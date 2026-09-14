@@ -1,4 +1,5 @@
 // Regression coverage for initialized codec buffers and block headers.
+#include <algorithm>
 #include <array>
 #include <cstddef>
 #include <cstdint>
@@ -8,6 +9,7 @@
 
 #include "gtest/gtest.h"
 #include "tech/b64straw.h"
+#include "tech/blwstraw.h"
 #include "tech/lcw.h"
 #include "tech/lcwpipe.h"
 #include "tech/lcwstraw.h"
@@ -18,6 +20,7 @@
 #include "tech/mp.h"
 #include "tech/pipe.h"
 #include "tech/sha.h"
+#include "tech/shastraw.h"
 #include "tech/straw.h"
 #include "tech/xstraw.h"
 
@@ -232,4 +235,47 @@ TEST(CodecStateTest, LzwRoundTripsIncompressibleBlocks) {
                          static_cast<int>(straw_encoded.size()));
   decompressing_pipe.Flush();
   EXPECT_EQ(decoded.bytes, expected);
+}
+
+// A pass-through straw link must not read ahead of its caller: the mixfile
+// header decode leaves the file positioned for whatever reads it next.
+TEST(CodecStateTest, UnkeyedBlowStrawReadsOnlyWhatWasRequested) {
+  std::array<uint8_t, 32> data{};
+  for (int i = 0; auto& byte : data) {
+    byte = static_cast<uint8_t>(i++);
+  }
+  BufferStraw source(data.data(), static_cast<int>(data.size()));
+  BlowStraw straw(BlowStraw::DECRYPT);
+  straw.SetSource(source);
+  std::array<uint8_t, 5> head{};
+  ASSERT_EQ(straw.Get(head.data(), static_cast<int>(head.size())), 5);
+  EXPECT_TRUE(std::equal(head.begin(), head.end(), data.begin()));
+
+  std::array<uint8_t, 64> rest{};
+  ASSERT_EQ(source.Get(rest.data(), static_cast<int>(rest.size())), 27);
+  EXPECT_TRUE(std::equal(data.begin() + 5, data.end(), rest.begin()));
+}
+
+TEST(CodecStateTest, ShaStrawHashesOnlyTheBytesItReturned) {
+  std::array<uint8_t, 32> data{};
+  for (int i = 0; auto& byte : data) {
+    byte = static_cast<uint8_t>(i++ * 3);
+  }
+  BufferStraw source(data.data(), static_cast<int>(data.size()));
+  SHAStraw sha;
+  sha.SetSource(source);
+  std::array<uint8_t, 5> head{};
+  ASSERT_EQ(sha.Get(head.data(), static_cast<int>(head.size())), 5);
+
+  SHAEngine expected_engine;
+  expected_engine.Hash(data.data(), 5);
+  std::array<uint8_t, 20> expected{};
+  expected_engine.Result(expected.data());
+  std::array<uint8_t, 20> actual{};
+  sha.Result(actual.data());
+  EXPECT_EQ(actual, expected);
+
+  std::array<uint8_t, 64> rest{};
+  ASSERT_EQ(source.Get(rest.data(), static_cast<int>(rest.size())), 27);
+  EXPECT_TRUE(std::equal(data.begin() + 5, data.end(), rest.begin()));
 }
