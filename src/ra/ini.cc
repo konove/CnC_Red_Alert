@@ -80,6 +80,7 @@
 #include "tech/b64pipe.h"
 #include "tech/b64straw.h"
 #include "tech/crc.h"
+#include "tech/file.h"
 #include "tech/fixed.h"
 #include "tech/int.h"
 #include "tech/number_parse.h"
@@ -87,7 +88,6 @@
 #include "tech/pk.h"
 #include "tech/readline.h"
 #include "tech/straw.h"
-#include "tech/wwfile.h"
 #include "tech/xpipe.h"
 #include "tech/xstraw.h"
 
@@ -175,7 +175,7 @@ bool INIClass::Clear(const char* section, const char* entry) {
  *                                                                                             *
  * HISTORY: * 07/02/1996 JLB : Created. *
  *=============================================================================================*/
-bool INIClass::Load(FileClass& file) {
+bool INIClass::Load(File& file) {
   FileStraw fs(file);
   return Load(fs);
 }
@@ -313,7 +313,7 @@ bool INIClass::Load(Straw& file)
  *                                                                                             *
  * HISTORY: * 07/02/1996 JLB : Created. *
  *=============================================================================================*/
-int INIClass::Save(FileClass& file) const {
+int INIClass::Save(File& file) const {
   FilePipe fp(file);
   return Save(fp);
 }

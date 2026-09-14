@@ -35,7 +35,7 @@
 #include "sdllib/file_access.h"
 #include "tech/buff.h"
 #include "tech/cdfile.h"
-#include "tech/wwfile.h"
+#include "tech/file.h"
 
 // A file object that knows about mixfiles (packed archives). Opening a name
 // that is packed inside a registered mixfile works whether that mixfile is

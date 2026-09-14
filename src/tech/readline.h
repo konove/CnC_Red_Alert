@@ -18,11 +18,11 @@
 #ifndef CNC_RED_ALERT_TECH_READLINE_H_
 #define CNC_RED_ALERT_TECH_READLINE_H_
 
+#include "tech/file.h"
 #include "tech/straw.h"
-#include "tech/wwfile.h"
 
 void strtrim(char* buffer);
-int Read_Line(FileClass& file, char* buffer, int len, bool& eof);
+int Read_Line(File& file, char* buffer, int len, bool& eof);
 int Read_Line(Straw& file, char* buffer, int len, bool& eof);
 
 #endif  // CNC_RED_ALERT_TECH_READLINE_H_

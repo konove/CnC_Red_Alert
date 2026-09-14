@@ -52,7 +52,7 @@
 #include "sdllib/iff.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
-#include "tech/wwfile.h"
+#include "tech/file.h"
 
 /*
 **	Interface class to the keyboard. This insulates the game from library
@@ -231,9 +231,9 @@ void* Small_Icon(const void* iconptr, int iconnum);
 void Set_Window(int window, int x, int y, int w, int h);
 // Allocates a buffer, reads the file into it, and null-terminates.
 // Returns ownership of the buffer. Caller must delete[].
-void* Load_Alloc_Data(FileClass& file);
+void* Load_Alloc_Data(File& file);
 void* Load_Alloc_Data(const char* name, int /*unused*/);
-int32_t Load_Uncompress(FileClass& file, BufferClass& uncomp_buff,
+int32_t Load_Uncompress(File& file, BufferClass& uncomp_buff,
                         BufferClass& dest_buff, void* reserved_data);
 int32_t Translucent_Table_Size(int count);
 void* Build_Translucent_Table(const void* palette, const TLucentType* control,

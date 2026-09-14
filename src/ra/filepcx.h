@@ -46,7 +46,7 @@ Buff);
 #include "ra/palette.h"
 #include "sdllib/buffer.h"
 #include "sdllib/gbuffer.h"
-#include "tech/wwfile.h"
+#include "tech/file.h"
 
 typedef struct {
   unsigned char red;
@@ -78,7 +78,7 @@ GraphicBufferClass* Read_PCX_File(const char* name, char* palette, void* buff,
 GraphicBufferClass* Read_PCX_File(const char* name, BufferClass& Buff,
                                   char* palette = nullptr);
 
-int Write_PCX_File(FileClass& file, GraphicBufferClass& pic,
+int Write_PCX_File(File& file, GraphicBufferClass& pic,
                    const PaletteClass* palette);
 
 #endif  // CNC_RED_ALERT_RA_FILEPCX_H_

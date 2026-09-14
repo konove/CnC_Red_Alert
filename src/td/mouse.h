@@ -48,7 +48,7 @@ class ArchiveWriter;
 #include "sdllib/timer.h"
 #include "td/defines.h"
 #include "td/scroll.h"
-#include "tech/wwfile.h"
+#include "tech/file.h"
 
 class MouseClass : public ScrollClass {
  public:

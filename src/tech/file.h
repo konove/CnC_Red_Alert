@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef CNC_RED_ALERT_TECH_WWFILE_H_
-#define CNC_RED_ALERT_TECH_WWFILE_H_
+#ifndef CNC_RED_ALERT_TECH_FILE_H_
+#define CNC_RED_ALERT_TECH_FILE_H_
 
 #define YEAR(dt) ((((dt) & 0xFE000000) >> (9 + 16)) + 1980)
 #define MONTH(dt) (((dt) & 0x01E00000) >> (5 + 16))
@@ -53,15 +53,20 @@
 
 #include "sdllib/file_access.h"
 
-class FileClass {
+// File: the interface every file object in the game implements. Concrete
+// files live on disk (DiskFile), in memory (MemoryFile) or inside the game's
+// mixfile archives (MixAwareFile); code that reads or writes takes a File&.
+//
+// Originally WWFILE.H (class FileClass) by Joe L. Bostic, August 8, 1994.
+class File {
  public:
-  FileClass() = default;
-  virtual ~FileClass() = default;
+  File() = default;
+  virtual ~File() = default;
 
-  FileClass(const FileClass&) = delete;
-  FileClass& operator=(const FileClass&) = delete;
-  FileClass(FileClass&&) = delete;
-  FileClass& operator=(FileClass&&) = delete;
+  File(const File&) = delete;
+  File& operator=(const File&) = delete;
+  File(File&&) = delete;
+  File& operator=(File&&) = delete;
 
   // Returns the name bound to the file object, which is empty if none has
   // been assigned. The view is invalidated by the next SetName() or Open()
@@ -93,4 +98,4 @@ class FileClass {
                      std::string_view filename = {}) = 0;
 };
 
-#endif  // CNC_RED_ALERT_TECH_WWFILE_H_
+#endif  // CNC_RED_ALERT_TECH_FILE_H_

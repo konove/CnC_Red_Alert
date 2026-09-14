@@ -100,8 +100,8 @@ int BufferPipe::Put(const void* source, int slen) {
 FilePipe::~FilePipe() {
   if (Valid_File() && HasOpened) {
     HasOpened = false;
-    File->Close();
-    File = nullptr;
+    file_->Close();
+    file_ = nullptr;
   }
 }
 
@@ -129,7 +129,7 @@ int FilePipe::End() {
   const int total = Pipe::End();
   if (Valid_File() && HasOpened) {
     HasOpened = false;
-    File->Close();
+    file_->Close();
   }
   return total;
 }
@@ -152,12 +152,12 @@ int FilePipe::End() {
  *=============================================================================================*/
 int FilePipe::Put(const void* source, int slen) {
   if (Valid_File() && source != nullptr && slen > 0) {
-    if (!File->IsOpen()) {
+    if (!file_->IsOpen()) {
       HasOpened = true;
-      File->Open(FileAccess::kWrite);
+      file_->Open(FileAccess::kWrite);
     }
 
-    return static_cast<int>(File->Write(source, slen));
+    return static_cast<int>(file_->Write(source, slen));
   }
   return 0;
 }

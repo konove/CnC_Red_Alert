@@ -42,8 +42,8 @@
 
 #include "absl/base/attributes.h"
 #include "tech/buff.h"
+#include "tech/file.h"
 #include "tech/straw.h"
-#include "tech/wwfile.h"
 
 /*
 **	This class is used to manage a buffer as a data source. Data requests
@@ -78,10 +78,10 @@ class BufferStraw : public Straw {
 */
 class FileStraw : public Straw {
  public:
-  explicit FileStraw(FileClass* file ABSL_ATTRIBUTE_LIFETIME_BOUND)
-      : File(file), HasOpened(false) {}
-  explicit FileStraw(FileClass& file ABSL_ATTRIBUTE_LIFETIME_BOUND)
-      : File(&file), HasOpened(false) {}
+  explicit FileStraw(File* file ABSL_ATTRIBUTE_LIFETIME_BOUND)
+      : file_(file), HasOpened(false) {}
+  explicit FileStraw(File& file ABSL_ATTRIBUTE_LIFETIME_BOUND)
+      : file_(&file), HasOpened(false) {}
   ~FileStraw() override;
 
   FileStraw(const FileStraw&) = delete;
@@ -92,10 +92,10 @@ class FileStraw : public Straw {
   int Get(void* source, int slen) override;
 
  private:
-  FileClass* File;
+  File* file_;
   bool HasOpened;
 
-  bool Valid_File() { return File != nullptr; }
+  bool Valid_File() { return file_ != nullptr; }
 };
 
 #endif  // CNC_RED_ALERT_TECH_XSTRAW_H_

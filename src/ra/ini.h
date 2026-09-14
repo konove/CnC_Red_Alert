@@ -47,12 +47,12 @@
 #include "ra/object.h"
 #include "ra/search.h"
 #include "tech/crc.h"
+#include "tech/file.h"
 #include "tech/fixed.h"
 #include "tech/listnode.h"
 #include "tech/pipe.h"
 #include "tech/pk.h"
 #include "tech/straw.h"
-#include "tech/wwfile.h"
 
 /*
 **	This is an INI database handler class. It handles a database with a disk
@@ -70,9 +70,9 @@ class INIClass {
   /*
   **	Fetch and store INI data.
   */
-  bool Load(FileClass& file);
+  bool Load(File& file);
   bool Load(Straw& file);
-  int Save(FileClass& file) const;
+  int Save(File& file) const;
   int Save(Pipe& pipe) const;
 
   /*

@@ -49,8 +49,8 @@
 #include "ra/object.h"
 #include "ra/stage.h"
 #include "ra/type.h"
+#include "tech/file.h"
 #include "tech/fixed.h"
-#include "tech/wwfile.h"
 
 /**********************************************************************************************
 **	This is the class that controls the shape animation objects. Shape

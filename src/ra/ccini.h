@@ -44,9 +44,9 @@
 
 #include "ra/defines.h"
 #include "ra/ini.h"
+#include "tech/file.h"
 #include "tech/pipe.h"
 #include "tech/straw.h"
-#include "tech/wwfile.h"
 
 class TriggerTypeClass;
 
@@ -59,9 +59,9 @@ class CCINIClass : public INIClass {
  public:
   CCINIClass() = default;
 
-  bool Load(FileClass& file, bool withdigest);
+  bool Load(File& file, bool withdigest);
   bool Load(Straw& file, bool withdigest);
-  int Save(FileClass& file, bool withdigest) const;
+  int Save(File& file, bool withdigest) const;
   int Save(Pipe& pipe, bool withdigest) const;
 
   uint64_t Get_Buildings(const char* section, const char* entry,

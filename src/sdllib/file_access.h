@@ -1,7 +1,7 @@
 #ifndef CNC_RED_ALERT_SDLLIB_FILE_ACCESS_H_
 #define CNC_RED_ALERT_SDLLIB_FILE_ACCESS_H_
 
-// File access rights used by FileClass::Open() and IO_Open_File().
+// File access rights used by File::Open() and IO_Open_File().
 //
 // These are bitmask flags: kRead and kWrite can be combined with bitwise OR
 // to request read-write access (kReadWrite is provided as a convenience).

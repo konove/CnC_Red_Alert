@@ -45,11 +45,11 @@
 #include <string_view>
 
 #include "absl/base/attributes.h"
-#include "tech/wwfile.h"
+#include "tech/file.h"
 
 // A "file" that reads and writes a caller-supplied memory buffer, for code
-// written against FileClass that needs to work on data already in memory.
-class RAMFileClass final : public FileClass {
+// written against File that needs to work on data already in memory.
+class RAMFileClass final : public File {
  public:
   // Wraps size bytes at buffer. A null buffer with a positive size allocates a
   // scratch buffer of that size, which is only useful for writing.

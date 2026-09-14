@@ -66,8 +66,8 @@
 #include "sdllib/misc.h"
 #include "sdllib/tile.h"
 #include "sdllib/ww_win.h"
+#include "tech/file.h"
 #include "tech/rgb.h"
-#include "tech/wwfile.h"
 
 /***********************************************************************************************
  * Small_Icon -- Create a small icon from a big one. *
@@ -208,8 +208,8 @@ void Format_Runtime_Text(char* buffer, size_t size, const char* format,
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-int32_t Load_Uncompress(FileClass& file, BuffType& uncomp_buff,
-                        BuffType& dest_buff, void* reserved_data) {
+int32_t Load_Uncompress(File& file, BuffType& uncomp_buff, BuffType& dest_buff,
+                        void* reserved_data) {
   uint16_t size;
   void* sptr = uncomp_buff.Get_Buffer();
   void* dptr = dest_buff.Get_Buffer();
@@ -309,7 +309,7 @@ int Load_Picture(const char* filename, BufferClass& scratchbuf,
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-void* Load_Alloc_Data(FileClass& file) {
+void* Load_Alloc_Data(File& file) {
   void* ptr = nullptr;
   const int32_t size = file.Size();
 
@@ -321,7 +321,7 @@ void* Load_Alloc_Data(FileClass& file) {
 }
 
 // Modern RAII version that returns owned data as a vector.
-std::vector<std::byte> LoadAllocData(FileClass& file) {
+std::vector<std::byte> LoadAllocData(File& file) {
   const int32_t size = file.Size();
   std::vector<std::byte> data(static_cast<size_t>(size));
   file.Read(data.data(), size);

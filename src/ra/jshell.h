@@ -57,7 +57,7 @@
 #include "sdllib/keyboard.h"
 #include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
-#include "tech/wwfile.h"
+#include "tech/file.h"
 
 /*
 **	Interface class to the keyboard. This insulates the game from library
@@ -264,10 +264,10 @@ void* Conquer_Build_Fading_Table(const PaletteClass& palette,
                                  int color, int frac);
 void* Small_Icon(const void* iconptr, int iconnum);
 void Set_Window(int window, int x, int y, int w, int h);
-void* Load_Alloc_Data(FileClass& file);
-std::vector<std::byte> LoadAllocData(FileClass& file);
-int32_t Load_Uncompress(FileClass& file, BuffType& uncomp_buff,
-                        BuffType& dest_buff, void* reserved_data);
+void* Load_Alloc_Data(File& file);
+std::vector<std::byte> LoadAllocData(File& file);
+int32_t Load_Uncompress(File& file, BuffType& uncomp_buff, BuffType& dest_buff,
+                        void* reserved_data);
 int32_t Translucent_Table_Size(int count);
 void* Build_Translucent_Table(const PaletteClass& palette,
                               const TLucentType* control, int count,

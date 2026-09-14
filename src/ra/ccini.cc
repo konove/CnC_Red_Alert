@@ -121,11 +121,11 @@
 #include "ra/weapon.h"
 #include "ra/ww_audio.h"
 #include "tech/crc.h"
+#include "tech/file.h"
 #include "tech/fixed.h"
 #include "tech/pipe.h"
 #include "tech/shapipe.h"
 #include "tech/straw.h"
-#include "tech/wwfile.h"
 #include "tech/xpipe.h"
 #include "tech/xstraw.h"
 /***********************************************************************************************
@@ -152,7 +152,7 @@
  * HISTORY: * 07/03/1996 JLB : Created. * 08/21/1996 JLB : Handles digest
  *control.                                                  *
  *=============================================================================================*/
-bool CCINIClass::Load(FileClass& file, bool withdigest) {
+bool CCINIClass::Load(File& file, bool withdigest) {
   FileStraw fs(file);
   return Load(fs, withdigest);
 }
@@ -225,7 +225,7 @@ bool CCINIClass::Load(Straw& file, bool withdigest) {
  * HISTORY: * 07/03/1996 JLB : Created. * 08/21/1996 JLB : Handles message
  *digest control.                                          *
  *=============================================================================================*/
-int CCINIClass::Save(FileClass& file, bool withdigest) const {
+int CCINIClass::Save(File& file, bool withdigest) const {
   FilePipe fp(file);
   return Save(fp, withdigest);
 }

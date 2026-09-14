@@ -51,7 +51,7 @@ class ArchiveWriter;
 #include "td/stage.h"
 #include "td/techno.h"
 #include "td/type.h"
-#include "tech/wwfile.h"
+#include "tech/file.h"
 
 class FactoryClass : StageClass {
  public:

@@ -37,9 +37,9 @@ int Write_Bin_Pos(const char* buffer);
 int Write_Bin_PosSet(int pos, const char* buffer);
 bool Write_Bin_String(const char* string, int length, const char* buffer);
 
-class FileClass;
+class File;
 struct NewConfigType;
 
-bool Read_Private_Config_Struct(FileClass& file, NewConfigType* config);
+bool Read_Private_Config_Struct(File& file, NewConfigType* config);
 
 #endif  // CNC_RED_ALERT_RA_PROFILE_H_

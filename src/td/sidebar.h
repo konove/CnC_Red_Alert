@@ -53,7 +53,7 @@ class ArchiveWriter;
 #include "td/power.h"
 #include "td/shapebtn.h"
 #include "td/stage.h"
-#include "tech/wwfile.h"
+#include "tech/file.h"
 
 class InitClass {};
 

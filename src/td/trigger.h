@@ -51,7 +51,7 @@ class ArchiveWriter;
 #include "td/defines.h"
 #include "td/object.h"
 #include "td/teamtype.h"
-#include "tech/wwfile.h"
+#include "tech/file.h"
 
 typedef enum EventType {
   EVENT_NONE = -1,

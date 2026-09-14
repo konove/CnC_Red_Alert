@@ -23,8 +23,8 @@
 #include <string_view>
 #include <vector>
 
+#include "tech/file.h"
 #include "tech/rawfile.h"
-#include "tech/wwfile.h"
 
 // File I/O class with multi-directory search support.
 //

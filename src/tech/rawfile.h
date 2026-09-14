@@ -52,7 +52,7 @@
 #include <string_view>
 
 #include "absl/base/attributes.h"
-#include "tech/wwfile.h"
+#include "tech/file.h"
 
 #ifndef WWERROR
 #define WWERROR (-1)
@@ -67,7 +67,7 @@
 //
 // Override Error() when more sophisticated error handling is required; the
 // version here ignores every error.
-class RawFileClass : public FileClass {
+class RawFileClass : public File {
  public:
   explicit RawFileClass(std::string_view filename);
   RawFileClass() = default;

@@ -54,9 +54,9 @@
 #include "port/safe_string.h"
 #include "ra/defines.h"
 #include "ra/ini.h"
+#include "tech/file.h"
 #include "tech/number_parse.h"
 #include "tech/readline.h"
-#include "tech/wwfile.h"
 
 static char* WriteBinBuffer = nullptr;
 static int WriteBinBufferLen = 0;
@@ -76,7 +76,7 @@ static int ReadBinBufferMax = 0;
  * HISTORY:                                                                *
  *   08/05/1992 JLB : Created.                                             *
  *=========================================================================*/
-bool Read_Private_Config_Struct(FileClass& file, NewConfigType* config) {
+bool Read_Private_Config_Struct(File& file, NewConfigType* config) {
   INIClass ini;
   ini.Load(file);
 

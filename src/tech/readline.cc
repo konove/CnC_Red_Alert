@@ -21,8 +21,8 @@
 #include <cctype>
 #include <cstring>
 
+#include "tech/file.h"
 #include "tech/straw.h"
-#include "tech/wwfile.h"
 #include "tech/xstraw.h"
 
 void strtrim(char* buffer) {
@@ -51,7 +51,7 @@ void strtrim(char* buffer) {
   }
 }
 
-int Read_Line(FileClass& file, char* buffer, int len, bool& eof) {
+int Read_Line(File& file, char* buffer, int len, bool& eof) {
   FileStraw fs(file);
   return Read_Line(fs, buffer, len, eof);
 }

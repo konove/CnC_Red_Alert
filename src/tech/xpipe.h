@@ -42,8 +42,8 @@
 
 #include "absl/base/attributes.h"
 #include "tech/buff.h"
+#include "tech/file.h"
 #include "tech/pipe.h"
-#include "tech/wwfile.h"
 
 /*
 **	This is a simple store-into-buffer pipe terminator. Use it as the final
@@ -83,10 +83,10 @@ class BufferPipe : public Pipe {
 */
 class FilePipe : public Pipe {
  public:
-  explicit FilePipe(FileClass* file ABSL_ATTRIBUTE_LIFETIME_BOUND)
-      : File(file), HasOpened(false) {}
-  explicit FilePipe(FileClass& file ABSL_ATTRIBUTE_LIFETIME_BOUND)
-      : File(&file), HasOpened(false) {}
+  explicit FilePipe(File* file ABSL_ATTRIBUTE_LIFETIME_BOUND)
+      : file_(file), HasOpened(false) {}
+  explicit FilePipe(File& file ABSL_ATTRIBUTE_LIFETIME_BOUND)
+      : file_(&file), HasOpened(false) {}
   ~FilePipe() override;
 
   FilePipe(const FilePipe&) = delete;
@@ -98,10 +98,10 @@ class FilePipe : public Pipe {
   int End() override;
 
  private:
-  FileClass* File;
+  File* file_;
   bool HasOpened;
 
-  bool Valid_File() { return File != nullptr; }
+  bool Valid_File() { return file_ != nullptr; }
 };
 
 #endif  // CNC_RED_ALERT_TECH_XPIPE_H_

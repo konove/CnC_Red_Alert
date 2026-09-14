@@ -65,7 +65,7 @@
 #include "support.h"
 #include "td/ccfile.h"
 #include "td/monoc.h"
-#include "tech/wwfile.h"
+#include "tech/file.h"
 
 /***********************************************************************************************
  * Small_Icon -- Create a small icon from a big one. *
@@ -212,7 +212,7 @@ void File_Fatal(const char* message) {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-int32_t Load_Uncompress(FileClass& file, BufferClass& uncomp_buff,
+int32_t Load_Uncompress(File& file, BufferClass& uncomp_buff,
                         BufferClass& dest_buff, void* reserved_data) {
   uint16_t size;
   void* sptr = uncomp_buff.Get_Buffer();
@@ -296,7 +296,7 @@ int Load_Picture(const char* filename, BufferClass& scratchbuf,
   return Load_Uncompress(fc, scratchbuf, destbuf, palette) / 8000;
 }
 
-void* Load_Alloc_Data(FileClass& file) {
+void* Load_Alloc_Data(File& file) {
   const auto size = static_cast<int>(file.Size());
   auto* ptr = new char[base::ToSize(size + 1)];
   file.Read(ptr, size);

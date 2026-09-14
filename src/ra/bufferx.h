@@ -40,7 +40,7 @@
 #ifndef CNC_RED_ALERT_RA_BUFFERX_H_
 #define CNC_RED_ALERT_RA_BUFFERX_H_
 
-#include "ra/wwfile.h"
+#include "tech/file.h"
 
 /*
 **	This is a transmuter interface designed to aid implementation of
@@ -80,9 +80,9 @@ class Transmuter {
 
 class FileTransmuter {
  public:
-  FileTransmuter(FileClass* file = nullptr) : OutputFile(file) {}
+  FileTransmuter(File* file = nullptr) : OutputFile(file) {}
 
-  virtual void Attach(FileClass* file) { OutputFile = file; }
+  virtual void Attach(File* file) { OutputFile = file; }
   virtual void Flush() {}
   virtual void Put(const void* input, unsigned length) {
     if (OutputFile) {
@@ -91,7 +91,7 @@ class FileTransmuter {
   }
 
  protected:
-  FileClass* OutputFile;
+  File* OutputFile;
 };
 
 class BufferTransmuter {

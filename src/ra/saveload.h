@@ -6,9 +6,9 @@
 
 #include "ra/defines.h"
 #include "tech/archive.h"
+#include "tech/file.h"
 #include "tech/pipe.h"
 #include "tech/straw.h"
-#include "tech/wwfile.h"
 
 // Identifies a saved game written by this port. It follows the description
 // in the file header, where the original format kept the scenario number, so

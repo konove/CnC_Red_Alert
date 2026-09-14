@@ -46,7 +46,7 @@
 #include <string_view>
 
 #include "tech/cdfile.h"
-#include "tech/wwfile.h"
+#include "tech/file.h"
 
 /*
 **	This derived class for file access knows about mixfiles (packed files).

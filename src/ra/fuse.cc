@@ -48,7 +48,7 @@
 #include "ra/coord.h"
 #include "ra/defines.h"
 #include "ra/display_constants.h"
-#include "tech/wwfile.h"
+#include "tech/file.h"
 
 /***********************************************************************************************
  * FuseClass::Arm_Fuse -- Sets up fuse for detonation check. *
@@ -150,7 +150,7 @@ bool FuseClass::Fuse_Checkup(COORDINATE newlocation) {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-void FuseClass::Fuse_Write(FileClass& file) {
+void FuseClass::Fuse_Write(File& file) {
   file.Write(&Timer, sizeof(Timer));
   file.Write(&Arming, sizeof(Arming));
   file.Write(&HeadTo, sizeof(HeadTo));
@@ -171,7 +171,7 @@ void FuseClass::Fuse_Write(FileClass& file) {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-void FuseClass::Fuse_Read(FileClass& file) {
+void FuseClass::Fuse_Read(File& file) {
   file.Read(&Timer, sizeof(Timer));
   file.Read(&Arming, sizeof(Arming));
   file.Read(&HeadTo, sizeof(HeadTo));

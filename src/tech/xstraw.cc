@@ -117,17 +117,17 @@ int BufferStraw::Get(void* source, int slen) {
  *=============================================================================================*/
 int FileStraw::Get(void* source, int slen) {
   if (Valid_File() && source != nullptr && slen > 0) {
-    if (!File->IsOpen()) {
+    if (!file_->IsOpen()) {
       HasOpened = true;
-      if (!File->IsAvailable()) {
+      if (!file_->IsAvailable()) {
         return 0;
       }
-      if (!File->Open(FileAccess::kRead)) {
+      if (!file_->Open(FileAccess::kRead)) {
         return 0;
       }
     }
 
-    return static_cast<int>(File->Read(source, slen));
+    return static_cast<int>(file_->Read(source, slen));
   }
   return 0;
 }
@@ -148,8 +148,8 @@ int FileStraw::Get(void* source, int slen) {
  *=============================================================================================*/
 FileStraw::~FileStraw() {
   if (Valid_File() && HasOpened) {
-    File->Close();
+    file_->Close();
     HasOpened = false;
-    File = nullptr;
+    file_ = nullptr;
   }
 }
