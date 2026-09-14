@@ -96,7 +96,7 @@ class FileClass {
 
   // legacy C interfaces take the object where a pointer or name is expected.
   // NOLINTNEXTLINE(*-explicit-constructor)
-  operator const char*() { return File_Name(); }
+  operator const char*() const { return File_Name(); }
 
  protected:
   virtual bool Do_Is_Available(AvailabilityCheck mode) = 0;

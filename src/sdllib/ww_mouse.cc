@@ -242,11 +242,11 @@ void WWMouseClass::Conditional_Hide_Mouse(int /*x1*/, int /*y1*/, int /*x2*/,
 
 void WWMouseClass::Conditional_Show_Mouse() {}
 
-int WWMouseClass::Get_Mouse_State() { return State; }
+int WWMouseClass::Get_Mouse_State() const { return State; }
 
-int WWMouseClass::Get_Mouse_X() { return LastX; }
+int WWMouseClass::Get_Mouse_X() const { return LastX; }
 
-int WWMouseClass::Get_Mouse_Y() { return LastY; }
+int WWMouseClass::Get_Mouse_Y() const { return LastY; }
 
 void WWMouseClass::Draw_Mouse(GraphicViewPortClass* /*scr*/) {
   // No-op: SDL hardware cursor is drawn by the OS, not by us.

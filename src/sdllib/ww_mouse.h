@@ -78,10 +78,10 @@ class WWMouseClass {
   void Conditional_Show_Mouse();
 
   // Returns the current hide count (0 = visible).
-  int Get_Mouse_State();
+  [[nodiscard]] int Get_Mouse_State() const;
 
-  int Get_Mouse_X();
-  int Get_Mouse_Y();
+  [[nodiscard]] int Get_Mouse_X() const;
+  [[nodiscard]] int Get_Mouse_Y() const;
 
   // No-ops for hardware cursor. Kept for API compatibility with legacy code
   // that expected software cursor rendering.

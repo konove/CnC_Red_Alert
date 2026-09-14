@@ -46,7 +46,7 @@ class BufferClass {
 
   // define functions to get at the protected data members
   void* Get_Buffer() { return Buffer; }
-  int32_t Get_Size() { return Size; }
+  [[nodiscard]] int32_t Get_Size() const { return Size; }
 
  protected:
   void* Buffer;
