@@ -2321,27 +2321,14 @@ void CC_Draw_Shape(const void* shapefile, const int shape_num, const int x,
       }
 
       if (draw_window.Lock()) {
-        constexpr auto kGhostFadeMask = SHAPE_GHOST | SHAPE_FADING;
-        const auto ghost_fade_bits = flags & kGhostFadeMask;
-        if (ghost_fade_bits == kGhostFadeMask) {
-          Buffer_Frame_To_Page(x, y, width, height, buffer, draw_window,
-                               flags | SHAPE_TRANS, ghostdata, fading_data, 1,
-                               pred_offset);
-        } else {
-          if (flags & SHAPE_FADING) {
-            Buffer_Frame_To_Page(x, y, width, height, buffer, draw_window,
-                                 flags | SHAPE_TRANS, fading_data, 1,
-                                 pred_offset);
-          } else {
-            if (flags & SHAPE_PREDATOR) {
-              Buffer_Frame_To_Page(x, y, width, height, buffer, draw_window,
-                                   flags | SHAPE_TRANS, pred_offset);
-            } else {
-              Buffer_Frame_To_Page(x, y, width, height, buffer, draw_window,
-                                   flags | SHAPE_TRANS, ghostdata, pred_offset);
-            }
-          }
-        }
+        const ShapeEffects effects{
+            .ghost_table = static_cast<const uint8_t*>(ghostdata),
+            .fading_table = static_cast<const uint8_t*>(fading_data),
+            .fading_count = 1,
+            .predator_offset = pred_offset,
+        };
+        Buffer_Frame_To_Page(x, y, width, height, buffer, draw_window,
+                             flags | SHAPE_TRANS, effects);
         draw_window.Unlock();
       }
     }

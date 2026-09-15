@@ -2498,32 +2498,15 @@ void CC_Draw_Shape(const void* shapefile, int shapenum, int x, int y,
       }
 
       if (draw_window.Lock()) {
-        if ((flags & (SHAPE_GHOST | SHAPE_FADING)) ==
-            (SHAPE_GHOST | SHAPE_FADING)) {
-          Buffer_Frame_To_Page(x, y, Get_Build_Frame_Width(shapefile),
-                               Get_Build_Frame_Height(shapefile), shape_pointer,
-                               draw_window, flags | SHAPE_TRANS, ghostdata,
-                               fadingdata, 1, predoffset);
-        } else {
-          if (flags & SHAPE_FADING) {
-            Buffer_Frame_To_Page(
-                x, y, Get_Build_Frame_Width(shapefile),
-                Get_Build_Frame_Height(shapefile), shape_pointer, draw_window,
-                flags | SHAPE_TRANS, fadingdata, 1, predoffset);
-          } else {
-            if (flags & SHAPE_PREDATOR) {
-              Buffer_Frame_To_Page(x, y, Get_Build_Frame_Width(shapefile),
-                                   Get_Build_Frame_Height(shapefile),
-                                   shape_pointer, draw_window,
-                                   flags | SHAPE_TRANS, predoffset);
-            } else {
-              Buffer_Frame_To_Page(x, y, Get_Build_Frame_Width(shapefile),
-                                   Get_Build_Frame_Height(shapefile),
-                                   shape_pointer, draw_window,
-                                   flags | SHAPE_TRANS, ghostdata, predoffset);
-            }
-          }
-        }
+        const ShapeEffects effects{
+            .ghost_table = static_cast<const uint8_t*>(ghostdata),
+            .fading_table = static_cast<const uint8_t*>(fadingdata),
+            .fading_count = 1,
+            .predator_offset = predoffset,
+        };
+        Buffer_Frame_To_Page(x, y, Get_Build_Frame_Width(shapefile),
+                             Get_Build_Frame_Height(shapefile), shape_pointer,
+                             draw_window, flags | SHAPE_TRANS, effects);
       }
       draw_window.Unlock();
       //		} else {

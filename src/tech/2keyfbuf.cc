@@ -2,7 +2,6 @@
 #include "tech/2keyfbuf.h"
 
 #include <bit>
-#include <cstdarg>
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
@@ -59,7 +58,7 @@ static inline int Make_Code(int x, int y, int w, int h) {
 
 static void Setup_Shape_Header(int pixel_width, int pixel_height, char* src,
                                ShapeHeaderType* headers, int flags,
-                               uint8_t* /*Translucent*/,
+                               const uint8_t* /*Translucent*/,
                                const uint8_t* IsTranslucent) {
   headers->draw_flags = static_cast<unsigned>(ShapeEffectFlags(flags));
   auto* ptr = port::BytesOf(*headers) + sizeof(ShapeHeaderType);
@@ -146,15 +145,15 @@ static void Do_Old_Blit(int line_count, int pixel_count, uint8_t* src_offset,
   } while (--line_count);
 }
 
-extern "C" int32_t Buffer_Frame_To_Page(int x, int y, int w, int h, void* src,
-                                        GraphicViewPortClass& dest, int flags,
-                                        ...) {
+void Buffer_Frame_To_Page(int x, int y, const int w, const int h, void* src,
+                          GraphicViewPortClass& dest, int flags,
+                          const ShapeEffects& effects) {
   if (!src) {
-    return 0;
+    return;
   }
 
-  uint8_t* IsTranslucent = nullptr;
-  uint8_t* Translucent = nullptr;
+  const uint8_t* IsTranslucent = nullptr;
+  const uint8_t* Translucent = nullptr;
   const uint8_t* FadingTable = nullptr;
   int FadingNum = 0;
 
@@ -177,10 +176,6 @@ extern "C" int32_t Buffer_Frame_To_Page(int x, int y, int w, int h, void* src,
   }
   // else just use the old shape drawing system
 
-  // Pull off optional arguments
-  va_list args;
-  va_start(args, flags);
-
   int jflags = 0;  // clear jump flags
 
   // See if we need to center the frame
@@ -196,7 +191,7 @@ extern "C" int32_t Buffer_Frame_To_Page(int x, int y, int w, int h, void* src,
   if (flags & SHAPE_GHOST) {
     // are we ghosting this shape
     jflags |= BLIT_GHOST;
-    IsTranslucent = va_arg(args, uint8_t*);
+    IsTranslucent = effects.ghost_table;
     Translucent = IsTranslucent + 256;
   }
 
@@ -226,9 +221,9 @@ extern "C" int32_t Buffer_Frame_To_Page(int x, int y, int w, int h, void* src,
   // are we fading this shape
   if (flags & SHAPE_FADING) {
     // save address of fading tbl
-    FadingTable = va_arg(args, uint8_t*);
+    FadingTable = effects.fading_table;
     // get fade num, no need for more than 63
-    FadingNum = va_arg(args, int) & 0x3F;
+    FadingNum = effects.fading_count & 0x3F;
     jflags |= BLIT_FADING;
 
     if (!FadingNum) {
@@ -246,7 +241,7 @@ extern "C" int32_t Buffer_Frame_To_Page(int x, int y, int w, int h, void* src,
 
   if (flags & SHAPE_PREDATOR)  // is predator effect on
   {
-    int offset = va_arg(args, int);
+    int offset = effects.predator_offset;
     jflags |= BLIT_PREDATOR;
 
     offset <<= 1;
@@ -270,10 +265,8 @@ extern "C" int32_t Buffer_Frame_To_Page(int x, int y, int w, int h, void* src,
 
   // is this a partial pred?
   if (flags & SHAPE_PARTIAL) {
-    BFPartialPred = va_arg(args, int) & 0xFF;
+    BFPartialPred = effects.partial_predator & 0xFF;
   }
-
-  va_end(args);
 
   // clip dest
   int src_x0 = 0;
@@ -291,7 +284,7 @@ extern "C" int32_t Buffer_Frame_To_Page(int x, int y, int w, int h, void* src,
 
   // outside
   if (code0 & code1) {
-    return 0;
+    return;
   }
 
   if (code0 | code1) {
@@ -328,7 +321,7 @@ extern "C" int32_t Buffer_Frame_To_Page(int x, int y, int w, int h, void* src,
 
   if (!use_new_draw) {
     if (dst_x1 <= dst_x0 || dst_y1 <= dst_y0) {
-      return 0;
+      return;
     }
 
     const int pixel_count = dst_x1 - dst_x0;
@@ -450,5 +443,4 @@ extern "C" int32_t Buffer_Frame_To_Page(int x, int y, int w, int h, void* src,
            static_cast<int>(use_all_flags));
   }
 
-  return 0;
 }
