@@ -70,6 +70,15 @@ back, so no build ever reached `ninja: no work to do`. Check with
 and fix with one `CCACHE_RECACHE=1 cmake --build <build-dir>`, which recompiles and replaces those
 entries.
 
+**Build a directory with the ninja that configured it.** Ninja versions hash commands differently in
+`.ninja_log`, so alternating two of them marks every object "command line changed" and rebuilds the
+tree. CLion-configured directories record CLion's bundled ninja (1.13.2 as of 2026-09-14) in
+`CMAKE_MAKE_PROGRAM`, while `/usr/bin/ninja` is 1.11.1. `cmake --build` always uses the recorded
+one; don't run bare `ninja` in those directories, and pass ninja flags through instead:
+`cmake --build <build-dir> -- -d explain`. Also, `ninja -n` always prints "Re-running CMake..."
+because a dry run can't check whether the glob verification changed anything; only a real build
+shows whether CMake re-runs.
+
 ccache caches only the compile. clang-tidy and IWYU run as separate passes in front of it, so under
 `STRICT_CHECKS=ON` a fully cached rebuild still pays their full cost — measured on `src/ra/drop.cc`:
 0.00 s for the cached compile, 1.5 s for clang-tidy, 1.0 s for IWYU. Nothing caches IWYU, so
