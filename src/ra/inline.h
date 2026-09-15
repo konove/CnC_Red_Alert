@@ -82,6 +82,7 @@
 #ifndef CNC_RED_ALERT_RA_INLINE_H_
 #define CNC_RED_ALERT_RA_INLINE_H_
 
+#include <bit>
 #include <cstdint>
 #include <cstdlib>
 #include <iterator>
@@ -197,7 +198,7 @@ inline COORDINATE XYP_COORD(int x, int y) noexcept {
  * HISTORY: * 08/21/1996 JLB : Created. *
  *=============================================================================================*/
 inline CELL Coord_XCell(COORDINATE coord) {
-  return ((COORD_COMPOSITE&)coord).Sub.X.Sub.Cell;
+  return std::bit_cast<COORD_COMPOSITE>(coord).Sub.X.Sub.Cell;
 }
 
 /***********************************************************************************************
@@ -215,7 +216,7 @@ inline CELL Coord_XCell(COORDINATE coord) {
  * HISTORY: * 08/21/1996 JLB : Created. *
  *=============================================================================================*/
 inline CELL Coord_YCell(COORDINATE coord) {
-  return ((COORD_COMPOSITE&)coord).Sub.Y.Sub.Cell;
+  return std::bit_cast<COORD_COMPOSITE>(coord).Sub.Y.Sub.Cell;
 }
 
 /***********************************************************************************************
@@ -235,8 +236,8 @@ inline CELL Coord_YCell(COORDINATE coord) {
 inline CELL XY_Cell(int x, int y) {
   CELL_COMPOSITE cell{};
   cell.Cell = 0;
-  cell.Sub.X = static_cast<unsigned>(x);
-  cell.Sub.Y = static_cast<unsigned>(y);
+  cell.Sub.X = static_cast<uint16_t>(x);
+  cell.Sub.Y = static_cast<uint16_t>(y);
   return cell.Cell;
 }
 
@@ -278,10 +279,11 @@ inline LEPTON Cell_To_Lepton(int cell_distance) {
  * HISTORY: * 08/21/1996 JLB : Created. *
  *=============================================================================================*/
 inline int Lepton_To_Cell(LEPTON lepton_distance) {
-  if (((LEPTON_COMPOSITE&)lepton_distance).Sub.Lepton >= CELL_LEPTON_W / 2) {
-    return ((LEPTON_COMPOSITE&)lepton_distance).Sub.Cell + 1;
+  const auto lepton = std::bit_cast<LEPTON_COMPOSITE>(lepton_distance);
+  if (lepton.Sub.Lepton >= CELL_LEPTON_W / 2) {
+    return lepton.Sub.Cell + 1;
   }
-  return ((LEPTON_COMPOSITE&)lepton_distance).Sub.Cell;
+  return lepton.Sub.Cell;
 }
 
 /***********************************************************************************************
@@ -299,7 +301,7 @@ inline int Lepton_To_Cell(LEPTON lepton_distance) {
  * HISTORY: * 08/21/1996 JLB : Created. *
  *=============================================================================================*/
 inline LEPTON Coord_X(COORDINATE coord) {
-  return ((COORD_COMPOSITE&)coord).Sub.X.Raw;
+  return std::bit_cast<COORD_COMPOSITE>(coord).Sub.X.Raw;
 }
 
 /***********************************************************************************************
@@ -318,7 +320,7 @@ inline LEPTON Coord_X(COORDINATE coord) {
  * HISTORY: * 08/21/1996 JLB : Created. *
  *=============================================================================================*/
 inline LEPTON Coord_Y(COORDINATE coord) {
-  return ((COORD_COMPOSITE&)coord).Sub.Y.Raw;
+  return std::bit_cast<COORD_COMPOSITE>(coord).Sub.Y.Raw;
 }
 
 /***********************************************************************************************
@@ -336,7 +338,9 @@ inline LEPTON Coord_Y(COORDINATE coord) {
  *                                                                                             *
  * HISTORY: * 08/21/1996 JLB : Created. *
  *=============================================================================================*/
-inline int Cell_X(CELL cell) { return ((CELL_COMPOSITE&)cell).Sub.X; }
+inline int Cell_X(CELL cell) {
+  return std::bit_cast<CELL_COMPOSITE>(cell).Sub.X;
+}
 
 /***********************************************************************************************
  * Cell_Y -- Fetch the Y cell component from the cell value specified. *
@@ -351,7 +355,9 @@ inline int Cell_X(CELL cell) { return ((CELL_COMPOSITE&)cell).Sub.X; }
  *                                                                                             *
  * HISTORY: * 08/21/1996 JLB : Created. *
  *=============================================================================================*/
-inline int Cell_Y(CELL cell) { return ((CELL_COMPOSITE&)cell).Sub.Y; }
+inline int Cell_Y(CELL cell) {
+  return std::bit_cast<CELL_COMPOSITE>(cell).Sub.Y;
+}
 
 /***********************************************************************************************
  * Coord_XLepton -- Fetch the X sub-cell lepton component from the coordinate. *
@@ -371,7 +377,7 @@ inline int Cell_Y(CELL cell) { return ((CELL_COMPOSITE&)cell).Sub.Y; }
  * HISTORY: * 08/21/1996 JLB : Created. *
  *=============================================================================================*/
 inline int Coord_XLepton(COORDINATE coord) {
-  return ((COORD_COMPOSITE&)coord).Sub.X.Sub.Lepton;
+  return std::bit_cast<COORD_COMPOSITE>(coord).Sub.X.Sub.Lepton;
 }
 
 /***********************************************************************************************
@@ -391,7 +397,7 @@ inline int Coord_XLepton(COORDINATE coord) {
  * HISTORY: * 08/23/1996 JLB : Created. *
  *=============================================================================================*/
 inline int Coord_YLepton(COORDINATE coord) {
-  return ((COORD_COMPOSITE&)coord).Sub.Y.Sub.Lepton;
+  return std::bit_cast<COORD_COMPOSITE>(coord).Sub.Y.Sub.Lepton;
 }
 
 /***********************************************************************************************
@@ -438,12 +444,11 @@ inline COORDINATE XYP_Coord(int x, int y) {
  *=============================================================================================*/
 inline COORDINATE Cell_Coord(CELL cell) {
   COORD_COMPOSITE coord{};
+  const auto cell_xy = std::bit_cast<CELL_COMPOSITE>(cell);
 
-  coord.Sub.X.Sub.Cell =
-      static_cast<unsigned char>(((CELL_COMPOSITE&)cell).Sub.X);
+  coord.Sub.X.Sub.Cell = static_cast<unsigned char>(cell_xy.Sub.X);
   coord.Sub.X.Sub.Lepton = static_cast<unsigned char>((CELL_LEPTON_W / 2));
-  coord.Sub.Y.Sub.Cell =
-      static_cast<unsigned char>(((CELL_COMPOSITE&)cell).Sub.Y);
+  coord.Sub.Y.Sub.Cell = static_cast<unsigned char>(cell_xy.Sub.Y);
   coord.Sub.Y.Sub.Lepton = static_cast<unsigned char>((CELL_LEPTON_W / 2));
   return coord.Coord;
 }
@@ -464,9 +469,10 @@ inline COORDINATE Cell_Coord(CELL cell) {
  * HISTORY: * 08/23/1996 JLB : Created. *
  *=============================================================================================*/
 inline COORDINATE Coord_Snap(COORDINATE coord) {
-  ((COORD_COMPOSITE&)coord).Sub.X.Sub.Lepton = CELL_LEPTON_W / 2;
-  ((COORD_COMPOSITE&)coord).Sub.Y.Sub.Lepton = CELL_LEPTON_W / 2;
-  return coord;
+  auto composite = std::bit_cast<COORD_COMPOSITE>(coord);
+  composite.Sub.X.Sub.Lepton = CELL_LEPTON_W / 2;
+  composite.Sub.Y.Sub.Lepton = CELL_LEPTON_W / 2;
+  return composite.Coord;
 }
 
 /***********************************************************************************************
@@ -486,9 +492,10 @@ inline COORDINATE Coord_Snap(COORDINATE coord) {
  * HISTORY: * 08/23/1996 JLB : Created. *
  *=============================================================================================*/
 inline COORDINATE Coord_Fraction(COORDINATE coord) {
-  ((COORD_COMPOSITE&)coord).Sub.X.Sub.Cell = 0;
-  ((COORD_COMPOSITE&)coord).Sub.Y.Sub.Cell = 0;
-  return coord;
+  auto composite = std::bit_cast<COORD_COMPOSITE>(coord);
+  composite.Sub.X.Sub.Cell = 0;
+  composite.Sub.Y.Sub.Cell = 0;
+  return composite.Coord;
 }
 
 /***********************************************************************************************
@@ -508,9 +515,10 @@ inline COORDINATE Coord_Fraction(COORDINATE coord) {
  * HISTORY: * 08/23/1996 JLB : Created. *
  *=============================================================================================*/
 inline COORDINATE Coord_Whole(COORDINATE coord) {
-  ((COORD_COMPOSITE&)coord).Sub.X.Sub.Lepton = 0;
-  ((COORD_COMPOSITE&)coord).Sub.Y.Sub.Lepton = 0;
-  return coord;
+  auto composite = std::bit_cast<COORD_COMPOSITE>(coord);
+  composite.Sub.X.Sub.Lepton = 0;
+  composite.Sub.Y.Sub.Lepton = 0;
+  return composite.Coord;
 }
 
 /***********************************************************************************************
@@ -532,13 +540,13 @@ inline COORDINATE Coord_Whole(COORDINATE coord) {
  *=============================================================================================*/
 inline COORDINATE Coord_Add(COORDINATE a, COORDINATE b) {
   COORD_COMPOSITE coord{};
+  const auto lhs = std::bit_cast<COORD_COMPOSITE>(a);
+  const auto rhs = std::bit_cast<COORD_COMPOSITE>(b);
 
-  coord.Sub.X.Raw =
-      static_cast<LEPTON>((int)(int16_t)((COORD_COMPOSITE&)a).Sub.X.Raw +
-                          (int)(int16_t)((COORD_COMPOSITE&)b).Sub.X.Raw);
-  coord.Sub.Y.Raw =
-      static_cast<LEPTON>((int)(int16_t)((COORD_COMPOSITE&)a).Sub.Y.Raw +
-                          (int)(int16_t)((COORD_COMPOSITE&)b).Sub.Y.Raw);
+  coord.Sub.X.Raw = static_cast<LEPTON>(static_cast<int16_t>(lhs.Sub.X.Raw) +
+                                        static_cast<int16_t>(rhs.Sub.X.Raw));
+  coord.Sub.Y.Raw = static_cast<LEPTON>(static_cast<int16_t>(lhs.Sub.Y.Raw) +
+                                        static_cast<int16_t>(rhs.Sub.Y.Raw));
   return coord.Coord;
 }
 
@@ -562,13 +570,13 @@ inline COORDINATE Coord_Add(COORDINATE a, COORDINATE b) {
  *=============================================================================================*/
 inline COORDINATE Coord_Sub(COORDINATE coord1, COORDINATE coord2) {
   COORD_COMPOSITE coord{};
+  const auto lhs = std::bit_cast<COORD_COMPOSITE>(coord1);
+  const auto rhs = std::bit_cast<COORD_COMPOSITE>(coord2);
 
-  coord.Sub.X.Raw =
-      static_cast<LEPTON>((int)(int16_t)((COORD_COMPOSITE&)coord1).Sub.X.Raw -
-                          (int)(int16_t)((COORD_COMPOSITE&)coord2).Sub.X.Raw);
-  coord.Sub.Y.Raw =
-      static_cast<LEPTON>((int)(int16_t)((COORD_COMPOSITE&)coord1).Sub.Y.Raw -
-                          (int)(int16_t)((COORD_COMPOSITE&)coord2).Sub.Y.Raw);
+  coord.Sub.X.Raw = static_cast<LEPTON>(static_cast<int16_t>(lhs.Sub.X.Raw) -
+                                        static_cast<int16_t>(rhs.Sub.X.Raw));
+  coord.Sub.Y.Raw = static_cast<LEPTON>(static_cast<int16_t>(lhs.Sub.Y.Raw) -
+                                        static_cast<int16_t>(rhs.Sub.Y.Raw));
   return coord.Coord;
 }
 
@@ -590,15 +598,13 @@ inline COORDINATE Coord_Sub(COORDINATE coord1, COORDINATE coord2) {
  *=============================================================================================*/
 inline COORDINATE Coord_Mid(COORDINATE coord1, COORDINATE coord2) {
   COORD_COMPOSITE coord{};
+  const auto first = std::bit_cast<COORD_COMPOSITE>(coord1);
+  const auto second = std::bit_cast<COORD_COMPOSITE>(coord2);
 
   coord.Sub.X.Raw =
-      static_cast<LEPTON>(((int)((COORD_COMPOSITE&)coord1).Sub.X.Raw +
-                           (int)((COORD_COMPOSITE&)coord2).Sub.X.Raw) /
-                          2);
+      static_cast<LEPTON>((int{first.Sub.X.Raw} + int{second.Sub.X.Raw}) / 2);
   coord.Sub.Y.Raw =
-      static_cast<LEPTON>(((int)((COORD_COMPOSITE&)coord1).Sub.Y.Raw +
-                           (int)((COORD_COMPOSITE&)coord2).Sub.Y.Raw) /
-                          2);
+      static_cast<LEPTON>((int{first.Sub.Y.Raw} + int{second.Sub.Y.Raw}) / 2);
   return coord.Coord;
 }
 

@@ -40,6 +40,7 @@
 #ifndef CNC_RED_ALERT_RA_FACE_H_
 #define CNC_RED_ALERT_RA_FACE_H_
 
+#include <bit>
 #include <cstdint>
 
 #include "ra/defines.h"
@@ -80,9 +81,9 @@ DirType Desired_Facing256(int srcx, int srcy, int dstx, int dsty);
 
 // Calculates the DirType from one cell to another (8-direction accuracy).
 inline DirType Direction(CELL cell1, CELL cell2) {
-  return Desired_Facing8(
-      ((CELL_COMPOSITE&)cell1).Sub.X, ((CELL_COMPOSITE&)cell1).Sub.Y,
-      ((CELL_COMPOSITE&)cell2).Sub.X, ((CELL_COMPOSITE&)cell2).Sub.Y);
+  const auto from = std::bit_cast<CELL_COMPOSITE>(cell1);
+  const auto to = std::bit_cast<CELL_COMPOSITE>(cell2);
+  return Desired_Facing8(from.Sub.X, from.Sub.Y, to.Sub.X, to.Sub.Y);
 }
 
 #endif  // CNC_RED_ALERT_RA_FACE_H_

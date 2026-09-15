@@ -94,6 +94,13 @@ add_gtest(
 target_compile_definitions(td_connect_test PRIVATE TD=1)
 
 add_gtest(
+    NAME td_coord_inline_test
+    SOURCES coord_inline_test.cc
+    LIBS absl::check absl::log
+)
+target_compile_definitions(td_coord_inline_test PRIVATE TD=1)
+
+add_gtest(
     NAME td_path_overlap_test
     SOURCES path_overlap_test.cc
     LIBS absl::check absl::log

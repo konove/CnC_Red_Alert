@@ -294,11 +294,18 @@ union COORD_COMPOSITE {
 
 union CELL_COMPOSITE {
   CELL Cell;
+  // uint16_t bit-fields keep the union the size of a CELL, which is what
+  // lets std::bit_cast convert between the two.
   struct {
-    unsigned X : 7;
-    unsigned Y : 7;
+    uint16_t X : 7;
+    uint16_t Y : 7;
   } Sub;
 };
+
+// The composites are std::bit_cast views of their packed words.
+static_assert(sizeof(LEPTON_COMPOSITE) == sizeof(LEPTON));
+static_assert(sizeof(COORD_COMPOSITE) == sizeof(COORDINATE));
+static_assert(sizeof(CELL_COMPOSITE) == sizeof(CELL));
 
 using WAYPOINT = int;
 
@@ -318,6 +325,7 @@ union TARGET_COMPOSITE {
     unsigned Exponent : kTargetExponentBits;
   } Sub;
 };
+static_assert(sizeof(TARGET_COMPOSITE) == sizeof(TARGET));
 
 inline TARGET Build_Target(const RTTIType kind, const int value) {
   TARGET_COMPOSITE target{};

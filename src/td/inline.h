@@ -68,11 +68,16 @@ inline int Coord_Y(COORDINATE coord) {
 inline int Cell_X(CELL cell) { return static_cast<int>((unsigned)cell & 0x3F); }
 inline int Cell_Y(CELL cell) { return static_cast<int>((unsigned)cell >> 6); }
 inline int Dir_Diff(DirType dir1, DirType dir2) {
-  return *(signed char*)&dir2 - *(signed char*)&dir1;
+  // Facings wrap at 256, so the difference is taken between their signed
+  // byte values.
+  return static_cast<int8_t>(dir2) - static_cast<int8_t>(dir1);
 }
-inline CELL Coord_XLepton(COORDINATE coord) { return *(unsigned char*)&coord; }
+// A COORDINATE packs, from the low byte up: X lepton, X cell, Y lepton, Y cell.
+inline CELL Coord_XLepton(COORDINATE coord) {
+  return static_cast<uint8_t>(coord);
+}
 inline CELL Coord_YLepton(COORDINATE coord) {
-  return *((unsigned char*)&coord + 2);
+  return static_cast<uint8_t>(coord >> 16);
 }
 // inline COORD CellXY_Coord(unsigned x, unsigned y) {return
 // (COORD)(MAKE_LONG(y<<8, x<<8));}
@@ -88,14 +93,13 @@ inline COORDINATE Coord_Sub(COORDINATE coord1, COORDINATE coord2) {
                static_cast<uint16_t>(Coord_X(coord1) - Coord_X(coord2))));
 }
 inline COORDINATE Coord_Snap(COORDINATE coord) {
-  return static_cast<COORDINATE>(
-      MakeLong((*((uint16_t*)&coord + 1) & 0xFF00) | 0x80,
-               (*(uint16_t*)&coord & 0xFF00) | 0x80));
+  return static_cast<COORDINATE>(MakeLong((HighWord(coord) & 0xFF00) | 0x80,
+                                          (LowWord(coord) & 0xFF00) | 0x80));
 }
 inline COORDINATE Coord_Mid(COORDINATE coord1, COORDINATE coord2) {
   return static_cast<COORDINATE>(
-      MakeLong((*((uint16_t*)&coord1 + 1) + *((uint16_t*)&coord2 + 1)) >> 1,
-               (*(uint16_t*)&coord1 + *(uint16_t*)&coord2) >> 1));
+      MakeLong((HighWord(coord1) + HighWord(coord2)) >> 1,
+               (LowWord(coord1) + LowWord(coord2)) >> 1));
 }
 inline COORDINATE Cell_Coord(CELL cell) {
   return static_cast<COORDINATE>(
@@ -151,10 +155,10 @@ inline COORDINATE XYP_Coord(int x, int y) {
 };
 
 inline CELL Coord_XCell(COORDINATE coord) {
-  return *((unsigned char*)&coord + 1);
+  return static_cast<uint8_t>(coord >> 8);
 }
 inline CELL Coord_YCell(COORDINATE coord) {
-  return *((unsigned char*)&coord + 3);
+  return static_cast<uint8_t>(coord >> 24);
 }
 [[nodiscard]] constexpr CELL Coord_Cell(const COORDINATE coord) noexcept {
   // Capture the 'High Word' processing:
