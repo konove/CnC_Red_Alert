@@ -129,7 +129,7 @@ comes from the installed tool, since the online documentation follows LLVM devel
 | `cppcoreguidelines-use-enum-class`                              | Skipped | Commit `Record the remaining P3 policy decisions`: 517 reports; unnamed integer-constant enums, ordered dialog redraw levels and the `defines.h` index enums. See review below.                                                                                                                                                                                                                                              |
 | `modernize-avoid-c-style-cast`                                  | Skipped | Commit `Record the remaining P3 policy decisions`: 1,393 casts; `docs/TYPE_MIGRATION.md` makes cast replacement opportunistic and rules out a codebase-wide hunt. See review below.                                                                                                                                                                                                                                          |
 | `google-readability-casting`                                    | Skipped | Commit `Record the remaining P3 policy decisions`: alias of `modernize-avoid-c-style-cast`, skipped with it.                                                                                                                                                                                                                                                                                                                 |
-| `cppcoreguidelines-pro-type-cstyle-cast`                        | Skipped | Commit `Record the remaining P3 policy decisions`: 866 type-unsafe casts (549 unrelated types, 187 downcasts, 132 dropping `const`); the `const` subset is gone since `clang-diagnostic-cast-qual` was enabled. See review below.                                                                                                                                                                                            |
+| `cppcoreguidelines-pro-type-cstyle-cast`                        | Enabled | Commits `Add byte-view helpers for the C-style cast work` through `Enable cppcoreguidelines-pro-type-cstyle-cast`: 415 type-unsafe casts, none replaced by a bare `reinterpret_cast`. Found an RA team-editor overflow, a TD map validator that rejected every 64-bit heap pointer, TD mono output writing to address 0xB0000, and signed-char PCX palette reads. See the enablement review below.                           |
 | `clang-diagnostic-old-style-cast`                               | Skipped | Commit `Record the remaining P3 policy decisions`: 0 reports because the clang flag set passes `-Wno-old-style-cast`; GCC's strict set already has `-Wold-style-cast`.                                                                                                                                                                                                                                                       |
 | `clang-diagnostic-deprecated-enum-enum-conversion`              | Enabled | Commit `Drop the implicit FIRST enum aliases and fix mixed enum operations`: 76 reports; the `WWKEY_*` modifier bits are flags, so they became integer constants, and five facing-to-animation offsets cast the facing to `int`.                                                                                                                                                                                             |
 | `clang-diagnostic-deprecated-anon-enum-enum-conversion`         | Enabled | Commit `Drop the implicit FIRST enum aliases and fix mixed enum operations`: three TD editor house-button offsets now subtract from an integer key number.                                                                                                                                                                                                                                                                   |
@@ -1359,6 +1359,54 @@ Follow-ups noted while working: `tech/2keyfbuf.cc` still reads the three big-sha
 that are now always false, `IsTheaterShape` is set but never read, and TD's `Get_Last_Frame_Length`
 is always zero.
 
+### C-style cast enablement (2026-09-14)
+
+`cppcoreguidelines-pro-type-cstyle-cast` is now enforced; the plan is
+[CSTYLE_CAST_PLAN.md](CSTYLE_CAST_PLAN.md). The isolated sweep over the 475 translation units of the
+strict compile database found 415 sites (327 between unrelated types, 88 downcasts): ra 302, td 84,
+tech 25, sdllib 4. The check has no fix-its. Every site was fixed without a bare `reinterpret_cast`
+at the call site, since `cppcoreguidelines-pro-type-reinterpret-cast` is also enforced: byte views
+go through one documented helper each, and downcasts became `dynamic_cast`.
+
+| Group                                                 | Sites | Fix                                                                                                                                                                                                                  |
+| ----------------------------------------------------- | ----- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| WOL text fields, `void*` list data, COM and registry  | 138   | `WolText` for the IDL structs' `unsigned char` text, `ComOut` for COM out-parameters, `port::BytesOf` for registry values, `static_cast` from `void*`; `iChannelLobbyNumber` takes `const char*`.                    |
+| Object-model downcasts                                | 99    | `dynamic_cast`, hoisted to one local per block; reference casts where the result is dereferenced unconditionally, so the analyzer sees no null path. `xTargetClass::As_*` and `Contact_With_Whom` moved out of line. |
+| Packed coordinate, cell and target words              | 48    | RA: `std::bit_cast` to the `*_COMPOSITE` unions (`CELL_COMPOSITE` now uses `uint16_t` bit-fields so it is the size of a `CELL`). TD: shifts and `HighWord`/`LowWord`; `td/coord_inline_test.cc` pins the old bytes.  |
+| Unaligned words, packet structs, sockets, bit helpers | 43    | `port::ReadUnaligned`/`WriteUnaligned` for CRC and length words and packet copies; `SocketAddress(sockaddr_in&)`; `static_cast` from the `const void*` parameters of `jshell.h` and `search.h`.                      |
+| Byte views, palettes, graphics buffers                | 43    | `port::BytesOf`; `Scale` remap tables are `const unsigned char*`; `Apply_XOR_Delta` takes `void*`; the PCX palette loops walk bytes instead of `RGB` structs.                                                        |
+| `tech/mp.cc` half-word digit views                    | 15    | One file-local `XMP_Halves` overload pair carries the documented `reinterpret_cast`.                                                                                                                                 |
+| Connection and serial-port byte sinks                 | 13    | `ConnectionClass::Send`, `Send_To` and `Broadcast` take `void*`; `Compute_CRC` and the serial port read and write take `void*`/`const void*`.                                                                        |
+| Defects                                               | 16    | See below.                                                                                                                                                                                                           |
+
+Five bugs came out of it:
+
+- RA's team editor carved two arrays out of `SysMemPage`, sized by a `MAX_TEAM_CLASSES` that left
+  out vessels. The vessel type pointers ran into the count array, and zeroing the counts overwrote
+  them. The arrays are locals now and the constant counts vessels.
+- TD's `MapClass::Validate` rejected any occupier, `Next` or trigger pointer with a bit in
+  `0xff000000`, a DOS-era range test that every 64-bit heap pointer fails. The pointer tests are
+  gone; the limbo and cell-range tests stay.
+- TD's `MonoClass` wrote through `MonoSegment = 0x000b0000` once `MonoClass::Enable()` ran
+  (reachable from `init.cc` and `debug.cc`). Its pages now live in memory, as RA's already did.
+- `Read_PCX_File` shifted the palette through `char*`, so on signed-char platforms every component
+  of 0x80 or more became 0xE0-0xFF instead of a 6-bit value. The palette parameter is
+  `unsigned char*` in both games.
+- RA's carrier docking stored a `VesselClass*` in a `BuildingClass*` local, and `sendfile.cc` read
+  an `int` packet length through an `unsigned int`. Both locals have the honest type now.
+
+Verification: the isolated sweep at zero; a probe confirming the enabled configuration reports a
+C-style downcast; the full strict build; CTest (446 tests, including the new
+`port/bytes_of_test.cc`, the `SocketAddress` test and `td/coord_inline_test.cc`); and the RA and TD
+save/load smoke tests, including the TD team and building fixtures. The network, modem and WOL
+dialogs and the TD mono display were not exercised at run time; that remains a manual check.
+
+`modernize-avoid-c-style-cast`, `google-readability-casting` and `clang-diagnostic-old-style-cast`
+stay skipped: what remains is numeric casts, which `docs/TYPE_MIGRATION.md` keeps opportunistic.
+
+Follow-ups left on purpose: `tech/mp.cc` still reads `uint32_t` digits through `uint16_t*`, and
+`rawolapi.cc` `strtok`s wolapi's server list in place (both marked `TODO`).
+
 ### Nodiscard review (2026-09-12)
 
 `modernize-use-nodiscard` is now enforced. Its fix-its add `[[nodiscard]]` to 927 value-returning
@@ -1530,7 +1578,6 @@ every site.
 | Check                                                        | Reports | Why it stays excluded                                                                                                                                                                                                   |
 | ------------------------------------------------------------ | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `modernize-avoid-c-style-cast`, `google-readability-casting` | 1,393   | `docs/TYPE_MIGRATION.md` makes cast replacement opportunistic, inside code already being migrated, and forbids a codebase-wide cast hunt.                                                                               |
-| `cppcoreguidelines-pro-type-cstyle-cast`                     | 866     | The type-unsafe subset of the same casts: 549 between unrelated types, 187 downcasts and 132 that cast away `const`; the `const` subset was removed when `clang-diagnostic-cast-qual` was enabled (2026-09-14).         |
 | `clang-diagnostic-old-style-cast`                            | 0       | The clang flag set passes `-Wno-old-style-cast`, so enabling the name enforces nothing; the GCC strict set already has `-Wold-style-cast`.                                                                              |
 | `cppcoreguidelines-macro-usage`                              | 2,134   | 2,094 are constants and 40 function-like macros. 1,310 are the text-string IDs in each game's `conquer.h`, and the next largest group is the `sdllib/keyboard.h` key codes.                                             |
 | `modernize-macro-to-enum`, `cppcoreguidelines-macro-to-enum` | 2,256   | The same macro groups. As enumerators they would change type wherever they meet integer arithmetic and `printf`-style formatting.                                                                                       |
