@@ -5,6 +5,13 @@
 
 #include "gtest/gtest.h"
 
+#ifdef _WIN32
+#include <winsock.h>
+#else
+#include <netinet/in.h>
+#include <sys/socket.h>
+#endif
+
 namespace {
 
 TEST(SocketBytes, ScalarAddressesTheObject) {
@@ -42,6 +49,20 @@ TEST(SocketBytes, PointerAddressesPointeeNotPointer) {
       std::is_same_v<decltype(SocketBytes(const_pointer)), const char*>);
   EXPECT_EQ(static_cast<const void*>(SocketBytes(const_pointer)),
             static_cast<const void*>(buffer));
+}
+
+TEST(SocketAddress, AddressesTheObjectAsSockaddr) {
+  sockaddr_in address{};
+  address.sin_family = AF_INET;
+  sockaddr* generic = SocketAddress(address);
+  EXPECT_EQ(static_cast<void*>(generic), static_cast<void*>(&address));
+  EXPECT_EQ(generic->sa_family, AF_INET);
+
+  const sockaddr_in& const_address = address;
+  static_assert(
+      std::is_same_v<decltype(SocketAddress(const_address)), const sockaddr*>);
+  EXPECT_EQ(static_cast<const void*>(SocketAddress(const_address)),
+            static_cast<const void*>(&address));
 }
 
 }  // namespace
