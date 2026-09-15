@@ -1366,10 +1366,8 @@ bool MapClass::Validate() {
     Validate Occupier
     .....................................................................*/
     obj = (*this)[cell].Cell_Occupier();
-    if (obj &&
-        ((uintptr_t)obj & 0xff000000 || (uintptr_t)obj->Next & 0xff000000 ||
-         (uintptr_t)obj->Trigger & 0xff000000 || obj->IsInLimbo ||
-         static_cast<unsigned int>(Coord_Cell(obj->Coord)) > 4095)) {
+    if (obj && (obj->IsInLimbo ||
+                static_cast<unsigned int>(Coord_Cell(obj->Coord)) > 4095)) {
       return false;
     }
 
@@ -1378,10 +1376,8 @@ bool MapClass::Validate() {
     .....................................................................*/
     for (i = 0; i < 3; i++) {
       obj = (*this)[cell].Overlappers[i];
-      if (obj &&
-          ((uintptr_t)obj & 0xff000000 || (uintptr_t)obj->Next & 0xff000000 ||
-           (uintptr_t)obj->Trigger & 0xff000000 || obj->IsInLimbo ||
-           static_cast<unsigned int>(Coord_Cell(obj->Coord)) > 4095)) {
+      if (obj && (obj->IsInLimbo ||
+                  static_cast<unsigned int>(Coord_Cell(obj->Coord)) > 4095)) {
         return false;
       }
     }
