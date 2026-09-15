@@ -60,6 +60,16 @@ Configure output confirms them (`-- ccache enabled: ...`, `-- clang-tidy cache e
 `-- mold linker enabled: ...`). Disable any of them with `-DUSE_CCACHE=OFF` / `-DUSE_CTCACHE=OFF` /
 `-DUSE_MOLD=OFF`. Check the compile cache with `ccache -s`; resize with `ccache -M 25G`.
 
+**Removing a system header package can make every build rebuild everything.** ccache restores the
+depfile it stored with a cached object, and its hash does not cover headers that were only probed
+with `__has_include` and are now missing. After `libtbb-dev` was purged (2026-09-13), libstdc++'s
+`pstl_config.h` probe of `<tbb/tbb.h>` kept hitting old cache entries whose `.d` files still listed
+`/usr/include/tbb/tbb.h`; ninja treated the missing file as dirty, rebuilt, and got the same depfile
+back, so no build ever reached `ninja: no work to do`. Check with
+`ninja -C <build-dir> -t deps | grep -c /usr/include/tbb/tbb.h` (or whichever header was removed),
+and fix with one `CCACHE_RECACHE=1 cmake --build <build-dir>`, which recompiles and replaces those
+entries.
+
 ccache caches only the compile. clang-tidy and IWYU run as separate passes in front of it, so under
 `STRICT_CHECKS=ON` a fully cached rebuild still pays their full cost — measured on `src/ra/drop.cc`:
 0.00 s for the cached compile, 1.5 s for clang-tidy, 1.0 s for IWYU. Nothing caches IWYU, so
