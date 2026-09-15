@@ -59,6 +59,7 @@
 
 #include "absl/log/check.h"
 #include "base/numeric.h"
+#include "port/bytes_of.h"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "port/sleep.h"
@@ -185,12 +186,12 @@ bool WolapiObject::bSetupCOMStuff() {
   //	Grab IChat, INetUtil, set up "sinks".
   //	debugprint( "CoCreateInstance\n" );
   CoCreateInstance(CLSID_Chat, nullptr, CLSCTX_INPROC_SERVER, IID_IChat,
-                   (void**)&pChat);
+                   ComOut(&pChat));
   if (!pChat) {
     return false;  //	Severe, essentially fatal.
   }
   CoCreateInstance(CLSID_NetUtil, nullptr, CLSCTX_INPROC_SERVER, IID_INetUtil,
-                   (void**)&pNetUtil);
+                   ComOut(&pNetUtil));
   if (!pNetUtil) {
     return false;  //	Severe, essentially fatal.
   }
@@ -211,7 +212,7 @@ bool WolapiObject::bSetupCOMStuff() {
   // Get a connection point from the chat class for the chatsink.
   //	debugprint( "QueryInterface\n" );
   hRes =
-      pChat->QueryInterface(IID_IConnectionPointContainer, (void**)&pContainer);
+      pChat->QueryInterface(IID_IConnectionPointContainer, ComOut(&pContainer));
   if (!SUCCEEDED(hRes)) {
     return false;  //	Severe, essentially fatal.
                    //	debugprint( "FindConnectionPoint\n" );
@@ -236,7 +237,7 @@ bool WolapiObject::bSetupCOMStuff() {
   // Get a connection point from the netutil class for the netutilsink.
   //	debugprint( "QueryInterface\n" );
   hRes = pNetUtil->QueryInterface(IID_IConnectionPointContainer,
-                                  (void**)&pContainer);
+                                  ComOut(&pContainer));
   if (!SUCCEEDED(hRes)) {
     return false;  //	Severe, essentially fatal.
                    //	debugprint( "FindConnectionPoint\n" );
@@ -276,7 +277,7 @@ void WolapiObject::UnsetupCOMStuff() {
 
   //	debugprint( "QueryInterface\n" );
   hRes =
-      pChat->QueryInterface(IID_IConnectionPointContainer, (void**)&pContainer);
+      pChat->QueryInterface(IID_IConnectionPointContainer, ComOut(&pContainer));
   DCHECK(SUCCEEDED(hRes));
   //	debugprint( "FindConnectionPoint\n" );
   hRes = pContainer->FindConnectionPoint(IID_IChatEvent, &pConnectionPoint);
@@ -291,7 +292,7 @@ void WolapiObject::UnsetupCOMStuff() {
   pContainer = nullptr;
   //	debugprint( "QueryInterface\n" );
   hRes = pNetUtil->QueryInterface(IID_IConnectionPointContainer,
-                                  (void**)&pContainer);
+                                  ComOut(&pContainer));
   DCHECK(SUCCEEDED(hRes));
   //	debugprint( "FindConnectionPoint\n" );
   hRes = pContainer->FindConnectionPoint(IID_INetUtilEvent, &pConnectionPoint);
@@ -674,9 +675,9 @@ HRESULT WolapiObject::AttemptLogin(const char* szName, const char* szPass,
   WWMessageBox().Process(TXT_WOL_ATTEMPTLOGIN, TXT_NONE);
 
   //	debugprint( "~1\n" );
-  port::SafeCopy((char*)pChatSink->pServer->login, szName,
+  port::SafeCopy(WolText(pChatSink->pServer->login), szName,
                  sizeof(pChatSink->pServer->login));
-  port::SafeCopy((char*)pChatSink->pServer->password, szPass,
+  port::SafeCopy(WolText(pChatSink->pServer->password), szPass,
                  sizeof(pChatSink->pServer->password));
 
   /*
@@ -870,15 +871,15 @@ void WolapiObject::ListChannels() {
     if (pChannel->type == 0) {
       //	Show chat channel.
       char* pShow;
-      const int iLobby = iChannelLobbyNumber(pChannel->name);
+      const int iLobby = iChannelLobbyNumber(WolText(pChannel->name));
       if (iLobby == -1) {
         //	Regular chat channel.
-        pShow = new char[strlen((char*)pChannel->name) + 10];
-        sprintf(pShow, "%s\t%-3u", (char*)pChannel->name,
+        pShow = new char[strlen(WolText(pChannel->name)) + 10];
+        sprintf(pShow, "%s\t%-3u", WolText(pChannel->name),
                 pChannel->currentUsers);
         char szHelp[200];
         Format_Runtime_Text(szHelp, sizeof(szHelp), TXT_WOL_TTIP_CHANLIST_CHAT,
-                            (char*)pChannel->name, pChannel->currentUsers);
+                            WolText(pChannel->name), pChannel->currentUsers);
         pILChannels->Add_Item(pShow, szHelp,
                               IconPointer(DibIconInfos[DIBICON_USER]), ICON_DIB,
                               CHANNELTYPE_CHATCHANNEL, (void*)pChannel);
@@ -899,7 +900,7 @@ void WolapiObject::ListChannels() {
       delete[] pShow;
     } else {
       //	Show game channel.
-      char* pShow = new char[strlen((char*)pChannel->name) + 10];
+      char* pShow = new char[strlen(WolText(pChannel->name)) + 10];
       char szHelp[200];
       void* pGameKindIcon;
       if (pChannel->type == GAME_TYPE) {
@@ -935,11 +936,11 @@ void WolapiObject::ListChannels() {
             pGameKindIcon = nullptr;
             break;
         }
-        sprintf(pShow, "%s\t%u/%u", (char*)pChannel->name,
+        sprintf(pShow, "%s\t%u/%u", WolText(pChannel->name),
                 pChannel->currentUsers, pChannel->maxUsers);
       } else {
         pGameKindIcon = IconForGameType(pChannel->type);
-        sprintf(pShow, "%s\t%-2u", (char*)pChannel->name,
+        sprintf(pShow, "%s\t%-2u", WolText(pChannel->name),
                 pChannel->currentUsers);
         Format_Runtime_Text(szHelp, sizeof(szHelp), TXT_WOL_TTIP_CHANLIST_GAME,
                             NameOfGameType(pChannel->type),
@@ -990,9 +991,9 @@ HRESULT WolapiObject::ChannelJoin(const char* szChannelName,
   //	Used for CHAT channels (or lobbies) only. Channel type is set to 0.
   Channel ChannelTemp;
   memset(&ChannelTemp, 0, sizeof(ChannelTemp));
-  port::SafeCopy((char*)ChannelTemp.name, szChannelName,
+  port::SafeCopy(WolText(ChannelTemp.name), szChannelName,
                  sizeof(ChannelTemp.name));
-  port::SafeCopy((char*)ChannelTemp.key, szKey, sizeof(ChannelTemp.key));
+  port::SafeCopy(WolText(ChannelTemp.key), szKey, sizeof(ChannelTemp.key));
   return ChannelJoin(&ChannelTemp);
 }
 
@@ -1124,8 +1125,7 @@ bool WolapiObject::ListChannelUsers() {
     bInLobby = false;
     pListToUse = pILPlayers;
   } else {
-    bInLobby =
-        (iChannelLobbyNumber((unsigned char*)szChannelNameCurrent) != -1);
+    bInLobby = (iChannelLobbyNumber(szChannelNameCurrent) != -1);
     pListToUse = pILUsers;
   }
 
@@ -1202,15 +1202,15 @@ bool WolapiObject::ListChannelUsers() {
 
       if (CurrentLevel == WOL_LEVEL_INGAMECHANNEL || bInLobby) {
         const int iRank =
-            pNetUtilSink->GetUserRank((char*)pUser->name, bShowRankRA);
+            pNetUtilSink->GetUserRank(WolText(pUser->name), bShowRankRA);
         char szNameToShow[WOL_NAME_LEN_MAX + 40];
         if (iRank) {
           //					debugprint("  Found %s has rank
           //%u\n", (char*)pUser->name, iRank );
           Format_Runtime_Text(szNameToShow, sizeof(szNameToShow),
-                              TXT_WOL_USERRANK, (char*)pUser->name, iRank);
+                              TXT_WOL_USERRANK, WolText(pUser->name), iRank);
         } else {
-          port::SafeCopy(szNameToShow, (char*)pUser->name);
+          port::SafeCopy(szNameToShow, WolText(pUser->name));
         }
 
         static const int iLatencyBarX = 248 - iLatencyIconWidth - 5 - 16;
@@ -1220,7 +1220,7 @@ bool WolapiObject::ListChannelUsers() {
         int iLatencyBarWidth = 0;
         int iLatency;
         if (CurrentLevel == WOL_LEVEL_INGAMECHANNEL) {
-          const uint32_t UserIP = pChatSink->GetUserIP((char*)pUser->name);
+          const uint32_t UserIP = pChatSink->GetUserIP(WolText(pUser->name));
           //					debugprint( "player %s ip
           // address %i\n", szNameToShow, UserIP );
           if (UserIP && pNetUtil->GetAvgPing(UserIP, &iLatency) == S_OK) {
@@ -1239,9 +1239,9 @@ bool WolapiObject::ListChannelUsers() {
                              IconPointer(DibIconInfos[DIBICON_LATENCY]),
                              ICON_DIB, iLatencyBarX, 2, iLatencyBarWidth);
       } else {
-        pListToUse->Add_Item((char*)pUser->name, nullptr, pIconStatus, ICON_DIB,
-                             nullptr, (void*)pUser, nullptr, pIconSquelched,
-                             ICON_DIB);
+        pListToUse->Add_Item(WolText(pUser->name), nullptr, pIconStatus,
+                             ICON_DIB, nullptr, (void*)pUser, nullptr,
+                             pIconSquelched, ICON_DIB);
       }
 
       pUser = pUser->next;
@@ -1441,9 +1441,10 @@ void WolapiObject::WritePlayerListItem(char* szDest, std::size_t iSize,
 void WolapiObject::RequestPlayerPings() {
   //	Does a RequestPing for every other player listed in pILPlayers.
   for (int i = 0; i < pILPlayers->Count(); i++) {
-    User* pUser = (User*)pILPlayers->Get_Item_ExtraDataPtr(i);
+    const User* pUser =
+        static_cast<const User*>(pILPlayers->Get_Item_ExtraDataPtr(i));
     if (pUser && !(pUser->flags & CHAT_USER_MYSELF)) {
-      const uint32_t UserIP = pChatSink->GetUserIP((char*)pUser->name);
+      const uint32_t UserIP = pChatSink->GetUserIP(WolText(pUser->name));
       if (UserIP) {
         int iUnused;
         in_addr inaddrUser{};
@@ -1493,7 +1494,7 @@ void WolapiObject::SendMessage(const char* szMessage, IconListClass& ILUsers,
   for (int i = 0; i != iCount; i++) {
     if (ILUsers.bItemIsMultiSelected(i)) {
       pUserNew = new User;
-      *pUserNew = *((User*)ILUsers.Get_Item_ExtraDataPtr(i));
+      *pUserNew = *static_cast<const User*>(ILUsers.Get_Item_ExtraDataPtr(i));
       //			debugprint( "Copied %s for sendmessage.\n",
       // pUserNew->name );
       pUserNew->next =
@@ -1506,7 +1507,7 @@ void WolapiObject::SendMessage(const char* szMessage, IconListClass& ILUsers,
       }
       pUserTail = pUserNew;
       //	Extra space and comma.
-      iPrivatePrintLen += static_cast<int>(strlen((char*)pUserNew->name)) + 2;
+      iPrivatePrintLen += static_cast<int>(strlen(WolText(pUserNew->name))) + 2;
     }
   }
   if (pUserListSend) {
@@ -1536,7 +1537,7 @@ void WolapiObject::SendMessage(const char* szMessage, IconListClass& ILUsers,
       snprintf(szPrint, iPrintSize, "<%s ", TXT_WOL_PRIVATETO);
       User* pUserPrint = pUserListSend;
       while (pUserPrint) {
-        port::SafeAppend(szPrint, (char*)pUserPrint->name, iPrintSize);
+        port::SafeAppend(szPrint, WolText(pUserPrint->name), iPrintSize);
         if (pUserPrint->next) {
           port::SafeAppend(szPrint, ", ", iPrintSize);
         } else {
@@ -1631,7 +1632,7 @@ bool WolapiObject::ChannelCreate(
 
   if (!bGame) {
     //	ChannelNew.type = 0;	0 for chat channel.
-    port::SafeCopy((char*)ChannelNew.name, szChannelName,
+    port::SafeCopy(WolText(ChannelNew.name), szChannelName,
                    sizeof(ChannelNew.name));
   } else {
     ChannelNew.type = GAME_TYPE;
@@ -1642,7 +1643,7 @@ bool WolapiObject::ChannelCreate(
     //	Note: If lobby number is -1 (no lobby to return to), it's encoded as
     // 0x00FFFFFF
     ChannelNew.reserved = (iLobby & 0x00FFFFFF) | GameKind;
-    port::SafeCopy((char*)ChannelNew.name, szChannelName,
+    port::SafeCopy(WolText(ChannelNew.name), szChannelName,
                    sizeof(ChannelNew.name));
   }
 
@@ -1650,7 +1651,7 @@ bool WolapiObject::ChannelCreate(
   // szChannelName );
 
   if (szKey) {
-    port::SafeCopy((char*)ChannelNew.key, szKey, sizeof(ChannelNew.key));
+    port::SafeCopy(WolText(ChannelNew.key), szKey, sizeof(ChannelNew.key));
   }
 
   WWMessageBox().Process(TXT_WOL_WAIT, TXT_NONE);
@@ -1739,8 +1740,8 @@ void WolapiObject::DoFindPage() {
         GenericErrorMessage();
         break;
       case S_OK: {
-        char* szChannel = (char*)pChatSink->OnFindChannel.name;
-        const int iLobby = iChannelLobbyNumber((unsigned char*)szChannel);
+        const char* szChannel = WolText(pChatSink->OnFindChannel.name);
+        const int iLobby = iChannelLobbyNumber(szChannel);
         char* szFound;
         if (iLobby != -1) {
           char szLobbyName[REASONABLELOBBYINTERPRETEDNAMELEN];
@@ -1814,7 +1815,7 @@ HRESULT WolapiObject::Locate(const char* szUser) {
   pChatSink->bRequestFindWait = true;
 
   User userFind;
-  port::SafeCopy((char*)userFind.name, szUser, sizeof(userFind.name));
+  port::SafeCopy(WolText(userFind.name), szUser, sizeof(userFind.name));
 
   //	debugprint( "RequestFind()\n" );
   if (!SUCCEEDED(pChat->RequestFind(&userFind))) {
@@ -1857,7 +1858,7 @@ HRESULT WolapiObject::Page(const char* szUser, const char* szSend,
   pChatSink->bRequestPageWait = true;
 
   User userFind;
-  port::SafeCopy((char*)userFind.name, szUser, sizeof(userFind.name));
+  port::SafeCopy(WolText(userFind.name), szUser, sizeof(userFind.name));
 
   //	debugprint( "RequestPage()\n" );
   if (!SUCCEEDED(pChat->RequestPage(&userFind, szSend))) {
@@ -1902,8 +1903,9 @@ void WolapiObject::DoKick(IconListClass* pILUsersOrPlayers, bool bAndBan) {
     int iFound = 0;
     for (int i = 0; i < pILUsersOrPlayers->Count(); i++) {
       if (pILUsersOrPlayers->bItemIsMultiSelected(i)) {
-        User* pUser = (User*)pILUsersOrPlayers->Get_Item_ExtraDataPtr(i);
-        if (pUser && strcmp((char*)pUser->name, szMyName) !=
+        User* pUser =
+            static_cast<User*>(pILUsersOrPlayers->Get_Item_ExtraDataPtr(i));
+        if (pUser && strcmp(WolText(pUser->name), szMyName) !=
                          0)  //	Don't kick yourself.
         {
           Kick(pUser);
@@ -1941,7 +1943,7 @@ bool WolapiObject::Ban(User* pUserToKick) {
   //	Returns false if something terrible happens.
   //	debugprint( "RequestChannelBan()\n" );
   //		debugprint( "RequestChannelBan() call failed\n" ) on failure.
-  return SUCCEEDED(pChat->RequestChannelBan((char*)pUserToKick->name, 1));
+  return SUCCEEDED(pChat->RequestChannelBan(WolText(pUserToKick->name), 1));
 }
 
 //***********************************************************************************************
@@ -1950,9 +1952,10 @@ void WolapiObject::DoSquelch(IconListClass* pILUsersOrPlayers) {
   bool bFound = false;
   for (int i = 0; i < pILUsersOrPlayers->Count(); i++) {
     if (pILUsersOrPlayers->bItemIsMultiSelected(i)) {
-      User* pUser = (User*)pILUsersOrPlayers->Get_Item_ExtraDataPtr(i);
+      User* pUser =
+          static_cast<User*>(pILUsersOrPlayers->Get_Item_ExtraDataPtr(i));
       if (pUser) {
-        if (strcmp((char*)pUser->name, szMyName) !=
+        if (strcmp(WolText(pUser->name), szMyName) !=
             0)  //	Don't squelch yourself.
         {
           Squelch(pUser);
@@ -2050,8 +2053,8 @@ bool WolapiObject::DoWebRegistration() {
   }
   char szPath[kMaxPath + 1];
   DWORD dwBufSize = kMaxPath;
-  if (RegQueryValueEx(hKey, "InstallPath", nullptr, nullptr, (LPBYTE)szPath,
-                      &dwBufSize) != ERROR_SUCCESS) {
+  if (RegQueryValueEx(hKey, "InstallPath", nullptr, nullptr,
+                      port::BytesOf(szPath), &dwBufSize) != ERROR_SUCCESS) {
     GenericErrorMessage();
     return false;
   }
@@ -2515,7 +2518,7 @@ void WolapiObject::OnExitingChatChannel() {
 
   //	debugprint( "*** OnExitingChatChannel() - szChannelNameCurrent '%s',
   // CurrentLevel %i\n", szChannelNameCurrent, CurrentLevel );
-  const int iLobby = iChannelLobbyNumber((unsigned char*)szChannelNameCurrent);
+  const int iLobby = iChannelLobbyNumber(szChannelNameCurrent);
   char* szMess;
   if (iLobby == -1) {
     szMess =
@@ -2672,9 +2675,8 @@ void WolapiObject::OnFailedToEnterGameChannel() {
   const HRESULT hRes =
       ChannelJoin(szChannelReturnOnGameEnterFail, LOBBYPASSWORD);
   if (hRes == S_OK) {
-    OnEnteringChatChannel(
-        szChannelReturnOnGameEnterFail, false,
-        iChannelLobbyNumber((unsigned char*)szChannelReturnOnGameEnterFail));
+    OnEnteringChatChannel(szChannelReturnOnGameEnterFail, false,
+                          iChannelLobbyNumber(szChannelReturnOnGameEnterFail));
   } else {
     //	ChannelJoin returned fail value.
     //	(Now only applies if you could ever enter a game channel from a
@@ -2783,7 +2785,7 @@ bool WolapiObject::RequestLadders(const char* szName) {
     *szNames = 0;
     //	Get 24 users from list and add names to string.
     for (int i = 0; i != 24; ++i) {
-      port::SafeAppend(szNames, (char*)pUser->name);
+      port::SafeAppend(szNames, WolText(pUser->name));
       port::SafeAppend(szNames, ":");
       pUser = pUser->next;
       if (!pUser) {
@@ -2828,7 +2830,7 @@ bool WolapiObject::RequestIPs(const char* szName) {
 
   if (szName && *szName) {
     User user;
-    port::SafeCopy((char*)user.name, szName, sizeof(user.name));
+    port::SafeCopy(WolText(user.name), szName, sizeof(user.name));
     //		debugprint( "RequestUserIP( %s )\n", szName );
     //		debugprint( "RequestUserIP() call failed\n" ) on failure.
     return SUCCEEDED(pChat->RequestUserIP(&user));
@@ -2965,7 +2967,7 @@ bool WolapiObject::GetNameOfBeginningLobby(char* szNameToSet,
   //	Return the name of the first lobby with less than 50 users.
   while (pChannel) {
     if (pChannel->currentUsers < 50) {
-      port::SafeCopy(szNameToSet, (char*)pChannel->name, iSize);
+      port::SafeCopy(szNameToSet, WolText(pChannel->name), iSize);
       return true;
     }
     ++iCount;
@@ -2979,7 +2981,7 @@ bool WolapiObject::GetNameOfBeginningLobby(char* szNameToSet,
     pChannel = pChannel->next;
   }
 
-  port::SafeCopy(szNameToSet, (char*)pChannel->name, iSize);
+  port::SafeCopy(szNameToSet, WolText(pChannel->name), iSize);
 
   return true;
 }
@@ -3023,9 +3025,10 @@ const char* WolapiObject::pGameHostName() {
   // of reference.
   if (pILPlayers) {
     for (int i = 0; i != pILPlayers->Count(); i++) {
-      User* pUser = (User*)pILPlayers->Get_Item_ExtraDataPtr(i);
+      const User* pUser =
+          static_cast<const User*>(pILPlayers->Get_Item_ExtraDataPtr(i));
       if (pUser && pUser->flags & CHAT_USER_CHANNELOWNER) {
-        return (char*)pUser->name;
+        return WolText(pUser->name);
       }
     }
   }
@@ -3039,7 +3042,7 @@ User* WolapiObject::pGameHost() {
   // reference.
   if (pILPlayers) {
     for (int i = 0; i != pILPlayers->Count(); i++) {
-      User* pUser = (User*)pILPlayers->Get_Item_ExtraDataPtr(i);
+      User* pUser = static_cast<User*>(pILPlayers->Get_Item_ExtraDataPtr(i));
       if (pUser && pUser->flags & CHAT_USER_CHANNELOWNER) {
         return pUser;
       }
@@ -3258,25 +3261,25 @@ void WolapiObject::SetOptionDefaults() {
     DWORD dwValue;
     DWORD dwBufSize = sizeof(DWORD);
     if (RegQueryValueEx(hKey, "WOLAPI Find Enabled", nullptr, nullptr,
-                        (LPBYTE)&dwValue, &dwBufSize) != ERROR_SUCCESS) {
+                        port::BytesOf(dwValue), &dwBufSize) != ERROR_SUCCESS) {
       bFindEnabled = true;
     } else {
       bFindEnabled = (bool)dwValue;
     }
     if (RegQueryValueEx(hKey, "WOLAPI Page Enabled", nullptr, nullptr,
-                        (LPBYTE)&dwValue, &dwBufSize) != ERROR_SUCCESS) {
+                        port::BytesOf(dwValue), &dwBufSize) != ERROR_SUCCESS) {
       bPageEnabled = true;
     } else {
       bPageEnabled = (bool)dwValue;
     }
     if (RegQueryValueEx(hKey, "WOLAPI Lang Filter", nullptr, nullptr,
-                        (LPBYTE)&dwValue, &dwBufSize) != ERROR_SUCCESS) {
+                        port::BytesOf(dwValue), &dwBufSize) != ERROR_SUCCESS) {
       bLangFilter = true;
     } else {
       bLangFilter = (bool)dwValue;
     }
     if (RegQueryValueEx(hKey, "WOLAPI Show All Games", nullptr, nullptr,
-                        (LPBYTE)&dwValue, &dwBufSize) != ERROR_SUCCESS) {
+                        port::BytesOf(dwValue), &dwBufSize) != ERROR_SUCCESS) {
       bAllGamesShown = true;
     } else {
       bAllGamesShown = (bool)dwValue;
@@ -3302,17 +3305,17 @@ void WolapiObject::SetOptions(bool bEnableFind, bool bEnablePage,
   if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, Game_Registry_Key(), 0, KEY_WRITE,
                    &hKey) == ERROR_SUCCESS) {
     DWORD dwValue = bFindEnabled ? 1 : 0;
-    RegSetValueEx(hKey, "WOLAPI Find Enabled", 0, REG_DWORD, (LPBYTE)&dwValue,
-                  sizeof(dwValue));
+    RegSetValueEx(hKey, "WOLAPI Find Enabled", 0, REG_DWORD,
+                  port::BytesOf(dwValue), sizeof(dwValue));
     dwValue = bPageEnabled ? 1 : 0;
-    RegSetValueEx(hKey, "WOLAPI Page Enabled", 0, REG_DWORD, (LPBYTE)&dwValue,
-                  sizeof(dwValue));
+    RegSetValueEx(hKey, "WOLAPI Page Enabled", 0, REG_DWORD,
+                  port::BytesOf(dwValue), sizeof(dwValue));
     dwValue = bLangFilter ? 1 : 0;
-    RegSetValueEx(hKey, "WOLAPI Lang Filter", 0, REG_DWORD, (LPBYTE)&dwValue,
-                  sizeof(dwValue));
+    RegSetValueEx(hKey, "WOLAPI Lang Filter", 0, REG_DWORD,
+                  port::BytesOf(dwValue), sizeof(dwValue));
     dwValue = bAllGamesShown ? 1 : 0;
-    RegSetValueEx(hKey, "WOLAPI Show All Games", 0, REG_DWORD, (LPBYTE)&dwValue,
-                  sizeof(dwValue));
+    RegSetValueEx(hKey, "WOLAPI Show All Games", 0, REG_DWORD,
+                  port::BytesOf(dwValue), sizeof(dwValue));
 
     RegCloseKey(hKey);
   }

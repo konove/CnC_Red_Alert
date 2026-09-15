@@ -33,7 +33,6 @@
 #include "absl/log/check.h"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
-#include "port/socket_bytes.h"
 #include "port/win32/win32_com.h"
 #include "port/win32/win32_system.h"
 #include "port/win32/win32_types.h"
@@ -124,7 +123,7 @@ HRESULT __stdcall RAChatEventSink::QueryInterface(const IID& iid, void** ppv) {
     *ppv = nullptr;
     return E_NOINTERFACE;
   }
-  ((IUnknown*)(*ppv))->AddRef();  //	Removed reinterpret_cast<> ajw
+  static_cast<IUnknown*>(*ppv)->AddRef();  //	Removed reinterpret_cast<> ajw
   return S_OK;
 }
 
@@ -168,16 +167,18 @@ STDMETHODIMP RAChatEventSink::OnServerList(HRESULT hRes, Server* pServerHead) {
     while (pServerHead) {
       //	Copy the first IRC Server to use in the RequestConnection()
       // call.
-      if (!pServer && (strcmp((char*)pServerHead->connlabel, "IRC") == 0)) {
+      if (!pServer && (strcmp(WolText(pServerHead->connlabel), "IRC") == 0)) {
         pServer = new Server;
         *pServer = *pServerHead;
       } else if (!*pOwner->szLadderServerHost &&
-                 (strcmp((char*)pServerHead->connlabel, "LAD") == 0)) {
+                 (strcmp(WolText(pServerHead->connlabel), "LAD") == 0)) {
         //				debugprint( "Scanning '%s'\n",
         //(char*)pServerHead->conndata );
         //	conndata is "something;host;port". The first field is not
         //	used, and a truncated one leaves the rest null.
-        strtok((char*)pServerHead->conndata, ";");
+        // TODO: strtok writes into the server list wolapi handed us, here and
+        // in both GAM branches below; parse a copy instead.
+        strtok(WolText(pServerHead->conndata), ";");
         const char* szHost = strtok(nullptr, ";");
         const char* szPort = strtok(nullptr, ";");
         if (szHost != nullptr && szPort != nullptr) {
@@ -188,11 +189,11 @@ STDMETHODIMP RAChatEventSink::OnServerList(HRESULT hRes, Server* pServerHead) {
         //				debugprint( "Ladder is at: %s, port
         //%i\n", pOwner->szLadderServerHost, pOwner->iLadderServerPort );
       } else if (!*pOwner->szGameResServerHost1 &&
-                 (strcmp((char*)pServerHead->connlabel, "GAM") == 0)) {
+                 (strcmp(WolText(pServerHead->connlabel), "GAM") == 0)) {
         //	This is the Red Alert game results port.
         //	conndata is "something;host;port". The first field is not
         //	used, and a truncated one leaves the rest null.
-        strtok((char*)pServerHead->conndata, ";");
+        strtok(WolText(pServerHead->conndata), ";");
         const char* szHost = strtok(nullptr, ";");
         const char* szPort = strtok(nullptr, ";");
         if (szHost != nullptr && szPort != nullptr) {
@@ -203,11 +204,11 @@ STDMETHODIMP RAChatEventSink::OnServerList(HRESULT hRes, Server* pServerHead) {
         //				debugprint( "GameRes is at: %s, port
         //%i\n", pOwner->szGameResServerHost, pOwner->iGameResServerPort );
       } else if (!*pOwner->szGameResServerHost2 &&
-                 (strcmp((char*)pServerHead->connlabel, "GAM") == 0)) {
+                 (strcmp(WolText(pServerHead->connlabel), "GAM") == 0)) {
         //	This is the Aftermath game results port.
         //	conndata is "something;host;port". The first field is not
         //	used, and a truncated one leaves the rest null.
-        strtok((char*)pServerHead->conndata, ";");
+        strtok(WolText(pServerHead->conndata), ";");
         const char* szHost = strtok(nullptr, ";");
         const char* szPort = strtok(nullptr, ";");
         if (szHost != nullptr && szPort != nullptr) {
@@ -248,7 +249,7 @@ STDMETHODIMP RAChatEventSink::OnPaged(HRESULT /*res*/, User* pUser,
 
   char szPrint[kMessageMax];
   Format_Runtime_Text(szPrint, sizeof(szPrint), TXT_WOL_ONPAGE,
-                      (char*)pUser->name, szMessage);
+                      WolText(pUser->name), szMessage);
   if (!pOwner->bInGame) {
     pOwner->PrintMessage(szPrint, WOLCOLORREMAP_PAGE);
   } else {
@@ -257,7 +258,7 @@ STDMETHODIMP RAChatEventSink::OnPaged(HRESULT /*res*/, User* pUser,
         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
         Rule.MessageDelay * kTicksPerMinute);
     if (!pOwner->bFreezeExternalPager) {
-      port::SafeCopy(pOwner->szExternalPager, (char*)pUser->name);
+      port::SafeCopy(pOwner->szExternalPager, WolText(pUser->name));
     }
     Map.Flag_To_Redraw(true);
   }
@@ -448,13 +449,13 @@ STDMETHODIMP RAChatEventSink::OnChannelJoin(HRESULT hRes, Channel* /*pChannel*/,
         pOwner->pGSupDlg->OnGuestJoin(pUser);
 
         //	Ask for this player's IP address.
-        pOwner->RequestIPs((char*)pUser->name);
+        pOwner->RequestIPs(WolText(pUser->name));
       }
 
       if (pOwner->CurrentLevel == WOL_LEVEL_INGAMECHANNEL ||
           pOwner->CurrentLevel == WOL_LEVEL_INLOBBY) {
         //	Request ladder results for new user.
-        pOwner->RequestLadders((char*)pUser->name);
+        pOwner->RequestLadders(WolText(pUser->name));
       }
     }
   } else {
@@ -515,7 +516,7 @@ bool operator<(const User& u1, const User& u2) {
   if (!(u1.flags & CHAT_USER_VOICE) && u2.flags & CHAT_USER_VOICE) {
     return false;
   }
-  return (stricmp(SocketBytes(u1.name), SocketBytes(u2.name)) < 0);
+  return (stricmp(WolText(u1.name), WolText(u2.name)) < 0);
 }
 
 //***********************************************************************************************
@@ -561,7 +562,7 @@ STDMETHODIMP RAChatEventSink::OnChannelLeave(HRESULT hRes, Channel* /*channel*/,
       User* pUserPrevious = nullptr;
       bool bFound = false;
       while (pUserSearch) {
-        if (stricmp((char*)pUserSearch->name, (char*)pUser->name) == 0) {
+        if (stricmp(WolText(pUserSearch->name), WolText(pUser->name)) == 0) {
           //	Remove from list.
           if (!pUserPrevious) {
             //	Head of list is being removed.
@@ -602,7 +603,7 @@ STDMETHODIMP RAChatEventSink::OnChannelLeave(HRESULT hRes, Channel* /*channel*/,
         // the playerlist.
         char szPrint[kMessageMax];
         Format_Runtime_Text(szPrint, sizeof(szPrint), TXT_WOL_PLAYERLEFTGAME,
-                            (char*)pUser->name);
+                            WolText(pUser->name));
         pOwner->PrintMessage(szPrint, WOLCOLORREMAP_LOCALMACHINEMESS);
         pOwner->pGSupDlg->OnGuestLeave(pUser);
       }
@@ -634,15 +635,15 @@ STDMETHODIMP RAChatEventSink::OnPublicMessage(HRESULT /*res*/,
         if (i >= VOX_ACCOMPLISHED && i <= VOX_LOAD1 && pOwner->bEggSounds) {
           Speak((VoxType)i);
         }
-        char* szPrint = new char[strlen((char*)pUserSender->name) + 16];
-        sprintf(szPrint, "%s!", (char*)pUserSender->name);
+        char* szPrint = new char[strlen(WolText(pUserSender->name)) + 16];
+        sprintf(szPrint, "%s!", WolText(pUserSender->name));
         pOwner->PrintMessage(szPrint, WOLCOLORREMAP_LOCALMACHINEMESS);
         delete[] szPrint;
       }
     } else {
-      char* szPrint =
-          new char[strlen((char*)pUserSender->name) + strlen(szMessage) + 110];
-      sprintf(szPrint, "%s: %s", (char*)pUserSender->name, szMessage);
+      char* szPrint = new char[strlen(WolText(pUserSender->name)) +
+                               strlen(szMessage) + 110];
+      sprintf(szPrint, "%s: %s", WolText(pUserSender->name), szMessage);
       pOwner->PrintMessage(szPrint, WOLCOLORREMAP_PUBLICMESSAGE);
       delete[] szPrint;
     }
@@ -689,10 +690,10 @@ STDMETHODIMP RAChatEventSink::OnPrivateMessage(HRESULT /*res*/,
           }
         }
       } else {
-        char* szPrint = new char[strlen((char*)pUserSender->name) +
+        char* szPrint = new char[strlen(WolText(pUserSender->name)) +
                                  strlen(szMessage) + 116];
-        sprintf(szPrint, "%s%s: %s", (char*)pUserSender->name, TXT_WOL_PRIVATE,
-                szMessage);
+        sprintf(szPrint, "%s%s: %s", WolText(pUserSender->name),
+                TXT_WOL_PRIVATE, szMessage);
         pOwner->PrintMessage(szPrint, WOLCOLORREMAP_PRIVATEMESSAGE);
         Sound_Effect(VOC_INCOMING_MESSAGE);
         delete[] szPrint;
@@ -800,8 +801,7 @@ STDMETHODIMP RAChatEventSink::OnChannelList(HRESULT /*res*/,
   // LastUpdateChannelCallLevel = %i \n", ChannelFilter,
   // pOwner->LastUpdateChannelCallLevel );
 
-  const int iLobbyCur =
-      iChannelLobbyNumber((unsigned char*)pOwner->szChannelNameCurrent);
+  const int iLobbyCur = iChannelLobbyNumber(pOwner->szChannelNameCurrent);
 
   Channel* pChannelListTail = nullptr;
 
@@ -811,7 +811,7 @@ STDMETHODIMP RAChatEventSink::OnChannelList(HRESULT /*res*/,
     switch (ChannelFilter) {
       case CHANNELFILTER_OFFICIAL:
         if (pChannelListIn->official != 1 ||
-            iChannelLobbyNumber(pChannelListIn->name) != -1) {
+            iChannelLobbyNumber(WolText(pChannelListIn->name)) != -1) {
           //				debugprint( "(OnChannelList filtered
           // this one.)\n", pChannelListIn->name );
           pChannelListIn = pChannelListIn->next;
@@ -820,7 +820,7 @@ STDMETHODIMP RAChatEventSink::OnChannelList(HRESULT /*res*/,
         break;
       case CHANNELFILTER_UNOFFICIAL:
         if (pChannelListIn->official == 1 ||
-            iChannelLobbyNumber(pChannelListIn->name) != -1) {
+            iChannelLobbyNumber(WolText(pChannelListIn->name)) != -1) {
           //				debugprint( "(OnChannelList filtered
           // this one.)\n", pChannelListIn->name );
           pChannelListIn = pChannelListIn->next;
@@ -828,7 +828,7 @@ STDMETHODIMP RAChatEventSink::OnChannelList(HRESULT /*res*/,
         }
         break;
       case CHANNELFILTER_LOBBIES: {
-        const int iLobby = iChannelLobbyNumber(pChannelListIn->name);
+        const int iLobby = iChannelLobbyNumber(WolText(pChannelListIn->name));
         if (iLobby == -1) {
           //				debugprint( "(OnChannelList filtered
           // this one.)\n", pChannelListIn->name );
@@ -980,14 +980,14 @@ bool RAChatEventSink::DownloadUpdates(Update* pUpdateList, int iUpdates) {
   // debugprint( "Do all the COM crap.\n" );
   IDownload* pDownload;
   CoCreateInstance(CLSID_Download, nullptr, CLSCTX_INPROC_SERVER, IID_IDownload,
-                   (void**)&pDownload);
+                   ComOut(&pDownload));
   DCHECK(pDownload);
   auto* pDownloadSink = new RADownloadEventSink();
   pDownloadSink->AddRef();
   IConnectionPoint* pConnectionPoint = nullptr;
   IConnectionPointContainer* pContainer = nullptr;
   HRESULT hRes = pDownload->QueryInterface(IID_IConnectionPointContainer,
-                                           (void**)&pContainer);
+                                           ComOut(&pContainer));
   DCHECK(SUCCEEDED(hRes));
   hRes = pContainer->FindConnectionPoint(IID_IDownloadEvent, &pConnectionPoint);
   DCHECK(SUCCEEDED(hRes));
@@ -1017,20 +1017,20 @@ bool RAChatEventSink::DownloadUpdates(Update* pUpdateList, int iUpdates) {
     //	Make sure the destination directory exists, and make it the current
     // directory during the download.
     // debugprint( "Switching to %s dir.\n", (char*)pUpdate->localpath );
-    if (!::SetCurrentDirectory((char*)pUpdate->localpath)) {
+    if (!::SetCurrentDirectory(WolText(pUpdate->localpath))) {
       //	Create the destination directory.
       //			debugprint( "Creating dir.\n" );
-      ::CreateDirectory((char*)pUpdate->localpath, nullptr);
-      ::SetCurrentDirectory((char*)pUpdate->localpath);
+      ::CreateDirectory(WolText(pUpdate->localpath), nullptr);
+      ::SetCurrentDirectory(WolText(pUpdate->localpath));
     }
     //	Note: Unknown what the reg key value is actually used for...
     // debugprint( "Asking to download %s to %s. Server '%s', login '%s',
     // password '%s'\n", fullpath, (char*)pUpdate->patchfile,
     //		   (char*)pUpdate->server, (char*)pUpdate->login,
     //(char*)pUpdate->password );
-    pDownload->DownloadFile((char*)pUpdate->server, (char*)pUpdate->login,
-                            (char*)pUpdate->password, fullpath,
-                            (char*)pUpdate->patchfile, Game_Registry_Key());
+    pDownload->DownloadFile(WolText(pUpdate->server), WolText(pUpdate->login),
+                            WolText(pUpdate->password), fullpath,
+                            WolText(pUpdate->patchfile), Game_Registry_Key());
     //		debugprint( "Call WOL_Download_Dialog()\n" );
     if (!WOL_Download_Dialog(pDownload, pDownloadSink, szTitle)) {
       bReturn = false;
@@ -1045,7 +1045,7 @@ bool RAChatEventSink::DownloadUpdates(Update* pUpdateList, int iUpdates) {
   pConnectionPoint = nullptr;
   pContainer = nullptr;
   hRes = pDownload->QueryInterface(IID_IConnectionPointContainer,
-                                   (void**)&pContainer);
+                                   ComOut(&pContainer));
   DCHECK(SUCCEEDED(hRes));
   hRes = pContainer->FindConnectionPoint(IID_IDownloadEvent, &pConnectionPoint);
   DCHECK(SUCCEEDED(hRes));
@@ -1250,8 +1250,8 @@ STDMETHODIMP RAChatEventSink::OnPrivateAction(HRESULT /*res*/,
 
   if (*szMessage) {
     char* szPrint =
-        new char[strlen((char*)pUserSender->name) + strlen(szMessage) + 116];
-    sprintf(szPrint, "%s %s %s", TXT_WOL_PRIVATE, (char*)pUserSender->name,
+        new char[strlen(WolText(pUserSender->name)) + strlen(szMessage) + 116];
+    sprintf(szPrint, "%s %s %s", TXT_WOL_PRIVATE, WolText(pUserSender->name),
             szMessage);
     pOwner->PrintMessage(szPrint, WOLCOLORREMAP_ACTION);
     delete[] szPrint;
@@ -1270,8 +1270,8 @@ STDMETHODIMP RAChatEventSink::OnPublicAction(HRESULT /*res*/,
                                              LPCSTR szMessage) {
   if (*szMessage) {
     char* szPrint =
-        new char[strlen((char*)pUserSender->name) + strlen(szMessage) + 110];
-    sprintf(szPrint, "%s %s", (char*)pUserSender->name, szMessage);
+        new char[strlen(WolText(pUserSender->name)) + strlen(szMessage) + 110];
+    sprintf(szPrint, "%s %s", WolText(pUserSender->name), szMessage);
     pOwner->PrintMessage(szPrint, WOLCOLORREMAP_ACTION);
     delete[] szPrint;
     //	Easter egg related.
@@ -1384,7 +1384,7 @@ uint32_t RAChatEventSink::GetPlayerGameIP(const char* szPlayerName) const {
   //	Returns ipaddr value of player if found in pGameUserList, else 0.
   User* pUser = pGameUserList;
   while (pUser) {
-    if (stricmp((char*)pUser->name, szPlayerName) == 0) {
+    if (stricmp(WolText(pUser->name), szPlayerName) == 0) {
       return static_cast<uint32_t>(pUser->ipaddr);
     }
     pUser = pUser->next;
@@ -1408,14 +1408,15 @@ STDMETHODIMP RAChatEventSink::OnUserKick(HRESULT hRes, Channel* /*channel*/,
       bGotKickedTrigger = true;
       char szPrint[kMessageMax];
       Format_Runtime_Text(szPrint, sizeof(szPrint), TXT_WOL_USERKICKEDYOU,
-                          (char*)pUserKicker->name);
+                          WolText(pUserKicker->name));
       pOwner->PrintMessage(szPrint, WOLCOLORREMAP_KICKORBAN);
       //	Ensure that the bGotKickedTrigger is acted upon immediately...
       pOwner->dwTimeNextWolapiPump = Get_Time_Ms();
     } else {
       char szPrint[kMessageMax];
       Format_Runtime_Text(szPrint, sizeof(szPrint), TXT_WOL_USERKICKEDUSER,
-                          (char*)pUserKicker->name, (char*)pUserKicked->name);
+                          WolText(pUserKicker->name),
+                          WolText(pUserKicked->name));
       pOwner->PrintMessage(szPrint, WOLCOLORREMAP_KICKORBAN);
     }
     switch (rand() % 4) {
@@ -1457,7 +1458,7 @@ STDMETHODIMP RAChatEventSink::OnUserIP(HRESULT hRes, User* pUser) {
     //	Look for user in our current users list.
     User* pUserSearch = pUserIPList;
     while (pUserSearch) {
-      if (stricmp((char*)pUserSearch->name, (char*)pUser->name) == 0) {
+      if (stricmp(WolText(pUserSearch->name), WolText(pUser->name)) == 0) {
         //	Found matching user. Replace it's ipaddr value, in case it
         // changed.(?)
         pUserSearch->ipaddr = pUser->ipaddr;
@@ -1506,7 +1507,7 @@ uint32_t RAChatEventSink::GetUserIP(const char* szName) const {
   //	Find szName in list.
   User* pUser = pUserIPList;
   while (pUser) {
-    if (stricmp((char*)pUser->name, szName) == 0) {
+    if (stricmp(WolText(pUser->name), szName) == 0) {
       return static_cast<uint32_t>(pUser->ipaddr);
     }
     pUser = pUser->next;
@@ -1553,7 +1554,7 @@ STDMETHODIMP RAChatEventSink::OnUserFlags(HRESULT hRes, LPCSTR name,
   User* pUserPrior = nullptr;
   User* pUserSearch = pUserList;
   while (pUserSearch) {
-    if (stricmp((char*)pUserSearch->name, name) == 0) {
+    if (stricmp(WolText(pUserSearch->name), name) == 0) {
       //	Set user's flags to new value.
       pUserSearch->flags = flags;
 
@@ -1621,7 +1622,7 @@ HRESULT __stdcall RADownloadEventSink::QueryInterface(const IID& iid,
     *ppv = nullptr;
     return E_NOINTERFACE;
   }
-  ((IUnknown*)(*ppv))->AddRef();  //	Removed reinterpret_cast<> ajw
+  static_cast<IUnknown*>(*ppv)->AddRef();  //	Removed reinterpret_cast<> ajw
   return S_OK;
 }
 
@@ -1733,7 +1734,7 @@ HRESULT __stdcall RANetUtilEventSink::QueryInterface(const IID& iid,
     *ppv = nullptr;
     return E_NOINTERFACE;
   }
-  ((IUnknown*)(*ppv))->AddRef();  //	Removed reinterpret_cast<> ajw
+  static_cast<IUnknown*>(*ppv)->AddRef();  //	Removed reinterpret_cast<> ajw
   return S_OK;
 }
 
@@ -1799,7 +1800,7 @@ STDMETHODIMP RANetUtilEventSink::OnLadderList(
             pLadderTail->next = pLadderNew;
             pLadderTail = pLadderNew;
           }
-          if (stricmp((char*)pLadderNew->login_name, pOwner->szMyName) == 0) {
+          if (stricmp(WolText(pLadderNew->login_name), pOwner->szMyName) == 0) {
             //	Set up local player's win/loss string.
             Format_Runtime_Text(pOwner->szMyRecord, sizeof(pOwner->szMyRecord),
                                 TXT_WOL_PERSONALWINLOSSRECORD, pOwner->szMyName,
@@ -1818,7 +1819,7 @@ STDMETHODIMP RANetUtilEventSink::OnLadderList(
             pLadderTailAM->next = pLadderNew;
             pLadderTailAM = pLadderNew;
           }
-          if (stricmp((char*)pLadderNew->login_name, pOwner->szMyName) == 0) {
+          if (stricmp(WolText(pLadderNew->login_name), pOwner->szMyName) == 0) {
             //	Set up local player's win/loss string for Aftermath.
             Format_Runtime_Text(
                 pOwner->szMyRecordAM, sizeof(pOwner->szMyRecordAM),
@@ -1900,7 +1901,7 @@ int RANetUtilEventSink::GetUserRank(const char* szName, bool bRankRA) const {
 
   while (pLad) {
     //		debugprint( "  comparing %s\n", (char*)pLad->login_name );
-    if (stricmp((char*)pLad->login_name, szName) == 0) {
+    if (stricmp(WolText(pLad->login_name), szName) == 0) {
       //			debugprint( "found rung value %u\n", pLad->rung
       //);
       return static_cast<int>(pLad->rung);
@@ -2064,12 +2065,11 @@ void DebugChatDef(HRESULT hRes) {
 }
 
 //***********************************************************************************************
-int iChannelLobbyNumber(const unsigned char* szChannelName) {
+int iChannelLobbyNumber(const char* szChannelName) {
   //	Returns lobby number of channel, or -1 for "channel is not a lobby".
-  if (strncmp(SocketBytes(szChannelName), LOB_PREFIX, strlen(LOB_PREFIX)) ==
-      0) {
+  if (strncmp(szChannelName, LOB_PREFIX, strlen(LOB_PREFIX)) == 0) {
     char szNum[10];
-    port::SafeCopy(szNum, SocketBytes(szChannelName) + strlen(LOB_PREFIX));
+    port::SafeCopy(szNum, szChannelName + strlen(LOB_PREFIX));
     //		debugprint( " ^ iChannelLobbyNumber returning atoi of %s\n",
     // szNum );
     return tech::ParseInteger<int>(szNum).value_or(0);

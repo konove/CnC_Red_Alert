@@ -412,9 +412,8 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
       // sprintf( szChannelToJoin, "Lob_%i_%i", GAME_TYPE,
       // pWO->iLobbyReturnAfterGame );
       sprintf(szChannelToJoin, "%s%i", LOB_PREFIX, pWO->iLobbyReturnAfterGame);
-      pWO->OnEnteringChatChannel(
-          szChannelToJoin, false,
-          iChannelLobbyNumber((unsigned char*)szChannelToJoin));
+      pWO->OnEnteringChatChannel(szChannelToJoin, false,
+                                 iChannelLobbyNumber(szChannelToJoin));
     } else {
       //	Will never happen presumably, if games are always entered via a
       // lobby chat channel.
@@ -1148,7 +1147,8 @@ bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist,
 
   //	We've stored the channel pointer in the hidden extra data field.
   //	( Be careful about calling RAChatEventSink::DeleteChannelList()! )
-  auto* pChannel = (Channel*)chanlist.Get_Item_ExtraDataPtr(iIndex);
+  auto* pChannel =
+      static_cast<Channel*>(chanlist.Get_Item_ExtraDataPtr(iIndex));
   return EnterChannel(pWO, chatlist, pChannel, nullptr, bGame);
 }
 
@@ -1167,7 +1167,7 @@ bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist, Channel* pChannel,
       return false;
     }
     pChannel = &ChannelWhenNameOnly;
-    port::SafeCopy((char*)pChannel->name, szChannelName,
+    port::SafeCopy(WolText(pChannel->name), szChannelName,
                    sizeof(pChannel->name));
   }
 
@@ -1210,9 +1210,10 @@ bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist, Channel* pChannel,
   bool bKeepTrying = true;
 
   //	Set password automatically for our lobbies, if trying to join one.
-  const int iLobby = iChannelLobbyNumber(pChannel->name);
+  const int iLobby = iChannelLobbyNumber(WolText(pChannel->name));
   if (iLobby != -1) {
-    port::SafeCopy((char*)pChannel->key, LOBBYPASSWORD, sizeof(pChannel->key));
+    port::SafeCopy(WolText(pChannel->key), LOBBYPASSWORD,
+                   sizeof(pChannel->key));
   }
 
   char szSuccessfulPassword[WOL_PASSWORD_LEN + 5];
@@ -1247,7 +1248,7 @@ bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist, Channel* pChannel,
           break;
         }
         pWO->bPump_In_Call_Back = false;
-        port::SafeCopy((char*)pChannel->key, pEditDlg->szEdit,
+        port::SafeCopy(WolText(pChannel->key), pEditDlg->szEdit,
                        sizeof(pChannel->key));
         port::SafeCopy(szSuccessfulPassword, pEditDlg->szEdit);
         delete pEditDlg;
@@ -1291,7 +1292,7 @@ bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist, Channel* pChannel,
 
   if (!bGame) {
     if (hRes == S_OK) {
-      return pWO->OnEnteringChatChannel((char*)pChannel->name, false, iLobby);
+      return pWO->OnEnteringChatChannel(WolText(pChannel->name), false, iLobby);
     }
     return false;
   }
@@ -1318,7 +1319,7 @@ bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist, Channel* pChannel,
     }
     CreateGameInfo.GameKind =
         (CREATEGAMEINFO::GAMEKIND)(pChannel->reserved & 0xFF000000);
-    return pWO->OnEnteringGameChannel((char*)pChannel->name, false,
+    return pWO->OnEnteringGameChannel(WolText(pChannel->name), false,
                                       CreateGameInfo);
   }
   pWO->OnFailedToEnterGameChannel();
@@ -1481,7 +1482,7 @@ bool ProcessChannelListSelection(WolapiObject* pWO, IconListClass& chatlist,
       }
 
       void* pExtraData = chanlist.Get_Item_ExtraDataPtr(iIndex);
-      pWO->EnterLevel_GamesOfType((WOL_GAMETYPEINFO*)pExtraData);
+      pWO->EnterLevel_GamesOfType(static_cast<WOL_GAMETYPEINFO*>(pExtraData));
     } else if (strcmp(szChannelType, CHANNELTYPE_CHATCHANNEL) == 0) {
       if (pWO->CurrentLevel == WOL_LEVEL_INCHATCHANNEL) {
         //	Not currently possible.
@@ -1502,7 +1503,8 @@ bool ProcessChannelListSelection(WolapiObject* pWO, IconListClass& chatlist,
         return false;
       }
       //	Check if local user is allowed to join GameKind.
-      const auto* pChannel = (Channel*)chanlist.Get_Item_ExtraDataPtr(iIndex);
+      const auto* pChannel =
+          static_cast<const Channel*>(chanlist.Get_Item_ExtraDataPtr(iIndex));
       if (pChannel->type == GAME_TYPE) {
         //	It is a game of our type, at least.
         const auto GameKind =

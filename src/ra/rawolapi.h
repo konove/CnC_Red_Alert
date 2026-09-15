@@ -43,6 +43,43 @@
 #include "ra/wolapi/ftpdefs.h"
 #include "ra/wolapi/wolapi.h"
 
+// The IDL-generated wolapi structs (User, Channel, Server, Update, Ladder)
+// declare their NUL-terminated text fields as unsigned char arrays, while the
+// C string functions and the chat interfaces take char*. Viewing those bytes
+// through char* is one of the few things reinterpret_cast is defined for, and
+// keeping it here keeps it out of the call sites. The NOLINTs cover only that
+// check.
+
+// Returns the wolapi text field `text` as a C string, valid for as long as the
+// struct that holds it.
+//
+// Example:
+//   port::SafeCopy(user.name_buffer, WolText(pUser->name));
+inline char* WolText(unsigned char* text ABSL_ATTRIBUTE_LIFETIME_BOUND) {
+  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+  return reinterpret_cast<char*>(text);
+}
+
+inline const char* WolText(
+    const unsigned char* text ABSL_ATTRIBUTE_LIFETIME_BOUND) {
+  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+  return reinterpret_cast<const char*>(text);
+}
+
+// Returns `out` as the void** out-parameter that QueryInterface and
+// CoCreateInstance take. COM types that parameter as void** for every
+// interface; the object written through it is the T* the caller asked for by
+// interface id, so reading it back through `*out` is sound.
+//
+// Example:
+//   IConnectionPointContainer* pContainer = nullptr;
+//   pChat->QueryInterface(IID_IConnectionPointContainer, ComOut(&pContainer));
+template <typename T>
+void** ComOut(T** out ABSL_ATTRIBUTE_LIFETIME_BOUND) {
+  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+  return reinterpret_cast<void**>(out);
+}
+
 //***********************************************************************************************
 //	For debugging chat defined hresults...
 //	Writes the name of `hRes` into `szDesc`, truncating rather than
@@ -50,7 +87,7 @@
 void ChatDefAsText(char* szDesc, std::size_t iSize, HRESULT hRes);
 void DebugChatDef(HRESULT hRes);
 
-int iChannelLobbyNumber(const unsigned char* szChannelName);
+int iChannelLobbyNumber(const char* szChannelName);
 #define REASONABLELOBBYINTERPRETEDNAMELEN 50
 void InterpretLobbyNumber(char* szLobbyNameToSet, int iLobby);
 

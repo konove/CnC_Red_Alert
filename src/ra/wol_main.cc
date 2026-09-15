@@ -32,6 +32,7 @@
 static bool ReregisterWolapiDLL();
 static void HandleDLLFail();
 
+#include "port/bytes_of.h"
 #include "port/ex_string.h"
 #include "port/sleep.h"
 #include "port/win32/win32_registry.h"
@@ -200,7 +201,8 @@ bool ReregisterWolapiDLL() {
                      KEY_READ, &hKey) == ERROR_SUCCESS) {
     DWORD dwBufSize = kMaxPath;
     if (::RegQueryValueEx(hKey, "InstallPath", nullptr, nullptr,
-                          (LPBYTE)szInstallPath, &dwBufSize) == ERROR_SUCCESS) {
+                          port::BytesOf(szInstallPath),
+                          &dwBufSize) == ERROR_SUCCESS) {
       WIN32_FIND_DATA wfd{};
       HANDLE handle = FindFirstFile(szInstallPath, &wfd);
       if (handle == INVALID_HANDLE_VALUE) {

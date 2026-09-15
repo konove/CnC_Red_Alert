@@ -49,6 +49,7 @@
 #include "absl/base/log_severity.h"
 #include "absl/log/globals.h"
 #include "absl/log/initialize.h"
+#include "port/bytes_of.h"
 #include "port/win32/win32_registry.h"
 #include "port/win32/win32_system.h"
 #include "port/win32/win32_types.h"
@@ -222,7 +223,7 @@ int main(int argc, char* argv[])
     DWORD dwValue;
     DWORD dwBufSize = sizeof(DWORD);
     if (RegQueryValueEx(hKey, "WolapiInstallComplete", nullptr, nullptr,
-                        (LPBYTE)&dwValue, &dwBufSize) == ERROR_SUCCESS) {
+                        port::BytesOf(dwValue), &dwBufSize) == ERROR_SUCCESS) {
       //		debugprint( "Found WolapiInstallComplete in registry\n"
       //); 	Setup has finished. Delete the setup exe and remove reg key.
       if (bWOLSetupFile) {

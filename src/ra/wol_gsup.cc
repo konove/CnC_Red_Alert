@@ -2147,17 +2147,17 @@ void WOL_GameSetupDialog::ProcessGuestRequest(User* pUser,
                                                  ? PCOLOR_REALLY_BLUE
                                                  : ColorDesired]) == -1) {
         //	Color is available.
-        SetPlayerColor((char*)pUser->name, ColorDesired);
+        SetPlayerColor(WolText(pUser->name), ColorDesired);
         //	Tell all guests about the color change.
-        InformAboutPlayerColor((char*)pUser->name, ColorDesired, nullptr);
+        InformAboutPlayerColor(WolText(pUser->name), ColorDesired, nullptr);
       } else {
         //	Color is not available.
         //			debugprint( "Color %i denied to %s\n",
         // ColorDesired, (char*)pUser->name ); 	Tell requestor that his color is
         // still the same.
         RemapControlType* pColorRemapCurrent =
-            pILPlayers->Get_Item_Color(pILPlayers->Find((char*)pUser->name));
-        InformAboutPlayerColor((char*)pUser->name,
+            pILPlayers->Get_Item_Color(pILPlayers->Find(WolText(pUser->name)));
+        InformAboutPlayerColor(WolText(pUser->name),
                                PlayerColorTypeOf(pColorRemapCurrent), pUser);
       }
       break;
@@ -2167,9 +2167,9 @@ void WOL_GameSetupDialog::ProcessGuestRequest(User* pUser,
           (HousesType)tech::ParseInteger<int>(szRequest).value_or(0);
       //		debugprint( "Host received: '%s' changed house to
       //%u.\n", (char*)pUser->name, HouseChoice );
-      SetPlayerHouse((char*)pUser->name, HouseChoice);
+      SetPlayerHouse(WolText(pUser->name), HouseChoice);
       nHostLastParamID++;
-      InformAboutPlayerHouse((char*)pUser->name, HouseChoice, nullptr);
+      InformAboutPlayerHouse(WolText(pUser->name), HouseChoice, nullptr);
       ClearAllAccepts();
       break;
     }
@@ -2180,8 +2180,8 @@ void WOL_GameSetupDialog::ProcessGuestRequest(User* pUser,
                          nHostLastParamID)) {
         //			debugprint( "Host received valid accept from
         //'%s'.\n", (char*)pUser->name );
-        SetPlayerAccepted((char*)pUser->name, true);
-        InformAboutPlayerAccept((char*)pUser->name, nullptr);
+        SetPlayerAccepted(WolText(pUser->name), true);
+        InformAboutPlayerAccept(WolText(pUser->name), nullptr);
         //	We may be ready to start a game now.
         if (bAllGuestsAccept()) {
           if (pToolTipHitLast && pToolTipHitLast->bShowing) {
@@ -2213,7 +2213,7 @@ void WOL_GameSetupDialog::ProcessGuestRequest(User* pUser,
       // WOLCOLORREMAP_LOCALMACHINEMESS );
       {
         //	If all responses are in, start the game!
-        GuestIsReadyToPlay((char*)pUser->name, "ready");
+        GuestIsReadyToPlay(WolText(pUser->name), "ready");
       }
         //			else
         //				debugprint( "Ignoring - I am no longer
@@ -2235,7 +2235,7 @@ void WOL_GameSetupDialog::ProcessGuestRequest(User* pUser,
       //);
       {
         //	If all responses are in, start the game!
-        GuestIsReadyToPlay((char*)pUser->name, "need scenario");
+        GuestIsReadyToPlay(WolText(pUser->name), "need scenario");
       }
         //			else
         //				debugprint( "Ignoring - I am no longer
@@ -3069,9 +3069,9 @@ void WOL_GameSetupDialog::OnGuestJoin(User* pUser) {
   //	A guest (not myself) has entered the game channel.
   //	debugprint( "OnGuestJoin()\n" );
   char* szPrint = new char[strlen(TXT_WOL_PLAYERJOINEDGAME) +
-                           strlen((char*)pUser->name) + 5];
+                           strlen(WolText(pUser->name)) + 5];
   Format_Runtime_Text(szPrint, sizeof(szPrint), TXT_WOL_PLAYERJOINEDGAME,
-                      (char*)pUser->name);
+                      WolText(pUser->name));
   WOL_PrintMessage(*pILDisc, szPrint, WOLCOLORREMAP_LOCALMACHINEMESS);
   delete[] szPrint;
 
@@ -3083,7 +3083,7 @@ void WOL_GameSetupDialog::OnGuestJoin(User* pUser) {
 
     //	Assign color to new guest.
     const PlayerColorType Color = ColorNextAvailable();
-    SetPlayerColor((char*)pUser->name, Color);
+    SetPlayerColor(WolText(pUser->name), Color);
 
     //	Previously, I was sending an individual color, house, and acceptedstate
     // message for each other guest. 	Though convenient code-wise, this causes
@@ -3124,7 +3124,7 @@ void WOL_GameSetupDialog::OnGuestJoin(User* pUser) {
               static_cast<int>(strlen(szPlayerName)), szPlayerName,
               PlayerColorTypeOf(pILPlayers->Get_Item_Color(i)));
 
-      if (strcmp(szPlayerName, (char*)pUser->name) != 0) {
+      if (strcmp(szPlayerName, WolText(pUser->name)) != 0) {
         const HousesType House =
             WolapiObject::PullPlayerHouse_From(pILPlayers->Get_Item(i));
         if (House != HOUSE_NONE) {
@@ -3150,7 +3150,7 @@ void WOL_GameSetupDialog::OnGuestJoin(User* pUser) {
     pWO->SendGameOpt(szSend, pUser);
 
     //	Send everyone the color of the new guest.
-    InformAboutPlayerColor((char*)pUser->name, Color, nullptr);
+    InformAboutPlayerColor(WolText(pUser->name), Color, nullptr);
 
     //	Send game params.
     //	This is done last because it contains a param ID value, and we need to
@@ -3258,7 +3258,7 @@ void WOL_GameSetupDialog::OnGuestLeave(User* pUser) {
   if (pUser->flags & CHAT_USER_CHANNELOWNER) {
     //	Host is leaving the channel. We must be a guest, and so must leave also.
     // This will trigger exit.
-    port::SafeCopy(szNameOfHostWhoJustBailedOnUs, (char*)pUser->name);
+    port::SafeCopy(szNameOfHostWhoJustBailedOnUs, WolText(pUser->name));
   } else {
     ClearAllAccepts();
   }
@@ -3269,7 +3269,8 @@ void WOL_GameSetupDialog::ClearAllAccepts() {
   //	Clears all "player has accepted" marks.
   // debugprint( "ClearAllAccepts()\n" );
   for (int i = 0; i < pILPlayers->Count(); i++) {
-    const User* pUser = (User*)pILPlayers->Get_Item_ExtraDataPtr(i);
+    const User* pUser =
+        static_cast<const User*>(pILPlayers->Get_Item_ExtraDataPtr(i));
     if (pUser &&
         !(pUser->flags &
           CHAT_USER_CHANNELOWNER)) {  //	pUser null if this is an "early
@@ -3402,8 +3403,8 @@ void WOL_GameSetupDialog::HostSaysGo() {
   User* pUser = pWO->pChatSink->pGameUserList;
   while (pUser) {
     char szUser[WOL_NAME_LEN_MAX + 10];
-    const PlayerColorType Color = GetPlayerColor((char*)pUser->name);
-    sprintf(szUser, " %s %02i", (char*)pUser->name,
+    const PlayerColorType Color = GetPlayerColor(WolText(pUser->name));
+    sprintf(szUser, " %s %02i", WolText(pUser->name),
             Color);  //	What if player left just now, and got removed from list.
                      // Ok to continue and fail on game start?
     port::SafeAppend(szSend, szUser);
@@ -3632,10 +3633,11 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
 
       //	If player is the game host, set HostAddress. This global is used
       // when downloading scenarios; who knows where else.
-      User* pUser = (User*)pILPlayers->Get_Item_ExtraDataPtr(iItem);
+      const User* pUser =
+          static_cast<const User*>(pILPlayers->Get_Item_ExtraDataPtr(iItem));
       if (pUser && pUser->flags & CHAT_USER_CHANNELOWNER) {
         Session.HostAddress = pPlayerNew->Address;
-        port::SafeCopy(szHostName, (char*)pUser->name);
+        port::SafeCopy(szHostName, WolText(pUser->name));
         /*
                                         //	debugging
                                         NetNumType netxxx;
