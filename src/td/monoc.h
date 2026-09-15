@@ -159,15 +159,16 @@ class MonoClass {
   }
   void Scroll(int lines);
   void Store_Cell(CellType& cell, int x, int y) {
-    std::memcpy(static_cast<char*>(MonoSegment) + Offset(x, y), &cell,
-                sizeof(cell));
+    std::memcpy(MonoRAM + Offset(x, y), &cell, sizeof(cell));
   }
 
   /*
-  **	This is the segment/selector of the monochrome screen.
+  **	The monochrome card's page memory. The DOS build addressed the card at
+  **	0xB0000; the port has no card, so the pages live in ordinary memory and
+  **	enabling mono output no longer writes to a fixed address.
   */
-  //		static DOSSegmentClass MonoSegment;
-  static void* MonoSegment;
+  inline static char
+      MonoRAM[static_cast<std::size_t>(MAX_MONO_PAGES) * SIZE_OF_PAGE]{};
 
   /*
   ** This the the arrays of characters used for drawing boxes.

@@ -72,8 +72,6 @@
 int MonoClass::Enabled = 0;
 MonoClass* MonoClass::PageUsage[MAX_MONO_PAGES] = {
     nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr};
-// DOSSegmentClass MonoClass::MonoSegment(MonoClass::SEGMENT);
-void* MonoClass::MonoSegment = (void*)0x000b0000;
 
 /*
 **	These are the IBM linedraw characters.
@@ -330,8 +328,7 @@ void MonoClass::Scroll(int lines) {
   }
 
   memmove(
-      (static_cast<char*>(MonoSegment) + Offset(0, 0)),
-      (static_cast<char*>(MonoSegment) + Offset(0, lines)),
+      (MonoRAM + Offset(0, 0)), (MonoRAM + Offset(0, lines)),
       (static_cast<std::size_t>(LINES - lines)) * COLUMNS * sizeof(CellType));
 
   //	DOSSegmentClass::Copy(MonoSegment, Offset(0, lines), MonoSegment,
@@ -571,8 +568,7 @@ void MonoClass::Print(int text) { Print(Text_String(text)); }
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
 MonoClass& MonoClass::operator=(const MonoClass& src) {
-  memcpy((static_cast<char*>(MonoSegment) + src.Offset(0, 0)),
-         (static_cast<char*>(MonoSegment) + Offset(0, 0)), SIZE_OF_PAGE);
+  memcpy((MonoRAM + src.Offset(0, 0)), (MonoRAM + Offset(0, 0)), SIZE_OF_PAGE);
   //	DOSSegmentClass::Copy(MonoSegment, src.Offset(0, 0), MonoSegment,
   // Offset(0,0), SIZE_OF_PAGE);
   Set_Cursor(src.X, src.Y);
@@ -613,11 +609,9 @@ void MonoClass::View() {
   if (displace) {
     char temp[SIZE_OF_PAGE];
 
-    memcpy(&temp[0], MonoSegment, SIZE_OF_PAGE);
-    memcpy(MonoSegment, (static_cast<char*>(MonoSegment) + Offset(0, 0)),
-           SIZE_OF_PAGE);
-    memcpy((static_cast<char*>(MonoSegment) + Offset(0, 0)), &temp[0],
-           SIZE_OF_PAGE);
+    memcpy(&temp[0], MonoRAM, SIZE_OF_PAGE);
+    memcpy(MonoRAM, (MonoRAM + Offset(0, 0)), SIZE_OF_PAGE);
+    memcpy((MonoRAM + Offset(0, 0)), &temp[0], SIZE_OF_PAGE);
 
     //		DOSSegmentClass::Swap(MonoSegment, Offset(0, 0), MonoSegment, 0,
     // SIZE_OF_PAGE);
@@ -628,8 +622,7 @@ void MonoClass::View() {
     **	Just copy the new page over since the display page is not assigned
     **	to a real monochrome page object.
     */
-    memcpy(MonoSegment, (static_cast<char*>(MonoSegment) + Offset(0, 0)),
-           SIZE_OF_PAGE);
+    memcpy(MonoRAM, (MonoRAM + Offset(0, 0)), SIZE_OF_PAGE);
     //		DOSSegmentClass::Copy(MonoSegment, Offset(0, 0), MonoSegment, 0,
     // SIZE_OF_PAGE);
   }
