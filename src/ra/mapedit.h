@@ -88,7 +88,8 @@ enum MapEdit1Enum {
   MAX_TEAM_CLASSES =  // max # ObjectTypeClasses for a team
       static_cast<int>(magic_enum::enum_count<UnitType>()) +
       static_cast<int>(magic_enum::enum_count<InfantryType>()) +
-      static_cast<int>(magic_enum::enum_count<AircraftType>()),
+      static_cast<int>(magic_enum::enum_count<AircraftType>()) +
+      static_cast<int>(magic_enum::enum_count<VesselType>()),
 
   //	NUM_EDIT_MISSIONS = 6,			// # missions that can be
   // assigned an object

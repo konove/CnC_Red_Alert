@@ -515,8 +515,8 @@ int MapEditClass::Team_Members(HousesType house) {
   /*
   **	Team display variables
   */
-  const TechnoTypeClass** teamclass;  // array of team classes
-  int* teamcount;                     // array of class counts
+  const TechnoTypeClass* teamclass[MAX_TEAM_CLASSES] = {};  // team classes
+  int teamcount[MAX_TEAM_CLASSES] = {};                     // class counts
   int numcols;                        // # units displayed horizontally
 
   /*
@@ -552,15 +552,6 @@ int MapEditClass::Team_Members(HousesType house) {
   TextButtonClass cancelbtn(BUTTON_CANCEL, TXT_CANCEL,
                             TPF_CENTER | TPF_EFNT | TPF_NOSHADOW, D_CANCEL_X,
                             D_CANCEL_Y, D_CANCEL_W, D_CANCEL_H);
-
-  /*
-  **	Set up the team data arrays (ObjectTypeClass pointers & count)
-  */
-  teamclass = (const TechnoTypeClass**)SysMemPage.Get_Buffer();
-  // The counts live directly after the pointer array. Deriving the address
-  // from teamclass keeps the pointer arithmetic in units of pointers; the
-  // original scaled the byte count by sizeof(int) a second time.
-  teamcount = (int*)(teamclass + MAX_TEAM_CLASSES);
 
   /*
   **	Fill in the ObjectTypeClass array with all available object type ptrs,
