@@ -420,7 +420,8 @@ void CellClass::Redraw_Objects(bool forced) {
       while (optr != nullptr && optr->IsActive) {
         if constexpr (config::kSortDrawEnabled) {
           if (optr->Is_Techno() &&
-              ((TechnoClass*)optr)->Visual_Character() != VISUAL_NORMAL) {
+              dynamic_cast<const TechnoClass*>(optr)->Visual_Character() !=
+                  VISUAL_NORMAL) {
             optr->Mark(MARK_CHANGE);
           }
         } else {
@@ -441,8 +442,8 @@ void CellClass::Redraw_Objects(bool forced) {
         if (Overlappers[index]) {
           assert(Overlappers[index]->IsActive);
           if (Overlappers[index]->Is_Techno() &&
-              ((TechnoClass*)Overlappers[index])->Visual_Character() !=
-                  VISUAL_NORMAL) {
+              dynamic_cast<const TechnoClass*>(Overlappers[index])
+                      ->Visual_Character() != VISUAL_NORMAL) {
             Overlappers[index]->Mark(MARK_CHANGE);
           }
         }
@@ -1329,7 +1330,8 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
         int yy;
         if ((object->IsToDisplay &&
              (!object->Is_Techno() ||
-              ((TechnoClass*)object)->Visual_Character() == VISUAL_NORMAL) &&
+              dynamic_cast<const TechnoClass*>(object)->Visual_Character() ==
+                  VISUAL_NORMAL) &&
              Map.Coord_To_Pixel(object->Render_Coord(), xx, yy)) &&
             Calc_Partial_Window(x, y, xx, yy)) {
           object->Draw_It(xx, yy, WINDOW_PARTIAL);

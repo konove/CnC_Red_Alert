@@ -4129,37 +4129,46 @@ static void Print_CRCs(const EventClass* ev) {
 
       if (objp->What_Am_I() == RTTI_AIRCRAFT) {
         fprintf(fp, "Aircraft  (Type:%d) ",
-                static_cast<AircraftType>(*(AircraftClass*)objp));
+                static_cast<AircraftType>(
+                    dynamic_cast<const AircraftClass&>(*objp)));
       } else if (objp->What_Am_I() == RTTI_ANIM) {
         fprintf(fp, "Anim      (Type:%d) ",
-                static_cast<AnimType>(*(AnimClass*)objp));
+                static_cast<AnimType>(dynamic_cast<const AnimClass&>(*objp)));
       } else if (objp->What_Am_I() == RTTI_BUILDING) {
-        fprintf(fp, "Building  (Type:%d) ",
-                static_cast<StructType>(*(BuildingClass*)objp));
+        fprintf(
+            fp, "Building  (Type:%d) ",
+            static_cast<StructType>(dynamic_cast<const BuildingClass&>(*objp)));
       } else if (objp->What_Am_I() == RTTI_BULLET) {
-        fprintf(fp, "Bullet    (Type:%d) ",
-                static_cast<BulletType>(*(BulletClass*)objp));
+        fprintf(
+            fp, "Bullet    (Type:%d) ",
+            static_cast<BulletType>(dynamic_cast<const BulletClass&>(*objp)));
       } else if (objp->What_Am_I() == RTTI_INFANTRY) {
         fprintf(fp, "Infantry  (Type:%d) ",
-                static_cast<InfantryType>(*(InfantryClass*)objp));
+                static_cast<InfantryType>(
+                    dynamic_cast<const InfantryClass&>(*objp)));
       } else if (objp->What_Am_I() == RTTI_OVERLAY) {
-        fprintf(fp, "Overlay   (Type:%d) ",
-                static_cast<OverlayType>(*(OverlayClass*)objp));
+        fprintf(
+            fp, "Overlay   (Type:%d) ",
+            static_cast<OverlayType>(dynamic_cast<const OverlayClass&>(*objp)));
       } else if (objp->What_Am_I() == RTTI_SMUDGE) {
-        fprintf(fp, "Smudge    (Type:%d) ",
-                static_cast<SmudgeType>(*(SmudgeClass*)objp));
+        fprintf(
+            fp, "Smudge    (Type:%d) ",
+            static_cast<SmudgeType>(dynamic_cast<const SmudgeClass&>(*objp)));
       } else if (objp->What_Am_I() == RTTI_TEMPLATE) {
         fprintf(fp, "Template  (Type:%d) ",
-                static_cast<TemplateType>(*(TemplateClass*)objp));
+                static_cast<TemplateType>(
+                    dynamic_cast<const TemplateClass&>(*objp)));
       } else if (objp->What_Am_I() == RTTI_TERRAIN) {
-        fprintf(fp, "Terrain   (Type:%d) ",
-                static_cast<TerrainType>(*(TerrainClass*)objp));
+        fprintf(
+            fp, "Terrain   (Type:%d) ",
+            static_cast<TerrainType>(dynamic_cast<const TerrainClass&>(*objp)));
       } else if (objp->What_Am_I() == RTTI_UNIT) {
         fprintf(fp, "Unit      (Type:%d) ",
-                static_cast<UnitType>(*(UnitClass*)objp));
+                static_cast<UnitType>(dynamic_cast<const UnitClass&>(*objp)));
       } else if (objp->What_Am_I() == RTTI_VESSEL) {
-        fprintf(fp, "Vessel    (Type:%d) ",
-                static_cast<VesselType>(*(VesselClass*)objp));
+        fprintf(
+            fp, "Vessel    (Type:%d) ",
+            static_cast<VesselType>(dynamic_cast<const VesselClass&>(*objp)));
       }
 
       house = objp->Owner();
@@ -4186,35 +4195,41 @@ static void Print_CRCs(const EventClass* ev) {
     fprintf(fp, "Object %d: %x ", i, objp->Coord);
 
     if (objp->What_Am_I() == RTTI_AIRCRAFT) {
-      fprintf(fp, "Aircraft  (Type:%d) ",
-              static_cast<AircraftType>(*(AircraftClass*)objp));
+      fprintf(
+          fp, "Aircraft  (Type:%d) ",
+          static_cast<AircraftType>(dynamic_cast<const AircraftClass&>(*objp)));
     } else if (objp->What_Am_I() == RTTI_ANIM) {
       fprintf(fp, "Anim      (Type:%d) ",
-              static_cast<AnimType>(*(AnimClass*)objp));
+              static_cast<AnimType>(dynamic_cast<const AnimClass&>(*objp)));
     } else if (objp->What_Am_I() == RTTI_BUILDING) {
-      fprintf(fp, "Building  (Type:%d) ",
-              static_cast<StructType>(*(BuildingClass*)objp));
+      fprintf(
+          fp, "Building  (Type:%d) ",
+          static_cast<StructType>(dynamic_cast<const BuildingClass&>(*objp)));
     } else if (objp->What_Am_I() == RTTI_BULLET) {
       fprintf(fp, "Bullet    (Type:%d) ",
-              static_cast<BulletType>(*(BulletClass*)objp));
+              static_cast<BulletType>(dynamic_cast<const BulletClass&>(*objp)));
     } else if (objp->What_Am_I() == RTTI_INFANTRY) {
-      fprintf(fp, "Infantry  (Type:%d) ",
-              static_cast<InfantryType>(*(InfantryClass*)objp));
+      fprintf(
+          fp, "Infantry  (Type:%d) ",
+          static_cast<InfantryType>(dynamic_cast<const InfantryClass&>(*objp)));
     } else if (objp->What_Am_I() == RTTI_OVERLAY) {
-      fprintf(fp, "Overlay   (Type:%d) ",
-              static_cast<OverlayType>(*(OverlayClass*)objp));
+      fprintf(
+          fp, "Overlay   (Type:%d) ",
+          static_cast<OverlayType>(dynamic_cast<const OverlayClass&>(*objp)));
     } else if (objp->What_Am_I() == RTTI_SMUDGE) {
       fprintf(fp, "Smudge    (Type:%d) ",
-              static_cast<SmudgeType>(*(SmudgeClass*)objp));
+              static_cast<SmudgeType>(dynamic_cast<const SmudgeClass&>(*objp)));
     } else if (objp->What_Am_I() == RTTI_TEMPLATE) {
-      fprintf(fp, "Template  (Type:%d) ",
-              static_cast<TemplateType>(*(TemplateClass*)objp));
+      fprintf(
+          fp, "Template  (Type:%d) ",
+          static_cast<TemplateType>(dynamic_cast<const TemplateClass&>(*objp)));
     } else if (objp->What_Am_I() == RTTI_TERRAIN) {
-      fprintf(fp, "Terrain   (Type:%d) ",
-              static_cast<TerrainType>(*(TerrainClass*)objp));
+      fprintf(
+          fp, "Terrain   (Type:%d) ",
+          static_cast<TerrainType>(dynamic_cast<const TerrainClass&>(*objp)));
     } else if (objp->What_Am_I() == RTTI_UNIT) {
       fprintf(fp, "Unit      (Type:%d) ",
-              static_cast<UnitType>(*(UnitClass*)objp));
+              static_cast<UnitType>(dynamic_cast<const UnitClass&>(*objp)));
     }
 
     house = objp->Owner();

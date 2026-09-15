@@ -1189,7 +1189,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
   **	Never consider agent Delphi a valid target.
   */
   if (otype == RTTI_INFANTRY &&
-      ((const InfantryTypeClass*)tclass)->Type == INFANTRY_DELPHI) {
+      dynamic_cast<const InfantryTypeClass&>(*tclass).Type == INFANTRY_DELPHI) {
     return false;
   }
 
@@ -1223,10 +1223,11 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
   /*
   **	If not allowed to attack boats, then eliminate them from consideration.
   */
-  if (!(method & THREAT_BOATS) && otype == RTTI_UNIT &&
-      (((const UnitTypeClass*)tclass)->Speed == SPEED_HOVER ||
-       ((const UnitTypeClass*)tclass)->Speed == SPEED_FLOAT)) {
-    return false;
+  if (!(method & THREAT_BOATS) && otype == RTTI_UNIT) {
+    const SpeedType speed = dynamic_cast<const UnitTypeClass&>(*tclass).Speed;
+    if (speed == SPEED_HOVER || speed == SPEED_FLOAT) {
+      return false;
+    }
   }
 
   /*
@@ -1245,7 +1246,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
   if (method & THREAT_TIBERIUM) {
     switch (otype) {
       case RTTI_UNIT:
-        if (!((const UnitTypeClass*)tclass)->IsToHarvest) {
+        if (!dynamic_cast<const UnitTypeClass&>(*tclass).IsToHarvest) {
           return false;
         }
         break;

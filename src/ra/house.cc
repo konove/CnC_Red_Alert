@@ -2843,7 +2843,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
           /*
           **	Warp the unit to the new location.
           */
-          auto* drive = (DriveClass*)tech;
+          auto* drive = dynamic_cast<DriveClass*>(tech);
           drive->MoebiusCell = Coord_Cell(drive->Coord);
           drive->Teleport_To(cell);
           drive->IsMoebius = true;

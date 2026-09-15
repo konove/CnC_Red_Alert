@@ -335,7 +335,8 @@ void MapEditClass::Popup_Controls() {
     return;
   }
 
-  objtype = (const TechnoTypeClass*)&CurrentObject[0]->Class_Of();
+  objtype = dynamic_cast<const TechnoTypeClass*>(&CurrentObject[0]->Class_Of());
+  const auto* techno = dynamic_cast<const TechnoClass*>(CurrentObject[0]);
 
   /*
   ---------------------- Get object's current values -----------------------
@@ -398,8 +399,7 @@ void MapEditClass::Popup_Controls() {
       MissionList->Set_Selected_Index(mission_index);
       HealthGauge->Set_Value(strength);
       sprintf(HealthBuf, "%d", CurrentObject[0]->Strength);
-      FacingDial->Set_Direction(
-          ((TechnoClass*)CurrentObject[0])->PrimaryFacing);
+      FacingDial->Set_Direction(techno->PrimaryFacing);
 
       /*
       **	Make the list.
@@ -417,8 +417,7 @@ void MapEditClass::Popup_Controls() {
       Add_A_Button(*HealthText);
 
       if (objtype->IsTurretEquipped) {
-        FacingDial->Set_Direction(
-            ((TechnoClass*)CurrentObject[0])->PrimaryFacing);
+        FacingDial->Set_Direction(techno->PrimaryFacing);
         Add_A_Button(*FacingDial);
       }
       break;
@@ -498,7 +497,8 @@ int MapEditClass::Move_Grabbed_Object() {
       /*..................................................................
       Clear the occupied bit in this infantry's cell.
       ..................................................................*/
-      ((InfantryClass*)GrabbedObject)->Clear_Occupy_Bit(GrabbedObject->Coord);
+      dynamic_cast<InfantryClass*>(GrabbedObject)
+          ->Clear_Occupy_Bit(GrabbedObject->Coord);
       //			Map[Coord_Cell(GrabbedObject->Coord)].Flag.Composite
       //&=
       //				~(1 <<
@@ -530,9 +530,12 @@ int MapEditClass::Move_Grabbed_Object() {
     ** If this object is part of the AI's Base list, change the coordinate
     ** in the Base's Node list.
     */
-    if (GrabbedObject->What_Am_I() == RTTI_BUILDING &&
-        Base.Get_Node((BuildingClass*)GrabbedObject)) {
-      Base.Get_Node((BuildingClass*)GrabbedObject)->Coord = new_coord;
+    if (GrabbedObject->What_Am_I() == RTTI_BUILDING) {
+      BaseNodeClass* node =
+          Base.Get_Node(dynamic_cast<BuildingClass*>(GrabbedObject));
+      if (node != nullptr) {
+        node->Coord = new_coord;
+      }
     }
 
     GrabbedObject->Coord = new_coord;
@@ -544,7 +547,7 @@ int MapEditClass::Move_Grabbed_Object() {
   For infantry, set the bit in its new cell marking that spot as occupied.
   ------------------------------------------------------------------------*/
   if (GrabbedObject->Is_Infantry()) {
-    ((InfantryClass*)GrabbedObject)->Set_Occupy_Bit(new_coord);
+    dynamic_cast<InfantryClass*>(GrabbedObject)->Set_Occupy_Bit(new_coord);
     //		Map[Coord_Cell(new_coord)].Flag.Composite |=
     //			(1 << CellClass::Spot_Index(new_coord));
   }
@@ -596,7 +599,7 @@ bool MapEditClass::Change_House(HousesType newhouse) {
   You can't change the house if the object is part of the AI's Base.
   ------------------------------------------------------------------------*/
   if (CurrentObject[0]->What_Am_I() == RTTI_BUILDING &&
-      Base.Is_Node((BuildingClass*)CurrentObject[0])) {
+      Base.Is_Node(dynamic_cast<BuildingClass*>(CurrentObject[0]))) {
     return false;
   }
 
@@ -617,7 +620,7 @@ bool MapEditClass::Change_House(HousesType newhouse) {
   /*------------------------------------------------------------------------
   Change the house
   ------------------------------------------------------------------------*/
-  tp = (TechnoClass*)CurrentObject[0];
+  tp = dynamic_cast<TechnoClass*>(CurrentObject[0]);
   tp->House = HouseClass::As_Pointer(newhouse);
 
   return true;

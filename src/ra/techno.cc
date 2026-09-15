@@ -1712,7 +1712,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
   **	Never consider a spy to be a valid target, unless you're a dog
   */
   if (otype == RTTI_INFANTRY &&
-      ((const InfantryTypeClass*)tclass)->Type == INFANTRY_SPY) {
+      dynamic_cast<const InfantryTypeClass&>(*tclass).Type == INFANTRY_SPY) {
     if (What_Am_I() == RTTI_INFANTRY &&
         dynamic_cast<const InfantryClass*>(this)->Class->IsDog) {
       // continue executing...
@@ -1747,7 +1747,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
   */
   if (method & THREAT_CAPTURE &&
       (otype != RTTI_BUILDING ||
-       !((const BuildingTypeClass*)tclass)->IsCaptureable)) {
+       !dynamic_cast<const BuildingTypeClass&>(*tclass).IsCaptureable)) {
     BEnd(BENCH_EVAL_OBJECT);
     return false;
   }
@@ -1785,14 +1785,14 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
   if (method & THREAT_TIBERIUM) {
     switch (otype) {
       case RTTI_UNIT:
-        if (!((const UnitTypeClass*)tclass)->IsToHarvest) {
+        if (!dynamic_cast<const UnitTypeClass&>(*tclass).IsToHarvest) {
           BEnd(BENCH_EVAL_OBJECT);
           return false;
         }
         break;
 
       case RTTI_BUILDING:
-        if (!((const BuildingTypeClass*)tclass)->Capacity &&
+        if (!dynamic_cast<const BuildingTypeClass&>(*tclass).Capacity &&
             Session.Type != GAME_NORMAL) {
           BEnd(BENCH_EVAL_OBJECT);
           return false;
@@ -1837,7 +1837,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
   *boost *	the fake building's value.
   */
   if (method & THREAT_FAKES && otype == RTTI_BUILDING) {
-    switch (dynamic_cast<const BuildingTypeClass*>(tclass)->Type) {
+    switch (dynamic_cast<const BuildingTypeClass&>(*tclass).Type) {
       case STRUCT_FAKECONST:
       case STRUCT_FAKEWEAP:
       case STRUCT_FAKE_YARD:
@@ -3551,13 +3551,16 @@ ActionType TechnoClass::What_Action(ObjectClass* object) {
       **	If firing is possible and legal, then return this action
       *potential.
       */
+      const auto* infantry_type =
+          What_Am_I() == RTTI_INFANTRY
+              ? dynamic_cast<const InfantryTypeClass*>(ttype)
+              : nullptr;
       if ((House->IsPlayerControl && (ctrldown || !House->Is_Ally(object)) &&
            (ctrldown || object->Class_Of().IsLegalTarget ||
             (Rule.IsTreeTarget && object->What_Am_I() == RTTI_TERRAIN))) &&
           (Is_Weapon_Equipped() ||
-           (What_Am_I() == RTTI_INFANTRY &&
-            (((const InfantryTypeClass*)ttype)->IsBomber ||
-             ((const InfantryTypeClass*)ttype)->IsCapture)))) {
+           (infantry_type != nullptr &&
+            (infantry_type->IsBomber || infantry_type->IsCapture)))) {
         const int primary = What_Weapon_Should_I_Use(object->As_Target());
         if (Can_Player_Move() || In_Range(object, primary)) {
           if (In_Range(object, primary) ||
@@ -5162,7 +5165,7 @@ bool TechnoClass::Is_Allowed_To_Retaliate(const TechnoClass* source) const {
   if ((House->IsHuman ||
        (Session.Type == GAME_NORMAL && House->IsPlayerControl)) &&
       source->What_Am_I() == RTTI_BUILDING && What_Am_I() == RTTI_INFANTRY &&
-      ((const InfantryTypeClass*)ttype)->IsBomber) {
+      dynamic_cast<const InfantryTypeClass&>(*ttype).IsBomber) {
     return false;
   }
 

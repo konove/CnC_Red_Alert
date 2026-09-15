@@ -1160,7 +1160,7 @@ int MapEditClass::Place_Object() {
     ......................... Unlimbo the object ..........................
     */
     if (PendingObjectPtr->Unlimbo(obj_coord)) {
-      ((InfantryClass*)PendingObjectPtr)->Set_Occupy_Bit(obj_coord);
+      dynamic_cast<InfantryClass*>(PendingObjectPtr)->Set_Occupy_Bit(obj_coord);
       //			Map[Coord_Cell(obj_coord)].Flag.Composite |=
       //				(1 << CellClass::Spot_Index(obj_coord));
       PendingObjectPtr = nullptr;
@@ -1727,7 +1727,7 @@ void MapEditClass::Toggle_House() {
   /*------------------------------------------------------------------------
   Change the house
   ------------------------------------------------------------------------*/
-  tp = (TechnoClass*)PendingObjectPtr;
+  tp = dynamic_cast<TechnoClass*>(PendingObjectPtr);
   tp->House = HouseClass::As_Pointer(LastHouse);
 
   /*------------------------------------------------------------------------
@@ -2004,8 +2004,8 @@ void MapEditClass::Build_Base_To(int percent) {
     ** Get a ptr to the type of building to build, create one, and unlimbo it.
     */
     objtype = &BuildingTypeClass::As_Reference(Base.Nodes[i].Type);
-    obj = (BuildingClass*)objtype->Create_One_Of(
-        HouseClass::As_Pointer(Base.House));
+    obj = dynamic_cast<BuildingClass*>(
+        objtype->Create_One_Of(HouseClass::As_Pointer(Base.House)));
     /*
     ** If unlimbo fails, error out
     */

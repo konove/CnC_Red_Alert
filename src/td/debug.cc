@@ -323,7 +323,7 @@ void Debug_Key(unsigned input) {
 
       case KN_R:
         if (CurrentObject.Count()) {
-          ((TechnoClass*)CurrentObject[0])->IsCloakable = true;
+          dynamic_cast<TechnoClass*>(CurrentObject[0])->IsCloakable = true;
         }
         break;
 
@@ -655,8 +655,8 @@ void Debug_Key(unsigned input) {
       */
       case KN_F7:
         if (CurrentObject.Count() && CurrentObject[0]->Is_Techno()) {
-          const auto& ttype =
-              (const TechnoTypeClass&)CurrentObject[0]->Class_Of();
+          const auto& ttype = dynamic_cast<const TechnoTypeClass&>(
+              CurrentObject[0]->Class_Of());
           const int sight = ((int)ttype.SightRange) << 8;
           int weapon = 0;
           if (ttype.Primary != WEAPON_NONE) {

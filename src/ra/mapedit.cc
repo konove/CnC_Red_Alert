@@ -1085,10 +1085,13 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
           ** If the current object is part of the AI's Base, remove it
           ** from the Base's Node list.
           */
-          if (CurrentObject[0]->What_Am_I() == RTTI_BUILDING &&
-              Base.Is_Node((BuildingClass*)CurrentObject[0])) {
-            node = Base.Get_Node((BuildingClass*)CurrentObject[0]);
-            Base.Nodes.Delete(*node);
+          if (CurrentObject[0]->What_Am_I() == RTTI_BUILDING) {
+            const auto* building =
+                dynamic_cast<const BuildingClass*>(CurrentObject[0]);
+            if (Base.Is_Node(building)) {
+              node = Base.Get_Node(building);
+              Base.Nodes.Delete(*node);
+            }
           }
 
           /*
@@ -1144,7 +1147,8 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       **	Determine the house desired by examining the currently
       **	selected index in the house list gadget.
       */
-      house = HousesType(((ListClass*)Buttons->Extract_Gadget(POPUP_HOUSELIST))
+      house = HousesType(dynamic_cast<const ListClass*>(
+                             Buttons->Extract_Gadget(POPUP_HOUSELIST))
                              ->Current_Index());
 
       /*
@@ -1193,7 +1197,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
 
     case ButtonKey(POPUP_SELLABLE):
       if (CurrentObject[0]->What_Am_I() == RTTI_BUILDING) {
-        auto* building = (BuildingClass*)CurrentObject[0];
+        auto* building = dynamic_cast<BuildingClass*>(CurrentObject[0]);
 
         if (building->Class->Level != -1) {
           //				if (building->Class->IsBuildable) {
@@ -1211,7 +1215,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
 
     case ButtonKey(POPUP_REBUILDABLE):
       if (CurrentObject[0]->What_Am_I() == RTTI_BUILDING) {
-        auto* building = (BuildingClass*)CurrentObject[0];
+        auto* building = dynamic_cast<BuildingClass*>(CurrentObject[0]);
 
         if (building->Class->Level != -1) {
           //				if (building->Class->IsBuildable) {
@@ -1236,7 +1240,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         */
         mission = MapEditMissions[base::ToSize(MissionList->Current_Index())];
         if (CurrentObject[0]->Get_Mission() != mission) {
-          ((TechnoClass*)CurrentObject[0])->Set_Mission(mission);
+          dynamic_cast<TechnoClass*>(CurrentObject[0])->Set_Mission(mission);
           Changed = true;
           Buttons->Flag_List_To_Redraw();
           Flag_To_Redraw(true);
@@ -1288,30 +1292,26 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     **	Object-Editing button: Facing
     */
     case ButtonKey(POPUP_FACINGDIAL):
-      if (CurrentObject[0]->Is_Techno() &&
-          (FacingDial->Get_Direction() !=
-           ((TechnoClass*)CurrentObject[0])->PrimaryFacing.Get()))
-      /*
-      **	Set new facing
-      */
-      {
-        /*
-        **	Set body's facing
-        */
-        ((TechnoClass*)CurrentObject[0])
-            ->PrimaryFacing.Set(FacingDial->Get_Direction());
+      if (CurrentObject[0]->Is_Techno()) {
+        auto* techno = dynamic_cast<TechnoClass*>(CurrentObject[0]);
+        if (FacingDial->Get_Direction() != techno->PrimaryFacing.Get()) {
+          /*
+          **	Set body's facing
+          */
+          techno->PrimaryFacing.Set(FacingDial->Get_Direction());
 
-        /*
-        **	Set turret facing, if there is one
-        */
-        if (CurrentObject[0]->What_Am_I() == RTTI_UNIT) {
-          ((UnitClass*)CurrentObject[0])
-              ->SecondaryFacing.Set(FacingDial->Get_Direction());
+          /*
+          **	Set turret facing, if there is one
+          */
+          if (techno->What_Am_I() == RTTI_UNIT) {
+            dynamic_cast<UnitClass&>(*techno).SecondaryFacing.Set(
+                FacingDial->Get_Direction());
+          }
+
+          HidPage.Clear();
+          Flag_To_Redraw(true);
+          Changed = true;
         }
-
-        HidPage.Clear();
-        Flag_To_Redraw(true);
-        Changed = true;
       }
 
       input = KN_NONE;

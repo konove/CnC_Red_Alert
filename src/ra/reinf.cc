@@ -752,9 +752,9 @@ int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
       *determine *	if this aircraft should drop parachute reinforcements.
       */
       if (obj->What_Am_I() == RTTI_AIRCRAFT) {
-        auto* aircraft = (AircraftClass*)obj;
+        auto& aircraft = dynamic_cast<AircraftClass&>(*obj);
         if (passenger != INFANTRY_NONE) {
-          aircraft->Passenger = passenger != INFANTRY_NONE;
+          aircraft.Passenger = passenger != INFANTRY_NONE;
         }
         //				if (Passenger == INFANTRY_TANYA) {
         //					aircraft->Ammo = 1;

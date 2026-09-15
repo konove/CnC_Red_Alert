@@ -235,7 +235,7 @@ void Debug_Key(unsigned input) {
           Map.Recalc();
           // CurrentObject[0]->Detach_All();
           if (CurrentObject[0]->What_Am_I() == RTTI_BUILDING) {
-            ((BuildingClass*)CurrentObject[0])->Sell_Back(1);
+            dynamic_cast<BuildingClass*>(CurrentObject[0])->Sell_Back(1);
           } else {
             ObjectClass* object = CurrentObject[0];
             object->Unselect();
@@ -311,8 +311,8 @@ void Debug_Key(unsigned input) {
       */
       case KN_F7:
         if (CurrentObject.Count() && CurrentObject[0]->Is_Techno()) {
-          const auto& ttype =
-              (const TechnoTypeClass&)CurrentObject[0]->Class_Of();
+          const auto& ttype = dynamic_cast<const TechnoTypeClass&>(
+              CurrentObject[0]->Class_Of());
           const int sight = ((int)ttype.SightRange) << 8;
           int weapon = 0;
           if (ttype.PrimaryWeapon != nullptr) {
@@ -569,7 +569,8 @@ void Self_Regulate() {
             _lastobject = nullptr;
           }
           if (_lastobject && _lastobject->Is_Techno()) {
-            ((TechnoClass*)_lastobject)->House->Debug_Dump(mono);
+            dynamic_cast<const TechnoClass*>(_lastobject)
+                ->House->Debug_Dump(mono);
           }
           break;
 
