@@ -1,16 +1,19 @@
 #include "sdllib/file.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <cstdio>
+#include <filesystem>
 #include <string>
+#include <system_error>
+#include <vector>
 
-#include "absl/strings/ascii.h"
 #include "sdllib/file_access.h"
 
 #ifdef _WIN32
 #include <windows.h>
 #else
-#include <glob.h>
+#include <fnmatch.h>
 #include <sys/stat.h>
 #include <sys/statvfs.h>
 #include <unistd.h>
@@ -158,65 +161,58 @@ uint64_t Disk_Space_Available() {
 }
 #else
 
+// The names matching the pattern, in sorted order, and the index of the one
+// `state.name` refers to.
+struct FindFileMatches {
+  std::vector<std::string> names;
+  size_t offset = 0;
+};
+
+// Advances `state` to the next match that is a regular file (or anything
+// but a directory) and fills in its name and modification time. Returns false
+// once the matches are used up.
 static bool Update_Find_Result(FindFileState& state) {
-  const auto* const glob_buf = static_cast<glob_t*>(state.data);
+  auto* const matches = static_cast<FindFileMatches*>(state.data);
   struct stat stat_buf{};
 
-  // Iterate through paths until we find a valid file or run out of items
-  while (state.offset < glob_buf->gl_pathc) {
-    const char* current_path = glob_buf->gl_pathv[state.offset];
+  while (matches->offset < matches->names.size()) {
+    const std::string& current = matches->names[matches->offset];
 
-    // 1. Try to stat the file.
-    // If stat fails (e.g., broken symlink, permission denied), skip this item.
-    if (stat(current_path, &stat_buf) != 0) {
-      state.offset++;
+    // A name that cannot be stat'ed (broken symlink, permission denied) or
+    // names a directory is skipped.
+    if (stat(current.c_str(), &stat_buf) != 0 || S_ISDIR(stat_buf.st_mode)) {
+      matches->offset++;
       continue;
     }
 
-    // 2. If it is a directory, skip it.
-    if (S_ISDIR(stat_buf.st_mode)) {
-      state.offset++;
-      continue;
-    }
-
-    // 3. Success: We found a valid non-directory file, and stat_buf is
-    // populated. Populate the state and return true.
     state.mod_time = stat_buf.st_mtime;
-    state.name = current_path;
-
-    // Note: We leave state.offset pointing to this current valid item.
+    state.name = current.c_str();
     return true;
   }
 
-  // We reached the end of the list without finding a valid file.
   return false;
 }
 
 bool Find_First_File(const char* path_glob, FindFileState& state) {
-  auto* glob_buf = new glob_t;
-  int ret = glob(path_glob, GLOB_MARK, nullptr, glob_buf);
-
-  // also search for lowercase filenames
-  if (ret == 0 || ret == GLOB_NOMATCH) {
-    const std::string lower_glob = absl::AsciiStrToLower(path_glob);
-    const int ret2 =
-        glob(lower_glob.c_str(), GLOB_MARK | GLOB_APPEND, nullptr, glob_buf);
-    if (ret2 != GLOB_NOMATCH) {
-      ret = ret2;
+  // The patterns are bare names ("SC*.MIX", "SAVEGAME.*") matched in the
+  // working directory. The game's files came from a case-insensitive
+  // filesystem, so the match ignores case.
+  auto* matches = new FindFileMatches;
+  std::error_code error;
+  for (const auto& entry : std::filesystem::directory_iterator(".", error)) {
+    const std::string name = entry.path().filename().string();
+    if (fnmatch(path_glob, name.c_str(), FNM_CASEFOLD) == 0) {
+      matches->names.push_back(name);
     }
   }
+  std::ranges::sort(matches->names);
 
-  if (ret) {
-    delete glob_buf;
-    return false;
-  }
-
+  state.data = matches;
   state.offset = 0;
-  state.data = glob_buf;
 
   if (!Update_Find_Result(state)) {
-    globfree(glob_buf);
-    delete glob_buf;
+    delete matches;
+    state.data = nullptr;
     return false;
   }
 
@@ -224,17 +220,14 @@ bool Find_First_File(const char* path_glob, FindFileState& state) {
 }
 
 bool Find_Next_File(FindFileState& state) {
-  // increment offset
-  state.offset++;
-  auto* glob_buf = static_cast<glob_t*>(state.data);
-
-  if (!glob_buf) {
+  auto* const matches = static_cast<FindFileMatches*>(state.data);
+  if (!matches) {
     return true;
   }
 
+  matches->offset++;
   if (!Update_Find_Result(state)) {
-    globfree(glob_buf);
-    delete glob_buf;
+    delete matches;
     state.data = nullptr;
     return false;
   }
@@ -244,9 +237,7 @@ bool Find_Next_File(FindFileState& state) {
 
 void End_Find_File(FindFileState& state) {
   if (state.data) {
-    auto* glob_buf = static_cast<glob_t*>(state.data);
-    globfree(glob_buf);
-    delete glob_buf;
+    delete static_cast<FindFileMatches*>(state.data);
     state.data = nullptr;
   }
 }

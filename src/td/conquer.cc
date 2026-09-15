@@ -81,6 +81,7 @@
 #include "base/seek_origin.h"
 #include "base/types.h"
 #include "port/aligned_buffer.h"
+#include "port/env.h"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "port/unaligned.h"
@@ -1757,7 +1758,7 @@ bool Main_Loop() {
     log_heap(Aircraft, "aircraftstate");
     class MapHashSink : public ByteSink {
      public:
-      bool trace = std::getenv("TD_MAP_TRACE") != nullptr;
+      bool trace = port::GetEnv("TD_MAP_TRACE").has_value();
       std::string fields;
       uint64_t hash = 14695981039346656037ULL;
       bool Write(std::span<const std::byte> bytes) override {

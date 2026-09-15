@@ -68,7 +68,8 @@
 #ifdef _WIN32
 #include <nspapi.h>
 #include <svcguid.h>
-#include <winsock.h>
+#include <winsock2.h>
+#include <ws2tcpip.h>
 
 typedef int socklen_t;
 #else
@@ -198,14 +199,18 @@ bool UDPInterfaceClass::Open_Socket(SOCKET /*unused*/) {
   }
 
   /*
-  ** Use gethostbyname to find the name of the local host. We will need this to
-  *look up
-  ** the local ip address.
+  ** Look up the local host's name to enumerate its IPv4 addresses.
   */
   char hostname[128];
   gethostname(hostname, 128);
   WWDebugString(hostname);
-  const struct hostent* host_info = gethostbyname(hostname);
+  addrinfo hints{};
+  hints.ai_family = AF_INET;
+  hints.ai_socktype = SOCK_DGRAM;
+  addrinfo* results = nullptr;
+  if (getaddrinfo(hostname, nullptr, &hints, &results) != 0) {
+    results = nullptr;
+  }
 
   /*
   ** Clear out any old local addresses from the local address list.
@@ -220,15 +225,9 @@ bool UDPInterfaceClass::Open_Socket(SOCKET /*unused*/) {
   *any packets that
   ** we send to ourselves.
   */
-  char* const* addresses = host_info->h_addr_list;
-
-  for (;;) {
-    if (!*addresses) {
-      break;
-    }
-
-    const auto address = port::ReadUnaligned<uint32_t>(*addresses++);
-    // address = ntohl (address);
+  for (const addrinfo* info = results; info != nullptr; info = info->ai_next) {
+    const uint32_t address =
+        port::ReadUnaligned<sockaddr_in>(info->ai_addr).sin_addr.s_addr;
 
     char temp[128];
     snprintf(temp, sizeof(temp), "RA95: Found local address: %d.%d.%d.%d\n",
@@ -244,6 +243,7 @@ bool UDPInterfaceClass::Open_Socket(SOCKET /*unused*/) {
       delete[] a;
     }
   }
+  freeaddrinfo(results);
 
   /*
   ** Set options for the UDP socket

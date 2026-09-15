@@ -46,6 +46,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <span>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -53,6 +54,7 @@
 #include "base/seek_origin.h"
 #include "base/types.h"
 #include "magic_enum/magic_enum.hpp"
+#include "port/env.h"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "ra/aircraft.h"
@@ -523,8 +525,8 @@ bool Save_Game(int id, const char* descr, bool /*unused*/) {
   DiskFile dump_file;
   FileSink dump_pipe(dump_file);
   bool dump_open = false;
-  const char* dump_path = std::getenv("RA_SAVE_DUMP");
-  if (dump_path != nullptr && dump_path[0] != '\0') {
+  const std::string dump_path = port::GetEnv("RA_SAVE_DUMP").value_or("");
+  if (!dump_path.empty()) {
     dump_file.Open(dump_path, FileAccess::kWrite);
     dump_open = dump_file.IsOpen();
     if (!dump_open) {

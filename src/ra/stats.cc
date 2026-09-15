@@ -178,13 +178,17 @@ static int32_t GameEndTime;
 void* PacketLater = nullptr;
 
 #ifdef _WIN32
-#include <winsock.h>
+#include <winsock2.h>
+#include <ws2tcpip.h>
 #else
 #include <arpa/inet.h>
 #include <netdb.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
 #include <unistd.h>
 #endif
 
+#include "port/inet_text.h"
 #include "port/safe_string.h"
 #include "ra/config.h"
 #include "ra/internet.h"
@@ -400,35 +404,31 @@ void Send_Statistics_Packet() {
               //						debugprint(
               //"gethostname
               // got me %s\n", szHostName );
-              const struct hostent* pHostent = gethostbyname(szHostName);
-              if (pHostent)  //	else forget about trying
-              {
-                int i = 0;
-                const char* piAddress = pHostent->h_addr_list[i];
-                while (piAddress) {
-                  //	There is a non-null value for this h_addr_list entry.
-                  char szAsciiIP[30];
-                  port::SafeCopy(
-                      szAsciiIP,
-                      inet_ntoa(port::ReadUnaligned<in_addr>(piAddress)));
-                  //	We have an address in the right form.
-                  //	Now, is it an address in a private network? If so we
-                  // should ignore it.
-                  //	First and second digits.
-                  const auto q1 = static_cast<unsigned char>(piAddress[0]);
-                  const auto q2 = static_cast<unsigned char>(piAddress[1]);
-                  //								debugprint(
-                  //"ip: %s\n", szAsciiIP );
+              addrinfo hints{};
+              hints.ai_family = AF_INET;
+              hints.ai_socktype = SOCK_DGRAM;
+              addrinfo* results = nullptr;
+              if (getaddrinfo(szHostName, nullptr, &hints, &results) == 0) {
+                for (const addrinfo* info = results; info != nullptr;
+                     info = info->ai_next) {
+                  const auto address =
+                      port::ReadUnaligned<sockaddr_in>(info->ai_addr);
+                  //	Is it an address in a private network? If so we
+                  // should ignore it. First and second octets.
+                  const uint32_t ip = ntohl(address.sin_addr.s_addr);
+                  const uint32_t q1 = ip >> 24;
+                  const uint32_t q2 = (ip >> 16) & 0xff;
                   if (q1 == 10 || (q1 == 172 && (q2 >= 16 && q2 <= 31)) ||
                       (q1 == 192 && q2 == 168)) {
                     //	This is a private network address - ignore it and go on
                     // to next.
                   } else {
-                    port::SafeCopy(szIPAddress, szAsciiIP);
+                    port::SafeCopy(szIPAddress,
+                                   port::Ipv4Text(address.sin_addr).c_str());
                     break;
                   }
-                  piAddress = pHostent->h_addr_list[++i];
                 }
+                freeaddrinfo(results);
               }
               //						else
               //							debugprint(

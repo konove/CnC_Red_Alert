@@ -7,7 +7,7 @@
 #include <linux/prctl.h>
 #include <sys/prctl.h>
 
-#include <cstdlib>
+#include "port/env.h"
 #endif
 
 int main(int argc, char** argv) {
@@ -16,7 +16,7 @@ int main(int argc, char** argv) {
   // and a stack trace for each one regardless of ulimit -c. Marking the
   // process undumpable (inherited by the fork) stops that; set
   // CNC_TEST_CORE_DUMPS=1 to get the dumps back when debugging a crash.
-  if (std::getenv("CNC_TEST_CORE_DUMPS") == nullptr) {
+  if (!port::GetEnv("CNC_TEST_CORE_DUMPS")) {
     prctl(PR_SET_DUMPABLE, 0);
   }
 #endif
