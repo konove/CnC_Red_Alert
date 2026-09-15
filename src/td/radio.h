@@ -91,9 +91,9 @@ class RadioClass : public MissionClass {
   */
   [[nodiscard]] bool In_Radio_Contact() const { return Radio != nullptr; }
   void Radio_Off() { Radio = nullptr; }
-  [[nodiscard]] TechnoClass* Contact_With_Whom() const {
-    return (TechnoClass*)Radio;
-  }
+  // Returns the techno object this radio is in contact with, or nullptr when
+  // there is no contact.
+  [[nodiscard]] TechnoClass* Contact_With_Whom() const;
 
   // Inherited from base class(es).
   RadioMessageType Receive_Message(RadioClass* from, RadioMessageType message,

@@ -125,6 +125,86 @@ CellClass* xTargetClass::As_Cell() const {
   return nullptr;
 }
 
+// The RTTI test picks the kind; the dynamic_cast then narrows the generic
+// pointer, which lives here rather than in target.h because the derived types
+// are only forward-declared there.
+TriggerTypeClass* xTargetClass::As_TriggerType() const {
+  if (*this == RTTI_TRIGGERTYPE) {
+    return dynamic_cast<TriggerTypeClass*>(As_TypeClass());
+  }
+  return nullptr;
+}
+
+TeamTypeClass* xTargetClass::As_TeamType() const {
+  if (*this == RTTI_TEAMTYPE) {
+    return dynamic_cast<TeamTypeClass*>(As_TypeClass());
+  }
+  return nullptr;
+}
+
+TerrainClass* xTargetClass::As_Terrain() const {
+  if (*this == RTTI_TERRAIN) {
+    return dynamic_cast<TerrainClass*>(As_Abstract());
+  }
+  return nullptr;
+}
+
+BulletClass* xTargetClass::As_Bullet() const {
+  if (*this == RTTI_BULLET) {
+    return dynamic_cast<BulletClass*>(As_Abstract());
+  }
+  return nullptr;
+}
+
+AnimClass* xTargetClass::As_Anim() const {
+  if (*this == RTTI_ANIM) {
+    return dynamic_cast<AnimClass*>(As_Abstract());
+  }
+  return nullptr;
+}
+
+TeamClass* xTargetClass::As_Team() const {
+  if (*this == RTTI_TEAM) {
+    return dynamic_cast<TeamClass*>(As_Abstract());
+  }
+  return nullptr;
+}
+
+InfantryClass* xTargetClass::As_Infantry() const {
+  if (*this == RTTI_INFANTRY) {
+    return dynamic_cast<InfantryClass*>(As_Techno());
+  }
+  return nullptr;
+}
+
+UnitClass* xTargetClass::As_Unit() const {
+  if (*this == RTTI_UNIT) {
+    return dynamic_cast<UnitClass*>(As_Techno());
+  }
+  return nullptr;
+}
+
+BuildingClass* xTargetClass::As_Building() const {
+  if (*this == RTTI_BUILDING) {
+    return dynamic_cast<BuildingClass*>(As_Techno());
+  }
+  return nullptr;
+}
+
+AircraftClass* xTargetClass::As_Aircraft() const {
+  if (*this == RTTI_AIRCRAFT) {
+    return dynamic_cast<AircraftClass*>(As_Techno());
+  }
+  return nullptr;
+}
+
+VesselClass* xTargetClass::As_Vessel() const {
+  if (*this == RTTI_VESSEL) {
+    return dynamic_cast<VesselClass*>(As_Techno());
+  }
+  return nullptr;
+}
+
 /***********************************************************************************************
  * As_Trigger -- Converts specified target into a trigger pointer. *
  *                                                                                             *

@@ -118,6 +118,12 @@ void RadioClass::Debug_Dump(MonoClass* mono) const {
   }
 }
 
+// Every radio in the game is part of a TechnoClass object, so the cast only
+// fails when there is no contact at all.
+TechnoClass* RadioClass::Contact_With_Whom() const {
+  return dynamic_cast<TechnoClass*>(Radio);
+}
+
 /***********************************************************************************************
  * RadioClass::Receive_Message -- Handles receipt of a radio message. *
  *                                                                                             *

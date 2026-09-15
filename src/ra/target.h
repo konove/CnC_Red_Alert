@@ -40,6 +40,8 @@
 #ifndef CNC_RED_ALERT_RA_TARGET_H_
 #define CNC_RED_ALERT_RA_TARGET_H_
 
+#include <bit>
+
 #include "ra/abstract.h"
 #include "ra/ccini.h"
 #include "ra/defines.h"
@@ -59,7 +61,7 @@ class UnitClass;
 class VesselClass;
 
 inline RTTIType Target_Kind(TARGET a) {
-  return static_cast<RTTIType>(((TARGET_COMPOSITE&)a).Sub.Exponent);
+  return static_cast<RTTIType>(std::bit_cast<TARGET_COMPOSITE>(a).Sub.Exponent);
 }
 
 inline int Target_Value(TARGET a) {
@@ -154,76 +156,20 @@ class xTargetClass {
   [[nodiscard]] ObjectClass* As_Object() const;
   [[nodiscard]] CellClass* As_Cell() const;
 
-  /*
-  **	Helper routines to combine testing for, and fetching a pointer to, the
-  **	type of object indicated.
-  */
-  [[nodiscard]] TriggerTypeClass* As_TriggerType() const {
-    if (*this == RTTI_TRIGGERTYPE) {
-      return (TriggerTypeClass*)As_TypeClass();
-    }
-    return nullptr;
-  }
-  [[nodiscard]] TeamTypeClass* As_TeamType() const {
-    if (*this == RTTI_TEAMTYPE) {
-      return (TeamTypeClass*)As_TypeClass();
-    }
-    return nullptr;
-  }
-  [[nodiscard]] TerrainClass* As_Terrain() const {
-    if (*this == RTTI_TERRAIN) {
-      return (TerrainClass*)As_Abstract();
-    }
-    return nullptr;
-  }
-  [[nodiscard]] BulletClass* As_Bullet() const {
-    if (*this == RTTI_BULLET) {
-      return (BulletClass*)As_Abstract();
-    }
-    return nullptr;
-  }
-  [[nodiscard]] AnimClass* As_Anim() const {
-    if (*this == RTTI_ANIM) {
-      return (AnimClass*)As_Abstract();
-    }
-    return nullptr;
-  }
-  [[nodiscard]] TeamClass* As_Team() const {
-    if (*this == RTTI_TEAM) {
-      return (TeamClass*)As_Abstract();
-    }
-    return nullptr;
-  }
-  [[nodiscard]] InfantryClass* As_Infantry() const {
-    if (*this == RTTI_INFANTRY) {
-      return (InfantryClass*)As_Techno();
-    }
-    return nullptr;
-  }
-  [[nodiscard]] UnitClass* As_Unit() const {
-    if (*this == RTTI_UNIT) {
-      return (UnitClass*)As_Techno();
-    }
-    return nullptr;
-  }
-  [[nodiscard]] BuildingClass* As_Building() const {
-    if (*this == RTTI_BUILDING) {
-      return (BuildingClass*)As_Techno();
-    }
-    return nullptr;
-  }
-  [[nodiscard]] AircraftClass* As_Aircraft() const {
-    if (*this == RTTI_AIRCRAFT) {
-      return (AircraftClass*)As_Techno();
-    }
-    return nullptr;
-  }
-  [[nodiscard]] VesselClass* As_Vessel() const {
-    if (*this == RTTI_VESSEL) {
-      return (VesselClass*)As_Techno();
-    }
-    return nullptr;
-  }
+  // Helpers that test for, and fetch a pointer to, the kind of object named.
+  // Each returns the object this target refers to when the target is of that
+  // kind, or nullptr otherwise.
+  [[nodiscard]] TriggerTypeClass* As_TriggerType() const;
+  [[nodiscard]] TeamTypeClass* As_TeamType() const;
+  [[nodiscard]] TerrainClass* As_Terrain() const;
+  [[nodiscard]] BulletClass* As_Bullet() const;
+  [[nodiscard]] AnimClass* As_Anim() const;
+  [[nodiscard]] TeamClass* As_Team() const;
+  [[nodiscard]] InfantryClass* As_Infantry() const;
+  [[nodiscard]] UnitClass* As_Unit() const;
+  [[nodiscard]] BuildingClass* As_Building() const;
+  [[nodiscard]] AircraftClass* As_Aircraft() const;
+  [[nodiscard]] VesselClass* As_Vessel() const;
 };
 
 /*
