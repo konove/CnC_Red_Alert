@@ -668,7 +668,7 @@ void TechnoClass::Debug_Dump(MonoClass* mono) const {
     mono->Printf("%3lu", Arm.Value());
     if (Is_Something_Attached()) {
       mono->Set_Cursor(1, 5);
-      mono->Printf("%08X", Attached_Object());
+      mono->Printf("%p", Attached_Object());
     }
     if (Target_Legal(TarCom)) {
       mono->Set_Cursor(29, 3);

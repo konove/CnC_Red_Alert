@@ -374,9 +374,9 @@ void UnitClass::Debug_Dump(MonoClass* mono) const {
                  SecondaryFacing.Desired());
 
     mono->Set_Cursor(1, 11);
-    mono->Printf("%03", Gems);
+    mono->Printf("%03d", Gems);
     mono->Set_Cursor(7, 11);
-    mono->Printf("%03", Gold);
+    mono->Printf("%03d", Gold);
 
     mono->Fill_Attrib(66, 13, 12, 1,
                       IsDumping ? MonoClass::INVERSE : MonoClass::NORMAL);

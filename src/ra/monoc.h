@@ -41,6 +41,11 @@
 #define CNC_RED_ALERT_RA_MONOC_H_
 
 #include <cstddef>
+#include <string_view>
+
+#include "absl/strings/str_format.h"
+#include "absl/types/span.h"
+#include "port/format.h"
 
 class MonoClass {
  public:
@@ -89,8 +94,23 @@ class MonoClass {
   void Set_Cursor(int x, int y);
   void Print(const char* ptr);
   void Print(int text);
-  void Printf(const char* text, ...);
-  void Printf(int text, ...);
+  // Prints `format` with `args`, checked at compile time, at the cursor.
+  template <typename... Args>
+  void Printf(const absl::FormatSpec<Args...>& format, const Args&... args) {
+    if (Enabled) {
+      Print(absl::StrFormat(format, args...).c_str());
+    }
+  }
+  // Prints string-table entry `text`, formatted with `args` as printf would;
+  // a text that is not a format for `args` prints verbatim (see
+  // port::FormatRuntime).
+  void Printf(int text, absl::Span<const absl::FormatArg> args = {});
+  template <typename... Args>
+    requires(sizeof...(Args) > 0)
+  void Printf(const int text, const Args&... args) {
+    const auto packed = port::MakeFormatArgs(args...);
+    Printf(text, absl::MakeConstSpan(packed));
+  }
   void Text_Print(const char* text, int x, int y,
                   MonoAttribute attrib = NORMAL);
   void Text_Print(int text, int x, int y, MonoAttribute attrib = NORMAL);
@@ -216,8 +236,16 @@ class MonoClass {
 };
 
 extern void Mono_Set_Cursor(int x, int y);
-extern int Mono_Printf(int string, ...);
-extern int Mono_Printf(const char* string, ...);
+// Prints `format` with `args`, checked at compile time, on the current mono
+// page, opening one if none is shown yet. Nothing happens while mono output
+// is disabled.
+void Mono_Print_Text(std::string_view text);
+template <typename... Args>
+void Mono_Printf(const absl::FormatSpec<Args...>& format, const Args&... args) {
+  if (MonoClass::Is_Enabled()) {
+    Mono_Print_Text(absl::StrFormat(format, args...));
+  }
+}
 extern void Mono_Clear_Screen();
 extern void Mono_Text_Print(const void* text, int x, int y, int attrib);
 extern void Mono_Draw_Rect(int x, int y, int w, int h, int attrib, int thick);

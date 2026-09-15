@@ -2375,7 +2375,7 @@ void CC_Texture_Fill(const void* shapefile, int shapenum, int xpos, int ypos,
     if (Get_Last_Frame_Length() > ShapeBufferSize) {
       Mono_Printf(
           "Attempt to use shape buffer for size %d buffer is only size %d",
-          shape_size, ShapeBufferSize);
+          Get_Last_Frame_Length(), ShapeBufferSize);
       Get_Key();
     }
 
@@ -2467,7 +2467,7 @@ void CC_Draw_Shape(const void* shapefile, int shapenum, int x, int y,
     if (Get_Last_Frame_Length() > ShapeBufferSize) {
       Mono_Printf(
           "Attempt to use shape buffer for size %d buffer is only size %d",
-          shape_size, ShapeBufferSize);
+          Get_Last_Frame_Length(), ShapeBufferSize);
       Get_Key();
     }
 

@@ -65,15 +65,18 @@
 #include "ra/monoc.h"
 
 #include <algorithm>
-#include <cstdarg>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <string>
+#include <string_view>
 
+#include "absl/strings/str_format.h"
+#include "absl/types/span.h"
 #include "base/numeric.h"
+#include "port/format.h"
 #include "ra/inline.h"
-#include "ra/jshell.h"
 
 bool MonoClass::Enabled = false;
 MonoClass* MonoClass::PageUsage[MAX_MONO_PAGES];
@@ -509,21 +512,6 @@ void MonoClass::Scroll(int lines) {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-void MonoClass::Printf(const char* text, ...) {
-  va_list va;
-  char buffer[256];
-
-  if (!Enabled) {
-    return;
-  }
-
-  va_start(va, text);
-  Format_Runtime_Text(buffer, sizeof(buffer), text, va);
-
-  Print(buffer);
-  va_end(va);
-}
-
 /***********************************************************************************************
  * MonoClass::Printf -- Prints formatted text using text string number. *
  *                                                                                             *
@@ -541,20 +529,12 @@ void MonoClass::Printf(const char* text, ...) {
  *                                                                                             *
  * HISTORY: * 06/04/1996 JLB : Created. *
  *=============================================================================================*/
-void MonoClass::Printf(int text, ...) {
-  va_list va;
-
-  char buffer[256];
-
-  if (!Enabled) {
-    return;
+void MonoClass::Printf(const int text,
+                       const absl::Span<const absl::FormatArg> args) {
+  if (Enabled) {
+    const std::string formatted = port::FormatRuntime(Text_String(text), args);
+    Print(formatted.c_str());
   }
-
-  va_start(va, text);
-  Format_Runtime_Text(buffer, sizeof(buffer), Text_String(text), va);
-
-  Print(buffer);
-  va_end(va);
 }
 
 /***********************************************************************************************
@@ -842,26 +822,13 @@ void Mono_Set_Cursor(int x, int y) {
  *                                                                                             *
  * HISTORY: * 06/04/1996 JLB : Created. *
  *=============================================================================================*/
-int Mono_Printf(const char* string, ...) {
-  va_list va;
-  char buffer[256];
-
-  buffer[0] = '\0';
-  if (MonoClass::Is_Enabled()) {
-    MonoClass* mono = MonoClass::Get_Current();
-    if (!mono) {
-      mono = new MonoClass();
-      mono->View();
-    }
-
-    va_start(va, string);
-    Format_Runtime_Text(buffer, sizeof(buffer), string, va);
-
-    mono->Print(buffer);
-
-    va_end(va);
+void Mono_Print_Text(const std::string_view text) {
+  MonoClass* mono = MonoClass::Get_Current();
+  if (!mono) {
+    mono = new MonoClass();
+    mono->View();
   }
-  return static_cast<int16_t>(strlen(buffer));
+  mono->Print(std::string(text).c_str());
 }
 
 /***********************************************************************************************
@@ -1025,24 +992,3 @@ int Mono_Y() {
   return 0;
 }
 
-int Mono_Printf(int string, ...) {
-  va_list va;
-  char buffer[256];
-
-  buffer[0] = '\0';
-  if (MonoClass::Is_Enabled()) {
-    MonoClass* mono = MonoClass::Get_Current();
-    if (!mono) {
-      mono = new MonoClass();
-      mono->View();
-    }
-
-    va_start(va, string);
-    Format_Runtime_Text(buffer, sizeof(buffer), Text_String(string), va);
-
-    mono->Print(buffer);
-
-    va_end(va);
-  }
-  return static_cast<int16_t>(strlen(buffer));
-}

@@ -48,15 +48,19 @@
 
 #include "td/jshell.h"
 
-#include <cstdarg>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <string_view>
 
+#include "absl/strings/str_format.h"
+#include "absl/types/span.h"
 #include "base/numeric.h"
 #include "base/seek_origin.h"
 #include "base/types.h"
+#include "port/format.h"
+#include "port/safe_string.h"
 #include "sdllib/buffer.h"
 #include "sdllib/iff.h"
 #include "sdllib/memflag.h"
@@ -155,33 +159,17 @@ void Set_Window(int window, int x, int y, int w, int h) {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-void Fatal(const char* message, ...) {
-  va_list va;
-
-  va_start(va, message);
+void Fatal_Message(const std::string_view message) {
   Prog_End();
-  vfprintf(stderr, message, va);
+  absl::FPrintF(stderr, "%s", message);
   Mono_Printf("%s", message);
   exit(EXIT_FAILURE);
 }
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wformat-nonliteral"
-
-void Format_Runtime_Text(char* buffer, size_t size, const char* format, ...) {
-  va_list va;
-
-  va_start(va, format);
-  vsnprintf(buffer, size, format, va);
-  va_end(va);
+void Format_Runtime_Text(char* buffer, const size_t size, const char* format,
+                         const absl::Span<const absl::FormatArg> args) {
+  port::SafeCopy(buffer, port::FormatRuntime(format, args).c_str(), size);
 }
-
-void Format_Runtime_Text(char* buffer, size_t size, const char* format,
-                         va_list args) {
-  vsnprintf(buffer, size, format, args);
-}
-
-#pragma GCC diagnostic pop
 
 #ifdef NEVER
 void File_Fatal(const char* message) {

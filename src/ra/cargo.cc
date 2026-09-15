@@ -67,7 +67,7 @@ void CargoClass::Debug_Dump(MonoClass* mono) const {
   if constexpr (config::kCheatKeysEnabled) {
     if (How_Many()) {
       mono->Set_Cursor(63, 3);
-      mono->Printf("(%d)%04X", How_Many(), Attached_Object());
+      mono->Printf("(%d)%p", How_Many(), Attached_Object());
     }
   }
 }

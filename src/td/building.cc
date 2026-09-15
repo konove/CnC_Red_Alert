@@ -543,7 +543,7 @@ void BuildingClass::Debug_Dump(MonoClass* mono) const {
     mono->Printf("%02X:%02X", PrimaryFacing.Current(), PrimaryFacing.Desired());
     mono->Set_Cursor(50, 3);
     if (Factory) {
-      mono->Printf(Factory->Get_Object()->Class_Of().IniName);
+      mono->Print(Factory->Get_Object()->Class_Of().IniName);
       mono->Printf(" ");
       mono->Printf("%d%%", Factory->Completion());
     } else {

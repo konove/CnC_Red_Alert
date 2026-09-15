@@ -43,11 +43,14 @@
 
 #include <algorithm>
 #include <bit>
-#include <cstdarg>
 #include <cstddef>
 #include <cstdint>
+#include <string_view>
 
 #include "absl/base/attributes.h"
+#include "absl/strings/str_format.h"
+#include "absl/types/span.h"
+#include "port/format.h"
 #include "sdllib/buffer.h"
 #include "sdllib/iff.h"
 #include "sdllib/keyboard.h"
@@ -198,24 +201,29 @@ int Fixed_To_Cardinal(int base, int fixed);
 // 0xFFFF if "base" is zero.
 int Cardinal_To_Fixed(int base, int cardinal);
 
-// Prints a printf-style message to stderr and exits with a failure code. The
-// format attribute both type-checks every call site and tells the compiler the
-// forwarded format string inside Fatal() is intentionally non-literal.
-[[noreturn]] extern void Fatal(const char* message, ...)
-    ABSL_PRINTF_ATTRIBUTE(1, 2);
+// Prints `format` with `args`, checked at compile time, to stderr and the
+// mono page, then exits with a failure code.
+[[noreturn]] void Fatal_Message(std::string_view message);
+template <typename... Args>
+[[noreturn]] void Fatal(const absl::FormatSpec<Args...>& format,
+                        const Args&... args) {
+  Fatal_Message(absl::StrFormat(format, args...));
+}
 
-// Formats "format" and its arguments into "buffer", which holds "size" bytes.
-// The result is always null terminated and is truncated rather than allowed to
-// overflow.
-//
-// Use this whenever the format string is only known at runtime -- the
-// localized string table, or a format handed in by a caller. The compiler
-// cannot check such a format against its arguments, and the suppression of
-// that diagnostic is centralized here instead of being repeated at every call
-// site.
-void Format_Runtime_Text(char* buffer, size_t size, const char* format, ...);
+// Formats `format`, known only at run time (the string table or a format
+// handed in by a caller), with `args` into `buffer`, which holds `size` bytes.
+// The result is always null terminated and truncated rather than allowed to
+// overflow. Each conversion is checked against its argument; a format that
+// does not match `args` is copied unformatted (see port::FormatRuntime).
 void Format_Runtime_Text(char* buffer, size_t size, const char* format,
-                         va_list args);
+                         absl::Span<const absl::FormatArg> args = {});
+template <typename... Args>
+  requires(sizeof...(Args) > 0)
+void Format_Runtime_Text(char* buffer, const size_t size, const char* format,
+                         const Args&... args) {
+  const auto packed = port::MakeFormatArgs(args...);
+  Format_Runtime_Text(buffer, size, format, absl::MakeConstSpan(packed));
+}
 
 typedef struct {
   unsigned char SourceColor;

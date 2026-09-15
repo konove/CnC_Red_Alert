@@ -43,6 +43,9 @@
 
 #include <cstddef>
 #include <cstring>
+#include <string_view>
+
+#include "absl/strings/str_format.h"
 
 // #include	"dpmi.h"
 // #include	"function.h"
@@ -123,8 +126,13 @@ class MonoClass {
   void Set_Cursor(int x, int y);
   void Print(const char* ptr);
   void Print(int text);
-  void Printf(const char* text, ...);
-  void Printf(int text, ...);
+  // Prints `format` with `args`, checked at compile time, at the cursor.
+  template <typename... Args>
+  void Printf(const absl::FormatSpec<Args...>& format, const Args&... args) {
+    if (Enabled) {
+      Print(absl::StrFormat(format, args...).c_str());
+    }
+  }
   void Text_Print(const char* text, int x, int y,
                   char attrib = DEFAULT_ATTRIBUTE);
   void Text_Print(int text, int x, int y, char attrib = DEFAULT_ATTRIBUTE);
@@ -190,10 +198,17 @@ class MonoClass {
   static int Enabled;
 };
 
-// extern int cdecl Mono_Printf(int string, ...);
-
 void Mono_Set_Cursor(int x, int y);
-int Mono_Printf(const char* string, ...);
+// Prints `format` with `args`, checked at compile time, on the current mono
+// page, opening one if none is shown yet. Nothing happens while mono output
+// is disabled.
+void Mono_Print_Text(std::string_view text);
+template <typename... Args>
+void Mono_Printf(const absl::FormatSpec<Args...>& format, const Args&... args) {
+  if (MonoClass::Is_Enabled()) {
+    Mono_Print_Text(absl::StrFormat(format, args...));
+  }
+}
 void Mono_Clear_Screen();
 void Mono_Text_Print(const void* text, int x, int y, int attrib);
 void Mono_Draw_Rect(int x, int y, int w, int h, int attrib, int thick);

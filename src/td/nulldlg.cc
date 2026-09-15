@@ -52,13 +52,14 @@
 
 #include <algorithm>
 #include <bit>
-#include <cstdarg>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <string_view>
 #include <utility>
 
+#include "absl/strings/str_format.h"
 #include "base/numeric.h"
 #include "port/ex_string.h"
 #include "port/random_seed.h"
@@ -7000,25 +7001,16 @@ static void Modem_Echo(char c) {
 
 } /* end of Modem_Echo */
 
-void Smart_Printf(const char* format, ...) {
-  va_list arglist;
-  char buf[501];
-
-  va_start(arglist, format);
-  Format_Runtime_Text(buf, sizeof(buf), format, arglist);
-  va_end(arglist);
-
+void Smart_Print(const std::string_view text) {
   if (Debug_Smart_Print) {
     if (Special.IsMonoEnabled) {
-      //			Mono_Set_Cursor(0,0);
-      Mono_Printf("%s", buf);
+      Mono_Printf("%s", text);
     } else {
-      //			Mono_Printf("%s",buf);
-      printf("%s", buf);
+      absl::PrintF("%s", text);
     }
   } else {
     if (Debug_Heap_Dump) {
-      printf("%s", buf);
+      absl::PrintF("%s", text);
     }
   }
 }

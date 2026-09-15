@@ -46,17 +46,21 @@
 
 #include "ra/jshell.h"
 
-#include <cstdarg>
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <string_view>
 #include <vector>
 
+#include "absl/strings/str_format.h"
+#include "absl/types/span.h"
 #include "base/numeric.h"
 #include "base/seek_origin.h"
 #include "base/types.h"
+#include "port/format.h"
+#include "port/safe_string.h"
 #include "ra/compat.h"
 #include "ra/monoc.h"
 #include "ra/palette.h"
@@ -158,34 +162,17 @@ void Set_Window(int window, int x, int y, int w, int h) {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-void Fatal(const char* message, ...) {
-  va_list va;
-
-  va_start(va, message);
+void Fatal_Message(const std::string_view message) {
   // Prog_End();
-  vfprintf(stderr, message, va);
-  va_end(va);
+  absl::FPrintF(stderr, "%s", message);
   Mono_Printf("%s", message);
   Emergency_Exit(EXIT_FAILURE);
 }
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wformat-nonliteral"
-
-void Format_Runtime_Text(char* buffer, size_t size, const char* format, ...) {
-  va_list va;
-
-  va_start(va, format);
-  vsnprintf(buffer, size, format, va);
-  va_end(va);
+void Format_Runtime_Text(char* buffer, const size_t size, const char* format,
+                         const absl::Span<const absl::FormatArg> args) {
+  port::SafeCopy(buffer, port::FormatRuntime(format, args).c_str(), size);
 }
-
-void Format_Runtime_Text(char* buffer, size_t size, const char* format,
-                         va_list args) {
-  vsnprintf(buffer, size, format, args);
-}
-
-#pragma GCC diagnostic pop
 
 /***********************************************************************************************
  * Load_Uncompress -- Loads and uncompresses data to a buffer. *

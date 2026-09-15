@@ -49,9 +49,6 @@
  * CONDITIONAL COMPILATION FLAGS
  *-------------------------------------------------------------------------*/
 
-// MEG - 11.28.95 - added for debug
-extern void Debug_Printf(char* format_string, ...);
-
 #define VQASTANDALONE 0 /* Stand alone player */
 #define VQAVOC_ON 0     /* Enable VOC file override */
 #define VQAAUDIO_ON 1   /* Audio playback enable/disable */

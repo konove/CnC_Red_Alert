@@ -54,13 +54,13 @@
 // #pragma inline
 #include "td/monoc.h"
 
-#include <cstdarg>
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
+#include <string>
+#include <string_view>
 
-#include "td/jshell.h"
 
 // extern void output(short port, short data);
 // #pragma aux output parm [dx] [ax] =		\
@@ -364,50 +364,6 @@ void MonoClass::Scroll(int lines) {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-void MonoClass::Printf(const char* text, ...) {
-  va_list va;
-  /*
-  **	The buffer object is placed at the end of the local variable list
-  **	so that if the sprintf happens to spill past the end, it isn't likely
-  **	to trash anything (important). The buffer is then manually truncated
-  **	to maximum allowed size before being printed.
-  */
-  char buffer[256];
-
-  if (!Enabled) {
-    return;
-  }
-
-  va_start(va, text);
-  Format_Runtime_Text(buffer, sizeof(buffer), text, va);
-
-  Print(buffer);
-  va_end(va);
-}
-
-#ifdef NEVER
-void MonoClass::Printf(int text, ...) {
-  va_list va;
-  /*
-  **	The buffer object is placed at the end of the local variable list
-  **	so that if the sprintf happens to spill past the end, it isn't likely
-  **	to trash anything (important). The buffer is then manually truncated
-  **	to maximum allowed size before being printed.
-  */
-  char buffer[256];
-
-  if (!Enabled) {
-    return;
-  }
-
-  va_start(va, text);
-  vsprintf(buffer, Text_String(text), va);
-  buffer[sizeof(buffer) - 1] = '\0';
-
-  Print(buffer);
-  va_end(va);
-}
-#endif
 
 /***********************************************************************************************
  * MonoClass::Print -- Prints the text string at the current cursor coordinates.
@@ -653,26 +609,13 @@ void Mono_Set_Cursor(int x, int y) {
   }
 }
 
-int Mono_Printf(const char* string, ...) {
-  va_list va;
-  char buffer[256];
-
-  buffer[0] = '\0';
-  if (MonoClass::Is_Enabled()) {
-    MonoClass* mono = MonoClass::Get_Current();
-    if (!mono) {
-      mono = new MonoClass();
-      mono->View();
-    }
-
-    va_start(va, string);
-    Format_Runtime_Text(buffer, sizeof(buffer), string, va);
-
-    mono->Print(buffer);
-
-    va_end(va);
+void Mono_Print_Text(const std::string_view text) {
+  MonoClass* mono = MonoClass::Get_Current();
+  if (!mono) {
+    mono = new MonoClass();
+    mono->View();
   }
-  return static_cast<int16_t>(strlen(buffer));
+  mono->Print(std::string(text).c_str());
 }
 
 void Mono_Clear_Screen() {
@@ -745,26 +688,3 @@ int Mono_Y() {
   return 0;
 }
 
-#ifdef NEVER
-int Mono_Printf(int string, ...) {
-  va_list va;
-  char buffer[256];
-
-  buffer[0] = '\0';
-  if (MonoClass::Is_Enabled()) {
-    MonoClass* mono = MonoClass::Get_Current();
-    if (!mono) {
-      mono = new MonoClass();
-      mono->View();
-    }
-
-    va_start(va, string);
-    vsprintf(buffer, Text_String(string), va);
-
-    mono->Print(buffer);
-
-    va_end(va);
-  }
-  return ((short)strlen(buffer));
-}
-#endif

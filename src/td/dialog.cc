@@ -51,10 +51,13 @@
 #include "td/dialog.h"
 
 #include <algorithm>
-#include <cstdarg>
 #include <cstdio>
 #include <cstring>
+#include <string>
 
+#include "absl/strings/str_format.h"
+#include "absl/types/span.h"
+#include "port/format.h"
 #include "port/safe_string.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
@@ -605,31 +608,11 @@ void Simple_Text_Print(const char* text, int x, int y, int fore,
  *                                                                                             *
  * HISTORY: * 11/29/1994 JLB : Created *
  *=============================================================================================*/
-void Fancy_Text_Print(int text, int x, int y, int fore,
-                      int back, TextPrintType flag, ...) {
-  char buffer[512];  // Working staging buffer.
-  va_list arg;       // Argument list var.
-
-  /*
-  **	If the text number is valid, then process it.
-  */
+void Fancy_Text_Print(const int text, const int x, const int y, const int fore,
+                      const int back, const TextPrintType flag,
+                      const absl::Span<const absl::FormatArg> args) {
   if (text != TXT_NONE) {
-    // The C++ standard says parmN of va_start must not be an enumeration
-    // type (a restriction lifted in C++26). TextPrintType is the flag API
-    // for every text call in the game, and its promotion is a no-op on the
-    // ABIs this port targets, so the parameter type is kept.
-    // NOLINTNEXTLINE(clang-diagnostic-varargs)
-    va_start(arg, flag);
-
-    /*
-    **	The text string must be locked since the vsprintf function doesn't know
-    **	how to handle EMS pointers.
-    */
-    const char* tptr = Text_String(text);
-    Format_Runtime_Text(buffer, sizeof(buffer), tptr, arg);
-    va_end(arg);
-
-    Simple_Text_Print(buffer, x, y, fore, back, flag);
+    Fancy_Text_Print(Text_String(text), x, y, fore, back, flag, args);
   } else {
     /*
     **	Just the flags are to be changed, since the text number is TXT_NONE.
@@ -664,31 +647,12 @@ void Fancy_Text_Print(int text, int x, int y, int fore,
  *spacing in a more friendly manner.                        * 11/29/1994 JLB :
  *Separated actual draw action.                                            *
  *=============================================================================================*/
-void Fancy_Text_Print(const char* text, int x, int y, int fore,
-                      int back, TextPrintType flag, ...) {
-  char buffer[512];  // Working staging buffer.
-  va_list arg;       // Argument list var.
-
-  /*
-  **	If there is a valid text string pointer then build the final string into
-  *the *	working buffer before sending it to the simple string printing
-  *routine.
-  */
+void Fancy_Text_Print(const char* text, const int x, const int y,
+                      const int fore, const int back, const TextPrintType flag,
+                      const absl::Span<const absl::FormatArg> args) {
   if (text) {
-    /*
-    **	Since vsprintf doesn't know about EMS pointers, be sure to surround this
-    **	call with locking code.
-    */
-    // The C++ standard says parmN of va_start must not be an enumeration
-    // type (a restriction lifted in C++26). TextPrintType is the flag API
-    // for every text call in the game, and its promotion is a no-op on the
-    // ABIs this port targets, so the parameter type is kept.
-    // NOLINTNEXTLINE(clang-diagnostic-varargs)
-    va_start(arg, flag);
-    Format_Runtime_Text(buffer, sizeof(buffer), text, arg);
-    va_end(arg);
-
-    Simple_Text_Print(buffer, x, y, fore, back, flag);
+    const std::string formatted = port::FormatRuntime(text, args);
+    Simple_Text_Print(formatted.c_str(), x, y, fore, back, flag);
   } else {
     /*
     **	Just the flags are desired to be changed, so call the simple print
