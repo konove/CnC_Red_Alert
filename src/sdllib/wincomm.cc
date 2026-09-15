@@ -2,6 +2,7 @@
 
 #include <cstdio>
 
+#include "absl/strings/str_format.h"
 #include "sdllib/modemreg.h"
 
 #ifdef LIBSERIALPORT
@@ -89,7 +90,7 @@ HANDLE WinModemClass::Serial_Port_Open(const char* /*device_name*/,
   return PortHandle;
 #else
 
-  printf("WinModemClass::%s : no serial port support\n", __func__);
+  absl::PrintF("WinModemClass::%s : no serial port support\n", __func__);
   return nullptr;
 #endif
 }
@@ -130,42 +131,42 @@ void WinModemClass::Write_To_Serial_Port([[maybe_unused]] const void* buffer,
 }
 
 void WinModemClass::Set_Modem_Dial_Type(WinCommDialMethodType /*method*/) {
-  printf("WinModemClass::%s\n", __func__);
+  absl::PrintF("WinModemClass::%s\n", __func__);
 }
 
 unsigned WinModemClass::Get_Modem_Status() {
-  printf("WinModemClass::%s\n", __func__);
+  absl::PrintF("WinModemClass::%s\n", __func__);
   return 0;
 }
 
 void WinModemClass::Set_Serial_DTR(bool /*state*/) {
-  printf("WinModemClass::%s\n", __func__);
+  absl::PrintF("WinModemClass::%s\n", __func__);
 }
 
 int WinModemClass::Get_Modem_Result(int /*delay*/, const char* /*buffer*/,
                                     int /*buffer_len*/) {
-  printf("WinModemClass::%s\n", __func__);
+  absl::PrintF("WinModemClass::%s\n", __func__);
   return 0;
 }
 
 void WinModemClass::Dial_Modem(const char* /*dial_number*/) {
-  printf("WinModemClass::%s\n", __func__);
+  absl::PrintF("WinModemClass::%s\n", __func__);
 }
 
 int WinModemClass::Send_Command_To_Modem(const char* /*command*/,
                                          char /*terminator*/, char* /*buffer*/,
                                          int /*buflen*/, int /*delay*/,
                                          int /*retries*/) {
-  printf("WinModemClass::%s\n", __func__);
+  absl::PrintF("WinModemClass::%s\n", __func__);
   return 0;
 }
 
 void WinModemClass::Set_Echo_Function(void (* /*func*/)(char c)) {
-  printf("WinModemClass::%s\n", __func__);
+  absl::PrintF("WinModemClass::%s\n", __func__);
 }
 
 void WinModemClass::Set_Abort_Function(int (* /*func*/)()) {
-  printf("WinModemClass::%s\n", __func__);
+  absl::PrintF("WinModemClass::%s\n", __func__);
 }
 
 HANDLE WinModemClass::Get_Port_Handle() const { return PortHandle; }

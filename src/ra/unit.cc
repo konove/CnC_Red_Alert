@@ -118,6 +118,7 @@
 #include <cstring>
 #include <iterator>
 
+#include "absl/strings/str_format.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/tokenizer.h"
 #include "ra/anim.h"
@@ -4664,9 +4665,9 @@ void UnitClass::Write_INI(CCINIClass& ini) {
       char uname[10];
       char buf[128];
 
-      sprintf(uname, "%d", index);
-      sprintf(
-          buf, "%s,%s,%d,%u,%d,%s,%s", unit->House->Class->IniName,
+      absl::SNPrintF(uname, sizeof(uname), "%d", index);
+      absl::SNPrintF(
+          buf, sizeof(buf), "%s,%s,%d,%u,%d,%s,%s", unit->House->Class->IniName,
           unit->Class->IniName, unit->Health_Ratio() * 256,
           Coord_Cell(unit->Coord), unit->PrimaryFacing.Current(),
           Mission_Name(unit->Mission),

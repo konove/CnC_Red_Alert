@@ -51,6 +51,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "absl/strings/str_format.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
@@ -641,7 +642,8 @@ int MapEditClass::Load_Scenario() {
     Set_Logic_Page(SeenBuff);
 
     if (scen_nump < 100) {
-      sprintf(scen_buf, "%d", scen_nump);  // init edit buffer
+      absl::SNPrintF(scen_buf, sizeof(scen_buf), "%d",
+                     scen_nump);  // init edit buffer
     } else {
       const char first = static_cast<char>(scen_nump / 36);
       const char second = static_cast<char>(scen_nump % 36);
@@ -2281,19 +2283,23 @@ int MapEditClass::Load_Scenario() {
         dotext = false;
         Hide_Mouse();
 
-        sprintf(statictechbuff, "%2d", techlevel.Get_Value());
+        absl::SNPrintF(statictechbuff, sizeof(statictechbuff), "%2d",
+                       techlevel.Get_Value());
         techstatic.Set_Text(statictechbuff);
         techstatic.Draw_Me();
 
-        sprintf(staticcreditbuff, "$%-7d", creditbtn.Get_Value() * 100);
+        absl::SNPrintF(staticcreditbuff, sizeof(staticcreditbuff), "$%-7d",
+                       creditbtn.Get_Value() * 100);
         creditstatic.Set_Text(staticcreditbuff);
         creditstatic.Draw_Me();
 
-        sprintf(staticmaxunitbuff, "%4d", maxunit.Get_Value());
+        absl::SNPrintF(staticmaxunitbuff, sizeof(staticmaxunitbuff), "%4d",
+                       maxunit.Get_Value());
         maxunitstatic.Set_Text(staticmaxunitbuff);
         maxunitstatic.Draw_Me();
 
-        sprintf(staticsmartiesbuff, "%2d", smarties.Get_Value());
+        absl::SNPrintF(staticsmartiesbuff, sizeof(staticsmartiesbuff), "%2d",
+                       smarties.Get_Value());
         smartiesstatic.Set_Text(staticsmartiesbuff);
         smartiesstatic.Draw_Me();
 

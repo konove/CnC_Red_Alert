@@ -45,6 +45,7 @@
 #include <cstdio>
 #include <filesystem>
 
+#include "absl/strings/str_format.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
@@ -203,9 +204,9 @@ void Debug_Key(unsigned input) {
           SeenBuff.Blit(temp_page);
           for (int lp = 0; lp < 99; lp++) {
             if (lp < 10) {
-              sprintf(filename, "scrsht0%d.pcx", lp);
+              absl::SNPrintF(filename, sizeof(filename), "scrsht0%d.pcx", lp);
             } else {
-              sprintf(filename, "scrsht%d.pcx", lp);
+              absl::SNPrintF(filename, sizeof(filename), "scrsht%d.pcx", lp);
             }
             if (!std::filesystem::exists(filename)) {
               break;

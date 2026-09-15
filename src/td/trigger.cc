@@ -70,6 +70,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "absl/strings/str_format.h"
 #include "port/ex_string.h"
 #include "port/tokenizer.h"
 #include "reinf.h"
@@ -1194,9 +1195,10 @@ void TriggerClass::Write_INI(char* buffer, bool refresh) {
       tname = trigger->Team->IniName;
     }
 
-    sprintf(buf, "%s,%s,%" PRId64 ",%s,%s,%d", Name_From_Event(trigger->Event),
-            Name_From_Action(trigger->Action), trigger->Data, hname, tname,
-            trigger->IsPersistant);
+    absl::SNPrintF(buf, sizeof(buf), "%s,%s,%" PRId64 ",%s,%s,%d",
+                   Name_From_Event(trigger->Event),
+                   Name_From_Action(trigger->Action), trigger->Data, hname,
+                   tname, trigger->IsPersistant);
     WWWritePrivateProfileString(INI_Name(), trigger->Get_Name(), buf, buffer);
   }
 }

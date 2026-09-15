@@ -79,6 +79,7 @@
 #include <span>
 #include <string_view>
 
+#include "absl/strings/str_format.h"
 #include "base/numeric.h"
 #include "tech/base64.h"
 #include "tech/base64_sink.h"
@@ -551,7 +552,7 @@ bool INIClass::Put_UUBlock(const char* section, const void* block, int len) {
       break;
     }
 
-    sprintf(sbuffer, "%d", counter);
+    absl::SNPrintF(sbuffer, sizeof(sbuffer), "%d", counter);
     Put_String(section, sbuffer, buffer);
     counter++;
   }
@@ -641,7 +642,7 @@ bool INIClass::Put_TextBlock(const char* section, const char* text) {
     buffer[75] = '\0';
 
     char b[32];
-    sprintf(b, "%d", index);
+    absl::SNPrintF(b, sizeof(b), "%d", index);
 
     /*
     **	Scan backward looking for a good break position.
@@ -768,17 +769,17 @@ bool INIClass::Put_Int(const char* section, const char* entry, int number,
   switch (format) {
     default:
     case 0:
-      snprintf(buffer, sizeof(buffer), "%d", number);
+      absl::SNPrintF(buffer, sizeof(buffer), "%d", number);
       break;
 
     case 1:
-      snprintf(buffer, sizeof(buffer), "%Xh",
-               static_cast<unsigned int>(number));
+      absl::SNPrintF(buffer, sizeof(buffer), "%Xh",
+                     static_cast<unsigned int>(number));
       break;
 
     case 2:
-      snprintf(buffer, sizeof(buffer), "$%X",
-               static_cast<unsigned int>(number));
+      absl::SNPrintF(buffer, sizeof(buffer), "$%X",
+                     static_cast<unsigned int>(number));
       break;
   }
   return Put_String(section, entry, buffer);
@@ -847,7 +848,8 @@ int INIClass::Get_Int(const char* section, const char* entry,
 bool INIClass::Put_Hex(const char* section, const char* entry, int number) {
   char buffer[MAX_LINE_LENGTH];
 
-  snprintf(buffer, sizeof(buffer), "%X", static_cast<unsigned int>(number));
+  absl::SNPrintF(buffer, sizeof(buffer), "%X",
+                 static_cast<unsigned int>(number));
   return Put_String(section, entry, buffer);
 }
 

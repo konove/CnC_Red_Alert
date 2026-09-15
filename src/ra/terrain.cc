@@ -69,6 +69,7 @@
 #include <cstdio>
 #include <cstdlib>
 
+#include "absl/strings/str_format.h"
 #include "base/types.h"
 #include "ra/anim.h"
 #include "ra/ccini.h"
@@ -777,7 +778,7 @@ void TerrainClass::Write_INI(CCINIClass& ini) {
     terrain = Terrains.Ptr(index);
     if (terrain != nullptr && !terrain->IsInLimbo && terrain->IsActive) {
       char uname[10];
-      sprintf(uname, "%d", Coord_Cell(terrain->Coord));
+      absl::SNPrintF(uname, sizeof(uname), "%d", Coord_Cell(terrain->Coord));
       ini.Put_TerrainType(INI_Name(), uname, *terrain);
     }
   }

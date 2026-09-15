@@ -64,6 +64,7 @@
 #include <cstdlib>
 #include <iterator>
 
+#include "absl/strings/str_format.h"
 #include "base/types.h"
 #include "port/ex_string.h"
 #include "rand.h"
@@ -931,7 +932,7 @@ bool MapClass::Read_Binary(const char* root, uint32_t* crc)
   /*
   **	Filename = INI name with BIN extension.
   */
-  sprintf(fname, "%s.BIN", root);
+  absl::SNPrintF(fname, sizeof(fname), "%s.BIN", root);
 
   /*
   **	Create object & open file.
@@ -1017,7 +1018,7 @@ bool MapClass::Write_Binary(const char* root) {
   /*
   **	Filename = INI name with BIN extension.
   */
-  sprintf(fname, "%s.BIN", root);
+  absl::SNPrintF(fname, sizeof(fname), "%s.BIN", root);
 
   /*
   **	Create object & open file.

@@ -53,6 +53,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "absl/strings/str_format.h"
 #include "port/tokenizer.h"
 #include "sdllib/shape.h"
 #include "td/cell.h"
@@ -419,9 +420,9 @@ void OverlayClass::Write_INI(char* buffer) {
     const CellClass* cellptr = &Map[index];
 
     if (cellptr->Overlay != OVERLAY_NONE) {
-      sprintf(uname, "%03d", index);
-      sprintf(buf, "%s",
-              OverlayTypeClass::As_Reference(cellptr->Overlay).IniName);
+      absl::SNPrintF(uname, sizeof(uname), "%03d", index);
+      absl::SNPrintF(buf, sizeof(buf), "%s",
+                     OverlayTypeClass::As_Reference(cellptr->Overlay).IniName);
       WWWritePrivateProfileString(INI_Name(), uname, buf, buffer);
     }
   }

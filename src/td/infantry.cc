@@ -100,6 +100,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "absl/strings/str_format.h"
 #include "port/tokenizer.h"
 #include "sdllib/shape.h"
 #include "td/aircraft.h"
@@ -3080,17 +3081,17 @@ void InfantryClass::Write_INI(char* buffer) {
 
     infantry = Infantry.Ptr(index);
     if (!infantry->IsInLimbo) {
-      sprintf(uname, "%03d", index);
-      sprintf(buf, "%s,%s,%d,%u,%d,%s,%d,%s", infantry->House->Class->IniName,
-              infantry->Class->IniName,
-              infantry->Health_Ratio(),
-              Coord_Cell(infantry->Coord),
-              CellClass::Spot_Index(infantry->Coord),
-              Mission_Name(infantry->Mission == MISSION_NONE
-                               ? infantry->MissionQueue
-                               : infantry->Mission),
-              infantry->PrimaryFacing.Current(),
-              infantry->Trigger ? infantry->Trigger->Get_Name() : "None");
+      absl::SNPrintF(uname, sizeof(uname), "%03d", index);
+      absl::SNPrintF(
+          buf, sizeof(buf), "%s,%s,%d,%u,%d,%s,%d,%s",
+          infantry->House->Class->IniName, infantry->Class->IniName,
+          infantry->Health_Ratio(), Coord_Cell(infantry->Coord),
+          CellClass::Spot_Index(infantry->Coord),
+          Mission_Name(infantry->Mission == MISSION_NONE
+                           ? infantry->MissionQueue
+                           : infantry->Mission),
+          infantry->PrimaryFacing.Current(),
+          infantry->Trigger ? infantry->Trigger->Get_Name() : "None");
       WWWritePrivateProfileString(INI_Name(), uname, buf, buffer);
     }
   }

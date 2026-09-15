@@ -7,6 +7,7 @@
 #include <cstring>
 #include <utility>
 
+#include "absl/strings/str_format.h"
 #include "base/numeric.h"
 #include "base/types.h"
 #include "port/aligned_buffer.h"
@@ -292,8 +293,8 @@ void* Open_Animation(const char* file_name, char* user_buffer,
   sys_header->largest_frame_size = static_cast<uint16_t>(
       delta_buffer_size - base::ssize{sizeof(SysAnimHeaderType)});
 
-  std::snprintf(sys_header->file_name, sizeof(sys_header->file_name), "%s",
-                file_name);
+  absl::SNPrintF(sys_header->file_name, sizeof(sys_header->file_name), "%s",
+                 file_name);
 
   // Figure how much room the frame offsets take up in the file.
   // Add 2 - one for the wrap around and one for the final end offset.

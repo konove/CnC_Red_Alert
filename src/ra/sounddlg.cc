@@ -43,6 +43,7 @@
 #include <cstdio>
 #include <vector>
 
+#include "absl/strings/str_format.h"
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/config.h"
@@ -295,8 +296,8 @@ void SoundControlsClass::Process() {
       const int length = ThemeClass::Track_Length(index);
       const char* fullname = ThemeClass::Full_Name(index);
 
-      snprintf(buffer, sizeof(buffer), "Track %d\t%d:%02d\t%s",
-               listbox.Count() + 1, length / 60, length % 60, fullname);
+      absl::SNPrintF(buffer, sizeof(buffer), "Track %d\t%d:%02d\t%s",
+                     listbox.Count() + 1, length / 60, length % 60, fullname);
       listbox.Add_Track(index, buffer);
 
       if (Theme.What_Is_Playing() == index) {

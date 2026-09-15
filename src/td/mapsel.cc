@@ -46,6 +46,7 @@
 
 #include "absl/algorithm/container.h"
 #include "absl/random/random.h"
+#include "absl/strings/str_format.h"
 #include "absl/types/span.h"
 #include "base/numeric.h"
 #include "sdllib/drawbuff.h"
@@ -1355,7 +1356,8 @@ void Print_Statistics(int country, int xpos, int ypos) {
               new ScorePrintClass(NodStats[country].pop, newx, ypos, greenpal));
           break;
         case 1:
-          sprintf(_deststr, "%d%%", NodStats[country].expendable);
+          absl::SNPrintF(_deststr, sizeof(_deststr), "%d%%",
+                         NodStats[country].expendable);
           Alloc_Object(new ScorePrintClass(_deststr, newx, ypos, greenpal));
           break;
         case 2:
@@ -1368,11 +1370,12 @@ void Print_Statistics(int country, int xpos, int ypos) {
           break;
         case 4:
 #ifdef FIX_ME_LATER
-          sprintf(_deststr, "%s %d%%",
-                  LowMedHiStr(NodStats[country].corruptible),
-                  NodStats[country].corruptible);
+          absl::SNPrintF(_deststr, sizeof(_deststr), "%s %d%%",
+                         LowMedHiStr(NodStats[country].corruptible),
+                         NodStats[country].corruptible);
 #endif  // FIX_ME_LATER
-          sprintf(_deststr, "%d%%", NodStats[country].corruptible);
+          absl::SNPrintF(_deststr, sizeof(_deststr), "%d%%",
+                         NodStats[country].corruptible);
           Alloc_Object(new ScorePrintClass(_deststr, newx, ypos, greenpal));
           break;
         case 5:
@@ -1388,7 +1391,8 @@ void Print_Statistics(int country, int xpos, int ypos) {
               _military[NodStats[country].military], newx, ypos, greenpal));
           break;
         case 8:
-          sprintf(_deststr, "%d%%", NodStats[country].probability);
+          absl::SNPrintF(_deststr, sizeof(_deststr), "%d%%",
+                         NodStats[country].probability);
           Alloc_Object(new ScorePrintClass(_deststr, newx, ypos, greenpal));
           break;
         default:

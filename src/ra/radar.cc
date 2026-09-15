@@ -85,6 +85,7 @@
 #include <iterator>
 
 #include "absl/log/check.h"
+#include "absl/strings/str_format.h"
 #include "base/types.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
@@ -2230,8 +2231,9 @@ bool RadarClass::Draw_House_Info() {
     ** Print house's name below 'spy report'
     */
     txt[0] = 0;
-    sprintf(txt, "%s", ptr->IniName);  // Text_String(ptr->Class->FullName));
-    //		sprintf(txt, "%s",
+    absl::SNPrintF(txt, sizeof(txt), "%s",
+                   ptr->IniName);  // Text_String(ptr->Class->FullName));
+    //		absl::SNPrintF(txt, sizeof(txt), "%s",
     // ptr->Name());//Text_String(ptr->Class->FullName));
     if (strlen(txt)) {
       if (strlen(txt) > 9) {
@@ -2251,7 +2253,7 @@ bool RadarClass::Draw_House_Info() {
     y += 12 + 1;
 
     // count & print buildings
-    snprintf(txt, sizeof(txt), "%i", ptr->CurBuildings);
+    absl::SNPrintF(txt, sizeof(txt), "%i", ptr->CurBuildings);
     Fancy_Text_Print(txt, RadX + RadOffX + 12, y, color, BLACK,
                      style);
     y += 12 + 1;
@@ -2261,7 +2263,7 @@ bool RadarClass::Draw_House_Info() {
                      TPF_6PT_GRAD | TPF_NOSHADOW);
     y += 12 + 1;
     // count & print units
-    snprintf(txt, sizeof(txt), "%i", ptr->CurUnits);
+    absl::SNPrintF(txt, sizeof(txt), "%i", ptr->CurUnits);
     Fancy_Text_Print(txt, RadX + RadOffX + 12, y, color, BLACK,
                      style);
     y += 12 + 1;
@@ -2271,7 +2273,7 @@ bool RadarClass::Draw_House_Info() {
                      TPF_6PT_GRAD | TPF_NOSHADOW);
     y += 12 + 1;
     // count & print infantry
-    snprintf(txt, sizeof(txt), "%i", ptr->CurInfantry);
+    absl::SNPrintF(txt, sizeof(txt), "%i", ptr->CurInfantry);
     Fancy_Text_Print(txt, RadX + RadOffX + 12, y, color, BLACK,
                      style);
     return true;
@@ -2350,8 +2352,9 @@ void RadarClass::Draw_Names() const {
     **	Initialize our message
     */
     txt[0] = 0;
-    //		sprintf(txt, "%s", ptr->Name());
-    sprintf(txt, "%s", ptr->IsHuman ? ptr->IniName : Text_String(TXT_COMPUTER));
+    //		absl::SNPrintF(txt, sizeof(txt), "%s", ptr->Name());
+    absl::SNPrintF(txt, sizeof(txt), "%s",
+                   ptr->IsHuman ? ptr->IniName : Text_String(TXT_COMPUTER));
 
     if (strlen(txt) == 0) {
       port::SafeCopy(txt, "________");
@@ -2371,7 +2374,7 @@ void RadarClass::Draw_Names() const {
       kills += ptr->UnitsKilled[h];
       kills += ptr->BuildingsKilled[h];
     }
-    sprintf(txt, "%2d", kills);
+    absl::SNPrintF(txt, sizeof(txt), "%2d", kills);
     Fancy_Text_Print(txt, RadX + RadOffX + RadIWidth - 2, y, color, TBLACK,
                      style | TPF_RIGHT);
 

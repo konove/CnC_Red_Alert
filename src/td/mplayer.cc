@@ -57,6 +57,7 @@
 #include <cstring>
 #include <utility>
 
+#include "absl/strings/str_format.h"
 #include "base/numeric.h"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
@@ -828,7 +829,8 @@ void Write_MultiPlayer_Settings() {
   WWWritePrivateProfileInt("SerialDefaults", "Baud", SerialDefaults.Baud,
                            buffer);
   WWWritePrivateProfileInt("SerialDefaults", "IRQ", SerialDefaults.IRQ, buffer);
-  sprintf(buf, "%x", static_cast<unsigned int>(SerialDefaults.Port));
+  absl::SNPrintF(buf, sizeof(buf), "%x",
+                 static_cast<unsigned int>(SerialDefaults.Port));
   WWWritePrivateProfileString("SerialDefaults", "Port", buf, buffer);
   WWWritePrivateProfileString("SerialDefaults", "ModemName",
                               SerialDefaults.ModemName, buffer);
@@ -849,7 +851,7 @@ void Write_MultiPlayer_Settings() {
   ascending order.
   ------------------------------------------------------------------------*/
   for (i = static_cast<int>(InitStrings.Count()) - 1; i >= 0; i--) {
-    sprintf(buf, "%03d", i);
+    absl::SNPrintF(buf, sizeof(buf), "%03d", i);
     WWWritePrivateProfileString("InitStrings", buf, InitStrings[i], buffer);
   }
 
@@ -863,18 +865,18 @@ void Write_MultiPlayer_Settings() {
   Format: Entry=Name,PhoneNum,Port,IRQ,Baud,InitString
   ------------------------------------------------------------------------*/
   for (i = static_cast<int>(PhoneBook.Count()) - 1; i >= 0; i--) {
-    snprintf(buf, sizeof(buf), "%s|%s|%x|%d|%d|%d|%d|%d|%s|%d|%d|%s",
-             PhoneBook[i]->Name, PhoneBook[i]->Number,
-             static_cast<unsigned int>(PhoneBook[i]->Settings.Port),
-             PhoneBook[i]->Settings.IRQ, PhoneBook[i]->Settings.Baud,
-             PhoneBook[i]->Settings.Compression ? 1 : 0,
-             PhoneBook[i]->Settings.ErrorCorrection ? 1 : 0,
-             PhoneBook[i]->Settings.HardwareFlowControl ? 1 : 0,
-             DialMethodCheck[PhoneBook[i]->Settings.DialMethod],
-             PhoneBook[i]->Settings.InitStringIndex,
-             PhoneBook[i]->Settings.CallWaitStringIndex,
-             PhoneBook[i]->Settings.CallWaitString);
-    sprintf(entrytext, "%03d", i);
+    absl::SNPrintF(buf, sizeof(buf), "%s|%s|%x|%d|%d|%d|%d|%d|%s|%d|%d|%s",
+                   PhoneBook[i]->Name, PhoneBook[i]->Number,
+                   static_cast<unsigned int>(PhoneBook[i]->Settings.Port),
+                   PhoneBook[i]->Settings.IRQ, PhoneBook[i]->Settings.Baud,
+                   PhoneBook[i]->Settings.Compression ? 1 : 0,
+                   PhoneBook[i]->Settings.ErrorCorrection ? 1 : 0,
+                   PhoneBook[i]->Settings.HardwareFlowControl ? 1 : 0,
+                   DialMethodCheck[PhoneBook[i]->Settings.DialMethod],
+                   PhoneBook[i]->Settings.InitStringIndex,
+                   PhoneBook[i]->Settings.CallWaitStringIndex,
+                   PhoneBook[i]->Settings.CallWaitString);
+    absl::SNPrintF(entrytext, sizeof(entrytext), "%03d", i);
     WWWritePrivateProfileString("PhoneBook", entrytext, buf, buffer);
   }
 
@@ -917,7 +919,7 @@ void Read_Scenario_Descriptions() {
   for (i = 0; i < 100; i++) {
     Set_Scenario_Name(ScenarioName, i, SCEN_PLAYER_MPLAYER, SCEN_DIR_EAST,
                       SCEN_VAR_A);
-    sprintf(fname, "%s.INI", ScenarioName);
+    absl::SNPrintF(fname, sizeof(fname), "%s.INI", ScenarioName);
     file.SetName(fname);
 
     if (file.IsAvailable()) {
@@ -942,7 +944,7 @@ void Read_Scenario_Descriptions() {
     .....................................................................*/
     Set_Scenario_Name(ScenarioName, MPlayerFilenum[i], SCEN_PLAYER_MPLAYER,
                       SCEN_DIR_EAST, SCEN_VAR_A);
-    sprintf(fname, "%s.INI", ScenarioName);
+    absl::SNPrintF(fname, sizeof(fname), "%s.INI", ScenarioName);
     file.SetName(fname);
     file.Read(buffer, ShapeBufferSize - 1);
     file.Close();
@@ -1045,14 +1047,15 @@ void Computer_Message() {
       Only add the message if there is one to add.
       ..................................................................*/
       if (strlen(LastMessage)) {
-        sprintf(txt, "%s %s", Text_String(TXT_FROM_COMPUTER), LastMessage);
+        absl::SNPrintF(txt, sizeof(txt), "%s %s",
+                       Text_String(TXT_FROM_COMPUTER), LastMessage);
         Messages.Add_Message(txt, color,
                              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
                              600, 0, 0);
       }
     } else {
-      sprintf(txt, "%s %s", Text_String(TXT_FROM_COMPUTER),
-              Text_String(TXT_COMP_MSG1 + GameRandomRange(0, 12)));
+      absl::SNPrintF(txt, sizeof(txt), "%s %s", Text_String(TXT_FROM_COMPUTER),
+                     Text_String(TXT_COMP_MSG1 + GameRandomRange(0, 12)));
       Messages.Add_Message(txt, color,
                            TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
                            600, 0, 0);

@@ -56,6 +56,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "absl/strings/str_format.h"
 #include "base/types.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/tokenizer.h"
@@ -350,7 +351,7 @@ void BaseClass::Read_INI(CCINIClass& ini) {
     /*
     ** Get an INI entry
     */
-    sprintf(uname, "%03d", i);
+    absl::SNPrintF(uname, sizeof(uname), "%03d", i);
     ini.Get_String(INI_Name(), uname, nullptr, buf, sizeof(buf));
 
     /*
@@ -411,11 +412,11 @@ void BaseClass::Write_INI(CCINIClass& ini) {
       char buf[128];
       char uname[10];
 
-      snprintf(uname, sizeof(uname), "%03td", i);
+      absl::SNPrintF(uname, sizeof(uname), "%03td", i);
 
-      snprintf(buf, sizeof(buf), "%s,%d",
-               BuildingTypeClass::As_Reference(Nodes[i].Type).IniName,
-               Nodes[i].Cell);
+      absl::SNPrintF(buf, sizeof(buf), "%s,%d",
+                     BuildingTypeClass::As_Reference(Nodes[i].Type).IniName,
+                     Nodes[i].Cell);
 
       ini.Put_String(INI_Name(), uname, buf);
     }

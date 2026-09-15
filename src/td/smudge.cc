@@ -54,6 +54,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "absl/strings/str_format.h"
 #include "port/tokenizer.h"
 #include "sdllib/shape.h"
 #include "td/cell.h"
@@ -361,8 +362,9 @@ void SmudgeClass::Write_INI(char* buffer) {
       const SmudgeTypeClass* stype =
           &SmudgeTypeClass::As_Reference(ptr->Smudge);
       if (!stype->IsBib) {
-        sprintf(uname, "%03d", index);
-        sprintf(buf, "%s,%d,%d", stype->IniName, index, ptr->SmudgeData);
+        absl::SNPrintF(uname, sizeof(uname), "%03d", index);
+        absl::SNPrintF(buf, sizeof(buf), "%s,%d,%d", stype->IniName, index,
+                       ptr->SmudgeData);
         WWWritePrivateProfileString(INI_Name(), uname, buf, buffer);
       }
     }

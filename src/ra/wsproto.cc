@@ -69,6 +69,7 @@
 #include <cstring>
 #include <utility>
 
+#include "absl/strings/str_format.h"
 #include "base/numeric.h"
 #include "port/socket_bytes.h"
 #include "ra/externs.h"
@@ -90,7 +91,6 @@ typedef int socklen_t;
 
 #define closesocket close
 
-#define OutputDebugString(x) printf("%s", x)
 #define GetLastError() errno
 #endif
 
@@ -319,9 +319,10 @@ bool WinsockInterfaceClass::Init() {
   int rc = WSAStartup(version, winsock_info);
   if (rc != 0) {
     char out[128];
-    sprintf(out, "TS: Winsock failed to initialise - error code %d.\n",
-            GetLastError());
-    OutputDebugString(out);
+    absl::SNPrintF(out, sizeof(out),
+                   "TS: Winsock failed to initialise - error code %d.\n",
+                   GetLastError());
+    absl::PrintF("%s", out);
     delete[] buffer;
     return (false);
   }
@@ -331,7 +332,7 @@ bool WinsockInterfaceClass::Init() {
   */
   if ((winsock_info->wVersion & 0x00ff) != (version & 0x00ff) ||
       (winsock_info->wVersion >> 8) != (version >> 8)) {
-    OutputDebugString("TS: Winsock version is less than 1.1\n");
+    absl::PrintF("%s", "TS: Winsock version is less than 1.1\n");
     delete[] buffer;
     return (false);
   }
@@ -549,10 +550,11 @@ bool WinsockInterfaceClass::Set_Socket_Options() {
                        SocketBytes(socket_receive_buffer_size), 4);
   if (err == INVALID_SOCKET) {
     char out[128];
-    sprintf(out,
-            "TS: Failed to set IPX socket option SO_RCVBUF - error code %d.\n",
-            GetLastError());
-    OutputDebugString(out);
+    absl::SNPrintF(
+        out, sizeof(out),
+        "TS: Failed to set IPX socket option SO_RCVBUF - error code %d.\n",
+        GetLastError());
+    absl::PrintF("%s", out);
     assert(err != INVALID_SOCKET);
   }
 
@@ -563,10 +565,11 @@ bool WinsockInterfaceClass::Set_Socket_Options() {
                    SocketBytes(socket_transmit_buffer_size), 4);
   if (err == INVALID_SOCKET) {
     char out[128];
-    sprintf(out,
-            "TS: Failed to set IPX socket option SO_SNDBUF - error code %d.\n",
-            GetLastError());
-    OutputDebugString(out);
+    absl::SNPrintF(
+        out, sizeof(out),
+        "TS: Failed to set IPX socket option SO_SNDBUF - error code %d.\n",
+        GetLastError());
+    absl::PrintF("%s", out);
     assert(err != INVALID_SOCKET);
   }
 
@@ -576,6 +579,8 @@ bool WinsockInterfaceClass::Set_Socket_Options() {
   ioctlsocket(Socket, FIONBIO, &mode);
 #else
   const int flags = fcntl(Socket, F_GETFL, 0);
+  // POSIX declares fcntl with a trailing "..." for its optional argument.
+  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-vararg)
   fcntl(Socket, F_SETFL, flags | O_NONBLOCK);
 #endif
 

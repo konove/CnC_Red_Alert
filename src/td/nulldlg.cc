@@ -895,7 +895,7 @@ void Destroy_Null_Connection(int id, int error) {
   If we're the last player left, tell the user.
   ------------------------------------------------------------------------*/
   if (MPlayerCount == 1) {
-    sprintf(txt, "%s", Text_String(TXT_JUST_YOU_AND_ME));
+    absl::SNPrintF(txt, sizeof(txt), "%s", Text_String(TXT_JUST_YOU_AND_ME));
     Messages.Add_Message(
         txt,
         MPlayerTColors[MPlayerID_To_ColorIndex(static_cast<unsigned char>(id))],
@@ -2146,7 +2146,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
     }
   }
 
-  sprintf(baudbuf, "%d", tempsettings.Baud);
+  absl::SNPrintF(baudbuf, sizeof(baudbuf), "%d", tempsettings.Baud);
 
   /*........................................................................
   Set up the port list box & edit box
@@ -2230,8 +2230,8 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
 
       default:
         port_index = port_custom_index;
-        snprintf(portbuf, sizeof(portbuf), "%x",
-                 static_cast<unsigned int>(tempsettings.Port));
+        absl::SNPrintF(portbuf, sizeof(portbuf), "%x",
+                       static_cast<unsigned int>(tempsettings.Port));
         temp = strchr(custom_port, '-');
         if (temp) {
           pos = static_cast<int>(temp - custom_port) + 2;
@@ -3432,7 +3432,7 @@ int Com_Scenario_Dialog() {
     ghostsbtn.Set_Text(TXT_CAPTURE_THE_FLAG);
   }
 
-  sprintf(credbuf, "%d", MPlayerCredits);
+  absl::SNPrintF(credbuf, sizeof(credbuf), "%d", MPlayerCredits);
   credit_edt.Set_Text(credbuf, CREDITSBUF_MAX);
   old_cred = MPlayerCredits;
 
@@ -3626,7 +3626,8 @@ int Com_Scenario_Dialog() {
 
         if (parms_received) {
           if (oppscorescreen) {
-            sprintf(txt, "%s", Text_String(TXT_WAITING_FOR_OPPONENT));
+            absl::SNPrintF(txt, sizeof(txt), "%s",
+                           Text_String(TXT_WAITING_FOR_OPPONENT));
 
             const int txtwidth = String_Pixel_Width(txt);
 
@@ -3640,9 +3641,11 @@ int Com_Scenario_Dialog() {
                 TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
             if (TheirHouse == HOUSE_GOOD) {
-              sprintf(txt, "%s %s", TheirName, Text_String(TXT_G_D_I));
+              absl::SNPrintF(txt, sizeof(txt), "%s %s", TheirName,
+                             Text_String(TXT_G_D_I));
             } else {
-              sprintf(txt, "%s %s", TheirName, Text_String(TXT_N_O_D));
+              absl::SNPrintF(txt, sizeof(txt), "%s %s", TheirName,
+                             Text_String(TXT_N_O_D));
             }
 
             Fancy_Text_Print(txt, d_opponent_x, d_opponent_y,
@@ -3651,15 +3654,15 @@ int Com_Scenario_Dialog() {
           }
         }
 
-        sprintf(txt, "%d ", MPlayerUnitCount);
+        absl::SNPrintF(txt, sizeof(txt), "%d ", MPlayerUnitCount);
         Fancy_Text_Print(txt, d_count_x + d_count_w + (3 * factor), d_count_y,
                          CC_GREEN, BLACK,
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         if (BuildLevel <= MPLAYER_BUILD_LEVEL_MAX) {
-          sprintf(txt, "%d ", BuildLevel);
+          absl::SNPrintF(txt, sizeof(txt), "%d ", BuildLevel);
         } else {
-          sprintf(txt, "**");
+          absl::SNPrintF(txt, sizeof(txt), "**");
         }
         Fancy_Text_Print(txt, d_level_x + d_level_w + (3 * factor), d_level_y,
                          CC_GREEN, BLACK,
@@ -4113,7 +4116,7 @@ int Com_Scenario_Dialog() {
       old_cred = Bound(tech::ParseInteger<int>(credbuf).value_or(0), 0, 9999);
       MPlayerCredits = old_cred;
       transmit = 1;
-      sprintf(credbuf, "%d", MPlayerCredits);
+      absl::SNPrintF(credbuf, sizeof(credbuf), "%d", MPlayerCredits);
       credit_edt.Set_Text(credbuf, CREDITSBUF_MAX);
     }
 
@@ -4453,8 +4456,8 @@ int Com_Scenario_Dialog() {
     //
     MPlayerMaxAhead = std::max<int>(static_cast<int>(SendPacket.ResponseTime / 8), 2);
     char flip[128];
-    snprintf(flip, sizeof(flip), "C&C95 - MaxAhead set to %d frames\n",
-             MPlayerMaxAhead);
+    absl::SNPrintF(flip, sizeof(flip), "C&C95 - MaxAhead set to %d frames\n",
+                   MPlayerMaxAhead);
     CCDebugString(flip);
 
     SendPacket.ID = ModemGameToPlay;
@@ -4897,7 +4900,8 @@ int Com_Show_Scenario_Dialog() {
 
         if (parms_received) {
           if (oppscorescreen) {
-            sprintf(txt, "%s", Text_String(TXT_WAITING_FOR_OPPONENT));
+            absl::SNPrintF(txt, sizeof(txt), "%s",
+                           Text_String(TXT_WAITING_FOR_OPPONENT));
 
             const int txtwidth = String_Pixel_Width(txt);
 
@@ -4914,9 +4918,11 @@ int Com_Show_Scenario_Dialog() {
                 TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
             if (TheirHouse == HOUSE_GOOD) {
-              sprintf(txt, "%s %s", TheirName, Text_String(TXT_G_D_I));
+              absl::SNPrintF(txt, sizeof(txt), "%s %s", TheirName,
+                             Text_String(TXT_G_D_I));
             } else {
-              sprintf(txt, "%s %s", TheirName, Text_String(TXT_N_O_D));
+              absl::SNPrintF(txt, sizeof(txt), "%s %s", TheirName,
+                             Text_String(TXT_N_O_D));
             }
 
             Fancy_Text_Print(txt, d_dialog_cx, d_opponent_y,
@@ -4932,7 +4938,8 @@ int Com_Show_Scenario_Dialog() {
                 TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
             if (ScenarioIdx != -1) {
-              sprintf(txt, "%s", MPlayerScenarios[ScenarioIdx]);
+              absl::SNPrintF(txt, sizeof(txt), "%s",
+                             MPlayerScenarios[ScenarioIdx]);
 
               Fancy_Text_Print(txt, d_dialog_cx, d_scenario_y, CC_GREEN, TBLACK,
                                TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
@@ -4951,7 +4958,7 @@ int Com_Show_Scenario_Dialog() {
                 d_credits_y, CC_GREEN, TBLACK,
                 TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
-            sprintf(txt, "%d", MPlayerCredits);
+            absl::SNPrintF(txt, sizeof(txt), "%d", MPlayerCredits);
             Fancy_Text_Print(txt, d_dialog_cx, d_credits_y, CC_GREEN, TBLACK,
                              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
@@ -4964,7 +4971,7 @@ int Com_Show_Scenario_Dialog() {
                 TBLACK,
                 TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
-            sprintf(txt, "%d ", MPlayerUnitCount);
+            absl::SNPrintF(txt, sizeof(txt), "%d ", MPlayerUnitCount);
             Fancy_Text_Print(txt, d_dialog_cx, d_count_y, CC_GREEN, TBLACK,
                              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
@@ -4978,9 +4985,9 @@ int Com_Show_Scenario_Dialog() {
                 TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
             if (BuildLevel <= MPLAYER_BUILD_LEVEL_MAX) {
-              sprintf(txt, "%d ", BuildLevel);
+              absl::SNPrintF(txt, sizeof(txt), "%d ", BuildLevel);
             } else {
-              sprintf(txt, "**");
+              absl::SNPrintF(txt, sizeof(txt), "**");
             }
             Fancy_Text_Print(txt, d_dialog_cx, d_level_y, CC_GREEN, TBLACK,
                              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
@@ -5539,9 +5546,9 @@ int Com_Show_Scenario_Dialog() {
             //
             MPlayerMaxAhead = std::max<int>(static_cast<int>(ReceivePacket.ResponseTime / 8), 2);
             char flip[128];
-            snprintf(flip, sizeof(flip),
-                     "C&C95 - MaxAhead set to %d frames\n",
-                     MPlayerMaxAhead);
+            absl::SNPrintF(flip, sizeof(flip),
+                           "C&C95 - MaxAhead set to %d frames\n",
+                           MPlayerMaxAhead);
             CCDebugString(flip);
 
             process = false;
@@ -6271,11 +6278,11 @@ static void Build_Phone_Listbox(ListClass* list, EditClass* edit, char* buf) {
     }
 
     if (PhoneBook[i]->Settings.Baud != -1) {
-      sprintf(item, "%s\t%s\t%d", phonename, phonenum,
-              PhoneBook[i]->Settings.Baud);
+      absl::SNPrintF(item, sizeof(item), "%s\t%s\t%d", phonename, phonenum,
+                     PhoneBook[i]->Settings.Baud);
     } else {
-      sprintf(item, "%s\t%s\t[%s]", phonename, phonenum,
-              Text_String(TXT_DEFAULT));
+      absl::SNPrintF(item, sizeof(item), "%s\t%s\t[%s]", phonename, phonenum,
+                     Text_String(TXT_DEFAULT));
     }
     list->Add_Item(item);
   }

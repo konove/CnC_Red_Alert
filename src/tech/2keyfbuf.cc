@@ -7,6 +7,7 @@
 #include <cstring>
 #include <utility>
 
+#include "absl/strings/str_format.h"
 #include "base/numeric.h"
 #include "base/types.h"
 #include "port/bytes_of.h"
@@ -438,9 +439,9 @@ void Buffer_Frame_To_Page(int x, int y, const int w, const int h, void* src,
     }
   } else {
     // super jump table fun!
-    printf("%s new f %x all flags %i\n", __func__,
-           header_pointer->draw_flags & BLIT_ALL,
-           static_cast<int>(use_all_flags));
+    absl::PrintF("%s new f %x all flags %i\n", __func__,
+                 header_pointer->draw_flags & BLIT_ALL,
+                 static_cast<int>(use_all_flags));
   }
 
 }

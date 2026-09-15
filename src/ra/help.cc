@@ -57,6 +57,7 @@
 #include <cstring>
 #include <iterator>
 
+#include "absl/strings/str_format.h"
 #include "ra/conquer.h"
 #include "ra/coord.h"
 #include "ra/defines.h"
@@ -277,7 +278,7 @@ void HelpClass::Draw_It(bool forced) {
 
     if (Cost) {
       char buffer[15];
-      sprintf(buffer, "$%d", Cost);
+      absl::SNPrintF(buffer, sizeof(buffer), "$%d", Cost);
       const int width = String_Pixel_Width(buffer);
 
       Plain_Text_Print(buffer, DrawX, DrawY + FontHeight, Color, BLACK,

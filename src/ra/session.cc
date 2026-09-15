@@ -61,6 +61,7 @@
 #include <cstring>
 #include <ctime>  // for station ID computation
 
+#include "absl/strings/str_format.h"
 #include "base/types.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/env.h"
@@ -882,7 +883,7 @@ void SessionClass::Write_MultiPlayer_Settings() {
     //	Save all InitString entries.
     for (int index = 0; index < InitStrings.Count(); index++) {
       char buf[10];
-      sprintf(buf, "%03d", index);
+      absl::SNPrintF(buf, sizeof(buf), "%03d", index);
       ini.Put_String("InitStrings", buf, InitStrings[index]);
     }
 
@@ -894,18 +895,18 @@ void SessionClass::Write_MultiPlayer_Settings() {
     for (base::ssize i = PhoneBook.Count() - 1; i >= 0; i--) {
       char buf[128];
       char entrytext[10];
-      snprintf(buf, sizeof(buf), "%s|%s|%x|%d|%d|%d|%d|%d|%s|%d|%d|%s",
-               PhoneBook[i]->Name, PhoneBook[i]->Number,
-               static_cast<unsigned int>(PhoneBook[i]->Settings.Port),
-               PhoneBook[i]->Settings.IRQ, PhoneBook[i]->Settings.Baud,
-               PhoneBook[i]->Settings.Compression ? 1 : 0,
-               PhoneBook[i]->Settings.ErrorCorrection ? 1 : 0,
-               PhoneBook[i]->Settings.HardwareFlowControl ? 1 : 0,
-               DialMethodCheck[PhoneBook[i]->Settings.DialMethod],
-               PhoneBook[i]->Settings.InitStringIndex,
-               PhoneBook[i]->Settings.CallWaitStringIndex,
-               PhoneBook[i]->Settings.CallWaitString);
-      sprintf(entrytext, "%03td", i);
+      absl::SNPrintF(buf, sizeof(buf), "%s|%s|%x|%d|%d|%d|%d|%d|%s|%d|%d|%s",
+                     PhoneBook[i]->Name, PhoneBook[i]->Number,
+                     static_cast<unsigned int>(PhoneBook[i]->Settings.Port),
+                     PhoneBook[i]->Settings.IRQ, PhoneBook[i]->Settings.Baud,
+                     PhoneBook[i]->Settings.Compression ? 1 : 0,
+                     PhoneBook[i]->Settings.ErrorCorrection ? 1 : 0,
+                     PhoneBook[i]->Settings.HardwareFlowControl ? 1 : 0,
+                     DialMethodCheck[PhoneBook[i]->Settings.DialMethod],
+                     PhoneBook[i]->Settings.InitStringIndex,
+                     PhoneBook[i]->Settings.CallWaitStringIndex,
+                     PhoneBook[i]->Settings.CallWaitString);
+      absl::SNPrintF(entrytext, sizeof(entrytext), "%03td", i);
       ini.Put_String("PhoneBook", entrytext, buf);
     }
 

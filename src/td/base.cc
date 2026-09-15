@@ -67,6 +67,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "absl/strings/str_format.h"
 #include "port/tokenizer.h"
 #include "td/building.h"
 #include "td/cell.h"
@@ -154,7 +155,7 @@ void BaseClass::Read_INI(char* buffer) {
     /*
     ** Get an INI entry
     */
-    sprintf(uname, "%03d", i);
+    absl::SNPrintF(uname, sizeof(uname), "%03d", i);
     WWGetPrivateProfileString(INI_Name(), uname, nullptr, buf, sizeof(buf) - 1,
                               buffer);
 
@@ -220,10 +221,10 @@ void BaseClass::Write_INI(char* buffer) {
   **	Write each entry into the INI
   */
   for (int i = 0; i < Nodes.Count(); i++) {
-    sprintf(uname, "%03d", i);
-    sprintf(buf, "%s,%d",
-            BuildingTypeClass::As_Reference(Nodes[i].Type).IniName,
-            static_cast<int>(Nodes[i].Coord));
+    absl::SNPrintF(uname, sizeof(uname), "%03d", i);
+    absl::SNPrintF(buf, sizeof(buf), "%s,%d",
+                   BuildingTypeClass::As_Reference(Nodes[i].Type).IniName,
+                   static_cast<int>(Nodes[i].Coord));
 
     WWWritePrivateProfileString(INI_Name(), uname, buf, buffer);
   }

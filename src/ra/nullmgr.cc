@@ -64,6 +64,7 @@
 #include <utility>
 
 #include "absl/log/log.h"
+#include "absl/strings/str_format.h"
 #include "base/numeric.h"
 #include "port/aligned_buffer.h"
 #include "port/safe_string.h"
@@ -98,6 +99,7 @@
 
 #ifdef _WIN32
 #include <windows.h>
+
 #endif
 
 
@@ -1677,7 +1679,8 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
     if (delay <= 0) {
       if (ring) {
         if (SerialPort->Get_Modem_Status() & CD_SET) {
-          sprintf(ModemRXString, "%s", "Connected");
+          absl::SNPrintF(ModemRXString, sizeof(ModemRXString), "%s",
+                         "Connected");
           dialstatus = DIAL_CONNECTED;
         } else {
           dialstatus = DIAL_ERROR;

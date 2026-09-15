@@ -130,6 +130,7 @@
 #include <cstring>
 #include <utility>
 
+#include "absl/strings/str_format.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/tokenizer.h"
 #include "ra/aircraft.h"
@@ -5089,13 +5090,15 @@ void BuildingClass::Write_INI(CCINIClass& ini) {
       char uname[10];
       char buf[127];
 
-      sprintf(uname, "%d", index);
-      sprintf(buf, "%s,%s,%d,%u,%d,%s,%d,%d", building->House->Class->IniName,
-              building->Class->IniName, building->Health_Ratio() * 256,
-              Coord_Cell(building->Coord), building->PrimaryFacing.Current(),
-              building->Trigger.Is_Valid() ? building->Trigger->Class->IniName
-                                           : "None",
-              building->IsAllowedToSell, building->IsToRebuild);
+      absl::SNPrintF(uname, sizeof(uname), "%d", index);
+      absl::SNPrintF(
+          buf, sizeof(buf), "%s,%s,%d,%u,%d,%s,%d,%d",
+          building->House->Class->IniName, building->Class->IniName,
+          building->Health_Ratio() * 256, Coord_Cell(building->Coord),
+          building->PrimaryFacing.Current(),
+          building->Trigger.Is_Valid() ? building->Trigger->Class->IniName
+                                       : "None",
+          building->IsAllowedToSell, building->IsToRebuild);
       ini.Put_String(INI_Name(), uname, buf);
     }
   }

@@ -55,6 +55,7 @@
 #include <cstdio>
 #include <cstring>
 
+#include "absl/strings/str_format.h"
 #include "base/numeric.h"
 #include "port/socket_bytes.h"
 #include "port/unaligned.h"
@@ -81,7 +82,6 @@ typedef int socklen_t;
 
 #define SOCKET_ERROR (-1)
 
-#define OutputDebugString(x) printf("%s", x)
 #endif
 
 /***********************************************************************************************
@@ -230,12 +230,13 @@ bool UDPInterfaceClass::Open_Socket(SOCKET /*unused*/) {
         port::ReadUnaligned<sockaddr_in>(info->ai_addr).sin_addr.s_addr;
 
     char temp[128];
-    snprintf(temp, sizeof(temp), "RA95: Found local address: %d.%d.%d.%d\n",
-             static_cast<int>(address & 0xff),
-             static_cast<int>((address & 0xff00) >> 8),
-             static_cast<int>((address & 0xff0000) >> 16),
-             static_cast<int>((address & 0xff000000) >> 24));
-    OutputDebugString(temp);
+    absl::SNPrintF(temp, sizeof(temp),
+                   "RA95: Found local address: %d.%d.%d.%d\n",
+                   static_cast<int>(address & 0xff),
+                   static_cast<int>((address & 0xff00) >> 8),
+                   static_cast<int>((address & 0xff0000) >> 16),
+                   static_cast<int>((address & 0xff000000) >> 24));
+    absl::PrintF("%s", temp);
 
     auto* a = new unsigned char[4];
     port::WriteUnaligned(a, address);

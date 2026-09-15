@@ -44,6 +44,7 @@
 #include <cstring>
 
 #include "absl/log/log.h"
+#include "absl/strings/str_format.h"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "sdllib/file_access.h"
@@ -107,7 +108,7 @@ bool Save_Game(int id, const char* descr) {
   /*
   **	Generate the filename to save
   */
-  sprintf(name, "SAVEGAME.%03d", id);
+  absl::SNPrintF(name, sizeof(name), "SAVEGAME.%03d", id);
 
   /*
   **	Open the file
@@ -126,8 +127,8 @@ bool Save_Game(int id, const char* descr) {
   **	which may or may not be a HousesType number; so, saving 'house'
   **	here ensures we can always pull out the house for this file.)
   */
-  snprintf(descr_buf, sizeof(descr_buf) - 1, "%s\r\n",
-           descr);                        // put CR-LF after text
+  absl::SNPrintF(descr_buf, sizeof(descr_buf) - 1, "%s\r\n",
+                 descr);                  // put CR-LF after text
   descr_buf[strlen(descr_buf) + 1] = 26;  // put CTRL-Z after NULL
 
   if (file.Write(descr_buf, kDescripMax) != kDescripMax) {
@@ -241,7 +242,7 @@ bool Load_Game(int id) {
   /*
   **	Generate the filename to load
   */
-  sprintf(name, "SAVEGAME.%03d", id);
+  absl::SNPrintF(name, sizeof(name), "SAVEGAME.%03d", id);
 
   /*
   **	Open the file
@@ -543,7 +544,7 @@ bool Get_Savefile_Info(int id, char* buf, unsigned* scenp, HousesType* housep) {
   /*
   **	Generate the filename to load
   */
-  sprintf(name, "SAVEGAME.%03d", id);
+  absl::SNPrintF(name, sizeof(name), "SAVEGAME.%03d", id);
 
   /*
   **	If the file opens OK, read the file

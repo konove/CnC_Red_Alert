@@ -51,6 +51,7 @@
 #include <cstring>
 #include <filesystem>
 
+#include "absl/strings/str_format.h"
 #include "port/safe_string.h"
 #include "sdllib/file.h"
 #include "sdllib/gbuffer.h"
@@ -454,7 +455,7 @@ bool LoadOptionsClass::Process() {
         game_num = Files[game_idx]->Num;
         if (CCMessageBox().Process(TXT_DELETE_FILE_QUERY, TXT_YES, TXT_NO) ==
             0) {
-          sprintf(fname, "SAVEGAME.%03d", game_num);
+          absl::SNPrintF(fname, sizeof(fname), "SAVEGAME.%03d", game_num);
           unlink(fname);
           Clear_List(&listbtn);
           Fill_List(&listbtn);

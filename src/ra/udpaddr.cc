@@ -19,6 +19,7 @@
 #include <cstdio>
 #include <string>
 
+#include "absl/strings/str_format.h"
 #include "ra/_wsproto.h"
 #include "ra/ccini.h"
 #include "ra/colrlist.h"
@@ -137,12 +138,13 @@ bool Get_Broadcast_Addresses() {
     do {
       entry++;
       char* temp = new char[128];
-      sprintf(entry_name, "%d", entry);
+      absl::SNPrintF(entry_name, sizeof(entry_name), "%d", entry);
       res = ip_ini.Get_String("IP_ADDRESSES", entry_name, "", temp, 128);
       if (res) {
         ip_address_list.Add_Item(temp);
         char debug[128];
-        sprintf(debug, "RA95 - Adding address %s\n", temp);
+        absl::SNPrintF(debug, sizeof(debug), "RA95 - Adding address %s\n",
+                       temp);
         WWDebugString(debug);
       }
     } while (res);

@@ -113,6 +113,7 @@
 #include <utility>
 #include <vector>
 
+#include "absl/strings/str_format.h"
 #include "base/numeric.h"
 #include "base/types.h"
 #include "magic_enum/magic_enum.hpp"
@@ -391,7 +392,7 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   /*
   ** Unload old mixfiles, and cache the new ones
   */
-  sprintf(fullname, "%s.MIX", Theaters[theater].Root);
+  absl::SNPrintF(fullname, sizeof(fullname), "%s.MIX", Theaters[theater].Root);
 
   if (Scen.Theater != LastTheater) {
     delete TheaterData;
@@ -406,7 +407,7 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   **	Load the custom palette associated with this theater.
   **	The fading palettes will have to be generated as well.
   */
-  sprintf(fullname, "%s.PAL", Theaters[theater].Root);
+  absl::SNPrintF(fullname, sizeof(fullname), "%s.PAL", Theaters[theater].Root);
   const auto* ptr =
       static_cast<const PaletteClass*>(MixArchive::Retrieve(fullname));
   GamePalette = *ptr;
@@ -4337,7 +4338,7 @@ void DisplayClass::Read_INI(CCINIClass& ini) {
   */
   for (int i = 0; i < ScenarioClass::kWaypointCount; i++) {
     char buf[20];
-    sprintf(buf, "%d", i);
+    absl::SNPrintF(buf, sizeof(buf), "%d", i);
     Scen.Waypoint[i] = static_cast<CELL>(ini.Get_Int("Waypoints", buf, -1));
 
     if (Scen.Waypoint[i] != -1) {
@@ -4429,7 +4430,7 @@ void DisplayClass::Write_INI(CCINIClass& ini) {
   ini.Clear(WAYNAME);
   for (int i = 0; i < ScenarioClass::kWaypointCount; i++) {
     if (Scen.Waypoint[i] != -1) {
-      sprintf(entry, "%d", i);
+      absl::SNPrintF(entry, sizeof(entry), "%d", i);
       ini.Put_Int(WAYNAME, entry, Scen.Waypoint[i]);
     }
   }
@@ -4446,7 +4447,7 @@ void DisplayClass::Write_INI(CCINIClass& ini) {
         /*
         **	Generate entry name.
         */
-        sprintf(entry, "%d", cell);
+        absl::SNPrintF(entry, sizeof(entry), "%d", cell);
 
         /*
         **	Save entry.

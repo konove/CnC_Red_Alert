@@ -43,6 +43,7 @@
 #include <cstdint>
 #include <cstdio>
 
+#include "absl/strings/str_format.h"
 #include "sdllib/font.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
@@ -261,7 +262,7 @@ void Nod_Ending() {
   Free_Sample(kanefinl);
   Free_Sample(loopie6m);
 
-  sprintf(fname, "NODEND%d", selection);
+  absl::SNPrintF(fname, sizeof(fname), "NODEND%d", selection);
   PreserveVQAScreen = true;
   Play_Movie(fname);
 

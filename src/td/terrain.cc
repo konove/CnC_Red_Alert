@@ -73,6 +73,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "absl/strings/str_format.h"
 #include "base/types.h"
 #include "port/tokenizer.h"
 #include "rand.h"
@@ -855,9 +856,9 @@ void TerrainClass::Write_INI(char* buffer) {
 
     terrain = Terrains.Ptr(index);
     if (!terrain->IsInLimbo && terrain->IsActive) {
-      sprintf(uname, "%d", Coord_Cell(terrain->Coord));
-      sprintf(buf, "%s,%s", terrain->Class->IniName,
-              terrain->Trigger ? terrain->Trigger->Get_Name() : "None");
+      absl::SNPrintF(uname, sizeof(uname), "%d", Coord_Cell(terrain->Coord));
+      absl::SNPrintF(buf, sizeof(buf), "%s,%s", terrain->Class->IniName,
+                     terrain->Trigger ? terrain->Trigger->Get_Name() : "None");
       WWWritePrivateProfileString(INI_Name(), uname, buf, buffer);
     }
   }

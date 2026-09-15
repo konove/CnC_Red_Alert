@@ -56,6 +56,7 @@
 
 #include <cstdio>
 
+#include "absl/strings/str_format.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
@@ -439,7 +440,7 @@ static void Add_Current_Screen() {
     if (CurrentScreen == MAX_SCREENS_SAVED) {
       char filename[20];
       for (int i = 0; i < MAX_SCREENS_SAVED; i++) {
-        sprintf(filename, "SCRN%04d.PCX", i);
+        absl::SNPrintF(filename, sizeof(filename), "SCRN%04d.PCX", i);
         Write_PCX_File(filename, *ScreenList[i], CurrentPalette);
         delete ScreenList[i];
       }

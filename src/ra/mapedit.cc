@@ -66,6 +66,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "absl/strings/str_format.h"
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/base.h"
@@ -1283,7 +1284,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         /*
         **	Update text label
         */
-        sprintf(HealthBuf, "%d", strength);
+        absl::SNPrintF(HealthBuf, sizeof(HealthBuf), "%d", strength);
       }
       input = KN_NONE;
       break;
@@ -1391,7 +1392,8 @@ void MapEditClass::Draw_It(bool forced) {
     */
     label = Text_String(CurrentObject[0]->Full_Name());
     tptr = label;
-    sprintf(buf, "%s (%d)", tptr, CurrentObject[0]->As_Target());
+    absl::SNPrintF(buf, sizeof(buf), "%s (%d)", tptr,
+                   CurrentObject[0]->As_Target());
 
     /*
     **	print the label
@@ -1848,7 +1850,7 @@ HousesType MapEditClass::Cycle_House(HousesType curhouse,
  *=========================================================================*/
 void MapEditClass::Fatal(int txt) {
   // Prog_End();
-  printf("%s\n", Text_String(txt));
+  absl::PrintF("%s\n", Text_String(txt));
   Emergency_Exit(EXIT_FAILURE);
 }
 

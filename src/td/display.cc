@@ -98,6 +98,7 @@
 #include <iterator>
 #include <vector>
 
+#include "absl/strings/str_format.h"
 #include "base/numeric.h"
 #include "base/types.h"
 #include "sdllib/drawbuff.h"
@@ -368,7 +369,7 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   /*
   ** Unload old mixfiles, and cache the new ones
   */
-  sprintf(fullname, "%s.MIX", Theaters[Theater].Root);
+  absl::SNPrintF(fullname, sizeof(fullname), "%s.MIX", Theaters[Theater].Root);
   if (Theater != LastTheater) {
     delete TheaterData;
     TheaterData = MixArchive::Register(fullname);
@@ -379,8 +380,9 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   /*
   ** Register the hi-res icons mix file now since it is theater specific
   */
-  sprintf(fullname, "%s.MIX", Theaters[Theater].Root);
-  snprintf(iconname, sizeof(iconname), "%.4sICNH.MIX", Theaters[Theater].Root);
+  absl::SNPrintF(fullname, sizeof(fullname), "%s.MIX", Theaters[Theater].Root);
+  absl::SNPrintF(iconname, sizeof(iconname), "%.4sICNH.MIX",
+                 Theaters[Theater].Root);
   if (Theater != LastTheater) {
     delete TheaterIcons;
     TheaterIcons = MixArchive::Register(iconname);
@@ -391,7 +393,7 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   **	Load the custom palette associated with this theater.
   **	The fading palettes will have to be generated as well.
   */
-  sprintf(fullname, "%s.PAL", Theaters[theater].Root);
+  absl::SNPrintF(fullname, sizeof(fullname), "%s.PAL", Theaters[theater].Root);
   const void* ptr = MixArchive::Retrieve(fullname);
   Mem_Copy(ptr, GamePalette, 768);
 
@@ -1085,7 +1087,7 @@ void DisplayClass::Read_INI(char* buffer) {
   **	Read the Waypoint entries.
   */
   for (i = 0; i < WAYPT_COUNT; i++) {
-    sprintf(buf, "%d", i);
+    absl::SNPrintF(buf, sizeof(buf), "%d", i);
     Waypoint[i] = static_cast<CELL>(WWGetPrivateProfileInt("Waypoints", buf, -1, buffer));
     if (Waypoint[i] != -1) {
       (*this)[Waypoint[i]].IsWaypoint = true;
@@ -1178,7 +1180,7 @@ void DisplayClass::Write_INI(char* buffer) {
   **	Save the Waypoint entries.
   */
   for (int i = 0; i < WAYPT_COUNT; i++) {
-    sprintf(entry, "%d", i);
+    absl::SNPrintF(entry, sizeof(entry), "%d", i);
     WWWritePrivateProfileInt("Waypoints", entry, Waypoint[i], buffer);
   }
 
@@ -1200,7 +1202,7 @@ void DisplayClass::Write_INI(char* buffer) {
       /*
       **	Generate entry name.
       */
-      sprintf(entry, "%d", cell);
+      absl::SNPrintF(entry, sizeof(entry), "%d", cell);
 
       /*
       **	Save entry.

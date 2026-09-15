@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "absl/base/attributes.h"
+#include "absl/strings/str_format.h"
 #include "base/numeric.h"
 #include "base/types.h"
 #include "port/unaligned.h"
@@ -385,8 +386,9 @@ int File_Stream_Sample_Vol(const char* filename, int volume,
 
   if (header.Compression != SCOMP_SOS || channels != 1 || bits != 16) {
     CloseFileHandle(handle);
-    printf("\trate %i size %i/%i channels %i bits %i comp %i\n", header.Rate,
-           header.Size, header.UncompSize, channels, bits, header.Compression);
+    absl::PrintF("\trate %i size %i/%i channels %i bits %i comp %i\n",
+                 header.Rate, header.Size, header.UncompSize, channels, bits,
+                 header.Compression);
     return -1;
   }
 
@@ -494,7 +496,7 @@ bool Audio_Init(void* /*window*/, int /*bits_per_sample*/, bool stereo,
       SDL_OpenAudioDevice(nullptr, 0, &desired, &ObtainedSpec, changes);
 
   if (!AudioDevice) {
-    printf("Audio_Init: %s\n", SDL_GetError());
+    absl::PrintF("Audio_Init: %s\n", SDL_GetError());
     return false;
   }
 
@@ -579,9 +581,9 @@ int Play_Sample_Handle(const void* sample, int priority, int volume,
                           (header->Compression == SCOMP_WESTWOOD && bits == 8);
 
   if (!valid_comp || channels != 1) {
-    printf("\trate %i size %i/%i channels %i bits %i comp %i\n", header->Rate,
-           header->Size, header->UncompSize, channels, bits,
-           header->Compression);
+    absl::PrintF("\trate %i size %i/%i channels %i bits %i comp %i\n",
+                 header->Rate, header->Size, header->UncompSize, channels, bits,
+                 header->Compression);
     return -1;
   }
 

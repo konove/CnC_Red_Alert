@@ -78,6 +78,7 @@
 #include <string_view>
 
 #include "absl/log/log.h"
+#include "absl/strings/str_format.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
@@ -378,7 +379,7 @@ bool Start_Scenario(char* name, bool briefing) {
   */
   char buffer[25];
   if (Scen.BriefMovie != VQ_NONE) {
-    sprintf(buffer, "%s.VQA", VQName[Scen.BriefMovie]);
+    absl::SNPrintF(buffer, sizeof(buffer), "%s.VQA", VQName[Scen.BriefMovie]);
   }
   if (Session.Type == GAME_NORMAL &&
       (Scen.BriefMovie == VQ_NONE || !GameFile(buffer).IsAvailable())) {
@@ -894,7 +895,7 @@ void Do_Win() {
         port::SafeCopy(scenarioname, Scen.ScenarioName);
         char buf[10];
         Scen.Scenario++;
-        sprintf(buf, "%02d", Scen.Scenario);
+        absl::SNPrintF(buf, sizeof(buf), "%02d", Scen.Scenario);
         memcpy(&scenarioname[3], buf, 2);
         Scen.Set_Scenario_Name(scenarioname);
       } else {
@@ -1709,8 +1710,8 @@ void ScenarioClass::Set_Scenario_Name(int scenario, ScenarioPlayerType player,
       if (candidate == SCEN_VAR_LOSE) {
         break;
       }
-      sprintf(fname, "SC%c%02d%c%c.INI", c_player, scenario, c_dir,
-              'A' + candidate);
+      absl::SNPrintF(fname, sizeof(fname), "SC%c%02d%c%c.INI", c_player,
+                     scenario, c_dir, 'A' + candidate);
       if (!GameFile(fname).IsAvailable()) {
         break;
       }
@@ -1752,7 +1753,8 @@ void ScenarioClass::Set_Scenario_Name(int scenario, ScenarioPlayerType player,
   // Mono_Printf("In set_scenario_name, scenario # =
   // %d\n",scenario);Keyboard->Get();Keyboard->Get();
   if (scenario < 100) {
-    sprintf(ScenarioName, "SC%c%02d%c%c.INI", c_player, scenario, c_dir, c_var);
+    absl::SNPrintF(ScenarioName, sizeof(ScenarioName), "SC%c%02d%c%c.INI",
+                   c_player, scenario, c_dir, c_var);
   } else {
     const char first = static_cast<char>((scenario / 36) + 'A');
     char second = static_cast<char>(scenario % 36);
@@ -1763,8 +1765,8 @@ void ScenarioClass::Set_Scenario_Name(int scenario, ScenarioPlayerType player,
       second = static_cast<char>(second - 10 + 'A');
     }
 
-    sprintf(ScenarioName, "SC%c%c%c%c%c.INI", c_player, first, second, c_dir,
-            c_var);
+    absl::SNPrintF(ScenarioName, sizeof(ScenarioName), "SC%c%c%c%c%c.INI",
+                   c_player, first, second, c_dir, c_var);
   }
 }
 
@@ -1923,7 +1925,7 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
   /*
   **	Create scenario filename and read the file.
   */
-  //	sprintf(fname, "%s.INI", root);
+  //	absl::SNPrintF(fname, sizeof(fname), "%s.INI", root);
   CCINIClass ini;
   GameFile file(fname);
   //	file.Cache();
@@ -2294,7 +2296,7 @@ void Write_Scenario_INI(const char* fname) {
     if (strlen(Scen.BriefingText)) {
       ini.Put_TextBlock("Briefing", Scen.BriefingText);
     }
-    //	sprintf(fname, "%s.INI", root);
+    //	absl::SNPrintF(fname, sizeof(fname), "%s.INI", root);
     DiskFile rawfile(fname);
     ini.Save(rawfile, true);
   }

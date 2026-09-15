@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <cstring>
 
+#include "absl/strings/str_format.h"
 #include "winvq/vqm32/compress.h"
 #include "winvq/vqm32/soscomp.h"
 
@@ -26,7 +27,7 @@ static constexpr int16_t kImaAdpcmStepTable[89] = {
 // the destination size the loader passes. A real decoder must stop after
 // size bytes.
 int32_t AudioUnzap(void* /*source*/, void* /*dest*/, int32_t /*size*/) {
-  printf("%s\n", __func__);
+  absl::PrintF("%s\n", __func__);
   return 0;
 }
 
@@ -40,8 +41,8 @@ void VQA_sosCODECInitStream(SosCompressInfo* info) {
 bool DecompressVqaSosData(SosCompressInfo* info, int32_t uncomp_size) {
   // Sanity check: This decoder only supports Mono 16-bit.
   if (info->channels != 1 || info->bit_size != 16) {
-    std::fprintf(stderr, "%s (%d/%d)\n", __func__, info->channels,
-                 info->bit_size);
+    absl::FPrintF(stderr, "%s (%d/%d)\n", __func__, info->channels,
+                  info->bit_size);
     return false;
   }
 

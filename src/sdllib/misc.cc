@@ -9,6 +9,7 @@
 #include <cstring>
 
 #include "absl/log/check.h"
+#include "absl/strings/str_format.h"
 #include "base/hsv.h"
 #include "sdllib/timer.h"
 #include "sdllib/ww_win.h"
@@ -22,7 +23,7 @@ void (*Misc_Focus_Restore_Function)();
 
 bool Set_Video_Mode(void* /*hwnd*/, int /*w*/, int /*h*/,
                     int /*bits_per_pixel*/) {
-  printf("%s\n", __func__);
+  absl::PrintF("%s\n", __func__);
   return true;
 }
 

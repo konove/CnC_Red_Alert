@@ -77,6 +77,7 @@
 #include <utility>
 
 #include "absl/log/log.h"
+#include "absl/strings/str_format.h"
 #include "base/numeric.h"
 #include "base/seek_origin.h"
 #include "base/types.h"
@@ -1330,7 +1331,7 @@ const char* Language_Name(const char* basename) {
     return nullptr;
   }
 
-  sprintf(_fullname, "%s.ENG", basename);
+  absl::SNPrintF(_fullname, sizeof(_fullname), "%s.ENG", basename);
   return _fullname;
 }
 
@@ -3107,10 +3108,12 @@ bool Force_CD_Available(int cd) {
       **	Prompt to insert the CD into the drive.
       */
       if (cd == -1) {
-        snprintf(buffer, sizeof(buffer), "%s", Text_String(TXT_CD_DIALOG_1));
+        absl::SNPrintF(buffer, sizeof(buffer), "%s",
+                       Text_String(TXT_CD_DIALOG_1));
       } else {
         if (cd == 2) {
-          snprintf(buffer, sizeof(buffer), "%s", Text_String(TXT_CD_DIALOG_3));
+          absl::SNPrintF(buffer, sizeof(buffer), "%s",
+                         Text_String(TXT_CD_DIALOG_3));
         } else {
           // 0 or 1?
           Format_Runtime_Text(buffer, sizeof(buffer),
@@ -3354,7 +3357,7 @@ const void* Hires_Retrieve(const char* name) {
   char filename[30];
 
   if (SeenBuff.Get_Width() != 320) {
-    sprintf(filename, "H%s", name);
+    absl::SNPrintF(filename, sizeof(filename), "H%s", name);
   } else {
     port::SafeCopy(filename, name);
   }

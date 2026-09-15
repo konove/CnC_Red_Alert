@@ -47,6 +47,7 @@
 #include <cstdint>
 #include <cstdio>
 
+#include "absl/strings/str_format.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
@@ -396,7 +397,7 @@ static const char* Bench_Time(BenchType btype) {
     percent = static_cast<int>(((count * time) * 99) / (roottime * rootcount));
   }
   percent = std::min(percent, 99);
-  sprintf(buffer, "%-2d%% %7" PRId64, percent, time);
+  absl::SNPrintF(buffer, sizeof(buffer), "%-2d%% %7" PRId64, percent, time);
   return buffer;
 }
 

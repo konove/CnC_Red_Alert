@@ -107,6 +107,7 @@
 #include <iterator>
 #include <utility>
 
+#include "absl/strings/str_format.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/tokenizer.h"
 #include "ra/anim.h"
@@ -3269,17 +3270,18 @@ void InfantryClass::Write_INI(CCINIClass& ini) {
       char uname[10];
       char buf[128];
 
-      sprintf(uname, "%d", index);
-      sprintf(buf, "%s,%s,%d,%u,%d,%s,%d,%s", infantry->House->Class->IniName,
-              infantry->Class->IniName, infantry->Health_Ratio() * 256,
-              Coord_Cell(infantry->Coord),
-              CellClass::Spot_Index(infantry->Coord),
-              Mission_Name(infantry->Mission == MISSION_NONE
-                               ? infantry->MissionQueue
-                               : infantry->Mission),
-              infantry->PrimaryFacing.Current(),
-              infantry->Trigger.Is_Valid() ? infantry->Trigger->Class->IniName
-                                           : "None");
+      absl::SNPrintF(uname, sizeof(uname), "%d", index);
+      absl::SNPrintF(
+          buf, sizeof(buf), "%s,%s,%d,%u,%d,%s,%d,%s",
+          infantry->House->Class->IniName, infantry->Class->IniName,
+          infantry->Health_Ratio() * 256, Coord_Cell(infantry->Coord),
+          CellClass::Spot_Index(infantry->Coord),
+          Mission_Name(infantry->Mission == MISSION_NONE
+                           ? infantry->MissionQueue
+                           : infantry->Mission),
+          infantry->PrimaryFacing.Current(),
+          infantry->Trigger.Is_Valid() ? infantry->Trigger->Class->IniName
+                                       : "None");
       ini.Put_String(INI_Name(), uname, buf);
     }
   }

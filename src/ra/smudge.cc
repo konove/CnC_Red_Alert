@@ -53,6 +53,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "absl/strings/str_format.h"
 #include "port/tokenizer.h"
 #include "ra/ccini.h"
 #include "ra/cell.h"
@@ -361,8 +362,9 @@ void SmudgeClass::Write_INI(CCINIClass& ini) {
         char uname[10];
         char buf[127];
 
-        sprintf(uname, "%d", index);
-        sprintf(buf, "%s,%d,%d", stype->IniName, index, ptr->SmudgeData);
+        absl::SNPrintF(uname, sizeof(uname), "%d", index);
+        absl::SNPrintF(buf, sizeof(buf), "%s,%d,%d", stype->IniName, index,
+                       ptr->SmudgeData);
         ini.Put_String(INI_Name(), uname, buf);
       }
     }

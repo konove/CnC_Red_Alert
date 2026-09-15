@@ -43,6 +43,7 @@
 #include <vector>
 
 #include "absl/base/attributes.h"
+#include "absl/strings/str_format.h"
 #include "base/numeric.h"
 #include "port/safe_string.h"
 #include "ra/config.h"
@@ -306,7 +307,8 @@ void EListClass::Draw_Entry(int index, int x, int y, int width, bool selected) {
   } else {
     text = TXT_SOVIET;
   }
-  sprintf(buffer, "%s: %s", Text_String(text), Get_Object(index).Name);
+  absl::SNPrintF(buffer, sizeof(buffer), "%s: %s", Text_String(text),
+                 Get_Object(index).Name);
 
   TextPrintType flags = TextFlags;
 

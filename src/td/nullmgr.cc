@@ -61,6 +61,7 @@
 #include <cstring>
 #include <utility>
 
+#include "absl/strings/str_format.h"
 #include "base/numeric.h"
 #include "port/aligned_buffer.h"
 #include "port/safe_string.h"
@@ -788,7 +789,7 @@ int NullModemClass::Service() {
   ........................................................................*/
   if (std::cmp_greater(length, MaxLen)) {
 #if (CONN_DEBUG)
-    printf("length too lonnng\n");
+    absl::PrintF("length too lonnng\n");
 #endif
     // Smart_Printf( "length too lonnng %d, max %d \n", length, MaxLen );
 
@@ -829,7 +830,7 @@ int NullModemClass::Service() {
     CRCErrors++;
 
 #if (CONN_DEBUG)
-    printf("CRC check failed\n");
+    absl::PrintF("CRC check failed\n");
 #endif
     // Smart_Printf( "CRC check failed for packet of length %d \n", length );
 
@@ -1537,7 +1538,8 @@ DialStatusType NullModemClass::Dial_Modem(char* string, DialMethodType method,
     // Timer_Test(__LINE__, __FILE__);
 
     char abuffer[128];
-    sprintf(abuffer, "C&C95 - ModemWaitCarrier delay = %d\n", delay);
+    absl::SNPrintF(abuffer, sizeof(abuffer),
+                   "C&C95 - ModemWaitCarrier delay = %d\n", delay);
     CCDebugString(abuffer);
     delay = SerialPort->Get_Modem_Result(delay, buffer, 81);
 
@@ -1831,7 +1833,8 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
     if (delay <= 0) {
       if (ring) {
         if (SerialPort->Get_Modem_Status() & CD_SET) {
-          sprintf(ModemRXString, "%s", "Connected");
+          absl::SNPrintF(ModemRXString, sizeof(ModemRXString), "%s",
+                         "Connected");
           dialstatus = DIAL_CONNECTED;
         } else {
           dialstatus = DIAL_ERROR;

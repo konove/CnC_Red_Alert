@@ -45,6 +45,7 @@
 #include <cstdio>
 #include <cstring>
 
+#include "absl/strings/str_format.h"
 #include "base/numeric.h"
 #include "sdllib/shape.h"
 #include "sdllib/timer.h"
@@ -268,7 +269,7 @@ void Send_Statistics_Packet() {
     char namebuffer[40];
     char* abuffer = ShapeBuffer;
     memset(abuffer, '\0', base::ToSize(ShapeBufferSize));
-    sprintf(fname, "%s.INI", ScenarioName);
+    absl::SNPrintF(fname, sizeof(fname), "%s.INI", ScenarioName);
     GameFile fileo;
     fileo.SetName(fname);
     fileo.Read(abuffer, ShapeBufferSize - 1);

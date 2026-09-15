@@ -55,6 +55,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "absl/strings/str_format.h"
 #include "port/safe_string.h"
 #include "port/tokenizer.h"
 #include "sdllib/drawbuff.h"
@@ -624,7 +625,8 @@ int MapEditClass::Pick_Scenario(const char* caption, int* scen_nump,
   */
   Set_Logic_Page(SeenBuff);
 
-  sprintf(scen_buf, "%d", (*scen_nump));  // init edit buffer
+  absl::SNPrintF(scen_buf, sizeof(scen_buf), "%d",
+                 (*scen_nump));  // init edit buffer
   editbtn.Set_Text(scen_buf, 5);
 
   varabtn.Turn_Off();
@@ -1261,25 +1263,25 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
         */
         txt_x = D_DIALOG_X + (D_DIALOG_W / 8);
         txt_y = D_DIALOG_Y + D_DIALOG_H - D_OK_H - 10 - 22;
-        sprintf(txt, "%d", map_x1 - D_BORD_X1 - 1);
+        absl::SNPrintF(txt, sizeof(txt), "%d", map_x1 - D_BORD_X1 - 1);
         Fancy_Text_Print(
             txt, txt_x, txt_y, CC_GREEN, TBLACK,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         txt_x += (D_DIALOG_W - 20) / 4;
-        sprintf(txt, "%d", map_y1 - D_BORD_Y1 - 1);
+        absl::SNPrintF(txt, sizeof(txt), "%d", map_y1 - D_BORD_Y1 - 1);
         Fancy_Text_Print(
             txt, txt_x, txt_y, CC_GREEN, TBLACK,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         txt_x += (D_DIALOG_W - 20) / 4;
-        sprintf(txt, "%d", map_x2 - map_x1 + 1);
+        absl::SNPrintF(txt, sizeof(txt), "%d", map_x2 - map_x1 + 1);
         Fancy_Text_Print(
             txt, txt_x, txt_y, CC_GREEN, TBLACK,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         txt_x += (D_DIALOG_W - 20) / 4;
-        sprintf(txt, "%d", map_y2 - map_y1 + 1);
+        absl::SNPrintF(txt, sizeof(txt), "%d", map_y2 - map_y1 + 1);
         Fancy_Text_Print(
             txt, txt_x, txt_y, CC_GREEN, TBLACK,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
@@ -1866,16 +1868,16 @@ int MapEditClass::Scenario_Dialog() {
   /*
   .......................... Init credits buffers ..........................
   */
-  sprintf(level_buf, "%d", BuildLevel);
+  absl::SNPrintF(level_buf, sizeof(level_buf), "%d", BuildLevel);
   leveledt.Set_Text(level_buf, 4);
 
-  sprintf(gdicred_buf, "%ld", gdi_credits);
+  absl::SNPrintF(gdicred_buf, sizeof(gdicred_buf), "%ld", gdi_credits);
   gdicred.Set_Text(gdicred_buf, 8);
 
-  sprintf(nodcred_buf, "%ld", nod_credits);
+  absl::SNPrintF(nodcred_buf, sizeof(nodcred_buf), "%ld", nod_credits);
   nodcred.Set_Text(nodcred_buf, 8);
 
-  sprintf(neutcred_buf, "%ld", neut_credits);
+  absl::SNPrintF(neutcred_buf, sizeof(neutcred_buf), "%ld", neut_credits);
   neutcred.Set_Text(neutcred_buf, 8);
 
   theaterbtn.Set_Selected_Index(orig_theater - THEATER_NONE - 1);
@@ -2423,9 +2425,10 @@ int MapEditClass::Select_Trigger() {
     // i;
     constexpr int kTrigTextSize = 255;
     trigtext[i] = new char[kTrigTextSize];
-    sprintf(trigtext[i], "%s\t%s\t%s\t", Triggers.Ptr(i)->Get_Name(),
-            TriggerClass::Name_From_Event(Triggers.Ptr(i)->Event),
-            TriggerClass::Name_From_Action(Triggers.Ptr(i)->Action));
+    absl::SNPrintF(trigtext[i], kTrigTextSize, "%s\t%s\t%s\t",
+                   Triggers.Ptr(i)->Get_Name(),
+                   TriggerClass::Name_From_Event(Triggers.Ptr(i)->Event),
+                   TriggerClass::Name_From_Action(Triggers.Ptr(i)->Action));
 
     /*
     ......................... Add on the house ID .........................
@@ -2923,7 +2926,8 @@ int MapEditClass::Edit_Trigger() {
   name_edt.Set_Text(namebuf, 5);
 
   if (TriggerClass::Event_Need_Data(event_idx)) {
-    sprintf(databuf, "%ld", CurTrigger->Data);  // Credits/Time
+    absl::SNPrintF(databuf, sizeof(databuf), "%ld",
+                   CurTrigger->Data);  // Credits/Time
     data_edt.Set_Text(databuf, 8);
   }
 
@@ -3074,7 +3078,7 @@ int MapEditClass::Edit_Trigger() {
       semipersistbtn.Add_Tail(*commands);
       if (TriggerClass::Event_Need_Data(event_idx)) {
         data_edt.Add_Tail(*commands);
-        sprintf(databuf, "%ld", CurTrigger->Data);
+        absl::SNPrintF(databuf, sizeof(databuf), "%ld", CurTrigger->Data);
         data_edt.Set_Text(databuf, 8);
       }
       if (TriggerClass::Event_Need_House(event_idx)) {
@@ -3421,7 +3425,8 @@ int MapEditClass::Import_Triggers() {
     /*
     ** Generate the descriptive string
     */
-    sprintf(item, " %s\t%s\t%s\t", tbuffer, eventptr, actionptr);
+    absl::SNPrintF(item, sizeof(item), " %s\t%s\t%s\t", tbuffer, eventptr,
+                   actionptr);
 
     /*
     ** Add house name if needed
@@ -3761,7 +3766,7 @@ int MapEditClass::Import_Teams() {
     /*
     ** Generate the descriptive string
     */
-    sprintf(item, " %s\t", tbuffer);
+    absl::SNPrintF(item, sizeof(item), " %s\t", tbuffer);
     const HousesType house = HouseTypeClass::From_Name(houseptr);
     if (house != HOUSE_NONE) {
       port::SafeAppend(item, HouseTypeClass::As_Reference(house).Suffix,

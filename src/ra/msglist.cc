@@ -62,6 +62,7 @@
 #include <cstring>
 #include <utility>
 
+#include "absl/strings/str_format.h"
 #include "base/numeric.h"
 #include "port/safe_string.h"
 #include "ra/conquer.h"
@@ -331,7 +332,7 @@ TextLabelClass* MessageListClass::Add_Message(const char* name, int id,
   // Combine the name & message text, if there's a name given
   //------------------------------------------------------------------------
   if (name) {
-    sprintf(message, "%s:%s", name, txt);
+    absl::SNPrintF(message, sizeof(message), "%s:%s", name, txt);
   } else {
     port::SafeCopy(message, txt);
   }
@@ -350,7 +351,7 @@ TextLabelClass* MessageListClass::Add_Message(const char* name, int id,
     // print
     //------------------------------------------------------------------------
     if (name) {
-      sprintf(temp, "%s:", name);
+      absl::SNPrintF(temp, sizeof(temp), "%s:", name);
       mess_start = static_cast<int>(strlen(name)) + 1;
     } else {
       mess_start = 0;

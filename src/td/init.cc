@@ -58,6 +58,7 @@
 #include <string>
 
 #include "absl/log/log.h"
+#include "absl/strings/str_format.h"
 #include "port/ex_string.h"
 #include "port/random_seed.h"
 #include "port/safe_string.h"
@@ -345,7 +346,8 @@ bool Init_Game(int /*unused*/, char* /*unused*/[]) {
         buffer,
         "Command & Conquer ne peut pas détecter votre gestionnaire de souris.");
 #else
-    sprintf(buffer, "Command & Conquer is unable to detect your mouse driver.");
+    absl::SNPrintF(buffer, sizeof(buffer),
+                   "Command & Conquer is unable to detect your mouse driver.");
 #endif
 #endif
     CCMessageBox().Process(buffer, TXT_OK);
@@ -2843,7 +2845,8 @@ int Version_Number() {
 #endif                          // GERMAN
 
 #if !(defined(FRENCH) || defined(GERMAN) || defined(JAPANESE))
-  sprintf(VersionText, ".07");  // Win95 USA version number
+  absl::SNPrintF(VersionText, sizeof(VersionText),
+                 ".07");        // Win95 USA version number
 #endif                          // FRENCH | GERMAN
 
   DiskFile file("VERSION.TXT");

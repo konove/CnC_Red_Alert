@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <cstring>
 
+#include "absl/strings/str_format.h"
 #include "base/numeric.h"
 #include "base/types.h"
 #include "sdllib/drawbuff.h"
@@ -212,6 +213,6 @@ void Buffer_Draw_Stamp_Clip(GraphicViewPortClass* viewport,
   }
 }
 
-void Restore_Cached_Icons() { printf("%s\n", __func__); }
+void Restore_Cached_Icons() { absl::PrintF("%s\n", __func__); }
 
 void Register_Icon_Set(const void* /*icon_data*/, bool /*pre_cache*/) {}

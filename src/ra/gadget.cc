@@ -64,6 +64,7 @@
 #include <cstdint>
 #include <cstdio>
 
+#include "absl/strings/str_format.h"
 #include "ra/config.h"
 #include "ra/control.h"
 #include "ra/defines.h"
@@ -486,7 +487,7 @@ KeyNumType GadgetClass::Input() {
       SeenBuff.Blit(temp_page);
       //			Show_Mouse();
       for (int lp = 0; lp < 99; lp++) {
-        sprintf(filename, "scrsht%02d.pcx", lp);
+        absl::SNPrintF(filename, sizeof(filename), "scrsht%02d.pcx", lp);
         file.SetName(filename);
         if (!file.IsAvailable()) {
           break;

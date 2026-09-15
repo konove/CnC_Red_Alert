@@ -46,6 +46,7 @@
 #include <array>
 #include <cstdio>
 
+#include "absl/strings/str_format.h"
 #include "base/numeric.h"
 #include "ra/base.h"
 #include "ra/building.h"
@@ -359,7 +360,8 @@ void MapEditClass::Popup_Controls() {
     case RTTI_AIRCRAFTTYPE:
       MissionList->Set_Selected_Index(mission_index);
       HealthGauge->Set_Value(strength);
-      sprintf(HealthBuf, "%d", CurrentObject[0]->Strength);
+      absl::SNPrintF(HealthBuf, sizeof(HealthBuf), "%d",
+                     CurrentObject[0]->Strength);
       FacingDial->Set_Direction(techno->PrimaryFacing);
 
       /*
@@ -377,7 +379,8 @@ void MapEditClass::Popup_Controls() {
       const auto& building =
           dynamic_cast<const BuildingClass&>(*CurrentObject[0]);
       HealthGauge->Set_Value(strength);
-      sprintf(HealthBuf, "%d", CurrentObject[0]->Strength);
+      absl::SNPrintF(HealthBuf, sizeof(HealthBuf), "%d",
+                     CurrentObject[0]->Strength);
       Add_A_Button(*HealthGauge);
       Add_A_Button(*HouseList);
       HouseList->Set_Selected_Index(owner);

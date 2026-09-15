@@ -504,8 +504,8 @@ void EventClass::Execute() {
   //	RTTIType rt;
 
   if (Debug_Print_Events) {
-    printf("(%" PRId64 ") Executing %s ID:%d Frame:%d ", ::Frame,
-           EventNames[Type], ID, Frame);
+    absl::PrintF("(%" PRId64 ") Executing %s ID:%d Frame:%d ", ::Frame,
+                 EventNames[Type], ID, Frame);
   }
 
   switch (Type) {
@@ -685,10 +685,11 @@ void EventClass::Execute() {
 
     case MEGAMISSION:
       if (Debug_Print_Events) {
-        printf("Whom:%x Tgt:%x Dest:%x ",
-               static_cast<unsigned>(Data.MegaMission.Whom.As_TARGET()),
-               static_cast<unsigned>(Data.MegaMission.Target.As_TARGET()),
-               static_cast<unsigned>(Data.MegaMission.Destination.As_TARGET()));
+        absl::PrintF(
+            "Whom:%x Tgt:%x Dest:%x ",
+            static_cast<unsigned>(Data.MegaMission.Whom.As_TARGET()),
+            static_cast<unsigned>(Data.MegaMission.Target.As_TARGET()),
+            static_cast<unsigned>(Data.MegaMission.Destination.As_TARGET()));
       }
       techno = Data.MegaMission.Whom.As_Techno();
       if (techno != nullptr && techno->IsActive && techno->Strength > 0 &&
@@ -932,9 +933,9 @@ void EventClass::Execute() {
     */
     case ADDPLAYER:
       int i;
-      printf("ADDPLAYER EVENT!\n");
+      absl::PrintF("ADDPLAYER EVENT!\n");
       for (i = 0; std::cmp_less(i, Data.Variable.Size); i++) {
-        printf("%d\n", static_cast<char*>(Data.Variable.Pointer)[i]);
+        absl::PrintF("%d\n", static_cast<char*>(Data.Variable.Pointer)[i]);
       }
       if (std::cmp_not_equal(ID, PlayerPtr->ID)) {
         delete[] static_cast<char*>(Data.Variable.Pointer);
@@ -962,8 +963,8 @@ void EventClass::Execute() {
       Session.MaxAhead = Data.Timing.MaxAhead;
 
       if (Debug_Print_Events) {
-        printf("DesiredFrameRate:%d MaxAhead:%d ", Session.DesiredFrameRate,
-               Session.MaxAhead);
+        absl::PrintF("DesiredFrameRate:%d MaxAhead:%d ",
+                     Session.DesiredFrameRate, Session.MaxAhead);
       }
 
       break;
@@ -1065,6 +1066,6 @@ void EventClass::Execute() {
   }
 
   if (Debug_Print_Events) {
-    printf("\n");
+    absl::PrintF("\n");
   }
 }

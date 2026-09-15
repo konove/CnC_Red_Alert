@@ -45,6 +45,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "absl/strings/str_format.h"
 #include "base/numeric.h"
 #include "port/tokenizer.h"
 #include "sdllib/drawbuff.h"
@@ -155,12 +156,12 @@ int main(int argc, char* argv[])
 
   if (Ram_Free(MEM_NORMAL) < 5000000) {
 #ifdef GERMAN
-    printf("Zuwenig Hauptspeicher verfügbar.\n");
+    absl::PrintF("Zuwenig Hauptspeicher verfügbar.\n");
 #else
 #ifdef FRENCH
-    printf("Mémoire vive (RAM) insuffisante.\n");
+    absl::PrintF("Mémoire vive (RAM) insuffisante.\n");
 #else
-    printf("Insufficient RAM available.\n");
+    absl::PrintF("Insufficient RAM available.\n");
 #endif
 #endif
     return EXIT_FAILURE;
@@ -500,15 +501,15 @@ void __cdecl Prog_End() {
 }
 
 void Print_Error_End_Exit(char* string) {
-  printf("%s\n", string);
+  absl::PrintF("%s\n", string);
   Get_Key();
   Prog_End();
-  printf("%s\n", string);
+  absl::PrintF("%s\n", string);
   exit(1);
 }
 
 void Print_Error_Exit(char* string) {
-  printf("%s\n", string);
+  absl::PrintF("%s\n", string);
   exit(1);
 }
 

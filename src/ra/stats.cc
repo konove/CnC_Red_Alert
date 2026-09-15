@@ -186,6 +186,8 @@ void* PacketLater = nullptr;
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <unistd.h>
+
+#include "absl/strings/str_format.h"
 #endif
 
 #include "port/inet_text.h"
@@ -394,8 +396,8 @@ void Send_Statistics_Packet() {
           NetNodeType node;
           char szIPAddress[30];
           Session.Players[0]->Address.Get_Address(net, node);
-          sprintf(szIPAddress, "%i.%i.%i.%i", node[0], node[1], node[2],
-                  node[3]);
+          absl::SNPrintF(szIPAddress, sizeof(szIPAddress), "%i.%i.%i.%i",
+                         node[0], node[1], node[2], node[3]);
           if (strcmp(szIPAddress, "255.255.255.255") == 0) {
             //	Ok. It's not set. Let's try to get it ourselves...
             char szHostName[512];
@@ -441,8 +443,8 @@ void Send_Statistics_Packet() {
           }
           stats.Add_Field(FIELD_PLAYER1_IP, szIPAddress);
           Session.Players[1]->Address.Get_Address(net, node);
-          sprintf(szIPAddress, "%i.%i.%i.%i", node[0], node[1], node[2],
-                  node[3]);
+          absl::SNPrintF(szIPAddress, sizeof(szIPAddress), "%i.%i.%i.%i",
+                         node[0], node[1], node[2], node[3]);
           stats.Add_Field(FIELD_PLAYER2_IP, szIPAddress);
         }
         // Stalemate games.
@@ -553,7 +555,7 @@ void Send_Statistics_Packet() {
     ** Red Alert version/build date
     */
     char version[128];
-    sprintf(version, "V%s", VerNum.Version_Name());
+    absl::SNPrintF(version, sizeof(version), "V%s", VerNum.Version_Name());
     stats.Add_Field(FIELD_GAME_VERSION, version);
 
     /*

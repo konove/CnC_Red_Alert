@@ -47,6 +47,7 @@
 #include <cstring>
 #include <iterator>
 
+#include "absl/strings/str_format.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
 #include "sdllib/gbuffer.h"
@@ -433,7 +434,7 @@ void GameOptionsClass::Process() {
 #endif
             BreakoutAllowed = true;
             char buffer[25];
-            sprintf(buffer, "%s.VQA", BriefMovie);
+            absl::SNPrintF(buffer, sizeof(buffer), "%s.VQA", BriefMovie);
             if (GameFile(buffer).IsAvailable()) {
               Play_Movie(BriefMovie);
             } else {

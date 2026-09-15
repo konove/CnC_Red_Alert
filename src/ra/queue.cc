@@ -89,6 +89,7 @@
 #include <cstring>
 #include <utility>
 
+#include "absl/strings/str_format.h"
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/safe_string.h"
@@ -1038,16 +1039,16 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
 
         fp = fopen("recon.txt", "wt");
         if (fp) {
-          fprintf(fp, "# Connections: %d\n", net->Num_Connections());
-          fprintf(fp, "   My Frame #: %" PRId64 "\n", Frame);
+          absl::FPrintF(fp, "# Connections: %d\n", net->Num_Connections());
+          absl::FPrintF(fp, "   My Frame #: %" PRId64 "\n", Frame);
           for (i = 0; i < net->Num_Connections(); i++) {
             housep = HouseClass::As_Pointer(
                 static_cast<HousesType>(net->Connection_ID(i)));
-            fprintf(fp,
-                    "%15s: Their Sent:%d  Their Recv:%d  Their Frame:%" PRId64
-                    "\\n",
-                    housep->IniName, their_sent[i], their_recv[i],
-                    their_frame[i]);
+            absl::FPrintF(
+                fp,
+                "%15s: Their Sent:%d  Their Recv:%d  Their Frame:%" PRId64
+                "\\n",
+                housep->IniName, their_sent[i], their_recv[i], their_frame[i]);
           }
           fclose(fp);
         }
@@ -1104,13 +1105,13 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
         if (WWMessageBox().Process(TXT_ASK_EMERGENCY_SAVE_NOT_RESPONDING,
                                    TXT_YES, TXT_NO, TXT_NONE) == 0) {
           Session.EmergencySave = true;
-          // printf("Saving emergency game; frame:%d,
-          // CRC:%d\n",Frame,GameCRC); Print_CRCs(NULL); printf("Before Save:
-          // Count1:%d, Count2:%d, Seed:%d\n", Scen.RandomNumber.Count1,
+          // absl::PrintF("Saving emergency game; frame:%d,
+          // CRC:%d\n",Frame,GameCRC); Print_CRCs(NULL); absl::PrintF("Before
+          // Save: Count1:%d, Count2:%d, Seed:%d\n", Scen.RandomNumber.Count1,
           //	Scen.RandomNumber.Count2,
           //	Scen.RandomNumber.Seed);
           Save_Game(-1, Text_String(TXT_MULTIPLAYER_GAME));
-          // printf("After Save: Count1:%d, Count2:%d, Seed:%d\n",
+          // absl::PrintF("After Save: Count1:%d, Count2:%d, Seed:%d\n",
           //	Scen.RandomNumber.Count1,
           //	Scen.RandomNumber.Count2,
           //	Scen.RandomNumber.Seed);
@@ -1170,14 +1171,14 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
           if (WWMessageBox().Process(TXT_ASK_EMERGENCY_SAVE_HUNG_UP, TXT_YES,
                                      TXT_NO, TXT_NONE) == 0) {
             Session.EmergencySave = true;
-            // printf("Saving emergency game; frame:%d,
-            // CRC:%d\n",Frame,GameCRC); Print_CRCs(NULL); printf("Before
+            // absl::PrintF("Saving emergency game; frame:%d,
+            // CRC:%d\n",Frame,GameCRC); Print_CRCs(NULL); absl::PrintF("Before
             // Save: Count1:%d, Count2:%d, Seed:%d\n",
             //	Scen.RandomNumber.Count1,
             //	Scen.RandomNumber.Count2,
             //	Scen.RandomNumber.Seed);
             Save_Game(-1, Text_String(TXT_MULTIPLAYER_GAME));
-            // printf("After Save: Count1:%d, Count2:%d, Seed:%d\n",
+            // absl::PrintF("After Save: Count1:%d, Count2:%d, Seed:%d\n",
             //	Scen.RandomNumber.Count1,
             //	Scen.RandomNumber.Count2,
             //	Scen.RandomNumber.Seed);
@@ -1865,15 +1866,17 @@ static RetcodeType Process_Receive_Packet(ConnManClass* net,
       FILE* fp;
       fp = fopen("badcount.txt", "wt");
       if (fp) {
-        fprintf(fp, "Event Type:%s\n", EventClass::EventNames[event->Type]);
-        fprintf(fp, "Frame:%d  ID:%d  IsExec:%d\n", event->Frame, event->ID,
-                event->IsExecuted);
+        absl::FPrintF(fp, "Event Type:%s\n",
+                      EventClass::EventNames[event->Type]);
+        absl::FPrintF(fp, "Frame:%d  ID:%d  IsExec:%d\n", event->Frame,
+                      event->ID, event->IsExecuted);
         if (event->Type != EventClass::FRAMEINFO) {
-          fprintf(fp, "Wrong Event Type!\n");
+          absl::FPrintF(fp, "Wrong Event Type!\n");
         } else {
-          fprintf(fp, "CRC:%x  CommandCount:%d  Delay:%d\n",
-                  event->Data.FrameInfo.CRC, event->Data.FrameInfo.CommandCount,
-                  event->Data.FrameInfo.Delay);
+          absl::FPrintF(fp, "CRC:%x  CommandCount:%d  Delay:%d\n",
+                        event->Data.FrameInfo.CRC,
+                        event->Data.FrameInfo.CommandCount,
+                        event->Data.FrameInfo.Delay);
         }
         fclose(fp);
       }
@@ -1884,13 +1887,14 @@ static RetcodeType Process_Receive_Packet(ConnManClass* net,
 
   if (Debug_Print_Events) {
     if (event->Type == EventClass::FRAMESYNC) {
-      printf("(%" PRId64 ") Received FRAMESYNC: ", Frame);
+      absl::PrintF("(%" PRId64 ") Received FRAMESYNC: ", Frame);
     } else {
-      printf("(%" PRId64 ") Received FRAMEINFO: ", Frame);
+      absl::PrintF("(%" PRId64 ") Received FRAMEINFO: ", Frame);
     }
-    printf("EvFrame:%d ID:%d CRC:%x CmdCount:%d Delay:%d\n", event->Frame,
-           event->ID, event->Data.FrameInfo.CRC,
-           event->Data.FrameInfo.CommandCount, event->Data.FrameInfo.Delay);
+    absl::PrintF("EvFrame:%d ID:%d CRC:%x CmdCount:%d Delay:%d\n", event->Frame,
+                 event->ID, event->Data.FrameInfo.CRC,
+                 event->Data.FrameInfo.CommandCount,
+                 event->Data.FrameInfo.Delay);
   }
 
   //------------------------------------------------------------------------
@@ -2620,7 +2624,7 @@ int Add_Compressed_Events(void* buf, int bufsize, int frame_delay, int size,
   //------------------------------------------------------------------------
 
   if (Debug_Print_Events) {
-    printf("\n(%" PRId64 ") Building Send Packet\n", Frame);
+    absl::PrintF("\n(%" PRId64 ") Building Send Packet\n", Frame);
   }
 
   //------------------------------------------------------------------------
@@ -2676,7 +2680,7 @@ int Add_Compressed_Events(void* buf, int bufsize, int frame_delay, int size,
             OutList.First().Data.MegaMission.Destination ==
                 prevevent.Data.MegaMission.Destination) {
           if (Debug_Print_Events) {
-            printf(
+            absl::PrintF(
                 "      adding Whom:%x (%x) Mission:%s Target:%x (%x) Dest:%x "
                 "(%x)\n",
                 static_cast<unsigned int>(
@@ -2714,7 +2718,7 @@ int Add_Compressed_Events(void* buf, int bufsize, int frame_delay, int size,
         //...............................................................
         else {
           if (Debug_Print_Events) {
-            printf("  New MEGAMISSION run:\n");
+            absl::PrintF("  New MEGAMISSION run:\n");
           }
 
           if (unitsptr != nullptr) {
@@ -2754,7 +2758,7 @@ int Add_Compressed_Events(void* buf, int bufsize, int frame_delay, int size,
     //.....................................................................
     else if (eventtype == EventClass::MEGAMISSION) {
       if (Debug_Print_Events) {
-        printf("  New MEGAMISSION run:\n");
+        absl::PrintF("  New MEGAMISSION run:\n");
       }
 
       unitsptr = static_cast<unsigned char*>(buf) + size +
@@ -2902,7 +2906,7 @@ int Add_Compressed_Events(void* buf, int bufsize, int frame_delay, int size,
   }
 
   if (Debug_Print_Events) {
-    printf("\n");
+    absl::PrintF("\n");
   }
 
   return size;
@@ -3416,11 +3420,12 @@ static int Execute_DoList(int max_houses, HousesType base_house,
           }
 
           if (Debug_Print_Events && (DoList[j].Type == EventClass::EXIT)) {
-            printf("(%" PRId64 ") Executing EXIT, ID:%d (%s), EvFrame:%d\\n",
-                   Frame, DoList[j].ID,
-                   HouseClass::As_Pointer(static_cast<HousesType>(DoList[j].ID))
-                       ->IniName,
-                   DoList[j].Frame);
+            absl::PrintF(
+                "(%" PRId64 ") Executing EXIT, ID:%d (%s), EvFrame:%d\\n",
+                Frame, DoList[j].ID,
+                HouseClass::As_Pointer(static_cast<HousesType>(DoList[j].ID))
+                    ->IniName,
+                DoList[j].Frame);
           }
 
           if (std::cmp_equal(DoList[j].ID, PlayerPtr->ID)) {
@@ -3959,7 +3964,7 @@ static void Print_CRCs(const EventClass* ev) {
   }
 
   for (i = 0; i < 32; i++) {
-    fprintf(fp, "CRC[%d]=%x\n", i, CRC[i]);
+    absl::FPrintF(fp, "CRC[%d]=%x\n", i, CRC[i]);
   }
 
   //
@@ -3971,9 +3976,9 @@ static void Print_CRCs(const EventClass* ev) {
     if (housep) {
       const HousesType actlike = housep->ActLike;
       color = housep->RemapColor;
-      fprintf(fp, "%s: IsHuman:%d  Color:%s  ID:%d  ActLike:%s\n",
-              housep->IniName, housep->IsHuman, ColorNames[color], housep->ID,
-              HouseClass::As_Pointer(actlike)->Class->Name());
+      absl::FPrintF(fp, "%s: IsHuman:%d  Color:%s  ID:%d  ActLike:%s\n",
+                    housep->IniName, housep->IsHuman, ColorNames[color],
+                    housep->ID, HouseClass::As_Pointer(actlike)->Class->Name());
       Add_CRC(&GameCRC,
               static_cast<uint32_t>(static_cast<int>(housep->Credits) +
                                     housep->Power +
@@ -3989,8 +3994,9 @@ static void Print_CRCs(const EventClass* ev) {
     housep = HouseClass::As_Pointer(house);
     if (housep) {
       GameCRC = 0;
-      fprintf(fp, "-------------------- %s Infantry -------------------\n",
-              housep->Class->Name());
+      absl::FPrintF(fp,
+                    "-------------------- %s Infantry -------------------\n",
+                    housep->Class->Name());
       for (i = 0; i < Infantry.Count(); i++) {
         infp = static_cast<InfantryClass*>(Infantry.Active_Ptr(i));
         if (infp->Owner() == house) {
@@ -4001,13 +4007,13 @@ static void Print_CRCs(const EventClass* ev) {
           Add_CRC(&GameCRC,
                   static_cast<uint32_t>(static_cast<int>(infp->Mission) +
                                         infp->TarCom));
-          fprintf(fp,
-                  "COORD:%x   Facing:%d   Mission:%d   Type:%d   Tgt:%x "
-                  "Speed:%d NavCom:%x\n",
-                  infp->Coord, static_cast<int>(infp->PrimaryFacing),
-                  infp->Get_Mission(), infp->Class->Type,
-                  static_cast<unsigned int>(infp->As_Target()), infp->Speed,
-                  static_cast<unsigned int>(infp->NavCom));
+          absl::FPrintF(fp,
+                        "COORD:%x   Facing:%d   Mission:%d   Type:%d   Tgt:%x "
+                        "Speed:%d NavCom:%x\n",
+                        infp->Coord, static_cast<int>(infp->PrimaryFacing),
+                        infp->Get_Mission(), infp->Class->Type,
+                        static_cast<unsigned int>(infp->As_Target()),
+                        infp->Speed, static_cast<unsigned int>(infp->NavCom));
         }
       }
       Mono_Printf("%s Infantry:%x\n", housep->Class->Name(), GameCRC);
@@ -4021,8 +4027,8 @@ static void Print_CRCs(const EventClass* ev) {
     housep = HouseClass::As_Pointer(house);
     if (housep) {
       GameCRC = 0;
-      fprintf(fp, "-------------------- %s Units -------------------\n",
-              housep->Class->Name());
+      absl::FPrintF(fp, "-------------------- %s Units -------------------\n",
+                    housep->Class->Name());
       for (i = 0; i < Units.Count(); i++) {
         unitp = static_cast<UnitClass*>(Units.Active_Ptr(i));
         if (unitp->Owner() == house) {
@@ -4030,13 +4036,14 @@ static void Print_CRCs(const EventClass* ev) {
                   static_cast<uint32_t>(static_cast<int>(unitp->Coord) +
                                         static_cast<int>(unitp->PrimaryFacing) +
                                         static_cast<int>(unitp->SecondaryFacing)));
-          fprintf(fp,
-                  "COORD:%x   Facing:%d   Facing2:%d   Mission:%d   Type:%d   "
-                  "Tgt:%x\n",
-                  unitp->Coord, static_cast<int>(unitp->PrimaryFacing),
-                  static_cast<int>(unitp->SecondaryFacing),
-                  unitp->Get_Mission(), unitp->Class->Type,
-                  static_cast<unsigned int>(unitp->As_Target()));
+          absl::FPrintF(
+              fp,
+              "COORD:%x   Facing:%d   Facing2:%d   Mission:%d   Type:%d   "
+              "Tgt:%x\n",
+              unitp->Coord, static_cast<int>(unitp->PrimaryFacing),
+              static_cast<int>(unitp->SecondaryFacing), unitp->Get_Mission(),
+              unitp->Class->Type,
+              static_cast<unsigned int>(unitp->As_Target()));
         }
       }
       Mono_Printf("%s Units:%x\n", housep->Class->Name(), GameCRC);
@@ -4050,8 +4057,8 @@ static void Print_CRCs(const EventClass* ev) {
     housep = HouseClass::As_Pointer(house);
     if (housep) {
       GameCRC = 0;
-      fprintf(fp, "-------------------- %s Vessels -------------------\n",
-              housep->Class->Name());
+      absl::FPrintF(fp, "-------------------- %s Vessels -------------------\n",
+                    housep->Class->Name());
       for (i = 0; i < Vessels.Count(); i++) {
         vesselp = static_cast<VesselClass*>(Vessels.Active_Ptr(i));
         if (vesselp->Owner() == house) {
@@ -4064,13 +4071,13 @@ static void Print_CRCs(const EventClass* ev) {
           Add_CRC(&GameCRC,
                   static_cast<uint32_t>(static_cast<int>(vesselp->Mission) +
                                         vesselp->TarCom));
-          fprintf(fp,
-                  "COORD:%x   Facing:%d   Mission:%d   Strength:%d Type:%d   "
-                  "Tgt:%x\n",
-                  vesselp->Coord, static_cast<int>(vesselp->PrimaryFacing),
-                  vesselp->Get_Mission(), vesselp->Strength,
-                  vesselp->Class->Type,
-                  static_cast<unsigned int>(vesselp->As_Target()));
+          absl::FPrintF(
+              fp,
+              "COORD:%x   Facing:%d   Mission:%d   Strength:%d Type:%d   "
+              "Tgt:%x\n",
+              vesselp->Coord, static_cast<int>(vesselp->PrimaryFacing),
+              vesselp->Get_Mission(), vesselp->Strength, vesselp->Class->Type,
+              static_cast<unsigned int>(vesselp->As_Target()));
         }
       }
       Mono_Printf("%s Vessels:%x\n", housep->Class->Name(), GameCRC);
@@ -4084,18 +4091,20 @@ static void Print_CRCs(const EventClass* ev) {
     housep = HouseClass::As_Pointer(house);
     if (housep) {
       GameCRC = 0;
-      fprintf(fp, "-------------------- %s Buildings -------------------\n",
-              housep->Class->Name());
+      absl::FPrintF(fp,
+                    "-------------------- %s Buildings -------------------\n",
+                    housep->Class->Name());
       for (i = 0; i < Buildings.Count(); i++) {
         bldgp = static_cast<BuildingClass*>(Buildings.Active_Ptr(i));
         if (bldgp->Owner() == house) {
           Add_CRC(&GameCRC,
                   static_cast<uint32_t>(static_cast<int>(bldgp->Coord) +
                                         static_cast<int>(bldgp->PrimaryFacing)));
-          fprintf(fp, "COORD:%x   Facing:%d   Mission:%d   Type:%d   Tgt:%x\n",
-                  bldgp->Coord, static_cast<int>(bldgp->PrimaryFacing),
-                  bldgp->Get_Mission(), bldgp->Class->Type,
-                  static_cast<unsigned int>(bldgp->As_Target()));
+          absl::FPrintF(
+              fp, "COORD:%x   Facing:%d   Mission:%d   Type:%d   Tgt:%x\n",
+              bldgp->Coord, static_cast<int>(bldgp->PrimaryFacing),
+              bldgp->Get_Mission(), bldgp->Class->Type,
+              static_cast<unsigned int>(bldgp->As_Target()));
         }
       }
       Mono_Printf("%s Buildings:%x\n", housep->Class->Name(), GameCRC);
@@ -4106,12 +4115,12 @@ static void Print_CRCs(const EventClass* ev) {
   // Animations
   //
   AnimClass* animp;
-  fprintf(fp, "-------------------- Animations -------------------\n");
+  absl::FPrintF(fp, "-------------------- Animations -------------------\n");
   for (i = 0; i < Anims.Count(); i++) {
     animp = static_cast<AnimClass*>(Anims.Active_Ptr(i));
-    fprintf(fp, "Target:%x OwnerHouse:%d Loops:%d\\n",
-            static_cast<unsigned int>(animp->xObject), animp->OwnerHouse,
-            animp->Loops);
+    absl::FPrintF(fp, "Target:%x OwnerHouse:%d Loops:%d\\n",
+                  static_cast<unsigned int>(animp->xObject), animp->OwnerHouse,
+                  animp->Loops);
   }
 
   //------------------------------------------------------------------------
@@ -4119,54 +4128,56 @@ static void Print_CRCs(const EventClass* ev) {
   //------------------------------------------------------------------------
   GameCRC = 0;
   for (i = 0; std::cmp_less(i, magic_enum::enum_count<LayerType>()); i++) {
-    fprintf(fp, ">>>> MAP LAYER %d <<<<\n", i);
+    absl::FPrintF(fp, ">>>> MAP LAYER %d <<<<\n", i);
     for (j = 0; j < MouseClass::Layer[i].Count(); j++) {
       objp = MouseClass::Layer[i][j];
       Add_CRC(&GameCRC,
               static_cast<uint32_t>(static_cast<int>(objp->Coord) +
                                     static_cast<int>(objp->What_Am_I())));
-      fprintf(fp, "Object %d: %x ", j, objp->Coord);
+      absl::FPrintF(fp, "Object %d: %x ", j, objp->Coord);
 
       if (objp->What_Am_I() == RTTI_AIRCRAFT) {
-        fprintf(fp, "Aircraft  (Type:%d) ",
-                static_cast<AircraftType>(
-                    dynamic_cast<const AircraftClass&>(*objp)));
+        absl::FPrintF(fp, "Aircraft  (Type:%d) ",
+                      static_cast<AircraftType>(
+                          dynamic_cast<const AircraftClass&>(*objp)));
       } else if (objp->What_Am_I() == RTTI_ANIM) {
-        fprintf(fp, "Anim      (Type:%d) ",
-                static_cast<AnimType>(dynamic_cast<const AnimClass&>(*objp)));
+        absl::FPrintF(
+            fp, "Anim      (Type:%d) ",
+            static_cast<AnimType>(dynamic_cast<const AnimClass&>(*objp)));
       } else if (objp->What_Am_I() == RTTI_BUILDING) {
-        fprintf(
+        absl::FPrintF(
             fp, "Building  (Type:%d) ",
             static_cast<StructType>(dynamic_cast<const BuildingClass&>(*objp)));
       } else if (objp->What_Am_I() == RTTI_BULLET) {
-        fprintf(
+        absl::FPrintF(
             fp, "Bullet    (Type:%d) ",
             static_cast<BulletType>(dynamic_cast<const BulletClass&>(*objp)));
       } else if (objp->What_Am_I() == RTTI_INFANTRY) {
-        fprintf(fp, "Infantry  (Type:%d) ",
-                static_cast<InfantryType>(
-                    dynamic_cast<const InfantryClass&>(*objp)));
+        absl::FPrintF(fp, "Infantry  (Type:%d) ",
+                      static_cast<InfantryType>(
+                          dynamic_cast<const InfantryClass&>(*objp)));
       } else if (objp->What_Am_I() == RTTI_OVERLAY) {
-        fprintf(
+        absl::FPrintF(
             fp, "Overlay   (Type:%d) ",
             static_cast<OverlayType>(dynamic_cast<const OverlayClass&>(*objp)));
       } else if (objp->What_Am_I() == RTTI_SMUDGE) {
-        fprintf(
+        absl::FPrintF(
             fp, "Smudge    (Type:%d) ",
             static_cast<SmudgeType>(dynamic_cast<const SmudgeClass&>(*objp)));
       } else if (objp->What_Am_I() == RTTI_TEMPLATE) {
-        fprintf(fp, "Template  (Type:%d) ",
-                static_cast<TemplateType>(
-                    dynamic_cast<const TemplateClass&>(*objp)));
+        absl::FPrintF(fp, "Template  (Type:%d) ",
+                      static_cast<TemplateType>(
+                          dynamic_cast<const TemplateClass&>(*objp)));
       } else if (objp->What_Am_I() == RTTI_TERRAIN) {
-        fprintf(
+        absl::FPrintF(
             fp, "Terrain   (Type:%d) ",
             static_cast<TerrainType>(dynamic_cast<const TerrainClass&>(*objp)));
       } else if (objp->What_Am_I() == RTTI_UNIT) {
-        fprintf(fp, "Unit      (Type:%d) ",
-                static_cast<UnitType>(dynamic_cast<const UnitClass&>(*objp)));
+        absl::FPrintF(
+            fp, "Unit      (Type:%d) ",
+            static_cast<UnitType>(dynamic_cast<const UnitClass&>(*objp)));
       } else if (objp->What_Am_I() == RTTI_VESSEL) {
-        fprintf(
+        absl::FPrintF(
             fp, "Vessel    (Type:%d) ",
             static_cast<VesselType>(dynamic_cast<const VesselClass&>(*objp)));
       }
@@ -4174,9 +4185,9 @@ static void Print_CRCs(const EventClass* ev) {
       house = objp->Owner();
       if (house != HOUSE_NONE) {
         housep = HouseClass::As_Pointer(house);
-        fprintf(fp, "Owner: %s\n", housep->Class->IniName);
+        absl::FPrintF(fp, "Owner: %s\n", housep->Class->IniName);
       } else {
-        fprintf(fp, "Owner: NONE\n");
+        absl::FPrintF(fp, "Owner: NONE\n");
       }
     }
   }
@@ -4186,58 +4197,62 @@ static void Print_CRCs(const EventClass* ev) {
   //	Logic Layers
   //------------------------------------------------------------------------
   GameCRC = 0;
-  fprintf(fp, ">>>> LOGIC LAYER <<<<\n");
+  absl::FPrintF(fp, ">>>> LOGIC LAYER <<<<\n");
   for (i = 0; i < Logic.Count(); i++) {
     objp = Logic[i];
     Add_CRC(&GameCRC,
             static_cast<uint32_t>(static_cast<int>(objp->Coord) +
                                   static_cast<int>(objp->What_Am_I())));
-    fprintf(fp, "Object %d: %x ", i, objp->Coord);
+    absl::FPrintF(fp, "Object %d: %x ", i, objp->Coord);
 
     if (objp->What_Am_I() == RTTI_AIRCRAFT) {
-      fprintf(
+      absl::FPrintF(
           fp, "Aircraft  (Type:%d) ",
           static_cast<AircraftType>(dynamic_cast<const AircraftClass&>(*objp)));
     } else if (objp->What_Am_I() == RTTI_ANIM) {
-      fprintf(fp, "Anim      (Type:%d) ",
-              static_cast<AnimType>(dynamic_cast<const AnimClass&>(*objp)));
+      absl::FPrintF(
+          fp, "Anim      (Type:%d) ",
+          static_cast<AnimType>(dynamic_cast<const AnimClass&>(*objp)));
     } else if (objp->What_Am_I() == RTTI_BUILDING) {
-      fprintf(
+      absl::FPrintF(
           fp, "Building  (Type:%d) ",
           static_cast<StructType>(dynamic_cast<const BuildingClass&>(*objp)));
     } else if (objp->What_Am_I() == RTTI_BULLET) {
-      fprintf(fp, "Bullet    (Type:%d) ",
-              static_cast<BulletType>(dynamic_cast<const BulletClass&>(*objp)));
+      absl::FPrintF(
+          fp, "Bullet    (Type:%d) ",
+          static_cast<BulletType>(dynamic_cast<const BulletClass&>(*objp)));
     } else if (objp->What_Am_I() == RTTI_INFANTRY) {
-      fprintf(
+      absl::FPrintF(
           fp, "Infantry  (Type:%d) ",
           static_cast<InfantryType>(dynamic_cast<const InfantryClass&>(*objp)));
     } else if (objp->What_Am_I() == RTTI_OVERLAY) {
-      fprintf(
+      absl::FPrintF(
           fp, "Overlay   (Type:%d) ",
           static_cast<OverlayType>(dynamic_cast<const OverlayClass&>(*objp)));
     } else if (objp->What_Am_I() == RTTI_SMUDGE) {
-      fprintf(fp, "Smudge    (Type:%d) ",
-              static_cast<SmudgeType>(dynamic_cast<const SmudgeClass&>(*objp)));
+      absl::FPrintF(
+          fp, "Smudge    (Type:%d) ",
+          static_cast<SmudgeType>(dynamic_cast<const SmudgeClass&>(*objp)));
     } else if (objp->What_Am_I() == RTTI_TEMPLATE) {
-      fprintf(
+      absl::FPrintF(
           fp, "Template  (Type:%d) ",
           static_cast<TemplateType>(dynamic_cast<const TemplateClass&>(*objp)));
     } else if (objp->What_Am_I() == RTTI_TERRAIN) {
-      fprintf(
+      absl::FPrintF(
           fp, "Terrain   (Type:%d) ",
           static_cast<TerrainType>(dynamic_cast<const TerrainClass&>(*objp)));
     } else if (objp->What_Am_I() == RTTI_UNIT) {
-      fprintf(fp, "Unit      (Type:%d) ",
-              static_cast<UnitType>(dynamic_cast<const UnitClass&>(*objp)));
+      absl::FPrintF(
+          fp, "Unit      (Type:%d) ",
+          static_cast<UnitType>(dynamic_cast<const UnitClass&>(*objp)));
     }
 
     house = objp->Owner();
     if (house != HOUSE_NONE) {
       housep = HouseClass::As_Pointer(house);
-      fprintf(fp, "Owner: %s\n", housep->Class->IniName);
+      absl::FPrintF(fp, "Owner: %s\n", housep->Class->IniName);
     } else {
-      fprintf(fp, "Owner: NONE\n");
+      absl::FPrintF(fp, "Owner: NONE\n");
     }
   }
   Mono_Printf("Logic:%x  \n", GameCRC);
@@ -4247,24 +4262,26 @@ static void Print_CRCs(const EventClass* ev) {
   //------------------------------------------------------------------------
   Mono_Printf("Random Number:%x  \n", Scen.sync_rng_.seed());
 #ifdef RANDOM_COUNT
-  fprintf(fp, "\nRandom Number:%x (Count1:%d, Count2:%d)\n",
-          Scen.sync_rng_.seed(), Scen.sync_rng_.Count1, Scen.sync_rng_.Count2);
+  absl::FPrintF(fp, "\nRandom Number:%x (Count1:%d, Count2:%d)\n",
+                Scen.sync_rng_.seed(), Scen.sync_rng_.Count1,
+                Scen.sync_rng_.Count2);
 #else
-  fprintf(fp, "\nRandom Number:%x\n", Scen.sync_rng_.seed());
+  absl::FPrintF(fp, "\nRandom Number:%x\n", Scen.sync_rng_.seed());
 #endif
 
   Mono_Printf("My Frame:%" PRId64 "  \n", Frame);
-  fprintf(fp, "My Frame:%" PRId64 "\n", Frame);
+  absl::FPrintF(fp, "My Frame:%" PRId64 "\n", Frame);
 
   if (ev) {
-    fprintf(fp, "\n");
-    fprintf(fp, "Offending event:\n");
-    fprintf(fp, "  Type:         %d\n", ev->Type);
-    fprintf(fp, "  Frame:        %d\n", ev->Frame);
-    fprintf(fp, "  ID:           %x\n", static_cast<unsigned int>(ev->ID));
-    fprintf(fp, "  CRC:          %x\n", ev->Data.FrameInfo.CRC);
-    fprintf(fp, "  CommandCount: %d\n", ev->Data.FrameInfo.CommandCount);
-    fprintf(fp, "  Delay:        %d\n", ev->Data.FrameInfo.Delay);
+    absl::FPrintF(fp, "\n");
+    absl::FPrintF(fp, "Offending event:\n");
+    absl::FPrintF(fp, "  Type:         %d\n", ev->Type);
+    absl::FPrintF(fp, "  Frame:        %d\n", ev->Frame);
+    absl::FPrintF(fp, "  ID:           %x\n",
+                  static_cast<unsigned int>(ev->ID));
+    absl::FPrintF(fp, "  CRC:          %x\n", ev->Data.FrameInfo.CRC);
+    absl::FPrintF(fp, "  CommandCount: %d\n", ev->Data.FrameInfo.CommandCount);
+    absl::FPrintF(fp, "  Delay:        %d\n", ev->Data.FrameInfo.Delay);
   }
 
   fclose(fp);
@@ -4483,30 +4500,31 @@ void Dump_Packet_Too_Late_Stuff(const EventClass* event, ConnManClass* net,
   if (!fp) {
     return;
   }
-  fprintf(fp, "----------------- Event data: ----------------------\n");
-  fprintf(fp, "Type:       %s\n", EventClass::EventNames[event->Type]);
-  fprintf(fp, "Frame:      %d\n", event->Frame);
-  fprintf(fp, "ID:         %d\n", event->ID);
+  absl::FPrintF(fp, "----------------- Event data: ----------------------\n");
+  absl::FPrintF(fp, "Type:       %s\n", EventClass::EventNames[event->Type]);
+  absl::FPrintF(fp, "Frame:      %d\n", event->Frame);
+  absl::FPrintF(fp, "ID:         %d\n", event->ID);
 
   for (i = 0; i < Session.Players.Count(); i++) {
     if (event->ID == Session.Players[i]->Player.ID) {
-      fprintf(fp, "Player's Name: %s", Session.Players[i]->Name);
+      absl::FPrintF(fp, "Player's Name: %s", Session.Players[i]->Name);
     }
   }
-  fprintf(fp, "\n");
+  absl::FPrintF(fp, "\n");
 
-  fprintf(fp, "--------------------- My data: ---------------------\n");
-  fprintf(fp, "My Frame:%" PRId64 "\n", Frame);
-  fprintf(fp, "My MaxAhead:%d\n", Session.MaxAhead);
+  absl::FPrintF(fp, "--------------------- My data: ---------------------\n");
+  absl::FPrintF(fp, "My Frame:%" PRId64 "\n", Frame);
+  absl::FPrintF(fp, "My MaxAhead:%d\n", Session.MaxAhead);
 
   if (net) {
-    fprintf(fp, "-------------------- Frame Stats: ------------------\n");
-    fprintf(fp, "Name          ID  TheirFrame  TheirSent  TheirRecv\n");
+    absl::FPrintF(fp, "-------------------- Frame Stats: ------------------\n");
+    absl::FPrintF(fp, "Name          ID  TheirFrame  TheirSent  TheirRecv\n");
     for (i = 0; i < net->Num_Connections(); i++) {
       house = static_cast<HousesType>(net->Connection_ID(i));
-      fprintf(fp, "%12s  %2d    %6" PRId64 "      %6d      %6d\n",
-              HouseClass::As_Pointer(house)->IniName, net->Connection_ID(i),
-              their_frame[i], their_sent[i], their_recv[i]);
+      absl::FPrintF(fp, "%12s  %2d    %6" PRId64 "      %6d      %6d\n",
+                    HouseClass::As_Pointer(house)->IniName,
+                    net->Connection_ID(i), their_frame[i], their_sent[i],
+                    their_recv[i]);
     }
   }
 

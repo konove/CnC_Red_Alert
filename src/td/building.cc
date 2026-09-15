@@ -118,6 +118,7 @@
 #include <cstring>
 #include <utility>
 
+#include "absl/strings/str_format.h"
 #include "port/tokenizer.h"
 #include "rand.h"
 #include "reinf.h"
@@ -3144,12 +3145,13 @@ void BuildingClass::Write_INI(char* buffer) {
 
     building = Buildings.Ptr(index);
     if (!building->IsInLimbo) {
-      sprintf(uname, "%03d", index);
-      sprintf(buf, "%s,%s,%d,%u,%d,%s", building->House->Class->IniName,
-              building->Class->IniName,
-              building->Health_Ratio(),
-              Coord_Cell(building->Coord), building->PrimaryFacing.Current(),
-              building->Trigger ? building->Trigger->Get_Name() : "None");
+      absl::SNPrintF(uname, sizeof(uname), "%03d", index);
+      absl::SNPrintF(
+          buf, sizeof(buf), "%s,%s,%d,%u,%d,%s",
+          building->House->Class->IniName, building->Class->IniName,
+          building->Health_Ratio(), Coord_Cell(building->Coord),
+          building->PrimaryFacing.Current(),
+          building->Trigger ? building->Trigger->Get_Name() : "None");
       WWWritePrivateProfileString(INI_Name(), uname, buf, buffer);
     }
   }

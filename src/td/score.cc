@@ -58,6 +58,7 @@
 #include <cstring>
 #include <utility>
 
+#include "absl/strings/str_format.h"
 #include "base/types.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/file_access.h"
@@ -665,9 +666,9 @@ void ScoreClass::Presentation() {
   ** Choose an appropriate palette file for the interpolation
   */
   if (house == HOUSE_GOOD) {
-    sprintf(inter_pal, "SCORPAL1.PAL");
+    absl::SNPrintF(inter_pal, sizeof(inter_pal), "SCORPAL1.PAL");
   } else {
-    sprintf(inter_pal, "SNODPAL1.PAL");
+    absl::SNPrintF(inter_pal, sizeof(inter_pal), "SNODPAL1.PAL");
   }
 
   if (Special.IsJurassic && AreThingiesEnabled) {
@@ -1013,13 +1014,13 @@ void ScoreClass::Presentation() {
     if (hallfame[j].score) {
       char* str = static_cast<char*>(SysMemPage.Get_Buffer()) +
                   (static_cast<base::ssize>(j) * 32);
-      sprintf(str, "%d", hallfame[j].score);
+      absl::SNPrintF(str, 16, "%d", hallfame[j].score);
       Alloc_Object(new ScorePrintClass(str, HALLFAME_X + (6 * 15),
                                        HALLFAME_Y + (j * 8), bluepal, BLACK));
       if (hallfame[j].level < 20) {
-        sprintf(str + 16, "%d", hallfame[j].level);
+        absl::SNPrintF(str + 16, 16, "%d", hallfame[j].level);
       } else {
-        sprintf(str + 16, "**");
+        absl::SNPrintF(str + 16, 16, "**");
       }
       Alloc_Object(new ScorePrintClass(str + 16, HALLFAME_X + (6 * 12),
                                        HALLFAME_Y + (j * 8), bluepal, BLACK));
@@ -2051,7 +2052,7 @@ void Animate_Score_Objs() {
 static char* Int_Print(int a) {
   static char str[10];
 
-  sprintf(str, "%d", a);
+  absl::SNPrintF(str, 16, "%d", a);
   return str;
 }
 

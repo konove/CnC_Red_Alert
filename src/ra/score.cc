@@ -56,6 +56,7 @@
 #include <cstring>
 #include <utility>
 
+#include "absl/strings/str_format.h"
 #include "base/types.h"
 #include "ra/ccptr.h"
 #include "ra/config.h"
@@ -350,7 +351,7 @@ void ScoreClass::Presentation() {
                         ? 1
                         : 0;  // 0 or 1
   char inter_pal[15];
-  sprintf(inter_pal, "SCORPAL1.PAL");
+  absl::SNPrintF(inter_pal, sizeof(inter_pal), "SCORPAL1.PAL");
 
   ControlQ = false;
   FontXSpacing = 0;
@@ -508,7 +509,7 @@ void ScoreClass::Presentation() {
   Count_Up_Print("%3d%%", economy, economy, 244, 38);
 
   char buffer[16];
-  sprintf(buffer, "x %5d", uspoints);
+  absl::SNPrintF(buffer, sizeof(buffer), "x %5d", uspoints);
   Alloc_Object(new ScorePrintClass(buffer, 274, 26, greenpal));
   Alloc_Object(new ScorePrintClass(buffer, 274, 38, greenpal));
   Call_Back_Delay(8);
@@ -516,7 +517,7 @@ void ScoreClass::Presentation() {
   Call_Back_Delay(1);
   SeenBuff.Draw_Line(548, 96, 626, 96, GREEN);
 
-  sprintf(buffer, "%5d", total);
+  absl::SNPrintF(buffer, sizeof(buffer), "%5d", total);
   Alloc_Object(new ScorePrintClass(buffer, 286, 50, greenpal));
 
   // BG	if (!Keyboard->Check()) {
@@ -653,13 +654,13 @@ void ScoreClass::Presentation() {
                                      HALLFAME_Y + (i * 8), pal));
     if (hallfame[i].score) {
       char* str = maststr + (static_cast<base::ssize>(i) * 32);
-      sprintf(str, "%d", hallfame[i].score);
+      absl::SNPrintF(str, sizeof(str), "%d", hallfame[i].score);
       Alloc_Object(new ScorePrintClass(str, HALLFAME_X + (6 * 14),
                                        HALLFAME_Y + (i * 8), pal, BLACK));
       if (hallfame[i].level < 20) {
-        sprintf(str + 16, "%d", hallfame[i].level);
+        absl::SNPrintF(str + 16, sizeof(str) - 16, "%d", hallfame[i].level);
       } else {
-        sprintf(str + 16, "**");
+        absl::SNPrintF(str + 16, sizeof(str) - 16, "**");
       }
       Alloc_Object(new ScorePrintClass(str + 16, HALLFAME_X + (6 * 11),
                                        HALLFAME_Y + (i * 8), pal, BLACK));
@@ -1549,7 +1550,7 @@ void Animate_Score_Objs() {
 static char* Int_Print(int a) {
   static char str[10];
 
-  sprintf(str, "%d", a);
+  absl::SNPrintF(str, sizeof(str), "%d", a);
   return str;
 }
 

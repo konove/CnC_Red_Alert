@@ -132,6 +132,7 @@
 #include <cstring>
 #include <ctime>
 
+#include "absl/strings/str_format.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "port/random_seed.h"
@@ -1117,8 +1118,8 @@ void Destroy_Connection(int id, int error) {
   char txt[80];
 
   if (Debug_Print_Events) {
-    printf("Destroying connection for house %d (%s)\n", id,
-           HouseClass::As_Pointer(static_cast<HousesType>(id))->IniName);
+    absl::PrintF("Destroying connection for house %d (%s)\n", id,
+                 HouseClass::As_Pointer(static_cast<HousesType>(id))->IniName);
   }
 
   //------------------------------------------------------------------------
@@ -1176,7 +1177,7 @@ void Destroy_Connection(int id, int error) {
   //	If we're the last player left, tell the user.
   //------------------------------------------------------------------------
   if (Session.NumPlayers == 1) {
-    sprintf(txt, "%s", Text_String(TXT_JUST_YOU_AND_ME));
+    absl::SNPrintF(txt, sizeof(txt), "%s", Text_String(TXT_JUST_YOU_AND_ME));
     Session.Messages.Add_Message(nullptr, 0, txt, housep->RemapColor, kTpfText,
                                  Rule.MessageDelay * kTicksPerMinute);
     Map.Flag_To_Redraw(false);
@@ -1948,24 +1949,28 @@ static int Net_Join_Dialog() {
           int ii;
           for (ii = 0; EngMisStr[ii] != nullptr; ii++) {
             if (!strcmp(Session.Options.ScenarioDescription, EngMisStr[ii])) {
-              sprintf(txt, "%s %s", p,
-                      config::kIsEnglish ? Session.Options.ScenarioDescription
-                                         : EngMisStr[ii + 1]);
+              absl::SNPrintF(txt, sizeof(txt), "%s %s", p,
+                             config::kIsEnglish
+                                 ? Session.Options.ScenarioDescription
+                                 : EngMisStr[ii + 1]);
               break;
             }
           }
           if (EngMisStr[ii] == nullptr) {
-            sprintf(txt, "%s %s", p, Session.Options.ScenarioDescription);
+            absl::SNPrintF(txt, sizeof(txt), "%s %s", p,
+                           Session.Options.ScenarioDescription);
           }
           descrip.Set_Text(txt);
 
-          //					sprintf(txt, "%s %s", p,
+          //					absl::SNPrintF(txt, sizeof(txt),
+          //"%s %s", p,
           // Session.Options.ScenarioDescription);
           // descrip.Set_Text(txt);
           // Fancy_Text_Print("%s %s", d_dialog_cx, d_name_y, scheme, BLACK,
           // kTpfText | TPF_CENTER, p, Session.Options.ScenarioDescription);
         } else {
-          sprintf(txt, "%s %s", p, Text_String(TXT_NOT_FOUND));
+          absl::SNPrintF(txt, sizeof(txt), "%s %s", p,
+                         Text_String(TXT_NOT_FOUND));
           descrip.Set_Text(txt);
           //					Fancy_Text_Print("%s %s",
           // d_dialog_cx, d_name_y, &ColorRemaps[PCOLOR_RED], TBLACK, kTpfText |
@@ -1981,7 +1986,7 @@ static int Net_Join_Dialog() {
         Fancy_Text_Print(TXT_COUNT, d_count_x - 4, d_count_y, scheme, TBLACK,
                          kTpfText | TPF_RIGHT);
 
-        sprintf(txt, "%d", Session.Options.UnitCount);
+        absl::SNPrintF(txt, sizeof(txt), "%d", Session.Options.UnitCount);
         staticcount.Set_Text(txt);
         staticcount.Draw_Me();
         //				Fancy_Text_Print(txt, d_count_x +
@@ -1990,9 +1995,9 @@ static int Net_Join_Dialog() {
         Fancy_Text_Print(TXT_LEVEL, d_level_x - 4, d_level_y, scheme, TBLACK,
                          kTpfText | TPF_RIGHT);
         if (BuildLevel <= MPLAYER_BUILD_LEVEL_MAX) {
-          sprintf(txt, "%d", BuildLevel);
+          absl::SNPrintF(txt, sizeof(txt), "%d", BuildLevel);
         } else {
-          sprintf(txt, "**");
+          absl::SNPrintF(txt, sizeof(txt), "**");
         }
         staticlevel.Set_Text(txt);
         staticlevel.Draw_Me();
@@ -2001,7 +2006,7 @@ static int Net_Join_Dialog() {
 
         Fancy_Text_Print(TXT_CREDITS_COLON, d_credits_x - 4, d_credits_y,
                          scheme, TBLACK, kTpfText | TPF_RIGHT);
-        sprintf(txt, "%d", Session.Options.Credits);
+        absl::SNPrintF(txt, sizeof(txt), "%d", Session.Options.Credits);
         staticcredits.Set_Text(txt);
         staticcredits.Draw_Me();
         //				Fancy_Text_Print(txt, d_credits_x +
@@ -2009,7 +2014,7 @@ static int Net_Join_Dialog() {
 
         Fancy_Text_Print(TXT_AI_PLAYERS_COLON, d_aiplayers_x - 4, d_aiplayers_y,
                          scheme, TBLACK, kTpfText | TPF_RIGHT);
-        sprintf(txt, "%d", Session.Options.AIPlayers);
+        absl::SNPrintF(txt, sizeof(txt), "%d", Session.Options.AIPlayers);
         staticaiplayers.Set_Text(txt);
         staticaiplayers.Draw_Me();
         //				Fancy_Text_Print(txt, d_aiplayers_x +
@@ -2585,14 +2590,17 @@ static int Net_Join_Dialog() {
 
 #ifdef OLDWAY
         if (Session.House == HOUSE_GOOD) {
-          sprintf(item, "%s\t%s", namebuf, Text_String(TXT_ALLIES));
+          absl::SNPrintF(item, sizeof(item), "%s\t%s", namebuf,
+                         Text_String(TXT_ALLIES));
         } else {
-          sprintf(item, "%s\t%s", namebuf, Text_String(TXT_SOVIET));
+          absl::SNPrintF(item, sizeof(item), "%s\t%s", namebuf,
+                         Text_String(TXT_SOVIET));
         }
 #else   // OLDWAY
-        sprintf(item, "%s\t%s", namebuf,
-                Text_String(
-                    HouseTypeClass::As_Reference(Session.House).Full_Name()));
+        absl::SNPrintF(
+            item, sizeof(item), "%s\t%s", namebuf,
+            Text_String(
+                HouseTypeClass::As_Reference(Session.House).Full_Name()));
 #endif  // OLDWAY
         playerlist.Add_Item(item, Session.ColorIdx == PCOLOR_DIALOG_BLUE
                                       ? &ColorRemaps[PCOLOR_REALLY_BLUE]
@@ -3559,15 +3567,17 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       //..................................................................
 #ifdef OLDWAY
       if (Session.GPacket.PlayerInfo.House == HOUSE_GOOD) {
-        sprintf(item, "%s\t%s", Session.GPacket.Name, Text_String(TXT_ALLIES));
+        absl::SNPrintF(item, sizeof(item), "%s\t%s", Session.GPacket.Name,
+                       Text_String(TXT_ALLIES));
       } else {
-        sprintf(item, "%s\t%s", Session.GPacket.Name, Text_String(TXT_SOVIET));
+        absl::SNPrintF(item, sizeof(item), "%s\t%s", Session.GPacket.Name,
+                       Text_String(TXT_SOVIET));
       }
 #else   // OLDWAY
-      sprintf(item, "%s\t%s", Session.GPacket.Name,
-              Text_String(
-                  HouseTypeClass::As_Reference(Session.GPacket.PlayerInfo.House)
-                      .Full_Name()));
+      absl::SNPrintF(item, sizeof(item), "%s\t%s", Session.GPacket.Name,
+                     Text_String(HouseTypeClass::As_Reference(
+                                     Session.GPacket.PlayerInfo.House)
+                                     .Full_Name()));
 #endif  // OLDWAY
       playerlist->Add_Item(item, who->Player.Color == PCOLOR_DIALOG_BLUE
                                      ? &ColorRemaps[PCOLOR_REALLY_BLUE]
@@ -4338,13 +4348,16 @@ static int Net_New_Dialog() {
   //------------------------------------------------------------------------
 #ifdef OLDWAY
   if (Session.House == HOUSE_GOOD) {
-    sprintf(item, "%s\t%s", Session.Handle, Text_String(TXT_ALLIES));
+    absl::SNPrintF(item, sizeof(item), "%s\t%s", Session.Handle,
+                   Text_String(TXT_ALLIES));
   } else {
-    sprintf(item, "%s\t%s", Session.Handle, Text_String(TXT_SOVIET));
+    absl::SNPrintF(item, sizeof(item), "%s\t%s", Session.Handle,
+                   Text_String(TXT_SOVIET));
   }
 #else   // OLDWAY
-  sprintf(item, "%s\t%s", Session.Handle,
-          Text_String(HouseTypeClass::As_Reference(Session.House).Full_Name()));
+  absl::SNPrintF(
+      item, sizeof(item), "%s\t%s", Session.Handle,
+      Text_String(HouseTypeClass::As_Reference(Session.House).Full_Name()));
 #endif  // OLDWAY
   playerlist.Add_Item(item, Session.ColorIdx == PCOLOR_DIALOG_BLUE
                                 ? &ColorRemaps[PCOLOR_REALLY_BLUE]
@@ -4480,29 +4493,29 @@ static int Net_New_Dialog() {
         // d_count_w + 2*2, d_count_y, d_count_x + d_count_w +
         // 35*2, d_aiplayers_y + d_aiplayers_h+2, BLACK);
 
-        sprintf(txt, "%d", Session.Options.UnitCount);
+        absl::SNPrintF(txt, sizeof(txt), "%d", Session.Options.UnitCount);
         staticunit.Set_Text(txt);
         staticunit.Draw_Me();
         //				Fancy_Text_Print(txt, d_count_x +
         // d_count_w + 2*2, d_count_y, scheme, BLACK, kTpfText);
 
         if (BuildLevel <= MPLAYER_BUILD_LEVEL_MAX) {
-          sprintf(txt, "%d", BuildLevel);
+          absl::SNPrintF(txt, sizeof(txt), "%d", BuildLevel);
         } else {
-          sprintf(txt, "**");
+          absl::SNPrintF(txt, sizeof(txt), "**");
         }
         staticlevel.Set_Text(txt);
         staticlevel.Draw_Me();
         //				Fancy_Text_Print(txt, d_level_x +
         // d_level_w + 2*2, d_level_y, scheme, BLACK, kTpfText);
 
-        sprintf(txt, "%d", Session.Options.Credits);
+        absl::SNPrintF(txt, sizeof(txt), "%d", Session.Options.Credits);
         staticcredits.Set_Text(txt);
         staticcredits.Draw_Me();
         //				Fancy_Text_Print(txt, d_credits_x +
         // d_credits_w + 2*2, d_credits_y, scheme, BLACK, kTpfText);
 
-        sprintf(txt, "%d", Session.Options.AIPlayers);
+        absl::SNPrintF(txt, sizeof(txt), "%d", Session.Options.AIPlayers);
         staticaiplayers.Set_Text(txt);
         staticaiplayers.Draw_Me();
         //				Fancy_Text_Print(txt, d_aiplayers_x +
@@ -5328,15 +5341,17 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
       //..................................................................
 #ifdef OLDWAY
       if (Session.GPacket.PlayerInfo.House == HOUSE_GOOD) {
-        sprintf(item, "%s\t%s", Session.GPacket.Name, Text_String(TXT_ALLIES));
+        absl::SNPrintF(item, sizeof(item), "%s\t%s", Session.GPacket.Name,
+                       Text_String(TXT_ALLIES));
       } else {
-        sprintf(item, "%s\t%s", Session.GPacket.Name, Text_String(TXT_SOVIET));
+        absl::SNPrintF(item, sizeof(item), "%s\t%s", Session.GPacket.Name,
+                       Text_String(TXT_SOVIET));
       }
 #else   // OLDWAY
-      sprintf(item, "%s\t%s", Session.GPacket.Name,
-              Text_String(
-                  HouseTypeClass::As_Reference(Session.GPacket.PlayerInfo.House)
-                      .Full_Name()));
+      absl::SNPrintF(item, sizeof(item), "%s\t%s", Session.GPacket.Name,
+                     Text_String(HouseTypeClass::As_Reference(
+                                     Session.GPacket.PlayerInfo.House)
+                                     .Full_Name()));
 #endif  // OLDWAY
       playerlist->Add_Item(item, who->Player.Color == PCOLOR_DIALOG_BLUE
                                      ? &ColorRemaps[PCOLOR_REALLY_BLUE]
@@ -5529,8 +5544,8 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
                               Text_String(TXT_RECONNECTING_TO),
                               Ipx.Connection_Name(id));
         } else {
-          snprintf(buf1, sizeof(buf1), "%s",
-                   Text_String(TXT_WAITING_FOR_CONNECTIONS));
+          absl::SNPrintF(buf1, sizeof(buf1), "%s",
+                         Text_String(TXT_WAITING_FOR_CONNECTIONS));
         }
         break;
       default:
@@ -5546,8 +5561,8 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
     //	A tournament game forfeits if you cancel, so the box says so and has
     //	to be wide enough for the longer line.
     char szNewCancelMessage[300];
-    snprintf(szNewCancelMessage, sizeof(szNewCancelMessage), "%s%s", buf3,
-             TXT_WOL_CANCELMEANSFORFEIT);
+    absl::SNPrintF(szNewCancelMessage, sizeof(szNewCancelMessage), "%s%s", buf3,
+                   TXT_WOL_CANCELMEANSFORFEIT);
     const bool bForfeitWarning =
         config::kWolapiEnabled && Session.Type == GAME_INTERNET &&
         pWolapi != nullptr && pWolapi->GameInfoCurrent.bTournament;
@@ -7134,13 +7149,16 @@ void Start_WWChat(ColorListClass* playerlist) {
   //------------------------------------------------------------------------
 #ifdef OLDWAY
   if (Session.House == HOUSE_GOOD) {
-    sprintf(item, "%s\t%s", Session.Handle, Text_String(TXT_ALLIES));
+    absl::SNPrintF(item, sizeof(item), "%s\t%s", Session.Handle,
+                   Text_String(TXT_ALLIES));
   } else {
-    sprintf(item, "%s\t%s", Session.Handle, Text_String(TXT_SOVIET));
+    absl::SNPrintF(item, sizeof(item), "%s\t%s", Session.Handle,
+                   Text_String(TXT_SOVIET));
   }
 #else   // OLDWAY
-  sprintf(item, "%s\t%s", Session.Handle,
-          Text_String(HouseTypeClass::As_Reference(Session.House).Full_Name()));
+  absl::SNPrintF(
+      item, sizeof(item), "%s\t%s", Session.Handle,
+      Text_String(HouseTypeClass::As_Reference(Session.House).Full_Name()));
 #endif  // OLDWAY
   playerlist->Add_Item(item, Session.ColorIdx == PCOLOR_DIALOG_BLUE
                                  ? &ColorRemaps[PCOLOR_REALLY_BLUE]
@@ -7167,9 +7185,11 @@ void Start_WWChat(ColorListClass* playerlist) {
       //			house =
       //(HousesType)Random_Pick((int)HOUSE_GOOD,(int)HOUSE_BAD);
       if (house != HOUSE_USSR && house != HOUSE_UKRAINE) {
-        sprintf(item, "%s\t%s", WWPersons[i].Name, Text_String(TXT_ALLIES));
+        absl::SNPrintF(item, sizeof(item), "%s\t%s", WWPersons[i].Name,
+                       Text_String(TXT_ALLIES));
       } else {
-        sprintf(item, "%s\t%s", WWPersons[i].Name, Text_String(TXT_SOVIET));
+        absl::SNPrintF(item, sizeof(item), "%s\t%s", WWPersons[i].Name,
+                       Text_String(TXT_SOVIET));
       }
       playerlist->Add_Item(item, WWPersons[i].Color == PCOLOR_DIALOG_BLUE
                                      ? &ColorRemaps[PCOLOR_REALLY_BLUE]

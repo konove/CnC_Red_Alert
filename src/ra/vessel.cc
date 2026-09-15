@@ -80,6 +80,7 @@
 #include <cstring>
 #include <utility>
 
+#include "absl/strings/str_format.h"
 #include "base/types.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/tokenizer.h"
@@ -2052,13 +2053,14 @@ void VesselClass::Write_INI(CCINIClass& ini) {
       char uname[10];
       char buf[128];
 
-      sprintf(uname, "%d", index);
-      sprintf(buf, "%s,%s,%d,%u,%d,%s,%s", vessel->House->Class->IniName,
-              vessel->Class->IniName, vessel->Health_Ratio() * 256,
-              Coord_Cell(vessel->Coord), vessel->PrimaryFacing.Current(),
-              Mission_Name(vessel->Mission),
-              vessel->Trigger.Is_Valid() ? vessel->Trigger->Class->IniName
-                                         : "None");
+      absl::SNPrintF(uname, sizeof(uname), "%d", index);
+      absl::SNPrintF(
+          buf, sizeof(buf), "%s,%s,%d,%u,%d,%s,%s",
+          vessel->House->Class->IniName, vessel->Class->IniName,
+          vessel->Health_Ratio() * 256, Coord_Cell(vessel->Coord),
+          vessel->PrimaryFacing.Current(), Mission_Name(vessel->Mission),
+          vessel->Trigger.Is_Valid() ? vessel->Trigger->Class->IniName
+                                     : "None");
       ini.Put_String(INI_Name(), uname, buf);
     }
   }

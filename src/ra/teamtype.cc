@@ -72,6 +72,7 @@
 #include <iterator>
 #include <utility>
 
+#include "absl/strings/str_format.h"
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
@@ -707,7 +708,7 @@ bool TeamTypeClass::Edit() {
                      TPF_EFNT | TPF_NOSHADOW,
                      housebtn.X + housebtn.Width + 5 + D_SPACING_X, housebtn.Y,
                      ED_WIDTH, 9, EditClass::kNumeric);
-  sprintf(recr_buf, "%d", RecruitPriority);
+  absl::SNPrintF(recr_buf, sizeof(recr_buf), "%d", RecruitPriority);
   recr_edt.Add(*commands);
 
   /*
@@ -718,7 +719,7 @@ bool TeamTypeClass::Edit() {
                        TPF_EFNT | TPF_NOSHADOW,
                        recr_edt.X + recr_edt.Width + D_SPACING_X, recr_edt.Y,
                        ED_WIDTH, 9, EditClass::kNumeric);
-  sprintf(maxnum_buf, "%d", MaxAllowed);
+  absl::SNPrintF(maxnum_buf, sizeof(maxnum_buf), "%d", MaxAllowed);
   maxnum_edt.Add(*commands);
 
   /*
@@ -729,7 +730,7 @@ bool TeamTypeClass::Edit() {
                         TPF_EFNT | TPF_NOSHADOW,
                         maxnum_edt.X + maxnum_edt.Width + D_SPACING_X,
                         maxnum_edt.Y, ED_WIDTH, 9, EditClass::kNumeric);
-  sprintf(initnum_buf, "%d", InitNum);
+  absl::SNPrintF(initnum_buf, sizeof(initnum_buf), "%d", InitNum);
   initnum_edt.Add(*commands);
 
   /*
@@ -743,10 +744,10 @@ bool TeamTypeClass::Edit() {
   *originbtn.Get_Text() = '\0';
   if (Origin != -1) {
     if (Origin < 26) {
-      sprintf(originbtn.Get_Text(), "%c", Origin + 'A');
+      absl::SNPrintF(originbtn.Get_Text(), sizeof(origin), "%c", Origin + 'A');
     } else {
-      sprintf(originbtn.Get_Text(), "%c%c", (Origin / 26) + 'A' - 1,
-              (Origin % 26) + 'A');
+      absl::SNPrintF(originbtn.Get_Text(), sizeof(origin), "%c%c",
+                     (Origin / 26) + 'A' - 1, (Origin % 26) + 'A');
     }
   }
   originbtn.Add(*commands);
@@ -1080,14 +1081,14 @@ bool TeamTypeClass::Edit() {
               break;
 
             case NEED_NUMBER:
-              sprintf(arg_edt.Get_Text(), "%d",
-                      missionlist2.Current_Item()->Data.Value);
+              absl::SNPrintF(arg_edt.Get_Text(), sizeof(arg_buf), "%d",
+                             missionlist2.Current_Item()->Data.Value);
               break;
 
             case NEED_HEX_NUMBER:
-              sprintf(arg_edt.Get_Text(), "%x",
-                      static_cast<unsigned int>(
-                          missionlist2.Current_Item()->Data.Value));
+              absl::SNPrintF(arg_edt.Get_Text(), sizeof(arg_buf), "%x",
+                             static_cast<unsigned int>(
+                                 missionlist2.Current_Item()->Data.Value));
               break;
 
             case NEED_QUARRY:
@@ -1099,11 +1100,11 @@ bool TeamTypeClass::Edit() {
 
             case NEED_WAYPOINT:
               if (missionlist2.Current_Item()->Data.Value < 26) {
-                sprintf(arg_edt.Get_Text(), "%c",
-                        missionlist2.Current_Item()->Data.Value + 'A');
+                absl::SNPrintF(arg_edt.Get_Text(), sizeof(arg_buf), "%c",
+                               missionlist2.Current_Item()->Data.Value + 'A');
               } else {
-                sprintf(
-                    arg_edt.Get_Text(), "%c%c",
+                absl::SNPrintF(
+                    arg_edt.Get_Text(), sizeof(arg_buf), "%c%c",
                     (missionlist2.Current_Item()->Data.Value / 26) + 'A' - 1,
                     (missionlist2.Current_Item()->Data.Value % 26) + 'A');
               }
@@ -1447,7 +1448,7 @@ const char* TeamTypeClass::Member_Description() const {
       port::SafeAppend(buffer, Members[index].Class->IniName);
       port::SafeAppend(buffer, ":");
 
-      sprintf(txt, "%d", Members[index].Quantity);
+      absl::SNPrintF(txt, sizeof(txt), "%d", Members[index].Quantity);
       port::SafeAppend(buffer, txt);
 
       if (index < ClassCount - 1) {
@@ -1499,9 +1500,9 @@ const char* TeamTypeClass::Description() const {
       }
     }
 
-    sprintf(_buffer, "%s\t%s\t%c%s\t%d\t%s", IniName,
-            HouseTypeClass::As_Reference(House).Suffix, extra, loc,
-            MissionCount, Member_Description());
+    absl::SNPrintF(_buffer, sizeof(_buffer), "%s\t%s\t%c%s\t%d\t%s", IniName,
+                   HouseTypeClass::As_Reference(House).Suffix, extra, loc,
+                   MissionCount, Member_Description());
     return _buffer;
   }
   return "";
@@ -1529,7 +1530,8 @@ const char* TeamMissionClass::Description(int index) const {
   if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
     static char buffer[64];
 
-    sprintf(buffer, "%d\t%s", index, TeamTypeClass::Name_From_Mission(Mission));
+    absl::SNPrintF(buffer, sizeof(buffer), "%d\t%s", index,
+                   TeamTypeClass::Name_From_Mission(Mission));
 
     switch (TeamMission_Needs(Mission)) {
       case NEED_MISSION:
@@ -1541,12 +1543,13 @@ const char* TeamMissionClass::Description(int index) const {
         break;
 
       case NEED_NUMBER:
-        sprintf(&buffer[strlen(buffer)], "%d", Data.Value);
+        absl::SNPrintF(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer),
+                       "%d", Data.Value);
         break;
 
       case NEED_HEX_NUMBER:
-        sprintf(&buffer[strlen(buffer)], "%x",
-                static_cast<unsigned int>(Data.Value));
+        absl::SNPrintF(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer),
+                       "%x", static_cast<unsigned int>(Data.Value));
         break;
 
       case NEED_QUARRY:
@@ -1555,10 +1558,13 @@ const char* TeamMissionClass::Description(int index) const {
 
       case NEED_WAYPOINT:
         if (Data.Value < 26) {
-          sprintf(&buffer[strlen(buffer)], "%c", Data.Value + 'A');
+          absl::SNPrintF(buffer + strlen(buffer),
+                         sizeof(buffer) - strlen(buffer), "%c",
+                         Data.Value + 'A');
         } else {
-          sprintf(&buffer[strlen(buffer)], "%c%c", (Data.Value / 26) + 'A' - 1,
-                  (Data.Value % 26) + 'A');
+          absl::SNPrintF(buffer + strlen(buffer),
+                         sizeof(buffer) - strlen(buffer), "%c%c",
+                         (Data.Value / 26) + 'A' - 1, (Data.Value % 26) + 'A');
         }
         break;
       default:
@@ -1861,27 +1867,30 @@ void TeamTypeClass::Build_INI_Entry(char* buf) {
   /*
   **	Output the general data for this team type.
   */
-  sprintf(buf, "%d,%d,%d,%d,%d,%d,%d", House, code, RecruitPriority, InitNum,
-          MaxAllowed, Origin, TriggerTypes.Logical_ID(Trigger));
+  absl::SNPrintF(buf, sizeof(buf), "%d,%d,%d,%d,%d,%d,%d", House, code,
+                 RecruitPriority, InitNum, MaxAllowed, Origin,
+                 TriggerTypes.Logical_ID(Trigger));
   buf += strlen(buf);
 
   /*
   **	For every class in the team, record the class's name & desired count
   */
-  sprintf(buf, ",%d", ClassCount);
+  absl::SNPrintF(buf, sizeof(buf), ",%d", ClassCount);
   buf += strlen(buf);
   for (int i = 0; i < ClassCount; i++) {
-    sprintf(buf, ",%s:%d", Members[i].Class->IniName, Members[i].Quantity);
+    absl::SNPrintF(buf, sizeof(buf), ",%s:%d", Members[i].Class->IniName,
+                   Members[i].Quantity);
     buf += strlen(buf);
   }
 
   /*
   **	Record the # of missions, and each mission name & argument value.
   */
-  sprintf(buf, ",%d", MissionCount);
+  absl::SNPrintF(buf, sizeof(buf), ",%d", MissionCount);
   buf += strlen(buf);
   for (int i = 0; i < MissionCount; i++) {
-    sprintf(buf, ",%d:%d", MissionList[i].Mission, MissionList[i].Data.Value);
+    absl::SNPrintF(buf, sizeof(buf), ",%d:%d", MissionList[i].Mission,
+                   MissionList[i].Data.Value);
     buf += strlen(buf);
   }
 }

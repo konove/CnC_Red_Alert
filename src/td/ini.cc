@@ -58,6 +58,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "absl/strings/str_format.h"
 #include "base/numeric.h"
 #include "port/ex_string.h"
 #include "sdllib/misc.h"
@@ -129,6 +130,8 @@ static CELL Clip_Move(CELL cell, FacingType facing, int dist);
  *=============================================================================================*/
 void Set_Scenario_Name(char* buf, int scenario, ScenarioPlayerType player,
                        ScenarioDirType dir, ScenarioVarType var) {
+  // "SC" + player + two-digit number + direction + variation, plus the NUL.
+  constexpr size_t kScenarioNameSize = sizeof("SCG01EA");
   char c_player;  // character representing player type
   char c_dir;     // character representing direction type
   char c_var;     // character representing variation type
@@ -191,7 +194,8 @@ void Set_Scenario_Name(char* buf, int scenario, ScenarioPlayerType player,
     ** Find which variations are available for this scenario
     */
     for (i = SCEN_VAR_A; i < SCEN_VAR_COUNT; i++) {
-      sprintf(fname, "SC%c%02d%c%c.INI", c_player, scenario, c_dir, 'A' + i);
+      absl::SNPrintF(fname, sizeof(fname), "SC%c%02d%c%c.INI", c_player,
+                     scenario, c_dir, 'A' + i);
       if (!GameFile(fname).IsAvailable()) {
         break;
       }
@@ -229,7 +233,8 @@ void Set_Scenario_Name(char* buf, int scenario, ScenarioPlayerType player,
   /*
   ** generate the filename
   */
-  sprintf(buf, "SC%c%02d%c%c", c_player, scenario, c_dir, c_var);
+  absl::SNPrintF(buf, kScenarioNameSize, "SC%c%02d%c%c", c_player, scenario,
+                 c_dir, c_var);
 }
 
 /***********************************************************************************************
@@ -311,7 +316,7 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   **	Create scenario filename and read the file.
   */
 
-  sprintf(fname, "%s.INI", root);
+  absl::SNPrintF(fname, sizeof(fname), "%s.INI", root);
   GameFile file(fname);
   if (!file.IsAvailable()) {
     return false;
@@ -516,7 +521,7 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   for (;;) {
     char buff[16];
 
-    sprintf(buff, "%d", index++);
+    absl::SNPrintF(buff, sizeof(buff), "%d", index++);
     *stage = '\0';
     WWGetPrivateProfileString("Briefing", buff, "", stage,
                               static_cast<int>(sizeof(BriefingText) -
@@ -548,7 +553,7 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
     for (;;) {
       char buff[16];
 
-      sprintf(buff, "%d", player_index++);
+      absl::SNPrintF(buff, sizeof(buff), "%d", player_index++);
       *work = '\0';
       WWGetPrivateProfileString(
           root, buff, "", work,
@@ -692,16 +697,16 @@ void Write_Scenario_Ini(const char* root) {
     /*
     **	Create scenario filename and clear the buffer to empty.
     */
-    sprintf(fname, "%s.INI", root);
+    absl::SNPrintF(fname, sizeof(fname), "%s.INI", root);
     file.SetName(fname);
     if (file.IsAvailable()) {
       //		file.Open(READ);
       file.Read(buffer, ShapeBufferSize - 1);
       //		file.Close();
     } else {
-      sprintf(buffer, "; Scenario %d control for house %s.\r\n",
-              Scenario,
-              HouseTypeClass::As_Reference(house).IniName);
+      absl::SNPrintF(buffer, base::ToSize(ShapeBufferSize),
+                     "; Scenario %d control for house %s.\r\n", Scenario,
+                     HouseTypeClass::As_Reference(house).IniName);
     }
 
     WWWritePrivateProfileString("Basic", "Intro", IntroMovie, buffer);
@@ -751,7 +756,8 @@ void Write_Scenario_Ini(const char* root) {
       file.Read(buffer, ShapeBufferSize - 1);
       //		file.Close();
     } else {
-      sprintf(buffer, "; Master Trigger & Team List.\r\n");
+      absl::SNPrintF(buffer, base::ToSize(ShapeBufferSize),
+                     "; Master Trigger & Team List.\r\n");
     }
 
     TeamTypeClass::Write_INI(buffer, false);
@@ -788,8 +794,9 @@ static void Assign_Houses() {
   HouseClass* housep2;
 
   char wibble[256];
-  sprintf(wibble, "C&C95 - In 'Assign_Houses'. Number of players:%d\n",
-          MPlayerCount);
+  absl::SNPrintF(wibble, sizeof(wibble),
+                 "C&C95 - In 'Assign_Houses'. Number of players:%d\n",
+                 MPlayerCount);
   CCDebugString(wibble);
 
   /*

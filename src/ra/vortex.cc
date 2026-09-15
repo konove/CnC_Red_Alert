@@ -67,6 +67,7 @@
 #include <cstdint>
 #include <cstdio>
 
+#include "absl/strings/str_format.h"
 #include "base/types.h"
 #include "ra/building.h"
 #include "ra/cell.h"
@@ -823,7 +824,7 @@ void ChronalVortexClass::Render() {
 
     frame += AnimateFrame;
 
-    sprintf(fname, "HOLE%04d.lut", frame);
+    absl::SNPrintF(fname, sizeof(fname), "HOLE%04d.lut", frame);
 
     const void* lut_ptr = MixArchive::Retrieve(fname);
     if (lut_ptr) {

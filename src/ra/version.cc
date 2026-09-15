@@ -54,6 +54,7 @@
 #include <cstring>
 #include <string>
 
+#include "absl/strings/str_format.h"
 #include "ra/config.h"
 #include "ra/conquer.h"
 #include "ra/externs.h"
@@ -302,7 +303,8 @@ char* VersionClass::Version_Name() {
     adjusted_minor >>= 4;
   }
 
-  sprintf(VersionName, "%x.%x", VerNum.Major_Version(), adjusted_minor);
+  absl::SNPrintF(VersionName, sizeof(VersionName), "%x.%x",
+                 VerNum.Major_Version(), adjusted_minor);
 
   return VersionName;
 

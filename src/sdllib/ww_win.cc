@@ -8,6 +8,7 @@
 
 #include <cstdio>
 
+#include "absl/strings/str_format.h"
 #include "sdllib/net_select.h"
 
 #ifdef __EMSCRIPTEN__
@@ -22,7 +23,7 @@ SDL_Renderer* SDLRenderer;
 Uint32 ForceRenderEventID;
 
 int Change_Window(int /*windnum*/) {
-  printf("%s\n", __func__);
+  absl::PrintF("%s\n", __func__);
   return 0;
 }
 

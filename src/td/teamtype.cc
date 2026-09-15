@@ -59,6 +59,7 @@
 #include <cstring>
 #include <utility>
 
+#include "absl/strings/str_format.h"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "port/tokenizer.h"
@@ -462,27 +463,29 @@ void TeamTypeClass::Write_INI(char* buffer, bool refresh) {
     /*
     ......................... Generate INI entry ..........................
     */
-    sprintf(buf, "%s,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d", hname, team->IsRoundAbout,
-            team->IsLearning, team->IsSuicide, team->IsAutocreate,
-            team->IsMercenary, team->RecruitPriority, team->MaxAllowed,
-            team->InitNum, team->Fear, team->ClassCount);
+    absl::SNPrintF(buf, sizeof(buf), "%s,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d", hname,
+                   team->IsRoundAbout, team->IsLearning, team->IsSuicide,
+                   team->IsAutocreate, team->IsMercenary, team->RecruitPriority,
+                   team->MaxAllowed, team->InitNum, team->Fear,
+                   team->ClassCount);
 
     /*.....................................................................
     For every class in the team, record the class's name & desired count
     .....................................................................*/
     for (i = 0; std::cmp_less(i, team->ClassCount); i++) {
-      sprintf(buf + strlen(buf), ",%s:%d", team->Class[i]->IniName,
-              team->DesiredNum[i]);
+      absl::SNPrintF(buf + strlen(buf), sizeof(buf) - strlen(buf), ",%s:%d",
+                     team->Class[i]->IniName, team->DesiredNum[i]);
     }
 
     /*.....................................................................
     Record the # of missions, and each mission name & argument value.
     .....................................................................*/
-    sprintf(buf + strlen(buf), ",%d", team->MissionCount);
+    absl::SNPrintF(buf + strlen(buf), sizeof(buf) - strlen(buf), ",%d",
+                   team->MissionCount);
     for (i = 0; i < team->MissionCount; i++) {
-      sprintf(buf + strlen(buf), ",%s:%d",
-              Name_From_Mission(team->MissionList[i].Mission),
-              team->MissionList[i].Argument);
+      absl::SNPrintF(buf + strlen(buf), sizeof(buf) - strlen(buf), ",%s:%d",
+                     Name_From_Mission(team->MissionList[i].Mission),
+                     team->MissionList[i].Argument);
     }
 
     if (team->IsReinforcable) {

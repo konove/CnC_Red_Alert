@@ -24,6 +24,7 @@
 #include <cstdlib>
 #include <span>
 
+#include "absl/strings/str_format.h"
 #include "port/win32/win32_types.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"
@@ -861,37 +862,32 @@ void WolapiObject::ListChannels() {
   while (pChannel) {
     if (pChannel->type == 0) {
       //	Show chat channel.
-      char* pShow;
       const int iLobby = iChannelLobbyNumber(WolText(pChannel->name));
       if (iLobby == -1) {
         //	Regular chat channel.
-        pShow = new char[strlen(WolText(pChannel->name)) + 10];
-        sprintf(pShow, "%s\t%-3u", WolText(pChannel->name),
-                pChannel->currentUsers);
+        const std::string show = absl::StrFormat(
+            "%s\t%-3u", WolText(pChannel->name), pChannel->currentUsers);
         char szHelp[200];
         Format_Runtime_Text(szHelp, sizeof(szHelp), TXT_WOL_TTIP_CHANLIST_CHAT,
                             WolText(pChannel->name), pChannel->currentUsers);
-        pILChannels->Add_Item(pShow, szHelp,
+        pILChannels->Add_Item(show.c_str(), szHelp,
                               IconPointer(DibIconInfos[DIBICON_USER]), ICON_DIB,
                               CHANNELTYPE_CHATCHANNEL, pChannel);
       } else {
         //	Channel is a lobby.
         char szLobbyName[REASONABLELOBBYINTERPRETEDNAMELEN];
         InterpretLobbyNumber(szLobbyName, iLobby);
-        pShow = new char[REASONABLELOBBYINTERPRETEDNAMELEN + 10];
-        sprintf(pShow, "%s\t%-3u", szLobbyName, pChannel->currentUsers);
+        const std::string show =
+            absl::StrFormat("%s\t%-3u", szLobbyName, pChannel->currentUsers);
         char szHelp[200];
         Format_Runtime_Text(szHelp, sizeof(szHelp), TXT_WOL_TTIP_CHANLIST_LOBBY,
                             szLobbyName, pChannel->currentUsers);
-        pILChannels->Add_Item(pShow, szHelp, IconForGameType(-1), ICON_DIB,
-                              CHANNELTYPE_LOBBYCHANNEL, pChannel);
-        //				debugprint( ":::::added pChannel %i,
-        // name %s, as %s\n", pChannel, pChannel->name, pShow );
+        pILChannels->Add_Item(show.c_str(), szHelp, IconForGameType(-1),
+                              ICON_DIB, CHANNELTYPE_LOBBYCHANNEL, pChannel);
       }
-      delete[] pShow;
     } else {
       //	Show game channel.
-      char* pShow = new char[strlen(WolText(pChannel->name)) + 10];
+      std::string show;
       char szHelp[200];
       void* pGameKindIcon;
       if (pChannel->type == GAME_TYPE) {
@@ -927,12 +923,12 @@ void WolapiObject::ListChannels() {
             pGameKindIcon = nullptr;
             break;
         }
-        sprintf(pShow, "%s\t%u/%u", WolText(pChannel->name),
-                pChannel->currentUsers, pChannel->maxUsers);
+        show = absl::StrFormat("%s\t%u/%u", WolText(pChannel->name),
+                               pChannel->currentUsers, pChannel->maxUsers);
       } else {
         pGameKindIcon = IconForGameType(pChannel->type);
-        sprintf(pShow, "%s\t%-2u", WolText(pChannel->name),
-                pChannel->currentUsers);
+        show = absl::StrFormat("%s\t%-2u", WolText(pChannel->name),
+                               pChannel->currentUsers);
         Format_Runtime_Text(szHelp, sizeof(szHelp), TXT_WOL_TTIP_CHANLIST_GAME,
                             NameOfGameType(pChannel->type),
                             pChannel->currentUsers);
@@ -958,13 +954,13 @@ void WolapiObject::ListChannels() {
 
       static const int iLatencyBarX = 227 - iLatencyIconWidth - 19;
 
-      pILChannels->Add_Item(
-          pShow, szHelp, pGameKindIcon, ICON_DIB, CHANNELTYPE_GAMECHANNEL,
-          pChannel, nullptr, pPrivateIcon, ICON_DIB, pTournamentIcon, ICON_DIB,
-          IconPointer(DibIconInfos[DIBICON_LATENCY]), ICON_DIB, iLatencyBarX, 0,
-          static_cast<int>(static_cast<float>(iLatencyUse) *
-                           fLatencyToIconWidth));
-      delete[] pShow;
+      pILChannels->Add_Item(show.c_str(), szHelp, pGameKindIcon, ICON_DIB,
+                            CHANNELTYPE_GAMECHANNEL, pChannel, nullptr,
+                            pPrivateIcon, ICON_DIB, pTournamentIcon, ICON_DIB,
+                            IconPointer(DibIconInfos[DIBICON_LATENCY]),
+                            ICON_DIB, iLatencyBarX, 0,
+                            static_cast<int>(static_cast<float>(iLatencyUse) *
+                                             fLatencyToIconWidth));
     }
     pChannel = pChannel->next;
   }
@@ -1516,15 +1512,15 @@ void WolapiObject::SendMessage(const char* szMessage, IconListClass& ILUsers,
       //	Too many users specified to print out. Just say "multiple
       // users".
       if (!bAction) {
-        snprintf(szPrint, iPrintSize, "%s %s", TXT_WOL_PRIVATETOMULTIPLE,
-                 szMessage);
+        absl::SNPrintF(szPrint, iPrintSize, "%s %s", TXT_WOL_PRIVATETOMULTIPLE,
+                       szMessage);
       } else {
-        snprintf(szPrint, iPrintSize, "%s %s %s", TXT_WOL_PRIVATETOMULTIPLE,
-                 szMyName, szMessage);
+        absl::SNPrintF(szPrint, iPrintSize, "%s %s %s",
+                       TXT_WOL_PRIVATETOMULTIPLE, szMyName, szMessage);
       }
     } else {
       // strcpy( szPrint, "<Private to " );
-      snprintf(szPrint, iPrintSize, "<%s ", TXT_WOL_PRIVATETO);
+      absl::SNPrintF(szPrint, iPrintSize, "<%s ", TXT_WOL_PRIVATETO);
       User* pUserPrint = pUserListSend;
       while (pUserPrint) {
         port::SafeAppend(szPrint, WolText(pUserPrint->name), iPrintSize);
@@ -1582,16 +1578,14 @@ void WolapiObject::SendMessage(const char* szMessage, IconListClass& ILUsers,
         // failed with: " ); 				DebugChatDef( hRes );
       }
     }
-    char* szPrint = new char[strlen(szMessage) + strlen(szMyName) + 10];
     if (!bAction) {
-      sprintf(szPrint, "%s: %s", szMyName, szMessage);
-      PrintMessage(szPrint, WOLCOLORREMAP_SELFSPEAKING);
+      PrintMessage(absl::StrFormat("%s: %s", szMyName, szMessage).c_str(),
+                   WOLCOLORREMAP_SELFSPEAKING);
     } else {
-      sprintf(szPrint, "%s %s", szMyName, szMessage);
-      PrintMessage(szPrint, WOLCOLORREMAP_ACTION);
+      PrintMessage(absl::StrFormat("%s %s", szMyName, szMessage).c_str(),
+                   WOLCOLORREMAP_ACTION);
       RAChatEventSink::ActionEggSound(szMessage);
     }
-    delete[] szPrint;
   }
 }
 
@@ -2100,7 +2094,8 @@ bool WolapiObject::SpawnBrowser(const char* szURL) {
 
   if (*szWebBrowser) {
     char szCommandLine[kMaxPath + 300];
-    sprintf(szCommandLine, "\"%s\" %s", szWebBrowser, szURL);
+    absl::SNPrintF(szCommandLine, sizeof(szCommandLine), "\"%s\" %s",
+                   szWebBrowser, szURL);
     //		debugprint( "About to CreateProcess: '%s'\n", szCommandLine );
     Hide_Mouse();
     BlackPalette.Set(kFadePaletteFast, Call_Back);
@@ -2712,9 +2707,11 @@ void WolapiObject::RejoinLobbyAfterGame() {
     // chat channel. 	We will naturally reenter the top level.
   } else {
     char szChannelToJoin[WOL_CHANNAME_LEN_MAX];
-    // sprintf( szChannelToJoin, "Lob_%i_%i", GAME_TYPE, iLobbyReturnAfterGame
+    // absl::SNPrintF(szChannelToJoin, sizeof(szChannelToJoin), "Lob_%i_%i",
+    // GAME_TYPE, iLobbyReturnAfterGame
     // );
-    sprintf(szChannelToJoin, "%s%i", LOB_PREFIX, iLobbyReturnAfterGame);
+    absl::SNPrintF(szChannelToJoin, sizeof(szChannelToJoin), "%s%i", LOB_PREFIX,
+                   iLobbyReturnAfterGame);
     // debugprint( "RejoinLobbyAfterGame, channel is %s\n", szChannelToJoin );
 
     const HRESULT hRes = ChannelJoin(szChannelToJoin, LOBBYPASSWORD);
@@ -3238,8 +3235,11 @@ void WolapiObject::DisconnectPingResultsString(char* szStringToSet) {
     }
   }
 
-  sprintf(szStringToSet, "%1i/%1i %1i/%1i", iGoodServerPings,
-          DISCONNECT_PING_COUNT, iGoodPlayerPings, DISCONNECT_PING_COUNT);
+  // The caller's buffer holds "x/y a/b" with single-digit counts.
+  constexpr size_t kResultSize = 8;
+  absl::SNPrintF(szStringToSet, kResultSize, "%1i/%1i %1i/%1i",
+                 iGoodServerPings, DISCONNECT_PING_COUNT, iGoodPlayerPings,
+                 DISCONNECT_PING_COUNT);
 }
 
 //***********************************************************************************************

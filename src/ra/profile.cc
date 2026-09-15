@@ -50,6 +50,7 @@
 #include <cstring>
 
 #include "absl/base/attributes.h"
+#include "absl/strings/str_format.h"
 #include "base/numeric.h"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
@@ -151,7 +152,7 @@ int WWGetPrivateProfileInt(const char* section, const char* entry, int def,
   /*
   **	Store the default in the buffer.
   */
-  sprintf(buffer, "%d", def);
+  absl::SNPrintF(buffer, sizeof(buffer), "%d", def);
 
   /*
   **	Get the buffer; use itself as the default.
@@ -197,7 +198,7 @@ bool WWWritePrivateProfileInt(const char* section, const char* entry, int value,
   /*
   **	Generate string to save.
   */
-  sprintf(buffer, "%d", value);
+  absl::SNPrintF(buffer, sizeof(buffer), "%d", value);
 
   /*
   **	Save the string.
@@ -246,7 +247,8 @@ const char* WWGetPrivateProfileString(const char* section, const char* key,
   /*
   **	Build section string to match file image.
   */
-  sprintf(sec, "[%s]", section);  // sec = section name including []'s
+  absl::SNPrintF(sec, sizeof(sec), "[%s]",
+                 section);  // sec = section name including []'s
   strupr(sec);
   len = static_cast<int>(strlen(sec));  // len = section name length, incl []'s
 
@@ -545,7 +547,7 @@ bool WWWritePrivateProfileString(const char* section, const char* entry,
   **	non-existent). Make sure two newlines precede the section name.
   */
   if (!offset && entry) {
-    sprintf(buffer, "\r\n[%s]\r\n", section);
+    absl::SNPrintF(buffer, sizeof(buffer), "\r\n[%s]\r\n", section);
     // TODO(konove): Why profile is initialized with kShapeBufferSize?
     port::SafeAppend(profile, buffer, kShapeBufferSize);
   }
@@ -640,7 +642,7 @@ bool WWWritePrivateProfileString(const char* section, const char* entry,
     /*
     **	Generate entry string.
     */
-    sprintf(buffer, "%s=%s\r\n", entry, string);
+    absl::SNPrintF(buffer, sizeof(buffer), "%s=%s\r\n", entry, string);
 
     /*
     **	Make room for new entry.

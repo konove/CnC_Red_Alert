@@ -26,6 +26,7 @@
 #include <ctime>
 #include <utility>
 
+#include "absl/strings/str_format.h"
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
@@ -776,7 +777,8 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
           //					debugprint( "Session.House
           // changed.\n" ); 	Tell host we changed our house.
           char szSend[20];
-          sprintf(szSend, "%02i %02i", WOL_GAMEOPT_REQHOUSE, Session.House);
+          absl::SNPrintF(szSend, sizeof(szSend), "%02i %02i",
+                         WOL_GAMEOPT_REQHOUSE, Session.House);
           pWO->SendGameOpt(szSend, pUserHost);
           //	Set house in our own list. This is fine because we know that the
           // change must be affirmed by the host.
@@ -1135,13 +1137,14 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
           int ii = 0;
           for (; EngMisStr[ii] != nullptr; ii++) {
             if (!strcmp(szScenarioDesc, EngMisStr[ii])) {
-              sprintf(txt, "%s",
-                      config::kIsEnglish ? szScenarioDesc : EngMisStr[ii + 1]);
+              absl::SNPrintF(
+                  txt, sizeof(txt), "%s",
+                  config::kIsEnglish ? szScenarioDesc : EngMisStr[ii + 1]);
               break;
             }
           }
           if (EngMisStr[ii] == nullptr) {
-            sprintf(txt, "%s", szScenarioDesc);
+            absl::SNPrintF(txt, sizeof(txt), "%s", szScenarioDesc);
           }
           //					pStaticDescrip->Set_Text( txt,
           // false );
@@ -1164,9 +1167,9 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
 
           DrawScenarioDescripIcon(pIcon);
         } else {
-          // sprintf(txt, "%s %s", Text_String(TXT_SCENARIO_COLON),
-          // Text_String(TXT_NOT_FOUND));
-          sprintf(txt, "%s", TXT_WOL_SCENARIONAMEWAIT);
+          // absl::SNPrintF(txt, sizeof(txt), "%s %s",
+          // Text_String(TXT_SCENARIO_COLON), Text_String(TXT_NOT_FOUND));
+          absl::SNPrintF(txt, sizeof(txt), "%s", TXT_WOL_SCENARIONAMEWAIT);
           //					pStaticDescrip->Set_Text( txt,
           // false );
           port::SafeCopy(szScenarioNameDisplay, txt);
@@ -1178,23 +1181,23 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
                                 d_gamekind_w);
         //				pStaticDescrip->Draw_Me();
 
-        sprintf(txt, "%d", Session.Options.UnitCount);
+        absl::SNPrintF(txt, sizeof(txt), "%d", Session.Options.UnitCount);
         pStaticUnit->Set_Text(txt);
         pStaticUnit->Draw_Me();
 
         if (BuildLevel <= MPLAYER_BUILD_LEVEL_MAX) {
-          sprintf(txt, "%d", BuildLevel);
+          absl::SNPrintF(txt, sizeof(txt), "%d", BuildLevel);
         } else {
-          sprintf(txt, "**");
+          absl::SNPrintF(txt, sizeof(txt), "**");
         }
         pStaticLevel->Set_Text(txt);
         pStaticLevel->Draw_Me();
 
-        sprintf(txt, "%d", Session.Options.Credits);
+        absl::SNPrintF(txt, sizeof(txt), "%d", Session.Options.Credits);
         pStaticCredits->Set_Text(txt);
         pStaticCredits->Draw_Me();
 
-        sprintf(txt, "%d", Session.Options.AIPlayers);
+        absl::SNPrintF(txt, sizeof(txt), "%d", Session.Options.AIPlayers);
         pStaticAIPlayers->Set_Text(txt);
         pStaticAIPlayers->Draw_Me();
       }
@@ -1585,8 +1588,8 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
               //							debugprint(
               //"Sending accept.\n" ); 	Tell host we accept.
               char szSend[20];
-              sprintf(szSend, "%02i %06i", WOL_GAMEOPT_REQACCEPT,
-                      nGuestLastParamID);
+              absl::SNPrintF(szSend, sizeof(szSend), "%02i %06i",
+                             WOL_GAMEOPT_REQACCEPT, nGuestLastParamID);
               pWO->SendGameOpt(szSend, pUserHost);
             }
           }
@@ -2369,11 +2372,12 @@ void WOL_GameSetupDialog::ProcessInform(char* szInform) {
           char szSend[20];
           //	Make sure we have the scenario.
           if (!bNeedScenarioDownload()) {
-            sprintf(szSend, "%02i %06i", WOL_GAMEOPT_REQSTART,
-                    nGuestLastParamID);
+            absl::SNPrintF(szSend, sizeof(szSend), "%02i %06i",
+                           WOL_GAMEOPT_REQSTART, nGuestLastParamID);
           } else {
-            sprintf(szSend, "%02i %06i", WOL_GAMEOPT_REQSTART_BUTNEEDSCENARIO,
-                    nGuestLastParamID);
+            absl::SNPrintF(szSend, sizeof(szSend), "%02i %06i",
+                           WOL_GAMEOPT_REQSTART_BUTNEEDSCENARIO,
+                           nGuestLastParamID);
           }
           pWO->SendGameOpt(szSend, pUserHost);
           //	Enter waiting mode.
@@ -2466,8 +2470,8 @@ void WOL_GameSetupDialog::SendParams() {
   // the arguments, and the packet mixes signed and unsigned fields. Everything
   // numeric here fits in an int and none of it is ever negative, so it all
   // goes out as %i and the widths are unchanged.
-  sprintf(
-      szSend,
+  absl::SNPrintF(
+      szSend, sizeof(szSend),
       "%01i "
       "%06i "
       "%03i "
@@ -2952,7 +2956,8 @@ bool WOL_GameSetupDialog::RequestPlayerColor(PlayerColorType Color) {
   //	2	WOL_GAMEOPT
   //	1	space
   //	2	color
-  sprintf(szSend, "%02i %02i", WOL_GAMEOPT_REQCOLOR, Color);
+  absl::SNPrintF(szSend, sizeof(szSend), "%02i %02i", WOL_GAMEOPT_REQCOLOR,
+                 Color);
 
   DCHECK(pWO->pGameHost());
 
@@ -2979,7 +2984,8 @@ bool WOL_GameSetupDialog::InformAboutPlayerColor(const char* szName,
     // szName );
     *szSend = 0;
   } else {
-    sprintf(szSend, "%02i %02i %s", WOL_GAMEOPT_INFCOLOR, Color, szName);
+    absl::SNPrintF(szSend, sizeof(szSend), "%02i %02i %s", WOL_GAMEOPT_INFCOLOR,
+                   Color, szName);
   }
 
   return pWO->SendGameOpt(szSend, pUserPriv);
@@ -3006,8 +3012,9 @@ bool WOL_GameSetupDialog::InformAboutPlayerHouse(const char* szName,
     // szName );
     *szSend = 0;
   } else {
-    sprintf(szSend, "%02i %06i %02i %s", WOL_GAMEOPT_INFHOUSE, nHostLastParamID,
-            static_cast<int>(House), szName);
+    absl::SNPrintF(szSend, sizeof(szSend), "%02i %06i %02i %s",
+                   WOL_GAMEOPT_INFHOUSE, nHostLastParamID,
+                   static_cast<int>(House), szName);
   }
 
   return pWO->SendGameOpt(szSend, pUserPriv);
@@ -3019,7 +3026,8 @@ bool WOL_GameSetupDialog::InformAboutPlayerAccept(const char* szName,
   //	Game host tells guests about player accepting game params.
   //	If pUserPriv is not null, indicates user to send message as private to.
   char szSend[6 + WOL_NAME_LEN_MAX];
-  sprintf(szSend, "%02i %s", WOL_GAMEOPT_INFACCEPT, szName);
+  absl::SNPrintF(szSend, sizeof(szSend), "%02i %s", WOL_GAMEOPT_INFACCEPT,
+                 szName);
 
   return pWO->SendGameOpt(szSend, pUserPriv);
 }
@@ -3032,7 +3040,8 @@ bool WOL_GameSetupDialog::InformAboutStart() {
   // an earlier one we canceled out of.
   char szSend[10];
 
-  sprintf(szSend, "%02i %06i", WOL_GAMEOPT_INFSTART, nHostLastParamID);
+  absl::SNPrintF(szSend, sizeof(szSend), "%02i %06i", WOL_GAMEOPT_INFSTART,
+                 nHostLastParamID);
 
   return pWO->SendGameOpt(szSend, nullptr);
 }
@@ -3048,7 +3057,7 @@ bool WOL_GameSetupDialog::InformAboutCancelStart() {
 
   char szSend[10];
 
-  sprintf(szSend, "%02i", WOL_GAMEOPT_INFCANCELSTART);
+  absl::SNPrintF(szSend, sizeof(szSend), "%02i", WOL_GAMEOPT_INFCANCELSTART);
 
   return pWO->SendGameOpt(szSend, nullptr);
 }
@@ -3098,8 +3107,8 @@ void WOL_GameSetupDialog::OnGuestJoin(User* pUser) {
 
     //	Build up a big WOL_GAMEOPT_INFNEWGUESTPLAYERINFO message.
     char szSend[500];
-    sprintf(szSend, "%02i %02i", WOL_GAMEOPT_INFNEWGUESTPLAYERINFO,
-            pILPlayers->Count());
+    absl::SNPrintF(szSend, sizeof(szSend), "%02i %02i",
+                   WOL_GAMEOPT_INFNEWGUESTPLAYERINFO, pILPlayers->Count());
     //	Send color and house of all players (including himself) to the new
     // guest.
     for (int i = 0; i < pILPlayers->Count(); i++) {
@@ -3109,9 +3118,9 @@ void WOL_GameSetupDialog::OnGuestJoin(User* pUser) {
                                              pILPlayers->Get_Item(i));
       //			InformAboutPlayerColor( szPlayerName,
       // PlayerColorTypeOf( pILPlayers->Get_Item_Color( i ) ), pUser );
-      sprintf(szSendPiece, " %02i %s %02i",
-              static_cast<int>(strlen(szPlayerName)), szPlayerName,
-              PlayerColorTypeOf(pILPlayers->Get_Item_Color(i)));
+      absl::SNPrintF(szSendPiece, sizeof(szSendPiece), " %02i %s %02i",
+                     static_cast<int>(strlen(szPlayerName)), szPlayerName,
+                     PlayerColorTypeOf(pILPlayers->Get_Item_Color(i)));
 
       if (strcmp(szPlayerName, WolText(pUser->name)) != 0) {
         const HousesType House =
@@ -3120,7 +3129,8 @@ void WOL_GameSetupDialog::OnGuestJoin(User* pUser) {
           //				InformAboutPlayerHouse( szPlayerName,
           // House, pUser );
           char szSendHouse[50];
-          sprintf(szSendHouse, " 1 %02i", static_cast<int>(House));
+          absl::SNPrintF(szSendHouse, sizeof(szSendHouse), " 1 %02i",
+                         static_cast<int>(House));
           port::SafeAppend(szSendPiece, szSendHouse);
         } else {
           //	Player must not have told me what house he is yet. Don't send
@@ -3369,15 +3379,16 @@ void WOL_GameSetupDialog::HostSaysGo() {
   // means that the colors everyone thinks everyone else is might not 	be
   // sync'ed. Host sets everyone straight here.
   char szSend[((WOL_NAME_LEN_MAX + 10) * 4) + 50] = "";
-  sprintf(szSend, "%02i", WOL_GAMEOPT_INFGO);
+  absl::SNPrintF(szSend, sizeof(szSend), "%02i", WOL_GAMEOPT_INFGO);
 
   User* pUser = pWO->pChatSink->pGameUserList;
   while (pUser) {
     char szUser[WOL_NAME_LEN_MAX + 10];
     const PlayerColorType Color = GetPlayerColor(WolText(pUser->name));
-    sprintf(szUser, " %s %02i", WolText(pUser->name),
-            Color);  //	What if player left just now, and got removed from list.
-                     // Ok to continue and fail on game start?
+    absl::SNPrintF(
+        szUser, sizeof(szUser), " %s %02i", WolText(pUser->name),
+        Color);  //	What if player left just now, and got removed from list.
+                 // Ok to continue and fail on game start?
     port::SafeAppend(szSend, szUser);
     pUser = pUser->next;
   }

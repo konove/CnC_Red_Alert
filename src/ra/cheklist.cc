@@ -52,6 +52,7 @@
 #include <cstdio>
 #include <vector>
 
+#include "absl/strings/str_format.h"
 #include "base/numeric.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
@@ -127,7 +128,7 @@ void CheckListClass::Draw_Entry(int index, int x, int y, int width,
   char buffer[100] = "";
   buffer[0] = Is_Checked(index) ? CHECK_CHAR : UNCHECK_CHAR;
   buffer[1] = ' ';
-  snprintf(&buffer[2], sizeof(buffer) - 2, "%s", Get_Item(index));
+  absl::SNPrintF(&buffer[2], sizeof(buffer) - 2, "%s", Get_Item(index));
 
   TextPrintType flags = TextFlags;
   RemapControlType* scheme = Get_Color_Scheme();

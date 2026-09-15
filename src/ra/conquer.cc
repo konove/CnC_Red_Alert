@@ -1894,7 +1894,7 @@ bool Main_Loop() {
       for (base::ssize index = 0; index < sequence; index++) {
         std::memcpy(temp_page.Get_Buffer(), frames[base::ToSize(index)].data(),
                     base::ToSize(size));
-        snprintf(filename, sizeof(filename), "cap%04zd.pcx", index);
+        absl::SNPrintF(filename, sizeof(filename), "cap%04zd.pcx", index);
         file.SetName(filename);
 
         Write_PCX_File(file, temp_page, &GamePalette);
@@ -2946,12 +2946,13 @@ bool Force_CD_Available(int cd_desired)  // ajw
       // the disc name varies.
       const auto insert_prompt = [&buffer](const char* disc_name) {
         if constexpr (config::kBuildLanguage == config::BuildLanguage::French) {
-          snprintf(buffer, sizeof(buffer), "Insèrez le %s", disc_name);
+          absl::SNPrintF(buffer, sizeof(buffer), "Insèrez le %s", disc_name);
         } else if constexpr (config::kBuildLanguage ==
                              config::BuildLanguage::German) {
-          snprintf(buffer, sizeof(buffer), "Bitte %s", disc_name);
+          absl::SNPrintF(buffer, sizeof(buffer), "Bitte %s", disc_name);
         } else {
-          snprintf(buffer, sizeof(buffer), "Please insert the %s", disc_name);
+          absl::SNPrintF(buffer, sizeof(buffer), "Please insert the %s",
+                         disc_name);
         }
       };
 
@@ -3060,7 +3061,7 @@ bool Force_CD_Available(int cd_desired)  // ajw
 void* Hires_Load(const char* name) {
   char filename[30];
 
-  sprintf(filename, "H%s", name);
+  absl::SNPrintF(filename, sizeof(filename), "H%s", name);
   GameFile file(filename);
 
   if (file.IsAvailable()) {

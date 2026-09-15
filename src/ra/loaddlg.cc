@@ -51,6 +51,7 @@
 #include <cstring>
 #include <filesystem>
 
+#include "absl/strings/str_format.h"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "ra/config.h"
@@ -511,7 +512,7 @@ bool LoadOptionsClass::Process() {
         game_num = Files[game_idx]->Num;
         if (WWMessageBox().Process(TXT_DELETE_FILE_QUERY, TXT_YES, TXT_NO) ==
             0) {
-          sprintf(fname, "SAVEGAME.%03d", game_num);
+          absl::SNPrintF(fname, sizeof(fname), "SAVEGAME.%03d", game_num);
           unlink(fname);
           Clear_List(&listbtn);
           Fill_List(&listbtn);
@@ -681,9 +682,11 @@ void LoadOptionsClass::Fill_List(ListClass* list) {
         port::SafeCopy(fdata->Descr, Text_String(TXT_OLD_GAME));
       } else {
         if (house == HOUSE_USSR || house == HOUSE_UKRAINE) {
-          sprintf(fdata->Descr, "(%s) ", Text_String(TXT_SOVIET));
+          absl::SNPrintF(fdata->Descr, sizeof(fdata->Descr), "(%s) ",
+                         Text_String(TXT_SOVIET));
         } else {
-          sprintf(fdata->Descr, "(%s) ", Text_String(TXT_ALLIES));
+          absl::SNPrintF(fdata->Descr, sizeof(fdata->Descr), "(%s) ",
+                         Text_String(TXT_ALLIES));
         }
       }
       port::SafeAppend(fdata->Descr, descr);

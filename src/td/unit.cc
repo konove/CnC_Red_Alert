@@ -115,6 +115,7 @@
 #include <cstring>
 #include <iterator>
 
+#include "absl/strings/str_format.h"
 #include "port/tokenizer.h"
 #include "sdllib/misc.h"
 #include "sdllib/shape.h"
@@ -3574,12 +3575,12 @@ void UnitClass::Write_INI(char* buffer) {
 
     unit = Units.Ptr(index);
     if (!unit->IsInLimbo && unit->IsActive) {
-      sprintf(uname, "%03d", index);
-      sprintf(buf, "%s,%s,%d,%u,%d,%s,%s", unit->House->Class->IniName,
-              unit->Class->IniName, unit->Health_Ratio(),
-              Coord_Cell(unit->Coord), unit->PrimaryFacing.Current(),
-              Mission_Name(unit->Mission),
-              unit->Trigger ? unit->Trigger->Get_Name() : "None");
+      absl::SNPrintF(uname, sizeof(uname), "%03d", index);
+      absl::SNPrintF(buf, sizeof(buf), "%s,%s,%d,%u,%d,%s,%s",
+                     unit->House->Class->IniName, unit->Class->IniName,
+                     unit->Health_Ratio(), Coord_Cell(unit->Coord),
+                     unit->PrimaryFacing.Current(), Mission_Name(unit->Mission),
+                     unit->Trigger ? unit->Trigger->Get_Name() : "None");
       WWWritePrivateProfileString(INI_Name(), uname, buf, buffer);
     }
   }

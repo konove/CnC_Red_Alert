@@ -878,7 +878,7 @@ void Destroy_Null_Connection(int id, int error) {
   **	If we're the last player left, tell the user.
   */
   if (Session.NumPlayers == 1) {
-    sprintf(txt, "%s", Text_String(TXT_JUST_YOU_AND_ME));
+    absl::SNPrintF(txt, sizeof(txt), "%s", Text_String(TXT_JUST_YOU_AND_ME));
     Session.Messages.Add_Message(nullptr, 0, txt,
                                  housep->RemapColor == PCOLOR_DIALOG_BLUE
                                      ? PCOLOR_REALLY_BLUE
@@ -1892,7 +1892,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   } else {
     baud_index = 4;
   }
-  sprintf(baudbuf, "%d", tempsettings.Baud);
+  absl::SNPrintF(baudbuf, sizeof(baudbuf), "%d", tempsettings.Baud);
 
   /*
   ** Set up the port list box & edit box
@@ -1973,8 +1973,8 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
 
       default:
         port_index = port_custom_index;
-        snprintf(portbuf, sizeof(portbuf), "%x",
-                 static_cast<unsigned int>(tempsettings.Port));
+        absl::SNPrintF(portbuf, sizeof(portbuf), "%x",
+                       static_cast<unsigned int>(tempsettings.Port));
         temp = strchr(custom_port, '-');
         if (temp) {
           pos = static_cast<int>(temp - custom_port) + 2;
@@ -3282,7 +3282,8 @@ int Com_Scenario_Dialog(bool skirmish) {
           // d_count_w + 2, d_count_y, d_count_x + d_count_w + 35 * 2,
           // d_aiplayers_y + d_aiplayers_h+2, BLACK);
 
-          sprintf(staticcountbuff, "%d", Session.Options.UnitCount);
+          absl::SNPrintF(staticcountbuff, sizeof(staticcountbuff), "%d",
+                         Session.Options.UnitCount);
           staticcount.Set_Text(staticcountbuff);
           staticcount.Draw_Me();
           //				Fancy_Text_Print("%d ", d_count_x +
@@ -3290,23 +3291,26 @@ int Com_Scenario_Dialog(bool skirmish) {
           // Session.Options.UnitCount);
 
           if (BuildLevel <= MPLAYER_BUILD_LEVEL_MAX) {
-            sprintf(staticlevelbuff, "%d ", BuildLevel);
+            absl::SNPrintF(staticlevelbuff, sizeof(staticlevelbuff), "%d ",
+                           BuildLevel);
           } else {
-            sprintf(staticlevelbuff, "**");
+            absl::SNPrintF(staticlevelbuff, sizeof(staticlevelbuff), "**");
           }
           staticlevel.Set_Text(staticlevelbuff);
           staticlevel.Draw_Me();
           //				Fancy_Text_Print(txt, d_level_x +
           // d_level_w + 3 * 2, d_level_y, scheme, BLACK, kTpfText);
 
-          sprintf(staticcreditsbuff, "%d", Session.Options.Credits);
+          absl::SNPrintF(staticcreditsbuff, sizeof(staticcreditsbuff), "%d",
+                         Session.Options.Credits);
           staticcredits.Set_Text(staticcreditsbuff);
           staticcredits.Draw_Me();
           //				Fancy_Text_Print("%d", d_credits_x +
           // d_credits_w + 2 * 2, d_credits_y, scheme, BLACK, kTpfText,
           // Session.Options.Credits);
 
-          sprintf(staticaibuff, "%d", Session.Options.AIPlayers);
+          absl::SNPrintF(staticaibuff, sizeof(staticaibuff), "%d",
+                         Session.Options.AIPlayers);
           staticai.Set_Text(staticaibuff);
           staticai.Draw_Me();
           //				Fancy_Text_Print("%d", d_aiplayers_x +
@@ -3777,9 +3781,10 @@ int Com_Scenario_Dialog(bool skirmish) {
             sprintf(item, "%s\t%s", namebuf, Text_String(TXT_SOVIET));
           }
 #else   // OLDWAY
-          sprintf(item, "%s\t%s", namebuf,
-                  Text_String(
-                      HouseTypeClass::As_Reference(Session.House).Full_Name()));
+          absl::SNPrintF(
+              item, sizeof(item), "%s\t%s", namebuf,
+              Text_String(
+                  HouseTypeClass::As_Reference(Session.House).Full_Name()));
 #endif  // OLDWAY
           playerlist.Set_Item(0, item);
           playerlist.Colors[0] =
@@ -3953,8 +3958,8 @@ int Com_Scenario_Dialog(bool skirmish) {
                 sprintf(item, "%s\t%s", namebuf, Text_String(TXT_SOVIET));
               }
 #else   // OLDWAY
-              sprintf(
-                  item, "%s\t%s", namebuf,
+              absl::SNPrintF(
+                  item, sizeof(item), "%s\t%s", namebuf,
                   Text_String(
                       HouseTypeClass::As_Reference(Session.House).Full_Name()));
 #endif  // OLDWAY
@@ -3971,8 +3976,8 @@ int Com_Scenario_Dialog(bool skirmish) {
                 sprintf(item, "%s\t%s", TheirName, Text_String(TXT_SOVIET));
               }
 #else   // OLDWAY
-              sprintf(
-                  item, "%s\t%s", TheirName,
+              absl::SNPrintF(
+                  item, sizeof(item), "%s\t%s", TheirName,
                   Text_String(
                       HouseTypeClass::As_Reference(TheirHouse).Full_Name()));
 #endif  // OLDWAY
@@ -4990,7 +4995,8 @@ int Com_Show_Scenario_Dialog() {
         //..................................................................
         if (display >= REDRAW_PARMS && parms_received) {
           if (oppscorescreen) {
-            sprintf(txt, "%s", Text_String(TXT_WAITING_FOR_OPPONENT));
+            absl::SNPrintF(txt, sizeof(txt), "%s",
+                           Text_String(TXT_WAITING_FOR_OPPONENT));
 
             Fancy_Text_Print(txt, d_dialog_cx, d_scenario_y, scheme, TBLACK,
                              TPF_CENTER | kTpfText);
@@ -5013,21 +5019,23 @@ int Com_Show_Scenario_Dialog() {
               for (i = 0; EngMisStr[i] != nullptr; i++) {
                 if (!strcmp(Session.Options.ScenarioDescription,
                             EngMisStr[i])) {
-                  sprintf(txt, "%s %s", p,
-                          config::kIsEnglish
-                              ? Session.Options.ScenarioDescription
-                              : EngMisStr[i + 1]);
+                  absl::SNPrintF(txt, sizeof(txt), "%s %s", p,
+                                 config::kIsEnglish
+                                     ? Session.Options.ScenarioDescription
+                                     : EngMisStr[i + 1]);
                   break;
                 }
               }
               if (EngMisStr[i] == nullptr) {
-                sprintf(txt, "%s %s", p, Session.Options.ScenarioDescription);
+                absl::SNPrintF(txt, sizeof(txt), "%s %s", p,
+                               Session.Options.ScenarioDescription);
               }
               Fancy_Text_Print(txt, d_dialog_cx, d_scenario_y, scheme, TBLACK,
                                kTpfText | TPF_CENTER);
 
             } else {
-              sprintf(txt, "%s %s", p, Text_String(TXT_NOT_FOUND));
+              absl::SNPrintF(txt, sizeof(txt), "%s %s", p,
+                             Text_String(TXT_NOT_FOUND));
 
               Fancy_Text_Print(txt, d_dialog_cx, d_scenario_y,
                                &ColorRemaps[PCOLOR_RED], TBLACK,
@@ -5042,22 +5050,26 @@ int Com_Show_Scenario_Dialog() {
             // d_aiplayers_y
             //+ d_aiplayers_h+2, 	BLACK);
 
-            sprintf(staticcountbuff, "%d", Session.Options.UnitCount);
+            absl::SNPrintF(staticcountbuff, sizeof(staticcountbuff), "%d",
+                           Session.Options.UnitCount);
             staticcount.Set_Text(staticcountbuff);
             staticcount.Draw_Me();
             if (BuildLevel <= MPLAYER_BUILD_LEVEL_MAX) {
-              sprintf(staticlevelbuff, "%d ", BuildLevel);
+              absl::SNPrintF(staticlevelbuff, sizeof(staticlevelbuff), "%d ",
+                             BuildLevel);
             } else {
-              sprintf(staticlevelbuff, "**");
+              absl::SNPrintF(staticlevelbuff, sizeof(staticlevelbuff), "**");
             }
             staticlevel.Set_Text(staticlevelbuff);
             staticlevel.Draw_Me();
 
-            sprintf(staticcreditsbuff, "%d", Session.Options.Credits);
+            absl::SNPrintF(staticcreditsbuff, sizeof(staticcreditsbuff), "%d",
+                           Session.Options.Credits);
             staticcredits.Set_Text(staticcreditsbuff);
             staticcredits.Draw_Me();
 
-            sprintf(staticaibuff, "%d", Session.Options.AIPlayers);
+            absl::SNPrintF(staticaibuff, sizeof(staticaibuff), "%d",
+                           Session.Options.AIPlayers);
             staticai.Set_Text(staticaibuff);
             staticai.Draw_Me();
           }
@@ -5318,9 +5330,10 @@ int Com_Show_Scenario_Dialog() {
           sprintf(item, "%s\t%s", namebuf, Text_String(TXT_SOVIET));
         }
 #else   // OLDWAY
-        sprintf(item, "%s\t%s", namebuf,
-                Text_String(
-                    HouseTypeClass::As_Reference(Session.House).Full_Name()));
+        absl::SNPrintF(
+            item, sizeof(item), "%s\t%s", namebuf,
+            Text_String(
+                HouseTypeClass::As_Reference(Session.House).Full_Name()));
 #endif  // OLDWAY
         playerlist.Set_Item(0, item);
         playerlist.Colors[0] =
@@ -5603,8 +5616,8 @@ int Com_Show_Scenario_Dialog() {
               sprintf(item, "%s\t%s", namebuf, Text_String(TXT_SOVIET));
             }
 #else  // OLDWAY
-            sprintf(
-                item, "%s\t%s", namebuf,
+            absl::SNPrintF(
+                item, sizeof(item), "%s\t%s", namebuf,
                 Text_String(
                     HouseTypeClass::As_Reference(Session.House).Full_Name()));
 
@@ -5622,9 +5635,10 @@ int Com_Show_Scenario_Dialog() {
               sprintf(item, "%s\t%s", TheirName, Text_String(TXT_SOVIET));
             }
 #else   // OLDWAY
-            sprintf(item, "%s\t%s", TheirName,
-                    Text_String(
-                        HouseTypeClass::As_Reference(TheirHouse).Full_Name()));
+            absl::SNPrintF(
+                item, sizeof(item), "%s\t%s", TheirName,
+                Text_String(
+                    HouseTypeClass::As_Reference(TheirHouse).Full_Name()));
 #endif  // OLDWAY
             playerlist.Set_Item(1, item);
             playerlist.Colors[1] = &ColorRemaps[TheirColor == PCOLOR_DIALOG_BLUE
@@ -6524,11 +6538,11 @@ static void Build_Phone_Listbox(ListClass* list, EditClass* edit, char* buf) {
     }
 
     if (Session.PhoneBook[i]->Settings.Baud != -1) {
-      sprintf(item, "%s\t%s\t%d", phonename, phonenum,
-              Session.PhoneBook[i]->Settings.Baud);
+      absl::SNPrintF(item, sizeof(item), "%s\t%s\t%d", phonename, phonenum,
+                     Session.PhoneBook[i]->Settings.Baud);
     } else {
-      sprintf(item, "%s\t%s\t[%s]", phonename, phonenum,
-              Text_String(TXT_DEFAULT));
+      absl::SNPrintF(item, sizeof(item), "%s\t%s\t[%s]", phonename, phonenum,
+                     Text_String(TXT_DEFAULT));
     }
     list->Add_Item(item);
   }

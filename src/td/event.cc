@@ -58,6 +58,7 @@
 #include <cstdio>
 #include <utility>
 
+#include "absl/strings/str_format.h"
 #include "td/anim.h"
 #include "td/audio.h"
 #include "td/building.h"
@@ -404,16 +405,16 @@ void EventClass::Execute() {
   // #if (0)
   if (static_cast<unsigned>(Type) > PROCESS_TIME) {
     char tempbuf[128];
-    sprintf(tempbuf, "Packet type %d received\n", Type);
+    absl::SNPrintF(tempbuf, sizeof(tempbuf), "Packet type %d received\n", Type);
     CCDebugString(tempbuf);
 
-    sprintf(tempbuf, "	ID = %d\n", ID);
+    absl::SNPrintF(tempbuf, sizeof(tempbuf), "	ID = %d\n", ID);
     CCDebugString(tempbuf);
 
-    sprintf(tempbuf, "	Frame = %d\n", Frame);
+    absl::SNPrintF(tempbuf, sizeof(tempbuf), "	Frame = %d\n", Frame);
     CCDebugString(tempbuf);
 
-    sprintf(tempbuf, "	MPlayer ID = %d\n", MPlayerID);
+    absl::SNPrintF(tempbuf, sizeof(tempbuf), "	MPlayer ID = %d\n", MPlayerID);
     CCDebugString(tempbuf);
   }
   // #endif	//(0)
@@ -698,8 +699,9 @@ void EventClass::Execute() {
     */
     case RESPONSE_TIME:
       char flip[128];
-      sprintf(flip, "C&C95 - Changing MaxAhead to %d frames\n",
-              Data.FrameInfo.Delay);
+      absl::SNPrintF(flip, sizeof(flip),
+                     "C&C95 - Changing MaxAhead to %d frames\n",
+                     Data.FrameInfo.Delay);
       CCDebugString(flip);
       MPlayerMaxAhead = Data.FrameInfo.Delay;
       break;
@@ -728,11 +730,13 @@ void EventClass::Execute() {
       DesiredFrameRate = Data.Timing.DesiredFrameRate;
       MPlayerMaxAhead = Data.Timing.MaxAhead;
 
-      sprintf(flip, "C&C95 -  Timing packet: DesiredFrameRate = %d\n",
-              Data.Timing.DesiredFrameRate);
+      absl::SNPrintF(flip, sizeof(flip),
+                     "C&C95 -  Timing packet: DesiredFrameRate = %d\n",
+                     Data.Timing.DesiredFrameRate);
       CCDebugString(flip);
-      sprintf(flip, "C&C95 -  Timing packet: MaxAhead = %d\n",
-              Data.Timing.MaxAhead);
+      absl::SNPrintF(flip, sizeof(flip),
+                     "C&C95 -  Timing packet: MaxAhead = %d\n",
+                     Data.Timing.MaxAhead);
       CCDebugString(flip);
 
       /*
@@ -760,8 +764,9 @@ void EventClass::Execute() {
           TheirProcessTime[i] = Data.ProcessTime.AverageTicks;
 
           char flip_text[128];
-          sprintf(flip_text, "C&C95 - Received PROCESS_TIME packet of %04x ticks\n",
-                  Data.ProcessTime.AverageTicks);
+          absl::SNPrintF(flip_text, sizeof(flip_text),
+                         "C&C95 - Received PROCESS_TIME packet of %04x ticks\n",
+                         Data.ProcessTime.AverageTicks);
           CCDebugString(flip_text);
 
           break;

@@ -7,6 +7,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "absl/strings/str_format.h"
 #include "port/bytes_of.h"
 #include "ra/externs.h"
 #include "sdllib/gbuffer.h"
@@ -72,12 +73,12 @@ void PaletteClass::Adjust(int /*unused*/) {}
 void PaletteClass::Adjust(int /*unused*/, PaletteClass& /*unused*/) {}
 
 void PaletteClass::Partial_Adjust(int /*unused*/, char* /*unused*/) {
-  printf("PaletteClass::%s\n", __func__);
+  absl::PrintF("PaletteClass::%s\n", __func__);
 }
 
 void PaletteClass::Partial_Adjust(int /*unused*/, PaletteClass& /*unused*/,
                                   char* /*unused*/) {
-  printf("PaletteClass::%s\n", __func__);
+  absl::PrintF("PaletteClass::%s\n", __func__);
 }
 
 int PaletteClass::Closest_Color(const RGBClass& col) const {

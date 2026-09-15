@@ -55,6 +55,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "absl/strings/str_format.h"
 #include "port/safe_string.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/misc.h"
@@ -163,7 +164,7 @@ bool Start_Scenario(char* root, bool briefing) {
 #ifdef NEWMENU
 
     char buffer[25];
-    sprintf(buffer, "%s.VQA", BriefMovie);
+    absl::SNPrintF(buffer, sizeof(buffer), "%s.VQA", BriefMovie);
     GameFile file(buffer);
 
     if (GameToPlay == GAME_NORMAL && !file.IsAvailable()) {
@@ -729,8 +730,8 @@ bool Restate_Mission(const char* name, int right_btn, int left_btn) {
 #ifdef NEWMENU
     char buffer[25];
     char buffer1[25];
-    sprintf(buffer, "%s.VQA", BriefMovie);
-    sprintf(buffer1, "%s.VQA", ActionMovie);
+    absl::SNPrintF(buffer, sizeof(buffer), "%s.VQA", BriefMovie);
+    absl::SNPrintF(buffer1, sizeof(buffer1), "%s.VQA", ActionMovie);
     GameFile file1(buffer);
     GameFile file2(buffer1);
     if (!file1.IsAvailable() && !file2.IsAvailable()) {

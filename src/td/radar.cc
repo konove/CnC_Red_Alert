@@ -83,6 +83,7 @@
 #include <string>
 #include <utility>
 
+#include "absl/strings/str_format.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
@@ -1924,7 +1925,7 @@ void RadarClass::Draw_Names() const {
     **	If the house is non-human, generate the message
     */
     if (!ptr->IsHuman) {
-      sprintf(txt, "%s", Text_String(TXT_COMPUTER));
+      absl::SNPrintF(txt, sizeof(txt), "%s", Text_String(TXT_COMPUTER));
     } else {
       /*
       **	For a human house:
@@ -1934,7 +1935,7 @@ void RadarClass::Draw_Names() const {
       id = static_cast<unsigned char>(Build_MPlayerID(c_idx, ptr->ActLike));
       for (i = 0; i < MPlayerCount; i++) {
         if (id == MPlayerID[i]) {
-          sprintf(txt, "%s", MPlayerNames[i]);
+          absl::SNPrintF(txt, sizeof(txt), "%s", MPlayerNames[i]);
           break;
         }
       }
@@ -1955,7 +1956,7 @@ void RadarClass::Draw_Names() const {
         kills += ptr->UnitsKilled[h];
         kills += ptr->BuildingsKilled[h];
       }
-      sprintf(txt, "%2d", kills);
+      absl::SNPrintF(txt, sizeof(txt), "%2d", kills);
       Fancy_Text_Print(txt, RadX + RadOffX + RadIWidth - 2, y, color, BLACK,
                        style | TPF_RIGHT);
 

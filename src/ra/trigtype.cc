@@ -69,6 +69,7 @@
 #include <string>
 #include <utility>
 
+#include "absl/strings/str_format.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
@@ -401,11 +402,12 @@ bool TriggerTypeClass::Edit() {
                      ED1_X, ED1_Y, ED_WIDTH, 9, EditClass::kAlpha);
   if (Event_Needs(Event1.Event) == NEED_WAYPOINT) {
     if (Event1.Data.Value < 26) {
-      sprintf(way1data.Get_Text(), "%c",
-              static_cast<int>(Event1.Data.Value) + 'A');
+      absl::SNPrintF(way1, sizeof(way1), "%c",
+                     static_cast<int>(Event1.Data.Value) + 'A');
     } else {
-      sprintf(way1data.Get_Text(), "%c%c", (Event1.Data.Value / 26) + 'A' - 1,
-              (Event1.Data.Value % 26) + 'A');
+      absl::SNPrintF(way1, sizeof(way1), "%c%c",
+                     (Event1.Data.Value / 26) + 'A' - 1,
+                     (Event1.Data.Value % 26) + 'A');
     }
   }
 
@@ -414,11 +416,12 @@ bool TriggerTypeClass::Edit() {
                      ED2_X, ED2_Y, ED_WIDTH, 9, EditClass::kAlpha);
   if (Event_Needs(Event2.Event) == NEED_WAYPOINT) {
     if (Event2.Data.Value < 26) {
-      sprintf(way2data.Get_Text(), "%c",
-              static_cast<int>(Event2.Data.Value) + 'A');
+      absl::SNPrintF(way2, sizeof(way2), "%c",
+                     static_cast<int>(Event2.Data.Value) + 'A');
     } else {
-      sprintf(way2data.Get_Text(), "%c%c", (Event2.Data.Value / 26) + 'A' - 1,
-              (Event2.Data.Value % 26) + 'A');
+      absl::SNPrintF(way2, sizeof(way2), "%c%c",
+                     (Event2.Data.Value / 26) + 'A' - 1,
+                     (Event2.Data.Value % 26) + 'A');
     }
   }
 
@@ -427,10 +430,11 @@ bool TriggerTypeClass::Edit() {
                      AD1_X, AD1_Y, ED_WIDTH, 9, EditClass::kAlpha);
   if (Action_Needs(Action1.Action) == NEED_WAYPOINT) {
     if (Action1.Data.Value < 26) {
-      sprintf(way3data.Get_Text(), "%c", Action1.Data.Value + 'A');
+      absl::SNPrintF(way3, sizeof(way3), "%c", Action1.Data.Value + 'A');
     } else {
-      sprintf(way3data.Get_Text(), "%c%c", (Action1.Data.Value / 26) + 'A' - 1,
-              (Action1.Data.Value % 26) + 'A');
+      absl::SNPrintF(way3, sizeof(way3), "%c%c",
+                     (Action1.Data.Value / 26) + 'A' - 1,
+                     (Action1.Data.Value % 26) + 'A');
     }
   }
 
@@ -439,10 +443,11 @@ bool TriggerTypeClass::Edit() {
                      AD2_X, AD2_Y, ED_WIDTH, 9, EditClass::kAlpha);
   if (Action_Needs(Action2.Action) == NEED_WAYPOINT) {
     if (Action2.Data.Value < 26) {
-      sprintf(way4data.Get_Text(), "%c", Action2.Data.Value + 'A');
+      absl::SNPrintF(way4, sizeof(way4), "%c", Action2.Data.Value + 'A');
     } else {
-      sprintf(way4data.Get_Text(), "%c%c", (Action2.Data.Value / 26) + 'A' - 1,
-              (Action2.Data.Value % 26) + 'A');
+      absl::SNPrintF(way4, sizeof(way4), "%c%c",
+                     (Action2.Data.Value / 26) + 'A' - 1,
+                     (Action2.Data.Value % 26) + 'A');
     }
   }
 
@@ -456,8 +461,8 @@ bool TriggerTypeClass::Edit() {
   switch (Event_Needs(Event1.Event)) {
     case NEED_TIME:
     case NEED_NUMBER:
-      sprintf(event1data.Get_Text(), "%d",
-              static_cast<int>(Event1.Data.Value));
+      absl::SNPrintF(databuf1, sizeof(databuf1), "%d",
+                     static_cast<int>(Event1.Data.Value));
       break;
     default:
       break;
@@ -470,8 +475,8 @@ bool TriggerTypeClass::Edit() {
   switch (Event_Needs(Event2.Event)) {
     case NEED_TIME:
     case NEED_NUMBER:
-      sprintf(event2data.Get_Text(), "%d",
-              static_cast<int>(Event2.Data.Value));
+      absl::SNPrintF(databuf2, sizeof(databuf2), "%d",
+                     static_cast<int>(Event2.Data.Value));
       break;
     default:
       break;
@@ -482,7 +487,7 @@ bool TriggerTypeClass::Edit() {
                         TPF_EFNT | TPF_NOSHADOW, AD1_X, AD1_Y, ED_WIDTH, 9,
                         EditClass::kNumeric);
   if (Action_Needs(Action1.Action) == NEED_NUMBER) {
-    sprintf(action1data.Get_Text(), "%d", Action1.Data.Value);
+    absl::SNPrintF(actionbuf1, sizeof(actionbuf1), "%d", Action1.Data.Value);
   }
 
   char actionbuf2[GENERAL_SIZE] = "";
@@ -490,7 +495,7 @@ bool TriggerTypeClass::Edit() {
                         TPF_EFNT | TPF_NOSHADOW, AD2_X, AD2_Y, ED_WIDTH, 9,
                         EditClass::kNumeric);
   if (Action_Needs(Action2.Action) == NEED_NUMBER) {
-    sprintf(action2data.Get_Text(), "%d", Action2.Data.Value);
+    absl::SNPrintF(actionbuf2, sizeof(actionbuf2), "%d", Action2.Data.Value);
   }
 
   /*
@@ -1757,7 +1762,8 @@ const char* TriggerTypeClass::Description() const {
     const char* added = "";
     switch (Event_Needs(Event1.Event)) {
       case NEED_NUMBER:
-        sprintf(tbuf, "%d", static_cast<int>(Event1.Data.Value));
+        absl::SNPrintF(tbuf, sizeof(tbuf), "%d",
+                       static_cast<int>(Event1.Data.Value));
         added = tbuf;
         break;
 
@@ -1783,10 +1789,12 @@ const char* TriggerTypeClass::Description() const {
 
       case NEED_WAYPOINT:
         if (Event1.Data.Value < 26) {
-          sprintf(tbuf, "'%c'", static_cast<int>(Event1.Data.Value) + 'A');
+          absl::SNPrintF(tbuf, sizeof(tbuf), "'%c'",
+                         static_cast<int>(Event1.Data.Value) + 'A');
         } else {
-          sprintf(tbuf, "'%c%c'", (Event1.Data.Value / 26) + 'A' - 1,
-                  (Event1.Data.Value % 26) + 'A');
+          absl::SNPrintF(tbuf, sizeof(tbuf), "'%c%c'",
+                         (Event1.Data.Value / 26) + 'A' - 1,
+                         (Event1.Data.Value % 26) + 'A');
         }
         added = tbuf;
         break;
@@ -1806,9 +1814,9 @@ const char* TriggerTypeClass::Description() const {
       pers = 'P';
     }
 
-    sprintf(_buffer, "%4.4s\t %s %c%c%c  %s%s", IniName,
-            HouseTypeClass::As_Reference(House).Suffix, pers, special, special2,
-            Name_From_Event(Event1.Event), added);
+    absl::SNPrintF(_buffer, sizeof(_buffer), "%4.4s\t %s %c%c%c  %s%s", IniName,
+                   HouseTypeClass::As_Reference(House).Suffix, pers, special,
+                   special2, Name_From_Event(Event1.Event), added);
     return _buffer;
   }
   return "";

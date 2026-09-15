@@ -51,6 +51,7 @@
 #include <cstring>
 #include <utility>
 
+#include "absl/strings/str_format.h"
 #include "port/safe_string.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
@@ -342,8 +343,9 @@ int MapEditClass::Select_Team(const char* caption) {
     ................ Fill in class & count for all classes ................
     */
     for (j = 0; std::cmp_less(j, TeamTypes.Ptr(i)->ClassCount); j++) {
-      sprintf(txt, "%s:%d", TeamTypes.Ptr(i)->Class[j]->IniName,
-              TeamTypes.Ptr(i)->DesiredNum[j]);
+      absl::SNPrintF(txt, sizeof(txt), "%s:%d",
+                     TeamTypes.Ptr(i)->Class[j]->IniName,
+                     TeamTypes.Ptr(i)->DesiredNum[j]);
 
       /*..................................................................
       Add entry if there's room; break otherwise
@@ -935,10 +937,10 @@ int MapEditClass::Edit_Team() {
   ........................... Copy team's state ............................
   */
   port::SafeCopy(name_buf, CurTeam->IniName);
-  sprintf(recr_buf, "%d", CurTeam->RecruitPriority);
-  sprintf(maxnum_buf, "%d", CurTeam->MaxAllowed);
-  sprintf(initnum_buf, "%d", CurTeam->InitNum);
-  sprintf(fear_buf, "%d", CurTeam->Fear);
+  absl::SNPrintF(recr_buf, sizeof(recr_buf), "%d", CurTeam->RecruitPriority);
+  absl::SNPrintF(maxnum_buf, sizeof(maxnum_buf), "%d", CurTeam->MaxAllowed);
+  absl::SNPrintF(initnum_buf, sizeof(initnum_buf), "%d", CurTeam->InitNum);
+  absl::SNPrintF(fear_buf, sizeof(fear_buf), "%d", CurTeam->Fear);
   roundabout = CurTeam->IsRoundAbout;
   learning = CurTeam->IsLearning;
   suicide = CurTeam->IsSuicide;
@@ -966,9 +968,11 @@ int MapEditClass::Edit_Team() {
   if (missioncount) {
     if (missions[curmission].Mission == TMISSION_MOVE ||
         missions[curmission].Mission == TMISSION_UNLOAD) {
-      sprintf(arg_buf, "%c", missions[curmission].Argument + 'A');
+      absl::SNPrintF(arg_buf, sizeof(arg_buf), "%c",
+                     missions[curmission].Argument + 'A');
     } else {
-      sprintf(arg_buf, "%d", missions[curmission].Argument);
+      absl::SNPrintF(arg_buf, sizeof(arg_buf), "%d",
+                     missions[curmission].Argument);
     }
   }
   missionlist2.Set_Tabs(tabs);
@@ -1226,9 +1230,11 @@ int MapEditClass::Edit_Team() {
           curmission = missionlist2.Current_Index();
           if (missions[curmission].Mission == TMISSION_MOVE ||
               missions[curmission].Mission == TMISSION_UNLOAD) {
-            sprintf(arg_buf, "%c", missions[curmission].Argument + 'A');
+            absl::SNPrintF(arg_buf, sizeof(arg_buf), "%c",
+                           missions[curmission].Argument + 'A');
           } else {
-            sprintf(arg_buf, "%d", missions[curmission].Argument);
+            absl::SNPrintF(arg_buf, sizeof(arg_buf), "%d",
+                           missions[curmission].Argument);
           }
           arg_edt.Set_Text(arg_buf, 3);
         }
@@ -2070,16 +2076,16 @@ void MapEditClass::Build_Mission_List(
     */
     if (missions[i].Mission == TMISSION_MOVE ||
         missions[i].Mission == TMISSION_UNLOAD) {
-      sprintf(missionbuf[i], "%s\t%c",
-              TeamTypeClass::Name_From_Mission(missions[i].Mission),
-              missions[i].Argument + 'A');
+      absl::SNPrintF(missionbuf[i], sizeof(missionbuf[i]), "%s\t%c",
+                     TeamTypeClass::Name_From_Mission(missions[i].Mission),
+                     missions[i].Argument + 'A');
     } else {
       /*
       ** All other missions take a numeric argument.
       */
-      sprintf(missionbuf[i], "%s\t%d",
-              TeamTypeClass::Name_From_Mission(missions[i].Mission),
-              missions[i].Argument);
+      absl::SNPrintF(missionbuf[i], sizeof(missionbuf[i]), "%s\t%d",
+                     TeamTypeClass::Name_From_Mission(missions[i].Mission),
+                     missions[i].Argument);
     }
 
     /*

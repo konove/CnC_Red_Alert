@@ -59,6 +59,7 @@
 #include <cstring>
 #include <utility>
 
+#include "absl/strings/str_format.h"
 #include "port/tokenizer.h"
 #include "sdllib/shape.h"
 #include "sdllib/tile.h"
@@ -184,8 +185,9 @@ void TemplateClass::Write_INI(char* buffer) {
 
     ptr = &Map[index];
     if (ptr->TType != TEMPLATE_NONE && ptr->TIcon == 0) {
-      sprintf(uname, "%03d", index);
-      sprintf(buf, "%s", TemplateTypeClass::As_Reference(ptr->TType).IniName);
+      absl::SNPrintF(uname, sizeof(uname), "%03d", index);
+      absl::SNPrintF(buf, sizeof(buf), "%s",
+                     TemplateTypeClass::As_Reference(ptr->TType).IniName);
       WWWritePrivateProfileString(INI_Name(), uname, buf, buffer);
     }
   }

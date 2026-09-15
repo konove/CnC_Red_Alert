@@ -22,6 +22,7 @@
 #include <cstdio>
 #include <cstring>
 
+#include "absl/strings/str_format.h"
 #include "port/safe_string.h"
 #include "port/sleep.h"
 #include "port/win32/win32_com.h"
@@ -409,9 +410,10 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
 
     if (pWO->iLobbyReturnAfterGame != -1) {
       char szChannelToJoin[WOL_CHANNAME_LEN_MAX];
-      // sprintf( szChannelToJoin, "Lob_%i_%i", GAME_TYPE,
-      // pWO->iLobbyReturnAfterGame );
-      sprintf(szChannelToJoin, "%s%i", LOB_PREFIX, pWO->iLobbyReturnAfterGame);
+      // absl::SNPrintF(szChannelToJoin, sizeof(szChannelToJoin), "Lob_%i_%i",
+      // GAME_TYPE, pWO->iLobbyReturnAfterGame );
+      absl::SNPrintF(szChannelToJoin, sizeof(szChannelToJoin), "%s%i",
+                     LOB_PREFIX, pWO->iLobbyReturnAfterGame);
       pWO->OnEnteringChatChannel(szChannelToJoin, false,
                                  iChannelLobbyNumber(szChannelToJoin));
     } else {
@@ -1392,7 +1394,8 @@ void CreateChatChannel(WolapiObject* pWO) {
 //***********************************************************************************************
 bool CreateGameChannel(WolapiObject* pWO, const CREATEGAMEINFO& cgi) {
   char szNewChannelName[WOL_CHANNAME_LEN_MAX];
-  sprintf(szNewChannelName, "%s's_game", pWO->szMyName);
+  absl::SNPrintF(szNewChannelName, sizeof(szNewChannelName), "%s's_game",
+                 pWO->szMyName);
 
   if ((pWO->CurrentLevel == WOL_LEVEL_INCHATCHANNEL ||
        pWO->CurrentLevel == WOL_LEVEL_INLOBBY) &&

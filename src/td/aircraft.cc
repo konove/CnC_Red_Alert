@@ -111,6 +111,7 @@
 #include <cstring>
 #include <utility>
 
+#include "absl/strings/str_format.h"
 #include "base/trig.h"
 #include "port/tokenizer.h"
 #include "sdllib/shape.h"
@@ -593,11 +594,11 @@ void AircraftClass::Write_INI(char* buffer) {
 
     unit = Aircraft.Ptr(index);
     if (!unit->IsInLimbo) {
-      snprintf(uname, 10, "%03d", index);
-      snprintf(buf, 128, "%s,%s,%d,%u,%d,%s", unit->House->Class->IniName,
-               unit->Class->IniName, unit->Health_Ratio(),
-               Coord_Cell(unit->Coord), unit->PrimaryFacing.Current(),
-               Mission_Name(unit->Mission));
+      absl::SNPrintF(uname, 10, "%03d", index);
+      absl::SNPrintF(buf, 128, "%s,%s,%d,%u,%d,%s", unit->House->Class->IniName,
+                     unit->Class->IniName, unit->Health_Ratio(),
+                     Coord_Cell(unit->Coord), unit->PrimaryFacing.Current(),
+                     Mission_Name(unit->Mission));
       WWWritePrivateProfileString(INI_Name(), uname, buf, buffer);
     }
   }

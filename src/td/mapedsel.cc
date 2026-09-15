@@ -49,6 +49,7 @@
 #include <cstdio>
 #include <iterator>
 
+#include "absl/strings/str_format.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
@@ -398,7 +399,8 @@ void MapEditClass::Popup_Controls() {
     case RTTI_AIRCRAFTTYPE:
       MissionList->Set_Selected_Index(mission_index);
       HealthGauge->Set_Value(strength);
-      sprintf(HealthBuf, "%d", CurrentObject[0]->Strength);
+      absl::SNPrintF(HealthBuf, sizeof(HealthBuf), "%d",
+                     CurrentObject[0]->Strength);
       FacingDial->Set_Direction(techno->PrimaryFacing);
 
       /*
@@ -412,7 +414,8 @@ void MapEditClass::Popup_Controls() {
 
     case RTTI_BUILDINGTYPE:
       HealthGauge->Set_Value(strength);
-      sprintf(HealthBuf, "%d", CurrentObject[0]->Strength);
+      absl::SNPrintF(HealthBuf, sizeof(HealthBuf), "%d",
+                     CurrentObject[0]->Strength);
       Add_A_Button(*HealthGauge);
       Add_A_Button(*HealthText);
 

@@ -28,9 +28,11 @@
 #include <cstring>
 #include <ctime>
 #include <iterator>
+#include <string>
 #include <utility>
 
 #include "absl/log/check.h"
+#include "absl/strings/str_format.h"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "port/tokenizer.h"
@@ -632,17 +634,14 @@ STDMETHODIMP RAChatEventSink::OnPublicMessage(HRESULT /*res*/,
         if (i >= VOX_ACCOMPLISHED && i <= VOX_LOAD1 && pOwner->bEggSounds) {
           Speak(static_cast<VoxType>(i));
         }
-        char* szPrint = new char[strlen(WolText(pUserSender->name)) + 16];
-        sprintf(szPrint, "%s!", WolText(pUserSender->name));
-        pOwner->PrintMessage(szPrint, WOLCOLORREMAP_LOCALMACHINEMESS);
-        delete[] szPrint;
+        const std::string szPrint =
+            absl::StrFormat("%s!", WolText(pUserSender->name));
+        pOwner->PrintMessage(szPrint.c_str(), WOLCOLORREMAP_LOCALMACHINEMESS);
       }
     } else {
-      char* szPrint = new char[strlen(WolText(pUserSender->name)) +
-                               strlen(szMessage) + 110];
-      sprintf(szPrint, "%s: %s", WolText(pUserSender->name), szMessage);
-      pOwner->PrintMessage(szPrint, WOLCOLORREMAP_PUBLICMESSAGE);
-      delete[] szPrint;
+      const std::string szPrint =
+          absl::StrFormat("%s: %s", WolText(pUserSender->name), szMessage);
+      pOwner->PrintMessage(szPrint.c_str(), WOLCOLORREMAP_PUBLICMESSAGE);
     }
   }
   return S_OK;
@@ -670,7 +669,8 @@ STDMETHODIMP RAChatEventSink::OnPrivateMessage(HRESULT /*res*/,
       char co2[34];
       Base64_Decode(ci2, static_cast<int>(strlen(ci2)), co2, 33);
       co2[33] = 0;
-      sprintf(szOut, "%s (%i/%i/%i)", co2, today.month, today.day, today.year);
+      absl::SNPrintF(szOut, sizeof(szOut), "%s (%i/%i/%i)", co2, today.month,
+                     today.day, today.year);
       User UserReply;
       UserReply = *pUserSender;
       UserReply.next = nullptr;
@@ -687,20 +687,18 @@ STDMETHODIMP RAChatEventSink::OnPrivateMessage(HRESULT /*res*/,
           }
         }
       } else {
-        char* szPrint = new char[strlen(WolText(pUserSender->name)) +
-                                 strlen(szMessage) + 116];
-        sprintf(szPrint, "%s%s: %s", WolText(pUserSender->name),
-                TXT_WOL_PRIVATE, szMessage);
-        pOwner->PrintMessage(szPrint, WOLCOLORREMAP_PRIVATEMESSAGE);
+        const std::string szPrint = absl::StrFormat(
+            "%s%s: %s", WolText(pUserSender->name), TXT_WOL_PRIVATE, szMessage);
+        pOwner->PrintMessage(szPrint.c_str(), WOLCOLORREMAP_PRIVATEMESSAGE);
         Sound_Effect(VOC_INCOMING_MESSAGE);
-        delete[] szPrint;
       }
     } else {
       char szOut[kMessageMax];
       port::SafeCopy(szOut, &szMessage[8]);
       pOwner->pChat->RequestPublicMessage(szOut);
       char szPrint[kMessageMax];
-      snprintf(szPrint, sizeof(szPrint), "%s: %s", pOwner->szMyName, szOut);
+      absl::SNPrintF(szPrint, sizeof(szPrint), "%s: %s", pOwner->szMyName,
+                     szOut);
       pOwner->PrintMessage(szPrint, WOLCOLORREMAP_SELFSPEAKING);
     }
   }
@@ -1009,7 +1007,8 @@ bool RAChatEventSink::DownloadUpdates(Update* pUpdateList, int iUpdates) {
     Format_Runtime_Text(szTitle, sizeof(szTitle), TXT_WOL_DOWNLOADING,
                         iUpdateCurrent, iUpdates);
     char fullpath[kMaxPath];
-    sprintf(fullpath, "%s\\%s", pUpdate->patchpath, pUpdate->patchfile);
+    absl::SNPrintF(fullpath, sizeof(fullpath), "%s\\%s",
+                   WolText(pUpdate->patchpath), WolText(pUpdate->patchfile));
     //	Downloading in WOLAPI is in a state of disarray somewhat.
     //	Make sure the destination directory exists, and make it the current
     // directory during the download.
@@ -1246,12 +1245,9 @@ STDMETHODIMP RAChatEventSink::OnPrivateAction(HRESULT /*res*/,
   }
 
   if (*szMessage) {
-    char* szPrint =
-        new char[strlen(WolText(pUserSender->name)) + strlen(szMessage) + 116];
-    sprintf(szPrint, "%s %s %s", TXT_WOL_PRIVATE, WolText(pUserSender->name),
-            szMessage);
-    pOwner->PrintMessage(szPrint, WOLCOLORREMAP_ACTION);
-    delete[] szPrint;
+    const std::string szPrint = absl::StrFormat(
+        "%s %s %s", TXT_WOL_PRIVATE, WolText(pUserSender->name), szMessage);
+    pOwner->PrintMessage(szPrint.c_str(), WOLCOLORREMAP_ACTION);
     //	Easter egg related.
     if (pOwner->bEggSounds) {
       ActionEggSound(szMessage);
@@ -1266,11 +1262,9 @@ STDMETHODIMP RAChatEventSink::OnPublicAction(HRESULT /*res*/,
                                              User* pUserSender,
                                              LPCSTR szMessage) {
   if (*szMessage) {
-    char* szPrint =
-        new char[strlen(WolText(pUserSender->name)) + strlen(szMessage) + 110];
-    sprintf(szPrint, "%s %s", WolText(pUserSender->name), szMessage);
-    pOwner->PrintMessage(szPrint, WOLCOLORREMAP_ACTION);
-    delete[] szPrint;
+    const std::string szPrint =
+        absl::StrFormat("%s %s", WolText(pUserSender->name), szMessage);
+    pOwner->PrintMessage(szPrint.c_str(), WOLCOLORREMAP_ACTION);
     //	Easter egg related.
     if (pOwner->bEggSounds) {
       ActionEggSound(szMessage);
@@ -1927,8 +1921,8 @@ void ChatDefAsText(char* szDesc, std::size_t iSize, HRESULT hRes) {
       szText = "Reference made to non-existant user or channel";
       break;
     case CHAT_E_CON_NETDOWN:
-      sprintf(
-          szDesc,
+      absl::SNPrintF(
+          szDesc, iSize,
           "The network layer is down or cannot be initialized for some reason");
       break;
     case CHAT_E_CON_LOOKUP_FAILED:
@@ -2013,8 +2007,8 @@ void ChatDefAsText(char* szDesc, std::size_t iSize, HRESULT hRes) {
       szText = "Invalid parameter passed - usually a NULL pointer";
       break;
     case CHAT_E_LEAVECHANNEL:
-      sprintf(
-          szDesc,
+      absl::SNPrintF(
+          szDesc, iSize,
           "Tried to create or join a channel before leaving the previous one");
       break;
     case CHAT_E_JOINCHANNEL:
@@ -2051,7 +2045,7 @@ void ChatDefAsText(char* szDesc, std::size_t iSize, HRESULT hRes) {
       break;
   }
 
-  snprintf(szDesc, iSize, "%s%s", szText, szNetUtil);
+  absl::SNPrintF(szDesc, iSize, "%s%s", szText, szNetUtil);
 }
 
 //***********************************************************************************************
@@ -2086,7 +2080,7 @@ void InterpretLobbyNumber(char* szLobbyNameToSet, int iLobby) {
     port::SafeCopy(szLobbyNameToSet, kLobbyNames[iLobby],
                    REASONABLELOBBYINTERPRETEDNAMELEN);
   } else {
-    snprintf(szLobbyNameToSet, REASONABLELOBBYINTERPRETEDNAMELEN,
-             "%ith Division", iLobby);
+    absl::SNPrintF(szLobbyNameToSet, REASONABLELOBBYINTERPRETEDNAMELEN,
+                   "%ith Division", iLobby);
   }
 }

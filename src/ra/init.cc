@@ -78,6 +78,7 @@
 
 #include "absl/log/log.h"
 #include "absl/strings/match.h"
+#include "absl/strings/str_format.h"
 #include "base/numeric.h"
 #include "base/types.h"
 #include "magic_enum/magic_enum.hpp"
@@ -2633,7 +2634,7 @@ static void Init_Bulk_Data() {
 
     char buffer[128];
     char num[10];
-    sprintf(num, "%d", index);
+    absl::SNPrintF(num, sizeof(num), "%d", index);
     if (ini.Get_String("Tutorial", num, "", buffer, sizeof(buffer))) {
       totallen += static_cast<int>(strlen(buffer)) + 1;
     }
@@ -2645,7 +2646,7 @@ static void Init_Bulk_Data() {
 
   for (int index = 0; index < std::ssize(TutorialTextOffsets); index++) {
     char num[10];
-    sprintf(num, "%d", index);
+    absl::SNPrintF(num, sizeof(num), "%d", index);
     const int textoffset = static_cast<int>(textptr - text_data);
     if (ini.Get_String("Tutorial", num, "", textptr, totallen - textoffset)) {
       TutorialTextOffsets[index] = static_cast<uint16_t>(textoffset);

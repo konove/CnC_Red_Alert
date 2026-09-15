@@ -129,6 +129,7 @@
 #include <cstring>
 #include <utility>
 
+#include "absl/strings/str_format.h"
 #include "port/ex_string.h"
 #include "port/random_seed.h"
 #include "port/safe_string.h"
@@ -472,7 +473,7 @@ void Destroy_Connection(int id, int error) {
   If we're the last player left, tell the user.
   ------------------------------------------------------------------------*/
   if (MPlayerCount == 1) {
-    sprintf(txt, "%s", Text_String(TXT_JUST_YOU_AND_ME));
+    absl::SNPrintF(txt, sizeof(txt), "%s", Text_String(TXT_JUST_YOU_AND_ME));
     Messages.Add_Message(
         txt,
         MPlayerTColors[MPlayerID_To_ColorIndex(static_cast<unsigned char>(id))],
@@ -1190,13 +1191,15 @@ static int Net_Join_Dialog() {
           ............................................................*/
           p = Text_String(TXT_SCENARIO_COLON);
           if (ScenarioIdx != -1) {
-            sprintf(txt, "%s %s", p, MPlayerScenarios[ScenarioIdx]);
+            absl::SNPrintF(txt, sizeof(txt), "%s %s", p,
+                           MPlayerScenarios[ScenarioIdx]);
 
             Fancy_Text_Print(
                 txt, d_dialog_cx, d_msg1_y, CC_GREEN, TBLACK,
                 TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW | TPF_CENTER);
           } else {
-            sprintf(txt, "%s %s", p, Text_String(TXT_NOT_FOUND));
+            absl::SNPrintF(txt, sizeof(txt), "%s %s", p,
+                           Text_String(TXT_NOT_FOUND));
 
             Fancy_Text_Print(
                 txt, d_dialog_cx, d_msg1_y, CC_NOD_COLOR, TBLACK,
@@ -1207,7 +1210,7 @@ static int Net_Join_Dialog() {
           # of credits
           ............................................................*/
           p = Text_String(TXT_START_CREDITS_COLON);
-          sprintf(txt, "%s %d", p, MPlayerCredits);
+          absl::SNPrintF(txt, sizeof(txt), "%s %d", p, MPlayerCredits);
           Fancy_Text_Print(
               txt, d_dialog_cx, d_msg2_y, CC_GREEN, TBLACK,
               TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW | TPF_CENTER);
@@ -1216,7 +1219,7 @@ static int Net_Join_Dialog() {
           Count & Level values
           ............................................................*/
           p = Text_String(TXT_COUNT);
-          sprintf(txt, "%s %d", p, MPlayerUnitCount);
+          absl::SNPrintF(txt, sizeof(txt), "%s %d", p, MPlayerUnitCount);
           Fancy_Text_Print(
               txt, d_dialog_x + (d_dialog_w / 4) - String_Pixel_Width(p),
               d_msg3_y, CC_GREEN, TBLACK,
@@ -1224,9 +1227,9 @@ static int Net_Join_Dialog() {
 
           p = Text_String(TXT_LEVEL);
           if (BuildLevel <= MPLAYER_BUILD_LEVEL_MAX) {
-            sprintf(txt, "%s %d", p, BuildLevel);
+            absl::SNPrintF(txt, sizeof(txt), "%s %d", p, BuildLevel);
           } else {
-            sprintf(txt, "%s **", p);
+            absl::SNPrintF(txt, sizeof(txt), "%s **", p);
           }
           Fancy_Text_Print(txt,
                            d_dialog_x + d_dialog_w - (d_dialog_w / 4) -
@@ -1239,9 +1242,9 @@ static int Net_Join_Dialog() {
           ............................................................*/
           p = Text_String(TXT_BASES_COLON);
           if (MPlayerBases) {
-            sprintf(txt, "%s %s", p, Text_String(TXT_ON));
+            absl::SNPrintF(txt, sizeof(txt), "%s %s", p, Text_String(TXT_ON));
           } else {
-            sprintf(txt, "%s %s", p, Text_String(TXT_OFF));
+            absl::SNPrintF(txt, sizeof(txt), "%s %s", p, Text_String(TXT_OFF));
           }
           Fancy_Text_Print(
               txt, d_dialog_x + (d_dialog_w / 4) - String_Pixel_Width(p),
@@ -1253,9 +1256,9 @@ static int Net_Join_Dialog() {
           ............................................................*/
           p = Text_String(TXT_TIBERIUM_COLON);
           if (MPlayerTiberium) {
-            sprintf(txt, "%s %s", p, Text_String(TXT_ON));
+            absl::SNPrintF(txt, sizeof(txt), "%s %s", p, Text_String(TXT_ON));
           } else {
-            sprintf(txt, "%s %s", p, Text_String(TXT_OFF));
+            absl::SNPrintF(txt, sizeof(txt), "%s %s", p, Text_String(TXT_OFF));
           }
 
           Fancy_Text_Print(
@@ -1268,9 +1271,9 @@ static int Net_Join_Dialog() {
           ............................................................*/
           p = Text_String(TXT_CRATES_COLON);
           if (MPlayerGoodies) {
-            sprintf(txt, "%s %s", p, Text_String(TXT_ON));
+            absl::SNPrintF(txt, sizeof(txt), "%s %s", p, Text_String(TXT_ON));
           } else {
-            sprintf(txt, "%s %s", p, Text_String(TXT_OFF));
+            absl::SNPrintF(txt, sizeof(txt), "%s %s", p, Text_String(TXT_OFF));
           }
 
           Fancy_Text_Print(txt,
@@ -1284,13 +1287,14 @@ static int Net_Join_Dialog() {
           ............................................................*/
           if (Special.IsCaptureTheFlag) {
             p = Text_String(TXT_CAPTURE_THE_FLAG_COLON);
-            sprintf(txt, "%s %s", p, Text_String(TXT_ON));
+            absl::SNPrintF(txt, sizeof(txt), "%s %s", p, Text_String(TXT_ON));
           } else {
             p = Text_String(TXT_AI_PLAYERS_COLON);
             if (MPlayerGhosts) {
-              sprintf(txt, "%s %s", p, Text_String(TXT_ON));
+              absl::SNPrintF(txt, sizeof(txt), "%s %s", p, Text_String(TXT_ON));
             } else {
-              sprintf(txt, "%s %s", p, Text_String(TXT_OFF));
+              absl::SNPrintF(txt, sizeof(txt), "%s %s", p,
+                             Text_String(TXT_OFF));
             }
           }
           Fancy_Text_Print(txt,
@@ -1692,9 +1696,11 @@ static int Net_Join_Dialog() {
           Clear_Player_List(&playerlist);
 
           if (MPlayerHouse == HOUSE_GOOD) {
-            sprintf(item, "%s\t%s", MPlayerName, Text_String(TXT_G_D_I));
+            absl::SNPrintF(item, sizeof(item), "%s\t%s", MPlayerName,
+                           Text_String(TXT_G_D_I));
           } else {
-            sprintf(item, "%s\t%s", MPlayerName, Text_String(TXT_N_O_D));
+            absl::SNPrintF(item, sizeof(item), "%s\t%s", MPlayerName,
+                           Text_String(TXT_N_O_D));
           }
           playerlist.Add_Item(item, static_cast<char>(MPlayerTColors[MPlayerColorIdx]));
 
@@ -2442,9 +2448,11 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       Create & add a string to the list box
       ..................................................................*/
       if (GPacket.PlayerInfo.House == HOUSE_GOOD) {
-        sprintf(item, "%s\t%s", GPacket.Name, Text_String(TXT_G_D_I));
+        absl::SNPrintF(item, sizeof(item), "%s\t%s", GPacket.Name,
+                       Text_String(TXT_G_D_I));
       } else {
-        sprintf(item, "%s\t%s", GPacket.Name, Text_String(TXT_N_O_D));
+        absl::SNPrintF(item, sizeof(item), "%s\t%s", GPacket.Name,
+                       Text_String(TXT_N_O_D));
       }
       playerlist->Add_Item(item, static_cast<char>(MPlayerTColors[who->Player.Color]));
 
@@ -3030,7 +3038,7 @@ static int Net_New_Dialog() {
     ghostsbtn.Set_Text(TXT_CAPTURE_THE_FLAG);
   }
 
-  sprintf(credbuf, "%d", MPlayerCredits);
+  absl::SNPrintF(credbuf, sizeof(credbuf), "%d", MPlayerCredits);
   credit_edt.Set_Text(credbuf, CREDITSBUF_MAX);
   old_cred = MPlayerCredits;
 
@@ -3082,9 +3090,11 @@ static int Net_New_Dialog() {
   the Vector & listbox are now 1 out of sync.
   ------------------------------------------------------------------------*/
   if (MPlayerHouse == HOUSE_GOOD) {
-    sprintf(item, "%s\t%s", MPlayerName, Text_String(TXT_G_D_I));
+    absl::SNPrintF(item, sizeof(item), "%s\t%s", MPlayerName,
+                   Text_String(TXT_G_D_I));
   } else {
-    sprintf(item, "%s\t%s", MPlayerName, Text_String(TXT_N_O_D));
+    absl::SNPrintF(item, sizeof(item), "%s\t%s", MPlayerName,
+                   Text_String(TXT_N_O_D));
   }
   playerlist.Add_Item(item, static_cast<char>(MPlayerTColors[MPlayerColorIdx]));
 
@@ -3121,7 +3131,7 @@ static int Net_New_Dialog() {
       LogicPage->Fill_Rect(d_count_x + d_count_w + (2 * factor), d_count_y,
                            d_count_x + d_count_w + (2 * factor) + 20,
                            d_count_y + 12, 0);
-      sprintf(txt, "%d", MPlayerUnitCount);
+      absl::SNPrintF(txt, sizeof(txt), "%d", MPlayerUnitCount);
       Fancy_Text_Print(txt, d_count_x + d_count_w + (2 * factor), d_count_y,
                        CC_GREEN, TBLACK,
                        TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
@@ -3161,7 +3171,7 @@ static int Net_New_Dialog() {
             TXT_COUNT, d_count_x - (2 * factor), d_count_y, CC_GREEN, TBLACK,
             TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_RIGHT);
 
-        sprintf(txt, "%d", MPlayerUnitCount);
+        absl::SNPrintF(txt, sizeof(txt), "%d", MPlayerUnitCount);
         Fancy_Text_Print(txt, d_count_x + d_count_w + (2 * factor), d_count_y,
                          CC_GREEN, TBLACK,
                          TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
@@ -3171,9 +3181,9 @@ static int Net_New_Dialog() {
             TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_RIGHT);
 
         if (BuildLevel <= MPLAYER_BUILD_LEVEL_MAX) {
-          sprintf(txt, "%d", BuildLevel);
+          absl::SNPrintF(txt, sizeof(txt), "%d", BuildLevel);
         } else {
-          sprintf(txt, "**");
+          absl::SNPrintF(txt, sizeof(txt), "**");
         }
         Fancy_Text_Print(txt, d_level_x + d_level_w + (2 * factor), d_level_y,
                          CC_GREEN, TBLACK,
@@ -3265,7 +3275,7 @@ static int Net_New_Dialog() {
                              d_count_x + d_count_w + (14 * factor),
                              d_count_y + (6 * factor), BLACK);
 
-        sprintf(txt, "%d", MPlayerUnitCount);
+        absl::SNPrintF(txt, sizeof(txt), "%d", MPlayerUnitCount);
         Fancy_Text_Print(txt, d_count_x + d_count_w + (2 * factor), d_count_y,
                          CC_GREEN, TBLACK,
                          TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
@@ -3287,9 +3297,9 @@ static int Net_New_Dialog() {
                              d_level_y + (6 * factor), BLACK);
 
         if (BuildLevel <= MPLAYER_BUILD_LEVEL_MAX) {
-          sprintf(txt, "%d", BuildLevel);
+          absl::SNPrintF(txt, sizeof(txt), "%d", BuildLevel);
         } else {
-          sprintf(txt, "**");
+          absl::SNPrintF(txt, sizeof(txt), "**");
         }
         Fancy_Text_Print(txt, d_level_x + d_level_w + (2 * factor), d_level_y,
                          CC_GREEN, TBLACK,
@@ -3643,7 +3653,7 @@ static int Net_New_Dialog() {
       old_cred = Bound(tech::ParseInteger<int>(credbuf).value_or(0), 0, 9999);
       MPlayerCredits = old_cred;
       transmit = 1;
-      sprintf(credbuf, "%d", MPlayerCredits);
+      absl::SNPrintF(credbuf, sizeof(credbuf), "%d", MPlayerCredits);
       credit_edt.Set_Text(credbuf, CREDITSBUF_MAX);
     }
 
@@ -3959,9 +3969,11 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist) {
       Add player name to the list box
       ..................................................................*/
       if (GPacket.PlayerInfo.House == HOUSE_GOOD) {
-        sprintf(item, "%s\t%s", GPacket.Name, Text_String(TXT_G_D_I));
+        absl::SNPrintF(item, sizeof(item), "%s\t%s", GPacket.Name,
+                       Text_String(TXT_G_D_I));
       } else {
-        sprintf(item, "%s\t%s", GPacket.Name, Text_String(TXT_N_O_D));
+        absl::SNPrintF(item, sizeof(item), "%s\t%s", GPacket.Name,
+                       Text_String(TXT_N_O_D));
       }
       playerlist->Add_Item(item, static_cast<char>(MPlayerTColors[who->Player.Color]));
 
@@ -4114,8 +4126,8 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
                           Text_String(TXT_RECONNECTING_TO),
                           Ipx.Connection_Name(id));
     } else {
-      snprintf(buf1, sizeof(buf1), "%s",
-               Text_String(TXT_WAITING_FOR_CONNECTIONS));
+      absl::SNPrintF(buf1, sizeof(buf1), "%s",
+                     Text_String(TXT_WAITING_FOR_CONNECTIONS));
     }
     Format_Runtime_Text(buf2, sizeof(buf2), Text_String(TXT_TIME_ALLOWED),
                         timeval + 1);
@@ -4357,7 +4369,7 @@ static int Net_Fake_New_Dialog() {
   ----------------------------- Various Inits ------------------------------
   */
 
-  sprintf(credbuf, "%d", MPlayerCredits);
+  absl::SNPrintF(credbuf, sizeof(credbuf), "%d", MPlayerCredits);
 
   /*........................................................................
   Init other scenario parameters
@@ -4386,9 +4398,11 @@ static int Net_Fake_New_Dialog() {
   the Vector & listbox are now 1 out of sync.
   ------------------------------------------------------------------------*/
   if (MPlayerHouse == HOUSE_GOOD) {
-    sprintf(item, "%s\t%s", MPlayerName, Text_String(TXT_G_D_I));
+    absl::SNPrintF(item, sizeof(item), "%s\t%s", MPlayerName,
+                   Text_String(TXT_G_D_I));
   } else {
-    sprintf(item, "%s\t%s", MPlayerName, Text_String(TXT_N_O_D));
+    absl::SNPrintF(item, sizeof(item), "%s\t%s", MPlayerName,
+                   Text_String(TXT_N_O_D));
   }
   playerlist.Add_Item(item, static_cast<char>(MPlayerTColors[MPlayerColorIdx]));
 
@@ -4406,8 +4420,8 @@ static int Net_Fake_New_Dialog() {
   }
 
   char a_buffer[128];
-  snprintf(a_buffer, sizeof(a_buffer), "Number of players:%d",
-           static_cast<int>(Players.Count()));
+  absl::SNPrintF(a_buffer, sizeof(a_buffer), "Number of players:%d",
+                 static_cast<int>(Players.Count()));
   CCDebugString(a_buffer);
 
 #ifdef VIRTUAL_SUBNET_SERVER
@@ -4700,8 +4714,9 @@ static int Net_Fake_New_Dialog() {
     GPacket.ResponseTime.OneWay = MPlayerMaxAhead;
     for (i = 0; i < Players.Count(); i++) {
       char flopbuf[128];
-      sprintf(flopbuf, "Sending 'GO' packet to address %d\n",
-              port::ReadUnaligned<uint16_t>(&Players[i]->Address));
+      absl::SNPrintF(flopbuf, sizeof(flopbuf),
+                     "Sending 'GO' packet to address %d\n",
+                     port::ReadUnaligned<uint16_t>(&Players[i]->Address));
       CCDebugString(flopbuf);
 
       Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 1,
@@ -4984,8 +4999,8 @@ static int Net_Fake_Join_Dialog() {
   }
 
   char a_buffer[128];
-  snprintf(a_buffer, sizeof(a_buffer), "C&C95 - Number of players:%d\n",
-           static_cast<int>(Players.Count()));
+  absl::SNPrintF(a_buffer, sizeof(a_buffer), "C&C95 - Number of players:%d\n",
+                 static_cast<int>(Players.Count()));
   CCDebugString(a_buffer);
 
   /*
@@ -5175,9 +5190,11 @@ static int Net_Fake_Join_Dialog() {
           Clear_Player_List(&playerlist);
 
           if (MPlayerHouse == HOUSE_GOOD) {
-            sprintf(item, "%s\t%s", MPlayerName, Text_String(TXT_G_D_I));
+            absl::SNPrintF(item, sizeof(item), "%s\t%s", MPlayerName,
+                           Text_String(TXT_G_D_I));
           } else {
-            sprintf(item, "%s\t%s", MPlayerName, Text_String(TXT_N_O_D));
+            absl::SNPrintF(item, sizeof(item), "%s\t%s", MPlayerName,
+                           Text_String(TXT_N_O_D));
           }
           playerlist.Add_Item(item, static_cast<char>(MPlayerTColors[MPlayerColorIdx]));
 

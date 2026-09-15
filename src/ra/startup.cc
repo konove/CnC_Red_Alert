@@ -49,6 +49,7 @@
 #include "absl/base/log_severity.h"
 #include "absl/log/globals.h"
 #include "absl/log/initialize.h"
+#include "absl/strings/str_format.h"
 #include "port/bytes_of.h"
 #include "port/tokenizer.h"
 #include "port/win32/win32_registry.h"
@@ -482,12 +483,12 @@ void __cdecl Prog_End() {
 
 void Print_Error_End_Exit(char* string) {
   Prog_End();
-  printf("%s\n", string);
+  absl::PrintF("%s\n", string);
   exit(1);
 }
 
 void Print_Error_Exit(char* string) {
-  printf("%s\n", string);
+  absl::PrintF("%s\n", string);
   exit(1);
 }
 

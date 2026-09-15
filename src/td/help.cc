@@ -56,6 +56,7 @@
 #include <cstdio>
 #include <cstring>
 
+#include "absl/strings/str_format.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
 #include "sdllib/gbuffer.h"
@@ -281,7 +282,7 @@ void HelpClass::Draw_It(bool forced) {
 
     if (Cost) {
       char buffer[15];
-      sprintf(buffer, "$%d", Cost);
+      absl::SNPrintF(buffer, sizeof(buffer), "$%d", Cost);
       const int width = String_Pixel_Width(buffer);
       Fancy_Text_Print(buffer, DrawX, DrawY + FontHeight, Color, BLACK,
                        TPF_MAP | TPF_NOSHADOW);
