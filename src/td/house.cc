@@ -1959,7 +1959,7 @@ void HouseClass::Make_Enemy(HousesType house) {
       enemy->Allies &= ~(1U << Class->House);
     }
 
-    if ((Debug_Flag || GameToPlay != GAME_NORMAL) && !ScenarioInit) {
+    if (enemy && (Debug_Flag || GameToPlay != GAME_NORMAL) && !ScenarioInit) {
       char buffer[80];
 
       Format_Runtime_Text(buffer, sizeof(buffer), Text_String(TXT_AT_WAR), Name,

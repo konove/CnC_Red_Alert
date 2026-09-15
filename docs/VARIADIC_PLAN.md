@@ -4,6 +4,10 @@ Written 2026-09-15 against `.clang-tidy` and clang-tidy 23.1.2. Companion to the
 [CLANG_TIDY_PRIORITIES.md](CLANG_TIDY_PRIORITIES.md); `hicpp-vararg` is the same rule under a name
 the installed toolchain does not ship and stays excluded as **Legacy**.
 
+**Status: complete (2026-09-15).** The three checks are enabled; the results, including the eight
+broken formats the compile-time check found, are in the "Variadic printer enablement" review in
+CLANG_TIDY_PRIORITIES.md.
+
 ## Context
 
 The rows were skipped on 2026-09-12 because most of the game's printers format a translated string

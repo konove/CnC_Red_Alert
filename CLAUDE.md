@@ -216,10 +216,19 @@ int dist = IsqrtFixed(dx * dx + dy * dy);
 
 ### Safe String Pattern
 
+The C printf family is a clang-tidy error (`cppcoreguidelines-pro-type-vararg`). Format with Abseil,
+which checks a literal format against its arguments at compile time:
+
 ```cpp
-// Old (unsafe)           →  snprintf(buf, sizeof(buf), "%s.INI", src);
-// strcpy + strcat        →  Or: strncpy + null-terminate + strncat(dest, src, sizeof(dest)-strlen(dest)-1)
+// sprintf(buf, "%s.INI", src)     →  absl::SNPrintF(buf, sizeof(buf), "%s.INI", src);
+// std::string result              →  absl::StrFormat("%s.INI", src);
+// printf / fprintf(fp, ...)       →  absl::PrintF(...) / absl::FPrintF(fp, ...);
+// strcpy + strcat                 →  port::SafeCopy / port::SafeAppend (port/safe_string.h)
+// run-time format (string table) →  port::FormatRuntime(Text_String(id), args...) (port/format.h)
 ```
+
+Game printers (`Fancy_Text_Print`, `Mono_Printf`, `Fatal`, ...) are variadic templates over the same
+machinery, so their call sites look unchanged but are type-checked.
 
 ## Testing
 
