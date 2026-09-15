@@ -15,13 +15,13 @@ target_sources(port PUBLIC
         FILES ${PORT_HEADERS}
 )
 
-target_link_libraries(port PUBLIC absl::check)
+target_link_libraries(port PUBLIC absl::check absl::log absl::span absl::str_format)
 
 # Tests
 include(Testing)
 add_gtest(
     NAME port_test
-    SOURCES bytes_of_test.cc env_test.cc inet_text_test.cc random_seed_test.cc safe_string_test.cc sleep_test.cc socket_bytes_test.cc tokenizer_test.cc unaligned_test.cc
+    SOURCES bytes_of_test.cc env_test.cc format_test.cc inet_text_test.cc random_seed_test.cc safe_string_test.cc sleep_test.cc socket_bytes_test.cc tokenizer_test.cc unaligned_test.cc
     LIBS port base
 )
 
