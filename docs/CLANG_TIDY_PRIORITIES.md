@@ -2,7 +2,7 @@
 
 Updated: 2026-09-15, against [`.clang-tidy`](../.clang-tidy) and clang-tidy 23.1.2.
 
-This tracks **all 107 currently excluded check names** and completed entries, in recommended work
+This tracks **all 104 currently excluded check names** and completed entries, in recommended work
 order. Priorities reflect likely defect prevention, relevance to this engine, and the cost of useful
 fixes; they are judgments, not fresh finding counts. Start at P1 and work downward. Aliases stay
 beside their related check so a single cleanup can handle them together. Previously deferred checks
@@ -32,7 +32,7 @@ comes from the installed tool, since the online documentation follows LLVM devel
 | Check                                                         | Status  | Reason / result                                                                                                                                                                                                                                   |
 | ------------------------------------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `bugprone-suspicious-stringview-data-usage`                   | Enabled | Commit `Enable string-view data usage checking`: copy the RA title-screen filename to a terminated string before calling the PCX reader.                                                                                                          |
-| `abseil-unchecked-statusor-access`                            | Skipped | Commit `Handle failed PCX byte reads`: guard both games' byte reads, but retain the exclusion because LLVM 23.1.2 crashes even on checked access with Abseil 20260107.0. Revisit after a toolchain fix; see reproduction below.                   |
+| `abseil-unchecked-statusor-access`                            | Enabled | Commit `Enable the remaining P1 checks`: the PCX byte reader, the only `StatusOr` user and the unit LLVM 23.1.2 crashed on, returns `std::optional`; see review below.                                                                            |
 | `clang-analyzer-unix.cstring.UninitializedRead`               | Enabled | Commit `Enable uninitialized C-string read checking`: initialize the public-key generation self-test buffer while preserving the random-fill loop.                                                                                                |
 | `clang-analyzer-cplusplus.InnerPointer`                       | Enabled | Commit `Enable string inner-pointer checking`: detect string-buffer pointers used after invalidation.                                                                                                                                             |
 | `bugprone-copy-constructor-init`                              | Enabled | Commit `Enable copy-constructor base initialization checking`: both games and shared code already initialize copied base state correctly; no source fixes needed.                                                                                 |
@@ -42,9 +42,9 @@ comes from the installed tool, since the online documentation follows LLVM devel
 | `clang-diagnostic-cast-align`                                 | Enabled | Commit `Fix buffer alignment and enable cast alignment checking`: copy unaligned packet/media values, check typed buffer access, align cached shape headers, and bound legacy byte fills.                                                         |
 | `clang-diagnostic-uninitialized-const-pointer`                | Enabled | Commit `Enable uninitialized const-pointer argument checking`: both games and shared code pass without source fixes.                                                                                                                              |
 | `clang-diagnostic-reorder-ctor`                               | Enabled | Commit `Match constructor initialization order to declarations`: reorder 16 initializer lists while preserving expressions, member layouts, and actual initialization order.                                                                      |
-| `bugprone-unhandled-code-paths`                               | Skipped | Commit `Document missing-default check policy`: default mode flags switches with valid post-switch fallbacks and bounded inputs; retain exclusion rather than require redundant defaults. See review below.                                       |
+| `bugprone-unhandled-code-paths`                               | Enabled | Commit `Enable the remaining P1 checks`: zero reports once the switch-fallback work had given every switch a `default`; see review below.                                                                                                         |
 | `bugprone-non-zero-enum-to-bool-conversion`                   | Enabled | Commit `Enable nonzero enum-to-bool conversion checking`: both games and shared code pass without source fixes.                                                                                                                                   |
-| `clang-analyzer-optin.core.EnumCastOutOfRange`                | Skipped | Commit `Document enum cast range check policy`: LLVM 23.1.2 rejects intentional intermediate directions, flag combinations, and path-command sentinels; retain exclusion. See review below.                                                       |
+| `clang-analyzer-optin.core.EnumCastOutOfRange`                | Enabled | Commit `Enable the remaining P1 checks`: the flag enums carry `CNC_FLAG_ENUM`, computed directions go through `AsDirection`, `KeyNumType` has its own operators; plan in [P1_REMAINING_PLAN.md](P1_REMAINING_PLAN.md), review below.              |
 | `clang-diagnostic-tautological-constant-out-of-range-compare` | Enabled | Commit `Preserve shutdown states and enable constant range comparison checking`: store RA shutdown states 0 through 3 in an integer instead of collapsing them to bool.                                                                           |
 | `clang-diagnostic-tautological-unsigned-enum-zero-compare`    | Enabled | Commit `Simplify unsigned enum bounds and enable zero comparison checking`: use an unsigned event range check and remove an impossible negative template-ID check while preserving the no-template sentinel.                                      |
 | `clang-diagnostic-tautological-unsigned-zero-compare`         | Enabled | Commit `Remove impossible icon checks and enable unsigned zero comparison checking`: drop the always-false negative test on the unsigned template icon index in both map validators while keeping the upper bound and icon-map checks.            |
@@ -1506,6 +1506,42 @@ runs); a probe confirming the enabled configuration reports `printf("%d", 1)`; t
 build; CTest (463 tests); and the RA and TD save/load smoke tests including the TD team, building,
 mobile, map and globals fixtures. The dialogs, map editors, mono debug pages and WOL code are not on
 the smoke path; those remain a manual check. The excluded-name count drops from 110 to 107.
+
+### Remaining P1 enablement (2026-09-15)
+
+`bugprone-unhandled-code-paths`, `abseil-unchecked-statusor-access` and
+`clang-analyzer-optin.core.EnumCastOutOfRange` are now enforced; the plan is
+[P1_REMAINING_PLAN.md](P1_REMAINING_PLAN.md). Each had been skipped on 2026-09-11 for a reason that
+no longer held on re-measurement.
+
+- **Unhandled code paths** reported nothing: the switch-fallback work of 2026-09-12 gave every
+  switch a `default`, which is all the check asks for in its default mode. The exclusion is simply
+  gone.
+- **StatusOr** still crashes LLVM 23.1.2's dataflow model (`getSyntheticFields` under
+  `runTypeErasedDataflowAnalysis`), but only on the two PCX readers, which were also the only
+  `absl::StatusOr` users left. Their `ReadByte` returned a `StatusOr<uint8_t>` whose error string
+  nobody read; it returns `std::optional<uint8_t>` now, both games drop the `absl::status` link, and
+  the check guards whatever uses `StatusOr` next.
+- **Enum cast range** had 27 locations and 274 messages. 246 came from the generic `|`, `&` and `~`
+  templates in each game's `jshell.h` being instantiated for flag enums. The checker accepts any
+  cast to an enum marked `[[clang::flag_enum]]` (probed: zero, a combination, a mask and `~` all
+  pass), and GCC rejects the bare attribute, so `base/attributes.h` wraps it as `CNC_FLAG_ENUM`;
+  `TextPrintType`, `ThreatType`, the gadget `FlagEnum`, RA's `AttachType`, `GBC_Enum`,
+  `ShapeFlags_Type`, the WSA open flags and the modem status bits carry it. `KeyNumType` is a key
+  code with modifier bits above it, which `-Wflag-enum` rightly refuses, so `keyboard.h` gives it
+  its own three operators and `ButtonKey` its own `NOLINT`, each explaining the representation.
+  `DirType` is a 256-step direction of which only the compass points are named; `AsDirection(int)`
+  beside each definition wraps an angle to the circle and holds the one `NOLINT`, and the eleven
+  computed casts (`Desired_Facing*`, the nuclear launch angles, the aircraft search, the debug
+  random directions, the harvester unloading adjustment) plus both games' `DirType` arithmetic
+  operators use it; the ~800 constant `static_cast<DirType>` in the data tables are initializers the
+  analyzer never runs. The path optimizer's `-2` marker was already `kEmptyCommand`; its table now
+  says so.
+
+No defect came out of it. Verification: the isolated sweep of the three checks over all 932
+translation units reports nothing (apart from the `base/numeric.h` header check, which has no Abseil
+include path and fails before any check runs); the full strict build; CTest (463 tests); and the RA
+and TD save/load smoke tests with every fixture. The excluded-name count drops from 107 to 104.
 
 ### Nodiscard review (2026-09-12)
 
