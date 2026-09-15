@@ -100,6 +100,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "port/tokenizer.h"
 #include "sdllib/shape.h"
 #include "td/aircraft.h"
 #include "td/anim.h"
@@ -2971,12 +2972,13 @@ void InfantryClass::Read_INI(char* buffer) {
     /*
     **	1st token: house name.
     */
-    inhouse = HouseTypeClass::From_Name(strtok(buf, ",\n\r"));
+    port::Tokenizer tokens(buf, ",\n\r");
+    inhouse = HouseTypeClass::From_Name(tokens.Next());
     if (inhouse != HOUSE_NONE) {
       /*
       **	2nd token: infantry type name.
       */
-      classid = InfantryTypeClass::From_Name(strtok(nullptr, ",\n\r"));
+      classid = InfantryTypeClass::From_Name(tokens.Next());
 
       if (classid != INFANTRY_NONE) {
         infantry = new InfantryClass(classid, inhouse);
@@ -2985,13 +2987,13 @@ void InfantryClass::Read_INI(char* buffer) {
           **	3rd token: strength.
           */
           const int strength =
-              tech::ParseInteger<int>(strtok(nullptr, ",\n\r")).value_or(0);
+              tech::ParseInteger<int>(tokens.Next()).value_or(0);
 
           /*
           **	4th token: cell #.
           */
-          COORDINATE coord = Cell_Coord(
-              tech::ParseInteger<CELL>(strtok(nullptr, ",\n\r")).value_or(0));
+          COORDINATE coord =
+              Cell_Coord(tech::ParseInteger<CELL>(tokens.Next()).value_or(0));
 
           /*
           **	5th token: cell sub-location.
@@ -2999,18 +3001,16 @@ void InfantryClass::Read_INI(char* buffer) {
           coord = Coord_Add(
               coord & 0xFF00FF00L,
               StoppingCoordAbs[std::clamp(
-                  tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0), 0,
+                  tech::ParseInteger<int>(tokens.Next(",")).value_or(0), 0,
                   4)]);
 
           /*
           **	Fetch the mission and facing.
           */
-          const MissionType mission =
-              Mission_From_Name(strtok(nullptr, ",\n\r"));
+          const MissionType mission = Mission_From_Name(tokens.Next());
           const DirType dir = static_cast<DirType>(
-              tech::ParseInteger<int>(strtok(nullptr, ",\n\r")).value_or(0));
-          infantry->Trigger =
-              TriggerClass::As_Pointer(strtok(nullptr, ",\n\r"));
+              tech::ParseInteger<int>(tokens.Next()).value_or(0));
+          infantry->Trigger = TriggerClass::As_Pointer(tokens.Next());
           if (infantry->Trigger) {
             infantry->Trigger->AttachCount++;
           }

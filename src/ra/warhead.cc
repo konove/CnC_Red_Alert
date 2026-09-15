@@ -48,6 +48,7 @@
 #include <cstring>
 
 #include "magic_enum/magic_enum.hpp"
+#include "port/tokenizer.h"
 #include "ra/ccini.h"
 #include "ra/defines.h"
 #include "ra/externs.h"
@@ -172,10 +173,9 @@ bool WarheadTypeClass::Read_INI(CCINIClass& ini) {
     char buffer[128];
     if (ini.Get_String(Name(), "Verses", "100%%,100%%,100%%,100%%,100%%",
                        buffer, sizeof(buffer))) {
-      const char* aval = strtok(buffer, ",");
+      port::Tokenizer tokens(buffer, ",");
       for (const ArmorType armor : magic_enum::enum_values<ArmorType>()) {
-        Modifier[armor] = fixed::FromString(aval);
-        aval = strtok(nullptr, ",");
+        Modifier[armor] = fixed::FromString(tokens.Next());
       }
     }
 

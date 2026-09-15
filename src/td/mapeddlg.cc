@@ -56,6 +56,7 @@
 #include <cstring>
 
 #include "port/safe_string.h"
+#include "port/tokenizer.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
@@ -3409,10 +3410,11 @@ int MapEditClass::Import_Triggers() {
     /*
     ** Parse the INI entry
     */
-    eventptr = strtok(buf, ",");
-    actionptr = strtok(nullptr, ",");
-    strtok(nullptr, ",");
-    houseptr = strtok(nullptr, ",");
+    port::Tokenizer tokens(buf, ",");
+    eventptr = tokens.Next();
+    actionptr = tokens.Next();
+    tokens.Next();  // data, unused
+    houseptr = tokens.Next();
 
     /*
     ** Generate the descriptive string
@@ -3747,11 +3749,12 @@ int MapEditClass::Import_Teams() {
     /*
     ** Parse the INI entry
     */
-    houseptr = strtok(buf, ",");
+    port::Tokenizer tokens(buf, ",");
+    houseptr = tokens.Next();
     for (i = 0; i < 9; i++) {
-      strtok(nullptr, ",");
+      tokens.Next();  // flags and counts, unused
     }
-    numclasses = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
+    numclasses = tech::ParseInteger<int>(tokens.Next()).value_or(0);
 
     /*
     ** Generate the descriptive string
@@ -3766,11 +3769,11 @@ int MapEditClass::Import_Teams() {
     }
     port::SafeAppend(item, "\t", kItemSize);
 
-    classptr = strtok(nullptr, ",");
+    classptr = tokens.Next();
     for (i = 0; i < numclasses; i++) {
       if (strlen(item) + strlen(classptr) < kItemSize) {
         port::SafeAppend(item, classptr, kItemSize);
-        classptr = strtok(nullptr, ",");
+        classptr = tokens.Next();
       } else {
         break;
       }

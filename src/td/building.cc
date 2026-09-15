@@ -118,6 +118,7 @@
 #include <cstring>
 #include <utility>
 
+#include "port/tokenizer.h"
 #include "rand.h"
 #include "reinf.h"
 #include "sdllib/drawbuff.h"
@@ -3043,12 +3044,13 @@ void BuildingClass::Read_INI(char* buffer) {
     /*
     **	1st token: house name.
     */
-    bhouse = HouseTypeClass::From_Name(strtok(buf, ","));
+    port::Tokenizer tokens(buf, ",");
+    bhouse = HouseTypeClass::From_Name(tokens.Next());
 
     /*
     **	2nd token: building name.
     */
-    classid = BuildingTypeClass::From_Name(strtok(nullptr, ","));
+    classid = BuildingTypeClass::From_Name(tokens.Next());
 
     if (bhouse != HOUSE_NONE && classid != STRUCT_NONE) {
       int strength;
@@ -3057,23 +3059,23 @@ void BuildingClass::Read_INI(char* buffer) {
       /*
       **	3rd token: strength.
       */
-      strength = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
+      strength = tech::ParseInteger<int>(tokens.Next()).value_or(0);
 
       /*
       **	4th token: cell #.
       */
-      cell = tech::ParseInteger<CELL>(strtok(nullptr, ",")).value_or(0);
+      cell = tech::ParseInteger<CELL>(tokens.Next()).value_or(0);
 
       /*
       **	5th token: facing.
       */
       facing = static_cast<DirType>(
-          tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0));
+          tech::ParseInteger<int>(tokens.Next()).value_or(0));
 
       /*
       **	6th token: triggername (can be NULL).
       */
-      trigname = strtok(nullptr, ",");
+      trigname = tokens.Next();
 
       b = new BuildingClass(classid, bhouse);
       if (b) {

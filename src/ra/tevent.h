@@ -44,6 +44,7 @@
 #include <string>
 
 #include "port/ex_string.h"
+#include "port/tokenizer.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
 #include "ra/jshell.h"
@@ -164,7 +165,8 @@ struct TEventClass {
   void Reset(TDEventClass& td) const;
   bool operator()(TDEventClass& td, TEventType event, HousesType house,
                   const ObjectClass* object, bool forced) const;
-  void Read_INI();
+  // Reads the event fields from the trigger entry `tokens` is parsing.
+  void Read_INI(port::Tokenizer& tokens);
   void Build_INI_Entry(std::string& buffer) const;
 };
 

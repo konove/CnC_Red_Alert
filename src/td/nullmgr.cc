@@ -64,6 +64,7 @@
 #include "base/numeric.h"
 #include "port/aligned_buffer.h"
 #include "port/safe_string.h"
+#include "port/tokenizer.h"
 #include "port/unaligned.h"
 #include "sdllib/font.h"
 #include "sdllib/gbuffer.h"
@@ -1213,7 +1214,8 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
     /*
     ** Tokenise the string and send it in chunks
     */
-    tokenptr = strtok(istr, "|");
+    port::Tokenizer tokens(istr, "|");
+    tokenptr = tokens.Next();
     while (tokenptr) {
       status =
           Send_Modem_Command(tokenptr, '\r', buffer, 81, DEFAULT_TIMEOUT, 1);
@@ -1229,7 +1231,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
         break;
       }
 
-      tokenptr = strtok(nullptr, "|");
+      tokenptr = tokens.Next();
     }
   }
   /*

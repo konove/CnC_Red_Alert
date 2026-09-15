@@ -74,6 +74,7 @@
 #include <cstring>
 
 #include "base/types.h"
+#include "port/tokenizer.h"
 #include "rand.h"
 #include "sdllib/misc.h"
 #include "sdllib/shape.h"
@@ -798,10 +799,11 @@ void TerrainClass::Read_INI(char* buffer) {
     cell = tech::ParseInteger<CELL>(tbuffer).value_or(0);
     WWGetPrivateProfileString(INI_Name(), tbuffer, nullptr, buf,
                               sizeof(buf) - 1, buffer);
-    terrain = TerrainTypeClass::From_Name(strtok(buf, ","));
+    port::Tokenizer tokens(buf, ",");
+    terrain = TerrainTypeClass::From_Name(tokens.Next());
     if (terrain != TERRAIN_NONE) {
       tptr = new TerrainClass(terrain, cell);
-      tptr->Trigger = TriggerClass::As_Pointer(strtok(nullptr, ","));
+      tptr->Trigger = TriggerClass::As_Pointer(tokens.Next());
       if (tptr->Trigger) {
         tptr->Trigger->AttachCount++;
       }

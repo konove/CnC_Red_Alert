@@ -131,6 +131,7 @@
 #include <utility>
 
 #include "magic_enum/magic_enum.hpp"
+#include "port/tokenizer.h"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
 #include "ra/base.h"
@@ -4978,12 +4979,13 @@ void BuildingClass::Read_INI(CCINIClass& ini) {
     /*
     **	1st token: house name.
     */
-    bhouse = HouseTypeClass::From_Name(strtok(buf, ","));
+    port::Tokenizer tokens(buf, ",");
+    bhouse = HouseTypeClass::From_Name(tokens.Next());
 
     /*
     **	2nd token: building name.
     */
-    classid = BuildingTypeClass::From_Name(strtok(nullptr, ","));
+    classid = BuildingTypeClass::From_Name(tokens.Next());
 
     if (bhouse != HOUSE_NONE && classid != STRUCT_NONE) {
       int strength;
@@ -4992,32 +4994,32 @@ void BuildingClass::Read_INI(CCINIClass& ini) {
       /*
       **	3rd token: strength.
       */
-      strength = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
+      strength = tech::ParseInteger<int>(tokens.Next()).value_or(0);
 
       /*
       **	4th token: cell #.
       */
-      cell = tech::ParseInteger<CELL>(strtok(nullptr, ",")).value_or(0);
+      cell = tech::ParseInteger<CELL>(tokens.Next()).value_or(0);
 
       /*
       **	5th token: facing.
       */
       facing = static_cast<DirType>(
-          tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0));
+          tech::ParseInteger<int>(tokens.Next()).value_or(0));
 
       /*
       **	6th token: triggername (can be nullptr).
       */
-      trigname = strtok(nullptr, ",");
+      trigname = tokens.Next();
 
       bool sellable = false;
-      const char* token_pointer = strtok(nullptr, ",");
+      const char* token_pointer = tokens.Next();
       if (token_pointer) {
         sellable = tech::ParseInteger<int>(token_pointer).value_or(0) != 0;
       }
 
       bool rebuild = false;
-      token_pointer = strtok(nullptr, ",");
+      token_pointer = tokens.Next();
       if (token_pointer) {
         rebuild = tech::ParseInteger<int>(token_pointer).value_or(0) != 0;
       }

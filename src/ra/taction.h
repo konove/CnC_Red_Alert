@@ -43,6 +43,7 @@
 #include <string>
 
 #include "port/ex_string.h"
+#include "port/tokenizer.h"
 #include "ra/ccini.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
@@ -142,7 +143,8 @@ struct TActionClass {
   void Serialize(Archive& ar) {
     ar(Action, Team, Trigger, Data.Value);
   }
-  void Read_INI();
+  // Reads the action fields from the trigger entry `tokens` is parsing.
+  void Read_INI(port::Tokenizer& tokens);
   void Build_INI_Entry(std::string& buffer) const;
 
   bool operator()(HousesType house, ObjectClass* object, int id, CELL cell);

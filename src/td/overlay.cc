@@ -53,6 +53,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "port/tokenizer.h"
 #include "sdllib/shape.h"
 #include "td/cell.h"
 #include "td/config.h"
@@ -357,7 +358,8 @@ void OverlayClass::Read_INI(char* buffer) {
     cell = tech::ParseInteger<CELL>(tbuffer).value_or(0);
     WWGetPrivateProfileString(INI_Name(), tbuffer, nullptr, buf,
                               sizeof(buf) - 1, buffer);
-    classid = OverlayTypeClass::From_Name(strtok(buf, ",\n\r"));
+    port::Tokenizer tokens(buf, ",\n\r");
+    classid = OverlayTypeClass::From_Name(tokens.Next());
 
     /*
     **	Don't allow placement of crates in the multiplayer scenarios.

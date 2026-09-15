@@ -112,6 +112,7 @@
 #include <utility>
 
 #include "base/trig.h"
+#include "port/tokenizer.h"
 #include "sdllib/shape.h"
 #include "td/anim.h"
 #include "td/audio.h"
@@ -511,9 +512,10 @@ void AircraftClass::Read_INI(char* buffer) {
   while (*tbuffer != '\0') {
     WWGetPrivateProfileString(INI_Name(), tbuffer, nullptr, buf,
                               sizeof(buf) - 1, buffer);
-    inhouse = HouseTypeClass::From_Name(strtok(buf, ","));
+    port::Tokenizer tokens(buf, ",");
+    inhouse = HouseTypeClass::From_Name(tokens.Next());
     if (inhouse != HOUSE_NONE) {
-      classid = AircraftTypeClass::From_Name(strtok(nullptr, ","));
+      classid = AircraftTypeClass::From_Name(tokens.Next());
 
       if (classid != AIRCRAFT_NONE) {
         air = new AircraftClass(classid, inhouse);
@@ -525,11 +527,11 @@ void AircraftClass::Read_INI(char* buffer) {
           /*
           **	Read the raw data.
           */
-          strength = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
-          coord = Cell_Coord(
-              tech::ParseInteger<CELL>(strtok(nullptr, ",")).value_or(0));
+          strength = tech::ParseInteger<int>(tokens.Next()).value_or(0);
+          coord =
+              Cell_Coord(tech::ParseInteger<CELL>(tokens.Next()).value_or(0));
           dir = static_cast<DirType>(
-              tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0));
+              tech::ParseInteger<int>(tokens.Next()).value_or(0));
 
           if (!Map.In_Radar(Coord_Cell(coord))) {
             delete air;
@@ -537,7 +539,7 @@ void AircraftClass::Read_INI(char* buffer) {
             air->Strength = static_cast<int16_t>(
                 Fixed_To_Cardinal(air->Class->MaxStrength, strength));
             if (air->Unlimbo(coord, dir)) {
-              air->Assign_Mission(Mission_From_Name(strtok(nullptr, ",\n\r")));
+              air->Assign_Mission(Mission_From_Name(tokens.Next(",\n\r")));
             } else {
               delete air;
             }

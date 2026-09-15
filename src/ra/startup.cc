@@ -50,6 +50,7 @@
 #include "absl/log/globals.h"
 #include "absl/log/initialize.h"
 #include "port/bytes_of.h"
+#include "port/tokenizer.h"
 #include "port/win32/win32_registry.h"
 #include "port/win32/win32_system.h"
 #include "port/win32/win32_types.h"
@@ -588,8 +589,8 @@ void Read_Setup_Options(DiskFile* config_file) {
       ** Scan the string, pulling off each address piece
       */
       int i = 0;
-      const char* p = strtok(netbuf, ".");
-      while (p != nullptr) {
+      port::Tokenizer tokens(netbuf, ".");
+      while (const char* p = tokens.Next()) {
         const auto byte = tech::ParseHex<uint8_t>(p);
         if (!byte || i >= 10) {
           i = 0;  // Reject the address instead of accepting a partial network.
@@ -601,7 +602,6 @@ void Read_Setup_Options(DiskFile* config_file) {
           node[i - 4] = *byte;  // fill NetNode
         }
         i++;
-        p = strtok(nullptr, ".");
       }
 
       /*

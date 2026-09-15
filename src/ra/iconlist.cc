@@ -41,6 +41,7 @@
 #include "absl/base/attributes.h"
 #include "base/types.h"
 #include "port/safe_string.h"
+#include "port/tokenizer.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
@@ -221,14 +222,12 @@ int IconListClass::Add_Item(
       }
 
       //	Each break character causes a line to be added to list.
-      char szBreakchars[] = "\r\n\v\f";
-      char* szToken;
+      port::Tokenizer tokens(szText, "\r\n\v\f");
       const char* szNextChar = szText;
-      szToken = strtok(szText, szBreakchars);
-      while (szToken) {
+      while (const char* szToken = tokens.Next()) {
         while (szNextChar < szToken) {
           //	We expected szToken to begin at szNextChar. Since it doesn't,
-          // extra break 	characters must have been removed by strtok as
+          // extra break 	characters must have been removed by the tokenizer as
           // they were adjacent. We want 	a line break for every break
           // character, so add lines for each space that 	szNextChar is
           // off by.
@@ -246,9 +245,6 @@ int IconListClass::Add_Item(
 
         //	Expect next token two chars after the end of this one.
         szNextChar = szToken + strlen(szToken) + 1;
-
-        //	Get next token.
-        szToken = strtok(nullptr, szBreakchars);
       }
       delete[] szText;
       return iRetVal;  //	Last value returned by ListClass::Add_Item

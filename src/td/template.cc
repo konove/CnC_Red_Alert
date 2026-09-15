@@ -59,6 +59,7 @@
 #include <cstring>
 #include <utility>
 
+#include "port/tokenizer.h"
 #include "sdllib/shape.h"
 #include "sdllib/tile.h"
 #include "td/cell.h"
@@ -135,7 +136,8 @@ void TemplateClass::Read_INI(char* buffer) {
     cell = tech::ParseInteger<CELL>(tbuffer).value_or(0);
     WWGetPrivateProfileString(INI_Name(), tbuffer, nullptr, buf,
                               sizeof(buf) - 1, buffer);
-    temp = TemplateTypeClass::From_Name(strtok(buf, ",\r\n"));
+    port::Tokenizer tokens(buf, ",\r\n");
+    temp = TemplateTypeClass::From_Name(tokens.Next());
     if (temp != TEMPLATE_NONE) {
       new TemplateClass(temp, cell);
     }

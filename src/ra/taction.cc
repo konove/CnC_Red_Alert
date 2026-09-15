@@ -58,6 +58,7 @@
 #include "absl/log/log.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
+#include "port/tokenizer.h"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
 #include "ra/building.h"
@@ -295,24 +296,23 @@ void TActionClass::Build_INI_Entry(std::string& buffer) const {
  *                                                                                             *
  * HISTORY: * 02/22/1996 JLB : Created. *
  *=============================================================================================*/
-void TActionClass::Read_INI() {
+void TActionClass::Read_INI(port::Tokenizer& tokens) {
   switch (NewINIFormat) {
     default: {
       Action = static_cast<TActionType>(
-          tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0));
-      Team.Set_Raw(tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0));
-      Trigger.Set_Raw(
-          tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0));
-      Data.Value = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
+          tech::ParseInteger<int>(tokens.Next()).value_or(0));
+      Team.Set_Raw(tech::ParseInteger<int>(tokens.Next()).value_or(0));
+      Trigger.Set_Raw(tech::ParseInteger<int>(tokens.Next()).value_or(0));
+      Data.Value = tech::ParseInteger<int>(tokens.Next()).value_or(0);
       break;
     }
 
     case 1:
     case 0:
       Action = static_cast<TActionType>(
-          tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0));
+          tech::ParseInteger<int>(tokens.Next()).value_or(0));
 
-      const char* ptr = strtok(nullptr, ",");
+      const char* ptr = tokens.Next();
       Team = TeamTypeClass::From_Name(ptr);
       assert(Action_Needs(Action) != NEED_TEAM || Team.Is_Valid());
 
@@ -320,10 +320,10 @@ void TActionClass::Read_INI() {
       **	Since triggers refer to other triggers, only record a copy of
       *the trigger text *	name. This will be fixed up later.
       */
-      const char* trig_name = strtok(nullptr, ",");
+      const char* trig_name = tokens.Next();
       PendingTriggerName = trig_name != nullptr ? trig_name : "";
 
-      Data.Value = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
+      Data.Value = tech::ParseInteger<int>(tokens.Next()).value_or(0);
       break;
   }
 
@@ -343,7 +343,6 @@ void TActionClass::Read_INI() {
     }
   }
 }
-
 
 /***********************************************************************************************
  * TActionClass::operator -- Performs the action that this object does. *

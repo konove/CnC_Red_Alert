@@ -60,12 +60,13 @@
 #include <cstdlib>
 #include <cstring>
 #include <ctime>  // for station ID computation
-#include <utility>
 
 #include "base/types.h"
 #include "magic_enum/magic_enum.hpp"
+#include "port/env.h"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
+#include "port/tokenizer.h"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
 #include "ra/building.h"
@@ -652,7 +653,8 @@ void SessionClass::Read_MultiPlayer_Settings() {
                      buf, sizeof(buf));
 
       //	Extract name, phone # & serial port settings
-      tokenptr = strtok(buf, "|");
+      port::Tokenizer tokens(buf, "|");
+      tokenptr = tokens.Next();
       if (tokenptr) {
         port::SafeCopy(phone->Name, tokenptr);
         strupr(phone->Name);
@@ -660,7 +662,7 @@ void SessionClass::Read_MultiPlayer_Settings() {
         phone->Name[0] = 0;
       }
 
-      tokenptr = strtok(nullptr, "|");
+      tokenptr = tokens.Next();
       if (tokenptr) {
         port::SafeCopy(phone->Number, tokenptr);
         strupr(phone->Number);
@@ -668,7 +670,7 @@ void SessionClass::Read_MultiPlayer_Settings() {
         phone->Number[0] = 0;
       }
 
-      tokenptr = strtok(nullptr, "|");
+      tokenptr = tokens.Next();
       if (tokenptr) {
         if (const auto value = tech::ParseHex<int>(tokenptr)) {
           phone->Settings.Port = *value;
@@ -677,14 +679,14 @@ void SessionClass::Read_MultiPlayer_Settings() {
         phone->Settings.Port = 0;
       }
 
-      tokenptr = strtok(nullptr, "|");
+      tokenptr = tokens.Next();
       if (tokenptr) {
         phone->Settings.IRQ = tech::ParseInteger<int>(tokenptr).value_or(0);
       } else {
         phone->Settings.IRQ = -1;
       }
 
-      tokenptr = strtok(nullptr, "|");
+      tokenptr = tokens.Next();
       if (tokenptr) {
         phone->Settings.Baud = tech::ParseInteger<int>(tokenptr).value_or(0);
       } else {
@@ -699,7 +701,7 @@ void SessionClass::Read_MultiPlayer_Settings() {
       ** Find out if this phonebook entry has the new settings included. If not
       ** then we need to skip this section.
       */
-      tokenptr = strtok(nullptr, "|");
+      tokenptr = tokens.Next();
       if (tokenptr) {
         port::SafeCopy(buf, tokenptr);
 
@@ -724,19 +726,19 @@ void SessionClass::Read_MultiPlayer_Settings() {
           phone->Settings.Compression =
               tech::ParseInteger<int>(tokenptr).value_or(0) != 0;
 
-          tokenptr = strtok(nullptr, "|");
+          tokenptr = tokens.Next();
           if (tokenptr) {
             phone->Settings.ErrorCorrection =
                 tech::ParseInteger<int>(tokenptr).value_or(0) != 0;
           }
 
-          tokenptr = strtok(nullptr, "|");
+          tokenptr = tokens.Next();
           if (tokenptr) {
             phone->Settings.HardwareFlowControl =
                 tech::ParseInteger<int>(tokenptr).value_or(0) != 0;
           }
 
-          tokenptr = strtok(nullptr, "|");
+          tokenptr = tokens.Next();
         }
       }
 
@@ -759,7 +761,7 @@ void SessionClass::Read_MultiPlayer_Settings() {
         phone->Settings.DialMethod = DIAL_TOUCH_TONE;
       }
 
-      tokenptr = strtok(nullptr, "|");
+      tokenptr = tokens.Next();
       if (tokenptr) {
         phone->Settings.InitStringIndex =
             tech::ParseInteger<int>(tokenptr).value_or(0);
@@ -767,7 +769,7 @@ void SessionClass::Read_MultiPlayer_Settings() {
         phone->Settings.InitStringIndex = 0;
       }
 
-      tokenptr = strtok(nullptr, "|");
+      tokenptr = tokens.Next();
       if (tokenptr) {
         phone->Settings.CallWaitStringIndex =
             tech::ParseInteger<int>(tokenptr).value_or(0);
@@ -775,7 +777,7 @@ void SessionClass::Read_MultiPlayer_Settings() {
         phone->Settings.CallWaitStringIndex = CALL_WAIT_CUSTOM;
       }
 
-      tokenptr = strtok(nullptr, "|");
+      tokenptr = tokens.Next();
       if (tokenptr) {
         port::SafeCopy(phone->Settings.CallWaitString, tokenptr);
       } else {
@@ -1302,8 +1304,6 @@ void SessionClass::Trap_Object() {
 uint32_t SessionClass::Compute_Unique_ID() {
   time_t tm;
   uint32_t id;
-  char* path;
-  int i;
 
   //------------------------------------------------------------------------
   // Start with the seconds since Jan 1, 1970 (system local time)
@@ -1321,10 +1321,9 @@ uint32_t SessionClass::Compute_Unique_ID() {
   //------------------------------------------------------------------------
   // Add in every byte in the user's path environment variable
   //------------------------------------------------------------------------
-  path = getenv("PATH");
-  if (path) {
-    for (i = 0; std::cmp_less(i, strlen(path)); i++) {
-      Add_CRC(&id, static_cast<uint32_t>(path[i]));
+  if (const auto path = port::GetEnv("PATH")) {
+    for (const char byte : *path) {
+      Add_CRC(&id, static_cast<uint32_t>(byte));
     }
   }
 

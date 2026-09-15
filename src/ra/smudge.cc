@@ -53,6 +53,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "port/tokenizer.h"
 #include "ra/ccini.h"
 #include "ra/cell.h"
 #include "ra/coord.h"
@@ -307,13 +308,14 @@ void SmudgeClass::Read_INI(CCINIClass& ini) {
     SmudgeType smudge;  // Smudge type.
 
     ini.Get_String(INI_Name(), entry, nullptr, buf, sizeof(buf));
-    smudge = SmudgeTypeClass::From_Name(strtok(buf, ","));
+    port::Tokenizer tokens(buf, ",");
+    smudge = SmudgeTypeClass::From_Name(tokens.Next());
     if (smudge != SMUDGE_NONE) {
-      const char* ptr = strtok(nullptr, ",");
+      const char* ptr = tokens.Next();
       if (ptr != nullptr) {
         int data = 0;
         const CELL cell = tech::ParseInteger<CELL>(ptr).value_or(0);
-        ptr = strtok(nullptr, ",");
+        ptr = tokens.Next();
         if (ptr != nullptr) {
           data = tech::ParseInteger<int>(ptr).value_or(0);
         }

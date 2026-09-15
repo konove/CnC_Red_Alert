@@ -46,6 +46,7 @@
 #include <cstring>
 
 #include "base/numeric.h"
+#include "port/tokenizer.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/misc.h"
@@ -565,7 +566,8 @@ void Read_Setup_Options(DiskFile* config_file) {
       ** Scan the string, pulling off each address piece
       */
       int i = 0;
-      const char* p = strtok(netbuf, ".");
+      port::Tokenizer tokens(netbuf, ".");
+      const char* p = tokens.Next();
       while (p) {
         const auto byte = tech::ParseHex<uint8_t>(p);
         if (!byte || i >= 10) {
@@ -578,7 +580,7 @@ void Read_Setup_Options(DiskFile* config_file) {
           node[i - 4] = *byte;  // fill NetNode
         }
         i++;
-        p = strtok(nullptr, ".");
+        p = tokens.Next();
       }
 
       /*

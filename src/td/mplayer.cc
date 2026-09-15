@@ -60,6 +60,7 @@
 #include "base/numeric.h"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
+#include "port/tokenizer.h"
 #include "rand.h"
 #include "sdllib/file_access.h"
 #include "sdllib/gbuffer.h"
@@ -607,7 +608,8 @@ void Read_MultiPlayer_Settings() {
     /*.....................................................................
     Extract name, phone # & serial port settings
     .....................................................................*/
-    tokenptr = strtok(buf, "|");
+    port::Tokenizer tokens(buf, "|");
+    tokenptr = tokens.Next();
     if (tokenptr) {
       port::SafeCopy(phone->Name, tokenptr);
       strupr(phone->Name);
@@ -615,7 +617,7 @@ void Read_MultiPlayer_Settings() {
       phone->Name[0] = 0;
     }
 
-    tokenptr = strtok(nullptr, "|");
+    tokenptr = tokens.Next();
     if (tokenptr) {
       port::SafeCopy(phone->Number, tokenptr);
       strupr(phone->Number);
@@ -623,7 +625,7 @@ void Read_MultiPlayer_Settings() {
       phone->Number[0] = 0;
     }
 
-    tokenptr = strtok(nullptr, "|");
+    tokenptr = tokens.Next();
     if (tokenptr) {
       if (const auto value = tech::ParseHex<int>(tokenptr)) {
         phone->Settings.Port = *value;
@@ -632,21 +634,21 @@ void Read_MultiPlayer_Settings() {
       phone->Settings.Port = 0;
     }
 
-    tokenptr = strtok(nullptr, "|");
+    tokenptr = tokens.Next();
     if (tokenptr) {
       phone->Settings.IRQ = tech::ParseInteger<int>(tokenptr).value_or(0);
     } else {
       phone->Settings.IRQ = -1;
     }
 
-    tokenptr = strtok(nullptr, "|");
+    tokenptr = tokens.Next();
     if (tokenptr) {
       phone->Settings.Baud = tech::ParseInteger<int>(tokenptr).value_or(0);
     } else {
       phone->Settings.Baud = -1;
     }
 
-    tokenptr = strtok(nullptr, "|");
+    tokenptr = tokens.Next();
     if (tokenptr) {
       phone->Settings.Compression =
           tech::ParseInteger<int>(tokenptr).value_or(0) != 0;
@@ -654,7 +656,7 @@ void Read_MultiPlayer_Settings() {
       phone->Settings.Compression = false;
     }
 
-    tokenptr = strtok(nullptr, "|");
+    tokenptr = tokens.Next();
     if (tokenptr) {
       phone->Settings.ErrorCorrection =
           tech::ParseInteger<int>(tokenptr).value_or(0) != 0;
@@ -662,7 +664,7 @@ void Read_MultiPlayer_Settings() {
       phone->Settings.ErrorCorrection = false;
     }
 
-    tokenptr = strtok(nullptr, "|");
+    tokenptr = tokens.Next();
     if (tokenptr) {
       phone->Settings.HardwareFlowControl =
           tech::ParseInteger<int>(tokenptr).value_or(0) != 0;
@@ -670,7 +672,7 @@ void Read_MultiPlayer_Settings() {
       phone->Settings.HardwareFlowControl = true;
     }
 
-    tokenptr = strtok(nullptr, "|");
+    tokenptr = tokens.Next();
     if (tokenptr) {
       port::SafeCopy(buf, tokenptr);
 
@@ -692,7 +694,7 @@ void Read_MultiPlayer_Settings() {
       phone->Settings.DialMethod = DIAL_TOUCH_TONE;
     }
 
-    tokenptr = strtok(nullptr, "|");
+    tokenptr = tokens.Next();
     if (tokenptr) {
       phone->Settings.InitStringIndex =
           tech::ParseInteger<int>(tokenptr).value_or(0);
@@ -700,7 +702,7 @@ void Read_MultiPlayer_Settings() {
       phone->Settings.InitStringIndex = 0;
     }
 
-    tokenptr = strtok(nullptr, "|");
+    tokenptr = tokens.Next();
     if (tokenptr) {
       phone->Settings.CallWaitStringIndex =
           tech::ParseInteger<int>(tokenptr).value_or(0);
@@ -708,7 +710,7 @@ void Read_MultiPlayer_Settings() {
       phone->Settings.CallWaitStringIndex = CALL_WAIT_CUSTOM;
     }
 
-    tokenptr = strtok(nullptr, "|");
+    tokenptr = tokens.Next();
     if (tokenptr) {
       port::SafeCopy(phone->Settings.CallWaitString, tokenptr);
     } else {
@@ -1123,12 +1125,13 @@ static void Garble_Message(char* buf) {
   /*------------------------------------------------------------------------
   Split it up into words
   ------------------------------------------------------------------------*/
-  p = strtok(txt, " ");
+  port::Tokenizer tokens(txt, " ");
+  p = tokens.Next();
   numwords = 0;
   while (p) {
     words[numwords] = p;
     numwords++;
-    p = strtok(nullptr, " ");
+    p = tokens.Next();
   }
 
   /*------------------------------------------------------------------------

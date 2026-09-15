@@ -54,6 +54,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "port/tokenizer.h"
 #include "sdllib/shape.h"
 #include "td/cell.h"
 #include "td/config.h"
@@ -296,13 +297,14 @@ void SmudgeClass::Read_INI(char* buffer) {
 
     WWGetPrivateProfileString(INI_Name(), tbuffer, nullptr, buf,
                               sizeof(buf) - 1, buffer);
-    smudge = SmudgeTypeClass::From_Name(strtok(buf, ","));
+    port::Tokenizer tokens(buf, ",");
+    smudge = SmudgeTypeClass::From_Name(tokens.Next());
     if (smudge != SMUDGE_NONE) {
-      const char* ptr = strtok(nullptr, ",");
+      const char* ptr = tokens.Next();
       if (ptr) {
         int data = 0;
         const CELL cell = tech::ParseInteger<CELL>(ptr).value_or(0);
-        ptr = strtok(nullptr, ",");
+        ptr = tokens.Next();
         if (ptr) {
           data = tech::ParseInteger<int>(ptr).value_or(0);
         }

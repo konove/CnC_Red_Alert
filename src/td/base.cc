@@ -67,6 +67,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "port/tokenizer.h"
 #include "td/building.h"
 #include "td/cell.h"
 #include "td/defines.h"
@@ -160,12 +161,13 @@ void BaseClass::Read_INI(char* buffer) {
     /*
     ** Set the node's building type
     */
-    node.Type = BuildingTypeClass::From_Name(strtok(buf, ","));
+    port::Tokenizer tokens(buf, ",");
+    node.Type = BuildingTypeClass::From_Name(tokens.Next());
 
     /*
     ** Read & set the node's coordinate
     */
-    const char* coordinate_text = strtok(nullptr, ",");
+    const char* coordinate_text = tokens.Next();
     if (coordinate_text == nullptr) {
       continue;
     }

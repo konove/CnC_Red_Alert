@@ -59,7 +59,9 @@
 
 #include "absl/log/log.h"
 #include "port/ex_string.h"
+#include "port/random_seed.h"
 #include "port/safe_string.h"
+#include "port/tokenizer.h"
 #include "sdllib/file.h"
 #include "sdllib/file_access.h"
 #include "sdllib/font.h"
@@ -1553,8 +1555,7 @@ bool Select_Game(bool fade) {
   ** back a recording, init the Seed to a random value.
   */
   if (GameToPlay == GAME_NORMAL && !PlaybackGame) {
-    randomize();
-    Seed = rand();
+    Seed = port::RandomSeed();
   }
 
   /*
@@ -1580,9 +1581,6 @@ bool Select_Game(bool fade) {
   /*
   **	Initialize the random-number generator.
   */
-  // Seed = 1;
-
-  srand(static_cast<unsigned>(Seed));
   // Loading already restored the exact stream positions.
   if (!gameloaded) {
     SeedGameRandom(static_cast<uint32_t>(Seed));
@@ -2421,7 +2419,8 @@ bool Parse_Command_Line(int argc, char* argv[]) {
       ** Scan the command-line string, pulling off each address piece
       */
       int i = 0;
-      const char* p = strtok(string + 8, ".");
+      port::Tokenizer tokens(string + 8, ".");
+      const char* p = tokens.Next();
       while (p) {
         const auto byte = tech::ParseHex<uint8_t>(p);
         if (!byte || i >= 10) {
@@ -2434,7 +2433,7 @@ bool Parse_Command_Line(int argc, char* argv[]) {
           node[i - 4] = *byte;  // fill NetNode
         }
         i++;
-        p = strtok(nullptr, ".");
+        p = tokens.Next();
       }
 
       /*

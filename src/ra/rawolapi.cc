@@ -33,12 +33,14 @@
 #include "absl/log/check.h"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
+#include "port/tokenizer.h"
 #include "port/win32/win32_com.h"
 #include "port/win32/win32_system.h"
 #include "port/win32/win32_types.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"
 #include "ra/externs.h"
+#include "ra/inline.h"
 #include "ra/jshell.h"
 #include "ra/msgbox.h"
 #include "ra/wol_gsup.h"
@@ -79,6 +81,27 @@ UtcDate TodayUtc() {
 //	with a chat line and a user name. Format_Runtime_Text truncates rather
 //	than overflowing, so this is a limit, not an assumption.
 constexpr int kMessageMax = 512;
+
+//	A server's conndata is "something;host;port". The first field is not
+//	used, and a truncated one leaves host or port empty. Parses a copy, so
+//	the list wolapi handed us is not written to. Returns false when either
+//	field is missing.
+template <int N, int M>
+bool ParseHostAndPort(const unsigned char (&conndata)[N], char (&host)[M],
+                      int& port) {
+  char buffer[N];
+  port::SafeCopy(buffer, WolText(conndata));
+  port::Tokenizer tokens(buffer, ";");
+  tokens.Next();  // label, unused
+  const char* const host_text = tokens.Next();
+  const char* const port_text = tokens.Next();
+  if (host_text == nullptr || port_text == nullptr) {
+    return false;
+  }
+  port::SafeCopy(host, host_text);
+  port = tech::ParseInteger<int>(port_text).value_or(0);
+  return true;
+}
 
 }  // namespace
 
@@ -174,48 +197,22 @@ STDMETHODIMP RAChatEventSink::OnServerList(HRESULT hRes, Server* pServerHead) {
                  (strcmp(WolText(pServerHead->connlabel), "LAD") == 0)) {
         //				debugprint( "Scanning '%s'\n",
         //(char*)pServerHead->conndata );
-        //	conndata is "something;host;port". The first field is not
-        //	used, and a truncated one leaves the rest null.
-        // TODO: strtok writes into the server list wolapi handed us, here and
-        // in both GAM branches below; parse a copy instead.
-        strtok(WolText(pServerHead->conndata), ";");
-        const char* szHost = strtok(nullptr, ";");
-        const char* szPort = strtok(nullptr, ";");
-        if (szHost != nullptr && szPort != nullptr) {
-          port::SafeCopy(pOwner->szLadderServerHost, szHost);
-          pOwner->iLadderServerPort =
-              tech::ParseInteger<int>(szPort).value_or(0);
-        }
+        ParseHostAndPort(pServerHead->conndata, pOwner->szLadderServerHost,
+                         pOwner->iLadderServerPort);
         //				debugprint( "Ladder is at: %s, port
         //%i\n", pOwner->szLadderServerHost, pOwner->iLadderServerPort );
       } else if (!*pOwner->szGameResServerHost1 &&
                  (strcmp(WolText(pServerHead->connlabel), "GAM") == 0)) {
         //	This is the Red Alert game results port.
-        //	conndata is "something;host;port". The first field is not
-        //	used, and a truncated one leaves the rest null.
-        strtok(WolText(pServerHead->conndata), ";");
-        const char* szHost = strtok(nullptr, ";");
-        const char* szPort = strtok(nullptr, ";");
-        if (szHost != nullptr && szPort != nullptr) {
-          port::SafeCopy(pOwner->szGameResServerHost1, szHost);
-          pOwner->iGameResServerPort1 =
-              tech::ParseInteger<int>(szPort).value_or(0);
-        }
+        ParseHostAndPort(pServerHead->conndata, pOwner->szGameResServerHost1,
+                         pOwner->iGameResServerPort1);
         //				debugprint( "GameRes is at: %s, port
         //%i\n", pOwner->szGameResServerHost, pOwner->iGameResServerPort );
       } else if (!*pOwner->szGameResServerHost2 &&
                  (strcmp(WolText(pServerHead->connlabel), "GAM") == 0)) {
         //	This is the Aftermath game results port.
-        //	conndata is "something;host;port". The first field is not
-        //	used, and a truncated one leaves the rest null.
-        strtok(WolText(pServerHead->conndata), ";");
-        const char* szHost = strtok(nullptr, ";");
-        const char* szPort = strtok(nullptr, ";");
-        if (szHost != nullptr && szPort != nullptr) {
-          port::SafeCopy(pOwner->szGameResServerHost2, szHost);
-          pOwner->iGameResServerPort2 =
-              tech::ParseInteger<int>(szPort).value_or(0);
-        }
+        ParseHostAndPort(pServerHead->conndata, pOwner->szGameResServerHost2,
+                         pOwner->iGameResServerPort2);
         //				debugprint( "GameRes is at: %s, port
         //%i\n", pOwner->szGameResServerHost, pOwner->iGameResServerPort );
       }
@@ -1073,13 +1070,13 @@ void RAChatEventSink::ActionEggSound(const char* szMessage) {
   if (strstr(szMessage, "<<groans>>") || strstr(szMessage, "<<groaning>>") ||
       strstr(szMessage, "<<dies>>") || strstr(szMessage, "<<dying>>") ||
       strstr(szMessage, "<<groan>>") || strstr(szMessage, "<<died>>")) {
-    const int i = rand() % 30;
+    const int i = Sim_Random_Pick(0, 29);
     if (i == 0) {
       Sound_Effect(VOC_DOG_HURT);
     } else if (i == 1) {
       Sound_Effect(VOC_ANTDIE);
     } else {
-      Sound_Effect((VocType)(VOC_SCREAM1 + (rand() % 9)));
+      Sound_Effect(static_cast<VocType>(VOC_SCREAM1 + Sim_Random_Pick(0, 8)));
     }
   } else if (strstr(szMessage, "<<whines>>") ||
              strstr(szMessage, "<<whining>>") ||
@@ -1089,7 +1086,7 @@ void RAChatEventSink::ActionEggSound(const char* szMessage) {
   } else if (strstr(szMessage, "<<shoots>>") ||
              strstr(szMessage, "<<shooting>>") ||
              strstr(szMessage, "<<shoot>>") || strstr(szMessage, "<<shot>>")) {
-    switch (rand() % 6) {
+    switch (Sim_Random_Pick(0, 5)) {
       case 0:
         Sound_Effect(VOC_CANNON1);
         break;
@@ -1116,7 +1113,7 @@ void RAChatEventSink::ActionEggSound(const char* szMessage) {
              strstr(szMessage, "<<explode>>") ||
              strstr(szMessage, "<<exploded>>") ||
              strstr(szMessage, "<<boom>>") || strstr(szMessage, "<<nukes>>")) {
-    switch (rand() % 5) {
+    switch (Sim_Random_Pick(0, 4)) {
       case 0:
         Sound_Effect(VOC_KABOOM1);
         break;
@@ -1137,7 +1134,7 @@ void RAChatEventSink::ActionEggSound(const char* szMessage) {
     }
   } else if (strstr(szMessage, "<<aye>>") || strstr(szMessage, "<<ok>>") ||
              strstr(szMessage, "<<yes>>") || strstr(szMessage, "<<yeah>>")) {
-    switch (rand() % 8) {
+    switch (Sim_Random_Pick(0, 7)) {
       case 0:
         Sound_Effect(VOC_E_AH);
         break;
@@ -1171,7 +1168,7 @@ void RAChatEventSink::ActionEggSound(const char* szMessage) {
   } else if (strstr(szMessage, "<<coming>>") ||
              strstr(szMessage, "<<on my way>>") ||
              strstr(szMessage, "<<moving out>>")) {
-    switch (rand() % 5) {
+    switch (Sim_Random_Pick(0, 4)) {
       case 0:
         Sound_Effect(VOC_SPY_ONWAY);
         break;
@@ -1223,7 +1220,7 @@ void RAChatEventSink::ActionEggSound(const char* szMessage) {
   } else if (strstr(szMessage, "<<heal>>") || strstr(szMessage, "<<heals>>")) {
     Sound_Effect(VOC_HEAL);
   } else if (strstr(szMessage, "<<missile>>")) {
-    switch (rand() % 3) {
+    switch (Sim_Random_Pick(0, 2)) {
       case 0:
         Sound_Effect(VOC_MISSILE_1);
         break;
@@ -1419,7 +1416,7 @@ STDMETHODIMP RAChatEventSink::OnUserKick(HRESULT hRes, Channel* /*channel*/,
                           WolText(pUserKicked->name));
       pOwner->PrintMessage(szPrint, WOLCOLORREMAP_KICKORBAN);
     }
-    switch (rand() % 4) {
+    switch (Sim_Random_Pick(0, 3)) {
       case 0:
         Sound_Effect(VOC_TANYA_CHEW);
         break;

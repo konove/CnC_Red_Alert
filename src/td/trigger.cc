@@ -71,6 +71,7 @@
 #include <cstring>
 
 #include "port/ex_string.h"
+#include "port/tokenizer.h"
 #include "reinf.h"
 #include "sdllib/shape.h"
 #include "td/anim.h"
@@ -1098,26 +1099,27 @@ void TriggerClass::Fill_In(char* name, char* entry) {
   */
   Set_Name(name);
 
+  port::Tokenizer tokens(entry, ",");
+
   /*
   **	1st token: Event.
   */
-  Event = Event_From_Name(strtok(entry, ","));
+  Event = Event_From_Name(tokens.Next());
 
   /*
   **	2nd token: Action.
   */
-  Action = Action_From_Name(strtok(nullptr, ","));
+  Action = Action_From_Name(tokens.Next());
 
   /*
   **	3rd token: Data.
   */
-  DataCopy = Data =
-      tech::ParseInteger<int64_t>(strtok(nullptr, ",")).value_or(0);
+  DataCopy = Data = tech::ParseInteger<int64_t>(tokens.Next()).value_or(0);
 
   /*
   **	4th token: House.
   */
-  House = HouseTypeClass::From_Name(strtok(nullptr, ","));
+  House = HouseTypeClass::From_Name(tokens.Next());
   if (House == HOUSE_NONE && Event == EVENT_PLAYER_ENTERED) {
     House = PlayerPtr->Class->House;
   }
@@ -1125,13 +1127,13 @@ void TriggerClass::Fill_In(char* name, char* entry) {
   /*
   **	5th token: Team.
   */
-  Team = TeamTypeClass::As_Pointer(strtok(nullptr, ","));
+  Team = TeamTypeClass::As_Pointer(tokens.Next());
 
   /*
   ** 6th token: IsPersistant.  This token was added later, so we must check
   ** for its existence.
   */
-  p = strtok(nullptr, ",");
+  p = tokens.Next();
   if (p) {
     IsPersistant =
         static_cast<PersistantType>(tech::ParseInteger<int>(p).value_or(0));

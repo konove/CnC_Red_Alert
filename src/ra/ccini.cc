@@ -107,6 +107,7 @@
 
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
+#include "port/tokenizer.h"
 #include "ra/adata.h"
 #include "ra/anim.h"
 #include "ra/conquer.h"
@@ -430,11 +431,9 @@ int32_t CCINIClass::Get_Owners(const char* section, const char* entry,
 
   if (Get_String(section, entry, "", buffer, sizeof(buffer))) {
     ownable = 0;
-    const char* name = strtok(buffer, ",");
-
-    while (name) {
+    port::Tokenizer tokens(buffer, ",");
+    while (const char* name = tokens.Next()) {
       ownable |= Owner_From_Name(name);
-      name = strtok(nullptr, ",");
     }
   }
   return ownable;
@@ -1338,7 +1337,7 @@ TerrainType CCINIClass::Get_TerrainType(const char* section, const char* entry,
   char buffer[128];
 
   if (Get_String(section, entry, "", buffer, sizeof(buffer))) {
-    return TerrainTypeClass::From_Name(strtok(buffer, ","));
+    return TerrainTypeClass::From_Name(port::Tokenizer(buffer, ",").Next());
   }
   return defvalue;
 }
@@ -1397,13 +1396,12 @@ uint64_t CCINIClass::Get_Buildings(const char* section, const char* entry,
 
   if (Get_String(section, entry, "", buffer, sizeof(buffer))) {
     pre = 0;
-    const char* token = strtok(buffer, ",");
-    while (token != nullptr && *token != '\0') {
+    port::Tokenizer tokens(buffer, ",");
+    while (const char* token = tokens.Next()) {
       const StructType building = BuildingTypeClass::From_Name(token);
       if (building != STRUCT_NONE) {
         pre |= uint64_t{1} << building;
       }
-      token = strtok(nullptr, ",");
     }
   } else {
     pre = defvalue;

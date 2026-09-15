@@ -72,6 +72,7 @@
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
+#include "port/tokenizer.h"
 #include "ra/ccini.h"
 #include "ra/ccptr.h"
 #include "ra/config.h"
@@ -1943,19 +1944,20 @@ void TriggerTypeClass::Fill_In(const char* name, char* entry) {
   */
   Set_Name(name);
 
+  port::Tokenizer tokens(entry, ",");
   IsPersistant = static_cast<PersistantType>(
-      tech::ParseInteger<int>(strtok(entry, ",")).value_or(0));
+      tech::ParseInteger<int>(tokens.Next()).value_or(0));
   House = static_cast<HousesType>(
-      tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0));
+      tech::ParseInteger<int>(tokens.Next()).value_or(0));
   EventControl = static_cast<MultiStyleType>(
-      tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0));
+      tech::ParseInteger<int>(tokens.Next()).value_or(0));
   ActionControl = static_cast<MultiStyleType>(
-      tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0));
+      tech::ParseInteger<int>(tokens.Next()).value_or(0));
 
-  Event1.Read_INI();
-  Event2.Read_INI();
-  Action1.Read_INI();
-  Action2.Read_INI();
+  Event1.Read_INI(tokens);
+  Event2.Read_INI(tokens);
+  Action1.Read_INI(tokens);
+  Action2.Read_INI(tokens);
 }
 
 /***********************************************************************************************

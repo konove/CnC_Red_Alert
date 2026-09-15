@@ -24,12 +24,13 @@
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
-#include <random>
 #include <utility>
 
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
+#include "port/random_seed.h"
+#include "port/tokenizer.h"
 #include "port/win32/win32_types.h"
 #include "ra/bigcheck.h"
 #include "ra/config.h"
@@ -697,7 +698,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
                      pILScens->Get_Item(pILScens->Current_Index()));
     }
 
-    Seed = rand();
+    Seed = port::RandomSeed();
   }
 
   //------------------------------------------------------------------------
@@ -726,12 +727,6 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
   pDropListHouse->Set_Read_Only(true);
 
   //	PlayingAgainstVersion = VerNum.Version_Number();
-
-  //------------------------------------------------------------------------
-  //	Init random-number generator, & create a seed to be used for all random
-  //	numbers from here on out
-  //------------------------------------------------------------------------
-  srand(std::random_device{}());
 
   //------------------------------------------------------------------------
   //	Init the version-clipping system
@@ -2546,7 +2541,6 @@ bool WOL_GameSetupDialog::AcceptParams(char* szParams) {
   if (szParams == nullptr) {
     return false;
   }
-  const char* params_end = szParams + strlen(szParams);
   //	Reverse of SendParams() process. szParams has already been stripped of 2
   // bytes header. Guest only.
 
@@ -2554,46 +2548,46 @@ bool WOL_GameSetupDialog::AcceptParams(char* szParams) {
   //	(Or if an error occurs due to the packet being incorrect - which
   // happened once in test...)
 
-  char szDelimiter[] = " ";
-  char* szToken;
-  char* szRemaining;
+  port::Tokenizer tokens(szParams, " ");
+  const char* szToken;
 
-  szToken = strtok(szParams, szDelimiter);
+  szToken = tokens.Next();
   nGuestLastParamID = tech::ParseInteger<int>(szToken).value_or(0);
 
   //	Read in length of following string.
-  szToken = strtok(nullptr, szDelimiter);
+  szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
   int iLen = tech::ParseInteger<int>(szToken).value_or(-1);
-  if (params_end - szToken <= 3 || strlen(szToken) != 3 || iLen < 0 ||
+  //	The string follows the 3-digit length and may contain spaces, so it is
+  //	read from the unparsed text rather than as a token.
+  char* const szRemaining = tokens.Remaining();
+  if (strlen(szToken) != 3 || iLen < 0 ||
       std::cmp_greater_equal(iLen,
                              sizeof(Session.Options.ScenarioDescription)) ||
-      static_cast<size_t>(iLen) >= strlen(szToken + 4)) {
+      static_cast<size_t>(iLen) >= strlen(szRemaining)) {
     return false;
   }
-  //	Set string pointer to start of string (length is 3 digits).
-  szRemaining = szToken + 4;
   //	Read in string.
   memcpy(Session.Options.ScenarioDescription, szRemaining, base::ToSize(iLen));
   //	Null-terminate.
   Session.Options.ScenarioDescription[iLen] = 0;
-  //	Advance string pointer to next param.
-  szRemaining += iLen + 1;
+  //	Resume parsing after the string.
+  tokens = port::Tokenizer(szRemaining + iLen + 1, " ");
 
   // debugprint( "scenario description is '%s'\n",
   // Session.Options.ScenarioDescription ); debugprint( "remaining: '%s'\n",
   // szRemaining );
 
-  szToken = strtok(szRemaining, szDelimiter);
+  szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
   Session.ScenarioFileLength =
       static_cast<unsigned int>(tech::ParseInteger<int>(szToken).value_or(0));
 
-  szToken = strtok(nullptr, szDelimiter);
+  szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
@@ -2606,7 +2600,7 @@ bool WOL_GameSetupDialog::AcceptParams(char* szParams) {
   //	szRemaining = szToken + 4;
   //	Method changed.
   //	Check if there is a digest.
-  szToken = strtok(nullptr, szDelimiter);
+  szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
@@ -2625,159 +2619,155 @@ bool WOL_GameSetupDialog::AcceptParams(char* szParams) {
     //		//	Advance string pointer to next param.
     //		szRemaining += iLen + 1;
     //	There is a digest.
-    szToken = strtok(nullptr,
-                     szDelimiter);  //	(Digests can't have spaces in the them.)
-                                    // debugprint( "digest: '%s'\n", szToken );
+    szToken = tokens.Next();  //	(Digests can't have spaces in the them.)
+                              // debugprint( "digest: '%s'\n", szToken );
     if (!szToken) {
       return false;
     }
     strncpy(Session.ScenarioDigest, szToken, sizeof(Session.ScenarioDigest));
   }
 
-  szToken = strtok(nullptr, szDelimiter);
+  szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
   Session.ScenarioIsOfficial =
       (bool)tech::ParseInteger<int>(szToken).value_or(0);
 
-  szToken = strtok(nullptr, szDelimiter);
+  szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
   Session.Options.Credits = tech::ParseInteger<int>(szToken).value_or(0);
 
-  szToken = strtok(nullptr, szDelimiter);
+  szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
   Session.Options.Bases = tech::ParseInteger<int>(szToken).value_or(0);
 
-  szToken = strtok(nullptr, szDelimiter);
+  szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
   Session.Options.Tiberium = tech::ParseInteger<int>(szToken).value_or(0);
 
-  szToken = strtok(nullptr, szDelimiter);
+  szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
   Session.Options.Goodies = tech::ParseInteger<int>(szToken).value_or(0);
 
-  szToken = strtok(nullptr, szDelimiter);
+  szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
   BuildLevel = tech::ParseInteger<int>(szToken).value_or(0);
 
-  szToken = strtok(nullptr, szDelimiter);
+  szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
   Session.Options.UnitCount = tech::ParseInteger<int>(szToken).value_or(0);
 
-  szToken = strtok(nullptr, szDelimiter);
+  szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
   Session.Options.AIPlayers = tech::ParseInteger<int>(szToken).value_or(0);
 
-  szToken = strtok(nullptr, szDelimiter);
+  szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
   Seed = tech::ParseInteger<int>(szToken).value_or(0);
 
-  szToken = strtok(nullptr, szDelimiter);
+  szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
   Special.IsShadowGrow =
       (tech::ParseInteger<int>(szToken).value_or(0) == 0) ? 0 : 1;
 
-  szToken = strtok(nullptr, szDelimiter);
+  szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
   Special.IsSpeedBuild =
       (tech::ParseInteger<int>(szToken).value_or(0) == 0) ? 0 : 1;
 
-  szToken = strtok(nullptr, szDelimiter);
+  szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
   Special.IsFromInstall =
       (tech::ParseInteger<int>(szToken).value_or(0) == 0) ? 0 : 1;
 
-  szToken = strtok(nullptr, szDelimiter);
+  szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
   Special.IsCaptureTheFlag =
       (tech::ParseInteger<int>(szToken).value_or(0) == 0) ? 0 : 1;
 
-  szToken = strtok(nullptr, szDelimiter);
+  szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
   Special.IsInert = (tech::ParseInteger<int>(szToken).value_or(0) == 0) ? 0 : 1;
 
-  szToken = strtok(nullptr, szDelimiter);
+  szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
   Special.IsThreePoint =
       (tech::ParseInteger<int>(szToken).value_or(0) == 0) ? 0 : 1;
 
-  szToken = strtok(nullptr, szDelimiter);
+  szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
   Special.IsTGrowth =
       (tech::ParseInteger<int>(szToken).value_or(0) == 0) ? 0 : 1;
 
-  szToken = strtok(nullptr, szDelimiter);
+  szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
   Special.IsTSpread =
       (tech::ParseInteger<int>(szToken).value_or(0) == 0) ? 0 : 1;
 
-  szToken = strtok(nullptr, szDelimiter);
+  szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
   Options.GameSpeed =
       static_cast<unsigned int>(tech::ParseInteger<int>(szToken).value_or(0));
 
-  szToken = strtok(nullptr, szDelimiter);
+  szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
   //	"Version"	= atoi( szToken );
 
-  szToken = strtok(nullptr, szDelimiter);
+  szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
   bAftermathUnits = (bool)tech::ParseInteger<int>(szToken).value_or(0);
 
-  szToken = strtok(nullptr, szDelimiter);
+  szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
   bSlowUnitBuildRate = (bool)tech::ParseInteger<int>(szToken).value_or(0);
 
-  szToken = strtok(nullptr, szDelimiter);
+  szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
   const int iRulesID = tech::ParseInteger<int>(szToken).value_or(0);
 
-  //	strtok( NULL, szDelimiter ) here should give NULL; nothing checks.
-  //	if( szToken )
-  //		debugprint( "szToken should be NULL!!!!!!!!\n" );
 
   return (RuleINI.Get_Unique_ID() == iRulesID);
 }
@@ -3170,71 +3160,56 @@ void WOL_GameSetupDialog::AcceptNewGuestPlayerInfo(char* szMsg) {
   if (szMsg == nullptr) {
     return;
   }
-  const char* message_end = szMsg + strlen(szMsg);
   //	Process a received WOL_GAMEOPT_INFNEWGUESTPLAYERINFO message.
   //	szMsg has already been stripped of 2 bytes header.
-  char szDelimiter[] = " ";
-  char* szToken;
-  char* szRemaining;
+  port::Tokenizer tokens(szMsg, " ");
+  const char* szToken;
 
-  szToken = strtok(szMsg, szDelimiter);
+  szToken = tokens.Next();
   const auto player_count = tech::ParseInteger<int>(szToken);
   if (!player_count || *player_count < 0 || *player_count > 8 ||
-      strlen(szToken) != 2 || message_end - szToken <= 2) {
+      strlen(szToken) != 2) {
     return;
   }
   const auto nPlayers = static_cast<unsigned int>(*player_count);
 
-  //	We have to assist strtok a bit because of calls below that may also call
-  // strtok()...
-  szRemaining = szMsg + 3;
-
   for (unsigned int nPlayer = 0; nPlayer != nPlayers; ++nPlayer) {
     //	Read in length of following string.
-    szToken = strtok(szRemaining, szDelimiter);
+    szToken = tokens.Next();
     const int iLen = tech::ParseInteger<int>(szToken).value_or(-1);
-    if (szToken == nullptr || message_end - szToken <= 2 ||
-        strlen(szToken) != 2 || iLen < 0 || iLen >= 50 ||
-        static_cast<size_t>(iLen) >= strlen(szToken + 3)) {
+    //	The name follows the 2-digit length and may contain spaces, so it is
+    //	read from the unparsed text rather than as a token.
+    char* const szRemaining = tokens.Remaining();
+    if (szToken == nullptr || strlen(szToken) != 2 || iLen < 0 || iLen >= 50 ||
+        static_cast<size_t>(iLen) >= strlen(szRemaining)) {
       return;
     }
 
-    //	Set string pointer to start of string (length is 2 digits).
-    szRemaining = szToken + 3;
     //	Read in string.
     char szPlayerName[50];
     memcpy(szPlayerName, szRemaining, base::ToSize(iLen));
     //	Null-terminate.
     szPlayerName[iLen] = 0;
 
-    //	Advance string pointer to next param.
-    szRemaining += iLen + 1;
+    //	Resume parsing after the name.
+    tokens = port::Tokenizer(szRemaining + iLen + 1, " ");
 
     //	Read color.
-    szToken = strtok(szRemaining, szDelimiter);
+    szToken = tokens.Next();
     const PlayerColorType Color =
         (PlayerColorType)tech::ParseInteger<int>(szToken).value_or(0);
     SetPlayerColor(szPlayerName, Color);
 
-    //	SetPlayerColor may call strtok, so we can't use the strtok( NULL,
-    // option... in the next call.
-    szRemaining += 3;
-
     //	Read whether there is a house field.
-    szToken = strtok(szRemaining, szDelimiter);
+    szToken = tokens.Next();
     const bool bHouseField = (bool)tech::ParseInteger<int>(szToken).value_or(0);
 
     if (bHouseField) {
       //	Read house.
-      szToken = strtok(nullptr, szDelimiter);
+      szToken = tokens.Next();
       const HousesType House =
           (HousesType)tech::ParseInteger<int>(szToken).value_or(0);
       SetPlayerHouse(szPlayerName, House);
-      //	SetPlayerHouse may call strtok, so we can't use the strtok(
-      // NULL, option... in the next call.
-      szRemaining += 5;
-    } else {
-      szRemaining += 2;  //	Advance past "0 ".
     }
 
     //	Acceptedness must be false. No need for it in message.
@@ -3245,9 +3220,6 @@ void WOL_GameSetupDialog::AcceptNewGuestPlayerInfo(char* szMsg) {
     //			SetPlayerAccepted( szPlayerName, true );
   }
 
-  //	strtok( NULL, szDelimiter ) here should give NULL; nothing checks.
-  //	if( szToken )
-  //		debugprint( "szToken should be NULL!!!!!!!!\n" );
 
   ClearAllAccepts();  //	Most likely a pointless precaution.
 }
@@ -3551,20 +3523,15 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
   }
 
   //	Parse szGoMessage to iterate through players.
-  char szDelimiter[] = " ";
-  char* szToken;
+  port::Tokenizer tokens(szGoMessage, " ");
   char szPlayerName[WOL_NAME_LEN_MAX];
 
-  szToken = strtok(szGoMessage, szDelimiter);
-
-  while (szToken) {
+  while (const char* szToken = tokens.Next()) {
     port::SafeCopy(szPlayerName, szToken);
-    szToken = strtok(nullptr, szDelimiter);
 
     const PlayerColorType Color =
-        (PlayerColorType)tech::ParseInteger<int>(szToken).value_or(0);
+        (PlayerColorType)tech::ParseInteger<int>(tokens.Next()).value_or(0);
     SetPlayerColor(szPlayerName, Color);  //	ajw note: inserts if not found.
-    szToken = strtok(nullptr, szDelimiter);
   }
 
   //	Add myself to Session.Players list.

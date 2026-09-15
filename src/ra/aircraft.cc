@@ -117,6 +117,7 @@
 #include "base/trig.h"
 #include "base/types.h"
 #include "magic_enum/magic_enum.hpp"
+#include "port/tokenizer.h"
 #include "ra/anim.h"
 #include "ra/bench_util.h"
 #include "ra/building.h"
@@ -614,9 +615,10 @@ void AircraftClass::Read_INI(CCINIClass& ini) {
     const char* entry = ini.Get_Entry(INI_Name(), index);
 
     ini.Get_String(INI_Name(), entry, nullptr, buf, sizeof(buf) - 1);
-    inhouse = HouseTypeClass::From_Name(strtok(buf, ","));
+    port::Tokenizer tokens(buf, ",");
+    inhouse = HouseTypeClass::From_Name(tokens.Next());
     if (inhouse != HOUSE_NONE) {
-      classid = AircraftTypeClass::From_Name(strtok(nullptr, ","));
+      classid = AircraftTypeClass::From_Name(tokens.Next());
 
       if (classid != AIRCRAFT_NONE) {
         air = new AircraftClass(classid, inhouse);
@@ -628,21 +630,21 @@ void AircraftClass::Read_INI(CCINIClass& ini) {
           /*
           **	Read the raw data.
           */
-          const char* token = strtok(nullptr, ",");
+          const char* token = tokens.Next();
           if (token) {
             strength = tech::ParseInteger<int>(token).value_or(0);
           } else {
             strength = 0;
           }
 
-          token = strtok(nullptr, ",");
+          token = tokens.Next();
           if (token) {
             coord = Cell_Coord(tech::ParseInteger<CELL>(token).value_or(0));
           } else {
             coord = 0xFFFFFFFFL;
           }
 
-          token = strtok(nullptr, ",");
+          token = tokens.Next();
           if (token) {
             dir = static_cast<DirType>(
                 tech::ParseInteger<int>(token).value_or(0));
@@ -656,7 +658,7 @@ void AircraftClass::Read_INI(CCINIClass& ini) {
             air->Strength = static_cast<int16_t>(air->Class->MaxStrength *
                                                  fixed(strength, 256));
             if (air->Unlimbo(coord, dir)) {
-              air->Assign_Mission(Mission_From_Name(strtok(nullptr, ",\n\r")));
+              air->Assign_Mission(Mission_From_Name(tokens.Next(",\n\r")));
             } else {
               delete air;
             }

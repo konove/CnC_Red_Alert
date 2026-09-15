@@ -60,6 +60,7 @@
 #include <cstring>
 
 #include "magic_enum/magic_enum.hpp"
+#include "port/tokenizer.h"
 #include "ra/anim.h"
 #include "ra/bench_util.h"
 #include "ra/ccini.h"
@@ -702,7 +703,8 @@ bool RulesClass::Powerups(CCINIClass& ini) {
         /*
         **	Share odds.
         */
-        char* token = strtok(buffer, ",");
+        port::Tokenizer tokens(buffer, ",");
+        char* token = tokens.Next();
         if (token) {
           strtrim(token);
           CrateShares[crate] = tech::ParseInteger<int>(token).value_or(0);
@@ -711,7 +713,7 @@ bool RulesClass::Powerups(CCINIClass& ini) {
         /*
         **	Animation to use.
         */
-        token = strtok(nullptr, ",");
+        token = tokens.Next();
         if (token) {
           strtrim(token);
           CrateAnims[crate] = Anim_From_Name(token);
@@ -720,7 +722,7 @@ bool RulesClass::Powerups(CCINIClass& ini) {
         /*
         **	Optional data number.
         */
-        token = strtok(nullptr, ",");
+        token = tokens.Next();
         if (token != nullptr) {
           if (strpbrk(token, ".%") != nullptr) {
             CrateData[crate] = fixed::FromString(token) * 256;
@@ -805,12 +807,13 @@ bool RulesClass::Themes(CCINIClass& ini) {
 
         ini.Get_String(THEMECONTROL, ThemeClass::Base_Name(theme), "", buffer,
                        sizeof(buffer));
-        const char* token = strtok(buffer, ",");
+        port::Tokenizer tokens(buffer, ",");
+        const char* token = tokens.Next();
         if (token != nullptr) {
           scen = tech::ParseInteger<int>(token).value_or(0);
         }
 
-        token = strtok(nullptr, ",");
+        token = tokens.Next();
         if (token != nullptr) {
           owners = Owner_From_Name(token);
         }

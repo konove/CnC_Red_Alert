@@ -54,6 +54,7 @@
 #include <utility>
 
 #include "port/ex_string.h"
+#include "port/tokenizer.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
@@ -566,25 +567,25 @@ void TEventClass::Build_INI_Entry(std::string& buffer) const {
  *                                                                                             *
  * HISTORY: * 11/28/1995 JLB : Created. *
  *=============================================================================================*/
-void TEventClass::Read_INI() {
+void TEventClass::Read_INI(port::Tokenizer& tokens) {
   const char* token;
   switch (NewINIFormat) {
     default:
       Event = static_cast<TEventType>(
-          tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0));
-      Team.Set_Raw(tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0));
-      Data.Value = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
+          tech::ParseInteger<int>(tokens.Next()).value_or(0));
+      Team.Set_Raw(tech::ParseInteger<int>(tokens.Next()).value_or(0));
+      Data.Value = tech::ParseInteger<int>(tokens.Next()).value_or(0);
       break;
 
     case 1:
-      token = strtok(nullptr, ",");
+      token = tokens.Next();
       Event = TEVENT_NONE;
       if (token) {
         Event =
             static_cast<TEventType>(tech::ParseInteger<int>(token).value_or(0));
       }
 
-      token = strtok(nullptr, ",");
+      token = tokens.Next();
       Team = nullptr;
       Data.Value = -1;
       if (token) {
@@ -598,14 +599,14 @@ void TEventClass::Read_INI() {
 
     case 0:
       Event = static_cast<TEventType>(
-          tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0));
+          tech::ParseInteger<int>(tokens.Next()).value_or(0));
 
-      strtok(nullptr, ",");
-      strtok(nullptr, ",");
+      tokens.Next();  // Old-format field, unused.
+      tokens.Next();  // Old-format field, unused.
 
-      Team = TeamTypeClass::From_Name(strtok(nullptr, ","));
-      Data.Value = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
-      strtok(nullptr, ",");
+      Team = TeamTypeClass::From_Name(tokens.Next());
+      Data.Value = tech::ParseInteger<int>(tokens.Next()).value_or(0);
+      tokens.Next();  // Old-format field, unused.
       break;
   }
 }

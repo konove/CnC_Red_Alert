@@ -115,6 +115,7 @@
 #include <cstring>
 #include <iterator>
 
+#include "port/tokenizer.h"
 #include "sdllib/misc.h"
 #include "sdllib/shape.h"
 #include "td/anim.h"
@@ -3471,9 +3472,10 @@ void UnitClass::Read_INI(char* buffer) {
   while (*tbuffer != '\0') {
     WWGetPrivateProfileString(INI_Name(), tbuffer, nullptr, buf,
                               sizeof(buf) - 1, buffer);
-    inhouse = HouseTypeClass::From_Name(strtok(buf, ","));
+    port::Tokenizer tokens(buf, ",\r\n");
+    inhouse = HouseTypeClass::From_Name(tokens.Next(","));
     if (inhouse != HOUSE_NONE) {
-      classid = UnitTypeClass::From_Name(strtok(nullptr, ","));
+      classid = UnitTypeClass::From_Name(tokens.Next(","));
 
       if (classid != UNIT_NONE) {
         unit = new UnitClass(classid, inhouse);
@@ -3482,14 +3484,13 @@ void UnitClass::Read_INI(char* buffer) {
           **	Read the raw data.
           */
           const int strength =
-              tech::ParseInteger<int>(strtok(nullptr, ",\r\n")).value_or(0);
-          const COORDINATE coord = Cell_Coord(
-              tech::ParseInteger<CELL>(strtok(nullptr, ",\r\n")).value_or(0));
+              tech::ParseInteger<int>(tokens.Next()).value_or(0);
+          const COORDINATE coord =
+              Cell_Coord(tech::ParseInteger<CELL>(tokens.Next()).value_or(0));
           const DirType dir = static_cast<DirType>(
-              tech::ParseInteger<int>(strtok(nullptr, ",\r\n")).value_or(0));
-          const MissionType mission =
-              Mission_From_Name(strtok(nullptr, ",\n\r"));
-          unit->Trigger = TriggerClass::As_Pointer(strtok(nullptr, ",\r\n"));
+              tech::ParseInteger<int>(tokens.Next()).value_or(0));
+          const MissionType mission = Mission_From_Name(tokens.Next(",\n\r"));
+          unit->Trigger = TriggerClass::As_Pointer(tokens.Next());
           if (unit->Trigger) {
             unit->Trigger->AttachCount++;
           }

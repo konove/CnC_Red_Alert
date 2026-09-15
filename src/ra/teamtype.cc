@@ -76,6 +76,7 @@
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
+#include "port/tokenizer.h"
 #include "ra/ccini.h"
 #include "ra/ccptr.h"
 #include "ra/checkbox.h"
@@ -1663,13 +1664,14 @@ void TeamTypeClass::Fill_In(const char* name, char* entry) {
   */
   Set_Name(name);
 
+  port::Tokenizer tokens(entry, ",");
   House = static_cast<HousesType>(
-      tech::ParseInteger<int>(strtok(entry, ",")).value_or(0));
+      tech::ParseInteger<int>(tokens.Next()).value_or(0));
 
   int code;
   switch (NewINIFormat) {
     default:
-      code = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
+      code = tech::ParseInteger<int>(tokens.Next()).value_or(0);
       IsRoundAbout = (code & 0x0001) != 0;
       IsSuicide = (code & 0x0002) != 0;
       IsAutocreate = (code & 0x0004) != 0;
@@ -1679,50 +1681,44 @@ void TeamTypeClass::Fill_In(const char* name, char* entry) {
 
     case 0:
     case 1:
-      IsRoundAbout =
-          tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0) != 0;
-      IsSuicide = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0) != 0;
-      IsAutocreate =
-          tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0) != 0;
-      IsPrebuilt =
-          tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0) != 0;
-      IsReinforcable =
-          tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0) != 0;
+      IsRoundAbout = tech::ParseInteger<int>(tokens.Next()).value_or(0) != 0;
+      IsSuicide = tech::ParseInteger<int>(tokens.Next()).value_or(0) != 0;
+      IsAutocreate = tech::ParseInteger<int>(tokens.Next()).value_or(0) != 0;
+      IsPrebuilt = tech::ParseInteger<int>(tokens.Next()).value_or(0) != 0;
+      IsReinforcable = tech::ParseInteger<int>(tokens.Next()).value_or(0) != 0;
       break;
   }
 
-  RecruitPriority = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
+  RecruitPriority = tech::ParseInteger<int>(tokens.Next()).value_or(0);
   InitNum = static_cast<unsigned char>(
-      tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0));
+      tech::ParseInteger<int>(tokens.Next()).value_or(0));
   MaxAllowed = static_cast<unsigned char>(
-      tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0));
-  Origin = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
+      tech::ParseInteger<int>(tokens.Next()).value_or(0));
+  Origin = tech::ParseInteger<int>(tokens.Next()).value_or(0);
 
   switch (NewINIFormat) {
     default:
-      Trigger.Set_Raw(
-          tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0));
+      Trigger.Set_Raw(tech::ParseInteger<int>(tokens.Next()).value_or(0));
       break;
 
     case 0:
     case 1:
-      // Throw this token away -- it isn't used.
-      strtok(nullptr, ",");
+      tokens.Next();  // Old-format trigger field, unused.
       break;
   }
 
   /*
   **	Fetch the team member types and quantity values.
   */
-  ClassCount = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(-1);
+  ClassCount = tech::ParseInteger<int>(tokens.Next()).value_or(-1);
   if (ClassCount < 0 || ClassCount > MAX_TEAM_CLASSCOUNT) {
     ClassCount = 0;
     MissionCount = 0;
     return;
   }
   for (int index = 0; index < ClassCount; index++) {
-    const char* p1 = strtok(nullptr, ",:");
-    const char* p2 = strtok(nullptr, ",:");
+    const char* p1 = tokens.Next(",:");
+    const char* p2 = tokens.Next(",:");
     if (p1 == nullptr || p2 == nullptr) {
       ClassCount = 0;
       MissionCount = 0;
@@ -1780,7 +1776,7 @@ void TeamTypeClass::Fill_In(const char* name, char* entry) {
   /*
   **	Fetch the missions assigned to this team type.
   */
-  MissionCount = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(-1);
+  MissionCount = tech::ParseInteger<int>(tokens.Next()).value_or(-1);
   if (MissionCount < 0 || MissionCount > MAX_TEAM_MISSIONS) {
     ClassCount = 0;
     MissionCount = 0;
@@ -1788,16 +1784,16 @@ void TeamTypeClass::Fill_In(const char* name, char* entry) {
   }
   for (int index = 0; index < MissionCount; index++) {
     MissionList[index].Mission = static_cast<TeamMissionType>(
-        tech::ParseInteger<int>(strtok(nullptr, ",:")).value_or(0));
+        tech::ParseInteger<int>(tokens.Next(",:")).value_or(0));
     MissionList[index].Data.Value =
-        tech::ParseInteger<int>(strtok(nullptr, ",:")).value_or(0);
+        tech::ParseInteger<int>(tokens.Next(",:")).value_or(0);
   }
 
   if (NewINIFormat < 2) {
     /*
     **	Fetch the trigger ID.
     */
-    Trigger.Set_Raw(tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0));
+    Trigger.Set_Raw(tech::ParseInteger<int>(tokens.Next()).value_or(0));
   }
 }
 

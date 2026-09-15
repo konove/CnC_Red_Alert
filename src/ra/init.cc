@@ -73,7 +73,6 @@
 #include <ctime>
 #include <iterator>
 #include <memory>
-#include <random>
 #include <span>
 #include <string>
 
@@ -84,6 +83,8 @@
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "port/platform.h"
+#include "port/random_seed.h"
+#include "port/tokenizer.h"
 #include "ra/_wsproto.h"
 #include "ra/ccini.h"
 #include "ra/compat.h"
@@ -1422,8 +1423,8 @@ bool Parse_Command_Line(int argc, char* argv[]) {
       ** Scan the command-line string, pulling off each address piece
       */
       int i = 0;
-      const char* p = strtok(string + 8, ".");
-      while (p) {
+      port::Tokenizer tokens(string + 8, ".");
+      while (const char* p = tokens.Next()) {
         const auto byte = tech::ParseHex<uint8_t>(p);
         if (!byte || i >= 10) {
           i = 0;  // Reject the address instead of accepting a partial network.
@@ -1435,7 +1436,6 @@ bool Parse_Command_Line(int argc, char* argv[]) {
           node[i - 4] = *byte;  // fill NetNode
         }
         i++;
-        p = strtok(nullptr, ".");
       }
 
       /*
@@ -1832,8 +1832,7 @@ void Init_Random() {
     if (CustomSeed != 0) {
       Seed = CustomSeed;
     } else {
-      srand(std::random_device{}());
-      Seed = rand();
+      Seed = port::RandomSeed();
     }
   }
 

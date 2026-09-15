@@ -108,6 +108,7 @@
 #include <utility>
 
 #include "magic_enum/magic_enum.hpp"
+#include "port/tokenizer.h"
 #include "ra/anim.h"
 #include "ra/bench_util.h"
 #include "ra/building.h"
@@ -3152,12 +3153,13 @@ void InfantryClass::Read_INI(CCINIClass& ini) {
     /*
     **	1st token: house name.
     */
-    inhouse = HouseTypeClass::From_Name(strtok(buf, ",\n\r"));
+    port::Tokenizer tokens(buf, ",\n\r");
+    inhouse = HouseTypeClass::From_Name(tokens.Next());
     if (inhouse != HOUSE_NONE) {
       /*
       **	2nd token: infantry type name.
       */
-      classid = InfantryTypeClass::From_Name(strtok(nullptr, ",\n\r"));
+      classid = InfantryTypeClass::From_Name(tokens.Next());
 
       if (classid != INFANTRY_NONE) {
         infantry = new InfantryClass(classid, inhouse);
@@ -3166,32 +3168,32 @@ void InfantryClass::Read_INI(CCINIClass& ini) {
           **	3rd token: strength.
           */
           const int strength =
-              tech::ParseInteger<int>(strtok(nullptr, ",\n\r")).value_or(0);
+              tech::ParseInteger<int>(tokens.Next()).value_or(0);
 
           /*
           **	4th token: cell #.
           */
           const CELL cell =
-              tech::ParseInteger<CELL>(strtok(nullptr, ",\n\r")).value_or(0);
+              tech::ParseInteger<CELL>(tokens.Next()).value_or(0);
           COORDINATE coord = Cell_Coord(cell);
 
           /*
           **	5th token: cell sub-location.
           */
           const int sub = std::clamp(
-              tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0), 0, 4);
+              tech::ParseInteger<int>(tokens.Next(",")).value_or(0), 0, 4);
           coord = Coord_Add(Coord_Whole(coord), StoppingCoordAbs[sub]);
 
           /*
           **	Fetch the mission and facing.
           */
           const MissionType mission =
-              Mission_From_Name(strtok(nullptr, ",\n\r"));
-          validation = strtok(nullptr, ",\n\r");
+              Mission_From_Name(tokens.Next());
+          validation = tokens.Next();
           if (validation) {
             dir = static_cast<DirType>(
                 tech::ParseInteger<int>(validation).value_or(0));
-            validation = strtok(nullptr, ",\n\r");
+            validation = tokens.Next();
             if (validation) {
               tp = TriggerTypeClass::From_Name(validation);
             } else {

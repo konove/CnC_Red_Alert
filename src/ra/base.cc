@@ -58,6 +58,7 @@
 
 #include "base/types.h"
 #include "magic_enum/magic_enum.hpp"
+#include "port/tokenizer.h"
 #include "ra/building.h"
 #include "ra/ccini.h"
 #include "ra/ccptr.h"
@@ -355,12 +356,13 @@ void BaseClass::Read_INI(CCINIClass& ini) {
     /*
     ** Set the node's building type
     */
-    node.Type = BuildingTypeClass::From_Name(strtok(buf, ","));
+    port::Tokenizer tokens(buf, ",");
+    node.Type = BuildingTypeClass::From_Name(tokens.Next());
 
     /*
     ** Read & set the node's coordinate
     */
-    node.Cell = tech::ParseInteger<CELL>(strtok(nullptr, ",")).value_or(0);
+    node.Cell = tech::ParseInteger<CELL>(tokens.Next()).value_or(0);
 
     /*
     ** Add this node to the Base's list

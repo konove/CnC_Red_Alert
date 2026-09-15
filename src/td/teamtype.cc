@@ -61,6 +61,7 @@
 
 #include "port/ex_string.h"
 #include "port/safe_string.h"
+#include "port/tokenizer.h"
 #include "sdllib/shape.h"
 #include "td/config.h"
 #include "td/conquer.h"
@@ -252,68 +253,65 @@ void TeamTypeClass::Fill_In(char* name, char* entry) {
   */
   Set_Name(name);
 
+  port::Tokenizer tokens(entry, ",");
+
   /*
   ---------------------------- 1st token: House ----------------------------
   */
-  House = HouseTypeClass::From_Name(strtok(entry, ","));
+  House = HouseTypeClass::From_Name(tokens.Next());
 
   /*
   -------------------------- 2nd token: RoundAbout -------------------------
   */
-  IsRoundAbout =
-      tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0) != 0;
+  IsRoundAbout = tech::ParseInteger<int>(tokens.Next()).value_or(0) != 0;
 
   /*
   --------------------------- 3rd token: Learning --------------------------
   */
-  IsLearning =
-      tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0) != 0;
+  IsLearning = tech::ParseInteger<int>(tokens.Next()).value_or(0) != 0;
 
   /*
   --------------------------- 4th token: Suicide ---------------------------
   */
-  IsSuicide =
-      tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0) != 0;
+  IsSuicide = tech::ParseInteger<int>(tokens.Next()).value_or(0) != 0;
 
   /*
   ----------------------------- 5th token: Spy -----------------------------
   */
-  IsAutocreate =
-      tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0) != 0;
+  IsAutocreate = tech::ParseInteger<int>(tokens.Next()).value_or(0) != 0;
 
   /*
   -------------------------- 6th token: Mercenary --------------------------
   */
-  IsMercenary =
-      tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0) != 0;
+  IsMercenary = tech::ParseInteger<int>(tokens.Next()).value_or(0) != 0;
 
   /*
   ----------------------- 7th token: RecruitPriority -----------------------
   */
-  RecruitPriority = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
+  RecruitPriority = tech::ParseInteger<int>(tokens.Next()).value_or(0);
 
   /*
   -------------------------- 8th token: MaxAllowed -------------------------
   */
   MaxAllowed = static_cast<unsigned char>(
-      tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0));
+      tech::ParseInteger<int>(tokens.Next()).value_or(0));
 
   /*
   --------------------------- 9th token: InitNum ---------------------------
   */
   InitNum = static_cast<unsigned char>(
-      tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0));
+      tech::ParseInteger<int>(tokens.Next()).value_or(0));
 
   /*
   ------------------------- 10th token: Fear level -------------------------
   */
   Fear = static_cast<unsigned char>(
-      tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0));
+      tech::ParseInteger<int>(tokens.Next()).value_or(0));
 
   /*
   ------------------------ 11th token: Class count -------------------------
   */
-  num_classes = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(-1);
+  num_classes = tech::ParseInteger<int>(tokens.Next()).value_or(-1);
   if (num_classes < 0 || num_classes > MAX_TEAM_CLASSCOUNT) {
     ClassCount = 0;
     MissionCount = 0;
@@ -325,8 +323,8 @@ void TeamTypeClass::Fill_In(char* name, char* entry) {
   */
   ClassCount = 0;
   for (i = 0; i < num_classes; i++) {
-    p1 = strtok(nullptr, ",:");
-    p2 = strtok(nullptr, ",:");
+    p1 = tokens.Next(",:");
+    p2 = tokens.Next(",:");
     if (p1 == nullptr || p2 == nullptr) {
       ClassCount = 0;
       MissionCount = 0;
@@ -372,7 +370,7 @@ void TeamTypeClass::Fill_In(char* name, char* entry) {
   /*
   ----------------------- next token: Mission count ------------------------
   */
-  MissionCount = tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(-1);
+  MissionCount = tech::ParseInteger<int>(tokens.Next()).value_or(-1);
   if (MissionCount < 0 || MissionCount > MAX_TEAM_MISSIONS) {
     ClassCount = 0;
     MissionCount = 0;
@@ -380,8 +378,8 @@ void TeamTypeClass::Fill_In(char* name, char* entry) {
   }
 
   for (i = 0; i < MissionCount; i++) {
-    p1 = strtok(nullptr, ",:");
-    p2 = strtok(nullptr, ",:");
+    p1 = tokens.Next(",:");
+    p2 = tokens.Next(",:");
     if (p1 == nullptr || p2 == nullptr) {
       ClassCount = 0;
       MissionCount = 0;
@@ -392,11 +390,11 @@ void TeamTypeClass::Fill_In(char* name, char* entry) {
     MissionList[i] = mission;
   }
 
-  const char* ptr = strtok(nullptr, ",");
+  const char* ptr = tokens.Next();
   if (ptr) {
     IsReinforcable = tech::ParseInteger<int>(ptr).value_or(0) != 0;
   }
-  ptr = strtok(nullptr, ",");
+  ptr = tokens.Next();
   if (ptr) {
     IsPrebuilt = tech::ParseInteger<int>(ptr).value_or(0) != 0;
   }
@@ -570,67 +568,64 @@ void TeamTypeClass::Read_Old_INI(char* buffer) {
     /*
     .......................... 1st token: House ...........................
     */
-    team->House = HouseTypeClass::From_Name(strtok(buf, ","));
+    port::Tokenizer tokens(buf, ",");
+    team->House = HouseTypeClass::From_Name(tokens.Next());
 
     /*
     ........................ 2nd token: RoundAbout ........................
     */
     team->IsRoundAbout =
-        tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0) != 0;
+        tech::ParseInteger<int>(tokens.Next()).value_or(0) != 0;
 
     /*
     ......................... 3rd token: Learning .........................
     */
-    team->IsLearning =
-        tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0) != 0;
+    team->IsLearning = tech::ParseInteger<int>(tokens.Next()).value_or(0) != 0;
 
     /*
     ......................... 4th token: Suicide ..........................
     */
-    team->IsSuicide =
-        tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0) != 0;
+    team->IsSuicide = tech::ParseInteger<int>(tokens.Next()).value_or(0) != 0;
 
     /*
     ........................... 5th token: Spy ............................
     */
     team->IsAutocreate =
-        tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0) != 0;
+        tech::ParseInteger<int>(tokens.Next()).value_or(0) != 0;
 
     /*
     ........................ 6th token: Mercenary .........................
     */
-    team->IsMercenary =
-        tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0) != 0;
+    team->IsMercenary = tech::ParseInteger<int>(tokens.Next()).value_or(0) != 0;
 
     /*
     ..................... 7th token: RecruitPriority ......................
     */
-    team->RecruitPriority =
-        tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0);
+    team->RecruitPriority = tech::ParseInteger<int>(tokens.Next()).value_or(0);
 
     /*
     ........................ 8th token: MaxAllowed ........................
     */
     team->MaxAllowed = static_cast<unsigned char>(
-        tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0));
+        tech::ParseInteger<int>(tokens.Next()).value_or(0));
 
     /*
     ......................... 9th token: InitNum ..........................
     */
     team->InitNum = static_cast<unsigned char>(
-        tech::ParseInteger<int>(strtok(nullptr, ",")).value_or(0));
+        tech::ParseInteger<int>(tokens.Next()).value_or(0));
 
     /*
     ....................... 10th token: Mission name ......................
     */
-    strtok(nullptr, ",");  // just throw it away
+    tokens.Next();  // mission name, unused
 
     /*
     ............ Loop through entries, setting class ptr & num ............
     */
     index = 0;
-    p1 = strtok(nullptr, ",:");
-    p2 = strtok(nullptr, ",:");
+    p1 = tokens.Next(",:");
+    p2 = tokens.Next(",:");
     while (p1 && p2 && index < MAX_TEAM_CLASSCOUNT) {
       otype = nullptr;
 
@@ -672,8 +667,8 @@ void TeamTypeClass::Read_Old_INI(char* buffer) {
       /*
       ................. Go to the next entry on the line .................
       */
-      p1 = strtok(nullptr, ",:");
-      p2 = strtok(nullptr, ",:");
+      p1 = tokens.Next(",:");
+      p2 = tokens.Next(",:");
     }
 
     team->Fear = 0;

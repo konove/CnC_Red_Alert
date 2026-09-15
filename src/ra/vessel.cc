@@ -82,6 +82,7 @@
 
 #include "base/types.h"
 #include "magic_enum/magic_enum.hpp"
+#include "port/tokenizer.h"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
 #include "ra/bench_util.h"
@@ -1956,9 +1957,10 @@ void VesselClass::Read_INI(CCINIClass& ini) {
     const char* entry = ini.Get_Entry(INI_Name(), index);
 
     ini.Get_String(INI_Name(), entry, nullptr, buf, sizeof(buf));
-    inhouse = HouseTypeClass::From_Name(strtok(buf, ","));
+    port::Tokenizer tokens(buf, ",\r\n");
+    inhouse = HouseTypeClass::From_Name(tokens.Next());
     if (inhouse != HOUSE_NONE) {
-      classid = VesselTypeClass::From_Name(strtok(nullptr, ","));
+      classid = VesselTypeClass::From_Name(tokens.Next());
 
       if (classid != VESSEL_NONE) {
         vessel = new VesselClass(classid, inhouse);
@@ -1967,21 +1969,21 @@ void VesselClass::Read_INI(CCINIClass& ini) {
           **	Read the raw data.
           */
           const int strength =
-              tech::ParseInteger<int>(strtok(nullptr, ",\r\n")).value_or(0);
+              tech::ParseInteger<int>(tokens.Next()).value_or(0);
 
           const CELL cell =
-              tech::ParseInteger<CELL>(strtok(nullptr, ",\r\n")).value_or(0);
+              tech::ParseInteger<CELL>(tokens.Next()).value_or(0);
 
           const COORDINATE coord = Cell_Coord(cell);
 
           const DirType dir = static_cast<DirType>(
-              tech::ParseInteger<int>(strtok(nullptr, ",\r\n")).value_or(0));
+              tech::ParseInteger<int>(tokens.Next()).value_or(0));
           const MissionType mission =
-              Mission_From_Name(strtok(nullptr, ",\n\r"));
+              Mission_From_Name(tokens.Next());
 
           vessel->Trigger = nullptr;
           TriggerTypeClass* tp =
-              TriggerTypeClass::From_Name(strtok(nullptr, ",\r\n"));
+              TriggerTypeClass::From_Name(tokens.Next());
           if (tp != nullptr) {
             TriggerClass* tt = Find_Or_Make(tp);
             if (tt != nullptr) {

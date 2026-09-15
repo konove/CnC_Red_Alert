@@ -119,6 +119,7 @@
 #include <iterator>
 
 #include "magic_enum/magic_enum.hpp"
+#include "port/tokenizer.h"
 #include "ra/anim.h"
 #include "ra/bench_util.h"
 #include "ra/building.h"
@@ -4573,9 +4574,10 @@ void UnitClass::Read_INI(CCINIClass& ini) {
 
     ini.Get_String(INI_Name(), entry, nullptr, buf, sizeof(buf));
 
-    inhouse = HouseTypeClass::From_Name(strtok(buf, ","));
+    port::Tokenizer tokens(buf, ",\r\n");
+    inhouse = HouseTypeClass::From_Name(tokens.Next());
     if (inhouse != HOUSE_NONE) {
-      classid = UnitTypeClass::From_Name(strtok(nullptr, ","));
+      classid = UnitTypeClass::From_Name(tokens.Next());
 
       if (classid != UNIT_NONE) {
         unit = new UnitClass(classid, inhouse);
@@ -4584,21 +4586,21 @@ void UnitClass::Read_INI(CCINIClass& ini) {
           **	Read the raw data.
           */
           const int strength =
-              tech::ParseInteger<int>(strtok(nullptr, ",\r\n")).value_or(0);
+              tech::ParseInteger<int>(tokens.Next()).value_or(0);
 
           const CELL cell =
-              tech::ParseInteger<CELL>(strtok(nullptr, ",\r\n")).value_or(0);
+              tech::ParseInteger<CELL>(tokens.Next()).value_or(0);
 
           const COORDINATE coord = Cell_Coord(cell);
 
           const DirType dir = static_cast<DirType>(
-              tech::ParseInteger<int>(strtok(nullptr, ",\r\n")).value_or(0));
+              tech::ParseInteger<int>(tokens.Next()).value_or(0));
           const MissionType mission =
-              Mission_From_Name(strtok(nullptr, ",\n\r"));
+              Mission_From_Name(tokens.Next());
 
           unit->Trigger = nullptr;
           TriggerTypeClass* tp =
-              TriggerTypeClass::From_Name(strtok(nullptr, ",\r\n"));
+              TriggerTypeClass::From_Name(tokens.Next());
           if (tp != nullptr) {
             TriggerClass* tt = Find_Or_Make(tp);
             if (tt != nullptr) {

@@ -56,11 +56,16 @@
 #include <cstdio>
 #include <cstring>
 #include <optional>
+#include <string>
+#include <string_view>
+#include <vector>
 
 #include "absl/log/check.h"
+#include "absl/strings/str_split.h"
 #include "base/numeric.h"
 #include "port/bytes_of.h"
 #include "port/ex_string.h"
+#include "port/inet_text.h"
 #include "port/safe_string.h"
 #include "port/sleep.h"
 #include "port/win32/win32_com.h"
@@ -463,33 +468,18 @@ void WolapiObject::PrepareButtonsAndIcons() {
   //	Load game icons from the wol api.
   LPCSTR szSkus;
   if (pChat->GetGametypeList(&szSkus) == S_OK) {
-    //	Make two copies of szSkus because strtok insists on messing with them.
-    const std::size_t iSkusSize = strlen(szSkus) + 1;
-    char* szSkus1 = new char[iSkusSize];
-    char* szSkus2 = new char[iSkusSize];
-    port::SafeCopy(szSkus1, szSkus, iSkusSize);
-    port::SafeCopy(szSkus2, szSkus, iSkusSize);
-    //	Count commas.
-    char seps[] = ",";
-    char* token;
-    nGameTypeInfos = 0;
-    token = strtok(szSkus1, seps);
-    while (token != nullptr) {
-      nGameTypeInfos++;
-      token = strtok(nullptr, seps);
-    }
+    const std::vector<std::string_view> skus =
+        absl::StrSplit(szSkus, ',', absl::SkipEmpty());
     //	There are actually 2 additional game types available in wolapi - 0 (ws
     // icon) and -1 (wwonline icon).
-    nGameTypeInfos += 2;
+    nGameTypeInfos = static_cast<unsigned int>(skus.size()) + 2;
     //	Create structs to hold infos.
     //		debugprint( "Creating %i gametypeinfos\n", nGameTypeInfos );
     GameTypeInfos = new WOL_GAMETYPEINFO[nGameTypeInfos];
     int iMyIndex = 0;
-    token = strtok(szSkus2, seps);
-    while (token != nullptr) {
-      GetGameTypeInfo(tech::ParseInteger<int>(token).value_or(0),
+    for (const std::string_view sku : skus) {
+      GetGameTypeInfo(tech::ParseInteger<int>(sku).value_or(0),
                       GameTypeInfos[iMyIndex], Palette);
-      token = strtok(nullptr, seps);
       iMyIndex++;
     }
     //	Get the two extra game type infos...
@@ -1449,10 +1439,10 @@ void WolapiObject::RequestPlayerPings() {
         int iUnused;
         in_addr inaddrUser{};
         inaddrUser.s_addr = UserIP;
-        const char* szIP = inet_ntoa(inaddrUser);
+        const std::string szIP = port::Ipv4Text(inaddrUser);
         //				debugprint( "RequestPing of %s, ipaddr
         // of %i, aka %s\n", (char*)pUser->name, UserIP, szIP );
-        pNetUtil->RequestPing(szIP, 1000, &iUnused);
+        pNetUtil->RequestPing(szIP.c_str(), 1000, &iUnused);
       }
     }
   }
@@ -1914,7 +1904,8 @@ void WolapiObject::DoKick(IconListClass* pILUsersOrPlayers, bool bAndBan) {
           }
           iFound++;
           if (iFound < 5) {
-            Sound_Effect((VocType)(VOC_SCREAM1 + (rand() % 9)));
+            Sound_Effect(
+                static_cast<VocType>(VOC_SCREAM1 + Sim_Random_Pick(0, 8)));
           }
         }
       }
@@ -2975,7 +2966,7 @@ bool WolapiObject::GetNameOfBeginningLobby(char* szNameToSet,
   }
 
   //	All lobbies have 50 or more users. So just choose a random one.
-  const int iChoice = (rand() % iCount);
+  const int iChoice = Sim_Random_Pick(0, iCount - 1);
   pChannel = pChatSink->pChannelList;
   for (int i = 0; i != iChoice; i++) {
     pChannel = pChannel->next;
@@ -3200,11 +3191,10 @@ bool WolapiObject::Pump_DisconnectPinging() {
 
       //	Ping opponent.
       in_addr inaddr{};
-      char* szIP;
       inaddr.s_addr = TournamentOpponentIP;
-      szIP = inet_ntoa(inaddr);
+      const std::string szIP = port::Ipv4Text(inaddr);
       //		debugprint( "RequestPing ( opponent )\n" );
-      if (pNetUtil->RequestPing(szIP, 1000, &iUnused) != S_OK) {
+      if (pNetUtil->RequestPing(szIP.c_str(), 1000, &iUnused) != S_OK) {
         //			debugprint( "RequestPing() ( opponent )
         // failed\n" );
         DisconnectPingResult_Opponent[iDisconnectPingCurrent] = PING_BAD;

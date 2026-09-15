@@ -120,6 +120,7 @@
 #include "absl/log/check.h"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
+#include "port/tokenizer.h"
 #include "sdllib/gbuffer.h"
 #include "td/aircraft.h"
 #include "td/anim.h"
@@ -1733,11 +1734,12 @@ void HouseClass::Read_INI(char* buffer) {
       WWGetPrivateProfileString(hname, "Allies", "", buf, sizeof(buf) - 1,
                                 buffer);
       if (strlen(buf)) {
-        const char* tok = strtok(buf, ", \t");
+        port::Tokenizer tokens(buf, ", \t");
+        const char* tok = tokens.Next();
         while (tok) {
           const HousesType h = HouseTypeClass::From_Name(tok);
           p->Make_Ally(h);
-          tok = strtok(nullptr, ", \t");
+          tok = tokens.Next();
         }
 
       } else {
