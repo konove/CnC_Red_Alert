@@ -46,6 +46,8 @@
 #ifndef CNC_RED_ALERT_SDLLIB_WINCOMM_H_
 #define CNC_RED_ALERT_SDLLIB_WINCOMM_H_
 
+#include "base/attributes.h"
+
 typedef enum WinCommDialMethodType {
   WC_TOUCH_TONE = 0,
   WC_PULSE
@@ -59,7 +61,12 @@ typedef enum WinCommDialMethodType {
 typedef void* HANDLE;
 
 // same enum as in the class below
-enum { CTS_SET = 0x10, DSR_SET = 0x20, RI_SET = 0x40, CD_SET = 0x80 };
+enum CNC_FLAG_ENUM {
+  CTS_SET = 0x10,
+  DSR_SET = 0x20,
+  RI_SET = 0x40,
+  CD_SET = 0x80
+};
 
 /*
 ** WinModemClass.
@@ -196,7 +203,12 @@ class WinModemClass {
   /*
   ** Enums for modem status flags
   */
-  enum { CTS_SET = 0x10, DSR_SET = 0x20, RI_SET = 0x40, CD_SET = 0x80 };
+  enum CNC_FLAG_ENUM {
+    CTS_SET = 0x10,
+    DSR_SET = 0x20,
+    RI_SET = 0x40,
+    CD_SET = 0x80
+  };
 
  protected:
   /*

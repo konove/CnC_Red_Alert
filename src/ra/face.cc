@@ -125,7 +125,7 @@ DirType Desired_Facing8(int x1, int y1, int x2, int y2) {
   }
   index += adder;
 
-  return static_cast<DirType>(index);
+  return AsDirection(index);
 }
 
 /***********************************************************************************************
@@ -228,5 +228,5 @@ DirType Desired_Facing256(int srcx, int srcy, int dstx, int dsty) {
   /*
   **	Return with the final facing value.
   */
-  return static_cast<DirType>(composite & 0x00FF);
+  return AsDirection(composite);
 }

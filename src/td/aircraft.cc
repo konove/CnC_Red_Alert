@@ -2853,8 +2853,8 @@ TARGET AircraftClass::Good_Fire_Location(TARGET target) const {
 
     for (int r = range - 0x0180; r > 0x0180; r -= 0x0100) {
       for (int face = 0; face < 255; face += 16) {
-        const COORDINATE newcoord = Coord_Move(
-            tcoord, static_cast<DirType>(face), static_cast<uint16_t>(r));
+        const COORDINATE newcoord =
+            Coord_Move(tcoord, AsDirection(face), static_cast<uint16_t>(r));
         const CELL newcell = Coord_Cell(newcoord);
 
         if (Map.In_Radar(newcell) &&

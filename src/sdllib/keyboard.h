@@ -515,7 +515,28 @@ typedef enum KeyNumType {
 //       ...
 //   }
 constexpr KeyNumType ButtonKey(const int id) {
+  // A gadget ID is not a key code, so the value never names an enumerator.
+  // NOLINTNEXTLINE(clang-analyzer-optin.core.EnumCastOutOfRange)
   return static_cast<KeyNumType>(id | static_cast<int>(KN_BUTTON));
+}
+
+// A key number is a key code in the low bits with the KN_*_BIT modifier and
+// release bits above it, so a combined or masked value rarely names an
+// enumerator. These operators define that representation for KeyNumType in
+// place of the games' generic enum operators, and are the only place the
+// analyzer's named-enumerator model of the type is set aside.
+constexpr KeyNumType operator|(const KeyNumType a,
+                               const KeyNumType b) noexcept {
+  // NOLINTNEXTLINE(clang-analyzer-optin.core.EnumCastOutOfRange)
+  return static_cast<KeyNumType>(static_cast<int>(a) | static_cast<int>(b));
+}
+inline KeyNumType operator&(const KeyNumType a, const KeyNumType b) noexcept {
+  // NOLINTNEXTLINE(clang-analyzer-optin.core.EnumCastOutOfRange)
+  return static_cast<KeyNumType>(static_cast<int>(a) & static_cast<int>(b));
+}
+inline KeyNumType operator~(const KeyNumType a) noexcept {
+  // NOLINTNEXTLINE(clang-analyzer-optin.core.EnumCastOutOfRange)
+  return static_cast<KeyNumType>(~static_cast<int>(a));
 }
 
 #endif  // CNC_RED_ALERT_SDLLIB_KEYBOARD_H_

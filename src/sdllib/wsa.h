@@ -49,6 +49,7 @@
 #include <cstdint>
 
 #include "absl/base/attributes.h"
+#include "base/attributes.h"
 #include "sdllib/gbuffer.h"
 
 typedef enum {
@@ -59,7 +60,7 @@ typedef enum {
   WSA_PRIORITY = 0x8000    // Copy using a priority (or in the priority)
 } WSAType;
 
-typedef enum {
+typedef enum CNC_FLAG_ENUM {
   WSA_OPEN_FROM_MEM = 0x0000,  // Try to load entire anim into memory.
   WSA_OPEN_INDIRECT =
       0x0000,  // First animate to internal buffer, then copy to page/viewport.

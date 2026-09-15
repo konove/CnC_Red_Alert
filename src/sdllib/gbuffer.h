@@ -124,6 +124,7 @@
 
 #include "absl/base/attributes.h"
 #include "absl/strings/str_cat.h"
+#include "base/attributes.h"
 #include "base/types.h"
 #include "sdllib/bitmap.h"
 #include "sdllib/buffer.h"
@@ -136,7 +137,7 @@
 //
 //
 
-enum GBC_Enum {
+enum CNC_FLAG_ENUM GBC_Enum {
   GBC_NONE = 0,
   GBC_VIDEOMEM = 1,
   GBC_VISIBLE = 2,

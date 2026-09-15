@@ -1082,12 +1082,12 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
   static const FacingType _trans[magic_enum::enum_count<FacingType>()] = {
       static_cast<FacingType>(0),  static_cast<FacingType>(0),
       static_cast<FacingType>(1),  static_cast<FacingType>(2),
-      static_cast<FacingType>(3),  static_cast<FacingType>(-2),
+      static_cast<FacingType>(3),  kEmptyCommand,
       static_cast<FacingType>(-1), static_cast<FacingType>(0)};  // Smoothing.
 #else
   static FacingType _trans[magic_enum::enum_count<FacingType>()] = {
-      (FacingType)0, (FacingType)0,  (FacingType)0, (FacingType)2,
-      (FacingType)3, (FacingType)-2, (FacingType)0, (FacingType)0};
+      (FacingType)0, (FacingType)0, (FacingType)0, (FacingType)2,
+      (FacingType)3, kEmptyCommand, (FacingType)0, (FacingType)0};
 #endif
   FacingType* cmd1;
   FacingType  // Floating first command pointer.

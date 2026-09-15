@@ -43,6 +43,7 @@
 #include <cstdint>
 #include <string>
 
+#include "base/attributes.h"
 #include "port/ex_string.h"
 #include "port/tokenizer.h"
 #include "ra/ccptr.h"
@@ -170,7 +171,7 @@ struct TEventClass {
   void Build_INI_Entry(std::string& buffer) const;
 };
 
-typedef enum AttachType {
+typedef enum CNC_FLAG_ENUM AttachType {
   ATTACH_NONE =
       0x00,  // Trigger doesn't attach to anything (orphan trigger types).
   ATTACH_CELL = 0x01,  // Trigger can only attach to a cell.

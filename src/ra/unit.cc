@@ -4025,9 +4025,9 @@ DirType UnitClass::Fire_Direction() const {
       const int adj = Fixed_To_Cardinal(
           std::abs(SecondaryFacing.Difference(DIR_N)), 64 - diff);
       if (SecondaryFacing.Difference(DIR_N) < 0) {
-        return SecondaryFacing - static_cast<DirType>(adj);
+        return SecondaryFacing - AsDirection(adj);
       }
-      return SecondaryFacing + static_cast<DirType>(adj);
+      return SecondaryFacing + AsDirection(adj);
     }
     return SecondaryFacing.Current();
   }

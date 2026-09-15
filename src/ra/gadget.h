@@ -84,6 +84,7 @@
 #ifndef CNC_RED_ALERT_RA_GADGET_H_
 #define CNC_RED_ALERT_RA_GADGET_H_
 
+#include "base/attributes.h"
 #include "ra/defines.h"
 #include "ra/link.h"
 #include "sdllib/keyboard.h"
@@ -92,7 +93,7 @@ class ControlClass;
 
 class GadgetClass : public LinkClass {
  public:
-  typedef enum FlagEnum {
+  typedef enum CNC_FLAG_ENUM FlagEnum {
     LEFTPRESS = 0x0001,     // Left mouse button press.
     LEFTHELD = 0x0002,      // Left mouse button is being held down.
     LEFTRELEASE = 0x0004,   // Left mouse button released.

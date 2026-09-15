@@ -4206,7 +4206,7 @@ int BuildingClass::Mission_Missile() {
                                        WARHEAD_HE, MPH_VERY_FAST);
         if (bullet) {
           const COORDINATE launch =
-              Coord_Move(Center_Coord(), static_cast<DirType>(28), 0xA0);
+              Coord_Move(Center_Coord(), AsDirection(28), 0xA0);
           if (!bullet->Unlimbo(launch, DIR_N)) {
             delete bullet;
             bullet = nullptr;
@@ -4424,7 +4424,7 @@ DirType BuildingClass::Fire_Direction() const {
   if (Class->IsTurretEquipped) {
     return PrimaryFacing.Current();
   }
-  return Direction(TarCom);
+  return AsDirection(TarCom);
 }
 
 /***********************************************************************************************

@@ -41,6 +41,7 @@
 #include <cstdint>
 #include <utility>
 
+#include "base/attributes.h"
 #include "magic_enum/magic_enum.hpp"
 #include "tech/fixed.h"
 
@@ -608,7 +609,7 @@ enum ThemeType {
 **	This is the various threat scan methods that can be used when looking
 **	for targets.
 */
-enum ThreatType {
+enum CNC_FLAG_ENUM ThreatType {
   THREAT_NORMAL = 0x0000,    // Any distance threat scan?
   THREAT_RANGE = 0x0001,     // Limit scan to weapon range?
   THREAT_AREA = 0x0002,      // Limit scan to general area (twice weapon range)?
@@ -2233,7 +2234,7 @@ inline constexpr int kEmberColor = kCycleColorStart + kCycleColorCount;
 /**********************************************************************
 **	These are the control flags for Fancy_Text_Print function.
 */
-enum TextPrintType {
+enum CNC_FLAG_ENUM TextPrintType {
   TPF_LASTPOINT = 0x0000,     // Use previous font point value.
   TPF_6POINT = 0x0001,        // Use 6 point font.
   TPF_8POINT = 0x0002,        // Use 8 point font.

@@ -672,8 +672,8 @@ void Debug_Key(unsigned input) {
             int y;
             int x1;
             int y1;
-            const auto r1 = static_cast<DirType>(r);
-            const auto r2 = static_cast<DirType>((r + 10) & 0xFF);
+            const DirType r1 = AsDirection(r);
+            const DirType r2 = AsDirection(r + 10);
 
             if (Map.Coord_To_Pixel(
                     Coord_Move(center, r1, static_cast<uint16_t>(sight)), x,

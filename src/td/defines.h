@@ -44,6 +44,7 @@
 #include <cstdint>
 #include <utility>
 
+#include "base/attributes.h"
 #include "sdllib/wwstd.h"
 #include "td/special.h"
 
@@ -344,7 +345,7 @@ typedef enum ThemeType {
 **	This is the various threat scan methods that can be used when looking
 **	for targets.
 */
-typedef enum ThreatType {
+typedef enum CNC_FLAG_ENUM ThreatType {
   THREAT_NORMAL = 0x0000,    // Any distance threat scan?
   THREAT_RANGE = 0x0001,     // Limit scan to weapon range?
   THREAT_AREA = 0x0002,      // Limit scan to general area (twice weapon range)?
@@ -1696,7 +1697,7 @@ typedef enum ArmorType {
 /**********************************************************************
 **	These are the control flags for Fancy_Text_Print function.
 */
-typedef enum TextPrintType {
+typedef enum CNC_FLAG_ENUM TextPrintType {
   TPF_LASTPOINT = 0x0000,     // Use previous font point value.
   TPF_6POINT = 0x0001,        // Use 6 point font.
   TPF_8POINT = 0x0002,        // Use 8 point font.
@@ -1906,12 +1907,20 @@ typedef enum DirType : uint8_t {
   DIR_NW = 7 << 5,
   DIR_MAX = 254
 } DirType;
-inline DirType operator+(DirType f1, DirType f2) {
-  return static_cast<DirType>((static_cast<int>(f1) + static_cast<int>(f2)) &
-                              0x00FF);
+
+// Builds a direction from any angle, wrapping it to the 256-step circle.
+// Every value is a valid DirType; only the compass points are named. This is
+// the one place that turns a computed integer into the type, and the one place
+// the analyzer's named-enumerator model of the enum is set aside.
+constexpr DirType AsDirection(const int angle) {
+  // NOLINTNEXTLINE(clang-analyzer-optin.core.EnumCastOutOfRange)
+  return static_cast<DirType>(angle & 0xFF);
 }
-inline DirType operator+(DirType f1, int f2) {
-  return static_cast<DirType>((static_cast<int>(f1) + f2) & 0x00FF);
+constexpr DirType operator+(const DirType f1, const DirType f2) {
+  return AsDirection(static_cast<int>(f1) + static_cast<int>(f2));
+}
+constexpr DirType operator+(const DirType f1, const int f2) {
+  return AsDirection(static_cast<int>(f1) + f2);
 }
 
 /****************************************************************************

@@ -22,10 +22,9 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
+#include <optional>
 
 #include "absl/base/attributes.h"
-#include "absl/status/status.h"
-#include "absl/status/statusor.h"
 #include "base/numeric.h"
 #include "base/seek_origin.h"
 #include "sdllib/file_access.h"
@@ -198,10 +197,10 @@ class BufferedFileReader {
   BufferedFileReader(BufferedFileReader&&) = delete;
   BufferedFileReader& operator=(BufferedFileReader&&) = delete;
 
-  // Returns the next byte, or an OutOfRange error on EOF.
-  absl::StatusOr<uint8_t> ReadByte() {
+  // Returns the next byte, or nullopt at end of file.
+  std::optional<uint8_t> ReadByte() {
     if ((cursor_ >= bytes_in_buffer_) && (!RefillBuffer())) {
-      return absl::OutOfRangeError("End of file reached.");
+      return std::nullopt;
     }
 
     return buffer_[cursor_++];
@@ -274,7 +273,7 @@ GraphicBufferClass* Read_PCX_File(const char* name, unsigned char* palette,
     for (int scan_pos = 0, j = 0; j < height; j++, scan_pos += width) {
       for (int i = 0; i < width;) {
         const auto rle_result = reader.ReadByte();
-        if (!rle_result.ok()) {
+        if (!rle_result.has_value()) {
           delete pic;
           return nullptr;
         }
@@ -282,7 +281,7 @@ GraphicBufferClass* Read_PCX_File(const char* name, unsigned char* palette,
         if (rle > 192) {
           rle -= 192;
           const auto color_result = reader.ReadByte();
-          if (!color_result.ok()) {
+          if (!color_result.has_value()) {
             delete pic;
             return nullptr;
           }
@@ -297,12 +296,12 @@ GraphicBufferClass* Read_PCX_File(const char* name, unsigned char* palette,
 
     // Consume any trailing RLE data for the scanline
     const auto rle_result = reader.ReadByte();
-    if (!rle_result.ok()) {
+    if (!rle_result.has_value()) {
       delete pic;
       return nullptr;
     }
     const int rle = *rle_result;
-    if ((rle > 192) && (!reader.ReadByte().ok())) {
+    if ((rle > 192) && (!reader.ReadByte().has_value())) {
       delete pic;
       return nullptr;
     }
@@ -310,7 +309,7 @@ GraphicBufferClass* Read_PCX_File(const char* name, unsigned char* palette,
   } else {
     for (int i = 0; i < width * height;) {
       const auto rle_result = reader.ReadByte();
-      if (!rle_result.ok()) {
+      if (!rle_result.has_value()) {
         delete pic;
         return nullptr;
       }
@@ -318,7 +317,7 @@ GraphicBufferClass* Read_PCX_File(const char* name, unsigned char* palette,
       if (rle > 192) {
         rle -= 192;
         const auto color_result = reader.ReadByte();
-        if (!color_result.ok()) {
+        if (!color_result.has_value()) {
           delete pic;
           return nullptr;
         }

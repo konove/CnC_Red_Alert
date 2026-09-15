@@ -4369,7 +4369,7 @@ int BuildingClass::Mission_Missile() {
         auto* bullet = new BulletClass(BULLET_NUKE_UP);
         if (bullet) {
           const COORDINATE launch =
-              Coord_Move(Center_Coord(), static_cast<DirType>(1), 0x1A0);
+              Coord_Move(Center_Coord(), AsDirection(1), 0x1A0);
           bullet->Assign_Target(kTargetNone);
           bullet->Payback = nullptr;
           bullet->Strength = 1;
@@ -4599,7 +4599,7 @@ DirType BuildingClass::Fire_Direction() const {
   if (Class->IsTurretEquipped) {
     return PrimaryFacing.Current();
   }
-  return Direction(TarCom);
+  return AsDirection(TarCom);
 }
 
 /***********************************************************************************************

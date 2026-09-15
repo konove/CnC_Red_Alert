@@ -100,8 +100,6 @@ target_link_libraries(rasdl PUBLIC absl::strings magic_enum::magic_enum PRIVATE
         absl::core_headers
         absl::log
         absl::log_initialize
-        absl::status
-        absl::statusor
         absl::str_format) # mpgdll wwipx32
 
 install(TARGETS rasdl)

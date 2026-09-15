@@ -61,20 +61,27 @@ typedef enum DirType : uint8_t {
   DIR_MAX = 255
 } DirType;
 
+// Builds a direction from any angle, wrapping it to the 256-step circle.
+// Every value is a valid DirType; only the compass points are named. This is
+// the one place that turns a computed integer into the type, and the one place
+// the analyzer's named-enumerator model of the enum is set aside.
+constexpr DirType AsDirection(const int angle) {
+  // NOLINTNEXTLINE(clang-analyzer-optin.core.EnumCastOutOfRange)
+  return static_cast<DirType>(angle & 0xFF);
+}
+
 // Operators that allow simple math with DirType.
-inline DirType operator+(DirType f1, DirType f2) {
-  return static_cast<DirType>((static_cast<int>(f1) + static_cast<int>(f2)) &
-                              0x00FF);
+constexpr DirType operator+(const DirType f1, const DirType f2) {
+  return AsDirection(static_cast<int>(f1) + static_cast<int>(f2));
 }
-inline DirType operator+(DirType f1, int f2) {
-  return static_cast<DirType>((static_cast<int>(f1) + f2) & 0x00FF);
+constexpr DirType operator+(const DirType f1, const int f2) {
+  return AsDirection(static_cast<int>(f1) + f2);
 }
-inline DirType operator-(DirType f1, DirType f2) {
-  return static_cast<DirType>((static_cast<int>(f1) - static_cast<int>(f2)) &
-                              0x00FF);
+constexpr DirType operator-(const DirType f1, const DirType f2) {
+  return AsDirection(static_cast<int>(f1) - static_cast<int>(f2));
 }
-inline DirType operator-(DirType f1, int f2) {
-  return static_cast<DirType>((static_cast<int>(f1) - f2) & 0x00FF);
+constexpr DirType operator-(const DirType f1, const int f2) {
+  return AsDirection(static_cast<int>(f1) - f2);
 }
 
 // Function prototypes.
