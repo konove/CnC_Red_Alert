@@ -7,13 +7,16 @@
 namespace {
 
 // setenv and unsetenv are POSIX additions that include-cleaner does not map
-// to <cstdlib>.
+// to <cstdlib>, and they are the environment writes GetEnv's copy guards
+// against; a single-threaded test may call them.
 void SetVar(const char* name, const char* value) {
-  ASSERT_EQ(setenv(name, value, 1), 0);  // NOLINT(misc-include-cleaner)
+  // NOLINTNEXTLINE(misc-include-cleaner,concurrency-mt-unsafe)
+  ASSERT_EQ(setenv(name, value, 1), 0);
 }
 
 void UnsetVar(const char* name) {
-  ASSERT_EQ(unsetenv(name), 0);  // NOLINT(misc-include-cleaner)
+  // NOLINTNEXTLINE(misc-include-cleaner,concurrency-mt-unsafe)
+  ASSERT_EQ(unsetenv(name), 0);
 }
 
 TEST(EnvTest, ReturnsValueEmptyValueAndUnsetDistinctly) {

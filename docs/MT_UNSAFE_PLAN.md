@@ -3,6 +3,9 @@
 Written 2026-09-15 against `.clang-tidy` and clang-tidy 23.1.2. Companion to the row in
 [CLANG_TIDY_PRIORITIES.md](CLANG_TIDY_PRIORITIES.md).
 
+**Status: complete (2026-09-15).** The check is enabled; the results are in the "Thread-unsafe
+function removal" review in CLANG_TIDY_PRIORITIES.md.
+
 ## Context
 
 `concurrency-mt-unsafe` reports calls to C library functions that keep hidden global state. The row

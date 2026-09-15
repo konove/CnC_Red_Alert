@@ -17,12 +17,9 @@ Checks: '*,
          -cert-dcl50-cpp,
          -cert-err33-c,
          -cert-exp42-c,
-         -cert-msc30-c,
-         -cert-msc50-cpp,
          -cert-oop54-cpp,
          -clang-analyzer-core.FixedAddressDereference,
          -clang-analyzer-optin.core.EnumCastOutOfRange,
-         -clang-analyzer-security.insecureAPI.rand,
          -clang-diagnostic-covered-switch-default,
          -clang-diagnostic-exit-time-destructors,
          -clang-diagnostic-global-constructors,
@@ -37,7 +34,6 @@ Checks: '*,
          -clang-diagnostic-switch-enum,
          -clang-diagnostic-unsafe-buffer-usage,
          -clang-diagnostic-weak-vtables,
-         -concurrency-mt-unsafe,
          -cppcoreguidelines-avoid-c-arrays,
          -cppcoreguidelines-avoid-const-or-ref-data-members,
          -cppcoreguidelines-avoid-do-while,
@@ -94,7 +90,6 @@ Checks: '*,
          -misc-multiple-inheritance,
          -misc-no-recursion,
          -misc-non-private-member-variables-in-classes,
-         -misc-predictable-rand,
          -misc-use-anonymous-namespace,
          -modernize-avoid-c-arrays,
          -modernize-avoid-c-style-cast,
@@ -126,6 +121,11 @@ CheckOptions:
   # (misc-use-anonymous-namespace stays excluded). Functions and variables are
   # still checked.
   misc-use-internal-linkage.AnalyzeTypes: false
+  # glibc's list adds exit, whose only hazard is two threads exiting at once;
+  # the game exits from the main thread. Everything the code used from that
+  # list (glob, gethostbyname) is gone anyway; the POSIX list keeps strtok,
+  # rand, getenv, inet_ntoa, localtime and strerror out.
+  concurrency-mt-unsafe.FunctionSet: posix
   # google-runtime-int names the <cstdint> spelling (int64_t, not int64) in its
   # suggestions.
   google-runtime-int.TypeSuffix: '_t'

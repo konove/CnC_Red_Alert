@@ -1,8 +1,8 @@
 # Clang-tidy priorities
 
-Updated: 2026-09-14, against [`.clang-tidy`](../.clang-tidy) and clang-tidy 23.1.2.
+Updated: 2026-09-15, against [`.clang-tidy`](../.clang-tidy) and clang-tidy 23.1.2.
 
-This tracks **all 118 currently excluded check names** and completed entries, in recommended work
+This tracks **all 113 currently excluded check names** and completed entries, in recommended work
 order. Priorities reflect likely defect prevention, relevance to this engine, and the cost of useful
 fixes; they are judgments, not fresh finding counts. Start at P1 and work downward. Aliases stay
 beside their related check so a single cleanup can handle them together. Previously deferred checks
@@ -99,7 +99,7 @@ comes from the installed tool, since the online documentation follows LLVM devel
 | `clang-diagnostic-undefined-var-template`                  | Enabled | Commit `Declare the CCPtr heap specializations`: the 27 `CCPtr<T>::Heap` explicit specializations defined in `globals.cc` are now declared in `ccptr.h`, which also removes an ill-formed use-before-declaration.                                                                                                                                                                                                                                                                                       |
 | `clang-diagnostic-shadow-field`                            | Enabled | Commit `Name each map layer's redraw flag after its layer`: the eight reports were one `IsToRedraw` bit-field redeclared at every step of both games' `GScreenClass` → `TabClass` chain; each layer's flag now has its own name, and every use was rebound by the compiler to the layer it already meant. See review below.                                                                                                                                                                             |
 | `clang-diagnostic-shadow`                                  | Enabled | Commit `Give shadowing locals and parameters their own names`: 65 reports, none a use of the wrong variable; the 57 inner locals and eight member-named parameters are renamed within their scope. See review below.                                                                                                                                                                                                                                                                                    |
-| `concurrency-mt-unsafe`                                    | Skipped | Commit `Document variadic and thread-safety check policy`: 323 reports, 222 `strtok` in INI and text parsing plus `exit`, `rand`, `inet_ntoa`, `gethostbyname`, `getenv` and `glob`; every call runs on the main game thread, and the SDL audio callback and VQA timer paths call none of them. See review below.                                                                                                                                                                                       |
+| `concurrency-mt-unsafe`                                    | Enabled | Commits `Add the helpers for the thread-unsafe function work` through `Enable concurrency-mt-unsafe`: 322 sites; `strtok` became `port::Tokenizer`, `rand` went away, `getenv`, `inet_ntoa`, `gethostbyname` and `glob` got modern replacements; `FunctionSet: posix` keeps `exit`. Plan in `docs/MT_UNSAFE_PLAN.md`; see review below.                                                                                                                                                                 |
 | `clang-analyzer-optin.core.FixedAddressDereference`        | Enabled | Commit `Keep mono pages in memory and bound the box drawing`: the port addressed the DOS mono card at 0xB0000; the pages now live in memory, which exposed and fixed an off-by-one box clamp, an unclamped view size and `Fill_Attrib` testing `h` for `y` without the enable check.                                                                                                                                                                                                                    |
 | `clang-analyzer-core.FixedAddressDereference`              | Legacy  | Unavailable in LLVM 23; review with `clang-analyzer-optin.core.FixedAddressDereference` on older tools.                                                                                                                                                                                                                                                                                                                                                                                                 |
 | `bugprone-easily-swappable-parameters`                     | Skipped | Commit `Document sign and parameter check policy`: 426 reports, almost all adjacent same-typed coordinates, sizes and IDs in the legacy drawing, gadget and type APIs (`(int x, int y, int w, int h)`); renaming or wrapping them in strong types would touch most call sites for little defect value.                                                                                                                                                                                                  |
@@ -281,10 +281,10 @@ comes from the installed tool, since the online documentation follows LLVM devel
 | `fuchsia-trailing-return`                     | Skip proposed | Fuchsia syntax policy adds no correctness protection.                              |
 | `google-default-arguments`                    | Skip proposed | Blanket default-argument restrictions have low expected value here.                |
 | `google-readability-todo`                     | Skip proposed | TODO ownership syntax is administrative style.                                     |
-| `misc-predictable-rand`                       | Skip proposed | Simulation randomness must remain deterministic; audit security uses separately.   |
-| `cert-msc30-c`                                | Skip proposed | Alias of `misc-predictable-rand`; handle together.                                 |
-| `cert-msc50-cpp`                              | Skip proposed | Alias of `misc-predictable-rand`; handle together.                                 |
-| `clang-analyzer-security.insecureAPI.rand`    | Skip proposed | Cryptographic RNG advice has low value for deterministic gameplay.                 |
+| `misc-predictable-rand`                       | Enabled       | Commit `Enable concurrency-mt-unsafe`: no `rand` or `srand` call remains.          |
+| `cert-msc30-c`                                | Enabled       | Alias of `misc-predictable-rand`; enabled with it.                                 |
+| `cert-msc50-cpp`                              | Enabled       | Alias of `misc-predictable-rand`; enabled with it.                                 |
+| `clang-analyzer-security.insecureAPI.rand`    | Enabled       | Commit `Enable concurrency-mt-unsafe`: nothing left for it to report.              |
 | `modernize-use-trailing-return-type`          | Skip proposed | Large syntax-only rewrite with no clear readability gain.                          |
 | `readability-identifier-length`               | Skip proposed | Short coordinates and loop indices are often appropriate.                          |
 | `clang-diagnostic-padded`                     | Skip proposed | Padding is normal; blanket packing risks performance and layout compatibility.     |
@@ -1406,6 +1406,37 @@ stay skipped: what remains is numeric casts, which `docs/TYPE_MIGRATION.md` keep
 
 Follow-ups left on purpose: `tech/mp.cc` still reads `uint32_t` digits through `uint16_t*`, and
 `rawolapi.cc` `strtok`s wolapi's server list in place (both marked `TODO`).
+
+### Thread-unsafe function removal (2026-09-15)
+
+`concurrency-mt-unsafe` is now enforced, with `FunctionSet: posix`; the plan is
+[MT_UNSAFE_PLAN.md](MT_UNSAFE_PLAN.md). The isolated sweep over the 920 compile-database entries
+found 322 sites: 268 `strtok`, 22 `exit`, 21 `rand`, 4 `getenv`, 3 `inet_ntoa`, 2 `gethostbyname`, 2
+`glob`. The check has no fix-its and its message never names the function, so the sites were
+classified from the source column.
+
+| Group                                                    | Sites | Fix                                                                                                                                                                                                                                                                        |
+| -------------------------------------------------------- | ----- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| INI object, team, trigger and rules parsers, phone books | 218   | `port::Tokenizer` (`port/tokenizer.h`): strtok's splitting rules with the cursor in the object. RA's event and action `Read_INI` take the trigger entry's tokenizer as a parameter instead of continuing a global one.                                                     |
+| WOL game-setup messages and the server list              | 50    | A tokenizer per message; `Remaining()` for the two length-prefixed strings; the "SetPlayerColor may call strtok" offset hops became plain `Next()` calls; the server list is parsed from a copy (the follow-up left by the cast work); the SKU list uses `absl::StrSplit`. |
+| Seeds and picks                                          | 21    | `port::RandomSeed()` for the eight seed sites; `Sim_Random_Pick` for the WOL sound effects; `std::minstd_rand` in the public-key self-test. `randomize`, `IRandom` and `Get_Random_Mask` in `sdllib/misc.cc` and TD's `srand(Seed)` were dead afterwards and are deleted.  |
+| Environment, addresses, file search                      | 11    | `port::GetEnv` (a copy, `std::optional<std::string>`); `port::Ipv4Text` (`inet_ntop`); `getaddrinfo` with an `AF_INET` hint in `ra/stats.cc` and `ra/wspudp.cc`; `std::filesystem::directory_iterator` + `fnmatch(FNM_CASEFOLD)` in `sdllib/file.cc`.                      |
+| `exit`                                                   | 22    | Kept. `FunctionSet: posix` drops glibc's additions, of which `exit` was the only one still used; its hazard is two threads exiting at once.                                                                                                                                |
+
+Two behaviour changes worth knowing: the WOL setup dialog read `Seed = rand()` before the `srand`
+that was meant to seed it, so it was the unseeded glibc sequence and is now a real seed; and the
+POSIX file search matches mixed-case names, where the two-pass glob matched only the pattern's own
+case and its lowercase.
+
+With no `rand` call left, `misc-predictable-rand`, `cert-msc30-c`, `cert-msc50-cpp` and
+`clang-analyzer-security.insecureAPI.rand` are enabled in the same commit.
+
+Verification: the isolated sweep at zero; a probe confirming the enabled configuration reports
+`strtok` and `rand`; the full strict build; CTest (456 tests, including the new tokenizer,
+environment, seed and address-text tests); and the RA and TD save/load smoke tests, including the TD
+team, building, mobile, map and globals fixtures. The phone books, WOL messages and address lookups
+are not on the smoke path; that remains a manual check. The excluded-name count drops from 118
+to 113.
 
 ### Nodiscard review (2026-09-12)
 
