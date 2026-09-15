@@ -98,19 +98,19 @@ class WinModemClass {
   void Serial_Port_Close();
 
   /*
-  ** This member copies any bytes from the internal class serial buffer
-  ** into your user buffer.
+  ** This member copies up to buffer_len bytes waiting on the serial port
+  ** into dest_ptr and returns how many were copied (0 if none).
   **
   ** Replacement for Greenleaf function: ReadBuffer
   */
-  static int Read_From_Serial_Port(unsigned char* dest_ptr, int buffer_len);
+  static int Read_From_Serial_Port(void* dest_ptr, int buffer_len);
 
   /*
-  ** Write chars to the serial port
+  ** Writes length bytes from buffer to the serial port.
   **
   ** Replacement for Greenleaf function: WriteBuffer
   */
-  void Write_To_Serial_Port(const unsigned char* buffer, int length);
+  void Write_To_Serial_Port(const void* buffer, int length);
 
   /*
   ** Wait for the outgoing buffer to empty

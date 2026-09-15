@@ -231,7 +231,7 @@ class ConnectionClass {
   is protected; it's only called by the ACK/Retry logic, not the
   application.
   .....................................................................*/
-  virtual int Send(char* buf, int buflen, void* extrabuf, int extralen) = 0;
+  virtual int Send(void* buf, int buflen, void* extrabuf, int extralen) = 0;
 
   /*.....................................................................
   This is the maximum packet length, including our own internal header.

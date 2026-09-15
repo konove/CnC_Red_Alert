@@ -159,7 +159,7 @@ class IPXGlobalConnClass : public IPXConnClass {
   used in SequencedConnClass.  This special version sends to the address
   embedded within the GlobalHeaderType.
   .....................................................................*/
-  int Send(char* buf, int buflen) override;
+  int Send(void* buf, int buflen) override;
 
   /*.....................................................................
   This routine is overloaded from SequencedConnClass, because the

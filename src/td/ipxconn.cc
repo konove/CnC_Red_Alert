@@ -422,7 +422,7 @@ bool IPXConnClass::Stop_Listening() {
  * HISTORY:                                                                *
  *   12/16/1994 BR : Created.                                              *
  *=========================================================================*/
-int IPXConnClass::Send(char* buf, int buflen) {
+int IPXConnClass::Send(void* buf, int buflen) {
   /*------------------------------------------------------------------------
   Invoke our own Send_To routine, filling in our Address as the destination.
   ------------------------------------------------------------------------*/
@@ -559,7 +559,7 @@ void IPXConnClass::Close_Socket(uint16_t socket) {
  * HISTORY:                                                                *
  *   12/16/1994 BR : Created.                                              *
  *=========================================================================*/
-int IPXConnClass::Send_To(char* buf, int buflen, IPXAddressClass* address,
+int IPXConnClass::Send_To(void* buf, int buflen, IPXAddressClass* address,
                           NetNodeType immed) {
   NetNumType net;
   NetNodeType node;
@@ -620,8 +620,8 @@ int IPXConnClass::Send_To(char* buf, int buflen, IPXAddressClass* address,
     }
   }
 
-  return IPX_Send_Packet95(&send_address[0], (unsigned char*)buf, buflen, net,
-                           node);
+  return IPX_Send_Packet95(&send_address[0], static_cast<unsigned char*>(buf),
+                           buflen, net, node);
 }
 
 /***************************************************************************
@@ -643,7 +643,7 @@ int IPXConnClass::Send_To(char* buf, int buflen, IPXAddressClass* address,
  * HISTORY:                                                                *
  *   12/16/1994 BR : Created.                                              *
  *=========================================================================*/
-int IPXConnClass::Broadcast(char* buf, int buflen) {
+int IPXConnClass::Broadcast(void* buf, int buflen) {
   if (Winsock.Get_Connected()) {
 #ifdef VIRTUAL_SUBNET_SERVER
     char* tempsend = new char[buflen + sizeof(unsigned short)];
@@ -658,5 +658,5 @@ int IPXConnClass::Broadcast(char* buf, int buflen) {
 #endif  // VIRTUAL_SUBNET_SERVER
     return 1;
   }
-  return IPX_Broadcast_Packet95((unsigned char*)buf, buflen);
+  return IPX_Broadcast_Packet95(static_cast<unsigned char*>(buf), buflen);
 }

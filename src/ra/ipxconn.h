@@ -132,7 +132,7 @@ class IPXConnClass : public ConnectionClass {
   This is the overloaded Send routine declared in ConnectionClass, and
   used in SequencedConnClass.
   .....................................................................*/
-  int Send(char* buf, int buflen, void* extrabuf, int extralen) override;
+  int Send(void* buf, int buflen, void* extrabuf, int extralen) override;
 
   /*.....................................................................
   These are the routines that access IPX.  Open_Socket & Close_Socket are
@@ -142,9 +142,9 @@ class IPXConnClass : public ConnectionClass {
   .....................................................................*/
   static int Open_Socket(uint16_t socket);
   static void Close_Socket(uint16_t socket);
-  static int Send_To(char* buf, int buflen, IPXAddressClass* address,
+  static int Send_To(void* buf, int buflen, IPXAddressClass* address,
                      const NetNodeType immed);
-  static bool Broadcast(char* buf, int buflen);
+  static bool Broadcast(void* buf, int buflen);
 
   /*.....................................................................
   The socket ID for this connection

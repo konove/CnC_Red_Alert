@@ -310,7 +310,7 @@ int IPXConnClass::Stop_Listening() {
  * HISTORY:                                                                *
  *   12/16/1994 BR : Created.                                              *
  *=========================================================================*/
-int IPXConnClass::Send(char* buf, int buflen, void* /*extrabuf*/,
+int IPXConnClass::Send(void* buf, int buflen, void* /*extrabuf*/,
                        int /*extralen*/) {
   /*------------------------------------------------------------------------
   Invoke our own Send_To routine, filling in our Address as the destination.
@@ -406,7 +406,7 @@ void IPXConnClass::Close_Socket(uint16_t /*socket*/) {
  * HISTORY:                                                                *
  *   12/16/1994 BR : Created.                                              *
  *=========================================================================*/
-int IPXConnClass::Send_To(char* buf, int buflen, IPXAddressClass* address,
+int IPXConnClass::Send_To(void* buf, int buflen, IPXAddressClass* address,
                           const NetNodeType immed) {
   assert(immed == nullptr);
   PacketTransport->WriteTo(buf, buflen, address);
@@ -433,7 +433,7 @@ int IPXConnClass::Send_To(char* buf, int buflen, IPXAddressClass* address,
  * HISTORY:                                                                *
  *   12/16/1994 BR : Created.                                              *
  *=========================================================================*/
-bool IPXConnClass::Broadcast(char* buf, int buflen) {
+bool IPXConnClass::Broadcast(void* buf, int buflen) {
   PacketTransport->Broadcast(buf, buflen);
   return true;
 } /* end of Broadcast */

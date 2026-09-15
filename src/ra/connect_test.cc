@@ -25,7 +25,7 @@ class TestConnection : public ConnectionClass {
   [[nodiscard]] int sent_count() const { return sent_count_; }
 
  protected:
-  int Send(char* /*buf*/, int /*buflen*/, void* /*extrabuf*/,
+  int Send(void* /*buf*/, int /*buflen*/, void* /*extrabuf*/,
            int /*extralen*/) override {
     ++sent_count_;
     return 1;

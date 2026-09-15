@@ -704,8 +704,8 @@ int NullModemClass::Service() {
     return 0;
   }
 
-  RXCount += WinModemClass::Read_From_Serial_Port(
-      (unsigned char*)(RXBuf + RXCount), RXSize - RXCount);
+  RXCount +=
+      WinModemClass::Read_From_Serial_Port(RXBuf + RXCount, RXSize - RXCount);
 
   // minimum packet size
 
@@ -1765,7 +1765,7 @@ bool NullModemClass::Hangup_Modem() {
   escape[2] = ModemEscapeCode;
   escape[3] = 0;
 
-  SerialPort->Write_To_Serial_Port((unsigned char*)escape, 3);
+  SerialPort->Write_To_Serial_Port(escape, 3);
 
   delay = ModemGuardTime;
   while (delay > 0) {

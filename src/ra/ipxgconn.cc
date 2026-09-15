@@ -285,7 +285,7 @@ int IPXGlobalConnClass::Receive_Packet(void* buf, int buflen,
         ackpacket.Header.Code = PACKET_ACK;
         ackpacket.Header.PacketID = packet->Header.PacketID;
         ackpacket.ProductID = ProductID;
-        Send((char*)&ackpacket, sizeof(GlobalHeaderType), address,
+        Send(&ackpacket, sizeof(GlobalHeaderType), address,
              sizeof(IPXAddressClass));
       }
 
@@ -401,7 +401,7 @@ int IPXGlobalConnClass::Get_Packet(void* buf, int* buflen,
     }
     *buflen = packetlen;
     *product_id = packet->ProductID;
-    *address = *(IPXAddressClass*)rec_entry->ExtraBuffer;
+    *address = port::ReadUnaligned<IPXAddressClass>(rec_entry->ExtraBuffer);
 
     return 1;
   }
@@ -437,7 +437,7 @@ int IPXGlobalConnClass::Get_Packet(void* buf, int* buflen,
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-int IPXGlobalConnClass::Send(char* buf, int buflen, void* extrabuf,
+int IPXGlobalConnClass::Send(void* buf, int buflen, void* extrabuf,
                              int /*extralen*/) {
   IPXAddressClass* addr;
   int rc;

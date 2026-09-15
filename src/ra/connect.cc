@@ -461,7 +461,7 @@ int ConnectionClass::Receive_Packet(void* buf, int buflen) {
     ackpacket.MagicNumber = Magic_Num();
     ackpacket.Code = PACKET_ACK;
     ackpacket.PacketID = packet->PacketID;
-    Send((char*)&ackpacket, sizeof(CommHeaderType), nullptr, 0);
+    Send(&ackpacket, sizeof(CommHeaderType), nullptr, 0);
 
     return 1;
   }

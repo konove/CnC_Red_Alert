@@ -339,7 +339,7 @@ class ConnectionClass {
   This routine actually performs a hardware-dependent data send.  It's
   pure virtual, so it >must< be defined by a derived class.
   .....................................................................*/
-  virtual int Send(char* buf, int buflen) = 0;
+  virtual int Send(void* buf, int buflen) = 0;
 
   /*.....................................................................
   This is the maximum packet length, including our own internal header.

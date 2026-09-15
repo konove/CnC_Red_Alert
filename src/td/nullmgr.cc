@@ -708,8 +708,8 @@ int NullModemClass::Service() {
   First, copy all the bytes we can from the Greenleaf RX buffer to our
   own buffer.
   ------------------------------------------------------------------------*/
-  RXCount += WinModemClass::Read_From_Serial_Port(
-      (unsigned char*)(RXBuf + RXCount), RXSize - RXCount);
+  RXCount +=
+      WinModemClass::Read_From_Serial_Port(RXBuf + RXCount, RXSize - RXCount);
 
   //	if (RXCount){
   // char port[128];
@@ -1917,7 +1917,7 @@ bool NullModemClass::Hangup_Modem() {
   escape[3] = 0;
 
   // status = HMSendStringNoWait( Port, escape, -1 );
-  SerialPort->Write_To_Serial_Port((unsigned char*)escape, 3);
+  SerialPort->Write_To_Serial_Port(escape, 3);
 
   delay = ModemGuardTime;
   while (delay > 0) {

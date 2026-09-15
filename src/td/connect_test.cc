@@ -28,7 +28,7 @@ class TestConnection : public NonSequencedConnClass {
   [[nodiscard]] int sent_count() const { return sent_count_; }
 
  protected:
-  int Send(char* /*buf*/, int /*buflen*/) override {
+  int Send(void* /*buf*/, int /*buflen*/) override {
     ++sent_count_;
     return 1;
   }

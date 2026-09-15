@@ -190,7 +190,7 @@ class IPXGlobalConnClass : public IPXConnClass {
   // used in SequencedConnClass.  This special version sends to the address
   // stored in the extra buffer within the Queue.
   //.....................................................................
-  int Send(char* buf, int buflen, void* extrabuf, int extralen) override;
+  int Send(void* buf, int buflen, void* extrabuf, int extralen) override;
 
   //.....................................................................
   // This routine is overloaded from SequencedConnClass, because the

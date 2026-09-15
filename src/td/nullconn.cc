@@ -165,7 +165,7 @@ void NullModemConnClass::Init(HANDLE port_handle) {
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-int NullModemConnClass::Send(char* buf, int buflen) {
+int NullModemConnClass::Send(void* buf, int buflen) {
   // int status;
   SerialHeaderType* header;
   int sendlen;
@@ -202,11 +202,10 @@ int NullModemConnClass::Send(char* buf, int buflen) {
   if (Winsock.Get_Connected() || GameToPlay == GAME_INTERNET) {
     Winsock.Write(SendBuf, sendlen);
   } else {
-    SerialPort->Write_To_Serial_Port((unsigned char*)SendBuf,
-                                     sendlen);
+    SerialPort->Write_To_Serial_Port(SendBuf, sendlen);
   }
 #else
-  SerialPort->Write_To_Serial_Port((unsigned char*)SendBuf, sendlen);
+  SerialPort->Write_To_Serial_Port(SendBuf, sendlen);
 #endif  // WINSOCK
 
   // if ( status == ASSUCCESS ) {
@@ -238,7 +237,8 @@ int NullModemConnClass::Send(char* buf, int buflen) {
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-int NullModemConnClass::Compute_CRC(const char* buf, int buflen) {
+int NullModemConnClass::Compute_CRC(const void* buf, int buflen) {
+  const auto* bytes = static_cast<const unsigned char*>(buf);
   unsigned int sum;
   unsigned int hibit;
 
@@ -251,7 +251,7 @@ int NullModemConnClass::Compute_CRC(const char* buf, int buflen) {
     }
 
     sum <<= 1;
-    sum += hibit + static_cast<unsigned char>(buf[i]);
+    sum += hibit + bytes[i];
   }
 
   return static_cast<int>(sum);

@@ -161,7 +161,7 @@ void NullModemConnClass::Init(HANDLE port_handle) {
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-int NullModemConnClass::Send(char* buf, int buflen, void* /*extrabuf*/,
+int NullModemConnClass::Send(void* buf, int buflen, void* /*extrabuf*/,
                              int /*extralen*/) {
   SerialHeaderType* header;
   int sendlen;
@@ -194,8 +194,7 @@ int NullModemConnClass::Send(char* buf, int buflen, void* /*extrabuf*/,
   /*------------------------------------------------------------------------
   Send the data
   ------------------------------------------------------------------------*/
-  SerialPort->Write_To_Serial_Port((unsigned char*)SendBuf,
-                                   sendlen);
+  SerialPort->Write_To_Serial_Port(SendBuf, sendlen);
   return 1;
 
 } /* end of Send */
@@ -220,7 +219,8 @@ int NullModemConnClass::Send(char* buf, int buflen, void* /*extrabuf*/,
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-int NullModemConnClass::Compute_CRC(const char* buf, int buflen) {
+int NullModemConnClass::Compute_CRC(const void* buf, int buflen) {
+  const auto* bytes = static_cast<const unsigned char*>(buf);
   unsigned int sum;
   unsigned int hibit;
 
@@ -233,7 +233,7 @@ int NullModemConnClass::Compute_CRC(const char* buf, int buflen) {
     }
 
     sum <<= 1;
-    sum += hibit + static_cast<unsigned char>(buf[i]);
+    sum += hibit + bytes[i];
   }
 
   return static_cast<int>(sum);

@@ -432,7 +432,7 @@ int NonSequencedConnClass::Receive_Packet(void* buf, int buflen) {
     ackpacket.Code = PACKET_ACK;
     ackpacket.PacketID = packet->PacketID;
     // Smart_Printf( "Sending ACK for %d \n", packet->PacketID );
-    Send((char*)&ackpacket, sizeof(CommHeaderType));
+    Send(&ackpacket, sizeof(CommHeaderType));
 
     return 1;
   }

@@ -105,8 +105,8 @@ void WinModemClass::Serial_Port_Close() {
 #endif
 }
 
-int WinModemClass::Read_From_Serial_Port(unsigned char* /*dest_ptr*/,
-                                         int /*buffer_len*/) {
+int WinModemClass::Read_From_Serial_Port([[maybe_unused]] void* dest_ptr,
+                                         [[maybe_unused]] int buffer_len) {
 #ifdef LIBSERIALPORT
   if (PortHandle) {
     sp_return result =
@@ -120,8 +120,8 @@ int WinModemClass::Read_From_Serial_Port(unsigned char* /*dest_ptr*/,
   return 0;
 }
 
-void WinModemClass::Write_To_Serial_Port(const unsigned char* /*buffer*/,
-                                         int /*length*/) {
+void WinModemClass::Write_To_Serial_Port([[maybe_unused]] const void* buffer,
+                                         [[maybe_unused]] int length) {
 #ifdef LIBSERIALPORT
   if (PortHandle) {
     sp_blocking_write((sp_port*)PortHandle, buffer, length, 0);

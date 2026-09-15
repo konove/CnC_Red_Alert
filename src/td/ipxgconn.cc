@@ -371,7 +371,7 @@ int IPXGlobalConnClass::Get_Packet(void* buf, int* buflen,
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-int IPXGlobalConnClass::Send(char* buf, int buflen) {
+int IPXGlobalConnClass::Send(void* buf, int buflen) {
   IPXAddressClass* addr;
   int rc;
 
@@ -459,7 +459,7 @@ int IPXGlobalConnClass::Service_Receive_Queue() {
     ackpacket.Address = packet_hdr->Address;
     ackpacket.ProductID = ProductID;
 
-    Send((char*)&ackpacket, sizeof(GlobalHeaderType));
+    Send(&ackpacket, sizeof(GlobalHeaderType));
 
     rec_entry->IsACK = 1;
   }
