@@ -109,7 +109,8 @@ int32_t __cdecl LCW_Uncompress(const void* source, void* dest, int32_t length)
       // not possible to write any more, and if we try to read more we might
       // fault
       if (!count) {
-        return static_cast<int32_t>(dest_ptr - (unsigned char*)dest);
+        return static_cast<int32_t>(dest_ptr -
+                                    static_cast<unsigned char*>(dest));
       }
 
       copy_ptr = dest_ptr - (static_cast<unsigned>(*source_ptr++) +
@@ -123,7 +124,8 @@ int32_t __cdecl LCW_Uncompress(const void* source, void* dest, int32_t length)
       if (!(op_code & 0x40)) {
         if (op_code == 0x80) {
           /* Return # of destination bytes written. */
-          return static_cast<int32_t>(dest_ptr - (unsigned char*)dest);
+          return static_cast<int32_t>(dest_ptr -
+                                      static_cast<unsigned char*>(dest));
         }
         /* Do a medium copy from source. */
         count = op_code & 0x3f;
@@ -174,6 +176,6 @@ int32_t __cdecl LCW_Uncompress(const void* source, void* dest, int32_t length)
     }
   }
 
-  return static_cast<int32_t>(dest_ptr - (unsigned char*)dest);
+  return static_cast<int32_t>(dest_ptr - static_cast<unsigned char*>(dest));
 }
 }

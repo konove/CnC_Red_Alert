@@ -1,6 +1,7 @@
 // re-implemented from assembly in 2keyfbuf.asm
 #include "tech/2keyfbuf.h"
 
+#include <bit>
 #include <cstdarg>
 #include <cstdint>
 #include <cstdio>
@@ -9,6 +10,7 @@
 
 #include "base/numeric.h"
 #include "base/types.h"
+#include "port/bytes_of.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/shape.h"
 
@@ -60,7 +62,7 @@ static void Setup_Shape_Header(int pixel_width, int pixel_height, char* src,
                                uint8_t* /*Translucent*/,
                                const uint8_t* IsTranslucent) {
   headers->draw_flags = static_cast<unsigned>(ShapeEffectFlags(flags));
-  auto* ptr = (uint8_t*)headers + sizeof(ShapeHeaderType);
+  auto* ptr = port::BytesOf(*headers) + sizeof(ShapeHeaderType);
   do {
     int line_flags = 0;
     int trans_count = 0;
@@ -170,7 +172,8 @@ extern "C" int32_t Buffer_Frame_To_Page(int x, int y, int w, int h, void* src,
                                    : BigShapeBufferStart;
 
     src = shape_buffer_start +
-          (uintptr_t)header_pointer->shape_data;  // these are both ptrs...
+          std::bit_cast<uintptr_t>(
+              header_pointer->shape_data);  // these are both ptrs...
   }
   // else just use the old shape drawing system
 

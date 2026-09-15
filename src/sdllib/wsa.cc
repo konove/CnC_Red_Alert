@@ -92,7 +92,7 @@ static int64_t Get_Resident_Frame_Offset(const char* file_buffer, int frame);
 static int64_t Get_File_Frame_Offset(int file_handle, int frame,
                                      int palette_adjust);
 static bool Apply_Delta(const SysAnimHeaderType* sys_header, int curr_frame,
-                        char* dest_ptr, int dest_w);
+                        void* dest_ptr, int dest_w);
 
 void* Open_Animation(const char* file_name, char* user_buffer,
                      int32_t user_buffer_size, WSAOpenType user_flags,
@@ -395,7 +395,7 @@ bool Animate_Frame(void* handle, GraphicViewPortClass& view, int frame_number,
   int search_dir;                 // direcion to search for desired frame.
   int search_frames;              // How many frames to search.
   int loop;                       // Just a loop varible.
-  char* frame_buffer;             // our destination.
+  uint8_t* frame_buffer;          // our destination.
   bool direct_to_dest;            // are we going directly to the destination?
   int dest_width;  // the width of the destination buffer or page.
 
@@ -430,11 +430,11 @@ bool Animate_Frame(void* handle, GraphicViewPortClass& view, int frame_number,
   //
   if (sys_header->flags & WSA_TARGET_IN_BUFFER) {
     // Get a pointer to the frame in animation buffer.
-    frame_buffer = static_cast<char*>(
+    frame_buffer = static_cast<uint8_t*>(
         Add_Long_To_Pointer(sys_header, sizeof(SysAnimHeaderType)));
     direct_to_dest = false;
   } else {
-    frame_buffer = (char*)view.Get_Offset();
+    frame_buffer = view.Get_Offset();
     frame_buffer += (y_pixel * dest_width) + x_pixel;
     direct_to_dest = true;
   }
@@ -553,8 +553,9 @@ int Get_Animation_Frame_Count(void* handle) {
   return static_cast<int16_t>(sys_header->total_frames);
 }
 
-unsigned int Apply_XOR_Delta(char* source_ptr, const char* delta_ptr) {
-  const auto* udelta = (const uint8_t*)delta_ptr;
+unsigned int Apply_XOR_Delta(void* target, const void* delta) {
+  auto* source_ptr = static_cast<uint8_t*>(target);
+  const auto* udelta = static_cast<const uint8_t*>(delta);
 
   // top_loop
   while (true) {
@@ -565,7 +566,8 @@ unsigned int Apply_XOR_Delta(char* source_ptr, const char* delta_ptr) {
       int count = *udelta++;      // get count
       const uint8_t xor_b = *udelta++;  // get XOR byte
       do {
-        *source_ptr = static_cast<char>(*source_ptr ^ xor_b);  // XOR that byte
+        *source_ptr =
+            static_cast<uint8_t>(*source_ptr ^ xor_b);  // XOR that byte
         source_ptr++;
       } while (--count);
     } else if (b & 0x80) {
@@ -585,7 +587,8 @@ unsigned int Apply_XOR_Delta(char* source_ptr, const char* delta_ptr) {
             count &= 0x3FFF;
             const uint8_t xor_b = *udelta++;  // get XOR byte
             do {
-              *source_ptr = static_cast<char>(*source_ptr ^ xor_b);  // XOR that byte
+              *source_ptr =
+                  static_cast<uint8_t>(*source_ptr ^ xor_b);  // XOR that byte
               source_ptr++;
             } while (--count);
           } else {
@@ -593,7 +596,8 @@ unsigned int Apply_XOR_Delta(char* source_ptr, const char* delta_ptr) {
             count &= 0x7FFF;
             do {
               const uint8_t xor_b = *udelta++;  // get delta XOR byte
-              *source_ptr = static_cast<char>(*source_ptr ^ xor_b);       // xor that byte on the dest
+              *source_ptr = static_cast<uint8_t>(
+                  *source_ptr ^ xor_b);  // xor that byte on the dest
               source_ptr++;
             } while (--count);
           }
@@ -609,7 +613,8 @@ unsigned int Apply_XOR_Delta(char* source_ptr, const char* delta_ptr) {
 
       do {
         const uint8_t xor_b = *udelta++;  // get delta XOR byte
-        *source_ptr = static_cast<char>(*source_ptr ^ xor_b);       // xor that byte on the dest
+        *source_ptr = static_cast<uint8_t>(*source_ptr ^
+                                           xor_b);  // xor that byte on the dest
         source_ptr++;
       } while (--count);
     }
@@ -855,7 +860,7 @@ static int64_t Get_File_Frame_Offset(int file_handle, int frame,
 }
 
 static bool Apply_Delta(const SysAnimHeaderType* sys_header, int curr_frame,
-                        char* dest_ptr, int dest_w) {
+                        void* dest_ptr, int dest_w) {
   char* data_ptr;
   char* delta_back;
   int file_handle;

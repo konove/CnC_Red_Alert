@@ -109,7 +109,7 @@ static char SlideNames[NUM_SLIDES][13] = {
 /*
 ** Array of all the palettes required for the slides
 */
-static char SlidePals[NUM_SLIDES][256 * 3];
+static unsigned char SlidePals[NUM_SLIDES][256 * 3];
 
 /*
 ** Array of graphic buffers containing the slides
@@ -259,7 +259,7 @@ void EgoClass::Wipe(GraphicBufferClass* background) const {
  *                                                                                             *
  * HISTORY: * 9/9/96 11:59PM ST : Created *
  *=============================================================================================*/
-static void Set_Pal(char* palette) { Set_Palette(palette); }
+static void Set_Pal(void* palette) { Set_Palette(palette); }
 
 /***********************************************************************************************
  * Slide_Show -- Handles the blitting and fading of the background pictures. *
@@ -307,12 +307,10 @@ static void Slide_Show(int slide, int frame) {
     */
     for (int index = 0; index < 256; index++) {
       if (PaletteLUT[index]) {
-        ComboPalPtr[static_cast<base::ssize>(index) * 3] = static_cast<unsigned char>(
-            SlidePals[slide][static_cast<base::ssize>(index) * 3]);
-        ComboPalPtr[(index * 3) + 1] =
-            static_cast<unsigned char>(SlidePals[slide][(index * 3) + 1]);
-        ComboPalPtr[(index * 3) + 2] =
-            static_cast<unsigned char>(SlidePals[slide][(index * 3) + 2]);
+        ComboPalPtr[static_cast<base::ssize>(index) * 3] =
+            SlidePals[slide][static_cast<base::ssize>(index) * 3];
+        ComboPalPtr[(index * 3) + 1] = SlidePals[slide][(index * 3) + 1];
+        ComboPalPtr[(index * 3) + 2] = SlidePals[slide][(index * 3) + 2];
       }
     }
     return;
@@ -327,7 +325,7 @@ static void Slide_Show(int slide, int frame) {
     // PaletteLUT);
     PaletteClass::Partial_Adjust(std::min(255 / FADE_DELAY * (frame - 10), 255),
                                  ComboPalette, PaletteLUT);
-    Set_Pal((char*)&CCPalette);
+    Set_Pal(&CCPalette);
     if (frame != 9 + FADE_DELAY) {
       memcpy(CCPalette, save_palette, sizeof(save_palette));
     } else {
@@ -344,7 +342,7 @@ static void Slide_Show(int slide, int frame) {
     PaletteClass::Partial_Adjust(
         std::min(255 / FADE_DELAY * (frame - FRAME_DELAY), 255), PaletteLUT);
     if (frame != FRAME_DELAY + FADE_DELAY - 1) {
-      Set_Pal((char*)&CCPalette);
+      Set_Pal(&CCPalette);
       memcpy(CCPalette, save_palette, sizeof(save_palette));
     } else {
       /*
@@ -359,7 +357,7 @@ static void Slide_Show(int slide, int frame) {
           ccpalptr[(index * 3) + 2] = 0;
         }
       }
-      Set_Pal((char*)&CCPalette);
+      Set_Pal(&CCPalette);
     }
   }
 }
@@ -626,7 +624,7 @@ void Show_Who_Was_Responsible() {
   /*
   ** Copy the font palette entries into the combo palette.
   */
-  ComboPalPtr = (unsigned char*)&ComboPalette;
+  ComboPalPtr = ComboPalette;
   memcpy(ComboPalette, CCPalette, sizeof(ComboPalette));
 
   for (int index = 0; index < 256; index++) {
@@ -657,7 +655,7 @@ void Show_Who_Was_Responsible() {
     SlideBuffers[index]->Init(SeenBuff.Get_Width(), SeenBuff.Get_Height(),
                               nullptr, 0, GBC_NONE);
     Load_Title_Screen(&SlideNames[index][0], SlideBuffers[index],
-                      (unsigned char*)&SlidePals[index][0]);
+                      &SlidePals[index][0]);
   }
 
   // Create a new graphic buffer to restore the background from. Initialize it

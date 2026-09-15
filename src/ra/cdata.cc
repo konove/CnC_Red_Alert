@@ -1889,17 +1889,18 @@ void TemplateTypeClass::Display(int x, int y, WindowNumberType window,
   x += WindowList[window][WINDOWX];
   y += WindowList[window][WINDOWY];
 
-  const auto* iconset = (const IconsetClass*)Get_Image_Data();
+  const auto* iconset = static_cast<const IconsetClass*>(Get_Image_Data());
   const unsigned char* map = iconset->Map_Data();
 
   for (index = 0; index < w * h; index++) {
     if (map[index] != 0xFF) {
       HidPage.Draw_Stamp(iconset, index, 0, 0, nullptr, WINDOW_MAIN);
       if (scale) {
-        HidPage.Scale(
-            (*LogicPage), 0, 0, x + ((index % w) * (ICON_PIXEL_W / 2)),
-            y + ((index / w) * (ICON_PIXEL_H / 2)), ICON_PIXEL_W, ICON_PIXEL_H,
-            ICON_PIXEL_W / 2, ICON_PIXEL_H / 2, (char*)nullptr);
+        HidPage.Scale((*LogicPage), 0, 0,
+                      x + ((index % w) * (ICON_PIXEL_W / 2)),
+                      y + ((index / w) * (ICON_PIXEL_H / 2)), ICON_PIXEL_W,
+                      ICON_PIXEL_H, ICON_PIXEL_W / 2, ICON_PIXEL_H / 2,
+                      static_cast<const unsigned char*>(nullptr));
 
       } else {
         HidPage.Blit((*LogicPage), 0, 0, x + ((index % w) * (ICON_PIXEL_W)),

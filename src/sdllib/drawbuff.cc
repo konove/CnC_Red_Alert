@@ -343,7 +343,7 @@ bool Linear_Blit_To_Linear(void* thisptr, void* dest, int x_pixel, int y_pixel,
 bool Linear_Scale_To_Linear(void* thisptr, void* dest, int src_x, int src_y,
                             int dst_x, int dst_y, int src_w, int src_h,
                             int dst_w, int dst_h, bool trans,
-                            const char* remap) {
+                            const unsigned char* remap) {
   // Check for scale error when to or from size 0,0
   if (dst_w == 0 || dst_h == 0 || src_w == 0 || src_h == 0) {
     return true;
@@ -451,7 +451,7 @@ bool Linear_Scale_To_Linear(void* thisptr, void* dest, int src_x, int src_y,
         const uint8_t pixel = src_offset[x >> 16];
 
         if (pixel) {
-          *out = static_cast<uint8_t>(remap[pixel]);
+          *out = remap[pixel];
         }
 
         x += dx_frac;
@@ -500,7 +500,7 @@ bool Linear_Scale_To_Linear(void* thisptr, void* dest, int src_x, int src_y,
       int x = 0;
       auto* out = dst_offset;
       do {
-        *out++ = static_cast<uint8_t>(remap[src_offset[x >> 16]]);
+        *out++ = remap[src_offset[x >> 16]];
         x += dx_frac;
       } while (--counter_x);
 

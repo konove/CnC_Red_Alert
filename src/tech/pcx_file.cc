@@ -74,7 +74,6 @@ int Write_PCX_File(const char* name, GraphicViewPortClass& pic,
   int file_handle;
   int VP_Scan_Line;
   char* ptr;
-  RGB* pal;
   GraphicBufferClass* Graphic_Buffer;
   PCX_HEADER header = {10,  5,   1,  8, 0, 0,   319, 199,
                        320, 200, {}, 0, 1, 320, 1,   {}};
@@ -92,7 +91,7 @@ int Write_PCX_File(const char* name, GraphicViewPortClass& pic,
 
   VP_Scan_Line = pic.Get_Width() + pic.Get_XAdd();
   Graphic_Buffer = pic.Get_Graphic_Buffer();
-  ptr = (char*)Graphic_Buffer->Get_Buffer();
+  ptr = static_cast<char*>(Graphic_Buffer->Get_Buffer());
   ptr += ((pic.Get_YPos() * VP_Scan_Line) + pic.Get_XPos());
 
   for (i = 0; i < static_cast<unsigned>(header.height) + 1; i++) {
@@ -101,12 +100,9 @@ int Write_PCX_File(const char* name, GraphicViewPortClass& pic,
   }
 
   Mem_Copy(palette, palcopy, 256UL * 3);
-  pal = (RGB*)palcopy;
-  for (i = 0; i < 256; i++) {
-    pal->red <<= 2;
-    pal->green <<= 2;
-    pal->blue <<= 2;
-    pal++;
+  // Scale the 6-bit palette components to 8 bits.
+  for (unsigned char& component : palcopy) {
+    component = static_cast<unsigned char>(component << 2);
   }
   i = 0x0c;
   WriteFileHandle(file_handle, &i, 1);

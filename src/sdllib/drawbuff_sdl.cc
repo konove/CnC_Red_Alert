@@ -28,7 +28,8 @@ bool GraphicBufferClass::Lock_Surface() {
 
   if (!LockCount) {
     SDL_LockSurface(static_cast<SDL_Surface*>(PaletteSurface));
-    Offset = static_cast<uint8_t*>(((SDL_Surface*)PaletteSurface)->pixels);
+    Offset = static_cast<uint8_t*>(
+        static_cast<SDL_Surface*>(PaletteSurface)->pixels);
   }
 
   LockCount++;

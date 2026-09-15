@@ -247,13 +247,13 @@ class GraphicViewPortClass {
 
   bool Scale(GraphicViewPortClass& dest, int src_x, int src_y, int dst_x,
              int dst_y, int src_w, int src_h, int dst_w, int dst_h,
-             bool trans = false, char* remap = nullptr);
+             bool trans = false, const unsigned char* remap = nullptr);
   bool Scale(GraphicViewPortClass& dest, int src_x, int src_y, int dst_x,
              int dst_y, int src_w, int src_h, int dst_w, int dst_h,
-             char* remap);
+             const unsigned char* remap);
   bool Scale(GraphicViewPortClass& dest, bool trans = false,
-             char* remap = nullptr);
-  bool Scale(GraphicViewPortClass& dest, char* remap);
+             const unsigned char* remap = nullptr);
+  bool Scale(GraphicViewPortClass& dest, const unsigned char* remap);
 
   void Print(const char* string, int x_pixel, int y_pixel, int fcolor,
              int bcolor);
@@ -622,7 +622,8 @@ inline bool GraphicViewPortClass::Blit(GraphicViewPortClass& dest, bool trans) {
 inline bool GraphicViewPortClass::Scale(GraphicViewPortClass& dest, int src_x,
                                         int src_y, int dst_x, int dst_y,
                                         int src_w, int src_h, int dst_w,
-                                        int dst_h, bool trans, char* remap) {
+                                        int dst_h, bool trans,
+                                        const unsigned char* remap) {
   bool return_code = false;
   if (Lock()) {
     if (dest.Lock()) {
@@ -639,19 +640,19 @@ inline bool GraphicViewPortClass::Scale(GraphicViewPortClass& dest, int src_x,
 inline bool GraphicViewPortClass::Scale(GraphicViewPortClass& dest, int src_x,
                                         int src_y, int dst_x, int dst_y,
                                         int src_w, int src_h, int dst_w,
-                                        int dst_h, char* remap) {
+                                        int dst_h, const unsigned char* remap) {
   return Scale(dest, src_x, src_y, dst_x, dst_y, src_w, src_h, dst_w, dst_h,
                false, remap);
 }
 
 inline bool GraphicViewPortClass::Scale(GraphicViewPortClass& dest, bool trans,
-                                        char* remap) {
+                                        const unsigned char* remap) {
   return Scale(dest, 0, 0, 0, 0, Width, Height, dest.Get_Width(),
                dest.Get_Height(), trans, remap);
 }
 
 inline bool GraphicViewPortClass::Scale(GraphicViewPortClass& dest,
-                                        char* remap) {
+                                        const unsigned char* remap) {
   return Scale(dest, 0, 0, 0, 0, Width, Height, dest.Get_Width(),
                dest.Get_Height(), false, remap);
 }

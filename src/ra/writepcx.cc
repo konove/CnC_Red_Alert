@@ -100,7 +100,6 @@ int Write_PCX_File(File& file, GraphicBufferClass& pic,
   unsigned char palcopy[256 * sizeof(RGB)];
   int VP_Scan_Line;
   char* ptr;
-  RGB* pal;
   const PCX_HEADER header = {10,
                              5,
                              1,
@@ -151,14 +150,8 @@ int Write_PCX_File(File& file, GraphicBufferClass& pic,
   **	Convert the palette from 6 bit to 8 bit format.
   */
   memmove(palcopy, palette, sizeof(PaletteClass));
-  pal = (RGB*)palcopy;
-  for (int palindex = 0; palindex < 256; palindex++) {
-    pal->red = static_cast<unsigned char>(pal->red << 2);  // | (pal->red>>6));
-    pal->green =
-        static_cast<unsigned char>(pal->green << 2);  // | (pal->green>>6));
-    pal->blue =
-        static_cast<unsigned char>(pal->blue << 2);  // | (pal->blue>>6));
-    pal++;
+  for (unsigned char& component : palcopy) {
+    component = static_cast<unsigned char>(component << 2);
   }
 
   /*

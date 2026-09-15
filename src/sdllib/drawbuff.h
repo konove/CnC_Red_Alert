@@ -40,7 +40,7 @@ bool Linear_Scale_To_Linear(void* /*thisptr*/, void* /*dest*/, int /*src_x*/,
                             int /*src_y*/, int /*dst_x*/, int /*dst_y*/,
                             int /*src_w*/, int /*src_h*/, int /*dst_w*/,
                             int /*dst_h*/, bool /*trans*/,
-                            const char* /*remap*/);
+                            const unsigned char* /*remap*/);
 
 // Draws text onto the viewport using the current global font (FontPtr).
 // Wraps to a new line when text exceeds the viewport width. A bcolor of 0

@@ -1,10 +1,12 @@
 #include "sdllib/misc.h"
 
 #include <algorithm>
+#include <array>
 #include <climits>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 #include <random>
 
 #include "absl/log/check.h"
@@ -179,8 +181,10 @@ int IRandom(int minval, int maxval) {
 }
 
 uint8_t Random() {
-  // mmm
-  auto* r = (uint8_t*)&RandNumb;
+  // The generator shifts and carries through the bytes of RandNumb, low byte
+  // first, so it works on a copy of them and stores the result back.
+  std::array<uint8_t, sizeof(RandNumb)> r{};
+  std::memcpy(r.data(), &RandNumb, sizeof(RandNumb));
 
   uint8_t tmp = r[0] >> 1;
   const int c = tmp & 1;
@@ -192,11 +196,12 @@ uint8_t Random() {
   const int c2 = r[1] & 0x80;
   r[1] = static_cast<uint8_t>(r[1] << 1 | c1 >> 7);
 
-  tmp = static_cast<uint8_t>(tmp - ((RandNumb & 0xFF) + (1 - c2)));
+  tmp = static_cast<uint8_t>(tmp - (r[0] + (1 - c2)));
   const int c3 = tmp & 1;
 
   r[0] = static_cast<uint8_t>(r[0] >> 1 | c3 << 7);
 
+  std::memcpy(&RandNumb, r.data(), sizeof(RandNumb));
   return r[0] ^ r[1];
 }
 

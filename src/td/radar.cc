@@ -586,7 +586,7 @@ void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) const {
 
     Buffer_To_Page(0, 0, 3, 3, icon, IconStage);
     IconStage.Scale(*LogicPage, 0, 0, x, y, 3, 3, ZoomFactor, ZoomFactor, true,
-                    (char*)&FadingBrighten[0]);
+                    &FadingBrighten[0]);
   }
 }
 
@@ -682,10 +682,10 @@ void RadarClass::Render_Overlay(CELL cell, int x, int y, int size) {
       Buffer_To_Page(0, 0, 3, 3, icon, IconStage);
       if (otype->IsTiberium) {
         IconStage.Scale(*LogicPage, 0, 0, x, y, 3, 3, size, size, true,
-                        (char*)&FadingGreen[0]);
+                        &FadingGreen[0]);
       } else {
         IconStage.Scale(*LogicPage, 0, 0, x, y, 3, 3, size, size, true,
-                        (char*)&FadingBrighten[0]);
+                        &FadingBrighten[0]);
       }
     }
   }

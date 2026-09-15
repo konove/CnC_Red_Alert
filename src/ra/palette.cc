@@ -7,6 +7,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "port/bytes_of.h"
 #include "ra/externs.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/ww_win.h"
@@ -109,11 +110,11 @@ const RGBClass& PaletteClass::operator[](int index) const {
 }
 
 PaletteClass::operator unsigned char*() noexcept {
-  return (unsigned char*)data_;
+  return port::BytesOf(data_);
 }
 
 PaletteClass::operator const unsigned char*() const {
-  return (const unsigned char*)data_;
+  return port::BytesOf(data_);
 }
 
 void Set_Palette(void* palette) {

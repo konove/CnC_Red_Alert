@@ -49,6 +49,7 @@
 
 #include <cstring>
 
+#include "port/bytes_of.h"
 #include "ra/_wsproto.h"
 #include "ra/ipx.h"
 #include "ra/wsproto.h"
@@ -204,7 +205,7 @@ void IPXAddressClass::Set_Address(IPXHeaderType* header) {
       break;
 
     case PROTOCOL_UDP: {
-      const auto* addr = (unsigned char*)header;
+      const unsigned char* addr = port::BytesOf(*header);
       memset(NodeAddress, 0, 6);
       memcpy(NodeAddress, addr, 4);
       memset(NetworkNumber, 0, 4);

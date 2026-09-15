@@ -56,6 +56,7 @@
 #define Size_Of_Region(a, b) ((a) * (b))
 
 #include "absl/base/attributes.h"
+#include "port/bytes_of.h"
 #include "sdllib/tile.h"
 
 #ifndef SEEK_SET
@@ -122,11 +123,11 @@ class IconsetClass : protected IControl_Type {
   [[nodiscard]] int Map_Width() const { return MapWidth; }
   [[nodiscard]] int Map_Height() const { return MapHeight; }
   unsigned char* Control_Map() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return (unsigned char*)this + ColorMap;
+    return Bytes() + ColorMap;
   }
   [[nodiscard]] const unsigned char* Control_Map() const
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return (const unsigned char*)this + ColorMap;
+    return Bytes() + ColorMap;
   }
   [[nodiscard]] int Icon_Count() const { return Count; }
   [[nodiscard]] int Pixel_Width() const { return Width; }
@@ -134,38 +135,38 @@ class IconsetClass : protected IControl_Type {
   [[nodiscard]] int Total_Size() const { return Size; }
   [[nodiscard]] const unsigned char* Palette_Data() const
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return (const unsigned char*)this + Palettes;
+    return Bytes() + Palettes;
   }
   unsigned char* Palette_Data() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return (unsigned char*)this + Palettes;
+    return Bytes() + Palettes;
   }
   [[nodiscard]] const unsigned char* Icon_Data() const
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return (const unsigned char*)this + Icons;
+    return Bytes() + Icons;
   }
   unsigned char* Icon_Data() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return (unsigned char*)this + Icons;
+    return Bytes() + Icons;
   }
   [[nodiscard]] const unsigned char* Map_Data() const
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return (const unsigned char*)this + Map;
+    return Bytes() + Map;
   }
   unsigned char* Map_Data() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return (unsigned char*)this + Map;
+    return Bytes() + Map;
   }
   [[nodiscard]] const unsigned char* Remap_Data() const
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return (const unsigned char*)this + Remaps;
+    return Bytes() + Remaps;
   }
   unsigned char* Remap_Data() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return (unsigned char*)this + Remaps;
+    return Bytes() + Remaps;
   }
   [[nodiscard]] const unsigned char* Trans_Data() const
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return (const unsigned char*)this + TransFlag;
+    return Bytes() + TransFlag;
   }
   unsigned char* Trans_Data() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return (unsigned char*)this + TransFlag;
+    return Bytes() + TransFlag;
   }
 
   /*
@@ -182,6 +183,16 @@ class IconsetClass : protected IControl_Type {
 
  private:
   void* operator new(size_t);
+
+  // The section offsets in the header count from the first byte of the
+  // iconset, which is the first byte of its IControl_Type header.
+  unsigned char* Bytes() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return port::BytesOf<IControl_Type>(*this);
+  }
+  [[nodiscard]] const unsigned char* Bytes() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return port::BytesOf<IControl_Type>(*this);
+  }
 };
 
 #endif  // CNC_RED_ALERT_RA_COMPAT_H_

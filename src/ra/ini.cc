@@ -1170,7 +1170,7 @@ bool INIClass::Put_PKey(const PKey& key) {
  *=============================================================================================*/
 PKey INIClass::Get_PKey(bool fast) const {
   PKey key;
-  char buffer[512];
+  unsigned char buffer[512];
 
   /*
   **	When retrieving the fast key, the exponent is a known constant. Don't
@@ -1178,7 +1178,7 @@ PKey INIClass::Get_PKey(bool fast) const {
   */
   if (fast) {
     const BigInt exp = PKey::Fast_Exponent();
-    exp.DEREncode((unsigned char*)buffer);
+    exp.DEREncode(buffer);
     key.Decode_Exponent(buffer);
   } else {
     Get_UUBlock("PrivateKey", buffer, sizeof(buffer));

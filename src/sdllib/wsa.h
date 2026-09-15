@@ -98,7 +98,7 @@ int Get_Animation_Frame_Count(void* handle);
 /*=========================================================================*/
 
 extern "C" {
-unsigned int Apply_XOR_Delta(char* source_ptr, const char* delta_ptr);
+unsigned int Apply_XOR_Delta(void* target, const void* delta);
 void Apply_XOR_Delta_To_Page_Or_Viewport(void* target, void* delta, int width,
                                          int nextrow, int copy);
 }
