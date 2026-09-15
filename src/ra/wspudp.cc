@@ -192,7 +192,7 @@ bool UDPInterfaceClass::Open_Socket(SOCKET /*unused*/) {
   addr.sin_port = htons(static_cast<uint16_t>(PlanetWestwoodPortNumber));
   addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
-  if (bind(Socket, (sockaddr*)&addr, sizeof(addr)) == SOCKET_ERROR) {
+  if (bind(Socket, SocketAddress(addr), sizeof(addr)) == SOCKET_ERROR) {
     Close_Socket();
     return false;
   }
@@ -220,14 +220,14 @@ bool UDPInterfaceClass::Open_Socket(SOCKET /*unused*/) {
   *any packets that
   ** we send to ourselves.
   */
-  auto* const* addresses = (uint32_t**)host_info->h_addr_list;
+  char* const* addresses = host_info->h_addr_list;
 
   for (;;) {
     if (!*addresses) {
       break;
     }
 
-    const uint32_t address = **addresses++;
+    const auto address = port::ReadUnaligned<uint32_t>(*addresses++);
     // address = ntohl (address);
 
     char temp[128];
@@ -329,7 +329,7 @@ void UDPInterfaceClass::Event_Handler(int /*socket*/, SocketEvent event) {
       socklen_t addr_len = sizeof(addr);
       const int rc = static_cast<int>(
           recvfrom(Socket, SocketBytes(ReceiveBuffer), sizeof(ReceiveBuffer), 0,
-                   (sockaddr*)&addr, &addr_len));
+                   SocketAddress(addr), &addr_len));
       if (rc == SOCKET_ERROR) {
         Clear_Socket_Error(Socket);
         return;
@@ -396,7 +396,7 @@ void UDPInterfaceClass::Event_Handler(int /*socket*/, SocketEvent event) {
       */
       const int rc = static_cast<int>(sendto(
           Socket, SocketBytes(packet->Buffer), base::ToSize(packet->BufferLen),
-          0, (sockaddr*)&addr, sizeof(addr)));
+          0, SocketAddress(addr), sizeof(addr)));
 
       if (rc == -1) {
         if (Get_Last_Error() == EWOULDBLOCK) {

@@ -1620,10 +1620,11 @@ static int Net_Join_Dialog() {
                 }
 
                 *(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 5) = 0;
-                *(uint16_t*)(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 4) =
-                    magic_number;
-                *(uint16_t*)(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 2) =
-                    crc;
+                port::WriteUnaligned(
+                    GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 4,
+                    magic_number);
+                port::WriteUnaligned(
+                    GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 2, crc);
                 GPacket.Message.ID = static_cast<unsigned char>(
                     Build_MPlayerID(MPlayerColorIdx, MPlayerHouse));
                 GPacket.Message.NameCRC = Compute_Name_CRC(MPlayerGameName);
@@ -2624,9 +2625,10 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
   else if (GPacket.Command == NET_MESSAGE) {
     Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_FROM), GPacket.Name,
                         GPacket.Message.Buf);
-    magic_number =
-        *(uint16_t*)(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 4);
-    crc = *(uint16_t*)(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 2);
+    magic_number = port::ReadUnaligned<uint16_t>(GPacket.Message.Buf +
+                                                 COMPAT_MESSAGE_LENGTH - 4);
+    crc = port::ReadUnaligned<uint16_t>(GPacket.Message.Buf +
+                                        COMPAT_MESSAGE_LENGTH - 2);
     color = MPlayerID_To_ColorIndex(GPacket.Message.ID);
     Messages.Add_Message(txt, MPlayerTColors[color],
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200,
@@ -3599,9 +3601,10 @@ static int Net_New_Dialog() {
             }
 
             *(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 5) = 0;
-            *(uint16_t*)(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 4) =
-                magic_number;
-            *(uint16_t*)(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 2) = crc;
+            port::WriteUnaligned(
+                GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 4, magic_number);
+            port::WriteUnaligned(
+                GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 2, crc);
             GPacket.Message.ID = static_cast<unsigned char>(
                 Build_MPlayerID(MPlayerColorIdx, MPlayerHouse));
             GPacket.Message.NameCRC = Compute_Name_CRC(MPlayerGameName);
@@ -4013,9 +4016,10 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist) {
   else if (GPacket.Command == NET_MESSAGE) {
     Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_FROM), GPacket.Name,
                         GPacket.Message.Buf);
-    magic_number =
-        *(uint16_t*)(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 4);
-    crc = *(uint16_t*)(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 2);
+    magic_number = port::ReadUnaligned<uint16_t>(GPacket.Message.Buf +
+                                                 COMPAT_MESSAGE_LENGTH - 4);
+    crc = port::ReadUnaligned<uint16_t>(GPacket.Message.Buf +
+                                        COMPAT_MESSAGE_LENGTH - 2);
     color = MPlayerID_To_ColorIndex(GPacket.Message.ID);
     Messages.Add_Message(txt, MPlayerTColors[color],
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200,

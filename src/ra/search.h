@@ -600,10 +600,10 @@ bool IndexClass<T>::Remove_Index(int id) {
  *=============================================================================================*/
 template <class T>
 int IndexClass<T>::search_compfunc(const void* ptr1, const void* ptr2) {
-  if (*(const int*)ptr1 == *(const int*)ptr2) {
+  if (*static_cast<const int*>(ptr1) == *static_cast<const int*>(ptr2)) {
     return 0;
   }
-  if (*(const int*)ptr1 < *(const int*)ptr2) {
+  if (*static_cast<const int*>(ptr1) < *static_cast<const int*>(ptr2)) {
     return -1;
   }
   return 1;

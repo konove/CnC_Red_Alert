@@ -48,6 +48,7 @@
 #include <utility>
 
 #include "base/numeric.h"
+#include "port/unaligned.h"
 
 #if !defined(__BORLANDC__) && !defined(min)
 #define min(a, b) ((a) < (b)) ? (a) : (b)
@@ -96,7 +97,7 @@ void SHAEngine::Process_Partial(const void*& data, int32_t& length) {
   */
   const int add_count = min((int)length, SRC_BLOCK_SIZE - PartialCount);
   memcpy(&Partial[PartialCount], data, base::ToSize(add_count));
-  data = (const char*&)data + add_count;
+  data = static_cast<const char*>(data) + add_count;
   PartialCount += add_count;
   length -= add_count;
 
@@ -234,7 +235,8 @@ Sha1Digest SHAEngine::Digest() const {
   */
   memset(&partial[partialcount], '\0',
          base::ToSize(SRC_BLOCK_SIZE - partialcount));
-  *(uint32_t*)&partial[SRC_BLOCK_SIZE - 4] = Reverse_LONG((length * 8));
+  port::WriteUnaligned(&partial[SRC_BLOCK_SIZE - 4],
+                       static_cast<uint32_t>(Reverse_LONG((length * 8))));
   Process_Block(&partial[0], acc);
 
   // Each word is stored most significant byte first.

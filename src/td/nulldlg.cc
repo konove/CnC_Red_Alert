@@ -62,6 +62,7 @@
 #include "base/numeric.h"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
+#include "port/unaligned.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
 #include "sdllib/gbuffer.h"
@@ -349,7 +350,7 @@ int Test_Null_Modem() {
   /*
   ** Send hangup command
   */
-  SerialPort->Write_To_Serial_Port((unsigned char*)"ATH\r", strlen("ATH\r"));
+  SerialPort->Write_To_Serial_Port("ATH\r", strlen("ATH\r"));
   CountDownTimerClass time;
   time.Set(2 * 60);
   while (time.Time()) {
@@ -3256,7 +3257,6 @@ int Com_Scenario_Dialog() {
   static int first_time = 1;
   bool oppscorescreen = false;
   bool gameoptions = false;
-  EventClass* event;                 // event ptr
   int64_t msg_timeout = 1200;  // init to 20 seconds
 
   int message_length;
@@ -4074,9 +4074,10 @@ int Com_Scenario_Dialog() {
             }
 
             *(SendPacket.Message + COMPAT_MESSAGE_LENGTH - 5) = 0;
-            *(uint16_t*)(SendPacket.Message + COMPAT_MESSAGE_LENGTH - 4) =
-                magic_number;
-            *(uint16_t*)(SendPacket.Message + COMPAT_MESSAGE_LENGTH - 2) = crc;
+            port::WriteUnaligned(SendPacket.Message + COMPAT_MESSAGE_LENGTH - 4,
+                                 magic_number);
+            port::WriteUnaligned(SendPacket.Message + COMPAT_MESSAGE_LENGTH - 2,
+                                 crc);
 
             /*..................................................................
             Send the message
@@ -4219,8 +4220,8 @@ int Com_Scenario_Dialog() {
         break;
       }
 
-      event = (EventClass*)&ReceivePacket;
-      if (event->Type <= EventClass::FRAMEINFO) {
+      const auto event = port::ReadUnaligned<EventClass>(&ReceivePacket);
+      if (event.Type <= EventClass::FRAMEINFO) {
         if (TickCount.Time() - lastredrawtime > PACKET_REDRAW_TIME) {
           lastredrawtime = TickCount.Time();
           oppscorescreen = true;
@@ -4317,10 +4318,10 @@ int Com_Scenario_Dialog() {
             oppscorescreen = false;
             Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_FROM),
                                 ReceivePacket.Name, ReceivePacket.Message);
-            magic_number =
-                *(uint16_t*)(ReceivePacket.Message + COMPAT_MESSAGE_LENGTH - 4);
-            crc =
-                *(uint16_t*)(ReceivePacket.Message + COMPAT_MESSAGE_LENGTH - 2);
+            magic_number = port::ReadUnaligned<uint16_t>(
+                ReceivePacket.Message + COMPAT_MESSAGE_LENGTH - 4);
+            crc = port::ReadUnaligned<uint16_t>(ReceivePacket.Message +
+                                                COMPAT_MESSAGE_LENGTH - 2);
             Messages.Add_Message(
                 txt, MPlayerTColors[MPlayerID_To_ColorIndex(ReceivePacket.ID)],
                 TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200,
@@ -4681,7 +4682,6 @@ int Com_Show_Scenario_Dialog() {
   int64_t transmittime = 0;
   int packetlen;
   bool oppscorescreen = false;
-  EventClass* event;                 // event ptr
   int64_t msg_timeout = 1200;  // init to 20 seconds
 
   int message_length;
@@ -5275,10 +5275,11 @@ int Com_Show_Scenario_Dialog() {
                   }
 
                   *(SendPacket.Message + COMPAT_MESSAGE_LENGTH - 5) = 0;
-                  *(uint16_t*)(SendPacket.Message + COMPAT_MESSAGE_LENGTH - 4) =
-                      magic_number;
-                  *(uint16_t*)(SendPacket.Message + COMPAT_MESSAGE_LENGTH - 2) =
-                      crc;
+                  port::WriteUnaligned(
+                      SendPacket.Message + COMPAT_MESSAGE_LENGTH - 4,
+                      magic_number);
+                  port::WriteUnaligned(
+                      SendPacket.Message + COMPAT_MESSAGE_LENGTH - 2, crc);
 
                   /*..................................................................
                   Send the message
@@ -5382,8 +5383,8 @@ int Com_Show_Scenario_Dialog() {
         break;
       }
 
-      event = (EventClass*)&ReceivePacket;
-      if (event->Type <= EventClass::FRAMEINFO) {
+      const auto event = port::ReadUnaligned<EventClass>(&ReceivePacket);
+      if (event.Type <= EventClass::FRAMEINFO) {
         if (TickCount.Time() - lastredrawtime > PACKET_REDRAW_TIME) {
           lastredrawtime = TickCount.Time();
           oppscorescreen = true;
@@ -5553,10 +5554,10 @@ int Com_Show_Scenario_Dialog() {
             oppscorescreen = false;
             Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_FROM),
                                 ReceivePacket.Name, ReceivePacket.Message);
-            magic_number =
-                *(uint16_t*)(ReceivePacket.Message + COMPAT_MESSAGE_LENGTH - 4);
-            crc =
-                *(uint16_t*)(ReceivePacket.Message + COMPAT_MESSAGE_LENGTH - 2);
+            magic_number = port::ReadUnaligned<uint16_t>(
+                ReceivePacket.Message + COMPAT_MESSAGE_LENGTH - 4);
+            crc = port::ReadUnaligned<uint16_t>(ReceivePacket.Message +
+                                                COMPAT_MESSAGE_LENGTH - 2);
             Messages.Add_Message(
                 txt, MPlayerTColors[MPlayerID_To_ColorIndex(ReceivePacket.ID)],
                 TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200,

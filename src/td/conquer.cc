@@ -1042,9 +1042,10 @@ static void Message_Input(KeyNumType& input) {
           ** Flag this message segment as either a message head or a message
           *tail.
           */
-          *(uint16_t*)(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 4) =
-              magic_number;
-          *(uint16_t*)(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 2) = crc;
+          port::WriteUnaligned(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 4,
+                               magic_number);
+          port::WriteUnaligned(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 2,
+                               crc);
 
           GPacket.Message.ID = MPlayerLocalID;
           GPacket.Message.NameCRC = Compute_Name_CRC(MPlayerGameName);
@@ -1262,9 +1263,10 @@ void Call_Back() {
           if (msg_ok) {
             Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_FROM),
                                 GPacket.Name, GPacket.Message.Buf);
-            magic_number =
-                *(uint16_t*)(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 4);
-            crc = *(uint16_t*)(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 2);
+            magic_number = port::ReadUnaligned<uint16_t>(
+                GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 4);
+            crc = port::ReadUnaligned<uint16_t>(GPacket.Message.Buf +
+                                                COMPAT_MESSAGE_LENGTH - 2);
             color = MPlayerID_To_ColorIndex(GPacket.Message.ID);
             Messages.Add_Message(
                 txt, MPlayerTColors[color],

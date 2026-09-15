@@ -996,7 +996,7 @@ int IPXManagerClass::Service() {
 
   // Cursor into temp_receive_buffer above. This was a member, which left the
   // object holding a pointer into this frame's stack after Service() returned.
-  const char* cur_data_buf = nullptr;
+  const unsigned char* cur_data_buf = nullptr;
 
   if (PacketTransport) {
     do {
@@ -1006,8 +1006,8 @@ int IPXManagerClass::Service() {
           PacketTransport->Read(temp_receive_buffer, temp_receive_buffer_len,
                                 temp_address, temp_address_len);
       if (packetlen) {
-        cur_data_buf = (char*)temp_receive_buffer;
-        address = *(IPXAddressClass*)temp_address;
+        cur_data_buf = temp_receive_buffer;
+        address = port::ReadUnaligned<IPXAddressClass>(temp_address);
 
         packet_storage = port::ReadUnaligned<CommHeaderType>(cur_data_buf);
         if (packet->MagicNumber == GlobalChannel->Magic_Num()) {

@@ -373,7 +373,7 @@ bool TcpipManagerClass::Add_Client() {
   ** Accept the connection. If there is an error then dont do anything else
   */
   addrsize = sizeof(addr);
-  ConnectSocket = accept(ListenSocket, (sockaddr*)&addr, &addrsize);
+  ConnectSocket = accept(ListenSocket, SocketAddress(addr), &addrsize);
   if (ConnectSocket == INVALID_SOCKET) {
     // Show_Error("accept", WSAGetLastError());
     return false;
@@ -410,7 +410,7 @@ bool TcpipManagerClass::Add_Client() {
   addr.sin_port = htons(static_cast<uint16_t>(PlanetWestwoodPortNumber));
   addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
-  if (bind(UDPSocket, (sockaddr*)&addr, sizeof(addr)) == SOCKET_ERROR) {
+  if (bind(UDPSocket, SocketAddress(addr), sizeof(addr)) == SOCKET_ERROR) {
     Close_Socket(UDPSocket);
     ConnectStatus = NOT_CONNECTING;
     return false;
@@ -551,7 +551,7 @@ void TcpipManagerClass::Start_Client() {
   addr.sin_port = htons(static_cast<uint16_t>(PlanetWestwoodPortNumber));
   addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
-  if (bind(UDPSocket, (sockaddr*)&addr, sizeof(addr)) == SOCKET_ERROR) {
+  if (bind(UDPSocket, SocketAddress(addr), sizeof(addr)) == SOCKET_ERROR) {
     Close_Socket(UDPSocket);
     Close_Socket(ConnectSocket);
     ConnectStatus = NOT_CONNECTING;

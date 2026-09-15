@@ -990,8 +990,9 @@ int IPXManagerClass::Service() {
   // the legacy DOS path's cursor over FirstHeaderBuf/FirstDataBuf; using them
   // here left the object pointing into this frame's stack after Service()
   // returned.
+  IPXHeaderType header_storage{};  // Copy of the received IPX header.
   IPXHeaderType* cur_header_buf = nullptr;
-  const char* cur_data_buf = nullptr;
+  const unsigned char* cur_data_buf = nullptr;
 
   if (Winsock.Get_Connected()) {
     while ((recv_length = Winsock.Read(temp_receive_buffer, 1024)) != 0) {
@@ -1003,7 +1004,7 @@ int IPXManagerClass::Service() {
       unsigned short* swapptr = (unsigned short*)cur_header_buf;
       *swapptr = ntohs(*swapptr);
 
-      cur_data_buf = (char*)&temp_receive_buffer[2];
+      cur_data_buf = &temp_receive_buffer[2];
 
       /*.....................................................................
       Compute the length of the packet (byte-swap the length in the IPX hdr)
@@ -1011,7 +1012,7 @@ int IPXManagerClass::Service() {
       packetlen = recv_length - 2;
 #else  // VIRTUAL_SUBNET_SERVER
       cur_header_buf = nullptr;
-      cur_data_buf = (char*)&temp_receive_buffer[0];
+      cur_data_buf = &temp_receive_buffer[0];
 
       /*.....................................................................
       Compute the length of the packet (byte-swap the length in the IPX hdr)
@@ -1060,8 +1061,9 @@ int IPXManagerClass::Service() {
     }
   } else {
     while (IPX_Get_Outstanding_Buffer95(&temp_receive_buffer[0])) {
-      cur_header_buf = (IPXHEADER*)&temp_receive_buffer[0];
-      cur_data_buf = (char*)&temp_receive_buffer[sizeof(IPXHeaderType)];
+      header_storage = port::ReadUnaligned<IPXHeaderType>(temp_receive_buffer);
+      cur_header_buf = &header_storage;
+      cur_data_buf = &temp_receive_buffer[sizeof(IPXHeaderType)];
 
       /*.....................................................................
       Compute the length of the packet (byte-swap the length in the IPX hdr)
