@@ -83,8 +83,8 @@
 **	When an edge search is started, it can be performed CLOCKwise or
 **	COUNTERCLOCKwise direction.
 */
-#define CLOCK (FacingType)1              // Clockwise.
-#define COUNTERCLOCK ((FacingType) - 1)  // Counterclockwise.
+constexpr FacingType kClockwise = static_cast<FacingType>(1);
+constexpr FacingType kCounterclockwise = static_cast<FacingType>(-1);
 
 /*
 **	If defined, diagonal moves are allowed, else no diagonals.
@@ -790,7 +790,7 @@ PathType* FootClass::Find_Path(CELL dest, FacingType* final_moves, int maxlen,
         Mem_Copy(path.Command, pleft.Command, base::ToSize(path.Length));
         Mem_Copy(path.Overlap, pleft.Overlap, sizeof(LeftOverlap));
         left =
-            Follow_Edge(startcell, next, &pleft, COUNTERCLOCK, direction,
+            Follow_Edge(startcell, next, &pleft, kCounterclockwise, direction,
                         threat, threat_stage, sizeof(moves_left), threshhold);
 
         /*
@@ -814,10 +814,11 @@ PathType* FootClass::Find_Path(CELL dest, FacingType* final_moves, int maxlen,
         pright.Overlap = RightOverlap;
         Mem_Copy(path.Command, pright.Command, base::ToSize(path.Length));
         Mem_Copy(path.Overlap, pright.Overlap, sizeof(RightOverlap));
-        right = Follow_Edge(startcell, next, &pright, CLOCK, direction, threat,
-                            threat_stage, sizeof(moves_right), threshhold);
+        right =
+            Follow_Edge(startcell, next, &pright, kClockwise, direction, threat,
+                        threat_stage, sizeof(moves_right), threshhold);
         //				right = Follow_Edge(startcell, next,
-        //&pright, CLOCK, direction, threat, threat_stage, follow_len,
+        //&pright, kClockwise, direction, threat, threat_stage, follow_len,
         // threshhold);
 
         /*
@@ -1229,7 +1230,8 @@ bool FootClass::Follow_Edge(CELL start, CELL target, PathType* path,
 *turn at *	the start of this loop.
 */
 #ifdef DIAGONAL
-    olddir = Next_Direction(newdir, static_cast<FacingType>(-(int)search * 3));
+    olddir = Next_Direction(
+        newdir, static_cast<FacingType>(-static_cast<int>(search) * 3));
 #else
     olddir = Next_Direction(newdir, (FacingType)(-(int)search * 4));
 #endif
@@ -1249,7 +1251,7 @@ bool FootClass::Follow_Edge(CELL start, CELL target, PathType* path,
  *                                                                                             *
  * OUTPUT:     none (list is optimized) *
  *                                                                                             *
- * WARNINGS:   EMPTY moves are used to hold the place of eliminated * commands.
+ * WARNINGS:   Empty moves are used to hold the place of eliminated * commands.
  *Also, NEVER call this routine with a list that                        *
  *             contains illegal commands. The list MUST be terminated * with a
  *EOL command                                                              *
@@ -1257,7 +1259,7 @@ bool FootClass::Follow_Edge(CELL start, CELL target, PathType* path,
  * HISTORY: * 07/08/1991  CY : Created. * 06/01/1992  JLB : Optimized and
  *commented.                                                *
  *=============================================================================================*/
-#define EMPTY ((FacingType) - 2)
+constexpr FacingType kEmptyCommand = static_cast<FacingType>(-2);
 int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
 // int Optimize_Moves(PathType *path, int (*callback)(CELL, FacingType), int
 // threshold)
@@ -1310,7 +1312,7 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
       **	command list.
       */
       cmd1 = cmd2 - 1;
-      while (*cmd1 == EMPTY && cmd1 != path->Command) {
+      while (*cmd1 == kEmptyCommand && cmd1 != path->Command) {
         cmd1--;
       }
 
@@ -1318,7 +1320,7 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
       **	If there isn't any valid previous command, then bump the
       **	cmd pointers to the next command pair and continue...
       */
-      if (*cmd1 == EMPTY) {
+      if (*cmd1 == kEmptyCommand) {
         cmd2++;
         continue;
       }
@@ -1340,8 +1342,8 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
       **	two commands. This is the easiest optimization.
       */
       if (newcmd == FACING_SE) {
-        *cmd1 = EMPTY;
-        *cmd2++ = EMPTY;
+        *cmd1 = kEmptyCommand;
+        *cmd2++ = kEmptyCommand;
         continue;
       }
 
@@ -1391,15 +1393,15 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
         *on *	90 degrees. Always allow 135 degree optimizations.
         */
         *cmd2 = newdir;
-        *cmd1 = EMPTY;
+        *cmd1 = kEmptyCommand;
 
         /*
         **	Backup what it thinks is the current cell.
         */
-        while (*cmd1 == EMPTY && cmd1 != path->Command) {
+        while (*cmd1 == kEmptyCommand && cmd1 != path->Command) {
           cmd1--;
         }
-        if (*cmd1 != EMPTY) {
+        if (*cmd1 != kEmptyCommand) {
           cell = Adjacent_Cell(cell, Next_Direction(*cmd1, FACING_S));
         } else {
           cell = path->Start;
@@ -1417,7 +1419,7 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
   }
 
   /*
-  **	Pack the command list to remove any EMPTY command entries.
+  **	Pack the command list to remove any empty command entries.
   */
   cmd1 = path->Command;
   cmd2 = path->Command;
@@ -1425,7 +1427,7 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
   path->Cost = 0;
   path->Length = 0;
   while (*cmd2 != END) {
-    if (*cmd2 != EMPTY) {
+    if (*cmd2 != kEmptyCommand) {
 #ifdef NEVER
       if (Debug_ShowPath) {
         int x, y, x1, y1;

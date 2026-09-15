@@ -155,8 +155,8 @@
 // #define FIELD_PLAYER1_HARVESTED "HRV1"
 // #define FIELD_PLAYER2_HARVESTED "HRV2"
 
-#define PACKET_TYPE_HOST_GAME_INFO (unsigned char)50
-#define PACKET_TYPE_GUEST_GAME_INFO (unsigned char)51
+constexpr unsigned char kPacketTypeHostGameInfo = 50;
+constexpr unsigned char kPacketTypeGuestGameInfo = 51;
 
 //	Note: These enums match those in the game results server code.
 enum {
@@ -260,8 +260,8 @@ void Send_Statistics_Packet() {
                       static_cast<unsigned char>(pWolapi->bGameServer ? 0 : 1));
     } else {
       stats.Add_Field(FIELD_PACKET_TYPE, PlanetWestwoodIsHost
-                                             ? PACKET_TYPE_HOST_GAME_INFO
-                                             : PACKET_TYPE_GUEST_GAME_INFO);
+                                             ? kPacketTypeHostGameInfo
+                                             : kPacketTypeGuestGameInfo);
     }
 
     /*
@@ -271,8 +271,9 @@ void Send_Statistics_Packet() {
 
     if constexpr (config::kWolapiEnabled) {
       //	Number of players initially in game.
-      stats.Add_Field(FIELD_NUM_INITIAL_PLAYERS,
-                      (uint32_t)pWolapi->GameInfoCurrent.iPlayerCount);
+      stats.Add_Field(
+          FIELD_NUM_INITIAL_PLAYERS,
+          static_cast<uint32_t>(pWolapi->GameInfoCurrent.iPlayerCount));
       // debugprint( "Stats: number of initial players is %i\n",
       // pWolapi->GameInfoCurrent.iPlayerCount );
 
@@ -280,14 +281,14 @@ void Send_Statistics_Packet() {
       // will be
       // statistically...
       stats.Add_Field(FIELD_NUM_REMAINING_PLAYERS,
-                      (uint32_t)Session.Players.Count());
+                      static_cast<uint32_t>(Session.Players.Count()));
       // debugprint( "Stats: number of remaining players is %i\n",
       // Session.Players.Count() );
 
       //	Whether or not this was a tournament game.
-      stats.Add_Field(
-          FIELD_TOURNAMENT,
-          (unsigned char)(pWolapi->GameInfoCurrent.bTournament ? 1 : 0));
+      stats.Add_Field(FIELD_TOURNAMENT,
+                      static_cast<unsigned char>(
+                          pWolapi->GameInfoCurrent.bTournament ? 1 : 0));
 
       //	ajw This is now in WOLAPI...
       //		//	A unique value that identifies the machine that
@@ -438,11 +439,11 @@ void Send_Statistics_Packet() {
             //						debugprint( "gethostname
             // failed with %i, error %i\n", iRes, WSAGetLastError() );
           }
-          stats.Add_Field(FIELD_PLAYER1_IP, (char*)szIPAddress);
+          stats.Add_Field(FIELD_PLAYER1_IP, szIPAddress);
           Session.Players[1]->Address.Get_Address(net, node);
           sprintf(szIPAddress, "%i.%i.%i.%i", node[0], node[1], node[2],
                   node[3]);
-          stats.Add_Field(FIELD_PLAYER2_IP, (char*)szIPAddress);
+          stats.Add_Field(FIELD_PLAYER2_IP, szIPAddress);
         }
         // Stalemate games.
         if (Scen.bLocalProposesDraw && Scen.bOtherProposesDraw) {
@@ -463,7 +464,7 @@ void Send_Statistics_Packet() {
                   char szPingResult[8];  //	Format is "x/y a/b", e.g., "3/5
                                          // 4/5"
                   pWolapi->DisconnectPingResultsString(szPingResult);
-                  stats.Add_Field(FIELD_DISCONNECT_PINGS, (char*)szPingResult);
+                  stats.Add_Field(FIELD_DISCONNECT_PINGS, szPingResult);
                 }
                 //						else
                 //							debugprint(

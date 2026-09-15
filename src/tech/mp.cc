@@ -1780,7 +1780,7 @@ void XMP_Decode_ASCII(const char* str, uint32_t* mpn, int precision) {
     if (isdigit(static_cast<char>(c))) {
       c -= '0';
     } else {
-      c = static_cast<unsigned char>(toupper((char)c) - 'A') + 10;
+      c = static_cast<unsigned char>(toupper(static_cast<char>(c)) - 'A') + 10;
     }
 
     /*
@@ -2126,28 +2126,29 @@ uint16_t mp_quo_digit(const uint16_t* dividend) {
    * The last terms of q1 and q2 perform upward rounding, which is
    * needed to guarantee that the result not be too small.
    */
-  q1 = ((dividend[-2] ^ SEMI_MASK) *
+  q1 = ((dividend[-2] ^ kSemiMask) *
         static_cast<uint64_t>(reciprical_high_digit)) +
        reciprical_high_digit;
-  q2 = ((dividend[-1] ^ SEMI_MASK) *
+  q2 = ((dividend[-1] ^ kSemiMask) *
         static_cast<uint64_t>(reciprical_low_digit)) +
        (1L << 16);
   q0 = (q1 >> 1) + (q2 >> 1) + 1;
 
   /*      Compute the middle significant product group.   */
   q1 =
-      (dividend[-1] ^ SEMI_MASK) * static_cast<uint64_t>(reciprical_high_digit);
-  q2 = (dividend[0] ^ SEMI_MASK) * static_cast<uint64_t>(reciprical_low_digit);
+      (dividend[-1] ^ kSemiMask) * static_cast<uint64_t>(reciprical_high_digit);
+  q2 = (dividend[0] ^ kSemiMask) * static_cast<uint64_t>(reciprical_low_digit);
   q = (q0 >> 16) + (q1 >> 1) + (q2 >> 1) + 1;
 
   /*      Compute the most significant term and add in the others */
-  q = (q >> (16 - 2)) + (((dividend[0] ^ SEMI_MASK) *
+  q = (q >> (16 - 2)) + (((dividend[0] ^ kSemiMask) *
                           static_cast<uint64_t>(reciprical_high_digit))
                          << 1);
   q >>= modulus_shift;
 
   /*      Prevent overflow and then wipe out the intermediate results. */
-  return static_cast<uint16_t>(std::min(q, (uint64_t)(1L << 16) - 1));
+  return static_cast<uint16_t>(
+      std::min(q, static_cast<uint64_t>(1L << 16) - 1));
 }
 
 /*

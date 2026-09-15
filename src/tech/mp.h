@@ -53,7 +53,7 @@ extern uint16_t primeTable[3511];
 #define UNITSIZE 32
 #define UPPER_MOST_BIT 0x80000000L
 #define SEMI_UPPER_MOST_BIT 0x8000
-#define SEMI_MASK ((unsigned short)~0)
+inline constexpr uint16_t kSemiMask = 0xFFFF;
 #define MAX_BIT_PRECISION 2048
 #define MAX_UNIT_PRECISION (MAX_BIT_PRECISION / UNITSIZE)
 

@@ -42,6 +42,7 @@
  *- - - - - - - */
 #include "tech/sha.h"
 
+#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
@@ -49,10 +50,6 @@
 
 #include "base/numeric.h"
 #include "port/unaligned.h"
-
-#if !defined(__BORLANDC__) && !defined(min)
-#define min(a, b) ((a) < (b)) ? (a) : (b)
-#endif
 
 /***********************************************************************************************
  * SHAEngine::Process_Partial -- Helper routine to process any partially
@@ -95,7 +92,7 @@ void SHAEngine::Process_Partial(const void*& data, int32_t& length) {
   **	Attach as many bytes as possible from the source data into
   **	the staging buffer.
   */
-  const int add_count = min((int)length, SRC_BLOCK_SIZE - PartialCount);
+  const int add_count = std::min(length, SRC_BLOCK_SIZE - PartialCount);
   memcpy(&Partial[PartialCount], data, base::ToSize(add_count));
   data = static_cast<const char*>(data) + add_count;
   PartialCount += add_count;

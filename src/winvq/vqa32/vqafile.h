@@ -138,41 +138,41 @@ struct VQAHeader {
  * VQA FILE CHUNK ID DEFINITIONS.
  *-------------------------------------------------------------------------*/
 
-#define ID_WVQA MAKE_ID('W', 'V', 'Q', 'A') /* Westwood VQ Animation form. */
-#define ID_VQHD MAKE_ID('V', 'Q', 'H', 'D') /* VQ header. */
-#define ID_NAME MAKE_ID('N', 'A', 'M', 'E') /* Name string. */
-#define ID_FINF MAKE_ID('F', 'I', 'N', 'F') /* Frame information. */
-#define ID_VQFR MAKE_ID('V', 'Q', 'F', 'R') /* VQ frame container. */
-#define ID_VQFK MAKE_ID('V', 'Q', 'F', 'K') /* VQ key frame container. */
-#define ID_CBF0 MAKE_ID('C', 'B', 'F', '0') /* Full codebook. */
-#define ID_CBFZ MAKE_ID('C', 'B', 'F', 'Z') /* Full codebook (compressed). */
-#define ID_CBP0 MAKE_ID('C', 'B', 'P', '0') /* Partial codebook. */
-#define ID_CBPZ                                                               \
-  MAKE_ID('C', 'B', 'P', 'Z')               /* Partial codebook (compressed). \
-                                             */
-#define ID_VPT0 MAKE_ID('V', 'P', 'T', '0') /* Vector pointers. */
-#define ID_VPTZ                                                              \
-  MAKE_ID('V', 'P', 'T', 'Z')               /* Vector pointers (compressed). \
-                                             */
-#define ID_VPTK MAKE_ID('V', 'P', 'T', 'K') /* Vector pointers (Delta Key). */
-#define ID_VPTD MAKE_ID('V', 'P', 'T', 'D') /* Vector pointers (Delta). */
-#define ID_VPTR MAKE_ID('V', 'P', 'T', 'R') /* Pointers RSD compressed. */
-#define ID_VPRZ                                                              \
-  MAKE_ID('V', 'P', 'R', 'Z')               /* Pointers RSD, lcw compressed. \
-                                             */
-#define ID_CPL0 MAKE_ID('C', 'P', 'L', '0') /* Color palette. */
-#define ID_CPLZ MAKE_ID('C', 'P', 'L', 'Z') /* Color palette (compressed). */
-#define ID_SND0 MAKE_ID('S', 'N', 'D', '0') /* Sound */
-#define ID_SND1 MAKE_ID('S', 'N', 'D', '1') /* Sound (Zap compressed). */
-#define ID_SND2 MAKE_ID('S', 'N', 'D', '2') /* Sound (ADPCM compressed). */
-#define ID_SNDZ MAKE_ID('S', 'N', 'D', 'Z') /* Sound (LCW compression). */
+#define ID_WVQA MakeId('W', 'V', 'Q', 'A') /* Westwood VQ Animation form. */
+#define ID_VQHD MakeId('V', 'Q', 'H', 'D') /* VQ header. */
+#define ID_NAME MakeId('N', 'A', 'M', 'E') /* Name string. */
+#define ID_FINF MakeId('F', 'I', 'N', 'F') /* Frame information. */
+#define ID_VQFR MakeId('V', 'Q', 'F', 'R') /* VQ frame container. */
+#define ID_VQFK MakeId('V', 'Q', 'F', 'K') /* VQ key frame container. */
+#define ID_CBF0 MakeId('C', 'B', 'F', '0') /* Full codebook. */
+#define ID_CBFZ MakeId('C', 'B', 'F', 'Z') /* Full codebook (compressed). */
+#define ID_CBP0 MakeId('C', 'B', 'P', '0') /* Partial codebook. */
+#define ID_CBPZ                                                              \
+  MakeId('C', 'B', 'P', 'Z')               /* Partial codebook (compressed). \
+                                            */
+#define ID_VPT0 MakeId('V', 'P', 'T', '0') /* Vector pointers. */
+#define ID_VPTZ                                                             \
+  MakeId('V', 'P', 'T', 'Z')               /* Vector pointers (compressed). \
+                                            */
+#define ID_VPTK MakeId('V', 'P', 'T', 'K') /* Vector pointers (Delta Key). */
+#define ID_VPTD MakeId('V', 'P', 'T', 'D') /* Vector pointers (Delta). */
+#define ID_VPTR MakeId('V', 'P', 'T', 'R') /* Pointers RSD compressed. */
+#define ID_VPRZ                                                             \
+  MakeId('V', 'P', 'R', 'Z')               /* Pointers RSD, lcw compressed. \
+                                            */
+#define ID_CPL0 MakeId('C', 'P', 'L', '0') /* Color palette. */
+#define ID_CPLZ MakeId('C', 'P', 'L', 'Z') /* Color palette (compressed). */
+#define ID_SND0 MakeId('S', 'N', 'D', '0') /* Sound */
+#define ID_SND1 MakeId('S', 'N', 'D', '1') /* Sound (Zap compressed). */
+#define ID_SND2 MakeId('S', 'N', 'D', '2') /* Sound (ADPCM compressed). */
+#define ID_SNDZ MakeId('S', 'N', 'D', 'Z') /* Sound (LCW compression). */
 
-#define ID_SNA0 MAKE_ID('S', 'N', 'A', '0') /* Sound */
-#define ID_SNA1 MAKE_ID('S', 'N', 'A', '1') /* Sound (Zap compressed). */
-#define ID_SNA2 MAKE_ID('S', 'N', 'A', '2') /* Sound (ADPCM compressed). */
-#define ID_SNAZ MAKE_ID('S', 'N', 'A', 'Z') /* Sound (LCW compression). */
+#define ID_SNA0 MakeId('S', 'N', 'A', '0') /* Sound */
+#define ID_SNA1 MakeId('S', 'N', 'A', '1') /* Sound (Zap compressed). */
+#define ID_SNA2 MakeId('S', 'N', 'A', '2') /* Sound (ADPCM compressed). */
+#define ID_SNAZ MakeId('S', 'N', 'A', 'Z') /* Sound (LCW compression). */
 
-#define ID_CAP0 MAKE_ID('C', 'A', 'P', '0') /* Caption text */
-#define ID_EVA0 MAKE_ID('E', 'V', 'A', '0') /* EVA text */
+#define ID_CAP0 MakeId('C', 'A', 'P', '0') /* Caption text */
+#define ID_EVA0 MakeId('E', 'V', 'A', '0') /* EVA text */
 
 #endif  // CNC_RED_ALERT_WINVQ_VQA32_VQAFILE_H_

@@ -115,16 +115,17 @@ typedef struct IFFHandle {
 
 #define PADSIZE(size) (((size) + 1) & (~1))
 
-#ifndef MAKE_ID
-#define MAKE_ID(a, b, c, d) \
-  ((long)((long)(d) << 24) | ((long)(c) << 16) | ((long)(b) << 8) | (long)(a))
-#endif
+// Packs four characters into the little-endian chunk identifier word.
+constexpr int32_t MakeId(char a, char b, char c, char d) {
+  return (int32_t{d} << 24) | (int32_t{c} << 16) | (int32_t{b} << 8) |
+         int32_t{a};
+}
 
 /* Universal IFF identifiers */
-#define ID_FORM MAKE_ID('F', 'O', 'R', 'M')
-#define ID_LIST MAKE_ID('L', 'I', 'S', 'T')
-#define ID_PROP MAKE_ID('P', 'R', 'O', 'P')
-#define ID_NULL MAKE_ID(' ', ' ', ' ', ' ')
+#define ID_FORM MakeId('F', 'O', 'R', 'M')
+#define ID_LIST MakeId('L', 'I', 'S', 'T')
+#define ID_PROP MakeId('P', 'R', 'O', 'P')
+#define ID_NULL MakeId(' ', ' ', ' ', ' ')
 
 /* Prototypes */
 IFFHandle* OpenIFF(char*, int32_t);

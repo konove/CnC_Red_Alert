@@ -137,8 +137,8 @@
 // #define FIELD_PLAYER1_HARVESTED "HRV1"
 // #define FIELD_PLAYER2_HARVESTED "HRV2"
 
-#define PACKET_TYPE_HOST_GAME_INFO (unsigned char)50
-#define PACKET_TYPE_GUEST_GAME_INFO (unsigned char)51
+constexpr unsigned char kPacketTypeHostGameInfo = 50;
+constexpr unsigned char kPacketTypeGuestGameInfo = 51;
 
 enum {
   COMPLETION_CONNECTION_LOST,
@@ -212,9 +212,9 @@ void Send_Statistics_Packet() {
     ** Field to identify this as C&C 95 internet game statistics packet
     */
     if (Server) {
-      stats.Add_Field(FIELD_PACKET_TYPE, PACKET_TYPE_HOST_GAME_INFO);
+      stats.Add_Field(FIELD_PACKET_TYPE, kPacketTypeHostGameInfo);
     } else {
-      stats.Add_Field(FIELD_PACKET_TYPE, PACKET_TYPE_GUEST_GAME_INFO);
+      stats.Add_Field(FIELD_PACKET_TYPE, kPacketTypeGuestGameInfo);
     }
 
     /*
