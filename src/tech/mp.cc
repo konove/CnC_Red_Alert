@@ -100,6 +100,7 @@
 
 #include "absl/base/attributes.h"
 #include "base/numeric.h"
+#include "port/bytes_of.h"
 #include "tech/byte_source.h"
 
 namespace {
@@ -108,6 +109,22 @@ namespace {
 // digit.
 std::byte* AsBytes(void* data ABSL_ATTRIBUTE_LIFETIME_BOUND) {
   return static_cast<std::byte*>(data);
+}
+
+// Views MP digits as the 16-bit halves that the subtract, multiply and
+// reciprocal routines step through, least significant first on the
+// little-endian hosts this code assumes.
+// TODO: Reading uint32_t digits through uint16_t* breaks strict aliasing;
+// move these loops to memcpy-based half-digit access or 16-bit storage.
+uint16_t* XMP_Halves(uint32_t* digits ABSL_ATTRIBUTE_LIFETIME_BOUND) {
+  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+  return reinterpret_cast<uint16_t*>(digits);
+}
+
+const uint16_t* XMP_Halves(
+    const uint32_t* digits ABSL_ATTRIBUTE_LIFETIME_BOUND) {
+  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+  return reinterpret_cast<const uint16_t*>(digits);
 }
 
 }  // namespace
@@ -404,7 +421,8 @@ void XMP_Signed_Decode(uint32_t* result, const unsigned char* from,
 
   const int fillcount =
       (precision * static_cast<int>(sizeof(uint32_t))) - frombytes;
-  auto* dest = (unsigned char*)&result[precision];
+  // Just past the last byte of the number; the loops below fill downwards.
+  auto* dest = port::BytesOf(result[precision - 1]) + sizeof(uint32_t);
 
   /*
   **	Fill in any excess significant bytes.
@@ -453,7 +471,8 @@ void XMP_Unsigned_Decode(uint32_t* result, const unsigned char* from,
 
   const int fillcount =
       (precision * static_cast<int>(sizeof(uint32_t))) - frombytes;
-  auto* dest = (unsigned char*)&result[precision];
+  // Just past the last byte of the number; the loops below fill downwards.
+  auto* dest = port::BytesOf(result[precision - 1]) + sizeof(uint32_t);
 
   /*
   **	Fill in any excess significant bytes.
@@ -1110,9 +1129,9 @@ bool XMP_Add_Int(uint32_t* result, const uint32_t* left_number,
  *=============================================================================================*/
 bool XMP_Sub(uint32_t* result, const uint32_t* left_number,
              const uint32_t* right_number, bool borrow, int precision) {
-  const auto* left_number_ptr = (const uint16_t*)left_number;
-  const auto* right_number_ptr = (const uint16_t*)right_number;
-  auto* result_ptr = (uint16_t*)result;
+  const auto* left_number_ptr = XMP_Halves(left_number);
+  const auto* right_number_ptr = XMP_Halves(right_number);
+  auto* result_ptr = XMP_Halves(result);
 
   precision *= 2;
   while (precision--) {
@@ -1155,8 +1174,8 @@ bool XMP_Sub(uint32_t* result, const uint32_t* left_number,
  *=============================================================================================*/
 bool XMP_Sub_Int(uint32_t* result, const uint32_t* left_number,
                  uint16_t right_number, bool borrow, int precision) {
-  const auto* left_number_ptr = (const uint16_t*)left_number;
-  auto* result_ptr = (uint16_t*)result;
+  const auto* left_number_ptr = XMP_Halves(left_number);
+  auto* result_ptr = XMP_Halves(result);
 
   precision *= 2;
   while (precision--) {
@@ -1252,8 +1271,8 @@ int XMP_Unsigned_Mult(uint32_t* prod, const uint32_t* multiplicand,
  *=============================================================================================*/
 int XMP_Unsigned_Mult_Int(uint32_t* prod, const uint32_t* multiplicand,
                           uint16_t multiplier, int precision) {
-  const auto* m2 = (const uint16_t*)multiplicand;
-  auto* pr = (uint16_t*)prod;
+  const auto* m2 = XMP_Halves(multiplicand);
+  auto* pr = XMP_Halves(prod);
   uint32_t carry = 0;
   for (int i = 0; i < precision * 2; ++i) {
     const uint32_t p = (static_cast<uint32_t>(multiplier) * *m2) + carry;
@@ -1858,13 +1877,13 @@ void XMP_Double_Mul(uint32_t* prod, const uint32_t* multiplicand,
   */
   XMP_Init(prod, 0, precision * 2);
 
-  const auto* multiplier_ptr = (const uint16_t*)multiplier;
-  auto* product_ptr = (uint16_t*)prod;
+  const auto* multiplier_ptr = XMP_Halves(multiplier);
+  auto* product_ptr = XMP_Halves(prod);
 
   // Multiply multiplicand by each word in multiplier, accumulating prod.
   for (int i = 0; i < precision * 2; ++i) {
-    XMP_Hybrid_Mul(product_ptr++, (const uint16_t*)multiplicand,
-                   *multiplier_ptr++, precision * 2);
+    XMP_Hybrid_Mul(product_ptr++, XMP_Halves(multiplicand), *multiplier_ptr++,
+                   precision * 2);
   }
 }
 
@@ -1933,7 +1952,7 @@ int XMP_Prepare_Modulus(const uint32_t* n_modulus, int precision) {
     XMP_Shift_Right_Bits(mod_quotient, 1, 2);
     modulus_shift--; /* now  0 <= _modulus_shift <= 16 */
   }
-  const auto* mpm = (uint16_t*)mod_quotient;
+  const auto* mpm = XMP_Halves(mod_quotient);
   reciprical_low_digit = *mpm++;
   reciprical_high_digit = *mpm;
 
@@ -1995,7 +2014,7 @@ int XMP_Mod_Mult(uint32_t* prod, const uint32_t* multiplicand,
                                                 // remaining to be generated
 
     /* Set msb, lsb, and normal ptrs of dividend */
-    uint16_t* dmph = (uint16_t*)double_staging_number + dmi +
+    uint16_t* dmph = XMP_Halves(double_staging_number) + dmi +
                      1;  // points to one higher than precision would indicate
     uint16_t* dmpl = dmph - modulus_sub_precision;
 
@@ -2014,7 +2033,7 @@ int XMP_Mod_Mult(uint32_t* prod, const uint32_t* multiplicand,
 
       const uint16_t q = mp_quo_digit(dmph);  // trial quotient uint32_t
       if (q > 0) {
-        XMP_Hybrid_Mul(dmpl, (uint16_t*)scratch_modulus, q, precision * 2);
+        XMP_Hybrid_Mul(dmpl, XMP_Halves(scratch_modulus), q, precision * 2);
 
         /* Perform correction if q too large.
         **  This rarely occurs.
