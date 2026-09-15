@@ -45,10 +45,11 @@ template <std::integral T>
   COORDINATE((((x) * ICON_LEPTON_W) / CELL_PIXEL_W) + \
              ((((y) * ICON_LEPTON_H) / CELL_PIXEL_H) << 16))
 inline FacingType Dir_Facing(DirType facing) {
-  return static_cast<FacingType>(((unsigned char)(facing + 0x10) & 0xFF) >> 5);
+  return static_cast<FacingType>(
+      (static_cast<unsigned char>(facing + 0x10) & 0xFF) >> 5);
 }
 inline DirType Facing_Dir(FacingType facing) {
-  return static_cast<DirType>((int)facing << 5);
+  return static_cast<DirType>(static_cast<int>(facing) << 5);
 }
 inline int Cell_To_Lepton(int cell) { return cell << 8; }
 inline int Lepton_To_Cell(int lepton) {
@@ -65,8 +66,12 @@ inline int Coord_X(COORDINATE coord) {
 inline int Coord_Y(COORDINATE coord) {
   return static_cast<int16_t>(HighWord(coord));
 }
-inline int Cell_X(CELL cell) { return static_cast<int>((unsigned)cell & 0x3F); }
-inline int Cell_Y(CELL cell) { return static_cast<int>((unsigned)cell >> 6); }
+inline int Cell_X(CELL cell) {
+  return static_cast<int>(static_cast<unsigned>(cell) & 0x3F);
+}
+inline int Cell_Y(CELL cell) {
+  return static_cast<int>(static_cast<unsigned>(cell) >> 6);
+}
 inline int Dir_Diff(DirType dir1, DirType dir2) {
   // Facings wrap at 256, so the difference is taken between their signed
   // byte values.
@@ -107,11 +112,11 @@ inline COORDINATE Cell_Coord(CELL cell) {
                static_cast<uint16_t>((((cell & 0x003F) << 1) + 1) << 7)));
 }
 inline COORDINATE XYPixel_Coord(int x, int y) {
-  return static_cast<COORDINATE>(MakeLong(
-      static_cast<uint16_t>((int32_t)y * (int32_t)ICON_LEPTON_H /
-                            (int32_t)ICON_PIXEL_H) /*+LEPTON_OFFSET_Y*/,
-      static_cast<uint16_t>((int32_t)x * (int32_t)ICON_LEPTON_W /
-                            (int32_t)ICON_PIXEL_W) /*+LEPTON_OFFSET_X*/));
+  return static_cast<COORDINATE>(
+      MakeLong(static_cast<uint16_t>(y * ICON_LEPTON_H /
+                                     ICON_PIXEL_H) /*+LEPTON_OFFSET_Y*/,
+               static_cast<uint16_t>(x * ICON_LEPTON_W /
+                                     ICON_PIXEL_W) /*+LEPTON_OFFSET_X*/));
 }
 inline int Facing_To_32(DirType facing) { return Facing32[facing]; }
 inline DirType Direction256(COORDINATE coord1, COORDINATE coord2) {

@@ -71,7 +71,7 @@ typedef enum KindType {
 #define TARGET_EXPONENT_MASK (~(((unsigned)(~0)) >> TARGET_EXPONENT))
 
 inline KindType Target_Kind(TARGET a) {
-  return static_cast<KindType>((unsigned)a >> TARGET_MANTISSA);
+  return static_cast<KindType>(static_cast<unsigned>(a) >> TARGET_MANTISSA);
 }
 inline int Target_Value(TARGET a) { return a & TARGET_MANTISSA_MASK; }
 
@@ -105,8 +105,8 @@ inline bool Is_Target_Animation(TARGET a) {
 }
 
 inline TARGET Build_Target(KindType kind, int value) {
-  return static_cast<TARGET>((unsigned)kind << TARGET_MANTISSA |
-                             (unsigned)value);
+  return static_cast<TARGET>(static_cast<unsigned>(kind) << TARGET_MANTISSA |
+                             static_cast<unsigned>(value));
 }
 inline TARGET As_Target(CELL cell) {
   return static_cast<TARGET>(KIND_CELL << TARGET_MANTISSA | cell);

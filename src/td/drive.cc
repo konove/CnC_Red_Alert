@@ -1375,13 +1375,14 @@ void DriveClass::Fixup_Path(PathType* path) {
     ptr = &_dpath[static_cast<FacingType>(std::abs(facediff)) - FACING_NE]
                  [1];  // Pointer to path adjust list.
     counter =
-        static_cast<int>(_dpath[(FacingType)std::abs(facediff) - FACING_NE]
-                               [0]);  // Number of path adjusts.
+        static_cast<int>(_dpath[static_cast<FacingType>(std::abs(facediff)) -
+                                FACING_NE][0]);  // Number of path adjusts.
   } else {
     ptr = &_path[static_cast<FacingType>(std::abs(facediff)) - FACING_NE]
                 [1];  // Pointer to path adjust list.
-    counter = static_cast<int>(_path[(FacingType)std::abs(facediff) - FACING_NE]
-                                    [0]);  // Number of path adjusts.
+    counter =
+        static_cast<int>(_path[static_cast<FacingType>(std::abs(facediff)) -
+                               FACING_NE][0]);  // Number of path adjusts.
   }
   ptr2 = ptr;
 

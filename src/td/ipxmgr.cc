@@ -1430,8 +1430,8 @@ int IPXManagerClass::Private_Num_Receive(int id) {
  *   01/25/1995 BR : Created.                                              *
  *=========================================================================*/
 void IPXManagerClass::Set_Socket(uint16_t socket) {
-  Socket = static_cast<uint16_t>(((uint32_t)socket & 0x00ff) << 8 |
-                                 ((uint32_t)socket & 0xff00) >> 8);
+  Socket = static_cast<uint16_t>((static_cast<uint32_t>(socket) & 0x00ff) << 8 |
+                                 (static_cast<uint32_t>(socket) & 0xff00) >> 8);
 
 } /* end of Set_Socket */
 

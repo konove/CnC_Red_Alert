@@ -525,7 +525,7 @@ int MapEditClass::Placement_Dialog() {
         WindowList[WINDOW_EDITOR][WINDOWY] = D_PICTURE_Y;
         WindowList[WINDOW_EDITOR][WINDOWWIDTH] = D_PICTURE_W >> 3;
         WindowList[WINDOW_EDITOR][WINDOWHEIGHT] = D_PICTURE_H;
-        Change_Window((int)WINDOW_EDITOR);
+        Change_Window(WINDOW_EDITOR);
         Draw_Box(D_PICTURE_X, D_PICTURE_Y, D_PICTURE_W, D_PICTURE_H,
                  BOXSTYLE_GREEN_DOWN, true);
         curobj->Display(ScreenWidth << 2, ScreenHeight >> 1, WINDOW_EDITOR,
@@ -665,7 +665,8 @@ int MapEditClass::Placement_Dialog() {
       case ButtonKey(BUTTON_MULTI2):
       case ButtonKey(BUTTON_MULTI3):
       case ButtonKey(BUTTON_MULTI4):
-        house = (HousesType)(static_cast<int>(input & ~KN_BUTTON) - BUTTON_GDI);
+        house = static_cast<HousesType>(static_cast<int>(input & ~KN_BUTTON) -
+                                        BUTTON_GDI);
         /*
         ............... ignore if invalid for this object ...............
         */
@@ -1770,7 +1771,7 @@ void MapEditClass::Set_House_Buttons(HousesType house, GadgetClass* btnlist,
     /*
     **	Compute the desired button ID; get a pointer to the button
     */
-    id = (int)h + base_id;
+    id = h + base_id;
     btn = dynamic_cast<TextButtonClass*>(
         btnlist->Extract_Gadget(static_cast<unsigned>(id)));
     if (btn) {

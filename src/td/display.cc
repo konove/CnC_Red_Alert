@@ -3686,12 +3686,12 @@ bool DisplayClass::In_View(CELL cell) const {
 #ifdef OBSOLETE
   int fudgex = Coord_XLepton(TacticalCoord) ? -1 : 0;
   int fudgey = Coord_YLepton(TacticalCoord) ? -1 : 0;
-  if ((unsigned)(Cell_X(cell) - Coord_XCell(TacticalCoord)) >
-      Lepton_To_Cell(TacLeptonWidth) + fudgex) {
+  const int dx = Cell_X(cell) - Coord_XCell(TacticalCoord);
+  if (dx < 0 || dx > Lepton_To_Cell(TacLeptonWidth) + fudgex) {
     return (false);
   }
-  if ((unsigned)(Cell_Y(cell) - Coord_YCell(TacticalCoord)) >
-      Lepton_To_Cell(TacLeptonHeight) + fudgey) {
+  const int dy = Cell_Y(cell) - Coord_YCell(TacticalCoord);
+  if (dy < 0 || dy > Lepton_To_Cell(TacLeptonHeight) + fudgey) {
     return (false);
   }
   return (true);

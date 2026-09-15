@@ -1318,7 +1318,7 @@ bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist, Channel* pChannel,
       *CreateGameInfo.szPassword = 0;
     }
     CreateGameInfo.GameKind =
-        (CREATEGAMEINFO::GAMEKIND)(pChannel->reserved & 0xFF000000);
+        static_cast<CREATEGAMEINFO::GAMEKIND>(pChannel->reserved & 0xFF000000);
     return pWO->OnEnteringGameChannel(WolText(pChannel->name), false,
                                       CreateGameInfo);
   }
@@ -1507,8 +1507,8 @@ bool ProcessChannelListSelection(WolapiObject* pWO, IconListClass& chatlist,
           static_cast<const Channel*>(chanlist.Get_Item_ExtraDataPtr(iIndex));
       if (pChannel->type == GAME_TYPE) {
         //	It is a game of our type, at least.
-        const auto GameKind =
-            (CREATEGAMEINFO::GAMEKIND)(pChannel->reserved & 0xFF000000);
+        const auto GameKind = static_cast<CREATEGAMEINFO::GAMEKIND>(
+            pChannel->reserved & 0xFF000000);
         switch (GameKind) {
           case CREATEGAMEINFO::RAGAME:
             break;

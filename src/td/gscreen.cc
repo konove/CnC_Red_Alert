@@ -431,7 +431,7 @@ static void Add_Current_Screen() {
   if (ScreenRecording) {
     ScreenList[CurrentScreen] = new GraphicBufferClass;
     ScreenList[CurrentScreen]->Init(SeenBuff.Get_Width(), SeenBuff.Get_Height(),
-                                    nullptr, 0, (GBC_Enum)0);
+                                    nullptr, 0, static_cast<GBC_Enum>(0));
     SeenBuff.Blit(*ScreenList[CurrentScreen]);
 
     CurrentScreen++;

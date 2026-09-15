@@ -76,11 +76,13 @@ struct KeyboardClass : public WWKeyboardClass {
   // These deliberately hide the library's int-returning versions; narrowing to
   // the game's key enums is the only reason this interface class exists.
   // NOLINTNEXTLINE(bugprone-derived-method-shadowing-base-method)
-  KeyNumType Get() { return (KeyNumType)WWKeyboardClass::Get(); }
+  KeyNumType Get() { return static_cast<KeyNumType>(WWKeyboardClass::Get()); }
   // NOLINTNEXTLINE(bugprone-derived-method-shadowing-base-method)
-  KeyNumType Check() { return (KeyNumType)WWKeyboardClass::Check(); }
+  KeyNumType Check() {
+    return static_cast<KeyNumType>(WWKeyboardClass::Check());
+  }
   static KeyASCIIType To_ASCII(KeyNumType key) {
-    return (KeyASCIIType)WWKeyboardClass::To_ASCII(key);
+    return static_cast<KeyASCIIType>(WWKeyboardClass::To_ASCII(key));
   }
   static bool Down(KeyNumType key) { return WWKeyboardClass::Down(key); }
 
@@ -95,37 +97,37 @@ struct KeyboardClass : public WWKeyboardClass {
 */
 template <class T>
 T operator++(T& a) {
-  a = (T)((int)a + 1);
+  a = static_cast<T>(static_cast<int>(a) + 1);
   return a;
 }
 template <class T>
 T operator++(T& a, int) {
   T aa = a;
-  a = (T)((int)a + 1);
+  a = static_cast<T>(static_cast<int>(a) + 1);
   return aa;
 }
 template <class T>
 T operator--(T& a) {
-  a = (T)((int)a - 1);
+  a = static_cast<T>(static_cast<int>(a) - 1);
   return a;
 }
 template <class T>
 T operator--(T& a, int) {
   T aa = a;
-  a = (T)((int)a - 1);
+  a = static_cast<T>(static_cast<int>(a) - 1);
   return aa;
 }
 template <class T>
 constexpr T operator|(T t1, T t2) noexcept {
-  return (T)((int)t1 | (int)t2);
+  return static_cast<T>(static_cast<int>(t1) | static_cast<int>(t2));
 }
 template <class T>
 T operator&(T t1, T t2) {
-  return (T)((int)t1 & (int)t2);
+  return static_cast<T>(static_cast<int>(t1) & static_cast<int>(t2));
 }
 template <class T>
 T operator~(T t1) {
-  return (T) ~(int)t1;
+  return static_cast<T>(~static_cast<int>(t1));
 }
 
 // TODO(konove): Replace with std::clamp

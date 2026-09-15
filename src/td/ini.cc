@@ -602,7 +602,7 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
         }
 
         for (int i = 0; i < MPlayerMax; i++) {
-          const auto house = static_cast<HousesType>(i + (int)HOUSE_MULTI1);
+          const auto house = static_cast<HousesType>(i + HOUSE_MULTI1);
           HouseClass* housep = HouseClass::As_Pointer(house);
           housep->BlitzTime = GameRandomRange(rndmin, rndmax);
         }
@@ -820,7 +820,7 @@ static void Assign_Houses() {
     **	Set the house, preferred house (GDI/NOD), color, and actual house;
     **	get a pointer to the house instance
     */
-    house = static_cast<HousesType>(j + (int)HOUSE_MULTI1);
+    house = static_cast<HousesType>(j + HOUSE_MULTI1);
     pref_house = MPlayerID_To_HousesType(MPlayerID[i]);
     color = MPlayerID_To_ColorIndex(MPlayerID[i]);
     housep = HouseClass::As_Pointer(house);
@@ -857,8 +857,8 @@ static void Assign_Houses() {
       **	Set the house, preferred house (GDI/NOD), and color; get a
       *pointer *	to the house instance
       */
-      house = static_cast<HousesType>(i + (int)HOUSE_MULTI1);
-      pref_house = static_cast<HousesType>(GameRandomRange(0, 1) + (int)HOUSE_GOOD);
+      house = static_cast<HousesType>(i + HOUSE_MULTI1);
+      pref_house = static_cast<HousesType>(GameRandomRange(0, 1) + HOUSE_GOOD);
       for (;;) {
         color = Random_Pick(REMAP_FIRST, REMAP_LAST);
         if (!color_used[color]) {
@@ -917,7 +917,7 @@ static void Remove_AI_Players() {
   HouseClass* housep;
 
   for (i = 0; i < MAX_PLAYERS; i++) {
-    house = static_cast<HousesType>(i + (int)HOUSE_MULTI1);
+    house = static_cast<HousesType>(i + HOUSE_MULTI1);
     housep = HouseClass::As_Pointer(house);
     if (!static_cast<bool>(housep->IsHuman)) {
       housep->Clobber_All();

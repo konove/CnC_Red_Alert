@@ -651,9 +651,9 @@ const IndexClass<T>::NodeElement* IndexClass<T>::Search_For_Node(int id) const {
   */
   NodeElement node{};
   node.ID = id;
-  return (const NodeElement*)bsearch(&node, &IndexTable[0],
-                                     base::ToSize(IndexCount),
-                                     sizeof(IndexTable[0]), search_compfunc);
+  return static_cast<const NodeElement*>(
+      bsearch(&node, &IndexTable[0], base::ToSize(IndexCount),
+              sizeof(IndexTable[0]), search_compfunc));
 }
 
 #endif  // CNC_RED_ALERT_RA_SEARCH_H_

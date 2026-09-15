@@ -234,7 +234,7 @@ void MapEditClass::One_Time() {
   */
   FacingDial =
       new Dial8Class(POPUP_FACINGDIAL, POPUP_FACEBOX_X, POPUP_FACEBOX_Y,
-                     POPUP_FACEBOX_W, POPUP_FACEBOX_H, (DirType)0);
+                     POPUP_FACEBOX_W, POPUP_FACEBOX_H, static_cast<DirType>(0));
 
   /*
   **	The base percent-built slider & its label
@@ -944,7 +944,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         *clear *	that waypoint.
         */
         for (i = 0; i < kMaxPlayers; i++) {
-          house = (HousesType)(HOUSE_MULTI1 + i);
+          house = static_cast<HousesType>(HOUSE_MULTI1 + i);
           if (HouseClass::As_Pointer(house) &&
               CurrentCell == HouseClass::As_Pointer(house)->FlagHome) {
             HouseClass::As_Pointer(house)->Flag_Remove(As_Target(CurrentCell),

@@ -518,7 +518,7 @@ ResultType InfantryClass::Take_Damage(int& damage, int distance,
         morefear /= 2;
       }
       Fear = static_cast<FearType>(
-          std::min((int)Fear + morefear, int(FEAR_MAXIMUM)));
+          std::min(Fear + morefear, static_cast<int>(FEAR_MAXIMUM)));
     }
   }
   return res;
@@ -3865,7 +3865,7 @@ void InfantryClass::Movement_AI() {
         */
         MPHType maxspeed = static_cast<MPHType>(
             std::min(Class->MaxSpeed * SpeedBias * House->GroundspeedBias,
-                     int(MPH_LIGHT_SPEED)));
+                     static_cast<int>(MPH_LIGHT_SPEED)));
 
         if (IsFormationMove) {
           maxspeed = FormationMaxSpeed;

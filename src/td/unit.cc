@@ -3367,13 +3367,13 @@ ActionType UnitClass::What_Action(ObjectClass* object) {
         action = ACTION_NONE;
       }
     } else {
-      ((ObjectClass&)*this).Mark(MARK_UP);
+      Mark(MARK_UP);
       if (!BuildingTypeClass::As_Reference(STRUCT_CONST)
                .Legal_Placement(
                    Coord_Cell(Adjacent_Cell(Center_Coord(), FACING_NW)))) {
         action = ACTION_NONE;
       }
-      ((ObjectClass&)*this).Mark(MARK_DOWN);
+      Mark(MARK_DOWN);
     }
   }
 
@@ -3383,9 +3383,7 @@ ActionType UnitClass::What_Action(ObjectClass* object) {
   if ((IsOwnedByPlayer && object->Is_Techno() &&
        dynamic_cast<const TechnoClass*>(object)->House->Is_Ally(this)) &&
       (object->What_Am_I() == RTTI_BUILDING &&
-       ((UnitClass*)this)
-               ->Transmit_Message(RADIO_CAN_LOAD,
-                                  dynamic_cast<TechnoClass*>(object)) ==
+       Transmit_Message(RADIO_CAN_LOAD, dynamic_cast<TechnoClass*>(object)) ==
            RADIO_ROGER)) {
     action = ACTION_ENTER;
   }

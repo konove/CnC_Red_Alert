@@ -141,7 +141,7 @@ RAChatEventSink::~RAChatEventSink() {
 HRESULT __stdcall RAChatEventSink::QueryInterface(const IID& iid, void** ppv) {
   //	debugprint( "RAChatEventSink::QueryInterface\n" );
   if ((iid == IID_IUnknown) || (iid == IID_IChatEvent)) {
-    *ppv = (IChatEvent*)this;  //	Removed static_cast<> ajw
+    *ppv = static_cast<IChatEvent*>(this);
   } else {
     *ppv = nullptr;
     return E_NOINTERFACE;
@@ -630,7 +630,7 @@ STDMETHODIMP RAChatEventSink::OnPublicMessage(HRESULT /*res*/,
       if (strlen(szMessage) > 4) {
         const int i = tech::ParseInteger<int>(szMessage + 4).value_or(0);
         if (i >= VOX_ACCOMPLISHED && i <= VOX_LOAD1 && pOwner->bEggSounds) {
-          Speak((VoxType)i);
+          Speak(static_cast<VoxType>(i));
         }
         char* szPrint = new char[strlen(WolText(pUserSender->name)) + 16];
         sprintf(szPrint, "%s!", WolText(pUserSender->name));
@@ -683,7 +683,7 @@ STDMETHODIMP RAChatEventSink::OnPrivateMessage(HRESULT /*res*/,
         if (strlen(szMessage) > 4) {
           const int i = tech::ParseInteger<int>(szMessage + 4).value_or(0);
           if (i >= VOX_ACCOMPLISHED && i <= VOX_LOAD1 && pOwner->bEggSounds) {
-            Speak((VoxType)i);
+            Speak(static_cast<VoxType>(i));
           }
         }
       } else {
@@ -989,7 +989,7 @@ bool RAChatEventSink::DownloadUpdates(Update* pUpdateList, int iUpdates) {
   hRes = pContainer->FindConnectionPoint(IID_IDownloadEvent, &pConnectionPoint);
   DCHECK(SUCCEEDED(hRes));
   DWORD dwDownloadAdvise;
-  hRes = pConnectionPoint->Advise((IDownloadEvent*)pDownloadSink,
+  hRes = pConnectionPoint->Advise(static_cast<IDownloadEvent*>(pDownloadSink),
                                   &dwDownloadAdvise);
   DCHECK(SUCCEEDED(hRes));
   //	Presumably the above calls will succeed, because they did so when we did
@@ -1614,7 +1614,7 @@ RADownloadEventSink::RADownloadEventSink()
 HRESULT __stdcall RADownloadEventSink::QueryInterface(const IID& iid,
                                                       void** ppv) {
   if ((iid == IID_IUnknown) || (iid == IID_IDownloadEvent)) {
-    *ppv = (IDownloadEvent*)this;  //	Removed static_cast<> ajw
+    *ppv = static_cast<IDownloadEvent*>(this);
   } else {
     *ppv = nullptr;
     return E_NOINTERFACE;
@@ -1726,7 +1726,7 @@ HRESULT __stdcall RANetUtilEventSink::QueryInterface(const IID& iid,
                                                      void** ppv) {
   //	debugprint( "RANetUtilEventSink::QueryInterface\n" );
   if ((iid == IID_IUnknown) || (iid == IID_INetUtilEvent)) {
-    *ppv = (INetUtilEvent*)this;  //	Removed static_cast<> ajw
+    *ppv = static_cast<INetUtilEvent*>(this);
   } else {
     *ppv = nullptr;
     return E_NOINTERFACE;

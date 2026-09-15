@@ -421,8 +421,8 @@ T Gcd(const T& a, const T& n) {
 
 template <class T>
 T Generate_Prime(ByteSource& rng, int pbits, const T* /*unused*/) {
-  T minQ = T(1UL) << static_cast<uint16_t>(pbits - (uint16_t)2);
-  T maxQ = (T(1UL) << static_cast<uint16_t>(pbits - (uint16_t)1)) -
+  T minQ = T(1UL) << static_cast<uint16_t>(pbits - static_cast<uint16_t>(2));
+  T maxQ = (T(1UL) << static_cast<uint16_t>(pbits - static_cast<uint16_t>(1))) -
            static_cast<uint16_t>(1);
 
   T q;

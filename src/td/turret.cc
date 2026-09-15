@@ -454,7 +454,8 @@ DirType TurretClass::Fire_Direction() const {
       const int adj = Fixed_To_Cardinal(
           std::abs(SecondaryFacing.Difference(DIR_N)), 64 - diff);
       if (SecondaryFacing.Difference(DIR_N) < 0) {
-        return static_cast<DirType>(SecondaryFacing - (DirType)adj);
+        return static_cast<DirType>(SecondaryFacing -
+                                    static_cast<DirType>(adj));
       }
       return SecondaryFacing + static_cast<DirType>(adj);
     }

@@ -200,19 +200,19 @@ void TDropListClass<T>::Zap() {
 template <class T>
 TDropListClass<T>& TDropListClass<T>::Add(LinkClass& object) {
   DropButton.Add(object);
-  return ((TDropListClass&)EditClass::Add(object));
+  return dynamic_cast<TDropListClass&>(EditClass::Add(object));
 }
 
 template <class T>
 TDropListClass<T>& TDropListClass<T>::Add_Tail(LinkClass& object) {
   DropButton.Add_Tail(object);
-  return ((TDropListClass&)EditClass::Add_Tail(object));
+  return dynamic_cast<TDropListClass&>(EditClass::Add_Tail(object));
 }
 
 template <class T>
 TDropListClass<T>& TDropListClass<T>::Add_Head(LinkClass& object) {
   DropButton.Add_Head(object);
-  return ((TDropListClass&)EditClass::Add_Head(object));
+  return dynamic_cast<TDropListClass&>(EditClass::Add_Head(object));
 }
 
 template <class T>
@@ -221,7 +221,7 @@ TDropListClass<T>* TDropListClass<T>::Remove() {
     Collapse();
   }
   DropButton.Remove();
-  return ((TDropListClass*)EditClass::Remove());
+  return dynamic_cast<TDropListClass*>(EditClass::Remove());
 }
 
 template <class T>

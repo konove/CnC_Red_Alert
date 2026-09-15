@@ -278,7 +278,7 @@ uint16_t Get_Build_Frame_Height(const void* dataptr) {
 bool Get_Build_Frame_Palette(const void* dataptr, void* palette) {
   if (dataptr && static_cast<const KeyFrameHeaderType*>(dataptr)->flags & 1) {
     const char* ptr = static_cast<const char*>(Add_Long_To_Pointer(
-        dataptr, (((int32_t)sizeof(uint32_t) << 1) *
+        dataptr, ((static_cast<int32_t>(sizeof(uint32_t)) << 1) *
                   static_cast<const KeyFrameHeaderType*>(dataptr)->frames) +
                      16 + sizeof(KeyFrameHeaderType)));
 

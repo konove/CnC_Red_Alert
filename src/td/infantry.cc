@@ -2898,9 +2898,8 @@ ActionType InfantryClass::What_Action(ObjectClass* object) {
   */
   if (House->Is_Ally(object) && IsOwnedByPlayer && object->Is_Techno() &&
       IsOwnedByPlayer &&
-      ((InfantryClass*)this)
-              ->Transmit_Message(RADIO_CAN_LOAD, dynamic_cast<TechnoClass*>(
-                                                     object)) == RADIO_ROGER) {
+      Transmit_Message(RADIO_CAN_LOAD, dynamic_cast<TechnoClass*>(object)) ==
+          RADIO_ROGER) {
     //	if (object->Owner() == Owner() && object->What_Am_I() == RTTI_UNIT &&
     //((UnitClass *)object)->Class->IsTransporter && ((UnitClass
     //*)object)->How_Many() < 5) {

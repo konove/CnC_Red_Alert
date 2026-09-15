@@ -915,14 +915,12 @@ bool TriggerTypeClass::Edit() {
     spc1.Add_Item(SpecialWeaponName[spec]);
     spc2.Add_Item(SpecialWeaponName[spec]);
   }
-  if ((unsigned)Action1.Data.Special <
-      magic_enum::enum_count<SpecialWeaponType>()) {
+  if (magic_enum::enum_contains(Action1.Data.Special)) {
     spc1.Set_Selected_Index(Action1.Data.Special);
   } else {
     spc1.Set_Selected_Index(0);
   }
-  if ((unsigned)Action2.Data.Special <
-      magic_enum::enum_count<SpecialWeaponType>()) {
+  if (magic_enum::enum_contains(Action2.Data.Special)) {
     spc2.Set_Selected_Index(Action2.Data.Special);
   } else {
     spc2.Set_Selected_Index(0);
@@ -945,12 +943,12 @@ bool TriggerTypeClass::Edit() {
     qlist1.Add_Item(QuarryName[q]);
     qlist2.Add_Item(QuarryName[q]);
   }
-  if ((unsigned)Action1.Data.Quarry < magic_enum::enum_count<QuarryType>()) {
+  if (magic_enum::enum_contains(Action1.Data.Quarry)) {
     qlist1.Set_Selected_Index(Action1.Data.Quarry);
   } else {
     qlist1.Set_Selected_Index(0);
   }
-  if ((unsigned)Action2.Data.Quarry < magic_enum::enum_count<QuarryType>()) {
+  if (magic_enum::enum_contains(Action2.Data.Quarry)) {
     qlist2.Set_Selected_Index(Action2.Data.Quarry);
   } else {
     qlist2.Set_Selected_Index(0);

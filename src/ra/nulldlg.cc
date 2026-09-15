@@ -5507,7 +5507,7 @@ int Com_Show_Scenario_Dialog() {
             port::SafeCopy(Session.ScenarioFileName,
                            ReceivePacket.ScenarioInfo.ShortFileName);
             port::SafeCopy(Session.ScenarioDigest,
-                           (char*)ReceivePacket.ScenarioInfo.FileDigest);
+                           ReceivePacket.ScenarioInfo.FileDigest);
             Session.ScenarioIsOfficial =
                 ReceivePacket.ScenarioInfo.OfficialScenario;
             Session.ScenarioFileLength = ReceivePacket.ScenarioInfo.FileLength;

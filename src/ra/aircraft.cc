@@ -2466,8 +2466,8 @@ int AircraftClass::Mission_Attack() {
           */
           int diff = SecondaryFacing.Difference(Direction(NavCom));
           diff = Bound(diff, -128, 128);
-          PrimaryFacing =
-              static_cast<DirType>((int)SecondaryFacing.Current() + diff);
+          PrimaryFacing = static_cast<DirType>(
+              static_cast<int>(SecondaryFacing.Current()) + diff);
         }
         return 1;
       }
@@ -3537,8 +3537,9 @@ void AircraftClass::Set_Speed(int speed) {
 
   FootClass::Set_Speed(speed);
 
-  const MPHType sp = static_cast<MPHType>(std::min(
-      Class->MaxSpeed * SpeedBias * House->AirspeedBias, int(MPH_LIGHT_SPEED)));
+  const MPHType sp = static_cast<MPHType>(
+      std::min(Class->MaxSpeed * SpeedBias * House->AirspeedBias,
+               static_cast<int>(MPH_LIGHT_SPEED)));
   Fly_Speed(speed, sp);
 }
 

@@ -389,7 +389,7 @@ int Check_Menu(MenuConfig& menu, const char* text[], uint32_t field,
     default:
       for (int menu_item = 0; menu_item < menu.item_count; menu_item++) {
         if (toupper(*text[Select_To_Entry(menu_item, field, index)]) ==
-            toupper(Keyboard::To_ASCII((KeyNumType)(key & 0x0FF)))) {
+            toupper(Keyboard::To_ASCII(static_cast<KeyNumType>(key & 0x0FF)))) {
           newitem = select = menu_item;
           break;
         }
@@ -498,7 +498,7 @@ int Do_Menu(const char** strings, bool blue) {
   /*
   **	Display the menu.
   */
-  Change_Window((int)WINDOW_MENU);
+  Change_Window(WINDOW_MENU);
   Show_Mouse();
   Window_Box(WINDOW_MENU, blue ? BOXSTYLE_BLUE_UP : BOXSTYLE_RAISED);
   Setup_Menu(menu_config, strings, 0xFFFFL, 0, 0);
@@ -520,7 +520,7 @@ int Do_Menu(const char** strings, bool blue) {
   Hide_Mouse();
 
   HidPage.Blit(SeenBuff);
-  Change_Window((int)WINDOW_MAIN);
+  Change_Window(WINDOW_MAIN);
   Map.Flag_To_Redraw(true);
   return selection;
 }

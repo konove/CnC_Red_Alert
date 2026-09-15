@@ -3722,7 +3722,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       port::SafeCopy(Session.ScenarioFileName,
                      Session.GPacket.ScenarioInfo.ShortFileName);
       port::SafeCopy(Session.ScenarioDigest,
-                     (char*)Session.GPacket.ScenarioInfo.FileDigest);
+                     Session.GPacket.ScenarioInfo.FileDigest);
       Session.ScenarioIsOfficial =
           Session.GPacket.ScenarioInfo.OfficialScenario;
       Session.ScenarioFileLength = Session.GPacket.ScenarioInfo.FileLength;
@@ -4882,7 +4882,7 @@ static int Net_New_Dialog() {
         port::SafeCopy(
             Session.GPacket.ScenarioInfo.ShortFileName,
             Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
-        strncpy((char*)Session.GPacket.ScenarioInfo.FileDigest,
+        strncpy(Session.GPacket.ScenarioInfo.FileDigest,
                 Session.Scenarios[Session.Options.ScenarioIndex]->Get_Digest(),
                 sizeof(Session.GPacket.ScenarioInfo.FileDigest));
         Session.GPacket.ScenarioInfo.OfficialScenario =

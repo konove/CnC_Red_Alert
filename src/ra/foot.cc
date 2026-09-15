@@ -249,8 +249,8 @@ void FootClass::Debug_Dump(MonoClass* mono) const {
     for (base::ssize index = 0;
          index < std::min<base::ssize>(12, std::ssize(Path)); index++) {
       mono->Set_Cursor(static_cast<int>(54 + index), 3);
-      mono->Printf("%s",
-                   _p2c[(std::abs((int)Path[index] + 1) % std::ssize(_p2c))]);
+      mono->Printf("%s", _p2c[(std::abs(static_cast<int>(Path[index]) + 1) %
+                               std::ssize(_p2c))]);
     }
     mono->Set_Cursor(54, 5);
     mono->Printf("%2d", PathThreshhold);

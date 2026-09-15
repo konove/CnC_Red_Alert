@@ -1295,8 +1295,8 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
                   (cbox_x[MAX_MPLAYER_COLORS - 1] + d_color_w) &&
               Keyboard->MouseQY > d_color_y &&
               Keyboard->MouseQY < (d_color_y + d_color_h)) {
-            Session.PrefColor =
-                (PlayerColorType)((Keyboard->MouseQX - cbox_x[0]) / d_color_w);
+            Session.PrefColor = static_cast<PlayerColorType>(
+                (Keyboard->MouseQX - cbox_x[0]) / d_color_w);
 
             //	Ensure that no one is using this color (to our knowledge).
             if (pILPlayers->FindColor(
@@ -1375,8 +1375,8 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         break;
 
       case ButtonKey(BUTTON_HOUSE):
-        Session.House =
-            (HousesType)(pDropListHouse->Current_Index() + HOUSE_USSR);
+        Session.House = static_cast<HousesType>(
+            pDropListHouse->Current_Index() + HOUSE_USSR);
         /*
                                         //	Bloody bloody hell I can't
         believe there are bugs in RA like the one I deal with here... if(
@@ -2158,8 +2158,8 @@ void WOL_GameSetupDialog::ProcessGuestRequest(User* pUser,
       break;
     }
     case WOL_GAMEOPT_REQHOUSE: {
-      const HousesType HouseChoice =
-          (HousesType)tech::ParseInteger<int>(szRequest).value_or(0);
+      const HousesType HouseChoice = static_cast<HousesType>(
+          tech::ParseInteger<int>(szRequest).value_or(0));
       //		debugprint( "Host received: '%s' changed house to
       //%u.\n", (char*)pUser->name, HouseChoice );
       SetPlayerHouse(WolText(pUser->name), HouseChoice);
@@ -2632,7 +2632,7 @@ bool WOL_GameSetupDialog::AcceptParams(char* szParams) {
     return false;
   }
   Session.ScenarioIsOfficial =
-      (bool)tech::ParseInteger<int>(szToken).value_or(0);
+      tech::ParseInteger<int>(szToken).value_or(0) != 0;
 
   szToken = tokens.Next();
   if (!szToken) {
@@ -2754,13 +2754,13 @@ bool WOL_GameSetupDialog::AcceptParams(char* szParams) {
   if (!szToken) {
     return false;
   }
-  bAftermathUnits = (bool)tech::ParseInteger<int>(szToken).value_or(0);
+  bAftermathUnits = tech::ParseInteger<int>(szToken).value_or(0) != 0;
 
   szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
-  bSlowUnitBuildRate = (bool)tech::ParseInteger<int>(szToken).value_or(0);
+  bSlowUnitBuildRate = tech::ParseInteger<int>(szToken).value_or(0) != 0;
 
   szToken = tokens.Next();
   if (!szToken) {
@@ -2787,7 +2787,7 @@ void WOL_GameSetupDialog::SetGParamsToCurrent(GAMEPARAMS& GParams) const {
       GParams.GPacket.ScenarioInfo.ShortFileName,
       Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
   //	Digest is not null-terminated.
-  strncpy((char*)GParams.GPacket.ScenarioInfo.FileDigest,
+  strncpy(GParams.GPacket.ScenarioInfo.FileDigest,
           Session.Scenarios[Session.Options.ScenarioIndex]->Get_Digest(),
           sizeof(GParams.GPacket.ScenarioInfo.FileDigest));
   GParams.GPacket.ScenarioInfo.OfficialScenario =
@@ -2831,8 +2831,7 @@ bool operator==(const GlobalPacketType& gp1, const GlobalPacketType& gp2) {
     return false;
   }
   //	Digest is not null-terminated...
-  if (strncmp((const char*)gp1.ScenarioInfo.FileDigest,
-              (const char*)gp2.ScenarioInfo.FileDigest,
+  if (strncmp(gp1.ScenarioInfo.FileDigest, gp2.ScenarioInfo.FileDigest,
               sizeof(gp1.ScenarioInfo.FileDigest)) != 0) {
     return false;
   }
@@ -3008,7 +3007,7 @@ bool WOL_GameSetupDialog::InformAboutPlayerHouse(const char* szName,
     *szSend = 0;
   } else {
     sprintf(szSend, "%02i %06i %02i %s", WOL_GAMEOPT_INFHOUSE, nHostLastParamID,
-            (short)House, szName);
+            static_cast<int>(House), szName);
   }
 
   return pWO->SendGameOpt(szSend, pUserPriv);
@@ -3121,7 +3120,7 @@ void WOL_GameSetupDialog::OnGuestJoin(User* pUser) {
           //				InformAboutPlayerHouse( szPlayerName,
           // House, pUser );
           char szSendHouse[50];
-          sprintf(szSendHouse, " 1 %02i", (short)House);
+          sprintf(szSendHouse, " 1 %02i", static_cast<int>(House));
           port::SafeAppend(szSendPiece, szSendHouse);
         } else {
           //	Player must not have told me what house he is yet. Don't send
@@ -3196,19 +3195,19 @@ void WOL_GameSetupDialog::AcceptNewGuestPlayerInfo(char* szMsg) {
 
     //	Read color.
     szToken = tokens.Next();
-    const PlayerColorType Color =
-        (PlayerColorType)tech::ParseInteger<int>(szToken).value_or(0);
+    const PlayerColorType Color = static_cast<PlayerColorType>(
+        tech::ParseInteger<int>(szToken).value_or(0));
     SetPlayerColor(szPlayerName, Color);
 
     //	Read whether there is a house field.
     szToken = tokens.Next();
-    const bool bHouseField = (bool)tech::ParseInteger<int>(szToken).value_or(0);
+    const bool bHouseField = tech::ParseInteger<int>(szToken).value_or(0) != 0;
 
     if (bHouseField) {
       //	Read house.
       szToken = tokens.Next();
       const HousesType House =
-          (HousesType)tech::ParseInteger<int>(szToken).value_or(0);
+          static_cast<HousesType>(tech::ParseInteger<int>(szToken).value_or(0));
       SetPlayerHouse(szPlayerName, House);
     }
 
@@ -3292,7 +3291,7 @@ PlayerColorType WOL_GameSetupDialog::ColorNextAvailable() {
 
   for (int i = 0; i < MAX_MPLAYER_COLORS; i++) {
     if (pILPlayers->FindColor(&ColorRemaps[i]) == -1) {
-      return (PlayerColorType)i;
+      return static_cast<PlayerColorType>(i);
     }
   }
   //	debugprint( "ColorNextAvailable is NONE!\n" );
@@ -3529,8 +3528,8 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
   while (const char* szToken = tokens.Next()) {
     port::SafeCopy(szPlayerName, szToken);
 
-    const PlayerColorType Color =
-        (PlayerColorType)tech::ParseInteger<int>(tokens.Next()).value_or(0);
+    const PlayerColorType Color = static_cast<PlayerColorType>(
+        tech::ParseInteger<int>(tokens.Next()).value_or(0));
     SetPlayerColor(szPlayerName, Color);  //	ajw note: inserts if not found.
   }
 

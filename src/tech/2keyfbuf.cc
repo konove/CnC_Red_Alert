@@ -37,7 +37,7 @@ enum BlitFlags {
 
 // the one in jshell isn't const enough
 static constexpr BlitFlags operator|(BlitFlags t1, BlitFlags t2) {
-  return static_cast<BlitFlags>((int)t1 | (int)t2);
+  return static_cast<BlitFlags>(static_cast<int>(t1) | static_cast<int>(t2));
 }
 
 #define PRED_MASK 0xE

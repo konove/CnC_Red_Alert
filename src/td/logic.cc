@@ -155,7 +155,7 @@ void LogicClass::Debug_Dump(MonoClass* mono) {
   /*
   **	Fill in the data for the current frame's performance record.
   */
-  SpareTicks = std::min(SpareTicks, (int64_t)kTimerSecond);
+  SpareTicks = std::min(SpareTicks, static_cast<int64_t>(kTimerSecond));
   _record[RECORDCOUNT - 1].Graphic = Fixed_To_Cardinal(
       RECORDHEIGHT, Cardinal_To_Fixed(kTimerSecond, static_cast<int>(SpareTicks)));
 

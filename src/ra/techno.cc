@@ -2011,7 +2011,7 @@ bool TechnoClass::Evaluate_Cell(ThreatType method, int mask, CELL cell,
       }
     }
 
-    tentative = dynamic_cast<const TechnoClass*>((ObjectClass*)tentative->Next);
+    tentative = dynamic_cast<const TechnoClass*>(tentative->Next);
   }
 
   if (tentative == nullptr) {

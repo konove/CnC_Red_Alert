@@ -326,7 +326,7 @@ static bool Consists_Only_Of_Infantry(const FootClass* first) {
     if (first->What_Am_I() != RTTI_INFANTRY) {
       return false;
     }
-    first = dynamic_cast<const FootClass*>((ObjectClass*)first->Next);
+    first = dynamic_cast<const FootClass*>(first->Next);
   }
   return true;
 }

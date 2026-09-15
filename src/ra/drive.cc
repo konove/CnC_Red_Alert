@@ -627,7 +627,7 @@ bool DriveClass::While_Moving() {
   */
   MPHType maxspeed = static_cast<MPHType>(std::min(
       Techno_Type_Class()->MaxSpeed * SpeedBias * House->GroundspeedBias,
-      (int)MPH_LIGHT_SPEED));
+      static_cast<int>(MPH_LIGHT_SPEED)));
   if (IsFormationMove) {
     maxspeed = FormationMaxSpeed;
   }

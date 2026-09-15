@@ -933,7 +933,7 @@ void MapEditClass::Draw_Member(const TechnoTypeClass* ptr, int index, int quant,
   WindowList[WINDOW_EDITOR][WINDOWY] = y;
   WindowList[WINDOW_EDITOR][WINDOWWIDTH] = D_PICTURE_W;
   WindowList[WINDOW_EDITOR][WINDOWHEIGHT] = D_PICTURE_H;
-  Change_Window((int)WINDOW_EDITOR);
+  Change_Window(WINDOW_EDITOR);
 
   Hide_Mouse();
   Draw_Box(x, y, D_PICTURE_W, D_PICTURE_H, BOXSTYLE_DOWN, true);

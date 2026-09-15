@@ -3398,13 +3398,13 @@ ActionType UnitClass::What_Action(ObjectClass* object) {
       **	The MCV will get the no-deploy cursor if it couldn't
       **	deploy at its current location.
       */
-      ((ObjectClass&)*this).Mark(MARK_UP);
+      Mark(MARK_UP);
       if (!BuildingTypeClass::As_Reference(STRUCT_CONST)
                .Legal_Placement(
                    Coord_Cell(Adjacent_Cell(Center_Coord(), FACING_NW)))) {
         action = ACTION_NO_DEPLOY;
       }
-      ((ObjectClass&)*this).Mark(MARK_DOWN);
+      Mark(MARK_DOWN);
 
     } else {
       /*
@@ -3732,8 +3732,9 @@ DirType UnitClass::Desired_Load_Dir(ObjectClass* passenger,
     **	Give more weight to the cells that require the least rotation of the
     *transport or the *	least roundabout movement for the potential passenger.
     */
-    value -= std::abs(static_cast<int>((signed char)Facing_Dir(face)) -
-                      static_cast<int>((signed char)faceto));
+    value -=
+        std::abs(static_cast<int>(static_cast<signed char>(Facing_Dir(face))) -
+                 static_cast<int>(static_cast<signed char>(faceto)));
     if (face == FACING_S) {
       value -= 100;
     }

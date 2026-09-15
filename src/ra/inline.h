@@ -116,7 +116,7 @@
  * HISTORY: * 08/21/1996 JLB : Created. *
  *=============================================================================================*/
 inline int Lepton_To_Pixel(LEPTON lepton) {
-  return ((static_cast<int>((int16_t)lepton) * ICON_PIXEL_W) +
+  return ((static_cast<int>(static_cast<int16_t>(lepton)) * ICON_PIXEL_W) +
           (ICON_LEPTON_W / 2)) /
          ICON_LEPTON_W;
 }
@@ -624,8 +624,9 @@ inline COORDINATE Coord_Mid(COORDINATE coord1, COORDINATE coord2) {
  * HISTORY: * 08/26/1996 JLB : Created. *
  *=============================================================================================*/
 inline FacingType Dir_Facing(DirType facing) {
-  return static_cast<FacingType>(((unsigned char)((int)facing + 0x10) & 0xFF) >>
-                                 5);
+  return static_cast<FacingType>(
+      (static_cast<unsigned char>(static_cast<int>(facing) + 0x10) & 0xFF) >>
+      5);
 }
 
 /***********************************************************************************************
@@ -643,7 +644,7 @@ inline FacingType Dir_Facing(DirType facing) {
  * HISTORY: * 08/26/1996 JLB : Created. *
  *=============================================================================================*/
 inline DirType Facing_Dir(FacingType facing) {
-  return static_cast<DirType>((int)facing << 5);
+  return static_cast<DirType>(static_cast<int>(facing) << 5);
 }
 
 /***********************************************************************************************
@@ -850,7 +851,8 @@ inline CELL Adjacent_Cell(CELL cell, DirType dir) {
  * HISTORY: * 08/26/1996 JLB : Created. *
  *=============================================================================================*/
 inline FacingType Dir_To_8(DirType facing) {
-  return static_cast<FacingType>((unsigned char)((int)facing | 0x10) >> 5);
+  return static_cast<FacingType>(
+      static_cast<unsigned char>(static_cast<int>(facing) | 0x10) >> 5);
 }
 
 /***********************************************************************************************

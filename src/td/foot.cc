@@ -403,7 +403,7 @@ bool FootClass::Basic_Path() {
     if (Can_Enter_Cell(cell) == MOVE_NO && Distance(NavCom) > 0x0300) {
       static const int _faceadjust[8] = {0, 1, -1, 2, -2, 3, -3, 4};
       const auto f2 = static_cast<FacingType>(
-          (unsigned)::Direction(cell, Coord_Cell(Coord)) >> 5);
+          static_cast<unsigned>(::Direction(cell, Coord_Cell(Coord))) >> 5);
 
       for (const int index : _faceadjust) {
         CELL cell2;

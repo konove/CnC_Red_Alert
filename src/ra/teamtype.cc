@@ -1154,7 +1154,8 @@ bool TeamTypeClass::Edit() {
                 tm->Data.Value = (tm->Data.Value + 1) * 26;
                 tm->Data.Value += toupper(*(arg_edt.Get_Text() + 1)) - 'A';
               }
-              if ((unsigned)tm->Data.Value >= ScenarioClass::kHomeWaypoint) {
+              if (tm->Data.Value < 0 ||
+                  tm->Data.Value >= ScenarioClass::kHomeWaypoint) {
                 tm->Data.Value = 0;
               }
               break;
@@ -1204,7 +1205,8 @@ bool TeamTypeClass::Edit() {
                 tm->Data.Value = (tm->Data.Value + 1) * 26;
                 tm->Data.Value += toupper(*(arg_edt.Get_Text() + 1)) - 'A';
               }
-              if ((unsigned)tm->Data.Value >= ScenarioClass::kHomeWaypoint) {
+              if (tm->Data.Value < 0 ||
+                  tm->Data.Value >= ScenarioClass::kHomeWaypoint) {
                 tm->Data.Value = 0;
               }
               break;
@@ -1255,7 +1257,8 @@ bool TeamTypeClass::Edit() {
                 tm->Data.Value = (tm->Data.Value + 1) * 26;
                 tm->Data.Value += toupper(*(arg_edt.Get_Text() + 1)) - 'A';
               }
-              if ((unsigned)tm->Data.Value >= ScenarioClass::kHomeWaypoint) {
+              if (tm->Data.Value < 0 ||
+                  tm->Data.Value >= ScenarioClass::kHomeWaypoint) {
                 tm->Data.Value = 0;
               }
               break;

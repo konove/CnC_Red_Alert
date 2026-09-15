@@ -380,7 +380,7 @@ int TListClass<T>::Add_Item(T text) {
 
 template <class T>
 void TListClass<T>::Remove_Index(int index) {
-  if ((unsigned)index < List.Count()) {
+  if (index >= 0 && index < List.Count()) {
     List.Delete(index);
 
     /*
@@ -717,7 +717,7 @@ GadgetClass* TListClass<T>::Remove() {
 
 template <class T>
 void TListClass<T>::Set_Selected_Index(int index) {
-  if ((unsigned)index < List.Count()) {
+  if (index >= 0 && index < List.Count()) {
     SelectedIndex = index;
     Flag_To_Redraw();
     if (SelectedIndex < CurrentTopIndex) {

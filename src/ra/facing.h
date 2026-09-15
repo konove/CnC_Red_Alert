@@ -82,10 +82,12 @@ class FacingClass {
     return DesiredFacing != CurrentFacing;
   }
   [[nodiscard]] int Difference() const {
-    return static_cast<signed char>((int)DesiredFacing - (int)CurrentFacing);
+    return static_cast<signed char>(static_cast<int>(DesiredFacing) -
+                                    static_cast<int>(CurrentFacing));
   }
   [[nodiscard]] int Difference(DirType facing) const {
-    return static_cast<signed char>((int)facing - (int)CurrentFacing);
+    return static_cast<signed char>(static_cast<int>(facing) -
+                                    static_cast<int>(CurrentFacing));
   }
   bool Rotation_Adjust(int rate);
 

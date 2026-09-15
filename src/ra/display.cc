@@ -1259,9 +1259,9 @@ bool DisplayClass::Scroll_Map(DirType facing, int& distance, bool really) {
   /*
   **	Clip the new coordinate to the edges of the game world.
   */
-  int xx = static_cast<int>((int16_t)Coord_X(coord)) -
+  int xx = static_cast<int>(static_cast<int16_t>(Coord_X(coord))) -
            static_cast<int16_t>(Cell_To_Lepton(MapCellX));
-  int yy = static_cast<int>((int16_t)Coord_Y(coord)) -
+  int yy = static_cast<int>(static_cast<int16_t>(Coord_Y(coord))) -
            static_cast<int16_t>(Cell_To_Lepton(MapCellY));
   bool shifted = Confine_Rect(&xx, &yy, TacLeptonWidth, TacLeptonHeight,
                               Cell_To_Lepton(MapCellWidth),

@@ -313,7 +313,7 @@ void Debug_Key(unsigned input) {
         if (CurrentObject.Count() && CurrentObject[0]->Is_Techno()) {
           const auto& ttype = dynamic_cast<const TechnoTypeClass&>(
               CurrentObject[0]->Class_Of());
-          const int sight = ((int)ttype.SightRange) << 8;
+          const int sight = ttype.SightRange << 8;
           int weapon = 0;
           if (ttype.PrimaryWeapon != nullptr) {
             weapon = ttype.PrimaryWeapon->Range;
@@ -327,8 +327,8 @@ void Debug_Key(unsigned input) {
             int y;
             int x1;
             int y1;
-            const auto r1 = (DirType)r;
-            const auto r2 = (DirType)((r + 10) & 0xFF);
+            const auto r1 = static_cast<DirType>(r);
+            const auto r2 = static_cast<DirType>((r + 10) & 0xFF);
 
             if (Map.Coord_To_Pixel(
                     Coord_Move(center, r1, static_cast<uint16_t>(sight)), x,

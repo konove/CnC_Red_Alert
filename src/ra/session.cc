@@ -356,7 +356,7 @@ bool SessionClass::Am_I_Master() {
   // the master.
   //------------------------------------------------------------------------
   for (i = 0; i < Session.MaxPlayers; i++) {
-    house = static_cast<HousesType>((int)HOUSE_MULTI1 + i);
+    house = static_cast<HousesType>(HOUSE_MULTI1 + i);
     hptr = HouseClass::As_Pointer(house);
     if (hptr->IsHuman) {
       return PlayerPtr == hptr;

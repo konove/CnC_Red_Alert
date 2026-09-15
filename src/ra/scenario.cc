@@ -2488,7 +2488,7 @@ static void Remove_AI_Players() {
   HouseClass* housep;
 
   for (i = 0; i < kMaxPlayers; i++) {
-    house = static_cast<HousesType>(i + (int)HOUSE_MULTI1);
+    house = static_cast<HousesType>(i + HOUSE_MULTI1);
     housep = HouseClass::As_Pointer(house);
     if (!static_cast<bool>(housep->IsHuman)) {
       aicount++;

@@ -522,8 +522,9 @@ AnimClass::AnimClass(AnimType animnum, COORDINATE coord,
                    PlayerPtr, false);
   }
 
-  Loops = static_cast<unsigned char>(std::max(int(loop), 1) * Class->Loops);
-  Loops = static_cast<unsigned char>(std::max(int(Loops), 1));
+  Loops = static_cast<unsigned char>(std::max(static_cast<int>(loop), 1) *
+                                     Class->Loops);
+  Loops = static_cast<unsigned char>(std::max(static_cast<int>(Loops), 1));
 
   /*
   **	If the animation starts immediately, then play the associated sound

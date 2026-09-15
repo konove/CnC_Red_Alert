@@ -46,7 +46,7 @@ void WOLEditClass::Draw_Text(const char* text) {
   if (Has_Focus()) {
     flags = TPF_BRIGHT_COLOR;
   } else {
-    flags = (TextPrintType)0;
+    flags = static_cast<TextPrintType>(0);
   }
 
   Conquer_Clip_Text_Print(text, X + 1, Y + 1, Color, TBLACK, TextFlags | flags,
@@ -108,13 +108,14 @@ bool WOLEditClass::Action(unsigned flags, KeyNumType& key) {
       flags = 0;
 
     } else {
-      const auto ascii = (KeyASCIIType)(KeyboardClass::To_ASCII(key) & 0xff);
+      const auto ascii =
+          static_cast<KeyASCIIType>(KeyboardClass::To_ASCII(key) & 0xff);
 
       //
       // Allow numeric keypad presses to map to ascii numbers
       //
       if ((key & WWKEY_VK_BIT) && ascii >= '0' && ascii <= '9') {
-        key = (KeyNumType)(key & ~WWKEY_VK_BIT);
+        key = static_cast<KeyNumType>(key & ~WWKEY_VK_BIT);
         if (((!(flags & LEFTRELEASE)) && (!(flags & RIGHTRELEASE))) &&
             Handle_Key(ascii)) {
           flags &= ~KEYBOARD;

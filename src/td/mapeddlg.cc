@@ -2114,7 +2114,8 @@ int MapEditClass::Scenario_Dialog() {
     theater; if not compatible, set TType to TEMPLATE_NONE & TIcon to 0
   - Then, re-initialize the TypeClasses for the new Theater
   ........................................................................*/
-  theater = (TheaterType)(THEATER_NONE + 1 + theaterbtn.Current_Index());
+  theater =
+      static_cast<TheaterType>(THEATER_NONE + 1 + theaterbtn.Current_Index());
   if (theater != orig_theater) {
     /*
     ....................... Loop through all cells ........................
@@ -2953,14 +2954,14 @@ int MapEditClass::Edit_Trigger() {
   ......................... Fill in the list boxes .........................
   */
   for (i = 0; i < EVENT_COUNT; i++) {
-    eventnames[i] = TriggerClass::Name_From_Event((EventType)i);
+    eventnames[i] = TriggerClass::Name_From_Event(static_cast<EventType>(i));
     eventlist.Add_Item(eventnames[i]);
   }
   eventlist.Set_Selected_Index(event_idx);
 
   for (i = 0; i < TriggerClass::ACTION_COUNT; i++) {
-    actionnames[i] =
-        TriggerClass::Name_From_Action((TriggerClass::ActionType)i);
+    actionnames[i] = TriggerClass::Name_From_Action(
+        static_cast<TriggerClass::ActionType>(i));
     actionlist.Add_Item(actionnames[i]);
   }
   actionlist.Set_Selected_Index(action_idx);
@@ -3137,7 +3138,8 @@ int MapEditClass::Edit_Trigger() {
       case ButtonKey(BUTTON_MULTI4):
       case ButtonKey(BUTTON_MULTI5):
       case ButtonKey(BUTTON_MULTI6):
-        house = (HousesType)(static_cast<int>(input & ~KN_BUTTON) - BUTTON_GDI);
+        house = static_cast<HousesType>(static_cast<int>(input & ~KN_BUTTON) -
+                                        BUTTON_GDI);
         Set_House_Buttons(house, commands, BUTTON_GDI);
         break;
 

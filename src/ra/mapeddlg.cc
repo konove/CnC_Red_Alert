@@ -1882,7 +1882,7 @@ int MapEditClass::Load_Scenario() {
     for (const VQType v : magic_enum::enum_values<VQType>()) {
       intro.Add_Item(VQName[v]);
     }
-    intro.Set_Selected_Index((int)Scen.IntroMovie + 1);
+    intro.Set_Selected_Index(Scen.IntroMovie + 1);
 
     /*
     **	Briefing movie name.
@@ -1897,7 +1897,7 @@ int MapEditClass::Load_Scenario() {
     for (const VQType v : magic_enum::enum_values<VQType>()) {
       briefing.Add_Item(VQName[v]);
     }
-    briefing.Set_Selected_Index((int)Scen.BriefMovie + 1);
+    briefing.Set_Selected_Index(Scen.BriefMovie + 1);
 
     char actiontext[kMaxFname + kMaxExt];
     DropListClass action(BUTTON_ACTION, actiontext, sizeof(actiontext),
@@ -1909,7 +1909,7 @@ int MapEditClass::Load_Scenario() {
     for (const VQType v : magic_enum::enum_values<VQType>()) {
       action.Add_Item(VQName[v]);
     }
-    action.Set_Selected_Index((int)Scen.ActionMovie + 1);
+    action.Set_Selected_Index(Scen.ActionMovie + 1);
 
     char wintext[kMaxFname + kMaxExt];
     DropListClass win(BUTTON_WIN, wintext, sizeof(wintext),
@@ -1920,7 +1920,7 @@ int MapEditClass::Load_Scenario() {
     for (const VQType v : magic_enum::enum_values<VQType>()) {
       win.Add_Item(VQName[v]);
     }
-    win.Set_Selected_Index((int)Scen.WinMovie + 1);
+    win.Set_Selected_Index(Scen.WinMovie + 1);
 
     char losetext[kMaxFname + kMaxExt];
     DropListClass lose(BUTTON_LOSE, losetext, sizeof(losetext),
@@ -1931,7 +1931,7 @@ int MapEditClass::Load_Scenario() {
     for (const VQType v : magic_enum::enum_values<VQType>()) {
       lose.Add_Item(VQName[v]);
     }
-    lose.Set_Selected_Index((int)Scen.LoseMovie + 1);
+    lose.Set_Selected_Index(Scen.LoseMovie + 1);
 
     /*
     **	House choice list.

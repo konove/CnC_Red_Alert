@@ -250,7 +250,7 @@ void MapEditClass::One_Time() {
   ........................................................................*/
   FacingDial =
       new Dial8Class(POPUP_FACINGDIAL, POPUP_FACEBOX_X, POPUP_FACEBOX_Y,
-                     POPUP_FACEBOX_W, POPUP_FACEBOX_H, (DirType)0);
+                     POPUP_FACEBOX_W, POPUP_FACEBOX_H, static_cast<DirType>(0));
 
   /*........................................................................
   The base percent-built slider & its label
@@ -979,7 +979,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       ------------------------------------------------------------------*/
       if (CurrentCell != 0) {
         waypt_idx = (KN_To_KA(input & 0xff) - KA_1);
-        house = (HousesType)(HOUSE_MULTI1 + waypt_idx);
+        house = static_cast<HousesType>(HOUSE_MULTI1 + waypt_idx);
         if (HouseClass::As_Pointer(house)) {
           HouseClass::As_Pointer(house)->Flag_Attach(CurrentCell, true);
         }
@@ -990,7 +990,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         ------------------------------------------------------------------*/
         if (CurrentObject[0] != nullptr) {
           waypt_idx = (KN_To_KA(input & 0xff) - KA_1);
-          house = (HousesType)(HOUSE_MULTI1 + waypt_idx);
+          house = static_cast<HousesType>(HOUSE_MULTI1 + waypt_idx);
           if (HouseClass::As_Pointer(house) &&
               CurrentObject[0]->What_Am_I() == RTTI_UNIT) {
             HouseClass::As_Pointer(house)->Flag_Attach(
@@ -1021,7 +1021,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         that waypoint.
         ...............................................................*/
         for (i = 0; i < MAX_PLAYERS; i++) {
-          house = (HousesType)(HOUSE_MULTI1 + i);
+          house = static_cast<HousesType>(HOUSE_MULTI1 + i);
           if (HouseClass::As_Pointer(house) &&
               CurrentCell == HouseClass::As_Pointer(house)->FlagHome) {
             HouseClass::As_Pointer(house)->Flag_Remove(As_Target(CurrentCell),
@@ -1222,7 +1222,8 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       /*..................................................................
       Convert input value into a house value; assume HOUSE_GOOD is 0
       ..................................................................*/
-      house = (HousesType)(static_cast<int>(input & ~KN_BUTTON) - POPUP_GDI);
+      house = static_cast<HousesType>(static_cast<int>(input & ~KN_BUTTON) -
+                                      POPUP_GDI);
       /*..................................................................
       If that house doesn't own this object, try to transfer it
       ..................................................................*/

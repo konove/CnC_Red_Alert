@@ -465,7 +465,7 @@ KeyNumType GadgetClass::Input() {
         }
       }
 
-      Write_PCX_File(filename, temp_page, (unsigned char*)CurrentPalette);
+      Write_PCX_File(filename, temp_page, CurrentPalette);
       // Map.Place_Random_Crate();
     }
   }

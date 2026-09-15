@@ -63,16 +63,18 @@ typedef enum DirType : uint8_t {
 
 // Operators that allow simple math with DirType.
 inline DirType operator+(DirType f1, DirType f2) {
-  return static_cast<DirType>(((int)f1 + (int)f2) & 0x00FF);
+  return static_cast<DirType>((static_cast<int>(f1) + static_cast<int>(f2)) &
+                              0x00FF);
 }
 inline DirType operator+(DirType f1, int f2) {
-  return static_cast<DirType>(((int)f1 + f2) & 0x00FF);
+  return static_cast<DirType>((static_cast<int>(f1) + f2) & 0x00FF);
 }
 inline DirType operator-(DirType f1, DirType f2) {
-  return static_cast<DirType>(((int)f1 - (int)f2) & 0x00FF);
+  return static_cast<DirType>((static_cast<int>(f1) - static_cast<int>(f2)) &
+                              0x00FF);
 }
 inline DirType operator-(DirType f1, int f2) {
-  return static_cast<DirType>(((int)f1 - f2) & 0x00FF);
+  return static_cast<DirType>((static_cast<int>(f1) - f2) & 0x00FF);
 }
 
 // Function prototypes.

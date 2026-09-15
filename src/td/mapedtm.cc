@@ -952,7 +952,8 @@ int MapEditClass::Edit_Team() {
   ......................... Fill in mission lists ..........................
   */
   for (i = 0; i < TMISSION_COUNT; i++) {
-    missionlist1.Add_Item(TeamTypeClass::Name_From_Mission((TeamMissionType)i));
+    missionlist1.Add_Item(
+        TeamTypeClass::Name_From_Mission(static_cast<TeamMissionType>(i)));
   }
 
   missioncount = CurTeam->MissionCount;
@@ -1266,8 +1267,8 @@ int MapEditClass::Edit_Team() {
           /*
           ** Set the Mission value based on 1st list box's index
           */
-          missions[i].Mission = (TeamMissionType)(TMISSION_ATTACKBASE +
-                                                  missionlist1.Current_Index());
+          missions[i].Mission = static_cast<TeamMissionType>(
+              TMISSION_ATTACKBASE + missionlist1.Current_Index());
 
           /*
           ** Set the missions argument field
@@ -1336,7 +1337,8 @@ int MapEditClass::Edit_Team() {
       case ButtonKey(BUTTON_MULTI2):
       case ButtonKey(BUTTON_MULTI3):
       case ButtonKey(BUTTON_MULTI4):
-        house = (HousesType)(static_cast<int>(input & ~KN_BUTTON) - BUTTON_GDI);
+        house = static_cast<HousesType>(static_cast<int>(input & ~KN_BUTTON) -
+                                        BUTTON_GDI);
         Set_House_Buttons(house, commands, BUTTON_GDI);
         break;
 
@@ -2017,7 +2019,7 @@ void MapEditClass::Draw_Member(const TechnoTypeClass* ptr, int index, int quant,
   WindowList[WINDOW_EDITOR][WINDOWY] = 0;
   WindowList[WINDOW_EDITOR][WINDOWWIDTH] = 640 / 8;
   WindowList[WINDOW_EDITOR][WINDOWHEIGHT] = 400;
-  Change_Window((int)WINDOW_EDITOR);
+  Change_Window(WINDOW_EDITOR);
 
   Hide_Mouse();
   Draw_Box(x, y, D_PICTURE_W, D_PICTURE_H, BOXSTYLE_GREEN_DOWN, true);
