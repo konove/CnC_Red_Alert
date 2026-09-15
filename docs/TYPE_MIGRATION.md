@@ -166,9 +166,11 @@ base::ssize VectorMax;                     // capacity (include "base/types.h", 
 
 ## Type Conversion Casts
 
-When migrating types, also replace C-style integer casts on the same lines with C++ alternatives.
-This is opportunistic — only fix casts in code being touched for type migration. Do not go on a
-codebase-wide cast hunt.
+C-style casts are gone from the tree and clang-tidy rejects new ones
+(`modernize-avoid-c-style-cast`, `google-readability-casting` and `-Wold-style-cast`, enabled
+2026-09-15). Write every conversion with one of the alternatives below, and prefer no cast at all
+where the language already converts: an enumerator in integer arithmetic (`HOUSE_MULTI1 + i`), a
+`T*` passed as `void*`, an array passed as a pointer to its own element type.
 
 ### Cast Alternatives (Preferred Order)
 
@@ -361,10 +363,9 @@ When encountering a virtual function with a legacy type:
 
 4. **Add `#include <cstdint>`** if not already present and fixed-width types were introduced.
 
-5. **Replace C-style integer casts** on lines being modified. Use brace initialization
-   (`int32_t{value}`) for compile-time-safe conversions, or `static_cast<int32_t>(value)` when
-   narrowing is intentional. Leave casts on unmodified lines alone. See
-   [Type Conversion Casts](#type-conversion-casts) for details.
+5. **Spell conversions as named casts.** Use brace initialization (`int32_t{value}`) for
+   compile-time-safe conversions, or `static_cast<int32_t>(value)` when narrowing is intentional;
+   the build rejects C-style casts. See [Type Conversion Casts](#type-conversion-casts) for details.
 
 6. **Update format strings** if any printf-family calls reference the changed types.
 

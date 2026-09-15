@@ -66,8 +66,6 @@
  *=============================================================================================*/
 #include "td/mission.h"
 
-#include <cstdint>
-
 #include "port/ex_string.h"
 #include "td/config.h"
 #include "td/defines.h"

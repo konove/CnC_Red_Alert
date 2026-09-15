@@ -2,7 +2,7 @@
 
 Updated: 2026-09-15, against [`.clang-tidy`](../.clang-tidy) and clang-tidy 23.1.2.
 
-This tracks **all 113 currently excluded check names** and completed entries, in recommended work
+This tracks **all 110 currently excluded check names** and completed entries, in recommended work
 order. Priorities reflect likely defect prevention, relevance to this engine, and the cost of useful
 fixes; they are judgments, not fresh finding counts. Start at P1 and work downward. Aliases stay
 beside their related check so a single cleanup can handle them together. Previously deferred checks
@@ -127,10 +127,10 @@ comes from the installed tool, since the online documentation follows LLVM devel
 | `cppcoreguidelines-avoid-c-arrays`                              | Skipped | Alias of `modernize-avoid-c-arrays`; skipped with it.                                                                                                                                                                                                                                                                                                                                                                        |
 | `hicpp-avoid-c-arrays`                                          | Legacy  | Unavailable in LLVM 23; review with `modernize-avoid-c-arrays` on older tools.                                                                                                                                                                                                                                                                                                                                               |
 | `cppcoreguidelines-use-enum-class`                              | Skipped | Commit `Record the remaining P3 policy decisions`: 517 reports; unnamed integer-constant enums, ordered dialog redraw levels and the `defines.h` index enums. See review below.                                                                                                                                                                                                                                              |
-| `modernize-avoid-c-style-cast`                                  | Skipped | Commit `Record the remaining P3 policy decisions`: 1,393 casts; `docs/TYPE_MIGRATION.md` makes cast replacement opportunistic and rules out a codebase-wide hunt. See review below.                                                                                                                                                                                                                                          |
-| `google-readability-casting`                                    | Skipped | Commit `Record the remaining P3 policy decisions`: alias of `modernize-avoid-c-style-cast`, skipped with it.                                                                                                                                                                                                                                                                                                                 |
+| `modernize-avoid-c-style-cast`                                  | Enabled | Commits `Drop the int casts from the key-number case labels` through `Enable the numeric cast checks`: 416 sites, none replaced by a bare `reinterpret_cast`; the casting macros are constants. See the numeric cast enablement review below.                                                                                                                                                                                |
+| `google-readability-casting`                                    | Enabled | Alias enabled with `modernize-avoid-c-style-cast` in commit `Enable the numeric cast checks`.                                                                                                                                                                                                                                                                                                                                |
 | `cppcoreguidelines-pro-type-cstyle-cast`                        | Enabled | Commits `Add byte-view helpers for the C-style cast work` through `Enable cppcoreguidelines-pro-type-cstyle-cast`: 415 type-unsafe casts, none replaced by a bare `reinterpret_cast`. Found an RA team-editor overflow, a TD map validator that rejected every 64-bit heap pointer, TD mono output writing to address 0xB0000, and signed-char PCX palette reads. See the enablement review below.                           |
-| `clang-diagnostic-old-style-cast`                               | Skipped | Commit `Record the remaining P3 policy decisions`: 0 reports because the clang flag set passes `-Wno-old-style-cast`; GCC's strict set already has `-Wold-style-cast`.                                                                                                                                                                                                                                                       |
+| `clang-diagnostic-old-style-cast`                               | Enabled | Commit `Enable the numeric cast checks`: `-Wno-old-style-cast` is gone from the clang strict flag set; the compiler found 58 casts inside macro expansions the tidy check skips, now constants. See the numeric cast enablement review below.                                                                                                                                                                                |
 | `clang-diagnostic-deprecated-enum-enum-conversion`              | Enabled | Commit `Drop the implicit FIRST enum aliases and fix mixed enum operations`: 76 reports; the `WWKEY_*` modifier bits are flags, so they became integer constants, and five facing-to-animation offsets cast the facing to `int`.                                                                                                                                                                                             |
 | `clang-diagnostic-deprecated-anon-enum-enum-conversion`         | Enabled | Commit `Drop the implicit FIRST enum aliases and fix mixed enum operations`: three TD editor house-button offsets now subtract from an integer key number.                                                                                                                                                                                                                                                                   |
 | `clang-diagnostic-deprecated-enum-compare`                      | Enabled | Commit `Drop the implicit FIRST enum aliases and fix mixed enum operations`: six comparisons against the wrong enum's zero or 1002 constant (`RESULT_NONE` for `IMPACT_NONE`, `ACTION_NONE` for `TACTION_NONE`, `NET_FILE_CHUNK` for `SERIAL_FILE_CHUNK`); values were equal, so behavior is unchanged.                                                                                                                      |
@@ -1438,6 +1438,36 @@ team, building, mobile, map and globals fixtures. The phone books, WOL messages 
 are not on the smoke path; that remains a manual check. The excluded-name count drops from 118
 to 113.
 
+### Numeric cast enablement (2026-09-15)
+
+`modernize-avoid-c-style-cast`, its alias `google-readability-casting` and
+`clang-diagnostic-old-style-cast` are now enforced; the plan is
+[NUMERIC_CAST_PLAN.md](NUMERIC_CAST_PLAN.md). The isolated sweep over the 486 translation units of
+the strict compile database found 416 unique sites (ra 225, td 185, tech 6), down from the 1,393
+recorded on 2026-09-12: the cast-qual and `pro-type-cstyle-cast` series had removed the rest on the
+way. `-Wold-style-cast` then found 58 more inside macro expansions, which the tidy check does not
+visit.
+
+| Group                                                          | Sites | Fix                                                                                                                                                                                                                                                              |
+| -------------------------------------------------------------- | ----- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Key-number case labels in the map editors and debug handlers   | 196   | `case KN_UP \| KN_ALT_BIT:` with no cast; `jshell.h`'s `constexpr operator\|` combines the enumerators and the label converts to the switch's `int`.                                                                                                             |
+| Enum and numeric conversions                                   | ~150  | The check's fix-its (`static_cast<T>`), applied with `clang-apply-replacements`; the `jshell.h` enum operator templates and the facing arithmetic in `face.h`, `facing.h` and `defines.h` by hand in the same form.                                              |
+| Enumerator promotions                                          | 17    | No cast: `HOUSE_MULTI1 + i`, `Scen.IntroMovie + 1`, `Change_Window(WINDOW_EDITOR)`, `Fear + morefear`.                                                                                                                                                           |
+| `(bool)` on parsed integers and registry values                | 8     | `!= 0`.                                                                                                                                                                                                                                                          |
+| Casts to the operand's own type                                | 16    | Deleted: the `char[32]` scenario digest, the `unsigned char[]` palette, an `int` sight range, `ObjectClass* Next`, `(UnitClass*)this`, and `((ObjectClass&)*this).Mark(...)`, which dispatched virtually anyway.                                                 |
+| Pointer and reference conversions the unsafe check let through | 16    | `static_cast` for the COM upcasts and the `bsearch` result; nothing for `T*` into the `void*` list data; `TDropListClass::Add`/`Remove` use `dynamic_cast` like `DropListClass` already did.                                                                     |
+| `(unsigned)index < count` range idiom                          | 11    | `index >= 0 && index < count` in `list.h`, `teamtype.cc` and TD's `display.cc`; `magic_enum::enum_contains` for the trigger special-weapon and quarry fields. The bit-manipulation `(unsigned)` casts in `target.h`, `inline.h` and `foot.cc` are `static_cast`. |
+| Casting macros seen only by the compiler                       | 58    | `constexpr` constants: the path-finder `kClockwise`/`kCounterclockwise`/`kEmptyCommand`, the stats packet types, `tech/mp.h`'s `kSemiMask`; `sha.cc` uses `std::min`; the IFF `MAKE_ID` macro is a `constexpr int32_t MakeId(char, char, char, char)`.           |
+
+No defect came out of it; the `(ObjectClass&)` casts around `Mark` and the `(int32_t)` on TD's
+already-`int` pixel maths were the only sites that did nothing at all.
+
+Verification: the isolated sweep at zero with `-Wold-style-cast` added; a probe confirming the
+enabled configuration reports `(int)x` under both names; the full strict build; CTest (456 tests);
+and the RA and TD save/load smoke tests, including the TD team, building, mobile, map and globals
+fixtures. The map editors, debug key handlers and WOL dialogs are not on the smoke path; that
+remains a manual check. The excluded-name count drops from 113 to 110.
+
 ### Nodiscard review (2026-09-12)
 
 `modernize-use-nodiscard` is now enforced. Its fix-its add `[[nodiscard]]` to 927 value-returning
@@ -2147,9 +2177,9 @@ sample confirmed the enabled check reports an error.
    enabling is unsuitable, record the concrete reason rather than silently dropping the row.
 
 Compiler diagnostic filters also depend on warning flags. In particular, `unsafe-buffer-usage`,
-`old-style-cast`, `padded`, and `covered-switch-default` are suppressed in
-[CMakeLists.txt](../CMakeLists.txt); removing their tidy exclusions alone does not enable them. An
-isolated diagnostic sweep needs its warning flag and at least one real clang-tidy check.
+`padded`, and `covered-switch-default` are suppressed in [CMakeLists.txt](../CMakeLists.txt);
+removing their tidy exclusions alone does not enable them. An isolated diagnostic sweep needs its
+warning flag and at least one real clang-tidy check.
 
 Preserve the [type-migration policy](TYPE_MIGRATION.md), deterministic simulation RNG, and
 packet/recording layouts when applying broad rules. Field-wise savegames do not make all layout

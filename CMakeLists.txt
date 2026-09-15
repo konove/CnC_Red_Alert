@@ -155,7 +155,6 @@ else ()
                     -Wno-c++98-compat
                     -Wno-c++98-compat-pedantic
                     -Wno-unsafe-buffer-usage
-                    -Wno-old-style-cast
                     -Wno-padded
                     # -Wswitch-enum wants every enumerator listed, while GCC's
                     # -Wswitch-default wants a default label. Clang flags that
