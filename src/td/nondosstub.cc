@@ -148,7 +148,7 @@ void Load_Title_Screen(const char* name, GraphicViewPortClass* video_page,
                        unsigned char* palette) {
   GraphicBufferClass* load_buffer;
 
-  load_buffer = Read_PCX_File(name, (char*)palette, nullptr, 0);
+  load_buffer = Read_PCX_File(name, palette, nullptr, 0);
 
   if (load_buffer) {
     load_buffer->Blit(*video_page);
@@ -226,8 +226,8 @@ class BufferedFileReader {
   size_t bytes_in_buffer_ = 0;
 };
 
-GraphicBufferClass* Read_PCX_File(const char* name, char* palette, void* Buff,
-                                  int32_t Size) {
+GraphicBufferClass* Read_PCX_File(const char* name, unsigned char* palette,
+                                  void* Buff, int32_t Size) {
   GameFile file_handle(name);
 
   if (!file_handle.IsAvailable()) {

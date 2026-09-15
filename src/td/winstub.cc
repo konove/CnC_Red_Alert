@@ -561,8 +561,8 @@ void Memory_Error_Handler() {
   ExitProcess(0);
 }
 
-GraphicBufferClass* Read_PCX_File(const char* name, char* Palette, void* Buff,
-                                  long Size);
+GraphicBufferClass* Read_PCX_File(const char* name, unsigned char* Palette,
+                                  void* Buff, long Size);
 
 /***********************************************************************************************
  * Load_Title_Screen -- loads the title screen into the given video buffer *
@@ -582,7 +582,7 @@ void Load_Title_Screen(const char* name, GraphicViewPortClass* video_page,
                        unsigned char* palette) {
   GraphicBufferClass* load_buffer;
 
-  load_buffer = Read_PCX_File(name, (char*)palette, NULL, 0);
+  load_buffer = Read_PCX_File(name, palette, NULL, 0);
 
   if (load_buffer) {
     load_buffer->Blit(*video_page);
@@ -628,8 +628,8 @@ void Load_Title_Screen(const char* name, GraphicViewPortClass* video_page,
     file_ptr = pool;                   \
   }
 
-GraphicBufferClass* Read_PCX_File(const char* name, char* palette, void* Buff,
-                                  long Size) {
+GraphicBufferClass* Read_PCX_File(const char* name, unsigned char* palette,
+                                  void* Buff, long Size) {
   unsigned i, j;
   unsigned rle;
   unsigned color;
