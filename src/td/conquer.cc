@@ -523,9 +523,9 @@ void Keyboard_Process(KeyNumType& input) {
   if constexpr (config::kCheatKeysEnabled) {
     if (Debug_Flag) {
       switch (static_cast<int>(input)) {
-        case (int)KN_M | (int)KN_SHIFT_BIT:
-        case (int)KN_M | (int)KN_ALT_BIT:
-        case (int)KN_M | (int)KN_CTRL_BIT:
+        case KN_M | KN_SHIFT_BIT:
+        case KN_M | KN_ALT_BIT:
+        case KN_M | KN_CTRL_BIT:
           PlayerPtr->Credits += 10000;
           break;
 

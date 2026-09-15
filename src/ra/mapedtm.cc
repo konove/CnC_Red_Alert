@@ -735,11 +735,11 @@ int MapEditClass::Team_Members(HousesType house) {
         }
         break;
 
-      case ((int)KN_LMOUSE | (int)KN_RLSE_BIT):
+      case (KN_LMOUSE | KN_RLSE_BIT):
         lheld = 0;
         break;
 
-      case ((int)KN_RMOUSE | (int)KN_RLSE_BIT):
+      case (KN_RMOUSE | KN_RLSE_BIT):
         rheld = 0;
         break;
 

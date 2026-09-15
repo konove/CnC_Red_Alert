@@ -190,7 +190,7 @@ void Debug_Key(unsigned input) {
         }
         break;
 
-      case (int)KN_Z | (int)KN_ALT_BIT:
+      case KN_Z | KN_ALT_BIT:
         if (map_x == -1) {
           map_x = Map.MapCellX;
           map_y = Map.MapCellY;
@@ -222,11 +222,11 @@ void Debug_Key(unsigned input) {
         }
         break;
 
-      case (int)KN_W | (int)KN_ALT_BIT:
+      case KN_W | KN_ALT_BIT:
         PlayerPtr->Flag_To_Win();
         break;
 
-      case (int)KN_L | (int)KN_ALT_BIT:
+      case KN_L | KN_ALT_BIT:
         PlayerPtr->Flag_To_Lose();
         break;
 
@@ -245,7 +245,7 @@ void Debug_Key(unsigned input) {
         }
         break;
 
-      case (int)KN_DELETE | (int)KN_SHIFT_BIT:
+      case KN_DELETE | KN_SHIFT_BIT:
         if (CurrentObject.Count()) {
           Map.Recalc();
           int damage = 50;
@@ -349,7 +349,7 @@ void Debug_Key(unsigned input) {
         }
         break;
 
-      case ((int)KN_F4 | (int)KN_CTRL_BIT):
+      case (KN_F4 | KN_CTRL_BIT):
         Debug_Unshroud = !Debug_Unshroud;
         Map.Flag_To_Redraw(true);
         break;

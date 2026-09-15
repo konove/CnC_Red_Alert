@@ -786,7 +786,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     /*
     **	SHIFT-HOME: set new Home Cell position
     */
-    case ((int)KN_HOME | (int)KN_SHIFT_BIT):
+    case (KN_HOME | KN_SHIFT_BIT):
       if (CurrentCell != 0) {
         /*
         ** Unflag the old Home Cell, if there are no other waypoints
@@ -828,7 +828,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     **	SHIFT-R: set new Reinforcement Cell position.  Don't allow setting
     **	the Reinf. Cell to the same as the Home Cell (for display purposes.)
     */
-    case ((int)KN_R | (int)KN_SHIFT_BIT):
+    case (KN_R | KN_SHIFT_BIT):
       if (CurrentCell == 0 ||
           CurrentCell == Scen.Waypoint[ScenarioClass::kHomeWaypoint]) {
         break;
@@ -867,32 +867,32 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     /*
     **	ALT-Letter: Label a waypoint cell
     */
-    case ((int)KN_A | (int)KN_ALT_BIT):
-    case ((int)KN_B | (int)KN_ALT_BIT):
-    case ((int)KN_C | (int)KN_ALT_BIT):
-    case ((int)KN_D | (int)KN_ALT_BIT):
-    case ((int)KN_E | (int)KN_ALT_BIT):
-    case ((int)KN_F | (int)KN_ALT_BIT):
-    case ((int)KN_G | (int)KN_ALT_BIT):
-    case ((int)KN_H | (int)KN_ALT_BIT):
-    case ((int)KN_I | (int)KN_ALT_BIT):
-    case ((int)KN_J | (int)KN_ALT_BIT):
-    case ((int)KN_K | (int)KN_ALT_BIT):
-    case ((int)KN_L | (int)KN_ALT_BIT):
-    case ((int)KN_M | (int)KN_ALT_BIT):
-    case ((int)KN_N | (int)KN_ALT_BIT):
-    case ((int)KN_O | (int)KN_ALT_BIT):
-    case ((int)KN_P | (int)KN_ALT_BIT):
-    case ((int)KN_Q | (int)KN_ALT_BIT):
-    case ((int)KN_R | (int)KN_ALT_BIT):
-    case ((int)KN_S | (int)KN_ALT_BIT):
-    case ((int)KN_T | (int)KN_ALT_BIT):
-    case ((int)KN_U | (int)KN_ALT_BIT):
-    case ((int)KN_V | (int)KN_ALT_BIT):
-    case ((int)KN_W | (int)KN_ALT_BIT):
-    case ((int)KN_X | (int)KN_ALT_BIT):
-    case ((int)KN_Y | (int)KN_ALT_BIT):
-    case ((int)KN_Z | (int)KN_ALT_BIT):
+    case (KN_A | KN_ALT_BIT):
+    case (KN_B | KN_ALT_BIT):
+    case (KN_C | KN_ALT_BIT):
+    case (KN_D | KN_ALT_BIT):
+    case (KN_E | KN_ALT_BIT):
+    case (KN_F | KN_ALT_BIT):
+    case (KN_G | KN_ALT_BIT):
+    case (KN_H | KN_ALT_BIT):
+    case (KN_I | KN_ALT_BIT):
+    case (KN_J | KN_ALT_BIT):
+    case (KN_K | KN_ALT_BIT):
+    case (KN_L | KN_ALT_BIT):
+    case (KN_M | KN_ALT_BIT):
+    case (KN_N | KN_ALT_BIT):
+    case (KN_O | KN_ALT_BIT):
+    case (KN_P | KN_ALT_BIT):
+    case (KN_Q | KN_ALT_BIT):
+    case (KN_R | KN_ALT_BIT):
+    case (KN_S | KN_ALT_BIT):
+    case (KN_T | KN_ALT_BIT):
+    case (KN_U | KN_ALT_BIT):
+    case (KN_V | KN_ALT_BIT):
+    case (KN_W | KN_ALT_BIT):
+    case (KN_X | KN_ALT_BIT):
+    case (KN_Y | KN_ALT_BIT):
+    case (KN_Z | KN_ALT_BIT):
       if (CurrentCell != 0) {
         waypt_idx = (input & ~KN_ALT_BIT) - KN_A;
         Update_Waypoint(waypt_idx);
@@ -904,7 +904,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     ** ALT-. : Designate an extended (2-letter) waypoint name
     */
     case KN_PERIOD:
-    case ((int)KN_PERIOD | (int)KN_ALT_BIT):
+    case (KN_PERIOD | KN_ALT_BIT):
       if (CurrentCell != 0 && Get_Waypoint_Name(wayname)) {
         int waynm = 0;
         if (strlen(wayname)) {
@@ -927,7 +927,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     /*
     **	ALT-Space: Remove a waypoint designation
     */
-    case ((int)KN_SPACE | (int)KN_ALT_BIT):
+    case (KN_SPACE | KN_ALT_BIT):
       if (CurrentCell != 0) {
         /*
         **	Loop through letter waypoints; if this cell is one of them,
@@ -971,7 +971,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     **	'H' = toggle current placement object's house
     */
     case KN_H:
-    case ((int)KN_H | (int)KN_SHIFT_BIT):
+    case (KN_H | KN_SHIFT_BIT):
       if (PendingObject) {
         Toggle_House();
       }
@@ -1055,10 +1055,10 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     /*
     **	SHIFT-ALT-Arrow: move the current object
     */
-    case (int)KN_UP | (int)KN_ALT_BIT | (int)KN_SHIFT_BIT:
-    case (int)KN_DOWN | (int)KN_ALT_BIT | (int)KN_SHIFT_BIT:
-    case (int)KN_LEFT | (int)KN_ALT_BIT | (int)KN_SHIFT_BIT:
-    case (int)KN_RIGHT | (int)KN_ALT_BIT | (int)KN_SHIFT_BIT:
+    case KN_UP | KN_ALT_BIT | KN_SHIFT_BIT:
+    case KN_DOWN | KN_ALT_BIT | KN_SHIFT_BIT:
+    case KN_LEFT | KN_ALT_BIT | KN_SHIFT_BIT:
+    case KN_RIGHT | KN_ALT_BIT | KN_SHIFT_BIT:
       if (CurrentObject.Count()) {
         CurrentObject[0]->Move(KN_To_Facing(input));
         Changed = true;

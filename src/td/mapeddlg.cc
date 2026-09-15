@@ -1386,7 +1386,7 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
         value while the button is being held down, so this case must be
         trapped as a default.
       .....................................................................*/
-      if (static_cast<int>(input) == ((int)KN_LMOUSE | (int)KN_RLSE_BIT)) {
+      if (static_cast<int>(input) == (KN_LMOUSE | KN_RLSE_BIT)) {
         grabbed = 0;
         display = REDRAW_MAP;
       } else {

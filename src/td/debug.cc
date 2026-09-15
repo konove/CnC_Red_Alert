@@ -185,7 +185,7 @@ void Debug_Key(unsigned input) {
       /*
       ** Start saving off screens
       */
-      case (int)KN_K | (int)KN_CTRL_BIT:
+      case KN_K | KN_CTRL_BIT:
         ScreenRecording = true;
         break;
 
@@ -234,7 +234,7 @@ void Debug_Key(unsigned input) {
         }
       } break;
 
-      case (int)KN_B | (int)KN_ALT_BIT: {
+      case KN_B | KN_ALT_BIT: {
         Debug_Instant_Build ^= 1;
       } break;
       case KN_B: {
@@ -287,7 +287,7 @@ void Debug_Key(unsigned input) {
         }
         break;
 
-      case (int)KN_Z | (int)KN_ALT_BIT:
+      case KN_Z | KN_ALT_BIT:
         if (map_x == -1) {
           map_x = Map.MapCellX;
           map_y = Map.MapCellY;
@@ -337,11 +337,11 @@ void Debug_Key(unsigned input) {
         }
         break;
 
-      case (int)KN_W | (int)KN_ALT_BIT:
+      case KN_W | KN_ALT_BIT:
         PlayerPtr->Flag_To_Win();
         break;
 
-      case (int)KN_L | (int)KN_ALT_BIT:
+      case KN_L | KN_ALT_BIT:
         PlayerPtr->Flag_To_Lose();
         break;
 
@@ -363,7 +363,7 @@ void Debug_Key(unsigned input) {
         }
         break;
 
-      case (int)KN_DELETE | (int)KN_SHIFT_BIT:
+      case KN_DELETE | KN_SHIFT_BIT:
         if (CurrentObject.Count()) {
           Map.Recalc();
           int damage = 50;
@@ -405,12 +405,12 @@ void Debug_Key(unsigned input) {
 #endif
 
 #ifdef NEVER
-      case ((int)KN_F1 | (int)KN_SHIFT_BIT):
+      case (KN_F1 | KN_SHIFT_BIT):
         Special.IsBarOn = (Special.IsBarOn == false);
         Map.Flag_To_Redraw(true);
         break;
 
-      case ((int)KN_F1 | (int)KN_SHIFT_BIT):  // quick load/save for debugging
+      case (KN_F1 | KN_SHIFT_BIT):  // quick load/save for debugging
         if (!Save_Game(0, "Command & Conquer Save Game File")) {
           CCMessageBox().Process("Error saving game!");
           Prog_End();
@@ -418,7 +418,7 @@ void Debug_Key(unsigned input) {
         }
         break;
 
-      case ((int)KN_F2 | (int)KN_SHIFT_BIT):  // quick load/save for debugging
+      case (KN_F2 | KN_SHIFT_BIT):  // quick load/save for debugging
         if (!Load_Game(0)) {
           CCMessageBox().Process("Error loading game!");
           Prog_End();
@@ -626,7 +626,7 @@ void Debug_Key(unsigned input) {
 #endif
 
 #ifdef NEVER
-      case ((int)KN_F3 | (int)KN_ALT_BIT):  // quick load/save for debugging
+      case (KN_F3 | KN_ALT_BIT):  // quick load/save for debugging
         Debug_Threat = (Debug_Threat == false);
         Map.Flag_To_Redraw(true);
         break;
@@ -693,7 +693,7 @@ void Debug_Key(unsigned input) {
         }
         break;
 
-      case ((int)KN_F4 | (int)KN_CTRL_BIT):
+      case (KN_F4 | KN_CTRL_BIT):
         Debug_Unshroud = !Debug_Unshroud;
         Map.Flag_To_Redraw(true);
         break;
@@ -712,13 +712,13 @@ void Debug_Key(unsigned input) {
         }
         break;
 
-      case ((int)KN_F9 | (int)KN_CTRL_BIT):
+      case (KN_F9 | KN_CTRL_BIT):
         if (HouseClass::As_Pointer(HOUSE_GOOD)) {
           (HouseClass::As_Pointer(HOUSE_GOOD))->Blowup_All();
         }
         break;
 
-      case ((int)KN_F10 | (int)KN_CTRL_BIT):
+      case (KN_F10 | KN_CTRL_BIT):
         if (HouseClass::As_Pointer(HOUSE_BAD)) {
           (HouseClass::As_Pointer(HOUSE_BAD))->Blowup_All();
         }
