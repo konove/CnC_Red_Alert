@@ -49,6 +49,7 @@
 
 #include <cstdlib>
 #include <cstring>
+#include <random>
 
 #include "base/numeric.h"
 #include "tech/byte_source.h"
@@ -244,8 +245,9 @@ void PKey::Generate(ByteSource& random, int bits, PKey& fastkey,
     char before[256]{};
     char after[256];
 
+    std::minstd_rand filler(std::random_device{}());
     for (int index = 0; index < fastkey.Plain_Block_Size(); index++) {
-      before[index] = static_cast<char>(rand());
+      before[index] = static_cast<char>(filler());
     }
     fastkey.Encrypt(before, fastkey.Plain_Block_Size(), after);
     slowkey.Decrypt(after, slowkey.Crypt_Block_Size(), after);

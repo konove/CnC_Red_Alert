@@ -61,6 +61,7 @@
 
 #include "base/numeric.h"
 #include "port/ex_string.h"
+#include "port/random_seed.h"
 #include "port/safe_string.h"
 #include "port/unaligned.h"
 #include "sdllib/drawbuff.h"
@@ -3460,8 +3461,7 @@ int Com_Scenario_Dialog() {
   Init random-number generator, & create a seed to be used for all random
   numbers from here on out
   ........................................................................*/
-  randomize();
-  Seed = rand();
+  Seed = port::RandomSeed();
 
   /*........................................................................
   Init the message display system

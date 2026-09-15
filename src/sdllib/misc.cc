@@ -7,7 +7,6 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <random>
 
 #include "absl/log/check.h"
 #include "base/hsv.h"
@@ -146,38 +145,6 @@ int Confine_Rect(int* x, int* y, int dw, int dh, int width, int height) {
   }
 
   return ret;
-}
-
-// these are used by TD
-static int Get_Random_Mask(int maxval) {
-  // original asm did something using bsr but I can't be bothered
-  DCHECK(maxval >= 0);
-  maxval |= maxval >> 1;
-  maxval |= maxval >> 2;
-  maxval |= maxval >> 4;
-  maxval |= maxval >> 8;
-  maxval |= maxval >> 16;
-  return maxval;
-}
-
-void randomize() { std::srand(std::random_device{}()); }
-
-int IRandom(int minval, int maxval) {
-  int num;
-  int mask;
-
-  // Keep minval and maxval straight.
-  if (minval > maxval) {
-    minval ^= maxval;
-    maxval ^= minval;
-    minval ^= maxval;
-  }
-
-  mask = Get_Random_Mask(maxval - minval);
-
-  while ((num = (rand() & mask) + minval) > maxval) {
-  }
-  return num;
 }
 
 uint8_t Random() {

@@ -86,9 +86,6 @@ void Prog_End();
 void Delay(int duration);
 
 // extras for TD
-// Seeds the C library generator from an unpredictable source.
-void randomize();
-int IRandom(int minval, int maxval);
 std::uint8_t Random();
 
 void Shake_Screen(int shakes);

@@ -58,13 +58,13 @@
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
-#include <random>
 #include <string>
 #include <utility>
 
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
+#include "port/random_seed.h"
 #include "port/safe_string.h"
 #include "port/unaligned.h"
 #include "ra/ccini.h"
@@ -3067,8 +3067,7 @@ int Com_Scenario_Dialog(bool skirmish) {
   Init random-number generator, & create a seed to be used for all random
   numbers from here on out
   ........................................................................*/
-  srand(std::random_device{}());
-  Seed = rand();
+  Seed = port::RandomSeed();
 
   /*........................................................................
   Init the message display system

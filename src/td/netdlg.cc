@@ -130,6 +130,7 @@
 #include <utility>
 
 #include "port/ex_string.h"
+#include "port/random_seed.h"
 #include "port/safe_string.h"
 #include "port/unaligned.h"
 #include "sdllib/drawbuff.h"
@@ -3068,8 +3069,7 @@ static int Net_New_Dialog() {
   Init random-number generator, & create a seed to be used for all random
   numbers from here on out
   ........................................................................*/
-  randomize();
-  Seed = rand();
+  Seed = port::RandomSeed();
 
   /*........................................................................
   Init the message display system
@@ -4379,8 +4379,7 @@ static int Net_Fake_New_Dialog() {
   Init random-number generator, & create a seed to be used for all random
   numbers from here on out
   ........................................................................*/
-  randomize();
-  Seed = rand();
+  Seed = port::RandomSeed();
 
   /*------------------------------------------------------------------------
   Add myself to the list.  Note that since I'm not in the Players Vector,

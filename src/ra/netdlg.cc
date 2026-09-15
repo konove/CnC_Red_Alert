@@ -134,6 +134,7 @@
 
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
+#include "port/random_seed.h"
 #include "port/safe_string.h"
 #include "ra/_wsproto.h"
 #include "ra/ccini.h"
@@ -201,7 +202,6 @@
 constexpr size_t kGameListItemSize = MPLAYER_NAME_MAX + 64;
 
 #include <iterator>
-#include <random>
 #include <utility>
 
 #include "ra/config.h"
@@ -4309,8 +4309,7 @@ static int Net_New_Dialog() {
   //	Init random-number generator, & create a seed to be used for all random
   //	numbers from here on out
   //------------------------------------------------------------------------
-  srand(std::random_device{}());
-  Seed = rand();
+  Seed = port::RandomSeed();
 
   //------------------------------------------------------------------------
   //	Init the message display system
@@ -7128,7 +7127,7 @@ void Start_WWChat(ColorListClass* playerlist) {
   //------------------------------------------------------------------------
   // Ensure a different sequence each time
   //------------------------------------------------------------------------
-  Scen.sync_rng_.set_seed(static_cast<uint32_t>(rand()));
+  Scen.sync_rng_.set_seed(static_cast<uint32_t>(port::RandomSeed()));
 
   //------------------------------------------------------------------------
   // Add myself to the player list
