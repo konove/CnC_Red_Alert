@@ -1695,11 +1695,11 @@ int AircraftClass::Mission_Move() {
             /*
             **	Normal aircraft try to find a good landing spot to rest.
             */
-            BuildingClass* building = Find_Docking_Bay(Class->Building, false);
+            TechnoClass* dock = Find_Docking_Bay(Class->Building, false);
             if (!Class->IsFixedWing) {
               int dist = 0x7FFFFFFF;
-              if (building) {
-                dist = Distance(building);
+              if (dock) {
+                dist = Distance(dock);
               }
               for (int index = 0; index < Vessels.Count(); index++) {
                 VesselClass* ship = Vessels.Ptr(index);
@@ -1707,8 +1707,8 @@ int AircraftClass::Mission_Move() {
                     !ship->IsInLimbo && ship->IsActive &&
                     ship->House == House &&
                     ship->How_Many() < ship->Class->Max_Passengers()) {
-                  if (Distance(ship) < dist || !building) {
-                    building = (BuildingClass*)ship;
+                  if (Distance(ship) < dist || !dock) {
+                    dock = ship;
                     dist = Distance(ship);
                   }
                   //				break;
@@ -1716,12 +1716,11 @@ int AircraftClass::Mission_Move() {
               }
             }
             Assign_Destination(kTargetNone);
-            if (building &&
-                (Transmit_Message(RADIO_HELLO, building) == RADIO_ROGER ||
-                 building->What_Am_I() == RTTI_VESSEL)) {
+            if (dock && (Transmit_Message(RADIO_HELLO, dock) == RADIO_ROGER ||
+                         dock->What_Am_I() == RTTI_VESSEL)) {
               mission = MISSION_ENTER;
-              if (building->What_Am_I() == RTTI_VESSEL) {
-                Assign_Destination(building->As_Target());
+              if (dock->What_Am_I() == RTTI_VESSEL) {
+                Assign_Destination(dock->As_Target());
               }
             } else {
               Assign_Destination(Good_LZ());
@@ -2009,19 +2008,19 @@ void AircraftClass::Enter_Idle_Mode(bool /*initial*/) {
             /*
             **	Normal aircraft try to find a good landing spot to rest.
             */
-            BuildingClass* building = Find_Docking_Bay(Class->Building, false);
+            TechnoClass* dock = Find_Docking_Bay(Class->Building, false);
             if (!Class->IsFixedWing) {
               int dist = 0x7FFFFFFF;
-              if (building) {
-                dist = Distance(building);
+              if (dock) {
+                dist = Distance(dock);
               }
               for (int index = 0; index < Vessels.Count(); index++) {
                 VesselClass* ship = Vessels.Ptr(index);
                 if (ship != nullptr && *ship == VESSEL_CARRIER &&
                     !ship->IsInLimbo && ship->IsActive &&
                     ship->House == House && ship->How_Many() < ship->Class->Max_Passengers() /* && !ship->In_Radio_Contact()*/) {
-                  if (Distance(ship) < dist || !building) {
-                    building = (BuildingClass*)ship;
+                  if (Distance(ship) < dist || !dock) {
+                    dock = ship;
                     dist = Distance(ship);
                   }
                   //				break;
@@ -2029,12 +2028,11 @@ void AircraftClass::Enter_Idle_Mode(bool /*initial*/) {
               }
             }
             Assign_Destination(kTargetNone);
-            if (building &&
-                (Transmit_Message(RADIO_HELLO, building) == RADIO_ROGER ||
-                 building->What_Am_I() == RTTI_VESSEL)) {
+            if (dock && (Transmit_Message(RADIO_HELLO, dock) == RADIO_ROGER ||
+                         dock->What_Am_I() == RTTI_VESSEL)) {
               mission = MISSION_ENTER;
-              if (building->What_Am_I() == RTTI_VESSEL) {
-                Assign_Destination(building->As_Target());
+              if (dock->What_Am_I() == RTTI_VESSEL) {
+                Assign_Destination(dock->As_Target());
               }
             } else {
               Assign_Destination(Good_LZ());
@@ -3723,27 +3721,27 @@ int AircraftClass::Mission_Guard() {
   **	to rearm.
   */
   if ((Ammo == 0 && Is_Weapon_Equipped()) && (!In_Radio_Contact())) {
-    const BuildingClass* building = Find_Docking_Bay(STRUCT_HELIPAD, false);
+    const TechnoClass* dock = Find_Docking_Bay(STRUCT_HELIPAD, false);
     if (!Class->IsFixedWing) {
       int dist = 0x7FFFFFFF;
-      if (building) {
-        dist = Distance(building);
+      if (dock) {
+        dist = Distance(dock);
       }
       for (int index = 0; index < Vessels.Count(); index++) {
         VesselClass* ship = Vessels.Ptr(index);
         if (ship != nullptr && *ship == VESSEL_CARRIER && !ship->IsInLimbo &&
             ship->IsActive && ship->House == House &&
             ship->How_Many() < ship->Class->Max_Passengers()) {
-          if (Distance(ship) < dist || !building) {
-            building = (BuildingClass*)ship;
+          if (Distance(ship) < dist || !dock) {
+            dock = ship;
             dist = Distance(ship);
           }
           //				break;
         }
       }
     }
-    if (building != nullptr) {
-      Assign_Destination(building->As_Target());
+    if (dock != nullptr) {
+      Assign_Destination(dock->As_Target());
       Assign_Target(kTargetNone);
       Assign_Mission(MISSION_ENTER);
       return 1;

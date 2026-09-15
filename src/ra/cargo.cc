@@ -47,7 +47,6 @@
 #include "ra/foot.h"
 #include "ra/monoc.h"
 #include "ra/object.h"
-#include "ra/techno.h"
 
 /***********************************************************************************************
  * CargoClass::Debug_Dump -- Displays the cargo value to the monochrome screen.
@@ -149,14 +148,14 @@ void CargoClass::Attach(FootClass* object) {
  *object types.                                            *
  *=============================================================================================*/
 FootClass* CargoClass::Detach_Object() {
-  TechnoClass* unit = Attached_Object();
+  FootClass* unit = Attached_Object();
 
   if (unit != nullptr) {
-    CargoHold = (FootClass*)unit->Next;
+    CargoHold = dynamic_cast<FootClass*>(unit->Next);
     unit->Next = nullptr;
     Quantity--;
   }
-  return (FootClass*)unit;
+  return unit;
 }
 
 /***********************************************************************************************

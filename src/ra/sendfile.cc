@@ -125,7 +125,7 @@ bool Get_Scenario_File_From_Host(char* return_name, size_t dest_size,
   SerialPacketType receive_packet;
   GlobalPacketType net_send_packet;
   GlobalPacketType net_receive_packet;
-  unsigned int packet_len;
+  int packet_len;
   uint16_t product_id;
 
   IPXAddressClass sender_address;
@@ -157,7 +157,7 @@ bool Get_Scenario_File_From_Host(char* return_name, size_t dest_size,
     do {
       NullModem.Service();
 
-      if ((NullModem.Get_Message(&receive_packet, (int*)&packet_len) > 0) &&
+      if ((NullModem.Get_Message(&receive_packet, &packet_len) > 0) &&
           (receive_packet.Command == SERIAL_FILE_INFO)) {
         strncpy(return_name, receive_packet.ScenarioInfo.ShortFileName,
                 dest_size);
@@ -305,7 +305,7 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
 
   int last_received_block = -1;  // No blocks received yet
   int total_length = 0;
-  unsigned int packet_len;
+  int packet_len;
 
   /*
   ** If the file name is already in use, use the temp file name
@@ -394,7 +394,7 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
     if (!gametype) {
       NullModem.Service();
 
-      if ((NullModem.Get_Message(&receive_packet, (int*)&packet_len) > 0) &&
+      if ((NullModem.Get_Message(&receive_packet, &packet_len) > 0) &&
           (receive_packet.Command == SERIAL_FILE_CHUNK) &&
           (receive_packet.BlockNumber == last_received_block + 1)) {
         save_file.Write(receive_packet.RawData, receive_packet.BlockLength);
