@@ -2,7 +2,7 @@
 
 Updated: 2026-09-15, against [`.clang-tidy`](../.clang-tidy) and clang-tidy 23.1.2.
 
-This tracks **all 103 currently excluded check names** and completed entries, in recommended work
+This tracks **all 102 currently excluded check names** and completed entries, in recommended work
 order. Priorities reflect likely defect prevention, relevance to this engine, and the cost of useful
 fixes; they are judgments, not fresh finding counts. Start at P1 and work downward. Aliases stay
 beside their related check so a single cleanup can handle them together. Previously deferred checks
@@ -126,7 +126,7 @@ comes from the installed tool, since the online documentation follows LLVM devel
 | `modernize-avoid-c-arrays`                                      | Skipped | Commit `Document P3 checks the legacy-code policy rules out`: 2,252 reports; many arrays are fixed-layout game data, packet and save structures, and STL containers everywhere is what CLAUDE.md's legacy-code rules list it under changes to avoid unless requested. See review below.                                                                                                                                      |
 | `cppcoreguidelines-avoid-c-arrays`                              | Skipped | Alias of `modernize-avoid-c-arrays`; skipped with it.                                                                                                                                                                                                                                                                                                                                                                        |
 | `hicpp-avoid-c-arrays`                                          | Legacy  | Unavailable in LLVM 23; review with `modernize-avoid-c-arrays` on older tools.                                                                                                                                                                                                                                                                                                                                               |
-| `cppcoreguidelines-use-enum-class`                              | Skipped | Commit `Record the remaining P3 policy decisions`: 517 reports; unnamed integer-constant enums, ordered dialog redraw levels and the `defines.h` index enums. See review below.                                                                                                                                                                                                                                              |
+| `cppcoreguidelines-use-enum-class`                              | Enabled | Commit `Enable cppcoreguidelines-use-enum-class`: 255 enums are scoped with `using enum`, 257 constant-only enums are `constexpr` constants, 178 tables are `base::EnumArray`; `KeyNumType`/`KeyASCIIType` stay unscoped under a reasoned `NOLINT`. Plan: `USE_ENUM_CLASS_PLAN.md`; see the enum class enablement review below.                                                                                              |
 | `modernize-avoid-c-style-cast`                                  | Enabled | Commits `Drop the int casts from the key-number case labels` through `Enable the numeric cast checks`: 416 sites, none replaced by a bare `reinterpret_cast`; the casting macros are constants. See the numeric cast enablement review below.                                                                                                                                                                                |
 | `google-readability-casting`                                    | Enabled | Alias enabled with `modernize-avoid-c-style-cast` in commit `Enable the numeric cast checks`.                                                                                                                                                                                                                                                                                                                                |
 | `cppcoreguidelines-pro-type-cstyle-cast`                        | Enabled | Commits `Add byte-view helpers for the C-style cast work` through `Enable cppcoreguidelines-pro-type-cstyle-cast`: 415 type-unsafe casts, none replaced by a bare `reinterpret_cast`. Found an RA team-editor overflow, a TD map validator that rejected every 64-bit heap pointer, TD mono output writing to address 0xB0000, and signed-char PCX palette reads. See the enablement review below.                           |
@@ -1642,6 +1642,62 @@ Verification: the isolated sweep over all 502 source translation units reports n
 strict build with the check enabled; CTest (465 tests); the RA save/load smoke test (240 positions,
 plus the fixture load) and the TD smoke test with every fixture (5,742 to 6,371 states). The
 excluded-name count drops from 96 to 95, counted as the `-name` lines under `Checks`.
+
+### Enum class enablement (2026-09-15)
+
+`cppcoreguidelines-use-enum-class` is now enforced; the plan is
+[USE_ENUM_CLASS_PLAN.md](USE_ENUM_CLASS_PLAN.md). The 2026-09-12 policy kept it out because the core
+type enums index arrays and loops and the unnamed enums are integer constants. A fresh sweep found
+515 unscoped enums in 118 files; scoping every named one with a script and syntax-checking the tree
+measured 7,900 compile errors, 2,000 of them one `GadgetClass` cascade and 1,171 the keyboard codes.
+Each enum took the first rule that applied:
+
+- **Constants (257 enums, 2,378 `constexpr` constants).** Every unnamed enum, and every named enum
+  whose name is never used as a type (`GameOptionsButtonEnum`, `PowerEnums`, `SAMState`, sdllib's
+  `ColorType`, the map editor layout sets, the per-dialog button IDs, the mission-state
+  `enum { INITIAL, DURING }` switched on an `int Status`, `GadgetClass`'s input flags), became
+  `constexpr int` (`uint32_t` for bit sets) named `kPascalCase`, with every use renamed. Constants
+  no configuration referenced were deleted rather than kept as unused variables.
+- **Scoped enums (255, each followed by `using enum`).** The enumerator names are the game's data
+  vocabulary in tens of thousands of table rows and INI keys; `using enum` keeps them resolving
+  unqualified, including `Class::ENUMERATOR` for nested enums, while the scope removes the implicit
+  conversions. `typedef enum X {...} Y;` became `enum class Y`.
+- **Tables (178 `base::EnumArray`).** `base/enum_array.h` wraps `T[N]`, subscripts by the enum and
+  iterates like `std::array`; RA sizes it from `magic_enum::enum_count`, TD from new `kXCount`
+  constants beside its `X_COUNT` sentinels. Every table already sized by `enum_count`, the
+  `TypeClass::Pointers` tables, the per-house and per-type counters and the local lookup tables
+  changed form; their subscripts did not. A brace initializer of struct elements needed one more
+  brace pair.
+- **Conversions.** `base::Bit<T>(enum)` and `base::Any(flags)` (`base/numeric.h`) and the
+  constrained flag operators in `base/flags.h` (opted into by the sdllib flag enums; the games' flag
+  enums keep the `jshell.h` templates) absorb the bit work; the remaining enum-to-int sites are
+  `static_cast<int>` (about 1,180 net), most of them heap `Ptr()` indices, `ScanBit`, `WindowList`
+  subscripts, packet byte fields and `DirType`/`MPHType` arithmetic. `tech/2keyfbuf.h` takes
+  `ShapeFlags_Type` instead of `uint32_t`; `FactoryClass::SpecialItem` is a `SpecialWeaponType`.
+- **Key codes.** `KeyNumType` and `KeyASCIIType` stay unscoped under one reasoned `NOLINT`: a key
+  number is a bit pattern (code, modifier bits, `KN_BUTTON | id`) that the keyboard buffer stores as
+  an integer and masks at 1,171 sites; scoping it adds a cast at each and no safety.
+
+The scope found five defects, each fixed and commented at the site: RA `event.cc` stored a target's
+RTTI kind instead of the target in `ArchiveTarget` (compiled through `operator RTTIType()`); RA
+`teamtype.cc` indexed `FormationName` with the union sibling `Data.Quarry`; RA `overlay.cc` reset
+zones with the `MZONE_` enumerators (`0 | 1`) where the `kZoneFlag` mask was meant, so the crusher
+zone was never reset; RA `cell.cc` summed `BQuantity` past its end (the table is three short of the
+type count, now `HouseClass::kBuildingQuantityCount`); RA `house.cc` indexed `HouseTriggers` by heap
+ID rather than house type. Two old 8-bit `255` sentinels on `TemplateType` (`radar.cc`, `vortex.cc`)
+are kept as casts with comments.
+
+Two tooling findings: TD test targets that did not link `base` lost the magic_enum include path once
+`td/defines.h` used `EnumArray`, and clang's error recovery then resolved gtest's `Message() << x`
+to the `bool` overload, which surfaced as nonsense `readability-implicit-bool-conversion` findings;
+they link `base` now. Scripted enumerator renames must skip strings and comments and check short
+names (`SC`, `SE`, `RED`) for collisions.
+
+Verification: the isolated sweep over all 940 compile commands reports nothing for the check; the
+full strict build with the check enabled; CTest (475 tests); the RA save/load smoke test (240
+positions, plus the fixture load) and the TD smoke test with every fixture (5,742 to 6,371 states).
+Enums serialize through `static_cast<int32_t>`, so the save format is unchanged. The excluded-name
+count drops from 95 to 94.
 
 ### Nodiscard review (2026-09-12)
 
