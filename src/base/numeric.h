@@ -10,6 +10,7 @@
 #include <concepts>
 #include <cstddef>
 #include <limits>
+#include <type_traits>
 #include <utility>
 
 #include "absl/log/check.h"
@@ -56,6 +57,25 @@ template <std::unsigned_integral T>
 constexpr T Bit(int index) noexcept {
   DCHECK(index >= 0 && index < std::numeric_limits<T>::digits);
   return static_cast<T>(T{1} << static_cast<unsigned>(index));
+}
+
+// The same for an index enum: `base::Bit<uint32_t>(HOUSE_SPAIN)`.
+template <std::unsigned_integral T, class E>
+  requires std::is_enum_v<E>
+constexpr T Bit(E index) noexcept {
+  return Bit<T>(static_cast<int>(index));
+}
+
+// True when any bit of a flag enum value is set. A scoped enum is not
+// contextually convertible to bool, so `if (flags & SHAPE_GHOST)` is written
+// `if (base::Any(flags & SHAPE_GHOST))`.
+//
+// Example:
+//   if (base::Any(threat & THREAT_RANGE)) ...
+template <class E>
+  requires std::is_enum_v<E>
+constexpr bool Any(E flags) noexcept {
+  return static_cast<std::underlying_type_t<E>>(flags) != 0;
 }
 
 }  // namespace base

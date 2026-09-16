@@ -31,7 +31,9 @@ TEST(ToSignedTest, PreservesRepresentableValues) {
   static_assert(ToSigned(3U) == 3);
 }
 
-enum Index { kFirst = 0, kSecond = 1, kLast = 31 };
+enum class Index { kFirst = 0, kSecond = 1, kLast = 31 };
+using enum Index;
+enum class Flags : uint8_t { kNone = 0, kRead = 1, kWrite = 2 };
 
 TEST(BitTest, SetsTheIndexedBit) {
   EXPECT_EQ(Bit<uint32_t>(0), 1U);
@@ -42,6 +44,13 @@ TEST(BitTest, SetsTheIndexedBit) {
   static_assert(Bit<uint32_t>(kFirst) == 1U);
   static_assert((Bit<uint64_t>(40) | Bit<uint64_t>(1)) ==
                 (uint64_t{1} << 40 | 2U));
+}
+
+TEST(AnyTest, IsTrueWhenAnyBitIsSet) {
+  static_assert(!Any(Flags::kNone));
+  static_assert(Any(Flags::kRead));
+  EXPECT_TRUE(Any(static_cast<Flags>(3)));
+  EXPECT_FALSE(Any(Flags{}));
 }
 
 #ifndef NDEBUG

@@ -8,12 +8,12 @@ target_sources(base PUBLIC
         FILES ${BASE_HEADERS}
 )
 
-target_link_libraries(base INTERFACE absl::check)
+target_link_libraries(base INTERFACE absl::check magic_enum::magic_enum)
 
 # Tests
 include(Testing)
 add_gtest(
         NAME base_test
-        SOURCES hsv_test.cc numeric_test.cc
+        SOURCES enum_array_test.cc hsv_test.cc numeric_test.cc
         LIBS base absl::core_headers
 )
