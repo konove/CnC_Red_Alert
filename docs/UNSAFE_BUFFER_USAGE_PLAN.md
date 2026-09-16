@@ -1,83 +1,83 @@
 # Enable clang-diagnostic-unsafe-buffer-usage
 
-The completion criterion is repository-wide enforcement, not a single defect: remove the clang-tidy
-exclusion and the strict Clang warning suppression, then pass candidate analysis, the full
-configured checks, both strict game builds, and the tests. Preserve simulation behavior, file
-formats, and packet layouts.
+Completed: the whole diagnostic family is enabled, including its unsafe libc-call and span-container
+children. Both the `.clang-tidy` exclusion and strict Clang warning suppression are removed. The
+completion criterion was repository-wide enforcement, not a single defect.
 
-## Work sequence
+## Plan and completed work
 
-1. Commit the completed LCW destination-bounds fix and its regression tests as a standalone
-   correctness change.
-2. Measure the warning across all project translation units and generated header checks, excluding
-   dependencies. Group unique findings by buffer/API and use compiler migration suggestions where
-   they preserve behavior.
-3. Migrate fixed arrays and their consumers to bounded access. Keep externally specified record
-   layouts unchanged. Propagate spans/string views through internal APIs instead of recovering
-   lengths from unbounded pointers.
-4. Migrate byte-buffer, codec, rendering, and I/O operations with explicit sizes. Validate sizes at
-   input boundaries. Any unavoidable C/OS interoperability boundary must have a narrow, reviewed
-   bounds contract; do not suppress whole files or hide arbitrary indexing behind an unchecked
-   helper.
-5. Handle both games' remaining table, string, heap, and pointer-walking sites. Commit coherent
-   API/component migrations and keep the inventory current.
-6. Remove both exclusions. Run the candidate and full-config sweeps over all project units,
-   strict-build both games, and run CTest. Use regression tests, sanitizer probes, and save/load
-   smoke checks for behavior-sensitive changes.
-7. Prove enforcement with a deliberately unsafe sample, mark the priorities row Enabled with the
-   enabling commit, and commit the final documentation.
+1. Fix LCW destination overruns and invalid back-references with regression tests.
+2. Inventory every configured project translation unit and generated header, excluding dependencies.
+3. Replace raw fixed-array indexing with checked access while retaining storage layouts.
+4. Carry string and byte extents through internal APIs; validate sizes at input boundaries.
+5. Migrate both games, shared codecs, rendering/audio, networking, profiles, containers, and UI.
+   Parallel agents handled independent API chains while integration and validation remained central.
+6. Enable the complete diagnostic family, run all configured checks, strict-build both games, and
+   verify tests, sanitizers, save/load behavior, and generated headers.
+7. Prove enforcement with deliberately unsafe code, update the priorities row, and commit.
 
-## Progress
+## Implementation history
 
-- LCW destination-bounds fix complete and validated (see LCW_BUFFER_BOUNDS_PLAN.md).
-- Baseline: 941 project translation units, 6,318 unique warnings (including the child diagnostics
-  for unsafe C library calls and span construction). Two generated VQA header checks also exposed a
-  missing public `base` dependency.
-- Fixed-array batch in validation: 2,233 accesses migrated in 152 files; array storage layouts are
-  unchanged. Checked element access rejects negative and excessive indices, while suffix views
-  preserve legal one-past pointers.
-- After the initial array rewrite: 943 units scanned, 4,345 warnings and no compile failures.
-  Subsequent suffix fixes will be included in the next sweep.
-- Next: null-terminated string views, then pointer/size APIs and buffer ownership.
-- Enforcement remains pending until the entire remaining inventory is resolved.
+| Commit                                                    | Completed change                                                                   |
+| --------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `ccb16f17`                                                | LCW output command bounds and back-reference validation.                           |
+| `c48eea0b`                                                | Repository-wide implementation and validation plan.                                |
+| `a0efc4fa`                                                | 2,233 fixed-array accesses in 152 files; checked access preserves storage layouts. |
+| `0e136dda`                                                | 293 C-string length/comparison operations in 68 files use string views.            |
+| `91e85664`                                                | 155 bounded memory operations and extent-preserving address APIs.                  |
+| `070fd49d`                                                | Bounded byte views and checked span cursor consumption.                            |
+| `452b8a5c`                                                | Complete buffer API migration, both games, and regression coverage.                |
+| `Enforce clang unsafe buffer diagnostics repository-wide` | Configuration enablement and final record.                                         |
 
-### Fixed-array validation
+The initial 941-unit inventory contained 6,318 unique diagnostics, including child diagnostics. The
+final inventory contains 952 units, reflecting added tests and generated header checks.
 
-Both strict game builds and all 486 CTest tests pass. Save/load smoke checks match 240 RA object
-positions and 5,742 TD game states.
+Bounds now travel from an allocation, container, or archive resource to its consumers. Internal
+pointer/size pairs became spans, sentinel traversals consume bounded views, and packet/resource
+parsers validate truncated data before access. Existing save, network, and binary record layouts
+remain unchanged. Vector/heap adapters retain serialized fields and derive views from their owners
+or validated external spans.
 
-The new runtime checks exposed two existing defects during those smoke tests: RA's team-center
-calculation indexed the mission list at the initial `-1` mission sentinel, and TD's display
-initialization read palette ramps beyond a 256-byte row for higher house IDs. RA now checks that a
-current mission exists before selecting hound-dog behavior. TD retains the base fading table when
-the palette has no corresponding ramp; the only current consumer uses the unchanged GDI identity
-row.
+Runtime checks also exposed defects beyond the original LCW overrun: a negative initial RA mission
+index, a TD palette-row overread, malformed packet lengths, path/occupancy boundary cases, short PCX
+input, profile/message buffer limits, and ignored SDL lock failures. Regression coverage and
+save/load comparisons accompany the relevant fixes. Rendering rejects invalid dimensions, short
+frame data, and missing surfaces before SDL side effects.
 
-`base::At` and `EnumArray::end` keep their lifetime-bound contracts. Three narrow lifetime
-diagnostic annotations document Clang 23's inability to trace the reference through libstdc++ span
-indexing or the pointer through `std::end`. No unsafe-buffer diagnostic is suppressed in this batch.
+## Narrow interoperability annotations
 
-### C-string view batch
+No whole-file unsafe-buffer suppression or arbitrary pointer/count indexing wrapper replaces the
+check. Reviewed annotations cover exact owned allocations, object representations, aliases of an
+existing bounded span, and external APIs that supply their allocation extents. SDL lock-derived
+views require successful locks. A few annotations cover bounded C interoperability operations and
+validated descriptor macros. GoogleTest death-test expansions have local annotations for the
+framework's formatted diagnostics. Separate lifetime annotations document Clang's inability to trace
+some references through standard-library span access.
 
-Replaced 293 `strlen`/`strcmp` calls in 68 files with string-view operations, using equality
-operators and `empty()` where appropriate. These retain the existing null-terminated-string
-contracts and comparison ordering. Both strict game builds, all 486 CTest tests, and both save/load
-smoke checks pass (240 RA positions and 5,742 TD states).
+## Final validation
 
-### Bounded memory operations
+Validated on the configured Linux Clang 23.1.2 build:
 
-Migrated 155 memory operations to checked byte spans or typed palette ranges. `ObjectBytes` takes a
-real object reference and rejects pointer types, avoiding confusion between a pointer variable's
-storage and its allocation. Array-typedef parameters in the IPX address and bridge APIs now retain
-their extents through references; the optional immediate address is a span. Palette bulk operations
-use a color span instead of treating one color as an entire palette tail.
+- Full configured clang-tidy plus the complete unsafe-buffer family: **952 units, zero findings**
+  (385 RA, 312 TD, and 255 shared-library/test/header units). Source analysis includes project
+  headers, including instantiated templates.
+- Both games and all test targets build with strict checks and enforcement enabled. A subsequent
+  default build reports no work remaining.
+- **547/547 CTest tests pass**, including new codec, packet, profile, container, message, icon,
+  rendering, and counter regressions.
+- ASan/UBSan probes pass for queue decoding, network buffers, profiles/strings, and text formatting.
+  Queue coverage includes every truncation of 1/2/3/255-unit compressed mission runs, variable
+  payload claims through UINT32_MAX, full-queue cleanup, and 50,000 randomized packets. Leak
+  detection is disabled for the sandbox's process-inspection restriction.
+- Final save/load smoke checks match **240 RA object positions** and **5,742 TD game states**. RA's
+  older save fixture also loads and runs through frame 120.
+- A deliberately unsafe raw-pointer indexing sample fails under the actual configuration with
+  `clang-diagnostic-unsafe-buffer-usage` treated as an error. The probe is not committed.
+- Changed-file whitespace checks pass.
 
-The byte-view constructor has one narrow unsafe-container annotation: it creates a span of exactly
-one existing `T` from a reference, with no caller-provided pointer/count pair. The byte-operation
-tests also annotate formatted diagnostics inside GoogleTest's death-test macro. Neither annotation
-conceals an unbounded project indexing or copy operation.
-
-Both strict game builds, all 492 CTest tests, and both save/load smoke checks pass (240 RA positions
-and 5,742 TD states). The existing player-address serialization test caught a decayed-array
-migration error before commit; the pointer constraint and extent-preserving signatures correct that
-class of error.
+The optional `all_verify_interface_header_sets` build encountered reproducible **IWYU tool
+segfaults** on eight generated headers: SDL `shape.h`; RA `const.h`, `interpal.h`, `netdlg.h`,
+`taction.h`, and `tevent.h`; TD `const.h` and `interpal.h`. These are not compiler or clang-tidy
+findings. Every other generated-header build step passed. All eight affected headers separately
+passed direct compilation with the configured compiler flags and full enabled clang-tidy. No project
+diagnostic was disabled to work around IWYU, and the ordinary strict build passes.

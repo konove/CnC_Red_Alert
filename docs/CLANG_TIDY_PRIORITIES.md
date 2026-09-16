@@ -113,7 +113,7 @@ comes from the installed tool, since the online documentation follows LLVM devel
 
 | Check                                                           | Status  | Reason / result                                                                                                                                                                                                                                                                                                                                                                                                              |
 | --------------------------------------------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `clang-diagnostic-unsafe-buffer-usage`                          | Skipped | Commit `Document buffer, union and boolean conversion check policy`: 5,924 reports of raw pointer and array indexing across the blitters, codecs, packet and save code; enforcing it needs a span-based buffer API first. A targeted LCW destination-bounds fix is recorded in [LCW_BUFFER_BOUNDS_PLAN.md](LCW_BUFFER_BOUNDS_PLAN.md) and the follow-up below; the broad exclusion remains.                                  |
+| `clang-diagnostic-unsafe-buffer-usage`                          | Enabled | Commit `Enforce clang unsafe buffer diagnostics repository-wide`: bounded APIs throughout both games and shared libraries; both exclusions removed. All 952 project source/header units pass full configured analysis, all 547 tests pass, and both save/load checks match. See [the completed plan and validation record](UNSAFE_BUFFER_USAGE_PLAN.md).                                                                     |
 | `cppcoreguidelines-pro-bounds-avoid-unchecked-container-access` | Skipped | Commit `Document buffer, union and boolean conversion check policy`: 1,840 reports of `operator[]` on the engine's vectors and heaps. See review below.                                                                                                                                                                                                                                                                      |
 | `cppcoreguidelines-pro-bounds-constant-array-index`             | Skipped | Commit `Document buffer, union and boolean conversion check policy`: 3,365 reports of runtime indices into fixed game tables. See review below.                                                                                                                                                                                                                                                                              |
 | `cppcoreguidelines-owning-memory`                               | Skipped | Commit `Document P3 checks the legacy-code policy rules out`: 1,240 reports, raw `new`/`delete` ownership across the object heaps, dialogs and buffers; `gsl::owner` or smart pointers everywhere is exactly what CLAUDE.md's legacy-code rules list it under changes to avoid unless requested. See review below.                                                                                                           |
@@ -413,10 +413,10 @@ The original decoder returned three and overwrote a guard byte for a one-byte ca
 decoder returns one and preserves the guard. The new `BoundsEveryCommand` regression also fails
 against the original implementation. All seven new regressions pass with AddressSanitizer and UBSan
 (leak detection is disabled because the sandbox prevents LeakSanitizer's process inspection).
-Full-config clang-tidy passes both changed translation units. The isolated unsafe-buffer check still
-reports 14 raw-pointer operations, so its broad exclusion remains. This API cannot validate
-compressed-input truncation without a source length; that separate API migration is not claimed as
-fixed here.
+Full-config clang-tidy passes both changed translation units. At that stage, the isolated
+unsafe-buffer check still reported 14 raw-pointer operations and remained excluded. The subsequent
+repository-wide migration added bounded input/output APIs and completed enforcement; see
+[the completed plan](UNSAFE_BUFFER_USAGE_PLAN.md).
 
 Both strict game builds passed, and all 482 CTest tests in the rebuilt suite passed, including the
 seven new regressions. The RA save/load smoke check matched 240 object positions; TD matched 5,742
