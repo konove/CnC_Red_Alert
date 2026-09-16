@@ -99,10 +99,8 @@ class WWMouseClass {
 
  private:
   // Legacy flags for conditional hide (unused with hardware cursors).
-  enum {
-    CONDHIDE = 1,
-    CONDHIDDEN = 2,
-  };
+  static constexpr int kCondhide = 1;
+  static constexpr int kCondhidden = 2;
 
   // Decoded cursor pixels (scaled for current display).
   std::vector<uint8_t> MouseCursor;

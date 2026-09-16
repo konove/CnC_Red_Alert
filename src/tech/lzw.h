@@ -59,7 +59,7 @@ class LZWEngine {
  private:
   typedef int16_t CodeType;
   struct CodeClass {
-    CodeType CodeValue = UNUSED;
+    CodeType CodeValue = kUnused;
     CodeType ParentCode = 0;
     unsigned char CharValue = 0;
 
@@ -67,24 +67,22 @@ class LZWEngine {
     CodeClass(CodeType code, CodeType parent, unsigned char c)
         : CodeValue(code), ParentCode(parent), CharValue(c) {}
 
-    enum { UNUSED = -1 };
-    void Make_Unused() { CodeValue = UNUSED; }
-    [[nodiscard]] bool Is_Unused() const { return CodeValue == UNUSED; }
+    static constexpr int kUnused = -1;
+    void Make_Unused() { CodeValue = kUnused; }
+    [[nodiscard]] bool Is_Unused() const { return CodeValue == kUnused; }
     [[nodiscard]] bool Is_Matching(CodeType code, unsigned char c) const {
       return ParentCode == code && CharValue == c;
     }
   };
 
-  enum {
-    BITS = 12,
-    MAX_CODE = 4095,  // (1 << BITS) - 1
-    FIRST_CODE = 257,
-    END_OF_STREAM = 256,
-    TABLE_SIZE = 5021
-  };
-  CodeClass dict[TABLE_SIZE];
+  static constexpr int kBits = 12;
+  static constexpr int kMaxCode = 4095;
+  static constexpr int kFirstCode = 257;  // (1 << kBits) - 1
+  static constexpr int kEndOfStream = 256;
+  static constexpr int kTableSize = 5021;
+  CodeClass dict[kTableSize];
 
-  unsigned char decode_stack[TABLE_SIZE]{};
+  unsigned char decode_stack[kTableSize]{};
 
   int Find_Child_Node(CodeType parent_code, unsigned char child_character);
   int Decode_String(unsigned char* ptr, CodeType code);

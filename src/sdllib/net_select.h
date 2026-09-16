@@ -1,11 +1,12 @@
 #ifndef CNC_RED_ALERT_SDLLIB_NET_SELECT_H_
 #define CNC_RED_ALERT_SDLLIB_NET_SELECT_H_
 
-enum SocketEvent {
+enum class SocketEvent {
   SOCKEV_READ,
   SOCKEV_WRITE,
   SOCKEV_ERROR,
 };
+using enum SocketEvent;
 
 typedef void (*SocketCallback)(int, SocketEvent, void*);
 

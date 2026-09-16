@@ -116,7 +116,7 @@ BlowfishEngine::~BlowfishEngine() {
  * HISTORY: * 04/14/1996 JLB : Created. *
  *=============================================================================================*/
 void BlowfishEngine::Submit_Key(const void* key, int length) {
-  assert(length <= MAX_KEY_LENGTH);
+  assert(length <= kMaxKeyLength);
 
   /*
   **	Initialize the permutation and S-Box tables to a known
@@ -143,7 +143,7 @@ void BlowfishEngine::Submit_Key(const void* key, int length) {
   int j = 0;
   const auto* key_ptr = static_cast<const unsigned char*>(key);
   uint32_t* p_ptr = &P_Encrypt[0];
-  for (int index = 0; index < ROUNDS + 2; index++) {
+  for (int index = 0; index < kRounds + 2; index++) {
     uint32_t data = 0;
 
     data = data << CHAR_BIT | key_ptr[j++ % length];
@@ -164,8 +164,8 @@ void BlowfishEngine::Submit_Key(const void* key, int length) {
   uint32_t left = 0x00000000L;
   uint32_t right = 0x00000000L;
   uint32_t* p_en = &P_Encrypt[0];           // Encryption table.
-  uint32_t* p_de = &P_Decrypt[ROUNDS + 1];  // Decryption table.
-  for (int p_index = 0; p_index < ROUNDS + 2; p_index += 2) {
+  uint32_t* p_de = &P_Decrypt[kRounds + 1];  // Decryption table.
+  for (int p_index = 0; p_index < kRounds + 2; p_index += 2) {
     Sub_Key_Encrypt(left, right);
 
     *p_en++ = left;
@@ -226,7 +226,7 @@ int BlowfishEngine::Encrypt(const void* plaintext, int length,
     /*
     **	Validate parameters.
     */
-    const int blocks = length / BYTES_PER_BLOCK;
+    const int blocks = length / kBytesPerBlock;
 
     /*
     **	Process the buffer in 64 bit chunks.
@@ -235,10 +235,10 @@ int BlowfishEngine::Encrypt(const void* plaintext, int length,
     char* out = static_cast<char*>(cyphertext);
     for (int index = 0; index < blocks; index++) {
       Process_Block(in, out, P_Encrypt);
-      in += BYTES_PER_BLOCK;
-      out += BYTES_PER_BLOCK;
+      in += kBytesPerBlock;
+      out += kBytesPerBlock;
     }
-    const int encrypted = blocks * BYTES_PER_BLOCK;
+    const int encrypted = blocks * kBytesPerBlock;
 
     /*
     **	Copy over any trailing left over appendix bytes.
@@ -294,7 +294,7 @@ int BlowfishEngine::Decrypt(const void* cyphertext, int length,
     /*
     **	Validate parameters.
     */
-    const int blocks = length / BYTES_PER_BLOCK;
+    const int blocks = length / kBytesPerBlock;
 
     /*
     **	Process the buffer in 64 bit chunks.
@@ -303,10 +303,10 @@ int BlowfishEngine::Decrypt(const void* cyphertext, int length,
     char* out = static_cast<char*>(plaintext);
     for (int index = 0; index < blocks; index++) {
       Process_Block(in, out, P_Decrypt);
-      in += BYTES_PER_BLOCK;
-      out += BYTES_PER_BLOCK;
+      in += kBytesPerBlock;
+      out += kBytesPerBlock;
     }
-    const int encrypted = blocks * BYTES_PER_BLOCK;
+    const int encrypted = blocks * kBytesPerBlock;
 
     /*
     **	Copy over any trailing left over appendix bytes.
@@ -382,7 +382,7 @@ void BlowfishEngine::Process_Block(const void* plaintext, void* cyphertext,
   *after each round, two *	rounds are combined in this loop to avoid
   *unnecessary exchanging.
   */
-  for (int index = 0; index < ROUNDS / 2; index++) {
+  for (int index = 0; index < kRounds / 2; index++) {
     left.Long ^= *ptable++;
     right.Long ^= ((bf_S[0][left.Char.C0] + bf_S[1][left.Char.C1]) ^
                    bf_S[2][left.Char.C2]) +
@@ -448,7 +448,7 @@ void BlowfishEngine::Sub_Key_Encrypt(uint32_t& left, uint32_t& right) {
   Int r;
   r.Long = right;
 
-  for (int index = 0; index < ROUNDS; index += 2) {
+  for (int index = 0; index < kRounds; index += 2) {
     l.Long ^= P_Encrypt[index];
     r.Long ^= ((bf_S[0][l.Char.C0] + bf_S[1][l.Char.C1]) ^ bf_S[2][l.Char.C2]) +
               bf_S[3][l.Char.C3];
@@ -456,8 +456,8 @@ void BlowfishEngine::Sub_Key_Encrypt(uint32_t& left, uint32_t& right) {
     l.Long ^= ((bf_S[0][r.Char.C0] + bf_S[1][r.Char.C1]) ^ bf_S[2][r.Char.C2]) +
               bf_S[3][r.Char.C3];
   }
-  left = r.Long ^ P_Encrypt[ROUNDS + 1];
-  right = l.Long ^ P_Encrypt[ROUNDS];
+  left = r.Long ^ P_Encrypt[kRounds + 1];
+  right = l.Long ^ P_Encrypt[kRounds];
 }
 
 /*
@@ -468,7 +468,7 @@ void BlowfishEngine::Sub_Key_Encrypt(uint32_t& left, uint32_t& right) {
 *painful.
 */
 
-const uint32_t BlowfishEngine::P_Init[ROUNDS + 2] = {
+const uint32_t BlowfishEngine::P_Init[kRounds + 2] = {
     0x243F6A88U, 0x85A308D3U, 0x13198A2EU, 0x03707344U, 0xA4093822U,
     0x299F31D0U, 0x082EFA98U, 0xEC4E6C89U, 0x452821E6U, 0x38D01377U,
     0xBE5466CFU, 0x34E90C6CU, 0xC0AC29B7U, 0xC97C50DDU, 0x3F84D5B5U,

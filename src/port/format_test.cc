@@ -9,7 +9,8 @@
 
 namespace {
 
-enum Owner { OWNER_NONE = -1, OWNER_GOOD = 0, OWNER_BAD = 1 };
+enum class Owner { OWNER_NONE = -1, OWNER_GOOD = 0, OWNER_BAD = 1 };
+using enum Owner;
 
 TEST(FormatRuntimeTest, FormatsLikePrintf) {
   EXPECT_EQ(port::FormatRuntime("%s has %d units", "GDI", 12),

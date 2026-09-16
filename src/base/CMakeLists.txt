@@ -14,6 +14,6 @@ target_link_libraries(base INTERFACE absl::check magic_enum::magic_enum)
 include(Testing)
 add_gtest(
         NAME base_test
-        SOURCES enum_array_test.cc hsv_test.cc numeric_test.cc
+        SOURCES enum_array_test.cc flags_test.cc hsv_test.cc numeric_test.cc
         LIBS base absl::core_headers
 )

@@ -59,14 +59,14 @@ int LZWEngine::Compress(std::span<const std::byte> input,
   SpanSource instraw(input);
   SpanSink outpipe(output);
 
-  CodeType string_code = END_OF_STREAM;
-  CodeType next_code = FIRST_CODE;
+  CodeType string_code = kEndOfStream;
+  CodeType next_code = kFirstCode;
 
   string_code = 0;
   // Only the low byte is read: the first code is a literal character.
   if (instraw.Read(
           std::as_writable_bytes(std::span(&string_code, 1)).first(1)) == 0) {
-    string_code = END_OF_STREAM;
+    string_code = kEndOfStream;
   }
 
   for (;;) {
@@ -102,7 +102,7 @@ int LZWEngine::Compress(std::span<const std::byte> input,
       **	value concatenated. This presumes there is room in the
       **	code table.
       */
-      if (index != -1 && next_code <= MAX_CODE) {
+      if (index != -1 && next_code <= kMaxCode) {
         dict[index] = CodeClass(next_code, string_code, character);
         next_code++;
       }
@@ -120,8 +120,8 @@ int LZWEngine::Compress(std::span<const std::byte> input,
   }
 
   outpipe.WriteObject(string_code);
-  if (string_code != END_OF_STREAM) {
-    string_code = END_OF_STREAM;
+  if (string_code != kEndOfStream) {
+    string_code = kEndOfStream;
     outpipe.WriteObject(string_code);
   }
 
@@ -147,13 +147,13 @@ int LZWEngine::Uncompress(std::span<const std::byte> input,
 
   int count = 0;
   CodeType new_code = 0;
-  CodeType next_code = FIRST_CODE;
+  CodeType next_code = kFirstCode;
   for (;;) {
     if (instraw.Read(std::as_writable_bytes(std::span(&new_code, 1))) == 0) {
       break;
     }
 
-    if (new_code == END_OF_STREAM) {
+    if (new_code == kEndOfStream) {
       break;
     }
 
@@ -187,7 +187,7 @@ int LZWEngine::Uncompress(std::span<const std::byte> input,
     **	Add the new code sequence to the dictionary (presuming there is still
     **	room).
     */
-    if (next_code <= MAX_CODE) {
+    if (next_code <= kMaxCode) {
       dict[next_code] = CodeClass(next_code, old_code, character);
       next_code++;
     }
@@ -198,7 +198,7 @@ int LZWEngine::Uncompress(std::span<const std::byte> input,
 }
 
 int LZWEngine::Make_LZW_Hash(CodeType code, unsigned char character) {
-  constexpr unsigned kShift = BITS - 8;
+  constexpr unsigned kShift = kBits - 8;
   return static_cast<int>((uint32_t{character} << kShift) ^
                           static_cast<uint32_t>(code));
 }
@@ -216,7 +216,7 @@ int LZWEngine::Find_Child_Node(CodeType parent_code,
   */
   int offset = 1;
   if (hash_index != 0) {
-    offset = TABLE_SIZE - hash_index;
+    offset = kTableSize - hash_index;
   }
 
   /*
@@ -240,7 +240,7 @@ int LZWEngine::Find_Child_Node(CodeType parent_code,
     */
     hash_index -= offset;
     if (hash_index < 0) {
-      hash_index += TABLE_SIZE;
+      hash_index += kTableSize;
     }
 
     /*

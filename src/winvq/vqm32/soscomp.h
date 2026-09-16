@@ -36,9 +36,7 @@
 #include <cstdint>
 
 /* compression types */
-enum {
-  ADPCM_TYPE_1,
-};
+inline constexpr int kAdpcmType1 = 0;
 
 /* define compression structure */
 struct SosCompressInfo {

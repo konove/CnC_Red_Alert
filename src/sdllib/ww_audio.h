@@ -68,19 +68,21 @@ typedef struct {
 /*	types.
  */
 /*=========================================================================*/
-typedef enum {
+enum class Sample_Type {
   SAMPLE_NONE = 0,  // No digitized sounds will be played.
   SAMPLE_SDL = 1,
   SAMPLE_TEMP = 0x1000,
   SAMPLE_LAST = 4097
-} Sample_Type;
+};
+using enum Sample_Type;
 
-typedef enum {
+enum class SFX_Type {
   SFX_NONE = 0,  // No sound effects will be played.
   SFX_SDL = 1,
   SFX_TEMP = 0x1000,
   SFX_LAST = 4097
-} SFX_Type;
+};
+using enum SFX_Type;
 
 /*=========================================================================*/
 /* The following prototypes are for the file: SOUNDIO.CPP

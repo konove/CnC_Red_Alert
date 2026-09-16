@@ -49,7 +49,7 @@ class Benchmark {
  private:
   // Maximum number of events in the running average. Older events drop off
   // once this count is reached.
-  enum { MAXIMUM_EVENT_COUNT = 256 };
+  static constexpr int kMaximumEventCount = 256;
 
   Stopwatch<PentiumTimerClass> Clock;  // Timer for clocking events.
   int64_t Average = 0;     // Total time of all events tracked so far.

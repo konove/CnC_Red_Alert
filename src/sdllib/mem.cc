@@ -12,8 +12,8 @@ void (*Memory_Error_Exit)(char* string) = nullptr;
 void Force_VM_Page_In(void* /*buffer*/, int /*length*/) {}
 
 char* Alloc(const base::ssize bytes_to_alloc, const MemoryFlagType flags) {
-  return (flags & MEM_CLEAR) ? new char[base::ToSize(bytes_to_alloc)]()
-                             : new char[base::ToSize(bytes_to_alloc)];
+  return base::Any(flags & MEM_CLEAR) ? new char[base::ToSize(bytes_to_alloc)]()
+                                      : new char[base::ToSize(bytes_to_alloc)];
 }
 
 void Free(void* pointer) {

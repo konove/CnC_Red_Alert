@@ -11,7 +11,7 @@
 //
 // Example:
 //   BlowfishSource cipher(CipherMode::kDecrypt, file_source);
-//   cipher.Key(key, BlowfishEngine::MAX_KEY_LENGTH);
+//   cipher.Key(key, BlowfishEngine::kMaxKeyLength);
 class BlowfishSource : public TransformSource<BlowfishCodec> {
  public:
   using TransformSource::TransformSource;

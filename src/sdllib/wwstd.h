@@ -39,23 +39,22 @@
 
 inline constexpr int kInvalidHandle = -1;
 
-enum ColorType : int {
-  TBLACK = 0,
-  PURPLE = 1,
-  CYAN = 2,
-  GREEN = 3,
-  LTGREEN = 4,
-  YELLOW = 5,
-  PINK = 6,
-  BROWN = 7,
-  RED = 8,
-  LTCYAN = 9,
-  LTBLUE = 10,
-  BLUE = 11,
-  BLACK = 12,
-  GREY = 13,
-  LTGREY = 14,
-  WHITE = 15,
-};
+// The sixteen standard palette colors, as `int` palette indices.
+inline constexpr int kTBlack = 0;
+inline constexpr int kPurple = 1;
+inline constexpr int kCyan = 2;
+inline constexpr int kGreen = 3;
+inline constexpr int kLtGreen = 4;
+inline constexpr int kYellow = 5;
+inline constexpr int kPink = 6;
+inline constexpr int kBrown = 7;
+inline constexpr int kRed = 8;
+inline constexpr int kLtCyan = 9;
+inline constexpr int kLtBlue = 10;
+inline constexpr int kBlue = 11;
+inline constexpr int kBlack = 12;
+inline constexpr int kGrey = 13;
+inline constexpr int kLtGrey = 14;
+inline constexpr int kWhite = 15;
 
 #endif  // CNC_RED_ALERT_SDLLIB_WWSTD_H_

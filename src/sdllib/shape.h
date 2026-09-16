@@ -40,6 +40,7 @@
 
 #include "absl/base/attributes.h"
 #include "base/attributes.h"
+#include "base/flags.h"
 
 /*
 *********************************** Types ***********************************
@@ -47,19 +48,20 @@
 /*
 --------------------------- Shape creation flags ----------------------------
 */
-typedef enum {
-  MAKESHAPE_NORMAL = 0x0000,   // 256-color compressed shape
-  MAKESHAPE_COMPACT = 0x0001,  // 16-color shape (with built-in color table)
-  MAKESHAPE_NOCOMP = 0x0002,   // Uncompressed shape
-  MAKESHAPE_VARIABLE = 0x0004  // <16-color shape
-} MakeShapeFlags_Type;
+// Shape creation flags.
+inline constexpr uint32_t kMakeshapeNormal =
+    0x0000;  // 256-color compressed shape
+inline constexpr uint32_t kMakeshapeCompact =
+    0x0001;  // 16-color shape (with built-in color table)
+inline constexpr uint32_t kMakeshapeNocomp = 0x0002;    // Uncompressed shape
+inline constexpr uint32_t kMakeshapeVariable = 0x0004;  // <16-color shape
 
 /*---------------------------------------------------------------------------
 Shape drawing flags:
 - The low byte is for coordinate transformations.
 - The high byte is for drawing effects.
 ---------------------------------------------------------------------------*/
-typedef enum CNC_FLAG_ENUM : uint32_t {
+enum class CNC_FLAG_ENUM ShapeFlags_Type : uint32_t {
   SHAPE_NORMAL = 0x0000,        // Standard shape
   SHAPE_HORZ_REV = 0x0001,      // Flipped horizontally
   SHAPE_VERT_REV = 0x0002,      // Flipped vertically
@@ -79,7 +81,10 @@ typedef enum CNC_FLAG_ENUM : uint32_t {
   SHAPE_PARTIAL = 0x4000,
   SHAPE_COLOR = 0x8000  // Remap the shape's colors
                         //  (void * color_table)
-} ShapeFlags_Type;
+};
+using enum ShapeFlags_Type;
+template <>
+inline constexpr bool base::kIsFlagEnum<ShapeFlags_Type> = true;
 
 /*
 ------------------------------- Shape header --------------------------------

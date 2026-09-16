@@ -261,7 +261,8 @@ constexpr int kMaxChainSteps = 256;
 
 // One way to encode the bytes at the current position.
 struct Choice {
-  enum Kind { kLiteral, kShort, kMedium, kLong, kFill };
+  enum class Kind { kLiteral, kShort, kMedium, kLong, kFill };
+  using enum Kind;
   Kind kind = kLiteral;
   int count = 1;    // Input bytes covered.
   int from = 0;     // Distance (short) or absolute position (medium, long).

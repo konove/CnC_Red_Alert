@@ -57,17 +57,18 @@ void Video_End_Frame();
 **	The WindowList[][8] array contains the following elements.  Use these
 **	defines when accessing the WindowList.
 */
-typedef enum {
-  WINDOWX = 0,        // X byte position of left edge.
-  WINDOWY = 1,        // Y pixel position of top edge.
-  WINDOWWIDTH = 2,    // Width in bytes of the window.
-  WINDOWHEIGHT = 3,   // Height in pixels of the window.
-  WINDOWFCOL = 4,     // Default foreground color.
-  WINDOWBCOL = 5,     // Default background color.
-  WINDOWCURSORX = 6,  // Current cursor X position (in rows).
-  WINDOWCURSORY = 7,  // Current cursor Y position (in lines).
-  WINDOWPADDING = 0x1000
-} WindowIndexType;
+// Column indices into a WindowList row.
+inline constexpr int kWindowX = 0;       // X byte position of left edge.
+inline constexpr int kWindowY = 1;       // Y pixel position of top edge.
+inline constexpr int kWindowWidth = 2;   // Width in bytes of the window.
+inline constexpr int kWindowHeight = 3;  // Height in pixels of the window.
+inline constexpr int kWindowFCol = 4;    // Default foreground color.
+inline constexpr int kWindowBCol = 5;    // Default background color.
+inline constexpr int kWindowCursorX =
+    6;  // Current cursor X position (in rows).
+inline constexpr int kWindowCursorY =
+    7;  // Current cursor Y position (in lines).
+inline constexpr int kWindowPadding = 0x1000;
 
 extern int WindowList[][8];
 extern int WindowColumns;

@@ -125,6 +125,7 @@
 #include "absl/base/attributes.h"
 #include "absl/strings/str_cat.h"
 #include "base/attributes.h"
+#include "base/flags.h"
 #include "base/types.h"
 #include "sdllib/bitmap.h"
 #include "sdllib/buffer.h"
@@ -137,11 +138,14 @@
 //
 //
 
-enum CNC_FLAG_ENUM GBC_Enum {
+enum class CNC_FLAG_ENUM GBC_Enum {
   GBC_NONE = 0,
   GBC_VIDEOMEM = 1,
   GBC_VISIBLE = 2,
 };
+using enum GBC_Enum;
+template <>
+inline constexpr bool base::kIsFlagEnum<GBC_Enum> = true;
 
 #define NOT_LOCKED NULL
 
@@ -679,16 +683,16 @@ inline void GraphicViewPortClass::Draw_Stamp(const void* icondata, int icon,
   if (Lock()) {
 #ifdef TD
     Buffer_Draw_Stamp_Clip(this, icondata, icon, x_pixel, y_pixel, remap,
-                           WindowList[clip_window][WINDOWX] * 8,
-                           WindowList[clip_window][WINDOWY],
-                           WindowList[clip_window][WINDOWWIDTH] * 8,
-                           WindowList[clip_window][WINDOWHEIGHT]);
+                           WindowList[clip_window][kWindowX] * 8,
+                           WindowList[clip_window][kWindowY],
+                           WindowList[clip_window][kWindowWidth] * 8,
+                           WindowList[clip_window][kWindowHeight]);
 #else
     Buffer_Draw_Stamp_Clip(this, icondata, icon, x_pixel, y_pixel, remap,
-                           WindowList[clip_window][WINDOWX],
-                           WindowList[clip_window][WINDOWY],
-                           WindowList[clip_window][WINDOWWIDTH],
-                           WindowList[clip_window][WINDOWHEIGHT]);
+                           WindowList[clip_window][kWindowX],
+                           WindowList[clip_window][kWindowY],
+                           WindowList[clip_window][kWindowWidth],
+                           WindowList[clip_window][kWindowHeight]);
 #endif
   }
   Unlock();

@@ -46,12 +46,10 @@
 #ifndef CNC_RED_ALERT_SDLLIB_WINCOMM_H_
 #define CNC_RED_ALERT_SDLLIB_WINCOMM_H_
 
-#include "base/attributes.h"
+#include <cstdint>
 
-typedef enum WinCommDialMethodType {
-  WC_TOUCH_TONE = 0,
-  WC_PULSE
-} WinCommDialMethodType;
+enum class WinCommDialMethodType { WC_TOUCH_TONE = 0, WC_PULSE };
+using enum WinCommDialMethodType;
 
 #define COMMSUCCESS 0
 #define ASTIMEOUT (-10)
@@ -60,13 +58,11 @@ typedef enum WinCommDialMethodType {
 #define ASUSERABORT COMMUSERABORT
 typedef void* HANDLE;
 
-// same enum as in the class below
-enum CNC_FLAG_ENUM {
-  CTS_SET = 0x10,
-  DSR_SET = 0x20,
-  RI_SET = 0x40,
-  CD_SET = 0x80
-};
+// Modem status bits returned by Get_Modem_Status().
+inline constexpr uint32_t kCtsSet = 0x10;
+inline constexpr uint32_t kDsrSet = 0x20;
+inline constexpr uint32_t kRiSet = 0x40;
+inline constexpr uint32_t kCdSet = 0x80;
 
 /*
 ** WinModemClass.
@@ -133,7 +129,7 @@ class WinModemClass {
 
   /*
   ** Get the status of the modem control lines
-  ** Possible flags are: CTS_SET DSR_SET RI_SET & CD_SET
+  ** Possible flags are: kCtsSet kDsrSet kRiSet & kCdSet
   **
   ** Replacement for Greenleaf function: GetModemStatus
   */
@@ -190,25 +186,17 @@ class WinModemClass {
   */
   [[nodiscard]] HANDLE Get_Port_Handle() const;
 
-  /*
-  ** Modem send result codes
-  */
-  enum SendModemEnum {
-    MODEM_CMD_TIMEOUT = 0,
-    MODEM_CMD_OK,
-    MODEM_CMD_0,
-    MODEM_CMD_ERROR
-  };
+  // Modem send result codes.
+  static constexpr int kModemCmdTimeout = 0;
+  static constexpr int kModemCmdOk = 1;
+  static constexpr int kModemCmd0 = 2;
+  static constexpr int kModemCmdError = 3;
 
-  /*
-  ** Enums for modem status flags
-  */
-  enum CNC_FLAG_ENUM {
-    CTS_SET = 0x10,
-    DSR_SET = 0x20,
-    RI_SET = 0x40,
-    CD_SET = 0x80
-  };
+  // Modem status flags.
+  static constexpr uint32_t kCtsSet = 0x10;
+  static constexpr uint32_t kDsrSet = 0x20;
+  static constexpr uint32_t kRiSet = 0x40;
+  static constexpr uint32_t kCdSet = 0x80;
 
  protected:
   /*

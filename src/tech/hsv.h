@@ -60,7 +60,7 @@ class HSVClass {
   // NOLINTNEXTLINE(*-explicit-constructor)
   operator RGBClass() const;
 
-  enum { MAX_VALUE = 255 };
+  static constexpr int kMaxValue = 255;
 
   void Adjust(int ratio, const HSVClass& hsv);
   [[nodiscard]] int Difference(const HSVClass& hsv) const;

@@ -169,7 +169,7 @@ void* Open_Animation(const char* file_name, char* user_buffer,
   // and set the allocation flag
   // Else size is zero.
   //
-  if (user_flags & WSA_OPEN_DIRECT) {
+  if (base::Any(user_flags & WSA_OPEN_DIRECT)) {
     target_buffer_size = 0L;
   } else {
     anim_flags |= WSA_TARGET_IN_BUFFER;
@@ -215,7 +215,7 @@ void* Open_Animation(const char* file_name, char* user_buffer,
     // If the user wants it from the disk, or specified a buffer less than
     // the max needed, give them the min. Otherwise (no buffer size, or
     // enough for the max configuration) allocate what we need.
-    if ((user_flags & WSA_OPEN_FROM_DISK) ||
+    if (base::Any(user_flags & WSA_OPEN_FROM_DISK) ||
         (user_buffer_size != 0 && user_buffer_size < max_buffer_size)) {
       user_buffer_size = static_cast<int32_t>(min_buffer_size);
     } else {
@@ -241,7 +241,8 @@ void* Open_Animation(const char* file_name, char* user_buffer,
     anim_flags |= WSA_SYS_ALLOCATED;
   } else {
     // Check to see if the user_buffer_size should be min or max.
-    if (user_flags & WSA_OPEN_FROM_DISK || user_buffer_size < max_buffer_size) {
+    if (base::Any(user_flags & WSA_OPEN_FROM_DISK) ||
+        user_buffer_size < max_buffer_size) {
       user_buffer_size = static_cast<int32_t>(min_buffer_size);
     } else {
       user_buffer_size = static_cast<int32_t>(max_buffer_size);

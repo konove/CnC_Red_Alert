@@ -1060,7 +1060,7 @@ void GraphicBufferClass::Init(int w, int h, void* buffer, int32_t size,
   XAdd = 0;
   XPos = YPos = 0;
 
-  if (flags & GBC_VISIBLE) {
+  if (base::Any(flags & GBC_VISIBLE)) {
     Init_Display_Surface();
 
     WindowBuffer = this;

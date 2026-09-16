@@ -24,7 +24,7 @@ class BlowfishCodec {
   explicit BlowfishCodec(CipherMode mode) : mode_(mode) {}
 
   // Keys the cipher with length bytes of key; at most
-  // BlowfishEngine::MAX_KEY_LENGTH are used.
+  // BlowfishEngine::kMaxKeyLength are used.
   void Key(const void* key, int length);
 
   bool Process(std::span<const std::byte> in, ByteSink& out);

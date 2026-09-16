@@ -50,17 +50,19 @@
 
 #include "absl/base/attributes.h"
 #include "base/attributes.h"
+#include "base/flags.h"
 #include "sdllib/gbuffer.h"
 
-typedef enum {
+enum class WSAType {
   WSA_NORMAL = 0,          // Normal WSA animation
   WSA_GHOST = 0x1000,      // Or'd with the above flags to get ghosting
   WSA_PRIORITY2 = 0x2000,  // Copy using a priority (or in the priority)
   WSA_TRANS = 0x4000,      // Copy frame, ignoring transparent colors
   WSA_PRIORITY = 0x8000    // Copy using a priority (or in the priority)
-} WSAType;
+};
+using enum WSAType;
 
-typedef enum CNC_FLAG_ENUM {
+enum class CNC_FLAG_ENUM WSAOpenType {
   WSA_OPEN_FROM_MEM = 0x0000,  // Try to load entire anim into memory.
   WSA_OPEN_INDIRECT =
       0x0000,  // First animate to internal buffer, then copy to page/viewport.
@@ -75,7 +77,10 @@ typedef enum CNC_FLAG_ENUM {
   WSA_OPEN_TO_PAGE = WSA_OPEN_DIRECT,
   WSA_OPEN_TO_BUFFER = WSA_OPEN_INDIRECT,
 
-} WSAOpenType;
+};
+using enum WSAOpenType;
+template <>
+inline constexpr bool base::kIsFlagEnum<WSAOpenType> = true;
 
 /*=========================================================================*/
 /* The following prototypes are for the file: WSA.CPP

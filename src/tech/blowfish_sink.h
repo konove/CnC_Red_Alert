@@ -11,7 +11,7 @@
 //
 // Example:
 //   BlowfishSink cipher(CipherMode::kEncrypt, file_sink);
-//   cipher.Key(key, BlowfishEngine::MAX_KEY_LENGTH);
+//   cipher.Key(key, BlowfishEngine::kMaxKeyLength);
 class BlowfishSink : public TransformSink<BlowfishCodec> {
  public:
   using TransformSink::TransformSink;

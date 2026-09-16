@@ -78,20 +78,17 @@ class SHAEngine {
   mutable bool IsCached = false;
   mutable Sha1Digest FinalResult{};
 
-  enum {
-    // These are the initial seeds to the block accumulators.
-    SA = 0x67452301L,
-    SB = 0xefcdab89L,
-    SC = 0x98badcfeL,
-    SD = 0x10325476L,
-    SE = 0xc3d2e1f0L,
-
-    // These are the constants used in the block transformation.
-    K1 = 0x5a827999L,  // t=0..19		2^(1/2)/4
-    K2 = 0x6ed9eba1L,  // t=20..39		3^(1/2)/4
-    K3 = 0x8f1bbcdcL,  // t=40..59		5^(1/2)/4
-    K4 = 0xca62c1d6L  // t=60..79		10^(1/2)/4
-  };
+  static constexpr uint32_t kSa =
+      0x67452301L;  // These are the initial seeds to the block accumulators.
+  static constexpr uint32_t kSb = 0xefcdab89L;
+  static constexpr uint32_t kSc = 0x98badcfeL;
+  static constexpr uint32_t kSd = 0x10325476L;
+  static constexpr uint32_t kSe = 0xc3d2e1f0L;
+  static constexpr uint32_t kK1 =
+      0x5a827999L;  // These are the constants used in the block transformation.
+  static constexpr uint32_t kK2 = 0x6ed9eba1L;  // t=0..19 2^(1/2)/4
+  static constexpr uint32_t kK3 = 0x8f1bbcdcL;  // t=20..39 3^(1/2)/4
+  static constexpr uint32_t kK4 = 0xca62c1d6L;  // t=40..59 5^(1/2)/4
 
   // Source data is grouped into blocks of this size. Sizes are constexpr int
   // rather than enumerators: sizeof() makes an enumerator unsigned, which turns
@@ -104,15 +101,15 @@ class SHAEngine {
 
   static uint32_t Get_Constant(int index) {
     if (index < 20) {
-      return K1;
+      return kK1;
     }
     if (index < 40) {
-      return K2;
+      return kK2;
     }
     if (index < 60) {
-      return K3;
+      return kK3;
     }
-    return K4;
+    return kK4;
   }
 
   // Used for 0..19
@@ -159,7 +156,7 @@ class SHAEngine {
   **	are updated by a block processing step that occurs
   **	every 512 bits of source data.
   */
-  Accumulator Acc{SA, SB, SC, SD, SE};
+  Accumulator Acc{kSa, kSb, kSc, kSd, kSe};
 
   /*
   **	This is the running length of the source data

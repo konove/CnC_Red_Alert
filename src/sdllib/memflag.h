@@ -40,6 +40,7 @@
 #include <cstdint>
 
 #include "absl/base/attributes.h"
+#include "base/flags.h"
 #include "base/types.h"
 
 // Memory Flags
@@ -47,14 +48,17 @@
 **	Memory allocation flags.  These are the flags that are passed into Alloc
 **	in order to control the type of memory allocated.
 */
-typedef enum {
+enum class MemoryFlagType {
   MEM_NORMAL = 0x0000,  // Default memory (normal).
   MEM_NEW = 0x0001,     // Called by the operator new and was overloaded.
   MEM_CLEAR = 0x0002,   // Clear memory before returning.
   MEM_REAL = 0x0004,    // Clear memory before returning.
   MEM_TEMP = 0x0008,    // Clear memory before returning.
   MEM_LOCK = 0x0010,    // Lock the memory that we allocated
-} MemoryFlagType;
+};
+using enum MemoryFlagType;
+template <>
+inline constexpr bool base::kIsFlagEnum<MemoryFlagType> = true;
 
 /*
 ** Prototypes for VMPAGEIN.ASM

@@ -30,7 +30,7 @@
 #include "tech/random_source.h"
 
 namespace {
-constexpr int kBlowfishKeySize = BlowfishEngine::MAX_KEY_LENGTH;
+constexpr int kBlowfishKeySize = BlowfishEngine::kMaxKeyLength;
 constexpr int kMaxKeyBlockSize = 256;
 }  // namespace
 

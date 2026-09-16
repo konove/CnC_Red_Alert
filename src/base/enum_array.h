@@ -5,6 +5,7 @@
 
 #include <type_traits>
 
+#include "absl/base/attributes.h"
 #include "absl/log/check.h"
 #include "base/types.h"
 #include "magic_enum/magic_enum.hpp"
@@ -31,23 +32,45 @@ struct EnumArray {
 
   T elements[N];
 
-  constexpr T& operator[](E index) noexcept {
+  constexpr T& operator[](E index) noexcept ABSL_ATTRIBUTE_LIFETIME_BOUND {
     DCHECK(static_cast<ssize>(index) >= 0 && static_cast<ssize>(index) < N);
     return elements[static_cast<ssize>(index)];
   }
-  constexpr const T& operator[](E index) const noexcept {
+  constexpr const T& operator[](E index) const noexcept
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
     DCHECK(static_cast<ssize>(index) >= 0 && static_cast<ssize>(index) < N);
     return elements[static_cast<ssize>(index)];
   }
 
-  static constexpr ssize size() noexcept { return N; }
+  [[nodiscard]] static constexpr ssize size() noexcept { return N; }
 
-  constexpr T* data() noexcept { return elements; }
-  constexpr const T* data() const noexcept { return elements; }
-  constexpr T* begin() noexcept { return elements; }
-  constexpr const T* begin() const noexcept { return elements; }
-  constexpr T* end() noexcept { return elements + N; }
-  constexpr const T* end() const noexcept { return elements + N; }
+  // Serializes the elements in order, exactly as the C array did.
+  template <class Archive>
+  void Serialize(Archive& ar) {
+    ar(elements);
+  }
+
+  [[nodiscard]] constexpr T* data() noexcept ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return elements;
+  }
+  [[nodiscard]] constexpr const T* data() const noexcept
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return elements;
+  }
+  [[nodiscard]] constexpr T* begin() noexcept ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return elements;
+  }
+  [[nodiscard]] constexpr const T* begin() const noexcept
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return elements;
+  }
+  [[nodiscard]] constexpr T* end() noexcept ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return elements + N;
+  }
+  [[nodiscard]] constexpr const T* end() const noexcept
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return elements + N;
+  }
 };
 
 }  // namespace base

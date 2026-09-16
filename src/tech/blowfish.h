@@ -79,7 +79,7 @@ class BlowfishEngine {
   /*
   **	This is the maximum key length supported.
   */
-  enum { MAX_KEY_LENGTH = 56 };
+  static constexpr int kMaxKeyLength = 56;
 
  private:
   bool IsKeyed = false;
@@ -90,25 +90,23 @@ class BlowfishEngine {
                      const uint32_t* ptable);
   void Initialize_Tables();
 
-  enum {
-    ROUNDS = 16,  // Feistal round count (16 is standard).
-    BYTES_PER_BLOCK =
-        8  // The number of bytes in each cypher block (don't change).
-  };
+  static constexpr int kRounds = 16;
+  static constexpr int kBytesPerBlock =
+      8;  // Feistal round count (16 is standard).
 
   /*
   **	Initialization data for sub keys. The initial values are constant and
   **	filled with a number generated from pi. Thus they are not random but
   **	they don't hold a weak pattern either.
   */
-  static const uint32_t P_Init[static_cast<int>(ROUNDS) + 2];
+  static const uint32_t P_Init[static_cast<int>(kRounds) + 2];
   static const uint32_t S_Init[4][UCHAR_MAX + 1];
 
   /*
   **	Permutation tables for encryption and decryption.
   */
-  uint32_t P_Encrypt[static_cast<int>(ROUNDS) + 2]{};
-  uint32_t P_Decrypt[static_cast<int>(ROUNDS) + 2]{};
+  uint32_t P_Encrypt[static_cast<int>(kRounds) + 2]{};
+  uint32_t P_Decrypt[static_cast<int>(kRounds) + 2]{};
 
   /*
   **	S-Box tables (four).

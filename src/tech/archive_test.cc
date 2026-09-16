@@ -94,7 +94,8 @@ TEST(ArchiveTest, BoolIsOneByte) {
 }
 
 enum class Narrow : uint8_t { kNone = 0, kA = 7 };
-enum Wide { kZero = 0, kNegative = -3 };
+enum class Wide { kZero = 0, kNegative = -3 };
+using enum Wide;
 
 TEST(ArchiveTest, EnumsAreAlwaysInt32) {
   Narrow narrow = Narrow::kA;

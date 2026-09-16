@@ -106,8 +106,8 @@ std::string Sha1Hex(const std::vector<uint8_t>& bytes) {
   return hex;
 }
 
-std::array<uint8_t, BlowfishEngine::MAX_KEY_LENGTH> Key() {
-  std::array<uint8_t, BlowfishEngine::MAX_KEY_LENGTH> key{};
+std::array<uint8_t, BlowfishEngine::kMaxKeyLength> Key() {
+  std::array<uint8_t, BlowfishEngine::kMaxKeyLength> key{};
   for (int i = 0; auto& byte : key) {
     byte = static_cast<uint8_t>((i++ * 37) + 11);
   }

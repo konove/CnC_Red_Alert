@@ -10,7 +10,7 @@ namespace base {
 namespace {
 
 enum class Fruit { kApple, kPear, kPlum };
-enum Legacy : uint8_t { LEGACY_A, LEGACY_B };
+enum class Legacy : uint8_t { kA, kB };
 
 TEST(EnumArrayTest, SubscriptsByEnumerator) {
   EnumArray<Fruit, int> counts = {1, 2, 3};
@@ -29,7 +29,7 @@ TEST(EnumArrayTest, SizeFollowsTheEnum) {
 TEST(EnumArrayTest, IsAConstantExpressionAggregate) {
   static constexpr EnumArray<Fruit, const char*> kNames = {"apple", "pear", "plum"};
   static_assert(kNames[Fruit::kPear][0] == 'p');
-  static_assert(kNames.size() == 3);
+  static_assert(decltype(kNames)::size() == 3);
 }
 
 TEST(EnumArrayTest, IteratesInEnumeratorOrder) {
@@ -41,15 +41,15 @@ TEST(EnumArrayTest, IteratesInEnumeratorOrder) {
     ++seen;
   }
   EXPECT_EQ(sum, 60);
-  EXPECT_EQ(seen, values.size());
+  EXPECT_EQ(seen, decltype(values)::size());
   EXPECT_EQ(values.end() - values.begin(), 3);
   EXPECT_EQ(values.data(), values.begin());
 }
 
 TEST(EnumArrayTest, NestsForTwoDimensionalTables) {
   constexpr EnumArray<Fruit, EnumArray<Legacy, int>> table = {{{1, 2}, {3, 4}, {5, 6}}};
-  static_assert(table[Fruit::kPlum][LEGACY_B] == 6);
-  EXPECT_EQ(table[Fruit::kPear][LEGACY_A], 3);
+  static_assert(table[Fruit::kPlum][Legacy::kB] == 6);
+  EXPECT_EQ(table[Fruit::kPear][Legacy::kA], 3);
 }
 
 TEST(EnumArrayTest, ValueInitializesToZero) {

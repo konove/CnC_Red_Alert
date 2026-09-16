@@ -1,11 +1,12 @@
 #include "base/numeric.h"
 
+#include <gtest/gtest.h>
+
 #include <cstddef>
 #include <cstdint>
 #include <limits>
 
-#include <gtest/gtest.h>
-
+#include "base/attributes.h"
 #include "base/types.h"
 
 namespace base {
@@ -33,7 +34,7 @@ TEST(ToSignedTest, PreservesRepresentableValues) {
 
 enum class Index { kFirst = 0, kSecond = 1, kLast = 31 };
 using enum Index;
-enum class Flags : uint8_t { kNone = 0, kRead = 1, kWrite = 2 };
+enum class CNC_FLAG_ENUM Flags : uint8_t { kNone = 0, kRead = 1, kWrite = 2 };
 
 TEST(BitTest, SetsTheIndexedBit) {
   EXPECT_EQ(Bit<uint32_t>(0), 1U);

@@ -107,8 +107,8 @@ void Benchmark::Begin(bool reset) {
 void Benchmark::End() {
   const int64_t value = Clock.Value();
 
-  if (Counter == MAXIMUM_EVENT_COUNT) {
-    Average -= Average / MAXIMUM_EVENT_COUNT;
+  if (Counter == kMaximumEventCount) {
+    Average -= Average / kMaximumEventCount;
     Average += value;
   } else {
     Average += value;

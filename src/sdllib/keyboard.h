@@ -254,6 +254,10 @@ inline int KN_To_VK(int key) { return key; }
 #define VK_DOWNRIGHT VK_NEXT
 #define VK_ALT VK_MENU
 
+// A key code is a bit pattern (the code, modifier bits and the KN_BUTTON
+// composite) that the keyboard buffer stores as an integer, so it stays
+// unscoped.
+// NOLINTNEXTLINE(cppcoreguidelines-use-enum-class)
 typedef enum KeyASCIIType {
 
   KA_NONE = 0,
@@ -381,6 +385,7 @@ typedef enum KeyASCIIType {
   KA_RLSE_BIT = WWKEY_RLS_BIT,
 } KeyASCIIType;
 
+// NOLINTNEXTLINE(cppcoreguidelines-use-enum-class)
 typedef enum KeyNumType {
   KN_NONE = 0,
 

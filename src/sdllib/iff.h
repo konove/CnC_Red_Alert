@@ -40,25 +40,27 @@
 #include <cstddef>
 #include <cstdint>
 
-typedef enum {
+enum class PicturePlaneType {
   BM_AMIGA = 0,  // Bit plane format (8K per bitplane).
   BM_MCGA = 1,   // Byte per pixel format (64K).
 
   BM_DEFAULT = BM_MCGA  // Default picture format.
-} PicturePlaneType;
+};
+using enum PicturePlaneType;
 
 /*
 **	This is the compression type code.  This value is used in the compressed
 **	file header to indicate the method of compression used.  Note that the
 **	LZW method may not be supported.
 */
-typedef enum {
+enum class CompressionType {
   NOCOMPRESS,  // No compression (raw data).
   LZW12,       // LZW 12 bit codes.
   LZW14,       // LZW 14 bit codes.
   HORIZONTAL,  // Run length encoding (RLE).
   LCW          // Westwood proprietary compression.
-} CompressionType;
+};
+using enum CompressionType;
 
 /*
 **	Compressed blocks of data must start with this header structure.

@@ -25,12 +25,13 @@
 // streaming, leaving 4 usable slots on both platforms.
 constexpr int kMaxSfx = 4;
 
-enum SCompressType : uint8_t {
+enum class SCompressType : uint8_t {
   SCOMP_NONE = 0,      // No compression -- raw data.
   SCOMP_WESTWOOD = 1,  // Special sliding window delta compression.
   SCOMP_SONARC = 33,   // Sonarc frame compression.
   SCOMP_SOS = 99       // SOS frame compression.
 };
+using enum SCompressType;
 
 static const int8_t ima_adpcm_index_table[] = {-1, -1, -1, -1, 2, 4, 6, 8,
                                                -1, -1, -1, -1, 2, 4, 6, 8};
@@ -387,7 +388,8 @@ int File_Stream_Sample_Vol(const char* filename, int volume,
   const int channels = header.Flags & 1 ? 2 : 1;
   const int bits = header.Flags & 2 ? 16 : 8;
 
-  if (header.Compression != SCOMP_SOS || channels != 1 || bits != 16) {
+  if (static_cast<SCompressType>(header.Compression) != SCOMP_SOS ||
+      channels != 1 || bits != 16) {
     CloseFileHandle(handle);
     absl::PrintF("\trate %i size %i/%i channels %i bits %i comp %i\n",
                  header.Rate, header.Size, header.UncompSize, channels, bits,
@@ -580,8 +582,11 @@ int Play_Sample_Handle(const void* sample, int priority, int volume,
   const int channels = header->Flags & AUD_FLAG_STEREO ? 2 : 1;
   const int bits = header->Flags & AUD_FLAG_16BIT ? 16 : 8;
 
-  const bool valid_comp = (header->Compression == SCOMP_SOS && bits == 16) ||
-                          (header->Compression == SCOMP_WESTWOOD && bits == 8);
+  const bool valid_comp =
+      (static_cast<SCompressType>(header->Compression) == SCOMP_SOS &&
+       bits == 16) ||
+      (static_cast<SCompressType>(header->Compression) == SCOMP_WESTWOOD &&
+       bits == 8);
 
   if (!valid_comp || channels != 1) {
     absl::PrintF("\trate %i size %i/%i channels %i bits %i comp %i\n",
