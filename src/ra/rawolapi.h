@@ -96,13 +96,14 @@ class WolapiObject;
 #define MAXCHATSENDLENGTH \
   71  //	Mainly aesthetic, and because of the length of edit line.
 
-enum CHANNELFILTER {
+enum class CHANNELFILTER {
   CHANNELFILTER_NO,
   CHANNELFILTER_OFFICIAL,
   CHANNELFILTER_UNOFFICIAL,
   CHANNELFILTER_LOBBIES,
   CHANNELFILTER_LOCALLOBBYGAMES,
 };
+using enum CHANNELFILTER;
 
 #define WOLCOLORREMAP_ACTION PCOLOR_GREY
 #define WOLCOLORREMAP_SELFSPEAKING PCOLOR_RED
@@ -123,12 +124,13 @@ enum CHANNELFILTER {
 #define WOLSOUND_ENTERGAME VOC_INVULNERABLE
 #define WOLSOUND_EXITGAME VOC_DOOR
 
-enum DISCONNECT_PING_STATUS {
+enum class DISCONNECT_PING_STATUS {
   PING_UNSTARTED,
   PING_WAITING,
   PING_GOOD,
   PING_BAD,
 };
+using enum DISCONNECT_PING_STATUS;
 #define DISCONNECT_PING_COUNT 5
 
 //***********************************************************************************************

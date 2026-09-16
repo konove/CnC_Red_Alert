@@ -296,7 +296,7 @@ class ObjectClass : public AbstractClass {
   void Debug_Dump(MonoClass* mono) const override;
   virtual void Move(FacingType /*facing*/);
 
-  enum { FLIGHT_LEVEL = 256 };
+  static constexpr int kFlightLevel = 256;
 };
 
 class ArchiveReader;

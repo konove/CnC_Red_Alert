@@ -45,7 +45,7 @@
 #include <string>
 #include <vector>
 
-#include "magic_enum/magic_enum.hpp"
+#include "base/enum_array.h"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
 #include "ra/base.h"
@@ -298,7 +298,7 @@ int NameIDOverride[25];
 **	These are the mission control structures. They hold the information
 *about *	how the missions should behave in the system.
 */
-MissionControlClass MissionControl[magic_enum::enum_count<MissionType>()];
+base::EnumArray<MissionType, MissionControlClass> MissionControl;
 
 /***************************************************************************
 **	There are various tutorial messages that can appear in the game. These
@@ -336,7 +336,7 @@ KeyboardClass* Keyboard;
 **	tables for the various possible player colors, and the color schemes
 ** for dialogs.
 */
-RemapControlType ColorRemaps[magic_enum::enum_count<PlayerColorType>()];
+base::EnumArray<PlayerColorType, RemapControlType> ColorRemaps;
 
 /*
 ** Special remap scheme for font that hs to print over metallic tabs
@@ -449,7 +449,7 @@ int32_t SidebarRedraws;  // Number of sidebar redraws.
 **	This is the monochrome debug page array. The various monochrome data
 **	screens are located here.
 */
-MonoClass MonoArray[magic_enum::enum_count<DMonoType>()];
+base::EnumArray<DMonoType, MonoClass> MonoArray;
 DMonoType MonoPage = DMONO_STRESS;  // The current page.
 
 /***************************************************************************
@@ -586,8 +586,7 @@ QueueClass<EventClass, kMaxEvents * 64> DoList;
 /***************************************************************************
 **	These are arrays/lists of trigger pointers for each cell & the houses.
 */
-DynamicVectorClass<TriggerClass*>
-    HouseTriggers[magic_enum::enum_count<HousesType>()];
+base::EnumArray<HousesType, DynamicVectorClass<TriggerClass*>> HouseTriggers;
 DynamicVectorClass<TriggerClass*> MapTriggers;
 int MapTriggerID;
 DynamicVectorClass<TriggerClass*> LogicTriggers;
@@ -657,17 +656,17 @@ NullModemClass NullModem(16,  // number of send entries
 // sizeof(EventClass), 	10,
 //// # entries in Global Queue 	8,
 //// # entries in Private Queues 	VIRGIN_SOCKET,
-//// Socket ID # 	IPXGlobalConnClass::COMMAND_AND_CONQUER0);// Product ID
+//// Socket ID # 	IPXGlobalConnClass::kCommandAndConquer0);// Product ID
 /// #
 
 IPXManagerClass Ipx(
     std::max(sizeof(GlobalPacketType),
              sizeof(RemoteFileTransferType)),  // size of Global Channel packets
     (546 - sizeof(CommHeaderType)) / sizeof(EventClass) * sizeof(EventClass),
-    160,                                        // # entries in Global Queue
-    32,                                         // # entries in Private Queues
-    VIRGIN_SOCKET,                              // Socket ID #
-    IPXGlobalConnClass::COMMAND_AND_CONQUER0);  // Product ID #
+    160,                                       // # entries in Global Queue
+    32,                                        // # entries in Private Queues
+    VIRGIN_SOCKET,                             // Socket ID #
+    IPXGlobalConnClass::kCommandAndConquer0);  // Product ID #
 
 /***************************************************************************
 **	This is the random-number seed; it's synchronized between systems for
@@ -687,14 +686,14 @@ int WindowList[][8] = {
 
     /* do not change the first 2 entries!! they are necc. to the system */
 
-    {0, 0, 40 * 16, 400, WHITE, BLACK, 0, 0},     /* screen window */
-    {1 * 8, 75, 38 * 8, 100, WHITE, BLACK, 0, 0}, /* DOS Error window */
+    {0, 0, 40 * 16, 400, kWhite, kBlack, 0, 0},     /* screen window */
+    {1 * 8, 75, 38 * 8, 100, kWhite, kBlack, 0, 0}, /* DOS Error window */
 
     // Tactical map.
-    {0, 0, 40 * 16, 400, WHITE, LTGREY, 0, 0},
+    {0, 0, 40 * 16, 400, kWhite, kLtGrey, 0, 0},
 
     // Initial menu window.
-    {12 * 8, 199 - 42, 16 * 8, 42, LTGREY, DKGREY, 0, 0},
+    {12 * 8, 199 - 42, 16 * 8, 42, kLtGrey, DKGREY, 0, 0},
 
     // Sidebar clipping window.
     {0, 0, 0, 0, 0, 0, 0, 0},
@@ -703,11 +702,11 @@ int WindowList[][8] = {
     {5 * 8, 30, 30 * 8, 140, 0, 0, 0, 0},
 
     // Partial object draw sub-window.
-    {0, 0, 0, 0, WHITE, BLACK, 0, 0}};
+    {0, 0, 0, 0, kWhite, kBlack, 0, 0}};
 
 /* X,Y,Item Width,Items High,Selected,Norm Color,Sel Color,zero 	*/
 int MenuList[][8] = {
-    {1, 3, 12, 3, 0, WHITE, PINK, 0},
+    {1, 3, 12, 3, 0, kWhite, kPink, 0},
 };
 
 GraphicBufferClass VisiblePage;

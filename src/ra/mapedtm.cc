@@ -200,58 +200,42 @@ int MapEditClass::Select_Team(const char* /*unused*/) {
   /*
   **	Dialog & button dimensions
   */
-  enum {
-    D_DIALOG_W = 400,  // dialog width
-    D_DIALOG_H = 250,  // dialog height
-    D_DIALOG_X = 0,    // centered x-coord
-    D_DIALOG_Y = 0,    // centered y-coord
-    //		D_DIALOG_CX = D_DIALOG_X + (D_DIALOG_W / 2),		// coord
-    // of x-center
-
-    D_TXT8_H = 11,  // ht of 8-pt text
-    D_MARGIN = 25,  // margin width/height
-
-    D_LIST_W = (D_DIALOG_W - (D_MARGIN * 2)) - 20,
-    D_LIST_X = D_DIALOG_X + ((D_DIALOG_W - D_LIST_W) / 2),
-    D_LIST_Y = D_DIALOG_Y + 20,
-    D_LIST_H = (D_DIALOG_H - 50) - D_LIST_Y,
-
-    BUTTON_W = 45,
-    BUTTON_H = 9,
-
-    D_EDIT_W = BUTTON_W,
-    D_EDIT_H = BUTTON_H,
-    D_EDIT_X = D_DIALOG_X + D_DIALOG_W - (((D_EDIT_W + 10) * 4) + 25),
-    D_EDIT_Y = D_DIALOG_Y + D_DIALOG_H - 20 - D_EDIT_H,
-
-    D_NEW_W = BUTTON_W,
-    D_NEW_H = BUTTON_H,
-    D_NEW_X = D_EDIT_X + D_EDIT_W + 10,
-    D_NEW_Y = D_DIALOG_Y + D_DIALOG_H - 20 - D_NEW_H,
-
-    D_DELETE_W = BUTTON_W,
-    D_DELETE_H = BUTTON_H,
-    D_DELETE_X = D_NEW_X + D_NEW_W + 10,
-    D_DELETE_Y = D_DIALOG_Y + D_DIALOG_H - 20 - D_DELETE_H,
-
-    D_OK_W = BUTTON_W,
-    D_OK_H = BUTTON_H,
-    D_OK_X = D_DELETE_X + D_DELETE_W + 10,
-    D_OK_Y = D_DIALOG_Y + D_DIALOG_H - 20 - D_OK_H,
-
-    TEAMTXT_LEN = 43,  // max length of a team entry
-  };
+  constexpr int kDialogW = 400;  // dialog width
+  constexpr int kDialogH = 250;  // dialog height
+  constexpr int kDialogX = 0;    // centered x-coord
+  constexpr int kDialogY = 0;    // coord // of x-center
+  constexpr int kMargin = 25;    // margin width/height
+  constexpr int kListW = (kDialogW - (kMargin * 2)) - 20;
+  constexpr int kListX = kDialogX + ((kDialogW - kListW) / 2);
+  constexpr int kListY = kDialogY + 20;
+  constexpr int kListH = (kDialogH - 50) - kListY;
+  constexpr int kButtonW = 45;
+  constexpr int kButtonH = 9;
+  constexpr int kEditW = kButtonW;
+  constexpr int kEditH = kButtonH;
+  constexpr int kEditX = kDialogX + kDialogW - (((kEditW + 10) * 4) + 25);
+  constexpr int kEditY = kDialogY + kDialogH - 20 - kEditH;
+  constexpr int kNewW = kButtonW;
+  constexpr int kNewH = kButtonH;
+  constexpr int kNewX = kEditX + kEditW + 10;
+  constexpr int kNewY = kDialogY + kDialogH - 20 - kNewH;
+  constexpr int kDeleteW = kButtonW;
+  constexpr int kDeleteH = kButtonH;
+  constexpr int kDeleteX = kNewX + kNewW + 10;
+  constexpr int kDeleteY = kDialogY + kDialogH - 20 - kDeleteH;
+  constexpr int kOkW = kButtonW;
+  constexpr int kOkH = kButtonH;
+  constexpr int kOkX = kDeleteX + kDeleteW + 10;
+  constexpr int kOkY = kDialogY + kDialogH - 20 - kOkH;
 
   /*
   **	Button enumerations:
   */
-  enum {
-    TEAM_LIST = 100,
-    BUTTON_EDIT,
-    BUTTON_NEW,
-    BUTTON_DELETE,
-    BUTTON_OK,
-  };
+  constexpr int kTeamList = 100;
+  constexpr int kButtonEdit = 101;
+  constexpr int kButtonNew = 102;
+  constexpr int kButtonDelete = 103;
+  constexpr int kButtonOk = 104;
 
   /*
   **	Dialog variables
@@ -267,17 +251,15 @@ int MapEditClass::Select_Team(const char* /*unused*/) {
   GadgetClass* commands = nullptr;  // the button list
 
   TListClass<CCPtr<TeamTypeClass> > teamlist(
-      TEAM_LIST, D_LIST_X, D_LIST_Y, D_LIST_W, D_LIST_H,
-      TPF_EFNT | TPF_NOSHADOW, MixArchive::Retrieve("EBTN-UP.SHP"),
-      MixArchive::Retrieve("EBTN-DN.SHP"));
+      kTeamList, kListX, kListY, kListW, kListH, TPF_EFNT | TPF_NOSHADOW,
+      MixArchive::Retrieve("EBTN-UP.SHP"), MixArchive::Retrieve("EBTN-DN.SHP"));
 
-  TextButtonClass editbtn(BUTTON_EDIT, "Edit", kTpfEButton, D_EDIT_X, D_EDIT_Y,
-                          D_EDIT_W);
-  TextButtonClass newbtn(BUTTON_NEW, "New", kTpfEButton, D_NEW_X, D_NEW_Y,
-                         D_NEW_W);
-  TextButtonClass deletebtn(BUTTON_DELETE, "Delete", kTpfEButton, D_DELETE_X,
-                            D_DELETE_Y, D_DELETE_W);
-  TextButtonClass okbtn(BUTTON_OK, "OK", kTpfEButton, D_OK_X, D_OK_Y, D_OK_W);
+  TextButtonClass editbtn(kButtonEdit, "Edit", kTpfEButton, kEditX, kEditY,
+                          kEditW);
+  TextButtonClass newbtn(kButtonNew, "New", kTpfEButton, kNewX, kNewY, kNewW);
+  TextButtonClass deletebtn(kButtonDelete, "Delete", kTpfEButton, kDeleteX,
+                            kDeleteY, kDeleteW);
+  TextButtonClass okbtn(kButtonOk, "OK", kTpfEButton, kOkX, kOkY, kOkW);
 
   /*
   **	Initialize
@@ -337,8 +319,8 @@ int MapEditClass::Select_Team(const char* /*unused*/) {
     */
     if (display /*&& LogicPage->Lock()*/) {
       Hide_Mouse();
-      Dialog_Box(D_DIALOG_X, D_DIALOG_Y, D_DIALOG_W, D_DIALOG_H);
-      Draw_Caption(TXT_TEAM_EDIT, D_DIALOG_X, D_DIALOG_Y, D_DIALOG_W);
+      Dialog_Box(kDialogX, kDialogY, kDialogW, kDialogH);
+      Draw_Caption(TXT_TEAM_EDIT, kDialogX, kDialogY, kDialogW);
       commands->Draw_All();
       Show_Mouse();
       display = false;
@@ -354,29 +336,29 @@ int MapEditClass::Select_Team(const char* /*unused*/) {
     **	Process input
     */
     switch (static_cast<int>(input)) {
-      case ButtonKey(TEAM_LIST):
+      case ButtonKey(kTeamList):
         CurTeam = teamlist.Current_Item();
         break;
 
-      case ButtonKey(BUTTON_EDIT):
+      case ButtonKey(kButtonEdit):
         if (teamlist.Count()) {
           process = false;
           edit_team = true;
         }
         break;
 
-      case ButtonKey(BUTTON_NEW):
+      case ButtonKey(kButtonNew):
         process = false;
         new_team = true;
         break;
 
-      case ButtonKey(BUTTON_DELETE):
+      case ButtonKey(kButtonDelete):
         process = false;
         del_team = true;
         break;
 
       case KN_RETURN:
-      case ButtonKey(BUTTON_OK):
+      case ButtonKey(kButtonOk):
         process = false;
         break;
       default:
@@ -451,43 +433,38 @@ int MapEditClass::Select_Team(const char* /*unused*/) {
 /*
 **	Dialog & button dimensions
 */
-enum {
-  D_DIALOG_W = 640,
-  D_DIALOG_X = 0,
-  D_DIALOG_CX = D_DIALOG_X + (D_DIALOG_W / 2),
+constexpr int kDialogW = 640;
+constexpr int kDialogX = 0;
+constexpr int kDialogCx = kDialogX + (kDialogW / 2);
 
-  D_TXT6_H = 7,
-  D_MARGIN = 7,
+constexpr int kTxt6H = 7;
+constexpr int kMargin = 7;
 
 #ifdef TEENSY_WEENSY
-  D_PICTURE_W = 32,
-  D_PICTURE_H = 24,
+constexpr int kPictureW = 32;
+constexpr int kPictureH = 24;
 #else
-  D_PICTURE_W = 64,
-  D_PICTURE_H = 48,
+constexpr int kPictureW = 64;
+constexpr int kPictureH = 48;
 #endif
-  D_ROW_H = (D_PICTURE_H + 3),
+constexpr int kRowH = (kPictureH + 3);
 
-  D_OK_W = 50,
-  D_OK_H = 9,
-  D_OK_X = D_DIALOG_CX - 5 - D_OK_W,
-  D_OK_Y = 0,
+constexpr int kOkW = 50;
+constexpr int kOkH = 9;
+constexpr int kOkX = kDialogCx - 5 - kOkW;
+constexpr int kOkY = 0;
 
-  D_CANCEL_W = 50,
-  D_CANCEL_H = 9,
-  D_CANCEL_X = D_DIALOG_CX + 5,
-  D_CANCEL_Y = 0,
-
-};
+constexpr int kCancelW = 50;
+constexpr int kCancelH = 9;
+constexpr int kCancelX = kDialogCx + 5;
+constexpr int kCancelY = 0;
 
 int MapEditClass::Team_Members(HousesType house) {
   /*
   **	Button enumerations:
   */
-  enum {
-    BUTTON_OK = 100,
-    BUTTON_CANCEL,
-  };
+  constexpr int kButtonOk = 100;
+  constexpr int kButtonCancel = 101;
 
   /*
   **	Redraw values: in order from "top" to "bottom" layer of the dialog
@@ -495,12 +472,13 @@ int MapEditClass::Team_Members(HousesType house) {
   **	the requested redraw level to see if it's supposed to draw; if it's
   **	>= its level, it redraws.
   */
-  typedef enum {
+  enum class RedrawType {
     REDRAW_NONE = 0,
     REDRAW_BUTTONS = 1,
     REDRAW_BACKGROUND = 2,
     REDRAW_ALL = REDRAW_BACKGROUND
-  } RedrawType;
+  };
+  using enum RedrawType;
 
   /*
   **	Dialog variables
@@ -511,8 +489,8 @@ int MapEditClass::Team_Members(HousesType house) {
   /*
   **	Team display variables
   */
-  const TechnoTypeClass* teamclass[MAX_TEAM_CLASSES] = {};  // team classes
-  int teamcount[MAX_TEAM_CLASSES] = {};                     // class counts
+  const TechnoTypeClass* teamclass[kMaxTeamClasses] = {};  // team classes
+  int teamcount[kMaxTeamClasses] = {};                     // class counts
 
   /*
   **	Dialog dimensions.
@@ -534,11 +512,11 @@ int MapEditClass::Team_Members(HousesType house) {
   **	Buttons.
   */
 
-  TextButtonClass okbtn(BUTTON_OK, TXT_OK, TPF_CENTER | TPF_EFNT | TPF_NOSHADOW,
-                        D_OK_X, D_OK_Y, D_OK_W, D_OK_H);
-  TextButtonClass cancelbtn(BUTTON_CANCEL, TXT_CANCEL,
-                            TPF_CENTER | TPF_EFNT | TPF_NOSHADOW, D_CANCEL_X,
-                            D_CANCEL_Y, D_CANCEL_W, D_CANCEL_H);
+  TextButtonClass okbtn(kButtonOk, TXT_OK, TPF_CENTER | TPF_EFNT | TPF_NOSHADOW,
+                        kOkX, kOkY, kOkW, kOkH);
+  TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL,
+                            TPF_CENTER | TPF_EFNT | TPF_NOSHADOW, kCancelX,
+                            kCancelY, kCancelW, kCancelH);
 
   /*
   **	Fill in the ObjectTypeClass array with all available object type ptrs,
@@ -607,7 +585,7 @@ int MapEditClass::Team_Members(HousesType house) {
   **	Compute picture rows & cols.
   */
   const int numcols =
-      (D_DIALOG_W - 16) / D_PICTURE_W;  // # units displayed horizontally
+      (kDialogW - 16) / kPictureW;  // # units displayed horizontally
 
   /*
   **	Dialog's height = top margin + label + picture rows + margin + label +
@@ -617,8 +595,8 @@ int MapEditClass::Team_Members(HousesType house) {
   const int dlg_y = 0;
   const int msg_y = dlg_y + dlg_h - 26 - 15;  // y-coord for object names
 
-  okbtn.Y = dlg_y + dlg_h - D_MARGIN - D_OK_H - 15;
-  cancelbtn.Y = dlg_y + dlg_h - D_MARGIN - D_CANCEL_H - 15;
+  okbtn.Y = dlg_y + dlg_h - kMargin - kOkH - 15;
+  cancelbtn.Y = dlg_y + dlg_h - kMargin - kCancelH - 15;
 
   /*
   **	Draw to SeenBuff.
@@ -656,7 +634,7 @@ int MapEditClass::Team_Members(HousesType house) {
     /*
     **	Refresh display if needed.
     */
-    if (display) {
+    if (display != REDRAW_NONE) {
       /*
       **	Display the dialog box.
       */
@@ -665,8 +643,8 @@ int MapEditClass::Team_Members(HousesType house) {
         /*
         **	Display the constant background of this dialog.
         */
-        Dialog_Box(D_DIALOG_X, dlg_y, D_DIALOG_W, dlg_h);
-        Draw_Caption(TXT_TEAM_MEMBERS, D_DIALOG_X, dlg_y, D_DIALOG_W);
+        Dialog_Box(kDialogX, dlg_y, kDialogW, dlg_h);
+        Draw_Caption(TXT_TEAM_MEMBERS, kDialogX, dlg_y, kDialogW);
 
         /*
         **	Draw the objects.
@@ -680,8 +658,8 @@ int MapEditClass::Team_Members(HousesType house) {
 
         if (static_cast<unsigned>(curclass) < static_cast<unsigned>(maxclasses)) {
           Fancy_Text_Print(teamclass[curclass]->Full_Name(),
-                           D_DIALOG_X + (D_DIALOG_W / 2), msg_y,
-                           &ColorRemaps[PCOLOR_BROWN], TBLACK,
+                           kDialogX + (kDialogW / 2), msg_y,
+                           &ColorRemaps[PCOLOR_BROWN], kTBlack,
                            TPF_CENTER | TPF_EFNT | TPF_NOSHADOW);
         }
       }
@@ -735,14 +713,14 @@ int MapEditClass::Team_Members(HousesType house) {
       /*
       **	OK: save values & return.
       */
-      case ButtonKey(BUTTON_OK):
+      case ButtonKey(kButtonOk):
         process = false;
         break;
 
       /*
       **	Cancel: abort & return.
       */
-      case ButtonKey(BUTTON_CANCEL):
+      case ButtonKey(kButtonCancel):
         cancel = true;
         process = false;
         break;
@@ -751,8 +729,8 @@ int MapEditClass::Team_Members(HousesType house) {
         /*
         **	Compute new 'curclass' based on mouse position.
         */
-        i = ((Get_Mouse_X() - 32 - D_DIALOG_X) / D_PICTURE_W) +
-            (((Get_Mouse_Y() - (dlg_y + 8 + 11)) / D_ROW_H) * numcols);
+        i = ((Get_Mouse_X() - 32 - kDialogX) / kPictureW) +
+            (((Get_Mouse_Y() - (dlg_y + 8 + 11)) / kRowH) * numcols);
 
         /*
         **	If it's changed, update class label.
@@ -764,14 +742,13 @@ int MapEditClass::Team_Members(HousesType house) {
           **	Clear out the previously printed name of the item.
           */
           Hide_Mouse();
-          LogicPage->Fill_Rect(D_DIALOG_X + 32, msg_y,
-                               D_DIALOG_X + D_DIALOG_W - 64, msg_y + D_TXT6_H,
-                               BLACK);
+          LogicPage->Fill_Rect(kDialogX + 32, msg_y, kDialogX + kDialogW - 64,
+                               msg_y + kTxt6H, kBlack);
 
           if (static_cast<unsigned>(curclass) < static_cast<unsigned>(maxclasses)) {
             Fancy_Text_Print(teamclass[curclass]->Full_Name(),
-                             D_DIALOG_X + (D_DIALOG_W / 2), msg_y, scheme,
-                             TBLACK, TPF_CENTER | TPF_EFNT | TPF_NOSHADOW);
+                             kDialogX + (kDialogW / 2), msg_y, scheme, kTBlack,
+                             TPF_CENTER | TPF_EFNT | TPF_NOSHADOW);
           }
 
           /*
@@ -809,7 +786,7 @@ int MapEditClass::Team_Members(HousesType house) {
           /*
           **	Don't allow more classes than we can handle.
           */
-          if (numclasses == TeamTypeClass::MAX_TEAM_CLASSCOUNT) {
+          if (numclasses == TeamTypeClass::kMaxTeamClasscount) {
             continue;
           }
           numclasses++;
@@ -907,30 +884,30 @@ int MapEditClass::Team_Members(HousesType house) {
  *=============================================================================================*/
 void MapEditClass::Draw_Member(const TechnoTypeClass* ptr, int index, int quant,
                                HousesType house) {
-  const int numcols = (D_DIALOG_W - 64) / D_PICTURE_W;
+  const int numcols = (kDialogW - 64) / kPictureW;
   const int col = index % numcols;
   const int row = index / numcols;
   const int dlg_y = 0;
-  const int x = D_DIALOG_X + 32 + (col * D_PICTURE_W);
-  const int y = dlg_y + 8 + 13 + (row * D_ROW_H);
+  const int x = kDialogX + 32 + (col * kPictureW);
+  const int y = dlg_y + 8 + 13 + (row * kRowH);
   RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
 
   /*
   **	Change the window to this box.
   */
-  WindowList[WINDOW_EDITOR][WINDOWX] = x;
-  WindowList[WINDOW_EDITOR][WINDOWY] = y;
-  WindowList[WINDOW_EDITOR][WINDOWWIDTH] = D_PICTURE_W;
-  WindowList[WINDOW_EDITOR][WINDOWHEIGHT] = D_PICTURE_H;
-  Change_Window(WINDOW_EDITOR);
+  WindowList[static_cast<int>(WINDOW_EDITOR)][kWindowX] = x;
+  WindowList[static_cast<int>(WINDOW_EDITOR)][kWindowY] = y;
+  WindowList[static_cast<int>(WINDOW_EDITOR)][kWindowWidth] = kPictureW;
+  WindowList[static_cast<int>(WINDOW_EDITOR)][kWindowHeight] = kPictureH;
+  Change_Window(static_cast<int>(WINDOW_EDITOR));
 
   Hide_Mouse();
-  Draw_Box(x, y, D_PICTURE_W, D_PICTURE_H, BOXSTYLE_DOWN, true);
+  Draw_Box(x, y, kPictureW, kPictureH, BOXSTYLE_DOWN, true);
   ptr->Display(ScreenWidth / 2, ScreenHeight / 2, WINDOW_EDITOR, house);
   if (quant > 0) {
-    Fancy_Text_Print("%d", x + 1, y + 1, scheme, TBLACK,
+    Fancy_Text_Print("%d", x + 1, y + 1, scheme, kTBlack,
                      TPF_8POINT | TPF_DROPSHADOW, quant);
-    //		Fancy_Text_Print("%d", x+1, y+D_PICTURE_H-8, scheme, TBLACK,
+    //		Fancy_Text_Print("%d", x+1, y+kPictureH-8, scheme, TBLACK,
     // TPF_6PT_GRAD|TPF_USE_GRAD_PAL|TPF_DROPSHADOW, quant);
   }
   Show_Mouse();

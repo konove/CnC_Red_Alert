@@ -80,7 +80,6 @@
 #include "ra/goptions.h"
 #include "ra/heap.h"
 #include "ra/inline.h"
-#include "ra/jshell.h"
 #include "ra/keyframe.h"
 #include "ra/logic.h"
 #include "ra/map.h"
@@ -491,7 +490,7 @@ void AnimClass::operator delete(void* ptr) {
 AnimClass::AnimClass(AnimType animnum, COORDINATE coord,
                      unsigned char timedelay, unsigned char loop)
     : ObjectClass(RTTI_ANIM, Anims.ID(this)),
-      Class(AnimTypes.Ptr(animnum)),
+      Class(AnimTypes.Ptr(static_cast<int>(animnum))),
       Delay(timedelay) {
   if (Class->Stages == -1) {
     IsTheaterShape = Class->IsTheater;
@@ -509,7 +508,7 @@ AnimClass::AnimClass(AnimType animnum, COORDINATE coord,
   Set_Stage(0);
 
   if (Class->IsGroundLayer) {
-    Height = FLIGHT_LEVEL;
+    Height = kFlightLevel;
   }
 
   AnimClass::Unlimbo(coord);

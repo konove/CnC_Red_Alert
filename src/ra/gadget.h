@@ -93,17 +93,23 @@ class ControlClass;
 
 class GadgetClass : public LinkClass {
  public:
-  typedef enum CNC_FLAG_ENUM FlagEnum {
-    LEFTPRESS = 0x0001,     // Left mouse button press.
-    LEFTHELD = 0x0002,      // Left mouse button is being held down.
-    LEFTRELEASE = 0x0004,   // Left mouse button released.
-    LEFTUP = 0x0008,        // Left mouse button is being held up.
-    RIGHTPRESS = 0x0010,    // Right mouse button press.
-    RIGHTHELD = 0x0020,     // Right mouse button is being held down.
-    RIGHTRELEASE = 0x0040,  // Right mouse button released.
-    RIGHTUP = 0x0080,       // Right mouse button is being held up.
-    KEYBOARD = 0x0100       // Keyboard input processing (maybe).
-  } FlagEnum;
+  // Input events a gadget listens for, stored OR'd in Flags.
+  static constexpr unsigned kLeftPress = 0x0001;  // Left mouse button press.
+  static constexpr unsigned kLeftHeld =
+      0x0002;  // Left mouse button is being held down.
+  static constexpr unsigned kLeftRelease =
+      0x0004;  // Left mouse button released.
+  static constexpr unsigned kLeftUp =
+      0x0008;  // Left mouse button is being held up.
+  static constexpr unsigned kRightPress = 0x0010;  // Right mouse button press.
+  static constexpr unsigned kRightHeld =
+      0x0020;  // Right mouse button is being held down.
+  static constexpr unsigned kRightRelease =
+      0x0040;  // Right mouse button released.
+  static constexpr unsigned kRightUp =
+      0x0080;  // Right mouse button is being held up.
+  static constexpr unsigned kKeyboard =
+      0x0100;  // Keyboard input processing (maybe).
 
   GadgetClass(int x, int y, int w, int h, unsigned flags,
               bool sticky = false) noexcept;
@@ -237,7 +243,7 @@ class GadgetClass : public LinkClass {
   **	These are the action flags that are used to determine when the action
   *function *	should be called. Example: If this gadget only wants the action
   *button called when *	the left mouse button is pressed over the its region,
-  *then the flag will be set *	to LEFTPRESS.
+  *then the flag will be set *	to kLeftPress.
   */
   unsigned Flags = 0;
 

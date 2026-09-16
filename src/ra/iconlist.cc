@@ -39,6 +39,7 @@
 #include <string>
 
 #include "absl/base/attributes.h"
+#include "base/numeric.h"
 #include "base/types.h"
 #include "port/safe_string.h"
 #include "port/tokenizer.h"
@@ -47,7 +48,6 @@
 #include "ra/dialog.h"
 #include "ra/dib.h"
 #include "ra/externs.h"
-#include "ra/gadget.h"
 #include "ra/inline.h"
 #include "ra/list.h"
 #include "ra/vector_dynamic.h"
@@ -452,7 +452,7 @@ void IconListClass::Draw_Entry(int index, int x, int y, int width,
       LogicPage->Fill_Rect(xText, y, xText + width - 1, y + LineHeight - 1,
                            pRemap->Shadow);
     } else {
-      if (!(flags & TPF_USE_GRAD_PAL)) {
+      if (!base::Any(flags & TPF_USE_GRAD_PAL)) {
         flags = flags | TPF_MEDIUM_COLOR;
       }
     }
@@ -461,10 +461,10 @@ void IconListClass::Draw_Entry(int index, int x, int y, int width,
     // one tab will now break this.)
     if (Tabs) {
       const int tab = *Tabs - (xText - x);
-      Conquer_Clip_Text_Print(Get_Item(index), xText, y, pRemap, TBLACK, flags,
+      Conquer_Clip_Text_Print(Get_Item(index), xText, y, pRemap, kTBlack, flags,
                               width, &tab);
     } else {
-      Conquer_Clip_Text_Print(Get_Item(index), xText, y, pRemap, TBLACK, flags,
+      Conquer_Clip_Text_Print(Get_Item(index), xText, y, pRemap, kTBlack, flags,
                               width, nullptr);
     }
   }
@@ -504,7 +504,8 @@ void IconListClass::Draw_Entry(int index, int x, int y, int width,
 //***********************************************************************************************
 bool IconListClass::Action(unsigned flags, KeyNumType& key) {
   //	Overriding of function is for the sake of MultiSelecting only.
-  if ((iSelectType == 2) && (!(flags & LEFTRELEASE)) && (!(flags & KEYBOARD))) {
+  if ((iSelectType == 2) && (!(flags & kLeftRelease)) &&
+      (!(flags & kKeyboard))) {
     int index = Get_Mouse_Y() - (Y + 1);
     index = index / LineHeight;
     base::ssize iSelected = CurrentTopIndex + index;

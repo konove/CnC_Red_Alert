@@ -83,10 +83,8 @@ class CheckListClass : public ListClass {
   **	This defines the ASCII value of the checkmark character & non-checkmark
   **	character.
   */
-  typedef enum CheckListClassEnum {
-    CHECK_CHAR = '\3',
-    UNCHECK_CHAR = ' '
-  } CheckListClassEnum;
+  static constexpr int kCheckChar = '\3';
+  static constexpr int kUncheckChar = ' ';
 
  protected:
   bool Action(unsigned flags, KeyNumType& key) override;

@@ -54,6 +54,7 @@
 #include <string>
 
 #include "absl/log/log.h"
+#include "base/enum_array.h"
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
@@ -76,16 +77,18 @@
 /***************************************************************************
 **	Controls what special effects may occur on the sound effect.
 */
-typedef enum {
+enum class ContextType {
   IN_NOVAR,  // No variation or alterations allowed.
   IN_VAR     // Infantry variance response modification.
-} ContextType;
+};
+using enum ContextType;
 
-static struct {
+struct SoundEffect {
   const char* Name;   // Digitized voice file name.
   int Priority;       // Playback priority of this sample.
   ContextType Where;  // In what game context does this sample exist.
-} SoundEffectName[magic_enum::enum_count<VocType>()] = {
+};
+static base::EnumArray<VocType, SoundEffect> SoundEffectName = {{
 
     /*
     **	Civilian voices (technicians too).
@@ -381,7 +384,7 @@ static struct {
      IN_NOVAR},  // VOC_MAD_EXPLODE		MAD tank explodes
     {"SHKTROP1", 20,
      IN_NOVAR},  // VOC_SHOCK_TROOP1		Shock Trooper fires
-};
+}};
 
 /***********************************************************************************************
  * Voc_From_Name -- Fetch VocType from ASCII name specified. *
@@ -526,8 +529,7 @@ void Sound_Effect(VocType voc, COORDINATE coord, int variation,
  *=============================================================================================*/
 int Sound_Effect(VocType voc, fixed volume, int variation, int16_t pan_value,
                  HousesType house) {
-  if (voc != VOC_NONE &&
-      (voc < 0 || voc >= static_cast<int>(magic_enum::enum_count<VocType>()))) {
+  if (voc != VOC_NONE && !magic_enum::enum_contains(voc)) {
     DLOG(WARNING) << "Sound_Effect: invalid voc=" << static_cast<int>(voc)
                   << ", valid range is [0, "
                   << static_cast<int>(magic_enum::enum_count<VocType>()) - 1
@@ -614,7 +616,7 @@ int Sound_Effect(VocType voc, fixed volume, int variation, int16_t pan_value,
 /*
 **	This elaborates all the EVA speech voices.
 */
-static const char* Speech[magic_enum::enum_count<VoxType>()] = {
+static constexpr base::EnumArray<VoxType, const char*> Speech = {
     "MISNWON1",  //	VOX_ACCOMPLISHED
                  // mission accomplished
     "MISNLST1",  //	VOX_FAIL
@@ -813,7 +815,7 @@ const char* Speech_Name(VoxType speech) {
  * HISTORY: * 11/12/1994 JLB : Created. *
  *=============================================================================================*/
 void Speak(VoxType voice) {
-  if (!Debug_Quiet && Options.Volume != 0 && SampleType != 0 &&
+  if (!Debug_Quiet && Options.Volume != 0 && SampleType != SAMPLE_NONE &&
       voice != VOX_NONE && voice != SpeakQueue && voice != CurrentVoice &&
       SpeakQueue == VOX_NONE) {
     SpeakQueue = voice;
@@ -839,7 +841,7 @@ void Speak(VoxType voice) {
  *=============================================================================================*/
 void Speak_AI() {
   static int _index = 0;
-  if (Debug_Quiet || SampleType == 0) {
+  if (Debug_Quiet || SampleType == SAMPLE_NONE) {
     return;
   }
 
@@ -933,7 +935,7 @@ void Stop_Speaking() {
  *=============================================================================================*/
 bool Is_Speaking() {
   Speak_AI();
-  return !Debug_Quiet && SampleType != 0 &&
+  return !Debug_Quiet && SampleType != SAMPLE_NONE &&
          (SpeakQueue != VOX_NONE ||
           std::ranges::any_of(SpeechBuffer, [](const void* buffer) {
             return Is_Sample_Playing(buffer);

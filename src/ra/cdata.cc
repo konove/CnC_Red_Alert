@@ -1881,15 +1881,16 @@ void TemplateTypeClass::Display(int x, int y, WindowNumberType window,
     x -= (w * ICON_PIXEL_W) / 2;
     y -= (h * ICON_PIXEL_H) / 2;
   }
-  x += WindowList[window][WINDOWX];
-  y += WindowList[window][WINDOWY];
+  x += WindowList[static_cast<int>(window)][kWindowX];
+  y += WindowList[static_cast<int>(window)][kWindowY];
 
   const auto* iconset = static_cast<const IconsetClass*>(Get_Image_Data());
   const unsigned char* map = iconset->Map_Data();
 
   for (int index = 0; index < w * h; index++) {
     if (map[index] != 0xFF) {
-      HidPage.Draw_Stamp(iconset, index, 0, 0, nullptr, WINDOW_MAIN);
+      HidPage.Draw_Stamp(iconset, index, 0, 0, nullptr,
+                         static_cast<int>(WINDOW_MAIN));
       if (scale) {
         HidPage.Scale((*LogicPage), 0, 0,
                       x + ((index % w) * (ICON_PIXEL_W / 2)),
@@ -2003,7 +2004,7 @@ void TemplateTypeClass::One_Time() {}
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
 TemplateTypeClass& TemplateTypeClass::As_Reference(TemplateType type) {
-  return *TemplateTypes.Ptr(type);
+  return *TemplateTypes.Ptr(static_cast<int>(type));
 }
 
 COORDINATE TemplateTypeClass::Coord_Fixup(COORDINATE coord) const {

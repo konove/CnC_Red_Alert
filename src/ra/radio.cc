@@ -48,7 +48,7 @@
 #include <cassert>
 #include <cstdint>
 
-#include "magic_enum/magic_enum.hpp"
+#include "base/enum_array.h"
 #include "ra/config.h"
 #include "ra/defines.h"
 #include "ra/globals.h"
@@ -60,7 +60,7 @@
 **	These are the text representations of the radio messages that can be
 *transmitted.
 */
-const char* RadioClass::Messages[magic_enum::enum_count<RadioMessageType>()] = {
+base::EnumArray<RadioMessageType, const char*> RadioClass::Messages = {
     "static (no message)",
     "Roger.",
     "Come in.",

@@ -107,7 +107,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
     b3txt = nullptr;
   }
 
-  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, kTpfText);
+  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack, kTpfText);
 
   /*
   **	Examine the optional button parameters. Fetch the width and starting
@@ -142,7 +142,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   */
   buffer[BUFFSIZE - 1] = 0;
   strncpy(buffer, msg, BUFFSIZE - 1);
-  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, kTpfText);
+  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack, kTpfText);
   int width = 0;
   int height = 0;
   const int lines = Format_Window_String(buffer, 510, width, height);
@@ -238,8 +238,8 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   /*
   **	Draw the body of the message.
   */
-  Fancy_Text_Print(buffer, printx, y + 40,
-                   GadgetClass::Get_Color_Scheme(), TBLACK, tpf);
+  Fancy_Text_Print(buffer, printx, y + 40, GadgetClass::Get_Color_Scheme(),
+                   kTBlack, tpf);
 
   /*
   **	Redraw the buttons.
@@ -268,7 +268,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
         **	Draw the body of the message.
         */
         Fancy_Text_Print(buffer, printx, y + 40,
-                         GadgetClass::Get_Color_Scheme(), TBLACK, tpf);
+                         GadgetClass::Get_Color_Scheme(), kTBlack, tpf);
 
         /*
         **	Redraw the buttons.

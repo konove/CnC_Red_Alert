@@ -53,13 +53,14 @@ class ColorListClass : public ListClass {
   ** These enums are the ways a selected item can be drawn
   */
   // lint -esym(578,SELECT_NONE)
-  typedef enum SelectEnum {
+  enum class SelectStyleType {
     SELECT_NORMAL,     // selected items aren't drawn differently
     SELECT_HIGHLIGHT,  // item is highlighted
     SELECT_BOX,        // draw a box around the item
     SELECT_BAR,        // draw a bar behind the item
     SELECT_INVERT      // draw the string inverted
-  } SelectStyleType;
+  };
+  using enum SelectStyleType;
 
   ColorListClass(int id, int x, int y, int w, int h, TextPrintType flags,
                  const void* up, const void* down);

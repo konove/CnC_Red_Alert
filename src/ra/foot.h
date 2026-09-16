@@ -258,7 +258,7 @@ class FootClass : public TechnoClass {
   **	that a findpath won't be calculated until this timer expires.
   */
   Timer<FrameTickSource> PathDelay;
-  enum { PATH_RETRY = 10 };
+  static constexpr int kPathRetry = 10;
   int TryTryAgain;  // Number of retry attempts remaining.
 
   /*
@@ -314,7 +314,7 @@ class FootClass : public TechnoClass {
 
         PathThreshhold(MOVE_CLOAK),
         PathDelay(0),
-        TryTryAgain(PATH_RETRY),
+        TryTryAgain(kPathRetry),
         BaseAttackTimer(0),
         FormationSpeed(SPEED_FOOT),
         FormationMaxSpeed(MPH_IMMOBILE),

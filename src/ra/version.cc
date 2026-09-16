@@ -153,8 +153,8 @@ VersionClass::VersionClass() {
  *   10/26/1995 BRR : Created.                                             *
  *=========================================================================*/
 
-// ajw Note: This function is no longer called. MIN_VERSION is now incorrect,
-// but I don't have time 	for a full rebuild (3 hrs!), and as MIN_VERSION
+// ajw Note: This function is no longer called. kMinVersion is now incorrect,
+// but I don't have time 	for a full rebuild (3 hrs!), and as kMinVersion
 // is no
 // longer referred to, I'm going to leave it. 	Really, it should be deleted or
 // commented out. 	Version number used is now kGameVersion. 	Note
@@ -220,7 +220,7 @@ uint16_t VersionClass::Major_Version() {
     return MajorVer;
   }
 
-  MajorVer = MAJOR_VERSION;
+  MajorVer = kMajorVersion;
 
   MajorInit = true;
 
@@ -262,7 +262,7 @@ uint16_t VersionClass::Minor_Version() {
     return MinorVer;
   }
 
-  MinorVer = MINOR_VERSION;
+  MinorVer = kMinorVersion;
 
   MinorInit = true;
 
@@ -508,15 +508,15 @@ uint32_t VersionClass::Clip_Version(uint32_t minver, uint32_t maxver) {
  *=========================================================================*/
 uint32_t VersionClass::Min_Version() {
   if constexpr (config::kWolapiEnabled) {
-    //	ajw: "Note! I'm no longer using MIN_VERSION, MAX_VERSION, or
+    //	ajw: "Note! I'm no longer using kMinVersion, kMaxVersion, or
     //	VERSION_RA_300! But no time to do three full rebuilds right now, so
     //	I'm not deleting them from the header file..."
     return kGameVersion;
   } else {
     if (Is_Counterstrike_Installed()) {
-      return MIN_VERSION - 1;
+      return kMinVersion - 1;
     }
-    return MIN_VERSION;
+    return kMinVersion;
   }
 } /* end of Min_Version */
 
@@ -547,7 +547,7 @@ uint32_t VersionClass::Max_Version() {
   if constexpr (config::kWolapiEnabled) {
     return kGameVersion;
   } else {
-    return MAX_VERSION;
+    return kMaxVersion;
   }
 }
 

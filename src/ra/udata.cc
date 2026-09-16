@@ -1191,7 +1191,7 @@ ObjectClass* UnitTypeClass::Create_One_Of(HouseClass* house) const {
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
 UnitTypeClass& UnitTypeClass::As_Reference(UnitType type) {
-  return *UnitTypes.Ptr(type);
+  return *UnitTypes.Ptr(static_cast<int>(type));
 }
 
 /***********************************************************************************************

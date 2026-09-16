@@ -71,7 +71,6 @@
 #include "ra/heap.h"
 #include "ra/house.h"
 #include "ra/inline.h"
-#include "ra/jshell.h"
 #include "ra/mapedit.h"
 #include "ra/mouse.h"
 #include "ra/object.h"
@@ -911,7 +910,7 @@ void OverlayTypeClass::Init(TheaterType theater) {
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 OverlayTypeClass& OverlayTypeClass::As_Reference(OverlayType type) {
-  return *OverlayTypes.Ptr(type);
+  return *OverlayTypes.Ptr(static_cast<int>(type));
 }
 
 /***********************************************************************************************

@@ -127,15 +127,15 @@ WolapiObject::WolapiObject()
   *szGameResServerHost1 = 0;
   *szGameResServerHost2 = 0;
 
-  port::SafeCopy(DibIconInfos[DIBICON_OWNER].szFile, "dib_own.bmp");
-  port::SafeCopy(DibIconInfos[DIBICON_SQUELCH].szFile, "dib_sqel.bmp");
-  port::SafeCopy(DibIconInfos[DIBICON_LATENCY].szFile, "latency.bmp");
-  port::SafeCopy(DibIconInfos[DIBICON_ACCEPT].szFile, "dib_acpt.bmp");
-  port::SafeCopy(DibIconInfos[DIBICON_NOTACCEPT].szFile, "dib_acp2.bmp");
-  port::SafeCopy(DibIconInfos[DIBICON_USER].szFile, "dib_user.bmp");
-  port::SafeCopy(DibIconInfos[DIBICON_PRIVATE].szFile, "privgame.bmp");
-  port::SafeCopy(DibIconInfos[DIBICON_TOURNAMENT].szFile, "tourgame.bmp");
-  port::SafeCopy(DibIconInfos[DIBICON_VOICE].szFile, "voice.bmp");
+  port::SafeCopy(DibIconInfos[kDibiconOwner].szFile, "dib_own.bmp");
+  port::SafeCopy(DibIconInfos[kDibiconSquelch].szFile, "dib_sqel.bmp");
+  port::SafeCopy(DibIconInfos[kDibiconLatency].szFile, "latency.bmp");
+  port::SafeCopy(DibIconInfos[kDibiconAccept].szFile, "dib_acpt.bmp");
+  port::SafeCopy(DibIconInfos[kDibiconNotaccept].szFile, "dib_acp2.bmp");
+  port::SafeCopy(DibIconInfos[kDibiconUser].szFile, "dib_user.bmp");
+  port::SafeCopy(DibIconInfos[kDibiconPrivate].szFile, "privgame.bmp");
+  port::SafeCopy(DibIconInfos[kDibiconTournament].szFile, "tourgame.bmp");
+  port::SafeCopy(DibIconInfos[kDibiconVoice].szFile, "voice.bmp");
   //	The name of the user's web browser. ajw found it by creating an empty
   //	.html file and asking ::FindExecutable what opened it -- "the 'correct'
   //	way to do this, but it's bloody stupid" -- which only means anything
@@ -459,7 +459,7 @@ void WolapiObject::PrepareButtonsAndIcons() {
   }
 
   const std::optional<dib::Image>& LatencyIcon =
-      DibIconInfos[DIBICON_LATENCY].Icon;
+      DibIconInfos[kDibiconLatency].Icon;
   iLatencyIconWidth = LatencyIcon.has_value() ? LatencyIcon->Width() : 0;
   fLatencyToIconWidth = static_cast<float>(iLatencyIconWidth) / 1000;
 
@@ -869,7 +869,7 @@ void WolapiObject::ListChannels() {
         Format_Runtime_Text(szHelp, sizeof(szHelp), TXT_WOL_TTIP_CHANLIST_CHAT,
                             WolText(pChannel->name), pChannel->currentUsers);
         pILChannels->Add_Item(show.c_str(), szHelp,
-                              IconPointer(DibIconInfos[DIBICON_USER]), ICON_DIB,
+                              IconPointer(DibIconInfos[kDibiconUser]), ICON_DIB,
                               CHANNELTYPE_CHATCHANNEL, pChannel);
       } else {
         //	Channel is a lobby.
@@ -934,14 +934,14 @@ void WolapiObject::ListChannels() {
       void* pPrivateIcon = nullptr;
       if (pChannel->flags & CHAN_MODE_KEY) {
         //	Game is private.
-        pPrivateIcon = IconPointer(DibIconInfos[DIBICON_PRIVATE]);
+        pPrivateIcon = IconPointer(DibIconInfos[kDibiconPrivate]);
         port::SafeAppend(szHelp, TXT_WOL_TTIP_PRIVATEGAME);
       }
 
       void* pTournamentIcon = nullptr;
       if (pChannel->tournament) {
         //	Game is tournament.
-        pTournamentIcon = IconPointer(DibIconInfos[DIBICON_TOURNAMENT]);
+        pTournamentIcon = IconPointer(DibIconInfos[kDibiconTournament]);
         port::SafeAppend(szHelp, TXT_WOL_TTIP_TOURNAMENTGAME);
       }
 
@@ -955,7 +955,7 @@ void WolapiObject::ListChannels() {
       pILChannels->Add_Item(show.c_str(), szHelp, pGameKindIcon, ICON_DIB,
                             CHANNELTYPE_GAMECHANNEL, pChannel, nullptr,
                             pPrivateIcon, ICON_DIB, pTournamentIcon, ICON_DIB,
-                            IconPointer(DibIconInfos[DIBICON_LATENCY]),
+                            IconPointer(DibIconInfos[kDibiconLatency]),
                             ICON_DIB, iLatencyBarX, 0,
                             static_cast<int>(static_cast<float>(iLatencyUse) *
                                              fLatencyToIconWidth));
@@ -1167,21 +1167,21 @@ bool WolapiObject::ListChannelUsers() {
       void* pIconStatus = nullptr;
       void* pIconSquelched = nullptr;
       if (pUser->flags & CHAT_USER_CHANNELOWNER) {
-        pIconStatus = IconPointer(DibIconInfos[DIBICON_OWNER]);
+        pIconStatus = IconPointer(DibIconInfos[kDibiconOwner]);
         bChannelOwnerFound = true;
       } else {
         if (CurrentLevel == WOL_LEVEL_INGAMECHANNEL) {
-          pIconStatus = IconPointer(DibIconInfos[DIBICON_NOTACCEPT]);
+          pIconStatus = IconPointer(DibIconInfos[kDibiconNotaccept]);
         } else {
           if (pUser->flags & CHAT_USER_VOICE) {
-            pIconStatus = IconPointer(DibIconInfos[DIBICON_VOICE]);
+            pIconStatus = IconPointer(DibIconInfos[kDibiconVoice]);
           } else {
-            pIconStatus = IconPointer(DibIconInfos[DIBICON_USER]);
+            pIconStatus = IconPointer(DibIconInfos[kDibiconUser]);
           }
         }
       }
       if (pUser->flags & CHAT_USER_SQUELCHED) {
-        pIconSquelched = IconPointer(DibIconInfos[DIBICON_SQUELCH]);
+        pIconSquelched = IconPointer(DibIconInfos[kDibiconSquelch]);
       }
 
       if (CurrentLevel == WOL_LEVEL_INGAMECHANNEL || bInLobby) {
@@ -1220,7 +1220,7 @@ bool WolapiObject::ListChannelUsers() {
         pListToUse->Add_Item(szNameToShow, nullptr, pIconStatus, ICON_DIB,
                              nullptr, pUser, nullptr, pIconSquelched, ICON_DIB,
                              nullptr, ICON_DIB,
-                             IconPointer(DibIconInfos[DIBICON_LATENCY]),
+                             IconPointer(DibIconInfos[kDibiconLatency]),
                              ICON_DIB, iLatencyBarX, 2, iLatencyBarWidth);
       } else {
         pListToUse->Add_Item(WolText(pUser->name), nullptr, pIconStatus,
@@ -1293,19 +1293,21 @@ bool WolapiObject::bItemMarkedAccepted(int iIndex) {
   //	Returns true if the iIndex'th entry in pILPlayers has an icon pointer in
   // position 0 that 	is either the host icon or the accepted icon.
   const IconList_ItemExtras* pItemExtras = pILPlayers->Get_ItemExtras(iIndex);
-  return (pItemExtras->pIcon[0] == IconPointer(DibIconInfos[DIBICON_OWNER]) ||
-          pItemExtras->pIcon[0] == IconPointer(DibIconInfos[DIBICON_ACCEPT]));
+  return (pItemExtras->pIcon[0] == IconPointer(DibIconInfos[kDibiconOwner]) ||
+          pItemExtras->pIcon[0] == IconPointer(DibIconInfos[kDibiconAccept]));
 }
 
 //***********************************************************************************************
 bool WolapiObject::MarkItemAccepted(int iIndex, bool bAccept) {
   pILPlayers->Flag_To_Redraw();
   if (bAccept) {
-    return pILPlayers->Set_Icon(
-        static_cast<unsigned int>(iIndex), 0, IconPointer(DibIconInfos[DIBICON_ACCEPT]), ICON_DIB);
+    return pILPlayers->Set_Icon(static_cast<unsigned int>(iIndex), 0,
+                                IconPointer(DibIconInfos[kDibiconAccept]),
+                                ICON_DIB);
   }  // return pILPlayers->Set_Icon( iIndex, 0, NULL, ICON_DIB );
-  return pILPlayers->Set_Icon(
-      static_cast<unsigned int>(iIndex), 0, IconPointer(DibIconInfos[DIBICON_NOTACCEPT]), ICON_DIB);
+  return pILPlayers->Set_Icon(static_cast<unsigned int>(iIndex), 0,
+                              IconPointer(DibIconInfos[kDibiconNotaccept]),
+                              ICON_DIB);
 }
 
 //***********************************************************************************************
@@ -1454,7 +1456,8 @@ void WolapiObject::SendMessage(const char* szMessage, IconListClass& ILUsers,
   if (strlen(szMessage) > 4 && szMessage[0] == 63 && szMessage[1] == 97 &&
       szMessage[2] == 106 && szMessage[3] == 119) {
     const int i = tech::ParseInteger<int>(szMessage + 4).value_or(0);
-    if (i >= VOX_ACCOMPLISHED && i <= VOX_LOAD1) {
+    if (i >= static_cast<int>(VOX_ACCOMPLISHED) &&
+        i <= static_cast<int>(VOX_LOAD1)) {
       Speak(static_cast<VoxType>(i));
     }
     return;
@@ -1462,7 +1465,8 @@ void WolapiObject::SendMessage(const char* szMessage, IconListClass& ILUsers,
   if (strlen(szMessage) > 4 && szMessage[0] == 35 && szMessage[1] == 97 &&
       szMessage[2] == 106 && szMessage[3] == 119) {
     const int i = tech::ParseInteger<int>(szMessage + 4).value_or(0);
-    if (i >= VOX_ACCOMPLISHED && i <= VOX_LOAD1) {
+    if (i >= static_cast<int>(VOX_ACCOMPLISHED) &&
+        i <= static_cast<int>(VOX_LOAD1)) {
       Speak(static_cast<VoxType>(i));
     }
   }
@@ -1623,8 +1627,8 @@ bool WolapiObject::ChannelCreate(
     //	lobby number to return to in the lower three bytes.
     //	Note: If lobby number is -1 (no lobby to return to), it's encoded as
     // 0x00FFFFFF
-    ChannelNew.reserved =
-        (static_cast<uint32_t>(iLobby) & 0x00FFFFFFU) | GameKind;
+    ChannelNew.reserved = (static_cast<uint32_t>(iLobby) & 0x00FFFFFFU) |
+                          static_cast<uint32_t>(GameKind);
     port::SafeCopy(WolText(ChannelNew.name), szChannelName,
                    sizeof(ChannelNew.name));
   }
@@ -1676,7 +1680,7 @@ void WolapiObject::DoFindPage() {
   //	User presses find/page button.
 
   //	Ask user for user desired.
-  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK,
+  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack,
                    kTpfText);  //	Required before String_Pixel_Width()
                                // call, for god's sake.
   auto* pFindPageDlg = new SimpleEditDlgClass(
@@ -1895,8 +1899,8 @@ void WolapiObject::DoKick(IconListClass* pILUsersOrPlayers, bool bAndBan) {
           }
           iFound++;
           if (iFound < 5) {
-            Sound_Effect(
-                static_cast<VocType>(VOC_SCREAM1 + Sim_Random_Pick(0, 8)));
+            Sound_Effect(static_cast<VocType>(static_cast<int>(VOC_SCREAM1) +
+                                              Sim_Random_Pick(0, 8)));
           }
         }
       }
@@ -2176,7 +2180,7 @@ bool WolapiObject::EnterLevel_Top() {
 
   ChannelListTitle(TXT_WOL_TOPLEVELTITLE);
   pILChannels->Clear();
-  // void* pTopIcon = IconPointer(DibIconInfos[ DIBICON_ACCEPT ]);
+  // void* pTopIcon = IconPointer(DibIconInfos[ kDibiconAccept ]);
   void* pTopIcon = IconForGameType(0);
   pILChannels->Add_Item(TXT_WOL_OFFICIALCHAT, CHANNELTYPE_OFFICIALCHAT,
                         pTopIcon, ICON_DIB, CHANNELTYPE_OFFICIALCHAT);

@@ -67,7 +67,7 @@
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
 ToggleClass::ToggleClass(unsigned id, int x, int y, int w, int h) noexcept
-    : ControlClass(id, x, y, w, h, LEFTPRESS | LEFTRELEASE, true) {}
+    : ControlClass(id, x, y, w, h, kLeftPress | kLeftRelease, true) {}
 
 /***********************************************************************************************
  * ToggleClass::Turn_On -- Turns the toggle button to the "ON" state. *
@@ -163,16 +163,16 @@ bool ToggleClass::Action(unsigned flags, KeyNumType& key) {
   **	Flag the button to show the pressed down imagery if this mouse button
   **	was pressed over this gadget.
   */
-  if (flags & LEFTPRESS) {
+  if (flags & kLeftPress) {
     IsPressed = true;
     Flag_To_Redraw();
-    flags &= ~unsigned{LEFTPRESS};
+    flags &= ~unsigned{kLeftPress};
     ControlClass::Action(flags, key);
     key = KN_NONE;  // erase the event
     return true;    // stop processing other buttons now
   }
 
-  if (flags & LEFTRELEASE) {
+  if (flags & kLeftRelease) {
     if (IsPressed) {
       if (IsToggleType && overbutton) {
         IsOn = !static_cast<bool>(IsOn);
@@ -180,7 +180,7 @@ bool ToggleClass::Action(unsigned flags, KeyNumType& key) {
       IsPressed = false;
       Flag_To_Redraw();
     } else {
-      flags &= ~unsigned{LEFTRELEASE};
+      flags &= ~unsigned{kLeftRelease};
     }
   }
 

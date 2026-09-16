@@ -215,7 +215,7 @@ class IPXManagerClass : public ConnManClass {
                          uint16_t* product_id);
 
   int Send_Private_Message(void* buf, int buflen, int ack_req = 1,
-                           int conn_id = CONNECTION_NONE) override;
+                           int conn_id = kConnectionNone) override;
   int Get_Private_Message(void* buf, int* buflen, int* conn_id) override;
 
   /*.....................................................................
@@ -234,8 +234,8 @@ class IPXManagerClass : public ConnManClass {
   .....................................................................*/
   int Global_Num_Send() override;
   int Global_Num_Receive() override;
-  int Private_Num_Send(int id = CONNECTION_NONE) override;
-  int Private_Num_Receive(int id = CONNECTION_NONE) override;
+  int Private_Num_Send(int id = kConnectionNone) override;
+  int Private_Num_Receive(int id = kConnectionNone) override;
 
   /*.....................................................................
   This routine changes the socket ID assigned the IPX Manager when it

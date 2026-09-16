@@ -181,7 +181,7 @@ static int IsMono = 0;
 //---------------------------------------------------------------------------
 // Several routines return various codes; here's an enum for all of them.
 //---------------------------------------------------------------------------
-typedef enum RetcodeEnum {
+enum class RetcodeType {
   RC_NORMAL,             // no news is good news
   RC_PLAYER_READY,       // a new player has been heard from
   RC_SCENARIO_MISMATCH,  // scenario mismatch
@@ -191,7 +191,8 @@ typedef enum RetcodeEnum {
   RC_HUNG_UP,            // modem has hung up
   RC_NOT_RESPONDING,     // other player not responding (timeout/hung up)
   RC_CANCEL,             // user cancelled
-} RetcodeType;
+};
+using enum RetcodeType;
 
 /********************************* Prototypes *******************************/
 //...........................................................................
@@ -629,12 +630,12 @@ static void Queue_AI_Multiplayer() {
   //........................................................................
   // Enums:
   //........................................................................
-  enum {
-    MIXFILE_RESEND_DELTA = 120,   // ticks b/w resends
-    MIXFILE_TIMEOUT = 3600 * 2,   // timeout waiting for mixfiles.
-    FRAMESYNC_DLG_TIME = 3 * 60,  // time until displaying reconnect dialog
-    FRAMESYNC_TIMEOUT = 15 * 60,  // timeout waiting for frame sync packet
-  };
+  constexpr int kMixfileResendDelta = 120;   // ticks b/w resends
+  constexpr int kMixfileTimeout = 3600 * 2;  // timeout waiting for mixfiles.
+  constexpr int kFramesyncDlgTime =
+      3 * 60;  // time until displaying reconnect dialog
+  constexpr int kFramesyncTimeout =
+      15 * 60;  // timeout waiting for frame sync packet
 
   const int timeout_factor = Session.Type == GAME_INTERNET ? 6 : 1;
 
@@ -744,8 +745,8 @@ static void Queue_AI_Multiplayer() {
     //.....................................................................
     // Wait for the other guys
     //.....................................................................
-    rc = Wait_For_Players(1, net, MIXFILE_RESEND_DELTA,
-                          FRAMESYNC_DLG_TIME * timeout_factor, MIXFILE_TIMEOUT,
+    rc = Wait_For_Players(1, net, kMixfileResendDelta,
+                          kFramesyncDlgTime * timeout_factor, kMixfileTimeout,
                           multi_packet_buf, my_sent, their_frame, their_sent,
                           their_recv);
 
@@ -863,12 +864,12 @@ static void Queue_AI_Multiplayer() {
       (config::kWolapiEnabled && Session.Type == GAME_INTERNET &&
        pWolapi != nullptr && pWolapi->GameInfoCurrent.iPlayerCount > 2)
           ? 5 * 60  //	One minute.
-          : FRAMESYNC_TIMEOUT;
+          : kFramesyncTimeout;
 
   rc = Wait_For_Players(
       0, net, Session.MaxAhead * 8,
       std::max<int>(static_cast<int>(net->Response_Time()) * 3,
-                    FRAMESYNC_DLG_TIME * timeout_factor),
+                    kFramesyncDlgTime * timeout_factor),
       iFramesyncTimeout * (2 * timeout_factor), multi_packet_buf, my_sent,
       their_frame, their_sent, their_recv);
 
@@ -1996,7 +1997,8 @@ static RetcodeType Process_Serial_Packet(const char* multi_packet_buf,
     }
   }
   if (player_gone) {
-    Destroy_Null_Connection(serial_packet->ScenarioInfo.Color, 0);
+    Destroy_Null_Connection(static_cast<int>(serial_packet->ScenarioInfo.Color),
+                            0);
     return RC_PLAYER_LEFT;
   }
 
@@ -2301,7 +2303,7 @@ static int Handle_Timeout(ConnManClass* net, int64_t* their_frame,
                                  // left.
     }
 
-    if (id != ConnManClass::CONNECTION_NONE) {
+    if (id != ConnManClass::kConnectionNone) {
       for (int i = oldest_index; i < net->Num_Connections() - 1; i++) {
         their_frame[i] = their_frame[i + 1];
         their_sent[i] = their_sent[i + 1];
@@ -3306,7 +3308,8 @@ static int Execute_DoList(int max_houses, HousesType base_house,
     //.....................................................................
     //	Convert our index into a HousesType value
     //.....................................................................
-    const auto house = static_cast<HousesType>(i + base_house);
+    const auto house =
+        static_cast<HousesType>(i + static_cast<int>(base_house));
     HouseClass* hptr = HouseClass::As_Pointer(house);
 
     //.....................................................................
@@ -3364,8 +3367,8 @@ static int Execute_DoList(int max_houses, HousesType base_house,
             */
 
             for (int player = 0; player < max_houses; player++) {
-              const auto quithouse =
-                  static_cast<HousesType>(player + base_house);
+              const auto quithouse = static_cast<HousesType>(
+                  player + static_cast<int>(base_house));
               HouseClass* quithptr = HouseClass::As_Pointer(quithouse);
               if (!quithptr) {
                 continue;
@@ -3406,11 +3409,11 @@ static int Execute_DoList(int max_houses, HousesType base_house,
             // connection ID.
             //............................................................
             if (Session.Type == GAME_MODEM || Session.Type == GAME_NULL_MODEM) {
-              Destroy_Null_Connection(house, 0);
+              Destroy_Null_Connection(static_cast<int>(house), 0);
             } else if ((Session.Type == GAME_IPX ||
                         Session.Type == GAME_INTERNET) &&
                        net) {
-              index = net->Connection_Index(house);
+              index = net->Connection_Index(static_cast<int>(house));
               if (index != -1) {
                 for (int k = index; k < net->Num_Connections() - 1; k++) {
                   their_frame[k] = their_frame[k + 1];
@@ -3418,7 +3421,7 @@ static int Execute_DoList(int max_houses, HousesType base_house,
                   their_recv[k] = their_recv[k + 1];
                 }
                 if (Session.Type == GAME_IPX || Session.Type == GAME_INTERNET) {
-                  Destroy_Connection(house, 0);
+                  Destroy_Connection(static_cast<int>(house), 0);
                 }
               }
             }
@@ -3464,7 +3467,7 @@ static int Execute_DoList(int max_houses, HousesType base_house,
                                          TXT_STOP) == 0) {
                 if (Session.Type == GAME_MODEM ||
                     Session.Type == GAME_NULL_MODEM) {
-                  Destroy_Null_Connection(house, -1);
+                  Destroy_Null_Connection(static_cast<int>(house), -1);
                   Shutdown_Modem();
                   Session.Type = GAME_NORMAL;
                 } else if ((Session.Type == GAME_IPX ||
@@ -3767,9 +3770,9 @@ static void Compute_Game_CRC() {
   //------------------------------------------------------------------------
   for (int i = 0; i < Infantry.Count(); i++) {
     auto* infp = static_cast<InfantryClass*>(Infantry.Active_Ptr(i));
-    Add_CRC(&GameCRC,
-            static_cast<uint32_t>(static_cast<int>(infp->Coord) +
-                                  static_cast<int>(infp->PrimaryFacing)));
+    Add_CRC(&GameCRC, static_cast<uint32_t>(
+                          static_cast<int>(infp->Coord) +
+                          static_cast<int>(infp->PrimaryFacing.Current())));
     Add_CRC(&GameCRC, static_cast<uint32_t>(infp->Speed + infp->NavCom));
     Add_CRC(&GameCRC, static_cast<uint32_t>(static_cast<int>(infp->Mission) +
                                             infp->TarCom));
@@ -3780,10 +3783,10 @@ static void Compute_Game_CRC() {
   //------------------------------------------------------------------------
   for (int i = 0; i < Units.Count(); i++) {
     auto* unitp = static_cast<UnitClass*>(Units.Active_Ptr(i));
-    Add_CRC(&GameCRC,
-            static_cast<uint32_t>(static_cast<int>(unitp->Coord) +
-                                  static_cast<int>(unitp->PrimaryFacing) +
-                                  static_cast<int>(unitp->SecondaryFacing)));
+    Add_CRC(&GameCRC, static_cast<uint32_t>(
+                          static_cast<int>(unitp->Coord) +
+                          static_cast<int>(unitp->PrimaryFacing.Current()) +
+                          static_cast<int>(unitp->SecondaryFacing.Current())));
   }
 
   //------------------------------------------------------------------------
@@ -3791,9 +3794,9 @@ static void Compute_Game_CRC() {
   //------------------------------------------------------------------------
   for (int i = 0; i < Vessels.Count(); i++) {
     auto* vessp = static_cast<VesselClass*>(Vessels.Active_Ptr(i));
-    Add_CRC(&GameCRC,
-            static_cast<uint32_t>(static_cast<int>(vessp->Coord) +
-                                  static_cast<int>(vessp->PrimaryFacing)));
+    Add_CRC(&GameCRC, static_cast<uint32_t>(
+                          static_cast<int>(vessp->Coord) +
+                          static_cast<int>(vessp->PrimaryFacing.Current())));
     Add_CRC(&GameCRC, static_cast<uint32_t>(vessp->Speed + vessp->NavCom));
     Add_CRC(&GameCRC, static_cast<uint32_t>(vessp->Strength));
     Add_CRC(&GameCRC, static_cast<uint32_t>(static_cast<int>(vessp->Mission) +
@@ -3805,9 +3808,9 @@ static void Compute_Game_CRC() {
   //------------------------------------------------------------------------
   for (int i = 0; i < Buildings.Count(); i++) {
     auto* bldgp = static_cast<BuildingClass*>(Buildings.Active_Ptr(i));
-    Add_CRC(&GameCRC,
-            static_cast<uint32_t>(static_cast<int>(bldgp->Coord) +
-                                  static_cast<int>(bldgp->PrimaryFacing)));
+    Add_CRC(&GameCRC, static_cast<uint32_t>(
+                          static_cast<int>(bldgp->Coord) +
+                          static_cast<int>(bldgp->PrimaryFacing.Current())));
   }
 
   //------------------------------------------------------------------------
@@ -3823,9 +3826,9 @@ static void Compute_Game_CRC() {
   //------------------------------------------------------------------------
   //	Map Layers
   //------------------------------------------------------------------------
-  for (int i = 0; std::cmp_less(i, magic_enum::enum_count<LayerType>()); i++) {
-    for (int j = 0; j < MouseClass::Layer[i].Count(); j++) {
-      objp = MouseClass::Layer[i][j];
+  for (const LayerType layer : magic_enum::enum_values<LayerType>()) {
+    for (int j = 0; j < MouseClass::Layer[layer].Count(); j++) {
+      objp = MouseClass::Layer[layer][j];
       Add_CRC(&GameCRC,
               static_cast<uint32_t>(static_cast<int>(objp->Coord) +
                                     static_cast<int>(objp->What_Am_I())));
@@ -3926,10 +3929,11 @@ static void Print_CRCs(const EventClass* ev) {
     housep = HouseClass::As_Pointer(house);
     if (housep) {
       const HousesType actlike = housep->ActLike;
-      const int color = housep->RemapColor;
+      const PlayerColorType color = housep->RemapColor;
       absl::FPrintF(fp, "%s: IsHuman:%d  Color:%s  ID:%d  ActLike:%s\n",
-                    housep->IniName, housep->IsHuman, ColorNames[color],
-                    housep->ID, HouseClass::As_Pointer(actlike)->Class->Name());
+                    housep->IniName, housep->IsHuman,
+                    ColorNames[static_cast<int>(color)], housep->ID,
+                    HouseClass::As_Pointer(actlike)->Class->Name());
       Add_CRC(&GameCRC,
               static_cast<uint32_t>(static_cast<int>(housep->Credits) +
                                     housep->Power +
@@ -3952,8 +3956,9 @@ static void Print_CRCs(const EventClass* ev) {
         auto* infp = static_cast<InfantryClass*>(Infantry.Active_Ptr(i));
         if (infp->Owner() == house) {
           Add_CRC(&GameCRC,
-                  static_cast<uint32_t>(static_cast<int>(infp->Coord) +
-                                        static_cast<int>(infp->PrimaryFacing)));
+                  static_cast<uint32_t>(
+                      static_cast<int>(infp->Coord) +
+                      static_cast<int>(infp->PrimaryFacing.Current())));
           Add_CRC(&GameCRC, static_cast<uint32_t>(infp->Speed + infp->NavCom));
           Add_CRC(&GameCRC,
                   static_cast<uint32_t>(static_cast<int>(infp->Mission) +
@@ -3961,7 +3966,8 @@ static void Print_CRCs(const EventClass* ev) {
           absl::FPrintF(fp,
                         "COORD:%x   Facing:%d   Mission:%d   Type:%d   Tgt:%x "
                         "Speed:%d NavCom:%x\n",
-                        infp->Coord, static_cast<int>(infp->PrimaryFacing),
+                        infp->Coord,
+                        static_cast<int>(infp->PrimaryFacing.Current()),
                         infp->Get_Mission(), infp->Class->Type,
                         static_cast<unsigned int>(infp->As_Target()),
                         infp->Speed, static_cast<unsigned int>(infp->NavCom));
@@ -3984,16 +3990,17 @@ static void Print_CRCs(const EventClass* ev) {
         auto* unitp = static_cast<UnitClass*>(Units.Active_Ptr(i));
         if (unitp->Owner() == house) {
           Add_CRC(&GameCRC,
-                  static_cast<uint32_t>(static_cast<int>(unitp->Coord) +
-                                        static_cast<int>(unitp->PrimaryFacing) +
-                                        static_cast<int>(unitp->SecondaryFacing)));
+                  static_cast<uint32_t>(
+                      static_cast<int>(unitp->Coord) +
+                      static_cast<int>(unitp->PrimaryFacing.Current()) +
+                      static_cast<int>(unitp->SecondaryFacing.Current())));
           absl::FPrintF(
               fp,
               "COORD:%x   Facing:%d   Facing2:%d   Mission:%d   Type:%d   "
               "Tgt:%x\n",
-              unitp->Coord, static_cast<int>(unitp->PrimaryFacing),
-              static_cast<int>(unitp->SecondaryFacing), unitp->Get_Mission(),
-              unitp->Class->Type,
+              unitp->Coord, static_cast<int>(unitp->PrimaryFacing.Current()),
+              static_cast<int>(unitp->SecondaryFacing.Current()),
+              unitp->Get_Mission(), unitp->Class->Type,
               static_cast<unsigned int>(unitp->As_Target()));
         }
       }
@@ -4014,8 +4021,9 @@ static void Print_CRCs(const EventClass* ev) {
         auto* vesselp = static_cast<VesselClass*>(Vessels.Active_Ptr(i));
         if (vesselp->Owner() == house) {
           Add_CRC(&GameCRC,
-                  static_cast<uint32_t>(static_cast<int>(vesselp->Coord) +
-                                        static_cast<int>(vesselp->PrimaryFacing)));
+                  static_cast<uint32_t>(
+                      static_cast<int>(vesselp->Coord) +
+                      static_cast<int>(vesselp->PrimaryFacing.Current())));
           Add_CRC(&GameCRC, static_cast<uint32_t>(vesselp->Speed +
                                                   vesselp->NavCom));
           Add_CRC(&GameCRC, static_cast<uint32_t>(vesselp->Strength));
@@ -4026,7 +4034,8 @@ static void Print_CRCs(const EventClass* ev) {
               fp,
               "COORD:%x   Facing:%d   Mission:%d   Strength:%d Type:%d   "
               "Tgt:%x\n",
-              vesselp->Coord, static_cast<int>(vesselp->PrimaryFacing),
+              vesselp->Coord,
+              static_cast<int>(vesselp->PrimaryFacing.Current()),
               vesselp->Get_Mission(), vesselp->Strength, vesselp->Class->Type,
               static_cast<unsigned int>(vesselp->As_Target()));
         }
@@ -4049,11 +4058,12 @@ static void Print_CRCs(const EventClass* ev) {
         auto* bldgp = static_cast<BuildingClass*>(Buildings.Active_Ptr(i));
         if (bldgp->Owner() == house) {
           Add_CRC(&GameCRC,
-                  static_cast<uint32_t>(static_cast<int>(bldgp->Coord) +
-                                        static_cast<int>(bldgp->PrimaryFacing)));
+                  static_cast<uint32_t>(
+                      static_cast<int>(bldgp->Coord) +
+                      static_cast<int>(bldgp->PrimaryFacing.Current())));
           absl::FPrintF(
               fp, "COORD:%x   Facing:%d   Mission:%d   Type:%d   Tgt:%x\n",
-              bldgp->Coord, static_cast<int>(bldgp->PrimaryFacing),
+              bldgp->Coord, static_cast<int>(bldgp->PrimaryFacing.Current()),
               bldgp->Get_Mission(), bldgp->Class->Type,
               static_cast<unsigned int>(bldgp->As_Target()));
         }
@@ -4077,10 +4087,10 @@ static void Print_CRCs(const EventClass* ev) {
   //	Map Layers
   //------------------------------------------------------------------------
   GameCRC = 0;
-  for (int i = 0; std::cmp_less(i, magic_enum::enum_count<LayerType>()); i++) {
-    absl::FPrintF(fp, ">>>> MAP LAYER %d <<<<\n", i);
-    for (int j = 0; j < MouseClass::Layer[i].Count(); j++) {
-      objp = MouseClass::Layer[i][j];
+  for (const LayerType layer : magic_enum::enum_values<LayerType>()) {
+    absl::FPrintF(fp, ">>>> MAP LAYER %d <<<<\n", layer);
+    for (int j = 0; j < MouseClass::Layer[layer].Count(); j++) {
+      objp = MouseClass::Layer[layer][j];
       Add_CRC(&GameCRC,
               static_cast<uint32_t>(static_cast<int>(objp->Coord) +
                                     static_cast<int>(objp->What_Am_I())));
@@ -4452,7 +4462,7 @@ void Dump_Packet_Too_Late_Stuff(const EventClass* event, ConnManClass* net,
   absl::FPrintF(fp, "ID:         %d\n", event->ID);
 
   for (int i = 0; i < Session.Players.Count(); i++) {
-    if (event->ID == Session.Players[i]->Player.ID) {
+    if (event->ID == static_cast<unsigned>(Session.Players[i]->Player.ID)) {
       absl::FPrintF(fp, "Player's Name: %s", Session.Players[i]->Name);
     }
   }

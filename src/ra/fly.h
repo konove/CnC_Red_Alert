@@ -43,11 +43,12 @@
 #include "ra/defines.h"
 #include "ra/face.h"
 
-typedef enum ImpactType {
+enum class ImpactType {
   IMPACT_NONE,    // No movement (of significance) occurred.
   IMPACT_NORMAL,  // Some (non eventful) movement occurred.
   IMPACT_EDGE     // The edge of the world was reached.
-} ImpactType;
+};
+using enum ImpactType;
 
 /****************************************************************************
 **	Flying objects are handled by this class definition.

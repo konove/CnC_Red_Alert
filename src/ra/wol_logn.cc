@@ -119,15 +119,13 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
   /*
   **	Button enumerations
   */
-  enum {
-    BUTTON_CONNECT = 100,
-    BUTTON_CANCEL,
-    LISTBOX_NICKS,
-    EDITBOX_NAME,
-    EDITBOX_PASS,
-    BUTTON_SAVECHECK,
-    BUTTON_DELETE,
-  };
+  constexpr int kButtonConnect = 100;
+  constexpr int kButtonCancel = 101;
+  constexpr int kListboxNicks = 102;
+  constexpr int kEditboxName = 103;
+  constexpr int kEditboxPass = 104;
+  constexpr int kButtonSavecheck = 105;
+  constexpr int kButtonDelete = 106;
 
   /*
   **	Redraw values: in order from "top" to "bottom" layer of the dialog
@@ -149,35 +147,35 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
   */
   ControlClass* commands = nullptr;  // the button list
 
-  TextButtonClass ConnectBtn(BUTTON_CONNECT, TXT_WOL_CONNECT, kTpfButton,
+  TextButtonClass ConnectBtn(kButtonConnect, TXT_WOL_CONNECT, kTpfButton,
                              d_connect_x, d_connect_y, d_connect_w);
-  TextButtonClass CancelBtn(BUTTON_CANCEL, TXT_CANCEL, kTpfButton, d_cancel_x,
+  TextButtonClass CancelBtn(kButtonCancel, TXT_CANCEL, kTpfButton, d_cancel_x,
                             d_cancel_y, d_cancel_w);
 
-  IconListClass NickList(LISTBOX_NICKS, d_list_x, d_list_y, d_list_w, d_list_h,
+  IconListClass NickList(kListboxNicks, d_list_x, d_list_y, d_list_w, d_list_h,
                          TPF_6PT_GRAD | TPF_NOSHADOW,
                          MixArchive::Retrieve("BTN-UP.SHP"),
                          MixArchive::Retrieve("BTN-DN.SHP"), true, 1, 0);
 
-  WOLEditClass NameEdit(EDITBOX_NAME, szNameBuffer, sizeof(szNameBuffer),
+  WOLEditClass NameEdit(kEditboxName, szNameBuffer, sizeof(szNameBuffer),
                         TPF_6PT_GRAD | TPF_NOSHADOW, d_name_x, d_name_y,
                         d_name_w, -1, EditClass::kAlphanumeric);
 
-  PassEditClass PassEdit(EDITBOX_PASS, szPassBuffer, sizeof(szPassBuffer),
+  PassEditClass PassEdit(kEditboxPass, szPassBuffer, sizeof(szPassBuffer),
                          TPF_6PT_GRAD | TPF_NOSHADOW, d_pass_x, d_pass_y,
                          d_pass_w, -1, EditClass::kAlphanumeric);
 
   //	Just making sure globals are set right before String_Pixel_Width()
   // call... sigh
-  Fancy_Text_Print(TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(), TBLACK,
+  Fancy_Text_Print(TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(), kTBlack,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
   const int iSaveTextWidth =
       String_Pixel_Width(TXT_WOL_SAVELOGIN) + BIGCHECK_OFFSETX;
-  BigCheckBoxClass SaveCheckBox(BUTTON_SAVECHECK, d_save_x, d_save_y,
+  BigCheckBoxClass SaveCheckBox(kButtonSavecheck, d_save_x, d_save_y,
                                 iSaveTextWidth, d_save_h, TXT_WOL_SAVELOGIN,
                                 TPF_6PT_GRAD | TPF_NOSHADOW, true);
 
-  TextButtonClass DeleteBtn(BUTTON_DELETE, TXT_DELETE_BUTTON, kTpfButton,
+  TextButtonClass DeleteBtn(kButtonDelete, TXT_DELETE_BUTTON, kTpfButton,
                             d_delete_x, d_delete_y, d_delete_w);
 
   /*
@@ -250,11 +248,11 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
       */
       {
         Fancy_Text_Print(TXT_WOL_NAME, d_name_x + (d_name_w / 2), d_name_y - 14,
-                         GadgetClass::Get_Color_Scheme(), TBLACK,
+                         GadgetClass::Get_Color_Scheme(), kTBlack,
                          kTpfText | TPF_CENTER);
         Fancy_Text_Print(TXT_WOL_PASSWORD, d_pass_x + (d_pass_w / 2),
-                         d_pass_y - 14, GadgetClass::Get_Color_Scheme(), TBLACK,
-                         kTpfText | TPF_CENTER);
+                         d_pass_y - 14, GadgetClass::Get_Color_Scheme(),
+                         kTBlack, kTpfText | TPF_CENTER);
         commands->Flag_List_To_Redraw();
       }
       Show_Mouse();
@@ -293,12 +291,12 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
     // appropriate
     //		**	action button according to the style of this dialog box.
     //		*/
-    /*		if (input == KN_RETURN || input == (BUTTON_CONNECT|KN_BUTTON)) {
+    /*		if (input == KN_RETURN || input == (kButtonConnect|KN_BUTTON)) {
                             ToggleClass * toggle = NULL;
-                            input = (KeyNumType)(BUTTON_CONNECT|KN_BUTTON);
+                            input = (KeyNumType)(kButtonConnect|KN_BUTTON);
                             CancelBtn.Turn_Off();
                             toggle =
-       (ToggleClass*)commands->Extract_Gadget(BUTTON_CONNECT); if (toggle !=
+       (ToggleClass*)commands->Extract_Gadget(kButtonConnect); if (toggle !=
        NULL) { toggle->Turn_On(); toggle->IsPressed = true;
                             }
 
@@ -328,15 +326,15 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
       ** ESC/Cancel: break
       */
       case KN_ESC:
-      case ButtonKey(BUTTON_CANCEL):
+      case ButtonKey(kButtonCancel):
         iReturn = 0;
         process = false;
         break;
 
       case KN_RETURN:
-      case ButtonKey(EDITBOX_NAME):
-      case ButtonKey(EDITBOX_PASS):
-      case ButtonKey(BUTTON_CONNECT): {
+      case ButtonKey(kEditboxName):
+      case ButtonKey(kEditboxPass):
+      case ButtonKey(kButtonConnect): {
         if (!strlen(szNameBuffer)) {
           WWMessageBox().Process(TXT_WOL_MISSINGNAME);
           firsttime = true;  //	Bloody hack.
@@ -436,7 +434,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
       }
 
         /*
-                                case( EDITBOX_PASS | KN_BUTTON ):
+                                case( kEditboxPass | KN_BUTTON ):
                                 {
                                         //	Message with delay so that user
            has time to read it... Timer<SystemTickSource> timer; timer =
@@ -450,7 +448,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
                                         break;
                                 }
         */
-      case ButtonKey(LISTBOX_NICKS):
+      case ButtonKey(kListboxNicks):
         port::SafeCopy(szNameBuffer,
                        NickList.Get_Item(NickList.Current_Index()));
         port::SafeCopy(szPassBuffer, NickList.Get_Item_ExtraDataString(
@@ -466,10 +464,10 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
         //				display = true;
         break;
 
-      case ButtonKey(BUTTON_SAVECHECK):
+      case ButtonKey(kButtonSavecheck):
         break;
 
-      case ButtonKey(BUTTON_DELETE):
+      case ButtonKey(kButtonDelete):
         if (NickList.Count() > 0) {
           DeleteNick(pWO, NickList.Current_Index() + 1);
           NickList.Remove_Item(NickList.Current_Index());

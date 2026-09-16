@@ -49,31 +49,31 @@
 
 class MonoClass {
  public:
-  enum MonoClassPageEnums {
-    COLUMNS = 80,        // Number of columns.
-    LINES = 25,          // Number of lines.
-    MAX_MONO_PAGES = 16  // Maximum RAM pages on mono card.
-  };
+  static constexpr int kColumns = 80;       // Number of columns.
+  static constexpr int kLines = 25;         // Number of lines.
+  static constexpr int kMaxMonoPages = 16;  // Maximum RAM pages on mono card.
 
-  typedef enum MonoAttribute {
+  enum class MonoAttribute {
     INVISIBLE = 0x00,  // Black on black.
     UNDERLINE = 0x01,  // Underline.
     BLINKING = 0x90,   // Blinking white on black.
     NORMAL = 0x02,     // White on black.
     INVERSE = 0x70,    // Black on white.
-  } MonoAttribute;
+  };
+  using enum MonoAttribute;
 
   /*
   **	These are the various box styles that may be used.
   */
-  typedef enum BoxStyleType {
+  enum class BoxStyleType {
     SINGLE,       // Single thickness.
     DOUBLE_HORZ,  // Double thick on the horizontal axis.
     DOUBLE_VERT,  // Double thick on the vertical axis.
     DOUBLE,       // Double thickness.
 
     COUNT
-  } BoxStyleType;
+  };
+  using enum BoxStyleType;
 
   MonoClass();
   ~MonoClass();
@@ -156,8 +156,8 @@ class MonoClass {
   */
   int SubX{0};
   int SubY{0};
-  int SubW{COLUMNS};
-  int SubH{LINES};
+  int SubW{kColumns};
+  int SubH{kLines};
 
   /*
   **	Pointer to the monochrome RAM.
@@ -197,18 +197,17 @@ class MonoClass {
   };
 
   struct MonoPageType {
-    CellType Data[LINES][COLUMNS];
+    CellType Data[kLines][kColumns];
   };
 
   /*
   **	These private constants are used in the various monochrome operations.
   */
-  enum MonoClassPortEnums {
-    CONTROL_PORT = 0x03B4,  // CRTC control register.
-    DATA_PORT = 0x03B5,     // CRTC data register.
-    SIZE_OF_PAGE = static_cast<std::size_t>(static_cast<int>(LINES)) * static_cast<int>(COLUMNS) *
-                   sizeof(CellType)  // Entire page size.
-  };
+  static constexpr int kControlPort = 0x03B4;  // CRTC control register.
+  static constexpr int kDataPort = 0x03B5;     // CRTC data register.
+  static constexpr int kSizeOfPage =
+      kLines * kColumns *
+      static_cast<int>(sizeof(CellType));  // Entire page size.
 
   /*
   **	This array contains pointers to the monochrome objects that are assigned
@@ -216,8 +215,8 @@ class MonoClass {
   *visible, *	they can be shuffled around between the actual locations. The
   *first entry *	in this table is the one that is visible.
   */
-  static MonoClass* PageUsage[MAX_MONO_PAGES];
-  inline static MonoPageType MonoRAM[MAX_MONO_PAGES]{};
+  static MonoClass* PageUsage[kMaxMonoPages];
+  inline static MonoPageType MonoRAM[kMaxMonoPages]{};
 
   /*
   **	Fetches pointers to the appropriate mono RAM. The DOS build addressed

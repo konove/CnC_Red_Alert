@@ -74,10 +74,10 @@
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 
-#define OPTION_WIDTH (236 * 2)
-#define OPTION_HEIGHT (162 * 2)
-#define OPTION_X ((640 - OPTION_WIDTH) / 2)
-#define OPTION_Y ((400 - OPTION_HEIGHT) / 2)
+#define kOptionWidth (236 * 2)
+#define kOptionHeight (162 * 2)
+#define kOptionX ((640 - kOptionWidth) / 2)
+#define kOptionY ((400 - kOptionHeight) / 2)
 
 /***********************************************************************************************
  * SpecialClass::Init -- Initialize the special class of options. *
@@ -132,18 +132,18 @@ void Special_Dialog(bool simple) {
       {TXT_SPEED_BUILD, false, nullptr},
   };
 
-  TextButtonClass ok(200, TXT_OK, kTpfButton, OPTION_X + 30,
-                     OPTION_Y + OPTION_HEIGHT - 30);
+  TextButtonClass ok(200, TXT_OK, kTpfButton, kOptionX + 30,
+                     kOptionY + kOptionHeight - 30);
   TextButtonClass cancel(201, TXT_CANCEL, kTpfButton,
-                         OPTION_X + OPTION_WIDTH - 120,
-                         OPTION_Y + OPTION_HEIGHT - 30);
+                         kOptionX + kOptionWidth - 120,
+                         kOptionY + kOptionHeight - 30);
   buttons = &ok;
   cancel.Add(*buttons);
 
   for (int index = 0; index < std::ssize(_options); index++) {
     _options[index].Button =
-        new CheckBoxClass(static_cast<unsigned>(100 + index), OPTION_X + 34,
-                          OPTION_Y + 40 + (index * 20));
+        new CheckBoxClass(static_cast<unsigned>(100 + index), kOptionX + 34,
+                          kOptionY + 40 + (index * 20));
     if (_options[index].Button) {
       _options[index].Button->Add(*buttons);
 
@@ -186,13 +186,13 @@ void Special_Dialog(bool simple) {
       display = false;
 
       Hide_Mouse();
-      Dialog_Box(OPTION_X, OPTION_Y, OPTION_WIDTH, OPTION_HEIGHT);
-      Draw_Caption(TXT_SPECIAL_OPTIONS, OPTION_X, OPTION_Y, OPTION_WIDTH);
+      Dialog_Box(kOptionX, kOptionY, kOptionWidth, kOptionHeight);
+      Draw_Caption(TXT_SPECIAL_OPTIONS, kOptionX, kOptionY, kOptionWidth);
 
       for (const auto& _option : _options) {
         Fancy_Text_Print(_option.Description, _option.Button->X + 20,
                          _option.Button->Y, GadgetClass::Get_Color_Scheme(),
-                         TBLACK,
+                         kTBlack,
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
       buttons->Draw_All();
@@ -291,22 +291,22 @@ void PWEditClass::Draw_Text(const char* text) {
     const TextPrintType flags =
         Has_Focus() ? TPF_BRIGHT_COLOR : static_cast<TextPrintType>(0);
 
-    Conquer_Clip_Text_Print(buffer, X + 1, Y + 1, Color, TBLACK,
+    Conquer_Clip_Text_Print(buffer, X + 1, Y + 1, Color, kTBlack,
                             TextFlags | flags, Width - 2);
 
     if (Has_Focus() && std::cmp_less(strlen(buffer), MaxLength)) {
       Conquer_Clip_Text_Print("_", X + 1 + String_Pixel_Width(buffer), Y + 1,
-                              Color, TBLACK, TextFlags | flags);
+                              Color, kTBlack, TextFlags | flags);
     }
   } else {
     Conquer_Clip_Text_Print(buffer, X + 1, Y + 1,
                             Has_Focus() ? &ColorRemaps[PCOLOR_DIALOG_BLUE]
                                         : &ColorRemaps[PCOLOR_GREY],
-                            TBLACK, TextFlags, Width - 2);
+                            kTBlack, TextFlags, Width - 2);
 
     if (Has_Focus() && std::cmp_less(strlen(buffer), MaxLength)) {
       Conquer_Clip_Text_Print("_", X + 1 + String_Pixel_Width(buffer), Y + 1,
-                              &ColorRemaps[PCOLOR_DIALOG_BLUE], TBLACK,
+                              &ColorRemaps[PCOLOR_DIALOG_BLUE], kTBlack,
                               TextFlags);
     }
   }
@@ -340,7 +340,7 @@ const char* Fetch_Password(int caption, int message, int btext) {
     btext = TXT_OK;
   }
 
-  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK,
+  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
 
   /*
@@ -360,7 +360,7 @@ const char* Fetch_Password(int caption, int message, int btext) {
   **	These dimensions will control how the dialog box looks.
   */
   port::SafeCopy(buffer, Text_String(message));
-  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK,
+  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
   int width = 0;
   int height = 0;
@@ -407,7 +407,7 @@ const char* Fetch_Password(int caption, int message, int btext) {
   **	Draw the body of the message box.
   */
   Fancy_Text_Print(buffer, x + 40, y + 50, GadgetClass::Get_Color_Scheme(),
-                   TBLACK, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+                   kTBlack, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   /*
   **	Redraw the buttons.
@@ -446,9 +446,9 @@ const char* Fetch_Password(int caption, int message, int btext) {
       first = false;
     }
     switch (static_cast<int>(input)) {
-      case 1 | BUTTON_FLAG:
+      case 1U | kButtonFlag:
       case KN_ESC:
-      case 2 | BUTTON_FLAG:
+      case 2U | kButtonFlag:
       case KN_RETURN:
         process = false;
         break;
@@ -500,7 +500,7 @@ int Fetch_Difficulty(bool amath) {
       buffer[index + 1] = 0;
     }
   }
-  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK,
+  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
   int width = 0;
   int height = 0;
@@ -549,19 +549,19 @@ int Fetch_Difficulty(bool amath) {
       // 15*2, GadgetClass::Get_Color_Scheme(), TBLACK,
       // TPF_6PT_GRAD|TPF_USE_GRAD_PAL|TPF_NOSHADOW);
       Fancy_Text_Print(buffer, x + 40, y + 30, GadgetClass::Get_Color_Scheme(),
-                       TBLACK, TPF_6PT_GRAD | TPF_NOSHADOW);
+                       kTBlack, TPF_6PT_GRAD | TPF_NOSHADOW);
 
       /*
       **	Display the descripton of the slider range.
       */
       Fancy_Text_Print(TXT_HARD, slider.X + slider.Width, slider.Y - 18,
-                       GadgetClass::Get_Color_Scheme(), TBLACK,
+                       GadgetClass::Get_Color_Scheme(), kTBlack,
                        TPF_RIGHT | TPF_6PT_GRAD | TPF_DROPSHADOW);
       Fancy_Text_Print(TXT_EASY, slider.X, slider.Y - 18,
-                       GadgetClass::Get_Color_Scheme(), TBLACK,
+                       GadgetClass::Get_Color_Scheme(), kTBlack,
                        TPF_6PT_GRAD | TPF_DROPSHADOW);
       Fancy_Text_Print(TXT_NORMAL, slider.X + (slider.Width / 2), slider.Y - 18,
-                       GadgetClass::Get_Color_Scheme(), TBLACK,
+                       GadgetClass::Get_Color_Scheme(), kTBlack,
                        TPF_CENTER | TPF_6PT_GRAD | TPF_DROPSHADOW);
 
       /*
@@ -594,7 +594,7 @@ int Fetch_Difficulty(bool amath) {
 
     switch (static_cast<int>(input)) {
       case KN_RETURN:
-      case 1 | BUTTON_FLAG:
+      case 1U | kButtonFlag:
         process = false;
         break;
 

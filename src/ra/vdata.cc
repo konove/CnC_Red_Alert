@@ -71,7 +71,6 @@
 #include "ra/heap.h"
 #include "ra/house.h"
 #include "ra/inline.h"
-#include "ra/jshell.h"
 #include "ra/mapedit.h"
 #include "ra/object.h"
 #include "ra/type.h"
@@ -339,7 +338,7 @@ void VesselTypeClass::Init_Heap() {
  * HISTORY: * 03/20/1996 JLB : Created. *
  *=============================================================================================*/
 VesselTypeClass& VesselTypeClass::As_Reference(VesselType type) {
-  return *VesselTypes.Ptr(type);
+  return *VesselTypes.Ptr(static_cast<int>(type));
 }
 
 /***********************************************************************************************
@@ -535,19 +534,19 @@ void VesselTypeClass::Turret_Adjust(DirType dir, int& x, int& y) const {
 
   switch (Type) {
     case VESSEL_CA:
-      base::MovePointIsometric(xx, yy, dir, 22);
+      base::MovePointIsometric(xx, yy, static_cast<uint8_t>(dir), 22);
       x = xx;
       y = yy - 4;
       break;
 
     case VESSEL_PT:
-      base::MovePointIsometric(xx, yy, dir, 14);
+      base::MovePointIsometric(xx, yy, static_cast<uint8_t>(dir), 14);
       x = xx;
       y = yy + 1;
       break;
 
     case VESSEL_DD:
-      base::MovePointIsometric(xx, yy, dir + DIR_S, 8);
+      base::MovePointIsometric(xx, yy, static_cast<uint8_t>(dir + DIR_S), 8);
       x = xx;
       y = yy - 4;
       break;

@@ -79,7 +79,6 @@
 #include "ra/externs.h"
 #include "ra/globals.h"
 #include "ra/inline.h"
-#include "ra/jshell.h"
 #include "ra/layer.h"
 #include "ra/map.h"
 #include "ra/mapedit.h"
@@ -845,15 +844,19 @@ void ChronalVortexClass::Render() {
       ** Temporarily modify the tactical window so it works with our offscreen
       *buffer
       */
-      const int wx = WindowList[WINDOW_TACTICAL][WINDOWX];
-      const int wy = WindowList[WINDOW_TACTICAL][WINDOWY];
-      const int ww = WindowList[WINDOW_TACTICAL][WINDOWWIDTH];
-      const int wh = WindowList[WINDOW_TACTICAL][WINDOWHEIGHT];
+      const int wx = WindowList[static_cast<int>(WINDOW_TACTICAL)][kWindowX];
+      const int wy = WindowList[static_cast<int>(WINDOW_TACTICAL)][kWindowY];
+      const int ww =
+          WindowList[static_cast<int>(WINDOW_TACTICAL)][kWindowWidth];
+      const int wh =
+          WindowList[static_cast<int>(WINDOW_TACTICAL)][kWindowHeight];
 
-      WindowList[WINDOW_TACTICAL][WINDOWX] = 0;
-      WindowList[WINDOW_TACTICAL][WINDOWY] = 0;
-      WindowList[WINDOW_TACTICAL][WINDOWWIDTH] = RenderBuffer->Get_Width();
-      WindowList[WINDOW_TACTICAL][WINDOWHEIGHT] = RenderBuffer->Get_Height();
+      WindowList[static_cast<int>(WINDOW_TACTICAL)][kWindowX] = 0;
+      WindowList[static_cast<int>(WINDOW_TACTICAL)][kWindowY] = 0;
+      WindowList[static_cast<int>(WINDOW_TACTICAL)][kWindowWidth] =
+          RenderBuffer->Get_Width();
+      WindowList[static_cast<int>(WINDOW_TACTICAL)][kWindowHeight] =
+          RenderBuffer->Get_Height();
 
       /*
       ** Loop through all the cells that the vortex overlaps and render the
@@ -871,7 +874,9 @@ void ChronalVortexClass::Render() {
             **	Fetch a pointer to the template type associated with this cell.
             */
             if (cellptr->TType != TEMPLATE_NONE &&
-                cellptr->TType != TEMPLATE_CLEAR1 && cellptr->TType != 255) {
+                cellptr->TType != TEMPLATE_CLEAR1 &&
+                // The original 8-bit template field used 255 as a sentinel.
+                cellptr->TType != static_cast<TemplateType>(255)) {
               ttype = &TemplateTypeClass::As_Reference(cellptr->TType);
               icon = cellptr->TIcon;
             } else {
@@ -885,7 +890,7 @@ void ChronalVortexClass::Render() {
             if (ttype->Get_Image_Data()) {
               RenderBuffer->Draw_Stamp(ttype->Get_Image_Data(), icon,
                                        x * CELL_PIXEL_W, y * CELL_PIXEL_H,
-                                       nullptr, WINDOW_MAIN);
+                                       nullptr, static_cast<int>(WINDOW_MAIN));
             }
 
             /*
@@ -924,10 +929,10 @@ void ChronalVortexClass::Render() {
       /*
       ** Restore the tactical window to its correct value
       */
-      WindowList[WINDOW_TACTICAL][WINDOWX] = wx;
-      WindowList[WINDOW_TACTICAL][WINDOWY] = wy;
-      WindowList[WINDOW_TACTICAL][WINDOWWIDTH] = ww;
-      WindowList[WINDOW_TACTICAL][WINDOWHEIGHT] = wh;
+      WindowList[static_cast<int>(WINDOW_TACTICAL)][kWindowX] = wx;
+      WindowList[static_cast<int>(WINDOW_TACTICAL)][kWindowY] = wy;
+      WindowList[static_cast<int>(WINDOW_TACTICAL)][kWindowWidth] = ww;
+      WindowList[static_cast<int>(WINDOW_TACTICAL)][kWindowHeight] = wh;
 
       /*
       ** Render the vortex over the cells we just rendered to our buffer

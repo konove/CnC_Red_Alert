@@ -82,7 +82,7 @@
 #include "ra/_wsproto.h"
 #include "ra/combuf.h"
 #include "ra/connect.h"
-#include "ra/connmgr.h"
+#include "ra/defines.h"
 #include "ra/event.h"
 #include "ra/externs.h"
 #include "ra/house.h"
@@ -181,7 +181,7 @@ IPXManagerClass::IPXManagerClass(int glb_maxlen, int pvt_maxlen,
 
   SendOverflows = 0;
   ReceiveOverflows = 0;
-  BadConnection = CONNECTION_NONE;
+  BadConnection = kConnectionNone;
 
   //------------------------------------------------------------------------
   //	Init timing parameters
@@ -580,7 +580,7 @@ int IPXManagerClass::Num_Connections() {
  **
  *                                                                         *
  * OUTPUT:                                                                 *
- *		ID for that connection, CONNECTION_NONE if invalid index
+ *		ID for that connection, kConnectionNone if invalid index
  **
  *                                                                         *
  * WARNINGS:                                                               *
@@ -594,7 +594,7 @@ int IPXManagerClass::Connection_ID(int index) {
   if (index >= 0 && index < NumConnections) {
     return Connection[index]->ID;
   }
-  return CONNECTION_NONE;
+  return kConnectionNone;
 } /* end of Connection_ID */
 
 /***************************************************************************
@@ -664,7 +664,7 @@ IPXAddressClass* IPXManagerClass::Connection_Address(int id) {
  **
  *                                                                         *
  * OUTPUT:                                                                 *
- *		index for this connection, CONNECTION_NONE if not found
+ *		index for this connection, kConnectionNone if not found
  **
  *                                                                         *
  * WARNINGS:                                                               *
@@ -681,7 +681,7 @@ int IPXManagerClass::Connection_Index(int id) {
     }
   }
 
-  return CONNECTION_NONE;
+  return kConnectionNone;
 
 } /* end of Connection_Index */
 
@@ -799,7 +799,7 @@ int IPXManagerClass::Get_Global_Message(void* buf, int* buflen,
  * INPUT:                                                                  *
  *		buf			buffer to send
  ** buflen		length of 'buf'
- ** conn_id		connection ID to send to (CONNECTION_NONE = all)
+ ** conn_id		connection ID to send to (kConnectionNone = all)
  ** ack_req		1 = ACK required; 0 = no ACK required
  **
  *                                                                         *
@@ -828,7 +828,7 @@ int IPXManagerClass::Send_Private_Message(void* buf, int buflen, int ack_req,
   //------------------------------------------------------------------------
   //	Send the message to all connections
   //------------------------------------------------------------------------
-  if (conn_id == CONNECTION_NONE) {
+  if (conn_id == kConnectionNone) {
     //.....................................................................
     //	Check for room in all connections
     //.....................................................................
@@ -854,7 +854,7 @@ int IPXManagerClass::Send_Private_Message(void* buf, int buflen, int ack_req,
   //------------------------------------------------------------------------
   const int connect_idx =
       Connection_Index(conn_id);  // index of channel to send to, if specified
-  if (connect_idx == CONNECTION_NONE) {
+  if (connect_idx == kConnectionNone) {
     SendOverflows++;
     return 0;
   }
@@ -1018,7 +1018,8 @@ int IPXManagerClass::Service() {
             ** packets then it might be from a player whos IP has changed.
             */
             if ((Session.Type == GAME_INTERNET) && (!found_address) &&
-                (packet->Code == ConnectionClass::PACKET_DATA_NOACK)) {
+                (packet->Code == static_cast<unsigned char>(
+                                     ConnectionClass::PACKET_DATA_NOACK))) {
               /*
               ** Magic number and packet code are valid. It's probably a C&C
               *packet.
@@ -1037,10 +1038,11 @@ int IPXManagerClass::Service() {
 
                 assert(id != PlayerPtr->ID);
                 for (int k = 1; k < Session.Players.Count(); k++) {
-                  if (Session.Players[k]->Player.ID == id) {
+                  if (Session.Players[k]->Player.ID ==
+                      static_cast<HousesType>(id)) {
                     const int iConnectionIndex = Connection_Index(id);
                     if (iConnectionIndex !=
-                        CONNECTION_NONE)  //	(else
+                        kConnectionNone)  //	(else
                                           // Create_Connections() has not
                                           // yet been called)
                     {
@@ -1084,7 +1086,7 @@ int IPXManagerClass::Service() {
   }
 
   if (rc) {
-    BadConnection = CONNECTION_NONE;
+    BadConnection = kConnectionNone;
   }
 
   return rc;
@@ -1099,7 +1101,7 @@ int IPXManagerClass::Service() {
  **
  *                                                                         *
  * OUTPUT:                                                                 *
- *		ID of bad connection; CONNECTION_NONE if none.
+ *		ID of bad connection; kConnectionNone if none.
  **
  *                                                                         *
  * WARNINGS:                                                               *
@@ -1207,9 +1209,9 @@ int IPXManagerClass::Private_Num_Send(int id) {
   //------------------------------------------------------------------------
   //	If connection ID specified, return that connection's # of packets
   //------------------------------------------------------------------------
-  if (id != CONNECTION_NONE) {
+  if (id != kConnectionNone) {
     i = Connection_Index(id);
-    if (i != CONNECTION_NONE) {
+    if (i != kConnectionNone) {
       return Connection[i]->Queue->Num_Send();
     }
     return 0;
@@ -1258,9 +1260,9 @@ int IPXManagerClass::Private_Num_Receive(int id) {
   //------------------------------------------------------------------------
   //	If connection ID specified, return that connection's # of packets
   //------------------------------------------------------------------------
-  if (id != CONNECTION_NONE) {
+  if (id != kConnectionNone) {
     i = Connection_Index(id);
-    if (i != CONNECTION_NONE) {
+    if (i != kConnectionNone) {
       return Connection[i]->Queue->Num_Receive();
     }
     return 0;

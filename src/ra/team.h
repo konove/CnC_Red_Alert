@@ -281,7 +281,7 @@ class TeamClass : public AbstractClass {
   */
   FootClass* Member = nullptr;
 
-  unsigned char Quantity[TeamTypeClass::MAX_TEAM_CLASSCOUNT] = {};
+  unsigned char Quantity[TeamTypeClass::kMaxTeamClasscount] = {};
 
   // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
   TeamClass() = default;

@@ -44,6 +44,7 @@
 #include <cstdint>
 
 #include "absl/base/attributes.h"
+#include "base/enum_array.h"
 #include "ra/ccini.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
@@ -133,9 +134,15 @@ class HouseClass {
   // Aftermath appended its units after the original lists, but the saved
   // per-type quantity arrays keep the original sizes and Aftermath IDs wrap
   // into them. These mark where the originals end.
-  static constexpr int kOriginalUnitCount = UNIT_CHRONOTANK;
-  static constexpr int kOriginalInfantryCount = INFANTRY_SHOCK;
-  static constexpr int kOriginalVesselCount = VESSEL_MISSILESUB;
+  // Three short of the type count: the original table was sized before the
+  // last three building types existed.
+  static constexpr int kBuildingQuantityCount =
+      static_cast<int>(magic_enum::enum_count<StructType>()) - 3;
+  static constexpr int kOriginalUnitCount = static_cast<int>(UNIT_CHRONOTANK);
+  static constexpr int kOriginalInfantryCount =
+      static_cast<int>(INFANTRY_SHOCK);
+  static constexpr int kOriginalVesselCount =
+      static_cast<int>(VESSEL_MISSILESUB);
 
   RTTIType RTTI;
   int ID;
@@ -343,7 +350,7 @@ class HouseClass {
   **	These super weapon control objects are used to control the recharge
   **	and availability of these special weapons to this house.
   */
-  SuperClass SuperWeapon[magic_enum::enum_count<SpecialWeaponType>()];
+  base::EnumArray<SpecialWeaponType, SuperClass> SuperWeapon;
 
   /*
   **	This is a record of the last building that was built. For buildings that
@@ -525,9 +532,9 @@ class HouseClass {
   ** For multiplayer games, each house needs to keep track of how many
   ** objects of each other house they've killed.
   */
-  unsigned UnitsKilled[magic_enum::enum_count<HousesType>()] = {};
+  base::EnumArray<HousesType, unsigned> UnitsKilled = {};
   unsigned UnitsLost = 0;
-  unsigned BuildingsKilled[magic_enum::enum_count<HousesType>()] = {};
+  base::EnumArray<HousesType, unsigned> BuildingsKilled = {};
   unsigned BuildingsLost = 0;
 
   /*
@@ -542,7 +549,7 @@ class HouseClass {
   */
   COORDINATE Center = 0;  // Center of the base.
   int Radius = 0;         // Average building distance from center (leptons).
-  struct {
+  struct ZoneInfoStruct {
     int AirDefense;
     int ArmorDefense;
     int InfantryDefense;
@@ -551,7 +558,8 @@ class HouseClass {
     void Serialize(Archive& ar) {
       ar(AirDefense, ArmorDefense, InfantryDefense);
     }
-  } ZoneInfo[magic_enum::enum_count<ZoneType>()]{};
+  };
+  base::EnumArray<ZoneType, ZoneInfoStruct> ZoneInfo{};
 
   /*
   **	This records information about the last time a building of this
@@ -593,11 +601,11 @@ class HouseClass {
   **	Tracks number of each building type owned by this house. Even if the
   **	building is in construction, it will be reflected in this total.
   */
-  int BQuantity[magic_enum::enum_count<StructType>() - 3] = {};
+  base::EnumArray<StructType, int, kBuildingQuantityCount> BQuantity = {};
   int UQuantity[kOriginalUnitCount - 3] = {};
 
   int IQuantity[kOriginalInfantryCount] = {};
-  int AQuantity[magic_enum::enum_count<AircraftType>()] = {};
+  base::EnumArray<AircraftType, int> AQuantity = {};
   int VQuantity[kOriginalVesselCount] = {};
 
   /*
@@ -952,7 +960,7 @@ class HouseClass {
   // are the only ones that fill it in.
   char InitialName[HOUSE_NAME_MAX]{};
 
-  int QuantityB(int index) { return BQuantity[index]; }
+  int QuantityB(int index) { return BQuantity[static_cast<StructType>(index)]; }
   int QuantityU(int index) {
     if (index >= kOriginalUnitCount) {
       index -= kOriginalUnitCount;
@@ -965,7 +973,9 @@ class HouseClass {
     }
     return IQuantity[index];
   }
-  int QuantityA(int index) { return AQuantity[index]; }
+  int QuantityA(int index) {
+    return AQuantity[static_cast<AircraftType>(index)];
+  }
   int QuantityV(int index) {
     if (index >= kOriginalVesselCount) {
       index -= kOriginalVesselCount;

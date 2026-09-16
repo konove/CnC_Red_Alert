@@ -75,7 +75,8 @@ bool ConfirmationClass::Process(const char* string) {
   **	Set up the window.  Window x-coords are in bytes not pixels.
   */
   strcpy(buffer, string);
-  Fancy_Text_Print(TXT_NONE, 0, 0, TBLACK, TBLACK, TPF_6PT_GRAD | TPF_NOSHADOW);
+  Fancy_Text_Print(TXT_NONE, 0, 0, kTBlack, kTBlack,
+                   TPF_6PT_GRAD | TPF_NOSHADOW);
   Format_Window_String(buffer, 200, width, height);
   width += 60;
   height += 60;
@@ -90,12 +91,12 @@ bool ConfirmationClass::Process(const char* string) {
   bheight = FontHeight + FontYSpacing + 2;
   bwidth = max(String_Pixel_Width(Text_String(TXT_YES)) + 8, 30);
 
-  TextButtonClass yesbtn(BUTTON_YES, TXT_YES,
+  TextButtonClass yesbtn(kButtonYes, TXT_YES,
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, x + 10,
                          y + height - (bheight + 5), bwidth);
 
   TextButtonClass nobtn(
-      BUTTON_NO, TXT_NO, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+      kButtonNo, TXT_NO, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       x + width - (bwidth + 10), y + height - (bheight + 5), bwidth);
 
   nobtn.Add_Tail(yesbtn);
@@ -109,15 +110,15 @@ bool ConfirmationClass::Process(const char* string) {
   **	This causes left mouse button clicking within the confines of the dialog
   *to *	be ignored if it wasn't recognized by any other button or slider.
   */
-  GadgetClass dialog(x, y, width, height, GadgetClass::LEFTPRESS);
+  GadgetClass dialog(x, y, width, height, GadgetClass::kLeftPress);
   dialog.Add_Tail(yesbtn);
 
   /*
   **	This causes a right click anywhere or a left click outside the dialog
   *region *	to be equivalent to clicking on the return to options dialog.
   */
-  ControlClass background(BUTTON_NO, 0, 0, 320, 200,
-                          GadgetClass::LEFTPRESS | GadgetClass::RIGHTPRESS);
+  ControlClass background(kButtonNo, 0, 0, 320, 200,
+                          GadgetClass::kLeftPress | GadgetClass::kRightPress);
   background.Add_Tail(yesbtn);
 
   /*
@@ -151,7 +152,7 @@ bool ConfirmationClass::Process(const char* string) {
       Dialog_Box(x, y, width, height);
       Draw_Caption(TXT_CONFIRMATION, x, y, width);
       Fancy_Text_Print(buffer, x + 20, y + 30, GadgetClass::Get_Color_Scheme(),
-                       TBLACK, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+                       kTBlack, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
       /*
       **	Draw the titles.
@@ -170,14 +171,14 @@ bool ConfirmationClass::Process(const char* string) {
     **	Process Input.
     */
     switch (input) {
-      case ButtonKey(BUTTON_YES):
-        selection = BUTTON_YES;
+      case ButtonKey(kButtonYes):
+        selection = kButtonYes;
         pressed = true;
         break;
 
       case KN_ESC:
-      case ButtonKey(BUTTON_NO):
-        selection = BUTTON_NO;
+      case ButtonKey(kButtonNo):
+        selection = kButtonNo;
         pressed = true;
         break;
 
@@ -208,7 +209,7 @@ bool ConfirmationClass::Process(const char* string) {
         break;
 
       case KN_RETURN:
-        selection = curbutton + BUTTON_YES;
+        selection = curbutton + kButtonYes;
         pressed = true;
         break;
 
@@ -218,12 +219,12 @@ bool ConfirmationClass::Process(const char* string) {
 
     if (pressed) {
       switch (selection) {
-        case BUTTON_YES:
+        case kButtonYes:
           result = true;
           process = false;
           break;
 
-        case BUTTON_NO:
+        case kButtonNo:
           result = false;
           process = false;
           break;

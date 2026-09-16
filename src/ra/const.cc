@@ -39,7 +39,7 @@
 
 #include "ra/const.h"
 
-#include "magic_enum/magic_enum.hpp"
+#include "base/enum_array.h"
 #include "ra/defines.h"
 
 // TODO(konove): Move to globals. These are not constants.
@@ -48,7 +48,7 @@
 **	This specifies the odds of receiving the various random crate power
 **	ups. The odds are expressed as "shares" of 100 percent.
 */
-int CrateShares[magic_enum::enum_count<CrateType>()] = {
+base::EnumArray<CrateType, int> CrateShares = {
     50,  //	CRATE_MONEY
     20,  //	CRATE_UNIT
     3,   //	CRATE_PARA_BOMB
@@ -69,7 +69,7 @@ int CrateShares[magic_enum::enum_count<CrateType>()] = {
     5    // CRATE_VORTEX
 };
 
-AnimType CrateAnims[magic_enum::enum_count<CrateType>()] = {
+base::EnumArray<CrateType, AnimType> CrateAnims = {
     ANIM_NONE,  //	CRATE_MONEY
     ANIM_NONE,  //	CRATE_UNIT
     ANIM_NONE,  //	CRATE_PARA_BOMB
@@ -90,7 +90,7 @@ AnimType CrateAnims[magic_enum::enum_count<CrateType>()] = {
     ANIM_NONE   // CRATE_VORTEX
 };
 
-int CrateData[magic_enum::enum_count<CrateType>()] = {
+base::EnumArray<CrateType, int> CrateData = {
     0,  //	CRATE_MONEY
     0,  //	CRATE_UNIT
     0,  //	CRATE_PARA_BOMB
@@ -111,4 +111,4 @@ int CrateData[magic_enum::enum_count<CrateType>()] = {
     0   //	CRATE_VORTEX
 };
 
-GroundType Ground[magic_enum::enum_count<LandType>()];
+base::EnumArray<LandType, GroundType> Ground;

@@ -82,7 +82,6 @@
 #include "ra/house.h"
 #include "ra/infantry.h"
 #include "ra/inline.h"
-#include "ra/jshell.h"
 #include "ra/map.h"
 #include "ra/mapedit.h"
 #include "ra/object.h"
@@ -118,14 +117,14 @@
 BulletClass::BulletClass(BulletType id, TARGET target, TechnoClass* payback,
                          int strength, WarheadType warhead, int speed)
     : ObjectClass(RTTI_BULLET, Bullets.ID(this)),
-      Class(BulletTypes.Ptr(id)),
+      Class(BulletTypes.Ptr(static_cast<int>(id))),
       Payback(payback),
       PrimaryFacing(DIR_N),
       TarCom(target),
       MaxSpeed(speed),
       Warhead(warhead) {
   Strength = static_cast<int16_t>(strength);
-  Height = FLIGHT_LEVEL;
+  Height = kFlightLevel;
 }
 
 /***********************************************************************************************
@@ -734,7 +733,7 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
             std::min(scatterdist, static_cast<int>(Rule.HomingScatter));
         scatterdist = std::max(scatterdist, 0);
 
-        dir = static_cast<DirType>(dir + (Random_Pick(0, 10) - 5) & 0x00FF);
+        dir = AsDirection(static_cast<int>(dir) + (Random_Pick(0, 10) - 5));
         tcoord = Coord_Scatter(tcoord, Random_Pick(0, scatterdist));
       } else {
         int scatterdist = (::Distance(coord, tcoord) / 16) - 0x0040;
@@ -750,7 +749,7 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
     **	For very fast and invisible projectiles, just make the projectile exist
     *at the target *	location and dispense with the actual flight.
     */
-    if (MaxSpeed == MPH_LIGHT_SPEED && Class->IsInvisible) {
+    if (MaxSpeed == static_cast<int>(MPH_LIGHT_SPEED) && Class->IsInvisible) {
       Coord = tcoord;
     }
 
@@ -770,8 +769,8 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
     **	target.
     */
     int speed = MaxSpeed;
-    if (speed == MPH_LIGHT_SPEED) {
-      speed = MPH_IMMOBILE;
+    if (speed == static_cast<int>(MPH_LIGHT_SPEED)) {
+      speed = static_cast<int>(MPH_IMMOBILE);
     }
     if (Class->IsArcing) {
       speed = MaxSpeed + (Distance(tcoord) / 32);
@@ -810,7 +809,7 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
     }
     if (Class->IsDropping) {
       IsFalling = true;
-      Height = FLIGHT_LEVEL;
+      Height = kFlightLevel;
       //			Height = Pixel_To_Lepton(24);
       Riser = 0;
       if (Class->IsParachuted) {
@@ -1055,7 +1054,9 @@ void BulletClass::Bullet_Explodes(bool forced) {
   if ((anim >= ANIM_WATER_EXP1 && anim <= ANIM_WATER_EXP3 &&
        Is_Target_Vessel(TarCom)) &&
       (Coord_Cell(Coord) == Coord_Cell(As_Vessel(TarCom)->Center_Coord()))) {
-    anim = static_cast<AnimType>(ANIM_VEH_HIT1 + (anim - ANIM_WATER_EXP1));
+    anim = static_cast<AnimType>(
+        static_cast<int>(ANIM_VEH_HIT1) +
+        (static_cast<int>(anim) - static_cast<int>(ANIM_WATER_EXP1)));
   }
 
   if (anim != ANIM_NONE) {

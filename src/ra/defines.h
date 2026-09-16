@@ -42,8 +42,10 @@
 #include <utility>
 
 #include "base/attributes.h"
+#include "base/enum_array.h"
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
+#include "ra/jshell.h"
 #include "tech/fixed.h"
 
 /**********************************************************************
@@ -64,7 +66,7 @@ inline constexpr int kSaveGameDiskSpace = kInitFreeDiskSpace - (1024 * 4096);
 /**********************************************************************
 **	This is the complete list of VQs allowed to be played in the game.
 */
-enum VQType {
+enum class VQType {
   VQ_NONE = -1,
   VQ_AAGUN,
   VQ_MIG,
@@ -168,13 +170,14 @@ enum VQType {
   VQ_ANTEND,
   VQ_ANTINTRO
 };
+using enum VQType;
 
 /**********************************************************************
 **	These enumerations are used to implement RTTI. The target system
 **	uses these and thus there can be no more RTTI types than can fit
 **	in the exponent of a target value.
 */
-enum RTTIType {
+enum class RTTIType {
   RTTI_NONE = 0,
   RTTI_AIRCRAFT,
   RTTI_AIRCRAFTTYPE,
@@ -208,10 +211,12 @@ enum RTTIType {
   RTTI_VESSEL,
   RTTI_VESSELTYPE
 };
+using enum RTTIType;
 
 // These are the difficulty settings of the game.
-enum DiffType { DIFF_EASY, DIFF_NORMAL, DIFF_HARD };
-inline constexpr int kDiffCount = DIFF_HARD + 1;
+enum class DiffType { DIFF_EASY, DIFF_NORMAL, DIFF_HARD };
+using enum DiffType;
+inline constexpr int kDiffCount = static_cast<int>(DIFF_HARD) + 1;
 
 /**********************************************************************
 **	This is the size of the speech buffer. This value should be as large
@@ -333,7 +338,7 @@ inline TARGET Build_Target(const RTTIType kind, const int value) {
   TARGET_COMPOSITE target{};
 
   target.Target = 0;
-  target.Sub.Exponent = kind;
+  target.Sub.Exponent = static_cast<unsigned>(kind);
   target.Sub.Mantissa = static_cast<unsigned>(value);
   return target.Target;
 }
@@ -357,13 +362,14 @@ inline constexpr int kMapTotalRegions = kMapRegionWidth * kMapRegionHeight;
 **	This enumerates the various known fear states for infantry units.
 **	At these stages, certain events or recovery actions are performed.
 */
-enum FearType {
+enum class FearType {
   FEAR_NONE = 0,      // No fear at all (default state).
   FEAR_ANXIOUS = 10,  // Something makes them scared.
   FEAR_SCARED = 100,  // Scared enough to take cover.
   FEAR_PANIC = 200,   // Run away! Run away!
   FEAR_MAXIMUM = 255  // Scared to death.
 };
+using enum FearType;
 
 /**********************************************************************
 **	When a moving object moves, the Per_Cell_Process function is called
@@ -372,17 +378,18 @@ enum FearType {
 **	different conditions under which the Per_Cell_Process function is
 **	called.
 */
-enum PCPType {
+enum class PCPType {
   PCP_ROTATION,  // When sitting in place and performing rotations.
   PCP_DURING,    // While moving between two cells.
   PCP_END,       // When the 'center' of a cell is reached during movement.
 };
+using enum PCPType;
 
 /**********************************************************************
 **	A base is broken up into several zones. This type enumerates the
 **	various zones.
 */
-enum ZoneType {
+enum class ZoneType {
   ZONE_CORE = 0,   // Center of base.
   ZONE_NORTH = 1,  // North section.
   ZONE_EAST = 2,   // East section.
@@ -391,18 +398,20 @@ enum ZoneType {
 
   ZONE_NONE = -1
 };
+using enum ZoneType;
 
 /**********************************************************************
 **	The map is prescanned to mark of movement zones according to certain
 **	movement characteristics. This enum specifies those characteristics
 **	and movement zones kept track of.
 */
-enum MZoneType {
+enum class MZoneType {
   MZONE_NORMAL,     // Normal terrestrial objects (can't crush walls).
   MZONE_CRUSHER,    // Can crush crushable wall types.
   MZONE_DESTROYER,  // Can destroy walls.
   MZONE_WATER       //	Water based objects.
 };
+using enum MZoneType;
 
 // Bit masks over MZoneType for Map.Zone_Reset and zone checks.
 inline constexpr uint32_t kZoneFlagNormal = base::Bit<uint32_t>(MZONE_NORMAL);
@@ -418,13 +427,14 @@ inline constexpr uint32_t kZoneFlagAll =
 **	AI will respond according to this state in order to control
 **	production and unit orders.
 */
-enum StateType {
+enum class StateType {
   STATE_BUILDUP,     // Base is building up (defensive buildup stage).
   STATE_BROKE,       // Low on money, need cash or income source.
   STATE_THREATENED,  // Enemy units are designated to move close by.
   STATE_ATTACKED,    // Base is under direct attack.
   STATE_ENDGAME      //	Resistance is futile.
 };
+using enum StateType;
 
 /**********************************************************************
 **	Urgency rating used to determine what action to perform. The greater
@@ -432,20 +442,21 @@ enum StateType {
 **	These values are assigned to each potential desired action the house
 **	is to perform.
 */
-enum UrgencyType {
+enum class UrgencyType {
   URGENCY_NONE,     // No action on this matter is needed or desired.
   URGENCY_LOW,      // Minimal attention requested.
   URGENCY_MEDIUM,   //	Normal attention requested.
   URGENCY_HIGH,     // High attention requested.
   URGENCY_CRITICAL  // This matter must be addressed immediately.
 };
+using enum UrgencyType;
 
 /**********************************************************************
 **	These are the various actions a house may perform. These actions refer
 **	to global events that encompass selling and production. Low level house
 **	specific actions of choosing targets is handled elsewhere.
 */
-enum StrategyType {
+enum class StrategyType {
   STRATEGY_BUILD_POWER,     // Power is low, build more.
   STRATEGY_BUILD_DEFENSE,   // Defense needs boosting.
   STRATEGY_BUILD_INCOME,    // Income is low or in jeopardy, raise it.
@@ -457,32 +468,35 @@ enum StrategyType {
   STRATEGY_LOWER_POWER,     // Too much power, sell power plants.
   STRATEGY_ATTACK           // General charge the enemy attack logic.
 };
+using enum StrategyType;
 
 /**********************************************************************
 **	These are the various return conditions that production may
 **	produce.
 */
-enum ProdFailType {
+enum class ProdFailType {
   PROD_OK,       // Production request successful.
   PROD_LIMIT,    // Failed with production capacity limit reached.
   PROD_ILLEGAL,  // Failed because of illegal request.
   PROD_CANT      // Failed because unable to comply (busy or occupied).
 };
+using enum ProdFailType;
 
 /**********************************************************************
 **	When performing a landing operation, the aircraft must pass through
 **	navigation checkpoints. These enumerations specify the check points.
 */
-enum CheckPointType {
+enum class CheckPointType {
   CHECK_STACK,     // Holding area far away from airfield.
   CHECK_DOWNWIND,  // Downwind leg of approach.
   CHECK_CROSSWIND  // Crosswind leg of approach.
 };
+using enum CheckPointType;
 
 /**********************************************************************
 **	These enumerate the various crate powerups that are available.
 */
-enum CrateType {
+enum class CrateType {
   CRATE_MONEY,
   CRATE_UNIT,
   CRATE_PARA_BOMB,
@@ -502,6 +516,7 @@ enum CrateType {
   CRATE_INVULN,
   CRATE_VORTEX
 };
+using enum CrateType;
 
 /**********************************************************************
 **	These are the special weapons that can be used in the game. The common
@@ -510,7 +525,7 @@ enum CrateType {
 */
 // Fixed underlying type so that kSpcChrono2, one past the last weapon, is a
 // representable value.
-enum SpecialWeaponType : int {
+enum class SpecialWeaponType : int {
   SPC_NONE = -1,
   SPC_SONAR_PULSE,    // Momentarily reveals submarines.
   SPC_NUCLEAR_BOMB,   //	Tactical nuclear weapon.
@@ -521,6 +536,7 @@ enum SpecialWeaponType : int {
   SPC_IRON_CURTAIN,   // Bestow invulnerability on a unit/building
   SPC_GPS             // give allies free unjammable radar.
 };
+using enum SpecialWeaponType;
 // Second stage of chronosphere targeting: picking the destination.
 inline constexpr auto kSpcChrono2 =
     static_cast<SpecialWeaponType>(magic_enum::enum_count<SpecialWeaponType>());
@@ -545,7 +561,7 @@ inline constexpr auto kSpcChrono2 =
 **	return value, appropriate action may be chosen.
 **	NOTE: If this changes, update the static array in Find_Path module.
 */
-enum MoveType {
+enum class MoveType {
   MOVE_OK,            // No blockage.
   MOVE_CLOAK,         // A cloaked blocking enemy object.
   MOVE_MOVING_BLOCK,  // Blocked, but only temporarily.
@@ -553,13 +569,14 @@ enum MoveType {
   MOVE_TEMP,          // Blocked by friendly unit.
   MOVE_NO             // Strictly prohibited terrain.
 };
+using enum MoveType;
 
 /**********************************************************************
 **	These are the themes that the game can play. They must be in exact
 **	same order as specified in the CONQUER.TXT file as well as the filename
 **	list located in the ThemeClass.
 */
-enum ThemeType {
+enum class ThemeType {
   THEME_QUIET = -3,
   THEME_PICK_ANOTHER = -2,
   THEME_NONE = -1,
@@ -606,12 +623,13 @@ enum ThemeType {
   THEME_TRACTION = 37,
   THEME_WASTELND = 38
 };
+using enum ThemeType;
 
 /**********************************************************************
 **	This is the various threat scan methods that can be used when looking
 **	for targets.
 */
-enum CNC_FLAG_ENUM ThreatType {
+enum class CNC_FLAG_ENUM ThreatType {
   THREAT_NORMAL = 0x0000,    // Any distance threat scan?
   THREAT_RANGE = 0x0001,     // Limit scan to weapon range?
   THREAT_AREA = 0x0002,      // Limit scan to general area (twice weapon range)?
@@ -630,16 +648,17 @@ enum CNC_FLAG_ENUM ThreatType {
   THREAT_BASE_DEFENSE =
       0x2000  // Consider base defense buildings a greater target?
 };
+using enum ThreatType;
 
-inline constexpr auto kThreatGround = static_cast<ThreatType>(
-    uint32_t{THREAT_VEHICLES} | THREAT_BUILDINGS | THREAT_INFANTRY);
+inline constexpr ThreatType kThreatGround =
+    THREAT_VEHICLES | THREAT_BUILDINGS | THREAT_INFANTRY;
 
 /**********************************************************************
 **	These return values are used when determine if firing is legal.
 **	By examining this value it can be determined what should be done
 **	to fix the reason why firing wasn't allowed.
 */
-enum FireErrorType {
+enum class FireErrorType {
   FIRE_OK,        // Weapon is allowed to fire.
   FIRE_AMMO,      // No ammo available to fire?
   FIRE_FACING,    // Not correctly facing target?
@@ -652,6 +671,7 @@ enum FireErrorType {
   FIRE_CLOAKED,   // Is the shooter currently cloaked?
   FIRE_BUSY       // Is shooter currently doing something else?
 };
+using enum FireErrorType;
 
 /**********************************************************************
 **	If an object can cloak, then it will be in one of these states.
@@ -659,18 +679,19 @@ enum FireErrorType {
 **	UNCLOAKED state. This state controls how the object transitions between
 **	cloaked and uncloaked conditions.
 */
-enum CloakType {
+enum class CloakType {
   UNCLOAKED,  // Completely visible (normal state).
   CLOAKING,   // In process of cloaking.
   CLOAKED,    // Completely cloaked (invisible).
   UNCLOAKING  // In process of uncloaking.
 };
+using enum CloakType;
 
 /**********************************************************************
 **	For units that are cloaking, these value specify the visual character
 **	of the object.
 */
-enum VisualType {
+enum class VisualType {
   VISUAL_NORMAL,      // Completely visible -- normal.
   VISUAL_INDISTINCT,  // The edges shimmer and become indistinct.
   VISUAL_DARKEN,      // Color and texture is muted along with shimmering.
@@ -678,13 +699,14 @@ enum VisualType {
   VISUAL_RIPPLE,      // Just a ripple (true predator effect).
   VISUAL_HIDDEN       // Nothing at all is visible.
 };
+using enum VisualType;
 
 /**********************************************************************
 **	These missions enumerate the various state machines that can apply to
 **	a game object. Only one of these state machines is active at any one
 **	time.
 */
-enum MissionType {
+enum class MissionType {
   MISSION_NONE = -1,
 
   MISSION_SLEEP,           // Do nothing whatsoever.
@@ -711,13 +733,14 @@ enum MissionType {
   MISSION_MISSILE,
   MISSION_HARMLESS  // Sit around and don't appear like a threat.
 };
+using enum MissionType;
 
 /**********************************************************************
 **	These are the enumerated animation sequences that a building may
 **	be processing. These serve to control the way that a building
 **	appears.
 */
-enum BStateType {
+enum class BStateType {
   BSTATE_NONE = -1,
   BSTATE_CONSTRUCTION,  // Construction animation.
   BSTATE_IDLE,          // Idle animation.
@@ -726,6 +749,7 @@ enum BStateType {
   BSTATE_AUX1,          // Auxiliary animation.
   BSTATE_AUX2           // Auxiliary animation.
 };
+using enum BStateType;
 
 /**********************************************************************
 **	Whenever a unit is selected and a click occurs over another object
@@ -734,7 +758,7 @@ enum BStateType {
 **	mouse cursor looks when "hovering" over the spot that clicking would
 **	occur at.
 */
-enum ActionType {
+enum class ActionType {
   ACTION_NONE,    // Either undefined action or "do nothing".
   ACTION_MOVE,    // Can move there or at least try to.
   ACTION_NOMOVE,  // Special case for movable object, but illegal mouse
@@ -769,24 +793,26 @@ enum ActionType {
   ACTION_NO_ENTER,
   ACTION_NO_GREPAIR
 };
+using enum ActionType;
 
 /**********************************************************************
 **	When a unit gets damaged, the result of the damage is returned as
 **	this type. It can range from no damage taken to complete destruction.
 */
-enum ResultType {
+enum class ResultType {
   RESULT_NONE,   // No damage was taken by the target.
   RESULT_LIGHT,  // Some damage was taken, but no state change occurred.
   RESULT_HALF,  // Damaged to below half strength (only returned on transition).
   RESULT_MAJOR,     // Damaged down to 1 hit point.
   RESULT_DESTROYED  // Damaged to complete destruction.
 };
+using enum ResultType;
 
 /**********************************************************************
 **	Units that move can move at different speeds. These enumerate the
 **	different speeds that a unit can move.
 */
-enum MPHType {
+enum class MPHType {
   MPH_IMMOBILE = 0,
   MPH_VERY_SLOW = 5,       //	2
   MPH_KINDA_SLOW = 6,      //	3
@@ -801,12 +827,13 @@ enum MPHType {
   MPH_VERY_FAST = 100,     // 40
   MPH_LIGHT_SPEED = 255    // 100
 };
+using enum MPHType;
 
 /**********************************************************************
 **	The houses that can be played are listed here. Each has their own
 **	personality and strengths.
 */
-enum HousesType : int8_t {
+enum class HousesType : int8_t {
   HOUSE_NONE = -1,
   HOUSE_SPAIN,    // Gold (unremapped)
   HOUSE_GREECE,   // LtBlue
@@ -829,6 +856,7 @@ enum HousesType : int8_t {
   HOUSE_MULTI7,   // Multi-Player house #7
   HOUSE_MULTI8    // Multi-Player house #8
 };
+using enum HousesType;
 
 // House bit masks over HousesType, for owner lists.
 inline constexpr uint32_t kHouseFlagEngland =
@@ -866,7 +894,7 @@ inline constexpr uint32_t kHouseFlagOthers =
     kHouseFlagMulti3 | kHouseFlagMulti4 | kHouseFlagMulti5 | kHouseFlagMulti6 |
     kHouseFlagMulti7 | kHouseFlagMulti8;
 
-enum PlayerColorType {
+enum class PlayerColorType {
   PCOLOR_NONE = -1,
   PCOLOR_GOLD,
   PCOLOR_LTBLUE,
@@ -880,19 +908,21 @@ enum PlayerColorType {
   PCOLOR_REALLY_BLUE,
   PCOLOR_DIALOG_BLUE
 };
+using enum PlayerColorType;
 
 /**********************************************************************
 **	This enumerates the remap logic to be applied to an object type when
 **	it appears in the construction sidebar.
 */
-enum RemapType { REMAP_NONE, REMAP_NORMAL, REMAP_ALTERNATE };
+enum class RemapType { REMAP_NONE, REMAP_NORMAL, REMAP_ALTERNATE };
+using enum RemapType;
 
 /**********************************************************************
 ** These are the types of games that can be played.  GDI & NOD are the
 ** usual human-vs-computer games; 2-Player games are network or modem,
 ** with 2 players; multi-player games are network with > 2 players.
 */
-enum ScenarioPlayerType {
+enum class ScenarioPlayerType {
   SCEN_PLAYER_NONE = -1,
   SCEN_PLAYER_SPAIN,
   SCEN_PLAYER_GREECE,
@@ -901,16 +931,18 @@ enum ScenarioPlayerType {
   SCEN_PLAYER_2PLAYER,
   SCEN_PLAYER_MPLAYER
 };
+using enum ScenarioPlayerType;
 
 /**********************************************************************
 ** These are the directional parameters for a scenario.
 */
-enum ScenarioDirType { SCEN_DIR_NONE = -1, SCEN_DIR_EAST, SCEN_DIR_WEST };
+enum class ScenarioDirType { SCEN_DIR_NONE = -1, SCEN_DIR_EAST, SCEN_DIR_WEST };
+using enum ScenarioDirType;
 
 /**********************************************************************
 ** These are the random variations of a scenario.
 */
-enum ScenarioVarType {
+enum class ScenarioVarType {
   SCEN_VAR_NONE = -1,
   SCEN_VAR_A,
   SCEN_VAR_B,
@@ -918,13 +950,14 @@ enum ScenarioVarType {
   SCEN_VAR_D,
   SCEN_VAR_LOSE
 };
+using enum ScenarioVarType;
 
 /**********************************************************************
 **	The objects to be drawn on the map are grouped into layers. These
 **	enumerated values specify those layers. The ground layer is sorted
 **	from back to front.
 */
-enum LayerType {
+enum class LayerType {
   LAYER_NONE = -1,
   LAYER_SURFACE,  // Flat on the ground (no sorting or apparent vertical
                   // height).
@@ -932,12 +965,13 @@ enum LayerType {
   LAYER_AIR,      // Flying above the ground (explosions & flames).
   LAYER_TOP       // Topmost layer (aircraft & bullets).
 };
+using enum LayerType;
 
 /**********************************************************************
 **	This enumerates the various bullet types. These types specify bullet's
 **	visual and explosive characteristics.
 */
-enum BulletType {
+enum class BulletType {
   BULLET_NONE = -1,
 
   BULLET_INVISIBLE,
@@ -959,12 +993,13 @@ enum BulletType {
   BULLET_NUKE_UP,
   BULLET_NUKE_DOWN
 };
+using enum BulletType;
 
 /**********************************************************************
 **	All game buildings (structures) are enumerated here. This includes
 **	civilian structures as well.
 */
-enum StructType {
+enum class StructType {
   STRUCT_NONE = -1,
   STRUCT_ADVANCED_TECH,
   STRUCT_IRON_CURTAIN,
@@ -1067,6 +1102,7 @@ enum StructType {
   STRUCT_LARVA1,
   STRUCT_LARVA2
 };
+using enum StructType;
 
 // The bit for `type` in the 64-bit house scans (HouseClass::BScan and the
 // unit, infantry, aircraft and vessel scans), or 0 for a building type past
@@ -1117,7 +1153,7 @@ inline constexpr uint64_t kStructFlagFakeWeap =
 **	a transparent icon. It is placed over the terrain but usually falls
 **	"under" buildings, trees, and units.
 */
-enum OverlayType : int8_t {
+enum class OverlayType : int8_t {
   OVERLAY_NONE = -1,
   OVERLAY_SANDBAG_WALL,   // Piled sandbags.
   OVERLAY_CYCLONE_WALL,   // Chain-link fence.
@@ -1145,12 +1181,13 @@ enum OverlayType : int8_t {
   OVERLAY_FENCE,        // New fangled fence.
   OVERLAY_WATER_CRATE   //	Water goodie crate.
 };
+using enum OverlayType;
 
 /**********************************************************************
 **	This specifies the infantry in the game. The "E" designation is
 **	similar to the army classification of enlisted soldiers.
 */
-enum InfantryType {
+enum class InfantryType {
   INFANTRY_NONE = -1,
   INFANTRY_E1,         // Mini-gun armed.
   INFANTRY_E2,         // Grenade thrower.
@@ -1182,6 +1219,7 @@ enum InfantryType {
   INFANTRY_SHOCK,  // Shock Trooper
   INFANTRY_MECHANIC
 };
+using enum InfantryType;
 
 // Infantry bit mask over InfantryType, matching HouseClass::IScan.
 inline constexpr uint64_t kInfantryFlagDog = base::Bit<uint64_t>(INFANTRY_DOG);
@@ -1190,7 +1228,7 @@ inline constexpr uint64_t kInfantryFlagDog = base::Bit<uint64_t>(INFANTRY_DOG);
 **	The game units are enumerated here. These include not only traditional
 **	vehicles, but also hovercraft and gunboats.
 */
-enum UnitType {
+enum class UnitType {
   UNIT_NONE = -1,
   UNIT_HTANK,        // Mammoth tank.
   UNIT_MTANK,        // Heavy tank.
@@ -1218,6 +1256,7 @@ enum UnitType {
   UNIT_DEMOTRUCK,   // Jihad truck
   UNIT_PHASE        // cloaking APC for special missions
 };
+using enum UnitType;
 
 // Unit bit masks over UnitType, matching HouseClass::UScan.
 inline constexpr uint64_t kUnitFlagHarvester =
@@ -1227,7 +1266,7 @@ inline constexpr uint64_t kUnitFlagMcv = base::Bit<uint64_t>(UNIT_MCV);
 /**********************************************************************
 **	The naval vessels are enumerated below.
 */
-enum VesselType {
+enum class VesselType {
   VESSEL_NONE = -1,
 
   VESSEL_SS,         // Submarine
@@ -1240,12 +1279,13 @@ enum VesselType {
   VESSEL_MISSILESUB,  // Missile-equipped submarine
   VESSEL_CARRIER
 };
+using enum VesselType;
 
 /**********************************************************************
 **	The various aircraft types are enumerated here. These include
 *helicopters *	as well as traditional aircraft.
 */
-enum AircraftType {
+enum class AircraftType {
   AIRCRAFT_TRANSPORT = 0,  // Transport helicopter.
   AIRCRAFT_BADGER = 1,     // Badger bomber.
   AIRCRAFT_U2 = 2,         // Photo recon plane.
@@ -1256,6 +1296,7 @@ enum AircraftType {
 
   AIRCRAFT_NONE = -1
 };
+using enum AircraftType;
 
 /**********************************************************************
 **	The game templates are enumerated here. These are the underlying
@@ -1263,7 +1304,7 @@ enum AircraftType {
 **	terrain is broken up into icons, is not transparent, and is drawn
 **	as the bottom most layer, then it is a template.
 */
-enum TemplateType : uint16_t {
+enum class TemplateType : uint16_t {
   TEMPLATE_CLEAR1 = 0,
   TEMPLATE_WATER = 1,  // This must be the first non-clear template.
   TEMPLATE_WATER2 = 2,
@@ -1672,6 +1713,7 @@ enum TemplateType : uint16_t {
 
   TEMPLATE_NONE = 65535
 };
+using enum TemplateType;
 
 // Templates outgrow magic_enum's default window; TEMPLATE_NONE (65535)
 // stays outside it on purpose, it is not an index.
@@ -1686,7 +1728,7 @@ struct magic_enum::customize::enum_range<TemplateType> {
 **	objects function similar to buildings in that they can be driven
 **	behind and can take damage on an individual basis.
 */
-enum TerrainType {
+enum class TerrainType {
   TERRAIN_NONE = -1,
   TERRAIN_TREE1,
   TERRAIN_TREE2,
@@ -1727,13 +1769,14 @@ enum TerrainType {
 
   TERRAIN_MINE
 };
+using enum TerrainType;
 
 /**********************************************************************
 **	Smudges are enumerated here. Smudges are transparent icons that are
 **	drawn over the underlying terrain in order to give the effect of
 **	alterations to the terrain. Craters are a good example of this.
 */
-enum SmudgeType {
+enum class SmudgeType {
   SMUDGE_NONE = -1,
   SMUDGE_CRATER1,
   SMUDGE_CRATER2,
@@ -1751,12 +1794,13 @@ enum SmudgeType {
   SMUDGE_BIB2,
   SMUDGE_BIB3
 };
+using enum SmudgeType;
 
 /**********************************************************************
 **	Animations are enumerated here. Animations are the high speed and
 **	short lived effects that occur with explosions and fire.
 */
-enum AnimType {
+enum class AnimType {
   ANIM_NONE = -1,
   ANIM_FBALL1,         // Large fireball explosion (bulges rightward).
   ANIM_FBALL_FADE,     // Fading fireball puff.
@@ -1840,12 +1884,13 @@ enum AnimType {
 
   ANIM_ANT_DEATH
 };
+using enum AnimType;
 
 /****************************************************************************
 **	Infantry can be performing various activities. These can range from
 *simple *	idle animations to physical hand to hand combat.
 */
-enum DoType {
+enum class DoType {
   DO_NOTHING = -1,  // Not performing any choreographed sequence.
   DO_STAND_READY = 0,
   DO_STAND_GUARD = 1,
@@ -1869,6 +1914,7 @@ enum DoType {
   DO_SALUTE2 = 19,
   DO_DOG_MAUL = 20
 };
+using enum DoType;
 
 /*
 **	This structure is associated with each maneuver type. It tells whether
@@ -1892,7 +1938,7 @@ struct DoInfoStruct {
 **	units and buildings. Some of these require a response from the receiver
 **	and some don't.
 */
-enum RadioMessageType {
+enum class RadioMessageType {
   RADIO_STATIC,      // "hisssss" -- non-message
   RADIO_ROGER,       // "Roger."
   RADIO_HELLO,       // "Come in. I wish to talk."
@@ -1928,6 +1974,7 @@ enum RadioMessageType {
   RADIO_NEED_REPAIR,     // "Are you in need of service depot work?"
   RADIO_ON_DEPOT         // "Are you sitting on a service depot?"
 };
+using enum RadioMessageType;
 
 /****************************************************************************
 **	Various trigger events and actions require additional data. This
@@ -1935,7 +1982,7 @@ enum RadioMessageType {
 *required. This is also used *	for team mission types that might need
 *additional data.
 */
-enum NeedType {
+enum class NeedType {
   NEED_NONE,       // No additional data is required.
   NEED_THEME,      // Need a musical theme.
   NEED_MOVIE,      // Need a movie to play.
@@ -1958,6 +2005,7 @@ enum NeedType {
   NEED_MISSION,    // General unit mission type.
   NEED_HEX_NUMBER  // General number.
 };
+using enum NeedType;
 
 /****************************************************************************
 **	There are various target types that teams and special weapons can be
@@ -1965,7 +2013,7 @@ enum NeedType {
 **	disposition of potential targets cannot be precisely predicted -- thus
 *these *	serve as guidelines for the computer AI.
 */
-enum QuarryType {
+enum class QuarryType {
   QUARRY_NONE,
 
   QUARRY_ANYTHING,    // Attack any enemy (same as "hunt").
@@ -1980,12 +2028,13 @@ enum QuarryType {
   QUARRY_POWER,       // Attack power facilities.
   QUARRY_FAKES        // Prefer to attack fake buildings.
 };
+using enum QuarryType;
 
 /****************************************************************************
 **	Teams can be assigned formations. This specifies the various formations
 *that *	a team can be composed into.
 */
-enum FormationType {
+enum class FormationType {
   FORMATION_NONE,
 
   FORMATION_TIGHT,    // Tight grouping (vulnerable units in center).
@@ -1997,27 +2046,30 @@ enum FormationType {
   FORMATION_LINE_NS,  // Column formation.
   FORMATION_LINE_EW   // Line formation.
 };
+using enum FormationType;
 
 /****************************************************************************
 **	Selected units have a special selected unit box around them. These are
 *the *	defines for the two types of selected unit boxes. One is for infantry
 *and *	the other is for regular units.
 */
-enum SelectEnum {
-  SELECT_NONE = -1,
-  SELECT_INFANTRY = 0,            // Small infantry selection box.
-  SELECT_UNIT = 1,                // Big unit selection box.
-  SELECT_BUILDING = SELECT_UNIT,  // Custom box for buildings.
-  SELECT_TERRAIN = SELECT_UNIT,   // Custom box for terrain objects.
-  SELECT_WRENCH = 2               // A building is repairing overlay graphic.
-};
+// Selection box shapes in SelectShapes.
+inline constexpr int kSelectNone = -1;
+inline constexpr int kSelectInfantry = 0;  // Small infantry selection box.
+inline constexpr int kSelectUnit = 1;      // Big unit selection box.
+inline constexpr int kSelectBuilding =
+    kSelectUnit;  // Custom box for buildings.
+inline constexpr int kSelectTerrain =
+    kSelectUnit;  // Custom box for terrain objects.
+inline constexpr int kSelectWrench =
+    2;  // A building is repairing overlay graphic.
 
 /****************************************************************************
 **	The pip shapes and text shapes are enumerated according to the following
 **	type. These special shapes are drawn over special objects or in other
 *places *	where shape technology is needed.
 */
-enum PipEnum {
+enum class PipEnum {
   PIP_EMPTY,     // Empty pip spot.
   PIP_FULL,      // Full pip spot.
   PIP_PRIMARY,   // "Primary" building marker.
@@ -2041,6 +2093,7 @@ enum PipEnum {
   PIP_MEDIC,     // Little medic red cross.
   PIP_PRI        // Abbreviated "Primary" for kennel
 };
+using enum PipEnum;
 
 /****************************************************************************
 **	The mouse cursor can be in different states. These states are listed
@@ -2048,7 +2101,7 @@ enum PipEnum {
 **	is controlled by passing one of these values to the appropriate
 **	MouseClass member function.
 */
-enum MouseType {
+enum class MouseType {
   MOUSE_NORMAL,
   MOUSE_N,
   MOUSE_NE,
@@ -2092,6 +2145,7 @@ enum MouseType {
   MOUSE_CHRONO_SELECT,
   MOUSE_CHRONO_DEST
 };
+using enum MouseType;
 
 /**********************************************************************
 **	This structure is used to control the box relief style drawn by
@@ -2104,7 +2158,7 @@ struct BoxStyleType {
   uint8_t Corner;     // Corner color (transition).
 };
 
-enum BoxStyleEnum {
+enum class BoxStyleEnum {
   BOXSTYLE_DOWN,        // Typical depressed edge border.
   BOXSTYLE_RAISED,      // Typical raised edge border.
   BOXSTYLE_DIS_DOWN,    // Disabled but depressed.
@@ -2112,13 +2166,14 @@ enum BoxStyleEnum {
   BOXSTYLE_BOX,         // list box.
   BOXSTYLE_BORDER,      // main dialog box.
 };
+using enum BoxStyleEnum;
 
 /**********************************************************************
 **	Damage, as inflicted by projectiles, has different characteristics.
 **	These are the different "warhead" types that can be assigned to the
 **	various projectiles in the game.
 */
-enum WarheadType {
+enum class WarheadType {
   WARHEAD_NONE = -1,
 
   WARHEAD_SA,            // Small arms -- good against infantry.
@@ -2131,13 +2186,14 @@ enum WarheadType {
   WARHEAD_NUKE,          // Nuclear missile
   WARHEAD_MECHANICAL     // repair weapon for vehicles
 };
+using enum WarheadType;
 
 /**********************************************************************
 **	This enumerates the various weapon types. The weapon is characterized
 **	by the projectile it launches, the damage it does, and the rate of
 **	fire.
 */
-enum WeaponType {
+enum class WeaponType {
   WEAPON_NONE = -1,
 
   WEAPON_COLT45,
@@ -2186,6 +2242,7 @@ enum WeaponType {
   WEAPON_DEMOCHARGE,
   WEAPON_CARRIER
 };
+using enum WeaponType;
 
 /**********************************************************************
 **	The various armor types are best suited to defend against a limited
@@ -2193,23 +2250,25 @@ enum WeaponType {
 **	combination of armor and weaponry. Each vehicle or building has armor
 **	rated according to one of the following types.
 */
-enum ArmorType {
+enum class ArmorType {
   ARMOR_NONE,      // Vulnerable to SA and HE.
   ARMOR_WOOD,      // Vulnerable to HE and Fire.
   ARMOR_ALUMINUM,  // Vulnerable to AP and SA.
   ARMOR_STEEL,     // Vulnerable to AP.
   ARMOR_CONCRETE   // Vulnerable to HE and AP.
 };
+using enum ArmorType;
 
 /**********************************************************************
 **	These are the identifiers for the various monochrome debug screens.
 */
-enum DMonoType { DMONO_OBJECT, DMONO_HOUSE, DMONO_STRESS, DMONO_EVENTS };
+enum class DMonoType { DMONO_OBJECT, DMONO_HOUSE, DMONO_STRESS, DMONO_EVENTS };
+using enum DMonoType;
 
 /*
 **	Performance benchmark tracking identifiers.
 */
-enum BenchType {
+enum class BenchType {
   BENCH_GAME_FRAME,       // Whole game frame (used for normalizing).
   BENCH_FINDPATH,         // Find path calls.
   BENCH_GREATEST_THREAT,  // Greatest threat calculation.
@@ -2237,6 +2296,7 @@ enum BenchType {
   BENCH_RULES,    // Processing of the rules.ini file.
   BENCH_SCENARIO  // Processing of the scenario.ini file.
 };
+using enum BenchType;
 
 // Working MCGA colors that give a pleasing effect for beveled edges and
 // other purposes.
@@ -2256,7 +2316,7 @@ inline constexpr int kEmberColor = kCycleColorStart + kCycleColorCount;
 /**********************************************************************
 **	These are the control flags for Fancy_Text_Print function.
 */
-enum CNC_FLAG_ENUM TextPrintType {
+enum class CNC_FLAG_ENUM TextPrintType {
   TPF_LASTPOINT = 0x0000,     // Use previous font point value.
   TPF_6POINT = 0x0001,        // Use 6 point font.
   TPF_8POINT = 0x0002,        // Use 8 point font.
@@ -2280,14 +2340,13 @@ enum CNC_FLAG_ENUM TextPrintType {
   TPF_BRIGHT_COLOR = 0x2000,  // Use bright color for all text gradient
   TPF_USE_GRAD_PAL = 0x4000   // Use a gradient palette based on fore color
 };
+using enum TextPrintType;
 
 // Standard button text print flags.
-inline constexpr auto kTpfButton = static_cast<TextPrintType>(
-    uint32_t{TPF_CENTER} | TPF_6PT_GRAD | TPF_NOSHADOW);
-inline constexpr auto kTpfEButton =
-    static_cast<TextPrintType>(uint32_t{TPF_CENTER} | TPF_EFNT | TPF_NOSHADOW);
-inline constexpr auto kTpfText =
-    static_cast<TextPrintType>(TPF_6PT_GRAD | TPF_NOSHADOW);
+inline constexpr TextPrintType kTpfButton =
+    TPF_CENTER | TPF_6PT_GRAD | TPF_NOSHADOW;
+inline constexpr auto kTpfEButton = TPF_CENTER | TPF_EFNT | TPF_NOSHADOW;
+inline constexpr auto kTpfText = TPF_6PT_GRAD | TPF_NOSHADOW;
 
 /**********************************************************************
 **	These control the maximum number of objects in the game. Make sure that
@@ -2321,7 +2380,7 @@ inline constexpr int kEachVesselMax = kVesselMax / 5;
 *classifications. *	This is true, even if it is undergoing a temporary
 *transition.
 */
-enum LandType {
+enum class LandType {
   LAND_CLEAR = 0,     // "Clear" terrain.
   LAND_ROAD = 1,      // Road terrain.
   LAND_WATER = 2,     // Water.
@@ -2334,16 +2393,18 @@ enum LandType {
 
   LAND_NONE = -1
 };
+using enum LandType;
 
 /**********************************************************************
 **	The theaters of operation are as follows.
 */
-enum TheaterType {
+enum class TheaterType {
   THEATER_NONE = -1,
   THEATER_TEMPERATE = 0,
   THEATER_SNOW = 1,
   THEATER_INTERIOR = 2
 };
+using enum TheaterType;
 
 // Theater bit masks over TheaterType, for the object type tables.
 inline constexpr uint32_t kTheaterFlagTemperate =
@@ -2363,7 +2424,7 @@ struct TheaterDataType {
 **	The trailing number is this define is the width and height
 *(respectively) *	of the building in cells.
 */
-enum BSizeType {
+enum class BSizeType {
   BSIZE_NONE = -1,
   BSIZE_11 = 0,
   BSIZE_21 = 1,
@@ -2375,6 +2436,7 @@ enum BSizeType {
   BSIZE_42 = 7,
   BSIZE_55 = 8
 };
+using enum BSizeType;
 
 /**********************************************************************
 ** When objects are manipulated on the map that are marked as being
@@ -2382,7 +2444,7 @@ enum BSizeType {
 ** or when an object's rendering (not logical) size changes, due to
 ** its being selected or having an animation attached (overlap up/down).
 */
-enum MarkType {
+enum class MarkType {
   MARK_UP,             //	Removed from the map.
   MARK_DOWN,           //	Placed on the map.
   MARK_CHANGE,         //	Altered in place on the map.
@@ -2390,13 +2452,14 @@ enum MarkType {
   MARK_OVERLAP_DOWN,   // Mark overlap cells on the map
   MARK_OVERLAP_UP      // Clear overlap cells on the map
 };
+using enum MarkType;
 
 /****************************************************************************
 **	Window number definition list. Each window should be referred to by
 **	the value given in this list.
 */
 // Allow window number enums to be passed to library functions.
-enum WindowNumberType {
+enum class WindowNumberType {
   WINDOW_MAIN,      // Full screen window.
   WINDOW_ERROR,     // Library error window.
   WINDOW_TACTICAL,  // Tactical map window.
@@ -2405,13 +2468,14 @@ enum WindowNumberType {
   WINDOW_EDITOR,    // Scenario editor window.
   WINDOW_PARTIAL,   // Partial object draw sub-window.
 };
+using enum WindowNumberType;
 
 /****************************************************************************
 **	For every cell there are 8 adjacent cells. Use these direction numbers
 **	when referring to adjacent cells. This comes into play when moving
 **	between cells and in the Desired_Facing() algorithm.
 */
-enum FacingType : int8_t {
+enum class FacingType : int8_t {
   FACING_NONE = -1,
   FACING_N,   // North
   FACING_NE,  // North-East
@@ -2422,6 +2486,7 @@ enum FacingType : int8_t {
   FACING_W,   // West
   FACING_NW   // North-West
 };
+using enum FacingType;
 
 // Wraps a facing sum or difference onto the eight compass facings. Negative
 // values wrap the same way the old low-three-bits mask did (-1 is FACING_NW).
@@ -2486,7 +2551,7 @@ inline constexpr int64_t kGrayFadeTime = kTicksPerSecond;
 **	its physical speed, but the means by which it travels (wheels, tracks,
 **	wings, etc). This is used to determine the movement table.
 */
-enum SpeedType {
+enum class SpeedType {
   SPEED_NONE = -1,
 
   SPEED_FOOT,    // Bipedal.
@@ -2495,11 +2560,12 @@ enum SpeedType {
   SPEED_WINGED,  // Lifter's, 'thopters, and rockets.
   SPEED_FLOAT    // Ships.
 };
+using enum SpeedType;
 
 /**********************************************************************
 **	These are the sound effect digitized sample file names.
 */
-enum VocType {
+enum class VocType {
   VOC_NONE = -1,
 
   VOC_GIRL_OKAY,  // "okay"
@@ -2679,6 +2745,7 @@ enum VocType {
   VOC_MAD_EXPLODE,
   VOC_SHOCK_TROOP1
 };
+using enum VocType;
 
 // Sound effects outgrow magic_enum's default window of 127.
 template <>
@@ -2690,7 +2757,7 @@ struct magic_enum::customize::enum_range<VocType> {
 /*
 **	EVA voices are specified by these identifiers.
 */
-enum VoxType : int8_t {
+enum class VoxType : int8_t {
   VOX_NONE = -1,
   VOX_ACCOMPLISHED,         //	mission accomplished
   VOX_FAIL,                 //	your mission has failed
@@ -2809,13 +2876,14 @@ enum VoxType : int8_t {
   VOX_SAVE1,
   VOX_LOAD1
 };
+using enum VoxType;
 
 /****************************************************************************
 **	Game reinforcements are each controlled by the following structure. The
 **	data originates in the scenario INI file but is then carried throughout
 **	any saved games.
 */
-enum SourceType {
+enum class SourceType {
   SOURCE_NONE = -1,  // No defined source (error condition).
   SOURCE_NORTH,      // From north edge.
   SOURCE_EAST,       // From east edge.
@@ -2823,6 +2891,7 @@ enum SourceType {
   SOURCE_WEST,       // From west edge.
   SOURCE_AIR         // Dropped by air (someplace).
 };
+using enum SourceType;
 
 /****************************************************************************
 **	This entry defines a complete color scheme, with the player's remap
@@ -2850,8 +2919,8 @@ struct RemapControlType {
 **	corresponding GroundType structure.
 */
 struct GroundType {
-  fixed Cost[magic_enum::enum_count<SpeedType>()];  // Terrain effect cost
-                                                    // (normal).
+  base::EnumArray<SpeedType, fixed> Cost;  // Terrain effect cost
+                                           // (normal).
   bool Build = false;  // Can build on this terrain?
 };
 
@@ -2873,14 +2942,13 @@ struct PathType {
 */
 inline constexpr int kMaxEvents = 64;
 
-enum KeyFrameType {
-  KF_NUMBER = 0x08,
-  KF_LCW = 0x10,
-  KF_DELTA = 0x20,
-  KF_KEYDELTA = 0x40,
-  KF_KEYFRAME = 0x80,
-  KF_MASK = 0xF0
-};
+// Frame flags in the high byte of a key-frame shape's offset table.
+inline constexpr uint8_t kKfNumber = 0x08;
+inline constexpr uint8_t kKfLcw = 0x10;
+inline constexpr uint8_t kKfDelta = 0x20;
+inline constexpr uint8_t kKfKeyDelta = 0x40;
+inline constexpr uint8_t kKfKeyFrame = 0x80;
+inline constexpr uint8_t kKfMask = 0xF0;
 
 /*
 ** New Config structure for .CFG files
@@ -2901,12 +2969,13 @@ struct NewConfigType {
 **	These are the types of dialogs that can pop up outside of the main loop,
 ** an call the game in the background.
 */
-enum SpecialDialogType {
+enum class SpecialDialogType {
   SDLG_NONE,
   SDLG_OPTIONS,
   SDLG_SURRENDER,
   SDLG_SPECIAL
 };
+using enum SpecialDialogType;
 
 // Palette entry reserved for the mouse cursor; brightness adjustment leaves
 // it alone.

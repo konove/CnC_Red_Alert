@@ -54,39 +54,39 @@ void DescriptionClass::Process(char* string) {
   /*
   **	Set up the window.  Window x-coords are in bytes not pixels.
   */
-  Set_Window(WINDOW_EDITOR, OPTION_X, OPTION_Y, OPTION_WIDTH, OPTION_HEIGHT);
+  Set_Window(WINDOW_EDITOR, kOptionX, kOptionY, kOptionWidth, kOptionHeight);
   Set_Logic_Page(SeenBuff);
 
   /*
   **	Create Buttons.  Button coords are in pixels, but are window-relative.
   */
-  TextButtonClass optionsbtn(BUTTON_OPTIONS, TXT_OK, kTpfButton, 0, BUTTON_Y);
-  TextButtonClass cancelbtn(BUTTON_CANCEL, TXT_CANCEL, kTpfButton, 0, BUTTON_Y);
+  TextButtonClass optionsbtn(kButtonOptions, TXT_OK, kTpfButton, 0, kButtonY);
+  TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL, kTpfButton, 0, kButtonY);
 
-  cancelbtn.X = OPTION_X + (OPTION_WIDTH - optionsbtn.Width) / 3 * 2;
-  optionsbtn.X = OPTION_X + (OPTION_WIDTH - optionsbtn.Width) / 3;
+  cancelbtn.X = kOptionX + (kOptionWidth - optionsbtn.Width) / 3 * 2;
+  optionsbtn.X = kOptionX + (kOptionWidth - optionsbtn.Width) / 3;
   optionsbtn.Add_Tail(cancelbtn);
 
-  EditClass edit(BUTTON_EDIT, string, 31, TPF_6PT_GRAD, 0, EDIT_Y, EDIT_W);
+  EditClass edit(kButtonEdit, string, 31, TPF_6PT_GRAD, 0, kEditY, kEditW);
 
   edit.Set_Focus();
-  edit.X = OPTION_X + (OPTION_WIDTH - edit.Width) / 2,
+  edit.X = kOptionX + (kOptionWidth - edit.Width) / 2,
   optionsbtn.Add_Tail(edit);
 
   /*
   **	This causes left mouse button clicking within the confines of the dialog
   *to *	be ignored if it wasn't recognized by any other button or slider.
   */
-  GadgetClass dialog(OPTION_X, OPTION_Y, OPTION_WIDTH, OPTION_HEIGHT,
-                     GadgetClass::LEFTPRESS);
+  GadgetClass dialog(kOptionX, kOptionY, kOptionWidth, kOptionHeight,
+                     GadgetClass::kLeftPress);
   optionsbtn.Add_Tail(dialog);
 
   /*
   **	This causes a right click anywhere or a left click outside the dialog
   *region *	to be equivalent to clicking on the return to options dialog.
   */
-  ControlClass background(BUTTON_OPTIONS, 0, 0, 320, 200,
-                          GadgetClass::LEFTPRESS | GadgetClass::RIGHTPRESS);
+  ControlClass background(kButtonOptions, 0, 0, 320, 200,
+                          GadgetClass::kLeftPress | GadgetClass::kRightPress);
   optionsbtn.Add_Tail(background);
 
   /*
@@ -110,7 +110,7 @@ void DescriptionClass::Process(char* string) {
       **	Draw the background
       */
       Window_Box(WINDOW_EDITOR, BOXSTYLE_BORDER);  // has border, raised up
-      Draw_Caption(TXT_MISSION_DESCRIPTION, OPTION_X, OPTION_Y, OPTION_WIDTH);
+      Draw_Caption(TXT_MISSION_DESCRIPTION, kOptionX, kOptionY, kOptionWidth);
 
       /*
       **	Draw the titles
@@ -130,19 +130,19 @@ void DescriptionClass::Process(char* string) {
     */
     switch (input) {
       case KN_RETURN:
-      case ButtonKey(BUTTON_OPTIONS):
+      case ButtonKey(kButtonOptions):
         strtrim(string);
         process = false;
         break;
 
       case KN_ESC:
-      case ButtonKey(BUTTON_CANCEL):
+      case ButtonKey(kButtonCancel):
         string[0] = NULL;
         strtrim(string);
         process = false;
         break;
 
-      case ButtonKey(BUTTON_EDIT):
+      case ButtonKey(kButtonEdit):
         break;
 
       default:

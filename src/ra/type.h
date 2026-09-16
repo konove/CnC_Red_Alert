@@ -50,6 +50,7 @@
 #include <vector>
 
 #include "absl/base/attributes.h"
+#include "base/enum_array.h"
 #include "port/ex_string.h"
 #include "ra/ccini.h"
 #include "ra/defines.h"
@@ -788,7 +789,7 @@ class BuildingTypeClass : public TechnoTypeClass {
     int Rate;   // Number of ticks to delay between each frame.
   } AnimControlType;
   // Resolved when the theater loads; the table itself stays const.
-  mutable AnimControlType Anims[magic_enum::enum_count<BStateType>()]{};
+  mutable base::EnumArray<BStateType, AnimControlType> Anims{};
 
   /*---------------------------------------------------------------------------
   **	This is the building type explicit constructor.

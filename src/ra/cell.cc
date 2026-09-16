@@ -115,7 +115,6 @@
 #include "ra/externs.h"
 #include "ra/foot.h"
 #include "ra/globals.h"
-#include "ra/heap.h"
 #include "ra/house.h"
 #include "ra/infantry.h"
 #include "ra/inline.h"
@@ -173,8 +172,7 @@ CellClass::CellClass()
     : ID(static_cast<int16_t>(Map.ID(this))),
 
       Trigger(nullptr) {
-  for (int zone = 0; std::cmp_less(zone, magic_enum::enum_count<MZoneType>());
-       zone++) {
+  for (const MZoneType zone : magic_enum::enum_values<MZoneType>()) {
     Zones[zone] = 0;
   }
   Flag.Composite = 0;
@@ -209,7 +207,7 @@ int CellClass::Cell_Color(bool override) const {
   }
 
   if (override) {
-    return TBLACK;
+    return kTBlack;
   }
   if (LastTheater == THEATER_SNOW) {
     return SnowColor[Land_Type()];
@@ -586,7 +584,7 @@ void CellClass::Recalc_Attributes() {
   **	If there is a template associated with this cell, then fetch the
   **	land type given the template type and icon number.
   */
-  if (TType != TEMPLATE_NONE && TType != 255) {
+  if (TType != TEMPLATE_NONE && TType != static_cast<TemplateType>(255)) {
     const TemplateTypeClass* ttype = &TemplateTypeClass::As_Reference(TType);
     Land = ttype->Land_Type(TIcon);
     return;
@@ -903,14 +901,14 @@ InfantryClass* CellClass::Cell_Infantry() const {
 // Only the cell-sorted renderer draws partial cells, hence maybe_unused.
 [[maybe_unused]] static bool Calc_Partial_Window(int cellx, int celly,
                                                  int& drawx, int& drawy) {
-  int& px = WindowList[WINDOW_PARTIAL][WINDOWX];
-  int& py = WindowList[WINDOW_PARTIAL][WINDOWY];
-  int& pw = WindowList[WINDOW_PARTIAL][WINDOWWIDTH];
-  int& ph = WindowList[WINDOW_PARTIAL][WINDOWHEIGHT];
-  const int& tx = WindowList[WINDOW_TACTICAL][WINDOWX];
-  const int& ty = WindowList[WINDOW_TACTICAL][WINDOWY];
-  const int& tw = WindowList[WINDOW_TACTICAL][WINDOWWIDTH];
-  const int& th = WindowList[WINDOW_TACTICAL][WINDOWHEIGHT];
+  int& px = WindowList[static_cast<int>(WINDOW_PARTIAL)][kWindowX];
+  int& py = WindowList[static_cast<int>(WINDOW_PARTIAL)][kWindowY];
+  int& pw = WindowList[static_cast<int>(WINDOW_PARTIAL)][kWindowWidth];
+  int& ph = WindowList[static_cast<int>(WINDOW_PARTIAL)][kWindowHeight];
+  const int& tx = WindowList[static_cast<int>(WINDOW_TACTICAL)][kWindowX];
+  const int& ty = WindowList[static_cast<int>(WINDOW_TACTICAL)][kWindowY];
+  const int& tw = WindowList[static_cast<int>(WINDOW_TACTICAL)][kWindowWidth];
+  const int& th = WindowList[static_cast<int>(WINDOW_TACTICAL)][kWindowHeight];
 
   px = cellx + tx;
   py = celly + ty;
@@ -990,7 +988,8 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
     /*
     **	Fetch a pointer to the template type associated with this cell.
     */
-    if (TType != TEMPLATE_NONE && TType != TEMPLATE_CLEAR1 && TType != 255) {
+    if (TType != TEMPLATE_NONE && TType != TEMPLATE_CLEAR1 &&
+        TType != static_cast<TemplateType>(255)) {
       ttype = &TemplateTypeClass::As_Reference(TType);
       icon = TIcon;
     } else {
@@ -1015,7 +1014,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
       FontXSpacing -= 2;
       Fancy_Text_Print(
           "%02X%02X\r%d%d%d\r%d %d", Map.TacPixelX + x + (ICON_PIXEL_W >> 1),
-          Map.TacPixelY + y, &GreyScheme, TBLACK,
+          Map.TacPixelY + y, &GreyScheme, kTBlack,
           TPF_EFNT | TPF_CENTER | TPF_BRIGHT_COLOR | TPF_FULLSHADOW,
           Cell_Y(cell), Cell_X(cell), Zones[MZONE_NORMAL], Zones[MZONE_CRUSHER],
           Zones[MZONE_DESTROYER], Overlay, OverlayData);
@@ -1026,12 +1025,13 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
         **	Set up the remap table for this icon.
         */
         if (MapEditorActive && Debug_Passable) {
-          if (::Ground[Land].Cost[0] == 0 ||
+          if (::Ground[Land].Cost[SPEED_FOOT] == 0 ||
               (Cell_Occupier() != nullptr &&
                Cell_Occupier()->What_Am_I() != RTTI_INFANTRY)) {  // impassable
             remap = DisplayClass::FadingRed;
           } else {
-            if (::Ground[Land].Cost[0] > fixed(1, 3)) {  // pretty passable
+            if (::Ground[Land].Cost[SPEED_FOOT] >
+                fixed(1, 3)) {  // pretty passable
               remap = DisplayClass::FadingGreen;
             } else {
               remap = DisplayClass::FadingYellow;  // moderately passable
@@ -1045,7 +1045,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
       */
       if (ttype->Get_Image_Data()) {
         LogicPage->Draw_Stamp(ttype->Get_Image_Data(), icon, x, y, nullptr,
-                              WINDOW_TACTICAL);
+                              static_cast<int>(WINDOW_TACTICAL));
         if (remap) {
           LogicPage->Remap(x + Map.TacPixelX, y + Map.TacPixelY, ICON_PIXEL_W,
                            ICON_PIXEL_H, remap);
@@ -1062,7 +1062,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
         if (MapEditorActive && CurrentCell == Cell_Number()) {
           LogicPage->Draw_Rect(x + Map.TacPixelX, y + Map.TacPixelY,
                                Map.TacPixelX + x + CELL_PIXEL_W - 1,
-                               Map.TacPixelY + y + CELL_PIXEL_H - 1, YELLOW);
+                               Map.TacPixelY + y + CELL_PIXEL_H - 1, kYellow);
         }
       }
 
@@ -1097,7 +1097,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
           if (Trigger.Is_Valid()) {
             Fancy_Text_Print(Trigger->Class->IniName, x + Map.TacPixelX,
                              y + Map.TacPixelY, &ColorRemaps[PCOLOR_RED],
-                             TBLACK, TPF_EFNT | TPF_FULLSHADOW);
+                             kTBlack, TPF_EFNT | TPF_FULLSHADOW);
           }
 
           /*
@@ -1117,7 +1117,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
                 }
                 Fancy_Text_Print(waypt, Map.TacPixelX + x + (CELL_PIXEL_W / 2),
                                  Map.TacPixelY + y + (CELL_PIXEL_H / 2) - 3,
-                                 &ColorRemaps[PCOLOR_RED], TBLACK,
+                                 &ColorRemaps[PCOLOR_RED], kTBlack,
                                  TPF_EFNT | TPF_CENTER | TPF_FULLSHADOW);
                 break;
               }
@@ -1125,14 +1125,14 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
             if (Scen.Waypoint[ScenarioClass::kHomeWaypoint] == Cell_Number()) {
               Fancy_Text_Print("Home", Map.TacPixelX + x,
                                Map.TacPixelY + y + (CELL_PIXEL_H)-7,
-                               &ColorRemaps[PCOLOR_GREY], TBLACK,
+                               &ColorRemaps[PCOLOR_GREY], kTBlack,
                                TPF_EFNT | TPF_FULLSHADOW);
             }
             if (Scen.Waypoint[ScenarioClass::kReinforcementWaypoint] ==
                 Cell_Number()) {
               Fancy_Text_Print("Reinf", Map.TacPixelX + x,
                                Map.TacPixelY + y + (CELL_PIXEL_H)-7,
-                               &ColorRemaps[PCOLOR_GREY], TBLACK,
+                               &ColorRemaps[PCOLOR_GREY], kTBlack,
                                TPF_EFNT | TPF_FULLSHADOW);
             }
           }
@@ -1160,10 +1160,10 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
         */
         if (Map.ProximityCheck && Is_Clear_To_Build(loco)) {
           LogicPage->Draw_Stamp(DisplayClass::TransIconset, 0, x, y, nullptr,
-                                WINDOW_TACTICAL);
+                                static_cast<int>(WINDOW_TACTICAL));
         } else {
           LogicPage->Draw_Stamp(DisplayClass::TransIconset, 2, x, y, nullptr,
-                                WINDOW_TACTICAL);
+                                static_cast<int>(WINDOW_TACTICAL));
         }
 
         if constexpr (config::kScenarioEditorEnabled) {
@@ -1187,7 +1187,8 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
                                               Map.ZoneCell + Map.ZoneOffset))) *
                           tptr->Width);
                   LogicPage->Draw_Stamp(tptr->Get_Image_Data(), icon, x, y,
-                                        nullptr, WINDOW_TACTICAL);
+                                        nullptr,
+                                        static_cast<int>(WINDOW_TACTICAL));
                 }
                 break;
               }
@@ -1952,8 +1953,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
     *used as *	the base pool to determine the odds from.
     */
     int total_shares = 0;
-    for (int index = 0;
-         std::cmp_less(index, magic_enum::enum_count<CrateType>()); index++) {
+    for (const CrateType index : magic_enum::enum_values<CrateType>()) {
       total_shares += CrateShares[index];
     }
 
@@ -2082,7 +2082,9 @@ bool CellClass::Goodie_Check(FootClass* object) {
                    i < Session.Players.Count() + Session.Options.AIPlayers;
                    i++) {
                 int ucount = 0;
-                HouseClass* hptr = Houses.Ptr(i + HOUSE_MULTI1);
+                HouseClass* hptr =
+                    HouseClass::As_Pointer(static_cast<HousesType>(
+                        i + static_cast<int>(HOUSE_MULTI1)));
                 if (hptr != nullptr && !hptr->IsDefeated) {
                   for (int j = 0;
                        std::cmp_less(j, magic_enum::enum_count<UnitType>());
@@ -2105,9 +2107,8 @@ bool CellClass::Goodie_Check(FootClass* object) {
                     ucount += hptr->QuantityV(j);
                   }
                   int bcount = 0;
-                  for (int j = 0;
-                       std::cmp_less(j, magic_enum::enum_count<StructType>());
-                       j++) {
+                  // BQuantity is three entries short of the type count.
+                  for (int j = 0; j < HouseClass::kBuildingQuantityCount; j++) {
                     bcount += hptr->QuantityB(j);
                   }
                   ucount += bcount / 2;  // weight buildings less
@@ -2177,7 +2178,8 @@ bool CellClass::Goodie_Check(FootClass* object) {
     ** Keep track of the number of each type of crate found
     */
     if (Session.Type == GAME_INTERNET) {
-      object->House->TotalCrates->Increment_Unit_Total(powerup);
+      object->House->TotalCrates->Increment_Unit_Total(
+          static_cast<int>(powerup));
     }
 
     /*
@@ -2342,7 +2344,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
       case CRATE_PARA_BOMB:
         if (object->House->SuperWeapon[SPC_PARA_BOMB].Enable(true) &&
             object->IsOwnedByPlayer) {
-          Map.Add(RTTI_SPECIAL, SPC_PARA_BOMB);
+          Map.Add(RTTI_SPECIAL, static_cast<int>(SPC_PARA_BOMB));
           Map.Column[1].Flag_To_Redraw();
         }
 
@@ -2354,7 +2356,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
       case CRATE_SONAR:
         if (object->House->SuperWeapon[SPC_SONAR_PULSE].Enable(true) &&
             object->IsOwnedByPlayer) {
-          Map.Add(RTTI_SPECIAL, SPC_SONAR_PULSE);
+          Map.Add(RTTI_SPECIAL, static_cast<int>(SPC_SONAR_PULSE));
           Map.Column[1].Flag_To_Redraw();
         }
 
@@ -2427,7 +2429,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
       case CRATE_ICBM:
         if (object->House->SuperWeapon[SPC_NUCLEAR_BOMB].Enable(true) &&
             object->IsOwnedByPlayer) {
-          Map.Add(RTTI_SPECIAL, SPC_NUCLEAR_BOMB);
+          Map.Add(RTTI_SPECIAL, static_cast<int>(SPC_NUCLEAR_BOMB));
           Map.Column[1].Flag_To_Redraw();
         }
 

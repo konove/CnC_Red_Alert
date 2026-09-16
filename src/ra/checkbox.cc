@@ -44,7 +44,6 @@
 #include "ra/compat.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
-#include "ra/gadget.h"
 #include "ra/toggle.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
@@ -73,7 +72,7 @@ bool CheckBoxClass::Draw_Me(bool forced) {
     LogicPage->Fill_Rect(X + 1, Y + 1, X + Width - 2, Y + Height - 2, DKGREY);
     if (IsOn) {
       LogicPage->Fill_Rect(X + 1, Y + 1, X + Width - 2, Y + Height - 2,
-                           LTGREEN);
+                           kLtGreen);
     }
     Show_Mouse();
     return true;
@@ -99,7 +98,7 @@ bool CheckBoxClass::Draw_Me(bool forced) {
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
 bool CheckBoxClass::Action(unsigned flags, KeyNumType& key) {
-  if (flags & LEFTRELEASE) {
+  if (flags & kLeftRelease) {
     if (IsOn) {
       Turn_Off();
     } else {

@@ -77,9 +77,10 @@ class PowerClass : public RadarClass {
   class PowerButtonClass : public GadgetClass {
    public:
     PowerButtonClass() noexcept
-        : GadgetClass(0, 0, 0, 0,
-                      LEFTPRESS | LEFTRELEASE | LEFTHELD | LEFTUP | RIGHTPRESS,
-                      true) {}
+        : GadgetClass(
+              0, 0, 0, 0,
+              kLeftPress | kLeftRelease | kLeftHeld | kLeftUp | kRightPress,
+              true) {}
 
    protected:
     bool Action(unsigned flags, KeyNumType& key) override;
@@ -92,16 +93,14 @@ class PowerClass : public RadarClass {
   */
   static PowerButtonClass PowerButton;
 
-  enum PowerEnums {
-    POWER_X = 10 * ICON_PIXEL_W,
-    POWER_Y = 7 + 70 + 13,
-    POWER_HEIGHT = 200 - (7 + 70 + 13),
-    POWER_WIDTH = 8,
-    POWER_LINE_SPACE = 5,
-    POWER_LINE_WIDTH = 3,
-    POWER_STEP_LEVEL = 100,
-    POWER_STEP_FACTOR = 5
-  };
+  static constexpr int kPowerX = 10 * ICON_PIXEL_W;
+  static constexpr int kPowerY = 7 + 70 + 13;
+  static constexpr int kPowerHeight = 200 - (7 + 70 + 13);
+  static constexpr int kPowerWidth = 8;
+  static constexpr int kPowerLineSpace = 5;
+  static constexpr int kPowerLineWidth = 3;
+  static constexpr int kPowerStepLevel = 100;
+  static constexpr int kPowerStepFactor = 5;
 
  private:
   static int Power_Height(int value);

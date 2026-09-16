@@ -99,7 +99,7 @@ TextButtonClass::TextButtonClass(unsigned id, const char* text,
       String(text),
       PrintFlags(style) {
   if (w == -1 || h == -1) {
-    Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, PrintFlags);
+    Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack, PrintFlags);
     if (w == -1) {
       Width = String_Pixel_Width(String) + 8;
     }
@@ -165,7 +165,7 @@ TextButtonClass::TextButtonClass(unsigned id, int text, TextPrintType style,
   Set_Text(text);
 
   if (w == -1 || h == -1) {
-    Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, PrintFlags);
+    Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack, PrintFlags);
     if (w == -1) {
       Width = String_Pixel_Width(String) + 8;
     }
@@ -238,7 +238,7 @@ void TextButtonClass::Set_Text(const char* text, bool resize) {
   String = text;
   Flag_To_Redraw();
   if (resize && String) {
-    Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, PrintFlags);
+    Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack, PrintFlags);
     Width = String_Pixel_Width(String) + 8;
     Height = FontHeight + FontYSpacing + 2;
   }
@@ -289,7 +289,7 @@ void TextButtonClass::Draw_Background() {
   **	Draw a border if selected style.
   */
   if (IsBlackBorder) {
-    LogicPage->Draw_Rect(X - 1, Y - 1, X + Width + 2, Y + Height + 2, BLACK);
+    LogicPage->Draw_Rect(X - 1, Y - 1, X + Width + 2, Y + Height + 2, kBlack);
   }
 
   /*
@@ -336,7 +336,7 @@ void TextButtonClass::Draw_Text(const char* text) {
                                : TPF_USE_GRAD_PAL | TPF_MEDIUM_COLOR;
     }();
 
-    Fancy_Text_Print(text, X + (Width / 2) - 1, Y + 1, scheme, TBLACK,
+    Fancy_Text_Print(text, X + (Width / 2) - 1, Y + 1, scheme, kTBlack,
                      PrintFlags | flags | TPF_CENTER);
   }
 }

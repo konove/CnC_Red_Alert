@@ -149,13 +149,11 @@ const char* SimpleEditDlgClass::Show() {
   /*
   **	Button enumerations
   */
-  enum {
-    BUTTON_OK = 100,
-    BUTTON_CANCEL,
-    BUTTON_MIDDLE,
-    BUTTON_EDIT,
-    BUTTON_EDIT2
-  };
+  constexpr int kButtonOk = 100;
+  constexpr int kButtonCancel = 101;
+  constexpr int kButtonMiddle = 102;
+  constexpr int kButtonEdit = 103;
+  constexpr int kButtonEdit2 = 104;
 
   /*
   **	Dialog variables
@@ -167,20 +165,20 @@ const char* SimpleEditDlgClass::Show() {
   */
   ControlClass* commands = nullptr;  // the button list
 
-  TextButtonClass OkBtn(BUTTON_OK, szOkButton, kTpfButton, d_ok_x, d_ok_y,
+  TextButtonClass OkBtn(kButtonOk, szOkButton, kTpfButton, d_ok_x, d_ok_y,
                         d_ok_w);
-  TextButtonClass CancelBtn(BUTTON_CANCEL, szCancelButton, kTpfButton,
+  TextButtonClass CancelBtn(kButtonCancel, szCancelButton, kTpfButton,
                             d_cancel_x, d_cancel_y, d_cancel_w);
-  TextButtonClass MiddleBtn(BUTTON_MIDDLE, szMiddleButton, kTpfButton, d_mid_x,
+  TextButtonClass MiddleBtn(kButtonMiddle, szMiddleButton, kTpfButton, d_mid_x,
                             d_mid_y, d_mid_w);
 
   WOLEditClass EditBox(
-      BUTTON_EDIT, szEdit,
+      kButtonEdit, szEdit,
       std::min(static_cast<int>(sizeof(szEdit)), iEditCharsAccept),
       TPF_6PT_GRAD | TPF_NOSHADOW, d_edit_x, d_edit_y, d_edit_w, -1,
       EditClass::kAlphanumeric);
   WOLEditClass EditBox2(
-      BUTTON_EDIT2, szEdit2,
+      kButtonEdit2, szEdit2,
       std::min(static_cast<int>(sizeof(szEdit2)), iEditCharsAccept2),
       TPF_6PT_GRAD | TPF_NOSHADOW, d_edit2_x, d_edit2_y, d_edit2_w, -1,
       EditClass::kAlphanumeric);
@@ -234,10 +232,10 @@ const char* SimpleEditDlgClass::Show() {
       **	Redraw the buttons.
       */
       Fancy_Text_Print(szPrompt.c_str(), d_prompt_x, d_prompt_y,
-                       GadgetClass::Get_Color_Scheme(), TBLACK, kTpfText);
+                       GadgetClass::Get_Color_Scheme(), kTBlack, kTpfText);
       if (!szPrompt2.empty()) {
         Fancy_Text_Print(szPrompt2.c_str(), d_prompt2_x, d_prompt2_y,
-                         GadgetClass::Get_Color_Scheme(), TBLACK, kTpfText);
+                         GadgetClass::Get_Color_Scheme(), kTBlack, kTpfText);
       }
       commands->Flag_List_To_Redraw();
       Show_Mouse();
@@ -268,20 +266,20 @@ const char* SimpleEditDlgClass::Show() {
     if (KeyboardClass::Down(KN_ESC)) {
       bEscapeDown = true;
     } else if (bEscapeDown) {
-      input = ButtonKey(BUTTON_CANCEL);
+      input = ButtonKey(kButtonCancel);
       bEscapeDown = false;
     }
     if (KeyboardClass::Down(KN_RETURN)) {
       bReturnDown = true;
     } else if (bReturnDown) {
-      input = ButtonKey(BUTTON_OK);
+      input = ButtonKey(kButtonOk);
       bReturnDown = false;
     }
 
     //	I really hate to do this, but...      ajw
     if (cancel_current_msgbox) {
       cancel_current_msgbox = false;
-      input = ButtonKey(BUTTON_CANCEL);
+      input = ButtonKey(kButtonCancel);
     }
 
     if (disable_current_msgbox) {
@@ -310,19 +308,19 @@ const char* SimpleEditDlgClass::Show() {
     */
     switch (static_cast<int>(input)) {
         //		case ( KN_ESC ):
-      case ButtonKey(BUTTON_CANCEL):
+      case ButtonKey(kButtonCancel):
         szReturn = szCancelButton;
         process = false;
         break;
 
         //		case KN_RETURN:
-      case ButtonKey(BUTTON_EDIT):  //	(Return pressed while on edit.)
-      case ButtonKey(BUTTON_OK):
+      case ButtonKey(kButtonEdit):  //	(Return pressed while on edit.)
+      case ButtonKey(kButtonOk):
         szReturn = szOkButton;
         process = false;
         break;
 
-      case ButtonKey(BUTTON_MIDDLE):
+      case ButtonKey(kButtonMiddle):
         szReturn = szMiddleButton;
         process = false;
         break;

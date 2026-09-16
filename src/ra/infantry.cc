@@ -108,6 +108,7 @@
 #include <utility>
 
 #include "absl/strings/str_format.h"
+#include "base/enum_array.h"
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/tokenizer.h"
@@ -166,30 +167,29 @@ const int InfantryClass::HumanShape[32] = {0, 0, 7, 7, 7, 7, 6, 6, 6, 6, 5,
 **	specifies the frame rate as well as if the animation can be aborted.
 */
 // interruptible, mobile, randomstart, rate
-const DoStruct
-    InfantryClass::MasterDoControls[magic_enum::enum_count<DoType>()] = {
-        {true, false, false, 0},   // DO_STAND_READY
-        {true, false, false, 0},   // DO_STAND_GUARD
-        {true, false, false, 0},   // DO_PRONE
-        {true, true, true, 2},     // DO_WALK
-        {true, false, false, 1},   // DO_FIRE_WEAPON
-        {false, true, false, 2},   // DO_LIE_DOWN
-        {true, true, true, 2},     // DO_CRAWL
-        {false, false, false, 3},  // DO_GET_UP
-        {true, false, false, 1},   // DO_FIRE_PRONE
-        {true, false, false, 2},   // DO_IDLE1
-        {true, false, false, 2},   // DO_IDLE2
-        {false, false, false, 2},  // DO_GUN_DEATH
-        {false, false, false, 2},  // DO_EXPLOSION_DEATH
-        {false, false, false, 2},  // DO_EXPLOSION2_DEATH
-        {false, false, false, 2},  // DO_GRENADE_DEATH
-        {false, false, false, 2},  // DO_FIRE_DEATH
-        {false, false, false, 2},  // DO_GESTURE1
-        {false, false, false, 2},  // DO_SALUTE1
-        {false, false, false, 2},  // DO_GESTURE2
-        {false, false, false, 2},  // DO_SALUTE2
-        {false, false, false, 2},  // DO_DOG_MAUL
-};
+const base::EnumArray<DoType, DoStruct> InfantryClass::MasterDoControls = {{
+    {true, false, false, 0},   // DO_STAND_READY
+    {true, false, false, 0},   // DO_STAND_GUARD
+    {true, false, false, 0},   // DO_PRONE
+    {true, true, true, 2},     // DO_WALK
+    {true, false, false, 1},   // DO_FIRE_WEAPON
+    {false, true, false, 2},   // DO_LIE_DOWN
+    {true, true, true, 2},     // DO_CRAWL
+    {false, false, false, 3},  // DO_GET_UP
+    {true, false, false, 1},   // DO_FIRE_PRONE
+    {true, false, false, 2},   // DO_IDLE1
+    {true, false, false, 2},   // DO_IDLE2
+    {false, false, false, 2},  // DO_GUN_DEATH
+    {false, false, false, 2},  // DO_EXPLOSION_DEATH
+    {false, false, false, 2},  // DO_EXPLOSION2_DEATH
+    {false, false, false, 2},  // DO_GRENADE_DEATH
+    {false, false, false, 2},  // DO_FIRE_DEATH
+    {false, false, false, 2},  // DO_GESTURE1
+    {false, false, false, 2},  // DO_SALUTE1
+    {false, false, false, 2},  // DO_GESTURE2
+    {false, false, false, 2},  // DO_SALUTE2
+    {false, false, false, 2},  // DO_DOG_MAUL
+}};
 
 /***********************************************************************************************
  * InfantryClass::Debug_Dump -- Displays debug information about infantry unit.
@@ -249,7 +249,7 @@ void InfantryClass::Debug_Dump(MonoClass* mono) const {
  *=============================================================================================*/
 InfantryClass::InfantryClass(InfantryType classid, HousesType house)
     : FootClass(RTTI_INFANTRY, Infantry.ID(this), house),
-      Class(InfantryTypes.Ptr(classid)) {
+      Class(InfantryTypes.Ptr(static_cast<int>(classid))) {
   House->Tracking_Add(this);
   IsCloakable = Class->IsCloakable;
   /*
@@ -510,15 +510,15 @@ ResultType InfantryClass::Take_Damage(int& damage, int distance,
       **	Increase the fear of the infantry by a bit. The fear increases
       *more *	quickly if the infantry is damaged.
       */
-      int morefear = FEAR_ANXIOUS;
+      int morefear = static_cast<int>(FEAR_ANXIOUS);
       if (Health_Ratio() > Rule.ConditionRed) {
         morefear /= 2;
       }
       if (Health_Ratio() > Rule.ConditionYellow) {
         morefear /= 2;
       }
-      Fear = static_cast<FearType>(
-          std::min(Fear + morefear, static_cast<int>(FEAR_MAXIMUM)));
+      Fear = static_cast<FearType>(std::min(static_cast<int>(Fear) + morefear,
+                                            static_cast<int>(FEAR_MAXIMUM)));
     }
   }
   return res;
@@ -555,23 +555,25 @@ int InfantryClass::Shape_Number() const {
   **	The infantry shape is always modulo the number of animation frames
   **	of the action stage that the infantry is doing.
   */
-  int shapenum = Fetch_Stage() %
-                 std::max(static_cast<int>(Class->DoControls[doit].Count), 1);
+  int shapenum =
+      Fetch_Stage() %
+      std::max(
+          static_cast<int>(Class->DoControls[static_cast<int>(doit)].Count), 1);
 
   /*
   **	If facing makes a difference, then the shape number will be incremented
   **	by the facing accordingly.
   */
-  if (Class->DoControls[doit].Jump) {
+  if (Class->DoControls[static_cast<int>(doit)].Jump) {
     shapenum += HumanShape[Dir_To_32(PrimaryFacing.Current())] *
-                Class->DoControls[doit].Jump;
+                Class->DoControls[static_cast<int>(doit)].Jump;
   }
 
   /*
   **	Finally, the shape number is biased according to the starting frame
   *number for *	that action in the infantry shape file.
   */
-  shapenum += Class->DoControls[doit].Frame;
+  shapenum += Class->DoControls[static_cast<int>(doit)].Frame;
 
   /*
   **	Return with the final infantry shape number.
@@ -724,7 +726,7 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
               if (build == STRUCT_SUB_PEN) {
                 House->SuperWeapon[SPC_SONAR_PULSE].Enable(false, true, false);
                 if (IsOwnedByPlayer) {
-                  Map.Add(RTTI_SPECIAL, SPC_SONAR_PULSE);
+                  Map.Add(RTTI_SPECIAL, static_cast<int>(SPC_SONAR_PULSE));
                   Map.Column[1].Flag_To_Redraw();
                 }
               }
@@ -1870,12 +1872,13 @@ bool InfantryClass::Do_Action(DoType todo, bool force) {
   assert(Infantry.ID(this) == ID);
   assert(IsActive);
 
-  if (todo == DO_NOTHING || Class->DoControls[todo].Count == 0) {
+  if (todo == DO_NOTHING ||
+      Class->DoControls[static_cast<int>(todo)].Count == 0) {
     return false;
   }
 
   if (*this == INFANTRY_SPY && todo >= DO_GESTURE1) {
-    todo = static_cast<DoType>(DO_IDLE1 + Random_Pick(0, 1));
+    todo = static_cast<DoType>(static_cast<int>(DO_IDLE1) + Random_Pick(0, 1));
   }
 
   if (todo != Doing &&
@@ -2135,8 +2138,8 @@ bool InfantryClass::Unlimbo(COORDINATE coord, DirType facing) {
     **	Ensure that the owning house knows about the
     **	new object.
     */
-    House->IScan |= ScanBit(Class->Type);
-    House->ActiveIScan |= ScanBit(Class->Type);
+    House->IScan |= ScanBit(static_cast<int>(Class->Type));
+    House->ActiveIScan |= ScanBit(static_cast<int>(Class->Type));
 
     /*
     **	If there is no sight range, then this object isn't discovered by the
@@ -3296,14 +3299,14 @@ void InfantryClass::Fear_AI() {
   /*
   **	After a time, the infantry will gain courage.
   */
-  if (Fear > 0) {
+  if (Fear != FEAR_NONE) {
     Fear--;
 
     /*
     **	When an armed civilian becomes unafraid, he will then reload
     **	another clip into his pistol.
     */
-    if (Fear == 0 && Ammo == 0 && Is_Weapon_Equipped()) {
+    if (Fear == FEAR_NONE && Ammo == 0 && Is_Weapon_Equipped()) {
       Ammo = Class->MaxAmmo;
     }
 
@@ -3502,7 +3505,8 @@ void InfantryClass::Firing_AI() {
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
 void InfantryClass::Doing_AI() {
-  if (Doing == DO_NOTHING || Fetch_Stage() >= Class->DoControls[Doing].Count) {
+  if (Doing == DO_NOTHING ||
+      Fetch_Stage() >= Class->DoControls[static_cast<int>(Doing)].Count) {
     switch (Doing) {
       default:
         if (IsDriving) {
@@ -3544,7 +3548,7 @@ void InfantryClass::Doing_AI() {
       case DO_EXPLOSION2_DEATH:
       case DO_GRENADE_DEATH:
       case DO_FIRE_DEATH:
-        if (Fetch_Stage() >= Class->DoControls[Doing].Count) {
+        if (Fetch_Stage() >= Class->DoControls[static_cast<int>(Doing)].Count) {
           if (Doing == DO_GUN_DEATH && !Class->IsDog && Height == 0) {
             new AnimClass(ANIM_CORPSE1,
                           Coord_Add(Center_Coord(), XYP_Coord(-2, 4)));
@@ -3717,7 +3721,7 @@ void InfantryClass::Movement_AI() {
             Stop_Driver();
             return;
           }
-          TryTryAgain = PATH_RETRY;
+          TryTryAgain = kPathRetry;
         }
 
         /*
@@ -3854,16 +3858,17 @@ void InfantryClass::Movement_AI() {
         **	Advance the infantry as far as it should go.
         */
         MPHType maxspeed = static_cast<MPHType>(
-            std::min(Class->MaxSpeed * SpeedBias * House->GroundspeedBias,
+            std::min(static_cast<int>(Class->MaxSpeed) * SpeedBias *
+                         House->GroundspeedBias,
                      static_cast<int>(MPH_LIGHT_SPEED)));
 
         if (IsFormationMove) {
           maxspeed = FormationMaxSpeed;
         }
 
-        Coord =
-            Coord_Move(Coord, Direction(Head_To_Coord()),
-                       static_cast<uint16_t>(maxspeed * fixed(movespeed, 256)));
+        Coord = Coord_Move(Coord, Direction(Head_To_Coord()),
+                           static_cast<uint16_t>(static_cast<int>(maxspeed) *
+                                                 fixed(movespeed, 256)));
       }
       Mark(MARK_DOWN);
     }

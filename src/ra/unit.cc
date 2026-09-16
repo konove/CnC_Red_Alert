@@ -119,6 +119,7 @@
 #include <iterator>
 
 #include "absl/strings/str_format.h"
+#include "base/enum_array.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/tokenizer.h"
 #include "ra/anim.h"
@@ -320,7 +321,7 @@ UnitClass::~UnitClass() {
  *=============================================================================================*/
 UnitClass::UnitClass(UnitType classid, HousesType house)
     : DriveClass(RTTI_UNIT, Units.ID(this), house),
-      Class(UnitTypes.Ptr(classid)),
+      Class(UnitTypes.Ptr(static_cast<int>(classid))),
       SecondaryFacing(PrimaryFacing) {
   Reload.Set(0);
   House->Tracking_Add(this);
@@ -949,8 +950,8 @@ bool UnitClass::Unlimbo(COORDINATE coord, DirType dir) {
     **	Ensure that the owning house knows about the
     **	new object.
     */
-    House->UScan |= ScanBit(Class->Type);
-    House->ActiveUScan |= ScanBit(Class->Type);
+    House->UScan |= ScanBit(static_cast<int>(Class->Type));
+    House->ActiveUScan |= ScanBit(static_cast<int>(Class->Type));
 
     /*
     **	If it starts off the edge of the map, then it already starts cloaked.
@@ -2343,7 +2344,11 @@ int UnitClass::Mission_Unload() {
   assert(Units.ID(this) == ID);
   assert(IsActive);
 
-  enum { INITIAL_CHECK, MANEUVERING, OPENING_DOOR, UNLOADING, CLOSING_DOOR };
+  constexpr int kInitialCheck = 0;
+  constexpr int kManeuvering = 1;
+  constexpr int kOpeningDoor = 2;
+  constexpr int kUnloading = 3;
+  constexpr int kClosingDoor = 4;
   DirType dir = DIR_N;
   CELL cell = 0;
 
@@ -2380,24 +2385,24 @@ int UnitClass::Mission_Unload() {
 
     case UNIT_TRUCK:
       switch (Status) {
-        case INITIAL_CHECK:
+        case kInitialCheck:
           dir = Desired_Load_Dir(nullptr, cell);
           if (How_Many() && cell != 0) {
             Do_Turn(dir);
-            Status = MANEUVERING;
+            Status = kManeuvering;
             return 1;
           }
           Assign_Mission(MISSION_GUARD);
           break;
 
-        case MANEUVERING:
+        case kManeuvering:
           if (!IsRotating) {
-            Status = UNLOADING;
+            Status = kUnloading;
             return 1;
           }
           break;
 
-        case UNLOADING:
+        case kUnloading:
           if (How_Many()) {
             FootClass* passenger = Detach_Object();
 
@@ -2428,18 +2433,18 @@ int UnitClass::Mission_Unload() {
               */
               if (!placed) {
                 Attach(passenger);
-                Status = CLOSING_DOOR;
+                Status = kClosingDoor;
               }
             }
           } else {
-            Status = CLOSING_DOOR;
+            Status = kClosingDoor;
           }
           break;
 
         /*
         **	Close APC door in preparation for normal operation.
         */
-        case CLOSING_DOOR:
+        case kClosingDoor:
           Assign_Mission(MISSION_GUARD);
           break;
         default:
@@ -2450,37 +2455,37 @@ int UnitClass::Mission_Unload() {
     case UNIT_APC:
     case UNIT_PHASE:
       switch (Status) {
-        case INITIAL_CHECK:
+        case kInitialCheck:
           dir = Desired_Load_Dir(nullptr, cell);
           if (How_Many() && cell != 0) {
             Do_Turn(dir);
-            Status = MANEUVERING;
+            Status = kManeuvering;
             return 1;
           }
           Assign_Mission(MISSION_GUARD);
           break;
 
-        case MANEUVERING:
+        case kManeuvering:
           if (!IsRotating) {
             APC_Open_Door();
             if (Is_Door_Opening()) {
-              Status = OPENING_DOOR;
+              Status = kOpeningDoor;
               return 1;
             }
           }
           break;
 
-        case OPENING_DOOR:
+        case kOpeningDoor:
           if (Is_Door_Open()) {
-            Status = UNLOADING;
+            Status = kUnloading;
             return 1;
           }
           if (!Is_Door_Opening()) {
-            Status = INITIAL_CHECK;
+            Status = kInitialCheck;
           }
           break;
 
-        case UNLOADING:
+        case kUnloading:
           if (How_Many()) {
             FootClass* passenger = Detach_Object();
 
@@ -2511,18 +2516,18 @@ int UnitClass::Mission_Unload() {
               */
               if (!placed) {
                 Attach(passenger);
-                Status = CLOSING_DOOR;
+                Status = kClosingDoor;
               }
             }
           } else {
-            Status = CLOSING_DOOR;
+            Status = kClosingDoor;
           }
           break;
 
         /*
         **	Close APC door in preparation for normal operation.
         */
-        case CLOSING_DOOR:
+        case kClosingDoor:
           if (Is_Door_Open()) {
             APC_Close_Door();
           }
@@ -2571,37 +2576,37 @@ int UnitClass::Mission_Unload() {
 
     case UNIT_MINELAYER:
       switch (Status) {
-        case INITIAL_CHECK:
+        case kInitialCheck:
           dir = DIR_NE;
           if (Ammo > 0) {
             Do_Turn(dir);
-            Status = MANEUVERING;
+            Status = kManeuvering;
             return 1;
           }
           Assign_Mission(MISSION_GUARD);
           break;
 
-        case MANEUVERING:
+        case kManeuvering:
           if (!IsRotating) {
             APC_Open_Door();
             if (Is_Door_Opening()) {
-              Status = OPENING_DOOR;
+              Status = kOpeningDoor;
               return 1;
             }
           }
           break;
 
-        case OPENING_DOOR:
+        case kOpeningDoor:
           if (Is_Door_Open()) {
-            Status = UNLOADING;
+            Status = kUnloading;
             return 1;
           }
           if (!Is_Door_Opening()) {
-            Status = INITIAL_CHECK;
+            Status = kInitialCheck;
           }
           break;
 
-        case UNLOADING:
+        case kUnloading:
           if (Ammo > 0) {
             if (!Map[Center_Coord()].Cell_Building()) {
               Mark(MARK_UP);
@@ -2622,20 +2627,20 @@ int UnitClass::Mission_Unload() {
                 }
                 ScenarioInit = 0;
               }
-              Status = CLOSING_DOOR;
+              Status = kClosingDoor;
               Mark(MARK_DOWN);
             } else {
-              Status = CLOSING_DOOR;
+              Status = kClosingDoor;
             }
           } else {
-            Status = CLOSING_DOOR;
+            Status = kClosingDoor;
           }
           break;
 
         /*
         **	Close APC door in preparation for normal operation.
         */
-        case CLOSING_DOOR:
+        case kClosingDoor:
           if (Is_Door_Open()) {
             APC_Close_Door();
           }
@@ -2748,13 +2753,11 @@ int UnitClass::Mission_Harvest() {
   assert(Units.ID(this) == ID);
   assert(IsActive);
 
-  enum {
-    LOOKING,
-    HARVESTING,
-    FINDHOME,
-    HEADINGHOME,
-    GOINGTOIDLE,
-  };
+  constexpr int kLooking = 0;
+  constexpr int kHarvesting = 1;
+  constexpr int kFindhome = 2;
+  constexpr int kHeadinghome = 3;
+  constexpr int kGoingtoidle = 4;
 
   /*
   **	A non-harvesting type unit will just sit still if it is given the
@@ -2776,13 +2779,13 @@ int UnitClass::Mission_Harvest() {
     /*
     **	Go and find a Tiberium field to harvest.
     */
-    case LOOKING:
+    case kLooking:
       /*
       **	When full of tiberium, just skip to finding a free refinery
       **	to unload at.
       */
       if (Tiberium_Load() == 1) {
-        Status = FINDHOME;
+        Status = kFindhome;
         return 1;
       }
 
@@ -2798,7 +2801,7 @@ int UnitClass::Mission_Harvest() {
         IsHarvesting = true;
         Set_Rate(2);
         Set_Stage(0);
-        Status = HARVESTING;
+        Status = kHarvesting;
         return 1;
       }
       /*
@@ -2817,7 +2820,7 @@ int UnitClass::Mission_Harvest() {
         if (Target_Legal(ArchiveTarget)) {
           Assign_Destination(ArchiveTarget);
         } else {
-          Status = GOINGTOIDLE;
+          Status = kGoingtoidle;
           IsUseless = true;
           House->IsTiberiumShort = true;
           return kTicksPerSecond * 7;
@@ -2830,7 +2833,7 @@ int UnitClass::Mission_Harvest() {
     /*
     **	Harvest at current location until full or Tiberium exhausted.
     */
-    case HARVESTING:
+    case kHarvesting:
       //			if (Fetch_Stage() >
       // std::ssize(UnitTypeClass::Harvester_Load_List)) {
       // Set_Stage(0);
@@ -2846,15 +2849,15 @@ int UnitClass::Mission_Harvest() {
       if (!Harvesting()) {
         IsHarvesting = false;
         if (Tiberium_Load() == 1) {
-          Status = FINDHOME;
+          Status = kFindhome;
           ArchiveTarget = ::As_Target(Coord_Cell(Coord));
         } else {
           if (!Goto_Tiberium(Rule.TiberiumShortScan / CELL_LEPTON_W) &&
               !Target_Legal(NavCom)) {
             ArchiveTarget = kTargetNone;
-            Status = FINDHOME;
+            Status = kFindhome;
           } else {
-            Status = HARVESTING;
+            Status = kHarvesting;
             IsHarvesting = true;
           }
         }
@@ -2866,7 +2869,7 @@ int UnitClass::Mission_Harvest() {
     /*
     **	Find and head to refinery.
     */
-    case FINDHOME:
+    case kFindhome:
       if (!Target_Legal(NavCom)) {
         /*
         **	Find nearby refinery and head to it?
@@ -2879,7 +2882,7 @@ int UnitClass::Mission_Harvest() {
         */
         if (nearest != nullptr &&
             Transmit_Message(RADIO_HELLO, nearest) == RADIO_ROGER) {
-          Status = HEADINGHOME;
+          Status = kHeadinghome;
           if (nearest->House == PlayerPtr &&
               PlayerPtr->Capacity - PlayerPtr->Tiberium < 300 &&
               PlayerPtr->Capacity > 500 &&
@@ -2903,7 +2906,7 @@ int UnitClass::Mission_Harvest() {
     **	unload. If, for some reason, radio contact was lost, then hunt for
     **	another refinery to unload at.
     */
-    case HEADINGHOME:
+    case kHeadinghome:
       Assign_Mission(MISSION_ENTER);
       return 1;
 
@@ -2911,7 +2914,7 @@ int UnitClass::Mission_Harvest() {
     **	The harvester has nothing to do. There is no Tiberium nearby and
     **	no where to go.
     */
-    case GOINGTOIDLE:
+    case kGoingtoidle:
       if (IsUseless) {
         if (House->ActiveBScan & kStructFlagRepair) {
           Assign_Mission(MISSION_REPAIR);
@@ -2948,16 +2951,17 @@ int UnitClass::Mission_Hunt() {
   assert(IsActive);
 
   if (*this == UNIT_MCV) {
-    enum { FIND_SPOT, WAITING };
+    constexpr int kFindSpot = 0;
+    constexpr int kWaiting = 1;
 
     switch (Status) {
       /*
       **	This stage handles locating a convenient spot, rotating to face
       *the correct *	direction and then commencing the deployment operation.
       */
-      case FIND_SPOT:
+      case kFindSpot:
         if (Goto_Clear_Spot() && Try_To_Deploy()) {
-          Status = WAITING;
+          Status = kWaiting;
         }
 
         break;
@@ -2967,9 +2971,9 @@ int UnitClass::Mission_Hunt() {
       *reason, the deployment *	is aborted (the IsDeploying flag becomes false),
       *then it reverts back to hunting for *	a convenient spot to deploy.
       */
-      case WAITING:
+      case kWaiting:
         if (!IsDeploying) {
-          Status = FIND_SPOT;
+          Status = kFindSpot;
         }
         break;
       default:
@@ -3162,9 +3166,10 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType /*from*/) const {
 
       if (House->Is_Ally(obj)) {
         if (is_moving) {
-          const int face = Dir_Facing(PrimaryFacing);
+          const int face = static_cast<int>(Dir_Facing(PrimaryFacing));
           const int techface =
-              (Dir_Facing(dynamic_cast<const FootClass*>(obj)->PrimaryFacing) +
+              (static_cast<int>(Dir_Facing(
+                   dynamic_cast<const FootClass*>(obj)->PrimaryFacing)) +
                4) %
               8;
           if (face == techface && Distance(obj) <= 0x1FF) {
@@ -3562,7 +3567,8 @@ void UnitClass::Exit_Repair() {
       XYCELL(0, 2),  XYCELL(-1, 1), XYCELL(-2, 0), XYCELL(-1, -1)};
 
   CELL cell = static_cast<CELL>(
-      Coord_Cell(Coord) + ExitRepair[Dir_Facing(PrimaryFacing.Current())]);
+      Coord_Cell(Coord) +
+      ExitRepair[static_cast<int>(Dir_Facing(PrimaryFacing.Current()))]);
   if (Can_Enter_Cell(cell) == MOVE_OK) {
     found = true;
   }
@@ -3751,9 +3757,8 @@ DirType UnitClass::Desired_Load_Dir(ObjectClass* passenger,
   */
   moveto = 0;
   if (bestval > 0) {
-    static const DirType
-        _desired_to_actual[magic_enum::enum_count<FacingType>()] = {
-            DIR_S, DIR_SW, DIR_NW, DIR_NW, DIR_NE, DIR_NE, DIR_NE, DIR_SE};
+    static constexpr base::EnumArray<FacingType, DirType> _desired_to_actual = {
+        DIR_S, DIR_SW, DIR_NW, DIR_NW, DIR_NE, DIR_NE, DIR_NE, DIR_SE};
 
     moveto = Adjacent_Cell(Coord_Cell(Coord), bestdir);
     return _desired_to_actual[bestdir];

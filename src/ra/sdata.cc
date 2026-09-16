@@ -373,8 +373,8 @@ void SmudgeTypeClass::Display(int x, int y, WindowNumberType window,
                               HousesType /*unused*/) const {
   const void* ptr = Get_Image_Data();
 
-  x += WindowList[window][WINDOWX];
-  y += WindowList[window][WINDOWY];
+  x += WindowList[static_cast<int>(window)][kWindowX];
+  y += WindowList[static_cast<int>(window)][kWindowY];
 
   IsTheaterShape = true;  // Smudges are theater specific
   if (ptr != nullptr) {
@@ -511,5 +511,5 @@ void SmudgeTypeClass::One_Time() {}
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 SmudgeTypeClass& SmudgeTypeClass::As_Reference(SmudgeType type) {
-  return *SmudgeTypes.Ptr(type);
+  return *SmudgeTypes.Ptr(static_cast<int>(type));
 }

@@ -85,7 +85,7 @@ class ToolTipClass;
 #define CHANNELTYPE_LOBBIES TXT_WOL_CHANNELTYPE_LOBBIES
 #define CHANNELTYPE_LOBBYCHANNEL "LobbyChannel"  //	Not seen.
 
-enum WOL_LEVEL {
+enum class WOL_LEVEL {
   WOL_LEVEL_TOP,            //	Viewing top level menu choices.
   WOL_LEVEL_OFFICIALCHAT,   //	Viewing official chat channels.
   WOL_LEVEL_USERCHAT,       //	Viewing user chat channels.
@@ -97,6 +97,7 @@ enum WOL_LEVEL {
   WOL_LEVEL_INLOBBY,        //	In a "lobby" chat channel.
   WOL_LEVEL_INVALID
 };
+using enum WOL_LEVEL;
 
 struct WOL_GAMETYPEINFO {
   int iGameType = 0;
@@ -109,7 +110,7 @@ struct WOL_GAMETYPEINFO {
 };
 
 //	Header values for game options messages. Note that 0 is not used!
-enum WOL_GAMEOPT {
+enum class WOL_GAMEOPT {
   WOL_GAMEOPT_REQCOLOR = 1,  //	REQuest = guest asks game host for a color
   WOL_GAMEOPT_INFCOLOR,      //	INForm = game host tells guests color of a
                              // single player (not "accept-canceling")
@@ -130,17 +131,16 @@ enum WOL_GAMEOPT {
   WOL_GAMEOPT_INFNEWGUESTPLAYERINFO,  //	host tells new guest a lot of
                                       // stuff about everyone that's in the game
 };
-enum DIBICON {
-  DIBICON_OWNER,
-  DIBICON_SQUELCH,
-  DIBICON_LATENCY,
-  DIBICON_ACCEPT,
-  DIBICON_NOTACCEPT,
-  DIBICON_USER,
-  DIBICON_PRIVATE,
-  DIBICON_TOURNAMENT,
-  DIBICON_VOICE,
-};
+using enum WOL_GAMEOPT;
+inline constexpr int kDibiconOwner = 0;
+inline constexpr int kDibiconSquelch = kDibiconOwner + 1;
+inline constexpr int kDibiconLatency = kDibiconSquelch + 1;
+inline constexpr int kDibiconAccept = kDibiconLatency + 1;
+inline constexpr int kDibiconNotaccept = kDibiconAccept + 1;
+inline constexpr int kDibiconUser = kDibiconNotaccept + 1;
+inline constexpr int kDibiconPrivate = kDibiconUser + 1;
+inline constexpr int kDibiconTournament = kDibiconPrivate + 1;
+inline constexpr int kDibiconVoice = kDibiconTournament + 1;
 #define NUMDIBICONS 9
 
 struct DIBICONINFO {
@@ -159,13 +159,15 @@ struct CHATSAVE  //	What we save about each individual list item.
 };
 
 struct CREATEGAMEINFO {
-  enum GAMEKIND  //	Gets or'ed with lobby number in channel 'reserved'
-                 // field.
+  enum class GAMEKIND  //	Gets or'ed with lobby number in channel
+                       //'reserved'
+                       // field.
   {
     RAGAME = 0x01000000,
     CSGAME = 0x02000000,
     AMGAME = 0x04000000,
   };
+  using enum GAMEKIND;
 
   bool bCreateGame = false;  //	True if user confirms game creation.
   int iPlayerMax = 0;    //	NOT number of players, but maximum number allowed into

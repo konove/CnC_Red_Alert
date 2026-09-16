@@ -57,9 +57,9 @@
 #include <cstdint>
 #include <cstring>
 #include <filesystem>
-#include <iterator>
 #include <string>
 
+#include "base/enum_array.h"
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
@@ -79,8 +79,7 @@
 /*
 **	These are the actual filename list for the theme sample files.
 */
-ThemeClass::ThemeControl ThemeClass::_themes[magic_enum::enum_count<
-    ThemeType>()] = {
+base::EnumArray<ThemeType, ThemeClass::ThemeControl> ThemeClass::_themes = {{
     {"BIGF226M", TXT_THEME_BIGF, 0, 307, true, false, true, kHouseFlagAllies},
     {"CRUS226M", TXT_THEME_CRUS, 0, 222, true, false, true, kHouseFlagSoviet},
     {"FAC1226M", TXT_THEME_FAC1, 0, 271, true, false, true, kHouseFlagAllies},
@@ -135,7 +134,7 @@ ThemeClass::ThemeControl ThemeClass::_themes[magic_enum::enum_count<
      kHouseFlagAllies},
     {"WASTELND", TXT_THEME_WASTELND, 0, 242, true, false, true,
      kHouseFlagSoviet | kHouseFlagSpain},
-};
+}};
 
 /***********************************************************************************************
  * ThemeClass::Base_Name -- Fetches the base filename for the theme specified. *
@@ -213,7 +212,7 @@ const char* ThemeClass::Full_Name(ThemeType theme) {
  *as it is about to play it.                           *
  *=============================================================================================*/
 void ThemeClass::AI() {
-  if (SampleType && !Debug_Quiet) {
+  if (SampleType != SAMPLE_NONE && !Debug_Quiet) {
     if (ScoresPresent && Options.ScoreVolume != 0 && !Still_Playing() &&
         Pending != THEME_NONE) {
       /*
@@ -310,7 +309,7 @@ void ThemeClass::Queue_Song(ThemeType theme) {
   **	If there is no sound driver or sounds have been specifically
   **	turned off, then abort.
   */
-  if (SampleType == 0 || Debug_Quiet) {
+  if (SampleType == SAMPLE_NONE || Debug_Quiet) {
     return;
   }
 
@@ -330,7 +329,7 @@ void ThemeClass::Queue_Song(ThemeType theme) {
       theme == THEME_NONE || theme == THEME_QUIET) {
     Pending = theme;
     if (Still_Playing()) {
-      Fade_Sample(Current, THEME_DELAY);
+      Fade_Sample(Current, kThemeDelay);
     }
   }
 }
@@ -352,7 +351,8 @@ void ThemeClass::Queue_Song(ThemeType theme) {
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
 int ThemeClass::Play_Song(ThemeType theme) {
-  if (ScoresPresent && SampleType && !Debug_Quiet && Options.ScoreVolume != 0) {
+  if (ScoresPresent && SampleType != SAMPLE_NONE && !Debug_Quiet &&
+      Options.ScoreVolume != 0) {
     Stop();
     Score = theme;
     if (theme != THEME_NONE && theme != THEME_QUIET) {
@@ -434,7 +434,8 @@ int ThemeClass::Track_Length(ThemeType theme) {
  * HISTORY: * 09/08/1994 JLB : Created. *
  *=============================================================================================*/
 void ThemeClass::Stop() {
-  if (ScoresPresent && SampleType && !Debug_Quiet && Current != -1) {
+  if (ScoresPresent && SampleType != SAMPLE_NONE && !Debug_Quiet &&
+      Current != -1) {
     Stop_Sample(Current);
     Current = -1;
     Score = THEME_NONE;
@@ -443,7 +444,8 @@ void ThemeClass::Stop() {
 }
 
 void ThemeClass::Suspend() {
-  if (ScoresPresent && SampleType && !Debug_Quiet && Current != -1) {
+  if (ScoresPresent && SampleType != SAMPLE_NONE && !Debug_Quiet &&
+      Current != -1) {
     Stop_Sample(Current);
     Current = -1;
     Pending = Score;
@@ -465,7 +467,8 @@ void ThemeClass::Suspend() {
  * HISTORY: * 12/20/1994 JLB : Created. *
  *=============================================================================================*/
 bool ThemeClass::Still_Playing() const {
-  if (ScoresPresent && SampleType && Current != -1 && !Debug_Quiet) {
+  if (ScoresPresent && SampleType != SAMPLE_NONE && Current != -1 &&
+      !Debug_Quiet) {
     return Sample_Status(Current);
   }
   return false;
@@ -595,9 +598,8 @@ ThemeType ThemeClass::From_Name(const char* name) {
  * HISTORY: * 01/04/1996 JLB : Created. *
  *=============================================================================================*/
 void ThemeClass::Scan() {
-  for (int index = 0; index < std::ssize(_themes); ++index) {
-    _themes[index].Available =
-        GameFile(Theme_File_Name(static_cast<ThemeType>(index))).IsAvailable();
+  for (const ThemeType theme : magic_enum::enum_values<ThemeType>()) {
+    _themes[theme].Available = GameFile(Theme_File_Name(theme)).IsAvailable();
   }
 }
 

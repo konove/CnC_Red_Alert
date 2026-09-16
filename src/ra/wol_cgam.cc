@@ -113,29 +113,27 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
   /*
   **	Button enumerations
   */
-  enum {
-    BUTTON_OK = 100,
-    BUTTON_CANCEL,
-    GAUGE_PLAYERCOUNT,
-    CHECK_TOURNAMENT,
-    CHECK_PRIVACY,
-    CHECK_RA,
-    CHECK_CS,
-    CHECK_AM,
-  };
+  constexpr int kButtonOk = 100;
+  constexpr int kButtonCancel = 101;
+  constexpr int kGaugePlayercount = 102;
+  constexpr int kCheckTournament = 103;
+  constexpr int kCheckPrivacy = 104;
+  constexpr int kCheckRa = 105;
+  constexpr int kCheckCs = 106;
+  constexpr int kCheckAm = 107;
 
   /*
   **	Buttons
   */
   ControlClass* commands = nullptr;  // the button list
 
-  TextButtonClass OkBtn(BUTTON_OK, TXT_OK, kTpfButton, d_ok_x, d_ok_y, d_ok_w);
-  TextButtonClass CancelBtn(BUTTON_CANCEL, TXT_CANCEL, kTpfButton, d_cancel_x,
+  TextButtonClass OkBtn(kButtonOk, TXT_OK, kTpfButton, d_ok_x, d_ok_y, d_ok_w);
+  TextButtonClass CancelBtn(kButtonCancel, TXT_CANCEL, kTpfButton, d_cancel_x,
                             d_cancel_y, d_cancel_w);
 
   StaticButtonClass PlayerCountStatic(0, "               ", kTpfText,
                                       d_gaugeplayers_x, d_gaugeplayers_y - 16);
-  GaugeClass PlayerCountGauge(GAUGE_PLAYERCOUNT, d_gaugeplayers_x,
+  GaugeClass PlayerCountGauge(kGaugePlayercount, d_gaugeplayers_x,
                               d_gaugeplayers_y, d_gaugeplayers_w,
                               d_gaugeplayers_h);
 
@@ -147,23 +145,23 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
   PlayerCountGauge.Set_Value(cgiReturn.iPlayerMax - 2);
 
   BigCheckBoxClass TournamentCheck(
-      CHECK_TOURNAMENT, d_checktourn_x, d_checktourn_y, d_checktourn_w,
+      kCheckTournament, d_checktourn_x, d_checktourn_y, d_checktourn_w,
       d_checktourn_h, TXT_WOL_CG_TOURNAMENT, TPF_6PT_GRAD | TPF_NOSHADOW,
       cgiReturn.bTournament);
 
   BigCheckBoxClass PrivacyCheck(
-      CHECK_PRIVACY, d_checkpriv_x, d_checkpriv_y, d_checkpriv_w, d_checkpriv_h,
+      kCheckPrivacy, d_checkpriv_x, d_checkpriv_y, d_checkpriv_w, d_checkpriv_h,
       TXT_WOL_CG_PRIVACY, TPF_6PT_GRAD | TPF_NOSHADOW, cgiReturn.bPrivate);
 
-  BigCheckBoxClass RA_Check(CHECK_RA, d_checkra_x, d_checkra_y, d_checkra_w,
+  BigCheckBoxClass RA_Check(kCheckRa, d_checkra_x, d_checkra_y, d_checkra_w,
                             d_checkra_h, TXT_WOL_CG_RAGAME,
                             TPF_6PT_GRAD | TPF_NOSHADOW,
                             cgiReturn.GameKind == CREATEGAMEINFO::RAGAME);
-  BigCheckBoxClass CS_Check(CHECK_CS, d_checkcs_x, d_checkcs_y, d_checkcs_w,
+  BigCheckBoxClass CS_Check(kCheckCs, d_checkcs_x, d_checkcs_y, d_checkcs_w,
                             d_checkcs_h, TXT_WOL_CG_CSGAME,
                             TPF_6PT_GRAD | TPF_NOSHADOW,
                             cgiReturn.GameKind == CREATEGAMEINFO::CSGAME);
-  BigCheckBoxClass AM_Check(CHECK_AM, d_checkam_x, d_checkam_y, d_checkam_w,
+  BigCheckBoxClass AM_Check(kCheckAm, d_checkam_x, d_checkam_y, d_checkam_w,
                             d_checkam_h, TXT_WOL_CG_AMGAME,
                             TPF_6PT_GRAD | TPF_NOSHADOW,
                             cgiReturn.GameKind == CREATEGAMEINFO::AMGAME);
@@ -249,13 +247,13 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
     if (KeyboardClass::Down(KN_ESC)) {
       bEscapeDown = true;
     } else if (bEscapeDown) {
-      input = ButtonKey(BUTTON_CANCEL);
+      input = ButtonKey(kButtonCancel);
       bEscapeDown = false;
     }
     if (KeyboardClass::Down(KN_RETURN)) {
       bReturnDown = true;
     } else if (bReturnDown) {
-      input = ButtonKey(BUTTON_OK);
+      input = ButtonKey(kButtonOk);
       bReturnDown = false;
     }
 
@@ -264,16 +262,16 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
     */
 
     switch (static_cast<int>(input)) {
-      case ButtonKey(BUTTON_OK):
+      case ButtonKey(kButtonOk):
         cgiReturn.bCreateGame = true;
         process = false;
         break;
 
-      case ButtonKey(BUTTON_CANCEL):
+      case ButtonKey(kButtonCancel):
         process = false;
         break;
 
-      case ButtonKey(GAUGE_PLAYERCOUNT):
+      case ButtonKey(kGaugePlayercount):
         if (PlayerCountGauge.Get_Value() != 0 && cgiReturn.bTournament) {
           WWMessageBox().Process(TXT_WOL_TOURNAMENTPLAYERLIMIT);
           PlayerCountGauge.Set_Value(0);
@@ -286,7 +284,7 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
         PlayerCountStatic.Draw_Me();
         break;
 
-      case ButtonKey(CHECK_TOURNAMENT):
+      case ButtonKey(kCheckTournament):
         cgiReturn.bTournament = TournamentCheck.IsOn;
         if (cgiReturn.bTournament) {
           PlayerCountGauge.Set_Value(0);
@@ -301,11 +299,11 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
         //					PlayerCountGauge.Enable();
         break;
 
-      case ButtonKey(CHECK_PRIVACY):
+      case ButtonKey(kCheckPrivacy):
         cgiReturn.bPrivate = PrivacyCheck.IsOn;
         break;
 
-      case ButtonKey(CHECK_RA):
+      case ButtonKey(kCheckRa):
         if (RA_Check.IsOn) {
           //	Box was checked.
           CS_Check.Turn_Off();
@@ -316,7 +314,7 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
           RA_Check.Turn_On();
         }
         break;
-      case ButtonKey(CHECK_CS):
+      case ButtonKey(kCheckCs):
         if (CS_Check.IsOn) {
           //	Box was checked.
           RA_Check.Turn_Off();
@@ -327,7 +325,7 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
           CS_Check.Turn_On();
         }
         break;
-      case ButtonKey(CHECK_AM):
+      case ButtonKey(kCheckAm):
         if (AM_Check.IsOn) {
           //	Box was checked.
           RA_Check.Turn_Off();
@@ -346,7 +344,7 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
 
   if (cgiReturn.bCreateGame && cgiReturn.bPrivate) {
     //	Get a password for the channel.
-    Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK,
+    Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack,
                      kTpfText);  //	Required before String_Pixel_Width()
                                  // call, for god's sake.
     auto* pEditDlg =

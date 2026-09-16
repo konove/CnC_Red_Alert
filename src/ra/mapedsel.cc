@@ -357,7 +357,7 @@ void MapEditClass::Popup_Controls() {
       */
       Add_A_Button(*HealthGauge);
       Add_A_Button(*HouseList);
-      HouseList->Set_Selected_Index(owner);
+      HouseList->Set_Selected_Index(static_cast<int>(owner));
       Add_A_Button(*MissionList);
       Add_A_Button(*HealthText);
       Add_A_Button(*FacingDial);
@@ -371,7 +371,7 @@ void MapEditClass::Popup_Controls() {
                      CurrentObject[0]->Strength);
       Add_A_Button(*HealthGauge);
       Add_A_Button(*HouseList);
-      HouseList->Set_Selected_Index(owner);
+      HouseList->Set_Selected_Index(static_cast<int>(owner));
       Add_A_Button(*HealthText);
 
       Add_A_Button(*Sellable);

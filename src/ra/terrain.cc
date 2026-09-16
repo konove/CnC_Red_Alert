@@ -85,7 +85,6 @@
 #include "ra/globals.h"
 #include "ra/heap.h"
 #include "ra/inline.h"
-#include "ra/jshell.h"
 #include "ra/keyframe.h"
 #include "ra/map.h"
 #include "ra/mapedit.h"
@@ -249,7 +248,7 @@ void TerrainClass::operator delete(void* ptr) {
  *=============================================================================================*/
 TerrainClass::TerrainClass(TerrainType type, CELL cell)
     : ObjectClass(RTTI_TERRAIN, Terrains.ID(this)),
-      Class(TerrainTypes.Ptr(type)) {
+      Class(TerrainTypes.Ptr(static_cast<int>(type))) {
   Strength = Class->MaxStrength;
   if ((cell != -1) && (!Unlimbo(Cell_Coord(cell)))) {
     delete this;

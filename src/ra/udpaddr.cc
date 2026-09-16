@@ -71,22 +71,21 @@ bool Get_Broadcast_Addresses() {
   //------------------------------------------------------------------------
   //	Button Enumerations
   //------------------------------------------------------------------------
-  enum {
-    BUTTON_IPLIST = 100,
-    BUTTON_OK,
-    BUTTON_CANCEL,
-  };
+  constexpr int kButtonIplist = 100;
+  constexpr int kButtonOk = 101;
+  constexpr int kButtonCancel = 102;
 
   //------------------------------------------------------------------------
   //	Redraw values: in order from "top" to "bottom" layer of the dialog
   //------------------------------------------------------------------------
-  typedef enum {
+  enum class RedrawType {
     REDRAW_NONE = 0,
     REDRAW_PARMS = 1,
     REDRAW_BUTTONS = 2,
     REDRAW_BACKGROUND = 3,
     REDRAW_ALL = REDRAW_BACKGROUND
-  } RedrawType;
+  };
+  using enum RedrawType;
 
   //------------------------------------------------------------------------
   //	Dialog variables
@@ -99,7 +98,7 @@ bool Get_Broadcast_Addresses() {
 
   RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
 
-  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK,
+  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
   // Format_Window_String rewrites the buffer in place, so the title cannot
   // be a string literal.
@@ -108,18 +107,18 @@ bool Get_Broadcast_Addresses() {
 
   GadgetClass* commands = nullptr;  // button list
   ColorListClass ip_address_list(
-      BUTTON_IPLIST, d_ip_address_list_x, d_ip_address_list_y,
+      kButtonIplist, d_ip_address_list_x, d_ip_address_list_y,
       d_ip_address_list_w, d_ip_address_list_h, kTpfText,
       MixArchive::Retrieve("BTN-UP.SHP"), MixArchive::Retrieve("BTN-DN.SHP"));
 
-  TextButtonClass okbtn(BUTTON_OK, TXT_OK, kTpfButton, d_ok_x, d_ok_y, d_ok_w,
+  TextButtonClass okbtn(kButtonOk, TXT_OK, kTpfButton, d_ok_x, d_ok_y, d_ok_w,
                         d_ok_h);
-  TextButtonClass cancelbtn(BUTTON_CANCEL, TXT_CANCEL, kTpfButton, d_cancel_x,
+  TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL, kTpfButton, d_cancel_x,
                             d_cancel_y, d_cancel_w, d_cancel_h);
 
   ip_address_list.Set_Selected_Style(ColorListClass::SELECT_NORMAL);
 
-  Fancy_Text_Print("", 0, 0, scheme, TBLACK, TPF_CENTER | kTpfText);
+  Fancy_Text_Print("", 0, 0, scheme, kTBlack, TPF_CENTER | kTpfText);
 
   Load_Title_Page(true);
   CCPalette.Set();  // GamePalette.Set();
@@ -166,7 +165,7 @@ bool Get_Broadcast_Addresses() {
     //.....................................................................
     //	Refresh display if needed
     //.....................................................................
-    if (display) {
+    if (display != REDRAW_NONE) {
       Hide_Mouse();
 
       //..................................................................
@@ -181,7 +180,7 @@ bool Get_Broadcast_Addresses() {
         //	Dialog & Field labels
         //...............................................................
         Fancy_Text_Print("IP Addresses", d_dialog_cx - (width / 2),
-                         d_dialog_y + 50, scheme, TBLACK, kTpfText);
+                         d_dialog_y + 50, scheme, kTBlack, kTpfText);
 
         //...............................................................
         //	Rebuild the button list
@@ -220,10 +219,10 @@ bool Get_Broadcast_Addresses() {
       // - If we're part of a game, stay in this dialog; otherwise, exit
       //..................................................................
       case KN_ESC:
-      case ButtonKey(BUTTON_CANCEL):
+      case ButtonKey(kButtonCancel):
         return false;
 
-      case ButtonKey(BUTTON_OK):
+      case ButtonKey(kButtonOk):
         process = false;
         break;
       default:

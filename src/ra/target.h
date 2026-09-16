@@ -144,11 +144,11 @@ class xTargetClass {
   [[nodiscard]] unsigned Value() const { return Target.Sub.Mantissa; }
 
   void Invalidate() {
-    Target.Sub.Exponent = RTTI_NONE;
+    Target.Sub.Exponent = static_cast<unsigned>(RTTI_NONE);
     Target.Sub.Mantissa = base::Bit<uint32_t>(kTargetMantissaBits) - 1;
   }
   [[nodiscard]] bool Is_Valid() const {
-    return Target.Sub.Exponent != RTTI_NONE;
+    return Target.Sub.Exponent != static_cast<unsigned>(RTTI_NONE);
   }
 
   [[nodiscard]] TARGET As_Target() const { return Target.Target; }
@@ -188,13 +188,13 @@ class TargetClass : public xTargetClass {
  public:
   TargetClass() : xTargetClass() { Invalidate(); }
   TargetClass(RTTIType rtti, int id) : xTargetClass() {
-    Target.Sub.Exponent = rtti;
+    Target.Sub.Exponent = static_cast<unsigned>(rtti);
     Target.Sub.Mantissa = static_cast<unsigned>(id);
   }
   // targets convert from every addressable thing by design.
   // NOLINTNEXTLINE(*-explicit-constructor)
   TargetClass(CELL cell) : xTargetClass() {
-    Target.Sub.Exponent = RTTI_CELL;
+    Target.Sub.Exponent = static_cast<unsigned>(RTTI_CELL);
     Target.Sub.Mantissa = static_cast<unsigned>(cell);
   }
   // targets convert from every addressable thing by design.

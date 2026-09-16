@@ -66,7 +66,7 @@ ToolTipClass::ToolTipClass(GadgetClass* gadget, const char* szText, int x_show,
   }
 
   Set_Font(TypeFontPtr);
-  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK,
+  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack,
                    TPF_TYPE);  //	Required before String_Pixel_Width()
                                // call, for god's sake.
   wShow = String_Pixel_Width(szTip) + 2;
@@ -161,7 +161,7 @@ void ToolTipClass::Show() {
         bLastShowNoText = true;
         return;
       }
-      Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK,
+      Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack,
                        TPF_TYPE);  //	Required before String_Pixel_Width()
                                    // call, for god's sake.
       wShowUse = String_Pixel_Width(szTipUse) + 2;
@@ -185,7 +185,7 @@ void ToolTipClass::Show() {
     // GadgetClass::Get_Color_Scheme(), ColorRemaps[ PCOLOR_BROWN ].Color,
     // TPF_TYPE ); //TPF_DROPSHADOW );
     Simple_Text_Print(szTipUse, xShowUse, yShowUse,
-                      GadgetClass::Get_Color_Scheme(), BLACK,
+                      GadgetClass::Get_Color_Scheme(), kBlack,
                       TPF_TYPE);  // TPF_DROPSHADOW );
     //	Draw bounding rect.
     //		LogicPage->Draw_Rect( xShowUse, yShowUse, xShowUse + wShowUse -

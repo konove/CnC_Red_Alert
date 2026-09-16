@@ -44,6 +44,7 @@
 #include <string>
 #include <vector>
 
+#include "base/enum_array.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/base.h"
 #include "ra/building.h"
@@ -149,8 +150,7 @@ extern GraphicBufferClass VQ640;  // 640x400 staging page for hi-res movies
 /*
 **	Dynamic global variables (these change or are initialized at run time).
 */
-extern MissionControlClass
-    MissionControl[magic_enum::enum_count<MissionType>()];
+extern base::EnumArray<MissionType, MissionControlClass> MissionControl;
 extern const char* TutorialTextData;
 extern uint16_t TutorialTextOffsets[225];
 extern Buffer* TheaterBuffer;
@@ -167,7 +167,7 @@ extern KeyboardClass* Keyboard;
 extern RandomClass local_rng;
 extern std::vector<CarryoverClass> Carryover;
 extern ScenarioClass Scen;
-extern RemapControlType ColorRemaps[magic_enum::enum_count<PlayerColorType>()];
+extern base::EnumArray<PlayerColorType, RemapControlType> ColorRemaps;
 extern RemapControlType MetalScheme;
 extern RemapControlType GreyScheme;
 extern VersionClass VerNum;
@@ -190,7 +190,7 @@ extern GameOptionsClass Options;
 extern LogicClass Logic;
 extern MapEditClass Map;
 extern ScoreClass Score;
-extern MonoClass MonoArray[magic_enum::enum_count<DMonoType>()];
+extern base::EnumArray<DMonoType, MonoClass> MonoArray;
 extern MixArchive* TheaterData;
 extern MixArchive* MoviesMix;
 extern MixArchive* GeneralMix;
@@ -234,7 +234,7 @@ extern TFixedIHeapClass<TerrainTypeClass> TerrainTypes;
 extern TFixedIHeapClass<OverlayTypeClass> OverlayTypes;
 extern TFixedIHeapClass<SmudgeTypeClass> SmudgeTypes;
 
-extern FixedIHeapClass* HeapPointers[magic_enum::enum_count<RTTIType>()];
+extern base::EnumArray<RTTIType, FixedIHeapClass*> HeapPointers;
 
 extern TFixedIHeapClass<WeaponTypeClass> Weapons;
 extern TFixedIHeapClass<WarheadTypeClass> Warheads;
@@ -245,8 +245,8 @@ extern QueueClass<EventClass, kMaxEvents * 64> DoList;
 extern DynamicVectorClass<ObjectClass*> CurrentObject;
 extern DynamicVectorClass<TriggerClass*> LogicTriggers;
 extern DynamicVectorClass<TriggerClass*> MapTriggers;
-extern DynamicVectorClass<TriggerClass*>
-    HouseTriggers[magic_enum::enum_count<HousesType>()];
+extern base::EnumArray<HousesType, DynamicVectorClass<TriggerClass*>>
+    HouseTriggers;
 
 extern BaseClass Base;
 

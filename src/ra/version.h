@@ -79,13 +79,14 @@
 //---------------------------------------------------------------------------
 //
 //---------------------------------------------------------------------------
-typedef enum CommProtocolEnum {
+enum class CommProtocolType {
   COMM_PROTOCOL_SINGLE_NO_COMP = 0,  // single frame with no compression
   COMM_PROTOCOL_SINGLE_E_COMP = 1,   // single frame with event compression
   COMM_PROTOCOL_MULTI_E_COMP = 2,    // multiple frame with event compression
   COMM_PROTOCOL_COUNT = 3,
   DEFAULT_COMM_PROTOCOL = COMM_PROTOCOL_MULTI_E_COMP
-} CommProtocolType;
+};
+using enum CommProtocolType;
 
 typedef struct {
   uint32_t Version;
@@ -154,7 +155,8 @@ class VersionClass {
   // These values define the major & minor version #'s for the current
   // version.  Change these values to change the game's version #!
   //.....................................................................
-  enum VersionEnum { MAJOR_VERSION = 0x0003, MINOR_VERSION = 0x0000 };
+  static constexpr int kMajorVersion = 0x0003;
+  static constexpr int kMinorVersion = 0x0000;
 
   //.....................................................................
   // These values control which other versions this program will connect
@@ -162,11 +164,9 @@ class VersionClass {
   // If CHEAT is defined, the program will only connect to itself; these
   // values aren't used.
   //.....................................................................
-  enum VersionRangeEnum {
-    //	ajw - We can only play against same version.
-    MIN_VERSION = VERSION_RA_300,
-    MAX_VERSION = VERSION_RA_300
-  };
+  //	ajw - We can only play against same version.
+  static constexpr int kMinVersion = VERSION_RA_300;
+  static constexpr int kMaxVersion = VERSION_RA_300;
 
   //.....................................................................
   // This is the program's version number, stored internally.

@@ -37,10 +37,11 @@
 #include "ra/list.h"
 #include "ra/vector.h"
 
-enum ICONKIND {
+enum class ICONKIND {
   ICON_SHAPE = 0,  //	pIcon points to a shape.
   ICON_DIB         //	pIcon points to DIBitmap data.
 };
+using enum ICONKIND;
 
 struct FIXEDICON  //	For putting icons in list entries at a specific fixed
                   // offset.

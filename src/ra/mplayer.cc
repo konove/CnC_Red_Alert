@@ -129,17 +129,14 @@ GameType Select_MPlayer_Game() {
   //------------------------------------------------------------------------
   //	Button enumerations:
   //------------------------------------------------------------------------
-  enum {
-    BUTTON_MODEMSERIAL = 100,
-    BUTTON_SKIRMISH = 101,
-    BUTTON_IPX = 102,
-    BUTTON_WOL = 103,  //	ajw
-    BUTTON_CANCEL = 104,
-
-    //	BUTTON_WOL keeps its slot either way; the pointer stays null when
-    //	the button is not built.
-    NUM_OF_BUTTONS = 5,  //	ajw
-  };
+  constexpr int kButtonModemserial = 100;
+  constexpr int kButtonSkirmish = 101;
+  constexpr int kButtonIpx = 102;
+  constexpr int kButtonWol = 103;  //	ajw
+  constexpr int kButtonCancel = 104;
+  //	BUTTON_WOL keeps its slot either way; the pointer stays null when
+  //	the button is not built.
+  constexpr int kNumOfButtons = 5;  //	ajw
 
   // Sampled once: the button list, its length and the cancel-button fixup
   // below all have to agree on how many buttons this dialog has.
@@ -147,23 +144,24 @@ GameType Select_MPlayer_Game() {
   //	The IPX and Westwood Online buttons are each present or not; the count
   //	drives keyboard navigation, so it has to match what was actually built.
   const int num_of_buttons =
-      NUM_OF_BUTTONS - (has_ipx ? 0 : 1) - (config::kWolapiEnabled ? 0 : 1);
+      kNumOfButtons - (has_ipx ? 0 : 1) - (config::kWolapiEnabled ? 0 : 1);
   //------------------------------------------------------------------------
   //	Redraw values: in order from "top" to "bottom" layer of the dialog
   //------------------------------------------------------------------------
-  typedef enum {
+  enum class RedrawType {
     REDRAW_NONE = 0,
     REDRAW_BUTTONS = 1,     // includes map interior & coord values
     REDRAW_BACKGROUND = 2,  // includes box, map bord, key, coord labels, btns
     REDRAW_ALL = REDRAW_BACKGROUND
-  } RedrawType;
+  };
+  using enum RedrawType;
 
   //------------------------------------------------------------------------
   //	Dialog variables:
   //------------------------------------------------------------------------
   GameType retval = GAME_NORMAL;  // return value
   int selection = 0;
-  TextButtonClass* buttons[NUM_OF_BUTTONS] = {};
+  TextButtonClass* buttons[kNumOfButtons] = {};
 
   //------------------------------------------------------------------------
   //	Buttons
@@ -177,19 +175,19 @@ GameType Select_MPlayer_Game() {
   //		return( Select_Serial_Dialog() );
   //	}
 
-  TextButtonClass modemserialbtn(BUTTON_MODEMSERIAL, TXT_MODEM_SERIAL,
+  TextButtonClass modemserialbtn(kButtonModemserial, TXT_MODEM_SERIAL,
                                  kTpfButton, d_modemserial_x, d_modemserial_y,
                                  d_modemserial_w, d_modemserial_h);
 
-  TextButtonClass skirmishbtn(BUTTON_SKIRMISH, TXT_SKIRMISH, kTpfButton,
+  TextButtonClass skirmishbtn(kButtonSkirmish, TXT_SKIRMISH, kTpfButton,
                               d_skirmish_x, d_skirmish_y, d_skirmish_w,
                               d_skirmish_h);
 
-  TextButtonClass ipxbtn(BUTTON_IPX, TXT_NETWORK, kTpfButton, d_ipx_x, d_ipx_y,
+  TextButtonClass ipxbtn(kButtonIpx, TXT_NETWORK, kTpfButton, d_ipx_x, d_ipx_y,
                          d_ipx_w, d_ipx_h);
 
   //	ajw
-  TextButtonClass wolbtn(BUTTON_WOL, TXT_WOL_INTERNETBUTTON, kTpfButton,
+  TextButtonClass wolbtn(kButtonWol, TXT_WOL_INTERNETBUTTON, kTpfButton,
                          d_wol_x, d_wol_y, d_wol_w, d_wol_h);
 
   if (!has_ipx) {
@@ -197,7 +195,7 @@ GameType Select_MPlayer_Game() {
     d_dialog_h -= d_cancel_h;
   }
 
-  TextButtonClass cancelbtn(BUTTON_CANCEL, TXT_CANCEL, kTpfButton, d_cancel_x,
+  TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL, kTpfButton, d_cancel_x,
                             d_cancel_y, d_cancel_w, d_cancel_h);
 
   //------------------------------------------------------------------------
@@ -235,7 +233,7 @@ GameType Select_MPlayer_Game() {
 
   Keyboard->Clear();
 
-  Fancy_Text_Print(TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(), TBLACK,
+  Fancy_Text_Print(TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(), kTBlack,
                    TPF_CENTER | kTpfText);
 
   //------------------------------------------------------------------------
@@ -253,7 +251,7 @@ GameType Select_MPlayer_Game() {
     //.....................................................................
     //	Refresh display if needed
     //.....................................................................
-    if (display) {
+    if (display != REDRAW_NONE) {
       Hide_Mouse();
       if (display >= REDRAW_BACKGROUND) {
         //...............................................................
@@ -289,29 +287,29 @@ GameType Select_MPlayer_Game() {
     //	Process input
     //.....................................................................
     switch (static_cast<int>(input)) {
-      case ButtonKey(BUTTON_MODEMSERIAL):
-        selection = BUTTON_MODEMSERIAL;
+      case ButtonKey(kButtonModemserial):
+        selection = kButtonModemserial;
         pressed = true;
         break;
 
-      case ButtonKey(BUTTON_SKIRMISH):
-        selection = BUTTON_SKIRMISH;
+      case ButtonKey(kButtonSkirmish):
+        selection = kButtonSkirmish;
         pressed = true;
         break;
 
-      case ButtonKey(BUTTON_IPX):
-        selection = BUTTON_IPX;
+      case ButtonKey(kButtonIpx):
+        selection = kButtonIpx;
         pressed = true;
         break;
 
-      case ButtonKey(BUTTON_WOL):  //	ajw
-        selection = BUTTON_WOL;
+      case ButtonKey(kButtonWol):  //	ajw
+        selection = kButtonWol;
         pressed = true;
         break;
 
       case KN_ESC:
-      case ButtonKey(BUTTON_CANCEL):
-        selection = BUTTON_CANCEL;
+      case ButtonKey(kButtonCancel):
+        selection = kButtonCancel;
         pressed = true;
         break;
 
@@ -338,7 +336,7 @@ GameType Select_MPlayer_Game() {
         break;
 
       case KN_RETURN:
-        selection = curbutton + BUTTON_MODEMSERIAL;
+        selection = curbutton + kButtonModemserial;
         pressed = true;
         break;
 
@@ -352,13 +350,13 @@ GameType Select_MPlayer_Game() {
       //..................................................................
       buttons[curbutton]->Turn_Off();
       buttons[curbutton]->Flag_To_Redraw();
-      curbutton = selection - BUTTON_MODEMSERIAL;
+      curbutton = selection - kButtonModemserial;
       //	BUTTON_WOL is in the enum either way, but only takes a slot in
       //	buttons[] when it was actually built.
-      if (!config::kWolapiEnabled && selection > BUTTON_WOL) {
+      if (!config::kWolapiEnabled && selection > kButtonWol) {
         curbutton--;
       }
-      if (selection == BUTTON_CANCEL && !has_ipx) {
+      if (selection == kButtonCancel && !has_ipx) {
         curbutton--;
       }
       DCHECK(buttons[curbutton] != nullptr);
@@ -367,7 +365,7 @@ GameType Select_MPlayer_Game() {
       buttons[curbutton]->Draw_Me(true);
 
       switch (selection) {
-        case BUTTON_MODEMSERIAL:
+        case kButtonModemserial:
 
           //............................................................
           // Pop up the modem/serial/com port dialog
@@ -382,7 +380,7 @@ GameType Select_MPlayer_Game() {
           }
           break;
 
-        case BUTTON_SKIRMISH:
+        case kButtonSkirmish:
           Session.Type = GAME_SKIRMISH;
           if (Com_Scenario_Dialog(true)) {
             retval = GAME_SKIRMISH;
@@ -399,17 +397,17 @@ GameType Select_MPlayer_Game() {
           }
           break;
 
-        case BUTTON_IPX:
+        case kButtonIpx:
           retval = GAME_IPX;
           process = false;
           break;
 
-        case BUTTON_WOL:  //	ajw
+        case kButtonWol:  //	ajw
           retval = GAME_INTERNET;
           process = false;
           break;
 
-        case BUTTON_CANCEL:
+        case kButtonCancel:
           retval = GAME_NORMAL;
           process = false;
           break;
@@ -516,47 +514,39 @@ int Surrender_Dialog(const char* text) {
   //------------------------------------------------------------------------
   //	Dialog & button dimensions
   //------------------------------------------------------------------------
-  enum {
-    D_DIALOG_W = 480,                             // dialog width
-    D_DIALOG_H = 126,                             // dialog height
-    D_DIALOG_X = (640 - D_DIALOG_W) / 2,          // centered x-coord
-    D_DIALOG_Y = (400 - D_DIALOG_H) / 2,          // centered y-coord
-    D_DIALOG_CX = D_DIALOG_X + (D_DIALOG_W / 2),  // coord of x-center
-
-    D_TXT6_H = 14,     // ht of 6-pt text
-    D_MARGIN = 10,     // margin width/height
-    D_TOPMARGIN = 40,  // top margin
-
-    D_OK_W = 90,                                                 // OK width
-    D_OK_H = 18,                                                 // OK height
-    D_OK_X = D_DIALOG_CX - D_OK_W - 10,                          // OK x
-    D_OK_Y = D_DIALOG_Y + D_DIALOG_H - D_OK_H - (D_MARGIN * 2),  // OK y
-
-    D_CANCEL_W = 90,                // Cancel width
-    D_CANCEL_H = 18,                // Cancel height
-    D_CANCEL_X = D_DIALOG_CX + 10,  // Cancel x
-    D_CANCEL_Y = D_DIALOG_Y + D_DIALOG_H - D_CANCEL_H -
-        (D_MARGIN * 2),  // Cancel y
-  };
+  constexpr int kDDialogW = 480;                           // dialog width
+  constexpr int kDDialogH = 126;                           // dialog height
+  constexpr int kDDialogX = (640 - kDDialogW) / 2;         // centered x-coord
+  constexpr int kDDialogY = (400 - kDDialogH) / 2;         // centered y-coord
+  constexpr int kDDialogCx = kDDialogX + (kDDialogW / 2);  // coord of x-center
+  constexpr int kDMargin = 10;                    // margin width/height
+  constexpr int kDTopmargin = 40;                 // top margin
+  constexpr int kDOkW = 90;                       // OK width
+  constexpr int kDOkH = 18;                       // OK height
+  constexpr int kDOkX = kDDialogCx - kDOkW - 10;  // OK x
+  constexpr int kDOkY = kDDialogY + kDDialogH - kDOkH - (kDMargin * 2);  // OK y
+  constexpr int kDCancelW = 90;               // Cancel width
+  constexpr int kDCancelH = 18;               // Cancel height
+  constexpr int kDCancelX = kDDialogCx + 10;  // Cancel x
+  constexpr int kDCancelY =
+      kDDialogY + kDDialogH - kDCancelH - (kDMargin * 2);  // Cancel y
 
   //------------------------------------------------------------------------
   //	Button enumerations
   //------------------------------------------------------------------------
-  enum {
-    BUTTON_OK = 100,
-    BUTTON_CANCEL,
-  };
+  constexpr int kButtonOk = 100;
+  constexpr int kButtonCancel = 101;
 
   //------------------------------------------------------------------------
   //	Buttons
   //------------------------------------------------------------------------
   ControlClass* commands = nullptr;  // the button list
 
-  TextButtonClass okbtn(BUTTON_OK, TXT_OK, kTpfButton, D_OK_X, D_OK_Y, D_OK_W,
-                        D_OK_H);
+  TextButtonClass okbtn(kButtonOk, TXT_OK, kTpfButton, kDOkX, kDOkY, kDOkW,
+                        kDOkH);
 
-  TextButtonClass cancelbtn(BUTTON_CANCEL, TXT_CANCEL, kTpfButton, D_CANCEL_X,
-                            D_CANCEL_Y, D_CANCEL_W, D_CANCEL_H);
+  TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL, kTpfButton, kDCancelX,
+                            kDCancelY, kDCancelW, kDCancelH);
 
   TextButtonClass* buttons[2];
   int curbutton = 0;
@@ -601,15 +591,15 @@ int Surrender_Dialog(const char* text) {
       //	Display the dialog box
       //..................................................................
       Hide_Mouse();
-      Dialog_Box(D_DIALOG_X, D_DIALOG_Y, D_DIALOG_W, D_DIALOG_H);
-      Draw_Caption(TXT_NONE, D_DIALOG_X, D_DIALOG_Y, D_DIALOG_W);
+      Dialog_Box(kDDialogX, kDDialogY, kDDialogW, kDDialogH);
+      Draw_Caption(TXT_NONE, kDDialogX, kDDialogY, kDDialogW);
 
       //...............................................................
       //	Draw the captions
       //...............................................................
       // Stalemate games.
-      Fancy_Text_Print(text, D_DIALOG_CX, D_DIALOG_Y + D_TOPMARGIN,
-                       GadgetClass::Get_Color_Scheme(), TBLACK,
+      Fancy_Text_Print(text, kDDialogCx, kDDialogY + kDTopmargin,
+                       GadgetClass::Get_Color_Scheme(), kTBlack,
                        TPF_CENTER | kTpfText);
 
       //..................................................................
@@ -628,12 +618,12 @@ int Surrender_Dialog(const char* text) {
     //	Process input
     //.....................................................................
     switch (static_cast<int>(input)) {
-      case ButtonKey(BUTTON_OK):
+      case ButtonKey(kButtonOk):
         retcode = 1;
         process = false;
         break;
 
-      case ButtonKey(BUTTON_CANCEL):
+      case ButtonKey(kButtonCancel):
         retcode = 0;
         process = false;
         break;
@@ -706,46 +696,40 @@ int Abort_Dialog() {
   //------------------------------------------------------------------------
   //	Dialog & button dimensions
   //------------------------------------------------------------------------
-  enum {
-    D_DIALOG_W = 340,                             // dialog width
-    D_DIALOG_H = 126,                             // dialog height
-    D_DIALOG_X = (640 - D_DIALOG_W) / 2,          // centered x-coord
-    D_DIALOG_Y = (400 - D_DIALOG_H) / 2,          // centered y-coord
-    D_DIALOG_CX = D_DIALOG_X + (D_DIALOG_W / 2),  // coord of x-center
-
-    D_TXT6_H = 14,     // ht of 6-pt text
-    D_MARGIN = 10,     // margin width/height
-    D_TOPMARGIN = 40,  // top margin
-
-    D_YES_W = 90,                                                  // YES width
-    D_YES_H = 18,                                                  // YES height
-    D_YES_X = D_DIALOG_CX - D_YES_W - 10,                          // YES x
-    D_YES_Y = D_DIALOG_Y + D_DIALOG_H - D_YES_H - (D_MARGIN * 2),  // YES y
-
-    D_NO_W = 90,                // Cancel width
-    D_NO_H = 18,                // Cancel height
-    D_NO_X = D_DIALOG_CX + 10,  // Cancel x
-    D_NO_Y = D_DIALOG_Y + D_DIALOG_H - D_NO_H - (D_MARGIN * 2),  // Cancel y
-  };
+  constexpr int kDDialogW = 340;                           // dialog width
+  constexpr int kDDialogH = 126;                           // dialog height
+  constexpr int kDDialogX = (640 - kDDialogW) / 2;         // centered x-coord
+  constexpr int kDDialogY = (400 - kDDialogH) / 2;         // centered y-coord
+  constexpr int kDDialogCx = kDDialogX + (kDDialogW / 2);  // coord of x-center
+  constexpr int kDMargin = 10;                      // margin width/height
+  constexpr int kDTopmargin = 40;                   // top margin
+  constexpr int kDYesW = 90;                        // YES width
+  constexpr int kDYesH = 18;                        // YES height
+  constexpr int kDYesX = kDDialogCx - kDYesW - 10;  // YES x
+  constexpr int kDYesY =
+      kDDialogY + kDDialogH - kDYesH - (kDMargin * 2);  // YES y
+  constexpr int kDNoW = 90;                             // Cancel width
+  constexpr int kDNoH = 18;                             // Cancel height
+  constexpr int kDNoX = kDDialogCx + 10;                // Cancel x
+  constexpr int kDNoY =
+      kDDialogY + kDDialogH - kDNoH - (kDMargin * 2);  // Cancel y
 
   //------------------------------------------------------------------------
   //	Button enumerations
   //------------------------------------------------------------------------
-  enum {
-    BUTTON_YES = 100,
-    BUTTON_NO,
-  };
+  constexpr int kButtonYes = 100;
+  constexpr int kButtonNo = 101;
 
   //------------------------------------------------------------------------
   //	Buttons
   //------------------------------------------------------------------------
   ControlClass* commands = nullptr;  // the button list
 
-  TextButtonClass yesbtn(BUTTON_YES, TXT_YES, kTpfButton, D_YES_X, D_YES_Y,
-                         D_YES_W, D_YES_H);
+  TextButtonClass yesbtn(kButtonYes, TXT_YES, kTpfButton, kDYesX, kDYesY,
+                         kDYesW, kDYesH);
 
-  TextButtonClass nobtn(BUTTON_NO, TXT_NO, kTpfButton, D_NO_X, D_NO_Y, D_NO_W,
-                        D_NO_H);
+  TextButtonClass nobtn(kButtonNo, TXT_NO, kTpfButton, kDNoX, kDNoY, kDNoW,
+                        kDNoH);
 
   TextButtonClass* buttons[2];
   int curbutton = 0;
@@ -790,15 +774,15 @@ int Abort_Dialog() {
       //	Display the dialog box
       //..................................................................
       Hide_Mouse();
-      Dialog_Box(D_DIALOG_X, D_DIALOG_Y, D_DIALOG_W, D_DIALOG_H);
-      Draw_Caption(TXT_NONE, D_DIALOG_X, D_DIALOG_Y, D_DIALOG_W);
+      Dialog_Box(kDDialogX, kDDialogY, kDDialogW, kDDialogH);
+      Draw_Caption(TXT_NONE, kDDialogX, kDDialogY, kDDialogW);
 
       //...............................................................
       //	Draw the captions
       //...............................................................
-      Fancy_Text_Print(
-          Text_String(TXT_CONFIRM_EXIT), D_DIALOG_CX, D_DIALOG_Y + D_TOPMARGIN,
-          GadgetClass::Get_Color_Scheme(), TBLACK, TPF_CENTER | kTpfText);
+      Fancy_Text_Print(Text_String(TXT_CONFIRM_EXIT), kDDialogCx,
+                       kDDialogY + kDTopmargin, GadgetClass::Get_Color_Scheme(),
+                       kTBlack, TPF_CENTER | kTpfText);
 
       //..................................................................
       //	Redraw the buttons
@@ -816,12 +800,12 @@ int Abort_Dialog() {
     //	Process input
     //.....................................................................
     switch (static_cast<int>(input)) {
-      case ButtonKey(BUTTON_YES):
+      case ButtonKey(kButtonYes):
         retcode = 1;
         process = false;
         break;
 
-      case ButtonKey(BUTTON_NO):
+      case ButtonKey(kButtonNo):
         retcode = 0;
         process = false;
         break;

@@ -104,7 +104,7 @@
 ListClass::ListClass(int id, int x, int y, int w, int h, TextPrintType flags,
                      const void* up, const void* down)
     : ControlClass(static_cast<unsigned>(id), x, y, w, h,
-                   LEFTPRESS | LEFTRELEASE | KEYBOARD, false),
+                   kLeftPress | kLeftRelease | kKeyboard, false),
       TextFlags(flags),
       LineHeight(FontHeight + FontYSpacing - 1),
       LineCount((h - 1) / LineHeight),
@@ -128,7 +128,7 @@ ListClass::ListClass(int id, int x, int y, int w, int h, TextPrintType flags,
   **	Set the list box to a default state.
   */
 
-  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, TextFlags);
+  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack, TextFlags);
 }
 
 void ListClass::Set_Position(int x, int y) {
@@ -295,16 +295,16 @@ void ListClass::Set_Item(int index, std::string_view text) {
  * HISTORY:          01/05/1995 MML : Created.                             *
  *=========================================================================*/
 bool ListClass::Action(unsigned flags, KeyNumType& key) {
-  if (flags & LEFTRELEASE) {
+  if (flags & kLeftRelease) {
     key = KN_NONE;
-    flags &= ~LEFTRELEASE;
+    flags &= ~kLeftRelease;
     ControlClass::Action(flags, key);
     return true;
   }
   /*
    ** Handle keyboard events here.
    */
-  if (flags & KEYBOARD) {
+  if (flags & kKeyboard) {
     /*
     **	Process the keyboard character. If indicated, consume this
     *keyboard event *	so that the edit gadget ID number is not returned.
@@ -316,7 +316,7 @@ bool ListClass::Action(unsigned flags, KeyNumType& key) {
       Step_Selected_Index(1);
       key = KN_NONE;
     } else {
-      flags &= ~KEYBOARD;
+      flags &= ~kKeyboard;
     }
 
   } else {
@@ -514,7 +514,7 @@ int ListClass::Current_Index() const { return SelectedIndex; }
  *=============================================================================================*/
 void ListClass::Peer_To_Peer(unsigned flags, KeyNumType& /*unused*/,
                              ControlClass& whom) {
-  if (flags & LEFTRELEASE) {
+  if (flags & kLeftRelease) {
     if (&whom == &UpGadget) {
       Step(true);
     }
@@ -701,13 +701,13 @@ void ListClass::Draw_Entry(int index, int x, int y, int width, bool selected) {
     LogicPage->Fill_Rect(x, y, x + width - 1, y + LineHeight - 1,
                          scheme->Shadow);
   } else {
-    if (!(flags & TPF_USE_GRAD_PAL)) {
+    if (!base::Any(flags & TPF_USE_GRAD_PAL)) {
       flags = flags | TPF_MEDIUM_COLOR;
     }
   }
 
   Conquer_Clip_Text_Print(List[base::ToSize(index)].c_str(), x, y, scheme,
-                          TBLACK, flags, width, Tabs);
+                          kTBlack, flags, width, Tabs);
 }
 
 /***********************************************************************************************

@@ -55,6 +55,7 @@
 #include <cstddef>
 #include <cstdint>
 
+#include "base/numeric.h"
 #include "ra/cell.h"
 #include "ra/config.h"
 #include "ra/defines.h"
@@ -118,24 +119,26 @@ void TriggerClass::Draw_It(int /*unused*/, int x, int y, int width, int height,
   if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
     RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
     static int _tabs[] = {13, 40};
-    if ((flags & 0x0F) == TPF_6PT_GRAD || (flags & 0x0F) == TPF_EFNT) {
+    const uint32_t font = static_cast<uint32_t>(flags) & 0x0FU;
+    if (font == static_cast<uint32_t>(TPF_6PT_GRAD) ||
+        font == static_cast<uint32_t>(TPF_EFNT)) {
       if (selected) {
         flags = flags | TPF_BRIGHT_COLOR;
         LogicPage->Fill_Rect(x, y, x + width - 1, y + height - 1,
                              scheme->Shadow);
       } else {
-        if (!(flags & TPF_USE_GRAD_PAL)) {
+        if (!base::Any(flags & TPF_USE_GRAD_PAL)) {
           flags = flags | TPF_MEDIUM_COLOR;
         }
       }
 
-      Conquer_Clip_Text_Print(Description(), x, y, scheme, TBLACK, flags, width,
-                              _tabs);
+      Conquer_Clip_Text_Print(Description(), x, y, scheme, kTBlack, flags,
+                              width, _tabs);
     } else {
       Conquer_Clip_Text_Print(Description(), x, y,
                               (selected ? &ColorRemaps[PCOLOR_DIALOG_BLUE]
                                         : &ColorRemaps[PCOLOR_GREY]),
-                              TBLACK, flags, width, _tabs);
+                              kTBlack, flags, width, _tabs);
     }
   }
 }
@@ -175,7 +178,7 @@ TriggerClass::TriggerClass() : RTTI(RTTI_TRIGGER), ID(Triggers.ID(this)) {}
  *=============================================================================================*/
 TriggerClass::~TriggerClass() {
   if ((GameActive && Class.Is_Valid() &&
-       (Class->Attaches_To() & ATTACH_GENERAL) != 0) &&
+       base::Any(Class->Attaches_To() & ATTACH_GENERAL)) &&
       (LogicTriggerID >= LogicTriggers.ID(this))) {
     LogicTriggerID--;
     if (LogicTriggerID < 0 && LogicTriggers.Count() == 0) {
@@ -184,7 +187,7 @@ TriggerClass::~TriggerClass() {
   }
 
   if ((GameActive && Class.Is_Valid() &&
-       (Class->Attaches_To() & ATTACH_MAP) != 0) &&
+       base::Any(Class->Attaches_To() & ATTACH_MAP)) &&
       (MapTriggerID >= MapTriggers.ID(this))) {
     MapTriggerID--;
     if (MapTriggerID < 0 && MapTriggers.Count() == 0) {
@@ -194,10 +197,11 @@ TriggerClass::~TriggerClass() {
 
   if (GameActive && Class->House != HOUSE_NONE &&
       Class->Action1.Action == TACTION_ALLOWWIN) {
-    if (Houses.Ptr(Class->House)->Blockage) {
-      Houses.Ptr(Class->House)->Blockage--;
+    if (HouseClass::As_Pointer(Class->House)->Blockage) {
+      HouseClass::As_Pointer(Class->House)->Blockage--;
     }
-    Houses.Ptr(Class->House)->BorrowedTime.Set(int64_t{kTicksPerSecond} * 4);
+    HouseClass::As_Pointer(Class->House)
+        ->BorrowedTime.Set(int64_t{kTicksPerSecond} * 4);
   }
   ID = -1;
 }

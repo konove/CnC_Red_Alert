@@ -64,12 +64,8 @@ class LoadOptionsClass {
   /*
   ** This defines the style of the dialog
   */
-  typedef enum OperationModeEnum {
-    NONE = 0,
-    LOAD,
-    SAVE,
-    WWDELETE
-  } LoadStyleType;
+  enum class LoadStyleType { NONE = 0, LOAD, SAVE, WWDELETE };
+  using enum LoadStyleType;
 
   explicit LoadOptionsClass(LoadStyleType style = NONE);
   ~LoadOptionsClass();

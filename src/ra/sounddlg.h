@@ -43,62 +43,61 @@
 #include "ra/config.h"
 
 class SoundControlsClass {
-  enum SoundControlsClassEnums {
-    OPTION_WIDTH = config::kIsFrench ? 308 : 292,
-    OPTION_HEIGHT = 146,
+  static constexpr int kOptionWidth = config::kIsFrench ? 308 : 292;
+  static constexpr int kOptionHeight = 146;
 
-    OPTION_X = (320 - OPTION_WIDTH) / 2,
-    OPTION_Y = (200 - OPTION_HEIGHT) / 2,
+  static constexpr int kOptionX = (320 - kOptionWidth) / 2;
+  static constexpr int kOptionY = (200 - kOptionHeight) / 2;
 
-    LISTBOX_X = 17,
-    LISTBOX_Y = 54,
-    LISTBOX_W = OPTION_WIDTH - (LISTBOX_X * 2),
-    LISTBOX_H = 72,
+  static constexpr int kListboxX = 17;
+  static constexpr int kListboxY = 54;
+  static constexpr int kListboxW = kOptionWidth - (kListboxX * 2);
+  static constexpr int kListboxH = 72;
 
-    BUTTON_WIDTH = 70,
-    BUTTON_X = OPTION_WIDTH - (BUTTON_WIDTH + 17),  // Options button x pos
-    BUTTON_Y = 128,                                 // Options button y pos
+  static constexpr int kButtonWidth = 70;
+  static constexpr int kButtonX =
+      kOptionWidth - (kButtonWidth + 17);  // Options button x pos
+  static constexpr int kButtonY = 128;     // Options button y pos
 
-    STOP_X = 17,   // Stop button X.
-    STOP_Y = 128,  //	Stop button Y.
+  static constexpr int kStopX = 17;   // Stop button X.
+  static constexpr int kStopY = 128;  //	Stop button Y.
 
-    PLAY_X = 35,
-    PLAY_Y = 128,
+  static constexpr int kPlayX = 35;
+  static constexpr int kPlayY = 128;
 
-    ONOFF_WIDTH = 25,
-    SHUFFLE_X = [] {
-      if (config::kIsGerman) {
-        return 79;
-      }
-      if (config::kIsFrench) {
-        return 99;
-      }
-      return 97;
-    }(),
-    SHUFFLE_Y = 128,
+  static constexpr int kOnoffWidth = 25;
+  static constexpr int kShuffleX = [] {
+    if (config::kIsGerman) {
+      return 79;
+    }
+    if (config::kIsFrench) {
+      return 99;
+    }
+    return 97;
+  }();
+  static constexpr int kShuffleY = 128;
 
-    REPEAT_X = config::kIsFrench ? 169 : 164,
-    REPEAT_Y = 128,
+  static constexpr int kRepeatX = config::kIsFrench ? 169 : 164;
+  static constexpr int kRepeatY = 128;
 
-    MSLIDER_X = 147,
-    MSLIDER_Y = 28,
-    MSLIDER_W = 108,
-    MSLIDER_HEIGHT = 5,
+  static constexpr int kMsliderX = 147;
+  static constexpr int kMsliderY = 28;
+  static constexpr int kMsliderW = 108;
+  static constexpr int kMsliderHeight = 5;
 
-    FXSLIDER_X = 147,
-    FXSLIDER_Y = 40,
-    FXSLIDER_W = 108,
-    FXSLIDER_HEIGHT = 5,
+  static constexpr int kFxsliderX = 147;
+  static constexpr int kFxsliderY = 40;
+  static constexpr int kFxsliderW = 108;
+  static constexpr int kFxsliderHeight = 5;
 
-    BUTTON_STOP = 605,
-    BUTTON_PLAY = 606,
-    BUTTON_SHUFFLE = 607,
-    BUTTON_REPEAT = 608,
-    BUTTON_OPTIONS = 609,
-    SLIDER_MUSIC = 610,
-    SLIDER_SOUND = 611,
-    BUTTON_LISTBOX = 612,
-  };
+  static constexpr int kButtonStop = 605;
+  static constexpr int kButtonPlay = 606;
+  static constexpr int kButtonShuffle = 607;
+  static constexpr int kButtonRepeat = 608;
+  static constexpr int kButtonOptions = 609;
+  static constexpr int kSliderMusic = 610;
+  static constexpr int kSliderSound = 611;
+  static constexpr int kButtonListbox = 612;
 
  public:
   SoundControlsClass() = default;

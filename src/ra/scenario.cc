@@ -79,6 +79,8 @@
 
 #include "absl/log/log.h"
 #include "absl/strings/str_format.h"
+#include "base/enum_array.h"
+#include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
@@ -548,13 +550,13 @@ void Fill_In_Data() {
 
     assert(tp != nullptr);
 
-    if (tp->Attaches_To() & ATTACH_MAP) {
+    if (base::Any(tp->Attaches_To() & ATTACH_MAP)) {
       MapTriggers.Add(Find_Or_Make(tp));
     }
-    if (tp->Attaches_To() & ATTACH_GENERAL) {
+    if (base::Any(tp->Attaches_To() & ATTACH_GENERAL)) {
       LogicTriggers.Add(Find_Or_Make(tp));
     }
-    if (tp->Attaches_To() & ATTACH_HOUSE) {
+    if (base::Any(tp->Attaches_To() & ATTACH_HOUSE)) {
       HouseTriggers[tp->House].Add(Find_Or_Make(tp));
     }
   }
@@ -801,7 +803,8 @@ void Do_Win() {
     Set_Logic_Page(SeenBuff);
     Map.Flag_To_Redraw(true);
     Map.Render();
-    Fancy_Text_Print(TXT_SCENARIO_WON, x, 180, &ColorRemaps[PCOLOR_RED], TBLACK,
+    Fancy_Text_Print(TXT_SCENARIO_WON, x, 180, &ColorRemaps[PCOLOR_RED],
+                     kTBlack,
                      TPF_CENTER | TPF_VCR | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
     CountDownTimer.Set(int64_t{kTimerSecond} * 3);
     while (Is_Speaking()) {
@@ -1017,7 +1020,7 @@ void Do_Lose() {
   **	Announce win to player.
   */
   Set_Logic_Page(SeenBuff);
-  Fancy_Text_Print(TXT_SCENARIO_LOST, x, 180, &ColorRemaps[PCOLOR_RED], TBLACK,
+  Fancy_Text_Print(TXT_SCENARIO_LOST, x, 180, &ColorRemaps[PCOLOR_RED], kTBlack,
                    TPF_CENTER | TPF_VCR | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
   CountDownTimer.Set(int64_t{kTimerSecond} * 3);
   while (Is_Speaking()) {
@@ -1106,7 +1109,7 @@ void Do_Draw() {
   **	Announce win to player.
   */
   Set_Logic_Page(SeenBuff);
-  Fancy_Text_Print(TXT_WOL_DRAW, x, 180, &ColorRemaps[PCOLOR_RED], TBLACK,
+  Fancy_Text_Print(TXT_WOL_DRAW, x, 180, &ColorRemaps[PCOLOR_RED], kTBlack,
                    TPF_CENTER | TPF_VCR | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
   CountDownTimer.Set(int64_t{kTimerSecond} * 3);
   while (Is_Speaking()) {
@@ -1210,7 +1213,7 @@ BriefingAction Restate_Mission() {
 static constexpr int kButton1 = 1;
 static constexpr int kButton2 = 2;
 static constexpr int kButton3 = 3;
-static constexpr uint32_t kButtonFlag =
+static constexpr uint32_t kBriefingButtonFlag =
     0x8000;  // Set in a pressed button's key.
 
 // Maximum characters to display per page of briefing text.
@@ -1288,7 +1291,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
     b3txt = nullptr;
   }
 
-  Fancy_Text_Print(TXT_NONE, 0, 0, &ColorRemaps[PCOLOR_TYPE], TBLACK,
+  Fancy_Text_Print(TXT_NONE, 0, 0, &ColorRemaps[PCOLOR_TYPE], kTBlack,
                    TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
   /*
   **	Examine the optional button parameters. Fetch the width and starting
@@ -1343,7 +1346,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
   // Copy to mutable buffer for Format_Window_String (which inserts newlines).
   page_text.copy(buffer, page_text.size());
   buffer[page_text.size()] = '\0';
-  Fancy_Text_Print(TXT_NONE, 0, 0, &ColorRemaps[PCOLOR_TYPE], TBLACK,
+  Fancy_Text_Print(TXT_NONE, 0, 0, &ColorRemaps[PCOLOR_TYPE], kTBlack,
                    TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
   int width = 0;
   int height = 0;
@@ -1438,7 +1441,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
 
     } else {
       if (bufprint[0] != 20) {
-        SeenBuff.Print(bufprint, xprint, yprint, TBLACK, TBLACK);
+        SeenBuff.Print(bufprint, xprint, yprint, kTBlack, kTBlack);
         xprint += Char_Pixel_Width(bufprint[0]);
       }
     }
@@ -1474,7 +1477,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
       // Fetch and process input.
       const KeyNumType input = buttonlist->Input();  // user input
       switch (static_cast<uint32_t>(input)) {
-        case kButtonFlag | uint32_t{kButton1}:
+        case kBriefingButtonFlag | uint32_t{kButton1}:
           selection = realval[0];
           pressed = true;
           break;
@@ -1489,12 +1492,12 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
           }
           break;
 
-        case kButtonFlag | uint32_t{kButton2}:
+        case kBriefingButtonFlag | uint32_t{kButton2}:
           selection = kButton2;
           pressed = true;
           break;
 
-        case kButtonFlag | uint32_t{kButton3}:
+        case kBriefingButtonFlag | uint32_t{kButton3}:
           selection = realval[1];
           pressed = true;
           break;
@@ -1705,7 +1708,7 @@ void ScenarioClass::Set_Scenario_Name(int scenario, ScenarioPlayerType player,
         break;
       }
       absl::SNPrintF(fname, sizeof(fname), "SC%c%02d%c%c.INI", c_player,
-                     scenario, c_dir, 'A' + candidate);
+                     scenario, c_dir, 'A' + static_cast<int>(candidate));
       if (!GameFile(fname).IsAvailable()) {
         break;
       }
@@ -2320,7 +2323,7 @@ void Write_Scenario_INI(const char* fname) {
  *=============================================================================================*/
 void Assign_Houses() {
   int assigned[kMaxPlayers];
-  bool color_used[8];
+  base::EnumArray<PlayerColorType, bool, 8> color_used{};
   HousesType house = HOUSE_NONE;
   HouseClass* housep = nullptr;
   int color = 0;
@@ -2330,7 +2333,7 @@ void Assign_Houses() {
   //------------------------------------------------------------------------
   for (int i = 0; i < kMaxPlayers; i++) {
     assigned[i] = 0;
-    color_used[i] = false;
+    color_used[static_cast<PlayerColorType>(i)] = false;
   }
 
   //	debugprint( "Assign_Houses()\n" );
@@ -2344,7 +2347,7 @@ void Assign_Houses() {
     // Find the player with the lowest color index
     //.....................................................................
     int index = 0;
-    int lowest_color = 255;
+    PlayerColorType lowest_color = PCOLOR_NONE;
     for (int j = 0; j < Session.Players.Count(); j++) {
       //..................................................................
       // If we've already assigned this house, skip it.
@@ -2352,7 +2355,8 @@ void Assign_Houses() {
       if (assigned[j]) {
         continue;
       }
-      if (Session.Players[j]->Player.Color < lowest_color) {
+      if (lowest_color == PCOLOR_NONE ||
+          Session.Players[j]->Player.Color < lowest_color) {
         lowest_color = Session.Players[j]->Player.Color;
         index = j;
       }
@@ -2368,7 +2372,7 @@ void Assign_Houses() {
     // Assign the lowest-color'd player to the next available slot in the
     // HouseClass array.
     //.....................................................................
-    house = static_cast<HousesType>(i + HOUSE_MULTI1);
+    house = static_cast<HousesType>(i + static_cast<int>(HOUSE_MULTI1));
     housep = HouseClass::As_Pointer(house);
     port::SafeCopy(housep->IniName, Session.Players[index]->Name);
     // A second copy that stays put for the whole game -- see InitialName.
@@ -2402,7 +2406,7 @@ void Assign_Houses() {
   //------------------------------------------------------------------------
   for (int i = static_cast<int>(Session.Players.Count());
        i < Session.Players.Count() + Session.Options.AIPlayers; i++) {
-    house = static_cast<HousesType>(i + HOUSE_MULTI1);
+    house = static_cast<HousesType>(i + static_cast<int>(HOUSE_MULTI1));
     housep = HouseClass::As_Pointer(house);
     const HousesType pref_house =
         Percent_Chance(50) ? HOUSE_GREECE : HOUSE_USSR;
@@ -2412,11 +2416,11 @@ void Assign_Houses() {
     //.....................................................................
     while (true) {
       color = Random_Pick(0, 7);
-      if (!color_used[color]) {
+      if (!color_used[static_cast<PlayerColorType>(color)]) {
         break;
       }
     }
-    color_used[color] = true;
+    color_used[static_cast<PlayerColorType>(color)] = true;
 
     //.....................................................................
     // Set up the house
@@ -2443,7 +2447,7 @@ void Assign_Houses() {
 
     if (Session.Players.Count() > 1 && Rule.IsCompEasyBonus &&
         difficulty > DIFF_EASY) {
-      difficulty = static_cast<DiffType>(difficulty - 1);
+      difficulty = static_cast<DiffType>(static_cast<int>(difficulty) - 1);
     }
     housep->Assign_Handicap(difficulty);
   }
@@ -2451,7 +2455,7 @@ void Assign_Houses() {
   for (int i = static_cast<int>(Session.Players.Count()) +
                Session.Options.AIPlayers;
        i < Rule.MaxPlayers; i++) {
-    house = static_cast<HousesType>(i + HOUSE_MULTI1);
+    house = static_cast<HousesType>(i + static_cast<int>(HOUSE_MULTI1));
     housep = HouseClass::As_Pointer(house);
     if (housep != nullptr) {
       housep->IsDefeated = true;
@@ -2474,7 +2478,8 @@ static void Remove_AI_Players() {
   int aicount = 0;
 
   for (int i = 0; i < kMaxPlayers; i++) {
-    const auto house = static_cast<HousesType>(i + HOUSE_MULTI1);
+    const auto house =
+        static_cast<HousesType>(i + static_cast<int>(HOUSE_MULTI1));
     HouseClass* housep = HouseClass::As_Pointer(house);
     if (!static_cast<bool>(housep->IsHuman)) {
       aicount++;
@@ -2672,8 +2677,9 @@ static void Create_Units(bool official) {
   *we have no base-building *	AI logic.)
   */
   int numtaken = 0;
-  for (HousesType house = HOUSE_MULTI1;
-       house < HOUSE_MULTI1 + Session.MaxPlayers; house++) {
+  for (int slot = 0; slot < Session.MaxPlayers; slot++) {
+    const auto house =
+        static_cast<HousesType>(static_cast<int>(HOUSE_MULTI1) + slot);
     /*
     **	Get a pointer to this house; if there is none, go to the next house
     */
@@ -3183,5 +3189,6 @@ void Disect_Scenario_Name(const char* name, int& scenario,
   **	Fetch the variation.
   */
   var = SCEN_VAR_A;
-  var = static_cast<ScenarioVarType>(name[6] - 'A' + SCEN_VAR_A);
+  var = static_cast<ScenarioVarType>(name[6] - 'A' +
+                                     static_cast<int>(SCEN_VAR_A));
 }

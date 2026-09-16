@@ -22,6 +22,7 @@
 #include <cstdint>
 #include <vector>
 
+#include "base/enum_array.h"
 #include "base/numeric.h"
 #include "ra/ccini.h"
 #include "ra/defines.h"
@@ -71,7 +72,7 @@ class DisplayClass : public MapClass {
   **	These layer control elements are used to group the displayable objects
   **	so that proper overlap can be obtained.
   */
-  static LayerClass Layer[magic_enum::enum_count<LayerType>()];
+  static base::EnumArray<LayerType, LayerClass> Layer;
 
   /*
   **	This records the position and shape of a placement cursor to display
@@ -139,7 +140,7 @@ class DisplayClass : public MapClass {
   virtual bool Map_Cell(CELL cell, HouseClass* house);
   [[nodiscard]] virtual CELL Click_Cell_Calc(int x, int y) const;
   virtual void Help_Text(int /*unused*/, int /*unused*/ = -1,
-                         int /*unused*/ = -1, int /*unused*/ = YELLOW,
+                         int /*unused*/ = -1, int /*unused*/ = kYellow,
                          bool /*unused*/ = false) {}
   [[nodiscard]] virtual MouseType Get_Mouse_Shape() const = 0;
   virtual bool Scroll_Map(DirType facing, int& distance, bool really);
@@ -282,9 +283,10 @@ class DisplayClass : public MapClass {
   class TacticalClass : public GadgetClass {
    public:
     TacticalClass() noexcept
-        : GadgetClass(0, 0, 0, 0,
-                      LEFTPRESS | LEFTRELEASE | LEFTHELD | LEFTUP | RIGHTPRESS,
-                      true) {}
+        : GadgetClass(
+              0, 0, 0, 0,
+              kLeftPress | kLeftRelease | kLeftHeld | kLeftUp | kRightPress,
+              true) {}
 
    protected:
     bool Action(unsigned flags, KeyNumType& key) override;

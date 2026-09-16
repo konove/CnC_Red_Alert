@@ -40,7 +40,7 @@
 EditClass::EditClass(const int id, char* text, const int max_len,
                      const TextPrintType flags, const int x, const int y,
                      const int w, const int h, const EditStyle style)
-    : ControlClass(static_cast<unsigned>(id), x, y, w, h, LEFTPRESS),
+    : ControlClass(static_cast<unsigned>(id), x, y, w, h, kLeftPress),
       TextFlags(flags & ~TPF_CENTER),
       EditFlags(style),
       String(text),
@@ -50,7 +50,7 @@ EditClass::EditClass(const int id, char* text, const int max_len,
   GadgetClass::Flag_To_Redraw();
 
   if (w == -1 || h == -1) {
-    Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, TextFlags);
+    Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack, TextFlags);
 
     if (h == -1) {
       Height = FontHeight + 1;
@@ -105,13 +105,13 @@ bool EditClass::Action(unsigned flags, KeyNumType& key) {
 
   // Claim focus on left-click. Clear the press flag so no button ID is
   // returned.
-  if (flags & LEFTPRESS) {
-    flags &= ~LEFTPRESS;
+  if (flags & kLeftPress) {
+    flags &= ~kLeftPress;
     Set_Focus();
     Flag_To_Redraw();
   }
 
-  if (flags & KEYBOARD && Has_Focus()) {
+  if (flags & kKeyboard && Has_Focus()) {
     // ESC clears focus without returning the gadget ID.
     if (key == KN_ESC) {
       Clear_Focus();
@@ -124,9 +124,9 @@ bool EditClass::Action(unsigned flags, KeyNumType& key) {
       // Allow numeric keypad presses to map to ascii numbers.
       if (key & WWKEY_VK_BIT && ascii >= '0' && ascii <= '9') {
         key = static_cast<KeyNumType>(key & ~WWKEY_VK_BIT);
-        if ((!(flags & LEFTRELEASE) && !(flags & RIGHTRELEASE)) &&
+        if ((!(flags & kLeftRelease) && !(flags & kRightRelease)) &&
             Handle_Key(ascii)) {
-          flags &= ~KEYBOARD;
+          flags &= ~kKeyboard;
           key = KN_NONE;
         }
 
@@ -134,14 +134,14 @@ bool EditClass::Action(unsigned flags, KeyNumType& key) {
         // Filter out all special keys except return and backspace.
         if ((!(key & WWKEY_VK_BIT) && ascii >= ' ' && ascii <= 255) ||
             key == KN_RETURN || key == KN_BACKSPACE) {
-          if ((!(flags & LEFTRELEASE) && !(flags & RIGHTRELEASE)) &&
+          if ((!(flags & kLeftRelease) && !(flags & kRightRelease)) &&
               Handle_Key(KeyboardClass::To_ASCII(key))) {
-            flags &= ~KEYBOARD;
+            flags &= ~kKeyboard;
             key = KN_NONE;
           }
 
         } else {
-          flags &= ~KEYBOARD;
+          flags &= ~kKeyboard;
           key = KN_NONE;
         }
       }
@@ -159,13 +159,13 @@ void EditClass::Draw_Text(const char* text) {
   const TextPrintType flags =
       Has_Focus() ? TPF_BRIGHT_COLOR : static_cast<TextPrintType>(0);
 
-  Conquer_Clip_Text_Print(text, X + 1, Y + 1, Color, TBLACK, TextFlags | flags,
+  Conquer_Clip_Text_Print(text, X + 1, Y + 1, Color, kTBlack, TextFlags | flags,
                           Width - 2);
 
   if (Has_Focus() && std::cmp_less(strlen(text), MaxLength) &&
       String_Pixel_Width(text) + String_Pixel_Width("_") < Width - 2) {
     Conquer_Clip_Text_Print("_", X + 1 + String_Pixel_Width(text), Y + 1, Color,
-                            TBLACK, TextFlags | flags);
+                            kTBlack, TextFlags | flags);
   }
 }
 

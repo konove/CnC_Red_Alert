@@ -47,7 +47,6 @@
 #include <cstring>
 #include <span>
 #include <string>
-#include <utility>
 #include <vector>
 
 #include "absl/log/log.h"
@@ -357,8 +356,8 @@ static void Put_All(ByteSink& pipe, int save_net) {
   }
 
   Put_Section(pipe, FourCC("LAYR"));
-  for (int i = 0; std::cmp_less(i, magic_enum::enum_count<LayerType>()); i++) {
-    writer(MouseClass::Layer[i]);
+  for (const LayerType layer : magic_enum::enum_values<LayerType>()) {
+    writer(MouseClass::Layer[layer]);
   }
 
   if (!save_net) {
@@ -518,7 +517,7 @@ bool Save_Game(int id, const char* descr, bool /*unused*/) {
   Sha1Sink sha(fpipe);
   BlowfishSink bpipe(CipherMode::kEncrypt, sha);
   LzoSink pipe(CodecMode::kCompress, bpipe, SAVE_BLOCK_SIZE);
-  bpipe.Key(&FastKey, BlowfishEngine::MAX_KEY_LENGTH);
+  bpipe.Key(&FastKey, BlowfishEngine::kMaxKeyLength);
 
   // Tee the field-wise body before compression. The dump has Section tags
   // but no save header, encryption, or digest, so it can be compared directly.
@@ -596,7 +595,6 @@ bool Save_Game(int id, const char* descr, bool /*unused*/) {
  *=========================================================================*/
 bool Load_Game(int id) {
   char name[kMaxFname + kMaxExt];
-  int i = 0;
   HousesType house = HOUSE_NONE;
   char descr_buf[kDescripMax];
   int load_net = 0;  // 1 = save network/modem game
@@ -688,7 +686,7 @@ bool Load_Game(int id) {
   file.Seek(pos, SeekOrigin::kBegin);
   BlowfishSource bstraw(CipherMode::kDecrypt, fstraw);
   LzoSource straw(CodecMode::kDecompress, bstraw, SAVE_BLOCK_SIZE);
-  bstraw.Key(&FastKey, BlowfishEngine::MAX_KEY_LENGTH);
+  bstraw.Key(&FastKey, BlowfishEngine::kMaxKeyLength);
 
   /*
   **	Clear the scenario so we start fresh; this calls the Init_Clear()
@@ -860,8 +858,8 @@ bool Load_Game(int id) {
   if (!Get_Section(straw, FourCC("LAYR"))) {
     return false;
   }
-  for (i = 0; std::cmp_less(i, magic_enum::enum_count<LayerType>()); i++) {
-    reader(MouseClass::Layer[i]);
+  for (const LayerType layer : magic_enum::enum_values<LayerType>()) {
+    reader(MouseClass::Layer[layer]);
     if (!reader.ok()) {
       return false;
     }
@@ -1354,7 +1352,9 @@ static bool Reconcile_Players() {
   for (int i = 0; i < Session.Players.Count(); i++) {
     found = 0;
     for (HousesType house = HOUSE_MULTI1;
-         house < HOUSE_MULTI1 + Session.MaxPlayers; house++) {
+         static_cast<int>(house) <
+         static_cast<int>(HOUSE_MULTI1) + Session.MaxPlayers;
+         house++) {
       housep = HouseClass::As_Pointer(house);
       if (!housep) {
         continue;
@@ -1375,7 +1375,9 @@ static bool Reconcile_Players() {
   // not connected to, turn it over to the computer.
   //
   for (HousesType house = HOUSE_MULTI1;
-       house < HOUSE_MULTI1 + Session.MaxPlayers; house++) {
+       static_cast<int>(house) <
+       static_cast<int>(HOUSE_MULTI1) + Session.MaxPlayers;
+       house++) {
     housep = HouseClass::As_Pointer(house);
     if (!housep) {
       continue;

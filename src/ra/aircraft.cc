@@ -114,6 +114,7 @@
 #include <iterator>
 
 #include "absl/log/check.h"
+#include "base/enum_array.h"
 #include "base/trig.h"
 #include "base/types.h"
 #include "magic_enum/magic_enum.hpp"
@@ -296,7 +297,7 @@ void AircraftClass::operator delete(void* ptr) {
  *=============================================================================================*/
 AircraftClass::AircraftClass(AircraftType classid, HousesType house)
     : FootClass(RTTI_AIRCRAFT, Aircraft.ID(this), house),
-      Class(AircraftTypes.Ptr(classid)),
+      Class(AircraftTypes.Ptr(static_cast<int>(classid))),
       SecondaryFacing(PrimaryFacing) {
   /*
   **	For two shooters, clear out the second shot flag -- it will be set the
@@ -308,7 +309,7 @@ AircraftClass::AircraftClass(AircraftType classid, HousesType house)
   IsSecondShot = !Class->Is_Two_Shooter();
   House->Tracking_Add(this);
   Ammo = Class->MaxAmmo;
-  Height = FLIGHT_LEVEL;
+  Height = kFlightLevel;
   Strength = Class->MaxStrength;
   NavCom = kTargetNone;
 
@@ -360,8 +361,8 @@ bool AircraftClass::Unlimbo(COORDINATE coord, DirType dir) {
     **	Ensure that the owning house knows about the
     **	new object.
     */
-    House->AScan |= ScanBit(Class->Type);
-    House->ActiveAScan |= ScanBit(Class->Type);
+    House->AScan |= ScanBit(static_cast<int>(Class->Type));
+    House->ActiveAScan |= ScanBit(static_cast<int>(Class->Type));
 
     /*
     **	Hack it so that aircraft that are both passenger and cargo carrying
@@ -389,7 +390,7 @@ bool AircraftClass::Unlimbo(COORDINATE coord, DirType dir) {
     **	When starting at flight level, then give it speed. When landed
     **	then it must be stationary.
     */
-    if (Height == FLIGHT_LEVEL) {
+    if (Height == kFlightLevel) {
       Set_Speed(0xFF);
     } else {
       Set_Speed(0);
@@ -486,14 +487,15 @@ void AircraftClass::Draw_It(int x, int y, WindowNumberType window) const {
   */
   DirType rotation = DIR_N;
   if (Class->Rotation == 16) {
-    rotation = static_cast<DirType>(Rotation16[SecondaryFacing]);
+    rotation =
+        AsDirection(Rotation16[static_cast<int>(SecondaryFacing.Current())]);
   }
 
   /*
   **	Helicopters that are flying have a "bobbing" effect.
   */
   int jitter = 0;
-  if (Height == FLIGHT_LEVEL && Get_Speed() < 3) {
+  if (Height == kFlightLevel && static_cast<int>(Get_Speed()) < 3) {
     static const int _jitter[] = {0, 0, 0, 0, 1,  1,  1,  0,
                                   0, 0, 0, 0, -1, -1, -1, 0};
     jitter = _jitter[Frame % 16];
@@ -560,8 +562,8 @@ void AircraftClass::Draw_Rotors(int x, int y, WindowNumberType window) const {
   }
 
   if (*this == AIRCRAFT_TRANSPORT) {
-    const int _stretch[magic_enum::enum_count<FacingType>()] = {8, 9, 10, 9,
-                                                                8, 9, 10, 9};
+    const base::EnumArray<FacingType, int> _stretch = {8, 9, 10, 9,
+                                                       8, 9, 10, 9};
 
     /*
     **	Dual rotors offset along flight axis.
@@ -570,11 +572,13 @@ void AircraftClass::Draw_Rotors(int x, int y, WindowNumberType window) const {
     auto yy =
         static_cast<int16_t>(y - Lepton_To_Pixel(static_cast<LEPTON>(Height)));
     const FacingType face = Dir_Facing(SecondaryFacing);
-    base::MovePoint(xx, yy, SecondaryFacing.Current(), static_cast<int16_t>(_stretch[face]));
+    base::MovePoint(xx, yy, static_cast<uint8_t>(SecondaryFacing.Current()),
+                    static_cast<int16_t>(_stretch[face]));
     CC_Draw_Shape(AircraftTypeClass::RRotorData, shapenum, xx, yy - 2, window,
                   flags, nullptr, DisplayClass::UnitShadow);
 
-    base::MovePoint(xx, yy, SecondaryFacing.Current() + DIR_S,
+    base::MovePoint(xx, yy,
+                    static_cast<uint8_t>(SecondaryFacing.Current() + DIR_S),
                     static_cast<int16_t>(_stretch[face] * 2));
     CC_Draw_Shape(AircraftTypeClass::LRotorData, shapenum, xx, yy - 2, window,
                   flags, nullptr, DisplayClass::UnitShadow);
@@ -695,14 +699,18 @@ int AircraftClass::Mission_Hunt() {
       Assign_Destination(TarCom);
     }
 
-    enum { LOOK_FOR_TARGET, TAKE_OFF, FLY_TO_TARGET, DROP_BOMBS, REGROUP };
+    constexpr int kLookForTarget = 0;
+    constexpr int kTakeOff = 1;
+    constexpr int kFlyToTarget = 2;
+    constexpr int kDropBombs = 3;
+    constexpr int kRegroup = 4;
     switch (Status) {
       /*
       **	Acquiring target stage.
       */
-      case LOOK_FOR_TARGET:
+      case kLookForTarget:
         if (Target_Legal(TarCom)) {
-          Status = TAKE_OFF;
+          Status = kTakeOff;
           return 1;
         }
         if (!Team.Is_Valid()) {
@@ -726,7 +734,7 @@ int AircraftClass::Mission_Hunt() {
       /*
       **	Make the aircraft take off from the airstrip.
       */
-      case TAKE_OFF:
+      case kTakeOff:
         /*
         **	If the aircraft is high enough to begin its mission, then do so.
         */
@@ -741,14 +749,14 @@ int AircraftClass::Mission_Hunt() {
             Transmit_Message(RADIO_OVER_OUT);
           }
 
-          Status = FLY_TO_TARGET;
+          Status = kFlyToTarget;
         }
         return 1;
 
       /*
       **	Homing in on target stage.
       */
-      case FLY_TO_TARGET:
+      case kFlyToTarget:
         switch (Can_Fire(TarCom, 0)) {
           case FIRE_FACING:
             /*
@@ -765,20 +773,20 @@ int AircraftClass::Mission_Hunt() {
             break;
 
           case FIRE_AMMO:
-            Status = REGROUP;
+            Status = kRegroup;
             break;
 
           case FIRE_CANT:
           case FIRE_ILLEGAL:
             if (Mission == MISSION_ATTACK) {
-              Status = REGROUP;
+              Status = kRegroup;
             } else {
-              Status = LOOK_FOR_TARGET;
+              Status = kLookForTarget;
             }
             break;
 
           case FIRE_OK:
-            Status = DROP_BOMBS;
+            Status = kDropBombs;
             return 1;
 
           default:
@@ -792,7 +800,7 @@ int AircraftClass::Mission_Hunt() {
       /*
       **	Dropping a stream of bombs phase.
       */
-      case DROP_BOMBS: {
+      case kDropBombs: {
         TARGET targ = kTargetNone;
         switch (Can_Fire(TarCom, 0)) {
           case FIRE_OK:
@@ -801,7 +809,7 @@ int AircraftClass::Mission_Hunt() {
                            static_cast<uint16_t>(Weapon_Range(0) - 0x0200)));
             if (Class->PrimaryWeapon != nullptr) {
               if (Class->PrimaryWeapon->IsCamera) {
-                Status = REGROUP;
+                Status = kRegroup;
               } else {
                 Map[As_Cell(TarCom)].Incoming(Coord, true);
               }
@@ -823,24 +831,24 @@ int AircraftClass::Mission_Hunt() {
 
           case FIRE_RANGE:
           case FIRE_FACING:
-            Status = FLY_TO_TARGET;
+            Status = kFlyToTarget;
             return kTicksPerSecond * 4;
 
           case FIRE_ILLEGAL:
             if (Mission == MISSION_ATTACK) {
-              Status = REGROUP;
+              Status = kRegroup;
             } else {
-              Status = LOOK_FOR_TARGET;
+              Status = kLookForTarget;
             }
             break;
 
           case FIRE_CANT:
-            Status = REGROUP;
+            Status = kRegroup;
             break;
 
           case FIRE_AMMO:
             AttacksRemaining--;
-            Status = REGROUP;
+            Status = kRegroup;
             break;
 
           default:
@@ -852,7 +860,7 @@ int AircraftClass::Mission_Hunt() {
       /*
       **	Pull away to regroup for possibly another attack or a retreat.
       */
-      case REGROUP:
+      case kRegroup:
         if (Ammo == 0) {
           AttacksRemaining = 0;
           if (Team.Is_Valid()) {
@@ -878,7 +886,7 @@ int AircraftClass::Mission_Hunt() {
           }
           Commence();
         } else {
-          Status = LOOK_FOR_TARGET;
+          Status = kLookForTarget;
         }
         break;
 
@@ -1130,16 +1138,20 @@ int AircraftClass::Mission_Unload() {
     Assign_Target(NavCom);
     return Mission_Hunt();
   }
-  enum { SEARCH_FOR_LZ, FLY_TO_LZ, LAND_ON_LZ, UNLOAD_PASSENGERS, TAKE_OFF };
+  constexpr int kSearchForLz = 0;
+  constexpr int kFlyToLz = 1;
+  constexpr int kLandOnLz = 2;
+  constexpr int kUnloadPassengers = 3;
+  constexpr int kTakeOff = 4;
 
   switch (Status) {
     /*
     **	Search for an appropriate destination spot if one isn't already
     *assigned.
     */
-    case SEARCH_FOR_LZ:
+    case kSearchForLz:
       if (Height == 0 && (Target_Legal(NavCom) || Coord == As_Coord(NavCom))) {
-        Status = UNLOAD_PASSENGERS;
+        Status = kUnloadPassengers;
       } else {
         if (!Is_LZ_Clear(NavCom)) {
           const FootClass* foot = Attached_Object();
@@ -1155,10 +1167,10 @@ int AircraftClass::Mission_Unload() {
             }
           }
         } else {
-          if (Height == FLIGHT_LEVEL) {
-            Status = FLY_TO_LZ;
+          if (Height == kFlightLevel) {
+            Status = kFlyToLz;
           } else {
-            Status = TAKE_OFF;
+            Status = kTakeOff;
           }
         }
       }
@@ -1167,7 +1179,7 @@ int AircraftClass::Mission_Unload() {
     /*
     **	Fly to destination.
     */
-    case FLY_TO_LZ: {
+    case kFlyToLz: {
       if (Is_LZ_Clear(NavCom)) {
         const int distance = Process_Fly_To(true, NavCom);
 
@@ -1175,26 +1187,26 @@ int AircraftClass::Mission_Unload() {
           SecondaryFacing.Set_Desired(Pose_Dir());
 
           if (distance < 0x0010) {
-            Status = LAND_ON_LZ;
+            Status = kLandOnLz;
           }
           return 1;
         }
         SecondaryFacing.Set_Desired(PrimaryFacing.Desired());
         return 5;
       }
-      Status = SEARCH_FOR_LZ;
+      Status = kSearchForLz;
     } break;
 
     /*
     **	Landing phase. Just delay until landing is complete. At that
     *time, *	transition to the unloading phase.
     */
-    case LAND_ON_LZ:
+    case kLandOnLz:
       if (IsTakingOff) {
-        Status = TAKE_OFF;
+        Status = kTakeOff;
       } else {
         if (Process_Landing()) {
-          Status = UNLOAD_PASSENGERS;
+          Status = kUnloadPassengers;
         }
       }
       return 1;
@@ -1203,7 +1215,7 @@ int AircraftClass::Mission_Unload() {
     **	Hold while unloading passengers. When passengers are unloaded
     *the order for this *	transport gets changed to MISSION_RETREAT.
     */
-    case UNLOAD_PASSENGERS:
+    case kUnloadPassengers:
       if (!IsTethered) {
         if (Is_Something_Attached()) {
           FootClass* unit = Detach_Object();
@@ -1238,10 +1250,10 @@ int AircraftClass::Mission_Unload() {
     *altitude then it *	will either take off or look for another landing
     *spot to try again.
     */
-    case TAKE_OFF: {
+    case kTakeOff: {
       if (Process_Take_Off()) {
         if (Is_Something_Attached()) {
-          Status = SEARCH_FOR_LZ;
+          Status = kSearchForLz;
 
           /*
           **	Break off radio contact with the helipad it is taking off from.
@@ -1366,28 +1378,30 @@ int AircraftClass::Mission_Retreat() {
   DCHECK(IsActive);
 
   if (Class->IsFixedWing) {
-    if (Class->IsFixedWing && Height < FLIGHT_LEVEL) {
+    if (Class->IsFixedWing && Height < kFlightLevel) {
       Height += 1;
       return 3;
     }
     return kTicksPerSecond * 10;
   }
 
-  enum { TAKE_OFF, FACE_MAP_EDGE, KEEP_FLYING };
+  constexpr int kTakeOff = 0;
+  constexpr int kFaceMapEdge = 1;
+  constexpr int kKeepFlying = 2;
   switch (Status) {
     /*
     **	Take off if landed.
     */
-    case TAKE_OFF:
+    case kTakeOff:
       if (Process_Take_Off()) {
-        Status = FACE_MAP_EDGE;
+        Status = kFaceMapEdge;
       }
       return 1;
 
     /*
     **	Set facing and speed toward the friendly map edge.
     */
-    case FACE_MAP_EDGE:
+    case kFaceMapEdge:
       Set_Speed(0xFF);
 
       /*
@@ -1401,14 +1415,14 @@ int AircraftClass::Mission_Retreat() {
       PrimaryFacing.Set_Desired(static_cast<DirType>(
           (static_cast<uint32_t>(House->Control.Edge) & 0x03U) << 6U));
       SecondaryFacing.Set_Desired(PrimaryFacing.Desired());
-      Status = KEEP_FLYING;
+      Status = kKeepFlying;
       break;
 
     /*
     **	Just do nothing since we are headed toward the map edge. When the
     **	edge is reached, the aircraft should be automatically eliminated.
     */
-    case KEEP_FLYING:
+    case kKeepFlying:
     default:
       break;
   }
@@ -1663,10 +1677,11 @@ int AircraftClass::Mission_Move() {
   DCHECK(IsActive);
 
   if (Class->IsFixedWing) {
-    enum { TAKE_OFF, FLY_TOWARD_TARGET };
+    constexpr int kTakeOff = 0;
+    constexpr int kFlyTowardTarget = 1;
 
     switch (Status) {
-      case TAKE_OFF:
+      case kTakeOff:
 
         /*
         **	If the aircraft is high enough to begin its mission, then do so.
@@ -1683,11 +1698,11 @@ int AircraftClass::Mission_Move() {
             Transmit_Message(RADIO_OVER_OUT);
           }
 
-          Status = FLY_TOWARD_TARGET;
+          Status = kFlyTowardTarget;
         }
         return 1;
 
-      case FLY_TOWARD_TARGET: {
+      case kFlyTowardTarget: {
         PrimaryFacing.Set_Desired(Direction(NavCom));
         const int distance = Distance(NavCom);
 
@@ -1761,12 +1776,15 @@ int AircraftClass::Mission_Move() {
     return 5;
   }
 
-  enum { VALIDATE_LZ, TAKE_OFF, FLY_TO_LZ, LAND };
+  constexpr int kValidateLz = 0;
+  constexpr int kTakeOff = 1;
+  constexpr int kFlyToLz = 2;
+  constexpr int kLand = 3;
   switch (Status) {
     /*
     **	Double check and change LZ if necessary.
     */
-    case VALIDATE_LZ:
+    case kValidateLz:
       if (!Target_Legal(NavCom)) {
         Enter_Idle_Mode();
       } else {
@@ -1776,7 +1794,7 @@ int AircraftClass::Mission_Move() {
             Team->Assign_Mission_Target(NavCom);
           }
         } else {
-          Status = TAKE_OFF;
+          Status = kTakeOff;
         }
       }
       break;
@@ -1784,9 +1802,9 @@ int AircraftClass::Mission_Move() {
     /*
     **	Take off if necessary.
     */
-    case TAKE_OFF:
+    case kTakeOff:
       if (!Target_Legal(NavCom)) {
-        Status = VALIDATE_LZ;
+        Status = kValidateLz;
       } else {
         if (Process_Take_Off()) {
           /*
@@ -1798,7 +1816,7 @@ int AircraftClass::Mission_Move() {
             Transmit_Message(RADIO_OVER_OUT);
           }
 
-          Status = FLY_TO_LZ;
+          Status = kFlyToLz;
         }
         return 1;
       }
@@ -1807,7 +1825,7 @@ int AircraftClass::Mission_Move() {
     /*
     **	Fly toward target.
     */
-    case FLY_TO_LZ:
+    case kFlyToLz:
       if (Is_LZ_Clear(NavCom)) {
         const int distance = Process_Fly_To(true, NavCom);
 
@@ -1819,7 +1837,7 @@ int AircraftClass::Mission_Move() {
           }
 
           if (distance < 0x0010) {
-            Status = LAND;
+            Status = kLand;
           }
           return 1;
         }
@@ -1834,7 +1852,7 @@ int AircraftClass::Mission_Move() {
           Team->Assign_Mission_Target(NavCom);
         }
         if (!Target_Legal(NavCom)) {
-          Status = LAND;
+          Status = kLand;
         }
       }
       return 1;
@@ -1842,13 +1860,13 @@ int AircraftClass::Mission_Move() {
     /*
     **	Land on target.
     */
-    case LAND:
+    case kLand:
       if (IsTakingOff) {
         Assign_Destination(New_LZ(NavCom));
         if (Team.Is_Valid()) {
           Team->Assign_Mission_Target(NavCom);
         }
-        Status = TAKE_OFF;
+        Status = kTakeOff;
       }
       if (Process_Landing() && (MissionQueue == MISSION_NONE)) {
         Enter_Idle_Mode();
@@ -2405,39 +2423,37 @@ int AircraftClass::Mission_Attack() {
     return Mission_Hunt();
   }
 
-  enum {
-    VALIDATE_AZ,
-    PICK_ATTACK_LOCATION,
-    TAKE_OFF,
-    FLY_TO_POSITION,
-    FIRE_AT_TARGET,
-    FIRE_AT_TARGET2,
-    RETURN_TO_BASE
-  };
+  constexpr int kValidateAz = 0;
+  constexpr int kPickAttackLocation = 1;
+  constexpr int kTakeOff = 2;
+  constexpr int kFlyToPosition = 3;
+  constexpr int kFireAtTarget = 4;
+  constexpr int kFireAtTarget2 = 5;
+  constexpr int kReturnToBase = 6;
   switch (Status) {
     /*
     **	Double check target and validate the attack zone.
     */
-    case VALIDATE_AZ:
+    case kValidateAz:
       if (!Target_Legal(TarCom)) {
-        Status = RETURN_TO_BASE;
+        Status = kReturnToBase;
       } else {
-        Status = PICK_ATTACK_LOCATION;
+        Status = kPickAttackLocation;
       }
       break;
 
     /*
     **	Pick a good location to attack from.
     */
-    case PICK_ATTACK_LOCATION:
+    case kPickAttackLocation:
       if (!Target_Legal(TarCom)) {
-        Status = RETURN_TO_BASE;
+        Status = kReturnToBase;
       } else {
         Assign_Destination(Good_Fire_Location(TarCom));
         if (Target_Legal(NavCom)) {
-          Status = TAKE_OFF;
+          Status = kTakeOff;
         } else {
-          Status = RETURN_TO_BASE;
+          Status = kReturnToBase;
         }
       }
       break;
@@ -2445,12 +2461,12 @@ int AircraftClass::Mission_Attack() {
     /*
     **	Take off (if necessary).
     */
-    case TAKE_OFF:
+    case kTakeOff:
       if (!Target_Legal(TarCom)) {
-        Status = RETURN_TO_BASE;
+        Status = kReturnToBase;
       } else {
         if (Process_Take_Off()) {
-          Status = FLY_TO_POSITION;
+          Status = kFlyToPosition;
 
           /*
           **	Break off radio contact with the helipad it is taking off from.
@@ -2477,7 +2493,7 @@ int AircraftClass::Mission_Attack() {
     /*
     **	Fly to attack location.
     */
-    case FLY_TO_POSITION:
+    case kFlyToPosition:
       if (Target_Legal(TarCom)) {
         /*
         **	If the navcom was cleared mysteriously, then try to pick
@@ -2485,7 +2501,7 @@ int AircraftClass::Mission_Attack() {
         **	clicks on a new target while in flight to an existing target.
         */
         if (!Target_Legal(NavCom)) {
-          Status = PICK_ATTACK_LOCATION;
+          Status = kPickAttackLocation;
           return 1;
         }
 
@@ -2495,7 +2511,7 @@ int AircraftClass::Mission_Attack() {
           SecondaryFacing.Set_Desired(Direction(TarCom));
 
           if (distance < 0x0010) {
-            Status = FIRE_AT_TARGET;
+            Status = kFireAtTarget;
             Assign_Destination(kTargetNone);
           }
         } else {
@@ -2504,16 +2520,16 @@ int AircraftClass::Mission_Attack() {
           return 1;
         }
       } else {
-        Status = RETURN_TO_BASE;
+        Status = kReturnToBase;
       }
       return 1;
 
     /*
     **	Fire at the target.
     */
-    case FIRE_AT_TARGET:
+    case kFireAtTarget:
       if (!Target_Legal(TarCom)) {
-        Status = RETURN_TO_BASE;
+        Status = kReturnToBase;
         return 1;
       }
 
@@ -2527,7 +2543,7 @@ int AircraftClass::Mission_Attack() {
         case FIRE_OK:
           Fire_At(TarCom, 0);
           Map[As_Cell(TarCom)].Incoming(Coord, true);
-          Status = FIRE_AT_TARGET2;
+          Status = kFireAtTarget2;
           break;
 
         case FIRE_REARM:
@@ -2536,9 +2552,9 @@ int AircraftClass::Mission_Attack() {
 
         default:
           if (!Ammo) {
-            Status = RETURN_TO_BASE;
+            Status = kReturnToBase;
           } else {
-            Status = FIRE_AT_TARGET2;
+            Status = kFireAtTarget2;
           }
           break;
       }
@@ -2547,9 +2563,9 @@ int AircraftClass::Mission_Attack() {
     /*
     **	Fire at the target.
     */
-    case FIRE_AT_TARGET2:
+    case kFireAtTarget2:
       if (!Target_Legal(TarCom)) {
-        Status = RETURN_TO_BASE;
+        Status = kReturnToBase;
         return 1;
       }
 
@@ -2568,22 +2584,21 @@ int AircraftClass::Mission_Attack() {
           Map[As_Cell(TarCom)].Incoming(Coord, true);
 
           if (Ammo) {
-            Status =
-                Rule.IsCurleyShuffle ? PICK_ATTACK_LOCATION : FIRE_AT_TARGET;
+            Status = Rule.IsCurleyShuffle ? kPickAttackLocation : kFireAtTarget;
           } else {
-            Status = RETURN_TO_BASE;
+            Status = kReturnToBase;
           }
           break;
 
         default:
           if (!Ammo) {
-            Status = RETURN_TO_BASE;
+            Status = kReturnToBase;
           } else {
             if (!In_Range(TarCom)) {
-              Status = PICK_ATTACK_LOCATION;
+              Status = kPickAttackLocation;
             } else {
               Status =
-                  Rule.IsCurleyShuffle ? PICK_ATTACK_LOCATION : FIRE_AT_TARGET;
+                  Rule.IsCurleyShuffle ? kPickAttackLocation : kFireAtTarget;
             }
           }
           break;
@@ -2593,7 +2608,7 @@ int AircraftClass::Mission_Attack() {
     /*
     **	Fly back to landing spot.
     */
-    case RETURN_TO_BASE:
+    case kReturnToBase:
       /*
       **	Break off of firing at the target if there is no more
       **	point in attacking it this mission. The player will
@@ -2878,7 +2893,8 @@ DirType AircraftClass::Desired_Load_Dir(ObjectClass* object,
   DCHECK(IsActive);
 
   const CELL center = Coord_Cell(Center_Coord());
-  for (int sweep = FACING_N; sweep < FACING_S; sweep++) {
+  for (int sweep = static_cast<int>(FACING_N);
+       sweep < static_cast<int>(FACING_S); sweep++) {
     moveto = Adjacent_Cell(center, FACING_S + sweep);
     if (Map.In_Radar(moveto) &&
         (Coord_Cell(object->Center_Coord()) == moveto ||
@@ -2920,7 +2936,7 @@ bool AircraftClass::Process_Take_Off() {
 
   if (Class->IsFixedWing) {
     Set_Speed(0xFF);
-    if (Height == FLIGHT_LEVEL) {
+    if (Height == kFlightLevel) {
       return true;
     }
 
@@ -2931,20 +2947,20 @@ bool AircraftClass::Process_Take_Off() {
         PrimaryFacing = SecondaryFacing;
         break;
 
-      case FLIGHT_LEVEL / 2:
+      case kFlightLevel / 2:
         PrimaryFacing.Set_Desired(Direction(NavCom));
         break;
 
-      case FLIGHT_LEVEL - (FLIGHT_LEVEL / 3):
+      case kFlightLevel - (kFlightLevel / 3):
         SecondaryFacing.Set_Desired(PrimaryFacing.Desired());
         Set_Speed(0x20);
         break;
 
-      case FLIGHT_LEVEL - (FLIGHT_LEVEL / 5):
+      case kFlightLevel - (kFlightLevel / 5):
         Set_Speed(0x40);
         break;
 
-      case FLIGHT_LEVEL:
+      case kFlightLevel:
         Set_Speed(0xFF);
         IsTakingOff = false;
         return true;
@@ -3005,11 +3021,11 @@ bool AircraftClass::Process_Landing() {
         IsLanding = false;
         return true;
 
-      case FLIGHT_LEVEL / 2:
+      case kFlightLevel / 2:
         Set_Speed(0);
         break;
 
-      case FLIGHT_LEVEL:
+      case kFlightLevel:
       default:
         break;
     }
@@ -3248,16 +3264,14 @@ int AircraftClass::Mission_Enter() {
   DCHECK_EQ(Aircraft.ID(this), ID);
   DCHECK(IsActive);
 
-  enum {
-    INITIAL,
-    TAKEOFF,
-    ALTITUDE,
-    STACK,
-    DOWNWIND,
-    CROSSWIND,
-    TRAVEL,
-    LANDING
-  };
+  constexpr int kInitial = 0;
+  constexpr int kTakeoff = 1;
+  constexpr int kAltitude = 2;
+  constexpr int kStack = 3;
+  constexpr int kDownwind = 4;
+  constexpr int kCrosswind = 5;
+  constexpr int kTravel = 6;
+  constexpr int kLanding = 7;
 
   /*
   **	Verify that it has a valid NavCom. If it doesn't then request one from
@@ -3271,15 +3285,15 @@ int AircraftClass::Mission_Enter() {
   }
 
   switch (Status) {
-    case INITIAL:
-      if (Height < FLIGHT_LEVEL || IsLanding) {
-        Status = TAKEOFF;
+    case kInitial:
+      if (Height < kFlightLevel || IsLanding) {
+        Status = kTakeoff;
       } else {
-        Status = ALTITUDE;
+        Status = kAltitude;
       }
       break;
 
-    case TAKEOFF:
+    case kTakeoff:
       if (Process_Take_Off()) {
         /*
         **	After takeoff is complete, break radio contact with any helipad
@@ -3289,11 +3303,11 @@ int AircraftClass::Mission_Enter() {
             Map[Coord].Cell_Building() == Contact_With_Whom()) {
           Transmit_Message(RADIO_OVER_OUT);
         }
-        Status = ALTITUDE;
+        Status = kAltitude;
       }
       break;
 
-    case ALTITUDE:
+    case kAltitude:
       /*
       **	Establish radio contact with the building this helicopter is
       *trying *	to land at.
@@ -3306,13 +3320,13 @@ int AircraftClass::Mission_Enter() {
             return 1;
           }
         }
-        Status = STACK;
+        Status = kStack;
       } else {
         TechnoClass* tech = As_Techno(NavCom);
         if (tech && Transmit_Message(RADIO_CAN_LOAD, tech) == RADIO_ROGER) {
           Transmit_Message(RADIO_HELLO, tech);
           Transmit_Message(RADIO_DOCKING);
-          Status = STACK;
+          Status = kStack;
         } else {
           if (tech->What_Am_I() != RTTI_VESSEL) {
             Assign_Destination(kTargetNone);
@@ -3322,7 +3336,7 @@ int AircraftClass::Mission_Enter() {
       }
       break;
 
-    case STACK:
+    case kStack:
       if (Class->IsFixedWing) {
         TARGET togo = 0;
 
@@ -3335,14 +3349,14 @@ int AircraftClass::Mission_Enter() {
 
         const int distance = Process_Fly_To(true, togo);
         if (distance < 0x0080) {
-          Status = DOWNWIND;
+          Status = kDownwind;
         }
       } else {
-        Status = DOWNWIND;
+        Status = kDownwind;
       }
       break;
 
-    case DOWNWIND:
+    case kDownwind:
       if (Class->IsFixedWing) {
         TARGET togo = 0;
 
@@ -3356,14 +3370,14 @@ int AircraftClass::Mission_Enter() {
 
         const int distance = Process_Fly_To(true, togo);
         if (distance < 0x0080) {
-          Status = CROSSWIND;
+          Status = kCrosswind;
         }
       } else {
-        Status = CROSSWIND;
+        Status = kCrosswind;
       }
       break;
 
-    case CROSSWIND:
+    case kCrosswind:
       if (Class->IsFixedWing) {
         TARGET togo = 0;
 
@@ -3377,14 +3391,14 @@ int AircraftClass::Mission_Enter() {
 
         const int distance = Process_Fly_To(true, togo);
         if (distance < 0x0080) {
-          Status = TRAVEL;
+          Status = kTravel;
         }
       } else {
-        Status = TRAVEL;
+        Status = kTravel;
       }
       break;
 
-    case TRAVEL:
+    case kTravel:
       Transmit_Message(RADIO_DOCKING);
       if (!In_Radio_Contact() && !Is_Target_Vessel(NavCom)) {
         Assign_Destination(kTargetNone);
@@ -3394,7 +3408,7 @@ int AircraftClass::Mission_Enter() {
 
         if (Class->IsFixedWing) {
           if (distance < 0x0400) {
-            Status = LANDING;
+            Status = kLanding;
           }
           return 1;
         }
@@ -3410,9 +3424,9 @@ int AircraftClass::Mission_Enter() {
             break;
           }
           if (distance < 0x0010) {
-            Status = LANDING;
+            Status = kLanding;
             if (Is_Target_Vessel(NavCom) && As_Vessel(NavCom)->NavCom) {
-              Status = TRAVEL;
+              Status = kTravel;
             }
           }
           break;
@@ -3422,14 +3436,14 @@ int AircraftClass::Mission_Enter() {
       }
       break;
 
-    case LANDING:
+    case kLanding:
       if (IsTakingOff && !Class->IsFixedWing) {
         Assign_Destination(kTargetNone);
         Enter_Idle_Mode();
       }
       // If we were trying to land on a carrier and it moved, take off again
       if (As_Vessel(NavCom) && !In_Radio_Contact()) {
-        Status = INITIAL;
+        Status = kInitial;
         break;
       }
       if (Process_Landing()) {
@@ -3535,9 +3549,9 @@ void AircraftClass::Set_Speed(int speed) {
 
   FootClass::Set_Speed(speed);
 
-  const MPHType sp = static_cast<MPHType>(
-      std::min(Class->MaxSpeed * SpeedBias * House->AirspeedBias,
-               static_cast<int>(MPH_LIGHT_SPEED)));
+  const MPHType sp = static_cast<MPHType>(std::min(
+      static_cast<int>(Class->MaxSpeed) * SpeedBias * House->AirspeedBias,
+      static_cast<int>(MPH_LIGHT_SPEED)));
   Fly_Speed(speed, sp);
 }
 
@@ -3669,7 +3683,7 @@ int AircraftClass::Mission_Guard() {
   DCHECK_EQ(Aircraft.ID(this), ID);
   DCHECK(IsActive);
 
-  if (Height == FLIGHT_LEVEL) {
+  if (Height == kFlightLevel) {
     /*
     **	If part of a team, then do nothing, since the team
     **	handler will take care of giving this aircraft a
@@ -3809,7 +3823,7 @@ int AircraftClass::Mission_Guard_Area() {
   DCHECK_EQ(Aircraft.ID(this), ID);
   DCHECK(IsActive);
 
-  if (Height == FLIGHT_LEVEL) {
+  if (Height == kFlightLevel) {
     if (!Team.Is_Valid()) {
       Enter_Idle_Mode();
     }
@@ -4049,8 +4063,8 @@ bool AircraftClass::Landing_Takeoff_AI() {
       Mark(MARK_UP);
       //			Map.Remove(this, layer);
       Height += Pixel_To_Lepton(1);
-      if (Height >= FLIGHT_LEVEL) {
-        Height = FLIGHT_LEVEL;
+      if (Height >= kFlightLevel) {
+        Height = kFlightLevel;
         IsTakingOff = false;
       }
       //			Map.Submit(this, In_Which_Layer());

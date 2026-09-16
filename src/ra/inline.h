@@ -661,7 +661,9 @@ inline DirType Facing_Dir(FacingType facing) {
  *                                                                                             *
  * HISTORY: * 08/26/1996 JLB : Created. *
  *=============================================================================================*/
-inline int Dir_To_16(DirType facing) { return Facing16[facing]; }
+inline int Dir_To_16(DirType facing) {
+  return Facing16[static_cast<int>(facing)];
+}
 
 /***********************************************************************************************
  * Dir_To_32 -- Convert a DirType into a 0..31 value. *
@@ -679,7 +681,9 @@ inline int Dir_To_16(DirType facing) { return Facing16[facing]; }
  *                                                                                             *
  * HISTORY: * 08/26/1996 JLB : Created. *
  *=============================================================================================*/
-inline int Dir_To_32(DirType facing) { return Facing32[facing]; }
+inline int Dir_To_32(DirType facing) {
+  return Facing32[static_cast<int>(facing)];
+}
 
 /***********************************************************************************************
  * Direction256 -- Calculate the facing value from one coordinate to another. *

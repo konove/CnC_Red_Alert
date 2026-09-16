@@ -94,33 +94,33 @@ TargetClass::TargetClass(TARGET target) : xTargetClass() { Target.Target = targe
 
 TargetClass::TargetClass(const AbstractClass* ptr) : xTargetClass() {
   if (ptr != nullptr) {
-    Target.Sub.Exponent = ptr->RTTI;
+    Target.Sub.Exponent = static_cast<unsigned>(ptr->RTTI);
     Target.Sub.Mantissa = static_cast<unsigned>(ptr->ID);
   } else {
-    Target.Sub.Exponent = RTTI_NONE;
+    Target.Sub.Exponent = static_cast<unsigned>(RTTI_NONE);
   }
 }
 
 TargetClass::TargetClass(const AbstractTypeClass* ptr) : xTargetClass() {
   if (ptr != nullptr) {
-    Target.Sub.Exponent = ptr->RTTI;
+    Target.Sub.Exponent = static_cast<unsigned>(ptr->RTTI);
     Target.Sub.Mantissa = static_cast<unsigned>(ptr->ID);
   } else {
-    Target.Sub.Exponent = RTTI_NONE;
+    Target.Sub.Exponent = static_cast<unsigned>(RTTI_NONE);
   }
 }
 
 TargetClass::TargetClass(const CellClass* ptr) : xTargetClass() {
   if (ptr != nullptr) {
-    Target.Sub.Exponent = RTTI_CELL;
+    Target.Sub.Exponent = static_cast<unsigned>(RTTI_CELL);
     Target.Sub.Mantissa = static_cast<unsigned>(ptr->ID);
   } else {
-    Target.Sub.Exponent = RTTI_NONE;
+    Target.Sub.Exponent = static_cast<unsigned>(RTTI_NONE);
   }
 }
 
 CellClass* xTargetClass::As_Cell() const {
-  if (Target.Sub.Exponent == RTTI_CELL) {
+  if (Target.Sub.Exponent == static_cast<unsigned>(RTTI_CELL)) {
     return &Map[static_cast<CELL>(Target.Sub.Mantissa)];
   }
   return nullptr;

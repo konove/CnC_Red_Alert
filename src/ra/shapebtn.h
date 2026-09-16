@@ -50,11 +50,11 @@ class ShapeButtonClass final : public ToggleClass {
   void Set_Shape(const void* data);
   const void* Get_Shape_Data() { return ShapeData; }
 
-  enum ShapeButtonClassEnums {
-    UP_SHAPE,       // Shape to use when button is "up".
-    DOWN_SHAPE,     // Shape to use when button is "down".
-    DISABLED_SHAPE  // Shape to use when button is disabled.
-  };
+  static constexpr int kUpShape = 0;  // Shape to use when button is "up".
+  static constexpr int kDownShape =
+      kUpShape + 1;  // Shape to use when button is "down".
+  static constexpr int kDisabledShape =
+      kDownShape + 1;  // Shape to use when button is disabled.
 
   bool ReflectButtonState : 1;
 

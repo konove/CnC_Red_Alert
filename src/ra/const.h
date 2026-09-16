@@ -4,15 +4,16 @@
 #include <cstdint>
 #include <string>
 
+#include "base/enum_array.h"
 #include "ra/config.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"
 #include "sdllib/wwstd.h"
 
-extern int CrateShares[magic_enum::enum_count<CrateType>()];
-extern AnimType CrateAnims[magic_enum::enum_count<CrateType>()];
-extern int CrateData[magic_enum::enum_count<CrateType>()];
-extern GroundType Ground[magic_enum::enum_count<LandType>()];
+extern base::EnumArray<CrateType, int> CrateShares;
+extern base::EnumArray<CrateType, AnimType> CrateAnims;
+extern base::EnumArray<CrateType, int> CrateData;
+extern base::EnumArray<LandType, GroundType> Ground;
 
 /***************************************************************************
 **	These are the access passwords used to activate cheat mode, editor mode,
@@ -49,7 +50,7 @@ constexpr uint32_t EditorCodes[] = {0xA2C09326,  // Erik Yeo
 **	a unit can have. The system initiated orders have no use for the ASCII
 *name *	associated, but they are listed here for completeness’s sake.
 */
-constexpr const char* Missions[magic_enum::enum_count<MissionType>()] = {
+constexpr base::EnumArray<MissionType, const char*> Missions = {
     "Sleep",   "Attack", "Move",    "QMove",   "Retreat",    "Guard",
     "Sticky",  "Enter",  "Capture", "Harvest", "Area Guard", "Return",
     "Stop",    "Ambush", "Hunt",    "Unload",  "Sabotage",   "Construction",
@@ -58,22 +59,20 @@ constexpr const char* Missions[magic_enum::enum_count<MissionType>()] = {
 /***************************************************************************
 **	Special weapon names.
 */
-constexpr const char*
-    SpecialWeaponName[magic_enum::enum_count<SpecialWeaponType>()] = {
-        "Sonar Pulse",  "Nuclear Missile", "Chronosphere", "Parachute Bomb",
-        "Paratroopers", "Recon Plane",     "Iron Curtain", "GPS Satellite"};
-constexpr int SpecialWeaponHelp[magic_enum::enum_count<SpecialWeaponType>()] = {
+constexpr base::EnumArray<SpecialWeaponType, const char*> SpecialWeaponName = {
+    "Sonar Pulse",  "Nuclear Missile", "Chronosphere", "Parachute Bomb",
+    "Paratroopers", "Recon Plane",     "Iron Curtain", "GPS Satellite"};
+constexpr base::EnumArray<SpecialWeaponType, int> SpecialWeaponHelp = {
     TXT_SONAR_PULSE,   TXT_NUCLEAR_BOMB, TXT_CHRONOSHIFT, TXT_PARA_BOMB,
     TXT_PARA_INFANTRY, TXT_SPY_MISSION,  TXT_INVUL,       TXT_GPS_SATELLITE};
-constexpr const char*
-    SpecialWeaponFile[magic_enum::enum_count<SpecialWeaponType>()] = {
-        "SONR", "ATOM", "WARP", "PBMB", "PINF", "CAM", "INFX", "GPSS"};
+constexpr base::EnumArray<SpecialWeaponType, const char*> SpecialWeaponFile = {
+    "SONR", "ATOM", "WARP", "PBMB", "PINF", "CAM", "INFX", "GPSS"};
 
 /***************************************************************************
 **	Type of quarry to search out and attack. These values are used for team
 **	attack missions.
 */
-constexpr const char* QuarryName[magic_enum::enum_count<QuarryType>()] = {
+constexpr base::EnumArray<QuarryType, const char*> QuarryName = {
     "N/A",           "Anything",       "Buildings - any",  "Harvesters",
     "Infantry",      "Vehicles - any", "Ships - any",      "Factories",
     "Base Defenses", "Base Threats",   "Power Facilities", "Fake Buildings"};
@@ -81,7 +80,7 @@ constexpr const char* QuarryName[magic_enum::enum_count<QuarryType>()] = {
 /***************************************************************************
 **	These are the text names for the formation types.
 */
-constexpr const char* FormationName[magic_enum::enum_count<FormationType>()] = {
+constexpr base::EnumArray<FormationType, const char*> FormationName = {
     "None",
 
     "Tight",       "Loose",      "Wedge North", "Wedge East",
@@ -90,19 +89,19 @@ constexpr const char* FormationName[magic_enum::enum_count<FormationType>()] = {
 /***************************************************************************
 **	These are the ASCII names for the reinforcement sources.
 */
-constexpr const char* SourceName[magic_enum::enum_count<SourceType>()] = {
+constexpr base::EnumArray<SourceType, const char*> SourceName = {
     "North", "East", "South", "West", "Air"};
 
 /***************************************************************************
 **	These are the text names for the various armor types a unit may possess.
 */
-constexpr const char* ArmorName[magic_enum::enum_count<ArmorType>()] = {
+constexpr base::EnumArray<ArmorType, const char*> ArmorName = {
     "none", "wood", "light", "heavy", "concrete"};
 
 /***************************************************************************
 **	The list of VQ filenames.
 */
-constexpr const char* VQName[magic_enum::enum_count<VQType>()] = {
+constexpr base::EnumArray<VQType, const char*> VQName = {
     "AAGUN",    "MIG",      "SFROZEN",  "AIRFIELD", "BATTLE",   "BMAP",
     "BOMBRUN",  "DPTHCHRG", "GRVESTNE", "MONTPASS", "MTNKFACT", "CRONTEST",
     "OILDRUM",  "ALLYEND",  "RADRRAID", "SHIPYARD", "SHORBOMB", "SITDUCK",
@@ -151,7 +150,7 @@ constexpr unsigned char Pixel2Lepton[24] = {
 **	offset that, when added to another cell, will achieve the adjacent cell
 **	in the indexed direction.
 */
-constexpr CELL AdjacentCell[magic_enum::enum_count<FacingType>()] = {
+constexpr base::EnumArray<FacingType, CELL> AdjacentCell = {
     -MAP_CELL_W,        // North
     -(MAP_CELL_W - 1),  // North East
     1,                  // East
@@ -162,11 +161,11 @@ constexpr CELL AdjacentCell[magic_enum::enum_count<FacingType>()] = {
     -(MAP_CELL_W + 1)   // North West
 };
 
-constexpr COORDINATE AdjacentCoord[magic_enum::enum_count<FacingType>()] = {
+constexpr base::EnumArray<FacingType, COORDINATE> AdjacentCoord = {
     0xFF000000L, 0xFF000100L, 0x00000100L, 0x01000100L,
     0x01000000L, 0x0100FF00L, 0x0000FF00L, 0xFF00FF00L};
 
-constexpr const char* CrateNames[magic_enum::enum_count<CrateType>()] = {
+constexpr base::EnumArray<CrateType, const char*> CrateNames = {
     "Money",           "Unit",         "ParaBomb", "HealBase",
     "Cloak",           "Explosion",    "Napalm",   "Squad",
     "Darkness",        "Reveal",       "Sonar",    "Armor",
@@ -249,7 +248,7 @@ constexpr unsigned char Facing32[256] = {
 **	of the given terrain cells.
 */
 
-constexpr int GroundColor[magic_enum::enum_count<LandType>()] = {
+constexpr base::EnumArray<LandType, int> GroundColor = {
     141,  // "Clear" terrain.
     141,  // Road terrain.
     172,  // Water.
@@ -261,7 +260,7 @@ constexpr int GroundColor[magic_enum::enum_count<LandType>()] = {
     174   // Rocky riverbed.
 };
 
-constexpr int SnowColor[magic_enum::enum_count<LandType>()] = {
+constexpr base::EnumArray<LandType, int> SnowColor = {
     141,  // "Clear" terrain.
     141,  // Road terrain.
     172,  // Water.
@@ -276,11 +275,11 @@ constexpr int SnowColor[magic_enum::enum_count<LandType>()] = {
 /***************************************************************************
 **	These are the names of the theaters.
 */
-constexpr TheaterDataType Theaters[magic_enum::enum_count<TheaterType>()] = {
+constexpr base::EnumArray<TheaterType, TheaterDataType> Theaters = {{
     {"TEMPERATE", "TEMPERAT", "TEM"},
     {"SNOW", "SNOW", "SNO"},
     {"INTERIOR", "INTERIOR", "INT"},
-};
+}};
 
 constexpr unsigned char RemapCiv2[256] = {
     0,   1,   2,   3,   4,   5,   6,   209,
@@ -567,7 +566,7 @@ constexpr unsigned char kEmber = kEmberColor;
 
 constexpr unsigned char RemapEmber[256] = {
     0,      kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber,
-    kEmber, kEmber, kEmber, BLACK,  kEmber, kEmber, kEmber, kEmber, kEmber,
+    kEmber, kEmber, kEmber, kBlack, kEmber, kEmber, kEmber, kEmber, kEmber,
     kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber,
     kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber,
     kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber, kEmber,

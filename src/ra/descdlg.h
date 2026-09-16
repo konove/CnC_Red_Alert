@@ -42,21 +42,20 @@
 
 class DescriptionClass {
  private:
-  enum DescriptionClassEnum {
-    OPTION_WIDTH = 216,   // Width of dialog box.
-    OPTION_HEIGHT = 122,  // Height of dialog box.
-    OPTION_X = (320 - OPTION_WIDTH) / 2 & ~7,
-    OPTION_Y = (200 - OPTION_HEIGHT) / 2,
-    TEXT_X = OPTION_X + 32,  // Title's x pos
-    TEXT_Y = OPTION_Y + 32,  // Add 11 for each following line
-    BUTTON_OPTIONS = 1,      // Button number for "Ok"
-    BUTTON_CANCEL,
-    BUTTON_EDIT,
-    BUTTON_X = OPTION_X + 63,   // Options button x pos
-    BUTTON_Y = OPTION_Y + 102,  // Options button y pos
-    EDIT_Y = OPTION_Y + 50,
-    EDIT_W = 180  // 204,
-  };
+  static constexpr int kOptionWidth = 216;   // Width of dialog box.
+  static constexpr int kOptionHeight = 122;  // Height of dialog box.
+  static constexpr int kOptionX = (320 - kOptionWidth) / 2 & ~7;
+  static constexpr int kOptionY = (200 - kOptionHeight) / 2;
+  static constexpr int kTextX = kOptionX + 32;  // Title's x pos
+  static constexpr int kTextY =
+      kOptionY + 32;                        // Add 11 for each following line
+  static constexpr int kButtonOptions = 1;  // Button number for "Ok"
+  static constexpr int kButtonCancel = kButtonOptions + 1;
+  static constexpr int kButtonEdit = kButtonCancel + 1;
+  static constexpr int kButtonX = kOptionX + 63;   // Options button x pos
+  static constexpr int kButtonY = kOptionY + 102;  // Options button y pos
+  static constexpr int kEditY = kOptionY + 50;
+  static constexpr int kEditW = 180;  // 204,
 
  public:
   DescriptionClass() {};

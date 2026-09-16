@@ -102,9 +102,8 @@ class FactoryClass : private StageClass {
   // must agree with it; a false here would deactivate every new factory.
   bool IsActive : 1 = true;
 
-  enum StepCountEnum {
-    STEP_COUNT = 54  // Number of steps to break production down into.
-  };
+  // Number of steps to break production down into.
+  static constexpr int kStepCount = 54;
 
  protected:
   int Cost_Per_Tick();
@@ -149,7 +148,7 @@ class FactoryClass : private StageClass {
   **	If the factory is not producing an object and is instead producing
   ** a special item, then special item will be set.
   */
-  int SpecialItem = SPC_NONE;
+  SpecialWeaponType SpecialItem = SPC_NONE;
 
   /*
   ** The factory has to be doing production for one house or another.

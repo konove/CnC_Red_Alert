@@ -631,7 +631,8 @@ STDMETHODIMP RAChatEventSink::OnPublicMessage(HRESULT /*res*/,
         szMessage[2] == 106 && szMessage[3] == 119) {
       if (strlen(szMessage) > 4) {
         const int i = tech::ParseInteger<int>(szMessage + 4).value_or(0);
-        if (i >= VOX_ACCOMPLISHED && i <= VOX_LOAD1 && pOwner->bEggSounds) {
+        if (i >= static_cast<int>(VOX_ACCOMPLISHED) &&
+            i <= static_cast<int>(VOX_LOAD1) && pOwner->bEggSounds) {
           Speak(static_cast<VoxType>(i));
         }
         const std::string szPrint =
@@ -682,7 +683,8 @@ STDMETHODIMP RAChatEventSink::OnPrivateMessage(HRESULT /*res*/,
           szMessage[2] == 106 && szMessage[3] == 119) {
         if (strlen(szMessage) > 4) {
           const int i = tech::ParseInteger<int>(szMessage + 4).value_or(0);
-          if (i >= VOX_ACCOMPLISHED && i <= VOX_LOAD1 && pOwner->bEggSounds) {
+          if (i >= static_cast<int>(VOX_ACCOMPLISHED) &&
+              i <= static_cast<int>(VOX_LOAD1) && pOwner->bEggSounds) {
             Speak(static_cast<VoxType>(i));
           }
         }
@@ -1079,7 +1081,8 @@ void RAChatEventSink::ActionEggSound(const char* szMessage) {
     } else if (i == 1) {
       Sound_Effect(VOC_ANTDIE);
     } else {
-      Sound_Effect(static_cast<VocType>(VOC_SCREAM1 + Sim_Random_Pick(0, 8)));
+      Sound_Effect(static_cast<VocType>(static_cast<int>(VOC_SCREAM1) +
+                                        Sim_Random_Pick(0, 8)));
     }
   } else if (strstr(szMessage, "<<whines>>") ||
              strstr(szMessage, "<<whining>>") ||

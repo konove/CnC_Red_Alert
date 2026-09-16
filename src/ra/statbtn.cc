@@ -47,6 +47,7 @@
 
 #include <cstdint>
 
+#include "base/numeric.h"
 #include "base/types.h"
 #include "port/safe_string.h"
 #include "ra/conquer.h"
@@ -92,16 +93,14 @@
 StaticButtonClass::StaticButtonClass(unsigned /*unused*/, const char* text,
                                      TextPrintType style, int x, int y, int w,
                                      int h)
-    : GadgetClass(x, y, w, h, static_cast<FlagEnum>(0)),
-      String(nullptr),
-      PrintFlags(style) {
+    : GadgetClass(x, y, w, h, 0), String(nullptr), PrintFlags(style) {
   /*
   **	Make a duplicate of the string to display.
   */
   Set_Text(text, false);
 
   if (w == -1 || h == -1) {
-    Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, PrintFlags);
+    Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack, PrintFlags);
     if (w == -1) {
       Width = String_Pixel_Width(String);
     }
@@ -124,9 +123,7 @@ StaticButtonClass::StaticButtonClass(unsigned /*unused*/, const char* text,
  * HISTORY:  01/15/1995 JLB : Created. *
  *=============================================================================================*/
 StaticButtonClass::StaticButtonClass()
-    : GadgetClass(0, 0, 0, 0, static_cast<FlagEnum>(0)),
-      String(nullptr),
-      PrintFlags(TPF_8POINT) {}
+    : GadgetClass(0, 0, 0, 0, 0), String(nullptr), PrintFlags(TPF_8POINT) {}
 
 /***********************************************************************************************
  * StaticButtonClass::Draw_Me -- Draws the text buttons as indicated. *
@@ -198,7 +195,7 @@ void StaticButtonClass::Set_Text(const char* text, bool resize) {
   Flag_To_Redraw();
   if (resize && String != nullptr) {
     Draw_Background();
-    Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, PrintFlags);
+    Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack, PrintFlags);
     Width = String_Pixel_Width(String);
     Height = FontHeight + FontYSpacing;
     Background = Buffer();
@@ -268,13 +265,13 @@ void StaticButtonClass::Draw_Text(const char* text) {
   if (String != nullptr) {
     int x = X;
 
-    if (PrintFlags & TPF_CENTER) {
+    if (base::Any(PrintFlags & TPF_CENTER)) {
       x += Width / 2;
     }
-    if (PrintFlags & TPF_RIGHT) {
+    if (base::Any(PrintFlags & TPF_RIGHT)) {
       x += Width - 1;
     }
 
-    Fancy_Text_Print(text, x, Y, Get_Color_Scheme(), TBLACK, PrintFlags);
+    Fancy_Text_Print(text, x, Y, Get_Color_Scheme(), kTBlack, PrintFlags);
   }
 }

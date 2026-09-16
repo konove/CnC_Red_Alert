@@ -44,6 +44,7 @@
 #include <cstdint>
 
 #include "absl/base/attributes.h"
+#include "base/enum_array.h"
 #include "ra/ccini.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
@@ -379,7 +380,7 @@ class BuildingClass : public TechnoClass {
  private:
   void Drop_Debris(TARGET source = kTargetNone);
 
-  static const COORDINATE CenterOffset[magic_enum::enum_count<BSizeType>()];
+  static const base::EnumArray<BSizeType, COORDINATE> CenterOffset;
 };
 
 class ArchiveReader;

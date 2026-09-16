@@ -136,7 +136,7 @@ static void Cycle_Call_Back_Delay(int time, PaletteClass& pal) {
       }
 
       // Blend white toward black based on current fade ratio.
-      pal[kHotspotPaletteIndex] = GamePalette[WHITE];
+      pal[kHotspotPaletteIndex] = GamePalette[kWhite];
       pal[kHotspotPaletteIndex].Adjust(fade_ratio, kBlackColor);
 
       pal.Set();
@@ -292,7 +292,7 @@ std::string Map_Selection() {
   Keyboard->Clear();
 
   Fancy_Text_Print(TXT_STAND_BY, 320, 380, GadgetClass::Get_Color_Scheme(),
-                   TBLACK, TPF_CENTER | TPF_6PT_GRAD | TPF_DROPSHADOW);
+                   kTBlack, TPF_CENTER | TPF_6PT_GRAD | TPF_DROPSHADOW);
 
   // Build the next scenario filename. Format: SCxNNEV.INI where x=campaign,
   // NN=scenario number (01-14), E=side (E=Allied, usually), V=variant (A/B/C).

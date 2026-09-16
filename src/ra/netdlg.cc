@@ -133,6 +133,7 @@
 #include <ctime>
 
 #include "absl/strings/str_format.h"
+#include "base/enum_array.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "port/random_seed.h"
@@ -213,19 +214,20 @@ constexpr size_t kGameListItemSize = MPLAYER_NAME_MAX + 64;
 //---------------------------------------------------------------------------
 //	The possible states of the join-game dialog
 //---------------------------------------------------------------------------
-typedef enum {
+enum class JoinStateType {
   JOIN_REJECTED = -1,    // we've been rejected
   JOIN_NOTHING,          // we're not trying to join a game
   JOIN_WAIT_CONFIRM,     // we're asking to join, & waiting for confirmation
   JOIN_CONFIRMED,        // we've been confirmed
   JOIN_GAME_START,       // the game we've joined is starting
   JOIN_GAME_START_LOAD,  // the game we've joined is starting; load saved game
-} JoinStateType;
+};
+using enum JoinStateType;
 
 //---------------------------------------------------------------------------
 //	The possible return codes from Get_Join_Responses()
 //---------------------------------------------------------------------------
-typedef enum {
+enum class JoinEventType {
   EV_NONE,            // nothing happened
   EV_STATE_CHANGE,    // Join dialog is in a new state
   EV_NEW_GAME,        // a new game formed, or is now open
@@ -234,12 +236,13 @@ typedef enum {
   EV_GAME_SIGNOFF,    // a gamed owner has signed off
   EV_GAME_OPTIONS,    // a game options packet was received
   EV_MESSAGE,         // a message was received
-} JoinEventType;
+};
+using enum JoinEventType;
 
 //---------------------------------------------------------------------------
 //	The possible reasons we're rejected from joining a game
 //---------------------------------------------------------------------------
-typedef enum {
+enum class RejectType {
   REJECT_NONE = -1,        // no rejection received
   REJECT_DUPLICATE_NAME,   // player's name is a duplicate
   REJECT_GAME_FULL,        // game is full
@@ -248,7 +251,8 @@ typedef enum {
   REJECT_BY_OWNER,         // game owner clicked "reject"
   REJECT_DISBANDED,        // game was disbanded
   REJECT_MISMATCH,         // "rules.ini" file mismatch.
-} RejectType;
+};
+using enum RejectType;
 
 // Official multiplayer mission names. The English table lists the names the
 // list boxes accept; the German and French tables pair each English name
@@ -931,8 +935,11 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
                                         int join_index, const char* my_name,
                                         RejectType* why);
 static int Net_New_Dialog();
+// 1 for each player color that a player already holds.
+using ColorUsedArray =
+    base::EnumArray<PlayerColorType, int, MAX_MPLAYER_COLORS>;
 static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
-                                           int* color_used);
+                                           ColorUsedArray& color_used);
 static void Start_WWChat(ColorListClass* playerlist);
 static int Update_WWChat();
 
@@ -1444,30 +1451,29 @@ static int Net_Join_Dialog() {
   //------------------------------------------------------------------------
   //	Button Enumerations
   //------------------------------------------------------------------------
-  enum {
-    BUTTON_NAME = 100,
+  constexpr int kButtonName = 100;
 #ifdef OLDWAY
-    BUTTON_GDI,
-    BUTTON_NOD,
+  constexpr int kButtonGdi = kButtonName + 1;
+  constexpr int kButtonNod = kButtonGdi + 1;
+  constexpr int kButtonGamelist = kButtonNod + 1;
 #else
-    BUTTON_HOUSE,
+  constexpr int kButtonHouse = kButtonName + 1;
+  constexpr int kButtonGamelist = kButtonHouse + 1;
 #endif
-    BUTTON_GAMELIST,
-    BUTTON_PLAYERLIST,
-    BUTTON_JOIN,
-    BUTTON_CANCEL,
-    BUTTON_NEW,
-    BUTTON_COUNT,
-    BUTTON_LEVEL,
-    BUTTON_CREDITS,
-    BUTTON_AI_PLAYERS,
-    BUTTON_OPTIONS,
-  };
+  constexpr int kButtonPlayerlist = kButtonGamelist + 1;
+  constexpr int kButtonJoin = kButtonPlayerlist + 1;
+  constexpr int kButtonCancel = kButtonJoin + 1;
+  constexpr int kButtonNew = kButtonCancel + 1;
+  constexpr int kButtonCount = kButtonNew + 1;
+  constexpr int kButtonLevel = kButtonCount + 1;
+  constexpr int kButtonCredits = kButtonLevel + 1;
+  constexpr int kButtonAiPlayers = kButtonCredits + 1;
+  constexpr int kButtonOptions = kButtonAiPlayers + 1;
 
   //------------------------------------------------------------------------
   //	Redraw values: in order from "top" to "bottom" layer of the dialog
   //------------------------------------------------------------------------
-  typedef enum {
+  enum class RedrawType {
     REDRAW_NONE = 0,
     REDRAW_PARMS = 1,
     REDRAW_MESSAGE = 2,
@@ -1475,7 +1481,8 @@ static int Net_Join_Dialog() {
     REDRAW_BUTTONS = 4,
     REDRAW_BACKGROUND = 5,
     REDRAW_ALL = REDRAW_BACKGROUND
-  } RedrawType;
+  };
+  using enum RedrawType;
 
   //------------------------------------------------------------------------
   //	Dialog variables
@@ -1527,44 +1534,44 @@ static int Net_Join_Dialog() {
   //------------------------------------------------------------------------
   GadgetClass* commands = nullptr;  // button list
 
-  EditClass name_edt(BUTTON_NAME, namebuf, MPLAYER_NAME_MAX, kTpfText, d_name_x,
+  EditClass name_edt(kButtonName, namebuf, MPLAYER_NAME_MAX, kTpfText, d_name_x,
                      d_name_y, d_name_w, d_name_h, EditClass::kAlphanumeric);
 
 #ifdef OLDWAY
-  TextButtonClass gdibtn(BUTTON_GDI, TXT_ALLIES, kTpfButton, d_gdi_x, d_gdi_y,
+  TextButtonClass gdibtn(kButtonGdi, TXT_ALLIES, kTpfButton, d_gdi_x, d_gdi_y,
                          d_gdi_w);
-  TextButtonClass nodbtn(BUTTON_NOD, TXT_SOVIET, kTpfButton, d_nod_x, d_nod_y,
+  TextButtonClass nodbtn(kButtonNod, TXT_SOVIET, kTpfButton, d_nod_x, d_nod_y,
                          d_nod_w);
 #else
   Fancy_Text_Print("", 0, 0, nullptr, 0, kTpfText);
-  DropListClass housebtn(BUTTON_HOUSE, housetext, sizeof(housetext), kTpfText,
+  DropListClass housebtn(kButtonHouse, housetext, sizeof(housetext), kTpfText,
                          d_house_x, d_house_y, d_house_w, d_house_h,
                          MixArchive::Retrieve("BTN-UP.SHP"),
                          MixArchive::Retrieve("BTN-DN.SHP"));
 #endif
 
-  ListClass gamelist(BUTTON_GAMELIST, d_gamelist_x, d_gamelist_y, d_gamelist_w,
+  ListClass gamelist(kButtonGamelist, d_gamelist_x, d_gamelist_y, d_gamelist_w,
                      d_gamelist_h, kTpfText, MixArchive::Retrieve("BTN-UP.SHP"),
                      MixArchive::Retrieve("BTN-DN.SHP"));
-  ColorListClass playerlist(BUTTON_PLAYERLIST, d_playerlist_x, d_playerlist_y,
+  ColorListClass playerlist(kButtonPlayerlist, d_playerlist_x, d_playerlist_y,
                             d_playerlist_w, d_playerlist_h, kTpfText,
                             MixArchive::Retrieve("BTN-UP.SHP"),
                             MixArchive::Retrieve("BTN-DN.SHP"));
-  TextButtonClass joinbtn(BUTTON_JOIN, TXT_JOIN, kTpfButton, d_join_x, d_join_y,
+  TextButtonClass joinbtn(kButtonJoin, TXT_JOIN, kTpfButton, d_join_x, d_join_y,
                           d_join_w);
-  TextButtonClass cancelbtn(BUTTON_CANCEL, TXT_CANCEL, kTpfButton, d_cancel_x,
+  TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL, kTpfButton, d_cancel_x,
                             d_cancel_y, d_cancel_w);
-  TextButtonClass newbtn(BUTTON_NEW, TXT_NEW, kTpfButton, d_new_x, d_new_y,
+  TextButtonClass newbtn(kButtonNew, TXT_NEW, kTpfButton, d_new_x, d_new_y,
                          d_new_w);
-  GaugeClass countgauge(BUTTON_COUNT, d_count_x, d_count_y, d_count_w,
+  GaugeClass countgauge(kButtonCount, d_count_x, d_count_y, d_count_w,
                         d_count_h);
-  GaugeClass levelgauge(BUTTON_LEVEL, d_level_x, d_level_y, d_level_w,
+  GaugeClass levelgauge(kButtonLevel, d_level_x, d_level_y, d_level_w,
                         d_level_h);
-  GaugeClass creditsgauge(BUTTON_CREDITS, d_credits_x, d_credits_y, d_credits_w,
+  GaugeClass creditsgauge(kButtonCredits, d_credits_x, d_credits_y, d_credits_w,
                           d_credits_h);
-  GaugeClass aiplayersgauge(BUTTON_AI_PLAYERS, d_aiplayers_x, d_aiplayers_y,
+  GaugeClass aiplayersgauge(kButtonAiPlayers, d_aiplayers_x, d_aiplayers_y,
                             d_aiplayers_w, d_aiplayers_h);
-  CheckListClass optionlist(BUTTON_OPTIONS, d_options_x, d_options_y,
+  CheckListClass optionlist(kButtonOptions, d_options_x, d_options_y,
                             d_options_w, d_options_h, kTpfText,
                             MixArchive::Retrieve("BTN-UP.SHP"),
                             MixArchive::Retrieve("BTN-DN.SHP"));
@@ -1629,7 +1636,8 @@ static int Net_Join_Dialog() {
     housebtn.Add_Item(
         Text_String(HouseTypeClass::As_Reference(house).Full_Name()));
   }
-  housebtn.Set_Selected_Index(Session.House - HOUSE_USSR);
+  housebtn.Set_Selected_Index(static_cast<int>(Session.House) -
+                              static_cast<int>(HOUSE_USSR));
   housebtn.Set_Read_Only(true);
 #endif
 
@@ -1654,7 +1662,7 @@ static int Net_Join_Dialog() {
   aiplayersgauge.Set_Maximum(Session.Options.AIPlayers);
   aiplayersgauge.Set_Value(Session.Options.AIPlayers);
 
-  Fancy_Text_Print("", 0, 0, scheme, TBLACK, kTpfText);
+  Fancy_Text_Print("", 0, 0, scheme, kTBlack, kTpfText);
 
   Session.Messages.Init(
       d_message1_x + 2, d_message1_y + 2, 14, MAX_MESSAGE_LENGTH, d_txt6_h,
@@ -1756,7 +1764,7 @@ static int Net_Join_Dialog() {
     //.....................................................................
     //	Refresh display if needed
     //.....................................................................
-    if (display) {
+    if (display != REDRAW_NONE) {
       Hide_Mouse();
 
       //..................................................................
@@ -1770,10 +1778,10 @@ static int Net_Join_Dialog() {
         //	Dialog & Field labels
         //...............................................................
         Fancy_Text_Print(TXT_CHANNEL_GAMES, d_gamelist_x + (d_gamelist_w / 2),
-                         d_gamelist_y - d_txt6_h, scheme, TBLACK,
+                         d_gamelist_y - d_txt6_h, scheme, kTBlack,
                          TPF_CENTER | kTpfText);
         Fancy_Text_Print(TXT_PLAYERS, d_playerlist_x + (d_playerlist_w / 2),
-                         d_playerlist_y - d_txt6_h, scheme, TBLACK,
+                         d_playerlist_y - d_txt6_h, scheme, kTBlack,
                          TPF_CENTER | kTpfText);
 
         //...............................................................
@@ -1781,21 +1789,21 @@ static int Net_Join_Dialog() {
         //...............................................................
         if (joinstate < JOIN_CONFIRMED) {
           Fancy_Text_Print(TXT_YOUR_NAME, d_name_x + (d_name_w / 2),
-                           d_name_y - d_txt6_h, scheme, TBLACK,
+                           d_name_y - d_txt6_h, scheme, kTBlack,
                            TPF_CENTER | kTpfText);
 
 #ifdef OLDWAY
           Fancy_Text_Print(TXT_SIDE_COLON, d_gdi_x + d_gdi_w,
-                           d_gdi_y - d_txt6_h, scheme, TBLACK,
+                           d_gdi_y - d_txt6_h, scheme, kTBlack,
                            TPF_CENTER | kTpfText);
 #else
           Fancy_Text_Print(TXT_SIDE_COLON, d_house_x + (d_house_w / 2),
-                           d_house_y - d_txt6_h, scheme, TBLACK,
+                           d_house_y - d_txt6_h, scheme, kTBlack,
                            TPF_CENTER | kTpfText);
 #endif
 
           Fancy_Text_Print(TXT_COLOR_COLON, d_dialog_x + (d_dialog_w / 4 * 3),
-                           d_color_y - d_txt6_h, scheme, TBLACK,
+                           d_color_y - d_txt6_h, scheme, kTBlack,
                            TPF_CENTER | kTpfText);
         } else {
           //...............................................................
@@ -1821,7 +1829,7 @@ static int Net_Join_Dialog() {
                            Session.ColorIdx == PCOLOR_DIALOG_BLUE
                                ? &ColorRemaps[PCOLOR_REALLY_BLUE]
                                : &ColorRemaps[Session.ColorIdx],
-                           TBLACK, TPF_CENTER | kTpfText);
+                           kTBlack, TPF_CENTER | kTpfText);
         }
 
         //...............................................................
@@ -1899,12 +1907,13 @@ static int Net_Join_Dialog() {
         for (i = 0; i < MAX_MPLAYER_COLORS; i++) {
           LogicPage->Fill_Rect(
               cbox_x[i] + 1, d_color_y + 1, cbox_x[i] + 1 + d_color_w - 4,
-              d_color_y + 1 + d_color_h - 2, ColorRemaps[i].Box);
+              d_color_y + 1 + d_color_h - 2,
+              ColorRemaps[static_cast<PlayerColorType>(i)].Box);
           //						(i ==
           // PCOLOR_DIALOG_BLUE) ? ColorRemaps[PCOLOR_REALLY_BLUE].Box :
           // ColorRemaps[i].Box);
 
-          if (i == Session.ColorIdx) {
+          if (static_cast<PlayerColorType>(i) == Session.ColorIdx) {
             Draw_Box(cbox_x[i], d_color_y, d_color_w, d_color_h, BOXSTYLE_DOWN,
                      false);
           } else {
@@ -1981,7 +1990,7 @@ static int Net_Join_Dialog() {
         // d_count_w + 2 *2, d_count_y, d_count_x + d_count_w + 35
         //*2, d_aiplayers_y + d_aiplayers_h+2, BLACK);
 
-        Fancy_Text_Print(TXT_COUNT, d_count_x - 4, d_count_y, scheme, TBLACK,
+        Fancy_Text_Print(TXT_COUNT, d_count_x - 4, d_count_y, scheme, kTBlack,
                          kTpfText | TPF_RIGHT);
 
         absl::SNPrintF(txt, sizeof(txt), "%d", Session.Options.UnitCount);
@@ -1990,7 +1999,7 @@ static int Net_Join_Dialog() {
         //				Fancy_Text_Print(txt, d_count_x +
         // d_count_w + 2 *2, d_count_y, scheme, BLACK, kTpfText);
 
-        Fancy_Text_Print(TXT_LEVEL, d_level_x - 4, d_level_y, scheme, TBLACK,
+        Fancy_Text_Print(TXT_LEVEL, d_level_x - 4, d_level_y, scheme, kTBlack,
                          kTpfText | TPF_RIGHT);
         if (BuildLevel <= MPLAYER_BUILD_LEVEL_MAX) {
           absl::SNPrintF(txt, sizeof(txt), "%d", BuildLevel);
@@ -2003,7 +2012,7 @@ static int Net_Join_Dialog() {
         // d_level_w + 2 *2, d_level_y, scheme, BLACK, kTpfText);
 
         Fancy_Text_Print(TXT_CREDITS_COLON, d_credits_x - 4, d_credits_y,
-                         scheme, TBLACK, kTpfText | TPF_RIGHT);
+                         scheme, kTBlack, kTpfText | TPF_RIGHT);
         absl::SNPrintF(txt, sizeof(txt), "%d", Session.Options.Credits);
         staticcredits.Set_Text(txt);
         staticcredits.Draw_Me();
@@ -2011,7 +2020,7 @@ static int Net_Join_Dialog() {
         // d_credits_w + 2 *2, d_credits_y, scheme, BLACK, kTpfText);
 
         Fancy_Text_Print(TXT_AI_PLAYERS_COLON, d_aiplayers_x - 4, d_aiplayers_y,
-                         scheme, TBLACK, kTpfText | TPF_RIGHT);
+                         scheme, kTBlack, kTpfText | TPF_RIGHT);
         absl::SNPrintF(txt, sizeof(txt), "%d", Session.Options.AIPlayers);
         staticaiplayers.Set_Text(txt);
         staticaiplayers.Draw_Me();
@@ -2096,7 +2105,7 @@ static int Net_Join_Dialog() {
       //..................................................................
       //	User clicks on the game list:
       //..................................................................
-      case ButtonKey(BUTTON_GAMELIST):
+      case ButtonKey(kButtonGamelist):
         //...............................................................
         // Handle a double-click
         //...............................................................
@@ -2138,8 +2147,8 @@ static int Net_Join_Dialog() {
             name_edt.Flag_To_Redraw();
             port::SafeCopy(Session.Handle, namebuf);
 #ifndef OLDWAY
-            Session.House =
-                static_cast<HousesType>(housebtn.Current_Index() + HOUSE_USSR);
+            Session.House = static_cast<HousesType>(
+                housebtn.Current_Index() + static_cast<int>(HOUSE_USSR));
 #endif
             join_index = gamelist.Current_Index();
             parms_received = 0;
@@ -2203,13 +2212,13 @@ static int Net_Join_Dialog() {
       //..................................................................
       //	House Buttons: set the player's desired House
       //..................................................................
-      case ButtonKey(BUTTON_GDI):
+      case ButtonKey(kButtonGdi):
         Session.House = HOUSE_GOOD;
         gdibtn.Turn_On();
         nodbtn.Turn_Off();
         break;
 
-      case ButtonKey(BUTTON_NOD):
+      case ButtonKey(kButtonNod):
         Session.House = HOUSE_BAD;
         gdibtn.Turn_Off();
         nodbtn.Turn_On();
@@ -2221,13 +2230,13 @@ static int Net_Join_Dialog() {
       //	JOIN: send a join request packet & switch to waiting-for-
       // confirmation mode.
       //..................................................................
-      case ButtonKey(BUTTON_JOIN):
+      case ButtonKey(kButtonJoin):
         name_edt.Clear_Focus();
         name_edt.Flag_To_Redraw();
         port::SafeCopy(Session.Handle, namebuf);
 #ifndef OLDWAY
-        Session.House =
-            static_cast<HousesType>(housebtn.Current_Index() + HOUSE_USSR);
+        Session.House = static_cast<HousesType>(housebtn.Current_Index() +
+                                                static_cast<int>(HOUSE_USSR));
 #endif
         join_index = gamelist.Current_Index();
         parms_received = 0;
@@ -2244,7 +2253,7 @@ static int Net_Join_Dialog() {
       // - If we're part of a game, stay in this dialog; otherwise, exit
       //..................................................................
       case KN_ESC:
-      case ButtonKey(BUTTON_CANCEL):
+      case ButtonKey(kButtonCancel):
         if (housebtn.IsDropped) {
           housebtn.Collapse();
         }
@@ -2297,7 +2306,7 @@ static int Net_Join_Dialog() {
       //..................................................................
       //	NEW: bail out with return code 1
       //..................................................................
-      case ButtonKey(BUTTON_NEW):
+      case ButtonKey(kButtonNew):
         //...............................................................
         //	Force user to enter a name
         //...............................................................
@@ -2335,8 +2344,8 @@ static int Net_Join_Dialog() {
         port::SafeCopy(Session.Handle, namebuf);
         port::SafeCopy(Session.GameName, namebuf);
 #ifndef OLDWAY
-        Session.House =
-            static_cast<HousesType>(housebtn.Current_Index() + HOUSE_USSR);
+        Session.House = static_cast<HousesType>(housebtn.Current_Index() +
+                                                static_cast<int>(HOUSE_USSR));
 #endif
 
         name_edt.Clear_Focus();
@@ -2422,9 +2431,10 @@ static int Net_Join_Dialog() {
           //............................................................
           Session.Messages.Add_Message(
               Session.GPacket.Name,
-              Session.GPacket.Message.Color == PCOLOR_DIALOG_BLUE
-                  ? PCOLOR_REALLY_BLUE
-                  : Session.GPacket.Message.Color,
+              static_cast<int>(Session.GPacket.Message.Color ==
+                                       PCOLOR_DIALOG_BLUE
+                                   ? PCOLOR_REALLY_BLUE
+                                   : Session.GPacket.Message.Color),
               Session.GPacket.Message.Buf,
               Session.ColorIdx == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
                                                      : Session.ColorIdx,
@@ -3199,11 +3209,9 @@ static void Send_Join_Queries(int curgame, JoinStateType joinstate, int gamenow,
   // These values control the timeouts for sending various types of packets;
   // they're designed such that they'll rarely occur simultaneously.
   //........................................................................
-  enum {
-    GAME_QUERY_TIME = 120,
-    PLAYER_QUERY_TIME = 35,
-    CHAT_ANNOUNCE_TIME = 83,
-  };
+  constexpr int kGameQueryTime = 120;
+  constexpr int kPlayerQueryTime = 35;
+  constexpr int kChatAnnounceTime = 83;
   static Timer<SystemTickSource> game_timer;  // time between NET_QUERY_GAME's
   static Timer<SystemTickSource>
       player_timer;  // time between NET_QUERY_PLAYERS's
@@ -3214,9 +3222,9 @@ static void Send_Join_Queries(int curgame, JoinStateType joinstate, int gamenow,
   // Initialize timers
   //------------------------------------------------------------------------
   if (init) {
-    game_timer.Set(GAME_QUERY_TIME);
-    player_timer.Set(PLAYER_QUERY_TIME);
-    chat_timer.Set(CHAT_ANNOUNCE_TIME);
+    game_timer.Set(kGameQueryTime);
+    player_timer.Set(kPlayerQueryTime);
+    chat_timer.Set(kChatAnnounceTime);
   }
 
   //------------------------------------------------------------------------
@@ -3224,7 +3232,7 @@ static void Send_Join_Queries(int curgame, JoinStateType joinstate, int gamenow,
   //	it right now
   //------------------------------------------------------------------------
   if (game_timer.IsFinished() || gamenow) {
-    game_timer.Set(GAME_QUERY_TIME);
+    game_timer.Set(kGameQueryTime);
 
     memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
 
@@ -3251,7 +3259,7 @@ static void Send_Join_Queries(int curgame, JoinStateType joinstate, int gamenow,
   if ((curgame > 0 && curgame < Session.Games.Count() &&
        player_timer.IsFinished()) ||
       playernow) {
-    player_timer.Set(PLAYER_QUERY_TIME);
+    player_timer.Set(kPlayerQueryTime);
 
     memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
 
@@ -3275,7 +3283,7 @@ static void Send_Join_Queries(int curgame, JoinStateType joinstate, int gamenow,
   // Send the chat announcement
   //------------------------------------------------------------------------
   if ((chat_timer.IsFinished() && joinstate != JOIN_CONFIRMED) || chatnow) {
-    chat_timer.Set(CHAT_ANNOUNCE_TIME);
+    chat_timer.Set(kChatAnnounceTime);
 
     memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
 
@@ -3356,7 +3364,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
   //------------------------------------------------------------------------
   const int rc = Ipx.Get_Global_Message(&Session.GPacket, &Session.GPacketlen,
                                         &Session.GAddress, &Session.GProductID);
-  if (!rc || Session.GProductID != IPXGlobalConnClass::COMMAND_AND_CONQUER0) {
+  if (!rc || Session.GProductID != IPXGlobalConnClass::kCommandAndConquer0) {
     return EV_NONE;
   }
 
@@ -3933,9 +3941,9 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
           Compute_Name_CRC(Session.GameName)) {
         Session.Messages.Add_Message(
             Session.GPacket.Name,
-            Session.GPacket.Message.Color == PCOLOR_DIALOG_BLUE
-                ? PCOLOR_REALLY_BLUE
-                : Session.GPacket.Message.Color,
+            static_cast<int>(Session.GPacket.Message.Color == PCOLOR_DIALOG_BLUE
+                                 ? PCOLOR_REALLY_BLUE
+                                 : Session.GPacket.Message.Color),
             Session.GPacket.Message.Buf,
             Session.GPacket.Message.Color == PCOLOR_DIALOG_BLUE
                 ? PCOLOR_REALLY_BLUE
@@ -3948,7 +3956,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
     //.....................................................................
     else {
       Session.Messages.Add_Message(
-          Session.GPacket.Name, Session.GPacket.Message.Color,
+          Session.GPacket.Name, static_cast<int>(Session.GPacket.Message.Color),
           Session.GPacket.Message.Buf,
           Session.GPacket.Message.Color == PCOLOR_DIALOG_BLUE
               ? PCOLOR_REALLY_BLUE
@@ -4088,31 +4096,30 @@ static int Net_New_Dialog() {
   //------------------------------------------------------------------------
   //	Button Enumerations
   //------------------------------------------------------------------------
-  enum {
-    BUTTON_PLAYERLIST = 100,
-    BUTTON_SCENARIOLIST,
-    BUTTON_REJECT,
-    BUTTON_COUNT,
-    BUTTON_LEVEL,
-    BUTTON_CREDITS,
-    BUTTON_AIPLAYERS,
-    BUTTON_OPTIONS,
-    BUTTON_OK,
-    BUTTON_LOAD,
-    BUTTON_CANCEL,
-  };
+  constexpr int kButtonPlayerlist = 100;
+  constexpr int kButtonScenariolist = 101;
+  constexpr int kButtonReject = 102;
+  constexpr int kButtonCount = 103;
+  constexpr int kButtonLevel = 104;
+  constexpr int kButtonCredits = 105;
+  constexpr int kButtonAiplayers = 106;
+  constexpr int kButtonOptions = 107;
+  constexpr int kButtonOk = 108;
+  constexpr int kButtonLoad = 109;
+  constexpr int kButtonCancel = 110;
 
   //------------------------------------------------------------------------
   //	Redraw values: in order from "top" to "bottom" layer of the dialog
   //------------------------------------------------------------------------
-  typedef enum {
+  enum class RedrawType {
     REDRAW_NONE = 0,
     REDRAW_PARMS = 1,
     REDRAW_MESSAGE = 2,
     REDRAW_BUTTONS = 3,
     REDRAW_BACKGROUND = 4,
     REDRAW_ALL = REDRAW_BACKGROUND
-  } RedrawType;
+  };
+  using enum RedrawType;
 
   //------------------------------------------------------------------------
   //	Dialog variables
@@ -4133,7 +4140,7 @@ static int Net_New_Dialog() {
   NodeNameType* who = nullptr;  // node to add to Players
   int64_t ping_timer = 0;  // for sending Ping packets
 
-  int color_used[MAX_MPLAYER_COLORS];  // 1 = color has been used
+  ColorUsedArray color_used;  // 1 = color has been used
   char txt[80];
   JoinEventType whahoppa = EV_NONE;  // event generated by received packets
   static int first_time = 1;  // 1 = 1st time this dialog is run
@@ -4145,32 +4152,32 @@ static int Net_New_Dialog() {
   // Buttons
   //------------------------------------------------------------------------
 
-  ColorListClass playerlist(BUTTON_PLAYERLIST, d_playerlist_x, d_playerlist_y,
+  ColorListClass playerlist(kButtonPlayerlist, d_playerlist_x, d_playerlist_y,
                             d_playerlist_w, d_playerlist_h, kTpfText,
                             MixArchive::Retrieve("BTN-UP.SHP"),
                             MixArchive::Retrieve("BTN-DN.SHP"));
-  ListClass scenariolist(BUTTON_SCENARIOLIST, d_scenariolist_x,
+  ListClass scenariolist(kButtonScenariolist, d_scenariolist_x,
                          d_scenariolist_y, d_scenariolist_w, d_scenariolist_h,
                          kTpfText, MixArchive::Retrieve("BTN-UP.SHP"),
                          MixArchive::Retrieve("BTN-DN.SHP"));
-  TextButtonClass rejectbtn(BUTTON_REJECT, TXT_REJECT, kTpfButton, d_reject_x,
+  TextButtonClass rejectbtn(kButtonReject, TXT_REJECT, kTpfButton, d_reject_x,
                             d_reject_y);
-  GaugeClass countgauge(BUTTON_COUNT, d_count_x, d_count_y, d_count_w,
+  GaugeClass countgauge(kButtonCount, d_count_x, d_count_y, d_count_w,
                         d_count_h);
-  GaugeClass levelgauge(BUTTON_LEVEL, d_level_x, d_level_y, d_level_w,
+  GaugeClass levelgauge(kButtonLevel, d_level_x, d_level_y, d_level_w,
                         d_level_h);
-  GaugeClass creditsgauge(BUTTON_CREDITS, d_credits_x, d_credits_y, d_credits_w,
+  GaugeClass creditsgauge(kButtonCredits, d_credits_x, d_credits_y, d_credits_w,
                           d_credits_h);
-  GaugeClass aiplayersgauge(BUTTON_AIPLAYERS, d_aiplayers_x, d_aiplayers_y,
+  GaugeClass aiplayersgauge(kButtonAiplayers, d_aiplayers_x, d_aiplayers_y,
                             d_aiplayers_w, d_aiplayers_h);
-  CheckListClass optionlist(BUTTON_OPTIONS, d_options_x, d_options_y,
+  CheckListClass optionlist(kButtonOptions, d_options_x, d_options_y,
                             d_options_w, d_options_h, kTpfText,
                             MixArchive::Retrieve("BTN-UP.SHP"),
                             MixArchive::Retrieve("BTN-DN.SHP"));
-  TextButtonClass okbtn(BUTTON_OK, TXT_OK, kTpfButton, d_ok_x, d_ok_y, 120);
-  TextButtonClass loadbtn(BUTTON_LOAD, TXT_LOAD_BUTTON, kTpfButton, d_load_x,
+  TextButtonClass okbtn(kButtonOk, TXT_OK, kTpfButton, d_ok_x, d_ok_y, 120);
+  TextButtonClass loadbtn(kButtonLoad, TXT_LOAD_BUTTON, kTpfButton, d_load_x,
                           d_load_y, 120);
-  TextButtonClass cancelbtn(BUTTON_CANCEL, TXT_CANCEL, kTpfButton, d_cancel_x,
+  TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL, kTpfButton, d_cancel_x,
                             d_cancel_y, 120);
 
   StaticButtonClass staticunit(0, "    ", kTpfText, d_count_x + d_count_w + 4,
@@ -4302,9 +4309,7 @@ static int Net_New_Dialog() {
   //------------------------------------------------------------------------
   //	Init player color-used flags
   //------------------------------------------------------------------------
-  for (i = 0; i < MAX_MPLAYER_COLORS; i++) {
-    color_used[i] = 0;  // init all colors to available
-  }
+  color_used = {};                   // init all colors to available
   color_used[Session.ColorIdx] = 1;  // set my color to used
   playerlist.Set_Selected_Style(ColorListClass::SELECT_BAR, scheme);
 
@@ -4390,7 +4395,7 @@ static int Net_New_Dialog() {
     //.....................................................................
     //	Refresh display if needed
     //.....................................................................
-    if (display) {
+    if (display != REDRAW_NONE) {
       Hide_Mouse();
 
       //..................................................................
@@ -4403,19 +4408,20 @@ static int Net_New_Dialog() {
         //	Dialog & Field labels
         //...............................................................
         Fancy_Text_Print(TXT_PLAYERS, d_playerlist_x + (d_playerlist_w / 2),
-                         d_playerlist_y - d_txt6_h, scheme, TBLACK,
+                         d_playerlist_y - d_txt6_h, scheme, kTBlack,
                          kTpfText | TPF_CENTER);
-        Fancy_Text_Print(
-            TXT_SCENARIOS, d_scenariolist_x + (d_scenariolist_w / 2),
-            d_scenariolist_y - d_txt6_h, scheme, TBLACK, kTpfText | TPF_CENTER);
-        Fancy_Text_Print(TXT_COUNT, d_count_x - 4, d_count_y, scheme, TBLACK,
+        Fancy_Text_Print(TXT_SCENARIOS,
+                         d_scenariolist_x + (d_scenariolist_w / 2),
+                         d_scenariolist_y - d_txt6_h, scheme, kTBlack,
+                         kTpfText | TPF_CENTER);
+        Fancy_Text_Print(TXT_COUNT, d_count_x - 4, d_count_y, scheme, kTBlack,
                          kTpfText | TPF_RIGHT);
-        Fancy_Text_Print(TXT_LEVEL, d_level_x - 4, d_level_y, scheme, TBLACK,
+        Fancy_Text_Print(TXT_LEVEL, d_level_x - 4, d_level_y, scheme, kTBlack,
                          kTpfText | TPF_RIGHT);
         Fancy_Text_Print(TXT_CREDITS_COLON, d_credits_x - 4, d_credits_y,
-                         scheme, TBLACK, kTpfText | TPF_RIGHT);
+                         scheme, kTBlack, kTpfText | TPF_RIGHT);
         Fancy_Text_Print(TXT_AI_PLAYERS_COLON, d_aiplayers_x - 4, d_aiplayers_y,
-                         scheme, TBLACK, kTpfText | TPF_RIGHT);
+                         scheme, kTBlack, kTpfText | TPF_RIGHT);
       }
 
       //..................................................................
@@ -4533,7 +4539,7 @@ static int Net_New_Dialog() {
       //	New Scenario selected.
       //..................................................................
       // All scenarios now allowable as downloads. ajw
-      case ButtonKey(BUTTON_SCENARIOLIST):
+      case ButtonKey(kButtonScenariolist):
         if (scenariolist.Current_Index() != Session.Options.ScenarioIndex) {
           Session.Options.ScenarioIndex = scenariolist.Current_Index();
           transmit = 1;
@@ -4543,7 +4549,7 @@ static int Net_New_Dialog() {
       //	Reject the currently-selected player (don't allow rejecting
       // myself, 	who will be the first entry in the list)
       //..................................................................
-      case ButtonKey(BUTTON_REJECT):
+      case ButtonKey(kButtonReject):
         index = playerlist.Current_Index();
 
         if (index == 0) {
@@ -4573,7 +4579,7 @@ static int Net_New_Dialog() {
       //..................................................................
       //	User adjusts max # units
       //..................................................................
-      case ButtonKey(BUTTON_COUNT):
+      case ButtonKey(kButtonCount):
         Session.Options.UnitCount =
             countgauge.Get_Value() +
             SessionClass::CountMin[Session.Options.Bases];
@@ -4584,7 +4590,7 @@ static int Net_New_Dialog() {
       //..................................................................
       //	User adjusts build level
       //..................................................................
-      case ButtonKey(BUTTON_LEVEL):
+      case ButtonKey(kButtonLevel):
         BuildLevel =
             std::min(levelgauge.Get_Value() + 1, MPLAYER_BUILD_LEVEL_MAX);
         transmit = 1;
@@ -4595,7 +4601,7 @@ static int Net_New_Dialog() {
       //	User edits the credits value; retransmit new game options
       // Round the credits to the nearest 500.
       //..................................................................
-      case ButtonKey(BUTTON_CREDITS):
+      case ButtonKey(kButtonCredits):
         Session.Options.Credits = creditsgauge.Get_Value();
         Session.Options.Credits = (Session.Options.Credits + 250) / 500 * 500;
         transmit = 1;
@@ -4605,7 +4611,7 @@ static int Net_New_Dialog() {
       //..................................................................
       //	User adjusts # of AI players
       //..................................................................
-      case ButtonKey(BUTTON_AIPLAYERS):
+      case ButtonKey(kButtonAiplayers):
         Session.Options.AIPlayers = aiplayersgauge.Get_Value();
         if (Session.Options.AIPlayers + Session.Players.Count() >
             Rule.MaxPlayers) {  // if it's pegged, max it out
@@ -4623,7 +4629,7 @@ static int Net_New_Dialog() {
       // Also, if Tiberium gets toggled, we have to set the flags
       // in SpecialClass.
       //..................................................................
-      case ButtonKey(BUTTON_OPTIONS):
+      case ButtonKey(kButtonOptions):
         if ((Special.IsCaptureTheFlag != 0) != optionlist.Is_Checked(3) &&
             !Special.IsCaptureTheFlag) {
           optionlist.Check_Item(0, true);
@@ -4666,8 +4672,8 @@ static int Net_New_Dialog() {
       //..................................................................
       //	OK: exit loop with true status
       //..................................................................
-      case ButtonKey(BUTTON_LOAD):
-      case ButtonKey(BUTTON_OK):
+      case ButtonKey(kButtonLoad):
+      case ButtonKey(kButtonOk):
         //...............................................................
         //	If a new player has joined in the last second, don't allow
         //	an OK; force a wait longer than 1 second (to give all players
@@ -4693,7 +4699,7 @@ static int Net_New_Dialog() {
           Sound_Effect(VOC_SYS_ERROR);
           display = REDRAW_MESSAGE;
         }
-        if (input == ButtonKey(BUTTON_LOAD)) {
+        if (input == ButtonKey(kButtonLoad)) {
           load_game = 1;
         } else {
           load_game = 0;
@@ -4704,7 +4710,7 @@ static int Net_New_Dialog() {
       //	CANCEL: send a SIGN_OFF, bail out with error code
       //..................................................................
       case KN_ESC:
-      case ButtonKey(BUTTON_CANCEL):
+      case ButtonKey(kButtonCancel):
         memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
 
         Session.GPacket.Command = NET_SIGN_OFF;
@@ -4813,9 +4819,10 @@ static int Net_New_Dialog() {
           //............................................................
           Session.Messages.Add_Message(
               Session.GPacket.Name,
-              Session.GPacket.Message.Color == PCOLOR_DIALOG_BLUE
-                  ? PCOLOR_REALLY_BLUE
-                  : Session.GPacket.Message.Color,
+              static_cast<int>(Session.GPacket.Message.Color ==
+                                       PCOLOR_DIALOG_BLUE
+                                   ? PCOLOR_REALLY_BLUE
+                                   : Session.GPacket.Message.Color),
               Session.GPacket.Message.Buf,
               Session.ColorIdx == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
                                                      : Session.ColorIdx,
@@ -5032,17 +5039,17 @@ static int Net_New_Dialog() {
           Ipx.Get_Global_Message(&Session.GPacket, &Session.GPacketlen,
                                  &Session.GAddress, &Session.GProductID);
       if (retcode &&
-          Session.GProductID == IPXGlobalConnClass::COMMAND_AND_CONQUER0) {
+          Session.GProductID == IPXGlobalConnClass::kCommandAndConquer0) {
         for (i = 1; i < Session.Players.Count(); i++) {
           if ((Session.Players[i]->Address == Session.GAddress) &&
               (!responses[i])) {
             if (Session.GPacket.Command == NET_REQ_SCENARIO) {
-              responses[i] = Session.GPacket.Command;
+              responses[i] = static_cast<int>(Session.GPacket.Command);
               send_scenario = true;
               num_responses++;
             }
             if (Session.GPacket.Command == NET_READY_TO_GO) {
-              responses[i] = Session.GPacket.Command;
+              responses[i] = static_cast<int>(Session.GPacket.Command);
               num_responses++;
             }
           }
@@ -5064,7 +5071,7 @@ static int Net_New_Dialog() {
       memset(Session.ScenarioRequests, 0, sizeof(Session.ScenarioRequests));
       Session.RequestCount = 0;
       for (i = 1; i < Session.Players.Count(); i++) {
-        if (responses[i] == NET_REQ_SCENARIO) {
+        if (responses[i] == static_cast<int>(NET_REQ_SCENARIO)) {
           Session.ScenarioRequests[Session.RequestCount++] = static_cast<char>(i);
         }
       }
@@ -5153,7 +5160,7 @@ static int Net_New_Dialog() {
  *   04/18/1995 BRR : Created.                                             *
  *=========================================================================*/
 static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
-                                           int* color_used) {
+                                           ColorUsedArray& color_used) {
   char item[kGameListItemSize];  // general-purpose string
   NodeNameType* who = nullptr;   // node to add to Players Vector
   int found = 0;
@@ -5166,7 +5173,7 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
   //------------------------------------------------------------------------
   const int rc = Ipx.Get_Global_Message(&Session.GPacket, &Session.GPacketlen,
                                         &Session.GAddress, &Session.GProductID);
-  if (!rc || Session.GProductID != IPXGlobalConnClass::COMMAND_AND_CONQUER0) {
+  if (!rc || Session.GProductID != IPXGlobalConnClass::kCommandAndConquer0) {
     return EV_NONE;
   }
 
@@ -5319,7 +5326,7 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
         who->Player.Color = Session.GPacket.PlayerInfo.Color;
       } else {
         for (int i = 0; i < MAX_MPLAYER_COLORS; i++) {
-          if (color_used[i] == 0) {
+          if (color_used[static_cast<PlayerColorType>(i)] == 0) {
             who->Player.Color = static_cast<PlayerColorType>(i);
             break;
           }
@@ -5416,9 +5423,9 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
   else if (Session.GPacket.Command == NET_MESSAGE) {
     Session.Messages.Add_Message(
         Session.GPacket.Name,
-        Session.GPacket.Message.Color == PCOLOR_DIALOG_BLUE
-            ? PCOLOR_REALLY_BLUE
-            : Session.GPacket.Message.Color,
+        static_cast<int>(Session.GPacket.Message.Color == PCOLOR_DIALOG_BLUE
+                             ? PCOLOR_REALLY_BLUE
+                             : Session.GPacket.Message.Color),
         Session.GPacket.Message.Buf,
         Session.GPacket.Message.Color == PCOLOR_DIALOG_BLUE
             ? PCOLOR_REALLY_BLUE
@@ -5518,7 +5525,7 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
   //	Draw the dialog from scratch
   //------------------------------------------------------------------------
   if (fresh) {
-    Fancy_Text_Print("", 0, 0, scheme, TBLACK, TPF_CENTER | kTpfText);
+    Fancy_Text_Print("", 0, 0, scheme, kTBlack, TPF_CENTER | kTpfText);
 
     switch (Session.Type) {
       case GAME_IPX:
@@ -5571,15 +5578,15 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
     Set_Logic_Page(SeenBuff);
     Dialog_Box(x, y, w, h);
 
-    Fancy_Text_Print(buf1, 320, y + (d_margin * 2), scheme, TBLACK,
+    Fancy_Text_Print(buf1, 320, y + (d_margin * 2), scheme, kTBlack,
                      TPF_CENTER | kTpfText);
 
     Fancy_Text_Print(buf2, 320, y + (d_margin * 2) + d_txt6_h + d_margin,
-                     scheme, TBLACK, TPF_CENTER | kTpfText);
+                     scheme, kTBlack, TPF_CENTER | kTpfText);
 
     Fancy_Text_Print(bForfeitWarning ? szNewCancelMessage : buf3, 320,
                      y + (d_margin * 2) + ((d_txt6_h + d_margin) * 2), scheme,
-                     TBLACK, TPF_CENTER | kTpfText);
+                     kTBlack, TPF_CENTER | kTpfText);
 
     Show_Mouse();
   }
@@ -5597,10 +5604,10 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
     LogicPage->Fill_Rect(
         fillx, y + (d_margin * 2) + d_txt6_h + d_margin,
         fillx + String_Pixel_Width(buf2) + 12,
-        y + (d_margin * 2) + d_txt6_h + d_margin + d_txt6_h + 2, BLACK);
+        y + (d_margin * 2) + d_txt6_h + d_margin + d_txt6_h + 2, kBlack);
 
     Fancy_Text_Print(buf2, 320, y + (d_margin * 2) + d_txt6_h + d_margin,
-                     scheme, BLACK, TPF_CENTER | kTpfText);
+                     scheme, kBlack, TPF_CENTER | kTpfText);
 
     Show_Mouse();
   }

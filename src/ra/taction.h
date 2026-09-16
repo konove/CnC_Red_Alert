@@ -42,6 +42,7 @@
 
 #include <string>
 
+#include "base/enum_array.h"
 #include "port/ex_string.h"
 #include "port/tokenizer.h"
 #include "ra/ccini.h"
@@ -50,7 +51,7 @@
 #include "ra/object.h"
 #include "ra/teamtype.h"
 
-typedef enum TActionType {
+enum class TActionType {
   TACTION_NONE,
 
   TACTION_WIN,               // player wins!
@@ -96,7 +97,8 @@ typedef enum TActionType {
   TACTION_LAUNCH_NUKES,      // Launch fake nuclear missiles from all silos
 
   TACTION_COUNT,
-} TActionType;
+};
+using enum TActionType;
 
 TActionType Action_From_Name(const char* name);
 const char* Name_From_Action(TActionType action);
@@ -189,6 +191,8 @@ class ActionChoiceClass {
   TActionType Action;
 };
 
-extern ActionChoiceClass ActionChoices[TACTION_COUNT];
+extern base::EnumArray<TActionType, ActionChoiceClass,
+                       static_cast<int>(TACTION_COUNT)>
+    ActionChoices;
 
 #endif  // CNC_RED_ALERT_RA_TACTION_H_

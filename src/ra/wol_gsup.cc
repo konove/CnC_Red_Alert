@@ -351,58 +351,58 @@ void WOL_GameSetupDialog::Initialize() {
   pToolTip = pToolTip->next;
   pToolTip->next = pWO->pTTipHelp;
 
-  pILPlayers = new IconListClass(BUTTON_PLAYERLIST, d_playerlist_x,
+  pILPlayers = new IconListClass(kButtonPlayerlist, d_playerlist_x,
                                  d_playerlist_y, d_playerlist_w, d_playerlist_h,
                                  TPF_TYPE, MixArchive::Retrieve("BTN-UP.SHP"),
                                  MixArchive::Retrieve("BTN-DN.SHP"), true, 2);
-  //	ListClass scenariolist(BUTTON_SCENARIOLIST, d_scenariolist_x,
+  //	ListClass scenariolist(kButtonScenariolist, d_scenariolist_x,
   // d_scenariolist_y, d_scenariolist_w, d_scenariolist_h, kTpfText,
   // MixArchive::Retrieve("BTN-UP.SHP"), MixArchive::Retrieve("BTN-DN.SHP"));
   pILScens = new IconListClass(
-      BUTTON_SCENARIOLIST, d_scenariolist_x, d_scenariolist_y, d_scenariolist_w,
+      kButtonScenariolist, d_scenariolist_x, d_scenariolist_y, d_scenariolist_w,
       d_scenariolist_h, TPF_TYPE, MixArchive::Retrieve("BTN-UP.SHP"),
       MixArchive::Retrieve("BTN-DN.SHP"), true, 1);
   pILDisc =
-      new IconListClass(BUTTON_DISCLIST, d_disc_x, d_disc_y, d_disc_w, d_disc_h,
+      new IconListClass(kButtonDisclist, d_disc_x, d_disc_y, d_disc_w, d_disc_h,
                         TPF_TYPE, MixArchive::Retrieve("BTN-UP.SHP"),
                         MixArchive::Retrieve("BTN-DN.SHP"), true, 0, 300);
 
-  pEditSend = new EditClass(BUTTON_SENDEDIT, szSendBuffer, MAXCHATSENDLENGTH,
+  pEditSend = new EditClass(kButtonSendedit, szSendBuffer, MAXCHATSENDLENGTH,
                             kTpfText, d_send_x, d_send_y, d_send_w, d_send_h);
 
   //	TextButtonClass rejectbtn( BUTTON_REJECT, TXT_REJECT, kTpfButton,
   // d_reject_x, d_reject_y );
   pGaugeCount =
-      new GaugeClass(BUTTON_COUNT, d_count_x, d_count_y, d_count_w, d_count_h);
+      new GaugeClass(kButtonCount, d_count_x, d_count_y, d_count_w, d_count_h);
   pGaugeLevel =
-      new GaugeClass(BUTTON_LEVEL, d_level_x, d_level_y, d_level_w, d_level_h);
-  pGaugeCredits = new GaugeClass(BUTTON_CREDITS, d_credits_x, d_credits_y,
+      new GaugeClass(kButtonLevel, d_level_x, d_level_y, d_level_w, d_level_h);
+  pGaugeCredits = new GaugeClass(kButtonCredits, d_credits_x, d_credits_y,
                                  d_credits_w, d_credits_h);
-  pGaugeAIPlayers = new GaugeClass(BUTTON_AIPLAYERS, d_aiplayers_x,
+  pGaugeAIPlayers = new GaugeClass(kButtonAiplayers, d_aiplayers_x,
                                    d_aiplayers_y, d_aiplayers_w, d_aiplayers_h);
   pCheckListOptions = new CheckListClass(
-      BUTTON_PARAMS, d_options_x, d_options_y, d_options_w, d_options_h,
+      kButtonParams, d_options_x, d_options_y, d_options_w, d_options_h,
       kTpfText, MixArchive::Retrieve("BTN-UP.SHP"),
       MixArchive::Retrieve("BTN-DN.SHP"));
   //	pTextBtnOk = new TextButtonClass( BUTTON_OK, TXT_OK, kTpfButton, d_ok_x,
-  // d_ok_y, 60*2 ); 	TextButtonClass loadbtn(BUTTON_LOAD,
+  // d_ok_y, 60*2 ); 	TextButtonClass loadbtn(kButtonLoad,
   // TXT_LOAD_BUTTON, kTpfButton, d_load_x, d_load_y, 60*2);
   pTextBtnCancel =
-      new TextButtonClass(BUTTON_CANCEL, TXT_WOL_CANCELGAME, kTpfButton,
+      new TextButtonClass(kButtonCancel, TXT_WOL_CANCELGAME, kTpfButton,
                           d_cancel_x, d_cancel_y, d_cancel_w);
   pTTipCancel = new ToolTipClass(pTextBtnCancel, TXT_WOL_TTIP_CANCELGAME,
                                  d_cancel_x + (d_cancel_w / 2), d_cancel_y - 6);
 
   if (bHost) {
     pTextBtnAcceptStart =
-        new TextButtonClass(BUTTON_ACCEPTSTART, TXT_WOL_STARTBUTTON, kTpfButton,
+        new TextButtonClass(kButtonAcceptstart, TXT_WOL_STARTBUTTON, kTpfButton,
                             d_accept_x, d_accept_y, d_accept_w);
     pTTipAcceptStart =
         new ToolTipClass(pTextBtnAcceptStart, TXT_WOL_TTIP_START,
                          d_accept_x + (d_accept_w / 2), d_accept_y - 6);
   } else {
     pTextBtnAcceptStart =
-        new TextButtonClass(BUTTON_ACCEPTSTART, TXT_WOL_ACCEPTBUTTON,
+        new TextButtonClass(kButtonAcceptstart, TXT_WOL_ACCEPTBUTTON,
                             kTpfButton, d_accept_x, d_accept_y, d_accept_w);
     pTTipAcceptStart =
         new ToolTipClass(pTextBtnAcceptStart, TXT_WOL_TTIP_ACCEPT,
@@ -410,7 +410,7 @@ void WOL_GameSetupDialog::Initialize() {
   }
 
   pTextBtnAction =
-      new TextButtonClass(BUTTON_ACTION, TXT_WOL_ACTION, kTpfButton, d_action_x,
+      new TextButtonClass(kButtonAction, TXT_WOL_ACTION, kTpfButton, d_action_x,
                           d_action_y, d_action_w);
   pTTipAction =
       new ToolTipClass(pTextBtnAction, TXT_WOL_TTIP_ACTION,
@@ -444,13 +444,13 @@ void WOL_GameSetupDialog::Initialize() {
 
   Fancy_Text_Print("", 0, 0, nullptr, 0, kTpfText);
   pDropListHouse = new DropListClass(
-      BUTTON_HOUSE, szHouseBuffer, sizeof(szHouseBuffer), kTpfText, d_house_x,
+      kButtonHouse, szHouseBuffer, sizeof(szHouseBuffer), kTpfText, d_house_x,
       d_house_y, d_house_w, d_house_h, MixArchive::Retrieve("BTN-UP.SHP"),
       MixArchive::Retrieve("BTN-DN.SHP"));
 
   //	ajw - This checkbox is not used. Could be turned on, though.
   pCheckAftermathUnits = new BigCheckBoxClass(
-      BUTTON_AFTERMATHUNITS, d_amunits_x, d_amunits_y, d_amunits_w, d_amunits_h,
+      kButtonAftermathunits, d_amunits_x, d_amunits_y, d_amunits_w, d_amunits_h,
       "Aftermath units enabled", kTpfText, false);
 
   if (pWO->GameInfoCurrent.GameKind == CREATEGAMEINFO::AMGAME) {
@@ -469,14 +469,14 @@ void WOL_GameSetupDialog::Initialize() {
   bSlowUnitBuildRate = true;
 
 #define TABSPACING 38
-  pShpBtnScenarioRA = new ShapeButtonClass(
-      BUTTON_SCENARIO_RA, MixArchive::Retrieve("tabra.shp"), d_scenariolist_x,
-      d_scenariolist_y - d_tab_h);
+  pShpBtnScenarioRA =
+      new ShapeButtonClass(kButtonScenarioRa, MixArchive::Retrieve("tabra.shp"),
+                           d_scenariolist_x, d_scenariolist_y - d_tab_h);
   pShpBtnScenarioCS = new ShapeButtonClass(
-      BUTTON_SCENARIO_CS, MixArchive::Retrieve("tabcs.shp"),
+      kButtonScenarioCs, MixArchive::Retrieve("tabcs.shp"),
       d_scenariolist_x + TABSPACING, d_scenariolist_y - d_tab_h);
   pShpBtnScenarioAM = new ShapeButtonClass(
-      BUTTON_SCENARIO_AM, MixArchive::Retrieve("tabam.shp"),
+      kButtonScenarioAm, MixArchive::Retrieve("tabam.shp"),
       d_scenariolist_x + TABSPACING, d_scenariolist_y - d_tab_h);
 
   int iScenarioUserTabPos = 0;
@@ -491,7 +491,7 @@ void WOL_GameSetupDialog::Initialize() {
   }
 
   pShpBtnScenarioUser = new ShapeButtonClass(
-      BUTTON_SCENARIO_USER, MixArchive::Retrieve("tabus.shp"),
+      kButtonScenarioUser, MixArchive::Retrieve("tabus.shp"),
       iScenarioUserTabPos, d_scenariolist_y - d_tab_h);
 
   //	Change draw behavior of tab buttons.
@@ -644,8 +644,9 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
           if (IsMissionCounterstrike(Session.Scenarios[i]->Get_Filename())) {
             //					debugprint( " ----------------
             // Adding scenario %s as CS\n", szScenarioNameShow );
-            ar_szScenarios[SCENARIO_CS].Add(szScenarioNameShow);
-            ar_szScenIndexes[SCENARIO_CS].Add(i);
+            ar_szScenarios[static_cast<int>(SCENARIO_CS)].Add(
+                szScenarioNameShow);
+            ar_szScenIndexes[static_cast<int>(SCENARIO_CS)].Add(i);
           } else if (IsMissionAftermath(Session.Scenarios[i]->Get_Filename())) {
             //					debugprint( " ----------------
             // Adding scenario %s as AM\n", szScenarioNameShow ); 	If this
@@ -653,20 +654,23 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
             // that have 	special AM units on them.
             if (pWO->GameInfoCurrent.GameKind == CREATEGAMEINFO::AMGAME ||
                 !bSpecialAftermathScenario(pMMission->Description())) {
-              ar_szScenarios[SCENARIO_AM].Add(szScenarioNameShow);
-              ar_szScenIndexes[SCENARIO_AM].Add(i);
+              ar_szScenarios[static_cast<int>(SCENARIO_AM)].Add(
+                  szScenarioNameShow);
+              ar_szScenIndexes[static_cast<int>(SCENARIO_AM)].Add(i);
             }
           } else {
             //					debugprint( " ----------------
             // Adding scenario %s as RA\n", szScenarioNameShow );
-            ar_szScenarios[SCENARIO_RA].Add(szScenarioNameShow);
-            ar_szScenIndexes[SCENARIO_RA].Add(i);
+            ar_szScenarios[static_cast<int>(SCENARIO_RA)].Add(
+                szScenarioNameShow);
+            ar_szScenIndexes[static_cast<int>(SCENARIO_RA)].Add(i);
           }
         } else {
           //				debugprint( " ---------------- Adding
           // scenario %s as User\n", szScenarioNameShow );
-          ar_szScenarios[SCENARIO_USER].Add(szScenarioNameShow);
-          ar_szScenIndexes[SCENARIO_USER].Add(i);
+          ar_szScenarios[static_cast<int>(SCENARIO_USER)].Add(
+              szScenarioNameShow);
+          ar_szScenIndexes[static_cast<int>(SCENARIO_USER)].Add(i);
         }
       }
 
@@ -723,7 +727,8 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
     pDropListHouse->Add_Item(
         Text_String(HouseTypeClass::As_Reference(house).Full_Name()));
   }
-  pDropListHouse->Set_Selected_Index(Session.House - HOUSE_USSR);
+  pDropListHouse->Set_Selected_Index(static_cast<int>(Session.House) -
+                                     static_cast<int>(HOUSE_USSR));
   pDropListHouse->Set_Read_Only(true);
 
   //	PlayingAgainstVersion = VerNum.Version_Number();
@@ -946,7 +951,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
     //			pDropListHouse->Flag_To_Redraw();
     //		}
 
-    if (display) {
+    if (display != REDRAW_NONE) {
       Hide_Mouse();
 
       /*
@@ -976,32 +981,32 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         //	Dialog & Field labels
         //...............................................................
         Fancy_Text_Print(TXT_PLAYERS, d_playerlist_x + (d_playerlist_w / 2),
-                         d_playerlist_y - d_txt6_h, scheme, TBLACK,
+                         d_playerlist_y - d_txt6_h, scheme, kTBlack,
                          kTpfText | TPF_CENTER);
         if (bHost) {
           Fancy_Text_Print(TXT_SCENARIOS, d_scenariolist_x + d_scenariolist_w,
-                           d_scenariolist_y - 12, scheme, TBLACK,
+                           d_scenariolist_y - 12, scheme, kTBlack,
                            TPF_TYPE | TPF_RIGHT);
         }
         //				else
         //					Fancy_Text_Print(
         // TXT_SCENARIO_COLON, d_scenariolist_x + (d_scenariolist_w / 2),
         // d_scenariolist_y - d_txt6_h, scheme, TBLACK, kTpfText | TPF_CENTER);
-        Fancy_Text_Print(TXT_COUNT, d_count_x - 4, d_count_y, scheme, TBLACK,
+        Fancy_Text_Print(TXT_COUNT, d_count_x - 4, d_count_y, scheme, kTBlack,
                          kTpfText | TPF_RIGHT);
-        Fancy_Text_Print(TXT_LEVEL, d_level_x - 4, d_level_y, scheme, TBLACK,
+        Fancy_Text_Print(TXT_LEVEL, d_level_x - 4, d_level_y, scheme, kTBlack,
                          kTpfText | TPF_RIGHT);
         Fancy_Text_Print(TXT_CREDITS_COLON, d_credits_x - 4, d_credits_y,
-                         scheme, TBLACK, kTpfText | TPF_RIGHT);
+                         scheme, kTBlack, kTpfText | TPF_RIGHT);
         Fancy_Text_Print(TXT_AI_PLAYERS_COLON, d_aiplayers_x - 4, d_aiplayers_y,
-                         scheme, TBLACK, kTpfText | TPF_RIGHT);
+                         scheme, kTBlack, kTpfText | TPF_RIGHT);
         Fancy_Text_Print(
             TXT_SIDE_COLON,
             //					d_house_x + (d_house_w / 2),
             d_house_x + ((d_house_w + 16) / 2), d_house_y - d_txt6_h, scheme,
-            TBLACK, TPF_CENTER | kTpfText);
+            kTBlack, TPF_CENTER | kTpfText);
         Fancy_Text_Print(TXT_COLOR_COLON, d_color_x + (d_color_w * 4),
-                         d_color_y - d_txt6_h, scheme, TBLACK,
+                         d_color_y - d_txt6_h, scheme, kTBlack,
                          TPF_CENTER | kTpfText);
 
         const char* szGameKind = nullptr;
@@ -1033,8 +1038,8 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         const int iGameInfoSecondColumnX = 0;  // 170;
         //	Game kind.
         Fancy_Text_Print(szGameKind, d_gamekind_x,
-                         d_gamekind_y - (iGameInfoSpacingY * 1), scheme, TBLACK,
-                         TPF_TYPE);
+                         d_gamekind_y - (iGameInfoSpacingY * 1), scheme,
+                         kTBlack, TPF_TYPE);
         //	Game kind icon.
         if (pIcon != nullptr) {
           DrawDib(*pIcon, d_gamekind_x - 16,
@@ -1042,10 +1047,11 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         }
         //	"Tournament."
         if (pWO->GameInfoCurrent.bTournament) {
-          Fancy_Text_Print(
-              TXT_WOL_CG_TOURNAMENT, d_gamekind_x + iGameInfoSecondColumnX,
-              d_gamekind_y + (iGameInfoSpacingY * 1), scheme, TBLACK, TPF_TYPE);
-          DrawDibIfLoaded(pWO->DibIconInfos[DIBICON_TOURNAMENT],
+          Fancy_Text_Print(TXT_WOL_CG_TOURNAMENT,
+                           d_gamekind_x + iGameInfoSecondColumnX,
+                           d_gamekind_y + (iGameInfoSpacingY * 1), scheme,
+                           kTBlack, TPF_TYPE);
+          DrawDibIfLoaded(pWO->DibIconInfos[kDibiconTournament],
                           d_gamekind_x + iGameInfoSecondColumnX - 16,
                           d_gamekind_y + (iGameInfoSpacingY * 1) - 2, 100,
                           WINDOW_MAIN);
@@ -1056,10 +1062,11 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
           Format_Runtime_Text(szPrivatePassword, sizeof(szPrivatePassword),
                               TXT_WOL_PRIVATEPASSWORD,
                               pWO->GameInfoCurrent.szPassword);
-          Fancy_Text_Print(
-              szPrivatePassword, d_gamekind_x + iGameInfoSecondColumnX,
-              d_gamekind_y + (iGameInfoSpacingY * 2), scheme, TBLACK, TPF_TYPE);
-          DrawDibIfLoaded(pWO->DibIconInfos[DIBICON_PRIVATE],
+          Fancy_Text_Print(szPrivatePassword,
+                           d_gamekind_x + iGameInfoSecondColumnX,
+                           d_gamekind_y + (iGameInfoSpacingY * 2), scheme,
+                           kTBlack, TPF_TYPE);
+          DrawDibIfLoaded(pWO->DibIconInfos[kDibiconPrivate],
                           d_gamekind_x + iGameInfoSecondColumnX - 16,
                           d_gamekind_y + (iGameInfoSpacingY * 2) - 2, 100,
                           WINDOW_MAIN);
@@ -1083,9 +1090,10 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         for (int i = 0; i < MAX_MPLAYER_COLORS; i++) {
           LogicPage->Fill_Rect(
               cbox_x[i] + 1, d_color_y + 1, cbox_x[i] + 1 + d_color_w - 4,
-              d_color_y + 1 + d_color_h - 2, ColorRemaps[i].Box);
+              d_color_y + 1 + d_color_h - 2,
+              ColorRemaps[static_cast<PlayerColorType>(i)].Box);
 
-          if (i == Session.ColorIdx) {
+          if (static_cast<PlayerColorType>(i) == Session.ColorIdx) {
             Draw_Box(cbox_x[i], d_color_y, d_color_w, d_color_h, BOXSTYLE_DOWN,
                      false);
           } else {
@@ -1161,7 +1169,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
               pIcon = IconImage(pWO->OldRAGameTypeInfos[0]);
             }
           } else {
-            pIcon = IconImage(pWO->DibIconInfos[DIBICON_USER]);
+            pIcon = IconImage(pWO->DibIconInfos[kDibiconUser]);
           }
 
           DrawScenarioDescripIcon(pIcon);
@@ -1176,7 +1184,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
 
         //	Print scenario name.
         Conquer_Clip_Text_Print(szScenarioNameDisplay, d_gamekind_x,
-                                d_gamekind_y, scheme, TBLACK, TPF_TYPE,
+                                d_gamekind_y, scheme, kTBlack, TPF_TYPE,
                                 d_gamekind_w);
         //				pStaticDescrip->Draw_Me();
 
@@ -1321,7 +1329,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         }
         break;
 
-      case ButtonKey(BUTTON_DISCONNECT):
+      case ButtonKey(kButtonDisconnect):
         if (WWMessageBox().Process(TXT_WOL_CONFIRMLOGOUT, TXT_YES, TXT_NO) ==
             0) {
           //					debugprint( "Logging out from
@@ -1335,50 +1343,50 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         bHackFocus = true;
         break;
 
-      case ButtonKey(BUTTON_REFRESH):  //	Always disabled.
+      case ButtonKey(kButtonRefresh):  //	Always disabled.
         break;
 
-      case ButtonKey(BUTTON_SQUELCH):
+      case ButtonKey(kButtonSquelch):
         pWO->DoSquelch(pILPlayers);
         break;
 
-      case ButtonKey(BUTTON_BAN):
+      case ButtonKey(kButtonBan):
         pWO->DoKick(pILPlayers, true);
         //				display = REDRAW_ALL;
         break;
 
-      case ButtonKey(BUTTON_KICK):
+      case ButtonKey(kButtonKick):
         pWO->DoKick(pILPlayers, false);
         //				display = REDRAW_ALL;
         break;
 
-      case ButtonKey(BUTTON_FINDPAGE):
+      case ButtonKey(kButtonFindpage):
         pWO->DoFindPage();
         display = REDRAW_ALL;
         bHackFocus = true;
         break;
 
-      case ButtonKey(BUTTON_OPTIONS):
+      case ButtonKey(kButtonOptions):
         pWO->DoOptions();
         display = REDRAW_ALL;
         bHackFocus = true;
         break;
 
-      case ButtonKey(BUTTON_LADDER):
+      case ButtonKey(kButtonLadder):
         pWO->DoLadder();
         display = REDRAW_ALL;
         bHackFocus = true;
         break;
 
-      case ButtonKey(BUTTON_HELP):
+      case ButtonKey(kButtonHelp):
         pWO->DoHelp();
         display = REDRAW_ALL;
         bHackFocus = true;
         break;
 
-      case ButtonKey(BUTTON_HOUSE):
+      case ButtonKey(kButtonHouse):
         Session.House = static_cast<HousesType>(
-            pDropListHouse->Current_Index() + HOUSE_USSR);
+            pDropListHouse->Current_Index() + static_cast<int>(HOUSE_USSR));
         /*
                                         //	Bloody bloody hell I can't
         believe there are bugs in RA like the one I deal with here... if(
@@ -1403,11 +1411,11 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         Sound_Effect(VOC_OPTIONS_CHANGED);
         break;
 
-      case ButtonKey(BUTTON_AFTERMATHUNITS):
+      case ButtonKey(kButtonAftermathunits):
         bAftermathUnits = pCheckAftermathUnits->IsOn;
         break;
 
-      case ButtonKey(BUTTON_SENDEDIT):
+      case ButtonKey(kButtonSendedit):
         //	Enter has been pressed - was caught by pEditSend control.
         pWO->SendMessage(pEditSend->Get_Text(), *pILPlayers, false);
         //	Clear pEditSend, reset focus.
@@ -1417,7 +1425,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         pEditSend->Flag_To_Redraw();
         break;
 
-      case ButtonKey(BUTTON_ACTION):
+      case ButtonKey(kButtonAction):
         //	Enter has been pressed - was caught by pEditSend control.
         pWO->SendMessage(pEditSend->Get_Text(), *pILPlayers, true);
         //	Clear pEditSend, reset focus.
@@ -1430,7 +1438,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       //..................................................................
       //	New Scenario selected.
       //..................................................................
-      case ButtonKey(BUTTON_SCENARIOLIST): {
+      case ButtonKey(kButtonScenariolist): {
         if (pILScens->Count()) {
           const int iSelectedScenIndex = ItemExtraDataAsInt(
               pILScens->Get_Item_ExtraDataPtr(pILScens->Current_Index()));
@@ -1456,7 +1464,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       //..................................................................
       //	User adjusts max # units
       //..................................................................
-      case ButtonKey(BUTTON_COUNT):
+      case ButtonKey(kButtonCount):
         Session.Options.UnitCount =
             pGaugeCount->Get_Value() +
             SessionClass::CountMin[Session.Options.Bases];
@@ -1467,7 +1475,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       //..................................................................
       //	User adjusts build level
       //..................................................................
-      case ButtonKey(BUTTON_LEVEL):
+      case ButtonKey(kButtonLevel):
         BuildLevel = pGaugeLevel->Get_Value() + 1;
         BuildLevel = std::min(
             BuildLevel, MPLAYER_BUILD_LEVEL_MAX);  // if it's pegged, max it out
@@ -1480,7 +1488,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       //	User edits the credits value; retransmit new game options
       // Round the credits to the nearest 500.
       //..................................................................
-      case ButtonKey(BUTTON_CREDITS):
+      case ButtonKey(kButtonCredits):
         Session.Options.Credits = pGaugeCredits->Get_Value();
         Session.Options.Credits = ((Session.Options.Credits + 250) / 500) * 500;
         display = std::max(display, REDRAW_PARMS);
@@ -1490,7 +1498,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       //..................................................................
       //	User adjusts # of AI players
       //..................................................................
-      case ButtonKey(BUTTON_AIPLAYERS):
+      case ButtonKey(kButtonAiplayers):
         Session.Options.AIPlayers = pGaugeAIPlayers->Get_Value();
         //				if
         //(Session.Options.AIPlayers+Session.Players.Count() > Rule.MaxPlayers)
@@ -1512,7 +1520,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       // Also, if Tiberium gets toggled, we have to set the flags
       // in SpecialClass.
       //..................................................................
-      case ButtonKey(BUTTON_PARAMS):
+      case ButtonKey(kButtonParams):
         bRetractHouseDropDown = true;
         if ((Special.IsCaptureTheFlag != 0) !=
                 pCheckListOptions->Is_Checked(3) &&
@@ -1561,7 +1569,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         Sound_Effect(VOC_OPTIONS_CHANGED);
         break;
 
-      case ButtonKey(BUTTON_ACCEPTSTART):  //	'Accept' or 'Start Game' button.
+      case ButtonKey(kButtonAcceptstart):  //	'Accept' or 'Start Game' button.
         if (!bHost) {
           //	Guest wishes to accept game params.
           User* pUserHost = pWO->pGameHost();
@@ -1621,20 +1629,20 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         }
         break;
 
-      case ButtonKey(BUTTON_SCENARIO_RA):
+      case ButtonKey(kButtonScenarioRa):
         ScenarioDisplayMode(SCENARIO_RA);
         break;
-      case ButtonKey(BUTTON_SCENARIO_CS):
+      case ButtonKey(kButtonScenarioCs):
         ScenarioDisplayMode(SCENARIO_CS);
         break;
-      case ButtonKey(BUTTON_SCENARIO_AM):
+      case ButtonKey(kButtonScenarioAm):
         ScenarioDisplayMode(SCENARIO_AM);
         break;
-      case ButtonKey(BUTTON_SCENARIO_USER):
+      case ButtonKey(kButtonScenarioUser):
         ScenarioDisplayMode(SCENARIO_USER);
         break;
 
-        //			case (BUTTON_LOAD | KN_BUTTON):
+        //			case (kButtonLoad | KN_BUTTON):
         //			case (BUTTON_OK | KN_BUTTON):
         //				break;
 
@@ -1644,8 +1652,8 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         }
         break;
 
-      case ButtonKey(BUTTON_LEAVE):
-      case ButtonKey(BUTTON_CANCEL):
+      case ButtonKey(kButtonLeave):
+      case ButtonKey(kButtonCancel):
         if (ExitGameChannel()) {
           pWO->RejoinLobbyAfterGame();
           bProcess = false;
@@ -1897,9 +1905,10 @@ void WOL_GameSetupDialog::ScenarioDisplayMode(SCENARIO_GAMEKIND ScenKind) {
   // scenario.
   bool bFoundCurrentSelection = false;
   int iSelect = 0;  //	Only read when bFoundCurrentSelection is true.
-  for (int i = 0; i != ar_szScenarios[ScenKind].Count(); i++) {
+  for (int i = 0; i != ar_szScenarios[static_cast<int>(ScenKind)].Count();
+       i++) {
     //	Put ScenarioIndex in as extradata to list item.
-    const int iScenIndex = ar_szScenIndexes[ScenKind][i];
+    const int iScenIndex = ar_szScenIndexes[static_cast<int>(ScenKind)][i];
     if (iScenIndex == Session.Options.ScenarioIndex &&
         !bFoundCurrentSelection) {
       //	(Choose first line of what can be multiline description of
@@ -3297,7 +3306,8 @@ PlayerColorType WOL_GameSetupDialog::ColorNextAvailable() {
   //	(Totally unoptimized, but hardly ever called.)
 
   for (int i = 0; i < MAX_MPLAYER_COLORS; i++) {
-    if (pILPlayers->FindColor(&ColorRemaps[i]) == -1) {
+    if (pILPlayers->FindColor(&ColorRemaps[static_cast<PlayerColorType>(i)]) ==
+        -1) {
       return static_cast<PlayerColorType>(i);
     }
   }

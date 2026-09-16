@@ -67,8 +67,8 @@ bool BigCheckBoxClass::Draw_Me(bool forced) {
     //		}
 
     Conquer_Clip_Text_Print(szCaption.c_str(), X + BIGCHECK_OFFSETX,
-                            Y + BIGCHECK_OFFSETY, pScheme, TBLACK, flags, Width,
-                            nullptr);
+                            Y + BIGCHECK_OFFSETY, pScheme, kTBlack, flags,
+                            Width, nullptr);
 
     Show_Mouse();
     return true;
@@ -78,7 +78,7 @@ bool BigCheckBoxClass::Draw_Me(bool forced) {
 
 //***********************************************************************************************
 bool BigCheckBoxClass::Action(unsigned flags, KeyNumType& key) {
-  /*	if( flags & LEFTPRESS )
+  /*	if( flags & kLeftPress )
           {
                   if (IsOn) {
                           Turn_Off();

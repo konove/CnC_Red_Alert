@@ -46,7 +46,7 @@
 #include "ra/defines.h"
 
 // Enumerations of the facing values returned from Desired_Facing().
-typedef enum DirType : uint8_t {
+enum class DirType : uint8_t {
   DIR_MIN = 0,
   DIR_N = 0,
   DIR_NE = 1 << 5,
@@ -59,7 +59,8 @@ typedef enum DirType : uint8_t {
   DIR_W = 6 << 5,
   DIR_NW = 7 << 5,
   DIR_MAX = 255
-} DirType;
+};
+using enum DirType;
 
 // Builds a direction from any angle, wrapping it to the 256-step circle.
 // Every value is a valid DirType; only the compass points are named. This is

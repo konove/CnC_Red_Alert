@@ -140,23 +140,25 @@ class DriveClass : public FootClass {
   **	These enumerations are used as working constants that exist only
   **	in the DriveClass namespace.
   */
-  enum DriveClassEnum {
-    BACKUP_INTO_REFINERY = 64,  // Track to backup into refinery.
-    OUT_OF_REFINERY,            // Track to leave refinery.
-    OUT_OF_WEAPON_FACTORY       // Track to leave weapons factory.
-  };
+  static constexpr int kBackupIntoRefinery =
+      64;  // Track to backup into refinery.
+  static constexpr int kOutOfRefinery =
+      kBackupIntoRefinery + 1;  // Track to leave refinery.
+  static constexpr int kOutOfWeaponFactory =
+      kOutOfRefinery + 1;  // Track to leave weapons factory.
 
   /****************************************************************************
   **	Smooth turning tracks are controlled by this structure and these
   **	processing bits.
   */
-  typedef enum TrackControlType {
+  enum class TrackControlType {
     F_ = 0x00,   // No translation necessary?
     F_T = 0x01,  // Transpose X and Y components?
     F_X = 0x02,  // Reverse X component sign?
     F_Y = 0x04,  // Reverse Y component sign?
     F_D = 0x08   // Two cell consumption?
-  } TrackControlType;
+  };
+  using enum TrackControlType;
 
  private:
   typedef struct {

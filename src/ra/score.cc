@@ -131,6 +131,10 @@ static struct InfantryAnim {
 static void Draw_InfantryMen();
 static void Draw_InfantryMan(int index);
 static void New_Infantry_Anim(int index, int anim);
+
+// InfantryAnim::anim holds DoType values as an int so that -1 can mean "gone"
+// and the four gun-death variants can be picked arithmetically.
+constexpr int kDoGunDeath = static_cast<int>(DO_GUN_DEATH);
 static void Draw_Bar_Graphs(int i, int gkilled, int nkilled);
 static void Animate_Cursor(int pos, int ypos);
 static void Animate_Score_Objs();
@@ -235,15 +239,15 @@ void ScorePrintClass::Update() {
     if (Stage) {
       Set_Font_Palette(PrimaryPalette);
       localstr[0] = Text()[Stage - 1];
-      HidPage.Print(localstr, pos - 12, YPos, TBLACK, TBLACK);
+      HidPage.Print(localstr, pos - 12, YPos, kTBlack, kTBlack);
       HidPage.Blit(SeenBuff, pos - 12, YPos - 2, pos - 12, YPos - 2, 14, 16);
     }
     if (Text()[Stage]) {
       localstr[0] = Text()[Stage];
       Set_Font_Palette(_whitepal);
-      SeenBuff.Print(localstr, pos, YPos - 1, TBLACK, TBLACK);
-      SeenBuff.Print(localstr, pos, YPos + 1, TBLACK, TBLACK);
-      SeenBuff.Print(localstr, pos + 1, YPos, TBLACK, TBLACK);
+      SeenBuff.Print(localstr, pos, YPos - 1, kTBlack, kTBlack);
+      SeenBuff.Print(localstr, pos, YPos + 1, kTBlack, kTBlack);
+      SeenBuff.Print(localstr, pos + 1, YPos, kTBlack, kTBlack);
     }
     Stage++;
   }
@@ -264,8 +268,8 @@ void ScoreScaleClass::Update() {
     AnimTimer.Set(1);
     if (Stage) {
       Set_Font_Palette(Palette);
-      HidPage.Fill_Rect(0, 0, 14, 14, TBLACK);
-      HidPage.Print(Text(), 0, 0, TBLACK, TBLACK);
+      HidPage.Fill_Rect(0, 0, 14, 14, kTBlack);
+      HidPage.Print(Text(), 0, 0, kTBlack, kTBlack);
       HidPage.Scale(SeenBuff, 0, 0, _destx[Stage] * 2, YPos, 10, 12,
                     _destw[Stage] * 2, _destw[Stage] * 2, true);
       Stage--;
@@ -276,7 +280,7 @@ void ScoreScaleClass::Update() {
           ScoreObj = nullptr;
         }
       }
-      HidPage.Print(Text(), XPos, YPos, TBLACK, TBLACK);
+      HidPage.Print(Text(), XPos, YPos, kTBlack, kTBlack);
       HidPage.Blit(SeenBuff, XPos, YPos, XPos, YPos, 12, 12);
       delete this;
       return;
@@ -506,9 +510,9 @@ void ScoreClass::Presentation() {
   Alloc_Object(new ScorePrintClass(buffer, 274, 26, greenpal));
   Alloc_Object(new ScorePrintClass(buffer, 274, 38, greenpal));
   Call_Back_Delay(8);
-  SeenBuff.Draw_Line(548, 96, 626, 96, WHITE);
+  SeenBuff.Draw_Line(548, 96, 626, 96, kWhite);
   Call_Back_Delay(1);
-  SeenBuff.Draw_Line(548, 96, 626, 96, GREEN);
+  SeenBuff.Draw_Line(548, 96, 626, 96, kGreen);
 
   absl::SNPrintF(buffer, sizeof(buffer), "%5d", total);
   Alloc_Object(new ScorePrintClass(buffer, 286, 50, greenpal));
@@ -649,14 +653,14 @@ void ScoreClass::Presentation() {
       char* str = maststr + (static_cast<base::ssize>(i) * 32);
       absl::SNPrintF(str, sizeof(str), "%d", hallfame[i].score);
       Alloc_Object(new ScorePrintClass(str, HALLFAME_X + (6 * 14),
-                                       HALLFAME_Y + (i * 8), pal, BLACK));
+                                       HALLFAME_Y + (i * 8), pal, kBlack));
       if (hallfame[i].level < 20) {
         absl::SNPrintF(str + 16, sizeof(str) - 16, "%d", hallfame[i].level);
       } else {
         absl::SNPrintF(str + 16, sizeof(str) - 16, "**");
       }
       Alloc_Object(new ScorePrintClass(str + 16, HALLFAME_X + (6 * 11),
-                                       HALLFAME_Y + (i * 8), pal, BLACK));
+                                       HALLFAME_Y + (i * 8), pal, kBlack));
       Call_Back_Delay(13);
     }
   }
@@ -726,7 +730,7 @@ void Cycle_Wait_Click(bool cycle) {
         memset(&sendpacket, 0, sizeof(SerialPacketType));
         sendpacket.Command = SERIAL_SCORE_SCREEN;
         sendpacket.ScenarioInfo.ResponseTime = NullModem.Response_Time();
-        sendpacket.ID = Session.ModemType;
+        sendpacket.ID = static_cast<unsigned char>(Session.ModemType);
 
         NullModem.Send_Message(&sendpacket, sizeof(sendpacket), 0);
         timingtime = TickCount.Value();
@@ -776,9 +780,9 @@ void ScoreClass::Do_Nod_Buildings_Graph() {
   Set_Logic_Page(HidPage);
   Call_Back_Delay(30);
   Set_Font_Palette(redpal);
-  HidPage.Print(0, BUILDING_X + 16, BUILDING_Y + 10, TBLACK, TBLACK);
+  HidPage.Print(0, BUILDING_X + 16, BUILDING_Y + 10, kTBlack, kTBlack);
   Set_Font_Palette(bluepal);
-  HidPage.Print(0, BUILDING_X + 16, BUILDING_Y + 22, TBLACK, TBLACK);
+  HidPage.Print(0, BUILDING_X + 16, BUILDING_Y + 22, kTBlack, kTBlack);
 
   /*
   ** Here's the animation/draw loop for blowing up the factory
@@ -827,13 +831,14 @@ void ScoreClass::Do_Nod_Buildings_Graph() {
     /*
     ** Draw the Tanya character running away from the building
     */
-    CC_Draw_Shape(tanya_shape,
-                  ramboclass->DoControls[DO_WALK].Frame +
-                      (ramboclass->DoControls[DO_WALK].Jump * 6) +
-                      ((i / 2) % ramboclass->DoControls[DO_WALK].Count),
-                  i + 32, 40, WINDOW_MAIN,
-                  SHAPE_FADING | SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST,
-                  ColorRemaps[PCOLOR_RED].RemapTable, DisplayClass::UnitShadow);
+    CC_Draw_Shape(
+        tanya_shape,
+        ramboclass->DoControls[static_cast<int>(DO_WALK)].Frame +
+            (ramboclass->DoControls[static_cast<int>(DO_WALK)].Jump * 6) +
+            ((i / 2) % ramboclass->DoControls[static_cast<int>(DO_WALK)].Count),
+        i + 32, 40, WINDOW_MAIN,
+        SHAPE_FADING | SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST,
+        ColorRemaps[PCOLOR_RED].RemapTable, DisplayClass::UnitShadow);
     HidPage.Blit(SeenBuff, 0, 0, BUILDING_X, BUILDING_Y, 320 - BUILDING_X, 48);
     Call_Back_Delay(1);
   }
@@ -905,7 +910,7 @@ void ScoreClass::Do_GDI_Graph(const void* yellowptr, const void* redptr,
 
   // Draw the white-flash shape on the hidpage
   Set_Logic_Page(HidPage);
-  HidPage.Fill_Rect(0, 0, 248, 18, TBLACK);
+  HidPage.Fill_Rect(0, 0, 248, 18, kTBlack);
   CC_Draw_Shape(redptr, 119, 0, 0, WINDOW_MAIN, SHAPE_WIN_REL, nullptr,
                 nullptr);
   Set_Logic_Page(SeenBuff);
@@ -1043,7 +1048,7 @@ void ScoreClass::Do_Nod_Casualties_Graph() {
   int k = 1;
   while (k) {
     for (int i = k = 0; i < NUMINFANTRYMEN; i++) {
-      if (InfantryMan[i].anim >= DO_GUN_DEATH) {
+      if (InfantryMan[i].anim >= kDoGunDeath) {
         k = 1;
       }
     }
@@ -1134,7 +1139,7 @@ void ScoreClass::Print_Minutes(int minutes) {
     Format_Runtime_Text(str, sizeof(str), Text_String(TXT_SCORE_TIMEFORMAT2),
                         minutes);
   }
-  SeenBuff.Print(str, 550, 18, TBLACK, TBLACK);
+  SeenBuff.Print(str, 550, 18, kTBlack, kTBlack);
 }
 
 /***********************************************************************************************
@@ -1163,7 +1168,7 @@ void ScoreClass::Count_Up_Print(const char* str, int percent, int maxval,
 
   Format_Runtime_Text(destbuf, sizeof(destbuf), str,
                       percent <= maxval ? percent : maxval);
-  SeenBuff.Print(destbuf, xpos * 2, ypos * 2, TBLACK, BLACK);
+  SeenBuff.Print(destbuf, xpos * 2, ypos * 2, kTBlack, kBlack);
 }
 
 /***********************************************************************************************
@@ -1286,7 +1291,7 @@ void Animate_Cursor(int pos, int ypos) {
   }
   SeenBuff.Draw_Line((HALLFAME_X + (pos * 6)) * 2, ypos,
                      (HALLFAME_X + (pos * 6) + 5) * 2, ypos,
-                     _state ? LTBLUE : TBLACK);
+                     _state ? kLtBlue : kTBlack);
   /*
   ** Toggle the color of the cursor, green or black, if it's time to do so.
   */
@@ -1373,10 +1378,10 @@ void Draw_InfantryMan(int index) {
       /*
       ** was he playing a death anim? If so, and it's done, erase him
       */
-      if (InfantryMan[index].anim >= DO_GUN_DEATH) {
+      if (InfantryMan[index].anim >= kDoGunDeath) {
         InfantryMan[index].anim = -1;
       } else {
-        New_Infantry_Anim(index, DO_STAND_READY);
+        New_Infantry_Anim(index, static_cast<int>(DO_STAND_READY));
       }
     }
   }
@@ -1399,7 +1404,7 @@ void Draw_InfantryMan(int index) {
 void New_Infantry_Anim(int index, int anim) {
   InfantryMan[index].anim = anim;
   InfantryMan[index].stage = 0;
-  if (anim >= DO_GUN_DEATH) {
+  if (anim >= kDoGunDeath) {
     InfantryMan[index].delay = 1;  // start right away
   } else {
     InfantryMan[index].delay = static_cast<char>(local_rng.Next() % 16);
@@ -1428,23 +1433,24 @@ void Draw_Bar_Graphs(int i, int gkilled, int nkilled) {
   // Top bar. Widths are doubled because the graph is drawn at hi-res (the
   // coordinates above are in the original 320-wide space).
   if (gkilled) {
-    LogicPage->Fill_Rect(0, 0 + 8, 0 + (std::min(i, gkilled) * 2), 0 + 10, RED);
+    LogicPage->Fill_Rect(0, 0 + 8, 0 + (std::min(i, gkilled) * 2), 0 + 10,
+                         kRed);
     LogicPage->Draw_Line(0 + 2, 0 + 12, (0 + std::min(i, gkilled) + 1) * 2,
-                         0 + 12, TBLACK);
+                         0 + 12, kTBlack);
     LogicPage->Draw_Line((0 + std::min(i, gkilled) + 1) * 2, 0 + 10,
-                         (0 + std::min(i, gkilled) + 1) * 2, 0 + 10, TBLACK);
+                         (0 + std::min(i, gkilled) + 1) * 2, 0 + 10, kTBlack);
     if (i <= gkilled) {
       // Each displayed infantryman stands for 11 ticks of the graph, so i / 11
       // is the man the bar has just reached. Kill him off unless he is already
       // dead or dying.
       const int anim = InfantryMan[i / 11].anim;
-      if (anim != -1 && anim < DO_GUN_DEATH) {
+      if (anim != -1 && anim < kDoGunDeath) {
         if (i / 11) {
           // Cosmetic death animations use the non-sync RNG so they cannot
           // perturb game logic; pick one of the 4 gun-death variants at random.
-          New_Infantry_Anim(i / 11, DO_GUN_DEATH + (local_rng.Next() % 4));
+          New_Infantry_Anim(i / 11, kDoGunDeath + (local_rng.Next() % 4));
         } else {
-          New_Infantry_Anim(i / 11, DO_GUN_DEATH);
+          New_Infantry_Anim(i / 11, kDoGunDeath);
         }
       }
     }
@@ -1453,19 +1459,19 @@ void Draw_Bar_Graphs(int i, int gkilled, int nkilled) {
   // second half of InfantryMan[] (hence the NUMINFANTRYMEN / 2 offset).
   if (nkilled) {
     LogicPage->Fill_Rect(0, 0 + 32, 0 + (std::min(i, nkilled) * 2), 0 + 34,
-                         LTCYAN);
+                         kLtCyan);
     LogicPage->Draw_Line(0 + 2, 0 + 36, (0 + std::min(i, nkilled) + 1) * 2,
-                         0 + 36, TBLACK);
+                         0 + 36, kTBlack);
     LogicPage->Draw_Line((0 + std::min(i, nkilled) + 1) * 2, 0 + 34,
-                         (0 + std::min(i, nkilled) + 1) * 2, 0 + 34, TBLACK);
+                         (0 + std::min(i, nkilled) + 1) * 2, 0 + 34, kTBlack);
     if (i <= nkilled) {
       const int anim = InfantryMan[(NUMINFANTRYMEN / 2) + (i / 11)].anim;
-      if (anim != -1 && anim < DO_GUN_DEATH) {
+      if (anim != -1 && anim < kDoGunDeath) {
         if (i / 11) {
           New_Infantry_Anim((NUMINFANTRYMEN / 2) + (i / 11),
-                            DO_GUN_DEATH + (local_rng.Next() % 4));
+                            kDoGunDeath + (local_rng.Next() % 4));
         } else {
-          New_Infantry_Anim((NUMINFANTRYMEN / 2) + (i / 11), DO_GUN_DEATH);
+          New_Infantry_Anim((NUMINFANTRYMEN / 2) + (i / 11), kDoGunDeath);
         }
       }
     }
@@ -1507,7 +1513,7 @@ void Call_Back_Delay(int time) {
       Call_Back();
       callbackcd.Set(kTimerSecond / 4);
     } else {
-      if (SoundType) {
+      if (SoundType != SFX_NONE) {
         Sound_Callback();
       }
       Video_End_Frame();
@@ -1625,7 +1631,7 @@ void Multi_Score_Presentation() {
   int y = 41;
   for (auto& i : Session.Score) {
     if (strlen(i.Name)) {
-      const int color = i.Color;
+      const PlayerColorType color = i.Color;
       remap[8] = ColorRemaps[color].FontRemap[11];
       remap[6] = ColorRemaps[color].FontRemap[12];
       remap[4] = ColorRemaps[color].FontRemap[13];

@@ -60,6 +60,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "base/enum_array.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/tokenizer.h"
 #include "ra/anim.h"
@@ -437,13 +438,13 @@ bool RulesClass::General(CCINIClass& ini) {
     ChronoTechLevel = ini.Get_Int(GENERAL, "ChronoTechLevel", ChronoTechLevel);
     CrateTime = ini.Get_Fixed(GENERAL, "CrateRegen", CrateTime);
     VortexRange = ini.Get_Lepton(GENERAL, "VortexRange", VortexRange);
-    VortexSpeed = static_cast<MPHType>(
-        Scale_To_256(ini.Get_Int(GENERAL, "VortexSpeed", VortexSpeed)));
+    VortexSpeed = static_cast<MPHType>(Scale_To_256(
+        ini.Get_Int(GENERAL, "VortexSpeed", static_cast<int>(VortexSpeed))));
     VortexDamage = ini.Get_Int(GENERAL, "VortexDamage", VortexDamage);
     VortexChance = ini.Get_Fixed(GENERAL, "VortexChance", VortexChance);
 
     ChronalVortex.Set_Range(VortexRange / CELL_LEPTON_W);
-    ChronalVortex.Set_Speed(VortexSpeed);
+    ChronalVortex.Set_Speed(static_cast<int>(VortexSpeed));
     ChronalVortex.Set_Damage(VortexDamage);
 
     // ChronalVortex.Set_Range ( ini.Get_Int (GENERAL, "VortexRange",
@@ -758,7 +759,7 @@ bool RulesClass::Land_Types(CCINIClass& ini) {
   **	Fetch the movement characteristic data for terrain types.
   */
   for (const LandType land : magic_enum::enum_values<LandType>()) {
-    static const char* _lands[magic_enum::enum_count<LandType>()] = {
+    static constexpr base::EnumArray<LandType, const char*> _lands = {
         "Clear", "Road",  "Water", "Rock", "Wall",
         "Ore",   "Beach", "Rough", "River"};
 
@@ -949,8 +950,8 @@ bool RulesClass::Objects(CCINIClass& ini) {
  * HISTORY: * 09/10/1996 JLB : Created. *
  *=============================================================================================*/
 bool RulesClass::Difficulty(CCINIClass& ini) {
-  Difficulty_Get(ini, Diff[DIFF_EASY], "Easy");
-  Difficulty_Get(ini, Diff[DIFF_NORMAL], "Normal");
-  Difficulty_Get(ini, Diff[DIFF_HARD], "Difficult");
+  Difficulty_Get(ini, Diff[static_cast<int>(DIFF_EASY)], "Easy");
+  Difficulty_Get(ini, Diff[static_cast<int>(DIFF_NORMAL)], "Normal");
+  Difficulty_Get(ini, Diff[static_cast<int>(DIFF_HARD)], "Difficult");
   return true;
 }

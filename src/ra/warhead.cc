@@ -140,7 +140,7 @@ void WarheadTypeClass::operator delete(void* pointer) {
  *=============================================================================================*/
 WarheadTypeClass* WarheadTypeClass::As_Pointer(WarheadType warhead) {
   if (warhead != WARHEAD_NONE) {
-    return Warheads.Ptr(warhead);
+    return Warheads.Ptr(static_cast<int>(warhead));
   }
   return nullptr;
 }

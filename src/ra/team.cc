@@ -1570,7 +1570,7 @@ void TeamClass::Calc_Center(TARGET& center, TARGET& close_member) const {
       *location of
       ** one of the team members.
       */
-      if (!closest->Can_Enter_Cell(As_Cell(center))) {
+      if (closest->Can_Enter_Cell(As_Cell(center)) != MOVE_OK) {
         //				if (Class->Origin != -1) {
         //					center =
         //::As_Target(Scen.Waypoint[Class->Origin]);

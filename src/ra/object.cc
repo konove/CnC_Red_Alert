@@ -381,7 +381,7 @@ ActionType ObjectClass::What_Action(CELL /*unused*/) const {
 LayerType ObjectClass::In_Which_Layer() const {
   assert(IsActive);
 
-  if (Height < FLIGHT_LEVEL - (FLIGHT_LEVEL / 3)) {
+  if (Height < kFlightLevel - (kFlightLevel / 3)) {
     return LAYER_GROUND;
   }
   return LAYER_TOP;
@@ -1171,8 +1171,8 @@ bool ObjectClass::Render(bool forced)  // const
         **	relative, so add the window's x-coord to 'x'.
         */
         if (MapEditorActive && Trigger.Is_Valid()) {
-          Fancy_Text_Print(Trigger->Class->IniName, x + static_cast<int>(WinX), y,
-                           &ColorRemaps[PCOLOR_RED], TBLACK,
+          Fancy_Text_Print(Trigger->Class->IniName, x + static_cast<int>(WinX),
+                           y, &ColorRemaps[PCOLOR_RED], kTBlack,
                            TPF_CENTER | TPF_NOSHADOW | TPF_6POINT);
         }
       }
@@ -1773,7 +1773,7 @@ bool ObjectClass::Revealed(HouseClass* house) {
 bool ObjectClass::Paradrop(COORDINATE coord) {
   assert(IsActive);
 
-  Height = FLIGHT_LEVEL;
+  Height = kFlightLevel;
   IsFalling = true;
   if (Unlimbo(coord, DIR_S)) {
     AnimClass* anim = nullptr;

@@ -2273,5 +2273,5 @@ const char* Anim_Name(AnimType anim) {
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
 AnimTypeClass& AnimTypeClass::As_Reference(AnimType type) {
-  return *AnimTypes.Ptr(type);
+  return *AnimTypes.Ptr(static_cast<int>(type));
 }

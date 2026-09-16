@@ -1329,7 +1329,7 @@ int InfantryTypeClass::Full_Name() const {
  * HISTORY: * 07/11/1996 JLB : Created. *
  *=============================================================================================*/
 InfantryTypeClass& InfantryTypeClass::As_Reference(InfantryType type) {
-  return *InfantryTypes.Ptr(type);
+  return *InfantryTypes.Ptr(static_cast<int>(type));
 }
 
 /***********************************************************************************************

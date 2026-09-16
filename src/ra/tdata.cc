@@ -67,7 +67,6 @@
 #include "ra/heap.h"
 #include "ra/house.h"
 #include "ra/inline.h"
-#include "ra/jshell.h"
 #include "ra/mapedit.h"
 #include "ra/object.h"
 #include "ra/terrain.h"
@@ -723,7 +722,7 @@ const int16_t* TerrainTypeClass::Overlap_List() const {
  * HISTORY: * 07/19/1996 JLB : Created. *
  *=============================================================================================*/
 TerrainTypeClass& TerrainTypeClass::As_Reference(TerrainType type) {
-  return *TerrainTypes.Ptr(type);
+  return *TerrainTypes.Ptr(static_cast<int>(type));
 }
 
 COORDINATE TerrainTypeClass::Coord_Fixup(COORDINATE coord) const {

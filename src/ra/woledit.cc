@@ -44,13 +44,13 @@ void WOLEditClass::Draw_Text(const char* text) {
   const TextPrintType flags =
       Has_Focus() ? TPF_BRIGHT_COLOR : static_cast<TextPrintType>(0);
 
-  Conquer_Clip_Text_Print(text, X + 1, Y + 1, Color, TBLACK, TextFlags | flags,
+  Conquer_Clip_Text_Print(text, X + 1, Y + 1, Color, kTBlack, TextFlags | flags,
                           Width - 2);
 
   const int text_width = String_Pixel_Width(text);
   if (Has_Focus() &&  //	strlen(text) < MaxLength &&
       text_width + String_Pixel_Width("_") < Width - 2) {
-    Conquer_Clip_Text_Print("_", X + 1 + text_width, Y + 1, Color, TBLACK,
+    Conquer_Clip_Text_Print("_", X + 1 + text_width, Y + 1, Color, kTBlack,
                             TextFlags | flags);
   }
 }
@@ -82,8 +82,8 @@ bool WOLEditClass::Action(unsigned flags, KeyNumType& key) {
   // to 	this gadget. The event flag is cleared so that no button ID
   // number is returned.
   //
-  if ((flags & LEFTPRESS)) {
-    flags &= ~LEFTPRESS;
+  if ((flags & kLeftPress)) {
+    flags &= ~kLeftPress;
     Set_Focus();
     Flag_To_Redraw();  // force to draw cursor
   }
@@ -93,7 +93,7 @@ bool WOLEditClass::Action(unsigned flags, KeyNumType& key) {
   // but if the 	RETURN key is pressed, then the button ID number is
   // returned from the Input() 	function.
   //
-  if ((flags & KEYBOARD) && Has_Focus()) {
+  if ((flags & kKeyboard) && Has_Focus()) {
     //
     //	Process the keyboard character. If indicated, consume this keyboard
     // event 	so that the edit gadget ID number is not returned.
@@ -111,9 +111,9 @@ bool WOLEditClass::Action(unsigned flags, KeyNumType& key) {
       //
       if ((key & WWKEY_VK_BIT) && ascii >= '0' && ascii <= '9') {
         key = static_cast<KeyNumType>(key & ~WWKEY_VK_BIT);
-        if (((!(flags & LEFTRELEASE)) && (!(flags & RIGHTRELEASE))) &&
+        if (((!(flags & kLeftRelease)) && (!(flags & kRightRelease))) &&
             Handle_Key(ascii)) {
-          flags &= ~KEYBOARD;
+          flags &= ~kKeyboard;
           key = KN_NONE;
         }
 
@@ -123,9 +123,9 @@ bool WOLEditClass::Action(unsigned flags, KeyNumType& key) {
         //
         if ((!(key & WWKEY_VK_BIT) && ascii >= ' ' && ascii <= 255) ||
             key == KN_RETURN || key == KN_BACKSPACE) {
-          if (((!(flags & LEFTRELEASE)) && (!(flags & RIGHTRELEASE))) &&
+          if (((!(flags & kLeftRelease)) && (!(flags & kRightRelease))) &&
               Handle_Key(KeyboardClass::To_ASCII(key))) {
-            flags &= ~KEYBOARD;
+            flags &= ~kKeyboard;
             key = KN_NONE;
           }
 
@@ -133,7 +133,7 @@ bool WOLEditClass::Action(unsigned flags, KeyNumType& key) {
           if (key == KN_TAB) {
             bTabKeyPressedHack = true;
           }
-          flags &= ~KEYBOARD;
+          flags &= ~kKeyboard;
           key = KN_NONE;
         }
       }

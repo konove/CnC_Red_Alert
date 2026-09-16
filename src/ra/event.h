@@ -43,6 +43,7 @@
 #include <cstdint>
 #include <cstring>
 
+#include "base/enum_array.h"
 #include "ra/defines.h"
 #include "ra/special.h"
 #include "ra/target.h"
@@ -61,7 +62,7 @@ class EventClass {
   /*
   **	All external events are identified by these labels.
   */
-  typedef enum EventType : uint8_t {
+  enum class EventType : uint8_t {
     EMPTY,
 
     ALLY,           // Make allie of specified house.
@@ -109,7 +110,8 @@ class EventClass {
     RETRACT_DRAW,  // Player retracts proposed draw offer.
 
     LAST_EVENT,  // one past the last event
-  } EventType;
+  };
+  using enum EventType;
 
   EventType Type = EMPTY;  // Type of queue command object.
 
@@ -267,8 +269,10 @@ class EventClass {
   // Process the event.
   void Execute();
 
-  static unsigned char EventLength[LAST_EVENT];
-  static const char* EventNames[LAST_EVENT];
+  static base::EnumArray<EventType, unsigned char, static_cast<int>(LAST_EVENT)>
+      EventLength;
+  static base::EnumArray<EventType, const char*, static_cast<int>(LAST_EVENT)>
+      EventNames;
 };
 
 #endif  // CNC_RED_ALERT_RA_EVENT_H_

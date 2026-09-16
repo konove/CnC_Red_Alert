@@ -378,7 +378,7 @@ bool Init_Game(int /*unused*/, char* /*unused*/[]) {
 
     Hide_Mouse();
     Fancy_Text_Print(TXT_STAND_BY, 320, 240, &ColorRemaps[PCOLOR_DIALOG_BLUE],
-                     TBLACK, TPF_CENTER | kTpfText | TPF_DROPSHADOW);
+                     kTBlack, TPF_CENTER | kTpfText | TPF_DROPSHADOW);
     Show_Mouse();
 
     CCPalette.Set(kFadePaletteSlow);
@@ -438,18 +438,16 @@ bool Init_Game(int /*unused*/, char* /*unused*/[]) {
  *=============================================================================================*/
 bool Select_Game(bool /*fade*/) {
   //	Enums in Select_Game() must match order of buttons in Main_Menu().
-  enum {
-    SEL_TIMEOUT = -1,      // main menu timeout--go into attract mode
-    SEL_NEW_SCENARIO_CS,   // Expansion scenario to play.
-    SEL_NEW_SCENARIO_AM,   // Expansion scenario to play.
-    SEL_START_NEW_GAME,    // start a new game
-    SEL_LOAD_MISSION,      // load a saved game
-    SEL_MULTIPLAYER_GAME,  // play modem/null-modem/network game
-    SEL_INTRO,             // couch-potato mode
-    SEL_EXIT,              // exit to DOS
-    SEL_FAME,              // view the hall o' fame
-    SEL_NONE,              // placeholder default value
-  };
+  constexpr int kSelTimeout = -1;  // main menu timeout--go into attract mode
+  constexpr int kSelNewScenarioCs = 0;    // Expansion scenario to play.
+  constexpr int kSelNewScenarioAm = 1;    // Expansion scenario to play.
+  constexpr int kSelStartNewGame = 2;     // start a new game
+  constexpr int kSelLoadMission = 3;      // load a saved game
+  constexpr int kSelMultiplayerGame = 4;  // play modem/null-modem/network game
+  constexpr int kSelIntro = 5;            // couch-potato mode
+  constexpr int kSelExit = 6;             // exit to DOS
+  constexpr int kSelFame = 7;             // view the hall o' fame
+  constexpr int kSelNone = 8;             // placeholder default value
 
   bool gameloaded = false;  // Has the game been loaded from the menu?
   int selection = 0;        // the default selection
@@ -518,9 +516,9 @@ bool Select_Game(bool /*fade*/) {
   **	menu by pre-setting 'selection'.
   */
   if (Session.Type == GAME_NORMAL) {
-    selection = SEL_NONE;
+    selection = kSelNone;
   } else {
-    selection = SEL_MULTIPLAYER_GAME;
+    selection = kSelMultiplayerGame;
   }
 
   /*
@@ -582,18 +580,18 @@ bool Select_Game(bool /*fade*/) {
       **	Display menu and fetch selection from player.
       */
       if (Special.IsFromInstall) {
-        selection = SEL_START_NEW_GAME;
+        selection = kSelStartNewGame;
       }
 
       if (config::kWolapiEnabled && pWolapi != nullptr) {
-        selection = SEL_MULTIPLAYER_GAME;  //	We are returning from a game.
+        selection = kSelMultiplayerGame;  //	We are returning from a game.
       }
 
       // -NEWGAME<scenario>: skip the menu and start that scenario as a
       // normal-difficulty campaign game, e.g. -NEWGAMESCG01EA. Used with
       // -QUITFRAME and -SAVESLOT to produce a reference save without a
       // display.
-      if (selection == SEL_NONE && !DebugNewGame.empty()) {
+      if (selection == kSelNone && !DebugNewGame.empty()) {
         Scen.CDifficulty = DIFF_NORMAL;
         Scen.Difficulty = DIFF_NORMAL;
         Scen.CarryOverMoney = 0;
@@ -610,7 +608,7 @@ bool Select_Game(bool /*fade*/) {
 
       // -LOADGAME<n>: skip the menu and load save slot n straight away.
       // Used with -QUITFRAME to drive save/load checks without a display.
-      if (selection == SEL_NONE && DebugLoadGame >= 0) {
+      if (selection == kSelNone && DebugLoadGame >= 0) {
         const int slot = DebugLoadGame;
         DebugLoadGame = -1;
         if (Load_Game(slot)) {
@@ -622,7 +620,7 @@ bool Select_Game(bool /*fade*/) {
         LOG(ERROR) << "-LOADGAME: could not load slot " << slot;
       }
 
-      if (selection == SEL_NONE) {
+      if (selection == kSelNone) {
         AntsEnabled = false;
         selection = Main_Menu(ATTRACT_MODE_TIMEOUT);
       }
@@ -632,28 +630,28 @@ bool Select_Game(bool /*fade*/) {
         /*
         **	Pick an expansion scenario.
         */
-        case SEL_NEW_SCENARIO_CS:
-        case SEL_NEW_SCENARIO_AM:
+        case kSelNewScenarioCs:
+        case kSelNewScenarioAm:
           Scen.CarryOverMoney = 0;
           IsTanyaDead = false;
           SaveTanya = false;
 
-          if (selection == SEL_NEW_SCENARIO_CS) {
+          if (selection == kSelNewScenarioCs) {
             if (!Force_CD_Available(2)) {
-              selection = SEL_NONE;
+              selection = kSelNone;
               break;
             }
             if (!Expansion_Dialog(true)) {
-              selection = SEL_NONE;
+              selection = kSelNone;
               break;
             }
           } else {
             if (!Force_CD_Available(3)) {
-              selection = SEL_NONE;
+              selection = kSelNone;
               break;
             }
             if (!Expansion_Dialog(false)) {
-              selection = SEL_NONE;
+              selection = kSelNone;
               break;
             }
           }
@@ -699,7 +697,7 @@ bool Select_Game(bool /*fade*/) {
         /*
         **	SEL_START_NEW_GAME: Play the game
         */
-        case SEL_START_NEW_GAME:
+        case kSelStartNewGame:
           if (Special.IsFromInstall) {
             Scen.CDifficulty = DIFF_NORMAL;
             Scen.Difficulty = DIFF_NORMAL;
@@ -749,7 +747,7 @@ bool Select_Game(bool /*fade*/) {
                   Scen.Set_Scenario_Name("SCU01EA.INI");
                   break;
                 default:
-                  selection = SEL_NONE;
+                  selection = kSelNone;
                   continue;
                 case 0:
                   Scen.Set_Scenario_Name("SCG01EA.INI");
@@ -776,14 +774,14 @@ bool Select_Game(bool /*fade*/) {
         /*
         **	Load a saved game.
         */
-        case SEL_LOAD_MISSION:
+        case kSelLoadMission:
           if (LoadOptionsClass(LoadOptionsClass::LOAD).Process()) {
             Theme.Queue_Song(magic_enum::enum_values<ThemeType>().front());
             process = false;
             gameloaded = true;
           } else {
             display = true;
-            selection = SEL_NONE;
+            selection = kSelNone;
           }
           break;
 
@@ -791,7 +789,7 @@ bool Select_Game(bool /*fade*/) {
         **	SEL_MULTIPLAYER_GAME: set 'Session.Type' to nullptr-modem,
         * modem, or *	network play.
         */
-        case SEL_MULTIPLAYER_GAME:
+        case kSelMultiplayerGame:
           //	With Westwood Online in charge, coming back here means we are
           //	returning from a game and the menu below is skipped.
           if (!config::kWolapiEnabled || pWolapi == nullptr) {
@@ -805,7 +803,7 @@ bool Select_Game(bool /*fade*/) {
                 Session.Type = Select_MPlayer_Game();
                 if (Session.Type == GAME_NORMAL) {  // 'Cancel'
                   display = true;
-                  selection = SEL_NONE;
+                  selection = kSelNone;
                 }
                 break;
 
@@ -814,7 +812,7 @@ bool Select_Game(bool /*fade*/) {
                   Session.Type = Select_MPlayer_Game();
                   if (Session.Type == GAME_NORMAL) {  // user hit Cancel
                     display = true;
-                    selection = SEL_NONE;
+                    selection = kSelNone;
                   }
                 } else {
                   //	Ever hits? Session.Type set to GAME_SKIRMISH without
@@ -845,7 +843,7 @@ bool Select_Game(bool /*fade*/) {
                       Session.Type = Select_Serial_Dialog();
                       if (Session.Type == GAME_NORMAL) {  // user hit Cancel
                         display = true;
-                        selection = SEL_NONE;
+                        selection = kSelNone;
                       }
                     }
                   } else {
@@ -853,7 +851,7 @@ bool Select_Game(bool /*fade*/) {
                       Session.Type = Select_Serial_Dialog();
                       if (Session.Type == GAME_NORMAL) {  // user hit Cancel
                         display = true;
-                        selection = SEL_NONE;
+                        selection = kSelNone;
                       }
                     }
                   }
@@ -861,7 +859,7 @@ bool Select_Game(bool /*fade*/) {
                   Session.Type = Select_MPlayer_Game();
                   if (Session.Type == GAME_NORMAL) {  // 'Cancel'
                     display = true;
-                    selection = SEL_NONE;
+                    selection = kSelNone;
                   }
                 }
                 break;
@@ -871,7 +869,7 @@ bool Select_Game(bool /*fade*/) {
                 Session.Type = Select_MPlayer_Game();
                 if (Session.Type == GAME_NORMAL) {  // 'Cancel'
                   display = true;
-                  selection = SEL_NONE;
+                  selection = kSelNone;
                 }
                 break;
               default:
@@ -915,7 +913,7 @@ bool Select_Game(bool /*fade*/) {
                       //	User cancelled.
                       Session.Type = GAME_NORMAL;
                       display = true;
-                      selection = SEL_MULTIPLAYER_GAME;  // SEL_NONE;
+                      selection = kSelMultiplayerGame;  // SEL_NONE;
                       delete PacketTransport;
                       PacketTransport = nullptr;
                       break;
@@ -930,7 +928,7 @@ bool Select_Game(bool /*fade*/) {
                 } else {
                   Session.Type = GAME_NORMAL;
                   display = true;
-                  selection = SEL_MULTIPLAYER_GAME;  // SEL_NONE;
+                  selection = kSelMultiplayerGame;  // SEL_NONE;
                   delete PacketTransport;
                   PacketTransport = nullptr;
                 }
@@ -962,7 +960,7 @@ bool Select_Game(bool /*fade*/) {
               } else {  // user hit cancel, or init failed
                 Session.Type = GAME_NORMAL;
                 display = true;
-                selection = SEL_NONE;
+                selection = kSelNone;
                 delete PacketTransport;
                 PacketTransport = nullptr;
               }
@@ -975,7 +973,7 @@ bool Select_Game(bool /*fade*/) {
         /*
         **	Play a VQ
         */
-        case SEL_INTRO:
+        case kSelIntro:
           Theme.Fade_Out();
           if (Debug_Flag) {
             Play_Intro(Debug_Flag);
@@ -994,13 +992,13 @@ bool Select_Game(bool /*fade*/) {
           }
           Theme.Queue_Song(THEME_CRUS);
           display = true;
-          selection = SEL_NONE;
+          selection = kSelNone;
           break;
 
         /*
         **	Exit to DOS.
         */
-        case SEL_EXIT:
+        case kSelExit:
           Theme.Fade_Out();
           BlackPalette.Set(kFadePaletteSlow);
           return false;
@@ -1008,10 +1006,10 @@ bool Select_Game(bool /*fade*/) {
         /*
         **	Display the hall of fame.
         */
-        case SEL_FAME:
+        case kSelFame:
           break;
 
-        case SEL_TIMEOUT:
+        case kSelTimeout:
           if (Session.Attract && Session.RecordFile.IsAvailable()) {
             Session.Play = true;
             if (Session.RecordFile.Open(FileAccess::kRead)) {
@@ -1021,14 +1019,14 @@ bool Select_Game(bool /*fade*/) {
               } else {
                 Session.RecordFile.Close();
                 Session.Play = false;
-                selection = SEL_NONE;
+                selection = kSelNone;
               }
             } else {
               Session.Play = false;
-              selection = SEL_NONE;
+              selection = kSelNone;
             }
           } else {
-            selection = SEL_NONE;
+            selection = kSelNone;
           }
           break;
 
@@ -1113,7 +1111,7 @@ bool Select_Game(bool /*fade*/) {
     */
     Hide_Mouse();
 
-    if (selection != SEL_START_NEW_GAME) {
+    if (selection != kSelStartNewGame) {
       BlackPalette.Set(kFadePaletteMedium, Call_Back);
       HiddenPage.Clear();
       VisiblePage.Clear();
@@ -1904,39 +1902,40 @@ static void Init_Color_Remaps() {
     }
 
     for (int index = 0; index < 16; index++) {
-      ptr[HidPage.Get_Pixel(index, 0)] =
-          static_cast<unsigned char>(HidPage.Get_Pixel(index, pcolor));
+      ptr[HidPage.Get_Pixel(index, 0)] = static_cast<unsigned char>(
+          HidPage.Get_Pixel(index, static_cast<int>(pcolor)));
     }
     for (int index = 0; index < 6; index++) {
-      ColorRemaps[pcolor].FontRemap[10 + index] =
-          static_cast<unsigned char>(HidPage.Get_Pixel(2 + index, pcolor));
+      ColorRemaps[pcolor].FontRemap[10 + index] = static_cast<unsigned char>(
+          HidPage.Get_Pixel(2 + index, static_cast<int>(pcolor)));
     }
-    ColorRemaps[pcolor].BrightColor = WHITE;
-    //		ColorRemaps[pcolor].BrightColor = HidPage.Get_Pixel(1, pcolor);
-    ColorRemaps[pcolor].Color =
-        static_cast<unsigned char>(HidPage.Get_Pixel(4, pcolor));
+    ColorRemaps[pcolor].BrightColor = kWhite;
+    //		ColorRemaps[pcolor].BrightColor = HidPage.Get_Pixel(1,
+    // static_cast<int>(pcolor));
+    ColorRemaps[pcolor].Color = static_cast<unsigned char>(
+        HidPage.Get_Pixel(4, static_cast<int>(pcolor)));
 
-    ColorRemaps[pcolor].Shadow =
-        static_cast<unsigned char>(HidPage.Get_Pixel(10, pcolor));
-    ColorRemaps[pcolor].Background =
-        static_cast<unsigned char>(HidPage.Get_Pixel(9, pcolor));
-    ColorRemaps[pcolor].Corners =
-        static_cast<unsigned char>(HidPage.Get_Pixel(7, pcolor));
-    ColorRemaps[pcolor].Highlight =
-        static_cast<unsigned char>(HidPage.Get_Pixel(4, pcolor));
-    ColorRemaps[pcolor].Bright =
-        static_cast<unsigned char>(HidPage.Get_Pixel(0, pcolor));
-    ColorRemaps[pcolor].Underline =
-        static_cast<unsigned char>(HidPage.Get_Pixel(0, pcolor));
-    ColorRemaps[pcolor].Bar =
-        static_cast<unsigned char>(HidPage.Get_Pixel(6, pcolor));
+    ColorRemaps[pcolor].Shadow = static_cast<unsigned char>(
+        HidPage.Get_Pixel(10, static_cast<int>(pcolor)));
+    ColorRemaps[pcolor].Background = static_cast<unsigned char>(
+        HidPage.Get_Pixel(9, static_cast<int>(pcolor)));
+    ColorRemaps[pcolor].Corners = static_cast<unsigned char>(
+        HidPage.Get_Pixel(7, static_cast<int>(pcolor)));
+    ColorRemaps[pcolor].Highlight = static_cast<unsigned char>(
+        HidPage.Get_Pixel(4, static_cast<int>(pcolor)));
+    ColorRemaps[pcolor].Bright = static_cast<unsigned char>(
+        HidPage.Get_Pixel(0, static_cast<int>(pcolor)));
+    ColorRemaps[pcolor].Underline = static_cast<unsigned char>(
+        HidPage.Get_Pixel(0, static_cast<int>(pcolor)));
+    ColorRemaps[pcolor].Bar = static_cast<unsigned char>(
+        HidPage.Get_Pixel(6, static_cast<int>(pcolor)));
 
     /*
     **	This must grab from column 4 because the multiplayer color dialog
     *palette counts *	on this to be true.
     */
-    ColorRemaps[pcolor].Box =
-        static_cast<unsigned char>(HidPage.Get_Pixel(4, pcolor));
+    ColorRemaps[pcolor].Box = static_cast<unsigned char>(
+        HidPage.Get_Pixel(4, static_cast<int>(pcolor)));
   }
 
   /*
@@ -1947,7 +1946,8 @@ static void Init_Color_Remaps() {
   }
   // The palette index in the low byte of the pixel read from the grey row.
   const auto GreyPixel = [](int x) {
-    return static_cast<uint8_t>(HidPage.Get_Pixel(x, PCOLOR_GREY));
+    return static_cast<uint8_t>(
+        HidPage.Get_Pixel(x, static_cast<int>(PCOLOR_GREY)));
   };
   for (int index = 0; index < 6; index++) {
     GreyScheme.FontRemap[10 + index] = GreyPixel(9 + index);
@@ -1984,8 +1984,8 @@ static void Init_Color_Remaps() {
   ** Set up the font remap table for the mission briefing font
   */
   for (int colr = 0; colr < 16; colr++) {
-    ColorRemaps[PCOLOR_TYPE].FontRemap[colr] =
-        static_cast<unsigned char>(HidPage.Get_Pixel(colr, PCOLOR_TYPE));
+    ColorRemaps[PCOLOR_TYPE].FontRemap[colr] = static_cast<unsigned char>(
+        HidPage.Get_Pixel(colr, static_cast<int>(PCOLOR_TYPE)));
   }
 
   ColorRemaps[PCOLOR_TYPE].Shadow = 11;
@@ -2526,14 +2526,14 @@ static void Bootstrap() {
   */
   Init_Expansion_Files();
 
-  SidebarScheme.Background = BLACK;
-  SidebarScheme.Corners = LTGREY;
+  SidebarScheme.Background = kBlack;
+  SidebarScheme.Corners = kLtGrey;
   SidebarScheme.Shadow = DKGREY;
-  SidebarScheme.Highlight = WHITE;
-  SidebarScheme.Color = LTGREY;
-  SidebarScheme.Bright = WHITE;
-  SidebarScheme.BrightColor = WHITE;
-  SidebarScheme.Box = LTGREY;
+  SidebarScheme.Highlight = kWhite;
+  SidebarScheme.Color = kLtGrey;
+  SidebarScheme.Bright = kWhite;
+  SidebarScheme.BrightColor = kWhite;
+  SidebarScheme.Box = kLtGrey;
   GadgetClass::Set_Color_Scheme(&SidebarScheme);
 }
 
@@ -2603,7 +2603,7 @@ static void Init_Bulk_Data() {
   **	Cache the main game data. This operation can take a very long time.
   */
   MixArchive::Cache("CONQUER.MIX");
-  if (SampleType != 0 && !Debug_Quiet) {
+  if (SampleType != SAMPLE_NONE && !Debug_Quiet) {
     MixArchive::Cache("SOUNDS.MIX");
     MixArchive::Cache("RUSSIAN.MIX");
     MixArchive::Cache("ALLIES.MIX");

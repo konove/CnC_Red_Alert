@@ -277,7 +277,7 @@ static const HouseTypeClass HouseMulti8(
 HouseTypeClass::HouseTypeClass(HousesType house, const char* ini, int fullname,
                                const char* ext, int lemon,
                                PlayerColorType remapcolor, char prefix) noexcept
-    : AbstractTypeClass(RTTI_HOUSETYPE, house, fullname, ini),
+    : AbstractTypeClass(RTTI_HOUSETYPE, static_cast<int>(house), fullname, ini),
       //	RTTI(RTTI_HOUSETYPE),
       //	ID(house),
       House(house),
@@ -437,7 +437,7 @@ void HouseTypeClass::One_Time() {}
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
 HouseTypeClass& HouseTypeClass::As_Reference(HousesType house) {
-  return *HouseTypes.Ptr(house);
+  return *HouseTypes.Ptr(static_cast<int>(house));
 }
 
 /***********************************************************************************************

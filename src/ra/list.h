@@ -290,7 +290,7 @@ template <class T>
 TListClass<T>::TListClass(int id, int x, int y, int w, int h,
                           TextPrintType flags, const void* up, const void* down)
     : ControlClass(static_cast<unsigned>(id), x, y, w, h,
-                   LEFTPRESS | LEFTRELEASE | KEYBOARD, false),
+                   kLeftPress | kLeftRelease | kKeyboard, false),
       TextFlags(flags),
       LineHeight(FontHeight + FontYSpacing - 1),
       LineCount((h - 1) / LineHeight),
@@ -313,7 +313,7 @@ TListClass<T>::TListClass(int id, int x, int y, int w, int h,
   /*
   **	Set the list box to a default state.
   */
-  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, TextFlags);
+  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack, TextFlags);
 }
 
 template <class T>
@@ -426,16 +426,16 @@ void TListClass<T>::Remove_Item(T text) {
 
 template <class T>
 bool TListClass<T>::Action(unsigned flags, KeyNumType& key) {
-  if (flags & LEFTRELEASE) {
+  if (flags & kLeftRelease) {
     key = KN_NONE;
-    flags &= (~LEFTRELEASE);
+    flags &= (~kLeftRelease);
     ControlClass::Action(flags, key);
     return true;
   }
   /*
    ** Handle keyboard events here.
    */
-  if (flags & KEYBOARD) {
+  if (flags & kKeyboard) {
     /*
     **	Process the keyboard character. If indicated, consume this
     *keyboard event *	so that the edit gadget ID number is not returned.
@@ -447,7 +447,7 @@ bool TListClass<T>::Action(unsigned flags, KeyNumType& key) {
       Step_Selected_Index(1);
       key = KN_NONE;
     } else {
-      flags &= ~KEYBOARD;
+      flags &= ~kKeyboard;
     }
 
   } else {
@@ -541,7 +541,7 @@ int TListClass<T>::Current_Index() const {
 template <class T>
 void TListClass<T>::Peer_To_Peer(unsigned flags, KeyNumType& /*unused*/,
                                  ControlClass& whom) {
-  if (flags & LEFTRELEASE) {
+  if (flags & kLeftRelease) {
     if (&whom == &UpGadget) {
       Step(true);
     }

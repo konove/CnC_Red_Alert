@@ -81,6 +81,8 @@
 #include <utility>
 
 #include "absl/strings/str_format.h"
+#include "base/enum_array.h"
+#include "base/numeric.h"
 #include "base/types.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/tokenizer.h"
@@ -145,7 +147,7 @@
  *=============================================================================================*/
 VesselClass::VesselClass(VesselType classid, HousesType house)
     : DriveClass(RTTI_VESSEL, Vessels.ID(this), house),
-      Class(VesselTypes.Ptr(classid)),
+      Class(VesselTypes.Ptr(static_cast<int>(classid))),
       SecondaryFacing(PrimaryFacing) {
   House->Tracking_Add(this);
 
@@ -1236,9 +1238,9 @@ TARGET VesselClass::Greatest_Threat(ThreatType threat)  // const
     threat = threat | THREAT_BUILDINGS;
     threat = threat | THREAT_FACTORIES;
   } else {
-    if ((threat & (kThreatGround | THREAT_POWER | THREAT_FACTORIES |
-                   THREAT_TIBERIUM | THREAT_BASE_DEFENSE | THREAT_BOATS)) ==
-        0) {
+    if (!base::Any(threat &
+                   (kThreatGround | THREAT_POWER | THREAT_FACTORIES |
+                    THREAT_TIBERIUM | THREAT_BASE_DEFENSE | THREAT_BOATS))) {
       if (Class->PrimaryWeapon != nullptr) {
         threat = threat | Class->PrimaryWeapon->Allowed_Threats();
       }
@@ -1618,9 +1620,8 @@ DirType VesselClass::Desired_Load_Dir(ObjectClass* passenger,
   */
   moveto = 0;
   if (bestval > 0) {
-    static const DirType
-        _desired_to_actual[magic_enum::enum_count<FacingType>()] = {
-            DIR_S, DIR_SW, DIR_NW, DIR_NW, DIR_NE, DIR_NE, DIR_NE, DIR_SE};
+    static constexpr base::EnumArray<FacingType, DirType> _desired_to_actual = {
+        DIR_S, DIR_SW, DIR_NW, DIR_NW, DIR_NE, DIR_NE, DIR_NE, DIR_SE};
 
     moveto = Adjacent_Cell(Coord_Cell(Coord), bestdir);
     return _desired_to_actual[bestdir];
@@ -1688,17 +1689,21 @@ int VesselClass::Mission_Unload() {
   assert(Vessels.ID(this) == ID);
   assert(IsActive);
 
-  enum { INITIAL_CHECK, MANEUVERING, OPENING_DOOR, UNLOADING, CLOSING_DOOR };
+  constexpr int kInitialCheck = 0;
+  constexpr int kManeuvering = 1;
+  constexpr int kOpeningDoor = 2;
+  constexpr int kUnloading = 3;
+  constexpr int kClosingDoor = 4;
   DirType dir = DIR_N;
   CELL cell = 0;
 
   if (Class->Type == VESSEL_TRANSPORT) {
     switch (Status) {
-      case INITIAL_CHECK:
+      case kInitialCheck:
         dir = Desired_Load_Dir(nullptr, cell);
         if (How_Many() > 0 && cell != 0) {
           Do_Turn(dir);
-          Status = MANEUVERING;
+          Status = kManeuvering;
           return 1;
         }
         if (!How_Many()) {  // don't break out if still carrying passengers
@@ -1706,27 +1711,27 @@ int VesselClass::Mission_Unload() {
         }
         break;
 
-      case MANEUVERING:
+      case kManeuvering:
         if (!IsRotating) {
           LST_Open_Door();
           if (Is_Door_Opening()) {
-            Status = OPENING_DOOR;
+            Status = kOpeningDoor;
             return 1;
           }
         }
         break;
 
-      case OPENING_DOOR:
+      case kOpeningDoor:
         if (Is_Door_Open()) {
-          Status = UNLOADING;
+          Status = kUnloading;
           return 1;
         }
         if (!Is_Door_Opening()) {
-          Status = INITIAL_CHECK;
+          Status = kInitialCheck;
         }
         break;
 
-      case UNLOADING:
+      case kUnloading:
         if (How_Many()) {
           /*
           **	Don't do anything if still in radio contact.
@@ -1787,14 +1792,14 @@ int VesselClass::Mission_Unload() {
             }
           }
         } else {
-          Status = CLOSING_DOOR;
+          Status = kClosingDoor;
         }
         break;
 
       /*
       **	Close LST door in preparation for normal operation.
       */
-      case CLOSING_DOOR:
+      case kClosingDoor:
         if (Is_Door_Open()) {
           LST_Close_Door();
         }
@@ -1883,9 +1888,10 @@ int VesselClass::Mission_Retreat() {
   assert(Vessels.ID(this) == ID);
   assert(IsActive);
 
-  enum { PICK_RETREAT_POINT, TRAVEL };
+  constexpr int kPickRetreatPoint = 0;
+  constexpr int kTravel = 1;
   switch (Status) {
-    case PICK_RETREAT_POINT:
+    case kPickRetreatPoint:
       IsALoaner = true;
       if (!Target_Legal(NavCom)) {
         //				CELL cell =
@@ -1899,12 +1905,12 @@ int VesselClass::Mission_Retreat() {
         }
         Assign_Destination(::As_Target(cell));
       }
-      Status = TRAVEL;
+      Status = kTravel;
       return 1;
 
-    case TRAVEL:
+    case kTravel:
       if (!Target_Legal(NavCom)) {
-        Status = PICK_RETREAT_POINT;
+        Status = kPickRetreatPoint;
       }
       break;
 

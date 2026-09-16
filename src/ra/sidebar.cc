@@ -97,6 +97,7 @@
 #include <new>
 #include <string>
 
+#include "base/enum_array.h"
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/bench_util.h"
@@ -151,14 +152,9 @@ char SidebarClass::StripClass::ClockTranslucentTable[(1 + 1) * 256];
 */
 // TheaterType SidebarClass::StripClass::LastTheater = THEATER_NONE;
 
-typedef enum ButtonNumberType {
-  BUTTON_RADAR = 100,
-  BUTTON_REPAIR,
-  BUTTON_DEMOLISH,
-  BUTTON_UPGRADE,
-  kButtonSelect,
-  BUTTON_ZOOM
-} ButtonNumberType;
+constexpr int kButtonRepair = 101;
+constexpr int kButtonUpgrade = 103;
+constexpr int kButtonZoom = 105;
 
 /*
 ** Sidebar buttons
@@ -177,8 +173,8 @@ SidebarClass::StripClass::SelectClass
 */
 const void* SidebarClass::StripClass::LogoShapes = nullptr;
 const void* SidebarClass::StripClass::ClockShapes;
-const void* SidebarClass::StripClass::SpecialShapes
-    [magic_enum::enum_count<SpecialWeaponType>()];
+base::EnumArray<SpecialWeaponType, const void*>
+    SidebarClass::StripClass::SpecialShapes;
 
 /***********************************************************************************************
  * SidebarClass::SidebarClass -- Default constructor for the sidebar. *
@@ -200,12 +196,14 @@ SidebarClass::SidebarClass() {
   *drawing *	code so that as the sidebar buildable buttons scroll, they get
   *properly *	clipped at the top and bottom edges.
   */
-  WindowList[WINDOW_SIDEBAR][WINDOWX] = kSideX + 8;
-  WindowList[WINDOW_SIDEBAR][WINDOWY] = kSideY + 1 + kTopHeight;
-  WindowList[WINDOW_SIDEBAR][WINDOWWIDTH] = kSideWidth;
-  WindowList[WINDOW_SIDEBAR][WINDOWHEIGHT] =
+  WindowList[static_cast<int>(WINDOW_SIDEBAR)][kWindowX] = kSideX + 8;
+  WindowList[static_cast<int>(WINDOW_SIDEBAR)][kWindowY] =
+      kSideY + 1 + kTopHeight;
+  WindowList[static_cast<int>(WINDOW_SIDEBAR)][kWindowWidth] = kSideWidth;
+  WindowList[static_cast<int>(WINDOW_SIDEBAR)][kWindowHeight] =
       StripClass::kMaxVisible * StripClass::kObjectHeight;
-  //	WindowList[WINDOW_SIDEBAR][WINDOWHEIGHT] = StripClass::kMaxVisible *
+  //	WindowList[static_cast<int>(WINDOW_SIDEBAR)][WINDOWHEIGHT] =
+  // StripClass::kMaxVisible *
   // StripClass::kObjectHeight-1;
 
   /*
@@ -243,18 +241,20 @@ void SidebarClass::One_Time() {
   *drawing *	code so that as the sidebar buildable buttons scroll, they get
   *properly *	clipped at the top and bottom edges.
   */
-  WindowList[WINDOW_SIDEBAR][WINDOWX] = (kSideX + 8) * 2;
-  WindowList[WINDOW_SIDEBAR][WINDOWY] = (kSideY + 1 + kTopHeight) * 2;
-  WindowList[WINDOW_SIDEBAR][WINDOWWIDTH] = kSideWidth * 2;
-  WindowList[WINDOW_SIDEBAR][WINDOWHEIGHT] =
+  WindowList[static_cast<int>(WINDOW_SIDEBAR)][kWindowX] = (kSideX + 8) * 2;
+  WindowList[static_cast<int>(WINDOW_SIDEBAR)][kWindowY] =
+      (kSideY + 1 + kTopHeight) * 2;
+  WindowList[static_cast<int>(WINDOW_SIDEBAR)][kWindowWidth] = kSideWidth * 2;
+  WindowList[static_cast<int>(WINDOW_SIDEBAR)][kWindowHeight] =
       StripClass::kMaxVisible * StripClass::kObjectHeight * 2;
-  //	WindowList[WINDOW_SIDEBAR][WINDOWHEIGHT] = (StripClass::kMaxVisible *
+  //	WindowList[static_cast<int>(WINDOW_SIDEBAR)][WINDOWHEIGHT] =
+  //(StripClass::kMaxVisible *
   // StripClass::kObjectHeight-1) * 2;
 
   /*
   ** Top of the window seems to be wrong for the new sidebar. ST - 5/2/96 2:49AM
   */
-  WindowList[WINDOW_SIDEBAR][WINDOWY] -= 2;
+  WindowList[static_cast<int>(WINDOW_SIDEBAR)][kWindowY] -= 2;
 
   /*
   **	Set up the coordinates for the sidebar strips. These coordinates are for
@@ -320,7 +320,7 @@ void SidebarClass::Init_IO() {
   */
   if (!MapEditorActive) {
     Repair.IsSticky = true;
-    Repair.ID = BUTTON_REPAIR;
+    Repair.ID = kButtonRepair;
     Repair.X = 0x1f2;
     Repair.Y = 0x96;
     Repair.IsPressed = false;
@@ -329,7 +329,7 @@ void SidebarClass::Init_IO() {
     Repair.Set_Shape(MixArchive::Retrieve("REPAIR.SHP"));
 
     Upgrade.IsSticky = true;
-    Upgrade.ID = BUTTON_UPGRADE;
+    Upgrade.ID = kButtonUpgrade;
     Upgrade.X = 0x21f;
     Upgrade.Y = 0x96;
     Upgrade.IsPressed = false;
@@ -338,7 +338,7 @@ void SidebarClass::Init_IO() {
     Upgrade.Set_Shape(MixArchive::Retrieve("SELL.SHP"));
 
     Zoom.IsSticky = true;
-    Zoom.ID = BUTTON_ZOOM;
+    Zoom.ID = kButtonZoom;
     Zoom.X = 0x24c;
     Zoom.Y = 0x96;
     Zoom.IsPressed = false;
@@ -412,7 +412,7 @@ void SidebarClass::Reload_Sidebar() {
   int houseloaded = 0;
 
   if (PlayerPtr) {
-    houseloaded = PlayerPtr->ActLike;
+    houseloaded = static_cast<int>(PlayerPtr->ActLike);
   }
 
   std::string sidename = sidebarnames[houseloaded];
@@ -829,15 +829,15 @@ void SidebarClass::AI(KeyNumType& input, int x, int y) {
       Activate_Repair(0);
     }
 
-    if (input == ButtonKey(BUTTON_REPAIR)) {
+    if (input == ButtonKey(kButtonRepair)) {
       Repair_Mode_Control(-1);
     }
 
-    if (input == ButtonKey(BUTTON_ZOOM)) {
+    if (input == ButtonKey(kButtonZoom)) {
       Zoom_Mode_Control();
     }
 
-    if (input == ButtonKey(BUTTON_UPGRADE)) {
+    if (input == ButtonKey(kButtonUpgrade)) {
       Sell_Mode_Control(-1);
     }
 
@@ -1158,7 +1158,7 @@ void SidebarClass::StripClass::Init_Theater(TheaterType theater) {
 
   if (theater != THEATER_NONE && theater != LastTheater) {
     static const TLucentType ClockCols[1] = {
-        {GREEN, BLACK, 100, 0}  //			{GREEN, LTGREY, 180, 0}
+        {kGreen, kBlack, 100, 0}  //			{GREEN, LTGREY, 180, 0}
     };
 
     /*
@@ -1174,7 +1174,7 @@ void SidebarClass::StripClass::Init_Theater(TheaterType theater) {
     //		Build_Translucent_Table(GamePalette, &ClockCols[0], 1,
     //(void*)ClockTranslucentTable); 		GamePalette = OriginalPalette;
 
-    Conquer_Build_Fading_Table(GamePalette, &ClockTranslucentTable[256], BLACK,
+    Conquer_Build_Fading_Table(GamePalette, &ClockTranslucentTable[256], kBlack,
                                100);
   }
 }
@@ -1200,7 +1200,7 @@ void SidebarClass::StripClass::Reload_LogoShapes() {
   */
 
   if (PlayerPtr) {
-    houseloaded = PlayerPtr->ActLike;
+    houseloaded = static_cast<int>(PlayerPtr->ActLike);
   }
   LogoShapes = MixArchive::Retrieve(stripnames[houseloaded]);
 }
@@ -1673,12 +1673,12 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
         if (obj == nullptr && spc == SPC_NONE) {
           shapefile = LogoShapes;
           if (!darken) {
-            shapenum = SB_BLANK;
+            shapenum = kSbBlank;
           }
         }
       } else {
         shapefile = LogoShapes;
-        shapenum = SB_BLANK;
+        shapenum = kSbBlank;
         production = false;
       }
 
@@ -1690,11 +1690,13 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
       ** Don't draw blank shapes over the new 640x400 sidebar art - ST 5/1/96
       *6:01PM
       */
-      if (shapenum != SB_BLANK || shapefile != LogoShapes) {
+      if (shapenum != kSbBlank || shapefile != LogoShapes) {
         CC_Draw_Shape(
             shapefile, shapenum,
-            x - WindowList[WINDOW_SIDEBAR][WINDOWX] + (kLeftEdgeOffset * 2),
-            y - WindowList[WINDOW_SIDEBAR][WINDOWY], WINDOW_SIDEBAR,
+            x - WindowList[static_cast<int>(WINDOW_SIDEBAR)][kWindowX] +
+                (kLeftEdgeOffset * 2),
+            y - WindowList[static_cast<int>(WINDOW_SIDEBAR)][kWindowY],
+            WINDOW_SIDEBAR,
             SHAPE_NORMAL | SHAPE_WIN_REL |
                 (remapper ? SHAPE_FADING : SHAPE_NORMAL),
             remapper);
@@ -1706,10 +1708,11 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
         if (darken) {
           CC_Draw_Shape(
               ClockShapes, 0,
-              x - WindowList[WINDOW_SIDEBAR][WINDOWX] + (kLeftEdgeOffset * 2),
-              y - WindowList[WINDOW_SIDEBAR][WINDOWY], WINDOW_SIDEBAR,
-              SHAPE_NORMAL | SHAPE_WIN_REL | SHAPE_GHOST, nullptr,
-              ClockTranslucentTable);
+              x - WindowList[static_cast<int>(WINDOW_SIDEBAR)][kWindowX] +
+                  (kLeftEdgeOffset * 2),
+              y - WindowList[static_cast<int>(WINDOW_SIDEBAR)][kWindowY],
+              WINDOW_SIDEBAR, SHAPE_NORMAL | SHAPE_WIN_REL | SHAPE_GHOST,
+              nullptr, ClockTranslucentTable);
         }
       }
 
@@ -1723,29 +1726,32 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
           /*
           **	Display text showing that the object is ready to place.
           */
-          CC_Draw_Shape(ObjectTypeClass::PipShapes, PIP_READY,
-                        x - WindowList[WINDOW_SIDEBAR][WINDOWX] +
-                            ((kLeftEdgeOffset + 15) * 2),
-                        y - WindowList[WINDOW_SIDEBAR][WINDOWY] + 8,
-                        WINDOW_SIDEBAR, SHAPE_CENTER);
+          CC_Draw_Shape(
+              ObjectTypeClass::PipShapes, static_cast<int>(PIP_READY),
+              x - WindowList[static_cast<int>(WINDOW_SIDEBAR)][kWindowX] +
+                  ((kLeftEdgeOffset + 15) * 2),
+              y - WindowList[static_cast<int>(WINDOW_SIDEBAR)][kWindowY] + 8,
+              WINDOW_SIDEBAR, SHAPE_CENTER);
         } else {
           CC_Draw_Shape(
               ClockShapes, stage + 1,
-              x - WindowList[WINDOW_SIDEBAR][WINDOWX] + (kLeftEdgeOffset * 2),
-              y - WindowList[WINDOW_SIDEBAR][WINDOWY], WINDOW_SIDEBAR,
-              SHAPE_NORMAL | SHAPE_WIN_REL | SHAPE_GHOST, nullptr,
-              ClockTranslucentTable);
+              x - WindowList[static_cast<int>(WINDOW_SIDEBAR)][kWindowX] +
+                  (kLeftEdgeOffset * 2),
+              y - WindowList[static_cast<int>(WINDOW_SIDEBAR)][kWindowY],
+              WINDOW_SIDEBAR, SHAPE_NORMAL | SHAPE_WIN_REL | SHAPE_GHOST,
+              nullptr, ClockTranslucentTable);
 
           /*
           **	Display text showing that the construction is temporarily on
           *hold.
           */
           if (factory && !factory->Is_Building()) {
-            CC_Draw_Shape(ObjectTypeClass::PipShapes, PIP_HOLDING,
-                          x - WindowList[WINDOW_SIDEBAR][WINDOWX] +
-                              ((kLeftEdgeOffset + 15) * 2),
-                          y - WindowList[WINDOW_SIDEBAR][WINDOWY] + 8,
-                          WINDOW_SIDEBAR, SHAPE_CENTER);
+            CC_Draw_Shape(
+                ObjectTypeClass::PipShapes, static_cast<int>(PIP_HOLDING),
+                x - WindowList[static_cast<int>(WINDOW_SIDEBAR)][kWindowX] +
+                    ((kLeftEdgeOffset + 15) * 2),
+                y - WindowList[static_cast<int>(WINDOW_SIDEBAR)][kWindowY] + 8,
+                WINDOW_SIDEBAR, SHAPE_CENTER);
           }
         }
       }
@@ -1796,7 +1802,10 @@ bool SidebarClass::StripClass::Recalc() {
     } else {
       if (static_cast<unsigned>(Buildables[index].BuildableID) <
           magic_enum::enum_count<SpecialWeaponType>()) {
-        ok = PlayerPtr->SuperWeapon[Buildables[index].BuildableID].Is_Present();
+        ok = PlayerPtr
+                 ->SuperWeapon[static_cast<SpecialWeaponType>(
+                     Buildables[index].BuildableID)]
+                 .Is_Present();
       } else {
         ok = false;
       }
@@ -1838,7 +1847,7 @@ bool SidebarClass::StripClass::Recalc() {
  *=============================================================================================*/
 SidebarClass::StripClass::SelectClass::SelectClass() noexcept
     : ControlClass(0, 0, 0, (kObjectWidth - 1) * 2, kObjectHeight * 2,
-                   LEFTPRESS | RIGHTPRESS | LEFTUP) {}
+                   kLeftPress | kRightPress | kLeftUp) {}
 
 /***********************************************************************************************
  * SidebarClass::StripClass::SelectClass:: -- Assigns special values to a
@@ -1927,32 +1936,32 @@ bool SidebarClass::StripClass::SelectClass::Action(unsigned flags,
     /*
     **	Display the help text if the mouse is over the button.
     */
-    if (flags & LEFTUP) {
+    if (flags & kLeftUp) {
       Map.Help_Text(SpecialWeaponHelp[spc], X, Y, scheme->Color, true);
-      flags &= ~LEFTUP;
+      flags &= ~kLeftUp;
     }
 
     /*
     **	A right mouse button signals "cancel".  If we are in targeting
     ** mode then we don't want to be any more.
     */
-    if (flags & RIGHTPRESS) {
+    if (flags & kRightPress) {
       Map.IsTargettingMode = SPC_NONE;
     }
     /*
     **	A left mouse press signal "activate".  If our weapon type is
     ** available then we should activate it.
     */
-    if ((flags & LEFTPRESS) && (static_cast<unsigned>(spc) <
-                                magic_enum::enum_count<SpecialWeaponType>())) {
+    if ((flags & kLeftPress) && (static_cast<unsigned>(spc) <
+                                 magic_enum::enum_count<SpecialWeaponType>())) {
       if (PlayerPtr->SuperWeapon[spc].Is_Ready()) {
         if (spc != SPC_SONAR_PULSE) {
           Map.IsTargettingMode = spc;
           Unselect_All();
           Speak(VOX_SELECT_TARGET);
         } else {
-          OutList.Add(
-              EventClass(EventClass::SPECIAL_PLACE, SPC_SONAR_PULSE, 0));
+          OutList.Add(EventClass(EventClass::SPECIAL_PLACE,
+                                 static_cast<int>(SPC_SONAR_PULSE), 0));
         }
       } else {
         PlayerPtr->SuperWeapon[spc].Impatient_Click();
@@ -1964,10 +1973,10 @@ bool SidebarClass::StripClass::SelectClass::Action(unsigned flags,
       /*
       **	Display the help text if the mouse is over the button.
       */
-      if (flags & LEFTUP) {
+      if (flags & kLeftUp) {
         Map.Help_Text(choice->Full_Name(), X, Y, scheme->Color, true);
         Map.Set_Cost(choice->Cost_Of() * PlayerPtr->CostBias);
-        flags &= ~LEFTUP;
+        flags &= ~kLeftUp;
       }
 
       /*
@@ -1979,7 +1988,7 @@ bool SidebarClass::StripClass::SelectClass::Action(unsigned flags,
       *factory *	manager deleted, and the object under construction is
       *returned to *	the free pool.
       */
-      if ((flags & RIGHTPRESS) && (factory != nullptr)) {
+      if ((flags & kRightPress) && (factory != nullptr)) {
         /*
         **	Cancels placement mode if the sidebar factory is abandoned or
         **	suspended.
@@ -2002,7 +2011,7 @@ bool SidebarClass::StripClass::SelectClass::Action(unsigned flags,
         }
       }
 
-      if (flags & LEFTPRESS) {
+      if (flags & kLeftPress) {
         /*
         **	If there is already a factory attached to this strip but the
         *player didn't click *	on the icon that has the attached factory, then

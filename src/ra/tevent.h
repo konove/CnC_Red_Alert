@@ -44,6 +44,7 @@
 #include <string>
 
 #include "base/attributes.h"
+#include "base/enum_array.h"
 #include "port/ex_string.h"
 #include "port/tokenizer.h"
 #include "ra/ccptr.h"
@@ -58,7 +59,7 @@
 *will signal *	a successful trigger event. This might result in the trigger
 *action being performed.
 */
-typedef enum TEventType {
+enum class TEventType {
   TEVENT_NONE,
   TEVENT_PLAYER_ENTERED,         // player enters this square
   TEVENT_SPIED,                  // Spied by.
@@ -94,7 +95,8 @@ typedef enum TEventType {
   TEVENT_BUILDING_EXISTS,        // Check for building existing.
 
   TEVENT_COUNT,
-} TEventType;
+};
+using enum TEventType;
 
 TEventType Event_From_Name(const char* name);
 NeedType Event_Needs(TEventType event);
@@ -171,7 +173,7 @@ struct TEventClass {
   void Build_INI_Entry(std::string& buffer) const;
 };
 
-typedef enum CNC_FLAG_ENUM AttachType {
+enum class CNC_FLAG_ENUM AttachType {
   ATTACH_NONE =
       0x00,  // Trigger doesn't attach to anything (orphan trigger types).
   ATTACH_CELL = 0x01,  // Trigger can only attach to a cell.
@@ -182,7 +184,8 @@ typedef enum CNC_FLAG_ENUM AttachType {
   ATTACH_HOUSE = 0x08,    // Trigger applies only to a house.
   ATTACH_GENERAL = 0x10,  // General purpose trigger attached to game state.
   ATTACH_TEAM = 0x20      // Trigger applies to team object.
-} AttachType;
+};
+using enum AttachType;
 
 AttachType Attaches_To(TEventType event);
 
@@ -224,6 +227,8 @@ class EventChoiceClass {
   TEventType Event;
 };
 
-extern EventChoiceClass EventChoices[TEVENT_COUNT];
+extern base::EnumArray<TEventType, EventChoiceClass,
+                       static_cast<int>(TEVENT_COUNT)>
+    EventChoices;
 
 #endif  // CNC_RED_ALERT_RA_TEVENT_H_

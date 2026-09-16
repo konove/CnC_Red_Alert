@@ -50,6 +50,7 @@
 
 #include <cassert>
 
+#include "base/enum_array.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/defines.h"
 #include "ra/jshell.h"
@@ -161,9 +162,9 @@ void MouseClass::Mouse_Small(bool wsmall) {
           control->X, control->Y,
           Extract_Shape(MouseShapes, control->SmallFrame + (Frame / 4)));
     } else {
-      Set_Mouse_Cursor(MouseControl[MOUSE_NORMAL].X,
-                       MouseControl[MOUSE_NORMAL].Y,
-                       Extract_Shape(MouseShapes, MOUSE_NORMAL));
+      Set_Mouse_Cursor(
+          MouseControl[MOUSE_NORMAL].X, MouseControl[MOUSE_NORMAL].Y,
+          Extract_Shape(MouseShapes, static_cast<int>(MOUSE_NORMAL)));
     }
   } else {
     Set_Mouse_Cursor(
@@ -323,8 +324,8 @@ void MouseClass::Init_Clear() {
 #define WD 29
 #define HT 23
 
-MouseClass::MouseStruct
-    MouseClass::MouseControl[magic_enum::enum_count<MouseType>()] = {
+base::EnumArray<MouseType, MouseClass::MouseStruct> MouseClass::MouseControl = {
+    {
         {0, 1, 0, 80, 0, 0},        //	MOUSE_NORMAL
         {1, 1, 0, -1, WD / 2, 0},   //	MOUSE_N
         {2, 1, 0, -1, WD, 0},       //	MOUSE_NE
@@ -371,4 +372,4 @@ MouseClass::MouseStruct
         {97, 8, 3, -1, WD / 2, HT / 2},   //	MOUSE_CHRONO_SELECT
         {105, 8, 2, -1, WD / 2, HT / 2},  //	MOUSE_CHRONO_DEST
 
-};
+    }};

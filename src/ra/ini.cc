@@ -202,7 +202,7 @@ bool INIClass::Load(File& file) {
  *=============================================================================================*/
 bool INIClass::Load(ByteSource& file) {
   bool end_of_file = false;
-  char buffer[MAX_LINE_LENGTH];
+  char buffer[kMaxLineLength];
 
   /*
   **	Prescan until the first section is found.
@@ -764,7 +764,7 @@ int INIClass::Get_TextBlock(const char* section, char* buffer, int len) const {
  *=============================================================================================*/
 bool INIClass::Put_Int(const char* section, const char* entry, int number,
                        int format) {
-  char buffer[MAX_LINE_LENGTH];
+  char buffer[kMaxLineLength];
 
   switch (format) {
     default:
@@ -846,7 +846,7 @@ int INIClass::Get_Int(const char* section, const char* entry,
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
 bool INIClass::Put_Hex(const char* section, const char* entry, int number) {
-  char buffer[MAX_LINE_LENGTH];
+  char buffer[kMaxLineLength];
 
   absl::SNPrintF(buffer, sizeof(buffer), "%X",
                  static_cast<unsigned int>(number));

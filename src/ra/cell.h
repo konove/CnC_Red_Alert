@@ -43,6 +43,7 @@
 #include <cstdint>
 
 #include "absl/base/attributes.h"
+#include "base/enum_array.h"
 #include "base/numeric.h"
 #include "base/types.h"
 #include "ra/ccptr.h"
@@ -126,7 +127,7 @@ class CellClass {
   **	will only consider the CrushZone. All other terrestrial travellers will
   **	use the normal Zone.
   */
-  unsigned char Zones[magic_enum::enum_count<MZoneType>()]{};
+  base::EnumArray<MZoneType, unsigned char> Zones{};
 
   /*
   ** This field controls whether an area is being jammed by a gap

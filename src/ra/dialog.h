@@ -25,7 +25,7 @@ int Format_Window_String(char* string, int max_line_len, int& width,
                          int& height);
 extern void Dialog_Box(int x, int y, int w, int h);
 void Conquer_Clip_Text_Print(const char* /*text*/, int x, int y,
-                             RemapControlType* fore, int back = TBLACK,
+                             RemapControlType* fore, int back = kTBlack,
                              TextPrintType flag = static_cast<TextPrintType>(
                                  TPF_8POINT | TPF_DROPSHADOW),
                              int width = -1, const int* tabs = nullptr);

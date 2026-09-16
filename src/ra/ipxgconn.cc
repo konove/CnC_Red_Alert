@@ -87,7 +87,7 @@ IPXGlobalConnClass::IPXGlobalConnClass(int numsend, int numreceive, int maxlen,
     : IPXConnClass(numsend, numreceive,
                    maxlen + static_cast<int>(sizeof(GlobalHeaderType) -
                                              sizeof(CommHeaderType)),
-                   GLOBAL_MAGICNUM,  // magic number for this connection
+                   kGlobalMagicnum,  // magic number for this connection
                    nullptr,          // IPX Address (none)
                    0,                // Connection ID
                    "",               // Connection Name
@@ -141,10 +141,10 @@ int IPXGlobalConnClass::Send_Packet(void* buf, int buflen,
   ------------------------------------------------------------------------*/
   if (ack_req && address != nullptr) {
     port::AlignedObject<GlobalHeaderType>(PacketBuf)->Header.Code =
-        PACKET_DATA_ACK;
+        static_cast<unsigned char>(PACKET_DATA_ACK);
   } else {
     port::AlignedObject<GlobalHeaderType>(PacketBuf)->Header.Code =
-        PACKET_DATA_NOACK;
+        static_cast<unsigned char>(PACKET_DATA_NOACK);
   }
 
   /*------------------------------------------------------------------------
@@ -222,7 +222,7 @@ int IPXGlobalConnClass::Receive_Packet(void* buf, int buflen,
   /*------------------------------------------------------------------------
   Process the packet based on its Code
   ------------------------------------------------------------------------*/
-  switch (packet->Header.Code) {
+  switch (static_cast<ConnectionEnum>(packet->Header.Code)) {
     //.....................................................................
     // DATA_ACK: Check for a resend by comparing the source address &
     // ID of this packet with our last 4 received packets.
@@ -273,7 +273,7 @@ int IPXGlobalConnClass::Receive_Packet(void* buf, int buflen,
       //..................................................................
       if (send_ack) {
         ackpacket.Header.MagicNumber = MagicNum;
-        ackpacket.Header.Code = PACKET_ACK;
+        ackpacket.Header.Code = static_cast<unsigned char>(PACKET_ACK);
         ackpacket.Header.PacketID = packet->Header.PacketID;
         ackpacket.ProductID = ProductID;
         Send(&ackpacket, sizeof(GlobalHeaderType), address,
@@ -315,7 +315,8 @@ int IPXGlobalConnClass::Receive_Packet(void* buf, int buflen,
         If ACK is for this entry, mark it
         ...............................................................*/
         if (packet->Header.PacketID == entry_data->Header.PacketID &&
-            entry_data->Header.Code == PACKET_DATA_ACK) {
+            entry_data->Header.Code ==
+                static_cast<unsigned char>(PACKET_DATA_ACK)) {
           send_entry->IsACK = 1;
           break;
         }

@@ -138,7 +138,7 @@ void Debug_Key(unsigned input) {
              magic_enum::enum_values<SpecialWeaponType>()) {
           PlayerPtr->SuperWeapon[spc].Enable(true, true);
           PlayerPtr->SuperWeapon[spc].Forced_Charge(true);
-          Map.Add(RTTI_SPECIAL, spc);
+          Map.Add(RTTI_SPECIAL, static_cast<int>(spc));
           Map.Column[1].Flag_To_Redraw();
         }
       } break;
@@ -274,7 +274,7 @@ void Debug_Key(unsigned input) {
         if (MonoPage == magic_enum::enum_values<DMonoType>().front()) {
           MonoPage = magic_enum::enum_values<DMonoType>().back();
         } else {
-          MonoPage = DMonoType(MonoPage - 1);
+          MonoPage = static_cast<DMonoType>(static_cast<int>(MonoPage) - 1);
         }
         DebugTimer.Set(0);
         break;
@@ -284,7 +284,7 @@ void Debug_Key(unsigned input) {
         if (MonoPage == magic_enum::enum_values<DMonoType>().back()) {
           MonoPage = magic_enum::enum_values<DMonoType>().front();
         } else {
-          MonoPage = DMonoType(MonoPage + 1);
+          MonoPage = static_cast<DMonoType>(static_cast<int>(MonoPage) + 1);
         }
         DebugTimer.Set(0);
         break;
@@ -336,7 +336,7 @@ void Debug_Key(unsigned input) {
                     y)) {
               Map.Coord_To_Pixel(
                   Coord_Move(center, r2, static_cast<uint16_t>(sight)), x1, y1);
-              LogicPage->Draw_Line(x, y + 8, x1, y1 + 8, WHITE);
+              LogicPage->Draw_Line(x, y + 8, x1, y1 + 8, kWhite);
             }
             if (Map.Coord_To_Pixel(
                     Coord_Move(center2, r1, static_cast<uint16_t>(weapon)), x,
@@ -344,7 +344,7 @@ void Debug_Key(unsigned input) {
               Map.Coord_To_Pixel(
                   Coord_Move(center2, r2, static_cast<uint16_t>(weapon)), x1,
                   y1);
-              LogicPage->Draw_Line(x, y + 8, x1, y1 + 8, RED);
+              LogicPage->Draw_Line(x, y + 8, x1, y1 + 8, kRed);
             }
           }
         }
@@ -382,13 +382,13 @@ void Debug_Key(unsigned input) {
 static const char* Bench_Time(BenchType btype) {
   static char buffer[32];
 
-  int64_t rootcount = Benches[BENCH_GAME_FRAME].Count();
+  int64_t rootcount = Benches[static_cast<int>(BENCH_GAME_FRAME)].Count();
   if (rootcount == 0) {
     rootcount = 1;
   }
-  const int64_t roottime = Benches[BENCH_GAME_FRAME].Value();
-  const int64_t count = Benches[btype].Count();
-  int64_t time = Benches[btype].Value();
+  const int64_t roottime = Benches[static_cast<int>(BENCH_GAME_FRAME)].Value();
+  const int64_t count = Benches[static_cast<int>(btype)].Count();
+  int64_t time = Benches[static_cast<int>(btype)].Value();
   if (count > 0 && count * time > roottime * rootcount) {
     time = roottime / count;
   }
@@ -479,13 +479,13 @@ static void Benchmarks(MonoClass* mono) {
     mono->Printf("%s", Bench_Time(BENCH_BLIT_DISPLAY));
 
     mono->Set_Cursor(66, 2);
-    mono->Printf("%7d", Benches[BENCH_RULES].Value());
+    mono->Printf("%7d", Benches[static_cast<int>(BENCH_RULES)].Value());
     mono->Set_Cursor(66, 4);
-    mono->Printf("%7d", Benches[BENCH_SCENARIO].Value());
+    mono->Printf("%7d", Benches[static_cast<int>(BENCH_SCENARIO)].Value());
 
     for (const BenchType index : magic_enum::enum_values<BenchType>()) {
       if (index != BENCH_RULES && index != BENCH_SCENARIO) {
-        Benches[index].Reset();
+        Benches[static_cast<int>(index)].Reset();
       }
     }
   }

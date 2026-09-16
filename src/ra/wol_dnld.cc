@@ -82,7 +82,7 @@ bool WOL_Download_Dialog(IDownload* pDownload,
   //	int	height;
   //	char* info_string = (char*)szTitle;
 
-  Fancy_Text_Print(TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(), TBLACK,
+  Fancy_Text_Print(TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(), kTBlack,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   //	Format_Window_String( info_string, SeenBuff.Get_Height(), width, height
@@ -91,20 +91,21 @@ bool WOL_Download_Dialog(IDownload* pDownload,
   /*
   ** Button Enumerations
   */
-  enum { BUTTON_CANCEL = 100, BUTTON_PROGRESS };
+  constexpr int kButtonCancel = 100;
+  constexpr int kButtonProgress = 101;
 
   /*
   ** Buttons
   */
   TextButtonClass cancelbtn(
-      BUTTON_CANCEL, TXT_CANCEL,
+      kButtonCancel, TXT_CANCEL,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       // The German and French captions outgrow the button, so those builds
       // let it size itself to the text.
       d_cancel_x, d_cancel_y, config::kIsEnglish ? d_cancel_w : -1,
       config::kIsEnglish ? d_cancel_h : -1);
 
-  GaugeClass progress_meter(BUTTON_PROGRESS, d_progress_x, d_progress_y,
+  GaugeClass progress_meter(kButtonProgress, d_progress_x, d_progress_y,
                             d_progress_w, d_progress_h);
   progress_meter.Use_Thumb(false);
 
@@ -121,13 +122,14 @@ bool WOL_Download_Dialog(IDownload* pDownload,
                              d_dialog_x + d_margin, d_dialog_y + 117,
                              d_dialog_w - (2 * d_margin), d_txt6_h);
 
-  typedef enum {
+  enum class RedrawType {
     REDRAW_NONE = 0,
     REDRAW_PROGRESS = 1,
     REDRAW_BUTTONS = 2,
     REDRAW_BACKGROUND = 3,
     REDRAW_ALL = REDRAW_BACKGROUND
-  } RedrawType;
+  };
+  using enum RedrawType;
 
   bool process = true;
   RedrawType display = REDRAW_ALL;  // redraw level
@@ -149,7 +151,7 @@ bool WOL_Download_Dialog(IDownload* pDownload,
     ** we need to redraw.
     */
 
-    if (display) {
+    if (display != REDRAW_NONE) {
       if (display >= REDRAW_BACKGROUND) {
         Hide_Mouse();
         /*
@@ -192,7 +194,7 @@ bool WOL_Download_Dialog(IDownload* pDownload,
         ** Cancel. Just return to the main menu
         */
         case KN_ESC:
-        case ButtonKey(BUTTON_CANCEL):
+        case ButtonKey(kButtonCancel):
           pDownload->Abort();
           process = false;
           bReturn = false;

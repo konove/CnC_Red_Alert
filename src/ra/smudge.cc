@@ -134,7 +134,8 @@ void SmudgeClass::operator delete(void* ptr) {
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
 SmudgeClass::SmudgeClass(SmudgeType type, COORDINATE pos, HousesType house)
-    : ObjectClass(RTTI_SMUDGE, Smudges.ID(this)), Class(SmudgeTypes.Ptr(type)) {
+    : ObjectClass(RTTI_SMUDGE, Smudges.ID(this)),
+      Class(SmudgeTypes.Ptr(static_cast<int>(type))) {
   if (pos != ~0U) {
     ToOwn = house;
     if (!Unlimbo(pos)) {
@@ -210,8 +211,9 @@ bool SmudgeClass::Mark(MarkType mark) {
                 *the *	specified coordinate as possible.
                 */
                 if (Class->IsCrater) {
-                  cell->Smudge = static_cast<SmudgeType>(
-                      SMUDGE_CRATER1 + CellClass::Spot_Index(Coord));
+                  cell->Smudge =
+                      static_cast<SmudgeType>(static_cast<int>(SMUDGE_CRATER1) +
+                                              CellClass::Spot_Index(Coord));
                 } else {
                   cell->Smudge = Class->Type;
                 }

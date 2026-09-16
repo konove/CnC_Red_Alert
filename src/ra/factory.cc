@@ -195,7 +195,7 @@ void FactoryClass::operator delete(void* ptr) {
 void FactoryClass::AI() {
   assert(Factories.ID(this) == ID);
 
-  if (!IsSuspended && (Object != nullptr || SpecialItem)) {
+  if (!IsSuspended && (Object != nullptr || SpecialItem != SPC_NONE)) {
     for (int index = 0; index < 1; index++) {
       if (!Has_Completed() && Graphic_Logic()) {
         IsDifferent = true;
@@ -222,7 +222,7 @@ void FactoryClass::AI() {
         **	If the production has completed, then suspend further
         *production.
         */
-        if (Fetch_Stage() == STEP_COUNT) {
+        if (Fetch_Stage() == kStepCount) {
           IsSuspended = true;
           Set_Rate(0);
           House->Spend_Money(Balance);
@@ -350,7 +350,7 @@ void FactoryClass::Set(TechnoClass& object) {
   House = Object->House;
   Balance = 0;
   Set_Rate(0);
-  Set_Stage(STEP_COUNT);
+  Set_Stage(kStepCount);
   IsDifferent = true;
   IsSuspended = true;
 }
@@ -403,7 +403,8 @@ bool FactoryClass::Suspend() {
 bool FactoryClass::Start() {
   assert(Factories.ID(this) == ID);
 
-  if (((Object || SpecialItem) && IsSuspended && !Has_Completed()) &&
+  if (((Object || SpecialItem != SPC_NONE) && IsSuspended &&
+       !Has_Completed()) &&
       (House->Available_Money() >= Cost_Per_Tick())) {
     int time = 0;
 
@@ -418,7 +419,8 @@ bool FactoryClass::Start() {
     *house. The *	build time will range from double normal time at the
     *slowest to *	just normal time at the fastest.
     */
-    if (!House->IsHuman && Rule.Diff[House->Difficulty].IsBuildSlowdown) {
+    if (!House->IsHuman &&
+        Rule.Diff[static_cast<int>(House->Difficulty)].IsBuildSlowdown) {
       time = time * fixed(House->IQ + Rule.MaxIQ, Rule.MaxIQ * 2).Inverse();
     }
 
@@ -427,7 +429,7 @@ bool FactoryClass::Start() {
     //			frac = Bound(frac, 0x0010, 0x0100);
     //			int rate = (time*256) / frac;
 
-    rate /= STEP_COUNT;
+    rate /= kStepCount;
     rate = Bound(rate, 1, 255);
 
     Set_Rate(rate);
@@ -476,7 +478,7 @@ bool FactoryClass::Abandon() {
       Object = nullptr;
       ScenarioInit--;
     }
-    if (SpecialItem) {
+    if (SpecialItem != SPC_NONE) {
       SpecialItem = SPC_NONE;
     }
 
@@ -502,7 +504,7 @@ bool FactoryClass::Abandon() {
  * INPUT:   none *
  *                                                                                             *
  * OUTPUT:  Returns a completion step number between 0 (uncompleted), to
- *STEP_COUNT (completed)*
+ *kStepCount (completed)*
  *                                                                                             *
  * WARNINGS:   none *
  *                                                                                             *
@@ -534,10 +536,10 @@ int FactoryClass::Completion() {
 bool FactoryClass::Has_Completed() {
   assert(Factories.ID(this) == ID);
 
-  if (Object && Fetch_Stage() == STEP_COUNT) {
+  if (Object && Fetch_Stage() == kStepCount) {
     return true;
   }
-  if (SpecialItem && Fetch_Stage() == STEP_COUNT) {
+  if (SpecialItem != SPC_NONE && Fetch_Stage() == kStepCount) {
     return true;
   }
   return false;
@@ -575,7 +577,7 @@ TechnoClass* FactoryClass::Get_Object() const {
 int FactoryClass::Get_Special_Item() const {
   assert(Factories.ID(this) == ID);
 
-  return SpecialItem;
+  return static_cast<int>(SpecialItem);
 }
 
 /***********************************************************************************************
@@ -598,7 +600,7 @@ int FactoryClass::Cost_Per_Tick() {
   assert(Factories.ID(this) == ID);
 
   if (Object) {
-    const int steps = STEP_COUNT - Fetch_Stage();
+    const int steps = kStepCount - Fetch_Stage();
     if (steps) {
       return Balance / steps;
     }
@@ -628,7 +630,7 @@ int FactoryClass::Cost_Per_Tick() {
 bool FactoryClass::Completed() {
   assert(Factories.ID(this) == ID);
 
-  if (Object && Fetch_Stage() == STEP_COUNT) {
+  if (Object && Fetch_Stage() == kStepCount) {
     Object = nullptr;
     IsSuspended = true;
     IsDifferent = true;
@@ -637,7 +639,7 @@ bool FactoryClass::Completed() {
     return true;
   }
 
-  if (SpecialItem && Fetch_Stage() == STEP_COUNT) {
+  if (SpecialItem != SPC_NONE && Fetch_Stage() == kStepCount) {
     SpecialItem = SPC_NONE;
     IsSuspended = true;
     IsDifferent = true;

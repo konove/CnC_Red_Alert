@@ -159,17 +159,15 @@ constexpr unsigned char kPacketTypeHostGameInfo = 50;
 constexpr unsigned char kPacketTypeGuestGameInfo = 51;
 
 //	Note: These enums match those in the game results server code.
-enum {
-  COMPLETION_CONNECTION_LOST = 0,
-  COMPLETION_PLAYER_1_WON = 1,
-  COMPLETION_PLAYER_1_WON_BY_RESIGNATION = 2,
-  COMPLETION_PLAYER_1_WON_BY_DISCONNECTION = 3,
-  COMPLETION_PLAYER_2_WON = 4,
-  COMPLETION_PLAYER_2_WON_BY_RESIGNATION = 5,
-  COMPLETION_PLAYER_2_WON_BY_DISCONNECTION = 6,
-  // Stalemate games.
-  COMPLETION_WASH = 64,
-};
+constexpr int kCompletionConnectionLost = 0;
+constexpr int kCompletionPlayer1Won = 1;
+constexpr int kCompletionPlayer1WonByResignation = 2;
+constexpr int kCompletionPlayer1WonByDisconnection = 3;
+constexpr int kCompletionPlayer2Won = 4;
+constexpr int kCompletionPlayer2WonByResignation = 5;
+constexpr int kCompletionPlayer2WonByDisconnection = 6;
+// Stalemate games.
+constexpr int kCompletionWash = 64;
 
 extern "C" char CPUType;
 
@@ -376,8 +374,8 @@ void Send_Statistics_Packet() {
       const HouseClass* player1 = nullptr;
       const HouseClass* player2 = nullptr;
       for (int h = 0; h < Session.Players.Count(); h++) {
-        HouseClass* ptr =
-            HouseClass::As_Pointer(static_cast<HousesType>(h + HOUSE_MULTI1));
+        HouseClass* ptr = HouseClass::As_Pointer(
+            static_cast<HousesType>(h + static_cast<int>(HOUSE_MULTI1)));
         if (ptr->IsHuman) {
           if (player1) {
             player2 = ptr;
@@ -447,19 +445,19 @@ void Send_Statistics_Packet() {
         }
         // Stalemate games.
         if (Scen.bLocalProposesDraw && Scen.bOtherProposesDraw) {
-          completion = COMPLETION_WASH;
+          completion = kCompletionWash;
         } else {
           if (ConnectionLost) {
             if constexpr (config::kWolapiEnabled) {
               if (bReconnectDialogCancelled) {
                 if (Session.Players[0]->Player.ID == HOUSE_MULTI1) {
                   //	I am player1.
-                  completion = COMPLETION_PLAYER_2_WON_BY_DISCONNECTION;
+                  completion = kCompletionPlayer2WonByDisconnection;
                 } else {
-                  completion = COMPLETION_PLAYER_1_WON_BY_DISCONNECTION;
+                  completion = kCompletionPlayer1WonByDisconnection;
                 }
               } else {
-                completion = COMPLETION_CONNECTION_LOST;
+                completion = kCompletionConnectionLost;
                 if (pWolapi->bDisconnectPingingCompleted) {
                   char szPingResult[8];  //	Format is "x/y a/b", e.g., "3/5
                                          // 4/5"
@@ -472,27 +470,27 @@ void Send_Statistics_Packet() {
                 // finished!!!!!!!!!!!!!!!\n" );
               }
             } else {
-              completion = COMPLETION_CONNECTION_LOST;
+              completion = kCompletionConnectionLost;
             }
           } else {
             if (player1->IsGiverUpper) {
-              completion = COMPLETION_PLAYER_2_WON_BY_DISCONNECTION;
+              completion = kCompletionPlayer2WonByDisconnection;
             }
 
             if (player2->IsGiverUpper) {
-              completion = COMPLETION_PLAYER_1_WON_BY_DISCONNECTION;
+              completion = kCompletionPlayer1WonByDisconnection;
             }
 
             if (player2->IsDefeated) {
               /*
               ** Player 1 won. Find out how.
               */
-              completion = COMPLETION_PLAYER_1_WON;
+              completion = kCompletionPlayer1Won;
               if (player2->IsResigner) {
-                completion = COMPLETION_PLAYER_1_WON_BY_RESIGNATION;
+                completion = kCompletionPlayer1WonByResignation;
               } else {
                 if (player2->IsGiverUpper) {
-                  completion = COMPLETION_PLAYER_1_WON_BY_DISCONNECTION;
+                  completion = kCompletionPlayer1WonByDisconnection;
                 }
               }
 
@@ -501,12 +499,12 @@ void Send_Statistics_Packet() {
                 /*
                 ** Player 2 won. Find out how.
                 */
-                completion = COMPLETION_PLAYER_2_WON;
+                completion = kCompletionPlayer2Won;
                 if (player1->IsResigner) {
-                  completion = COMPLETION_PLAYER_2_WON_BY_RESIGNATION;
+                  completion = kCompletionPlayer2WonByResignation;
                 } else {
                   if (player1->IsGiverUpper) {
-                    completion = COMPLETION_PLAYER_2_WON_BY_DISCONNECTION;
+                    completion = kCompletionPlayer2WonByDisconnection;
                   }
                 }
               }
@@ -569,8 +567,8 @@ void Send_Statistics_Packet() {
     //	only ever described two.
     constexpr int kHouseCount = config::kWolapiEnabled ? 8 : 2;
     for (int house = 0; house < kHouseCount; house++) {
-      HouseClass* player =
-          HouseClass::As_Pointer(static_cast<HousesType>(house + HOUSE_MULTI1));
+      HouseClass* player = HouseClass::As_Pointer(
+          static_cast<HousesType>(house + static_cast<int>(HOUSE_MULTI1)));
 
       if (config::kWolapiEnabled && !player) {
         continue;
@@ -600,7 +598,8 @@ void Send_Statistics_Packet() {
       ** Player team. (NOD or GDI)
       */
       field_player_team[3] = static_cast<char>('1' + static_cast<char>(house));
-      stats.Add_Field(field_player_team, houses[player->ActLike]);
+      stats.Add_Field(field_player_team,
+                      houses[static_cast<int>(player->ActLike)]);
 
       /*
       ** Player color
@@ -608,7 +607,8 @@ void Send_Statistics_Packet() {
       field_player_color[3] = static_cast<char>('1' + static_cast<char>(house));
       stats.Add_Field(
           field_player_color,
-          static_cast<unsigned char>(player->Class->House - HOUSE_MULTI1));
+          static_cast<unsigned char>(static_cast<int>(player->Class->House) -
+                                     static_cast<int>(HOUSE_MULTI1)));
 
       /*
       ** Player end credits.
@@ -675,14 +675,16 @@ void Send_Statistics_Packet() {
       for (int index = 0; index < Units.Count(); index++) {
         const UnitClass* unit = Units.Ptr(index);
         if (player == unit->House) {
-          player->UnitTotals->Increment_Unit_Total(unit->Class->Type);
+          player->UnitTotals->Increment_Unit_Total(
+              static_cast<int>(unit->Class->Type));
         }
       }
 
       for (int index = 0; index < Infantry.Count(); index++) {
         const InfantryClass* infantry = Infantry.Ptr(index);
         if (player == infantry->House && !infantry->Class->IsCivilian) {
-          player->InfantryTotals->Increment_Unit_Total(infantry->Class->Type);
+          player->InfantryTotals->Increment_Unit_Total(
+              static_cast<int>(infantry->Class->Type));
         }
       }
 
@@ -690,21 +692,24 @@ void Send_Statistics_Packet() {
         const AircraftClass* aircraft = Aircraft.Ptr(index);
         if (player == aircraft->House) {  // &&	aircraft->Class->Type !=
                                           // AIRCRAFT_CARGO){
-          player->AircraftTotals->Increment_Unit_Total(aircraft->Class->Type);
+          player->AircraftTotals->Increment_Unit_Total(
+              static_cast<int>(aircraft->Class->Type));
         }
       }
 
       for (int index = 0; index < Buildings.Count(); index++) {
         const BuildingClass* building = Buildings.Ptr(index);
         if (player == building->House) {
-          player->BuildingTotals->Increment_Unit_Total(building->Class->Type);
+          player->BuildingTotals->Increment_Unit_Total(
+              static_cast<int>(building->Class->Type));
         }
       }
 
       for (int index = 0; index < Vessels.Count(); index++) {
         const VesselClass* vessel = Vessels.Ptr(index);
         if (player == vessel->House) {
-          player->VesselTotals->Increment_Unit_Total(vessel->Class->Type);
+          player->VesselTotals->Increment_Unit_Total(
+              static_cast<int>(vessel->Class->Type));
         }
       }
 
@@ -817,8 +822,8 @@ void Send_Statistics_Packet() {
     *for later
     */
     if (!config::kWolapiEnabled &&
-        (completion == COMPLETION_PLAYER_1_WON_BY_DISCONNECTION ||
-         completion == COMPLETION_PLAYER_2_WON_BY_DISCONNECTION)) {
+        (completion == kCompletionPlayer1WonByDisconnection ||
+         completion == kCompletionPlayer2WonByDisconnection)) {
       PacketLater = packet;
       return;
     }

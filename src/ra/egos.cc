@@ -212,7 +212,7 @@ bool EgoClass::Scroll(int distance) {
  *=============================================================================================*/
 void EgoClass::Render() const {
   if (YPos < LogicPage->Get_Height() && YPos > -16) {
-    Fancy_Text_Print(Text, XPos, YPos, GadgetClass::Get_Color_Scheme(), TBLACK,
+    Fancy_Text_Print(Text, XPos, YPos, GadgetClass::Get_Color_Scheme(), kTBlack,
                      Flags);
   }
 }
@@ -234,10 +234,10 @@ void EgoClass::Wipe(GraphicBufferClass* background) const {
   const int width = String_Pixel_Width(Text);
   int x = XPos;
 
-  if (Flags & TPF_RIGHT) {
+  if (base::Any(Flags & TPF_RIGHT)) {
     x -= width;
   } else {
-    if (Flags & TPF_CENTER) {
+    if (base::Any(Flags & TPF_CENTER)) {
       x -= width / 2;
     }
   }
@@ -406,7 +406,7 @@ void Show_Who_Was_Responsible() {
   ** Initialise the text printing system.
   */
   GadgetClass::Set_Color_Scheme(&ColorRemaps[PCOLOR_GREEN]);
-  Fancy_Text_Print(TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(), TBLACK,
+  Fancy_Text_Print(TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(), kTBlack,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   /*
@@ -587,7 +587,7 @@ void Show_Who_Was_Responsible() {
   ** Work out which palette entries the font needs so we dont fade those colors.
   */
   memset(PaletteLUT, 1, sizeof(PaletteLUT));
-  const int pcolor = PCOLOR_GREEN;
+  const PlayerColorType pcolor = PCOLOR_GREEN;
 
   for (int index = 0; index < 6; index++) {
     PaletteLUT[ColorRemaps[pcolor].FontRemap[10 + index]] = 0;

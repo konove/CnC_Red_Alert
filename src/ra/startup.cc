@@ -289,10 +289,12 @@ int main(int argc, char* argv[])
       */
       Memory_Error = &Memory_Error_Handler;
 
-      WindowList[0][WINDOWWIDTH] = SeenBuff.Get_Width();
-      WindowList[0][WINDOWHEIGHT] = SeenBuff.Get_Height();
-      WindowList[WINDOW_EDITOR][WINDOWWIDTH] = SeenBuff.Get_Width();
-      WindowList[WINDOW_EDITOR][WINDOWHEIGHT] = SeenBuff.Get_Height();
+      WindowList[0][kWindowWidth] = SeenBuff.Get_Width();
+      WindowList[0][kWindowHeight] = SeenBuff.Get_Height();
+      WindowList[static_cast<int>(WINDOW_EDITOR)][kWindowWidth] =
+          SeenBuff.Get_Width();
+      WindowList[static_cast<int>(WINDOW_EDITOR)][kWindowHeight] =
+          SeenBuff.Get_Height();
 
       WWMouse = new WWMouseClass(&SeenBuff, 48, 48);
       MouseInstalled = true;

@@ -69,7 +69,6 @@
 #include "ra/externs.h"
 #include "ra/heap.h"
 #include "ra/house.h"
-#include "ra/jshell.h"
 #include "ra/mapedit.h"
 #include "ra/object.h"
 #include "ra/type.h"
@@ -609,5 +608,5 @@ void AircraftTypeClass::Dimensions(int& width, int& height) const {
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 AircraftTypeClass& AircraftTypeClass::As_Reference(AircraftType aircraft) {
-  return *AircraftTypes.Ptr(aircraft);
+  return *AircraftTypes.Ptr(static_cast<int>(aircraft));
 }

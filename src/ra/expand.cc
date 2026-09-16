@@ -228,10 +228,10 @@ static const char* const kFrenchMissionNames[] = {
     config::kIsGerman ? kGermanMissionNames : kFrenchMissionNames;
 inline constexpr int kMissionNameOffset = 20;
 
-#define OPTION_WIDTH 560
-#define OPTION_HEIGHT 332
-#define OPTION_X ((640 - OPTION_WIDTH) / 2)
-#define OPTION_Y ((400 - OPTION_HEIGHT) / 2)
+#define kOptionWidth 560
+#define kOptionHeight 332
+#define kOptionX ((640 - kOptionWidth) / 2)
+#define kOptionY ((400 - kOptionHeight) / 2)
 
 struct EObjectClass {
   HousesType House;
@@ -316,12 +316,12 @@ void EListClass::Draw_Entry(int index, int x, int y, int width, bool selected) {
     flags = flags | TPF_BRIGHT_COLOR;
     LogicPage->Fill_Rect(x, y, x + width - 1, y + LineHeight - 1, 1);
   } else {
-    if (!(flags & TPF_USE_GRAD_PAL)) {
+    if (!base::Any(flags & TPF_USE_GRAD_PAL)) {
       flags = flags | TPF_MEDIUM_COLOR;
     }
   }
 
-  Conquer_Clip_Text_Print(buffer, x + 100, y, scheme, TBLACK,
+  Conquer_Clip_Text_Print(buffer, x + 100, y, scheme, kTBlack,
                           flags & ~TPF_CENTER, width, Tabs);
 }
 
@@ -330,14 +330,14 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
 {
   GadgetClass* buttons = nullptr;
 
-  TextButtonClass ok(200, TXT_OK, kTpfButton, OPTION_X + 40,
-                     OPTION_Y + OPTION_HEIGHT - 50);
+  TextButtonClass ok(200, TXT_OK, kTpfButton, kOptionX + 40,
+                     kOptionY + kOptionHeight - 50);
   TextButtonClass cancel(201, TXT_CANCEL, kTpfButton,
-                         OPTION_X + OPTION_WIDTH - 85,
-                         OPTION_Y + OPTION_HEIGHT - 50);
+                         kOptionX + kOptionWidth - 85,
+                         kOptionY + kOptionHeight - 50);
 
-  EListClass list(202, OPTION_X + 35, OPTION_Y + 30, OPTION_WIDTH - 70,
-                  OPTION_HEIGHT - 85, kTpfButton,
+  EListClass list(202, kOptionX + 35, kOptionY + 30, kOptionWidth - 70,
+                  kOptionHeight - 85, kTpfButton,
                   MixArchive::Retrieve("BTN-UP.SHP"),
                   MixArchive::Retrieve("BTN-DN.SHP"));
   buttons = &ok;
@@ -453,11 +453,11 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
       Load_Title_Page();
       CCPalette.Set();
 
-      Dialog_Box(OPTION_X, OPTION_Y, OPTION_WIDTH, OPTION_HEIGHT);
+      Dialog_Box(kOptionX, kOptionY, kOptionWidth, kOptionHeight);
       if (bCounterstrike) {
-        Draw_Caption(TXT_WOL_CS_MISSIONS, OPTION_X, OPTION_Y, OPTION_WIDTH);
+        Draw_Caption(TXT_WOL_CS_MISSIONS, kOptionX, kOptionY, kOptionWidth);
       } else {
-        Draw_Caption(TXT_WOL_AM_MISSIONS, OPTION_X, OPTION_Y, OPTION_WIDTH);
+        Draw_Caption(TXT_WOL_AM_MISSIONS, kOptionX, kOptionY, kOptionWidth);
       }
       buttons->Draw_All();
       Show_Mouse();

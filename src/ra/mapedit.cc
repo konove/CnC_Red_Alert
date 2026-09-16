@@ -65,6 +65,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <utility>
 
 #include "absl/strings/str_format.h"
 #include "base/numeric.h"
@@ -140,7 +141,7 @@ MapEditClass::MapEditClass() {
   */
   //	ScenVar = SCEN_VAR_A;
 
-  for (int i = 0; i < NUM_EDIT_CLASSES; i++) {
+  for (int i = 0; i < kNumEditClasses; i++) {
     NumType[i] = 0;
     TypeOffset[i] = 0;
   }
@@ -175,17 +176,17 @@ void MapEditClass::One_Time() {
   /*
   **	The map: a single large "button"
   */
-  MapArea = new ControlClass(MAP_AREA, 0, 8, 640 - 8, 400 - 8,
-                             GadgetClass::LEFTPRESS | GadgetClass::LEFTRELEASE,
-                             false);
+  MapArea = new ControlClass(
+      kMapArea, 0, 8, 640 - 8, 400 - 8,
+      GadgetClass::kLeftPress | GadgetClass::kLeftRelease, false);
 
   /*
   **	House buttons
   */
-  HouseList = new ListClass(
-      POPUP_HOUSELIST, POPUP_HOUSE_X, POPUP_HOUSE_Y, POPUP_HOUSE_W,
-      POPUP_HOUSE_H, TPF_EFNT | TPF_NOSHADOW,
-      MixArchive::Retrieve("EBTN-UP.SHP"), MixArchive::Retrieve("EBTN-DN.SHP"));
+  HouseList = new ListClass(kPopupHouselist, kPopupHouseX, kPopupHouseY,
+                            kPopupHouseW, kPopupHouseH, TPF_EFNT | TPF_NOSHADOW,
+                            MixArchive::Retrieve("EBTN-UP.SHP"),
+                            MixArchive::Retrieve("EBTN-DN.SHP"));
   for (const HousesType house : magic_enum::enum_values<HousesType>()) {
     HouseList->Add_Item(HouseTypeClass::As_Reference(house).IniName);
   }
@@ -194,8 +195,8 @@ void MapEditClass::One_Time() {
   **	The mission list box
   */
   MissionList = new ListClass(
-      POPUP_MISSIONLIST, POPUP_MISSION_X, POPUP_MISSION_Y, POPUP_MISSION_W,
-      POPUP_MISSION_H, TPF_EFNT | TPF_NOSHADOW,
+      kPopupMissionlist, kPopupMissionX, kPopupMissionY, kPopupMissionW,
+      kPopupMissionH, TPF_EFNT | TPF_NOSHADOW,
       MixArchive::Retrieve("EBTN-UP.SHP"), MixArchive::Retrieve("EBTN-DN.SHP"));
 
   for (const auto mission : MapEditMissions) {
@@ -206,8 +207,8 @@ void MapEditClass::One_Time() {
   **	The health bar
   */
   HealthGauge =
-      new TriColorGaugeClass(POPUP_HEALTHGAUGE, POPUP_HEALTH_X, POPUP_HEALTH_Y,
-                             POPUP_HEALTH_W, POPUP_HEALTH_H);
+      new TriColorGaugeClass(kPopupHealthgauge, kPopupHealthX, kPopupHealthY,
+                             kPopupHealthW, kPopupHealthH);
   HealthGauge->Use_Thumb(true);
   HealthGauge->Set_Maximum(0x100);
   HealthGauge->Set_Red_Limit(0x3f - 1);
@@ -218,34 +219,34 @@ void MapEditClass::One_Time() {
   */
   HealthBuf[0] = 0;
   HealthText = new TextLabelClass(
-      HealthBuf, POPUP_HEALTH_X + (POPUP_HEALTH_W / 2),
-      POPUP_HEALTH_Y + POPUP_HEALTH_H + 1, GadgetClass::Get_Color_Scheme(),
+      HealthBuf, kPopupHealthX + (kPopupHealthW / 2),
+      kPopupHealthY + kPopupHealthH + 1, GadgetClass::Get_Color_Scheme(),
       TPF_CENTER | TPF_FULLSHADOW | TPF_EFNT);
 
   /*
   **	Building attribute buttons.
   */
-  Sellable = new TextButtonClass(POPUP_SELLABLE, TXT_SELLABLE, kTpfEButton,
+  Sellable = new TextButtonClass(kPopupSellable, TXT_SELLABLE, kTpfEButton,
                                  320 - 65, 200 - 25, 60);
-  Rebuildable = new TextButtonClass(POPUP_REBUILDABLE, TXT_REBUILD, kTpfEButton,
+  Rebuildable = new TextButtonClass(kPopupRebuildable, TXT_REBUILD, kTpfEButton,
                                     320 - 65, 200 - 15, 60);
 
   /*
   **	The facing dial
   */
   FacingDial =
-      new Dial8Class(POPUP_FACINGDIAL, POPUP_FACEBOX_X, POPUP_FACEBOX_Y,
-                     POPUP_FACEBOX_W, POPUP_FACEBOX_H, static_cast<DirType>(0));
+      new Dial8Class(kPopupFacingdial, kPopupFaceboxX, kPopupFaceboxY,
+                     kPopupFaceboxW, kPopupFaceboxH, static_cast<DirType>(0));
 
   /*
   **	The base percent-built slider & its label
   */
-  BaseGauge = new GaugeClass(POPUP_BASEPERCENT, POPUP_BASE_X, POPUP_BASE_Y,
-                             POPUP_BASE_W, POPUP_BASE_H);
+  BaseGauge = new GaugeClass(kPopupBasepercent, kPopupBaseX, kPopupBaseY,
+                             kPopupBaseW, kPopupBaseH);
   // TextLabelClass keeps the pointer in its non-const Text member, so the
   // caption needs storage that outlives this call and is not a literal.
   static char base_caption[] = "Base:";
-  BaseLabel = new TextLabelClass(base_caption, POPUP_BASE_X - 3, POPUP_BASE_Y,
+  BaseLabel = new TextLabelClass(base_caption, kPopupBaseX - 3, kPopupBaseY,
                                  GadgetClass::Get_Color_Scheme(),
                                  TPF_RIGHT | TPF_NOSHADOW | TPF_EFNT);
   BaseGauge->Set_Maximum(100);
@@ -332,7 +333,7 @@ bool MapEditClass::Add_To_List(const ObjectTypeClass* object) {
   /*
   **	Add the object if there's room.
   */
-  if (object && ObjCount < MAX_EDIT_OBJECTS) {
+  if (object && ObjCount < kMaxEditObjects) {
     Objects[ObjCount++] = object;
 
     /*
@@ -423,9 +424,9 @@ bool MapEditClass::Add_To_List(const ObjectTypeClass* object) {
  * Object-editing controls:                                                *
  *      POPUP_GDI:            makes GDI the owner of this object           *
  *      POPUP_NOD:            makes NOD the owner of this object           *
- *      POPUP_MISSIONLIST:   sets that mission for this object             *
- *      POPUP_HEALTHGAUGE:   sets that health value for this object        *
- *      POPUP_FACINGDIAL:      sets the object's facing                    *
+ *      kPopupMissionlist:   sets that mission for this object             *
+ *      kPopupHealthgauge:   sets that health value for this object        *
+ *      kPopupFacingdial:      sets the object's facing                    *
  *                                                                         *
  * Changed is set when you:                                                *
  *      - place an object                                                  *
@@ -941,7 +942,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         *clear *	that waypoint.
         */
         for (int i = 0; i < kMaxPlayers; i++) {
-          house = static_cast<HousesType>(HOUSE_MULTI1 + i);
+          house = static_cast<HousesType>(static_cast<int>(HOUSE_MULTI1) + i);
           if (HouseClass::As_Pointer(house) &&
               CurrentCell == HouseClass::As_Pointer(house)->FlagHome) {
             HouseClass::As_Pointer(house)->Flag_Remove(As_Target(CurrentCell),
@@ -987,7 +988,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     **	- Toggle LMouseDown
     **	- release any grabbed object
     */
-    case ButtonKey(MAP_AREA):
+    case ButtonKey(kMapArea):
 
       /*
       **	Left Button DOWN
@@ -1140,13 +1141,13 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     /*
     **	Object-Editing button: House Button
     */
-    case ButtonKey(POPUP_HOUSELIST):
+    case ButtonKey(kPopupHouselist):
       /*
       **	Determine the house desired by examining the currently
       **	selected index in the house list gadget.
       */
       house = HousesType(dynamic_cast<const ListClass*>(
-                             Buttons->Extract_Gadget(POPUP_HOUSELIST))
+                             Buttons->Extract_Gadget(kPopupHouselist))
                              ->Current_Index());
 
       /*
@@ -1157,7 +1158,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       }
 
       //			Set_House_Buttons(CurrentObject[0]->Owner(),
-      // Buttons, POPUP_FIRST);
+      // Buttons, kPopupFirst);
       HidPage.Clear();
       Buttons->Flag_List_To_Redraw();
       Flag_To_Redraw(true);
@@ -1177,7 +1178,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       // assume HOUSE_GOOD is 0
       //			*/
       //			house = (HousesType)( (input & (~KN_BUTTON)) -
-      // POPUP_FIRST);
+      // kPopupFirst);
       //
       //			/*
       //			**	If that house doesn't own this object,
@@ -1189,11 +1190,11 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       //				}
       //			}
       //			Set_House_Buttons(CurrentObject[0]->Owner(),
-      // Buttons, POPUP_FIRST); 			HidPage.Clear();
+      // Buttons, kPopupFirst); 			HidPage.Clear();
       // Flag_To_Redraw(true); 			input = KN_NONE;
       // break;
 
-    case ButtonKey(POPUP_SELLABLE):
+    case ButtonKey(kPopupSellable):
       if (CurrentObject[0]->What_Am_I() == RTTI_BUILDING) {
         auto* building = dynamic_cast<BuildingClass*>(CurrentObject[0]);
 
@@ -1211,7 +1212,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       }
       break;
 
-    case ButtonKey(POPUP_REBUILDABLE):
+    case ButtonKey(kPopupRebuildable):
       if (CurrentObject[0]->What_Am_I() == RTTI_BUILDING) {
         auto* building = dynamic_cast<BuildingClass*>(CurrentObject[0]);
 
@@ -1231,7 +1232,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     /*
     **	Object-Editing button: Mission
     */
-    case ButtonKey(POPUP_MISSIONLIST):
+    case ButtonKey(kPopupMissionlist):
       if (CurrentObject[0]->Is_Techno()) {
         /*
         **	Set new mission
@@ -1251,7 +1252,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     /*
     **	Object-Editing button: Health
     */
-    case ButtonKey(POPUP_HEALTHGAUGE):
+    case ButtonKey(kPopupHealthgauge):
       if (CurrentObject[0]->Is_Techno()) {
         /*
         **	Derive strength from current gauge reading
@@ -1290,7 +1291,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     /*
     **	Object-Editing button: Facing
     */
-    case ButtonKey(POPUP_FACINGDIAL):
+    case ButtonKey(kPopupFacingdial):
       if (CurrentObject[0]->Is_Techno()) {
         auto* techno = dynamic_cast<TechnoClass*>(CurrentObject[0]);
         if (FacingDial->Get_Direction() != techno->PrimaryFacing.Get()) {
@@ -1319,7 +1320,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     /*
     **	Object-Editing button: Facing
     */
-    case ButtonKey(POPUP_BASEPERCENT):
+    case ButtonKey(kPopupBasepercent):
       if (BaseGauge->Get_Value() != Scen.Percent) {
         Scen.Percent = BaseGauge->Get_Value();
         Build_Base_To(Scen.Percent);
@@ -1364,7 +1365,7 @@ void MapEditClass::Draw_It(bool forced) {
   **	Display the total value of all Tiberium on the map.
   */
   Fancy_Text_Print("Tiberium=%ld   ", 0, 0, GadgetClass::Get_Color_Scheme(),
-                   BLACK, TPF_EFNT | TPF_NOSHADOW, TotalValue);
+                   kBlack, TPF_EFNT | TPF_NOSHADOW, TotalValue);
 
   /*
   **	If there are no object controls displayed, just invoke parent's Redraw
@@ -1394,7 +1395,7 @@ void MapEditClass::Draw_It(bool forced) {
     /*
     **	print the label
     */
-    Fancy_Text_Print(buf, 160, 0, &ColorRemaps[PCOLOR_BROWN], TBLACK,
+    Fancy_Text_Print(buf, 160, 0, &ColorRemaps[PCOLOR_BROWN], kTBlack,
                      TPF_CENTER | TPF_NOSHADOW | TPF_EFNT);
   }
 }
@@ -1484,7 +1485,7 @@ bool MapEditClass::Mouse_Moved() {
  *   10/20/1994 BR : Created.                                              *
  *=========================================================================*/
 void MapEditClass::Main_Menu() {
-  const char* _menus[MAX_MAIN_MENU_NUM + 1];
+  const char* _menus[kMaxMainMenuNum + 1];
   int rc = 0;
 
   /*
@@ -1673,7 +1674,7 @@ void MapEditClass::Main_Menu() {
  *   11/29/1994 BR : Created.                                              *
  *=========================================================================*/
 void MapEditClass::AI_Menu() {
-  const char* _menus[MAX_AI_MENU_NUM + 1];
+  const char* _menus[kMaxAiMenuNum + 1];
 
   /*
   **	Fill in menu strings
@@ -1791,7 +1792,7 @@ HousesType MapEditClass::Cycle_House(HousesType curhouse,
   **	Loop through all house types, starting with the one after 'curhouse';
   **	return the first one that's valid
   */
-  HousesType count = HOUSE_NONE;  // prevents an infinite loop
+  int count = 0;  // prevents an infinite loop
   while (true) {
     /*
     **	Go to next house
@@ -1806,7 +1807,7 @@ HousesType MapEditClass::Cycle_House(HousesType curhouse,
     **	Count # iterations; don't go forever
     */
     count++;
-    if (count == static_cast<int>(magic_enum::enum_count<HousesType>())) {
+    if (std::cmp_equal(count, magic_enum::enum_count<HousesType>())) {
       curhouse = HOUSE_NONE;
       break;
     }
@@ -1866,41 +1867,27 @@ bool MapEditClass::Get_Waypoint_Name(char wayptname[]) {
   /*
   **	Dialog & button dimensions
   */
-  enum {
-    D_DIALOG_W = 100,                             // dialog width
-    D_DIALOG_H = 56,                              // dialog height
-    D_DIALOG_X = ((320 - D_DIALOG_W) / 2),        // centered x-coord
-    D_DIALOG_Y = ((200 - D_DIALOG_H) / 2),        // centered y-coord
-    D_DIALOG_CX = D_DIALOG_X + (D_DIALOG_W / 2),  // coord of x-center
-
-    D_TXT8_H = 11,  // ht of 8-pt text
-    D_MARGIN = 7,   // margin width/height
-
-    D_EDIT_W = D_DIALOG_W - (D_MARGIN * 2),
-    D_EDIT_H = 13,
-    D_EDIT_X = D_DIALOG_X + D_MARGIN,
-    D_EDIT_Y = D_DIALOG_Y + 20,
-
-    D_BUTTON_X = D_DIALOG_X + D_MARGIN,
-    D_BUTTON_Y = D_DIALOG_Y + 40,
-    D_BUTTON_W = 40,
-    D_BUTTON_H = 13,
-
-    D_CANCEL_X = D_DIALOG_X + 53,
-    D_CANCEL_Y = D_DIALOG_Y + 40,
-    D_CANCEL_W = 40,
-    D_CANCEL_H = 13,
-
-  };
+  constexpr int kDialogW = 100;                     // dialog width
+  constexpr int kDialogH = 56;                      // dialog height
+  constexpr int kDialogX = ((320 - kDialogW) / 2);  // centered x-coord
+  constexpr int kDialogY = ((200 - kDialogH) / 2);  // centered y-coord
+  constexpr int kMargin = 7;                        // margin width/height
+  constexpr int kEditW = kDialogW - (kMargin * 2);
+  constexpr int kEditX = kDialogX + kMargin;
+  constexpr int kEditY = kDialogY + 20;
+  constexpr int kButtonX = kDialogX + kMargin;
+  constexpr int kButtonY = kDialogY + 40;
+  constexpr int kButtonW = 40;
+  constexpr int kCancelX = kDialogX + 53;
+  constexpr int kCancelY = kDialogY + 40;
+  constexpr int kCancelW = 40;
 
   /*
   **	Button enumerations
   */
-  enum {
-    BUTTON_OK = 100,
-    BUTTON_CANCEL,
-    BUTTON_EDIT,
-  };
+  constexpr int kButtonOk = 100;
+  constexpr int kButtonCancel = 101;
+  constexpr int kButtonEdit = 102;
 
   /*
   **	Dialog variables
@@ -1913,12 +1900,12 @@ bool MapEditClass::Get_Waypoint_Name(char wayptname[]) {
   */
   ControlClass* commands = nullptr;  // the button list
 
-  TextButtonClass button(BUTTON_OK, TXT_OK, kTpfEButton, D_BUTTON_X, D_BUTTON_Y,
-                         D_BUTTON_W);
-  TextButtonClass cancelbtn(BUTTON_CANCEL, TXT_CANCEL, kTpfEButton, D_CANCEL_X,
-                            D_CANCEL_Y, D_CANCEL_W);
-  EditClass editbtn(BUTTON_EDIT, wayptname, 3, TPF_EFNT | TPF_NOSHADOW,
-                    D_EDIT_X, D_EDIT_Y, D_EDIT_W, -1, EditClass::kAlphanumeric);
+  TextButtonClass button(kButtonOk, TXT_OK, kTpfEButton, kButtonX, kButtonY,
+                         kButtonW);
+  TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL, kTpfEButton, kCancelX,
+                            kCancelY, kCancelW);
+  EditClass editbtn(kButtonEdit, wayptname, 3, TPF_EFNT | TPF_NOSHADOW, kEditX,
+                    kEditY, kEditW, -1, EditClass::kAlphanumeric);
 
   /*
   **	Initialize.
@@ -1958,9 +1945,9 @@ bool MapEditClass::Get_Waypoint_Name(char wayptname[]) {
       **	Display the dialog box.
       */
       Hide_Mouse();
-      Dialog_Box(D_DIALOG_X, D_DIALOG_Y, D_DIALOG_W, D_DIALOG_H);
-      //				Draw_Caption(caption, D_DIALOG_X,
-      // D_DIALOG_Y, D_DIALOG_W);
+      Dialog_Box(kDialogX, kDialogY, kDialogW, kDialogH);
+      //				Draw_Caption(caption, kDialogX,
+      // kDialogY, kDialogW);
 
       /*
       **	Redraw the buttons.
@@ -1993,7 +1980,7 @@ bool MapEditClass::Get_Waypoint_Name(char wayptname[]) {
     **	action button according to the style of this dialog box.
     */
     if (input == KN_RETURN) {
-      input = ButtonKey(BUTTON_OK);
+      input = ButtonKey(kButtonOk);
     }
 
     /*
@@ -2004,7 +1991,7 @@ bool MapEditClass::Get_Waypoint_Name(char wayptname[]) {
       ** Load: if load fails, present a message, and stay in the dialog
       ** to allow the user to try another game
       */
-      case ButtonKey(BUTTON_OK):
+      case ButtonKey(kButtonOk):
         Hide_Mouse();
         SeenBuff.Clear();
         GamePalette.Set();
@@ -2017,7 +2004,7 @@ bool MapEditClass::Get_Waypoint_Name(char wayptname[]) {
       ** ESC/Cancel: break
       */
       case KN_ESC:
-      case ButtonKey(BUTTON_CANCEL):
+      case ButtonKey(kButtonCancel):
         Hide_Mouse();
         SeenBuff.Clear();
         GamePalette.Set();

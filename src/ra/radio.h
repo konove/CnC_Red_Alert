@@ -42,6 +42,7 @@
 
 #include <cstdint>
 
+#include "base/enum_array.h"
 #include "ra/defines.h"
 #include "ra/globals.h"
 #include "ra/mission.h"
@@ -73,7 +74,7 @@ class RadioClass : public MissionClass {
   **	This is a text representation of all the possible radio messages. This
   **	text is used for monochrome debug printing.
   */
-  static const char* Messages[magic_enum::enum_count<RadioMessageType>()];
+  static base::EnumArray<RadioMessageType, const char*> Messages;
 
  public:
   /*---------------------------------------------------------------------

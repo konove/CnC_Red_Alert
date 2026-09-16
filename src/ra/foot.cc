@@ -176,7 +176,7 @@ FootClass::FootClass(RTTIType rtti, int id, HousesType house)
       Member(nullptr),
       PathThreshhold(MOVE_CLOAK),
       PathDelay(0),
-      TryTryAgain(PATH_RETRY),
+      TryTryAgain(kPathRetry),
       BaseAttackTimer(0),
       FormationSpeed(SPEED_FOOT),
       FormationMaxSpeed(MPH_IMMOBILE),
@@ -1917,10 +1917,10 @@ TARGET FootClass::Greatest_Threat(ThreatType method)  // const
     return kTargetNone;
   }
 
-  if (!(method &
-        (THREAT_INFANTRY | THREAT_VEHICLES | THREAT_BUILDINGS |
-         THREAT_TIBERIUM | THREAT_BOATS | THREAT_CIVILIANS | THREAT_POWER |
-         THREAT_FAKES | THREAT_FACTORIES | THREAT_BASE_DEFENSE))) {
+  if (!base::Any(method & (THREAT_INFANTRY | THREAT_VEHICLES |
+                           THREAT_BUILDINGS | THREAT_TIBERIUM | THREAT_BOATS |
+                           THREAT_CIVILIANS | THREAT_POWER | THREAT_FAKES |
+                           THREAT_FACTORIES | THREAT_BASE_DEFENSE))) {
     if (What_Am_I() != RTTI_VESSEL) {
       method = method | kThreatGround;
     } else {
@@ -2480,15 +2480,16 @@ bool FootClass::Is_On_Priority_Mission() const {
 int FootClass::Mission_Retreat() {
   assert(IsActive);
 
-  enum { FIND_EDGE, TRAVELLING };
+  constexpr int kFindEdge = 0;
+  constexpr int kTravelling = 1;
 
   switch (Status) {
     /*
     **	Find a suitable edge to travel to and then assign destination there.
     */
-    case FIND_EDGE:
+    case kFindEdge:
       if (Target_Legal(NavCom)) {
-        Status = TRAVELLING;
+        Status = kTravelling;
       } else {
         CELL cell = 0;
 
@@ -2515,16 +2516,16 @@ int FootClass::Mission_Retreat() {
         assert(cell == 0);  // An edge cell must be found!
 
         Assign_Destination(::As_Target(cell));
-        Status = TRAVELLING;
+        Status = kTravelling;
       }
       break;
 
     /*
     **	While travelling, monitor that all is proceeding according to plan.
     */
-    case TRAVELLING:
+    case kTravelling:
       if (!Target_Legal(NavCom)) {
-        Status = FIND_EDGE;
+        Status = kFindEdge;
       }
       break;
     default:

@@ -953,7 +953,8 @@ void* NullModemClass::Oldest_Send() {
         Connection->Queue->Get_Send(i);  // ptr to send entry header
     if (send_entry) {
       auto* packet = port::AlignedObject<CommHeaderType>(send_entry->Buffer);
-      if (packet->Code == ConnectionClass::PACKET_DATA_ACK &&
+      if (packet->Code ==
+              static_cast<unsigned char>(ConnectionClass::PACKET_DATA_ACK) &&
           send_entry->IsACK == 0) {
         buf = send_entry->Buffer;
         break;
@@ -1083,7 +1084,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
   ------------------------------------------------------------------------*/
   port::SafeCopy(buffer, Text_String(TXT_INITIALIZING_MODEM));
 
-  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, kTpfText);
+  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack, kTpfText);
   const int lines =
       Format_Window_String(buffer, SeenBuff.Get_Height(), width, height);
 
@@ -1112,11 +1113,11 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
 
   if (lines == 1) {
     Fancy_Text_Print(buffer, x + (width / 2), y + 25,
-                     GadgetClass::Get_Color_Scheme(), TBLACK,
+                     GadgetClass::Get_Color_Scheme(), kTBlack,
                      kTpfText | TPF_CENTER);
   } else {
     Fancy_Text_Print(buffer, x + 40, y + 25, GadgetClass::Get_Color_Scheme(),
-                     TBLACK, kTpfText);
+                     kTBlack, kTpfText);
   }
 
   Show_Mouse();
@@ -1205,7 +1206,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
 
       // Stop initialization only when the command failed and the user clicked
       // "Cancel" (Process returns true for it); success or "Ignore" continues.
-      return result == MODEM_CMD_OK || result == MODEM_CMD_0 ||
+      return result == kModemCmdOk || result == kModemCmd0 ||
              !WWMessageBox().Process(errorMsgId, TXT_IGNORE, TXT_CANCEL);
     };
 
@@ -1245,7 +1246,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
   */
   status = Send_Modem_Command("ATS0=0", '\r', buffer, 81, DEFAULT_TIMEOUT,
                               INIT_COMMAND_RETRIES);
-  if (status != MODEM_CMD_OK) {
+  if (status != kModemCmdOk) {
     if (WWMessageBox().Process(TXT_ERROR_NO_DISABLE, TXT_IGNORE, TXT_CANCEL)) {
       return 0;
     }
@@ -1295,9 +1296,7 @@ DialStatusType NullModemClass::Dial_Modem(const char* string,
   /*------------------------------------------------------------------------
   Button Enumerations
   ------------------------------------------------------------------------*/
-  enum {
-    BUTTON_CANCEL = 100,
-  };
+  constexpr int kButtonCancel = 100;
 
   /*------------------------------------------------------------------------
   Dialog variables
@@ -1316,7 +1315,7 @@ DialStatusType NullModemClass::Dial_Modem(const char* string,
 
   std::string buffer(buffer_const);
 
-  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, kTpfText);
+  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack, kTpfText);
   Format_Window_String(buffer.data(), SeenBuff.Get_Height(), width, height);
 
   const int text_width = width;
@@ -1328,7 +1327,7 @@ DialStatusType NullModemClass::Dial_Modem(const char* string,
   const int y = (SeenBuff.Get_Height() - height) / 2;
 
   TextButtonClass cancelbtn(
-      BUTTON_CANCEL, TXT_CANCEL, kTpfButton,
+      kButtonCancel, TXT_CANCEL, kTpfButton,
       x + ((width - (String_Pixel_Width(Text_String(TXT_CANCEL)) + 16)) / 2),
       y + height - (FontHeight + FontYSpacing + 4) - 20);
 
@@ -1357,7 +1356,7 @@ DialStatusType NullModemClass::Dial_Modem(const char* string,
 
   Fancy_Text_Print(buffer.c_str(),
                    (SeenBuff.Get_Width() / 2) - (text_width / 2), y + 50,
-                   GadgetClass::Get_Color_Scheme(), TBLACK, kTpfText);
+                   GadgetClass::Get_Color_Scheme(), kTBlack, kTpfText);
 
   Commands->Draw_All();
   Show_Mouse();
@@ -1404,7 +1403,7 @@ DialStatusType NullModemClass::Dial_Modem(const char* string,
     .....................................................................*/
     switch (static_cast<int>(Input)) {
       case KN_ESC:
-      case ButtonKey(BUTTON_CANCEL):
+      case ButtonKey(kButtonCancel):
         dialstatus = DIAL_CANCELED;
         process = false;
         break;
@@ -1477,19 +1476,18 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
   /*------------------------------------------------------------------------
   Button Enumerations
   ------------------------------------------------------------------------*/
-  enum {
-    BUTTON_CANCEL = 100,
-  };
+  constexpr int kButtonCancel = 100;
 
   /*------------------------------------------------------------------------
   Redraw values: in order from "top" to "bottom" layer of the dialog
   ------------------------------------------------------------------------*/
-  typedef enum {
+  enum class RedrawType {
     REDRAW_NONE = 0,
     REDRAW_BUTTONS = 1,
     REDRAW_BACKGROUND = 2,
     REDRAW_ALL = REDRAW_BACKGROUND
-  } RedrawType;
+  };
+  using enum RedrawType;
 
   /*------------------------------------------------------------------------
   Dialog variables
@@ -1514,7 +1512,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
     port::SafeCopy(text_buffer, Text_String(TXT_WAITING_FOR_CALL));
   }
 
-  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, kTpfText);
+  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack, kTpfText);
   Format_Window_String(text_buffer, SeenBuff.Get_Height(), width, height);
 
   int text_width = width;
@@ -1526,7 +1524,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
   int y = (SeenBuff.Get_Height() - height) / 2;
 
   TextButtonClass cancelbtn(
-      BUTTON_CANCEL, TXT_CANCEL, kTpfButton,
+      kButtonCancel, TXT_CANCEL, kTpfButton,
       x + ((width - (String_Pixel_Width(Text_String(TXT_CANCEL)) + 16)) / 2),
       y + height - (FontHeight + FontYSpacing + 4) - 20);
 
@@ -1570,7 +1568,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
     /*.....................................................................
     Refresh display if needed
     .....................................................................*/
-    if (display) {
+    if (display != REDRAW_NONE) {
       Hide_Mouse();
       if (display >= REDRAW_BACKGROUND) {
         /*...............................................................
@@ -1592,7 +1590,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
 
         Fancy_Text_Print(text_buffer,
                          (SeenBuff.Get_Width() / 2) - (text_width / 2), y + 50,
-                         GadgetClass::Get_Color_Scheme(), TBLACK, kTpfText);
+                         GadgetClass::Get_Color_Scheme(), kTBlack, kTpfText);
 
         Commands->Draw_All();
       }
@@ -1610,7 +1608,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
     }
     switch (static_cast<int>(Input)) {
       case KN_ESC:
-      case ButtonKey(BUTTON_CANCEL):
+      case ButtonKey(kButtonCancel):
         dialstatus = DIAL_CANCELED;
         process = false;
         break;
@@ -1623,7 +1621,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
       if (strncmp(comm_buffer, "RING", 4) == 0) {
         port::SafeCopy(text_buffer, Text_String(TXT_ANSWERING));
 
-        Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, kTpfText);
+        Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack, kTpfText);
         Format_Window_String(text_buffer, SeenBuff.Get_Height(), width, height);
 
         text_width = width;
@@ -1661,7 +1659,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
 
     if (delay <= 0) {
       if (ring) {
-        if (SerialPort->Get_Modem_Status() & CD_SET) {
+        if (SerialPort->Get_Modem_Status() & kCdSet) {
           absl::SNPrintF(ModemRXString, sizeof(ModemRXString), "%s",
                          "Connected");
           dialstatus = DIAL_CONNECTED;
@@ -1717,7 +1715,7 @@ bool NullModemClass::Hangup_Modem() {
 
   int status = Send_Modem_Command("AT", '\r', buffer, 81, DEFAULT_TIMEOUT, 1);
 
-  if (status == MODEM_CMD_OK) {
+  if (status == kModemCmdOk) {
     Session.ModemService = true;
     return true;
   }
@@ -1731,7 +1729,7 @@ bool NullModemClass::Hangup_Modem() {
 
   status = Send_Modem_Command("AT", '\r', buffer, 81, DEFAULT_TIMEOUT, 1);
 
-  if (status == MODEM_CMD_OK) {
+  if (status == kModemCmdOk) {
     Session.ModemService = true;
     return true;
   }
@@ -1765,7 +1763,7 @@ bool NullModemClass::Hangup_Modem() {
   */
   status = Send_Modem_Command("ATH", '\r', buffer, 81, ModemHangupDelay, 1);
 
-  if (status == MODEM_CMD_OK) {
+  if (status == kModemCmdOk) {
   } else {
     Session.ModemService = true;
     return false;
@@ -1776,7 +1774,7 @@ bool NullModemClass::Hangup_Modem() {
   */
   status = Send_Modem_Command("ATZ", '\r', buffer, 81, 5000, 1);
 
-  if (status != MODEM_CMD_OK) {
+  if (status != kModemCmdOk) {
     Session.ModemService = true;
     return false;
   }
@@ -1884,9 +1882,7 @@ int NullModemClass::Abort_Modem() {
   /*
   ** Button Enumerations
   */
-  enum {
-    BUTTON_CANCEL = 100,
-  };
+  constexpr int kButtonCancel = 100;
 
   /*
   ** Invoke game callback
@@ -1900,7 +1896,7 @@ int NullModemClass::Abort_Modem() {
 
   switch (static_cast<int>(Input)) {
     case KN_ESC:
-    case ButtonKey(BUTTON_CANCEL):
+    case ButtonKey(kButtonCancel):
       return ASUSERABORT;
     default:
       break;
@@ -1984,8 +1980,8 @@ uint32_t NullModemClass::Get_Modem_Status() {
   const int status =
       Send_Modem_Command("AT", '\r', buffer, 81, DEFAULT_TIMEOUT, 1);
 
-  if (status == MODEM_CMD_OK) {
-    modemstatus &= ~CD_SET;
+  if (status == kModemCmdOk) {
+    modemstatus &= ~kCdSet;
   }
 
   return modemstatus;

@@ -752,11 +752,12 @@ interface DECLSPEC_UUID("B832B0AC-A7D3-11D1-97C3-00609706FA0C") INetUtilEvent
 
 typedef unsigned long GID;
 
-enum GTYPE_ { SERVER = 0, CHANNEL = 1, CLIENT = 2 };
-typedef enum GTYPE_ GTYPE;
+enum class GTYPE { SERVER = 0, CHANNEL = 1, CLIENT = 2 };
+using enum GTYPE;
 
-enum CHAN_CTYPE_ { ALLEXIT = 0, CREATOREXIT = 1, CLOSEC = 2 };
-typedef enum CHAN_CTYPE_ CHAN_CTYPE;
+inline constexpr int kAllexit = 0;
+inline constexpr int kCreatorexit = 1;
+inline constexpr int kClosec = 2;
 
 EXTERN_C const IID IID_IChat2;
 

@@ -43,6 +43,7 @@
 #include <cstddef>
 
 #include "absl/base/attributes.h"
+#include "base/enum_array.h"
 #include "ra/ccini.h"
 #include "ra/defines.h"
 #include "tech/fixed.h"
@@ -109,7 +110,7 @@ class WarheadTypeClass {
   **	The warhead damage is reduced depending on the the type of armor the
   **	defender has. This table is what gives weapons their "character".
   */
-  fixed Modifier[magic_enum::enum_count<ArmorType>()];
+  base::EnumArray<ArmorType, fixed> Modifier;
 
   /*
   **	Which explosion set to use for warhead impact.

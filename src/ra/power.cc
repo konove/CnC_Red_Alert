@@ -137,10 +137,10 @@ void PowerClass::Init_Clear() {
  *=============================================================================================*/
 void PowerClass::One_Time() {
   RadarClass::One_Time();
-  PowerButton.X = POWER_X * 2;
-  PowerButton.Y = POWER_Y * 2;
-  PowerButton.Width = (POWER_WIDTH * 2) - 1;
-  PowerButton.Height = POWER_HEIGHT * 2;
+  PowerButton.X = kPowerX * 2;
+  PowerButton.Y = kPowerY * 2;
+  PowerButton.Width = (kPowerWidth * 2) - 1;
+  PowerButton.Height = kPowerHeight * 2;
   PowerShape = MixArchive::Retrieve("POWER.SHP");
   PowerBarShape = MixArchive::Retrieve("POWERBAR.SHP");
 }
@@ -177,8 +177,8 @@ void PowerClass::Draw_It(bool complete) {
           remap = FadingRed;
         }
 
-        //				LogicPage->Fill_Rect(POWER_X, POWER_Y,
-        // POWER_X+POWER_WIDTH-1, POWER_Y+POWER_HEIGHT-1, LTGREY);
+        //				LogicPage->Fill_Rect(kPowerX, kPowerY,
+        // kPowerX+kPowerWidth-1, kPowerY+kPowerHeight-1, LTGREY);
         CC_Draw_Shape(PowerBarShape, 0, 480, 176,
                       WINDOW_MAIN, flags | SHAPE_NORMAL | SHAPE_WIN_REL, remap);
 
@@ -193,7 +193,7 @@ void PowerClass::Draw_It(bool complete) {
         **	Determine how much the power production exceeds or falls short
         **	of power demands.
         */
-        int bottom = (POWER_Y + POWER_HEIGHT - 1) * 2;
+        int bottom = (kPowerY + kPowerHeight - 1) * 2;
         int power_height =
             PowerHeight == DesiredPowerHeight
                 ? PowerHeight + (_modtable[PowerBounce] * PowerDir)
@@ -202,8 +202,8 @@ void PowerClass::Draw_It(bool complete) {
             DrainHeight == DesiredDrainHeight
                 ? DrainHeight + (_modtable[DrainBounce] * DrainDir)
                 : DrainHeight;
-        power_height = Bound(power_height, 0, POWER_HEIGHT - 2);
-        drain_height = Bound(drain_height, 0, POWER_HEIGHT - 2);
+        power_height = Bound(power_height, 0, kPowerHeight - 2);
+        drain_height = Bound(drain_height, 0, kPowerHeight - 2);
 
         /*
         **	Draw the power output graphic on top of the power bar framework.
@@ -243,7 +243,7 @@ void PowerClass::Draw_It(bool complete) {
         /*
         **	Draw the power drain threshold marker.
         */
-        CC_Draw_Shape(PowerShape, 0, (POWER_X * 2) + 2,
+        CC_Draw_Shape(PowerShape, 0, (kPowerX * 2) + 2,
                       bottom - (drain_height + 4), WINDOW_MAIN,
                       flags | SHAPE_NORMAL, remap);
       }
@@ -395,7 +395,7 @@ void PowerClass::Refresh_Cells(CELL cell, const int16_t* list) {
  *=========================================================================*/
 int PowerClass::Power_Height(int value) {
   const int num =
-      value / POWER_STEP_LEVEL;  // figure out the initial num of DRAIN_VALUE's
+      value / kPowerStepLevel;   // figure out the initial num of DRAIN_VALUE's
   int retval = 0;                // currently there is no power
 
   /*
@@ -403,19 +403,19 @@ int PowerClass::Power_Height(int value) {
   ** of each.
   */
   for (int lp = 0; lp < num; lp++) {
-    retval = retval + ((POWER_HEIGHT - 2 - retval) / POWER_STEP_FACTOR);
-    value -= POWER_STEP_LEVEL;
+    retval = retval + ((kPowerHeight - 2 - retval) / kPowerStepFactor);
+    value -= kPowerStepLevel;
   }
 
   /*
   ** Adjust the retval to factor in the remainder
   */
   if (value) {
-    retval = retval + ((POWER_HEIGHT - 2 - retval) / POWER_STEP_FACTOR * value /
-                       POWER_STEP_LEVEL);
+    retval = retval + ((kPowerHeight - 2 - retval) / kPowerStepFactor * value /
+                       kPowerStepLevel);
   }
 
-  retval = Bound(retval, 0, POWER_HEIGHT - 2);
+  retval = Bound(retval, 0, kPowerHeight - 2);
   return retval;
 }
 

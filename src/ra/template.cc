@@ -233,7 +233,7 @@ void TemplateClass::operator delete(void* ptr) {
  *=============================================================================================*/
 TemplateClass::TemplateClass(TemplateType type, CELL pos)
     : ObjectClass(RTTI_TEMPLATE, Templates.ID(this)),
-      Class(TemplateTypes.Ptr(type)) {
+      Class(TemplateTypes.Ptr(static_cast<int>(type))) {
   if (pos != -1) {
     Unlimbo(Cell_Coord(pos));
   }

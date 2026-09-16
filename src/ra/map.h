@@ -184,7 +184,7 @@ class MapClass : public GScreenClass {
   */
   CELL TiberiumScan = 0;
 
-  enum MapEnum { SCAN_AMOUNT = MAP_CELL_TOTAL };
+  static constexpr int kScanAmount = MAP_CELL_TOTAL;
 };
 
 int Coord_Spillage_Number(COORDINATE coord, int maxsize);

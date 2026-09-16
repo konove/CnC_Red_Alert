@@ -58,7 +58,6 @@
 #include "ra/externs.h"
 #include "ra/heap.h"
 #include "ra/inline.h"
-#include "ra/jshell.h"
 #include "ra/map.h"
 #include "ra/mapedit.h"
 #include "ra/object.h"
@@ -148,7 +147,7 @@ void OverlayClass::operator delete(void* ptr) {
  *=============================================================================================*/
 OverlayClass::OverlayClass(OverlayType type, CELL pos, HousesType house)
     : ObjectClass(RTTI_OVERLAY, Overlays.ID(this)),
-      Class(OverlayTypes.Ptr(type)) {
+      Class(OverlayTypes.Ptr(static_cast<int>(type))) {
   if (pos != -1) {
     ToOwn = house;
     Unlimbo(Cell_Coord(pos));
@@ -191,8 +190,11 @@ bool OverlayClass::Mark(MarkType mark) {
         cellptr->OverlayData = 0;
         cellptr->Redraw_Objects();
         cellptr->Wall_Update();
-        Map.Zone_Reset(Class->IsCrushable ? MZONE_NORMAL
-                                          : MZONE_NORMAL | MZONE_CRUSHER);
+        // The original OR'd the MZONE_ enumerators (0 | 1), which only ever
+        // named the normal zone; the crusher zone is what an uncrushable
+        // overlay changes.
+        Map.Zone_Reset(Class->IsCrushable ? kZoneFlagNormal
+                                          : kZoneFlagNormal | kZoneFlagCrusher);
 
         /*
         **	Flag ownership of the cell if the 'global' ownership flag

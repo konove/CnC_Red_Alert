@@ -192,7 +192,7 @@ static void Color_Cycle() {
 
       // Set the pulse color as the proportional value between white and
       // the minimum value for pulsing.
-      GamePalette[kPulseColor] = GamePalette[WHITE];
+      GamePalette[kPulseColor] = GamePalette[kWhite];
       GamePalette[kPulseColor].Adjust(val, kBlackColor);
 
       // Pulse the glowing embers between medium and dark red.
@@ -1030,7 +1030,7 @@ void Keyboard_Process(KeyNumType& input) {
         case static_cast<unsigned>(KN_M) | static_cast<unsigned>(KN_ALT_BIT):
         case static_cast<unsigned>(KN_M) | static_cast<unsigned>(KN_CTRL_BIT):
           for (const HousesType house : magic_enum::enum_values<HousesType>()) {
-            Houses.Ptr(house)->Refund_Money(10000);
+            HouseClass::As_Pointer(house)->Refund_Money(10000);
           }
           break;
 
@@ -1231,7 +1231,8 @@ void Keyboard_Process(KeyNumType& input) {
     if ((Session.Type != GAME_NORMAL || Debug_Flag) &&
         (CurrentObject.Count() && !PlayerPtr->IsDefeated) &&
         (CurrentObject[0]->Owner() != PlayerPtr->Class->House)) {
-      OutList.Add(EventClass(EventClass::ALLY, CurrentObject[0]->Owner()));
+      OutList.Add(EventClass(EventClass::ALLY,
+                             static_cast<int>(CurrentObject[0]->Owner())));
     }
 
     input = KN_NONE;
@@ -1390,7 +1391,7 @@ void Keyboard_Process(KeyNumType& input) {
 
 void Call_Back() {
   // Music and speech maintenance
-  if (SampleType) {
+  if (SampleType != SAMPLE_NONE) {
     Sound_Callback();
     Theme.AI();
     Speak_AI();
@@ -1454,7 +1455,7 @@ void IPX_Call_Back() {
   if ((!Session.NetOpen) &&
       Ipx.Get_Global_Message(&Session.GPacket, &Session.GPacketlen,
                              &Session.GAddress, &Session.GProductID) &&
-      (Session.GProductID == IPXGlobalConnClass::COMMAND_AND_CONQUER0))
+      (Session.GProductID == IPXGlobalConnClass::kCommandAndConquer0))
 
   {
     // If this is another player signing off, remove the connection &
@@ -1484,7 +1485,8 @@ void IPX_Call_Back() {
 
         if (msg_ok) {
           if (!Session.Messages.Concat_Message(
-                  Session.GPacket.Name, Session.GPacket.Message.Color,
+                  Session.GPacket.Name,
+                  static_cast<int>(Session.GPacket.Message.Color),
                   Session.GPacket.Message.Buf,
                   Rule.MessageDelay * kTicksPerMinute)) {
             if (NewUnitsEnabled &&
@@ -1493,7 +1495,8 @@ void IPX_Call_Back() {
               Enable_Secret_Units();
             }
             Session.Messages.Add_Message(
-                Session.GPacket.Name, Session.GPacket.Message.Color,
+                Session.GPacket.Name,
+                static_cast<int>(Session.GPacket.Message.Color),
                 Session.GPacket.Message.Buf, Session.GPacket.Message.Color,
                 TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
                 Rule.MessageDelay * kTicksPerMinute);
@@ -1651,7 +1654,7 @@ bool Main_Loop() {
   // If there is no theme playing, but it looks like one is required, then
   // start one playing. This is usually the symptom of there being no
   // transition score.
-  if (SampleType && Theme.What_Is_Playing() == THEME_NONE) {
+  if (SampleType != SAMPLE_NONE && Theme.What_Is_Playing() == THEME_NONE) {
     Theme.Queue_Song(THEME_PICK_ANOTHER);
   }
 
@@ -2217,7 +2220,7 @@ std::unique_ptr<char[]> Get_Radar_Icon(const void* shapefile,
                              pixel_width) +
                             getx - off_x[lp]);
 
-                  if (pixel == LTGREEN) {
+                  if (pixel == kLtGreen) {
                     pixel = 0;
                   }
                   if (pixel) {
@@ -2248,10 +2251,10 @@ void CC_Draw_Shape(const void* shapefile, const int shape_num, const int x,
   //
   // Callers that ask for ghosting or fading without supplying the table get
   // the display class's default rather than a null dereference.
-  if (flags & SHAPE_GHOST && !ghostdata) {
+  if (base::Any(flags & SHAPE_GHOST) && !ghostdata) {
     ghostdata = DisplayClass::SpecialGhost;
   }
-  if (flags & SHAPE_FADING && !fading_data) {
+  if (base::Any(flags & SHAPE_FADING) && !fading_data) {
     fading_data = DisplayClass::FadingShade;
   }
 
@@ -2271,9 +2274,12 @@ void CC_Draw_Shape(const void* shapefile, const int shape_num, const int x,
     if (shape_pointer) {
       GraphicViewPortClass draw_window(
           LogicPage->Get_Graphic_Buffer(),
-          WindowList[window][WINDOWX] + LogicPage->Get_XPos(),
-          WindowList[window][WINDOWY] + LogicPage->Get_YPos(),
-          WindowList[window][WINDOWWIDTH], WindowList[window][WINDOWHEIGHT]);
+          WindowList[static_cast<int>(window)][kWindowX] +
+              LogicPage->Get_XPos(),
+          WindowList[static_cast<int>(window)][kWindowY] +
+              LogicPage->Get_YPos(),
+          WindowList[static_cast<int>(window)][kWindowWidth],
+          WindowList[static_cast<int>(window)][kWindowHeight]);
       auto* buffer = static_cast<unsigned char*>(shape_pointer);
 
       UseOldShapeDraw = false;
@@ -2292,8 +2298,9 @@ void CC_Draw_Shape(const void* shapefile, const int shape_num, const int x,
         GraphicBufferClass gb(width, height, x_buffer);
         const TPoint2D pt(width / 2, height / 2);
 
-        gb.Scale_Rotate(bm, pt, scale,
-                        static_cast<uint8_t>(256 - rotation + 64));
+        gb.Scale_Rotate(
+            bm, pt, scale,
+            static_cast<uint8_t>(256 - static_cast<int>(rotation) + 64));
         buffer = x_buffer;
       }
 
@@ -2313,7 +2320,7 @@ void CC_Draw_Shape(const void* shapefile, const int shape_num, const int x,
       // cloaked objects side by side do not ripple in lockstep.
       int pred_offset = static_cast<int>(Frame);
 
-      if (x > WindowList[window][WINDOWWIDTH] * 4) {
+      if (x > WindowList[static_cast<int>(window)][kWindowWidth] * 4) {
         pred_offset = -pred_offset;
       }
 
@@ -2777,23 +2784,21 @@ int Get_CD_Index(int /*cd_drive*/, int /*timeout*/) {
   return 5;  // we uh, magically have the DVD
 }
 
-// Disc identifiers, matching the order of kCdNames below. CD_SOVIET and
-// CD_ALLIED are unreferenced by name but fix the numbering the later values
+// Disc identifiers, matching the order of kCdNames below. kCdSoviet and
+// kCdAllied are unreferenced by name but fix the numbering the later values
 // depend on, and are the values Get_CD_Index() returns for those discs.
 namespace {
-enum CD_VOLUME {
-  CD_LOCAL = -2,
-  CD_ANY = -1,
-  CD_SOVIET [[maybe_unused]] = 0,
-  CD_ALLIED [[maybe_unused]] = 1,
-  CD_COUNTERSTRIKE = 2,
-  CD_AFTERMATH = 3,
-  CD_CS_OR_AM = 4,
-  CD_DVD = 5,
-};
+constexpr int kCdLocal = -2;
+constexpr int kCdAny = -1;
+[[maybe_unused]] constexpr int kCdSoviet = 0;
+[[maybe_unused]] constexpr int kCdAllied = 1;
+constexpr int kCdCounterstrike = 2;
+constexpr int kCdAftermath = 3;
+constexpr int kCdCsOrAm = 4;
+constexpr int kCdDvd = 5;
 
 // Index of the DVD's name in kCdNames. The table has no entry for the
-// CD_CS_OR_AM request, so the names stop lining up with CD_VOLUME there.
+// kCdCsOrAm request, so the names stop lining up with the disc ids there.
 constexpr int kDvdName = 4;
 }  // namespace
 
@@ -2828,7 +2833,7 @@ bool Force_CD_Available(int cd_desired)  // ajw
 
   // If the required CD is set to -2 then it means that the file is present
   // on the local hard drive and we shouldn't have to worry about it.
-  if (cd_desired == CD_LOCAL) {
+  if (cd_desired == kCdLocal) {
     return true;
   }
 
@@ -2839,19 +2844,19 @@ bool Force_CD_Available(int cd_desired)  // ajw
   if (Using_DVD()) {
     // The DVD release carries every disc's content, so any disc request is
     // satisfied by it.
-    cd_desired = CD_DVD;
+    cd_desired = kCdDvd;
   }
 
   if (cd_current >= 0) {
     // If the current cd is CS or AM then change request to whatever
     // is present.
-    if ((cd_desired == CD_CS_OR_AM) &&
-        (cd_current == CD_COUNTERSTRIKE || cd_current == CD_AFTERMATH)) {
+    if ((cd_desired == kCdCsOrAm) &&
+        (cd_current == kCdCounterstrike || cd_current == kCdAftermath)) {
       cd_desired = cd_current;
     }
 
     // If the current CD is requested or any CD will work
-    if (cd_desired == cd_current || cd_desired == CD_ANY) {
+    if (cd_desired == cd_current || cd_desired == kCdAny) {
       // The required CD is still in the CD drive we used last time, so the
       // content is already reachable.
       return true;
@@ -2878,13 +2883,13 @@ bool Force_CD_Available(int cd_desired)  // ajw
       if (cd_current >= 0) {
         // If the cd is CS or AM then change request to whatever
         // is present.
-        if ((cd_desired == CD_CS_OR_AM) &&
-            (cd_current == CD_COUNTERSTRIKE || cd_current == CD_AFTERMATH)) {
+        if ((cd_desired == kCdCsOrAm) &&
+            (cd_current == kCdCounterstrike || cd_current == kCdAftermath)) {
           cd_desired = cd_current;
         }
 
         // If the cd is present or any cd will work
-        if (cd_desired == cd_current || cd_desired == CD_ANY) {
+        if (cd_desired == cd_current || cd_desired == kCdAny) {
           // The required CD is in the CD drive we used last time
           new_cd_drive = last_drive;
         }
@@ -2910,12 +2915,12 @@ bool Force_CD_Available(int cd_desired)  // ajw
           // Require CS or AM
           // If the cd is CS or AM then change request to whatever
           // is present.
-          if ((cd_desired == CD_CS_OR_AM) &&
-              (cd_current == CD_COUNTERSTRIKE || cd_current == CD_AFTERMATH)) {
+          if ((cd_desired == kCdCsOrAm) &&
+              (cd_current == kCdCounterstrike || cd_current == kCdAftermath)) {
             cd_desired = cd_current;
           }
 
-          if (cd_desired == cd_current || cd_desired == CD_ANY) {
+          if (cd_desired == cd_current || cd_desired == kCdAny) {
             // Woohoo! The disk was in a different cd drive. Refresh the search
             // path list and return.
             new_cd_drive = cd_drive;
@@ -2934,8 +2939,8 @@ bool Force_CD_Available(int cd_desired)  // ajw
 
       // Prompt to insert the CD into the drive.
       // V.Grippi
-      if (cd_desired == CD_CS_OR_AM) {
-        cd_desired = CD_AFTERMATH;
+      if (cd_desired == kCdCsOrAm) {
+        cd_desired = kCdAftermath;
       }
 
       // The wording is fixed by the language this build was compiled for; only
@@ -2952,15 +2957,15 @@ bool Force_CD_Available(int cd_desired)  // ajw
         }
       };
 
-      if (cd_desired == CD_DVD) {
+      if (cd_desired == kCdDvd) {
         insert_prompt(kCdNames[kDvdName]);
-      } else if (cd_desired == CD_COUNTERSTRIKE || cd_desired == CD_AFTERMATH) {
+      } else if (cd_desired == kCdCounterstrike || cd_desired == kCdAftermath) {
         insert_prompt(kCdNames[base::ToSize(cd_desired)]);
       } else {
         // These prompts come from the localized string table, so verify the
         // translation still takes a %d followed by a %s before using it.
         const int text =
-            cd_desired == CD_ANY ? TXT_CD_DIALOG_1 : TXT_CD_DIALOG_2;  // 0 or 1
+            cd_desired == kCdAny ? TXT_CD_DIALOG_1 : TXT_CD_DIALOG_2;  // 0 or 1
         const auto format =
             absl::ParsedFormat<'d', 's'>::New(Text_String(text));
         if (format != nullptr) {
@@ -3014,7 +3019,7 @@ bool Force_CD_Available(int cd_desired)  // ajw
 
   // If it broke out of the query for CD-ROM loop, then this means that the
   // CD-ROM has been inserted.
-  // CD_CS_OR_AM is a request, not a disc that exists; narrow it to Aftermath
+  // kCdCsOrAm is a request, not a disc that exists; narrow it to Aftermath
   // now that a real disc has been found, so the cache check below compares
   // like with like.
   if (cd_desired == 4) {
@@ -3024,10 +3029,10 @@ bool Force_CD_Available(int cd_desired)  // ajw
   // Re-register the secondary mix files from the disc that was just found,
   // but only when the disc actually changed.
   //
-  // The cd_desired != CD_DVD condition is ajw's: on the DVD build this ran
+  // The cd_desired != kCdDvd condition is ajw's: on the DVD build this ran
   // before Init_Secondary_Mixfiles() and corrupted the mixfile system. Skipping
   // it there is safe, because the DVD is the only disc that can ever be
-  // requested when Using_DVD(), and cd_desired can never be CD_DVD otherwise.
+  // requested when Using_DVD(), and cd_desired can never be kCdDvd otherwise.
   if (cd_desired > -1 && _last != cd_desired && cd_desired != 5) {
     _last = cd_desired;
 

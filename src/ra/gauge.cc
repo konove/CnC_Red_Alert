@@ -75,7 +75,7 @@
  * HISTORY:  01/05/1995 MML : Created.                                     *
  *=========================================================================*/
 GaugeClass::GaugeClass(unsigned id, int x, int y, int w, int h)
-    : ControlClass(id, x, y, w, h, LEFTHELD | LEFTPRESS | LEFTRELEASE, true),
+    : ControlClass(id, x, y, w, h, kLeftHeld | kLeftPress | kLeftRelease, true),
       IsHorizontal(w > h) {
   // Set the range directly. Set_Maximum and Set_Value are virtual -- SliderClass
   // overrides both to recalculate the thumb -- so a constructor cannot reach the
@@ -290,12 +290,12 @@ bool GaugeClass::Action(unsigned flags, KeyNumType& key) {
   **	position according to the mouse position. In all other cases, ignore the
   **	button being held down.
   */
-  if (flags & LEFTPRESS || (flags & LEFTHELD && StuckOn == this)) {
+  if (flags & kLeftPress || (flags & kLeftHeld && StuckOn == this)) {
     /*
     ** Compute the difference between where we clicked, and the edge of
     ** the thumb (only if we clicked on the thumb.)
     */
-    if (flags & LEFTPRESS) {
+    if (flags & kLeftPress) {
       const int curpix = Value_To_Pixel(CurValue);
       const int clickpix = IsHorizontal ? Get_Mouse_X() : Get_Mouse_Y();
 
@@ -336,11 +336,11 @@ bool GaugeClass::Action(unsigned flags, KeyNumType& key) {
   } else {
     /*
     **	Ignore the left mouse button being held down if this gauge is not
-    **	currently in "sticky" mode. This allows processing of the LEFTPRESS
+    **	currently in "sticky" mode. This allows processing of the kLeftPress
     **	by any derived classes such that this gauge can be more closely
     **	controlled.
     */
-    flags &= ~LEFTHELD;
+    flags &= ~kLeftHeld;
   }
   return ControlClass::Action(flags, key);
 }
@@ -482,27 +482,27 @@ bool TriColorGaugeClass::Draw_Me(bool forced) {
 
     if (CurValue <= RedLimit) {
       if (IsHorizontal) {
-        LogicPage->Fill_Rect(X + 1, Y + 1, middle, Y + Height - 2, PINK);
+        LogicPage->Fill_Rect(X + 1, Y + 1, middle, Y + Height - 2, kPink);
       } else {
-        LogicPage->Fill_Rect(X + 1, Y + 1, X + Width - 2, middle, PINK);
+        LogicPage->Fill_Rect(X + 1, Y + 1, X + Width - 2, middle, kPink);
       }
     } else if (CurValue > RedLimit && CurValue <= YellowLimit) {
       if (IsHorizontal) {
-        LogicPage->Fill_Rect(X + 1, Y + 1, red, Y + Height - 2, PINK);
-        LogicPage->Fill_Rect(red, Y + 1, middle, Y + Height - 2, YELLOW);
+        LogicPage->Fill_Rect(X + 1, Y + 1, red, Y + Height - 2, kPink);
+        LogicPage->Fill_Rect(red, Y + 1, middle, Y + Height - 2, kYellow);
       } else {
-        LogicPage->Fill_Rect(X + 1, Y + 1, X + Width - 2, red, PINK);
-        LogicPage->Fill_Rect(X + 1, red, X + Width - 2, middle, YELLOW);
+        LogicPage->Fill_Rect(X + 1, Y + 1, X + Width - 2, red, kPink);
+        LogicPage->Fill_Rect(X + 1, red, X + Width - 2, middle, kYellow);
       }
     } else if (CurValue > YellowLimit && CurValue <= MaxValue) {
       if (IsHorizontal) {
-        LogicPage->Fill_Rect(X + 1, Y + 1, red, Y + Height - 2, PINK);
-        LogicPage->Fill_Rect(red, Y + 1, yellow, Y + Height - 2, YELLOW);
-        LogicPage->Fill_Rect(yellow, Y + 1, middle, Y + Height - 2, GREEN);
+        LogicPage->Fill_Rect(X + 1, Y + 1, red, Y + Height - 2, kPink);
+        LogicPage->Fill_Rect(red, Y + 1, yellow, Y + Height - 2, kYellow);
+        LogicPage->Fill_Rect(yellow, Y + 1, middle, Y + Height - 2, kGreen);
       } else {
-        LogicPage->Fill_Rect(X + 1, Y + 1, X + Width - 2, red, PINK);
-        LogicPage->Fill_Rect(X + 1, red, X + Width - 2, yellow, YELLOW);
-        LogicPage->Fill_Rect(X + 1, yellow, X + Width - 2, middle, GREEN);
+        LogicPage->Fill_Rect(X + 1, Y + 1, X + Width - 2, red, kPink);
+        LogicPage->Fill_Rect(X + 1, red, X + Width - 2, yellow, kYellow);
+        LogicPage->Fill_Rect(X + 1, yellow, X + Width - 2, middle, kGreen);
       }
     }
 

@@ -74,120 +74,100 @@
 /*
 **	This is the maximum # of ObjectTypeClasses the editor has to deal with.
 */
-enum MapEdit1Enum {
-  MAX_EDIT_OBJECTS =  // max # of ObjectTypeClasses allowed
-      static_cast<int>(magic_enum::enum_count<TemplateType>()) +
-      static_cast<int>(magic_enum::enum_count<OverlayType>()) +
-      static_cast<int>(magic_enum::enum_count<SmudgeType>()) +
-      static_cast<int>(magic_enum::enum_count<TerrainType>()) +
-      static_cast<int>(magic_enum::enum_count<UnitType>()) +
-      static_cast<int>(magic_enum::enum_count<InfantryType>()) +
-      static_cast<int>(magic_enum::enum_count<VesselType>()) +
-      static_cast<int>(magic_enum::enum_count<StructType>()),
-
-  MAX_TEAM_CLASSES =  // max # ObjectTypeClasses for a team
-      static_cast<int>(magic_enum::enum_count<UnitType>()) +
-      static_cast<int>(magic_enum::enum_count<InfantryType>()) +
-      static_cast<int>(magic_enum::enum_count<AircraftType>()) +
-      static_cast<int>(magic_enum::enum_count<VesselType>()),
-
-  //	NUM_EDIT_MISSIONS = 6,			// # missions that can be
-  // assigned an object
-
-  NUM_EDIT_CLASSES = 9,  // # different classes (templates, terrain, etc)
-
-  MAX_MAIN_MENU_NUM = 8,
-  MAX_MAIN_MENU_LEN = 20,
-
-  MAX_AI_MENU_NUM = 6,
-  MAX_AI_MENU_LEN = 20,
-
-  POPUP_HOUSE_X = 10,
-  POPUP_HOUSE_Y = 100,
-  POPUP_HOUSE_W = 60,
-  POPUP_HOUSE_H = 190 - 100,
-
-  //	POPUP_GDI_W = 50,
-  //	POPUP_GDI_H = 9,
-  //	POPUP_GDI_X = 10,
-  //	POPUP_GDI_Y = 160,
-
-  //	POPUP_NOD_W = 50,
-  //	POPUP_NOD_H = 9,
-  //	POPUP_NOD_X = 10,
-  //	POPUP_NOD_Y = 169,
-
-  //	POPUP_NEUTRAL_W = 50,
-  //	POPUP_NEUTRAL_H = 9,
-  //	POPUP_NEUTRAL_X = 10,
-  //	POPUP_NEUTRAL_Y = 178,
-
-  //	POPUP_MULTI1_W = 25,
-  //	POPUP_MULTI1_H = 9,
-  //	POPUP_MULTI1_X = 10,
-  //	POPUP_MULTI1_Y = 160,
-
-  //	POPUP_MULTI2_W = 25,
-  //	POPUP_MULTI2_H = 9,
-  //	POPUP_MULTI2_X = 35,
-  //	POPUP_MULTI2_Y = 160,
-
-  //	POPUP_MULTI3_W = 25,
-  //	POPUP_MULTI3_H = 9,
-  //	POPUP_MULTI3_X = 10,
-  //	POPUP_MULTI3_Y = 169,
-
-  //	POPUP_MULTI4_W = 25,
-  //	POPUP_MULTI4_H = 9,
-  //	POPUP_MULTI4_X = 35,
-  //	POPUP_MULTI4_Y = 169,
-
-  POPUP_MISSION_W = 80,
-  POPUP_MISSION_H = 40,
-  POPUP_MISSION_X = 70,
-  POPUP_MISSION_Y = 150,
-
-  POPUP_FACEBOX_W = 30,
-  POPUP_FACEBOX_H = 30,
-  POPUP_FACEBOX_X = 160,
-  POPUP_FACEBOX_Y = 160,
-
-  POPUP_HEALTH_W = 50,
-  POPUP_HEALTH_H = 10,
-  POPUP_HEALTH_X = 200,
-  POPUP_HEALTH_Y = 170,
-
-  POPUP_BASE_W = 50,
-  POPUP_BASE_H = 8,
-  POPUP_BASE_X = 300 - 50,
-  POPUP_BASE_Y = 0
-};
+inline constexpr int kMaxEditObjects =
+    static_cast<int>(magic_enum::enum_count<TemplateType>()) +
+    static_cast<int>(magic_enum::enum_count<OverlayType>()) +
+    static_cast<int>(magic_enum::enum_count<SmudgeType>()) +
+    static_cast<int>(magic_enum::enum_count<TerrainType>()) +
+    static_cast<int>(magic_enum::enum_count<UnitType>()) +
+    static_cast<int>(magic_enum::enum_count<InfantryType>()) +
+    static_cast<int>(magic_enum::enum_count<VesselType>()) +
+    static_cast<int>(magic_enum::enum_count<StructType>());
+inline constexpr int kMaxTeamClasses =
+    static_cast<int>(magic_enum::enum_count<UnitType>()) +
+    static_cast<int>(magic_enum::enum_count<InfantryType>()) +
+    static_cast<int>(magic_enum::enum_count<AircraftType>()) +
+    static_cast<int>(magic_enum::enum_count<VesselType>());
+//	NUM_EDIT_MISSIONS = 6,			// # missions that can be
+// assigned an object
+inline constexpr int kNumEditClasses =
+    9;  // # different classes (templates, terrain, etc)
+inline constexpr int kMaxMainMenuNum = 8;
+inline constexpr int kMaxMainMenuLen = 20;
+inline constexpr int kMaxAiMenuNum = 6;
+inline constexpr int kMaxAiMenuLen = 20;
+inline constexpr int kPopupHouseX = 10;
+inline constexpr int kPopupHouseY = 100;
+inline constexpr int kPopupHouseW = 60;
+inline constexpr int kPopupHouseH = 190 - 100;
+//	POPUP_GDI_W = 50,
+//	POPUP_GDI_H = 9,
+//	POPUP_GDI_X = 10,
+//	POPUP_GDI_Y = 160,
+//	POPUP_NOD_W = 50,
+//	POPUP_NOD_H = 9,
+//	POPUP_NOD_X = 10,
+//	POPUP_NOD_Y = 169,
+//	POPUP_NEUTRAL_W = 50,
+//	POPUP_NEUTRAL_H = 9,
+//	POPUP_NEUTRAL_X = 10,
+//	POPUP_NEUTRAL_Y = 178,
+//	POPUP_MULTI1_W = 25,
+//	POPUP_MULTI1_H = 9,
+//	POPUP_MULTI1_X = 10,
+//	POPUP_MULTI1_Y = 160,
+//	POPUP_MULTI2_W = 25,
+//	POPUP_MULTI2_H = 9,
+//	POPUP_MULTI2_X = 35,
+//	POPUP_MULTI2_Y = 160,
+//	POPUP_MULTI3_W = 25,
+//	POPUP_MULTI3_H = 9,
+//	POPUP_MULTI3_X = 10,
+//	POPUP_MULTI3_Y = 169,
+//	POPUP_MULTI4_W = 25,
+//	POPUP_MULTI4_H = 9,
+//	POPUP_MULTI4_X = 35,
+//	POPUP_MULTI4_Y = 169,
+inline constexpr int kPopupMissionW = 80;
+inline constexpr int kPopupMissionH = 40;
+inline constexpr int kPopupMissionX = 70;
+inline constexpr int kPopupMissionY = 150;
+inline constexpr int kPopupFaceboxW = 30;
+inline constexpr int kPopupFaceboxH = 30;
+inline constexpr int kPopupFaceboxX = 160;
+inline constexpr int kPopupFaceboxY = 160;
+inline constexpr int kPopupHealthW = 50;
+inline constexpr int kPopupHealthH = 10;
+inline constexpr int kPopupHealthX = 200;
+inline constexpr int kPopupHealthY = 170;
+inline constexpr int kPopupBaseW = 50;
+inline constexpr int kPopupBaseH = 8;
+inline constexpr int kPopupBaseX = 300 - 50;
+inline constexpr int kPopupBaseY = 0;
 
 /*
 **	These are the button ID's for the pop-up object-editing gizmos.
 **	The house button ID's must be sequential, with a 1-to-1 correspondence
 *to *	the HousesType values.
 */
-enum MapEditButtonIDEnum {
-  POPUP_SPAIN = 500,
-  POPUP_FIRST = POPUP_SPAIN,
-  POPUP_GREECE = 501,
-  POPUP_USSR = 502,
-  POPUP_ENGLAND = 503,
-  POPUP_ITALY = 504,
-  POPUP_GERMANY = 505,
-  POPUP_FRANCE = 506,
-  POPUP_TURKEY = 507,
-  POPUP_HOUSELIST = 508,    // House selection list.
-  POPUP_SELLABLE = 509,     // Allowed to sell.
-  POPUP_REBUILDABLE = 510,  // Allowed to rebuild.
-  POPUP_MISSIONLIST = 511,  // list box for missions
-  POPUP_HEALTHGAUGE = 512,  // health of object
-  POPUP_FACINGDIAL = 513,   // object's facing
-  POPUP_BASEPERCENT = 514,  // Base's percent-built slider
-  MAP_AREA = 515,           // map as a click-able thingy
-  BUTTON_FLAG = 0x8000
-};
+inline constexpr int kPopupSpain = 500;
+inline constexpr int kPopupFirst = kPopupSpain;
+inline constexpr int kPopupGreece = 501;
+inline constexpr int kPopupUssr = 502;
+inline constexpr int kPopupEngland = 503;
+inline constexpr int kPopupItaly = 504;
+inline constexpr int kPopupGermany = 505;
+inline constexpr int kPopupFrance = 506;
+inline constexpr int kPopupTurkey = 507;
+inline constexpr int kPopupHouselist = 508;    // House selection list.
+inline constexpr int kPopupSellable = 509;     // Allowed to sell.
+inline constexpr int kPopupRebuildable = 510;  // Allowed to rebuild.
+inline constexpr int kPopupMissionlist = 511;  // list box for missions
+inline constexpr int kPopupHealthgauge = 512;  // health of object
+inline constexpr int kPopupFacingdial = 513;   // object's facing
+inline constexpr int kPopupBasepercent = 514;  // Base's percent-built slider
+inline constexpr int kMapArea = 515;           // map as a click-able thingy
+inline constexpr unsigned kButtonFlag = 0x8000;
 
 class MapEditClass : public MouseClass {
   /*
@@ -287,7 +267,7 @@ class MapEditClass : public MouseClass {
   **	Array of all TypeClasses the user can add to the map; cleared by
   **	Clear_List(), added to by Add_To_List()
   */
-  const ObjectTypeClass* Objects[MAX_EDIT_OBJECTS]{};
+  const ObjectTypeClass* Objects[kMaxEditObjects]{};
   int ObjCount{0};  // # of objects in the Objects array
 
   /*
@@ -306,21 +286,21 @@ class MapEditClass : public MouseClass {
   /*
   **	Number of each type of object in Objects, so we can switch categories
   */
-  int NumType[NUM_EDIT_CLASSES]{};  // # of each type of class:
-                                  // 0 = Template
-                                  // 1 = Overlay
-                                  // 2 = Smudge
-                                  // 3 = Terrain
-                                  // 4 = Unit
-                                  // 5 = Infantry
-                                  // 6 = Vessels
-                                  // 7 = Building
-                                  // 8 = Aircraft
+  int NumType[kNumEditClasses]{};  // # of each type of class:
+                                   // 0 = Template
+                                   // 1 = Overlay
+                                   // 2 = Smudge
+                                   // 3 = Terrain
+                                   // 4 = Unit
+                                   // 5 = Infantry
+                                   // 6 = Vessels
+                                   // 7 = Building
+                                   // 8 = Aircraft
 
   /*
   **	The offset of each type of object within the Objects[] array
   */
-  int TypeOffset[NUM_EDIT_CLASSES]{};  // offsets within Objects[]
+  int TypeOffset[kNumEditClasses]{};  // offsets within Objects[]
 
   /*
   **	The "current" trigger for point-and-click trigger setting

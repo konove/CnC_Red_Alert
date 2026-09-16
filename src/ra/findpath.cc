@@ -52,14 +52,13 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/findpath.h"
-
 #include <algorithm>
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
 
 #include "absl/log/check.h"
+#include "base/enum_array.h"
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/bench_util.h"
@@ -71,7 +70,6 @@
 #include "ra/face.h"
 #include "ra/foot.h"
 #include "ra/inline.h"
-#include "ra/jshell.h"
 #include "ra/mapedit.h"
 #include "ra/path_overlap.h"
 #include "ra/team.h"
@@ -132,7 +130,7 @@ constexpr FacingType kCounterclockwise = static_cast<FacingType>(-1);
 // static bool DrawPath;
 
 static inline FacingType Opposite(FacingType face) {
-  return static_cast<FacingType>((face + 4) % 8);
+  return WrapFacing(static_cast<int>(face) + 4);
 }
 
 static FacingType Next_Direction(FacingType current, FacingType delta) {
@@ -275,7 +273,7 @@ bool FootClass::Unravel_Loop(PathType* path, CELL& cell, FacingType& dir,
       ** if we left the line on a diagonal.  If we did then we need to fix
       ** it up.
       */
-      if (curr_dir % 2 != 0 && curr_pos != path->LastFixup) {
+      if (static_cast<int>(curr_dir) % 2 != 0 && curr_pos != path->LastFixup) {
         cell = curr_pos;
         dir = *(list - 1);
         path->Length = idx;
@@ -862,7 +860,7 @@ bool FootClass::Follow_Edge(CELL start, CELL target, PathType* path,
       **	will happen if the destination it is at the corner edge of an
       **	impassable that we are moving around.
       */
-      if (newdir & FACING_NE) {
+      if (static_cast<int>(newdir) % 2 != 0) {
         // int	x,y;
 
         CELL checkcell = Adjacent_Cell(
@@ -916,7 +914,7 @@ bool FootClass::Follow_Edge(CELL start, CELL target, PathType* path,
         ** because we could be trying to escape from a culdesack!
         */
         if (forcefail && path->Length > 0 &&
-            static_cast<FacingType>((newdir + 4) % 8) ==
+            WrapFacing(static_cast<int>(newdir) + 4) ==
                 path->Command[path->Length - 1]) {
           forcefail = false;
         }
@@ -979,7 +977,8 @@ bool FootClass::Follow_Edge(CELL start, CELL target, PathType* path,
         ** attaining this square, we were moving turned further in the
         ** search direction then we really were.
         */
-        newdir = Next_Direction(newdir, static_cast<FacingType>(search * 2));
+        newdir =
+            Next_Direction(newdir, WrapFacing(static_cast<int>(search) * 2));
       }
       /*
       ** Find out which side of the line this cell is on.  If it is on
@@ -1070,7 +1069,7 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
   *first command facing.
   */
 #ifdef DIAGONAL
-  static const FacingType _trans[magic_enum::enum_count<FacingType>()] = {
+  static constexpr base::EnumArray<FacingType, FacingType> _trans = {
       static_cast<FacingType>(0),  static_cast<FacingType>(0),
       static_cast<FacingType>(1),  static_cast<FacingType>(2),
       static_cast<FacingType>(3),  kEmptyCommand,
@@ -1154,7 +1153,7 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
       *a facing *	offset to more directly travel toward the immediate
       *destination cell.
       */
-      if (newcmd) {
+      if (newcmd != FACING_N) {
         /*
         **	Optimizations differ when dealing with diagonals. Especially
         *when dealing *	with diagonals of 90 degrees. In such a case, 90 degree
@@ -1162,7 +1161,7 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
         *passable. The distance travelled *	is the same, but the path is
         *less circuitous.
         */
-        if (*cmd1 & FACING_NE) {
+        if (static_cast<int>(*cmd1) % 2 != 0) {
           /*
           **	Diagonal optimizations are always only 45
           **	degree adjustments.
@@ -1175,7 +1174,7 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
           **	Diagonal 90 degree changes can be smoothed, although
           **	the path isn't any shorter.
           */
-          if (std::abs(newcmd) == 1) {
+          if (std::abs(static_cast<int>(newcmd)) == 1) {
             if (Passable_Cell(Adjacent_Cell(cell, newdir), newdir, -1,
                               threshhold)) {
               *cmd2 = newdir;
@@ -1244,7 +1243,7 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
 
 CELL FootClass::Safety_Point(CELL src, CELL dst, int start, int max) const {
   const FacingType dir =
-      static_cast<FacingType>((CELL_FACING(src, dst) + 4) % 8) - 1;
+      WrapFacing(static_cast<int>(CELL_FACING(src, dst)) + 4) - 1;
 
   /*
   ** Loop through the different acceptable distances.
@@ -1259,7 +1258,7 @@ CELL FootClass::Safety_Point(CELL src, CELL dst, int start, int max) const {
       next = Adjacent_Cell(next, dir);
     }
 
-    if (dir % 2 != 0) {
+    if (static_cast<int>(dir) % 2 != 0) {
       /*
       ** If our direction is diagonal than we need to check
       ** only one side which is as long as both of the old sides
@@ -1267,7 +1266,7 @@ CELL FootClass::Safety_Point(CELL src, CELL dst, int start, int max) const {
       */
       for (int lp = 0; lp < dist * 2; lp++) {
         next = Adjacent_Cell(next, dir + 3);
-        if (!Can_Enter_Cell(next)) {
+        if (Can_Enter_Cell(next) == MOVE_OK) {
           return next;
         }
       }
@@ -1278,14 +1277,14 @@ CELL FootClass::Safety_Point(CELL src, CELL dst, int start, int max) const {
       */
       for (int lp = 0; lp < dist; lp++) {
         next = Adjacent_Cell(next, dir + 2);
-        if (!Can_Enter_Cell(next)) {
+        if (Can_Enter_Cell(next) == MOVE_OK) {
           return next;
         }
       }
 
       for (int lp = 0; lp < dist; lp++) {
         next = Adjacent_Cell(next, dir + 4);
-        if (!Can_Enter_Cell(next)) {
+        if (Can_Enter_Cell(next) == MOVE_OK) {
           return next;
         }
       }
@@ -1319,7 +1318,7 @@ int FootClass::Passable_Cell(CELL cell, FacingType face, int threat,
     }
   }
 
-  static const int _value[magic_enum::enum_count<MoveType>()] = {
+  static constexpr base::EnumArray<MoveType, int> _value = {
       1,   //	MOVE_OK
       1,   //	MOVE_CLOAK
       3,   //	MOVE_MOVING_BLOCK

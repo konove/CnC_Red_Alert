@@ -44,32 +44,27 @@
 #include "ra/options.h"
 
 class GameOptionsClass : public OptionsClass {
-  enum GameOptionsButtonEnum {
-    BUTTON_LOAD = 1,
-    BUTTON_SAVE,
-    BUTTON_DELETE,
-    BUTTON_GAME,
-    BUTTON_QUIT,
-    BUTTON_DRAW,
-    BUTTON_RESUME,
-    BUTTON_RESTATE,
+  static constexpr int kButtonLoad = 1;
+  static constexpr int kButtonSave = kButtonLoad + 1;
+  static constexpr int kButtonDelete = kButtonSave + 1;
+  static constexpr int kButtonGame = kButtonDelete + 1;
+  static constexpr int kButtonQuit = kButtonGame + 1;
+  static constexpr int kButtonDraw = kButtonQuit + 1;
+  static constexpr int kButtonResume = kButtonDraw + 1;
+  static constexpr int kButtonRestate = kButtonResume + 1;
+  static constexpr int kButtonCount = kButtonRestate + 1;
 
-    BUTTON_COUNT
-  };
-
-  enum GameOptionsEnum {
-    OPTION_WIDTH = 216 + 8,
-    OPTION_HEIGHT = 100,
-    OPTION_X = (320 - (216 + 8)) / 2,
-    OPTION_Y = (200 - 100) / 2,
-    BUTTON_WIDTH = config::kIsFrench ? 142 : 130,
-    NUMBER_OF_BUTTONS = 6,  //	ajw Not used.
-    CAPTION_Y_POS = 5,
-    BUTTON_Y = 21,
-    BORDER1_LEN = 72,
-    BORDER2_LEN = 16,
-    BUTTON_RESUME_Y = 100 - 15
-  };
+  static constexpr int kOptionWidth = 216 + 8;
+  static constexpr int kOptionHeight = 100;
+  static constexpr int kOptionX = (320 - (216 + 8)) / 2;
+  static constexpr int kOptionY = (200 - 100) / 2;
+  static constexpr int kButtonWidth = config::kIsFrench ? 142 : 130;
+  static constexpr int kNumberOfButtons = 6;  //	ajw Not used.
+  static constexpr int kCaptionYPos = 5;
+  static constexpr int kButtonY = 21;
+  static constexpr int kBorder1Len = 72;
+  static constexpr int kBorder2Len = 16;
+  static constexpr int kButtonResumeY = 100 - 15;
 
  public:
   GameOptionsClass() = default;

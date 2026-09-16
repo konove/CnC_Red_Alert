@@ -42,6 +42,7 @@
 
 #include <cstdint>
 
+#include "base/enum_array.h"
 #include "ra/control.h"
 #include "ra/defines.h"
 #include "ra/gadget.h"
@@ -185,10 +186,9 @@ class SidebarClass : public PowerClass {
     /*
     **	Shape numbers for the shapes in the STRIP.SHP file.
     */
-    enum SideBarStipShapeEnums {
-      SB_BLANK,  // The blank rectangle to use if there are no objects present.
-      SB_FRAME
-    };
+    static constexpr int kSbBlank =
+        0;  // The blank rectangle to use if there are no objects present.
+    static constexpr int kSbFrame = kSbBlank + 1;
 
     /*
     **	If this particular side strip needs to be redrawn, then this flag
@@ -284,8 +284,7 @@ class SidebarClass : public PowerClass {
     ** This points to the animation sequence which deals with special
     ** shapes which handle non-production based icons.
     */
-    static const void*
-        SpecialShapes[magic_enum::enum_count<SpecialWeaponType>()];
+    static base::EnumArray<SpecialWeaponType, const void*> SpecialShapes;
 
     /*
     **	This is the last theater that the special palette remap table was loaded
@@ -321,7 +320,7 @@ class SidebarClass : public PowerClass {
    public:
     SBGadgetClass() noexcept
         : GadgetClass((kSideX + 8) * 2, kSideY * 2, ((kSideWidth - 1) * 2) - 1,
-                      (kSideHeight - 1) * 2, LEFTUP) {}
+                      (kSideHeight - 1) * 2, kLeftUp) {}
 
    protected:
     bool Action(unsigned flags, KeyNumType& key) override;

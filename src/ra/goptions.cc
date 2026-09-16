@@ -100,14 +100,14 @@ void GameOptionsClass::Process() {
     int Text;        // Text number to use for this button.
     bool Multiplay;  // Allowed in multiplayer version?
   } _constants[] = {
-      {BUTTON_LOAD, TXT_LOAD_MISSION, false},
-      {BUTTON_SAVE, TXT_SAVE_MISSION, true},
-      {BUTTON_DELETE, TXT_DELETE_MISSION, true},
-      {BUTTON_GAME, TXT_GAME_CONTROLS, true},
-      {BUTTON_QUIT, TXT_QUIT_MISSION, true},
-      {BUTTON_DRAW, TXT_OK, true},
-      {BUTTON_RESUME, TXT_RESUME_MISSION, true},
-      {BUTTON_RESTATE, TXT_RESTATE_MISSION, false},
+      {kButtonLoad, TXT_LOAD_MISSION, false},
+      {kButtonSave, TXT_SAVE_MISSION, true},
+      {kButtonDelete, TXT_DELETE_MISSION, true},
+      {kButtonGame, TXT_GAME_CONTROLS, true},
+      {kButtonQuit, TXT_QUIT_MISSION, true},
+      {kButtonDraw, TXT_OK, true},
+      {kButtonResume, TXT_RESUME_MISSION, true},
+      {kButtonRestate, TXT_RESTATE_MISSION, false},
   };
 
   /*
@@ -173,22 +173,22 @@ void GameOptionsClass::Process() {
     }
 
     TextButtonClass* g = nullptr;
-    if (_constants[index].ID == BUTTON_DRAW) {
+    if (_constants[index].ID == kButtonDraw) {
       if (Session.Type != GAME_NORMAL && Session.Type != GAME_SKIRMISH &&
           Session.Players.Count() == 2) {
         if (Scen.bLocalProposesDraw) {
           if (!Scen.bOtherProposesDraw) {
-            g = new TextButtonClass(BUTTON_DRAW, TXT_WOL_RETRACT_DRAW,
+            g = new TextButtonClass(kButtonDraw, TXT_WOL_RETRACT_DRAW,
                                     kTpfButton, 0, y);
           } else {
             continue;  //	Game will end now anyway.
           }
         } else {
           if (!Scen.bOtherProposesDraw) {
-            g = new TextButtonClass(BUTTON_DRAW, TXT_WOL_PROPOSE_DRAW,
+            g = new TextButtonClass(kButtonDraw, TXT_WOL_PROPOSE_DRAW,
                                     kTpfButton, 0, y);
           } else {
-            g = new TextButtonClass(BUTTON_DRAW, TXT_WOL_ACCEPT_DRAW,
+            g = new TextButtonClass(kButtonDraw, TXT_WOL_ACCEPT_DRAW,
                                     kTpfButton, 0, y);
           }
         }
@@ -230,14 +230,13 @@ void GameOptionsClass::Process() {
     g->X = OptionX + ((OptionWidth - g->Width) / 2);
     g = g->Get_Next();
   }
-  buttonsel[BUTTON_RESUME - 1]->Width = 180;
-  buttonsel[BUTTON_RESUME - 1]->X = OptionX + 34;
+  buttonsel[kButtonResume - 1]->Width = 180;
+  buttonsel[kButtonResume - 1]->X = OptionX + 34;
 
   if (Session.Type == GAME_NORMAL) {
-    buttonsel[BUTTON_RESTATE - 1]->Width = 180;
-    buttonsel[BUTTON_RESTATE - 1]->X =
-        OptionX + OptionWidth -
-        (buttonsel[BUTTON_RESTATE - 1]->Width + 34);
+    buttonsel[kButtonRestate - 1]->Width = 180;
+    buttonsel[kButtonRestate - 1]->X =
+        OptionX + OptionWidth - (buttonsel[kButtonRestate - 1]->Width + 34);
   }
 
   /*
@@ -245,21 +244,21 @@ void GameOptionsClass::Process() {
   *to *	be ignored if it wasn't recognized by any other button or slider.
   */
   (new GadgetClass(OptionX, OptionY, OptionWidth, OptionHeight,
-                   GadgetClass::LEFTPRESS))
+                   GadgetClass::kLeftPress))
       ->Add_Tail(*buttons);
 
   /*
   **	This cause a right click anywhere or a left click outside the dialog
   *region *	to be equivalent to clicking on the return to game button.
   */
-  (new ControlClass(BUTTON_RESUME, 0, 0, SeenBuff.Get_Width(),
+  (new ControlClass(kButtonResume, 0, 0, SeenBuff.Get_Width(),
                     SeenBuff.Get_Height(),
-                    GadgetClass::LEFTPRESS | GadgetClass::RIGHTPRESS))
+                    GadgetClass::kLeftPress | GadgetClass::kRightPress))
       ->Add_Tail(*buttons);
 
   Keyboard->Clear();
 
-  Fancy_Text_Print(TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(), TBLACK,
+  Fancy_Text_Print(TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(), kTBlack,
                    TPF_CENTER | kTpfText);
 
   /*
@@ -304,7 +303,8 @@ void GameOptionsClass::Process() {
       /*
       **	Reset up the window.  Window x-coords are in bytes not pixels.
       */
-      Set_Window(WINDOW_EDITOR, OptionX, OptionY, OptionWidth, OptionHeight);
+      Set_Window(static_cast<int>(WINDOW_EDITOR), OptionX, OptionY, OptionWidth,
+                 OptionHeight);
       Hide_Mouse();
 
       /*
@@ -322,9 +322,8 @@ void GameOptionsClass::Process() {
       */
       Fancy_Text_Print(
           "%s\rV%s", OptionX + OptionWidth - 50,
-          OptionY + OptionHeight -
-              (Session.Type == GAME_NORMAL ? 64 : 48),
-          GadgetClass::Get_Color_Scheme(), TBLACK,
+          OptionY + OptionHeight - (Session.Type == GAME_NORMAL ? 64 : 48),
+          GadgetClass::Get_Color_Scheme(), kTBlack,
           TPF_EFNT | TPF_NOSHADOW | TPF_RIGHT, Scen.ScenarioName,
           Version_Name());
 
@@ -344,44 +343,44 @@ void GameOptionsClass::Process() {
     **	Process Input.
     */
     switch (static_cast<int>(input)) {
-      case ButtonKey(BUTTON_RESTATE):
-        selection = BUTTON_RESTATE;
+      case ButtonKey(kButtonRestate):
+        selection = kButtonRestate;
         pressed = true;
         break;
 
-      case ButtonKey(BUTTON_LOAD):
-        selection = BUTTON_LOAD;
+      case ButtonKey(kButtonLoad):
+        selection = kButtonLoad;
         pressed = true;
         break;
 
-      case ButtonKey(BUTTON_SAVE):
-        selection = BUTTON_SAVE;
+      case ButtonKey(kButtonSave):
+        selection = kButtonSave;
         pressed = true;
         break;
 
-      case ButtonKey(BUTTON_DELETE):
-        selection = BUTTON_DELETE;
+      case ButtonKey(kButtonDelete):
+        selection = kButtonDelete;
         pressed = true;
         break;
 
-      case ButtonKey(BUTTON_QUIT):
-        selection = BUTTON_QUIT;
+      case ButtonKey(kButtonQuit):
+        selection = kButtonQuit;
         pressed = true;
         break;
 
-      case ButtonKey(BUTTON_GAME):
-        selection = BUTTON_GAME;
+      case ButtonKey(kButtonGame):
+        selection = kButtonGame;
         pressed = true;
         break;
 
-      case ButtonKey(BUTTON_DRAW):
-        selection = BUTTON_DRAW;
+      case ButtonKey(kButtonDraw):
+        selection = kButtonDraw;
         pressed = true;
         break;
 
       case KN_ESC:
-      case ButtonKey(BUTTON_RESUME):
-        selection = BUTTON_RESUME;
+      case ButtonKey(kButtonResume):
+        selection = kButtonResume;
         pressed = true;
         break;
 
@@ -433,7 +432,7 @@ void GameOptionsClass::Process() {
       buttonsel[curbutton - 1]->Flag_To_Redraw();
 
       switch (selection) {
-        case BUTTON_RESTATE:
+        case kButtonRestate:
           display = true;
           if (Restate_Mission() == BriefingAction::kPlayVideo) {
             BreakoutAllowed = true;
@@ -449,14 +448,14 @@ void GameOptionsClass::Process() {
           process = false;
           break;
 
-        case BUTTON_LOAD:
+        case kButtonLoad:
           display = true;
           if (LoadOptionsClass(LoadOptionsClass::LOAD).Process()) {
             process = false;
           }
           break;
 
-        case BUTTON_SAVE:
+        case kButtonSave:
           display = true;
           if (Session.Type == GAME_NORMAL) {
             LoadOptionsClass(LoadOptionsClass::SAVE).Process();
@@ -467,7 +466,7 @@ void GameOptionsClass::Process() {
           }
           break;
 
-        case BUTTON_DELETE:
+        case kButtonDelete:
           display = true;
           if (Session.Type != GAME_NORMAL) {
             if (Surrender_Dialog(TXT_SURRENDER)) {
@@ -479,7 +478,7 @@ void GameOptionsClass::Process() {
           }
           break;
 
-        case BUTTON_QUIT:
+        case kButtonQuit:
           if (Session.Type == GAME_NORMAL) {
             switch (WWMessageBox().Process(TXT_CONFIRM_EXIT, TXT_ABORT,
                                            TXT_CANCEL, TXT_RESTART)) {
@@ -514,7 +513,7 @@ void GameOptionsClass::Process() {
           }
           break;
 
-        case BUTTON_DRAW:
+        case kButtonDraw:
           if (Scen.bLocalProposesDraw) {
             //	Retract draw offer.
             OutList.Add(EventClass(EventClass::RETRACT_DRAW));
@@ -540,12 +539,12 @@ void GameOptionsClass::Process() {
           }
           break;
 
-        case BUTTON_GAME:
+        case kButtonGame:
           display = true;
           GameControlsClass::Process();
           break;
 
-        case BUTTON_RESUME:
+        case kButtonResume:
           Save_Settings();
           process = false;
           display = true;

@@ -82,11 +82,11 @@ TextLabelClass::TextLabelClass(char* txt, int x, int y, RemapControlType* color,
 bool TextLabelClass::Draw_Me(bool forced) {
   if (GadgetClass::Draw_Me(forced)) {
     if (PixWidth == -1) {
-      Simple_Text_Print(Text, X, Y, Color, TBLACK, Style);
+      Simple_Text_Print(Text, X, Y, Color, kTBlack, Style);
       //			Fancy_Text_Print(Text, X, Y, Color, TBLACK,
       // Style);
     } else {
-      Conquer_Clip_Text_Print(Text, X, Y, Color, TBLACK, Style, PixWidth);
+      Conquer_Clip_Text_Print(Text, X, Y, Color, kTBlack, Style, PixWidth);
     }
     return true;
   }

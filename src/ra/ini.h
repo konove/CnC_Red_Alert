@@ -134,7 +134,7 @@ class INIClass {
   bool Put_PKey(const PKey& key);
 
  protected:
-  enum { MAX_LINE_LENGTH = 128 };
+  static constexpr int kMaxLineLength = 128;
 
   /*
   **	The value entries for the INI file are stored as objects of this type.

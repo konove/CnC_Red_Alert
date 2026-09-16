@@ -42,15 +42,14 @@
 
 class VisualControlsClass {
  private:
-  enum VisualControlEnums {
-    BUTTON_BRIGHTNESS = 1,
-    BUTTON_BASE = BUTTON_BRIGHTNESS,  // Base for zero-indexed button offsets.
-    BUTTON_COLOR = 2,
-    BUTTON_CONTRAST = 3,
-    BUTTON_TINT = 4,
-    BUTTON_RESET = 5,
-    BUTTON_OPTIONS = 6,
-  };
+  static constexpr int kButtonBrightness = 1;
+  static constexpr int kButtonBase =
+      kButtonBrightness;  // Base for zero-indexed button offsets.
+  static constexpr int kButtonColor = 2;
+  static constexpr int kButtonContrast = 3;
+  static constexpr int kButtonTint = 4;
+  static constexpr int kButtonReset = 5;
+  static constexpr int kButtonOptions = 6;
 
   // Layout constants.
   static constexpr int kOptionWidth = 216;

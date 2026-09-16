@@ -155,10 +155,10 @@ class ScorePrintClass : public ScoreAnimClass {
   void Update() override;
   ScorePrintClass(const void* string, int xpos, int ypos,
                   const void* palette ABSL_ATTRIBUTE_LIFETIME_BOUND,
-                  int background = TBLACK);
+                  int background = kTBlack);
   ScorePrintClass(int string, int xpos, int ypos,
                   const void* palette ABSL_ATTRIBUTE_LIFETIME_BOUND,
-                  int background = TBLACK);
+                  int background = kTBlack);
   ~ScorePrintClass() override { PrimaryPalette = nullptr; }
   ScorePrintClass(const ScorePrintClass&) = delete;
   ScorePrintClass& operator=(const ScorePrintClass&) = delete;

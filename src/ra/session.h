@@ -42,6 +42,7 @@
 #include <cstdint>
 
 #include "absl/base/attributes.h"
+#include "base/enum_array.h"
 #include "port/ex_string.h"
 #include "ra/connect.h"
 #include "ra/defines.h"
@@ -122,58 +123,53 @@
 //...........................................................................
 // Types of games; used to tell which protocol we're using
 //...........................................................................
-typedef enum GameEnum {
+enum class GameType {
   GAME_NORMAL,      // not multiplayer
   GAME_MODEM,       // modem game
   GAME_NULL_MODEM,  // NULL-modem
   GAME_IPX,         // IPX Network game
   GAME_INTERNET,    // Internet H2H
   GAME_SKIRMISH     // 1 plr vs. AI's
-} GameType;
+};
+using enum GameType;
 
 //...........................................................................
 // Various Modem-specific enums
 //...........................................................................
-typedef enum DetectPortType {
-  PORT_VALID = 0,
-  PORT_INVALID,
-  PORT_IRQ_INUSE
-} DetectPortType;
+enum class DetectPortType { PORT_VALID = 0, PORT_INVALID, PORT_IRQ_INUSE };
+using enum DetectPortType;
 
-typedef enum DialStatusType {
+enum class DialStatusType {
   DIAL_CONNECTED = 0,
   DIAL_NO_CARRIER,
   DIAL_BUSY,
   DIAL_ERROR,
   DIAL_NO_DIAL_TONE,
   DIAL_CANCELED
-} DialStatusType;
+};
+using enum DialStatusType;
 
-typedef enum DialMethodType {
-  DIAL_TOUCH_TONE = 0,
-  DIAL_PULSE,
-  DIAL_METHODS
-} DialMethodType;
+enum class DialMethodType { DIAL_TOUCH_TONE = 0, DIAL_PULSE, DIAL_METHODS };
+using enum DialMethodType;
 
-typedef enum CallWaitStringType {
-  CALL_WAIT_TONE_1 = 0,
-  CALL_WAIT_TONE_2,
-  CALL_WAIT_PULSE,
-  CALL_WAIT_CUSTOM,
-  CALL_WAIT_STRINGS_NUM
-} CallWaitStringType;
+inline constexpr int kCallWaitTone1 = 0;
+inline constexpr int kCallWaitTone2 = kCallWaitTone1 + 1;
+inline constexpr int kCallWaitPulse = kCallWaitTone2 + 1;
+inline constexpr int kCallWaitCustom = kCallWaitPulse + 1;
+inline constexpr int kCallWaitStringsNum = kCallWaitCustom + 1;
 
-typedef enum ModemGameType {
+enum class ModemGameType {
   MODEM_NULL_HOST = 0,
   MODEM_NULL_JOIN,
   MODEM_DIALER,
   MODEM_ANSWERER
-} ModemGameType;
+};
+using enum ModemGameType;
 
 //...........................................................................
 // Commands sent over the serial Global Channel
 //...........................................................................
-typedef enum SerialCommandType : uint16_t {
+enum class SerialCommandType : uint16_t {
   SERIAL_CONNECT = 100,       // Are you there?  Hello?  McFly?
   SERIAL_GAME_OPTIONS = 101,  // Hey, dudes, here's some new game options
   SERIAL_SIGN_OFF = 102,  // Bogus, dudes, my boss is coming; I'm outta here!
@@ -191,12 +187,13 @@ typedef enum SerialCommandType : uint16_t {
   SERIAL_READY_TO_GO = 1003,  // Sent in response to a 'GO' command
   SERIAL_NO_SCENARIO =
       1004  // Scenario isnt available on remote machine so we cant play
-} SerialCommandType;
+};
+using enum SerialCommandType;
 
 //...........................................................................
 // Commands sent over the network Global Channel
 //...........................................................................
-typedef enum NetCommandType : uint16_t {
+enum class NetCommandType : uint16_t {
   NET_QUERY_GAME = 0,     // Hey, what games are out there?
   NET_ANSWER_GAME = 1,    // Yo, Here's my game's name!
   NET_QUERY_PLAYER = 2,   // Hey, what players are in this game?
@@ -219,7 +216,8 @@ typedef enum NetCommandType : uint16_t {
   NET_READY_TO_GO = 1003,  // Sent in response to a 'GO' command
   NET_NO_SCENARIO =
       1004  // Scenario isnt available on remote machine so we cant play
-} NetCommandType;
+};
+using enum NetCommandType;
 
 //---------------------------------------------------------------------------
 // Structures
@@ -696,8 +694,10 @@ class SessionClass {
 
   DynamicVectorClass<PhoneEntryClass*> PhoneBook;
   DynamicVectorClass<char*> InitStrings;
-  static const char* DialMethodCheck[DIAL_METHODS];
-  static const char* CallWaitStrings[CALL_WAIT_STRINGS_NUM];
+  static base::EnumArray<DialMethodType, const char*,
+                         static_cast<int>(DIAL_METHODS)>
+      DialMethodCheck;
+  static const char* CallWaitStrings[kCallWaitStringsNum];
 
   //.....................................................................
   // For finding Sync Bugs

@@ -223,7 +223,7 @@ void BulletTypeClass::One_Time() {
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
 BulletTypeClass& BulletTypeClass::As_Reference(BulletType type) {
-  return *BulletTypes.Ptr(type);
+  return *BulletTypes.Ptr(static_cast<int>(type));
 }
 
 /***********************************************************************************************

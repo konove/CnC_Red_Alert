@@ -44,6 +44,7 @@
 #include <cstdint>
 
 #include "absl/base/attributes.h"
+#include "base/enum_array.h"
 #include "ra/bullet.h"
 #include "ra/ccini.h"
 #include "ra/ccptr.h"
@@ -261,7 +262,7 @@ class InfantryClass final : public FootClass {
   static const int HumanShape[32];
 
  private:
-  static const DoStruct MasterDoControls[magic_enum::enum_count<DoType>()];
+  static const base::EnumArray<DoType, DoStruct> MasterDoControls;
 };
 
 class ArchiveReader;

@@ -74,6 +74,7 @@
 #include <filesystem>
 #include <string>
 
+#include "base/enum_array.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "ra/building.h"
@@ -3418,7 +3419,7 @@ void BuildingTypeClass::Dimensions(int& width, int& height) const {
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
 BuildingTypeClass& BuildingTypeClass::As_Reference(StructType type) {
-  return *BuildingTypes.Ptr(type);
+  return *BuildingTypes.Ptr(static_cast<int>(type));
 }
 
 /***********************************************************************************************
@@ -3515,8 +3516,8 @@ const int16_t* BuildingTypeClass::Overlap_List() const {
  * HISTORY: * 02/23/1995 JLB : Created. *
  *=============================================================================================*/
 int BuildingTypeClass::Width() const {
-  static const int width[magic_enum::enum_count<BSizeType>()] = {1, 2, 1, 2, 2,
-                                                                 3, 3, 4, 5};
+  static constexpr base::EnumArray<BSizeType, int> width = {1, 2, 1, 2, 2,
+                                                            3, 3, 4, 5};
   return width[Size];
 }
 
@@ -3535,8 +3536,8 @@ int BuildingTypeClass::Width() const {
  * HISTORY: * 02/23/1995 JLB : Created. *
  *=============================================================================================*/
 int BuildingTypeClass::Height(bool bib) const {
-  static const int height[magic_enum::enum_count<BSizeType>()] = {1, 1, 2, 2, 3,
-                                                                  2, 3, 2, 5};
+  static constexpr base::EnumArray<BSizeType, int> height = {1, 1, 2, 2, 3,
+                                                             2, 3, 2, 5};
   return height[Size] + (bib && IsBibbed ? 1 : 0);
 }
 

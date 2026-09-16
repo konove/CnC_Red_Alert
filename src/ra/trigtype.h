@@ -56,12 +56,13 @@
 *enumeration is used to *	indicate if there are multiple events/actions
 *and what their relationship is.
 */
-typedef enum MultiStyleType {
+enum class MultiStyleType {
   MULTI_ONLY,   // "Only" main trigger action/event?
   MULTI_AND,    // "And" secondary trigger action/event?
   MULTI_OR,     // "Or" secondary event?
   MULTI_LINKED  // Cause and effect pairs are linked?
-} MultiStyleType;
+};
+using enum MultiStyleType;
 
 class TriggerTypeClass : public AbstractTypeClass {
  public:
@@ -69,11 +70,12 @@ class TriggerTypeClass : public AbstractTypeClass {
   // must agree with it.
   bool IsActive : 1 = true;
 
-  typedef enum PersistantType {
+  enum class PersistantType {
     VOLATILE = 0,
     SEMIPERSISTANT = 1,
     PERSISTANT = 2
-  } PersistantType;
+  };
+  using enum PersistantType;
 
   /*
   **	This flag controls whether the trigger destroys itself after it goes

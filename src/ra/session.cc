@@ -62,6 +62,8 @@
 #include <ctime>  // for station ID computation
 
 #include "absl/strings/str_format.h"
+#include "base/enum_array.h"
+#include "base/numeric.h"
 #include "base/types.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/env.h"
@@ -150,9 +152,10 @@ const char* SessionClass::SerialPacketNames[] = {
     "TIMING",  "SCORE_SCREEN", "LOADGAME", "LAST_COMMAND",
 };
 
-const char* SessionClass::DialMethodCheck[DIAL_METHODS] = {"T", "P"};
+base::EnumArray<DialMethodType, const char*, static_cast<int>(DIAL_METHODS)>
+    SessionClass::DialMethodCheck = {"T", "P"};
 
-const char* SessionClass::CallWaitStrings[CALL_WAIT_STRINGS_NUM] = {
+const char* SessionClass::CallWaitStrings[kCallWaitStringsNum] = {
     "*70,", "70#,", "1170,", "CUSTOM -                "};
 
 /***************************************************************************
@@ -316,8 +319,8 @@ int SessionClass::Create_Connections() {
     //.....................................................................
     if (!stricmp(Players[i]->Name,
                  HouseClass::As_Pointer(Players[i]->Player.ID)->IniName)) {
-      Ipx.Create_Connection(Players[i]->Player.ID, Players[i]->Name,
-                            &Players[i]->Address);
+      Ipx.Create_Connection(static_cast<int>(Players[i]->Player.ID),
+                            Players[i]->Name, &Players[i]->Address);
       Players[i]->Player.ProcessTime = -1;
     } else {
       return 0;
@@ -353,7 +356,8 @@ bool SessionClass::Am_I_Master() {
   // the master.
   //------------------------------------------------------------------------
   for (int i = 0; i < Session.MaxPlayers; i++) {
-    const auto house = static_cast<HousesType>(HOUSE_MULTI1 + i);
+    const auto house =
+        static_cast<HousesType>(static_cast<int>(HOUSE_MULTI1) + i);
     HouseClass* hptr = HouseClass::As_Pointer(house);
     if (hptr->IsHuman) {
       return PlayerPtr == hptr;
@@ -565,7 +569,8 @@ void SessionClass::Read_MultiPlayer_Settings() {
     //	Get the player's last-used Color
     PrefColor =
         static_cast<PlayerColorType>(ini.Get_Int("MultiPlayer", "Color", 0));
-    int iSide = ini.Get_Int("MultiPlayer", "Side", HOUSE_USSR);
+    int iSide =
+        ini.Get_Int("MultiPlayer", "Side", static_cast<int>(HOUSE_USSR));
     iSide = std::max(2, std::min(6, iSide));
     House = static_cast<HousesType>(iSide);
     CurPhoneIdx = ini.Get_Int("MultiPlayer", "PhoneIndex", -1);
@@ -591,15 +596,15 @@ void SessionClass::Read_MultiPlayer_Settings() {
 
 
     // find dial method
-    for (i = 0; i < DIAL_METHODS; i++) {
-      if (!stricmp(buf, DialMethodCheck[i])) {
+    for (i = 0; i < static_cast<int>(DIAL_METHODS); i++) {
+      if (!stricmp(buf, DialMethodCheck[static_cast<DialMethodType>(i)])) {
         SerialDefaults.DialMethod = static_cast<DialMethodType>(i);
         break;
       }
     }
 
     // if method not found set to touch tone
-    if (i == DIAL_METHODS) {
+    if (i == static_cast<int>(DIAL_METHODS)) {
       SerialDefaults.DialMethod = DIAL_TOUCH_TONE;
     }
 
@@ -607,7 +612,7 @@ void SessionClass::Read_MultiPlayer_Settings() {
         ini.Get_Int("SerialDefaults", "InitStringIndex", 0);
 
     SerialDefaults.CallWaitStringIndex =
-        ini.Get_Int("SerialDefaults", "CallWaitStringIndex", CALL_WAIT_CUSTOM);
+        ini.Get_Int("SerialDefaults", "CallWaitStringIndex", kCallWaitCustom);
 
     ini.Get_String("SerialDefaults", "CallWaitString", "",
                    SerialDefaults.CallWaitString, CWAITSTRBUF_MAX);
@@ -701,8 +706,8 @@ void SessionClass::Read_MultiPlayer_Settings() {
 
         // find dial method
 
-        for (i = 0; i < DIAL_METHODS; i++) {
-          if (!stricmp(buf, DialMethodCheck[i])) {
+        for (i = 0; i < static_cast<int>(DIAL_METHODS); i++) {
+          if (!stricmp(buf, DialMethodCheck[static_cast<DialMethodType>(i)])) {
             /*
             ** This must be an old phonebook entry
             */
@@ -716,7 +721,7 @@ void SessionClass::Read_MultiPlayer_Settings() {
         */
         // if method not found set to touch tone
 
-        if (i == DIAL_METHODS) {
+        if (i == static_cast<int>(DIAL_METHODS)) {
           phone->Settings.Compression =
               tech::ParseInteger<int>(tokenptr).value_or(0) != 0;
 
@@ -740,15 +745,15 @@ void SessionClass::Read_MultiPlayer_Settings() {
         port::SafeCopy(buf, tokenptr);
 
         //	find dial method
-        for (i = 0; i < DIAL_METHODS; i++) {
-          if (!stricmp(buf, DialMethodCheck[i])) {
+        for (i = 0; i < static_cast<int>(DIAL_METHODS); i++) {
+          if (!stricmp(buf, DialMethodCheck[static_cast<DialMethodType>(i)])) {
             phone->Settings.DialMethod = static_cast<DialMethodType>(i);
             break;
           }
         }
 
         //	if method not found set to touch tone
-        if (i == DIAL_METHODS) {
+        if (i == static_cast<int>(DIAL_METHODS)) {
           phone->Settings.DialMethod = DIAL_TOUCH_TONE;
         }
       } else {
@@ -768,7 +773,7 @@ void SessionClass::Read_MultiPlayer_Settings() {
         phone->Settings.CallWaitStringIndex =
             tech::ParseInteger<int>(tokenptr).value_or(0);
       } else {
-        phone->Settings.CallWaitStringIndex = CALL_WAIT_CUSTOM;
+        phone->Settings.CallWaitStringIndex = kCallWaitCustom;
       }
 
       tokenptr = tokens.Next();
@@ -843,8 +848,8 @@ void SessionClass::Write_MultiPlayer_Settings() {
   if (ini.Load(file)) {
     //	Save the player's last-used Handle & Color
     ini.Put_Int("MultiPlayer", "PhoneIndex", CurPhoneIdx);
-    ini.Put_Int("MultiPlayer", "Color", PrefColor);
-    ini.Put_Int("MultiPlayer", "Side", House);
+    ini.Put_Int("MultiPlayer", "Color", static_cast<int>(PrefColor));
+    ini.Put_Int("MultiPlayer", "Side", static_cast<int>(House));
     ini.Put_String("MultiPlayer", "Handle", Handle);
 
     //	Clear all existing Settings.SerialDefault entries.
@@ -1335,23 +1340,24 @@ void MultiMission::Draw_It(int /*unused*/, int x, int y, int width, int height,
                            bool selected, TextPrintType flags) const {
   RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
   static int _tabs[] = {35, 60, 80, 100};
-  if ((flags & 0x0F) == TPF_6PT_GRAD || (flags & 0x0F) == TPF_EFNT) {
+  const TextPrintType point = flags & static_cast<TextPrintType>(0x0F);
+  if (point == TPF_6PT_GRAD || point == TPF_EFNT) {
     if (selected) {
       flags = flags | TPF_BRIGHT_COLOR;
       LogicPage->Fill_Rect(x, y, x + width - 1, y + height - 1, scheme->Shadow);
     } else {
-      if (!(flags & TPF_USE_GRAD_PAL)) {
+      if (!base::Any(flags & TPF_USE_GRAD_PAL)) {
         flags = flags | TPF_MEDIUM_COLOR;
       }
     }
 
-    Conquer_Clip_Text_Print(ScenarioDescription, x, y, scheme, TBLACK, flags,
+    Conquer_Clip_Text_Print(ScenarioDescription, x, y, scheme, kTBlack, flags,
                             width, _tabs);
   } else {
     Conquer_Clip_Text_Print(
         ScenarioDescription, x, y,
         selected ? &ColorRemaps[PCOLOR_DIALOG_BLUE] : &ColorRemaps[PCOLOR_GREY],
-        TBLACK, flags, width, _tabs);
+        kTBlack, flags, width, _tabs);
   }
 }
 

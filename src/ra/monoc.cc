@@ -79,12 +79,12 @@
 #include "ra/inline.h"
 
 bool MonoClass::Enabled = false;
-MonoClass* MonoClass::PageUsage[MAX_MONO_PAGES];
+MonoClass* MonoClass::PageUsage[kMaxMonoPages];
 
 /*
 **	These are the IBM linedraw characters.
 */
-const MonoClass::BoxDataType MonoClass::CharData[COUNT] = {
+const MonoClass::BoxDataType MonoClass::CharData[static_cast<int>(COUNT)] = {
     {0xDA, 0xC4, 0xBF, 0xB3, 0xD9, 0xC4, 0xC0, 0xB3},  // Single line
     {0xD5, 0xCD, 0xB8, 0xB3, 0xBE, 0xCD, 0xD4, 0xB3},  // Double horz.
     {0xD6, 0xC4, 0xB7, 0xBA, 0xBD, 0xC4, 0xD3, 0xBA},  // Double vert.
@@ -112,14 +112,14 @@ const MonoClass::BoxDataType MonoClass::CharData[COUNT] = {
 MonoClass::MonoClass() {
   int index = 0;
 
-  for (index = 0; index < MAX_MONO_PAGES; index++) {
+  for (index = 0; index < kMaxMonoPages; index++) {
     if (!PageUsage[index]) {
       PageUsage[index] = this;
       Page = index;
       break;
     }
   }
-  if (index == MAX_MONO_PAGES) {
+  if (index == kMaxMonoPages) {
     // Major error message should pop up here!
     delete this;
   }
@@ -168,7 +168,7 @@ void MonoClass::Pan(int cols) {
 
   CellType cell{};
   cell.Character = ' ';
-  cell.Attribute = Attrib;
+  cell.Attribute = static_cast<unsigned char>(Attrib);
 
   if (cols > 0) {
     for (int index = SubY; index < SubY + SubH; index++) {
@@ -219,20 +219,20 @@ void MonoClass::Sub_Window(int x, int y, int w, int h) {
   /*
   **	Ensure parameters are legal.
   */
-  x = std::min(x, COLUMNS - 1);
+  x = std::min(x, kColumns - 1);
   x = std::max(x, 0);
-  y = std::min(y, LINES - 1);
+  y = std::min(y, kLines - 1);
   y = std::max(y, 0);
   if (w == -1) {
-    w = COLUMNS - x;
+    w = kColumns - x;
   }
   if (h == -1) {
-    h = LINES - y;
+    h = kLines - y;
   }
   // Keep the view on the page; the drawing routines index the page with
   // SubX + SubW and SubY + SubH.
-  w = std::clamp(w, 1, COLUMNS - x);
-  h = std::clamp(h, 1, LINES - y);
+  w = std::clamp(w, 1, kColumns - x);
+  h = std::clamp(h, 1, kLines - y);
 
   /*
   **	Assign the new sub-region.
@@ -301,15 +301,15 @@ void MonoClass::Draw_Box(int x, int y, int w, int h, MonoAttribute attrib,
   x += SubX;
   y += SubY;
 
-  cell.Attribute = attrib;
+  cell.Attribute = static_cast<unsigned char>(attrib);
 
   /*
   **	Draw the horizontal lines.
   */
   for (int xpos = 0; xpos < w - 2; xpos++) {
-    cell.Character = CharData[thick].TopEdge;
+    cell.Character = CharData[static_cast<int>(thick)].TopEdge;
     Page_Ptr()->Data[y][x + xpos + 1] = cell;
-    cell.Character = CharData[thick].BottomEdge;
+    cell.Character = CharData[static_cast<int>(thick)].BottomEdge;
     Page_Ptr()->Data[y + h - 1][x + xpos + 1] = cell;
   }
 
@@ -317,9 +317,9 @@ void MonoClass::Draw_Box(int x, int y, int w, int h, MonoAttribute attrib,
   **	Draw the vertical lines.
   */
   for (int ypos = 0; ypos < h - 2; ypos++) {
-    cell.Character = CharData[thick].LeftEdge;
+    cell.Character = CharData[static_cast<int>(thick)].LeftEdge;
     Page_Ptr()->Data[y + ypos + 1][x] = cell;
-    cell.Character = CharData[thick].RightEdge;
+    cell.Character = CharData[static_cast<int>(thick)].RightEdge;
     Page_Ptr()->Data[y + ypos + 1][x + w - 1] = cell;
   }
 
@@ -327,13 +327,13 @@ void MonoClass::Draw_Box(int x, int y, int w, int h, MonoAttribute attrib,
   **	Draw the four corners.
   */
   if (w > 1 && h > 1) {
-    cell.Character = CharData[thick].UpperLeft;
+    cell.Character = CharData[static_cast<int>(thick)].UpperLeft;
     Page_Ptr()->Data[y][x] = cell;
-    cell.Character = CharData[thick].UpperRight;
+    cell.Character = CharData[static_cast<int>(thick)].UpperRight;
     Page_Ptr()->Data[y][x + w - 1] = cell;
-    cell.Character = CharData[thick].BottomRight;
+    cell.Character = CharData[static_cast<int>(thick)].BottomRight;
     Page_Ptr()->Data[y + h - 1][x + w - 1] = cell;
-    cell.Character = CharData[thick].BottomLeft;
+    cell.Character = CharData[static_cast<int>(thick)].BottomLeft;
     Page_Ptr()->Data[y + h - 1][x] = cell;
   }
 
@@ -392,7 +392,7 @@ void MonoClass::Clear() {
   Set_Cursor(0, 0);
 
   CellType cell{};
-  cell.Attribute = Attrib;
+  cell.Attribute = static_cast<unsigned char>(Attrib);
   cell.Character = ' ';
 
   for (int rows = 0; rows < SubH; rows++) {
@@ -432,7 +432,8 @@ void MonoClass::Fill_Attrib(int x, int y, int w, int h, MonoAttribute attrib) {
 
   for (int rows = y; rows < y + h; rows++) {
     for (int cols = x; cols < x + w; cols++) {
-      Page_Ptr()->Data[rows + SubY][cols + SubX].Attribute = attrib;
+      Page_Ptr()->Data[rows + SubY][cols + SubX].Attribute =
+          static_cast<unsigned char>(attrib);
     }
   }
 }
@@ -465,7 +466,7 @@ void MonoClass::Scroll(int lines) {
   }
 
   CellType cell{};
-  cell.Attribute = Attrib;
+  cell.Attribute = static_cast<unsigned char>(Attrib);
   cell.Character = ' ';
 
   if (lines > 0) {
@@ -561,7 +562,7 @@ void MonoClass::Print(const char* ptr) {
   }
 
   const char* text = ptr;
-  cell.Attribute = Attrib;
+  cell.Attribute = static_cast<unsigned char>(Attrib);
   while (*text) {
     cell.Character = static_cast<unsigned char>(*text);
 
@@ -759,8 +760,8 @@ void MonoClass::View() {
   */
   MonoClass* displace = Get_Current();
   if (displace) {
-    for (int line = 0; line < LINES; line++) {
-      for (int col = 0; col < COLUMNS; col++) {
+    for (int line = 0; line < kLines; line++) {
+      for (int col = 0; col < kColumns; col++) {
         const CellType temp = Page_Ptr()->Data[line][col];
         Page_Ptr()->Data[line][col] = Raw_Ptr(0)->Data[line][col];
         Raw_Ptr(0)->Data[line][col] = temp;

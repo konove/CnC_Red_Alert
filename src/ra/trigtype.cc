@@ -61,6 +61,7 @@
 
 #include <cassert>
 #include <cctype>
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -69,6 +70,7 @@
 #include <utility>
 
 #include "absl/strings/str_format.h"
+#include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
@@ -104,6 +106,12 @@
 #include "sdllib/wwstd.h"
 #include "tech/mix_archive.h"
 #include "tech/number_parse.h"
+
+// The low nibble of the text print flags selects the font.
+static constexpr bool Is_Font(const TextPrintType flags,
+                              const TextPrintType font) {
+  return (static_cast<uint32_t>(flags) & 0x0FU) == static_cast<uint32_t>(font);
+}
 
 /***********************************************************************************************
  * TriggerTypeClass::TriggerTypeClass -- Constructor for trigger class object. *
@@ -193,6 +201,116 @@ void TriggerTypeClass::Detach(TARGET target, bool /*unused*/) {
   Action2.Detach(target);
 }
 
+// Layout and gadget IDs of the trigger editor dialog.
+/*
+**	Dialog position and dimensions.
+*/
+constexpr int kDialogW = 320 + 100;
+constexpr int kDialogH = 200 + 20;
+constexpr int kDialogX = 0;
+constexpr int kDialogY = 0;
+
+/*
+**	Event entry list box coordinates and dimensions.
+*/
+constexpr int kE1X = kDialogX + 45;
+constexpr int kE1Y = kDialogY + 65;
+constexpr int kE2X = kE1X;
+constexpr int kE2Y = kE1Y + 22;
+constexpr int kEWidth = 160;
+constexpr int kEHeight = 8 * 5;
+
+/*
+**	Event optional data entry coordinates and dimensions.
+*/
+constexpr int kEd1X = kE1X + kEWidth + 20;
+constexpr int kEd1Y = kE1Y;
+constexpr int kEd2X = kEd1X;
+constexpr int kEd2Y = kE2Y;
+
+constexpr int kEdWidth = 95;
+constexpr int kEdHeight = 8 * 5;
+
+/*
+**	Action entry list box coordinates.
+*/
+constexpr int kA1X = kE1X;
+constexpr int kA1Y = kDialogY + 120;
+constexpr int kA2X = kE1X;
+constexpr int kA2Y = kA1Y + 22;
+
+/*
+**	Action optional data entry coordinates.
+*/
+constexpr int kAd1X = kA1X + kEWidth + 20;
+constexpr int kAd1Y = kA1Y;
+constexpr int kAd2X = kAd1X;
+constexpr int kAd2Y = kA2Y;
+
+/*
+**	Misc control values.
+*/
+constexpr int kGeneralSize = 10;  // Text length for general data entry fields.
+constexpr int kEntrySize =
+    35;  // Maximum size of event or action description text.
+constexpr int kWaypointSize = 3;  // Text length maximum for waypoint entry.
+constexpr int kTeamSize = 10;     // Team name text entry field length.
+constexpr int kDescSize =
+    35;  // Maximum length of object full name description.
+
+/*
+**	Button enumerations:
+*/
+constexpr int kEventList = 100;      // Primary event list.
+constexpr int kEventList2 = 101;     // Secondary event list.
+constexpr int kActionList = 102;     // Primary action list.
+constexpr int kActionList2 = 103;    // Secondary action list.
+constexpr int kNameEdit = 104;       // Trigger name edit field.
+constexpr int kDataSpeech1 = 105;    // Primary action speech.
+constexpr int kDataSpeech2 = 106;    // Secondary action speech.
+constexpr int kDataTheme1 = 107;     // Primary action theme.
+constexpr int kDataTheme2 = 108;     // Secondary action theme.
+constexpr int kDataMovie1 = 109;     // Primary action movie.
+constexpr int kDataMovie2 = 110;     // Secondary action movie.
+constexpr int kDataSound1 = 111;     // Primary action sound effect.
+constexpr int kDataSound2 = 112;     // Secondary action sound effect.
+constexpr int kDataSpecial1 = 113;   // Primary action special weapon.
+constexpr int kDataSpecial2 = 114;   // Secondary action special weapon.
+constexpr int kDataEdit = 115;       // Primary event waypoint data field.
+constexpr int kDataEdit2 = 116;      // Secondary event waypoint data field.
+constexpr int kDataEdit3 = 117;      // Primary action waypoint data field.
+constexpr int kDataEdit4 = 118;      // Secondary action waypoint data field.
+constexpr int kDataHtype1 = 119;     // Primary event house choice list.
+constexpr int kDataHtype2 = 120;     // Secondary event house choice list.
+constexpr int kDataHtype3 = 121;     // Primary action house choice list.
+constexpr int kDataHtype4 = 122;     // Secondary action house choice list.
+constexpr int kDataBooltype1 = 123;  // Primary action boolean data list.
+constexpr int kDataBooltype2 = 124;  // Secondary action boolean data list.
+constexpr int kDataGeneral1 = 125;   // Primary event general data field.
+constexpr int kDataGeneral2 = 126;   // Secondary event general data field.
+constexpr int kDataGeneral3 = 127;   // Primary action general data field.
+constexpr int kDataGeneral4 = 128;   // Secondary action general data field.
+constexpr int kDataBtype1 = 129;     // Primary event building type list.
+constexpr int kDataBtype2 = 130;     // Secondary event building type list.
+constexpr int kDataItype1 = 131;     // Primary event infantry type list.
+constexpr int kDataItype2 = 132;     // Secondary event infantry type list.
+constexpr int kDataAtype1 = 133;     // Primary event aircraft type list.
+constexpr int kDataAtype2 = 134;     // Secondary event aircraft type list.
+constexpr int kDataUtype1 = 135;     // Primary event unit type list.
+constexpr int kDataUtype2 = 136;     // Secondary event unit type list.
+constexpr int kDataTtype1 = 137;     // Primary event team type entry list.
+constexpr int kDataTtype2 = 138;     // Secondary event team type entry list.
+constexpr int kDataTtype3 = 139;     // Primary action team type entry list.
+constexpr int kDataTtype4 = 140;     // Secondary action team type entry list.
+constexpr int kDataTrtype1 = 141;    // Primary action trigger list.
+constexpr int kDataTrtype2 = 142;    // Secondary action trigger list.
+constexpr int kButtonHouse = 143;    // House ownership for this trigger.
+constexpr int kButtonPersistance = 144;  // Persistence of this trigger.
+constexpr int kButtonOk = 145;           // Ok button - save and exit.
+constexpr int kKbuttoncancel = 146;      // Cancel button - just exit.
+constexpr int kButtonAction = 147;       // Multiple action control button.
+constexpr int kButtonEvent = 148;        // Multiple event control button.
+
 /***********************************************************************************************
  * TriggerTypeClass::Edit -- Edit the trigger type through the scenario editor.
  **
@@ -211,116 +329,7 @@ void TriggerTypeClass::Detach(TARGET target, bool /*unused*/) {
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 bool TriggerTypeClass::Edit() {
-  enum {
-    /*
-    **	Dialog position and dimensions.
-    */
-    D_DIALOG_W = 320 + 100,
-    D_DIALOG_H = 200 + 20,
-    D_DIALOG_X = 0,
-    D_DIALOG_Y = 0,
 
-    /*
-    **	Event entry list box coordinates and dimensions.
-    */
-    E1_X = D_DIALOG_X + 45,
-    E1_Y = D_DIALOG_Y + 65,
-    E2_X = E1_X,
-    E2_Y = E1_Y + 22,
-    E_WIDTH = 160,
-    E_HEIGHT = 8 * 5,
-
-    /*
-    **	Event optional data entry coordinates and dimensions.
-    */
-    ED1_X = E1_X + E_WIDTH + 20,
-    ED1_Y = E1_Y,
-    ED2_X = ED1_X,
-    ED2_Y = E2_Y,
-
-    ED_WIDTH = 95,
-    ED_HEIGHT = 8 * 5,
-
-    /*
-    **	Action entry list box coordinates.
-    */
-    A1_X = E1_X,
-    A1_Y = D_DIALOG_Y + 120,
-    A2_X = E1_X,
-    A2_Y = A1_Y + 22,
-
-    /*
-    **	Action optional data entry coordinates.
-    */
-    AD1_X = A1_X + E_WIDTH + 20,
-    AD1_Y = A1_Y,
-    AD2_X = AD1_X,
-    AD2_Y = A2_Y,
-
-    /*
-    **	Misc control values.
-    */
-    GENERAL_SIZE = 10,  // Text length for general data entry fields.
-    ENTRY_SIZE = 35,    // Maximum size of event or action description text.
-    WAYPOINT_SIZE = 3,  // Text length maximum for waypoint entry.
-    TEAM_SIZE = 10,     // Team name text entry field length.
-    DESC_SIZE = 35      // Maximum length of object full name description.
-  };
-
-  /*
-  **	Button enumerations:
-  */
-  enum {
-    EVENT_LIST = 100,    // Primary event list.
-    EVENT_LIST2,         // Secondary event list.
-    ACTION_LIST,         // Primary action list.
-    ACTION_LIST2,        // Secondary action list.
-    NAME_EDIT,           // Trigger name edit field.
-    DATA_SPEECH1,        // Primary action speech.
-    DATA_SPEECH2,        // Secondary action speech.
-    DATA_THEME1,         // Primary action theme.
-    DATA_THEME2,         // Secondary action theme.
-    DATA_MOVIE1,         // Primary action movie.
-    DATA_MOVIE2,         // Secondary action movie.
-    DATA_SOUND1,         // Primary action sound effect.
-    DATA_SOUND2,         // Secondary action sound effect.
-    DATA_SPECIAL1,       // Primary action special weapon.
-    DATA_SPECIAL2,       // Secondary action special weapon.
-    DATA_EDIT,           // Primary event waypoint data field.
-    DATA_EDIT2,          // Secondary event waypoint data field.
-    DATA_EDIT3,          // Primary action waypoint data field.
-    DATA_EDIT4,          // Secondary action waypoint data field.
-    DATA_HTYPE1,         // Primary event house choice list.
-    DATA_HTYPE2,         // Secondary event house choice list.
-    DATA_HTYPE3,         // Primary action house choice list.
-    DATA_HTYPE4,         // Secondary action house choice list.
-    DATA_BOOLTYPE1,      // Primary action boolean data list.
-    DATA_BOOLTYPE2,      // Secondary action boolean data list.
-    DATA_GENERAL1,       // Primary event general data field.
-    DATA_GENERAL2,       // Secondary event general data field.
-    DATA_GENERAL3,       // Primary action general data field.
-    DATA_GENERAL4,       // Secondary action general data field.
-    DATA_BTYPE1,         // Primary event building type list.
-    DATA_BTYPE2,         // Secondary event building type list.
-    DATA_ITYPE1,         // Primary event infantry type list.
-    DATA_ITYPE2,         // Secondary event infantry type list.
-    DATA_ATYPE1,         // Primary event aircraft type list.
-    DATA_ATYPE2,         // Secondary event aircraft type list.
-    DATA_UTYPE1,         // Primary event unit type list.
-    DATA_UTYPE2,         // Secondary event unit type list.
-    DATA_TTYPE1,         // Primary event team type entry list.
-    DATA_TTYPE2,         // Secondary event team type entry list.
-    DATA_TTYPE3,         // Primary action team type entry list.
-    DATA_TTYPE4,         // Secondary action team type entry list.
-    DATA_TRTYPE1,        // Primary action trigger list.
-    DATA_TRTYPE2,        // Secondary action trigger list.
-    BUTTON_HOUSE,        // House ownership for this trigger.
-    BUTTON_PERSISTANCE,  // Persistence of this trigger.
-    BUTTON_OK,           // Ok button - save and exit.
-    BUTTON_CANCEL,       // Cancel button - just exit.
-    BUTTON_ACTION,       // Multiple action control button.
-    BUTTON_EVENT,        // Multiple event control button.
-  };
 
   /*
   **	Dialog variables:
@@ -335,15 +344,15 @@ bool TriggerTypeClass::Edit() {
   /*
   **	List of events allowed.
   */
-  char eventtext[ENTRY_SIZE] = "";
+  char eventtext[kEntrySize] = "";
   TDropListClass<EventChoiceClass*> event1list(
-      EVENT_LIST, eventtext, sizeof(eventtext), TPF_EFNT | TPF_NOSHADOW, E1_X,
-      E1_Y, E_WIDTH, E_HEIGHT, MixArchive::Retrieve("EBTN-UP.SHP"),
+      kEventList, eventtext, sizeof(eventtext), TPF_EFNT | TPF_NOSHADOW, kE1X,
+      kE1Y, kEWidth, kEHeight, MixArchive::Retrieve("EBTN-UP.SHP"),
       MixArchive::Retrieve("EBTN-DN.SHP"));
-  char event2text[ENTRY_SIZE] = "";
+  char event2text[kEntrySize] = "";
   TDropListClass<EventChoiceClass*> event2list(
-      EVENT_LIST2, event2text, sizeof(event2text), TPF_EFNT | TPF_NOSHADOW,
-      E2_X, E2_Y, E_WIDTH, E_HEIGHT, MixArchive::Retrieve("EBTN-UP.SHP"),
+      kEventList2, event2text, sizeof(event2text), TPF_EFNT | TPF_NOSHADOW,
+      kE2X, kE2Y, kEWidth, kEHeight, MixArchive::Retrieve("EBTN-UP.SHP"),
       MixArchive::Retrieve("EBTN-DN.SHP"));
   for (TEventType event = TEVENT_NONE; event < TEVENT_COUNT; event++) {
     event1list.Add_Item(&EventChoices[event]);
@@ -365,15 +374,15 @@ bool TriggerTypeClass::Edit() {
   /*
   **	List of actions allowed.
   */
-  char actiontext[ENTRY_SIZE] = "";
+  char actiontext[kEntrySize] = "";
   TDropListClass<ActionChoiceClass*> action1list(
-      ACTION_LIST, actiontext, sizeof(actiontext), TPF_EFNT | TPF_NOSHADOW,
-      A1_X, A1_Y, E_WIDTH, E_HEIGHT, MixArchive::Retrieve("EBTN-UP.SHP"),
+      kActionList, actiontext, sizeof(actiontext), TPF_EFNT | TPF_NOSHADOW,
+      kA1X, kA1Y, kEWidth, kEHeight, MixArchive::Retrieve("EBTN-UP.SHP"),
       MixArchive::Retrieve("EBTN-DN.SHP"));
-  char action2text[ENTRY_SIZE] = "";
+  char action2text[kEntrySize] = "";
   TDropListClass<ActionChoiceClass*> action2list(
-      ACTION_LIST2, action2text, sizeof(action2text), TPF_EFNT | TPF_NOSHADOW,
-      A2_X, A2_Y, E_WIDTH, E_HEIGHT, MixArchive::Retrieve("EBTN-UP.SHP"),
+      kActionList2, action2text, sizeof(action2text), TPF_EFNT | TPF_NOSHADOW,
+      kA2X, kA2Y, kEWidth, kEHeight, MixArchive::Retrieve("EBTN-UP.SHP"),
       MixArchive::Retrieve("EBTN-DN.SHP"));
   for (TActionType action = TACTION_NONE; action < TACTION_COUNT; action++) {
     action1list.Add_Item(&ActionChoices[action]);
@@ -395,9 +404,9 @@ bool TriggerTypeClass::Edit() {
   /*
   **	Optional waypoint entry field.
   */
-  char way1[WAYPOINT_SIZE] = "A";
-  EditClass way1data(DATA_EDIT, way1, sizeof(way1), TPF_EFNT | TPF_NOSHADOW,
-                     ED1_X, ED1_Y, ED_WIDTH, 9, EditClass::kAlpha);
+  char way1[kWaypointSize] = "A";
+  EditClass way1data(kDataEdit, way1, sizeof(way1), TPF_EFNT | TPF_NOSHADOW,
+                     kEd1X, kEd1Y, kEdWidth, 9, EditClass::kAlpha);
   if (Event_Needs(Event1.Event) == NEED_WAYPOINT) {
     if (Event1.Data.Value < 26) {
       absl::SNPrintF(way1, sizeof(way1), "%c",
@@ -409,9 +418,9 @@ bool TriggerTypeClass::Edit() {
     }
   }
 
-  char way2[WAYPOINT_SIZE] = "A";
-  EditClass way2data(DATA_EDIT2, way2, sizeof(way2), TPF_EFNT | TPF_NOSHADOW,
-                     ED2_X, ED2_Y, ED_WIDTH, 9, EditClass::kAlpha);
+  char way2[kWaypointSize] = "A";
+  EditClass way2data(kDataEdit2, way2, sizeof(way2), TPF_EFNT | TPF_NOSHADOW,
+                     kEd2X, kEd2Y, kEdWidth, 9, EditClass::kAlpha);
   if (Event_Needs(Event2.Event) == NEED_WAYPOINT) {
     if (Event2.Data.Value < 26) {
       absl::SNPrintF(way2, sizeof(way2), "%c",
@@ -423,9 +432,9 @@ bool TriggerTypeClass::Edit() {
     }
   }
 
-  char way3[WAYPOINT_SIZE] = "A";
-  EditClass way3data(DATA_EDIT3, way3, sizeof(way3), TPF_EFNT | TPF_NOSHADOW,
-                     AD1_X, AD1_Y, ED_WIDTH, 9, EditClass::kAlpha);
+  char way3[kWaypointSize] = "A";
+  EditClass way3data(kDataEdit3, way3, sizeof(way3), TPF_EFNT | TPF_NOSHADOW,
+                     kAd1X, kAd1Y, kEdWidth, 9, EditClass::kAlpha);
   if (Action_Needs(Action1.Action) == NEED_WAYPOINT) {
     if (Action1.Data.Value < 26) {
       absl::SNPrintF(way3, sizeof(way3), "%c", Action1.Data.Value + 'A');
@@ -436,9 +445,9 @@ bool TriggerTypeClass::Edit() {
     }
   }
 
-  char way4[WAYPOINT_SIZE] = "A";
-  EditClass way4data(DATA_EDIT4, way4, sizeof(way4), TPF_EFNT | TPF_NOSHADOW,
-                     AD2_X, AD2_Y, ED_WIDTH, 9, EditClass::kAlpha);
+  char way4[kWaypointSize] = "A";
+  EditClass way4data(kDataEdit4, way4, sizeof(way4), TPF_EFNT | TPF_NOSHADOW,
+                     kAd2X, kAd2Y, kEdWidth, 9, EditClass::kAlpha);
   if (Action_Needs(Action2.Action) == NEED_WAYPOINT) {
     if (Action2.Data.Value < 26) {
       absl::SNPrintF(way4, sizeof(way4), "%c", Action2.Data.Value + 'A');
@@ -452,9 +461,9 @@ bool TriggerTypeClass::Edit() {
   /*
   **	Optional event data entry field.
   */
-  char databuf1[GENERAL_SIZE] = "";
-  EditClass event1data(DATA_GENERAL1, databuf1, sizeof(databuf1),
-                       TPF_EFNT | TPF_NOSHADOW, ED1_X, ED1_Y, ED_WIDTH, 9,
+  char databuf1[kGeneralSize] = "";
+  EditClass event1data(kDataGeneral1, databuf1, sizeof(databuf1),
+                       TPF_EFNT | TPF_NOSHADOW, kEd1X, kEd1Y, kEdWidth, 9,
                        EditClass::kNumeric);
   switch (Event_Needs(Event1.Event)) {
     case NEED_TIME:
@@ -466,9 +475,9 @@ bool TriggerTypeClass::Edit() {
       break;
   }
 
-  char databuf2[GENERAL_SIZE] = "";
-  EditClass event2data(DATA_GENERAL2, databuf2, sizeof(databuf2),
-                       TPF_EFNT | TPF_NOSHADOW, ED2_X, ED2_Y, ED_WIDTH, 9,
+  char databuf2[kGeneralSize] = "";
+  EditClass event2data(kDataGeneral2, databuf2, sizeof(databuf2),
+                       TPF_EFNT | TPF_NOSHADOW, kEd2X, kEd2Y, kEdWidth, 9,
                        EditClass::kNumeric);
   switch (Event_Needs(Event2.Event)) {
     case NEED_TIME:
@@ -480,17 +489,17 @@ bool TriggerTypeClass::Edit() {
       break;
   }
 
-  char actionbuf1[GENERAL_SIZE] = "";
-  EditClass action1data(DATA_GENERAL3, actionbuf1, sizeof(actionbuf1),
-                        TPF_EFNT | TPF_NOSHADOW, AD1_X, AD1_Y, ED_WIDTH, 9,
+  char actionbuf1[kGeneralSize] = "";
+  EditClass action1data(kDataGeneral3, actionbuf1, sizeof(actionbuf1),
+                        TPF_EFNT | TPF_NOSHADOW, kAd1X, kAd1Y, kEdWidth, 9,
                         EditClass::kNumeric);
   if (Action_Needs(Action1.Action) == NEED_NUMBER) {
     absl::SNPrintF(actionbuf1, sizeof(actionbuf1), "%d", Action1.Data.Value);
   }
 
-  char actionbuf2[GENERAL_SIZE] = "";
-  EditClass action2data(DATA_GENERAL4, actionbuf2, sizeof(actionbuf2),
-                        TPF_EFNT | TPF_NOSHADOW, AD2_X, AD2_Y, ED_WIDTH, 9,
+  char actionbuf2[kGeneralSize] = "";
+  EditClass action2data(kDataGeneral4, actionbuf2, sizeof(actionbuf2),
+                        TPF_EFNT | TPF_NOSHADOW, kAd2X, kAd2Y, kEdWidth, 9,
                         EditClass::kNumeric);
   if (Action_Needs(Action2.Action) == NEED_NUMBER) {
     absl::SNPrintF(actionbuf2, sizeof(actionbuf2), "%d", Action2.Data.Value);
@@ -499,25 +508,25 @@ bool TriggerTypeClass::Edit() {
   /*
   **	Optional team entry list.
   */
-  char tbuf1[TEAM_SIZE] = "";
-  DropListClass ttype1list(DATA_TTYPE1, tbuf1, sizeof(tbuf1),
-                           TPF_EFNT | TPF_NOSHADOW, ED1_X, ED1_Y, ED_WIDTH,
-                           ED_HEIGHT, MixArchive::Retrieve("EBTN-UP.SHP"),
+  char tbuf1[kTeamSize] = "";
+  DropListClass ttype1list(kDataTtype1, tbuf1, sizeof(tbuf1),
+                           TPF_EFNT | TPF_NOSHADOW, kEd1X, kEd1Y, kEdWidth,
+                           kEdHeight, MixArchive::Retrieve("EBTN-UP.SHP"),
                            MixArchive::Retrieve("EBTN-DN.SHP"));
-  char tbuf2[TEAM_SIZE] = "";
-  DropListClass ttype2list(DATA_TTYPE2, tbuf2, sizeof(tbuf2),
-                           TPF_EFNT | TPF_NOSHADOW, ED2_X, ED2_Y, ED_WIDTH,
-                           ED_HEIGHT, MixArchive::Retrieve("EBTN-UP.SHP"),
+  char tbuf2[kTeamSize] = "";
+  DropListClass ttype2list(kDataTtype2, tbuf2, sizeof(tbuf2),
+                           TPF_EFNT | TPF_NOSHADOW, kEd2X, kEd2Y, kEdWidth,
+                           kEdHeight, MixArchive::Retrieve("EBTN-UP.SHP"),
                            MixArchive::Retrieve("EBTN-DN.SHP"));
-  char tbuf3[TEAM_SIZE] = "";
-  DropListClass ttype3list(DATA_TTYPE3, tbuf3, sizeof(tbuf3),
-                           TPF_EFNT | TPF_NOSHADOW, AD1_X, AD1_Y, ED_WIDTH,
-                           ED_HEIGHT, MixArchive::Retrieve("EBTN-UP.SHP"),
+  char tbuf3[kTeamSize] = "";
+  DropListClass ttype3list(kDataTtype3, tbuf3, sizeof(tbuf3),
+                           TPF_EFNT | TPF_NOSHADOW, kAd1X, kAd1Y, kEdWidth,
+                           kEdHeight, MixArchive::Retrieve("EBTN-UP.SHP"),
                            MixArchive::Retrieve("EBTN-DN.SHP"));
-  char tbuf4[TEAM_SIZE] = "";
-  DropListClass ttype4list(DATA_TTYPE4, tbuf4, sizeof(tbuf4),
-                           TPF_EFNT | TPF_NOSHADOW, AD2_X, AD2_Y, ED_WIDTH,
-                           ED_HEIGHT, MixArchive::Retrieve("EBTN-UP.SHP"),
+  char tbuf4[kTeamSize] = "";
+  DropListClass ttype4list(kDataTtype4, tbuf4, sizeof(tbuf4),
+                           TPF_EFNT | TPF_NOSHADOW, kAd2X, kAd2Y, kEdWidth,
+                           kEdHeight, MixArchive::Retrieve("EBTN-UP.SHP"),
                            MixArchive::Retrieve("EBTN-DN.SHP"));
 
   for (int index = 0; index < TeamTypes.Count(); index++) {
@@ -551,15 +560,15 @@ bool TriggerTypeClass::Edit() {
   /*
   **	Optional trigger entry list.
   */
-  char trbuf1[TEAM_SIZE] = "";
-  DropListClass trtype1list(DATA_TRTYPE1, trbuf1, sizeof(trbuf1),
-                            TPF_EFNT | TPF_NOSHADOW, AD1_X, AD1_Y, ED_WIDTH,
-                            ED_HEIGHT, MixArchive::Retrieve("EBTN-UP.SHP"),
+  char trbuf1[kTeamSize] = "";
+  DropListClass trtype1list(kDataTrtype1, trbuf1, sizeof(trbuf1),
+                            TPF_EFNT | TPF_NOSHADOW, kAd1X, kAd1Y, kEdWidth,
+                            kEdHeight, MixArchive::Retrieve("EBTN-UP.SHP"),
                             MixArchive::Retrieve("EBTN-DN.SHP"));
-  char trbuf2[TEAM_SIZE] = "";
-  DropListClass trtype2list(DATA_TRTYPE2, trbuf2, sizeof(trbuf2),
-                            TPF_EFNT | TPF_NOSHADOW, AD2_X, AD2_Y, ED_WIDTH,
-                            ED_HEIGHT, MixArchive::Retrieve("EBTN-UP.SHP"),
+  char trbuf2[kTeamSize] = "";
+  DropListClass trtype2list(kDataTrtype2, trbuf2, sizeof(trbuf2),
+                            TPF_EFNT | TPF_NOSHADOW, kAd2X, kAd2Y, kEdWidth,
+                            kEdHeight, MixArchive::Retrieve("EBTN-UP.SHP"),
                             MixArchive::Retrieve("EBTN-DN.SHP"));
 
   for (int index = 0; index < TriggerTypes.Count(); index++) {
@@ -581,15 +590,15 @@ bool TriggerTypeClass::Edit() {
   /*
   **	Optional boolean value list.
   */
-  char boolbuf1[TEAM_SIZE] = "";
-  DropListClass booltype1list(DATA_BOOLTYPE1, boolbuf1, sizeof(boolbuf1),
-                              TPF_EFNT | TPF_NOSHADOW, AD1_X, AD1_Y, ED_WIDTH,
-                              ED_HEIGHT, MixArchive::Retrieve("EBTN-UP.SHP"),
+  char boolbuf1[kTeamSize] = "";
+  DropListClass booltype1list(kDataBooltype1, boolbuf1, sizeof(boolbuf1),
+                              TPF_EFNT | TPF_NOSHADOW, kAd1X, kAd1Y, kEdWidth,
+                              kEdHeight, MixArchive::Retrieve("EBTN-UP.SHP"),
                               MixArchive::Retrieve("EBTN-DN.SHP"));
-  char boolbuf2[TEAM_SIZE] = "";
-  DropListClass booltype2list(DATA_BOOLTYPE2, boolbuf2, sizeof(boolbuf2),
-                              TPF_EFNT | TPF_NOSHADOW, AD2_X, AD2_Y, ED_WIDTH,
-                              ED_HEIGHT, MixArchive::Retrieve("EBTN-UP.SHP"),
+  char boolbuf2[kTeamSize] = "";
+  DropListClass booltype2list(kDataBooltype2, boolbuf2, sizeof(boolbuf2),
+                              TPF_EFNT | TPF_NOSHADOW, kAd2X, kAd2Y, kEdWidth,
+                              kEdHeight, MixArchive::Retrieve("EBTN-UP.SHP"),
                               MixArchive::Retrieve("EBTN-DN.SHP"));
 
   booltype1list.Add_Item("OFF");
@@ -603,15 +612,15 @@ bool TriggerTypeClass::Edit() {
   /*
   **	Optional musical theme choice list.
   */
-  char themebuf1[DESC_SIZE] = "";
-  DropListClass themetype1list(DATA_THEME1, themebuf1, sizeof(themebuf1),
-                               TPF_EFNT | TPF_NOSHADOW, AD1_X, AD1_Y, ED_WIDTH,
-                               ED_HEIGHT, MixArchive::Retrieve("EBTN-UP.SHP"),
+  char themebuf1[kDescSize] = "";
+  DropListClass themetype1list(kDataTheme1, themebuf1, sizeof(themebuf1),
+                               TPF_EFNT | TPF_NOSHADOW, kAd1X, kAd1Y, kEdWidth,
+                               kEdHeight, MixArchive::Retrieve("EBTN-UP.SHP"),
                                MixArchive::Retrieve("EBTN-DN.SHP"));
-  char themebuf2[DESC_SIZE] = "";
-  DropListClass themetype2list(DATA_THEME2, themebuf2, sizeof(themebuf2),
-                               TPF_EFNT | TPF_NOSHADOW, AD2_X, AD2_Y, ED_WIDTH,
-                               ED_HEIGHT, MixArchive::Retrieve("EBTN-UP.SHP"),
+  char themebuf2[kDescSize] = "";
+  DropListClass themetype2list(kDataTheme2, themebuf2, sizeof(themebuf2),
+                               TPF_EFNT | TPF_NOSHADOW, kAd2X, kAd2Y, kEdWidth,
+                               kEdHeight, MixArchive::Retrieve("EBTN-UP.SHP"),
                                MixArchive::Retrieve("EBTN-DN.SHP"));
 
   for (const ThemeType theme : magic_enum::enum_values<ThemeType>()) {
@@ -620,12 +629,12 @@ bool TriggerTypeClass::Edit() {
   }
 
   if (Action_Needs(Action1.Action) == NEED_THEME) {
-    themetype1list.Set_Selected_Index(Action1.Data.Theme);
+    themetype1list.Set_Selected_Index(static_cast<int>(Action1.Data.Theme));
   } else {
     themetype1list.Set_Selected_Index(0);
   }
   if (Action_Needs(Action2.Action) == NEED_THEME) {
-    themetype2list.Set_Selected_Index(Action2.Data.Theme);
+    themetype2list.Set_Selected_Index(static_cast<int>(Action2.Data.Theme));
   } else {
     themetype2list.Set_Selected_Index(0);
   }
@@ -633,15 +642,15 @@ bool TriggerTypeClass::Edit() {
   /*
   **	Optional movie list.
   */
-  char moviebuf1[DESC_SIZE] = "";
-  DropListClass movietype1list(DATA_MOVIE1, moviebuf1, sizeof(moviebuf1),
-                               TPF_EFNT | TPF_NOSHADOW, AD1_X, AD1_Y, ED_WIDTH,
-                               ED_HEIGHT, MixArchive::Retrieve("EBTN-UP.SHP"),
+  char moviebuf1[kDescSize] = "";
+  DropListClass movietype1list(kDataMovie1, moviebuf1, sizeof(moviebuf1),
+                               TPF_EFNT | TPF_NOSHADOW, kAd1X, kAd1Y, kEdWidth,
+                               kEdHeight, MixArchive::Retrieve("EBTN-UP.SHP"),
                                MixArchive::Retrieve("EBTN-DN.SHP"));
-  char moviebuf2[DESC_SIZE] = "";
-  DropListClass movietype2list(DATA_MOVIE2, moviebuf2, sizeof(moviebuf2),
-                               TPF_EFNT | TPF_NOSHADOW, AD2_X, AD2_Y, ED_WIDTH,
-                               ED_HEIGHT, MixArchive::Retrieve("EBTN-UP.SHP"),
+  char moviebuf2[kDescSize] = "";
+  DropListClass movietype2list(kDataMovie2, moviebuf2, sizeof(moviebuf2),
+                               TPF_EFNT | TPF_NOSHADOW, kAd2X, kAd2Y, kEdWidth,
+                               kEdHeight, MixArchive::Retrieve("EBTN-UP.SHP"),
                                MixArchive::Retrieve("EBTN-DN.SHP"));
 
   for (const VQType movie : magic_enum::enum_values<VQType>()) {
@@ -650,12 +659,12 @@ bool TriggerTypeClass::Edit() {
   }
 
   if (Action_Needs(Action1.Action) == NEED_MOVIE) {
-    movietype1list.Set_Selected_Index(Action1.Data.Movie);
+    movietype1list.Set_Selected_Index(static_cast<int>(Action1.Data.Movie));
   } else {
     movietype1list.Set_Selected_Index(0);
   }
   if (Action_Needs(Action2.Action) == NEED_MOVIE) {
-    movietype2list.Set_Selected_Index(Action2.Data.Movie);
+    movietype2list.Set_Selected_Index(static_cast<int>(Action2.Data.Movie));
   } else {
     movietype2list.Set_Selected_Index(0);
   }
@@ -663,15 +672,15 @@ bool TriggerTypeClass::Edit() {
   /*
   **	Optional sound effect list.
   */
-  char soundbuf1[DESC_SIZE] = "";
-  DropListClass soundtype1list(DATA_SOUND1, soundbuf1, sizeof(soundbuf1),
-                               TPF_EFNT | TPF_NOSHADOW, AD1_X, AD1_Y, ED_WIDTH,
-                               ED_HEIGHT, MixArchive::Retrieve("EBTN-UP.SHP"),
+  char soundbuf1[kDescSize] = "";
+  DropListClass soundtype1list(kDataSound1, soundbuf1, sizeof(soundbuf1),
+                               TPF_EFNT | TPF_NOSHADOW, kAd1X, kAd1Y, kEdWidth,
+                               kEdHeight, MixArchive::Retrieve("EBTN-UP.SHP"),
                                MixArchive::Retrieve("EBTN-DN.SHP"));
-  char soundbuf2[DESC_SIZE] = "";
-  DropListClass soundtype2list(DATA_SOUND2, soundbuf2, sizeof(soundbuf2),
-                               TPF_EFNT | TPF_NOSHADOW, AD2_X, AD2_Y, ED_WIDTH,
-                               ED_HEIGHT, MixArchive::Retrieve("EBTN-UP.SHP"),
+  char soundbuf2[kDescSize] = "";
+  DropListClass soundtype2list(kDataSound2, soundbuf2, sizeof(soundbuf2),
+                               TPF_EFNT | TPF_NOSHADOW, kAd2X, kAd2Y, kEdWidth,
+                               kEdHeight, MixArchive::Retrieve("EBTN-UP.SHP"),
                                MixArchive::Retrieve("EBTN-DN.SHP"));
 
   for (const VocType sound : magic_enum::enum_values<VocType>()) {
@@ -680,12 +689,12 @@ bool TriggerTypeClass::Edit() {
   }
 
   if (Action_Needs(Action1.Action) == NEED_SOUND) {
-    soundtype1list.Set_Selected_Index(Action1.Data.Sound);
+    soundtype1list.Set_Selected_Index(static_cast<int>(Action1.Data.Sound));
   } else {
     soundtype1list.Set_Selected_Index(0);
   }
   if (Action_Needs(Action2.Action) == NEED_SOUND) {
-    soundtype2list.Set_Selected_Index(Action2.Data.Sound);
+    soundtype2list.Set_Selected_Index(static_cast<int>(Action2.Data.Sound));
   } else {
     soundtype2list.Set_Selected_Index(0);
   }
@@ -693,15 +702,15 @@ bool TriggerTypeClass::Edit() {
   /*
   **	Optional speech effect list.
   */
-  char speechbuf1[DESC_SIZE] = "";
-  DropListClass speechtype1list(DATA_SPEECH1, speechbuf1, sizeof(speechbuf1),
-                                TPF_EFNT | TPF_NOSHADOW, AD1_X, AD1_Y, ED_WIDTH,
-                                ED_HEIGHT, MixArchive::Retrieve("EBTN-UP.SHP"),
+  char speechbuf1[kDescSize] = "";
+  DropListClass speechtype1list(kDataSpeech1, speechbuf1, sizeof(speechbuf1),
+                                TPF_EFNT | TPF_NOSHADOW, kAd1X, kAd1Y, kEdWidth,
+                                kEdHeight, MixArchive::Retrieve("EBTN-UP.SHP"),
                                 MixArchive::Retrieve("EBTN-DN.SHP"));
-  char speechbuf2[DESC_SIZE] = "";
-  DropListClass speechtype2list(DATA_SPEECH2, speechbuf2, sizeof(speechbuf2),
-                                TPF_EFNT | TPF_NOSHADOW, AD2_X, AD2_Y, ED_WIDTH,
-                                ED_HEIGHT, MixArchive::Retrieve("EBTN-UP.SHP"),
+  char speechbuf2[kDescSize] = "";
+  DropListClass speechtype2list(kDataSpeech2, speechbuf2, sizeof(speechbuf2),
+                                TPF_EFNT | TPF_NOSHADOW, kAd2X, kAd2Y, kEdWidth,
+                                kEdHeight, MixArchive::Retrieve("EBTN-UP.SHP"),
                                 MixArchive::Retrieve("EBTN-DN.SHP"));
 
   for (const VoxType speech : magic_enum::enum_values<VoxType>()) {
@@ -710,12 +719,12 @@ bool TriggerTypeClass::Edit() {
   }
 
   if (Action_Needs(Action1.Action) == NEED_SPEECH) {
-    speechtype1list.Set_Selected_Index(Action1.Data.Speech);
+    speechtype1list.Set_Selected_Index(static_cast<int>(Action1.Data.Speech));
   } else {
     speechtype1list.Set_Selected_Index(0);
   }
   if (Action_Needs(Action2.Action) == NEED_SPEECH) {
-    speechtype2list.Set_Selected_Index(Action2.Data.Speech);
+    speechtype2list.Set_Selected_Index(static_cast<int>(Action2.Data.Speech));
   } else {
     speechtype2list.Set_Selected_Index(0);
   }
@@ -723,15 +732,15 @@ bool TriggerTypeClass::Edit() {
   /*
   **	Optional building type entry list.
   */
-  char bbuf1[DESC_SIZE] = "";
-  DropListClass btype1list(DATA_BTYPE1, bbuf1, sizeof(bbuf1),
-                           TPF_EFNT | TPF_NOSHADOW, ED1_X, ED1_Y, ED_WIDTH,
-                           ED_HEIGHT, MixArchive::Retrieve("EBTN-UP.SHP"),
+  char bbuf1[kDescSize] = "";
+  DropListClass btype1list(kDataBtype1, bbuf1, sizeof(bbuf1),
+                           TPF_EFNT | TPF_NOSHADOW, kEd1X, kEd1Y, kEdWidth,
+                           kEdHeight, MixArchive::Retrieve("EBTN-UP.SHP"),
                            MixArchive::Retrieve("EBTN-DN.SHP"));
-  char bbuf2[DESC_SIZE] = "";
-  DropListClass btype2list(DATA_BTYPE2, bbuf2, sizeof(bbuf2),
-                           TPF_EFNT | TPF_NOSHADOW, ED2_X, ED2_Y, ED_WIDTH,
-                           ED_HEIGHT, MixArchive::Retrieve("EBTN-UP.SHP"),
+  char bbuf2[kDescSize] = "";
+  DropListClass btype2list(kDataBtype2, bbuf2, sizeof(bbuf2),
+                           TPF_EFNT | TPF_NOSHADOW, kEd2X, kEd2Y, kEdWidth,
+                           kEdHeight, MixArchive::Retrieve("EBTN-UP.SHP"),
                            MixArchive::Retrieve("EBTN-DN.SHP"));
 
   for (const StructType ss : magic_enum::enum_values<StructType>()) {
@@ -742,12 +751,12 @@ bool TriggerTypeClass::Edit() {
   }
 
   if (Event_Needs(Event1.Event) == NEED_STRUCTURE) {
-    btype1list.Set_Selected_Index(Event1.Data.Structure);
+    btype1list.Set_Selected_Index(static_cast<int>(Event1.Data.Structure));
   } else {
     btype1list.Set_Selected_Index(0);
   }
   if (Event_Needs(Event2.Event) == NEED_STRUCTURE) {
-    btype2list.Set_Selected_Index(Event2.Data.Structure);
+    btype2list.Set_Selected_Index(static_cast<int>(Event2.Data.Structure));
   } else {
     btype2list.Set_Selected_Index(0);
   }
@@ -755,15 +764,15 @@ bool TriggerTypeClass::Edit() {
   /*
   **	Optional infantry type entry list.
   */
-  char ibuf1[DESC_SIZE] = "";
-  DropListClass itype1list(DATA_ITYPE1, ibuf1, sizeof(ibuf1),
-                           TPF_EFNT | TPF_NOSHADOW, ED1_X, ED1_Y, ED_WIDTH,
-                           ED_HEIGHT, MixArchive::Retrieve("EBTN-UP.SHP"),
+  char ibuf1[kDescSize] = "";
+  DropListClass itype1list(kDataItype1, ibuf1, sizeof(ibuf1),
+                           TPF_EFNT | TPF_NOSHADOW, kEd1X, kEd1Y, kEdWidth,
+                           kEdHeight, MixArchive::Retrieve("EBTN-UP.SHP"),
                            MixArchive::Retrieve("EBTN-DN.SHP"));
-  char ibuf2[DESC_SIZE] = "";
-  DropListClass itype2list(DATA_ITYPE2, ibuf2, sizeof(ibuf2),
-                           TPF_EFNT | TPF_NOSHADOW, ED2_X, ED2_Y, ED_WIDTH,
-                           ED_HEIGHT, MixArchive::Retrieve("EBTN-UP.SHP"),
+  char ibuf2[kDescSize] = "";
+  DropListClass itype2list(kDataItype2, ibuf2, sizeof(ibuf2),
+                           TPF_EFNT | TPF_NOSHADOW, kEd2X, kEd2Y, kEdWidth,
+                           kEdHeight, MixArchive::Retrieve("EBTN-UP.SHP"),
                            MixArchive::Retrieve("EBTN-DN.SHP"));
 
   for (const InfantryType ii : magic_enum::enum_values<InfantryType>()) {
@@ -774,12 +783,12 @@ bool TriggerTypeClass::Edit() {
   }
 
   if (Event_Needs(Event1.Event) == NEED_INFANTRY) {
-    itype1list.Set_Selected_Index(Event1.Data.Infantry);
+    itype1list.Set_Selected_Index(static_cast<int>(Event1.Data.Infantry));
   } else {
     itype1list.Set_Selected_Index(0);
   }
   if (Event_Needs(Event2.Event) == NEED_INFANTRY) {
-    itype2list.Set_Selected_Index(Event2.Data.Infantry);
+    itype2list.Set_Selected_Index(static_cast<int>(Event2.Data.Infantry));
   } else {
     itype2list.Set_Selected_Index(0);
   }
@@ -787,15 +796,15 @@ bool TriggerTypeClass::Edit() {
   /*
   **	Optional aircraft type entry list.
   */
-  char abuf1[DESC_SIZE] = "";
-  DropListClass atype1list(DATA_ATYPE1, abuf1, sizeof(abuf1),
-                           TPF_EFNT | TPF_NOSHADOW, ED1_X, ED1_Y, ED_WIDTH,
-                           ED_HEIGHT, MixArchive::Retrieve("EBTN-UP.SHP"),
+  char abuf1[kDescSize] = "";
+  DropListClass atype1list(kDataAtype1, abuf1, sizeof(abuf1),
+                           TPF_EFNT | TPF_NOSHADOW, kEd1X, kEd1Y, kEdWidth,
+                           kEdHeight, MixArchive::Retrieve("EBTN-UP.SHP"),
                            MixArchive::Retrieve("EBTN-DN.SHP"));
-  char abuf2[DESC_SIZE] = "";
-  DropListClass atype2list(DATA_ATYPE2, abuf2, sizeof(abuf2),
-                           TPF_EFNT | TPF_NOSHADOW, ED2_X, ED2_Y, ED_WIDTH,
-                           ED_HEIGHT, MixArchive::Retrieve("EBTN-UP.SHP"),
+  char abuf2[kDescSize] = "";
+  DropListClass atype2list(kDataAtype2, abuf2, sizeof(abuf2),
+                           TPF_EFNT | TPF_NOSHADOW, kEd2X, kEd2Y, kEdWidth,
+                           kEdHeight, MixArchive::Retrieve("EBTN-UP.SHP"),
                            MixArchive::Retrieve("EBTN-DN.SHP"));
 
   for (const AircraftType aa : magic_enum::enum_values<AircraftType>()) {
@@ -806,12 +815,12 @@ bool TriggerTypeClass::Edit() {
   }
 
   if (Event_Needs(Event1.Event) == NEED_AIRCRAFT) {
-    atype1list.Set_Selected_Index(Event1.Data.Aircraft);
+    atype1list.Set_Selected_Index(static_cast<int>(Event1.Data.Aircraft));
   } else {
     atype1list.Set_Selected_Index(0);
   }
   if (Event_Needs(Event2.Event) == NEED_AIRCRAFT) {
-    atype2list.Set_Selected_Index(Event2.Data.Aircraft);
+    atype2list.Set_Selected_Index(static_cast<int>(Event2.Data.Aircraft));
   } else {
     atype2list.Set_Selected_Index(0);
   }
@@ -819,15 +828,15 @@ bool TriggerTypeClass::Edit() {
   /*
   **	Optional unit type entry list.
   */
-  char ubuf1[DESC_SIZE] = "";
-  DropListClass utype1list(DATA_UTYPE1, ubuf1, sizeof(ubuf1),
-                           TPF_EFNT | TPF_NOSHADOW, ED1_X, ED1_Y, ED_WIDTH,
-                           ED_HEIGHT, MixArchive::Retrieve("EBTN-UP.SHP"),
+  char ubuf1[kDescSize] = "";
+  DropListClass utype1list(kDataUtype1, ubuf1, sizeof(ubuf1),
+                           TPF_EFNT | TPF_NOSHADOW, kEd1X, kEd1Y, kEdWidth,
+                           kEdHeight, MixArchive::Retrieve("EBTN-UP.SHP"),
                            MixArchive::Retrieve("EBTN-DN.SHP"));
-  char ubuf2[DESC_SIZE] = "";
-  DropListClass utype2list(DATA_UTYPE2, ubuf2, sizeof(ubuf2),
-                           TPF_EFNT | TPF_NOSHADOW, ED2_X, ED2_Y, ED_WIDTH,
-                           ED_HEIGHT, MixArchive::Retrieve("EBTN-UP.SHP"),
+  char ubuf2[kDescSize] = "";
+  DropListClass utype2list(kDataUtype2, ubuf2, sizeof(ubuf2),
+                           TPF_EFNT | TPF_NOSHADOW, kEd2X, kEd2Y, kEdWidth,
+                           kEdHeight, MixArchive::Retrieve("EBTN-UP.SHP"),
                            MixArchive::Retrieve("EBTN-DN.SHP"));
 
   for (const UnitType uu : magic_enum::enum_values<UnitType>()) {
@@ -838,12 +847,12 @@ bool TriggerTypeClass::Edit() {
   }
 
   if (Event_Needs(Event1.Event) == NEED_UNIT) {
-    utype1list.Set_Selected_Index(Event1.Data.Unit);
+    utype1list.Set_Selected_Index(static_cast<int>(Event1.Data.Unit));
   } else {
     utype1list.Set_Selected_Index(0);
   }
   if (Event_Needs(Event2.Event) == NEED_UNIT) {
-    utype2list.Set_Selected_Index(Event2.Data.Unit);
+    utype2list.Set_Selected_Index(static_cast<int>(Event2.Data.Unit));
   } else {
     utype2list.Set_Selected_Index(0);
   }
@@ -851,25 +860,25 @@ bool TriggerTypeClass::Edit() {
   /*
   **	Optional house type entry list.
   */
-  char housebuf1[DESC_SIZE] = "";
-  DropListClass htype1list(DATA_HTYPE1, housebuf1, sizeof(housebuf1),
-                           TPF_EFNT | TPF_NOSHADOW, ED1_X, ED1_Y, ED_WIDTH,
-                           ED_HEIGHT, MixArchive::Retrieve("EBTN-UP.SHP"),
+  char housebuf1[kDescSize] = "";
+  DropListClass htype1list(kDataHtype1, housebuf1, sizeof(housebuf1),
+                           TPF_EFNT | TPF_NOSHADOW, kEd1X, kEd1Y, kEdWidth,
+                           kEdHeight, MixArchive::Retrieve("EBTN-UP.SHP"),
                            MixArchive::Retrieve("EBTN-DN.SHP"));
-  char housebuf2[DESC_SIZE] = "";
-  DropListClass htype2list(DATA_HTYPE2, housebuf2, sizeof(housebuf2),
-                           TPF_EFNT | TPF_NOSHADOW, ED2_X, ED2_Y, ED_WIDTH,
-                           ED_HEIGHT, MixArchive::Retrieve("EBTN-UP.SHP"),
+  char housebuf2[kDescSize] = "";
+  DropListClass htype2list(kDataHtype2, housebuf2, sizeof(housebuf2),
+                           TPF_EFNT | TPF_NOSHADOW, kEd2X, kEd2Y, kEdWidth,
+                           kEdHeight, MixArchive::Retrieve("EBTN-UP.SHP"),
                            MixArchive::Retrieve("EBTN-DN.SHP"));
-  char housebuf3[DESC_SIZE] = "";
-  DropListClass htype3list(DATA_HTYPE3, housebuf3, sizeof(housebuf3),
-                           TPF_EFNT | TPF_NOSHADOW, AD1_X, AD1_Y, ED_WIDTH,
-                           ED_HEIGHT, MixArchive::Retrieve("EBTN-UP.SHP"),
+  char housebuf3[kDescSize] = "";
+  DropListClass htype3list(kDataHtype3, housebuf3, sizeof(housebuf3),
+                           TPF_EFNT | TPF_NOSHADOW, kAd1X, kAd1Y, kEdWidth,
+                           kEdHeight, MixArchive::Retrieve("EBTN-UP.SHP"),
                            MixArchive::Retrieve("EBTN-DN.SHP"));
-  char housebuf4[DESC_SIZE] = "";
-  DropListClass htype4list(DATA_HTYPE4, housebuf4, sizeof(housebuf4),
-                           TPF_EFNT | TPF_NOSHADOW, AD2_X, AD2_Y, ED_WIDTH,
-                           ED_HEIGHT, MixArchive::Retrieve("EBTN-UP.SHP"),
+  char housebuf4[kDescSize] = "";
+  DropListClass htype4list(kDataHtype4, housebuf4, sizeof(housebuf4),
+                           TPF_EFNT | TPF_NOSHADOW, kAd2X, kAd2Y, kEdWidth,
+                           kEdHeight, MixArchive::Retrieve("EBTN-UP.SHP"),
                            MixArchive::Retrieve("EBTN-DN.SHP"));
 
   for (const HousesType hh : magic_enum::enum_values<HousesType>()) {
@@ -880,22 +889,22 @@ bool TriggerTypeClass::Edit() {
   }
 
   if (Event_Needs(Event1.Event) == NEED_HOUSE) {
-    htype1list.Set_Selected_Index(Event1.Data.House);
+    htype1list.Set_Selected_Index(static_cast<int>(Event1.Data.House));
   } else {
     htype1list.Set_Selected_Index(0);
   }
   if (Event_Needs(Event2.Event) == NEED_HOUSE) {
-    htype2list.Set_Selected_Index(Event2.Data.House);
+    htype2list.Set_Selected_Index(static_cast<int>(Event2.Data.House));
   } else {
     htype2list.Set_Selected_Index(0);
   }
   if (Action_Needs(Action1.Action) == NEED_HOUSE) {
-    htype3list.Set_Selected_Index(Action1.Data.House);
+    htype3list.Set_Selected_Index(static_cast<int>(Action1.Data.House));
   } else {
     htype3list.Set_Selected_Index(0);
   }
   if (Action_Needs(Action2.Action) == NEED_HOUSE) {
-    htype4list.Set_Selected_Index(Action2.Data.House);
+    htype4list.Set_Selected_Index(static_cast<int>(Action2.Data.House));
   } else {
     htype4list.Set_Selected_Index(0);
   }
@@ -903,14 +912,14 @@ bool TriggerTypeClass::Edit() {
   /*
   **	Optional special weapon list.
   */
-  char special1[DESC_SIZE] = "";
-  DropListClass spc1(DATA_SPECIAL1, special1, sizeof(special1),
-                     TPF_EFNT | TPF_NOSHADOW, AD1_X, AD1_Y, ED_WIDTH, ED_HEIGHT,
+  char special1[kDescSize] = "";
+  DropListClass spc1(kDataSpecial1, special1, sizeof(special1),
+                     TPF_EFNT | TPF_NOSHADOW, kAd1X, kAd1Y, kEdWidth, kEdHeight,
                      MixArchive::Retrieve("EBTN-UP.SHP"),
                      MixArchive::Retrieve("EBTN-DN.SHP"));
-  char special2[DESC_SIZE] = "";
-  DropListClass spc2(DATA_SPECIAL2, special2, sizeof(special2),
-                     TPF_EFNT | TPF_NOSHADOW, AD2_X, AD2_Y, ED_WIDTH, ED_HEIGHT,
+  char special2[kDescSize] = "";
+  DropListClass spc2(kDataSpecial2, special2, sizeof(special2),
+                     TPF_EFNT | TPF_NOSHADOW, kAd2X, kAd2Y, kEdWidth, kEdHeight,
                      MixArchive::Retrieve("EBTN-UP.SHP"),
                      MixArchive::Retrieve("EBTN-DN.SHP"));
   for (const SpecialWeaponType spec :
@@ -919,12 +928,12 @@ bool TriggerTypeClass::Edit() {
     spc2.Add_Item(SpecialWeaponName[spec]);
   }
   if (magic_enum::enum_contains(Action1.Data.Special)) {
-    spc1.Set_Selected_Index(Action1.Data.Special);
+    spc1.Set_Selected_Index(static_cast<int>(Action1.Data.Special));
   } else {
     spc1.Set_Selected_Index(0);
   }
   if (magic_enum::enum_contains(Action2.Data.Special)) {
-    spc2.Set_Selected_Index(Action2.Data.Special);
+    spc2.Set_Selected_Index(static_cast<int>(Action2.Data.Special));
   } else {
     spc2.Set_Selected_Index(0);
   }
@@ -932,27 +941,27 @@ bool TriggerTypeClass::Edit() {
   /*
   **	Optional quarry type.
   */
-  char quarry1[DESC_SIZE] = "";
-  DropListClass qlist1(DATA_SPECIAL1, quarry1, sizeof(quarry1),
-                       TPF_EFNT | TPF_NOSHADOW, AD1_X, AD1_Y, ED_WIDTH,
-                       ED_HEIGHT, MixArchive::Retrieve("EBTN-UP.SHP"),
+  char quarry1[kDescSize] = "";
+  DropListClass qlist1(kDataSpecial1, quarry1, sizeof(quarry1),
+                       TPF_EFNT | TPF_NOSHADOW, kAd1X, kAd1Y, kEdWidth,
+                       kEdHeight, MixArchive::Retrieve("EBTN-UP.SHP"),
                        MixArchive::Retrieve("EBTN-DN.SHP"));
-  char quarry2[DESC_SIZE] = "";
-  DropListClass qlist2(DATA_SPECIAL2, quarry2, sizeof(quarry2),
-                       TPF_EFNT | TPF_NOSHADOW, AD2_X, AD2_Y, ED_WIDTH,
-                       ED_HEIGHT, MixArchive::Retrieve("EBTN-UP.SHP"),
+  char quarry2[kDescSize] = "";
+  DropListClass qlist2(kDataSpecial2, quarry2, sizeof(quarry2),
+                       TPF_EFNT | TPF_NOSHADOW, kAd2X, kAd2Y, kEdWidth,
+                       kEdHeight, MixArchive::Retrieve("EBTN-UP.SHP"),
                        MixArchive::Retrieve("EBTN-DN.SHP"));
   for (const QuarryType q : magic_enum::enum_values<QuarryType>()) {
     qlist1.Add_Item(QuarryName[q]);
     qlist2.Add_Item(QuarryName[q]);
   }
   if (magic_enum::enum_contains(Action1.Data.Quarry)) {
-    qlist1.Set_Selected_Index(Action1.Data.Quarry);
+    qlist1.Set_Selected_Index(static_cast<int>(Action1.Data.Quarry));
   } else {
     qlist1.Set_Selected_Index(0);
   }
   if (magic_enum::enum_contains(Action2.Data.Quarry)) {
-    qlist2.Set_Selected_Index(Action2.Data.Quarry);
+    qlist2.Set_Selected_Index(static_cast<int>(Action2.Data.Quarry));
   } else {
     qlist2.Set_Selected_Index(0);
   }
@@ -961,17 +970,17 @@ bool TriggerTypeClass::Edit() {
   **	Name of this trigger text edit field.
   */
   char namebuf[5] = "";
-  EditClass name_edt(NAME_EDIT, namebuf, sizeof(namebuf),
-                     TPF_EFNT | TPF_NOSHADOW, D_DIALOG_X + 40, D_DIALOG_Y + 30,
-                     40, 9, EditClass::kAlphanumeric);
+  EditClass name_edt(kNameEdit, namebuf, sizeof(namebuf),
+                     TPF_EFNT | TPF_NOSHADOW, kDialogX + 40, kDialogY + 30, 40,
+                     9, EditClass::kAlphanumeric);
   port::SafeCopy(namebuf, IniName);  // Name
 
   /*
   **	Create the list of house's allowed for trigger.
   */
-  char housetext[DESC_SIZE] = "";
+  char housetext[kDescSize] = "";
   DropListClass housebtn(
-      BUTTON_HOUSE, housetext, sizeof(housetext), TPF_EFNT | TPF_NOSHADOW,
+      kButtonHouse, housetext, sizeof(housetext), TPF_EFNT | TPF_NOSHADOW,
       name_edt.X + name_edt.Width + 20, name_edt.Y, 95, 8 * 5,
       MixArchive::Retrieve("EBTN-UP.SHP"), MixArchive::Retrieve("EBTN-DN.SHP"));
   for (const HousesType house : magic_enum::enum_values<HousesType>()) {
@@ -980,47 +989,47 @@ bool TriggerTypeClass::Edit() {
   if (House == HOUSE_NONE) {
     House = HOUSE_GOOD;
   }
-  housebtn.Set_Selected_Index(House);
+  housebtn.Set_Selected_Index(static_cast<int>(House));
 
   /*
   ** Must match order and number of PersistantType specified in
   **	TriggerTypeClass definition.
   */
-  char perstext[DESC_SIZE] = "";
+  char perstext[kDescSize] = "";
   static const char* _perstext[3] = {"Volatile", "Semi-persistent",
                                      "Persistent"};
   DropListClass persbtn(
-      BUTTON_PERSISTANCE, perstext, sizeof(perstext), TPF_EFNT | TPF_NOSHADOW,
+      kButtonPersistance, perstext, sizeof(perstext), TPF_EFNT | TPF_NOSHADOW,
       housebtn.X + housebtn.Width + 20, housebtn.Y, 105, 8 * 5,
       MixArchive::Retrieve("EBTN-UP.SHP"), MixArchive::Retrieve("EBTN-DN.SHP"));
   for (auto& i : _perstext) {
     persbtn.Add_Item(i);
   }
-  persbtn.Set_Selected_Index(IsPersistant);
+  persbtn.Set_Selected_Index(static_cast<int>(IsPersistant));
 
   /*
   **	This button controls the existence and relationship of a second trigger
   **	event.
   */
-  int eventflag = EventControl;
-  TextButtonClass eventbtn(BUTTON_EVENT, TXT_TRIGGER_JUST_EVENT, kTpfEButton,
+  int eventflag = static_cast<int>(EventControl);
+  TextButtonClass eventbtn(kButtonEvent, TXT_TRIGGER_JUST_EVENT, kTpfEButton,
                            event1list.X, event1list.Y + 11, 100, 9);
 
   /*
   **	This button controls the existence of a secondary action.
   */
   bool actionflag = ActionControl != MULTI_ONLY;
-  TextButtonClass actionbtn(BUTTON_ACTION, TXT_TRIGGER_JUST_ACTION, kTpfEButton,
+  TextButtonClass actionbtn(kButtonAction, TXT_TRIGGER_JUST_ACTION, kTpfEButton,
                             action1list.X, action1list.Y + 11, 100, 9);
 
   /*
   **	Create the ubiquitous OK and Cancel buttons.
   */
-  TextButtonClass okbtn(BUTTON_OK, TXT_OK, kTpfEButton, D_DIALOG_X + 35,
-                        D_DIALOG_Y + D_DIALOG_H - 30, 45, 9);
-  TextButtonClass cancelbtn(BUTTON_CANCEL, TXT_CANCEL, kTpfEButton,
-                            D_DIALOG_X + D_DIALOG_W - 80,
-                            D_DIALOG_Y + D_DIALOG_H - 30, 45, 9);
+  TextButtonClass okbtn(kButtonOk, TXT_OK, kTpfEButton, kDialogX + 35,
+                        kDialogY + kDialogH - 30, 45, 9);
+  TextButtonClass cancelbtn(kKbuttoncancel, TXT_CANCEL, kTpfEButton,
+                            kDialogX + kDialogW - 80, kDialogY + kDialogH - 30,
+                            45, 9);
 
   /*
   **	Initialize
@@ -1059,43 +1068,37 @@ bool TriggerTypeClass::Edit() {
       **	Display the dialog box
       */
       Hide_Mouse();
-      Dialog_Box(D_DIALOG_X, D_DIALOG_Y, D_DIALOG_W, D_DIALOG_H);
-      Draw_Caption(TXT_TRIGGER_EDITOR, D_DIALOG_X, D_DIALOG_Y, D_DIALOG_W);
+      Dialog_Box(kDialogX, kDialogY, kDialogW, kDialogH);
+      Draw_Caption(TXT_TRIGGER_EDITOR, kDialogX, kDialogY, kDialogW);
 
       /*
       **	Draw the captions
       */
       Fancy_Text_Print("Trigger Event:", event1list.X, event1list.Y - 7, scheme,
-                       TBLACK, TPF_EFNT | TPF_NOSHADOW);
+                       kTBlack, TPF_EFNT | TPF_NOSHADOW);
       Fancy_Text_Print("Action to Perform:", action1list.X, action1list.Y - 7,
-                       scheme, TBLACK, TPF_EFNT | TPF_NOSHADOW);
-      Fancy_Text_Print("House:", housebtn.X, housebtn.Y - 7, scheme, TBLACK,
+                       scheme, kTBlack, TPF_EFNT | TPF_NOSHADOW);
+      Fancy_Text_Print("House:", housebtn.X, housebtn.Y - 7, scheme, kTBlack,
                        TPF_EFNT | TPF_NOSHADOW);
-      Fancy_Text_Print("Name:", name_edt.X, name_edt.Y - 7, scheme, TBLACK,
+      Fancy_Text_Print("Name:", name_edt.X, name_edt.Y - 7, scheme, kTBlack,
                        TPF_EFNT | TPF_NOSHADOW);
-      Fancy_Text_Print("Persistence:", persbtn.X, persbtn.Y - 7, scheme, TBLACK,
-                       TPF_EFNT | TPF_NOSHADOW);
+      Fancy_Text_Print("Persistence:", persbtn.X, persbtn.Y - 7, scheme,
+                       kTBlack, TPF_EFNT | TPF_NOSHADOW);
 
       if (eventflag == 3) {
         LogicPage->Draw_Line(event1list.X - 1, event1list.Y + 3,
-                             event1list.X - 4, event1list.Y + 3,
-                             WHITE);
+                             event1list.X - 4, event1list.Y + 3, kWhite);
         LogicPage->Draw_Line(event1list.X - 4, event1list.Y + 3,
-                             action1list.X - 4, action1list.Y + 3,
-                             WHITE);
+                             action1list.X - 4, action1list.Y + 3, kWhite);
         LogicPage->Draw_Line(action1list.X - 1, action1list.Y + 3,
-                             action1list.X - 4, action1list.Y + 3,
-                             WHITE);
+                             action1list.X - 4, action1list.Y + 3, kWhite);
 
         LogicPage->Draw_Line(event2list.X - 1, event2list.Y + 3,
-                             event2list.X - 10, event2list.Y + 3,
-                             WHITE);
+                             event2list.X - 10, event2list.Y + 3, kWhite);
         LogicPage->Draw_Line(event2list.X - 10, event2list.Y + 3,
-                             action2list.X - 10, action2list.Y + 3,
-                             WHITE);
+                             action2list.X - 10, action2list.Y + 3, kWhite);
         LogicPage->Draw_Line(action2list.X - 1, action2list.Y + 3,
-                             action2list.X - 10, action2list.Y + 3,
-                             WHITE);
+                             action2list.X - 10, action2list.Y + 3, kWhite);
       }
 
       /*
@@ -1185,7 +1188,7 @@ bool TriggerTypeClass::Edit() {
       atype2list.Remove();
       utype2list.Remove();
       ttype2list.Remove();
-      if (commands->Extract_Gadget(EVENT_LIST2)) {
+      if (commands->Extract_Gadget(kEventList2)) {
         switch (Event_Needs(*event2list.Current_Item())) {
           case NEED_HOUSE:
             htype2list.Add(*commands);
@@ -1318,7 +1321,7 @@ bool TriggerTypeClass::Edit() {
       soundtype2list.Remove();
       movietype2list.Remove();
       speechtype2list.Remove();
-      if (commands->Extract_Gadget(ACTION_LIST2)) {
+      if (commands->Extract_Gadget(kActionList2)) {
         switch (Action_Needs(*action2list.Current_Item())) {
           case NEED_MOVIE:
             movietype2list.Add(*commands);
@@ -1428,32 +1431,32 @@ bool TriggerTypeClass::Edit() {
     **	Process input
     */
     switch (static_cast<int>(input)) {
-      case ButtonKey(BUTTON_EVENT):
+      case ButtonKey(kButtonEvent):
         eventflag = (eventflag + 1) % 4;
         display = true;
         break;
 
-      case ButtonKey(BUTTON_ACTION):
+      case ButtonKey(kButtonAction):
         actionflag = !actionflag;
         display = true;
         break;
 
-      case ButtonKey(DATA_SPEECH1):
+      case ButtonKey(kDataSpeech1):
         Speak(VoxType(speechtype1list.Current_Index()));
         display = true;
         break;
 
-      case ButtonKey(DATA_SPEECH2):
+      case ButtonKey(kDataSpeech2):
         Speak(VoxType(speechtype2list.Current_Index()));
         display = true;
         break;
 
-      case ButtonKey(DATA_SOUND1):
+      case ButtonKey(kDataSound1):
         Sound_Effect(VocType(soundtype1list.Current_Index()));
         display = true;
         break;
 
-      case ButtonKey(DATA_SOUND2):
+      case ButtonKey(kDataSound2):
         Sound_Effect(VocType(soundtype2list.Current_Index()));
         display = true;
         break;
@@ -1463,7 +1466,7 @@ bool TriggerTypeClass::Edit() {
       *their *	respective positions within the trigger object.
       */
       case KN_RETURN:
-      case ButtonKey(BUTTON_OK):
+      case ButtonKey(kButtonOk):
         House = HousesType(housebtn.Current_Index());
         IsPersistant = PersistantType(persbtn.Current_Index());
         if (strlen(namebuf) == 0) {
@@ -1692,7 +1695,7 @@ bool TriggerTypeClass::Edit() {
         return true;
 
       case KN_ESC:
-      case ButtonKey(BUTTON_CANCEL):
+      case ButtonKey(kKbuttoncancel):
         process = false;
         [[fallthrough]];
 
@@ -2071,24 +2074,24 @@ void TriggerTypeClass::Draw_It(int /*unused*/, int x, int y, int width,
   if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
     RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
     static int _tabs[] = {13, 40};
-    if ((flags & 0x0F) == TPF_6PT_GRAD || (flags & 0x0F) == TPF_EFNT) {
+    if (Is_Font(flags, TPF_6PT_GRAD) || Is_Font(flags, TPF_EFNT)) {
       if (selected) {
         flags = flags | TPF_BRIGHT_COLOR;
         LogicPage->Fill_Rect(x, y, x + width - 1, y + height - 1,
                              scheme->Shadow);
       } else {
-        if (!(flags & TPF_USE_GRAD_PAL)) {
+        if (!base::Any(flags & TPF_USE_GRAD_PAL)) {
           flags = flags | TPF_MEDIUM_COLOR;
         }
       }
 
-      Conquer_Clip_Text_Print(Description(), x, y, scheme, TBLACK, flags, width,
-                              _tabs);
+      Conquer_Clip_Text_Print(Description(), x, y, scheme, kTBlack, flags,
+                              width, _tabs);
     } else {
       Conquer_Clip_Text_Print(Description(), x, y,
                               (selected ? &ColorRemaps[PCOLOR_DIALOG_BLUE]
                                         : &ColorRemaps[PCOLOR_GREY]),
-                              TBLACK, flags, width, _tabs);
+                              kTBlack, flags, width, _tabs);
     }
   }
 }

@@ -47,12 +47,15 @@
 
 #include "ra/tevent.h"
 
+#include <cstdint>
 #include <cstdlib>
 #include <cstring>
 #include <format>
 #include <string>
 #include <utility>
 
+#include "base/enum_array.h"
+#include "base/numeric.h"
 #include "port/ex_string.h"
 #include "port/tokenizer.h"
 #include "ra/ccptr.h"
@@ -73,83 +76,91 @@
 #include "tech/fixed.h"
 #include "tech/number_parse.h"
 
+// The low nibble of the text print flags selects the font.
+static constexpr bool Is_Font(const TextPrintType flags,
+                              const TextPrintType font) {
+  return (static_cast<uint32_t>(flags) & 0x0FU) == static_cast<uint32_t>(font);
+}
+
 /*
 **	This is the text name for all of the trigger events. These are used by
 *the scenario editor
 */
-static const char* EventText[TEVENT_COUNT] = {"-No Event-",
-                                              "Entered by...",
-                                              "Spied by...",
-                                              "Thieved by...",
-                                              "Discovered by player",
-                                              "House Discovered...",
-                                              "Attacked by anybody",
-                                              "Destroyed by anybody",
-                                              "Any Event",
-                                              "Destroyed, Units, All...",
-                                              "Destroyed, Buildings, All...",
-                                              "Destroyed, All...",
-                                              "Credits exceed (x100)...",
-                                              "Elapsed Time (1/10th min)...",
-                                              "Mission Timer Expired",
-                                              "Destroyed, Buildings, #...",
-                                              "Destroyed, Units, #...",
-                                              "No Factories left",
-                                              "Civilians Evacuated",
-                                              "Build Building Type...",
-                                              "Build Unit Type...",
-                                              "Build Infantry Type...",
-                                              "Build Aircraft Type...",
-                                              "Leaves map (team)...",
-                                              "Zone Entry by...",
-                                              "Crosses Horizontal Line...",
-                                              "Crosses Vertical Line...",
-                                              "Global is set...",
-                                              "Global is clear...",
-                                              "Destroyed, Fakes, All...",
-                                              "Low Power...",
-                                              "All bridges destroyed",
-                                              "Building exists..."};
+static base::EnumArray<TEventType, const char*, static_cast<int>(TEVENT_COUNT)>
+    EventText = {"-No Event-",
+                 "Entered by...",
+                 "Spied by...",
+                 "Thieved by...",
+                 "Discovered by player",
+                 "House Discovered...",
+                 "Attacked by anybody",
+                 "Destroyed by anybody",
+                 "Any Event",
+                 "Destroyed, Units, All...",
+                 "Destroyed, Buildings, All...",
+                 "Destroyed, All...",
+                 "Credits exceed (x100)...",
+                 "Elapsed Time (1/10th min)...",
+                 "Mission Timer Expired",
+                 "Destroyed, Buildings, #...",
+                 "Destroyed, Units, #...",
+                 "No Factories left",
+                 "Civilians Evacuated",
+                 "Build Building Type...",
+                 "Build Unit Type...",
+                 "Build Infantry Type...",
+                 "Build Aircraft Type...",
+                 "Leaves map (team)...",
+                 "Zone Entry by...",
+                 "Crosses Horizontal Line...",
+                 "Crosses Vertical Line...",
+                 "Global is set...",
+                 "Global is clear...",
+                 "Destroyed, Fakes, All...",
+                 "Low Power...",
+                 "All bridges destroyed",
+                 "Building exists..."};
 
 /*
 **	This is an ordinal list of trigger events. This list
 **	is used when generating the trigger dialog box.
 */
-EventChoiceClass EventChoices[TEVENT_COUNT] = {
-    {TEVENT_NONE},
-    {TEVENT_PLAYER_ENTERED},
-    {TEVENT_SPIED},
-    {TEVENT_THIEVED},
-    {TEVENT_DISCOVERED},
-    {TEVENT_HOUSE_DISCOVERED},
-    {TEVENT_ATTACKED},
-    {TEVENT_DESTROYED},
-    {TEVENT_ANY},
-    {TEVENT_UNITS_DESTROYED},
-    {TEVENT_BUILDINGS_DESTROYED},
-    {TEVENT_ALL_DESTROYED},
-    {TEVENT_CREDITS},
-    {TEVENT_TIME},
-    {TEVENT_MISSION_TIMER_EXPIRED},
-    {TEVENT_NBUILDINGS_DESTROYED},
-    {TEVENT_NUNITS_DESTROYED},
-    {TEVENT_NOFACTORIES},
-    {TEVENT_EVAC_CIVILIAN},
-    {TEVENT_BUILD},
-    {TEVENT_BUILD_UNIT},
-    {TEVENT_BUILD_INFANTRY},
-    {TEVENT_BUILD_AIRCRAFT},
-    {TEVENT_LEAVES_MAP},
-    {TEVENT_ENTERS_ZONE},
-    {TEVENT_CROSS_HORIZONTAL},
-    {TEVENT_CROSS_VERTICAL},
-    {TEVENT_GLOBAL_SET},
-    {TEVENT_GLOBAL_CLEAR},
-    {TEVENT_FAKES_DESTROYED},
-    {TEVENT_LOW_POWER},
-    {TEVENT_ALL_BRIDGES_DESTROYED},
-    {TEVENT_BUILDING_EXISTS},
-};
+base::EnumArray<TEventType, EventChoiceClass, static_cast<int>(TEVENT_COUNT)>
+    EventChoices = {{
+        {TEVENT_NONE},
+        {TEVENT_PLAYER_ENTERED},
+        {TEVENT_SPIED},
+        {TEVENT_THIEVED},
+        {TEVENT_DISCOVERED},
+        {TEVENT_HOUSE_DISCOVERED},
+        {TEVENT_ATTACKED},
+        {TEVENT_DESTROYED},
+        {TEVENT_ANY},
+        {TEVENT_UNITS_DESTROYED},
+        {TEVENT_BUILDINGS_DESTROYED},
+        {TEVENT_ALL_DESTROYED},
+        {TEVENT_CREDITS},
+        {TEVENT_TIME},
+        {TEVENT_MISSION_TIMER_EXPIRED},
+        {TEVENT_NBUILDINGS_DESTROYED},
+        {TEVENT_NUNITS_DESTROYED},
+        {TEVENT_NOFACTORIES},
+        {TEVENT_EVAC_CIVILIAN},
+        {TEVENT_BUILD},
+        {TEVENT_BUILD_UNIT},
+        {TEVENT_BUILD_INFANTRY},
+        {TEVENT_BUILD_AIRCRAFT},
+        {TEVENT_LEAVES_MAP},
+        {TEVENT_ENTERS_ZONE},
+        {TEVENT_CROSS_HORIZONTAL},
+        {TEVENT_CROSS_VERTICAL},
+        {TEVENT_GLOBAL_SET},
+        {TEVENT_GLOBAL_CLEAR},
+        {TEVENT_FAKES_DESTROYED},
+        {TEVENT_LOW_POWER},
+        {TEVENT_ALL_BRIDGES_DESTROYED},
+        {TEVENT_BUILDING_EXISTS},
+    }};
 
 /***********************************************************************************************
  * EventChoiceClass::Draw_It -- Displays the event choice class as a text
@@ -171,23 +182,23 @@ void EventChoiceClass::Draw_It(int /*unused*/, int x, int y, int width,
                                TextPrintType flags) const {
   RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
   static int _tabs[] = {13, 40};
-  if ((flags & 0x0F) == TPF_6PT_GRAD || (flags & 0x0F) == TPF_EFNT) {
+  if (Is_Font(flags, TPF_6PT_GRAD) || Is_Font(flags, TPF_EFNT)) {
     if (selected) {
       flags = flags | TPF_BRIGHT_COLOR;
       LogicPage->Fill_Rect(x, y, x + width - 1, y + height - 1, scheme->Shadow);
     } else {
-      if (!(flags & TPF_USE_GRAD_PAL)) {
+      if (!base::Any(flags & TPF_USE_GRAD_PAL)) {
         flags = flags | TPF_MEDIUM_COLOR;
       }
     }
 
-    Conquer_Clip_Text_Print(Description(), x, y, scheme, TBLACK, flags, width,
+    Conquer_Clip_Text_Print(Description(), x, y, scheme, kTBlack, flags, width,
                             _tabs);
   } else {
     Conquer_Clip_Text_Print(
         Description(), x, y,
         selected ? &ColorRemaps[PCOLOR_DIALOG_BLUE] : &ColorRemaps[PCOLOR_GREY],
-        TBLACK, flags, width, _tabs);
+        kTBlack, flags, width, _tabs);
   }
 }
 
@@ -395,7 +406,8 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
       **	Verify that the structure has been built.
       */
       case TEVENT_BUILDING_EXISTS:
-        if ((hptr->ActiveBScan & ScanBit(Data.Structure)) == 0) {
+        if ((hptr->ActiveBScan & ScanBit(static_cast<int>(Data.Structure))) ==
+            0) {
           return false;
         }
         //				if (hptr->Get_Quantity(Data.Structure)

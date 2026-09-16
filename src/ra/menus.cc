@@ -193,22 +193,22 @@ void Setup_Menu(int menu, const char* text[], uint32_t field, int index,
                 int skip) {
   int* menuptr = &MenuList[menu][0]; /* get pointer to menu	*/
   const int menuy =
-      static_cast<int>(WinY) + menuptr[MENUY]; /* get the absolute */
+      static_cast<int>(WinY) + menuptr[kMenuy]; /* get the absolute */
   const int menux =
-      static_cast<int>(WinX) + menuptr[MENUX]; /* coords of menu */
-  const int item = Select_To_Entry(menuptr[MSELECTED], field, index);
-  const int num = menuptr[ITEMSHIGH];
+      static_cast<int>(WinX) + menuptr[kMenux]; /* coords of menu */
+  const int item = Select_To_Entry(menuptr[kMselected], field, index);
+  const int num = menuptr[kItemshigh];
 
-  Plain_Text_Print(0, 0, 0, TBLACK, TBLACK, TPF_8POINT | TPF_DROPSHADOW);
+  Plain_Text_Print(0, 0, 0, kTBlack, kTBlack, TPF_8POINT | TPF_DROPSHADOW);
   Hide_Mouse();
   for (int lp = 0; lp < num; lp++) {
     const int idx = Select_To_Entry(lp, field, index);
     const int drawy = menuy + (lp * FontHeight) + (lp * skip);
     Plain_Text_Print(text[idx], menux, drawy,
-                     menuptr[idx == item && MenuUpdate ? HILITE : NORMCOL],
-                     TBLACK, TPF_8POINT | TPF_DROPSHADOW);
+                     menuptr[idx == item && MenuUpdate ? kHilite : kNormcol],
+                     kTBlack, TPF_8POINT | TPF_DROPSHADOW);
     //		if ((idx==item) && (MenuUpdate ))
-    //			Text_Print(text[idx], menux, drawy, menuptr[HILITE],
+    //			Text_Print(text[idx], menux, drawy, menuptr[kHilite],
     // TBLACK);
   }
   MenuSkip = skip;
@@ -226,18 +226,18 @@ int Check_Menu(int menu, const char* text[], char* /*unused*/, uint32_t field,
   // /* get rid of warning	*/
 
   int* menuptr = &MenuList[menu][0];          /* get pointer to menu	*/
-  const int maxitem = menuptr[ITEMSHIGH] - 1; /* find max items */
-  int newitem = item = menuptr[MSELECTED] % (maxitem + 1); /* find selected */
+  const int maxitem = menuptr[kItemshigh] - 1;              /* find max items */
+  int newitem = item = menuptr[kMselected] % (maxitem + 1); /* find selected */
   int select = -1;                            /* no selection made		*/
   const int menuskip = FontHeight + MenuSkip; /* calc new font height	*/
   const int halfskip = MenuSkip / 2;          /* adjustment for menus	*/
 
   const int menuy =
-      static_cast<int>(WinY) + menuptr[MENUY]; /* get the absolute */
+      static_cast<int>(WinY) + menuptr[kMenuy]; /* get the absolute */
   const int menux =
-      static_cast<int>(WinX) + menuptr[MENUX]; /* coords of menu */
-  const int normcol = menuptr[NORMCOL];
-  const int litcol = menuptr[HILITE];
+      static_cast<int>(WinX) + menuptr[kMenux]; /* coords of menu */
+  const int normcol = menuptr[kNormcol];
+  const int litcol = menuptr[kHilite];
 
   /*
   **	Fetch a pending keystroke from the buffer if there is a keystroke
@@ -259,12 +259,12 @@ int Check_Menu(int menu, const char* text[], char* /*unused*/, uint32_t field,
   **	out the new selected item, and continue forward.
   */
   /* get menu coords from the menu structure as necessary */
-  const int mx1 = static_cast<int>(WinX) + (menuptr[MENUX] * FontWidth);
-  const int my1 = static_cast<int>(WinY) + menuptr[MENUY] -
+  const int mx1 = static_cast<int>(WinX) + (menuptr[kMenux] * FontWidth);
+  const int my1 = static_cast<int>(WinY) + menuptr[kMenuy] -
                   halfskip; /*		from the menu		*/
-  const int mx2 = mx1 + (menuptr[ITEMWIDTH] * FontWidth) -
+  const int mx2 = mx1 + (menuptr[kItemwidth] * FontWidth) -
                   1; /*		structure as		*/
-  const int my2 = my1 + (menuptr[ITEMSHIGH] * menuskip) -
+  const int my2 = my1 + (menuptr[kItemshigh] * menuskip) -
                   1; /*		necessary			*/
 
   const int tempy = Get_Mouse_Y();
@@ -332,7 +332,7 @@ int Check_Menu(int menu, const char* text[], char* /*unused*/, uint32_t field,
     *selection of *					that entry.
     */
     default:
-      for (idx = 0; idx < menuptr[ITEMSHIGH]; idx++) {
+      for (idx = 0; idx < menuptr[kItemshigh]; idx++) {
         if (toupper(*text[Select_To_Entry(idx, field, index)]) ==
             toupper(KeyboardClass::To_ASCII(
                 static_cast<KeyNumType>(key & 0xFFU)))) {
@@ -348,11 +348,11 @@ int Check_Menu(int menu, const char* text[], char* /*unused*/, uint32_t field,
     Hide_Mouse();
     idx = Select_To_Entry(item, field, index);
     drawy = menuy + (item * menuskip);
-    Plain_Text_Print(text[idx], menux, drawy, normcol, TBLACK,
+    Plain_Text_Print(text[idx], menux, drawy, normcol, kTBlack,
                      TPF_8POINT | TPF_DROPSHADOW);
     idx = Select_To_Entry(newitem, field, index);
     drawy = menuy + (newitem * menuskip);
-    Plain_Text_Print(text[idx], menux, drawy, litcol, TBLACK,
+    Plain_Text_Print(text[idx], menux, drawy, litcol, kTBlack,
                      TPF_8POINT | TPF_DROPSHADOW);
     Show_Mouse(); /* resurrect the mouse	*/
   }
@@ -361,12 +361,12 @@ int Check_Menu(int menu, const char* text[], char* /*unused*/, uint32_t field,
     idx = Select_To_Entry(select, field, index);
     Hide_Mouse(); /* get rid of the mouse	*/
     drawy = menuy + (newitem * menuskip);
-    Flash_Line(text[idx], menux, drawy, normcol, litcol, TBLACK);
+    Flash_Line(text[idx], menux, drawy, normcol, litcol, kTBlack);
     Show_Mouse();
     select = idx;
   }
 
-  menuptr[MSELECTED] = newitem; /* update menu select	*/
+  menuptr[kMselected] = newitem; /* update menu select	*/
 
   return select;
 }
@@ -410,7 +410,7 @@ int Do_Menu(const char** strings, bool /*unused*/) {
   while (*ptr++) {
     count++;
   }
-  MenuList[0][ITEMSHIGH] = count;
+  MenuList[0][kItemshigh] = count;
 
   /*
   **	Determine the width of the menu by finding the length of the
@@ -424,23 +424,25 @@ int Do_Menu(const char** strings, bool /*unused*/) {
     ptr++;
   }
   length += 7;
-  MenuList[0][ITEMWIDTH] = length / 8;
+  MenuList[0][kItemwidth] = length / 8;
 
   /*
   **	Adjust the window values to match the size of the
   **	specified menu.
   */
-  WindowList[WINDOW_MENU][WINDOWWIDTH] = (MenuList[0][ITEMWIDTH] + 2) * 8;
-  WindowList[WINDOW_MENU][WINDOWX] = (19 - (length / 16)) * 8;
-  WindowList[WINDOW_MENU][WINDOWY] =
-      174 - (MenuList[0][ITEMSHIGH] * (FontHeight + FontYSpacing));
-  WindowList[WINDOW_MENU][WINDOWHEIGHT] =
-      (MenuList[0][ITEMSHIGH] * FontHeight) + 5 /*11*/;
+  WindowList[static_cast<int>(WINDOW_MENU)][kWindowWidth] =
+      (MenuList[0][kItemwidth] + 2) * 8;
+  WindowList[static_cast<int>(WINDOW_MENU)][kWindowX] =
+      (19 - (length / 16)) * 8;
+  WindowList[static_cast<int>(WINDOW_MENU)][kWindowY] =
+      174 - (MenuList[0][kItemshigh] * (FontHeight + FontYSpacing));
+  WindowList[static_cast<int>(WINDOW_MENU)][kWindowHeight] =
+      (MenuList[0][kItemshigh] * FontHeight) + 5 /*11*/;
 
   /*
   **	Display the menu.
   */
-  Change_Window(WINDOW_MENU);
+  Change_Window(static_cast<int>(WINDOW_MENU));
   Show_Mouse();
   Window_Box(WINDOW_MENU, BOXSTYLE_RAISED);
   Setup_Menu(0, strings, 0xFFFFL, 0, 0);
@@ -459,8 +461,8 @@ int Do_Menu(const char** strings, bool /*unused*/) {
   Hide_Mouse();
 
   HidPage.Blit(SeenBuff);
-  // WindowList[WINDOW_MAIN][2] = SeenBuff.Get_Width();//BG
-  Change_Window(WINDOW_MAIN);
+  // WindowList[static_cast<int>(WINDOW_MAIN)][2] = SeenBuff.Get_Width();//BG
+  Change_Window(static_cast<int>(WINDOW_MAIN));
   Map.Flag_To_Redraw(true);
   return selection;
 }
@@ -521,15 +523,13 @@ int Main_Menu(int32_t /*unused*/) {
   **	Button enumerations:
   */
   //	Enums in Select_Game() must match order of buttons in Main_Menu().
-  enum {
-    BUTTON_EXPAND = 100,  //	(CS)
-    BUTTON_EXPAND_AM,
-    BUTTON_START,
-    BUTTON_LOAD,
-    BUTTON_MULTI,
-    BUTTON_INTRO,
-    BUTTON_EXIT,
-  };
+  constexpr int kButtonExpand = 100;  //	(CS)
+  constexpr int kButtonExpandAm = 101;
+  constexpr int kButtonStart = 102;
+  constexpr int kButtonLoad = 103;
+  constexpr int kButtonMulti = 104;
+  constexpr int kButtonIntro = 105;
+  constexpr int kButtonExit = 106;
 
   /*
   **	Dialog variables:
@@ -556,34 +556,34 @@ int Main_Menu(int32_t /*unused*/) {
     ystep = 26;
   }
 
-  TextButtonClass expandbtnCS(BUTTON_EXPAND, TXT_WOL_CS_MISSIONS, kTpfButton,
+  TextButtonClass expandbtnCS(kButtonExpand, TXT_WOL_CS_MISSIONS, kTpfButton,
                               d_start_x, starty, d_start_w, d_start_h);
   if (bExpansionCS) {
     starty += ystep;
   }
-  TextButtonClass expandbtnAM(BUTTON_EXPAND_AM, TXT_WOL_AM_MISSIONS, kTpfButton,
+  TextButtonClass expandbtnAM(kButtonExpandAm, TXT_WOL_AM_MISSIONS, kTpfButton,
                               d_start_x, starty, d_start_w, d_start_h);
   if (bExpansionAM) {
     starty += ystep;
   }
 
-  TextButtonClass startbtn(BUTTON_START, TXT_START_NEW_GAME, kTpfButton,
+  TextButtonClass startbtn(kButtonStart, TXT_START_NEW_GAME, kTpfButton,
                            d_start_x, starty, d_start_w, d_start_h);
   starty += ystep;
 
-  TextButtonClass loadbtn(BUTTON_LOAD, TXT_LOAD_MISSION, kTpfButton, d_load_x,
+  TextButtonClass loadbtn(kButtonLoad, TXT_LOAD_MISSION, kTpfButton, d_load_x,
                           starty, d_load_w, d_load_h);
   starty += ystep;
 
-  TextButtonClass multibtn(BUTTON_MULTI, TXT_MULTIPLAYER_GAME, kTpfButton,
+  TextButtonClass multibtn(kButtonMulti, TXT_MULTIPLAYER_GAME, kTpfButton,
                            d_multi_x, starty, d_multi_w, d_multi_h);
   starty += ystep;
 
-  TextButtonClass introbtn(BUTTON_INTRO, TXT_INTRO, kTpfButton, d_intro_x,
+  TextButtonClass introbtn(kButtonIntro, TXT_INTRO, kTpfButton, d_intro_x,
                            starty, d_intro_w, d_intro_h);
   starty += ystep;
 
-  TextButtonClass exitbtn(BUTTON_EXIT, TXT_EXIT_GAME, kTpfButton, d_exit_x,
+  TextButtonClass exitbtn(kButtonExit, TXT_EXIT_GAME, kTpfButton, d_exit_x,
                           starty, d_exit_w, d_exit_h);
 
   /*
@@ -634,7 +634,7 @@ int Main_Menu(int32_t /*unused*/) {
 
   Keyboard->Clear();
 
-  Fancy_Text_Print(TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(), TBLACK,
+  Fancy_Text_Print(TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(), kTBlack,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   const fixed oldvolume = Options.ScoreVolume;
@@ -692,7 +692,7 @@ int Main_Menu(int32_t /*unused*/) {
       commands->Draw_All();
       Fancy_Text_Print("V%s", d_dialog_x + d_dialog_w - 36,
                        d_dialog_y + d_dialog_h - 10,
-                       GadgetClass::Get_Color_Scheme(), TBLACK,
+                       GadgetClass::Get_Color_Scheme(), kTBlack,
                        TPF_EFNT | TPF_NOSHADOW | TPF_RIGHT, Version_Name());
 
       /*
@@ -715,14 +715,14 @@ int Main_Menu(int32_t /*unused*/) {
     **	Dispatch the input to be processed.
     */
     switch (static_cast<int>(input)) {
-      case ButtonKey(BUTTON_EXPAND):
-      case ButtonKey(BUTTON_EXPAND_AM):
-      case ButtonKey(BUTTON_START):
-      case ButtonKey(BUTTON_LOAD):
-      case ButtonKey(BUTTON_MULTI):
-      case ButtonKey(BUTTON_INTRO):
-      case ButtonKey(BUTTON_EXIT):
-        retval = (input & 0x7FFF) - BUTTON_EXPAND;
+      case ButtonKey(kButtonExpand):
+      case ButtonKey(kButtonExpandAm):
+      case ButtonKey(kButtonStart):
+      case ButtonKey(kButtonLoad):
+      case ButtonKey(kButtonMulti):
+      case ButtonKey(kButtonIntro):
+      case ButtonKey(kButtonExit):
+        retval = (input & 0x7FFF) - kButtonExpand;
         process = false;
         break;
 

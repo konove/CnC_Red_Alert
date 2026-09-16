@@ -43,6 +43,7 @@
 #include <cstddef>
 
 #include "absl/base/attributes.h"
+#include "base/enum_array.h"
 #include "ra/ccini.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
@@ -53,7 +54,7 @@
 /*
 **	TeamMissionType: the various missions that a team can have.
 */
-typedef enum TeamMissionType {
+enum class TeamMissionType {
   TMISSION_NONE = -1,
   TMISSION_ATTACK,        // Attack specified quarry type.
   TMISSION_ATT_WAYPT,     // Attack specified waypoint
@@ -74,7 +75,8 @@ typedef enum TeamMissionType {
   TMISSION_PATROL,        // Move but look for enemies as well.
 
   TMISSION_COUNT,
-} TeamMissionType;
+};
+using enum TeamMissionType;
 
 /*
 **	This structure contains one team mission value & its argument.
@@ -122,7 +124,8 @@ class TeamMemberClass {
 */
 class TeamTypeClass : public AbstractTypeClass {
  public:
-  enum TeamTypeClassEnums { MAX_TEAM_CLASSCOUNT = 5, MAX_TEAM_MISSIONS = 20 };
+  static constexpr int kMaxTeamClasscount = 5;
+  static constexpr int kMaxTeamMissions = 20;
 
   /*
   **	Constructor/Destructor
@@ -286,15 +289,17 @@ class TeamTypeClass : public AbstractTypeClass {
   **	Number and list of missions that this team will follow.
   */
   int MissionCount = 0;
-  TeamMissionClass MissionList[MAX_TEAM_MISSIONS]{};
+  TeamMissionClass MissionList[kMaxTeamMissions]{};
 
   /*
   **	Number and type of members desired for this team.
   */
   int ClassCount = 0;
-  TeamMemberClass Members[MAX_TEAM_CLASSCOUNT];
+  TeamMemberClass Members[kMaxTeamClasscount];
 
-  static const char* TMissions[TMISSION_COUNT];
+  static base::EnumArray<TeamMissionType, const char*,
+                         static_cast<int>(TMISSION_COUNT)>
+      TMissions;
 };
 
 NeedType TeamMission_Needs(TeamMissionType tmtype);

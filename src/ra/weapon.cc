@@ -167,7 +167,7 @@ void WeaponTypeClass::operator delete(void* pointer) {
  *=============================================================================================*/
 WeaponTypeClass* WeaponTypeClass::As_Pointer(WeaponType weapon) {
   if (weapon != WEAPON_NONE) {
-    return Weapons.Ptr(weapon);
+    return Weapons.Ptr(static_cast<int>(weapon));
     //		for (int index = 0; index < Weapons.Count(); index++) {
     //			WeaponTypeClass * ptr = Weapons.Ptr(index);
     //			if (ptr->ID == weapon) {

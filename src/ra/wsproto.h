@@ -79,11 +79,8 @@ typedef void* HANDLE;
 /*
 ** Enum to identify the protocols supported by the Winsock interface.
 */
-typedef enum tProtocolEnum {
-  PROTOCOL_NONE,
-  PROTOCOL_IPX,
-  PROTOCOL_UDP
-} ProtocolEnum;
+enum class ProtocolEnum { PROTOCOL_NONE, PROTOCOL_IPX, PROTOCOL_UDP };
+using enum ProtocolEnum;
 
 /*
 **
@@ -129,7 +126,7 @@ class WinsockInterfaceClass {
 
   virtual void Event_Handler(int /*unused*/, SocketEvent /*unused*/) {}
 
-  typedef enum ConnectStatusEnum {
+  enum class ConnectStatusEnum {
     CONNECTED_OK = 0,
     NOT_CONNECTING,
     CONNECTING,
@@ -140,7 +137,8 @@ class WinsockInterfaceClass {
     UNABLE_TO_ACCEPT_CLIENT,
     UNABLE_TO_CONNECT,
     CONNECTION_LOST
-  } ConnectStatusEnum;
+  };
+  using enum ConnectStatusEnum;
 
   ConnectStatusEnum Get_Connection_Status() { return ConnectStatus; }
 

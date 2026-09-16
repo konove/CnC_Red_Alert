@@ -150,13 +150,13 @@ bool ShapeButtonClass::Draw_Me(bool forced) {
     */
     int shapenum = 0;
     if (IsDisabled) {
-      shapenum = DISABLED_SHAPE;
+      shapenum = kDisabledShape;
     } else {
       if (!ReflectButtonState) {
         if (IsPressed) {
-          shapenum = DOWN_SHAPE;
+          shapenum = kDownShape;
         } else {
-          shapenum = UP_SHAPE;
+          shapenum = kUpShape;
         }
       } else {
         shapenum = IsOn;

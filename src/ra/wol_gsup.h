@@ -46,7 +46,7 @@ class BigCheckBoxClass;
 class ToolTipClass;
 
 //***********************************************************************************************
-enum RESULT_WOLGSUP {
+enum class RESULT_WOLGSUP {
   RESULT_WOLGSUP_BACKTOCHAT,
   RESULT_WOLGSUP_FATALERROR,
   RESULT_WOLGSUP_HOSTLEFT,
@@ -55,6 +55,7 @@ enum RESULT_WOLGSUP {
   RESULT_WOLGSUP_RULESMISMATCH,
   RESULT_WOLGSUP_LOGOUT,
 };
+using enum RESULT_WOLGSUP;
 
 struct GAMEPARAMS {
   GlobalPacketType GPacket;
@@ -135,13 +136,14 @@ class WOL_GameSetupDialog {
   void HostSaysGo();
   void TriggerGameStart(char* szGoMessage);
 
-  enum SCENARIO_GAMEKIND {
+  enum class SCENARIO_GAMEKIND {
     SCENARIO_RA = 0,
     SCENARIO_CS,
     SCENARIO_AM,
     SCENARIO_USER,
     SCENARIO_UNINITIALIZED,
   };
+  using enum SCENARIO_GAMEKIND;
   void ScenarioDisplayMode(SCENARIO_GAMEKIND ScenKind);
 
   //	bool	bSpecialAftermathScenario( const char* szScenarioDescription );
@@ -329,47 +331,40 @@ class WOL_GameSetupDialog {
   DynamicVectorClass<int> ar_szScenIndexes[4];
 
   //------------------------------------------------------------------------
-  //	Button Enumerations
-  //------------------------------------------------------------------------
-  enum {
-    BUTTON_DISCONNECT =
-        100,  //	Note: standard WOL button IDs must match values in
-              // WolapiObject::PrepareButtonsAndIcons().
-    BUTTON_LEAVE,
-    BUTTON_REFRESH,
-    BUTTON_SQUELCH,
-    BUTTON_BAN,
-    BUTTON_KICK,
-    BUTTON_FINDPAGE,
-    BUTTON_OPTIONS,
-    BUTTON_LADDER,
-    BUTTON_HELP,
-
-    BUTTON_PLAYERLIST,
-    BUTTON_HOUSE,
-    BUTTON_SCENARIOLIST,
-    BUTTON_DISCLIST,
-    BUTTON_SENDEDIT,
-    BUTTON_COUNT,
-    BUTTON_LEVEL,
-    BUTTON_CREDITS,
-    BUTTON_AIPLAYERS,
-    BUTTON_PARAMS,
-    //		BUTTON_OK,
-    BUTTON_CANCEL,
-    BUTTON_ACCEPTSTART,
-    BUTTON_ACTION,
-    BUTTON_AFTERMATHUNITS,
-    BUTTON_SCENARIO_RA,
-    BUTTON_SCENARIO_CS,
-    BUTTON_SCENARIO_AM,
-    BUTTON_SCENARIO_USER,
-  };
+  static constexpr int kButtonDisconnect = 100;
+  static constexpr int kButtonLeave =
+      101;  //	Note: standard WOL button IDs must match values in
+  static constexpr int kButtonRefresh = 102;
+  static constexpr int kButtonSquelch = 103;
+  static constexpr int kButtonBan = 104;
+  static constexpr int kButtonKick = 105;
+  static constexpr int kButtonFindpage = 106;
+  static constexpr int kButtonOptions = 107;
+  static constexpr int kButtonLadder = 108;
+  static constexpr int kButtonHelp = 109;
+  static constexpr int kButtonPlayerlist = 110;
+  static constexpr int kButtonHouse = 111;
+  static constexpr int kButtonScenariolist = 112;
+  static constexpr int kButtonDisclist = 113;
+  static constexpr int kButtonSendedit = 114;
+  static constexpr int kButtonCount = 115;
+  static constexpr int kButtonLevel = 116;
+  static constexpr int kButtonCredits = 117;
+  static constexpr int kButtonAiplayers = 118;
+  static constexpr int kButtonParams = 119;
+  static constexpr int kButtonCancel = 120;
+  static constexpr int kButtonAcceptstart = 121;
+  static constexpr int kButtonAction = 122;
+  static constexpr int kButtonAftermathunits = 123;
+  static constexpr int kButtonScenarioRa = 124;
+  static constexpr int kButtonScenarioCs = 125;
+  static constexpr int kButtonScenarioAm = 126;
+  static constexpr int kButtonScenarioUser = 127;
 
   //------------------------------------------------------------------------
   //	Redraw values: in order from "top" to "bottom" layer of the dialog
   //------------------------------------------------------------------------
-  typedef enum {
+  enum class RedrawType {
     REDRAW_NONE = 0,
     REDRAW_PARMS = 1,
     REDRAW_MESSAGE = 2,
@@ -377,7 +372,8 @@ class WOL_GameSetupDialog {
     REDRAW_BUTTONS = 4,
     REDRAW_BACKGROUND = 5,
     REDRAW_ALL = REDRAW_BACKGROUND
-  } RedrawType;
+  };
+  using enum RedrawType;
 
   RedrawType display = REDRAW_NONE;
 };

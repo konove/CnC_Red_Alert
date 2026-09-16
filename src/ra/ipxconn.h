@@ -65,9 +65,8 @@ class IPXConnClass : public ConnectionClass {
   /*.....................................................................
   Various useful enums:
   .....................................................................*/
-  enum IPXConnTag {
-    CONN_NAME_MAX = 40  // max # chars allowed for connection name
-  };
+  static constexpr int kConnNameMax =
+      40;  // max # chars allowed for connection name
 
   /*.....................................................................
   Constructor/destructor.
@@ -122,7 +121,7 @@ class IPXConnClass : public ConnectionClass {
   Each IPX Connection can have a Name & Unique numerical ID
   .....................................................................*/
   int ID;
-  char Name[CONN_NAME_MAX]{};
+  char Name[kConnNameMax]{};
 
   /*
   -------------------------- Protected Interface ---------------------------

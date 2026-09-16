@@ -40,6 +40,7 @@
 #ifndef CNC_RED_ALERT_RA_MOUSE_H_
 #define CNC_RED_ALERT_RA_MOUSE_H_
 
+#include "base/enum_array.h"
 #include "ra/defines.h"
 #include "ra/jshell.h"
 #include "ra/scroll.h"
@@ -109,7 +110,7 @@ class MouseClass : public ScrollClass {
   **	The control frames and rates for the various mouse pointers are stored
   **	in this static array.
   */
-  static MouseStruct MouseControl[magic_enum::enum_count<MouseType>()];
+  static base::EnumArray<MouseType, MouseStruct> MouseControl;
 
  public:
   /*

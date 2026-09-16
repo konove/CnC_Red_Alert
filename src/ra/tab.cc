@@ -118,7 +118,7 @@ void TabClass::Draw_It(bool complete) {
     const int rightx = width - 1;
     const int tab_height = TAB_HEIGHT * 2;
 
-    LogicPage->Fill_Rect(0, 0, rightx, tab_height - 1, BLACK);
+    LogicPage->Fill_Rect(0, 0, rightx, tab_height - 1, kBlack);
     //		LogicPage->Fill_Rect(0, 0, rightx, tab_height-(2 * 2),
     // BLACK);
 
@@ -127,19 +127,16 @@ void TabClass::Draw_It(bool complete) {
     */
     CC_Draw_Shape(TabShape, 0, 0, 0, WINDOW_MAIN, SHAPE_NORMAL);
     Draw_Credits_Tab();
-    LogicPage->Draw_Line(0, tab_height - 2, rightx,
-                         tab_height - 2, BLACK);
-    Fancy_Text_Print(TXT_TAB_BUTTON_CONTROLS, EVA_WIDTH, 0,
-                     &MetalScheme, TBLACK,
-                     TPF_METAL12 | TPF_CENTER | TPF_USE_GRAD_PAL);
+    LogicPage->Draw_Line(0, tab_height - 2, rightx, tab_height - 2, kBlack);
+    Fancy_Text_Print(TXT_TAB_BUTTON_CONTROLS, EVA_WIDTH, 0, &MetalScheme,
+                     kTBlack, TPF_METAL12 | TPF_CENTER | TPF_USE_GRAD_PAL);
     if (IsSidebarActive) {
     } else {
       CC_Draw_Shape(TabShape, 0, width - (EVA_WIDTH * 2), 0, WINDOW_MAIN,
                     SHAPE_NORMAL);
       Fancy_Text_Print(
-          TXT_TAB_SIDEBAR, width - EVA_WIDTH, 0,
-          &ColorRemaps[PCOLOR_GREY], TBLACK,
-          TPF_METAL12 | TPF_NOSHADOW | TPF_CENTER | TPF_BRIGHT_COLOR);
+          TXT_TAB_SIDEBAR, width - EVA_WIDTH, 0, &ColorRemaps[PCOLOR_GREY],
+          kTBlack, TPF_METAL12 | TPF_NOSHADOW | TPF_CENTER | TPF_BRIGHT_COLOR);
     }
 
     LogicPage->Unlock();
@@ -175,8 +172,7 @@ void TabClass::Hilite_Tab(int tab) {
   */
   CC_Draw_Shape(TabShape, 1, xpos, 0, WINDOW_MAIN, SHAPE_NORMAL);
   MetalScheme.Color = 128 + 6;
-  Fancy_Text_Print(TXT_TAB_BUTTON_CONTROLS, EVA_WIDTH, 0,
-                   &MetalScheme, TBLACK,
+  Fancy_Text_Print(TXT_TAB_BUTTON_CONTROLS, EVA_WIDTH, 0, &MetalScheme, kTBlack,
                    TPF_METAL12 | TPF_CENTER | TPF_USE_GRAD_PAL);
   MetalScheme.Color = 128;
 }

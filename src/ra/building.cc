@@ -131,6 +131,7 @@
 #include <utility>
 
 #include "absl/strings/str_format.h"
+#include "base/enum_array.h"
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/tokenizer.h"
@@ -190,22 +191,21 @@
 #include "tech/fixed.h"
 #include "tech/number_parse.h"
 
-enum SAMState {
-  SAM_READY,  // Launcher can be facing any direction tracking targets.
-  SAM_FIRING  // Stationary while missile is being fired.
-};
+// SAM site launcher states kept in Status.
+constexpr int kSamReady =
+    0;  // Launcher can be facing any direction tracking targets.
+constexpr int kSamFiring = 1;  // Stationary while missile is being fired.
 
 /***************************************************************************
 **	Center of building offset table.
 */
-const COORDINATE
-    BuildingClass::CenterOffset[magic_enum::enum_count<BSizeType>()] = {
-        0x00800080L, 0x008000FFL, 0x00FF0080L, 0x00FF00FFL,
-        0x018000FFL, 0x00FF0180L, 0x01800180L,
+const base::EnumArray<BSizeType, COORDINATE> BuildingClass::CenterOffset = {
+    0x00800080L, 0x008000FFL, 0x00FF0080L, 0x00FF00FFL,
+    0x018000FFL, 0x00FF0180L, 0x01800180L,
 
-        0x00FF0200L,
+    0x00FF0200L,
 
-        0x02800280L,
+    0x02800280L,
 };
 
 /***********************************************************************************************
@@ -530,7 +530,7 @@ void BuildingClass::Debug_Dump(MonoClass* mono) const {
     mono->Set_Cursor(1, 11);
     if (Factory) {
       mono->Printf("%s %d%%", Factory->Get_Object()->Class_Of().IniName,
-                   (100 * Factory->Completion()) / FactoryClass::STEP_COUNT);
+                   (100 * Factory->Completion()) / FactoryClass::kStepCount);
     }
 
     TechnoClass::Debug_Dump(mono);
@@ -615,7 +615,7 @@ void BuildingClass::Draw_It(int x, int y, WindowNumberType window) const {
     **	Draw any repair feedback graphic required.
     */
     if (IsRepairing && IsWrenchVisible) {
-      CC_Draw_Shape(ObjectTypeClass::SelectShapes, SELECT_WRENCH, x, y, window,
+      CC_Draw_Shape(ObjectTypeClass::SelectShapes, kSelectWrench, x, y, window,
                     SHAPE_CENTER | SHAPE_WIN_REL);
     }
   }
@@ -1204,8 +1204,8 @@ bool BuildingClass::Unlimbo(COORDINATE coord, DirType dir) {
     **	Ensure that the owning house knows about the
     **	new object.
     */
-    House->BScan |= ScanBit(Class->Type);
-    House->ActiveBScan |= ScanBit(Class->Type);
+    House->BScan |= ScanBit(static_cast<int>(Class->Type));
+    House->ActiveBScan |= ScanBit(static_cast<int>(Class->Type));
 
     /*
     **	Recalculate the center point of the house's base.
@@ -1449,34 +1449,34 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
           const COORDINATE center = Center_Coord();
           const CELL cellcenter = Coord_Cell(center);
 
-          auto* bullet =
-              new BulletClass(BULLET_INVISIBLE,
-                              ::As_Target(Adjacent_Cell(cellcenter, FACING_N)),
-                              nullptr, 200, WARHEAD_FIRE, MPH_MEDIUM_FAST);
+          auto* bullet = new BulletClass(
+              BULLET_INVISIBLE,
+              ::As_Target(Adjacent_Cell(cellcenter, FACING_N)), nullptr, 200,
+              WARHEAD_FIRE, static_cast<int>(MPH_MEDIUM_FAST));
           if (bullet) {
             bullet->Unlimbo(center, DIR_N);
           }
 
-          bullet =
-              new BulletClass(BULLET_INVISIBLE,
-                              ::As_Target(Adjacent_Cell(cellcenter, FACING_E)),
-                              nullptr, 200, WARHEAD_FIRE, MPH_MEDIUM_FAST);
+          bullet = new BulletClass(
+              BULLET_INVISIBLE,
+              ::As_Target(Adjacent_Cell(cellcenter, FACING_E)), nullptr, 200,
+              WARHEAD_FIRE, static_cast<int>(MPH_MEDIUM_FAST));
           if (bullet) {
             bullet->Unlimbo(center, DIR_E);
           }
 
-          bullet =
-              new BulletClass(BULLET_INVISIBLE,
-                              ::As_Target(Adjacent_Cell(cellcenter, FACING_S)),
-                              nullptr, 200, WARHEAD_FIRE, MPH_MEDIUM_FAST);
+          bullet = new BulletClass(
+              BULLET_INVISIBLE,
+              ::As_Target(Adjacent_Cell(cellcenter, FACING_S)), nullptr, 200,
+              WARHEAD_FIRE, static_cast<int>(MPH_MEDIUM_FAST));
           if (bullet) {
             bullet->Unlimbo(center, DIR_S);
           }
 
-          bullet =
-              new BulletClass(BULLET_INVISIBLE,
-                              ::As_Target(Adjacent_Cell(cellcenter, FACING_W)),
-                              nullptr, 200, WARHEAD_FIRE, MPH_MEDIUM_FAST);
+          bullet = new BulletClass(
+              BULLET_INVISIBLE,
+              ::As_Target(Adjacent_Cell(cellcenter, FACING_W)), nullptr, 200,
+              WARHEAD_FIRE, static_cast<int>(MPH_MEDIUM_FAST));
           if (bullet) {
             bullet->Unlimbo(center, DIR_W);
           }
@@ -1678,7 +1678,7 @@ void BuildingClass::operator delete(void* ptr) {
  *=============================================================================================*/
 BuildingClass::BuildingClass(StructType type, HousesType house)
     : TechnoClass(RTTI_BUILDING, Buildings.ID(this), house),
-      Class(BuildingTypes.Ptr(type)),
+      Class(BuildingTypes.Ptr(static_cast<int>(type))),
       ActLike(House->ActLike),
       WhoLastHurtMe(house) {
   House->Tracking_Add(this);
@@ -2247,7 +2247,7 @@ void BuildingClass::Update_Buildables() {
         for (const VesselType v : magic_enum::enum_values<VesselType>()) {
           if (PlayerPtr->Can_Build(&VesselTypeClass::As_Reference(v),
                                    ActLike)) {
-            Map.Add(RTTI_VESSELTYPE, v);
+            Map.Add(RTTI_VESSELTYPE, static_cast<int>(v));
           }
         }
         break;
@@ -2256,7 +2256,7 @@ void BuildingClass::Update_Buildables() {
         for (const StructType i : magic_enum::enum_values<StructType>()) {
           if (PlayerPtr->Can_Build(&BuildingTypeClass::As_Reference(i),
                                    ActLike)) {
-            Map.Add(RTTI_BUILDINGTYPE, i);
+            Map.Add(RTTI_BUILDINGTYPE, static_cast<int>(i));
           }
         }
         break;
@@ -2264,7 +2264,7 @@ void BuildingClass::Update_Buildables() {
       case RTTI_UNITTYPE:
         for (const UnitType u : magic_enum::enum_values<UnitType>()) {
           if (PlayerPtr->Can_Build(&UnitTypeClass::As_Reference(u), ActLike)) {
-            Map.Add(RTTI_UNITTYPE, u);
+            Map.Add(RTTI_UNITTYPE, static_cast<int>(u));
           }
         }
         break;
@@ -2275,11 +2275,11 @@ void BuildingClass::Update_Buildables() {
                                    ActLike)) {
             if (InfantryTypeClass::As_Reference(f).IsDog) {
               if (*this == STRUCT_KENNEL) {
-                Map.Add(RTTI_INFANTRYTYPE, f);
+                Map.Add(RTTI_INFANTRYTYPE, static_cast<int>(f));
               }
             } else {
               if (*this != STRUCT_KENNEL) {
-                Map.Add(RTTI_INFANTRYTYPE, f);
+                Map.Add(RTTI_INFANTRYTYPE, static_cast<int>(f));
               }
             }
           }
@@ -2290,7 +2290,7 @@ void BuildingClass::Update_Buildables() {
         for (const AircraftType a : magic_enum::enum_values<AircraftType>()) {
           if (PlayerPtr->Can_Build(&AircraftTypeClass::As_Reference(a),
                                    ActLike)) {
-            Map.Add(RTTI_AIRCRAFTTYPE, a);
+            Map.Add(RTTI_AIRCRAFTTYPE, static_cast<int>(a));
           }
         }
         break;
@@ -3049,7 +3049,8 @@ bool BuildingClass::Captured(HouseClass* newowner) {
     *internet stats purposes.
     */
     if (Session.Type == GAME_INTERNET) {
-      newowner->CapturedBuildings->Increment_Unit_Total(Class->Type);
+      newowner->CapturedBuildings->Increment_Unit_Total(
+          static_cast<int>(Class->Type));
     }
 
     House->Adjust_Power(-Power_Output());
@@ -3335,14 +3336,15 @@ int BuildingClass::Mission_Guard() {
     **	nothing. This is the mode that non weapon equipped buildings
     **	are normally in.
     */
-    enum { INITIAL_ENTRY, IDLE };
+    constexpr int kInitialEntry = 0;
+    constexpr int kIdle = 1;
     switch (Status) {
-      case INITIAL_ENTRY:
+      case kInitialEntry:
         Begin_Mode(BSTATE_IDLE);
-        Status = IDLE;
+        Status = kIdle;
         break;
 
-      case IDLE:
+      case kIdle:
         /*
         **	Special case to break out of guard mode if this is a repair
         **	facility and there is a customer waiting at the grease pit.
@@ -3388,18 +3390,19 @@ int BuildingClass::Mission_Construction() {
   assert(Buildings.ID(this) == ID);
   assert(IsActive);
 
-  enum { INITIAL, DURING };
+  constexpr int kInitial = 0;
+  constexpr int kDuring = 1;
   switch (Status) {
-    case INITIAL:
+    case kInitial:
       Begin_Mode(BSTATE_CONSTRUCTION);
       Transmit_Message(RADIO_BUILDING);
       if (House->IsPlayerControl) {
         Sound_Effect(VOC_CONSTRUCTION, Coord);
       }
-      Status = DURING;
+      Status = kDuring;
       break;
 
-    case DURING:
+    case kDuring:
       if (IsReadyToCommence) {
         /*
         **	When construction is complete, then transmit this
@@ -3448,9 +3451,11 @@ int BuildingClass::Mission_Deconstruction() {
   */
   Repair(0);
 
-  enum { INITIAL, HOLDING, DURING };
+  constexpr int kInitial = 0;
+  constexpr int kHolding = 1;
+  constexpr int kDuring = 2;
   switch (Status) {
-    case INITIAL:
+    case kInitial:
 
       /*
       **	Special check for the repair bay which has the ability to sell
@@ -3489,10 +3494,10 @@ int BuildingClass::Mission_Deconstruction() {
 
       IsReadyToCommence = false;
       Transmit_Message(RADIO_RUN_AWAY);
-      Status = HOLDING;
+      Status = kHolding;
       break;
 
-    case HOLDING:
+    case kHolding:
       if (!IsTethered) {
         /*
         **	The crew will evacuate from the building. The number of crew
@@ -3546,7 +3551,7 @@ int BuildingClass::Mission_Deconstruction() {
         if (House->IsPlayerControl) {
           Sound_Effect(VOC_CASHTURN, Coord);
         }
-        Status = DURING;
+        Status = kDuring;
         Begin_Mode(BSTATE_CONSTRUCTION);
         Detach_All(true);
         Transmit_Message(RADIO_OVER_OUT);
@@ -3556,7 +3561,7 @@ int BuildingClass::Mission_Deconstruction() {
       Transmit_Message(RADIO_RUN_AWAY);
       break;
 
-    case DURING:
+    case kDuring:
       if (IsReadyToCommence) {
         House->IsRecalcNeeded = true;
         if (IsOwnedByPlayer) {
@@ -3672,14 +3677,14 @@ int BuildingClass::Mission_Attack() {
       **	This is the target tracking state of the launcher. It will
       *rotate *	to face the current TarCom of the launcher.
       */
-      case SAM_READY:
+      case kSamReady:
         if ((Class->IsPowered && House->Power_Fraction() < 1) || IsJammed) {
           return 1;
         }
         if (!Target_Legal(TarCom) || !Is_Target_Aircraft(TarCom) ||
             As_Aircraft(TarCom)->Height == 0) {
           Assign_Target(kTargetNone);
-          Status = SAM_READY;
+          Status = kSamReady;
           Assign_Mission(MISSION_GUARD);
           Commence();
           return 1;
@@ -3689,7 +3694,7 @@ int BuildingClass::Mission_Attack() {
           if (PrimaryFacing.Difference(facing)) {
             PrimaryFacing.Set_Desired(facing);
           } else {
-            Status = SAM_FIRING;
+            Status = kSamFiring;
           }
         }
         return 1;
@@ -3697,25 +3702,25 @@ int BuildingClass::Mission_Attack() {
       /*
       **	The launcher is in the process of firing.
       */
-      case SAM_FIRING:
+      case kSamFiring:
         if (!Target_Legal(TarCom) || !Is_Target_Aircraft(TarCom) ||
             As_Aircraft(TarCom)->Height == 0) {
           Assign_Target(kTargetNone);
-          Status = SAM_READY;
+          Status = kSamReady;
         } else {
           const FireErrorType error = Can_Fire(TarCom, 0);
           if (error == FIRE_ILLEGAL || error == FIRE_CANT ||
               error == FIRE_RANGE) {
             Assign_Target(kTargetNone);
-            Status = SAM_READY;
+            Status = kSamReady;
           } else {
             if (error == FIRE_FACING) {
-              Status = SAM_READY;
+              Status = kSamReady;
             } else {
               if (error == FIRE_OK) {
                 Fire_At(TarCom, 0);
                 Fire_At(TarCom, 1);
-                Status = SAM_READY;
+                Status = kSamReady;
               }
             }
           }
@@ -3792,25 +3797,23 @@ int BuildingClass::Mission_Harvest() {
   assert(Buildings.ID(this) == ID);
   assert(IsActive);
 
-  enum {
-    INITIAL,         // Dock the Tiberium cannister.
-    WAIT_FOR_DOCK,   // Waiting for docking to complete.
-    MIDDLE,          // Offload "bails" of tiberium.
-    WAIT_FOR_UNDOCK  // Waiting for undocking to complete.
-  };
+  constexpr int kInitial = 0;
+  constexpr int kWaitForDock = 1;    // Waiting for docking to complete.
+  constexpr int kMiddle = 2;         // Offload "bails" of tiberium.
+  constexpr int kWaitForUndock = 3;  // Waiting for undocking to complete.
   switch (Status) {
-    case INITIAL:
-      Status = WAIT_FOR_DOCK;
+    case kInitial:
+      Status = kWaitForDock;
       break;
 
-    case WAIT_FOR_DOCK:
+    case kWaitForDock:
       if (IsReadyToCommence) {
         IsReadyToCommence = false;
-        Status = MIDDLE;
+        Status = kMiddle;
       }
       break;
 
-    case MIDDLE:
+    case kMiddle:
       if (IsReadyToCommence) {
         IsReadyToCommence = false;
 
@@ -3831,11 +3834,11 @@ int BuildingClass::Mission_Harvest() {
             }
           }
         }
-        Status = WAIT_FOR_UNDOCK;
+        Status = kWaitForUndock;
       }
       break;
 
-    case WAIT_FOR_UNDOCK:
+    case kWaitForUndock:
       if (IsReadyToCommence) {
         /*
         **	Detach harvester and go back into idle state.
@@ -3874,14 +3877,15 @@ int BuildingClass::Mission_Repair() {
   assert(IsActive);
 
   if (*this == STRUCT_CONST) {
-    enum { INITIAL, DURING };
+    constexpr int kInitial = 0;
+    constexpr int kDuring = 1;
     switch (Status) {
-      case INITIAL:
+      case kInitial:
         Begin_Mode(BSTATE_ACTIVE);
-        Status = DURING;
+        Status = kDuring;
         break;
 
-      case DURING:
+      case kDuring:
         if (!In_Radio_Contact()) {
           Assign_Mission(MISSION_GUARD);
         }
@@ -3894,9 +3898,11 @@ int BuildingClass::Mission_Repair() {
   }
 
   if (*this == STRUCT_REPAIR) {
-    enum { INITIAL, IDLE, DURING };
+    constexpr int kInitial = 0;
+    constexpr int kIdle = 1;
+    constexpr int kDuring = 2;
     switch (Status) {
-      case INITIAL: {
+      case kInitial: {
         if (!In_Radio_Contact()) {
           Begin_Mode(BSTATE_IDLE);
           Assign_Mission(MISSION_GUARD);
@@ -3921,13 +3927,13 @@ int BuildingClass::Mission_Repair() {
 
         if (Transmit_Message(RADIO_NEED_TO_MOVE) == RADIO_ROGER &&
             Distance(Contact_With_Whom()) < distance) {
-          Status = IDLE;
+          Status = kIdle;
           return kTicksPerSecond / 4;
         }
         break;
       }
 
-      case IDLE:
+      case kIdle:
         if (!In_Radio_Contact()) {
           Assign_Mission(MISSION_GUARD);
           return 1;
@@ -3948,13 +3954,13 @@ int BuildingClass::Mission_Repair() {
               if (!radio->House->IsHuman) {
                 radio->Sell_Back(1);
               }
-              Status = INITIAL;
+              Status = kInitial;
               IsReadyToCommence = true;
             } else {
               if (IsOwnedByPlayer) {
                 Speak(VOX_REPAIRING);
               }
-              Status = DURING;
+              Status = kDuring;
               Begin_Mode(BSTATE_ACTIVE);
               IsReadyToCommence = false;
             }
@@ -3968,10 +3974,10 @@ int BuildingClass::Mission_Repair() {
         }
         break;
 
-      case DURING:
+      case kDuring:
         if (!In_Radio_Contact()) {
           Begin_Mode(BSTATE_IDLE);
-          Status = IDLE;
+          Status = kIdle;
           return 1;
         }
 
@@ -4005,7 +4011,7 @@ int BuildingClass::Mission_Repair() {
                 Speak(VOX_NO_CASH);
               }
               Begin_Mode(BSTATE_IDLE);
-              Status = IDLE;
+              Status = kIdle;
               break;
 
             /*
@@ -4017,7 +4023,7 @@ int BuildingClass::Mission_Repair() {
               }
               //							Transmit_Message(RADIO_RUN_AWAY);
               Begin_Mode(BSTATE_IDLE);
-              Status = IDLE;
+              Status = kIdle;
               break;
 
             /*
@@ -4028,7 +4034,7 @@ int BuildingClass::Mission_Repair() {
             default:
               //							Transmit_Message(RADIO_RUN_AWAY);
               Begin_Mode(BSTATE_IDLE);
-              Status = IDLE;
+              Status = kIdle;
               break;
           }
         }
@@ -4041,20 +4047,21 @@ int BuildingClass::Mission_Repair() {
   }
 
   if (*this == STRUCT_HELIPAD || *this == STRUCT_AIRSTRIP) {
-    enum { INITIAL, DURING };
+    constexpr int kInitial = 0;
+    constexpr int kDuring = 1;
     switch (Status) {
-      case INITIAL:
+      case kInitial:
         if (Transmit_Message(RADIO_NEED_TO_MOVE) == RADIO_ROGER &&
             Transmit_Message(RADIO_PREPARED) == RADIO_NEGATIVE) {
           Begin_Mode(BSTATE_ACTIVE);
           Contact_With_Whom()->Assign_Mission(MISSION_SLEEP);
-          Status = DURING;
+          Status = kDuring;
           return 1;
         }
         Assign_Mission(MISSION_GUARD);
         break;
 
-      case DURING:
+      case kDuring:
         if (IsReadyToCommence) {
           if (!In_Radio_Contact() ||
               Transmit_Message(RADIO_NEED_TO_MOVE) == RADIO_NEGATIVE) {
@@ -4111,20 +4118,22 @@ int BuildingClass::Mission_Missile() {
   assert(IsActive);
 
   if (*this == STRUCT_ADVANCED_TECH) {
-    enum { DOOR_OPENING, LAUNCH_UP, SATELLITE_DEPLOY, DONE_LAUNCH };
+    // Stages 2 (satellite deploy) and 3 (done) have no handling.
+    constexpr int kDoorOpening = 0;
+    constexpr int kLaunchUp = 1;
 
     switch (Status) {
       /*
       ** The initial case is responsible for starting the door
       ** opening on the building, the missile rising, and smoke broiling.
       */
-      case DOOR_OPENING: {
+      case kDoorOpening: {
         const COORDINATE door =
             Coord_Move(Center_Coord(), static_cast<DirType>(0xC0), 0x30);
         const auto* sput = new AnimClass(ANIM_SPUTDOOR, door);
         if (sput) {
           IsReadyToCommence = false;
-          Status = LAUNCH_UP;
+          Status = kLaunchUp;
           AnimToTrack = sput->As_Target();
         }
       }
@@ -4134,15 +4143,16 @@ int BuildingClass::Mission_Missile() {
       ** Once the smoke has been going for a little while this
       ** actually handles launching the missile into the air.
       */
-      case LAUNCH_UP: {
+      case kLaunchUp: {
         const AnimClass* sput = As_Animation(AnimToTrack);
         if (sput && (sput->Fetch_Stage() >= 19)) {
           const CELL center = Coord_Cell(Center_Coord());
           const CELL cell = XY_Cell(Cell_X(center), 1);
           const TARGET targ = ::As_Target(cell);
 
-          auto* bullet = new BulletClass(BULLET_GPS_SATELLITE, targ, this, 200,
-                                         WARHEAD_FIRE, MPH_ROCKET);
+          auto* bullet =
+              new BulletClass(BULLET_GPS_SATELLITE, targ, this, 200,
+                              WARHEAD_FIRE, static_cast<int>(MPH_ROCKET));
           if (bullet) {
             const COORDINATE launch =
                 Coord_Move(Center_Coord(), static_cast<DirType>(0xC0), 0x30);
@@ -4164,27 +4174,31 @@ int BuildingClass::Mission_Missile() {
   }
 
   if (*this == STRUCT_MSLO) {
-    enum { INITIAL, DOOR_OPENING, LAUNCH_UP, LAUNCH_DOWN, DONE_LAUNCH };
+    constexpr int kInitial = 0;
+    constexpr int kDoorOpening = 1;
+    constexpr int kLaunchUp = 2;
+    constexpr int kLaunchDown = 3;
+    constexpr int kDoneLaunch = 4;
 
     switch (Status) {
       /*
       ** The initial case is responsible for starting the door
       ** opening on the building.
       */
-      case INITIAL:
+      case kInitial:
         IsReadyToCommence = false;
         Begin_Mode(BSTATE_ACTIVE);  // open the door
-        Status = DOOR_OPENING;
+        Status = kDoorOpening;
         return 1;
 
       /*
       ** This polls for the case when the door is actually open and
       ** then kicks off the missile smoke.
       */
-      case DOOR_OPENING:
+      case kDoorOpening:
         if (IsReadyToCommence) {
           Begin_Mode(BSTATE_AUX1);  // hold the door open
-          Status = LAUNCH_UP;
+          Status = kLaunchUp;
           return 14;
         }
         return 1;
@@ -4193,12 +4207,13 @@ int BuildingClass::Mission_Missile() {
       ** Once the smoke has been going for a little while this
       ** actually handles launching the missile into the air.
       */
-      case LAUNCH_UP: {
+      case kLaunchUp: {
         const CELL center = Coord_Cell(Center_Coord());
         const CELL cell = XY_Cell(Cell_X(center), 1);
         const TARGET targ = ::As_Target(cell);
-        auto* bullet = new BulletClass(BULLET_NUKE_UP, targ, this, 200,
-                                       WARHEAD_HE, MPH_VERY_FAST);
+        auto* bullet =
+            new BulletClass(BULLET_NUKE_UP, targ, this, 200, WARHEAD_HE,
+                            static_cast<int>(MPH_VERY_FAST));
         if (bullet) {
           const COORDINATE launch =
               Coord_Move(Center_Coord(), AsDirection(28), 0xA0);
@@ -4210,7 +4225,7 @@ int BuildingClass::Mission_Missile() {
 
         if (bullet) {
           Speak(VOX_ABOMB_LAUNCH);
-          Status = LAUNCH_DOWN;
+          Status = kLaunchDown;
           /*
           ** Hack: If it's the artificial nukes, don't let the bullets come down
           *(as
@@ -4223,9 +4238,9 @@ int BuildingClass::Mission_Missile() {
           if (House->Control.TechLevel <= 10) {
             return 6;
           }
-          bullet =
-              new BulletClass(BULLET_NUKE_DOWN, ::As_Target(House->NukeDest),
-                              this, 200, WARHEAD_NUKE, MPH_VERY_FAST);
+          bullet = new BulletClass(
+              BULLET_NUKE_DOWN, ::As_Target(House->NukeDest), this, 200,
+              WARHEAD_NUKE, static_cast<int>(MPH_VERY_FAST));
           if (bullet) {
             const int celly = std::max(Cell_Y(House->NukeDest) - 64, 1);
             const COORDINATE start =
@@ -4244,9 +4259,9 @@ int BuildingClass::Mission_Missile() {
       ** the missile to be off the screen and then launching one down
       ** over the target.
       */
-      case LAUNCH_DOWN: {
+      case kLaunchDown: {
         Begin_Mode(BSTATE_AUX2);  // start the door closing
-        Status = DONE_LAUNCH;
+        Status = kDoneLaunch;
         return 6;
       }
 
@@ -4254,7 +4269,7 @@ int BuildingClass::Mission_Missile() {
       ** Once the missile is done launching this handles allowing
       ** the building to sit there with its door closed.
       */
-      case DONE_LAUNCH:
+      case kDoneLaunch:
         Begin_Mode(BSTATE_IDLE);  // keep the door closed.
         Assign_Mission(MISSION_GUARD);
         return 60;
@@ -4446,14 +4461,19 @@ int BuildingClass::Mission_Unload() {
     const CELL cell = static_cast<CELL>(Coord_Cell(Coord) + Class->ExitList[0]);
     const COORDINATE coord = Cell_Coord(cell);
     CellClass* cellptr = &Map[cell];
-    enum { INITIAL, CLEAR_BIB, OPEN, LEAVE, CLOSE };
-    enum { DOOR_STAGES = 5, DOOR_RATE = 8 };
+    constexpr int kInitial = 0;
+    constexpr int kClearBib = 1;
+    constexpr int kOpen = 2;
+    constexpr int kLeave = 3;
+    constexpr int kClose = 4;
+    constexpr int kDoorStages = 5;
+    constexpr int kDoorRate = 8;
     UnitClass* unit = nullptr;
     switch (Status) {
       /*
       **	Start the door opening.
       */
-      case INITIAL:
+      case kInitial:
         //				if (cellptr->Cell_Techno()) {
         //					cellptr->Incoming(0, true);
         //				}
@@ -4462,8 +4482,8 @@ int BuildingClass::Mission_Unload() {
           unit->Assign_Mission(MISSION_GUARD);
           unit->Commence();
         }
-        Open_Door(DOOR_RATE, DOOR_STAGES);
-        Status = CLEAR_BIB;
+        Open_Door(kDoorRate, kDoorStages);
+        Status = kClearBib;
         break;
 
       /*
@@ -4471,7 +4491,7 @@ int BuildingClass::Mission_Unload() {
       **	everyone that could be blocking the way, that they should
       **	scatter away.
       */
-      case CLEAR_BIB:
+      case kClearBib:
         if (cellptr->Cell_Techno()) {
           cellptr->Incoming(0, true, true);
 
@@ -4485,7 +4505,7 @@ int BuildingClass::Mission_Unload() {
             }
           }
         } else {
-          Status = OPEN;
+          Status = kOpen;
         }
         break;
 
@@ -4493,7 +4513,7 @@ int BuildingClass::Mission_Unload() {
       **	When the door is finally open and the way is clear, tell the
       **	unit to drive out.
       */
-      case OPEN:
+      case kOpen:
         if (Is_Door_Open()) {
           unit = dynamic_cast<UnitClass*>(Contact_With_Whom());
           if (unit) {
@@ -4503,15 +4523,15 @@ int BuildingClass::Mission_Unload() {
               unit->Assign_Mission(MISSION_GUARD_AREA);
               unit->ArchiveTarget = ::As_Target(House->Where_To_Go(unit));
             }
-            unit->Force_Track(DriveClass::OUT_OF_WEAPON_FACTORY, coord);
-            //						unit->Force_Track(DriveClass::OUT_OF_WEAPON_FACTORY,
+            unit->Force_Track(DriveClass::kOutOfWeaponFactory, coord);
+            //						unit->Force_Track(DriveClass::kOutOfWeaponFactory,
             // Adjacent_Cell(Adjacent_Cell(Center_Coord(), FACING_S),
             // FACING_S));
             unit->Set_Speed(128);
-            Status = LEAVE;
+            Status = kLeave;
           } else {
-            Close_Door(DOOR_RATE, DOOR_STAGES);
-            Status = CLOSE;
+            Close_Door(kDoorRate, kDoorStages);
+            Status = kClose;
           }
         }
         break;
@@ -4519,10 +4539,10 @@ int BuildingClass::Mission_Unload() {
       /*
       **	Wait until the unit has completely left the building.
       */
-      case LEAVE:
+      case kLeave:
         if (!IsTethered) {
-          Close_Door(DOOR_RATE, DOOR_STAGES);
-          Status = CLOSE;
+          Close_Door(kDoorRate, kDoorStages);
+          Status = kClose;
         } else {
           //					if (In_Radio_Contact() &&
           //!((FootClass *)Contact_With_Whom())->IsDriving) {
@@ -4534,7 +4554,7 @@ int BuildingClass::Mission_Unload() {
       /*
       **	Wait while the door closes.
       */
-      case CLOSE:
+      case kClose:
         if (Is_Door_Closed()) {
           Enter_Idle_Mode();
         }

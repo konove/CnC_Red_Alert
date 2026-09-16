@@ -56,7 +56,6 @@
 #include "base/numeric.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
-#include "ra/gadget.h"
 #include "ra/jshell.h"
 #include "ra/list.h"
 #include "sdllib/drawbuff.h"
@@ -112,7 +111,7 @@ bool CheckListClass::Action(unsigned flags, KeyNumType& key) {
   **	Now, if this event was a left-press, toggle the checked state of the
   **	current item.
   */
-  if (flags & LEFTPRESS) {
+  if (flags & kLeftPress) {
     Check_Item(SelectedIndex, !Is_Checked(SelectedIndex));
   }
 
@@ -126,7 +125,7 @@ void CheckListClass::Draw_Entry(int index, int x, int y, int width,
   }
 
   char buffer[100] = "";
-  buffer[0] = Is_Checked(index) ? CHECK_CHAR : UNCHECK_CHAR;
+  buffer[0] = static_cast<char>(Is_Checked(index) ? kCheckChar : kUncheckChar);
   buffer[1] = ' ';
   absl::SNPrintF(&buffer[2], sizeof(buffer) - 2, "%s", Get_Item(index));
 
@@ -138,10 +137,10 @@ void CheckListClass::Draw_Entry(int index, int x, int y, int width,
     LogicPage->Fill_Rect(x, y, x + width - 1, y + LineHeight - 1,
                          scheme->Shadow);
   } else {
-    if (!(flags & TPF_USE_GRAD_PAL)) {
+    if (!base::Any(flags & TPF_USE_GRAD_PAL)) {
       flags = flags | TPF_MEDIUM_COLOR;
     }
   }
 
-  Conquer_Clip_Text_Print(buffer, x, y, scheme, TBLACK, flags, width, Tabs);
+  Conquer_Clip_Text_Print(buffer, x, y, scheme, kTBlack, flags, width, Tabs);
 }

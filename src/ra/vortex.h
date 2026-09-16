@@ -135,11 +135,12 @@ class ChronalVortexClass {
   /*
   ** Possible states the vortex can be in.
   */
-  typedef enum AnimStateType {
+  enum class AnimStateType {
     STATE_GROW,    // Vortex has just appeared and is growing larger
     STATE_ROTATE,  // Vortex is rotating
     STATE_SHRINK   // Vortex is shrinking and about to disappear
-  } AnimStateType;
+  };
+  using enum AnimStateType;
 
  private:
   /*

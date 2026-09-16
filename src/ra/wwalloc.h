@@ -26,7 +26,7 @@
 extern "C" {
 #endif
 
-typedef enum MemoryFlagType {
+enum class MemoryFlagType {
   MEM_NORMAL = 0x0000,   // Default memory (normal).
   MEM_PUBLIC = 0x0000,   // Default memory (normal).
   MEM_CHIP = 0x0000,     // Graphic & sound buffer memory (Amiga).
@@ -39,7 +39,8 @@ typedef enum MemoryFlagType {
   MEM_XMS = 0x0040,      // XMS memory.
   MEM_EMS = 0x0080,      // EMS memory (not implemented).
   MEM_X = 0x8000         // Here to force this enum to be unsigned sized.
-} MemoryFlagType;
+};
+using enum MemoryFlagType;
 MemoryFlagType operator|(MemoryFlagType, MemoryFlagType);
 MemoryFlagType operator&(MemoryFlagType, MemoryFlagType);
 MemoryFlagType operator~(MemoryFlagType);

@@ -69,6 +69,7 @@
 #include <cstring>
 #include <iterator>
 
+#include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/building.h"
 #include "ra/ccptr.h"
@@ -491,19 +492,19 @@ COORDINATE DriveClass::Smooth_Turn(COORDINATE adj, DirType& dir) {
   int x = Coord_X(adj);
   int y = Coord_Y(adj);
 
-  if (flags & F_T) {
+  if (base::Any(flags & F_T)) {
     const int temp = x;
     x = y;
     y = temp;
     workdir = DIR_W - workdir;
   }
 
-  if (flags & F_X) {
+  if (base::Any(flags & F_X)) {
     x = -x;
-    workdir = static_cast<DirType>(-workdir);
+    workdir = AsDirection(-static_cast<int>(workdir));
   }
 
-  if (flags & F_Y) {
+  if (base::Any(flags & F_Y)) {
     y = -y;
     workdir = DIR_S - workdir;
   }
@@ -620,9 +621,10 @@ bool DriveClass::While_Moving() {
   **	visibly move on the map, then process accordingly.
   ** Slow the unit down if he's carrying a flag.
   */
-  MPHType maxspeed = static_cast<MPHType>(std::min(
-      Techno_Type_Class()->MaxSpeed * SpeedBias * House->GroundspeedBias,
-      static_cast<int>(MPH_LIGHT_SPEED)));
+  MPHType maxspeed = static_cast<MPHType>(
+      std::min(static_cast<int>(Techno_Type_Class()->MaxSpeed) * SpeedBias *
+                   House->GroundspeedBias,
+               static_cast<int>(MPH_LIGHT_SPEED)));
   if (IsFormationMove) {
     maxspeed = FormationMaxSpeed;
   }
@@ -632,7 +634,7 @@ bool DriveClass::While_Moving() {
       dynamic_cast<UnitClass*>(this)->Flagged != HOUSE_NONE) {
     actual = SpeedAccum + static_cast<int>(maxspeed) / 2 * fixed(Speed, 256);
   } else {
-    actual = SpeedAccum + maxspeed * fixed(Speed, 256);
+    actual = SpeedAccum + static_cast<int>(maxspeed) * fixed(Speed, 256);
   }
 
   if (actual > PIXEL_LEPTON_W) {
@@ -694,7 +696,7 @@ bool DriveClass::While_Moving() {
         if (/**this != UNIT_GUNBOAT &&*/ nextface != FACING_NONE && adj &&
             RawTracks[tracknum - 1].Jump == TrackIndex && TrackIndex) {
           const int tnum =
-              (Dir_Facing(track->Facing) *
+              (static_cast<int>(Dir_Facing(track->Facing)) *
                static_cast<int>(magic_enum::enum_count<FacingType>())) +
               static_cast<int>(nextface);
           const TurnTrackType* newtrack =
@@ -1001,7 +1003,7 @@ bool DriveClass::Start_Of_Move() {
       }
     }
 
-    TryTryAgain = PATH_RETRY;
+    TryTryAgain = kPathRetry;
     facing = Path[0];
   }
 
@@ -1138,15 +1140,15 @@ bool DriveClass::Start_Of_Move() {
     }
 
     IsOnShortTrack = false;
-    TrackNumber =
-        (facing * static_cast<int>(magic_enum::enum_count<FacingType>())) +
-        static_cast<int>(nextface);
+    TrackNumber = (static_cast<int>(facing) *
+                   static_cast<int>(magic_enum::enum_count<FacingType>())) +
+                  static_cast<int>(nextface);
     if (TrackControl[TrackNumber].Track == 0) {
       Path[0] = FACING_NONE;
       TrackNumber = -1;
       return true;
     }
-    if (TrackControl[TrackNumber].Flag & F_D) {
+    if (base::Any(TrackControl[TrackNumber].Flag & F_D)) {
       /*
       **	If the middle cell of a two cell track contains a crate,
       **	the check for goodies before movement starts.

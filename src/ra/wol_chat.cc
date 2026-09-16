@@ -73,11 +73,12 @@ static bool ProcessChannelListSelection(WolapiObject* pWO,
                                         const IconListClass& chanlist,
                                         int iIndex);
 
-enum LIST_EXPAND_STATE {
+enum class LIST_EXPAND_STATE {
   LES_NORMAL,
   LES_CHANNELS_EXPANDED,
   LES_USERS_EXPANDED,
 };
+using enum LIST_EXPAND_STATE;
 static LIST_EXPAND_STATE lesCurrent = LES_NORMAL;
 
 static bool OnExpandChannelList(IconListClass& chanlist,
@@ -171,43 +172,40 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
   //------------------------------------------------------------------------
   //	Button Enumerations
   //------------------------------------------------------------------------
-  enum {
-    BUTTON_DISCONNECT =
-        100,  //	Note: standard WOL button IDs must match values in
-              // WolapiObject::PrepareButtonsAndIcons().
-    BUTTON_LEAVE,
-    BUTTON_REFRESH,
-    BUTTON_SQUELCH,
-    BUTTON_BAN,
-    BUTTON_KICK,
-    BUTTON_FINDPAGE,
-    BUTTON_OPTIONS,
-    BUTTON_LADDER,
-    BUTTON_HELP,
-
-    BUTTON_CHATLIST,
-    BUTTON_CHANLIST,
-    BUTTON_USERLIST,
-    BUTTON_SENDEDIT,
-    BUTTON_ACTION,
-    //		BUTTON_CGAME,
-    BUTTON_CREATE,
-    BUTTON_JOIN,
-    BUTTON_BACK,
-    BUTTON_EXPANDCHANNELS,
-    BUTTON_EXPANDUSERS,
-    BUTTON_RANKRA,
-    BUTTON_RANKAM
-  };
+  // Note: standard WOL button IDs must match values in
+  // WolapiObject::PrepareButtonsAndIcons().
+  constexpr int kButtonDisconnect = 100;
+  constexpr int kButtonLeave = 101;
+  constexpr int kButtonRefresh = 102;
+  constexpr int kButtonSquelch = 103;
+  constexpr int kButtonBan = 104;
+  constexpr int kButtonKick = 105;
+  constexpr int kButtonFindpage = 106;
+  constexpr int kButtonOptions = 107;
+  constexpr int kButtonLadder = 108;
+  constexpr int kButtonHelp = 109;
+  constexpr int kButtonChatlist = 110;
+  constexpr int kButtonChanlist = 111;
+  constexpr int kButtonUserlist = 112;
+  constexpr int kButtonSendedit = 113;
+  constexpr int kButtonAction = 114;
+  constexpr int kButtonCreate = 115;
+  constexpr int kButtonJoin = 116;
+  constexpr int kButtonBack = 117;
+  constexpr int kButtonExpandchannels = 118;
+  constexpr int kButtonExpandusers = 119;
+  constexpr int kButtonRankra = 120;
+  constexpr int kButtonRankam = 121;
 
   //------------------------------------------------------------------------
   //	Redraw values: in order from "top" to "bottom" layer of the dialog
   //------------------------------------------------------------------------
-  typedef enum {
+  enum class RedrawType {
     REDRAW_NONE = 0,
     REDRAW_BACKGROUND = 1,
     REDRAW_ALL = REDRAW_BACKGROUND
-  } RedrawType;
+  };
+  using enum RedrawType;
 
   //------------------------------------------------------------------------
   //	Dialog variables
@@ -226,31 +224,31 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
   const void* pShpExpand = MixArchive::Retrieve("exp.shp");
   const void* pShpUnexpand = MixArchive::Retrieve("unexp.shp");
 
-  IconListClass chatlist(BUTTON_CHATLIST, d_chatlist_x, d_chatlist_y,
+  IconListClass chatlist(kButtonChatlist, d_chatlist_x, d_chatlist_y,
                          d_chatlist_w, d_chatlist_h, TPF_TYPE,
                          MixArchive::Retrieve("BTN-UP.SHP"),
                          MixArchive::Retrieve("BTN-DN.SHP"), true, 0, 500);
-  ShapeButtonClass ExpandChanBtn(BUTTON_EXPANDCHANNELS, pShpExpand,
+  ShapeButtonClass ExpandChanBtn(kButtonExpandchannels, pShpExpand,
                                  d_chanlist_x + d_chanlist_w - 17,
                                  d_chanlist_y - 14);
-  IconListClass chanlist(BUTTON_CHANLIST, d_chanlist_x, d_chanlist_y,
+  IconListClass chanlist(kButtonChanlist, d_chanlist_x, d_chanlist_y,
                          d_chanlist_w, d_chanlist_h, TPF_TYPE,
                          MixArchive::Retrieve("BTN-UP.SHP"),
                          MixArchive::Retrieve("BTN-DN.SHP"), true, 1);
-  ShapeButtonClass ExpandUserBtn(BUTTON_EXPANDUSERS, pShpExpand,
+  ShapeButtonClass ExpandUserBtn(kButtonExpandusers, pShpExpand,
                                  d_userlist_x + d_userlist_w - 17,
                                  d_userlist_y - 14);
-  IconListClass userlist(BUTTON_USERLIST, d_userlist_x, d_userlist_y,
+  IconListClass userlist(kButtonUserlist, d_userlist_x, d_userlist_y,
                          d_userlist_w, d_userlist_h, TPF_TYPE,
                          MixArchive::Retrieve("BTN-UP.SHP"),
                          MixArchive::Retrieve("BTN-DN.SHP"), true, 2);
-  TextButtonClass ActionBtn(BUTTON_ACTION, TXT_WOL_ACTION, kTpfButton,
+  TextButtonClass ActionBtn(kButtonAction, TXT_WOL_ACTION, kTpfButton,
                             d_action_x, d_action_y, d_action_w);
-  TextButtonClass CreateBtn(BUTTON_CREATE, TXT_WOL_NEWSOMETHING, kTpfButton,
+  TextButtonClass CreateBtn(kButtonCreate, TXT_WOL_NEWSOMETHING, kTpfButton,
                             d_create_x, d_create_y, d_create_w);
-  TextButtonClass JoinBtn(BUTTON_JOIN, TXT_WOL_JOIN, kTpfButton, d_join_x,
+  TextButtonClass JoinBtn(kButtonJoin, TXT_WOL_JOIN, kTpfButton, d_join_x,
                           d_join_y, d_join_w);
-  TextButtonClass BackBtn(BUTTON_BACK, TXT_WOL_BACK, kTpfButton, d_back_x,
+  TextButtonClass BackBtn(kButtonBack, TXT_WOL_BACK, kTpfButton, d_back_x,
                           d_back_y, d_back_w);
   char* szRecordToStartWith = nullptr;
   if (pWO->bShowRankRA) {
@@ -269,15 +267,15 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
                                   d_userlist_w - 4 - (16 * 4), 12);
 
   char szSendBuffer[MAXCHATSENDLENGTH] = "";
-  EditClass sendedit(BUTTON_SENDEDIT, szSendBuffer, MAXCHATSENDLENGTH, kTpfText,
+  EditClass sendedit(kButtonSendedit, szSendBuffer, MAXCHATSENDLENGTH, kTpfText,
                      d_send_x, d_send_y, d_send_w, d_send_h);
 
   const void* pShpRankRA = MixArchive::Retrieve("rank_ra.shp");
   const void* pShpRankAM = MixArchive::Retrieve("rank_am.shp");
-  ShapeButtonClass RankRABtn(BUTTON_RANKRA, pShpRankRA,
+  ShapeButtonClass RankRABtn(kButtonRankra, pShpRankRA,
                              d_userlist_x + d_userlist_w - ((16 * 4) + 1),
                              d_userlist_y - 14);
-  ShapeButtonClass RankAMBtn(BUTTON_RANKAM, pShpRankAM,
+  ShapeButtonClass RankAMBtn(kButtonRankam, pShpRankAM,
                              d_userlist_x + d_userlist_w - ((16 * 3) + 1),
                              d_userlist_y - 14);
   //	Change draw behavior of toggle buttons.
@@ -608,7 +606,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
     //.....................................................................
     //	Refresh display if needed
     //.....................................................................
-    if (display) {
+    if (display != REDRAW_NONE) {
       Hide_Mouse();
 
       //..................................................................
@@ -725,7 +723,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
     //	Process input
     //.....................................................................
     switch (static_cast<int>(input)) {
-      case ButtonKey(BUTTON_SENDEDIT):
+      case ButtonKey(kButtonSendedit):
         //	Enter has been pressed - was caught by sendedit control.
         if (pWO->CurrentLevel == WOL_LEVEL_INCHATCHANNEL ||
             pWO->CurrentLevel == WOL_LEVEL_INLOBBY) {
@@ -748,7 +746,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
       case KN_LMOUSE:
         break;
 
-      case ButtonKey(BUTTON_EXPANDCHANNELS):
+      case ButtonKey(kButtonExpandchannels):
         if (OnExpandChannelList(chanlist, userlist)) {
           //	Hide userlist.
           if (ExpandUserBtn.Get_Next() == &userlist) {
@@ -788,7 +786,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
         display = REDRAW_ALL;
         break;
 
-      case ButtonKey(BUTTON_EXPANDUSERS):
+      case ButtonKey(kButtonExpandusers):
         if (OnExpandUserList(chanlist, userlist)) {
           //	Hide chanlist controls.
           if (ExpandChanBtn.Get_Next() == &chanlist) {
@@ -822,7 +820,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
         display = REDRAW_ALL;
         break;
 
-      case ButtonKey(BUTTON_CHANLIST):
+      case ButtonKey(kButtonChanlist):
         //	User clicks on the game list.
         //...............................................................
         // Handle a double-click
@@ -851,7 +849,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
         }
         break;
 
-      case ButtonKey(BUTTON_JOIN):
+      case ButtonKey(kButtonJoin):
         //	Pressing the join button is exactly like doubleclicking on the
         // selected index in chanlist, except: 		if the first item is
         // selected, ignore, unless we are at the top level
@@ -868,11 +866,11 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
         }
         break;
 
-      case ButtonKey(BUTTON_USERLIST):
+      case ButtonKey(kButtonUserlist):
         //	User clicks on user list.
         break;
 
-      case ButtonKey(BUTTON_CREATE):
+      case ButtonKey(kButtonCreate):
         switch (pWO->CurrentLevel) {
           case WOL_LEVEL_INCHATCHANNEL:
             //					debugprint( "%s\n",
@@ -908,7 +906,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
         bHackFocus = true;
         break;
 
-      case ButtonKey(BUTTON_LEAVE):
+      case ButtonKey(kButtonLeave):
         //	Because of the way things are set up, this is exactly like
         // selecting the first item in chanlist. 	(Button is disabled when
         // this is not appropriate.)
@@ -916,31 +914,31 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
         display = REDRAW_ALL;
         break;
 
-      case ButtonKey(BUTTON_REFRESH):
+      case ButtonKey(kButtonRefresh):
         pWO->dwTimeNextChannelUpdate = Get_Time_Ms();
         break;
 
-      case ButtonKey(BUTTON_SQUELCH):
+      case ButtonKey(kButtonSquelch):
         pWO->DoSquelch(&userlist);
         break;
 
-      case ButtonKey(BUTTON_BAN):
+      case ButtonKey(kButtonBan):
         pWO->DoKick(&userlist, true);
         //				display = REDRAW_ALL;
         break;
 
-      case ButtonKey(BUTTON_KICK):
+      case ButtonKey(kButtonKick):
         pWO->DoKick(&userlist, false);
         //				display = REDRAW_ALL;
         break;
 
-      case ButtonKey(BUTTON_FINDPAGE):
+      case ButtonKey(kButtonFindpage):
         pWO->DoFindPage();
         display = REDRAW_ALL;
         bHackFocus = true;
         break;
 
-      case ButtonKey(BUTTON_OPTIONS):
+      case ButtonKey(kButtonOptions):
         pWO->DoOptions();
         display = REDRAW_ALL;
         bHackFocus = true;
@@ -950,7 +948,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
         //				break;			ajw
         // Put back in?
 
-      case ButtonKey(BUTTON_BACK):
+      case ButtonKey(kButtonBack):
         //	Pressing the back button is exactly like doubleclicking on the
         // top item in chanlist, except 	when we're at the top level.
         if (pWO->CurrentLevel != WOL_LEVEL_TOP) {
@@ -960,7 +958,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
         }
         //	Note no break; here. Fall through if at top level.
         [[fallthrough]];
-      case ButtonKey(BUTTON_DISCONNECT):
+      case ButtonKey(kButtonDisconnect):
         if (WWMessageBox().Process(TXT_WOL_CONFIRMLOGOUT, TXT_YES, TXT_NO) ==
             0) {
           if (pWO->CurrentLevel == WOL_LEVEL_INCHATCHANNEL ||
@@ -975,7 +973,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
         bHackFocus = true;
         break;
 
-      case ButtonKey(BUTTON_ACTION):
+      case ButtonKey(kButtonAction):
         if (pWO->CurrentLevel == WOL_LEVEL_INCHATCHANNEL ||
             pWO->CurrentLevel == WOL_LEVEL_INLOBBY) {
           pWO->SendMessage(sendedit.Get_Text(), userlist, true);
@@ -995,24 +993,24 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
         }
         break;
 
-      case ButtonKey(BUTTON_LADDER):
+      case ButtonKey(kButtonLadder):
         pWO->DoLadder();
         display = REDRAW_ALL;
         bHackFocus = true;
         break;
 
-      case ButtonKey(BUTTON_HELP):
+      case ButtonKey(kButtonHelp):
         pWO->DoHelp();
         display = REDRAW_ALL;
         bHackFocus = true;
         break;
 
-      case ButtonKey(BUTTON_RANKRA):
+      case ButtonKey(kButtonRankra):
         pWO->bShowRankRA = true;
         pWO->bShowRankUpdated = true;
         break;
 
-      case ButtonKey(BUTTON_RANKAM):
+      case ButtonKey(kButtonRankam):
         pWO->bShowRankRA = false;
         pWO->bShowRankUpdated = true;
         break;
@@ -1225,7 +1223,7 @@ bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist, Channel* pChannel,
     hRes = pWO->ChannelJoin(pChannel);
     switch (hRes) {
       case CHAT_E_BADCHANNELPASSWORD: {
-        Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK,
+        Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack,
                          kTpfText);  //	Required before String_Pixel_Width()
                                      // call, for god's sake.
         auto* pEditDlg = new SimpleEditDlgClass(
@@ -1363,7 +1361,7 @@ void CreateChatChannel(WolapiObject* pWO) {
           else
   */
   {
-    Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK,
+    Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack,
                      kTpfText);  //	Required before String_Pixel_Width()
                                  // call, for god's sake.
     pEditDlg = new SimpleEditDlgClass(

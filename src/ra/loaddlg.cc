@@ -171,24 +171,23 @@ bool LoadOptionsClass::Process() {
   /*
   **	Button enumerations
   */
-  enum {
-    BUTTON_LOAD = 100,
-    BUTTON_SAVE,
-    BUTTON_DELETE,
-    BUTTON_CANCEL,
-    BUTTON_LIST,
-    BUTTON_EDIT,
-  };
+  constexpr int kButtonLoad = 100;
+  constexpr int kButtonSave = 101;
+  constexpr int kButtonDelete = 102;
+  constexpr int kButtonCancel = 103;
+  constexpr int kButtonList = 104;
+  constexpr int kButtonEdit = 105;
 
   /*
   **	Redraw values: in order from "top" to "bottom" layer of the dialog
   */
-  enum RedrawType {
+  enum class RedrawType {
     REDRAW_NONE = 0,
     REDRAW_BUTTONS = 1,
     REDRAW_BACKGROUND = 2,
     REDRAW_ALL = REDRAW_BACKGROUND
   };
+  using enum RedrawType;
 
   /*
   **	Dialog variables
@@ -215,35 +214,35 @@ bool LoadOptionsClass::Process() {
   switch (Style) {
     case LOAD:
       btn_txt = TXT_LOAD_BUTTON;
-      btn_id = BUTTON_LOAD;
+      btn_id = kButtonLoad;
       caption = TXT_LOAD_MISSION;
       break;
 
     case SAVE:
       btn_txt = TXT_SAVE_BUTTON;
-      btn_id = BUTTON_SAVE;
+      btn_id = kButtonSave;
       caption = TXT_SAVE_MISSION;
       list_ht -= 30;
       break;
 
     default:
       btn_txt = TXT_DELETE_BUTTON;
-      btn_id = BUTTON_DELETE;
+      btn_id = kButtonDelete;
       caption = TXT_DELETE_MISSION;
       break;
   }
 
   TextButtonClass button(btn_id, btn_txt, kTpfButton, d_button_x, d_button_y,
                          d_button_w);
-  TextButtonClass cancelbtn(BUTTON_CANCEL, TXT_CANCEL, kTpfButton, d_cancel_x,
+  TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL, kTpfButton, d_cancel_x,
                             d_cancel_y, d_cancel_w);
 
-  ListClass listbtn(BUTTON_LIST, d_list_x, d_list_y, d_list_w, list_ht,
+  ListClass listbtn(kButtonList, d_list_x, d_list_y, d_list_w, list_ht,
                     TPF_6PT_GRAD | TPF_NOSHADOW,
                     MixArchive::Retrieve("BTN-UP.SHP"),
                     MixArchive::Retrieve("BTN-DN.SHP"));
 
-  EditClass editbtn(BUTTON_EDIT, game_descr, sizeof(game_descr) - 4,
+  EditClass editbtn(kButtonEdit, game_descr, sizeof(game_descr) - 4,
                     TPF_6PT_GRAD | TPF_NOSHADOW, d_edit_x, d_edit_y, d_edit_w,
                     -1, EditClass::kAlphanumeric);
 
@@ -318,7 +317,7 @@ bool LoadOptionsClass::Process() {
       if (Style == SAVE) {
         Fancy_Text_Print(TXT_MISSION_DESCRIPTION, d_dialog_cx,
                          d_edit_y - d_txt8_h, GadgetClass::Get_Color_Scheme(),
-                         TBLACK, kTpfText | TPF_CENTER);
+                         kTBlack, kTpfText | TPF_CENTER);
       }
 
       /*
@@ -351,15 +350,15 @@ bool LoadOptionsClass::Process() {
     **	If the <RETURN> key was pressed, then default to the appropriate
     **	action button according to the style of this dialog box.
     */
-    if (input == KN_RETURN || input == ButtonKey(BUTTON_EDIT)) {
+    if (input == KN_RETURN || input == ButtonKey(kButtonEdit)) {
       ToggleClass* toggle = nullptr;
       switch (Style) {
         case SAVE:
-          input = ButtonKey(BUTTON_SAVE);
+          input = ButtonKey(kButtonSave);
           cancelbtn.Turn_Off();
           //					cancelbtn.IsOn = false;
           toggle =
-              dynamic_cast<ToggleClass*>(commands->Extract_Gadget(BUTTON_SAVE));
+              dynamic_cast<ToggleClass*>(commands->Extract_Gadget(kButtonSave));
           if (toggle != nullptr) {
             toggle->Turn_On();
             //						toggle->IsOn = true;
@@ -368,11 +367,11 @@ bool LoadOptionsClass::Process() {
           break;
 
         case LOAD:
-          input = ButtonKey(BUTTON_LOAD);
+          input = ButtonKey(kButtonLoad);
           //					cancelbtn.IsOn = false;
           cancelbtn.Turn_Off();
           toggle =
-              dynamic_cast<ToggleClass*>(commands->Extract_Gadget(BUTTON_LOAD));
+              dynamic_cast<ToggleClass*>(commands->Extract_Gadget(kButtonLoad));
           if (toggle != nullptr) {
             toggle->IsOn = true;
             toggle->IsPressed = true;
@@ -380,11 +379,11 @@ bool LoadOptionsClass::Process() {
           break;
 
         case WWDELETE:
-          input = ButtonKey(BUTTON_DELETE);
+          input = ButtonKey(kButtonDelete);
           //					cancelbtn.IsOn = false;
           cancelbtn.Turn_Off();
           toggle = dynamic_cast<ToggleClass*>(
-              commands->Extract_Gadget(BUTTON_DELETE));
+              commands->Extract_Gadget(kButtonDelete));
           if (toggle != nullptr) {
             toggle->IsOn = true;
             toggle->IsPressed = true;
@@ -406,7 +405,7 @@ bool LoadOptionsClass::Process() {
       ** Load: if load fails, present a message, and stay in the dialog
       ** to allow the user to try another game
       */
-      case ButtonKey(BUTTON_LOAD):
+      case ButtonKey(kButtonLoad):
         game_idx = listbtn.Current_Index();
         if (game_idx < 0 || game_idx >= Files.Count()) {
           break;
@@ -454,9 +453,9 @@ bool LoadOptionsClass::Process() {
       /*
       ** Save: Save the game & exit the dialog
       */
-      case ButtonKey(BUTTON_EDIT):
+      case ButtonKey(kButtonEdit):
 
-      case ButtonKey(BUTTON_SAVE):
+      case ButtonKey(kButtonSave):
         if (!strlen(game_descr)) {
           WWMessageBox().Process(TXT_MUSTENTER_DESCRIPTION);
           firsttime = true;
@@ -503,7 +502,7 @@ bool LoadOptionsClass::Process() {
       ** Delete: delete the file & stay in the dialog, to allow the user
       ** to delete multiple files.
       */
-      case ButtonKey(BUTTON_DELETE):
+      case ButtonKey(kButtonDelete):
         game_idx = listbtn.Current_Index();
         if (game_idx < 0 || game_idx >= Files.Count()) {
           break;
@@ -519,7 +518,7 @@ bool LoadOptionsClass::Process() {
             process = false;
           } else {
             auto* toggle = dynamic_cast<ToggleClass*>(
-                commands->Extract_Gadget(BUTTON_DELETE));
+                commands->Extract_Gadget(kButtonDelete));
             if (toggle != nullptr) {
               //							toggle->IsOn
               //= false;
@@ -537,7 +536,7 @@ bool LoadOptionsClass::Process() {
       ** item; if so, and if we're in SAVE mode, copy the list item into
       ** the save-game description field.
       */
-      case ButtonKey(BUTTON_LIST):
+      case ButtonKey(kButtonList):
         if (Style != SAVE) {
           break;
         }
@@ -574,7 +573,7 @@ bool LoadOptionsClass::Process() {
       ** ESC/Cancel: break
       */
       case KN_ESC:
-      case ButtonKey(BUTTON_CANCEL):
+      case ButtonKey(kButtonCancel):
         cancel = true;
         process = false;
         break;

@@ -57,6 +57,8 @@
 #include <utility>
 
 #include "absl/log/log.h"
+#include "base/enum_array.h"
+#include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "port/tokenizer.h"
@@ -107,82 +109,84 @@
 **	These are the text names for the various actions. If the action name
 *ends with "..." then *	this means that additional data is probably required.
 */
-static const char* ActionText[TACTION_COUNT] = {
-    "-No Action-",
-    "Winner is...",
-    "Loser is...",
-    "Production Begins",
-    "Create Team...",
-    "Destroy All Teams",
-    "All to Hunt...",
-    "Reinforcement (team)...",
-    "Drop Zone Flare (waypoint)...",
-    "Fire Sale...",
-    "Play Movie...",
-    "Text Trigger (ID num)...",
-    "Destroy Trigger...",
-    "Autocreate Begins...",
-    "~don't use~",
-    "Allow Win",
-    "Reveal all map",
-    "Reveal around waypoint...",
-    "Reveal zone of waypoint...",
-    "Play sound effect...",
-    "Play music theme...",
-    "Play speech...",
-    "Force Trigger...",
-    "Timer Start",
-    "Timer Stop",
-    "Timer Extend (1/10th min)...",
-    "Timer Shorten (1/10th min)...",
-    "Timer Set (1/10th min)...",
-    "Global Set...",
-    "Global Clear...",
-    "Auto Base Building...",
-    "Grow shroud one 'step'",
-    "Destroy attached building",
-    "Add 1-time special weapon...",
-    "Add repeating special weapon...",
-    "Preferred target...",
-    "Launch Nukes"};
+static base::EnumArray<TActionType, const char*,
+                       static_cast<int>(TACTION_COUNT)>
+    ActionText = {"-No Action-",
+                  "Winner is...",
+                  "Loser is...",
+                  "Production Begins",
+                  "Create Team...",
+                  "Destroy All Teams",
+                  "All to Hunt...",
+                  "Reinforcement (team)...",
+                  "Drop Zone Flare (waypoint)...",
+                  "Fire Sale...",
+                  "Play Movie...",
+                  "Text Trigger (ID num)...",
+                  "Destroy Trigger...",
+                  "Autocreate Begins...",
+                  "~don't use~",
+                  "Allow Win",
+                  "Reveal all map",
+                  "Reveal around waypoint...",
+                  "Reveal zone of waypoint...",
+                  "Play sound effect...",
+                  "Play music theme...",
+                  "Play speech...",
+                  "Force Trigger...",
+                  "Timer Start",
+                  "Timer Stop",
+                  "Timer Extend (1/10th min)...",
+                  "Timer Shorten (1/10th min)...",
+                  "Timer Set (1/10th min)...",
+                  "Global Set...",
+                  "Global Clear...",
+                  "Auto Base Building...",
+                  "Grow shroud one 'step'",
+                  "Destroy attached building",
+                  "Add 1-time special weapon...",
+                  "Add repeating special weapon...",
+                  "Preferred target...",
+                  "Launch Nukes"};
 
-ActionChoiceClass ActionChoices[TACTION_COUNT] = {{TACTION_NONE},
-                                                  {TACTION_WIN},
-                                                  {TACTION_LOSE},
-                                                  {TACTION_BEGIN_PRODUCTION},
-                                                  {TACTION_CREATE_TEAM},
-                                                  {TACTION_DESTROY_TEAM},
-                                                  {TACTION_ALL_HUNT},
-                                                  {TACTION_REINFORCEMENTS},
-                                                  {TACTION_DZ},
-                                                  {TACTION_FIRE_SALE},
-                                                  {TACTION_PLAY_MOVIE},
-                                                  {TACTION_TEXT_TRIGGER},
-                                                  {TACTION_DESTROY_TRIGGER},
-                                                  {TACTION_AUTOCREATE},
-                                                  {TACTION_WINLOSE},
-                                                  {TACTION_ALLOWWIN},
-                                                  {TACTION_REVEAL_ALL},
-                                                  {TACTION_REVEAL_SOME},
-                                                  {TACTION_REVEAL_ZONE},
-                                                  {TACTION_PLAY_SOUND},
-                                                  {TACTION_PLAY_MUSIC},
-                                                  {TACTION_PLAY_SPEECH},
-                                                  {TACTION_FORCE_TRIGGER},
-                                                  {TACTION_START_TIMER},
-                                                  {TACTION_STOP_TIMER},
-                                                  {TACTION_ADD_TIMER},
-                                                  {TACTION_SUB_TIMER},
-                                                  {TACTION_SET_TIMER},
-                                                  {TACTION_SET_GLOBAL},
-                                                  {TACTION_CLEAR_GLOBAL},
-                                                  {TACTION_BASE_BUILDING},
-                                                  {TACTION_CREEP_SHADOW},
-                                                  {TACTION_DESTROY_OBJECT},
-                                                  {TACTION_1_SPECIAL},
-                                                  {TACTION_FULL_SPECIAL},
-                                                  {TACTION_PREFERRED_TARGET},
-                                                  {TACTION_LAUNCH_NUKES}};
+base::EnumArray<TActionType, ActionChoiceClass, static_cast<int>(TACTION_COUNT)>
+    ActionChoices = {{{TACTION_NONE},
+                      {TACTION_WIN},
+                      {TACTION_LOSE},
+                      {TACTION_BEGIN_PRODUCTION},
+                      {TACTION_CREATE_TEAM},
+                      {TACTION_DESTROY_TEAM},
+                      {TACTION_ALL_HUNT},
+                      {TACTION_REINFORCEMENTS},
+                      {TACTION_DZ},
+                      {TACTION_FIRE_SALE},
+                      {TACTION_PLAY_MOVIE},
+                      {TACTION_TEXT_TRIGGER},
+                      {TACTION_DESTROY_TRIGGER},
+                      {TACTION_AUTOCREATE},
+                      {TACTION_WINLOSE},
+                      {TACTION_ALLOWWIN},
+                      {TACTION_REVEAL_ALL},
+                      {TACTION_REVEAL_SOME},
+                      {TACTION_REVEAL_ZONE},
+                      {TACTION_PLAY_SOUND},
+                      {TACTION_PLAY_MUSIC},
+                      {TACTION_PLAY_SPEECH},
+                      {TACTION_FORCE_TRIGGER},
+                      {TACTION_START_TIMER},
+                      {TACTION_STOP_TIMER},
+                      {TACTION_ADD_TIMER},
+                      {TACTION_SUB_TIMER},
+                      {TACTION_SET_TIMER},
+                      {TACTION_SET_GLOBAL},
+                      {TACTION_CLEAR_GLOBAL},
+                      {TACTION_BASE_BUILDING},
+                      {TACTION_CREEP_SHADOW},
+                      {TACTION_DESTROY_OBJECT},
+                      {TACTION_1_SPECIAL},
+                      {TACTION_FULL_SPECIAL},
+                      {TACTION_PREFERRED_TARGET},
+                      {TACTION_LAUNCH_NUKES}}};
 
 /***********************************************************************************************
  * ActionChoiceClass::Draw_It -- Display the action choice as part of a list
@@ -211,23 +215,25 @@ void ActionChoiceClass::Draw_It(int /*unused*/, int x, int y, int width,
                                 TextPrintType flags) const {
   RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
   static int _tabs[] = {13, 40};
-  if ((flags & 0x0F) == TPF_6PT_GRAD || (flags & 0x0F) == TPF_EFNT) {
+  const uint32_t font = static_cast<uint32_t>(flags) & 0x0FU;
+  if (font == static_cast<uint32_t>(TPF_6PT_GRAD) ||
+      font == static_cast<uint32_t>(TPF_EFNT)) {
     if (selected) {
       flags = flags | TPF_BRIGHT_COLOR;
       LogicPage->Fill_Rect(x, y, x + width - 1, y + height - 1, scheme->Shadow);
     } else {
-      if (!(flags & TPF_USE_GRAD_PAL)) {
+      if (!base::Any(flags & TPF_USE_GRAD_PAL)) {
         flags = flags | TPF_MEDIUM_COLOR;
       }
     }
 
-    Conquer_Clip_Text_Print(Description(), x, y, scheme, TBLACK, flags, width,
+    Conquer_Clip_Text_Print(Description(), x, y, scheme, kTBlack, flags, width,
                             _tabs);
   } else {
     Conquer_Clip_Text_Print(
         Description(), x, y,
         selected ? &ColorRemaps[PCOLOR_DIALOG_BLUE] : &ColorRemaps[PCOLOR_GREY],
-        TBLACK, flags, width, _tabs);
+        kTBlack, flags, width, _tabs);
   }
 }
 
@@ -599,7 +605,7 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
       //== hptr);
 
       if (PlayerPtr == hptr) {
-        Map.Add(RTTI_SPECIAL, Data.Special);
+        Map.Add(RTTI_SPECIAL, static_cast<int>(Data.Special));
         Map.Column[1].Flag_To_Redraw();
       }
       break;

@@ -145,19 +145,17 @@ void GameControlsClass::Process() {
   /*
   **	Button Enumerations
   */
-  //	BUTTON_WOLAPI is always in the list, and so always takes a slot in
+  //	kButtonWolapi is always in the list, and so always takes a slot in
   //	buttons[] below, even when bShowWolapi keeps it off the screen. One
   //	spare pointer costs less than two spellings of the enum.
-  enum {
-    BUTTON_SPEED = 100,
-    BUTTON_SCROLLRATE = 101,
-    BUTTON_VISUAL = 102,
-    BUTTON_SOUND = 103,
-    BUTTON_WOLAPI = 104,
-    BUTTON_OK = 105,
-    BUTTON_COUNT = 106,
-    BUTTON_FIRST = BUTTON_SPEED,
-  };
+  constexpr int kButtonSpeed = 100;
+  constexpr int kButtonScrollrate = 101;
+  constexpr int kButtonVisual = 102;
+  constexpr int kButtonSound = 103;
+  constexpr int kButtonWolapi = 104;
+  constexpr int kButtonOk = 105;
+  constexpr int kButtonCount = 106;
+  constexpr int kButtonFirst = kButtonSpeed;
 
   /*
   **	Dialog variables
@@ -168,7 +166,7 @@ void GameControlsClass::Process() {
   int selection = 0;
   bool pressed = false;
   int curbutton = 0;
-  TextButtonClass* buttons[BUTTON_COUNT - BUTTON_FIRST] = {};
+  TextButtonClass* buttons[kButtonCount - kButtonFirst] = {};
 
   RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
 
@@ -176,19 +174,19 @@ void GameControlsClass::Process() {
   **	Buttons
   */
 
-  SliderClass gspeed_btn(BUTTON_SPEED, d_speed_x, d_speed_y, d_speed_w,
+  SliderClass gspeed_btn(kButtonSpeed, d_speed_x, d_speed_y, d_speed_w,
                          d_speed_h, true);
-  SliderClass scrate_btn(BUTTON_SCROLLRATE, d_scroll_x, d_scroll_y, d_scroll_w,
+  SliderClass scrate_btn(kButtonScrollrate, d_scroll_x, d_scroll_y, d_scroll_w,
                          d_scroll_h, true);
-  TextButtonClass visual_btn(BUTTON_VISUAL, TXT_VISUAL_CONTROLS, kTpfButton,
+  TextButtonClass visual_btn(kButtonVisual, TXT_VISUAL_CONTROLS, kTpfButton,
                              d_visual_x, d_visual_y, d_visual_w, d_visual_h);
-  TextButtonClass sound_btn(BUTTON_SOUND, TXT_SOUND_CONTROLS, kTpfButton,
+  TextButtonClass sound_btn(kButtonSound, TXT_SOUND_CONTROLS, kTpfButton,
                             d_sound_x, d_sound_y, d_sound_w, d_sound_h);
-  TextButtonClass okbtn(BUTTON_OK, TXT_OPTIONS_MENU, kTpfButton, d_ok_x,
+  TextButtonClass okbtn(kButtonOk, TXT_OPTIONS_MENU, kTpfButton, d_ok_x,
                         d_ok_y);
   okbtn.X = (SeenBuff.Get_Width() - okbtn.Width) / 2;
 
-  TextButtonClass wol_btn(BUTTON_WOLAPI, TXT_WOL_OPTTITLE, kTpfButton, d_wol_x,
+  TextButtonClass wol_btn(kButtonWolapi, TXT_WOL_OPTTITLE, kTpfButton, d_wol_x,
                           d_wol_y, d_wol_w, d_wol_h);
 
   /*
@@ -215,14 +213,13 @@ void GameControlsClass::Process() {
   **	and,
   **		slider.Set_Value(-(val + 1 - std::max));
   */
-  gspeed_btn.Set_Maximum(OptionsClass::MAX_SPEED_SETTING);  // varies from 0 - 7
+  gspeed_btn.Set_Maximum(OptionsClass::kMaxSpeedSetting);  // varies from 0 - 7
   gspeed_btn.Set_Thumb_Size(1);
-  gspeed_btn.Set_Value(OptionsClass::MAX_SPEED_SETTING - 1 - gamespeed);
+  gspeed_btn.Set_Value(OptionsClass::kMaxSpeedSetting - 1 - gamespeed);
 
-  scrate_btn.Set_Maximum(
-      OptionsClass::MAX_SCROLL_SETTING);  // varies from 0 - 7
+  scrate_btn.Set_Maximum(OptionsClass::kMaxScrollSetting);  // varies from 0 - 7
   scrate_btn.Set_Thumb_Size(1);
-  scrate_btn.Set_Value(OptionsClass::MAX_SCROLL_SETTING - 1 - scrollrate);
+  scrate_btn.Set_Value(OptionsClass::kMaxScrollSetting - 1 - scrollrate);
 
   /*
   **	Fill array of button ptrs.
@@ -283,32 +280,32 @@ void GameControlsClass::Process() {
       **	Label the game speed slider
       */
       TextPrintType style = kTpfText;
-      if (curbutton == BUTTON_SPEED - BUTTON_FIRST) {
+      if (curbutton == kButtonSpeed - kButtonFirst) {
         style = style | TPF_BRIGHT_COLOR;
       }
       Fancy_Text_Print(TXT_SPEED, d_speed_x, d_speed_y - d_txt6_h, scheme,
-                       TBLACK, style);
+                       kTBlack, style);
 
       Fancy_Text_Print(TXT_SLOWER, d_speed_x, d_speed_y + d_speed_h + 2, scheme,
-                       TBLACK, kTpfText);
+                       kTBlack, kTpfText);
       Fancy_Text_Print(TXT_FASTER, d_speed_x + d_speed_w,
-                       d_speed_y + d_speed_h + 2, scheme, TBLACK,
+                       d_speed_y + d_speed_h + 2, scheme, kTBlack,
                        kTpfText | TPF_RIGHT);
 
       /*
       **	Label the scroll rate slider
       */
       style = kTpfText;
-      if (curbutton == BUTTON_SCROLLRATE - BUTTON_FIRST) {
+      if (curbutton == kButtonScrollrate - kButtonFirst) {
         style = style | TPF_BRIGHT_COLOR;
       }
       Fancy_Text_Print(TXT_SCROLLRATE, d_scroll_x, d_scroll_y - d_txt6_h,
-                       scheme, TBLACK, style);
+                       scheme, kTBlack, style);
 
       Fancy_Text_Print(TXT_SLOWER, d_scroll_x, d_scroll_y + d_scroll_h + 2,
-                       scheme, TBLACK, kTpfText);
+                       scheme, kTBlack, kTpfText);
       Fancy_Text_Print(TXT_FASTER, d_scroll_x + d_scroll_w,
-                       d_scroll_y + d_scroll_h + 2, scheme, TBLACK,
+                       d_scroll_y + d_scroll_h + 2, scheme, kTBlack,
                        kTpfText | TPF_RIGHT);
 
       commands->Draw_All();
@@ -326,33 +323,33 @@ void GameControlsClass::Process() {
     **	Process input.
     */
     switch (static_cast<int>(input)) {
-      case ButtonKey(BUTTON_SPEED):
-        curbutton = BUTTON_SPEED - BUTTON_FIRST;
+      case ButtonKey(kButtonSpeed):
+        curbutton = kButtonSpeed - kButtonFirst;
         refresh = true;
         break;
 
-      case ButtonKey(BUTTON_SCROLLRATE):
-        curbutton = BUTTON_SCROLLRATE - BUTTON_FIRST;
+      case ButtonKey(kButtonScrollrate):
+        curbutton = kButtonScrollrate - kButtonFirst;
         refresh = true;
         break;
 
-      case ButtonKey(BUTTON_VISUAL):
-        selection = BUTTON_VISUAL;
+      case ButtonKey(kButtonVisual):
+        selection = kButtonVisual;
         pressed = true;
         break;
 
-      case ButtonKey(BUTTON_SOUND):
-        selection = BUTTON_SOUND;
+      case ButtonKey(kButtonSound):
+        selection = kButtonSound;
         pressed = true;
         break;
 
-      case ButtonKey(BUTTON_OK):
-        selection = BUTTON_OK;
+      case ButtonKey(kButtonOk):
+        selection = kButtonOk;
         pressed = true;
         break;
 
-      case ButtonKey(BUTTON_WOLAPI):
-        selection = BUTTON_WOLAPI;
+      case ButtonKey(kButtonWolapi):
+        selection = kButtonWolapi;
         pressed = true;
         break;
 
@@ -361,17 +358,17 @@ void GameControlsClass::Process() {
         break;
 
       case KN_LEFT:
-        if (curbutton == BUTTON_SPEED - BUTTON_FIRST) {
+        if (curbutton == kButtonSpeed - kButtonFirst) {
           gspeed_btn.Bump(true);
-        } else if (curbutton == BUTTON_SCROLLRATE - BUTTON_FIRST) {
+        } else if (curbutton == kButtonScrollrate - kButtonFirst) {
           scrate_btn.Bump(true);
         }
         break;
 
       case KN_RIGHT:
-        if (curbutton == BUTTON_SPEED - BUTTON_FIRST) {
+        if (curbutton == kButtonSpeed - kButtonFirst) {
           gspeed_btn.Bump(false);
-        } else if (curbutton == BUTTON_SCROLLRATE - BUTTON_FIRST) {
+        } else if (curbutton == kButtonScrollrate - kButtonFirst) {
           scrate_btn.Bump(false);
         }
         break;
@@ -383,11 +380,11 @@ void GameControlsClass::Process() {
         }
 
         curbutton--;
-        if (!bShowWolapi && curbutton == BUTTON_WOLAPI - BUTTON_FIRST) {
+        if (!bShowWolapi && curbutton == kButtonWolapi - kButtonFirst) {
           curbutton--;  //	Skip over missing button.
         }
         if (curbutton < 0) {
-          curbutton = BUTTON_COUNT - BUTTON_FIRST - 1;
+          curbutton = kButtonCount - kButtonFirst - 1;
         }
 
         if (buttons[curbutton]) {
@@ -404,10 +401,10 @@ void GameControlsClass::Process() {
         }
 
         curbutton++;
-        if (!bShowWolapi && curbutton == BUTTON_WOLAPI - BUTTON_FIRST) {
+        if (!bShowWolapi && curbutton == kButtonWolapi - kButtonFirst) {
           curbutton++;  //	Skip over missing button.
         }
-        if (curbutton > BUTTON_COUNT - BUTTON_FIRST - 1) {
+        if (curbutton > kButtonCount - kButtonFirst - 1) {
           curbutton = 0;
         }
 
@@ -419,7 +416,7 @@ void GameControlsClass::Process() {
         break;
 
       case KN_RETURN:
-        selection = curbutton + BUTTON_FIRST;
+        selection = curbutton + kButtonFirst;
         pressed = true;
         break;
 
@@ -439,16 +436,15 @@ void GameControlsClass::Process() {
       *executed.
       */
       if (gamespeed !=
-          OptionsClass::MAX_SPEED_SETTING - 1 - gspeed_btn.Get_Value()) {
-        gamespeed =
-            OptionsClass::MAX_SPEED_SETTING - 1 - gspeed_btn.Get_Value();
+          OptionsClass::kMaxSpeedSetting - 1 - gspeed_btn.Get_Value()) {
+        gamespeed = OptionsClass::kMaxSpeedSetting - 1 - gspeed_btn.Get_Value();
         OutList.Add(EventClass(EventClass::GAMESPEED, gamespeed));
       }
 
       if (scrollrate !=
-          OptionsClass::MAX_SCROLL_SETTING - 1 - scrate_btn.Get_Value()) {
+          OptionsClass::kMaxScrollSetting - 1 - scrate_btn.Get_Value()) {
         scrollrate =
-            OptionsClass::MAX_SCROLL_SETTING - 1 - scrate_btn.Get_Value();
+            OptionsClass::kMaxScrollSetting - 1 - scrate_btn.Get_Value();
         Options.ScrollRate = scrollrate;
       }
       process = false;
@@ -473,15 +469,15 @@ void GameControlsClass::Process() {
       **	Possibly launch into another dialog if so directed.
       */
       switch (selection) {
-        case BUTTON_VISUAL:
+        case kButtonVisual:
           VisualControlsClass::Process();
           process = true;
           display = true;
           refresh = true;
           break;
 
-        case BUTTON_SOUND:
-          if (!SoundType) {
+        case kButtonSound:
+          if (SoundType == SFX_NONE) {
             WWMessageBox().Process(Text_String(TXT_NO_SOUND_CARD));
             process = true;
             display = true;
@@ -494,7 +490,7 @@ void GameControlsClass::Process() {
           }
           break;
 
-        case BUTTON_WOLAPI:
+        case kButtonWolapi:
           if (WOL_Options_Dialog(pWolapi, true)) {
             //	The game ended while in this dialog.
             process = false;
@@ -505,7 +501,7 @@ void GameControlsClass::Process() {
           }
           break;
 
-        case BUTTON_OK:
+        case kButtonOk:
         default:
           break;
       }

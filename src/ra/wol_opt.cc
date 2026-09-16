@@ -82,37 +82,35 @@ bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame) {
   /*
   **	Button enumerations
   */
-  enum {
-    BUTTON_OK = 100,
-    CHECK_FIND,
-    CHECK_PAGE,
-    CHECK_LANGUAGE,
-    CHECK_ALLGAMES,
-    CHECK_RANKAM,
-  };
+  constexpr int kButtonOk = 100;
+  constexpr int kCheckFind = 101;
+  constexpr int kCheckPage = 102;
+  constexpr int kCheckLanguage = 103;
+  constexpr int kCheckAllgames = 104;
+  constexpr int kCheckRankam = 105;
 
   /*
   **	Buttons
   */
   ControlClass* commands = nullptr;  // the button list
 
-  TextButtonClass OkBtn(BUTTON_OK, TXT_OK, kTpfButton, d_ok_x, d_ok_y, d_ok_w);
+  TextButtonClass OkBtn(kButtonOk, TXT_OK, kTpfButton, d_ok_x, d_ok_y, d_ok_w);
 
-  BigCheckBoxClass FindCheck(CHECK_FIND, d_list_x, d_list_y, d_list_w, d_list_h,
+  BigCheckBoxClass FindCheck(kCheckFind, d_list_x, d_list_y, d_list_w, d_list_h,
                              TXT_WOL_OPTFIND, TPF_6PT_GRAD | TPF_NOSHADOW,
                              pWO->bFindEnabled);
-  BigCheckBoxClass PageCheck(CHECK_PAGE, d_list_x, d_list_y + d_list_h + 2,
+  BigCheckBoxClass PageCheck(kCheckPage, d_list_x, d_list_y + d_list_h + 2,
                              d_list_w, d_list_h, TXT_WOL_OPTPAGE,
                              TPF_6PT_GRAD | TPF_NOSHADOW, pWO->bPageEnabled);
-  BigCheckBoxClass LanguageCheck(CHECK_LANGUAGE, d_list_x,
+  BigCheckBoxClass LanguageCheck(kCheckLanguage, d_list_x,
                                  d_list_y + (2 * (d_list_h + 2)), d_list_w,
                                  d_list_h, TXT_WOL_OPTLANGUAGE,
                                  TPF_6PT_GRAD | TPF_NOSHADOW, pWO->bLangFilter);
   BigCheckBoxClass GamescopeCheck(
-      CHECK_ALLGAMES, d_list_x, d_list_y + (3 * (d_list_h + 2)), d_list_w,
+      kCheckAllgames, d_list_x, d_list_y + (3 * (d_list_h + 2)), d_list_w,
       d_list_h, TXT_WOL_OPTGAMESCOPE, TPF_6PT_GRAD | TPF_NOSHADOW,
       !pWO->bAllGamesShown);
-  BigCheckBoxClass RankAMCheck(CHECK_RANKAM, d_list_x,
+  BigCheckBoxClass RankAMCheck(kCheckRankam, d_list_x,
                                d_list_y + (4 * (d_list_h + 2)), d_list_w,
                                d_list_h, TXT_WOL_OPTRANKAM,
                                TPF_6PT_GRAD | TPF_NOSHADOW, !pWO->bShowRankRA);
@@ -186,7 +184,7 @@ bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame) {
     if (KeyboardClass::Down(KN_ESC)) {
       bEscapeDown = true;
     } else if (bEscapeDown) {
-      input = ButtonKey(BUTTON_OK);
+      input = ButtonKey(kButtonOk);
       bEscapeDown = false;
     }
     if (KeyboardClass::Down(KN_RETURN)) {
@@ -196,7 +194,7 @@ bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame) {
     } else {
       bIgnoreReturnDown = false;
       if (bReturnDown) {
-        input = ButtonKey(BUTTON_OK);
+        input = ButtonKey(kButtonOk);
         bReturnDown = false;
       }
     }
@@ -207,22 +205,22 @@ bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame) {
 
     if (cancel_current_msgbox) {
       cancel_current_msgbox = false;
-      input = ButtonKey(BUTTON_OK);
+      input = ButtonKey(kButtonOk);
     }
     switch (static_cast<int>(input)) {
-      case ButtonKey(BUTTON_OK):
+      case ButtonKey(kButtonOk):
         process = false;
         break;
 
-      case ButtonKey(CHECK_FIND):
-      case ButtonKey(CHECK_PAGE):
-      case ButtonKey(CHECK_LANGUAGE):
-      case ButtonKey(CHECK_ALLGAMES):
+      case ButtonKey(kCheckFind):
+      case ButtonKey(kCheckPage):
+      case ButtonKey(kCheckLanguage):
+      case ButtonKey(kCheckAllgames):
         pWO->SetOptions(FindCheck.IsOn, PageCheck.IsOn, LanguageCheck.IsOn,
                         !GamescopeCheck.IsOn);
         break;
 
-      case ButtonKey(CHECK_RANKAM):
+      case ButtonKey(kCheckRankam):
         pWO->bShowRankRA = !RankAMCheck.IsOn;
         pWO->bMyRecordUpdated = true;
         pWO->bShowRankUpdated = true;

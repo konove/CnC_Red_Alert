@@ -73,24 +73,22 @@
 /*
 **	This is the menu control structures.
 */
-typedef enum MenuIndexType {
-  MENUX = 0,
-  MENUY = 1,
-  ITEMWIDTH = 2,
-  ITEMSHIGH = 3,
-  MSELECTED = 4,
-  NORMCOL = 5,
-  HILITE = 6,
-  MENUPADDING = 0x1000
-} MenuIndexType;
+inline constexpr int kMenux = 0;
+inline constexpr int kMenuy = 1;
+inline constexpr int kItemwidth = 2;
+inline constexpr int kItemshigh = 3;
+inline constexpr int kMselected = 4;
+inline constexpr int kNormcol = 5;
+inline constexpr int kHilite = 6;
+inline constexpr int kMenupadding = 0x1000;
 
 /* These defines handle the various names given to the same color. */
-#define DKGREEN GREEN
-#define DKBLUE BLUE
-#define GRAY GREY
-#define DKGREY GREY
-#define DKGRAY GREY
-#define LTGRAY LTGREY
+#define DKGREEN kGreen
+#define DKBLUE kBlue
+#define GRAY kGrey
+#define DKGREY kGrey
+#define DKGRAY kGrey
+#define LTGRAY kLtGrey
 
 inline int16_t Get_IconSet_MapWidth(const void* data) {
   if (data) {

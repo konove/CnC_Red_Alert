@@ -114,6 +114,7 @@
 #include <vector>
 
 #include "absl/strings/str_format.h"
+#include "base/enum_array.h"
 #include "base/numeric.h"
 #include "base/types.h"
 #include "magic_enum/magic_enum.hpp"
@@ -181,7 +182,7 @@
 **	These layer control elements are used to group the displayable objects
 **	so that proper overlap can be obtained.
 */
-LayerClass DisplayClass::Layer[magic_enum::enum_count<LayerType>()];
+base::EnumArray<LayerType, LayerClass> DisplayClass::Layer;
 
 /*
 ** Fading tables
@@ -356,28 +357,30 @@ void DisplayClass::Init_IO() {
  *=============================================================================================*/
 void DisplayClass::Init_Theater(TheaterType theater) {
   char fullname[16];
-  static const TLucentType MouseCols[4] = {{BLACK, BLACK, 110, 0},
-                                           {WHITE, WHITE, 110, 0},
-                                           {LTGREY, LTGREY, 110, 0},
+  static const TLucentType MouseCols[4] = {{kBlack, kBlack, 110, 0},
+                                           {kWhite, kWhite, 110, 0},
+                                           {kLtGrey, kLtGrey, 110, 0},
                                            {DKGREY, DKGREY, 110, 0}};
   static const TLucentType MagicCols[kMagicColorCount] = {
-      {32, 32, 110, 0},        {33, 33, 110, 0},       {34, 34, 110, 0},
-      {35, 35, 110, 0},        {36, 36, 110, 0},       {37, 37, 110, 0},
-      {38, 38, 110, 0},        {39, 39, 110, 0},       {BLACK, BLACK, 200, 0},
-      {WHITE, BLACK, 40, 0},   {LTGREY, BLACK, 80, 0}, {DKGREY, BLACK, 140, 0},
-      {LTGREEN, BLACK, 130, 0}};
-  static const TLucentType WhiteCols[1] = {{1, WHITE, 80, 0}};
+      {32, 32, 110, 0},          {33, 33, 110, 0},
+      {34, 34, 110, 0},          {35, 35, 110, 0},
+      {36, 36, 110, 0},          {37, 37, 110, 0},
+      {38, 38, 110, 0},          {39, 39, 110, 0},
+      {kBlack, kBlack, 200, 0},  {kWhite, kBlack, 40, 0},
+      {kLtGrey, kBlack, 80, 0},  {DKGREY, kBlack, 140, 0},
+      {kLtGreen, kBlack, 130, 0}};
+  static const TLucentType WhiteCols[1] = {{1, kWhite, 80, 0}};
   static const TLucentType ShadowCols[kShadowColorCount] = {
-      {WHITE + 1, BLACK, 130, 0},
-      {WHITE, BLACK, 170, 0},
-      {LTGRAY, BLACK, 250, 0},
-      {DKGRAY, BLACK, 250, 0}};
+      {kWhite + 1, kBlack, 130, 0},
+      {kWhite, kBlack, 170, 0},
+      {LTGRAY, kBlack, 250, 0},
+      {DKGRAY, kBlack, 250, 0}};
   static const TLucentType UShadowCols[kUnitShadowColorCount] = {
-      {LTGREEN, BLACK, 130, 0}};
+      {kLtGreen, kBlack, 130, 0}};
   static const TLucentType UShadowColsAir[kUnitShadowColorCount] = {
-      {LTGREEN, WHITE, 0, 0}};
+      {kLtGreen, kWhite, 0, 0}};
   static const TLucentType UShadowColsSnow[kUnitShadowColorCount] = {
-      {LTGREEN, BLACK, 75, 0}};
+      {kLtGreen, kBlack, 75, 0}};
 
   /*
   **	Invoke parent's init routine.
@@ -414,11 +417,11 @@ void DisplayClass::Init_Theater(TheaterType theater) {
 
   OriginalPalette = GamePalette;
 
-  Build_Fading_Table(GamePalette, FadingGreen, GREEN, 110);
+  Build_Fading_Table(GamePalette, FadingGreen, kGreen, 110);
 
-  Build_Fading_Table(GamePalette, FadingYellow, YELLOW, 140);
+  Build_Fading_Table(GamePalette, FadingYellow, kYellow, 140);
 
-  Build_Fading_Table(GamePalette, FadingRed, RED, 140);
+  Build_Fading_Table(GamePalette, FadingRed, kRed, 140);
 
   Build_Translucent_Table(GamePalette, &MouseCols[0], 4, MouseTranslucentTable);
 
@@ -443,22 +446,22 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   }
 
   if (theater == THEATER_SNOW) {
-    Conquer_Build_Fading_Table(GamePalette, FadingShade, BLACK, 75);
+    Conquer_Build_Fading_Table(GamePalette, FadingShade, kBlack, 75);
   } else {
-    Conquer_Build_Fading_Table(GamePalette, FadingShade, BLACK, 130);
+    Conquer_Build_Fading_Table(GamePalette, FadingShade, kBlack, 130);
   }
 
-  Conquer_Build_Fading_Table(GamePalette, FadingLight, WHITE, 85);
+  Conquer_Build_Fading_Table(GamePalette, FadingLight, kWhite, 85);
 
   /*
   **	Create the shadow color used by aircraft.
   */
-  Conquer_Build_Fading_Table(GamePalette, &SpecialGhost[256], BLACK, 100);
+  Conquer_Build_Fading_Table(GamePalette, &SpecialGhost[256], kBlack, 100);
   for (int index = 0; index < 256; index++) {
     SpecialGhost[index] = 0;
   }
 
-  Make_Fading_Table(GamePalette, FadingBrighten, WHITE, 25);
+  Make_Fading_Table(GamePalette, FadingBrighten, kWhite, 25);
 
   Make_Fading_Table(GamePalette, FadingWayDark, DKGRAY, 192);
 
@@ -610,11 +613,13 @@ void DisplayClass::Update_View_Dimensions(int x, int y, int width, int height,
 
   TacPixelX = x;
   TacPixelY = y;
-  WindowList[WINDOW_TACTICAL][WINDOWX] = x;
-  WindowList[WINDOW_TACTICAL][WINDOWY] = y;
-  WindowList[WINDOW_TACTICAL][WINDOWWIDTH] = Lepton_To_Pixel(TacLeptonWidth);
-  WindowList[WINDOW_TACTICAL][WINDOWHEIGHT] = Lepton_To_Pixel(TacLeptonHeight);
-  if (Window == WINDOW_TACTICAL) {
+  WindowList[static_cast<int>(WINDOW_TACTICAL)][kWindowX] = x;
+  WindowList[static_cast<int>(WINDOW_TACTICAL)][kWindowY] = y;
+  WindowList[static_cast<int>(WINDOW_TACTICAL)][kWindowWidth] =
+      Lepton_To_Pixel(TacLeptonWidth);
+  WindowList[static_cast<int>(WINDOW_TACTICAL)][kWindowHeight] =
+      Lepton_To_Pixel(TacLeptonHeight);
+  if (Window == static_cast<unsigned>(WINDOW_TACTICAL)) {
     Change_Window(0);
     Change_Window(static_cast<int>(Window));
   }
@@ -2080,7 +2085,7 @@ void DisplayClass::Draw_It(bool forced) {
     */
     if (IsRubberBand) {
       LogicPage->Draw_Rect(BandX + TacPixelX, BandY + TacPixelY,
-                           NewX + TacPixelX, NewY + TacPixelY, WHITE);
+                           NewX + TacPixelX, NewY + TacPixelY, kWhite);
     }
 
     /*
@@ -2262,7 +2267,7 @@ void DisplayClass::Redraw_Shadow() {
                               Lepton_To_Pixel(TacLeptonHeight)) >= 0) {
                   LogicPage->Fill_Rect(TacPixelX + xpixel, TacPixelY + ypixel,
                                        TacPixelX + xpixel + ww - 1,
-                                       TacPixelY + ypixel + hh - 1, BLACK);
+                                       TacPixelY + ypixel + hh - 1, kBlack);
                 }
               }
             }
@@ -2850,7 +2855,7 @@ bool DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
   *press *	or release event, special mouse queuing storage variables are
   *used. Other *	events must use the current mouse position globals.
   */
-  if (flags & (LEFTPRESS | LEFTRELEASE | RIGHTPRESS | RIGHTRELEASE)) {
+  if (flags & (kLeftPress | kLeftRelease | kRightPress | kRightRelease)) {
     x = Keyboard->MouseQX;
     y = Keyboard->MouseQY;
   } else {
@@ -3005,7 +3010,7 @@ bool DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
     /*
     **	A right mouse button press cancels the current action or selection.
     */
-    if (flags & RIGHTPRESS) {
+    if (flags & kRightPress) {
       Map.Mouse_Right_Press();
     }
 
@@ -3014,8 +3019,8 @@ bool DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
     *know about it, *	then it must be informed. Do this by faking a mouse
     *release event.
     */
-    if (flags & LEFTUP && Map.IsRubberBand) {
-      flags |= LEFTRELEASE;
+    if (flags & kLeftUp && Map.IsRubberBand) {
+      flags |= kLeftRelease;
     }
 
     /*
@@ -3023,7 +3028,7 @@ bool DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
     *processed. *	The shape changes depending on what object the mouse is
     *currently over and what *	object is currently selected.
     */
-    if ((!edge) && (flags & LEFTUP)) {
+    if ((!edge) && (flags & kLeftUp)) {
       Map.Mouse_Left_Up(cell, shadow, object, action);
     }
 
@@ -3031,7 +3036,7 @@ bool DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
     **	Normal actions occur when the mouse button is released. The press event
     *is *	intercepted and possible rubber-band mode is flagged.
     */
-    if (flags & LEFTRELEASE) {
+    if (flags & kLeftRelease) {
       Map.Mouse_Left_Release(cell, x, y, object, action);
     }
 
@@ -3041,7 +3046,7 @@ bool DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
     **	mode can be made. Rubber band mode starts when the mouse is
     **	held down and moved a certain minimum distance.
     */
-    if (!edge && flags & LEFTPRESS) {
+    if (!edge && flags & kLeftPress) {
       Map.Mouse_Left_Up(cell, shadow, object, action);
       Map.Mouse_Left_Press(x, y);
     }
@@ -3051,7 +3056,7 @@ bool DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
     **	start. If rubber band mode is already active, then update the size
     **	and flag the map to redraw it.
     */
-    if (flags & LEFTHELD) {
+    if (flags & kLeftHeld) {
       Map.Mouse_Left_Held(x, y);
     }
   }
@@ -3361,18 +3366,18 @@ void DisplayClass::Mouse_Left_Up(CELL cell, bool shadow, ObjectClass* object,
     **	system of the text name for the object under the mouse.
     */
     if (object != nullptr) {
-      int color = LTGREY;
+      int color = kLtGrey;
 
       /*
       **	Fetch the appropriate background color for help text.
       */
       if (PlayerPtr->Is_Ally(object)) {
-        color = GREEN;
+        color = kGreen;
       } else {
         if (object->Owner() == HOUSE_NONE || object->Owner() == HOUSE_NEUTRAL) {
-          color = LTGREY;
+          color = kLtGrey;
         } else {
-          color = PINK;
+          color = kPink;
         }
       }
 
@@ -3670,32 +3675,33 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
         }
 
         if (action == ACTION_NUKE_BOMB) {
-          OutList.Add(
-              EventClass(EventClass::SPECIAL_PLACE, SPC_NUCLEAR_BOMB, cell));
+          OutList.Add(EventClass(EventClass::SPECIAL_PLACE,
+                                 static_cast<int>(SPC_NUCLEAR_BOMB), cell));
         }
 
         if (action == ACTION_PARA_BOMB) {
-          OutList.Add(
-              EventClass(EventClass::SPECIAL_PLACE, SPC_PARA_BOMB, cell));
+          OutList.Add(EventClass(EventClass::SPECIAL_PLACE,
+                                 static_cast<int>(SPC_PARA_BOMB), cell));
         }
         if (action == ACTION_PARA_INFANTRY) {
-          OutList.Add(
-              EventClass(EventClass::SPECIAL_PLACE, SPC_PARA_INFANTRY, cell));
+          OutList.Add(EventClass(EventClass::SPECIAL_PLACE,
+                                 static_cast<int>(SPC_PARA_INFANTRY), cell));
         }
         if (action == ACTION_SPY_MISSION) {
-          OutList.Add(
-              EventClass(EventClass::SPECIAL_PLACE, SPC_SPY_MISSION, cell));
+          OutList.Add(EventClass(EventClass::SPECIAL_PLACE,
+                                 static_cast<int>(SPC_SPY_MISSION), cell));
         }
         if (action == ACTION_IRON_CURTAIN) {
-          OutList.Add(
-              EventClass(EventClass::SPECIAL_PLACE, SPC_IRON_CURTAIN, cell));
+          OutList.Add(EventClass(EventClass::SPECIAL_PLACE,
+                                 static_cast<int>(SPC_IRON_CURTAIN), cell));
         }
         if (action == ACTION_CHRONOSPHERE) {
-          OutList.Add(
-              EventClass(EventClass::SPECIAL_PLACE, SPC_CHRONOSPHERE, cell));
+          OutList.Add(EventClass(EventClass::SPECIAL_PLACE,
+                                 static_cast<int>(SPC_CHRONOSPHERE), cell));
         }
         if (action == ACTION_CHRONO2) {
-          OutList.Add(EventClass(EventClass::SPECIAL_PLACE, kSpcChrono2, cell));
+          OutList.Add(EventClass(EventClass::SPECIAL_PLACE,
+                                 static_cast<int>(kSpcChrono2), cell));
         }
       }
 

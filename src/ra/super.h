@@ -96,7 +96,7 @@ class SuperClass {
   VoxType VoxSuspend = VOX_NONE;
   int RechargeTime = 0;
 
-  enum { ANIMATION_STAGES = 54 };
+  static constexpr int kAnimationStages = 54;
 };
 
 #endif  // CNC_RED_ALERT_RA_SUPER_H_

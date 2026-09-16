@@ -59,6 +59,7 @@
 
 #include "absl/log/log.h"
 #include "absl/strings/str_format.h"
+#include "base/enum_array.h"
 #include "ra/anim.h"
 #include "ra/building.h"
 #include "ra/ccptr.h"
@@ -104,52 +105,57 @@
 ** Table of what data is really used in the EventClass struct for different
 ** events.  This table must be kept current with the EventType enum.
 */
-unsigned char EventClass::EventLength[LAST_EVENT] = {
-    0,                                                        // EMPTY
-    sizeof(std::declval<EventClass>().Data.General),          // ALLY
-    sizeof(std::declval<EventClass>().Data.MegaMission),      // MEGAMISSION
-    sizeof(std::declval<EventClass>().Data.MegaMission_F),    // MEGAMISSION_F
-    sizeof(std::declval<EventClass>().Data.Target),           // IDLE
-    sizeof(std::declval<EventClass>().Data.Target),           // SCATTER
-    0,                                                        // DESTRUCT
-    0,                                                        // DEPLOY
-    sizeof(std::declval<EventClass>().Data.Place),            // PLACE
-    0,                                                        // OPTIONS
-    sizeof(std::declval<EventClass>().Data.General),          // GAMESPEED
-    sizeof(std::declval<EventClass>().Data.Specific),         // PRODUCE
-    sizeof(std::declval<EventClass>().Data.Specific.Type),    // SUSPEND
-    sizeof(std::declval<EventClass>().Data.Specific.Type),    // ABANDON
-    sizeof(std::declval<EventClass>().Data.Target),           // PRIMARY
-    sizeof(std::declval<EventClass>().Data.Special),          // SPECIAL_PLACE
-    0,                                                        // EXIT
-    sizeof(std::declval<EventClass>().Data.Anim),             // ANIMATION
-    sizeof(std::declval<EventClass>().Data.Target),           // REPAIR
-    sizeof(std::declval<EventClass>().Data.Target),           // SELL
-    sizeof(std::declval<EventClass>().Data.SellCell),         // SELLCELL
-    sizeof(std::declval<EventClass>().Data.Options),          // SPECIAL
-    0,                                                        // FRAMESYNC
-    0,                                                        // MESSAGE
-    sizeof(std::declval<EventClass>().Data.FrameInfo.Delay),  // RESPONSE_TIME
-    sizeof(std::declval<EventClass>().Data.FrameInfo),        // FRAMEINFO
-    0,                                                        // SAVEGAME
-    sizeof(std::declval<EventClass>().Data.NavCom),           // ARCHIVE
-    sizeof(std::declval<EventClass>().Data.Variable.Size),    // ADDPLAYER
-    sizeof(std::declval<EventClass>().Data.Timing),           // TIMING
-    sizeof(std::declval<EventClass>().Data.ProcessTime),      // PROCESS_TIME
-    0,                                                        // PROPOSE_DRAW
-    0,                                                        // RETRACT_DRAW
+base::EnumArray<EventClass::EventType, unsigned char,
+                static_cast<int>(EventClass::LAST_EVENT)>
+    EventClass::EventLength = {
+        0,                                                      // EMPTY
+        sizeof(std::declval<EventClass>().Data.General),        // ALLY
+        sizeof(std::declval<EventClass>().Data.MegaMission),    // MEGAMISSION
+        sizeof(std::declval<EventClass>().Data.MegaMission_F),  // MEGAMISSION_F
+        sizeof(std::declval<EventClass>().Data.Target),         // IDLE
+        sizeof(std::declval<EventClass>().Data.Target),         // SCATTER
+        0,                                                      // DESTRUCT
+        0,                                                      // DEPLOY
+        sizeof(std::declval<EventClass>().Data.Place),          // PLACE
+        0,                                                      // OPTIONS
+        sizeof(std::declval<EventClass>().Data.General),        // GAMESPEED
+        sizeof(std::declval<EventClass>().Data.Specific),       // PRODUCE
+        sizeof(std::declval<EventClass>().Data.Specific.Type),  // SUSPEND
+        sizeof(std::declval<EventClass>().Data.Specific.Type),  // ABANDON
+        sizeof(std::declval<EventClass>().Data.Target),         // PRIMARY
+        sizeof(std::declval<EventClass>().Data.Special),        // SPECIAL_PLACE
+        0,                                                      // EXIT
+        sizeof(std::declval<EventClass>().Data.Anim),           // ANIMATION
+        sizeof(std::declval<EventClass>().Data.Target),         // REPAIR
+        sizeof(std::declval<EventClass>().Data.Target),         // SELL
+        sizeof(std::declval<EventClass>().Data.SellCell),       // SELLCELL
+        sizeof(std::declval<EventClass>().Data.Options),        // SPECIAL
+        0,                                                      // FRAMESYNC
+        0,                                                      // MESSAGE
+        sizeof(
+            std::declval<EventClass>().Data.FrameInfo.Delay),   // RESPONSE_TIME
+        sizeof(std::declval<EventClass>().Data.FrameInfo),      // FRAMEINFO
+        0,                                                      // SAVEGAME
+        sizeof(std::declval<EventClass>().Data.NavCom),         // ARCHIVE
+        sizeof(std::declval<EventClass>().Data.Variable.Size),  // ADDPLAYER
+        sizeof(std::declval<EventClass>().Data.Timing),         // TIMING
+        sizeof(std::declval<EventClass>().Data.ProcessTime),    // PROCESS_TIME
+        0,                                                      // PROPOSE_DRAW
+        0,                                                      // RETRACT_DRAW
 };
 
-const char* EventClass::EventNames[LAST_EVENT] = {
-    "EMPTY",         "ALLY",      "MEGAMISSION",  "MEGAMISSION_F",
-    "IDLE",          "SCATTER",   "DESTRUCT",     "DEPLOY",
-    "PLACE",         "OPTIONS",   "GAMESPEED",    "PRODUCE",
-    "SUSPEND",       "ABANDON",   "PRIMARY",      "SPECIAL_PLACE",
-    "EXIT",          "ANIMATION", "REPAIR",       "SELL",
-    "SELLCELL",      "SPECIAL",   "FRAMESYNC",    "MESSAGE",
-    "RESPONSE_TIME", "FRAMEINFO", "SAVEGAME",     "ARCHIVE",
-    "ADDPLAYER",     "TIMING",    "PROCESS_TIME", "PROPOSE_DRAW",
-    "RETRACT_DRAW",
+base::EnumArray<EventClass::EventType, const char*,
+                static_cast<int>(EventClass::LAST_EVENT)>
+    EventClass::EventNames = {
+        "EMPTY",         "ALLY",      "MEGAMISSION",  "MEGAMISSION_F",
+        "IDLE",          "SCATTER",   "DESTRUCT",     "DEPLOY",
+        "PLACE",         "OPTIONS",   "GAMESPEED",    "PRODUCE",
+        "SUSPEND",       "ABANDON",   "PRIMARY",      "SPECIAL_PLACE",
+        "EXIT",          "ANIMATION", "REPAIR",       "SELL",
+        "SELLCELL",      "SPECIAL",   "FRAMESYNC",    "MESSAGE",
+        "RESPONSE_TIME", "FRAMEINFO", "SAVEGAME",     "ARCHIVE",
+        "ADDPLAYER",     "TIMING",    "PROCESS_TIME", "PROPOSE_DRAW",
+        "RETRACT_DRAW",
 };
 
 /***********************************************************************************************
@@ -515,7 +521,7 @@ void EventClass::Execute() {
     case ARCHIVE:
       techno = Data.NavCom.Whom.As_Techno();
       if (techno && techno->IsActive) {
-        techno->ArchiveTarget = Data.NavCom.Where;
+        techno->ArchiveTarget = Data.NavCom.Where.As_TARGET();
       }
       break;
 
@@ -975,7 +981,7 @@ void EventClass::Execute() {
     //
     case PROCESS_TIME:
       for (int i = 0; i < Session.Players.Count(); i++) {
-        if (ID == Session.Players[i]->Player.ID) {
+        if (static_cast<HousesType>(ID) == Session.Players[i]->Player.ID) {
           Session.Players[i]->Player.ProcessTime =
               Data.ProcessTime.AverageTicks;
           break;
@@ -1007,7 +1013,7 @@ void EventClass::Execute() {
         const auto format =
             absl::ParsedFormat<'s'>::New(TXT_WOL_DRAW_PROPOSED_OTHER);
         for (int i = 0; i < Session.Players.Count(); i++) {
-          if (ID == Session.Players[i]->Player.ID) {
+          if (static_cast<HousesType>(ID) == Session.Players[i]->Player.ID) {
             if (format != nullptr) {
               message = absl::StrFormat(*format, Session.Players[i]->Name);
             }
@@ -1039,7 +1045,7 @@ void EventClass::Execute() {
         const auto format =
             absl::ParsedFormat<'s'>::New(TXT_WOL_DRAW_RETRACTED_OTHER);
         for (int i = 0; i < Session.Players.Count(); i++) {
-          if (ID == Session.Players[i]->Player.ID) {
+          if (static_cast<HousesType>(ID) == Session.Players[i]->Player.ID) {
             if (format != nullptr) {
               message = absl::StrFormat(*format, Session.Players[i]->Name);
             }

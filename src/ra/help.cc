@@ -180,7 +180,7 @@ void HelpClass::AI(KeyNumType& key, int x, int y) {
     if (!IsRight && (X != x || Y != y)) {
       X = x;
       Y = y;
-      CountDownTimer.Set(HELP_DELAY);
+      CountDownTimer.Set(kHelpDelay);
       Help_Text(TXT_NONE);
     } else {
       /*
@@ -239,7 +239,7 @@ void HelpClass::Help_Text(int text, int x, int y, int /*color*/, bool quick) {
     if (quick) {
       CountDownTimer.Set(1);
     } else {
-      CountDownTimer.Set(HELP_DELAY);
+      CountDownTimer.Set(kHelpDelay);
     }
 
     /*
@@ -272,7 +272,7 @@ void HelpClass::Draw_It(bool forced) {
   forced = false;  // TCTCTCTC
   if ((Text != TXT_NONE && (forced || CountDownTimer.IsFinished())) &&
       LogicPage->Lock()) {
-    Plain_Text_Print(Text, DrawX, DrawY, Color, BLACK, TPF_MAP | TPF_NOSHADOW);
+    Plain_Text_Print(Text, DrawX, DrawY, Color, kBlack, TPF_MAP | TPF_NOSHADOW);
     LogicPage->Draw_Rect(DrawX - 1, DrawY - 1, DrawX + Width + 1,
                          DrawY + FontHeight, static_cast<unsigned char>(Color));
 
@@ -281,14 +281,14 @@ void HelpClass::Draw_It(bool forced) {
       absl::SNPrintF(buffer, sizeof(buffer), "$%d", Cost);
       const int width = String_Pixel_Width(buffer);
 
-      Plain_Text_Print(buffer, DrawX, DrawY + FontHeight, Color, BLACK,
+      Plain_Text_Print(buffer, DrawX, DrawY + FontHeight, Color, kBlack,
                        TPF_MAP | TPF_NOSHADOW);
       LogicPage->Draw_Rect(DrawX - 1, DrawY + FontHeight, DrawX + width + 1,
                            DrawY + FontHeight + FontHeight - 1,
                            static_cast<unsigned char>(Color));
       LogicPage->Draw_Line(DrawX, DrawY + FontHeight,
                            DrawX + std::min(width + 1, Width) - 1,
-                           DrawY + FontHeight, BLACK);
+                           DrawY + FontHeight, kBlack);
     }
     LogicPage->Unlock();
   }
@@ -322,8 +322,8 @@ void HelpClass::Set_Text(int text) {
       const int right = TacPixelX + Lepton_To_Pixel(TacLeptonWidth) - 6;
       const int bottom = TacPixelY + Lepton_To_Pixel(TacLeptonHeight) - 2;
 
-      DrawX = X + X_OFFSET;
-      DrawY = Y + Y_OFFSET;
+      DrawX = X + kXOffset;
+      DrawY = Y + kYOffset;
       if (DrawX + Width > right) {
         DrawX -= DrawX + Width - right;
       }

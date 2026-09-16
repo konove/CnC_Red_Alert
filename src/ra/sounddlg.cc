@@ -128,42 +128,42 @@ void SoundControlsClass::Process() {
   /*
   ** Adjust dialog controls for resolution
   */
-  const int option_width = OPTION_WIDTH * 2;
-  const int option_height = OPTION_HEIGHT * 2;
+  const int option_width = kOptionWidth * 2;
+  const int option_height = kOptionHeight * 2;
 
-  const int option_x = OPTION_X * 2;
-  const int option_y = OPTION_Y * 2;
+  const int option_x = kOptionX * 2;
+  const int option_y = kOptionY * 2;
 
-  const int listbox_x = LISTBOX_X * 2;
-  const int listbox_y = LISTBOX_Y * 2;
-  const int listbox_w = LISTBOX_W * 2;
-  const int listbox_h = (LISTBOX_H * 2) + 2;
+  const int listbox_x = kListboxX * 2;
+  const int listbox_y = kListboxY * 2;
+  const int listbox_w = kListboxW * 2;
+  const int listbox_h = (kListboxH * 2) + 2;
 
-  const int button_width = BUTTON_WIDTH * 2;
-  const int button_x = BUTTON_X * 2;
-  const int button_y = BUTTON_Y * 2;
+  const int button_width = kButtonWidth * 2;
+  const int button_x = kButtonX * 2;
+  const int button_y = kButtonY * 2;
 
-  const int stop_x = STOP_X * 2;
-  const int stop_y = STOP_Y * 2;
+  const int stop_x = kStopX * 2;
+  const int stop_y = kStopY * 2;
 
-  const int play_x = PLAY_X * 2;
-  const int play_y = PLAY_Y * 2;
+  const int play_x = kPlayX * 2;
+  const int play_y = kPlayY * 2;
 
-  const int onoff_width = ONOFF_WIDTH * 2;
-  const int shuffle_x = SHUFFLE_X * 2;
-  const int shuffle_y = SHUFFLE_Y * 2;
-  const int repeat_x = REPEAT_X * 2;
-  const int repeat_y = REPEAT_Y * 2;
+  const int onoff_width = kOnoffWidth * 2;
+  const int shuffle_x = kShuffleX * 2;
+  const int shuffle_y = kShuffleY * 2;
+  const int repeat_x = kRepeatX * 2;
+  const int repeat_y = kRepeatY * 2;
 
-  const int mslider_x = MSLIDER_X * 2;
-  const int mslider_y = MSLIDER_Y * 2;
-  const int mslider_w = MSLIDER_W * 2;
-  const int mslider_height = MSLIDER_HEIGHT * 2;
+  const int mslider_x = kMsliderX * 2;
+  const int mslider_y = kMsliderY * 2;
+  const int mslider_w = kMsliderW * 2;
+  const int mslider_height = kMsliderHeight * 2;
 
-  const int fxslider_x = FXSLIDER_X * 2;
-  const int fxslider_y = FXSLIDER_Y * 2;
-  const int fxslider_w = FXSLIDER_W * 2;
-  const int fxslider_height = FXSLIDER_HEIGHT * 2;
+  const int fxslider_x = kFxsliderX * 2;
+  const int fxslider_y = kFxsliderY * 2;
+  const int fxslider_w = kFxsliderW * 2;
+  const int fxslider_height = kFxsliderHeight * 2;
 
   RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
   //	ThemeType theme;
@@ -177,49 +177,49 @@ void SoundControlsClass::Process() {
   /*
   **	Return to options menu button.
   */
-  TextButtonClass returnto(BUTTON_OPTIONS, TXT_OK, kTpfButton,
+  TextButtonClass returnto(kButtonOptions, TXT_OK, kTpfButton,
                            option_x + button_x, option_y + button_y,
                            button_width);
-  //	TextButtonClass returnto(BUTTON_OPTIONS, TXT_OPTIONS_MENU, kTpfButton,
+  //	TextButtonClass returnto(kButtonOptions, TXT_OPTIONS_MENU, kTpfButton,
 
   /*
   **	Stop playing button.
   */
-  ShapeButtonClass stopbtn(BUTTON_STOP, MixArchive::Retrieve("BTN-ST.SHP"),
+  ShapeButtonClass stopbtn(kButtonStop, MixArchive::Retrieve("BTN-ST.SHP"),
                            option_x + stop_x, option_y + stop_y);
 
   /*
   **	Start playing button.
   */
-  ShapeButtonClass playbtn(BUTTON_PLAY, MixArchive::Retrieve("BTN-PL.SHP"),
+  ShapeButtonClass playbtn(kButtonPlay, MixArchive::Retrieve("BTN-PL.SHP"),
                            option_x + play_x, option_y + play_y);
 
   /*
   **	Shuffle control.
   */
-  TextButtonClass shufflebtn(BUTTON_SHUFFLE, TXT_OFF, kTpfButton,
+  TextButtonClass shufflebtn(kButtonShuffle, TXT_OFF, kTpfButton,
                              option_x + shuffle_x, option_y + shuffle_y,
                              onoff_width);
-  //	TextButtonClass shufflebtn(BUTTON_SHUFFLE, TXT_OFF, kTpfButton,
-  // option_x+shuffle_x, option_y+shuffle_y, ONOFF_WIDTH);
+  //	TextButtonClass shufflebtn(kButtonShuffle, TXT_OFF, kTpfButton,
+  // option_x+shuffle_x, option_y+shuffle_y, kOnoffWidth);
 
   /*
   **	Repeat control.
   */
-  TextButtonClass repeatbtn(BUTTON_REPEAT, TXT_OFF, kTpfButton,
+  TextButtonClass repeatbtn(kButtonRepeat, TXT_OFF, kTpfButton,
                             option_x + repeat_x, option_y + repeat_y,
                             onoff_width);
 
   /*
   **	Music volume slider.
   */
-  SliderClass music(SLIDER_MUSIC, option_x + mslider_x, option_y + mslider_y,
+  SliderClass music(kSliderMusic, option_x + mslider_x, option_y + mslider_y,
                     mslider_w, mslider_height, true);
 
   /*
   **	Sound volume slider.
   */
-  SliderClass sound(SLIDER_SOUND, option_x + fxslider_x, option_y + fxslider_y,
+  SliderClass sound(kSliderSound, option_x + fxslider_x, option_y + fxslider_y,
                     fxslider_w, fxslider_height, true);
 
   /*
@@ -227,15 +227,15 @@ void SoundControlsClass::Process() {
   **	particular button, to be ignored.
   */
   GadgetClass area(option_x, option_y, option_width, option_height,
-                   GadgetClass::LEFTPRESS);
+                   GadgetClass::kLeftPress);
 
   /*
   **	Causes right clicks anywhere or left clicks outside of the dialog
   **	box area to be the same a clicking the return to game options button.
   */
-  ControlClass ctrl(BUTTON_OPTIONS, 0, 0, SeenBuff.Get_Width(),
+  ControlClass ctrl(kButtonOptions, 0, 0, SeenBuff.Get_Width(),
                     SeenBuff.Get_Height(),
-                    GadgetClass::RIGHTPRESS | GadgetClass::LEFTPRESS);
+                    GadgetClass::kRightPress | GadgetClass::kLeftPress);
 
   /*
   **	The repeat and shuffle buttons are of the toggle type. They toggle
@@ -352,17 +352,17 @@ void SoundControlsClass::Process() {
       ** Draw the Music, Speech & Sound titles.
       */
       Fancy_Text_Print(TXT_MUSIC_VOLUME, option_x + mslider_x - 10,
-                       option_y + mslider_y - 4, scheme, TBLACK,
+                       option_y + mslider_y - 4, scheme, kTBlack,
                        kTpfText | TPF_RIGHT);
       Fancy_Text_Print(TXT_SOUND_VOLUME, option_x + fxslider_x - 10,
-                       option_y + fxslider_y - 4, scheme, TBLACK,
+                       option_y + fxslider_y - 4, scheme, kTBlack,
                        kTpfText | TPF_RIGHT);
 
       Fancy_Text_Print(
           TXT_SHUFFLE, option_x + shuffle_x - 10 + (config::kIsEnglish ? 0 : 4),
-          option_y + shuffle_y + 2, scheme, TBLACK, kTpfText | TPF_RIGHT);
+          option_y + shuffle_y + 2, scheme, kTBlack, kTpfText | TPF_RIGHT);
       Fancy_Text_Print(TXT_REPEAT, option_x + repeat_x - 10,
-                       option_y + repeat_y + 2, scheme, TBLACK,
+                       option_y + repeat_y + 2, scheme, kTBlack,
                        kTpfText | TPF_RIGHT);
 
       optionsbtn->Draw_All();
@@ -380,14 +380,14 @@ void SoundControlsClass::Process() {
     */
     switch (static_cast<int>(input)) {
       case KN_ESC:
-      case ButtonKey(BUTTON_OPTIONS):
+      case ButtonKey(kButtonOptions):
         process = false;
         break;
 
       /*
       **	Control music volume.
       */
-      case ButtonKey(SLIDER_MUSIC):
+      case ButtonKey(kSliderMusic):
         Options.Set_Score_Volume(fixed(music.Get_Value(), 256), true);
         if (Session.Type != GAME_NORMAL) {
           Options.MultiScoreVolume = Options.ScoreVolume;
@@ -397,17 +397,17 @@ void SoundControlsClass::Process() {
       /*
       **	Control sound volume.
       */
-      case ButtonKey(SLIDER_SOUND):
+      case ButtonKey(kSliderSound):
         Options.Set_Sound_Volume(fixed(sound.Get_Value(), 256), true);
         break;
 
-      case ButtonKey(BUTTON_LISTBOX):
+      case ButtonKey(kButtonListbox):
         break;
 
       /*
       **	Stop all themes from playing.
       */
-      case ButtonKey(BUTTON_STOP):
+      case ButtonKey(kButtonStop):
         Theme.Stop();
         Theme.Queue_Song(THEME_QUIET);
         //				Theme.Queue_Song(THEME_NONE);
@@ -417,14 +417,14 @@ void SoundControlsClass::Process() {
       **	Start the currently selected theme to play.
       */
       case KN_SPACE:
-      case ButtonKey(BUTTON_PLAY):
+      case ButtonKey(kButtonPlay):
         Theme.Queue_Song(listbox.Current_Theme());
         break;
 
       /*
       **	Toggle the shuffle button.
       */
-      case ButtonKey(BUTTON_SHUFFLE):
+      case ButtonKey(kButtonShuffle):
         shufflebtn.Set_Text(shufflebtn.IsOn ? TXT_ON : TXT_OFF);
         Options.Set_Shuffle(shufflebtn.IsOn);
         break;
@@ -432,7 +432,7 @@ void SoundControlsClass::Process() {
       /*
       **	Toggle the repeat button.
       */
-      case ButtonKey(BUTTON_REPEAT):
+      case ButtonKey(kButtonRepeat):
         repeatbtn.Set_Text(repeatbtn.IsOn ? TXT_ON : TXT_OFF);
         Options.Set_Repeat(repeatbtn.IsOn);
         break;
@@ -479,7 +479,7 @@ void MusicListClass::Draw_Entry(int index, int x, int y, int width,
                                 bool selected) {
   RemapControlType* scheme = Get_Color_Scheme();
 
-  if (TextFlags & TPF_6PT_GRAD) {
+  if (base::Any(TextFlags & TPF_6PT_GRAD)) {
     TextPrintType flags = TextFlags;
 
     if (selected) {
@@ -487,18 +487,18 @@ void MusicListClass::Draw_Entry(int index, int x, int y, int width,
       LogicPage->Fill_Rect(x, y, x + width - 1, y + LineHeight - 1,
                            Get_Color_Scheme()->Shadow);
     } else {
-      if (!(flags & TPF_USE_GRAD_PAL)) {
+      if (!base::Any(flags & TPF_USE_GRAD_PAL)) {
         flags = flags | TPF_MEDIUM_COLOR;
       }
     }
 
-    Conquer_Clip_Text_Print(Get_Item(index), x, y, scheme, TBLACK, flags, width,
-                            Tabs);
+    Conquer_Clip_Text_Print(Get_Item(index), x, y, scheme, kTBlack, flags,
+                            width, Tabs);
 
   } else {
     Conquer_Clip_Text_Print(
         Get_Item(index), x, y,
         selected ? &ColorRemaps[PCOLOR_DIALOG_BLUE] : &ColorRemaps[PCOLOR_GREY],
-        TBLACK, TextFlags, width, Tabs);
+        kTBlack, TextFlags, width, Tabs);
   }
 }

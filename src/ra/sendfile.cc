@@ -255,7 +255,7 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
   // rather than the shared string table.
   std::string info_string(Text_String(TXT_RECEIVING_SCENARIO));
 
-  Fancy_Text_Print(TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(), TBLACK,
+  Fancy_Text_Print(TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(), kTBlack,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   Format_Window_String(info_string.data(), SeenBuff.Get_Height(), width,
@@ -264,7 +264,8 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
   /*
   ** Button Enumerations
   */
-  enum { BUTTON_CANCEL = 100, BUTTON_PROGRESS };
+  constexpr int kButtonCancel = 100;
+  constexpr int kButtonProgress = 101;
 
   /*
   ** Buttons
@@ -273,26 +274,27 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
   // // button list
 
   TextButtonClass cancelbtn(
-      BUTTON_CANCEL, TXT_CANCEL,
+      kButtonCancel, TXT_CANCEL,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       // The German and French captions outgrow the button, so those builds
       // let it size itself to the text.
       d_cancel_x, d_cancel_y, config::kIsEnglish ? d_cancel_w : -1,
       config::kIsEnglish ? d_cancel_h : -1);
 
-  GaugeClass progress_meter(BUTTON_PROGRESS, d_progress_x, d_progress_y,
+  GaugeClass progress_meter(kButtonProgress, d_progress_x, d_progress_y,
                             d_progress_w, d_progress_h);
 
-  Fancy_Text_Print(TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(), TBLACK,
+  Fancy_Text_Print(TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(), kTBlack,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
-  typedef enum {
+  enum class RedrawType {
     REDRAW_NONE = 0,
     REDRAW_PROGRESS = 1,
     REDRAW_BUTTONS = 2,
     REDRAW_BACKGROUND = 3,
     REDRAW_ALL = REDRAW_BACKGROUND
-  } RedrawType;
+  };
+  using enum RedrawType;
 
   bool process = true;
   RedrawType display = REDRAW_ALL;  // redraw level
@@ -354,7 +356,7 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
 
     PumpWolapi();
 
-    if (display) {
+    if (display != REDRAW_NONE) {
       if (display >= REDRAW_BACKGROUND) {
         Hide_Mouse();
         /*
@@ -372,7 +374,7 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
 
         Fancy_Text_Print(info_string.c_str(), d_dialog_cx - (width / 2),
                          d_dialog_y + 50, GadgetClass::Get_Color_Scheme(),
-                         TBLACK,
+                         kTBlack,
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Show_Mouse();
@@ -456,7 +458,7 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
         ** Cancel. Just return to the main menu
         */
         case KN_ESC:
-        case ButtonKey(BUTTON_CANCEL):
+        case ButtonKey(kButtonCancel):
           process = false;
           return_code = false;
           break;
@@ -527,7 +529,7 @@ bool Send_Remote_File(const char* file_name, int gametype) {
   Timer<SystemTickSource>
       response_timer;  // timeout timer for waiting for responses
 
-  Fancy_Text_Print(TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(), TBLACK,
+  Fancy_Text_Print(TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(), kTBlack,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   Format_Window_String(info_string.data(), SeenBuff.Get_Height(), width,
@@ -536,7 +538,8 @@ bool Send_Remote_File(const char* file_name, int gametype) {
   /*
   ** Button Enumerations
   */
-  enum { BUTTON_CANCEL = 100, BUTTON_PROGRESS };
+  constexpr int kButtonCancel = 100;
+  constexpr int kButtonProgress = 101;
 
   /*
   ** Buttons
@@ -545,26 +548,27 @@ bool Send_Remote_File(const char* file_name, int gametype) {
   // // button list
 
   TextButtonClass cancelbtn(
-      BUTTON_CANCEL, TXT_CANCEL,
+      kButtonCancel, TXT_CANCEL,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       // The German and French captions outgrow the button, so those builds
       // let it size itself to the text.
       d_cancel_x, d_cancel_y, config::kIsEnglish ? d_cancel_w : -1,
       config::kIsEnglish ? d_cancel_h : -1);
 
-  GaugeClass progress_meter(BUTTON_PROGRESS, d_progress_x, d_progress_y,
+  GaugeClass progress_meter(kButtonProgress, d_progress_x, d_progress_y,
                             d_progress_w, d_progress_h);
 
-  Fancy_Text_Print(TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(), TBLACK,
+  Fancy_Text_Print(TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(), kTBlack,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
-  typedef enum {
+  enum class RedrawType {
     REDRAW_NONE = 0,
     REDRAW_PROGRESS = 1,
     REDRAW_BUTTONS = 2,
     REDRAW_BACKGROUND = 3,
     REDRAW_ALL = REDRAW_BACKGROUND
-  } RedrawType;
+  };
+  using enum RedrawType;
 
   bool process = true;
   RedrawType display = REDRAW_ALL;  // redraw level
@@ -657,7 +661,7 @@ bool Send_Remote_File(const char* file_name, int gametype) {
 
     PumpWolapi();
 
-    if (display) {
+    if (display != REDRAW_NONE) {
       if (display >= REDRAW_BACKGROUND) {
         Hide_Mouse();
         /*
@@ -675,7 +679,7 @@ bool Send_Remote_File(const char* file_name, int gametype) {
 
         Fancy_Text_Print(info_string.c_str(), d_dialog_cx - (width / 2),
                          d_dialog_y + (25 * factor),
-                         GadgetClass::Get_Color_Scheme(), TBLACK,
+                         GadgetClass::Get_Color_Scheme(), kTBlack,
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Show_Mouse();
@@ -782,7 +786,7 @@ bool Send_Remote_File(const char* file_name, int gametype) {
         ** Cancel. Just return to the main menu
         */
         case KN_ESC:
-        case ButtonKey(BUTTON_CANCEL):
+        case ButtonKey(kButtonCancel):
           process = false;
           return_code = false;
           break;

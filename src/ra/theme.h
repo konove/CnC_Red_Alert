@@ -40,6 +40,7 @@
 #ifndef CNC_RED_ALERT_RA_THEME_H_
 #define CNC_RED_ALERT_RA_THEME_H_
 
+#include "base/enum_array.h"
 #include "ra/defines.h"
 
 class ThemeClass {
@@ -61,9 +62,9 @@ class ThemeClass {
     uint32_t Owner;  // What houses are allowed to play this theme (bit field)?
   } ThemeControl;
 
-  static ThemeControl _themes[magic_enum::enum_count<ThemeType>()];
+  static base::EnumArray<ThemeType, ThemeControl> _themes;
 
-  enum { THEME_DELAY = kTimerSecond };
+  static constexpr int kThemeDelay = kTimerSecond;
 
  public:
   ThemeClass();
