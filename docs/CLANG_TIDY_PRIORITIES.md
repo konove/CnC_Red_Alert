@@ -2,7 +2,7 @@
 
 Updated: 2026-09-15, against [`.clang-tidy`](../.clang-tidy) and clang-tidy 23.1.2.
 
-This tracks **all 104 currently excluded check names** and completed entries, in recommended work
+This tracks **all 103 currently excluded check names** and completed entries, in recommended work
 order. Priorities reflect likely defect prevention, relevance to this engine, and the cost of useful
 fixes; they are judgments, not fresh finding counts. Start at P1 and work downward. Aliases stay
 beside their related check so a single cleanup can handle them together. Previously deferred checks
@@ -64,7 +64,7 @@ comes from the installed tool, since the online documentation follows LLVM devel
 | `cppcoreguidelines-interfaces-global-init`                 | Enabled | Commit `Enable cross-unit global initialization checking`: TD's house table is the only report and is safe on two counts; it is annotated, and the check now guards the rest of the tree.                                                                                                                                                                                                                                                                                                               |
 | `bugprone-throwing-static-initialization`                  | Enabled | Commit `Make the game data tables nothrow constructible and enable throwing static initialization checking`: mark the type-class, value-type, timer, heap and gadget constructors `noexcept`, and allow the engine's allocating singletons by type. See review below.                                                                                                                                                                                                                                   |
 | `cert-err58-cpp`                                           | Enabled | Alias enabled with `bugprone-throwing-static-initialization` in the same commit; the alias needs its own `AllowedTypes` copy.                                                                                                                                                                                                                                                                                                                                                                           |
-| `cppcoreguidelines-init-variables`                         | Skipped | Commit `Document local initialization check policy`: the check's own fix hides findings the eleven enabled uninitialized-use checks already report, and those report nothing across the tree. See review below.                                                                                                                                                                                                                                                                                         |
+| `cppcoreguidelines-init-variables`                         | Enabled | Commit `Enable cppcoreguidelines-init-variables`: 2,887 locals; 1,878 declarations moved to their first use, 881 took the check's initializer, 128 enum-typed ones a sentinel or a `const` ternary. Plan [INIT_VARIABLES_PLAN.md](INIT_VARIABLES_PLAN.md). See review below.                                                                                                                                                                                                                            |
 | `cppcoreguidelines-special-member-functions`               | Enabled | Commit `Declare copy and move intent on the classes that own a destructor`: annotate 170 class declarations; the compiler found the five classes that are genuinely copied. See review below.                                                                                                                                                                                                                                                                                                           |
 | `hicpp-special-member-functions`                           | Enabled | Exclusion removed with `cppcoreguidelines-special-member-functions` in the same commit. The name does nothing on LLVM 23, so the alias enforces the same rule wherever it exists.                                                                                                                                                                                                                                                                                                                       |
 | `clang-diagnostic-deprecated-copy-with-user-provided-copy` | Enabled | Commit `Enable deprecated implicit copy checking`: no reports; the declarations added for `cppcoreguidelines-special-member-functions` removed every implicit copy definition. See review below.                                                                                                                                                                                                                                                                                                        |
@@ -487,11 +487,15 @@ count drops from 218 to 216.
 
 ### Local initialization check policy (2026-09-12)
 
-`cppcoreguidelines-init-variables` remains excluded after review. The isolated sweep of 890 project
-translation units, including 431 generated header checks, produced 2,998 findings across both games
-and the shared libraries — 738 of them pointer declarations. Every sampled finding is the same 1990s
-construct: locals declared at the top of a block and assigned before they are read (`int x, y;` in
-`ra/scenario.cc`, `int num;` in `td/team.cc`, `const TechnoTypeClass* otype;` in `td/teamtype.cc`).
+Superseded on 2026-09-15: the check is enabled; see the local initialization enablement review below
+for the approach that answers the objection here.
+
+`cppcoreguidelines-init-variables` remained excluded after this review. The isolated sweep of 890
+project translation units, including 431 generated header checks, produced 2,998 findings across
+both games and the shared libraries — 738 of them pointer declarations. Every sampled finding is the
+same 1990s construct: locals declared at the top of a block and assigned before they are read
+(`int x, y;` in `ra/scenario.cc`, `int num;` in `td/team.cc`, `const TechnoTypeClass* otype;` in
+`td/teamtype.cc`).
 
 The problem is not the volume, it is that the check's fix works against the checks already in place.
 Eleven checks that do report a genuine uninitialized read are enforced today:
@@ -1542,6 +1546,51 @@ No defect came out of it. Verification: the isolated sweep of the three checks o
 translation units reports nothing (apart from the `base/numeric.h` header check, which has no Abseil
 include path and fails before any check runs); the full strict build; CTest (463 tests); and the RA
 and TD save/load smoke tests with every fixture. The excluded-name count drops from 107 to 104.
+
+### Local initialization enablement (2026-09-15)
+
+`cppcoreguidelines-init-variables` is now enforced; the plan is
+[INIT_VARIABLES_PLAN.md](INIT_VARIABLES_PLAN.md). The 2026-09-12 review kept it out because the
+check's fix-it, `int x = 0;`, hides the missing-`else` bug that the uninitialized-read checks catch.
+That is an objection to the fix-it, not to the rule: Google style and Core Guidelines ES.20 and
+ES.21 ask for what the check enforces, and that review already named declaring each local at its
+first use as the valuable form. This pass did that form, and used the initializer only where the
+declaration has to precede the branches that assign it.
+
+A fresh sweep found 2,887 sites in 236 files, all the 1990s declare-at-the-top style. Three tiers:
+
+- **1,878 declarations moved to their first use** by `tools/sink_declarations.py`, which reads the
+  check's `--export-fixes` output and moves a declaration onto its first mention when that mention
+  is an unconditional `name = expr;` in the same block, into a nested block when nothing after the
+  block mentions the name, or into each `for (name = ...)` header when every mention is such an
+  init. It refuses self-referencing assignments, anything separated by a preprocessor line, `goto`
+  or case label, and sinks that a later case label would jump over.
+- **881 took the check's initializer** (`= 0`, `= nullptr`, `= false`): assigned in more than one
+  branch or loop and read afterwards, passed by address as an out-parameter, or separated from the
+  first use by `#if`. All paths assign; the analyzer sweep confirms nothing reads the placeholder.
+- **128 enum-typed locals by hand**, which get no fix-it: the type's sentinel (`KN_NONE`,
+  `HOUSE_NONE`, `FACING_NONE`, `SMUDGE_NONE`, `VOC_NONE`, `MISSION_NONE`, `THEME_NONE`,
+  `SOURCE_NONE`, `OVERLAY_NONE`, `REMAP_NONE`, the scenario-name parts, the type IDs, `EV_NONE`,
+  `RC_NORMAL`, `kTargetNone`, `DIR_N` for directions); a `const` ternary where an `if`/`else` only
+  picked the value; an immediately invoked lambda for the nested style pickers in each `textbtn.cc`;
+  braces around the `switch` cases that now hold an initialized declaration. RA's `RejectType` gains
+  `REJECT_NONE = -1` for the `Get_Join_Responses` out-parameter.
+
+The sunk declarations cascaded into five enabled checks, fixed in the same pass: 609 new
+`misc-const-correctness` consts, 109 `modernize-use-auto`, 45 `modernize-loop-convert` range-fors
+(its fix-it writes `short`/`long` for `int16_t`/`int64_t` arrays; rewritten), two
+`readability-redundant-nested-if` merges (an outer `if` that only held a declaration), two
+`clang-diagnostic-shadow` range-for names and one `cppcoreguidelines-prefer-member-initializer`.
+
+No defect came out of it, which matches the 2026-09-12 finding that the eleven uninitialized-read
+checks report nothing. One pitfall for the next sweep: per-unit logs and fix-it files keyed by
+basename let `td/unit.cc` overwrite `ra/unit.cc` and silently dropped 1,077 Red Alert sites from the
+first pass; key them by path.
+
+Verification: the isolated sweep over all 488 source translation units reports nothing; the full
+strict build; CTest (463 tests); the RA save/load smoke test (240 positions, plus the fixture load)
+and the TD smoke test with every fixture (5,742 to 6,371 states). The excluded-name count drops from
+104 to 103.
 
 ### Nodiscard review (2026-09-12)
 
