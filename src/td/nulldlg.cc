@@ -845,7 +845,7 @@ void Destroy_Null_Connection(int id, int error) {
     NullModem.Delete_Connection();
   }
 
-  if (strlen(txt)) {
+  if (!std::string_view(txt).empty()) {
     Messages.Add_Message(
         txt,
         MPlayerTColors[static_cast<int>(

@@ -87,6 +87,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <string_view>
 #include <utility>
 
 #include "absl/strings/str_format.h"
@@ -2027,7 +2028,7 @@ static RetcodeType Process_Serial_Packet(const char* multi_packet_buf,
     //.....................................................................
     //	Save this message in our last-message buffer
     //.....................................................................
-    if (strlen(serial_packet->Message.Message)) {
+    if (!std::string_view(serial_packet->Message.Message).empty()) {
       port::SafeCopy(Session.LastMessage, serial_packet->Message.Message);
     }
 

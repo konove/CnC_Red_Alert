@@ -83,6 +83,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <iterator>
+#include <string_view>
 
 #include "absl/log/check.h"
 #include "absl/strings/str_format.h"
@@ -2223,8 +2224,8 @@ bool RadarClass::Draw_House_Info() {
                    ptr->IniName);  // Text_String(ptr->Class->FullName));
     //		absl::SNPrintF(txt, sizeof(txt), "%s",
     // ptr->Name());//Text_String(ptr->Class->FullName));
-    if (strlen(txt)) {
-      if (strlen(txt) > 9) {
+    if (!std::string_view(txt).empty()) {
+      if (std::string_view(txt).size() > 9) {
         txt[9] = '.';
         txt[10] = '\0';
       }
@@ -2336,14 +2337,14 @@ void RadarClass::Draw_Names() const {
     absl::SNPrintF(txt, sizeof(txt), "%s",
                    ptr->IsHuman ? ptr->IniName : Text_String(TXT_COMPUTER));
 
-    if (strlen(txt) == 0) {
+    if (std::string_view(txt).empty()) {
       port::SafeCopy(txt, "________");
     }
 
     /*
     **	Print the player name, and the # of kills
     */
-    if (strlen(txt) > 9) {
+    if (std::string_view(txt).size() > 9) {
       txt[9] = '.';
       txt[10] = '\0';
     }

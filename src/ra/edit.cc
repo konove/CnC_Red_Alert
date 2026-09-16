@@ -22,6 +22,7 @@
 
 #include <cctype>
 #include <cstring>
+#include <string_view>
 #include <utility>
 
 #include "ra/conquer.h"
@@ -45,7 +46,7 @@ EditClass::EditClass(const int id, char* text, const int max_len,
       EditFlags(style),
       String(text),
       MaxLength(max_len - 1),
-      Length(static_cast<int>(strlen(String))),
+      Length(static_cast<int>(std::string_view(String).size())),
       Color(Get_Color_Scheme()) {
   GadgetClass::Flag_To_Redraw();
 
@@ -56,7 +57,7 @@ EditClass::EditClass(const int id, char* text, const int max_len,
       Height = FontHeight + 1;
     }
     if (w == -1) {
-      if (strlen(String) > 0) {
+      if (!std::string_view(String).empty()) {
         Width = String_Pixel_Width(String) + 6;
       } else {
         Width = ((Char_Pixel_Width('X') + FontXSpacing) * (MaxLength + 1)) + 2;
@@ -76,7 +77,7 @@ EditClass::~EditClass() {
 void EditClass::Set_Text(char* text, const int max_len) {
   String = text;
   MaxLength = max_len - 1;
-  Length = static_cast<int>(strlen(String));
+  Length = static_cast<int>(std::string_view(String).size());
   Flag_To_Redraw();
 }
 
@@ -162,7 +163,7 @@ void EditClass::Draw_Text(const char* text) {
   Conquer_Clip_Text_Print(text, X + 1, Y + 1, Color, kTBlack, TextFlags | flags,
                           Width - 2);
 
-  if (Has_Focus() && std::cmp_less(strlen(text), MaxLength) &&
+  if (Has_Focus() && std::cmp_less(std::string_view(text).size(), MaxLength) &&
       String_Pixel_Width(text) + String_Pixel_Width("_") < Width - 2) {
     Conquer_Clip_Text_Print("_", X + 1 + String_Pixel_Width(text), Y + 1, Color,
                             kTBlack, TextFlags | flags);
@@ -232,7 +233,7 @@ bool EditClass::Handle_Key(KeyASCIIType ascii) {
 void EditClass::Set_Focus() {
   Length = 0;
   if (String) {
-    Length = static_cast<int>(strlen(String));
+    Length = static_cast<int>(std::string_view(String).size());
   }
   ControlClass::Set_Focus();
 }

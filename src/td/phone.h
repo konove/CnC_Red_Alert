@@ -36,6 +36,7 @@
 #define CNC_RED_ALERT_TD_PHONE_H_
 
 #include <cstring>
+#include <string_view>
 
 /*
 ***************************** Class Declaration *****************************
@@ -48,22 +49,22 @@ class PhoneEntryClass {
   PhoneEntryClass() = default;
 
   bool operator==(PhoneEntryClass& obj) {
-    return memcmp(Name, obj.Name, strlen(Name)) == 0;
+    return memcmp(Name, obj.Name, std::string_view(Name).size()) == 0;
   }
   bool operator!=(PhoneEntryClass& obj) {
-    return memcmp(Name, obj.Name, strlen(Name)) != 0;
+    return memcmp(Name, obj.Name, std::string_view(Name).size()) != 0;
   }
   bool operator>(PhoneEntryClass& obj) {
-    return memcmp(Name, obj.Name, strlen(Name)) > 0;
+    return memcmp(Name, obj.Name, std::string_view(Name).size()) > 0;
   }
   bool operator<(PhoneEntryClass& obj) {
-    return memcmp(Name, obj.Name, strlen(Name)) < 0;
+    return memcmp(Name, obj.Name, std::string_view(Name).size()) < 0;
   }
   bool operator>=(PhoneEntryClass& obj) {
-    return memcmp(Name, obj.Name, strlen(Name)) >= 0;
+    return memcmp(Name, obj.Name, std::string_view(Name).size()) >= 0;
   }
   bool operator<=(PhoneEntryClass& obj) {
-    return memcmp(Name, obj.Name, strlen(Name)) <= 0;
+    return memcmp(Name, obj.Name, std::string_view(Name).size()) <= 0;
   }
 
   SerialSettingsType Settings = {};

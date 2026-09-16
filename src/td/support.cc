@@ -2,12 +2,13 @@
 
 #include <algorithm>
 #include <cctype>
+#include <climits>
 #include <cstdint>
 #include <cstring>
+#include <string_view>
 
-#include "sdllib/gbuffer.h"
 #include "base/types.h"
-#include <climits>
+#include "sdllib/gbuffer.h"
 
 void* Conquer_Build_Fading_Table(const void* palette, void* dest, int color,
                                  int frac) {
@@ -116,12 +117,12 @@ void strtrim(char* buffer) {
   }
 
   if (source != buffer) {
-    const auto len = std::strlen(source);
+    const auto len = std::string_view(source).size();
     std::memmove(buffer, source, len + 1);
   }
 
   // Strip trailing whitespace
-  auto len = std::strlen(buffer);
+  auto len = std::string_view(buffer).size();
   while (len > 0 && std::isspace(static_cast<unsigned char>(buffer[len - 1]))) {
     buffer[--len] = '\0';
   }

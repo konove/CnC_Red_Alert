@@ -70,6 +70,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <iterator>
+#include <string_view>
 #include <utility>
 
 #include "absl/strings/str_format.h"
@@ -1310,7 +1311,7 @@ bool TeamTypeClass::Edit() {
       */
       case ButtonKey(kButtonOk):
         strtrim(name_edt.Get_Text());
-        if (strlen(name_edt.Get_Text()) != 0) {
+        if (!std::string_view(name_edt.Get_Text()).empty()) {
           port::SafeCopy(IniName, name_edt.Get_Text());
         } else {
           port::SafeCopy(IniName, "----");
@@ -1340,8 +1341,8 @@ bool TeamTypeClass::Edit() {
           base::At(MissionList, index) = *missionlist2[index];
         }
 
-        if (strlen(originbtn.Get_Text())) {
-          if (strlen(originbtn.Get_Text()) == 1) {
+        if (!std::string_view(originbtn.Get_Text()).empty()) {
+          if (std::string_view(originbtn.Get_Text()).size() == 1) {
             Origin = toupper(*originbtn.Get_Text()) - 'A';
           } else {
             Origin = (toupper(*originbtn.Get_Text()) + 1 - 'A') * 26;
@@ -1454,7 +1455,7 @@ const char* TeamTypeClass::Member_Description() const {
       }
     }
 
-    if (strlen(buffer) > 25) {
+    if (std::string_view(buffer).size() > 25) {
       port::SafeCopy(&buffer[25 - 3], "...", 4);
     }
 
@@ -1541,13 +1542,15 @@ const char* TeamMissionClass::Description(int index) const {
         break;
 
       case NEED_NUMBER:
-        absl::SNPrintF(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer),
-                       "%d", Data.Value);
+        absl::SNPrintF(buffer + std::string_view(buffer).size(),
+                       sizeof(buffer) - std::string_view(buffer).size(), "%d",
+                       Data.Value);
         break;
 
       case NEED_HEX_NUMBER:
-        absl::SNPrintF(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer),
-                       "%x", static_cast<unsigned int>(Data.Value));
+        absl::SNPrintF(buffer + std::string_view(buffer).size(),
+                       sizeof(buffer) - std::string_view(buffer).size(), "%x",
+                       static_cast<unsigned int>(Data.Value));
         break;
 
       case NEED_QUARRY:
@@ -1556,13 +1559,14 @@ const char* TeamMissionClass::Description(int index) const {
 
       case NEED_WAYPOINT:
         if (Data.Value < 26) {
-          absl::SNPrintF(buffer + strlen(buffer),
-                         sizeof(buffer) - strlen(buffer), "%c",
+          absl::SNPrintF(buffer + std::string_view(buffer).size(),
+                         sizeof(buffer) - std::string_view(buffer).size(), "%c",
                          Data.Value + 'A');
         } else {
-          absl::SNPrintF(buffer + strlen(buffer),
-                         sizeof(buffer) - strlen(buffer), "%c%c",
-                         (Data.Value / 26) + 'A' - 1, (Data.Value % 26) + 'A');
+          absl::SNPrintF(buffer + std::string_view(buffer).size(),
+                         sizeof(buffer) - std::string_view(buffer).size(),
+                         "%c%c", (Data.Value / 26) + 'A' - 1,
+                         (Data.Value % 26) + 'A');
         }
         break;
       default:
@@ -1868,28 +1872,28 @@ void TeamTypeClass::Build_INI_Entry(char* buf) {
   absl::SNPrintF(buf, sizeof(buf), "%d,%d,%d,%d,%d,%d,%d", House, code,
                  RecruitPriority, InitNum, MaxAllowed, Origin,
                  TriggerTypes.Logical_ID(Trigger));
-  buf += strlen(buf);
+  buf += std::string_view(buf).size();
 
   /*
   **	For every class in the team, record the class's name & desired count
   */
   absl::SNPrintF(buf, sizeof(buf), ",%d", ClassCount);
-  buf += strlen(buf);
+  buf += std::string_view(buf).size();
   for (int i = 0; i < ClassCount; i++) {
     absl::SNPrintF(buf, sizeof(buf), ",%s:%d",
                    base::At(Members, i).Class->IniName,
                    base::At(Members, i).Quantity);
-    buf += strlen(buf);
+    buf += std::string_view(buf).size();
   }
 
   /*
   **	Record the # of missions, and each mission name & argument value.
   */
   absl::SNPrintF(buf, sizeof(buf), ",%d", MissionCount);
-  buf += strlen(buf);
+  buf += std::string_view(buf).size();
   for (int i = 0; i < MissionCount; i++) {
     absl::SNPrintF(buf, sizeof(buf), ",%d:%d", base::At(MissionList, i).Mission,
                    base::At(MissionList, i).Data.Value);
-    buf += strlen(buf);
+    buf += std::string_view(buf).size();
   }
 }

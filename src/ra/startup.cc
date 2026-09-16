@@ -45,6 +45,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <filesystem>
+#include <string_view>
 
 #include "absl/base/log_severity.h"
 #include "absl/log/globals.h"
@@ -585,7 +586,7 @@ void Read_Setup_Options(DiskFile* config_file) {
     const bool found = ini.Get_String("Options", "DestNet", nullptr, netbuf,
                                       sizeof(netbuf)) != 0;
 
-    if (found && netptr != nullptr && strlen(netbuf)) {
+    if (found && netptr != nullptr && !std::string_view(netbuf).empty()) {
       NetNumType net;
       NetNodeType node;
 

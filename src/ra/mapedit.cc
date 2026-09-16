@@ -65,6 +65,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <string_view>
 #include <utility>
 
 #include "absl/strings/str_format.h"
@@ -907,7 +908,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     case (KN_PERIOD | KN_ALT_BIT):
       if (CurrentCell != 0 && Get_Waypoint_Name(wayname)) {
         int waynm = 0;
-        if (strlen(wayname)) {
+        if (!std::string_view(wayname).empty()) {
           wayname[0] = static_cast<char>(toupper(wayname[0]));
           wayname[1] = static_cast<char>(toupper(wayname[1]));
           if (wayname[0] >= 'A' && wayname[0] <= 'Z') {

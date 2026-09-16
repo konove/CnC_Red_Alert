@@ -50,6 +50,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <cstring>
+#include <string_view>
 
 #include "base/array.h"
 #include "base/numeric.h"
@@ -206,8 +207,8 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
       ** Dont check for duplicates in multi-segment strings
       */
       if ((!txtlabel->Segments) &&
-          (!strcmp(txtlabel->Text, txt) && txtlabel->Color == color &&
-           txtlabel->Style == style)) {
+          ((std::string_view(txtlabel->Text) == txt) &&
+           txtlabel->Color == color && txtlabel->Style == style)) {
         return txtlabel;
       }
 
@@ -237,7 +238,7 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
           *s1 = 0;
           *s2 = 0;
 
-          same = strcmp(txtlabel->Text, txt) == 0;
+          same = std::string_view(txtlabel->Text) == txt;
 
           *s1 = ':';
           *s2 = ':';
@@ -458,7 +459,7 @@ TextLabelClass* MessageListClass::Add_Edit(int color, TextPrintType style,
   /*------------------------------------------------------------------------
   Initialize the buffer positions; add a new label to the label list.
   ------------------------------------------------------------------------*/
-  EditCurPos = EditInitPos = static_cast<int>(strlen(to));
+  EditCurPos = EditInitPos = static_cast<int>(std::string_view(to).size());
   EditLabel = Add_Message(to, color, style, -1, 0, 0);
   Width = width;
 

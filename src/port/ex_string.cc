@@ -92,21 +92,21 @@ int memicmp(const void* buffer1, const void* buffer2, const size_t count) {
 
 // TODO(konove): Replace all usage of this function with absl::AsciiStrToUpper
 char* strupr(char* str) {
-  std::transform(str, str + strlen(str), str,
+  std::transform(str, str + std::string_view(str).size(), str,
                  [](const unsigned char chr) { return std::toupper(chr); });
   return str;
 }
 
 // TODO(konove): Replace all usage of this function with absl::AsciiStrToLower
 char* strlwr(char* str) {
-  std::transform(str, str + strlen(str), str,
+  std::transform(str, str + std::string_view(str).size(), str,
                  [](const unsigned char chr) { return std::tolower(chr); });
   return str;
 }
 
 // TODO(konove): Replace all usage of this function with std::reverse
 char* strrev(char* str) {
-  std::reverse(str, str + strlen(str));
+  std::reverse(str, str + std::string_view(str).size());
   return str;
 }
 

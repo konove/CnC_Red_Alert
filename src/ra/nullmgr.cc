@@ -61,6 +61,7 @@
 #include <cstring>
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "absl/log/log.h"
@@ -314,7 +315,7 @@ int NullModemClass::Init(int port, int /*irq*/, char* dev_name, int baud,
       for (int i = 0; i < 10; i++) {
         ModemRegistry = new ModemRegistryEntryClass(i);
         if (ModemRegistry->Get_Modem_Name() &&
-            (!strcmp(dev_name, ModemRegistry->Get_Modem_Name()))) {
+            (std::string_view(dev_name) == ModemRegistry->Get_Modem_Name())) {
           device = ModemRegistry->Get_Modem_Device_Name();
           break;
         }
@@ -499,7 +500,7 @@ DetectPortType NullModemClass::Detect_Port(SerialSettingsType* settings) {
       for (int i = 0; i < 10; i++) {
         ModemRegistry = new ModemRegistryEntryClass(i);
         if (ModemRegistry->Get_Modem_Name() &&
-            (!strcmp(device, ModemRegistry->Get_Modem_Name()))) {
+            (std::string_view(device) == ModemRegistry->Get_Modem_Name())) {
           /*
           ** Got a match. Break out leaving the registry info intact.
           */
@@ -1833,7 +1834,8 @@ void NullModemClass::Remove_Modem_Echo() {
  * HISTORY: * 8/2/96 12:51PM ST : Documented *
  *=============================================================================================*/
 void NullModemClass::Print_EchoBuf() {
-  for (int i = 0; std::cmp_less(i, strlen(NullModem.EchoBuf)); i++) {
+  for (int i = 0; std::cmp_less(i, std::string_view(NullModem.EchoBuf).size());
+       i++) {
     if (NullModem.EchoBuf[i] == '\r') {
       NullModem.EchoBuf[i] = 1;
     } else {
@@ -2030,7 +2032,7 @@ int NullModemClass::Send_Modem_Command(const char* command, char terminator,
  *=============================================================================================*/
 int NullModemClass::Verify_And_Convert_To_Int(char* buffer) {
   int value = 0;
-  const int len = static_cast<int>(strlen(buffer));
+  const int len = static_cast<int>(std::string_view(buffer).size());
 
   for (int i = 0; i < len; i++) {
     if (!isdigit(*(buffer + i))) {

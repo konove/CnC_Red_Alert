@@ -43,6 +43,7 @@
 #include <cstdio>
 #include <cstring>
 #include <numeric>
+#include <string_view>
 
 #include "absl/algorithm/container.h"
 #include "absl/random/random.h"
@@ -1302,17 +1303,24 @@ void Print_Statistics(int country, int xpos, int ypos) {
         base::At(_countryname, base::At(GDIStats, country).nameindex), xpos,
         ypos, greenpal));
     Call_Back_Delay(
-        static_cast<int>(strlen(Text_String(
-            base::At(_countryname, base::At(GDIStats, country).nameindex)))) *
+        static_cast<int>(
+            std::string_view(
+                Text_String(base::At(_countryname,
+                                     base::At(GDIStats, country).nameindex)))
+                .size()) *
         3);
     ypos += 16;
     for (index = 0; index < 7; index++) {
       Alloc_Object(new ScorePrintClass(base::At(_gdistatnames, index), xpos,
                                        ypos, greenpal));
       Call_Back_Delay(static_cast<int>(
-          strlen(Text_String(base::At(_gdistatnames, index) + 3))));
-      newx = xpos + (6 * static_cast<int>(strlen(
-                             Text_String(base::At(_gdistatnames, index)))));
+          std::string_view(Text_String(base::At(_gdistatnames, index) + 3))
+              .size()));
+      newx =
+          xpos +
+          (6 * static_cast<int>(
+                   std::string_view(Text_String(base::At(_gdistatnames, index)))
+                       .size()));
       switch (index) {
         case 0:
           Alloc_Object(new ScorePrintClass(base::At(GDIStats, country).pop,
@@ -1363,17 +1371,24 @@ void Print_Statistics(int country, int xpos, int ypos) {
         base::At(_countryname, base::At(NodStats, country).nameindex), xpos,
         ypos, greenpal));
     Call_Back_Delay(
-        static_cast<int>(strlen(Text_String(
-            base::At(_countryname, base::At(NodStats, country).nameindex)))) *
+        static_cast<int>(
+            std::string_view(
+                Text_String(base::At(_countryname,
+                                     base::At(NodStats, country).nameindex)))
+                .size()) *
         3);
     ypos += 16;
     for (index = 0; index < 9; index++) {
       Alloc_Object(new ScorePrintClass(base::At(_nodstatnames, index), xpos,
                                        ypos, greenpal));
       Call_Back_Delay(static_cast<int>(
-          strlen(Text_String(base::At(_nodstatnames, index) + 3))));
-      newx = xpos + (6 * static_cast<int>(strlen(
-                             Text_String(base::At(_nodstatnames, index)))));
+          std::string_view(Text_String(base::At(_nodstatnames, index) + 3))
+              .size()));
+      newx =
+          xpos +
+          (6 * static_cast<int>(
+                   std::string_view(Text_String(base::At(_nodstatnames, index)))
+                       .size()));
       switch (index) {
         case 0:
           Alloc_Object(new ScorePrintClass(base::At(NodStats, country).pop,

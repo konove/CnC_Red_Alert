@@ -54,6 +54,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
+#include <string_view>
 #include <utility>
 
 #include "absl/strings/str_format.h"
@@ -1642,7 +1643,7 @@ void Multi_Score_Presentation() {
 
   int y = 41;
   for (auto& i : Session.Score) {
-    if (strlen(i.Name)) {
+    if (!std::string_view(i.Name).empty()) {
       const PlayerColorType color = i.Color;
       remap[8] = ColorRemaps[color].FontRemap[11];
       remap[6] = ColorRemaps[color].FontRemap[12];

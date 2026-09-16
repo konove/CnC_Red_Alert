@@ -57,6 +57,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <string_view>
 #include <utility>
 
 #include "absl/strings/str_format.h"
@@ -169,8 +170,8 @@ void TeamTypeClass::Read_INI(char* buffer) {
   /*------------------------------------------------------------------------
   Set 'tbuffer' to point just past the INI buffer
   ------------------------------------------------------------------------*/
-  const int len =
-      static_cast<int>(strlen(buffer)) + 2;  // Length of data in buffer.
+  const int len = static_cast<int>(std::string_view(buffer).size()) +
+                  2;             // Length of data in buffer.
   char* tbuffer = buffer + len;  // Accumulation buffer of team names.
 
   /*------------------------------------------------------------------------
@@ -202,7 +203,7 @@ void TeamTypeClass::Read_INI(char* buffer) {
     /*
     ...................... Go to the next INI entry .......................
     */
-    tbuffer += strlen(tbuffer) + 1;
+    tbuffer += std::string_view(tbuffer).size() + 1;
   }
 
   /*
@@ -464,7 +465,8 @@ void TeamTypeClass::Write_INI(char* buffer, bool refresh) {
     For every class in the team, record the class's name & desired count
     .....................................................................*/
     for (int i = 0; std::cmp_less(i, team->ClassCount); i++) {
-      absl::SNPrintF(buf + strlen(buf), sizeof(buf) - strlen(buf), ",%s:%d",
+      absl::SNPrintF(buf + std::string_view(buf).size(),
+                     sizeof(buf) - std::string_view(buf).size(), ",%s:%d",
                      base::At(team->Class, i)->IniName,
                      base::At(team->DesiredNum, i));
     }
@@ -472,10 +474,12 @@ void TeamTypeClass::Write_INI(char* buffer, bool refresh) {
     /*.....................................................................
     Record the # of missions, and each mission name & argument value.
     .....................................................................*/
-    absl::SNPrintF(buf + strlen(buf), sizeof(buf) - strlen(buf), ",%d",
+    absl::SNPrintF(buf + std::string_view(buf).size(),
+                   sizeof(buf) - std::string_view(buf).size(), ",%d",
                    team->MissionCount);
     for (int i = 0; i < team->MissionCount; i++) {
-      absl::SNPrintF(buf + strlen(buf), sizeof(buf) - strlen(buf), ",%s:%d",
+      absl::SNPrintF(buf + std::string_view(buf).size(),
+                     sizeof(buf) - std::string_view(buf).size(), ",%s:%d",
                      Name_From_Mission(base::At(team->MissionList, i).Mission),
                      base::At(team->MissionList, i).Argument);
     }
@@ -521,8 +525,8 @@ void TeamTypeClass::Read_Old_INI(char* buffer) {
   /*------------------------------------------------------------------------
   Set 'tbuffer' to point just past the INI buffer
   ------------------------------------------------------------------------*/
-  const int len =
-      static_cast<int>(strlen(buffer)) + 2;  // Length of data in buffer.
+  const int len = static_cast<int>(std::string_view(buffer).size()) +
+                  2;             // Length of data in buffer.
   char* tbuffer = buffer + len;  // Accumulation buffer of team names.
 
   /*------------------------------------------------------------------------
@@ -664,7 +668,7 @@ void TeamTypeClass::Read_Old_INI(char* buffer) {
     /*
     ...................... Go to the next INI entry .......................
     */
-    tbuffer += strlen(tbuffer) + 1;
+    tbuffer += std::string_view(tbuffer).size() + 1;
   }
 }
 

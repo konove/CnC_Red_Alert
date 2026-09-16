@@ -47,6 +47,7 @@
 #include <cstring>
 #include <span>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "absl/log/log.h"
@@ -487,7 +488,8 @@ bool Save_Game(int id, const char* descr, bool /*unused*/) {
   memset(descr_buf, '\0', sizeof(descr_buf));
   absl::SNPrintF(descr_buf, sizeof(descr_buf), "%s\r\n",
                  descr);                  // put CR-LF after text
-  base::At(descr_buf, strlen(descr_buf) + 1) = 26;  // put CTRL-Z after nullptr
+  base::At(descr_buf, std::string_view(descr_buf).size() + 1) =
+      26;  // put CTRL-Z after nullptr
   fpipe.Write(std::as_bytes(std::span(descr_buf)));
 
   /*
@@ -1277,7 +1279,8 @@ bool Get_Savefile_Info(int id, char* buf, size_t buf_size, unsigned* scenp,
     return false;
   }
 
-  base::At(descr_buf, strlen(descr_buf) - 2) = '\0';  // trim off CR/LF
+  base::At(descr_buf, std::string_view(descr_buf).size() - 2) =
+      '\0';  // trim off CR/LF
   port::SafeCopy(buf, descr_buf, buf_size);
 
   ArchiveReader header(straw);

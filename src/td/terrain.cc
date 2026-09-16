@@ -72,6 +72,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <string_view>
 
 #include "absl/strings/str_format.h"
 #include "base/numeric.h"
@@ -781,8 +782,8 @@ const unsigned char* TerrainClass::Radar_Icon(CELL cell) {
 void TerrainClass::Read_INI(char* buffer) {
   char buf[128];
 
-  const int len =
-      static_cast<int>(strlen(buffer)) + 2;  // Size of data in buffer.
+  const int len = static_cast<int>(std::string_view(buffer).size()) +
+                  2;                         // Size of data in buffer.
   char* tbuffer = buffer + len;              // Accumulation buffer of unit IDs.
 
   WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
@@ -801,7 +802,7 @@ void TerrainClass::Read_INI(char* buffer) {
         tptr->Trigger->AttachCount++;
       }
     }
-    tbuffer += strlen(tbuffer) + 1;
+    tbuffer += std::string_view(tbuffer).size() + 1;
   }
 }
 
@@ -829,14 +830,15 @@ void TerrainClass::Write_INI(char* buffer) {
   /*
   **	First, clear out all existing terrain data from the ini file.
   */
-  char* tbuffer =
-      buffer + strlen(buffer) + 2;  // Accumulation buffer of unit IDs.
-  WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
-                            ShapeBufferSize - static_cast<int>(strlen(buffer)),
-                            buffer);
+  char* tbuffer = buffer + std::string_view(buffer).size() +
+                  2;  // Accumulation buffer of unit IDs.
+  WWGetPrivateProfileString(
+      INI_Name(), nullptr, nullptr, tbuffer,
+      ShapeBufferSize - static_cast<int>(std::string_view(buffer).size()),
+      buffer);
   while (*tbuffer != '\0') {
     WWWritePrivateProfileString(INI_Name(), tbuffer, nullptr, buffer);
-    tbuffer += strlen(tbuffer) + 1;
+    tbuffer += std::string_view(tbuffer).size() + 1;
   }
 
   /*

@@ -2291,7 +2291,7 @@ void Write_Scenario_INI(const char* fname) {
     OverlayClass::Write_INI(ini);
     SmudgeClass::Write_INI(ini);
 
-    if (strlen(Scen.BriefingText)) {
+    if (!std::string_view(Scen.BriefingText).empty()) {
       ini.Put_TextBlock("Briefing", Scen.BriefingText);
     }
     //	absl::SNPrintF(fname, sizeof(fname), "%s.INI", root);

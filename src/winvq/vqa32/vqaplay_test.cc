@@ -97,7 +97,7 @@ class FakeVqaIo final : public VqaIo {
 };
 
 void AppendBytes(std::vector<uint8_t>& out, const char* text) {
-  out.insert(out.end(), text, text + strlen(text));
+  out.insert(out.end(), text, text + std::string_view(text).size());
 }
 
 void AppendBigEndian32(std::vector<uint8_t>& out, uint32_t value) {

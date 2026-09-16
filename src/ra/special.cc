@@ -46,6 +46,7 @@
 #include <algorithm>
 #include <cstring>
 #include <iterator>
+#include <string_view>
 #include <utility>
 
 #include "base/array.h"
@@ -287,7 +288,7 @@ void PWEditClass::Draw_Text(const char* text) {
   char buffer[80];
 
   memset(buffer, '\0', sizeof(buffer));
-  memset(buffer, '*', strlen(text));
+  memset(buffer, '*', std::string_view(text).size());
 
   if (FontPtr == GradFont6Ptr) {
     const TextPrintType flags =
@@ -296,7 +297,8 @@ void PWEditClass::Draw_Text(const char* text) {
     Conquer_Clip_Text_Print(buffer, X + 1, Y + 1, Color, kTBlack,
                             TextFlags | flags, Width - 2);
 
-    if (Has_Focus() && std::cmp_less(strlen(buffer), MaxLength)) {
+    if (Has_Focus() &&
+        std::cmp_less(std::string_view(buffer).size(), MaxLength)) {
       Conquer_Clip_Text_Print("_", X + 1 + String_Pixel_Width(buffer), Y + 1,
                               Color, kTBlack, TextFlags | flags);
     }
@@ -306,7 +308,8 @@ void PWEditClass::Draw_Text(const char* text) {
                                         : &ColorRemaps[PCOLOR_GREY],
                             kTBlack, TextFlags, Width - 2);
 
-    if (Has_Focus() && std::cmp_less(strlen(buffer), MaxLength)) {
+    if (Has_Focus() &&
+        std::cmp_less(std::string_view(buffer).size(), MaxLength)) {
       Conquer_Clip_Text_Print("_", X + 1 + String_Pixel_Width(buffer), Y + 1,
                               &ColorRemaps[PCOLOR_DIALOG_BLUE], kTBlack,
                               TextFlags);

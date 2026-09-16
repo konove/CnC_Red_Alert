@@ -20,6 +20,7 @@
 
 #include <cctype>
 #include <cstring>
+#include <string_view>
 
 #include "tech/byte_source.h"
 #include "tech/file.h"
@@ -35,13 +36,14 @@ void strtrim(char* buffer) {
       source++;
     }
     if (source != buffer) {
-      memmove(buffer, source, strlen(source) + 1);
+      memmove(buffer, source, std::string_view(source).size() + 1);
     }
 
     /*
     **	Clip trailing white space from the string.
     */
-    for (int index = static_cast<int>(strlen(buffer)) - 1; index >= 0; index--) {
+    for (int index = static_cast<int>(std::string_view(buffer).size()) - 1;
+         index >= 0; index--) {
       if (isspace(buffer[index])) {
         buffer[index] = '\0';
       } else {
@@ -80,5 +82,5 @@ int Read_Line(ByteSource& file, char* buffer, int len, bool& eof) {
   buffer[count] = '\0';
 
   strtrim(buffer);
-  return static_cast<int>(strlen(buffer));
+  return static_cast<int>(std::string_view(buffer).size());
 }

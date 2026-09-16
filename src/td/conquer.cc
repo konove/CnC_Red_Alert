@@ -74,6 +74,7 @@
 #include <iterator>
 #include <span>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "absl/log/log.h"
@@ -926,12 +927,12 @@ static void Message_Input(KeyNumType& input) {
     Store this message in our LastMessage buffer; the computer may send
     us a version of it later.
     .....................................................................*/
-    if (strlen(Messages.Get_Edit_Buf())) {
+    if (!std::string_view(Messages.Get_Edit_Buf()).empty()) {
       port::SafeCopy(LastMessage, Messages.Get_Edit_Buf());
     }
 
     const int message_length =
-        static_cast<int>(strlen(Messages.Get_Edit_Buf()));
+        static_cast<int>(std::string_view(Messages.Get_Edit_Buf()).size());
 
     int32_t actual_message_size = 0;
     char* the_string = nullptr;
@@ -1233,7 +1234,7 @@ void Call_Back() {
         for (i = 0; i < Ipx.Num_Connections(); i++) {
           id = Ipx.Connection_ID(i);
 
-          if (!strcmp(GPacket.Name, Ipx.Connection_Name(id)) &&
+          if ((std::string_view(GPacket.Name) == Ipx.Connection_Name(id)) &&
               GAddress == *Ipx.Connection_Address(id)) {
             CCDebugString("C&C95 = Destroying connection due to sign off\n");
             Destroy_Connection(id, 0);
@@ -1281,7 +1282,7 @@ void Call_Back() {
             /*
             **	Save this message in our last-message buffer
             */
-            if (strlen(GPacket.Message.Buf)) {
+            if (!std::string_view(GPacket.Message.Buf).empty()) {
               port::SafeCopy(LastMessage, GPacket.Message.Buf);
             }
           }

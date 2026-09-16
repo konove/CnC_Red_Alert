@@ -272,12 +272,12 @@ bool INIClass::Load(ByteSource& file) {
       */
       *divider++ = '\0';
       strtrim(buffer);
-      if (!strlen(buffer)) {
+      if (std::string_view(buffer).empty()) {
         continue;
       }
 
       strtrim(divider);
-      if (!strlen(divider)) {
+      if (std::string_view(divider).empty()) {
         continue;
       }
 
@@ -648,7 +648,7 @@ bool INIClass::Put_TextBlock(const char* section, const char* text) {
     /*
     **	Scan backward looking for a good break position.
     */
-    int count = static_cast<int>(strlen(buffer));
+    int count = static_cast<int>(std::string_view(buffer).size());
     if (count > 0) {
       if (count >= 75) {
         while (count) {
@@ -724,7 +724,7 @@ int INIClass::Get_TextBlock(const char* section, char* buffer, int len) const {
 
     Get_String(section, Get_Entry(section, index), "", buffer, len);
 
-    const int partial = static_cast<int>(strlen(buffer));
+    const int partial = static_cast<int>(std::string_view(buffer).size());
     total += partial;
     buffer += partial;
     len -= partial;
@@ -944,7 +944,7 @@ bool INIClass::Put_String(const char* section, const char* entry,
   /*
   **	Create and add the new entry.
   */
-  if (string != nullptr && strlen(string) > 0) {
+  if (string != nullptr && !std::string_view(string).empty()) {
     entryptr = new INIEntry(entry, string);
 
     if (entryptr == nullptr) {
@@ -1020,7 +1020,7 @@ int INIClass::Get_String(const char* section, const char* entry,
   }
   buffer[size - 1] = '\0';
   strtrim(buffer);
-  return static_cast<int>(strlen(buffer));
+  return static_cast<int>(std::string_view(buffer).size());
 }
 
 /***********************************************************************************************

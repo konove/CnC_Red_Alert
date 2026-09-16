@@ -127,6 +127,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <string_view>
 #include <utility>
 
 #include "absl/strings/str_format.h"
@@ -356,8 +357,10 @@ bool Process_Global_Packet(GlobalPacketType* packet, IPXAddressClass* address) {
     the game still shows up on other players' dialogs.
     If the game is open, only the game owner may respond.
     .....................................................................*/
-    if (strlen(MPlayerName) > 0 && strlen(MPlayerGameName) > 0 &&
-        (!NetOpen || (NetOpen && !strcmp(MPlayerName, MPlayerGameName)))) {
+    if (!std::string_view(MPlayerName).empty() &&
+        !std::string_view(MPlayerGameName).empty() &&
+        (!NetOpen ||
+         (NetOpen && (std::string_view(MPlayerName) == MPlayerGameName)))) {
       memset(packet, 0, sizeof(GlobalPacketType));
 
       mypacket.Command = NET_ANSWER_GAME;
@@ -381,8 +384,8 @@ bool Process_Global_Packet(GlobalPacketType* packet, IPXAddressClass* address) {
       ----------------- Another system asking what player I am -----------------
       */
   if (packet->Command == NET_QUERY_PLAYER &&
-      !strcmp(packet->Name, MPlayerGameName) && strlen(MPlayerGameName) > 0 &&
-      !NetStealth) {
+      (std::string_view(packet->Name) == MPlayerGameName) &&
+      !std::string_view(MPlayerGameName).empty() && !NetStealth) {
     memset(packet, 0, sizeof(GlobalPacketType));
 
     mypacket.Command = NET_ANSWER_PLAYER;
@@ -431,7 +434,7 @@ void Destroy_Connection(int id, int error) {
                         Ipx.Connection_Name(id));
   }
 
-  if (strlen(txt)) {
+  if (!std::string_view(txt).empty()) {
     Messages.Add_Message(
         txt,
         MPlayerTColors[static_cast<int>(

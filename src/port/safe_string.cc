@@ -1,6 +1,7 @@
 #include "port/safe_string.h"
 
 #include <cstring>
+#include <string_view>
 
 namespace port {
 
@@ -54,7 +55,7 @@ char* CloneString(const char* src) {
   }
 
   // +1 for the null terminator.
-  const size_t len = std::strlen(src) + 1;
+  const size_t len = std::string_view(src).size() + 1;
   // Caller must delete[].
   auto* const dest = new char[len];
 

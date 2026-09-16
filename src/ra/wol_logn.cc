@@ -20,6 +20,7 @@
 //	ajw 07/16/98
 
 #include <cstring>
+#include <string_view>
 
 #include "port/safe_string.h"
 #include "port/sleep.h"
@@ -335,7 +336,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
       case ButtonKey(kEditboxName):
       case ButtonKey(kEditboxPass):
       case ButtonKey(kButtonConnect): {
-        if (!strlen(szNameBuffer)) {
+        if (std::string_view(szNameBuffer).empty()) {
           WWMessageBox().Process(TXT_WOL_MISSINGNAME);
           firsttime = true;  //	Bloody hack.
           NameEdit.Set_Focus();
@@ -343,7 +344,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
           display = true;
           break;
         }
-        if (!strlen(szPassBuffer)) {
+        if (std::string_view(szPassBuffer).empty()) {
           WWMessageBox().Process(TXT_WOL_MISSINGPASSWORD);
           firsttime = true;  //	Bloody hack.
           PassEdit.Set_Focus();
@@ -536,7 +537,7 @@ bool bSaveNick(const WolapiObject* pWO, const char* szNickToSave,
       break;
     case S_OK:
       // We can use this blank slot, or this slot as the name is the same.
-      if (*szNick == 0 || strcmp(szNick, szNickToSave) == 0) {
+      if (*szNick == 0 || std::string_view(szNick) == szNickToSave) {
         bPushSlot1 = false;
       }
       break;

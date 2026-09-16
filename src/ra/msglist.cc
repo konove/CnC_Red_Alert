@@ -60,6 +60,7 @@
 #include <cctype>
 #include <cstdio>
 #include <cstring>
+#include <string_view>
 #include <utility>
 
 #include "absl/strings/str_format.h"
@@ -348,11 +349,11 @@ TextLabelClass* MessageListClass::Add_Message(const char* name, int id,
     //------------------------------------------------------------------------
     if (name) {
       absl::SNPrintF(temp, sizeof(temp), "%s:", name);
-      mess_start = static_cast<int>(strlen(name)) + 1;
+      mess_start = static_cast<int>(std::string_view(name).size()) + 1;
     } else {
       mess_start = 0;
     }
-    for (int j = 1; std::cmp_less(j, strlen(txt)); j++) {
+    for (int j = 1; std::cmp_less(j, std::string_view(txt).size()); j++) {
       strncpy(base::Suffix(temp, mess_start).data(), txt, base::ToSize(j));
       base::At(temp, mess_start + j) = 0;
       wid = String_Pixel_Width(temp);
@@ -575,7 +576,7 @@ int MessageListClass::Concat_Message(const char* name, int id, const char* txt,
     tlabel = MessageList;
     while (tlabel) {
       if (tlabel->UserData2 == id &&
-          !memcmp(tlabel->Text, name, strlen(name))) {
+          !memcmp(tlabel->Text, name, std::string_view(name).size())) {
         found = 1;
         break;
       }
@@ -593,12 +594,14 @@ int MessageListClass::Concat_Message(const char* name, int id, const char* txt,
   //------------------------------------------------------------------------
   // set a pointer to the text string, plus the name and colon
   //------------------------------------------------------------------------
-  char* msg = tlabel->Text + strlen(name) + 1;
+  char* msg = tlabel->Text + std::string_view(name).size() + 1;
 
   //------------------------------------------------------------------------
   // If there's room enough in the message, just add the given string
   //------------------------------------------------------------------------
-  if (static_cast<int>(strlen(msg)) + static_cast<int>(strlen(txt)) < MaxChars) {
+  if (static_cast<int>(std::string_view(msg).size()) +
+          static_cast<int>(std::string_view(txt).size()) <
+      MaxChars) {
     //---------------------------------------------------------------------
     // We need to trim the message if there is no room to draw it
     //---------------------------------------------------------------------
@@ -613,7 +616,8 @@ int MessageListClass::Concat_Message(const char* name, int id, const char* txt,
     min_chars = 10;
 
     while (width >= Width - 8) {
-      max_chars = std::max<int>(static_cast<int>(strlen(msg)), min_chars);
+      max_chars = std::max<int>(static_cast<int>(std::string_view(msg).size()),
+                                min_chars);
 
       Trim_Message(nullptr, msg, min_chars, max_chars, 0);
 
@@ -634,8 +638,10 @@ int MessageListClass::Concat_Message(const char* name, int id, const char* txt,
   // Trim from left to right to remove the minimum required text.
   //------------------------------------------------------------------------
   else {
-    min_chars = static_cast<int>(strlen(msg)) + static_cast<int>(strlen(txt)) - MaxChars;
-    max_chars = std::max<int>(static_cast<int>(strlen(msg)), min_chars);
+    min_chars = static_cast<int>(std::string_view(msg).size()) +
+                static_cast<int>(std::string_view(txt).size()) - MaxChars;
+    max_chars = std::max<int>(static_cast<int>(std::string_view(msg).size()),
+                              min_chars);
     Trim_Message(nullptr, msg, min_chars, max_chars, 0);
     port::SafeCopy(msg, txt, MAX_MESSAGE_LENGTH);
   }
@@ -757,7 +763,7 @@ TextLabelClass* MessageListClass::Add_Edit(PlayerColorType color,
   memset(EditBuf, 0, sizeof(EditBuf));
   port::SafeCopy(EditBuf, to);
   OverflowBuf[0] = 0;
-  EditCurPos = EditInitPos = static_cast<int>(strlen(to));
+  EditCurPos = EditInitPos = static_cast<int>(std::string_view(to).size());
   EditLabel =
       new TextLabelClass(EditBuf, EditX, EditY, &ColorRemaps[color], style);
 
@@ -1244,7 +1250,7 @@ int MessageListClass::Trim_Message(char* dest, char* src, int min_chars,
     return 0;
   }
 
-  const int len = static_cast<int>(strlen(src));
+  const int len = static_cast<int>(std::string_view(src).size());
   max_chars = std::min(max_chars, len);
 
   //------------------------------------------------------------------------

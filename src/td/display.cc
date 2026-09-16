@@ -98,6 +98,7 @@
 #include <iterator>
 #include <numeric>
 #include <span>
+#include <string_view>
 #include <vector>
 
 #include "absl/strings/str_format.h"
@@ -1105,7 +1106,7 @@ void DisplayClass::Read_INI(char* buffer) {
   **	Read the cell trigger names, and assign TriggerClass pointers
   */
   const int len =
-      static_cast<int>(strlen(buffer)) +
+      static_cast<int>(std::string_view(buffer).size()) +
       2;  // Length of data in buffer.  // len is the length of the INI data
   char* tbuffer = buffer + len;  // Accumulation buffer of Trigger names.    //
                                  // tbuffer is after the INI data
@@ -1146,7 +1147,7 @@ void DisplayClass::Read_INI(char* buffer) {
     /*
     **	Step to next entry name.
     */
-    tbuffer += strlen(tbuffer) + 1;
+    tbuffer += std::string_view(tbuffer).size() + 1;
   }
 }
 

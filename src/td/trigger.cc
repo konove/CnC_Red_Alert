@@ -69,6 +69,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <string_view>
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
@@ -1007,8 +1008,8 @@ void TriggerClass::Read_INI(char* buffer) {
   /*
   **	Set 'tbuffer' to point just past the INI buffer
   */
-  const int len =
-      static_cast<int>(strlen(buffer)) + 2;  // Length of data in buffer.
+  const int len = static_cast<int>(std::string_view(buffer).size()) +
+                  2;             // Length of data in buffer.
   char* tbuffer = buffer + len;  // Accumulation buffer of trigger IDs.
 
   /*
@@ -1059,7 +1060,7 @@ void TriggerClass::Read_INI(char* buffer) {
     /*
     **	Go to next entry.
     */
-    tbuffer += strlen(tbuffer) + 1;
+    tbuffer += std::string_view(tbuffer).size() + 1;
   }
 }
 

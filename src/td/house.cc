@@ -115,6 +115,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
+#include <string_view>
 #include <utility>
 
 #include "absl/log/check.h"
@@ -1724,7 +1725,7 @@ void HouseClass::Read_INI(char* buffer) {
     if (GameToPlay == GAME_NORMAL) {
       WWGetPrivateProfileString(hname, "Allies", "", buf, sizeof(buf) - 1,
                                 buffer);
-      if (strlen(buf)) {
+      if (!std::string_view(buf).empty()) {
         port::Tokenizer tokens(buf, ", \t");
         const char* tok = tokens.Next();
         while (tok) {

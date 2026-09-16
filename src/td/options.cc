@@ -69,6 +69,7 @@
 
 #include <cstdint>
 #include <cstring>
+#include <string_view>
 
 #include "base/array.h"
 #include "base/numeric.h"
@@ -689,7 +690,7 @@ void OptionsClass::Save_Settings() const {
   /*
   **	Write the INI data out to a file.
   */
-  file.Write(buffer, static_cast<int32_t>(strlen(buffer)));
+  file.Write(buffer, static_cast<int32_t>(std::string_view(buffer).size()));
 }
 
 /***********************************************************************************************

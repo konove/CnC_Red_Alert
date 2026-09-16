@@ -21,6 +21,7 @@
 
 #include <cstdio>
 #include <cstring>
+#include <string_view>
 
 #include "absl/strings/str_format.h"
 #include "port/safe_string.h"
@@ -1239,7 +1240,7 @@ bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist, Channel* pChannel,
             TXT_WOL_JOINPRIVATETITLE, TXT_WOL_JOINPRIVATEPROMPT,
             WOL_CHANKEY_LEN_MAX);
         pWO->bPump_In_Call_Back = true;
-        if (strcmp(pEditDlg->Show(), Text_String(TXT_OK)) != 0 ||
+        if (std::string_view(pEditDlg->Show()) != Text_String(TXT_OK) ||
             !*pEditDlg->szEdit) {
           pWO->bPump_In_Call_Back = false;
           delete pEditDlg;
@@ -1368,7 +1369,7 @@ void CreateChatChannel(WolapiObject* pWO) {
         350, TXT_WOL_CREATECHANNELTITLE, TXT_WOL_CREATECHANNELPROMPT,
         WOL_CHANNAME_LEN_MAX, TXT_WOL_OPTIONALPASSPROMPT, WOL_CHANKEY_LEN_MAX);
     pWO->bPump_In_Call_Back = true;
-    if (strcmp(pEditDlg->Show(), Text_String(TXT_OK)) == 0 &&
+    if (std::string_view(pEditDlg->Show()) == Text_String(TXT_OK) &&
         *pEditDlg->szEdit) {
       pWO->bPump_In_Call_Back = false;
       if (*pEditDlg->szEdit2) {

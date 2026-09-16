@@ -49,6 +49,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <string_view>
 
 #include "absl/strings/str_format.h"
 #include "base/numeric.h"
@@ -240,8 +241,8 @@ char* WWGetPrivateProfileString(const char* section, const char* key,
   absl::SNPrintF(sec, sizeof(sec), "[%s]",
                  section);  // sec = section name including []'s
   strupr(sec);
-  int len =
-      static_cast<int>(strlen(sec));  // Working substring length value.  // len
+  int len = static_cast<int>(
+      std::string_view(sec).size());  // Working substring length value.  // len
                                       // = section name length, incl []'s
 
   /*
@@ -323,7 +324,7 @@ char* WWGetPrivateProfileString(const char* section, const char* key,
           /*
           **	No bracket found; set 'next' to the end of the file
           */
-          next = workptr + strlen(workptr) - 1;
+          next = workptr + std::string_view(workptr).size() - 1;
           break;
         }
       }
@@ -333,8 +334,8 @@ char* WWGetPrivateProfileString(const char* section, const char* key,
       *associated *	string.
       */
       if (key) {
-        const int entrylen =
-            static_cast<int>(strlen(key));  // Byte length of specified entry.
+        const int entrylen = static_cast<int>(
+            std::string_view(key).size());  // Byte length of specified entry.
 
         for (;;) {
           /*
@@ -441,7 +442,8 @@ char* WWGetPrivateProfileString(const char* section, const char* key,
               memcpy(dest, workptr, base::ToSize(length));  // copy entry name
               *(dest + length) = '\0';        // NULL-terminate it
               strtrim(dest);                  // trim spaces
-              dest += strlen(dest) + 1;       // next pos in dest buf
+              dest +=
+                  std::string_view(dest).size() + 1;  // next pos in dest buf
             } else {
               break;
             }
@@ -558,7 +560,7 @@ bool WWWritePrivateProfileString(const char* section, const char* entry,
         /*
         **	No bracket found; set 'next' to the end of the file
         */
-        next = offset + strlen(offset);
+        next = offset + std::string_view(offset).size();
         break;
       }
     }
@@ -595,7 +597,8 @@ bool WWWritePrivateProfileString(const char* section, const char* entry,
     **	Erase the entry by strcpy'ing the entire INI file over this entry
     */
     if (eol) {
-      memmove(offset, offset + eol + 1, strlen(offset + eol + 1) + 1);
+      memmove(offset, offset + eol + 1,
+              std::string_view(offset + eol + 1).size() + 1);
     }
   } else {
     /*
@@ -618,13 +621,14 @@ bool WWWritePrivateProfileString(const char* section, const char* entry,
     /*
     **	Make room for new entry.
     */
-    memmove(offset + strlen(buffer), offset, strlen(offset) + 1);
+    memmove(offset + std::string_view(buffer).size(), offset,
+            std::string_view(offset).size() + 1);
 
     /*
     **	Copy the entry into the INI buffer (without null terminator, since we're
     **	inserting into the middle of existing text).
     */
-    std::copy(buffer, buffer + strlen(buffer), offset);
+    std::copy(buffer, buffer + std::string_view(buffer).size(), offset);
   }
 
   return true;

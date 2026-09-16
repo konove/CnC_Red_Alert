@@ -56,6 +56,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
+#include <string_view>
 #include <utility>
 
 #include "absl/strings/str_format.h"
@@ -1630,7 +1631,7 @@ void ScoreClass::Count_Up_Print(const char* str, int percent, int max, int xpos,
 
   Format_Runtime_Text(destbuf, sizeof(destbuf), str,
                       percent <= max ? percent : max);
-  const int width = static_cast<int>(strlen(destbuf)) * 7;
+  const int width = static_cast<int>(std::string_view(destbuf).size()) * 7;
 
   //	HidPage.Blit(HidPage, xpos, ypos, 0, 0, width, 8);
   //	Set_Logic_Page(HidPage);
@@ -2172,7 +2173,7 @@ void Multi_Score_Presentation() {
 
   int y = 41;
   for (auto& i : MPlayerScore) {
-    if (strlen(i.Name)) {
+    if (!std::string_view(i.Name).empty()) {
       const unsigned char* pal = base::At(_colors, i.Color);
 
       Alloc_Object(new ScorePrintClass(i.Name, 15, y, pal));

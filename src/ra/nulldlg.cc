@@ -829,7 +829,7 @@ void Destroy_Null_Connection(int id, int error) {
       break;
   }
 
-  if (strlen(txt)) {
+  if (!std::string_view(txt).empty()) {
     Session.Messages.Add_Message(nullptr, 0, txt,
                                  housep->RemapColor == PCOLOR_DIALOG_BLUE
                                      ? PCOLOR_REALLY_BLUE

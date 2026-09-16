@@ -54,6 +54,7 @@
 #include <cstdio>
 #include <cstring>
 #include <string>
+#include <string_view>
 
 #include "absl/strings/str_format.h"
 #include "absl/types/span.h"
@@ -397,10 +398,11 @@ void Simple_Text_Print(const char* text, int x, int y, int fore,
     /*
     ** remove any 0xff characters from the string
     */
-    tempstr = new char[strlen(text) + 1];
+    tempstr = new char[std::string_view(text).size() + 1];
     char* tempptr = tempstr;
 
-    for (int i = 0; i < static_cast<int>(strlen(text)) + 1; i++) {
+    for (int i = 0; i < static_cast<int>(std::string_view(text).size()) + 1;
+         i++) {
       if (text[i] != -1) {
         *tempptr = text[i];
         tempptr++;

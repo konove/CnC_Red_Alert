@@ -37,6 +37,7 @@
 #include <cstddef>
 #include <cstring>
 #include <string>
+#include <string_view>
 
 #include "absl/base/attributes.h"
 #include "base/array.h"
@@ -188,7 +189,7 @@ int IconListClass::Add_Item(
 
       //	50 extra chars added for line breaks later, by
       //	Format_Window_String_New.
-      const std::size_t iTextSize = strlen(text) + 51;
+      const std::size_t iTextSize = std::string_view(text).size() + 51;
       char* szText = new char[iTextSize];
       port::SafeCopy(szText, text, iTextSize);
 
@@ -245,7 +246,7 @@ int IconListClass::Add_Item(
                                   iXFixedIcon, iYFixedIcon, iFixedIconWidth);
 
         //	Expect next token two chars after the end of this one.
-        szNextChar = szToken + strlen(szToken) + 1;
+        szNextChar = szToken + std::string_view(szToken).size() + 1;
       }
       delete[] szText;
       return iRetVal;  //	Last value returned by ListClass::Add_Item
@@ -639,7 +640,8 @@ int IconListClass::Find(const char* szItemToFind) {
   //	Returns -1 if szItemToFind is not found as the text BEGINNING one of the
   // list entries, else index of item. 	Compare is case-sensitive.
   for (int i = 0; i < Count(); i++) {
-    if (strncmp(Get_Item(i), szItemToFind, strlen(szItemToFind)) == 0) {
+    if (strncmp(Get_Item(i), szItemToFind,
+                std::string_view(szItemToFind).size()) == 0) {
       return i;
     }
   }

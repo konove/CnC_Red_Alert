@@ -57,6 +57,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <string_view>
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
@@ -326,7 +327,7 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   ** Init the Scenario CRC value
   */
   ScenarioCRC = 0;
-  const int len = static_cast<int>(strlen(buffer));
+  const int len = static_cast<int>(std::string_view(buffer).size());
   for (int i = 0; i < len; i++) {
     val = static_cast<unsigned char>(buffer[i]);
 #ifndef DEMO
@@ -522,17 +523,18 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
 
     absl::SNPrintF(buff, sizeof(buff), "%d", index++);
     *stage = '\0';
-    WWGetPrivateProfileString("Briefing", buff, "", stage,
-                              static_cast<int>(sizeof(BriefingText) -
-                                               strlen(BriefingText) - 1),
-                              buffer);
-    if (strlen(stage) == 0) {
+    WWGetPrivateProfileString(
+        "Briefing", buff, "", stage,
+        static_cast<int>(sizeof(BriefingText) -
+                         std::string_view(BriefingText).size() - 1),
+        buffer);
+    if (std::string_view(stage).empty()) {
       break;
     }
     // Really old and ugly code - refactor.
     // NOLINTNEXTLINE(clang-analyzer-security.insecureAPI.strcpy)
     strcat(stage, " ");
-    stage += strlen(stage);
+    stage += std::string_view(stage).size();
   }
 
   /*
@@ -556,15 +558,16 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
       *work = '\0';
       WWGetPrivateProfileString(
           root, buff, "", work,
-          static_cast<int>(sizeof(BriefingText) - strlen(BriefingText) - 1),
+          static_cast<int>(sizeof(BriefingText) -
+                           std::string_view(BriefingText).size() - 1),
           ShapeBuffer);
-      if (strlen(work) == 0) {
+      if (std::string_view(work).empty()) {
         break;
       }
       // Really old and ugly code - refactor.
       // NOLINTNEXTLINE(clang-analyzer-security.insecureAPI.strcpy)
       strcat(work, " ");
-      work += strlen(work);
+      work += std::string_view(work).size();
     }
   }
 
@@ -740,7 +743,7 @@ void Write_Scenario_Ini(const char* root) {
     **	Write the scenario data out to a file.
     */
     //	file.Open(WRITE);
-    file.Write(buffer, static_cast<int32_t>(strlen(buffer)));
+    file.Write(buffer, static_cast<int32_t>(std::string_view(buffer).size()));
     //	file.Close();
 
     /*
@@ -763,7 +766,7 @@ void Write_Scenario_Ini(const char* root) {
     TriggerClass::Write_INI(buffer, false);
 
     //	file.Open(WRITE);
-    file.Write(buffer, static_cast<int32_t>(strlen(buffer)));
+    file.Write(buffer, static_cast<int32_t>(std::string_view(buffer).size()));
     //	file.Close();
   }
 }

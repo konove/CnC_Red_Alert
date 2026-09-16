@@ -42,6 +42,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <string_view>
 
 #include "absl/log/log.h"
 #include "absl/strings/str_format.h"
@@ -127,7 +128,8 @@ bool Save_Game(int id, const char* descr) {
   */
   absl::SNPrintF(descr_buf, sizeof(descr_buf) - 1, "%s\r\n",
                  descr);                  // put CR-LF after text
-  base::At(descr_buf, strlen(descr_buf) + 1) = 26;  // put CTRL-Z after NULL
+  base::At(descr_buf, std::string_view(descr_buf).size() + 1) =
+      26;  // put CTRL-Z after NULL
 
   if (file.Write(descr_buf, kDescripMax) != kDescripMax) {
     file.Close();
@@ -557,7 +559,7 @@ bool Get_Savefile_Info(int id, char* buf, unsigned* scenp, HousesType* housep) {
     }
 
     descr_buf[kDescripMax - 1] = '\0';
-    const auto description_length = strlen(descr_buf);
+    const auto description_length = std::string_view(descr_buf).size();
     if (description_length >= 2 &&
         base::At(descr_buf, description_length - 2) == '\r' &&
         base::At(descr_buf, description_length - 1) == '\n') {

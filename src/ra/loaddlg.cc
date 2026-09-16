@@ -50,6 +50,7 @@
 #include <cstdio>
 #include <cstring>
 #include <filesystem>
+#include <string_view>
 
 #include "absl/strings/str_format.h"
 #include "port/ex_string.h"
@@ -456,7 +457,7 @@ bool LoadOptionsClass::Process() {
       case ButtonKey(kButtonEdit):
 
       case ButtonKey(kButtonSave):
-        if (!strlen(game_descr)) {
+        if (std::string_view(game_descr).empty()) {
           WWMessageBox().Process(TXT_MUSTENTER_DESCRIPTION);
           firsttime = true;
           display = true;
@@ -557,7 +558,8 @@ bool LoadOptionsClass::Process() {
             if (game_descr[0] == '(') {
               const char* ptr = strchr(game_descr, ')');
               if (ptr != nullptr) {
-                memmove(game_descr, ptr + 1, strlen(ptr + 1) + 1);
+                memmove(game_descr, ptr + 1,
+                        std::string_view(ptr + 1).size() + 1);
                 strtrim(game_descr);
               }
             }

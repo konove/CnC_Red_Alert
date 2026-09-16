@@ -51,6 +51,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
+#include <string_view>
 
 #include "port/safe_string.h"
 #include "sdllib/drawbuff.h"
@@ -158,7 +159,7 @@ void Check_From_WChat(const char* wchat_name) {
     WWGetPrivateProfileString("Internet", "Address", default_string, key_string,
                               sizeof(key_string), ini_file);
 
-    if (!strcmp(key_string, default_string)) {
+    if ((std::string_view(key_string) == default_string)) {
       if (wchat_name) {
         delete[] ini_file;
       }
@@ -174,7 +175,7 @@ void Check_From_WChat(const char* wchat_name) {
     WWGetPrivateProfileString("Internet", "Port", default_string, key_string,
                               sizeof(key_string), ini_file);
 
-    if (!strcmp(key_string, default_string)) {
+    if ((std::string_view(key_string) == default_string)) {
       if (wchat_name) {
         delete[] ini_file;
       }
@@ -191,7 +192,7 @@ void Check_From_WChat(const char* wchat_name) {
     WWGetPrivateProfileString("Internet", "Host", default_string, key_string,
                               sizeof(key_string), ini_file);
 
-    if (!strcmp(key_string, default_string)) {
+    if ((std::string_view(key_string) == default_string)) {
       if (wchat_name) {
         delete[] ini_file;
       }

@@ -20,6 +20,7 @@
 //	ajw 09/9/98
 
 #include <cstring>
+#include <string_view>
 
 #include "port/safe_string.h"
 #include "port/sleep.h"
@@ -351,7 +352,7 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
         new SimpleEditDlgClass(300, TXT_WOL_CREATEPRIVGAMETITLE,
                                TXT_WOL_PASSPROMPT, WOL_CHANKEY_LEN_MAX);
     pWO->bPump_In_Call_Back = true;
-    if (strcmp(pEditDlg->Show(), Text_String(TXT_OK)) == 0 &&
+    if (std::string_view(pEditDlg->Show()) == Text_String(TXT_OK) &&
         *pEditDlg->szEdit) {
       port::SafeCopy(cgiReturn.szPassword, pEditDlg->szEdit);
     } else {

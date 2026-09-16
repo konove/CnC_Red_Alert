@@ -50,6 +50,7 @@
 #include <cstdio>
 #include <cstring>
 #include <filesystem>
+#include <string_view>
 
 #include "absl/strings/str_format.h"
 #include "port/safe_string.h"
@@ -419,7 +420,7 @@ bool LoadOptionsClass::Process() {
       ** Save: Save the game & exit the dialog
       */
       case ButtonKey(kButtonSave):
-        if (!strlen(game_descr)) {
+        if (std::string_view(game_descr).empty()) {
           CCMessageBox().Process(TXT_MUSTENTER_DESCRIPTION);
           firsttime = true;
           display = true;
@@ -599,7 +600,7 @@ void LoadOptionsClass::Fill_List(ListClass* list) {
       port::SafeCopy(fdata->Descr, Text_String(TXT_OLD_GAME));
     }
     strncat(fdata->Descr, descr,
-            sizeof(fdata->Descr) - strlen(fdata->Descr) - 1);
+            sizeof(fdata->Descr) - std::string_view(fdata->Descr).size() - 1);
     fdata->Valid = ok;
     fdata->Scenario = scenario;
     fdata->House = house;

@@ -81,6 +81,7 @@
 #include <cstring>
 #include <filesystem>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "absl/strings/str_format.h"
@@ -1929,8 +1930,8 @@ void RadarClass::Draw_Names() const {
     /*
     **	Print the player name, and the # of kills
     */
-    if (strlen(txt)) {
-      if (strlen(txt) > 9) {
+    if (!std::string_view(txt).empty()) {
+      if (std::string_view(txt).size() > 9) {
         txt[9] = '.';
         txt[10] = '\0';
       }

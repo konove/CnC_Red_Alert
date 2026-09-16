@@ -54,6 +54,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <string_view>
 
 #include "absl/strings/str_format.h"
 #include "port/safe_string.h"
@@ -744,7 +745,7 @@ bool Restate_Mission(const char* name, int right_btn, int left_btn) {
     /*
     **	If mission object text was found, then display it.
     */
-    if (strlen(BriefingText)) {
+    if (!std::string_view(BriefingText).empty()) {
       static char _buff[512];
 
       port::SafeCopy(_buff, BriefingText);

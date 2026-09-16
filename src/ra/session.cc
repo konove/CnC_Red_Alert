@@ -60,6 +60,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <ctime>  // for station ID computation
+#include <string_view>
 
 #include "absl/strings/str_format.h"
 #include "base/enum_array.h"
@@ -579,7 +580,7 @@ void SessionClass::Read_MultiPlayer_Settings() {
     //	Read in default serial settings
     ini.Get_String("SerialDefaults", "ModemName", "NoName",
                    SerialDefaults.ModemName, MODEM_NAME_MAX);
-    if (!strcmp(SerialDefaults.ModemName, "NoName")) {
+    if ((std::string_view(SerialDefaults.ModemName) == "NoName")) {
       SerialDefaults.ModemName[0] = 0;
     }
     SerialDefaults.Port = ini.Get_Int("SerialDefaults", "Port", 0);

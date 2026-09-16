@@ -36,6 +36,7 @@
 
 #include <cstdint>
 #include <cstring>
+#include <string_view>
 
 // htons/htonl
 #ifdef _WIN32
@@ -106,7 +107,7 @@ FieldClass::FieldClass(const char* id, uint32_t data)
 
 FieldClass::FieldClass(const char* id, const char* data)
     : DataType(TYPE_STRING),
-      Size(static_cast<uint16_t>(strlen(data) + 1)),
+      Size(static_cast<uint16_t>(std::string_view(data).size() + 1)),
       Data(new char[Size]),
       Next(nullptr) {
   strncpy(ID, id, sizeof(ID));

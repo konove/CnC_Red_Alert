@@ -55,6 +55,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <string_view>
 #include <utility>
 
 #include "absl/strings/str_format.h"
@@ -471,7 +472,7 @@ void Read_MultiPlayer_Settings() {
   ------------------------------------------------------------------------*/
   WWGetPrivateProfileString("SerialDefaults", "ModemName", "NoName",
                             SerialDefaults.ModemName, MODEM_NAME_MAX, buffer);
-  if (!strcmp(SerialDefaults.ModemName, "NoName")) {
+  if ((std::string_view(SerialDefaults.ModemName) == "NoName")) {
     SerialDefaults.ModemName[0] = 0;
   }
   WWGetPrivateProfileString("SerialDefaults", "Port", "0", buf, 5, buffer);
@@ -529,7 +530,8 @@ void Read_MultiPlayer_Settings() {
   /*------------------------------------------------------------------------
   Set 'tbuffer' to point past the actual INI data
   ------------------------------------------------------------------------*/
-  int len = static_cast<int>(strlen(buffer)) + 2;  // Length of data in buffer.
+  int len = static_cast<int>(std::string_view(buffer).size()) +
+            2;                   // Length of data in buffer.
   char* tbuffer = buffer + len;  // Accumulation buffer of trigger IDs.
 
   /*------------------------------------------------------------------------
@@ -553,7 +555,7 @@ void Read_MultiPlayer_Settings() {
 
     InitStrings.Add(entry);
 
-    tbuffer += strlen(tbuffer) + 1;
+    tbuffer += std::string_view(tbuffer).size() + 1;
   }
 
   // if no entries then have at least one
@@ -564,7 +566,7 @@ void Read_MultiPlayer_Settings() {
     InitStrings.Add(entry);
     SerialDefaults.InitStringIndex = 0;
   } else {
-    len = static_cast<int>(strlen(buffer)) + 2;
+    len = static_cast<int>(std::string_view(buffer).size()) + 2;
   }
 
   /*------------------------------------------------------------------------
@@ -711,7 +713,7 @@ void Read_MultiPlayer_Settings() {
     .....................................................................*/
     PhoneBook.Add(phone);
 
-    tbuffer += strlen(tbuffer) + 1;
+    tbuffer += std::string_view(tbuffer).size() + 1;
   }
 
   /*------------------------------------------------------------------------
@@ -871,7 +873,7 @@ void Write_MultiPlayer_Settings() {
   Write the INI data out to a file.
   ------------------------------------------------------------------------*/
   file.Open(FileAccess::kWrite);
-  file.Write(buffer, static_cast<int32_t>(strlen(buffer)));
+  file.Write(buffer, static_cast<int32_t>(std::string_view(buffer).size()));
   file.Close();
 }
 
@@ -1029,7 +1031,7 @@ void Computer_Message() {
       /*..................................................................
       Only add the message if there is one to add.
       ..................................................................*/
-      if (strlen(LastMessage)) {
+      if (!std::string_view(LastMessage).empty()) {
         absl::SNPrintF(txt, sizeof(txt), "%s %s",
                        Text_String(TXT_FROM_COMPUTER), LastMessage);
         Messages.Add_Message(txt, color,
@@ -1071,7 +1073,7 @@ static void Garble_Message(char* buf) {
   /*------------------------------------------------------------------------
   Pull off any trailing punctuation
   ------------------------------------------------------------------------*/
-  char* p = buf + strlen(buf) - 1;  // working ptr
+  char* p = buf + std::string_view(buf).size() - 1;  // working ptr
   while (true) {
     if (p < buf) {
       break;
@@ -1082,7 +1084,7 @@ static void Garble_Message(char* buf) {
       p++;
       break;
     }
-    if (strlen(p) >= sizeof(punct) - 1) {
+    if (std::string_view(p).size() >= sizeof(punct) - 1) {
       break;
     }
   }

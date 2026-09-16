@@ -49,6 +49,7 @@
 
 #include <cctype>
 #include <cstring>
+#include <string_view>
 #include <utility>
 
 #include "base/numeric.h"
@@ -117,7 +118,7 @@ EditClass::EditClass(int id, char* text, int max_len, TextPrintType flags,
       Height = FontHeight + 2;
     }
     if (w == -1) {
-      if (strlen(String) > 0) {
+      if (!std::string_view(String).empty()) {
         Width = String_Pixel_Width(String) + 6;
       } else {
         Width = ((Char_Pixel_Width('X') + FontXSpacing) * (MaxLength + 1)) + 2;
@@ -161,7 +162,7 @@ EditClass::~EditClass() {
 void EditClass::Set_Text(char* text, int max_len) {
   String = text;
   MaxLength = max_len - 1;
-  Length = static_cast<int>(strlen(String));
+  Length = static_cast<int>(std::string_view(String).size());
   Flag_To_Redraw();
 }
 
@@ -347,7 +348,8 @@ void EditClass::Draw_Text(const char* text) {
     Conquer_Clip_Text_Print(text, X + 1, Y + 1, Color, kTBlack,
                             TextFlags | flags, Width - 2);
 
-    if (Has_Focus() && std::cmp_less(strlen(text), MaxLength) &&
+    if (Has_Focus() &&
+        std::cmp_less(std::string_view(text).size(), MaxLength) &&
         String_Pixel_Width(text) + String_Pixel_Width("_") < Width - 2) {
       Conquer_Clip_Text_Print("_", X + 1 + String_Pixel_Width(text), Y + 1,
                               Color, kTBlack, TextFlags | flags);
@@ -356,7 +358,8 @@ void EditClass::Draw_Text(const char* text) {
     Conquer_Clip_Text_Print(text, X + 1, Y + 1, Has_Focus() ? kBlue : kWhite,
                             kTBlack, TextFlags, Width - 2);
 
-    if (Has_Focus() && std::cmp_less(strlen(text), MaxLength) &&
+    if (Has_Focus() &&
+        std::cmp_less(std::string_view(text).size(), MaxLength) &&
         String_Pixel_Width(text) + String_Pixel_Width("_") < Width - 2) {
       Conquer_Clip_Text_Print("_", X + 1 + String_Pixel_Width(text), Y + 1,
                               kBlue, kTBlack, TextFlags);

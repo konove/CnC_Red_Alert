@@ -29,6 +29,7 @@
 #include <ctime>
 #include <iterator>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "absl/log/check.h"
@@ -193,11 +194,12 @@ STDMETHODIMP RAChatEventSink::OnServerList(HRESULT hRes, Server* pServerHead) {
     while (pServerHead) {
       //	Copy the first IRC Server to use in the RequestConnection()
       // call.
-      if (!pServer && (strcmp(WolText(pServerHead->connlabel), "IRC") == 0)) {
+      if (!pServer &&
+          (std::string_view(WolText(pServerHead->connlabel)) == "IRC")) {
         pServer = new Server;
         *pServer = *pServerHead;
       } else if (!*pOwner->szLadderServerHost &&
-                 (strcmp(WolText(pServerHead->connlabel), "LAD") == 0)) {
+                 (std::string_view(WolText(pServerHead->connlabel)) == "LAD")) {
         //				debugprint( "Scanning '%s'\n",
         //(char*)pServerHead->conndata );
         ParseHostAndPort(pServerHead->conndata, pOwner->szLadderServerHost,
@@ -205,14 +207,14 @@ STDMETHODIMP RAChatEventSink::OnServerList(HRESULT hRes, Server* pServerHead) {
         //				debugprint( "Ladder is at: %s, port
         //%i\n", pOwner->szLadderServerHost, pOwner->iLadderServerPort );
       } else if (!*pOwner->szGameResServerHost1 &&
-                 (strcmp(WolText(pServerHead->connlabel), "GAM") == 0)) {
+                 (std::string_view(WolText(pServerHead->connlabel)) == "GAM")) {
         //	This is the Red Alert game results port.
         ParseHostAndPort(pServerHead->conndata, pOwner->szGameResServerHost1,
                          pOwner->iGameResServerPort1);
         //				debugprint( "GameRes is at: %s, port
         //%i\n", pOwner->szGameResServerHost, pOwner->iGameResServerPort );
       } else if (!*pOwner->szGameResServerHost2 &&
-                 (strcmp(WolText(pServerHead->connlabel), "GAM") == 0)) {
+                 (std::string_view(WolText(pServerHead->connlabel)) == "GAM")) {
         //	This is the Aftermath game results port.
         ParseHostAndPort(pServerHead->conndata, pOwner->szGameResServerHost2,
                          pOwner->iGameResServerPort2);
@@ -313,7 +315,7 @@ STDMETHODIMP RAChatEventSink::OnConnection(HRESULT hRes, LPCSTR motd) {
 
   if (hRes == S_OK) {
     //	Prepare a new string for a modified version of motd.
-    szMotd = new char[strlen(motd) + 1];
+    szMotd = new char[std::string_view(motd).size() + 1];
     //	Replace single line breaks with a space.
     //	Replace double line breaks with double carriage returns.
 
@@ -628,9 +630,9 @@ STDMETHODIMP RAChatEventSink::OnPublicMessage(HRESULT /*res*/,
                                               User* pUserSender,
                                               LPCSTR szMessage) {
   if (*szMessage) {
-    if (strlen(szMessage) > 3 && szMessage[0] == 35 && szMessage[1] == 97 &&
-        szMessage[2] == 106 && szMessage[3] == 119) {
-      if (strlen(szMessage) > 4) {
+    if (std::string_view(szMessage).size() > 3 && szMessage[0] == 35 &&
+        szMessage[1] == 97 && szMessage[2] == 106 && szMessage[3] == 119) {
+      if (std::string_view(szMessage).size() > 4) {
         const int i = tech::ParseInteger<int>(szMessage + 4).value_or(0);
         if (i >= static_cast<int>(VOX_ACCOMPLISHED) &&
             i <= static_cast<int>(VOX_LOAD1) && pOwner->bEggSounds) {
@@ -662,14 +664,15 @@ STDMETHODIMP RAChatEventSink::OnPrivateMessage(HRESULT /*res*/,
     char ci1[] =
         "VGhpcyBpcyBBZGFtLiBIYXZlIHdlIG5vdCBwZXJjaGFuY2UgbWV0IGJlZm9yZT8=";
     char co1[48];
-    Base64_Decode(ci1, static_cast<int>(strlen(ci1)), co1, 47);
+    Base64_Decode(ci1, static_cast<int>(std::string_view(ci1).size()), co1, 47);
     co1[47] = 0;
-    if (strcmp(szMessage, co1) == 0) {
+    if (std::string_view(szMessage) == co1) {
       const UtcDate today = TodayUtc();
       char szOut[60];
       char ci2[] = "SSBhbSB5b3VyIGFibGUgYW5kIHdpbGxpbmcgc2xhdmUu";
       char co2[34];
-      Base64_Decode(ci2, static_cast<int>(strlen(ci2)), co2, 33);
+      Base64_Decode(ci2, static_cast<int>(std::string_view(ci2).size()), co2,
+                    33);
       co2[33] = 0;
       absl::SNPrintF(szOut, sizeof(szOut), "%s (%i/%i/%i)", co2, today.month,
                      today.day, today.year);
@@ -680,9 +683,9 @@ STDMETHODIMP RAChatEventSink::OnPrivateMessage(HRESULT /*res*/,
       return S_OK;
     }
     if (!bSpecialMessage(szMessage)) {
-      if (strlen(szMessage) > 3 && szMessage[0] == 35 && szMessage[1] == 97 &&
-          szMessage[2] == 106 && szMessage[3] == 119) {
-        if (strlen(szMessage) > 4) {
+      if (std::string_view(szMessage).size() > 3 && szMessage[0] == 35 &&
+          szMessage[1] == 97 && szMessage[2] == 106 && szMessage[3] == 119) {
+        if (std::string_view(szMessage).size() > 4) {
           const int i = tech::ParseInteger<int>(szMessage + 4).value_or(0);
           if (i >= static_cast<int>(VOX_ACCOMPLISHED) &&
               i <= static_cast<int>(VOX_LOAD1) && pOwner->bEggSounds) {
@@ -710,7 +713,7 @@ STDMETHODIMP RAChatEventSink::OnPrivateMessage(HRESULT /*res*/,
 
 //***********************************************************************************************
 bool RAChatEventSink::bSpecialMessage(const char* szMessage) {
-  if (strlen(szMessage) < 9) {
+  if (std::string_view(szMessage).size() < 9) {
     return false;
   }
   if (szMessage[0] != 33 || szMessage[1] != 97 || szMessage[2] != 106 ||
@@ -1593,7 +1596,7 @@ STDMETHODIMP RAChatEventSink::OnUserFlags(HRESULT hRes, LPCSTR name,
 //***********************************************************************************************
 STDMETHODIMP RAChatEventSink::OnChannelBan(HRESULT /*res*/, LPCSTR name,
                                            int banned) {
-  if (banned && strcmp(name, "*") != 0) {
+  if (banned && std::string_view(name) != "*") {
     char szPrint[kMessageMax];
     Format_Runtime_Text(szPrint, sizeof(szPrint), TXT_WOL_USERWASBANNED, name);
     pOwner->PrintMessage(szPrint, WOLCOLORREMAP_KICKORBAN);
@@ -2066,9 +2069,10 @@ void DebugChatDef(HRESULT hRes) {
 //***********************************************************************************************
 int iChannelLobbyNumber(const char* szChannelName) {
   //	Returns lobby number of channel, or -1 for "channel is not a lobby".
-  if (strncmp(szChannelName, LOB_PREFIX, strlen(LOB_PREFIX)) == 0) {
+  if (strncmp(szChannelName, LOB_PREFIX, std::string_view(LOB_PREFIX).size()) ==
+      0) {
     char szNum[10];
-    port::SafeCopy(szNum, szChannelName + strlen(LOB_PREFIX));
+    port::SafeCopy(szNum, szChannelName + std::string_view(LOB_PREFIX).size());
     //		debugprint( " ^ iChannelLobbyNumber returning atoi of %s\n",
     // szNum );
     return tech::ParseInteger<int>(szNum).value_or(0);

@@ -56,3 +56,10 @@ row.
 `base::At` and `EnumArray::end` keep their lifetime-bound contracts. Three narrow lifetime
 diagnostic annotations document Clang 23's inability to trace the reference through libstdc++ span
 indexing or the pointer through `std::end`. No unsafe-buffer diagnostic is suppressed in this batch.
+
+### C-string view batch
+
+Replaced 293 `strlen`/`strcmp` calls in 68 files with string-view operations, using equality
+operators and `empty()` where appropriate. These retain the existing null-terminated-string
+contracts and comparison ordering. Both strict game builds, all 486 CTest tests, and both save/load
+smoke checks pass (240 RA positions and 5,742 TD states).

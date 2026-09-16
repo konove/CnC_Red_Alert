@@ -44,6 +44,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
+#include <string_view>
 
 #include "base/array.h"
 #include "port/unaligned.h"
@@ -395,7 +396,7 @@ void Send_Statistics_Packet() {
           Session.Players[0]->Address.Get_Address(net, node);
           absl::SNPrintF(szIPAddress, sizeof(szIPAddress), "%i.%i.%i.%i",
                          node[0], node[1], node[2], node[3]);
-          if (strcmp(szIPAddress, "255.255.255.255") == 0) {
+          if (std::string_view(szIPAddress) == "255.255.255.255") {
             //	Ok. It's not set. Let's try to get it ourselves...
             char szHostName[512];
             const int iRes = gethostname(szHostName, 512);
@@ -593,7 +594,8 @@ void Send_Statistics_Packet() {
         stats.Add_Field(
             FIELD_COMPUTERTOOKOVER,
             static_cast<unsigned char>(
-                strcmp(player->IniName, player->InitialName) != 0 ? 1 : 0));
+                std::string_view(player->IniName) != player->InitialName ? 1
+                                                                         : 0));
       }
       /*
       ** Player team. (NOD or GDI)

@@ -2,6 +2,7 @@
 
 #include <cstring>
 #include <string>
+#include <string_view>
 
 #include "ra/woledit.h"
 
@@ -19,6 +20,7 @@ void PassEditClass::Set_Focus() {
 }
 
 void PassEditClass::Draw_Text(const char* text) {
-  const std::string mask(text != nullptr ? std::strlen(text) : 0, '*');
+  const std::string mask(text != nullptr ? std::string_view(text).size() : 0,
+                         '*');
   WOLEditClass::Draw_Text(mask.c_str());
 }

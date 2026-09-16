@@ -24,6 +24,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
+#include <string_view>
 #include <utility>
 
 #include "absl/strings/str_format.h"
@@ -634,7 +635,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
           // Show the translation when the table has one; otherwise the
           // English description stands.
           for (int j = 0; EngMisStr[j] != nullptr; j++) {
-            if (!strcmp(szScenarioNameShow, EngMisStr[j])) {
+            if ((std::string_view(szScenarioNameShow) == EngMisStr[j])) {
               szScenarioNameShow = EngMisStr[j + 1];
               break;
             }
@@ -1145,7 +1146,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
           //	Language translation.
           int ii = 0;
           for (; EngMisStr[ii] != nullptr; ii++) {
-            if (!strcmp(szScenarioDesc, EngMisStr[ii])) {
+            if ((std::string_view(szScenarioDesc) == EngMisStr[ii])) {
               absl::SNPrintF(
                   txt, sizeof(txt), "%s",
                   config::kIsEnglish ? szScenarioDesc : EngMisStr[ii + 1]);
@@ -1986,7 +1987,7 @@ void WOL_GameSetupDialog::SetPlayerColor(const char* szName,
     iItem = pILPlayers->Add_Item(szName);
   }
 
-  if (strcmp(pWO->szMyName, szName) == 0) {
+  if (std::string_view(pWO->szMyName) == szName) {
     //	I am the player involved.
     Session.ColorIdx = Color;
     display = std::max(display, REDRAW_COLORS);
@@ -2136,7 +2137,8 @@ void WOL_GameSetupDialog::ProcessGuestRequest(User* pUser,
   // WOL_GAMEOPT 	1 space 	2		color 	1
   // null-terminator 	debugprint( "ProcessGuestRequest. szRequest is '%s', len
   //%i.\n", szRequest, strlen( szRequest ) );
-  if (szRequest == nullptr || strlen(szRequest) < 3 || szRequest[2] != ' ') {
+  if (szRequest == nullptr || std::string_view(szRequest).size() < 3 ||
+      szRequest[2] != ' ') {
     return;
   }
   const auto option = tech::ParseInteger<int>(std::string_view{szRequest, 2});
@@ -2274,7 +2276,8 @@ void WOL_GameSetupDialog::ProcessInform(char* szInform) {
   //	Process inform message arriving from game host.
   //	debugprint( "ProcessInform: '%s'\n", szInform );
   if (!bHost) {
-    if (szInform == nullptr || strlen(szInform) < 3 || szInform[2] != ' ') {
+    if (szInform == nullptr || std::string_view(szInform).size() < 3 ||
+        szInform[2] != ' ') {
       return;
     }
     const auto option = tech::ParseInteger<int>(std::string_view{szInform, 2});
@@ -2291,7 +2294,7 @@ void WOL_GameSetupDialog::ProcessInform(char* szInform) {
         //	2		color
         //	1		space
         //	string	name of player
-        if (strlen(szInform) < 3 || szInform[2] != ' ') {
+        if (std::string_view(szInform).size() < 3 || szInform[2] != ' ') {
           return;
         }
         const auto color =
@@ -2312,7 +2315,8 @@ void WOL_GameSetupDialog::ProcessInform(char* szInform) {
                                   // it refers to me. I've already set my own
                                   // house.
       {
-        if (strlen(szInform) < 10 || szInform[6] != ' ' || szInform[9] != ' ') {
+        if (std::string_view(szInform).size() < 10 || szInform[6] != ' ' ||
+            szInform[9] != ' ') {
           return;
         }
         const auto param_id =
@@ -2518,7 +2522,9 @@ void WOL_GameSetupDialog::SendParams() {
       "%i "
       "%i ",
       WOL_GAMEOPT_INFPARAMS, nHostLastParamID,
-      static_cast<int>(strlen(GParamsLastSent.GPacket.ScenarioInfo.Scenario)),
+      static_cast<int>(
+          std::string_view(GParamsLastSent.GPacket.ScenarioInfo.Scenario)
+              .size()),
       GParamsLastSent.GPacket.ScenarioInfo.Scenario,
       static_cast<int>(GParamsLastSent.GPacket.ScenarioInfo.FileLength),
       GParamsLastSent.GPacket.ScenarioInfo.ShortFileName,
@@ -2580,10 +2586,10 @@ bool WOL_GameSetupDialog::AcceptParams(char* szParams) {
   //	The string follows the 3-digit length and may contain spaces, so it is
   //	read from the unparsed text rather than as a token.
   char* const szRemaining = tokens.Remaining();
-  if (strlen(szToken) != 3 || iLen < 0 ||
+  if (std::string_view(szToken).size() != 3 || iLen < 0 ||
       std::cmp_greater_equal(iLen,
                              sizeof(Session.Options.ScenarioDescription)) ||
-      static_cast<size_t>(iLen) >= strlen(szRemaining)) {
+      static_cast<size_t>(iLen) >= std::string_view(szRemaining).size()) {
     return false;
   }
   //	Read in string.
@@ -2840,11 +2846,12 @@ bool operator==(const GAMEPARAMS& gp1, const GAMEPARAMS& gp2) {
 
 //***********************************************************************************************
 bool operator==(const GlobalPacketType& gp1, const GlobalPacketType& gp2) {
-  if (strcmp(gp1.ScenarioInfo.Scenario, gp2.ScenarioInfo.Scenario) != 0) {
+  if (std::string_view(gp1.ScenarioInfo.Scenario) !=
+      gp2.ScenarioInfo.Scenario) {
     return false;
   }
-  if (strcmp(gp1.ScenarioInfo.ShortFileName, gp2.ScenarioInfo.ShortFileName) !=
-      0) {
+  if (std::string_view(gp1.ScenarioInfo.ShortFileName) !=
+      gp2.ScenarioInfo.ShortFileName) {
     return false;
   }
   //	Digest is not null-terminated...
@@ -3079,8 +3086,8 @@ bool WOL_GameSetupDialog::InformAboutCancelStart() {
 void WOL_GameSetupDialog::OnGuestJoin(User* pUser) {
   //	A guest (not myself) has entered the game channel.
   //	debugprint( "OnGuestJoin()\n" );
-  char* szPrint = new char[strlen(TXT_WOL_PLAYERJOINEDGAME) +
-                           strlen(WolText(pUser->name)) + 5];
+  char* szPrint = new char[std::string_view(TXT_WOL_PLAYERJOINEDGAME).size() +
+                           std::string_view(WolText(pUser->name)).size() + 5];
   Format_Runtime_Text(szPrint, sizeof(szPrint), TXT_WOL_PLAYERJOINEDGAME,
                       WolText(pUser->name));
   WOL_PrintMessage(*pILDisc, szPrint, WOLCOLORREMAP_LOCALMACHINEMESS);
@@ -3132,10 +3139,11 @@ void WOL_GameSetupDialog::OnGuestJoin(User* pUser) {
       //			InformAboutPlayerColor( szPlayerName,
       // PlayerColorTypeOf( pILPlayers->Get_Item_Color( i ) ), pUser );
       absl::SNPrintF(szSendPiece, sizeof(szSendPiece), " %02i %s %02i",
-                     static_cast<int>(strlen(szPlayerName)), szPlayerName,
+                     static_cast<int>(std::string_view(szPlayerName).size()),
+                     szPlayerName,
                      PlayerColorTypeOf(pILPlayers->Get_Item_Color(i)));
 
-      if (strcmp(szPlayerName, WolText(pUser->name)) != 0) {
+      if (std::string_view(szPlayerName) != WolText(pUser->name)) {
         const HousesType House =
             WolapiObject::PullPlayerHouse_From(pILPlayers->Get_Item(i));
         if (House != HOUSE_NONE) {
@@ -3189,7 +3197,7 @@ void WOL_GameSetupDialog::AcceptNewGuestPlayerInfo(char* szMsg) {
   const char* szToken = tokens.Next();
   const auto player_count = tech::ParseInteger<int>(szToken);
   if (!player_count || *player_count < 0 || *player_count > 8 ||
-      strlen(szToken) != 2) {
+      std::string_view(szToken).size() != 2) {
     return;
   }
   const auto nPlayers = static_cast<unsigned int>(*player_count);
@@ -3201,8 +3209,9 @@ void WOL_GameSetupDialog::AcceptNewGuestPlayerInfo(char* szMsg) {
     //	The name follows the 2-digit length and may contain spaces, so it is
     //	read from the unparsed text rather than as a token.
     char* const szRemaining = tokens.Remaining();
-    if (szToken == nullptr || strlen(szToken) != 2 || iLen < 0 || iLen >= 50 ||
-        static_cast<size_t>(iLen) >= strlen(szRemaining)) {
+    if (szToken == nullptr || std::string_view(szToken).size() != 2 ||
+        iLen < 0 || iLen >= 50 ||
+        static_cast<size_t>(iLen) >= std::string_view(szRemaining).size()) {
       return;
     }
 
@@ -3585,7 +3594,7 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
     // this case to keep it clear and simple.
     WolapiObject::PullPlayerName_Into_From(szPlayerName, sizeof(szPlayerName),
                                            pILPlayers->Get_Item(iItem));
-    if (strcmp(szPlayerName, pWO->szMyName) != 0 &&
+    if (std::string_view(szPlayerName) != pWO->szMyName &&
         GetPlayerColor(szPlayerName) != PCOLOR_NONE) {
       //			debugprint( "Creating player node '%s'\n",
       // szPlayerName );
@@ -3822,18 +3831,20 @@ bool bSpecialAftermathScenario(const char* szScenarioDescription) {
   //	Returns true if szScenarioDescription matches one of the descriptions
   // for Aftermath multiplayer 	scenarios that have special Aftermath-only units
   //*embedded* within them.
-  return strcmp(szScenarioDescription, "Booby Traps (Mega 8 players)") == 0 ||
-         strcmp(szScenarioDescription,
-                "Central Conflict Extreme (Mega 8 players)") == 0 ||
-         strcmp(szScenarioDescription, "Circles of Death (Mega 8 players)") ==
-             0 ||
-         strcmp(szScenarioDescription, "Holy Grounds (Mega 8 players)") == 0 ||
-         strcmp(szScenarioDescription,
-                "Island Wars Extreme (Mega 8 players)") == 0 ||
-         strcmp(szScenarioDescription,
-                "King of the Hills Extreme (Mega 8 players)") == 0 ||
-         strcmp(szScenarioDescription,
-                "The Hills Have Eyes (Mega 8 players)") == 0;
+  return std::string_view(szScenarioDescription) ==
+             "Booby Traps (Mega 8 players)" ||
+         std::string_view(szScenarioDescription) ==
+             "Central Conflict Extreme (Mega 8 players)" ||
+         std::string_view(szScenarioDescription) ==
+             "Circles of Death (Mega 8 players)" ||
+         std::string_view(szScenarioDescription) ==
+             "Holy Grounds (Mega 8 players)" ||
+         std::string_view(szScenarioDescription) ==
+             "Island Wars Extreme (Mega 8 players)" ||
+         std::string_view(szScenarioDescription) ==
+             "King of the Hills Extreme (Mega 8 players)" ||
+         std::string_view(szScenarioDescription) ==
+             "The Hills Have Eyes (Mega 8 players)";
 }
 
 //***********************************************************************************************

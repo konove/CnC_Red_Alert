@@ -53,6 +53,7 @@
 #include <cstdio>
 #include <cstring>
 #include <string>
+#include <string_view>
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
@@ -333,8 +334,9 @@ void VersionClass::Read_Text_String() {
   if (file.IsAvailable()) {
     file.ReadObject(VersionText);
     VersionText[sizeof(VersionText) - 1] = '\0';
-    while (base::At(VersionText, strlen(VersionText) - 1) == '\r') {
-      base::At(VersionText, strlen(VersionText) - 1) = '\0';
+    while (base::At(VersionText, std::string_view(VersionText).size() - 1) ==
+           '\r') {
+      base::At(VersionText, std::string_view(VersionText).size() - 1) = '\0';
     }
   } else {
     VersionText[0] = '\0';

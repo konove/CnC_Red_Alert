@@ -22,6 +22,7 @@
 
 #include <cstdint>
 #include <cstring>
+#include <string_view>
 
 #include "base/numeric.h"
 #include "base/types.h"
@@ -59,7 +60,8 @@ ToolTipClass::ToolTipClass(GadgetClass* gadget, const char* szText, int x_show,
       yShow(y_show)
 
 {
-  if (szText != nullptr && strlen(szText) > TOOLTIPTEXT_MAX_LEN) {
+  if (szText != nullptr &&
+      std::string_view(szText).size() > TOOLTIPTEXT_MAX_LEN) {
     port::SafeCopy(szTip, "Tooltip too long!");
   } else {
     port::SafeCopy(szTip, szText != nullptr ? szText : "");

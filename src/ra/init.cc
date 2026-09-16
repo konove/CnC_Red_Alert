@@ -75,6 +75,7 @@
 #include <memory>
 #include <span>
 #include <string>
+#include <string_view>
 
 #include "absl/log/log.h"
 #include "absl/strings/match.h"
@@ -1454,7 +1455,8 @@ bool Parse_Command_Line(int argc, char* argv[]) {
     **	Specify socket ID, as an offset from 0x4000.
     */
     if (strstr(string, "-SOCKET")) {
-      const auto offset = tech::ParseInteger<int>(string + strlen("-SOCKET"));
+      const auto offset =
+          tech::ParseInteger<int>(string + std::string_view("-SOCKET").size());
       if (offset && *offset >= 0 && *offset < 0x4000) {
         Ipx.Set_Socket(static_cast<uint16_t>(*offset + 0x4000));
       }
@@ -1496,13 +1498,14 @@ bool Parse_Command_Line(int argc, char* argv[]) {
     if constexpr (config::kCheatKeysEnabled) {
       // Specify the random number seed (for debugging)
       if (strstr(string, "-SEED")) {
-        CustomSeed = tech::ParseInteger<uint16_t>(string + strlen("-SEED"))
+        CustomSeed = tech::ParseInteger<uint16_t>(
+                         string + std::string_view("-SEED").size())
                          .value_or(CustomSeed);
         continue;
       }
     }
 
-    if (strcmp(string, "-NOMOVIES") == 0) {
+    if (std::string_view(string) == "-NOMOVIES") {
       bNoMovies = true;
       continue;
     }
@@ -1537,7 +1540,7 @@ bool Parse_Command_Line(int argc, char* argv[]) {
     **	Special command line control parsing.
     */
     if (absl::StartsWithIgnoreCase(string, "-X")) {
-      string += strlen("-X");
+      string += std::string_view("-X").size();
       while (*string) {
         const char code = *string++;
 
@@ -1624,7 +1627,7 @@ uint32_t Obfuscate(const char* string) {
   */
   strncpy(buffer, string, sizeof(buffer));
   buffer[sizeof(buffer) - 1] = '\0';
-  int length = static_cast<int>(strlen(buffer));
+  int length = static_cast<int>(std::string_view(buffer).size());
 
   /*
   **	Only upper case letters are significant.
@@ -2638,7 +2641,7 @@ static void Init_Bulk_Data() {
     char num[10];
     absl::SNPrintF(num, sizeof(num), "%d", index);
     if (ini.Get_String("Tutorial", num, "", buffer, sizeof(buffer))) {
-      totallen += static_cast<int>(strlen(buffer)) + 1;
+      totallen += static_cast<int>(std::string_view(buffer).size()) + 1;
     }
   }
 
@@ -2652,7 +2655,7 @@ static void Init_Bulk_Data() {
     const int textoffset = static_cast<int>(textptr - text_data);
     if (ini.Get_String("Tutorial", num, "", textptr, totallen - textoffset)) {
       base::At(TutorialTextOffsets, index) = static_cast<uint16_t>(textoffset);
-      textptr += strlen(textptr) + 1;
+      textptr += std::string_view(textptr).size() + 1;
     }
   }
   TutorialTextData = text_data;

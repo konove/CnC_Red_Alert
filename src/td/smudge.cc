@@ -53,6 +53,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <string_view>
 
 #include "absl/strings/str_format.h"
 #include "port/tokenizer.h"
@@ -287,7 +288,7 @@ bool SmudgeClass::Mark(MarkType mark) {
 void SmudgeClass::Read_INI(char* buffer) {
   char buf[128];  // Working string staging buffer.
 
-  const int len = static_cast<int>(strlen(buffer)) + 2;
+  const int len = static_cast<int>(std::string_view(buffer).size()) + 2;
   char* tbuffer = buffer + len;
 
   WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
@@ -314,7 +315,7 @@ void SmudgeClass::Read_INI(char* buffer) {
         }
       }
     }
-    tbuffer += strlen(tbuffer) + 1;
+    tbuffer += std::string_view(tbuffer).size() + 1;
   }
 }
 
@@ -340,14 +341,15 @@ void SmudgeClass::Write_INI(char* buffer) {
   /*
   **	First, clear out all existing template data from the ini file.
   */
-  char* tbuffer =
-      buffer + strlen(buffer) + 2;  // Accumulation buffer of unit IDs.
-  WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
-                            ShapeBufferSize - static_cast<int>(strlen(buffer)),
-                            buffer);
+  char* tbuffer = buffer + std::string_view(buffer).size() +
+                  2;  // Accumulation buffer of unit IDs.
+  WWGetPrivateProfileString(
+      INI_Name(), nullptr, nullptr, tbuffer,
+      ShapeBufferSize - static_cast<int>(std::string_view(buffer).size()),
+      buffer);
   while (*tbuffer != '\0') {
     WWWritePrivateProfileString(INI_Name(), tbuffer, nullptr, buffer);
-    tbuffer += strlen(tbuffer) + 1;
+    tbuffer += std::string_view(tbuffer).size() + 1;
   }
 
   /*

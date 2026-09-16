@@ -97,6 +97,7 @@
 #include <cstring>
 #include <iterator>
 #include <span>
+#include <string_view>
 
 #include "absl/base/attributes.h"
 #include "base/array.h"
@@ -1729,7 +1730,7 @@ void XMP_Decode_ASCII(const char* str, uint32_t* mpn, int precision) {
   if (!str) {
     return;
   }
-  const int i = static_cast<int>(strlen(str));
+  const int i = static_cast<int>(std::string_view(str).size());
   if (i == 0) {
     return;
   }

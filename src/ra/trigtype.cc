@@ -67,6 +67,7 @@
 #include <cstring>
 #include <format>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "absl/strings/str_format.h"
@@ -1469,7 +1470,7 @@ bool TriggerTypeClass::Edit() {
       case ButtonKey(kButtonOk):
         House = HousesType(housebtn.Current_Index());
         IsPersistant = PersistantType(persbtn.Current_Index());
-        if (strlen(namebuf) == 0) {
+        if (std::string_view(namebuf).empty()) {
           Set_Name("____");
         } else {
           Set_Name(namebuf);

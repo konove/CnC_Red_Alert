@@ -1122,7 +1122,7 @@ bool WolapiObject::ListChannelUsers() {
     // debugprint( "szChannelLastListed '%s', szChannelNameCurrent '%s'\n",
     // szChannelLastListed, szChannelNameCurrent );
     int iListViewIndex = 0;
-    if (strcmp(szChannelLastListed, szChannelNameCurrent) == 0) {
+    if (std::string_view(szChannelLastListed) == szChannelNameCurrent) {
       iListViewIndex = pListToUse->Get_View_Index();
     } else {
       port::SafeCopy(szChannelLastListed, szChannelNameCurrent);
@@ -1320,7 +1320,8 @@ bool WolapiObject::bItemMarkedReadyToGo(int iIndex) {
     return false;
   }
   //	debugprint( "szItem is %s\n", szItem );
-  return (strcmp(szItem, "ready") == 0 || strcmp(szItem, "need scenario") == 0);
+  return (std::string_view(szItem) == "ready" ||
+          std::string_view(szItem) == "need scenario");
 }
 
 //***********************************************************************************************
@@ -1339,7 +1340,7 @@ bool WolapiObject::bItemMarkedNeedScenario(int iIndex) {
   if (!szItem) {
     return false;
   }
-  return (strcmp(szItem, "need scenario") == 0);
+  return (std::string_view(szItem) == "need scenario");
 }
 
 //***********************************************************************************************
@@ -1377,7 +1378,8 @@ HousesType WolapiObject::PullPlayerHouse_From(const char* szSource) {
     return HOUSE_NONE;
   }
   ++pChar;
-  const std::size_t iLen = strlen(pChar);  //	Remaining: "housename>"
+  const std::size_t iLen =
+      std::string_view(pChar).size();  //	Remaining: "housename>"
   //	Copy remaining string, minus the trailing ">".
   char szHouse[30];
   port::SafeCopy(szHouse, pChar, std::min(iLen, sizeof(szHouse)));
@@ -1387,14 +1389,14 @@ HousesType WolapiObject::PullPlayerHouse_From(const char* szSource) {
 //	return HouseTypeClass::From_Name( szHouse );
   if constexpr (config::kIsEnglish) {
     // From_Name() knows the house as "USSR", but the game calls it "Russia".
-    if (strcmp(szHouse, "Russia") == 0) {
+    if (std::string_view(szHouse) == "Russia") {
       return HOUSE_USSR;
     }
     return HouseTypeClass::From_Name(szHouse);
   } else {
     for (HousesType house = HOUSE_USSR; house <= HOUSE_FRANCE; house++) {
-      if (strcmp(Text_String(HouseTypeClass::As_Reference(house).Full_Name()),
-                 szHouse) == 0) {
+      if (std::string_view(Text_String(
+              HouseTypeClass::As_Reference(house).Full_Name())) == szHouse) {
         return house;
       }
     }
@@ -1453,8 +1455,8 @@ void WolapiObject::SendMessage(const char* szMessage, IconListClass& ILUsers,
     return;
   }
 
-  if (strlen(szMessage) > 4 && szMessage[0] == 63 && szMessage[1] == 97 &&
-      szMessage[2] == 106 && szMessage[3] == 119) {
+  if (std::string_view(szMessage).size() > 4 && szMessage[0] == 63 &&
+      szMessage[1] == 97 && szMessage[2] == 106 && szMessage[3] == 119) {
     const int i = tech::ParseInteger<int>(szMessage + 4).value_or(0);
     if (i >= static_cast<int>(VOX_ACCOMPLISHED) &&
         i <= static_cast<int>(VOX_LOAD1)) {
@@ -1462,8 +1464,8 @@ void WolapiObject::SendMessage(const char* szMessage, IconListClass& ILUsers,
     }
     return;
   }
-  if (strlen(szMessage) > 4 && szMessage[0] == 35 && szMessage[1] == 97 &&
-      szMessage[2] == 106 && szMessage[3] == 119) {
+  if (std::string_view(szMessage).size() > 4 && szMessage[0] == 35 &&
+      szMessage[1] == 97 && szMessage[2] == 106 && szMessage[3] == 119) {
     const int i = tech::ParseInteger<int>(szMessage + 4).value_or(0);
     if (i >= static_cast<int>(VOX_ACCOMPLISHED) &&
         i <= static_cast<int>(VOX_LOAD1)) {
@@ -1494,7 +1496,9 @@ void WolapiObject::SendMessage(const char* szMessage, IconListClass& ILUsers,
       }
       pUserTail = pUserNew;
       //	Extra space and comma.
-      iPrivatePrintLen += static_cast<int>(strlen(WolText(pUserNew->name))) + 2;
+      iPrivatePrintLen +=
+          static_cast<int>(std::string_view(WolText(pUserNew->name)).size()) +
+          2;
     }
   }
   if (pUserListSend) {
@@ -1505,9 +1509,9 @@ void WolapiObject::SendMessage(const char* szMessage, IconListClass& ILUsers,
       pChat->RequestPrivateAction(pUserListSend, szMessage);
     }
     //	One buffer for either shape of the message, sized for the longest.
-    const std::size_t iPrintSize = strlen(szMessage) + strlen(szMyName) +
-                                   static_cast<std::size_t>(iPrivatePrintLen) +
-                                   140;
+    const std::size_t iPrintSize =
+        std::string_view(szMessage).size() + std::string_view(szMyName).size() +
+        static_cast<std::size_t>(iPrivatePrintLen) + 140;
     char* szPrint = new char[iPrintSize];
     if (iPrivatePrintLen > 50) {
       //	Too many users specified to print out. Just say "multiple
@@ -1691,13 +1695,13 @@ void WolapiObject::DoFindPage() {
   const char* szNameDlgResult = pFindPageDlg->Show();
   bPump_In_Call_Back = false;
 
-  if (strcmp(szNameDlgResult, Text_String(TXT_CANCEL)) == 0 ||
+  if (std::string_view(szNameDlgResult) == Text_String(TXT_CANCEL) ||
       !*pFindPageDlg->szEdit) {
     delete pFindPageDlg;
     return;
   }
 
-  if (strcmp(szNameDlgResult, TXT_WOL_LOCATE) == 0) {
+  if (std::string_view(szNameDlgResult) == TXT_WOL_LOCATE) {
     //	Locate user.
     const HRESULT hRes = Locate(pFindPageDlg->szEdit);
     switch (hRes) {
@@ -1731,11 +1735,13 @@ void WolapiObject::DoFindPage() {
         if (iLobby != -1) {
           char szLobbyName[REASONABLELOBBYINTERPRETEDNAMELEN];
           InterpretLobbyNumber(szLobbyName, iLobby);
-          szFound = new char[strlen(TXT_WOL_FOUNDIN) + strlen(szLobbyName) + 5];
+          szFound = new char[std::string_view(TXT_WOL_FOUNDIN).size() +
+                             std::string_view(szLobbyName).size() + 5];
           Format_Runtime_Text(szFound, sizeof(szFound), TXT_WOL_FOUNDIN,
                               szLobbyName);
         } else {
-          szFound = new char[strlen(TXT_WOL_FOUNDIN) + strlen(szChannel) + 5];
+          szFound = new char[std::string_view(TXT_WOL_FOUNDIN).size() +
+                             std::string_view(szChannel).size() + 5];
           Format_Runtime_Text(szFound, sizeof(szFound), TXT_WOL_FOUNDIN,
                               szChannel);
         }
@@ -1755,7 +1761,7 @@ void WolapiObject::DoFindPage() {
         new SimpleEditDlgClass(600, TXT_WOL_PAGEMESSAGETITLE,
                                TXT_WOL_PAGEMESSAGEPROMPT, MAXCHATSENDLENGTH);
     bPump_In_Call_Back = true;
-    if (strcmp(pMessDlg->Show(), Text_String(TXT_OK)) == 0 &&
+    if (std::string_view(pMessDlg->Show()) == Text_String(TXT_OK) &&
         *pMessDlg->szEdit) {
       switch (Page(pFindPageDlg->szEdit, pMessDlg->szEdit, true)) {
         case CHAT_S_PAGE_NOTHERE:
@@ -1792,7 +1798,8 @@ void WolapiObject::DoFindPage() {
 HRESULT WolapiObject::Locate(const char* szUser) {
   //	Returns HRESULT with possibly customized meanings.
 
-  char* szMessage = new char[strlen(TXT_WOL_LOCATING) + strlen(szUser) + 5];
+  char* szMessage = new char[std::string_view(TXT_WOL_LOCATING).size() +
+                             std::string_view(szUser).size() + 5];
   Format_Runtime_Text(szMessage, sizeof(szMessage), TXT_WOL_LOCATING, szUser);
   WWMessageBox().Process(szMessage, TXT_NONE);
   delete[] szMessage;
@@ -1834,7 +1841,8 @@ HRESULT WolapiObject::Page(const char* szUser, const char* szSend,
   //	Returns HRESULT with possibly customized meanings.
 
   if (bWaitForResult) {
-    char* szMessage = new char[strlen(TXT_WOL_PAGING) + strlen(szUser) + 5];
+    char* szMessage = new char[std::string_view(TXT_WOL_PAGING).size() +
+                               std::string_view(szUser).size() + 5];
     Format_Runtime_Text(szMessage, sizeof(szMessage), TXT_WOL_PAGING, szUser);
     WWMessageBox().Process(szMessage, TXT_NONE);
     delete[] szMessage;
@@ -1890,8 +1898,8 @@ void WolapiObject::DoKick(IconListClass* pILUsersOrPlayers, bool bAndBan) {
       if (pILUsersOrPlayers->bItemIsMultiSelected(i)) {
         User* pUser =
             static_cast<User*>(pILUsersOrPlayers->Get_Item_ExtraDataPtr(i));
-        if (pUser && strcmp(WolText(pUser->name), szMyName) !=
-                         0)  //	Don't kick yourself.
+        if (pUser && std::string_view(WolText(pUser->name)) !=
+                         szMyName)  //	Don't kick yourself.
         {
           Kick(pUser);
           if (bAndBan) {
@@ -1941,8 +1949,8 @@ void WolapiObject::DoSquelch(IconListClass* pILUsersOrPlayers) {
       User* pUser =
           static_cast<User*>(pILUsersOrPlayers->Get_Item_ExtraDataPtr(i));
       if (pUser) {
-        if (strcmp(WolText(pUser->name), szMyName) !=
-            0)  //	Don't squelch yourself.
+        if (std::string_view(WolText(pUser->name)) !=
+            szMyName)  //	Don't squelch yourself.
         {
           Squelch(pUser);
           //					char szMess[ 150 ];

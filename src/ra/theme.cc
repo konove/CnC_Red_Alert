@@ -58,6 +58,7 @@
 #include <cstring>
 #include <filesystem>
 #include <string>
+#include <string_view>
 
 #include "base/enum_array.h"
 #include "base/numeric.h"
@@ -554,7 +555,7 @@ bool ThemeClass::Is_Allowed(ThemeType index) {
  * HISTORY: * 05/29/1995 JLB : Created. *
  *=============================================================================================*/
 ThemeType ThemeClass::From_Name(const char* name) {
-  if (name && strlen(name) > 0) {
+  if (name && !std::string_view(name).empty()) {
     /*
     **	First search for an exact name match with the filename
     **	of the theme. This is guaranteed to be unique.
