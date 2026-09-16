@@ -1,16 +1,21 @@
 #ifndef CNC_RED_ALERT_SDLLIB_BITMAP_H_
 #define CNC_RED_ALERT_SDLLIB_BITMAP_H_
 
+#include <cstdint>
+#include <span>
+
 #include "absl/base/attributes.h"
+#include "base/numeric.h"
 
 class BitmapClass {
  public:
-  BitmapClass(int w, int h, unsigned char* data ABSL_ATTRIBUTE_LIFETIME_BOUND)
+  BitmapClass(int w, int h,
+              std::span<const uint8_t> data ABSL_ATTRIBUTE_LIFETIME_BOUND)
       : Width(w), Height(h), Data(data) {}
 
   int Width;
   int Height;
-  unsigned char* Data;
+  std::span<const uint8_t> Data;
 };
 
 class TPoint2D {

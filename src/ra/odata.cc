@@ -59,8 +59,10 @@
 #include <cstddef>
 #include <cstdint>
 #include <filesystem>
+#include <span>
 #include <string>
 
+#include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "ra/conquer.h"
@@ -75,6 +77,7 @@
 #include "ra/mouse.h"
 #include "ra/object.h"
 #include "ra/overlay.h"
+#include "ra/keyframe.h"
 #include "ra/type.h"
 #include "sdllib/shape.h"
 #include "tech/mix_archive.h"
@@ -669,7 +672,7 @@ void OverlayTypeClass::One_Time() {}
 OverlayType OverlayTypeClass::From_Name(const char* name) {
   if (name != nullptr) {
     for (const OverlayType index : magic_enum::enum_values<OverlayType>()) {
-      if (stricmp(As_Reference(index).IniName, name) == 0) {
+      if (port::CompareIgnoreCase(As_Reference(index).IniName, name) == 0) {
         return index;
       }
     }
@@ -694,8 +697,9 @@ OverlayType OverlayTypeClass::From_Name(const char* name) {
  *                                                                                             *
  * HISTORY: * 05/23/1994 JLB : Created. *
  *=============================================================================================*/
-const int16_t* OverlayTypeClass::Occupy_List(bool /*placement*/) const {
-  static int16_t _simple[] = {0, kRefreshEol};
+std::span<const int16_t> OverlayTypeClass::Occupy_List(
+    bool /*placement*/) const {
+  static const int16_t _simple[] = {0, kRefreshEol};
 
   return _simple;
 }
@@ -713,13 +717,13 @@ const int16_t* OverlayTypeClass::Occupy_List(bool /*placement*/) const {
  * HISTORY:                                                                *
  *   04/19/1995 PWG : Created.                                             *
  *=========================================================================*/
-const unsigned char* OverlayTypeClass::Radar_Icon(int data) const {
-  const auto* icon = static_cast<const unsigned char*>(
-      Get_Radar_Data());  // Get pointer to radar icons
-  if (icon != nullptr) {
-    icon += (data * 9) + 2;  // move icon ptr to correct icon
+std::span<const unsigned char> OverlayTypeClass::Radar_Icon(int data) const {
+  const auto icons = Get_Radar_Data();
+  if (data < 0 || icons.size() < 2 ||
+      base::ToSize(data) >= (icons.size() - 2) / 9) {
+    return {};
   }
-  return icon;  // Return the correct icon
+  return icons.subspan((base::ToSize(data) * 9) + 2, 9);
 }
 
 /***********************************************************************************************
@@ -740,7 +744,7 @@ const unsigned char* OverlayTypeClass::Radar_Icon(int data) const {
  *=============================================================================================*/
 void OverlayTypeClass::Display(int x, int y, WindowNumberType window,
                                HousesType /*unused*/) const {
-  if (Get_Image_Data() != nullptr) {
+  if (!Get_Image_Data().empty()) {
     int frame = 0;
 
     if (IsTiberium) {
@@ -776,7 +780,7 @@ void OverlayTypeClass::Display(int x, int y, WindowNumberType window,
 void OverlayTypeClass::Prep_For_Add() {
   for (const OverlayType index : magic_enum::enum_values<OverlayType>()) {
     const OverlayTypeClass& overlay = As_Reference(index);
-    if (overlay.Get_Image_Data() != nullptr && !overlay.IsWall &&
+    if (!overlay.Get_Image_Data().empty() && !overlay.IsWall &&
         (!overlay.IsTiberium || index == OVERLAY_GOLD1 ||
          index == OVERLAY_GEMS1)) {
       Map.Add_To_List(&overlay);
@@ -848,7 +852,7 @@ void OverlayTypeClass::Draw_It(int x, int y, int data) const {
   IsTheaterShape = IsTheater;
   CC_Draw_Shape(Get_Image_Data(), data, Map.TacPixelX + x + (CELL_PIXEL_W >> 1),
                 Map.TacPixelY + y + (CELL_PIXEL_H >> 1), WINDOW_MAIN,
-                SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST, nullptr,
+                SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST, {},
                 MouseClass::UnitShadow);
   IsTheaterShape = false;
 }

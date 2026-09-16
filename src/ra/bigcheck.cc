@@ -39,18 +39,18 @@ bool BigCheckBoxClass::Draw_Me(bool forced) {
 
     if (!IsOn) {
       if (!IsDisabled) {
-        CC_Draw_Shape(MixArchive::Retrieve("bigcheck.shp"), 0, X, Y,
+        CC_Draw_Shape(MixArchive::RetrieveData("bigcheck.shp"), 0, X, Y,
                       WINDOW_MAIN, SHAPE_NORMAL);
       } else {
-        CC_Draw_Shape(MixArchive::Retrieve("bigcheck.shp"), 2, X, Y,
+        CC_Draw_Shape(MixArchive::RetrieveData("bigcheck.shp"), 2, X, Y,
                       WINDOW_MAIN, SHAPE_NORMAL);
       }
     } else {
       if (!IsDisabled) {
-        CC_Draw_Shape(MixArchive::Retrieve("bigcheck.shp"), 1, X, Y,
+        CC_Draw_Shape(MixArchive::RetrieveData("bigcheck.shp"), 1, X, Y,
                       WINDOW_MAIN, SHAPE_NORMAL);
       } else {
-        CC_Draw_Shape(MixArchive::Retrieve("bigcheck.shp"), 3, X, Y,
+        CC_Draw_Shape(MixArchive::RetrieveData("bigcheck.shp"), 3, X, Y,
                       WINDOW_MAIN, SHAPE_NORMAL);
       }
     }
@@ -68,7 +68,7 @@ bool BigCheckBoxClass::Draw_Me(bool forced) {
 
     Conquer_Clip_Text_Print(szCaption.c_str(), X + BIGCHECK_OFFSETX,
                             Y + BIGCHECK_OFFSETY, pScheme, kTBlack, flags,
-                            Width, nullptr);
+                            Width, {});
 
     Show_Mouse();
     return true;

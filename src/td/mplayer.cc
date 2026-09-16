@@ -55,12 +55,14 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <span>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
-#include "base/numeric.h"
+#include "port/bytes_of.h"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "port/tokenizer.h"
@@ -99,7 +101,7 @@
 #include "tech/game_file.h"
 #include "tech/number_parse.h"
 
-static void Garble_Message(char* buf);
+static void Garble_Message(std::span<char> buf);
 
 int Choose_Internet_Game();
 int Get_Internet_Host_Or_Join();
@@ -220,12 +222,12 @@ GameType Select_MPlayer_Game() {
   ......................... Fill array of button ptrs ......................
   */
   int curbutton = 0;
-  buttons[0] = &modemserialbtn;
+  base::At(buttons, 0) = &modemserialbtn;
   if (ipx_avail) {
-    buttons[1] = &ipxbtn;
-    buttons[2] = &cancelbtn;
+    base::At(buttons, 1) = &ipxbtn;
+    base::At(buttons, 2) = &cancelbtn;
   } else {
-    buttons[1] = &cancelbtn;
+    base::At(buttons, 1) = &cancelbtn;
     number_of_buttons--;
   }
 
@@ -417,7 +419,7 @@ void Read_MultiPlayer_Settings() {
   parsing.)
   ------------------------------------------------------------------------*/
   char* buffer = ShapeBuffer;  // INI staging buffer pointer.
-  memset(buffer, '\0', base::ToSize(ShapeBufferSize));
+  std::ranges::fill(ShapeBufferBytes, 0);
 
   /*------------------------------------------------------------------------
   Clear the initstring entries
@@ -442,7 +444,8 @@ void Read_MultiPlayer_Settings() {
   if (!file.IsAvailable()) {
     return;
   }
-  file.Read(buffer, ShapeBufferSize - 1);
+  file.Read(std::as_writable_bytes(ShapeBufferBytes)
+                .first(ShapeBufferBytes.size() - 1));
   file.Close();
 
   if (!Special.IsFromWChat) {
@@ -450,7 +453,7 @@ void Read_MultiPlayer_Settings() {
     Get the player's last-used Handle
     ------------------------------------------------------------------------*/
     WWGetPrivateProfileString("MultiPlayer", "Handle", "Noname", MPlayerName,
-                              sizeof(MPlayerName), buffer);
+                              buffer);
 
     /*------------------------------------------------------------------------
     Get the player's last-used Color
@@ -470,12 +473,17 @@ void Read_MultiPlayer_Settings() {
   /*------------------------------------------------------------------------
   Read in default serial settings
   ------------------------------------------------------------------------*/
-  WWGetPrivateProfileString("SerialDefaults", "ModemName", "NoName",
-                            SerialDefaults.ModemName, MODEM_NAME_MAX, buffer);
+  WWGetPrivateProfileString(
+      "SerialDefaults", "ModemName", "NoName",
+      std::span(SerialDefaults.ModemName)
+          .first(static_cast<std::size_t>(MODEM_NAME_MAX)),
+      buffer);
   if ((std::string_view(SerialDefaults.ModemName) == "NoName")) {
-    SerialDefaults.ModemName[0] = 0;
+    base::At(SerialDefaults.ModemName, 0) = 0;
   }
-  WWGetPrivateProfileString("SerialDefaults", "Port", "0", buf, 5, buffer);
+  WWGetPrivateProfileString("SerialDefaults", "Port", "0",
+                            std::span(buf).first(static_cast<std::size_t>(5)),
+                            buffer);
   if (const auto value = tech::ParseHex<int>(buf)) {
     SerialDefaults.Port = *value;
   }
@@ -493,13 +501,15 @@ void Read_MultiPlayer_Settings() {
   SerialDefaults.HardwareFlowControl =
       WWGetPrivateProfileInt("SerialDefaults", "HardwareFlowControl", 1,
                              buffer) != 0;
-  WWGetPrivateProfileString("SerialDefaults", "DialMethod", "T", buf, 2,
+  WWGetPrivateProfileString("SerialDefaults", "DialMethod", "T",
+                            std::span(buf).first(static_cast<std::size_t>(2)),
                             buffer);
 
   // find dial method
 
   for (i = 0; i < kDialMethods; i++) {
-    if (!stricmp(buf, DialMethodCheck[static_cast<DialMethodType>(i)])) {
+    if (!port::CompareIgnoreCase(
+            buf, DialMethodCheck[static_cast<DialMethodType>(i)])) {
       SerialDefaults.DialMethod = static_cast<DialMethodType>(i);
       break;
     }
@@ -517,9 +527,11 @@ void Read_MultiPlayer_Settings() {
   SerialDefaults.CallWaitStringIndex = WWGetPrivateProfileInt(
       "SerialDefaults", "CallWaitStringIndex", kCallWaitCustom, buffer);
 
-  WWGetPrivateProfileString("SerialDefaults", "CallWaitString", "",
-                            SerialDefaults.CallWaitString, CWAITSTRBUF_MAX,
-                            buffer);
+  WWGetPrivateProfileString(
+      "SerialDefaults", "CallWaitString", "",
+      std::span(SerialDefaults.CallWaitString)
+          .first(static_cast<std::size_t>(CWAITSTRBUF_MAX)),
+      buffer);
 
   if (SerialDefaults.IRQ == 0 || SerialDefaults.Baud == 0) {
     SerialDefaults.Port = 0;
@@ -530,49 +542,55 @@ void Read_MultiPlayer_Settings() {
   /*------------------------------------------------------------------------
   Set 'tbuffer' to point past the actual INI data
   ------------------------------------------------------------------------*/
-  int len = static_cast<int>(std::string_view(buffer).size()) +
-            2;                   // Length of data in buffer.
-  char* tbuffer = buffer + len;  // Accumulation buffer of trigger IDs.
+  std::vector<char> key_storage(std::string_view(buffer).size() + 2);
+  auto key_cursor = std::span(key_storage);
+  char* tbuffer = key_cursor.data();  // Accumulation buffer of trigger IDs.
 
   /*------------------------------------------------------------------------
   Read all Base-Scenario names into 'tbuffer'
   ------------------------------------------------------------------------*/
-  WWGetPrivateProfileString("InitStrings", nullptr, nullptr, tbuffer,
-                            ShapeBufferSize - len, buffer);
+  WWGetPrivateProfileString("InitStrings", nullptr, nullptr, key_cursor,
+                            buffer);
 
   /*------------------------------------------------------------------------
   Read in & store each entry
   ------------------------------------------------------------------------*/
   while (*tbuffer != '\0') {
     entry = new char[INITSTRBUF_MAX];
+    // This allocation owns exactly INITSTRBUF_MAX writable characters.
+    // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
+    const std::span<char> entry_storage(entry, INITSTRBUF_MAX);
 
     entry[0] = 0;
 
-    WWGetPrivateProfileString("InitStrings", tbuffer, nullptr, entry,
-                              INITSTRBUF_MAX, buffer);
+    WWGetPrivateProfileString("InitStrings", tbuffer, nullptr, entry_storage,
+                              buffer);
 
     strupr(entry);
 
     InitStrings.Add(entry);
 
-    tbuffer += std::string_view(tbuffer).size() + 1;
+    key_cursor = key_cursor.subspan(std::string_view(tbuffer).size() + 1);
+    tbuffer = key_cursor.data();
   }
 
   // if no entries then have at least one
 
-  if (tbuffer == buffer + len) {
+  if (key_cursor.data() == key_storage.data()) {
     entry = new char[INITSTRBUF_MAX];
-    port::SafeCopy(entry, "ATZ", INITSTRBUF_MAX);
+    // This allocation owns exactly INITSTRBUF_MAX writable characters.
+    // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
+    const std::span<char> entry_storage(entry, INITSTRBUF_MAX);
+    port::SafeCopy(entry_storage, "ATZ");
     InitStrings.Add(entry);
     SerialDefaults.InitStringIndex = 0;
-  } else {
-    len = static_cast<int>(std::string_view(buffer).size()) + 2;
   }
 
   /*------------------------------------------------------------------------
   Repeat the process for the phonebook
   ------------------------------------------------------------------------*/
-  tbuffer = buffer + len;
+  key_cursor = std::span(key_storage);
+  tbuffer = key_cursor.data();
 
   /*------------------------------------------------------------------------
   Read in all phone book listings.
@@ -582,8 +600,7 @@ void Read_MultiPlayer_Settings() {
   /*........................................................................
   Read the entry names in
   ........................................................................*/
-  WWGetPrivateProfileString("PhoneBook", nullptr, nullptr, tbuffer,
-                            ShapeBufferSize - len, buffer);
+  WWGetPrivateProfileString("PhoneBook", nullptr, nullptr, key_cursor, buffer);
 
   while (*tbuffer != '\0') {
     /*.....................................................................
@@ -594,7 +611,9 @@ void Read_MultiPlayer_Settings() {
     /*.....................................................................
     Read the entire entry in
     .....................................................................*/
-    WWGetPrivateProfileString("PhoneBook", tbuffer, nullptr, buf, 128, buffer);
+    WWGetPrivateProfileString(
+        "PhoneBook", tbuffer, nullptr,
+        std::span(buf).first(static_cast<std::size_t>(128)), buffer);
 
     /*.....................................................................
     Extract name, phone # & serial port settings
@@ -605,7 +624,7 @@ void Read_MultiPlayer_Settings() {
       port::SafeCopy(phone->Name, tokenptr);
       strupr(phone->Name);
     } else {
-      phone->Name[0] = 0;
+      base::At(phone->Name, 0) = 0;
     }
 
     tokenptr = tokens.Next();
@@ -613,7 +632,7 @@ void Read_MultiPlayer_Settings() {
       port::SafeCopy(phone->Number, tokenptr);
       strupr(phone->Number);
     } else {
-      phone->Number[0] = 0;
+      base::At(phone->Number, 0) = 0;
     }
 
     tokenptr = tokens.Next();
@@ -670,7 +689,8 @@ void Read_MultiPlayer_Settings() {
       // find dial method
 
       for (i = 0; i < kDialMethods; i++) {
-        if (!stricmp(buf, DialMethodCheck[static_cast<DialMethodType>(i)])) {
+        if (!port::CompareIgnoreCase(
+                buf, DialMethodCheck[static_cast<DialMethodType>(i)])) {
           phone->Settings.DialMethod = static_cast<DialMethodType>(i);
           break;
         }
@@ -705,7 +725,7 @@ void Read_MultiPlayer_Settings() {
     if (tokenptr) {
       port::SafeCopy(phone->Settings.CallWaitString, tokenptr);
     } else {
-      phone->Settings.CallWaitString[0] = 0;
+      base::At(phone->Settings.CallWaitString, 0) = 0;
     }
 
     /*.....................................................................
@@ -713,7 +733,8 @@ void Read_MultiPlayer_Settings() {
     .....................................................................*/
     PhoneBook.Add(phone);
 
-    tbuffer += std::string_view(tbuffer).size() + 1;
+    key_cursor = key_cursor.subspan(std::string_view(tbuffer).size() + 1);
+    tbuffer = key_cursor.data();
   }
 
   /*------------------------------------------------------------------------
@@ -724,32 +745,40 @@ void Read_MultiPlayer_Settings() {
 
     TrapObjType = static_cast<RTTIType>(WWGetPrivateProfileInt(
         "SyncBug", "Type", static_cast<int>(RTTI_NONE), buffer));
-    WWGetPrivateProfileString("SyncBug", "Type", "NONE", buf, 80, buffer);
-    if (!stricmp(buf, "AIRCRAFT")) {
+    WWGetPrivateProfileString(
+        "SyncBug", "Type", "NONE",
+        std::span(buf).first(static_cast<std::size_t>(80)), buffer);
+    if (!port::CompareIgnoreCase(buf, "AIRCRAFT")) {
       TrapObjType = RTTI_AIRCRAFT;
-    } else if (!stricmp(buf, "ANIM")) {
+    } else if (!port::CompareIgnoreCase(buf, "ANIM")) {
       TrapObjType = RTTI_ANIM;
-    } else if (!stricmp(buf, "BUILDING")) {
+    } else if (!port::CompareIgnoreCase(buf, "BUILDING")) {
       TrapObjType = RTTI_BUILDING;
-    } else if (!stricmp(buf, "BULLET")) {
+    } else if (!port::CompareIgnoreCase(buf, "BULLET")) {
       TrapObjType = RTTI_BULLET;
-    } else if (!stricmp(buf, "INFANTRY")) {
+    } else if (!port::CompareIgnoreCase(buf, "INFANTRY")) {
       TrapObjType = RTTI_INFANTRY;
-    } else if (!stricmp(buf, "UNIT")) {
+    } else if (!port::CompareIgnoreCase(buf, "UNIT")) {
       TrapObjType = RTTI_UNIT;
     } else {
       TrapObjType = RTTI_NONE;
     }
 
-    WWGetPrivateProfileString("SyncBug", "Coord", "0", buf, 80, buffer);
+    WWGetPrivateProfileString(
+        "SyncBug", "Coord", "0",
+        std::span(buf).first(static_cast<std::size_t>(80)), buffer);
     TrapCoord = tech::ParseHex<uint32_t>(buf).value_or(0);
 
-    WWGetPrivateProfileString("SyncBug", "this", "0", buf, 80, buffer);
+    WWGetPrivateProfileString(
+        "SyncBug", "this", "0",
+        std::span(buf).first(static_cast<std::size_t>(80)), buffer);
     if (const auto trap_this = tech::ParseHex<uintptr_t>(buf)) {
       TrapThis = std::bit_cast<void*>(*trap_this);
     }
 
-    WWGetPrivateProfileString("SyncBug", "Cell", "0", buf, 80, buffer);
+    WWGetPrivateProfileString(
+        "SyncBug", "Cell", "0",
+        std::span(buf).first(static_cast<std::size_t>(80)), buffer);
     CELL const cell = tech::ParseInteger<CELL>(buf).value_or(0);
     if (cell) {
       TrapCell = &Map[cell];
@@ -778,62 +807,79 @@ void Write_MultiPlayer_Settings() {
   starts cleared out of any data.
   ------------------------------------------------------------------------*/
   char* buffer = ShapeBuffer;  // INI staging buffer pointer.
-  memset(buffer, '\0', base::ToSize(ShapeBufferSize));
+  std::ranges::fill(ShapeBufferBytes, 0);
 
   file.SetName("CONQUER.INI");
   if (file.IsAvailable()) {
     file.Open(FileAccess::kRead);
-    file.Read(buffer, ShapeBufferSize - 1);
+    file.Read(std::as_writable_bytes(ShapeBufferBytes)
+                  .first(ShapeBufferBytes.size() - 1));
     file.Close();
   }
 
   /*------------------------------------------------------------------------
   Save the player's last-used Handle & Color
   ------------------------------------------------------------------------*/
-  WWWritePrivateProfileInt("MultiPlayer", "PhoneIndex", CurPhoneIdx, buffer);
-  WWWritePrivateProfileInt("MultiPlayer", "Color", MPlayerPrefColor, buffer);
+  WWWritePrivateProfileInt("MultiPlayer", "PhoneIndex", CurPhoneIdx,
+                           port::CharBytes(ShapeBufferBytes));
+  WWWritePrivateProfileInt("MultiPlayer", "Color", MPlayerPrefColor,
+                           port::CharBytes(ShapeBufferBytes));
   WWWritePrivateProfileInt("MultiPlayer", "Side",
-                           static_cast<int>(MPlayerHouse), buffer);
-  WWWritePrivateProfileString("MultiPlayer", "Handle", MPlayerName, buffer);
+                           static_cast<int>(MPlayerHouse),
+                           port::CharBytes(ShapeBufferBytes));
+  WWWritePrivateProfileString("MultiPlayer", "Handle", MPlayerName,
+                              port::CharBytes(ShapeBufferBytes));
 
   /*------------------------------------------------------------------------
   Clear all existing SerialDefault entries.
   ------------------------------------------------------------------------*/
-  WWWritePrivateProfileString("SerialDefaults", nullptr, nullptr, buffer);
+  WWWritePrivateProfileString("SerialDefaults", nullptr, nullptr,
+                              port::CharBytes(ShapeBufferBytes));
 
   /*------------------------------------------------------------------------
   Save default serial settings in opposite order you want to see them
   ------------------------------------------------------------------------*/
   WWWritePrivateProfileString("SerialDefaults", "CallWaitString",
-                              SerialDefaults.CallWaitString, buffer);
+                              SerialDefaults.CallWaitString,
+                              port::CharBytes(ShapeBufferBytes));
   WWWritePrivateProfileInt("SerialDefaults", "CallWaitStringIndex",
-                           SerialDefaults.CallWaitStringIndex, buffer);
+                           SerialDefaults.CallWaitStringIndex,
+                           port::CharBytes(ShapeBufferBytes));
   WWWritePrivateProfileInt("SerialDefaults", "InitStringIndex",
-                           SerialDefaults.InitStringIndex, buffer);
+                           SerialDefaults.InitStringIndex,
+                           port::CharBytes(ShapeBufferBytes));
   WWWritePrivateProfileInt("SerialDefaults", "Init",
-                           SerialDefaults.Init ? 1 : 0, buffer);
+                           SerialDefaults.Init ? 1 : 0,
+                           port::CharBytes(ShapeBufferBytes));
   WWWritePrivateProfileString("SerialDefaults", "DialMethod",
                               DialMethodCheck[SerialDefaults.DialMethod],
-                              buffer);
+                              port::CharBytes(ShapeBufferBytes));
   WWWritePrivateProfileInt("SerialDefaults", "Baud", SerialDefaults.Baud,
-                           buffer);
-  WWWritePrivateProfileInt("SerialDefaults", "IRQ", SerialDefaults.IRQ, buffer);
+                           port::CharBytes(ShapeBufferBytes));
+  WWWritePrivateProfileInt("SerialDefaults", "IRQ", SerialDefaults.IRQ,
+                           port::CharBytes(ShapeBufferBytes));
   absl::SNPrintF(buf, sizeof(buf), "%x",
                  static_cast<unsigned int>(SerialDefaults.Port));
-  WWWritePrivateProfileString("SerialDefaults", "Port", buf, buffer);
+  WWWritePrivateProfileString("SerialDefaults", "Port", buf,
+                              port::CharBytes(ShapeBufferBytes));
   WWWritePrivateProfileString("SerialDefaults", "ModemName",
-                              SerialDefaults.ModemName, buffer);
+                              SerialDefaults.ModemName,
+                              port::CharBytes(ShapeBufferBytes));
   WWWritePrivateProfileInt("SerialDefaults", "Compression",
-                           SerialDefaults.Compression ? 1 : 0, buffer);
+                           SerialDefaults.Compression ? 1 : 0,
+                           port::CharBytes(ShapeBufferBytes));
   WWWritePrivateProfileInt("SerialDefaults", "ErrorCorrection",
-                           SerialDefaults.ErrorCorrection ? 1 : 0, buffer);
+                           SerialDefaults.ErrorCorrection ? 1 : 0,
+                           port::CharBytes(ShapeBufferBytes));
   WWWritePrivateProfileInt("SerialDefaults", "HardwareFlowControl",
-                           SerialDefaults.HardwareFlowControl ? 1 : 0, buffer);
+                           SerialDefaults.HardwareFlowControl ? 1 : 0,
+                           port::CharBytes(ShapeBufferBytes));
 
   /*------------------------------------------------------------------------
   Clear all existing InitString entries.
   ------------------------------------------------------------------------*/
-  WWWritePrivateProfileString("InitStrings", nullptr, nullptr, buffer);
+  WWWritePrivateProfileString("InitStrings", nullptr, nullptr,
+                              port::CharBytes(ShapeBufferBytes));
 
   /*------------------------------------------------------------------------
   Save all InitString entries.  In descending order so they come out in
@@ -841,13 +887,15 @@ void Write_MultiPlayer_Settings() {
   ------------------------------------------------------------------------*/
   for (int i = static_cast<int>(InitStrings.Count()) - 1; i >= 0; i--) {
     absl::SNPrintF(buf, sizeof(buf), "%03d", i);
-    WWWritePrivateProfileString("InitStrings", buf, InitStrings[i], buffer);
+    WWWritePrivateProfileString("InitStrings", buf, InitStrings[i],
+                                port::CharBytes(ShapeBufferBytes));
   }
 
   /*------------------------------------------------------------------------
   Clear all existing Phone Book entries.
   ------------------------------------------------------------------------*/
-  WWWritePrivateProfileString("PhoneBook", nullptr, nullptr, buffer);
+  WWWritePrivateProfileString("PhoneBook", nullptr, nullptr,
+                              port::CharBytes(ShapeBufferBytes));
 
   /*------------------------------------------------------------------------
   Save all Phone Book entries.
@@ -866,14 +914,16 @@ void Write_MultiPlayer_Settings() {
                    PhoneBook[i]->Settings.CallWaitStringIndex,
                    PhoneBook[i]->Settings.CallWaitString);
     absl::SNPrintF(entrytext, sizeof(entrytext), "%03d", i);
-    WWWritePrivateProfileString("PhoneBook", entrytext, buf, buffer);
+    WWWritePrivateProfileString("PhoneBook", entrytext, buf,
+                                port::CharBytes(ShapeBufferBytes));
   }
 
   /*------------------------------------------------------------------------
   Write the INI data out to a file.
   ------------------------------------------------------------------------*/
   file.Open(FileAccess::kWrite);
-  file.Write(buffer, static_cast<int32_t>(std::string_view(buffer).size()));
+  file.Write(
+      std::as_bytes(ShapeBufferBytes).first(std::string_view(buffer).size()));
   file.Close();
 }
 
@@ -924,7 +974,7 @@ void Read_Scenario_Descriptions() {
     buffer is cleared out before proceeding.
     .....................................................................*/
     char* buffer = ShapeBuffer;  // INI staging buffer pointer.
-    memset(buffer, '\0', base::ToSize(ShapeBufferSize));
+    std::ranges::fill(ShapeBufferBytes, 0);
 
     /*.....................................................................
     Create filename and read the file.
@@ -933,14 +983,17 @@ void Read_Scenario_Descriptions() {
                       SCEN_DIR_EAST, SCEN_VAR_A);
     absl::SNPrintF(fname, sizeof(fname), "%s.INI", ScenarioName);
     file.SetName(fname);
-    file.Read(buffer, ShapeBufferSize - 1);
+    file.Read(std::as_writable_bytes(ShapeBufferBytes)
+                  .first(ShapeBufferBytes.size() - 1));
     file.Close();
 
     /*.....................................................................
     Extract description & add it to the list.
     .....................................................................*/
     WWGetPrivateProfileString("Basic", "Name", "Nulls-Ville",
-                              base::At(MPlayerDescriptions, i), 40, buffer);
+                              std::span(base::At(MPlayerDescriptions, i))
+                                  .first(static_cast<std::size_t>(40)),
+                              buffer);
     MPlayerScenarios.Add(base::At(MPlayerDescriptions, i));
   }
 }
@@ -1014,7 +1067,8 @@ void Computer_Message() {
     /*.....................................................................
     Decode this house's color
     .....................................................................*/
-    const int color = MPlayerTColors[static_cast<int>(ptr->RemapColor)];
+    const int color =
+        base::At(MPlayerTColors, static_cast<int>(ptr->RemapColor));
 
     /*.....................................................................
     We now have a 1/4 chance of echoing one of the human players' messages
@@ -1065,7 +1119,7 @@ void Computer_Message() {
  * HISTORY:                                                                *
  *   06/06/1995 BRR : Created.                                             *
  *=========================================================================*/
-static void Garble_Message(char* buf) {
+static void Garble_Message(std::span<char> buf) {
   char txt[80];
   char punct[20];   // for punctuation
   char* words[40];  // ptrs to various words in the phrase
@@ -1073,29 +1127,17 @@ static void Garble_Message(char* buf) {
   /*------------------------------------------------------------------------
   Pull off any trailing punctuation
   ------------------------------------------------------------------------*/
-  char* p = buf + std::string_view(buf).size() - 1;  // working ptr
-  while (true) {
-    if (p < buf) {
+  const std::string_view message(buf.data());
+  size_t punctuation = message.size();
+  while (punctuation > 0 && message.size() - punctuation < sizeof(punct) - 1) {
+    const char ch = message[punctuation - 1];
+    if (ch != '!' && ch != '.' && ch != '?') {
       break;
     }
-    if (p[0] == '!' || p[0] == '.' || p[0] == '?') {
-      p--;
-    } else {
-      p++;
-      break;
-    }
-    if (std::string_view(p).size() >= sizeof(punct) - 1) {
-      break;
-    }
+    --punctuation;
   }
-  /*
-  ** An empty message, or one that is nothing but punctuation, walks p back
-  ** past the start of the buffer. Clamp it so the copy and the terminator
-  ** below stay inside buf.
-  */
-  p = std::max(p, buf);
-  port::SafeCopy(punct, p);
-  p[0] = 0;
+  port::SafeCopy(punct, message.substr(punctuation));
+  buf[punctuation] = '\0';
 
   for (auto& word : words) {
     word = nullptr;
@@ -1104,13 +1146,13 @@ static void Garble_Message(char* buf) {
   /*------------------------------------------------------------------------
   Copy the original buffer
   ------------------------------------------------------------------------*/
-  port::SafeCopy(txt, buf);
+  port::SafeCopy(txt, buf.data());
 
   /*------------------------------------------------------------------------
   Split it up into words
   ------------------------------------------------------------------------*/
   port::Tokenizer tokens(txt, " ");
-  p = tokens.Next();
+  char* p = tokens.Next();
   int numwords = 0;  // # words in the phrase
   while (p) {
     base::At(words, numwords) = p;
@@ -1130,13 +1172,14 @@ static void Garble_Message(char* buf) {
       i--;
       continue;
     }
-    port::SafeAppend(buf, base::At(words, j), MAX_MESSAGE_LENGTH);
+    port::SafeAppend(std::span(buf).first(MAX_MESSAGE_LENGTH),
+                     base::At(words, j));
     base::At(words, j) = nullptr;
     if (i < numwords - 1) {
-      port::SafeAppend(buf, " ", MAX_MESSAGE_LENGTH);
+      port::SafeAppend(std::span(buf).first(MAX_MESSAGE_LENGTH), " ");
     }
   }
-  port::SafeAppend(buf, punct, MAX_MESSAGE_LENGTH);
+  port::SafeAppend(std::span(buf).first(MAX_MESSAGE_LENGTH), punct);
 }
 
 /***************************************************************************

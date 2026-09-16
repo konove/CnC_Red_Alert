@@ -61,6 +61,10 @@
 #ifndef __BORLANDC__
 #endif
 
+#include <algorithm>
+#include <limits>
+#include <span>
+
 #include "absl/log/check.h"
 #include "base/numeric.h"
 
@@ -193,7 +197,14 @@ class IndexClass {
   */
   [[nodiscard]] const NodeElement* Search_For_Node(int id) const;
 
-  static int search_compfunc(const void* ptr, const void* ptr2);
+  // Preserve the serialized owner fields while retaining the allocation bound.
+  [[nodiscard]] std::span<NodeElement> Nodes() const {
+    CHECK_GE(IndexSize, 0);
+    CHECK(IndexTable != nullptr || IndexSize == 0);
+    // IndexTable is allocated exclusively by Increase_Table_Size at IndexSize.
+    // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
+    return {IndexTable, base::ToSize(IndexSize)};
+  }
 };
 
 /***********************************************************************************************
@@ -283,17 +294,21 @@ bool IndexClass<T>::Increase_Table_Size(int amount) {
   /*
   **	Check size increase parameter for legality.
   */
-  if (amount < 0) {
+  if (amount < 0 || amount > std::numeric_limits<int>::max() - IndexSize) {
     return false;
   }
 
   auto* table = new NodeElement[base::ToSize(IndexSize + amount)];
   if (table != nullptr) {
+    // table was allocated immediately above for exactly IndexSize + amount
+    // nodes. NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
+    const std::span<NodeElement> replacement(table,
+                                             base::ToSize(IndexSize + amount));
     /*
     **	Copy all valid nodes into the new table.
     */
     for (int index = 0; index < IndexCount; index++) {
-      table[index] = IndexTable[index];
+      replacement[base::ToSize(index)] = Nodes()[base::ToSize(index)];
     }
 
     /*
@@ -506,7 +521,7 @@ bool IndexClass<T>::Add_Index(int id, T data) {
   **	Ensure that there is enough room to add this index. If not, then
   *increase the *	capacity of the internal index table.
   */
-  if (IndexCount + 1 > IndexSize) {
+  if (IndexCount == IndexSize) {
     if (!Increase_Table_Size(IndexSize == 0 ? 10 : IndexSize)) {
       /*
       **	Failure to increase the size of the index table means failure to
@@ -520,8 +535,8 @@ bool IndexClass<T>::Add_Index(int id, T data) {
   **	Add the data to the end of the index data and then sort the index table.
   */
   DCHECK(IndexCount >= 0 && IndexCount < IndexSize);
-  IndexTable[IndexCount].ID = id;
-  IndexTable[IndexCount].Data = data;
+  Nodes()[base::ToSize(IndexCount)].ID = id;
+  Nodes()[base::ToSize(IndexCount)].Data = data;
   IndexCount++;
   IsSorted = false;
 
@@ -550,7 +565,7 @@ bool IndexClass<T>::Remove_Index(int id) {
   */
   int found_index = -1;
   for (int index = 0; index < IndexCount; index++) {
-    if (IndexTable[index].ID == id) {
+    if (Nodes()[base::ToSize(index)].ID == id) {
       found_index = index;
       break;
     }
@@ -564,14 +579,14 @@ bool IndexClass<T>::Remove_Index(int id) {
   */
   if (found_index != -1) {
     for (int index = found_index + 1; index < IndexCount; index++) {
-      IndexTable[index - 1] = IndexTable[index];
+      Nodes()[base::ToSize(index - 1)] = Nodes()[base::ToSize(index)];
     }
     IndexCount--;
 
     NodeElement fake{};
     fake.ID = 0;
     fake.Data = T();
-    IndexTable[IndexCount] = fake;  // zap last (now unused) element
+    Nodes()[base::ToSize(IndexCount)] = fake;  // zap last (now unused) element
 
     Invalidate_Archive();
     return true;
@@ -598,17 +613,6 @@ bool IndexClass<T>::Remove_Index(int id) {
  *                                                                                             *
  * HISTORY: * 11/02/1996 JLB : Created. *
  *=============================================================================================*/
-template <class T>
-int IndexClass<T>::search_compfunc(const void* ptr1, const void* ptr2) {
-  if (*static_cast<const int*>(ptr1) == *static_cast<const int*>(ptr2)) {
-    return 0;
-  }
-  if (*static_cast<const int*>(ptr1) < *static_cast<const int*>(ptr2)) {
-    return -1;
-  }
-  return 1;
-}
-
 /***********************************************************************************************
  * IndexClass<T>::Search_For_Node -- Perform a search for the specified node ID
  **
@@ -641,7 +645,8 @@ const IndexClass<T>::NodeElement* IndexClass<T>::Search_For_Node(int id) const {
   *requires *	the list to be sorted.
   */
   if (!IsSorted) {
-    qsort(&IndexTable[0], base::ToSize(IndexCount), sizeof(IndexTable[0]), search_compfunc);
+    std::ranges::sort(Nodes().first(base::ToSize(IndexCount)), {},
+                      &NodeElement::ID);
     Invalidate_Archive();
     IsSorted = true;
   }
@@ -649,11 +654,9 @@ const IndexClass<T>::NodeElement* IndexClass<T>::Search_For_Node(int id) const {
   /*
   **	This list is sorted and ready to perform a binary search upon it.
   */
-  NodeElement node{};
-  node.ID = id;
-  return static_cast<const NodeElement*>(
-      bsearch(&node, &IndexTable[0], base::ToSize(IndexCount),
-              sizeof(IndexTable[0]), search_compfunc));
+  const auto nodes = Nodes().first(base::ToSize(IndexCount));
+  const auto found = std::ranges::lower_bound(nodes, id, {}, &NodeElement::ID);
+  return found != nodes.end() && found->ID == id ? &*found : nullptr;
 }
 
 #endif  // CNC_RED_ALERT_RA_SEARCH_H_

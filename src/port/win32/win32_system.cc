@@ -1,14 +1,13 @@
 #include "port/win32/win32_system.h"
 
-#include <algorithm>
 #include <cstdint>
 
-#include "base/array.h"
+#include "port/safe_string.h"
 #include "port/win32/win32_types.h"
 
 #ifndef _WIN32
 
-#include <cstring>
+#include <span>
 #include <filesystem>
 #include <string>
 #include <string_view>
@@ -48,10 +47,7 @@ HANDLE FindFirstFile(LPCSTR file_name, WIN32_FIND_DATA* find_data) {
   find_data->nFileSizeHigh = static_cast<DWORD>(size >> 32U);
 
   const std::string name = path.filename().string();
-  const std::size_t copied =
-      std::min(name.size(), sizeof(find_data->cFileName) - 1);
-  std::memcpy(find_data->cFileName, name.data(), copied);
-  base::At(find_data->cFileName, copied) = '\0';
+  port::SafeCopy(find_data->cFileName, name.c_str());
 
   return &kFoundHandleStorage;
 }
@@ -111,16 +107,16 @@ HWND GetTopWindow(HWND /*parent*/) { return nullptr; }
 
 DWORD GetLastError() { return 0; }
 
-DWORD GetCurrentDirectory(DWORD buffer_length, LPSTR buffer) {
-  if (buffer == nullptr || buffer_length == 0) {
+DWORD GetCurrentDirectory(std::span<char> buffer) {
+  if (buffer.empty()) {
     return 0;
   }
   std::error_code failed;
   const std::string path = std::filesystem::current_path(failed).string();
-  if (failed || path.size() + 1 > buffer_length) {
+  if (failed || path.size() + 1 > buffer.size()) {
     return 0;
   }
-  std::memcpy(buffer, path.c_str(), path.size() + 1);
+  port::SafeCopy(buffer.first(path.size() + 1), path.c_str());
   return static_cast<DWORD>(path.size());
 }
 

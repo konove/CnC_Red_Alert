@@ -8,6 +8,7 @@
 #include <fstream>
 #include <ios>
 #include <iterator>
+#include <span>
 #include <string>
 
 #include "absl/base/attributes.h"
@@ -53,7 +54,8 @@ TEST_F(IoOpenFileTest, ReadWriteKeepsExistingContents) {
   // Used to open with "w+b", which truncated the file to nothing.
   EXPECT_EQ(IO_Seek_File(handle, 0, SEEK_END), 5);
   size_t written = 0;
-  ASSERT_TRUE(IO_Write_File(handle, "!", 1, written));
+  ASSERT_TRUE(
+      IO_Write_File(handle, std::as_bytes(std::span("!")).first(1), written));
   IO_Close_File(handle);
 
   EXPECT_EQ(ReadAll(path()), "hello!");

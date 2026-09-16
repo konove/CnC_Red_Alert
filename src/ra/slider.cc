@@ -81,9 +81,9 @@ SliderClass::SliderClass(unsigned id, int x, int y, int w, int h,
                          bool belong_to_list)
     : GaugeClass(id, x, y, w, h), BelongToList(belong_to_list) {
   if (!BelongToList) {
-    PlusGadget = new ShapeButtonClass(id, MixArchive::Retrieve("BTN-PLUS.SHP"),
+    PlusGadget = new ShapeButtonClass(id, MixArchive::RetrieveData("BTN-PLUS.SHP"),
                                       X + Width + 2, Y);
-    MinusGadget = new ShapeButtonClass(id, MixArchive::Retrieve("BTN-MINS.SHP"),
+    MinusGadget = new ShapeButtonClass(id, MixArchive::RetrieveData("BTN-MINS.SHP"),
                                        X - 6, Y);
 
     if (PlusGadget) {

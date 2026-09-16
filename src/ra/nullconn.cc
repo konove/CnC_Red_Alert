@@ -42,9 +42,13 @@
 
 #include "ra/nullconn.h"
 
+#include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <span>
 
+#include "absl/log/check.h"
+#include "base/buffer.h"
 #include "base/numeric.h"
 #include "port/aligned_buffer.h"
 #include "port/unaligned.h"
@@ -79,8 +83,7 @@ NullModemConnClass::NullModemConnClass(int numsend, int numreceive, int maxlen,
           60,  // Retry Delta Time
           -1,  // Max Retries (-1 means ignore this timeout parameter)
           1200),
-      SendBuf(
-          new char[base::ToSize(Actual_Max_Packet())])  // Timeout: 20 seconds
+      SendBuf(base::ToSize(Actual_Max_Packet()))  // Timeout: 20 seconds
 {
   /*------------------------------------------------------------------------
   Pre-set the port value to NULL, so Send won't send until we've been Init'd
@@ -110,10 +113,8 @@ NullModemConnClass::NullModemConnClass(int numsend, int numreceive, int maxlen,
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-NullModemConnClass::~NullModemConnClass() {
-  delete[] SendBuf;
-
-} /* end of ~NullModemConnClass */
+NullModemConnClass::~NullModemConnClass() =
+    default; /* end of ~NullModemConnClass */
 
 /***************************************************************************
  * NullModemConnClass::Init -- hardware-dependent initialization
@@ -161,8 +162,14 @@ void NullModemConnClass::Init(HANDLE port_handle) {
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-int NullModemConnClass::Send(void* buf, int buflen, void* /*extrabuf*/,
+int NullModemConnClass::Send(std::span<const std::byte> buf, int buflen,
+                             std::span<const std::byte> /*extrabuf*/,
                              int /*extralen*/) {
+  if (buflen < 0 || base::ToSize(buflen) > buf.size() ||
+      base::ToSize(buflen) + sizeof(SerialHeaderType) + sizeof(int) + 1 >
+          SendBuf.size()) {
+    return 0;
+  }
 
   /*------------------------------------------------------------------------
   Error if we haven't been properly initialized
@@ -175,24 +182,28 @@ int NullModemConnClass::Send(void* buf, int buflen, void* /*extrabuf*/,
   /*------------------------------------------------------------------------
   Package the data into the Send Buffer
   ------------------------------------------------------------------------*/
-  auto* header = port::AlignedObject<SerialHeaderType>(SendBuf);
+  auto* header = port::AlignedObject<SerialHeaderType>(SendBuf.data());
   header->MagicNumber = PACKET_SERIAL_START;
   header->Length = static_cast<uint16_t>(buflen);
   header->MagicNumber2 = PACKET_SERIAL_VERIFY;
 
   int sendlen = static_cast<int>(sizeof(SerialHeaderType));
-  memcpy(SendBuf + sendlen, buf, base::ToSize(buflen));
+  base::CopyBytes(
+      std::as_writable_bytes(std::span(SendBuf)).subspan(base::ToSize(sendlen)),
+      buf, base::ToSize(buflen));
   sendlen += buflen;
-  port::WriteUnaligned(SendBuf + sendlen, Compute_CRC(buf, buflen));
+  port::WriteUnaligned(
+      std::as_writable_bytes(std::span(SendBuf)).subspan(base::ToSize(sendlen)),
+      Compute_CRC(buf, buflen));
   sendlen += static_cast<int>(sizeof(int));
 
-  *(SendBuf + sendlen) = '\r';
+  SendBuf[base::ToSize(sendlen)] = '\r';
   sendlen += 1;
 
   /*------------------------------------------------------------------------
   Send the data
   ------------------------------------------------------------------------*/
-  SerialPort->Write_To_Serial_Port(SendBuf, sendlen);
+  SerialPort->Write_To_Serial_Port(SendBuf.data(), sendlen);
   return 1;
 
 } /* end of Send */
@@ -217,8 +228,10 @@ int NullModemConnClass::Send(void* buf, int buflen, void* /*extrabuf*/,
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-int NullModemConnClass::Compute_CRC(const void* buf, int buflen) {
-  const auto* bytes = static_cast<const unsigned char*>(buf);
+int NullModemConnClass::Compute_CRC(std::span<const std::byte> buf,
+                                    int buflen) {
+  CHECK_GE(buflen, 0);
+  CHECK_LE(base::ToSize(buflen), buf.size());
   unsigned int hibit = 0;
 
   unsigned int sum = 0;
@@ -230,7 +243,7 @@ int NullModemConnClass::Compute_CRC(const void* buf, int buflen) {
     }
 
     sum <<= 1;
-    sum += hibit + bytes[i];
+    sum += hibit + std::to_integer<unsigned char>(buf[base::ToSize(i)]);
   }
 
   return static_cast<int>(sum);

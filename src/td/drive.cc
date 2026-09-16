@@ -138,7 +138,7 @@ void DriveClass::Do_Turn(DirType dir) {
                         (static_cast<int>(face) + facediff),
                     Coord);
 
-        Path[0] = FACING_NONE;
+        base::At(Path, 0) = FACING_NONE;
         Set_Speed(0xFF);  // Full speed.
       }
     } else {
@@ -562,7 +562,7 @@ void DriveClass::Assign_Destination(TARGET target) {
         if (Ground[Map[cell].Land_Type()].Cost[Class->Speed]) {
           if (Transmit_Message(RADIO_DOCKING) == RADIO_ROGER) {
             FootClass::Assign_Destination(target);
-            Path[0] = FACING_NONE;
+            base::At(Path, 0) = FACING_NONE;
             return;
           }
 
@@ -580,7 +580,7 @@ void DriveClass::Assign_Destination(TARGET target) {
   **	Set the unit's navigation computer.
   */
   FootClass::Assign_Destination(target);
-  Path[0] = FACING_NONE;  // Force recalculation of path.
+  base::At(Path, 0) = FACING_NONE;  // Force recalculation of path.
   if (!IsDriving) {
     Start_Of_Move();
   }
@@ -638,9 +638,10 @@ bool DriveClass::While_Moving() {
     } else {
       tracknum = track->Track;
     }
-    const TrackType* ptr = base::At(RawTracks, tracknum - 1)
-                               .Track;    // Pointer to coord offset values.
-    const FacingType nextface = Path[0];  // Next facing queued in path.
+    auto ptr = base::At(RawTracks, tracknum - 1)
+                   .Track;  // Pointer to coord offset values.
+    const FacingType nextface =
+        base::At(Path, 0);  // Next facing queued in path.
 
     /*
     **	Determine if there is a turn coming up. If there is
@@ -661,9 +662,9 @@ bool DriveClass::While_Moving() {
 
       actual -= PIXEL_LEPTON_W;
 
-      COORDINATE const offset = ptr[TrackIndex].Offset;
+      COORDINATE const offset = ptr[base::ToSize(TrackIndex)].Offset;
       if (offset || !TrackIndex) {
-        DirType dir = ptr[TrackIndex].Facing;
+        DirType dir = ptr[base::ToSize(TrackIndex)].Facing;
         Coord = Smooth_Turn(offset, &dir);
 
         PrimaryFacing.Set(dir);
@@ -721,9 +722,9 @@ bool DriveClass::While_Moving() {
                   base::MoveBytes(std::as_writable_bytes(base::Suffix(Path, 0)),
                                   std::as_bytes(base::Suffix(Path, 1)),
                                   kConquerPathMax - 1);
-                  Path[kConquerPathMax - 1] = FACING_NONE;
+                  base::At(Path, kConquerPathMax - 1) = FACING_NONE;
                 } else {
-                  Path[0] = FACING_NONE;
+                  base::At(Path, 0) = FACING_NONE;
                   TrackNumber = -1;
                   actual = 0;
                 }
@@ -808,7 +809,7 @@ void DriveClass::Per_Cell_Process(bool center) {
   if (center && As_Cell(NavCom) == cell) {
     IsTurretLockedDown = false;
     NavCom = kTargetNone;
-    Path[0] = FACING_NONE;
+    base::At(Path, 0) = FACING_NONE;
   }
 
 #ifdef NEVER
@@ -854,7 +855,7 @@ bool DriveClass::Start_Of_Move() {
   CELL destcell = 0;    // Cell of destination.
   COORDINATE dest = 0;  // Destination coordinate.
 
-  FacingType facing = Path[0];  // Direction movement will commence.
+  FacingType facing = base::At(Path, 0);  // Direction movement will commence.
 
   if (!Target_Legal(NavCom) && facing == FACING_NONE) {
     IsTurretLockedDown = false;
@@ -893,7 +894,7 @@ bool DriveClass::Start_Of_Move() {
 
     if (dist < kConquerPathMax) {
       base::At(Path, dist) = FACING_NONE;
-      facing = Path[0];  // Maybe needed.
+      facing = base::At(Path, 0);  // Maybe needed.
     }
     //			}
   }
@@ -955,7 +956,8 @@ bool DriveClass::Start_Of_Move() {
     **	blocked by a friendly temporary blockage, then cause that blockage
     **	to scatter.
     */
-    const CELL cell = Adjacent_Cell(Coord_Cell(Center_Coord()), Path[0]);
+    const CELL cell =
+        Adjacent_Cell(Coord_Cell(Center_Coord()), base::At(Path, 0));
     if (Map.In_Radar(cell) && (Can_Enter_Cell(cell) == MOVE_TEMP)) {
       CellClass* cellptr = &Map[cell];
       const TechnoClass* blockage = cellptr->Cell_Techno();
@@ -968,7 +970,7 @@ bool DriveClass::Start_Of_Move() {
     }
 
     TryTryAgain = kPathRetry;
-    facing = Path[0];
+    facing = base::At(Path, 0);
   }
 
   if (Class->IsLockTurret || !Class->IsTurretEquipped) {
@@ -1042,7 +1044,7 @@ bool DriveClass::Start_Of_Move() {
 
     Stop_Driver();
     if (cando != MOVE_MOVING_BLOCK) {
-      Path[0] = FACING_NONE;  // Path is blocked!
+      base::At(Path, 0) = FACING_NONE;  // Path is blocked!
     }
 
     /*
@@ -1108,7 +1110,7 @@ bool DriveClass::Start_Of_Move() {
   **	occupied AS this unit is moving into it.
   */
   if (cando != MOVE_OK) {
-    Path[0] = FACING_NONE;  // Path is blocked!
+    base::At(Path, 0) = FACING_NONE;  // Path is blocked!
     TrackNumber = -1;
     dest = 0;
   } else {
@@ -1117,7 +1119,7 @@ bool DriveClass::Start_Of_Move() {
     /*
     **	Determine which track to use (based on recorded path).
     */
-    FacingType nextface = Path[1];
+    FacingType nextface = base::At(Path, 1);
     if (nextface == FACING_NONE) {
       nextface = facing;
     }
@@ -1126,7 +1128,7 @@ bool DriveClass::Start_Of_Move() {
     TrackNumber =
         (static_cast<int>(facing) * kFacingCount) + static_cast<int>(nextface);
     if (base::At(TrackControl, TrackNumber).Track == 0) {
-      Path[0] = FACING_NONE;
+      base::At(Path, 0) = FACING_NONE;
       TrackNumber = -1;
       return true;
     }
@@ -1162,7 +1164,7 @@ bool DriveClass::Start_Of_Move() {
           Map[destcell].Shimmer();
         }
 
-        Path[0] = FACING_NONE;  // Path is blocked!
+        base::At(Path, 0) = FACING_NONE;  // Path is blocked!
         TrackNumber = -1;
         dest = 0;
         if (cando == MOVE_DESTROYABLE) {
@@ -1187,7 +1189,7 @@ bool DriveClass::Start_Of_Move() {
         base::MoveBytes(std::as_writable_bytes(base::Suffix(Path, 0)),
                         std::as_bytes(base::Suffix(Path, 2)),
                         kConquerPathMax - 2);
-        Path[kConquerPathMax - 2] = FACING_NONE;
+        base::At(Path, kConquerPathMax - 2) = FACING_NONE;
         IsPlanningToLook = true;
       }
     } else {
@@ -1195,14 +1197,14 @@ bool DriveClass::Start_Of_Move() {
                       std::as_bytes(base::Suffix(Path, 1)),
                       kConquerPathMax - 1);
     }
-    Path[kConquerPathMax - 1] = FACING_NONE;
+    base::At(Path, kConquerPathMax - 1) = FACING_NONE;
   }
 
   IsNewNavCom = false;
   TrackIndex = 0;
   if (!Start_Driver(dest)) {
     TrackNumber = -1;
-    Path[0] = FACING_NONE;
+    base::At(Path, 0) = FACING_NONE;
     Set_Speed(0);
   }
   return false;
@@ -1246,7 +1248,8 @@ void DriveClass::AI() {
     if (!IsActive) {
       return;
     }
-    if (TrackNumber == -1 && (Target_Legal(NavCom) || Path[0] != FACING_NONE)) {
+    if (TrackNumber == -1 &&
+        (Target_Legal(NavCom) || base::At(Path, 0) != FACING_NONE)) {
       Start_Of_Move();
       While_Moving();
       if (!IsActive) {
@@ -1279,7 +1282,7 @@ void DriveClass::AI() {
       **	then start on a new track.
       */
       if (Mission != MISSION_GUARD || NavCom != kTargetNone) {
-        if (Target_Legal(NavCom) || Path[0] != FACING_NONE) {
+        if (Target_Legal(NavCom) || base::At(Path, 0) != FACING_NONE) {
           Start_Of_Move();
           While_Moving();
           if (!IsActive) {
@@ -1345,7 +1348,7 @@ void DriveClass::Fixup_Path(PathType* path) {
        static_cast<FacingType>(1), static_cast<FacingType>(0)}};
 
   int counter = 0;            // Path addition
-  FacingType* ptr = nullptr;  // Path list pointer.
+  std::span<FacingType> ptr;  // Path list pointer.
 
   /*
   **	Verify that the unit is valid and there is a path problem to resolve.
@@ -1377,19 +1380,17 @@ void DriveClass::Fixup_Path(PathType* path) {
   // The diagonal facings are the odd ones.
   if (static_cast<int>(Dir_Facing(PrimaryFacing)) % 2 != 0) {
     ptr = base::Suffix(base::At(_dpath, std::abs(facediff) - 1),
-                       1)
-              .data();  // Pointer to path adjust list.
+                       1);  // Pointer to path adjust list.
     counter =
         static_cast<int>(base::At(base::At(_dpath, std::abs(facediff) - 1),
                                   0));  // Number of path adjusts.
   } else {
     ptr = base::Suffix(base::At(_path, std::abs(facediff) - 1),
-                       1)
-              .data();  // Pointer to path adjust list.
+                       1);  // Pointer to path adjust list.
     counter = static_cast<int>(base::At(base::At(_path, std::abs(facediff) - 1),
                                         0));  // Number of path adjusts.
   }
-  FacingType* ptr2 = ptr;  // Copy of new path list pointer.
+  const auto ptr2 = ptr;  // Copy of new path list pointer.
 
   bool ok = true;  // Presume adjustment is all ok.
   CELL cell =
@@ -1402,9 +1403,9 @@ void DriveClass::Fixup_Path(PathType* path) {
     **	working path list.
     */
     if (facediff > 0) {
-      nextpath = nextpath + *ptr++;
+      nextpath = nextpath + base::ConsumeFront(ptr);
     } else {
-      nextpath = nextpath - *ptr++;
+      nextpath = nextpath - base::ConsumeFront(ptr);
     }
     base::At(stage, index) = nextpath;
     cell = Adjacent_Cell(cell, nextpath);
@@ -1438,9 +1439,9 @@ void DriveClass::Fixup_Path(PathType* path) {
       **	working path list.
       */
       if (facediff > 0) {
-        nextpath = nextpath + *ptr++;
+        nextpath = nextpath + base::ConsumeFront(ptr);
       } else {
-        nextpath = nextpath - *ptr++;
+        nextpath = nextpath - base::ConsumeFront(ptr);
       }
       base::At(stage, index) = nextpath;
       cell = Coord_Cell(Adjacent_Cell(Cell_Coord(cell), nextpath));
@@ -1464,7 +1465,9 @@ void DriveClass::Fixup_Path(PathType* path) {
   */
   if (ok) {
     if (path->Length <= 1) {
-      memmove(path->Command, &stage[0], base::ToSize(std::max(counter, 1)));
+      std::ranges::copy(
+          std::span(stage).first(base::ToSize(std::max(counter, 1))),
+          path->Command.begin());
       path->Length = counter;
     } else {
       /*
@@ -1483,13 +1486,16 @@ void DriveClass::Fixup_Path(PathType* path) {
       **	insert the rest now.
       */
       if (counter) {
-        memmove(&path->Command[counter], &path->Command[0],
-                base::ToSize(40 - counter));
-        memmove(&path->Command[0], &stage[0], base::ToSize(counter));
+        base::MoveBytes(std::as_writable_bytes(
+                            path->Command.subspan(base::ToSize(counter))),
+                        std::as_bytes(path->Command),
+                        base::ToSize(40 - counter));
+        base::CopyBytes(std::as_writable_bytes(path->Command),
+                        base::ObjectBytes(stage), base::ToSize(counter));
         path->Length += counter;
       }
     }
-    path->Command[path->Length] = FACING_NONE;
+    path->Command[base::ToSize(path->Length)] = FACING_NONE;
   }
 }
 
@@ -1550,13 +1556,14 @@ void DriveClass::Mark_Track(COORDINATE headto, MarkType type) {
       */
       const int tracknum = base::At(TrackControl, TrackNumber).Track;
       if (tracknum) {
-        const TrackType* ptr = base::At(RawTracks, tracknum - 1).Track;
+        const auto ptr = base::At(RawTracks, tracknum - 1).Track;
         const int cellidx = base::At(RawTracks, tracknum - 1).Cell;
         if (cellidx > -1) {
-          DirType dir = ptr[cellidx].Facing;
+          DirType dir = ptr[base::ToSize(cellidx)].Facing;
 
           if (TrackIndex < cellidx && cellidx != -1) {
-            const COORDINATE offset = Smooth_Turn(ptr[cellidx].Offset, &dir);
+            const COORDINATE offset =
+                Smooth_Turn(ptr[base::ToSize(cellidx)].Offset, &dir);
             Map[Coord_Cell(offset)].Flag.Occupy.Vehicle = value;
           }
         }

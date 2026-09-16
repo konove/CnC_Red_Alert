@@ -221,7 +221,7 @@ void GScreenClass::ResetTransientUiState() {
 void DisplayClass::ResetTransientUiState() {
   GScreenClass::ResetTransientUiState();
   PendingObject = nullptr;
-  CursorSize = nullptr;
+  CursorSize = {};
   ProximityCheck = false;
   IsDisplayToRedraw = true;
   IsRepairMode = false;
@@ -282,7 +282,7 @@ void HelpClass::ResetTransientUiState() {
   Text = TXT_NONE;
   Color = kLtGrey;
   CountDownTimer.Set(0);
-  OverlapList[0] = REFRESH_EOL;
+  base::At(OverlapList, 0) = REFRESH_EOL;
 }
 
 void ScrollClass::ResetTransientUiState() {

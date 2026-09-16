@@ -10,16 +10,16 @@
 
 inline void BStart(BenchType bench) {
   if constexpr (config::kCheatKeysEnabled) {
-    if (Benches != nullptr) {
-      Benches[static_cast<int>(bench)].Begin();
+    if (!Benches.empty()) {
+      Benches[static_cast<size_t>(bench)].Begin();
     }
   }
 }
 
 inline void BEnd(BenchType bench) {
   if constexpr (config::kCheatKeysEnabled) {
-    if (Benches != nullptr) {
-      Benches[static_cast<int>(bench)].End();
+    if (!Benches.empty()) {
+      Benches[static_cast<size_t>(bench)].End();
     }
   }
 }

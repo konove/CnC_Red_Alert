@@ -46,6 +46,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <span>
 #include <utility>
 
 #include "base/array.h"
@@ -76,38 +77,20 @@
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-void SHAEngine::Process_Partial(const void*& data, int32_t& length) {
-  if (length == 0 || data == nullptr) {
+void SHAEngine::Process_Partial(std::span<const std::byte>& data) {
+  if (data.empty() || (PartialCount == 0 && data.size() >= SRC_BLOCK_SIZE)) {
     return;
   }
-
-  /*
-  **	If there is no partial buffer and the source is greater than
-  **	a source block size, then partial processing is unnecessary.
-  **	Bail out in this case.
-  */
-  if (PartialCount == 0 && length >= SRC_BLOCK_SIZE) {
-    return;
-  }
-
-  /*
-  **	Attach as many bytes as possible from the source data into
-  **	the staging buffer.
-  */
-  const int add_count = std::min(length, SRC_BLOCK_SIZE - PartialCount);
-  memcpy(base::Suffix(Partial, PartialCount).data(), data,
-         base::ToSize(add_count));
-  data = static_cast<const char*>(data) + add_count;
-  PartialCount += add_count;
-  length -= add_count;
-
-  /*
-  **	If a full staging buffer has been accumulated, then process
-  **	the staging buffer and then bail.
-  */
+  const auto count = std::min(
+      data.size(), static_cast<std::size_t>(SRC_BLOCK_SIZE - PartialCount));
+  base::CopyBytes(
+      base::ObjectBytes(Partial).subspan(base::ToSize(PartialCount)), data,
+      count);
+  data = data.subspan(count);
+  PartialCount += static_cast<int>(count);
   if (PartialCount == SRC_BLOCK_SIZE) {
-    Process_Block(&Partial[0], Acc);
-    Length += static_cast<int32_t>(SRC_BLOCK_SIZE);
+    Process_Block(base::ObjectBytes(Partial), Acc);
+    Length += SRC_BLOCK_SIZE;
     PartialCount = 0;
   }
 }
@@ -129,45 +112,15 @@ void SHAEngine::Process_Partial(const void*& data, int32_t& length) {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-void SHAEngine::Hash(const void* data, int32_t length) {
+void SHAEngine::Hash(std::span<const std::byte> data) {
   IsCached = false;
-
-  /*
-  **	Check for and handle any smaller-than-512bit blocks. This can
-  **	result in all of the source data submitted to this routine to be
-  **	consumed at this point.
-  */
-  Process_Partial(data, length);
-
-  /*
-  **	If there is no more source data to process, then bail. Speed reasons.
-  */
-  if (length == 0) {
-    return;
+  Process_Partial(data);
+  while (data.size() >= SRC_BLOCK_SIZE) {
+    Process_Block(data.first(SRC_BLOCK_SIZE), Acc);
+    Length += SRC_BLOCK_SIZE;
+    data = data.subspan(SRC_BLOCK_SIZE);
   }
-
-  /*
-  **	First process all the whole blocks available in the source data.
-  */
-  // source advances a whole block at a time, and it is typed in words, so the
-  // step has to be expressed in words rather than bytes.
-  constexpr int kWordsPerBlock = SRC_BLOCK_SIZE / sizeof(uint32_t);
-
-  const int32_t blocks = length / SRC_BLOCK_SIZE;
-  const auto* source = static_cast<const uint32_t*>(data);
-  for (int bcount = 0; bcount < blocks; bcount++) {
-    Process_Block(source, Acc);
-    Length += static_cast<int32_t>(SRC_BLOCK_SIZE);
-    source += kWordsPerBlock;
-    length -= static_cast<int32_t>(SRC_BLOCK_SIZE);
-  }
-
-  /*
-  **	Process any remainder bytes. This data is stored in the source
-  **	accumulator buffer for future processing.
-  */
-  data = source;
-  Process_Partial(data, length);
+  Process_Partial(data);
 }
 
 // Byte-swaps a 32-bit word.
@@ -223,10 +176,9 @@ Sha1Digest SHAEngine::Digest() const {
   Accumulator acc = Acc;
   if (SRC_BLOCK_SIZE - partialcount < 9) {
     if (partialcount + 1 < SRC_BLOCK_SIZE) {
-      memset(base::Suffix(partial, partialcount + 1).data(), '\0',
-             base::ToSize(SRC_BLOCK_SIZE - (partialcount + 1)));
+      std::ranges::fill(base::Suffix(partial, partialcount + 1), '\0');
     }
-    Process_Block(&partial[0], acc);
+    Process_Block(base::ObjectBytes(partial), acc);
     partialcount = 0;
   } else {
     partialcount++;
@@ -236,11 +188,10 @@ Sha1Digest SHAEngine::Digest() const {
   **	Put the length of the source data as a 64 bit integer in the
   **	last 8 bytes of the pseudo-source data.
   */
-  memset(base::Suffix(partial, partialcount).data(), '\0',
-         base::ToSize(SRC_BLOCK_SIZE - partialcount));
-  port::WriteUnaligned(&partial[SRC_BLOCK_SIZE - 4],
+  std::ranges::fill(base::Suffix(partial, partialcount), '\0');
+  port::WriteUnaligned(base::ObjectBytes(partial).last(4),
                        Reverse_LONG(static_cast<uint32_t>(length * 8)));
-  Process_Block(&partial[0], acc);
+  Process_Block(base::ObjectBytes(partial), acc);
 
   // Each word is stored most significant byte first.
   for (std::size_t word = 0; word < acc.size(); ++word) {
@@ -272,7 +223,6 @@ static T rotl(T X, unsigned n) {
 // long)X ) << (int)n ) | (unsigned long)( ((unsigned long) X ) >> (
 //(int)((int)(sizeof(long)*(long)8) - (long)n) ) ) );
 // }
-void memrev(char* buffer, size_t length);
 
 /***********************************************************************************************
  * SHAEngine::Process_Block -- Process a full data block into the hash
@@ -292,7 +242,8 @@ void memrev(char* buffer, size_t length);
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-void SHAEngine::Process_Block(const void* source, Accumulator& acc) {
+void SHAEngine::Process_Block(std::span<const std::byte> source,
+                              Accumulator& acc) {
   /*
   **	The hash is generated by performing operations on a
   **	block of generated/seeded data.
@@ -303,10 +254,10 @@ void SHAEngine::Process_Block(const void* source, Accumulator& acc) {
   **	Expand the source data into a large 80 * 32bit buffer. This is the
   *working *	data that will be transformed by the secure hash algorithm.
   */
-  const auto* data = static_cast<const uint32_t*>(source);
   for (int index = 0; std::cmp_less(index, SRC_BLOCK_SIZE / sizeof(uint32_t));
        index++) {
-    base::At(block, index) = Reverse_LONG(data[index]);
+    base::At(block, index) = Reverse_LONG(port::ReadUnaligned<uint32_t>(
+        source.subspan(base::ToSize(index) * sizeof(uint32_t))));
   }
 
   for (int index = SRC_BLOCK_SIZE / sizeof(uint32_t);

@@ -85,7 +85,7 @@ class LZWEngine {
   unsigned char decode_stack[kTableSize]{};
 
   int Find_Child_Node(CodeType parent_code, unsigned char child_character);
-  int Decode_String(unsigned char* ptr, CodeType code);
+  int Decode_String(std::span<unsigned char> output, CodeType code);
   static int Make_LZW_Hash(CodeType code, unsigned char character);
 };
 

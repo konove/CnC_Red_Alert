@@ -6,6 +6,7 @@
 #include <span>
 #include <vector>
 
+#include "base/buffer.h"
 #include "base/numeric.h"
 #include "gtest/gtest.h"
 #include "td/cell.h"
@@ -108,7 +109,8 @@ TEST_F(TdArchiveRoundTripTest, EventConstructorsClearExecutionFlagAndUnusedWireB
     EXPECT_EQ(event->IsExecuted, 0U);
     EXPECT_EQ(event->MPlayerID, 0);
     std::array<unsigned char, sizeof(EventClass)> expected_bytes{};
-    std::memcpy(expected_bytes.data(), &expected, sizeof(expected));
+    base::CopyBytes(std::as_writable_bytes(std::span(expected_bytes)),
+                    base::ObjectBytes(expected), sizeof(expected));
     EXPECT_EQ(storage, expected_bytes);
     event->~EventClass();
   };
@@ -254,7 +256,7 @@ TEST_F(TdArchiveRoundTripTest, HouseRestoresEconomyFlagsTimersAndTypeIdentity) {
   HouseClass restored;
   ASSERT_TRUE(Restore(restored, bytes));
   EXPECT_EQ(restored.Class, house.Class);
-  EXPECT_EQ(restored.RemapTable, house.RemapTable);
+  EXPECT_EQ(restored.RemapTable.data(), house.RemapTable.data());
   EXPECT_EQ(restored.Credits, house.Credits);
   EXPECT_EQ(restored.InitialCredits, house.InitialCredits);
   EXPECT_TRUE(restored.IsHuman && restored.IsAlerted);

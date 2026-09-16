@@ -41,6 +41,10 @@
 
 #include "tech/base64.h"
 
+#include <cstddef>
+#include <span>
+#include <string_view>
+
 #include "base/array.h"
 
 /*
@@ -49,13 +53,13 @@
 *necessary to accomplish this. *	The pad character lets the decoder know
 *of this condition and it will compensate *	accordingly.
 */
-static const char* const kPad = "=";
+static constexpr char kPad = '=';
 
 /*
 **	This encoder translation table will convert a 6 bit number into an ASCII
 *character.
 */
-static const char* const kEncoder =
+static constexpr std::string_view kEncoder =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 /*
@@ -134,11 +138,12 @@ typedef union {
  *                                                                                             *
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
-int Base64_Encode(const void* source, int slen, void* dest, int dlen) {
+int Base64_Encode(std::span<const std::byte> source,
+                  std::span<std::byte> dest) {
   /*
   **	Check the parameters for legality.
   */
-  if (source == nullptr || slen == 0 || dest == nullptr || dlen == 0) {
+  if (source.empty() || dest.empty()) {
     return 0;
   }
 
@@ -148,8 +153,10 @@ int Base64_Encode(const void* source, int slen, void* dest, int dlen) {
   **	during the decode process).
   */
   int total = 0;
-  const auto* sptr = static_cast<const unsigned char*>(source);
-  auto* dptr = static_cast<char*>(dest);
+  std::size_t input = 0;
+  std::size_t output = 0;
+  int slen = static_cast<int>(source.size());
+  int dlen = static_cast<int>(dest.size());
   while (slen > 0 && dlen >= PacketChars) {
     /*
     **	Fetch 24 bits of source data.
@@ -158,16 +165,16 @@ int Base64_Encode(const void* source, int slen, void* dest, int dlen) {
 
     int pad = 0;
     packet.Raw = 0;
-    packet.Char.C1 = *sptr++;
+    packet.Char.C1 = std::to_integer<unsigned char>(source[input++]);
     slen--;
     if (slen) {
-      packet.Char.C2 = *sptr++;
+      packet.Char.C2 = std::to_integer<unsigned char>(source[input++]);
       slen--;
     } else {
       pad++;
     }
     if (slen) {
-      packet.Char.C3 = *sptr++;
+      packet.Char.C3 = std::to_integer<unsigned char>(source[input++]);
       slen--;
     } else {
       pad++;
@@ -177,17 +184,17 @@ int Base64_Encode(const void* source, int slen, void* dest, int dlen) {
     **	Translate and write 4 characters of Base64 data. Pad with pad
     **	characters if there is insufficient source data for a full packet.
     */
-    *dptr++ = kEncoder[packet.SubCode.O1];
-    *dptr++ = kEncoder[packet.SubCode.O2];
+    dest[output++] = static_cast<std::byte>(kEncoder[packet.SubCode.O1]);
+    dest[output++] = static_cast<std::byte>(kEncoder[packet.SubCode.O2]);
     if (pad < 2) {
-      *dptr++ = kEncoder[packet.SubCode.O3];
+      dest[output++] = static_cast<std::byte>(kEncoder[packet.SubCode.O3]);
     } else {
-      *dptr++ = kPad[0];
+      dest[output++] = static_cast<std::byte>(kPad);
     }
     if (pad < 1) {
-      *dptr++ = kEncoder[packet.SubCode.O4];
+      dest[output++] = static_cast<std::byte>(kEncoder[packet.SubCode.O4]);
     } else {
-      *dptr++ = kPad[0];
+      dest[output++] = static_cast<std::byte>(kPad);
     }
 
     dlen -= PacketChars;
@@ -198,7 +205,7 @@ int Base64_Encode(const void* source, int slen, void* dest, int dlen) {
   **	Add a trailing null as a courtesy measure.
   */
   if (dlen > 0) {
-    *dptr = '\0';
+    dest[output] = std::byte{0};
   }
 
   /*
@@ -234,17 +241,20 @@ int Base64_Encode(const void* source, int slen, void* dest, int dlen) {
  *                                                                                             *
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
-int Base64_Decode(const void* source, int slen, void* dest, int dlen) {
+int Base64_Decode(std::span<const std::byte> source,
+                  std::span<std::byte> dest) {
   /*
   **	Check the parameters for legality.
   */
-  if (source == nullptr || slen == 0 || dest == nullptr || dlen == 0) {
+  if (source.empty() || dest.empty()) {
     return 0;
   }
 
   int total = 0;
-  const auto* sptr = static_cast<const unsigned char*>(source);
-  auto* dptr = static_cast<unsigned char*>(dest);
+  std::size_t input = 0;
+  std::size_t output = 0;
+  int slen = static_cast<int>(source.size());
+  int dlen = static_cast<int>(dest.size());
   while (slen > 0 && dlen > 0) {
     PacketType packet;
     packet.Raw = 0;
@@ -255,7 +265,7 @@ int Base64_Decode(const void* source, int slen, void* dest, int dlen) {
     */
     int pcount = 0;
     while (pcount < PacketChars && slen > 0) {
-      const unsigned char c = *sptr++;
+      const auto c = std::to_integer<unsigned char>(source[input++]);
       slen--;
 
       const unsigned char code = base::At(kDecoder, c);
@@ -302,16 +312,16 @@ int Base64_Decode(const void* source, int slen, void* dest, int dlen) {
     /*
     **	A packet block is ready for output into the destination buffer.
     */
-    *dptr++ = packet.Char.C1;
+    dest[output++] = static_cast<std::byte>(packet.Char.C1);
     dlen--;
     total++;
     if (dlen > 0 && pcount > 2) {
-      *dptr++ = packet.Char.C2;
+      dest[output++] = static_cast<std::byte>(packet.Char.C2);
       dlen--;
       total++;
     }
     if (dlen > 0 && pcount > 3) {
-      *dptr++ = packet.Char.C3;
+      dest[output++] = static_cast<std::byte>(packet.Char.C3);
       dlen--;
       total++;
     }

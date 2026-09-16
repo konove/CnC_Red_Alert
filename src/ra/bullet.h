@@ -42,6 +42,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <span>
 
 #include "absl/base/attributes.h"
 #include "ra/ccptr.h"
@@ -115,9 +116,9 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   void Draw_It(int x, int y, WindowNumberType window) const override;
   bool Mark(MarkType mark = MARK_CHANGE) override;
   void AI() override;
-  [[nodiscard]] const int16_t* Occupy_List(
+  [[nodiscard]] std::span<const int16_t> Occupy_List(
       bool /*placement*/ = false) const override;
-  [[nodiscard]] const int16_t* Overlap_List(
+  [[nodiscard]] std::span<const int16_t> Overlap_List(
       bool /*redraw*/ = false) const override {
     return Occupy_List(false);
   }

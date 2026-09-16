@@ -41,11 +41,17 @@
 #ifndef CNC_RED_ALERT_TD_TYPE_H_
 #define CNC_RED_ALERT_TD_TYPE_H_
 
+#include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <span>
+#include <utility>
+#include <vector>
 
 #include "absl/base/attributes.h"
+#include "base/array.h"
 #include "base/enum_array.h"
+#include "port/safe_string.h"
 #include "td/defines.h"
 #include "td/object.h"
 
@@ -184,7 +190,7 @@ class HouseTypeClass {
   /*
   **	This points to the default remap table for this house.
   */
-  const unsigned char* RemapTable;
+  std::span<const unsigned char> RemapTable;
   PlayerColorType RemapColor;
 
   /*
@@ -195,12 +201,12 @@ class HouseTypeClass {
   char Prefix;
 
   //------------------------------------------------------------------------
-  HouseTypeClass(HousesType house,
-                 const char* ini ABSL_ATTRIBUTE_LIFETIME_BOUND, int fullname,
-                 const char* ext, int lemon, int color, int bright_color,
-                 PlayerColorType remapcolor,
-                 const unsigned char* remap ABSL_ATTRIBUTE_LIFETIME_BOUND,
-                 char prefix) noexcept;
+  HouseTypeClass(
+      HousesType house, const char* ini ABSL_ATTRIBUTE_LIFETIME_BOUND,
+      int fullname, const char* ext, int lemon, int color, int bright_color,
+      PlayerColorType remapcolor,
+      std::span<const unsigned char> remap ABSL_ATTRIBUTE_LIFETIME_BOUND,
+      char prefix) noexcept;
 
   static HousesType From_Name(const char* name);
   static const HouseTypeClass& As_Reference(HousesType house);
@@ -238,7 +244,7 @@ class AbstractTypeClass {
   void Serialize(Archive& ar) {
     ar(IniName, Name);
     if constexpr (Archive::kIsReading) {
-      if (IniName[sizeof(IniName) - 1] != '\0') {
+      if (base::At(IniName, sizeof(IniName) - 1) != '\0') {
         ar.Fail("unterminated saved type name");
       }
     }
@@ -256,10 +262,7 @@ class AbstractTypeClass {
 
   [[nodiscard]] virtual COORDINATE Coord_Fixup(COORDINATE coord) const;
   [[nodiscard]] virtual int Full_Name() const;
-  void Set_Name(const char* buf) {
-    strncpy(IniName, buf, sizeof(IniName));
-    IniName[sizeof(IniName) - 1] = '\0';
-  }
+  void Set_Name(const char* buf) { port::SafeCopy(IniName, buf); }
   [[nodiscard]] virtual uint16_t Get_Ownable() const;
 };
 
@@ -345,13 +348,13 @@ class ObjectTypeClass : public AbstractTypeClass {
   *to this otherwise const object.
   */
   // Resolved when the theater loads; the table itself stays const.
-  mutable const void* ImageData{nullptr};
+  mutable std::span<const std::byte> ImageData;
 
   /*
   **	This points to the radar imagery for this object.
   */
   // Resolved when the theater loads; the table itself stays const.
-  mutable const void* RadarIcon = nullptr;
+  mutable std::vector<uint8_t> RadarIcon;
 
   //--------------------------------------------------------------------
   ObjectTypeClass(bool is_sentient, bool is_flammable, bool is_crushable,
@@ -370,30 +373,36 @@ class ObjectTypeClass : public AbstractTypeClass {
   [[nodiscard]] virtual int Cost_Of() const;
   [[nodiscard]] virtual int Time_To_Build(HousesType house) const;
   virtual ObjectClass* Create_One_Of(HouseClass*) const = 0;
-  [[nodiscard]] virtual const int16_t* Occupy_List(
+  [[nodiscard]] virtual std::span<const int16_t> Occupy_List(
       bool placement = false) const;
-  [[nodiscard]] virtual const int16_t* Overlap_List() const;
+  [[nodiscard]] virtual std::span<const int16_t> Overlap_List() const;
   [[nodiscard]] virtual BuildingClass* Who_Can_Build_Me(
       bool /*unused*/, bool /*unused*/, HousesType /*unused*/) const;
-  [[nodiscard]] virtual const void* Get_Cameo_Data() const;
-  [[nodiscard]] const void* Get_Image_Data() const { return ImageData; }
-  [[nodiscard]] const void* Get_Radar_Data() const { return RadarIcon; }
+  [[nodiscard]] virtual std::span<const std::byte> Get_Cameo_Data() const;
+  [[nodiscard]] std::span<const std::byte> Get_Image_Data() const {
+    return ImageData;
+  }
+  [[nodiscard]] std::span<const uint8_t> Get_Radar_Data() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return RadarIcon;
+  }
   // Points this type at freshly loaded shape data; nullptr clears it. The
   // memory is owned by the archive or loader, never by this object.
-  void Set_Image_Data(const void* data) const { ImageData = data; }
+  void Set_Image_Data(std::span<const std::byte> data) const {
+    ImageData = data;
+  }
   // Installs a radar icon built by Get_Radar_Icon(), taking ownership and
   // freeing the previous one, if any. nullptr clears it.
-  void Set_Radar_Icon(const void* icon) const {
-    delete[] static_cast<const unsigned char*>(RadarIcon);
-    RadarIcon = icon;
+  void Set_Radar_Icon(std::vector<uint8_t> icon) const {
+    RadarIcon = std::move(icon);
   }
 
   virtual void Display(int /*unused*/, int /*unused*/,
                        WindowNumberType /*unused*/,
                        HousesType /*unused*/) const {}
 
-  static const void* SelectShapes;
-  static const void* PipShapes;
+  static std::span<const std::byte> SelectShapes;
+  static std::span<const std::byte> PipShapes;
 };
 
 /***************************************************************************
@@ -530,7 +539,7 @@ class TechnoTypeClass : public ObjectTypeClass {
   **	the sidebar for construction selection purposes.
   */
   // Resolved when the theater loads; the table itself stays const.
-  mutable const void* CameoData{nullptr};
+  mutable std::span<const std::byte> CameoData;
 
   /*
   **	These are the weapons that this techno object is armed with.
@@ -555,9 +564,11 @@ class TechnoTypeClass : public ObjectTypeClass {
   [[nodiscard]] virtual int Max_Passengers() const;
   [[nodiscard]] virtual int Repair_Cost() const;
   [[nodiscard]] virtual int Repair_Step() const;
-  [[nodiscard]] const void* Get_Cameo_Data() const override;
+  [[nodiscard]] std::span<const std::byte> Get_Cameo_Data() const override;
   // Points this type at its sidebar cameo shape; nullptr clears it.
-  void Set_Cameo_Data(const void* data) const { CameoData = data; }
+  void Set_Cameo_Data(std::span<const std::byte> data) const {
+    CameoData = data;
+  }
   [[nodiscard]] int Cost_Of() const override;
   [[nodiscard]] int Time_To_Build(HousesType house) const override;
   [[nodiscard]] uint16_t Get_Ownable() const override;
@@ -650,7 +661,7 @@ class BuildingTypeClass : public TechnoTypeClass {
     *that are *	more suitable than others. This list is here to inform the
     *system which *	directions those are.
     */
-    const int16_t* ExitList;
+    std::span<const int16_t> ExitList;
 
     /*
     **	This is the structure type identifier. It can serve as a unique
@@ -731,9 +742,10 @@ class BuildingTypeClass : public TechnoTypeClass {
         int scenario, int risk, int reward, int ownable, WeaponType primary,
         WeaponType secondary, ArmorType armor, uint32_t canenter, int capacity,
         int power, int drain, BSizeType size,
-        const int16_t* exitlist ABSL_ATTRIBUTE_LIFETIME_BOUND,
-        const int16_t* sizelist ABSL_ATTRIBUTE_LIFETIME_BOUND,
-        const int16_t* overlap ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept;
+        std::span<const int16_t> exitlist ABSL_ATTRIBUTE_LIFETIME_BOUND,
+        std::span<const int16_t> sizelist ABSL_ATTRIBUTE_LIFETIME_BOUND,
+        std::span<const int16_t> overlap
+            ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept;
     [[nodiscard]] RTTIType What_Am_I() const override {
       return RTTI_BUILDINGTYPE;
     }
@@ -762,12 +774,12 @@ class BuildingTypeClass : public TechnoTypeClass {
   // NOLINTNEXTLINE(modernize-use-nodiscard)
   bool Create_And_Place(CELL cell, HousesType house) const override;
   ObjectClass* Create_One_Of(HouseClass* house) const override;
-  [[nodiscard]] const int16_t* Occupy_List(
+  [[nodiscard]] std::span<const int16_t> Occupy_List(
       bool placement = false) const override;
-  [[nodiscard]] const int16_t* Overlap_List() const override;
+  [[nodiscard]] std::span<const int16_t> Overlap_List() const override;
   [[nodiscard]] BuildingClass* Who_Can_Build_Me(
       bool intheory, bool legal, HousesType house) const override;
-  [[nodiscard]] virtual const void* Get_Buildup_Data() const {
+  [[nodiscard]] virtual std::span<const std::byte> Get_Buildup_Data() const {
     return BuildupData;
   }
 
@@ -785,7 +797,7 @@ class BuildingTypeClass : public TechnoTypeClass {
   **	are used to indicate the building's "footprint". This footprint is used
   **	to determine building placement legality and terrain passibility.
   */
-  const int16_t* OccupyList;
+  std::span<const int16_t> OccupyList;
 
   /*
   **	Buildings can often times overlap a cell but not actually "occupy" it
@@ -793,7 +805,7 @@ class BuildingTypeClass : public TechnoTypeClass {
   *indicate which *	cells the building has visual overlap but does not
   *occupy.
   */
-  const int16_t* OverlapList;
+  std::span<const int16_t> OverlapList;
 
   static const base::EnumArray<StructType, const BuildingTypeClass*,
                                kStructCount>
@@ -804,10 +816,12 @@ class BuildingTypeClass : public TechnoTypeClass {
   **	pointed to by this element.
   */
   // Resolved when the theater loads; the table itself stays const.
-  mutable const void* BuildupData = nullptr;
+  mutable std::span<const std::byte> BuildupData;
 
   // Points this type at its construction animation; nullptr clears it.
-  void Set_Buildup_Data(const void* data) const { BuildupData = data; }
+  void Set_Buildup_Data(std::span<const std::byte> data) const {
+    BuildupData = data;
+  }
   void Init_Anim(BStateType state, int start, int count, int rate) const;
 };
 
@@ -978,7 +992,7 @@ class UnitTypeClass : public TechnoTypeClass {
   // NOLINTNEXTLINE(modernize-use-nodiscard)
   bool Create_And_Place(CELL cell, HousesType house) const override;
   ObjectClass* Create_One_Of(HouseClass* house) const override;
-  [[nodiscard]] const int16_t* Occupy_List(
+  [[nodiscard]] std::span<const int16_t> Occupy_List(
       bool placement = false) const override;
   [[nodiscard]] BuildingClass* Who_Can_Build_Me(
       bool intheory, bool legal, HousesType house) const override;
@@ -993,7 +1007,7 @@ class UnitTypeClass : public TechnoTypeClass {
   /*
   **	This is a pointer to the wake shape (as needed by the gunboat).
   */
-  static const void* WakeShapes;
+  static std::span<const std::byte> WakeShapes;
 
  private:
   static const base::EnumArray<UnitType, const UnitTypeClass*, kUnitCount>
@@ -1072,7 +1086,8 @@ class InfantryTypeClass : public TechnoTypeClass {
                     unsigned char level, uint64_t pre, bool is_female,
                     bool is_leader, bool is_crawling, bool is_civilian,
                     bool is_nominal, bool is_fraidycat, bool is_capture,
-                    bool is_theater, int ammo, int* do_table, int firelaunch,
+                    bool is_theater, int ammo,
+                    const int (&do_table)[kDoCount][3], int firelaunch,
                     int pronelaunch, int16_t strength, int sightrange, int cost,
                     int scenario, int risk, int reward, int ownable,
                     WeaponType primary, WeaponType secondary,
@@ -1097,7 +1112,7 @@ class InfantryTypeClass : public TechnoTypeClass {
   // NOLINTNEXTLINE(modernize-use-nodiscard)
   bool Create_And_Place(CELL cell, HousesType house) const override;
   ObjectClass* Create_One_Of(HouseClass* house) const override;
-  [[nodiscard]] const int16_t* Occupy_List(
+  [[nodiscard]] std::span<const int16_t> Occupy_List(
       bool placement = false) const override;
   [[nodiscard]] BuildingClass* Who_Can_Build_Me(
       bool intheory, bool legal, HousesType house) const override;
@@ -1322,8 +1337,8 @@ class TerrainTypeClass : public ObjectTypeClass {
       bool is_crushable, bool is_selectable, bool is_legal_target,
       bool is_insignificant, bool is_immune, const char* ininame, int fullname,
       int16_t strength, ArmorType armor,
-      const int16_t* occupy ABSL_ATTRIBUTE_LIFETIME_BOUND,
-      const int16_t* overlap ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept;
+      std::span<const int16_t> occupy ABSL_ATTRIBUTE_LIFETIME_BOUND,
+      std::span<const int16_t> overlap ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept;
   [[nodiscard]] RTTIType What_Am_I() const override { return RTTI_TERRAINTYPE; }
 
   static TerrainType From_Name(const char* name);
@@ -1341,16 +1356,16 @@ class TerrainTypeClass : public ObjectTypeClass {
   // NOLINTNEXTLINE(modernize-use-nodiscard)
   bool Create_And_Place(CELL cell, HousesType house) const override;
   ObjectClass* Create_One_Of(HouseClass* /*unused*/) const override;
-  [[nodiscard]] const int16_t* Occupy_List(
+  [[nodiscard]] std::span<const int16_t> Occupy_List(
       bool placement = false) const override;
-  [[nodiscard]] const int16_t* Overlap_List() const override;
+  [[nodiscard]] std::span<const int16_t> Overlap_List() const override;
 
   void Display(int x, int y, WindowNumberType window,
                HousesType house = HOUSE_NONE) const override;
 
  private:
-  const int16_t* Occupy;
-  const int16_t* Overlap;
+  std::span<const int16_t> Occupy;
+  std::span<const int16_t> Overlap;
 
   static const base::EnumArray<TerrainType, const TerrainTypeClass*,
                                kTerrainCount>
@@ -1394,13 +1409,13 @@ class TemplateTypeClass : public ObjectTypeClass {
   unsigned char Width, Height;
 
   LandType AltLand;
-  const char* AltIcons;
+  std::span<const char> AltIcons;
 
   //----------------------------------------------------------
   TemplateTypeClass(
       TemplateType iconset, int theater, const char* ininame, int fullname,
       LandType land, int width, int height, LandType altland,
-      const char* alticons ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept;
+      std::span<const char> alticons ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept;
   [[nodiscard]] RTTIType What_Am_I() const override {
     return RTTI_TEMPLATETYPE;
   }
@@ -1421,7 +1436,7 @@ class TemplateTypeClass : public ObjectTypeClass {
   bool Create_And_Place(CELL cell,
                         HousesType house = HOUSE_NONE) const override;
   ObjectClass* Create_One_Of(HouseClass* /*unused*/) const override;
-  [[nodiscard]] const int16_t* Occupy_List(
+  [[nodiscard]] std::span<const int16_t> Occupy_List(
       bool placement = false) const override;
 
   void Display(int x, int y, WindowNumberType window,
@@ -1683,9 +1698,9 @@ class AircraftTypeClass : public TechnoTypeClass {
 
   // Occupation and overlap lists are only meaningful when the aircraft is
   // landed.
-  [[nodiscard]] const int16_t* Occupy_List(
+  [[nodiscard]] std::span<const int16_t> Occupy_List(
       bool placement = false) const override;
-  [[nodiscard]] const int16_t* Overlap_List() const override;
+  [[nodiscard]] std::span<const int16_t> Overlap_List() const override;
 
   // Scans all buildings to find a factory that can produce this aircraft type.
   // Returns the leader building if available, otherwise any eligible building,
@@ -1699,8 +1714,8 @@ class AircraftTypeClass : public TechnoTypeClass {
   void Display(int x, int y, WindowNumberType window,
                HousesType house) const override;
 
-  static const void* LRotorData;
-  static const void* RRotorData;
+  static std::span<const std::byte> LRotorData;
+  static std::span<const std::byte> RRotorData;
 
  private:
   static const base::EnumArray<AircraftType, const AircraftTypeClass*,
@@ -1811,10 +1826,10 @@ class OverlayTypeClass : public ObjectTypeClass {
   bool Create_And_Place(CELL cell,
                         HousesType house = HOUSE_NONE) const override;
   ObjectClass* Create_One_Of(HouseClass* /*unused*/) const override;
-  [[nodiscard]] const int16_t* Occupy_List(
+  [[nodiscard]] std::span<const int16_t> Occupy_List(
       bool placement = false) const override;
   virtual void Draw_It(int x, int y, int data) const;
-  [[nodiscard]] virtual const unsigned char* Radar_Icon(int data) const;
+  [[nodiscard]] virtual std::span<const uint8_t> Radar_Icon(int data) const;
 
   void Display(int x, int y, WindowNumberType window,
                HousesType house = HOUSE_NONE) const override;
@@ -1881,9 +1896,9 @@ class SmudgeTypeClass : public ObjectTypeClass {
   bool Create_And_Place(CELL cell,
                         HousesType house = HOUSE_NONE) const override;
   ObjectClass* Create_One_Of(HouseClass* /*unused*/) const override;
-  [[nodiscard]] const int16_t* Occupy_List(
+  [[nodiscard]] std::span<const int16_t> Occupy_List(
       bool placement = false) const override;
-  [[nodiscard]] const int16_t* Overlap_List() const override {
+  [[nodiscard]] std::span<const int16_t> Overlap_List() const override {
     return Occupy_List();
   }
   virtual void Draw_It(int x, int y, int data) const;

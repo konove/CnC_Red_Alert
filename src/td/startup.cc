@@ -1,3 +1,6 @@
+#ifndef TD_NO_ENTRY_POINT
+#include "port/bytes_of.h"
+#endif
 /*
 **	Command & Conquer(tm)
 **	Copyright 2025 Electronic Arts Inc.
@@ -44,8 +47,13 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <span>
+#include <string_view>
+#include <vector>
 
 #include "absl/strings/str_format.h"
+#include "base/array.h"
+#include "base/buffer.h"
 #include "base/numeric.h"
 #include "port/tokenizer.h"
 #include "sdllib/drawbuff.h"
@@ -237,7 +245,11 @@ int main(int argc, char* argv[])
 #ifdef JAPANESE
   ForceEnglish = false;
 #endif
-  if (Parse_Command_Line(argc, argv)) {
+  // main receives argc valid argument pointers from the C++ runtime. On
+  // Windows, the local argv array above is bounded by its command-line parser.
+  // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
+  const std::span<char*> arguments(argv, base::ToSize(argc));
+  if (Parse_Command_Line(arguments)) {
     InitTickTimer();
     TickCount.Start();
 
@@ -261,7 +273,8 @@ int main(int argc, char* argv[])
     }
 
     if (cfile.IsAvailable()) {
-      char* cdata = static_cast<char*>(Load_Alloc_Data(cfile));
+      const auto config_data = port::CharBytes(Load_Alloc_Data(cfile));
+      char* cdata = config_data.data();
       Read_Private_Config_Struct(cdata, &NewConfig);
       delete[] cdata;
       Read_Setup_Options(&cfile);
@@ -273,7 +286,7 @@ int main(int argc, char* argv[])
 
       SoundOn = Audio_Init(MainWindow, 16, false, 11025 * 2, 0);
 
-      Palette = new unsigned char[768]();
+      Palette.assign(768, 0);
 
       bool video_success = false;
       CCDebugString("C&C95 - Setting video mode.\n");
@@ -298,17 +311,17 @@ int main(int argc, char* argv[])
       if (!video_success) {
         CCDebugString("C&C95 - Failed to set video mode.\n");
         ShutdownTickTimer();
-        delete[] Palette;
-        Palette = nullptr;
+        Palette.clear();
+        Palette.clear();
         return EXIT_FAILURE;
       }
 
       CCDebugString("C&C95 - Initialising video surfaces.\n");
 
       {
-        VisiblePage.Init(ScreenWidth, ScreenHeight, nullptr, 0,
+        VisiblePage.Init(ScreenWidth, ScreenHeight, {}, 0,
                          GBC_VISIBLE | GBC_VIDEOMEM);
-        HiddenPage.Init(ScreenWidth, ScreenHeight, nullptr, 0,
+        HiddenPage.Init(ScreenWidth, ScreenHeight, {}, 0,
                         static_cast<GBC_Enum>(0));
       }
 
@@ -344,18 +357,21 @@ int main(int argc, char* argv[])
       ** See if we should run the intro
       */
       CCDebugString("C&C95 - Reading CONQUER.INI.\n");
-      char* buffer = new char[64000];
-      cfile.Read(buffer, cfile.Size());
-      buffer[cfile.Size()] = '\0';
+      std::vector<char> profile_storage(64000);
+      char* buffer = profile_storage.data();
+      cfile.Read(std::as_writable_bytes(std::span(profile_storage))
+                     .first(profile_storage.size() - 1));
 
       /*
       **	Check for forced intro movie run disabling. If the conquer
       **	configuration file says "no", then don't run the intro.
       */
       char tempbuff[5];
-      WWGetPrivateProfileString("Intro", "PlayIntro", "Yes", tempbuff, 4,
-                                buffer);
-      Special.IsFromInstall = stricmp(tempbuff, "No") != 0 && !SpawnedFromWChat;
+      WWGetPrivateProfileString(
+          "Intro", "PlayIntro", "Yes",
+          std::span(tempbuff).first(static_cast<std::size_t>(4)), buffer);
+      Special.IsFromInstall =
+          port::CompareIgnoreCase(tempbuff, "No") != 0 && !SpawnedFromWChat;
       SlowPalette =
           WWGetPrivateProfileInt("Options", "SlowPalette", 1, buffer) != 0;
 
@@ -363,18 +379,16 @@ int main(int argc, char* argv[])
       /*
       **	Check for override directory path for CD searches.
       */
-      WWGetPrivateProfileString("CD", "Path", ".", OverridePath,
-                                sizeof(OverridePath), buffer);
+      WWGetPrivateProfileString("CD", "Path", ".", OverridePath, buffer);
 #endif
 
       /*
       ** Regardless of whether we should run it or not, here we're
       ** gonna change it to say "no" in the future.
       */
-      WWWritePrivateProfileString("Intro", "PlayIntro", "No", buffer);
-      cfile.Write(buffer, static_cast<int32_t>(strlen(buffer)));
-
-      Free(buffer);
+      WWWritePrivateProfileString("Intro", "PlayIntro", "No", profile_storage);
+      cfile.Write(std::as_bytes(std::span(profile_storage))
+                      .first(std::string_view(buffer).size()));
 
 #ifdef _WIN32
       CCDebugString(
@@ -442,9 +456,9 @@ int main(int argc, char* argv[])
     //		Remove_Keyboard_Interrupt();
     ShutdownTickTimer();
 
-    if (Palette) {
-      delete[] Palette;
-      Palette = nullptr;
+    if (!Palette.empty()) {
+      Palette.clear();
+      Palette.clear();
     }
   }
 
@@ -493,10 +507,10 @@ void __cdecl Prog_End() {
   CCDebugString("C&C95 - Deleting tick timer.\n");
   ShutdownTickTimer();
 
-  if (Palette) {
+  if (!Palette.empty()) {
     CCDebugString("C&C95 - Deleting palette object.\n");
-    delete[] Palette;
-    Palette = nullptr;
+    Palette.clear();
+    Palette.shrink_to_fit();
   }
 }
 
@@ -528,11 +542,12 @@ void Print_Error_Exit(char* string) {
  * HISTORY: * 6/7/96 4:09PM ST : Created *
  *=============================================================================================*/
 void Read_Setup_Options(DiskFile* config_file) {
-  char* buffer = new char[base::ToSize(config_file->Size() + 1)];
-  buffer[config_file->Size()] = 0;
+  std::vector<char> profile_storage(base::ToSize(config_file->Size() + 1));
+  char* buffer = profile_storage.data();
 
   if (config_file->IsAvailable()) {
-    config_file->Read(buffer, config_file->Size());
+    config_file->Read(std::as_writable_bytes(std::span(profile_storage))
+                          .first(profile_storage.size() - 1));
 
     AllowHardwareBlitFills =
         WWGetPrivateProfileInt("Options", "HardwareFills", 1, buffer) != 0;
@@ -555,11 +570,11 @@ void Read_Setup_Options(DiskFile* config_file) {
     ** See if a destination network has been specified
     */
     char netbuf[512];
-    memset(netbuf, 0, sizeof(netbuf));
-    const char* netptr = WWGetPrivateProfileString(
-        "Options", "DestNet", nullptr, netbuf, sizeof(netbuf), buffer);
+    base::FillBytes(base::ObjectBytes(netbuf), 0, sizeof(netbuf));
+    const char* netptr = WWGetPrivateProfileString("Options", "DestNet",
+                                                   nullptr, netbuf, buffer);
 
-    if (netptr && strlen(netbuf)) {
+    if (netptr && !std::string_view(netbuf).empty()) {
       NetNumType net;
       NetNodeType node;
 
@@ -576,9 +591,9 @@ void Read_Setup_Options(DiskFile* config_file) {
           break;
         }
         if (i < 4) {
-          net[i] = *byte;  // fill NetNum
+          base::At(net, i) = *byte;  // fill NetNum
         } else {
-          node[i - 4] = *byte;  // fill NetNode
+          base::At(node, i - 4) = *byte;  // fill NetNode
         }
         i++;
         p = tokens.Next();
@@ -590,11 +605,9 @@ void Read_Setup_Options(DiskFile* config_file) {
       */
       if (i >= 4) {
         IsBridge = 1;
-        memset(node, 0xff, 6);
+        base::FillBytes(base::ObjectBytes(node), 0xff, 6);
         BridgeNet = IPXAddressClass(net, node);
       }
     }
   }
-
-  delete[] buffer;
 }

@@ -1722,11 +1722,12 @@ void TemplateTypeClass::Init_Heap() {
  * HISTORY: * 12/12/1995 JLB : Created. *
  *=============================================================================================*/
 LandType TemplateTypeClass::Land_Type(int icon) const {
-  const auto* icontrol = static_cast<const IconsetClass*>(Get_Image_Data());
+  const IconsetClass icontrol(Get_Image_Data());
 
-  if (icontrol != nullptr) {
-    const unsigned char* map = icontrol->Control_Map();
-    if (map != nullptr) {
+  if (!Get_Image_Data().empty()) {
+    const auto map = icontrol.Control_Map();
+    if (!map.empty() && icon >= 0 && icontrol.Map_Width() > 0 &&
+        icontrol.Map_Height() > 0) {
       static const LandType _land[16] = {
           LAND_CLEAR, LAND_CLEAR, LAND_CLEAR,
           LAND_CLEAR,  // Clear
@@ -1743,7 +1744,13 @@ LandType TemplateTypeClass::Land_Type(int icon) const {
       };
 
       return base::At(
-          _land, map[icon % (icontrol->Map_Width() * icontrol->Map_Height())]);
+          _land,
+          (static_cast<size_t>(icon % (icontrol.Map_Width() *
+                                       icontrol.Map_Height())) < map.size()
+               ? map[static_cast<size_t>(
+                     icon % (icontrol.Map_Width() * icontrol.Map_Height()))] &
+                     15
+               : 0));
     }
   }
   return LAND_CLEAR;
@@ -1768,7 +1775,7 @@ LandType TemplateTypeClass::Land_Type(int icon) const {
 TemplateType TemplateTypeClass::From_Name(const char* name) {
   if (name != nullptr) {
     for (const TemplateType index : magic_enum::enum_values<TemplateType>()) {
-      if (stricmp(As_Reference(index).IniName, name) == 0) {
+      if (port::CompareIgnoreCase(As_Reference(index).IniName, name) == 0) {
         return index;
       }
     }
@@ -1794,22 +1801,26 @@ TemplateType TemplateTypeClass::From_Name(const char* name) {
  * HISTORY: * 05/23/1994 JLB : Created. * 12/12/1995 JLB : Optimized for direct
  *access to iconset data.                             *
  *=============================================================================================*/
-const int16_t* TemplateTypeClass::Occupy_List(bool /*placement*/) const {
+std::span<const int16_t> TemplateTypeClass::Occupy_List(
+    bool /*placement*/) const {
   static int16_t _occupy[(13 * 8) + 5];
 
-  const auto* iconset = static_cast<const IconsetClass*>(Get_Image_Data());
-  const unsigned char* map = iconset->Map_Data();
+  const IconsetClass iconset(Get_Image_Data());
+  const auto map = iconset.Map_Data();
 
-  int16_t* ptr = &_occupy[0];
-  for (int index = 0; index < Width * Height; index++) {
-    if (*map++ != 0xFF) {
-      *ptr++ =
+  size_t output = 0;
+  for (int index = 0;
+       index < Width * Height && static_cast<size_t>(index) < map.size() &&
+       output + 1 < std::size(_occupy);
+       index++) {
+    if (map[static_cast<size_t>(index)] != 0xFF) {
+      base::At(_occupy, output++) =
           static_cast<int16_t>((index % Width) + (index / Width * MAP_CELL_W));
     }
   }
-  *ptr = kRefreshEol;
+  base::At(_occupy, output) = kRefreshEol;
 
-  return &_occupy[0];
+  return _occupy;
 }
 
 /***********************************************************************************************
@@ -1847,8 +1858,8 @@ void TemplateTypeClass::Init(TheaterType theater) {
       // Register icon set for video memory caching
       Register_Icon_Set(ptr, true);
 
-      tplate.Width = static_cast<unsigned char>(Get_IconSet_MapWidth(ptr));
-      tplate.Height = static_cast<unsigned char>(Get_IconSet_MapHeight(ptr));
+      tplate.Width = static_cast<unsigned char>(Get_IconSet_MapWidth(data));
+      tplate.Height = static_cast<unsigned char>(Get_IconSet_MapHeight(data));
     }
   }
 }
@@ -1882,22 +1893,23 @@ void TemplateTypeClass::Display(int x, int y, WindowNumberType window,
     x -= (w * ICON_PIXEL_W) / 2;
     y -= (h * ICON_PIXEL_H) / 2;
   }
-  x += base::At(WindowList[static_cast<int>(window)], kWindowX);
-  y += base::At(WindowList[static_cast<int>(window)], kWindowY);
+  x += base::At(base::At(WindowList, static_cast<int>(window)), kWindowX);
+  y += base::At(base::At(WindowList, static_cast<int>(window)), kWindowY);
 
-  const auto* iconset = static_cast<const IconsetClass*>(Get_Image_Data());
-  const unsigned char* map = iconset->Map_Data();
+  const IconsetClass iconset(Get_Image_Data());
+  const auto map = iconset.Map_Data();
 
   for (int index = 0; index < w * h; index++) {
-    if (map[index] != 0xFF) {
-      HidPage.Draw_Stamp(iconset, index, 0, 0, nullptr,
+    if (static_cast<size_t>(index) < map.size() &&
+        map[static_cast<size_t>(index)] != 0xFF) {
+      HidPage.Draw_Stamp(Get_Image_Data(), index, 0, 0, {},
                          static_cast<int>(WINDOW_MAIN));
       if (scale) {
         HidPage.Scale((*LogicPage), 0, 0,
                       x + ((index % w) * (ICON_PIXEL_W / 2)),
                       y + ((index / w) * (ICON_PIXEL_H / 2)), ICON_PIXEL_W,
                       ICON_PIXEL_H, ICON_PIXEL_W / 2, ICON_PIXEL_H / 2,
-                      static_cast<const unsigned char*>(nullptr));
+                      std::span<const unsigned char>{});
 
       } else {
         HidPage.Blit((*LogicPage), 0, 0, x + ((index % w) * (ICON_PIXEL_W)),
@@ -1928,7 +1940,7 @@ void TemplateTypeClass::Display(int x, int y, WindowNumberType window,
  *=============================================================================================*/
 void TemplateTypeClass::Prep_For_Add() {
   for (const TemplateType index : magic_enum::enum_values<TemplateType>()) {
-    if (As_Reference(index).Get_Image_Data()) {
+    if (!As_Reference(index).Get_Image_Data().empty()) {
       Map.Add_To_List(&As_Reference(index));
     }
   }

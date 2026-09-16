@@ -5,10 +5,10 @@
 
 #include <algorithm>
 #include <cstddef>
-#include <cstring>
 #include <iterator>
 #include <span>
 
+#include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/types.h"
 #include "tech/byte_sink.h"
@@ -35,7 +35,7 @@ class SpanSink : public ByteSink {
     const base::ssize count =
         std::min(std::ssize(bytes), std::ssize(buffer_) - index_);
     if (count > 0) {
-      std::memmove(buffer_.data() + index_, bytes.data(), base::ToSize(count));
+      base::MoveBytes(buffer_.subspan(base::ToSize(index_)), bytes, count);
       index_ += count;
     }
     if (count < std::ssize(bytes)) {

@@ -5,6 +5,7 @@
 
 #include "absl/base/attributes.h"
 #include "tech/rgb.h"
+#include "base/buffer.h"
 
 class PaletteClass {
  public:
@@ -45,13 +46,21 @@ class PaletteClass {
     return data_;
   }
 
+  [[nodiscard]] std::span<unsigned char> bytes() { return base::UnsignedBytes(colors()); }
+  [[nodiscard]] std::span<const unsigned char> bytes() const { return base::UnsignedBytes(colors()); }
+  // Palette objects serve as bounded byte ranges to legacy rendering APIs.
+  // NOLINTNEXTLINE(*-explicit-constructor)
+  operator std::span<unsigned char>() { return bytes(); }
+  // NOLINTNEXTLINE(*-explicit-constructor)
+  operator std::span<const unsigned char>() const { return bytes(); }
+
   static PaletteClass CurrentPalette;
 
  private:
   RGBClass data_[COLOR_COUNT];
 };
 
-void Set_Palette(void* palette);
+void Set_Palette(std::span<const unsigned char> palette);
 
 extern "C" unsigned char* CurrentPalette;
 

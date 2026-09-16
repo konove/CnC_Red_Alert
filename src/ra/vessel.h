@@ -42,6 +42,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <span>
 
 #include "absl/base/attributes.h"
 #include "ra/bullet.h"
@@ -133,7 +134,8 @@ class VesselClass : public DriveClass {
   [[nodiscard]] MoveType Can_Enter_Cell(
       CELL cell, FacingType from = FACING_NONE) const override;
   void Draw_It(int x, int y, WindowNumberType window) const override;
-  [[nodiscard]] const int16_t* Overlap_List(bool redraw = false) const override;
+  [[nodiscard]] std::span<const int16_t> Overlap_List(
+      bool redraw = false) const override;
   DirType Desired_Load_Dir(ObjectClass* passenger, CELL& moveto) const override;
   RadioMessageType Receive_Message(RadioClass* from, RadioMessageType message,
                                    int32_t& param) override;

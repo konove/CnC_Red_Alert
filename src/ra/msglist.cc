@@ -60,8 +60,10 @@
 #include <cctype>
 #include <cstdio>
 #include <cstring>
+#include <span>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
@@ -355,7 +357,8 @@ TextLabelClass* MessageListClass::Add_Message(const char* name, int id,
       mess_start = 0;
     }
     for (int j = 1; std::cmp_less(j, std::string_view(txt).size()); j++) {
-      strncpy(base::Suffix(temp, mess_start).data(), txt, base::ToSize(j));
+      port::SafeCopy(base::Suffix(temp, mess_start),
+                     std::string_view(txt).substr(0, base::ToSize(j)));
       base::At(temp, mess_start + j) = 0;
       wid = String_Pixel_Width(temp);
       if (wid >= Width - 8) {
@@ -578,7 +581,7 @@ int MessageListClass::Concat_Message(const char* name, int id, const char* txt,
     tlabel = MessageList;
     while (tlabel) {
       if (tlabel->UserData2 == id &&
-          !memcmp(tlabel->Text, name, std::string_view(name).size())) {
+          std::string_view(tlabel->Text).starts_with(name)) {
         found = 1;
         break;
       }
@@ -596,42 +599,56 @@ int MessageListClass::Concat_Message(const char* name, int id, const char* txt,
   //------------------------------------------------------------------------
   // set a pointer to the text string, plus the name and colon
   //------------------------------------------------------------------------
-  char* msg = tlabel->Text + std::string_view(name).size() + 1;
+  std::span<char> message_storage;
+  for (auto& buffer : MessageBuffers) {
+    if (std::data(buffer) == tlabel->Text) {
+      message_storage = buffer;
+      break;
+    }
+  }
+  const auto prefix = std::string_view(name).size() + 1;
+  if (prefix >= message_storage.size()) {
+    return 0;
+  }
+  const auto msg = message_storage.subspan(prefix);
 
   //------------------------------------------------------------------------
   // If there's room enough in the message, just add the given string
   //------------------------------------------------------------------------
-  if (static_cast<int>(std::string_view(msg).size()) +
+  if (static_cast<int>(std::string_view(msg.data()).size()) +
           static_cast<int>(std::string_view(txt).size()) <
       MaxChars) {
     //---------------------------------------------------------------------
     // We need to trim the message if there is no room to draw it
     //---------------------------------------------------------------------
-    char* concat_test = new char[base::ToSize(MaxChars + 1)];
+    std::vector<char> concat_test(base::ToSize(MaxChars + 1));
     Fancy_Text_Print(TXT_NONE, 0, 0, tlabel->Color, kTBlack, tlabel->Style);
     const int name_width =
-        String_Pixel_Width(tlabel->Text) - String_Pixel_Width(msg);
+        String_Pixel_Width(tlabel->Text) - String_Pixel_Width(msg.data());
 
-    port::SafeCopy(concat_test, msg, base::ToSize(MaxChars));
-    port::SafeAppend(concat_test, txt, base::ToSize(MaxChars));
-    int width = String_Pixel_Width(concat_test) + name_width;
+    port::SafeCopy(std::span(concat_test).first(base::ToSize(MaxChars)),
+                   msg.data());
+    port::SafeAppend(std::span(concat_test).first(base::ToSize(MaxChars)), txt);
+    int width = String_Pixel_Width(concat_test.data()) + name_width;
     min_chars = 10;
 
     while (width >= Width - 8) {
-      max_chars = std::max<int>(static_cast<int>(std::string_view(msg).size()),
-                                min_chars);
+      max_chars = std::max<int>(
+          static_cast<int>(std::string_view(msg.data()).size()), min_chars);
 
-      Trim_Message(nullptr, msg, min_chars, max_chars, 0);
+      if (Trim_Message({}, msg, min_chars, max_chars, 0) == 0) {
+        break;
+      }
 
-      port::SafeCopy(concat_test, msg, base::ToSize(MaxChars));
-      port::SafeAppend(concat_test, txt, base::ToSize(MaxChars));
+      port::SafeCopy(std::span(concat_test).first(base::ToSize(MaxChars)),
+                     msg.data());
+      port::SafeAppend(std::span(concat_test).first(base::ToSize(MaxChars)),
+                       txt);
 
-      width = String_Pixel_Width(concat_test) + name_width;
+      width = String_Pixel_Width(concat_test.data()) + name_width;
     }
 
-    delete[] concat_test;
-
-    port::SafeAppend(msg, txt, MAX_MESSAGE_LENGTH);
+    port::SafeAppend(msg, txt);
   }
 
   //------------------------------------------------------------------------
@@ -640,12 +657,12 @@ int MessageListClass::Concat_Message(const char* name, int id, const char* txt,
   // Trim from left to right to remove the minimum required text.
   //------------------------------------------------------------------------
   else {
-    min_chars = static_cast<int>(std::string_view(msg).size()) +
+    min_chars = static_cast<int>(std::string_view(msg.data()).size()) +
                 static_cast<int>(std::string_view(txt).size()) - MaxChars;
-    max_chars = std::max<int>(static_cast<int>(std::string_view(msg).size()),
-                              min_chars);
-    Trim_Message(nullptr, msg, min_chars, max_chars, 0);
-    port::SafeCopy(msg, txt, MAX_MESSAGE_LENGTH);
+    max_chars = std::max<int>(
+        static_cast<int>(std::string_view(msg.data()).size()), min_chars);
+    Trim_Message({}, msg, min_chars, max_chars, 0);
+    port::SafeCopy(msg, txt);
   }
 
   //------------------------------------------------------------------------
@@ -847,7 +864,7 @@ void MessageListClass::Remove_Edit() {
  *   05/21/1995 BRR : Created.                                             *
  *=========================================================================*/
 char* MessageListClass::Get_Edit_Buf() {
-  return EditBuf + EditInitPos;
+  return std::span(EditBuf).subspan(base::ToSize(EditInitPos)).data();
 
 }  // end of Get_Edit_Buf
 
@@ -1085,9 +1102,10 @@ int MessageListClass::Input(KeyNumType& input) {
           }
 
           if (/*BGEnableOverflow &&*/ overflowed) {
-            const int numchars =
-                Trim_Message(OverflowBuf, EditBuf + EditInitPos, OverflowStart,
-                             OverflowEnd, 1);
+            const int numchars = Trim_Message(
+                OverflowBuf,
+                std::span(EditBuf).subspan(base::ToSize(EditInitPos)),
+                OverflowStart, OverflowEnd, 1);
             EditCurPos -= numchars;
             base::At(EditBuf, EditCurPos) = static_cast<char>(ascii);
             EditCurPos++;
@@ -1241,18 +1259,19 @@ void MessageListClass::Set_Width(int width) {
  * HISTORY:                                                                *
  *   11/07/1995 BRR : Created.                                             *
  *=========================================================================*/
-int MessageListClass::Trim_Message(char* dest, char* src, int min_chars,
-                                   int max_chars, int scandir) {
+int MessageListClass::Trim_Message(std::span<char> dest, std::span<char> src,
+                                   int min_chars, int max_chars, int scandir) {
   int i = 0;
 
   //------------------------------------------------------------------------
   // validate parameters
   //------------------------------------------------------------------------
-  if (min_chars <= 0) {
+  if (min_chars <= 0 || src.empty() || src.front() == '\0') {
     return 0;
   }
 
-  const int len = static_cast<int>(std::string_view(src).size());
+  const int len = static_cast<int>(std::string_view(src.data()).size());
+  min_chars = std::min(min_chars, len);
   max_chars = std::min(max_chars, len);
 
   //------------------------------------------------------------------------
@@ -1266,7 +1285,7 @@ int MessageListClass::Trim_Message(char* dest, char* src, int min_chars,
   //........................................................................
   if (scandir == 0) {
     for (i = min_chars; i <= max_chars; i++) {
-      if (isspace(src[i - 1])) {
+      if (isspace(static_cast<unsigned char>(src[base::ToSize(i - 1)]))) {
         found = 1;
         break;
       }
@@ -1277,7 +1296,7 @@ int MessageListClass::Trim_Message(char* dest, char* src, int min_chars,
   //........................................................................
   else {
     for (i = max_chars; i >= min_chars; i--) {
-      if (isspace(src[i - 1])) {
+      if (isspace(static_cast<unsigned char>(src[base::ToSize(i - 1)]))) {
         found = 1;
         break;
       }
@@ -1293,15 +1312,16 @@ int MessageListClass::Trim_Message(char* dest, char* src, int min_chars,
   //------------------------------------------------------------------------
   // Save trimmed characters in the dest buffer, if there is one
   //------------------------------------------------------------------------
-  if (dest) {
-    memcpy(dest, src, base::ToSize(i));
-    dest[i] = '\0';
+  if (!dest.empty()) {
+    base::CopyBytes(std::as_writable_bytes(dest), std::as_bytes(src), i);
+    dest[base::ToSize(i)] = '\0';
   }
 
   //------------------------------------------------------------------------
   // Shift characters over in the source buffer
   //------------------------------------------------------------------------
-  memmove(src, src + i, base::ToSize(len - i + 1));
+  base::MoveBytes(std::as_writable_bytes(src),
+                  std::as_bytes(src.subspan(base::ToSize(i))), len - i + 1);
 
   return i;
 

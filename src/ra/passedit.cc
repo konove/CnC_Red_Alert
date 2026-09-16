@@ -1,6 +1,7 @@
 #include "ra/passedit.h"
 
 #include <cstring>
+#include <span>
 #include <string>
 #include <string_view>
 
@@ -11,8 +12,8 @@ void PassEditClass::Set_Focus() {
     // The buffer holds the saved, scrambled password. Throw it away rather
     // than let the player edit characters they never typed.
     bClearOnNextSetFocus = false;
-    if (String != nullptr) {
-      *String = '\0';
+    if (!String.empty()) {
+      String[0] = '\0';
     }
     Length = 0;
   }

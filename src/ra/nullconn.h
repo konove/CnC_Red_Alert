@@ -45,6 +45,10 @@
 #ifndef CNC_RED_ALERT_RA_NULLCONN_H_
 #define CNC_RED_ALERT_RA_NULLCONN_H_
 
+#include <cstddef>
+#include <span>
+#include <vector>
+
 /*
 ********************************* Includes **********************************
 */
@@ -108,7 +112,7 @@ class NullModemConnClass : public ConnectionClass {
   /*.....................................................................
   This routine computes a CRC value for the given buffer.
   .....................................................................*/
-  static int Compute_CRC(const void* buf, int buflen);
+  static int Compute_CRC(std::span<const std::byte> buf, int buflen);
 
   /*.....................................................................
   This routine returns the number of bytes extra added the packet
@@ -123,7 +127,8 @@ class NullModemConnClass : public ConnectionClass {
   /*.....................................................................
   This routine actually performs a hardware-dependent data send.
   .....................................................................*/
-  int Send(void* buf, int buflen, void* extrabuf, int extralen) override;
+  int Send(std::span<const std::byte> buf, int buflen,
+           std::span<const std::byte> extrabuf, int extralen) override;
   /*
   ** This is the winsoze port handle
   */
@@ -138,7 +143,7 @@ class NullModemConnClass : public ConnectionClass {
   - 4-byte CRC value (at the end of the buffer)
   This is the actual packet that gets sent across the serial line.
   .....................................................................*/
-  char* SendBuf;
+  std::vector<char> SendBuf;
 };
 
 #endif  // CNC_RED_ALERT_RA_NULLCONN_H_

@@ -48,8 +48,10 @@
 
 #include <cassert>
 #include <climits>
+#include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <span>
 
 #include "absl/log/check.h"
 #include "base/array.h"
@@ -88,7 +90,7 @@ typedef union {
  *=============================================================================================*/
 BlowfishEngine::~BlowfishEngine() {
   if (IsKeyed) {
-    Submit_Key(nullptr, 0);
+    Submit_Key({});
   }
 }
 
@@ -117,8 +119,9 @@ BlowfishEngine::~BlowfishEngine() {
  *                                                                                             *
  * HISTORY: * 04/14/1996 JLB : Created. *
  *=============================================================================================*/
-void BlowfishEngine::Submit_Key(const void* key, int length) {
-  assert(length <= kMaxKeyLength);
+void BlowfishEngine::Submit_Key(std::span<const std::byte> key) {
+  const int length = static_cast<int>(key.size());
+  CHECK_LE(length, kMaxKeyLength);
 
   /*
   **	Initialize the permutation and S-Box tables to a known
@@ -134,7 +137,7 @@ void BlowfishEngine::Submit_Key(const void* key, int length) {
   /*
   **	Validate parameters.
   */
-  if (key == nullptr || length == 0) {
+  if (key.empty()) {
     IsKeyed = false;
     return;
   }
@@ -146,17 +149,19 @@ void BlowfishEngine::Submit_Key(const void* key, int length) {
   **	into a long by using endian independent means.
   */
   int j = 0;
-  const auto* key_ptr = static_cast<const unsigned char*>(key);
-  uint32_t* p_ptr = &P_Encrypt[0];
   for (int index = 0; index < kRounds + 2; index++) {
     uint32_t data = 0;
 
-    data = data << CHAR_BIT | key_ptr[j++ % length];
-    data = data << CHAR_BIT | key_ptr[j++ % length];
-    data = data << CHAR_BIT | key_ptr[j++ % length];
-    data = data << CHAR_BIT | key_ptr[j++ % length];
+    data = data << CHAR_BIT |
+           std::to_integer<uint32_t>(key[base::ToSize(j++ % length)]);
+    data = data << CHAR_BIT |
+           std::to_integer<uint32_t>(key[base::ToSize(j++ % length)]);
+    data = data << CHAR_BIT |
+           std::to_integer<uint32_t>(key[base::ToSize(j++ % length)]);
+    data = data << CHAR_BIT |
+           std::to_integer<uint32_t>(key[base::ToSize(j++ % length)]);
 
-    *p_ptr++ ^= data;
+    base::At(P_Encrypt, index) ^= data;
   }
 
   /*
@@ -168,16 +173,14 @@ void BlowfishEngine::Submit_Key(const void* key, int length) {
   */
   uint32_t left = 0x00000000L;
   uint32_t right = 0x00000000L;
-  uint32_t* p_en = &P_Encrypt[0];           // Encryption table.
-  uint32_t* p_de = &P_Decrypt[kRounds + 1];  // Decryption table.
   for (int p_index = 0; p_index < kRounds + 2; p_index += 2) {
     Sub_Key_Encrypt(left, right);
 
-    *p_en++ = left;
-    *p_en++ = right;
+    base::At(P_Encrypt, p_index) = left;
+    base::At(P_Encrypt, p_index + 1) = right;
 
-    *p_de-- = left;
-    *p_de-- = right;
+    base::At(P_Decrypt, kRounds + 1 - p_index) = left;
+    base::At(P_Decrypt, kRounds - p_index) = right;
   }
 
   /*
@@ -220,48 +223,24 @@ void BlowfishEngine::Submit_Key(const void* key, int length) {
  *                                                                                             *
  * HISTORY: * 04/14/1996 JLB : Created. *
  *=============================================================================================*/
-int BlowfishEngine::Encrypt(const void* plaintext, int length,
-                            void* cyphertext) {
-  if (plaintext == nullptr || length == 0) {
-    return 0;
+int BlowfishEngine::Encrypt(std::span<const std::byte> plaintext,
+                            std::span<std::byte> cyphertext) {
+  CHECK_GE(cyphertext.size(), plaintext.size());
+  const int length = static_cast<int>(plaintext.size());
+  if (!IsKeyed) {
+    base::MoveBytes(cyphertext, plaintext, length);
+    return length;
   }
-  CHECK(cyphertext != nullptr) << "Blowfish needs a destination buffer";
-
-  if (IsKeyed) {
-    /*
-    **	Validate parameters.
-    */
-    const int blocks = length / kBytesPerBlock;
-
-    /*
-    **	Process the buffer in 64 bit chunks.
-    */
-    const char* in = static_cast<const char*>(plaintext);
-    char* out = static_cast<char*>(cyphertext);
-    for (int index = 0; index < blocks; index++) {
-      Process_Block(in, out, P_Encrypt);
-      in += kBytesPerBlock;
-      out += kBytesPerBlock;
-    }
-    const int encrypted = blocks * kBytesPerBlock;
-
-    /*
-    **	Copy over any trailing left over appendix bytes.
-    */
-    if (encrypted < length) {
-      memmove(out, in, base::ToSize(length - encrypted));
-    }
-
-    return encrypted;
+  const int encrypted = (length / kBytesPerBlock) * kBytesPerBlock;
+  for (int offset = 0; offset < encrypted; offset += kBytesPerBlock) {
+    Process_Block(plaintext.subspan(base::ToSize(offset), kBytesPerBlock),
+                  cyphertext.subspan(base::ToSize(offset), kBytesPerBlock),
+                  P_Encrypt);
   }
-
-  /*
-  **	Non-keyed processing merely copies the data.
-  */
-  if (plaintext != cyphertext) {
-    memmove(cyphertext, plaintext, base::ToSize(length));
-  }
-  return length;
+  base::MoveBytes(cyphertext.subspan(base::ToSize(encrypted)),
+                  plaintext.subspan(base::ToSize(encrypted)),
+                  length - encrypted);
+  return encrypted;
 }
 
 /***********************************************************************************************
@@ -288,48 +267,24 @@ int BlowfishEngine::Encrypt(const void* plaintext, int length,
  *                                                                                             *
  * HISTORY: * 04/14/1996 JLB : Created. *
  *=============================================================================================*/
-int BlowfishEngine::Decrypt(const void* cyphertext, int length,
-                            void* plaintext) {
-  if (cyphertext == nullptr || length == 0) {
-    return 0;
+int BlowfishEngine::Decrypt(std::span<const std::byte> cyphertext,
+                            std::span<std::byte> plaintext) {
+  CHECK_GE(plaintext.size(), cyphertext.size());
+  const int length = static_cast<int>(cyphertext.size());
+  if (!IsKeyed) {
+    base::MoveBytes(plaintext, cyphertext, length);
+    return length;
   }
-  CHECK(plaintext != nullptr) << "Blowfish needs a destination buffer";
-
-  if (IsKeyed) {
-    /*
-    **	Validate parameters.
-    */
-    const int blocks = length / kBytesPerBlock;
-
-    /*
-    **	Process the buffer in 64 bit chunks.
-    */
-    const char* in = static_cast<const char*>(cyphertext);
-    char* out = static_cast<char*>(plaintext);
-    for (int index = 0; index < blocks; index++) {
-      Process_Block(in, out, P_Decrypt);
-      in += kBytesPerBlock;
-      out += kBytesPerBlock;
-    }
-    const int encrypted = blocks * kBytesPerBlock;
-
-    /*
-    **	Copy over any trailing left over appendix bytes.
-    */
-    if (encrypted < length) {
-      memmove(out, in, base::ToSize(length - encrypted));
-    }
-
-    return encrypted;
+  const int encrypted = (length / kBytesPerBlock) * kBytesPerBlock;
+  for (int offset = 0; offset < encrypted; offset += kBytesPerBlock) {
+    Process_Block(cyphertext.subspan(base::ToSize(offset), kBytesPerBlock),
+                  plaintext.subspan(base::ToSize(offset), kBytesPerBlock),
+                  P_Decrypt);
   }
-
-  /*
-  **	Non-keyed processing merely copies the data.
-  */
-  if (plaintext != cyphertext) {
-    memmove(plaintext, cyphertext, base::ToSize(length));
-  }
-  return length;
+  base::MoveBytes(plaintext.subspan(base::ToSize(encrypted)),
+                  cyphertext.subspan(base::ToSize(encrypted)),
+                  length - encrypted);
+  return encrypted;
 }
 
 /***********************************************************************************************
@@ -359,8 +314,9 @@ int BlowfishEngine::Decrypt(const void* cyphertext, int length,
  *                                                                                             *
  * HISTORY: * 04/19/1996 JLB : Created. *
  *=============================================================================================*/
-void BlowfishEngine::Process_Block(const void* plaintext, void* cyphertext,
-                                   const uint32_t* ptable) {
+void BlowfishEngine::Process_Block(std::span<const std::byte> plaintext,
+                                   std::span<std::byte> cyphertext,
+                                   std::span<const uint32_t> ptable) {
   /*
   **	Input the left and right halves of the source block such that
   **	the byte order is constant regardless of the endian
@@ -368,18 +324,19 @@ void BlowfishEngine::Process_Block(const void* plaintext, void* cyphertext,
   **	biased toward "big endian" architecture and some optimizations
   **	could be done for big endian processors in that case.
   */
-  const auto* source = static_cast<const unsigned char*>(plaintext);
+  std::size_t source = 0;
+  std::size_t table_index = 0;
   Int left;
-  left.Char.C0 = *source++;
-  left.Char.C1 = *source++;
-  left.Char.C2 = *source++;
-  left.Char.C3 = *source++;
+  left.Char.C0 = std::to_integer<unsigned char>(plaintext[source++]);
+  left.Char.C1 = std::to_integer<unsigned char>(plaintext[source++]);
+  left.Char.C2 = std::to_integer<unsigned char>(plaintext[source++]);
+  left.Char.C3 = std::to_integer<unsigned char>(plaintext[source++]);
 
   Int right;
-  right.Char.C0 = *source++;
-  right.Char.C1 = *source++;
-  right.Char.C2 = *source++;
-  right.Char.C3 = *source;
+  right.Char.C0 = std::to_integer<unsigned char>(plaintext[source++]);
+  right.Char.C1 = std::to_integer<unsigned char>(plaintext[source++]);
+  right.Char.C2 = std::to_integer<unsigned char>(plaintext[source++]);
+  right.Char.C3 = std::to_integer<unsigned char>(plaintext[source]);
 
   /*
   **	Perform all Feistal rounds on the block. This is the
@@ -388,12 +345,12 @@ void BlowfishEngine::Process_Block(const void* plaintext, void* cyphertext,
   *unnecessary exchanging.
   */
   for (int index = 0; index < kRounds / 2; index++) {
-    left.Long ^= *ptable++;
+    left.Long ^= ptable[table_index++];
     right.Long ^= ((base::At(base::At(bf_S, 0), left.Char.C0) +
                     base::At(base::At(bf_S, 1), left.Char.C1)) ^
                    base::At(base::At(bf_S, 2), left.Char.C2)) +
                   base::At(base::At(bf_S, 3), left.Char.C3);
-    right.Long ^= *ptable++;
+    right.Long ^= ptable[table_index++];
     left.Long ^= ((base::At(base::At(bf_S, 0), right.Char.C0) +
                    base::At(base::At(bf_S, 1), right.Char.C1)) ^
                   base::At(base::At(bf_S, 2), right.Char.C2)) +
@@ -405,8 +362,8 @@ void BlowfishEngine::Process_Block(const void* plaintext, void* cyphertext,
   *block. *	The left and right halves are still reversed as a side effect of
   *the last *	round.
   */
-  left.Long ^= *ptable++;
-  right.Long ^= *ptable;
+  left.Long ^= ptable[table_index++];
+  right.Long ^= ptable[table_index];
 
   /*
   **	The final block data is output in endian architecture
@@ -415,16 +372,16 @@ void BlowfishEngine::Process_Block(const void* plaintext, void* cyphertext,
   **	superfluous exchange that occurs as a side effect of the
   **	encryption rounds.
   */
-  auto* out = static_cast<unsigned char*>(cyphertext);
-  *out++ = right.Char.C0;
-  *out++ = right.Char.C1;
-  *out++ = right.Char.C2;
-  *out++ = right.Char.C3;
+  std::size_t out = 0;
+  cyphertext[out++] = static_cast<std::byte>(right.Char.C0);
+  cyphertext[out++] = static_cast<std::byte>(right.Char.C1);
+  cyphertext[out++] = static_cast<std::byte>(right.Char.C2);
+  cyphertext[out++] = static_cast<std::byte>(right.Char.C3);
 
-  *out++ = left.Char.C0;
-  *out++ = left.Char.C1;
-  *out++ = left.Char.C2;
-  *out = left.Char.C3;
+  cyphertext[out++] = static_cast<std::byte>(left.Char.C0);
+  cyphertext[out++] = static_cast<std::byte>(left.Char.C1);
+  cyphertext[out++] = static_cast<std::byte>(left.Char.C2);
+  cyphertext[out] = static_cast<std::byte>(left.Char.C3);
 }
 
 /***********************************************************************************************

@@ -1,5 +1,7 @@
 #include "port/tokenizer.h"
 
+#include "port/safe_string.h"
+
 #include <cstring>
 
 #include "gtest/gtest.h"
@@ -50,7 +52,7 @@ TEST(TokenizerTest, RemainingStartsAfterTheLastTokensDelimiter) {
   EXPECT_STREQ(tokens.Remaining(), "hello world 7");
   // A length-prefixed field is read from Remaining() and parsing resumes
   // after it with a fresh tokenizer.
-  tokens = port::Tokenizer(tokens.Remaining() + 5, " ");
+  tokens = port::Tokenizer(port::MutableCString(tokens.Remaining()).subspan(5).data(), " ");
   EXPECT_STREQ(tokens.Next(), "world");
   EXPECT_STREQ(tokens.Remaining(), "7");
   EXPECT_STREQ(tokens.Next(), "7");

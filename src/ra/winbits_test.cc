@@ -2,14 +2,18 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <span>
 #include <vector>
 
+#include "base/buffer.h"
 #include "base/types.h"
 #include "gtest/gtest.h"
+#include "ra/compat.h"
 #include "ra/defines.h"
 #include "ra/dib.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
+#include "sdllib/tile.h"
 #include "sdllib/ww_win.h"
 
 namespace {
@@ -21,7 +25,7 @@ constexpr int kHeight = 4;
 
 // The real table lives in ra/globals.cc, which would drag the whole game in.
 // One window, covering the whole buffer, is all these tests need.
-int WindowList[][8] = {
+int WindowList[7][8] = {
     {0, 0, kWidth, kHeight, 0, 0, 0, 0},
 };
 
@@ -36,7 +40,7 @@ class TestScreen {
  public:
   TestScreen()
       : pixels_(std::size_t{kWidth} * kHeight, 0),
-        buffer_(kWidth, kHeight, pixels_.data()),
+        buffer_(kWidth, kHeight, pixels_),
         previous_(Set_Logic_Page(&buffer_)) {}
 
   TestScreen(const TestScreen&) = delete;
@@ -177,3 +181,32 @@ TEST(WinBitsTest, DrawDibDrawsNothingForANegativeWidth) {
 }
 
 }  // namespace
+
+TEST(WinBitsTest, RejectsShortBuffersAndOutOfWindowRectangles) {
+  const TestScreen screen;
+  std::uint8_t short_buffer[3] = {1, 2, 3};
+  EXPECT_FALSE(SaveSurfaceRect(0, 0, 2, 2, short_buffer, WINDOW_MAIN));
+  EXPECT_FALSE(RestoreSurfaceRect(0, 0, 2, 2, short_buffer, WINDOW_MAIN));
+  EXPECT_FALSE(SaveSurfaceRect(-1, 0, 1, 1, short_buffer, WINDOW_MAIN));
+  EXPECT_FALSE(RestoreSurfaceRect(kWidth, 0, 1, 1, short_buffer, WINDOW_MAIN));
+  EXPECT_EQ(short_buffer[0], 1);
+  EXPECT_EQ(screen.Pixel(0, 0), 0);
+}
+
+TEST(IconsetViewTest, RejectsTruncatedHeadersAndOutOfRangeSections) {
+  const unsigned char short_data[3] = {};
+  const IconsetClass truncated(std::as_bytes(std::span(short_data)));
+  EXPECT_TRUE(truncated.Map_Data().empty());
+  EXPECT_EQ(truncated.Map_Width(), 0);
+
+  IControl_Type header{};
+  header.Map = -1;
+  const IconsetClass negative(base::ObjectBytes(header));
+  EXPECT_TRUE(negative.Map_Data().empty());
+  header.Map = sizeof(header) + 1;
+  const IconsetClass oversized(base::ObjectBytes(header));
+  EXPECT_TRUE(oversized.Map_Data().empty());
+  header.Map = sizeof(header);
+  const IconsetClass end(base::ObjectBytes(header));
+  EXPECT_TRUE(end.Map_Data().empty());
+}

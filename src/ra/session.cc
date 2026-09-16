@@ -60,6 +60,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <ctime>  // for station ID computation
+#include <span>
 #include <string_view>
 
 #include "absl/strings/str_format.h"
@@ -318,8 +319,9 @@ int SessionClass::Create_Connections() {
     //.....................................................................
     // Make sure the name matches before creating the connection
     //.....................................................................
-    if (!stricmp(Players[i]->Name,
-                 HouseClass::As_Pointer(Players[i]->Player.ID)->IniName)) {
+    if (!port::CompareIgnoreCase(
+            Players[i]->Name,
+            HouseClass::As_Pointer(Players[i]->Player.ID)->IniName)) {
       Ipx.Create_Connection(static_cast<int>(Players[i]->Player.ID),
                             Players[i]->Name, &Players[i]->Address);
       Players[i]->Player.ProcessTime = -1;
@@ -598,7 +600,8 @@ void SessionClass::Read_MultiPlayer_Settings() {
 
     // find dial method
     for (i = 0; i < static_cast<int>(DIAL_METHODS); i++) {
-      if (!stricmp(buf, DialMethodCheck[static_cast<DialMethodType>(i)])) {
+      if (!port::CompareIgnoreCase(
+              buf, DialMethodCheck[static_cast<DialMethodType>(i)])) {
         SerialDefaults.DialMethod = static_cast<DialMethodType>(i);
         break;
       }
@@ -627,9 +630,12 @@ void SessionClass::Read_MultiPlayer_Settings() {
     const int initcount = ini.Entry_Count("InitStrings");
     for (int index = 0; index < initcount; index++) {
       entry = new char[INITSTRBUF_MAX];
-      entry[0] = 0;
+      // entry was allocated above with INITSTRBUF_MAX elements.
+      // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
+      const std::span entry_buffer(entry, INITSTRBUF_MAX);
+      entry_buffer[0] = 0;
       ini.Get_String("InitStrings", ini.Get_Entry("InitStrings", index),
-                     nullptr, entry, INITSTRBUF_MAX);
+                     nullptr, entry_buffer, INITSTRBUF_MAX);
       strupr(entry);
       InitStrings.Add(entry);
     }
@@ -637,7 +643,9 @@ void SessionClass::Read_MultiPlayer_Settings() {
     //	if no entries then have at least one
     if (initcount == 0) {
       entry = new char[INITSTRBUF_MAX];
-      port::SafeCopy(entry, "ATZ", INITSTRBUF_MAX);
+      // The freshly allocated entry contains INITSTRBUF_MAX characters.
+      // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
+      port::SafeCopy(std::span(entry, INITSTRBUF_MAX), "ATZ");
       InitStrings.Add(entry);
       SerialDefaults.InitStringIndex = 0;
     }
@@ -708,7 +716,8 @@ void SessionClass::Read_MultiPlayer_Settings() {
         // find dial method
 
         for (i = 0; i < static_cast<int>(DIAL_METHODS); i++) {
-          if (!stricmp(buf, DialMethodCheck[static_cast<DialMethodType>(i)])) {
+          if (!port::CompareIgnoreCase(
+                  buf, DialMethodCheck[static_cast<DialMethodType>(i)])) {
             /*
             ** This must be an old phonebook entry
             */
@@ -747,7 +756,8 @@ void SessionClass::Read_MultiPlayer_Settings() {
 
         //	find dial method
         for (i = 0; i < static_cast<int>(DIAL_METHODS); i++) {
-          if (!stricmp(buf, DialMethodCheck[static_cast<DialMethodType>(i)])) {
+          if (!port::CompareIgnoreCase(
+                  buf, DialMethodCheck[static_cast<DialMethodType>(i)])) {
             phone->Settings.DialMethod = static_cast<DialMethodType>(i);
             break;
           }
@@ -795,17 +805,17 @@ void SessionClass::Read_MultiPlayer_Settings() {
 
     ini.Get_String("SyncBug", "Type", "NONE", buf, 80);
 
-    if (!stricmp(buf, "AIRCRAFT")) {
+    if (!port::CompareIgnoreCase(buf, "AIRCRAFT")) {
       TrapObjType = RTTI_AIRCRAFT;
-    } else if (!stricmp(buf, "ANIM")) {
+    } else if (!port::CompareIgnoreCase(buf, "ANIM")) {
       TrapObjType = RTTI_ANIM;
-    } else if (!stricmp(buf, "BUILDING")) {
+    } else if (!port::CompareIgnoreCase(buf, "BUILDING")) {
       TrapObjType = RTTI_BUILDING;
-    } else if (!stricmp(buf, "BULLET")) {
+    } else if (!port::CompareIgnoreCase(buf, "BULLET")) {
       TrapObjType = RTTI_BULLET;
-    } else if (!stricmp(buf, "INFANTRY")) {
+    } else if (!port::CompareIgnoreCase(buf, "INFANTRY")) {
       TrapObjType = RTTI_INFANTRY;
-    } else if (!stricmp(buf, "UNIT")) {
+    } else if (!port::CompareIgnoreCase(buf, "UNIT")) {
       TrapObjType = RTTI_UNIT;
     } else {
       TrapObjType = RTTI_NONE;
@@ -923,12 +933,13 @@ void SessionClass::Write_MultiPlayer_Settings() {
 bool Is_Mission_126x126(
     const char* file_name)  //	This is no longer used. ajw
 {
-  if (isdigit(file_name[5])) {
+  const std::string_view name(file_name == nullptr ? "" : file_name);
+  if (name.size() < 6 || isdigit(static_cast<unsigned char>(name[5]))) {
     return false;
   }
 
-  if ((file_name[3] >= 'k' && file_name[3] <= 'm') ||
-      (file_name[3] >= 'K' && file_name[3] <= 'M')) {
+  if ((name[3] >= 'k' && name[3] <= 'm') ||
+      (name[3] >= 'K' && name[3] <= 'M')) {
     return true;
   }
   return false;
@@ -1340,7 +1351,7 @@ MultiMission::MultiMission(const char* filename, const char* description,
 void MultiMission::Draw_It(int /*unused*/, int x, int y, int width, int height,
                            bool selected, TextPrintType flags) const {
   RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
-  static int _tabs[] = {35, 60, 80, 100};
+  static const int _tabs[] = {35, 60, 80, 100};
   const TextPrintType point = flags & static_cast<TextPrintType>(0x0F);
   if (point == TPF_6PT_GRAD || point == TPF_EFNT) {
     if (selected) {

@@ -6,6 +6,7 @@
 #include <ios>
 #include <string>
 
+#include "base/buffer.h"
 #include "gtest/gtest.h"
 #include "sdllib/file.h"
 #include "sdllib/file_access.h"
@@ -40,7 +41,7 @@ TEST_F(FileHandlesTest, HandleReadsSeeksAndSizesAFile) {
   EXPECT_EQ(SeekFileHandle(handle, 1, SEEK_SET), 1);
 
   char buffer[8] = {};
-  EXPECT_EQ(ReadFileHandle(handle, buffer, 8), 3);
+  EXPECT_EQ(ReadFileHandle(handle, base::ObjectBytes(buffer)), 3);
   EXPECT_EQ(std::string(buffer, 3), "bcd");
   CloseFileHandle(handle);
   EXPECT_EQ(FileHandleSize(handle), 0);
@@ -56,8 +57,8 @@ TEST_F(FileHandlesTest, InvalidHandlesAreIgnored) {
   char buffer[4] = {};
   // Each used to index the handle table unchecked; only -1 was rejected.
   for (const int handle : {kInvalidHandle, -2, 10, 1000}) {
-    EXPECT_EQ(ReadFileHandle(handle, buffer, 4), 0) << handle;
-    EXPECT_EQ(WriteFileHandle(handle, buffer, 4), 0) << handle;
+    EXPECT_EQ(ReadFileHandle(handle, base::ObjectBytes(buffer)), 0) << handle;
+    EXPECT_EQ(WriteFileHandle(handle, base::ObjectBytes(buffer)), 0) << handle;
     EXPECT_EQ(FileHandleSize(handle), 0) << handle;
     EXPECT_EQ(SeekFileHandle(handle, 0, SEEK_SET), 0) << handle;
     CloseFileHandle(handle);

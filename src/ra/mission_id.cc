@@ -17,8 +17,7 @@ bool IsMissionCounterstrike(const std::string_view file_name) {
   // first non-digit (e.g. the house letters in "SCM25EA.INI").
   const std::string_view number = file_name.substr(3, 3);
   int scenario_number = 0;
-  std::from_chars(number.data(), number.data() + number.size(),
-                  scenario_number);
+  std::from_chars(number.begin(), number.end(), scenario_number);
   return scenario_number > 24;
 }
 

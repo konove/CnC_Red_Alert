@@ -41,6 +41,10 @@
 #define CNC_RED_ALERT_RA_EVENT_H_
 
 #include <cstdint>
+#include <cstddef>
+#include <span>
+#include "base/buffer.h"
+#include "base/array.h"
 #include <cstring>
 
 #include "base/enum_array.h"
@@ -245,7 +249,7 @@ class EventClass {
   // Member initializers cannot reach padding. Every other defined constructor
   // delegates here to clear IsExecuted and all unused payload bytes.
   // NOLINTNEXTLINE(cert-oop57-cpp)
-  EventClass() { std::memset(this, 0, sizeof(EventClass)); }
+  EventClass() { base::FillBytes(base::ObjectBytes(*this), 0, sizeof(EventClass)); }
   explicit EventClass(SpecialClass data);
   EventClass(EventType type, TargetClass target);
   explicit EventClass(EventType type);
@@ -264,7 +268,11 @@ class EventClass {
   EventClass(EventType type, int id, CELL cell);
   EventClass(AnimType anim, HousesType owner, COORDINATE coord);
   EventClass(void* ptr, uint32_t size);
-  EventClass(EventType type, void* ptr, uint32_t size);
+  EventClass(EventType type, std::span<std::byte> payload);
+
+  // Views the owned payload initialized from a span or an exact-size allocation.
+  // Only valid for ADDPLAYER events after the wire pointer has been replaced.
+  [[nodiscard]] std::span<std::byte> variable_bytes() const;
 
   // Process the event.
   void Execute();

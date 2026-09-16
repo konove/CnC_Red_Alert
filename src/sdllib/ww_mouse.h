@@ -26,8 +26,10 @@
 #ifndef CNC_RED_ALERT_SDLLIB_WW_MOUSE_H_
 #define CNC_RED_ALERT_SDLLIB_WW_MOUSE_H_
 
+#include <cstddef>
 #include <cstdint>
 #include <memory>
+#include <span>
 #include <vector>
 
 #include "sdllib/gbuffer.h"
@@ -65,7 +67,8 @@ class WWMouseClass {
 
   // Decodes a game cursor shape and creates an SDL hardware cursor.
   // The cursor pointer must be a Shape_Type structure (LCW+RLE compressed).
-  void Set_Cursor(int xhotspot, int yhotspot, const void* cursor);
+  void Set_Cursor(int xhotspot, int yhotspot,
+                  std::span<const std::byte> cursor);
 
   // Reference-counted visibility control. Hide increments the hide count,
   // Show decrements it. The cursor is only visible when the count is zero.
@@ -119,7 +122,7 @@ class WWMouseClass {
   int MaxHeight;
 
   // Tracks cursor identity to avoid redundant Set_Cursor work.
-  const char* PrevCursor = nullptr;
+  const std::byte* PrevCursor = nullptr;
 
   // Reference count for Hide/Show. Cursor visible when State == 0.
   int State{0};
@@ -138,7 +141,7 @@ void Show_Mouse();
 void Conditional_Hide_Mouse(int x1, int y1, int x2, int y2);
 void Conditional_Show_Mouse();
 int Get_Mouse_State();
-void Set_Mouse_Cursor(int hotx, int hoty, const void* cursor);
+void Set_Mouse_Cursor(int hotx, int hoty, std::span<const std::byte> cursor);
 int Get_Mouse_X();
 int Get_Mouse_Y();
 

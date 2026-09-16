@@ -54,7 +54,12 @@
 #ifndef CNC_RED_ALERT_TD_COMBUF_H_
 #define CNC_RED_ALERT_TD_COMBUF_H_
 
+#include <cstddef>
 #include <cstdint>
+#include <span>
+#include <vector>
+
+#include "absl/base/attributes.h"
 
 /*
 ********************************** Defines **********************************
@@ -62,26 +67,26 @@
 /*---------------------------------------------------------------------------
 This is one output queue entry
 ---------------------------------------------------------------------------*/
-typedef struct {
-  unsigned int IsActive : 1;  // 1 = this entry is ready to be processed
-  unsigned int IsACK : 1;     // 1 = ACK received for this packet
-  int64_t FirstTime;          // time this packet was first sent
-  int64_t LastTime;           // time this packet was last sent
-  int SendCount;              // # of times this packet has been sent
-  int BufLen;                 // size of the packet stored in this entry
-  char* Buffer;               // the data packet
-} SendQueueType;
+struct SendQueueType {
+  unsigned int IsActive : 1 = 0;  // 1 = this entry is ready to be processed
+  unsigned int IsACK : 1 = 0;     // 1 = ACK received for this packet
+  int64_t FirstTime = 0;          // time this packet was first sent
+  int64_t LastTime = 0;           // time this packet was last sent
+  int SendCount = 0;              // # of times this packet has been sent
+  int BufLen = 0;                 // size of the packet stored in this entry
+  std::vector<std::byte> Buffer;  // the data packet
+};
 
 /*---------------------------------------------------------------------------
 This is one input queue entry
 ---------------------------------------------------------------------------*/
-typedef struct {
-  unsigned int IsActive : 1;  // 1 = this entry is ready to be processed
-  unsigned int IsRead : 1;    // 1 = caller has read this entry
-  unsigned int IsACK : 1;     // 1 = ACK sent for this packet
-  int BufLen;                 // size of the packet stored in this entry
-  char* Buffer;               // the data packet
-} ReceiveQueueType;
+struct ReceiveQueueType {
+  unsigned int IsActive : 1 = 0;  // 1 = this entry is ready to be processed
+  unsigned int IsRead : 1 = 0;    // 1 = caller has read this entry
+  unsigned int IsACK : 1 = 0;     // 1 = ACK sent for this packet
+  int BufLen = 0;                 // size of the packet stored in this entry
+  std::vector<std::byte> Buffer;  // the data packet
+};
 
 /*
 ***************************** Class Declaration *****************************
@@ -106,27 +111,31 @@ class CommBufferClass {
   /*
   ......................... Send Queue routines .........................
   */
-  int Queue_Send(void* buf, int buflen);  // add to Send queue
-  int UnQueue_Send(void* buf, int* buflen,
-                   int index);          // remove from Send queue
+  int Queue_Send(std::span<const std::byte> buf,
+                 int buflen);  // add to Send queue
+  int UnQueue_Send(std::span<std::byte> buf, int* buflen,
+                   int index);  // remove from Send queue
   // # entries in queue
   [[nodiscard]] int Num_Send() const { return SendCount; }
   // max # send queue entries
   [[nodiscard]] int Max_Send() const { return MaxSend; }
-  SendQueueType* Get_Send(int index);  // random access to queue
+  SendQueueType* Get_Send(int index)
+      ABSL_ATTRIBUTE_LIFETIME_BOUND;  // random access to queue
   [[nodiscard]] uint32_t Send_Total() const { return SendTotal; }
 
   /*
   ....................... Receive Queue routines ........................
   */
-  int Queue_Receive(void* buf, int buflen);  // add to Receive queue
-  int UnQueue_Receive(void* buf, int* buflen,
+  int Queue_Receive(std::span<const std::byte> buf,
+                    int buflen);  // add to Receive queue
+  int UnQueue_Receive(std::span<std::byte> buf, int* buflen,
                       int index);  // remove from Receive queue
   // # entries in queue
   [[nodiscard]] int Num_Receive() const { return ReceiveCount; }
   // max # recv queue entries
   [[nodiscard]] int Max_Receive() const { return MaxReceive; }
-  ReceiveQueueType* Get_Receive(int index);  // random access to queue
+  ReceiveQueueType* Get_Receive(int index)
+      ABSL_ATTRIBUTE_LIFETIME_BOUND;  // random access to queue
   [[nodiscard]] uint32_t Receive_Total() const { return ReceiveTotal; }
 
   /*
@@ -166,18 +175,18 @@ class CommBufferClass {
   /*
   ........................ Send Queue variables .........................
   */
-  SendQueueType* SendQueue;  // incoming packets
+  std::vector<SendQueueType> SendQueue;  // incoming packets
   int SendCount = 0;         // # packets in the queue
   uint32_t SendTotal = 0;    // total # added to send queue
-  int* SendIndex;            // array of Send entry indices
+  std::vector<int> SendIndex;  // array of Send entry indices
 
   /*
   ....................... Receive Queue variables .......................
   */
-  ReceiveQueueType* ReceiveQueue;  // outgoing packets
+  std::vector<ReceiveQueueType> ReceiveQueue;  // outgoing packets
   int ReceiveCount = 0;            // # packets in the queue
   uint32_t ReceiveTotal = 0;       // total # added to receive queue
-  int* ReceiveIndex;               // array of Receive entry indices
+  std::vector<int> ReceiveIndex;   // array of Receive entry indices
 
   /*
   ......................... Debugging Variables .........................

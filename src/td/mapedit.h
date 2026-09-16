@@ -55,6 +55,7 @@
 #define CNC_RED_ALERT_TD_MAPEDIT_H_
 
 #include <array>
+#include <span>
 
 #include "sdllib/keyboard.h"
 #include "td/control.h"
@@ -196,7 +197,7 @@ class MapEditClass : public MouseClass {
   bool Scroll_Map(DirType facing, int& distance, bool really = true) override;
   //		virtual void Flag_To_Redraw(bool complete);
   void Read_INI(char* buffer) override;
-  void Write_INI(char* buffer) override;
+  void Write_INI(std::span<char> buffer) override;
   void Detach(ObjectClass* object) override;
   void Clear_List();
   bool Add_To_List(const ObjectTypeClass* object);
@@ -267,8 +268,9 @@ class MapEditClass : public MouseClass {
   int Edit_Team();
   int Team_Members(HousesType house);
   static void Build_Mission_List(
-      int missioncount, TeamMissionStruct* missions,
-      char missionbuf[TeamTypeClass::kMaxTeamMissions][20], ListClass* list);
+      int missioncount,
+      const TeamMissionStruct (&missions)[TeamTypeClass::kMaxTeamMissions],
+      char (&missionbuf)[TeamTypeClass::kMaxTeamMissions][20], ListClass* list);
 
   /*
   --------------------------- Private Interface ----------------------------

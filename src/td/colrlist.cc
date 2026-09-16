@@ -64,6 +64,9 @@
  *=========================================================================*/
 #include "td/colrlist.h"
 
+#include <cstddef>
+#include <span>
+
 #include "base/numeric.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
@@ -77,8 +80,9 @@
 #include "td/vector.h"
 
 ColorListClass::ColorListClass(int id, int x, int y, int w, int h,
-                               TextPrintType flags, const void* up,
-                               const void* down)
+                               TextPrintType flags,
+                               std::span<const std::byte> up,
+                               std::span<const std::byte> down)
     : ListClass(id, x, y, w, h, flags, up, down) {}
 
 /***************************************************************************

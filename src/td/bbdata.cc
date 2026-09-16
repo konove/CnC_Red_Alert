@@ -42,6 +42,7 @@
  *- - - - - - - */
 
 #include <filesystem>
+#include <span>
 
 #include "base/enum_array.h"
 #include "td/conquer.h"
@@ -596,7 +597,7 @@ void BulletTypeClass::One_Time() {
       if (file.IsAvailable()) {
         bullet.Set_Image_Data(Load_Alloc_Data(file));
       } else {
-        bullet.Set_Image_Data(MixArchive::Retrieve(fullname));
+        bullet.Set_Image_Data(MixArchive::RetrieveData(fullname));
       }
     }
   }

@@ -108,7 +108,7 @@ install(TARGETS rasdl)
 include(Testing)
 add_gtest(
     NAME ra_ini_number_test
-    SOURCES ini_number_test.cc ini.cc
+    SOURCES ini_number_test.cc ini.cc profile_buffer_test.cc profile.cc
     LIBS tech port sdllib absl::strings absl::check absl::log magic_enum::magic_enum
 )
 
@@ -189,3 +189,9 @@ if (EMSCRIPTEN)
     # (which is huge if you include the movies)
     # and adding files.js to the shell html
 endif ()
+
+add_gtest(
+    NAME ra_utracker_test
+    SOURCES utracker_test.cc utracker.cc
+    LIBS base
+)

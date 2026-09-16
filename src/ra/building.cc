@@ -124,10 +124,12 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cstddef>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <span>
 #include <utility>
 
 #include "absl/strings/str_format.h"
@@ -181,6 +183,7 @@
 #include "ra/techno.h"
 #include "ra/trigger.h"
 #include "ra/trigtype.h"
+#include "ra/keyframe.h"
 #include "ra/type.h"
 #include "ra/unit.h"
 #include "ra/utracker.h"
@@ -564,8 +567,8 @@ void BuildingClass::Draw_It(int x, int y, WindowNumberType window) const {
   **	The shape file to use for rendering depends on whether the building
   **	is undergoing construction or not.
   */
-  const void* shapefile = Get_Image_Data();
-  if (shapefile == nullptr) {
+  const auto shapefile = Get_Image_Data();
+  if (shapefile.empty()) {
     return;
   }
 
@@ -649,8 +652,7 @@ void BuildingClass::Draw_It(int x, int y, WindowNumberType window) const {
       const TechnoClass* obj = factory->Get_Object();
       if (obj != nullptr) {
         CC_Draw_Shape(obj->Techno_Type_Class()->Get_Cameo_Data(), 0, x, y,
-                      window, SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_NORMAL,
-                      nullptr);
+                      window, SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_NORMAL, {});
       }
     }
   }
@@ -821,7 +823,7 @@ bool BuildingClass::Mark(MarkType mark) {
   assert(IsActive);
 
   if (TechnoClass::Mark(mark)) {
-    const int16_t* occupy = Occupy_List();
+    const std::span<const int16_t> occupy = Occupy_List();
     CELL cell = Coord_Cell(Coord);
     SmudgeType bib = SMUDGE_NONE;
 
@@ -1306,7 +1308,7 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
       Base_Is_Attacked(source);
     }
 
-    const int16_t* offset = Occupy_List();
+    std::span<const int16_t> offset = Occupy_List();
 
     /*
     ** Memorize who they used to be in radio contact with.
@@ -1353,8 +1355,9 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
         }
 
         Sound_Effect(VOC_KABOOM22, Coord);
-        while (*offset != kRefreshEol) {
-          const CELL cell = static_cast<CELL>(Coord_Cell(Coord) + *offset++);
+        while (offset.front() != kRefreshEol) {
+          const CELL cell =
+              static_cast<CELL>(Coord_Cell(Coord) + base::ConsumeFront(offset));
 
           /*
           **	If the building is destroyed, then lots of
@@ -1496,8 +1499,9 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
 
       case RESULT_MAJOR:
         Sound_Effect(VOC_KABOOM1, Coord);
-        while (*offset != kRefreshEol) {
-          const CELL cell = static_cast<CELL>(Coord_Cell(Coord) + *offset++);
+        while (offset.front() != kRefreshEol) {
+          const CELL cell =
+              static_cast<CELL>(Coord_Cell(Coord) + base::ConsumeFront(offset));
           AnimClass* anim = nullptr;
 
           /*
@@ -1691,7 +1695,7 @@ BuildingClass::BuildingClass(StructType type, HousesType house)
   **	If the building could never be built, then it can never be sold either.
   *This *	is due to the lack of buildup animation.
   */
-  if (Class->Get_Buildup_Data() != nullptr) {
+  if (!Class->Get_Buildup_Data().empty()) {
     //	if (!Class->IsBuildable) {
     IsAllowedToSell = false;
   }
@@ -1754,7 +1758,7 @@ void BuildingClass::Drop_Debris(TARGET source) {
   **	Generate random survivors from the destroyed building.
   */
   CELL const cell = Coord_Cell(Coord);
-  const CELL* offset = Occupy_List();
+  std::span<const int16_t> offset = Occupy_List();
   int odds = 2;
   if (Target_Legal(WhomToRepay)) {
     odds -= 1;
@@ -1763,8 +1767,8 @@ void BuildingClass::Drop_Debris(TARGET source) {
     odds += 6;
   }
   int count = How_Many_Survivors();
-  while (*offset != kRefreshEol) {
-    CELL const newcell = static_cast<CELL>(cell + *offset++);
+  while (offset.front() != kRefreshEol) {
+    CELL const newcell = static_cast<CELL>(cell + base::ConsumeFront(offset));
     const CellClass* cellptr = &Map[newcell];
 
     /*
@@ -1780,7 +1784,7 @@ void BuildingClass::Drop_Debris(TARGET source) {
           i = new InfantryClass(typ, House->Class->House);
         }
         if (i != nullptr) {
-          if (Class->Get_Buildup_Data() != nullptr && i->Class->IsNominal) {
+          if (!Class->Get_Buildup_Data().empty() && i->Class->IsNominal) {
             i->IsTechnician = true;
           }
           ScenarioInit++;
@@ -2629,7 +2633,7 @@ void BuildingClass::Sell_Back(int control) {
   assert(Buildings.ID(this) == ID);
   assert(IsActive);
 
-  if (Class->Get_Buildup_Data()) {
+  if (!Class->Get_Buildup_Data().empty()) {
     bool decon = false;
     switch (control) {
       case -1:
@@ -3165,10 +3169,10 @@ bool BuildingClass::Captured(HouseClass* newowner) {
     /*
     ** Update the new building's colors on the radar map.
     */
-    const int16_t* offset = Occupy_List();
-    while (*offset != kRefreshEol) {
+    std::span<const int16_t> offset = Occupy_List();
+    while (offset.front() != kRefreshEol) {
       const CELL footprint_cell =
-          static_cast<CELL>(Coord_Cell(Coord) + *offset++);
+          static_cast<CELL>(Coord_Cell(Coord) + base::ConsumeFront(offset));
       Map.Radar_Pixel(footprint_cell);
     }
     return true;
@@ -3276,7 +3280,7 @@ bool BuildingClass::Can_Demolish() const {
     return false;
   }
 
-  if (Class->Get_Buildup_Data() && BState != BSTATE_CONSTRUCTION &&
+  if (!Class->Get_Buildup_Data().empty() && BState != BSTATE_CONSTRUCTION &&
       Mission != MISSION_DECONSTRUCTION && Mission != MISSION_CONSTRUCTION) {
     return *this != STRUCT_REFINERY || !Is_Something_Attached();
   }
@@ -4789,10 +4793,10 @@ CELL BuildingClass::Find_Exit_Cell(const TechnoClass* techno) const {
 
   const CELL origin = Coord_Cell(Coord);
 
-  const CELL* ptr = Class->ExitList;
-  if (ptr != nullptr) {
-    while (*ptr != kRefreshEol) {
-      const CELL cell = static_cast<CELL>(origin + *ptr++);
+  std::span<const int16_t> ptr = Class->ExitList;
+  if (!ptr.empty()) {
+    while (ptr.front() != kRefreshEol) {
+      const CELL cell = static_cast<CELL>(origin + base::ConsumeFront(ptr));
       if (Map.In_Radar(cell) && techno->Can_Enter_Cell(cell) == MOVE_OK) {
         return cell;
       }
@@ -5574,7 +5578,7 @@ int BuildingClass::How_Many_Survivors() const {
  *                                                                                             *
  * HISTORY: * 08/06/1996 JLB : Created. *
  *=============================================================================================*/
-const void* BuildingClass::Get_Image_Data() const {
+std::span<const std::byte> BuildingClass::Get_Image_Data() const {
   if (BState == BSTATE_CONSTRUCTION) {
     return Class->Get_Buildup_Data();
   }
@@ -5661,7 +5665,7 @@ void BuildingClass::Remove_Gap_Effect() {
   }
 }
 
-const int16_t* BuildingClass::Overlap_List(bool redraw) const {
+std::span<const int16_t> BuildingClass::Overlap_List(bool redraw) const {
   if ((SpiedBy & base::Bit<uint32_t>(PlayerPtr->Class->House)) != 0 &&
       IsSelected && (*this == STRUCT_BARRACKS || *this == STRUCT_TENT)) {
     static const int16_t _list[] = {-1, 2, (MAP_CELL_W * 1) - 1,

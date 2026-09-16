@@ -5,20 +5,22 @@
 #include <climits>
 #include <cstdint>
 #include <cstring>
-#include <string_view>
+#include <span>
 
-#include "base/types.h"
+#include "base/buffer.h"
+#include "base/numeric.h"
+#include "port/safe_string.h"
 #include "sdllib/gbuffer.h"
 
-void* Conquer_Build_Fading_Table(const void* palette, void* dest, int color,
-                                 int frac) {
-
+std::span<uint8_t> Conquer_Build_Fading_Table(std::span<const uint8_t> palette,
+                                              std::span<uint8_t> dest,
+                                              int color, int frac) {
   const int ALLOWED_COUNT = 16;
   const int ALLOWED_START = 256 - ALLOWED_COUNT;
 
   // If the source palette is NULL, then just return with current fading table
   // pointer.
-  if (!palette || !dest) {
+  if (palette.size() < 768 || dest.size() < 256 || color < 0 || color >= 256) {
     return dest;
   }
 
@@ -26,21 +28,21 @@ void* Conquer_Build_Fading_Table(const void* palette, void* dest, int color,
   frac = std::min(frac, 255);
 
   // Record the target gun values.
-  const auto* pal8 = static_cast<const uint8_t*>(palette);
-  const uint8_t targetred = pal8[(color * 3) + 0];
-  const uint8_t targetgreen = pal8[(color * 3) + 0];
+  const auto pal8 = palette;
+  const uint8_t targetred = pal8[(static_cast<size_t>(color) * 3) + 0];
+  const uint8_t targetgreen = pal8[(static_cast<size_t>(color) * 3) + 0];
 
   // Main loop
 
-  auto* dptr = static_cast<uint8_t*>(dest);
+  size_t output = 0;
 
   // Transparent black never gets remapped.
-  *dptr++ = 0;
+  dest[output++] = 0;
 
   int remap_index = 0;
   for (remap_index = 1; remap_index < ALLOWED_START; remap_index++) {
-    const uint8_t origred = pal8[(remap_index * 3) + 0];
-    const uint8_t origgreen = pal8[(remap_index * 3) + 1];
+    const uint8_t origred = pal8[(static_cast<size_t>(remap_index) * 3) + 0];
+    const uint8_t origgreen = pal8[(static_cast<size_t>(remap_index) * 3) + 1];
 
     // The products can be negative; the shifts floor them as the original
     // table builder did, so the palette comes out identical.
@@ -58,7 +60,7 @@ void* Conquer_Build_Fading_Table(const void* palette, void* dest, int color,
     int matchcolor = color;    // Default color (self).
     int matchvalue = INT_MAX;  // Ridiculous match value init.
 
-    const auto* palptr = pal8 + (static_cast<base::ssize>(ALLOWED_START) * 3);
+    auto palptr = pal8.subspan(base::ToSize(ALLOWED_START) * 3);
 
     for (int color_index = ALLOWED_START; color_index < 256; color_index++) {
       int compval = 0;
@@ -83,17 +85,17 @@ void* Conquer_Build_Fading_Table(const void* palette, void* dest, int color,
         matchvalue = compval;
       }
 
-      palptr += 3;
+      palptr = palptr.subspan(3);
     }
 
     // When the loop exits, we have found the closest match.
-    *dptr++ = static_cast<uint8_t>(matchcolor);
+    dest[output++] = static_cast<uint8_t>(matchcolor);
   }
 
   // Fill the remainder of the remap table with values
   // that will remap the color to itself.
   for (; remap_index < 256; remap_index++) {
-    *dptr++ = static_cast<uint8_t>(remap_index);
+    dest[output++] = static_cast<uint8_t>(remap_index);
   }
 
   return dest;
@@ -106,24 +108,23 @@ void Fat_Put_Pixel(int x, int y, std::uint8_t color, int size,
 
 // from RA readline.cpp
 void strtrim(char* buffer) {
-  if (!buffer || *buffer == '\0') {
+  const auto storage = port::MutableCString(buffer);
+  if (storage.empty()) {
     return;
   }
-
-  // Strip leading whitespace
-  const auto* source = buffer;
-  while (std::isspace(static_cast<unsigned char>(*source))) {
-    ++source;
+  const auto text = storage.first(storage.size() - 1);
+  size_t first = 0;
+  while (first < text.size() &&
+         std::isspace(static_cast<unsigned char>(text[first]))) {
+    ++first;
   }
-
-  if (source != buffer) {
-    const auto len = std::string_view(source).size();
-    std::memmove(buffer, source, len + 1);
+  size_t last = text.size();
+  while (last > first &&
+         std::isspace(static_cast<unsigned char>(text[last - 1]))) {
+    --last;
   }
-
-  // Strip trailing whitespace
-  auto len = std::string_view(buffer).size();
-  while (len > 0 && std::isspace(static_cast<unsigned char>(buffer[len - 1]))) {
-    buffer[--len] = '\0';
-  }
+  base::MoveBytes(std::as_writable_bytes(storage),
+                  std::as_bytes(text.subspan(first, last - first)),
+                  last - first);
+  storage[last - first] = '\0';
 }

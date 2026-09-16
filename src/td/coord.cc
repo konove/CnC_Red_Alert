@@ -52,6 +52,7 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <span>
 
 #include "base/array.h"
 #include "base/trig.h"
@@ -86,7 +87,7 @@
  *   06/03/1994 JLB : Converted to general purpose spillage functionality. *
  *   01/07/1995 JLB : Manually calculates spillage list for large objects. *
  *=============================================================================================*/
-const int16_t* Coord_Spillage_List(COORDINATE coord, int maxsize) {
+std::span<const int16_t> Coord_Spillage_List(COORDINATE coord, int maxsize) {
   static const int16_t MoveSpillage[static_cast<int>(FACING_COUNT) + 1][5] = {
       {0, -MAP_CELL_W, REFRESH_EOL, 0, 0},                   // N
       {0, -MAP_CELL_W, 1, -(MAP_CELL_W - 1), REFRESH_EOL},   // NE
@@ -130,7 +131,7 @@ const int16_t* Coord_Spillage_List(COORDINATE coord, int maxsize) {
         +((2 * MAP_CELL_W) - 2), +((2 * MAP_CELL_W) - 1),
         +(2 * MAP_CELL_W),       +((2 * MAP_CELL_W) + 1),
         +((2 * MAP_CELL_W) + 2), REFRESH_EOL};
-    return &_gigundo[0];
+    return _gigundo;
   }
 
   /*
@@ -174,7 +175,7 @@ const int16_t* Coord_Spillage_List(COORDINATE coord, int maxsize) {
       base::At(_manual, index++) = -(MAP_CELL_W - 1);
     }
     base::At(_manual, index) = REFRESH_EOL;
-    return &_manual[0];
+    return _manual;
   }
 
   /*
@@ -198,8 +199,7 @@ const int16_t* Coord_Spillage_List(COORDINATE coord, int maxsize) {
     index += 1;  // Spilling West.
   }
 
-  return base::Suffix(base::At(MoveSpillage, base::At(SpillTable, index)), 0)
-      .data();
+  return base::At(MoveSpillage, base::At(SpillTable, index));
 }
 
 /***********************************************************************************************

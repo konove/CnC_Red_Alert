@@ -56,6 +56,7 @@
 #include <cstdio>
 #include <cstring>
 #include <iterator>
+#include <span>
 
 #include "absl/strings/str_format.h"
 #include "ra/conquer.h"
@@ -136,7 +137,7 @@ void HelpClass::Init_Clear() {
  *                                                                                             *
  * HISTORY: * 11/18/1994 JLB : Created. *
  *=============================================================================================*/
-const int16_t* HelpClass::Overlap_List() const {
+std::span<const int16_t> HelpClass::Overlap_List() const {
   if (Text == TXT_NONE || CountDownTimer.HasTimeLeft()) {
     OverlapList[0] = kRefreshEol;
   }
@@ -218,7 +219,7 @@ void HelpClass::Help_Text(int text, int x, int y, int /*color*/, bool quick) {
     *underlying *	icons so that the text message is erased.
     */
     if (Text != TXT_NONE) {
-      Refresh_Cells(Coord_Cell(TacticalCoord), &OverlapList[0]);
+      Refresh_Cells(Coord_Cell(TacticalCoord), OverlapList);
     }
 
     /*
@@ -333,9 +334,9 @@ void HelpClass::Set_Text(int text) {
       DrawX = std::max(DrawX, TacPixelX + 1);
       DrawY = std::max(DrawY, TacPixelY + 1);
     }
-    memcpy(OverlapList, Text_Overlap_List(Text_String(Text), DrawX - 1, DrawY),
-           sizeof(OverlapList));
-    *&OverlapList[std::ssize(OverlapList) - 1] = kRefreshEol;
+    List_Copy(Text_Overlap_List(Text_String(Text), DrawX - 1, DrawY),
+              std::ssize(OverlapList), OverlapList);
+    std::span(OverlapList).back() = kRefreshEol;
   }
 }
 

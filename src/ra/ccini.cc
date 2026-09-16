@@ -105,6 +105,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/buffer.h"
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
@@ -188,8 +189,8 @@ bool CCINIClass::Load(ByteSource& file, bool withdigest) {
     **	If a digest is present, fetch it.
     */
     Sha1Digest digest{};
-    const int len =
-        Get_UUBlock("Digest", digest.data(), static_cast<int>(digest.size()));
+    const int len = Get_UUBlock("Digest", base::ObjectBytes(digest),
+                                static_cast<int>(digest.size()));
     if (len > 0) {
       Clear("Digest");
 
@@ -273,7 +274,8 @@ bool CCINIClass::Save(ByteSink& pipe, bool withdigest) {
   /*
   **	Store the actual digest into the INI database.
   */
-  Put_UUBlock("Digest", Digest.data(), static_cast<int>(Digest.size()));
+  Put_UUBlock("Digest", base::ObjectBytes(Digest),
+              static_cast<int>(Digest.size()));
 
   /*
   **	Output the database to the pipe specified.
@@ -768,7 +770,8 @@ WarheadType CCINIClass::Get_WarheadType(const char* section, const char* entry,
 
   if (Get_String(section, entry, "", buffer, sizeof(buffer))) {
     for (const WarheadType wh : magic_enum::enum_values<WarheadType>()) {
-      if (stricmp(WarheadTypeClass::As_Pointer(wh)->Name(), buffer) == 0) {
+      if (port::CompareIgnoreCase(WarheadTypeClass::As_Pointer(wh)->Name(),
+                                  buffer) == 0) {
         return wh;
       }
     }
@@ -886,8 +889,10 @@ BulletType CCINIClass::Get_BulletType(const char* section, const char* entry,
 
   if (Get_String(section, entry, "", buffer, sizeof(buffer))) {
     for (const BulletType proj : magic_enum::enum_values<BulletType>()) {
-      if (stricmp(BulletTypeClass::As_Reference(proj).Name(), buffer) == 0) {
-        //			if (stricmp(ProjectileNames[proj], buffer) == 0)
+      if (port::CompareIgnoreCase(BulletTypeClass::As_Reference(proj).Name(),
+                                  buffer) == 0) {
+        //			if
+        //(port::CompareIgnoreCase(ProjectileNames[proj], buffer) == 0)
         //{
         return proj;
       }
@@ -1009,7 +1014,7 @@ VQType CCINIClass::Get_VQType(const char* section, const char* entry,
 
   if (Get_String(section, entry, "", buffer, sizeof(buffer))) {
     for (const VQType vq : magic_enum::enum_values<VQType>()) {
-      if (stricmp(buffer, VQName[vq]) == 0) {
+      if (port::CompareIgnoreCase(buffer, VQName[vq]) == 0) {
         return vq;
       }
     }

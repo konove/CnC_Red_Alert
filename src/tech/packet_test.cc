@@ -6,7 +6,9 @@
 #include <cstdint>
 #include <cstring>
 #include <memory>
+#include <span>
 
+#include "base/buffer.h"
 #include "gtest/gtest.h"
 #include "tech/field.h"
 
@@ -29,7 +31,11 @@ TEST(PacketClassTest, IntegerFieldsRoundTrip) {
 
   int size = 0;
   const std::unique_ptr<char[]> wire = Serialize(packet, size);
-  PacketClass parsed(wire.get());
+  // Serialize returns an owning allocation of exactly size bytes.
+  const auto bytes =
+      // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
+      std::as_bytes(std::span(wire.get(), static_cast<std::size_t>(size)));
+  PacketClass parsed(bytes);
 
   char c = 0;
   unsigned char uc = 0;
@@ -44,7 +50,7 @@ TEST(PacketClassTest, IntegerFieldsRoundTrip) {
   ASSERT_TRUE(parsed.Get_Field("USHT", us));
   ASSERT_TRUE(parsed.Get_Field("LONG", l));
   ASSERT_TRUE(parsed.Get_Field("ULNG", ul));
-  ASSERT_TRUE(parsed.Get_Field("STRG", text.data(), text.size()));
+  ASSERT_TRUE(parsed.Get_Field("STRG", text));
 
   EXPECT_EQ(c, -3);
   EXPECT_EQ(uc, 200);
@@ -71,7 +77,20 @@ TEST(PacketClassTest, LongFieldIsFourBigEndianBytes) {
       0x04,                                           // field size
       0x01, 0x02, 0x03, 0x04};                        // value
   ASSERT_EQ(size, static_cast<int>(kExpected.size()));
-  EXPECT_EQ(std::memcmp(wire.get(), kExpected.data(), kExpected.size()), 0);
+  // Create_Comms_Packet allocated exactly size bytes, owned by wire.
+  const auto bytes =
+      // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
+      std::as_bytes(std::span(wire.get(), static_cast<std::size_t>(size)));
+  EXPECT_EQ(base::CompareBytes(bytes, base::ObjectBytes(kExpected), size), 0);
+}
+
+TEST(PacketClassTest, RejectsCharacterFieldWithoutAValue) {
+  constexpr std::array<unsigned char, 12> wire = {
+      0, 12, 0, 1, 'C', 'H', 'A', 'R', 0, TYPE_CHAR, 0, 0};
+  PacketClass parsed(std::as_bytes(std::span(wire)));
+  char value = 'x';
+  EXPECT_FALSE(parsed.Get_Field("CHAR", value));
+  EXPECT_EQ(value, 'x');
 }
 
 }  // namespace

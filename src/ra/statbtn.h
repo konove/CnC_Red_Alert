@@ -40,6 +40,9 @@
 #ifndef CNC_RED_ALERT_RA_STATBTN_H_
 #define CNC_RED_ALERT_RA_STATBTN_H_
 
+#include <cstdint>
+#include <vector>
+
 #include "ra/defines.h"
 #include "ra/gadget.h"
 #include "tech/buff.h"
@@ -60,7 +63,7 @@ class StaticButtonClass final : public GadgetClass {
   **	If a background is to be preserved for this button, then this will point
   *to *	a buffer that holds a pristine background image.
   */
-  Buffer Background;
+  std::vector<uint8_t> Background;
 
   /*
   **	This points to a copy of the string that is used for the button's text.

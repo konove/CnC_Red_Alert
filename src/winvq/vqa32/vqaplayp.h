@@ -43,6 +43,7 @@
  ****************************************************************************/
 #include <cstdint>
 #include <memory>
+#include <span>
 #include <vector>
 
 #include "winvq/vqa32/vqafile.h"
@@ -245,7 +246,7 @@ typedef struct VQADrawer {
   VQAFrameNode* CurFrame;
   uint32_t Flags;  // VQADRWF_* bits
   DisplayInfo* Display;
-  unsigned char* ImageBuf;
+  std::span<unsigned char> ImageBuf;
   int32_t ImageWidth;
   int32_t ImageHeight;
   int32_t X1, Y1, X2, Y2;
@@ -332,7 +333,7 @@ struct VQAAudio {
   std::vector<unsigned char> BufferStorage;
   std::vector<int16_t> IsLoadedStorage;
   std::vector<unsigned char> TempBufStorage;
-  unsigned char* Buffer = nullptr;  // Points into BufferStorage
+  std::span<unsigned char> Buffer;  // BufferStorage or caller-owned span
   int32_t AudBufPos = 0;
   int16_t* IsLoaded = nullptr;  // Points into IsLoadedStorage
   int32_t NumAudBlocks = 0;
@@ -399,8 +400,9 @@ struct VQAAudio {
 struct VQAData {
   int32_t (*Draw_Frame)(VQAHandle* vqa) = nullptr;
 
-  void (*UnVQ)(const unsigned char* codebook, const unsigned char* pointers,
-               unsigned char* buffer, int blocksperrow, int numrows,
+  void (*UnVQ)(std::span<const unsigned char> codebook,
+               std::span<const unsigned char> pointers,
+               std::span<unsigned char> buffer, int blocksperrow, int numrows,
                int bufwidth) = nullptr;
 
   // RAII storage for nodes - these vectors own the node objects

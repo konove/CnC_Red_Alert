@@ -477,7 +477,7 @@ KeyNumType GadgetClass::Input() {
     if ((key == KN_K && !MapEditorActive && (Debug_Flag || Debug_Playtest)) &&
         (!Debug_MotionCapture)) {
       GraphicBufferClass temp_page(
-          SeenBuff.Get_Width(), SeenBuff.Get_Height(), nullptr,
+          SeenBuff.Get_Width(), SeenBuff.Get_Height(), {},
           static_cast<int32_t>(SeenBuff.Get_Width()) * SeenBuff.Get_Height());
       DiskFile file;
       char filename[30];

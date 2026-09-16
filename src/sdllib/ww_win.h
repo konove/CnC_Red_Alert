@@ -70,7 +70,7 @@ inline constexpr int kWindowCursorY =
     7;  // Current cursor Y position (in lines).
 inline constexpr int kWindowPadding = 0x1000;
 
-extern int WindowList[][8];
+extern int WindowList[7][8];
 extern int WindowColumns;
 extern int WindowLines;
 extern int WindowWidth;

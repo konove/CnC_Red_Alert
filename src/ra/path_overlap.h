@@ -4,6 +4,7 @@
 #define CNC_RED_ALERT_RA_PATH_OVERLAP_H_
 
 #include <cstdint>
+#include <span>
 
 #include "absl/log/check.h"
 #include "base/numeric.h"
@@ -28,21 +29,24 @@ constexpr uint32_t OverlapMask(int cell) {
 }
 
 // Returns whether `cell` is marked in the bitmap `words`.
-inline bool IsOverlapped(const uint32_t* words, int cell) {
-  DCHECK(cell >= 0);
-  return (words[OverlapWord(cell)] & OverlapMask(cell)) != 0;
+inline bool IsOverlapped(std::span<const uint32_t> words, int cell) {
+  CHECK_GE(cell, 0);
+  CHECK_LT(base::ToSize(OverlapWord(cell)), words.size());
+  return (words[base::ToSize(OverlapWord(cell))] & OverlapMask(cell)) != 0;
 }
 
 // Marks `cell` in the bitmap `words`.
-inline void SetOverlap(uint32_t* words, int cell) {
-  DCHECK(cell >= 0);
-  words[OverlapWord(cell)] |= OverlapMask(cell);
+inline void SetOverlap(std::span<uint32_t> words, int cell) {
+  CHECK_GE(cell, 0);
+  CHECK_LT(base::ToSize(OverlapWord(cell)), words.size());
+  words[base::ToSize(OverlapWord(cell))] |= OverlapMask(cell);
 }
 
 // Unmarks `cell` in the bitmap `words`.
-inline void ClearOverlap(uint32_t* words, int cell) {
-  DCHECK(cell >= 0);
-  words[OverlapWord(cell)] &= ~OverlapMask(cell);
+inline void ClearOverlap(std::span<uint32_t> words, int cell) {
+  CHECK_GE(cell, 0);
+  CHECK_LT(base::ToSize(OverlapWord(cell)), words.size());
+  words[base::ToSize(OverlapWord(cell))] &= ~OverlapMask(cell);
 }
 
 #endif  // CNC_RED_ALERT_RA_PATH_OVERLAP_H_

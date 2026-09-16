@@ -38,15 +38,17 @@
 
 #include <cstdint>
 #include <cstring>
+#include <span>
 
-#include "base/types.h"
+#include "base/buffer.h"
 #include "ra/filepcx.h"
 #include "ra/palette.h"
 #include "sdllib/file_access.h"
 #include "sdllib/gbuffer.h"
 #include "tech/file.h"
 
-static void Write_Pcx_ScanLine(File& file, int scansize, const char* ptr);
+static void Write_Pcx_ScanLine(File& file, int scansize,
+                               std::span<const uint8_t> pixels);
 
 /***************************************************************************
  * WRITE_PCX_FILE -- Write the data in ViewPort to a pcx file              *
@@ -131,11 +133,11 @@ int Write_PCX_File(File& file, GraphicBufferClass& pic,
   **	Write out the picture, line by line.
   */
   const int VP_Scan_Line = pic.Get_Width() + pic.Get_XAdd();
-  char* ptr = static_cast<char*>(pic.Get_Buffer());
-  ptr += (pic.Get_YPos() * VP_Scan_Line) + pic.Get_XPos();
+  const auto pixels = pic.Get_Pixels();
   for (int line = 0; line < header.height + 1; line++) {
     Write_Pcx_ScanLine(file, header.byte_per_line,
-                       ptr + (static_cast<base::ssize>(line) * VP_Scan_Line));
+                       pixels.subspan(static_cast<size_t>(line) *
+                                      static_cast<size_t>(VP_Scan_Line)));
   }
 
   /*
@@ -147,7 +149,8 @@ int Write_PCX_File(File& file, GraphicBufferClass& pic,
   /*
   **	Convert the palette from 6 bit to 8 bit format.
   */
-  memmove(palcopy, palette, sizeof(PaletteClass));
+  base::CopyBytes(base::ObjectBytes(palcopy), std::as_bytes(palette->bytes()),
+                  sizeof(palcopy));
   for (unsigned char& component : palcopy) {
     component = static_cast<unsigned char>(component << 2);
   }
@@ -184,12 +187,16 @@ int Write_PCX_File(File& file, GraphicBufferClass& pic,
  * HISTORY: * 05/04/1995 JRJ : Created. * 06/03/1996 JLB : Converted to C++ and
  *file class I/O.                                     *
  *=============================================================================================*/
-static void Write_Pcx_ScanLine(File& file, int scansize, const char* ptr) {
-  auto last = static_cast<unsigned char>(*ptr);
+static void Write_Pcx_ScanLine(File& file, int scansize,
+                               std::span<const uint8_t> pixels) {
+  if (scansize <= 0 || static_cast<size_t>(scansize) > pixels.size()) {
+    return;
+  }
+  auto last = pixels.front();
   unsigned char rle = 1;
   unsigned char c = 0;
   for (int i = 1; i < scansize; i++) {
-    const auto color = static_cast<unsigned char>(*++ptr);
+    const auto color = pixels[static_cast<size_t>(i)];
     if (color == last) {
       rle++;
       if (rle == rle_max_run) {

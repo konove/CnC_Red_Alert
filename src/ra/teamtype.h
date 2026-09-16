@@ -40,6 +40,8 @@
 #ifndef CNC_RED_ALERT_RA_TEAMTYPE_H_
 #define CNC_RED_ALERT_RA_TEAMTYPE_H_
 
+#include <string>
+
 #include <cstddef>
 
 #include "absl/base/attributes.h"
@@ -152,7 +154,7 @@ class TeamTypeClass : public AbstractTypeClass {
   /*
   **	File I/O routines
   */
-  void Build_INI_Entry(char* buffer);
+  void Build_INI_Entry(std::string& buf);
   static void Read_INI(CCINIClass& ini);
   void Fill_In(const char* name, char* entry);
   static void Write_INI(CCINIClass& ini);

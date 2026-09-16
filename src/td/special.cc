@@ -285,7 +285,7 @@ void Special_Dialog() {
       default:
         const int index = (input & ~KN_BUTTON) - 100;
         if (static_cast<unsigned>(index) <
-            sizeof(_options) / sizeof(_options[0])) {
+            sizeof(_options) / sizeof(base::At(_options, 0))) {
           base::At(_options, index).Setting =
               !base::At(_options, index).Setting;
           if (base::At(_options, index).Setting) {

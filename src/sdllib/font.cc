@@ -1,7 +1,10 @@
 #include "sdllib/font.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <cstdint>
+#include <span>
+#include <string_view>
 
 #include "base/array.h"
 
@@ -9,7 +12,7 @@ int FontXSpacing;
 int FontYSpacing;
 char FontWidth;
 char FontHeight;
-const void* FontPtr;
+std::span<const std::byte> FontPtr;
 
 // Maps 4-bit glyph pixel values to screen colors. Defaults to the identity
 // mapping; Buffer_Print installs the fore/background per call and
@@ -19,10 +22,10 @@ uint8_t FontPalette[16]{
     0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
 };
 
-const void* Set_Font(const void* new_font) {
-  const void* old_font = FontPtr;
+std::span<const std::byte> Set_Font(std::span<const std::byte> new_font) {
+  const auto old_font = FontPtr;
 
-  if (new_font) {
+  if (!new_font.empty()) {
     FontPtr = new_font;
 
     // Refresh the font metric globals the rest of the system reads.
@@ -46,27 +49,33 @@ int String_Pixel_Width(const char* string) {
   const FontView font(FontPtr);
   int largest = 0;  // Largest recorded line width of the string.
   int width = 0;    // Working accumulator of the current line's width.
-  while (*string) {
-    if (*string == '\r') {
-      string++;
+  for (const char ch : std::string_view(string)) {
+    if (ch == '\r') {
       largest = std::max(largest, width);
       width = 0;
     } else {
-      width += font.GlyphWidth(static_cast<uint8_t>(*string++)) + FontXSpacing;
+      width += font.GlyphWidth(static_cast<uint8_t>(ch)) + FontXSpacing;
     }
   }
   return std::max(largest, width);
 }
 
-void Set_Font_Palette_Range(const void* palette, int start_idx, int end_idx) {
-  const auto* palette8 = static_cast<const uint8_t*>(palette);
+void Set_Font_Palette_Range(std::span<const uint8_t> palette, int start_idx,
+                            int end_idx) {
+  auto palette8 = palette.begin();
 
   start_idx %= 16;
   end_idx %= 16;
 
+  if (start_idx < 0 || end_idx < start_idx ||
+      (static_cast<size_t>(end_idx) - static_cast<size_t>(start_idx) + 1) >
+          palette.size()) {
+    return;
+  }
   for (int i = start_idx; i <= end_idx; ++i) {
     base::At(FontPalette, i) = *palette8++;
   }
 }
 
 void* Get_Font_Palette_Ptr() { return FontPalette; }
+std::span<const uint8_t> Get_Font_Palette() { return FontPalette; }

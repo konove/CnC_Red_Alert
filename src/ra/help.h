@@ -41,6 +41,7 @@
 #define CNC_RED_ALERT_RA_HELP_H_
 
 #include <cstdint>
+#include <span>
 
 #include "ra/conquer.h"
 #include "ra/defines.h"
@@ -73,7 +74,7 @@ class HelpClass : public TabClass {
   void Help_Text(int text, int x = -1, int y = -1, int color = kLtGrey,
                  bool quick = false) override;
   void Set_Cost(int cost);
-  [[nodiscard]] const int16_t* Overlap_List() const;
+  [[nodiscard]] std::span<const int16_t> Overlap_List() const;
 
  private:
   static const char* HelpText;

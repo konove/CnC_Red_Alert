@@ -69,6 +69,7 @@
 #include <algorithm>
 #include <cassert>
 #include <cctype>
+#include <cstddef>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
@@ -534,10 +535,12 @@ void Fill_In_Data() {
   if (!MapEditorActive) {
     Map.Activate(1);
     //		if (Session.Type == GAME_NORMAL) {
-    Scen.Views[0] = Scen.Views[1] = Scen.Views[2] = Scen.Views[3] =
-        Scen.Waypoint[ScenarioClass::kHomeWaypoint];
+    base::At(Scen.Views, 0) = base::At(Scen.Views, 1) =
+        base::At(Scen.Views, 2) = base::At(Scen.Views, 3) =
+            base::At(Scen.Waypoint, ScenarioClass::kHomeWaypoint);
     Map.Set_Tactical_Position(Cell_Coord(static_cast<CELL>(
-        Scen.Waypoint[ScenarioClass::kHomeWaypoint] - (MAP_CELL_W * 8) - 10)));
+        base::At(Scen.Waypoint, ScenarioClass::kHomeWaypoint) -
+        (MAP_CELL_W * 8) - 10)));
     //		}
   }
 
@@ -787,7 +790,7 @@ void Do_Win() {
   ** to game queries any more (in Call_Back)
   */
   if (Session.Type != GAME_NORMAL) {
-    Session.GameName[0] = 0;
+    base::At(Session.GameName, 0) = 0;
   }
 
   /*
@@ -904,7 +907,7 @@ void Do_Win() {
                         base::ObjectBytes(buf), 2);
         Scen.Set_Scenario_Name(scenarioname);
       } else {
-        Scen.ScenarioName[6] = 'B';
+        base::At(Scen.ScenarioName, 6) = 'B';
       }
     } else {
       Scen.Set_Scenario_Name(Map_Selection().c_str());
@@ -1013,7 +1016,7 @@ void Do_Lose() {
   ** to game queries any more (in Call_Back)
   */
   if (Session.Type != GAME_NORMAL) {
-    Session.GameName[0] = 0;
+    base::At(Session.GameName, 0) = 0;
   }
 
   /*
@@ -1102,7 +1105,7 @@ void Do_Draw() {
   ** to game queries any more (in Call_Back)
   */
   if (Session.Type != GAME_NORMAL) {
-    Session.GameName[0] = 0;
+    base::At(Session.GameName, 0) = 0;
   }
 
   /*
@@ -1253,7 +1256,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
     return "MORE";
   }();
 
-  const void* briefsnd = MixArchive::Retrieve("BRIEFING.AUD");
+  const auto briefsnd = MixArchive::RetrieveData("BRIEFING.AUD");
 
   GadgetClass::Set_Color_Scheme(&ColorRemaps[PCOLOR_TYPE]);
 
@@ -1390,20 +1393,20 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
   */
   if (numbuttons) {
     buttonlist = &button1;
-    buttons[0] = &button1;
-    realval[0] = kButton1;
+    base::At(buttons, 0) = &button1;
+    base::At(realval, 0) = kButton1;
     if (numbuttons > 2) {
       button3.Add(*buttonlist);
-      buttons[1] = &button3;
-      realval[1] = kButton3;
+      base::At(buttons, 1) = &button3;
+      base::At(realval, 1) = kButton3;
       button2.Add(*buttonlist);
-      buttons[2] = &button2;
-      realval[2] = kButton2;
+      base::At(buttons, 2) = &button2;
+      base::At(realval, 2) = kButton2;
       base::At(buttons, curbutton)->Turn_On();
     } else if (numbuttons == 2) {
       button2.Add(*buttonlist);
-      buttons[1] = &button2;
-      realval[1] = kButton2;
+      base::At(buttons, 1) = &button2;
+      base::At(realval, 1) = kButton2;
       base::At(buttons, curbutton)->Turn_On();
     }
   }
@@ -1422,8 +1425,8 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
   Load_Title_Screen(filename, &HidPage, temp);
   HidPage.Blit(SeenBuff);
 
-  static unsigned char _scorepal[] = {0, 1, 12, 13,  4,   5,   6,  7,
-                                      8, 9, 10, 255, 252, 253, 14, 248};
+  static const unsigned char _scorepal[] = {0, 1, 12, 13,  4,   5,   6,  7,
+                                            8, 9, 10, 255, 252, 253, 14, 248};
   Set_Font_Palette(_scorepal);
   temp.Set(kFadePaletteMedium, Call_Back);
 
@@ -1438,19 +1441,19 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
   int yprint = y + 25;
   do {
     char bufprint[2];
-    bufprint[1] = 0;
-    bufprint[0] = base::At(buffer, bufindex);
-    if (bufprint[0] == '\r' || bufprint[0] == '@') {
+    base::At(bufprint, 1) = 0;
+    base::At(bufprint, 0) = base::At(buffer, bufindex);
+    if (base::At(bufprint, 0) == '\r' || base::At(bufprint, 0) == '@') {
       xprint = x + 20;
       yprint += FontHeight + FontYSpacing;
 
     } else {
-      if (bufprint[0] != 20) {
+      if (base::At(bufprint, 0) != 20) {
         SeenBuff.Print(bufprint, xprint, yprint, kTBlack, kTBlack);
-        xprint += Char_Pixel_Width(bufprint[0]);
+        xprint += Char_Pixel_Width(base::At(bufprint, 0));
       }
     }
-    if (bufprint[0] == '\r' || bufprint[0] == '@') {
+    if (base::At(bufprint, 0) == '\r' || base::At(bufprint, 0) == '@') {
       Play_Sample(briefsnd, 255, Options.Normalize_Volume(135));
       Timer<SystemTickSource> cd;
       cd.Set(5);
@@ -1483,16 +1486,16 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
       const KeyNumType input = buttonlist->Input();  // user input
       switch (static_cast<uint32_t>(input)) {
         case kBriefingButtonFlag | uint32_t{kButton1}:
-          selection = realval[0];
+          selection = base::At(realval, 0);
           pressed = true;
           break;
 
         case KN_ESC:
           if (numbuttons > 2) {
-            selection = realval[1];
+            selection = base::At(realval, 1);
             pressed = true;
           } else {
-            selection = realval[2];
+            selection = base::At(realval, 2);
             pressed = true;
           }
           break;
@@ -1503,7 +1506,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
           break;
 
         case kBriefingButtonFlag | uint32_t{kButton3}:
-          selection = realval[1];
+          selection = base::At(realval, 1);
           pressed = true;
           break;
 
@@ -1780,10 +1783,10 @@ void ScenarioClass::Set_Scenario_Name(const char* name) {
     char buf[3];
     base::CopyBytes(base::ObjectBytes(buf),
                     std::as_bytes(base::Suffix(ScenarioName, 3)), 2);
-    buf[2] = '\0';
-    if (buf[0] > '9' || buf[1] > '9') {
-      char first = buf[0];
-      char second = buf[1];
+    base::At(buf, 2) = '\0';
+    if (base::At(buf, 0) > '9' || base::At(buf, 1) > '9') {
+      char first = base::At(buf, 0);
+      char second = base::At(buf, 1);
       if (first <= '9') {
         first -= '0';
       } else {
@@ -1837,12 +1840,12 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
   */
   // Avoid CD check if official scenario was downloaded.
   if ((Session.Type == GAME_NORMAL || Session.ScenarioIsOfficial) &&
-      stricmp(Scen.ScenarioName, "download.tmp") != 0) {
+      port::CompareIgnoreCase(Scen.ScenarioName, "download.tmp") != 0) {
     /*
     ** If this is scenario 1 then it should be on all CDs unless its an ant
     *scenario
     */
-    if (Scen.Scenario == 1 && Scen.ScenarioName[2] != 'A') {
+    if (Scen.Scenario == 1 && base::At(Scen.ScenarioName, 2) != 'A') {
       RequiredCD = -1;
     } else {
       //			Mono_Printf("Read_SCen_INI scenario is: %s\n",
@@ -1876,9 +1879,9 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
         *mission
         ** then we need the counterstrike CD (2)
         */
-        if (Scen.Scenario >= 20 || Scen.ScenarioName[2] == 'A') {
+        if (Scen.Scenario >= 20 || base::At(Scen.ScenarioName, 2) == 'A') {
           RequiredCD = 2;
-          if (Scen.Scenario >= 36 && Scen.ScenarioName[2] != 'A') {
+          if (Scen.Scenario >= 36 && base::At(Scen.ScenarioName, 2) != 'A') {
             RequiredCD = 3;
 #ifdef BOGUSCD
             RequiredCD = -1;
@@ -1890,10 +1893,10 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
           *Soviet or
           ** allied CD depending on the scenario name.
           */
-          if (Scen.ScenarioName[2] == 'U') {
+          if (base::At(Scen.ScenarioName, 2) == 'U') {
             RequiredCD = 1;
           } else {
-            if (Scen.ScenarioName[2] == 'G') {
+            if (base::At(Scen.ScenarioName, 2) == 'G') {
               //							Mono_Printf("We
               // are setting REquiredCD to 0");
               RequiredCD = 0;
@@ -2158,7 +2161,7 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
   /*
   **	Read in any briefing text.
   */
-  if (Scen.BriefingText[0] == '\0') {
+  if (base::At(Scen.BriefingText, 0) == '\0') {
     ini.Get_TextBlock("Briefing", Scen.BriefingText, sizeof(Scen.BriefingText));
   }
   /*
@@ -3129,10 +3132,15 @@ static CELL Clip_Move(CELL cell, FacingType facing, int dist) {
   return XY_Cell(x, y);
 }
 
-void Disect_Scenario_Name(const char* name, int& scenario,
+void Disect_Scenario_Name(const char* name_data, int& scenario,
                           ScenarioPlayerType& player, ScenarioDirType& dir,
                           ScenarioVarType& var) {
-  if (name == nullptr) {
+  if (name_data == nullptr) {
+    return;
+  }
+
+  const std::string_view name(name_data);
+  if (name.size() < 7) {
     return;
   }
 
@@ -3140,10 +3148,10 @@ void Disect_Scenario_Name(const char* name, int& scenario,
   **	Fetch the scenario number.
   */
   char buf[3];
-  memcpy(buf, &name[3], 2);
-  buf[2] = '\0';
-  char first = buf[0];
-  char second = buf[1];
+  port::SafeCopy(buf, name.substr(3, 2));
+  base::At(buf, 2) = '\0';
+  char first = base::At(buf, 0);
+  char second = base::At(buf, 1);
   if (first <= '9' && second <= '9') {
     scenario = tech::ParseInteger<int>(buf).value_or(0);
   } else {

@@ -53,7 +53,9 @@
 #ifndef CNC_RED_ALERT_TD_NOSEQCON_H_
 #define CNC_RED_ALERT_TD_NOSEQCON_H_
 
+#include <cstddef>
 #include <cstdint>
+#include <span>
 
 /*
 ********************************* Includes **********************************
@@ -89,9 +91,10 @@ class NonSequencedConnClass : public ConnectionClass {
   /*.....................................................................
   Send/Receive routines.
   .....................................................................*/
-  int Send_Packet(void* buf, int buflen, int ack_req) override;
-  int Receive_Packet(void* buf, int buflen) override;
-  int Get_Packet(void* buf, int* buflen) override;
+  int Send_Packet(std::span<const std::byte> buf, int buflen,
+                  int ack_req) override;
+  int Receive_Packet(std::span<std::byte> buf, int buflen) override;
+  int Get_Packet(std::span<std::byte> buf, int* buflen) override;
 
   /*.....................................................................
   The packet "queue"; this non-sequenced version isn't really much of

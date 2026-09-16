@@ -344,16 +344,16 @@ class WolapiObject {
   bool bShowRankUpdated{false};  //	set true when bShowRankRA value changes
 
   //	Standard wol buttons.
-  const void* pShpDiscon{nullptr};
-  const void* pShpLeave{nullptr};
-  const void* pShpRefresh{nullptr};
-  const void* pShpSquelch{nullptr};
-  const void* pShpBan{nullptr};
-  const void* pShpKick{nullptr};
-  const void* pShpFindpage{nullptr};
-  const void* pShpOptions{nullptr};
-  const void* pShpLadder{nullptr};
-  const void* pShpHelp{nullptr};
+  std::span<const std::byte> pShpDiscon;
+  std::span<const std::byte> pShpLeave;
+  std::span<const std::byte> pShpRefresh;
+  std::span<const std::byte> pShpSquelch;
+  std::span<const std::byte> pShpBan;
+  std::span<const std::byte> pShpKick;
+  std::span<const std::byte> pShpFindpage;
+  std::span<const std::byte> pShpOptions;
+  std::span<const std::byte> pShpLadder;
+  std::span<const std::byte> pShpHelp;
   ShapeButtonClass* pShpBtnDiscon{nullptr};
   ShapeButtonClass* pShpBtnLeave{nullptr};
   ShapeButtonClass* pShpBtnRefresh{nullptr};
@@ -415,13 +415,13 @@ class WolapiObject {
   bool bItemMarkedNeedScenario(int iIndex);
   //	Copies the player name out of a game-channel list item into szDest,
   //	truncating to iSize rather than overflowing.
-  static void PullPlayerName_Into_From(char* szDest, std::size_t iSize,
+  static void PullPlayerName_Into_From(std::span<char> szDest,
                                        const char* szSource);
   static HousesType PullPlayerHouse_From(const char* szSource);
   //	Writes a game-channel player list item into szDest, truncating to
   //	iSize rather than overflowing.
-  void WritePlayerListItem(char* szDest, std::size_t iSize, const char* szName,
-                           HousesType House) const;
+  void WritePlayerListItem(std::span<char> szDest, std::size_t iSize,
+                           const char* szName, HousesType House) const;
 
   void RequestPlayerPings();
 
@@ -476,7 +476,7 @@ class WolapiObject {
   //	Picks a lobby to drop the player into and writes its name into
   //	szNameToSet, truncating to iSize rather than overflowing. False if
   //	there are no lobbies.
-  bool GetNameOfBeginningLobby(char* szNameToSet, std::size_t iSize);
+  bool GetNameOfBeginningLobby(std::span<char> szNameToSet);
   bool GetLobbyChannels();
 
   const char* pGameHostName();
@@ -496,9 +496,9 @@ class WolapiObject {
  protected:
   void GetGameTypeInfo(int iGameType, WOL_GAMETYPEINFO& GameTypeInfo,
                        std::span<const dib::Color> palette) const;
-  void* IconForGameType(int iGameType);
-  [[nodiscard]] const char* NameOfGameType(int iGameType) const;
-  [[nodiscard]] const char* URLForGameType(int iGameType) const;
+  void* IconForGameType(int iGameType) ABSL_ATTRIBUTE_LIFETIME_BOUND;
+  [[nodiscard]] const char* NameOfGameType(int iGameType) const ABSL_ATTRIBUTE_LIFETIME_BOUND;
+  [[nodiscard]] const char* URLForGameType(int iGameType) const ABSL_ATTRIBUTE_LIFETIME_BOUND;
 
   //	Used by the general chat dialog.
   IconListClass* pILChat{nullptr};       //	Main messages list.
@@ -513,7 +513,7 @@ class WolapiObject {
       nullptr};  //	Title for a users list. Used by main
                  // chat dialog only, not by game setup.
 
-  WOL_GAMETYPEINFO* GameTypeInfos{nullptr};
+  std::vector<WOL_GAMETYPEINFO> GameTypeInfos;
   unsigned int nGameTypeInfos{0};
 
   float fLatencyToIconWidth = 0.0F;

@@ -45,6 +45,9 @@
 #include <algorithm>
 #include <cstdint>
 #include <cstring>
+#include <memory>
+#include <span>
+#include <vector>
 
 #include "base/array.h"
 #include "base/buffer.h"
@@ -132,7 +135,7 @@ static PaletteClass ComboPalette;
 /*
 ** Ptr to the combo palette.
 */
-static unsigned char* ComboPalPtr;
+static std::span<uint8_t> ComboPalPtr;
 
 /*
 ** Lookup table. If an entry is non-zero then it should be faded in/out when the
@@ -261,7 +264,9 @@ void EgoClass::Wipe(GraphicBufferClass* background) const {
  *                                                                                             *
  * HISTORY: * 9/9/96 11:59PM ST : Created *
  *=============================================================================================*/
-static void Set_Pal(void* palette) { Set_Palette(palette); }
+static void Set_Pal(const PaletteClass* palette) {
+  Set_Palette(palette->bytes());
+}
 
 /***********************************************************************************************
  * Slide_Show -- Handles the blitting and fading of the background pictures. *
@@ -310,11 +315,12 @@ static void Slide_Show(int slide, int frame) {
     */
     for (int index = 0; index < 256; index++) {
       if (base::At(PaletteLUT, index)) {
-        ComboPalPtr[static_cast<base::ssize>(index) * 3] = base::At(
-            base::At(SlidePals, slide), static_cast<base::ssize>(index) * 3);
-        ComboPalPtr[(index * 3) + 1] =
+        ComboPalPtr[base::ToSize(static_cast<base::ssize>(index) * 3)] =
+            base::At(base::At(SlidePals, slide),
+                     static_cast<base::ssize>(index) * 3);
+        ComboPalPtr[base::ToSize((index * 3) + 1)] =
             base::At(base::At(SlidePals, slide), (index * 3) + 1);
-        ComboPalPtr[(index * 3) + 2] =
+        ComboPalPtr[base::ToSize((index * 3) + 2)] =
             base::At(base::At(SlidePals, slide), (index * 3) + 2);
       }
     }
@@ -325,16 +331,18 @@ static void Slide_Show(int slide, int frame) {
     /*
     ** Fade up the picture in the background. The text colors never fade.
     */
-    memcpy(save_palette, CCPalette, sizeof(save_palette));
+    base::CopyBytes(base::ObjectBytes(save_palette),
+                    std::as_bytes(CCPalette.bytes()), sizeof(save_palette));
     // CCPalette.Partial_Adjust (std::min (6*(frame-5), 255), ComboPalette,
     // PaletteLUT);
     PaletteClass::Partial_Adjust(std::min(255 / FADE_DELAY * (frame - 10), 255),
                                  ComboPalette, PaletteLUT);
     Set_Pal(&CCPalette);
     if (frame != 9 + FADE_DELAY) {
-      memcpy(CCPalette, save_palette, sizeof(save_palette));
+      base::CopyBytes(std::as_writable_bytes(CCPalette.bytes()),
+                      base::ObjectBytes(save_palette), sizeof(save_palette));
     } else {
-      memcpy(CCPalette, CurrentPalette, sizeof(CCPalette));
+      CCPalette = PaletteClass::CurrentPalette;
     }
     return;
   }
@@ -343,23 +351,25 @@ static void Slide_Show(int slide, int frame) {
     /*
     ** Fade down the picture in the background. The text colors never fade.
     */
-    memcpy(save_palette, CCPalette, sizeof(save_palette));
+    base::CopyBytes(base::ObjectBytes(save_palette),
+                    std::as_bytes(CCPalette.bytes()), sizeof(save_palette));
     PaletteClass::Partial_Adjust(
         std::min(255 / FADE_DELAY * (frame - FRAME_DELAY), 255), PaletteLUT);
     if (frame != FRAME_DELAY + FADE_DELAY - 1) {
       Set_Pal(&CCPalette);
-      memcpy(CCPalette, save_palette, sizeof(save_palette));
+      base::CopyBytes(std::as_writable_bytes(CCPalette.bytes()),
+                      base::ObjectBytes(save_palette), sizeof(save_palette));
     } else {
       /*
       ** If this is the last fade down frame then zero the picture palette
       *entries.
       */
-      unsigned char* ccpalptr = CCPalette;
+      const auto ccpalptr = CCPalette.bytes();
       for (int index = 0; index < 256; index++) {
         if (base::At(PaletteLUT, index)) {
-          ccpalptr[static_cast<base::ssize>(index) * 3] = 0;
-          ccpalptr[(index * 3) + 1] = 0;
-          ccpalptr[(index * 3) + 2] = 0;
+          ccpalptr[base::ToSize(static_cast<base::ssize>(index) * 3)] = 0;
+          ccpalptr[base::ToSize((index * 3) + 1)] = 0;
+          ccpalptr[base::ToSize((index * 3) + 2)] = 0;
         }
       }
       Set_Pal(&CCPalette);
@@ -404,8 +414,11 @@ void Show_Who_Was_Responsible() {
   if (!creditsfile.IsAvailable()) {
     return;
   }
-  char* credits = new char[base::ToSize(creditsfile.Size() + 1)];
-  creditsfile.Read(credits, creditsfile.Size());
+  std::vector<char> credits(base::ToSize(creditsfile.Size()) + 1);
+  if (creditsfile.Read(std::as_writable_bytes(
+          std::span(credits).first(credits.size() - 1))) <= 0) {
+    return;
+  }
 
   /*
   ** Initialise the text printing system.
@@ -420,11 +433,11 @@ void Show_Who_Was_Responsible() {
   int length = static_cast<int>(creditsfile.Size());
   int line = 0;
   int column = 0;
-  char* cptr = credits;
+  auto cptr = credits.begin();
   char lastchar = 0;
   char oldchar = 0;
-  char* strstart = nullptr;
-  char* strparse = nullptr;
+  auto strstart = credits.begin();
+  auto strparse = credits.begin();
   bool gotendstr = false;
   int startcolumn = 0;
   int endcolumn = 0;
@@ -556,7 +569,8 @@ void Show_Who_Was_Responsible() {
         /*
         ** Create the new class and add it to our list.
         */
-        ego = new EgoClass(x, y + (line * 16), strstart, flags);
+        ego =
+            new EgoClass(x, y + (line * 16), std::to_address(strstart), flags);
 
         if (!EgoList.Add(ego)) {
           delete ego;
@@ -628,13 +642,13 @@ void Show_Who_Was_Responsible() {
   ** Copy the font palette entries into the combo palette.
   */
   ComboPalPtr = ComboPalette;
-  memcpy(ComboPalette, CCPalette, sizeof(ComboPalette));
+  ComboPalette = CCPalette;
 
   for (int index = 0; index < 256; index++) {
     if (base::At(PaletteLUT, index)) {
-      ComboPalPtr[static_cast<base::ssize>(index) * 3] = 0;
-      ComboPalPtr[(index * 3) + 1] = 0;
-      ComboPalPtr[(index * 3) + 2] = 0;
+      ComboPalPtr[base::ToSize(static_cast<base::ssize>(index) * 3)] = 0;
+      ComboPalPtr[base::ToSize((index * 3) + 1)] = 0;
+      ComboPalPtr[base::ToSize((index * 3) + 2)] = 0;
     }
   }
 
@@ -647,7 +661,7 @@ void Show_Who_Was_Responsible() {
   /*
   ** Set the font palette.
   */
-  memcpy(CCPalette, ComboPalette, sizeof(ComboPalette));
+  CCPalette = ComboPalette;
   CCPalette.Set();
 
   /*
@@ -656,18 +670,17 @@ void Show_Who_Was_Responsible() {
   for (int index = 0; index < NUM_SLIDES; index++) {
     base::At(SlideBuffers, index) = new GraphicBufferClass;
     base::At(SlideBuffers, index)
-        ->Init(SeenBuff.Get_Width(), SeenBuff.Get_Height(), nullptr, 0,
-               GBC_NONE);
+        ->Init(SeenBuff.Get_Width(), SeenBuff.Get_Height(), {}, 0, GBC_NONE);
     Load_Title_Screen(base::Suffix(base::At(SlideNames, index), 0).data(),
                       base::At(SlideBuffers, index),
-                      base::Suffix(base::At(SlidePals, index), 0).data());
+                      base::At(SlidePals, index));
   }
 
   // Create a new graphic buffer to restore the background from. Initialize it
   // to black so we can start scrolling before the first slideshow picture is
   // blitted.
   BackgroundPage = new GraphicBufferClass;
-  BackgroundPage->Init(SeenBuff.Get_Width(), SeenBuff.Get_Height(), nullptr, 0,
+  BackgroundPage->Init(SeenBuff.Get_Width(), SeenBuff.Get_Height(), {}, 0,
                        GBC_VIDEOMEM);
 
   SeenBuff.Blit(*BackgroundPage);
@@ -854,8 +867,6 @@ void Show_Who_Was_Responsible() {
 
   delete BackgroundPage;
   BackgroundPage = nullptr;
-
-  delete[] credits;
 
   EgoList.Clear();
 }

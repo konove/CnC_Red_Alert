@@ -47,6 +47,8 @@
 #include <type_traits>
 #include <vector>
 
+#include "absl/log/check.h"
+#include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/seek_origin.h"
 #include "base/types.h"
@@ -105,16 +107,14 @@ class File {
   template <typename T>
     requires std::is_trivially_copyable_v<T>
   bool ReadObject(T& value) {
-    return Read(std::as_writable_bytes(std::span(&value, 1))) ==
-           base::ToSigned(sizeof(T));
+    return Read(base::ObjectBytes(value)) == base::ToSigned(sizeof(T));
   }
 
   // Writes one trivially copyable value. Returns false on a short write.
   template <typename T>
     requires std::is_trivially_copyable_v<T>
   bool WriteObject(const T& value) {
-    return Write(std::as_bytes(std::span(&value, 1))) ==
-           base::ToSigned(sizeof(T));
+    return Write(base::ObjectBytes(value)) == base::ToSigned(sizeof(T));
   }
 
   // Reads up to count bytes; the result is shorter at the end of the file.
@@ -140,19 +140,40 @@ class File {
     return Write(std::as_bytes(buffer));
   }
 
+  // Reads or writes a byte-counted prefix of an existing bounded view.
+  // count is always measured in bytes, including for wider element types.
+  template <typename T, std::size_t N>
+    requires(std::is_trivially_copyable_v<T> && !std::is_const_v<T>)
+  base::ssize Read(std::span<T, N> buffer, base::ssize count) {
+    CHECK_GE(count, 0);
+    CHECK_LE(base::ToSize(count), buffer.size_bytes());
+    return Read(std::as_writable_bytes(buffer).first(base::ToSize(count)));
+  }
+  template <typename T, std::size_t N>
+    requires std::is_trivially_copyable_v<T>
+  base::ssize Write(std::span<T, N> buffer, base::ssize count) {
+    CHECK_GE(count, 0);
+    CHECK_LE(base::ToSize(count), buffer.size_bytes());
+    return Write(std::as_bytes(buffer).first(base::ToSize(count)));
+  }
+
   // A character buffer and a byte count, for the many callers that read text
   // or raw bytes into a char array. Only byte-sized element types are
   // accepted, so the count cannot be misread as elements; use ReadObject()
   // or a span for anything else.
-  template <typename T>
+  template <typename T, std::size_t N>
     requires(sizeof(T) == 1 && std::is_trivially_copyable_v<T>)
-  base::ssize Read(T* buffer, base::ssize count) {
-    return Read(std::span(buffer, base::ToSize(count)));
+  base::ssize Read(T (&buffer)[N], base::ssize count) {
+    CHECK_GE(count, 0);
+    CHECK_LE(base::ToSize(count), N);
+    return Read(std::span(buffer).first(base::ToSize(count)));
   }
-  template <typename T>
+  template <typename T, std::size_t N>
     requires(sizeof(T) == 1 && std::is_trivially_copyable_v<T>)
-  base::ssize Write(const T* buffer, base::ssize count) {
-    return Write(std::span(buffer, base::ToSize(count)));
+  base::ssize Write(const T (&buffer)[N], base::ssize count) {
+    CHECK_GE(count, 0);
+    CHECK_LE(base::ToSize(count), N);
+    return Write(std::span(buffer).first(base::ToSize(count)));
   }
 
   // Moves the file position by offset from origin and returns the new

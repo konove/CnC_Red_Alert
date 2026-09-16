@@ -26,6 +26,8 @@
 #include <cstdint>
 #include <cstring>
 
+#include "base/array.h"
+#include "port/safe_string.h"
 #include "td/building.h"
 #include "td/defines.h"
 #include "td/inline.h"
@@ -53,8 +55,8 @@ int AbstractClass::Distance(const TARGET target) const {
 // Initializes the display name and INI identifier for this object type.
 AbstractTypeClass::AbstractTypeClass(const int name, const char* ini) noexcept
     : Name(name) {
-  strncpy(IniName, ini, sizeof(IniName));
-  IniName[sizeof(IniName) - 1] = '\0';
+  port::SafeCopy(IniName, ini);
+  base::At(IniName, sizeof(IniName) - 1) = '\0';
 }
 
 RTTIType AbstractTypeClass::What_Am_I() const { return RTTI_ABSTRACTTYPE; }

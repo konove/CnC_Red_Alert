@@ -52,18 +52,23 @@
 
 #include "td/ini.h"
 
+#include <absl/log/check.h>
+
 #include <algorithm>
-#include <cstdint>
+#include <cstddef>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <span>
 #include <string_view>
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
+#include "port/bytes_of.h"
 #include "port/ex_string.h"
+#include "port/safe_string.h"
 #include "sdllib/misc.h"
 #include "sdllib/shape.h"
 #include "td/base.h"
@@ -106,9 +111,10 @@
 static void Assign_Houses();
 static void Remove_AI_Players();
 static void Create_Units();
-static void Sort_Cells(CELL* cells, int numcells, CELL* outcells);
-static int Furthest_Cell(const CELL* ref_cells, int num_ref_cells,
-                         const CELL* test_cells, int num_test_cells);
+static void Sort_Cells(std::span<CELL> cells, int numcells,
+                       std::span<CELL> outcells);
+static int Furthest_Cell(std::span<const CELL> ref_cells, int num_ref_cells,
+                         std::span<const CELL> test_cells, int num_test_cells);
 static CELL Clip_Scatter(CELL cell, int maxdist);
 static CELL Clip_Move(CELL cell, FacingType facing, int dist);
 
@@ -273,7 +279,7 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   *during the INI *	parsing.)
   */
   char* buffer = ShapeBuffer;  // Scenario.ini staging buffer pointer.
-  memset(buffer, '\0', base::ToSize(ShapeBufferSize));
+  std::ranges::fill(ShapeBufferBytes, 0);
 
   if (fresh) {
     Clear_Scenario();
@@ -322,7 +328,8 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   if (!file.IsAvailable()) {
     return false;
   }
-  file.Read(buffer, ShapeBufferSize - 1);
+  file.Read(std::as_writable_bytes(ShapeBufferBytes)
+                .first(ShapeBufferBytes.size() - 1));
 
   /*
   ** Init the Scenario CRC value
@@ -330,7 +337,7 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   ScenarioCRC = 0;
   const int len = static_cast<int>(std::string_view(buffer).size());
   for (int i = 0; i < len; i++) {
-    val = static_cast<unsigned char>(buffer[i]);
+    val = static_cast<unsigned char>(std::string_view(buffer)[base::ToSize(i)]);
 #ifndef DEMO
     Add_CRC(&ScenarioCRC, val);
 #endif
@@ -339,16 +346,11 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   /*
   **	Fetch the appropriate movie names from the INI file.
   */
-  WWGetPrivateProfileString("Basic", "Intro", "x", IntroMovie,
-                            sizeof(IntroMovie), buffer);
-  WWGetPrivateProfileString("Basic", "Brief", "x", BriefMovie,
-                            sizeof(BriefMovie), buffer);
-  WWGetPrivateProfileString("Basic", "Win", "x", WinMovie, sizeof(WinMovie),
-                            buffer);
-  WWGetPrivateProfileString("Basic", "Lose", "x", LoseMovie, sizeof(LoseMovie),
-                            buffer);
-  WWGetPrivateProfileString("Basic", "Action", "x", ActionMovie,
-                            sizeof(ActionMovie), buffer);
+  WWGetPrivateProfileString("Basic", "Intro", "x", IntroMovie, buffer);
+  WWGetPrivateProfileString("Basic", "Brief", "x", BriefMovie, buffer);
+  WWGetPrivateProfileString("Basic", "Win", "x", WinMovie, buffer);
+  WWGetPrivateProfileString("Basic", "Lose", "x", LoseMovie, buffer);
+  WWGetPrivateProfileString("Basic", "Action", "x", ActionMovie, buffer);
 
   /*
   **	For single-player scenarios, 'BuildLevel' is the scenario number.
@@ -380,8 +382,7 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   **	Fetch the transition theme for this scenario.
   */
   TransitTheme = THEME_NONE;
-  WWGetPrivateProfileString("Basic", "Theme", "No Theme", buf, sizeof(buf),
-                            buffer);
+  WWGetPrivateProfileString("Basic", "Theme", "No Theme", buf, buffer);
   TransitTheme = ThemeClass::From_Name(buf);
 
   /*
@@ -405,7 +406,9 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   //	if (GameToPlay == GAME_NORMAL && (ScenPlayer == SCEN_PLAYER_GDI ||
   // ScenPlayer == SCEN_PLAYER_NOD)) {
   if (GameToPlay == GAME_NORMAL) {
-    WWGetPrivateProfileString("Basic", "Player", "GoodGuy", buf, 127, buffer);
+    WWGetPrivateProfileString(
+        "Basic", "Player", "GoodGuy",
+        std::span(buf).first(static_cast<std::size_t>(127)), buffer);
     CarryOverPercent =
         WWGetPrivateProfileInt("Basic", "CarryOverMoney", 100, buffer);
     CarryOverPercent = Cardinal_To_Fixed(100, CarryOverPercent);
@@ -512,8 +515,8 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   /*
   **	Read in any briefing text.
   */
-  char* stage = &BriefingText[0];
-  *stage = '\0';
+  std::span<char> stage(BriefingText);
+  stage.front() = '\0';
   int index = 1;
 
   /*
@@ -523,30 +526,29 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
     char buff[16];
 
     absl::SNPrintF(buff, sizeof(buff), "%d", index++);
-    *stage = '\0';
-    WWGetPrivateProfileString(
-        "Briefing", buff, "", stage,
-        static_cast<int>(sizeof(BriefingText) -
-                         std::string_view(BriefingText).size() - 1),
-        buffer);
-    if (std::string_view(stage).empty()) {
+    stage.front() = '\0';
+    WWGetPrivateProfileString("Briefing", buff, "",
+                              stage.first(stage.size() - 1), buffer);
+    if (std::string_view(stage.data()).empty()) {
       break;
     }
     // Really old and ugly code - refactor.
     // NOLINTNEXTLINE(clang-analyzer-security.insecureAPI.strcpy)
-    strcat(stage, " ");
-    stage += std::string_view(stage).size();
+    port::SafeAppend(stage, " ");
+    stage = stage.subspan(std::string_view(stage.data()).size());
   }
 
   /*
   **	If the briefing text could not be found in the INI file, then search
   **	the mission.ini file.
   */
-  if (BriefingText[0] == '\0') {
-    memset(ShapeBuffer, '\0', base::ToSize(ShapeBufferSize));
-    GameFile("MISSION.INI").Read(ShapeBuffer, ShapeBufferSize);
+  if (base::At(BriefingText, 0) == '\0') {
+    std::ranges::fill(ShapeBufferBytes, 0);
+    GameFile("MISSION.INI")
+        .Read(std::as_writable_bytes(ShapeBufferBytes)
+                  .first(ShapeBufferBytes.size() - 1));
 
-    char* work = &BriefingText[0];
+    std::span<char> work(BriefingText);
     int player_index = 1;
 
     /*
@@ -556,19 +558,16 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
       char buff[16];
 
       absl::SNPrintF(buff, sizeof(buff), "%d", player_index++);
-      *work = '\0';
-      WWGetPrivateProfileString(
-          root, buff, "", work,
-          static_cast<int>(sizeof(BriefingText) -
-                           std::string_view(BriefingText).size() - 1),
-          ShapeBuffer);
-      if (std::string_view(work).empty()) {
+      work.front() = '\0';
+      WWGetPrivateProfileString(root, buff, "", work.first(work.size() - 1),
+                                ShapeBuffer);
+      if (std::string_view(work.data()).empty()) {
         break;
       }
       // Really old and ugly code - refactor.
       // NOLINTNEXTLINE(clang-analyzer-security.insecureAPI.strcpy)
-      strcat(work, " ");
-      work += std::string_view(work).size();
+      port::SafeAppend(work, " ");
+      work = work.subspan(std::string_view(work.data()).size());
     }
   }
 
@@ -677,7 +676,7 @@ void Write_Scenario_Ini(const char* root) {
     *buffer *	starts cleared out of any data.
     */
     char* buffer = ShapeBuffer;  // Scenario.ini staging buffer pointer.
-    memset(buffer, '\0', base::ToSize(ShapeBufferSize));
+    std::ranges::fill(ShapeBufferBytes, 0);
 
     switch (ScenPlayer) {
       case SCEN_PLAYER_GDI:
@@ -704,7 +703,8 @@ void Write_Scenario_Ini(const char* root) {
     file.SetName(fname);
     if (file.IsAvailable()) {
       //		file.Open(READ);
-      file.Read(buffer, ShapeBufferSize - 1);
+      file.Read(std::as_writable_bytes(ShapeBufferBytes)
+                    .first(ShapeBufferBytes.size() - 1));
       //		file.Close();
     } else {
       absl::SNPrintF(buffer, base::ToSize(ShapeBufferSize),
@@ -712,62 +712,74 @@ void Write_Scenario_Ini(const char* root) {
                      HouseTypeClass::As_Reference(house).IniName);
     }
 
-    WWWritePrivateProfileString("Basic", "Intro", IntroMovie, buffer);
-    WWWritePrivateProfileString("Basic", "Brief", BriefMovie, buffer);
-    WWWritePrivateProfileString("Basic", "Win", WinMovie, buffer);
-    WWWritePrivateProfileString("Basic", "Lose", LoseMovie, buffer);
-    WWWritePrivateProfileString("Basic", "Action", ActionMovie, buffer);
+    WWWritePrivateProfileString("Basic", "Intro", IntroMovie,
+                                port::CharBytes(ShapeBufferBytes));
+    WWWritePrivateProfileString("Basic", "Brief", BriefMovie,
+                                port::CharBytes(ShapeBufferBytes));
+    WWWritePrivateProfileString("Basic", "Win", WinMovie,
+                                port::CharBytes(ShapeBufferBytes));
+    WWWritePrivateProfileString("Basic", "Lose", LoseMovie,
+                                port::CharBytes(ShapeBufferBytes));
+    WWWritePrivateProfileString("Basic", "Action", ActionMovie,
+                                port::CharBytes(ShapeBufferBytes));
     WWWritePrivateProfileString("Basic", "Player", PlayerPtr->Class->IniName,
-                                buffer);
+                                port::CharBytes(ShapeBufferBytes));
     WWWritePrivateProfileString("Basic", "Theme",
-                                ThemeClass::Base_Name(TransitTheme), buffer);
-    WWWritePrivateProfileInt("Basic", "BuildLevel", BuildLevel, buffer);
+                                ThemeClass::Base_Name(TransitTheme),
+                                port::CharBytes(ShapeBufferBytes));
+    WWWritePrivateProfileInt("Basic", "BuildLevel", BuildLevel,
+                             port::CharBytes(ShapeBufferBytes));
     WWWritePrivateProfileInt("Basic", "CarryOverMoney",
-                             Fixed_To_Cardinal(100, CarryOverPercent), buffer);
-    WWWritePrivateProfileInt("Basic", "CarryOverCap", CarryOverCap, buffer);
+                             Fixed_To_Cardinal(100, CarryOverPercent),
+                             port::CharBytes(ShapeBufferBytes));
+    WWWritePrivateProfileInt("Basic", "CarryOverCap", CarryOverCap,
+                             port::CharBytes(ShapeBufferBytes));
 
-    TeamTypeClass::Write_INI(buffer, true);
-    TriggerClass::Write_INI(buffer, true);
-    Map.Write_INI(buffer);
+    TeamTypeClass::Write_INI(port::CharBytes(ShapeBufferBytes), true);
+    TriggerClass::Write_INI(port::CharBytes(ShapeBufferBytes), true);
+    Map.Write_INI(port::CharBytes(ShapeBufferBytes));
     MapEditClass::Write_Binary(root);
-    HouseClass::Write_INI(buffer);
-    UnitClass::Write_INI(buffer);
-    InfantryClass::Write_INI(buffer);
-    BuildingClass::Write_INI(buffer);
-    TerrainClass::Write_INI(buffer);
-    OverlayClass::Write_INI(buffer);
-    SmudgeClass::Write_INI(buffer);
+    HouseClass::Write_INI(port::CharBytes(ShapeBufferBytes));
+    UnitClass::Write_INI(port::CharBytes(ShapeBufferBytes));
+    InfantryClass::Write_INI(port::CharBytes(ShapeBufferBytes));
+    BuildingClass::Write_INI(port::CharBytes(ShapeBufferBytes));
+    TerrainClass::Write_INI(port::CharBytes(ShapeBufferBytes));
+    OverlayClass::Write_INI(port::CharBytes(ShapeBufferBytes));
+    SmudgeClass::Write_INI(port::CharBytes(ShapeBufferBytes));
 
-    Base.Write_INI(buffer);
+    Base.Write_INI(port::CharBytes(ShapeBufferBytes));
 
     /*
     **	Write the scenario data out to a file.
     */
     //	file.Open(WRITE);
-    file.Write(buffer, static_cast<int32_t>(std::string_view(buffer).size()));
+    file.Write(
+        std::as_bytes(ShapeBufferBytes).first(std::string_view(buffer).size()));
     //	file.Close();
 
     /*
     **	Now update the Master INI file, containing the master list of triggers &
     *teams
     */
-    memset(buffer, '\0', base::ToSize(ShapeBufferSize));
+    std::ranges::fill(ShapeBufferBytes, 0);
 
     file.SetName("MASTER.INI");
     if (file.IsAvailable()) {
       //		file.Open(READ);
-      file.Read(buffer, ShapeBufferSize - 1);
+      file.Read(std::as_writable_bytes(ShapeBufferBytes)
+                    .first(ShapeBufferBytes.size() - 1));
       //		file.Close();
     } else {
       absl::SNPrintF(buffer, base::ToSize(ShapeBufferSize),
                      "; Master Trigger & Team List.\r\n");
     }
 
-    TeamTypeClass::Write_INI(buffer, false);
-    TriggerClass::Write_INI(buffer, false);
+    TeamTypeClass::Write_INI(port::CharBytes(ShapeBufferBytes), false);
+    TriggerClass::Write_INI(port::CharBytes(ShapeBufferBytes), false);
 
     //	file.Open(WRITE);
-    file.Write(buffer, static_cast<int32_t>(std::string_view(buffer).size()));
+    file.Write(
+        std::as_bytes(ShapeBufferBytes).first(std::string_view(buffer).size()));
     //	file.Close();
   }
 }
@@ -842,7 +854,7 @@ static void Assign_Houses() {
     **	Set the house's IsHuman, Credits, ActLike, & RemapTable
     */
     base::FillBytes(base::ObjectBytes(housep->Name), 0, MPLAYER_NAME_MAX);
-    strncpy(housep->Name, base::At(MPlayerNames, i), MPLAYER_NAME_MAX - 1);
+    port::SafeCopy(housep->Name, base::At(MPlayerNames, i));
     housep->IsHuman = true;
     housep->Init_Data(color, pref_house, MPlayerCredits);
 
@@ -1419,7 +1431,14 @@ bool Scan_Place_Object(ObjectClass* obj, CELL cell) {
  *                                                                                             *
  * HISTORY: * 07/19/1995 BRR : Created. *
  *=============================================================================================*/
-static void Sort_Cells(CELL* cells, int numcells, CELL* outcells) {
+static void Sort_Cells(std::span<CELL> cells, int numcells,
+                       std::span<CELL> outcells) {
+  CHECK_GE(numcells, 0);
+  CHECK_LE(base::ToSize(numcells), cells.size());
+  CHECK_LE(base::ToSize(numcells), outcells.size());
+  if (numcells == 0) {
+    return;
+  }
   int num_sorted = 0;
   int num_unsorted = numcells;
 
@@ -1427,11 +1446,11 @@ static void Sort_Cells(CELL* cells, int numcells, CELL* outcells) {
   Pick the first cell at random
   ------------------------------------------------------------------------*/
   int j = Random_Pick(0, numcells - 1);
-  outcells[0] = cells[j];
+  outcells[base::ToSize(0)] = cells[base::ToSize(j)];
   num_sorted++;
 
   for (int k = j; k < num_unsorted - 1; k++) {
-    cells[k] = cells[k + 1];
+    cells[base::ToSize(k)] = cells[base::ToSize(k + 1)];
   }
   num_unsorted--;
 
@@ -1439,13 +1458,13 @@ static void Sort_Cells(CELL* cells, int numcells, CELL* outcells) {
   After the first cell, assign the other cells based on who's furthest away
   from the chosen ones.
   ------------------------------------------------------------------------*/
-  for (int i = 0; i < numcells; i++) {
+  for (int i = 1; i < numcells; i++) {
     j = Furthest_Cell(outcells, num_sorted, cells, num_unsorted);
-    outcells[num_sorted] = cells[j];
+    outcells[base::ToSize(num_sorted)] = cells[base::ToSize(j)];
     num_sorted++;
 
     for (int k = j; k < num_unsorted - 1; k++) {
-      cells[k] = cells[k + 1];
+      cells[base::ToSize(k)] = cells[base::ToSize(k + 1)];
     }
     num_unsorted--;
   }
@@ -1466,9 +1485,8 @@ static void Sort_Cells(CELL* cells, int numcells, CELL* outcells) {
  *                                                                                             *
  * HISTORY: * 07/19/1995 BRR : Created. *
  *=============================================================================================*/
-static int Furthest_Cell(const CELL* ref_cells, int num_ref_cells,
-                         const CELL* test_cells, int num_test_cells) {
-
+static int Furthest_Cell(std::span<const CELL> ref_cells, int num_ref_cells,
+                         std::span<const CELL> test_cells, int num_test_cells) {
   /*------------------------------------------------------------------------
   Initialize
   ------------------------------------------------------------------------*/
@@ -1486,7 +1504,8 @@ static int Furthest_Cell(const CELL* ref_cells, int num_ref_cells,
     int mindist = 0xffff;  // minimum distance a test_cell is from a ref_cell
     for (int j = 0; j < num_ref_cells; j++) {
       const int dist =
-          Distance(test_cells[i], ref_cells[j]);  // working distance measure
+          Distance(test_cells[base::ToSize(i)],
+                   ref_cells[base::ToSize(j)]);  // working distance measure
       mindist = std::min(dist, mindist);
     }
 

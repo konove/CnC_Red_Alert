@@ -45,14 +45,17 @@
 #include "ra/loaddlg.h"
 
 #include <algorithm>
-#include <charconv>
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
 #include <filesystem>
+#include <span>
 #include <string_view>
+#include <vector>
 
 #include "absl/strings/str_format.h"
+#include "base/buffer.h"
+#include "base/numeric.h"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "ra/config.h"
@@ -84,6 +87,7 @@
 #include "sdllib/wwstd.h"
 #include "tech/ftimer.h"
 #include "tech/mix_archive.h"
+#include "tech/number_parse.h"
 #include "tech/readline.h"
 
 #ifdef _WIN32
@@ -240,8 +244,8 @@ bool LoadOptionsClass::Process() {
 
   ListClass listbtn(kButtonList, d_list_x, d_list_y, d_list_w, list_ht,
                     TPF_6PT_GRAD | TPF_NOSHADOW,
-                    MixArchive::Retrieve("BTN-UP.SHP"),
-                    MixArchive::Retrieve("BTN-DN.SHP"));
+                    MixArchive::RetrieveData("BTN-UP.SHP"),
+                    MixArchive::RetrieveData("BTN-DN.SHP"));
 
   EditClass editbtn(kButtonEdit, game_descr, sizeof(game_descr) - 4,
                     TPF_6PT_GRAD | TPF_NOSHADOW, d_edit_x, d_edit_y, d_edit_w,
@@ -556,10 +560,13 @@ bool LoadOptionsClass::Process() {
             **	Strip any leading parenthesis off of the description.
             */
             if (game_descr[0] == '(') {
-              const char* ptr = strchr(game_descr, ')');
-              if (ptr != nullptr) {
-                memmove(game_descr, ptr + 1,
-                        std::string_view(ptr + 1).size() + 1);
+              const auto separator = std::string_view(game_descr).find(')');
+              if (separator != std::string_view::npos) {
+                const auto remainder =
+                    std::span(game_descr).subspan(separator + 1);
+                base::MoveBytes(base::ObjectBytes(game_descr),
+                                std::as_bytes(remainder),
+                                std::string_view(remainder.data()).size() + 1);
                 strtrim(game_descr);
               }
             }
@@ -663,7 +670,7 @@ void LoadOptionsClass::Fill_List(ListClass* list) {
   bool found = Find_First_File("SAVEGAME.*", find_state);
 
   while (found) {
-    if (stricmp(find_state.name, kNetSaveFileName) != 0) {
+    if (port::CompareIgnoreCase(find_state.name, kNetSaveFileName) != 0) {
       /*
       ** Extract the game ID from the filename
       */
@@ -737,10 +744,18 @@ void LoadOptionsClass::Fill_List(ListClass* list) {
   ** Now sort the list in order of Date/Time (newest first, oldest last)
   */
   if (Files.Count() > 0) {
-    std::sort(&Files[0], &Files[0] + Files.Count(),
-              [](const FileEntryClass* left, const FileEntryClass* right) {
-                return left->DateTime > right->DateTime;
-              });
+    std::vector<FileEntryClass*> sorted;
+    sorted.reserve(base::ToSize(Files.Count()));
+    for (int i = 0; i < Files.Count(); ++i) {
+      sorted.push_back(Files[i]);
+    }
+    std::ranges::sort(
+        sorted, [](const FileEntryClass* left, const FileEntryClass* right) {
+          return left->DateTime > right->DateTime;
+        });
+    for (int i = 0; i < Files.Count(); ++i) {
+      Files[i] = sorted[base::ToSize(i)];
+    }
   }
 
   /*
@@ -763,11 +778,11 @@ void LoadOptionsClass::Fill_List(ListClass* list) {
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
 int LoadOptionsClass::Num_From_Ext(const char* fname) {
-  auto ext = std::filesystem::path(fname).extension().string();
+  const auto ext = std::filesystem::path(fname).extension().string();
 
   int num = 0;
   if (ext.size() > 1) {  // Has more than just '.'
-    std::from_chars(ext.data() + 1, ext.data() + ext.size(), num);
+    num = tech::ParseInteger<int>(std::string_view(ext).substr(1)).value_or(0);
   }
   return num;
 }

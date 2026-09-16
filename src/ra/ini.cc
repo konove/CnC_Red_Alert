@@ -71,6 +71,7 @@
 
 #include "ra/ini.h"
 
+#include <algorithm>
 #include <cctype>
 #include <cstddef>
 #include <cstdint>
@@ -78,10 +79,14 @@
 #include <cstring>
 #include <span>
 #include <string_view>
+#include <utility>
 
+#include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
+#include "base/buffer.h"
 #include "base/numeric.h"
+#include "port/safe_string.h"
 #include "tech/base64.h"
 #include "tech/base64_sink.h"
 #include "tech/base64_source.h"
@@ -209,11 +214,11 @@ bool INIClass::Load(ByteSource& file) {
   **	Prescan until the first section is found.
   */
   while (!end_of_file) {
-    Read_Line(file, buffer, sizeof(buffer), end_of_file);
+    Read_Line(file, buffer, end_of_file);
     if (end_of_file) {
       return false;
     }
-    if (buffer[0] == '[' && strchr(buffer, ']') != nullptr) {
+    if (buffer[0] == '[' && absl::StrContains(buffer, ']')) {
       break;
     }
   }
@@ -223,11 +228,11 @@ bool INIClass::Load(ByteSource& file) {
   */
   while (!end_of_file) {
     buffer[0] = ' ';
-    char* ptr = strchr(buffer, ']');
-    if (ptr) {
-      *ptr = '\0';
+    const auto close = std::string_view(buffer).find(']');
+    if (close != std::string_view::npos) {
+      base::At(buffer, close) = '\0';
     }
-    strtrim(buffer);
+    strtrim(port::MutableCString(buffer));
     auto* secptr = new INISection(buffer);
     if (secptr == nullptr) {
       Clear();
@@ -243,8 +248,8 @@ bool INIClass::Load(ByteSource& file) {
       **	of the entry loop and let the outer section loop take
       **	care of it.
       */
-      const int len = Read_Line(file, buffer, sizeof(buffer), end_of_file);
-      if (buffer[0] == '[' && strchr(buffer, ']') != nullptr) {
+      const int len = Read_Line(file, buffer, end_of_file);
+      if (buffer[0] == '[' && absl::StrContains(buffer, ']')) {
         break;
       }
 
@@ -261,8 +266,8 @@ bool INIClass::Load(ByteSource& file) {
       **	The line isn't an obvious comment. Make sure that there is the
       *"=" character *	at an appropriate spot.
       */
-      char* divider = strchr(buffer, '=');
-      if (!divider) {
+      const auto split = std::string_view(buffer).find('=');
+      if (split == std::string_view::npos) {
         continue;
       }
 
@@ -270,13 +275,15 @@ bool INIClass::Load(ByteSource& file) {
       **	Split the line into entry and value sections. Be sure to catch
       *the *	"=foobar" and "foobar=" cases. These lines are ignored.
       */
-      *divider++ = '\0';
-      strtrim(buffer);
+      base::At(buffer, split) = '\0';
+      const auto value = std::span(buffer).subspan(split + 1);
+      char* divider = value.data();
+      strtrim(port::MutableCString(buffer));
       if (std::string_view(buffer).empty()) {
         continue;
       }
 
-      strtrim(divider);
+      strtrim(value);
       if (std::string_view(divider).empty()) {
         continue;
       }
@@ -529,15 +536,15 @@ const char* INIClass::Get_Entry(const char* section, int index) const {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-bool INIClass::Put_UUBlock(const char* section, const void* block, int len) {
-  if (section == nullptr || block == nullptr || len < 1) {
+bool INIClass::Put_UUBlock(const char* section,
+                           std::span<const std::byte> block, int len) {
+  if (section == nullptr || len < 1 || std::cmp_greater(len, block.size())) {
     return false;
   }
 
   Clear(section);
 
-  SpanSource straw(
-      std::span(static_cast<const std::byte*>(block), base::ToSize(len)));
+  SpanSource straw(block.first(base::ToSize(len)));
   Base64Source bstraw(Base64Mode::kEncode, straw);
 
   int counter = 1;
@@ -587,12 +594,16 @@ bool INIClass::Put_UUBlock(const char* section, const void* block, int len) {
  *                                                                                             *
  * HISTORY: * 07/02/1996 JLB : Created. *
  *=============================================================================================*/
-int INIClass::Get_UUBlock(const char* section, void* block, int len) const {
+int INIClass::Get_UUBlock(const char* section, std::span<std::byte> block,
+                          int len) const {
   if (section == nullptr) {
     return 0;
   }
 
-  SpanSink bpipe(std::span(static_cast<std::byte*>(block), base::ToSize(len)));
+  if (len < 0 || std::cmp_greater(len, block.size())) {
+    return 0;
+  }
+  SpanSink bpipe(block.first(base::ToSize(len)));
   Base64Sink b64pipe(Base64Mode::kDecode, bpipe);
 
   const int counter = Entry_Count(section);
@@ -634,13 +645,13 @@ bool INIClass::Put_TextBlock(const char* section, const char* text) {
   }
 
   Clear(section);
+  std::string_view remaining(text == nullptr ? "" : text);
 
   int index = 1;
-  while (text != nullptr && *text != 0) {
+  while (!remaining.empty()) {
     char buffer[128];
 
-    strncpy(buffer, text, 75);
-    buffer[75] = '\0';
+    port::SafeCopy(std::span(buffer).first(76), remaining);
 
     char b[32];
     absl::SNPrintF(b, sizeof(b), "%d", index);
@@ -666,10 +677,10 @@ bool INIClass::Put_TextBlock(const char* section, const char* text) {
         base::At(buffer, count) = '\0';
       }
 
-      strtrim(buffer);
+      strtrim(port::MutableCString(buffer));
       Put_String(section, b, buffer);
       index++;
-      text += count;
+      remaining.remove_prefix(base::ToSize(count));
     } else {
       break;
     }
@@ -700,8 +711,9 @@ bool INIClass::Put_TextBlock(const char* section, const char* text) {
  *                                                                                             *
  * HISTORY: * 07/02/1996 JLB : Created. *
  *=============================================================================================*/
-int INIClass::Get_TextBlock(const char* section, char* buffer, int len) const {
-  if (len <= 0) {
+int INIClass::Get_TextBlock(const char* section, std::span<char> buffer,
+                            int len) const {
+  if (len <= 0 || std::cmp_greater(len, buffer.size())) {
     return 0;
   }
 
@@ -717,16 +729,18 @@ int INIClass::Get_TextBlock(const char* section, char* buffer, int len) const {
     **	Add spacers between lines of fetched text.
     */
     if (index > 0) {
-      *buffer++ = ' ';
+      buffer[0] = ' ';
+      buffer = buffer.subspan(1);
       len--;
       total++;
     }
 
     Get_String(section, Get_Entry(section, index), "", buffer, len);
 
-    const int partial = static_cast<int>(std::string_view(buffer).size());
+    const int partial =
+        static_cast<int>(std::string_view(buffer.data()).size());
     total += partial;
-    buffer += partial;
+    buffer = buffer.subspan(base::ToSize(partial));
     len -= partial;
     if (len <= 1) {
       break;
@@ -985,42 +999,25 @@ bool INIClass::Put_String(const char* section, const char* entry,
  * HISTORY: * 07/02/1996 JLB : Created. *
  *=============================================================================================*/
 int INIClass::Get_String(const char* section, const char* entry,
-                         const char* defvalue, char* buffer, int size) const {
-  /*
-  **	Verify that the parameters are nominally legal.
-  */
-  if (buffer != nullptr && size > 0) {
-    buffer[0] = '\0';
-  }
-  if (buffer == nullptr || !size || section == nullptr || entry == nullptr) {
+                         const char* defvalue, std::span<char> buffer,
+                         int size) const {
+  if (size <= 0 || std::cmp_greater(size, buffer.size())) {
     return 0;
   }
-
-  /*
-  **	Fetch the entry string if it is present. If not, then the normal default
-  **	value will be used as the entry value.
-  */
+  buffer = buffer.first(base::ToSize(size));
+  if (section == nullptr || entry == nullptr) {
+    buffer[0] = '\0';
+    return 0;
+  }
   const INIEntry* entryptr = Find_Entry(section, entry);
   if (entryptr) {
-    {
-      defvalue = entryptr->Value.c_str();
-    }
+    defvalue = entryptr->Value.c_str();
   }
-
-  /*
-  **	Fill in the buffer with the entry value and return with the length of
-  *the string.
-  */
-  if (defvalue == nullptr) {
-    buffer[0] = '\0';
-    return 0;
-  }
-  if (buffer != defvalue) {
-    strncpy(buffer, defvalue, base::ToSize(size));
-  }
-  buffer[size - 1] = '\0';
+  // A caller may use its output as the default. Copy before clearing it.
+  const std::string value = defvalue == nullptr ? "" : defvalue;
+  port::SafeCopy(buffer, value.c_str());
   strtrim(buffer);
-  return static_cast<int>(std::string_view(buffer).size());
+  return static_cast<int>(std::string_view(buffer.data()).size());
 }
 
 /***********************************************************************************************
@@ -1147,11 +1144,11 @@ INIClass::INIEntry* INIClass::INISection::Find_Entry(const char* entry) const {
 bool INIClass::Put_PKey(const PKey& key) {
   char buffer[512];
 
-  int len = key.Encode_Modulus(buffer);
-  Put_UUBlock("PublicKey", buffer, len);
+  int len = key.Encode_Modulus(base::ObjectBytes(buffer));
+  Put_UUBlock("PublicKey", base::ObjectBytes(buffer), len);
 
-  len = key.Encode_Exponent(buffer);
-  Put_UUBlock("PrivateKey", buffer, len);
+  len = key.Encode_Exponent(base::ObjectBytes(buffer));
+  Put_UUBlock("PrivateKey", base::ObjectBytes(buffer), len);
   return true;
 }
 
@@ -1181,15 +1178,17 @@ PKey INIClass::Get_PKey(bool fast) const {
   */
   if (fast) {
     const BigInt exp = PKey::Fast_Exponent();
-    exp.DEREncode(buffer);
-    key.Decode_Exponent(buffer);
+    const auto length = exp.DEREncode(buffer);
+    key.Decode_Exponent(base::ObjectBytes(buffer).first(base::ToSize(length)));
   } else {
-    Get_UUBlock("PrivateKey", buffer, sizeof(buffer));
-    key.Decode_Exponent(buffer);
+    const int length =
+        Get_UUBlock("PrivateKey", base::ObjectBytes(buffer), sizeof(buffer));
+    key.Decode_Exponent(base::ObjectBytes(buffer).first(base::ToSize(length)));
   }
 
-  Get_UUBlock("PublicKey", buffer, sizeof(buffer));
-  key.Decode_Modulus(buffer);
+  const int length =
+      Get_UUBlock("PublicKey", base::ObjectBytes(buffer), sizeof(buffer));
+  key.Decode_Modulus(base::ObjectBytes(buffer).first(base::ToSize(length)));
 
   return key;
 }
@@ -1266,12 +1265,11 @@ bool INIClass::Put_Fixed(const char* section, const char* entry, fixed value) {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-void INIClass::Strip_Comments(char* buffer) {
-  if (buffer != nullptr) {
-    char* comment = strchr(buffer, ';');
-    if (comment) {
-      *comment = '\0';
-      strtrim(buffer);
-    }
+void INIClass::Strip_Comments(std::span<char> buffer) {
+  const auto comment = std::ranges::find(buffer, ';');
+  const auto nul = std::ranges::find(buffer, '\0');
+  if (comment < nul) {
+    *comment = '\0';
+    strtrim(buffer);
   }
 }

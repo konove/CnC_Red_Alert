@@ -1,16 +1,20 @@
 #include "sdllib/font.h"
 
+#include <cstddef>
 #include <cstdint>
-#include <cstring>
+#include <span>
 #include <vector>
 
+#include "base/buffer.h"
 #include "gtest/gtest.h"
 
 namespace {
 
 // Writes a little-endian uint16 into the blob at the given byte offset.
 void WriteWord(std::vector<uint8_t>& blob, int offset, uint16_t value) {
-  std::memcpy(blob.data() + offset, &value, sizeof(value));
+  base::CopyBytes(std::as_writable_bytes(
+                      std::span(blob).subspan(static_cast<size_t>(offset))),
+                  base::ObjectBytes(value), sizeof(value));
 }
 
 // Builds a minimal two-glyph font blob:
@@ -22,10 +26,10 @@ void WriteWord(std::vector<uint8_t>& blob, int offset, uint16_t value) {
 //                      exercise the unaligned-read path)
 //   glyph data  @ 31
 std::vector<uint8_t> MakeTestFont() {
-  std::vector<uint8_t> blob(40, 0);
+  std::vector<uint8_t> blob(64, 0);
 
   // Header.
-  WriteWord(blob, 0, 40);   // size
+  WriteWord(blob, 0, 64);   // size
   blob[2] = 0;              // compression
   blob[3] = 5;              // num_blocks
   WriteWord(blob, 4, 14);   // info_block
@@ -61,9 +65,10 @@ TEST(FontHeaderTest, MatchesOnDiskLayout) {
   const std::vector<uint8_t> blob = MakeTestFont();
 
   FontHeader header{};
-  std::memcpy(&header, blob.data(), sizeof(header));
+  base::CopyBytes(base::ObjectBytes(header), std::as_bytes(std::span(blob)),
+                  sizeof(header));
 
-  EXPECT_EQ(header.size, 40);
+  EXPECT_EQ(header.size, 64);
   EXPECT_EQ(header.compression, 0);
   EXPECT_EQ(header.num_blocks, 5);
   EXPECT_EQ(header.info_block, 14);
@@ -75,7 +80,7 @@ TEST(FontHeaderTest, MatchesOnDiskLayout) {
 
 TEST(FontViewTest, FontWideMetrics) {
   const std::vector<uint8_t> blob = MakeTestFont();
-  const FontView font(blob.data());
+  const FontView font(std::as_bytes(std::span(blob)));
 
   EXPECT_EQ(font.MaxHeight(), 8);
   EXPECT_EQ(font.MaxWidth(), 5);
@@ -83,7 +88,7 @@ TEST(FontViewTest, FontWideMetrics) {
 
 TEST(FontViewTest, GlyphWidths) {
   const std::vector<uint8_t> blob = MakeTestFont();
-  const FontView font(blob.data());
+  const FontView font(std::as_bytes(std::span(blob)));
 
   EXPECT_EQ(font.GlyphWidth(0), 3);
   EXPECT_EQ(font.GlyphWidth(1), 4);
@@ -91,7 +96,7 @@ TEST(FontViewTest, GlyphWidths) {
 
 TEST(FontViewTest, GlyphHeightsFromUnalignedTable) {
   const std::vector<uint8_t> blob = MakeTestFont();
-  const FontView font(blob.data());
+  const FontView font(std::as_bytes(std::span(blob)));
 
   EXPECT_EQ(font.GlyphHeight(0), 6);
   EXPECT_EQ(font.GlyphBlankRowsAbove(0), 2);
@@ -101,12 +106,14 @@ TEST(FontViewTest, GlyphHeightsFromUnalignedTable) {
 
 TEST(FontViewTest, GlyphDataPointsIntoBlob) {
   const std::vector<uint8_t> blob = MakeTestFont();
-  const FontView font(blob.data());
+  const FontView font(std::as_bytes(std::span(blob)));
 
-  EXPECT_EQ(font.GlyphData(0), blob.data() + 31);
-  EXPECT_EQ(*font.GlyphData(0), 0xAB);
-  EXPECT_EQ(font.GlyphData(1), blob.data() + 35);
-  EXPECT_EQ(*font.GlyphData(1), 0xCD);
+  EXPECT_EQ(font.GlyphData(0).data(),
+            std::as_bytes(std::span(blob)).subspan(31).data());
+  EXPECT_EQ(font.GlyphData(0).front(), std::byte{0xAB});
+  EXPECT_EQ(font.GlyphData(1).data(),
+            std::as_bytes(std::span(blob)).subspan(35).data());
+  EXPECT_EQ(font.GlyphData(1).front(), std::byte{0xCD});
 }
 
 }  // namespace

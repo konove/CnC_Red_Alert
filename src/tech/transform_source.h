@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <concepts>
 #include <cstddef>
-#include <cstring>
 #include <iterator>
 #include <span>
 #include <type_traits>
@@ -15,6 +14,7 @@
 #include <vector>
 
 #include "absl/base/attributes.h"
+#include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/types.h"
 #include "tech/byte_codec.h"
@@ -53,8 +53,9 @@ class TransformSource : public ChainedSource {
       if (cursor_ < std::ssize(pending_)) {
         const base::ssize count = std::min(std::ssize(buffer) - total,
                                            std::ssize(pending_) - cursor_);
-        std::memcpy(buffer.data() + total, pending_.data() + cursor_,
-                    base::ToSize(count));
+        base::CopyBytes(buffer.subspan(base::ToSize(total)),
+                        std::span(pending_).subspan(base::ToSize(cursor_)),
+                        count);
         cursor_ += count;
         total += count;
         continue;

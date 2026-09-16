@@ -222,12 +222,8 @@ class CellClass {
   // Returns the cell adjacent to this one in direction `face`, or this cell
   // itself when `face` is invalid or the neighbour lies outside the map.
   [[nodiscard]] const CellClass& Adjacent_Cell(FacingType face) const
-      ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return *(this + Adjacent_Offset(face));
-  }
-  CellClass& Adjacent_Cell(FacingType face) ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return *(this + Adjacent_Offset(face));
-  }
+      ABSL_ATTRIBUTE_LIFETIME_BOUND;
+  CellClass& Adjacent_Cell(FacingType face) ABSL_ATTRIBUTE_LIFETIME_BOUND;
   // Returns the cell-index delta from this cell to its neighbour in direction
   // `face`, or 0 when `face` is invalid or the neighbour lies off the map.
   [[nodiscard]] int Adjacent_Offset(FacingType face) const;

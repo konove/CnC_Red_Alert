@@ -1,6 +1,7 @@
 #ifndef CNC_RED_ALERT_RA_NULLDLG_H_
 #define CNC_RED_ALERT_RA_NULLDLG_H_
 
+#include <span>
 #include <string_view>
 
 #include "absl/strings/str_format.h"
@@ -26,8 +27,8 @@ void Smart_Printf(const absl::FormatSpec<Args...>& format,
                   const Args&... args) {
   Smart_Print(absl::StrFormat(format, args...));
 }
-void Hex_Dump_Data(const char* buffer, int length);
-void itoh(int i, char* s);
+void Hex_Dump_Data(std::span<const char> buffer);
+void itoh(int i, std::span<char> s);
 void Log_Start_Time(const char* string);
 void Log_End_Time(const char* string);
 void Log_Time(const char* string);

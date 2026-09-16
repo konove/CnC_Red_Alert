@@ -41,6 +41,7 @@
  *- - - - - - - */
 
 #include <filesystem>
+#include <span>
 
 #include "base/enum_array.h"
 #include "td/conquer.h"
@@ -2275,7 +2276,7 @@ void AnimTypeClass::One_Time() {
     if (file.IsAvailable()) {
       As_Reference(index).Set_Image_Data(Load_Alloc_Data(file));
     } else {
-      As_Reference(index).Set_Image_Data(MixArchive::Retrieve(fullname));
+      As_Reference(index).Set_Image_Data(MixArchive::RetrieveData(fullname));
     }
     // Load shells skip AnimClass's gameplay constructor. Derived frame limits
     // must be ready for both restored animations and newly created ones.

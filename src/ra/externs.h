@@ -40,7 +40,9 @@
 #ifndef CNC_RED_ALERT_RA_EXTERNS_H_
 #define CNC_RED_ALERT_RA_EXTERNS_H_
 
+#include <cstddef>
 #include <cstdint>
+#include <span>
 #include <string>
 #include <vector>
 
@@ -116,7 +118,7 @@ extern bool Debug_Trap_Check_Heap;
 extern bool Debug_Modem_Dump;
 extern bool Debug_Print_Events;
 
-extern const void* LightningShapes;
+extern std::span<const std::byte> LightningShapes;
 
 extern int NewINIFormat;
 
@@ -133,7 +135,7 @@ extern int NameIDOverride[25];
 extern bool GameInFocus;
 // One interpolation table per palette a movie can use; VQAs in this game never
 // come close to the limit.
-inline unsigned char* InterpolatedPalettes[100] = {};
+inline std::vector<unsigned char> InterpolatedPalettes[100];
 inline bool PalettesRead = false;
 inline int PaletteCounter = 0;
 extern int AllDone;
@@ -151,13 +153,13 @@ extern GraphicBufferClass VQ640;  // 640x400 staging page for hi-res movies
 **	Dynamic global variables (these change or are initialized at run time).
 */
 extern base::EnumArray<MissionType, MissionControlClass> MissionControl;
-extern const char* TutorialTextData;
+extern std::vector<char> TutorialTextData;
 extern uint16_t TutorialTextOffsets[225];
 extern Buffer* TheaterBuffer;
 extern GetCDClass CDList;
 extern CCINIClass RuleINI;
 extern CCINIClass AftermathINI;
-extern Benchmark* Benches;
+extern std::vector<Benchmark> Benches;
 extern int MapTriggerID;
 extern int LogicTriggerID;
 extern PKey FastKey;
@@ -180,7 +182,7 @@ extern bool PlayerWins;
 extern bool PlayerLoses;
 extern bool PlayerRestarts;
 extern VoxType SpeechRecord[2];
-extern void* SpeechBuffer[2];
+extern std::vector<std::byte> SpeechBuffer[2];
 extern int PreserveVQAScreen;
 extern bool BreakoutAllowed;
 extern bool Brokeout;
@@ -276,17 +278,17 @@ extern fixed
 /*
 **	Loaded data file pointers.
 */
-extern const void* Metal12FontPtr;
-extern const void* MapFontPtr;
-extern const void* VCRFontPtr;
-extern const void* TypeFontPtr;
-extern const void* Font3Ptr;
-extern const void* Font6Ptr;
-extern const void* EditorFont;
-extern const void* Font8Ptr;
-extern const void* FontLEDPtr;
-extern const void* ScoreFontPtr;
-extern const void* GradFont6Ptr;
+extern std::span<const std::byte> Metal12FontPtr;
+extern std::span<const std::byte> MapFontPtr;
+extern std::span<const std::byte> VCRFontPtr;
+extern std::span<const std::byte> TypeFontPtr;
+extern std::span<const std::byte> Font3Ptr;
+extern std::span<const std::byte> Font6Ptr;
+extern std::span<const std::byte> EditorFont;
+extern std::span<const std::byte> Font8Ptr;
+extern std::span<const std::byte> FontLEDPtr;
+extern std::span<const std::byte> ScoreFontPtr;
+extern std::span<const std::byte> GradFont6Ptr;
 // Tutorial prompts, dialog text, and other UI strings loaded from the mix file.
 // Accessed via Text_String() for indices 0–999.
 extern std::span<const std::byte> SystemStrings;
@@ -338,7 +340,7 @@ extern int NewMaxAheadFrame1;
 extern int NewMaxAheadFrame2;
 
 extern GraphicViewPortClass HidPage;
-extern int MenuList[][8];
+extern int MenuList[1][8];
 extern Timer<SystemTickSource> FrameTimer;
 extern Timer<SystemTickSource> CountDownTimer;
 
@@ -357,9 +359,6 @@ extern DynamicVectorClass<ActionChoiceClass> test3;
 
 extern bool LogDump_Print;
 
-extern "C" {
-extern bool IsTheaterShape;
-}
 
 extern TheaterType LastTheater;
 
@@ -390,10 +389,10 @@ extern int UnitBuildPenalty;
 bool Receive_Remote_File(char* file_name, unsigned int file_length,
                          unsigned int crc, int gametype);
 bool Send_Remote_File(const char* file_name, int gametype);
-bool Get_Scenario_File_From_Host(char* return_name, size_t dest_size,
+bool Get_Scenario_File_From_Host(std::span<char> return_name, size_t dest_size,
                                  int gametype);
 
-bool Find_Local_Scenario(const char* description, char* filename,
+bool Find_Local_Scenario(const char* description, std::span<char> filename,
                          unsigned int length, const char* digest,
                          bool official);
 

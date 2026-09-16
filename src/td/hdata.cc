@@ -44,9 +44,12 @@
 **	These are the colors used to identify the various owners.
 */
 #include <cstring>
+#include <span>
 
+#include "base/array.h"
 #include "base/enum_array.h"
 #include "port/ex_string.h"
+#include "port/safe_string.h"
 #include "td/conquer.h"
 #include "td/const.h"
 #include "td/defines.h"
@@ -227,7 +230,8 @@ const base::EnumArray<HousesType, const HouseTypeClass*, kHouseCount>
 HouseTypeClass::HouseTypeClass(HousesType house, const char* ini, int fullname,
                                const char* ext, int lemon, int color,
                                int bright_color, PlayerColorType remapcolor,
-                               const unsigned char* remap, char prefix) noexcept
+                               std::span<const unsigned char> remap,
+                               char prefix) noexcept
     : House(house),
       IniName(ini),
       FullName(fullname),
@@ -237,8 +241,8 @@ HouseTypeClass::HouseTypeClass(HousesType house, const char* ini, int fullname,
       RemapTable(remap),
       RemapColor(remapcolor),
       Prefix(prefix) {
-  strncpy(Suffix, ext, 3);
-  Suffix[3] = '\0';
+  port::SafeCopy(Suffix, ext);
+  base::At(Suffix, 3) = '\0';
 }
 
 /***********************************************************************************************
@@ -260,7 +264,7 @@ HouseTypeClass::HouseTypeClass(HousesType house, const char* ini, int fullname,
 HousesType HouseTypeClass::From_Name(const char* name) {
   if (name) {
     for (HousesType house = HOUSE_FIRST; house < HOUSE_COUNT; house++) {
-      if (stricmp(Pointers[house]->IniName, name) == 0) {
+      if (port::CompareIgnoreCase(Pointers[house]->IniName, name) == 0) {
         return house;
       }
     }

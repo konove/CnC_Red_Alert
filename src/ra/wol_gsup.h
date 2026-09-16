@@ -87,8 +87,8 @@ class WOL_GameSetupDialog {
                                     // start.
   bool bExitForGameTrigger{false};  //	Trigger exiting dialog for game.
 
-  void ProcessGuestRequest(User* pUser, const char* szRequest);
-  void ProcessInform(char* szInform);
+  void ProcessGuestRequest(User* pUser, const char* request_data);
+  void ProcessInform(char* inform_data);
   void OnGuestJoin(User* pUser);
   void OnGuestLeave(User* pUser);
 

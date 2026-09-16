@@ -41,9 +41,11 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include <cstddef>
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
+#include <span>
 #include <string_view>
 
 #include "base/array.h"
@@ -412,8 +414,19 @@ void Send_Statistics_Packet() {
               if (getaddrinfo(szHostName, nullptr, &hints, &results) == 0) {
                 for (const addrinfo* info = results; info != nullptr;
                      info = info->ai_next) {
+                  if (info->ai_family != AF_INET || info->ai_addr == nullptr ||
+                      info->ai_addrlen < sizeof(sockaddr_in)) {
+                    continue;
+                  }
+                  // getaddrinfo owns ai_addr and provides its allocation
+                  // extent.
+                  // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
+                  const std::span address_bytes(
+                      // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+                      reinterpret_cast<const std::byte*>(info->ai_addr),
+                      info->ai_addrlen);
                   const auto address =
-                      port::ReadUnaligned<sockaddr_in>(info->ai_addr);
+                      port::ReadUnaligned<sockaddr_in>(address_bytes);
                   //	Is it an address in a private network? If so we
                   // should ignore it. First and second octets.
                   const uint32_t ip = ntohl(address.sin_addr.s_addr);
@@ -642,20 +655,15 @@ void Send_Statistics_Packet() {
       player->VesselTotals->To_Network_Format();
 
       stats.Add_Field(field_player_infantry_bought,
-                      player->InfantryTotals->Get_All_Totals(),
-                      player->InfantryTotals->Get_Unit_Count() * 4);
+                      std::as_bytes(player->InfantryTotals->Get_All_Totals()));
       stats.Add_Field(field_player_units_bought,
-                      player->UnitTotals->Get_All_Totals(),
-                      player->UnitTotals->Get_Unit_Count() * 4);
+                      std::as_bytes(player->UnitTotals->Get_All_Totals()));
       stats.Add_Field(field_player_planes_bought,
-                      player->AircraftTotals->Get_All_Totals(),
-                      player->AircraftTotals->Get_Unit_Count() * 4);
+                      std::as_bytes(player->AircraftTotals->Get_All_Totals()));
       stats.Add_Field(field_player_buildings_bought,
-                      player->BuildingTotals->Get_All_Totals(),
-                      player->BuildingTotals->Get_Unit_Count() * 4);
+                      std::as_bytes(player->BuildingTotals->Get_All_Totals()));
       stats.Add_Field(field_player_vessels_bought,
-                      player->VesselTotals->Get_All_Totals(),
-                      player->VesselTotals->Get_Unit_Count() * 4);
+                      std::as_bytes(player->VesselTotals->Get_All_Totals()));
 
       player->InfantryTotals->To_PC_Format();
       player->UnitTotals->To_PC_Format();
@@ -733,20 +741,15 @@ void Send_Statistics_Packet() {
       field_player_vessels_left[3] =
           static_cast<char>('1' + static_cast<char>(house));
       stats.Add_Field(field_player_infantry_left,
-                      player->InfantryTotals->Get_All_Totals(),
-                      player->InfantryTotals->Get_Unit_Count() * 4);
+                      std::as_bytes(player->InfantryTotals->Get_All_Totals()));
       stats.Add_Field(field_player_units_left,
-                      player->UnitTotals->Get_All_Totals(),
-                      player->UnitTotals->Get_Unit_Count() * 4);
+                      std::as_bytes(player->UnitTotals->Get_All_Totals()));
       stats.Add_Field(field_player_planes_left,
-                      player->AircraftTotals->Get_All_Totals(),
-                      player->AircraftTotals->Get_Unit_Count() * 4);
+                      std::as_bytes(player->AircraftTotals->Get_All_Totals()));
       stats.Add_Field(field_player_buildings_left,
-                      player->BuildingTotals->Get_All_Totals(),
-                      player->BuildingTotals->Get_Unit_Count() * 4);
+                      std::as_bytes(player->BuildingTotals->Get_All_Totals()));
       stats.Add_Field(field_player_vessels_left,
-                      player->VesselTotals->Get_All_Totals(),
-                      player->VesselTotals->Get_Unit_Count() * 4);
+                      std::as_bytes(player->VesselTotals->Get_All_Totals()));
 
       /*
       ** Number of enemy units/buildings of each type destroyed.
@@ -769,21 +772,20 @@ void Send_Statistics_Packet() {
       field_player_vessels_killed[3] =
           static_cast<char>('1' + static_cast<char>(house));
 
-      stats.Add_Field(field_player_infantry_killed,
-                      player->DestroyedInfantry->Get_All_Totals(),
-                      player->DestroyedInfantry->Get_Unit_Count() * 4);
+      stats.Add_Field(
+          field_player_infantry_killed,
+          std::as_bytes(player->DestroyedInfantry->Get_All_Totals()));
       stats.Add_Field(field_player_units_killed,
-                      player->DestroyedUnits->Get_All_Totals(),
-                      player->DestroyedUnits->Get_Unit_Count() * 4);
-      stats.Add_Field(field_player_planes_killed,
-                      player->DestroyedAircraft->Get_All_Totals(),
-                      player->DestroyedAircraft->Get_Unit_Count() * 4);
-      stats.Add_Field(field_player_buildings_killed,
-                      player->DestroyedBuildings->Get_All_Totals(),
-                      player->DestroyedBuildings->Get_Unit_Count() * 4);
-      stats.Add_Field(field_player_vessels_killed,
-                      player->DestroyedVessels->Get_All_Totals(),
-                      player->DestroyedVessels->Get_Unit_Count() * 4);
+                      std::as_bytes(player->DestroyedUnits->Get_All_Totals()));
+      stats.Add_Field(
+          field_player_planes_killed,
+          std::as_bytes(player->DestroyedAircraft->Get_All_Totals()));
+      stats.Add_Field(
+          field_player_buildings_killed,
+          std::as_bytes(player->DestroyedBuildings->Get_All_Totals()));
+      stats.Add_Field(
+          field_player_vessels_killed,
+          std::as_bytes(player->DestroyedVessels->Get_All_Totals()));
 
       /*
       ** Number and type of enemy buildings captured
@@ -791,9 +793,9 @@ void Send_Statistics_Packet() {
       field_player_buildings_captured[3] =
           static_cast<char>('1' + static_cast<char>(house));
       player->CapturedBuildings->To_Network_Format();
-      stats.Add_Field(field_player_buildings_captured,
-                      player->CapturedBuildings->Get_All_Totals(),
-                      player->CapturedBuildings->Get_Unit_Count() * 4);
+      stats.Add_Field(
+          field_player_buildings_captured,
+          std::as_bytes(player->CapturedBuildings->Get_All_Totals()));
 
       /*
       ** Number of crates discovered and their contents
@@ -802,8 +804,7 @@ void Send_Statistics_Packet() {
           static_cast<char>('1' + static_cast<char>(house));
       player->TotalCrates->To_Network_Format();
       stats.Add_Field(field_player_crates_found,
-                      player->TotalCrates->Get_All_Totals(),
-                      player->TotalCrates->Get_Unit_Count() * 4);
+                      std::as_bytes(player->TotalCrates->Get_All_Totals()));
 
       /*
       ** Amount of tiberium turned into credits

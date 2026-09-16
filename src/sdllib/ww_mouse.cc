@@ -9,11 +9,13 @@
 #include <SDL_stdinc.h>
 #include <SDL_surface.h>
 #include <SDL_video.h>
+#include <algorithm>
+#include <cstddef>
 
 #include <cstdint>
-#include <cstring>
 #include <span>
 #include <utility>
+#include <vector>
 
 #include "absl/log/log.h"
 #include "base/buffer.h"
@@ -38,26 +40,26 @@ void SDLSurfaceDeleter::operator()(SDL_Surface* p) const noexcept {
 static WWMouseClass* Mouse = nullptr;
 
 // Nearest-neighbor scaling preserves the crisp pixel art look of game cursors.
-[[nodiscard]] static uint8_t* Scale_Cursor_Nearest(const uint8_t* src,
-                                                   int src_w, int src_h,
-                                                   int scale, int* out_w,
-                                                   int* out_h) {
+[[nodiscard]] static std::vector<uint8_t> Scale_Cursor_Nearest(
+    std::span<const uint8_t> src, int src_w, int src_h, int scale, int* out_w,
+    int* out_h) {
   if (src_w <= 0 || src_h <= 0 || scale <= 0) {
     *out_w = 0;
     *out_h = 0;
-    return nullptr;
+    return {};
   }
 
   const int dst_w = src_w * scale;
   const int dst_h = src_h * scale;
-  auto* dst =
-      new uint8_t[base::ToSize(static_cast<base::ssize>(dst_w) * dst_h)];
+  std::vector<uint8_t> dst(
+      base::ToSize(static_cast<base::ssize>(dst_w) * dst_h));
 
   for (int y = 0; y < dst_h; ++y) {
     const int src_y = y / scale;
     for (int x = 0; x < dst_w; ++x) {
       const int src_x = x / scale;
-      dst[(y * dst_w) + x] = src[(src_y * src_w) + src_x];
+      dst[base::ToSize((y * dst_w) + x)] =
+          src[base::ToSize((src_y * src_w) + src_x)];
     }
   }
 
@@ -107,13 +109,14 @@ WWMouseClass::WWMouseClass([[maybe_unused]] GraphicViewPortClass* scr,
 }
 
 WWMouseClass::~WWMouseClass() { Clear_Cursor_Clip(); }
-
-void WWMouseClass::Set_Cursor(int xhotspot, int yhotspot, const void* cursor) {
-  if (cursor == nullptr || PrevCursor == cursor) {
+void WWMouseClass::Set_Cursor(int xhotspot, int yhotspot,
+                              std::span<const std::byte> cursor) {
+  if (cursor.size() < 10 || PrevCursor == cursor.data()) {
     return;
   }
-
-  const auto* cursor_shape = static_cast<const Shape_Type*>(cursor);
+  Shape_Type shape{};
+  base::CopyBytes(base::ObjectBytes(shape), cursor, 10);
+  const auto* cursor_shape = &shape;
 
   if (cursor_shape->Width == 0 || cursor_shape->OriginalHeight == 0 ||
       std::cmp_greater(cursor_shape->Width, MaxWidth) ||
@@ -128,36 +131,35 @@ void WWMouseClass::Set_Cursor(int xhotspot, int yhotspot, const void* cursor) {
   }
 
   // Shape data is LCW compressed starting at byte 10 (after the header).
-  auto* decompressed_data = new uint8_t[cursor_shape->DataLength];
-  LCW_Uncompress(static_cast<const uint8_t*>(cursor) + 10, decompressed_data,
-                 cursor_shape->DataLength);
-
-  // After LCW decompression, the shape is still RLE encoded.
-  const auto* inptr = decompressed_data;
-
-  int remaining = cursor_shape->Width * cursor_shape->OriginalHeight;
-  auto* outptr = MouseCursor.data();
-
-  // Pre-zero buffer: RLE decoding may not write every pixel explicitly.
-  base::FillBytes(std::as_writable_bytes(std::span(MouseCursor)), 0,
-                  base::ToSize(remaining));
-
-  do {
-    const uint8_t pixel = *inptr++;
-    if (pixel) {
-      *outptr++ = pixel;
-      remaining--;
-    } else {
-      // RLE: zero byte followed by count of zeros to emit.
-      int count = *inptr++;
-      remaining -= count;
-      while (count--) {
-        *outptr++ = 0;
-      }
+  std::vector<uint8_t> decompressed_data(cursor_shape->DataLength);
+  const int32_t decoded = LCW_Uncompress(
+      cursor.subspan(10), std::as_writable_bytes(std::span(decompressed_data)));
+  auto input = std::span(decompressed_data).first(base::ToSize(decoded));
+  const auto pixels =
+      base::ToSize(cursor_shape->Width * cursor_shape->OriginalHeight);
+  auto output = std::span(MouseCursor).first(pixels);
+  std::ranges::fill(output, 0);
+  while (!output.empty()) {
+    if (input.empty()) {
+      return;
     }
-  } while (remaining);
-
-  delete[] decompressed_data;
+    const uint8_t pixel = input.front();
+    input = input.subspan(1);
+    if (pixel != 0) {
+      output.front() = pixel;
+      output = output.subspan(1);
+    } else {
+      if (input.empty()) {
+        return;
+      }
+      const auto count = input.front();
+      input = input.subspan(1);
+      if (count == 0 || count > output.size()) {
+        return;
+      }
+      output = output.subspan(count);
+    }
+  }
 
   // Keep the unscaled cursor for palette updates. When the game palette
   // changes, we recreate the SDL cursor from this copy.
@@ -171,10 +173,10 @@ void WWMouseClass::Set_Cursor(int xhotspot, int yhotspot, const void* cursor) {
   CurrentScale = Get_Display_Scale();
   int scaled_width = 0;
   int scaled_height = 0;
-  const uint8_t* scaled_cursor =
-      Scale_Cursor_Nearest(OriginalCursor.data(), OriginalWidth, OriginalHeight,
+  const auto scaled_cursor =
+      Scale_Cursor_Nearest(OriginalCursor, OriginalWidth, OriginalHeight,
                            CurrentScale, &scaled_width, &scaled_height);
-  if (!scaled_cursor) {
+  if (scaled_cursor.empty()) {
     return;
   }
 
@@ -186,24 +188,34 @@ void WWMouseClass::Set_Cursor(int xhotspot, int yhotspot, const void* cursor) {
   SDLSurfacePtr sdl_surf(
       SDL_CreateRGBSurface(0, scaled_width, scaled_height, 8, 0, 0, 0, 0));
   if (!sdl_surf) {
-    delete[] scaled_cursor;
     return;
   }
   // SDL surface pitch may include padding, so copy row by row.
+  // SDL-created surface owns pitch*h writable bytes.
+  const auto surface =
+      // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
+      std::span(static_cast<uint8_t*>(sdl_surf->pixels),
+                base::ToSize(sdl_surf->pitch) * base::ToSize(sdl_surf->h));
   for (int y = 0; y < scaled_height; ++y) {
-    memcpy(static_cast<uint8_t*>(sdl_surf->pixels) +
-               (static_cast<base::ssize>(y) * sdl_surf->pitch),
-           scaled_cursor + (static_cast<base::ssize>(y) * scaled_width),
-           base::ToSize(scaled_width));
+    std::ranges::copy(
+        std::span(scaled_cursor)
+            .subspan(base::ToSize(y * scaled_width),
+                     base::ToSize(scaled_width)),
+        surface.subspan(base::ToSize(y * sdl_surf->pitch)).begin());
   }
-  delete[] scaled_cursor;
 
   if (WindowBuffer) {
     // Sync cursor palette with game palette. Index 0 is transparent.
     const auto* window_pal =
         static_cast<const SDL_Palette*>(WindowBuffer->Get_Palette());
-    SDL_SetPaletteColors(sdl_surf->format->palette, window_pal->colors + 1, 1,
-                         255);
+    // SDL owns ncolors color entries in this palette.
+    SDL_SetPaletteColors(
+        sdl_surf->format->palette,
+        // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
+        std::span(window_pal->colors, base::ToSize(window_pal->ncolors))
+            .subspan(1)
+            .data(),
+        1, 255);
     sdl_surf->format->palette->colors[0].a = 0;
   }
 
@@ -211,8 +223,7 @@ void WWMouseClass::Set_Cursor(int xhotspot, int yhotspot, const void* cursor) {
       SDL_CreateColorCursor(sdl_surf.get(), scaled_hotx, scaled_hoty));
 
   SDL_SetCursor(sdl_cursor.get());
-
-  PrevCursor = static_cast<const char*>(cursor);
+  PrevCursor = cursor.data();
   sdl_cursor_ = std::move(sdl_cursor);
   sdl_surface_ = std::move(sdl_surf);
   MouseXHot = xhotspot;
@@ -286,8 +297,14 @@ void WWMouseClass::Update_Palette() {
 
   const auto* window_pal =
       static_cast<const SDL_Palette*>(WindowBuffer->Get_Palette());
-  SDL_SetPaletteColors(sdl_surface_->format->palette, window_pal->colors + 1, 1,
-                       255);
+  // SDL owns ncolors entries in the window palette.
+  SDL_SetPaletteColors(
+      sdl_surface_->format->palette,
+      // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
+      std::span(window_pal->colors, base::ToSize(window_pal->ncolors))
+          .subspan(1)
+          .data(),
+      1, 255);
 
   const int scaled_hotx = MouseXHot * CurrentScale;
   const int scaled_hoty = MouseYHot * CurrentScale;
@@ -335,8 +352,7 @@ int Get_Mouse_State() {
   }
   return 0;
 }
-
-void Set_Mouse_Cursor(int hotx, int hoty, const void* cursor) {
+void Set_Mouse_Cursor(int hotx, int hoty, std::span<const std::byte> cursor) {
   if (Mouse) {
     Mouse->Set_Cursor(hotx, hoty, cursor);
   }

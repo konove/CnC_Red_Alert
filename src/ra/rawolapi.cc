@@ -28,6 +28,7 @@
 #include <cstring>
 #include <ctime>
 #include <iterator>
+#include <span>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -35,6 +36,7 @@
 #include "absl/log/check.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
+#include "base/buffer.h"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "port/tokenizer.h"
@@ -132,7 +134,6 @@ RAChatEventSink::RAChatEventSink(WolapiObject* pOwnerIn)
 RAChatEventSink::~RAChatEventSink() {
   //	debugprint( "RAChatEventSink destructor\n" );
   delete pServer;
-  delete[] szMotd;
   DeleteChannelList();
   DeleteUserList();
   DeleteUserIPList();
@@ -315,34 +316,27 @@ STDMETHODIMP RAChatEventSink::OnConnection(HRESULT hRes, LPCSTR motd) {
 
   if (hRes == S_OK) {
     //	Prepare a new string for a modified version of motd.
-    szMotd = new char[std::string_view(motd).size() + 1];
-    //	Replace single line breaks with a space.
-    //	Replace double line breaks with double carriage returns.
-
+    szMotd.clear();
+    std::string_view input(motd);
     bool bJustDidBreak = false;
-    const char* szIn = motd;
-    char* szOut = szMotd;
-
-    while (*szIn) {
-      if (*szIn == '\r' && *(szIn + 1) == '\n') {
+    while (!input.empty()) {
+      if (input.starts_with("\r\n")) {
         if (!bJustDidBreak) {
-          *szOut++ = ' ';
+          szMotd.push_back(' ');
           bJustDidBreak = true;
         } else {
-          szOut--;
-          *szOut++ = '\r';
-          *szOut++ = '\r';
+          szMotd.back() = '\r';
+          szMotd.push_back('\r');
           bJustDidBreak = false;
-          //					debugprint( "^" );
         }
-        szIn += 2;
+        input.remove_prefix(2);
       } else {
-        *szOut++ = *szIn++;
+        szMotd.push_back(input.front());
+        input.remove_prefix(1);
         bJustDidBreak = false;
       }
-      //			debugprint( "%c", *( szOut - 1 ) );
     }
-    *szOut = 0;  //	Null-terminate.
+
                  //		debugprint( "\n" );
 
     //		pOwner->PrintMessage( szMotd );
@@ -518,7 +512,7 @@ bool operator<(const User& u1, const User& u2) {
   if (!(u1.flags & CHAT_USER_VOICE) && u2.flags & CHAT_USER_VOICE) {
     return false;
   }
-  return (stricmp(WolText(u1.name), WolText(u2.name)) < 0);
+  return (port::CompareIgnoreCase(WolText(u1.name), WolText(u2.name)) < 0);
 }
 
 //***********************************************************************************************
@@ -564,7 +558,8 @@ STDMETHODIMP RAChatEventSink::OnChannelLeave(HRESULT hRes, Channel* /*channel*/,
       User* pUserPrevious = nullptr;
       bool bFound = false;
       while (pUserSearch) {
-        if (stricmp(WolText(pUserSearch->name), WolText(pUser->name)) == 0) {
+        if (port::CompareIgnoreCase(WolText(pUserSearch->name),
+                                    WolText(pUser->name)) == 0) {
           //	Remove from list.
           if (!pUserPrevious) {
             //	Head of list is being removed.
@@ -630,10 +625,11 @@ STDMETHODIMP RAChatEventSink::OnPublicMessage(HRESULT /*res*/,
                                               User* pUserSender,
                                               LPCSTR szMessage) {
   if (*szMessage) {
-    if (std::string_view(szMessage).size() > 3 && szMessage[0] == 35 &&
-        szMessage[1] == 97 && szMessage[2] == 106 && szMessage[3] == 119) {
+    if (std::string_view(szMessage).starts_with("#ajw")) {
       if (std::string_view(szMessage).size() > 4) {
-        const int i = tech::ParseInteger<int>(szMessage + 4).value_or(0);
+        const int i =
+            tech::ParseInteger<int>(std::string_view(szMessage).substr(4))
+                .value_or(0);
         if (i >= static_cast<int>(VOX_ACCOMPLISHED) &&
             i <= static_cast<int>(VOX_LOAD1) && pOwner->bEggSounds) {
           Speak(static_cast<VoxType>(i));
@@ -664,16 +660,17 @@ STDMETHODIMP RAChatEventSink::OnPrivateMessage(HRESULT /*res*/,
     char ci1[] =
         "VGhpcyBpcyBBZGFtLiBIYXZlIHdlIG5vdCBwZXJjaGFuY2UgbWV0IGJlZm9yZT8=";
     char co1[48];
-    Base64_Decode(ci1, static_cast<int>(std::string_view(ci1).size()), co1, 47);
-    co1[47] = 0;
+    Base64_Decode(base::ObjectBytes(ci1).first(sizeof(ci1) - 1),
+                  base::ObjectBytes(co1).first(47));
+    base::At(co1, 47) = 0;
     if (std::string_view(szMessage) == co1) {
       const UtcDate today = TodayUtc();
       char szOut[60];
       char ci2[] = "SSBhbSB5b3VyIGFibGUgYW5kIHdpbGxpbmcgc2xhdmUu";
       char co2[34];
-      Base64_Decode(ci2, static_cast<int>(std::string_view(ci2).size()), co2,
-                    33);
-      co2[33] = 0;
+      Base64_Decode(base::ObjectBytes(ci2).first(sizeof(ci2) - 1),
+                    base::ObjectBytes(co2).first(33));
+      base::At(co2, 33) = 0;
       absl::SNPrintF(szOut, sizeof(szOut), "%s (%i/%i/%i)", co2, today.month,
                      today.day, today.year);
       User UserReply;
@@ -683,10 +680,11 @@ STDMETHODIMP RAChatEventSink::OnPrivateMessage(HRESULT /*res*/,
       return S_OK;
     }
     if (!bSpecialMessage(szMessage)) {
-      if (std::string_view(szMessage).size() > 3 && szMessage[0] == 35 &&
-          szMessage[1] == 97 && szMessage[2] == 106 && szMessage[3] == 119) {
+      if (std::string_view(szMessage).starts_with("#ajw")) {
         if (std::string_view(szMessage).size() > 4) {
-          const int i = tech::ParseInteger<int>(szMessage + 4).value_or(0);
+          const int i =
+              tech::ParseInteger<int>(std::string_view(szMessage).substr(4))
+                  .value_or(0);
           if (i >= static_cast<int>(VOX_ACCOMPLISHED) &&
               i <= static_cast<int>(VOX_LOAD1) && pOwner->bEggSounds) {
             Speak(static_cast<VoxType>(i));
@@ -700,7 +698,7 @@ STDMETHODIMP RAChatEventSink::OnPrivateMessage(HRESULT /*res*/,
       }
     } else {
       char szOut[kMessageMax];
-      port::SafeCopy(szOut, &szMessage[8]);
+      port::SafeCopy(szOut, std::string_view(szMessage).substr(8));
       pOwner->pChat->RequestPublicMessage(szOut);
       char szPrint[kMessageMax];
       absl::SNPrintF(szPrint, sizeof(szPrint), "%s: %s", pOwner->szMyName,
@@ -716,15 +714,13 @@ bool RAChatEventSink::bSpecialMessage(const char* szMessage) {
   if (std::string_view(szMessage).size() < 9) {
     return false;
   }
-  if (szMessage[0] != 33 || szMessage[1] != 97 || szMessage[2] != 106 ||
-      szMessage[3] != 119) {
+  if (!std::string_view(szMessage).starts_with("!ajw")) {
     return false;
   }
   const UtcDate today = TodayUtc();
-  char szCode[5];
-  memcpy(szCode, &szMessage[4], 4);
-  szCode[4] = 0;
-  const int iCode = tech::ParseInteger<int>(szCode).value_or(0);
+  const int iCode =
+      tech::ParseInteger<int>(std::string_view(szMessage).substr(4, 4))
+          .value_or(0);
   // The code mixes the date fields as bit patterns.
   const uint32_t expected = (static_cast<uint32_t>(today.month * 99) ^
                              static_cast<uint32_t>(today.day * 33)) ^
@@ -1010,7 +1006,7 @@ bool RAChatEventSink::DownloadUpdates(Update* pUpdateList, int iUpdates) {
   int iUpdateCurrent = 0;
   //	Save current directory.
   char szCurDirSave[kMaxPath];
-  ::GetCurrentDirectory(kMaxPath, szCurDirSave);
+  ::GetCurrentDirectory(szCurDirSave);
   while (pUpdate) {
     ++iUpdateCurrent;
     char szTitle[120];
@@ -1076,9 +1072,12 @@ STDMETHODIMP RAChatEventSink::OnMessageOfTheDay(HRESULT /*res*/,
 //***********************************************************************************************
 void RAChatEventSink::ActionEggSound(const char* szMessage) {
   //	Easter egg related.
-  if (strstr(szMessage, "<<groans>>") || strstr(szMessage, "<<groaning>>") ||
-      strstr(szMessage, "<<dies>>") || strstr(szMessage, "<<dying>>") ||
-      strstr(szMessage, "<<groan>>") || strstr(szMessage, "<<died>>")) {
+  if (std::string_view(szMessage).contains("<<groans>>") ||
+      std::string_view(szMessage).contains("<<groaning>>") ||
+      std::string_view(szMessage).contains("<<dies>>") ||
+      std::string_view(szMessage).contains("<<dying>>") ||
+      std::string_view(szMessage).contains("<<groan>>") ||
+      std::string_view(szMessage).contains("<<died>>")) {
     const int i = Sim_Random_Pick(0, 29);
     if (i == 0) {
       Sound_Effect(VOC_DOG_HURT);
@@ -1088,14 +1087,15 @@ void RAChatEventSink::ActionEggSound(const char* szMessage) {
       Sound_Effect(static_cast<VocType>(static_cast<int>(VOC_SCREAM1) +
                                         Sim_Random_Pick(0, 8)));
     }
-  } else if (strstr(szMessage, "<<whines>>") ||
-             strstr(szMessage, "<<whining>>") ||
-             strstr(szMessage, "<<bitching>>") ||
-             strstr(szMessage, "<<whine>>")) {
+  } else if (std::string_view(szMessage).contains("<<whines>>") ||
+             std::string_view(szMessage).contains("<<whining>>") ||
+             std::string_view(szMessage).contains("<<bitching>>") ||
+             std::string_view(szMessage).contains("<<whine>>")) {
     Sound_Effect(VOC_DOG_WHINE);
-  } else if (strstr(szMessage, "<<shoots>>") ||
-             strstr(szMessage, "<<shooting>>") ||
-             strstr(szMessage, "<<shoot>>") || strstr(szMessage, "<<shot>>")) {
+  } else if (std::string_view(szMessage).contains("<<shoots>>") ||
+             std::string_view(szMessage).contains("<<shooting>>") ||
+             std::string_view(szMessage).contains("<<shoot>>") ||
+             std::string_view(szMessage).contains("<<shot>>")) {
     switch (Sim_Random_Pick(0, 5)) {
       case 0:
         Sound_Effect(VOC_CANNON1);
@@ -1118,11 +1118,12 @@ void RAChatEventSink::ActionEggSound(const char* szMessage) {
       default:
         break;
     }
-  } else if (strstr(szMessage, "<<explodes>>") ||
-             strstr(szMessage, "<<exploding>>") ||
-             strstr(szMessage, "<<explode>>") ||
-             strstr(szMessage, "<<exploded>>") ||
-             strstr(szMessage, "<<boom>>") || strstr(szMessage, "<<nukes>>")) {
+  } else if (std::string_view(szMessage).contains("<<explodes>>") ||
+             std::string_view(szMessage).contains("<<exploding>>") ||
+             std::string_view(szMessage).contains("<<explode>>") ||
+             std::string_view(szMessage).contains("<<exploded>>") ||
+             std::string_view(szMessage).contains("<<boom>>") ||
+             std::string_view(szMessage).contains("<<nukes>>")) {
     switch (Sim_Random_Pick(0, 4)) {
       case 0:
         Sound_Effect(VOC_KABOOM1);
@@ -1142,8 +1143,10 @@ void RAChatEventSink::ActionEggSound(const char* szMessage) {
       default:
         break;
     }
-  } else if (strstr(szMessage, "<<aye>>") || strstr(szMessage, "<<ok>>") ||
-             strstr(szMessage, "<<yes>>") || strstr(szMessage, "<<yeah>>")) {
+  } else if (std::string_view(szMessage).contains("<<aye>>") ||
+             std::string_view(szMessage).contains("<<ok>>") ||
+             std::string_view(szMessage).contains("<<yes>>") ||
+             std::string_view(szMessage).contains("<<yeah>>")) {
     switch (Sim_Random_Pick(0, 7)) {
       case 0:
         Sound_Effect(VOC_E_AH);
@@ -1172,12 +1175,13 @@ void RAChatEventSink::ActionEggSound(const char* szMessage) {
       default:
         break;
     }
-  } else if (strstr(szMessage, "<<incredible>>") ||
-             strstr(szMessage, "<<adam>>") || strstr(szMessage, "<<Adam>>")) {
+  } else if (std::string_view(szMessage).contains("<<incredible>>") ||
+             std::string_view(szMessage).contains("<<adam>>") ||
+             std::string_view(szMessage).contains("<<Adam>>")) {
     Sound_Effect(VOC_E_OK);
-  } else if (strstr(szMessage, "<<coming>>") ||
-             strstr(szMessage, "<<on my way>>") ||
-             strstr(szMessage, "<<moving out>>")) {
+  } else if (std::string_view(szMessage).contains("<<coming>>") ||
+             std::string_view(szMessage).contains("<<on my way>>") ||
+             std::string_view(szMessage).contains("<<moving out>>")) {
     switch (Sim_Random_Pick(0, 4)) {
       case 0:
         Sound_Effect(VOC_SPY_ONWAY);
@@ -1197,39 +1201,44 @@ void RAChatEventSink::ActionEggSound(const char* szMessage) {
       default:
         break;
     }
-  } else if (strstr(szMessage, "<<water>>")) {
+  } else if (std::string_view(szMessage).contains("<<water>>")) {
     Sound_Effect(VOC_SPLASH);
-  } else if (strstr(szMessage, "<<charging>>") ||
-             strstr(szMessage, "<<powering>>")) {
+  } else if (std::string_view(szMessage).contains("<<charging>>") ||
+             std::string_view(szMessage).contains("<<powering>>")) {
     Sound_Effect(VOC_TESLA_POWER_UP);
-  } else if (strstr(szMessage, "<<zap>>") || strstr(szMessage, "<<zaps>>")) {
+  } else if (std::string_view(szMessage).contains("<<zap>>") ||
+             std::string_view(szMessage).contains("<<zaps>>")) {
     Sound_Effect(VOC_TESLA_ZAP);
-  } else if (strstr(szMessage, "<<torpedo>>") ||
-             strstr(szMessage, "<<torpedoes>>")) {
+  } else if (std::string_view(szMessage).contains("<<torpedo>>") ||
+             std::string_view(szMessage).contains("<<torpedoes>>")) {
     Sound_Effect(VOC_TORPEDO);
-  } else if (strstr(szMessage, "<<appears>>") ||
-             strstr(szMessage, "<<surfaces>>") ||
-             strstr(szMessage, "<<emerges>>")) {
+  } else if (std::string_view(szMessage).contains("<<appears>>") ||
+             std::string_view(szMessage).contains("<<surfaces>>") ||
+             std::string_view(szMessage).contains("<<emerges>>")) {
     Sound_Effect(VOC_SUBSHOW);
-  } else if (strstr(szMessage, "<<bark>>") || strstr(szMessage, "<<barks>>")) {
+  } else if (std::string_view(szMessage).contains("<<bark>>") ||
+             std::string_view(szMessage).contains("<<barks>>")) {
     Sound_Effect(VOC_DOG_BARK);
-  } else if (strstr(szMessage, "<<growl>>") ||
-             strstr(szMessage, "<<growls>>")) {
+  } else if (std::string_view(szMessage).contains("<<growl>>") ||
+             std::string_view(szMessage).contains("<<growls>>")) {
     Sound_Effect(VOC_DOG_GROWL2);
-  } else if (strstr(szMessage, "<<chronoshift>>") ||
-             strstr(szMessage, "<<disappears>>")) {
+  } else if (std::string_view(szMessage).contains("<<chronoshift>>") ||
+             std::string_view(szMessage).contains("<<disappears>>")) {
     Sound_Effect(VOC_CHRONO);
-  } else if (strstr(szMessage, "<<crumble>>") ||
-             strstr(szMessage, "<<crumbles>>") ||
-             strstr(szMessage, "<<collapse>>") ||
-             strstr(szMessage, "<<collapses>>")) {
+  } else if (std::string_view(szMessage).contains("<<crumble>>") ||
+             std::string_view(szMessage).contains("<<crumbles>>") ||
+             std::string_view(szMessage).contains("<<collapse>>") ||
+             std::string_view(szMessage).contains("<<collapses>>")) {
     Sound_Effect(VOC_CRUMBLE);
-  } else if (strstr(szMessage, "<<sell>>") || strstr(szMessage, "<<sells>>") ||
-             strstr(szMessage, "<<cash>>") || strstr(szMessage, "<<money>>")) {
+  } else if (std::string_view(szMessage).contains("<<sell>>") ||
+             std::string_view(szMessage).contains("<<sells>>") ||
+             std::string_view(szMessage).contains("<<cash>>") ||
+             std::string_view(szMessage).contains("<<money>>")) {
     Sound_Effect(VOC_CASHTURN);
-  } else if (strstr(szMessage, "<<heal>>") || strstr(szMessage, "<<heals>>")) {
+  } else if (std::string_view(szMessage).contains("<<heal>>") ||
+             std::string_view(szMessage).contains("<<heals>>")) {
     Sound_Effect(VOC_HEAL);
-  } else if (strstr(szMessage, "<<missile>>")) {
+  } else if (std::string_view(szMessage).contains("<<missile>>")) {
     switch (Sim_Random_Pick(0, 2)) {
       case 0:
         Sound_Effect(VOC_MISSILE_1);
@@ -1386,7 +1395,7 @@ uint32_t RAChatEventSink::GetPlayerGameIP(const char* szPlayerName) const {
   //	Returns ipaddr value of player if found in pGameUserList, else 0.
   User* pUser = pGameUserList;
   while (pUser) {
-    if (stricmp(WolText(pUser->name), szPlayerName) == 0) {
+    if (port::CompareIgnoreCase(WolText(pUser->name), szPlayerName) == 0) {
       return static_cast<uint32_t>(pUser->ipaddr);
     }
     pUser = pUser->next;
@@ -1460,7 +1469,8 @@ STDMETHODIMP RAChatEventSink::OnUserIP(HRESULT hRes, User* pUser) {
     //	Look for user in our current users list.
     User* pUserSearch = pUserIPList;
     while (pUserSearch) {
-      if (stricmp(WolText(pUserSearch->name), WolText(pUser->name)) == 0) {
+      if (port::CompareIgnoreCase(WolText(pUserSearch->name),
+                                  WolText(pUser->name)) == 0) {
         //	Found matching user. Replace it's ipaddr value, in case it
         // changed.(?)
         pUserSearch->ipaddr = pUser->ipaddr;
@@ -1509,7 +1519,7 @@ uint32_t RAChatEventSink::GetUserIP(const char* szName) const {
   //	Find szName in list.
   User* pUser = pUserIPList;
   while (pUser) {
-    if (stricmp(WolText(pUser->name), szName) == 0) {
+    if (port::CompareIgnoreCase(WolText(pUser->name), szName) == 0) {
       return static_cast<uint32_t>(pUser->ipaddr);
     }
     pUser = pUser->next;
@@ -1556,7 +1566,7 @@ STDMETHODIMP RAChatEventSink::OnUserFlags(HRESULT hRes, LPCSTR name,
   User* pUserPrior = nullptr;
   User* pUserSearch = pUserList;
   while (pUserSearch) {
-    if (stricmp(WolText(pUserSearch->name), name) == 0) {
+    if (port::CompareIgnoreCase(WolText(pUserSearch->name), name) == 0) {
       //	Set user's flags to new value.
       pUserSearch->flags = flags;
 
@@ -1802,7 +1812,8 @@ STDMETHODIMP RANetUtilEventSink::OnLadderList(
             pLadderTail->next = pLadderNew;
             pLadderTail = pLadderNew;
           }
-          if (stricmp(WolText(pLadderNew->login_name), pOwner->szMyName) == 0) {
+          if (port::CompareIgnoreCase(WolText(pLadderNew->login_name),
+                                      pOwner->szMyName) == 0) {
             //	Set up local player's win/loss string.
             Format_Runtime_Text(pOwner->szMyRecord, sizeof(pOwner->szMyRecord),
                                 TXT_WOL_PERSONALWINLOSSRECORD, pOwner->szMyName,
@@ -1821,7 +1832,8 @@ STDMETHODIMP RANetUtilEventSink::OnLadderList(
             pLadderTailAM->next = pLadderNew;
             pLadderTailAM = pLadderNew;
           }
-          if (stricmp(WolText(pLadderNew->login_name), pOwner->szMyName) == 0) {
+          if (port::CompareIgnoreCase(WolText(pLadderNew->login_name),
+                                      pOwner->szMyName) == 0) {
             //	Set up local player's win/loss string for Aftermath.
             Format_Runtime_Text(
                 pOwner->szMyRecordAM, sizeof(pOwner->szMyRecordAM),
@@ -1903,7 +1915,7 @@ int RANetUtilEventSink::GetUserRank(const char* szName, bool bRankRA) const {
 
   while (pLad) {
     //		debugprint( "  comparing %s\n", (char*)pLad->login_name );
-    if (stricmp(WolText(pLad->login_name), szName) == 0) {
+    if (port::CompareIgnoreCase(WolText(pLad->login_name), szName) == 0) {
       //			debugprint( "found rung value %u\n", pLad->rung
       //);
       return static_cast<int>(pLad->rung);
@@ -2069,10 +2081,10 @@ void DebugChatDef(HRESULT hRes) {
 //***********************************************************************************************
 int iChannelLobbyNumber(const char* szChannelName) {
   //	Returns lobby number of channel, or -1 for "channel is not a lobby".
-  if (strncmp(szChannelName, LOB_PREFIX, std::string_view(LOB_PREFIX).size()) ==
-      0) {
+  if (std::string_view(szChannelName).starts_with(LOB_PREFIX)) {
     char szNum[10];
-    port::SafeCopy(szNum, szChannelName + std::string_view(LOB_PREFIX).size());
+    port::SafeCopy(szNum, std::string_view(szChannelName)
+                              .substr(std::string_view(LOB_PREFIX).size()));
     //		debugprint( " ^ iChannelLobbyNumber returning atoi of %s\n",
     // szNum );
     return tech::ParseInteger<int>(szNum).value_or(0);
@@ -2081,7 +2093,7 @@ int iChannelLobbyNumber(const char* szChannelName) {
 }
 
 //***********************************************************************************************
-void InterpretLobbyNumber(char* szLobbyNameToSet, int iLobby) {
+void InterpretLobbyNumber(std::span<char> szLobbyNameToSet, int iLobby) {
   //	Hard-coded translation of lobby number to apparent lobby name.
   static constexpr const char* kLobbyNames[] = {
       "Combat Alley", "No Man's Land",      "Hell's Pass",  "Lost Vegas",
@@ -2089,10 +2101,9 @@ void InterpretLobbyNumber(char* szLobbyNameToSet, int iLobby) {
       "The Hive",     "North by Northwest", "Decatur High", "Damnation Alley",
   };
   if (iLobby >= 0 && std::cmp_less(iLobby, std::size(kLobbyNames))) {
-    port::SafeCopy(szLobbyNameToSet, base::At(kLobbyNames, iLobby),
-                   REASONABLELOBBYINTERPRETEDNAMELEN);
+    port::SafeCopy(szLobbyNameToSet, base::At(kLobbyNames, iLobby));
   } else {
-    absl::SNPrintF(szLobbyNameToSet, REASONABLELOBBYINTERPRETEDNAMELEN,
+    absl::SNPrintF(szLobbyNameToSet.data(), szLobbyNameToSet.size(),
                    "%ith Division", iLobby);
   }
 }

@@ -41,7 +41,9 @@
 
 #include <algorithm>
 #include <cctype>
+#include <cstddef>
 #include <cstdint>
+#include <span>
 
 #include "base/array.h"
 #include "base/numeric.h"
@@ -190,10 +192,10 @@ static bool Coordinates_In_Region(int x, int y, int inx1, int iny1, int inx2,
 /*	RETURNS:	none
  */
 /*=========================================================================*/
-void Setup_Menu(int menu, const char* text[], uint32_t field, int index,
-                int skip) {
-  int* menuptr =
-      base::Suffix(MenuList[menu], 0).data(); /* get pointer to menu	*/
+void Setup_Menu(int menu, std::span<const char* const> text, uint32_t field,
+                int index, int skip) {
+  const auto menuptr =
+      std::span(base::At(MenuList, menu)); /* get pointer to menu	*/
   const int menuy =
       static_cast<int>(WinY) + menuptr[kMenuy]; /* get the absolute */
   const int menux =
@@ -206,11 +208,12 @@ void Setup_Menu(int menu, const char* text[], uint32_t field, int index,
   for (int lp = 0; lp < num; lp++) {
     const int idx = Select_To_Entry(lp, field, index);
     const int drawy = menuy + (lp * FontHeight) + (lp * skip);
-    Plain_Text_Print(text[idx], menux, drawy,
+    Plain_Text_Print(text[base::ToSize(idx)], menux, drawy,
                      menuptr[idx == item && MenuUpdate ? kHilite : kNormcol],
                      kTBlack, TPF_8POINT | TPF_DROPSHADOW);
     //		if ((idx==item) && (MenuUpdate ))
-    //			Text_Print(text[idx], menux, drawy, menuptr[kHilite],
+    //			Text_Print(text[base::ToSize(idx)], menux, drawy,
+    //menuptr[kHilite],
     // TBLACK);
   }
   MenuSkip = skip;
@@ -218,8 +221,8 @@ void Setup_Menu(int menu, const char* text[], uint32_t field, int index,
   Keyboard->Clear();
 }
 
-int Check_Menu(int menu, const char* text[], char* /*unused*/, uint32_t field,
-               int index) {
+int Check_Menu(int menu, std::span<const char* const> text, char* /*unused*/,
+               uint32_t field, int index) {
   int drawy = 0;
   int item = 0;
   int idx = 0;
@@ -227,8 +230,8 @@ int Check_Menu(int menu, const char* text[], char* /*unused*/, uint32_t field,
   // selection++;
   // /* get rid of warning	*/
 
-  int* menuptr =
-      base::Suffix(MenuList[menu], 0).data(); /* get pointer to menu	*/
+  const auto menuptr =
+      std::span(base::At(MenuList, menu)); /* get pointer to menu	*/
   const int maxitem = menuptr[kItemshigh] - 1;              /* find max items */
   int newitem = item = menuptr[kMselected] % (maxitem + 1); /* find selected */
   int select = -1;                            /* no selection made		*/
@@ -336,7 +339,7 @@ int Check_Menu(int menu, const char* text[], char* /*unused*/, uint32_t field,
     */
     default:
       for (idx = 0; idx < menuptr[kItemshigh]; idx++) {
-        if (toupper(*text[Select_To_Entry(idx, field, index)]) ==
+        if (toupper(*text[base::ToSize(Select_To_Entry(idx, field, index))]) ==
             toupper(KeyboardClass::To_ASCII(
                 static_cast<KeyNumType>(key & 0xFFU)))) {
           newitem = select = idx;
@@ -351,11 +354,11 @@ int Check_Menu(int menu, const char* text[], char* /*unused*/, uint32_t field,
     Hide_Mouse();
     idx = Select_To_Entry(item, field, index);
     drawy = menuy + (item * menuskip);
-    Plain_Text_Print(text[idx], menux, drawy, normcol, kTBlack,
+    Plain_Text_Print(text[base::ToSize(idx)], menux, drawy, normcol, kTBlack,
                      TPF_8POINT | TPF_DROPSHADOW);
     idx = Select_To_Entry(newitem, field, index);
     drawy = menuy + (newitem * menuskip);
-    Plain_Text_Print(text[idx], menux, drawy, litcol, kTBlack,
+    Plain_Text_Print(text[base::ToSize(idx)], menux, drawy, litcol, kTBlack,
                      TPF_8POINT | TPF_DROPSHADOW);
     Show_Mouse(); /* resurrect the mouse	*/
   }
@@ -364,7 +367,7 @@ int Check_Menu(int menu, const char* text[], char* /*unused*/, uint32_t field,
     idx = Select_To_Entry(select, field, index);
     Hide_Mouse(); /* get rid of the mouse	*/
     drawy = menuy + (newitem * menuskip);
-    Flash_Line(text[idx], menux, drawy, normcol, litcol, kTBlack);
+    Flash_Line(text[base::ToSize(idx)], menux, drawy, normcol, litcol, kTBlack);
     Show_Mouse();
     select = idx;
   }
@@ -397,9 +400,8 @@ int Check_Menu(int menu, const char* text[], char* /*unused*/, uint32_t field,
  * HISTORY:                                                                *
  *   05/16/1994 JLB : Created.                                             *
  *=========================================================================*/
-int Do_Menu(const char** strings, bool /*unused*/) {
-
-  if (!strings) {
+int Do_Menu(std::span<const char* const> strings, bool /*unused*/) {
+  if (strings.empty()) {
     return -1;
   }
   Set_Logic_Page(SeenBuff);
@@ -408,12 +410,13 @@ int Do_Menu(const char** strings, bool /*unused*/) {
   /*
   **	Determine the number of entries in this string.
   */
-  const char** ptr = strings;  // Working menu text pointer.
-  int count = 0;               // Number of entries in this menu.
-  while (*ptr++) {
-    count++;
+  const auto end = std::ranges::find(strings, nullptr);
+  const int count = static_cast<int>(end - strings.begin());
+  strings = strings.first(static_cast<size_t>(count));
+  if (strings.empty()) {
+    return -1;
   }
-  MenuList[0][kItemshigh] = count;
+  base::At(MenuList[0], kItemshigh) = count;
 
   /*
   **	Determine the width of the menu by finding the length of the
@@ -421,26 +424,24 @@ int Do_Menu(const char** strings, bool /*unused*/) {
   */
   Plain_Text_Print(TXT_NONE, 0, 0, 0, 0, TPF_8POINT | TPF_DROPSHADOW);
   int length = 0;  // The width of the menu (in pixels).
-  ptr = strings;
-  while (*ptr) {
-    length = std::max(length, String_Pixel_Width(*ptr));
-    ptr++;
+  for (const char* text : strings) {
+    length = std::max(length, String_Pixel_Width(text));
   }
   length += 7;
-  MenuList[0][kItemwidth] = length / 8;
+  base::At(MenuList[0], kItemwidth) = length / 8;
 
   /*
   **	Adjust the window values to match the size of the
   **	specified menu.
   */
   base::At(WindowList[static_cast<int>(WINDOW_MENU)], kWindowWidth) =
-      (MenuList[0][kItemwidth] + 2) * 8;
+      (base::At(MenuList[0], kItemwidth) + 2) * 8;
   base::At(WindowList[static_cast<int>(WINDOW_MENU)], kWindowX) =
       (19 - (length / 16)) * 8;
   base::At(WindowList[static_cast<int>(WINDOW_MENU)], kWindowY) =
-      174 - (MenuList[0][kItemshigh] * (FontHeight + FontYSpacing));
+      174 - (base::At(MenuList[0], kItemshigh) * (FontHeight + FontYSpacing));
   base::At(WindowList[static_cast<int>(WINDOW_MENU)], kWindowHeight) =
-      (MenuList[0][kItemshigh] * FontHeight) + 5 /*11*/;
+      (base::At(MenuList[0], kItemshigh) * FontHeight) + 5 /*11*/;
 
   /*
   **	Display the menu.
@@ -625,13 +626,13 @@ int Main_Menu(int32_t /*unused*/) {
     curbutton = 2;
   }
 
-  buttons[0] = &expandbtnCS;
-  buttons[1] = &expandbtnAM;
-  buttons[2] = &startbtn;
-  buttons[3] = &loadbtn;
-  buttons[4] = &multibtn;
-  buttons[5] = &introbtn;
-  buttons[6] = &exitbtn;
+  base::At(buttons, 0) = &expandbtnCS;
+  base::At(buttons, 1) = &expandbtnAM;
+  base::At(buttons, 2) = &startbtn;
+  base::At(buttons, 3) = &loadbtn;
+  base::At(buttons, 4) = &multibtn;
+  base::At(buttons, 5) = &introbtn;
+  base::At(buttons, 6) = &exitbtn;
 
   base::At(buttons, curbutton)->Turn_On();
 

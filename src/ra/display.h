@@ -19,7 +19,9 @@
 #ifndef CNC_RED_ALERT_RA_DISPLAY_H_
 #define CNC_RED_ALERT_RA_DISPLAY_H_
 
+#include <cstddef>
 #include <cstdint>
+#include <span>
 #include <vector>
 
 #include "base/enum_array.h"
@@ -38,7 +40,6 @@
 #include "ra/type.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/wwstd.h"
-
 
 #define SIDE_BAR_TAC_WIDTH 10
 #define SIDE_BAR_TAC_HEIGHT 8
@@ -81,7 +82,7 @@ class DisplayClass : public MapClass {
   */
   CELL ZoneCell{0};
   int16_t ZoneOffset{0};
-  const int16_t* CursorSize{nullptr};
+  std::span<const int16_t> CursorSize;
   bool ProximityCheck{false};  // Is proximity check ok?
 
   /*
@@ -104,7 +105,7 @@ class DisplayClass : public MapClass {
   static unsigned char TranslucentTable[(kMagicColorCount + 1) * 256];
   static unsigned char WhiteTranslucentTable[(1 + 1) * 256];
   static unsigned char MouseTranslucentTable[(4 + 1) * 256];
-  static const void* TransIconset;
+  static std::span<const std::byte> TransIconset;
   static unsigned char UnitShadow[(kUnitShadowColorCount + 1) * 256];
   static unsigned char UnitShadowAir[(kUnitShadowColorCount + 1) * 256];
   static unsigned char SpecialGhost[2 * 256];
@@ -144,7 +145,7 @@ class DisplayClass : public MapClass {
                          bool /*unused*/ = false) {}
   [[nodiscard]] virtual MouseType Get_Mouse_Shape() const = 0;
   virtual bool Scroll_Map(DirType facing, int& distance, bool really);
-  virtual void Refresh_Cells(CELL cell, const int16_t* list);
+  virtual void Refresh_Cells(CELL cell, std::span<const int16_t> list);
   virtual void Set_View_Dimensions(int x, int y, int width = -1,
                                    int height = -1);
 
@@ -165,9 +166,10 @@ class DisplayClass : public MapClass {
   virtual void Put_Place_Back(TechnoClass* /*unused*/) {
   }  // Affects 'pending' system.
   void Cursor_Mark(CELL pos, bool on);
-  void Set_Cursor_Shape(const int16_t* list);
+  void Set_Cursor_Shape(std::span<const int16_t> list);
   CELL Set_Cursor_Pos(CELL pos = -1);
-  static void Get_Occupy_Dimensions(int& w, int& h, const int16_t* list);
+  static void Get_Occupy_Dimensions(int& w, int& h,
+                                    std::span<const int16_t> list);
 
   /*
   **	Tactical map only functionality.
@@ -187,12 +189,14 @@ class DisplayClass : public MapClass {
                                      MZoneType mzone = MZONE_NORMAL) const;
   [[nodiscard]] bool In_View(CELL cell) const;
   bool Passes_Proximity_Check(const ObjectTypeClass* object, HousesType house,
-                              const int16_t* list, CELL trycell) const;
+                              std::span<const int16_t> list,
+                              CELL trycell) const;
   [[nodiscard]] ObjectClass* Cell_Object(CELL cell, int x = 0, int y = 0) const;
   static ObjectClass* Next_Object(ObjectClass* object);
   static ObjectClass* Prev_Object(ObjectClass* object);
   [[nodiscard]] int Cell_Shadow(CELL cell) const;
-  const int16_t* Text_Overlap_List(const char* text, int x, int y) const;
+  std::span<const int16_t> Text_Overlap_List(const char* text, int x,
+                                             int y) const;
   [[nodiscard]] static bool Is_Spot_Free(COORDINATE coord);
   [[nodiscard]] static COORDINATE Closest_Free_Spot(COORDINATE coord,
                                                     bool any = false);
@@ -316,7 +320,7 @@ class DisplayClass : public MapClass {
   int BandX{0}, BandY{0};
   int NewX{0}, NewY{0};
 
-  static const void* ShadowShapes;
+  static std::span<const std::byte> ShadowShapes;
   static unsigned char ShadowTrans[(kShadowColorCount + 1) * 256];
 
   void Redraw_Icons();

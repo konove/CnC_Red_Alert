@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <source_location>
+#include <span>
 
 #include "absl/base/attributes.h"
 #include "sdllib/gbuffer.h"
@@ -11,9 +12,9 @@
 #include "td/config.h"
 #include "td/monoc.h"
 
-void* Conquer_Build_Fading_Table(const void* palette,
-                                 void* dest ABSL_ATTRIBUTE_LIFETIME_BOUND,
-                                 int color, int frac);
+std::span<uint8_t> Conquer_Build_Fading_Table(
+    std::span<const uint8_t> palette,
+    std::span<uint8_t> dest ABSL_ATTRIBUTE_LIFETIME_BOUND, int color, int frac);
 void Fat_Put_Pixel(int x, int y, std::uint8_t color, int size,
                    GraphicViewPortClass& /*gpage*/);
 void strtrim(char* buffer);

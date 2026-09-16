@@ -46,7 +46,6 @@
  *
  ****************************************************************************/
 
-#include <cstring>
 
 #include "winvq/vqa32/vqaplay.h"
 #include "winvq/vqm32/video.h"
@@ -79,8 +78,8 @@ static VQAConfig defaultconfig = {
     /* VBIBit: Vertical blank bit polarity. */
     -1,
 
-    /* ImageBuf: Pointer to image buffer to draw into. */
-    nullptr,
+    /* ImageBuf: Caller-owned image storage. */
+    {},
 
     /* ImageWidth, ImageHeight: Width and height dimensions of image buffer.
      * A width and height value of -1 tells the player to consider the image
@@ -133,7 +132,7 @@ static VQAConfig defaultconfig = {
     /* AudioBuf: Audio buffer to use. A value of 0 tells the player that
      * it has to allocate a buffer itself.
      */
-    nullptr,
+    {},
 
     /* AudioBufSize: Size of audio buffer to use/allocate. A value of -1
      * tells the player to compute the buffer size from the audio
@@ -210,6 +209,4 @@ static VQAConfig defaultconfig = {
  *
  ****************************************************************************/
 
-void VQA_DefaultConfig(VQAConfig* config) {
-  memcpy(config, &defaultconfig, sizeof(VQAConfig));
-}
+void VQA_DefaultConfig(VQAConfig* config) { *config = defaultconfig; }

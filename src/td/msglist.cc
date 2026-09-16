@@ -50,12 +50,12 @@
 #include <algorithm>
 #include <cstdint>
 #include <cstring>
+#include <span>
 #include <string_view>
 
 #include "base/array.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
-#include "base/types.h"
 #include "port/safe_string.h"
 #include "sdllib/font.h"
 #include "sdllib/keyboard.h"
@@ -163,7 +163,7 @@ void MessageListClass::Init(int x, int y, int max_msg, int maxchars,
 
   Height = height;
   EditLabel = nullptr;
-  EditBuf = nullptr;
+  EditBuf = {};
   EditCurPos = 0;
   EditInitPos = 0;
 }
@@ -187,6 +187,15 @@ void MessageListClass::Init(int x, int y, int max_msg, int maxchars,
  * HISTORY:                                                                *
  *   05/05/1995 BRR : Created.                                             *
  *=========================================================================*/
+std::span<char> MessageListClass::Text_Storage(const TextLabelClass& label) {
+  for (auto& buffer : MessageBuffers) {
+    if (label.Text == buffer) {
+      return buffer;
+    }
+  }
+  return {};
+}
+
 TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
                                               TextPrintType style, int timeout,
                                               uint16_t magic_number,
@@ -195,7 +204,6 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
   int y = 0;
   GadgetClass* gadg = nullptr;
   int position = 0;
-  char* raw_string = nullptr;
 
   /*------------------------------------------------------------------------
   Prevent a duplicate message.  (The IPXManager Global Channel cannot detect
@@ -230,20 +238,14 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
     while (txtlabel) {
       if (txtlabel->Color == color && txtlabel->Style == style &&
           txtlabel->CRC == crc) {
-        bool same = true;
-
-        char* s1 = strchr(txtlabel->Text, ':');
-        char* s2 = strchr(txt, ':');
-
-        if (s1 && s2) {
-          *s1 = 0;
-          *s2 = 0;
-
-          same = std::string_view(txtlabel->Text) == txt;
-
-          *s1 = ':';
-          *s2 = ':';
-        }
+        const std::string_view current(txtlabel->Text);
+        const std::string_view incoming(txt);
+        const auto current_colon = current.find(':');
+        const auto incoming_colon = incoming.find(':');
+        const bool same = current_colon == std::string_view::npos ||
+                          incoming_colon == std::string_view::npos ||
+                          current.substr(0, current_colon) ==
+                              incoming.substr(0, incoming_colon);
 
         if (same) {
           /*
@@ -255,13 +257,19 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
             ** Search for the ':' to find the actual message after the players
             *name
             */
-            raw_string = s2;
-            char* current_string = s1;
-            if (raw_string++ && current_string++) {
-              memcpy(current_string +
-                         (static_cast<base::ssize>(position) *
-                          (COMPAT_MESSAGE_LENGTH - 5)) /*+from_adjust*/,
-                     raw_string, COMPAT_MESSAGE_LENGTH - 4);
+            if (current_colon != std::string_view::npos &&
+                incoming_colon != std::string_view::npos) {
+              const auto storage = Text_Storage(*txtlabel);
+              const auto offset =
+                  current_colon + 1 +
+                  (base::ToSize(position) * (COMPAT_MESSAGE_LENGTH - 5));
+              if (offset >= storage.size()) {
+                return txtlabel;
+              }
+              port::SafeCopy(
+                  storage.subspan(offset).first(std::min<size_t>(
+                      storage.size() - offset, COMPAT_MESSAGE_LENGTH - 4)),
+                  incoming.substr(incoming_colon + 1));
               /*
               ** Flag this string segment as complete
               */
@@ -379,31 +387,29 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
       */
       if (magic_number >= MESSAGE_HEAD_MAGIC_NUMBER &&
           magic_number < MESSAGE_HEAD_MAGIC_NUMBER + MAX_MESSAGE_SEGMENTS) {
-        raw_string = strchr(txt, ':');
-        char* dest_str = strchr(base::At(MessageBuffers, i), ':');
-        if (dest_str) {
-          dest_str++;
-        } else {
-          dest_str = base::At(MessageBuffers, i);
-        }
-
-        if (raw_string++) {
-          for (int j = 0; j < 3; j++) {
-            if (!(magic_number - j == MESSAGE_HEAD_MAGIC_NUMBER)) {
-              memset(dest_str + (static_cast<base::ssize>(j) *
-                                 (COMPAT_MESSAGE_LENGTH - 4)) /*+from_adjust*/,
-                     32, COMPAT_MESSAGE_LENGTH - 4);
+        const std::string_view incoming(txt);
+        const auto colon = incoming.find(':');
+        if (colon != std::string_view::npos) {
+          const auto storage = std::span(base::At(MessageBuffers, i));
+          const auto prefix = std::min(colon + 1, storage.size() - 1);
+          const auto destination = storage.subspan(prefix);
+          constexpr size_t kSegmentSize = COMPAT_MESSAGE_LENGTH - 4;
+          for (int segment = 0; segment < MAX_MESSAGE_SEGMENTS; ++segment) {
+            const auto offset = base::ToSize(segment) * kSegmentSize;
+            if (offset >= destination.size()) {
+              break;
+            }
+            const auto slot = destination.subspan(offset).first(
+                std::min(kSegmentSize, destination.size() - offset));
+            if (magic_number - segment != MESSAGE_HEAD_MAGIC_NUMBER) {
+              std::ranges::fill(slot, ' ');
             } else {
-              // This whole segment needs to be rewritten. Impossible to guess
-              // safe length.
-              // NOLINTNEXTLINE(clang-analyzer-security.insecureAPI.strcpy)
-              strcpy(dest_str + (static_cast<base::ssize>(j) *
-                                 (COMPAT_MESSAGE_LENGTH - 4)) /*+from_adjust*/,
-                     raw_string);
+              port::SafeCopy(slot, incoming.substr(colon + 1));
             }
           }
-          *(dest_str +
-            (((COMPAT_MESSAGE_LENGTH - 4) * MAX_MESSAGE_SEGMENTS) - 1)) = 0;
+          destination[std::min(destination.size(),
+                               kSegmentSize * MAX_MESSAGE_SEGMENTS) -
+                      1] = '\0';
         }
         position = magic_number - MESSAGE_HEAD_MAGIC_NUMBER;
         txtlabel->Segments = base::Bit<uint8_t>(position);
@@ -469,9 +475,11 @@ TextLabelClass* MessageListClass::Add_Edit(int color, TextPrintType style,
   Save our edit buffer pointer.
   ------------------------------------------------------------------------*/
   if (EditLabel) {
-    EditBuf = EditLabel->Text;
+    EditBuf = Text_Storage(*EditLabel);
+    EditCurPos = EditInitPos =
+        static_cast<int>(std::string_view(EditLabel->Text).size());
   } else {
-    EditBuf = nullptr;
+    EditBuf = {};
   }
 
   return EditLabel;
@@ -493,11 +501,11 @@ TextLabelClass* MessageListClass::Add_Edit(int color, TextPrintType style,
  *   05/21/1995 BRR : Created.                                             *
  *=========================================================================*/
 char* MessageListClass::Get_Edit_Buf() {
-  if (!EditBuf) {
+  if (EditBuf.empty()) {
     return nullptr;
   }
 
-  return EditBuf + EditInitPos;
+  return EditBuf.subspan(base::ToSize(EditInitPos)).data();
 }
 
 /***************************************************************************
@@ -535,7 +543,7 @@ int MessageListClass::Manage() {
       ..................................................................*/
       if (txtlabel == EditLabel) {
         EditLabel = nullptr;
-        EditBuf = nullptr;
+        EditBuf = {};
       }
       /*..................................................................
       Save the next ptr in the list; remove this entry
@@ -663,7 +671,7 @@ int MessageListClass::Input(KeyNumType& input) {
       case KA_BACKSPACE & 0xff:
         if (EditCurPos > EditInitPos) {
           EditCurPos--;
-          EditBuf[EditCurPos] = 0;
+          EditBuf[base::ToSize(EditCurPos)] = 0;
           retcode = 2;
         }
         input = KN_NONE;
@@ -676,9 +684,11 @@ int MessageListClass::Input(KeyNumType& input) {
       ------------------------------------------------------------------*/
       default:
         if ((EditCurPos - EditInitPos < MaxChars - 1) &&
+            base::ToSize(EditCurPos + 1) < EditBuf.size() &&
             (!(input & WWKEY_VK_BIT) && ascii >= ' ' && ascii <= 127)) {
-          EditBuf[EditCurPos] = static_cast<char>(ascii);
+          EditBuf[base::ToSize(EditCurPos)] = static_cast<char>(ascii);
           EditCurPos++;
+          EditBuf[base::ToSize(EditCurPos)] = '\0';
           retcode = 1;
 
           /*
@@ -687,9 +697,10 @@ int MessageListClass::Input(KeyNumType& input) {
           */
           Fancy_Text_Print(TXT_NONE, 0, 0, EditLabel->Color, kTBlack,
                            EditLabel->Style);
-          const int width = String_Pixel_Width(EditBuf);
+          const int width = String_Pixel_Width(EditBuf.data());
           if (width >= Width) {
-            EditBuf[EditCurPos--] = 0;
+            --EditCurPos;
+            EditBuf[base::ToSize(EditCurPos)] = 0;
             retcode = 0;
           }
         }

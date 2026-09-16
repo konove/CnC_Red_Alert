@@ -40,15 +40,17 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include <array>
+#include <cstddef>
 #include <cstdio>
 #include <cstring>
 #include <numeric>
+#include <span>
 #include <string_view>
 
 #include "absl/algorithm/container.h"
 #include "absl/random/random.h"
 #include "absl/strings/str_format.h"
-#include "absl/types/span.h"
 #include "base/array.h"
 #include "base/numeric.h"
 #include "sdllib/drawbuff.h"
@@ -85,7 +87,7 @@
 void Fading_Byte_Blit(int srcx, int srcy, int destx, int desty, int w, int h,
                       GraphicBufferClass* src, GraphicBufferClass* dest);
 static void Print_Statistics(int country, int xpos, int ypos);
-static void Cycle_Call_Back_Delay(int time, unsigned char* pal);
+static void Cycle_Call_Back_Delay(int time, std::span<unsigned char> pal);
 [[maybe_unused]] static int LowMedHiStr(int percentage);
 
 #ifdef OBSOLETE
@@ -501,18 +503,18 @@ void Map_Selection() {
                                   /* Nod countries */
                                   45, 80, 75, 76, 31, 64, 69, 89, 88, 106, 115,
                                   139, 168, 164, 183, 123, 154};
-  static const char greenpal[] = {0,    0x41, 0x42, 0x43, 0x44, 0x44,
-                                  0x44, 0x44, 0x44, 0x44, 0x44, 0x44,
-                                  0x44, 0x44, 0x44, 0x44};
-  static const char _othergreenpal[] = {0,    0x21, 0x22, 0x23, 0x24, 0x25,
-                                        0x26, 0x26, 0x26, 0x26, 0x26, 0x26,
-                                        0x26, 0x26, 0x26, 0x26};
-  static const char _regpal[] = {0, 1, 2,  3,  4,  5,  6,  7,
-                                 8, 9, 10, 11, 12, 13, 14, 15};
+  static const unsigned char greenpal[] = {0,    0x41, 0x42, 0x43, 0x44, 0x44,
+                                           0x44, 0x44, 0x44, 0x44, 0x44, 0x44,
+                                           0x44, 0x44, 0x44, 0x44};
+  static const unsigned char _othergreenpal[] = {
+      0,    0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x26,
+      0x26, 0x26, 0x26, 0x26, 0x26, 0x26, 0x26, 0x26};
+  static const unsigned char _regpal[] = {0, 1, 2,  3,  4,  5,  6,  7,
+                                          8, 9, 10, 11, 12, 13, 14, 15};
   GraphicBufferClass backpage(20 * 6, 8);
 
-  auto* grey2palette = new unsigned char[768];
-  auto* progresspalette = new unsigned char[768];
+  std::array<unsigned char, 768> grey2palette{};
+  std::array<unsigned char, 768> progresspalette{};
 
   Keyboard::Clear();
   Set_Font(ScoreFontPtr);
@@ -523,15 +525,11 @@ void Map_Selection() {
   if (house == HOUSE_GOOD) {
     lastscenario = Scenario == 14;
     if (Scenario == 15) {
-      delete[] progresspalette;
-      delete[] grey2palette;
       return;
     }
   } else {
     lastscenario = Scenario == 12;
     if (Scenario == 13) {
-      delete[] progresspalette;
-      delete[] grey2palette;
       return;
     }
   }
@@ -539,21 +537,18 @@ void Map_Selection() {
   // Check if they're even entitled to map selection this time
   if (base::At(base::At(CountryArray, scenario).Choices,
                static_cast<int>(ScenDir)) == 0) {
-    delete[] progresspalette;
-    delete[] grey2palette;
     return;
   }
 
   Theme.Queue_Song(THEME_MAP1);
 
-  PseudoSeenBuff =
-      new GraphicBufferClass(320, 200, static_cast<void*>(nullptr));
+  PseudoSeenBuff = new GraphicBufferClass(320, 200, {});
 
   /*
   ** Extra graphic buffer to draw text into
   */
-  TextPrintBuffer = new GraphicBufferClass(
-      SeenBuff.Get_Width(), SeenBuff.Get_Height(), static_cast<void*>(nullptr));
+  TextPrintBuffer =
+      new GraphicBufferClass(SeenBuff.Get_Width(), SeenBuff.Get_Height(), {});
   TextPrintBuffer->Clear();
   BlitList.Clear();
 
@@ -561,42 +556,42 @@ void Map_Selection() {
   ** Now start the process where we fade the gray earth in.
   */
   void* greyearth =
-      Open_Animation("GREYERTH.WSA", nullptr, 0,
+      Open_Animation("GREYERTH.WSA", {}, 0,
                      WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, localpalette);
   void* greyearth2 =
-      Open_Animation("E-BWTOCL.WSA", nullptr, 0,
+      Open_Animation("E-BWTOCL.WSA", {}, 0,
                      WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, grey2palette);
 
   /*
   ** Load the spinning-globe anim
   */
   if (house == HOUSE_GOOD) {
-    anim = Open_Animation("HEARTH_E.WSA", nullptr, 0,
+    anim = Open_Animation("HEARTH_E.WSA", {}, 0,
                           WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, Palette);
     progress =
-        Open_Animation(lastscenario ? "HBOSNIA.WSA" : "EUROPE.WSA", nullptr, 0,
+        Open_Animation(lastscenario ? "HBOSNIA.WSA" : "EUROPE.WSA", {}, 0,
                        WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, progresspalette);
   } else {
-    anim = Open_Animation("HEARTH_A.WSA", nullptr, 0,
+    anim = Open_Animation("HEARTH_A.WSA", {}, 0,
                           WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, Palette);
     progress =
-        Open_Animation(lastscenario ? "HSAFRICA.WSA" : "AFRICA.WSA", nullptr, 0,
+        Open_Animation(lastscenario ? "HSAFRICA.WSA" : "AFRICA.WSA", {}, 0,
                        WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, progresspalette);
   }
 
-  const void* appear1 = MixArchive::Retrieve("APPEAR1.AUD");
-  const void* sfx4 = MixArchive::Retrieve("SFX4.AUD");
-  const void* text2 = MixArchive::Retrieve("TEXT2.AUD");
-  const void* target1 = MixArchive::Retrieve("TARGET1.AUD");
-  const void* target2 = MixArchive::Retrieve("TARGET2.AUD");
-  //	void const * target3 = MixArchive::Retrieve("TARGET3.AUD");
-  const void* newtarg1 = MixArchive::Retrieve("NEWTARG1.AUD");
-  const void* beepy2 = MixArchive::Retrieve("BEEPY2.AUD");
-  const void* beepy3 = MixArchive::Retrieve("BEEPY3.AUD");
-  const void* beepy6 = MixArchive::Retrieve("BEEPY6.AUD");
-  const void* world2 = MixArchive::Retrieve("WORLD2.AUD");
-  const void* country1 = MixArchive::Retrieve("COUNTRY1.AUD");
-  const void* scold1 = MixArchive::Retrieve("SCOLD1.AUD");
+  const auto appear1 = MixArchive::RetrieveData("APPEAR1.AUD");
+  const auto sfx4 = MixArchive::RetrieveData("SFX4.AUD");
+  const auto text2 = MixArchive::RetrieveData("TEXT2.AUD");
+  const auto target1 = MixArchive::RetrieveData("TARGET1.AUD");
+  const auto target2 = MixArchive::RetrieveData("TARGET2.AUD");
+  //	void const * target3 = MixArchive::RetrieveData("TARGET3.AUD");
+  const auto newtarg1 = MixArchive::RetrieveData("NEWTARG1.AUD");
+  const auto beepy2 = MixArchive::RetrieveData("BEEPY2.AUD");
+  const auto beepy3 = MixArchive::RetrieveData("BEEPY3.AUD");
+  const auto beepy6 = MixArchive::RetrieveData("BEEPY6.AUD");
+  const auto world2 = MixArchive::RetrieveData("WORLD2.AUD");
+  const auto country1 = MixArchive::RetrieveData("COUNTRY1.AUD");
+  const auto scold1 = MixArchive::RetrieveData("SCOLD1.AUD");
 
   SysMemPage.Clear();
   PseudoSeenBuff->Clear();
@@ -662,7 +657,7 @@ void Map_Selection() {
   Animate_Frame(anim, SysMemPage, 1);  //, 0,0, (WSAType)0,0,0);
   SysMemPage.Blit(*PseudoSeenBuff);
 
-  Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, nullptr);
+  Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, {});
 
   Stop_Speaking();
 
@@ -677,7 +672,7 @@ void Map_Selection() {
   ** now make the grid appear
   */
   SysMemPage.Blit(*PseudoSeenBuff);
-  Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, nullptr);
+  Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, {});
 
   Play_Sample(sfx4, 255, Options.Normalize_Sound(130));
   Play_Sample(text2, 255, Options.Normalize_Sound(90));
@@ -868,7 +863,7 @@ void Map_Selection() {
                              kBlack);
 #endif
 
-  Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, nullptr);
+  Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, {});
 
   SysMemPage.Blit(backpage, xcoord, 1, 0, 0, 20 * 6, 8);
   if (!lastscenario) {
@@ -899,7 +894,7 @@ void Map_Selection() {
                              kBlack);
 #endif
 
-  Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, nullptr);
+  Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, {});
 
   startframe = base::At(base::At(CountryArray, scenario).ContAnim,
                         static_cast<int>(ScenDir));
@@ -1059,7 +1054,7 @@ void Map_Selection() {
 #endif
   }
 
-  Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, nullptr);
+  Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, {});
 
   /*
   ** Now the crosshairs are over the target countries - loop until a
@@ -1069,10 +1064,10 @@ void Map_Selection() {
 
   if (house == HOUSE_GOOD) {
     GameFile f(lastscenario ? "CLICK_EB.CPS" : "CLICK_E.CPS");
-    Load_Uncompress(f, SysMemPage, SysMemPage, nullptr);
+    Load_Uncompress(f, SysMemPage, SysMemPage, {});
   } else {
     GameFile f(lastscenario ? "CLICK_SA.CPS" : "CLICK_A.CPS");
-    Load_Uncompress(f, SysMemPage, SysMemPage, nullptr);
+    Load_Uncompress(f, SysMemPage, SysMemPage, {});
     if (lastscenario) {
       attackxcoord = 200;
     }
@@ -1136,7 +1131,7 @@ void Map_Selection() {
     /*
     ** Now it's time to highlight the country we're going to.
     */
-    const void* countryshape = MixArchive::Retrieve(
+    auto countryshape = MixArchive::RetrieveData(
         house == HOUSE_GOOD ? "COUNTRYE.SHP" : "COUNTRYA.SHP");
 
     Hide_Mouse();
@@ -1152,7 +1147,7 @@ void Map_Selection() {
                                2 * (attackxcoord + (21 * 6)), 2 * 178, kBlack);
 #endif  // GERMAN
 
-    Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, nullptr);
+    Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, {});
 
     /*
     ** Draw the country's shape in non-fading colors
@@ -1166,9 +1161,9 @@ void Map_Selection() {
     const int xshuffled_rows = shape + (house == HOUSE_GOOD ? 0 : 18);
     CC_Draw_Shape(countryshape, shape, base::At(_countryx, xshuffled_rows),
                   base::At(_countryy, xshuffled_rows), WINDOW_MAIN,
-                  SHAPE_WIN_REL | SHAPE_CENTER, nullptr, nullptr);
+                  SHAPE_WIN_REL | SHAPE_CENTER, {}, {});
     SysMemPage.Blit(*PseudoSeenBuff);
-    Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, nullptr);
+    Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, {});
 
     /*
     ** Now clear the palette of all but the country's colors, and fade
@@ -1183,7 +1178,7 @@ void Map_Selection() {
     Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, "MAP_LOC2.PAL");
     Fade_Palette_To(localpalette, kFadePaletteMedium, Call_Back);
 
-    countryshape = nullptr;
+    countryshape = {};
 
     Print_Statistics(color % 128, base::At(_countryx, xshuffled_rows),
                      base::At(_countryy, xshuffled_rows));
@@ -1212,7 +1207,7 @@ void Map_Selection() {
                                2 * (attackxcoord + (17 * 6)), 398,
                                kBlack);  // erase "Select country to attack"
 #endif
-    Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, nullptr);
+    Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, {});
 
     Animate_Frame(progress, *PseudoSeenBuff,
                   Get_Animation_Frame_Count(progress) - 1);
@@ -1225,8 +1220,7 @@ void Map_Selection() {
   Theme.Queue_Song(THEME_NONE);
   Fade_Palette_To(BlackPalette, kFadePaletteMedium, nullptr);
   delete europe;
-  delete[] progresspalette;
-  delete[] grey2palette;
+
   delete PseudoSeenBuff;
   PseudoSeenBuff = nullptr;
   delete TextPrintBuffer;
@@ -1282,15 +1276,15 @@ void Print_Statistics(int country, int xpos, int ypos) {
                                   TXT_MAP_MILITARY2, TXT_MAP_MILITARY3,
                                   TXT_MAP_MILITARY4};
 
-  static const char greenpal[] = {0,    0x41, 0x42, 0x43, 0x44, 0x44,
-                                  0x44, 0x44, 0x44, 0x44, 0x44, 0x44,
-                                  0x44, 0x44, 0x44, 0x44};
+  static const unsigned char greenpal[] = {0,    0x41, 0x42, 0x43, 0x44, 0x44,
+                                           0x44, 0x44, 0x44, 0x44, 0x44, 0x44,
+                                           0x44, 0x44, 0x44, 0x44};
   // static char const
   // _greenpal[]={0,1,0x42,3,0x43,5,0x44,7,0x44,9,10,1,12,13,0x41,15};
   static char _deststr[16];
 
   /* Change to the six-point font for Text_Print */
-  const void* oldfont = Set_Font(ScoreFontPtr);
+  const std::span<const std::byte> oldfont = Set_Font(ScoreFontPtr);
 
 #ifdef GERMAN
   xpos = 8;
@@ -1578,7 +1572,7 @@ void Fading_Byte_Blit(int srcx, int srcy, int destx, int desty, int w, int h,
 }
 #endif
 
-void Cycle_Call_Back_Delay(int time, unsigned char* pal) {
+void Cycle_Call_Back_Delay(int time, std::span<unsigned char> pal) {
   static int _counter;
 
   while (time--) {
@@ -1590,9 +1584,9 @@ void Cycle_Call_Back_Delay(int time, unsigned char* pal) {
       const unsigned char b = pal[(249 * 3) + 2];
 
       for (int i = 249; i < 254; i++) {
-        pal[(i * 3) + 0] = pal[((i + 1) * 3) + 0];
-        pal[(i * 3) + 1] = pal[((i + 1) * 3) + 1];
-        pal[(i * 3) + 2] = pal[((i + 1) * 3) + 2];
+        pal[(base::ToSize(i) * 3) + 0] = pal[(base::ToSize(i + 1) * 3) + 0];
+        pal[(base::ToSize(i) * 3) + 1] = pal[(base::ToSize(i + 1) * 3) + 1];
+        pal[(base::ToSize(i) * 3) + 2] = pal[(base::ToSize(i + 1) * 3) + 2];
       }
       pal[(254 * 3) + 0] = r;
       pal[(254 * 3) + 1] = g;
@@ -1650,12 +1644,15 @@ void Bit_It_In(const int x, const int y, const int w, const int h,
   // scattered dots rather than appearing all at once.
   int shuffled_cols[320];
   int shuffled_rows[200];
-  std::iota(shuffled_cols, shuffled_cols + w, 0);
-  std::iota(shuffled_rows, shuffled_rows + h, 0);
+  if (w < 0 || w > 320 || h < 0 || h > 200) {
+    return;
+  }
+  const auto x_span = std::span(shuffled_cols).first(base::ToSize(w));
+  const auto y_span = std::span(shuffled_rows).first(base::ToSize(h));
+  std::ranges::iota(x_span, 0);
+  std::ranges::iota(y_span, 0);
 
   absl::BitGen gen;
-  auto x_span = absl::MakeSpan(shuffled_cols, base::ToSize(w));
-  auto y_span = absl::MakeSpan(shuffled_rows, base::ToSize(h));
   absl::c_shuffle(x_span, gen);
   absl::c_shuffle(y_span, gen);
 

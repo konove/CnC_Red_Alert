@@ -40,7 +40,10 @@
 #ifndef CNC_RED_ALERT_RA_SCORE_H_
 #define CNC_RED_ALERT_RA_SCORE_H_
 
+#include <cstddef>
 #include <cstdint>
+#include <span>
+#include <string_view>
 
 #include "absl/base/attributes.h"
 #include "ra/jshell.h"
@@ -85,28 +88,31 @@ class ScoreClass {
   static void Print_Minutes(int minutes);
   static void Count_Up_Print(const char* str, int percent, int max, int xpos,
                              int ypos);
-  static void Show_Credits(int house, const unsigned char pal[]);
-  static void Do_GDI_Graph(const void* yellowptr, const void* redptr,
-                           int gkilled, int nkilled, int ypos);
+  static void Show_Credits(int house, std::span<const uint8_t> pal);
+  static void Do_GDI_Graph(std::span<const std::byte> yellowptr,
+                           std::span<const std::byte> redptr, int gkilled,
+                           int nkilled, int ypos);
   void Do_Nod_Casualties_Graph();
   void Do_Nod_Buildings_Graph();
-  static void Input_Name(char str[], int xpos, int ypos,
-                         const unsigned char pal[]);
+  static void Input_Name(std::span<char> str, int xpos, int ypos,
+                         std::span<const uint8_t> pal);
 };
 
 class ScoreAnimClass {
  public:
-  ScoreAnimClass(int x, int y, const void* data ABSL_ATTRIBUTE_LIFETIME_BOUND);
+  ScoreAnimClass(int x, int y,
+                 std::span<const std::byte> data ABSL_ATTRIBUTE_LIFETIME_BOUND);
+  ScoreAnimClass(int x, int y,
+                 std::string_view text ABSL_ATTRIBUTE_LIFETIME_BOUND);
   int XPos;
   int YPos;
   Timer<SystemTickSource> AnimTimer;
-  const void* DataPtr;
+  std::span<const std::byte> DataPtr;
+  std::string_view TextData;
   // The animation's text, for the text-style animations.
-  [[nodiscard]] const char* Text() const {
-    return static_cast<const char*>(DataPtr);
-  }
+  [[nodiscard]] std::string_view Text() const { return TextData; }
   virtual void Update() {}
-  virtual ~ScoreAnimClass() { DataPtr = nullptr; }
+  virtual ~ScoreAnimClass() = default;
   ScoreAnimClass(const ScoreAnimClass&) = delete;
   ScoreAnimClass& operator=(const ScoreAnimClass&) = delete;
   ScoreAnimClass(ScoreAnimClass&&) = delete;
@@ -118,14 +124,15 @@ class ScoreCredsClass : public ScoreAnimClass {
   int Stage{0};
   int MaxStage;
   int TimerReset;
-  const void* CashTurn;
-  const void* Clock1;
+  std::span<const std::byte> CashTurn;
+  std::span<const std::byte> Clock1;
 
   void Update() override;
-  ScoreCredsClass(int xpos, int ypos, const void* data, int max, int timer);
+  ScoreCredsClass(int xpos, int ypos, std::span<const std::byte> data, int max,
+                  int timer);
   ~ScoreCredsClass() override {
-    CashTurn = nullptr;
-    Clock1 = nullptr;
+    CashTurn = {};
+    Clock1 = {};
   }
   ScoreCredsClass(const ScoreCredsClass&) = delete;
   ScoreCredsClass& operator=(const ScoreCredsClass&) = delete;
@@ -139,7 +146,8 @@ class ScoreTimeClass : public ScoreAnimClass {
   int MaxStage;
   int TimerReset;
   void Update() override;
-  ScoreTimeClass(int xpos, int ypos, const void* data, int max, int timer);
+  ScoreTimeClass(int xpos, int ypos, std::span<const std::byte> data, int max,
+                 int timer);
   ~ScoreTimeClass() override = default;
   ScoreTimeClass(const ScoreTimeClass&) = delete;
   ScoreTimeClass& operator=(const ScoreTimeClass&) = delete;
@@ -151,15 +159,17 @@ class ScorePrintClass : public ScoreAnimClass {
  public:
   int Background;
   int Stage;
-  const void* PrimaryPalette;
+  std::span<const uint8_t> PrimaryPalette;
   void Update() override;
-  ScorePrintClass(const void* string, int xpos, int ypos,
-                  const void* palette ABSL_ATTRIBUTE_LIFETIME_BOUND,
+  ScorePrintClass(std::string_view string, int xpos, int ypos,
+                  std::span<const uint8_t> palette
+                      ABSL_ATTRIBUTE_LIFETIME_BOUND,
                   int background = kTBlack);
   ScorePrintClass(int string, int xpos, int ypos,
-                  const void* palette ABSL_ATTRIBUTE_LIFETIME_BOUND,
+                  std::span<const uint8_t> palette
+                      ABSL_ATTRIBUTE_LIFETIME_BOUND,
                   int background = kTBlack);
-  ~ScorePrintClass() override { PrimaryPalette = nullptr; }
+  ~ScorePrintClass() override { PrimaryPalette = {}; }
   ScorePrintClass(const ScorePrintClass&) = delete;
   ScorePrintClass& operator=(const ScorePrintClass&) = delete;
   ScorePrintClass(ScorePrintClass&&) = delete;
@@ -169,11 +179,11 @@ class ScorePrintClass : public ScoreAnimClass {
 class ScoreScaleClass : public ScoreAnimClass {
  public:
   int Stage{0};
-  const unsigned char* Palette;
+  std::span<const uint8_t> Palette;
   void Update() override;
-  ScoreScaleClass(const void* string, int xpos, int ypos,
-                  const unsigned char* pal ABSL_ATTRIBUTE_LIFETIME_BOUND);
-  ~ScoreScaleClass() override { Palette = nullptr; }
+  ScoreScaleClass(std::string_view string, int xpos, int ypos,
+                  std::span<const uint8_t> pal ABSL_ATTRIBUTE_LIFETIME_BOUND);
+  ~ScoreScaleClass() override { Palette = {}; }
   ScoreScaleClass(const ScoreScaleClass&) = delete;
   ScoreScaleClass& operator=(const ScoreScaleClass&) = delete;
   ScoreScaleClass(ScoreScaleClass&&) = delete;

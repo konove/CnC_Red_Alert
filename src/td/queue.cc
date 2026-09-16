@@ -85,6 +85,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <span>
 #include <string_view>
 #include <utility>
 
@@ -182,30 +183,37 @@ static void Queue_AI_Normal();
 static void Queue_AI_Multiplayer();
 static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
                                     int resend_delta, int dialog_time,
-                                    int timeout, char* multi_packet_buf,
-                                    int my_sent, int* their_frame,
-                                    uint16_t* their_sent, uint16_t* their_recv);
+                                    int timeout,
+                                    std::span<std::byte> multi_packet_buf,
+                                    int my_sent, std::span<int> their_frame,
+                                    std::span<uint16_t> their_sent,
+                                    std::span<uint16_t> their_recv);
 static void Generate_Timing_Event(ConnManClass* net, int my_sent);
 static void Generate_Real_Timing_Event(ConnManClass* net, int my_sent);
 static void Generate_Process_Time_Event(ConnManClass* net);
 static int Process_Send_Period(ConnManClass* net);
-static int Send_Packets(ConnManClass* net, char* multi_packet_buf,
+static int Send_Packets(ConnManClass* net,
+                        std::span<std::byte> multi_packet_buf,
                         int multi_packet_max, int max_ahead, int my_sent);
 static void Send_FrameSync(ConnManClass* net, int cmd_count);
 static RetcodeType Process_Receive_Packet(ConnManClass* net,
-                                          char* multi_packet_buf, int id,
-                                          int packetlen, int* their_frame,
-                                          uint16_t* their_sent,
-                                          uint16_t* their_recv);
-static RetcodeType Process_Serial_Packet(const char* multi_packet_buf,
-                                         int packetlen, int first_time);
-static int Can_Advance(ConnManClass* net, int max_ahead, const int* their_frame,
-                       const uint16_t* their_sent, const uint16_t* their_recv);
+                                          std::span<std::byte> multi_packet_buf,
+                                          int id, int packetlen,
+                                          std::span<int> their_frame,
+                                          std::span<uint16_t> their_sent,
+                                          std::span<uint16_t> their_recv);
+static RetcodeType Process_Serial_Packet(
+    std::span<const std::byte> multi_packet_buf, int packetlen, int first_time);
+static int Can_Advance(ConnManClass* net, int max_ahead,
+                       std::span<const int> their_frame,
+                       std::span<const uint16_t> their_sent,
+                       std::span<const uint16_t> their_recv);
 static int Process_Reconnect_Dialog(CountDownTimerClass* timeout_timer,
-                                    const int* their_frame, int num_conn,
-                                    bool reconn, bool fresh);
-static int Handle_Timeout(ConnManClass* net, int* their_frame,
-                          uint16_t* their_sent, uint16_t* their_recv);
+                                    std::span<const int> their_frame,
+                                    int num_conn, bool reconn, bool fresh);
+static int Handle_Timeout(ConnManClass* net, std::span<int> their_frame,
+                          std::span<uint16_t> their_sent,
+                          std::span<uint16_t> their_recv);
 static void Stop_Game();
 #endif  // DEMO
 
@@ -213,22 +221,23 @@ static void Stop_Game();
 // Packet compression/decompression:
 //...........................................................................
 #ifndef DEMO
-static int Build_Send_Packet(void* buf, int bufsize, int frame_delay,
-                             int num_cmds, int cap);
-static int Breakup_Receive_Packet(void* buf, int bufsize);
+static int Build_Send_Packet(std::span<std::byte> buf, int bufsize,
+                             int frame_delay, int num_cmds, int cap);
+static int Breakup_Receive_Packet(std::span<const std::byte> buf, int bufsize);
 #endif  // DEMO
-static int Add_Uncompressed_Events(void* buf, int bufsize, int frame_delay,
-                                   int size, int cap);
-static int Add_Compressed_Events(void* buf, int bufsize, int frame_delay,
-                                 int size, int cap);
+static int Add_Uncompressed_Events(std::span<std::byte> buf, int bufsize,
+                                   int frame_delay, int size, int cap);
+static int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
+                                 int frame_delay, int size, int cap);
 
 //...........................................................................
 // DoList management:
 //...........................................................................
 static int Execute_DoList(int max_houses, HousesType base_house,
                           ConnManClass* net, TCountDownTimerClass* skip_crc,
-                          int* their_frame, uint16_t* their_sent,
-                          uint16_t* their_recv);
+                          std::span<int> their_frame,
+                          std::span<uint16_t> their_sent,
+                          std::span<uint16_t> their_recv);
 static void Clean_DoList(ConnManClass* net);
 #ifndef DEMO
 static void Queue_Record();
@@ -251,8 +260,8 @@ static void Init_Queue_Mono(ConnManClass* net);
 static void Update_Queue_Mono(ConnManClass* net, int flow_index);
 static void Print_Framesync_Values(int64_t curframe, int max_ahead,
                                    int num_connections,
-                                   const uint16_t* their_recv,
-                                   const uint16_t* their_sent,
+                                   std::span<const uint16_t> their_recv,
+                                   std::span<const uint16_t> their_sent,
                                    uint16_t my_sent);
 #endif  // DEMO
 static void Print_CRCs(EventClass* /*unused*/);
@@ -432,8 +441,8 @@ static void Queue_AI_Normal() {
   //------------------------------------------------------------------------
   // Execute the DoList
   //------------------------------------------------------------------------
-  if (!Execute_DoList(1, PlayerPtr->Class->House, nullptr, nullptr, nullptr,
-                      nullptr, nullptr)) {
+  if (!Execute_DoList(1, PlayerPtr->Class->House, nullptr, nullptr, {}, {},
+                      {})) {
     GameActive = false;
     return;
   }
@@ -491,7 +500,7 @@ static void Queue_AI_Normal() {
  **
  * - Our current frame # must be <= their_frame + MaxAhead
  **
- * - their_recv[i] must be >= their_sent[i]
+ * - their_recv[base::ToSize(i)] must be >= their_sent[base::ToSize(i)]
  **
  *                                                                         *
  * 'their_frame[] is updated by Process_Receive_Packet()
@@ -595,7 +604,7 @@ static void Queue_AI_Multiplayer() {
   //........................................................................
   ConnManClass* net = nullptr;  // ptr to access all multiplayer functions
   const EventClass packet;      // for sending single frame-sync's
-  char* multi_packet_buf = nullptr;  // buffer for sending/receiving
+  std::span<std::byte> multi_packet_buf = {};  // buffer for sending/receiving
   int multi_packet_max = 0;          // max length of multi_packet_buf
 
   //........................................................................
@@ -603,11 +612,12 @@ static void Queue_AI_Multiplayer() {
   // order in which the connections are created.
   // (ie net->Connection_Index(id))
   //........................................................................
-  static int their_frame[MAX_PLAYERS - 1];  // other players' frame #'s
-  static uint16_t
-      their_sent[MAX_PLAYERS - 1];  // # cmds other player claims to have sent
-  static uint16_t
-      their_recv[MAX_PLAYERS - 1];  // # cmds actually received from others
+  static int
+      their_frame[base::ToSize(MAX_PLAYERS - 1)];  // other players' frame #'s
+  static uint16_t their_sent[base::ToSize(
+      MAX_PLAYERS - 1)];  // # cmds other player claims to have sent
+  static uint16_t their_recv[base::ToSize(
+      MAX_PLAYERS - 1)];            // # cmds actually received from others
   static uint16_t my_sent;          // # cmds I've sent out
 
   //........................................................................
@@ -730,7 +740,7 @@ static void Queue_AI_Multiplayer() {
       //
       // The game "host" will transmit timing adjustment events.
       //
-      if (MPlayerLocalID == MPlayerID[0]) {
+      if (MPlayerLocalID == base::At(MPlayerID, 0)) {
         Generate_Real_Timing_Event(net, my_sent);
       }
     } else {
@@ -866,10 +876,11 @@ static void Queue_AI_Multiplayer() {
  *=========================================================================*/
 static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
                                     int resend_delta, int dialog_time,
-                                    int timeout, char* multi_packet_buf,
-                                    int my_sent, int* their_frame,
-                                    uint16_t* their_sent,
-                                    uint16_t* their_recv) {
+                                    int timeout,
+                                    std::span<std::byte> multi_packet_buf,
+                                    int my_sent, std::span<int> their_frame,
+                                    std::span<uint16_t> their_sent,
+                                    std::span<uint16_t> their_recv) {
   //........................................................................
   // Variables for sending, receiving & parsing packets:
   //........................................................................
@@ -1162,7 +1173,7 @@ static void Generate_Timing_Event(ConnManClass* net, int my_sent) {
     // If I'm the network "master", I'm also responsible for updating the
     // MaxAhead value on all systems, so do that here too.
     //.....................................................................
-    if (MPlayerLocalID == MPlayerID[0]) {
+    if (MPlayerLocalID == base::At(MPlayerID, 0)) {
       ev.Type = EventClass::RESPONSE_TIME;
       //..................................................................
       // For multi-frame compressed events, the MaxAhead must be an even
@@ -1438,7 +1449,8 @@ static int Process_Send_Period(ConnManClass* net) {
  * HISTORY:                                                                *
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
-static int Send_Packets(ConnManClass* net, char* multi_packet_buf,
+static int Send_Packets(ConnManClass* net,
+                        std::span<std::byte> multi_packet_buf,
                         int multi_packet_max, int max_ahead, int my_sent) {
   int cap = 0;      // max # events to send, NOT including FRAMEINFO event
   int do_once = 0;  // true: only go through packet loop once
@@ -1590,8 +1602,8 @@ static void Send_FrameSync(ConnManClass* net, int cmd_count) {
   // for network, it sends to everyone we're connected to.
   //------------------------------------------------------------------------
   net->Send_Private_Message(
-      &packet, offsetof(EventClass, Data) + size_of(EventClass, Data.FrameInfo),
-      0);
+      base::ObjectBytes(packet),
+      offsetof(EventClass, Data) + size_of(EventClass, Data.FrameInfo), 0);
 }  // end of Send_FrameSync
 
 /***************************************************************************
@@ -1631,10 +1643,11 @@ static void Send_FrameSync(ConnManClass* net, int cmd_count) {
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
 static RetcodeType Process_Receive_Packet(ConnManClass* net,
-                                          char* multi_packet_buf, int id,
-                                          int packetlen, int* their_frame,
-                                          uint16_t* their_sent,
-                                          uint16_t* their_recv) {
+                                          std::span<std::byte> multi_packet_buf,
+                                          int id, int packetlen,
+                                          std::span<int> their_frame,
+                                          std::span<uint16_t> their_sent,
+                                          std::span<uint16_t> their_recv) {
   EventClass event_storage;
   const EventClass* event = &event_storage;
   RetcodeType retcode = RC_NORMAL;
@@ -1646,37 +1659,43 @@ static RetcodeType Process_Receive_Packet(ConnManClass* net,
                                    sizeof(event_storage.Data.FrameInfo))) {
     return RC_NORMAL;
   }
-  std::memcpy(
-      &event_storage, multi_packet_buf,
+  base::CopyBytes(
+      base::ObjectBytes(event_storage), multi_packet_buf,
       offsetof(EventClass, Data) + sizeof(event_storage.Data.FrameInfo));
 
   //------------------------------------------------------------------------
   //	Get the index of the sender
   //------------------------------------------------------------------------
   const int index = net->Connection_Index(id);
+  if (index < 0 || base::ToSize(index) >= their_frame.size() ||
+      base::ToSize(index) >= their_sent.size() ||
+      base::ToSize(index) >= their_recv.size()) {
+    return RC_NORMAL;
+  }
 
   //------------------------------------------------------------------------
   //	Compute the other player's frame # (at the time this packet was sent)
   //------------------------------------------------------------------------
-  if (their_frame[index] <
+  if (their_frame[base::ToSize(index)] <
       static_cast<int>(event->Frame - event->Data.FrameInfo.Delay)) {
     //.....................................................................
     // If the original frame # for this player is -1, it means we've heard
     // from this player for the 1st time; return the appropriate value.
     //.....................................................................
-    if (their_frame[index] == -1) {
+    if (their_frame[base::ToSize(index)] == -1) {
       retcode = RC_PLAYER_READY;
     }
 
-    their_frame[index] = event->Frame - event->Data.FrameInfo.Delay;
+    their_frame[base::ToSize(index)] =
+        event->Frame - event->Data.FrameInfo.Delay;
   }
 
   //------------------------------------------------------------------------
   //	Extract the other player's CommandCount.  This count will include
   //	the commands in this packet, if there are any.
   //------------------------------------------------------------------------
-  their_sent[index] =
-      std::max(event->Data.FrameInfo.CommandCount, their_sent[index]);
+  their_sent[base::ToSize(index)] = std::max(event->Data.FrameInfo.CommandCount,
+                                             their_sent[base::ToSize(index)]);
 
   //------------------------------------------------------------------------
   //	If this packet was not a FRAMESYNC packet:
@@ -1701,7 +1720,7 @@ static RetcodeType Process_Receive_Packet(ConnManClass* net,
       i--;
     }
 
-    their_recv[index] += i;
+    their_recv[base::ToSize(index)] += i;
   }
 
   //------------------------------------------------------------------------
@@ -1752,8 +1771,9 @@ static RetcodeType Process_Receive_Packet(ConnManClass* net,
  * HISTORY:                                                                *
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
-static RetcodeType Process_Serial_Packet(const char* multi_packet_buf,
-                                         int packetlen, int first_time) {
+static RetcodeType Process_Serial_Packet(
+    std::span<const std::byte> multi_packet_buf, int packetlen,
+    int first_time) {
   SerialPacketType serial_storage;
   SerialPacketType* serial_packet =
       &serial_storage;  // for parsing serial packets
@@ -1768,8 +1788,9 @@ static RetcodeType Process_Serial_Packet(const char* multi_packet_buf,
     return RC_SERIAL_PROCESSED;
   }
   base::FillBytes(base::ObjectBytes(serial_storage), 0, sizeof(serial_storage));
-  std::memcpy(&serial_storage, multi_packet_buf,
-              std::min(sizeof(serial_storage), static_cast<size_t>(packetlen)));
+  base::CopyBytes(
+      base::ObjectBytes(serial_storage), multi_packet_buf,
+      std::min(sizeof(serial_storage), static_cast<size_t>(packetlen)));
   int player_gone = 0;
   //........................................................................
   // On Frame 0, only a SIGN_OFF means the other player left; the other
@@ -1803,16 +1824,19 @@ static RetcodeType Process_Serial_Packet(const char* multi_packet_buf,
     Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_FROM),
                         serial_packet->Name, serial_packet->Message);
 
-    const auto magic_number = port::ReadUnaligned<uint16_t>(
-        serial_packet->Message + COMPAT_MESSAGE_LENGTH - 4);
-    const auto crc = port::ReadUnaligned<uint16_t>(serial_packet->Message +
-                                                   COMPAT_MESSAGE_LENGTH - 2);
+    const auto magic_number =
+        port::ReadUnaligned<uint16_t>(base::ObjectBytes(serial_packet->Message)
+                                          .subspan(COMPAT_MESSAGE_LENGTH - 4));
+    const auto crc =
+        port::ReadUnaligned<uint16_t>(base::ObjectBytes(serial_packet->Message)
+                                          .subspan(COMPAT_MESSAGE_LENGTH - 2));
 
-    Messages.Add_Message(txt,
-                         MPlayerTColors[static_cast<int>(
-                             MPlayerID_To_ColorIndex(serial_packet->ID))],
-                         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600,
-                         magic_number, crc);
+    Messages.Add_Message(
+        txt,
+        base::At(MPlayerTColors,
+                 static_cast<int>(MPlayerID_To_ColorIndex(serial_packet->ID))),
+        TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600, magic_number,
+        crc);
 
     //.....................................................................
     //	Save this message in our last-message buffer
@@ -1846,8 +1870,8 @@ static RetcodeType Process_Serial_Packet(const char* multi_packet_buf,
                                    sizeof(event_storage.Data.FrameInfo))) {
     return RC_NORMAL;
   }
-  std::memcpy(
-      &event_storage, multi_packet_buf,
+  base::CopyBytes(
+      base::ObjectBytes(event_storage), multi_packet_buf,
       offsetof(EventClass, Data) + sizeof(event_storage.Data.FrameInfo));
   if (event->ID == Houses.ID(PlayerPtr)) {
     return RC_HUNG_UP;
@@ -1899,9 +1923,10 @@ static RetcodeType Process_Serial_Packet(const char* multi_packet_buf,
  * HISTORY:                                                                *
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
-static int Can_Advance(ConnManClass* net, int max_ahead, const int* their_frame,
-                       const uint16_t* their_sent, const uint16_t* their_recv) {
-
+static int Can_Advance(ConnManClass* net, int max_ahead,
+                       std::span<const int> their_frame,
+                       std::span<const uint16_t> their_sent,
+                       std::span<const uint16_t> their_recv) {
   //------------------------------------------------------------------------
   // Special case for modem: if the other player has left, go ahead and
   // advance to the next frame; don't wait on him.
@@ -1915,19 +1940,20 @@ static int Can_Advance(ConnManClass* net, int max_ahead, const int* their_frame,
   int their_oldest_frame =
       static_cast<int>(Frame + 1000);  // other players' oldest frame #
   for (int i = 0; i < net->Num_Connections(); i++) {
-    their_oldest_frame = std::min(their_frame[i], their_oldest_frame);
+    their_oldest_frame =
+        std::min(their_frame[base::ToSize(i)], their_oldest_frame);
   }
 
   //------------------------------------------------------------------------
   //	I can advance to the next frame IF:
   //	1) I'm less than a one-way propogation delay ahead of the other
   //    players' frame numbers, AND
-  //	2) their_recv[i] >= their_sent[i] (ie I've received all the commands
-  //	   the other players have sent so far).
+  //	2) their_recv[base::ToSize(i)] >= their_sent[base::ToSize(i)] (ie I've
+  // received all the commands 	   the other players have sent so far).
   //------------------------------------------------------------------------
   int count_ok = 1;  // true = my cmd count matches theirs
   for (int i = 0; i < net->Num_Connections(); i++) {
-    if (their_recv[i] < their_sent[i]) {
+    if (their_recv[base::ToSize(i)] < their_sent[base::ToSize(i)]) {
       count_ok = 0;
       break;
     }
@@ -1966,8 +1992,8 @@ static int Can_Advance(ConnManClass* net, int max_ahead, const int* their_frame,
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
 static int Process_Reconnect_Dialog(CountDownTimerClass* timeout_timer,
-                                    const int* their_frame, int num_conn,
-                                    bool reconn, bool fresh) {
+                                    std::span<const int> their_frame,
+                                    int num_conn, bool reconn, bool fresh) {
   static int displayed_time = 0;  // time value currently displayed
   int oldest_index = 0;  // index of person requiring a reconnect
 
@@ -1996,8 +2022,8 @@ static int Process_Reconnect_Dialog(CountDownTimerClass* timeout_timer,
       int j = 0x7fffffff;
       oldest_index = 0;
       for (int i = 0; i < num_conn; i++) {
-        if (their_frame[i] < j) {
-          j = their_frame[i];
+        if (their_frame[base::ToSize(i)] < j) {
+          j = their_frame[base::ToSize(i)];
           oldest_index = i;
         }
       }
@@ -2053,9 +2079,9 @@ static int Process_Reconnect_Dialog(CountDownTimerClass* timeout_timer,
  * HISTORY:                                                                *
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
-static int Handle_Timeout(ConnManClass* net, int* their_frame,
-                          uint16_t* their_sent, uint16_t* their_recv) {
-
+static int Handle_Timeout(ConnManClass* net, std::span<int> their_frame,
+                          std::span<uint16_t> their_sent,
+                          std::span<uint16_t> their_recv) {
   //------------------------------------------------------------------------
   // For modem, attempt to reconnect; if that fails, save the game & bail.
   //------------------------------------------------------------------------
@@ -2075,8 +2101,8 @@ static int Handle_Timeout(ConnManClass* net, int* their_frame,
     int j = 0x7fffffff;
     int oldest_index = 0;  // index of person requiring a reconnect
     for (int i = 0; i < net->Num_Connections(); i++) {
-      if (their_frame[i] < j) {
-        j = their_frame[i];
+      if (their_frame[base::ToSize(i)] < j) {
+        j = their_frame[base::ToSize(i)];
         oldest_index = i;
       }
     }
@@ -2095,9 +2121,9 @@ static int Handle_Timeout(ConnManClass* net, int* their_frame,
 
     if (id != ConnManClass::kConnectionNone) {
       for (int i = oldest_index; i < net->Num_Connections() - 1; i++) {
-        their_frame[i] = their_frame[i + 1];
-        their_sent[i] = their_sent[i + 1];
-        their_recv[i] = their_recv[i + 1];
+        their_frame[base::ToSize(i)] = their_frame[base::ToSize(i + 1)];
+        their_sent[base::ToSize(i)] = their_sent[base::ToSize(i + 1)];
+        their_recv[base::ToSize(i)] = their_recv[base::ToSize(i + 1)];
       }
       CCDebugString("C&C95 = Destroying connection due to time out\n");
       Destroy_Connection(id, 1);
@@ -2181,8 +2207,8 @@ static void Stop_Game() {
  * HISTORY:                                                                *
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
-static int Build_Send_Packet(void* buf, int bufsize, int frame_delay,
-                             int num_cmds, int cap) {
+static int Build_Send_Packet(std::span<std::byte> buf, int bufsize,
+                             int frame_delay, int num_cmds, int cap) {
   int size = 0;
 
   //------------------------------------------------------------------------
@@ -2191,7 +2217,8 @@ static int Build_Send_Packet(void* buf, int bufsize, int frame_delay,
   //........................................................................
   // Set the event type
   //........................................................................
-  auto* finfo = static_cast<EventClass*>(buf);
+  EventClass frame_info;
+  auto* finfo = &frame_info;
   finfo->Type = EventClass::FRAMEINFO;
   //........................................................................
   // Set the frame to execute this event on; this is protocol-specific
@@ -2211,6 +2238,9 @@ static int Build_Send_Packet(void* buf, int bufsize, int frame_delay,
   finfo->Data.FrameInfo.CRC = GameCRC;
   finfo->Data.FrameInfo.CommandCount = static_cast<uint16_t>(num_cmds);
   finfo->Data.FrameInfo.Delay = static_cast<unsigned char>(frame_delay);
+  port::WriteUnaligned(buf, frame_info);
+  port::WriteUnaligned(buf, frame_info);
+  port::WriteUnaligned(buf, frame_info);
 
   //------------------------------------------------------------------------
   // Initialize the # of bytes processed; this is protocol-specific
@@ -2281,8 +2311,8 @@ static int Build_Send_Packet(void* buf, int bufsize, int frame_delay,
  * HISTORY:                                                                *
  *   11/21/1995 DRD : Created.                                             *
  *=========================================================================*/
-int Add_Uncompressed_Events(void* buf, int bufsize, int frame_delay, int size,
-                            int cap) {
+int Add_Uncompressed_Events(std::span<std::byte> buf, int bufsize,
+                            int frame_delay, int size, int cap) {
   int num = 0;  // # of events processed
 
   //------------------------------------------------------------------------
@@ -2321,8 +2351,8 @@ int Add_Uncompressed_Events(void* buf, int bufsize, int frame_delay, int size,
     //.....................................................................
     // Add event to the send packet
     //.....................................................................
-    memcpy(static_cast<char*>(buf) + size, &OutList.First(),
-           sizeof(EventClass));
+    base::CopyBytes(buf.subspan(base::ToSize(size)),
+                    base::ObjectBytes(OutList.First()), sizeof(EventClass));
     size += sizeof(EventClass);
 
     //.....................................................................
@@ -2358,12 +2388,11 @@ int Add_Uncompressed_Events(void* buf, int bufsize, int frame_delay, int size,
  * HISTORY:                                                                *
  *   11/21/1995 DRD : Created.                                             *
  *=========================================================================*/
-int Add_Compressed_Events(void* buf, int bufsize, int frame_delay, int size,
-                          int cap) {
+int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
+                          int frame_delay, int size, int cap) {
   int num = 0;                      // # of events processed
   EventClass prevevent;             // last event processed
-  unsigned char* unitsptr =
-      nullptr;                 // ptr to buffer pos to store mega. rep count
+  int units_offset = -1;       // ptr to buffer pos to store mega. rep count
   unsigned char numunits = 0;  // megamission rep count value
   bool missiondup = false;     // flag: is this event a megamission repeat?
 
@@ -2433,11 +2462,10 @@ int Add_Compressed_Events(void* buf, int bufsize, int frame_delay, int size,
         // - clear the MegaMission rep flag
         //...............................................................
         else {
-          if (unitsptr != nullptr) {
-            *unitsptr = numunits;
+          if (units_offset >= 0) {
+            buf[base::ToSize(units_offset)] = static_cast<std::byte>(numunits);
           }
-          unitsptr = static_cast<unsigned char*>(buf) + size +
-                     sizeof(EventClass::EventType);
+          units_offset = size + kEventTypeSize;
           storedsize += sizeof(numunits);
           numunits = 1;
           missiondup = false;
@@ -2451,10 +2479,10 @@ int Add_Compressed_Events(void* buf, int bufsize, int frame_delay, int size,
       //..................................................................
       else {
         // save # events in our run
-        if (unitsptr != nullptr) {
-          *unitsptr = numunits;
+        if (units_offset >= 0) {
+          buf[base::ToSize(units_offset)] = static_cast<std::byte>(numunits);
         }
-        unitsptr = nullptr;  // init other values
+        units_offset = -1;  // init other values
         numunits = 0;
         missiondup = false;
       }
@@ -2470,8 +2498,7 @@ int Add_Compressed_Events(void* buf, int bufsize, int frame_delay, int size,
     // - clear the MegaMission rep flag
     //.....................................................................
     else if (eventtype == EventClass::MEGAMISSION) {
-      unitsptr = static_cast<unsigned char*>(buf) + size +
-                 sizeof(EventClass::EventType);
+      units_offset = size + kEventTypeSize;
       storedsize += sizeof(numunits);
       numunits = 1;
       missiondup = false;
@@ -2520,10 +2547,12 @@ int Add_Compressed_Events(void* buf, int bufsize, int frame_delay, int size,
       //..................................................................
       case EventClass::RESPONSE_TIME:
 
-        port::WriteUnaligned(static_cast<char*>(buf) + size, eventtype);
+        port::WriteUnaligned(buf.subspan(base::ToSize(size)), eventtype);
 
-        memcpy(static_cast<char*>(buf) + size + sizeof(EventClass::EventType),
-               &OutList.First().Data.FrameInfo.Delay, base::ToSize(datasize));
+        base::CopyBytes(
+            buf.subspan(base::ToSize(size) + sizeof(EventClass::EventType)),
+            base::ObjectBytes(OutList.First().Data.FrameInfo.Delay),
+            base::ToSize(datasize));
 
         size += datasize + kEventTypeSize;
         break;
@@ -2538,12 +2567,14 @@ int Add_Compressed_Events(void* buf, int bufsize, int frame_delay, int size,
         //   - Copy the Whom field only
         //...............................................................
         if (missiondup) {
-          if (unitsptr != nullptr) {
-            *unitsptr = numunits;
+          if (units_offset >= 0) {
+            buf[base::ToSize(units_offset)] = static_cast<std::byte>(numunits);
           }
 
-          memcpy(static_cast<char*>(buf) + size,
-                 &OutList.First().Data.MegaMission.Whom, base::ToSize(datasize));
+          base::CopyBytes(
+              buf.subspan(base::ToSize(size)),
+              base::ObjectBytes(OutList.First().Data.MegaMission.Whom),
+              base::ToSize(datasize));
 
           size += datasize;
         }
@@ -2554,15 +2585,17 @@ int Add_Compressed_Events(void* buf, int bufsize, int frame_delay, int size,
         //   - Copy the MegaMission structure, leaving room for 'numunits'
         //...............................................................
         else {
-          if (unitsptr != nullptr) {
-            *unitsptr = numunits;
+          if (units_offset >= 0) {
+            buf[base::ToSize(units_offset)] = static_cast<std::byte>(numunits);
           }
 
-          port::WriteUnaligned(static_cast<char*>(buf) + size, eventtype);
+          port::WriteUnaligned(buf.subspan(base::ToSize(size)), eventtype);
 
-          memcpy(static_cast<char*>(buf) + size +
-                     sizeof(EventClass::EventType) + sizeof(numunits),
-                 &OutList.First().Data.MegaMission, base::ToSize(datasize));
+          base::CopyBytes(
+              buf.subspan(base::ToSize(size) + sizeof(EventClass::EventType) +
+                          sizeof(numunits)),
+              base::ObjectBytes(OutList.First().Data.MegaMission),
+              base::ToSize(datasize));
 
           size += datasize + kEventTypeSize + static_cast<int>(sizeof(numunits));
         }
@@ -2572,10 +2605,11 @@ int Add_Compressed_Events(void* buf, int bufsize, int frame_delay, int size,
       // Default case: Just copy over the data field from the union
       //..................................................................
       default:
-        port::WriteUnaligned(static_cast<char*>(buf) + size, eventtype);
+        port::WriteUnaligned(buf.subspan(base::ToSize(size)), eventtype);
 
-        memcpy(static_cast<char*>(buf) + size + sizeof(EventClass::EventType),
-               &OutList.First().Data, base::ToSize(datasize));
+        base::CopyBytes(
+            buf.subspan(base::ToSize(size) + sizeof(EventClass::EventType)),
+            base::ObjectBytes(OutList.First().Data), base::ToSize(datasize));
 
         size += datasize + kEventTypeSize;
 
@@ -2625,7 +2659,7 @@ int Add_Compressed_Events(void* buf, int bufsize, int frame_delay, int size,
  * HISTORY:                                                                *
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
-static int Breakup_Receive_Packet(void* buf, int bufsize) {
+static int Breakup_Receive_Packet(std::span<const std::byte> buf, int bufsize) {
   int count = 0;
 
   /*
@@ -2660,7 +2694,11 @@ static int Breakup_Receive_Packet(void* buf, int bufsize) {
  * HISTORY:                                                                *
  *   11/21/1995 DRD : Created.                                             *
  *=========================================================================*/
-int Extract_Uncompressed_Events(void* buf, int bufsize) {
+int Extract_Uncompressed_Events(std::span<const std::byte> buf, int bufsize) {
+  if (bufsize < 0 || std::cmp_greater(bufsize, buf.size())) {
+    return 0;
+  }
+  buf = buf.first(base::ToSize(bufsize));
   int count = 0;
   int pos = 0;
   int leftover = bufsize;
@@ -2672,7 +2710,7 @@ int Extract_Uncompressed_Events(void* buf, int bufsize) {
   //------------------------------------------------------------------------
   while (std::cmp_greater_equal(leftover, sizeof(EventClass))) {
     event_storage =
-        port::ReadUnaligned<EventClass>(static_cast<char*>(buf) + pos);
+        port::ReadUnaligned<EventClass>(buf.subspan(base::ToSize(pos)));
 
     //.....................................................................
     // add event to the DoList, only if it's not a FRAMESYNC
@@ -2722,7 +2760,11 @@ int Extract_Uncompressed_Events(void* buf, int bufsize) {
  * HISTORY:                                                                *
  *   11/21/1995 DRD : Created.                                             *
  *=========================================================================*/
-int Extract_Compressed_Events(void* buf, int bufsize) {
+int Extract_Compressed_Events(std::span<const std::byte> buf, int bufsize) {
+  if (bufsize < 0 || std::cmp_greater(bufsize, buf.size())) {
+    return 0;
+  }
+  buf = buf.first(base::ToSize(bufsize));
   int pos = 0;                 // current buffer parsing position
   int leftover = bufsize;      // # bytes left to process
   EventClass::EventType event_type{};  // event ptr for parsing buffer
@@ -2746,8 +2788,8 @@ int Extract_Compressed_Events(void* buf, int bufsize) {
   if (std::cmp_less(leftover, sizeof(EventClass::EventType))) {
     return count;
   }
-  event_type =
-      port::ReadUnaligned<EventClass::EventType>(static_cast<char*>(buf) + pos);
+  event_type = port::ReadUnaligned<EventClass::EventType>(
+      buf.subspan(base::ToSize(pos)));
   if (event_type < EventClass::EMPTY || event_type >= EventClass::LAST_EVENT) {
     return count;
   }
@@ -2765,8 +2807,9 @@ int Extract_Compressed_Events(void* buf, int bufsize) {
       //..................................................................
       if (event_type == EventClass::FRAMEINFO) {
         EventClass frame_header;
-        std::memcpy(&frame_header, static_cast<char*>(buf) + pos,
-                    offsetof(EventClass, Data));
+        base::CopyBytes(base::ObjectBytes(frame_header),
+                        buf.subspan(base::ToSize(pos)),
+                        offsetof(EventClass, Data));
         eventdata.Frame = frame_header.Frame;
         eventdata.ID = frame_header.ID;
         eventdata.MPlayerID = frame_header.MPlayerID;
@@ -2781,8 +2824,8 @@ int Extract_Compressed_Events(void* buf, int bufsize) {
       // if MEGAMISSION event get the number of units (events to generate)
       //..................................................................
       else if (event_type == EventClass::MEGAMISSION) {
-        numunits =
-            *(static_cast<unsigned char*>(buf) + pos + sizeof(eventdata.Type));
+        numunits = std::to_integer<unsigned char>(
+            buf[base::ToSize(pos) + sizeof(eventdata.Type)]);
         pos += sizeof(numunits);
         leftover -= sizeof(numunits);
       }
@@ -2794,18 +2837,30 @@ int Extract_Compressed_Events(void* buf, int bufsize) {
                       sizeof(eventdata.Data));
       eventdata.Type = event_type;
       datasize = EventClass::EventLength[eventdata.Type];
+      if (datasize < 0 || leftover < datasize + kEventTypeSize) {
+        return count;
+      }
 
       switch (eventdata.Type) {
         case EventClass::RESPONSE_TIME:
-          memcpy(&eventdata.Data.FrameInfo.Delay,
-                 static_cast<char*>(buf) + pos + sizeof(EventClass::EventType),
-                 base::ToSize(datasize));
+          base::CopyBytes(
+              base::ObjectBytes(eventdata.Data.FrameInfo.Delay),
+              buf.subspan(base::ToSize(pos) + sizeof(EventClass::EventType)),
+              base::ToSize(datasize));
           break;
 
         case EventClass::MEGAMISSION:
-          memcpy(&eventdata.Data.MegaMission,
-                 static_cast<char*>(buf) + pos + sizeof(EventClass::EventType),
-                 base::ToSize(datasize));
+          // Validate the entire repetition run before adding any of its events.
+          if (numunits == 0 ||
+              std::cmp_less(
+                  leftover - datasize - kEventTypeSize,
+                  (numunits - 1) * sizeof(eventdata.Data.MegaMission.Whom))) {
+            return count;
+          }
+          base::CopyBytes(
+              base::ObjectBytes(eventdata.Data.MegaMission),
+              buf.subspan(base::ToSize(pos) + sizeof(EventClass::EventType)),
+              base::ToSize(datasize));
 
           if (numunits > 1) {
             pos += datasize + kEventTypeSize;
@@ -2822,8 +2877,9 @@ int Extract_Compressed_Events(void* buf, int bufsize) {
               //......................................................
               count++;
               numunits--;
-              memcpy(&eventdata.Data.MegaMission.Whom,
-                     static_cast<char*>(buf) + pos, base::ToSize(datasize));
+              base::CopyBytes(
+                  base::ObjectBytes(eventdata.Data.MegaMission.Whom),
+                  buf.subspan(base::ToSize(pos)), base::ToSize(datasize));
 
               //......................................................
               // if one unit left fall thru to normal code
@@ -2839,9 +2895,10 @@ int Extract_Compressed_Events(void* buf, int bufsize) {
           break;
 
         default:
-          memcpy(&eventdata.Data,
-                 static_cast<char*>(buf) + pos + sizeof(EventClass::EventType),
-                 base::ToSize(datasize));
+          base::CopyBytes(
+              base::ObjectBytes(eventdata.Data),
+              buf.subspan(base::ToSize(pos) + sizeof(EventClass::EventType)),
+              base::ToSize(datasize));
           break;
       }
 
@@ -2873,7 +2930,7 @@ int Extract_Compressed_Events(void* buf, int bufsize) {
           return count;
         }
         event_type = port::ReadUnaligned<EventClass::EventType>(
-            static_cast<char*>(buf) + pos);
+            buf.subspan(base::ToSize(pos)));
         if (event_type < EventClass::EMPTY ||
             event_type >= EventClass::LAST_EVENT) {
           return count;
@@ -2895,7 +2952,7 @@ int Extract_Compressed_Events(void* buf, int bufsize) {
         return count;
       }
       event_type = port::ReadUnaligned<EventClass::EventType>(
-          static_cast<char*>(buf) + pos);
+          buf.subspan(base::ToSize(pos)));
       if (event_type < EventClass::EMPTY ||
           event_type >= EventClass::LAST_EVENT) {
         return count;
@@ -2954,8 +3011,9 @@ int Extract_Compressed_Events(void* buf, int bufsize) {
  *=========================================================================*/
 static int Execute_DoList(int /*unused*/, HousesType /*unused*/,
                           ConnManClass* net, TCountDownTimerClass* /*unused*/,
-                          int* their_frame, uint16_t* their_sent,
-                          uint16_t* their_recv) {
+                          std::span<int> their_frame,
+                          std::span<uint16_t> their_sent,
+                          std::span<uint16_t> their_recv) {
   int k = 0;
   int wibble = 0;
   int index = 0;
@@ -3103,9 +3161,10 @@ static int Execute_DoList(int /*unused*/, HousesType /*unused*/,
               index = net->Connection_Index(DoList[j].MPlayerID);
               if (index != -1) {
                 for (k = index; k < net->Num_Connections() - 1; k++) {
-                  their_frame[k] = their_frame[k + 1];
-                  their_sent[k] = their_sent[k + 1];
-                  their_recv[k] = their_recv[k + 1];
+                  their_frame[base::ToSize(k)] =
+                      their_frame[base::ToSize(k + 1)];
+                  their_sent[base::ToSize(k)] = their_sent[base::ToSize(k + 1)];
+                  their_recv[base::ToSize(k)] = their_recv[base::ToSize(k + 1)];
                 }
                 CCDebugString(
                     "C&C95 = Destroying connection due to exit event\n");
@@ -3396,8 +3455,7 @@ static void Queue_Playback() {
     max_houses = MPlayerMax;
     base_house = HOUSE_MULTI1;
   }
-  if (!Execute_DoList(max_houses, base_house, nullptr, nullptr, nullptr,
-                      nullptr, nullptr)) {
+  if (!Execute_DoList(max_houses, base_house, nullptr, nullptr, {}, {}, {})) {
     GameActive = false;
     return;
   }
@@ -4164,8 +4222,8 @@ static void Update_Queue_Mono(ConnManClass* net, int flow_index) {
  *=========================================================================*/
 static void Print_Framesync_Values(int64_t curframe, int max_ahead,
                                    int num_connections,
-                                   const uint16_t* their_recv,
-                                   const uint16_t* their_sent,
+                                   std::span<const uint16_t> their_recv,
+                                   std::span<const uint16_t> their_sent,
                                    uint16_t my_sent) {
 #if (SHOW_MONO)
 
@@ -4178,12 +4236,12 @@ static void Print_Framesync_Values(int64_t curframe, int max_ahead,
 
     for (int i = 0; i < num_connections; i++) {
       Mono_Set_Cursor(35 + (i * 5), 11);
-      Mono_Printf("%4d", static_cast<int>(their_recv[i]));
+      Mono_Printf("%4d", static_cast<int>(their_recv[base::ToSize(i)]));
     }
 
     for (int i = 0; i < num_connections; i++) {
       Mono_Set_Cursor(35 + (i * 5), 12);
-      Mono_Printf("%4d", static_cast<int>(their_sent[i]));
+      Mono_Printf("%4d", static_cast<int>(their_sent[base::ToSize(i)]));
     }
 
     Mono_Set_Cursor(35, 13);

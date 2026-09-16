@@ -44,6 +44,7 @@
 #include <span>
 
 #include "base/array.h"
+#include "base/numeric.h"
 #include "tech/span_sink.h"
 #include "tech/span_source.h"
 
@@ -173,7 +174,7 @@ int LZWEngine::Uncompress(std::span<const std::byte> input,
     if (new_code >= next_code) {
       decode_stack[0] = character;
       count = 1;
-      count += Decode_String(&decode_stack[1], old_code);
+      count += Decode_String(std::span(decode_stack).subspan(1), old_code);
     } else {
       count = Decode_String(decode_stack, new_code);
     }
@@ -258,14 +259,20 @@ int LZWEngine::Find_Child_Node(CodeType parent_code,
   return hash_index;
 }
 
-int LZWEngine::Decode_String(unsigned char* ptr, CodeType code) {
+int LZWEngine::Decode_String(std::span<unsigned char> output, CodeType code) {
   int count = 0;
   while (code > 255) {
-    *ptr++ = base::At(dict, code).CharValue;
+    if (static_cast<std::size_t>(count) >= output.size()) {
+      return count;
+    }
+    output[base::ToSize(count)] = base::At(dict, code).CharValue;
     count++;
     code = base::At(dict, code).ParentCode;
   }
-  *ptr = static_cast<unsigned char>(code);
+  if (static_cast<std::size_t>(count) >= output.size()) {
+    return count;
+  }
+  output[base::ToSize(count)] = static_cast<unsigned char>(code);
   count++;
   return count;
 }

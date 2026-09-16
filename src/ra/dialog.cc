@@ -51,6 +51,7 @@
 #include "ra/dialog.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <cstdio>
 #include <cstring>
 #include <span>
@@ -108,7 +109,7 @@ void Dialog_Box(int x, int y, int w, int h) {
   */
   const int cx = w / 2;
   const int cy = h / 2;
-  const void* shapedata = MixArchive::Retrieve("DD-BKGND.SHP");
+  auto shapedata = MixArchive::RetrieveData("DD-BKGND.SHP");
   CC_Draw_Shape(shapedata, 0, cx - 312, cy - 192, WINDOW_PARTIAL,
                 SHAPE_WIN_REL);
   CC_Draw_Shape(shapedata, 1, cx, cy - 192, WINDOW_PARTIAL, SHAPE_WIN_REL);
@@ -117,7 +118,7 @@ void Dialog_Box(int x, int y, int w, int h) {
   /*
   **	Draw the side strips.
   */
-  shapedata = MixArchive::Retrieve("DD-EDGE.SHP");
+  shapedata = MixArchive::RetrieveData("DD-EDGE.SHP");
   for (int yy = 0; yy < h; yy += 6) {
     CC_Draw_Shape(shapedata, 0, 14, yy, WINDOW_PARTIAL, SHAPE_WIN_REL);
     CC_Draw_Shape(shapedata, 1, w - ((7 + 8) * 2), yy, WINDOW_PARTIAL,
@@ -127,27 +128,27 @@ void Dialog_Box(int x, int y, int w, int h) {
   /*
   **	Draw the border bars.
   */
-  shapedata = MixArchive::Retrieve("DD-LEFT.SHP");
+  shapedata = MixArchive::RetrieveData("DD-LEFT.SHP");
   CC_Draw_Shape(shapedata, 0, 0, cy - 200, WINDOW_PARTIAL, SHAPE_WIN_REL);
   CC_Draw_Shape(shapedata, 0, 0, cy, WINDOW_PARTIAL, SHAPE_WIN_REL);
 
-  shapedata = MixArchive::Retrieve("DD-RIGHT.SHP");
+  shapedata = MixArchive::RetrieveData("DD-RIGHT.SHP");
   const int rightx = w - 14;
   CC_Draw_Shape(shapedata, 0, rightx, cy - 200, WINDOW_PARTIAL, SHAPE_WIN_REL);
   CC_Draw_Shape(shapedata, 0, rightx, cy, WINDOW_PARTIAL, SHAPE_WIN_REL);
 
-  shapedata = MixArchive::Retrieve("DD-BOTM.SHP");
+  shapedata = MixArchive::RetrieveData("DD-BOTM.SHP");
   CC_Draw_Shape(shapedata, 0, cx - 320, h - 16, WINDOW_PARTIAL, SHAPE_WIN_REL);
   CC_Draw_Shape(shapedata, 0, cx, h - 16, WINDOW_PARTIAL, SHAPE_WIN_REL);
 
-  shapedata = MixArchive::Retrieve("DD-TOP.SHP");
+  shapedata = MixArchive::RetrieveData("DD-TOP.SHP");
   CC_Draw_Shape(shapedata, 0, cx - 320, 0, WINDOW_PARTIAL, SHAPE_WIN_REL);
   CC_Draw_Shape(shapedata, 0, cx, 0, WINDOW_PARTIAL, SHAPE_WIN_REL);
 
   /*
   **	Draw the corner caps.
   */
-  shapedata = MixArchive::Retrieve("DD-CRNR.SHP");
+  shapedata = MixArchive::RetrieveData("DD-CRNR.SHP");
   CC_Draw_Shape(shapedata, 0, 0, 0, WINDOW_PARTIAL, SHAPE_WIN_REL);
   CC_Draw_Shape(shapedata, 1, w - 23, 0, WINDOW_PARTIAL, SHAPE_WIN_REL);
   CC_Draw_Shape(shapedata, 2, 0, h - 24, WINDOW_PARTIAL, SHAPE_WIN_REL);
@@ -264,58 +265,43 @@ static constexpr bool Is_Line_Break(const char c) {
   return c == '\r' || c == '@' || c == '\0';
 }
 
-int Format_Window_String(char* string, int max_line_len, int& width,
+int Format_Window_String(std::span<char> string, int max_line_len, int& width,
                          int& height) {
   width = 0;
   height = 0;
 
-  if (string == nullptr) {
+  if (string.empty()) {
     return 0;
   }
 
   int lines = 0;
-  char* cursor = string;
-
-  while (*cursor != '\0') {
-    char* const line_start = cursor;
+  size_t cursor = 0;
+  while (cursor < string.size() && string[cursor] != '\0') {
+    const auto line_start = cursor;
     height += FontHeight + FontYSpacing;
-    lines++;
-
-    // Gather characters until the line is full or an explicit break is hit.
-    // "line_len" always holds the pixel width of [line_start, cursor).
+    ++lines;
     int line_len = 0;
-    while (line_len < max_line_len && !Is_Line_Break(*cursor)) {
-      line_len += Char_Pixel_Width(*cursor++);
+    while (cursor < string.size() && line_len < max_line_len &&
+           !Is_Line_Break(string[cursor])) {
+      line_len += Char_Pixel_Width(string[cursor++]);
     }
-
     if (line_len >= max_line_len) {
-      char* const overflow = cursor;
-
-      // Back up to the last space so the break falls between words. The
-      // line_start guard is what keeps a word wider than the whole line from
-      // walking off the front of the buffer, which the original code did.
-      while (cursor > line_start && *cursor != ' ') {
-        line_len -= Char_Pixel_Width(*--cursor);
+      const auto overflow = cursor;
+      while (cursor > line_start &&
+             (cursor == string.size() || string[cursor] != ' ')) {
+        line_len -= Char_Pixel_Width(string[--cursor]);
       }
-
       if (cursor == line_start) {
-        // No break point in the line at all. The '\r' has to be stored
-        // somewhere and the buffer cannot grow, so the last character that
-        // fits is sacrificed to make room for it.
-        cursor = std::max(overflow - 1, line_start);
+        cursor = overflow > line_start ? overflow - 1 : line_start;
         line_len = 0;
-        for (const char* c = line_start; c < cursor; ++c) {
-          line_len += Char_Pixel_Width(*c);
+        for (auto c = line_start; c < cursor; ++c) {
+          line_len += Char_Pixel_Width(string[c]);
         }
       }
     }
-
     width = std::max(line_len, width);
-
-    // Overwrite the break candidate (a space, an '@' or an already present
-    // '\r') with the canonical line break and step past it.
-    if (*cursor != '\0') {
-      *cursor++ = '\r';
+    if (cursor < string.size() && string[cursor] != '\0') {
+      string[cursor++] = '\r';
     }
   }
 
@@ -342,10 +328,14 @@ int Format_Window_String(char* string, int max_line_len, int& width,
  *appropriate enumeration parameters.                                *
  *=============================================================================================*/
 void Window_Box(WindowNumberType window, BoxStyleEnum style) {
-  const int x = base::At(WindowList[static_cast<int>(window)], kWindowX);
-  const int y = base::At(WindowList[static_cast<int>(window)], kWindowY);
-  const int w = base::At(WindowList[static_cast<int>(window)], kWindowWidth);
-  const int h = base::At(WindowList[static_cast<int>(window)], kWindowHeight);
+  const int x =
+      base::At(base::At(WindowList, static_cast<int>(window)), kWindowX);
+  const int y =
+      base::At(base::At(WindowList, static_cast<int>(window)), kWindowY);
+  const int w =
+      base::At(base::At(WindowList, static_cast<int>(window)), kWindowWidth);
+  const int h =
+      base::At(base::At(WindowList, static_cast<int>(window)), kWindowHeight);
 
   /*
   **	If it is to be rendered to the seenpage, then
@@ -406,7 +396,7 @@ void Simple_Text_Print(const char* text, int x, int y,
                        TextPrintType flag) {
   static int yspace = 0;          // Y spacing adjustment for font.
   static int xspace = 0;          // Spacing adjustment for font.
-  const void* font = nullptr;     // Font to use.
+  std::span<const std::byte> font = {};  // Font to use.
   unsigned char fontpalette[16];  // Working font palette array.
 
   if (fore == nullptr) {
@@ -436,7 +426,7 @@ void Simple_Text_Print(const char* text, int x, int y,
                       base::ObjectBytes(fore->FontRemap), 16);
       forecolor = fore->Color;
       if (point == TPF_TYPE) {
-        forecolor = fontpalette[1];
+        forecolor = base::At(fontpalette, 1);
       }
     } else {
       base::FillBytes(std::as_writable_bytes(base::Suffix(fontpalette, 4)),
@@ -556,8 +546,8 @@ void Simple_Text_Print(const char* text, int x, int y,
     **	The text is rendered plain.
     */
     case TPF_NOSHADOW:
-      fontpalette[2] = static_cast<unsigned char>(back);
-      fontpalette[3] = static_cast<unsigned char>(back);
+      base::At(fontpalette, 2) = static_cast<unsigned char>(back);
+      base::At(fontpalette, 3) = static_cast<unsigned char>(back);
       xspace -= 1;
       yspace -= 2;
       break;
@@ -567,8 +557,8 @@ void Simple_Text_Print(const char* text, int x, int y,
     **	drop shadow.
     */
     case TPF_DROPSHADOW:
-      fontpalette[2] = kBlack;
-      fontpalette[3] = static_cast<unsigned char>(back);
+      base::At(fontpalette, 2) = kBlack;
+      base::At(fontpalette, 3) = static_cast<unsigned char>(back);
       xspace -= 1;
       break;
 
@@ -577,8 +567,8 @@ void Simple_Text_Print(const char* text, int x, int y,
     **	dialog system.
     */
     case TPF_LIGHTSHADOW:
-      fontpalette[2] = (14 * 16) + 7 + 1;
-      fontpalette[3] = static_cast<unsigned char>(back);
+      base::At(fontpalette, 2) = (14 * 16) + 7 + 1;
+      base::At(fontpalette, 3) = static_cast<unsigned char>(back);
       xspace -= 1;
       break;
 
@@ -587,8 +577,8 @@ void Simple_Text_Print(const char* text, int x, int y,
     **	when the text will be over a non-plain background.
     */
     case TPF_FULLSHADOW:
-      fontpalette[2] = kBlack;
-      fontpalette[3] = kBlack;
+      base::At(fontpalette, 2) = kBlack;
+      base::At(fontpalette, 3) = kBlack;
       xspace -= 1;
       break;
 
@@ -596,8 +586,8 @@ void Simple_Text_Print(const char* text, int x, int y,
       break;
   }
   if (point != TPF_TYPE) {
-    fontpalette[0] = static_cast<unsigned char>(back);
-    fontpalette[1] = fore->Color;
+    base::At(fontpalette, 0) = static_cast<unsigned char>(back);
+    base::At(fontpalette, 1) = fore->Color;
   }
 
   /*
@@ -743,78 +733,45 @@ void Fancy_Text_Print(const char* text, const int x, const int y,
  *=============================================================================================*/
 void Conquer_Clip_Text_Print(const char* text, int x, int y,
                              RemapControlType* fore, int back,
-                             TextPrintType flag, int width, const int* tabs) {
+                             TextPrintType flag, int width,
+                             std::span<const int> tabs) {
+  if (text == nullptr) {
+    return;
+  }
   char buffer[512];
-
-  if (text) {
-    port::SafeCopy(buffer, text);
-
-    /*
-    **	Set the font and spacing characteristics according to the flag
-    **	value passed in.
-    */
-    Simple_Text_Print(nullptr, 0, 0, nullptr, kTBlack, flag);
-
-    char* source = &buffer[0];
-    int offset = 0;
-    bool processing = true;
-    while (processing && offset < width) {
-      char* ptr = strchr(source, '\t');
-
-      /*
-      **	Zap the tab character. It will be processed later.
-      */
-      if (ptr) {
-        *ptr = '\0';
-      }
-
-      if (*source) {
-        /*
-        **	Scan forward until the end of the string is reached or the
-        **	maximum width, whichever comes first.
-        */
-        int w = 0;
-        char* bptr = source;
-        do {
-          w += Char_Pixel_Width(*bptr++);
-        } while (*bptr && offset + w < width);
-
-        /*
-        **	If the maximum width has been exceeded, then remove the last
-        **	character and signal that further processing is not necessary.
-        */
-        if (offset + w >= width) {
-          bptr--;
-          w -= Char_Pixel_Width(*bptr);
-          *bptr = '\0';
-          processing = false;
-        }
-
-        /*
-        **	Print this text block and advance the offset accordingly.
-        */
-        Simple_Text_Print(source, x + offset, y, fore, back, flag);
-        offset += w;
-      }
-
-      /*
-      **	If a <TAB> was the terminator for this text block, then advance
-      **	to the next tabstop.
-      */
-      if (ptr) {
-        if (tabs) {
-          while (offset > *tabs) {
-            tabs++;
-          }
-          offset = *tabs;
-        } else {
-          offset = (offset + (1 / 50) + 1) * 50;
-        }
-        source = ptr + 1;
-      } else {
+  port::SafeCopy(buffer, text);
+  Simple_Text_Print(nullptr, 0, 0, nullptr, kTBlack, flag);
+  std::span<char> source(buffer);
+  int offset = 0;
+  while (offset < width && !source.empty() && source.front() != '\0') {
+    const auto text_view = std::string_view(source.data());
+    const auto tab = text_view.find('\t');
+    const auto count = tab == std::string_view::npos ? text_view.size() : tab;
+    int line_width = 0;
+    size_t visible = 0;
+    while (visible < count) {
+      const int next = Char_Pixel_Width(source[visible]);
+      if (offset + line_width + next >= width) {
         break;
       }
+      line_width += next;
+      ++visible;
     }
+    source[visible] = '\0';
+    Simple_Text_Print(source.data(), x + offset, y, fore, back, flag);
+    offset += line_width;
+    if (visible < count || tab == std::string_view::npos) {
+      break;
+    }
+    if (!tabs.empty()) {
+      while (tabs.size() > 1 && offset > tabs.front()) {
+        tabs = tabs.subspan(1);
+      }
+      offset = tabs.front();
+    } else {
+      offset = (offset + (1 / 50) + 1) * 50;
+    }
+    source = source.subspan(tab + 1);
   }
 }
 

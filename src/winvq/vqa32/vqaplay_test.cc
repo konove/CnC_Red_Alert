@@ -15,6 +15,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/buffer.h"
 #include "base/seek_origin.h"
 #include "base/types.h"
 #include "gtest/gtest.h"
@@ -29,15 +30,15 @@
 extern void* MainWindow;  // Declared by the Windows viewer as an HWND.
 void* MainWindow = nullptr;
 
-int32_t LCW_Uncompress(const void* /*source*/, void* /*dest*/,
-                       int32_t /*length*/) {
+int32_t LCW_Uncompress(std::span<const unsigned char> /*source*/,
+                       std::span<unsigned char> /*dest*/) {
   return 0;
 }
 
-void SetPalette(unsigned char* /*palette*/, int32_t /*numbytes*/,
+void SetPalette(std::span<uint8_t> /*palette*/, int32_t /*numbytes*/,
                 uint32_t /*slowpal*/) {}
 
-void Flag_To_Set_Palette(unsigned char* /*palette*/, int32_t /*numbytes*/,
+void Flag_To_Set_Palette(std::span<uint8_t> /*palette*/, int32_t /*numbytes*/,
                          uint32_t /*slowpal*/) {}
 
 namespace {
@@ -60,7 +61,10 @@ class FakeVqaIo final : public VqaIo {
     if (fail_read || pos + bytes > static_cast<int64_t>(data.size())) {
       return false;
     }
-    memcpy(buffer.data(), data.data() + pos, buffer.size());
+    base::CopyBytes(
+        buffer,
+        std::as_bytes(std::span(data).subspan(static_cast<size_t>(pos))),
+        buffer.size());
     pos += bytes;
     return true;
   }
@@ -97,7 +101,8 @@ class FakeVqaIo final : public VqaIo {
 };
 
 void AppendBytes(std::vector<uint8_t>& out, const char* text) {
-  out.insert(out.end(), text, text + std::string_view(text).size());
+  const std::string_view view(text);
+  out.insert(out.end(), view.begin(), view.end());
 }
 
 void AppendBigEndian32(std::vector<uint8_t>& out, uint32_t value) {
@@ -265,14 +270,16 @@ constexpr int kMaxCbSize = 376;
 
 std::vector<uint8_t> HeaderPayload(const VQAHeader& header) {
   std::vector<uint8_t> payload(sizeof(header));
-  memcpy(payload.data(), &header, sizeof(header));
+  base::CopyBytes(std::as_writable_bytes(std::span(payload)),
+                  base::ObjectBytes(header), sizeof(header));
   return payload;
 }
 
 // FINF entries are 4 bytes each, stored in native (little-endian) order.
 std::vector<uint8_t> FinfPayload(const std::vector<uint32_t>& entries) {
   std::vector<uint8_t> payload(entries.size() * sizeof(uint32_t));
-  memcpy(payload.data(), entries.data(), payload.size());
+  base::CopyBytes(std::as_writable_bytes(std::span(payload)),
+                  std::as_bytes(std::span(entries)), payload.size());
   return payload;
 }
 
@@ -331,12 +338,12 @@ TEST_F(VqaLoaderTest, FinfEntriesAreFourBytesEach) {
 
   ASSERT_EQ(Open(), 0);
   ASSERT_EQ(handle_.data->FoffStorage.size(), entries.size());
-  EXPECT_EQ(handle_.data->Foff[0], entries[0]);
-  EXPECT_EQ(handle_.data->Foff[1], entries[1]);
-  EXPECT_EQ(handle_.data->Foff[2], entries[2]);
+  EXPECT_EQ(handle_.data->FoffStorage[0], entries[0]);
+  EXPECT_EQ(handle_.data->FoffStorage[1], entries[1]);
+  EXPECT_EQ(handle_.data->FoffStorage[2], entries[2]);
   // The flags occupy the top bits; the offset is stored halved.
-  EXPECT_NE(handle_.data->Foff[0] & VQAFINF_PAL, 0);
-  EXPECT_EQ(VQAFRAME_OFFSET(handle_.data->Foff[1]), 0x40);
+  EXPECT_NE(handle_.data->FoffStorage[0] & VQAFINF_PAL, 0);
+  EXPECT_EQ(VQAFRAME_OFFSET(handle_.data->FoffStorage[1]), 0x40);
 }
 
 TEST_F(VqaLoaderTest, OversizedFinfChunkIsSkippedPastTheTable) {
@@ -347,7 +354,7 @@ TEST_F(VqaLoaderTest, OversizedFinfChunkIsSkippedPastTheTable) {
 
   ASSERT_EQ(Open(), 0);
   ASSERT_EQ(handle_.data->FoffStorage.size(), 3U);
-  EXPECT_EQ(handle_.data->Foff[2], 0x30U);
+  EXPECT_EQ(handle_.data->FoffStorage[2], 0x30U);
   // The excess entries were skipped, so the frame after them still loaded.
   EXPECT_EQ(fake_.pos, static_cast<int64_t>(fake_.data.size()));
 }
@@ -413,7 +420,8 @@ TEST_F(VqaLoaderTest, PartialCompressedCodebookLoadsAtEstimatedOffset) {
   // Groupsize 1: offset = Max_CB_Size - (20 * 1 + 100).
   const VQACBNode* codebook = handle_.data->Loader.FullCB;
   EXPECT_EQ(codebook->CBOffset, kMaxCbSize - 120);
-  EXPECT_EQ(codebook->Buffer[codebook->CBOffset], 0xAB);
+  EXPECT_EQ(codebook->BufferStorage[static_cast<size_t>(codebook->CBOffset)],
+            0xAB);
 }
 
 TEST_F(VqaLoaderTest, RejectsPartialCodebookWithNegativeOffset) {
@@ -605,9 +613,9 @@ TEST(VqaDrawerTest, BottomRightOrigin) {
 TEST(VqaDrawerDeathTest, ImageOutsideBufferFailsCheck) {
   // A gap wider than the buffer would start drawing outside it.
   // The switch is inside GoogleTest's macro.
-  // NOLINTNEXTLINE(clang-diagnostic-switch-default)
+  // NOLINTNEXTLINE(clang-diagnostic-switch-default,clang-diagnostic-unsafe-buffer-usage-in-libc-call)
   EXPECT_DEATH(PlaceImage(VQACFGF_TOPLEFT, 400, 20), "Check failed");
-  // NOLINTNEXTLINE(clang-diagnostic-switch-default)
+  // NOLINTNEXTLINE(clang-diagnostic-switch-default,clang-diagnostic-unsafe-buffer-usage-in-libc-call)
   EXPECT_DEATH(PlaceImage(VQACFGF_BOTRIGHT, 10, 250), "Check failed");
 }
 #endif

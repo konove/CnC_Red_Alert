@@ -141,7 +141,8 @@ void GameOptionsClass::Process() {
   bool pressed = false;
   int curbutton = 6;
   int y = 0;
-  TextButtonClass* buttonsel[sizeof(_constants) / sizeof(_constants[0])];
+  TextButtonClass*
+      buttonsel[sizeof(_constants) / sizeof(base::At(_constants, 0))];
 
   Set_Logic_Page(SeenBuff);
 
@@ -201,15 +202,15 @@ void GameOptionsClass::Process() {
 #ifdef FRENCH
   buttonsel[kButtonResume - 1]->Width = 104 * resfactor;
 #else
-  buttonsel[kButtonResume - 1]->Width = 90 * resfactor;
+  base::At(buttonsel, kButtonResume - 1)->Width = 90 * resfactor;
 #endif
-  buttonsel[kButtonResume - 1]->X = OptionX + (5 * resfactor);
+  base::At(buttonsel, kButtonResume - 1)->X = OptionX + (5 * resfactor);
 
   if (GameToPlay == GAME_NORMAL) {
-    buttonsel[kButtonRestate - 1]->Width = 90 * resfactor;
-    buttonsel[kButtonRestate - 1]->X =
+    base::At(buttonsel, kButtonRestate - 1)->Width = 90 * resfactor;
+    base::At(buttonsel, kButtonRestate - 1)->X =
         OptionX + OptionWidth -
-        (buttonsel[kButtonRestate - 1]->Width + (5 * resfactor));
+        (base::At(buttonsel, kButtonRestate - 1)->Width + (5 * resfactor));
   }
 
   /*
@@ -311,13 +312,15 @@ void GameOptionsClass::Process() {
 #else
       Fancy_Text_Print(
           "%s\rV.%d%s",
-          ((base::At(WindowList[static_cast<int>(WINDOW_EDITOR)], kWindowX) +
-            base::At(WindowList[static_cast<int>(WINDOW_EDITOR)],
+          ((base::At(base::At(WindowList, static_cast<int>(WINDOW_EDITOR)),
+                     kWindowX) +
+            base::At(base::At(WindowList, static_cast<int>(WINDOW_EDITOR)),
                      kWindowWidth)) *
            8) -
               (3 * resfactor),
-          base::At(WindowList[static_cast<int>(WINDOW_EDITOR)], kWindowY) +
-              base::At(WindowList[static_cast<int>(WINDOW_EDITOR)],
+          base::At(base::At(WindowList, static_cast<int>(WINDOW_EDITOR)),
+                   kWindowY) +
+              base::At(base::At(WindowList, static_cast<int>(WINDOW_EDITOR)),
                        kWindowHeight) -
               (GameToPlay == GAME_NORMAL ? 32 * resfactor : 24 * resfactor),
           kGrey, kTBlack, TPF_6POINT | TPF_NOSHADOW | TPF_RIGHT, ScenarioName,
@@ -447,9 +450,9 @@ void GameOptionsClass::Process() {
               Play_Movie(ActionMovie);
             }
             // BreakoutAllowed = false;
-            memset(BlackPalette, 0x01, 768);
+            std::ranges::fill(BlackPalette, 0x01);
             Set_Palette(BlackPalette);
-            memset(BlackPalette, 0x00, 768);
+            std::ranges::fill(BlackPalette, 0x00);
             Set_Palette(BlackPalette);
             Map.Flag_To_Redraw(true);
             Theme.Queue_Song(THEME_PICK_ANOTHER);
@@ -636,9 +639,10 @@ void Draw_Caption(int text, int x, int y, int w) {
   **	Draw the filigree at the corners of the dialog.
   */
   if (option != OPTION_NONE) {
-    CC_Draw_Shape(MixArchive::Retrieve("OPTIONS.SHP"), static_cast<int>(option),
-                  x + 12, y + 11, WINDOW_MAIN, SHAPE_CENTER);
-    CC_Draw_Shape(MixArchive::Retrieve("OPTIONS.SHP"),
+    CC_Draw_Shape(MixArchive::RetrieveData("OPTIONS.SHP"),
+                  static_cast<int>(option), x + 12, y + 11, WINDOW_MAIN,
+                  SHAPE_CENTER);
+    CC_Draw_Shape(MixArchive::RetrieveData("OPTIONS.SHP"),
                   static_cast<int>(option) + 1, x + w - 14, y + 11, WINDOW_MAIN,
                   SHAPE_CENTER);
   }

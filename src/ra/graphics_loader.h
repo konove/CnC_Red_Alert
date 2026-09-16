@@ -22,6 +22,8 @@
 #ifndef CNC_RED_ALERT_RA_GRAPHICS_LOADER_H_
 #define CNC_RED_ALERT_RA_GRAPHICS_LOADER_H_
 
+#include <cstdint>
+#include <span>
 #include <string_view>
 
 // Forward declarations to avoid pulling in heavy headers
@@ -31,6 +33,6 @@ class GraphicViewPortClass;
 // Reads the PCX file, extracts the palette, and blits the image to the
 // viewport. The palette parameter is updated with the image's palette data.
 void Load_Title_Screen(std::string_view name, GraphicViewPortClass* video_page,
-                       unsigned char* palette);
+                       std::span<uint8_t> palette);
 
 #endif  // CNC_RED_ALERT_RA_GRAPHICS_LOADER_H_

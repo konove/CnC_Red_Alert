@@ -44,14 +44,19 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 #include <algorithm>
+#include <array>
 #include <cctype>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <span>
+#include <string_view>
 #include <utility>
 
 #include "absl/strings/str_format.h"
+#include "base/array.h"
+#include "base/numeric.h"
 #include "port/safe_string.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
@@ -266,7 +271,7 @@ int MapEditClass::Select_Team(const char* caption) {
   bool edit_team = false;            // true = user wants to edit
   bool new_team = false;             // true = user wants to new
   bool del_team = false;             // true = user wants to new
-  static int tabs[] = {120, 180};  // list box tab stops
+  static const int tabs[] = {120, 180};  // list box tab stops
   char txt[10];
   //	int housetxt;
 
@@ -316,39 +321,44 @@ int MapEditClass::Select_Team(const char* caption) {
     // teamtext[i] = (char *)HidPage.Get_Graphic_Buffer()->Get_Buffer() +
     // TEAMTXT_LEN * i;
     constexpr int kTeamNameSize = 255;
-    teamtext[i] = new char[kTeamNameSize];
+    base::At(teamtext, i) = new char[kTeamNameSize];
+    // This entry was allocated immediately above with exactly kTeamNameSize
+    // characters.
+    // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
+    const std::span<char> team_name(base::At(teamtext, i), kTeamNameSize);
 
     /*
     ........................ Fill in name & house .........................
     */
-    port::SafeCopy(teamtext[i], TeamTypes.Ptr(i)->IniName, kTeamNameSize);
-    port::SafeAppend(teamtext[i], "\t", kTeamNameSize);
+    port::SafeCopy(team_name, TeamTypes.Ptr(i)->IniName);
+    port::SafeAppend(team_name, "\t");
     port::SafeAppend(
-        teamtext[i],
-        HouseTypeClass::As_Reference(TeamTypes.Ptr(i)->House).Suffix,
-        kTeamNameSize);
-    port::SafeAppend(teamtext[i], "\t", kTeamNameSize);
+        team_name,
+        HouseTypeClass::As_Reference(TeamTypes.Ptr(i)->House).Suffix);
+    port::SafeAppend(team_name, "\t");
 
     /*
     ................ Fill in class & count for all classes ................
     */
     for (int j = 0; std::cmp_less(j, TeamTypes.Ptr(i)->ClassCount); j++) {
       absl::SNPrintF(txt, sizeof(txt), "%s:%d",
-                     TeamTypes.Ptr(i)->Class[j]->IniName,
-                     TeamTypes.Ptr(i)->DesiredNum[j]);
+                     base::At(TeamTypes.Ptr(i)->Class, j)->IniName,
+                     base::At(TeamTypes.Ptr(i)->DesiredNum, j));
 
       /*..................................................................
       Add entry if there's room; break otherwise
       (+ 3 for the ", " and the NULL; +3 again for the "..." for the next
       entry)
       ..................................................................*/
-      if (strlen(txt) + strlen(teamtext[i]) + 6 < kTeamtxtLen) {
+      if (std::string_view(txt).size() +
+              std::string_view(base::At(teamtext, i)).size() + 6 <
+          kTeamtxtLen) {
         if (j > 0) {
-          port::SafeAppend(teamtext[i], ", ", kTeamNameSize);
+          port::SafeAppend(team_name, ", ");
         }
-        port::SafeAppend(teamtext[i], txt, kTeamNameSize);
+        port::SafeAppend(team_name, txt);
       } else {
-        port::SafeAppend(teamtext[i], "...", kTeamNameSize);
+        port::SafeAppend(team_name, "...");
         break;
       }
     }
@@ -363,7 +373,7 @@ int MapEditClass::Select_Team(const char* caption) {
     /*
     ........................... Add to list box ...........................
     */
-    teamlist.Add_Item(teamtext[i]);
+    teamlist.Add_Item(base::At(teamtext, i));
   }
 
   /*
@@ -491,7 +501,7 @@ int MapEditClass::Select_Team(const char* caption) {
   Render();
 
   for (int i = 0; i < TeamTypes.Count(); i++) {
-    delete[] teamtext[i];
+    delete[] base::At(teamtext, i);
   }
   if (edit_team) {
     return 1;
@@ -757,7 +767,7 @@ int MapEditClass::Edit_Team() {
   char missionbuf[TeamTypeClass::kMaxTeamMissions][20];
 
   char arg_buf[4] = {0};
-  static int tabs[] = {130, 180};  // list box tab stops
+  static const int tabs[] = {130, 180};  // list box tab stops
   int i = 0;
 
   /*........................................................................
@@ -930,19 +940,19 @@ int MapEditClass::Edit_Team() {
 
   int missioncount = CurTeam->MissionCount;
   for (i = 0; i < missioncount; i++) {
-    missions[i] = CurTeam->MissionList[i];
+    base::At(missions, i) = base::At(CurTeam->MissionList, i);
   }
   Build_Mission_List(missioncount, missions, missionbuf, &missionlist2);
 
   int curmission = 0;  // currently-selected mission index
   if (missioncount) {
-    if (missions[curmission].Mission == TMISSION_MOVE ||
-        missions[curmission].Mission == TMISSION_UNLOAD) {
+    if (base::At(missions, curmission).Mission == TMISSION_MOVE ||
+        base::At(missions, curmission).Mission == TMISSION_UNLOAD) {
       absl::SNPrintF(arg_buf, sizeof(arg_buf), "%c",
-                     missions[curmission].Argument + 'A');
+                     base::At(missions, curmission).Argument + 'A');
     } else {
       absl::SNPrintF(arg_buf, sizeof(arg_buf), "%d",
-                     missions[curmission].Argument);
+                     base::At(missions, curmission).Argument);
     }
   }
   missionlist2.Set_Tabs(tabs);
@@ -1198,13 +1208,13 @@ int MapEditClass::Edit_Team() {
         if (missionlist2.Count() > 0 &&
             missionlist2.Current_Index() != curmission) {
           curmission = missionlist2.Current_Index();
-          if (missions[curmission].Mission == TMISSION_MOVE ||
-              missions[curmission].Mission == TMISSION_UNLOAD) {
+          if (base::At(missions, curmission).Mission == TMISSION_MOVE ||
+              base::At(missions, curmission).Mission == TMISSION_UNLOAD) {
             absl::SNPrintF(arg_buf, sizeof(arg_buf), "%c",
-                           missions[curmission].Argument + 'A');
+                           base::At(missions, curmission).Argument + 'A');
           } else {
             absl::SNPrintF(arg_buf, sizeof(arg_buf), "%d",
-                           missions[curmission].Argument);
+                           base::At(missions, curmission).Argument);
           }
           arg_edt.Set_Text(arg_buf, 3);
         }
@@ -1237,24 +1247,26 @@ int MapEditClass::Edit_Team() {
           ** Move all other missions forward in the array
           */
           for (int j = missioncount; j > i; j--) {
-            missions[j] = missions[j - 1];
+            base::At(missions, j) = base::At(missions, j - 1);
           }
 
           /*
           ** Set the Mission value based on 1st list box's index
           */
-          missions[i].Mission = static_cast<TeamMissionType>(
+          base::At(missions, i).Mission = static_cast<TeamMissionType>(
               static_cast<int>(TMISSION_ATTACKBASE) +
               missionlist1.Current_Index());
 
           /*
           ** Set the missions argument field
           */
-          if (missions[i].Mission == TMISSION_MOVE ||
-              missions[i].Mission == TMISSION_UNLOAD) {
-            missions[i].Argument = toupper(arg_buf[0]) - 'A';
+          if (base::At(missions, i).Mission == TMISSION_MOVE ||
+              base::At(missions, i).Mission == TMISSION_UNLOAD) {
+            base::At(missions, i).Argument =
+                toupper(base::At(arg_buf, 0)) - 'A';
           } else {
-            missions[i].Argument = tech::ParseInteger<int>(arg_buf).value_or(0);
+            base::At(missions, i).Argument =
+                tech::ParseInteger<int>(arg_buf).value_or(0);
           }
           missioncount++;
 
@@ -1284,7 +1296,7 @@ int MapEditClass::Edit_Team() {
           ** Move all missions back in the array
           */
           for (int j = i; j < missioncount - 1; j++) {
-            missions[j] = missions[j + 1];
+            base::At(missions, j) = base::At(missions, j + 1);
           }
           missioncount--;
 
@@ -1396,7 +1408,7 @@ int MapEditClass::Edit_Team() {
   CurTeam->House = house;
   CurTeam->MissionCount = missioncount;
   for (i = 0; i < missioncount; i++) {
-    CurTeam->MissionList[i] = missions[i];
+    base::At(CurTeam->MissionList, i) = base::At(missions, i);
   }
 
   return 0;
@@ -1567,9 +1579,9 @@ int MapEditClass::Team_Members(HousesType house) {
   /*
   **	Set up the team data arrays (ObjectTypeClass pointers & count)
   */
-  const auto** teamclass =
-      new const TechnoTypeClass*[kMaxTeamClasses];  // array of team classes
-  int* teamcount = new int[kMaxTeamClasses];        // array of class counts
+  std::array<const TechnoTypeClass*, kMaxTeamClasses>
+      teamclass{};                               // array of team classes
+  std::array<int, kMaxTeamClasses> teamcount{};  // array of class counts
 
   /*
   **	Fill in the ObjectTypeClass array with all available object type ptrs,
@@ -1578,21 +1590,21 @@ int MapEditClass::Team_Members(HousesType house) {
   int i = 0;
   for (InfantryType i_id = INFANTRY_E1; i_id < INFANTRY_COUNT; i_id++) {
     if (Verify_House(house, &InfantryTypeClass::As_Reference(i_id))) {
-      teamclass[i] = &InfantryTypeClass::As_Reference(i_id);
+      teamclass[base::ToSize(i)] = &InfantryTypeClass::As_Reference(i_id);
       i++;
     }
   }
 
   for (AircraftType a_id = AIRCRAFT_TRANSPORT; a_id < AIRCRAFT_COUNT; a_id++) {
     if (Verify_House(house, &AircraftTypeClass::As_Reference(a_id))) {
-      teamclass[i] = &AircraftTypeClass::As_Reference(a_id);
+      teamclass[base::ToSize(i)] = &AircraftTypeClass::As_Reference(a_id);
       i++;
     }
   }
 
   for (UnitType u_id = UNIT_HTANK; u_id < UNIT_COUNT; u_id++) {
     if (Verify_House(house, &UnitTypeClass::As_Reference(u_id))) {
-      teamclass[i] = &UnitTypeClass::As_Reference(u_id);
+      teamclass[base::ToSize(i)] = &UnitTypeClass::As_Reference(u_id);
       i++;
     }
   }
@@ -1608,7 +1620,7 @@ int MapEditClass::Team_Members(HousesType house) {
   **	  'teamclass' array & set its count value
   */
   for (int j = 0; j < maxclasses; j++) {
-    teamcount[j] = 0;
+    teamcount[base::ToSize(j)] = 0;
   }
 
   /*
@@ -1624,8 +1636,8 @@ int MapEditClass::Team_Members(HousesType house) {
       **	'teamclass' array entry by comparing the actual pointers; typeid
       **	won't work because E1 & E2 are the same type class.
       */
-      if (CurTeam->Class[i] == teamclass[j]) {
-        teamcount[j] = CurTeam->DesiredNum[i];
+      if (base::At(CurTeam->Class, i) == teamclass[base::ToSize(j)]) {
+        teamcount[base::ToSize(j)] = base::At(CurTeam->DesiredNum, i);
         break;
       }
     }
@@ -1728,14 +1740,14 @@ int MapEditClass::Team_Members(HousesType house) {
           //
           //	Display the object along with any count value for it.
           //
-          Draw_Member(teamclass[i], i, teamcount[i], house, kDialogX + 16,
-                      dlg_picture_top);
+          Draw_Member(teamclass[base::ToSize(i)], i, teamcount[base::ToSize(i)],
+                      house, kDialogX + 16, dlg_picture_top);
         }
 
         if (static_cast<unsigned>(curclass) < static_cast<unsigned>(maxclasses)) {
           Fancy_Text_Print(
-              teamclass[curclass]->Full_Name(), kDialogX + (kDialogW / 2),
-              msg_y, kCcTan, kTBlack,
+              teamclass[base::ToSize(curclass)]->Full_Name(),
+              kDialogX + (kDialogW / 2), msg_y, kCcTan, kTBlack,
               TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
         }
       }
@@ -1823,8 +1835,8 @@ int MapEditClass::Team_Members(HousesType house) {
 
           if (static_cast<unsigned>(curclass) < static_cast<unsigned>(maxclasses)) {
             Fancy_Text_Print(
-                teamclass[curclass]->Full_Name(), kDialogX + (kDialogW / 2),
-                msg_y, kCcGreen, kTBlack,
+                teamclass[base::ToSize(curclass)]->Full_Name(),
+                kDialogX + (kDialogW / 2), msg_y, kCcGreen, kTBlack,
                 TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
           }
 
@@ -1850,7 +1862,7 @@ int MapEditClass::Team_Members(HousesType house) {
       *decrement *	tindex to go to the next time delay, which is longer;
       *then, decr. *	again to go to the 1st time delay which is the shortest.
       */
-      if (TickCount.Time() - heldtime > tdelay[tindex]) {
+      if (TickCount.Time() - heldtime > base::At(tdelay, tindex)) {
         heldtime = TickCount.Time();
         if (tindex) {
           tindex--;
@@ -1859,7 +1871,7 @@ int MapEditClass::Team_Members(HousesType house) {
         /*
         **	Detect addition of a new class.
         */
-        if (teamcount[curclass] == 0) {
+        if (teamcount[base::ToSize(curclass)] == 0) {
           /*
           **	Don't allow more classes than we can handle.
           */
@@ -1868,13 +1880,14 @@ int MapEditClass::Team_Members(HousesType house) {
           }
           numclasses++;
         }
-        teamcount[curclass]++;
+        teamcount[base::ToSize(curclass)]++;
 
         /*
         **	Update number label.
         */
-        Draw_Member(teamclass[curclass], curclass, teamcount[curclass], house,
-                    kDialogX + 16, dlg_picture_top);
+        Draw_Member(teamclass[base::ToSize(curclass)], curclass,
+                    teamcount[base::ToSize(curclass)], house, kDialogX + 16,
+                    dlg_picture_top);
       }
 
     } else {
@@ -1884,19 +1897,19 @@ int MapEditClass::Team_Members(HousesType house) {
       *decrement *	tindex to go to the next time delay, which is longer;
       *then, decr. *	again to go to the 1st time delay which is the shortest.
       */
-      if (rheld && (TickCount.Time() - heldtime > tdelay[tindex])) {
+      if (rheld && (TickCount.Time() - heldtime > base::At(tdelay, tindex))) {
         if (tindex) {
           tindex--;
         }
         heldtime = TickCount.Time();
 
-        if (teamcount[curclass] > 0) {
-          teamcount[curclass]--;
+        if (teamcount[base::ToSize(curclass)] > 0) {
+          teamcount[base::ToSize(curclass)]--;
 
           /*
           **	Detect removal of a class.
           */
-          if (teamcount[curclass] == 0) {
+          if (teamcount[base::ToSize(curclass)] == 0) {
             numclasses--;
           }
         }
@@ -1904,8 +1917,9 @@ int MapEditClass::Team_Members(HousesType house) {
         /*
         **	Update number label.
         */
-        Draw_Member(teamclass[curclass], curclass, teamcount[curclass], house,
-                    kDialogX + 16, dlg_picture_top);
+        Draw_Member(teamclass[base::ToSize(curclass)], curclass,
+                    teamcount[base::ToSize(curclass)], house, kDialogX + 16,
+                    dlg_picture_top);
       }
     }
   }
@@ -1917,9 +1931,10 @@ int MapEditClass::Team_Members(HousesType house) {
     CurTeam->ClassCount = static_cast<unsigned char>(numclasses);
     i = 0;  // current team class index
     for (int j = 0; j < maxclasses; j++) {
-      if (teamcount[j] > 0) {
-        CurTeam->DesiredNum[i] = static_cast<unsigned char>(teamcount[j]);
-        CurTeam->Class[i] = teamclass[j];
+      if (teamcount[base::ToSize(j)] > 0) {
+        base::At(CurTeam->DesiredNum, i) =
+            static_cast<unsigned char>(teamcount[base::ToSize(j)]);
+        base::At(CurTeam->Class, i) = teamclass[base::ToSize(j)];
         i++;
       }
     }
@@ -1931,9 +1946,6 @@ int MapEditClass::Team_Members(HousesType house) {
   HiddenPage.Clear();
   Flag_To_Redraw(true);
   Render();
-
-  delete[] teamclass;
-  delete[] teamcount;
 
   if (cancel) {
     return (-1);
@@ -1973,10 +1985,12 @@ void MapEditClass::Draw_Member(const TechnoTypeClass* ptr, int index, int quant,
   const int x = pic_x + (col * kPictureW);
   const int y = pic_y + (row * kRowH);
 
-  WindowList[static_cast<int>(WINDOW_EDITOR)][kWindowX] = 0;
-  WindowList[static_cast<int>(WINDOW_EDITOR)][kWindowY] = 0;
-  WindowList[static_cast<int>(WINDOW_EDITOR)][kWindowWidth] = 640 / 8;
-  WindowList[static_cast<int>(WINDOW_EDITOR)][kWindowHeight] = 400;
+  base::At(base::At(WindowList, static_cast<int>(WINDOW_EDITOR)), kWindowX) = 0;
+  base::At(base::At(WindowList, static_cast<int>(WINDOW_EDITOR)), kWindowY) = 0;
+  base::At(base::At(WindowList, static_cast<int>(WINDOW_EDITOR)),
+           kWindowWidth) = 640 / 8;
+  base::At(base::At(WindowList, static_cast<int>(WINDOW_EDITOR)),
+           kWindowHeight) = 400;
   Change_Window(static_cast<int>(WINDOW_EDITOR));
 
   Hide_Mouse();
@@ -2011,8 +2025,9 @@ void MapEditClass::Draw_Member(const TechnoTypeClass* ptr, int index, int quant,
  *   12/07/1994 BR : Created.                                              *
  *=========================================================================*/
 void MapEditClass::Build_Mission_List(
-    int missioncount, TeamMissionStruct* missions,
-    char missionbuf[TeamTypeClass::kMaxTeamMissions][20], ListClass* list) {
+    int missioncount,
+    const TeamMissionStruct (&missions)[TeamTypeClass::kMaxTeamMissions],
+    char (&missionbuf)[TeamTypeClass::kMaxTeamMissions][20], ListClass* list) {
   /*
   ** Start with an empty list
   */
@@ -2025,23 +2040,25 @@ void MapEditClass::Build_Mission_List(
     ** generate the string for a MOVE mission; the argument is the
     ** letter-designation of the cell to move to.
     */
-    if (missions[i].Mission == TMISSION_MOVE ||
-        missions[i].Mission == TMISSION_UNLOAD) {
-      absl::SNPrintF(missionbuf[i], sizeof(missionbuf[i]), "%s\t%c",
-                     TeamTypeClass::Name_From_Mission(missions[i].Mission),
-                     missions[i].Argument + 'A');
+    if (base::At(missions, i).Mission == TMISSION_MOVE ||
+        base::At(missions, i).Mission == TMISSION_UNLOAD) {
+      absl::SNPrintF(
+          base::At(missionbuf, i), sizeof(base::At(missionbuf, i)), "%s\t%c",
+          TeamTypeClass::Name_From_Mission(base::At(missions, i).Mission),
+          base::At(missions, i).Argument + 'A');
     } else {
       /*
       ** All other missions take a numeric argument.
       */
-      absl::SNPrintF(missionbuf[i], sizeof(missionbuf[i]), "%s\t%d",
-                     TeamTypeClass::Name_From_Mission(missions[i].Mission),
-                     missions[i].Argument);
+      absl::SNPrintF(
+          base::At(missionbuf, i), sizeof(base::At(missionbuf, i)), "%s\t%d",
+          TeamTypeClass::Name_From_Mission(base::At(missions, i).Mission),
+          base::At(missions, i).Argument);
     }
 
     /*
     ** Add the string to the list box
     */
-    list->Add_Item(missionbuf[i]);
+    list->Add_Item(base::At(missionbuf, i));
   }
 }

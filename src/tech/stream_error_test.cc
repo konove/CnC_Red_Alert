@@ -128,7 +128,7 @@ TEST(StreamErrorTest, FlushEmitsEverythingSoFinishAddsNothing) {
   BlowfishSink blow(CipherMode::kEncrypt, file);
   LzoSink lzo(CodecMode::kCompress, blow, 64);
   const std::array<char, 8> key = {1, 2, 3, 4, 5, 6, 7, 8};
-  blow.Key(key.data(), static_cast<int>(key.size()));
+  blow.Key(std::as_bytes(std::span(key)));
   // 100 bytes: one full block and a partial one, and a Blowfish tail.
   const std::string text(100, 'q');
   EXPECT_TRUE(lzo.Write(Bytes(text)));

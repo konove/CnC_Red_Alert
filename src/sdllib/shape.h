@@ -38,7 +38,6 @@
 #include <cstdint>
 #include <span>
 
-#include "absl/base/attributes.h"
 #include "base/attributes.h"
 #include "base/flags.h"
 
@@ -125,21 +124,19 @@ typedef struct {
 
 extern int ShapeBufferSize;
 extern char* ShapeBuffer;
+extern std::span<uint8_t> ShapeBufferBytes;
 
 /*
 ---------------------------------- shape.c ----------------------------------
 */
-int Extract_Shape_Count(const void* buffer);
-int Extract_Shape_Count(std::span<const std::byte> span);
-const void* Extract_Shape(const void* buffer ABSL_ATTRIBUTE_LIFETIME_BOUND,
-                          int shape);
+int Extract_Shape_Count(std::span<const std::byte> buffer);
+std::span<const std::byte> Extract_Shape(std::span<const std::byte> buffer,
+                                         int shape);
 
 /*
 ------------------------------- setshape.asm --------------------------------
 */
-extern "C" {
-void Set_Shape_Buffer(void* buffer, int size);
-}
+void Set_Shape_Buffer(std::span<uint8_t> buffer);
 
 #endif  // CNC_RED_ALERT_SDLLIB_SHAPE_H_
 

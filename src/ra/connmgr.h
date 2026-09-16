@@ -75,7 +75,9 @@
 #ifndef CNC_RED_ALERT_RA_CONNMGR_H_
 #define CNC_RED_ALERT_RA_CONNMGR_H_
 
+#include <cstddef>
 #include <cstdint>
+#include <span>
 
 /*
 ***************************** Class Declaration *****************************
@@ -113,9 +115,11 @@ class ConnManClass {
   /*.....................................................................
   Sending & receiving data
   .....................................................................*/
-  virtual int Send_Private_Message(void* buf, int buflen, int ack_req = 1,
+  virtual int Send_Private_Message(std::span<const std::byte> buf, int buflen,
+                                   int ack_req = 1,
                                    int conn_id = kConnectionNone) = 0;
-  virtual int Get_Private_Message(void* buf, int* buflen, int* conn_id) = 0;
+  virtual int Get_Private_Message(std::span<std::byte> buf, int* buflen,
+                                  int* conn_id) = 0;
 
   /*.....................................................................
   Connection management

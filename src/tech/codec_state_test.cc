@@ -9,6 +9,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/buffer.h"
 #include "base/types.h"
 #include "gtest/gtest.h"
 #include "tech/base64.h"
@@ -48,7 +49,8 @@ std::vector<uint8_t> Drain(ByteSource& straw) {
   for (base::ssize count = straw.Read(std::as_writable_bytes(std::span(chunk)));
        count != 0;
        count = straw.Read(std::as_writable_bytes(std::span(chunk)))) {
-    result.insert(result.end(), chunk.begin(), chunk.begin() + count);
+    std::ranges::copy(std::span(chunk).first(static_cast<std::size_t>(count)),
+                      std::back_inserter(result));
   }
   return result;
 }
@@ -110,34 +112,43 @@ TEST(CodecStateTest, LzwHandlesFragmentedHeadersAndPartialBlocks) {
 }
 
 TEST(CodecStateTest, Base64HandlesShortFinalGroups) {
-  constexpr const char* expected[] = {"YQ==", "YWI=", "YWJj", "YWJjZA==", "YWJjZGU="};
+  constexpr std::array<std::string_view, 5> expected = {"YQ==", "YWI=", "YWJj",
+                                                        "YWJjZA==", "YWJjZGU="};
   for (const int length : {1, 2, 3, 4, 5}) {
     constexpr char input[] = "abcde";
-    SpanSource plain(
-        std::as_bytes(std::span(input, static_cast<std::size_t>(length))));
+    SpanSource plain(std::as_bytes(
+        std::span(input).first(static_cast<std::size_t>(length))));
     Base64Source encoder(Base64Mode::kEncode, plain);
     const auto bytes = Drain(encoder);
-    ASSERT_EQ(bytes.size(), std::strlen(expected[length - 1]));
-    EXPECT_EQ(std::memcmp(bytes.data(), expected[length - 1], bytes.size()), 0);
+    ASSERT_EQ(bytes.size(),
+              expected[static_cast<std::size_t>(length - 1)].size());
+    EXPECT_EQ(
+        base::CompareBytes(std::as_bytes(std::span(bytes)),
+                           std::as_bytes(std::span(
+                               expected[static_cast<std::size_t>(length - 1)])),
+                           bytes.size()),
+        0);
     SpanSource encoded(std::as_bytes(std::span(bytes)));
     Base64Source decoder(Base64Mode::kDecode, encoded);
     const auto decoded = Drain(decoder);
     ASSERT_EQ(std::ssize(decoded), length);
-    EXPECT_EQ(
-        std::memcmp(decoded.data(), input, static_cast<std::size_t>(length)),
-        0);
+    EXPECT_EQ(base::CompareBytes(std::as_bytes(std::span(decoded)),
+                                 base::ObjectBytes(input), length),
+              0);
   }
 }
 
 TEST(CodecStateTest, ShaResetRestoresKnownDigestAfterPartialInput) {
   SHAEngine hash;
-  hash.Hash("discard this partial block", 26);
+  hash.Hash(std::as_bytes(std::span("discard this partial block")).first(26));
   static_cast<void>(hash.Digest());
   hash.Init();
-  hash.Hash("a", 1);
-  hash.Hash("bc", 2);
+  hash.Hash(std::as_bytes(std::span("a")).first(1));
+  hash.Hash(std::as_bytes(std::span("bc")).first(2));
   const Sha1Digest actual = hash.Digest();
-  EXPECT_EQ(std::memcmp(actual.data(), SHA_DIGEST1a, actual.size()), 0);
+  EXPECT_EQ(base::CompareBytes(actual, base::ObjectBytes(SHA_DIGEST1a),
+                               actual.size()),
+            0);
   EXPECT_EQ(hash.Digest(), actual);
 }
 }  // namespace
@@ -149,8 +160,12 @@ TEST(CodecStateTest, LcwLongRunsRespectTheirLengthAtEveryAlignment) {
       output.fill(0xa5);
       const std::array<uint8_t, 5> encoded = {
           0xfe, static_cast<uint8_t>(length), 0, 0x6b, 0x80};
-      EXPECT_EQ(LCW_Uncomp(encoded.data(), output.data() + offset, length),
-                length);
+      EXPECT_EQ(
+          LcwUncompBounded(std::as_bytes(std::span(encoded)),
+                           std::as_writable_bytes(std::span(output))
+                               .subspan(static_cast<std::size_t>(offset),
+                                        static_cast<std::size_t>(length))),
+          length);
       for (int i = 0; const uint8_t byte : output) {
         EXPECT_EQ(byte, i >= offset && i < offset + length ? 0x6b : 0xa5);
         ++i;
@@ -164,7 +179,7 @@ TEST(CodecStateTest, ModularMultiplicationMatchesIndependentRemainder) {
   constexpr uint64_t kModulus = 0x10000000f;
   constexpr int kPrecision = 3;
   const std::array<uint32_t, kPrecision> modulus = {15, 1, 0};
-  ASSERT_EQ(XMP_Prepare_Modulus(modulus.data(), kPrecision), 0);
+  ASSERT_EQ(XMP_Prepare_Modulus(modulus, kPrecision), 0);
   uint64_t seed = 17;
   for (int trial = 0; trial < 256; ++trial) {
     seed = ((seed * 1664525) + 1013904223) % kModulus;
@@ -176,8 +191,7 @@ TEST(CodecStateTest, ModularMultiplicationMatchesIndependentRemainder) {
     const std::array<uint32_t, kPrecision> right = {
         static_cast<uint32_t>(b), static_cast<uint32_t>(b >> 32), 0};
     std::array<uint32_t, kPrecision> result{};
-    ASSERT_EQ(
-        XMP_Mod_Mult(result.data(), left.data(), right.data(), kPrecision), 0);
+    ASSERT_EQ(XMP_Mod_Mult(result, left, right, kPrecision), 0);
     // Repeated doubling avoids overflowing a native 64-bit product.
     uint64_t expected = 0;
     uint64_t addend = a;
@@ -241,7 +255,8 @@ TEST(CodecStateTest, UnkeyedBlowStrawReadsOnlyWhatWasRequested) {
 
   std::array<uint8_t, 64> rest{};
   ASSERT_EQ(source.Read(std::as_writable_bytes(std::span(rest))), 27);
-  EXPECT_TRUE(std::equal(data.begin() + 5, data.end(), rest.begin()));
+  EXPECT_TRUE(std::equal(std::span(data).subspan(5).begin(),
+                         std::span(data).subspan(5).end(), rest.begin()));
 }
 
 TEST(CodecStateTest, ShaStrawHashesOnlyTheBytesItReturned) {
@@ -255,12 +270,13 @@ TEST(CodecStateTest, ShaStrawHashesOnlyTheBytesItReturned) {
   ASSERT_EQ(sha.Read(std::as_writable_bytes(std::span(head))), 5);
 
   SHAEngine expected_engine;
-  expected_engine.Hash(data.data(), 5);
+  expected_engine.Hash(std::as_bytes(std::span(data)).first(5));
   EXPECT_EQ(sha.digest(), expected_engine.Digest());
 
   std::array<uint8_t, 64> rest{};
   ASSERT_EQ(source.Read(std::as_writable_bytes(std::span(rest))), 27);
-  EXPECT_TRUE(std::equal(data.begin() + 5, data.end(), rest.begin()));
+  EXPECT_TRUE(std::equal(std::span(data).subspan(5).begin(),
+                         std::span(data).subspan(5).end(), rest.begin()));
 }
 
 // A pull link reads only as much of its source as its codec can use, so the
@@ -290,7 +306,7 @@ TEST(CodecStateTest, SourcesReadOnlyWhatTheirCodecNeeds) {
     SpanSource source(std::as_bytes(std::span(plain)));
     BlowfishSource cipher(CipherMode::kDecrypt, source);
     const std::array<char, 4> key = {'k', 'e', 'y', '!'};
-    cipher.Key(key.data(), static_cast<int>(key.size()));
+    cipher.Key(std::as_bytes(std::span(key)));
     std::array<std::byte, 1> one{};
     ASSERT_EQ(cipher.Read(one), 1);
     EXPECT_EQ(source.bytes_remaining(), std::ssize(plain) - 8);

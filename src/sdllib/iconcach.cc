@@ -1,10 +1,12 @@
 #include "sdllib/iconcach.h"
 
+#include <algorithm>
+#include <cstddef>
 #include <cstdint>
-#include <cstdio>
-#include <cstring>
+#include <span>
 
 #include "absl/strings/str_format.h"
+#include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/types.h"
 #include "sdllib/drawbuff.h"
@@ -12,11 +14,11 @@
 #include "sdllib/tile.h"
 
 static const void* LastIconset = nullptr;
-static const uint8_t* StampPtr = nullptr;
+static std::span<const std::byte> StampPtr;
 
-static const uint8_t* IsTrans = nullptr;
+static std::span<const std::byte> IsTrans;
 
-static const uint8_t* MapPtr = nullptr;
+static std::span<const std::byte> MapPtr;
 static int IconWidth = 0;
 static int IconHeight = 0;
 static int IconSize = 0;
@@ -35,21 +37,30 @@ typedef struct {
   int32_t Map;        // Icon map offset (if present).
 } IControl_Type_Old;
 
-static void Init_Stamps(const void* icon_ptr) {
+static std::span<const std::byte> Table(std::span<const std::byte> data,
+                                        int offset) {
+  return offset >= 0 && base::ToSize(offset) <= data.size()
+             ? data.subspan(base::ToSize(offset))
+             : std::span<const std::byte>{};
+}
+
+static void Init_Stamps(std::span<const std::byte> icon_ptr) {
   // Verify legality of parameter.
-  if (!icon_ptr) {
+  if (icon_ptr.size() < sizeof(IControl_Type)) {
     return;
   }
 
   // Don't initialize if already initialized to this set (speed reasons).
-  if (LastIconset == icon_ptr) {
+  if (LastIconset == icon_ptr.data()) {
     return;
   }
 
-  LastIconset = icon_ptr;
+  LastIconset = icon_ptr.data();
 
   // Record number of icons in set.
-  const auto* control = static_cast<const IControl_Type*>(icon_ptr);
+  IControl_Type header{};
+  base::CopyBytes(base::ObjectBytes(header), icon_ptr, sizeof(header));
+  const auto* control = &header;
   IconCount = control->Count;
 
   // Record width of icon.
@@ -64,42 +75,51 @@ static void Init_Stamps(const void* icon_ptr) {
   // hack to detect old format
   // (these fields are actually Size in that case)
   if (!control->MapHeight || control->MapWidth > 256) {
-    const auto* old = static_cast<const IControl_Type_Old*>(icon_ptr);
-    MapPtr = static_cast<const uint8_t*>(icon_ptr) + old->Map;
-    StampPtr = static_cast<const uint8_t*>(icon_ptr) + old->Icons;
-    IsTrans = static_cast<const uint8_t*>(icon_ptr) + old->TransFlag;
+    IControl_Type_Old old_header{};
+    base::CopyBytes(base::ObjectBytes(old_header), icon_ptr,
+                    sizeof(old_header));
+    const auto* old = &old_header;
+    MapPtr = Table(icon_ptr, old->Map);
+    StampPtr = Table(icon_ptr, old->Icons);
+    IsTrans = Table(icon_ptr, old->TransFlag);
   } else {
     // Record hard pointer to icon map data.
-    MapPtr = static_cast<const uint8_t*>(icon_ptr) + control->Map;
+    MapPtr = Table(icon_ptr, control->Map);
 
     // Record hard pointer to icon data
-    StampPtr = static_cast<const uint8_t*>(icon_ptr) + control->Icons;
+    StampPtr = Table(icon_ptr, control->Icons);
 
     // Record the transparent table
-    IsTrans = static_cast<const uint8_t*>(icon_ptr) + control->TransFlag;
+    IsTrans = Table(icon_ptr, control->TransFlag);
   }
 }
 
 void Buffer_Draw_Stamp_Clip(GraphicViewPortClass* viewport,
-                            const void* icondata, int icon, int x_pixel,
-                            int y_pixel, const void* remap, int min_x,
+                            std::span<const std::byte> icondata, int icon,
+                            int x_pixel, int y_pixel,
+                            std::span<const uint8_t> remap, int min_x,
                             int min_y, int max_x, int max_y) {
-  if (!icondata) {
+  if (icondata.empty()) {
     return;
   }
 
   // Initialize the stamp data if necessary.
-  if (icondata != LastIconset) {
+  if (icondata.data() != LastIconset) {
     Init_Stamps(icondata);
   }
 
   // Determine if the icon number requested is actually in the set.
   // Perform the logical icon to actual icon number remap if necessary.
-  if (MapPtr) {
-    icon = MapPtr[icon];
+  if (!MapPtr.empty()) {
+    if (icon < 0 || base::ToSize(icon) >= MapPtr.size()) {
+      return;
+    }
+    icon = std::to_integer<uint8_t>(MapPtr[base::ToSize(icon)]);
   }
 
-  if (icon >= IconCount) {
+  if (icon < 0 || icon >= IconCount || IconSize <= 0 ||
+      base::ToSize(icon) >= IsTrans.size() ||
+      base::ToSize(icon + 1) > StampPtr.size() / base::ToSize(IconSize)) {
     return;
   }
 
@@ -108,7 +128,7 @@ void Buffer_Draw_Stamp_Clip(GraphicViewPortClass* viewport,
   int iheight = IconHeight;
 
   // Fetch pointer to start of icon's data.
-  const auto* ptr = StampPtr + (static_cast<base::ssize>(icon) * IconSize);
+  auto ptr = StampPtr.begin() + (static_cast<base::ssize>(icon) * IconSize);
 
   // Update the clipping window coordinates to be valid maxes instead of width &
   // height , and change the coordinates to be window-relative
@@ -161,23 +181,27 @@ void Buffer_Draw_Stamp_Clip(GraphicViewPortClass* viewport,
 
   // If the remap table pointer passed in is NULL, then flag this condition
   // so that the faster (non-remapping) icon draw loop will be used.
-  const bool doremap = remap != nullptr;
+  const bool doremap = !remap.empty();
+  if (doremap && remap.size() < 256) {
+    return;
+  }
 
   // Get pointer to position to render icon.
   GraphicViewPortClass* vp_dst = viewport;
   const base::ssize dst_area =
       vp_dst->Get_XAdd() + vp_dst->Get_Width() + vp_dst->Get_Pitch();
-  auto* dst_offset = vp_dst->Get_Offset() + x_pixel + (y_pixel * dst_area);
+  auto dst_offset =
+      vp_dst->Get_Pixels().begin() + x_pixel + (y_pixel * dst_area);
 
   // Determine row modulo for advancing to next line.
-  const int modulo = vp_dst->Get_Width() - iwidth;
+  const base::ssize modulo = dst_area - iwidth;
 
   if (doremap) {
-    const auto* remap8 = static_cast<const uint8_t*>(remap);
+    const auto remap8 = remap;
     // Complex icon draw -- extended remap.
     do {
       for (int x = 0; x < iwidth; x++) {
-        const uint8_t pixel = remap8[*ptr++];
+        const uint8_t pixel = remap8[std::to_integer<uint8_t>(*ptr++)];
         if (pixel) {
           *dst_offset = pixel;
         }
@@ -189,11 +213,11 @@ void Buffer_Draw_Stamp_Clip(GraphicViewPortClass* viewport,
     } while (--iheight);
   }
   // Check to see if transparent or generic draw is necessary.
-  else if (IsTrans[icon]) {
+  else if (IsTrans[base::ToSize(icon)] != std::byte{}) {
     // Transparent icon draw routine -- no extended remap.
     do {
       for (int x = 0; x < iwidth; x++) {
-        const uint8_t pixel = *ptr++;
+        const auto pixel = std::to_integer<uint8_t>(*ptr++);
         if (pixel) {
           *dst_offset = pixel;
         }
@@ -206,7 +230,9 @@ void Buffer_Draw_Stamp_Clip(GraphicViewPortClass* viewport,
   } else {
     // Fast non-transparent icon draw routine.
     do {
-      memcpy(dst_offset, ptr, base::ToSize(iwidth));
+      std::transform(ptr, ptr + iwidth, dst_offset, [](std::byte value) {
+        return std::to_integer<uint8_t>(value);
+      });
       dst_offset += dst_area;
       ptr += IconWidth;
     } while (--iheight);

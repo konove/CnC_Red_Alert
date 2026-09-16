@@ -46,6 +46,8 @@
 #ifndef CNC_RED_ALERT_RA_INTERPAL_H_
 #define CNC_RED_ALERT_RA_INTERPAL_H_
 
+#include <span>
+
 // Forward declarations
 class GraphicBufferClass;
 class GraphicViewPortClass;
@@ -56,7 +58,7 @@ class GraphicViewPortClass;
 // Palette interpolation functions
 void Read_Interpolation_Palette(const char* palette_file_name);
 void Write_Interpolation_Palette(const char* palette_file_name);
-void Increase_Palette_Luminance(unsigned char* InterpolationPalette,
+void Increase_Palette_Luminance(std::span<unsigned char> InterpolationPalette,
                                 int red_percentage, int green_percentage,
                                 int blue_percentage, int cap);
 void Interpolate_2X_Scale(GraphicBufferClass* source,
@@ -67,7 +69,7 @@ void Interpolate_2X_Scale(GraphicBufferClass* source,
 extern "C" {
 extern unsigned char PaletteInterpolationTable[SIZE_OF_PALETTE]
                                               [SIZE_OF_PALETTE];
-extern unsigned char* InterpolationPalette;
+extern std::span<unsigned char> InterpolationPalette;
 void __cdecl Asm_Create_Palette_Interpolation_Table();
 }
 

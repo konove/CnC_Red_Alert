@@ -94,6 +94,7 @@
 #include <cassert>
 #include <cstdint>
 #include <iterator>
+#include <span>
 #include <utility>
 
 #include "base/array.h"
@@ -120,6 +121,7 @@
 #include "ra/infantry.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
+#include "ra/keyframe.h"
 #include "ra/layer.h"
 #include "ra/logic.h"
 #include "ra/mapedit.h"
@@ -439,7 +441,7 @@ void CellClass::Redraw_Objects(bool forced) {
       */
       for (int index = 0; index < std::ssize(Overlappers); index++) {
         if (base::At(Overlappers, index)) {
-          assert(Overlappers[index]->IsActive);
+          assert(base::At(Overlappers, index)->IsActive);
           if (base::At(Overlappers, index)->Is_Techno() &&
               dynamic_cast<const TechnoClass*>(base::At(Overlappers, index))
                       ->Visual_Character() != VISUAL_NORMAL) {
@@ -988,7 +990,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
 
     const TemplateTypeClass* ttype = nullptr;
     int icon = 0;  // The icon number to use from the template set.
-    void* remap = nullptr;
+    std::span<const unsigned char> remap;
 
     CellCount++;
 
@@ -1050,10 +1052,10 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
       /*
       **	This is the underlying terrain icon.
       */
-      if (ttype->Get_Image_Data()) {
-        LogicPage->Draw_Stamp(ttype->Get_Image_Data(), icon, x, y, nullptr,
+      if (!ttype->Get_Image_Data().empty()) {
+        LogicPage->Draw_Stamp(ttype->Get_Image_Data(), icon, x, y, {},
                               static_cast<int>(WINDOW_TACTICAL));
-        if (remap) {
+        if (!remap.empty()) {
           LogicPage->Remap(x + Map.TacPixelX, y + Map.TacPixelY, ICON_PIXEL_W,
                            ICON_PIXEL_H, remap);
         }
@@ -1091,7 +1093,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
         CC_Draw_Shape(otype.Get_Image_Data(), OverlayData,
                       x + (CELL_PIXEL_W >> 1), y + (CELL_PIXEL_H >> 1),
                       WINDOW_TACTICAL,
-                      SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST, nullptr,
+                      SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST, {},
                       DisplayClass::UnitShadow);
         IsTheaterShape = false;
       }
@@ -1115,12 +1117,12 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
             for (int i = 0; i < ScenarioClass::kHomeWaypoint; i++) {
               if (base::At(Scen.Waypoint, i) == Cell_Number()) {
                 if (i < 26) {
-                  waypt[0] = static_cast<char>('A' + i);
-                  waypt[1] = 0;
+                  base::At(waypt, 0) = static_cast<char>('A' + i);
+                  base::At(waypt, 1) = 0;
                 } else {
-                  waypt[0] = static_cast<char>('A' + (i / 26) - 1);
-                  waypt[1] = static_cast<char>('A' + (i % 26));
-                  waypt[2] = 0;
+                  base::At(waypt, 0) = static_cast<char>('A' + (i / 26) - 1);
+                  base::At(waypt, 1) = static_cast<char>('A' + (i % 26));
+                  base::At(waypt, 2) = 0;
                 }
                 Fancy_Text_Print(waypt, Map.TacPixelX + x + (CELL_PIXEL_W / 2),
                                  Map.TacPixelY + y + (CELL_PIXEL_H / 2) - 3,
@@ -1129,13 +1131,15 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
                 break;
               }
             }
-            if (Scen.Waypoint[ScenarioClass::kHomeWaypoint] == Cell_Number()) {
+            if (base::At(Scen.Waypoint, ScenarioClass::kHomeWaypoint) ==
+                Cell_Number()) {
               Fancy_Text_Print("Home", Map.TacPixelX + x,
                                Map.TacPixelY + y + (CELL_PIXEL_H)-7,
                                &ColorRemaps[PCOLOR_GREY], kTBlack,
                                TPF_EFNT | TPF_FULLSHADOW);
             }
-            if (Scen.Waypoint[ScenarioClass::kReinforcementWaypoint] ==
+            if (base::At(Scen.Waypoint,
+                         ScenarioClass::kReinforcementWaypoint) ==
                 Cell_Number()) {
               Fancy_Text_Print("Reinf", Map.TacPixelX + x,
                                Map.TacPixelY + y + (CELL_PIXEL_H)-7,
@@ -1166,10 +1170,10 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
         **	Draw the hash-mark cursor:
         */
         if (Map.ProximityCheck && Is_Clear_To_Build(loco)) {
-          LogicPage->Draw_Stamp(DisplayClass::TransIconset, 0, x, y, nullptr,
+          LogicPage->Draw_Stamp(DisplayClass::TransIconset, 0, x, y, {},
                                 static_cast<int>(WINDOW_TACTICAL));
         } else {
-          LogicPage->Draw_Stamp(DisplayClass::TransIconset, 2, x, y, nullptr,
+          LogicPage->Draw_Stamp(DisplayClass::TransIconset, 2, x, y, {},
                                 static_cast<int>(WINDOW_TACTICAL));
         }
 
@@ -1186,15 +1190,14 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
               case RTTI_TEMPLATETYPE: {
                 const auto* tptr =
                     dynamic_cast<const TemplateTypeClass*>(Map.PendingObject);
-                if (tptr->Get_Image_Data()) {
+                if (!tptr->Get_Image_Data().empty()) {
                   const CELL cell = Cell_Number();
                   icon = (Cell_X(cell) - Cell_X(static_cast<CELL>(
                                              Map.ZoneCell + Map.ZoneOffset))) +
                          ((Cell_Y(cell) - Cell_Y(static_cast<CELL>(
                                               Map.ZoneCell + Map.ZoneOffset))) *
                           tptr->Width);
-                  LogicPage->Draw_Stamp(tptr->Get_Image_Data(), icon, x, y,
-                                        nullptr,
+                  LogicPage->Draw_Stamp(tptr->Get_Image_Data(), icon, x, y, {},
                                         static_cast<int>(WINDOW_TACTICAL));
                 }
                 break;
@@ -1232,9 +1235,9 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
       **	Draw the flag if there is one located at this cell.
       */
       if (IsFlagged) {
-        const void* flag_remap =
+        const auto flag_remap =
             HouseClass::As_Pointer(Owner)->Remap_Table(false, REMAP_NORMAL);
-        CC_Draw_Shape(MixArchive::Retrieve("FLAGFLY.SHP"),
+        CC_Draw_Shape(MixArchive::RetrieveData("FLAGFLY.SHP"),
                       static_cast<int>(Frame % 14), x + (ICON_PIXEL_W / 2),
                       y + (ICON_PIXEL_H / 2), WINDOW_TACTICAL,
                       SHAPE_CENTER | SHAPE_GHOST | SHAPE_FADING, flag_remap,
@@ -1295,8 +1298,8 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
         **	Two objects can be sorted with a single compare and swap.
         */
         case 2:
-          if (optr[0]->Sort_Y() > optr[1]->Sort_Y()) {
-            std::swap(optr[0], optr[1]);
+          if (base::At(optr, 0)->Sort_Y() > base::At(optr, 1)->Sort_Y()) {
+            std::swap(base::At(optr, 0), base::At(optr, 1));
           }
           break;
 
@@ -1304,14 +1307,14 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
         **	Three objects can be sorted with three compares and swaps.
         */
         case 3:
-          if (optr[0]->Sort_Y() > optr[2]->Sort_Y()) {
-            std::swap(optr[0], optr[2]);
+          if (base::At(optr, 0)->Sort_Y() > base::At(optr, 2)->Sort_Y()) {
+            std::swap(base::At(optr, 0), base::At(optr, 2));
           }
-          if (optr[0]->Sort_Y() > optr[1]->Sort_Y()) {
-            std::swap(optr[0], optr[1]);
+          if (base::At(optr, 0)->Sort_Y() > base::At(optr, 1)->Sort_Y()) {
+            std::swap(base::At(optr, 0), base::At(optr, 1));
           }
-          if (optr[1]->Sort_Y() > optr[2]->Sort_Y()) {
-            std::swap(optr[1], optr[2]);
+          if (base::At(optr, 1)->Sort_Y() > base::At(optr, 2)->Sort_Y()) {
+            std::swap(base::At(optr, 1), base::At(optr, 2));
           }
           break;
 
@@ -1320,10 +1323,11 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
         **	a quicksort.
         */
         default:
-          std::sort(optr, optr + count,
-                    [](const ObjectClass* left, const ObjectClass* right) {
-                      return *left < *right;  // Compares Sort_Y().
-                    });
+          std::ranges::sort(
+              std::span(optr).first(base::ToSize(count)),
+              [](const ObjectClass* left, const ObjectClass* right) {
+                return *left < *right;  // Compares Sort_Y().
+              });
           break;
       }
 
@@ -1692,14 +1696,14 @@ COORDINATE CellClass::Closest_Free_Spot(COORDINATE coord, bool any) const {
   *determine *	the closest one to the coordinate requested. Use precalculated
   *table so that *	when the first free position is found, bail.
   */
-  unsigned char* sequence = nullptr;
+  std::span<const unsigned char> sequence;
   if (spot_index == 0) {
-    sequence = base::Suffix(base::At(_alternate, Random_Pick(0, 3)), 0).data();
+    sequence = std::span(base::At(_alternate, Random_Pick(0, 3)));
   } else {
-    sequence = base::Suffix(base::At(_sequence, spot_index), 0).data();
+    sequence = std::span(base::At(_sequence, spot_index));
   }
   for (int index = 0; index < 4; index++) {
-    const int pos = *sequence++;
+    const int pos = sequence[base::ToSize(index)];
 
     if (Is_Spot_Free(pos)) {
       return Coord_Add(coord, base::At(StoppingCoordAbs, pos));
@@ -2353,7 +2357,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
         if (object->House->SuperWeapon[SPC_PARA_BOMB].Enable(true) &&
             object->IsOwnedByPlayer) {
           Map.Add(RTTI_SPECIAL, static_cast<int>(SPC_PARA_BOMB));
-          Map.Column[1].Flag_To_Redraw();
+          base::At(Map.Column, 1).Flag_To_Redraw();
         }
 
         break;
@@ -2365,7 +2369,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
         if (object->House->SuperWeapon[SPC_SONAR_PULSE].Enable(true) &&
             object->IsOwnedByPlayer) {
           Map.Add(RTTI_SPECIAL, static_cast<int>(SPC_SONAR_PULSE));
-          Map.Column[1].Flag_To_Redraw();
+          base::At(Map.Column, 1).Flag_To_Redraw();
         }
 
         break;
@@ -2438,7 +2442,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
         if (object->House->SuperWeapon[SPC_NUCLEAR_BOMB].Enable(true) &&
             object->IsOwnedByPlayer) {
           Map.Add(RTTI_SPECIAL, static_cast<int>(SPC_NUCLEAR_BOMB));
-          Map.Column[1].Flag_To_Redraw();
+          base::At(Map.Column, 1).Flag_To_Redraw();
         }
 
         break;
@@ -2954,4 +2958,14 @@ bool CellClass::Can_Tiberium_Germinate() const {
   }
 
   return true;
+}
+
+CellClass& CellClass::Adjacent_Cell(FacingType face) {
+  const int offset = Adjacent_Offset(face);
+  return offset == 0 ? *this : Map[static_cast<CELL>(Cell_Number() + offset)];
+}
+
+const CellClass& CellClass::Adjacent_Cell(FacingType face) const {
+  const int offset = Adjacent_Offset(face);
+  return offset == 0 ? *this : Map[static_cast<CELL>(Cell_Number() + offset)];
 }

@@ -6,11 +6,44 @@
 #include <vector>
 
 #include "gtest/gtest.h"
+#include "ra/search.h"
+#include "ra/vector_dynamic.h"
 #include "tech/archive.h"
 #include "tech/byte_sink.h"
 #include "tech/span_source.h"
 
 namespace {
+TEST(VectorStorageTest, BorrowedStorageRetainsExtentAndDoesNotGrow) {
+  int first = 1;
+  int second = 2;
+  void* storage[2] = {};
+  DynamicVectorClass<void*> values(2, storage);
+  EXPECT_TRUE(values.Add(&first));
+  EXPECT_TRUE(values.Add_Head(&second));
+  EXPECT_EQ(values[0], &second);
+  EXPECT_EQ(values[1], &first);
+  EXPECT_FALSE(values.Add(nullptr));
+  EXPECT_TRUE(values.Resize(4));
+  EXPECT_EQ(values[0], &second);
+  EXPECT_EQ(values[1], &first);
+  EXPECT_TRUE(values.Add(nullptr));
+  EXPECT_EQ(values.Count(), 3);
+}
+
+TEST(IndexStorageTest, PreservesEntriesAcrossGrowthSortAndRemoval) {
+  IndexClass<int> index;
+  for (int i = 30; i >= 0; --i) {
+    ASSERT_TRUE(index.Add_Index(i, i * 2));
+  }
+  EXPECT_EQ(index.Fetch_Index(17), 34);
+  EXPECT_TRUE(index.Remove_Index(17));
+  EXPECT_FALSE(index.Is_Present(17));
+  EXPECT_EQ(index.Fetch_Index(30), 60);
+  EXPECT_EQ(index.Fetch_Index(0), 0);
+  index.Clear();
+  EXPECT_EQ(index.Count(), 0);
+  EXPECT_FALSE(index.Is_Present(30));
+}
 
 // A stand-in for a game object: something with a slot ID and a few fields.
 struct Widget {

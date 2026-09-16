@@ -20,6 +20,7 @@
 //	ajw 07/16/98
 
 #include <cstring>
+#include <span>
 #include <string_view>
 
 #include "port/safe_string.h"
@@ -55,7 +56,8 @@
 #include "tech/mix_archive.h"
 
 static bool ReadSavedNicks(const WolapiObject* pWO, IconListClass& NickList,
-                           char* szNameBuffer, char* szPassBuffer);
+                           std::span<char> szNameBuffer,
+                           std::span<char> szPassBuffer);
 static bool bSaveNick(const WolapiObject* pWO, const char* szNickToSave,
                       const char* szPassToSave, bool bPassIsMangled);
 static void DeleteNick(const WolapiObject* pWO, int iOneBasedEntryToDelete);
@@ -155,8 +157,8 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
 
   IconListClass NickList(kListboxNicks, d_list_x, d_list_y, d_list_w, d_list_h,
                          TPF_6PT_GRAD | TPF_NOSHADOW,
-                         MixArchive::Retrieve("BTN-UP.SHP"),
-                         MixArchive::Retrieve("BTN-DN.SHP"), true, 1, 0);
+                         MixArchive::RetrieveData("BTN-UP.SHP"),
+                         MixArchive::RetrieveData("BTN-DN.SHP"), true, 1, 0);
 
   WOLEditClass NameEdit(kEditboxName, szNameBuffer, sizeof(szNameBuffer),
                         TPF_6PT_GRAD | TPF_NOSHADOW, d_name_x, d_name_y,
@@ -490,7 +492,8 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
 
 //***********************************************************************************************
 bool ReadSavedNicks(const WolapiObject* pWO, IconListClass& NickList,
-                    char* szNameBuffer, char* szPassBuffer) {
+                    std::span<char> szNameBuffer,
+                    std::span<char> szPassBuffer) {
   //	Read saved nickname/passwords from the registry.
   //	Set up the list of nick/passwords.
   //	Copy the first nick into the nick/password edits.
@@ -506,8 +509,8 @@ bool ReadSavedNicks(const WolapiObject* pWO, IconListClass& NickList,
     if ((pWO->pChat->GetNick(i, &szNick, &szPass) == S_OK) && (*szNick)) {
       NickList.Add_Item(szNick, nullptr, nullptr, ICON_SHAPE, szPass);
       if (i == 1) {
-        port::SafeCopy(szNameBuffer, szNick, WOL_NAME_LEN_MAX);
-        port::SafeCopy(szPassBuffer, szPass, WOL_PASSWORD_LEN);
+        port::SafeCopy(szNameBuffer, szNick);
+        port::SafeCopy(szPassBuffer, szPass);
         bReturn = true;
       }
     }

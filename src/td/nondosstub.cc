@@ -22,10 +22,13 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
+#include <memory>
 #include <optional>
+#include <span>
 
 #include "absl/base/attributes.h"
 #include "base/array.h"
+#include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/seek_origin.h"
 #include "sdllib/file_access.h"
@@ -90,17 +93,17 @@ void Focus_Restore() {
   }
 }
 
-static unsigned char* VQPalette;
+static std::span<unsigned char> VQPalette;
 static int32_t VQNumBytes;
 static uint32_t VQSlowpal;
 bool VQPaletteChange = false;
 
 extern "C" {
-void __cdecl SetPalette(unsigned char* palette, int32_t numbytes,
+void __cdecl SetPalette(std::span<unsigned char> palette, int32_t numbytes,
                         uint32_t slowpal);
 }
 
-void Flag_To_Set_Palette(unsigned char* palette, int32_t numbytes,
+void Flag_To_Set_Palette(std::span<unsigned char> palette, int32_t numbytes,
                          uint32_t slowpal) {
   VQPalette = palette;
   VQNumBytes = numbytes;
@@ -115,16 +118,18 @@ void Check_VQ_Palette_Set() {
   }
 }
 
-void __cdecl SetPalette(unsigned char* palette, int32_t /*unused*/,
+void __cdecl SetPalette(std::span<unsigned char> palette, int32_t /*unused*/,
                         uint32_t /*unused*/) {
   for (int i = 0; i < 256 * 3; i++) {
-    *(palette + i) &= 63;
+    palette[base::ToSize(i)] &= 63;
   }
   Increase_Palette_Luminance(palette, 15, 15, 15, 63);
 
   if (PalettesRead) {
-    memcpy(&PaletteInterpolationTable[0][0],
-           base::At(InterpolatedPalettes, PaletteCounter++), 65536);
+    base::CopyBytes(base::ObjectBytes(PaletteInterpolationTable),
+                    std::as_bytes(std::span(
+                        base::At(InterpolatedPalettes, PaletteCounter++))),
+                    sizeof(PaletteInterpolationTable));
   }
 
   Set_Palette(palette);
@@ -145,8 +150,8 @@ void __cdecl SetPalette(unsigned char* palette, int32_t /*unused*/,
  *=============================================================================================*/
 
 void Load_Title_Screen(const char* name, GraphicViewPortClass* video_page,
-                       unsigned char* palette) {
-  GraphicBufferClass* load_buffer = Read_PCX_File(name, palette, nullptr, 0);
+                       std::span<unsigned char> palette) {
+  GraphicBufferClass* load_buffer = Read_PCX_File(name, palette, {}, 0);
 
   if (load_buffer) {
     load_buffer->Blit(*video_page);
@@ -210,7 +215,8 @@ class BufferedFileReader {
   bool RefillBuffer() {
     cursor_ = 0;
     // Track exactly how many bytes were read.
-    bytes_in_buffer_ = base::ToSize(file_.Read(buffer_.data(), kBufferSize));
+    bytes_in_buffer_ =
+        base::ToSize(file_.Read(std::as_writable_bytes(std::span(buffer_))));
     return bytes_in_buffer_ > 0;
   }
 
@@ -224,120 +230,76 @@ class BufferedFileReader {
   size_t bytes_in_buffer_ = 0;
 };
 
-GraphicBufferClass* Read_PCX_File(const char* name, unsigned char* palette,
-                                  void* Buff, int32_t Size) {
+GraphicBufferClass* Read_PCX_File(const char* name, std::span<uint8_t> palette,
+                                  std::span<uint8_t> buff, int32_t size) {
   GameFile file_handle(name);
-
-  if (!file_handle.IsAvailable()) {
+  if (!file_handle.IsAvailable() || !file_handle.Open(FileAccess::kRead)) {
     return nullptr;
   }
-
-  file_handle.Open(FileAccess::kRead);
-
-  PCX_HEADER header;
-  file_handle.ReadObject(header);
-
-  if (header.id != 10 && header.version != 5 && header.pixelsize != 8) {
+  PCX_HEADER header{};
+  if (!file_handle.ReadObject(header) || header.id != 10 ||
+      header.version != 5 || header.pixelsize != 8 ||
+      header.color_planes != 1 || header.encoding != 1) {
     return nullptr;
   }
-
   const int width = header.width - header.x + 1;
   int height = header.height - header.y + 1;
-
-  GraphicBufferClass* pic = nullptr;
-  char* buffer = nullptr;
-
-  if (Buff) {
-    buffer = static_cast<char*>(Buff);
-    const int max_lines = Size / width;
-    height = std::min(max_lines - 1, height);
-    pic = new GraphicBufferClass(width, height, buffer, Size);
-    if (!pic->Get_Buffer()) {
-      delete pic;
-      return nullptr;
-    }
-  } else {
-    pic = new GraphicBufferClass(width, height, nullptr,
-                                 static_cast<int32_t>(width) * (height + 4));
-    if (!pic->Get_Buffer()) {
-      delete pic;
+  if (width <= 0 || height <= 0 || header.byte_per_line < width || size < 0 ||
+      static_cast<int64_t>(width) * height > INT32_MAX) {
+    return nullptr;
+  }
+  if (!buff.empty()) {
+    const auto available =
+        size == 0 ? buff.size() : std::min(buff.size(), base::ToSize(size));
+    height =
+        std::min(height, static_cast<int>(available / base::ToSize(width)));
+    if (height <= 0) {
       return nullptr;
     }
   }
-
-  buffer = static_cast<char*>(pic->Get_Buffer());
+  auto pic = std::make_unique<GraphicBufferClass>(width, height, buff);
+  const auto pixels = pic->Get_Bytes();
   BufferedFileReader reader(file_handle);
-
-  if (header.byte_per_line != width) {
-    for (int scan_pos = 0, j = 0; j < height; j++, scan_pos += width) {
-      for (int i = 0; i < width;) {
-        const auto rle_result = reader.ReadByte();
-        if (!rle_result.has_value()) {
-          delete pic;
-          return nullptr;
-        }
-        int rle = *rle_result;
-        if (rle > 192) {
-          rle -= 192;
-          const auto color_result = reader.ReadByte();
-          if (!color_result.has_value()) {
-            delete pic;
-            return nullptr;
-          }
-          const int color = *color_result;
-          memset(buffer + scan_pos + i, color, base::ToSize(rle));
-          i += rle;
-        } else {
-          buffer[scan_pos + i++] = static_cast<char>(rle);
-        }
-      }
-    }
-
-    // Consume any trailing RLE data for the scanline
-    const auto rle_result = reader.ReadByte();
-    if (!rle_result.has_value()) {
-      delete pic;
-      return nullptr;
-    }
-    const int rle = *rle_result;
-    if ((rle > 192) && (!reader.ReadByte().has_value())) {
-      delete pic;
-      return nullptr;
-    }
-
-  } else {
-    for (int i = 0; i < width * height;) {
-      const auto rle_result = reader.ReadByte();
-      if (!rle_result.has_value()) {
-        delete pic;
+  for (int row = 0; row < height; ++row) {
+    int column = 0;
+    while (column < header.byte_per_line) {
+      const auto code = reader.ReadByte();
+      if (!code) {
         return nullptr;
       }
-      int rle = *rle_result;
-      if (rle > 192) {
-        rle -= 192;
-        const auto color_result = reader.ReadByte();
-        if (!color_result.has_value()) {
-          delete pic;
+      int count = 1;
+      uint8_t color = *code;
+      if ((color & 0xc0U) == 0xc0U) {
+        count = color & 0x3fU;
+        const auto value = reader.ReadByte();
+        if (!value || count == 0) {
           return nullptr;
         }
-        const int color = *color_result;
-        memset(buffer + i, color, base::ToSize(rle));
-        i += rle;
-      } else {
-        buffer[i++] = static_cast<char>(rle);
+        color = *value;
       }
+      if (count > header.byte_per_line - column) {
+        return nullptr;
+      }
+      const int visible = std::min(count, std::max(0, width - column));
+      if (visible > 0) {
+        std::ranges::fill(pixels.subspan(base::ToSize((row * width) + column),
+                                         base::ToSize(visible)),
+                          color);
+      }
+      column += count;
     }
   }
-
-  if (palette) {
-    file_handle.Seek(-static_cast<int>(256 * sizeof(RGB)), SeekOrigin::kEnd);
-    file_handle.Read(palette, 256L * sizeof(RGB));
-
-    for (int i = 0; i < 256 * 3; i++) {
-      palette[i] >>= 2;
+  if (!palette.empty()) {
+    if (palette.size() < 768) {
+      return nullptr;
+    }
+    file_handle.Seek(-768, SeekOrigin::kEnd);
+    if (file_handle.Read(std::as_writable_bytes(palette.first(768))) != 768) {
+      return nullptr;
+    }
+    for (auto& color : palette.first(768)) {
+      color >>= 2;
     }
   }
-
-  file_handle.Close();
-  return pic;
+  return pic.release();
 }

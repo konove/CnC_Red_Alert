@@ -18,6 +18,8 @@
 #ifndef CNC_RED_ALERT_PORT_TOKENIZER_H_
 #define CNC_RED_ALERT_PORT_TOKENIZER_H_
 
+#include <span>
+
 #include "absl/base/attributes.h"
 
 namespace port {
@@ -39,10 +41,10 @@ class Tokenizer {
   // Returns the unread text following the delimiter that ended the last
   // token, for fields whose length is given by the token before them.
   // Returns "" once the text is exhausted.
-  [[nodiscard]] char* Remaining() const { return cursor_; }
+  [[nodiscard]] char* Remaining() const { return cursor_.data(); }
 
  private:
-  char* cursor_;  // Points at the terminating NUL once exhausted.
+  std::span<char> cursor_;  // Includes the terminating NUL, even once exhausted.
   const char* delimiters_;
 };
 

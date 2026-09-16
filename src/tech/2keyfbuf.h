@@ -1,7 +1,9 @@
 #ifndef CNC_RED_ALERT_TECH_2KEYFBUF_H_
 #define CNC_RED_ALERT_TECH_2KEYFBUF_H_
 
+#include <cstddef>
 #include <cstdint>
+#include <span>
 
 #include "sdllib/gbuffer.h"
 #include "sdllib/shape.h"
@@ -11,10 +13,10 @@
 struct ShapeEffects {
   // SHAPE_GHOST: 256 translucency indices (0xFF for an opaque color) followed
   // by the 256-entry remap rows the index selects from.
-  const uint8_t* ghost_table = nullptr;
+  std::span<const uint8_t> ghost_table;
   // SHAPE_FADING: a 256-entry remap applied fading_count times; 0 turns the
   // fade off. Only the low six bits of the count are used.
-  const uint8_t* fading_table = nullptr;
+  std::span<const uint8_t> fading_table;
   int fading_count = 0;
   // SHAPE_PREDATOR: the frame-dependent sample offset that makes a cloaked
   // shape shimmer; negative walks it the other way.
@@ -27,7 +29,7 @@ struct ShapeEffects {
 // Draws the w x h shape at `src`, clipped to `dest`, at x,y with the SHAPE_*
 // `flags` and the tables in `effects` those flags call for. A nullptr src
 // draws nothing.
-void Buffer_Frame_To_Page(int x, int y, int w, int h, void* src,
+void Buffer_Frame_To_Page(int x, int y, int w, int h, std::span<std::byte> src,
                           GraphicViewPortClass& dest, ShapeFlags_Type flags,
                           const ShapeEffects& effects = {});
 
@@ -49,6 +51,8 @@ inline bool UseOldShapeDraw = false;
 // UseBigShapeBuffer is set, cached shape headers hold offsets from the start of
 // the big buffer, or of the theater buffer for theater-specific shapes.
 extern char* BigShapeBufferStart;
+extern std::span<char> BigShapeBufferBytes;
+extern std::span<char> TheaterShapeBufferBytes;
 extern char* TheaterShapeBufferStart;
 extern bool UseBigShapeBuffer;
 

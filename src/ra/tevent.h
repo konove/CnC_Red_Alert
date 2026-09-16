@@ -205,18 +205,18 @@ class EventChoiceClass {
     return Event != rvalue.Event;
   }
   bool operator>(const EventChoiceClass& rvalue) const {
-    return stricmp(Description(), rvalue.Description()) > 0;
+    return port::CompareIgnoreCase(Description(), rvalue.Description()) > 0;
   }
   bool operator<(const EventChoiceClass& rvalue) const {
-    return stricmp(Description(), rvalue.Description()) < 0;
+    return port::CompareIgnoreCase(Description(), rvalue.Description()) < 0;
   }
   bool operator<=(const EventChoiceClass& rvalue) const {
     return Event == rvalue.Event ||
-           stricmp(Description(), rvalue.Description()) < 0;
+           port::CompareIgnoreCase(Description(), rvalue.Description()) < 0;
   }
   bool operator>=(const EventChoiceClass& rvalue) const {
     return Event == rvalue.Event ||
-           stricmp(Description(), rvalue.Description()) > 0;
+           port::CompareIgnoreCase(Description(), rvalue.Description()) > 0;
   }
   [[nodiscard]] const char* Description() const {
     return Name_From_Event(Event);

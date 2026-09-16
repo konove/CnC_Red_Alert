@@ -49,7 +49,9 @@ std::unique_ptr<BlowfishSink> MakePkEncryptSink(ByteSink& sink, const PKey& key,
 
   // Encrypt the blowfish key with the public key.
   char encrypted_key[kMaxKeyBlockSize];
-  const int encrypted_len = key.Encrypt(blowfish_key, plain_len, encrypted_key);
+  const int encrypted_len = key.Encrypt(
+      base::ObjectBytes(blowfish_key).first(base::ToSize(plain_len)),
+      base::ObjectBytes(encrypted_key));
 
   // Write the encrypted key header to the sink.
   sink.Write(std::as_bytes(
@@ -57,6 +59,6 @@ std::unique_ptr<BlowfishSink> MakePkEncryptSink(ByteSink& sink, const PKey& key,
 
   // Create and configure the BlowfishSink.
   auto pipe = std::make_unique<BlowfishSink>(CipherMode::kEncrypt, sink);
-  pipe->Key(blowfish_key, kBlowfishKeySize);
+  pipe->Key(std::as_bytes(std::span(blowfish_key)).first(kBlowfishKeySize));
   return pipe;
 }

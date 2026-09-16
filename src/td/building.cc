@@ -112,13 +112,18 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cstddef>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <span>
+#include <string_view>
 #include <utility>
+#include <vector>
 
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "base/enum_array.h"
 #include "port/tokenizer.h"
 #include "rand.h"
@@ -584,7 +589,7 @@ void BuildingClass::Debug_Dump(MonoClass* mono) const {
  *=============================================================================================*/
 void BuildingClass::Draw_It(int x, int y, WindowNumberType window) {
   Validate();
-  const void* shapefile = nullptr;  // Pointer to loaded shape file.
+  std::span<const std::byte> shapefile;  // Pointer to loaded shape file.
 
   int shapenum = Fetch_Stage();
 
@@ -629,7 +634,7 @@ void BuildingClass::Draw_It(int x, int y, WindowNumberType window) {
     **	the direction the turret is facing.
     */
     if (Class->IsTurretEquipped) {
-      shapenum = BodyShape[Facing_To_32(PrimaryFacing.Current())];
+      shapenum = base::At(BodyShape, Facing_To_32(PrimaryFacing.Current()));
 
       if (*this == STRUCT_SAM) {
         /*
@@ -785,8 +790,8 @@ void BuildingClass::Draw_It(int x, int y, WindowNumberType window) {
 bool BuildingClass::Mark(MarkType mark) {
   Validate();
   if (TechnoClass::Mark(mark)) {
-    const int16_t* offset = Overlap_List();
-    const int16_t* occupy = Occupy_List();
+    const std::span<const int16_t> offset = Overlap_List();
+    const std::span<const int16_t> occupy = Occupy_List();
     CELL cell = Coord_Cell(Coord);
     SmudgeType bib = SMUDGE_NONE;
 
@@ -1537,7 +1542,7 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
       Base_Is_Attacked(source);
     }
 
-    const int16_t* offset = Occupy_List();
+    std::span<const int16_t> offset = Occupy_List();
 
     /*
     **	SPECIAL CASE:
@@ -1577,8 +1582,9 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
         }
 
         Sound_Effect(VOC_XPLOBIG4, Coord);
-        while (*offset != REFRESH_EOL) {
-          const CELL cell = static_cast<CELL>(Coord_Cell(Coord) + *offset++);
+        while (offset.front() != REFRESH_EOL) {
+          const CELL cell =
+              static_cast<CELL>(Coord_Cell(Coord) + base::ConsumeFront(offset));
 
           /*
           **	If the building is destroyed, then lots of
@@ -1635,8 +1641,9 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
 
       case RESULT_MAJOR:
         Sound_Effect(VOC_XPLOBIG4, Coord);
-        while (*offset != REFRESH_EOL) {
-          const CELL cell = static_cast<CELL>(Coord_Cell(Coord) + *offset++);
+        while (offset.front() != REFRESH_EOL) {
+          const CELL cell =
+              static_cast<CELL>(Coord_Cell(Coord) + base::ConsumeFront(offset));
           AnimClass* anim = nullptr;
 
           /*
@@ -1936,7 +1943,7 @@ void BuildingClass::Drop_Debris(TARGET source) {
   **	Generate random survivors from the destroyed building.
   */
   CELL const cell = Coord_Cell(Coord);
-  const CELL* offset = Occupy_List();
+  std::span<const int16_t> offset = Occupy_List();
   int odds = 2;
   if (Target_Legal(WhomToRepay)) {
     odds -= 1;
@@ -1944,8 +1951,8 @@ void BuildingClass::Drop_Debris(TARGET source) {
   if (IsCaptured) {
     odds += 6;
   }
-  while (*offset != REFRESH_EOL) {
-    CELL const newcell = static_cast<CELL>(cell + *offset++);
+  while (offset.front() != REFRESH_EOL) {
+    CELL const newcell = static_cast<CELL>(cell + base::ConsumeFront(offset));
 
     /*
     **	Infantry could run out of a destroyed building.
@@ -1956,7 +1963,7 @@ void BuildingClass::Drop_Debris(TARGET source) {
       if (Random_Pick(0, odds) == 1) {
         i = new InfantryClass(Crew_Type(), House->Class->House);
         if (i) {
-          if (Class->Get_Buildup_Data() != nullptr && i->Class->IsNominal) {
+          if (!Class->Get_Buildup_Data().empty() && i->Class->IsNominal) {
             i->IsTechnician = true;
           }
           ScenarioInit++;
@@ -2251,12 +2258,12 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
           }
 
 #ifdef OBSOLETE
-          const CELL* ptr;
+          std::span<const int16_t> ptr;
           bool found = false;
 
           ptr = Class->ExitList;
-          while (*ptr != REFRESH_EOL) {
-            cell = Coord_Cell(Coord) + *ptr++;
+          while (ptr.front() != REFRESH_EOL) {
+            cell = Coord_Cell(Coord) + base::ConsumeFront(ptr);
             if (base->Can_Enter_Cell(cell) == MOVE_OK) {
               found = true;
               break;
@@ -2813,7 +2820,7 @@ void BuildingClass::Repair(int control) {
  *=============================================================================================*/
 void BuildingClass::Sell_Back(int control) {
   Validate();
-  if (Class->Get_Buildup_Data()) {
+  if (!Class->Get_Buildup_Data().empty()) {
     bool decon = false;
     switch (control) {
       case -1:
@@ -3013,22 +3020,23 @@ void BuildingClass::Begin_Mode(BStateType bstate) {
 void BuildingClass::Read_INI(char* buffer) {
   char buf[128];
 
-  const int len =
-      static_cast<int>(strlen(buffer)) + 2;  // Size of data in buffer.
-  char* tbuffer = buffer + len;              // Accumulation buffer of unit IDs.
+  std::vector<char> key_storage(std::string_view(buffer).size() + 2);
+  auto key_cursor = std::span(key_storage);
+  char* tbuffer = key_cursor.data();  // Accumulation buffer of unit IDs.
 
   /*
   **	Read the entire building INI section into HIDBUF
   */
-  WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
-                            ShapeBufferSize - len, buffer);
+  WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, key_cursor, buffer);
 
   while (*tbuffer != '\0') {
     /*
     **	Get a building entry.
     */
-    WWGetPrivateProfileString(INI_Name(), tbuffer, nullptr, buf,
-                              sizeof(buf) - 1, buffer);
+    WWGetPrivateProfileString(
+        INI_Name(), tbuffer, nullptr,
+        std::span(buf).first(static_cast<std::size_t>(sizeof(buf) - 1)),
+        buffer);
 
     /*
     **	1st token: house name.
@@ -3087,7 +3095,8 @@ void BuildingClass::Read_INI(char* buffer) {
         }
       }
     }
-    tbuffer += strlen(tbuffer) + 1;
+    key_cursor = key_cursor.subspan(std::string_view(tbuffer).size() + 1);
+    tbuffer = key_cursor.data();
   }
 }
 
@@ -3108,21 +3117,22 @@ void BuildingClass::Read_INI(char* buffer) {
  *                                                                                             *
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
-void BuildingClass::Write_INI(char* buffer) {
+void BuildingClass::Write_INI(std::span<char> buffer) {
   char uname[10];
   char buf[127];
 
   /*
   **	First, clear out all existing building data from the ini file.
   */
-  char* tbuffer =
-      buffer + strlen(buffer) + 2;  // Accumulation buffer of unit IDs.
-  WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
-                            ShapeBufferSize - static_cast<int>(strlen(buffer)),
-                            buffer);
+  std::vector<char> key_storage(std::string_view(buffer.data()).size() + 2);
+  auto key_cursor = std::span(key_storage);
+  char* tbuffer = key_cursor.data();  // Accumulation buffer of unit IDs.
+  WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, key_cursor,
+                            buffer.data());
   while (*tbuffer != '\0') {
     WWWritePrivateProfileString(INI_Name(), tbuffer, nullptr, buffer);
-    tbuffer += strlen(tbuffer) + 1;
+    key_cursor = key_cursor.subspan(std::string_view(tbuffer).size() + 1);
+    tbuffer = key_cursor.data();
   }
 
   /*
@@ -3534,7 +3544,7 @@ MoveType BuildingClass::Can_Enter_Cell(CELL cell, FacingType /*unused*/) const {
  *=============================================================================================*/
 bool BuildingClass::Can_Demolish() const {
   Validate();
-  if (Class->Get_Buildup_Data() && BState != BSTATE_CONSTRUCTION &&
+  if (!Class->Get_Buildup_Data().empty() && BState != BSTATE_CONSTRUCTION &&
       Mission != MISSION_DECONSTRUCTION && Mission != MISSION_CONSTRUCTION) {
     return *this != STRUCT_REFINERY || !Is_Something_Attached();
   }
@@ -4615,7 +4625,7 @@ DirType BuildingClass::Fire_Direction() const {
  *                                                                                             *
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
-const void* BuildingClass::Remap_Table() {
+std::span<const unsigned char> BuildingClass::Remap_Table() {
   Validate();
   return House->Remap_Table(IsBlushing, false);
 }
@@ -4918,10 +4928,10 @@ bool BuildingClass::Flush_For_Placement(TechnoClass* techno, CELL cell) {
   Validate();
   bool again = false;
   if (techno && cell > 0) {
-    const int16_t* list = techno->Class_Of().Occupy_List(true);
+    std::span<const int16_t> list = techno->Class_Of().Occupy_List(true);
 
-    while (*list != REFRESH_EOL) {
-      const CELL newcell = static_cast<CELL>(cell + *list++);
+    while (list.front() != REFRESH_EOL) {
+      const CELL newcell = static_cast<CELL>(cell + base::ConsumeFront(list));
 
       if (Map.In_Radar(newcell)) {
         TechnoClass* occupier = Map[newcell].Cell_Techno();
@@ -4949,10 +4959,10 @@ void BuildingClass::Hidden() {
 CELL BuildingClass::Find_Exit_Cell(const TechnoClass* techno) const {
   const CELL origin = Coord_Cell(Coord);
 
-  const CELL* ptr = Class->ExitList;
-  if (ptr) {
-    while (*ptr != REFRESH_EOL) {
-      const CELL cell = static_cast<CELL>(origin + *ptr++);
+  std::span<const int16_t> ptr = Class->ExitList;
+  if (!ptr.empty()) {
+    while (ptr.front() != REFRESH_EOL) {
+      const CELL cell = static_cast<CELL>(origin + base::ConsumeFront(ptr));
       if (Map.In_Radar(cell) && techno->Can_Enter_Cell(cell) == MOVE_OK) {
         return cell;
       }
@@ -4997,9 +5007,9 @@ bool BuildingClass::Passes_Proximity_Check(CELL homecell) {
   *adjacent *	cells to these are of friendly persuasion, then consider the
   *proximity check to *	have been a success.
   */
-  const int16_t* ptr = Occupy_List(true);
-  while (*ptr != REFRESH_EOL) {
-    const CELL cell = static_cast<CELL>(homecell + *ptr++);
+  std::span<const int16_t> ptr = Occupy_List(true);
+  while (ptr.front() != REFRESH_EOL) {
+    const CELL cell = static_cast<CELL>(homecell + base::ConsumeFront(ptr));
 
     if (!Map.In_Radar(cell)) {
       return false;

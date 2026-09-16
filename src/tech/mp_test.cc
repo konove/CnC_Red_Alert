@@ -6,6 +6,7 @@
 #include <cstdint>
 
 #include "gtest/gtest.h"
+#include "tech/digit_cursor.h"
 #include "tech/random_source.h"
 
 namespace {
@@ -18,7 +19,7 @@ TEST(XmpEncodeTest, ShortBufferKeepsLowOrderBytes) {
   buffer.fill(0xaa);
 
   // Before the fix, the padding count wrapped and the loop overran the buffer.
-  EXPECT_EQ(XMP_Encode(buffer.data(), 3, number.data(), kPrecision), 3U);
+  EXPECT_EQ(XMP_Encode(buffer, 3, number, kPrecision), 3U);
 
   EXPECT_EQ(buffer, (std::array<unsigned char, 5>{0x03, 0x02, 0x01, 0xaa,
                                                   0xaa}));
@@ -28,7 +29,7 @@ TEST(XmpEncodeTest, ExactBufferIsBigEndian) {
   const std::array<uint32_t, kPrecision> number = {0x04030201, 0x08070605};
   std::array<unsigned char, 8> buffer{};
 
-  EXPECT_EQ(XMP_Encode(buffer.data(), 8, number.data(), kPrecision), 8U);
+  EXPECT_EQ(XMP_Encode(buffer, 8, number, kPrecision), 8U);
 
   EXPECT_EQ(buffer, (std::array<unsigned char, 8>{0x08, 0x07, 0x06, 0x05, 0x04,
                                                   0x03, 0x02, 0x01}));
@@ -39,13 +40,13 @@ TEST(XmpEncodeTest, LongBufferIsSignExtended) {
   std::array<unsigned char, 10> buffer{};
   buffer.fill(0xaa);
 
-  EXPECT_EQ(XMP_Encode(buffer.data(), 10, positive.data(), kPrecision), 10U);
+  EXPECT_EQ(XMP_Encode(buffer, 10, positive, kPrecision), 10U);
   EXPECT_EQ(buffer, (std::array<unsigned char, 10>{0x00, 0x00, 0x08, 0x07,
                                                    0x06, 0x05, 0x04, 0x03,
                                                    0x02, 0x01}));
 
   const std::array<uint32_t, kPrecision> negative = {0x00000001, 0x80000000};
-  EXPECT_EQ(XMP_Encode(buffer.data(), 10, negative.data(), kPrecision), 10U);
+  EXPECT_EQ(XMP_Encode(buffer, 10, negative, kPrecision), 10U);
   EXPECT_EQ(buffer, (std::array<unsigned char, 10>{0xff, 0xff, 0x80, 0x00,
                                                    0x00, 0x00, 0x00, 0x00,
                                                    0x00, 0x01}));
@@ -65,7 +66,7 @@ TEST(XmpRandomizeTest, FullPrecisionStaysInsideTheDigits) {
   std::array<uint32_t, kPrecision + 1> digits{};
   digits.fill(0xa5a5a5a5);
 
-  XMP_Randomize(digits.data(), rng, kPrecision * 32, kPrecision);
+  XMP_Randomize(digits, rng, kPrecision * 32, kPrecision);
 
   EXPECT_EQ(digits[kPrecision], 0xa5a5a5a5U);
   EXPECT_NE(digits[0] | digits[1], 0U);
@@ -78,12 +79,43 @@ TEST(XmpRandomizeTest, ClearsBitsAboveTheRequestedCount) {
     std::array<uint32_t, kPrecision + 1> digits{};
     digits.fill(0xffffffff);
 
-    XMP_Randomize(digits.data(), rng, bits, kPrecision);
+    XMP_Randomize(digits, rng, bits, kPrecision);
 
     const uint64_t value = digits[0] | (uint64_t{digits[1]} << 32);
     EXPECT_EQ(value >> static_cast<unsigned>(bits), 0U) << bits;
     EXPECT_EQ(digits[kPrecision], 0xffffffffU) << bits;
   }
+}
+
+TEST(DigitCursorTest, HalfDigitWritesPreserveNeighbors) {
+  std::array<uint32_t, 2> digits = {0x12345678U, 0x90abcdefU};
+  DigitCursor<uint32_t> cursor(digits);
+  const auto halves = cursor.Rebind<uint16_t>();
+  EXPECT_EQ(static_cast<uint16_t>(halves[0]), 0x5678);
+  halves[1] = 0x4321;
+  EXPECT_EQ(digits[0], 0x43215678U);
+  EXPECT_EQ(digits[1], 0x90abcdefU);
+  cursor += 2;
+  EXPECT_EQ(static_cast<uint32_t>(*--cursor), 0x90abcdefU);
+  EXPECT_EQ(static_cast<uint32_t>(*--cursor), 0x43215678U);
+}
+
+TEST(DigitCursorTest, RejectsAccessOutsideOriginalStorage) {
+  std::array<uint32_t, 2> digits{};
+  const DigitCursor<uint32_t> cursor(digits);
+  // GoogleTest's death-test macro formats subprocess diagnostics with libc.
+  // NOLINTBEGIN(clang-diagnostic-unsafe-buffer-usage-in-libc-call,clang-diagnostic-switch-default)
+  EXPECT_DEATH(static_cast<void>(cursor[-1]), "Check failed");
+  EXPECT_DEATH(static_cast<void>(cursor[2]), "Check failed");
+  // NOLINTEND(clang-diagnostic-unsafe-buffer-usage-in-libc-call,clang-diagnostic-switch-default)
+}
+
+TEST(XmpDerDecodeTest, TruncatedInputLeavesNumberUnchanged) {
+  std::array<uint32_t, 2> digits = {7, 0};
+  const std::array<unsigned char, 3> truncated = {2, 3, 1};
+  XMP_DER_Decode(digits, truncated, 2);
+  EXPECT_EQ(digits[0], 7U);
+  EXPECT_EQ(digits[1], 0U);
 }
 
 }  // namespace

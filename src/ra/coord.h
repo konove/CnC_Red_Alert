@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <span>
 
 #include "ra/defines.h"
 #include "ra/face.h"
@@ -11,8 +12,8 @@
 // Returns a list of cell offsets that a dirty rectangle overlaps, relative to
 // the cell containing `coord`. The list is kRefreshEol-terminated. If
 // `no_center` is true, the center cell (offset 0) is excluded.
-const int16_t* Coord_Spillage_List(COORDINATE coord, const Rect& rect,
-                                   bool no_center = true);
+std::span<const int16_t> Coord_Spillage_List(COORDINATE coord, const Rect& rect,
+                                             bool no_center = true);
 
 // Moves `start` by `distance` leptons in the given `facing` direction.
 COORDINATE Coord_Move(COORDINATE start, DirType facing, uint16_t distance);
@@ -36,7 +37,7 @@ int Distance(TARGET target1, TARGET target2);
 // Returns a kRefreshEol-terminated list of cell offsets that an object of
 // `maxsize` pixels overlaps. Limited to maxsize <= 48 for the lookup path;
 // larger objects use a manually computed or prebuilt 5x5 table.
-const int16_t* Coord_Spillage_List(COORDINATE coord, int maxsize);
+std::span<const int16_t> Coord_Spillage_List(COORDINATE coord, int maxsize);
 
 // Converts a coordinate to its cell number (map array index).
 CELL Coord_Cell(COORDINATE coord);

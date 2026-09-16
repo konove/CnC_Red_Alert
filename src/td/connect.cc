@@ -95,7 +95,7 @@ ConnectionClass::ConnectionClass(int maxlen, uint16_t magicnum,
                                  int32_t retry_delta, int32_t max_retries,
                                  int32_t timeout)
     : MaxPacketLen(maxlen + static_cast<int>(sizeof(CommHeaderType))),
-      PacketBuf(new char[base::ToSize(MaxPacketLen)]),
+      PacketBuf(base::ToSize(MaxPacketLen)),
       MagicNum(magicnum),
       RetryDelta(retry_delta),
       MaxRetries(max_retries),
@@ -146,13 +146,7 @@ ConnectionClass::ConnectionClass(int maxlen, uint16_t magicnum,
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-ConnectionClass::~ConnectionClass() {
-  /*------------------------------------------------------------------------
-  Free memory.
-  ------------------------------------------------------------------------*/
-  delete[] PacketBuf;
-
-} /* end of ~ConnectionClass */
+ConnectionClass::~ConnectionClass() = default; /* end of ~ConnectionClass */
 
 /***************************************************************************
  * ConnectionClass::Service -- main polling routine; services packets *
@@ -238,7 +232,7 @@ SendQueueType* ConnectionClass::OldestUnackedSend(
         continue;
       }
       const CommHeaderType* packet =
-          port::AlignedObject<CommHeaderType>(entry->Buffer);
+          port::AlignedObject<CommHeaderType>(entry->Buffer.data());
       if (packet->Code == static_cast<unsigned char>(PACKET_DATA_ACK) &&
           entry->IsACK == 0) {
         if (oldest == nullptr || entry->FirstTime < oldest->FirstTime) {

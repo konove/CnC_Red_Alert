@@ -112,7 +112,7 @@ void Self_Regulate() {
       mono->Set_Default_Attribute(2);
 
       if (MonoPage == 0) {
-        mono = &MonoArray[0];
+        mono = &base::At(MonoArray, 0);
         mono->Clear();
 
         /*
@@ -197,7 +197,7 @@ void Debug_Key(unsigned input) {
         */
         {
           GraphicBufferClass temp_page(
-              SeenBuff.Get_Width(), SeenBuff.Get_Height(), nullptr,
+              SeenBuff.Get_Width(), SeenBuff.Get_Height(), {},
               static_cast<int32_t>(SeenBuff.Get_Width()) *
                   SeenBuff.Get_Height());
           char filename[30];

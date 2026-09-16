@@ -44,11 +44,13 @@
  *                                                                         *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "base/numeric.h"
 #include "ra/utracker.h"
 
+#include <algorithm>
 #include <cstdint>
-#include <cstring>
+#include <span>
+
+#include "base/numeric.h"
 
 /*
 ** Define host to network to host functions for DOS
@@ -73,7 +75,7 @@
  * HISTORY: * 6/7/96 0:10AM ST : Created *
  *=============================================================================================*/
 UnitTrackerClass::UnitTrackerClass(int unit_count)
-    : UnitTotals(new int32_t[base::ToSize(unit_count)]), UnitCount(unit_count) {
+    : UnitTotals(base::ToSize(unit_count)), UnitCount(unit_count) {
   Clear_Unit_Total();      // Clear each entry
 }
 
@@ -90,7 +92,7 @@ UnitTrackerClass::UnitTrackerClass(int unit_count)
  *                                                                                             *
  * HISTORY: * 6/7/96 0:10AM ST : Created *
  *=============================================================================================*/
-UnitTrackerClass::~UnitTrackerClass() { delete[] UnitTotals; }
+UnitTrackerClass::~UnitTrackerClass() = default;
 
 /***********************************************************************************************
  * UTC::Increment_Unit_Total -- Increment the total for the specefied unit *
@@ -106,7 +108,7 @@ UnitTrackerClass::~UnitTrackerClass() { delete[] UnitTotals; }
  * HISTORY: * 6/7/96 0:12AM ST : Created *
  *=============================================================================================*/
 void UnitTrackerClass::Increment_Unit_Total(int unit_type) {
-  UnitTotals[unit_type]++;
+  UnitTotals.at(base::ToSize(unit_type))++;
 }
 
 /***********************************************************************************************
@@ -123,7 +125,7 @@ void UnitTrackerClass::Increment_Unit_Total(int unit_type) {
  * HISTORY: * 6/7/96 0:13AM ST : Created *
  *=============================================================================================*/
 void UnitTrackerClass::Decrement_Unit_Total(int unit_type) {
-  UnitTotals[unit_type]--;
+  UnitTotals.at(base::ToSize(unit_type))--;
 }
 
 /***********************************************************************************************
@@ -140,7 +142,11 @@ void UnitTrackerClass::Decrement_Unit_Total(int unit_type) {
  *                                                                                             *
  * HISTORY: * 6/7/96 0:13AM ST : Created *
  *=============================================================================================*/
-int32_t* UnitTrackerClass::Get_All_Totals() { return UnitTotals; }
+std::span<int32_t> UnitTrackerClass::Get_All_Totals() { return UnitTotals; }
+
+int UnitTrackerClass::Get_Unit_Total(int unit_type) const {
+  return UnitTotals.at(base::ToSize(unit_type));
+}
 
 /***********************************************************************************************
  * UTC::Clear_Unit_Total -- Clear out all the unit totals *
@@ -155,9 +161,7 @@ int32_t* UnitTrackerClass::Get_All_Totals() { return UnitTotals; }
  *                                                                                             *
  * HISTORY: * 6/7/96 0:14AM ST : Created *
  *=============================================================================================*/
-void UnitTrackerClass::Clear_Unit_Total() {
-  memset(UnitTotals, 0, base::ToSize(UnitCount) * sizeof(int32_t));
-}
+void UnitTrackerClass::Clear_Unit_Total() { std::ranges::fill(UnitTotals, 0); }
 
 /***********************************************************************************************
  * UTC::To_Network_Format -- Changes all unit totals to network format for the
@@ -176,8 +180,8 @@ void UnitTrackerClass::Clear_Unit_Total() {
 void UnitTrackerClass::To_Network_Format() {
   if (!InNetworkFormat) {
     for (int i = 0; i < UnitCount; i++) {
-      UnitTotals[i] =
-          static_cast<int32_t>(htonl(static_cast<uint32_t>(UnitTotals[i])));
+      UnitTotals.at(base::ToSize(i)) = static_cast<int32_t>(
+          htonl(static_cast<uint32_t>(UnitTotals.at(base::ToSize(i)))));
     }
   }
   InNetworkFormat = 1;  // Flag that data is now in network format
@@ -200,8 +204,8 @@ void UnitTrackerClass::To_Network_Format() {
 void UnitTrackerClass::To_PC_Format() {
   if (InNetworkFormat) {
     for (int i = 0; i < UnitCount; i++) {
-      UnitTotals[i] =
-          static_cast<int32_t>(ntohl(static_cast<uint32_t>(UnitTotals[i])));
+      UnitTotals.at(base::ToSize(i)) = static_cast<int32_t>(
+          ntohl(static_cast<uint32_t>(UnitTotals.at(base::ToSize(i)))));
     }
   }
   InNetworkFormat = 0;  // Flag that data is now in PC format

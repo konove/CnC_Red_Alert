@@ -599,7 +599,8 @@
 
 // Copies a cell offset list, stopping early at the kRefreshEol terminator.
 // At most len elements are written, so dest must have room for that many.
-void List_Copy(const int16_t* source, int len, int16_t* dest);
+void List_Copy(std::span<const int16_t> source, int len,
+               std::span<int16_t> dest);
 
 // Identifies which C&C disc is in the given drive by matching its volume label.
 // Returns a CD_VOLUME value (see conquer.cc), or -1 if the disc is not a C&C
@@ -621,7 +622,7 @@ CrateType Crate_From_Name(const char* name);
 // tighten the map's dirty-rectangle logic.
 //
 // This is brute force and slow -- cache the result rather than recomputing it.
-Rect Shape_Dimensions(const void* shapedata, int shape_num);
+Rect Shape_Dimensions(std::span<const std::byte> shapedata, int shape_num);
 
 // Services the IPX connection and dispatches any global packet that arrived:
 // sign-offs, player chat, or a game-setup packet.
@@ -740,8 +741,9 @@ FacingType KN_To_Facing(unsigned input);
 // the icons themselves follow, frames of (width * height) icons each. Pass
 // frames == -1 to build every frame in the shape file. Returns nullptr if
 // shapefile is null.
-std::unique_ptr<char[]> Get_Radar_Icon(const void* shapefile, int shape_num,
-                                       int frames, int zoom_factor);
+std::vector<unsigned char> Get_Radar_Icon(std::span<const std::byte> shapefile,
+                                          int shape_num, int frames,
+                                          int zoom_factor);
 // Draws a shape to the current logical page. Every shape draw in the game goes
 // through here.
 //
@@ -750,16 +752,11 @@ std::unique_ptr<char[]> Get_Radar_Icon(const void* shapefile, int shape_num,
 // ghostdata by SHAPE_GHOST; if either is omitted the display class's default
 // table is substituted. rotation and scale (24.8 fixed point) take the slower
 // rotate-and-scale path when either differs from its default.
-void CC_Draw_Shape(const void* shapefile, int shape_num, int x, int y,
-                   WindowNumberType window, ShapeFlags_Type flags,
-                   const void* fading_data = nullptr,
-                   const void* ghostdata = nullptr, DirType rotation = DIR_N,
-                   int32_t scale = 0x0100);
 void CC_Draw_Shape(std::span<const std::byte> shapefile, int shape_num, int x,
                    int y, WindowNumberType window, ShapeFlags_Type flags,
-                   const void* fading_data = nullptr,
-                   const void* ghostdata = nullptr, DirType rotation = DIR_N,
-                   int32_t scale = 0x0100);
+                   std::span<const uint8_t> fading_data = {},
+                   std::span<const uint8_t> ghostdata = {},
+                   DirType rotation = DIR_N, int32_t scale = 0x0100);
 
 // Switches between scenario-editor mode and normal game mode. Both modes need
 // a different button layout and a full redraw, so this cannot just set a flag.
@@ -774,7 +771,7 @@ void Heap_Dump_Check(const char* string);
 
 // Loads the resolution-specific ("H"-prefixed) variant of a file, or nullptr if
 // it is not available. The caller owns the returned buffer.
-void* Hires_Load(const char* name);
+std::span<std::byte> Hires_Load(const char* name);
 
 // Jolts the screen up and down the given number of times, for explosions and
 // similar. Blocks until the shaking is done.
@@ -782,7 +779,7 @@ void Shake_The_Screen(int shakes);
 
 // Mirrors an interpolation table's lower triangle into its upper one. The
 // tables are symmetric, so only half of each is stored on disk.
-void Rebuild_Interpolated_Palette(unsigned char* interpal);
+void Rebuild_Interpolated_Palette(std::span<unsigned char> interpal);
 
 // Loads the precalculated interpolation tables a hi-res VQA needs to scale its
 // frames, and returns how many were loaded. Pass add == true to append to the

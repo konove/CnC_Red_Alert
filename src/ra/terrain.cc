@@ -65,13 +65,15 @@
 #include "ra/terrain.h"
 
 #include <cassert>
+#include <cstddef>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
+#include <span>
 
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "base/numeric.h"
-#include "base/types.h"
 #include "ra/anim.h"
 #include "ra/ccini.h"
 #include "ra/cell.h"
@@ -324,8 +326,8 @@ void TerrainClass::Draw_It(int x, int y, WindowNumberType window) const {
   assert(Terrains.ID(this) == ID);
   assert(IsActive);
 
-  const void* shapedata = Get_Image_Data();
-  if (shapedata) {
+  const auto shapedata = Get_Image_Data();
+  if (!shapedata.empty()) {
     int shapenum = 0;
 
     /*
@@ -398,15 +400,17 @@ MoveType TerrainClass::Can_Enter_Cell(CELL cell, FacingType /*unused*/) const {
     return MOVE_NO;
   }
 
-  const int16_t* offset = Occupy_List();  // Pointer to cell offset list.
-  while (*offset != kRefreshEol) {
+  std::span<const int16_t> offset =
+      Occupy_List();  // Pointer to cell offset list.
+  while (offset.front() != kRefreshEol) {
     if (Class->IsWaterBased) {
-      if (!Map[static_cast<CELL>(cell + *offset++)].Is_Clear_To_Build(
-              SPEED_FLOAT)) {
+      if (!Map[static_cast<CELL>(cell + base::ConsumeFront(offset))]
+               .Is_Clear_To_Build(SPEED_FLOAT)) {
         return MOVE_NO;
       }
     } else {
-      if (!Map[static_cast<CELL>(cell + *offset++)].Is_Clear_To_Build()) {
+      if (!Map[static_cast<CELL>(cell + base::ConsumeFront(offset))]
+               .Is_Clear_To_Build()) {
         return MOVE_NO;
       }
     }
@@ -665,14 +669,16 @@ COORDINATE TerrainClass::Center_Coord() const {
  *                                                                                             *
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
-const unsigned char* TerrainClass::Radar_Icon(CELL cell) {
+std::span<const unsigned char> TerrainClass::Radar_Icon(CELL cell) {
   assert(Terrains.ID(this) == ID);
   assert(IsActive);
 
-  const auto* icon = static_cast<const unsigned char*>(
-      Class->Get_Radar_Data());                 // get a pointer to radar icons
-  const int width = *icon++;                    // extract the width from data
-  const int height = *icon++;                   // extract the width from data
+  const auto icons = Class->Get_Radar_Data();
+  if (icons.size() < 2) {
+    return {};
+  }
+  const int width = icons[0];
+  const int height = icons[1];
 
   /*
   ** Icon number that we need can be found by converting the cell and base
@@ -685,11 +691,14 @@ const unsigned char* TerrainClass::Radar_Icon(CELL cell) {
       static_cast<CELL>(Cell_Y(cell) - Cell_Y(static_cast<CELL>(basecell)));
   const int xdiff =
       static_cast<CELL>(Cell_X(cell) - Cell_X(static_cast<CELL>(basecell)));
-  if (xdiff < width && ydiff < height) {
+  if (xdiff >= 0 && ydiff >= 0 && xdiff < width && ydiff < height) {
     const int iconnum = (ydiff * width) + xdiff;
-    return icon + (static_cast<base::ssize>(iconnum) * 9);
+    const auto start = (base::ToSize(iconnum) * 9) + 2;
+    if (start <= icons.size() && icons.size() - start >= 9) {
+      return icons.subspan(start, 9);
+    }
   }
-  return nullptr;
+  return {};
 }
 
 /***********************************************************************************************

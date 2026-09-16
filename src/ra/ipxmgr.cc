@@ -75,8 +75,11 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <span>
+#include <utility>
 
 #include "base/array.h"
+#include "base/buffer.h"
 #include "base/numeric.h"
 #include "port/safe_string.h"
 #include "port/unaligned.h"
@@ -738,9 +741,9 @@ void IPXManagerClass::Set_Connection_Parms(int index, int id, char* name) {
  * HISTORY:                                                                *
  *   01/25/1995 BR : Created.                                              *
  *=========================================================================*/
-int IPXManagerClass::Send_Global_Message(void* buf, int buflen, int ack_req,
+int IPXManagerClass::Send_Global_Message(std::span<const std::byte> buf,
+                                         int buflen, int ack_req,
                                          IPXAddressClass* address) {
-
   //------------------------------------------------------------------------
   //	Error if IPX not installed or not Listening
   //------------------------------------------------------------------------
@@ -779,7 +782,7 @@ int IPXManagerClass::Send_Global_Message(void* buf, int buflen, int ack_req,
  * HISTORY:                                                                *
  *   01/25/1995 BR : Created.                                              *
  *=========================================================================*/
-int IPXManagerClass::Get_Global_Message(void* buf, int* buflen,
+int IPXManagerClass::Get_Global_Message(std::span<std::byte> buf, int* buflen,
                                         IPXAddressClass* address,
                                         uint16_t* product_id) {
   //------------------------------------------------------------------------
@@ -815,9 +818,9 @@ int IPXManagerClass::Get_Global_Message(void* buf, int* buflen,
  * HISTORY:                                                                *
  *   01/25/1995 BR : Created.                                              *
  *=========================================================================*/
-int IPXManagerClass::Send_Private_Message(void* buf, int buflen, int ack_req,
+int IPXManagerClass::Send_Private_Message(std::span<const std::byte> buf,
+                                          int buflen, int ack_req,
                                           int conn_id) {
-
   //------------------------------------------------------------------------
   //	Error if IPX not installed or not Listening
   //------------------------------------------------------------------------
@@ -898,8 +901,8 @@ int IPXManagerClass::Send_Private_Message(void* buf, int buflen, int ack_req,
  * HISTORY:                                                                *
  *   01/25/1995 BR : Created.                                              *
  *=========================================================================*/
-int IPXManagerClass::Get_Private_Message(void* buf, int* buflen, int* conn_id) {
-
+int IPXManagerClass::Get_Private_Message(std::span<std::byte> buf, int* buflen,
+                                         int* conn_id) {
   //------------------------------------------------------------------------
   //	Error if IPX not installed or not Listening
   //------------------------------------------------------------------------
@@ -977,25 +980,33 @@ int IPXManagerClass::Service() {
 
   // Cursor into temp_receive_buffer above. This was a member, which left the
   // object holding a pointer into this frame's stack after Service() returned.
-  const unsigned char* cur_data_buf = nullptr;
+  std::span<std::byte> cur_data_buf;
 
   if (PacketTransport) {
     do {
       int temp_receive_buffer_len = sizeof(temp_receive_buffer);
       int temp_address_len = sizeof(temp_address);
-      packetlen =
-          PacketTransport->Read(temp_receive_buffer, temp_receive_buffer_len,
-                                temp_address, temp_address_len);
+      packetlen = PacketTransport->Read(
+          base::ObjectBytes(temp_receive_buffer), temp_receive_buffer_len,
+          base::ObjectBytes(temp_address), temp_address_len);
       if (packetlen) {
-        cur_data_buf = temp_receive_buffer;
-        address = port::ReadUnaligned<IPXAddressClass>(temp_address);
+        cur_data_buf = base::ObjectBytes(temp_receive_buffer)
+                           .first(base::ToSize(packetlen));
+        address = port::ReadUnaligned<IPXAddressClass>(
+            base::ObjectBytes(temp_address));
 
+        if (std::cmp_less(packetlen, sizeof(CommHeaderType)) ||
+            base::ToSize(packetlen) > cur_data_buf.size()) {
+          continue;
+        }
+        cur_data_buf = cur_data_buf.first(base::ToSize(packetlen));
         packet_storage = port::ReadUnaligned<CommHeaderType>(cur_data_buf);
         if (packet->MagicNumber == GlobalChannel->Magic_Num()) {
           /*
           ** Put the packet in the Global Queue
           */
-          if (!GlobalChannel->Receive_Packet(packet, packetlen, &address)) {
+          if (!GlobalChannel->Receive_Packet(cur_data_buf, packetlen,
+                                             &address)) {
             ReceiveOverflows++;
           }
         } else {
@@ -1008,7 +1019,7 @@ int IPXManagerClass::Service() {
               if (base::At(Connection, i)->Address == address) {
                 found_address = true;
                 if (!base::At(Connection, i)
-                         ->Receive_Packet(packet, packetlen)) {
+                         ->Receive_Packet(cur_data_buf, packetlen)) {
                   ReceiveOverflows++;
                 }
                 break;
@@ -1026,9 +1037,14 @@ int IPXManagerClass::Service() {
               ** Magic number and packet code are valid. It's probably a C&C
               *packet.
               */
+              if (cur_data_buf.size() <
+                  sizeof(CommHeaderType) + offsetof(EventClass, Data)) {
+                continue;
+              }
               EventClass event_storage;
-              std::memcpy(&event_storage, cur_data_buf + sizeof(CommHeaderType),
-                          offsetof(EventClass, Data));
+              base::CopyBytes(base::ObjectBytes(event_storage),
+                              cur_data_buf.subspan(sizeof(CommHeaderType)),
+                              offsetof(EventClass, Data));
               const EventClass* event = &event_storage;
 
               /*
@@ -1076,7 +1092,7 @@ int IPXManagerClass::Service() {
   //	from being clogged by one un-ACK'd outgoing packet.
   //------------------------------------------------------------------------
   if (GlobalChannel && (!GlobalChannel->Service())) {
-    GlobalChannel->Queue->UnQueue_Send(nullptr, nullptr, 0);
+    GlobalChannel->Queue->UnQueue_Send({}, {}, 0);
     rc = 0;
   }
 
@@ -1409,13 +1425,15 @@ void IPXManagerClass::Reset_Response_Time() {
  * HISTORY:                                                                *
  *   05/04/1995 BRR : Created.                                             *
  *=========================================================================*/
-void* IPXManagerClass::Oldest_Send() {
+std::span<const std::byte> IPXManagerClass::Oldest_Send() {
   std::array<CommBufferClass*, CONNECT_MAX> queues{};
   for (int i = 0; i < NumConnections; i++) {
     queues[base::ToSize(i)] = base::At(Connection, i)->Queue;
   }
   const SendQueueType* oldest = ConnectionClass::OldestUnackedSend(queues);
-  return oldest != nullptr ? oldest->Buffer : nullptr;
+  return oldest != nullptr
+             ? std::span(oldest->Buffer).first(base::ToSize(oldest->BufLen))
+             : std::span<const std::byte>{};
 
 } /* end of Oldest_Send */
 
@@ -1556,7 +1574,8 @@ void IPXManagerClass::Mono_Debug_Print(int index, int refresh) {
   Mono_Printf("%d  ", ReceiveOverflows);
 
   for (i = 0; i < NumBufs; i++) {
-    if (BufferFlags[i]) {
+    if (base::ToSize(i) < BufferFlags.size() &&
+        BufferFlags[base::ToSize(i)] != 0) {
       base::At(txt, i) = 'X';
     } else {
       base::At(txt, i) = '_';

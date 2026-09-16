@@ -47,7 +47,10 @@
 #include "ra/interpal.h"
 
 #include <algorithm>
+#include <cstddef>
+#include <span>
 
+#include "absl/log/check.h"
 #include "sdllib/file_access.h"
 #include "sdllib/gbuffer.h"
 #include "tech/game_file.h"
@@ -55,7 +58,7 @@
 bool InterpolationPaletteChanged = false;
 
 unsigned char PaletteInterpolationTable[SIZE_OF_PALETTE][SIZE_OF_PALETTE];
-unsigned char* InterpolationPalette;
+std::span<unsigned char> InterpolationPalette;
 
 /***********************************************************************************************
  * Read_Interpolation_Palette -- reads an interpolation palette table from disk
@@ -127,28 +130,30 @@ static void Create_Palette_Interpolation_Table() {
   //
   // Create an interpolation table for the current palette.
   //
-  unsigned char* first_palette_ptr = InterpolationPalette;
+  CHECK_GE(InterpolationPalette.size(),
+           static_cast<std::size_t>(SIZE_OF_PALETTE) * 3);
+  std::size_t first_palette_ptr = 0;
   for (auto& i : PaletteInterpolationTable) {
     //
     // Get the first palette entry's RGB.
     //
-    const int first_r = *first_palette_ptr;
+    const int first_r = InterpolationPalette[first_palette_ptr];
     first_palette_ptr++;
-    const int first_g = *first_palette_ptr;
+    const int first_g = InterpolationPalette[first_palette_ptr];
     first_palette_ptr++;
-    const int first_b = *first_palette_ptr;
+    const int first_b = InterpolationPalette[first_palette_ptr];
     first_palette_ptr++;
 
-    unsigned char* second_palette_ptr = InterpolationPalette;
+    std::size_t second_palette_ptr = 0;
     for (unsigned char& j : i) {
       //
       // Get the second palette entry's RGB.
       //
-      const int second_r = *second_palette_ptr;
+      const int second_r = InterpolationPalette[second_palette_ptr];
       second_palette_ptr++;
-      const int second_g = *second_palette_ptr;
+      const int second_g = InterpolationPalette[second_palette_ptr];
       second_palette_ptr++;
-      const int second_b = *second_palette_ptr;
+      const int second_b = InterpolationPalette[second_palette_ptr];
       second_palette_ptr++;
 
       //
@@ -165,13 +170,16 @@ static void Create_Palette_Interpolation_Table() {
       int index_of_closest_color = 0;
       //			closest_distance = (256 * 256) * 3;
       int closest_distance = 500000;
-      unsigned char* match_pal_ptr = InterpolationPalette;
+      std::size_t match_pal_ptr = 0;
       for (int p = 0; p < SIZE_OF_PALETTE; p++) {
-        const int diff_r = static_cast<int>(*match_pal_ptr) - dest_r;
+        const int diff_r =
+            static_cast<int>(InterpolationPalette[match_pal_ptr]) - dest_r;
         match_pal_ptr++;
-        const int diff_g = static_cast<int>(*match_pal_ptr) - dest_g;
+        const int diff_g =
+            static_cast<int>(InterpolationPalette[match_pal_ptr]) - dest_g;
         match_pal_ptr++;
-        const int diff_b = static_cast<int>(*match_pal_ptr) - dest_b;
+        const int diff_b =
+            static_cast<int>(InterpolationPalette[match_pal_ptr]) - dest_b;
         match_pal_ptr++;
 
         const int distance =
@@ -207,13 +215,15 @@ static void Create_Palette_Interpolation_Table() {
  * HISTORY: * 12/12/95 12:16PM ST : Created *
  *=============================================================================================*/
 
-void Increase_Palette_Luminance(unsigned char* palette, int red_percentage,
-                                int green_percentage, int blue_percentage,
-                                int cap) {
-  for (int i = 0; i < SIZE_OF_PALETTE * 3; i += 3) {
-    int red = *(palette + i);
-    int green = *(palette + i + 1);
-    int blue = *(palette + i + 2);
+void Increase_Palette_Luminance(std::span<unsigned char> palette,
+                                int red_percentage, int green_percentage,
+                                int blue_percentage, int cap) {
+  CHECK_GE(palette.size(), static_cast<std::size_t>(SIZE_OF_PALETTE) * 3);
+  for (std::size_t i = 0; i < static_cast<std::size_t>(SIZE_OF_PALETTE) * 3;
+       i += 3) {
+    int red = palette[i];
+    int green = palette[i + 1];
+    int blue = palette[i + 2];
 
     red += red * red_percentage / 100;
     green += green * green_percentage / 100;
@@ -223,9 +233,9 @@ void Increase_Palette_Luminance(unsigned char* palette, int red_percentage,
     green = std::min(cap, green);
     blue = std::min(cap, blue);
 
-    *(palette + i) = static_cast<unsigned char>(red);
-    *(palette + i + 1) = static_cast<unsigned char>(green);
-    *(palette + i + 2) = static_cast<unsigned char>(blue);
+    palette[i] = static_cast<unsigned char>(red);
+    palette[i + 1] = static_cast<unsigned char>(green);
+    palette[i + 2] = static_cast<unsigned char>(blue);
   }
 }
 
@@ -255,7 +265,7 @@ void Interpolate_2X_Scale(GraphicBufferClass* source,
 
   // Render using SDL scaling - palette already set via Update_Palette
   source->Lock();
-  WindowBuffer->Render_Scaled_Frame(source->Get_Offset(), source->Get_Width(),
+  WindowBuffer->Render_Scaled_Frame(source->Get_Bytes(), source->Get_Width(),
                                     source->Get_Height());
   source->Unlock();
 }

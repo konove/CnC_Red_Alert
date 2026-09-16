@@ -42,6 +42,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <span>
 
 #include "absl/base/attributes.h"
 #include "base/array.h"
@@ -742,7 +743,7 @@ class HouseClass {
 
   int Get_Quantity(AircraftType aircraft);
   int Get_Quantity(StructType building);
-  [[nodiscard]] const unsigned char* Remap_Table(
+  [[nodiscard]] std::span<const unsigned char> Remap_Table(
       bool blushing = false, RemapType remap = REMAP_NORMAL) const;
 
   [[nodiscard]] const TechnoTypeClass* Suggest_New_Object(

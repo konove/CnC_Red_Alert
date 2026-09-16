@@ -2,10 +2,11 @@
 #include <algorithm>
 #include <cstdint>
 #include <cstdio>
-#include <cstring>
+#include <span>
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
+#include "base/buffer.h"
 #include "winvq/vqm32/compress.h"
 #include "winvq/vqm32/soscomp.h"
 
@@ -47,13 +48,18 @@ bool DecompressVqaSosData(SosCompressInfo* info, int32_t uncomp_size) {
     return false;
   }
 
-  auto* in_ptr = info->source;
-  auto* out_ptr = info->dest;
+  auto in_ptr = info->source;
+  auto out_ptr = info->dest;
+  if (uncomp_size < 0 || static_cast<size_t>(uncomp_size) > out_ptr.size() ||
+      static_cast<size_t>(uncomp_size / 4) > in_ptr.size()) {
+    return false;
+  }
 
   // Loop processes 4 output bytes (2 samples) per iteration.
   // We use >= 4 to prevent underflow if uncomp_size is not a multiple of 4.
   while (uncomp_size >= 4) {
-    const std::uint8_t raw_byte = *in_ptr++;
+    const uint8_t raw_byte = in_ptr.front();
+    in_ptr = in_ptr.subspan(1);
 
     // A single byte contains two 4-bit ADPCM samples (nibbles).
     // We iterate 0 (low nibble) then 1 (high nibble).
@@ -81,8 +87,9 @@ bool DecompressVqaSosData(SosCompressInfo* info, int32_t uncomp_size) {
 
       // 6. Output Sample
       const auto sample = static_cast<std::int16_t>(info->predicted);
-      std::memcpy(out_ptr, &sample, sizeof(sample));
-      out_ptr += sizeof(sample);
+      base::CopyBytes(std::as_writable_bytes(out_ptr),
+                      base::ObjectBytes(sample), sizeof(sample));
+      out_ptr = out_ptr.subspan(sizeof(sample));
     }
 
     uncomp_size -= 4;

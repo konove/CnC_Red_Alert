@@ -24,6 +24,7 @@ class ArchiveWriter;
 
 #include <cstddef>
 #include <cstdint>
+#include <span>
 
 #include "absl/base/attributes.h"
 #include "td/bullet.h"
@@ -114,7 +115,7 @@ class AircraftClass : public FootClass, public FlyClass {
   */
   int Exit_Object(TechnoClass* /*unit*/ /*unused*/) override;
   bool Mark(MarkType mark = MARK_CHANGE) override;
-  const int16_t* Overlap_List() const override;
+  std::span<const int16_t> Overlap_List() const override;
   void Draw_It(int x, int y, WindowNumberType window) override;
   void Set_Speed(int speed) override;
 
@@ -153,7 +154,7 @@ class AircraftClass : public FootClass, public FlyClass {
   **	File I/O.
   */
   static void Read_INI(char* buffer);
-  static void Write_INI(char* buffer);
+  static void Write_INI(std::span<char> buffer);
   static const char* INI_Name() { return "AIRCRAFT"; }
 
   // Debugging support.

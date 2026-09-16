@@ -55,9 +55,11 @@
 
 #include "td/heap.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <cstring>
 #include <new>
+#include <span>
 
 #include "base/algorithm.h"
 #include "base/numeric.h"
@@ -118,7 +120,7 @@ FixedHeapClass::~FixedHeapClass() { FixedHeapClass::Clear(); }
  *                                                                                             *
  * HISTORY: * 02/21/1995 JLB : Created. *
  *=============================================================================================*/
-bool FixedHeapClass::Set_Heap(int count, void* buffer) {
+bool FixedHeapClass::Set_Heap(int count, std::span<char> buffer) {
   /*
   **	Clear out the old heap data.
   */
@@ -128,7 +130,7 @@ bool FixedHeapClass::Set_Heap(int count, void* buffer) {
   **	If there is no size to the objects in the heap, then this block memory
   **	handler can NEVER function. Return with a failure condition.
   */
-  if (!Size) {
+  if (Size <= 0 || count < 0) {
     return false;
   }
 
@@ -145,13 +147,19 @@ bool FixedHeapClass::Set_Heap(int count, void* buffer) {
   **	allocation objects.
   */
   FreeFlag.resize(base::ToSize(count), false);
-  if (!buffer) {
-    buffer = new char[base::ToSize(int64_t{count} * Size)];
-    if (!buffer) {
+  if (buffer.empty()) {
+    const auto extent = base::ToSize(int64_t{count} * Size);
+    // This span covers the allocation made by this owner, using the same
+    // extent. NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
+    buffer = std::span<char>(new char[extent], extent);
+    if (buffer.empty()) {
       FreeFlag.clear();
       return false;
     }
     IsAllocated = true;
+  }
+  if (buffer.size() < base::ToSize(int64_t{count} * Size)) {
+    return false;
   }
   Buffer = buffer;
   TotalCount = count;
@@ -238,8 +246,7 @@ bool FixedHeapClass::Free(void* pointer) {
 int FixedHeapClass::ID(const void* pointer) {
   if (pointer && Size) {
     return static_cast<int>(
-        (static_cast<const char*>(pointer) - static_cast<const char*>(Buffer)) /
-        Size);
+        (static_cast<const char*>(pointer) - Buffer.data()) / Size);
   }
   return -1;
 }
@@ -263,10 +270,10 @@ void FixedHeapClass::Clear() {
   /*
   **	Free the old buffer (if present).
   */
-  if (Buffer && IsAllocated) {
-    delete[] static_cast<char*>(Buffer);
+  if (!Buffer.empty() && IsAllocated) {
+    delete[] Buffer.data();
   }
-  Buffer = nullptr;
+  Buffer = {};
   IsAllocated = false;
   ActiveCount = 0;
   TotalCount = 0;
@@ -319,7 +326,7 @@ void FixedIHeapClass::Clear() {
   ActivePointers.Clear();
 }
 
-bool FixedIHeapClass::Set_Heap(int count, void* buffer) {
+bool FixedIHeapClass::Set_Heap(int count, std::span<char> buffer) {
   Clear();
   if (FixedHeapClass::Set_Heap(count, buffer)) {
     ActivePointers.Resize(count);
@@ -332,7 +339,9 @@ void* FixedIHeapClass::Allocate() {
   void* ptr = FixedHeapClass::Allocate();
   if (ptr) {
     ActivePointers.Add(ptr);
-    memset(ptr, 0, base::ToSize(Size));
+    std::ranges::fill(Buffer.subspan(base::ToSize(ID(ptr)) * base::ToSize(Size),
+                                     base::ToSize(Size)),
+                      char{});
   }
   return ptr;
 }

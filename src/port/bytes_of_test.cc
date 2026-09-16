@@ -2,7 +2,7 @@
 
 #include <array>
 #include <cstdint>
-#include <cstring>
+#include "base/buffer.h"
 #include <type_traits>
 
 #include "gtest/gtest.h"
@@ -20,7 +20,7 @@ TEST(BytesOf, ScalarAddressesTheObject) {
   EXPECT_EQ(static_cast<void*>(bytes), static_cast<void*>(&value));
 
   uint32_t copy = 0;
-  std::memcpy(&copy, bytes, sizeof(copy));
+  base::CopyBytes(base::ObjectBytes(copy), base::ObjectBytes(value), sizeof(copy));
   EXPECT_EQ(copy, value);
 }
 
@@ -28,7 +28,7 @@ TEST(BytesOf, WritesReachTheObject) {
   Record record{};
   std::array<unsigned char, sizeof(Record)> pattern{};
   pattern.fill(0x5A);
-  std::memcpy(port::BytesOf(record), pattern.data(), pattern.size());
+  base::CopyBytes(base::ObjectBytes(record), base::ObjectBytes(pattern), pattern.size());
   EXPECT_EQ(record.word, 0x5A5A);
   EXPECT_EQ(record.byte, 0x5A);
 }

@@ -247,7 +247,7 @@ void GScreenClass::ResetTransientUiState() {
 void DisplayClass::ResetTransientUiState() {
   GScreenClass::ResetTransientUiState();
   PendingObject = nullptr;
-  CursorSize = nullptr;
+  CursorSize = {};
   ProximityCheck = false;
   IsDisplayToRedraw = true;
   IsRepairMode = false;

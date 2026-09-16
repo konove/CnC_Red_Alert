@@ -6,7 +6,9 @@
 #include <SDL_timer.h>
 
 #include <cstdint>
+#include <span>
 #include <utility>
+#include "base/numeric.h"
 
 #include "sdllib/gbuffer.h"
 #include "sdllib/ww_win.h"
@@ -27,9 +29,15 @@ bool GraphicBufferClass::Lock_Surface() {
   }
 
   if (!LockCount) {
-    SDL_LockSurface(static_cast<SDL_Surface*>(PaletteSurface));
-    Offset = static_cast<uint8_t*>(
-        static_cast<SDL_Surface*>(PaletteSurface)->pixels);
+    if (SDL_LockSurface(static_cast<SDL_Surface*>(PaletteSurface)) != 0) {
+      return false;
+    }
+    const auto* surface = static_cast<SDL_Surface*>(PaletteSurface);
+    Offset = static_cast<uint8_t*>(surface->pixels);
+    // SDL_LockSurface exposes pitch bytes for each of h rows until unlock.
+    // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
+    bytes_ = std::span(Offset,
+                       base::ToSize(surface->pitch) * base::ToSize(surface->h));
   }
 
   LockCount++;
@@ -46,6 +54,7 @@ bool GraphicBufferClass::Unlock_Surface() {
   if (!LockCount) {
     SDL_UnlockSurface(static_cast<SDL_Surface*>(PaletteSurface));
     Offset = nullptr;
+    bytes_ = {};
     // Content was drawn to PaletteSurface - clear VQA texture to switch back
     // to normal rendering mode
     if (VQATexture) {
@@ -108,25 +117,32 @@ void GraphicBufferClass::Update_Window_Surface(bool end_frame) {
   // update the event loop here too for now
   SDL_Event_Loop();
 }
-
-void GraphicBufferClass::Update_Palette(const uint8_t* palette) {
+void GraphicBufferClass::Update_Palette(std::span<const uint8_t> palette) {
   auto* sdl_pal = static_cast<SDL_Surface*>(PaletteSurface)->format->palette;
+  if (palette.size() / 3 < base::ToSize(sdl_pal->ncolors)) {
+    return;
+  }
+  // SDL owns exactly ncolors entries in the surface palette.
+  const auto colors =
+      // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
+      std::span(sdl_pal->colors, base::ToSize(sdl_pal->ncolors));
 
   bool changed = false;
 
   for (int i = 0; i < sdl_pal->ncolors; i++) {
     // convert from 6-bit
-    const int new_r = (palette[(i * 3) + 0] * 4) + (palette[(i * 3) + 0] / 16);
-    const int new_g = (palette[(i * 3) + 1] * 4) + (palette[(i * 3) + 1] / 16);
-    const int new_b = (palette[(i * 3) + 2] * 4) + (palette[(i * 3) + 2] / 16);
-
-    changed = changed || std::cmp_not_equal(sdl_pal->colors[i].r, new_r) ||
-              std::cmp_not_equal(sdl_pal->colors[i].g, new_g) ||
-              std::cmp_not_equal(sdl_pal->colors[i].b, new_b);
-
-    sdl_pal->colors[i].r = static_cast<Uint8>(new_r);
-    sdl_pal->colors[i].g = static_cast<Uint8>(new_g);
-    sdl_pal->colors[i].b = static_cast<Uint8>(new_b);
+    const int new_r = (palette[base::ToSize((i * 3) + 0)] * 4) +
+                      (palette[base::ToSize((i * 3) + 0)] / 16);
+    const int new_g = (palette[base::ToSize((i * 3) + 1)] * 4) +
+                      (palette[base::ToSize((i * 3) + 1)] / 16);
+    const int new_b = (palette[base::ToSize((i * 3) + 2)] * 4) +
+                      (palette[base::ToSize((i * 3) + 2)] / 16);
+    changed = changed || std::cmp_not_equal(colors[base::ToSize(i)].r, new_r) ||
+              std::cmp_not_equal(colors[base::ToSize(i)].g, new_g) ||
+              std::cmp_not_equal(colors[base::ToSize(i)].b, new_b);
+    colors[base::ToSize(i)].r = static_cast<Uint8>(new_r);
+    colors[base::ToSize(i)].g = static_cast<Uint8>(new_g);
+    colors[base::ToSize(i)].b = static_cast<Uint8>(new_b);
   }
 
   if (!changed) {
@@ -148,9 +164,16 @@ void GraphicBufferClass::Init_Display_Surface() {
                                     SDL_TEXTUREACCESS_STREAMING, Width, Height);
   PaletteSurface = SDL_CreateRGBSurface(0, Width, Height, 8, 0, 0, 0, 0);
 }
-
-void GraphicBufferClass::Render_Scaled_Frame(const uint8_t* paletted_data,
-                                             int width, int height) {
+void GraphicBufferClass::Render_Scaled_Frame(
+    std::span<const uint8_t> paletted_data, int width, int height) {
+  if (width <= 0 || height <= 0) {
+    return;
+  }
+  const auto frame_width = base::ToSize(width);
+  const auto frame_height = base::ToSize(height);
+  if (frame_width > paletted_data.size() / frame_height || !PaletteSurface) {
+    return;
+  }
   // Cancel any pending redraw timer
   if (RedrawTimer) {
     SDL_RemoveTimer(RedrawTimer);
@@ -177,18 +200,27 @@ void GraphicBufferClass::Render_Scaled_Frame(const uint8_t* paletted_data,
   // Convert paletted pixels to RGBA and upload to intermediate texture
   void* pixels = nullptr;
   int pitch = 0;
-  SDL_LockTexture(static_cast<SDL_Texture*>(VQATexture), nullptr, &pixels,
-                  &pitch);
-
-  auto* dest = static_cast<uint32_t*>(pixels);
+  if (SDL_LockTexture(static_cast<SDL_Texture*>(VQATexture), nullptr, &pixels,
+                      &pitch) != 0) {
+    return;
+  }
+  // SDL_LockTexture exposes pitch bytes for each texture row.
+  // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
+  const auto dest = std::span(static_cast<uint32_t*>(pixels),
+                              base::ToSize(pitch / 4) * base::ToSize(height));
+  // SDL owns exactly ncolors entries in the surface palette.
+  const auto colors =
+      // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
+      std::span(sdl_pal->colors, base::ToSize(sdl_pal->ncolors));
   for (int y = 0; y < height; y++) {
     for (int x = 0; x < width; x++) {
-      const uint8_t idx = paletted_data[(y * width) + x];
+      const uint8_t idx =
+          paletted_data[(base::ToSize(y) * frame_width) + base::ToSize(x)];
       // Use palette already converted to 8-bit by Update_Palette
-      const uint8_t r = sdl_pal->colors[idx].r;
-      const uint8_t g = sdl_pal->colors[idx].g;
-      const uint8_t b = sdl_pal->colors[idx].b;
-      dest[(y * (pitch / 4)) + x] =
+      const uint8_t r = colors[idx].r;
+      const uint8_t g = colors[idx].g;
+      const uint8_t b = colors[idx].b;
+      dest[(base::ToSize(y) * base::ToSize(pitch / 4)) + base::ToSize(x)] =
           0xFFU << 24U | uint32_t{b} << 16U | uint32_t{g} << 8U | r;
     }
   }

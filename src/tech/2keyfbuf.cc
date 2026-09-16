@@ -2,15 +2,18 @@
 #include "tech/2keyfbuf.h"
 
 #include <bit>
+#include <cstddef>
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
+#include <span>
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
+#include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/types.h"
-#include "port/bytes_of.h"
+#include "port/unaligned.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/shape.h"
 
@@ -54,19 +57,22 @@ static inline uint32_t Make_Code(int x, int y, int w, int h) {
          (y < 0 ? 0b0010U : 0U) | (y >= h ? 0b0001U : 0U);
 }
 
-static void Setup_Shape_Header(int pixel_width, int pixel_height, char* src,
-                               ShapeHeaderType* headers, ShapeFlags_Type flags,
-                               const uint8_t* /*Translucent*/,
-                               const uint8_t* IsTranslucent) {
-  headers->draw_flags = static_cast<uint32_t>(ShapeEffectFlags(flags));
-  auto* ptr = port::BytesOf(*headers) + sizeof(ShapeHeaderType);
+static void Setup_Shape_Header(int pixel_width, int pixel_height,
+                               std::span<const std::byte> src,
+                               ShapeHeaderType& header,
+                               std::span<std::byte> line_flags_out,
+                               ShapeFlags_Type flags,
+                               std::span<const uint8_t> /*Translucent*/,
+                               std::span<const uint8_t> IsTranslucent) {
+  header.draw_flags = static_cast<uint32_t>(ShapeEffectFlags(flags));
+  std::size_t input = 0;
+  std::size_t output = 0;
   do {
     uint32_t line_flags = 0;
     int trans_count = 0;
     int x_count = pixel_width;
     do {
-      const int pixel = static_cast<uint8_t>(*src);
-      src = src + 1;
+      const int pixel = std::to_integer<uint8_t>(src[input++]);
       if (!pixel && base::Any(flags & SHAPE_TRANS)) {
         line_flags = kBlitTransparent;
         trans_count++;  // keep track of number of transparent pixels
@@ -75,7 +81,8 @@ static void Setup_Shape_Header(int pixel_width, int pixel_height, char* src,
           line_flags |= kBlitPredator;
         }
 
-        if (base::Any(flags & SHAPE_GHOST) && IsTranslucent[pixel] != 0xFF) {
+        if (base::Any(flags & SHAPE_GHOST) &&
+            IsTranslucent[static_cast<std::size_t>(pixel)] != 0xFF) {
           line_flags |= kBlitGhost;
         }
 
@@ -90,22 +97,26 @@ static void Setup_Shape_Header(int pixel_width, int pixel_height, char* src,
       line_flags = kBlitSkip;
     }
 
-    *ptr++ = static_cast<uint8_t>(line_flags);
+    line_flags_out[output++] = static_cast<std::byte>(line_flags);
   } while (--pixel_height != 0);
 }
 
 // single helper that handles all combinations
 // templated on flags to avoid writing every combination
 template <uint32_t flags>
-static void Do_Old_Blit(int line_count, int pixel_count, uint8_t* src_offset,
-                        uint8_t* dst_offset, int src_adjust_width,
-                        int dst_adjust_width, const uint8_t* Translucent,
-                        const uint8_t* IsTranslucent, int FadingNum,
-                        const uint8_t* FadingTable) {
+static void Do_Old_Blit(int line_count, int pixel_count,
+                        std::span<const std::byte> src_offset,
+                        std::span<uint8_t> dst_offset, int src_adjust_width,
+                        int dst_adjust_width,
+                        std::span<const uint8_t> Translucent,
+                        std::span<const uint8_t> IsTranslucent, int FadingNum,
+                        std::span<const uint8_t> FadingTable) {
+  std::size_t input = 0;
+  std::size_t output = 0;
   do {
     // original asm unrolled this 32 times
     for (int x = 0; x < pixel_count; x++) {
-      uint8_t pixel = *src_offset++;
+      auto pixel = std::to_integer<uint8_t>(src_offset[input++]);
       if (pixel || !(flags & kBlitTransparent)) {
         if (flags & kBlitPredator) {
           const int pred = BFPartialCount + BFPartialPred;
@@ -115,16 +126,21 @@ static void Do_Old_Blit(int line_count, int pixel_count, uint8_t* src_offset,
             // pick up a color offset a pseudo-random amount from the current
             // viewport address
             // NOLINTNEXTLINE(bugprone-signed-bitwise)
-            pixel = dst_offset[base::At(BFPredTable, BFPredOffset >> 1)];
+            const int pred_index = BFPredOffset >> 1;
+            const auto sample = output + base::ToSize(base::At(BFPredTable, pred_index));
+            if (sample < dst_offset.size()) {
+              pixel = dst_offset[sample];
+            }
             // NOLINTNEXTLINE(bugprone-signed-bitwise)
             BFPredOffset = (BFPredOffset + 2) & PRED_MASK;
           }
         }
 
         if (flags & kBlitGhost) {
-          const uint8_t is_trans = IsTranslucent[pixel];
+          const uint8_t is_trans =
+              IsTranslucent[static_cast<std::size_t>(pixel)];
           if (is_trans != 0xFF) {  // is it a translucent color?
-            pixel = Translucent[(is_trans * 256) + *dst_offset];
+            pixel = Translucent[(is_trans * 256) + dst_offset[output]];
           }
         }
 
@@ -135,47 +151,54 @@ static void Do_Old_Blit(int line_count, int pixel_count, uint8_t* src_offset,
           }
         }
 
-        *dst_offset = pixel;
+        dst_offset[output] = pixel;
       }
-      dst_offset++;
+      output++;
     }
 
-    src_offset += src_adjust_width;
-    dst_offset += dst_adjust_width;
+    input += static_cast<std::size_t>(src_adjust_width);
+    output += static_cast<std::size_t>(dst_adjust_width);
   } while (--line_count);
 }
 
-void Buffer_Frame_To_Page(int x, int y, const int w, const int h, void* src,
-                          GraphicViewPortClass& dest, ShapeFlags_Type flags,
-                          const ShapeEffects& effects) {
-  if (!src) {
+void Buffer_Frame_To_Page(int x, int y, const int w, const int h,
+                          std::span<std::byte> src, GraphicViewPortClass& dest,
+                          ShapeFlags_Type flags, const ShapeEffects& effects) {
+  if (src.empty() || w <= 0 || h <= 0) {
     return;
   }
 
-  const uint8_t* IsTranslucent = nullptr;
-  const uint8_t* Translucent = nullptr;
-  const uint8_t* FadingTable = nullptr;
+  std::span<const uint8_t> IsTranslucent;
+  std::span<const uint8_t> Translucent;
+  std::span<const uint8_t> FadingTable;
   int FadingNum = 0;
 
-  ShapeHeaderType* header_pointer = nullptr;
+  ShapeHeaderType header{};
+  std::span<std::byte> header_bytes;
 
   bool use_new_draw = !UseOldShapeDraw && UseBigShapeBuffer;
 
   // Save the line attributes pointers and modify the src pointer to point to
   // the actual image.
   if (use_new_draw) {
-    header_pointer = static_cast<ShapeHeaderType*>(src);
-
-    auto* shape_buffer_start = header_pointer->shape_buffer
-                                   ? TheaterShapeBufferStart
-                                   : BigShapeBufferStart;
-
-    src = shape_buffer_start +
-          std::bit_cast<uintptr_t>(
-              header_pointer->shape_data);  // these are both ptrs...
+    if (src.size() < sizeof(ShapeHeaderType) + static_cast<std::size_t>(h)) {
+      return;
+    }
+    header_bytes = src;
+    header = port::ReadUnaligned<ShapeHeaderType>(src);
+    const auto shape_buffer = std::as_writable_bytes(
+        header.shape_buffer ? TheaterShapeBufferBytes : BigShapeBufferBytes);
+    const auto offset = std::bit_cast<uintptr_t>(header.shape_data);
+    if (offset > shape_buffer.size()) {
+      return;
+    }
+    src = shape_buffer.subspan(offset);
   }
   // else just use the old shape drawing system
 
+  if (static_cast<std::size_t>(w) * static_cast<std::size_t>(h) > src.size()) {
+    return;
+  }
   uint32_t jflags = 0;  // clear jump flags
 
   // See if we need to center the frame
@@ -192,7 +215,17 @@ void Buffer_Frame_To_Page(int x, int y, const int w, const int h, void* src,
     // are we ghosting this shape
     jflags |= kBlitGhost;
     IsTranslucent = effects.ghost_table;
-    Translucent = IsTranslucent + 256;
+    if (IsTranslucent.size() < 256) {
+      return;
+    }
+    Translucent = IsTranslucent.subspan(256);
+    IsTranslucent = IsTranslucent.first(256);
+    for (const uint8_t row : IsTranslucent) {
+      if (row != 0xff &&
+          (static_cast<std::size_t>(row) + 1) * 256 > Translucent.size()) {
+        return;
+      }
+    }
   }
 
   // If this is the first time through for this shape then
@@ -200,11 +233,13 @@ void Buffer_Frame_To_Page(int x, int y, const int w, const int h, void* src,
 
   bool use_all_flags = false;
 
-  if (use_new_draw && (header_pointer->draw_flags == ~0U ||
-                       header_pointer->draw_flags !=
-                           static_cast<uint32_t>(ShapeEffectFlags(flags)))) {
-    Setup_Shape_Header(w, h, static_cast<char*>(src), header_pointer, flags,
+  if (use_new_draw &&
+      (header.draw_flags == ~0U ||
+       header.draw_flags != static_cast<uint32_t>(ShapeEffectFlags(flags)))) {
+    Setup_Shape_Header(w, h, src, header,
+                       header_bytes.subspan(sizeof(ShapeHeaderType)), flags,
                        Translucent, IsTranslucent);
+    port::WriteUnaligned(header_bytes, header);
     // ShapeJumpTableAddress = AllFlagsJumpTable;
     use_all_flags = true;
   } else {
@@ -222,6 +257,9 @@ void Buffer_Frame_To_Page(int x, int y, const int w, const int h, void* src,
   if (base::Any(flags & SHAPE_FADING)) {
     // save address of fading tbl
     FadingTable = effects.fading_table;
+    if (FadingTable.size() < 256) {
+      return;
+    }
     // get fade num, no need for more than 63
     FadingNum = effects.fading_count % 64;
     jflags |= kBlitFading;
@@ -311,13 +349,14 @@ void Buffer_Frame_To_Page(int x, int y, const int w, const int h, void* src,
   }
 
   // do blit
-  auto* src_offset = static_cast<uint8_t*>(src) + src_x0 +
-                     (static_cast<base::ssize>(src_y0) * w);
+  auto src_offset = src.subspan(
+      base::ToSize(src_x0 + (static_cast<base::ssize>(src_y0) * w)));
   const int src_adjust_width = w - (dst_x1 - dst_x0);
 
   const base::ssize dst_area =
       dest.Get_XAdd() + dest.Get_Width() + dest.Get_Pitch();
-  auto* dst_offset = dest.Get_Offset() + dst_x0 + (dst_y0 * dst_area);
+  auto dst_offset =
+      dest.Get_Pixels().subspan(base::ToSize(dst_x0 + (dst_y0 * dst_area)));
   const int dst_adjust_width = static_cast<int>(dst_area - (dst_x1 - dst_x0));
 
   if (!use_new_draw) {
@@ -333,9 +372,14 @@ void Buffer_Frame_To_Page(int x, int y, const int w, const int h, void* src,
       {
         // copy lines
         do {
-          memcpy(dst_offset, src_offset, base::ToSize(pixel_count));
-          src_offset += w;
-          dst_offset += dst_area;
+          base::CopyBytes(std::as_writable_bytes(dst_offset), src_offset,
+                          pixel_count);
+          if (line_count > 1) {
+            src_offset = src_offset.subspan(base::ToSize(w));
+          }
+          if (line_count > 1) {
+            dst_offset = dst_offset.subspan(base::ToSize(dst_area));
+          }
         } while (--line_count);
         break;
       }
@@ -440,7 +484,6 @@ void Buffer_Frame_To_Page(int x, int y, const int w, const int h, void* src,
   } else {
     // super jump table fun!
     absl::PrintF("%s new f %x all flags %i\n", __func__,
-                 header_pointer->draw_flags & kBlitAll,
-                 static_cast<int>(use_all_flags));
+                 header.draw_flags & kBlitAll, static_cast<int>(use_all_flags));
   }
 }

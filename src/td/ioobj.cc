@@ -41,6 +41,7 @@
  */
 
 #include <cstdint>
+#include <span>
 #include <utility>
 
 #include "base/array.h"
@@ -120,7 +121,7 @@ void TriggerClass::Serialize(Archive& ar) {
     if (!active || IsPersistant < VOLATILE || IsPersistant > PERSISTANT ||
         AttachCount < 0 || Event < EVENT_NONE || Event >= EVENT_COUNT ||
         Action < ACTION_NONE || Action >= ACTION_COUNT || House < HOUSE_NONE ||
-        House >= HOUSE_COUNT || Name[4] != '\0') {
+        House >= HOUSE_COUNT || base::At(Name, 4) != '\0') {
       ar.Fail("invalid trigger state");
     }
   }
@@ -224,13 +225,13 @@ template void TeamClass::Serialize(ArchiveReader&);
 template <class Archive>
 void HouseClass::Serialize(Archive& ar) {
   // Runtime remap pointers are encoded by table identity, including RemapNone.
-  const unsigned char* tables[] = {RemapNone,      RemapYellow, RemapRed,
-                                   RemapBlueGreen, RemapOrange, RemapGreen,
-                                   RemapBlue};
+  const std::span<const unsigned char> tables[] = {
+      RemapNone,   RemapYellow, RemapRed, RemapBlueGreen,
+      RemapOrange, RemapGreen,  RemapBlue};
   int32_t remap_id = -1;
   if constexpr (!Archive::kIsReading) {
     for (int i = 0; i < 7; ++i) {
-      if (RemapTable == base::At(tables, i)) {
+      if (RemapTable.data() == base::At(tables, i).data()) {
         remap_id = i;
       }
     }
@@ -299,7 +300,7 @@ void HouseClass::Serialize(Archive& ar) {
         Edge < SOURCE_FIRST || Edge >= SOURCE_COUNT || remap_id < 0 ||
         remap_id >= 7 || RemapColor < REMAP_NONE || RemapColor >= REMAP_COUNT ||
         WhoLastHurtMe < HOUSE_NONE || WhoLastHurtMe >= HOUSE_COUNT ||
-        Name[sizeof(Name) - 1] != '\0') {
+        base::At(Name, sizeof(Name) - 1) != '\0') {
       ar.Fail("invalid house state");
       return;
     }

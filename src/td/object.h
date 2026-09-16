@@ -42,6 +42,7 @@
 #define CNC_RED_ALERT_TD_OBJECT_H_
 
 #include <cstdint>
+#include <span>
 
 #include "td/abstract.h"
 #include "td/defines.h"
@@ -200,9 +201,9 @@ class ObjectClass : public AbstractClass {
   virtual void Do_Shimmer();
   virtual int Exit_Object(TechnoClass* /*unused*/);
   virtual bool Render(bool forced);
-  [[nodiscard]] virtual const int16_t* Occupy_List(
+  [[nodiscard]] virtual std::span<const int16_t> Occupy_List(
       bool placement = false) const;
-  [[nodiscard]] virtual const int16_t* Overlap_List() const;
+  [[nodiscard]] virtual std::span<const int16_t> Overlap_List() const;
   [[nodiscard]] virtual int Health_Ratio() const;
   virtual void Draw_It(int x, int y, WindowNumberType) = 0;
   virtual void Hidden();

@@ -52,16 +52,16 @@ TEST(RaPathOverlapTest, WordBoundaryCellsUseDefinedShifts) {
 TEST(RaPathOverlapTest, SetAndClearTouchOnlyTheirCell) {
   for (const int cell : {0, 1, 31, 32, 33, MAP_CELL_TOTAL - 1}) {
     OverlapBuffer words{};
-    SetOverlap(words.data(), cell);
-    EXPECT_TRUE(IsOverlapped(words.data(), cell)) << "cell " << cell;
+    SetOverlap(words, cell);
+    EXPECT_TRUE(IsOverlapped(words, cell)) << "cell " << cell;
     if (cell > 0) {
-      EXPECT_FALSE(IsOverlapped(words.data(), cell - 1)) << "cell " << cell;
+      EXPECT_FALSE(IsOverlapped(words, cell - 1)) << "cell " << cell;
     }
     if (cell < MAP_CELL_TOTAL - 1) {
-      EXPECT_FALSE(IsOverlapped(words.data(), cell + 1)) << "cell " << cell;
+      EXPECT_FALSE(IsOverlapped(words, cell + 1)) << "cell " << cell;
     }
-    ClearOverlap(words.data(), cell);
-    EXPECT_FALSE(IsOverlapped(words.data(), cell)) << "cell " << cell;
+    ClearOverlap(words, cell);
+    EXPECT_FALSE(IsOverlapped(words, cell)) << "cell " << cell;
     EXPECT_TRUE(IsEmpty(words)) << "cell " << cell;
   }
 }
@@ -69,12 +69,12 @@ TEST(RaPathOverlapTest, SetAndClearTouchOnlyTheirCell) {
 TEST(RaPathOverlapTest, ClearKeepsTheRestOfTheWord) {
   OverlapBuffer words{};
   for (int cell = 32; cell < 64; ++cell) {
-    SetOverlap(words.data(), cell);
+    SetOverlap(words, cell);
   }
   EXPECT_EQ(words[1], uint32_t{0xFFFFFFFF});
-  ClearOverlap(words.data(), 63);
+  ClearOverlap(words, 63);
   EXPECT_EQ(words[1], uint32_t{0x7FFFFFFF});
-  EXPECT_TRUE(IsOverlapped(words.data(), 62));
+  EXPECT_TRUE(IsOverlapped(words, 62));
   EXPECT_EQ(words[0], uint32_t{0});
   EXPECT_EQ(words[2], uint32_t{0});
 }

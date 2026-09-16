@@ -184,8 +184,9 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
         //				rate = Bound(rate-3, 0, 4);
         //			}
         if (Keyboard::Down(KN_RMOUSE)) {
-          rate = Bound(rate + 1, 4,
-                       static_cast<int>(sizeof(_rate) / sizeof(_rate[0])) - 1);
+          rate = Bound(
+              rate + 1, 4,
+              static_cast<int>(sizeof(_rate) / sizeof(base::At(_rate, 0))) - 1);
         }
 
         /*

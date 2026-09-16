@@ -38,11 +38,12 @@
 #ifndef CNC_RED_ALERT_SDLLIB_FONT_H_
 #define CNC_RED_ALERT_SDLLIB_FONT_H_
 
+#include <cstddef>
 #include <cstdint>
-#include <cstring>
+#include <span>
 
 #include "absl/base/attributes.h"
-#include "base/types.h"
+#include "base/buffer.h"
 
 //////////////////////////////////////// Defines
 /////////////////////////////////////////////
@@ -78,58 +79,66 @@ class FontView {
  public:
   // data must point at a complete font file; the view reads the header
   // eagerly and the metric tables lazily.
-  explicit FontView(const void* data ABSL_ATTRIBUTE_LIFETIME_BOUND)
-      : font_(static_cast<const uint8_t*>(data)) {
+  explicit FontView(
+      std::span<const std::byte> data ABSL_ATTRIBUTE_LIFETIME_BOUND)
+      : font_(data) {
+    if (font_.size() < sizeof(FontHeader)) {
+      return;
+    }
     FontHeader header{};
-    std::memcpy(&header, font_, sizeof(header));
-    info_ = font_ + header.info_block;
-    offsets_ = font_ + header.offset_block;
-    widths_ = font_ + header.width_block;
-    heights_ = font_ + header.height_block;
+    base::CopyBytes(base::ObjectBytes(header), std::as_bytes(font_),
+                    sizeof(header));
+    info_ = Table(header.info_block);
+    offsets_ = Table(header.offset_block);
+    widths_ = Table(header.width_block);
+    heights_ = Table(header.height_block);
   }
 
-  // Tallest glyph in pixels; the height of one text line.
-  [[nodiscard]] int MaxHeight() const { return info_[kFontInfoMaxHeight]; }
-  // Widest glyph in pixels.
-  [[nodiscard]] int MaxWidth() const { return info_[kFontInfoMaxWidth]; }
-
-  // Width in pixels of the glyph for character ch.
-  [[nodiscard]] int GlyphWidth(uint8_t ch) const { return widths_[ch]; }
-
-  // Number of drawn pixel rows in the glyph.
+  [[nodiscard]] int MaxHeight() const {
+    return Byte(info_, kFontInfoMaxHeight);
+  }
+  [[nodiscard]] int MaxWidth() const { return Byte(info_, kFontInfoMaxWidth); }
+  [[nodiscard]] int GlyphWidth(uint8_t ch) const { return Byte(widths_, ch); }
   [[nodiscard]] int GlyphHeight(uint8_t ch) const {
     return PackedHeight(ch) / 256;
   }
-  // Number of blank rows between the top of the line and the drawn rows.
   [[nodiscard]] int GlyphBlankRowsAbove(uint8_t ch) const {
     return PackedHeight(ch) % 256;
   }
-
-  // The glyph's pixel data: two 4-bit palette indices per byte, low nibble
-  // first, GlyphWidth x GlyphHeight pixels.
-  [[nodiscard]] const uint8_t* GlyphData(uint8_t ch) const {
-    return font_ + ReadWord(offsets_ + (base::ssize{2} * ch));
+  // Returns the complete packed glyph, or an empty span for malformed data.
+  [[nodiscard]] std::span<const std::byte> GlyphData(uint8_t ch) const {
+    const auto data = Table(ReadWord(offsets_, size_t{2} * ch));
+    const auto size = ((static_cast<size_t>(GlyphWidth(ch)) + 1) / 2) *
+                      static_cast<size_t>(GlyphHeight(ch));
+    return size <= data.size() ? data.first(size)
+                               : std::span<const std::byte>{};
   }
 
  private:
-  // Reads a little-endian uint16 with no alignment requirement.
-  static uint16_t ReadWord(const uint8_t* data) {
+  static uint8_t Byte(std::span<const std::byte> data, size_t offset) {
+    return offset < data.size() ? std::to_integer<uint8_t>(data[offset]) : 0;
+  }
+  static uint16_t ReadWord(std::span<const std::byte> data, size_t offset) {
+    if (offset > data.size() || data.size() - offset < sizeof(uint16_t)) {
+      return 0;
+    }
     uint16_t value = 0;
-    std::memcpy(&value, data, sizeof(value));
+    base::CopyBytes(base::ObjectBytes(value),
+                    std::as_bytes(data.subspan(offset)), sizeof(value));
     return value;
   }
-
-  // Blank rows above the glyph in the low byte, drawn rows in the high byte.
   [[nodiscard]] int PackedHeight(uint8_t ch) const {
-    return ReadWord(heights_ + (base::ssize{2} * ch));
+    return ReadWord(heights_, size_t{2} * ch);
   }
-
-  const uint8_t* font_;     // Start of the font data.
-  const uint8_t* info_;     // Font-wide info block.
-  const uint8_t* offsets_;  // Per-glyph data offset table (uint16, unaligned).
-  const uint8_t* widths_;   // Per-glyph width table (uint8).
-  const uint8_t*
-      heights_;  // Per-glyph packed height table (uint16, unaligned).
+  [[nodiscard]] std::span<const std::byte> Table(size_t offset) const {
+    return offset <= font_.size() ? font_.subspan(offset)
+                                  : std::span<const std::byte>{};
+  }
+  std::span<const std::byte> font_;
+  std::span<const std::byte> info_;
+  std::span<const std::byte> offsets_;
+  std::span<const std::byte> widths_;
+  std::span<const std::byte> heights_;
 };
 
 //////////////////////////////////////// Prototypes
@@ -143,7 +152,7 @@ class FontView {
 // Makes new_font the current font and refreshes the font metric globals.
 // Returns the previous font, so callers can restore it. Null new_font leaves
 // the current font in place.
-const void* Set_Font(const void* new_font);
+std::span<const std::byte> Set_Font(std::span<const std::byte> new_font);
 
 /*=========================================================================*/
 /* The following prototypes are for the file: FONT.CPP
@@ -158,20 +167,14 @@ int String_Pixel_Width(const char* string);
  */
 /*=========================================================================*/
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-void Set_Font_Palette_Range(const void* palette, int start_idx, int end_idx);
+void Set_Font_Palette_Range(std::span<const uint8_t> palette, int start_idx,
+                            int end_idx);
 
 void* Get_Font_Palette_Ptr();
-
-#ifdef __cplusplus
-}
-#endif
+std::span<const uint8_t> Get_Font_Palette();
 
 // Sets all 16 font color entries (indices 0 through 15).
-inline void Set_Font_Palette(const void* palette) {
+inline void Set_Font_Palette(std::span<const uint8_t> palette) {
   constexpr int kFirstColor = 0;
   constexpr int kLastColor = 15;
   Set_Font_Palette_Range(palette, kFirstColor, kLastColor);
@@ -186,7 +189,7 @@ extern "C" int FontYSpacing;
 extern char FontWidth;
 extern char FontHeight;
 
-extern "C" const void* FontPtr;
+extern std::span<const std::byte> FontPtr;
 // Maps 4-bit glyph pixel values to screen colours; see font.cc.
 extern uint8_t FontPalette[16];
 

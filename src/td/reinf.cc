@@ -146,9 +146,9 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
       **	Special case for the gunboat. It always arrives according to the
       *shipping source.
       */
-      if (teamtype->Class[0]->What_Am_I() == RTTI_UNITTYPE &&
-          dynamic_cast<const UnitTypeClass*>(teamtype->Class[0])->Type ==
-              UNIT_GUNBOAT) {
+      if (base::At(teamtype->Class, 0)->What_Am_I() == RTTI_UNITTYPE &&
+          dynamic_cast<const UnitTypeClass*>(base::At(teamtype->Class, 0))
+                  ->Type == UNIT_GUNBOAT) {
         source = SOURCE_SHIPPING;
       } else {
         source = HouseClass::As_Pointer(teamtype->House)->Edge;
@@ -571,25 +571,25 @@ bool Create_Special_Reinforcement(const HouseClass* house,
       team->IsReinforcable = false;
       team->IsTransient = true;
       team->ClassCount = 1;
-      team->Class[0] = type;
-      team->DesiredNum[0] = 1;
+      base::At(team->Class, 0) = type;
+      base::At(team->DesiredNum, 0) = 1;
       team->MissionCount = 1;
       if (mission == TMISSION_NONE) {
         if (another &&
             (another->What_Am_I() != RTTI_UNITTYPE ||
              dynamic_cast<const UnitTypeClass*>(another)->Type != UNIT_HOVER)) {
-          team->MissionList[0].Mission = TMISSION_UNLOAD;
-          team->MissionList[0].Argument = kWayptReinf;
+          base::At(team->MissionList, 0).Mission = TMISSION_UNLOAD;
+          base::At(team->MissionList, 0).Argument = kWayptReinf;
         }
       } else {
-        team->MissionList[0].Mission = mission;
-        team->MissionList[0].Argument = argument;
+        base::At(team->MissionList, 0).Mission = mission;
+        base::At(team->MissionList, 0).Argument = argument;
       }
       team->House = house->Class->House;
       if (another) {
         team->ClassCount++;
-        team->Class[1] = another;
-        team->DesiredNum[1] = 1;
+        base::At(team->Class, 1) = another;
+        base::At(team->DesiredNum, 1) = 1;
       }
 
       const bool ok = Do_Reinforcements(team);

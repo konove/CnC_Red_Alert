@@ -393,7 +393,7 @@ bool FootClass::Basic_Path() {
   CELL cell = 0;
   const bool skip_path = false;
 
-  Path[0] = FACING_NONE;
+  base::At(Path, 0) = FACING_NONE;
 
   if (Target_Legal(NavCom)) {
     cell = As_Cell(NavCom);
@@ -430,9 +430,12 @@ bool FootClass::Basic_Path() {
           InfantryClass* inf = (InfantryClass*)obj;
           if (inf->NavCom == NavCom && inf->Path[0] != FACING_NONE) {
             if (Coord_Cell(inf->Head_To_Coord()) == Coord_Cell(inf->Coord)) {
-              Mem_Copy(&inf->Path[1], Path, sizeof(Path) - sizeof(Path[0]));
+              Mem_Copy(std::as_bytes(std::span(inf->Path).subspan(1)),
+                       std::as_writable_bytes(std::span(Path)),
+                       sizeof(Path) - sizeof(Path[0]));
             } else {
-              Mem_Copy(inf->Path, Path, sizeof(Path));
+              Mem_Copy(std::as_bytes(std::span(inf->Path)),
+                       std::as_writable_bytes(std::span(Path)), sizeof(Path));
             }
             if (Path[0] != FACING_NONE) {
               skip_path = true;
@@ -448,7 +451,7 @@ bool FootClass::Basic_Path() {
 
     if (!skip_path) {
       Mark(MARK_UP);
-      Path[0] = FACING_NONE;  // Probably not necessary, but...
+      base::At(Path, 0) = FACING_NONE;  // Probably not necessary, but...
 
       /*
       **	Try to find a path to the destination. If a failure occurs, then
@@ -480,9 +483,9 @@ bool FootClass::Basic_Path() {
       *most *	aggressive case. If this fails, then no path will succeed.
       *Further *	scanning is unnecessary.
       */
-      path = Find_Path(cell, &workpath1[0], sizeof(workpath1), maxtype);
+      path = Find_Path(cell, workpath1, sizeof(workpath1), maxtype);
       if (path && path->Cost) {
-        memcpy(&path1, path, sizeof(path1));
+        path1 = *path;
         found1 = true;
 
         /*
@@ -490,10 +493,10 @@ bool FootClass::Basic_Path() {
         *simple *	comparison with the most aggressive path. If they are
         *very close, then *	go with the best (easiest) path method.
         */
-        path = Find_Path(cell, &workpath2[0], sizeof(workpath2), MOVE_CLOAK);
+        path = Find_Path(cell, workpath2, sizeof(workpath2), MOVE_CLOAK);
         if (path && path->Cost &&
             path->Cost < std::max(path1.Cost + (path1.Cost / 2), 3)) {
-          memcpy(&path1, path, sizeof(path1));
+          path1 = *path;
           base::CopyBytes(base::ObjectBytes(workpath1),
                           base::ObjectBytes(workpath2), sizeof(workpath1));
         } else {
@@ -503,10 +506,10 @@ bool FootClass::Basic_Path() {
           *best one.
           */
           for (MoveType move = MOVE_MOVING_BLOCK; move < maxtype; move++) {
-            path = Find_Path(cell, &workpath2[0], sizeof(workpath2), move);
+            path = Find_Path(cell, workpath2, sizeof(workpath2), move);
             if (path && path->Cost &&
                 path->Cost < std::max(path1.Cost + (path1.Cost / 2), 3)) {
-              memcpy(&path1, path, sizeof(path1));
+              path1 = *path;
               base::CopyBytes(base::ObjectBytes(workpath1),
                               base::ObjectBytes(workpath2), sizeof(workpath1));
             }
@@ -517,20 +520,20 @@ bool FootClass::Basic_Path() {
 #ifdef OBSOLETE
       for (MoveType move = MOVE_CLOAK; move <= maxtype; move++) {
         if (!found1) {
-          path = Find_Path(cell, &workpath1[0], sizeof(workpath1), move);
+          path = Find_Path(cell, workpath1, sizeof(workpath1), move);
           if (path && path->Cost) {
-            memcpy(&path1, path, sizeof(path1));
+            path1 = *path;
             found1 = true;
             if (path1.Cost < 5) {
               break;
             }
           }
         } else {
-          path = Find_Path(cell, &workpath2[0], sizeof(workpath2), move);
+          path = Find_Path(cell, workpath2, sizeof(workpath2), move);
 
           if (path) {
             if (path->Cost && path->Cost <= path1.Cost / 2) {
-              memcpy(&path1, path, sizeof(path1));
+              path1 = *path;
               memcpy(workpath1, workpath2, sizeof(workpath1));
             }
           }
@@ -544,8 +547,9 @@ bool FootClass::Basic_Path() {
       */
       if (found1) {
         Fixup_Path(&path1);
-        memcpy(&Path[0], &workpath1[0],
-               base::ToSize(std::min(path1.Length, static_cast<int>(sizeof(Path)))));
+        base::CopyBytes(base::ObjectBytes(Path), base::ObjectBytes(workpath1),
+                        base::ToSize(std::min(path1.Length,
+                                              static_cast<int>(sizeof(Path)))));
       }
 
       Mark(MARK_DOWN);
@@ -566,7 +570,7 @@ bool FootClass::Basic_Path() {
 #endif
 
     PathDelay = kPathDelay;
-    if (Path[0] != FACING_NONE) {
+    if (base::At(Path, 0) != FACING_NONE) {
       return true;
     }
 
@@ -882,7 +886,7 @@ COORDINATE FootClass::Sort_Y() const {
  *=============================================================================================*/
 void FootClass::Stun() {
   Assign_Destination(kTargetNone);
-  Path[0] = FACING_NONE;
+  base::At(Path, 0) = FACING_NONE;
   Stop_Driver();
   TechnoClass::Stun();
 }
@@ -1083,7 +1087,7 @@ bool FootClass::Unlimbo(COORDINATE coord, DirType dir) {
     /*
     **	Start in a still (non-moving) state.
     */
-    Path[0] = FACING_NONE;
+    base::At(Path, 0) = FACING_NONE;
     return true;
   }
   return false;
@@ -1107,7 +1111,7 @@ bool FootClass::Unlimbo(COORDINATE coord, DirType dir) {
 void FootClass::Assign_Mission(MissionType order) {
   if (What_Am_I() != RTTI_UNIT ||
       *dynamic_cast<UnitClass*>(this) != UNIT_GUNBOAT) {
-    Path[0] = FACING_NONE;
+    base::At(Path, 0) = FACING_NONE;
   }
   TechnoClass::Assign_Mission(order);
 }
@@ -1432,7 +1436,7 @@ void FootClass::Per_Cell_Process(bool center) {
          Mission == MISSION_ATTACK || Mission == MISSION_HUNT) &&
         inrange) {
       Assign_Destination(kTargetNone);
-      Path[0] = FACING_NONE;
+      base::At(Path, 0) = FACING_NONE;
     }
   }
 
@@ -1895,7 +1899,7 @@ void FootClass::Detach(TARGET target, bool all) {
   */
   if (NavCom == target) {
     NavCom = kTargetNone;
-    Path[0] = FACING_NONE;
+    base::At(Path, 0) = FACING_NONE;
     Restore_Mission();
   }
 
@@ -1904,7 +1908,7 @@ void FootClass::Detach(TARGET target, bool all) {
   **	toward the target to get within range, then abort the path.
   */
   if (TarCom == target && House->IsHuman) {
-    Path[0] = FACING_NONE;
+    base::At(Path, 0) = FACING_NONE;
   }
 }
 

@@ -433,7 +433,7 @@ static void Add_Current_Screen() {
   if (ScreenRecording) {
     base::At(ScreenList, CurrentScreen) = new GraphicBufferClass;
     base::At(ScreenList, CurrentScreen)
-        ->Init(SeenBuff.Get_Width(), SeenBuff.Get_Height(), nullptr, 0,
+        ->Init(SeenBuff.Get_Width(), SeenBuff.Get_Height(), {}, 0,
                static_cast<GBC_Enum>(0));
     SeenBuff.Blit(*base::At(ScreenList, CurrentScreen));
 

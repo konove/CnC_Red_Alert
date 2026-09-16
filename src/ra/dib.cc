@@ -8,6 +8,7 @@
 #include <optional>
 #include <span>
 
+#include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/types.h"
 
@@ -86,9 +87,10 @@ std::optional<Image> Image::FromBmp(std::span<const std::uint8_t> bmp) {
   image.height_ = height;
 
   image.colors_.resize(static_cast<std::size_t>(color_count));
-  std::memcpy(image.colors_.data(),
-              bmp.data() + static_cast<std::size_t>(color_table_start),
-              static_cast<std::size_t>(color_table_bytes));
+  base::CopyBytes(
+      std::as_writable_bytes(std::span(image.colors_)),
+      std::as_bytes(bmp.subspan(static_cast<size_t>(color_table_start))),
+      color_table_bytes);
 
   // bfOffBits says where the pixels start. Trust it only if it lands inside
   // the data and past the headers; some writers leave it at zero.
@@ -105,9 +107,9 @@ std::optional<Image> Image::FromBmp(std::span<const std::uint8_t> bmp) {
   }
 
   image.bits_.resize(static_cast<std::size_t>(needed));
-  std::memcpy(image.bits_.data(),
-              bmp.data() + static_cast<std::size_t>(bits_start),
-              static_cast<std::size_t>(needed));
+  base::CopyBytes(std::as_writable_bytes(std::span(image.bits_)),
+                  std::as_bytes(bmp.subspan(static_cast<size_t>(bits_start))),
+                  needed);
 
   return image;
 }

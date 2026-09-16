@@ -41,6 +41,9 @@
 #ifndef CNC_RED_ALERT_TD_TAB_H_
 #define CNC_RED_ALERT_TD_TAB_H_
 
+#include <cstddef>
+#include <span>
+
 #include "sdllib/keyboard.h"
 #include "td/credits.h"
 #include "td/sidebar.h"
@@ -79,7 +82,7 @@ class TabClass : public SidebarClass {
  private:
   static void Set_Active(int select);
 
-  static const void* TabShape;
+  static std::span<const std::byte> TabShape;
 };
 
 #endif  // CNC_RED_ALERT_TD_TAB_H_

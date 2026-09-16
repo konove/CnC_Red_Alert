@@ -131,9 +131,14 @@
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
+#include <span>
+#include <string_view>
 
 #include "absl/strings/str_format.h"
+#include "base/array.h"
+#include "base/buffer.h"
 #include "base/enum_array.h"
+#include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "port/random_seed.h"
@@ -906,7 +911,8 @@ static const char* const kFrenchMissionNames[] = {
     // #endif
     nullptr};
 
-const char* const* EngMisStr = [] noexcept -> const char* const* {
+const std::span<const char* const> EngMisStr =
+    [] noexcept -> std::span<const char* const> {
   if (config::kIsGerman) {
     return kGermanMissionNames;
   }
@@ -1063,17 +1069,18 @@ bool Process_Global_Packet(GlobalPacketType* packet, IPXAddressClass* address) {
     //	the game still shows up on other players' dialogs.
     //	If the game is open, only the game owner may respond.
     //.....................................................................
-    if (strlen(Session.GameName) > 0 &&
+    if (!std::string_view(Session.GameName).empty() &&
         (!Session.NetOpen ||
          (Session.NetOpen &&
-          !strcmp(Session.Players[0]->Name, Session.GameName)))) {
-      memset(&mypacket, 0, sizeof(GlobalPacketType));
+          std::string_view(Session.Players[0]->Name) == Session.GameName))) {
+      base::FillBytes(base::ObjectBytes(mypacket), 0, sizeof(mypacket));
 
       mypacket.Command = NET_ANSWER_GAME;
       port::SafeCopy(mypacket.Name, Session.GameName);
       mypacket.GameInfo.IsOpen = Session.NetOpen;
 
-      Ipx.Send_Global_Message(&mypacket, sizeof(GlobalPacketType), 1, address);
+      Ipx.Send_Global_Message(base::ObjectBytes(mypacket),
+                              sizeof(GlobalPacketType), 1, address);
     }
     return true;
   }
@@ -1082,9 +1089,10 @@ bool Process_Global_Packet(GlobalPacketType* packet, IPXAddressClass* address) {
   //	Another system asking what player I am
   //------------------------------------------------------------------------
   if (packet->Command == NET_QUERY_PLAYER &&
-      !strcmp(packet->Name, Session.GameName) && strlen(Session.GameName) > 0 &&
-      !Session.NetStealth) {
-    memset(&mypacket, 0, sizeof(GlobalPacketType));  // changed DRD 9/26
+      (std::string_view(packet->Name) == Session.GameName) &&
+      !std::string_view(Session.GameName).empty() && !Session.NetStealth) {
+    base::FillBytes(base::ObjectBytes(mypacket), 0,
+                    sizeof(mypacket));  // changed DRD 9/26
 
     mypacket.Command = NET_ANSWER_PLAYER;
     port::SafeCopy(mypacket.Name, Session.Players[0]->Name);
@@ -1092,7 +1100,8 @@ bool Process_Global_Packet(GlobalPacketType* packet, IPXAddressClass* address) {
     mypacket.PlayerInfo.Color = Session.ColorIdx;
     mypacket.PlayerInfo.NameCRC = Compute_Name_CRC(Session.GameName);
 
-    Ipx.Send_Global_Message(&mypacket, sizeof(GlobalPacketType), 1, address);
+    Ipx.Send_Global_Message(base::ObjectBytes(mypacket),
+                            sizeof(GlobalPacketType), 1, address);
     return true;
   }
 
@@ -1148,7 +1157,7 @@ void Destroy_Connection(int id, int error) {
                         housep->IniName);
   }
 
-  if (strlen(txt)) {
+  if (!std::string_view(txt).empty()) {
     Session.Messages.Add_Message(nullptr, 0, txt, housep->RemapColor, kTpfText,
                                  Rule.MessageDelay * kTicksPerMinute);
     Map.Flag_To_Redraw(false);
@@ -1158,7 +1167,7 @@ void Destroy_Connection(int id, int error) {
   // Remove this player from the Players vector
   //------------------------------------------------------------------------
   for (int i = 0; i < Session.Players.Count(); i++) {
-    if (!stricmp(Session.Players[i]->Name, housep->IniName)) {
+    if (!port::CompareIgnoreCase(Session.Players[i]->Name, housep->IniName)) {
       delete Session.Players[i];
       Session.Players.Delete(Session.Players[i]);
       break;
@@ -1504,8 +1513,8 @@ static int Net_Join_Dialog() {
 
   JoinStateType joinstate = JOIN_NOTHING;  // current "state" of this dialog
   char namebuf[MPLAYER_NAME_MAX] = {0};    // buffer for player's name
-  int playertabs[] = {71 * 2};             // tabs for player list box
-  int optiontabs[] = {8};                  // tabs for player list box
+  const int playertabs[] = {71 * 2};       // tabs for player list box
+  const int optiontabs[] = {8};            // tabs for player list box
   int game_index = -1;                     // index of currently-selected game
   int join_index = -1;                     // index of game we're joining
   int rc = 0;                              // -1 = user cancelled, 1 = New
@@ -1546,17 +1555,18 @@ static int Net_Join_Dialog() {
   Fancy_Text_Print("", 0, 0, nullptr, 0, kTpfText);
   DropListClass housebtn(kButtonHouse, housetext, sizeof(housetext), kTpfText,
                          d_house_x, d_house_y, d_house_w, d_house_h,
-                         MixArchive::Retrieve("BTN-UP.SHP"),
-                         MixArchive::Retrieve("BTN-DN.SHP"));
+                         MixArchive::RetrieveData("BTN-UP.SHP"),
+                         MixArchive::RetrieveData("BTN-DN.SHP"));
 #endif
 
   ListClass gamelist(kButtonGamelist, d_gamelist_x, d_gamelist_y, d_gamelist_w,
-                     d_gamelist_h, kTpfText, MixArchive::Retrieve("BTN-UP.SHP"),
-                     MixArchive::Retrieve("BTN-DN.SHP"));
+                     d_gamelist_h, kTpfText,
+                     MixArchive::RetrieveData("BTN-UP.SHP"),
+                     MixArchive::RetrieveData("BTN-DN.SHP"));
   ColorListClass playerlist(kButtonPlayerlist, d_playerlist_x, d_playerlist_y,
                             d_playerlist_w, d_playerlist_h, kTpfText,
-                            MixArchive::Retrieve("BTN-UP.SHP"),
-                            MixArchive::Retrieve("BTN-DN.SHP"));
+                            MixArchive::RetrieveData("BTN-UP.SHP"),
+                            MixArchive::RetrieveData("BTN-DN.SHP"));
   TextButtonClass joinbtn(kButtonJoin, TXT_JOIN, kTpfButton, d_join_x, d_join_y,
                           d_join_w);
   TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL, kTpfButton, d_cancel_x,
@@ -1573,8 +1583,8 @@ static int Net_Join_Dialog() {
                             d_aiplayers_w, d_aiplayers_h);
   CheckListClass optionlist(kButtonOptions, d_options_x, d_options_y,
                             d_options_w, d_options_h, kTpfText,
-                            MixArchive::Retrieve("BTN-UP.SHP"),
-                            MixArchive::Retrieve("BTN-DN.SHP"));
+                            MixArchive::RetrieveData("BTN-UP.SHP"),
+                            MixArchive::RetrieveData("BTN-DN.SHP"));
   StaticButtonClass descrip(0, "", TPF_CENTER | kTpfText, d_dialog_x + 32,
                             d_name_y, d_dialog_w - 64, d_txt6_h + 1);
   StaticButtonClass staticcount(0, "     ", kTpfText, d_count_x + d_count_w + 4,
@@ -1645,10 +1655,11 @@ static int Net_Join_Dialog() {
   // Option gauges
   //........................................................................
   countgauge.Use_Thumb(false);
-  countgauge.Set_Maximum(SessionClass::CountMax[Session.Options.Bases] -
-                         SessionClass::CountMin[Session.Options.Bases]);
+  countgauge.Set_Maximum(
+      base::At(SessionClass::CountMax, Session.Options.Bases) -
+      base::At(SessionClass::CountMin, Session.Options.Bases));
   countgauge.Set_Value(Session.Options.UnitCount -
-                       SessionClass::CountMin[Session.Options.Bases]);
+                       base::At(SessionClass::CountMin, Session.Options.Bases));
 
   levelgauge.Use_Thumb(false);
   levelgauge.Set_Maximum(MPLAYER_BUILD_LEVEL_MAX - 1);
@@ -1697,7 +1708,7 @@ static int Net_Join_Dialog() {
   // node for the gamelist, so Games[i] will always match gamelist[i]
   //------------------------------------------------------------------------
   who = new NodeNameType;
-  strcpy(who->Name, "");
+  who->Name[0] = '\0';
   who->Game.IsOpen = 0;
   who->Game.LastTime = 0;
   Session.Games.Add(who);
@@ -1906,7 +1917,8 @@ static int Net_Join_Dialog() {
       if (display >= REDRAW_COLORS && joinstate < JOIN_CONFIRMED) {
         for (i = 0; i < MAX_MPLAYER_COLORS; i++) {
           LogicPage->Fill_Rect(
-              cbox_x[i] + 1, d_color_y + 1, cbox_x[i] + 1 + d_color_w - 4,
+              base::At(cbox_x, i) + 1, d_color_y + 1,
+              base::At(cbox_x, i) + 1 + d_color_w - 4,
               d_color_y + 1 + d_color_h - 2,
               ColorRemaps[static_cast<PlayerColorType>(i)].Box);
           //						(i ==
@@ -1914,10 +1926,10 @@ static int Net_Join_Dialog() {
           // ColorRemaps[i].Box);
 
           if (static_cast<PlayerColorType>(i) == Session.ColorIdx) {
-            Draw_Box(cbox_x[i], d_color_y, d_color_w, d_color_h, BOXSTYLE_DOWN,
-                     false);
+            Draw_Box(base::At(cbox_x, i), d_color_y, d_color_w, d_color_h,
+                     BOXSTYLE_DOWN, false);
           } else {
-            Draw_Box(cbox_x[i], d_color_y, d_color_w, d_color_h,
+            Draw_Box(base::At(cbox_x, i), d_color_y, d_color_w, d_color_h,
                      BOXSTYLE_RAISED, false);
           }
         }
@@ -1954,16 +1966,17 @@ static int Net_Join_Dialog() {
         if (Session.Options.ScenarioDescription[0]) {
           // EW - Scenario language translation goes here!!!!!!!! VG
           int ii = 0;
-          for (ii = 0; EngMisStr[ii] != nullptr; ii++) {
-            if (!strcmp(Session.Options.ScenarioDescription, EngMisStr[ii])) {
+          for (ii = 0; EngMisStr[base::ToSize(ii)] != nullptr; ii++) {
+            if (std::string_view(Session.Options.ScenarioDescription) ==
+                EngMisStr[base::ToSize(ii)]) {
               absl::SNPrintF(txt, sizeof(txt), "%s %s", p,
                              config::kIsEnglish
                                  ? Session.Options.ScenarioDescription
-                                 : EngMisStr[ii + 1]);
+                                 : EngMisStr[base::ToSize(ii + 1)]);
               break;
             }
           }
-          if (EngMisStr[ii] == nullptr) {
+          if (EngMisStr[base::ToSize(ii)] == nullptr) {
             absl::SNPrintF(txt, sizeof(txt), "%s %s", p,
                            Session.Options.ScenarioDescription);
           }
@@ -2273,23 +2286,26 @@ static int Net_Join_Dialog() {
           // If I'm not joined to a game, send a SIGN_OFF to all players
           // in my Chat vector (but not to myself, index 0)
           //...............................................................
-          memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
+          base::FillBytes(base::ObjectBytes(Session.GPacket), 0,
+                          sizeof(Session.GPacket));
           Session.GPacket.Command = NET_SIGN_OFF;
           port::SafeCopy(Session.GPacket.Name, namebuf);
           for (i = 1; i < Session.Chat.Count(); i++) {
-            Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType),
-                                    1, &Session.Chat[i]->Address);
+            Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
+                                    sizeof(GlobalPacketType), 1,
+                                    &Session.Chat[i]->Address);
             Ipx.Service();
           }
 
           //............................................................
           //	Now broadcast a SIGN_OFF just to be thorough
           //............................................................
-          Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 0,
-                                  nullptr);
+          Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
+                                  sizeof(GlobalPacketType), 0, nullptr);
           if (Session.IsBridge) {
-            Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType),
-                                    0, &Session.BridgeNet);
+            Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
+                                    sizeof(GlobalPacketType), 0,
+                                    &Session.BridgeNet);
           }
 
           while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0) {
@@ -2310,7 +2326,7 @@ static int Net_Join_Dialog() {
         //...............................................................
         //	Force user to enter a name
         //...............................................................
-        if (strlen(namebuf) == 0) {
+        if (std::string_view(namebuf).empty()) {
           Session.Messages.Add_Message(nullptr, 0, Text_String(TXT_NAME_ERROR),
                                        PCOLOR_BROWN, kTpfText, 1200);
           Sound_Effect(VOC_SYS_ERROR);
@@ -2323,7 +2339,7 @@ static int Net_Join_Dialog() {
         //...............................................................
         found = 0;
         for (i = 1; i < Session.Games.Count(); i++) {
-          if (!stricmp(Session.Games[i]->Name, namebuf)) {
+          if (!port::CompareIgnoreCase(Session.Games[i]->Name, namebuf)) {
             found = 1;
             Session.Messages.Add_Message(
                 nullptr, 0, Text_String(TXT_GAMENAME_MUSTBE_UNIQUE),
@@ -2383,7 +2399,8 @@ static int Net_Join_Dialog() {
           //...............................................................
           //	If 'Input' returned 3, it means send the current message.
           //...............................................................
-          memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
+          base::FillBytes(base::ObjectBytes(Session.GPacket), 0,
+                          sizeof(Session.GPacket));
           Session.GPacket.Command = NET_MESSAGE;
           port::SafeCopy(Session.GPacket.Name, namebuf);
           if (i == 3) {
@@ -2403,7 +2420,7 @@ static int Net_Join_Dialog() {
           //............................................................
           if (joinstate == JOIN_CONFIRMED) {
             for (i = 1; i < Session.Players.Count(); i++) {
-              Ipx.Send_Global_Message(&Session.GPacket,
+              Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
                                       sizeof(GlobalPacketType), 1,
                                       &Session.Players[i]->Address);
               Ipx.Service();
@@ -2413,7 +2430,7 @@ static int Net_Join_Dialog() {
             // Otherwise, send the message to all players in our chat list.
             //............................................................
             for (i = 1; i < Session.Chat.Count(); i++) {
-              Ipx.Send_Global_Message(&Session.GPacket,
+              Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
                                       sizeof(GlobalPacketType), 1,
                                       &Session.Chat[i]->Address);
               Ipx.Service();
@@ -2514,9 +2531,10 @@ static int Net_Join_Dialog() {
               ** We should have the scenario but the wrong disk is in.
               ** Tell the host that I am ready to go anyway.
               */
-              memset(&Session.GPacket, 0, sizeof(Session.GPacket));
+              base::FillBytes(base::ObjectBytes(Session.GPacket), 0,
+                              sizeof(Session.GPacket));
               Session.GPacket.Command = NET_READY_TO_GO;
-              Ipx.Send_Global_Message(&Session.GPacket,
+              Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
                                       sizeof(GlobalPacketType), 1,
                                       &Session.HostAddress);
               while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0) {
@@ -2555,10 +2573,12 @@ static int Net_Join_Dialog() {
           ** We have the scenario. Tell the host that I am ready to go.
           */
           if (!ready_packet_was_sent) {
-            memset(&Session.GPacket, 0, sizeof(Session.GPacket));
+            base::FillBytes(base::ObjectBytes(Session.GPacket), 0,
+                            sizeof(Session.GPacket));
             Session.GPacket.Command = NET_READY_TO_GO;
-            Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType),
-                                    1, &Session.HostAddress);
+            Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
+                                    sizeof(GlobalPacketType), 1,
+                                    &Session.HostAddress);
 
             while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0) {
             }
@@ -2679,10 +2699,12 @@ static int Net_Join_Dialog() {
       //.....................................................................
       //	If the game options have changed, print them.
       //.....................................................................
-      countgauge.Set_Maximum(SessionClass::CountMax[Session.Options.Bases] -
-                             SessionClass::CountMin[Session.Options.Bases]);
-      countgauge.Set_Value(Session.Options.UnitCount -
-                           SessionClass::CountMin[Session.Options.Bases]);
+      countgauge.Set_Maximum(
+          base::At(SessionClass::CountMax, Session.Options.Bases) -
+          base::At(SessionClass::CountMin, Session.Options.Bases));
+      countgauge.Set_Value(
+          Session.Options.UnitCount -
+          base::At(SessionClass::CountMin, Session.Options.Bases));
       levelgauge.Set_Value(BuildLevel - 1);
       creditsgauge.Set_Value(Session.Options.Credits);
       if (Session.Options.AIPlayers >
@@ -2803,10 +2825,12 @@ static int Net_Join_Dialog() {
           Session.Chat.Delete(Session.Chat[i]);
         } else if (TickCount.Value() - Session.Chat[i]->Chat.LastTime > 300 &&
                    Session.Chat[i]->Chat.LastChance == 0) {
-          memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
+          base::FillBytes(base::ObjectBytes(Session.GPacket), 0,
+                          sizeof(Session.GPacket));
           Session.GPacket.Name[0] = 0;
           Session.GPacket.Command = NET_CHAT_REQUEST;
-          Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 0,
+          Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
+                                  sizeof(GlobalPacketType), 0,
                                   &Session.Chat[i]->Address);
           Ipx.Service();
           Session.Chat[i]->Chat.LastChance = 1;
@@ -2834,7 +2858,8 @@ static int Net_Join_Dialog() {
             playerlist.Flag_To_Redraw();
           }
           for (i = 0; i < Session.Chat.Count(); i++) {
-            if (stricmp(Session.Chat[i]->Name, playerlist.Get_Item(i)) != 0 ||
+            if (port::CompareIgnoreCase(Session.Chat[i]->Name,
+                                        playerlist.Get_Item(i)) != 0 ||
                 &ColorRemaps[Session.Chat[i]->Chat.Color == PCOLOR_DIALOG_BLUE
                                  ? PCOLOR_REALLY_BLUE
                                  : Session.Chat[i]->Chat.Color] !=
@@ -2848,7 +2873,8 @@ static int Net_Join_Dialog() {
             }
           }
         } else {
-          if (stricmp(Session.Chat[0]->Name, playerlist.Get_Item(0)) != 0 ||
+          if (port::CompareIgnoreCase(Session.Chat[0]->Name,
+                                      playerlist.Get_Item(0)) != 0 ||
               &ColorRemaps[Session.Chat[0]->Chat.Color] !=
                   playerlist.Colors[0]) {
             playerlist.Colors[0] = &ColorRemaps[Session.Chat[0]->Chat.Color];
@@ -2881,7 +2907,8 @@ static int Net_Join_Dialog() {
     if (Session.Options.ScenarioIndex == -1) {
       WWMessageBox().Process(TXT_UNABLE_PLAY_WAAUGH);
 
-      memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
+      base::FillBytes(base::ObjectBytes(Session.GPacket), 0,
+                      sizeof(Session.GPacket));
 
       Session.GPacket.Command = NET_SIGN_OFF;
       port::SafeCopy(Session.GPacket.Name, namebuf);
@@ -2890,20 +2917,23 @@ static int Net_Join_Dialog() {
       // Don't send myself the message.
       //..................................................................
       for (int j = 1; j < Session.Players.Count(); j++) {
-        Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
+        Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
+                                sizeof(GlobalPacketType), 1,
                                 &Session.Players[j]->Address);
         Ipx.Service();
       }
 
-      Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 0,
-                              nullptr);
-      Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 0,
-                              nullptr);
+      Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
+                              sizeof(GlobalPacketType), 0, nullptr);
+      Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
+                              sizeof(GlobalPacketType), 0, nullptr);
 
       if (Session.IsBridge) {
-        Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 0,
+        Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
+                                sizeof(GlobalPacketType), 0,
                                 &Session.BridgeNet);
-        Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 0,
+        Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
+                                sizeof(GlobalPacketType), 0,
                                 &Session.BridgeNet);
       }
 
@@ -3032,7 +3062,7 @@ static bool Request_To_Join(const char* playername, int join_index,
   //------------------------------------------------------------------------
   //	Force user to enter a name
   //------------------------------------------------------------------------
-  if (strlen(playername) == 0) {
+  if (std::string_view(playername).empty()) {
     Session.Messages.Add_Message(nullptr, 0, Text_String(TXT_NAME_ERROR),
                                  PCOLOR_BROWN, kTpfText, 1200);
     Sound_Effect(VOC_SYS_ERROR);
@@ -3052,7 +3082,8 @@ static bool Request_To_Join(const char* playername, int join_index,
   //------------------------------------------------------------------------
   //	Send packet to game's owner
   //------------------------------------------------------------------------
-  memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
+  base::FillBytes(base::ObjectBytes(Session.GPacket), 0,
+                  sizeof(Session.GPacket));
 
   Session.GPacket.Command = NET_QUERY_JOIN;
   port::SafeCopy(Session.GPacket.Name, playername);
@@ -3073,7 +3104,8 @@ static bool Request_To_Join(const char* playername, int join_index,
   Session.GPacket.PlayerInfo.MaxVersion = VersionClass::Max_Version();
   Session.GPacket.PlayerInfo.CheatCheck = RuleINI.Get_Unique_ID();
 
-  Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
+  Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
+                          sizeof(GlobalPacketType), 1,
                           &Session.Games[join_index]->Address);
 
   return true;
@@ -3113,7 +3145,8 @@ static void Unjoin_Game(char* namebuf, JoinStateType joinstate,
   //------------------------------------------------------------------------
   // Fill in a SIGN_OFF packet
   //------------------------------------------------------------------------
-  memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
+  base::FillBytes(base::ObjectBytes(Session.GPacket), 0,
+                  sizeof(Session.GPacket));
   Session.GPacket.Command = NET_SIGN_OFF;
   port::SafeCopy(Session.GPacket.Name, namebuf);
 
@@ -3123,13 +3156,15 @@ static void Unjoin_Game(char* namebuf, JoinStateType joinstate,
   //	packet.  Don't send this to myself (index 0).
   //------------------------------------------------------------------------
   for (int i = 1; i < Session.Players.Count(); i++) {
-    Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
+    Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
+                            sizeof(GlobalPacketType), 1,
                             &Session.Players[i]->Address);
     Ipx.Service();
   }
 
   if (joinstate == JOIN_WAIT_CONFIRM || joinstate == JOIN_CONFIRMED) {
-    Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
+    Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
+                            sizeof(GlobalPacketType), 1,
                             &Session.Games[game_index]->Address);
   }
 
@@ -3234,20 +3269,21 @@ static void Send_Join_Queries(int curgame, JoinStateType joinstate, int gamenow,
   if (game_timer.IsFinished() || gamenow) {
     game_timer.Set(kGameQueryTime);
 
-    memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
+    base::FillBytes(base::ObjectBytes(Session.GPacket), 0,
+                    sizeof(Session.GPacket));
 
     Session.GPacket.Command = NET_QUERY_GAME;
 
-    Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 0,
-                            nullptr);
+    Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
+                            sizeof(GlobalPacketType), 0, nullptr);
 
     //.....................................................................
     //	If the user specified a remote server address, broadcast over
     // that 	network, too.
     //.....................................................................
     if (Session.IsBridge) {
-      Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 0,
-                              &Session.BridgeNet);
+      Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
+                              sizeof(GlobalPacketType), 0, &Session.BridgeNet);
     }
   }
 
@@ -3261,21 +3297,22 @@ static void Send_Join_Queries(int curgame, JoinStateType joinstate, int gamenow,
       playernow) {
     player_timer.Set(kPlayerQueryTime);
 
-    memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
+    base::FillBytes(base::ObjectBytes(Session.GPacket), 0,
+                    sizeof(Session.GPacket));
 
     Session.GPacket.Command = NET_QUERY_PLAYER;
     port::SafeCopy(Session.GPacket.Name, Session.Games[curgame]->Name);
 
-    Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 0,
-                            nullptr);
+    Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
+                            sizeof(GlobalPacketType), 0, nullptr);
 
     //.....................................................................
     //	If the user specified a remote server address, broadcast over
     // that 	network, too.
     //.....................................................................
     if (Session.IsBridge) {
-      Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 0,
-                              &Session.BridgeNet);
+      Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
+                              sizeof(GlobalPacketType), 0, &Session.BridgeNet);
     }
   }
 
@@ -3285,19 +3322,20 @@ static void Send_Join_Queries(int curgame, JoinStateType joinstate, int gamenow,
   if ((chat_timer.IsFinished() && joinstate != JOIN_CONFIRMED) || chatnow) {
     chat_timer.Set(kChatAnnounceTime);
 
-    memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
+    base::FillBytes(base::ObjectBytes(Session.GPacket), 0,
+                    sizeof(Session.GPacket));
 
     Session.GPacket.Command = NET_CHAT_ANNOUNCE;
     port::SafeCopy(Session.GPacket.Name, myname);
     Session.GPacket.Chat.ID = static_cast<uint32_t>(Session.UniqueID);
     Session.GPacket.Chat.Color = Session.ColorIdx;
 
-    Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 0,
-                            nullptr);
+    Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
+                            sizeof(GlobalPacketType), 0, nullptr);
 
     if (Session.IsBridge) {
-      Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 0,
-                              &Session.BridgeNet);
+      Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
+                              sizeof(GlobalPacketType), 0, &Session.BridgeNet);
     }
   }
 
@@ -3362,8 +3400,9 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
   //------------------------------------------------------------------------
   //	If there is no incoming packet, just return
   //------------------------------------------------------------------------
-  const int rc = Ipx.Get_Global_Message(&Session.GPacket, &Session.GPacketlen,
-                                        &Session.GAddress, &Session.GProductID);
+  const int rc = Ipx.Get_Global_Message(base::ObjectBytes(Session.GPacket),
+                                        &Session.GPacketlen, &Session.GAddress,
+                                        &Session.GProductID);
   if (!rc || Session.GProductID != IPXGlobalConnClass::kCommandAndConquer0) {
     return EV_NONE;
   }
@@ -3388,7 +3427,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
     retcode = EV_NONE;
     found = 0;
     for (i = 1; i < Session.Games.Count(); i++) {
-      if (!strcmp(Session.Games[i]->Name, Session.GPacket.Name)) {
+      if (std::string_view(Session.Games[i]->Name) == Session.GPacket.Name) {
         found = 1;
 
         //...............................................................
@@ -3547,7 +3586,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
     //	Don't add this player if it's myself.  (We must check the name
     // since the address of myself in 'Players' won't be valid.)
     //.....................................................................
-    if (!strcmp(my_name, Session.GPacket.Name)) {
+    if ((std::string_view(my_name) == Session.GPacket.Name)) {
       found = 1;
     }
 
@@ -3635,20 +3674,23 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
     // properly removed from their dialogs.
     //.....................................................................
     if (*joinstate == JOIN_CONFIRMED) {
-      memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
+      base::FillBytes(base::ObjectBytes(Session.GPacket), 0,
+                      sizeof(Session.GPacket));
       Session.GPacket.Command = NET_SIGN_OFF;
       port::SafeCopy(Session.GPacket.Name, my_name);
 
       for (i = 1; i < Session.Players.Count(); i++) {
-        Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
+        Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
+                                sizeof(GlobalPacketType), 1,
                                 &Session.Players[i]->Address);
         Ipx.Service();
       }
 
-      Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 0,
-                              nullptr);
+      Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
+                              sizeof(GlobalPacketType), 0, nullptr);
       if (Session.IsBridge) {
-        Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 0,
+        Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
+                                sizeof(GlobalPacketType), 0,
                                 &Session.BridgeNet);
       }
 
@@ -3754,7 +3796,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
     //	Remove this name from the list of games
     //.....................................................................
     for (i = 1; i < Session.Games.Count(); i++) {
-      if (!strcmp(Session.Games[i]->Name, Session.GPacket.Name) &&
+      if (std::string_view(Session.Games[i]->Name) == Session.GPacket.Name &&
           Session.Games[i]->Address == Session.GAddress) {
         //...............................................................
         //	If the system signing off is the currently-selected list
@@ -3915,15 +3957,16 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
   //------------------------------------------------------------------------
   else if (Session.GPacket.Command == NET_CHAT_REQUEST) {
     if (*joinstate != JOIN_WAIT_CONFIRM && *joinstate != JOIN_CONFIRMED) {
-      memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
+      base::FillBytes(base::ObjectBytes(Session.GPacket), 0,
+                      sizeof(Session.GPacket));
 
       Session.GPacket.Command = NET_CHAT_ANNOUNCE;
       port::SafeCopy(Session.GPacket.Name, my_name);
       Session.GPacket.Chat.ID = static_cast<uint32_t>(Session.UniqueID);
       Session.GPacket.Chat.Color = Session.ColorIdx;
 
-      Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
-                              &Session.GAddress);
+      Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
+                              sizeof(GlobalPacketType), 1, &Session.GAddress);
 
       Ipx.Service();
     }
@@ -4134,8 +4177,8 @@ static int Net_New_Dialog() {
   int i = 0;
   int j = 0;
   char item[kGameListItemSize];
-  int tabs[] = {77 * 2};       // tabs for player list box
-  int optiontabs[] = {8 * 2};  // tabs for option list box
+  const int tabs[] = {77 * 2};       // tabs for player list box
+  const int optiontabs[] = {8 * 2};  // tabs for option list box
 
   NodeNameType* who = nullptr;  // node to add to Players
   int64_t ping_timer = 0;  // for sending Ping packets
@@ -4154,12 +4197,12 @@ static int Net_New_Dialog() {
 
   ColorListClass playerlist(kButtonPlayerlist, d_playerlist_x, d_playerlist_y,
                             d_playerlist_w, d_playerlist_h, kTpfText,
-                            MixArchive::Retrieve("BTN-UP.SHP"),
-                            MixArchive::Retrieve("BTN-DN.SHP"));
+                            MixArchive::RetrieveData("BTN-UP.SHP"),
+                            MixArchive::RetrieveData("BTN-DN.SHP"));
   ListClass scenariolist(kButtonScenariolist, d_scenariolist_x,
                          d_scenariolist_y, d_scenariolist_w, d_scenariolist_h,
-                         kTpfText, MixArchive::Retrieve("BTN-UP.SHP"),
-                         MixArchive::Retrieve("BTN-DN.SHP"));
+                         kTpfText, MixArchive::RetrieveData("BTN-UP.SHP"),
+                         MixArchive::RetrieveData("BTN-DN.SHP"));
   TextButtonClass rejectbtn(kButtonReject, TXT_REJECT, kTpfButton, d_reject_x,
                             d_reject_y);
   GaugeClass countgauge(kButtonCount, d_count_x, d_count_y, d_count_w,
@@ -4172,8 +4215,8 @@ static int Net_New_Dialog() {
                             d_aiplayers_w, d_aiplayers_h);
   CheckListClass optionlist(kButtonOptions, d_options_x, d_options_y,
                             d_options_w, d_options_h, kTpfText,
-                            MixArchive::Retrieve("BTN-UP.SHP"),
-                            MixArchive::Retrieve("BTN-DN.SHP"));
+                            MixArchive::RetrieveData("BTN-UP.SHP"),
+                            MixArchive::RetrieveData("BTN-DN.SHP"));
   TextButtonClass okbtn(kButtonOk, TXT_OK, kTpfButton, d_ok_x, d_ok_y, 120);
   TextButtonClass loadbtn(kButtonLoad, TXT_LOAD_BUTTON, kTpfButton, d_load_x,
                           d_load_y, 120);
@@ -4225,8 +4268,8 @@ static int Net_New_Dialog() {
     Session.Options.Goodies = Rule.IsMPCrates;
     Session.Options.AIPlayers = 0;
     Session.Options.UnitCount =
-        (SessionClass::CountMax[Session.Options.Bases] +
-         SessionClass::CountMin[Session.Options.Bases]) /
+        (base::At(SessionClass::CountMax, Session.Options.Bases) +
+         base::At(SessionClass::CountMin, Session.Options.Bases)) /
         2;
     first_time = 0;
   }
@@ -4249,10 +4292,11 @@ static int Net_New_Dialog() {
   optionlist.Check_Item(3, Special.IsCaptureTheFlag);
   optionlist.Check_Item(4, Special.IsShadowGrow);
 
-  countgauge.Set_Maximum(SessionClass::CountMax[Session.Options.Bases] -
-                         SessionClass::CountMin[Session.Options.Bases]);
+  countgauge.Set_Maximum(
+      base::At(SessionClass::CountMax, Session.Options.Bases) -
+      base::At(SessionClass::CountMin, Session.Options.Bases));
   countgauge.Set_Value(Session.Options.UnitCount -
-                       SessionClass::CountMin[Session.Options.Bases]);
+                       base::At(SessionClass::CountMin, Session.Options.Bases));
 
   levelgauge.Set_Maximum(MPLAYER_BUILD_LEVEL_MAX - 1);
   levelgauge.Set_Value(BuildLevel - 1);
@@ -4273,21 +4317,23 @@ static int Net_New_Dialog() {
   //	Init scenario description list box
   //------------------------------------------------------------------------
   for (i = 0; i < Session.Scenarios.Count(); i++) {
-    for (j = 0; EngMisStr[j] != nullptr; j++) {
-      if (!strcmp(Session.Scenarios[i]->Description(), EngMisStr[j])) {
+    for (j = 0; EngMisStr[base::ToSize(j)] != nullptr; j++) {
+      if (std::string_view(Session.Scenarios[i]->Description()) ==
+          EngMisStr[base::ToSize(j)]) {
         // ajw Added Aftermath installed checks (before, it was
         // assumed). Add mission if it's available to us.
         if ((!IsMissionCounterstrike(Session.Scenarios[i]->Get_Filename()) ||
              Is_Counterstrike_Installed()) &&
             (!IsMissionAftermath(Session.Scenarios[i]->Get_Filename()) ||
              Is_Aftermath_Installed())) {
-          scenariolist.Add_Item(EngMisStr[config::kIsEnglish ? j : j + 1]);
+          scenariolist.Add_Item(
+              EngMisStr[base::ToSize(config::kIsEnglish ? j : j + 1)]);
         }
 
         break;
       }
     }
-    if ((EngMisStr[j] == nullptr) &&
+    if ((EngMisStr[base::ToSize(j)] == nullptr) &&
         (!Session.Scenarios[i]->Get_Official() ||
          ((!IsMissionCounterstrike(Session.Scenarios[i]->Get_Filename()) ||
            Is_Counterstrike_Installed()) &&
@@ -4568,11 +4614,13 @@ static int Net_New_Dialog() {
           display = REDRAW_MESSAGE;
           break;
         }
-        memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
+        base::FillBytes(base::ObjectBytes(Session.GPacket), 0,
+                        sizeof(Session.GPacket));
 
         Session.GPacket.Command = NET_REJECT_JOIN;
 
-        Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
+        Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
+                                sizeof(GlobalPacketType), 1,
                                 &Session.Players[index]->Address);
         break;
 
@@ -4582,7 +4630,7 @@ static int Net_New_Dialog() {
       case ButtonKey(kButtonCount):
         Session.Options.UnitCount =
             countgauge.Get_Value() +
-            SessionClass::CountMin[Session.Options.Bases];
+            base::At(SessionClass::CountMin, Session.Options.Bases);
         transmit = 1;
         display = REDRAW_PARMS;
         break;
@@ -4650,10 +4698,12 @@ static int Net_New_Dialog() {
                 static_cast<uint32_t>(SessionClass::CountMax[1] - SessionClass::CountMin[1]),
                 static_cast<uint32_t>(SessionClass::CountMax[0] - SessionClass::CountMin[0])));
           }
-          countgauge.Set_Maximum(SessionClass::CountMax[Session.Options.Bases] -
-                                 SessionClass::CountMin[Session.Options.Bases]);
-          countgauge.Set_Value(Session.Options.UnitCount -
-                               SessionClass::CountMin[Session.Options.Bases]);
+          countgauge.Set_Maximum(
+              base::At(SessionClass::CountMax, Session.Options.Bases) -
+              base::At(SessionClass::CountMin, Session.Options.Bases));
+          countgauge.Set_Value(
+              Session.Options.UnitCount -
+              base::At(SessionClass::CountMin, Session.Options.Bases));
         }
         Session.Options.Tiberium = optionlist.Is_Checked(1) ? 1 : 0;
         Special.IsTGrowth = static_cast<unsigned>(Session.Options.Tiberium);
@@ -4711,7 +4761,8 @@ static int Net_New_Dialog() {
       //..................................................................
       case KN_ESC:
       case ButtonKey(kButtonCancel):
-        memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
+        base::FillBytes(base::ObjectBytes(Session.GPacket), 0,
+                        sizeof(Session.GPacket));
 
         Session.GPacket.Command = NET_SIGN_OFF;
         port::SafeCopy(Session.GPacket.Name, Session.Handle);
@@ -4719,10 +4770,10 @@ static int Net_New_Dialog() {
         //...............................................................
         //	Broadcast my sign-off over my network
         //...............................................................
-        Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 0,
-                                nullptr);
-        Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 0,
-                                nullptr);
+        Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
+                                sizeof(GlobalPacketType), 0, nullptr);
+        Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
+                                sizeof(GlobalPacketType), 0, nullptr);
         while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0) {
         }
 
@@ -4730,9 +4781,11 @@ static int Net_New_Dialog() {
         //	Broadcast my sign-off over a bridged network if there is one
         //...............................................................
         if (Session.IsBridge) {
-          Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 0,
+          Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
+                                  sizeof(GlobalPacketType), 0,
                                   &Session.BridgeNet);
-          Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 0,
+          Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
+                                  sizeof(GlobalPacketType), 0,
                                   &Session.BridgeNet);
         }
         while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0) {
@@ -4748,7 +4801,8 @@ static int Net_New_Dialog() {
         // Don't send this message to myself.
         //...............................................................
         for (i = 1; i < Session.Players.Count(); i++) {
-          Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
+          Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
+                                  sizeof(GlobalPacketType), 1,
                                   &Session.Players[i]->Address);
           Ipx.Service();
         }
@@ -4787,7 +4841,8 @@ static int Net_New_Dialog() {
           //...............................................................
           //	If 'input' returned 3, it means send the current message.
           //...............................................................
-          memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
+          base::FillBytes(base::ObjectBytes(Session.GPacket), 0,
+                          sizeof(Session.GPacket));
           Session.GPacket.Command = NET_MESSAGE;
           port::SafeCopy(Session.GPacket.Name, Session.Handle);
           if (i == 3) {
@@ -4806,8 +4861,9 @@ static int Net_New_Dialog() {
           // myself.
           //............................................................
           for (i = 1; i < Session.Players.Count(); i++) {
-            Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType),
-                                    1, &Session.Players[i]->Address);
+            Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
+                                    sizeof(GlobalPacketType), 1,
+                                    &Session.Players[i]->Address);
             Ipx.Service();
           }
 
@@ -4876,7 +4932,8 @@ static int Net_New_Dialog() {
     //.....................................................................
     if (transmit) {
       for (i = 1; i < Session.Players.Count(); i++) {
-        memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
+        base::FillBytes(base::ObjectBytes(Session.GPacket), 0,
+                        sizeof(Session.GPacket));
 
         Session.GPacket.Command = NET_GAME_OPTIONS;
 
@@ -4895,9 +4952,9 @@ static int Net_New_Dialog() {
         port::SafeCopy(
             Session.GPacket.ScenarioInfo.ShortFileName,
             Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
-        strncpy(Session.GPacket.ScenarioInfo.FileDigest,
-                Session.Scenarios[Session.Options.ScenarioIndex]->Get_Digest(),
-                sizeof(Session.GPacket.ScenarioInfo.FileDigest));
+        port::SafeCopy(
+            Session.GPacket.ScenarioInfo.FileDigest,
+            Session.Scenarios[Session.Options.ScenarioIndex]->Get_Digest());
         Session.GPacket.ScenarioInfo.OfficialScenario =
             Session.Scenarios[Session.Options.ScenarioIndex]->Get_Official();
 
@@ -4931,7 +4988,8 @@ static int Net_New_Dialog() {
           Session.GPacket.ScenarioInfo.Version = VerNum.Get_Clipped_Version();
         }
 
-        Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
+        Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
+                                sizeof(GlobalPacketType), 1,
                                 &Session.Players[i]->Address);
       }
       Sound_Effect(VOC_OPTIONS_CHANGED);
@@ -4944,10 +5002,12 @@ static int Net_New_Dialog() {
     // 0).
     //.....................................................................
     if (TickCount.Value() - ping_timer > 15) {
-      memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
+      base::FillBytes(base::ObjectBytes(Session.GPacket), 0,
+                      sizeof(Session.GPacket));
       Session.GPacket.Command = NET_PING;
       for (i = 1; i < Session.Players.Count(); i++) {
-        Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
+        Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
+                                sizeof(GlobalPacketType), 1,
                                 &Session.Players[i]->Address);
       }
       ping_timer = TickCount.Value();
@@ -5001,7 +5061,8 @@ static int Net_New_Dialog() {
     //	Send all players the NET_GO packet.  Wait until all ACK's have
     // been 	received.
     //.....................................................................
-    memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
+    base::FillBytes(base::ObjectBytes(Session.GPacket), 0,
+                    sizeof(Session.GPacket));
     if (load_game) {
       Session.GPacket.Command = NET_LOADGAME;
     } else {
@@ -5009,7 +5070,8 @@ static int Net_New_Dialog() {
     }
     Session.GPacket.ResponseTime.OneWay = Session.MaxAhead;
     for (i = 1; i < Session.Players.Count(); i++) {
-      Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
+      Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
+                              sizeof(GlobalPacketType), 1,
                               &Session.Players[i]->Address);
     }
     //.....................................................................
@@ -5025,7 +5087,7 @@ static int Net_New_Dialog() {
     ** file to be sent.
     */
     int responses[20];  // In big trub if more than 20 players
-    memset(responses, 0, sizeof(responses));
+    base::FillBytes(base::ObjectBytes(responses), 0, sizeof(responses));
     int num_responses = 0;
     bool send_scenario = false;
     WWDebugString("RA95 - About to wait for 'GO' response.");
@@ -5035,21 +5097,23 @@ static int Net_New_Dialog() {
 
     do {
       Ipx.Service();
-      const int retcode =
-          Ipx.Get_Global_Message(&Session.GPacket, &Session.GPacketlen,
-                                 &Session.GAddress, &Session.GProductID);
+      const int retcode = Ipx.Get_Global_Message(
+          base::ObjectBytes(Session.GPacket), &Session.GPacketlen,
+          &Session.GAddress, &Session.GProductID);
       if (retcode &&
           Session.GProductID == IPXGlobalConnClass::kCommandAndConquer0) {
         for (i = 1; i < Session.Players.Count(); i++) {
           if ((Session.Players[i]->Address == Session.GAddress) &&
-              (!responses[i])) {
+              (!base::At(responses, i))) {
             if (Session.GPacket.Command == NET_REQ_SCENARIO) {
-              responses[i] = static_cast<int>(Session.GPacket.Command);
+              base::At(responses, i) =
+                  static_cast<int>(Session.GPacket.Command);
               send_scenario = true;
               num_responses++;
             }
             if (Session.GPacket.Command == NET_READY_TO_GO) {
-              responses[i] = static_cast<int>(Session.GPacket.Command);
+              base::At(responses, i) =
+                  static_cast<int>(Session.GPacket.Command);
               num_responses++;
             }
           }
@@ -5068,11 +5132,13 @@ static int Net_New_Dialog() {
     * it.
     */
     if (send_scenario) {
-      memset(Session.ScenarioRequests, 0, sizeof(Session.ScenarioRequests));
+      base::FillBytes(base::ObjectBytes(Session.ScenarioRequests), 0,
+                      sizeof(Session.ScenarioRequests));
       Session.RequestCount = 0;
       for (i = 1; i < Session.Players.Count(); i++) {
-        if (responses[i] == static_cast<int>(NET_REQ_SCENARIO)) {
-          Session.ScenarioRequests[Session.RequestCount++] = static_cast<char>(i);
+        if (base::At(responses, i) == static_cast<int>(NET_REQ_SCENARIO)) {
+          base::At(Session.ScenarioRequests, Session.RequestCount++) =
+              static_cast<char>(i);
         }
       }
       Send_Remote_File(Scen.ScenarioName, 1);
@@ -5171,8 +5237,9 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
   //------------------------------------------------------------------------
   //	If there is no incoming packet, just return
   //------------------------------------------------------------------------
-  const int rc = Ipx.Get_Global_Message(&Session.GPacket, &Session.GPacketlen,
-                                        &Session.GAddress, &Session.GProductID);
+  const int rc = Ipx.Get_Global_Message(base::ObjectBytes(Session.GPacket),
+                                        &Session.GPacketlen, &Session.GAddress,
+                                        &Session.GProductID);
   if (!rc || Session.GProductID != IPXGlobalConnClass::kCommandAndConquer0) {
     return EV_NONE;
   }
@@ -5200,7 +5267,7 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
     found = 0;
     resend = 0;
     for (int i = 1; i < Session.Players.Count(); i++) {
-      if (!strcmp(Session.Players[i]->Name, Session.GPacket.Name)) {
+      if (std::string_view(Session.Players[i]->Name) == Session.GPacket.Name) {
         if (Session.Players[i]->Address != Session.GAddress) {
           found = 1;
         } else {
@@ -5212,7 +5279,7 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
     //.....................................................................
     // If his name is the same as mine, treat it like a duplicate name
     //.....................................................................
-    if (!strcmp(Session.Players[0]->Name, Session.GPacket.Name)) {
+    if (std::string_view(Session.Players[0]->Name) == Session.GPacket.Name) {
       found = 1;
     }
 
@@ -5220,11 +5287,12 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
     //	Reject if name is a duplicate
     //.....................................................................
     if (found) {
-      memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
+      base::FillBytes(base::ObjectBytes(Session.GPacket), 0,
+                      sizeof(Session.GPacket));
       Session.GPacket.Command = NET_REJECT_JOIN;
       Session.GPacket.Reject.Why = static_cast<int>(REJECT_DUPLICATE_NAME);
-      Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
-                              &Session.GAddress);
+      Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
+                              sizeof(GlobalPacketType), 1, &Session.GAddress);
       return EV_NONE;
     }
 
@@ -5232,11 +5300,12 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
     //	Reject if there are too many players
     //.....................................................................
     if (Session.Players.Count() >= Session.MaxPlayers && !resend) {
-      memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
+      base::FillBytes(base::ObjectBytes(Session.GPacket), 0,
+                      sizeof(Session.GPacket));
       Session.GPacket.Command = NET_REJECT_JOIN;
       Session.GPacket.Reject.Why = static_cast<int>(REJECT_GAME_FULL);
-      Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
-                              &Session.GAddress);
+      Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
+                              sizeof(GlobalPacketType), 1, &Session.GAddress);
       return EV_NONE;
     }
 
@@ -5246,11 +5315,12 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
     */
     if (Session.GPacket.PlayerInfo.CheatCheck != RuleINI.Get_Unique_ID() &&
         !resend) {
-      memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
+      base::FillBytes(base::ObjectBytes(Session.GPacket), 0,
+                      sizeof(Session.GPacket));
       Session.GPacket.Command = NET_REJECT_JOIN;
       Session.GPacket.Reject.Why = static_cast<int>(REJECT_MISMATCH);
-      Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
-                              &Session.GAddress);
+      Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
+                              sizeof(GlobalPacketType), 1, &Session.GAddress);
       return EV_NONE;
     }
 
@@ -5282,11 +5352,12 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
       // Reject player if his version is too old
       //..................................................................
       if (version == 0) {
-        memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
+        base::FillBytes(base::ObjectBytes(Session.GPacket), 0,
+                        sizeof(Session.GPacket));
         Session.GPacket.Command = NET_REJECT_JOIN;
         Session.GPacket.Reject.Why = static_cast<int>(REJECT_VERSION_TOO_OLD);
-        Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
-                                &Session.GAddress);
+        Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
+                                sizeof(GlobalPacketType), 1, &Session.GAddress);
         return EV_NONE;
       }
 
@@ -5294,11 +5365,12 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
       // Reject player if his version is too new
       //..................................................................
       if (version == 0xffffffff) {
-        memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
+        base::FillBytes(base::ObjectBytes(Session.GPacket), 0,
+                        sizeof(Session.GPacket));
         Session.GPacket.Command = NET_REJECT_JOIN;
         Session.GPacket.Reject.Why = static_cast<int>(REJECT_VERSION_TOO_NEW);
-        Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
-                                &Session.GAddress);
+        Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
+                                sizeof(GlobalPacketType), 1, &Session.GAddress);
         return EV_NONE;
       }
       //..................................................................
@@ -5358,15 +5430,16 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
       //..................................................................
       //	Send a confirmation packet
       //..................................................................
-      memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
+      base::FillBytes(base::ObjectBytes(Session.GPacket), 0,
+                      sizeof(Session.GPacket));
 
       Session.GPacket.Command = NET_CONFIRM_JOIN;
       port::SafeCopy(Session.GPacket.Name, Session.Handle);
       Session.GPacket.PlayerInfo.House = who->Player.House;
       Session.GPacket.PlayerInfo.Color = who->Player.Color;
 
-      Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
-                              &Session.GAddress);
+      Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
+                              sizeof(GlobalPacketType), 1, &Session.GAddress);
 
       //..................................................................
       // Play a special sound.
@@ -5386,7 +5459,7 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
       //..................................................................
       //	Name found; remove it
       //..................................................................
-      if (!strcmp(Session.Players[i]->Name, Session.GPacket.Name) &&
+      if (std::string_view(Session.Players[i]->Name) == Session.GPacket.Name &&
           Session.Players[i]->Address == Session.GAddress) {
         //...............................................................
         //	Remove from the list box
@@ -5466,8 +5539,8 @@ uint32_t Compute_Name_CRC(const char* name) {
   port::SafeCopy(buf, name);
   strupr(buf);
 
-  for (int i = 0; std::cmp_less(i, strlen(buf)); i++) {
-    Add_CRC(&crc, static_cast<uint32_t>(buf[i]));
+  for (int i = 0; std::cmp_less(i, std::string_view(buf).size()); i++) {
+    Add_CRC(&crc, static_cast<uint32_t>(base::At(buf, i)));
   }
 
   return crc;
@@ -7165,8 +7238,9 @@ void Start_WWChat(ColorListClass* playerlist) {
     // Add the 1st entry to the list no matter what; for entries after the
     // 1st, only add the name if it's different from the previous name.
     //.....................................................................
-    if (i == 0 || strcmp(WWPersons[i].Name, WWPersons[i - 1].Name) != 0) {
-      WWPersons[i].Color = static_cast<PlayerColorType>(Random_Pick(
+    if (i == 0 || std::string_view(base::At(WWPersons, i).Name) !=
+                      base::At(WWPersons, i - 1).Name) {
+      base::At(WWPersons, i).Color = static_cast<PlayerColorType>(Random_Pick(
           0,
           static_cast<int>(magic_enum::enum_values<PlayerColorType>().back()) -
               1));
@@ -7174,22 +7248,23 @@ void Start_WWChat(ColorListClass* playerlist) {
       //			house =
       //(HousesType)Random_Pick((int)HOUSE_GOOD,(int)HOUSE_BAD);
       if (house != HOUSE_USSR && house != HOUSE_UKRAINE) {
-        absl::SNPrintF(item, sizeof(item), "%s\t%s", WWPersons[i].Name,
-                       Text_String(TXT_ALLIES));
+        absl::SNPrintF(item, sizeof(item), "%s\t%s",
+                       base::At(WWPersons, i).Name, Text_String(TXT_ALLIES));
       } else {
-        absl::SNPrintF(item, sizeof(item), "%s\t%s", WWPersons[i].Name,
-                       Text_String(TXT_SOVIET));
+        absl::SNPrintF(item, sizeof(item), "%s\t%s",
+                       base::At(WWPersons, i).Name, Text_String(TXT_SOVIET));
       }
-      playerlist->Add_Item(item, WWPersons[i].Color == PCOLOR_DIALOG_BLUE
-                                     ? &ColorRemaps[PCOLOR_REALLY_BLUE]
-                                     : &ColorRemaps[WWPersons[i].Color]);
+      playerlist->Add_Item(item,
+                           base::At(WWPersons, i).Color == PCOLOR_DIALOG_BLUE
+                               ? &ColorRemaps[PCOLOR_REALLY_BLUE]
+                               : &ColorRemaps[base::At(WWPersons, i).Color]);
     }
     //.....................................................................
     // If this entry's name is the same as the previous, copy the color
     // value from the previous entry.
     //.....................................................................
     else if (i > 0) {
-      WWPersons[i].Color = WWPersons[i - 1].Color;
+      base::At(WWPersons, i).Color = base::At(WWPersons, i - 1).Color;
     }
   }
 
@@ -7224,14 +7299,15 @@ int Update_WWChat() {
   //------------------------------------------------------------------------
   const int j = sizeof(WWPersons) / sizeof(struct WWPerson);
   const int i = Random_Pick(0, j - 1);
-  if (TickCount.Value() - WWPersons[i].LastTime < 1800 &&
-      WWPersons[i].LastTime != 0) {
+  if (TickCount.Value() - base::At(WWPersons, i).LastTime < 1800 &&
+      base::At(WWPersons, i).LastTime != 0) {
     return 0;
   }
 
-  Session.Messages.Add_Message(WWPersons[i].Name, 0, WWPersons[i].Phrase,
-                               WWPersons[i].Color, kTpfText, -1);
-  WWPersons[i].LastTime = TickCount.Value();
+  Session.Messages.Add_Message(base::At(WWPersons, i).Name, 0,
+                               base::At(WWPersons, i).Phrase,
+                               base::At(WWPersons, i).Color, kTpfText, -1);
+  base::At(WWPersons, i).LastTime = TickCount.Value();
 
   return 1;
 

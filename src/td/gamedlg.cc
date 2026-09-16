@@ -201,11 +201,11 @@ void GameControlsClass::Process() {
   /*
   **	Fill array of button ptrs.
   */
-  buttons[0] = nullptr;
-  buttons[1] = nullptr;
-  buttons[2] = &visual_btn;
-  buttons[3] = &sound_btn;
-  buttons[4] = &okbtn;
+  base::At(buttons, 0) = nullptr;
+  base::At(buttons, 1) = nullptr;
+  base::At(buttons, 2) = &visual_btn;
+  base::At(buttons, 3) = &sound_btn;
+  base::At(buttons, 4) = &okbtn;
 
   /*
   **	Processing loop.

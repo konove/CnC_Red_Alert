@@ -47,113 +47,6 @@
 #include "base/numeric.h"
 #include "base/types.h"
 
-/***************************************************************************
- * LCW_Uncomp -- Decompress an LCW encoded data block.                     *
- *                                                                         *
- * Uncompress data to the following codes in the format b = byte, w = word *
- * n = byte code pulled from compressed data.                              *
- *                                                                         *
- *   Command code, n        |Description                                   *
- * ------------------------------------------------------------------------*
- * n=0xxxyyyy,yyyyyyyy      |short copy back y bytes and run x+3 from dest *
- * n=10xxxxxx,n1,n2,...,nx+1|med length copy the next x+1 bytes from source*
- * n=11xxxxxx,w1            |med copy from dest x+3 bytes from offset w1   *
- * n=11111111,w1,w2         |long copy from dest w1 bytes from offset w2   *
- * n=11111110,w1,b1         |long run of byte b1 for w1 bytes              *
- * n=10000000               |end of data reached                           *
- *                                                                         *
- *                                                                         *
- * INPUT:                                                                  *
- *      void * source ptr                                                  *
- *      void * destination ptr                                             *
- *      unsigned long length of uncompressed data                          *
- *                                                                         *
- *                                                                         *
- * OUTPUT:                                                                 *
- *     unsigned long # of destination bytes written                        *
- *                                                                         *
- * WARNINGS:                                                               *
- *     3rd argument is dummy. It exists to provide cross-platform          *
- *      compatibility. Note therefore that this implementation does not    *
- *      check for corrupt source data by testing the uncompressed length.  *
- *                                                                         *
- * HISTORY:                                                                *
- *    03/20/1995 IML : Created.                                            *
- *=========================================================================*/
-int LCW_Uncomp(const void* source, void* dest, int /*unused*/) {
-  unsigned char* copy_ptr = nullptr;
-  unsigned count = 0;
-
-  /* Copy the source and destination ptrs. */
-  const auto* source_ptr = static_cast<const unsigned char*>(source);
-  auto* dest_ptr = static_cast<unsigned char*>(dest);
-
-  while (true) {
-    /* Read in the operation code. */
-    const unsigned char op_code = *source_ptr++;
-
-    if (!(op_code & 0x80)) {
-      /* Do a short copy from destination. */
-      count = (op_code >> 4) + 3;
-      copy_ptr = dest_ptr - (static_cast<unsigned>(*source_ptr++) +
-                             ((static_cast<unsigned>(op_code) & 0x0f) << 8));
-
-      while (count--) {
-        *dest_ptr++ = *copy_ptr++;
-      }
-
-    } else {
-      if (!(op_code & 0x40)) {
-        if (op_code == 0x80) {
-          /* Return # of destination bytes written. */
-          return static_cast<int>(dest_ptr - static_cast<unsigned char*>(dest));
-        }
-        /* Do a medium copy from source. */
-        count = op_code & 0x3f;
-
-        while (count--) {
-          *dest_ptr++ = *source_ptr++;
-        }
-
-      } else {
-        if (op_code == 0xfe) {
-          /* Do a long run. */
-          count = *source_ptr + (static_cast<unsigned>(*(source_ptr + 1)) << 8);
-          const unsigned char data = *(source_ptr + 2);
-          source_ptr += 3;
-          std::memset(dest_ptr, data, count);
-          dest_ptr += count;
-
-        } else {
-          if (op_code == 0xff) {
-            /* Do a long copy from destination. */
-            count =
-                *source_ptr + (static_cast<unsigned>(*(source_ptr + 1)) << 8);
-            copy_ptr = static_cast<unsigned char*>(dest) + *(source_ptr + 2) +
-                       (static_cast<unsigned>(*(source_ptr + 3)) << 8);
-            source_ptr += 4;
-
-            while (count--) {
-              *dest_ptr++ = *copy_ptr++;
-            }
-
-          } else {
-            /* Do a medium copy from destination. */
-            count = (op_code & 0x3f) + 3;
-            copy_ptr = static_cast<unsigned char*>(dest) + *source_ptr +
-                       (static_cast<unsigned>(*(source_ptr + 1)) << 8);
-            source_ptr += 2;
-
-            while (count--) {
-              *dest_ptr++ = *copy_ptr++;
-            }
-          }
-        }
-      }
-    }
-  }
-}
-
 int LcwUncompBounded(std::span<const std::byte> source,
                      std::span<std::byte> dest) {
   const base::ssize in_size = std::ssize(source);
@@ -290,9 +183,11 @@ Choice BestReference(int length, int distance, int position) {
   return best;
 }
 
-int HashAt(const unsigned char* in, int pos) {
+int HashAt(std::span<const std::byte> in, int pos) {
   const uint32_t hash =
-      (uint32_t{in[pos]} << 8) ^ (uint32_t{in[pos + 1]} << 4) ^ in[pos + 2];
+      (std::to_integer<uint32_t>(in[base::ToSize(pos)]) << 8) ^
+      (std::to_integer<uint32_t>(in[base::ToSize(pos + 1)]) << 4) ^
+      std::to_integer<uint32_t>(in[base::ToSize(pos + 2)]);
   return static_cast<int>(hash % kHashSize);
 }
 
@@ -301,9 +196,11 @@ int HashAt(const unsigned char* in, int pos) {
 // Greedy encoder. A back-reference or fill is only used when it saves at least
 // one byte over storing the bytes as literals, which also pays for any literal
 // opcode it forces afterwards; so the output never exceeds LcwWorstCaseSize().
-int __cdecl LCW_Comp(const void* source, void* dest, int length) {
-  const auto* in = static_cast<const unsigned char*>(source);
-  auto* out = static_cast<unsigned char*>(dest);
+int LCW_Comp(std::span<const std::byte> in, std::span<std::byte> out) {
+  const int length = static_cast<int>(in.size());
+  if (out.size() < static_cast<std::size_t>(LcwWorstCaseSize(length))) {
+    return -1;
+  }
   int written = 0;
   int literal_opcode = -1;  // Index of the open literal run's opcode, or -1.
 
@@ -319,7 +216,7 @@ int __cdecl LCW_Comp(const void* source, void* dest, int length) {
   };
 
   const auto put = [&](int value) {
-    out[written++] = static_cast<unsigned char>(value);
+    out[base::ToSize(written++)] = static_cast<std::byte>(value);
   };
 
   int pos = 0;
@@ -328,7 +225,8 @@ int __cdecl LCW_Comp(const void* source, void* dest, int length) {
     Choice best;
 
     int run = 1;
-    while (run < limit && in[pos + run] == in[pos]) {
+    while (run < limit &&
+           in[base::ToSize(pos + run)] == in[base::ToSize(pos)]) {
       ++run;
     }
     if (run - 4 > best.savings) {
@@ -342,7 +240,8 @@ int __cdecl LCW_Comp(const void* source, void* dest, int length) {
            candidate = previous[base::ToSize(candidate)], ++steps) {
         int match = 0;
         // Overlapping matches are fine: the decoder copies byte by byte.
-        while (match < limit && in[candidate + match] == in[pos + match]) {
+        while (match < limit && in[base::ToSize(candidate + match)] ==
+                                    in[base::ToSize(pos + match)]) {
           ++match;
         }
         if (match < 3) {
@@ -356,12 +255,15 @@ int __cdecl LCW_Comp(const void* source, void* dest, int length) {
     }
 
     if (best.savings < 1) {
-      if (literal_opcode < 0 || out[literal_opcode] == 0x80 + kMaxLiteralRun) {
+      if (literal_opcode < 0 ||
+          out[base::ToSize(literal_opcode)] ==
+              static_cast<std::byte>(0x80 + kMaxLiteralRun)) {
         literal_opcode = written;
         put(0x80);
       }
-      ++out[literal_opcode];
-      put(in[pos]);
+      out[base::ToSize(literal_opcode)] = static_cast<std::byte>(
+          std::to_integer<int>(out[base::ToSize(literal_opcode)]) + 1);
+      put(std::to_integer<int>(in[base::ToSize(pos)]));
       remember(pos);
       ++pos;
       continue;
@@ -388,7 +290,7 @@ int __cdecl LCW_Comp(const void* source, void* dest, int length) {
         put(0xfe);
         put(best.count % 256);
         put(best.count / 256);
-        put(in[pos]);
+        put(std::to_integer<int>(in[base::ToSize(pos)]));
         break;
       case Choice::kLiteral:
       default:

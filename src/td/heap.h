@@ -43,8 +43,10 @@
 
 #include <concepts>
 #include <new>
+#include <span>
 #include <vector>
 
+#include "absl/log/check.h"
 #include "base/numeric.h"
 #include "base/types.h"
 #include "td/vector.h"
@@ -84,7 +86,7 @@ class FixedHeapClass {
     return index >= 0 && index < TotalCount && FreeFlag[base::ToSize(index)];
   }
 
-  virtual bool Set_Heap(int count, void* buffer = nullptr);
+  virtual bool Set_Heap(int count, std::span<char> buffer = {});
   virtual void* Allocate();
   virtual void Clear();
   virtual bool Free(void* pointer);
@@ -92,8 +94,9 @@ class FixedHeapClass {
 
  protected:
   void* operator[](int index) {
-    return static_cast<char*>(Buffer) +
-           (static_cast<base::ssize>(index) * Size);
+    CHECK_GE(index, 0);
+    CHECK_LT(index, TotalCount);
+    return Buffer.subspan(base::ToSize(int64_t{index} * Size)).data();
   }
 
   /*
@@ -121,7 +124,7 @@ class FixedHeapClass {
   /*
   **	Pointer to the heap's memory buffer.
   */
-  void* Buffer{nullptr};
+  std::span<char> Buffer;
 
   /*
   **	This is a boolean vector array of allocation flag bits.
@@ -151,7 +154,7 @@ class FixedIHeapClass : public FixedHeapClass {
   FixedIHeapClass(FixedIHeapClass&&) = delete;
   FixedIHeapClass& operator=(FixedIHeapClass&&) = delete;
 
-  bool Set_Heap(int count, void* buffer = nullptr) override;
+  bool Set_Heap(int count, std::span<char> buffer = {}) override;
   void* Allocate() override;
   void Clear() override;
   bool Free(void* pointer) override;

@@ -58,6 +58,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <filesystem>
+#include <span>
 #include <string>
 
 #include "base/trig.h"
@@ -366,8 +367,8 @@ VesselTypeClass& VesselTypeClass::As_Reference(VesselType type) {
 void VesselTypeClass::Display(int x, int y, WindowNumberType window,
                               HousesType /*unused*/) const {
   int shape = 0;
-  const void* ptr = Get_Cameo_Data();
-  if (ptr == nullptr) {
+  auto ptr = Get_Cameo_Data();
+  if (ptr.empty()) {
     ptr = Get_Image_Data();
     shape = Rotation / 6;
   }
@@ -392,7 +393,7 @@ void VesselTypeClass::Display(int x, int y, WindowNumberType window,
  *=============================================================================================*/
 void VesselTypeClass::Prep_For_Add() {
   for (const VesselType index : magic_enum::enum_values<VesselType>()) {
-    if (As_Reference(index).Get_Image_Data() != nullptr) {
+    if (!As_Reference(index).Get_Image_Data().empty()) {
       Map.Add_To_List(&As_Reference(index));
     }
   }
@@ -494,7 +495,7 @@ void VesselTypeClass::One_Time() {
       const auto filename = std::string(uclass.Graphic_Name()) + "ICON";
       const auto fullname =
           std::filesystem::path(filename).replace_extension(".SHP").string();
-      uclass.CameoData = MixArchive::Retrieve(fullname);
+      uclass.CameoData = MixArchive::RetrieveData(fullname);
     }
 
     /*
@@ -571,7 +572,7 @@ void VesselTypeClass::Turret_Adjust(DirType dir, int& x, int& y) const {
  *                                                                                             *
  * HISTORY: * 03/20/1996 JLB : Created. *
  *=============================================================================================*/
-const int16_t* VesselTypeClass::Overlap_List() const {
+std::span<const int16_t> VesselTypeClass::Overlap_List() const {
   static const int16_t _ship[] = {-3,
                                   -2,
                                   -1,
@@ -594,7 +595,7 @@ const int16_t* VesselTypeClass::Overlap_List() const {
   //		+MAP_CELL_W, +(MAP_CELL_W+1), +(MAP_CELL_W-1),
   //		kRefreshEol};
 
-  return &_ship[0];
+  return _ship;
 }
 
 /***********************************************************************************************
@@ -617,7 +618,7 @@ const int16_t* VesselTypeClass::Overlap_List() const {
 VesselType VesselTypeClass::From_Name(const char* name) {
   if (name != nullptr) {
     for (const VesselType classid : magic_enum::enum_values<VesselType>()) {
-      if (stricmp(As_Reference(classid).IniName, name) == 0) {
+      if (port::CompareIgnoreCase(As_Reference(classid).IniName, name) == 0) {
         return classid;
       }
     }

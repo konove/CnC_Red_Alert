@@ -2,8 +2,9 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
-#include <cstring>
+#include <span>
 
+#include "base/buffer.h"
 #include "gtest/gtest.h"
 #include "port/unaligned.h"
 #include "td/connect.h"
@@ -29,7 +30,9 @@ class TestConnection : public NonSequencedConnClass {
   }
 
  protected:
-  int Send(void* /*buf*/, int /*buflen*/) override { return 1; }
+  int Send(std::span<const std::byte> /*buf*/, int /*buflen*/) override {
+    return 1;
+  }
 };
 
 TEST_F(QueueAlignmentTest, ReceivesPacketHeaderAtOddAddress) {
@@ -40,20 +43,24 @@ TEST_F(QueueAlignmentTest, ReceivesPacketHeaderAtOddAddress) {
   header.MagicNumber = 0x1234;
   header.Code = static_cast<unsigned char>(ConnectionClass::PACKET_DATA_NOACK);
   header.PacketID = 7;
-  port::WriteUnaligned(bytes.data() + 1, header);
+  port::WriteUnaligned(std::as_writable_bytes(std::span(bytes)).subspan(1),
+                       header);
   bytes[1 + sizeof(header)] = 0x6b;
-  EXPECT_TRUE(connection.Receive_Packet(bytes.data() + 1, sizeof(header) + 1));
+  EXPECT_TRUE(connection.Receive_Packet(
+      std::as_writable_bytes(std::span(bytes)).subspan(1), sizeof(header) + 1));
   std::array<uint8_t, 4> payload{};
   int length = 0;
-  EXPECT_TRUE(connection.Get_Packet(payload.data(), &length));
+  EXPECT_TRUE(connection.Get_Packet(std::as_writable_bytes(std::span(payload)),
+                                    &length));
   EXPECT_EQ(length, 1);
   EXPECT_EQ(payload[0], 0x6b);
-  EXPECT_FALSE(connection.Receive_Packet(bytes.data() + 1, sizeof(header) - 1));
+  EXPECT_FALSE(connection.Receive_Packet(
+      std::as_writable_bytes(std::span(bytes)).subspan(1), sizeof(header) - 1));
 }
 
 TEST_F(QueueAlignmentTest, ExtractsCompressedFrameAndPayloadFromOddAddress) {
   alignas(EventClass) std::array<uint8_t, 512> bytes{};
-  auto* packet = bytes.data() + 1;
+  const auto packet = std::as_writable_bytes(std::span(bytes)).subspan(1);
   EventClass frame;
   frame.Type = EventClass::FRAMEINFO;
   frame.Frame = 123;
@@ -62,11 +69,11 @@ TEST_F(QueueAlignmentTest, ExtractsCompressedFrameAndPayloadFromOddAddress) {
   frame.Data.FrameInfo.Delay = 4;
   const auto header_size =
       offsetof(EventClass, Data) + sizeof(frame.Data.FrameInfo);
-  std::memcpy(packet, &frame, header_size);
-  auto* payload = packet + header_size;
+  base::CopyBytes(packet, base::ObjectBytes(frame), header_size);
+  const auto payload = packet.subspan(header_size);
   port::WriteUnaligned(payload, EventClass::RESPONSE_TIME);
   decltype(frame.Data.FrameInfo.Delay) const delay = 9;
-  port::WriteUnaligned(payload + sizeof(EventClass::EventType), delay);
+  port::WriteUnaligned(payload.subspan(sizeof(EventClass::EventType)), delay);
   const int size = static_cast<int>(
       header_size + sizeof(EventClass::EventType) + sizeof(delay));
   EXPECT_EQ(Extract_Compressed_Events(packet, size), 2);
@@ -86,9 +93,13 @@ TEST_F(QueueAlignmentTest, ExtractsUncompressedEventWithoutMutatingPacket) {
   event.Frame = 321;
   event.IsExecuted = true;
   event.Data.FrameInfo.Delay = 11;
-  port::WriteUnaligned(bytes.data() + 1, event);
+  port::WriteUnaligned(std::as_writable_bytes(std::span(bytes)).subspan(1),
+                       event);
   const auto before = bytes;
-  EXPECT_EQ(Extract_Uncompressed_Events(bytes.data() + 1, sizeof(event)), 1);
+  EXPECT_EQ(
+      Extract_Uncompressed_Events(
+          std::as_writable_bytes(std::span(bytes)).subspan(1), sizeof(event)),
+      1);
   ASSERT_EQ(DoList.Count(), 1);
   EXPECT_EQ(DoList[0].Frame, 321);
   EXPECT_EQ(DoList[0].Data.FrameInfo.Delay, 11);
@@ -98,7 +109,33 @@ TEST_F(QueueAlignmentTest, ExtractsUncompressedEventWithoutMutatingPacket) {
 
 TEST_F(QueueAlignmentTest, RejectsTruncatedCompressedType) {
   std::array<uint8_t, 3> bytes{};
-  EXPECT_EQ(Extract_Compressed_Events(bytes.data(), bytes.size()), 0);
+  EXPECT_EQ(
+      Extract_Compressed_Events(std::as_bytes(std::span(bytes)), bytes.size()),
+      0);
   EXPECT_EQ(DoList.Count(), 0);
 }
+TEST_F(QueueAlignmentTest, RejectsClaimedExtentBeyondStorage) {
+  std::array<std::byte, sizeof(EventClass)> bytes{};
+  EXPECT_EQ(Extract_Uncompressed_Events(bytes, sizeof(EventClass) + 1), 0);
+  EXPECT_EQ(Extract_Compressed_Events(bytes, -1), 0);
+  EXPECT_EQ(DoList.Count(), 0);
+}
+
+TEST_F(QueueAlignmentTest, RejectsTruncatedMissionRun) {
+  std::array<std::byte, 256> bytes{};
+  EventClass frame;
+  frame.Type = EventClass::FRAMEINFO;
+  const auto header_size =
+      offsetof(EventClass, Data) + sizeof(frame.Data.FrameInfo);
+  base::CopyBytes(bytes, base::ObjectBytes(frame), header_size);
+  const auto mission = std::span(bytes).subspan(header_size);
+  port::WriteUnaligned(mission, EventClass::MEGAMISSION);
+  mission[sizeof(EventClass::EventType)] = std::byte{2};
+  const int size =
+      static_cast<int>(header_size + sizeof(EventClass::EventType) + 1 +
+                       sizeof(frame.Data.MegaMission));
+  EXPECT_EQ(Extract_Compressed_Events(bytes, size), 1);
+  EXPECT_EQ(DoList.Count(), 1);
+}
+
 }  // namespace

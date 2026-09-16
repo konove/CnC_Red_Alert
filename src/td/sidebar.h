@@ -44,7 +44,9 @@
 class ArchiveReader;
 class ArchiveWriter;
 
+#include <cstddef>
 #include <cstdint>
+#include <span>
 
 #include "sdllib/keyboard.h"
 #include "td/control.h"
@@ -97,7 +99,7 @@ class SidebarClass : public PowerClass {
 
   void AI(KeyNumType& input, int x, int y) override;
   void Draw_It(bool complete) override;
-  void Refresh_Cells(CELL cell, const int16_t* list) override;
+  void Refresh_Cells(CELL cell, std::span<const int16_t> list) override;
 
   bool Abandon_Production(RTTIType type, int factory);
   bool Activate(int control);
@@ -151,7 +153,7 @@ class SidebarClass : public PowerClass {
     void Deactivate();
     void Flag_To_Redraw();
     bool Factory_Link(int factory, RTTIType type, int id);
-    static const void* Get_Special_Cameo(int type);
+    static std::span<const std::byte> Get_Special_Cameo(int type);
 
     /*
     **	File I/O.
@@ -297,19 +299,19 @@ class SidebarClass : public PowerClass {
     **	Pointer to the shape data for small versions of the logos. These are
     *used as *	placeholder pieces on the side bar.
     */
-    static const void* LogoShapes;
+    static std::span<const std::byte> LogoShapes;
 
     /*
     **	This points to the animation sequence of frames used to mark the passage
     *of time *	as an object is undergoing construction.
     */
-    static const void* ClockShapes;
+    static std::span<const std::byte> ClockShapes;
 
     /*
     ** This points to the animation sequence which deals with special
     ** shapes which handle non-production based icons.
     */
-    static const void* SpecialShapes[3];
+    static std::span<const std::byte> SpecialShapes[3];
 
     /*
     **	This is the last theater that the special palette remap table was loaded
@@ -326,7 +328,7 @@ class SidebarClass : public PowerClass {
     **	This points to the shapes that are used for the clock overlay. This
     *displays *	progress of construction.
     */
-    static char ClockTranslucentTable[(1 + 1) * 256];
+    static unsigned char ClockTranslucentTable[(1 + 1) * 256];
 
   } Column[kColumns];
 
@@ -363,8 +365,8 @@ class SidebarClass : public PowerClass {
   /*
   **	Pointer to the shape data for the sidebar
   */
-  static const void* SidebarShape1;
-  static const void* SidebarShape2;
+  static std::span<const std::byte> SidebarShape1;
+  static std::span<const std::byte> SidebarShape2;
 
  private:
   bool Activate_Repair(int control);

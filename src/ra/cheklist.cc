@@ -49,7 +49,9 @@
 
 #include "ra/cheklist.h"
 
+#include <cstddef>
 #include <cstdio>
+#include <span>
 #include <vector>
 
 #include "absl/strings/str_format.h"
@@ -64,8 +66,9 @@
 #include "sdllib/wwstd.h"
 
 CheckListClass::CheckListClass(int id, int x, int y, int w, int h,
-                               TextPrintType flags, const void* up,
-                               const void* down)
+                               TextPrintType flags,
+                               std::span<const std::byte> up,
+                               std::span<const std::byte> down)
     : ListClass(id, x, y, w, h, flags, up, down) {}
 
 int CheckListClass::Add_Item(const char* text) {

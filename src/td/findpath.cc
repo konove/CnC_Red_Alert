@@ -52,19 +52,17 @@
  *overlap bit for given cell                                   *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
-#include "td/findpath.h"
-
 #include <algorithm>
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
+#include <span>
 
 #include "absl/log/check.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/memflag.h"
 #include "sdllib/wwstd.h"
 #include "td/defines.h"
 #include "td/dialog.h"
@@ -290,8 +288,7 @@ bool FootClass::Unravel_Loop(PathType* path, CELL& cell, FacingType& dir,
   FacingType curr_dir = dir;
   CELL curr_pos = Adjacent_Cell(cell, Opposite(curr_dir));
   int idx = path->Length;                      // start at the last position
-  const FacingType* list =
-      &path->Command[idx - 1];  // point to the last command
+  int list = idx - 1;
   bool last_was_line = false;
 
   /*
@@ -310,9 +307,10 @@ bool FootClass::Unravel_Loop(PathType* path, CELL& cell, FacingType& dir,
       ** if we left the line on a diagonal.  If we did then we need to fix
       ** it up.
       */
-      if (static_cast<int>(curr_dir) % 2 != 0 && curr_pos != path->LastFixup) {
+      if (idx > 1 && static_cast<int>(curr_dir) % 2 != 0 &&
+          curr_pos != path->LastFixup) {
         cell = curr_pos;
-        dir = *(list - 1);
+        dir = path->Command[base::ToSize(list - 1)];
         path->Length = idx;
         path->LastFixup = curr_pos;
         Draw_Cell_Point(curr_pos, true, -1, kCyan);
@@ -325,7 +323,8 @@ bool FootClass::Unravel_Loop(PathType* path, CELL& cell, FacingType& dir,
     /*
     ** Since this cell will not be in the list, then pull out its cost
     */
-    path->Cost -= Passable_Cell(curr_pos, *list, -1, threshhold);
+    path->Cost -= Passable_Cell(curr_pos, path->Command[base::ToSize(list)], -1,
+                                threshhold);
 
     /*
     ** Remove this cells flag from the overlap list for the path
@@ -340,7 +339,7 @@ bool FootClass::Unravel_Loop(PathType* path, CELL& cell, FacingType& dir,
     /*
     ** Adjust to the next list position and direction.
     */
-    curr_dir = *list--;
+    curr_dir = path->Command[base::ToSize(list--)];
     curr_pos = Adjacent_Cell(curr_pos, Opposite(curr_dir));
     idx--;
   }
@@ -387,7 +386,7 @@ bool FootClass::Register_Cell(PathType* path, CELL cell, FacingType dir,
     ** could not have a duplicate unless there are cells in the list.
     */
 
-    if (path->Command[path->Length - 1] == Opposite(dir)) {
+    if (path->Command[base::ToSize(path->Length - 1)] == Opposite(dir)) {
       const CELL pos = Adjacent_Cell(cell, Opposite(dir));
       Clear_Overlap(path, pos);
       path->Length--;
@@ -406,7 +405,7 @@ bool FootClass::Register_Cell(PathType* path, CELL cell, FacingType dir,
       CELL pos = path->Start;
       int newlen = 0;
       int idx = 0;
-      FacingType* list = path->Command;
+      size_t list = 0;
 
       /*
       ** Note that the cell has to be in this list, so theres no sense
@@ -419,7 +418,7 @@ bool FootClass::Register_Cell(PathType* path, CELL cell, FacingType dir,
 
       if (pos != cell) {
         while (idx < path->Length) {
-          pos = Adjacent_Cell(pos, *list);
+          pos = Adjacent_Cell(pos, path->Command[list]);
           if (pos == cell) {
             idx++;
             list++;
@@ -438,8 +437,8 @@ bool FootClass::Register_Cell(PathType* path, CELL cell, FacingType dir,
       ** then.
       */
       while (idx < path->Length) {
-        pos = Adjacent_Cell(pos, *list);
-        path->Cost -= Passable_Cell(pos, *list, -1, threshhold);
+        pos = Adjacent_Cell(pos, path->Command[list]);
+        path->Cost -= Passable_Cell(pos, path->Command[list], -1, threshhold);
         Clear_Overlap(path, pos);
         Draw_Cell_Point(pos, true, -1, kLtBlue);
         idx++;
@@ -453,7 +452,7 @@ bool FootClass::Register_Cell(PathType* path, CELL cell, FacingType dir,
     ** and the cost.
     */
     const int cpos = path->Length++;
-    path->Command[cpos] = dir;  // save of the direction we moved
+    path->Command[base::ToSize(cpos)] = dir;  // save of the direction we moved
     path->Cost += cost;         // figure new cost for cell
     Set_Overlap(path, cell);    // mark the we have entered point
   }
@@ -482,7 +481,7 @@ bool FootClass::Register_Cell(PathType* path, CELL cell, FacingType dir,
     ** could not have a duplicate unless there are cells in the list.
     */
 
-    if (path->Command[path->Length - 1] == Opposite(dir)) {
+    if (path->Command[base::ToSize(path->Length - 1)] == Opposite(dir)) {
       CELL pos = Adjacent_Cell(cell, Opposite(dir));
       path->Overlap[pos >> 5] &= ~(1 << ((pos & 31) - 1));
       path->Length--;
@@ -507,7 +506,7 @@ bool FootClass::Register_Cell(PathType* path, CELL cell, FacingType dir,
       ** in checking whether we found it (famous last words)
       */
       for (idx = 0, list = path->Command; idx < path->Length; idx++, list++) {
-        pos = Adjacent_Cell(pos, *list);
+        pos = Adjacent_Cell(pos, path->Command[list]);
         if (pos == cell) {
           idx++;
           list++;
@@ -523,8 +522,8 @@ bool FootClass::Register_Cell(PathType* path, CELL cell, FacingType dir,
       ** then.
       */
       while (idx < path->Length) {
-        pos = Adjacent_Cell(pos, *list);
-        path->Cost -= Passable_Cell(pos, *list, -1, threshhold);
+        pos = Adjacent_Cell(pos, path->Command[list]);
+        path->Cost -= Passable_Cell(pos, path->Command[list], -1, threshhold);
         path->Overlap[pos >> 5] &= ~(1 << ((pos & 31) - 1));
         Draw_Cell_Point(pos, true, -1, kLtBlue);
         idx++;
@@ -538,7 +537,7 @@ bool FootClass::Register_Cell(PathType* path, CELL cell, FacingType dir,
     ** and the cost.
     */
     int cpos = path->Length++;
-    path->Command[cpos] = dir;         // save of the direction we moved
+    path->Command[base::ToSize(cpos)] = dir;  // save of the direction we moved
     path->Cost += cost;                // figure new cost for cell
     path->Overlap[pos] |= (1 << bit);  // mark the we have entered point
   }
@@ -563,8 +562,8 @@ bool FootClass::Register_Cell(PathType* path, CELL cell, FacingType dir,
  *                                                                                             *
  * HISTORY: * 07/08/1991  CY : Created. *
  *=============================================================================================*/
-PathType* FootClass::Find_Path(CELL dest, FacingType* final_moves, int maxlen,
-                               MoveType threshhold) {
+PathType* FootClass::Find_Path(CELL dest, std::span<FacingType> final_moves,
+                               int maxlen, MoveType threshhold) {
   const CELL source = Coord_Cell(Coord);  // Source expressed as cell
   static PathType path;             // Main path control.
   FacingType newdir = FACING_NONE;  // Tentative facing value.
@@ -588,7 +587,7 @@ PathType* FootClass::Find_Path(CELL dest, FacingType* final_moves, int maxlen,
   ** If we have been provided an illegal place to store our final moves
   ** then forget it.
   */
-  if (!final_moves) {
+  if (final_moves.empty() || maxlen <= 0) {
     return nullptr;
   }
   //	IsFindPath = true;
@@ -628,7 +627,7 @@ PathType* FootClass::Find_Path(CELL dest, FacingType* final_moves, int maxlen,
   path.LastOverlap = -1;
   path.LastFixup = -1;
 
-  memset(path.Overlap, 0, sizeof(MainOverlap));
+  std::ranges::fill(path.Overlap, 0);
 
   /*
   ** Clear the over lap list and then make sure that our starting position is
@@ -644,6 +643,7 @@ PathType* FootClass::Find_Path(CELL dest, FacingType* final_moves, int maxlen,
   **	Account for trailing end of list command, so reduce the maximum
   **	allowed legal commands to reflect this.
   */
+  maxlen = std::min(maxlen, static_cast<int>(final_moves.size()));
   maxlen--;
 
   /*
@@ -778,11 +778,12 @@ PathType* FootClass::Find_Path(CELL dest, FacingType* final_moves, int maxlen,
         */
 
         Debug_Draw_Map("Follow left edge", startcell, next, true);
-        Mem_Copy(&path, &pleft, sizeof(PathType));
-        pleft.Command = &moves_left[0];
+        pleft = path;
+        pleft.Command = moves_left;
         pleft.Overlap = LeftOverlap;
-        Mem_Copy(path.Command, pleft.Command, base::ToSize(path.Length));
-        Mem_Copy(path.Overlap, pleft.Overlap, sizeof(LeftOverlap));
+        std::ranges::copy(path.Command.first(base::ToSize(path.Length)),
+                          pleft.Command.begin());
+        std::ranges::copy(path.Overlap, pleft.Overlap.begin());
         left =
             Follow_Edge(startcell, next, &pleft, kCounterclockwise, direction,
                         threat, threat_stage, sizeof(moves_left), threshhold);
@@ -803,11 +804,12 @@ PathType* FootClass::Find_Path(CELL dest, FacingType* final_moves, int maxlen,
         }
 
         Debug_Draw_Map("Follow right edge", startcell, next, true);
-        Mem_Copy(&path, &pright, sizeof(PathType));
-        pright.Command = &moves_right[0];
+        pright = path;
+        pright.Command = moves_right;
         pright.Overlap = RightOverlap;
-        Mem_Copy(path.Command, pright.Command, base::ToSize(path.Length));
-        Mem_Copy(path.Overlap, pright.Overlap, sizeof(RightOverlap));
+        std::ranges::copy(path.Command.first(base::ToSize(path.Length)),
+                          pright.Command.begin());
+        std::ranges::copy(path.Overlap, pright.Overlap.begin());
         right =
             Follow_Edge(startcell, next, &pright, kClockwise, direction, threat,
                         threat_stage, sizeof(moves_right), threshhold);
@@ -914,8 +916,9 @@ PathType* FootClass::Find_Path(CELL dest, FacingType* final_moves, int maxlen,
       len = which->Length;
       len = std::min(len, maxlen);
       if (len > 0) {
-        memcpy(&path.Overlap[0], &which->Overlap[0], sizeof(LeftOverlap));
-        memcpy(&path.Command[0], &which->Command[0], base::ToSize(len));
+        std::ranges::copy(which->Overlap, path.Overlap.begin());
+        std::ranges::copy(which->Command.first(base::ToSize(len)),
+                          path.Command.begin());
         path.Length = len;
         path.Cost = which->Cost;
         path.LastOverlap = -1;
@@ -933,7 +936,7 @@ end_of_list:
   **	Poke in the stop command.
   */
   if (path.Length < maxlen) {
-    path.Command[path.Length++] = END;
+    path.Command[base::ToSize(path.Length++)] = END;
   }
   if (Debug_Find_Path && DrawPath) {
     Map.Flag_To_Redraw(true);
@@ -1101,9 +1104,10 @@ bool FootClass::Follow_Edge(CELL start, CELL target, PathType* path,
         ** because we could be trying to escape from a culdesack!
         */
         if (forcefail && path->Length > 0 &&
-            newdir + 4 == path->Command[path->Length - 1]) {
+            newdir + 4 == path->Command[base::ToSize(path->Length - 1)]) {
           // ST - 12/18/96 5:15PM		if (forcefail &&
-          // (FacingType)(newdir ^ 4) == path->Command[path->Length - 1]) {
+          // (FacingType)(newdir ^ 4) == path->Command[base::ToSize(path->Length
+          // - 1)]) {
           forcefail = false;
         }
       }
@@ -1197,7 +1201,7 @@ bool FootClass::Follow_Edge(CELL start, CELL target, PathType* path,
     **	If we have found the target spot, we are done.
     */
     if (newcell == target) {
-      path->Command[path->Length] = END;
+      path->Command[base::ToSize(path->Length)] = END;
       return true;
     }
 
@@ -1272,15 +1276,14 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
       (FacingType)0, (FacingType)0, (FacingType)0, (FacingType)2,
       (FacingType)3, kEmptyCommand, (FacingType)0, (FacingType)0};
 #endif
-  FacingType* cmd1 = nullptr;
-  FacingType  // Floating first command pointer.
-      * cmd2 = nullptr;
+  size_t cmd1 = 0;
+  size_t cmd2 = 0;
   FacingType newdir = FACING_NONE;  // Tentative new direction for smoothing.
 
   /*
   **	Abort if there is any illegal parameter.
   */
-  if (!path || !path->Command) {
+  if (!path || path->Command.empty()) {
     return 0;
   }
 
@@ -1289,18 +1292,18 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
   **	first pair of commands (if there are at least two
   **	in the command list).
   */
-  path->Command[path->Length] = END;  // Force end of list.
+  path->Command[base::ToSize(path->Length)] = END;  // Force end of list.
   CELL cell = path->Start;            // Working cell (as it moves along path).
   if (path->Length > 1) {
-    cmd2 = path->Command + 1;
-    while (*cmd2 != END) {
+    cmd2 = 1;
+    while (path->Command[cmd2] != END) {
       /*
       **	Set the cmd1 pointer to point to the valid command closest, but
       **	previous to cmd2. Be sure not to go previous to the head of the
       **	command list.
       */
       cmd1 = cmd2 - 1;
-      while (*cmd1 == kEmptyCommand && cmd1 != path->Command) {
+      while (path->Command[cmd1] == kEmptyCommand && cmd1 != 0) {
         cmd1--;
       }
 
@@ -1308,7 +1311,7 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
       **	If there isn't any valid previous command, then bump the
       **	cmd pointers to the next command pair and continue...
       */
-      if (*cmd1 == kEmptyCommand) {
+      if (path->Command[cmd1] == kEmptyCommand) {
         cmd2++;
         continue;
       }
@@ -1319,7 +1322,9 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
       **	commands. Any other value is new direction and eliminate
       **	one command.
       */
-      FacingType newcmd = *cmd2 - *cmd1;  // Calculated new optimized command.
+      FacingType newcmd =
+          path->Command[cmd2] -
+          path->Command[cmd1];  // Calculated new optimized command.
       if (newcmd < FACING_N) {
         newcmd = newcmd + FACING_COUNT;
       }
@@ -1330,8 +1335,8 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
       **	two commands. This is the easiest optimization.
       */
       if (newcmd == FACING_SE) {
-        *cmd1 = kEmptyCommand;
-        *cmd2++ = kEmptyCommand;
+        path->Command[cmd1] = kEmptyCommand;
+        path->Command[cmd2++] = kEmptyCommand;
         continue;
       }
 
@@ -1349,14 +1354,15 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
         *less circuitous.
         */
         // The diagonal facings are the odd ones.
-        if (static_cast<int>(*cmd1) % 2 != 0) {
+        if (static_cast<int>(path->Command[cmd1]) % 2 != 0) {
           /*
           **	Diagonal optimizations are always only 45
           **	degree adjustments.
           */
-          newdir = Next_Direction(*cmd1, newcmd < FACING_N
-                                             ? static_cast<FacingType>(-1)
-                                             : static_cast<FacingType>(1));
+          newdir =
+              Next_Direction(path->Command[cmd1],
+                             newcmd < FACING_N ? static_cast<FacingType>(-1)
+                                               : static_cast<FacingType>(1));
 
           /*
           **	Diagonal 90 degree changes can be smoothed, although
@@ -1365,33 +1371,34 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
           if (std::abs(static_cast<int>(newcmd)) == 1) {
             if (Passable_Cell(Adjacent_Cell(cell, newdir), newdir, -1,
                               threshhold)) {
-              *cmd2 = newdir;
-              *cmd1 = newdir;
+              path->Command[cmd2] = newdir;
+              path->Command[cmd1] = newdir;
             }
             // BOB 16.12.92
-            cell = Adjacent_Cell(cell, *cmd1);
+            cell = Adjacent_Cell(cell, path->Command[cmd1]);
             cmd2++;
             continue;
           }
         } else {
-          newdir = Next_Direction(*cmd1, newcmd);
+          newdir = Next_Direction(path->Command[cmd1], newcmd);
         }
 
         /*
         **	Allow shortening turn only on right angle moves that are based
         *on *	90 degrees. Always allow 135 degree optimizations.
         */
-        *cmd2 = newdir;
-        *cmd1 = kEmptyCommand;
+        path->Command[cmd2] = newdir;
+        path->Command[cmd1] = kEmptyCommand;
 
         /*
         **	Backup what it thinks is the current cell.
         */
-        while (*cmd1 == kEmptyCommand && cmd1 != path->Command) {
+        while (path->Command[cmd1] == kEmptyCommand && cmd1 != 0) {
           cmd1--;
         }
-        if (*cmd1 != kEmptyCommand) {
-          cell = Adjacent_Cell(cell, Next_Direction(*cmd1, FACING_S));
+        if (path->Command[cmd1] != kEmptyCommand) {
+          cell = Adjacent_Cell(cell,
+                               Next_Direction(path->Command[cmd1], FACING_S));
         } else {
           cell = path->Start;
         }
@@ -1402,7 +1409,7 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
       **	Since we could not make an optimization, we move our
       **	head pointer forward.
       */
-      cell = Adjacent_Cell(cell, *cmd1);
+      cell = Adjacent_Cell(cell, path->Command[cmd1]);
       cmd2++;
     }
   }
@@ -1410,34 +1417,35 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
   /*
   **	Pack the command list to remove any empty command entries.
   */
-  cmd1 = path->Command;
-  cmd2 = path->Command;
+  cmd1 = 0;
+  cmd2 = 0;
   cell = path->Start;
   path->Cost = 0;
   path->Length = 0;
-  while (*cmd2 != END) {
-    if (*cmd2 != kEmptyCommand) {
+  while (path->Command[cmd2] != END) {
+    if (path->Command[cmd2] != kEmptyCommand) {
 #ifdef NEVER
       if (Debug_ShowPath) {
         int x, y, x1, y1;
 
         if (Map.Coord_To_Pixel(Cell_Coord(cell), x, y)) {
-          Map.Coord_To_Pixel(Cell_Coord(Adjacent_Cell(cell, *cmd2)), x1, y1);
+          Map.Coord_To_Pixel(
+              Cell_Coord(Adjacent_Cell(cell, path->Command[cmd2])), x1, y1);
           Set_Logic_Page(SeenBuff);
           LogicPage->Draw_Line(x, y + 8, x1, y1 + 8, kGrey);
         }
       }
 #endif
 
-      cell = Adjacent_Cell(cell, *cmd2);
-      path->Cost += Passable_Cell(cell, *cmd2, -1, threshhold);
+      cell = Adjacent_Cell(cell, path->Command[cmd2]);
+      path->Cost += Passable_Cell(cell, path->Command[cmd2], -1, threshhold);
       path->Length++;
-      *cmd1++ = *cmd2;
+      path->Command[cmd1++] = path->Command[cmd2];
     }
     cmd2++;
   }
   path->Length++;
-  *cmd1 = END;
+  path->Command[cmd1] = END;
   return path->Length;
 }
 
@@ -1618,15 +1626,15 @@ void FootClass::Debug_Draw_Map(const char* txt, CELL start, CELL dest,
 }
 
 void FootClass::Debug_Draw_Path(PathType* path) {
-  if (!path || !path->Command) {
+  if (!path || path->Command.empty()) {
     return;
   }
 
-  const FacingType* list = path->Command;
+  size_t list = 0;
   CELL pos = path->Start;
 
   for (int idx = 0; idx < path->Length; idx++) {
-    pos = Adjacent_Cell(pos, *list++);
+    pos = Adjacent_Cell(pos, path->Command[list++]);
     Draw_Cell_Point(pos, true, -1, 0);
   }
 }

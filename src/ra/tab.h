@@ -40,6 +40,9 @@
 #ifndef CNC_RED_ALERT_RA_TAB_H_
 #define CNC_RED_ALERT_RA_TAB_H_
 
+#include <cstddef>
+#include <span>
+
 #include "ra/credits.h"
 #include "ra/jshell.h"
 #include "ra/sidebar.h"
@@ -80,7 +83,7 @@ class TabClass : public SidebarClass {
 
   Timer<FrameTickSource> MoneyFlashTimer;
 
-  static const void* TabShape;
+  static std::span<const std::byte> TabShape;
 };
 
 #endif  // CNC_RED_ALERT_RA_TAB_H_

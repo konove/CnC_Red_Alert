@@ -44,13 +44,14 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <span>
 
 #include "tech/field.h"
 
 class PacketClass {
  public:
   explicit PacketClass(int16_t id = 0) : Size(0), ID(id), Head(nullptr) {}
-  explicit PacketClass(char* curbuf);
+  explicit PacketClass(std::span<const std::byte> curbuf);
   ~PacketClass();
 
   PacketClass(const PacketClass&) = delete;
@@ -90,8 +91,8 @@ class PacketClass {
   void Add_Field(const char* field, const char* data) {
     Add_Field(new FieldClass(field, data));
   }
-  void Add_Field(const char* field, void* data, int length) {
-    Add_Field(new FieldClass(field, data, length));
+  void Add_Field(const char* field, std::span<const std::byte> data) {
+    Add_Field(new FieldClass(field, data));
   }
 
   //
@@ -105,8 +106,8 @@ class PacketClass {
   bool Get_Field(const char* id, uint16_t& data);
   bool Get_Field(const char* id, int32_t& data);
   bool Get_Field(const char* id, uint32_t& data);
-  bool Get_Field(const char* id, char* data, std::size_t data_size);
-  bool Get_Field(const char* id, void* data, int& length);
+  bool Get_Field(const char* id, std::span<char> data);
+  bool Get_Field(const char* id, std::span<std::byte> data, int& length);
 
   char* Create_Comms_Packet(int& size);
 

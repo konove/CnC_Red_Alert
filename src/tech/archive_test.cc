@@ -255,7 +255,7 @@ TEST(ArchiveTest, WriterReportsShortWriteForGood) {
   int32_t value = 123;
   writer(value);
   EXPECT_FALSE(writer.ok());
-  EXPECT_FALSE(sink.Write(std::as_bytes(std::span("x", 1))));
+  EXPECT_FALSE(sink.Write(std::as_bytes(std::span("x").first(1))));
   EXPECT_FALSE(writer.ok());
 }
 

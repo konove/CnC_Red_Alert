@@ -62,18 +62,18 @@ class Int {
   /*
   **	Constructors and initializers.
   */
-  Int() noexcept { XMP_Init(&reg[0], 0, PRECISION); }
+  Int() noexcept { XMP_Init(reg, 0, PRECISION); }
   // big integers mix with machine integers in the crypto code.
   // NOLINTNEXTLINE(*-explicit-constructor)
   Int(uint32_t value) {
-    XMP_Init(&reg[0], static_cast<std::uint32_t>(value), PRECISION);
+    XMP_Init(reg, static_cast<std::uint32_t>(value), PRECISION);
   }
 
   void Randomize(ByteSource& rng, int bitcount) {
-    XMP_Randomize(&reg[0], rng, bitcount, PRECISION);
+    XMP_Randomize(reg, rng, bitcount, PRECISION);
   }
   void Randomize(ByteSource& rng, const Int& minval, const Int& maxval) {
-    XMP_Randomize(&reg[0], rng, minval, maxval, PRECISION);
+    XMP_Randomize(reg, rng, minval, maxval, PRECISION);
     reg[0] |= 1;
   }
 
@@ -83,33 +83,33 @@ class Int {
   **	length arrays.
   */
   // legacy C interfaces take the object where a pointer or name is expected.
-  // NOLINTNEXTLINE(*-explicit-constructor)
-  operator uint32_t*() ABSL_ATTRIBUTE_LIFETIME_BOUND { return &reg[0]; }
+  // NOLINTNEXTLINE(*-explicit-constructor,clang-diagnostic-lifetime-safety-lifetimebound-violation)
+  operator DigitCursor<uint32_t>() ABSL_ATTRIBUTE_LIFETIME_BOUND { return reg; }
   // legacy C interfaces take the object where a pointer or name is expected.
-  // NOLINTNEXTLINE(*-explicit-constructor)
-  operator const uint32_t*() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return &reg[0];
+  // NOLINTNEXTLINE(*-explicit-constructor,clang-diagnostic-lifetime-safety-lifetimebound-violation)
+  operator DigitCursor<const uint32_t>() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return reg;
   }
 
   /*
   **	Array access operator (references bit position). Bit 0 is the first bit.
   */
-  bool operator[](int bit) const { return XMP_Test_Bit(&reg[0], bit); }
+  bool operator[](int bit) const { return XMP_Test_Bit(reg, bit); }
 
   /*
   **	Unary operators.
   */
   Int& operator++() {
-    XMP_Inc(&reg[0], PRECISION);
+    XMP_Inc(reg, PRECISION);
     return *this;
   }
   Int& operator--() {
-    XMP_Dec(&reg[0], PRECISION);
+    XMP_Dec(reg, PRECISION);
     return *this;
   }
-  int operator!() const { return XMP_Test_Eq_Int(&reg[0], 0, PRECISION); }
+  int operator!() const { return XMP_Test_Eq_Int(reg, 0, PRECISION); }
   Int operator~() {
-    XMP_Not(&reg[0], PRECISION);
+    XMP_Not(reg, PRECISION);
     return *this;
   }
   Int operator-() const {
@@ -122,47 +122,43 @@ class Int {
   **	Attribute query functions.
   */
   [[nodiscard]] int ByteCount() const {
-    return XMP_Count_Bytes(&reg[0], PRECISION);
+    return XMP_Count_Bytes(reg, PRECISION);
   }
-  [[nodiscard]] int BitCount() const {
-    return XMP_Count_Bits(&reg[0], PRECISION);
-  }
+  [[nodiscard]] int BitCount() const { return XMP_Count_Bits(reg, PRECISION); }
   [[nodiscard]] bool Is_Negative() const {
-    return XMP_Is_Negative(&reg[0], PRECISION);
+    return XMP_Is_Negative(reg, PRECISION);
   }
   [[nodiscard]] unsigned MaxBitPrecision() const {
     return PRECISION * (sizeof(uint32_t) * CHAR_BIT);
   }
   [[nodiscard]] bool IsSmallPrime() const {
-    return XMP_Is_Small_Prime(&reg[0], PRECISION);
+    return XMP_Is_Small_Prime(reg, PRECISION);
   }
   [[nodiscard]] bool SmallDivisorsTest() const {
-    return XMP_Small_Divisors_Test(&reg[0], PRECISION);
+    return XMP_Small_Divisors_Test(reg, PRECISION);
   }
   [[nodiscard]] bool FermatTest(unsigned rounds) const {
-    return XMP_Fermat_Test(&reg[0], rounds, PRECISION);
+    return XMP_Fermat_Test(reg, rounds, PRECISION);
   }
-  [[nodiscard]] bool IsPrime() const {
-    return XMP_Is_Prime(&reg[0], PRECISION);
-  }
+  [[nodiscard]] bool IsPrime() const { return XMP_Is_Prime(reg, PRECISION); }
   bool RabinMillerTest(ByteSource& rng, unsigned int rounds) const {
-    return XMP_Rabin_Miller_Test(rng, &reg[0], rounds, PRECISION);
+    return XMP_Rabin_Miller_Test(rng, reg, rounds, PRECISION);
   }
 
   /*
   **	'in-place' binary operators.
   */
   Int& operator+=(const Int& number) {
-    Carry = XMP_Add(&reg[0], &reg[0], number, 0, PRECISION);
+    Carry = XMP_Add(reg, reg, number, 0, PRECISION);
     return *this;
   }
   Int& operator-=(const Int& number) {
-    Borrow = XMP_Sub(&reg[0], &reg[0], number, 0, PRECISION);
+    Borrow = XMP_Sub(reg, reg, number, 0, PRECISION);
     return *this;
   }
   Int& operator*=(const Int& multiplier) {
     Remainder = *this;
-    Error = XMP_Signed_Mult(&reg[0], Remainder, multiplier, PRECISION);
+    Error = XMP_Signed_Mult(reg, Remainder, multiplier, PRECISION);
     return *this;
   }
   Int& operator/=(const Int& t) {
@@ -174,11 +170,11 @@ class Int {
     return *this;
   }
   Int& operator<<=(int bits) {
-    XMP_Shift_Left_Bits(&reg[0], bits, PRECISION);
+    XMP_Shift_Left_Bits(reg, bits, PRECISION);
     return *this;
   }
   Int& operator>>=(int bits) {
-    XMP_Shift_Right_Bits(&reg[0], bits, PRECISION);
+    XMP_Shift_Right_Bits(reg, bits, PRECISION);
     return *this;
   }
 
@@ -187,61 +183,61 @@ class Int {
   */
   Int operator+(const Int& number) const {
     Int term;
-    Carry = XMP_Add(term, &reg[0], number, 0, PRECISION);
+    Carry = XMP_Add(term, reg, number, 0, PRECISION);
     return term;
   }
   Int operator+(uint16_t b) const {
     Int result;
-    Carry = XMP_Add_Int(result, &reg[0], b, 0, PRECISION);
+    Carry = XMP_Add_Int(result, reg, b, 0, PRECISION);
     return result;
   }
   //		friend Int<PRECISION> operator + (digit b, const Int<PRECISION>
   //& a) {return(Int<PRECISION>(b) + a);}
   Int operator-(const Int& number) const {
     Int term;
-    Borrow = XMP_Sub(term, &reg[0], number, 0, PRECISION);
+    Borrow = XMP_Sub(term, reg, number, 0, PRECISION);
     return term;
   }
   Int operator-(uint16_t b) const {
     Int result;
-    Borrow = XMP_Sub_Int(result, &reg[0], b, 0, PRECISION);
+    Borrow = XMP_Sub_Int(result, reg, b, 0, PRECISION);
     return result;
   }
   //		friend Int<PRECISION> operator - (digit b, const Int<PRECISION>
   //& a) {return(Int<PRECISION>(b) - a);}
   Int operator*(const Int& multiplier) const {
     Int result;
-    Error = XMP_Signed_Mult(result, &reg[0], multiplier, PRECISION);
+    Error = XMP_Signed_Mult(result, reg, multiplier, PRECISION);
     return result;
   }
   Int operator*(uint16_t b) const {
     Int result;
-    Error = XMP_Unsigned_Mult_Int(result, &reg[0], b, PRECISION);
+    Error = XMP_Unsigned_Mult_Int(result, reg, b, PRECISION);
     return result;
   }
   //		friend Int<PRECISION> operator * (digit b, const Int<PRECISION>
   //& a) {return(Int<PRECISION>(b) * a);}
   Int operator/(const Int& divisor) const {
     Int quotient = *this;
-    XMP_Signed_Div(Remainder, quotient, &reg[0], divisor, PRECISION);
+    XMP_Signed_Div(Remainder, quotient, reg, divisor, PRECISION);
     return quotient;
   }
   Int operator/(uint32_t b) const { return *this / Int<PRECISION>(b); }
   Int operator/(uint16_t divisor) const {
     Int quotient;
-    Error = XMP_Unsigned_Div_Int(quotient, &reg[0], divisor, PRECISION);
+    Error = XMP_Unsigned_Div_Int(quotient, reg, divisor, PRECISION);
     return quotient;
   }
   //		friend Int<PRECISION> operator / (digit a, const Int<PRECISION>
   //& b) {return(Int<PRECISION>(a) / b);}
   Int operator%(const Int& divisor) const {
     Int remainder;
-    XMP_Signed_Div(remainder, Remainder, &reg[0], divisor, PRECISION);
+    XMP_Signed_Div(remainder, Remainder, reg, divisor, PRECISION);
     return remainder;
   }
   Int operator%(uint32_t b) const { return *this % Int<PRECISION>(b); }
   uint16_t operator%(uint16_t divisor) const {
-    return XMP_Unsigned_Div_Int(Remainder, &reg[0], divisor, PRECISION);
+    return XMP_Unsigned_Div_Int(Remainder, reg, divisor, PRECISION);
   }
   //		friend Int<PRECISION> operator % (digit a, const Int<PRECISION>
   //& b) {return(Int<PRECISION>(a) % b);}
@@ -263,50 +259,48 @@ class Int {
   /*
   **	Comparison binary operators.
   */
-  int operator==(const Int& b) const {
-    return memcmp(&reg[0], &b.reg[0], MAX_BIT_PRECISION / CHAR_BIT) == 0;
-  }
+  int operator==(const Int& b) const { return std::ranges::equal(reg, b.reg); }
   int operator!=(const Int& b) const { return !(*this == b); }
   int operator>(const Int& number) const {
-    return XMP_Compare(&reg[0], number, PRECISION) > 0;
+    return XMP_Compare(reg, number, PRECISION) > 0;
   }
   int operator>=(const Int& number) const {
-    return XMP_Compare(&reg[0], number, PRECISION) >= 0;
+    return XMP_Compare(reg, number, PRECISION) >= 0;
   }
   int operator<(const Int& number) const {
-    return XMP_Compare(&reg[0], number, PRECISION) < 0;
+    return XMP_Compare(reg, number, PRECISION) < 0;
   }
   int operator<=(const Int& number) const {
-    return XMP_Compare(&reg[0], number, PRECISION) <= 0;
+    return XMP_Compare(reg, number, PRECISION) <= 0;
   }
 
   /*
   **	Misc. mathematical and logical functions.
   */
-  void Negate() { XMP_Neg(&reg[0], PRECISION); }
+  void Negate() { XMP_Neg(reg, PRECISION); }
   Int Abs() {
-    XMP_Abs(&reg[0], PRECISION);
+    XMP_Abs(reg, PRECISION);
     return *this;
   }
   [[nodiscard]] Int times_b_mod_c(const Int& multiplier,
                                   const Int& modulus) const {
     Int result;
     Error = xmp_stage_modulus(modulus, PRECISION);
-    Error = XMP_Mod_Mult(result, &reg[0], multiplier, PRECISION);
+    Error = XMP_Mod_Mult(result, reg, multiplier, PRECISION);
     XMP_Mod_Mult_Clear(PRECISION);
     return result;
   }
 
   [[nodiscard]] Int exp_b_mod_c(const Int& e, const Int& m) const {
     Int result;
-    Error = xmp_exponent_mod(result, &reg[0], e, m, PRECISION);
+    Error = xmp_exponent_mod(result, reg, e, m, PRECISION);
     return result;
   }
 
   static Int Unsigned_Mult(const Int& multiplicand, const Int& multiplier) {
     Int product;
-    Error = XMP_Unsigned_Mult(&product.reg[0], &multiplicand.reg[0],
-                              &multiplier.reg[0], PRECISION);
+    Error = XMP_Unsigned_Mult(product.reg, multiplicand.reg, multiplier.reg,
+                              PRECISION);
     return product;
   }
   static void Unsigned_Divide(Int& remainder, Int& quotient,
@@ -319,7 +313,7 @@ class Int {
   }
   [[nodiscard]] Int Inverse(const Int& modulus) const {
     Int result;
-    XMP_Inverse_A_Mod_B(result, &reg[0], modulus, PRECISION);
+    XMP_Inverse_A_Mod_B(result, reg, modulus, PRECISION);
     return result;
   }
 
@@ -330,25 +324,26 @@ class Int {
   }
 
   // Number (sign independand) inserted into buffer.
-  int Encode(unsigned char* output) const {
-    return XMP_Encode(output, &reg[0], PRECISION);
+  [[nodiscard]] int Encode(DigitCursor<unsigned char> output) const {
+    return XMP_Encode(output, reg, PRECISION);
   }
-  int Encode(unsigned char* output, unsigned length) const {
-    return XMP_Encode(output, length, &reg[0], PRECISION);
+  [[nodiscard]] int Encode(DigitCursor<unsigned char> output,
+                           unsigned length) const {
+    return XMP_Encode(output, length, reg, PRECISION);
   }
-  void Signed_Decode(const unsigned char* from, int frombytes) {
-    XMP_Signed_Decode(&reg[0], from, frombytes, PRECISION);
+  void Signed_Decode(DigitCursor<const unsigned char> from, int frombytes) {
+    XMP_Signed_Decode(reg, from, frombytes, PRECISION);
   }
-  void Unsigned_Decode(const unsigned char* from, int frombytes) {
-    XMP_Unsigned_Decode(&reg[0], from, frombytes, PRECISION);
+  void Unsigned_Decode(DigitCursor<const unsigned char> from, int frombytes) {
+    XMP_Unsigned_Decode(reg, from, frombytes, PRECISION);
   }
 
   // encode Int using Distinguished Encoding Rules, returns size of output
-  int DEREncode(unsigned char* output) const {
-    return XMP_DER_Encode(&reg[0], output, PRECISION);
+  [[nodiscard]] int DEREncode(DigitCursor<unsigned char> output) const {
+    return XMP_DER_Encode(reg, output, PRECISION);
   }
-  void DERDecode(const unsigned char* input) {
-    XMP_DER_Decode(&reg[0], input, PRECISION);
+  void DERDecode(DigitCursor<const unsigned char> input) {
+    XMP_DER_Decode(reg, input, PRECISION);
   }
 
   // Friend helper functions.

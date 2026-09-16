@@ -169,18 +169,18 @@ class ActionChoiceClass {
     return Action != rvalue.Action;
   }
   bool operator>(const ActionChoiceClass& rvalue) const {
-    return stricmp(Description(), rvalue.Description()) > 0;
+    return port::CompareIgnoreCase(Description(), rvalue.Description()) > 0;
   }
   bool operator<(const ActionChoiceClass& rvalue) const {
-    return stricmp(Description(), rvalue.Description()) < 0;
+    return port::CompareIgnoreCase(Description(), rvalue.Description()) < 0;
   }
   bool operator<=(const ActionChoiceClass& rvalue) const {
     return Action == rvalue.Action ||
-           stricmp(Description(), rvalue.Description()) < 0;
+           port::CompareIgnoreCase(Description(), rvalue.Description()) < 0;
   }
   bool operator>=(const ActionChoiceClass& rvalue) const {
     return Action == rvalue.Action ||
-           stricmp(Description(), rvalue.Description()) > 0;
+           port::CompareIgnoreCase(Description(), rvalue.Description()) > 0;
   }
   [[nodiscard]] const char* Description() const {
     return Name_From_Action(Action);

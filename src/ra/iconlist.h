@@ -31,9 +31,12 @@
 #ifndef CNC_RED_ALERT_RA_ICONLIST_H_
 #define CNC_RED_ALERT_RA_ICONLIST_H_
 
+#include <cstddef>
 #include <cstdint>
+#include <span>
 #include <string>
 
+#include "absl/base/attributes.h"
 #include "ra/list.h"
 #include "ra/vector.h"
 
@@ -43,10 +46,28 @@ enum class ICONKIND {
 };
 using enum ICONKIND;
 
+// A shape retains its complete resource extent; a DIB is a single image object.
+struct IconListIcon {
+  IconListIcon() = default;
+  // These conversions preserve Add_Item's optional icon arguments.
+  // NOLINTNEXTLINE(google-explicit-constructor,cppcoreguidelines-explicit-constructor,misc-explicit-constructor)
+  IconListIcon(std::nullptr_t) {}
+  // NOLINTNEXTLINE(google-explicit-constructor,cppcoreguidelines-explicit-constructor,misc-explicit-constructor)
+  IconListIcon(void* image_value ABSL_ATTRIBUTE_LIFETIME_BOUND)
+      : image(image_value) {}
+  // The span owns no storage; the resource allocation, not the temporary view,
+  // supplies the lifetime.
+  // NOLINTNEXTLINE(google-explicit-constructor,cppcoreguidelines-explicit-constructor,misc-explicit-constructor,clang-diagnostic-lifetime-safety-intra-tu-constructor-suggestions)
+  IconListIcon(std::span<const std::byte> shape_value) : shape(shape_value) {}
+  explicit operator bool() const { return image != nullptr || !shape.empty(); }
+  void* image = nullptr;
+  std::span<const std::byte> shape;
+};
+
 struct FIXEDICON  //	For putting icons in list entries at a specific fixed
                   // offset.
 {
-  void* pIcon;
+  IconListIcon pIcon;
   ICONKIND IconKind;
   int xOffset;
   int yOffset;
@@ -60,7 +81,8 @@ struct IconList_ItemExtras {
   bool bMultiSelected =
       false;  //	True if selected when bMultiSelect is on.
 
-  void* pIcon[3] = {nullptr, nullptr, nullptr};  //	Icons before the text.
+  IconListIcon pIcon[3] = {nullptr, nullptr,
+                           nullptr};  //	Icons before the text.
   //	Says what kind of image data each pIcon points to.
   ICONKIND IconKind[3] = {ICON_SHAPE, ICON_SHAPE, ICON_SHAPE};
 
@@ -100,8 +122,9 @@ inline int ItemExtraDataAsInt(const void* data) {
 class IconListClass : public ListClass {
  public:
   IconListClass(int id, int x, int y, int w, int h, TextPrintType flags,
-                const void* up, const void* down, bool wrap_text = false,
-                int iSelectionType = 1, int iMaxItemsSaved = 0);
+                std::span<const std::byte> up, std::span<const std::byte> down,
+                bool wrap_text = false, int iSelectionType = 1,
+                int iMaxItemsSaved = 0);
   //		IconListClass( const IconListClass& list );
   ~IconListClass() override;
   IconListClass(const IconListClass&) = delete;
@@ -110,28 +133,24 @@ class IconListClass : public ListClass {
   IconListClass& operator=(IconListClass&&) = delete;
 
   int Add_Item(const char* text) override;
-  virtual int Add_Item(const char* text, const char* szHelp, void* pIcon0,
-                       ICONKIND IconKind0,
-                       const char* szExtraDataString = nullptr,
-                       void* pvExtraDataPtr = nullptr,
-                       RemapControlType* pColorRemap = nullptr,
-                       void* pIcon1 = nullptr, ICONKIND IconKind1 = ICON_SHAPE,
-                       void* pIcon2 = nullptr, ICONKIND IconKind2 = ICON_SHAPE,
-                       void* pFixedIcon = nullptr,
-                       ICONKIND FixedIconKind = ICON_SHAPE, int iXFixedIcon = 0,
-                       int iYFixedIcon = 0, int iFixedIconWidth = -1);
+  virtual int Add_Item(
+      const char* text, const char* szHelp, IconListIcon pIcon0,
+      ICONKIND IconKind0, const char* szExtraDataString = nullptr,
+      void* pvExtraDataPtr = nullptr, RemapControlType* pColorRemap = nullptr,
+      IconListIcon pIcon1 = nullptr, ICONKIND IconKind1 = ICON_SHAPE,
+      IconListIcon pIcon2 = nullptr, ICONKIND IconKind2 = ICON_SHAPE,
+      IconListIcon pFixedIcon = nullptr, ICONKIND FixedIconKind = ICON_SHAPE,
+      int iXFixedIcon = 0, int iYFixedIcon = 0, int iFixedIconWidth = -1);
 
   int Add_Item(int text) override;
-  virtual int Add_Item(int text, const char* szHelp, void* pIcon0,
-                       ICONKIND IconKind0,
-                       const char* szExtraDataString = nullptr,
-                       void* pvExtraDataPtr = nullptr,
-                       RemapControlType* pColorRemap = nullptr,
-                       void* pIcon1 = nullptr, ICONKIND IconKind1 = ICON_SHAPE,
-                       void* pIcon2 = nullptr, ICONKIND IconKind2 = ICON_SHAPE,
-                       void* pFixedIcon = nullptr,
-                       ICONKIND FixedIconKind = ICON_SHAPE, int iXFixedIcon = 0,
-                       int iYFixedIcon = 0, int iFixedIconWidth = -1);
+  virtual int Add_Item(
+      int text, const char* szHelp, IconListIcon pIcon0, ICONKIND IconKind0,
+      const char* szExtraDataString = nullptr, void* pvExtraDataPtr = nullptr,
+      RemapControlType* pColorRemap = nullptr, IconListIcon pIcon1 = nullptr,
+      ICONKIND IconKind1 = ICON_SHAPE, IconListIcon pIcon2 = nullptr,
+      ICONKIND IconKind2 = ICON_SHAPE, IconListIcon pFixedIcon = nullptr,
+      ICONKIND FixedIconKind = ICON_SHAPE, int iXFixedIcon = 0,
+      int iYFixedIcon = 0, int iFixedIconWidth = -1);
 
   //		virtual int Add_Scroll_Bar();
   //		virtual void Bump(bool up);
@@ -193,7 +212,7 @@ class IconListClass : public ListClass {
   // Replaces an item's text; false when `index` is out of range.
   virtual bool Set_Item(unsigned int index, const char* szText);
   virtual bool Set_Icon(unsigned int index, unsigned int iIconNumber,
-                        void* pIcon, ICONKIND IconKind);
+                        IconListIcon pIcon, ICONKIND IconKind);
 
   virtual int GetRealWidth();
   virtual void Resize(int x, int y, int w, int h);
@@ -213,13 +232,14 @@ class IconListClass : public ListClass {
   void Draw_Entry(int index, int x, int y, int width, bool selected) override;
 
   virtual int Add_Item_Detail(const char* szToken, const char* szHelp,
-                              void* pIcon0, ICONKIND IconKind0,
+                              IconListIcon pIcon0, ICONKIND IconKind0,
                               const char* szExtraDataString, void* pvExtraData,
-                              RemapControlType* pColorRemap, void* pIcon1,
-                              ICONKIND IconKind1, void* pIcon2,
-                              ICONKIND IconKind2, void* pFixedIcon,
-                              ICONKIND FixedIconKind, int iXFixedIcon,
-                              int iYFixedIcon, int iFixedIconWidth);
+                              RemapControlType* pColorRemap,
+                              IconListIcon pIcon1, ICONKIND IconKind1,
+                              IconListIcon pIcon2, ICONKIND IconKind2,
+                              IconListIcon pFixedIcon, ICONKIND FixedIconKind,
+                              int iXFixedIcon, int iYFixedIcon,
+                              int iFixedIconWidth);
 
   //	The extras for each item, in the same order as the list's text.
   //	ajw stored these as void* because a vector of the real pointer type

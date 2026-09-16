@@ -40,7 +40,9 @@
 #ifndef CNC_RED_ALERT_RA_INI_H_
 #define CNC_RED_ALERT_RA_INI_H_
 
+#include <cstddef>
 #include <cstdlib>
+#include <span>
 #include <string>
 
 #include "ra/defines.h"
@@ -110,13 +112,14 @@ class INIClass {
   **	Get the various data types from the section and entry specified.
   */
   int Get_String(const char* section, const char* entry, const char* defvalue,
-                 char* buffer, int size) const;
+                 std::span<char> buffer, int size) const;
   int Get_Int(const char* section, const char* entry, int defvalue = 0) const;
   int Get_Hex(const char* section, const char* entry, int defvalue = 0) const;
   bool Get_Bool(const char* section, const char* entry,
                 bool defvalue = false) const;
-  int Get_TextBlock(const char* section, char* buffer, int len) const;
-  int Get_UUBlock(const char* section, void* block, int len) const;
+  int Get_TextBlock(const char* section, std::span<char> buffer, int len) const;
+  int Get_UUBlock(const char* section, std::span<std::byte> block,
+                  int len) const;
   [[nodiscard]] PKey Get_PKey(bool fast) const;
   fixed Get_Fixed(const char* section, const char* entry, fixed defvalue) const;
 
@@ -130,7 +133,8 @@ class INIClass {
                int format = 0);
   bool Put_Bool(const char* section, const char* entry, bool value);
   bool Put_TextBlock(const char* section, const char* text);
-  bool Put_UUBlock(const char* section, const void* block, int len);
+  bool Put_UUBlock(const char* section, std::span<const std::byte> block,
+                   int len);
   bool Put_PKey(const PKey& key);
 
  protected:
@@ -182,7 +186,7 @@ class INIClass {
   */
   INISection* Find_Section(const char* section) const;
   INIEntry* Find_Entry(const char* section, const char* entry) const;
-  static void Strip_Comments(char* buffer);
+  static void Strip_Comments(std::span<char> buffer);
 
   /*
   **	This is the list of all sections within this INI file.

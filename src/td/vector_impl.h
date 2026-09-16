@@ -30,15 +30,17 @@
  * HISTORY: * 03/10/1995 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-VectorClass<T>::VectorClass(base::ssize size, T* array)
+VectorClass<T>::VectorClass(base::ssize size, std::span<T> array)
     : Vector(nullptr), VectorMax(size) {
+  CHECK_GE(size, 0);
+  CHECK(array.empty() || base::ToSize(size) <= array.size());
   /*
   **	Allocate the vector. The default constructor will be called for every
   **	object in this vector.
   */
   if (size) {
-    if (array) {
-      Vector = new (static_cast<void*>(array)) T[base::ToSize(size)];
+    if (!array.empty()) {
+      Vector = new (static_cast<void*>(array.data())) T[base::ToSize(size)];
     } else {
       Vector = new T[base::ToSize(size)];
       IsAllocated = true;
@@ -94,7 +96,7 @@ void VectorClass<T>::Copy_From(const VectorClass<T>& vector) {
     if (Vector) {
       IsAllocated = true;
       for (base::ssize index = 0; index < VectorMax; index++) {
-        Vector[index] = vector[index];
+        Elements()[base::ToSize(index)] = vector[index];
       }
     }
   } else {
@@ -147,7 +149,7 @@ template <class T>
 bool VectorClass<T>::operator==(const VectorClass<T>& vector) const {
   if (VectorMax == vector.Length()) {
     for (base::ssize index = 0; index < VectorMax; index++) {
-      if (Vector[index] != vector[index]) {
+      if (Elements()[base::ToSize(index)] != vector[index]) {
         return false;
       }
     }
@@ -256,21 +258,26 @@ void VectorClass<T>::Clear() {
  * HISTORY: * 03/10/1995 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-bool VectorClass<T>::Resize(base::ssize newsize, T* array) {
+bool VectorClass<T>::Resize(base::ssize newsize, std::span<T> array) {
+  CHECK_GE(newsize, 0);
+  CHECK(array.empty() || base::ToSize(newsize) <= array.size());
   if (newsize) {
     /*
     **	Allocate a new vector of the size specified. The default constructor
     **	will be called for every object in this vector.
     */
     T* newptr = nullptr;
-    if (!array) {
+    if (array.empty()) {
       newptr = new T[base::ToSize(newsize)];
     } else {
-      newptr = new (static_cast<void*>(array)) T[base::ToSize(newsize)];
+      newptr = new (static_cast<void*>(array.data())) T[base::ToSize(newsize)];
     }
     if (!newptr) {
       return false;
     }
+    // newptr is the newsize-element allocation or the checked external span
+    // above. NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
+    const std::span<T> replacement(newptr, base::ToSize(newsize));
 
     /*
     **	If there is an old vector, then it must be copied (as much as is
@@ -285,7 +292,7 @@ bool VectorClass<T>::Resize(base::ssize newsize, T* array) {
       const int copycount = static_cast<int>(
           std::cmp_less(newsize, VectorMax) ? newsize : VectorMax);
       for (int index = 0; index < copycount; index++) {
-        newptr[index] = Vector[index];
+        replacement[base::ToSize(index)] = Elements()[base::ToSize(index)];
       }
 
       /*
@@ -305,7 +312,7 @@ bool VectorClass<T>::Resize(base::ssize newsize, T* array) {
     */
     Vector = newptr;
     VectorMax = newsize;
-    IsAllocated = Vector != nullptr && array == nullptr;
+    IsAllocated = Vector != nullptr && array.empty();
 
   } else {
     /*
@@ -339,7 +346,7 @@ bool VectorClass<T>::Resize(base::ssize newsize, T* array) {
  * HISTORY: * 03/10/1995 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-DynamicVectorClass<T>::DynamicVectorClass(base::ssize size, T* array)
+DynamicVectorClass<T>::DynamicVectorClass(base::ssize size, std::span<T> array)
     : VectorClass<T>(size, array) {}
 
 /***********************************************************************************************
@@ -363,7 +370,7 @@ DynamicVectorClass<T>::DynamicVectorClass(base::ssize size, T* array)
  * HISTORY: * 03/10/1995 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-bool DynamicVectorClass<T>::Resize(base::ssize newsize, T* array) {
+bool DynamicVectorClass<T>::Resize(base::ssize newsize, std::span<T> array) {
   if (VectorClass<T>::Resize(newsize, array)) {
     if (this->Length() < ActiveCount) {
       ActiveCount = this->Length();
@@ -481,8 +488,9 @@ bool DynamicVectorClass<T>::Add_Head(const T& object) {
   // Shift by assignment rather than a raw byte move, both so that a non-trivial
   // T is handled correctly (matching Delete()) and to avoid the void* round
   // trip. For a trivially copyable T this still compiles down to a memmove.
-  std::move_backward(this->Vector, this->Vector + ActiveCount,
-                     this->Vector + ActiveCount + 1);
+  const auto elements = this->Elements();
+  std::move_backward(elements.begin(), elements.begin() + ActiveCount,
+                     elements.begin() + ActiveCount + 1);
   (*this)[0] = object;
   ActiveCount++;
   //	(*this)[ActiveCount++] = object;

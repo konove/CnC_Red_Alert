@@ -40,6 +40,9 @@
 #ifndef CNC_RED_ALERT_RA_COLRLIST_H_
 #define CNC_RED_ALERT_RA_COLRLIST_H_
 
+#include <cstddef>
+#include <span>
+
 #include "ra/defines.h"
 #include "ra/list.h"
 #include "ra/vector_dynamic.h"
@@ -63,7 +66,8 @@ class ColorListClass : public ListClass {
   using enum SelectStyleType;
 
   ColorListClass(int id, int x, int y, int w, int h, TextPrintType flags,
-                 const void* up, const void* down);
+                 std::span<const std::byte> up,
+                 std::span<const std::byte> down);
   ~ColorListClass() override;
   ColorListClass(const ColorListClass&) = delete;
   ColorListClass& operator=(const ColorListClass&) = delete;

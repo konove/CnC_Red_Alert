@@ -42,6 +42,10 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <span>
+#include <utility>
+
+#include "base/buffer.h"
 
 #define BuffType BufferClass
 // #define movmem(a,b,c) memmove(b,a,c)
@@ -90,107 +94,59 @@ inline constexpr int kMenupadding = 0x1000;
 #define DKGRAY kGrey
 #define LTGRAY kLtGrey
 
-inline int16_t Get_IconSet_MapWidth(const void* data) {
-  if (data) {
-    return static_cast<const IControl_Type*>(data)->MapWidth;
-  }
-  return 0;
-}
-
-inline int16_t Get_IconSet_MapHeight(const void* data) {
-  if (data) {
-    return static_cast<const IControl_Type*>(data)->MapHeight;
-  }
-  return 0;
-}
-
-inline const unsigned char* Get_IconSet_ControlMap(
-    const void* data ABSL_ATTRIBUTE_LIFETIME_BOUND) {
-  if (data) {
-    return static_cast<const unsigned char*>(data) +
-           static_cast<const IControl_Type*>(data)->ColorMap;
-  }
-  return nullptr;
-}
-
-class IconsetClass : protected IControl_Type {
+// A view retains the archive extent rather than treating a file header as an
+// object.
+class IconsetClass {
  public:
-  /*
-  **	Query functions.
-  */
-  [[nodiscard]] int Map_Width() const { return MapWidth; }
-  [[nodiscard]] int Map_Height() const { return MapHeight; }
-  unsigned char* Control_Map() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return Bytes() + ColorMap;
+  explicit IconsetClass(
+      std::span<const std::byte> data ABSL_ATTRIBUTE_LIFETIME_BOUND)
+      : data_(data) {
+    if (data.size() >= sizeof(header_)) {
+      base::CopyBytes(base::ObjectBytes(header_), data, sizeof(header_));
+    }
   }
-  [[nodiscard]] const unsigned char* Control_Map() const
-      ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return Bytes() + ColorMap;
+  [[nodiscard]] int Map_Width() const { return header_.MapWidth; }
+  [[nodiscard]] int Map_Height() const { return header_.MapHeight; }
+  [[nodiscard]] int Icon_Count() const { return header_.Count; }
+  [[nodiscard]] int Pixel_Width() const { return header_.Width; }
+  [[nodiscard]] int Pixel_Height() const { return header_.Height; }
+  [[nodiscard]] int Total_Size() const { return header_.Size; }
+  [[nodiscard]] std::span<const unsigned char> Control_Map() const {
+    return Section(header_.ColorMap);
   }
-  [[nodiscard]] int Icon_Count() const { return Count; }
-  [[nodiscard]] int Pixel_Width() const { return Width; }
-  [[nodiscard]] int Pixel_Height() const { return Height; }
-  [[nodiscard]] int Total_Size() const { return Size; }
-  [[nodiscard]] const unsigned char* Palette_Data() const
-      ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return Bytes() + Palettes;
+  [[nodiscard]] std::span<const unsigned char> Palette_Data() const {
+    return Section(header_.Palettes);
   }
-  unsigned char* Palette_Data() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return Bytes() + Palettes;
+  [[nodiscard]] std::span<const unsigned char> Icon_Data() const {
+    return Section(header_.Icons);
   }
-  [[nodiscard]] const unsigned char* Icon_Data() const
-      ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return Bytes() + Icons;
+  [[nodiscard]] std::span<const unsigned char> Map_Data() const {
+    return Section(header_.Map);
   }
-  unsigned char* Icon_Data() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return Bytes() + Icons;
+  [[nodiscard]] std::span<const unsigned char> Remap_Data() const {
+    return Section(header_.Remaps);
   }
-  [[nodiscard]] const unsigned char* Map_Data() const
-      ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return Bytes() + Map;
+  [[nodiscard]] std::span<const unsigned char> Trans_Data() const {
+    return Section(header_.TransFlag);
   }
-  unsigned char* Map_Data() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return Bytes() + Map;
-  }
-  [[nodiscard]] const unsigned char* Remap_Data() const
-      ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return Bytes() + Remaps;
-  }
-  unsigned char* Remap_Data() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return Bytes() + Remaps;
-  }
-  [[nodiscard]] const unsigned char* Trans_Data() const
-      ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return Bytes() + TransFlag;
-  }
-  unsigned char* Trans_Data() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return Bytes() + TransFlag;
-  }
-
-  /*
-  **	Disallow these operations with an IconsetClass object.
-  */
- private:
- public:
-  IconsetClass() = delete;
-  ~IconsetClass() = delete;
-  IconsetClass(const IconsetClass&) = delete;
-  IconsetClass& operator=(const IconsetClass&) = delete;
-  IconsetClass(IconsetClass&&) = delete;
-  IconsetClass& operator=(IconsetClass&&) = delete;
 
  private:
-  void* operator new(size_t);
-
-  // The section offsets in the header count from the first byte of the
-  // iconset, which is the first byte of its IControl_Type header.
-  unsigned char* Bytes() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return port::BytesOf<IControl_Type>(*this);
+  [[nodiscard]] std::span<const unsigned char> Section(int offset) const {
+    if (std::cmp_less(offset, sizeof(header_)) ||
+        static_cast<size_t>(offset) > data_.size()) {
+      return {};
+    }
+    return base::UnsignedBytes(data_.subspan(static_cast<size_t>(offset)));
   }
-  [[nodiscard]] const unsigned char* Bytes() const
-      ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return port::BytesOf<IControl_Type>(*this);
-  }
+  std::span<const std::byte> data_;
+  IControl_Type header_{};
 };
+
+inline int16_t Get_IconSet_MapWidth(std::span<const std::byte> data) {
+  return static_cast<int16_t>(IconsetClass(data).Map_Width());
+}
+inline int16_t Get_IconSet_MapHeight(std::span<const std::byte> data) {
+  return static_cast<int16_t>(IconsetClass(data).Map_Height());
+}
 
 #endif  // CNC_RED_ALERT_RA_COMPAT_H_

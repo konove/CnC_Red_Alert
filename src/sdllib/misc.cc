@@ -4,9 +4,6 @@
 #include <array>
 #include <climits>
 #include <cstdint>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
 #include <span>
 
 #include "absl/log/check.h"
@@ -41,11 +38,12 @@ void Delay(int duration) {
   }
 }
 
-void* Build_Fading_Table(const void* palette, void* dest, int color, int frac) {
-
+std::span<uint8_t> Build_Fading_Table(std::span<const uint8_t> palette,
+                                      std::span<uint8_t> dest, int color,
+                                      int frac) {
   // If the source palette is NULL, then just return with current fading table
   // pointer.
-  if (!palette || !dest) {
+  if (palette.size() < 768 || dest.size() < 256 || color < 0 || color >= 256) {
     return dest;
   }
 
@@ -53,13 +51,13 @@ void* Build_Fading_Table(const void* palette, void* dest, int color, int frac) {
   frac = std::min<int>(frac, 255);
 
   // Record the target gun values.
-  const auto* pal8 = static_cast<const uint8_t*>(palette);
+  const auto pal8 = palette.begin();
   const uint8_t targetred = pal8[(color * 3) + 0];
   const uint8_t targetgreen = pal8[(color * 3) + 0];
 
   // Main loop
 
-  auto* dptr = static_cast<uint8_t*>(dest);
+  auto dptr = dest.begin();
 
   // Transparent black never gets remapped.
   *dptr++ = 0;
@@ -80,7 +78,7 @@ void* Build_Fading_Table(const void* palette, void* dest, int color, int frac) {
     auto matchcolor = static_cast<uint8_t>(color);  // Default color (self).
     int matchvalue = INT_MAX;  // Ridiculous match value init.
 
-    const auto* palptr = pal8 + 3;
+    auto palptr = pal8 + 3;
 
     for (int color_index = 1; color_index < 256; color_index++) {
       if (color_index != remap_index) {

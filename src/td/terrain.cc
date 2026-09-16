@@ -68,15 +68,18 @@
 
 #include "td/terrain.h"
 
+#include <cstddef>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <span>
 #include <string_view>
+#include <vector>
 
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "base/numeric.h"
-#include "base/types.h"
 #include "port/tokenizer.h"
 #include "rand.h"
 #include "sdllib/misc.h"
@@ -327,8 +330,8 @@ TerrainClass::TerrainClass(TerrainType type, CELL cell)
 bool TerrainClass::Mark(MarkType mark) {
   Validate();
   if (ObjectClass::Mark(mark)) {
-    const int16_t* overlap = Class->Overlap_List();
-    const int16_t* occupy = Class->Occupy_List();
+    const std::span<const int16_t> overlap = Class->Overlap_List();
+    const std::span<const int16_t> occupy = Class->Occupy_List();
     const CELL cell = Coord_Cell(Coord);
 
     switch (mark) {
@@ -374,8 +377,8 @@ bool TerrainClass::Mark(MarkType mark) {
 void TerrainClass::Draw_It(int x, int y, WindowNumberType window) {
   Validate();
 
-  const void* shapedata = Class->Get_Image_Data();
-  if (shapedata) {
+  const auto shapedata = Class->Get_Image_Data();
+  if (!shapedata.empty()) {
     int shapenum = 0;
 
     /*
@@ -443,9 +446,11 @@ MoveType TerrainClass::Can_Enter_Cell(CELL cell, FacingType /*unused*/) const {
     return MOVE_NO;
   }
 
-  const int16_t* offset = Occupy_List();  // Pointer to cell offset list.
-  while (*offset != REFRESH_EOL) {
-    if (!Map[static_cast<CELL>(cell + *offset++)].Is_Generally_Clear()) {
+  std::span<const int16_t> offset =
+      Occupy_List();  // Pointer to cell offset list.
+  while (offset.front() != REFRESH_EOL) {
+    if (!Map[static_cast<CELL>(cell + base::ConsumeFront(offset))]
+             .Is_Generally_Clear()) {
       return MOVE_NO;
     }
   }
@@ -738,29 +743,25 @@ COORDINATE TerrainClass::Center_Coord() const {
  *                                                                                             *
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
-const unsigned char* TerrainClass::Radar_Icon(CELL cell) {
+std::span<const uint8_t> TerrainClass::Radar_Icon(CELL cell) {
   Validate();
-  const auto* icon = static_cast<const unsigned char*>(
-      Class->Get_Radar_Data());                 // get a pointer to radar icons
-  const int width = *icon++;                    // extract the width from data
-  const int height = *icon++;                   // extract the width from data
-
-  /*
-  ** Icon number that we need can be found by converting the cell and base
-  ** cell to and x and y offset from the upper left of the cell, and then
-  ** multiplying it by the width of the terrain in icons, which we
-  ** conveniantly stored out as the first byte of every icon we made.
-  */
-  const int basecell = Coord_Cell(Coord);  // find the base cell of terrain
-  const int ydiff =
-      static_cast<CELL>(Cell_Y(cell) - Cell_Y(static_cast<CELL>(basecell)));
-  const int xdiff =
-      static_cast<CELL>(Cell_X(cell) - Cell_X(static_cast<CELL>(basecell)));
-  if (xdiff < width && ydiff < height) {
-    const int iconnum = (ydiff * width) + xdiff;
-    return icon + (static_cast<base::ssize>(iconnum) * 9);
+  const auto icons = Class->Get_Radar_Data();
+  if (icons.size() < 2) {
+    return {};
   }
-  return nullptr;
+  const int width = icons[0];
+  const int height = icons[1];
+  const CELL basecell = Coord_Cell(Coord);
+  const int ydiff = Cell_Y(cell) - Cell_Y(basecell);
+  const int xdiff = Cell_X(cell) - Cell_X(basecell);
+  if (xdiff < 0 || ydiff < 0 || xdiff >= width || ydiff >= height) {
+    return {};
+  }
+  const auto index = base::ToSize((ydiff * width) + xdiff);
+  if (index >= (icons.size() - 2) / 9) {
+    return {};
+  }
+  return icons.subspan(2 + (index * 9), 9);
 }
 
 /***********************************************************************************************
@@ -782,16 +783,17 @@ const unsigned char* TerrainClass::Radar_Icon(CELL cell) {
 void TerrainClass::Read_INI(char* buffer) {
   char buf[128];
 
-  const int len = static_cast<int>(std::string_view(buffer).size()) +
-                  2;                         // Size of data in buffer.
-  char* tbuffer = buffer + len;              // Accumulation buffer of unit IDs.
+  std::vector<char> key_storage(std::string_view(buffer).size() + 2);
+  auto key_cursor = std::span(key_storage);
+  char* tbuffer = key_cursor.data();  // Accumulation buffer of unit IDs.
 
-  WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
-                            ShapeBufferSize - len, buffer);
+  WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, key_cursor, buffer);
   while (*tbuffer != '\0') {
     CELL const cell = tech::ParseInteger<CELL>(tbuffer).value_or(0);
-    WWGetPrivateProfileString(INI_Name(), tbuffer, nullptr, buf,
-                              sizeof(buf) - 1, buffer);
+    WWGetPrivateProfileString(
+        INI_Name(), tbuffer, nullptr,
+        std::span(buf).first(static_cast<std::size_t>(sizeof(buf) - 1)),
+        buffer);
     port::Tokenizer tokens(buf, ",");
     const TerrainType terrain =
         TerrainTypeClass::From_Name(tokens.Next());  // Terrain type.
@@ -802,7 +804,8 @@ void TerrainClass::Read_INI(char* buffer) {
         tptr->Trigger->AttachCount++;
       }
     }
-    tbuffer += std::string_view(tbuffer).size() + 1;
+    key_cursor = key_cursor.subspan(std::string_view(tbuffer).size() + 1);
+    tbuffer = key_cursor.data();
   }
 }
 
@@ -823,22 +826,22 @@ void TerrainClass::Read_INI(char* buffer) {
  *                                                                                             *
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
-void TerrainClass::Write_INI(char* buffer) {
+void TerrainClass::Write_INI(std::span<char> buffer) {
   char uname[10];
   char buf[127];
 
   /*
   **	First, clear out all existing terrain data from the ini file.
   */
-  char* tbuffer = buffer + std::string_view(buffer).size() +
-                  2;  // Accumulation buffer of unit IDs.
-  WWGetPrivateProfileString(
-      INI_Name(), nullptr, nullptr, tbuffer,
-      ShapeBufferSize - static_cast<int>(std::string_view(buffer).size()),
-      buffer);
+  std::vector<char> key_storage(std::string_view(buffer.data()).size() + 2);
+  auto key_cursor = std::span(key_storage);
+  char* tbuffer = key_cursor.data();  // Accumulation buffer of unit IDs.
+  WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, key_cursor,
+                            buffer.data());
   while (*tbuffer != '\0') {
     WWWritePrivateProfileString(INI_Name(), tbuffer, nullptr, buffer);
-    tbuffer += std::string_view(tbuffer).size() + 1;
+    key_cursor = key_cursor.subspan(std::string_view(tbuffer).size() + 1);
+    tbuffer = key_cursor.data();
   }
 
   /*

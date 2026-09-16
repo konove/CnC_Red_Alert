@@ -99,12 +99,16 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <span>
+#include <string_view>
+#include <vector>
 
 #include "absl/strings/str_format.h"
+#include "base/array.h"
+#include "base/buffer.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
 #include "port/tokenizer.h"
-#include "sdllib/shape.h"
 #include "td/aircraft.h"
 #include "td/anim.h"
 #include "td/audio.h"
@@ -661,9 +665,9 @@ void InfantryClass::Draw_It(int x, int y, WindowNumberType window) {
   /*
   **	Verify the legality of the unit class.
   */
-  const void* shapefile =
+  const auto shapefile =
       Class->Get_Image_Data();  // Working shape file pointer.
-  if (!shapefile) {
+  if (shapefile.empty()) {
     return;
   }
 
@@ -674,7 +678,7 @@ void InfantryClass::Draw_It(int x, int y, WindowNumberType window) {
   **	Fetch the basic body shape pointer. This requires taking into account
   **	the current animation stage.
   */
-  const int facenum = HumanShape[facing];
+  const int facenum = base::At(HumanShape, facing);
 
   /*
   **	Fetch the shape pointer to use for the infantry. This is controlled by
@@ -1006,10 +1010,10 @@ void InfantryClass::Assign_Destination(TARGET target) {
         }
       }
     } else {
-      Path[0] = FACING_NONE;
+      base::At(Path, 0) = FACING_NONE;
     }
   } else {
-    Path[0] = FACING_NONE;
+    base::At(Path, 0) = FACING_NONE;
   }
   FootClass::Assign_Destination(target);
 }
@@ -1033,7 +1037,7 @@ void InfantryClass::Assign_Destination(TARGET target) {
  *=============================================================================================*/
 void InfantryClass::Assign_Target(TARGET target) {
   Validate();
-  Path[0] = FACING_NONE;
+  base::At(Path, 0) = FACING_NONE;
   FootClass::Assign_Target(target);
 
   /*
@@ -1159,9 +1163,11 @@ void InfantryClass::AI() {
       const VocType _response[] = {VOC_RAMBO_LEFTY, VOC_RAMBO_LAUGH,
                                    VOC_RAMBO_COMIN, VOC_RAMBO_TUFF};
       Sound_Effect(
-          _response[Sim_Random_Pick(
-              0,
-              static_cast<int>(sizeof(_response) / sizeof(_response[0])) - 1)],
+          base::At(_response,
+                   Sim_Random_Pick(
+                       0, static_cast<int>(sizeof(_response) /
+                                           sizeof(base::At(_response, 0))) -
+                              1)),
           Coord);
     }
   }
@@ -1223,7 +1229,7 @@ void InfantryClass::AI() {
           */
           if (TarCom == NavCom) {
             NavCom = kTargetNone;
-            Path[0] = FACING_NONE;
+            base::At(Path, 0) = FACING_NONE;
           }
 #ifdef BOXING
         }
@@ -1346,10 +1352,10 @@ void InfantryClass::AI() {
         **	to be entered. If not, then abort the path and try
         **	again.
         */
-        if (Path[0] != FACING_NONE &&
+        if (base::At(Path, 0) != FACING_NONE &&
             Can_Enter_Cell(Adjacent_Cell(Coord_Cell(Center_Coord()),
-                                         Path[0])) != MOVE_OK) {
-          Path[0] = FACING_NONE;
+                                         base::At(Path, 0))) != MOVE_OK) {
+          base::At(Path, 0) = FACING_NONE;
         }
 
         /*
@@ -1360,13 +1366,13 @@ void InfantryClass::AI() {
         */
         const int d = Lepton_To_Cell(Distance(NavCom));
         if (d < kConquerPathMax) {
-          Path[d] = FACING_NONE;
+          base::At(Path, d) = FACING_NONE;
         }
 
         /*
         **	Find a path to follow if one isn't already calculated.
         */
-        if (Path[0] == FACING_NONE) {
+        if (base::At(Path, 0) == FACING_NONE) {
           /*
           **	Calculate the path from the current location to the
           **	destination indicated by the navigation computer. If there
@@ -1401,7 +1407,7 @@ void InfantryClass::AI() {
         **	Determine the coordinate to head to based on the infantry's
         **	current location and the next location in the path.
         */
-        COORDINATE acoord = Adjacent_Cell(Coord, Path[0]);
+        COORDINATE acoord = Adjacent_Cell(Coord, base::At(Path, 0));
         const CELL acell = Coord_Cell(acoord);
 
         if (Can_Enter_Cell(acell) != MOVE_OK) {
@@ -1430,7 +1436,7 @@ void InfantryClass::AI() {
             }
           }
 
-          Path[0] = FACING_NONE;
+          base::At(Path, 0) = FACING_NONE;
           Stop_Driver();
           if (IsNewNavCom) {
             Sound_Effect(VOC_SCOLD);
@@ -1460,8 +1466,11 @@ void InfantryClass::AI() {
       */
       Mark(MARK_UP);
       if (Distance(Head_To_Coord()) < 0x0010) {
-        memmove(&Path[0], &Path[1], sizeof(Path) - sizeof(Path[0]));
-        Path[(sizeof(Path) / sizeof(Path[0])) - 1] = FACING_NONE;
+        base::MoveBytes(std::as_writable_bytes(base::Suffix(Path, 0)),
+                        std::as_bytes(base::Suffix(Path, 1)),
+                        sizeof(Path) - sizeof(Path[0]));
+        base::At(Path, (sizeof(Path) / sizeof(base::At(Path, 0))) - 1) =
+            FACING_NONE;
         Coord = Head_To_Coord();
         Stop_Driver();
         Per_Cell_Process(true);
@@ -1476,7 +1485,7 @@ void InfantryClass::AI() {
             Enter_Idle_Mode();
           }
           // Stop_Driver();
-          Path[0] = FACING_NONE;
+          base::At(Path, 0) = FACING_NONE;
         }
       } else {
         int movespeed = Speed;
@@ -1819,7 +1828,7 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType /*unused*/) const {
  *                                                                                             *
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
-const int16_t* InfantryClass::Overlap_List() const {
+std::span<const int16_t> InfantryClass::Overlap_List() const {
   Validate();
   // return(Coord_Spillage_List(Coord, 24 + ((IsSelected || Doing >
   // DO_WALK)?12:0)));
@@ -2023,11 +2032,13 @@ void InfantryClass::Random_Animate() {
               VOC_QUIP1,
               //						VOC_QUIP2
           };
-          Sound_Effect(_response[Sim_Random_Pick(
+          Sound_Effect(
+              base::At(_response,
+                       Sim_Random_Pick(
                            0, static_cast<int>(sizeof(_response) /
-                                               sizeof(_response[0])) -
-                                  1)],
-                       Coord);
+                                               sizeof(base::At(_response, 0))) -
+                                  1)),
+              Coord);
         }
         break;
 
@@ -2204,7 +2215,7 @@ bool InfantryClass::Do_Action(DoType todo, bool force) {
       case DO_ON_GUARD:
         IsBoxing = true;
         PrimaryFacing.Set(Direction8(Center_Coord(), As_Coord(TarCom)));
-        Path[0] = FACING_NONE;
+        base::At(Path, 0) = FACING_NONE;
         break;
 
       default:
@@ -2574,15 +2585,21 @@ void InfantryClass::Response_Select() {
   if (*this == INFANTRY_RAMBO) {
     static const VocType _response[] = {VOC_RAMBO_YEA, VOC_RAMBO_YES,
                                         VOC_RAMBO_YO};
-    response = _response[Sim_Random_Pick(
-        0, static_cast<int>(sizeof(_response) / sizeof(_response[0])) - 1)];
+    response = base::At(
+        _response,
+        Sim_Random_Pick(0, static_cast<int>(sizeof(_response) /
+                                            sizeof(base::At(_response, 0))) -
+                               1));
   } else {
     if (Class->IsCivilian) {
       if (*this == INFANTRY_MOEBIUS) {
         static const VocType _response[] = {VOC_YES, VOC_COMMANDER, VOC_HELLO,
                                             VOC_HMMM};
-        response = _response[Sim_Random_Pick(
-            0, static_cast<int>(sizeof(_response) / sizeof(_response[0])) - 1)];
+        response = base::At(
+            _response, Sim_Random_Pick(
+                           0, static_cast<int>(sizeof(_response) /
+                                               sizeof(base::At(_response, 0))) -
+                                  1));
       } else {
         if (Class->IsFemale) {
           response = VOC_GIRL_YEAH;
@@ -2594,8 +2611,11 @@ void InfantryClass::Response_Select() {
       static const VocType _response[] = {VOC_ACKNOWL, VOC_REPORT, VOC_REPORT,
                                           VOC_YESSIR,  VOC_YESSIR, VOC_READY,
                                           VOC_AWAIT};
-      response = _response[Sim_Random_Pick(
-          0, static_cast<int>(sizeof(_response) / sizeof(_response[0])) - 1)];
+      response = base::At(
+          _response,
+          Sim_Random_Pick(0, static_cast<int>(sizeof(_response) /
+                                              sizeof(base::At(_response, 0))) -
+                                 1));
     }
   }
   if (AllowVoice) {
@@ -2624,14 +2644,20 @@ void InfantryClass::Response_Move() {
   if (*this == INFANTRY_RAMBO) {
     static const VocType _response[] = {VOC_RAMBO_UGOTIT, VOC_RAMBO_ONIT,
                                         VOC_RAMBO_NOPROB};
-    response = _response[Sim_Random_Pick(
-        0, static_cast<int>(sizeof(_response) / sizeof(_response[0])) - 1)];
+    response = base::At(
+        _response,
+        Sim_Random_Pick(0, static_cast<int>(sizeof(_response) /
+                                            sizeof(base::At(_response, 0))) -
+                               1));
   } else {
     if (Class->IsCivilian) {
       if (*this == INFANTRY_MOEBIUS) {
         static const VocType _response[] = {VOC_OF_COURSE, VOC_YESYES};
-        response = _response[Sim_Random_Pick(
-            0, static_cast<int>(sizeof(_response) / sizeof(_response[0])) - 1)];
+        response = base::At(
+            _response, Sim_Random_Pick(
+                           0, static_cast<int>(sizeof(_response) /
+                                               sizeof(base::At(_response, 0))) -
+                                  1));
       } else {
         if (Class->IsFemale) {
           response = VOC_GIRL_OKAY;
@@ -2643,8 +2669,11 @@ void InfantryClass::Response_Move() {
       static const VocType _response[] = {
           VOC_MOVEOUT,    VOC_MOVEOUT, VOC_MOVEOUT, VOC_ROGER,
           VOC_RIGHT_AWAY, VOC_UGOTIT,  VOC_AFFIRM,  VOC_AFFIRM};
-      response = _response[Sim_Random_Pick(
-          0, static_cast<int>(sizeof(_response) / sizeof(_response[0])) - 1)];
+      response = base::At(
+          _response,
+          Sim_Random_Pick(0, static_cast<int>(sizeof(_response) /
+                                              sizeof(base::At(_response, 0))) -
+                                 1));
     }
   }
   if (AllowVoice) {
@@ -2674,8 +2703,11 @@ void InfantryClass::Response_Attack() {
   if (*this == INFANTRY_RAMBO) {
     static const VocType _response[] = {VOC_RAMBO_NOPROB, VOC_RAMBO_UGOTIT,
                                         VOC_RAMBO_NOPROB, VOC_RAMBO_ONIT};
-    response = _response[Sim_Random_Pick(
-        0, static_cast<int>(sizeof(_response) / sizeof(_response[0])) - 1)];
+    response = base::At(
+        _response,
+        Sim_Random_Pick(0, static_cast<int>(sizeof(_response) /
+                                            sizeof(base::At(_response, 0))) -
+                               1));
   } else {
     if (Class->IsCivilian) {
       if (Class->IsFemale) {
@@ -2687,8 +2719,11 @@ void InfantryClass::Response_Attack() {
       static const VocType _response[] = {
           VOC_RIGHT_AWAY, VOC_AFFIRM, VOC_AFFIRM, VOC_UGOTIT,
           VOC_NO_PROB,    VOC_YESSIR, VOC_YESSIR, VOC_YESSIR};
-      response = _response[Sim_Random_Pick(
-          0, static_cast<int>(sizeof(_response) / sizeof(_response[0])) - 1)];
+      response = base::At(
+          _response,
+          Sim_Random_Pick(0, static_cast<int>(sizeof(_response) /
+                                              sizeof(base::At(_response, 0))) -
+                                 1));
     }
   }
 
@@ -2781,9 +2816,11 @@ RadioMessageType InfantryClass::Receive_Message(RadioClass* from,
     **	Just received a kick! Take some damage.
     */
     case RADIO_KICK:
-      damage = Infantry_Kick_Damage[Random_Pick(
-          0, static_cast<int>(sizeof(Infantry_Kick_Damage) /
-                              sizeof(Infantry_Kick_Damage[0])))];
+      damage = base::At(
+          Infantry_Kick_Damage,
+          Random_Pick(
+              0, static_cast<int>(sizeof(Infantry_Kick_Damage) /
+                                  sizeof(base::At(Infantry_Kick_Damage, 0)))));
       if (Take_Damage(damage, 0, WARHEAD_FOOT, this) == RESULT_DESTROYED) {
         return RADIO_STATIC;
       }
@@ -2793,9 +2830,11 @@ RadioMessageType InfantryClass::Receive_Message(RadioClass* from,
     **	Just recieved a punch! Take some damage.
     */
     case RADIO_PUNCH:
-      damage = Infantry_Punch_Damage[Random_Pick(
-          0, static_cast<int>(sizeof(Infantry_Punch_Damage) /
-                              sizeof(Infantry_Punch_Damage[0])))];
+      damage = base::At(
+          Infantry_Punch_Damage,
+          Random_Pick(
+              0, static_cast<int>(sizeof(Infantry_Punch_Damage) /
+                                  sizeof(base::At(Infantry_Punch_Damage, 0)))));
       if (Take_Damage(damage, 0, WARHEAD_FIST, this) == RESULT_DESTROYED) {
         return RADIO_STATIC;
       }
@@ -2945,22 +2984,23 @@ ActionType InfantryClass::What_Action(ObjectClass* object) {
 void InfantryClass::Read_INI(char* buffer) {
   char buf[128];
 
-  const int len =
-      static_cast<int>(strlen(buffer)) + 2;  // Length of data in buffer.
-  char* tbuffer = buffer + len;  // Accumulation buffer of infantry IDs.
+  std::vector<char> key_storage(std::string_view(buffer).size() + 2);
+  auto key_cursor = std::span(key_storage);
+  char* tbuffer = key_cursor.data();  // Accumulation buffer of infantry IDs.
 
   /*------------------------------------------------------------------------
   Read the entire INFANTRY INI section into HIDBUF
   ------------------------------------------------------------------------*/
-  WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
-                            ShapeBufferSize - len, buffer);
+  WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, key_cursor, buffer);
 
   while (*tbuffer != '\0') {
     /*
     **	Get an infantry entry
     */
-    WWGetPrivateProfileString(INI_Name(), tbuffer, nullptr, buf,
-                              sizeof(buf) - 1, buffer);
+    WWGetPrivateProfileString(
+        INI_Name(), tbuffer, nullptr,
+        std::span(buf).first(static_cast<std::size_t>(sizeof(buf) - 1)),
+        buffer);
 
     /*
     **	1st token: house name.
@@ -2996,9 +3036,11 @@ void InfantryClass::Read_INI(char* buffer) {
           */
           coord = Coord_Add(
               coord & 0xFF00FF00L,
-              StoppingCoordAbs[std::clamp(
-                  tech::ParseInteger<int>(tokens.Next(",")).value_or(0), 0,
-                  4)]);
+              base::At(
+                  StoppingCoordAbs,
+                  std::clamp(
+                      tech::ParseInteger<int>(tokens.Next(",")).value_or(0), 0,
+                      4)));
 
           /*
           **	Fetch the mission and facing.
@@ -3030,7 +3072,8 @@ void InfantryClass::Read_INI(char* buffer) {
         }
       }
     }
-    tbuffer += strlen(tbuffer) + 1;
+    key_cursor = key_cursor.subspan(std::string_view(tbuffer).size() + 1);
+    tbuffer = key_cursor.data();
   }
 }
 
@@ -3051,21 +3094,22 @@ void InfantryClass::Read_INI(char* buffer) {
  *                                                                                             *
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
-void InfantryClass::Write_INI(char* buffer) {
+void InfantryClass::Write_INI(std::span<char> buffer) {
   char uname[10];
   char buf[128];
 
   /*
   **	First, clear out all existing infantry data from the ini file.
   */
-  char* tbuffer =
-      buffer + strlen(buffer) + 2;  // Accumulation buffer of infantry IDs.
-  WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
-                            ShapeBufferSize - static_cast<int>(strlen(buffer)),
-                            buffer);
+  std::vector<char> key_storage(std::string_view(buffer.data()).size() + 2);
+  auto key_cursor = std::span(key_storage);
+  char* tbuffer = key_cursor.data();  // Accumulation buffer of infantry IDs.
+  WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, key_cursor,
+                            buffer.data());
   while (*tbuffer != '\0') {
     WWWritePrivateProfileString(INI_Name(), tbuffer, nullptr, buffer);
-    tbuffer += strlen(tbuffer) + 1;
+    key_cursor = key_cursor.subspan(std::string_view(tbuffer).size() + 1);
+    tbuffer = key_cursor.data();
   }
 
   /*

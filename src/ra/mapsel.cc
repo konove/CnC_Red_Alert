@@ -25,8 +25,11 @@
 
 #include "ra/mapsel.h"
 
+#include <algorithm>
+#include <cstdint>
 #include <cstring>
 #include <format>
+#include <span>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -199,22 +202,22 @@ std::string Map_Selection() {
   int selection = 0;
   static Timer<SystemTickSource> timer;
 
-  const void* appear1 = MixArchive::Retrieve("MAPWIPE2.AUD");
-  const void* bleep11 = MixArchive::Retrieve("BLEEP11.AUD");
-  const void* country4 = MixArchive::Retrieve("MAPWIPE5.AUD");
-  const void* toney7 = MixArchive::Retrieve("TONEY7.AUD");
-  const void* bleep17 = MixArchive::Retrieve("BLEEP17.AUD");
+  const auto appear1 = MixArchive::RetrieveData("MAPWIPE2.AUD");
+  const auto bleep11 = MixArchive::RetrieveData("BLEEP11.AUD");
+  const auto country4 = MixArchive::RetrieveData("MAPWIPE5.AUD");
+  const auto toney7 = MixArchive::RetrieveData("TONEY7.AUD");
+  const auto bleep17 = MixArchive::RetrieveData("BLEEP17.AUD");
 
-  const void* scold1 = MixArchive::Retrieve("TONEY4.AUD");
-  const void* country1 = MixArchive::Retrieve("TONEY10.AUD");
+  const auto scold1 = MixArchive::RetrieveData("TONEY4.AUD");
+  const auto country1 = MixArchive::RetrieveData("TONEY10.AUD");
 
   auto* pseudo_seen_buf =
-      new GraphicBufferClass(320, 200, static_cast<void*>(nullptr));
+      new GraphicBufferClass(320, 200, std::span<uint8_t>{});
 
   Theme.Queue_Song(THEME_MAP);
 
   void* anim = Open_Animation(
-      file_name.c_str(), /*user_buffer=*/nullptr, /*user_buffer_size=*/0L,
+      file_name.c_str(), /*user_buffer=*/{}, /*user_buffer_size=*/0L,
       WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, map_palette);
 
   Keyboard->Clear();
@@ -226,17 +229,17 @@ std::string Map_Selection() {
   // Initialize palette interpolation as identity mapping (no blending).
   // Each row x maps all 256 entries to color x.
   for (int x = 0; x < 256; x++) {
-    memset(base::Suffix(base::At(PaletteInterpolationTable, x), 0).data(), x,
-           256);
+    std::ranges::fill(base::At(PaletteInterpolationTable, x),
+                      static_cast<uint8_t>(x));
   }
-  Interpolate_2X_Scale(pseudo_seen_buf, &SeenBuff, nullptr);
+  Interpolate_2X_Scale(pseudo_seen_buf, &SeenBuff, {});
 
   // Play the map reveal animation with synchronized sound effects.
   StreamLowImpact = true;
   Play_Sample(appear1, 255, Options.Normalize_Volume(170));
   for (int frame = 1; frame < Get_Animation_Frame_Count(anim); frame++) {
     Animate_Frame(anim, *pseudo_seen_buf, frame);
-    Interpolate_2X_Scale(pseudo_seen_buf, &SeenBuff, nullptr);
+    Interpolate_2X_Scale(pseudo_seen_buf, &SeenBuff, {});
     Call_Back_Delay(/*time=*/2);
     // Sound effects timed to specific animation frames.
     switch (frame) {
@@ -270,7 +273,7 @@ std::string Map_Selection() {
     // The SDL2 port bakes palette colors into an RGBA texture, so unlike
     // DOS VGA hardware, palette changes aren't reflected until we re-render.
     AllSurfaces.SurfacesRestored = false;
-    Interpolate_2X_Scale(pseudo_seen_buf, &SeenBuff, nullptr);
+    Interpolate_2X_Scale(pseudo_seen_buf, &SeenBuff, {});
     const int choice = Mouse_Over_Spot(is_soviet, Scen.Scenario);
     const bool hovering_over_choice = choice != -1;
 

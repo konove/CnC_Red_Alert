@@ -48,23 +48,29 @@
 
 #include "td/jshell.h"
 
+#include <algorithm>
+#include <cstddef>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <span>
 #include <string_view>
+#include <utility>
+#include <vector>
 
 #include "absl/strings/str_format.h"
 #include "absl/types/span.h"
 #include "base/array.h"
+#include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/seek_origin.h"
 #include "base/types.h"
 #include "port/format.h"
 #include "port/safe_string.h"
+#include "port/unaligned.h"
 #include "sdllib/buffer.h"
 #include "sdllib/iff.h"
-#include "sdllib/memflag.h"
 #include "sdllib/misc.h"
 #include "sdllib/tile.h"
 #include "sdllib/ww_win.h"
@@ -92,26 +98,29 @@
  *                                                                                             *
  * HISTORY: * 05/11/1995 JLB : Created. *
  *=============================================================================================*/
-void* Small_Icon(const void* iconptr, int iconnum) {
-  static unsigned char _icon[9];
-  const auto* iptr = static_cast<const IControl_Type*>(iconptr);
-
-  if (iconptr) {
-    iconnum = (static_cast<const unsigned char*>(iconptr) + iptr->Map)[iconnum];
-    const unsigned char* data =
-        &(static_cast<const unsigned char*>(iconptr) +
-          iptr->Icons)[static_cast<base::ssize>(iconnum) *
-                       (base::ssize{24} * 24)];
-
-    for (int index = 0; index < 9; index++) {
-      const int _offsets[9] = {4 + (4 * 24),  12 + (4 * 24),  20 + (4 * 24),
-                               4 + (12 * 24), 12 + (12 * 24), 20 + (12 * 24),
-                               4 + (20 * 24), 12 + (20 * 24), 20 + (20 * 24)};
-      base::At(_icon, index) = data[base::At(_offsets, index)];
-    }
+std::span<const unsigned char> Small_Icon(std::span<const std::byte> iconptr,
+                                          int iconnum) {
+  static unsigned char icon[9];
+  if (iconptr.size() < sizeof(IControl_Type)) {
+    return {};
   }
-
-  return _icon;
+  const auto control = port::ReadUnaligned<IControl_Type>(iconptr);
+  const auto map = Get_Icon_Set_Map(iconptr);
+  if (iconnum < 0 || base::ToSize(iconnum) >= map.size() || control.Icons < 0) {
+    return {};
+  }
+  const auto offset =
+      base::ToSize(control.Icons) +
+      (std::to_integer<size_t>(map[base::ToSize(iconnum)]) * 24 * 24);
+  if (offset > iconptr.size() || iconptr.size() - offset < size_t{24} * 24) {
+    return {};
+  }
+  for (int index = 0; index < 9; ++index) {
+    base::At(icon, index) = std::to_integer<unsigned char>(
+        iconptr[offset + base::ToSize(4 + ((index % 3) * 8)) +
+                (base::ToSize(4 + ((index / 3) * 8)) * 24)]);
+  }
+  return icon;
 }
 
 /***********************************************************************************************
@@ -136,10 +145,10 @@ void* Small_Icon(const void* iconptr, int iconnum) {
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
 void Set_Window(int window, int x, int y, int w, int h) {
-  base::At(WindowList[window], kWindowWidth) = w / 8;
-  base::At(WindowList[window], kWindowHeight) = h;
-  base::At(WindowList[window], kWindowX) = x / 8;
-  base::At(WindowList[window], kWindowY) = y;
+  base::At(base::At(WindowList, window), kWindowWidth) = w / 8;
+  base::At(base::At(WindowList, window), kWindowHeight) = h;
+  base::At(base::At(WindowList, window), kWindowX) = x / 8;
+  base::At(base::At(WindowList, window), kWindowY) = y;
 }
 
 /***********************************************************************************************
@@ -167,9 +176,10 @@ void Fatal_Message(const std::string_view message) {
   exit(EXIT_FAILURE);
 }
 
-void Format_Runtime_Text(char* buffer, const size_t size, const char* format,
+void Format_Runtime_Text(std::span<char> buffer, const size_t size,
+                         const char* format,
                          const absl::Span<const absl::FormatArg> args) {
-  port::SafeCopy(buffer, port::FormatRuntime(format, args).c_str(), size);
+  port::SafeCopy(buffer.first(size), port::FormatRuntime(format, args).c_str());
 }
 
 #ifdef NEVER
@@ -205,95 +215,84 @@ void File_Fatal(const char* message) {
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
 int32_t Load_Uncompress(File& file, BufferClass& uncomp_buff,
-                        BufferClass& dest_buff, void* reserved_data) {
-  uint16_t size = 0;
-  void* sptr = uncomp_buff.Get_Buffer();
-  void* dptr = dest_buff.Get_Buffer();
-  bool opened = false;
-  CompHeaderType header;
-
-  /*
-  **	The file must be opened in order to be read from. If the file
-  **	isn't opened, then open it. Record this fact so that it can be
-  **	restored to its closed state at the end.
-  */
-  if (!file.IsOpen()) {
-    if (!file.Open()) {
+                        BufferClass& dest_buff,
+                        std::span<unsigned char> reserved_data) {
+  const bool opened = !file.IsOpen();
+  if (opened && !file.Open()) {
+    return 0;
+  }
+  const auto decode = [&] -> int32_t {
+    uint16_t stored_size = 0;
+    CompHeaderType header;
+    if (!file.ReadObject(stored_size) || !file.ReadObject(header) ||
+        stored_size < sizeof(header)) {
       return 0;
     }
-    opened = true;
-  }
-
-  /*
-  **	Read in the size of the file (supposedly).
-  */
-  file.ReadObject(size);
-
-  /*
-  **	Read in the header block. This block contains the compression type
-  **	and skip data (among other things).
-  */
-  file.ReadObject(header);
-  size -= sizeof(header);
-
-  /*
-  **	If there are skip bytes then they must be processed. Either read
-  **	them into the buffer provided or skip past them. No check is made
-  **	to ensure that the reserved data buffer is big enough (watch out!).
-  */
-  if (header.Skip) {
-    size -= header.Skip;
-    if (reserved_data) {
-      file.Read(static_cast<char*>(reserved_data), header.Skip);
-    } else {
-      file.Seek(header.Skip, SeekOrigin::kCurrent);
+    std::size_t size = stored_size - sizeof(header);
+    if (header.Skip < 0 || base::ToSize(header.Skip) > size) {
+      return 0;
     }
-    header.Skip = 0;
-  }
-
-  /*
-  **	Determine where is the proper place to load the data. If both buffers
-  **	specified are identical, then the data should be loaded at the end of
-  **	the buffer and decompressed at the beginning.
-  */
-  if (uncomp_buff.Get_Buffer() == dest_buff.Get_Buffer()) {
-    sptr = Add_Long_To_Pointer(
-        sptr, uncomp_buff.Get_Size() - (size + base::ToSigned(sizeof(header))));
-  }
-
-  /*
-  **	Read in the bulk of the data.
-  */
-  Mem_Copy(&header, sptr, sizeof(header));
-  file.Read(static_cast<char*>(sptr) + sizeof(header), size);
-
-  /*
-  **	Decompress the data.
-  */
-  const size_t uncompressed_size = Uncompress_Data(sptr, dptr);
-
-  /*
-  **	Close the file if necessary.
-  */
+    if (header.Skip != 0) {
+      size -= base::ToSize(header.Skip);
+      if (!reserved_data.empty()) {
+        if (base::ToSize(header.Skip) > reserved_data.size() ||
+            file.Read(reserved_data.first(base::ToSize(header.Skip))) !=
+                header.Skip) {
+          return 0;
+        }
+      } else {
+        file.Seek(header.Skip, SeekOrigin::kCurrent);
+      }
+      header.Skip = 0;
+    }
+    auto source = uncomp_buff.Get_Bytes();
+    const auto dest = dest_buff.Get_Bytes();
+    const auto packet_size = size + sizeof(header);
+    if (packet_size > source.size()) {
+      return 0;
+    }
+    if (source.data() == dest.data()) {
+      source = source.last(packet_size);
+    } else {
+      source = source.first(packet_size);
+    }
+    base::CopyBytes(std::as_writable_bytes(source), base::ObjectBytes(header),
+                    sizeof(header));
+    if (file.Read(source.subspan(sizeof(header))) !=
+        static_cast<base::ssize>(size)) {
+      return 0;
+    }
+    return static_cast<int32_t>(Uncompress_Data(source, dest));
+  };
+  const int32_t result = decode();
   if (opened) {
     file.Close();
   }
-  return static_cast<int32_t>(uncompressed_size);
+  return result;
 }
 
 int Load_Picture(const char* filename, BufferClass& scratchbuf,
-                 BufferClass& destbuf, unsigned char* palette,
+                 BufferClass& destbuf, std::span<unsigned char> palette,
                  PicturePlaneType /*unused*/) {
   GameFile fc(filename);
   return Load_Uncompress(fc, scratchbuf, destbuf, palette) / 8000;
 }
 
-void* Load_Alloc_Data(File& file) {
-  const auto size = static_cast<int>(file.Size());
-  auto* ptr = new char[base::ToSize(size + 1)];
-  file.Read(ptr, size);
-  ptr[size] = '\0';  // Null-terminate so text parsers don't read past the data.
-  return ptr;
+std::vector<std::byte> LoadAllocData(File& file) {
+  std::vector<std::byte> data(base::ToSize(file.Size()));
+  file.Read(std::span(data));
+  return data;
+}
+
+std::span<std::byte> Load_Alloc_Data(File& file) {
+  const auto size = base::ToSize(file.Size());
+  // The returned view carries the exact allocation extent; legacy callers
+  // retain ownership. The extra NUL also supports files read as C strings.
+  // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
+  const std::span<char> storage(new char[size + 1], size + 1);
+  file.Read(std::as_writable_bytes(storage.first(size)));
+  storage[size] = '\0';
+  return std::as_writable_bytes(storage.first(size));
 }
 
 /***********************************************************************************************
@@ -339,30 +338,29 @@ int32_t Translucent_Table_Size(int count) { return 256 + (256 * count); }
  *                                                                                             *
  * HISTORY: * 04/02/1994 JLB : Created. *
  *=============================================================================================*/
-void* Build_Translucent_Table(const void* palette, const TLucentType* control,
-                              int count, void* buffer) {
-
-  if (count && control && palette) {
-    if (!buffer) {
-      buffer = new char[base::ToSize(Translucent_Table_Size(count))];
-    }
-
-    if (buffer) {
-      memset(buffer, -1, 256);
-      auto* table = static_cast<unsigned char*>(
-          Add_Long_To_Pointer(buffer, 256));  // Remap table pointer.
-
-      /*
-      **	Build the individual remap tables for each translucent color.
-      */
-      for (int index = 0; index < count; index++) {
-        static_cast<unsigned char*>(buffer)[control[index].SourceColor] =
-            static_cast<unsigned char>(index);
-        Build_Fading_Table(palette, table, control[index].DestColor,
-                           control[index].Fading);
-        table += 256;
-      }
-    }
+std::span<unsigned char> Build_Translucent_Table(
+    std::span<const unsigned char> palette,
+    std::span<const TLucentType> control, int count,
+    std::span<unsigned char> buffer) {
+  if (count <= 0 || std::cmp_greater(count, control.size())) {
+    return buffer;
+  }
+  const auto size = base::ToSize(Translucent_Table_Size(count));
+  if (buffer.empty()) {
+    // This legacy allocation is returned with its exact size to the caller.
+    // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
+    buffer = std::span<unsigned char>(new unsigned char[size], size);
+  }
+  if (buffer.size() < size) {
+    return {};
+  }
+  std::ranges::fill(buffer.first(256), static_cast<unsigned char>(255));
+  for (int index = 0; index < count; ++index) {
+    const auto& item = control[base::ToSize(index)];
+    buffer[item.SourceColor] = static_cast<unsigned char>(index);
+    Build_Fading_Table(palette,
+                       buffer.subspan(base::ToSize(index + 1) * 256, 256),
+                       item.DestColor, item.Fading);
   }
   return buffer;
 }
@@ -396,31 +394,29 @@ void* Build_Translucent_Table(const void* palette, const TLucentType* control,
  *                                                                                             *
  * HISTORY: * 06/27/1994 JLB : Created. *
  *=============================================================================================*/
-void* Conquer_Build_Translucent_Table(const void* palette,
-                                      const TLucentType* control, int count,
-                                      void* buffer) {
-
-  if (count && control && palette) {
-    if (!buffer) {
-      buffer = new char[base::ToSize(Translucent_Table_Size(count))];
-    }
-
-    if (buffer) {
-      memset(buffer, -1, 256);
-      auto* table = static_cast<unsigned char*>(
-          Add_Long_To_Pointer(buffer, 256));  // Remap table pointer.
-
-      /*
-      **	Build the individual remap tables for each translucent color.
-      */
-      for (int index = 0; index < count; index++) {
-        static_cast<unsigned char*>(buffer)[control[index].SourceColor] =
-            static_cast<unsigned char>(index);
-        Conquer_Build_Fading_Table(palette, table, control[index].DestColor,
-                                   control[index].Fading);
-        table += 256;
-      }
-    }
+std::span<unsigned char> Conquer_Build_Translucent_Table(
+    std::span<const unsigned char> palette,
+    std::span<const TLucentType> control, int count,
+    std::span<unsigned char> buffer) {
+  if (count <= 0 || std::cmp_greater(count, control.size())) {
+    return buffer;
+  }
+  const auto size = base::ToSize(Translucent_Table_Size(count));
+  if (buffer.empty()) {
+    // This legacy allocation is returned with its exact size to the caller.
+    // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
+    buffer = std::span<unsigned char>(new unsigned char[size], size);
+  }
+  if (buffer.size() < size) {
+    return {};
+  }
+  std::ranges::fill(buffer.first(256), static_cast<unsigned char>(255));
+  for (int index = 0; index < count; ++index) {
+    const auto& item = control[base::ToSize(index)];
+    buffer[item.SourceColor] = static_cast<unsigned char>(index);
+    Conquer_Build_Fading_Table(
+        palette, buffer.subspan(base::ToSize(index + 1) * 256, 256),
+        item.DestColor, item.Fading);
   }
   return buffer;
 }

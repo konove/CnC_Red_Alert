@@ -508,7 +508,7 @@ ThemeType ThemeClass::From_Name(const char* name) {
     **	of the theme. This is guaranteed to be unique.
     */
     for (ThemeType theme = THEME_AIRSTRIKE; theme < THEME_COUNT; theme++) {
-      if (stricmp(_themes[theme].Name, name) == 0) {
+      if (port::CompareIgnoreCase(_themes[theme].Name, name) == 0) {
         return theme;
       }
     }
@@ -519,7 +519,8 @@ ThemeType ThemeClass::From_Name(const char* name) {
     **	yeild a match, but is not guaranteed to be unique.
     */
     for (ThemeType theme = THEME_AIRSTRIKE; theme < THEME_COUNT; theme++) {
-      if (strstr(Text_String(_themes[theme].Fullname), name) != nullptr) {
+      if (std::string_view(Text_String(_themes[theme].Fullname))
+              .contains(name)) {
         return theme;
       }
     }

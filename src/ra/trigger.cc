@@ -118,7 +118,7 @@ void TriggerClass::Draw_It(int /*unused*/, int x, int y, int width, int height,
                            bool selected, TextPrintType flags) const {
   if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
     RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
-    static int _tabs[] = {13, 40};
+    static const int _tabs[] = {13, 40};
     const uint32_t font = static_cast<uint32_t>(flags) & 0x0FU;
     if (font == static_cast<uint32_t>(TPF_6PT_GRAD) ||
         font == static_cast<uint32_t>(TPF_EFNT)) {

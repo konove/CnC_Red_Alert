@@ -87,7 +87,7 @@ CCPtr<T>::CCPtr(T* ptr) : ID(-1) {
  *=============================================================================================*/
 template <class T>
 bool CCPtr<T>::operator>(const CCPtr& rvalue) const {
-  return stricmp((*this)->Name(), rvalue->Name()) > 0;
+  return port::CompareIgnoreCase((*this)->Name(), rvalue->Name()) > 0;
 }
 
 template class CCPtr<AircraftClass>;

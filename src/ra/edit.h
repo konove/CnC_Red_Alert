@@ -20,6 +20,7 @@
 
 #ifndef CNC_RED_ALERT_RA_EDIT_H_
 #define CNC_RED_ALERT_RA_EDIT_H_
+#include <span>
 #include "absl/base/attributes.h"
 #include "ra/control.h"
 #include "ra/defines.h"
@@ -61,7 +62,7 @@ class EditClass : public ControlClass {
   // Constructs an edit gadget. |text| is a caller-owned buffer that will be
   // modified in place. |max_len| is the buffer size including the null
   // terminator. |w| and |h| default to -1, meaning auto-sized from the text.
-  EditClass(int id, char* text ABSL_ATTRIBUTE_LIFETIME_BOUND, int max_len,
+  EditClass(int id, std::span<char> text ABSL_ATTRIBUTE_LIFETIME_BOUND, int max_len,
             TextPrintType flags, int x, int y, int w = -1, int h = -1,
             EditStyle style = kAlphanumeric);
   ~EditClass() override;
@@ -75,8 +76,9 @@ class EditClass : public ControlClass {
 
   // Changes the text buffer and maximum length. Does not copy; |text| must
   // outlive this gadget.
-  virtual void Set_Text(char* text, int max_len);
-  virtual char* Get_Text() { return String; }
+  virtual void Set_Text(std::span<char> text, int max_len);
+  std::span<char> Get_Text_Buffer() { return String; }
+  virtual char* Get_Text() { return String.data(); }
   void Set_Color(RemapControlType* color) { Color = color; }
 
   void Set_Read_Only(bool rdonly) { IsReadOnly = rdonly; }
@@ -86,9 +88,9 @@ class EditClass : public ControlClass {
   TextPrintType TextFlags;  // Text rendering style (font, alignment).
   EditStyle EditFlags{};    // Allowed character types for input filtering.
 
-  char* String;   // Caller-owned text buffer modified in place.
+  std::span<char> String;   // Caller-owned text buffer modified in place.
   int MaxLength;  // Max string length (excludes null terminator).
-  int Length;     // Current string length, always <= MaxLength.
+  int Length{};     // Current string length, always <= MaxLength.
 
   RemapControlType* Color;  // Color scheme for rendering.
 

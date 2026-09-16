@@ -254,7 +254,7 @@ WeaponType Weapon_From_Name(const char* name) {
   }
 
   for (int index = 0; index < Weapons.Count(); index++) {
-    if (stricmp(Weapons.Ptr(index)->Name(), name) == 0) {
+    if (port::CompareIgnoreCase(Weapons.Ptr(index)->Name(), name) == 0) {
       return static_cast<WeaponType>(Weapons.Ptr(index)->ID);
     }
   }
@@ -283,7 +283,7 @@ ArmorType Armor_From_Name(const char* name) {
   }
 
   for (const ArmorType index : magic_enum::enum_values<ArmorType>()) {
-    if (stricmp(ArmorName[index], name) == 0) {
+    if (port::CompareIgnoreCase(ArmorName[index], name) == 0) {
       return index;
     }
   }

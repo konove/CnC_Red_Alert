@@ -44,6 +44,9 @@
 #ifndef CNC_RED_ALERT_TD_CHEKLIST_H_
 #define CNC_RED_ALERT_TD_CHEKLIST_H_
 
+#include <cstddef>
+#include <span>
+
 #include "sdllib/keyboard.h"
 #include "td/defines.h"
 #include "td/list.h"
@@ -57,7 +60,8 @@ class CheckListClass : public ListClass {
   Constructor/Destructor
   ---------------------------------------------------------------------*/
   CheckListClass(int id, int x, int y, int w, int h, TextPrintType flags,
-                 const void* up, const void* down);
+                 std::span<const std::byte> up,
+                 std::span<const std::byte> down);
   ~CheckListClass() override = default;
   CheckListClass(const CheckListClass&) = delete;
   CheckListClass& operator=(const CheckListClass&) = delete;

@@ -3,10 +3,10 @@
 #include <algorithm>
 #include <array>
 #include <cstddef>
-#include <cstring>
 #include <iterator>
 #include <span>
 
+#include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/types.h"
 #include "tech/base64.h"
@@ -17,7 +17,7 @@ bool Base64Codec::Process(std::span<const std::byte> in, ByteSink& out) {
   while (!in.empty()) {
     const int take =
         std::min(GroupSize() - count_, static_cast<int>(std::ssize(in)));
-    std::memcpy(group_.data() + count_, in.data(), base::ToSize(take));
+    base::CopyBytes(std::span(group_).subspan(base::ToSize(count_)), in, take);
     count_ += take;
     in = in.subspan(base::ToSize(take));
     if (count_ == GroupSize()) {
@@ -39,8 +39,9 @@ bool Base64Codec::EmitGroup(ByteSink& out) {
   // it: the decoder writes no more than that for a group of four.
   const int produced =
       mode_ == Base64Mode::kEncode
-          ? Base64_Encode(group_.data(), count_, result.data(), 4)
-          : Base64_Decode(group_.data(), count_, result.data(), 3);
+          ? Base64_Encode(std::span(group_).first(base::ToSize(count_)), result)
+          : Base64_Decode(std::span(group_).first(base::ToSize(count_)),
+                          std::span(result).first(3));
   count_ = 0;
   return produced == 0 ||
          out.Write(std::span(result).first(base::ToSize(produced)));

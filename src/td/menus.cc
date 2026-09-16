@@ -1,3 +1,5 @@
+#include <cstddef>
+#include <span>
 /*
 **	Command & Conquer(tm)
 **	Copyright 2025 Electronic Arts Inc.
@@ -233,7 +235,7 @@ int Find_Menu_Items(int maxitems, unsigned long field, char index) {
 /*	RETURNS:	none
  */
 /*=========================================================================*/
-void Setup_Menu(const MenuConfig& menu, const char* labels[],
+void Setup_Menu(const MenuConfig& menu, std::span<const char* const> labels,
                 const uint32_t visible_items, const int bit_offset,
                 const int line_spacing) {
   const int menu_x = (static_cast<int>(WinX) + menu.x) * 8;
@@ -248,7 +250,7 @@ void Setup_Menu(const MenuConfig& menu, const char* labels[],
   for (int i = 0; i < item_count; i++) {
     const int text_index = Select_To_Entry(i, visible_items, bit_offset);
     const int draw_y = menu_y + (i * FontHeight) + (i * line_spacing);
-    Fancy_Text_Print(labels[text_index], menu_x, draw_y,
+    Fancy_Text_Print(labels[base::ToSize(text_index)], menu_x, draw_y,
                      text_index == selected_entry && MenuUpdate
                          ? menu.highlight_color
                          : menu.normal_color,
@@ -270,8 +272,8 @@ void Setup_Menu(const MenuConfig& menu, const char* labels[],
 /*	RETURNS:
  */
 /*=========================================================================*/
-int Check_Menu(MenuConfig& menu, const char* text[], uint32_t field,
-               int index) {
+int Check_Menu(MenuConfig& menu, std::span<const char* const> text,
+               uint32_t field, int index) {
   int drawy = 0;
   int item = 0;
   int idx = 0;
@@ -377,7 +379,8 @@ int Check_Menu(MenuConfig& menu, const char* text[], uint32_t field,
     */
     default:
       for (int menu_item = 0; menu_item < menu.item_count; menu_item++) {
-        if (toupper(*text[Select_To_Entry(menu_item, field, index)]) ==
+        if (toupper(*text[base::ToSize(
+                Select_To_Entry(menu_item, field, index))]) ==
             toupper(Keyboard::To_ASCII(static_cast<KeyNumType>(key % 256)))) {
           newitem = select = menu_item;
           break;
@@ -391,11 +394,11 @@ int Check_Menu(MenuConfig& menu, const char* text[], uint32_t field,
     Hide_Mouse();
     idx = Select_To_Entry(item, field, index);
     drawy = menuy + (item * menuskip);
-    Fancy_Text_Print(text[idx], menux, drawy, normcol, kTBlack,
+    Fancy_Text_Print(text[base::ToSize(idx)], menux, drawy, normcol, kTBlack,
                      TPF_8POINT | TPF_DROPSHADOW);
     idx = Select_To_Entry(newitem, field, index);
     drawy = menuy + (newitem * menuskip);
-    Fancy_Text_Print(text[idx], menux, drawy, litcol, kTBlack,
+    Fancy_Text_Print(text[base::ToSize(idx)], menux, drawy, litcol, kTBlack,
                      TPF_8POINT | TPF_DROPSHADOW);
     Show_Mouse(); /* resurrect the mouse	*/
   }
@@ -404,7 +407,7 @@ int Check_Menu(MenuConfig& menu, const char* text[], uint32_t field,
     idx = Select_To_Entry(select, field, index);
     Hide_Mouse(); /* get rid of the mouse	*/
     drawy = menuy + (newitem * menuskip);
-    Flash_Line(text[idx], menux, drawy, normcol, litcol, kTBlack);
+    Flash_Line(text[base::ToSize(idx)], menux, drawy, normcol, litcol, kTBlack);
     Show_Mouse();
     select = idx;
   }
@@ -437,9 +440,8 @@ int Check_Menu(MenuConfig& menu, const char* text[], uint32_t field,
  * HISTORY:                                                                *
  *   05/16/1994 JLB : Created.                                             *
  *=========================================================================*/
-int Do_Menu(const char** strings, bool blue) {
-
-  if (!strings) {
+int Do_Menu(std::span<const char* const> strings, bool blue) {
+  if (strings.empty()) {
     return (-1);
   }
   Set_Logic_Page(SeenBuff);
@@ -448,11 +450,9 @@ int Do_Menu(const char** strings, bool blue) {
   /*
   **	Determine the number of entries in this string.
   */
-  const char** ptr = strings;  // Working menu text pointer.
-  int count = 0;               // Number of entries in this menu.
-  while (*ptr++) {
-    count++;
-  }
+  const auto terminator = std::ranges::find(strings, nullptr);
+  strings = strings.first(static_cast<size_t>(terminator - strings.begin()));
+  const int count = static_cast<int>(strings.size());
   menu_config.item_count = count;
 
   /*
@@ -461,10 +461,8 @@ int Do_Menu(const char** strings, bool blue) {
   */
   Fancy_Text_Print(TXT_NONE, 0, 0, 0, 0, TPF_8POINT | TPF_DROPSHADOW);
   int length = 0;  // The width of the menu (in pixels).
-  ptr = strings;
-  while (*ptr) {
-    length = std::max(length, String_Pixel_Width(*ptr));
-    ptr++;
+  for (const char* text : strings) {
+    length = std::max(length, String_Pixel_Width(text));
   }
   length += 7;
   menu_config.item_width = length / 8;
@@ -473,13 +471,13 @@ int Do_Menu(const char** strings, bool blue) {
   **	Adjust the window values to match the size of the
   **	specified menu.
   */
-  base::At(WindowList[static_cast<int>(WINDOW_MENU)], kWindowWidth) =
+  base::At(base::At(WindowList, static_cast<int>(WINDOW_MENU)), kWindowWidth) =
       menu_config.item_width + 2;
-  base::At(WindowList[static_cast<int>(WINDOW_MENU)], kWindowX) =
+  base::At(base::At(WindowList, static_cast<int>(WINDOW_MENU)), kWindowX) =
       19 - (length / 16);
-  base::At(WindowList[static_cast<int>(WINDOW_MENU)], kWindowY) =
+  base::At(base::At(WindowList, static_cast<int>(WINDOW_MENU)), kWindowY) =
       174 - (menu_config.item_count * (FontHeight + FontYSpacing));
-  base::At(WindowList[static_cast<int>(WINDOW_MENU)], kWindowHeight) =
+  base::At(base::At(WindowList, static_cast<int>(WINDOW_MENU)), kWindowHeight) =
       (menu_config.item_count * FontHeight) + 5 /*11*/;
 
   /*

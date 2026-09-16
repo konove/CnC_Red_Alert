@@ -108,10 +108,12 @@
 #include "ra/aircraft.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
 #include <iterator>
+#include <span>
 
 #include "absl/log/check.h"
 #include "base/array.h"
@@ -480,8 +482,8 @@ void AircraftClass::Draw_It(int x, int y, WindowNumberType window) const {
   /*
   **	Verify the legality of the unit class.
   */
-  const void* shapefile = Get_Image_Data();
-  if (!shapefile) {
+  const auto shapefile = Get_Image_Data();
+  if (shapefile.empty()) {
     return;
   }
 
@@ -514,7 +516,7 @@ void AircraftClass::Draw_It(int x, int y, WindowNumberType window) const {
   if (Visual_Character() <= VISUAL_DARKEN) {
     CC_Draw_Shape(shapefile, shapenum, x + 1, y + 2, window,
                   SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING,
-                  DisplayClass::FadingShade, nullptr);
+                  DisplayClass::FadingShade, {});
   }
 
   /*
@@ -582,13 +584,13 @@ void AircraftClass::Draw_Rotors(int x, int y, WindowNumberType window) const {
     base::MovePoint(xx, yy, static_cast<uint8_t>(SecondaryFacing.Current()),
                     static_cast<int16_t>(_stretch[face]));
     CC_Draw_Shape(AircraftTypeClass::RRotorData, shapenum, xx, yy - 2, window,
-                  flags, nullptr, DisplayClass::UnitShadow);
+                  flags, {}, DisplayClass::UnitShadow);
 
     base::MovePoint(xx, yy,
                     static_cast<uint8_t>(SecondaryFacing.Current() + DIR_S),
                     static_cast<int16_t>(_stretch[face] * 2));
     CC_Draw_Shape(AircraftTypeClass::LRotorData, shapenum, xx, yy - 2, window,
-                  flags, nullptr, DisplayClass::UnitShadow);
+                  flags, {}, DisplayClass::UnitShadow);
 
   } else {
     /*
@@ -596,7 +598,7 @@ void AircraftClass::Draw_Rotors(int x, int y, WindowNumberType window) const {
     */
     CC_Draw_Shape(AircraftTypeClass::RRotorData, shapenum, x,
                   y - Lepton_To_Pixel(static_cast<LEPTON>(Height)) - 2, window,
-                  flags, nullptr, DisplayClass::UnitShadow);
+                  flags, {}, DisplayClass::UnitShadow);
   }
 }
 
@@ -1048,7 +1050,7 @@ void AircraftClass::AI() {
  *                                                                                             *
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
-const int16_t* AircraftClass::Overlap_List(bool redraw) const {
+std::span<const int16_t> AircraftClass::Overlap_List(bool redraw) const {
   DCHECK_EQ(Aircraft.ID(this), ID);
   DCHECK(IsActive);
 
@@ -1167,8 +1169,8 @@ int AircraftClass::Mission_Unload() {
             Assign_Destination(::As_Target(
                 base::At(Scen.Waypoint, foot->Team->Class->Origin)));
           } else {
-            Assign_Destination(New_LZ(::As_Target(
-                Scen.Waypoint[ScenarioClass::kReinforcementWaypoint])));
+            Assign_Destination(New_LZ(::As_Target(base::At(
+                Scen.Waypoint, ScenarioClass::kReinforcementWaypoint))));
             if (Team.Is_Valid()) {
               Team->Assign_Mission_Target(NavCom);
             }

@@ -119,8 +119,8 @@ bool ConfirmationClass::Process(const char* string) {
   nobtn.Add_Tail(yesbtn);
 
   int curbutton = 1;
-  buttons[0] = &yesbtn;
-  buttons[1] = &nobtn;
+  base::At(buttons, 0) = &yesbtn;
+  base::At(buttons, 1) = &nobtn;
   base::At(buttons, curbutton)->Turn_On();
 
   /*

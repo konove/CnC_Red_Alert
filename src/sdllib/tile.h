@@ -19,9 +19,12 @@
 #ifndef CNC_RED_ALERT_SDLLIB_TILE_H_
 #define CNC_RED_ALERT_SDLLIB_TILE_H_
 
+#include <cstddef>
 #include <cstdint>
+#include <span>
 
 #include "absl/base/attributes.h"
+#include "base/buffer.h"
 
 typedef struct {
   int16_t Width;      // Width of icons (pixels).
@@ -43,13 +46,17 @@ typedef struct {
   int32_t Map;  // Icon map offset (if present).
 } IControl_Type;
 
-inline const void* Get_Icon_Set_Map(
-    const void* iconset ABSL_ATTRIBUTE_LIFETIME_BOUND) {
-  if (iconset != nullptr) {
-    return static_cast<const char*>(iconset) +
-           static_cast<const IControl_Type*>(iconset)->Map;
+inline std::span<const std::byte> Get_Icon_Set_Map(
+    std::span<const std::byte> iconset) {
+  if (iconset.size() < sizeof(IControl_Type)) {
+    return {};
   }
-  return nullptr;
+  IControl_Type control{};
+  base::CopyBytes(base::ObjectBytes(control), iconset, sizeof(control));
+  if (control.Map < 0 || static_cast<size_t>(control.Map) > iconset.size()) {
+    return {};
+  }
+  return iconset.subspan(static_cast<size_t>(control.Map));
 }
 
 #endif  // CNC_RED_ALERT_SDLLIB_TILE_H_

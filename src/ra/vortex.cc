@@ -64,12 +64,15 @@
 #include "ra/vortex.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <cstdint>
 #include <cstdio>
+#include <span>
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
-#include "base/types.h"
+#include "base/buffer.h"
+#include "base/numeric.h"
 #include "ra/building.h"
 #include "ra/cell.h"
 #include "ra/conquer.h"
@@ -88,6 +91,7 @@
 #include "ra/scenario.h"
 #include "ra/target.h"
 #include "ra/techno.h"
+#include "ra/keyframe.h"
 #include "ra/type.h"
 #include "ra/vector.h"
 #include "ra/ww_audio.h"
@@ -725,57 +729,36 @@ void ChronalVortexClass::Zap_Target() {
  *                                                                                             *
  * HISTORY: * 8/29/96 4:48PM ST : Created *
  *=============================================================================================*/
-void ChronalVortexClass::Coordinate_Remap(GraphicViewPortClass* inbuffer, int x,
-                                          int y, int width, int height,
-                                          const unsigned char* remap_table) {
-
-  BufferClass destbuf(static_cast<int32_t>(width) * height);
-
-  auto* destptr = static_cast<unsigned char*>(destbuf.Get_Buffer());
-
-  const int destx = x;
-  const int desty = y;
-
-  const int dest_width = width;
-  const int dest_height = height;
-
-  if (inbuffer->Lock()) {
-    /*
-    ** Get a pointer to the section of buffer we are going to work on.
-    */
-    const unsigned char* bufptr =
-        inbuffer->Get_Offset() + destx +
-        (static_cast<base::ssize>(desty) *
-         (inbuffer->Get_Width() + inbuffer->Get_XAdd() +
-          inbuffer->Get_Pitch()));
-
-    const int modulo =
-        inbuffer->Get_Pitch() + inbuffer->Get_XAdd() + inbuffer->Get_Width();
-
-    for (int yy = desty; yy < desty + dest_height; yy++) {
-      for (int xx = destx; xx < destx + dest_width; xx++) {
-        /*
-        ** Get the coordinates of the pixel to draw
-        */
-        const unsigned char getx = *remap_table++;
-        const unsigned char gety = *remap_table++;
-        const unsigned char remap_color = *remap_table++;
-
-        const unsigned char pixel_color =
-            *(bufptr + getx + (static_cast<base::ssize>(gety) * modulo));
-
-        *destptr++ =
-            base::At(base::At(VortexRemapTables, remap_color), pixel_color);
-      }
-
-      remap_table += static_cast<base::ssize>(3) * (width - dest_width);
-      destptr += width - dest_width;
-    }
-
-    destbuf.To_Page(destx, desty, dest_width, dest_height, *inbuffer);
-
-    inbuffer->Unlock();
+void ChronalVortexClass::Coordinate_Remap(
+    GraphicViewPortClass* inbuffer, int x, int y, int width, int height,
+    std::span<const uint8_t> remap_table) {
+  if (width <= 0 || height <= 0 || x < 0 || y < 0) {
+    return;
   }
+  const auto count = base::ToSize(width) * base::ToSize(height);
+  if (count > remap_table.size() / 3 || !inbuffer->Lock()) {
+    return;
+  }
+  BufferClass destbuf(static_cast<int32_t>(count));
+  const auto output = destbuf.Get_Bytes();
+  const auto input = inbuffer->Get_Pixels();
+  const auto stride = base::ToSize(
+      inbuffer->Get_Pitch() + inbuffer->Get_XAdd() + inbuffer->Get_Width());
+  const auto origin = base::ToSize(x) + (base::ToSize(y) * stride);
+  for (size_t i = 0; i < count; ++i) {
+    const auto getx = remap_table[i * 3];
+    const auto gety = remap_table[(i * 3) + 1];
+    const auto remap_color = remap_table[(i * 3) + 2];
+    const auto source = origin + getx + (gety * stride);
+    if (source >= input.size() || remap_color >= std::size(VortexRemapTables)) {
+      inbuffer->Unlock();
+      return;
+    }
+    output[i] =
+        base::At(base::At(VortexRemapTables, remap_color), input[source]);
+  }
+  destbuf.To_Page(x, y, width, height, *inbuffer);
+  inbuffer->Unlock();
 }
 
 /***********************************************************************************************
@@ -821,8 +804,8 @@ void ChronalVortexClass::Render() {
 
     absl::SNPrintF(fname, sizeof(fname), "HOLE%04d.lut", frame);
 
-    const void* lut_ptr = MixArchive::Retrieve(fname);
-    if (lut_ptr) {
+    const auto lut_ptr = MixArchive::RetrieveData(fname);
+    if (!lut_ptr.empty()) {
       /*
       ** Build a representation of the area of the screen where the vortex will
       *be
@@ -833,7 +816,7 @@ void ChronalVortexClass::Render() {
       */
       if (!RenderBuffer) {
         RenderBuffer =
-            new GraphicBufferClass(CELL_PIXEL_W * 4, CELL_PIXEL_H * 4, nullptr);
+            new GraphicBufferClass(CELL_PIXEL_W * 4, CELL_PIXEL_H * 4, {});
       }
       const CELL xc = Coord_XCell(Position);
       const CELL yc = Coord_YCell(Position);
@@ -891,10 +874,10 @@ void ChronalVortexClass::Render() {
             /*
             ** Draw the template
             */
-            if (ttype->Get_Image_Data()) {
+            if (!ttype->Get_Image_Data().empty()) {
               RenderBuffer->Draw_Stamp(ttype->Get_Image_Data(), icon,
-                                       x * CELL_PIXEL_W, y * CELL_PIXEL_H,
-                                       nullptr, static_cast<int>(WINDOW_MAIN));
+                                       x * CELL_PIXEL_W, y * CELL_PIXEL_H, {},
+                                       static_cast<int>(WINDOW_MAIN));
             }
 
             /*
@@ -919,7 +902,7 @@ void ChronalVortexClass::Render() {
                             (x * CELL_PIXEL_W) + (CELL_PIXEL_W >> 1),
                             (y * CELL_PIXEL_H) + (CELL_PIXEL_H >> 1),
                             WINDOW_TACTICAL,
-                            SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST, nullptr,
+                            SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST, {},
                             DisplayClass::UnitShadow);
 
               IsTheaterShape = false;
@@ -946,7 +929,7 @@ void ChronalVortexClass::Render() {
       Coordinate_Remap(RenderBuffer,
                        Lepton_To_Pixel(Coord_X(Coord_Fraction(Position))),
                        Lepton_To_Pixel(Coord_Y(Coord_Fraction(Position))), 64,
-                       64, static_cast<const unsigned char*>(lut_ptr));
+                       64, base::UnsignedBytes(lut_ptr));
 
       /*
       ** Calculate the pixel position of our fresh block of cells on the
@@ -1091,9 +1074,8 @@ void ChronalVortexClass::Setup_Remap_Tables(TheaterType theater) {
       file.ReadObject(VortexRemapTables);
     } else {
       for (int i = 0; i < MAX_REMAP_SHADES; i++) {
-        Build_Fading_Table(
-            GamePalette, base::Suffix(base::At(VortexRemapTables, i), 0).data(),
-            0, 240 - (i * 256 / MAX_REMAP_SHADES));
+        Build_Fading_Table(GamePalette, base::At(VortexRemapTables, i), 0,
+                           240 - (i * 256 / MAX_REMAP_SHADES));
       }
 
       file.WriteObject(VortexRemapTables);
@@ -1131,9 +1113,10 @@ void ChronalVortexClass::Setup_Remap_Tables(TheaterType theater) {
  * HISTORY: * 8/29/96 4:53PM ST : Created *
  *=============================================================================================*/
 void ChronalVortexClass::Build_Fading_Table(const PaletteClass& palette,
-                                            void* dest, int color, int frac) {
-  if (dest) {
-    auto* ptr = static_cast<unsigned char*>(dest);
+                                            std::span<uint8_t> dest, int color,
+                                            int frac) {
+  if (!dest.empty()) {
+    auto ptr = dest.begin();
 
     /*
     **	Find an appropriate remap color index for every color in the palette.

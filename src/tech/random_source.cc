@@ -62,6 +62,7 @@
 #include <span>
 #include <utility>
 
+#include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/types.h"
 #include "tech/sha.h"
@@ -260,12 +261,12 @@ void RandomSource::Scramble_Seed() {
       std::as_writable_bytes(std::span(Random));
 
   for (int index = 0; index < kSeedBytes; index++) {
-    sha.Hash(&Random[0], sizeof(Random));
+    sha.Hash(std::as_bytes(std::span(Random)));
     const Sha1Digest digest = sha.Digest();
 
     const int tocopy =
         std::min(static_cast<int>(digest.size()), kSeedBytes - index);
-    memmove(seed_bytes.data() + index, digest.data(), base::ToSize(tocopy));
+    base::MoveBytes(seed_bytes.subspan(base::ToSize(index)), digest, tocopy);
   }
 }
 

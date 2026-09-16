@@ -5,11 +5,11 @@
 
 #include <algorithm>
 #include <cstddef>
-#include <cstring>
 #include <iterator>
 #include <span>
 
 #include "absl/base/attributes.h"
+#include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/types.h"
 #include "tech/byte_source.h"
@@ -30,7 +30,7 @@ class SpanSource : public ByteSource {
     const base::ssize count =
         std::min(std::ssize(buffer), std::ssize(buffer_) - index_);
     if (count > 0) {
-      std::memmove(buffer.data(), buffer_.data() + index_, base::ToSize(count));
+      base::MoveBytes(buffer, buffer_.subspan(base::ToSize(index_)), count);
       index_ += count;
     }
     return count;

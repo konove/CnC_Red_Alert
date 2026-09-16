@@ -57,6 +57,7 @@
 #include <string_view>
 
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "port/safe_string.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/misc.h"
@@ -234,8 +235,8 @@ bool Read_Scenario(char* root) {
     **	so that tutorial message will reappear in scenario two.
     */
     if (Scenario < 5) {
-      TutorFlags[0] = 0L;
-      TutorFlags[1] = 0L;
+      base::At(TutorFlags, 0) = 0L;
+      base::At(TutorFlags, 1) = 0L;
     }
 
   } else {
@@ -368,7 +369,7 @@ void Do_Win() {
   ** to game queries any more (in Call_Back)
   */
   if (GameToPlay != GAME_NORMAL) {
-    MPlayerGameName[0] = 0;
+    base::At(MPlayerGameName, 0) = 0;
   }
 
   /*
@@ -590,7 +591,7 @@ void Do_Lose() {
   ** to game queries any more (in Call_Back)
   */
   if (GameToPlay != GAME_NORMAL) {
-    MPlayerGameName[0] = 0;
+    base::At(MPlayerGameName, 0) = 0;
   }
 
   /*

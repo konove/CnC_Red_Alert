@@ -20,7 +20,6 @@
 
 #include "ra/tooltip.h"
 
-#include <cstdint>
 #include <cstring>
 #include <string_view>
 
@@ -76,12 +75,12 @@ ToolTipClass::ToolTipClass(GadgetClass* gadget, const char* szText, int x_show,
 
   if (!bIconList) {
     //	Else it is reallocated on every draw.
-    pSaveRect = new std::uint8_t[base::ToSize(base::ssize{wShow} * hShow)];
+    pSaveRect.resize(base::ToSize(base::ssize{wShow} * hShow));
     if (bRightAlign) {
       xShow -= wShow;
     }
   } else {
-    pSaveRect = nullptr;
+    pSaveRect.clear();
   }
 
   //	bIconList is true if tooltips appear for individual line items in an
@@ -170,8 +169,7 @@ void ToolTipClass::Show() {
       if (bRightAlign) {
         xShowUse -= wShowUse;
       }
-      delete[] pSaveRect;
-      pSaveRect = new std::uint8_t[base::ToSize(base::ssize{wShowUse} * hShow)];
+      pSaveRect.resize(base::ToSize(base::ssize{wShowUse} * hShow));
       bLastShowNoText = false;
       xLastShow = xShowUse;
       yLastShow = yShowUse;

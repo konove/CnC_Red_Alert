@@ -38,6 +38,7 @@
 
 #include "ra/saveload.h"
 
+#include <algorithm>
 #include <array>
 #include <cassert>
 #include <cctype>
@@ -521,7 +522,7 @@ bool Save_Game(int id, const char* descr, bool /*unused*/) {
   Sha1Sink sha(fpipe);
   BlowfishSink bpipe(CipherMode::kEncrypt, sha);
   LzoSink pipe(CodecMode::kCompress, bpipe, SAVE_BLOCK_SIZE);
-  bpipe.Key(&FastKey, BlowfishEngine::kMaxKeyLength);
+  bpipe.Key(base::ObjectBytes(FastKey).first(BlowfishEngine::kMaxKeyLength));
 
   // Tee the field-wise body before compression. The dump has Section tags
   // but no save header, encryption, or digest, so it can be compared directly.
@@ -690,7 +691,7 @@ bool Load_Game(int id) {
   file.Seek(pos, SeekOrigin::kBegin);
   BlowfishSource bstraw(CipherMode::kDecrypt, fstraw);
   LzoSource straw(CodecMode::kDecompress, bstraw, SAVE_BLOCK_SIZE);
-  bstraw.Key(&FastKey, BlowfishEngine::kMaxKeyLength);
+  bstraw.Key(base::ObjectBytes(FastKey).first(BlowfishEngine::kMaxKeyLength));
 
   /*
   **	Clear the scenario so we start fresh; this calls the Init_Clear()
@@ -935,7 +936,7 @@ bool Load_Game(int id) {
 #endif
   } else {
     Map.PendingObject = nullptr;
-    Map.Set_Cursor_Shape(nullptr);
+    Map.Set_Cursor_Shape({});
   }
   Map.Init_IO();
   Map.Flag_To_Redraw(true);
@@ -1005,8 +1006,10 @@ bool Load_Game(int id) {
           Session.ScenarioFileLength =
               static_cast<decltype(Session.ScenarioFileLength)>(
                   scenario_file.Size());
-          memcpy(Session.ScenarioDigest, Session.Scenarios[s]->Get_Digest(),
-                 sizeof(Session.ScenarioDigest));
+          base::CopyBytes(
+              base::ObjectBytes(Session.ScenarioDigest),
+              std::as_bytes(Session.Scenarios[s]->Get_Digest_Bytes()),
+              sizeof(Session.ScenarioDigest));
           Session.ScenarioIsOfficial = Session.Scenarios[s]->Get_Official();
           Scen.Scenario = s;
           Session.Options.ScenarioIndex = s;
@@ -1263,8 +1266,8 @@ bool Load_MPlayer_Values(ByteSource& file) {
  * HISTORY:                                                                *
  *   01/12/1995 BR : Created.                                              *
  *=========================================================================*/
-bool Get_Savefile_Info(int id, char* buf, size_t buf_size, unsigned* scenp,
-                       HousesType* housep) {
+bool Get_Savefile_Info(int id, std::span<char> buf, size_t buf_size,
+                       unsigned* scenp, HousesType* housep) {
   char name[kMaxFname + kMaxExt];
   char descr_buf[kDescripMax];
 
@@ -1283,9 +1286,13 @@ bool Get_Savefile_Info(int id, char* buf, size_t buf_size, unsigned* scenp,
     return false;
   }
 
-  base::At(descr_buf, std::string_view(descr_buf).size() - 2) =
-      '\0';  // trim off CR/LF
-  port::SafeCopy(buf, descr_buf, buf_size);
+  descr_buf[sizeof(descr_buf) - 1] = '\0';
+  const auto length = std::string_view(descr_buf).size();
+  if (length >= 2 && base::At(descr_buf, length - 2) == '\r' &&
+      base::At(descr_buf, length - 1) == '\n') {
+    base::At(descr_buf, length - 2) = '\0';
+  }
+  port::SafeCopy(buf.first(std::min(buf_size, buf.size())), descr_buf);
 
   ArchiveReader header(straw);
   uint32_t magic = 0;
@@ -1368,7 +1375,7 @@ static bool Reconcile_Players() {
         continue;
       }
 
-      if (!stricmp(Session.Players[i]->Name, housep->IniName)) {
+      if (!port::CompareIgnoreCase(Session.Players[i]->Name, housep->IniName)) {
         found = 1;
         break;
       }
@@ -1404,7 +1411,7 @@ static bool Reconcile_Players() {
     //
     found = 0;
     for (int i = 0; i < Session.Players.Count(); i++) {
-      if (!stricmp(Session.Players[i]->Name, housep->IniName)) {
+      if (!port::CompareIgnoreCase(Session.Players[i]->Name, housep->IniName)) {
         found = 1;
         Session.Players[i]->Player.ID = house;
         break;

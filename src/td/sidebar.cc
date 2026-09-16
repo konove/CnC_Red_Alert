@@ -91,13 +91,16 @@
 #include "td/sidebar.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <cstdint>
 #include <cstring>
 #include <filesystem>
 #include <new>
+#include <span>
 #include <string>
 
 #include "base/array.h"
+#include "base/buffer.h"
 #include "base/numeric.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
@@ -139,7 +142,7 @@
 **	This holds the translucent table for use with the construction clock
 **	animation.
 */
-char SidebarClass::StripClass::ClockTranslucentTable[(1 + 1) * 256];
+unsigned char SidebarClass::StripClass::ClockTranslucentTable[(1 + 1) * 256];
 
 /***************************************************************************
 **	This points to the main sidebar shapes. These include the upgrade and
@@ -170,12 +173,12 @@ SidebarClass::StripClass::SelectClass
 /*
 ** Shape data pointers
 */
-const void* SidebarClass::StripClass::LogoShapes;
-const void* SidebarClass::StripClass::ClockShapes;
-const void* SidebarClass::StripClass::SpecialShapes[3];
+std::span<const std::byte> SidebarClass::StripClass::LogoShapes;
+std::span<const std::byte> SidebarClass::StripClass::ClockShapes;
+std::span<const std::byte> SidebarClass::StripClass::SpecialShapes[3];
 
-const void* SidebarClass::SidebarShape1;
-const void* SidebarClass::SidebarShape2;
+std::span<const std::byte> SidebarClass::SidebarShape1;
+std::span<const std::byte> SidebarClass::SidebarShape2;
 
 /***********************************************************************************************
  * SidebarClass::SidebarClass -- Default constructor for the sidebar. *
@@ -192,8 +195,8 @@ const void* SidebarClass::SidebarShape2;
  * HISTORY: * 11/17/1994 JLB : Created. *
  *=============================================================================================*/
 SidebarClass::SidebarClass() {
-  new (&Column[0]) StripClass(InitClass());
-  new (&Column[1]) StripClass(InitClass());
+  new (&base::At(Column, 0)) StripClass(InitClass());
+  new (&base::At(Column, 1)) StripClass(InitClass());
 }
 
 /***********************************************************************************************
@@ -236,13 +239,14 @@ void SidebarClass::One_Time() {
   *drawing *	code so that as the sidebar buildable buttons scroll, they get
   *properly *	clipped at the top and bottom edges.
   */
-  base::At(WindowList[static_cast<int>(WINDOW_SIDEBAR)], kWindowX) =
+  base::At(base::At(WindowList, static_cast<int>(WINDOW_SIDEBAR)), kWindowX) =
       (SideX + PowWidth) / 8;
-  base::At(WindowList[static_cast<int>(WINDOW_SIDEBAR)], kWindowY) =
+  base::At(base::At(WindowList, static_cast<int>(WINDOW_SIDEBAR)), kWindowY) =
       SideY + 1 + TopHeight;
-  base::At(WindowList[static_cast<int>(WINDOW_SIDEBAR)], kWindowWidth) =
-      SideWidth / 8;
-  base::At(WindowList[static_cast<int>(WINDOW_SIDEBAR)], kWindowHeight) =
+  base::At(base::At(WindowList, static_cast<int>(WINDOW_SIDEBAR)),
+           kWindowWidth) = SideWidth / 8;
+  base::At(base::At(WindowList, static_cast<int>(WINDOW_SIDEBAR)),
+           kWindowHeight) =
       (MaxVisible * (StripClass::kObjectHeight * factor)) - 1;
 
   /*
@@ -253,14 +257,15 @@ void SidebarClass::One_Time() {
       SideWidth - PowWidth - ((StripClass::kStripWidth * factor) * 2);
   const int spacing = width / 3;
 
-  Column[0].X = SideX + PowWidth + spacing;
-  Column[0].Y = SideY + TopHeight + 1;
-  Column[1].X =
-      Column[0].X + (StripClass::kStripWidth * factor) + spacing - (factor - 1);
-  Column[1].Y = SideY + TopHeight + 1;
+  base::At(Column, 0).X = SideX + PowWidth + spacing;
+  base::At(Column, 0).Y = SideY + TopHeight + 1;
+  base::At(Column, 1).X = base::At(Column, 0).X +
+                          (StripClass::kStripWidth * factor) + spacing -
+                          (factor - 1);
+  base::At(Column, 1).Y = SideY + TopHeight + 1;
 
-  Column[0].One_Time(0);
-  Column[1].One_Time(1);
+  base::At(Column, 0).One_Time(0);
+  base::At(Column, 1).One_Time(1);
 
   SidebarShape1 = Hires_Retrieve("SIDE1.SHP");
   SidebarShape2 = Hires_Retrieve("SIDE2.SHP");
@@ -285,8 +290,8 @@ void SidebarClass::Init_Clear() {
   IsUpgradeActive = false;
   IsDemolishActive = false;
 
-  Column[0].Init_Clear();
-  Column[1].Init_Clear();
+  base::At(Column, 0).Init_Clear();
+  base::At(Column, 1).Init_Clear();
 
   Activate(0);
 }
@@ -303,7 +308,7 @@ void SidebarClass::Init_Clear() {
  * HISTORY: * 12/24/1994 JLB : Created. *
  *=============================================================================================*/
 void SidebarClass::Init_IO() {
-  const void* oldfont = nullptr;
+  std::span<const std::byte> oldfont = {};
   int oldx = 0;
   PowerClass::Init_IO();
 
@@ -391,8 +396,8 @@ void SidebarClass::Init_IO() {
     FontXSpacing = oldx;
     FontXSpacing = -1;
 
-    Column[0].Init_IO(0);
-    Column[1].Init_IO(1);
+    base::At(Column, 0).Init_IO(0);
+    base::At(Column, 1).Init_IO(1);
 
     /*
     ** If a game was loaded & the sidebar was enabled, pop it up now
@@ -490,11 +495,11 @@ bool SidebarClass::Factory_Link(int factory, RTTIType type, int id) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-void SidebarClass::Refresh_Cells(CELL cell, const int16_t* list) {
-  if (*list == REFRESH_SIDEBAR) {
+void SidebarClass::Refresh_Cells(CELL cell, std::span<const int16_t> list) {
+  if (list.front() == REFRESH_SIDEBAR) {
     IsSidebarToRedraw = true;
-    Column[0].IsToRedraw = true;
-    Column[1].IsToRedraw = true;
+    base::At(Column, 0).IsToRedraw = true;
+    base::At(Column, 1).IsToRedraw = true;
     Flag_To_Redraw(false);
   }
   PowerClass::Refresh_Cells(cell, list);
@@ -744,8 +749,8 @@ void SidebarClass::Draw_It(bool complete) {
   **	Draw the side strip elements by calling their respective draw functions.
   */
   if (IsSidebarActive) {
-    Column[0].Draw_It(complete);
-    Column[1].Draw_It(complete);
+    base::At(Column, 0).Draw_It(complete);
+    base::At(Column, 1).Draw_It(complete);
     Repair.Draw_Me(true);
     Upgrade.Draw_Me(true);
     Zoom.Draw_Me(true);
@@ -786,19 +791,19 @@ void SidebarClass::AI(KeyNumType& input, int x, int y) {
   }
 
   if (!Debug_Map) {
-    Column[0].AI(input, x, y);
-    Column[1].AI(input, x, y);
+    base::At(Column, 0).AI(input, x, y);
+    base::At(Column, 1).AI(input, x, y);
   }
 
   if (IsSidebarActive && !Debug_Map) {
     if (input == KN_DOWN) {
-      redraw |= Column[0].Scroll(false);
-      redraw |= Column[1].Scroll(false);
+      redraw |= base::At(Column, 0).Scroll(false);
+      redraw |= base::At(Column, 1).Scroll(false);
       input = KN_NONE;
     }
     if (input == KN_UP) {
-      redraw |= Column[0].Scroll(true);
-      redraw |= Column[1].Scroll(true);
+      redraw |= base::At(Column, 0).Scroll(true);
+      redraw |= base::At(Column, 1).Scroll(true);
       input = KN_NONE;
     }
   }
@@ -874,8 +879,8 @@ void SidebarClass::AI(KeyNumType& input, int x, int y) {
 
     if (redraw) {
       // IsToRedraw = true;
-      Column[0].Flag_To_Redraw();
-      Column[1].Flag_To_Redraw();
+      base::At(Column, 0).Flag_To_Redraw();
+      base::At(Column, 1).Flag_To_Redraw();
 
       Flag_To_Redraw(false);
     }
@@ -915,8 +920,8 @@ void SidebarClass::AI(KeyNumType& input, int x, int y) {
 void SidebarClass::Recalc() {
   bool redraw = false;
 
-  redraw |= Column[0].Recalc();
-  redraw |= Column[1].Recalc();
+  redraw |= base::At(Column, 0).Recalc();
+  redraw |= base::At(Column, 1).Recalc();
 
   if (redraw) {
     IsSidebarToRedraw = true;
@@ -988,8 +993,8 @@ bool SidebarClass::Activate(int control) {
       Add_A_Button(Upgrade);
       Zoom.Zap();
       Add_A_Button(Zoom);
-      Column[0].Activate();
-      Column[1].Activate();
+      base::At(Column, 0).Activate();
+      base::At(Column, 1).Activate();
       Background.Zap();
       Add_A_Button(Background);
       RadarButton.Zap();
@@ -1003,8 +1008,8 @@ bool SidebarClass::Activate(int control) {
       Remove_A_Button(Upgrade);
       Remove_A_Button(Zoom);
       Remove_A_Button(Background);
-      Column[0].Deactivate();
-      Column[1].Deactivate();
+      base::At(Column, 0).Deactivate();
+      base::At(Column, 1).Deactivate();
       Remove_A_Button(RadarButton);
       Remove_A_Button(PowerButton);
     }
@@ -1079,7 +1084,7 @@ void SidebarClass::StripClass::One_Time(int /*unused*/) {
     }
     const auto fullname =
         std::filesystem::path(filename).replace_extension(".SHP").string();
-    base::At(SpecialShapes, lp) = MixArchive::Retrieve(fullname);
+    base::At(SpecialShapes, lp) = MixArchive::RetrieveData(fullname);
   }
 }
 
@@ -1099,7 +1104,8 @@ void SidebarClass::StripClass::One_Time(int /*unused*/) {
  *                                                                                             *
  * HISTORY: * 05/19/1995 JLB : commented *
  *=============================================================================================*/
-const void* SidebarClass::StripClass::Get_Special_Cameo(int type) {
+std::span<const std::byte> SidebarClass::StripClass::Get_Special_Cameo(
+    int type) {
   return base::At(SpecialShapes, type);
 }
 
@@ -1204,8 +1210,8 @@ void SidebarClass::StripClass::Init_Theater(TheaterType theater) {
     const auto fullname = std::filesystem::path(filename)
                               .replace_extension(Theaters[theater].Suffix)
                               .string();
-    const void* cameo_ptr = MixArchive::Retrieve(fullname);
-    if (cameo_ptr) {
+    const auto cameo_ptr = MixArchive::RetrieveData(fullname);
+    if (!cameo_ptr.empty()) {
       base::At(SpecialShapes, lp) = cameo_ptr;
     }
   }
@@ -1660,7 +1666,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
     */
     if (BuildableCount < kMaxVisible) {
       CC_Draw_Shape(LogoShapes, ID, X + 3, Y - 1, WINDOW_MAIN,
-                    SHAPE_WIN_REL | SHAPE_NORMAL, nullptr);
+                    SHAPE_WIN_REL | SHAPE_NORMAL, {});
     }
 
     /*
@@ -1679,9 +1685,9 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
       bool completed = false;
       int stage = 0;
       bool darken = false;
-      const void* shapefile = nullptr;
+      std::span<const std::byte> shapefile;
       int shapenum = 0;
-      const void* remapper = nullptr;
+      std::span<const unsigned char> remapper;
       FactoryClass* factory = nullptr;
       const int index = i + TopIndex;
       const int x = X;
@@ -1791,7 +1797,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
         production = false;
       }
 
-      remapper = nullptr;
+      remapper = {};
 
       /*
       **	Now that the shape of the object at the current working slot has
@@ -1800,20 +1806,21 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
       ** Dont draw blank shapes over the new 640x400 sidebar art - ST 5/1/96
       *6:01PM
       */
-      if (shapenum != kSbBlank || shapefile != LogoShapes) {
+      if (shapenum != kSbBlank || shapefile.data() != LogoShapes.data()) {
         IsTheaterShape = true;  // This shape is theater specific
         CC_Draw_Shape(
             shapefile, shapenum,
             x -
-                (base::At(WindowList[static_cast<int>(WINDOW_SIDEBAR)],
-                          kWindowX) *
+                (base::At(
+                     base::At(WindowList, static_cast<int>(WINDOW_SIDEBAR)),
+                     kWindowX) *
                  8) +
                 LeftEdgeOffset,
-            y - base::At(WindowList[static_cast<int>(WINDOW_SIDEBAR)],
+            y - base::At(base::At(WindowList, static_cast<int>(WINDOW_SIDEBAR)),
                          kWindowY),
             WINDOW_SIDEBAR,
             SHAPE_NORMAL | SHAPE_WIN_REL |
-                (remapper ? SHAPE_FADING : SHAPE_NORMAL),
+                (!remapper.empty() ? SHAPE_FADING : SHAPE_NORMAL),
             remapper);
         IsTheaterShape = false;
 
@@ -1825,14 +1832,16 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
           CC_Draw_Shape(
               ClockShapes, 0,
               x -
-                  (base::At(WindowList[static_cast<int>(WINDOW_SIDEBAR)],
-                            kWindowX) *
+                  (base::At(
+                       base::At(WindowList, static_cast<int>(WINDOW_SIDEBAR)),
+                       kWindowX) *
                    8) +
                   LeftEdgeOffset,
-              y - base::At(WindowList[static_cast<int>(WINDOW_SIDEBAR)],
-                           kWindowY),
-              WINDOW_SIDEBAR, SHAPE_NORMAL | SHAPE_WIN_REL | SHAPE_GHOST,
-              nullptr, ClockTranslucentTable);
+              y - base::At(
+                      base::At(WindowList, static_cast<int>(WINDOW_SIDEBAR)),
+                      kWindowY),
+              WINDOW_SIDEBAR, SHAPE_NORMAL | SHAPE_WIN_REL | SHAPE_GHOST, {},
+              ClockTranslucentTable);
         }
       }
 
@@ -1849,13 +1858,15 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
           CC_Draw_Shape(
               ObjectTypeClass::PipShapes, static_cast<int>(PIP_READY),
               x -
-                  (base::At(WindowList[static_cast<int>(WINDOW_SIDEBAR)],
-                            kWindowX) *
+                  (base::At(
+                       base::At(WindowList, static_cast<int>(WINDOW_SIDEBAR)),
+                       kWindowX) *
                    8) +
                   LeftEdgeOffset + (ObjectWidth / 2),
               y -
-                  base::At(WindowList[static_cast<int>(WINDOW_SIDEBAR)],
-                           kWindowY) +
+                  base::At(
+                      base::At(WindowList, static_cast<int>(WINDOW_SIDEBAR)),
+                      kWindowY) +
                   ObjectHeight -
                   Get_Build_Frame_Height(ObjectTypeClass::PipShapes) - 8,
               WINDOW_SIDEBAR, SHAPE_CENTER);
@@ -1866,14 +1877,16 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
           CC_Draw_Shape(
               ClockShapes, stage + 1,
               x -
-                  (base::At(WindowList[static_cast<int>(WINDOW_SIDEBAR)],
-                            kWindowX) *
+                  (base::At(
+                       base::At(WindowList, static_cast<int>(WINDOW_SIDEBAR)),
+                       kWindowX) *
                    8) +
                   LeftEdgeOffset,
-              y - base::At(WindowList[static_cast<int>(WINDOW_SIDEBAR)],
-                           kWindowY),
-              WINDOW_SIDEBAR, SHAPE_NORMAL | SHAPE_WIN_REL | SHAPE_GHOST,
-              nullptr, ClockTranslucentTable);
+              y - base::At(
+                      base::At(WindowList, static_cast<int>(WINDOW_SIDEBAR)),
+                      kWindowY),
+              WINDOW_SIDEBAR, SHAPE_NORMAL | SHAPE_WIN_REL | SHAPE_GHOST, {},
+              ClockTranslucentTable);
           /*
           **	Display text showing that the construction is temporarily on
           *hold.
@@ -1882,13 +1895,15 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
             CC_Draw_Shape(
                 ObjectTypeClass::PipShapes, static_cast<int>(PIP_HOLDING),
                 x -
-                    (base::At(WindowList[static_cast<int>(WINDOW_SIDEBAR)],
-                              kWindowX) *
+                    (base::At(
+                         base::At(WindowList, static_cast<int>(WINDOW_SIDEBAR)),
+                         kWindowX) *
                      8) +
                     LeftEdgeOffset + (ObjectWidth / 2),
                 y -
-                    base::At(WindowList[static_cast<int>(WINDOW_SIDEBAR)],
-                             kWindowY) +
+                    base::At(
+                        base::At(WindowList, static_cast<int>(WINDOW_SIDEBAR)),
+                        kWindowY) +
                     ObjectHeight -
                     Get_Build_Frame_Height(ObjectTypeClass::PipShapes) -
                     8,  // Moved up now that icons have names on them
@@ -2016,10 +2031,10 @@ bool SidebarClass::StripClass::Recalc() {
       **	Removes this entry from the list.
       */
       if (BuildableCount > 1 && index < BuildableCount - 1) {
-        memcpy(
-            base::Suffix(Buildables, index).data(),
-            base::Suffix(Buildables, index + 1).data(),
-            sizeof(Buildables[0]) * base::ToSize(BuildableCount - index - 1));
+        base::MoveBytes(std::as_writable_bytes(base::Suffix(Buildables, index)),
+                        std::as_bytes(base::Suffix(Buildables, index + 1)),
+                        sizeof(base::At(Buildables, 0)) *
+                            base::ToSize(BuildableCount - index - 1));
       }
       TopIndex = 0;
       IsToRedraw = true;
@@ -2269,7 +2284,7 @@ bool SidebarClass::StripClass::SelectClass::Action(unsigned flags,
           Map.PendingObjectPtr = nullptr;
           Map.PendingObject = nullptr;
           Map.PendingHouse = HOUSE_NONE;
-          Map.Set_Cursor_Shape(nullptr);
+          Map.Set_Cursor_Shape({});
         }
 
         if (!factory->Is_Building()) {

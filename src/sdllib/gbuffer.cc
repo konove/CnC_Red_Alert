@@ -21,7 +21,9 @@
 #include <cmath>
 #include <cstdint>
 #include <numbers>
+#include <span>
 
+#include "base/numeric.h"
 #include "sdllib/bitmap.h"
 
 // Uses inverse mapping: for each destination pixel, applies the inverse
@@ -41,7 +43,7 @@ void GraphicBufferClass::Scale_Rotate(const BitmapClass& bmp,
   const double cx_bmp = bmp.Width / 2.0;
   const double cy_bmp = bmp.Height / 2.0;
 
-  auto* dst_buf = static_cast<uint8_t*>(Get_Buffer());
+  const auto dst_buf = Get_Bytes();
 
   for (int dy = 0; dy < Height; dy++) {
     for (int dx = 0; dx < Width; dx++) {
@@ -55,9 +57,9 @@ void GraphicBufferClass::Scale_Rotate(const BitmapClass& bmp,
           static_cast<int>((((-cos_a * rx) + (sin_a * ry)) * inv_S) + cy_bmp);
 
       if (bx >= 0 && bx < bmp.Width && by >= 0 && by < bmp.Height) {
-        const uint8_t pixel = bmp.Data[(by * bmp.Width) + bx];
+        const uint8_t pixel = bmp.Data[base::ToSize((by * bmp.Width) + bx)];
         if (pixel != 0) {
-          dst_buf[(dy * Width) + dx] = pixel;
+          dst_buf[base::ToSize((dy * Width) + dx)] = pixel;
         }
       }
     }

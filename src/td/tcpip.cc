@@ -58,8 +58,10 @@
 #include "td/tcpip.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <span>
 
 #include "base/array.h"
 #include "base/buffer.h"
@@ -292,7 +294,7 @@ void TcpipManagerClass::Start_Server() {
  * HISTORY: * 3/20/96 2:58PM ST : Created *
  *=============================================================================================*/
 
-int TcpipManagerClass::Read(void* buffer, int buffer_len) {
+int TcpipManagerClass::Read(std::span<std::byte> buffer, int buffer_len) {
   int bytes_copied = 0;
 
   /*
@@ -306,9 +308,11 @@ int TcpipManagerClass::Read(void* buffer, int buffer_len) {
   ** Copy any outstanding incoming data to the buffer provided
   */
   if (base::At(ReceiveBuffers, RXBufferTail).InUse) {
-    memcpy(buffer, base::At(ReceiveBuffers, RXBufferTail).Buffer,
-           base::ToSize(std::min(
-               base::At(ReceiveBuffers, RXBufferTail).DataLength, buffer_len)));
+    base::CopyBytes(
+        buffer,
+        base::ObjectBytes(base::At(ReceiveBuffers, RXBufferTail).Buffer),
+        base::ToSize(std::min(base::At(ReceiveBuffers, RXBufferTail).DataLength,
+                              buffer_len)));
     base::At(ReceiveBuffers, RXBufferTail).InUse = false;
 
     bytes_copied = std::min(base::At(ReceiveBuffers, RXBufferTail++).DataLength,
@@ -334,13 +338,15 @@ int TcpipManagerClass::Read(void* buffer, int buffer_len) {
  * HISTORY: * 3/20/96 3:00PM ST : Created *
  *=============================================================================================*/
 
-void TcpipManagerClass::Write(void* buffer, int buffer_len) {
+void TcpipManagerClass::Write(std::span<const std::byte> buffer,
+                              int buffer_len) {
   /*
   ** Copy the data to one of the classes internal buffers
   */
   if (!base::At(TransmitBuffers, TXBufferHead).InUse) {
-    memcpy(base::At(TransmitBuffers, TXBufferHead).Buffer, buffer,
-           base::ToSize(std::min(buffer_len, WS_INTERNET_BUFFER_LEN)));
+    base::CopyBytes(
+        base::ObjectBytes(base::At(TransmitBuffers, TXBufferHead).Buffer),
+        buffer, base::ToSize(std::min(buffer_len, WS_INTERNET_BUFFER_LEN)));
     base::At(TransmitBuffers, TXBufferHead).InUse = true;
     base::At(TransmitBuffers, TXBufferHead++).DataLength =
         std::min(buffer_len, WS_INTERNET_BUFFER_LEN);
@@ -460,8 +466,10 @@ bool TcpipManagerClass::Add_Client() {
  *=============================================================================================*/
 void TcpipManagerClass::Copy_To_In_Buffer(int bytes) {
   if (!base::At(ReceiveBuffers, RXBufferHead).InUse) {
-    memcpy(base::At(ReceiveBuffers, RXBufferHead).Buffer, ReceiveBuffer,
-           base::ToSize(std::min(bytes, WS_INTERNET_BUFFER_LEN)));
+    base::CopyBytes(
+        base::ObjectBytes(base::At(ReceiveBuffers, RXBufferHead).Buffer),
+        base::ObjectBytes(ReceiveBuffer),
+        base::ToSize(std::min(bytes, WS_INTERNET_BUFFER_LEN)));
     base::At(ReceiveBuffers, RXBufferHead).InUse = true;
     base::At(ReceiveBuffers, RXBufferHead++).DataLength =
         std::min(bytes, WS_INTERNET_BUFFER_LEN);

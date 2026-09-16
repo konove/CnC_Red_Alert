@@ -20,6 +20,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <span>
 
 /****************************************************************************
  *
@@ -145,39 +146,39 @@
  * EVAFont        - Pointer to font to use for E.V.A text cations. (For C&C)
  */
 typedef struct VQAConfig {
-  int32_t (*DrawerCallback)(unsigned char* screen, int32_t framenum);
-  int32_t (*EventHandler)(uint32_t event, void* buffer, int32_t nbytes);
-  uint32_t NotifyFlags;
-  int32_t Vmode;
-  int32_t VBIBit;
-  unsigned char* ImageBuf;
-  int32_t ImageWidth;
-  int32_t ImageHeight;
-  int32_t X1, Y1;
-  int32_t FrameRate;
-  int32_t DrawRate;
-  int32_t TimerMethod;
-  uint32_t DrawFlags;    // VQACFGF_* bits
-  uint32_t OptionFlags;  // VQAOPTF_* bits
-  int32_t NumFrameBufs;
-  int32_t NumCBBufs;
-  uint32_t AudioDeviceID;  // SDL_AudioDeviceID
-  void (**AudioCallback)(uint8_t*, int);
-  void* AudioSpec;  // pointer to an SDL_AudioSpec
-  char* VocFile;
-  unsigned char* AudioBuf;
-  int32_t AudioBufSize;
-  int32_t AudioRate;
-  int32_t Volume;
-  int32_t HMIBufSize;
-  int32_t DigiHandle;
-  int32_t DigiCard;
-  int32_t DigiPort;
-  int32_t DigiIRQ;
-  int32_t DigiDMA;
-  int32_t Language;
-  char* CapFont;
-  char* EVAFont; /* For C&C Only */
+  int32_t (*DrawerCallback)(unsigned char* screen, int32_t framenum){};
+  int32_t (*EventHandler)(uint32_t event, void* buffer, int32_t nbytes){};
+  uint32_t NotifyFlags{};
+  int32_t Vmode{};
+  int32_t VBIBit{};
+  std::span<unsigned char> ImageBuf;
+  int32_t ImageWidth{};
+  int32_t ImageHeight{};
+  int32_t X1{}, Y1{};
+  int32_t FrameRate{};
+  int32_t DrawRate{};
+  int32_t TimerMethod{};
+  uint32_t DrawFlags{};    // VQACFGF_* bits
+  uint32_t OptionFlags{};  // VQAOPTF_* bits
+  int32_t NumFrameBufs{};
+  int32_t NumCBBufs{};
+  uint32_t AudioDeviceID{};  // SDL_AudioDeviceID
+  void (**AudioCallback)(uint8_t*, int){};
+  void* AudioSpec{};  // pointer to an SDL_AudioSpec
+  char* VocFile{};
+  std::span<unsigned char> AudioBuf;
+  int32_t AudioBufSize{};
+  int32_t AudioRate{};
+  int32_t Volume{};
+  int32_t HMIBufSize{};
+  int32_t DigiHandle{};
+  int32_t DigiCard{};
+  int32_t DigiPort{};
+  int32_t DigiIRQ{};
+  int32_t DigiDMA{};
+  int32_t Language{};
+  char* CapFont{};
+  char* EVAFont{}; /* For C&C Only */
 } VQAConfig;
 
 /* Drawer Configuration flags (DrawFlags) */
@@ -329,7 +330,7 @@ void VQA_PauseAudio();
 void VQA_ResumeAudio();
 
 // Supplied by the game: queue a palette change for the next frame.
-void Flag_To_Set_Palette(unsigned char* palette, int32_t numbytes,
+void Flag_To_Set_Palette(std::span<uint8_t> palette, int32_t numbytes,
                          uint32_t slowpal);
 
 #endif  // CNC_RED_ALERT_WINVQ_VQA32_VQAPLAY_H_

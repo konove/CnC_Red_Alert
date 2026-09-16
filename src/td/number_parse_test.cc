@@ -77,7 +77,8 @@ TEST_F(TdTeamTypeParseTest, TeamTypeOutsideItsHeapFailsValidation) {
   char entry[] = "GoodGuy,0,0,0,0,0,7,2,1,0,0,0";
   TeamTypeClass stack_team;
   // The switch is inside GoogleTest's macro.
-  // NOLINTNEXTLINE(clang-diagnostic-switch-default)
+  // GoogleTest death-test reporting uses its own bounded format arguments.
+  // NOLINTNEXTLINE(clang-diagnostic-switch-default,clang-diagnostic-unsafe-buffer-usage-in-libc-call)
   EXPECT_DEATH(stack_team.Fill_In(name, entry), "TEAMTYPE object error");
 }
 

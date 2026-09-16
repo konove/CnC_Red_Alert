@@ -20,6 +20,7 @@
 #define CNC_RED_ALERT_WINVQ_VQM32_PALETTE_H_
 
 #include <cstdint>
+#include <span>
 /****************************************************************************
  *
  *        C O N F I D E N T I A L -- W E S T W O O D  S T U D I O S
@@ -46,7 +47,7 @@
 extern "C" {
 #endif
 
-void __cdecl SetPalette(unsigned char* palette, int32_t numbytes,
+void __cdecl SetPalette(std::span<uint8_t> palette, int32_t numbytes,
                         uint32_t slowpal);
 void __cdecl ReadPalette(void* palette);
 void __cdecl SetDAC(int32_t color, int32_t red, int32_t green, int32_t blue);

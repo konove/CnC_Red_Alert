@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <array>
+#include <span>
 
 #include "gtest/gtest.h"
 
@@ -34,12 +35,11 @@ constexpr std::array<Vector, 3> kVectors = {{
 TEST(BlowfishEngineTest, EncryptsReferenceVectors) {
   for (const Vector& vector : kVectors) {
     BlowfishEngine engine;
-    engine.Submit_Key(vector.key.data(), static_cast<int>(vector.key.size()));
+    engine.Submit_Key(std::as_bytes(std::span(vector.key)));
 
     Block cypher{};
-    EXPECT_EQ(engine.Encrypt(vector.plain.data(),
-                             static_cast<int>(vector.plain.size()),
-                             cypher.data()),
+    EXPECT_EQ(engine.Encrypt(std::as_bytes(std::span(vector.plain)),
+                             std::as_writable_bytes(std::span(cypher))),
               8);
     EXPECT_EQ(cypher, vector.cypher);
   }
@@ -48,12 +48,11 @@ TEST(BlowfishEngineTest, EncryptsReferenceVectors) {
 TEST(BlowfishEngineTest, DecryptsReferenceVectors) {
   for (const Vector& vector : kVectors) {
     BlowfishEngine engine;
-    engine.Submit_Key(vector.key.data(), static_cast<int>(vector.key.size()));
+    engine.Submit_Key(std::as_bytes(std::span(vector.key)));
 
     Block plain{};
-    EXPECT_EQ(engine.Decrypt(vector.cypher.data(),
-                             static_cast<int>(vector.cypher.size()),
-                             plain.data()),
+    EXPECT_EQ(engine.Decrypt(std::as_bytes(std::span(vector.cypher)),
+                             std::as_writable_bytes(std::span(plain))),
               8);
     EXPECT_EQ(plain, vector.plain);
   }
@@ -64,7 +63,7 @@ TEST(BlowfishEngineTest, DecryptsReferenceVectors) {
 TEST(BlowfishEngineTest, RoundTripsInPlaceThroughOneBuffer) {
   const Vector& vector = kVectors[2];
   BlowfishEngine engine;
-  engine.Submit_Key(vector.key.data(), static_cast<int>(vector.key.size()));
+  engine.Submit_Key(std::as_bytes(std::span(vector.key)));
 
   std::array<unsigned char, 11> data{};
   std::ranges::copy(vector.plain, data.begin());
@@ -73,17 +72,17 @@ TEST(BlowfishEngineTest, RoundTripsInPlaceThroughOneBuffer) {
   data[10] = 0xCC;
   const std::array<unsigned char, 11> original = data;
 
-  EXPECT_EQ(
-      engine.Encrypt(data.data(), static_cast<int>(data.size()), data.data()),
-      8);
+  EXPECT_EQ(engine.Encrypt(std::as_bytes(std::span(data)),
+                           std::as_writable_bytes(std::span(data))),
+            8);
   EXPECT_TRUE(
       std::equal(vector.cypher.begin(), vector.cypher.end(), data.begin()));
   EXPECT_EQ(data[8], 0xAA);
   EXPECT_EQ(data[10], 0xCC);
 
-  EXPECT_EQ(
-      engine.Decrypt(data.data(), static_cast<int>(data.size()), data.data()),
-      8);
+  EXPECT_EQ(engine.Decrypt(std::as_bytes(std::span(data)),
+                           std::as_writable_bytes(std::span(data))),
+            8);
   EXPECT_EQ(data, original);
 }
 

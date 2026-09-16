@@ -22,12 +22,10 @@
 #include <span>
 #include <string_view>
 
-#include "absl/base/attributes.h"
 
 // Extracts a string from packed string table data.
 // Returns the null-terminated string at `index`, or empty string_view if
 // data is empty or index is out of bounds.
-std::string_view Extract_String(
-    std::span<const std::byte> data ABSL_ATTRIBUTE_LIFETIME_BOUND, int index);
+std::string_view Extract_String(std::span<const std::byte> data, int index);
 
 #endif  // CNC_RED_ALERT_SDLLIB_STRING_TABLE_H_

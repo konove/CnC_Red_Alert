@@ -44,6 +44,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <new>
+#include <span>
 
 // A SHA-1 digest: 20 bytes, most significant first.
 using Sha1Digest = std::array<std::byte, 20>;
@@ -63,7 +64,7 @@ class SHAEngine {
   // here. Hashing may continue afterwards.
   [[nodiscard]] Sha1Digest Digest() const;
 
-  void Hash(const void* data, int32_t length);
+  void Hash(std::span<const std::byte> data);
 
  private:
   // The five 32-bit words the algorithm accumulates.
@@ -146,10 +147,11 @@ class SHAEngine {
   }
 
   // Process a full source data block.
-  static void Process_Block(const void* source, Accumulator& acc);
+  static void Process_Block(std::span<const std::byte> source,
+                            Accumulator& acc);
 
   // Processes a partially filled source accumulator buffer.
-  void Process_Partial(const void*& data, int32_t& length);
+  void Process_Partial(std::span<const std::byte>& data);
 
   /*
   **	This is the running accumulator values. These values

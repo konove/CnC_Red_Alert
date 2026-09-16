@@ -46,6 +46,7 @@ class ArchiveWriter;
 
 #include <cstddef>
 #include <cstdint>
+#include <span>
 
 #include "absl/base/attributes.h"
 #include "base/enum_array.h"
@@ -182,7 +183,7 @@ class InfantryClass final : public FootClass {
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
   */
-  const int16_t* Overlap_List() const override;
+  std::span<const int16_t> Overlap_List() const override;
   void Draw_It(int x, int y, WindowNumberType window) override;
   void Look(bool incremental = false) override;
 
@@ -242,7 +243,7 @@ class InfantryClass final : public FootClass {
   **	File I/O.
   */
   static void Read_INI(char* buffer);
-  static void Write_INI(char* buffer);
+  static void Write_INI(std::span<char> buffer);
   static const char* INI_Name() { return "INFANTRY"; }
 
   /*

@@ -56,6 +56,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <filesystem>
+#include <span>
 
 #include "base/array.h"
 #include "externs.h"
@@ -71,6 +72,7 @@
 #include "ra/mapedit.h"
 #include "ra/object.h"
 #include "ra/smudge.h"
+#include "ra/keyframe.h"
 #include "ra/type.h"
 #include "sdllib/shape.h"
 #include "sdllib/ww_win.h"
@@ -289,7 +291,7 @@ void SmudgeTypeClass::Init_Heap() {
 SmudgeType SmudgeTypeClass::From_Name(const char* name) {
   if (name != nullptr) {
     for (const SmudgeType index : magic_enum::enum_values<SmudgeType>()) {
-      if (stricmp(As_Reference(index).IniName, name) == 0) {
+      if (port::CompareIgnoreCase(As_Reference(index).IniName, name) == 0) {
         return index;
       }
     }
@@ -314,16 +316,17 @@ SmudgeType SmudgeTypeClass::From_Name(const char* name) {
  *                                                                                             *
  * HISTORY: * 08/12/1994 JLB : Created. *
  *=============================================================================================*/
-const int16_t* SmudgeTypeClass::Occupy_List(bool /*placement*/) const {
-  static int16_t _occupy[4 * 4];
-  int16_t* ptr = &_occupy[0];
+std::span<const int16_t> SmudgeTypeClass::Occupy_List(
+    bool /*placement*/) const {
+  static int16_t _occupy[(4 * 4) + 1];
+  std::span<int16_t> ptr(_occupy);
 
   for (int x = 0; x < Width; x++) {
     for (int y = 0; y < Height; y++) {
-      *ptr++ = static_cast<int16_t>(x + (y * MAP_CELL_W));
+      base::ConsumeFront(ptr) = static_cast<int16_t>(x + (y * MAP_CELL_W));
     }
   }
-  *ptr = kRefreshEol;
+  ptr.front() = kRefreshEol;
   return _occupy;
 }
 
@@ -372,13 +375,13 @@ void SmudgeTypeClass::Init(TheaterType theater) {
  *=============================================================================================*/
 void SmudgeTypeClass::Display(int x, int y, WindowNumberType window,
                               HousesType /*unused*/) const {
-  const void* ptr = Get_Image_Data();
+  const auto ptr = Get_Image_Data();
 
-  x += base::At(WindowList[static_cast<int>(window)], kWindowX);
-  y += base::At(WindowList[static_cast<int>(window)], kWindowY);
+  x += base::At(base::At(WindowList, static_cast<int>(window)), kWindowX);
+  y += base::At(base::At(WindowList, static_cast<int>(window)), kWindowY);
 
   IsTheaterShape = true;  // Smudges are theater specific
-  if (ptr != nullptr) {
+  if (!ptr.empty()) {
     for (int w = 0; w < Width; w++) {
       for (int h = 0; h < Height; h++) {
         CC_Draw_Shape(ptr, w + (h * Width), x + (w * ICON_PIXEL_W),
@@ -407,7 +410,7 @@ void SmudgeTypeClass::Display(int x, int y, WindowNumberType window,
  *=============================================================================================*/
 void SmudgeTypeClass::Prep_For_Add() {
   for (const SmudgeType index : magic_enum::enum_values<SmudgeType>()) {
-    if (As_Reference(index).Get_Image_Data()) {
+    if (!As_Reference(index).Get_Image_Data().empty()) {
       Map.Add_To_List(&As_Reference(index));
     }
   }
@@ -474,8 +477,8 @@ ObjectClass* SmudgeTypeClass::Create_One_Of(HouseClass* /*unused*/) const {
  * HISTORY: * 08/12/1994 JLB : Created. *
  *=============================================================================================*/
 void SmudgeTypeClass::Draw_It(int x, int y, int data) const {
-  const void* ptr = Get_Image_Data();
-  if (ptr != nullptr) {
+  const auto ptr = Get_Image_Data();
+  if (!ptr.empty()) {
     IsTheaterShape = true;  // Smudges are theater specific
     CC_Draw_Shape(ptr, data, x, y, WINDOW_TACTICAL, SHAPE_WIN_REL);
     IsTheaterShape = false;

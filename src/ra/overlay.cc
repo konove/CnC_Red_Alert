@@ -49,6 +49,7 @@
 #include <cstdlib>
 #include <span>
 
+#include "base/buffer.h"
 #include "base/numeric.h"
 #include "ra/building.h"
 #include "ra/ccini.h"
@@ -275,7 +276,8 @@ bool OverlayClass::Mark(MarkType mark) {
 void OverlayClass::Read_INI(CCINIClass& ini) {
   if (NewINIFormat > 1) {
     const int len =
-        ini.Get_UUBlock("OverlayPack", staging_buffer, sizeof(staging_buffer));
+        ini.Get_UUBlock("OverlayPack", base::ObjectBytes(staging_buffer),
+                        sizeof(staging_buffer));
 
     if (len > 0) {
       SpanSource bpipe(
@@ -371,14 +373,12 @@ void OverlayClass::Write_INI(CCINIClass& ini) {
   SpanSink bpipe(std::as_writable_bytes(std::span(staging_buffer)));
   LcwSink comppipe(CodecMode::kCompress, bpipe);
 
-  CellClass* cellptr = &Map[static_cast<CELL>(0)];
   for (CELL index = 0; index < MAP_CELL_TOTAL; index++) {
-    comppipe.WriteObject(cellptr->Overlay);
-    cellptr++;
+    comppipe.WriteObject(Map[index].Overlay);
   }
   comppipe.Finish();
   if (bpipe.bytes_written() > 0) {
-    ini.Put_UUBlock("OverlayPack", staging_buffer,
+    ini.Put_UUBlock("OverlayPack", base::ObjectBytes(staging_buffer),
                     static_cast<int>(bpipe.bytes_written()));
   }
 

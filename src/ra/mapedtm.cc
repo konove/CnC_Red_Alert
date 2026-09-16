@@ -41,6 +41,7 @@
 
 #include <cstdint>
 
+#include "base/array.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ccptr.h"
 #include "ra/conquer.h"
@@ -243,7 +244,7 @@ int MapEditClass::Select_Team(const char* /*unused*/) {
   bool edit_team = false;                 // true = user wants to edit
   bool new_team = false;                  // true = user wants to new
   bool del_team = false;                  // true = user wants to new
-  static int tabs[] = {35, 60, 80, 100};  // list box tab stops
+  static const int tabs[] = {35, 60, 80, 100};  // list box tab stops
 
   /*
   **	Buttons
@@ -252,7 +253,8 @@ int MapEditClass::Select_Team(const char* /*unused*/) {
 
   TListClass<CCPtr<TeamTypeClass> > teamlist(
       kTeamList, kListX, kListY, kListW, kListH, TPF_EFNT | TPF_NOSHADOW,
-      MixArchive::Retrieve("EBTN-UP.SHP"), MixArchive::Retrieve("EBTN-DN.SHP"));
+      MixArchive::RetrieveData("EBTN-UP.SHP"),
+      MixArchive::RetrieveData("EBTN-DN.SHP"));
 
   TextButtonClass editbtn(kButtonEdit, "Edit", kTpfEButton, kEditX, kEditY,
                           kEditW);
@@ -273,7 +275,7 @@ int MapEditClass::Select_Team(const char* /*unused*/) {
     teamlist.Add_Item(CCPtr<TeamTypeClass>(TeamTypes.Ptr(index)));
   }
 
-  PNBubble_Sort(&teamlist[0], teamlist.Count());
+  PNBubble_Sort(teamlist, teamlist.Count());
 
   if (!CurTeam || !CurTeam->IsActive) {
     CurTeam = nullptr;
@@ -524,22 +526,22 @@ int MapEditClass::Team_Members(HousesType house) {
   */
   int i = 0;
   for (const InfantryType i_id : magic_enum::enum_values<InfantryType>()) {
-    teamclass[i] = &InfantryTypeClass::As_Reference(i_id);
+    base::At(teamclass, i) = &InfantryTypeClass::As_Reference(i_id);
     i++;
   }
 
   for (const AircraftType a_id : magic_enum::enum_values<AircraftType>()) {
-    teamclass[i] = &AircraftTypeClass::As_Reference(a_id);
+    base::At(teamclass, i) = &AircraftTypeClass::As_Reference(a_id);
     i++;
   }
 
   for (const UnitType u_id : magic_enum::enum_values<UnitType>()) {
-    teamclass[i] = &UnitTypeClass::As_Reference(u_id);
+    base::At(teamclass, i) = &UnitTypeClass::As_Reference(u_id);
     i++;
   }
 
   for (const VesselType v_id : magic_enum::enum_values<VesselType>()) {
-    teamclass[i] = &VesselTypeClass::As_Reference(v_id);
+    base::At(teamclass, i) = &VesselTypeClass::As_Reference(v_id);
     i++;
   }
 
@@ -554,7 +556,7 @@ int MapEditClass::Team_Members(HousesType house) {
   **	  'teamclass' array & set its count value
   */
   for (int j = 0; j < maxclasses; j++) {
-    teamcount[j] = 0;
+    base::At(teamcount, j) = 0;
   }
 
   /*
@@ -570,8 +572,8 @@ int MapEditClass::Team_Members(HousesType house) {
       **	'teamclass' array entry by comparing the actual pointers; typeid
       **	won't work because E1 & E2 are the same type class.
       */
-      if (CurTeam->Members[i].Class == teamclass[j]) {
-        teamcount[j] = CurTeam->Members[i].Quantity;
+      if (base::At(CurTeam->Members, i).Class == base::At(teamclass, j)) {
+        base::At(teamcount, j) = base::At(CurTeam->Members, i).Quantity;
         break;
       }
     }
@@ -653,11 +655,11 @@ int MapEditClass::Team_Members(HousesType house) {
           /*
           **	Display the object along with any count value for it.
           */
-          Draw_Member(teamclass[i], i, teamcount[i], house);
+          Draw_Member(base::At(teamclass, i), i, base::At(teamcount, i), house);
         }
 
         if (static_cast<unsigned>(curclass) < static_cast<unsigned>(maxclasses)) {
-          Fancy_Text_Print(teamclass[curclass]->Full_Name(),
+          Fancy_Text_Print(base::At(teamclass, curclass)->Full_Name(),
                            kDialogX + (kDialogW / 2), msg_y,
                            &ColorRemaps[PCOLOR_BROWN], kTBlack,
                            TPF_CENTER | TPF_EFNT | TPF_NOSHADOW);
@@ -746,7 +748,7 @@ int MapEditClass::Team_Members(HousesType house) {
                                msg_y + kTxt6H, kBlack);
 
           if (static_cast<unsigned>(curclass) < static_cast<unsigned>(maxclasses)) {
-            Fancy_Text_Print(teamclass[curclass]->Full_Name(),
+            Fancy_Text_Print(base::At(teamclass, curclass)->Full_Name(),
                              kDialogX + (kDialogW / 2), msg_y, scheme, kTBlack,
                              TPF_CENTER | TPF_EFNT | TPF_NOSHADOW);
           }
@@ -773,7 +775,7 @@ int MapEditClass::Team_Members(HousesType house) {
       *decrement *	tindex to go to the next time delay, which is longer;
       *then, decr. *	again to go to the 1st time delay which is the shortest.
       */
-      if (TickCount.Value() - heldtime > tdelay[tindex]) {
+      if (TickCount.Value() - heldtime > base::At(tdelay, tindex)) {
         heldtime = TickCount.Value();
         if (tindex) {
           tindex--;
@@ -782,7 +784,7 @@ int MapEditClass::Team_Members(HousesType house) {
         /*
         **	Detect addition of a new class.
         */
-        if (teamcount[curclass] == 0) {
+        if (base::At(teamcount, curclass) == 0) {
           /*
           **	Don't allow more classes than we can handle.
           */
@@ -791,12 +793,13 @@ int MapEditClass::Team_Members(HousesType house) {
           }
           numclasses++;
         }
-        teamcount[curclass]++;
+        base::At(teamcount, curclass)++;
 
         /*
         **	Update number label.
         */
-        Draw_Member(teamclass[curclass], curclass, teamcount[curclass], house);
+        Draw_Member(base::At(teamclass, curclass), curclass,
+                    base::At(teamcount, curclass), house);
       }
 
     } else {
@@ -806,19 +809,19 @@ int MapEditClass::Team_Members(HousesType house) {
       *decrement *	tindex to go to the next time delay, which is longer;
       *then, decr. *	again to go to the 1st time delay which is the shortest.
       */
-      if (rheld && (TickCount.Value() - heldtime > tdelay[tindex])) {
+      if (rheld && (TickCount.Value() - heldtime > base::At(tdelay, tindex))) {
         if (tindex) {
           tindex--;
         }
         heldtime = TickCount.Value();
 
-        if (teamcount[curclass] > 0) {
-          teamcount[curclass]--;
+        if (base::At(teamcount, curclass) > 0) {
+          base::At(teamcount, curclass)--;
 
           /*
           **	Detect removal of a class.
           */
-          if (teamcount[curclass] == 0) {
+          if (base::At(teamcount, curclass) == 0) {
             numclasses--;
           }
         }
@@ -826,7 +829,8 @@ int MapEditClass::Team_Members(HousesType house) {
         /*
         **	Update number label.
         */
-        Draw_Member(teamclass[curclass], curclass, teamcount[curclass], house);
+        Draw_Member(base::At(teamclass, curclass), curclass,
+                    base::At(teamcount, curclass), house);
       }
     }
   }
@@ -838,9 +842,9 @@ int MapEditClass::Team_Members(HousesType house) {
     CurTeam->ClassCount = numclasses;
     i = 0;  // current team class index
     for (int j = 0; j < maxclasses; j++) {
-      if (teamcount[j] > 0) {
-        CurTeam->Members[i].Quantity = teamcount[j];
-        CurTeam->Members[i].Class = teamclass[j];
+      if (base::At(teamcount, j) > 0) {
+        base::At(CurTeam->Members, i).Quantity = base::At(teamcount, j);
+        base::At(CurTeam->Members, i).Class = base::At(teamclass, j);
         i++;
       }
     }
@@ -895,10 +899,12 @@ void MapEditClass::Draw_Member(const TechnoTypeClass* ptr, int index, int quant,
   /*
   **	Change the window to this box.
   */
-  WindowList[static_cast<int>(WINDOW_EDITOR)][kWindowX] = x;
-  WindowList[static_cast<int>(WINDOW_EDITOR)][kWindowY] = y;
-  WindowList[static_cast<int>(WINDOW_EDITOR)][kWindowWidth] = kPictureW;
-  WindowList[static_cast<int>(WINDOW_EDITOR)][kWindowHeight] = kPictureH;
+  base::At(WindowList[static_cast<int>(WINDOW_EDITOR)], kWindowX) = x;
+  base::At(WindowList[static_cast<int>(WINDOW_EDITOR)], kWindowY) = y;
+  base::At(WindowList[static_cast<int>(WINDOW_EDITOR)], kWindowWidth) =
+      kPictureW;
+  base::At(WindowList[static_cast<int>(WINDOW_EDITOR)], kWindowHeight) =
+      kPictureH;
   Change_Window(static_cast<int>(WINDOW_EDITOR));
 
   Hide_Mouse();

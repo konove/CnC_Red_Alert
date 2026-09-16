@@ -464,7 +464,7 @@ void EventClass::Execute() {
       Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_SPECIAL_WARNING),
                           sender->Name);
       Messages.Add_Message(
-          txt, MPlayerTColors[static_cast<int>(sender->RemapColor)],
+          txt, base::At(MPlayerTColors, static_cast<int>(sender->RemapColor)),
           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200, 0, 0);
       Map.Flag_To_Redraw(false);
     } break;

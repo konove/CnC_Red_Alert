@@ -71,8 +71,10 @@
  *=========================================================================*/
 #include "td/ipxgconn.h"
 
+#include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <span>
 #include <utility>
 
 #include "base/buffer.h"
@@ -123,12 +125,16 @@ IPXGlobalConnClass::IPXGlobalConnClass(int numsend, int numreceive, int maxlen,
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-int IPXGlobalConnClass::Send_Packet(void* buf, int buflen,
+int IPXGlobalConnClass::Send_Packet(std::span<const std::byte> buf, int buflen,
                                     IPXAddressClass* address, int ack_req) {
+  if (buflen < 0 || base::ToSize(buflen) > buf.size() ||
+      base::ToSize(buflen) > PacketBuf.size() - sizeof(GlobalHeaderType)) {
+    return 0;
+  }
   /*------------------------------------------------------------------------
   Store the packet's Magic Number
   ------------------------------------------------------------------------*/
-  port::AlignedObject<GlobalHeaderType>(PacketBuf)->Header.MagicNumber =
+  port::AlignedObject<GlobalHeaderType>(PacketBuf.data())->Header.MagicNumber =
       MagicNum;
 
   /*------------------------------------------------------------------------
@@ -136,10 +142,10 @@ int IPXGlobalConnClass::Send_Packet(void* buf, int buflen,
   ACK-required; otherwise, mark as no-ACK-required.
   ------------------------------------------------------------------------*/
   if (ack_req && address != nullptr) {
-    port::AlignedObject<GlobalHeaderType>(PacketBuf)->Header.Code =
+    port::AlignedObject<GlobalHeaderType>(PacketBuf.data())->Header.Code =
         static_cast<unsigned char>(PACKET_DATA_ACK);
   } else {
-    port::AlignedObject<GlobalHeaderType>(PacketBuf)->Header.Code =
+    port::AlignedObject<GlobalHeaderType>(PacketBuf.data())->Header.Code =
         static_cast<unsigned char>(PACKET_DATA_NOACK);
   }
 
@@ -148,29 +154,31 @@ int IPXGlobalConnClass::Send_Packet(void* buf, int buflen,
   allows us to determine if an ACK packet we receive later goes with this
   packet; it doesn't let us detect re-sends of other systems' packets.
   ------------------------------------------------------------------------*/
-  port::AlignedObject<GlobalHeaderType>(PacketBuf)->Header.PacketID =
+  port::AlignedObject<GlobalHeaderType>(PacketBuf.data())->Header.PacketID =
       Queue->Send_Total();
 
   /*------------------------------------------------------------------------
   Set the product ID for this packet.
   ------------------------------------------------------------------------*/
-  port::AlignedObject<GlobalHeaderType>(PacketBuf)->ProductID = ProductID;
+  port::AlignedObject<GlobalHeaderType>(PacketBuf.data())->ProductID =
+      ProductID;
 
   /*------------------------------------------------------------------------
   Set this packet's destination address.  If no address is specified, use
   a Broadcast address (which IPXAddressClass's default constructor creates).
   ------------------------------------------------------------------------*/
   if (address != nullptr) {
-    port::AlignedObject<GlobalHeaderType>(PacketBuf)->Address = *address;
+    port::AlignedObject<GlobalHeaderType>(PacketBuf.data())->Address = *address;
   } else {
-    port::AlignedObject<GlobalHeaderType>(PacketBuf)->Address =
+    port::AlignedObject<GlobalHeaderType>(PacketBuf.data())->Address =
         IPXAddressClass();
   }
 
   /*------------------------------------------------------------------------
   Copy the application's data
   ------------------------------------------------------------------------*/
-  memcpy(PacketBuf + sizeof(GlobalHeaderType), buf, base::ToSize(buflen));
+  base::CopyBytes(std::span(PacketBuf).subspan(sizeof(GlobalHeaderType)), buf,
+                  base::ToSize(buflen));
 
   /*------------------------------------------------------------------------
   Queue it
@@ -202,13 +210,13 @@ int IPXGlobalConnClass::Send_Packet(void* buf, int buflen,
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-int IPXGlobalConnClass::Receive_Packet(void* buf, int buflen,
+int IPXGlobalConnClass::Receive_Packet(std::span<std::byte> buf, int buflen,
                                        IPXAddressClass* address) {
-
   /*
   --------------------------- Check the magic # ----------------------------
   */
-  if (std::cmp_less(buflen, sizeof(GlobalHeaderType))) {
+  if (std::cmp_less(buflen, sizeof(GlobalHeaderType)) ||
+      base::ToSize(buflen) > buf.size()) {
     return 0;
   }
   auto packet_storage = port::ReadUnaligned<GlobalHeaderType>(buf);
@@ -253,7 +261,7 @@ int IPXGlobalConnClass::Receive_Packet(void* buf, int buflen,
         ............. If ptr is valid, get ptr to its data ..............
         */
         auto* entry_data = port::AlignedObject<GlobalHeaderType>(
-            send_entry->Buffer);  // ptr to queue entry data
+            send_entry->Buffer.data());  // ptr to queue entry data
         /*
         .............. If ACK is for this entry, mark it ................
         */
@@ -299,10 +307,9 @@ int IPXGlobalConnClass::Receive_Packet(void* buf, int buflen,
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-int IPXGlobalConnClass::Get_Packet(void* buf, int* buflen,
+int IPXGlobalConnClass::Get_Packet(std::span<std::byte> buf, int* buflen,
                                    IPXAddressClass* address,
                                    uint16_t* product_id) {
-
   /*
   ------------------------ Return if nothing to do -------------------------
   */
@@ -320,6 +327,11 @@ int IPXGlobalConnClass::Get_Packet(void* buf, int* buflen,
   ------------------------ Read it if it's un-read -------------------------
   */
   if (rec_entry != nullptr && rec_entry->IsRead == 0) {
+    if (std::cmp_less(rec_entry->BufLen, sizeof(GlobalHeaderType)) ||
+        base::ToSize(rec_entry->BufLen) - sizeof(GlobalHeaderType) >
+            buf.size()) {
+      return 0;
+    }
     /*
     ........................... Mark as read ..............................
     */
@@ -328,13 +340,15 @@ int IPXGlobalConnClass::Get_Packet(void* buf, int* buflen,
     /*
     .......................... Copy data packet ...........................
     */
-    auto* packet = port::AlignedObject<GlobalHeaderType>(rec_entry->Buffer);
+    auto* packet =
+        port::AlignedObject<GlobalHeaderType>(rec_entry->Buffer.data());
     const int packetlen =
         rec_entry->BufLen -
         static_cast<int>(sizeof(GlobalHeaderType));  // size of received packet
     if (packetlen > 0) {
-      memcpy(buf, rec_entry->Buffer + sizeof(GlobalHeaderType),
-             base::ToSize(packetlen));
+      base::CopyBytes(
+          buf, std::span(rec_entry->Buffer).subspan(sizeof(GlobalHeaderType)),
+          base::ToSize(packetlen));
     }
     *buflen = packetlen;
     *address = packet->Address;
@@ -371,7 +385,7 @@ int IPXGlobalConnClass::Get_Packet(void* buf, int* buflen,
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-int IPXGlobalConnClass::Send(void* buf, int buflen) {
+int IPXGlobalConnClass::Send(std::span<const std::byte> buf, int buflen) {
   int rc = 0;
 
   /*------------------------------------------------------------------------
@@ -389,7 +403,8 @@ int IPXGlobalConnClass::Send(void* buf, int buflen) {
   /*------------------------------------------------------------------------
       Otherwise, send it
       ------------------------------------------------------------------------*/
-  if (IsBridge && !memcmp(addr, BridgeNet, 4)) {
+  if (IsBridge && base::CompareBytes(base::ObjectBytes(*addr),
+                                     base::ObjectBytes(BridgeNet), 4) == 0) {
     rc = Send_To(buf, buflen, addr, BridgeNode);
   } else {
     rc = Send_To(buf, buflen, addr, {});
@@ -440,7 +455,7 @@ int IPXGlobalConnClass::Service_Receive_Queue() {
   If this packet doesn't require an ACK, mark it as ACK'd.
   ------------------------------------------------------------------------*/
   auto* packet_hdr = port::AlignedObject<GlobalHeaderType>(
-      rec_entry->Buffer);  // packet header
+      rec_entry->Buffer.data());  // packet header
   if (packet_hdr->Header.Code ==
       static_cast<unsigned char>(PACKET_DATA_NOACK)) {
     rec_entry->IsACK = 1;
@@ -459,7 +474,7 @@ int IPXGlobalConnClass::Service_Receive_Queue() {
     ackpacket.Address = packet_hdr->Address;
     ackpacket.ProductID = ProductID;
 
-    Send(&ackpacket, sizeof(GlobalHeaderType));
+    Send(base::ObjectBytes(ackpacket), sizeof(GlobalHeaderType));
 
     rec_entry->IsACK = 1;
   }
@@ -472,7 +487,7 @@ int IPXGlobalConnClass::Service_Receive_Queue() {
   ------------------------------------------------------------------------*/
   if (rec_entry != nullptr && rec_entry->IsRead && rec_entry->IsACK &&
       Queue->Num_Receive() > 1) {
-    Queue->UnQueue_Receive(nullptr, nullptr, 0);
+    Queue->UnQueue_Receive({}, {}, 0);
   }
 
   return 1;

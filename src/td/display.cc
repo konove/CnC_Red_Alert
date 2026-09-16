@@ -91,6 +91,7 @@
 #include "td/display.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
@@ -103,6 +104,7 @@
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
+#include "base/buffer.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
 #include "base/types.h"
@@ -110,7 +112,6 @@
 #include "sdllib/font.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/memflag.h"
 #include "sdllib/misc.h"
 #include "sdllib/shape.h"
 #include "sdllib/ww_mouse.h"
@@ -174,11 +175,11 @@ unsigned char DisplayClass::FadingRed[256];
 unsigned char DisplayClass::TranslucentTable[(MAGIC_COL_COUNT + 1) * 256];
 unsigned char DisplayClass::WhiteTranslucentTable[(1 + 1) * 256];
 unsigned char DisplayClass::MouseTranslucentTable[(4 + 1) * 256];
-const void* DisplayClass::TransIconset;
+std::span<const std::byte> DisplayClass::TransIconset;
 unsigned char DisplayClass::UnitShadow[(USHADOW_COL_COUNT + 1) * 256];
 unsigned char DisplayClass::SpecialGhost[2 * 256];
 
-const void* DisplayClass::ShadowShapes;
+std::span<const std::byte> DisplayClass::ShadowShapes;
 unsigned char DisplayClass::ShadowTrans[(SHADOW_COL_COUNT + 1) * 256];
 
 /*
@@ -211,8 +212,8 @@ DisplayClass::TacticalClass DisplayClass::TacButton;
  * HISTORY: * 12/06/1994 JLB : Created. *
  *=============================================================================================*/
 DisplayClass::DisplayClass() {
-  ShadowShapes = nullptr;
-  TransIconset = nullptr;
+  ShadowShapes = {};
+  TransIconset = {};
 }
 
 /***********************************************************************************************
@@ -247,9 +248,9 @@ void DisplayClass::One_Time() {
   /*
   **	Load the generic transparent icon set.
   */
-  TransIconset = MixArchive::Retrieve("TRANS.ICN");
+  TransIconset = MixArchive::RetrieveData("TRANS.ICN");
 
-  ShadowShapes = MixArchive::Retrieve("SHADOW.SHP");
+  ShadowShapes = MixArchive::RetrieveData("SHADOW.SHP");
 
   Set_View_Dimensions(0, Map.Get_Tab_Height());
 
@@ -305,7 +306,7 @@ void DisplayClass::Init_Clear() {
   PendingObjectPtr = nullptr;
   PendingObject = nullptr;
   PendingHouse = HOUSE_NONE;
-  CursorSize = nullptr;
+  CursorSize = {};
   IsTargettingMode = 0;
   IsRepairMode = false;
   IsRubberBand = false;
@@ -398,14 +399,14 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   **	The fading palettes will have to be generated as well.
   */
   absl::SNPrintF(fullname, sizeof(fullname), "%s.PAL", Theaters[theater].Root);
-  const void* ptr = MixArchive::Retrieve(fullname);
-  Mem_Copy(ptr, GamePalette, 768);
+  const auto ptr = MixArchive::RetrieveData(fullname);
+  base::CopyBytes(std::as_writable_bytes(std::span(GamePalette)), ptr, 768);
 
-  Mem_Copy(GamePalette, OriginalPalette, 768);
+  std::ranges::copy(GamePalette, OriginalPalette.begin());
 
   GameFile(Fading_Table_Name("GREEN", theater)).ReadObject(FadingGreen);
   if (theater == THEATER_DESERT) {
-    FadingGreen[196] = 160;
+    base::At(FadingGreen, 196) = 160;
   }
 
   GameFile(Fading_Table_Name("YELLOW", theater)).ReadObject(FadingYellow);
@@ -436,7 +437,8 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   /*
   **	Create the shadow color used by aircraft.
   */
-  Conquer_Build_Fading_Table(GamePalette, &SpecialGhost[256], kBlack, 100);
+  Conquer_Build_Fading_Table(GamePalette, base::Suffix(SpecialGhost, 256),
+                             kBlack, 100);
   for (int index = 0; index < 256; index++) {
     base::At(SpecialGhost, index) = 0;
   }
@@ -473,12 +475,13 @@ void DisplayClass::Init_Theater(TheaterType theater) {
  * HISTORY: * 12/06/1994 JLB : Created. * 12/07/1994 JLB : Sidebar fixup. *
  *   08/13/1995 JLB : Optimized for variable sized help text. *
  *=============================================================================================*/
-const int16_t* DisplayClass::Text_Overlap_List(const char* text, int x, int y,
-                                               int lines) {
+std::span<const int16_t> DisplayClass::Text_Overlap_List(const char* text,
+                                                         int x, int y,
+                                                         int lines) {
   static int16_t _list[30];
 
   if (text) {
-    int16_t* ptr = &_list[0];
+    std::span<int16_t> ptr(_list);
     int len = String_Pixel_Width(text) + CELL_PIXEL_W;
     const int right = TacPixelX + Lepton_To_Pixel(TacLeptonWidth);
 
@@ -489,7 +492,7 @@ const int16_t* DisplayClass::Text_Overlap_List(const char* text, int x, int y,
     */
     if (x + len >= TacPixelX + Lepton_To_Pixel(TacLeptonWidth)) {
       len = right - x;
-      *ptr++ = REFRESH_SIDEBAR;
+      base::ConsumeFront(ptr) = REFRESH_SIDEBAR;
     }
 
     /*
@@ -511,14 +514,14 @@ const int16_t* DisplayClass::Text_Overlap_List(const char* text, int x, int y,
       if (ul != -1 && lr != -1) {
         for (int yy = Cell_Y(ul); yy <= Cell_Y(lr); yy++) {
           for (int xx = Cell_X(ul); xx <= Cell_X(lr); xx++) {
-            *ptr++ = static_cast<int16_t>(XY_Cell(xx, yy) -
-                                          Coord_Cell(TacticalCoord));
+            base::ConsumeFront(ptr) = static_cast<int16_t>(
+                XY_Cell(xx, yy) - Coord_Cell(TacticalCoord));
           }
         }
       }
     }
 
-    *ptr = REFRESH_EOL;
+    ptr.front() = REFRESH_EOL;
   }
   return _list;
 }
@@ -575,12 +578,14 @@ void DisplayClass::Set_View_Dimensions(int x, int y, int width, int height) {
 
   TacPixelX = x;
   TacPixelY = y;
-  base::At(WindowList[static_cast<int>(WINDOW_TACTICAL)], kWindowX) = x / 8;
-  base::At(WindowList[static_cast<int>(WINDOW_TACTICAL)], kWindowY) = y;
-  base::At(WindowList[static_cast<int>(WINDOW_TACTICAL)], kWindowWidth) =
-      width / 8;
-  base::At(WindowList[static_cast<int>(WINDOW_TACTICAL)], kWindowHeight) =
-      height;
+  base::At(base::At(WindowList, static_cast<int>(WINDOW_TACTICAL)), kWindowX) =
+      x / 8;
+  base::At(base::At(WindowList, static_cast<int>(WINDOW_TACTICAL)), kWindowY) =
+      y;
+  base::At(base::At(WindowList, static_cast<int>(WINDOW_TACTICAL)),
+           kWindowWidth) = width / 8;
+  base::At(base::At(WindowList, static_cast<int>(WINDOW_TACTICAL)),
+           kWindowHeight) = height;
   if (Window == static_cast<unsigned>(WINDOW_TACTICAL)) {
     Change_Window(0);
     Change_Window(static_cast<int>(Window));
@@ -613,27 +618,27 @@ void DisplayClass::Set_View_Dimensions(int x, int y, int width, int height) {
  * HISTORY: * 06/03/1994 JLB : Created. * 06/26/1995 JLB : Puts placement cursor
  *into static buffer.                                *
  *=============================================================================================*/
-void DisplayClass::Set_Cursor_Shape(const int16_t* list) {
-  if (CursorSize) {
+void DisplayClass::Set_Cursor_Shape(std::span<const int16_t> list) {
+  if (!CursorSize.empty()) {
     Cursor_Mark(static_cast<CELL>(ZoneCell + ZoneOffset), false);
   }
 
   ZoneOffset = 0;
 
-  if (list) {
+  if (!list.empty()) {
     int w = 0;
     int h = 0;
     static int16_t _list[50];
 
-    for (int i = 0; !i || list[i - 1] != REFRESH_EOL; i++) {
-      base::At(_list, i) = list[i];
+    for (int i = 0; !i || list[base::ToSize(i - 1)] != REFRESH_EOL; i++) {
+      base::At(_list, i) = list[base::ToSize(i)];
     }
     CursorSize = _list;
     Get_Occupy_Dimensions(w, h, CursorSize);
     ZoneOffset = static_cast<int16_t>(-((h / 2 * MAP_CELL_W) + (w / 2)));
     Cursor_Mark(static_cast<CELL>(ZoneCell + ZoneOffset), true);
   } else {
-    CursorSize = nullptr;
+    CursorSize = {};
   }
 }
 
@@ -669,7 +674,8 @@ bool DisplayClass::Passes_Proximity_Check(const ObjectTypeClass* object) {
     return true;
   }
 
-  if (!object || !CursorSize || object->What_Am_I() != RTTI_BUILDINGTYPE) {
+  if (!object || CursorSize.empty() ||
+      object->What_Am_I() != RTTI_BUILDINGTYPE) {
     return true;
   }
 
@@ -678,9 +684,10 @@ bool DisplayClass::Passes_Proximity_Check(const ObjectTypeClass* object) {
   *adjacent *	cells to these are of friendly persuasion, then consider the
   *proximity check to *	have been a success.
   */
-  const int16_t* ptr = CursorSize;
-  while (*ptr != REFRESH_EOL) {
-    const CELL cell = static_cast<CELL>(ZoneCell + ZoneOffset + *ptr++);
+  std::span<const int16_t> ptr = CursorSize;
+  while (ptr.front() != REFRESH_EOL) {
+    const CELL cell =
+        static_cast<CELL>(ZoneCell + ZoneOffset + base::ConsumeFront(ptr));
 
     for (FacingType facing = FACING_N; facing < FACING_COUNT; facing++) {
       const CELL newcell = Adjacent_Cell(cell, facing);
@@ -740,7 +747,7 @@ CELL DisplayClass::Set_Cursor_Pos(CELL pos) {
     pos = Click_Cell_Calc(Get_Mouse_X(), Get_Mouse_Y());
   }
 
-  if (!CursorSize) {
+  if (CursorSize.empty()) {
     prevpos = ZoneCell;
     ZoneCell = pos;
     return prevpos;
@@ -779,7 +786,7 @@ CELL DisplayClass::Set_Cursor_Pos(CELL pos) {
   **	If the cursor is visible, then handle the graphic update.
   **	Otherwise, just update the global position of the cursor.
   */
-  if (CursorSize) {
+  if (!CursorSize.empty()) {
     /*
     ** Erase the old cursor (if it exists) AND the cursor is moving.
     */
@@ -813,7 +820,8 @@ CELL DisplayClass::Set_Cursor_Pos(CELL pos) {
  *                                                                                             *
  * HISTORY: * 03/31/1995 BRR : Created. *
  *=============================================================================================*/
-void DisplayClass::Get_Occupy_Dimensions(int& w, int& h, const int16_t* list) {
+void DisplayClass::Get_Occupy_Dimensions(int& w, int& h,
+                                         std::span<const int16_t> list) {
   int min_x = MAP_CELL_W;
   int max_x = -MAP_CELL_W;
   int min_y = MAP_CELL_H;
@@ -822,25 +830,25 @@ void DisplayClass::Get_Occupy_Dimensions(int& w, int& h, const int16_t* list) {
   w = 0;
   h = 0;
 
-  if (!list) {
+  if (list.empty()) {
     /*
     ** Loop through all cell offsets, accumulating max & min x- & y-coords
     */
-    while (*list != REFRESH_EOL) {
+    while (list.front() != REFRESH_EOL) {
       /*
       ** Compute x & y coords of the current cell offset.  We can't use Cell_X()
       ** & Cell_Y(), because they use shifts to compute the values, and if the
       ** offset is negative we'll get a bogus coordinate!
       */
-      const int x = *list % MAP_CELL_W;
-      const int y = *list / MAP_CELL_H;
+      const int x = list.front() % MAP_CELL_W;
+      const int y = list.front() / MAP_CELL_H;
 
       max_x = std::max(max_x, x);
       min_x = std::min(min_x, x);
       max_y = std::max(max_y, y);
       min_y = std::min(min_y, y);
 
-      list++;
+      list = list.subspan(1);
     }
 
     w = std::max(1, max_x - min_x + 1);
@@ -877,9 +885,9 @@ void DisplayClass::Cursor_Mark(CELL pos, bool on) {
   **	For every cell in the CursorSize list, invoke its Redraw_Objects and
   **	toggle its IsCursorHere flag
   */
-  const CELL* ptr = CursorSize;
-  while (*ptr != REFRESH_EOL) {
-    const CELL cell = static_cast<CELL>(pos + *ptr++);
+  std::span<const int16_t> ptr = CursorSize;
+  while (ptr.front() != REFRESH_EOL) {
+    const CELL cell = static_cast<CELL>(pos + base::ConsumeFront(ptr));
     if (In_Radar(cell)) {
       cellptr = &(*this)[cell];
       cellptr->Redraw_Objects();
@@ -893,8 +901,8 @@ void DisplayClass::Cursor_Mark(CELL pos, bool on) {
   */
   if (PendingObjectPtr) {
     ptr = PendingObjectPtr->Overlap_List();
-    while (*ptr != REFRESH_EOL) {
-      const CELL cell = static_cast<CELL>(pos + *ptr++);
+    while (ptr.front() != REFRESH_EOL) {
+      const CELL cell = static_cast<CELL>(pos + base::ConsumeFront(ptr));
       if (In_Radar(cell)) {
         cellptr = &(*this)[cell];
         cellptr->Redraw_Objects();
@@ -1056,7 +1064,8 @@ void DisplayClass::Read_INI(char* buffer) {
   **	at this point.
   */
   WWGetPrivateProfileString("MAP", "Theater", Theaters[THEATER_DESERT].Name,
-                            name, 13, buffer);
+                            std::span(name).first(static_cast<std::size_t>(13)),
+                            buffer);
   Theater = Theater_From_Name(name);
 
   /*
@@ -1096,26 +1105,26 @@ void DisplayClass::Read_INI(char* buffer) {
   **	Set the starting position (do this after Init(), which clears the cells'
   **	IsWaypoint flags).
   */
-  if (Waypoint[kWayptHome] == -1) {
-    Waypoint[kWayptHome] = XY_Cell(MapCellX, MapCellY);
+  if (base::At(Waypoint, kWayptHome) == -1) {
+    base::At(Waypoint, kWayptHome) = XY_Cell(MapCellX, MapCellY);
   }
-  Set_Tactical_Position(Cell_Coord(Waypoint[kWayptHome]) & 0xFF00FF00L);
-  Views[0] = Views[1] = Views[2] = Views[3] = Waypoint[kWayptHome];
+  Set_Tactical_Position(Cell_Coord(base::At(Waypoint, kWayptHome)) &
+                        0xFF00FF00L);
+  base::At(Views, 0) = base::At(Views, 1) = base::At(Views, 2) =
+      base::At(Views, 3) = base::At(Waypoint, kWayptHome);
 
   /*
   **	Read the cell trigger names, and assign TriggerClass pointers
   */
-  const int len =
-      static_cast<int>(std::string_view(buffer).size()) +
-      2;  // Length of data in buffer.  // len is the length of the INI data
-  char* tbuffer = buffer + len;  // Accumulation buffer of Trigger names.    //
-                                 // tbuffer is after the INI data
+  std::vector<char> key_storage(std::string_view(buffer).size() + 2);
+  auto key_cursor = std::span(key_storage);
+  char* tbuffer = key_cursor.data();  // Accumulation buffer of Trigger names.
+                                      // // tbuffer is after the INI data
 
   /*
   **	Read all entry names into 'tbuffer'.
   */
-  WWGetPrivateProfileString(trigsection, nullptr, nullptr, tbuffer,
-                            ShapeBufferSize - len, buffer);
+  WWGetPrivateProfileString(trigsection, nullptr, nullptr, key_cursor, buffer);
 
   /*
   **	Loop through all CellTrigger entries.
@@ -1124,8 +1133,10 @@ void DisplayClass::Read_INI(char* buffer) {
     /*
     **	Get a cell trigger assignment.
     */
-    WWGetPrivateProfileString(trigsection, tbuffer, nullptr, buf,
-                              sizeof(buf) - 1, buffer);
+    WWGetPrivateProfileString(
+        trigsection, tbuffer, nullptr,
+        std::span(buf).first(static_cast<std::size_t>(sizeof(buf) - 1)),
+        buffer);
 
     /*
     **	Get cell # from entry name.
@@ -1147,7 +1158,8 @@ void DisplayClass::Read_INI(char* buffer) {
     /*
     **	Step to next entry name.
     */
-    tbuffer += std::string_view(tbuffer).size() + 1;
+    key_cursor = key_cursor.subspan(std::string_view(tbuffer).size() + 1);
+    tbuffer = key_cursor.data();
   }
 }
 
@@ -1165,7 +1177,7 @@ void DisplayClass::Read_INI(char* buffer) {
  *                                                                                             *
  * HISTORY: * 05/27/1994 JLB : Created. *
  *=============================================================================================*/
-void DisplayClass::Write_INI(char* buffer) {
+void DisplayClass::Write_INI(std::span<char> buffer) {
   char entry[20];
 
   /*
@@ -1354,12 +1366,12 @@ bool DisplayClass::Scroll_Map(DirType facing, int& distance, bool really) {
  *                                                                                             *
  * HISTORY: * 05/14/1994 JLB : Created. * 08/01/1994 JLB : Simplified. *
  *=============================================================================================*/
-void DisplayClass::Refresh_Cells(CELL cell, const int16_t* list) {
-  if (*list == REFRESH_SIDEBAR) {
-    list++;
+void DisplayClass::Refresh_Cells(CELL cell, std::span<const int16_t> list) {
+  if (list.front() == REFRESH_SIDEBAR) {
+    list = list.subspan(1);
   }
-  while (*list != REFRESH_EOL) {
-    const CELL newcell = static_cast<CELL>(cell + *list++);
+  while (list.front() != REFRESH_EOL) {
+    const CELL newcell = static_cast<CELL>(cell + base::ConsumeFront(list));
     if (In_Radar(newcell)) {
       (*this)[newcell].Redraw_Objects();
     }
@@ -1402,27 +1414,27 @@ int DisplayClass::Cell_Shadow(CELL cell) {
 
   const bool rightedge = Cell_X(cell) == MAP_CELL_W - 1;
 
-  CellClass* cellptr = &(*this)[cell];
-  if (!cellptr->IsMapped) {
+  int cell_index = cell;
+  if (!(*this)[static_cast<CELL>(cell_index)].IsMapped) {
     /*
     **	Check the cardinal directions first. This will either result
     **	in a solution or the flag to check the diagonals.
     */
     uint32_t index = 0;
-    cellptr--;
-    if (cellptr->IsMapped) {
+    cell_index--;
+    if ((*this)[static_cast<CELL>(cell_index)].IsMapped) {
       index |= 0x08;
     }
-    cellptr += MAP_CELL_W + 1;
-    if (cellptr->IsMapped) {
+    cell_index += MAP_CELL_W + 1;
+    if ((*this)[static_cast<CELL>(cell_index)].IsMapped) {
       index |= 0x04;
     }
-    cellptr -= MAP_CELL_W - 1;
-    if (cellptr->IsMapped) {
+    cell_index -= MAP_CELL_W - 1;
+    if ((*this)[static_cast<CELL>(cell_index)].IsMapped) {
       index |= 0x02;
     }
-    cellptr -= MAP_CELL_W + 1;
-    if (cellptr->IsMapped) {
+    cell_index -= MAP_CELL_W + 1;
+    if ((*this)[static_cast<CELL>(cell_index)].IsMapped) {
       index |= 0x01;
     }
     value = base::At(CardShadow, index);
@@ -1433,20 +1445,20 @@ int DisplayClass::Cell_Shadow(CELL cell) {
     */
     if (value == -2) {
       index = 0;
-      cellptr--;
-      if (cellptr->IsMapped) {
+      cell_index--;
+      if ((*this)[static_cast<CELL>(cell_index)].IsMapped) {
         index |= 0x08;
       }
-      cellptr += static_cast<base::ssize>(MAP_CELL_W) * 2;
-      if (cellptr->IsMapped) {
+      cell_index += static_cast<base::ssize>(MAP_CELL_W) * 2;
+      if ((*this)[static_cast<CELL>(cell_index)].IsMapped) {
         index |= 0x04;
       }
-      cellptr += 2;
-      if (!rightedge && cellptr->IsMapped) {
+      cell_index += 2;
+      if (!rightedge && (*this)[static_cast<CELL>(cell_index)].IsMapped) {
         index |= 0x02;
       }
-      cellptr -= static_cast<base::ssize>(MAP_CELL_W) * 2;
-      if (cellptr->IsMapped) {
+      cell_index -= static_cast<base::ssize>(MAP_CELL_W) * 2;
+      if ((*this)[static_cast<CELL>(cell_index)].IsMapped) {
         index |= 0x01;
       }
       value = base::At(DiagShadow, index);
@@ -2132,8 +2144,7 @@ void DisplayClass::Redraw_Shadow() {
               const int shadow = Cell_Shadow(cell);
               if (shadow >= 0) {
                 CC_Draw_Shape(ShadowShapes, shadow, xpixel, ypixel,
-                              WINDOW_TACTICAL, SHAPE_GHOST, nullptr,
-                              ShadowTrans);
+                              WINDOW_TACTICAL, SHAPE_GHOST, {}, ShadowTrans);
               }
             }
           }
@@ -2443,7 +2454,7 @@ CELL DisplayClass::Calculated_Cell(SourceType dir, HousesType house) {
       **	Drop in at a random location.
       */
       case SOURCE_AIR:
-        cell = Waypoint[kWayptReinf];
+        cell = base::At(Waypoint, kWayptReinf);
         if (cell < 1) {
           cell = Coord_Cell(TacticalCoord);
           return cell;
@@ -2953,7 +2964,7 @@ void DisplayClass::Mouse_Right_Press() {
     PendingObjectPtr = nullptr;
     PendingObject = nullptr;
     PendingHouse = HOUSE_NONE;
-    Set_Cursor_Shape(nullptr);
+    Set_Cursor_Shape({});
   } else {
     if (IsRepairMode) {
       IsRepairMode = false;

@@ -40,6 +40,9 @@
 #ifndef CNC_RED_ALERT_RA_DROP_H_
 #define CNC_RED_ALERT_RA_DROP_H_
 
+#include "port/safe_string.h"
+#include <cstddef>
+#include <span>
 #include <cstring>
 
 #include "absl/base/attributes.h"
@@ -55,8 +58,8 @@
 
 class DropListClass : public EditClass {
  public:
-  DropListClass(int id, char* text, int max_len, TextPrintType flags, int x,
-                int y, int w, int h, const void* up, const void* down);
+  DropListClass(int id, std::span<char> text, int max_len, TextPrintType flags, int x,
+                int y, int w, int h, std::span<const std::byte> up, std::span<const std::byte> down);
   ~DropListClass() override = default;
   DropListClass(DropListClass&&) = delete;
   DropListClass& operator=(DropListClass&&) = delete;
@@ -116,8 +119,8 @@ class DropListClass : public EditClass {
 template <class T>
 class TDropListClass : public EditClass {
  public:
-  TDropListClass(int id, char* text, int max_len, TextPrintType flags, int x,
-                 int y, int w, int h, const void* up, const void* down);
+  TDropListClass(int id, std::span<char> text, int max_len, TextPrintType flags, int x,
+                 int y, int w, int h, std::span<const std::byte> up, std::span<const std::byte> down);
   TDropListClass(const TDropListClass<T>&) = delete;
   ~TDropListClass() override = default;
   TDropListClass(TDropListClass&&) = delete;
@@ -176,9 +179,9 @@ class TDropListClass : public EditClass {
 template <class T>
 TDropListClass<T>::TDropListClass(
     int id,
-    char* text,  // NOLINT(readability-non-const-parameter)
+    std::span<char> text,
     int max_len, TextPrintType flags, int x, int y, int w, int h,
-    const void* up, const void* down)
+    std::span<const std::byte> up, std::span<const std::byte> down)
     : EditClass(id, text, max_len, flags, x, y, w, 9, kAlphanumeric),
 
       ListHeight(h),
@@ -226,7 +229,7 @@ TDropListClass<T>* TDropListClass<T>::Remove() {
 
 template <class T>
 int TDropListClass<T>::Add_Item(T item) {
-  strncpy(String, item->Description(), base::ToSize(MaxLength));
+  port::SafeCopy(String.first(base::ToSize(MaxLength)), item->Description());
   Flag_To_Redraw();
   return List.Add_Item(item);
 }
@@ -245,7 +248,7 @@ template <class T>
 void TDropListClass<T>::Set_Selected_Index(int index) {
   if (static_cast<unsigned>(index) < static_cast<unsigned>(List.Count())) {
     List.Set_Selected_Index(index);
-    strncpy(String, List.Get_Item(Current_Index())->Description(), base::ToSize(MaxLength));
+    port::SafeCopy(String.first(base::ToSize(MaxLength)), List.Get_Item(Current_Index())->Description());
   } else {
     String[0] = '\0';
   }
@@ -269,7 +272,7 @@ void TDropListClass<T>::Peer_To_Peer(unsigned flags, KeyNumType& key,
   }
 
   if (&whom == &List) {
-    strncpy(String, List.Current_Item()->Description(), base::ToSize(MaxLength));
+    port::SafeCopy(String.first(base::ToSize(MaxLength)), List.Current_Item()->Description());
     Flag_To_Redraw();
     key = ButtonKey(static_cast<int>(ID));
   }

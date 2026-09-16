@@ -11,11 +11,11 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
-#include <cstring>
 #include <iterator>
 #include <span>
 #include <vector>
 
+#include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/types.h"
 #include "tech/byte_sink.h"
@@ -67,7 +67,8 @@ class BlockCodec {
       const auto wanted = static_cast<int>(BytesWanted(std::ssize(in)));
       const auto take =
           static_cast<int>(std::min<base::ssize>(wanted, std::ssize(in)));
-      std::memcpy(input_.data() + count_, in.data(), base::ToSize(take));
+      base::CopyBytes(std::span(input_).subspan(base::ToSize(count_)), in,
+                      take);
       count_ += take;
       in = in.subspan(base::ToSize(take));
       if (take < wanted) {

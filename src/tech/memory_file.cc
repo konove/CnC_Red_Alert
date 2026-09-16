@@ -59,6 +59,7 @@
 #include <span>
 #include <string_view>
 
+#include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/seek_origin.h"
 #include "base/types.h"
@@ -89,13 +90,16 @@
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-MemoryFile::MemoryFile(void* buffer, base::ssize size)
-    : buffer_(static_cast<char*>(buffer)), capacity_(size), size_(size) {
-  if (buffer == nullptr && size > 0) {
-    buffer_ = new char[base::ToSize(size)];
-    owns_buffer_ = true;
-  }
-}
+MemoryFile::MemoryFile(std::span<std::byte> buffer)
+    : buffer_(buffer),
+      capacity_(std::ssize(buffer)),
+      size_(std::ssize(buffer)) {}
+
+MemoryFile::MemoryFile(base::ssize size)
+    : owned_buffer_(base::ToSize(size)),
+      buffer_(owned_buffer_),
+      capacity_(size),
+      size_(size) {}
 
 /***********************************************************************************************
  * MemoryFile::~MemoryFile -- Destructor for the RAM file class. *
@@ -111,14 +115,7 @@ MemoryFile::MemoryFile(void* buffer, base::ssize size)
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-MemoryFile::~MemoryFile() {
-  Close();
-  if (owns_buffer_) {
-    delete[] buffer_;
-    buffer_ = nullptr;
-    owns_buffer_ = false;
-  }
-}
+MemoryFile::~MemoryFile() { Close(); }
 
 /***********************************************************************************************
  * MemoryFile::Create -- Effectively clears the buffer of data. *
@@ -236,7 +233,7 @@ bool MemoryFile::Open(std::string_view /*filename*/, FileAccess access) {
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
 bool MemoryFile::Open(FileAccess access) {
-  if (buffer_ == nullptr || IsOpen()) {
+  if (buffer_.data() == nullptr || IsOpen()) {
     return false;
   }
 
@@ -283,7 +280,7 @@ bool MemoryFile::Open(FileAccess access) {
  *=============================================================================================*/
 base::ssize MemoryFile::Read(const std::span<std::byte> buffer) {
   const base::ssize size = std::ssize(buffer);
-  if (buffer_ == nullptr || size == 0) {
+  if (buffer_.data() == nullptr || size == 0) {
     return 0;
   }
 
@@ -298,7 +295,8 @@ base::ssize MemoryFile::Read(const std::span<std::byte> buffer) {
   }
 
   const base::ssize bytes_to_copy = std::min(size, size_ - position_);
-  memmove(buffer.data(), &buffer_[position_], base::ToSize(bytes_to_copy));
+  base::MoveBytes(buffer, buffer_.subspan(base::ToSize(position_)),
+                  bytes_to_copy);
   position_ += bytes_to_copy;
 
   if (opened_here) {
@@ -329,7 +327,7 @@ base::ssize MemoryFile::Read(const std::span<std::byte> buffer) {
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
 base::ssize MemoryFile::Seek(base::ssize offset, SeekOrigin origin) {
-  if (buffer_ == nullptr || !IsOpen()) {
+  if (buffer_.data() == nullptr || !IsOpen()) {
     return position_;
   }
 
@@ -397,7 +395,7 @@ base::ssize MemoryFile::Size() { return size_; }
  *=============================================================================================*/
 base::ssize MemoryFile::Write(const std::span<const std::byte> buffer) {
   const base::ssize size = std::ssize(buffer);
-  if (buffer_ == nullptr || size == 0) {
+  if (buffer_.data() == nullptr || size == 0) {
     return 0;
   }
 
@@ -412,7 +410,8 @@ base::ssize MemoryFile::Write(const std::span<const std::byte> buffer) {
   }
 
   const base::ssize bytes_to_write = std::min(size, capacity_ - position_);
-  memmove(&buffer_[position_], buffer.data(), base::ToSize(bytes_to_write));
+  base::MoveBytes(buffer_.subspan(base::ToSize(position_)), buffer,
+                  bytes_to_write);
   position_ += bytes_to_write;
 
   size_ = std::max(position_, size_);

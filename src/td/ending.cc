@@ -40,6 +40,16 @@
 
 #include "td/ending.h"
 
+#include <cstddef>
+#include <span>
+
+#include "port/bytes_of.h"
+#ifdef NOT_FOR_WIN95
+#include <vector>
+
+#include "base/buffer.h"
+#endif
+
 #include <cstdint>
 #include <cstdio>
 
@@ -142,17 +152,16 @@ void Nod_Ending() {
 
   char fname[12];
 #ifdef NOT_FOR_WIN95
-  char* satpic = new char[64000];
+  std::vector<uint8_t> satpic(64000);
 #endif  // NOT_FOR_WIN95
   const int oldfontxspacing = FontXSpacing;
 
   Score.Presentation();
 
-  const void* oldfont = Set_Font(ScoreFontPtr);
-  PseudoSeenBuff =
-      new GraphicBufferClass(320, 200, static_cast<void*>(nullptr));
-  TextPrintBuffer = new GraphicBufferClass(
-      SeenBuff.Get_Width(), SeenBuff.Get_Height(), static_cast<void*>(nullptr));
+  const std::span<const std::byte> oldfont = Set_Font(ScoreFontPtr);
+  PseudoSeenBuff = new GraphicBufferClass(320, 200, {});
+  TextPrintBuffer =
+      new GraphicBufferClass(SeenBuff.Get_Width(), SeenBuff.Get_Height(), {});
   TextPrintBuffer->Clear();
   BlitList.Clear();
   SeenBuff.Clear();
@@ -160,29 +169,31 @@ void Nod_Ending() {
   PseudoSeenBuff->Clear();
 
   GameFile f("SATSEL.PAL");
-  void* localpal = Load_Alloc_Data(f);
+  const auto localpal = Load_Alloc_Data(f);
   f.Open("SATSEL.CPS");
-  Load_Uncompress(f, SysMemPage, SysMemPage, nullptr);
+  Load_Uncompress(f, SysMemPage, SysMemPage, {});
 #ifdef NOT_FOR_WIN95
-  memcpy(satpic, HidPage.Get_Buffer(), 64000);
+  base::CopyBytes(std::as_writable_bytes(std::span(satpic)),
+                  std::as_bytes(HidPage.Get_Bytes()), satpic.size());
 #else
   SysMemPage.Blit(*PseudoSeenBuff);
 #endif  // NOT_FOR_WIN95
-  void* kanefinl = Load_Sample("KANEFINL.AUD");
-  void* loopie6m = Load_Sample("LOOPIE6M.AUD");
+  const auto kanefinl = Load_Sample("KANEFINL.AUD");
+  const auto loopie6m = Load_Sample("LOOPIE6M.AUD");
 
   Play_Movie("NODFINAL", THEME_NONE, false);
 
   Hide_Mouse();
   Wait_Vert_Blank();
-  Set_Palette(localpal);
+  Set_Palette(port::UnsignedBytes(localpal));
 #ifdef NOT_FOR_WIN95
-  memcpy(SeenBuff.Get_Buffer(), satpic, 64000);
+  base::CopyBytes(std::as_writable_bytes(SeenBuff.Get_Bytes()),
+                  std::as_writable_bytes(std::span(satpic)), satpic.size());
 #endif  // NOT_FOR_WIN95
   Show_Mouse();
 
   InterpolationPaletteChanged = true;
-  InterpolationPalette = static_cast<unsigned char*>(localpal);
+  InterpolationPalette = port::UnsignedBytes(localpal);
   Increase_Palette_Luminance(InterpolationPalette, 30, 30, 30, 63);
   Read_Interpolation_Palette("SATSELIN.PAL");
   Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, "SATSELIN.PAL");
@@ -196,7 +207,7 @@ void Nod_Ending() {
   int selection = 1;
   bool printedtext = false;
   while (!done) {
-    if (!printedtext && !Is_Sample_Playing(kanefinl)) {
+    if (!printedtext && !Is_Sample_Playing(kanefinl.data())) {
       printedtext = true;
       Alloc_Object(
           new ScorePrintClass(Text_String(TXT_SEL_TARGET), 0, 180, _tanpal));
@@ -205,11 +216,11 @@ void Nod_Ending() {
     }
     Call_Back_Delay(1);
     if (!Keyboard::Check()) {
-      if (!Is_Sample_Playing(loopie6m)) {
+      if (!Is_Sample_Playing(loopie6m.data())) {
         Play_Sample(loopie6m, 255, 128);
       }
     } else {
-      if (Is_Sample_Playing(kanefinl)) {
+      if (Is_Sample_Playing(kanefinl.data())) {
         Clear_KeyBuffer();
       } else {
         const auto key = static_cast<uint32_t>(Keyboard::Get());
@@ -236,7 +247,7 @@ void Nod_Ending() {
     Hide_Mouse();
   }
 #ifdef NOT_FOR_WIN95
-  delete satpic;
+  satpic.clear();
 #else
   delete PseudoSeenBuff;
   PseudoSeenBuff = nullptr;
@@ -258,8 +269,8 @@ void Nod_Ending() {
 
   Set_Font(oldfont);
   FontXSpacing = oldfontxspacing;
-  Free_Sample(kanefinl);
-  Free_Sample(loopie6m);
+  Free_Sample(kanefinl.data());
+  Free_Sample(loopie6m.data());
 
   absl::SNPrintF(fname, sizeof(fname), "NODEND%d", selection);
   PreserveVQAScreen = true;
@@ -297,7 +308,7 @@ void Nod_Ending() {
 
   Play_Movie("CC2TEASE");
 
-  delete[] static_cast<char*>(localpal);
+  delete[] port::CharBytes(std::span(localpal)).data();
   delete TextPrintBuffer;
   TextPrintBuffer = nullptr;
   BlitList.Clear();

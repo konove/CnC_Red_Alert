@@ -40,7 +40,9 @@
 #ifndef CNC_RED_ALERT_TECH_PK_H_
 #define CNC_RED_ALERT_TECH_PK_H_
 
+#include <cstddef>
 #include <cstdint>
+#include <span>
 
 #include "tech/byte_source.h"
 #include "tech/int.h"
@@ -64,10 +66,13 @@
 class PKey {
  public:
   PKey() noexcept : Modulus(0), Exponent(0), BitPrecision(0) {}
-  PKey(const void* exponent, const void* modulus);  // DER initialization.
+  PKey(std::span<const std::byte> exponent,
+       std::span<const std::byte> modulus);  // DER initialization.
 
-  int Encrypt(const void* source, int slen, void* dest) const;
-  int Decrypt(const void* source, int slen, void* dest) const;
+  [[nodiscard]] int Encrypt(std::span<const std::byte> source,
+                            std::span<std::byte> dest) const;
+  [[nodiscard]] int Decrypt(std::span<const std::byte> source,
+                            std::span<std::byte> dest) const;
 
   static void Generate(ByteSource& random, int bits, PKey& fastkey,
                        PKey& slowkey);
@@ -78,11 +83,11 @@ class PKey {
     return ((plaintext_length - 1) / Plain_Block_Size()) + 1;
   }
 
-  int Encode_Modulus(void* buffer) const;
-  int Encode_Exponent(void* buffer) const;
+  [[nodiscard]] int Encode_Modulus(std::span<std::byte> buffer) const;
+  [[nodiscard]] int Encode_Exponent(std::span<std::byte> buffer) const;
 
-  void Decode_Modulus(void* buffer);
-  void Decode_Exponent(void* buffer);
+  void Decode_Modulus(std::span<const std::byte> buffer);
+  void Decode_Exponent(std::span<const std::byte> buffer);
 
   static uint32_t Fast_Exponent() { return 65537; }
 

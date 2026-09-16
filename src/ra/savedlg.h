@@ -46,7 +46,7 @@ class SaveOptionsClass {
   static constexpr int kButtonSave = 201;
   static constexpr int kOptionWidth = 216;
   static constexpr int kOptionHeight = 122;
-  static constexpr int kOptionX = (320 - kOptionWidth) / 2 & ~7;
+  static constexpr int kOptionX = ((320 - kOptionWidth) / 2 / 8) * 8;
   static constexpr int kOptionY = (200 - kOptionHeight) / 2;
   static constexpr int kNumberOfButtons = 2;
   static constexpr int kCaptionYPos = 5;
@@ -59,7 +59,7 @@ class SaveOptionsClass {
   static constexpr int kListboxH = 72;
 
  public:
-  SaveOptionsClass() {}
+  SaveOptionsClass() = default;
   void Process();
 };
 

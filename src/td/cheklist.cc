@@ -64,14 +64,18 @@
  *=========================================================================*/
 #include "td/cheklist.h"
 
+#include <cstddef>
+#include <span>
+
 #include "base/numeric.h"
 #include "sdllib/keyboard.h"
 #include "td/defines.h"
 #include "td/list.h"
 
 CheckListClass::CheckListClass(int id, int x, int y, int w, int h,
-                               TextPrintType flags, const void* up,
-                               const void* down)
+                               TextPrintType flags,
+                               std::span<const std::byte> up,
+                               std::span<const std::byte> down)
     : ListClass(id, x, y, w, h, flags, up, down) {}
 
 /***************************************************************************

@@ -46,7 +46,7 @@
 */
 class RandomNumberGenerator {
  public:
-  virtual ~RandomNumberGenerator() {}
+  virtual ~RandomNumberGenerator() = default;
   RandomNumberGenerator(const RandomNumberGenerator&) = delete;
   RandomNumberGenerator& operator=(const RandomNumberGenerator&) = delete;
   RandomNumberGenerator(RandomNumberGenerator&&) = delete;

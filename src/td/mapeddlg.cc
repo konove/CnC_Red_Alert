@@ -54,8 +54,12 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <span>
+#include <string_view>
+#include <vector>
 
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "base/numeric.h"
 #include "port/safe_string.h"
 #include "port/tokenizer.h"
@@ -194,15 +198,15 @@ int MapEditClass::New_Scenario() {
   /*
   ------ Set the Home & Reinforcement Cells to the center of the map -------
   */
-  Waypoint[kWayptReinf] =
+  base::At(Waypoint, kWayptReinf) =
       XY_Cell(MapCellX + (MapCellWidth / 2), MapCellY + (MapCellHeight / 2));
-  Waypoint[kWayptHome] =
+  base::At(Waypoint, kWayptHome) =
       XY_Cell(MapCellX + (MapCellWidth / 2), MapCellY + (MapCellHeight / 2));
   (*this)[Coord_Cell(TacticalCoord)].IsWaypoint = true;
   Flag_Cell(Coord_Cell(TacticalCoord));
 
   ScenarioInit++;
-  Set_Tactical_Position(Cell_Coord(Waypoint[kWayptHome]));
+  Set_Tactical_Position(Cell_Coord(base::At(Waypoint, kWayptHome)));
   ScenarioInit--;
 
   return 0;
@@ -1205,9 +1209,9 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
         /*
         ...................... Draw Home location .......................
         */
-        LogicPage->Put_Pixel(kBordX1 + Cell_X(Waypoint[kWayptHome]) + 1,
-                             kBordY1 + Cell_Y(Waypoint[kWayptHome]) + 1,
-                             kWhite);
+        LogicPage->Put_Pixel(
+            kBordX1 + Cell_X(base::At(Waypoint, kWayptHome)) + 1,
+            kBordY1 + Cell_Y(base::At(Waypoint, kWayptHome)) + 1, kWhite);
 
         /*
         ..................... Erase old coordinates .....................
@@ -1454,22 +1458,24 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
   /*
   --------------------- Clip Home Cell to new map size ---------------------
   */
-  if (Cell_X(Waypoint[kWayptHome]) < MapCellX) {
-    Waypoint[kWayptHome] = XY_Cell(MapCellX, Cell_Y(Waypoint[kWayptHome]));
+  if (Cell_X(base::At(Waypoint, kWayptHome)) < MapCellX) {
+    base::At(Waypoint, kWayptHome) =
+        XY_Cell(MapCellX, Cell_Y(base::At(Waypoint, kWayptHome)));
   }
 
-  if (Cell_X(Waypoint[kWayptHome]) > MapCellX + MapCellWidth - 1) {
-    Waypoint[kWayptHome] =
-        XY_Cell(MapCellX + MapCellWidth - 1, Cell_Y(Waypoint[kWayptHome]));
+  if (Cell_X(base::At(Waypoint, kWayptHome)) > MapCellX + MapCellWidth - 1) {
+    base::At(Waypoint, kWayptHome) = XY_Cell(
+        MapCellX + MapCellWidth - 1, Cell_Y(base::At(Waypoint, kWayptHome)));
   }
 
-  if (Cell_Y(Waypoint[kWayptHome]) < MapCellY) {
-    Waypoint[kWayptHome] = XY_Cell(Cell_X(Waypoint[kWayptHome]), MapCellY);
+  if (Cell_Y(base::At(Waypoint, kWayptHome)) < MapCellY) {
+    base::At(Waypoint, kWayptHome) =
+        XY_Cell(Cell_X(base::At(Waypoint, kWayptHome)), MapCellY);
   }
 
-  if (Cell_Y(Waypoint[kWayptHome]) > MapCellY + MapCellHeight - 1) {
-    Waypoint[kWayptHome] =
-        XY_Cell(Cell_X(Waypoint[kWayptHome]), MapCellY + MapCellHeight - 1);
+  if (Cell_Y(base::At(Waypoint, kWayptHome)) > MapCellY + MapCellHeight - 1) {
+    base::At(Waypoint, kWayptHome) = XY_Cell(
+        Cell_X(base::At(Waypoint, kWayptHome)), MapCellY + MapCellHeight - 1);
   }
 
   return 0;
@@ -2284,7 +2290,7 @@ int MapEditClass::Select_Trigger() {
   bool edit_trig = false;                   // true = user wants to edit
   bool new_trig = false;                    // true = user wants to new
   bool del_trig = false;                    // true = user wants to new
-  static int tabs[] = {70, 240, 390, 440};  // list box tab stops
+  static const int tabs[] = {70, 240, 390, 440};  // list box tab stops
 
   /*........................................................................
   Buttons
@@ -2337,8 +2343,11 @@ int MapEditClass::Select_Trigger() {
     // trigtext[i] = (char *)HidPage.Get_Graphic_Buffer()->Get_Buffer() + 60 *
     // i;
     constexpr int kTrigTextSize = 255;
-    trigtext[i] = new char[kTrigTextSize];
-    absl::SNPrintF(trigtext[i], kTrigTextSize, "%s\t%s\t%s\t",
+    base::At(trigtext, i) = new char[kTrigTextSize];
+    // The allocation immediately above has exactly kTrigTextSize bytes.
+    // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
+    const std::span<char> trigger_text(base::At(trigtext, i), kTrigTextSize);
+    absl::SNPrintF(base::At(trigtext, i), kTrigTextSize, "%s\t%s\t%s\t",
                    Triggers.Ptr(i)->Get_Name(),
                    TriggerClass::Name_From_Event(Triggers.Ptr(i)->Event),
                    TriggerClass::Name_From_Action(Triggers.Ptr(i)->Action));
@@ -2349,26 +2358,24 @@ int MapEditClass::Select_Trigger() {
     if (TriggerClass::Event_Need_House(Triggers.Ptr(i)->Event)) {
       if (Triggers.Ptr(i)->House != HOUSE_NONE) {
         port::SafeAppend(
-            trigtext[i],
-            HouseTypeClass::As_Reference(Triggers.Ptr(i)->House).Suffix,
-            kTrigTextSize);
+            trigger_text,
+            HouseTypeClass::As_Reference(Triggers.Ptr(i)->House).Suffix);
       } else {
-        port::SafeAppend(trigtext[i], "!!!", kTrigTextSize);
+        port::SafeAppend(trigger_text, "!!!");
       }
     } else {
-      port::SafeAppend(trigtext[i], "   ", kTrigTextSize);
+      port::SafeAppend(trigger_text, "   ");
     }
 
     /*
     .......................... Add the team name ..........................
     */
-    port::SafeAppend(trigtext[i], "\t", kTrigTextSize);
+    port::SafeAppend(trigger_text, "\t");
     if (TriggerClass::Action_Need_Team(Triggers.Ptr(i)->Action)) {
       if (Triggers.Ptr(i)->Team) {
-        port::SafeAppend(trigtext[i], Triggers.Ptr(i)->Team->IniName,
-                         kTrigTextSize);
+        port::SafeAppend(trigger_text, Triggers.Ptr(i)->Team->IniName);
       } else {
-        port::SafeAppend(trigtext[i], "!!!", kTrigTextSize);
+        port::SafeAppend(trigger_text, "!!!");
       }
     }
 
@@ -2384,7 +2391,7 @@ int MapEditClass::Select_Trigger() {
   .......................... Fill in the list box ..........................
   */
   for (int i = 0; i < Triggers.Count(); i++) {
-    triggerlist.Add_Item(trigtext[i]);
+    triggerlist.Add_Item(base::At(trigtext, i));
   }
   triggerlist.Set_Selected_Index(def_idx);
 
@@ -2514,7 +2521,7 @@ int MapEditClass::Select_Trigger() {
   Render();
 
   for (int i = 0; i < Triggers.Count(); i++) {
-    delete[] trigtext[i];
+    delete[] base::At(trigtext, i);
   }
 
   if (edit_trig) {
@@ -2844,15 +2851,16 @@ int MapEditClass::Edit_Trigger() {
   ......................... Fill in the list boxes .........................
   */
   for (int i = 0; i < static_cast<int>(EVENT_COUNT); i++) {
-    eventnames[i] = TriggerClass::Name_From_Event(static_cast<EventType>(i));
-    eventlist.Add_Item(eventnames[i]);
+    base::At(eventnames, i) =
+        TriggerClass::Name_From_Event(static_cast<EventType>(i));
+    eventlist.Add_Item(base::At(eventnames, i));
   }
   eventlist.Set_Selected_Index(static_cast<int>(event_idx));
 
   for (int i = 0; i < static_cast<int>(TriggerClass::ACTION_COUNT); i++) {
-    actionnames[i] = TriggerClass::Name_From_Action(
+    base::At(actionnames, i) = TriggerClass::Name_From_Action(
         static_cast<TriggerClass::ActionType>(i));
-    actionlist.Add_Item(actionnames[i]);
+    actionlist.Add_Item(base::At(actionnames, i));
   }
   actionlist.Set_Selected_Index(static_cast<int>(action_idx));
 
@@ -2998,7 +3006,7 @@ int MapEditClass::Edit_Trigger() {
       case ButtonKey(kEventList):
         if (eventlist.Current_Index() != static_cast<int>(event_idx)) {
           event_idx = EventType(eventlist.Current_Index());
-          databuf[0] = 0;
+          base::At(databuf, 0) = 0;
           CurTrigger->Data = 0;
           if (!TriggerClass::Event_Need_House(event_idx)) {
             CurTrigger->House = HOUSE_NONE;
@@ -3099,7 +3107,7 @@ int MapEditClass::Edit_Trigger() {
     /*
     .............................. Set name ...............................
     */
-    if (strlen(namebuf) == 0) {
+    if (std::string_view(namebuf).empty()) {
       CurTrigger->Set_Name("____");
     } else {
       CurTrigger->Set_Name(namebuf);
@@ -3215,7 +3223,7 @@ int MapEditClass::Import_Triggers() {
   Dialog variables:
   ........................................................................*/
   bool cancel = false;
-  static int tabs[] = {70, 220, 370, 420};  // list box tab stops
+  static const int tabs[] = {70, 220, 370, 420};  // list box tab stops
   DynamicVectorClass<char*> trignames;      // list of INI trigger names
   GameFile file;                            // file for reading the INI file
   char buf[128];                            // for reading an INI entry
@@ -3249,25 +3257,26 @@ int MapEditClass::Import_Triggers() {
   /*........................................................................
   Read the file into the staging buffer
   ........................................................................*/
-  char* inibuf = new char[30000];  // working INI buffer
-  memset(inibuf, '\0', 30000);
+  std::vector<char> profile_storage(30000);
+  char* inibuf = profile_storage.data();  // working INI buffer
   file.SetName("MASTER.INI");
   if (!file.IsAvailable()) {
     file.Close();
-    delete[] inibuf;
+
     return (-1);
   }
-  file.Read(inibuf, 30000 - 1);
+  file.Read(std::as_writable_bytes(std::span(profile_storage))
+                .first(profile_storage.size() - 1));
   file.Close();
 
   /*........................................................................
   Read all entry names in the Triggers section into a temp buffer
   ........................................................................*/
-  const int len =
-      static_cast<int>(strlen(inibuf)) + 2;  // Length of data in buffer.
-  char* tbuffer = inibuf + len;  // Accumulation buffer of trigger IDs.
-  WWGetPrivateProfileString(TriggerClass::INI_Name(), nullptr, nullptr, tbuffer,
-                            30000 - len, inibuf);
+  std::vector<char> key_storage(std::string_view(inibuf).size() + 2);
+  auto key_cursor = std::span(key_storage);
+  char* tbuffer = key_cursor.data();  // Accumulation buffer of trigger IDs.
+  WWGetPrivateProfileString(TriggerClass::INI_Name(), nullptr, nullptr,
+                            key_cursor, inibuf);
 
   /*........................................................................
   For each entry in the INI section:
@@ -3277,8 +3286,10 @@ int MapEditClass::Import_Triggers() {
   - Add a ptr to the INI entry name to our 'trignames' list
   ........................................................................*/
   while (*tbuffer != '\0') {
-    WWGetPrivateProfileString(TriggerClass::INI_Name(), tbuffer, nullptr, buf,
-                              sizeof(buf) - 1, inibuf);
+    WWGetPrivateProfileString(
+        TriggerClass::INI_Name(), tbuffer, nullptr,
+        std::span(buf).first(static_cast<std::size_t>(sizeof(buf) - 1)),
+        inibuf);
 
     /*
     ** Parse the INI entry
@@ -3302,13 +3313,12 @@ int MapEditClass::Import_Triggers() {
             TriggerClass::Event_From_Name(eventptr))) {
       const HousesType house = HouseTypeClass::From_Name(houseptr);
       if (house != HOUSE_NONE) {
-        port::SafeAppend(item, HouseTypeClass::As_Reference(house).Suffix,
-                         kItemSize);
+        port::SafeAppend(item, HouseTypeClass::As_Reference(house).Suffix);
       } else {
-        port::SafeAppend(item, "!!!", kItemSize);
+        port::SafeAppend(item, "!!!");
       }
     } else {
-      port::SafeAppend(item, "   ", kItemSize);
+      port::SafeAppend(item, "   ");
     }
 
     /*
@@ -3321,7 +3331,8 @@ int MapEditClass::Import_Triggers() {
     */
     trignames.Add(tbuffer);
 
-    tbuffer += strlen(tbuffer) + 1;
+    key_cursor = key_cursor.subspan(std::string_view(tbuffer).size() + 1);
+    tbuffer = key_cursor.data();
   }
 
   /*
@@ -3423,7 +3434,8 @@ int MapEditClass::Import_Triggers() {
   that trigger for this scenario.
   ........................................................................*/
   if (!cancel) {
-    tbuffer = inibuf + len;
+    key_cursor = std::span(key_storage);
+    tbuffer = key_cursor.data();
     int i = 0;
     while (*tbuffer != '\0') {
       /*
@@ -3431,8 +3443,10 @@ int MapEditClass::Import_Triggers() {
       ** and fill it in.
       */
       if (triggerlist.Is_Checked(i)) {
-        WWGetPrivateProfileString(TriggerClass::INI_Name(), tbuffer, nullptr,
-                                  buf, sizeof(buf) - 1, inibuf);
+        WWGetPrivateProfileString(
+            TriggerClass::INI_Name(), tbuffer, nullptr,
+            std::span(buf).first(static_cast<std::size_t>(sizeof(buf) - 1)),
+            inibuf);
 
         auto* trigger = new TriggerClass();  // Working trigger pointer.
         trigger->Fill_In(tbuffer, buf);
@@ -3442,7 +3456,8 @@ int MapEditClass::Import_Triggers() {
         }
       }
 
-      tbuffer += strlen(tbuffer) + 1;
+      key_cursor = key_cursor.subspan(std::string_view(tbuffer).size() + 1);
+      tbuffer = key_cursor.data();
       i++;
     }
   }
@@ -3452,7 +3467,6 @@ int MapEditClass::Import_Triggers() {
   ........................................................................*/
   trignames.Clear();
   triggerlist.Clear();
-  delete[] inibuf;
 
   if (cancel) {
     return (-1);
@@ -3535,7 +3549,7 @@ int MapEditClass::Import_Teams() {
   Dialog variables:
   ........................................................................*/
   bool cancel = false;
-  static int tabs[] = {120, 180};       // list box tab stops
+  static const int tabs[] = {120, 180};  // list box tab stops
   DynamicVectorClass<char*> teamnames;  // list of INI team names
   GameFile file;                        // file for reading the INI file
   char buf[128];                        // for reading an INI entry
@@ -3570,25 +3584,26 @@ int MapEditClass::Import_Teams() {
   /*........................................................................
   Read the file into the staging buffer
   ........................................................................*/
-  char* inibuf = new char[30000];  // working INI buffer
-  memset(inibuf, '\0', 30000);
+  std::vector<char> profile_storage(30000);
+  char* inibuf = profile_storage.data();  // working INI buffer
   file.SetName("MASTER.INI");
   if (!file.IsAvailable()) {
     file.Close();
-    delete[] inibuf;
+
     return (-1);
   }
-  file.Read(inibuf, 30000 - 1);
+  file.Read(std::as_writable_bytes(std::span(profile_storage))
+                .first(profile_storage.size() - 1));
 
   file.Close();
   /*........................................................................
   Read all entry names in the TeamTypes section into a temp buffer
   ........................................................................*/
-  const int len =
-      static_cast<int>(strlen(inibuf)) + 2;  // Length of data in buffer.
-  char* tbuffer = inibuf + len;              // Accumulation buffer of team IDs.
+  std::vector<char> key_storage(std::string_view(inibuf).size() + 2);
+  auto key_cursor = std::span(key_storage);
+  char* tbuffer = key_cursor.data();  // Accumulation buffer of team IDs.
   WWGetPrivateProfileString(TeamTypeClass::INI_Name(), nullptr, nullptr,
-                            tbuffer, 30000 - len, inibuf);
+                            key_cursor, inibuf);
 
   /*........................................................................
   For each entry in the INI section:
@@ -3598,8 +3613,10 @@ int MapEditClass::Import_Teams() {
   - Add a ptr to the INI entry name to our 'teamnames' list
   ........................................................................*/
   while (*tbuffer != '\0') {
-    WWGetPrivateProfileString(TeamTypeClass::INI_Name(), tbuffer, nullptr, buf,
-                              sizeof(buf) - 1, inibuf);
+    WWGetPrivateProfileString(
+        TeamTypeClass::INI_Name(), tbuffer, nullptr,
+        std::span(buf).first(static_cast<std::size_t>(sizeof(buf) - 1)),
+        inibuf);
 
     /*
     ** Parse the INI entry
@@ -3617,17 +3634,17 @@ int MapEditClass::Import_Teams() {
     absl::SNPrintF(item, sizeof(item), " %s\t", tbuffer);
     const HousesType house = HouseTypeClass::From_Name(houseptr);
     if (house != HOUSE_NONE) {
-      port::SafeAppend(item, HouseTypeClass::As_Reference(house).Suffix,
-                       kItemSize);
+      port::SafeAppend(item, HouseTypeClass::As_Reference(house).Suffix);
     } else {
-      port::SafeAppend(item, "!!!", kItemSize);
+      port::SafeAppend(item, "!!!");
     }
-    port::SafeAppend(item, "\t", kItemSize);
+    port::SafeAppend(item, "\t");
 
     char* classptr = tokens.Next();
     for (i = 0; i < numclasses; i++) {
-      if (strlen(item) + strlen(classptr) < kItemSize) {
-        port::SafeAppend(item, classptr, kItemSize);
+      if (std::string_view(item).size() + std::string_view(classptr).size() <
+          kItemSize) {
+        port::SafeAppend(item, classptr);
         classptr = tokens.Next();
       } else {
         break;
@@ -3643,7 +3660,8 @@ int MapEditClass::Import_Teams() {
     */
     teamnames.Add(tbuffer);
 
-    tbuffer += strlen(tbuffer) + 1;
+    key_cursor = key_cursor.subspan(std::string_view(tbuffer).size() + 1);
+    tbuffer = key_cursor.data();
   }
 
   /*
@@ -3745,7 +3763,8 @@ int MapEditClass::Import_Teams() {
   that team for this scenario.
   ........................................................................*/
   if (!cancel) {
-    tbuffer = inibuf + len;
+    key_cursor = std::span(key_storage);
+    tbuffer = key_cursor.data();
     i = 0;
     while (*tbuffer != '\0') {
       /*
@@ -3753,14 +3772,17 @@ int MapEditClass::Import_Teams() {
       ** and fill it in.
       */
       if (teamlist.Is_Checked(i)) {
-        WWGetPrivateProfileString(TeamTypeClass::INI_Name(), tbuffer, nullptr,
-                                  buf, sizeof(buf) - 1, inibuf);
+        WWGetPrivateProfileString(
+            TeamTypeClass::INI_Name(), tbuffer, nullptr,
+            std::span(buf).first(static_cast<std::size_t>(sizeof(buf) - 1)),
+            inibuf);
 
         auto* team = new TeamTypeClass();  // Working team pointer.
         team->Fill_In(tbuffer, buf);
       }
 
-      tbuffer += strlen(tbuffer) + 1;
+      key_cursor = key_cursor.subspan(std::string_view(tbuffer).size() + 1);
+      tbuffer = key_cursor.data();
       i++;
     }
   }
@@ -3770,7 +3792,6 @@ int MapEditClass::Import_Teams() {
   ........................................................................*/
   teamnames.Clear();
   teamlist.Clear();
-  delete[] inibuf;
 
   if (cancel) {
     return (-1);

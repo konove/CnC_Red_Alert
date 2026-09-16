@@ -18,48 +18,42 @@
 
 #include "tech/readline.h"
 
+#include <algorithm>
 #include <cctype>
-#include <cstring>
+#include <cstddef>
+#include <iterator>
+#include <span>
 #include <string_view>
 
 #include "tech/byte_source.h"
 #include "tech/file.h"
 #include "tech/file_source.h"
 
-void strtrim(char* buffer) {
-  if (buffer) {
-    /*
-    **	Strip leading white space from the string.
-    */
-    const char* source = buffer;
-    while (isspace(*source)) {
-      source++;
-    }
-    if (source != buffer) {
-      memmove(buffer, source, std::string_view(source).size() + 1);
-    }
-
-    /*
-    **	Clip trailing white space from the string.
-    */
-    for (int index = static_cast<int>(std::string_view(buffer).size()) - 1;
-         index >= 0; index--) {
-      if (isspace(buffer[index])) {
-        buffer[index] = '\0';
-      } else {
-        break;
-      }
-    }
+void strtrim(std::span<char> buffer) {
+  const auto end = std::ranges::find(buffer, '\0');
+  auto text = buffer.first(static_cast<std::size_t>(end - buffer.begin()));
+  while (!text.empty() && isspace(static_cast<unsigned char>(text.front()))) {
+    text = text.subspan(1);
+  }
+  while (!text.empty() && isspace(static_cast<unsigned char>(text.back()))) {
+    text = text.first(text.size() - 1);
+  }
+  // Forward copy is safe when removing a prefix from the same buffer.
+  for (std::size_t i = 0; i < text.size(); ++i) {
+    buffer[i] = text[i];
+  }
+  if (text.size() < buffer.size()) {
+    buffer[static_cast<std::size_t>(text.size())] = '\0';
   }
 }
 
-int Read_Line(File& file, char* buffer, int len, bool& eof) {
+int Read_Line(File& file, std::span<char> buffer, bool& eof) {
   FileSource fs(file);
-  return Read_Line(fs, buffer, len, eof);
+  return Read_Line(fs, buffer, eof);
 }
 
-int Read_Line(ByteSource& file, char* buffer, int len, bool& eof) {
-  if (len == 0 || buffer == nullptr) {
+int Read_Line(ByteSource& file, std::span<char> buffer, bool& eof) {
+  if (buffer.empty()) {
     return 0;
   }
 
@@ -68,19 +62,19 @@ int Read_Line(ByteSource& file, char* buffer, int len, bool& eof) {
     char c = 0;
     if (!file.ReadObject(c)) {
       eof = true;
-      buffer[0] = '\0';
+      buffer[static_cast<std::size_t>(0)] = '\0';
       break;
     }
 
     if (c == '\x0A') {
       break;
     }
-    if (c != '\x0D' && count + 1 < len) {
-      buffer[count++] = c;
+    if (c != '\x0D' && count + 1 < std::ssize(buffer)) {
+      buffer[static_cast<std::size_t>(count++)] = c;
     }
   }
-  buffer[count] = '\0';
+  buffer[static_cast<std::size_t>(count)] = '\0';
 
   strtrim(buffer);
-  return static_cast<int>(std::string_view(buffer).size());
+  return static_cast<int>(std::string_view(buffer.data()).size());
 }

@@ -34,14 +34,15 @@
 #define CNC_RED_ALERT_WINVQ_VQM32_SOSCOMP_H_
 
 #include <cstdint>
+#include <span>
 
 /* compression types */
 inline constexpr int kAdpcmType1 = 0;
 
 /* define compression structure */
 struct SosCompressInfo {
-  std::uint8_t* source;
-  std::uint8_t* dest;
+  std::span<const uint8_t> source;
+  std::span<uint8_t> dest;
 
   std::uint32_t comp_size;
   std::uint32_t uncomp_size;

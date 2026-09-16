@@ -47,14 +47,17 @@
 
 #include "tech/pk.h"
 
+#include <cstddef>
 #include <cstdlib>
 #include <cstring>
 #include <random>
+#include <span>
 
 #include "base/array.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
 #include "tech/byte_source.h"
+#include "tech/digit_cursor.h"
 #include "tech/int.h"
 /***********************************************************************************************
  * PKey::PKey -- Construct a key using encoded strings. *
@@ -73,10 +76,11 @@
  *                                                                                             *
  * HISTORY: * 07/08/1996 JLB : Created. *
  *=============================================================================================*/
-PKey::PKey(const void* exponent, const void* modulus)
+PKey::PKey(std::span<const std::byte> exponent,
+           std::span<const std::byte> modulus)
     : BitPrecision(Modulus.BitCount() - 1) {
-  Modulus.DERDecode(static_cast<const unsigned char*>(modulus));
-  Exponent.DERDecode(static_cast<const unsigned char*>(exponent));
+  Modulus.DERDecode(DigitCursor<const unsigned char>::FromBytes(modulus));
+  Exponent.DERDecode(DigitCursor<const unsigned char>::FromBytes(exponent));
 }
 
 /***********************************************************************************************
@@ -96,11 +100,11 @@ PKey::PKey(const void* exponent, const void* modulus)
  *                                                                                             *
  * HISTORY: * 07/08/1996 JLB : Created. *
  *=============================================================================================*/
-int PKey::Encode_Modulus(void* buffer) const {
-  if (buffer == nullptr) {
+int PKey::Encode_Modulus(std::span<std::byte> buffer) const {
+  if (buffer.empty()) {
     return 0;
   }
-  return Modulus.DEREncode(static_cast<unsigned char*>(buffer));
+  return Modulus.DEREncode(DigitCursor<unsigned char>::FromBytes(buffer));
 }
 
 /***********************************************************************************************
@@ -122,11 +126,11 @@ int PKey::Encode_Modulus(void* buffer) const {
  *                                                                                             *
  * HISTORY: * 07/08/1996 JLB : Created. *
  *=============================================================================================*/
-int PKey::Encode_Exponent(void* buffer) const {
-  if (buffer == nullptr) {
+int PKey::Encode_Exponent(std::span<std::byte> buffer) const {
+  if (buffer.empty()) {
     return 0;
   }
-  return Exponent.DEREncode(static_cast<unsigned char*>(buffer));
+  return Exponent.DEREncode(DigitCursor<unsigned char>::FromBytes(buffer));
 }
 
 /***********************************************************************************************
@@ -145,8 +149,8 @@ int PKey::Encode_Exponent(void* buffer) const {
  *                                                                                             *
  * HISTORY: * 07/08/1996 JLB : Created. *
  *=============================================================================================*/
-void PKey::Decode_Modulus(void* buffer) {
-  Modulus.DERDecode(static_cast<unsigned char*>(buffer));
+void PKey::Decode_Modulus(std::span<const std::byte> buffer) {
+  Modulus.DERDecode(DigitCursor<const unsigned char>::FromBytes(buffer));
   BitPrecision = Modulus.BitCount() - 1;
 }
 
@@ -165,8 +169,8 @@ void PKey::Decode_Modulus(void* buffer) {
  *                                                                                             *
  * HISTORY: * 07/08/1996 JLB : Created. *
  *=============================================================================================*/
-void PKey::Decode_Exponent(void* buffer) {
-  Exponent.DERDecode(static_cast<unsigned char*>(buffer));
+void PKey::Decode_Exponent(std::span<const std::byte> buffer) {
+  Exponent.DERDecode(DigitCursor<const unsigned char>::FromBytes(buffer));
 }
 
 /***********************************************************************************************
@@ -251,8 +255,14 @@ void PKey::Generate(ByteSource& random, int bits, PKey& fastkey,
     for (int index = 0; index < fastkey.Plain_Block_Size(); index++) {
       base::At(before, index) = static_cast<char>(filler());
     }
-    fastkey.Encrypt(before, fastkey.Plain_Block_Size(), after);
-    slowkey.Decrypt(after, slowkey.Crypt_Block_Size(), after);
+    static_cast<void>(
+        fastkey.Encrypt(base::ObjectBytes(before).first(
+                            base::ToSize(fastkey.Plain_Block_Size())),
+                        base::ObjectBytes(after)));
+    static_cast<void>(
+        slowkey.Decrypt(base::ObjectBytes(after).first(
+                            base::ToSize(slowkey.Crypt_Block_Size())),
+                        base::ObjectBytes(after)));
 
     /*
     **	Compare the pre and post processing buffer. A match indicates
@@ -288,30 +298,33 @@ void PKey::Generate(ByteSource& random, int bits, PKey& fastkey,
  *                                                                                             *
  * HISTORY: * 07/05/1996 JLB : Created. *
  *=============================================================================================*/
-int PKey::Encrypt(const void* source, int slen, void* dest) const {
+int PKey::Encrypt(std::span<const std::byte> source,
+                  std::span<std::byte> dest) const {
   int total = 0;
-  const char* in = static_cast<const char*>(source);
-  char* out = static_cast<char*>(dest);
+  auto in = source;
+  auto out = dest;
+  int slen = static_cast<int>(in.size());
 
   /*
   **	Encrypt the source data in full blocks. Partial blocks are not processed
   *and are not *	copied to the destination buffer.
   */
-  while (slen >= Plain_Block_Size()) {
+  while (Plain_Block_Size() > 0 && slen >= Plain_Block_Size() &&
+         out.size() >= base::ToSize(Crypt_Block_Size())) {
     /*
     **	Perform the encryption of the block.
     */
     BigInt temp = 0;
-    memmove(&temp, in, base::ToSize(Plain_Block_Size()));
+    base::MoveBytes(base::ObjectBytes(temp), in, Plain_Block_Size());
     temp = temp.exp_b_mod_c(Exponent, Modulus);
 
     /*
     **	Move the cypher block to the destination.
     */
-    memmove(out, &temp, base::ToSize(Crypt_Block_Size()));
+    base::MoveBytes(out, base::ObjectBytes(temp), Crypt_Block_Size());
     slen -= Plain_Block_Size();
-    in += Plain_Block_Size();
-    out += Crypt_Block_Size();
+    in = in.subspan(base::ToSize(Plain_Block_Size()));
+    out = out.subspan(base::ToSize(Crypt_Block_Size()));
     total += Crypt_Block_Size();
   }
 
@@ -341,31 +354,34 @@ int PKey::Encrypt(const void* source, int slen, void* dest) const {
  *                                                                                             *
  * HISTORY: * 07/05/1996 JLB : Created. *
  *=============================================================================================*/
-int PKey::Decrypt(const void* source, int slen, void* dest) const {
+int PKey::Decrypt(std::span<const std::byte> source,
+                  std::span<std::byte> dest) const {
   int total = 0;
   BigInt temp;
-  const char* in = static_cast<const char*>(source);
-  char* out = static_cast<char*>(dest);
+  auto in = source;
+  auto out = dest;
+  int slen = static_cast<int>(in.size());
 
   /*
   **	Decrypt the source data in full blocks. Partial blocks are not processed
   *in any way.
   */
-  while (slen >= Crypt_Block_Size()) {
+  while (Crypt_Block_Size() > 0 && slen >= Crypt_Block_Size() &&
+         out.size() >= base::ToSize(Plain_Block_Size())) {
     /*
     **	Perform the encryption.
     */
     temp = 0;
-    memmove(&temp, in, base::ToSize(Crypt_Block_Size()));
+    base::MoveBytes(base::ObjectBytes(temp), in, Crypt_Block_Size());
     temp = temp.exp_b_mod_c(Exponent, Modulus);
 
     /*
     **	Move the cypher block to the destination.
     */
-    memmove(out, &temp, base::ToSize(Plain_Block_Size()));
+    base::MoveBytes(out, base::ObjectBytes(temp), Plain_Block_Size());
     slen -= Crypt_Block_Size();
-    in += Crypt_Block_Size();
-    out += Plain_Block_Size();
+    in = in.subspan(base::ToSize(Crypt_Block_Size()));
+    out = out.subspan(base::ToSize(Plain_Block_Size()));
     total += Plain_Block_Size();
   }
 

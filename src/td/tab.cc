@@ -43,6 +43,9 @@
 
 #include "td/tab.h"
 
+#include <cstddef>
+#include <span>
+
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
@@ -60,7 +63,7 @@
 #include "td/sidebar.h"
 #include "td/special.h"
 
-const void* TabClass::TabShape = nullptr;
+std::span<const std::byte> TabClass::TabShape = {};
 
 /***********************************************************************************************
  * TabClass::TabClass -- Default construct for the tab button class. *

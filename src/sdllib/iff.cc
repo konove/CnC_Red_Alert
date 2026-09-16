@@ -1,46 +1,42 @@
 #include "sdllib/iff.h"
 
 #include <cstddef>
-#include <cstdint>
-#include <cstring>
+#include <span>
 
+#include "base/buffer.h"
 
-[[nodiscard]] size_t Uncompress_Data(void* src, void* dst) {
-  if (src == nullptr || dst == nullptr) {
+size_t Uncompress_Data(std::span<const unsigned char> src,
+                       std::span<unsigned char> dst) {
+  if (src.size() < sizeof(CompHeaderType)) {
     return 0;
   }
-
-  // Interpret the data block header structure to determine
-  // compression method, size, and skip data amount.
-  CompHeaderType header;
-  std::memcpy(&header, src, sizeof(header));
-
-  const size_t uncompressed_size = header.Size;
-  // Number of leading data to skip.
+  CompHeaderType header{};
+  base::CopyBytes(base::ObjectBytes(header), std::as_bytes(src),
+                  sizeof(header));
+  if (header.Skip < 0) {
+    return 0;
+  }
   const auto skip = static_cast<size_t>(header.Skip);
-  // Compression method used.
-  const auto method = static_cast<CompressionType>(header.Method);
-
-  // Advance past header and skip data.
-  auto* payload_src =
-      static_cast<std::byte*>(src) + sizeof(CompHeaderType) + skip;
-  auto* payload_dst = static_cast<std::byte*>(dst);
-
-  switch (method) {
+  if (skip > src.size() - sizeof(header) || header.Size > dst.size()) {
+    return 0;
+  }
+  const auto payload = src.subspan(sizeof(header) + skip);
+  const auto output = dst.first(header.Size);
+  switch (static_cast<CompressionType>(header.Method)) {
     case HORIZONTAL:
       break;
     case LCW:
-      LCW_Uncompress(payload_src, payload_dst,
-                     static_cast<int32_t>(uncompressed_size));
-      break;
-    // Unsupported compression methods - copy the payload through untouched.
+      return static_cast<size_t>(LCW_Uncompress(payload, output));
     [[unlikely]] case LZW12:
     case LZW14:
     case NOCOMPRESS:
     default:
-      std::memcpy(payload_dst, payload_src, uncompressed_size);
+      if (payload.size() < output.size()) {
+        return 0;
+      }
+      base::CopyBytes(std::as_writable_bytes(output), std::as_bytes(payload),
+                      output.size());
       break;
   }
-
-  return uncompressed_size;
+  return output.size();
 }

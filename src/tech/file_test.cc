@@ -1,12 +1,13 @@
 // Tests for the File interface helpers, using MemoryFile as the concrete file.
 
-
+#include <array>
 #include <cstddef>
 #include <cstdint>
 #include <span>
 #include <string>
 #include <vector>
 
+#include "base/buffer.h"
 #include "base/seek_origin.h"
 #include "gtest/gtest.h"
 #include "sdllib/file_access.h"
@@ -22,7 +23,7 @@ struct Header {
 
 TEST(FileTest, ObjectsRoundTripThroughWriteObjectAndReadObject) {
   char storage[64] = {};
-  MemoryFile file(storage, sizeof(storage));
+  MemoryFile file(std::as_writable_bytes(std::span(storage)));
   ASSERT_TRUE(file.Open(FileAccess::kReadWrite));
 
   const Header written{.magic = 0x41424344, .version = 3, .flags = 7};
@@ -42,14 +43,14 @@ TEST(FileTest, ObjectsRoundTripThroughWriteObjectAndReadObject) {
 
 TEST(FileTest, ReadObjectFailsOnShortRead) {
   char storage[2] = {'a', 'b'};
-  MemoryFile file(storage, sizeof(storage));
+  MemoryFile file(std::as_writable_bytes(std::span(storage)));
   int32_t value = 0;
   EXPECT_FALSE(file.ReadObject(value));
 }
 
 TEST(FileTest, ArraysAreObjectsToo) {
   char storage[8] = {};
-  MemoryFile file(storage, sizeof(storage));
+  MemoryFile file(std::as_writable_bytes(std::span(storage)));
   ASSERT_TRUE(file.Open(FileAccess::kReadWrite));
   const int16_t written[3] = {1, 2, 3};
   EXPECT_TRUE(file.WriteObject(written));
@@ -61,7 +62,7 @@ TEST(FileTest, ArraysAreObjectsToo) {
 
 TEST(FileTest, ReadBytesAndReadStringStopAtEndOfFile) {
   char storage[] = {'h', 'e', 'l', 'l', 'o'};
-  MemoryFile file(storage, sizeof(storage));
+  MemoryFile file(std::as_writable_bytes(std::span(storage)));
   ASSERT_TRUE(file.Open());
   EXPECT_EQ(file.ReadString(2), "he");
   const std::vector<std::byte> rest = file.ReadBytes(10);
@@ -72,14 +73,27 @@ TEST(FileTest, ReadBytesAndReadStringStopAtEndOfFile) {
 
 TEST(FileTest, SpanAndRawPointerReadsAgree) {
   char storage[] = {'x', 'y', 'z'};
-  MemoryFile file(storage, sizeof(storage));
+  MemoryFile file(std::as_writable_bytes(std::span(storage)));
   ASSERT_TRUE(file.Open());
   std::byte first[2];
   EXPECT_EQ(file.Read(std::span(first)), 2);
   EXPECT_EQ(static_cast<char>(first[1]), 'y');
   char last = 0;
-  EXPECT_EQ(file.Read(&last, 1), 1);
+  EXPECT_EQ(file.Read(base::ObjectBytes(last)), 1);
   EXPECT_EQ(last, 'z');
+}
+
+TEST(FileTest, TypedViewCountIsBytesRatherThanElements) {
+  char storage[] = {'a', 'b', 'c', 'd'};
+  MemoryFile file(std::as_writable_bytes(std::span(storage)));
+  ASSERT_TRUE(file.Open());
+  std::array<uint16_t, 2> words{};
+  EXPECT_EQ(file.Read(std::span(words), 3), 3);
+  const auto bytes = std::as_bytes(std::span(words));
+  EXPECT_EQ(bytes[0], std::byte{'a'});
+  EXPECT_EQ(bytes[1], std::byte{'b'});
+  EXPECT_EQ(bytes[2], std::byte{'c'});
+  EXPECT_EQ(bytes[3], std::byte{0});
 }
 
 }  // namespace

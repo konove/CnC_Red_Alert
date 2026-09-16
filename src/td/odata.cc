@@ -54,9 +54,11 @@
 
 #include <cstdint>
 #include <filesystem>
+#include <span>
 #include <string>
 
 #include "base/enum_array.h"
+#include "base/numeric.h"
 #include "port/ex_string.h"
 #include "sdllib/shape.h"
 #include "td/conquer.h"
@@ -66,6 +68,7 @@
 #include "td/externs.h"
 #include "td/house.h"
 #include "td/jshell.h"
+#include "td/keyframe.h"
 #include "td/mapedit.h"
 #include "td/mouse.h"
 #include "td/object.h"
@@ -689,7 +692,7 @@ void OverlayTypeClass::One_Time() {}
 OverlayType OverlayTypeClass::From_Name(const char* name) {
   if (name) {
     for (OverlayType index = OVERLAY_CONCRETE; index < OVERLAY_COUNT; index++) {
-      if (stricmp(As_Reference(index).IniName, name) == 0) {
+      if (port::CompareIgnoreCase(As_Reference(index).IniName, name) == 0) {
         return index;
       }
     }
@@ -714,8 +717,9 @@ OverlayType OverlayTypeClass::From_Name(const char* name) {
  *                                                                                             *
  * HISTORY: * 05/23/1994 JLB : Created. *
  *=============================================================================================*/
-const int16_t* OverlayTypeClass::Occupy_List(bool /*placement*/) const {
-  static int16_t _simple[] = {0, REFRESH_EOL};
+std::span<const int16_t> OverlayTypeClass::Occupy_List(
+    bool /*placement*/) const {
+  static const int16_t _simple[] = {0, REFRESH_EOL};
 
   return _simple;
 }
@@ -733,11 +737,13 @@ const int16_t* OverlayTypeClass::Occupy_List(bool /*placement*/) const {
  * HISTORY:                                                                *
  *   04/19/1995 PWG : Created.                                             *
  *=========================================================================*/
-const unsigned char* OverlayTypeClass::Radar_Icon(int data) const {
-  const auto* icon = static_cast<const unsigned char*>(
-      Get_Radar_Data());                 // Get pointer to radar icons
-  icon += (data * 9) + 2;                // move icon ptr to correct icon
-  return icon;                           // Return the correct icon
+std::span<const uint8_t> OverlayTypeClass::Radar_Icon(int data) const {
+  const auto icons = Get_Radar_Data();
+  if (data < 0 || icons.size() < 2 ||
+      base::ToSize(data) >= (icons.size() - 2) / 9) {
+    return {};
+  }
+  return icons.subspan(2 + (base::ToSize(data) * 9), 9);
 }
 
 /***********************************************************************************************
@@ -761,7 +767,7 @@ void OverlayTypeClass::Display(int x, int y, WindowNumberType window,
   /*
   ---------------------------- Draw the shape ------------------------------
   */
-  if (Get_Image_Data()) {
+  if (!Get_Image_Data().empty()) {
     int frame = 0;
 
     if (IsTiberium) {
@@ -791,7 +797,7 @@ void OverlayTypeClass::Display(int x, int y, WindowNumberType window,
 void OverlayTypeClass::Prep_For_Add() {
   for (OverlayType index = OVERLAY_CONCRETE; index < OVERLAY_COUNT; index++) {
     const OverlayTypeClass& overlay = As_Reference(index);
-    if (overlay.Get_Image_Data() && !overlay.IsWall &&
+    if (!overlay.Get_Image_Data().empty() && !overlay.IsWall &&
         (!overlay.IsTiberium || index == OVERLAY_TIBERIUM1)) {
       Map.Add_To_List(&overlay);
     }
@@ -861,7 +867,7 @@ ObjectClass* OverlayTypeClass::Create_One_Of(HouseClass* /*unused*/) const {
 void OverlayTypeClass::Draw_It(int x, int y, int data) const {
   CC_Draw_Shape(Get_Image_Data(), data, Map.TacPixelX + x + (CELL_PIXEL_W >> 1),
                 Map.TacPixelY + y + (CELL_PIXEL_H >> 1), WINDOW_MAIN,
-                SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST, nullptr,
+                SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST, {},
                 MouseClass::UnitShadow);
 }
 
@@ -896,7 +902,7 @@ void OverlayTypeClass::Init(TheaterType theater) {
                        .replace_extension(".SHP")
                        .string();
       }
-      overlay.Set_Image_Data(MixArchive::Retrieve(fullname));
+      overlay.Set_Image_Data(MixArchive::RetrieveData(fullname));
 
       IsTheaterShape = overlay.IsTheater;
       overlay.Set_Radar_Icon(

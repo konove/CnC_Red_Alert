@@ -7,7 +7,9 @@
 #include <type_traits>
 #include <vector>
 
+#include "base/buffer.h"
 #include "gtest/gtest.h"
+#include "port/safe_string.h"
 #include "ra/_wsproto.h"
 #include "ra/defines.h"
 #include "ra/globals.h"
@@ -114,7 +116,7 @@ TEST(SaveGlobalsTest, TruncatedScoreFails) {
 
 TEST(SaveGlobalsTest, PlayerRecordPreservesNameAddressAndPlayerFields) {
   NodeNameType player{};
-  std::memcpy(player.Name, "Player", 7);
+  port::SafeCopy(player.Name, "Player");
   NetNumType network = {1, 2, 3, 4};
   NetNodeType node = {5, 6, 7, 8, 9, 10};
   player.Address.Set_Address(network, node);
@@ -134,8 +136,12 @@ TEST(SaveGlobalsTest, PlayerRecordPreservesNameAddressAndPlayerFields) {
   NetNumType loaded_network{};
   NetNodeType loaded_node{};
   loaded.Address.Get_Address(loaded_network, loaded_node);
-  EXPECT_EQ(std::memcmp(loaded_network, network, sizeof(network)), 0);
-  EXPECT_EQ(std::memcmp(loaded_node, node, sizeof(node)), 0);
+  EXPECT_EQ(base::CompareBytes(base::ObjectBytes(loaded_network),
+                               base::ObjectBytes(network), sizeof(network)),
+            0);
+  EXPECT_EQ(base::CompareBytes(base::ObjectBytes(loaded_node),
+                               base::ObjectBytes(node), sizeof(node)),
+            0);
   EXPECT_EQ(loaded.Player.House, HOUSE_USSR);
   EXPECT_EQ(loaded.Player.Color, PCOLOR_RED);
   EXPECT_EQ(loaded.Player.ID, HOUSE_MULTI1);

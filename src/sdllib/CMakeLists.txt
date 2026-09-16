@@ -56,3 +56,10 @@ if (LIBSERIALPORT_LIBRARIES AND LIBSERIALPORT_INCLUDE_DIR)
     target_include_directories(sdllib PRIVATE ${LIBSERIALPORT_INCLUDE_DIR})
     target_link_libraries(sdllib ${LIBSERIALPORT_LIBRARIES})
 endif ()
+
+# Exercises the game's key-frame/delta chain using the real bounded LCW decoder.
+add_gtest(
+        NAME keyframe_test
+        SOURCES keyframe_test.cc ../ra/2keyfram.cc ../tech/lcwuncmp.cc
+        LIBS sdllib
+)

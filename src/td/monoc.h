@@ -43,9 +43,13 @@
 
 #include <cstddef>
 #include <cstring>
+#include <span>
 #include <string_view>
 
 #include "absl/strings/str_format.h"
+#include "base/array.h"
+#include "base/buffer.h"
+#include "base/numeric.h"
 
 // #include	"dpmi.h"
 // #include	"function.h"
@@ -117,7 +121,7 @@ class MonoClass {
   static void Enable() { Enabled = 1; }
   static void Disable() { Enabled = 0; }
   static int Is_Enabled() { return Enabled; }
-  static MonoClass* Get_Current() { return PageUsage[0]; }
+  static MonoClass* Get_Current() { return base::At(PageUsage, 0); }
 
   void Draw_Box(int x, int y, int w, int h, char attrib = kDefaultAttribute,
                 BoxStyleType thick = SINGLE);
@@ -167,7 +171,9 @@ class MonoClass {
   }
   void Scroll(int lines);
   void Store_Cell(CellType& cell, int x, int y) {
-    std::memcpy(MonoRAM + Offset(x, y), &cell, sizeof(cell));
+    base::CopyBytes(std::as_writable_bytes(std::span(MonoRAM))
+                        .subspan(base::ToSize(Offset(x, y))),
+                    base::ObjectBytes(cell), sizeof(cell));
   }
 
   /*

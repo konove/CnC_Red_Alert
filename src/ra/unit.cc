@@ -112,11 +112,13 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cstddef>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <iterator>
+#include <span>
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
@@ -1409,7 +1411,7 @@ bool UnitClass::Goto_Clear_Spot() {
     **	This scan table is skewed to north scanning only. This should
     **	probably be converted to a more flexible method.
     */
-    static int _offsets[] = {
+    static const int _offsets[] = {
         -MAP_CELL_W * 1, -MAP_CELL_W * 2, -(MAP_CELL_W * 2) + 1,
         -(MAP_CELL_W * 2) - 1, -MAP_CELL_W * 3, -(MAP_CELL_W * 3) + 1,
         -(MAP_CELL_W * 3) - 1, -(MAP_CELL_W * 3) + 2, -(MAP_CELL_W * 3) - 2,
@@ -1427,9 +1429,10 @@ bool UnitClass::Goto_Clear_Spot() {
 
         1, 2, 3, 4, 0};
 
-    int* ptr = &_offsets[0];
-    while (*ptr) {
-      const CELL cell = static_cast<CELL>(Coord_Cell(Coord) + *ptr++);
+    std::span<const int> ptr(_offsets);
+    while (ptr.front()) {
+      const CELL cell =
+          static_cast<CELL>(Coord_Cell(Coord) + base::ConsumeFront(ptr));
       const CELL check_cell = Adjacent_Cell(cell, FACING_NW);
       if (BuildingTypeClass::As_Reference(STRUCT_CONST)
               .Legal_Placement(check_cell)) {
@@ -2029,8 +2032,8 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) const {
   /*
   **	Verify the legality of the unit class.
   */
-  const void* shapefile = Get_Image_Data();  // Working shape file pointer.
-  if (shapefile == nullptr) {
+  const auto shapefile = Get_Image_Data();  // Working shape file pointer.
+  if (shapefile.empty()) {
     return;
   }
 
@@ -2113,8 +2116,8 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) const {
   */
   if (Flagged != HOUSE_NONE) {
     CC_Draw_Shape(
-        MixArchive::Retrieve("FLAGFLY.SHP"), static_cast<int>(Frame % 14), x, y,
-        window, SHAPE_CENTER | SHAPE_FADING | SHAPE_GHOST,
+        MixArchive::RetrieveData("FLAGFLY.SHP"), static_cast<int>(Frame % 14),
+        x, y, window, SHAPE_CENTER | SHAPE_FADING | SHAPE_GHOST,
         HouseClass::As_Pointer(Flagged)->Remap_Table(false, Class->Remap),
         MouseClass::UnitShadow);
   }
@@ -3003,7 +3006,7 @@ int UnitClass::Mission_Hunt() {
  * HISTORY: * 05/26/1994 JLB : Created. * 06/19/1994 JLB : Uses
  *Coord_Spillable_List function.                                      *
  *=============================================================================================*/
-const int16_t* UnitClass::Overlap_List(bool redraw) const {
+std::span<const int16_t> UnitClass::Overlap_List(bool redraw) const {
   assert(Units.ID(this) == ID);
   assert(IsActive);
 
@@ -3016,7 +3019,7 @@ const int16_t* UnitClass::Overlap_List(bool redraw) const {
     size = ICON_PIXEL_W * 2;
   }
 
-  return Coord_Spillage_List(Coord, size) + 1;
+  return Coord_Spillage_List(Coord, size).subspan(1);
 }
 
 /***********************************************************************************************

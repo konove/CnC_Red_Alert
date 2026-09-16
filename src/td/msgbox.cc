@@ -45,9 +45,11 @@
 #include <algorithm>
 #include <cstdint>
 #include <cstring>
+#include <vector>
 
 #include "base/array.h"
 #include "base/numeric.h"
+#include "port/safe_string.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
 #include "sdllib/gbuffer.h"
@@ -106,12 +108,12 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   bool pressed = false;
   int curbutton = 0;
   TextButtonClass* buttons[3];
-  void* back = nullptr;
+  std::vector<uint8_t> back;
   bool display = false;  // display level
   int realval[5];
 
   GraphicBufferClass seen_buff_save(VisiblePage.Get_Width(),
-                                    VisiblePage.Get_Height(), nullptr);
+                                    VisiblePage.Get_Height(), {});
 
   const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
 
@@ -159,8 +161,8 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   **	Determine the dimensions of the text to be used for the dialog box.
   **	These dimensions will control how the dialog box looks.
   */
-  buffer[BUFFSIZE - 1] = 0;
-  strncpy(buffer, msg, BUFFSIZE - 2);
+  base::At(buffer, BUFFSIZE - 1) = 0;
+  port::SafeCopy(std::span(buffer).first(BUFFSIZE - 1), msg);
   int width = 0;
   int height = 0;
 
@@ -219,20 +221,20 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   */
   if (numbuttons) {
     buttonlist = &button1;
-    buttons[0] = &button1;
-    realval[0] = BUTTON_1;
+    base::At(buttons, 0) = &button1;
+    base::At(realval, 0) = BUTTON_1;
     if (numbuttons > 2) {
       button3.Add(*buttonlist);
-      buttons[1] = &button3;
-      realval[1] = BUTTON_3;
+      base::At(buttons, 1) = &button3;
+      base::At(realval, 1) = BUTTON_3;
       button2.Add(*buttonlist);
-      buttons[2] = &button2;
-      realval[2] = BUTTON_2;
+      base::At(buttons, 2) = &button2;
+      base::At(realval, 2) = BUTTON_2;
       base::At(buttons, curbutton)->Turn_On();
     } else if (numbuttons == 2) {
       button2.Add(*buttonlist);
-      buttons[1] = &button2;
-      realval[1] = BUTTON_2;
+      base::At(buttons, 1) = &button2;
+      base::At(realval, 1) = BUTTON_2;
       base::At(buttons, curbutton)->Turn_On();
     }
   }
@@ -242,8 +244,8 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   */
   Hide_Mouse();
   if (preserve) {
-    back = new char[base::ToSize(width * height)];
-    SeenBuff.To_Buffer(x, y, width, height, back,
+    back.resize(base::ToSize(width * height));
+    SeenBuff.To_Buffer(x, y, width, height, std::span(back),
                        static_cast<int32_t>(width) * height);
   }
   // display = true;
@@ -333,27 +335,27 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
       input = buttonlist->Input();
       switch (static_cast<int>(input)) {
         case BUTTON_1 | BUTTON_FLAG:
-          selection = realval[0];
+          selection = base::At(realval, 0);
           pressed = true;
           break;
 
         case KN_ESC:
           if (numbuttons > 2) {
-            selection = realval[1];
+            selection = base::At(realval, 1);
             pressed = true;
           } else {
-            selection = realval[2];
+            selection = base::At(realval, 2);
             pressed = true;
           }
           break;
 
         case BUTTON_2 | BUTTON_FLAG:
-          selection = realval[1];
+          selection = base::At(realval, 1);
           pressed = true;
           break;
 
         case BUTTON_3 | BUTTON_FLAG:
-          selection = realval[2];
+          selection = base::At(realval, 2);
           pressed = true;
           break;
 
@@ -455,11 +457,10 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   if (preserve) {
     Hide_Mouse();
     if (SeenBuff.Lock()) {
-      Buffer_To_Page(x, y, width, height, back, &SeenBuff);
+      Buffer_To_Page(x, y, width, height, std::span(back), &SeenBuff);
     }
     SeenBuff.Unlock();
-    delete[] static_cast<char*>(back);
-    back = nullptr;
+    back.clear();
     Show_Mouse();
   }
   return retval;

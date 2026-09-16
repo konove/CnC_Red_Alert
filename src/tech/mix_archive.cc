@@ -17,6 +17,7 @@
 #include <span>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "absl/strings/ascii.h"
@@ -216,10 +217,13 @@ std::optional<MixArchive::FileLocation> MixArchive::Offset(
 
       // Safe span construction
       std::span<const std::byte> view;
-      if (cached && it->offset + it->size <=
-                        static_cast<std::int32_t>(mix->data_.size())) {
-        view = {mix->data_.data() + it->offset,
-                static_cast<std::size_t>(it->size)};
+      if (cached && it->offset >= 0 && it->size >= 0 &&
+          std::cmp_less_equal(it->offset, mix->data_.size()) &&
+          it->size <=
+              static_cast<std::int32_t>(mix->data_.size()) - it->offset) {
+        view = std::span(mix->data_)
+                   .subspan(static_cast<std::size_t>(it->offset),
+                            static_cast<std::size_t>(it->size));
       }
 
       return FileLocation{

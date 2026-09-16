@@ -40,6 +40,8 @@
 #ifndef CNC_RED_ALERT_RA_TECHNO_H_
 #define CNC_RED_ALERT_RA_TECHNO_H_
 
+#include <cstddef>
+#include <span>
 #include <cstdint>
 
 #include "absl/base/attributes.h"
@@ -402,7 +404,7 @@ class TechnoClass : public RadioClass,
   [[nodiscard]] int Evaluate_Just_Cell(CELL cell) const;
   virtual bool Electric_Zap(TARGET target, int which,
                             COORDINATE source_coord = 0L,
-                            unsigned char* remap = nullptr);
+                            std::span<const unsigned char> remap = {});
 
   /*
   **	AI.
@@ -425,7 +427,7 @@ class TechnoClass : public RadioClass,
   */
   // Returns the color remap table for rendering this object. Remappable
   // objects use their house color; non-remappable objects use gold.
-  [[nodiscard]] virtual const void* Remap_Table() const;
+  [[nodiscard]] virtual std::span<const unsigned char> Remap_Table() const;
   [[nodiscard]] VisualType Visual_Character(bool raw = false) const;
 
   // Draws the object with appropriate remapping, cloaking, and shadow effects.
@@ -433,7 +435,7 @@ class TechnoClass : public RadioClass,
   // iron curtain visual overlay, and cloaking transparency stages. The
   // `shapefile` must match the type class image data for dimension caching to
   // work correctly. `scale` uses 24.8 fixed point (0x0100 = 1x).
-  void Techno_Draw_Object(const void* shapefile, int shapenum, int x, int y,
+  void Techno_Draw_Object(std::span<const std::byte> shapefile, int shapenum, int x, int y,
                           WindowNumberType window, DirType rotation = DIR_N,
                           int scale = 0x0100) const;
 

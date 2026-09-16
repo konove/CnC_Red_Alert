@@ -38,6 +38,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <span>
 
 #include "absl/base/attributes.h"
 #include "base/flags.h"
@@ -93,19 +94,8 @@ int64_t Heap_Size(MemoryFlagType flag);
  */
 /*=========================================================================*/
 
-extern "C" {
-void Mem_Copy(const void* source, void* dest, size_t bytes_to_copy);
-}
-
-inline const void* Add_Long_To_Pointer(
-    const void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND, base::ssize size) {
-  return static_cast<const char*>(ptr) + size;
-}
-
-inline void* Add_Long_To_Pointer(void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND,
-                                 base::ssize size) {
-  return static_cast<char*>(ptr) + size;
-}
+void Mem_Copy(std::span<const std::byte> source, std::span<std::byte> dest,
+              size_t bytes_to_copy);
 
 extern void (*Memory_Error)();
 extern void (*Memory_Error_Exit)(char* string);

@@ -62,6 +62,7 @@
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
+#include <span>
 
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
@@ -119,7 +120,8 @@ AnimType Anim_From_Name(const char* name) {
   }
 
   for (const AnimType anim : magic_enum::enum_values<AnimType>()) {
-    if (stricmp(AnimTypeClass::As_Reference(anim).IniName, name) == 0) {
+    if (port::CompareIgnoreCase(AnimTypeClass::As_Reference(anim).IniName,
+                                name) == 0) {
       return anim;
     }
   }
@@ -273,20 +275,20 @@ void AnimClass::Draw_It(int x, int y, WindowNumberType window) const {
 
     IsTheaterShape = Class->IsTheater;
 
-    const void* shapefile = Get_Image_Data();
-    if (shapefile != nullptr) {
-      const void* transtable = nullptr;
+    const auto shapefile = Get_Image_Data();
+    if (!shapefile.empty()) {
+      std::span<const unsigned char> transtable;
       const int shapenum = Class->Start + Fetch_Stage();
-      const void* remap = nullptr;
+      const std::span<const unsigned char> remap;
 
       /*
       **	If the translucent table hasn't been determined yet, then check
       *to see if it *	should use the white or normal translucent tables.
       */
-      if (transtable == nullptr && Class->IsWhiteTrans) {
+      if (transtable.empty() && Class->IsWhiteTrans) {
         transtable = DisplayClass::WhiteTranslucentTable;
       }
-      if (transtable == nullptr && Class->IsTranslucent) {
+      if (transtable.empty() && Class->IsTranslucent) {
         transtable = DisplayClass::TranslucentTable;
       }
       if (Class->Type == ANIM_ATOM_BLAST) {
@@ -298,7 +300,7 @@ void AnimClass::Draw_It(int x, int y, WindowNumberType window) const {
       *ghosting *	table necessary.
       */
       ShapeFlags_Type flags = SHAPE_CENTER | SHAPE_WIN_REL;
-      if (transtable != nullptr) {
+      if (!transtable.empty()) {
         flags = flags | SHAPE_GHOST;
       }
 
@@ -354,7 +356,7 @@ bool AnimClass::Mark(MarkType mark) {
  *                                                                                             *
  * HISTORY: * 03/19/1995 JLB : Created. *
  *=============================================================================================*/
-const int16_t* AnimClass::Overlap_List(bool /*redraw*/) const {
+std::span<const int16_t> AnimClass::Overlap_List(bool /*redraw*/) const {
   assert(Anims.ID(this) == ID);
   assert(IsActive);
   static const int16_t OverlapAtom[] = {
@@ -394,11 +396,11 @@ const int16_t* AnimClass::Overlap_List(bool /*redraw*/) const {
  *                                                                                             *
  * HISTORY: * 03/19/1995 JLB : Created. *
  *=============================================================================================*/
-const int16_t* AnimClass::Occupy_List(bool /*placement*/) const {
+std::span<const int16_t> AnimClass::Occupy_List(bool /*placement*/) const {
   assert(Anims.ID(this) == ID);
   assert(IsActive);
 
-  static int16_t _simple[] = {kRefreshEol};
+  static const int16_t _simple[] = {kRefreshEol};
 
   return _simple;
 }

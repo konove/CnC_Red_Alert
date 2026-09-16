@@ -134,7 +134,9 @@
 #include "td/techno.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <cstdint>
+#include <span>
 #include <utility>
 
 #include "base/array.h"
@@ -367,7 +369,9 @@ int TechnoTypeClass::Cost_Of() const { return Cost; }
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-const void* TechnoTypeClass::Get_Cameo_Data() const { return CameoData; }
+std::span<const std::byte> TechnoTypeClass::Get_Cameo_Data() const {
+  return CameoData;
+}
 
 /***********************************************************************************************
  * TechnoTypeClass::Repair_Cost -- Fetches the cost to repair one step. *
@@ -870,12 +874,15 @@ void TechnoClass::Draw_It(int x, int y, WindowNumberType window) {
   if (IsSelected || Special.IsBarOn) {
     GraphicViewPortClass draw_window(
         LogicPage->Get_Graphic_Buffer(),
-        (base::At(WindowList[static_cast<int>(window)], kWindowX) * 8) +
+        (base::At(base::At(WindowList, static_cast<int>(window)), kWindowX) *
+         8) +
             LogicPage->Get_XPos(),
-        base::At(WindowList[static_cast<int>(window)], kWindowY) +
+        base::At(base::At(WindowList, static_cast<int>(window)), kWindowY) +
             LogicPage->Get_YPos(),
-        base::At(WindowList[static_cast<int>(window)], kWindowWidth) * 8,
-        base::At(WindowList[static_cast<int>(window)], kWindowHeight));
+        base::At(base::At(WindowList, static_cast<int>(window)), kWindowWidth) *
+            8,
+        base::At(base::At(WindowList, static_cast<int>(window)),
+                 kWindowHeight));
 
     /*
     **	The infantry select box should be a bit higher than normal.
@@ -3064,18 +3071,19 @@ VisualType TechnoClass::Visual_Character(bool raw) const {
  *                                                                                             *
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
-void TechnoClass::Techno_Draw_Object(const void* shapefile, int shapenum, int x,
-                                     int y, WindowNumberType window) {
-  if (shapefile) {
+void TechnoClass::Techno_Draw_Object(std::span<const std::byte> shapefile,
+                                     int shapenum, int x, int y,
+                                     WindowNumberType window) {
+  if (!shapefile.empty()) {
     const VisualType visual = Visual_Character();
-    const void* remap = Remap_Table();
+    const auto remap = Remap_Table();
 
     if (visual != VISUAL_HIDDEN && visual != VISUAL_RIPPLE) {
       if (visual == VISUAL_SHADOWY) {
         CC_Draw_Shape(
             shapefile, shapenum, x, y, window,
-            SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING | SHAPE_PREDATOR,
-            nullptr, MouseClass::FadingShade);
+            SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING | SHAPE_PREDATOR, {},
+            MouseClass::FadingShade);
       } else {
         CC_Draw_Shape(shapefile, shapenum, x, y, window,
                       SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING | SHAPE_GHOST,
@@ -3109,7 +3117,7 @@ void TechnoClass::Techno_Draw_Object(const void* shapefile, int shapenum, int x,
  *                                                                                             *
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
-const void* TechnoClass::Remap_Table() {
+std::span<const unsigned char> TechnoClass::Remap_Table() {
   return House->Remap_Table(IsBlushing, true);
 }
 

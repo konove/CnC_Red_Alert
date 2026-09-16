@@ -46,8 +46,11 @@ class ArchiveWriter;
 
 #include <cstdint>
 #include <cstring>
+#include <span>
 
 #include "absl/base/attributes.h"
+#include "base/array.h"
+#include "port/safe_string.h"
 #include "td/defines.h"
 #include "td/object.h"
 #include "td/teamtype.h"
@@ -158,7 +161,7 @@ class TriggerClass {
   */
   static void Read_INI(char* buffer);
   void Fill_In(char* name, char* entry);
-  static void Write_INI(char* buffer, bool refresh);
+  static void Write_INI(std::span<char> buffer, bool refresh);
   static const char* INI_Name() { return "Triggers"; }
   // Field-wise saved-game support, defined in ioobj.cc.
   template <class Archive>
@@ -183,10 +186,7 @@ class TriggerClass {
   [[nodiscard]] const char* Get_Name() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return Name;
   }
-  void Set_Name(const char* buf) {
-    strncpy(Name, buf, sizeof(Name));
-    Name[sizeof(Name) - 1] = '\0';
-  }
+  void Set_Name(const char* buf) { port::SafeCopy(Name, buf); }
 
   /*
   **	Utility routines

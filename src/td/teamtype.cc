@@ -57,8 +57,10 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <span>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
@@ -67,7 +69,6 @@
 #include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "port/tokenizer.h"
-#include "sdllib/shape.h"
 #include "td/config.h"
 #include "td/conquer.h"
 #include "td/defines.h"
@@ -170,15 +171,14 @@ void TeamTypeClass::Read_INI(char* buffer) {
   /*------------------------------------------------------------------------
   Set 'tbuffer' to point just past the INI buffer
   ------------------------------------------------------------------------*/
-  const int len = static_cast<int>(std::string_view(buffer).size()) +
-                  2;             // Length of data in buffer.
-  char* tbuffer = buffer + len;  // Accumulation buffer of team names.
+  std::vector<char> key_storage(std::string_view(buffer).size() + 2);
+  auto key_cursor = std::span(key_storage);
+  char* tbuffer = key_cursor.data();  // Accumulation buffer of team names.
 
   /*------------------------------------------------------------------------
   Read all TeamType entry names into 'tbuffer'
   ------------------------------------------------------------------------*/
-  WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
-                            ShapeBufferSize - len, buffer);
+  WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, key_cursor, buffer);
 
   /*
   ----------------------- Loop for all team entries ------------------------
@@ -192,8 +192,10 @@ void TeamTypeClass::Read_INI(char* buffer) {
     /*
     ......................... Get the team entry ..........................
     */
-    WWGetPrivateProfileString(INI_Name(), tbuffer, nullptr, buf,
-                              sizeof(buf) - 1, buffer);
+    WWGetPrivateProfileString(
+        INI_Name(), tbuffer, nullptr,
+        std::span(buf).first(static_cast<std::size_t>(sizeof(buf) - 1)),
+        buffer);
 
     /*
     .......................... Fill the team in ...........................
@@ -203,7 +205,8 @@ void TeamTypeClass::Read_INI(char* buffer) {
     /*
     ...................... Go to the next INI entry .......................
     */
-    tbuffer += std::string_view(tbuffer).size() + 1;
+    key_cursor = key_cursor.subspan(std::string_view(tbuffer).size() + 1);
+    tbuffer = key_cursor.data();
   }
 
   /*
@@ -417,7 +420,7 @@ void TeamTypeClass::Fill_In(char* name, char* entry) {
  * HISTORY:                                                                *
  *   12/07/1994 BR : Created.                                              *
  *=========================================================================*/
-void TeamTypeClass::Write_INI(char* buffer, bool refresh) {
+void TeamTypeClass::Write_INI(std::span<char> buffer, bool refresh) {
   char buf[500];
   const char* hname = nullptr;
 
@@ -436,7 +439,7 @@ void TeamTypeClass::Write_INI(char* buffer, bool refresh) {
   /*------------------------------------------------------------------------
   Now write all the team data out
   ------------------------------------------------------------------------*/
-  buf[0] = 0;
+  base::At(buf, 0) = 0;
   for (int index = 0; index < TeamTypes.Count(); index++) {
     /*
     .................. Get ptr to next active teamtype ....................
@@ -465,7 +468,7 @@ void TeamTypeClass::Write_INI(char* buffer, bool refresh) {
     For every class in the team, record the class's name & desired count
     .....................................................................*/
     for (int i = 0; std::cmp_less(i, team->ClassCount); i++) {
-      absl::SNPrintF(buf + std::string_view(buf).size(),
+      absl::SNPrintF(base::Suffix(buf, std::string_view(buf).size()).data(),
                      sizeof(buf) - std::string_view(buf).size(), ",%s:%d",
                      base::At(team->Class, i)->IniName,
                      base::At(team->DesiredNum, i));
@@ -474,11 +477,11 @@ void TeamTypeClass::Write_INI(char* buffer, bool refresh) {
     /*.....................................................................
     Record the # of missions, and each mission name & argument value.
     .....................................................................*/
-    absl::SNPrintF(buf + std::string_view(buf).size(),
+    absl::SNPrintF(base::Suffix(buf, std::string_view(buf).size()).data(),
                    sizeof(buf) - std::string_view(buf).size(), ",%d",
                    team->MissionCount);
     for (int i = 0; i < team->MissionCount; i++) {
-      absl::SNPrintF(buf + std::string_view(buf).size(),
+      absl::SNPrintF(base::Suffix(buf, std::string_view(buf).size()).data(),
                      sizeof(buf) - std::string_view(buf).size(), ",%s:%d",
                      Name_From_Mission(base::At(team->MissionList, i).Mission),
                      base::At(team->MissionList, i).Argument);
@@ -525,15 +528,14 @@ void TeamTypeClass::Read_Old_INI(char* buffer) {
   /*------------------------------------------------------------------------
   Set 'tbuffer' to point just past the INI buffer
   ------------------------------------------------------------------------*/
-  const int len = static_cast<int>(std::string_view(buffer).size()) +
-                  2;             // Length of data in buffer.
-  char* tbuffer = buffer + len;  // Accumulation buffer of team names.
+  std::vector<char> key_storage(std::string_view(buffer).size() + 2);
+  auto key_cursor = std::span(key_storage);
+  char* tbuffer = key_cursor.data();  // Accumulation buffer of team names.
 
   /*------------------------------------------------------------------------
   Read all TeamType entry names into 'tbuffer'
   ------------------------------------------------------------------------*/
-  WWGetPrivateProfileString("Teams", nullptr, nullptr, tbuffer,
-                            ShapeBufferSize - len, buffer);
+  WWGetPrivateProfileString("Teams", nullptr, nullptr, key_cursor, buffer);
 
   /*
   ----------------------- Loop for all team entries ------------------------
@@ -552,8 +554,10 @@ void TeamTypeClass::Read_Old_INI(char* buffer) {
     /*
     ......................... Get the team entry ..........................
     */
-    WWGetPrivateProfileString("Teams", tbuffer, nullptr, buf, sizeof(buf) - 1,
-                              buffer);
+    WWGetPrivateProfileString(
+        "Teams", tbuffer, nullptr,
+        std::span(buf).first(static_cast<std::size_t>(sizeof(buf) - 1)),
+        buffer);
 
     /*
     .......................... 1st token: House ...........................
@@ -668,7 +672,8 @@ void TeamTypeClass::Read_Old_INI(char* buffer) {
     /*
     ...................... Go to the next INI entry .......................
     */
-    tbuffer += std::string_view(tbuffer).size() + 1;
+    key_cursor = key_cursor.subspan(std::string_view(tbuffer).size() + 1);
+    tbuffer = key_cursor.data();
   }
 }
 
@@ -687,14 +692,13 @@ void TeamTypeClass::Read_Old_INI(char* buffer) {
  * HISTORY:                                                                *
  *   12/07/1994 BR : Created.                                              *
  *=========================================================================*/
-TeamTypeClass* TeamTypeClass::As_Pointer(char* name) {
-
+TeamTypeClass* TeamTypeClass::As_Pointer(const char* name) {
   if (name == nullptr) {
     return nullptr;
   }
 
   for (int i = 0; i < TeamTypes.Count(); i++) {
-    if (!stricmp(name, TeamTypes.Ptr(i)->IniName)) {
+    if (!port::CompareIgnoreCase(name, TeamTypes.Ptr(i)->IniName)) {
       return TeamTypes.Ptr(i);
     }
   }
@@ -756,7 +760,7 @@ TeamMissionType TeamTypeClass::Mission_From_Name(const char* name) {
   if (name) {
     for (TeamMissionType order = TMISSION_ATTACKBASE; order < TMISSION_COUNT;
          order++) {
-      if (stricmp(TMissions[order], name) == 0) {
+      if (port::CompareIgnoreCase(TMissions[order], name) == 0) {
         return order;
       }
     }

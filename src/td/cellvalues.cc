@@ -1,4 +1,5 @@
 // Cell defaults and sparse-save selection, independent of the game session.
+#include "base/array.h"
 #include "td/cell.h"
 #include "td/defines.h"
 
@@ -22,9 +23,9 @@ void CellClass::Reset() {
   Owner = HOUSE_NONE;
   InfType = HOUSE_NONE;
   OccupierPtr = nullptr;
-  Overlappers[0] = nullptr;
-  Overlappers[1] = nullptr;
-  Overlappers[2] = nullptr;
+  base::At(Overlappers, 0) = nullptr;
+  base::At(Overlappers, 1) = nullptr;
+  base::At(Overlappers, 2) = nullptr;
   Flag.Composite = 0;
   Land = LAND_CLEAR;
 }
@@ -35,6 +36,8 @@ bool CellClass::Should_Save() const {
          TIcon != 0 || Overlay != OVERLAY_NONE || OverlayData != 0 ||
          Smudge != SMUDGE_NONE || SmudgeData != 0 || Owner != HOUSE_NONE ||
          InfType != HOUSE_NONE || OccupierPtr != nullptr ||
-         Overlappers[0] != nullptr || Overlappers[1] != nullptr ||
-         Overlappers[2] != nullptr || Flag.Composite != 0 || Land != LAND_CLEAR;
+         base::At(Overlappers, 0) != nullptr ||
+         base::At(Overlappers, 1) != nullptr ||
+         base::At(Overlappers, 2) != nullptr || Flag.Composite != 0 ||
+         Land != LAND_CLEAR;
 }

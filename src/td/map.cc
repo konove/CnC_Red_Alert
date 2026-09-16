@@ -59,13 +59,16 @@
 
 #include "td/map.h"
 
+#include <cstddef>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <iterator>
+#include <span>
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
+#include "base/numeric.h"
 #include "base/types.h"
 #include "port/ex_string.h"
 #include "rand.h"
@@ -607,9 +610,9 @@ void MapClass::Sight_From(CELL cell, int sightrange, bool incremental) {
   */
   int count = base::At(
       RadiusCount, sightrange);  // Counter for number of offsets to process.
-  const int* ptr = &RadiusOffset[0];  // Offset pointer.
+  std::span<const int> ptr = RadiusOffset;  // Offset pointer.
   if (incremental && (sightrange > 1)) {
-    ptr += base::At(RadiusCount, sightrange - 2);
+    ptr = ptr.subspan(base::ToSize(base::At(RadiusCount, sightrange - 2)));
     count -= base::At(RadiusCount, sightrange - 2);
   }
 
@@ -617,8 +620,8 @@ void MapClass::Sight_From(CELL cell, int sightrange, bool incremental) {
   **	Process all offsets required for the desired scan.
   */
   while (count--) {
-    CELL const newcell =
-        static_cast<CELL>(cell + *ptr++);  // New cell with offset.
+    CELL const newcell = static_cast<CELL>(
+        cell + base::ConsumeFront(ptr));  // New cell with offset.
 
     /*
     **	Determine if the map edge has been wrapped. If so,
@@ -736,9 +739,9 @@ void MapClass::Place_Down(CELL cell, ObjectClass* object) {
     return;
   }
 
-  const int16_t* list = object->Occupy_List();
-  while (*list != REFRESH_EOL) {
-    const CELL newcell = static_cast<CELL>(cell + *list++);
+  std::span<const int16_t> list = object->Occupy_List();
+  while (list.front() != REFRESH_EOL) {
+    const CELL newcell = static_cast<CELL>(cell + base::ConsumeFront(list));
     if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
       (*this)[newcell].Occupy_Down(object);
       (*this)[newcell].Recalc_Attributes();
@@ -747,8 +750,8 @@ void MapClass::Place_Down(CELL cell, ObjectClass* object) {
   }
 
   list = object->Overlap_List();
-  while (*list != REFRESH_EOL) {
-    const CELL newcell = static_cast<CELL>(cell + *list++);
+  while (list.front() != REFRESH_EOL) {
+    const CELL newcell = static_cast<CELL>(cell + base::ConsumeFront(list));
     if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
       (*this)[newcell].Overlap_Down(object);
       (*this)[newcell].Redraw_Objects();
@@ -779,9 +782,9 @@ void MapClass::Pick_Up(CELL cell, ObjectClass* object) {
     return;
   }
 
-  const int16_t* list = object->Occupy_List();
-  while (*list != REFRESH_EOL) {
-    const CELL newcell = static_cast<CELL>(cell + *list++);
+  std::span<const int16_t> list = object->Occupy_List();
+  while (list.front() != REFRESH_EOL) {
+    const CELL newcell = static_cast<CELL>(cell + base::ConsumeFront(list));
     if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
       (*this)[newcell].Occupy_Up(object);
       (*this)[newcell].Recalc_Attributes();
@@ -790,8 +793,8 @@ void MapClass::Pick_Up(CELL cell, ObjectClass* object) {
   }
 
   list = object->Overlap_List();
-  while (*list != REFRESH_EOL) {
-    const CELL newcell = static_cast<CELL>(cell + *list++);
+  while (list.front() != REFRESH_EOL) {
+    const CELL newcell = static_cast<CELL>(cell + base::ConsumeFront(list));
     if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
       (*this)[newcell].Overlap_Up(object);
       (*this)[newcell].Redraw_Objects();
@@ -822,9 +825,9 @@ void MapClass::Overlap_Down(CELL cell, ObjectClass* object) {
     return;
   }
 
-  const int16_t* list = object->Overlap_List();
-  while (*list != REFRESH_EOL) {
-    const CELL newcell = static_cast<CELL>(cell + *list++);
+  std::span<const int16_t> list = object->Overlap_List();
+  while (list.front() != REFRESH_EOL) {
+    const CELL newcell = static_cast<CELL>(cell + base::ConsumeFront(list));
     if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
       (*this)[newcell].Overlap_Down(object);
       (*this)[newcell].Redraw_Objects();
@@ -854,9 +857,9 @@ void MapClass::Overlap_Up(CELL cell, ObjectClass* object) {
     return;
   }
 
-  const int16_t* list = object->Overlap_List();
-  while (*list != REFRESH_EOL) {
-    const CELL newcell = static_cast<CELL>(cell + *list++);
+  std::span<const int16_t> list = object->Overlap_List();
+  while (list.front() != REFRESH_EOL) {
+    const CELL newcell = static_cast<CELL>(cell + base::ConsumeFront(list));
     if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
       (*this)[newcell].Overlap_Up(object);
       (*this)[newcell].Redraw_Objects();
@@ -938,8 +941,8 @@ bool MapClass::Read_Binary(const char* root, uint32_t* crc)
   /*
   **	Loop through all cells.
   */
-  CellClass* cellptr = &Map[0];
   for (i = 0; i < MAP_CELL_TOTAL; i++) {
+    CellClass* cellptr = &Map[static_cast<CELL>(i)];
     struct {
       TemplateType TType;   // Template type.
       unsigned char TIcon;  // Template icon number.
@@ -958,16 +961,14 @@ bool MapClass::Read_Binary(const char* root, uint32_t* crc)
     *clear terrain.
     */
     if (temp.TType != TEMPLATE_CLEAR1 && temp.TType != TEMPLATE_NONE) {
-      const void* shape =
+      const auto shape =
           TemplateTypeClass::As_Reference(temp.TType).Get_Image_Data();
-      if (shape) {
-        const void* rawmap = Get_Icon_Set_Map(shape);
-        if (rawmap) {
-          const char* map = static_cast<const char*>(rawmap);
-          if (map[temp.TIcon] == -1) {
-            temp.TIcon = 0;
-            temp.TType = TEMPLATE_NONE;
-          }
+      if (!shape.empty()) {
+        const auto map = Get_Icon_Set_Map(shape);
+        if ((!map.empty()) &&
+            (temp.TIcon >= map.size() || map[temp.TIcon] == std::byte{0xff})) {
+          temp.TIcon = 0;
+          temp.TType = TEMPLATE_NONE;
         }
       }
     }
@@ -981,7 +982,6 @@ bool MapClass::Read_Binary(const char* root, uint32_t* crc)
     Add_CRC(crc, cellptr->TIcon);
 #endif
 
-    cellptr++;
   }
 
   /*
@@ -1316,7 +1316,8 @@ bool MapClass::Validate() {
     if (ttype != TEMPLATE_NONE) {
       const TemplateTypeClass* tclass = &TemplateTypeClass::As_Reference(ttype);
       const unsigned char ticon = (*this)[cell].TIcon;
-      Mem_Copy(Get_Icon_Set_Map(tclass->Get_Image_Data()), map,
+      Mem_Copy(std::as_bytes(Get_Icon_Set_Map(tclass->Get_Image_Data())),
+               std::as_writable_bytes(std::span(map)),
                static_cast<size_t>(tclass->Width) * tclass->Height);
       if (ticon >= tclass->Width * tclass->Height ||
           base::At(map, ticon) == 0xff) {

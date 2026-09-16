@@ -52,7 +52,7 @@ class PcxFile {
   // Load without a palette so EOF is exactly the end of the encoded pixels.
   [[nodiscard]] std::unique_ptr<GraphicBufferClass> Load() const {
     return std::unique_ptr<GraphicBufferClass>(
-        Read_PCX_File(path_.string().c_str(), nullptr, nullptr, 0));
+        Read_PCX_File(path_.string().c_str(), {}, {}, 0));
   }
 
  private:
@@ -97,11 +97,12 @@ TEST(PcxTest, RejectsMissingTrailingRunColor) {
 }
 
 TEST(PcxTest, DecodesLiteralPixels) {
-  constexpr std::array<uint8_t, 3> pixels{7, 8, 0};
+  constexpr std::array<uint8_t, 4> pixels{7, 8, 0, 0};
   for (const bool padded : {false, true}) {
-    const auto image = PcxFile(std::span(pixels).first(padded ? 3 : 2), padded).Load();
+    const auto image =
+        PcxFile(std::span(pixels).first(padded ? 4 : 2), padded).Load();
     ASSERT_NE(image, nullptr);
-    const auto* decoded = static_cast<const uint8_t*>(image->Get_Buffer());
+    const auto decoded = image->Get_Bytes();
     EXPECT_EQ(decoded[0], 7);
     EXPECT_EQ(decoded[1], 8);
   }
@@ -112,10 +113,25 @@ TEST(PcxTest, DecodesRepeatedPixels) {
   for (const bool padded : {false, true}) {
     const auto image = PcxFile(std::span(pixels).first(padded ? 4 : 2), padded).Load();
     ASSERT_NE(image, nullptr);
-    const auto* decoded = static_cast<const uint8_t*>(image->Get_Buffer());
+    const auto decoded = image->Get_Bytes();
     EXPECT_EQ(decoded[0], 7);
     EXPECT_EQ(decoded[1], 7);
   }
+}
+
+TEST(PcxTest, RejectsRunsCrossingRowBoundary) {
+  constexpr std::array<uint8_t, 2> pixels{195, 7};
+  EXPECT_EQ(PcxFile(pixels, false).Load(), nullptr);
+}
+
+TEST(PcxTest, RejectsZeroLengthRuns) {
+  constexpr std::array<uint8_t, 4> pixels{192, 7, 7, 8};
+  EXPECT_EQ(PcxFile(pixels, false).Load(), nullptr);
+}
+
+TEST(PcxTest, RejectsTruncatedPadding) {
+  constexpr std::array<uint8_t, 3> pixels{7, 8, 0};
+  EXPECT_EQ(PcxFile(pixels, true).Load(), nullptr);
 }
 
 }  // namespace

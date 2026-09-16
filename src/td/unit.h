@@ -46,6 +46,7 @@ class ArchiveWriter;
 
 #include <cstddef>
 #include <cstdint>
+#include <span>
 
 #include "absl/base/attributes.h"
 #include "td/defines.h"
@@ -131,9 +132,9 @@ class UnitClass final : public TarComClass {
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
   */
-  const void* Remap_Table() override;
+  std::span<const unsigned char> Remap_Table() override;
   void Look(bool incremental = false) override;
-  const int16_t* Overlap_List() const override;
+  std::span<const int16_t> Overlap_List() const override;
   void Draw_It(int x, int y, WindowNumberType window) override;
 
   /*
@@ -199,7 +200,7 @@ class UnitClass final : public TarComClass {
   **	File I/O.
   */
   static void Read_INI(char* buffer);
-  static void Write_INI(char* buffer);
+  static void Write_INI(std::span<char> buffer);
   static const char* INI_Name() { return "UNITS"; }
 
   /*

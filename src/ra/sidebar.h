@@ -40,7 +40,9 @@
 #ifndef CNC_RED_ALERT_RA_SIDEBAR_H_
 #define CNC_RED_ALERT_RA_SIDEBAR_H_
 
+#include <cstddef>
 #include <cstdint>
+#include <span>
 
 #include "base/enum_array.h"
 #include "ra/control.h"
@@ -75,9 +77,11 @@ class SidebarClass : public PowerClass {
   static constexpr int kColumnTwoY = 7 + 70 + 13;
   static constexpr int kColumns = 2;  // Side strips on the sidebar.
 
-  static const void* SidebarShape;
-  static const void* SidebarMiddleShape;  // Only used in Win95 version
-  static const void* SidebarBottomShape;  // Only used in Win95 version
+  static std::span<const std::byte> SidebarShape;
+  static std::span<const std::byte>
+      SidebarMiddleShape;  // Only used in Win95 version
+  static std::span<const std::byte>
+      SidebarBottomShape;  // Only used in Win95 version
 
   SidebarClass();
 
@@ -92,7 +96,7 @@ class SidebarClass : public PowerClass {
 
   void AI(KeyNumType& input, int x, int y) override;
   void Draw_It(bool complete) override;
-  void Refresh_Cells(CELL cell, const int16_t* list) override;
+  void Refresh_Cells(CELL cell, std::span<const int16_t> list) override;
 
   void Zoom_Mode_Control();
   bool Abandon_Production(RTTIType type, int factory);
@@ -139,7 +143,7 @@ class SidebarClass : public PowerClass {
     void Deactivate();
     void Flag_To_Redraw();
     bool Factory_Link(int factory, RTTIType type, int id);
-    static const void* Get_Special_Cameo(SpecialWeaponType type);
+    static std::span<const std::byte> Get_Special_Cameo(SpecialWeaponType type);
 
     /*
     **	File I/O.
@@ -272,19 +276,20 @@ class SidebarClass : public PowerClass {
     **	Pointer to the shape data for small versions of the logos. These are
     *used as *	placeholder pieces on the side bar.
     */
-    static const void* LogoShapes;
+    static std::span<const std::byte> LogoShapes;
 
     /*
     **	This points to the animation sequence of frames used to mark the passage
     *of time *	as an object is undergoing construction.
     */
-    static const void* ClockShapes;
+    static std::span<const std::byte> ClockShapes;
 
     /*
     ** This points to the animation sequence which deals with special
     ** shapes which handle non-production based icons.
     */
-    static base::EnumArray<SpecialWeaponType, const void*> SpecialShapes;
+    static base::EnumArray<SpecialWeaponType, std::span<const std::byte>>
+        SpecialShapes;
 
     /*
     **	This is the last theater that the special palette remap table was loaded
@@ -301,7 +306,7 @@ class SidebarClass : public PowerClass {
     **	This points to the shapes that are used for the clock overlay. This
     *displays *	progress of construction.
     */
-    static char ClockTranslucentTable[(1 + 1) * 256];
+    static unsigned char ClockTranslucentTable[(1 + 1) * 256];
 
   } Column[kColumns];
 

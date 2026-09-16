@@ -40,6 +40,9 @@
 #ifndef CNC_RED_ALERT_RA_MOUSE_H_
 #define CNC_RED_ALERT_RA_MOUSE_H_
 
+#include <cstddef>
+#include <span>
+
 #include "base/enum_array.h"
 #include "ra/defines.h"
 #include "ra/jshell.h"
@@ -91,7 +94,7 @@ class MouseClass : public ScrollClass {
   /*
   ** This points to the loaded mouse shapes.
   */
-  static const void* MouseShapes;
+  static std::span<const std::byte> MouseShapes;
 
  private:
   /*

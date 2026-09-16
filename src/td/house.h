@@ -46,6 +46,7 @@ class ArchiveWriter;
 
 #include <cstddef>
 #include <cstdint>
+#include <span>
 
 #include "absl/base/attributes.h"
 #include "base/enum_array.h"
@@ -369,7 +370,7 @@ class HouseClass {
   ** in the HousesTypeClass isn't used.  This variable is set to the remap
   ** table for the color the player wants to play.
   */
-  const unsigned char* RemapTable = nullptr;
+  std::span<const unsigned char> RemapTable;
   PlayerColorType RemapColor = REMAP_NONE;
 
   // Radar and text colors for this house; start as the type's defaults and
@@ -455,8 +456,8 @@ class HouseClass {
   [[nodiscard]] bool Can_Build(UnitType unit, HousesType /*house*/) const;
   [[nodiscard]] bool Can_Build(AircraftType aircraft, HousesType house) const;
   bool Can_Build(const TechnoTypeClass* type, HousesType house) const;
-  [[nodiscard]] const unsigned char* Remap_Table(bool blushing = false,
-                                                 bool unit = false) const;
+  [[nodiscard]] std::span<const unsigned char> Remap_Table(
+      bool blushing = false, bool unit = false) const;
 
   [[nodiscard]] const TechnoTypeClass* Suggest_New_Object(
       RTTIType objecttype) const;
@@ -491,7 +492,7 @@ class HouseClass {
   **	File I/O.
   */
   static void Read_INI(char* buffer);
-  static void Write_INI(char* buffer);
+  static void Write_INI(std::span<char> buffer);
   static void Read_Flag_INI(char* buffer);
   static void Write_Flag_INI(char* buffer);
   // Field-wise saved-game support, defined in ioobj.cc.

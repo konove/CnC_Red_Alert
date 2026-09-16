@@ -66,17 +66,18 @@
  *
  ****************************************************************************/
 
+#include "winvq/vqa32/vqaio.h"
+
 #include <algorithm>
 #include <bit>
 #include <cstddef>
 #include <cstdint>
-#include <cstdio>
-#include <cstring>
 #include <memory>
 #include <span>
 #include <utility>
 #include <vector>
 
+#include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/seek_origin.h"
 #include "base/types.h"
@@ -217,7 +218,7 @@ int32_t VQA_Open(VQAHandle* vqa, const char* filename, VQAConfig* config) {
 
   /* Use the clients configuration if they provided one. */
   if (config != nullptr) {
-    memcpy(&vqap->config, config, sizeof(VQAConfig));
+    vqap->config = *config;
   } else {
     VQA_DefaultConfig(&vqap->config);
   }
@@ -625,8 +626,9 @@ int32_t VQA_LoadFrame(VQAHandle* vqa) {
          * This functionality is needed for Monopoly!
          */
         if (drawer->CurPalSize == 0) {
-          memcpy(drawer->Palette_24, curframe->Palette,
-                 base::ToSize(curframe->PaletteSize));
+          base::CopyBytes(base::ObjectBytes(drawer->Palette_24),
+                          std::as_bytes(std::span(curframe->PaletteStorage)),
+                          curframe->PaletteSize);
           drawer->CurPalSize = curframe->PaletteSize;
         }
 
@@ -645,8 +647,9 @@ int32_t VQA_LoadFrame(VQAHandle* vqa) {
          */
         if (drawer->CurPalSize == 0) {
           drawer->CurPalSize =
-              LCW_Uncompress(curframe->Palette + curframe->PalOffset,
-                             drawer->Palette_24, sizeof(drawer->Palette_24));
+              LCW_Uncompress(std::span(curframe->PaletteStorage)
+                                 .subspan(base::ToSize(curframe->PalOffset)),
+                             drawer->Palette_24);
         }
 
         /* Flag this frame as having a palette. */
@@ -912,11 +915,11 @@ int32_t VQA_SeekFrame(VQAHandle* vqa, int32_t framenum, int32_t /*fromwhere*/) {
       frame = loader->CurFrame;
 
       for (int32_t i = framenum; i >= 0; i--) {
-        if (vqabuf->Foff[i] & VQAFINF_PAL) {
+        if (vqabuf->FoffStorage[base::ToSize(i)] & VQAFINF_PAL) {
           /* Seek to the palette frame. */
-          rc = vqap->io->Seek(
-                   static_cast<base::ssize>(VQAFRAME_OFFSET(vqabuf->Foff[i])),
-                   SeekOrigin::kBegin)
+          rc = vqap->io->Seek(static_cast<base::ssize>(VQAFRAME_OFFSET(
+                                  vqabuf->FoffStorage[base::ToSize(i)])),
+                              SeekOrigin::kBegin)
                    ? VQAERR_NONE
                    : VQAERR_SEEK;
 
@@ -934,11 +937,12 @@ int32_t VQA_SeekFrame(VQAHandle* vqa, int32_t framenum, int32_t /*fromwhere*/) {
               /* Decompress the palette if neccessary.*/
               if (frame->Flags & VQAFRMF_PALCOMP) {
                 frame->PaletteSize =
-                    LCW_Uncompress(frame->Palette + frame->PalOffset,
-                                   frame->Palette, vqabuf->Max_Pal_Size);
+                    LCW_Uncompress(std::span(frame->PaletteStorage)
+                                       .subspan(base::ToSize(frame->PalOffset)),
+                                   frame->PaletteStorage);
               }
 
-              SetPalette(frame->Palette, frame->PaletteSize, 0);
+              SetPalette(frame->PaletteStorage, frame->PaletteSize, 0);
             }
           } else {
             rc = VQAERR_SEEK;
@@ -964,14 +968,13 @@ int32_t VQA_SeekFrame(VQAHandle* vqa, int32_t framenum, int32_t /*fromwhere*/) {
       /* Seek to the start of the group containing the partial codebooks for
        * the target frame.
        */
-      if (vqap->io->Seek(
-              static_cast<base::ssize>(VQAFRAME_OFFSET(vqabuf->Foff[group])),
-              SeekOrigin::kBegin)) {
+      if (vqap->io->Seek(static_cast<base::ssize>(VQAFRAME_OFFSET(
+                             vqabuf->FoffStorage[base::ToSize(group)])),
+                         SeekOrigin::kBegin)) {
         /* Throw away any audio frames that were loaded. */
-        if (config->OptionFlags & VQAOPTF_AUDIO && audio->Buffer != nullptr) {
-          memset(audio->IsLoaded, 0,
-                 base::ToSize(audio->NumAudBlocks) * sizeof(*audio->IsLoaded));
-          memset(audio->Buffer, 0, base::ToSize(config->AudioBufSize));
+        if (config->OptionFlags & VQAOPTF_AUDIO && !audio->Buffer.empty()) {
+          std::ranges::fill(audio->IsLoadedStorage, 0);
+          std::ranges::fill(audio->Buffer, 0);
 
           /* Position the audio buffer to 1/2 second. */
           audio->AudBufPos = audio->SampleRate * audio->Channels *
@@ -979,7 +982,7 @@ int32_t VQA_SeekFrame(VQAHandle* vqa, int32_t framenum, int32_t /*fromwhere*/) {
 
           /* Mark 1/2 second of the audio buffer as loaded. */
           for (int32_t i = 0; i < audio->AudBufPos / config->HMIBufSize; i++) {
-            audio->IsLoaded[i] = 1;
+            audio->IsLoadedStorage[base::ToSize(i)] = 1;
           }
         }
 
@@ -1190,12 +1193,12 @@ static VQAData* AllocBuffers(const VQAHeader* header, VQAConfig* config) {
   /*-------------------------------------------------------------------------
    * ALLOCATE THE IMAGE BUFFERS IF ONE IS NOT ALREADY PROVIDED.
    *-----------------------------------------------------------------------*/
-  if (config->ImageBuf == nullptr) {
+  if (config->ImageBuf.empty()) {
     /* Allocate our own buffer. */
     if ((config->DrawFlags & VQACFGF_BUFFER) != 0) {
       vqa->ImageBufStorage.resize(static_cast<std::size_t>(header->ImageWidth) *
                                   header->ImageHeight);
-      vqa->Drawer.ImageBuf = vqa->ImageBufStorage.data();
+      vqa->Drawer.ImageBuf = vqa->ImageBufStorage;
 
       /* Plugin image buffer information. */
       vqa->Drawer.ImageWidth = header->ImageWidth;
@@ -1259,9 +1262,9 @@ static VQAData* AllocBuffers(const VQAHeader* header, VQAConfig* config) {
       /* Allocate an audio buffer if the user did not provide one.
        * Otherwise, use the user supplied buffer.
        */
-      if (config->AudioBuf == nullptr) {
+      if (config->AudioBuf.empty()) {
         audio->BufferStorage.resize(base::ToSize(config->AudioBufSize));
-        audio->Buffer = audio->BufferStorage.data();
+        audio->Buffer = audio->BufferStorage;
 
         /* Add audio buffer size to memory usage. */
         vqa->MemUsed += config->AudioBufSize;
@@ -1477,8 +1480,9 @@ static int32_t Load_VQF(VQAHandle* vqap, int32_t frame_iffsize) {
          * This functionality is needed for Monopoly!
          */
         if (drawer->CurPalSize == 0) {
-          memcpy(drawer->Palette_24, curframe->Palette,
-                 base::ToSize(curframe->PaletteSize));
+          base::CopyBytes(base::ObjectBytes(drawer->Palette_24),
+                          std::as_bytes(std::span(curframe->PaletteStorage)),
+                          curframe->PaletteSize);
           drawer->CurPalSize = curframe->PaletteSize;
         }
 
@@ -1497,8 +1501,9 @@ static int32_t Load_VQF(VQAHandle* vqap, int32_t frame_iffsize) {
          */
         if (drawer->CurPalSize == 0) {
           drawer->CurPalSize =
-              LCW_Uncompress(curframe->Palette + curframe->PalOffset,
-                             drawer->Palette_24, sizeof(drawer->Palette_24));
+              LCW_Uncompress(std::span(curframe->PaletteStorage)
+                                 .subspan(base::ToSize(curframe->PalOffset)),
+                             drawer->Palette_24);
         }
 
         /* Flag this frame as having a palette. */
@@ -1616,7 +1621,7 @@ static int32_t Load_CBF0(const VQAHandle* vqap, int32_t iffsize) {
   }
 
   /* Read into the start of the buffer */
-  if (!vqap->io->Read(curcb->Buffer, PadSize(iffsize))) {
+  if (!vqap->io->Read(std::span(curcb->BufferStorage), PadSize(iffsize))) {
     return VQAERR_READ;
   }
 
@@ -1671,7 +1676,8 @@ static int32_t Load_CBFZ(const VQAHandle* vqap, int32_t iffsize) {
     return VQAERR_READ;
   }
 
-  unsigned char* buffer = curcb->Buffer + lcwoffset;
+  const auto buffer =
+      std::span(curcb->BufferStorage).subspan(base::ToSize(lcwoffset));
 
   if (!vqap->io->Read(buffer, padsize)) {
     return VQAERR_READ;
@@ -1730,7 +1736,8 @@ static int32_t Load_CBP0(const VQAHandle* vqap, int32_t iffsize) {
   }
 
   /* Read the partial codebook into the next position in the buffer. */
-  unsigned char* buffer = curcb->Buffer + loader->PartialCBSize;
+  const auto buffer = std::span(curcb->BufferStorage)
+                          .subspan(base::ToSize(loader->PartialCBSize));
 
   if (!vqap->io->Read(buffer, PadSize(iffsize))) {
     return VQAERR_READ;
@@ -1818,8 +1825,9 @@ static int32_t Load_CBPZ(const VQAHandle* vqap, int32_t iffsize) {
    *-----------------------------------------------------------------------*/
 
   /* Read the partial codebook into the next position in the buffer. */
-  unsigned char* buffer =
-      curcb->Buffer + curcb->CBOffset + loader->PartialCBSize;
+  const auto buffer =
+      std::span(curcb->BufferStorage)
+          .subspan(base::ToSize(curcb->CBOffset + loader->PartialCBSize));
 
   if (!vqap->io->Read(buffer, padsize)) {
     return VQAERR_READ;
@@ -1883,7 +1891,7 @@ static int32_t Load_CPL0(const VQAHandle* vqap, int32_t iffsize) {
   }
 
   /* Read the palette into the palette buffer */
-  if (!vqap->io->Read(curframe->Palette, PadSize(iffsize))) {
+  if (!vqap->io->Read(std::span(curframe->PaletteStorage), PadSize(iffsize))) {
     return VQAERR_READ;
   }
 
@@ -1930,7 +1938,8 @@ static int32_t Load_CPLZ(const VQAHandle* vqap, int32_t iffsize) {
     return VQAERR_READ;
   }
 
-  unsigned char* buffer = curframe->Palette + lcwoffset;
+  const auto buffer =
+      std::span(curframe->PaletteStorage).subspan(base::ToSize(lcwoffset));
 
   if (!vqap->io->Read(buffer, padsize)) {
     return VQAERR_READ;
@@ -1975,7 +1984,7 @@ static int32_t Load_VPT0(const VQAHandle* vqap, int32_t iffsize) {
   }
 
   /* Read the pointers into start of the pointer buffer. */
-  if (!vqap->io->Read(curframe->Pointers, PadSize(iffsize))) {
+  if (!vqap->io->Read(std::span(curframe->PointersStorage), PadSize(iffsize))) {
     return VQAERR_READ;
   }
 
@@ -2020,7 +2029,8 @@ static int32_t Load_VPTZ(const VQAHandle* vqap, int32_t iffsize) {
   }
 
   /* Read the pointers into end of the pointer buffer. */
-  unsigned char* buffer = curframe->Pointers + lcwoffset;
+  const auto buffer =
+      std::span(curframe->PointersStorage).subspan(base::ToSize(lcwoffset));
 
   if (!vqap->io->Read(buffer, padsize)) {
     return VQAERR_READ;
@@ -2069,7 +2079,7 @@ static int32_t Load_SND0(VQAHandle* vqap, int32_t iffsize) {
   /* If sound is disabled, or if we're playing from a VOC file, or if
    * there's no Audio Buffer, just skip the chunk.
    */
-  if ((config->OptionFlags & VQAOPTF_AUDIO) == 0 || audio->Buffer == nullptr) {
+  if ((config->OptionFlags & VQAOPTF_AUDIO) == 0 || audio->Buffer.empty()) {
     if (!vqap->io->Seek(padsize, SeekOrigin::kCurrent)) {
       return VQAERR_SEEK;
     }
@@ -2090,7 +2100,7 @@ static int32_t Load_SND0(VQAHandle* vqap, int32_t iffsize) {
 
     /* Flag the audio frame flags as loaded for the initial audio frame. */
     for (int32_t i = 0; i < iffsize / config->HMIBufSize; i++) {
-      audio->IsLoaded[i] = 1;
+      audio->IsLoadedStorage[base::ToSize(i)] = 1;
     }
 
     return 0;
@@ -2101,7 +2111,7 @@ static int32_t Load_SND0(VQAHandle* vqap, int32_t iffsize) {
   }
 
   /*  Read data into TempBuf */
-  if (!vqap->io->Read(audio->TempBuf, padsize)) {
+  if (!vqap->io->Read(std::span(audio->TempBufStorage), padsize)) {
     return VQAERR_READ;
   }
 
@@ -2137,7 +2147,7 @@ static int32_t Load_SND0(VQAHandle* vqap, int32_t iffsize) {
  ****************************************************************************/
 
 static int32_t Load_SND1(VQAHandle* vqap, int32_t iffsize) {
-  unsigned char* loadbuf = nullptr;
+  std::span<unsigned char> loadbuf;
   ZAPHeader zap;
 
   /* Dereference commonly used data members for quicker access. */
@@ -2149,7 +2159,7 @@ static int32_t Load_SND1(VQAHandle* vqap, int32_t iffsize) {
   /* If sound is disabled, or if we're playing from a VOC file, or if
    * there's no Audio Buffer, just skip the chunk
    */
-  if ((config->OptionFlags & VQAOPTF_AUDIO) == 0 || audio->Buffer == nullptr) {
+  if ((config->OptionFlags & VQAOPTF_AUDIO) == 0 || audio->Buffer.empty()) {
     if (!vqap->io->Seek(padsize, SeekOrigin::kCurrent)) {
       return VQAERR_SEEK;
     }
@@ -2185,21 +2195,22 @@ static int32_t Load_SND1(VQAHandle* vqap, int32_t iffsize) {
       }
     } else {
       /* Load compressed data into the end of the buffer. */
-      loadbuf = audio->Buffer + config->AudioBufSize - padsize;
+      loadbuf =
+          audio->Buffer.subspan(base::ToSize(config->AudioBufSize - padsize));
 
       if (!vqap->io->Read(loadbuf, padsize)) {
         return VQAERR_READ;
       }
 
       /* Uncompress the audio frame. */
-      AudioUnzap(loadbuf, audio->Buffer, zap.UnCompSize);
+      AudioUnzap(loadbuf.data(), audio->Buffer.data(), zap.UnCompSize);
     }
 
     /* Set buffer positions & flags */
     audio->AudBufPos += zap.UnCompSize;
 
     for (int32_t i = 0; i < zap.UnCompSize / config->HMIBufSize; i++) {
-      audio->IsLoaded[i] = 1;
+      audio->IsLoadedStorage[base::ToSize(i)] = 1;
     }
 
     return 0;
@@ -2214,19 +2225,20 @@ static int32_t Load_SND1(VQAHandle* vqap, int32_t iffsize) {
   /* Load an audio frame. */
   if (zap.UnCompSize == zap.CompSize) {
     /* If the frame is uncompressed the load it in directly. */
-    if (!vqap->io->Read(audio->TempBuf, padsize)) {
+    if (!vqap->io->Read(std::span(audio->TempBufStorage), padsize)) {
       return VQAERR_READ;
     }
   } else {
     /* Load the audio frame into the end of the buffer. */
-    loadbuf = audio->TempBuf + audio->TempBufSize - padsize;
+    loadbuf = std::span(audio->TempBufStorage)
+                  .subspan(base::ToSize(audio->TempBufSize - padsize));
 
     if (!vqap->io->Read(loadbuf, padsize)) {
       return VQAERR_READ;
     }
 
     /* Uncompress the audio frame. */
-    AudioUnzap(loadbuf, audio->TempBuf, zap.UnCompSize);
+    AudioUnzap(loadbuf.data(), audio->TempBuf, zap.UnCompSize);
   }
 
   /* Set the TempBufLen */
@@ -2261,7 +2273,7 @@ static int32_t Load_SND1(VQAHandle* vqap, int32_t iffsize) {
  ****************************************************************************/
 
 static int32_t Load_SND2(VQAHandle* vqap, int32_t iffsize) {
-  unsigned char* loadbuf = nullptr;
+  std::span<unsigned char> loadbuf;
 
   /* Dereference commonly used data members for quicker access. */
   VQAData* vqabuf = vqap->data;
@@ -2272,7 +2284,7 @@ static int32_t Load_SND2(VQAHandle* vqap, int32_t iffsize) {
   /* If sound is disabled, or if we're playing from a VOC file, or if
    * there's no Audio Buffer, just skip the chunk
    */
-  if ((config->OptionFlags & VQAOPTF_AUDIO) == 0 || audio->Buffer == nullptr) {
+  if ((config->OptionFlags & VQAOPTF_AUDIO) == 0 || audio->Buffer.empty()) {
     if (!vqap->io->Seek(padsize, SeekOrigin::kCurrent)) {
       return VQAERR_SEEK;
     }
@@ -2294,7 +2306,8 @@ static int32_t Load_SND2(VQAHandle* vqap, int32_t iffsize) {
     }
 
     /* Load compressed data into the end of the buffer. */
-    loadbuf = audio->Buffer + config->AudioBufSize - padsize;
+    loadbuf =
+        audio->Buffer.subspan(base::ToSize(config->AudioBufSize - padsize));
 
     if (!vqap->io->Read(loadbuf, padsize)) {
       return VQAERR_READ;
@@ -2309,7 +2322,7 @@ static int32_t Load_SND2(VQAHandle* vqap, int32_t iffsize) {
     audio->AudBufPos += uncomp_size;
 
     for (int32_t i = 0; i < uncomp_size / config->HMIBufSize; i++) {
-      audio->IsLoaded[i] = 1;
+      audio->IsLoadedStorage[base::ToSize(i)] = 1;
     }
 
     return 0;
@@ -2321,7 +2334,8 @@ static int32_t Load_SND2(VQAHandle* vqap, int32_t iffsize) {
   }
 
   /* Load an audio frame. */
-  loadbuf = audio->TempBuf + audio->TempBufSize - padsize;
+  loadbuf = std::span(audio->TempBufStorage)
+                .subspan(base::ToSize(audio->TempBufSize - padsize));
 
   if (!vqap->io->Read(loadbuf, padsize)) {
     return VQAERR_READ;
@@ -2329,7 +2343,7 @@ static int32_t Load_SND2(VQAHandle* vqap, int32_t iffsize) {
 
   /* Uncompress the audio frame. */
   audio->ADPCM_Info.source = loadbuf;
-  audio->ADPCM_Info.dest = audio->TempBuf;
+  audio->ADPCM_Info.dest = audio->TempBufStorage;
   DecompressVqaSosData(&audio->ADPCM_Info, uncomp_size);
 
   /* Set the TempBufLen */

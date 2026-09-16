@@ -269,7 +269,7 @@ fixed EngineerCaptureLevel(
     0x40);  // Building damage level before engineer can capture
 
 WWMouseClass* WWMouse = nullptr;
-GraphicBufferClass SysMemPage(kDefaultScreenWidth, 200, nullptr);
+GraphicBufferClass SysMemPage(kDefaultScreenWidth, 200, {});
 int ScreenWidth = 640;
 int ScreenHeight = 400;
 GraphicBufferClass ModeXBuff;
@@ -304,7 +304,7 @@ base::EnumArray<MissionType, MissionControlClass> MissionControl;
 **	There are various tutorial messages that can appear in the game. These
 **	are called upon by number and pointed to by this array.
 */
-const char* TutorialTextData;
+std::vector<char> TutorialTextData;
 uint16_t TutorialTextOffsets[225];
 
 /***************************************************************************
@@ -318,7 +318,7 @@ CCINIClass AftermathINI;
 **	This points to the benchmark objects that are allocated only if the
 **	machine is running on a Pentium and this is a debug version.
 */
-Benchmark* Benches;
+std::vector<Benchmark> Benches;
 
 /***************************************************************************
 **	General rules that control the game.
@@ -425,7 +425,7 @@ bool PlayerRestarts;
 **	is played at a time, this buffer is only as big as the largest speech
 **	sample that can be played.
 */
-void* SpeechBuffer[2];
+std::vector<std::byte> SpeechBuffer[2];
 VoxType SpeechRecord[2];
 
 /***************************************************************************
@@ -544,17 +544,19 @@ CELL CurrentCell = 0;
 **	pointers to the fonts. If it is NULL, then the font hasn't been loaded
 **	yet.
 */
-const void* Metal12FontPtr;  // Font for use on in-game tabs in hires
-const void* MapFontPtr;      // Standard very small font.
-const void* TypeFontPtr;     // Teletype font for mission briefings.
-const void* Font3Ptr;        // Standard very small font.
-const void* Font6Ptr;        // Standard small font.
-const void* EditorFont;      // Font used for scenario editor.
-const void* Font8Ptr;        // 8 point proportional.
-const void* FontLEDPtr;      // LED fixed point font.
-const void* VCRFontPtr;      // VCR font pointer.
-const void* ScoreFontPtr;    // font for score & map selection screens
-const void* GradFont6Ptr;    // gradient 6 point font pointer.
+std::span<const std::byte>
+    Metal12FontPtr;                     // Font for use on in-game tabs in hires
+std::span<const std::byte> MapFontPtr;  // Standard very small font.
+std::span<const std::byte> TypeFontPtr;  // Teletype font for mission briefings.
+std::span<const std::byte> Font3Ptr;     // Standard very small font.
+std::span<const std::byte> Font6Ptr;     // Standard small font.
+std::span<const std::byte> EditorFont;   // Font used for scenario editor.
+std::span<const std::byte> Font8Ptr;     // 8 point proportional.
+std::span<const std::byte> FontLEDPtr;   // LED fixed point font.
+std::span<const std::byte> VCRFontPtr;   // VCR font pointer.
+std::span<const std::byte>
+    ScoreFontPtr;  // font for score & map selection screens
+std::span<const std::byte> GradFont6Ptr;  // gradient 6 point font pointer.
 
 /***************************************************************************
 **	This is the house that the human player is currently playing.

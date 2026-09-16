@@ -1,13 +1,15 @@
 #include "port/tokenizer.h"
 
-#include <cstring>
+#include <string_view>
+
+#include "port/safe_string.h"
 
 #include "absl/log/check.h"
 
 namespace port {
 
 Tokenizer::Tokenizer(char* text, const char* delimiters)
-    : cursor_(text), delimiters_(delimiters) {
+    : cursor_(MutableCString(text)), delimiters_(delimiters) {
   CHECK(text != nullptr);
   CHECK(delimiters != nullptr);
 }
@@ -15,19 +17,23 @@ Tokenizer::Tokenizer(char* text, const char* delimiters)
 char* Tokenizer::Next() { return Next(delimiters_); }
 
 char* Tokenizer::Next(const char* delimiters) {
-  char* const start = cursor_ + strspn(cursor_, delimiters);
-  if (*start == '\0') {
-    // Leave the cursor on the NUL so Remaining() stays valid and every later
-    // call also finds nothing.
-    cursor_ = start;
+  CHECK(delimiters != nullptr);
+  const std::string_view separators(delimiters);
+  while (cursor_.front() != '\0' &&
+         separators.contains(cursor_.front())) {
+    cursor_ = cursor_.subspan(1);
+  }
+  if (cursor_.front() == '\0') {
     return nullptr;
   }
-  char* const end = start + strcspn(start, delimiters);
-  if (*end == '\0') {
-    cursor_ = end;
-  } else {
-    *end = '\0';
-    cursor_ = end + 1;
+  char* const start = cursor_.data();
+  while (cursor_.front() != '\0' &&
+         !separators.contains(cursor_.front())) {
+    cursor_ = cursor_.subspan(1);
+  }
+  if (cursor_.front() != '\0') {
+    cursor_.front() = '\0';
+    cursor_ = cursor_.subspan(1);
   }
   return start;
 }

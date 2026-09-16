@@ -43,31 +43,17 @@
 
 #include "td/profile.h"
 
-#include <algorithm>
-#include <cctype>
+#include <cstddef>
 #include <cstdint>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
+#include <span>
 #include <string_view>
 
 #include "absl/strings/str_format.h"
-#include "base/numeric.h"
-#include "port/ex_string.h"
+#include "port/profile_buffer.h"
 #include "port/safe_string.h"
 #include "td/defines.h"
 #include "tech/number_parse.h"
-#include "tech/readline.h"
 
-/***************************************************************************
- * Read_Private_Config_Struct -- Fetches override integer value.           *
- *                                                                         *
- * INPUT:                                                                  *
- * OUTPUT:                                                                 *
- * WARNINGS:                                                               *
- * HISTORY:                                                                *
- *   08/05/1992 JLB : Created.                                             *
- *=========================================================================*/
 bool Read_Private_Config_Struct(char* profile, NewConfigType* config) {
   config->DigitCard = WWGetPrivateProfileHex("Sound", "Card", profile);
   config->IRQ = static_cast<unsigned>(
@@ -82,554 +68,51 @@ bool Read_Private_Config_Struct(char* profile, NewConfigType* config) {
   config->Reverse = WWGetPrivateProfileInt("Sound", "Reverse", 0, profile) != 0;
   config->Speed = static_cast<unsigned>(
       WWGetPrivateProfileInt("Sound", "Speed", 0, profile));
-  WWGetPrivateProfileString("Language", "Language", nullptr, config->Language,
-                            3, profile);
+  WWGetPrivateProfileString(
+      "Language", "Language", nullptr,
+      std::span(config->Language).first(static_cast<std::size_t>(3)), profile);
 
   return config->DigitCard == 0 && config->IRQ == 0 && config->DMA == 0;
 }
 
-/***************************************************************************
- * Get_Private_Profile_Hex -- Fetches override integer value.              *
- *                                                                         *
- * INPUT:                                                                  *
- * OUTPUT:                                                                 *
- * WARNINGS:                                                               *
- * HISTORY:                                                                *
- *   08/05/1992 JLB : Created.                                             *
- *=========================================================================*/
 unsigned WWGetPrivateProfileHex(const char* section, const char* entry,
-                                char* profile) {
-  char buffer[kMaxEntrySize];  // Integer staging buffer.
-  WWGetPrivateProfileString(section, entry, "0", buffer, sizeof(buffer),
-                            profile);
+                                const char* profile) {
+  char buffer[16];
+  WWGetPrivateProfileString(section, entry, "0", buffer, profile);
   return tech::ParseHex<uint32_t>(buffer).value_or(0);
 }
 
-/***********************************************************************************************
- * WWGetPrivateProfileInt -- Fetches integer value. *
- *                                                                                             *
- * INPUT: * section      section to read from *
- *                                                                                             *
- *      entry         name of entry to read *
- *                                                                                             *
- *      def         default value, if entry isn't found *
- *                                                                                             *
- *      profile      buffer containing INI data *
- *                                                                                             *
- * OUTPUT: * integer requested *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 08/05/1992 JLB : Created. *
- *=============================================================================================*/
 int WWGetPrivateProfileInt(const char* section, const char* entry, int def,
-                           char* profile) {
-  char buffer[16];  // Integer staging buffer.
-
-  /*
-  **	Store the default in the buffer.
-  */
+                           const char* profile) {
+  char buffer[16];
   absl::SNPrintF(buffer, sizeof(buffer), "%d", def);
-
-  /*
-  **	Get the buffer; use itself as the default.
-  */
-  WWGetPrivateProfileString(section, entry, buffer, buffer, 15, profile);
-
-  /*
-  **	Convert to int & return.
-  */
+  WWGetPrivateProfileString(section, entry, buffer, buffer, profile);
   return tech::ParseInteger<int>(buffer).value_or(def);
 }
 
-/***********************************************************************************************
- * WWWritePrivateProfileInt -- Write a profile int to the profile data block. *
- *                                                                                             *
- * INPUT: * section      section name to write to *
- *                                                                                             *
- *      entry         name of entry to write; if NULL, the entire section is
- *deleted           *
- *                                                                                             *
- *      value         value to write *
- *                                                                                             *
- *      profile      INI buffer *
- *                                                                                             *
- * OUTPUT: * true = success, false = failure *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 10/07/1992 JLB : Created. *
- *=============================================================================================*/
 bool WWWritePrivateProfileInt(const char* section, const char* entry, int value,
-                              char* profile) {
-  char buffer[250];  // Working section buffer.
-
-  /*
-  **	Just return if nothing to do.
-  */
-  if (!profile || !section) {
-    return true;
-  }
-
-  /*
-  **	Generate string to save.
-  */
+                              std::span<char> profile) {
+  char buffer[16];
   absl::SNPrintF(buffer, sizeof(buffer), "%d", value);
-
-  /*
-  **	Save the string.
-  */
   return WWWritePrivateProfileString(section, entry, buffer, profile);
 }
 
-/***********************************************************************************************
- * WWGetPrivateProfileString -- Fetch game override string. *
- *                                                                                             *
- * INPUT: * section      section name to read from *
- *                                                                                             *
- *      entry         name of entry to read; if NULL, all entry names are
- *returned             *
- *                                                                                             *
- *      def         default string to use if not found; can be NULL *
- *                                                                                             *
- *      retbuffer   buffer to store result in *
- *                                                                                             *
- *      retlen      max length of return buffer *
- *                                                                                             *
- *      profile      INI buffer *
- *                                                                                             *
- * OUTPUT: * ptr to entry found in INI buf; NULL if not found *
- *                                                                                             *
- * WARNINGS: * On the PC, the "\n" (10) is translated to "\r\n" (13,10) when
- *it's written             * to disk. This routine must take this into
- *consideration, by searching                  * for \n when scanning backward,
- *and for CR when scanning forward.                       *
- *                                                                                             *
- * HISTORY: * 08/05/1992 JLB : Created. *
- *=============================================================================================*/
-char* WWGetPrivateProfileString(const char* section, const char* key,
-                                const char* def, char* dest, int dest_len,
-                                char* ini_data) {
-  char                         // Working pointer into profile block.
-      * altworkptr = nullptr;  // Alternate work pointer.
-  char sec[50];       // Working section buffer.
-  char* retval = nullptr;  // Start of section or entry pointer.
-  char c = 0;
-  const char* orig_retbuf = nullptr;  // original dest ptr
-
-  /*
-  **	Fill in the default value just in case the entry could not be found.
-  */
-  if (dest) {
-    if (def && dest != def) {
-      port::SafeCopy(dest, def, base::ToSize(dest_len));
-    }
-    dest[dest_len - 1] = '\0';
-    orig_retbuf = dest;
+const char* WWGetPrivateProfileString(const char* section, const char* key,
+                                      const char* def, std::span<char> dest,
+                                      const char* ini_data) {
+  if (ini_data == nullptr || section == nullptr) {
+    port::SafeCopy(dest, def);
+    return dest.data();
   }
-
-  /*
-  **	Make sure a profile string was passed in
-  */
-  if (!ini_data || !section) {
-    return dest;
-  }
-
-  /*
-  **	Build section string to match file image.
-  */
-  absl::SNPrintF(sec, sizeof(sec), "[%s]",
-                 section);  // sec = section name including []'s
-  strupr(sec);
-  int len = static_cast<int>(
-      std::string_view(sec).size());  // Working substring length value.  // len
-                                      // = section name length, incl []'s
-
-  /*
-  **	Scan for a matching section
-  */
-  char* workptr = ini_data;
-  for (;;) {
-    /*
-    **	'workptr' = start of next section
-    */
-    workptr = strchr(workptr, '[');
-
-    /*
-    **	If the end has been reached without finding the desired section
-    **	then abort with a failure flag.
-    */
-    if (!workptr) {
-      return nullptr;
-    }
-
-    /*
-    **	'c' = character just before the '['
-    */
-    if (workptr == ini_data) {
-      c = '\n';
-    } else {
-      c = *(workptr - 1);
-    }
-
-    /*
-    **	If this is the section name & the character before is a newline,
-    **	process this section
-    */
-    if (memicmp(workptr, sec, base::ToSize(len)) == 0 && c == '\n') {
-      /*
-      **	Skip work pointer to start of first valid entry.
-      */
-      workptr += len;
-      while (isspace(*workptr)) {
-        workptr++;
-      }
-
-      /*
-      **	If the section name is empty, we will have stepped onto the
-      *start *	of the next section name; inserting new entries here will leave
-      **	a blank line between this section's name & 1st entry. So, check
-      **	for 2 newlines in a row & step backward.
-      */
-      if ((workptr - ini_data > 4) &&
-          (*(workptr - 1) == '\n' && *(workptr - 3) == '\n')) {
-        workptr -= 2;
-      }
-
-      /*
-      **	'next = end of section or end of file.
-      */
-      char* next =
-          strchr(workptr, '[');  // Pointer to start of next section (or EOF).
-      for (;;) {
-        if (next) {
-          c = *(next - 1);
-
-          /*
-          **	If character before '[' is newline, this is the start of the
-          **	next section
-          */
-          if (c == '\n') {
-            if (*(next - 1) == '\n' && *(next - 3) == '\n') {
-              next -= 2;
-            }
-            break;
-          }
-
-          /*
-          **	This bracket was in the section; keep looking
-          */
-          next = strchr(next + 1, '[');
-        } else {
-          /*
-          **	No bracket found; set 'next' to the end of the file
-          */
-          next = workptr + std::string_view(workptr).size() - 1;
-          break;
-        }
-      }
-
-      /*
-      **	If a specific entry was specified then return with the
-      *associated *	string.
-      */
-      if (key) {
-        const int entrylen = static_cast<int>(
-            std::string_view(key).size());  // Byte length of specified entry.
-
-        for (;;) {
-          /*
-          ** Search for the 1st character of the entry
-          */
-          workptr = strchr(workptr, *key);
-
-          /*
-          **	If the end of the file has been reached or we have spilled
-          **	into the next section, then abort
-          */
-          if (!workptr || workptr >= next) {
-            return nullptr;
-          }
-
-          /*
-          **	'c' = character before possible entry; must be a newline
-          **	'c2' = character after possible entry; must be '=' or space
-          */
-          c = *(workptr - 1);
-          const char c2 = *(workptr + entrylen);  // Working character values.
-
-          /*
-          **	Entry found; extract it
-          */
-          if (memicmp(workptr, key, base::ToSize(entrylen)) == 0 && c == '\n' &&
-              (c2 == '=' || isspace(c2))) {
-            retval = workptr;
-            workptr += entrylen;             // skip entry name
-            workptr = strchr(workptr, '=');  // find '='
-
-            /*
-            ** 'altworkptr' = next newline; \r is used here since we're
-            ** scanning forward!
-            */
-            if (workptr) {
-              altworkptr = strchr(workptr, '\r');  // find next newline
-            }
-
-            /*
-            **	Return if there was no '=', or if the newline is before
-            **	the next '='
-            */
-            if (workptr == nullptr || altworkptr < workptr) {
-              return retval;
-            }
-
-            /*
-            **	Skip any white space after the '=' and before the first
-            **	valid character of the parameter.
-            */
-            workptr++;  // Skip the '='.
-            while (isspace(*workptr)) {
-              /*
-              **	Just return if there's no entry past the '='.
-              */
-              if (workptr >= altworkptr) {
-                return retval;
-              }
-
-              workptr++;  // Skip the whitespace
-            }
-
-            /*
-            **	Copy the entry into the return buffer.
-            */
-            len = static_cast<int>(altworkptr - workptr);
-            len = std::min(len, dest_len - 1);
-
-            if (dest) {
-              memcpy(dest, workptr, base::ToSize(len));
-              *(dest + len) = '\0';  // Insert trailing null.
-              strtrim(dest);
-            }
-            return retval;
-          }
-
-          /*
-          **	Entry was not found; go to the next one
-          */
-          workptr++;
-        }
-      }
-      // No entry was specified, so build a list of all entries. 'workptr' is at
-      // 1st entry after section name 'next' is next bracket, or end of file
-      retval = workptr;
-
-      if (dest) {
-        /*
-        **	Keep accumulating the identifier strings in dest.
-        */
-        while (workptr && workptr < next) {
-          altworkptr = strchr(workptr, '=');  // find '='
-
-          if (altworkptr && altworkptr < next) {
-            const int length =
-                static_cast<int>(altworkptr - workptr);  // Length of ID string.
-
-            /*
-            **	Make sure we don't write past the end of dest;
-            **	add '3' for the 3 NULL's at the end
-            */
-            if (dest - orig_retbuf + length + 3 < dest_len) {
-              memcpy(dest, workptr, base::ToSize(length));  // copy entry name
-              *(dest + length) = '\0';        // NULL-terminate it
-              strtrim(dest);                  // trim spaces
-              dest +=
-                  std::string_view(dest).size() + 1;  // next pos in dest buf
-            } else {
-              break;
-            }
-
-            /*
-            **	Advance the work pointer to the start of the next line
-            **	by skipping the end of line character.
-            */
-            workptr = strchr(altworkptr, '\n');
-            if (!workptr) {
-              break;
-            }
-            workptr++;
-          } else {
-            /*
-            **	If no '=', break out of loop
-            */
-            break;
-          }
-        }
-
-        /*
-        **	Final trailing terminator. Make double sure the double
-        **	trailing null is added.
-        */
-        *dest++ = '\0';
-        *dest = '\0';
-      }
-      break;
-    }
-    /*
-     **	Section name not found; go to the next bracket & try again
-     **	Advance past '[' and keep scanning.
-     */
-    workptr++;
-  }
-
-  return retval;
+  const std::string_view text(ini_data);
+  const auto found = port::ReadProfile(text, section, key, def, dest);
+  return found ? text.substr(*found).data() : nullptr;
 }
 
-/***********************************************************************************************
- * WWWritePrivateProfileString -- Write a string to the profile data block. *
- *                                                                                             *
- * INPUT: * section      section name to write to * entry         name of entry
- *to write; if NULL, the section is deleted                  * string string to
- *write; if NULL, the entry is deleted                             * profile INI
- *buffer                                                                *
- *                                                                                             *
- * OUTPUT: * true = success, false = failure *
- *                                                                                             *
- * WARNINGS: * This function has to translate newlines into CR LF sequences. *
- *                                                                                             *
- * HISTORY: * 10/07/1992 JLB : Created. *
- *=============================================================================================*/
 bool WWWritePrivateProfileString(const char* section, const char* entry,
-                                 const char* string, char* profile) {
-  char buffer[250];  // Working section buffer
-
-  /*
-  **	Just return if nothing to do.
-  */
-  if (!profile || !section) {
+                                 const char* string, std::span<char> profile) {
+  if (profile.empty() || section == nullptr) {
     return true;
   }
-
-  /*
-  **	Try to find the section. WWGetPrivateProfileString with NULL entry name
-  **	will return all entry names in the given buffer, truncated to the given
-  **	buffer length. 'offset' will point to 1st entry in the section, NULL if
-  **	section not found.
-  */
-  char* offset =
-      WWGetPrivateProfileString(section, nullptr, nullptr, nullptr, 0, profile);
-
-  /*
-  **	If the section could not be found, then add it to the end. Don't add
-  **	anything if a removal of an entry is requested (it is obviously already
-  **	non-existent). Make sure two newlines precede the section name.
-  */
-  if (!offset && entry) {
-    absl::SNPrintF(buffer, sizeof(buffer), "\r\n[%s]\r\n", section);
-    // TODO(konove): Why profile is initialized with SHAPE_BUFFER_SIZE?
-    port::SafeAppend(profile, buffer, SHAPE_BUFFER_SIZE);
-  }
-
-  /*
-  **	If the section is there and 'entry' is NULL, remove the entire section
-  */
-  if (offset && !entry) {
-    /*
-    **	'next = end of section or end of file.
-    */
-    char* next = strchr(offset, '[');  // ptr to next section
-    for (;;) {
-      if (next) {
-        const char c = *(next - 1);  // Working character value
-
-        /*
-        **	If character before '[' is newline, this is the start of the
-        **	next section
-        */
-        if (c == '\n') {
-          if (*(next - 1) == '\n' && *(next - 3) == '\n') {
-            next -= 2;
-          }
-          break;
-        }
-
-        /*
-        **	This bracket was in the section; keep looking
-        */
-        next = strchr(next + 1, '[');
-      } else {
-        /*
-        **	No bracket found; set 'next' to the end of the file
-        */
-        next = offset + std::string_view(offset).size();
-        break;
-      }
-    }
-
-    // Profile is initialized to be of size SHAPE_BUFFER_SIZE, which is big
-    // enough.
-    // NOLINTNEXTLINE(clang-analyzer-security.insecureAPI.strcpy)
-    strcpy(offset, next);
-
-    return true;
-  }
-
-  /*
-  **	Find the matching entry within the desired section. A NULL return buffer
-  **	with 0 length will just return the offset of the found entry, NULL if
-  **	entry not found.
-  */
-  offset =
-      WWGetPrivateProfileString(section, entry, nullptr, nullptr, 0, profile);
-
-  /*
-  **	Remove any existing entry
-  */
-  if (offset) {
-
-    /*
-    **	Get # characters up to newline; \n is used since we're after the end
-    **	of this line
-    */
-    const int eol =
-        static_cast<int>(strcspn(offset, "\n"));  // Working EOL offset.
-
-    /*
-    **	Erase the entry by strcpy'ing the entire INI file over this entry
-    */
-    if (eol) {
-      memmove(offset, offset + eol + 1,
-              std::string_view(offset + eol + 1).size() + 1);
-    }
-  } else {
-    /*
-    **	Entry doesn't exist, so point 'offset' to the 1st entry position in
-    **	the section.
-    */
-    offset = WWGetPrivateProfileString(section, nullptr, nullptr, nullptr, 0,
-                                       profile);
-  }
-
-  /*
-  **	Add the desired entry.
-  */
-  if (entry && string) {
-    /*
-    **	Generate entry string.
-    */
-    absl::SNPrintF(buffer, sizeof(buffer), "%s=%s\r\n", entry, string);
-
-    /*
-    **	Make room for new entry.
-    */
-    memmove(offset + std::string_view(buffer).size(), offset,
-            std::string_view(offset).size() + 1);
-
-    /*
-    **	Copy the entry into the INI buffer (without null terminator, since we're
-    **	inserting into the middle of existing text).
-    */
-    std::copy(buffer, buffer + std::string_view(buffer).size(), offset);
-  }
-
-  return true;
+  return port::WriteProfile(profile, section, entry, string);
 }

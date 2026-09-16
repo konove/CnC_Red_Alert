@@ -52,14 +52,17 @@
 #include "ra/event.h"
 
 #include <cinttypes>
+#include <cstddef>
 #include <cstdint>
 #include <cstdio>
+#include <span>
 #include <string>
 #include <utility>
 
 #include "absl/log/log.h"
 #include "absl/strings/str_format.h"
 #include "base/enum_array.h"
+#include "base/numeric.h"
 #include "ra/anim.h"
 #include "ra/building.h"
 #include "ra/ccptr.h"
@@ -476,14 +479,22 @@ EventClass::EventClass(EventType type, int id, CELL cell) : EventClass() {
  *                                                                                             *
  * HISTORY: * 11/10/1995 BRR : Created. *
  *=============================================================================================*/
-EventClass::EventClass(EventType type, void* ptr, uint32_t size)
+
+std::span<std::byte> EventClass::variable_bytes() const {
+  // The ADDPLAYER owner stores the allocation extent alongside its pointer.
+  // Receive paths replace the untrusted wire pointer before calling this.
+  // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
+  return {static_cast<std::byte*>(Data.Variable.Pointer), Data.Variable.Size};
+}
+
+EventClass::EventClass(EventType type, std::span<std::byte> payload)
     : EventClass() {
   ID = static_cast<unsigned>(PlayerPtr->ID);
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
   Frame = static_cast<unsigned>(::Frame);
-  Data.Variable.Pointer = ptr;
-  Data.Variable.Size = static_cast<std::uint32_t>(size);
+  Data.Variable.Pointer = payload.data();
+  Data.Variable.Size = static_cast<uint32_t>(payload.size());
 }
 
 /***********************************************************************************************
@@ -940,7 +951,8 @@ void EventClass::Execute() {
     case ADDPLAYER:
       absl::PrintF("ADDPLAYER EVENT!\n");
       for (int i = 0; std::cmp_less(i, Data.Variable.Size); i++) {
-        absl::PrintF("%d\n", static_cast<char*>(Data.Variable.Pointer)[i]);
+        absl::PrintF("%d\n",
+                     std::to_integer<char>(variable_bytes()[base::ToSize(i)]));
       }
       if (std::cmp_not_equal(ID, PlayerPtr->ID)) {
         delete[] static_cast<char*>(Data.Variable.Pointer);

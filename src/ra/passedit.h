@@ -3,6 +3,8 @@
 #ifndef CNC_RED_ALERT_RA_PASSEDIT_H_
 #define CNC_RED_ALERT_RA_PASSEDIT_H_
 
+#include <span>
+
 #include "ra/edit.h"
 #include "ra/woledit.h"
 
@@ -21,8 +23,8 @@
 //   pass.bClearOnNextSetFocus = LoadSavedPassword(buffer);
 class PassEditClass : public WOLEditClass {
  public:
-  PassEditClass(int id, char* text, int max_len, TextPrintType flags, int x,
-                int y, int w, int h, EditStyle style)
+  PassEditClass(int id, std::span<char> text, int max_len, TextPrintType flags,
+                int x, int y, int w, int h, EditStyle style)
       : WOLEditClass(id, text, max_len, flags, x, y, w, h, style) {}
 
   // True while the buffer holds a saved password rather than a typed one.

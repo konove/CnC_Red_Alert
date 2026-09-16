@@ -44,6 +44,9 @@
 class ArchiveReader;
 class ArchiveWriter;
 
+#include <cstddef>
+#include <span>
+
 #include "base/enum_array.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/timer.h"
@@ -116,7 +119,7 @@ class MouseClass : public ScrollClass {
   /*
   **	This points to the loaded mouse shapes.
   */
-  static const void* MouseShapes;
+  static std::span<const std::byte> MouseShapes;
 
   /*
   **	The mouse shape is controlled by these variables. These

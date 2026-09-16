@@ -22,6 +22,7 @@
 #define CNC_RED_ALERT_RA_TOOLTIP_H_
 
 #include <cstdint>
+#include <vector>
 
 #include "absl/base/attributes.h"
 #include "ra/gadget.h"
@@ -35,7 +36,7 @@ class ToolTipClass {
   ToolTipClass(GadgetClass* pGadget ABSL_ATTRIBUTE_LIFETIME_BOUND,
                const char* szText, int x_show, int y_show,
                bool right_align = false, bool icon_list = false);
-  ~ToolTipClass() { delete[] pSaveRect; }
+  ~ToolTipClass() = default;
   ToolTipClass(const ToolTipClass&) = delete;
   ToolTipClass& operator=(const ToolTipClass&) = delete;
   ToolTipClass(ToolTipClass&&) = delete;
@@ -67,7 +68,7 @@ class ToolTipClass {
   int hShow;
   char szTip[TOOLTIPTEXT_MAX_LEN + 1]{};  //	Text to show as tip.
 
-  std::uint8_t* pSaveRect;
+  std::vector<std::uint8_t> pSaveRect;
 
   //	Used only if bIconList.
   int iLastIconListIndex = -1;

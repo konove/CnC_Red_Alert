@@ -67,13 +67,14 @@
 
 #include "td/options.h"
 
-#include <cstdint>
+#include <algorithm>
 #include <cstring>
+#include <span>
 #include <string_view>
 
 #include "base/array.h"
 #include "base/numeric.h"
-#include "base/types.h"
+#include "port/bytes_of.h"
 #include "sdllib/misc.h"
 #include "sdllib/shape.h"
 #include "sdllib/ww_audio.h"
@@ -410,14 +411,15 @@ int OptionsClass::Get_Tint() const { return Tint; }
  *                                                                                             *
  * HISTORY: * 07/21/1994 JLB : Created. *
  *=============================================================================================*/
-void OptionsClass::Adjust_Palette(void* oldpal, void* newpal,
+void OptionsClass::Adjust_Palette(std::span<const unsigned char> oldpal,
+                                  std::span<unsigned char> newpal,
                                   unsigned char brightness, unsigned char color,
                                   unsigned char tint, unsigned char contrast) {
   unsigned h = 0;
   unsigned s = 0;
   unsigned v = 0;
 
-  if (!oldpal || !newpal) {
+  if (oldpal.size() < 768 || newpal.size() < 768) {
     return;
   }
 
@@ -426,12 +428,12 @@ void OptionsClass::Adjust_Palette(void* oldpal, void* newpal,
   */
   for (int index = 0; index < 256; index++) {
     if (/*index == LTGREEN ||*/ index == 255) {
-      memcpy(&static_cast<char*>(newpal)[static_cast<base::ssize>(index) * 3],
-             &static_cast<char*>(oldpal)[static_cast<base::ssize>(index) * 3], 3);
+      std::ranges::copy(oldpal.subspan(base::ToSize(index) * 3, 3),
+                        newpal.subspan(base::ToSize(index) * 3).begin());
     } else {
-      unsigned r = static_cast<unsigned char*>(oldpal)[(index * 3) + 0];
-      unsigned g = static_cast<unsigned char*>(oldpal)[(index * 3) + 1];
-      unsigned b = static_cast<unsigned char*>(oldpal)[(index * 3) + 2];
+      unsigned r = oldpal[(base::ToSize(index) * 3) + 0];
+      unsigned g = oldpal[(base::ToSize(index) * 3) + 1];
+      unsigned b = oldpal[(base::ToSize(index) * 3) + 2];
       Convert_RGB_To_HSV(r, g, b, &h, &s, &v);
 
       /*
@@ -453,9 +455,9 @@ void OptionsClass::Adjust_Palette(void* oldpal, void* newpal,
       temp = Bound(temp, 0, 0xFF);
       h = static_cast<unsigned>(temp);
       Convert_HSV_To_RGB(h, s, v, &r, &g, &b);
-      static_cast<char*>(newpal)[(index * 3) + 0] = static_cast<char>(r);
-      static_cast<char*>(newpal)[(index * 3) + 1] = static_cast<char>(g);
-      static_cast<char*>(newpal)[(index * 3) + 2] = static_cast<char>(b);
+      newpal[(base::ToSize(index) * 3) + 0] = static_cast<unsigned char>(r);
+      newpal[(base::ToSize(index) * 3) + 1] = static_cast<unsigned char>(g);
+      newpal[(base::ToSize(index) * 3) + 2] = static_cast<unsigned char>(b);
     }
   }
 }
@@ -480,7 +482,7 @@ void OptionsClass::Load_Settings() {
   *during the INI *	parsing.)
   */
   char* buffer = ShapeBuffer;  // INI staging buffer pointer.
-  memset(buffer, '\0', base::ToSize(ShapeBufferSize));
+  std::ranges::fill(ShapeBufferBytes, 0);
 
   /*
   **	Create filename and read the file.
@@ -489,7 +491,8 @@ void OptionsClass::Load_Settings() {
   if (!file.IsAvailable()) {
     return;
   }
-  file.Read(buffer, ShapeBufferSize - 1);
+  file.Read(std::as_writable_bytes(ShapeBufferBytes)
+                .first(ShapeBufferBytes.size() - 1));
   file.Close();
 
   /*
@@ -522,8 +525,7 @@ void OptionsClass::Load_Settings() {
   /*
   **	Check for and possible enable true object names.
   */
-  WWGetPrivateProfileString("Options", "TrueNames", "", workbuf,
-                            sizeof(workbuf), buffer);
+  WWGetPrivateProfileString("Options", "TrueNames", "", workbuf, buffer);
   if (Obfuscate(workbuf) == PARM_TRUENAME) {
     Special.IsNamed = true;
   }
@@ -531,8 +533,7 @@ void OptionsClass::Load_Settings() {
   /*
   **	Enable 6 player games if special flag is detected.
   */
-  WWGetPrivateProfileString("Options", "Players", "", workbuf, sizeof(workbuf),
-                            buffer);
+  WWGetPrivateProfileString("Options", "Players", "", workbuf, buffer);
   if (Obfuscate(workbuf) == PARM_6PLAYER) {
     MPlayerMax = 6;
   }
@@ -540,8 +541,7 @@ void OptionsClass::Load_Settings() {
   /*
   **	Enable three point turning logic as indicated.
   */
-  WWGetPrivateProfileString("Options", "Rotation", "", workbuf, sizeof(workbuf),
-                            buffer);
+  WWGetPrivateProfileString("Options", "Rotation", "", workbuf, buffer);
   if (Obfuscate(workbuf) == PARM_3POINT) {
     Special.IsThreePoint = true;
   }
@@ -549,8 +549,7 @@ void OptionsClass::Load_Settings() {
   /*
   **	Allow purchase of the helipad separately from the helicopter.
   */
-  WWGetPrivateProfileString("Options", "Helipad", "", workbuf, sizeof(workbuf),
-                            buffer);
+  WWGetPrivateProfileString("Options", "Helipad", "", workbuf, buffer);
   if (Obfuscate(workbuf) == PARM_HELIPAD) {
     Special.IsSeparate = true;
   }
@@ -558,8 +557,7 @@ void OptionsClass::Load_Settings() {
   /*
   **	Allow the MCV to undeploy rather than sell.
   */
-  WWGetPrivateProfileString("Options", "MCV", "", workbuf, sizeof(workbuf),
-                            buffer);
+  WWGetPrivateProfileString("Options", "MCV", "", workbuf, buffer);
   if (Obfuscate(workbuf) == PARM_MCV) {
     Special.IsMCVDeploy = true;
   }
@@ -568,8 +566,7 @@ void OptionsClass::Load_Settings() {
   **	Allow disabling of building bibs so that tigher building packing can
   *occur.
   */
-  WWGetPrivateProfileString("Options", "Bibs", "", workbuf, sizeof(workbuf),
-                            buffer);
+  WWGetPrivateProfileString("Options", "Bibs", "", workbuf, buffer);
   if (Obfuscate(workbuf) == PARM_BIB) {
     Special.IsRoad = true;
   }
@@ -577,8 +574,7 @@ void OptionsClass::Load_Settings() {
   /*
   **	Allow targeting of trees without having to hold down the shift key.
   */
-  WWGetPrivateProfileString("Options", "TreeTarget", "", workbuf,
-                            sizeof(workbuf), buffer);
+  WWGetPrivateProfileString("Options", "TreeTarget", "", workbuf, buffer);
   if (Obfuscate(workbuf) == PARM_TREETARGET) {
     Special.IsTreeTarget = true;
   }
@@ -587,8 +583,7 @@ void OptionsClass::Load_Settings() {
   **	Allow infantry to fire while moving. Attacker gets advantage with this
   *flag.
   */
-  WWGetPrivateProfileString("Options", "Combat", "", workbuf, sizeof(workbuf),
-                            buffer);
+  WWGetPrivateProfileString("Options", "Combat", "", workbuf, buffer);
   if (Obfuscate(workbuf) == PARM_COMBAT) {
     Special.IsDefenderAdvantage = false;
   }
@@ -596,8 +591,7 @@ void OptionsClass::Load_Settings() {
   /*
   **	Allow custom scores.
   */
-  WWGetPrivateProfileString("Options", "Scores", "", workbuf, sizeof(workbuf),
-                            buffer);
+  WWGetPrivateProfileString("Options", "Scores", "", workbuf, buffer);
   if (Obfuscate(workbuf) == PARM_SCORE) {
     Special.IsVariation = true;
   }
@@ -608,8 +602,7 @@ void OptionsClass::Load_Settings() {
   *upon. Infantry will run from an *	incoming explosive (grenade or napalm)
   *or damage that can't be directly addressed.
   */
-  WWGetPrivateProfileString("Options", "CombatIQ", "", workbuf, sizeof(workbuf),
-                            buffer);
+  WWGetPrivateProfileString("Options", "CombatIQ", "", workbuf, buffer);
   if (Obfuscate(workbuf) == PARM_IQ) {
     Special.IsSmartDefense = true;
     Special.IsScatter = true;
@@ -618,8 +611,7 @@ void OptionsClass::Load_Settings() {
   /*
   **	Enable the infantry squish marks when run over by a vehicle.
   */
-  WWGetPrivateProfileString("Options", "Overrun", "", workbuf, sizeof(workbuf),
-                            buffer);
+  WWGetPrivateProfileString("Options", "Overrun", "", workbuf, buffer);
   if (Obfuscate(workbuf) == PARM_SQUISH) {
     Special.IsGross = true;
   }
@@ -627,8 +619,7 @@ void OptionsClass::Load_Settings() {
   /*
   **	Enable the human generated sound effects.
   */
-  WWGetPrivateProfileString("Options", "Sounds", "", workbuf, sizeof(workbuf),
-                            buffer);
+  WWGetPrivateProfileString("Options", "Sounds", "", workbuf, buffer);
   if (Obfuscate(workbuf) == PARM_HUMAN) {
     Special.IsJuvenile = true;
   }
@@ -636,8 +627,7 @@ void OptionsClass::Load_Settings() {
   /*
   **	Scrolling is disabled over the tabs with this option.
   */
-  WWGetPrivateProfileString("Options", "Scrolling", "", workbuf,
-                            sizeof(workbuf), buffer);
+  WWGetPrivateProfileString("Options", "Scrolling", "", workbuf, buffer);
   if (Obfuscate(workbuf) == PARM_SCROLLING) {
     Special.IsScrollMod = true;
   }
@@ -662,35 +652,49 @@ void OptionsClass::Save_Settings() const {
   *buffer *	starts cleared out of any data.
   */
   char* buffer = ShapeBuffer;  // INI staging buffer pointer.
-  memset(buffer, '\0', base::ToSize(ShapeBufferSize));
+  std::ranges::fill(ShapeBufferBytes, 0);
 
   file.SetName("CONQUER.INI");
   if (file.IsAvailable()) {
-    file.Read(buffer, ShapeBufferSize - 1);
+    file.Read(std::as_writable_bytes(ShapeBufferBytes)
+                  .first(ShapeBufferBytes.size() - 1));
   }
 
   /*
   **	Save Options settings
   */
   WWWritePrivateProfileInt("Options", "GameSpeed", static_cast<int>(GameSpeed),
-                           buffer);
-  WWWritePrivateProfileInt("Options", "ScrollRate", ScrollRate, buffer);
-  WWWritePrivateProfileInt("Options", "Brightness", Brightness, buffer);
-  WWWritePrivateProfileInt("Options", "Volume", Volume, buffer);
-  WWWritePrivateProfileInt("Options", "ScoreVolume", ScoreVolume, buffer);
-  WWWritePrivateProfileInt("Options", "Contrast", Contrast, buffer);
-  WWWritePrivateProfileInt("Options", "Color", Color, buffer);
-  WWWritePrivateProfileInt("Options", "Tint", Tint, buffer);
-  WWWritePrivateProfileInt("Options", "AutoScroll", AutoScroll, buffer);
-  WWWritePrivateProfileInt("Options", "IsScoreRepeat", IsScoreRepeat, buffer);
-  WWWritePrivateProfileInt("Options", "IsScoreShuffle", IsScoreShuffle, buffer);
-  WWWritePrivateProfileInt("Options", "DeathAnnounce", IsDeathAnnounce, buffer);
-  WWWritePrivateProfileInt("Options", "FreeScrolling", IsFreeScroll, buffer);
+                           port::CharBytes(ShapeBufferBytes));
+  WWWritePrivateProfileInt("Options", "ScrollRate", ScrollRate,
+                           port::CharBytes(ShapeBufferBytes));
+  WWWritePrivateProfileInt("Options", "Brightness", Brightness,
+                           port::CharBytes(ShapeBufferBytes));
+  WWWritePrivateProfileInt("Options", "Volume", Volume,
+                           port::CharBytes(ShapeBufferBytes));
+  WWWritePrivateProfileInt("Options", "ScoreVolume", ScoreVolume,
+                           port::CharBytes(ShapeBufferBytes));
+  WWWritePrivateProfileInt("Options", "Contrast", Contrast,
+                           port::CharBytes(ShapeBufferBytes));
+  WWWritePrivateProfileInt("Options", "Color", Color,
+                           port::CharBytes(ShapeBufferBytes));
+  WWWritePrivateProfileInt("Options", "Tint", Tint,
+                           port::CharBytes(ShapeBufferBytes));
+  WWWritePrivateProfileInt("Options", "AutoScroll", AutoScroll,
+                           port::CharBytes(ShapeBufferBytes));
+  WWWritePrivateProfileInt("Options", "IsScoreRepeat", IsScoreRepeat,
+                           port::CharBytes(ShapeBufferBytes));
+  WWWritePrivateProfileInt("Options", "IsScoreShuffle", IsScoreShuffle,
+                           port::CharBytes(ShapeBufferBytes));
+  WWWritePrivateProfileInt("Options", "DeathAnnounce", IsDeathAnnounce,
+                           port::CharBytes(ShapeBufferBytes));
+  WWWritePrivateProfileInt("Options", "FreeScrolling", IsFreeScroll,
+                           port::CharBytes(ShapeBufferBytes));
 
   /*
   **	Write the INI data out to a file.
   */
-  file.Write(buffer, static_cast<int32_t>(std::string_view(buffer).size()));
+  file.Write(
+      std::as_bytes(ShapeBufferBytes).first(std::string_view(buffer).size()));
 }
 
 /***********************************************************************************************

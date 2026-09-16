@@ -55,8 +55,11 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
+#include <span>
 
 #include "absl/strings/str_format.h"
+#include "base/array.h"
+#include "base/buffer.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
 #include "sdllib/gbuffer.h"
@@ -135,9 +138,9 @@ void HelpClass::Init_Clear() {
  *                                                                                             *
  * HISTORY: * 11/18/1994 JLB : Created. *
  *=============================================================================================*/
-const int16_t* HelpClass::Overlap_List() const {
+std::span<const int16_t> HelpClass::Overlap_List() const {
   if (Text == TXT_NONE || CountDownTimer.Time()) {
-    OverlapList[0] = REFRESH_EOL;
+    base::At(OverlapList, 0) = REFRESH_EOL;
   }
   return OverlapList;
 }
@@ -226,7 +229,7 @@ void HelpClass::Help_Text(int text, int x, int y, int color, bool quick,
     *underlying *	icons so that the text message is erased.
     */
     if (Text != TXT_NONE) {
-      Refresh_Cells(Coord_Cell(TacticalCoord), &OverlapList[0]);
+      Refresh_Cells(Coord_Cell(TacticalCoord), OverlapList);
     }
 
     /*
@@ -340,9 +343,10 @@ void HelpClass::Set_Text(int text) {
       DrawY = std::max(DrawY, TacPixelY + 1);
     }
     const int lines = Cost ? 2 : 1;
-    memcpy(OverlapList,
-           Text_Overlap_List(Text_String(Text), DrawX - 1, DrawY, lines),
-           sizeof(OverlapList));
+    base::CopyBytes(base::ObjectBytes(OverlapList),
+                    std::as_bytes(Text_Overlap_List(Text_String(Text),
+                                                    DrawX - 1, DrawY, lines)),
+                    sizeof(OverlapList));
   }
 }
 

@@ -1,13 +1,18 @@
+#include "base/flags.h"
+
 #include "sdllib/wsa.h"
 
+#include <algorithm>
 #include <bit>
+#include <cstddef>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
-#include <cstring>
+#include <span>
 #include <utility>
 
 #include "absl/strings/str_format.h"
+#include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/types.h"
 #include "port/aligned_buffer.h"
@@ -47,8 +52,9 @@ typedef struct {
   uint16_t pixel_width;
   uint16_t pixel_height;
   uint16_t largest_frame_size;
-  char* delta_buffer;
-  char* file_buffer;
+  std::span<uint8_t> delta_buffer;
+  std::span<uint8_t> file_buffer;
+  std::span<uint8_t> target_buffer;
   char file_name[13];
   uint16_t flags;
   // New fields that animate does not know about below this point. SEE
@@ -89,15 +95,16 @@ typedef struct {
 constexpr int kWsaFileHeaderSize{sizeof(WSA_FileHeaderType) -
                                  (2 * sizeof(uint32_t))};
 
-static int64_t Get_Resident_Frame_Offset(const char* file_buffer, int frame);
+static int64_t Get_Resident_Frame_Offset(std::span<const uint8_t> file_buffer,
+                                         int frame);
 static int64_t Get_File_Frame_Offset(int file_handle, int frame,
                                      int palette_adjust);
 static bool Apply_Delta(const SysAnimHeaderType* sys_header, int curr_frame,
-                        void* dest_ptr, int dest_w);
+                        std::span<uint8_t> dest_ptr, int dest_w);
 
-void* Open_Animation(const char* file_name, char* user_buffer,
+void* Open_Animation(const char* file_name, std::span<uint8_t> user_buffer,
                      int32_t user_buffer_size, WSAOpenType user_flags,
-                     unsigned char* palette) {
+                     std::span<uint8_t> palette) {
   int palette_adjust = 0;
   int frame0_size = 0;
   base::ssize target_buffer_size = 0;
@@ -113,7 +120,7 @@ void* Open_Animation(const char* file_name, char* user_buffer,
   if (fh == kInvalidHandle) {
     return nullptr;
   }
-  ReadFileHandle(fh, &file_header, sizeof(WSA_FileHeaderType));
+  ReadFileHandle(fh, base::ObjectBytes(file_header));
 
   /*======================================================================*/
   /* If the file has an attached palette then if we have a valid palette
@@ -126,11 +133,11 @@ void* Open_Animation(const char* file_name, char* user_buffer,
     anim_flags |= WSA_PALETTE_PRESENT;
     palette_adjust = 768;
 
-    if (palette != nullptr) {
+    if (palette.size() >= 768) {
       SeekFileHandle(
           fh, static_cast<int32_t>(sizeof(uint32_t) * file_header.total_frames),
           SEEK_CUR);
-      ReadFileHandle(fh, palette, 768L);
+      ReadFileHandle(fh, std::as_writable_bytes(palette.first(768)));
     }
 
   } else {
@@ -158,6 +165,11 @@ void* Open_Animation(const char* file_name, char* user_buffer,
   }
 
   file_buffer_size -= palette_adjust + frame0_size + kWsaFileHeaderSize;
+  if (file_buffer_size < (base::ssize{file_header.total_frames} + 2) * 4 ||
+      file_header.pixel_width == 0 || file_header.pixel_height == 0) {
+    CloseFileHandle(fh);
+    return nullptr;
+  }
 
   // We need to determine the buffer sizes required for the animation.  At a
   // minimum, we need a target buffer for the uncompressed frame and a delta
@@ -199,19 +211,22 @@ void* Open_Animation(const char* file_name, char* user_buffer,
   const base::ssize max_buffer_size = min_buffer_size + file_buffer_size;
 
   // check to see if buffer size is big enough for at least min required
-  if (user_buffer &&
-      std::bit_cast<uintptr_t>(user_buffer) % alignof(SysAnimHeaderType) != 0) {
+  if (!user_buffer.empty() && std::bit_cast<uintptr_t>(user_buffer.data()) %
+                                      alignof(SysAnimHeaderType) !=
+                                  0) {
     CloseFileHandle(fh);
     return nullptr;
   }
 
-  if (user_buffer && user_buffer_size < min_buffer_size) {
+  if (!user_buffer.empty() &&
+      (user_buffer_size < min_buffer_size ||
+       std::cmp_less(user_buffer.size(), user_buffer_size))) {
     CloseFileHandle(fh);
     return nullptr;
   }
 
   // A buffer was not passed in, so do allocations
-  if (user_buffer == nullptr) {
+  if (user_buffer.empty()) {
     // If the user wants it from the disk, or specified a buffer less than
     // the max needed, give them the min. Otherwise (no buffer size, or
     // enough for the max configuration) allocate what we need.
@@ -236,7 +251,10 @@ void* Open_Animation(const char* file_name, char* user_buffer,
     }
 
     // allocate buffer needed
-    user_buffer = new char[base::ToSize(user_buffer_size)]();
+    auto* allocation = new uint8_t[base::ToSize(user_buffer_size)]();
+    // This owner allocates exactly user_buffer_size elements.
+    // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
+    user_buffer = std::span(allocation, base::ToSize(user_buffer_size));
 
     anim_flags |= WSA_SYS_ALLOCATED;
   } else {
@@ -251,26 +269,19 @@ void* Open_Animation(const char* file_name, char* user_buffer,
   }
 
   // Set the pointers to the RAM buffers
-  char* sys_anim_header_buffer = user_buffer;
-  char* target_buffer = static_cast<char*>(
-      Add_Long_To_Pointer(sys_anim_header_buffer, sizeof(SysAnimHeaderType)));
-  char* delta_buffer = static_cast<char*>(
-      Add_Long_To_Pointer(target_buffer, target_buffer_size));
-
-  //	Clear target buffer if it is in the user buffer.
-  if (target_buffer_size) {
-    // The 16-bit DOS build clamped this to unsigned short, which left most of
-    // any frame over 65535 pixels (e.g. 320x240) uncleared.
-    memset(target_buffer, 0, base::ToSize(target_buffer_size));
-  }
+  const auto target_buffer = user_buffer.subspan(
+      sizeof(SysAnimHeaderType), base::ToSize(target_buffer_size));
+  const auto delta_buffer = user_buffer.subspan(
+      sizeof(SysAnimHeaderType) + base::ToSize(target_buffer_size),
+      base::ToSize(frame_capacity));
+  std::ranges::fill(target_buffer, 0);
 
   // Poke data into the system animation header (start of user_buffer)
   // current_frame is set to total_frames so that Animate_Frame() knows that
   // it needs to clear the target buffer.
 
   // Allocated storage is aligned; caller-provided storage was checked above.
-  auto* sys_header =
-      port::AlignedObject<SysAnimHeaderType>(sys_anim_header_buffer);
+  auto* sys_header = port::AlignedObject<SysAnimHeaderType>(user_buffer.data());
   sys_header->current_frame = sys_header->total_frames =
       file_header.total_frames;
   sys_header->pixel_x = file_header.pixel_x;
@@ -279,6 +290,7 @@ void* Open_Animation(const char* file_name, char* user_buffer,
   sys_header->pixel_height = file_header.pixel_height;
   sys_header->anim_mem_size = static_cast<std::uint32_t>(user_buffer_size);
   sys_header->delta_buffer = delta_buffer;
+  sys_header->target_buffer = target_buffer;
   sys_header->largest_frame_size = static_cast<uint16_t>(
       delta_buffer_size - base::ssize{sizeof(SysAnimHeaderType)});
 
@@ -299,13 +311,14 @@ void* Open_Animation(const char* file_name, char* user_buffer,
     // Read in remaining frames.
     //
 
-    sys_header->file_buffer = static_cast<char*>(
-        Add_Long_To_Pointer(delta_buffer, sys_header->largest_frame_size));
+    sys_header->file_buffer = user_buffer.subspan(
+        base::ToSize(min_buffer_size), base::ToSize(file_buffer_size));
     SeekFileHandle(fh, kWsaFileHeaderSize, SEEK_SET);
-    ReadFileHandle(fh, sys_header->file_buffer, offsets_size);
+    ReadFileHandle(fh, std::as_writable_bytes(sys_header->file_buffer.first(
+                           base::ToSize(offsets_size))));
     SeekFileHandle(fh, frame0_size + palette_adjust, SEEK_CUR);
-    ReadFileHandle(fh, sys_header->file_buffer + offsets_size,
-                   static_cast<int32_t>(file_buffer_size - offsets_size));
+    ReadFileHandle(fh, std::as_writable_bytes(sys_header->file_buffer.subspan(
+                           base::ToSize(offsets_size))));
 
     //
     // Find out if there is an ending value for the last frame.
@@ -327,18 +340,18 @@ void* Open_Animation(const char* file_name, char* user_buffer,
       anim_flags |= WSA_LINEAR_ONLY | WSA_FILE;
     }
     ////
-    sys_header->file_buffer = nullptr;
+    sys_header->file_buffer = {};
   }
 
   // Figure where to back load frame 0 into the delta buffer.
-  char* delta_back = static_cast<char*>(Add_Long_To_Pointer(
-      delta_buffer, sys_header->largest_frame_size - frame0_size));
+  const auto delta_back = delta_buffer.subspan(
+      base::ToSize(sys_header->largest_frame_size - frame0_size));
 
   // Read the first frame into the delta buffer and uncompress it.
   // Then close it.
   SeekFileHandle(fh, kWsaFileHeaderSize + offsets_size + palette_adjust,
                  SEEK_SET);
-  ReadFileHandle(fh, delta_back, frame0_size);
+  ReadFileHandle(fh, std::as_writable_bytes(delta_back));
 
   // We do not use the file handle when it is in RAM.
   if (anim_flags & WSA_RESIDENT) {
@@ -348,16 +361,19 @@ void* Open_Animation(const char* file_name, char* user_buffer,
     sys_header->file_handle = static_cast<int16_t>(fh);
   }
 
-  LCW_Uncompress(delta_back, delta_buffer, sys_header->largest_frame_size);
+  LCW_Uncompress(delta_back, delta_buffer);
 
   // Finally set the flags,
   sys_header->flags = anim_flags;
 
   // return valid handle
-  return user_buffer;
+  return user_buffer.data();
 }
 
 void Close_Animation(void* handle) {
+  if (handle == nullptr) {
+    return;
+  }
 
   // Assign our local system header pointer to the beginning of the handle space
   auto* sys_header = static_cast<SysAnimHeaderType*>(handle);
@@ -370,15 +386,18 @@ void Close_Animation(void* handle) {
   // Check to see if the buffer was allocated OR the programmer provided the
   // buffer
   if (handle && sys_header->flags & WSA_SYS_ALLOCATED) {
-    Free(handle);
+    delete[] static_cast<uint8_t*>(handle);
   }
 }
 
 bool Animate_Frame(void* handle, GraphicViewPortClass& view, int frame_number,
                    int x_pixel, int y_pixel, WSAType /*flags_and_prio*/,
                    void* /*magic_cols*/, void* /*magic*/) {
+  if (handle == nullptr || frame_number < 0) {
+    return false;
+  }
   int search_frames = 0;            // How many frames to search.
-  uint8_t* frame_buffer = nullptr;  // our destination.
+  std::span<uint8_t> frame_buffer;  // our destination.
   bool direct_to_dest = false;      // are we going directly to the destination?
 
   // Assign local pointer to the beginning of the buffer where the system
@@ -416,12 +435,17 @@ bool Animate_Frame(void* handle, GraphicViewPortClass& view, int frame_number,
   //
   if (sys_header->flags & WSA_TARGET_IN_BUFFER) {
     // Get a pointer to the frame in animation buffer.
-    frame_buffer = static_cast<uint8_t*>(
-        Add_Long_To_Pointer(sys_header, sizeof(SysAnimHeaderType)));
+    frame_buffer = sys_header->target_buffer;
     direct_to_dest = false;
   } else {
-    frame_buffer = view.Get_Offset();
-    frame_buffer += (y_pixel * dest_width) + x_pixel;
+    if (x_pixel < 0 || y_pixel < 0 ||
+        x_pixel + sys_header->pixel_width > view.Get_Width() ||
+        y_pixel + sys_header->pixel_height > view.Get_Height()) {
+      view.Unlock();
+      return false;
+    }
+    frame_buffer = view.Get_Pixels().subspan(
+        base::ToSize((y_pixel * dest_width) + x_pixel));
     direct_to_dest = true;
   }
   //
@@ -539,295 +563,114 @@ int Get_Animation_Frame_Count(void* handle) {
   return static_cast<int16_t>(sys_header->total_frames);
 }
 
-unsigned int Apply_XOR_Delta(void* target, const void* delta) {
-  auto* source_ptr = static_cast<uint8_t*>(target);
-  const auto* udelta = static_cast<const uint8_t*>(delta);
-
-  // top_loop
-  while (true) {
-    uint8_t b = *udelta++;
-
-    if (b == 0) {
-      // SHORTRUN
-      int count = *udelta++;      // get count
-      const uint8_t xor_b = *udelta++;  // get XOR byte
-      do {
-        *source_ptr =
-            static_cast<uint8_t>(*source_ptr ^ xor_b);  // XOR that byte
-        source_ptr++;
-      } while (--count);
-    } else if (b & 0x80) {
-      // By now, we know it must be a LONGDUMP, SHORTSKIP, LONGRUN, or LONGSKIP
-      b &= 0x7F;
-      if (b == 0) {
-        // get word code
-        const uint32_t code = udelta[0] | uint32_t{udelta[1]} << 8;
-        udelta += 2;
-
-        if (!code) {
-          return 0;  // long count of zero means stop
-        }
-
-        if (code & 0x8000) {
-          if (code & 0x4000) {
-            // LONGRUN
-            int count = static_cast<int>(code & 0x3FFF);
-            const uint8_t xor_b = *udelta++;  // get XOR byte
-            do {
-              *source_ptr =
-                  static_cast<uint8_t>(*source_ptr ^ xor_b);  // XOR that byte
-              source_ptr++;
-            } while (--count);
-          } else {
-            // LONGDUMP
-            int count = static_cast<int>(code & 0x7FFF);
-            do {
-              const uint8_t xor_b = *udelta++;  // get delta XOR byte
-              *source_ptr = static_cast<uint8_t>(
-                  *source_ptr ^ xor_b);  // xor that byte on the dest
-              source_ptr++;
-            } while (--count);
-          }
-        } else {  // LONGSKIP
-          source_ptr += code;
-        }
-      } else {  // SHORTSKIP
-        source_ptr += b;
+namespace {
+void DecodeDelta(std::span<uint8_t> target, std::span<const std::byte> delta,
+                 size_t width, size_t stride, bool copy) {
+  if (width == 0 || stride < width) {
+    return;
+  }
+  size_t pixel = 0;
+  while (!delta.empty()) {
+    const auto command = std::to_integer<uint8_t>(delta.front());
+    delta = delta.subspan(1);
+    size_t count = command;
+    bool run = false;
+    bool skip = false;
+    if (command == 0) {
+      if (delta.empty()) {
+        return;
       }
-    } else {
-      // SHORTDUMP
-      int count = b;
-
-      do {
-        const uint8_t xor_b = *udelta++;  // get delta XOR byte
-        *source_ptr = static_cast<uint8_t>(*source_ptr ^
-                                           xor_b);  // xor that byte on the dest
-        source_ptr++;
-      } while (--count);
+      count = std::to_integer<uint8_t>(delta.front());
+      delta = delta.subspan(1);
+      run = true;
+    } else if ((command & 0x80) != 0) {
+      count = command & 0x7f;
+      skip = true;
+      if (count == 0) {
+        if (delta.size() < 2) {
+          return;
+        }
+        const auto code =
+            static_cast<uint16_t>(std::to_integer<uint8_t>(delta[0]) |
+                                  (std::to_integer<uint32_t>(delta[1]) << 8));
+        delta = delta.subspan(2);
+        if (code == 0) {
+          return;
+        }
+        skip = (code & 0x8000) == 0;
+        run = (code & 0xc000) == 0xc000;
+        count = code & (run ? 0x3fffU : 0x7fffU);
+      }
     }
+    if (count == 0) {
+      return;
+    }
+    // Check logical pixels without multiplying attacker-controlled offsets.
+    const size_t capacity = ((target.size() / stride) * width) +
+                            std::min(target.size() % stride, width);
+    if (pixel > capacity || count > capacity - pixel) {
+      return;
+    }
+    if (skip) {
+      pixel += count;
+      continue;
+    }
+    if (delta.size() < (run ? 1 : count)) {
+      return;
+    }
+    for (size_t i = 0; i < count; ++i) {
+      const auto value = std::to_integer<uint8_t>(delta[run ? 0 : i]);
+      const auto offset = ((pixel / width) * stride) + (pixel % width);
+      target[offset] =
+          copy ? value : static_cast<uint8_t>(target[offset] ^ value);
+      ++pixel;
+    }
+    delta = delta.subspan(run ? 1 : count);
   }
 }
+}  // namespace
 
-void Apply_XOR_Delta_To_Page_Or_Viewport(void* target, void* delta, int width,
-                                         int nextrow, int copy) {
-  auto* source_ptr = static_cast<uint8_t*>(target);
-  const auto* udelta = static_cast<uint8_t*>(delta);
-
-  int x = 0;
-
-  if (copy == DO_XOR) {
-    // mostly duplicated from Apply_XOR_Delta
-    // except for the row checks
-    while (true) {
-      uint8_t b = *udelta++;
-
-      if (b == 0) {
-        // SHORTRUN
-        int count = *udelta++;      // get count
-        const uint8_t xor_b = *udelta++;  // get XOR byte
-        do {
-          *source_ptr ^= xor_b;  // XOR that byte
-          source_ptr++;
-
-          if (++x == width) {
-            // final column, go to next row
-            x = 0;
-            source_ptr = source_ptr - width + nextrow;
-          }
-        } while (--count);
-      } else if (b & 0x80) {
-        // By now, we know it must be a LONGDUMP, SHORTSKIP, LONGRUN, or
-        // LONGSKIP
-        b &= 0x7F;
-        if (b == 0) {
-          // get word code
-          const uint32_t code = udelta[0] | uint32_t{udelta[1]} << 8;
-          udelta += 2;
-
-          if (!code) {
-            return;  // long count of zero means stop
-          }
-
-          if (code & 0x8000) {
-            if (code & 0x4000) {
-              // LONGRUN
-              int count = static_cast<int>(code & 0x3FFF);
-              const uint8_t xor_b = *udelta++;  // get XOR byte
-              do {
-                *source_ptr ^= xor_b;  // XOR that byte
-                source_ptr++;
-
-                if (++x == width) {
-                  // final column, go to next row
-                  x = 0;
-                  source_ptr = source_ptr - width + nextrow;
-                }
-              } while (--count);
-            } else {
-              // LONGDUMP
-              int count = static_cast<int>(code & 0x7FFF);
-              do {
-                const uint8_t xor_b = *udelta++;  // get delta XOR byte
-                *source_ptr ^= xor_b;       // xor that byte on the dest
-                source_ptr++;
-
-                if (++x == width) {
-                  // final column, go to next row
-                  x = 0;
-                  source_ptr = source_ptr - width + nextrow;
-                }
-              } while (--count);
-            }
-          } else {
-            // LONGSKIP
-            source_ptr -= x;  // go back to beginning or row.
-            x += static_cast<int>(code);
-            while (x >= width) {
-              x -= width;
-              source_ptr += nextrow;
-            }
-            source_ptr += x;  // get to correct position in row.
-          }
-        } else  // SHORTSKIP
-        {
-          source_ptr -= x;  // go back to beginning or row.
-          x += b;
-          while (x >= width) {
-            x -= width;
-            source_ptr += nextrow;
-          }
-          source_ptr += x;  // get to correct position in row.
-        }
-      } else {
-        // SHORTDUMP
-        int count = b;
-
-        do {
-          const uint8_t xor_b = *udelta++;  // get delta XOR byte
-          *source_ptr ^= xor_b;       // xor that byte on the dest
-          source_ptr++;
-          if (++x == width) {
-            // final column, go to next row
-            x = 0;
-            source_ptr = source_ptr - width + nextrow;
-          }
-        } while (--count);
-      }
-    }
-  } else  // copy
-  {
-    // same thing without xor...
-    while (true) {
-      uint8_t b = *udelta++;
-
-      if (b == 0) {
-        // SHORTRUN
-        int count = *udelta++;      // get count
-        const uint8_t xor_b = *udelta++;  // get byte
-        do {
-          *source_ptr = xor_b;  // store that byte
-          source_ptr++;
-
-          if (++x == width) {
-            // final column, go to next row
-            x = 0;
-            source_ptr = source_ptr - width + nextrow;
-          }
-        } while (--count);
-      } else if (b & 0x80) {
-        // By now, we know it must be a LONGDUMP, SHORTSKIP, LONGRUN, or
-        // LONGSKIP
-        b &= 0x7F;
-        if (b == 0) {
-          // get word code
-          const uint32_t code = udelta[0] | uint32_t{udelta[1]} << 8;
-          udelta += 2;
-
-          if (!code) {
-            return;  // long count of zero means stop
-          }
-
-          if (code & 0x8000) {
-            if (code & 0x4000) {
-              // LONGRUN
-              int count = static_cast<int>(code & 0x3FFF);
-              const uint8_t xor_b = *udelta++;  // get byte
-              do {
-                *source_ptr = xor_b;  // store that byte
-                source_ptr++;
-
-                if (++x == width) {
-                  // final column, go to next row
-                  x = 0;
-                  source_ptr = source_ptr - width + nextrow;
-                }
-              } while (--count);
-            } else {
-              // LONGDUMP
-              int count = static_cast<int>(code & 0x7FFF);
-              do {
-                const uint8_t xor_b = *udelta++;  // get delta byte
-                *source_ptr = xor_b;        // store that byte
-                source_ptr++;
-
-                if (++x == width) {
-                  // final column, go to next row
-                  x = 0;
-                  source_ptr = source_ptr - width + nextrow;
-                }
-              } while (--count);
-            }
-          } else {
-            // LONGSKIP
-            source_ptr -= x;  // go back to beginning or row.
-            x += static_cast<int>(code);
-            while (x >= width) {
-              x -= width;
-              source_ptr += nextrow;
-            }
-            source_ptr += x;  // get to correct position in row.
-          }
-        } else  // SHORTSKIP
-        {
-          source_ptr -= x;  // go back to beginning or row.
-          x += b;
-          while (x >= width) {
-            x -= width;
-            source_ptr += nextrow;
-          }
-          source_ptr += x;  // get to correct position in row.
-        }
-      } else {
-        // SHORTDUMP
-        int count = b;
-
-        do {
-          const uint8_t xor_b = *udelta++;  // get delta byte
-          *source_ptr = xor_b;        // store that byte
-          source_ptr++;
-          if (++x == width) {
-            // final column, go to next row
-            x = 0;
-            source_ptr = source_ptr - width + nextrow;
-          }
-        } while (--count);
-      }
-    }
-  }
+unsigned int Apply_XOR_Delta(std::span<uint8_t> target,
+                             std::span<const std::byte> delta) {
+  DecodeDelta(target, delta, target.size(), target.size(), false);
+  return 0;
 }
 
-static int64_t Get_Resident_Frame_Offset(const char* file_buffer, int frame) {
+unsigned int Apply_XOR_Delta(std::span<uint8_t> target,
+                             std::span<const uint8_t> delta) {
+  DecodeDelta(target, std::as_bytes(delta), target.size(), target.size(),
+              false);
+  return 0;
+}
+
+void Apply_XOR_Delta_To_Page_Or_Viewport(std::span<uint8_t> target,
+                                         std::span<const uint8_t> delta,
+                                         int width, int nextrow, int copy) {
+  if (width <= 0 || nextrow <= 0) {
+    return;
+  }
+  DecodeDelta(target, std::as_bytes(delta), base::ToSize(width),
+              base::ToSize(nextrow), copy != DO_XOR);
+}
+
+static int64_t Get_Resident_Frame_Offset(std::span<const uint8_t> file_buffer,
+                                         int frame) {
+  if (frame < 0 || file_buffer.size() < 8 ||
+      base::ToSize(frame) >= file_buffer.size() / sizeof(uint32_t)) {
+    return 0;
+  }
   uint32_t frame0_size = 0;
-  const auto first = port::ReadUnaligned<uint32_t>(file_buffer);
+  const auto first = port::ReadUnaligned<uint32_t>(std::as_bytes(file_buffer));
   if (first) {
-    frame0_size =
-        port::ReadUnaligned<uint32_t>(file_buffer + sizeof(uint32_t)) - first;
+    frame0_size = port::ReadUnaligned<uint32_t>(
+                      std::as_bytes(file_buffer.subspan(sizeof(uint32_t)))) -
+                  first;
   } else {
     frame0_size = 0;
   }
 
-  const auto offset = port::ReadUnaligned<uint32_t>(
-      file_buffer + (base::ToSize(frame) * sizeof(uint32_t)));
+  const auto offset = port::ReadUnaligned<uint32_t>(std::as_bytes(
+      file_buffer.subspan(base::ToSize(frame) * sizeof(uint32_t))));
   if (offset) {
     return offset - (frame0_size + kWsaFileHeaderSize);
   }
@@ -840,7 +683,7 @@ static int64_t Get_File_Frame_Offset(int file_handle, int frame,
 
   SeekFileHandle(file_handle, (frame * 4) + kWsaFileHeaderSize, SEEK_SET);
 
-  if (ReadFileHandle(file_handle, &offset, sizeof(uint32_t)) !=
+  if (ReadFileHandle(file_handle, base::ObjectBytes(offset)) !=
       sizeof(uint32_t)) {
     offset = 0L;
   }
@@ -849,12 +692,12 @@ static int64_t Get_File_Frame_Offset(int file_handle, int frame,
 }
 
 static bool Apply_Delta(const SysAnimHeaderType* sys_header, int curr_frame,
-                        void* dest_ptr, int dest_w) {
+                        std::span<uint8_t> dest_ptr, int dest_w) {
   int64_t frame_data_size = 0;
   int64_t frame_offset = 0;
 
   const int palette_adjust = sys_header->flags & WSA_PALETTE_PRESENT ? 768 : 0;
-  char* delta_back = sys_header->delta_buffer;
+  auto delta_back = sys_header->delta_buffer;
 
   if (sys_header->flags & WSA_RESIDENT) {
     // Get offset of the given frame in the resident file
@@ -871,20 +714,20 @@ static bool Apply_Delta(const SysAnimHeaderType* sys_header, int curr_frame,
 
     // A corrupt offset table must not copy from outside the loaded file data
     // or past the delta buffer, which holds largest_frame_size bytes.
-    const auto* const anim_end = static_cast<const char*>(
-        Add_Long_To_Pointer(sys_header, sys_header->anim_mem_size));
     if (frame_offset < 0 || frame_data_size <= 0 ||
         std::cmp_greater(frame_data_size, sys_header->largest_frame_size) ||
-        frame_offset + frame_data_size > anim_end - sys_header->file_buffer) {
+        std::cmp_greater(frame_offset + frame_data_size,
+                         sys_header->file_buffer.size())) {
       return false;
     }
 
-    char* data_ptr = static_cast<char*>(
-        Add_Long_To_Pointer(sys_header->file_buffer, frame_offset));
-    delta_back = static_cast<char*>(Add_Long_To_Pointer(
-        delta_back, sys_header->largest_frame_size - frame_data_size));
+    const auto data = sys_header->file_buffer.subspan(
+        base::ToSize(frame_offset), base::ToSize(frame_data_size));
+    delta_back = delta_back.subspan(
+        base::ToSize(sys_header->largest_frame_size - frame_data_size));
 
-    Mem_Copy(data_ptr, delta_back, base::ToSize(frame_data_size));
+    base::CopyBytes(std::as_writable_bytes(delta_back), std::as_bytes(data),
+                    frame_data_size);
 
   } else if (sys_header->flags & WSA_FILE) {
     //	Open up file because not file not in RAM.
@@ -912,11 +755,10 @@ static bool Apply_Delta(const SysAnimHeaderType* sys_header, int curr_frame,
     }
 
     SeekFileHandle(file_handle, static_cast<int32_t>(frame_offset), SEEK_SET);
-    delta_back = static_cast<char*>(Add_Long_To_Pointer(
-        delta_back, sys_header->largest_frame_size - frame_data_size));
+    delta_back = delta_back.subspan(
+        base::ToSize(sys_header->largest_frame_size - frame_data_size));
 
-    if (ReadFileHandle(file_handle, delta_back,
-                       static_cast<int32_t>(frame_data_size)) !=
+    if (ReadFileHandle(file_handle, std::as_writable_bytes(delta_back)) !=
         static_cast<int>(frame_data_size)) {
       return false;
     }
@@ -926,8 +768,7 @@ static bool Apply_Delta(const SysAnimHeaderType* sys_header, int curr_frame,
   // Find start of target buffer.
   // Apply the XOR delta.
 
-  LCW_Uncompress(delta_back, sys_header->delta_buffer,
-                 sys_header->largest_frame_size);
+  LCW_Uncompress(delta_back, sys_header->delta_buffer);
 
   if (sys_header->flags & WSA_TARGET_IN_BUFFER) {
     Apply_XOR_Delta(dest_ptr, sys_header->delta_buffer);

@@ -93,8 +93,11 @@
 */
 #include "td/object.h"
 
+#include <cstddef>
 #include <cstdint>
+#include <span>
 
+#include "base/array.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/ww_win.h"
@@ -131,9 +134,9 @@
 #include "td/vector.h"
 #include "tech/mix_archive.h"
 
-const void* ObjectTypeClass::SelectShapes = nullptr;
+std::span<const std::byte> ObjectTypeClass::SelectShapes = {};
 
-const void* ObjectTypeClass::PipShapes = nullptr;
+std::span<const std::byte> ObjectTypeClass::PipShapes = {};
 
 bool ObjectClass::Is_Infantry() const { return false; }
 
@@ -292,7 +295,9 @@ BuildingClass* ObjectTypeClass::Who_Can_Build_Me(bool /*unused*/,
  *                                                                                             *
  * HISTORY: * 07/19/1995 JLB : Created. *
  *=============================================================================================*/
-const void* ObjectTypeClass::Get_Cameo_Data() const { return nullptr; }
+std::span<const std::byte> ObjectTypeClass::Get_Cameo_Data() const {
+  return {};
+}
 
 /***********************************************************************************************
  * ObjectClass::ObjectClass -- Default constructor for objects. *
@@ -800,9 +805,10 @@ bool ObjectClass::Render(bool forced) {
           int oldx = 0;
           int oldy = 0;
 
-          if (foot->Head_To_Coord() && foot->Path[0] != FACING_NONE) {
-            CELL cell = Adjacent_Cell(Coord_Cell(foot->Head_To_Coord()),
-                                      foot->Path[0] + FACING_S & FACING_NW);
+          if (foot->Head_To_Coord() && base::At(foot->Path, 0) != FACING_NONE) {
+            CELL cell =
+                Adjacent_Cell(Coord_Cell(foot->Head_To_Coord()),
+                              base::At(foot->Path, 0) + FACING_S & FACING_NW);
             Map.Coord_To_Pixel(Cell_Coord(cell), oldx, oldy);
             for (const auto& index : foot->Path) {
               if (index == FACING_NONE) {
@@ -891,7 +897,7 @@ void ObjectClass::Debug_Dump(MonoClass* mono) const {
  *                                                                                             *
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
-const int16_t* ObjectTypeClass::Occupy_List(bool /*unused*/) const {
+std::span<const int16_t> ObjectTypeClass::Occupy_List(bool /*unused*/) const {
   static const int16_t _list[] = {0, REFRESH_EOL};
   return _list;
 }
@@ -914,7 +920,7 @@ const int16_t* ObjectTypeClass::Occupy_List(bool /*unused*/) const {
  *                                                                                             *
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
-const int16_t* ObjectTypeClass::Overlap_List() const {
+std::span<const int16_t> ObjectTypeClass::Overlap_List() const {
   static const int16_t _list[] = {REFRESH_EOL};
   return _list;
 }
@@ -935,7 +941,7 @@ const int16_t* ObjectTypeClass::Overlap_List() const {
  * HISTORY: * 11/01/1994 JLB : Created. *
  *=============================================================================================*/
 void ObjectTypeClass::One_Time() {
-  SelectShapes = MixArchive::Retrieve("SELECT.SHP");
+  SelectShapes = MixArchive::RetrieveData("SELECT.SHP");
 #ifdef FRENCH
   PipShapes = Hires_Retrieve("PIPS_F.SHP");
 #else
@@ -1422,10 +1428,10 @@ void ObjectClass::Init() { CurrentObject.Clear(); }
 bool ObjectClass::Revealed(HouseClass* house) { return house != nullptr; }
 
 // These can't be made inline (for various reasons).
-const int16_t* ObjectClass::Occupy_List(bool placement) const {
+std::span<const int16_t> ObjectClass::Occupy_List(bool placement) const {
   return Class_Of().Occupy_List(placement);
 };
-const int16_t* ObjectClass::Overlap_List() const {
+std::span<const int16_t> ObjectClass::Overlap_List() const {
   return Class_Of().Overlap_List();
 };
 BuildingClass* ObjectClass::Who_Can_Build_Me(bool intheory, bool legal) const {

@@ -38,8 +38,10 @@
 #ifndef CNC_RED_ALERT_SDLLIB_FILE_H_
 #define CNC_RED_ALERT_SDLLIB_FILE_H_
 
+#include <cstddef>
 #include <cstdint>
 #include <ctime>
+#include <span>
 #include <string_view>
 
 #include "sdllib/file_access.h"
@@ -55,8 +57,8 @@
 // mixfiles. A handle is kInvalidHandle (-1) when the open failed.
 int OpenFileHandle(std::string_view file_name, FileAccess mode);
 void CloseFileHandle(int handle);
-int32_t ReadFileHandle(int handle, void* buffer, int32_t size);
-int32_t WriteFileHandle(int handle, const void* buffer, int32_t size);
+int32_t ReadFileHandle(int handle, std::span<std::byte> buffer);
+int32_t WriteFileHandle(int handle, std::span<const std::byte> buffer);
 int32_t SeekFileHandle(int handle, int32_t offset, int origin);
 int32_t FileHandleSize(int handle);
 bool FileExists(std::string_view file_name);
@@ -65,9 +67,9 @@ bool FileExists(std::string_view file_name);
 void* IO_Open_File(const char* filename, FileAccess mode);
 void IO_Close_File(void* handle);
 
-bool IO_Read_File(void* handle, void* buffer, size_t count,
+bool IO_Read_File(void* handle, std::span<std::byte> buffer,
                   size_t& actual_read);
-bool IO_Write_File(void* handle, const void* buffer, size_t count,
+bool IO_Write_File(void* handle, std::span<const std::byte> buffer,
                    size_t& actual_written);
 
 // Seeks like fseek and returns the new position, or -1 on error. offset may

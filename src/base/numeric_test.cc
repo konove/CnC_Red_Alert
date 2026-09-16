@@ -56,22 +56,22 @@ TEST(AnyTest, IsTrueWhenAnyBitIsSet) {
 
 #ifndef NDEBUG
 TEST(BitDeathTest, RejectsIndicesOutsideTheWidth) {
-  // The switch is inside GoogleTest's macro.
-  // NOLINTNEXTLINE(clang-diagnostic-switch-default)
+  // The switch and formatted failure diagnostic are inside GoogleTest's macro.
+  // NOLINTNEXTLINE(clang-diagnostic-switch-default,clang-diagnostic-unsafe-buffer-usage-in-libc-call)
   EXPECT_DEATH(Bit<uint32_t>(32), "digits");
-  // NOLINTNEXTLINE(clang-diagnostic-switch-default)
+  // NOLINTNEXTLINE(clang-diagnostic-switch-default,clang-diagnostic-unsafe-buffer-usage-in-libc-call)
   EXPECT_DEATH(Bit<uint32_t>(-1), "index >= 0");
 }
 
 TEST(ToSizeDeathTest, RejectsNegativeValues) {
-  // The switch is inside GoogleTest's macro.
-  // NOLINTNEXTLINE(clang-diagnostic-switch-default)
+  // The switch and formatted failure diagnostic are inside GoogleTest's macro.
+  // NOLINTNEXTLINE(clang-diagnostic-switch-default,clang-diagnostic-unsafe-buffer-usage-in-libc-call)
   EXPECT_DEATH(ToSize(-1), "in_range");
 }
 
 TEST(ToSignedDeathTest, RejectsValuesAboveSignedRange) {
-  // The switch is inside GoogleTest's macro.
-  // NOLINTNEXTLINE(clang-diagnostic-switch-default)
+  // The switch and formatted failure diagnostic are inside GoogleTest's macro.
+  // NOLINTNEXTLINE(clang-diagnostic-switch-default,clang-diagnostic-unsafe-buffer-usage-in-libc-call)
   EXPECT_DEATH(ToSigned(std::numeric_limits<std::size_t>::max()), "in_range");
 }
 #endif

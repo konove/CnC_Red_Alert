@@ -156,6 +156,7 @@
 #include <cstring>
 #include <iterator>
 #include <new>
+#include <span>
 
 #include "absl/base/attributes.h"
 #include "absl/log/check.h"
@@ -2340,16 +2341,16 @@ void HouseClass::Make_Enemy(HousesType house) {
  * HISTORY: * 05/08/1995 JLB : Created. * 10/25/1995 JLB : Uses remap control
  *value.                                                *
  *=============================================================================================*/
-const unsigned char* HouseClass::Remap_Table(bool blushing,
-                                             RemapType remap) const {
+std::span<const unsigned char> HouseClass::Remap_Table(bool blushing,
+                                                       RemapType remap) const {
   CHECK_EQ(Houses.ID(this), ID);
 
   if (blushing) {
-    return &MouseClass::FadingLight[0];
+    return MouseClass::FadingLight;
   }
 
   if (remap == REMAP_NONE) {
-    return nullptr;
+    return {};
   }
 
   return ColorRemaps[RemapColor].RemapTable;
@@ -2404,8 +2405,6 @@ void HouseClass::Adjust_Threat(int region, int threat) {
   // edges, the full threat for the center.
   static const int _div[] = {4, 2, 4, 2, 1, 2, 4, 2, 4};
   bool neg = false;
-  const int* val = &_val[0];
-  const int* div = &_div[0];
 
   if (threat < 0) {
     threat = -threat;
@@ -2415,9 +2414,8 @@ void HouseClass::Adjust_Threat(int region, int threat) {
   }
 
   for (int lp = 0; lp < 9; lp++) {
-    base::At(Regions, region + *val).Adjust_Threat(threat / *div, neg);
-    val++;
-    div++;
+    base::At(Regions, region + base::At(_val, lp))
+        .Adjust_Threat(threat / base::At(_div, lp), neg);
   }
 }
 
@@ -2564,7 +2562,7 @@ ProdFailType HouseClass::Abandon_Production(RTTIType type) {
       Map.PendingObjectPtr = nullptr;
       Map.PendingObject = nullptr;
       Map.PendingHouse = HOUSE_NONE;
-      Map.Set_Cursor_Shape(nullptr);
+      Map.Set_Cursor_Shape({});
     }
   }
 
@@ -2716,7 +2714,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
         if (ttype == nullptr) {
           ttype = new TeamTypeClass;
           if (ttype != nullptr) {
-            strcpy(ttype->IniName, "@PINF");
+            port::SafeCopy(ttype->IniName, "@PINF");
             ttype->IsTransient = true;
             ttype->IsPrebuilt = false;
             ttype->IsReinforcable = false;
@@ -3044,7 +3042,7 @@ bool HouseClass::Place_Object(RTTIType type, CELL cell) {
 
             if (PlayerPtr == this) {
               Sound_Effect(VOC_PLACE_BUILDING_DOWN);
-              Map.Set_Cursor_Shape(nullptr);
+              Map.Set_Cursor_Shape({});
               Map.PendingObjectPtr = nullptr;
               Map.PendingObject = nullptr;
               Map.PendingHouse = HOUSE_NONE;
@@ -3717,7 +3715,8 @@ void HouseClass::Tally_Score() {
     */
     int score_index = -1;
     for (int i = 0; i < Session.NumScores; i++) {
-      if (!stricmp(hptr->IniName, base::At(Session.Score, i).Name)) {
+      if (!port::CompareIgnoreCase(hptr->IniName,
+                                   base::At(Session.Score, i).Name)) {
         score_index = i;
         break;
       }
@@ -7528,7 +7527,7 @@ CELL HouseClass::Find_Cell_In_Zone(const TechnoClass* techno,
   */
   const CELL trycell = Random_Cell_In_Zone(zone);
 
-  const int16_t* list = nullptr;
+  std::span<const int16_t> list{};
   if (techno->What_Am_I() == RTTI_BUILDING) {
     list = techno->Occupy_List(true);
   }
@@ -7545,7 +7544,7 @@ CELL HouseClass::Find_Cell_In_Zone(const TechnoClass* techno,
       /*
       **	Another (adjacency) check is required for buildings.
       */
-      if (ok && list != nullptr &&
+      if (ok && !list.empty() &&
           !Map.Passes_Proximity_Check(ttype, techno->House->Class->House, list,
                                       cell)) {
         ok = false;

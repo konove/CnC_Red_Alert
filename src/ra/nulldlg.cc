@@ -57,9 +57,11 @@
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
+#include <span>
 #include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
@@ -162,8 +164,9 @@ static int Reconnect_Null_Modem();
 static int Com_Settings_Dialog(SerialSettingsType* settings);
 static int Phone_Dialog();
 static void Build_Init_String_Listbox(ListClass* list, EditClass* edit,
-                                      char* buf, int* index);
-static void Build_Phone_Listbox(ListClass* list, EditClass* edit, char* buf);
+                                      std::span<char> buf, int* index);
+static void Build_Phone_Listbox(ListClass* list, EditClass* edit,
+                                std::span<char> buf);
 static int Edit_Phone_Dialog(PhoneEntryClass* phone);
 static bool Dial_Modem(SerialSettingsType* settings, bool reconnect);
 static bool Answer_Modem(SerialSettingsType* settings, bool reconnect);
@@ -264,8 +267,8 @@ void Modem_Signoff() {
     ** Send a sign-off packet
     */
     event.Type = EventClass::EXIT;
-    NullModem.Send_Message(&event, sizeof(EventClass), 0);
-    NullModem.Send_Message(&event, sizeof(EventClass), 0);
+    NullModem.Send_Message(base::ObjectBytes(event), sizeof(EventClass), 0);
+    NullModem.Send_Message(base::ObjectBytes(event), sizeof(EventClass), 0);
 
     const int64_t starttime = TickCount.Value();
     while (TickCount.Value() - starttime < 30) {
@@ -378,7 +381,8 @@ int Test_Null_Modem() {
   int64_t starttime = TickCount.Value();
   while (TickCount.Value() - starttime < 80) {
     NullModem.Service();
-    if ((NullModem.Get_Message(&ReceivePacket, &packetlen) > 0) &&
+    if ((NullModem.Get_Message(base::ObjectBytes(ReceivePacket), &packetlen) >
+         0) &&
         (ReceivePacket.Command == SERIAL_CONNECT)) {
       starttime = TickCount.Value();
       while (TickCount.Value() - starttime < 30) {
@@ -404,12 +408,14 @@ int Test_Null_Modem() {
     SendPacket.ID = static_cast<unsigned char>(std::bit_cast<uintptr_t>(
         &buffer[0]));  // address of buffer for more uniqueness.
 
-    NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 1);
+    NullModem.Send_Message(base::ObjectBytes(SendPacket), sizeof(SendPacket),
+                           1);
 
     starttime = TickCount.Value();
     while (TickCount.Value() - starttime < 80) {
       NullModem.Service();
-      if ((NullModem.Get_Message(&ReceivePacket, &packetlen) > 0) &&
+      if ((NullModem.Get_Message(base::ObjectBytes(ReceivePacket), &packetlen) >
+           0) &&
           (ReceivePacket.Command == SERIAL_CONNECT)) {
         starttime = TickCount.Value();
         while (TickCount.Value() - starttime < 30) {
@@ -484,7 +490,8 @@ int Test_Null_Modem() {
     */
     NullModem.Service();
     if (NullModem.Num_Send() == 0) {
-      if (NullModem.Get_Message(&ReceivePacket, &packetlen) > 0) {
+      if (NullModem.Get_Message(base::ObjectBytes(ReceivePacket), &packetlen) >
+          0) {
         if (ReceivePacket.Command == SERIAL_CONNECT) {
           starttime = TickCount.Value();
           while (TickCount.Value() - starttime < 30) {
@@ -726,13 +733,15 @@ static int Reconnect_Null_Modem() {
                       sizeof(SerialPacketType));
       SendPacket.Command = SERIAL_CONNECT;
       SendPacket.ID = static_cast<unsigned char>(Session.ColorIdx);
-      NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 0);
+      NullModem.Send_Message(base::ObjectBytes(SendPacket), sizeof(SendPacket),
+                             0);
     }
 
     /*
     ** Check for an incoming message
     */
-    if (NullModem.Get_Message(&ReceivePacket, &packetlen) > 0) {
+    if (NullModem.Get_Message(base::ObjectBytes(ReceivePacket), &packetlen) >
+        0) {
       lastmsgtime = TickCount.Value();
 
       if (ReceivePacket.Command == SERIAL_CONNECT) {
@@ -752,7 +761,8 @@ static int Reconnect_Null_Modem() {
                         sizeof(SerialPacketType));
         SendPacket.Command = SERIAL_CONNECT;
         SendPacket.ID = static_cast<unsigned char>(Session.ColorIdx);
-        NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 1);
+        NullModem.Send_Message(base::ObjectBytes(SendPacket),
+                               sizeof(SendPacket), 1);
         starttime = TickCount.Value();
         while (TickCount.Value() - starttime < 60) {
           NullModem.Service();
@@ -845,7 +855,7 @@ void Destroy_Null_Connection(int id, int error) {
   ** Remove this player from the Players vector
   */
   for (int i = 0; i < Session.Players.Count(); i++) {
-    if (!stricmp(Session.Players[i]->Name, housep->IniName)) {
+    if (!port::CompareIgnoreCase(Session.Players[i]->Name, housep->IniName)) {
       delete Session.Players[i];
       Session.Players.Delete(Session.Players[i]);
       break;
@@ -1764,7 +1774,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   RedrawType display = REDRAW_ALL;  // redraw level
   bool process = true;              // process while true
   char* item = nullptr;             // general-purpose string
-  char* temp = nullptr;             // general-purpose string
+  size_t temp = 0;                  // general-purpose string
   RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
 
   char portbuf[PORTBUF_MAX] = {0};          // buffer for port
@@ -1792,21 +1802,23 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
                      d_port_y, d_port_w, d_port_h, EditClass::kAlphanumeric);
 
   ListClass portlist(kButtonPortlist, d_portlist_x, d_portlist_y, d_portlist_w,
-                     d_portlist_h, kTpfText, MixArchive::Retrieve("BTN-UP.SHP"),
-                     MixArchive::Retrieve("BTN-DN.SHP"));
+                     d_portlist_h, kTpfText,
+                     MixArchive::RetrieveData("BTN-UP.SHP"),
+                     MixArchive::RetrieveData("BTN-DN.SHP"));
 
   EditClass baud_edt(kButtonBaud, baudbuf, BAUDBUF_MAX, kTpfText, d_baud_x,
                      d_baud_y, d_baud_w, d_baud_h, EditClass::kNumeric);
   ListClass baudlist(kButtonBaudlist, d_baudlist_x, d_baudlist_y, d_baudlist_w,
-                     d_baudlist_h, kTpfText, MixArchive::Retrieve("BTN-UP.SHP"),
-                     MixArchive::Retrieve("BTN-DN.SHP"));
+                     d_baudlist_h, kTpfText,
+                     MixArchive::RetrieveData("BTN-UP.SHP"),
+                     MixArchive::RetrieveData("BTN-DN.SHP"));
   EditClass initstr_edt(kButtonInitstr, initstrbuf, INITSTRBUF_MAX, kTpfText,
                         d_initstr_x, d_initstr_y, d_initstr_w, d_initstr_h,
                         EditClass::kAlphanumeric);
   ListClass initstrlist(kButtonInitstrlist, d_initstrlist_x, d_initstrlist_y,
                         d_initstrlist_w, d_initstrlist_h, kTpfText,
-                        MixArchive::Retrieve("BTN-UP.SHP"),
-                        MixArchive::Retrieve("BTN-DN.SHP"));
+                        MixArchive::RetrieveData("BTN-UP.SHP"),
+                        MixArchive::RetrieveData("BTN-DN.SHP"));
   TextButtonClass addbtn(kButtonAdd, TXT_ADD, kTpfButton, d_add_x, d_add_y,
                          d_add_w, d_add_h);
   TextButtonClass deletebtn(kButtonDelete, TXT_DELETE_BUTTON, kTpfButton,
@@ -1816,8 +1828,8 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
                          d_cwaitstr_h, EditClass::kAlphanumeric);
   ListClass cwaitstrlist(kButtonCwaitstrlist, d_cwaitstrlist_x,
                          d_cwaitstrlist_y, d_cwaitstrlist_w, d_cwaitstrlist_h,
-                         kTpfText, MixArchive::Retrieve("BTN-UP.SHP"),
-                         MixArchive::Retrieve("BTN-DN.SHP"));
+                         kTpfText, MixArchive::RetrieveData("BTN-UP.SHP"),
+                         MixArchive::RetrieveData("BTN-DN.SHP"));
   TextButtonClass tonebtn(kButtonTone, TXT_TONE_BUTTON, kTpfButton, d_tone_x,
                           d_tone_y, d_tone_w, d_tone_h);
   TextButtonClass pulsebtn(kButtonPulse, TXT_PULSE_BUTTON, kTpfButton,
@@ -1832,7 +1844,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   /*
   ** Various Inits
   */
-  memcpy(&tempsettings, settings, sizeof(SerialSettingsType));
+  tempsettings = *settings;
 
   if (tempsettings.Port == 0) {
     tempsettings.Port = 0x2f8;
@@ -1878,8 +1890,9 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   for (int i = 0; i < 10; i++) {
     ModemRegistry = new ModemRegistryEntryClass(i);
     if (ModemRegistry->Get_Modem_Name()) {
-      port::SafeCopy(modemnames[modems_found], ModemRegistry->Get_Modem_Name());
-      portlist.Add_Item(modemnames[modems_found++]);
+      port::SafeCopy(base::At(modemnames, modems_found),
+                     ModemRegistry->Get_Modem_Name());
+      portlist.Add_Item(base::At(modemnames, modems_found++));
       port_custom_index++;
     }
     delete ModemRegistry;
@@ -1895,7 +1908,8 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   port_index = -1;
   if (tempsettings.ModemName[0]) {
     for (int i = 0; i < port_custom_index; i++) {
-      if (!stricmp(portlist.Get_Item(i), tempsettings.ModemName)) {
+      if (!port::CompareIgnoreCase(portlist.Get_Item(i),
+                                   tempsettings.ModemName)) {
         port_index = i;
         port::SafeCopy(portbuf, tempsettings.ModemName);
         break;
@@ -1906,12 +1920,13 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
     *entry
     */
     if (port_index == -1) {
-      temp = strchr(custom_port, '-');
-      if (temp) {
-        pos = static_cast<int>(temp - custom_port) + 2;
-        len = static_cast<int>(strlen(tempsettings.ModemName));
-        port::SafeCopy(custom_port + pos, tempsettings.ModemName, base::ToSize(len));
-        *(custom_port + pos + len) = 0;
+      temp = std::string_view(custom_port).find('-');
+      if (temp != std::string_view::npos) {
+        pos = static_cast<int>(temp) + 2;
+        len = static_cast<int>(std::string_view(tempsettings.ModemName).size());
+        port::SafeCopy(std::span(custom_port).subspan(base::ToSize(pos)),
+                       tempsettings.ModemName);
+        base::At(custom_port, pos + len) = 0;
         port::SafeCopy(portbuf, tempsettings.ModemName);
         port_index = port_custom_index;
       }
@@ -1944,12 +1959,13 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         port_index = port_custom_index;
         absl::SNPrintF(portbuf, sizeof(portbuf), "%x",
                        static_cast<unsigned int>(tempsettings.Port));
-        temp = strchr(custom_port, '-');
-        if (temp) {
-          pos = static_cast<int>(temp - custom_port) + 2;
-          len = static_cast<int>(strlen(portbuf));
-          port::SafeCopy(custom_port + pos, portbuf, base::ToSize(len));
-          *(custom_port + pos + len) = 0;
+        temp = std::string_view(custom_port).find('-');
+        if (temp != std::string_view::npos) {
+          pos = static_cast<int>(temp) + 2;
+          len = static_cast<int>(std::string_view(portbuf).size());
+          port::SafeCopy(std::span(custom_port).subspan(base::ToSize(pos)),
+                         portbuf);
+          base::At(custom_port, pos + len) = 0;
         }
         break;
     }
@@ -1984,22 +2000,23 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   cwaitstr_index = tempsettings.CallWaitStringIndex;
   for (int i = 0; i < kCallWaitStringsNum; i++) {
     if (i == kCallWaitCustom) {
-      std::string item_str = SessionClass::CallWaitStrings[i];
+      std::string item_str = base::At(SessionClass::CallWaitStrings, i);
       const size_t dash_pos = item_str.find('-');
       if (dash_pos != std::string::npos) {
         pos = static_cast<int>(dash_pos) + 2;
         item_str.replace(base::ToSize(pos), std::string::npos, tempsettings.CallWaitString);
         if (i == cwaitstr_index) {
-          port::SafeCopy(cwaitstrbuf, item_str.c_str() + pos, CWAITSTRBUF_MAX);
+          port::SafeCopy(std::span(cwaitstrbuf).first(CWAITSTRBUF_MAX),
+                         std::string_view(item_str).substr(base::ToSize(pos)));
         }
       }
       cwaitstrlist.Add_Item(item_str.c_str());
     } else {
       if (i == cwaitstr_index) {
-        port::SafeCopy(cwaitstrbuf, SessionClass::CallWaitStrings[i],
-                       CWAITSTRBUF_MAX);
+        port::SafeCopy(std::span(cwaitstrbuf).first(CWAITSTRBUF_MAX),
+                       base::At(SessionClass::CallWaitStrings, i));
       }
-      cwaitstrlist.Add_Item(SessionClass::CallWaitStrings[i]);
+      cwaitstrlist.Add_Item(base::At(SessionClass::CallWaitStrings, i));
     }
   }
 
@@ -2146,42 +2163,43 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
       case ButtonKey(kButtonPort):
         if (port_index < 4) {
           const char* const current = portlist.Current_Item();
-          const char* const space = strchr(current, ' ');
-          if (!space) {
-            port::SafeCopy(portbuf, current, PORTBUF_MAX);
+          const auto space = std::string_view(current).find(' ');
+          if (space == std::string_view::npos) {
+            port::SafeCopy(std::span(portbuf).first(PORTBUF_MAX), current);
           } else {
-            pos = static_cast<int>(space - current);
-            port::SafeCopy(portbuf, current, base::ToSize(pos));
+            pos = static_cast<int>(space);
+            port::SafeCopy(std::span(portbuf).first(base::ToSize(pos)),
+                           current);
           }
           port_edt.Set_Text(portbuf, PORTBUF_MAX);
           port_edt.Flag_To_Redraw();
         } else {
           strupr(portbuf);
-          if (stricmp(portbuf, "3F8") == 0) {
+          if (port::CompareIgnoreCase(portbuf, "3F8") == 0) {
             port_index = 0;
             portlist.Set_Selected_Index(port_index);
             port::SafeCopy(portbuf, "COM1");
             display = REDRAW_BUTTONS;
 
-          } else if (stricmp(portbuf, "2F8") == 0) {
+          } else if (port::CompareIgnoreCase(portbuf, "2F8") == 0) {
             port_index = 1;
             portlist.Set_Selected_Index(port_index);
             port::SafeCopy(portbuf, "COM2");
             display = REDRAW_BUTTONS;
 
-          } else if (stricmp(portbuf, "3E8") == 0) {
+          } else if (port::CompareIgnoreCase(portbuf, "3E8") == 0) {
             port_index = 2;
             portlist.Set_Selected_Index(port_index);
             port::SafeCopy(portbuf, "COM3");
             display = REDRAW_BUTTONS;
 
-          } else if (stricmp(portbuf, "2E8") == 0) {
+          } else if (port::CompareIgnoreCase(portbuf, "2E8") == 0) {
             port_index = 3;
             portlist.Set_Selected_Index(port_index);
             port::SafeCopy(portbuf, "COM4");
             display = REDRAW_BUTTONS;
 
-          } else if (strncmp(portbuf, "COM", 3) == 0) {
+          } else if (std::string_view(portbuf).starts_with("COM")) {
             display = REDRAW_BUTTONS;
 
             switch (portbuf[3] - '0') {
@@ -2205,11 +2223,14 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
                 if (portbuf[3] <= '9' && portbuf[3] > '0') {
                   portbuf[4] = 0;
                   port_index = port_custom_index;
-                  temp = strchr(custom_port, '-');
-                  if (temp) {
-                    pos = static_cast<int>(temp - custom_port) + 2;
-                    port::SafeCopy(custom_port + pos, portbuf,
-                                   sizeof(custom_port) - base::ToSize(pos));
+                  temp = std::string_view(custom_port).find('-');
+                  if (temp != std::string_view::npos) {
+                    pos = static_cast<int>(temp) + 2;
+                    port::SafeCopy(
+                        std::span(custom_port)
+                            .subspan(base::ToSize(pos))
+                            .first(sizeof(custom_port) - base::ToSize(pos)),
+                        portbuf);
                     portlist.Set_Item(port_custom_index, custom_port);
                     display = REDRAW_BUTTONS;
                   }
@@ -2224,11 +2245,14 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
             portlist.Set_Selected_Index(port_index);
 
           } else {
-            temp = strchr(custom_port, '-');
-            if (temp) {
-              pos = static_cast<int>(temp - custom_port) + 2;
-              port::SafeCopy(custom_port + pos, portbuf,
-                             sizeof(custom_port) - base::ToSize(pos));
+            temp = std::string_view(custom_port).find('-');
+            if (temp != std::string_view::npos) {
+              pos = static_cast<int>(temp) + 2;
+              port::SafeCopy(
+                  std::span(custom_port)
+                      .subspan(base::ToSize(pos))
+                      .first(sizeof(custom_port) - base::ToSize(pos)),
+                  portbuf);
               portlist.Set_Item(port_custom_index, custom_port);
               display = REDRAW_BUTTONS;
             }
@@ -2245,13 +2269,14 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
               /*
               ** This is the custom entry
               */
-              const char* const sep = strchr(current, '-');
-              if (sep) {
-                pos = static_cast<int>(sep - current) + 2;
-                if (*(current + pos) == '?') {
+              const auto sep = std::string_view(current).find('-');
+              if (sep != std::string_view::npos) {
+                pos = static_cast<int>(sep) + 2;
+                if (std::string_view(current)[base::ToSize(pos)] == '?') {
                   portbuf[0] = 0;
                 } else {
-                  port::SafeCopy(portbuf, current + pos);
+                  port::SafeCopy(portbuf, std::string_view(current).substr(
+                                              base::ToSize(pos)));
                 }
               }
               port_edt.Set_Focus();
@@ -2282,7 +2307,8 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
       case ButtonKey(kButtonBaudlist):
         if (baudlist.Current_Index() != baud_index) {
           baud_index = baudlist.Current_Index();
-          port::SafeCopy(baudbuf, baudlist.Current_Item(), BAUDBUF_MAX);
+          port::SafeCopy(std::span(baudbuf).first(BAUDBUF_MAX),
+                         baudlist.Current_Item());
           baud_edt.Set_Text(baudbuf, BAUDBUF_MAX);
           baud_edt.Clear_Focus();
           display = REDRAW_BUTTONS;
@@ -2303,13 +2329,14 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
       /*
       ** Add a new InitString entry
       */
-      case ButtonKey(kButtonAdd):
-
-        item = new char[INITSTRBUF_MAX];
-        memset(item, 0, INITSTRBUF_MAX);
+      case ButtonKey(kButtonAdd): {
+        item = new char[INITSTRBUF_MAX]{};
+        // The allocation immediately above owns exactly INITSTRBUF_MAX bytes.
+        // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
+        const std::span<char> item_buffer(item, INITSTRBUF_MAX);
 
         strupr(initstrbuf);
-        port::SafeCopy(item, initstrbuf, INITSTRBUF_MAX);
+        port::SafeCopy(item_buffer, initstrbuf);
 
         Session.InitStrings.Add(item);
         Build_Init_String_Listbox(&initstrlist, &initstr_edt, initstrbuf,
@@ -2329,6 +2356,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         initstr_edt.Flag_To_Redraw();
         display = REDRAW_BUTTONS;
         break;
+      }
 
       /*------------------------------------------------------------------
       Delete the current InitString entry
@@ -2345,10 +2373,10 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
       case ButtonKey(kButtonCwaitstr):
         if (cwaitstr_index >= kCallWaitCustom) {
           const char* const current = cwaitstrlist.Current_Item();
-          const char* const dash = strchr(current, '-');
-          if (dash) {
+          const auto dash = std::string_view(current).find('-');
+          if (dash != std::string_view::npos) {
             // Keep the "Custom - " prefix, replace what follows it.
-            std::string custom(current, base::ToSize(dash - current) + 2);
+            std::string custom(current, dash + 2);
             custom += cwaitstrbuf;
             cwaitstrlist.Set_Item(cwaitstr_index, custom);
             display = REDRAW_BUTTONS;
@@ -2364,10 +2392,11 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
             port::SafeCopy(cwaitstrbuf, current);
             cwaitstr_edt.Clear_Focus();
           } else {
-            const char* const sep = strchr(current, '-');
-            if (sep) {
-              pos = static_cast<int>(sep - current) + 2;
-              port::SafeCopy(cwaitstrbuf, current + pos);
+            const auto sep = std::string_view(current).find('-');
+            if (sep != std::string_view::npos) {
+              pos = static_cast<int>(sep) + 2;
+              port::SafeCopy(cwaitstrbuf, std::string_view(current).substr(
+                                              base::ToSize(pos)));
             }
             cwaitstr_edt.Set_Focus();
           }
@@ -2418,10 +2447,11 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         {
           // The list item carries the string the user edited.
           const char* custom = cwaitstrlist.Get_Item(kCallWaitCustom);
-          const char* dash = strchr(custom, '-');
-          if (dash) {
-            pos = static_cast<int>(dash - custom) + 2;
-            port::SafeCopy(cwaitstrbuf, custom + pos);
+          const auto dash = std::string_view(custom).find('-');
+          if (dash != std::string_view::npos) {
+            pos = static_cast<int>(dash) + 2;
+            port::SafeCopy(cwaitstrbuf,
+                           std::string_view(custom).substr(base::ToSize(pos)));
           } else {
             cwaitstrbuf[0] = 0;
           }
@@ -2472,7 +2502,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   Save values into the Settings structure
   ------------------------------------------------------------------------*/
   if (rc) {
-    memcpy(settings, &tempsettings, sizeof(SerialSettingsType));
+    *settings = tempsettings;
   }
 
   return rc;
@@ -2504,7 +2534,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
  *   06/08/1995 DRD : Created.                                             *
  *=========================================================================*/
 static void Build_Init_String_Listbox(ListClass* list, EditClass* edit,
-                                      char* buf, int* index) {
+                                      std::span<char> buf, int* index) {
   int curidx = *index;
 
   /*........................................................................
@@ -2516,11 +2546,16 @@ static void Build_Init_String_Listbox(ListClass* list, EditClass* edit,
   ** Now sort the init string list by name then number
   */
   if (Session.InitStrings.Count() > 0) {
-    std::sort(&Session.InitStrings[0],
-              &Session.InitStrings[0] + Session.InitStrings.Count(),
-              [](const char* left, const char* right) {
-                return strcmp(left, right) < 0;
-              });
+    std::vector<char*> sorted(base::ToSize(Session.InitStrings.Count()));
+    for (int i = 0; i < Session.InitStrings.Count(); ++i) {
+      sorted[base::ToSize(i)] = Session.InitStrings[i];
+    }
+    std::ranges::sort(sorted, [](const char* left, const char* right) {
+      return std::string_view(left).compare(right) < 0;
+    });
+    for (int i = 0; i < Session.InitStrings.Count(); ++i) {
+      Session.InitStrings[i] = sorted[base::ToSize(i)];
+    }
   }
 
   /*........................................................................
@@ -2544,7 +2579,8 @@ static void Build_Init_String_Listbox(ListClass* list, EditClass* edit,
   Fill in initstring edit buffer
   ........................................................................*/
   if (curidx > -1) {
-    port::SafeCopy(buf, Session.InitStrings[curidx], INITSTRBUF_MAX);
+    port::SafeCopy(std::span(buf).first(INITSTRBUF_MAX),
+                   Session.InitStrings[curidx]);
     edit->Set_Text(buf, INITSTRBUF_MAX);
     list->Set_Selected_Index(curidx);
   }
@@ -2733,8 +2769,8 @@ int Com_Scenario_Dialog(bool skirmish) {
   bool process = true;              // process while true
   KeyNumType input = KN_NONE;
 
-  int playertabs[] = {77 * 2};   // tabs for player list box
-  int optiontabs[] = {8};                // tabs for player list box
+  const int playertabs[] = {77 * 2};     // tabs for player list box
+  const int optiontabs[] = {8};          // tabs for player list box
   char namebuf[MPLAYER_NAME_MAX] = {0};  // buffer for player's name
   bool transmit = false;                 // 1 = re-transmit new game options
   const int cbox_x[] = {d_color_x,
@@ -2794,17 +2830,17 @@ int Com_Scenario_Dialog(bool skirmish) {
   Fancy_Text_Print("", 0, 0, nullptr, 0, kTpfText);
   DropListClass housebtn(kButtonHouse, housetext, sizeof(housetext), kTpfText,
                          d_house_x, d_house_y, d_house_w, d_house_h,
-                         MixArchive::Retrieve("BTN-UP.SHP"),
-                         MixArchive::Retrieve("BTN-DN.SHP"));
+                         MixArchive::RetrieveData("BTN-UP.SHP"),
+                         MixArchive::RetrieveData("BTN-DN.SHP"));
 #endif
   ColorListClass playerlist(kButtonPlayerlist, d_playerlist_x, d_playerlist_y,
                             d_playerlist_w, d_playerlist_h, kTpfText,
-                            MixArchive::Retrieve("BTN-UP.SHP"),
-                            MixArchive::Retrieve("BTN-DN.SHP"));
+                            MixArchive::RetrieveData("BTN-UP.SHP"),
+                            MixArchive::RetrieveData("BTN-DN.SHP"));
   ListClass scenariolist(kButtonScenariolist, d_scenariolist_x,
                          d_scenariolist_y, d_scenariolist_w, d_scenariolist_h,
-                         kTpfText, MixArchive::Retrieve("BTN-UP.SHP"),
-                         MixArchive::Retrieve("BTN-DN.SHP"));
+                         kTpfText, MixArchive::RetrieveData("BTN-UP.SHP"),
+                         MixArchive::RetrieveData("BTN-DN.SHP"));
   GaugeClass countgauge(kButtonCount, d_count_x, d_count_y, d_count_w,
                         d_count_h);
 
@@ -2835,8 +2871,8 @@ int Com_Scenario_Dialog(bool skirmish) {
 
   CheckListClass optionlist(kButtonOptions, d_options_x, d_options_y,
                             d_options_w, d_options_h, kTpfText,
-                            MixArchive::Retrieve("BTN-UP.SHP"),
-                            MixArchive::Retrieve("BTN-DN.SHP"));
+                            MixArchive::RetrieveData("BTN-UP.SHP"),
+                            MixArchive::RetrieveData("BTN-DN.SHP"));
   TextButtonClass okbtn(kButtonOk, TXT_OK, kTpfButton, d_ok_x, d_ok_y, d_ok_w,
                         d_ok_h);
   TextButtonClass loadbtn(kButtonLoad, TXT_LOAD_BUTTON, kTpfButton, d_load_x,
@@ -2932,8 +2968,8 @@ int Com_Scenario_Dialog(bool skirmish) {
     Session.Options.AIPlayers = 0;
     Special.IsShadowGrow = Rule.IsMPShadowGrow;
     Session.Options.UnitCount =
-        (SessionClass::CountMax[Session.Options.Bases] +
-         SessionClass::CountMin[Session.Options.Bases]) /
+        (base::At(SessionClass::CountMax, Session.Options.Bases) +
+         base::At(SessionClass::CountMin, Session.Options.Bases)) /
         2;
     first_time = false;
   }
@@ -2963,10 +2999,11 @@ int Com_Scenario_Dialog(bool skirmish) {
     optionlist.Check_Item(4, Special.IsCaptureTheFlag);
   }
 
-  countgauge.Set_Maximum(SessionClass::CountMax[Session.Options.Bases] -
-                         SessionClass::CountMin[Session.Options.Bases]);
+  countgauge.Set_Maximum(
+      base::At(SessionClass::CountMax, Session.Options.Bases) -
+      base::At(SessionClass::CountMin, Session.Options.Bases));
   countgauge.Set_Value(Session.Options.UnitCount -
-                       SessionClass::CountMin[Session.Options.Bases]);
+                       base::At(SessionClass::CountMin, Session.Options.Bases));
 
   levelgauge.Set_Maximum(MPLAYER_BUILD_LEVEL_MAX - 1);
   levelgauge.Set_Value(BuildLevel - 1);
@@ -3003,20 +3040,22 @@ int Com_Scenario_Dialog(bool skirmish) {
   ........................................................................*/
   for (i = 0; i < Session.Scenarios.Count(); i++) {
     int j = 0;
-    for (j = 0; EngMisStr[j] != nullptr; j++) {
-      if (!strcmp(Session.Scenarios[i]->Description(), EngMisStr[j])) {
+    for (j = 0; EngMisStr[base::ToSize(j)] != nullptr; j++) {
+      if (std::string_view(Session.Scenarios[i]->Description()) ==
+          EngMisStr[base::ToSize(j)]) {
         // ajw Added Aftermath installed checks (before, it was
         // assumed). Add mission if it's available to us.
         if ((!IsMissionCounterstrike(Session.Scenarios[i]->Get_Filename()) ||
              Is_Counterstrike_Installed()) &&
             (!IsMissionAftermath(Session.Scenarios[i]->Get_Filename()) ||
              Is_Aftermath_Installed())) {
-          scenariolist.Add_Item(EngMisStr[config::kIsEnglish ? j : j + 1]);
+          scenariolist.Add_Item(
+              EngMisStr[base::ToSize(config::kIsEnglish ? j : j + 1)]);
         }
         break;
       }
     }
-    if ((EngMisStr[j] == nullptr) &&
+    if ((EngMisStr[base::ToSize(j)] == nullptr) &&
         (!Session.Scenarios[i]->Get_Official() ||
          ((!IsMissionCounterstrike(Session.Scenarios[i]->Get_Filename()) ||
            Is_Counterstrike_Installed()) &&
@@ -3058,11 +3097,11 @@ int Com_Scenario_Dialog(bool skirmish) {
   Load_Title_Page(true);
   CCPalette.Set();
 
-  if (strlen(ModemRXString) > 36) {
+  if (std::string_view(ModemRXString).size() > 36) {
     ModemRXString[36] = 0;
   }
 
-  if (strlen(ModemRXString) > 0) {
+  if (!std::string_view(ModemRXString).empty()) {
     Session.Messages.Add_Message(nullptr, 0, ModemRXString, PCOLOR_BROWN,
                                  kTpfText, -1);
   }
@@ -3217,7 +3256,8 @@ int Com_Scenario_Dialog(bool skirmish) {
         if (display >= REDRAW_COLORS) {
           for (i = 0; i < MAX_MPLAYER_COLORS; i++) {
             LogicPage->Fill_Rect(
-                cbox_x[i] + 1, d_color_y + 1, cbox_x[i] + 1 + d_color_w - 2,
+                base::At(cbox_x, i) + 1, d_color_y + 1,
+                base::At(cbox_x, i) + 1 + d_color_w - 2,
                 d_color_y + 1 + d_color_h - 2,
                 ColorRemaps[static_cast<PlayerColorType>(i)].Box);
             //						(i ==
@@ -3225,10 +3265,10 @@ int Com_Scenario_Dialog(bool skirmish) {
             // ColorRemaps[static_cast<PlayerColorType>(i)].Box);
 
             if (static_cast<PlayerColorType>(i) == Session.ColorIdx) {
-              Draw_Box(cbox_x[i], d_color_y, d_color_w, d_color_h,
+              Draw_Box(base::At(cbox_x, i), d_color_y, d_color_w, d_color_h,
                        BOXSTYLE_DOWN, false);
             } else {
-              Draw_Box(cbox_x[i], d_color_y, d_color_w, d_color_h,
+              Draw_Box(base::At(cbox_x, i), d_color_y, d_color_w, d_color_h,
                        BOXSTYLE_RAISED, false);
             }
           }
@@ -3431,7 +3471,7 @@ int Com_Scenario_Dialog(bool skirmish) {
         case ButtonKey(kButtonCount):
           Session.Options.UnitCount =
               countgauge.Get_Value() +
-              SessionClass::CountMin[Session.Options.Bases];
+              base::At(SessionClass::CountMin, Session.Options.Bases);
           display = std::max(display, REDRAW_PARMS);
           if (housebtn.IsDropped) {
             housebtn.Collapse();
@@ -3530,10 +3570,11 @@ int Com_Scenario_Dialog(bool skirmish) {
                 static_cast<uint32_t>(SessionClass::CountMax[0] - SessionClass::CountMin[0])));
             }
             countgauge.Set_Maximum(
-                SessionClass::CountMax[Session.Options.Bases] -
-                SessionClass::CountMin[Session.Options.Bases]);
-            countgauge.Set_Value(Session.Options.UnitCount -
-                                 SessionClass::CountMin[Session.Options.Bases]);
+                base::At(SessionClass::CountMax, Session.Options.Bases) -
+                base::At(SessionClass::CountMin, Session.Options.Bases));
+            countgauge.Set_Value(
+                Session.Options.UnitCount -
+                base::At(SessionClass::CountMin, Session.Options.Bases));
           }
           Session.Options.Tiberium = optionlist.Is_Checked(1) ? 1 : 0;
           Special.IsTGrowth = static_cast<unsigned>(Session.Options.Tiberium);
@@ -3627,7 +3668,8 @@ int Com_Scenario_Dialog(bool skirmish) {
               /*...............................................................
               If 'input' returned 3, it means send the current message.
               ...............................................................*/
-              memset(&SendPacket, 0, sizeof(SerialPacketType));
+              base::FillBytes(base::ObjectBytes(SendPacket), 0,
+                              sizeof(SendPacket));
               SendPacket.Command = SERIAL_MESSAGE;
               port::SafeCopy(SendPacket.Name, namebuf);
               SendPacket.ID = static_cast<unsigned char>(Session.ColorIdx);
@@ -3644,7 +3686,8 @@ int Com_Scenario_Dialog(bool skirmish) {
               Send the message
               ..................................................................*/
               if (!skirmish) {
-                NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 1);
+                NullModem.Send_Message(base::ObjectBytes(SendPacket),
+                                       sizeof(SendPacket), 1);
                 NullModem.Service();
               }
               /*..................................................................
@@ -3669,7 +3712,7 @@ int Com_Scenario_Dialog(bool skirmish) {
       /*---------------------------------------------------------------------
       Detect editing of the name buffer, transmit new values to players
       ---------------------------------------------------------------------*/
-      if (strcmp(namebuf, Session.Handle) != 0) {
+      if (std::string_view(namebuf) != Session.Handle) {
         port::SafeCopy(Session.Handle, namebuf);
         transmit = true;
         changed = true;
@@ -3686,7 +3729,7 @@ int Com_Scenario_Dialog(bool skirmish) {
       }
 
       if (transmit && TickCount.Value() - transmittime > PACKET_RETRANS_TIME) {
-        memset(&SendPacket, 0, sizeof(SerialPacketType));
+        base::FillBytes(base::ObjectBytes(SendPacket), 0, sizeof(SendPacket));
         SendPacket.Command = SERIAL_GAME_OPTIONS;
         port::SafeCopy(SendPacket.Name, namebuf);
         SendPacket.ScenarioInfo.CheatCheck = RuleINI.Get_Unique_ID();
@@ -3731,11 +3774,11 @@ int Com_Scenario_Dialog(bool skirmish) {
             Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
         port::SafeCopy(
             SendPacket.ScenarioInfo.FileDigest,
-            Session.Scenarios[Session.Options.ScenarioIndex]->Get_Digest(),
-            sizeof(SendPacket.ScenarioInfo.FileDigest));
+            Session.Scenarios[Session.Options.ScenarioIndex]->Get_Digest());
         SendPacket.ScenarioInfo.OfficialScenario =
             Session.Scenarios[Session.Options.ScenarioIndex]->Get_Official();
-        NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 1);
+        NullModem.Send_Message(base::ObjectBytes(SendPacket),
+                               sizeof(SendPacket), 1);
 
         transmittime = TickCount.Value();
         transmit = false;
@@ -3774,19 +3817,21 @@ int Com_Scenario_Dialog(bool skirmish) {
       // send a timing packet if enough time has gone by.
       //
       if (!skirmish && TickCount.Value() - timingtime > PACKET_TIMING_TIMEOUT) {
-        memset(&SendPacket, 0, sizeof(SerialPacketType));
+        base::FillBytes(base::ObjectBytes(SendPacket), 0, sizeof(SendPacket));
         SendPacket.Command = SERIAL_TIMING;
         SendPacket.ScenarioInfo.ResponseTime = NullModem.Response_Time();
         SendPacket.ID = static_cast<unsigned char>(Session.ModemType);
 
-        NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 0);
+        NullModem.Send_Message(base::ObjectBytes(SendPacket),
+                               sizeof(SendPacket), 0);
         timingtime = TickCount.Value();
       }
 
       /*---------------------------------------------------------------------
       Check for an incoming message
       ---------------------------------------------------------------------*/
-      if (!skirmish && NullModem.Get_Message(&ReceivePacket, &packetlen) > 0) {
+      if (!skirmish && NullModem.Get_Message(base::ObjectBytes(ReceivePacket),
+                                             &packetlen) > 0) {
         lastmsgtime = TickCount.Value();
         msg_timeout = 600;  // reset timeout value to 10 seconds
                             // (only the 1st time through is 20 seconds)
@@ -3810,8 +3855,8 @@ int Com_Scenario_Dialog(bool skirmish) {
           break;
         }
 
-        const auto event_type =
-            port::ReadUnaligned<EventClass::EventType>(&ReceivePacket);
+        const auto event_type = port::ReadUnaligned<EventClass::EventType>(
+            base::ObjectBytes(ReceivePacket));
         if (event_type <= EventClass::FRAMEINFO) {
           if (TickCount.Value() - lastredrawtime > PACKET_REDRAW_TIME) {
             lastredrawtime = TickCount.Value();
@@ -4101,8 +4146,8 @@ int Com_Scenario_Dialog(bool skirmish) {
          * be be unique. This is necessary to prevent a crash after loading
          * a modem save game.
          */
-        if (strcmp(TheirName, namebuf) == 0) {
-          if (strlen(TheirName) == MPLAYER_NAME_MAX - 1) {
+        if (std::string_view(TheirName) == namebuf) {
+          if (std::string_view(TheirName).size() == MPLAYER_NAME_MAX - 1) {
             TheirName[MPLAYER_NAME_MAX - 1] = '\0';
           } else {
             port::SafeAppend(TheirName, "2");
@@ -4119,7 +4164,7 @@ int Com_Scenario_Dialog(bool skirmish) {
       /*.....................................................................
       Send all players a GO packet.
       .....................................................................*/
-      memset(&SendPacket, 0, sizeof(SerialPacketType));
+      base::FillBytes(base::ObjectBytes(SendPacket), 0, sizeof(SendPacket));
       if (load_game) {
         SendPacket.Command = SERIAL_LOADGAME;
       } else {
@@ -4153,7 +4198,8 @@ int Com_Scenario_Dialog(bool skirmish) {
       SendPacket.ID = static_cast<unsigned char>(Session.ModemType);
 
       if (!skirmish) {
-        NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 1);
+        NullModem.Send_Message(base::ObjectBytes(SendPacket),
+                               sizeof(SendPacket), 1);
         starttime = TickCount.Value();
         while ((NullModem.Num_Send() &&
                 TickCount.Value() - starttime < PACKET_SENDING_TIMEOUT) ||
@@ -4175,7 +4221,8 @@ int Com_Scenario_Dialog(bool skirmish) {
         do {
           NullModem.Service();
 
-          if (NullModem.Get_Message(&ReceivePacket, &packetlen) > 0) {
+          if (NullModem.Get_Message(base::ObjectBytes(ReceivePacket),
+                                    &packetlen) > 0) {
             if (ReceivePacket.Command == SERIAL_READY_TO_GO) {
               if (Session.Scenarios[Session.Options.ScenarioIndex]
                       ->Get_Official() &&
@@ -4229,11 +4276,12 @@ int Com_Scenario_Dialog(bool skirmish) {
       Broadcast my sign-off over my network
       .....................................................................*/
       {
-        memset(&SendPacket, 0, sizeof(SerialPacketType));
+        base::FillBytes(base::ObjectBytes(SendPacket), 0, sizeof(SendPacket));
         SendPacket.Command = SERIAL_SIGN_OFF;
         SendPacket.ScenarioInfo.Color = Session.ColorIdx;  // use Color for ID
         SendPacket.ID = static_cast<unsigned char>(Session.ModemType);
-        NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 1);
+        NullModem.Send_Message(base::ObjectBytes(SendPacket),
+                               sizeof(SendPacket), 1);
 
         starttime = TickCount.Value();
         while ((NullModem.Num_Send() &&
@@ -4243,7 +4291,8 @@ int Com_Scenario_Dialog(bool skirmish) {
             NullModem.Mono_Debug_Print(0);
 #endif
 
-            if ((NullModem.Get_Message(&ReceivePacket, &packetlen) > 0) &&
+            if ((NullModem.Get_Message(base::ObjectBytes(ReceivePacket),
+                                       &packetlen) > 0) &&
                 (ReceivePacket.Command == SERIAL_SIGN_OFF &&
                  ReceivePacket.ID ==
                      static_cast<unsigned char>(Session.ModemType)))
@@ -4326,7 +4375,7 @@ int Com_Scenario_Dialog(bool skirmish) {
  *                                                                                             *
  * HISTORY: * 8/23/96 12:36PM ST : Created *
  *=============================================================================================*/
-bool Find_Local_Scenario(const char* description, char* filename,
+bool Find_Local_Scenario(const char* description, std::span<char> filename,
                          unsigned int length, const char* digest,
                          bool official) {
   // FILE *fp;
@@ -4343,7 +4392,8 @@ bool Find_Local_Scenario(const char* description, char* filename,
   for (int index = 0; index < Session.Scenarios.Count(); index++) {
     // debugprint( "Checking against scenario: %s\n",
     // Session.Scenarios[index]->Description());
-    if (!strcmp(Session.Scenarios[index]->Description(), description)) {
+    if (std::string_view(Session.Scenarios[index]->Description()) ==
+        description) {
       // debugprint("found matching description.\n");
       GameFile file(Session.Scenarios[index]->Get_Filename());
 
@@ -4380,18 +4430,18 @@ bool Find_Local_Scenario(const char* description, char* filename,
         */
         if (IsMissionAftermath(Session.Scenarios[index]->Get_Filename())) {
           // debugprint("a 1match!\n");
-          port::SafeCopy(filename, Session.Scenarios[index]->Get_Filename(),
-                         kMaxFname + kMaxExt + 1);
+          port::SafeCopy(std::span(filename).first(kMaxFname + kMaxExt + 1),
+                         Session.Scenarios[index]->Get_Filename());
           return true;
         }
 
         /*
         ** This must be the same scenario. Copy the name and return true.
         */
-        if (official || !strcmp(digest, digest_buffer)) {
+        if (official || (std::string_view(digest) == digest_buffer)) {
           // debugprint("a match!\n");
-          port::SafeCopy(filename, Session.Scenarios[index]->Get_Filename(),
-                         kMaxFname + kMaxExt + 1);
+          port::SafeCopy(std::span(filename).first(kMaxFname + kMaxExt + 1),
+                         Session.Scenarios[index]->Get_Filename());
           return true;
         }
       }
@@ -4600,10 +4650,10 @@ int Com_Show_Scenario_Dialog() {
                         d_color_x + (d_color_w * 7)};
 
   char namebuf[MPLAYER_NAME_MAX] = {0};  // buffer for player's name
-  // BG	int playertabs[] = {77};				// tabs for
+  // BG	const int playertabs[] = {77};				// tabs for
   // player list box
-  int playertabs[] = {71 * 2};  // tabs for player list box
-  int optiontabs[] = {8};               // tabs for options list box
+  const int playertabs[] = {71 * 2};    // tabs for player list box
+  const int optiontabs[] = {8};         // tabs for options list box
   bool transmit = false;                // 1 = re-transmit new game options
   bool first = false;                   // 1 = no packets received yet
   bool parms_received = false;          // 1 = game options received
@@ -4650,18 +4700,19 @@ int Com_Show_Scenario_Dialog() {
   Fancy_Text_Print("", 0, 0, nullptr, 0, kTpfText);
   DropListClass housebtn(kButtonHouse, housetext, sizeof(housetext), kTpfText,
                          d_house_x, d_house_y, d_house_w, d_house_h,
-                         MixArchive::Retrieve("BTN-UP.SHP"),
-                         MixArchive::Retrieve("BTN-DN.SHP"));
+                         MixArchive::RetrieveData("BTN-UP.SHP"),
+                         MixArchive::RetrieveData("BTN-DN.SHP"));
 #endif  // OLDWAY
   TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL, kTpfButton, d_cancel_x,
                             d_cancel_y, d_cancel_w);
   ListClass gamelist(kButtonGamelist, d_gamelist_x, d_gamelist_y, d_gamelist_w,
-                     d_gamelist_h, kTpfText, MixArchive::Retrieve("BTN-UP.SHP"),
-                     MixArchive::Retrieve("BTN-DN.SHP"));
+                     d_gamelist_h, kTpfText,
+                     MixArchive::RetrieveData("BTN-UP.SHP"),
+                     MixArchive::RetrieveData("BTN-DN.SHP"));
   ColorListClass playerlist(kButtonPlayerlist, d_playerlist_x, d_playerlist_y,
                             d_playerlist_w, d_playerlist_h, kTpfText,
-                            MixArchive::Retrieve("BTN-UP.SHP"),
-                            MixArchive::Retrieve("BTN-DN.SHP"));
+                            MixArchive::RetrieveData("BTN-UP.SHP"),
+                            MixArchive::RetrieveData("BTN-DN.SHP"));
 
   GaugeClass countgauge(kButtonCount, d_count_x, d_count_y, d_count_w,
                         d_count_h);
@@ -4689,8 +4740,8 @@ int Com_Show_Scenario_Dialog() {
 
   CheckListClass optionlist(kButtonOptions, d_options_x, d_options_y,
                             d_options_w, d_options_h, kTpfText,
-                            MixArchive::Retrieve("BTN-UP.SHP"),
-                            MixArchive::Retrieve("BTN-DN.SHP"));
+                            MixArchive::RetrieveData("BTN-UP.SHP"),
+                            MixArchive::RetrieveData("BTN-DN.SHP"));
 
   /*
   ------------------------- Build the button list --------------------------
@@ -4772,10 +4823,11 @@ int Com_Show_Scenario_Dialog() {
   // Option gauges
   //........................................................................
   countgauge.Use_Thumb(false);
-  countgauge.Set_Maximum(SessionClass::CountMax[Session.Options.Bases] -
-                         SessionClass::CountMin[Session.Options.Bases]);
+  countgauge.Set_Maximum(
+      base::At(SessionClass::CountMax, Session.Options.Bases) -
+      base::At(SessionClass::CountMin, Session.Options.Bases));
   countgauge.Set_Value(Session.Options.UnitCount -
-                       SessionClass::CountMin[Session.Options.Bases]);
+                       base::At(SessionClass::CountMin, Session.Options.Bases));
 
   levelgauge.Use_Thumb(false);
   levelgauge.Set_Maximum(MPLAYER_BUILD_LEVEL_MAX - 1);
@@ -4820,11 +4872,11 @@ int Com_Show_Scenario_Dialog() {
   CCPalette.Set();
 
   // TODO(konove): This is ugly and just for printing a message.
-  if (strlen(ModemRXString) > 36) {
+  if (std::string_view(ModemRXString).size() > 36) {
     ModemRXString[36] = 0;
   }
 
-  if (strlen(ModemRXString) > 0) {
+  if (!std::string_view(ModemRXString).empty()) {
     Session.Messages.Add_Message(nullptr, 0, ModemRXString, PCOLOR_BROWN,
                                  kTpfText, -1);
   }
@@ -4936,7 +4988,8 @@ int Com_Show_Scenario_Dialog() {
       if (display >= REDRAW_COLORS) {
         for (i = 0; i < MAX_MPLAYER_COLORS; i++) {
           LogicPage->Fill_Rect(
-              cbox_x[i] + 2, d_color_y + 2, cbox_x[i] + 2 + d_color_w - 4,
+              base::At(cbox_x, i) + 2, d_color_y + 2,
+              base::At(cbox_x, i) + 2 + d_color_w - 4,
               d_color_y + 2 + d_color_h - 4,
               ColorRemaps[static_cast<PlayerColorType>(i)].Box);
           //						(i ==
@@ -4944,10 +4997,10 @@ int Com_Show_Scenario_Dialog() {
           // ColorRemaps[static_cast<PlayerColorType>(i)].Box);
 
           if (static_cast<PlayerColorType>(i) == Session.ColorIdx) {
-            Draw_Box(cbox_x[i], d_color_y, d_color_w, d_color_h, BOXSTYLE_DOWN,
-                     false);
+            Draw_Box(base::At(cbox_x, i), d_color_y, d_color_w, d_color_h,
+                     BOXSTYLE_DOWN, false);
           } else {
-            Draw_Box(cbox_x[i], d_color_y, d_color_w, d_color_h,
+            Draw_Box(base::At(cbox_x, i), d_color_y, d_color_w, d_color_h,
                      BOXSTYLE_RAISED, false);
           }
         }
@@ -4988,17 +5041,17 @@ int Com_Show_Scenario_Dialog() {
               // TBLACK, kTpfText | TPF_CENTER);
 
               // EW - Scenario language translation goes here!!!!!!!! VG
-              for (i = 0; EngMisStr[i] != nullptr; i++) {
-                if (!strcmp(Session.Options.ScenarioDescription,
-                            EngMisStr[i])) {
+              for (i = 0; EngMisStr[base::ToSize(i)] != nullptr; i++) {
+                if (std::string_view(Session.Options.ScenarioDescription) ==
+                    EngMisStr[base::ToSize(i)]) {
                   absl::SNPrintF(txt, sizeof(txt), "%s %s", p,
                                  config::kIsEnglish
                                      ? Session.Options.ScenarioDescription
-                                     : EngMisStr[i + 1]);
+                                     : EngMisStr[base::ToSize(i + 1)]);
                   break;
                 }
               }
-              if (EngMisStr[i] == nullptr) {
+              if (EngMisStr[base::ToSize(i)] == nullptr) {
                 absl::SNPrintF(txt, sizeof(txt), "%s %s", p,
                                Session.Options.ScenarioDescription);
               }
@@ -5227,7 +5280,7 @@ int Com_Show_Scenario_Dialog() {
           /*...............................................................
           If 'input' returned 3, it means send the current message.
           ...............................................................*/
-          memset(&SendPacket, 0, sizeof(SerialPacketType));
+          base::FillBytes(base::ObjectBytes(SendPacket), 0, sizeof(SendPacket));
           SendPacket.Command = SERIAL_MESSAGE;
           port::SafeCopy(SendPacket.Name, namebuf);
           SendPacket.ID = static_cast<unsigned char>(Session.ColorIdx);
@@ -5243,7 +5296,8 @@ int Com_Show_Scenario_Dialog() {
           /*..................................................................
           Send the message
           ..................................................................*/
-          NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 1);
+          NullModem.Send_Message(base::ObjectBytes(SendPacket),
+                                 sizeof(SendPacket), 1);
           NullModem.Service();
 
           /*..................................................................
@@ -5266,7 +5320,7 @@ int Com_Show_Scenario_Dialog() {
     /*---------------------------------------------------------------------
     Detect editing of the name buffer, transmit new values to players
     ---------------------------------------------------------------------*/
-    if (strcmp(namebuf, Session.Handle) != 0) {
+    if (std::string_view(namebuf) != Session.Handle) {
       port::SafeCopy(Session.Handle, namebuf);
       transmit = true;
       changed = true;
@@ -5276,7 +5330,7 @@ int Com_Show_Scenario_Dialog() {
     If our Transmit flag is set, we need to send out a game option packet
     ---------------------------------------------------------------------*/
     if (transmit && TickCount.Value() - transmittime > PACKET_RETRANS_TIME) {
-      memset(&SendPacket, 0, sizeof(SerialPacketType));
+      base::FillBytes(base::ObjectBytes(SendPacket), 0, sizeof(SendPacket));
       SendPacket.Command = SERIAL_GAME_OPTIONS;
       port::SafeCopy(SendPacket.Name, namebuf);
       SendPacket.ScenarioInfo.CheatCheck = RuleINI.Get_Unique_ID();
@@ -5286,7 +5340,8 @@ int Com_Show_Scenario_Dialog() {
       SendPacket.ScenarioInfo.Color = Session.ColorIdx;
       SendPacket.ID = static_cast<unsigned char>(Session.ModemType);
 
-      NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 1);
+      NullModem.Send_Message(base::ObjectBytes(SendPacket), sizeof(SendPacket),
+                             1);
 
       transmittime = TickCount.Value();
       transmit = false;
@@ -5325,19 +5380,21 @@ int Com_Show_Scenario_Dialog() {
     // send a timing packet if enough time has gone by.
     //
     if (TickCount.Value() - timingtime > PACKET_TIMING_TIMEOUT) {
-      memset(&SendPacket, 0, sizeof(SerialPacketType));
+      base::FillBytes(base::ObjectBytes(SendPacket), 0, sizeof(SendPacket));
       SendPacket.Command = SERIAL_TIMING;
       SendPacket.ScenarioInfo.ResponseTime = NullModem.Response_Time();
       SendPacket.ID = static_cast<unsigned char>(Session.ModemType);
 
-      NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 0);
+      NullModem.Send_Message(base::ObjectBytes(SendPacket), sizeof(SendPacket),
+                             0);
       timingtime = TickCount.Value();
     }
 
     /*---------------------------------------------------------------------
     Check for an incoming message
     ---------------------------------------------------------------------*/
-    if (NullModem.Get_Message(&ReceivePacket, &packetlen) > 0) {
+    if (NullModem.Get_Message(base::ObjectBytes(ReceivePacket), &packetlen) >
+        0) {
       lastmsgtime = TickCount.Value();
 
       msg_timeout = 600;
@@ -5358,8 +5415,8 @@ int Com_Show_Scenario_Dialog() {
         break;
       }
 
-      const auto event_type =
-          port::ReadUnaligned<EventClass::EventType>(&ReceivePacket);
+      const auto event_type = port::ReadUnaligned<EventClass::EventType>(
+          base::ObjectBytes(ReceivePacket));
       if (event_type <= EventClass::FRAMEINFO) {
         if (TickCount.Value() - lastredrawtime > PACKET_REDRAW_TIME) {
           lastredrawtime = TickCount.Value();
@@ -5457,10 +5514,11 @@ int Com_Show_Scenario_Dialog() {
             // Adjust the gauges
             //.........................................................
             countgauge.Set_Maximum(
-                SessionClass::CountMax[Session.Options.Bases] -
-                SessionClass::CountMin[Session.Options.Bases]);
-            countgauge.Set_Value(Session.Options.UnitCount -
-                                 SessionClass::CountMin[Session.Options.Bases]);
+                base::At(SessionClass::CountMax, Session.Options.Bases) -
+                base::At(SessionClass::CountMin, Session.Options.Bases));
+            countgauge.Set_Value(
+                Session.Options.UnitCount -
+                base::At(SessionClass::CountMin, Session.Options.Bases));
             levelgauge.Set_Value(BuildLevel - 1);
             creditsgauge.Set_Value(Session.Options.Credits);
             aiplayersgauge.Set_Value(Session.Options.AIPlayers);
@@ -5479,8 +5537,8 @@ int Com_Show_Scenario_Dialog() {
             ** If the scenario name changed then we need to redraw the whole
             *lot.
             */
-            if (strcmp(Session.Options.ScenarioDescription,
-                       ReceivePacket.ScenarioInfo.Scenario) != 0) {
+            if (std::string_view(Session.Options.ScenarioDescription) !=
+                ReceivePacket.ScenarioInfo.Scenario) {
               display = std::max(display, REDRAW_BACKGROUND);
             }
 
@@ -5682,9 +5740,11 @@ int Com_Show_Scenario_Dialog() {
                     ** We should have the scenario but the wrong disk is in.
                     ** Tell the host that I am ready to go anyway.
                     */
-                    memset(&SendPacket, 0, sizeof(SendPacket));
+                    base::FillBytes(base::ObjectBytes(SendPacket), 0,
+                                    sizeof(SendPacket));
                     SendPacket.Command = SERIAL_READY_TO_GO;
-                    NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 1);
+                    NullModem.Send_Message(base::ObjectBytes(SendPacket),
+                                           sizeof(SendPacket), 1);
 
                     starttime = TickCount.Value();
                     while (
@@ -5728,9 +5788,11 @@ int Com_Show_Scenario_Dialog() {
                 ** We have the scenario. Tell the host that I am ready to go.
                 */
                 if (!ready_packet_was_sent) {
-                  memset(&SendPacket, 0, sizeof(SendPacket));
+                  base::FillBytes(base::ObjectBytes(SendPacket), 0,
+                                  sizeof(SendPacket));
                   SendPacket.Command = SERIAL_READY_TO_GO;
-                  NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 1);
+                  NullModem.Send_Message(base::ObjectBytes(SendPacket),
+                                         sizeof(SendPacket), 1);
                   starttime = TickCount.Value();
 
                   while (
@@ -5760,9 +5822,11 @@ int Com_Show_Scenario_Dialog() {
               /*
               ** Make sure we respond to the host in a load game
               */
-              memset(&SendPacket, 0, sizeof(SendPacket));
+              base::FillBytes(base::ObjectBytes(SendPacket), 0,
+                              sizeof(SendPacket));
               SendPacket.Command = SERIAL_READY_TO_GO;
-              NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 1);
+              NullModem.Send_Message(base::ObjectBytes(SendPacket),
+                                     sizeof(SendPacket), 1);
               starttime = TickCount.Value();
 
               while ((NullModem.Num_Send() &&
@@ -5878,8 +5942,8 @@ int Com_Show_Scenario_Dialog() {
      * to be unique. This is necessary to prevent a crash after loading
      * a modem save game.
      */
-    if (strcmp(TheirName, namebuf) == 0) {
-      if (strlen(TheirName) == MPLAYER_NAME_MAX - 1) {
+    if (std::string_view(TheirName) == namebuf) {
+      if (std::string_view(TheirName).size() == MPLAYER_NAME_MAX - 1) {
         namebuf[MPLAYER_NAME_MAX - 1] = '\0';
       } else {
         port::SafeAppend(namebuf, "2");
@@ -5918,11 +5982,12 @@ int Com_Show_Scenario_Dialog() {
       /*.....................................................................
       Broadcast my sign-off over my network
       .....................................................................*/
-      memset(&SendPacket, 0, sizeof(SerialPacketType));
+      base::FillBytes(base::ObjectBytes(SendPacket), 0, sizeof(SendPacket));
       SendPacket.Command = SERIAL_SIGN_OFF;
       SendPacket.ScenarioInfo.Color = Session.ColorIdx;  // use Color for ID
       SendPacket.ID = static_cast<unsigned char>(Session.ModemType);
-      NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 1);
+      NullModem.Send_Message(base::ObjectBytes(SendPacket), sizeof(SendPacket),
+                             1);
 
       starttime = TickCount.Value();
       while ((NullModem.Num_Send() &&
@@ -5932,7 +5997,8 @@ int Com_Show_Scenario_Dialog() {
         NullModem.Mono_Debug_Print(0);
 #endif
 
-        if ((NullModem.Get_Message(&ReceivePacket, &packetlen) > 0) &&
+        if ((NullModem.Get_Message(base::ObjectBytes(ReceivePacket),
+                                   &packetlen) > 0) &&
             (ReceivePacket.Command == SERIAL_SIGN_OFF &&
              ReceivePacket.ID == static_cast<unsigned char>(Session.ModemType)))
         // are we getting our own packets back??
@@ -6088,7 +6154,7 @@ static int Phone_Dialog() {
   char phone_num[PhoneEntryClass::PHONE_MAX_NUM] = {
       0};  // buffer for editing phone #
   int rc = 0;
-  int tabs[] = {123 * 2, 414};  // tabs for list box
+  const int tabs[] = {123 * 2, 414};  // tabs for list box
   PhoneEntryClass* p_entry =
       nullptr;               // for creating / editing phonebook entries
   bool changed = false;      // 1 = save changes to INI file
@@ -6100,8 +6166,8 @@ static int Phone_Dialog() {
 
   ListClass phonelist(kButtonPhonelist, d_phonelist_x, d_phonelist_y,
                       d_phonelist_w, d_phonelist_h, kTpfText,
-                      MixArchive::Retrieve("BTN-UP.SHP"),
-                      MixArchive::Retrieve("BTN-DN.SHP"));
+                      MixArchive::RetrieveData("BTN-UP.SHP"),
+                      MixArchive::RetrieveData("BTN-DN.SHP"));
   TextButtonClass addbtn(kButtonAdd, TXT_ADD, kTpfButton, d_add_x, d_add_y,
                          d_add_w, d_add_h);
   TextButtonClass editbtn(kButtonEdit, TXT_EDIT, kTpfButton, d_edit_x, d_edit_y,
@@ -6370,9 +6436,9 @@ static int Phone_Dialog() {
         - Set settings to defaults
         ...............................................................*/
         if (Session.CurPhoneIdx == -1 ||
-            strcmp(Session.PhoneBook[Session.CurPhoneIdx]->Number, phone_num) !=
-                0) {
-          if (strlen(phone_num) == 0) {  // do not dial
+            std::string_view(Session.PhoneBook[Session.CurPhoneIdx]->Number) !=
+                phone_num) {
+          if (std::string_view(phone_num).empty()) {  // do not dial
             dialbtn.IsPressed = true;
             dialbtn.Flag_To_Redraw();
             break;
@@ -6460,7 +6526,8 @@ static int Phone_Dialog() {
  * HISTORY:                                                                *
  *   04/29/1995 BRR : Created.                                             *
  *=========================================================================*/
-static void Build_Phone_Listbox(ListClass* list, EditClass* edit, char* buf) {
+static void Build_Phone_Listbox(ListClass* list, EditClass* edit,
+                                std::span<char> buf) {
   char item[80];
   char phonename[21];
   char phonenum[15];
@@ -6474,32 +6541,39 @@ static void Build_Phone_Listbox(ListClass* list, EditClass* edit, char* buf) {
   ** Now sort the phone list by name then number
   */
   if (Session.PhoneBook.Count() > 0) {
-    std::sort(&Session.PhoneBook[0],
-              &Session.PhoneBook[0] + Session.PhoneBook.Count(),
-              [](const PhoneEntryClass* left, const PhoneEntryClass* right) {
-                int result = strcmp(left->Name, right->Name);
-                if (result == 0) {
-                  // Same name, so order by the phone number instead.
-                  result = strcmp(left->Number, right->Number);
-                }
-                return result < 0;
-              });
+    std::vector<PhoneEntryClass*> sorted;
+    sorted.reserve(base::ToSize(Session.PhoneBook.Count()));
+    for (int i = 0; i < Session.PhoneBook.Count(); ++i) {
+      sorted.push_back(Session.PhoneBook[i]);
+    }
+    std::ranges::sort(
+        sorted, [](const PhoneEntryClass* left, const PhoneEntryClass* right) {
+          int result = std::string_view(left->Name).compare(right->Name);
+          if (result == 0) {
+            // Same name, so order by the phone number instead.
+            result = std::string_view(left->Number).compare(right->Number);
+          }
+          return result < 0;
+        });
+    for (int i = 0; i < Session.PhoneBook.Count(); ++i) {
+      Session.PhoneBook[i] = sorted[base::ToSize(i)];
+    }
   }
 
   /*........................................................................
   Build the list
   ........................................................................*/
   for (int i = 0; i < Session.PhoneBook.Count(); i++) {
-    if (!strlen(Session.PhoneBook[i]->Name)) {
+    if (std::string_view(Session.PhoneBook[i]->Name).empty()) {
       port::SafeCopy(phonename, " ");
     } else {
       port::SafeCopy(phonename, Session.PhoneBook[i]->Name);
     }
 
-    if (!strlen(Session.PhoneBook[i]->Number)) {
+    if (std::string_view(Session.PhoneBook[i]->Number).empty()) {
       port::SafeCopy(phonenum, " ");
     } else {
-      if (strlen(Session.PhoneBook[i]->Number) < 14) {
+      if (std::string_view(Session.PhoneBook[i]->Number).size() < 14) {
         port::SafeCopy(phonenum, Session.PhoneBook[i]->Number);
       } else {
         port::SafeCopy(phonenum, Session.PhoneBook[i]->Number);
@@ -6533,8 +6607,8 @@ static void Build_Phone_Listbox(ListClass* list, EditClass* edit, char* buf) {
   Fill in phone number edit buffer
   ........................................................................*/
   if (Session.CurPhoneIdx > -1) {
-    port::SafeCopy(buf, Session.PhoneBook[Session.CurPhoneIdx]->Number,
-                   PhoneEntryClass::PHONE_MAX_NUM);
+    port::SafeCopy(std::span(buf).first(PhoneEntryClass::PHONE_MAX_NUM),
+                   Session.PhoneBook[Session.CurPhoneIdx]->Number);
     edit->Set_Text(buf, PhoneEntryClass::PHONE_MAX_NUM);
     list->Set_Selected_Index(Session.CurPhoneIdx);
   }
@@ -7171,8 +7245,8 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
 
 static void Modem_Echo(char c) {
   if (NullModem.EchoCount < NullModem.EchoSize - 1) {
-    *(NullModem.EchoBuf + NullModem.EchoCount) = c;
-    *(NullModem.EchoBuf + NullModem.EchoCount + 1) = 0;
+    NullModem.EchoBuf[base::ToSize(NullModem.EchoCount)] = c;
+    NullModem.EchoBuf[base::ToSize(NullModem.EchoCount + 1)] = 0;
     NullModem.EchoCount++;
   }
 
@@ -7195,19 +7269,22 @@ void Smart_Print(const std::string_view text) {
   }
 }
 
-void Hex_Dump_Data(const char* buffer, int length) {
+void Hex_Dump_Data(std::span<const char> buffer) {
+  int length = static_cast<int>(buffer.size());
   int offset = 0;
   char buff[10];
-  char ptr[16];
+  char ptr[16]{};
   char c = 0;
 
   while (length >= 16) {
-    memcpy(ptr, buffer + offset, 16);
+    base::CopyBytes(base::ObjectBytes(ptr),
+                    std::as_bytes(buffer.subspan(base::ToSize(offset))),
+                    std::min(length, 16));
 
     Smart_Printf("%05X  ", static_cast<unsigned int>(offset));
 
     for (int i = 0; i < 16; i++) {
-      c = ptr[i];
+      c = base::At(ptr, i);
       itoh(c, buff);
 
       if (i % 4 == 0 && i) {
@@ -7236,13 +7313,15 @@ void Hex_Dump_Data(const char* buffer, int length) {
   }
 
   if (length) {
-    memcpy(ptr, buffer + offset, 16);
+    base::CopyBytes(base::ObjectBytes(ptr),
+                    std::as_bytes(buffer.subspan(base::ToSize(offset))),
+                    std::min(length, 16));
 
     Smart_Printf("%05X  ", static_cast<unsigned int>(offset));
 
     for (int i = 0; i < 16; i++) {
       if (i < length) {
-        c = ptr[i];
+        c = base::At(ptr, i);
         itoh(c, buff);
         if (i % 4 == 0 && i) {
           Smart_Printf("│ ");
@@ -7259,7 +7338,7 @@ void Hex_Dump_Data(const char* buffer, int length) {
     Smart_Printf("  ");
 
     for (int i = 0; i < length; i++) {
-      c = ptr[i];
+      c = base::At(ptr, i);
 
       if (c && (c < 7 || c > 11) && c != 13) {
         Smart_Printf("%c", c);
@@ -7273,34 +7352,19 @@ void Hex_Dump_Data(const char* buffer, int length) {
 
 } /* end of Hex_Dump_Data */
 
-void itoh(int i, char* s) {
-
-  //	*s++ = '0';
-  //	*s++ = 'x';
-
-  if (i == 0) {
-    *s++ = '0';
-    *s++ = '0';
-  } else {
-    const auto bits = static_cast<uint32_t>(i);
-    const uint32_t nibbles[] = {(bits >> 4) & 0xFU, bits & 0xFU};
-    for (const uint32_t nibble : nibbles) {
-      /* decimal range */
-      if (nibble < 10) {
-        *s++ = static_cast<char>('0' + nibble);
-      } else {
-        *s++ = static_cast<char>('A' + (nibble - 10));
-      }
-    }
-  }
-  *s = 0; /* null terminate it */
+void itoh(int i, std::span<char> s) {
+  constexpr std::string_view digits = "0123456789ABCDEF";
+  const auto bits = static_cast<uint32_t>(i);
+  s[0] = digits[(bits >> 4) & 0xfU];
+  s[1] = digits[bits & 0xfU];
+  s[2] = '\0';
 }
 
 void Log_Start_Time(const char* string) {
   //	LogDump_Print = true;
 
   LogLevel = 0;
-  LogLevelTime[LogLevel] = LogLastTime = TickCount.Value();
+  base::At(LogLevelTime, LogLevel) = LogLastTime = TickCount.Value();
 
   Smart_Printf("start tick=%" PRId64 ", %s \n", LogLastTime, string);
 }
@@ -7321,7 +7385,7 @@ void Log_End_Time(const char* string) {
       LogLevel = kMaxLogLevel - 1;
     }
 
-    const int64_t ticks = currtime - LogLevelTime[LogLevel--];
+    const int64_t ticks = currtime - base::At(LogLevelTime, LogLevel--);
     Smart_Printf("end tick=%" PRId64 ", ticks=%" PRId64 ", tsecs=%" PRId64
                  ", %s \n",
                  currtime, ticks, ticks * 10 / 60, string);
@@ -7379,7 +7443,7 @@ void Log_Start_Nest_Time(const char* string) {
     Smart_Printf("Could not start another nesting Maxed at %d,%d!-! \n",
                  LogLevel, kMaxLogLevel - 1);
   } else {
-    LogLevelTime[++LogLevel] = currtime;
+    base::At(LogLevelTime, ++LogLevel) = currtime;
   }
 
   LogLastTime = currtime;
@@ -7407,7 +7471,7 @@ void Log_End_Nest_Time(const char* string) {
     LogLevel = kMaxLogLevel - 1;
   }
 
-  const int64_t ticks = currtime - LogLevelTime[LogLevel];
+  const int64_t ticks = currtime - base::At(LogLevelTime, LogLevel);
   Smart_Printf("end ntick=%" PRId64 ", ticks=%" PRId64 ", secs=%" PRId64
                ", %s \n",
                currtime, ticks, ticks * 10 / 60, string);

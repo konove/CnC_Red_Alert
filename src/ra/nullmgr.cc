@@ -55,10 +55,12 @@
 
 #include <algorithm>
 #include <cctype>
+#include <cstddef>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <span>
 #include <sstream>
 #include <string>
 #include <string_view>
@@ -247,12 +249,12 @@ int NullModemClass::Init(int port, int /*irq*/, char* dev_name, int baud,
     both headers that get added to the packet.
     ---------------------------------------------------------------------*/
     RXSize = Connection->Actual_Max_Packet() * NumReceive;
-    RXBuf = new char[base::ToSize(RXSize)];
+    RXBuf.resize(base::ToSize(RXSize));
 
     // new char[] provides alignment for the packet headers stored at its base.
-    BuildBuf = new char[base::ToSize(MaxLen)];
+    BuildBuf.resize(base::ToSize(MaxLen));
 
-    EchoBuf = new char[base::ToSize(EchoSize)];
+    EchoBuf.resize(base::ToSize(EchoSize));
   }
 
   RXCount = 0;
@@ -381,19 +383,16 @@ bool NullModemClass::Delete_Connection() {
     Connection = nullptr;
   }
 
-  if (RXBuf) {
-    delete[] RXBuf;
-    RXBuf = nullptr;
+  if (!RXBuf.empty()) {
+    RXBuf.clear();
   }
 
-  if (BuildBuf) {
-    delete[] BuildBuf;
-    BuildBuf = nullptr;
+  if (!BuildBuf.empty()) {
+    BuildBuf.clear();
   }
 
-  if (EchoBuf) {
-    delete[] EchoBuf;
-    EchoBuf = nullptr;
+  if (!EchoBuf.empty()) {
+    EchoBuf.clear();
   }
 
   NumConnections = 0;
@@ -631,8 +630,8 @@ void NullModemClass::Set_Timing(int32_t retrydelta, int32_t maxretries,
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-int NullModemClass::Send_Message(void* buf, int buflen, int ack_req) {
-
+int NullModemClass::Send_Message(std::span<const std::byte> buf, int buflen,
+                                 int ack_req) {
   if (NumConnections == 0) {
     return 0;
   }
@@ -666,7 +665,7 @@ int NullModemClass::Send_Message(void* buf, int buflen, int ack_req) {
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-int NullModemClass::Get_Message(void* buf, int* buflen) {
+int NullModemClass::Get_Message(std::span<std::byte> buf, int* buflen) {
   if (NumConnections == 0) {
     return 0;
   }
@@ -703,8 +702,8 @@ int NullModemClass::Service() {
     return 0;
   }
 
-  RXCount +=
-      WinModemClass::Read_From_Serial_Port(RXBuf + RXCount, RXSize - RXCount);
+  RXCount += WinModemClass::Read_From_Serial_Port(
+      std::span(RXBuf).subspan(base::ToSize(RXCount)).data(), RXSize - RXCount);
 
   // minimum packet size
 
@@ -717,7 +716,9 @@ int NullModemClass::Service() {
   ------------------------------------------------------------------------*/
   int pos = -1;  // current position in RXBuf
   for (i = 0; i <= RXCount - static_cast<int>(sizeof(int16_t)); i++) {
-    if (port::ReadUnaligned<uint16_t>(RXBuf + i) == PACKET_SERIAL_START) {
+    if (port::ReadUnaligned<uint16_t>(std::as_writable_bytes(std::span(RXBuf))
+                                          .subspan(base::ToSize(i))) ==
+        PACKET_SERIAL_START) {
       pos = i;
       break;
     }
@@ -732,7 +733,10 @@ int NullModemClass::Service() {
     /*.....................................................................
     move the remaining, un-checked bytes to the start of the buffer
     .....................................................................*/
-    memmove(RXBuf, RXBuf + i, sizeof(int16_t) - 1);
+    base::MoveBytes(
+        std::as_writable_bytes(std::span(RXBuf)),
+        std::as_writable_bytes(std::span(RXBuf)).subspan(base::ToSize(i)),
+        sizeof(int16_t) - 1);
     RXCount = sizeof(int16_t) - 1;
     return Connection->Service();
   }
@@ -740,8 +744,11 @@ int NullModemClass::Service() {
   /*------------------------------------------------------------------------
   Check to see if there are enough bytes for the header to be decoded
   ------------------------------------------------------------------------*/
-  if (RXCount - pos < static_cast<int>(sizeof(SerialHeaderType))) {
-    memmove(RXBuf, RXBuf + pos, base::ToSize(RXCount - pos));
+  if (std::cmp_less(RXCount - pos, sizeof(SerialHeaderType))) {
+    base::MoveBytes(
+        std::as_writable_bytes(std::span(RXBuf)),
+        std::as_writable_bytes(std::span(RXBuf)).subspan(base::ToSize(pos)),
+        base::ToSize(RXCount - pos));
     RXCount -= pos;
     return Connection->Service();
   }
@@ -749,7 +756,8 @@ int NullModemClass::Service() {
   /*------------------------------------------------------------------------
   A start code was found; check the packet's length & CRC
   ------------------------------------------------------------------------*/
-  header = port::ReadUnaligned<SerialHeaderType>(RXBuf + pos);
+  header = port::ReadUnaligned<SerialHeaderType>(
+      std::as_writable_bytes(std::span(RXBuf)).subspan(base::ToSize(pos)));
 
   /*------------------------------------------------------------------------
   If we lost a byte in the length, we may end up waiting a very long time
@@ -758,10 +766,15 @@ int NullModemClass::Service() {
   ------------------------------------------------------------------------*/
   if (header.MagicNumber2 != PACKET_SERIAL_VERIFY) {
     // Smart_Printf( "Verify failed\n");
-    //		Hex_Dump_Data( (RXBuf + pos), PACKET_SERIAL_OVERHEAD_SIZE );
+    //		Hex_Dump_Data(
+    //(std::as_writable_bytes(std::span(RXBuf)).subspan(base::ToSize(pos))),
+    //PACKET_SERIAL_OVERHEAD_SIZE );
 
     pos += sizeof(int16_t);  // throw away the bogus start code
-    memmove(RXBuf, RXBuf + pos, base::ToSize(RXCount - pos));
+    base::MoveBytes(
+        std::as_writable_bytes(std::span(RXBuf)),
+        std::as_writable_bytes(std::span(RXBuf)).subspan(base::ToSize(pos)),
+        base::ToSize(RXCount - pos));
     RXCount -= pos;
     return Connection->Service();
   }
@@ -781,7 +794,10 @@ int NullModemClass::Service() {
     // Smart_Printf( "length too lonnng %d, max %d \n", length, MaxLen );
 
     pos += sizeof(int16_t);  // throw away the bogus start code
-    memmove(RXBuf, RXBuf + pos, base::ToSize(RXCount - pos));
+    base::MoveBytes(
+        std::as_writable_bytes(std::span(RXBuf)),
+        std::as_writable_bytes(std::span(RXBuf)).subspan(base::ToSize(pos)),
+        base::ToSize(RXCount - pos));
     RXCount -= pos;
     return Connection->Service();
   }
@@ -798,7 +814,10 @@ int NullModemClass::Service() {
     }
 
     if (pos) {
-      memmove(RXBuf, RXBuf + pos, base::ToSize(RXCount - pos));
+      base::MoveBytes(
+          std::as_writable_bytes(std::span(RXBuf)),
+          std::as_writable_bytes(std::span(RXBuf)).subspan(base::ToSize(pos)),
+          base::ToSize(RXCount - pos));
       RXCount -= pos;
     }
     return Connection->Service();
@@ -810,10 +829,13 @@ int NullModemClass::Service() {
   start-code, move the rest to the front of the buffer, & return.
   We'll continue parsing this data when we're called next time.
   ------------------------------------------------------------------------*/
-  crc = port::ReadUnaligned<SerialCRCType>(RXBuf + pos +
-                                           sizeof(SerialHeaderType) + length);
-  if (NullModemConnClass::Compute_CRC(RXBuf + pos + sizeof(SerialHeaderType),
-                                      length) != crc.SerialCRC) {
+  crc = port::ReadUnaligned<SerialCRCType>(
+      std::as_writable_bytes(std::span(RXBuf))
+          .subspan(base::ToSize(pos) + sizeof(SerialHeaderType) + length));
+  if (NullModemConnClass::Compute_CRC(
+          std::as_writable_bytes(std::span(RXBuf))
+              .subspan(base::ToSize(pos) + sizeof(SerialHeaderType)),
+          length) != crc.SerialCRC) {
     CRCErrors++;
 
 #if (CONN_DEBUG)
@@ -822,12 +844,16 @@ int NullModemClass::Service() {
     // Smart_Printf( "CRC check failed for packet of length %d \n", length );
 
     //		if (length < 100) {
-    //			Hex_Dump_Data( (RXBuf + pos),
+    //			Hex_Dump_Data(
+    //(std::as_writable_bytes(std::span(RXBuf)).subspan(base::ToSize(pos))),
     //(PACKET_SERIAL_OVERHEAD_SIZE + length) );
     //		}
 
     pos += sizeof(int16_t);  // throw away the bogus start code
-    memmove(RXBuf, RXBuf + pos, base::ToSize(RXCount - pos));
+    base::MoveBytes(
+        std::as_writable_bytes(std::span(RXBuf)),
+        std::as_writable_bytes(std::span(RXBuf)).subspan(base::ToSize(pos)),
+        base::ToSize(RXCount - pos));
     RXCount -= pos;
     return Connection->Service();
   }
@@ -835,8 +861,10 @@ int NullModemClass::Service() {
   /*------------------------------------------------------------------------
   Give the new packet to the Connection to process.
   ------------------------------------------------------------------------*/
-  if (!Connection->Receive_Packet(RXBuf + pos + sizeof(SerialHeaderType),
-                                  length)) {
+  if (!Connection->Receive_Packet(
+          std::as_writable_bytes(std::span(RXBuf))
+              .subspan(base::ToSize(pos) + sizeof(SerialHeaderType)),
+          length)) {
     ReceiveOverflows++;
     // Smart_Printf( "Received overflows %d \n", ReceiveOverflows );
   }
@@ -845,7 +873,10 @@ int NullModemClass::Service() {
   Move all data past this packet to the front of the buffer.
   ------------------------------------------------------------------------*/
   pos += static_cast<int>(PACKET_SERIAL_OVERHEAD_SIZE) + length;
-  memmove(RXBuf, RXBuf + pos, base::ToSize(RXCount - pos));
+  base::MoveBytes(
+      std::as_writable_bytes(std::span(RXBuf)),
+      std::as_writable_bytes(std::span(RXBuf)).subspan(base::ToSize(pos)),
+      base::ToSize(RXCount - pos));
   RXCount -= pos;
 
   /*------------------------------------------------------------------------
@@ -947,18 +978,20 @@ void NullModemClass::Reset_Response_Time() {
  * HISTORY:                                                                *
  *   05/01/1995 BRR : Created.                                             *
  *=========================================================================*/
-void* NullModemClass::Oldest_Send() {
-  void* buf = nullptr;
+std::span<const std::byte> NullModemClass::Oldest_Send() {
+  std::span<const std::byte> buf;
 
   for (int i = 0; i < Connection->Queue->Num_Send(); i++) {
     SendQueueType* send_entry =
         Connection->Queue->Get_Send(i);  // ptr to send entry header
     if (send_entry) {
-      auto* packet = port::AlignedObject<CommHeaderType>(send_entry->Buffer);
+      auto* packet =
+          port::AlignedObject<CommHeaderType>(send_entry->Buffer.data());
       if (packet->Code ==
               static_cast<unsigned char>(ConnectionClass::PACKET_DATA_ACK) &&
           send_entry->IsACK == 0) {
-        buf = send_entry->Buffer;
+        buf = std::span(send_entry->Buffer)
+                  .first(base::ToSize(send_entry->BufLen));
         break;
       }
     }
@@ -1318,7 +1351,7 @@ DialStatusType NullModemClass::Dial_Modem(const char* string,
   std::string buffer(buffer_const);
 
   Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack, kTpfText);
-  Format_Window_String(buffer.data(), SeenBuff.Get_Height(), width, height);
+  Format_Window_String(std::span(buffer), SeenBuff.Get_Height(), width, height);
 
   const int text_width = width;
   width = std::max(width, 180);
@@ -1620,7 +1653,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
     }
 
     if (process) {
-      if (strncmp(comm_buffer, "RING", 4) == 0) {
+      if (std::string_view(comm_buffer).starts_with("RING")) {
         port::SafeCopy(text_buffer, Text_String(TXT_ANSWERING));
 
         Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack, kTpfText);
@@ -1641,18 +1674,18 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
         ring = true;
         delay = ModemWaitCarrier;
         display = REDRAW_ALL;
-      } else if (strncmp(comm_buffer, "CON", 3) == 0) {
+      } else if (std::string_view(comm_buffer).starts_with("CON")) {
         base::FillBytes(base::ObjectBytes(ModemRXString), 0, 80);
-        strncpy(ModemRXString, comm_buffer, 79);
+        port::SafeCopy(ModemRXString, comm_buffer);
         dialstatus = DIAL_CONNECTED;
         process = false;
-      } else if (strncmp(comm_buffer, "BUSY", 4) == 0) {
+      } else if (std::string_view(comm_buffer).starts_with("BUSY")) {
         dialstatus = DIAL_BUSY;
         process = false;
-      } else if (strncmp(comm_buffer, "NO C", 4) == 0) {
+      } else if (std::string_view(comm_buffer).starts_with("NO C")) {
         dialstatus = DIAL_NO_CARRIER;
         process = false;
-      } else if (strncmp(comm_buffer, "ERRO", 4) == 0) {
+      } else if (std::string_view(comm_buffer).starts_with("ERRO")) {
         dialstatus = DIAL_ERROR;
         WWMessageBox().Process(TXT_ERROR_ERROR, TXT_OK);
         process = false;
@@ -1755,7 +1788,7 @@ bool NullModemClass::Hangup_Modem() {
   while (delay > 0) {
     delay = SerialPort->Get_Modem_Result(delay, buffer, 81);
 
-    if (strncmp(buffer, "OK", 2) == 0) {
+    if (std::string_view(buffer).starts_with("OK")) {
       break;
     }
   }
@@ -1835,13 +1868,14 @@ void NullModemClass::Remove_Modem_Echo() {
  * HISTORY: * 8/2/96 12:51PM ST : Documented *
  *=============================================================================================*/
 void NullModemClass::Print_EchoBuf() {
-  for (int i = 0; std::cmp_less(i, std::string_view(NullModem.EchoBuf).size());
+  for (int i = 0;
+       std::cmp_less(i, std::string_view(NullModem.EchoBuf.data()).size());
        i++) {
-    if (NullModem.EchoBuf[i] == '\r') {
-      NullModem.EchoBuf[i] = 1;
+    if (NullModem.EchoBuf[base::ToSize(i)] == '\r') {
+      NullModem.EchoBuf[base::ToSize(i)] = 1;
     } else {
-      if (NullModem.EchoBuf[i] == '\n') {
-        NullModem.EchoBuf[i] = 2;
+      if (NullModem.EchoBuf[base::ToSize(i)] == '\n') {
+        NullModem.EchoBuf[base::ToSize(i)] = 2;
       }
     }
   }
@@ -1863,7 +1897,7 @@ void NullModemClass::Print_EchoBuf() {
  * HISTORY: * 8/2/96 12:51PM ST : Documented *
  *=============================================================================================*/
 void NullModemClass::Reset_EchoBuf() {
-  *EchoBuf = 0;
+  EchoBuf.front() = 0;
   EchoCount = 0;
 }
 
@@ -2036,7 +2070,8 @@ int NullModemClass::Verify_And_Convert_To_Int(char* buffer) {
   const int len = static_cast<int>(std::string_view(buffer).size());
 
   for (int i = 0; i < len; i++) {
-    if (!isdigit(*(buffer + i))) {
+    if (!isdigit(static_cast<unsigned char>(
+            std::string_view(buffer)[base::ToSize(i)]))) {
       value = -1;
       break;
     }

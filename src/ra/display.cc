@@ -104,6 +104,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cstddef>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
@@ -199,12 +200,12 @@ unsigned char DisplayClass::FadingRed[256];
 unsigned char DisplayClass::TranslucentTable[(kMagicColorCount + 1) * 256];
 unsigned char DisplayClass::WhiteTranslucentTable[(1 + 1) * 256];
 unsigned char DisplayClass::MouseTranslucentTable[(4 + 1) * 256];
-const void* DisplayClass::TransIconset;
+std::span<const std::byte> DisplayClass::TransIconset;
 unsigned char DisplayClass::UnitShadow[(kUnitShadowColorCount + 1) * 256];
 unsigned char DisplayClass::UnitShadowAir[(kUnitShadowColorCount + 1) * 256];
 unsigned char DisplayClass::SpecialGhost[2 * 256];
 
-const void* DisplayClass::ShadowShapes;
+std::span<const std::byte> DisplayClass::ShadowShapes;
 unsigned char DisplayClass::ShadowTrans[(kShadowColorCount + 1) * 256];
 
 /*
@@ -235,8 +236,8 @@ DisplayClass::TacticalClass DisplayClass::TacButton;
  * HISTORY: * 12/06/1994 JLB : Created. *
  *=============================================================================================*/
 DisplayClass::DisplayClass() {
-  ShadowShapes = nullptr;
-  TransIconset = nullptr;
+  ShadowShapes = {};
+  TransIconset = {};
 
   Update_View_Dimensions(0, 8, 320 / CELL_PIXEL_W, 200 / CELL_PIXEL_H, false);
 }
@@ -271,17 +272,17 @@ void DisplayClass::One_Time() {
   /*
   **	Load the generic transparent icon set.
   */
-  TransIconset = MixArchive::Retrieve("TRANS.ICN");
+  TransIconset = MixArchive::RetrieveData("TRANS.ICN");
 
 #ifndef NDEBUG
   DiskFile file("SHADOW.SHP");
   if (file.IsAvailable()) {
     ShadowShapes = Load_Alloc_Data(file);
   } else {
-    ShadowShapes = MixArchive::Retrieve("SHADOW.SHP");
+    ShadowShapes = MixArchive::RetrieveData("SHADOW.SHP");
   }
 #else
-  ShadowShapes = MixArchive::Retrieve("SHADOW.SHP");
+  ShadowShapes = MixArchive::RetrieveData("SHADOW.SHP");
 #endif
 
   Set_View_Dimensions(0, 16);
@@ -307,7 +308,7 @@ void DisplayClass::Init_Clear() {
   PendingObjectPtr = nullptr;
   PendingObject = nullptr;
   PendingHouse = HOUSE_NONE;
-  CursorSize = nullptr;
+  CursorSize = {};
   IsTargettingMode = SPC_NONE;
   IsRepairMode = false;
   IsRubberBand = false;
@@ -425,26 +426,29 @@ void DisplayClass::Init_Theater(TheaterType theater) {
 
   Build_Fading_Table(GamePalette, FadingRed, kRed, 140);
 
-  Build_Translucent_Table(GamePalette, &MouseCols[0], 4, MouseTranslucentTable);
+  Build_Translucent_Table(GamePalette, base::Suffix(MouseCols, 0), 4,
+                          MouseTranslucentTable);
 
-  Build_Translucent_Table(GamePalette, &MagicCols[0], kMagicColorCount,
-                          TranslucentTable);
+  Build_Translucent_Table(GamePalette, base::Suffix(MagicCols, 0),
+                          kMagicColorCount, TranslucentTable);
 
-  Build_Translucent_Table(GamePalette, &WhiteCols[0], 1, WhiteTranslucentTable);
+  Build_Translucent_Table(GamePalette, base::Suffix(WhiteCols, 0), 1,
+                          WhiteTranslucentTable);
 
-  Build_Translucent_Table(GamePalette, &ShadowCols[0], kShadowColorCount,
-                          ShadowTrans);
+  Build_Translucent_Table(GamePalette, base::Suffix(ShadowCols, 0),
+                          kShadowColorCount, ShadowTrans);
 
-  Conquer_Build_Translucent_Table(GamePalette, &UShadowColsAir[0],
+  Conquer_Build_Translucent_Table(GamePalette, base::Suffix(UShadowColsAir, 0),
                                   kUnitShadowColorCount, UnitShadowAir);
   base::CopyBytes(std::as_writable_bytes(base::Suffix(UnitShadowAir, 256)),
                   base::ObjectBytes(ColorRemaps[PCOLOR_GOLD].RemapTable),
                   sizeof(ColorRemaps[PCOLOR_GOLD].RemapTable));
   if (theater == THEATER_SNOW) {
-    Conquer_Build_Translucent_Table(GamePalette, &UShadowColsSnow[0],
+    Conquer_Build_Translucent_Table(GamePalette,
+                                    base::Suffix(UShadowColsSnow, 0),
                                     kUnitShadowColorCount, UnitShadow);
   } else {
-    Conquer_Build_Translucent_Table(GamePalette, &UShadowCols[0],
+    Conquer_Build_Translucent_Table(GamePalette, base::Suffix(UShadowCols, 0),
                                     kUnitShadowColorCount, UnitShadow);
   }
 
@@ -459,7 +463,8 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   /*
   **	Create the shadow color used by aircraft.
   */
-  Conquer_Build_Fading_Table(GamePalette, &SpecialGhost[256], kBlack, 100);
+  Conquer_Build_Fading_Table(GamePalette, base::Suffix(SpecialGhost, 256),
+                             kBlack, 100);
   for (int index = 0; index < 256; index++) {
     base::At(SpecialGhost, index) = 0;
   }
@@ -498,13 +503,13 @@ void DisplayClass::Init_Theater(TheaterType theater) {
  * HISTORY: * 12/06/1994 JLB : Created. * 12/07/1994 JLB : Sidebar fixup. *
  *   08/13/1995 JLB : Optimized for variable sized help text. *
  *=============================================================================================*/
-const int16_t* DisplayClass::Text_Overlap_List(const char* text, int x,
-                                               int y) const {
+std::span<const int16_t> DisplayClass::Text_Overlap_List(const char* text,
+                                                         int x, int y) const {
   static int16_t _list[60];
   int count = std::ssize(_list);
 
   if (text != nullptr) {
-    int16_t* ptr = &_list[0];
+    std::span<int16_t> ptr(_list);
     int len = String_Pixel_Width(text) + CELL_PIXEL_W;
     const int right = TacPixelX + Lepton_To_Pixel(TacLeptonWidth);
 
@@ -515,7 +520,7 @@ const int16_t* DisplayClass::Text_Overlap_List(const char* text, int x,
     */
     if (x + len >= TacPixelX + Lepton_To_Pixel(TacLeptonWidth)) {
       len = right - x;
-      *ptr++ = kRefreshSidebar;
+      base::ConsumeFront(ptr) = kRefreshSidebar;
       count--;
     }
 
@@ -536,8 +541,8 @@ const int16_t* DisplayClass::Text_Overlap_List(const char* text, int x,
       if (ul != -1 && lr != -1) {
         for (int yy = Cell_Y(ul); yy <= Cell_Y(lr); yy++) {
           for (int xx = Cell_X(ul); xx <= Cell_X(lr); xx++) {
-            *ptr++ = static_cast<int16_t>(XY_Cell(xx, yy) -
-                                          Coord_Cell(TacticalCoord));
+            base::ConsumeFront(ptr) = static_cast<int16_t>(
+                XY_Cell(xx, yy) - Coord_Cell(TacticalCoord));
             count--;
             if (count < 2) {
               break;
@@ -550,7 +555,7 @@ const int16_t* DisplayClass::Text_Overlap_List(const char* text, int x,
       }
     }
 
-    *ptr = kRefreshEol;
+    ptr.front() = kRefreshEol;
   }
   return _list;
 }
@@ -654,19 +659,19 @@ void DisplayClass::Update_View_Dimensions(int x, int y, int width, int height,
  * HISTORY: * 06/03/1994 JLB : Created. * 06/26/1995 JLB : Puts placement cursor
  *into static buffer.                                *
  *=============================================================================================*/
-void DisplayClass::Set_Cursor_Shape(const int16_t* list) {
-  if (CursorSize) {
+void DisplayClass::Set_Cursor_Shape(std::span<const int16_t> list) {
+  if (!CursorSize.empty()) {
     Cursor_Mark(static_cast<CELL>(ZoneCell + ZoneOffset), false);
   }
   ZoneOffset = 0;
 
-  if (list) {
+  if (!list.empty()) {
     int w = 0;
     int h = 0;
     static int16_t _list[50];
 
-    for (int i = 0; !i || list[i - 1] != kRefreshEol; i++) {
-      base::At(_list, i) = list[i];
+    for (int i = 0; !i || list[base::ToSize(i - 1)] != kRefreshEol; i++) {
+      base::At(_list, i) = list[base::ToSize(i)];
     }
 
     CursorSize = _list;
@@ -674,7 +679,7 @@ void DisplayClass::Set_Cursor_Shape(const int16_t* list) {
     ZoneOffset = static_cast<int16_t>(-((h / 2 * MAP_CELL_W) + (w / 2)));
     Cursor_Mark(static_cast<CELL>(ZoneCell + ZoneOffset), true);
   } else {
-    CursorSize = nullptr;
+    CursorSize = {};
   }
 }
 
@@ -711,7 +716,8 @@ void DisplayClass::Set_Cursor_Shape(const int16_t* list) {
  *Added IsProximate check for ore refineries                               *
  *=============================================================================================*/
 bool DisplayClass::Passes_Proximity_Check(const ObjectTypeClass* object,
-                                          HousesType house, const int16_t* list,
+                                          HousesType house,
+                                          std::span<const int16_t> list,
                                           CELL trycell) const {
   int retval = -1;
   bool noradar = false;
@@ -727,7 +733,7 @@ bool DisplayClass::Passes_Proximity_Check(const ObjectTypeClass* object,
     return true;
   }
 
-  if (list == nullptr || trycell == 0) {
+  if (list.empty() || trycell == 0) {
     return true;
   }
 
@@ -742,14 +748,15 @@ bool DisplayClass::Passes_Proximity_Check(const ObjectTypeClass* object,
   *adjacent *	cells to these are of friendly persuasion, then consider the
   *proximity check to *	have been a success.
   */
-  const int16_t* ptr = list;
+  std::span<const int16_t> ptr = list;
   //	ptr = CursorSize;
   CELL cell = trycell;
   //	CELL cell = ZoneCell;
   if (building->Adjacent == 1) {
-    while (*ptr != kRefreshEol && retval == -1) {
-      cell = static_cast<CELL>(trycell + *ptr++);
-      //			cell = ZoneCell + ZoneOffset + *ptr++;
+    while (ptr.front() != kRefreshEol && retval == -1) {
+      cell = static_cast<CELL>(trycell + base::ConsumeFront(ptr));
+      //			cell = ZoneCell + ZoneOffset +
+      //base::ConsumeFront(ptr);
 
       if (!In_Radar(cell)) {
         retval = 0;
@@ -897,7 +904,7 @@ CELL DisplayClass::Set_Cursor_Pos(CELL pos) {
     pos = Click_Cell_Calc(Get_Mouse_X(), Get_Mouse_Y());
   }
 
-  if (CursorSize == nullptr) {
+  if (CursorSize.empty()) {
     prevpos = ZoneCell;
     ZoneCell = pos;
     return prevpos;
@@ -938,7 +945,7 @@ CELL DisplayClass::Set_Cursor_Pos(CELL pos) {
   **	If the cursor is visible, then handle the graphic update.
   **	Otherwise, just update the global position of the cursor.
   */
-  if (CursorSize != nullptr) {
+  if (!CursorSize.empty()) {
     /*
     ** Erase the old cursor (if it exists) AND the cursor is moving.
     */
@@ -974,7 +981,8 @@ CELL DisplayClass::Set_Cursor_Pos(CELL pos) {
  *                                                                                             *
  * HISTORY: * 03/31/1995 BRR : Created. *
  *=============================================================================================*/
-void DisplayClass::Get_Occupy_Dimensions(int& w, int& h, const int16_t* list) {
+void DisplayClass::Get_Occupy_Dimensions(int& w, int& h,
+                                         std::span<const int16_t> list) {
   int min_x = MAP_CELL_W;
   int max_x = -MAP_CELL_W;
   int min_y = MAP_CELL_H;
@@ -983,25 +991,25 @@ void DisplayClass::Get_Occupy_Dimensions(int& w, int& h, const int16_t* list) {
   w = 0;
   h = 0;
 
-  if (!list) {
+  if (list.empty()) {
     /*
     ** Loop through all cell offsets, accumulating max & min x- & y-coords
     */
-    while (*list != kRefreshEol) {
+    while (list.front() != kRefreshEol) {
       /*
       ** Compute x & y coords of the current cell offset.  We can't use Cell_X()
       ** & Cell_Y(), because they use shifts to compute the values, and if the
       ** offset is negative we'll get a bogus coordinate!
       */
-      const int x = *list % MAP_CELL_W;
-      const int y = *list / MAP_CELL_H;
+      const int x = list.front() % MAP_CELL_W;
+      const int y = list.front() / MAP_CELL_H;
 
       max_x = std::max(max_x, x);
       min_x = std::min(min_x, x);
       max_y = std::max(max_y, y);
       min_y = std::min(min_y, y);
 
-      list++;
+      list = list.subspan(1);
     }
 
     w = std::max(1, max_x - min_x + 1);
@@ -1038,9 +1046,9 @@ void DisplayClass::Cursor_Mark(CELL pos, bool on) {
   **	For every cell in the CursorSize list, invoke its Redraw_Objects and
   **	toggle its IsCursorHere flag
   */
-  const CELL* ptr = CursorSize;
-  while (*ptr != kRefreshEol) {
-    const CELL cell = static_cast<CELL>(pos + *ptr++);
+  std::span<const int16_t> ptr = CursorSize;
+  while (ptr.front() != kRefreshEol) {
+    const CELL cell = static_cast<CELL>(pos + base::ConsumeFront(ptr));
     if (In_Radar(cell)) {
       cellptr = &(*this)[cell];
       cellptr->Redraw_Objects();
@@ -1054,8 +1062,8 @@ void DisplayClass::Cursor_Mark(CELL pos, bool on) {
   */
   if (PendingObjectPtr) {
     ptr = PendingObjectPtr->Overlap_List();
-    while (*ptr != kRefreshEol) {
-      const CELL cell = static_cast<CELL>(pos + *ptr++);
+    while (ptr.front() != kRefreshEol) {
+      const CELL cell = static_cast<CELL>(pos + base::ConsumeFront(ptr));
       if (In_Radar(cell)) {
         cellptr = &(*this)[cell];
         cellptr->Redraw_Objects();
@@ -1337,17 +1345,17 @@ bool DisplayClass::Scroll_Map(DirType facing, int& distance, bool really) {
  *                                                                                             *
  * HISTORY: * 05/14/1994 JLB : Created. * 08/01/1994 JLB : Simplified. *
  *=============================================================================================*/
-void DisplayClass::Refresh_Cells(CELL cell, const int16_t* list) {
+void DisplayClass::Refresh_Cells(CELL cell, std::span<const int16_t> list) {
   int16_t tlist[36];
 
-  if (*list == kRefreshSidebar) {
-    list++;
+  if (list.front() == kRefreshSidebar) {
+    list = list.subspan(1);
   }
 
   List_Copy(list, std::ssize(tlist), tlist);
-  const int16_t* tt = tlist;
-  while (*tt != kRefreshEol) {
-    const CELL newcell = static_cast<CELL>(cell + *tt++);
+  std::span<const int16_t> tt = tlist;
+  while (tt.front() != kRefreshEol) {
+    const CELL newcell = static_cast<CELL>(cell + base::ConsumeFront(tt));
     if (In_Radar(newcell)) {
       (*this)[newcell].Redraw_Objects();
     }
@@ -1423,36 +1431,33 @@ int DisplayClass::Cell_Shadow(CELL cell) const {
     ** of black cells.  Bit numbering starts at the upper-right corner and
     ** goes around the cell clockwise, so 0x80 = directly north.
     */
-    cellptr -= MAP_CELL_W + 1;
-    if (!cellptr->IsMapped) {
+    const auto unmapped = [this, cell](int delta) {
+      const int neighbor = static_cast<int>(cell) + delta;
+      return neighbor < 0 || neighbor >= MAP_CELL_TOTAL ||
+             !Array[neighbor].IsMapped;
+    };
+    if (unmapped(-MAP_CELL_W - 1)) {
       index |= 0x40;
     }
-    cellptr++;
-    if (!cellptr->IsMapped) {
+    if (unmapped(-MAP_CELL_W)) {
       index |= 0x80;
     }
-    cellptr++;
-    if (!cellptr->IsMapped) {
+    if (unmapped(-MAP_CELL_W + 1)) {
       index |= 0x01;
     }
-    cellptr += MAP_CELL_W - 2;
-    if (!cellptr->IsMapped) {
+    if (unmapped(-1)) {
       index |= 0x20;
     }
-    cellptr += 2;
-    if (!cellptr->IsMapped) {
+    if (unmapped(1)) {
       index |= 0x02;
     }
-    cellptr += MAP_CELL_W - 2;
-    if (!cellptr->IsMapped) {
+    if (unmapped(MAP_CELL_W - 1)) {
       index |= 0x10;
     }
-    cellptr++;
-    if (!cellptr->IsMapped) {
+    if (unmapped(MAP_CELL_W)) {
       index |= 0x08;
     }
-    cellptr++;
-    if (!cellptr->IsMapped) {
+    if (unmapped(MAP_CELL_W + 1)) {
       index |= 0x04;
     }
 
@@ -2259,7 +2264,7 @@ void DisplayClass::Redraw_Shadow() {
             }
             if (shadow >= 0) {
               CC_Draw_Shape(ShadowShapes, shadow, xpixel, ypixel,
-                            WINDOW_TACTICAL, SHAPE_GHOST, nullptr, ShadowTrans);
+                            WINDOW_TACTICAL, SHAPE_GHOST, {}, ShadowTrans);
             } else {
               if (shadow != -1) {
                 int ww = CELL_PIXEL_W;
@@ -3089,7 +3094,7 @@ void DisplayClass::Mouse_Right_Press() {
     PendingObjectPtr = nullptr;
     PendingObject = nullptr;
     PendingHouse = HOUSE_NONE;
-    Set_Cursor_Shape(nullptr);
+    Set_Cursor_Shape({});
   } else {
     if (IsRepairMode) {
       IsRepairMode = false;
@@ -3922,12 +3927,13 @@ void DisplayClass::Compute_Start_Pos() {
   x = std::clamp<int32_t>(x, MapCellX + 10, MapCellX + MapCellWidth - 10);
   y = std::clamp<int32_t>(y, MapCellY + 8, MapCellY + MapCellHeight - 8);
 
-  Scen.Waypoint[ScenarioClass::kHomeWaypoint] = Scen.Views[0] = Scen.Views[1] =
-      Scen.Views[2] = Scen.Views[3] =
-          XY_Cell(static_cast<int>(x), static_cast<int>(y));
+  base::At(Scen.Waypoint, ScenarioClass::kHomeWaypoint) =
+      base::At(Scen.Views, 0) = base::At(Scen.Views, 1) =
+          base::At(Scen.Views, 2) = base::At(Scen.Views, 3) =
+              XY_Cell(static_cast<int>(x), static_cast<int>(y));
 
-  Map.Set_Tactical_Position(Coord_Whole(
-      Cell_Coord(static_cast<CELL>(Scen.Views[0] - (MAP_CELL_W * 8) - 10))));
+  Map.Set_Tactical_Position(Coord_Whole(Cell_Coord(
+      static_cast<CELL>(base::At(Scen.Views, 0) - (MAP_CELL_W * 8) - 10))));
   //	Set_Tactical_Position(Cell_Coord(XY_Cell(x, y)));
 }
 
@@ -4348,15 +4354,17 @@ void DisplayClass::Read_INI(CCINIClass& ini) {
   **	Set the starting position (do this after Init(), which clears the cells'
   **	IsWaypoint flags).
   */
-  if (Scen.Waypoint[ScenarioClass::kHomeWaypoint] == -1) {
-    Scen.Waypoint[ScenarioClass::kHomeWaypoint] =
+  if (base::At(Scen.Waypoint, ScenarioClass::kHomeWaypoint) == -1) {
+    base::At(Scen.Waypoint, ScenarioClass::kHomeWaypoint) =
         XY_Cell(MapCellX + 10, MapCellY + 8);
   }
 
-  Scen.Views[0] = Scen.Views[1] = Scen.Views[2] = Scen.Views[3] =
-      Scen.Waypoint[ScenarioClass::kHomeWaypoint];
-  Set_Tactical_Position(Cell_Coord(static_cast<CELL>(
-      Scen.Waypoint[ScenarioClass::kHomeWaypoint] - (MAP_CELL_W * 8) - 10)));
+  base::At(Scen.Views, 0) = base::At(Scen.Views, 1) = base::At(Scen.Views, 2) =
+      base::At(Scen.Views, 3) =
+          base::At(Scen.Waypoint, ScenarioClass::kHomeWaypoint);
+  Set_Tactical_Position(Cell_Coord(
+      static_cast<CELL>(base::At(Scen.Waypoint, ScenarioClass::kHomeWaypoint) -
+                        (MAP_CELL_W * 8) - 10)));
 
   /*
   **	Loop through all CellTrigger entries.
@@ -4384,7 +4392,8 @@ void DisplayClass::Read_INI(CCINIClass& ini) {
   **	Read the map template data.
   */
   static const char* const MAPPACK = "MapPack";
-  len = ini.Get_UUBlock(MAPPACK, staging_buffer, sizeof(staging_buffer));
+  len = ini.Get_UUBlock(MAPPACK, base::ObjectBytes(staging_buffer),
+                        sizeof(staging_buffer));
   SpanSource bstraw(
       std::as_bytes(std::span(staging_buffer).first(base::ToSize(len))));
   Map.Read_Binary(bstraw);
@@ -4464,7 +4473,7 @@ void DisplayClass::Write_INI(CCINIClass& ini) {
   const auto len = static_cast<int>(bpipe.bytes_written());
   ini.Clear(MAPPACK);
   if (len) {
-    ini.Put_UUBlock(MAPPACK, staging_buffer, len);
+    ini.Put_UUBlock(MAPPACK, base::ObjectBytes(staging_buffer), len);
   }
 }
 

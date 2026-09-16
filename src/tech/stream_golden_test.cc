@@ -97,7 +97,7 @@ void PutInPieces(ByteSink& pipe, const std::vector<uint8_t>& bytes) {
 
 std::string Sha1Hex(const std::vector<uint8_t>& bytes) {
   SHAEngine sha;
-  sha.Hash(bytes.data(), static_cast<int32_t>(bytes.size()));
+  sha.Hash(std::as_bytes(std::span(bytes)));
   std::string hex;
   for (const std::byte byte : sha.Digest()) {
     absl::StrAppend(&hex,
@@ -161,19 +161,19 @@ TEST(StreamGoldenTest, BlowfishEncryptsWithFixedKey) {
   const auto key = Key();
   RecordingSink encrypted;
   BlowfishSink encryptor(CipherMode::kEncrypt, encrypted);
-  encryptor.Key(key.data(), static_cast<int>(key.size()));
+  encryptor.Key(std::as_bytes(std::span(key)));
   PutInPieces(encryptor, input);
   EXPECT_EQ(Sha1Hex(encrypted.bytes),
             "2fea48225f216a5c044f307a870ae4b2a88a8afc");
 
   SpanSource plain(std::as_bytes(std::span(input)));
   BlowfishSource encrypting_straw(CipherMode::kEncrypt, plain);
-  encrypting_straw.Key(key.data(), static_cast<int>(key.size()));
+  encrypting_straw.Key(std::as_bytes(std::span(key)));
   EXPECT_EQ(Drain(encrypting_straw, 1000), encrypted.bytes);
 
   SpanSource cipher(std::as_bytes(std::span(encrypted.bytes)));
   BlowfishSource decryptor(CipherMode::kDecrypt, cipher);
-  decryptor.Key(key.data(), static_cast<int>(key.size()));
+  decryptor.Key(std::as_bytes(std::span(key)));
   EXPECT_EQ(Drain(decryptor, 1000), input);
 }
 
@@ -185,19 +185,19 @@ TEST(StreamGoldenTest, SaveGameChainProducesPinnedBytesAndDigest) {
   Sha1Sink sha(file);
   BlowfishSink blow(CipherMode::kEncrypt, sha);
   LzoSink lzo(CodecMode::kCompress, blow, kSaveBlockSize);
-  blow.Key(key.data(), static_cast<int>(key.size()));
+  blow.Key(std::as_bytes(std::span(key)));
   PutInPieces(lzo, input);
   EXPECT_EQ(Sha1Hex(file.bytes), "2338b443f754c7b2e6e587dab7c29deff557d0b1");
 
   // The digest written into the save covers the stream exactly as stored.
   SHAEngine stored_hash;
-  stored_hash.Hash(file.bytes.data(), static_cast<int32_t>(file.bytes.size()));
+  stored_hash.Hash(std::as_bytes(std::span(file.bytes)));
   EXPECT_EQ(sha.digest(), stored_hash.Digest());
 
   SpanSource stored(std::as_bytes(std::span(file.bytes)));
   BlowfishSource decrypt(CipherMode::kDecrypt, stored);
   LzoSource decompress(CodecMode::kDecompress, decrypt, kSaveBlockSize);
-  decrypt.Key(key.data(), static_cast<int>(key.size()));
+  decrypt.Key(std::as_bytes(std::span(key)));
   EXPECT_EQ(Drain(decompress, 1000), input);
 }
 
@@ -216,8 +216,13 @@ TEST(StreamGoldenTest, Base64EncodesInUuBlockLines) {
     if (length == 0) {
       break;
     }
-    lines.emplace_back(line.begin(), line.begin() + length);
-    joined.insert(joined.end(), line.begin(), line.begin() + length);
+    lines.emplace_back(
+        std::span(line).first(static_cast<std::size_t>(length)).begin(),
+        std::span(line).first(static_cast<std::size_t>(length)).end());
+    joined.insert(
+        joined.end(),
+        std::span(line).first(static_cast<std::size_t>(length)).begin(),
+        std::span(line).first(static_cast<std::size_t>(length)).end());
     joined.push_back('\n');
   }
   EXPECT_EQ(Sha1Hex(joined), "228aa04caf47a421738b2d0186b6a379b1b23fbd");

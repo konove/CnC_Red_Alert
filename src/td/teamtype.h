@@ -41,6 +41,7 @@ class ArchiveReader;
 class ArchiveWriter;
 
 #include <cstddef>
+#include <span>
 
 #include "absl/base/attributes.h"
 #include "base/enum_array.h"
@@ -124,7 +125,7 @@ class TeamTypeClass : public AbstractTypeClass {
   */
   static void Read_INI(char* buffer);
   void Fill_In(char* name, char* entry);
-  static void Write_INI(char* buffer, bool refresh);
+  static void Write_INI(std::span<char> buffer, bool refresh);
   static void Read_Old_INI(char* buffer);
   static const char* INI_Name() { return "TeamTypes"; }
   // Field-wise saved-game support, defined in ioobj.cc.
@@ -134,7 +135,7 @@ class TeamTypeClass : public AbstractTypeClass {
   /*
   **	As_Pointer gets a pointer to the trigger object give its name
   */
-  static TeamTypeClass* As_Pointer(char* name);
+  static TeamTypeClass* As_Pointer(const char* name);
 
   /*
   **	Processing routines

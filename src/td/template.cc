@@ -54,15 +54,18 @@
 
 #include "td/template.h"
 
+#include <cstddef>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <span>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "absl/strings/str_format.h"
+#include "base/numeric.h"
 #include "port/tokenizer.h"
-#include "sdllib/shape.h"
 #include "sdllib/tile.h"
 #include "td/cell.h"
 #include "td/config.h"
@@ -122,24 +125,26 @@ int TemplateClass::Validate() const {
 void TemplateClass::Read_INI(char* buffer) {
   char buf[128];  // Working string staging buffer.
 
-  const int len = static_cast<int>(std::string_view(buffer).size()) +
-                  2;                         // Size of data in buffer.
-  char* tbuffer = buffer + len;              // Accumulation buffer of unit IDs.
+  std::vector<char> key_storage(std::string_view(buffer).size() + 2);
+  auto key_cursor = std::span(key_storage);
+  char* tbuffer = key_cursor.data();  // Accumulation buffer of unit IDs.
 
-  WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
-                            ShapeBufferSize - len, buffer);
+  WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, key_cursor, buffer);
   while (*tbuffer != '\0') {
     CELL const cell =
         tech::ParseInteger<CELL>(tbuffer).value_or(0);  // Cell of building.
-    WWGetPrivateProfileString(INI_Name(), tbuffer, nullptr, buf,
-                              sizeof(buf) - 1, buffer);
+    WWGetPrivateProfileString(
+        INI_Name(), tbuffer, nullptr,
+        std::span(buf).first(static_cast<std::size_t>(sizeof(buf) - 1)),
+        buffer);
     port::Tokenizer tokens(buf, ",\r\n");
     const TemplateType temp =
         TemplateTypeClass::From_Name(tokens.Next());  // Terrain type.
     if (temp != TEMPLATE_NONE) {
       new TemplateClass(temp, cell);
     }
-    tbuffer += std::string_view(tbuffer).size() + 1;
+    key_cursor = key_cursor.subspan(std::string_view(tbuffer).size() + 1);
+    tbuffer = key_cursor.data();
   }
 }
 
@@ -157,22 +162,22 @@ void TemplateClass::Read_INI(char* buffer) {
  *                                                                                             *
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
-void TemplateClass::Write_INI(char* buffer) {
+void TemplateClass::Write_INI(std::span<char> buffer) {
   char uname[10];
   char buf[127];
 
   /*
   **	First, clear out all existing template data from the ini file.
   */
-  char* tbuffer = buffer + std::string_view(buffer).size() +
-                  2;  // Accumulation buffer of unit IDs.
-  WWGetPrivateProfileString(
-      INI_Name(), nullptr, nullptr, tbuffer,
-      ShapeBufferSize - static_cast<int>(std::string_view(buffer).size()),
-      buffer);
+  std::vector<char> key_storage(std::string_view(buffer.data()).size() + 2);
+  auto key_cursor = std::span(key_storage);
+  char* tbuffer = key_cursor.data();  // Accumulation buffer of unit IDs.
+  WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, key_cursor,
+                            buffer.data());
   while (*tbuffer != '\0') {
     WWWritePrivateProfileString(INI_Name(), tbuffer, nullptr, buffer);
-    tbuffer += std::string_view(tbuffer).size() + 1;
+    key_cursor = key_cursor.subspan(std::string_view(tbuffer).size() + 1);
+    tbuffer = key_cursor.data();
   }
 
   /*
@@ -262,9 +267,9 @@ void TemplateClass::Init() { Templates.Free_All(); }
 bool TemplateClass::Mark(MarkType mark) {
   Validate();
   static bool noup = false;
-  const void* iset = Class->Get_Image_Data();
-  if (iset && ObjectClass::Mark(mark)) {
-    const void* map = Get_Icon_Set_Map(iset);
+  const auto iset = Class->Get_Image_Data();
+  if (!iset.empty() && ObjectClass::Mark(mark)) {
+    const auto map = Get_Icon_Set_Map(iset);
 
     for (int y = 0; std::cmp_less(y, Class->Height); y++) {
       for (int x = 0; std::cmp_less(x, Class->Width); x++) {
@@ -279,8 +284,7 @@ bool TemplateClass::Mark(MarkType mark) {
           *no real *	icon is associated with this logical position, then
           *don't do any action *	since none is required.
           */
-          const char* mapptr = static_cast<const char*>(map);
-          const bool real = mapptr[number] != -1;
+          const bool real = map[base::ToSize(number)] != std::byte{0xff};
 
           if (real) {
             /*

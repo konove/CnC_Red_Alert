@@ -78,18 +78,19 @@
 #include "ra/radar.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <iterator>
+#include <span>
 #include <string_view>
 
 #include "absl/log/check.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/numeric.h"
-#include "base/types.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
@@ -135,9 +136,9 @@
 // void const * RadarClass::CoverShape;
 RadarClass::RTacticalClass RadarClass::RadarButton;
 
-const void* RadarClass::RadarAnim = nullptr;
-const void* RadarClass::RadarPulse = nullptr;
-const void* RadarClass::RadarFrame = nullptr;
+std::span<const std::byte> RadarClass::RadarAnim = {};
+std::span<const std::byte> RadarClass::RadarPulse = {};
+std::span<const std::byte> RadarClass::RadarFrame = {};
 
 static bool FullRedraw = false;
 
@@ -415,14 +416,14 @@ void RadarClass::Draw_It(bool forced) {
     if (file.IsAvailable()) {
       RadarAnim = Load_Alloc_Data(file);
     } else {
-      RadarAnim = MixArchive::Retrieve(name);
+      RadarAnim = MixArchive::RetrieveData(name);
     }
     port::SafeCopy(name, "PULSE.SHP");
     DiskFile file2(name);
     if (file2.IsAvailable()) {
       RadarPulse = Load_Alloc_Data(file2);
     } else {
-      RadarPulse = MixArchive::Retrieve(name);
+      RadarPulse = MixArchive::RetrieveData(name);
     }
     port::SafeCopy(name,
                    base::At(_frames, static_cast<int>(PlayerPtr->ActLike)));
@@ -430,19 +431,19 @@ void RadarClass::Draw_It(bool forced) {
     if (file3.IsAvailable()) {
       RadarFrame = Load_Alloc_Data(file3);
     } else {
-      RadarFrame = MixArchive::Retrieve(
+      RadarFrame = MixArchive::RetrieveData(
           base::At(_frames, static_cast<int>(PlayerPtr->ActLike)));
     }
 #else
-    RadarAnim = MixArchive::Retrieve(name);
+    RadarAnim = MixArchive::RetrieveData(name);
     port::SafeCopy(name, "PULSE.SHP");
     DiskFile file3(name);
     if (file3.IsAvailable()) {
       RadarPulse = Load_Alloc_Data(file3);
     } else {
-      RadarPulse = MixArchive::Retrieve(name);
+      RadarPulse = MixArchive::RetrieveData(name);
     }
-    RadarFrame = MixArchive::Retrieve(_frames[PlayerPtr->ActLike]);
+    RadarFrame = MixArchive::RetrieveData(_frames[PlayerPtr->ActLike]);
 #endif
     _house = PlayerPtr->ActLike;
   }
@@ -694,13 +695,13 @@ void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) const {
   ** loop through the list and take care of rendering the correct icon.
   */
   for (int lp = 0; lp < listidx; lp++) {
-    const unsigned char* icon = base::At(list, lp)->Radar_Icon(cell);
-    if (!icon) {
+    const auto icon = base::At(list, lp)->Radar_Icon(cell);
+    if (icon.empty()) {
       continue;
     }
     Buffer_To_Page(0, 0, 3, 3, icon, IconStage);
     IconStage.Scale(*LogicPage, 0, 0, x, y, 3, 3, ZoomFactor, ZoomFactor, true,
-                    &FadingBrighten[0]);
+                    FadingBrighten);
   }
 }
 
@@ -791,8 +792,8 @@ void RadarClass::Render_Overlay(CELL cell, int x, int y, int size) {
     const OverlayTypeClass* otype = &OverlayTypeClass::As_Reference(overlay);
 
     if (otype->IsRadarVisible) {
-      const unsigned char* icon = otype->Radar_Icon((*this)[cell].OverlayData);
-      if (!icon) {
+      const auto icon = otype->Radar_Icon((*this)[cell].OverlayData);
+      if (icon.empty()) {
         return;
       }
       Buffer_To_Page(0, 0, 3, 3, icon, IconStage);
@@ -804,7 +805,7 @@ void RadarClass::Render_Overlay(CELL cell, int x, int y, int size) {
           // 0, x, y, 3, 3, size, size, true, (char *)&FadingShade[0]);
         } else {
           IconStage.Scale(*LogicPage, 0, 0, x, y, 3, 3, size, size, true,
-                          &FadingYellow[0]);
+                          FadingYellow);
         }
         //				_IconStage.Scale(*LogicPage, 0, 0, x, y,
         // 3, 3, size, size, true, (char *)&FadingGreen[0]);
@@ -1013,7 +1014,7 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
     */
     if (color == kTBlack) {
       if (ZoomFactor > 1) {
-        const void* ptr = nullptr;
+        std::span<const std::byte> ptr;
         int icon = 0;
 
         /*
@@ -1031,23 +1032,33 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
         **	If the template pointer is still NULL, then this means either a
         *clear *	template or an illegal one. Setup for a clear template.
         */
-        if (ptr == nullptr) {
+        if (ptr.empty()) {
           ptr =
               TemplateTypeClass::As_Reference(TEMPLATE_CLEAR1).Get_Image_Data();
           icon = cellptr->Clear_Icon();
         }
 
-        const auto* iconset = static_cast<const IconsetClass*>(ptr);
-        const unsigned char* icondata = iconset->Icon_Data();
+        const IconsetClass iconset(ptr);
+        const auto icondata = iconset.Icon_Data();
 
         /*
         **	Convert the logical icon number into the actual icon number.
         */
         icon %= 256;
-        icon = *(iconset->Map_Data() + icon);
+        const auto iconmap = iconset.Map_Data();
+        if (icon < 0 || static_cast<size_t>(icon) >= iconmap.size()) {
+          LogicPage->Unlock();
+          return;
+        }
+        icon = iconmap[static_cast<size_t>(icon)];
 
-        const unsigned char* data = icondata + (static_cast<base::ssize>(icon) *
-                                                (base::ssize{24} * 24));
+        const size_t offset = static_cast<size_t>(icon) * 24 * 24;
+        if (offset > icondata.size() ||
+            icondata.size() - offset < size_t{24} * 24) {
+          LogicPage->Unlock();
+          return;
+        }
+        const auto data = icondata.subspan(offset, size_t{24} * 24);
         Buffer_To_Page(0, 0, 24, 24, data, TileStage);
         TileStage.Scale(*LogicPage, 0, 0, x, y, 24, 24, ZoomFactor, ZoomFactor,
                         true);
@@ -1851,8 +1862,8 @@ bool RadarClass::RTacticalClass::Action(unsigned flags, KeyNumType& key) {
  *                                                                                             *
  * HISTORY: * 01/01/1995 JLB : Created. *
  *=============================================================================================*/
-void RadarClass::Refresh_Cells(CELL cell, const int16_t* list) {
-  if (*list == kRefreshSidebar) {
+void RadarClass::Refresh_Cells(CELL cell, std::span<const int16_t> list) {
+  if (list.front() == kRefreshSidebar) {
     IsRadarToRedraw = true;
     Flag_To_Redraw(false);
   }
@@ -1948,7 +1959,7 @@ void RadarClass::Set_Radar_Position(CELL cell) {
           */
           GraphicBufferClass temp_surface;
           temp_surface.Init(((RadarWidth + 16) / 16) * 16,
-                            ((RadarHeight + 16) / 16) * 16, nullptr, 0,
+                            ((RadarHeight + 16) / 16) * 16, {}, 0,
                             GBC_VIDEOMEM);
 
           /*

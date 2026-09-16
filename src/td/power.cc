@@ -51,7 +51,9 @@
 */
 #include "td/power.h"
 
+#include <cstddef>
 #include <cstdint>
+#include <span>
 
 #include "base/array.h"
 #include "base/numeric.h"
@@ -71,8 +73,8 @@
 #include "td/radar.h"
 #include "tech/mix_archive.h"
 
-const void* PowerClass::PowerShape;
-const void* PowerClass::PowerBarShape;
+std::span<const std::byte> PowerClass::PowerShape;
+std::span<const std::byte> PowerClass::PowerBarShape;
 
 PowerClass::PowerButtonClass PowerClass::PowerButton;
 
@@ -153,7 +155,7 @@ void PowerClass::One_Time() {
   PowerButton.Width = PowWidth - 1;
   PowerButton.Height = PowHeight;
 
-  PowerShape = MixArchive::Retrieve(factor ? "HPOWER.SHP" : "POWER.SHP");
+  PowerShape = MixArchive::RetrieveData(factor ? "HPOWER.SHP" : "POWER.SHP");
   PowerBarShape = Hires_Retrieve("PWRBAR.SHP");
 }
 
@@ -199,12 +201,14 @@ void PowerClass::Draw_It(bool complete) {
       /*
       ** Create a clip region to draw the unfilled section of the bar
       */
-      base::At(WindowList[static_cast<int>(WINDOW_CUSTOM)], kWindowX) = 0;
-      base::At(WindowList[static_cast<int>(WINDOW_CUSTOM)], kWindowY) = 0;
-      base::At(WindowList[static_cast<int>(WINDOW_CUSTOM)], kWindowWidth) =
-          SeenBuff.Get_Width();
-      base::At(WindowList[static_cast<int>(WINDOW_CUSTOM)], kWindowHeight) =
-          bottom - power_height;
+      base::At(base::At(WindowList, static_cast<int>(WINDOW_CUSTOM)),
+               kWindowX) = 0;
+      base::At(base::At(WindowList, static_cast<int>(WINDOW_CUSTOM)),
+               kWindowY) = 0;
+      base::At(base::At(WindowList, static_cast<int>(WINDOW_CUSTOM)),
+               kWindowWidth) = SeenBuff.Get_Width();
+      base::At(base::At(WindowList, static_cast<int>(WINDOW_CUSTOM)),
+               kWindowHeight) = bottom - power_height;
 
       /*
       ** Draw the unfilled section
@@ -216,11 +220,13 @@ void PowerClass::Draw_It(bool complete) {
       /*
       ** Set up the clip region for the filled section
       */
-      base::At(WindowList[static_cast<int>(WINDOW_CUSTOM)], kWindowY) =
-          bottom - power_height;
-      base::At(WindowList[static_cast<int>(WINDOW_CUSTOM)], kWindowHeight) =
+      base::At(base::At(WindowList, static_cast<int>(WINDOW_CUSTOM)),
+               kWindowY) = bottom - power_height;
+      base::At(base::At(WindowList, static_cast<int>(WINDOW_CUSTOM)),
+               kWindowHeight) =
           SeenBuff.Get_Height() -
-          base::At(WindowList[static_cast<int>(WINDOW_CUSTOM)], kWindowY);
+          base::At(base::At(WindowList, static_cast<int>(WINDOW_CUSTOM)),
+                   kWindowY);
 
       /*
       ** What color is the filled section?
@@ -238,18 +244,19 @@ void PowerClass::Draw_It(bool complete) {
         /*
         ** Draw the filled section
         */
-        CC_Draw_Shape(
-            PowerBarShape, 2 + power_color, PowX,
-            PowY -
-                base::At(WindowList[static_cast<int>(WINDOW_CUSTOM)], kWindowY),
-            WINDOW_CUSTOM, SHAPE_WIN_REL);
-
-        CC_Draw_Shape(PowerBarShape, 3 + power_color, PowX,
-                      PowY -
-                          base::At(WindowList[static_cast<int>(WINDOW_CUSTOM)],
-                                   kWindowY) +
-                          100,
+        CC_Draw_Shape(PowerBarShape, 2 + power_color, PowX,
+                      PowY - base::At(base::At(WindowList,
+                                               static_cast<int>(WINDOW_CUSTOM)),
+                                      kWindowY),
                       WINDOW_CUSTOM, SHAPE_WIN_REL);
+
+        CC_Draw_Shape(
+            PowerBarShape, 3 + power_color, PowX,
+            PowY -
+                base::At(base::At(WindowList, static_cast<int>(WINDOW_CUSTOM)),
+                         kWindowY) +
+                100,
+            WINDOW_CUSTOM, SHAPE_WIN_REL);
       }
 
       /*
@@ -380,8 +387,8 @@ void PowerClass::AI(KeyNumType& input, int x, int y) {
  *                                                                                             *
  * HISTORY: * 06/01/1995 JLB : Created. *
  *=============================================================================================*/
-void PowerClass::Refresh_Cells(CELL cell, const int16_t* list) {
-  if (*list == REFRESH_SIDEBAR) {
+void PowerClass::Refresh_Cells(CELL cell, std::span<const int16_t> list) {
+  if (list.front() == REFRESH_SIDEBAR) {
     IsPowerToRedraw = true;
     Flag_To_Redraw(false);
   }

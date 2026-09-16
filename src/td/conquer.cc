@@ -65,6 +65,7 @@
 
 #include "td/conquer.h"
 
+#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>
@@ -76,6 +77,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "absl/log/log.h"
 #include "absl/strings/str_format.h"
@@ -83,8 +85,6 @@
 #include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/seek_origin.h"
-#include "base/types.h"
-#include "port/aligned_buffer.h"
 #include "port/env.h"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
@@ -94,7 +94,6 @@
 #include "sdllib/font.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/memflag.h"
 #include "sdllib/misc.h"
 #include "sdllib/playcd.h"
 #include "sdllib/shape.h"
@@ -844,7 +843,7 @@ static void Message_Input(KeyNumType& input) {
       if (input == KN_F1 || input == KN_F1 + MPlayerMax - 1) {
         port::SafeCopy(txt, Text_String(TXT_MESSAGE));  // "Message:"
 
-        Messages.Add_Edit(MPlayerTColors[MPlayerColorIdx],
+        Messages.Add_Edit(base::At(MPlayerTColors, MPlayerColorIdx),
                           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, txt,
                           180 * factor);
 
@@ -862,7 +861,7 @@ static void Message_Input(KeyNumType& input) {
           MessageAddress = IPXAddressClass();            // set to broadcast
           port::SafeCopy(txt, Text_String(TXT_TO_ALL));  // "To All:"
 
-          Messages.Add_Edit(MPlayerTColors[MPlayerColorIdx],
+          Messages.Add_Edit(base::At(MPlayerTColors, MPlayerColorIdx),
                             TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
                             txt, 180 * factor);
 
@@ -875,7 +874,7 @@ static void Message_Input(KeyNumType& input) {
             Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_TO),
                                 Ipx.Connection_Name(id));
 
-            Messages.Add_Edit(MPlayerTColors[MPlayerColorIdx],
+            Messages.Add_Edit(base::At(MPlayerTColors, MPlayerColorIdx),
                               TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
                               txt, 180 * factor);
 
@@ -936,7 +935,7 @@ static void Message_Input(KeyNumType& input) {
         static_cast<int>(std::string_view(Messages.Get_Edit_Buf()).size());
 
     int32_t actual_message_size = 0;
-    char* the_string = nullptr;
+    std::span<char> the_string;
 
     /*
     **	Serial game: fill in a SerialPacketType & send it.
@@ -952,13 +951,33 @@ static void Message_Input(KeyNumType& input) {
                                   0xffff);
 
       while (sent_so_far < message_length) {
-        auto* serial_packet =
-            port::AlignedObject<SerialPacketType>(NullModem.BuildBuf);
+        SerialPacketType packet{.Command = SERIAL_MESSAGE,
+                                .Name = {},
+                                .Version = 0,
+                                .House = HOUSE_NONE,
+                                .Color = 0,
+                                .Scenario = 0,
+                                .Credits = 0,
+                                .IsBases = 0,
+                                .IsTiberium = 0,
+                                .IsGoodies = 0,
+                                .IsGhosties = 0,
+                                .BuildLevel = 0,
+                                .UnitCount = 0,
+                                .Seed = 0,
+                                .Special = {},
+                                .GameSpeed = 0,
+                                .ResponseTime = 0,
+                                .Message = {},
+                                .ID = 0};
+        auto* serial_packet = &packet;
 
         serial_packet->Command = SERIAL_MESSAGE;
         port::SafeCopy(serial_packet->Name, MPlayerName);
-        memcpy(serial_packet->Message, Messages.Get_Edit_Buf() + sent_so_far,
-               COMPAT_MESSAGE_LENGTH - 5);
+        port::SafeCopy(
+            std::span(serial_packet->Message).first(COMPAT_MESSAGE_LENGTH - 4),
+            std::string_view(Messages.Get_Edit_Buf())
+                .substr(base::ToSize(sent_so_far)));
 
         /*
         ** Steve I's stuff for splitting message on word boundries
@@ -968,31 +987,35 @@ static void Message_Input(KeyNumType& input) {
         /* Start at the end of the message and find a space with 10 chars. */
         the_string = serial_packet->Message;
         while (COMPAT_MESSAGE_LENGTH - 5 - actual_message_size < 10 &&
-               the_string[actual_message_size] != ' ') {
+               the_string[base::ToSize(actual_message_size)] != ' ') {
           --actual_message_size;
         }
-        if (the_string[actual_message_size] == ' ') {
+        if (the_string[base::ToSize(actual_message_size)] == ' ') {
           /* Now delete the extra characters after the space (they musnt print)
            */
           for (int j = 0; j < COMPAT_MESSAGE_LENGTH - 5 - actual_message_size;
                j++) {
-            the_string[j + actual_message_size] = static_cast<char>(0xff);
+            the_string[base::ToSize(j + actual_message_size)] =
+                static_cast<char>(0xff);
           }
         } else {
           actual_message_size = COMPAT_MESSAGE_LENGTH - 5;
         }
 
-        *(serial_packet->Message + COMPAT_MESSAGE_LENGTH - 5) = 0;
+        base::At(serial_packet->Message, COMPAT_MESSAGE_LENGTH - 5) = 0;
         /*
         ** Flag this message segment as either a message head or a message tail.
         */
-        port::WriteUnaligned(serial_packet->Message + COMPAT_MESSAGE_LENGTH - 4,
+        port::WriteUnaligned(base::ObjectBytes(serial_packet->Message)
+                                 .subspan(COMPAT_MESSAGE_LENGTH - 4),
                              magic_number);
-        port::WriteUnaligned(serial_packet->Message + COMPAT_MESSAGE_LENGTH - 2,
+        port::WriteUnaligned(base::ObjectBytes(serial_packet->Message)
+                                 .subspan(COMPAT_MESSAGE_LENGTH - 2),
                              crc);
         serial_packet->ID = MPlayerLocalID;
 
-        NullModem.Send_Message(NullModem.BuildBuf, sizeof(SerialPacketType), 1);
+        NullModem.Send_Message(base::ObjectBytes(packet),
+                               sizeof(SerialPacketType), 1);
 
         magic_number++;
         sent_so_far =
@@ -1012,8 +1035,10 @@ static void Message_Input(KeyNumType& input) {
         while (sent_so_far < message_length) {
           GPacket.Command = NET_MESSAGE;
           port::SafeCopy(GPacket.Name, MPlayerName);
-          memcpy(GPacket.Message.Buf, Messages.Get_Edit_Buf() + sent_so_far,
-                 COMPAT_MESSAGE_LENGTH - 5);
+          port::SafeCopy(
+              std::span(GPacket.Message.Buf).first(COMPAT_MESSAGE_LENGTH - 4),
+              std::string_view(Messages.Get_Edit_Buf())
+                  .substr(base::ToSize(sent_so_far)));
 
           /*
           ** Steve I's stuff for splitting message on word boundries
@@ -1023,28 +1048,31 @@ static void Message_Input(KeyNumType& input) {
           /* Start at the end of the message and find a space with 10 chars. */
           the_string = GPacket.Message.Buf;
           while (COMPAT_MESSAGE_LENGTH - 5 - actual_message_size < 10 &&
-                 the_string[actual_message_size] != ' ') {
+                 the_string[base::ToSize(actual_message_size)] != ' ') {
             --actual_message_size;
           }
-          if (the_string[actual_message_size] == ' ') {
+          if (the_string[base::ToSize(actual_message_size)] == ' ') {
             /* Now delete the extra characters after the space (they musnt
              * print) */
             for (int j = 0; j < COMPAT_MESSAGE_LENGTH - 5 - actual_message_size;
                  j++) {
-              the_string[j + actual_message_size] = static_cast<char>(0xff);
+              the_string[base::ToSize(j + actual_message_size)] =
+                  static_cast<char>(0xff);
             }
           } else {
             actual_message_size = COMPAT_MESSAGE_LENGTH - 5;
           }
 
-          *(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 5) = 0;
+          base::At(GPacket.Message.Buf, COMPAT_MESSAGE_LENGTH - 5) = 0;
           /*
           ** Flag this message segment as either a message head or a message
           *tail.
           */
-          port::WriteUnaligned(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 4,
+          port::WriteUnaligned(base::ObjectBytes(GPacket.Message.Buf)
+                                   .subspan(COMPAT_MESSAGE_LENGTH - 4),
                                magic_number);
-          port::WriteUnaligned(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 2,
+          port::WriteUnaligned(base::ObjectBytes(GPacket.Message.Buf)
+                                   .subspan(COMPAT_MESSAGE_LENGTH - 2),
                                crc);
 
           GPacket.Message.ID = MPlayerLocalID;
@@ -1057,7 +1085,7 @@ static void Message_Input(KeyNumType& input) {
           if (MessageAddress.Is_Broadcast()) {
             for (int i = 0; i < Ipx.Num_Connections(); i++) {
               Ipx.Send_Global_Message(
-                  &GPacket, sizeof(GlobalPacketType), 1,
+                  base::ObjectBytes(GPacket), sizeof(GlobalPacketType), 1,
                   Ipx.Connection_Address(Ipx.Connection_ID(i)));
               Ipx.Service();
             }
@@ -1066,7 +1094,8 @@ static void Message_Input(KeyNumType& input) {
             **	Otherwise, MessageAddress contains the exact address to send to.
             **	Send to that address only.
             */
-            Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 1,
+            Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
+                                    sizeof(GlobalPacketType), 1,
                                     &MessageAddress);
             Ipx.Service();
           }
@@ -1153,16 +1182,17 @@ bool Color_Cycle() {
 
     _timer.Set(kTimerSecond / 4);
 
-    memmove(
-        colors,
-        &GamePalette[std::size_t{CYCLE_COLOR_START + CYCLE_COLOR_COUNT - 1} *
-                     3],
-        sizeof(colors));
-    memmove(&GamePalette[std::size_t{CYCLE_COLOR_START + 1} * 3],
-            &GamePalette[std::size_t{CYCLE_COLOR_START} * 3],
-            std::size_t{CYCLE_COLOR_COUNT - 1} * 3);
-    memmove(&GamePalette[std::size_t{CYCLE_COLOR_START} * 3], colors,
-            sizeof(colors));
+    const auto palette_bytes = std::as_writable_bytes(std::span(GamePalette));
+    base::CopyBytes(base::ObjectBytes(colors),
+                    palette_bytes.subspan(base::ToSize(
+                        (CYCLE_COLOR_START + CYCLE_COLOR_COUNT - 1) * 3)),
+                    sizeof(colors));
+    base::MoveBytes(
+        palette_bytes.subspan(base::ToSize((CYCLE_COLOR_START + 1) * 3)),
+        palette_bytes.subspan(base::ToSize(CYCLE_COLOR_START * 3)),
+        base::ToSize((CYCLE_COLOR_COUNT - 1) * 3));
+    base::CopyBytes(palette_bytes.subspan(base::ToSize(CYCLE_COLOR_START * 3)),
+                    base::ObjectBytes(colors), sizeof(colors));
     changed = true;
   }
 
@@ -1222,7 +1252,8 @@ void Call_Back() {
     ** messages from the connection dialogs.
     */
     if ((!NetOpen) &&
-        Ipx.Get_Global_Message(&GPacket, &GPacketlen, &GAddress, &GProductID) &&
+        Ipx.Get_Global_Message(base::ObjectBytes(GPacket), &GPacketlen,
+                               &GAddress, &GProductID) &&
         (GProductID == IPXGlobalConnClass::kCommandAndConquer))
 
     {
@@ -1264,13 +1295,15 @@ void Call_Back() {
             Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_FROM),
                                 GPacket.Name, GPacket.Message.Buf);
             magic_number = port::ReadUnaligned<uint16_t>(
-                GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 4);
-            crc = port::ReadUnaligned<uint16_t>(GPacket.Message.Buf +
-                                                COMPAT_MESSAGE_LENGTH - 2);
+                base::ObjectBytes(GPacket.Message.Buf)
+                    .subspan(COMPAT_MESSAGE_LENGTH - 4));
+            crc = port::ReadUnaligned<uint16_t>(
+                base::ObjectBytes(GPacket.Message.Buf)
+                    .subspan(COMPAT_MESSAGE_LENGTH - 2));
             color =
                 static_cast<int>(MPlayerID_To_ColorIndex(GPacket.Message.ID));
             Messages.Add_Message(
-                txt, MPlayerTColors[color],
+                txt, base::At(MPlayerTColors, color),
                 TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600,
                 magic_number, crc);
 
@@ -1352,7 +1385,7 @@ const char* Language_Name(const char* basename) {
 SourceType Source_From_Name(const char* name) {
   if (name) {
     for (SourceType source = SOURCE_FIRST; source < SOURCE_COUNT; source++) {
-      if (stricmp(SourceName[source], name) == 0) {
+      if (port::CompareIgnoreCase(SourceName[source], name) == 0) {
         return source;
       }
     }
@@ -1401,7 +1434,7 @@ TheaterType Theater_From_Name(const char* name) {
 
   if (name) {
     for (TheaterType index = THEATER_DESERT; index < THEATER_COUNT; index++) {
-      if (stricmp(name, Theaters[index].Name) == 0) {
+      if (port::CompareIgnoreCase(name, Theaters[index].Name) == 0) {
         return index;
       }
     }
@@ -1731,7 +1764,7 @@ bool Main_Loop() {
             for (const std::byte byte : bytes) {
               const auto value = std::to_integer<uint8_t>(byte);
               fields += base::At(hex, value >> 4);
-              fields += hex[value & 15];
+              fields += base::At(hex, value & 15);
             }
             return true;
           }
@@ -1769,7 +1802,7 @@ bool Main_Loop() {
           if (trace) {
             constexpr char hex[] = "0123456789abcdef";
             fields += base::At(hex, value >> 4);
-            fields += hex[value & 15];
+            fields += base::At(hex, value & 15);
           }
         }
         return true;
@@ -1800,7 +1833,7 @@ bool Main_Loop() {
     for (int i = 0; i < TeamTypes.Count(); ++i) {
       const int id = TeamTypes.ID(TeamTypes.Ptr(i));
       LOG(INFO) << "frame " << Frame << " teamcount " << id << " "
-                << static_cast<int>(TeamClass::Number[id]);
+                << static_cast<int>(base::At(TeamClass::Number, id));
     }
     if (Frame >= DebugQuitAtFrame) {
       if (DebugSaveSlot >= 0) {
@@ -1969,15 +2002,16 @@ void Go_Editor(bool flag) {
   }
 }
 
-static void Rebuild_Interpolated_Palette(unsigned char* interpal) {
+static void Rebuild_Interpolated_Palette(std::span<unsigned char> interpal) {
   for (int y = 0; y < 255; y++) {
     for (int x = y + 1; x < 256; x++) {
-      *(interpal + ((y * 256) + x)) = *(interpal + ((x * 256) + y));
+      interpal[base::ToSize((y * 256) + x)] =
+          interpal[base::ToSize((x * 256) + y)];
     }
   }
 }
 
-unsigned char* InterpolatedPalettes[100];
+std::vector<unsigned char> InterpolatedPalettes[100];
 bool PalettesRead;
 int PaletteCounter;
 
@@ -1992,13 +2026,13 @@ int Load_Interpolated_Palettes(const char* filename, bool add) {
 
   if (!add) {
     for (auto& InterpolatedPalette : InterpolatedPalettes) {
-      InterpolatedPalette = nullptr;
+      InterpolatedPalette.clear();
     }
     start_palette = 0;
   } else {
     for (start_palette = 0; start_palette < std::ssize(InterpolatedPalettes);
          start_palette++) {
-      if (!base::At(InterpolatedPalettes, start_palette)) {
+      if (base::At(InterpolatedPalettes, start_palette).empty()) {
         break;
       }
     }
@@ -2010,12 +2044,16 @@ int Load_Interpolated_Palettes(const char* filename, bool add) {
   file.Open(FileAccess::kRead);
   file.ReadObject(num_palettes);
 
+  if (num_palettes < 0 ||
+      num_palettes > std::ssize(InterpolatedPalettes) - start_palette) {
+    file.Close();
+    return 0;
+  }
   for (int i = 0; i < num_palettes; i++) {
-    base::At(InterpolatedPalettes, i + start_palette) =
-        new unsigned char[65536]();
+    base::At(InterpolatedPalettes, i + start_palette).assign(65536, 0);
     for (int y = 0; y < 256; y++) {
-      file.Read(base::At(InterpolatedPalettes, i + start_palette) +
-                    (static_cast<base::ssize>(y) * 256),
+      file.Read(std::span(base::At(InterpolatedPalettes, i + start_palette))
+                    .subspan(base::ToSize(y) * 256),
                 y + 1);
     }
 
@@ -2032,10 +2070,8 @@ int Load_Interpolated_Palettes(const char* filename, bool add) {
 
 void Free_Interpolated_Palettes() {
   for (auto& InterpolatedPalette : InterpolatedPalettes) {
-    if (InterpolatedPalette) {
-      delete[] InterpolatedPalette;
-      InterpolatedPalette = nullptr;
-    }
+    InterpolatedPalette.clear();
+    InterpolatedPalette.shrink_to_fit();
   }
 }
 
@@ -2077,9 +2113,9 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
     return;
   }
 
-  base::FillBytes(
-      std::as_writable_bytes(base::Suffix(PaletteInterpolationTable[0], 0)), 0,
-      65536);
+  base::FillBytes(std::as_writable_bytes(
+                      base::Suffix(base::At(PaletteInterpolationTable, 0), 0)),
+                  0, 65536);
 
   if (name) {
     const auto fullname =
@@ -2110,9 +2146,9 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
     if (!PreserveVQAScreen) {
       Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
       VisiblePage.Clear();
-      memset(BlackPalette, 0x01, 768);
+      std::ranges::fill(BlackPalette, 0x01);
       Set_Palette(BlackPalette);
-      memset(BlackPalette, 0x00, 768);
+      std::ranges::fill(BlackPalette, 0x00);
     }
     PreserveVQAScreen = false;
     Keyboard::Clear();
@@ -2136,7 +2172,7 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
       ** Kludge to use the old palette interpolation table for CC2TEASE
       ** unless the covert CD is inserted.
       */
-      if (!stricmp(palname, "CC2TEASE.VQP")) {
+      if (!port::CompareIgnoreCase(palname, "CC2TEASE.VQP")) {
         int cd_index = Get_CD_Index(SearchPaths::current_cd_drive(), 1 * 60);
         /*
         ** If cd_index == 2 then its a covert CD
@@ -2152,7 +2188,7 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
       ** Kludge to use a different palette interpolation table for RETRO.VQA
       ** if the covert CD is inserted.
       */
-      if (!stricmp(palname, "RETRO.VQP")) {
+      if (!port::CompareIgnoreCase(palname, "RETRO.VQP")) {
         int cd_index = Get_CD_Index(SearchPaths::current_cd_drive(), 1 * 60);
         /*
         ** If cd_index == 2 then its a covert CD
@@ -2191,9 +2227,9 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
     */
     if (clear_screen) {
       VisiblePage.Clear();
-      memset(BlackPalette, 0x01, 768);
+      std::ranges::fill(BlackPalette, 0x01);
       Set_Palette(BlackPalette);
-      memset(BlackPalette, 0x00, 768);
+      std::ranges::fill(BlackPalette, 0x00);
       Set_Palette(BlackPalette);
     }
     Show_Mouse();
@@ -2240,7 +2276,7 @@ void Unselect_All() {
 std::string Fading_Table_Name(const char* base, TheaterType theater) {
   // Build filename: first character of theater root + base name + .MRF
   // extension
-  const auto root = std::string(1, Theaters[theater].Root[0]) + base;
+  const auto root = std::string(1, base::At(Theaters[theater].Root, 0)) + base;
   const auto file_path = std::filesystem::path(root).replace_extension(".MRF");
   return file_path.string();
 }
@@ -2256,167 +2292,94 @@ std::string Fading_Table_Name(const char* base, TheaterType theater) {
  * HISTORY: * 04/12/1995 PWG : Created. * 05/10/1995 JLB : Handles a null
  *shapefile pointer.                                        *
  *=============================================================================================*/
-const void* Get_Radar_Icon(const void* shapefile, int shapenum, int frames,
-                           int zoomfactor) {
-  static const int _offx[] = {0, 0, -1, 1, 0, -1, 1, -1, 1};
-  static const int _offy[] = {0, 0, -1, 1, 0, -1, 1, -1, 1};
-  char pixel = 0;
-
-  const char* retval = nullptr;
-  char* buffer = nullptr;
-
-  /*
-  **	If there is no shape file, then there can be no radar icon imagery.
-  */
-  if (!shapefile) {
-    return nullptr;
+std::vector<uint8_t> Get_Radar_Icon(std::span<const std::byte> shapefile,
+                                    int shapenum, int frames, int zoomfactor) {
+  static constexpr int kOffsets[] = {0, 0, -1, 1, 0, -1, 1, -1, 1};
+  if (shapefile.empty() || shapenum < 0 || zoomfactor <= 0 || zoomfactor > 24) {
+    return {};
   }
-
-  /*
-  ** Get the pixel width and height of the frame we built.  This will
-  ** be used to extract icons and build pixels.
-  */
   const int pixel_width = Get_Build_Frame_Width(shapefile);
   const int pixel_height = Get_Build_Frame_Height(shapefile);
-
-  /*
-  ** Find the width and height in icons, adjust these by half an
-  ** icon because the artists may be sloppy and miss the edge of an
-  ** icon one way or the other.
-  */
   const int icon_width = (pixel_width + 12) / 24;
   const int icon_height = (pixel_height + 12) / 24;
-
-  /*
-  ** If we have been told to build as many frames as possible, then
-  ** find out how many frames there are to build.
-  */
   if (frames == -1) {
-    frames = Get_Build_Frame_Count(shapefile);
+    frames = Get_Build_Frame_Count(shapefile) - shapenum;
   }
-
-  /*
-  ** Allocate a position to store our icons.  If the alloc fails then
-  ** we dont add these icons to the set.
-  **/
-  buffer = new char[base::ToSize((icon_width * icon_height * 9 * frames) + 2)];
-  if (!buffer) {
-    return nullptr;
+  if (frames <= 0 || icon_width <= 0 || icon_height <= 0) {
+    return {};
   }
-
-  /*
-  ** Save off the return value so that we can return it to the calling
-  ** function.
-  */
-  retval = buffer;
-  *buffer++ = static_cast<char>(icon_width);
-  *buffer++ = static_cast<char>(icon_height);
-  const int val = 24 / zoomfactor;
-
-  for (int framelp = 0; framelp < frames; framelp++) {
-    /*
-    ** Build the current frame.  If the frame can not be built then we
-    ** just need to skip past this set of icons and try to build the
-    ** next frame.
-    */
-    const void* ptr =
-        Build_Frame(shapefile, static_cast<uint16_t>(shapenum + framelp),
-                    SysMemPage.Get_Buffer());
-    if (ptr != nullptr) {
-      /*
-      ** Loop through the icon width and the icon height building icons
-      ** into the buffer pointer.  When the getx or gety falls outside of
-      ** the width and height of the shape, just insert transparent pixels.
-      */
-      for (int icony = 0; icony < icon_height; icony++) {
-        for (int iconx = 0; iconx < icon_width; iconx++) {
-          for (int y = 0; y < zoomfactor; y++) {
-            for (int x = 0; x < zoomfactor; x++) {
-              const int getx = (iconx * 24) + (x * val) + (zoomfactor / 2);
-              const int gety = (icony * 24) + (y * val) + (zoomfactor / 2);
-              if (getx < pixel_width && gety < pixel_height) {
-                for (int lp = 0; lp < 9; lp++) {
-                  pixel = *static_cast<const char*>(Add_Long_To_Pointer(
-                      ptr, ((gety - base::At(_offy, lp)) * pixel_width) + getx -
-                               base::At(_offx, lp)));
-                  if (pixel == kLtGreen) {
-                    pixel = 0;
-                  }
-                  if (pixel) {
-                    break;
-                  }
+  const auto frame_pixels = base::ToSize(icon_width) *
+                            base::ToSize(icon_height) *
+                            base::ToSize(zoomfactor) * base::ToSize(zoomfactor);
+  std::vector<uint8_t> result(2 + (frame_pixels * base::ToSize(frames)));
+  result[0] = static_cast<uint8_t>(icon_width);
+  result[1] = static_cast<uint8_t>(icon_height);
+  const int step = 24 / zoomfactor;
+  size_t out = 2;
+  for (int frame = 0; frame < frames; ++frame) {
+    const auto pixels =
+        Build_Frame(shapefile, static_cast<uint16_t>(shapenum + frame),
+                    SysMemPage.Get_Bytes());
+    if (pixels.empty()) {
+      out += frame_pixels;
+      continue;
+    }
+    for (int icon_y = 0; icon_y < icon_height; ++icon_y) {
+      for (int icon_x = 0; icon_x < icon_width; ++icon_x) {
+        for (int y = 0; y < zoomfactor; ++y) {
+          for (int x = 0; x < zoomfactor; ++x) {
+            const int get_x = (icon_x * 24) + (x * step) + (zoomfactor / 2);
+            const int get_y = (icon_y * 24) + (y * step) + (zoomfactor / 2);
+            uint8_t pixel = 0;
+            if (get_x < pixel_width && get_y < pixel_height) {
+              for (const int offset : kOffsets) {
+                const int sample_x = get_x - offset;
+                const int sample_y = get_y - offset;
+                if (sample_x < 0 || sample_x >= pixel_width || sample_y < 0 ||
+                    sample_y >= pixel_height) {
+                  continue;
                 }
-                *buffer++ = pixel;
-              } else {
-                *buffer++ = 0;
+                pixel =
+                    pixels[base::ToSize((sample_y * pixel_width) + sample_x)];
+                if (pixel == kLtGreen) {
+                  pixel = 0;
+                }
+                if (pixel != 0) {
+                  break;
+                }
               }
             }
+            result[out++] = pixel;
           }
         }
       }
-    } else {
-      buffer += static_cast<base::ssize>(icon_width * icon_height) * 9;
     }
   }
-  return retval;
+  return result;
 }
 
-void CC_Texture_Fill(const void* shapefile, int shapenum, int xpos, int ypos,
-                     int width, int height) {
-  // unsigned char	*shape_save;
-  // int x,y;
-
-  if (shapefile && shapenum != -1) {
-    /*
-    ** Build frame returns a pointer now instead of the shapes length
-    */
-    void* shape_size =
-        Build_Frame(shapefile, static_cast<uint16_t>(shapenum), ShapeBuffer);
-    if (Get_Last_Frame_Length() > ShapeBufferSize) {
-      Mono_Printf(
-          "Attempt to use shape buffer for size %d buffer is only size %d",
-          Get_Last_Frame_Length(), ShapeBufferSize);
-      Get_Key();
-    }
-
-    if (shape_size) {
-      auto* shape_pointer = static_cast<unsigned char*>(shape_size);
-      const int source_width = Get_Build_Frame_Width(shapefile);
-      const int source_height = Get_Build_Frame_Height(shapefile);
-
-      // FIXME: can't find this one anywhere
-      //  (this is the only user)
-      // LogicPage->Texture_Fill_Rect (xpos, ypos, width, height, shape_pointer,
-      // source_width, source_height);
-      if (LogicPage->Lock()) {
-        const unsigned char* shape_end =
-            shape_pointer +
-            (static_cast<base::ssize>(source_width) * source_height);
-
-        for (int y = ypos; y < ypos + height; y++) {
-          unsigned char* shape_save = shape_pointer;
-          unsigned char* line_end = shape_save + source_width;
-
-          for (int x = xpos; x < xpos + width; x++) {
-            LogicPage->Put_Pixel(x, y, *shape_pointer++);
-
-            if (shape_pointer == line_end) {
-              shape_pointer = shape_save;
-            }
-          }
-
-          shape_pointer = line_end;
-
-          if (shape_pointer == shape_end) {
-            shape_pointer -=
-                static_cast<base::ssize>(source_width) * source_height;
-          }
-        }
-
-        LogicPage->Unlock();
-      }
+void CC_Texture_Fill(std::span<const std::byte> shapefile, int shapenum,
+                     int xpos, int ypos, int width, int height) {
+  if (shapefile.empty() || shapenum < 0) {
+    return;
+  }
+  const auto pixels =
+      Build_Frame(shapefile, static_cast<uint16_t>(shapenum), ShapeBufferBytes);
+  const int source_width = Get_Build_Frame_Width(shapefile);
+  const int source_height = Get_Build_Frame_Height(shapefile);
+  if (pixels.empty() || source_width == 0 || source_height == 0 ||
+      !LogicPage->Lock()) {
+    return;
+  }
+  for (int y = 0; y < height; ++y) {
+    for (int x = 0; x < width; ++x) {
+      LogicPage->Put_Pixel(
+          xpos + x, ypos + y,
+          pixels[base::ToSize(((y % source_height) * source_width) +
+                              (x % source_width))]);
     }
   }
+  LogicPage->Unlock();
 }
 
 /***********************************************************************************************
@@ -2451,16 +2414,16 @@ void CC_Texture_Fill(const void* shapefile, int shapenum, int xpos, int ypos,
  *                                                                                             *
  * HISTORY: * 02/21/1995 JLB : Created. *
  *=============================================================================================*/
-void CC_Draw_Shape(const void* shapefile, int shapenum, int x, int y,
-                   WindowNumberType window, ShapeFlags_Type flags,
-                   const void* fadingdata, const void* ghostdata) {
-
-  if (shapefile && shapenum != -1) {
+void CC_Draw_Shape(std::span<const std::byte> shapefile, int shapenum, int x,
+                   int y, WindowNumberType window, ShapeFlags_Type flags,
+                   std::span<const uint8_t> fadingdata,
+                   std::span<const uint8_t> ghostdata) {
+  if (!shapefile.empty() && shapenum >= 0) {
     /*
     ** Build frame returns a pointer now instead of the shapes length
     */
-    void* shape_size =
-        Build_Frame(shapefile, static_cast<uint16_t>(shapenum), ShapeBuffer);
+    const auto shape_size = Build_Frame(
+        shapefile, static_cast<uint16_t>(shapenum), ShapeBufferBytes);
     if (Get_Last_Frame_Length() > ShapeBufferSize) {
       Mono_Printf(
           "Attempt to use shape buffer for size %d buffer is only size %d",
@@ -2468,17 +2431,21 @@ void CC_Draw_Shape(const void* shapefile, int shapenum, int x, int y,
       Get_Key();
     }
 
-    if (shape_size) {
+    if (!shape_size.empty()) {
       GraphicViewPortClass draw_window(
           LogicPage->Get_Graphic_Buffer(),
-          (base::At(WindowList[static_cast<int>(window)], kWindowX) * 8) +
+          (base::At(base::At(WindowList, static_cast<int>(window)), kWindowX) *
+           8) +
               LogicPage->Get_XPos(),
-          base::At(WindowList[static_cast<int>(window)], kWindowY) +
+          base::At(base::At(WindowList, static_cast<int>(window)), kWindowY) +
               LogicPage->Get_YPos(),
-          base::At(WindowList[static_cast<int>(window)], kWindowWidth) * 8,
-          base::At(WindowList[static_cast<int>(window)], kWindowHeight));
+          base::At(base::At(WindowList, static_cast<int>(window)),
+                   kWindowWidth) *
+              8,
+          base::At(base::At(WindowList, static_cast<int>(window)),
+                   kWindowHeight));
 
-      char* shape_pointer = static_cast<char*>(shape_size);
+      const auto shape_pointer = std::as_writable_bytes(shape_size);
 
       /*
       **	Special shadow drawing code (used for aircraft and bullets).
@@ -2492,15 +2459,16 @@ void CC_Draw_Shape(const void* shapefile, int shapenum, int x, int y,
 
       int predoffset = static_cast<int>(Frame);
 
-      if (x >
-          base::At(WindowList[static_cast<int>(window)], kWindowWidth) * 4) {
+      if (x > base::At(base::At(WindowList, static_cast<int>(window)),
+                       kWindowWidth) *
+                  4) {
         predoffset = -predoffset;
       }
 
       if (draw_window.Lock()) {
         const ShapeEffects effects{
-            .ghost_table = static_cast<const uint8_t*>(ghostdata),
-            .fading_table = static_cast<const uint8_t*>(fadingdata),
+            .ghost_table = ghostdata,
+            .fading_table = fadingdata,
             .fading_count = 1,
             .predator_offset = predoffset,
         };
@@ -2927,7 +2895,8 @@ void Handle_Team(int team, int action) {
  * HISTORY: * 07/04/1995 JLB : Created. *
  *=============================================================================================*/
 void Handle_View(int view, int action) {
-  if (static_cast<unsigned>(view) < sizeof(Views) / sizeof(Views[0])) {
+  if (static_cast<unsigned>(view) <
+      sizeof(Views) / sizeof(base::At(Views, 0))) {
     if (action == 0) {
       Map.Set_Tactical_Position(Cell_Coord(base::At(Views, view)) &
                                 0xFF00FF00L);
@@ -2995,9 +2964,10 @@ bool Force_CD_Available(int cd) {
 #ifndef DEMO
   static int _last = -1;
 #endif
-  static char _palette[768];
-  static char _hold[16];  // Saved copy of the font palette (FontPalette).
-  static const void* font;
+  static unsigned char _palette[768];
+  static unsigned char
+      _hold[16];  // Saved copy of the font palette (FontPalette).
+  static std::span<const std::byte> font;
   static const char* _volid[] = {"GDI", "NOD", "COVERT"};
 
   int new_cd_drive = 0;
@@ -3119,8 +3089,8 @@ bool Force_CD_Available(int cd) {
       Theme.Stop();
       int hidden = Get_Mouse_State();
       font = FontPtr;
-      Mem_Copy(CurrentPalette, _palette, 768);
-      Mem_Copy(Get_Font_Palette_Ptr(), _hold, sizeof(_hold));
+      std::ranges::copy(CurrentPalette, std::begin(_palette));
+      std::ranges::copy(Get_Font_Palette(), std::begin(_hold));
 
       /*
       **	Only set the palette if necessary.
@@ -3151,7 +3121,7 @@ bool Force_CD_Available(int cd) {
       }
       Set_Palette(_palette);
       Set_Font(font);
-      Mem_Copy(_hold, Get_Font_Palette_Ptr(), sizeof(_hold));
+      Set_Font_Palette(_hold);
       Set_Logic_Page(oldpage);
       InMainLoop = old_in_main_loop;
     }
@@ -3345,7 +3315,7 @@ static void Do_Record_Playback() {
  * HISTORY:                                                                *
  *   01/25/1996     : Created.                                             *
  *=========================================================================*/
-const void* Hires_Retrieve(const char* name) {
+std::span<const std::byte> Hires_Retrieve(const char* name) {
   char filename[30];
 
   if (SeenBuff.Get_Width() != 320) {
@@ -3353,6 +3323,6 @@ const void* Hires_Retrieve(const char* name) {
   } else {
     port::SafeCopy(filename, name);
   }
-  return MixArchive::Retrieve(filename);
+  return MixArchive::RetrieveData(filename);
 }
 int Get_Resolution_Factor() { return SeenBuff.Get_Width() == 320 ? 0 : 1; }

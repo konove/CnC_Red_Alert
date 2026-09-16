@@ -43,42 +43,21 @@
 #include "ra/profile.h"
 
 #include <algorithm>
-#include <cctype>
+#include <cstddef>
 #include <cstdint>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
+#include <span>
 #include <string_view>
 
-#include "absl/base/attributes.h"
 #include "absl/strings/str_format.h"
-#include "base/numeric.h"
-#include "port/ex_string.h"
+#include "port/profile_buffer.h"
 #include "port/safe_string.h"
+#include "tech/number_parse.h"
+#include "base/buffer.h"
+#include "base/numeric.h"
 #include "ra/defines.h"
 #include "ra/ini.h"
 #include "tech/file.h"
-#include "tech/number_parse.h"
-#include "tech/readline.h"
 
-static char* WriteBinBuffer = nullptr;
-static int WriteBinBufferLen = 0;
-static int WriteBinBufferPos = 0;
-static int WriteBinBufferMax = 0;
-static char* ReadBinBuffer = nullptr;
-static int ReadBinBufferLen = 0;
-static int ReadBinBufferPos = 0;
-static int ReadBinBufferMax = 0;
-
-/***************************************************************************
- * Read_Private_Config_Struct -- Fetches override integer value.           *
- *                                                                         *
- * INPUT:                                                                  *
- * OUTPUT:                                                                 *
- * WARNINGS:                                                               *
- * HISTORY:                                                                *
- *   08/05/1992 JLB : Created.                                             *
- *=========================================================================*/
 bool Read_Private_Config_Struct(File& file, NewConfigType* config) {
   INIClass ini;
   ini.Load(file);
@@ -95,692 +74,150 @@ bool Read_Private_Config_Struct(File& file, NewConfigType* config) {
   ini.Get_String("Language", "Language", nullptr, config->Language,
                  sizeof(config->Language));
 
-  //	config->DigitCard 	= WWGetPrivateProfileHex("Sound", "Card",
-  // profile); 	config->IRQ 			=
-  // WWGetPrivateProfileInt("Sound", "IRQ", 			 0,profile);
-  //	config->DMA 			= WWGetPrivateProfileInt("Sound", "DMA",
-  // 0,profile); 	config->Port 			=
-  // WWGetPrivateProfileHex("Sound", "Port", 			 profile);
-  //	config->BitsPerSample= WWGetPrivateProfileInt("Sound",
-  //"BitsPerSample",0,profile); 	config->Channels 		=
-  // WWGetPrivateProfileInt("Sound", "Channels",		 0,profile);
-  //	config->Reverse      = WWGetPrivateProfileInt("Sound", "Reverse",
-  // 0,profile); 	config->Speed        = WWGetPrivateProfileInt("Sound",
-  // "Speed", 0,profile); 	WWGetPrivateProfileString("Language",
-  // "Language", NULL, config->Language, 3, profile);
-
   return config->DigitCard == 0 && config->IRQ == 0 && config->DMA == 0;
 }
 
-/***************************************************************************
- * Get_Private_Profile_Hex -- Fetches override integer value.              *
- *                                                                         *
- * INPUT:                                                                  *
- * OUTPUT:                                                                 *
- * WARNINGS:                                                               *
- * HISTORY:                                                                *
- *   08/05/1992 MML : Created.                                             *
- *=========================================================================*/
 unsigned WWGetPrivateProfileHex(const char* section, const char* entry,
                                 const char* profile) {
-  char buffer[16];  // Integer staging buffer.
-  WWGetPrivateProfileString(section, entry, "0", buffer, sizeof(buffer),
-                            profile);
+  char buffer[16];
+  WWGetPrivateProfileString(section, entry, "0", buffer, profile);
   return tech::ParseHex<uint32_t>(buffer).value_or(0);
 }
 
-/***********************************************************************************************
- * WWGetPrivateProfileInt -- Fetches integer value. *
- *                                                                                             *
- * INPUT: * section      section to read from *
- *                                                                                             *
- *      entry         name of entry to read *
- *                                                                                             *
- *      def         default value, if entry isn't found *
- *                                                                                             *
- *      profile      buffer containing INI data *
- *                                                                                             *
- * OUTPUT: * integer requested *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 08/05/1992 JLB : Created. *
- *=============================================================================================*/
 int WWGetPrivateProfileInt(const char* section, const char* entry, int def,
                            const char* profile) {
-  char buffer[16];  // Integer staging buffer.
-
-  /*
-  **	Store the default in the buffer.
-  */
+  char buffer[16];
   absl::SNPrintF(buffer, sizeof(buffer), "%d", def);
-
-  /*
-  **	Get the buffer; use itself as the default.
-  */
-  WWGetPrivateProfileString(section, entry, buffer, buffer, sizeof(buffer) - 1,
-                            profile);
-
-  /*
-  **	Convert to int & return.
-  */
+  WWGetPrivateProfileString(section, entry, buffer, buffer, profile);
   return tech::ParseInteger<int>(buffer).value_or(def);
 }
 
-/***********************************************************************************************
- * WWWritePrivateProfileInt -- Write a profile int to the profile data block. *
- *                                                                                             *
- * INPUT: * section      section name to write to *
- *                                                                                             *
- *      entry         name of entry to write; if NULL, the entire section is
- *deleted           *
- *                                                                                             *
- *      value         value to write *
- *                                                                                             *
- *      profile      INI buffer *
- *                                                                                             *
- * OUTPUT: * true = success, false = failure *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 10/07/1992 JLB : Created. *
- *=============================================================================================*/
 bool WWWritePrivateProfileInt(const char* section, const char* entry, int value,
-                              char* profile) {
-  char buffer[250];  // Working section buffer.
-
-  /*
-  **	Just return if nothing to do.
-  */
-  if (!profile || !section) {
-    return true;
-  }
-
-  /*
-  **	Generate string to save.
-  */
+                              std::span<char> profile) {
+  char buffer[16];
   absl::SNPrintF(buffer, sizeof(buffer), "%d", value);
-
-  /*
-  **	Save the string.
-  */
   return WWWritePrivateProfileString(section, entry, buffer, profile);
 }
 
 const char* WWGetPrivateProfileString(const char* section, const char* key,
-                                      const char* def, char* dest, int dest_len,
-                                      const char* ini_data) {
-  const char* altworkptr = nullptr;  // Alternate work pointer.
-  char sec[50];            // Working section buffer.
-  const char* retval = nullptr;  // Start of section or entry pointer.
-  char c = 0;
-  const char* orig_retbuf = nullptr;  // original retbuffer ptr
-
-  //	if (!retlen) return(NULL);
-
-  /*
-  **	Fill in the default value just in case the entry could not be found.
-  */
-  if (dest) {
-    dest[0] = '\0';
-    if (dest_len > 1 || dest_len == 0) {
-      dest[1] = '\0';
-    }
-    if (def) {
-      strncpy(dest, def, base::ToSize(dest_len));
-    }
-    dest[dest_len - 1] = '\0';
-    orig_retbuf = dest;
+                                     const char* def, std::span<char> dest,
+                                     const char* ini_data) {
+  if (ini_data == nullptr || section == nullptr) {
+    port::SafeCopy(dest, def);
+    return dest.data();
   }
-
-  /*
-  **	Make sure a profile string was passed in
-  */
-  if (!ini_data || !section) {
-    return dest;
-  }
-
-  /*
-  **	Build section string to match file image.
-  */
-  absl::SNPrintF(sec, sizeof(sec), "[%s]",
-                 section);  // sec = section name including []'s
-  strupr(sec);
-  int len = static_cast<int>(
-      std::string_view(sec).size());  // Working substring length value.  // len
-                                      // = section name length, incl []'s
-
-  /*
-  **	Scan for a matching section
-  */
-  const char* workptr = ini_data;  // Working pointer into profile block.
-  for (;;) {
-    /*
-    **	'workptr' = start of next section
-    */
-    workptr = strchr(workptr, '[');
-
-    /*
-    **	If the end has been reached without finding the desired section
-    **	then abort with a failure flag.
-    */
-    if (!workptr) {
-      return nullptr;
-    }
-
-    /*
-    **	'c' = character just before the '['
-    */
-    if (workptr == ini_data) {
-      c = '\n';
-    } else {
-      c = *(workptr - 1);
-    }
-
-    /*
-    **	If this is the section name & the character before is a newline,
-    **	process this section
-    */
-    if (memicmp(workptr, sec, base::ToSize(len)) == 0 && c == '\n') {
-      /*
-      **	Skip work pointer to start of first valid entry.
-      */
-      workptr += len;
-      while (isspace(*workptr)) {
-        workptr++;
-      }
-
-      /*
-      **	If the section name is empty, we will have stepped onto the
-      *start *	of the next section name; inserting new entries here will leave
-      **	a blank line between this section's name & 1st entry. So, check
-      **	for 2 newlines in a row & step backward.
-      */
-      if ((workptr - ini_data > 4) &&
-          (*(workptr - 1) == '\n' && *(workptr - 3) == '\n')) {
-        workptr -= 2;
-      }
-
-      /*
-      **	'next = end of section or end of file.
-      */
-      const char* next =
-          strchr(workptr, '[');  // Pointer to start of next section (or EOF).
-      for (;;) {
-        if (next) {
-          c = *(next - 1);
-
-          /*
-          **	If character before '[' is newline, this is the start of the
-          **	next section
-          */
-          if (c == '\n') {
-            if (*(next - 1) == '\n' && *(next - 3) == '\n') {
-              next -= 2;
-            }
-            break;
-          }
-
-          /*
-          **	This bracket was in the section; keep looking
-          */
-          next = strchr(next + 1, '[');
-        } else {
-          /*
-          **	No bracket found; set 'next' to the end of the file
-          */
-          next = workptr + std::string_view(workptr).size() - 1;
-          break;
-        }
-      }
-
-      /*
-      **	If a specific entry was specified then return with the
-      *associated *	string.
-      */
-      if (key) {
-        const int entrylen = static_cast<int>(
-            std::string_view(key).size());  // Byte length of specified entry.
-
-        for (;;) {
-          /*
-          ** Search for the 1st character of the entry
-          */
-          workptr = strchr(workptr, *key);
-
-          /*
-          **	If the end of the file has been reached or we have spilled
-          **	into the next section, then abort
-          */
-          if (!workptr || workptr >= next) {
-            return nullptr;
-          }
-
-          /*
-          **	'c' = character before possible entry; must be a newline
-          **	'c2' = character after possible entry; must be '=' or space
-          */
-          c = *(workptr - 1);
-          const char c2 = *(workptr + entrylen);  // Working character values.
-
-          /*
-          **	Entry found; extract it
-          */
-          if (memicmp(workptr, key, base::ToSize(entrylen)) == 0 && c == '\n' &&
-              (c2 == '=' || isspace(c2))) {
-            retval = workptr;
-            workptr += entrylen;             // skip entry name
-            workptr = strchr(workptr, '=');  // find '='
-
-            /*
-            ** 'altworkptr' = next newline; \r is used here since we're
-            ** scanning forward!
-            */
-            if (workptr) {
-              altworkptr = strchr(workptr, '\r');  // find next newline
-            }
-
-            /*
-            **	Return if there was no '=', or if the newline is before
-            **	the next '='
-            */
-            if (workptr == nullptr || altworkptr < workptr) {
-              return retval;
-            }
-
-            /*
-            **	Skip any white space after the '=' and before the first
-            **	valid character of the parameter.
-            */
-            workptr++;  // Skip the '='.
-            while (isspace(*workptr)) {
-              /*
-              **	Just return if there's no entry past the '='.
-              */
-              if (workptr >= altworkptr) {
-                return retval;
-              }
-
-              workptr++;  // Skip the whitespace
-            }
-
-            /*
-            **	Copy the entry into the return buffer.
-            */
-            len = static_cast<int>(altworkptr - workptr);
-            len = std::min(len, dest_len - 1);
-
-            if (dest) {
-              memcpy(dest, workptr, base::ToSize(len));
-              *(dest + len) = '\0';  // Insert trailing null.
-              strtrim(dest);
-            }
-            return retval;
-          }
-
-          /*
-          **	Entry was not found; go to the next one
-          */
-          workptr++;
-        }
-      } else {
-        /*
-        **	No entry was specified, so build a list of all entries.
-        **	'workptr' is at 1st entry after section name
-        **	'next' is next bracket, or end of file
-        */
-        retval = workptr;
-
-        if (dest) {
-          /*
-          **	Keep accumulating the identifier strings in the retbuffer.
-          */
-          while (workptr && workptr < next) {
-            altworkptr = strchr(workptr, '=');  // find '='
-
-            if (altworkptr && altworkptr < next) {
-              const int length = static_cast<int>(
-                  altworkptr - workptr);  // Length of ID string.
-
-              /*
-              **	Make sure we don't write past the end of the retbuffer;
-              **	add '3' for the 3 NULL's at the end
-              */
-              if (dest - orig_retbuf + length + 3 < dest_len) {
-                memcpy(dest, workptr, base::ToSize(length));  // copy entry name
-                *(dest + length) = '\0';  // NULL-terminate it
-                strtrim(dest);            // trim spaces
-                dest +=
-                    std::string_view(dest).size() + 1;  // next pos in dest buf
-              } else {
-                break;
-              }
-
-              /*
-              **	Advance the work pointer to the start of the next line
-              **	by skipping the end of line character.
-              */
-              workptr = strchr(altworkptr, '\n');
-              if (!workptr) {
-                break;
-              }
-              workptr++;
-            } else {
-              /*
-              **	If no '=', break out of loop
-              */
-              break;
-            }
-          }
-
-          /*
-          **	Final trailing terminator. Make double sure the double
-          **	trailing null is added.
-          */
-          *dest++ = '\0';
-          *dest++ = '\0';
-        }
-        break;
-      }
-    } else {
-      /*
-      **	Section name not found; go to the next bracket & try again
-      **	Advance past '[' and keep scanning.
-      */
-      workptr++;
-    }
-  }
-
-  return retval;
+  const std::string_view text(ini_data);
+  const auto found = port::ReadProfile(text, section, key, def, dest);
+  return found ? text.substr(*found).data() : nullptr;
 }
 
-// Returns a writable cursor into `profile` at the entry (or, with a nullptr
-// `entry`, the first entry of the section) that WWGetPrivateProfileString
-// finds, or nullptr if there is none. The lookup hands back a const view, so
-// the cursor is rebuilt from its offset into the buffer being edited.
-static char* Find_Profile_Entry(const char* section, const char* entry,
-                                char* profile ABSL_ATTRIBUTE_LIFETIME_BOUND) {
-  const char* found =
-      WWGetPrivateProfileString(section, entry, nullptr, nullptr, 0, profile);
-  return found == nullptr ? nullptr : profile + (found - profile);
-}
-
-/***********************************************************************************************
- * WritePrivateProfileString -- Write a string to the profile data block. *
- *                                                                                             *
- * INPUT: * section      section name to write to * entry         name of entry
- *to write; if NULL, the section is deleted                  * string string to
- *write; if NULL, the entry is deleted                             * profile INI
- *buffer                                                                *
- *                                                                                             *
- * OUTPUT: * true = success, false = failure *
- *                                                                                             *
- * WARNINGS: * This function has to translate newlines into CR LF sequences. *
- *                                                                                             *
- * HISTORY: * 10/07/1992 JLB : Created. *
- *=============================================================================================*/
 bool WWWritePrivateProfileString(const char* section, const char* entry,
-                                 const char* string, char* profile) {
-  char buffer[250];  // Working section buffer
-
-  /*
-  **	Just return if nothing to do.
-  */
-  if (!profile || !section) {
+                                 const char* string, std::span<char> profile) {
+  if (profile.empty() || section == nullptr) {
     return true;
   }
-
-  /*
-  **	Try to find the section. WWGetPrivateProfileString with NULL entry name
-  **	will return all entry names in the given buffer, truncated to the given
-  **	buffer length. 'offset' will point to 1st entry in the section, NULL if
-  **	section not found.
-  */
-  char* offset = Find_Profile_Entry(section, nullptr, profile);
-
-  /*
-  **	If the section could not be found, then add it to the end. Don't add
-  **	anything if a removal of an entry is requested (it is obviously already
-  **	non-existent). Make sure two newlines precede the section name.
-  */
-  if (!offset && entry) {
-    absl::SNPrintF(buffer, sizeof(buffer), "\r\n[%s]\r\n", section);
-    // TODO(konove): Why profile is initialized with kShapeBufferSize?
-    port::SafeAppend(profile, buffer, kShapeBufferSize);
-  }
-
-  /*
-  **	If the section is there and 'entry' is NULL, remove the entire section
-  */
-  if (offset && !entry) {
-    /*
-    **	'next = end of section or end of file.
-    */
-    const char* next = strchr(offset, '[');  // ptr to next section
-    for (;;) {
-      if (next) {
-        const char c = *(next - 1);  // Working character value
-
-        /*
-        **	If character before '[' is newline, this is the start of the
-        **	next section
-        */
-        if (c == '\n') {
-          if (*(next - 1) == '\n' && *(next - 3) == '\n') {
-            next -= 2;
-          }
-          break;
-        }
-
-        /*
-        **	This bracket was in the section; keep looking
-        */
-        next = strchr(next + 1, '[');
-      } else {
-        /*
-        **	No bracket found; set 'next' to the end of the file
-        */
-        next = offset + std::string_view(offset).size();
-        break;
-      }
-    }
-
-    /*
-    **	Remove the section
-    */
-    // Profile is initialized to be of size kShapeBufferSize, which is big
-    // enough.
-    // NOLINTNEXTLINE(clang-analyzer-security.insecureAPI.strcpy)
-    strcpy(offset, next);
-
-    return true;
-  }
-
-  /*
-  **	Find the matching entry within the desired section. A NULL return buffer
-  **	with 0 length will just return the offset of the found entry, NULL if
-  **	entry not found.
-  */
-  offset = Find_Profile_Entry(section, entry, profile);
-
-  /*
-  **	Remove any existing entry
-  */
-  if (offset) {
-
-    /*
-    **	Get # characters up to newline; \n is used since we're after the end
-    **	of this line
-    */
-    const int eol =
-        static_cast<int>(strcspn(offset, "\n"));  // Working EOL offset.
-
-    /*
-    **	Erase the entry by strcpy'ing the entire INI file over this entry
-    */
-    if (eol) {
-      // Profile is initialized to be of size kShapeBufferSize, which is big
-      // enough.
-      // NOLINTNEXTLINE(clang-analyzer-security.insecureAPI.strcpy)
-      strcpy(offset, offset + eol + 1);
-    }
-  } else {
-    /*
-    **	Entry doesn't exist, so point 'offset' to the 1st entry position in
-    **	the section.
-    */
-    offset = Find_Profile_Entry(section, nullptr, profile);
-  }
-
-  /*
-  **	Add the desired entry.
-  */
-  if (entry && string) {
-    /*
-    **	Generate entry string.
-    */
-    absl::SNPrintF(buffer, sizeof(buffer), "%s=%s\r\n", entry, string);
-
-    /*
-    **	Make room for new entry.
-    */
-    memmove(offset + std::string_view(buffer).size(), offset,
-            std::string_view(offset).size() + 1);
-
-    /*
-    **	Copy the entry into the INI buffer (without null terminator, since we're
-    **	inserting into the middle of existing text).
-    */
-    std::copy(buffer, buffer + std::string_view(buffer).size(), offset);
-  }
-
-  return true;
+  return port::WriteProfile(profile, section, entry, string);
 }
 
-char* Read_Bin_Buffer() { return ReadBinBuffer; }
+namespace {
+std::span<char> write_bin_buffer;
+std::span<char> read_bin_buffer;
+int write_bin_pos = 0;
+int write_bin_max = 0;
+int read_bin_pos = 0;
+int read_bin_max = 0;
+}  // namespace
 
-bool Read_Bin_Init(char* buffer, int length) {
-  ReadBinBuffer = buffer;
-  ReadBinBufferLen = length;
-  ReadBinBufferPos = 0;
-  ReadBinBufferMax = 0;
+char* Read_Bin_Buffer() { return read_bin_buffer.data(); }
+char* Write_Bin_Buffer() { return write_bin_buffer.data(); }
+
+bool Read_Bin_Init(std::span<char> buffer) {
+  read_bin_buffer = buffer;
+  read_bin_pos = 0;
+  read_bin_max = 0;
   return true;
 }
-
+bool Write_Bin_Init(std::span<char> buffer) {
+  write_bin_buffer = buffer;
+  write_bin_pos = 0;
+  write_bin_max = 0;
+  return true;
+}
 int Read_Bin_Length(const char* buffer) {
-  if (buffer != ReadBinBuffer) {
-    return -1;
-  }
-  return ReadBinBufferMax;
+  return buffer == read_bin_buffer.data() ? read_bin_max : -1;
 }
-
-bool Read_Bin_Num(void* num, int length, const char* buffer) {
-
-  if (buffer != ReadBinBuffer || length <= 0 || length > 4 ||
-      ReadBinBufferPos + length >= ReadBinBufferLen) {
-    return false;
-  }
-  char* ptr = ReadBinBuffer + ReadBinBufferPos;
-  memcpy(num, ptr, base::ToSize(length));
-  ReadBinBufferPos += length;
-
-  ReadBinBufferMax = std::max(ReadBinBufferPos, ReadBinBufferMax);
-
-  return true;
-}
-
-int Read_Bin_Pos(const char* buffer) {
-  if (buffer != ReadBinBuffer) {
-    return -1;
-  }
-  return ReadBinBufferPos;
-}
-
-int Read_Bin_PosSet(int pos, const char* buffer) {
-  if (buffer != ReadBinBuffer) {
-    return -1;
-  }
-  ReadBinBufferPos = pos;
-  return ReadBinBufferPos;
-}
-
-bool Read_Bin_String(char* string, const char* buffer) {
-
-  if (buffer != ReadBinBuffer || ReadBinBufferPos >= ReadBinBufferLen) {
-    return false;
-  }
-  char* ptr = ReadBinBuffer + ReadBinBufferPos;
-  const auto length = static_cast<unsigned char>(*ptr++);
-  if (ReadBinBufferPos + length + 2 <= ReadBinBufferLen) {
-    memcpy(string, ptr, static_cast<unsigned int>(length + 1));
-    ReadBinBufferPos += length + 2;
-
-    ReadBinBufferMax = std::max(ReadBinBufferPos, ReadBinBufferMax);
-
-    return true;
-  }
-  return false;
-}
-
-char* Write_Bin_Buffer() { return WriteBinBuffer; }
-
-bool Write_Bin_Init(char* buffer, int length) {
-  WriteBinBuffer = buffer;
-  WriteBinBufferLen = length;
-  WriteBinBufferPos = 0;
-  WriteBinBufferMax = 0;
-  return true;
-}
-
 int Write_Bin_Length(const char* buffer) {
-  if (buffer != WriteBinBuffer) {
+  return buffer == write_bin_buffer.data() ? write_bin_max : -1;
+}
+int Read_Bin_Pos(const char* buffer) {
+  return buffer == read_bin_buffer.data() ? read_bin_pos : -1;
+}
+int Write_Bin_Pos(const char* buffer) {
+  return buffer == write_bin_buffer.data() ? write_bin_pos : -1;
+}
+int Read_Bin_PosSet(int pos, const char* buffer) {
+  if (buffer != read_bin_buffer.data() || pos < 0 ||
+      base::ToSize(pos) > read_bin_buffer.size()) {
     return -1;
   }
-  return WriteBinBufferMax;
+  read_bin_pos = pos;
+  return pos;
 }
-
-bool Write_Bin_Num(const void* num, int length, const char* buffer) {
-
-  if (buffer != WriteBinBuffer || length <= 0 || length > 4 ||
-      WriteBinBufferPos + length > WriteBinBufferLen) {
+int Write_Bin_PosSet(int pos, const char* buffer) {
+  if (buffer != write_bin_buffer.data() || pos < 0 ||
+      base::ToSize(pos) > write_bin_buffer.size()) {
+    return -1;
+  }
+  write_bin_pos = pos;
+  return pos;
+}
+bool Read_Bin_Num(std::span<std::byte> num, int length, const char* buffer) {
+  if (buffer != read_bin_buffer.data() || length <= 0 || length > 4 ||
+      base::ToSize(length) > num.size() ||
+      base::ToSize(length) > read_bin_buffer.size() - base::ToSize(read_bin_pos)) {
     return false;
   }
-  char* ptr = WriteBinBuffer + WriteBinBufferPos;
-  memcpy(ptr, num, base::ToSize(length));
-  WriteBinBufferPos += length;
-
-  WriteBinBufferMax = std::max(WriteBinBufferPos, WriteBinBufferMax);
-
+  base::CopyBytes(num, std::as_bytes(read_bin_buffer).subspan(base::ToSize(read_bin_pos)), length);
+  read_bin_pos += length;
+  read_bin_max = std::max(read_bin_pos, read_bin_max);
   return true;
 }
-
-int Write_Bin_Pos(const char* buffer) {
-  if (buffer != WriteBinBuffer) {
-    return -1;
-  }
-  return WriteBinBufferPos;
-}
-
-int Write_Bin_PosSet(int pos, const char* buffer) {
-  if (buffer != WriteBinBuffer) {
-    return -1;
-  }
-  WriteBinBufferPos = pos;
-  return WriteBinBufferPos;
-}
-
-bool Write_Bin_String(const char* string, int length, const char* buffer) {
-
-  if (buffer != WriteBinBuffer || length < 0 || length > 255 ||
-      WriteBinBufferPos + length + 2 > WriteBinBufferLen) {
+bool Write_Bin_Num(std::span<const std::byte> num, int length, const char* buffer) {
+  if (buffer != write_bin_buffer.data() || length <= 0 || length > 4 ||
+      base::ToSize(length) > num.size() ||
+      base::ToSize(length) > write_bin_buffer.size() - base::ToSize(write_bin_pos)) {
     return false;
   }
-  char* ptr = WriteBinBuffer + WriteBinBufferPos;
-  *ptr++ = static_cast<char>(length);
-  memcpy(ptr, string, base::ToSize(length + 1));
-  WriteBinBufferPos += length + 2;
-
-  WriteBinBufferMax = std::max(WriteBinBufferPos, WriteBinBufferMax);
-
+  base::CopyBytes(std::as_writable_bytes(write_bin_buffer).subspan(base::ToSize(write_bin_pos)), num, length);
+  write_bin_pos += length;
+  write_bin_max = std::max(write_bin_pos, write_bin_max);
+  return true;
+}
+bool Read_Bin_String(std::span<char> string, const char* buffer) {
+  if (buffer != read_bin_buffer.data() || base::ToSize(read_bin_pos) >= read_bin_buffer.size()) {
+    return false;
+  }
+  const auto remaining = read_bin_buffer.subspan(base::ToSize(read_bin_pos));
+  const auto length = static_cast<unsigned char>(remaining.front());
+  if (static_cast<std::size_t>(length) + 2 > remaining.size() ||
+      static_cast<std::size_t>(length) + 1 > string.size() || remaining[static_cast<std::size_t>(length) + 1] != '\0') {
+    return false;
+  }
+  std::ranges::copy(remaining.subspan(1, static_cast<std::size_t>(length) + 1), string.begin());
+  read_bin_pos += length + 2;
+  read_bin_max = std::max(read_bin_pos, read_bin_max);
+  return true;
+}
+bool Write_Bin_String(std::string_view string, const char* buffer) {
+  if (buffer != write_bin_buffer.data() || string.size() > 255 ||
+      string.size() + 2 > write_bin_buffer.size() - base::ToSize(write_bin_pos)) {
+    return false;
+  }
+  const auto remaining = write_bin_buffer.subspan(base::ToSize(write_bin_pos));
+  remaining.front() = static_cast<char>(string.size());
+  std::ranges::copy(string, remaining.subspan(1).begin());
+  remaining[string.size() + 1] = '\0';
+  write_bin_pos += static_cast<int>(string.size()) + 2;
+  write_bin_max = std::max(write_bin_pos, write_bin_max);
   return true;
 }

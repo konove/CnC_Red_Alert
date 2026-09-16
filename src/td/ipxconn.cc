@@ -50,10 +50,12 @@
 
 #include "td/ipxconn.h"
 
+#include <cstddef>
 #include <cstdint>
 #include <cstring>
 #include <span>
 
+#include "base/array.h"
 #include "base/buffer.h"
 #include "port/safe_string.h"
 #include "td/ipx.h"
@@ -426,7 +428,7 @@ bool IPXConnClass::Stop_Listening() {
  * HISTORY:                                                                *
  *   12/16/1994 BR : Created.                                              *
  *=========================================================================*/
-int IPXConnClass::Send(void* buf, int buflen) {
+int IPXConnClass::Send(std::span<const std::byte> buf, int buflen) {
   /*------------------------------------------------------------------------
   Invoke our own Send_To routine, filling in our Address as the destination.
   ------------------------------------------------------------------------*/
@@ -562,7 +564,8 @@ void IPXConnClass::Close_Socket(uint16_t socket) {
  * HISTORY:                                                                *
  *   12/16/1994 BR : Created.                                              *
  *=========================================================================*/
-int IPXConnClass::Send_To(void* buf, int buflen, IPXAddressClass* address,
+int IPXConnClass::Send_To(std::span<const std::byte> buf, int buflen,
+                          IPXAddressClass* address,
                           std::span<const unsigned char> immed) {
   NetNumType net;
   NetNodeType node;
@@ -576,7 +579,7 @@ int IPXConnClass::Send_To(void* buf, int buflen, IPXAddressClass* address,
       base::CopyBytes(base::ObjectBytes(send_address), std::as_bytes(immed), 6);
     } else {
       address->Get_Address(net, node);
-      memcpy(send_address, node, 6);
+      base::CopyBytes(send_address, node, 6);
     }
     /*
     ** Use first two bytes of ipx address as target mask
@@ -587,7 +590,7 @@ int IPXConnClass::Send_To(void* buf, int buflen, IPXAddressClass* address,
     char* tempsend = new char[buflen + sizeof(target_mask)];
 
     *(unsigned short*)tempsend = htons(target_mask);
-    memcpy(tempsend + 2, buf, buflen);
+    base::CopyBytes(tempsend + 2, buf, buflen);
 
     Winsock.Write((void*)tempsend, buflen + sizeof(target_mask));
     delete[] tempsend;
@@ -600,7 +603,7 @@ int IPXConnClass::Send_To(void* buf, int buflen, IPXAddressClass* address,
 
   if (!immed.empty()) {
     base::CopyBytes(base::ObjectBytes(send_address), std::as_bytes(immed), 6);
-    // memcpy(node, immed, 6);
+    // base::CopyBytes(node, immed, 6);
     // memset (net, 0, sizeof(net) );
     address->Get_Address(net, node);
   } else {
@@ -610,7 +613,7 @@ int IPXConnClass::Send_To(void* buf, int buflen, IPXAddressClass* address,
     bridge address the "official" way
     .....................................................................*/
     if (ConnectionNum != 0) {
-      rc = IPX_Get_Local_Target(net, node, Socket, &send_address[0]);
+      rc = IPX_Get_Local_Target(net, node, Socket, &base::At(send_address, 0));
       if (rc != 0) {
         return 0;
       }
@@ -624,8 +627,8 @@ int IPXConnClass::Send_To(void* buf, int buflen, IPXAddressClass* address,
     }
   }
 
-  return IPX_Send_Packet95(&send_address[0], static_cast<unsigned char*>(buf),
-                           buflen, net, node);
+  return IPX_Send_Packet95(&base::At(send_address, 0), buf.data(), buflen, net,
+                           node);
 }
 
 /***************************************************************************
@@ -647,11 +650,11 @@ int IPXConnClass::Send_To(void* buf, int buflen, IPXAddressClass* address,
  * HISTORY:                                                                *
  *   12/16/1994 BR : Created.                                              *
  *=========================================================================*/
-int IPXConnClass::Broadcast(void* buf, int buflen) {
+int IPXConnClass::Broadcast(std::span<const std::byte> buf, int buflen) {
   if (Winsock.Get_Connected()) {
 #ifdef VIRTUAL_SUBNET_SERVER
     char* tempsend = new char[buflen + sizeof(unsigned short)];
-    memcpy(tempsend + 2, buf, buflen);
+    base::CopyBytes(tempsend + 2, buf, buflen);
     *tempsend = 0;
     *(tempsend + 1) = 0;
 
@@ -662,5 +665,5 @@ int IPXConnClass::Broadcast(void* buf, int buflen) {
 #endif  // VIRTUAL_SUBNET_SERVER
     return 1;
   }
-  return IPX_Broadcast_Packet95(static_cast<unsigned char*>(buf), buflen);
+  return IPX_Broadcast_Packet95(buf.data(), buflen);
 }

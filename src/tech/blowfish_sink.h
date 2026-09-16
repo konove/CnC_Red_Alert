@@ -17,7 +17,7 @@ class BlowfishSink : public TransformSink<BlowfishCodec> {
   using TransformSink::TransformSink;
 
   // Keys the cipher. Until then bytes pass through unchanged.
-  void Key(const void* key, int length) { codec().Key(key, length); }
+  void Key(std::span<const std::byte> key) { codec().Key(key); }
 };
 
 #endif  // CNC_RED_ALERT_TECH_BLOWFISH_SINK_H_

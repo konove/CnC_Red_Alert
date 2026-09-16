@@ -107,11 +107,14 @@
 #ifndef CNC_RED_ALERT_RA_CONNECT_H_
 #define CNC_RED_ALERT_RA_CONNECT_H_
 
+#include <cstddef>
+#include <span>
+#include <vector>
+
 /*
 ********************************* Includes **********************************
 */
 #include <cstdint>
-#include <span>
 
 #include "base/enum_array.h"
 #include "ra/combuf.h"
@@ -175,9 +178,10 @@ class ConnectionClass {
   /*.....................................................................
   Send/Receive routines.
   .....................................................................*/
-  virtual int Send_Packet(void* buf, int buflen, int ack_req);
-  virtual int Receive_Packet(void* buf, int buflen);
-  virtual int Get_Packet(void* buf, int* buflen);
+  virtual int Send_Packet(std::span<const std::byte> buf, int buflen,
+                          int ack_req);
+  virtual int Receive_Packet(std::span<std::byte> buf, int buflen);
+  virtual int Get_Packet(std::span<std::byte> buf, int* buflen);
 
   /*.....................................................................
   The main polling routine for the connection.  Should be called as often
@@ -233,7 +237,8 @@ class ConnectionClass {
   is protected; it's only called by the ACK/Retry logic, not the
   application.
   .....................................................................*/
-  virtual int Send(void* buf, int buflen, void* extrabuf, int extralen) = 0;
+  virtual int Send(std::span<const std::byte> buf, int buflen,
+                   std::span<const std::byte> extrabuf, int extralen) = 0;
 
   /*.....................................................................
   This is the maximum packet length, including our own internal header.
@@ -244,7 +249,7 @@ class ConnectionClass {
   Packet staging area; this is where the CommHeaderType gets tacked onto
   the application's packet before it's sent.
   .....................................................................*/
-  char* PacketBuf;
+  std::vector<std::byte> PacketBuf;
 
   /*.....................................................................
   This is the magic number assigned to this connection.  It is the first

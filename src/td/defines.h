@@ -42,6 +42,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <span>
 #include <utility>
 
 #include "base/attributes.h"
@@ -2382,15 +2383,15 @@ struct GroundType {
 /**************************************************************************
 **	Find_Path returns with a pointer to this structure.
 */
-typedef struct {
-  CELL Start;              // Starting cell number.
-  int Cost;                // Accumulated terrain cost.
-  int Length;              // Command string length.
-  FacingType* Command;     // Pointer to command string.
-  uint32_t* Overlap;       // Overlap bitmap, see td/path_overlap.h.
-  CELL LastOverlap;        // stores position of last overlap
-  CELL LastFixup;          // stores position of last overlap
-} PathType;
+struct PathType {
+  CELL Start = 0;                 // Starting cell number.
+  int Cost = 0;                   // Accumulated terrain cost.
+  int Length = 0;                 // Command string length.
+  std::span<FacingType> Command;  // Pointer to command string.
+  std::span<uint32_t> Overlap;    // Overlap bitmap, see td/path_overlap.h.
+  CELL LastOverlap = 0;           // stores position of last overlap
+  CELL LastFixup = 0;             // stores position of last overlap
+};
 
 /**********************************************************************
 ** These are special indices into the Waypoint array; slots 0-25 are

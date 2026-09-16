@@ -1,9 +1,11 @@
 // Tests the public-key stream factories: a random Blowfish key sealed with
 // one half of a key pair opens with the other half.
 
+#include <algorithm>
 #include <array>
 #include <cstddef>
 #include <cstdint>
+#include <iterator>
 #include <span>
 #include <vector>
 
@@ -36,7 +38,8 @@ std::vector<uint8_t> Drain(ByteSource& straw) {
   for (base::ssize count = straw.Read(std::as_writable_bytes(std::span(chunk)));
        count != 0;
        count = straw.Read(std::as_writable_bytes(std::span(chunk)))) {
-    result.insert(result.end(), chunk.begin(), chunk.begin() + count);
+    std::ranges::copy(std::span(chunk).first(static_cast<std::size_t>(count)),
+                      std::back_inserter(result));
   }
   return result;
 }

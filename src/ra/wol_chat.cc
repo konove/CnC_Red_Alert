@@ -222,27 +222,27 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
   //	Buttons
   //------------------------------------------------------------------------
 
-  const void* pShpExpand = MixArchive::Retrieve("exp.shp");
-  const void* pShpUnexpand = MixArchive::Retrieve("unexp.shp");
+  const auto pShpExpand = MixArchive::RetrieveData("exp.shp");
+  const auto pShpUnexpand = MixArchive::RetrieveData("unexp.shp");
 
   IconListClass chatlist(kButtonChatlist, d_chatlist_x, d_chatlist_y,
                          d_chatlist_w, d_chatlist_h, TPF_TYPE,
-                         MixArchive::Retrieve("BTN-UP.SHP"),
-                         MixArchive::Retrieve("BTN-DN.SHP"), true, 0, 500);
+                         MixArchive::RetrieveData("BTN-UP.SHP"),
+                         MixArchive::RetrieveData("BTN-DN.SHP"), true, 0, 500);
   ShapeButtonClass ExpandChanBtn(kButtonExpandchannels, pShpExpand,
                                  d_chanlist_x + d_chanlist_w - 17,
                                  d_chanlist_y - 14);
   IconListClass chanlist(kButtonChanlist, d_chanlist_x, d_chanlist_y,
                          d_chanlist_w, d_chanlist_h, TPF_TYPE,
-                         MixArchive::Retrieve("BTN-UP.SHP"),
-                         MixArchive::Retrieve("BTN-DN.SHP"), true, 1);
+                         MixArchive::RetrieveData("BTN-UP.SHP"),
+                         MixArchive::RetrieveData("BTN-DN.SHP"), true, 1);
   ShapeButtonClass ExpandUserBtn(kButtonExpandusers, pShpExpand,
                                  d_userlist_x + d_userlist_w - 17,
                                  d_userlist_y - 14);
   IconListClass userlist(kButtonUserlist, d_userlist_x, d_userlist_y,
                          d_userlist_w, d_userlist_h, TPF_TYPE,
-                         MixArchive::Retrieve("BTN-UP.SHP"),
-                         MixArchive::Retrieve("BTN-DN.SHP"), true, 2);
+                         MixArchive::RetrieveData("BTN-UP.SHP"),
+                         MixArchive::RetrieveData("BTN-DN.SHP"), true, 2);
   TextButtonClass ActionBtn(kButtonAction, TXT_WOL_ACTION, kTpfButton,
                             d_action_x, d_action_y, d_action_w);
   TextButtonClass CreateBtn(kButtonCreate, TXT_WOL_NEWSOMETHING, kTpfButton,
@@ -271,8 +271,8 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
   EditClass sendedit(kButtonSendedit, szSendBuffer, MAXCHATSENDLENGTH, kTpfText,
                      d_send_x, d_send_y, d_send_w, d_send_h);
 
-  const void* pShpRankRA = MixArchive::Retrieve("rank_ra.shp");
-  const void* pShpRankAM = MixArchive::Retrieve("rank_am.shp");
+  const auto pShpRankRA = MixArchive::RetrieveData("rank_ra.shp");
+  const auto pShpRankAM = MixArchive::RetrieveData("rank_am.shp");
   ShapeButtonClass RankRABtn(kButtonRankra, pShpRankRA,
                              d_userlist_x + d_userlist_w - ((16 * 4) + 1),
                              d_userlist_y - 14);
@@ -377,7 +377,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
   //........................................................................
   // List boxes
   //........................................................................
-  int tabs[] = {150};  //	tabs for channel list
+  const int tabs[] = {150};  //	tabs for channel list
   chanlist.Set_Tabs(tabs);
 
   lastclick_timer.Reset();
@@ -388,7 +388,8 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
 
   if (!pWO->bChatShownBefore) {
     //	Print message of the day.
-    chatlist.Add_Item(pWO->pChatSink->szMotd, nullptr, nullptr, ICON_SHAPE);
+    chatlist.Add_Item(pWO->pChatSink->szMotd.c_str(), nullptr, nullptr,
+                      ICON_SHAPE);
   } else {
     //	We have returned to the chat dialog after being in either game setup or
     // an actual game.
@@ -585,7 +586,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
     if (bFirsttime && !pWO->bChatShownBefore) {
       WWMessageBox().Process(TXT_WOL_FINDINGLOBBY, TXT_NONE);
       char szLobbyName[WOL_CHANNAME_LEN_MAX];
-      if (pWO->GetNameOfBeginningLobby(szLobbyName, sizeof(szLobbyName))) {
+      if (pWO->GetNameOfBeginningLobby(szLobbyName)) {
         //				debugprint( "Found lobby to go into:
         //'%s'\n", szLobbyName );
         if (!EnterChannel(pWO, chatlist, nullptr, szLobbyName, false)) {
@@ -1167,8 +1168,7 @@ bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist, Channel* pChannel,
       return false;
     }
     pChannel = &ChannelWhenNameOnly;
-    port::SafeCopy(WolText(pChannel->name), szChannelName,
-                   sizeof(pChannel->name));
+    port::SafeCopy(WolTextBuffer(pChannel->name), szChannelName);
   }
 
   if (bGame && pChannel->currentUsers >=
@@ -1212,8 +1212,7 @@ bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist, Channel* pChannel,
   //	Set password automatically for our lobbies, if trying to join one.
   const int iLobby = iChannelLobbyNumber(WolText(pChannel->name));
   if (iLobby != -1) {
-    port::SafeCopy(WolText(pChannel->key), LOBBYPASSWORD,
-                   sizeof(pChannel->key));
+    port::SafeCopy(WolTextBuffer(pChannel->key), LOBBYPASSWORD);
   }
 
   char szSuccessfulPassword[WOL_PASSWORD_LEN + 5];
@@ -1248,8 +1247,7 @@ bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist, Channel* pChannel,
           break;
         }
         pWO->bPump_In_Call_Back = false;
-        port::SafeCopy(WolText(pChannel->key), pEditDlg->szEdit,
-                       sizeof(pChannel->key));
+        port::SafeCopy(WolTextBuffer(pChannel->key), pEditDlg->szEdit);
         port::SafeCopy(szSuccessfulPassword, pEditDlg->szEdit);
         delete pEditDlg;
         break;
@@ -1440,7 +1438,7 @@ bool ProcessChannelListSelection(WolapiObject* pWO, IconListClass& chatlist,
   const char* szChannelType = chanlist.Get_Item_ExtraDataString(iIndex);
   if (szChannelType) {
     // debugprint( "szChannelType %s\n", szChannelType );
-    if (strcmp(szChannelType, CHANNELTYPE_OFFICIALCHAT) == 0) {
+    if (std::string_view(szChannelType) == CHANNELTYPE_OFFICIALCHAT) {
       if ((pWO->CurrentLevel == WOL_LEVEL_INCHATCHANNEL) &&
           (!ExitChatChannel(pWO))) {
         pWO->bSelfDestruct = true;
@@ -1448,7 +1446,7 @@ bool ProcessChannelListSelection(WolapiObject* pWO, IconListClass& chatlist,
       }
 
       pWO->EnterLevel_OfficialChat();
-    } else if (strcmp(szChannelType, CHANNELTYPE_USERCHAT) == 0) {
+    } else if (std::string_view(szChannelType) == CHANNELTYPE_USERCHAT) {
       if ((pWO->CurrentLevel == WOL_LEVEL_INCHATCHANNEL) &&
           (!ExitChatChannel(pWO))) {
         pWO->bSelfDestruct = true;
@@ -1456,7 +1454,7 @@ bool ProcessChannelListSelection(WolapiObject* pWO, IconListClass& chatlist,
       }
 
       pWO->EnterLevel_UserChat();
-    } else if (strcmp(szChannelType, CHANNELTYPE_TOP) == 0) {
+    } else if (std::string_view(szChannelType) == CHANNELTYPE_TOP) {
       //	Now not possible.
       if ((pWO->CurrentLevel == WOL_LEVEL_INCHATCHANNEL) &&
           (!ExitChatChannel(pWO))) {
@@ -1465,7 +1463,7 @@ bool ProcessChannelListSelection(WolapiObject* pWO, IconListClass& chatlist,
       }
 
       pWO->EnterLevel_Top();
-    } else if (strcmp(szChannelType, CHANNELTYPE_GAMES) == 0) {
+    } else if (std::string_view(szChannelType) == CHANNELTYPE_GAMES) {
       //	Now not possible.
       if ((pWO->CurrentLevel == WOL_LEVEL_INCHATCHANNEL) &&
           (!ExitChatChannel(pWO))) {
@@ -1474,7 +1472,7 @@ bool ProcessChannelListSelection(WolapiObject* pWO, IconListClass& chatlist,
       }
 
       pWO->EnterLevel_Games();
-    } else if (strcmp(szChannelType, CHANNELTYPE_GAMESOFTYPE) == 0) {
+    } else if (std::string_view(szChannelType) == CHANNELTYPE_GAMESOFTYPE) {
       //	Now not possible.
       if ((pWO->CurrentLevel == WOL_LEVEL_INCHATCHANNEL) &&
           (!ExitChatChannel(pWO))) {
@@ -1484,7 +1482,7 @@ bool ProcessChannelListSelection(WolapiObject* pWO, IconListClass& chatlist,
 
       void* pExtraData = chanlist.Get_Item_ExtraDataPtr(iIndex);
       pWO->EnterLevel_GamesOfType(static_cast<WOL_GAMETYPEINFO*>(pExtraData));
-    } else if (strcmp(szChannelType, CHANNELTYPE_CHATCHANNEL) == 0) {
+    } else if (std::string_view(szChannelType) == CHANNELTYPE_CHATCHANNEL) {
       if (pWO->CurrentLevel == WOL_LEVEL_INCHATCHANNEL) {
         //	Not currently possible.
         //				debugprint( "Trying to jump from channel
@@ -1494,7 +1492,7 @@ bool ProcessChannelListSelection(WolapiObject* pWO, IconListClass& chatlist,
       }
       //	Join the chat channel.
       EnterChannel(pWO, chatlist, chanlist, iIndex, false);  //	Can fail.
-    } else if (strcmp(szChannelType, CHANNELTYPE_GAMECHANNEL) == 0) {
+    } else if (std::string_view(szChannelType) == CHANNELTYPE_GAMECHANNEL) {
       //	User attempting to join game channel.
       if (pWO->CurrentLevel == WOL_LEVEL_INCHATCHANNEL) {
         //	Not currently possible.
@@ -1545,7 +1543,7 @@ bool ProcessChannelListSelection(WolapiObject* pWO, IconListClass& chatlist,
         //	Offer to take them to a web page regarding the game type.
         pWO->DoGameAdvertising(pChannel);
       }
-    } else if (strcmp(szChannelType, CHANNELTYPE_LOBBIES) == 0) {
+    } else if (std::string_view(szChannelType) == CHANNELTYPE_LOBBIES) {
       if (pWO->CurrentLevel == WOL_LEVEL_INCHATCHANNEL) {
         //	Not currently possible.
         //				debugprint( "Chat channel to lobbies
@@ -1559,7 +1557,7 @@ bool ProcessChannelListSelection(WolapiObject* pWO, IconListClass& chatlist,
       }
 
       pWO->EnterLevel_Lobbies();
-    } else if (strcmp(szChannelType, CHANNELTYPE_LOBBYCHANNEL) == 0) {
+    } else if (std::string_view(szChannelType) == CHANNELTYPE_LOBBYCHANNEL) {
       if (pWO->CurrentLevel == WOL_LEVEL_INCHATCHANNEL ||
           pWO->CurrentLevel == WOL_LEVEL_INLOBBY) {
         //	Not currently possible.
@@ -1570,7 +1568,7 @@ bool ProcessChannelListSelection(WolapiObject* pWO, IconListClass& chatlist,
       }
       //	Join the lobby chat channel.
       EnterChannel(pWO, chatlist, chanlist, iIndex, false);  //	Can fail.
-    } else if (strcmp(szChannelType, CHANNELTYPE_LOADING) == 0) {
+    } else if (std::string_view(szChannelType) == CHANNELTYPE_LOADING) {
       //	User clicked on the channel list loading notification - do
       // nothing.
     } else {

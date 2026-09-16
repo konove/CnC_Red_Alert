@@ -6,20 +6,21 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstddef>
 #include <cstdint>
-#include <cstdio>
-#include <cstring>
+#include <span>
 #include <utility>
+#include <vector>
 
 #include "absl/base/attributes.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
+#include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/types.h"
 #include "port/unaligned.h"
 #include "sdllib/file.h"
 #include "sdllib/file_access.h"
-#include "sdllib/memflag.h"
 #include "sdllib/wwstd.h"
 
 // Windows original had 5 slots; DOS had 4. One slot was reserved for disk
@@ -65,7 +66,7 @@ static int ScoreVolume = 255;
 
 static SDL_AudioDeviceID AudioDevice;
 static SDL_AudioSpec ObtainedSpec;
-static uint8_t* MixBuffer;  // temp buffer for mixing
+static std::vector<std::byte> MixBuffer;  // temp buffer for mixing
 static AudioCallback ExtraCallback = nullptr;
 
 // Fields are ordered by decreasing alignment to minimize padding
@@ -73,7 +74,7 @@ static AudioCallback ExtraCallback = nullptr;
 struct ChannelState {
   const void* sample = nullptr;
   SDL_AudioStream* stream = nullptr;
-  const uint8_t* in_ptr = nullptr;
+  std::span<const std::byte> in_ptr;
 
   int priority = 0;
   int local_volume = 255;  // per-sound volume [0, 255], set at play time
@@ -109,17 +110,20 @@ static int ToMixerAmplitude(const int raw_volume) {
   const float normalized = static_cast<float>(raw_volume) / (255.0F * 255.0F);
   return static_cast<int>(powf(normalized, 2.0F) * 32767.0F);
 }
-
-static const uint8_t* DecodeADPCMBlock(ChannelState& chan, int block_size,
-                                       const uint8_t* in_ptr
-                                           ABSL_ATTRIBUTE_LIFETIME_BOUND) {
+static std::span<const std::byte> DecodeADPCMBlock(
+    ChannelState& chan, int block_size,
+    std::span<const std::byte> in_ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) {
   const auto clamp = [](int v, int min, int max) {
     return std::clamp(v, min, max);
   };
+  if (block_size < 0 || base::ToSize(block_size) > in_ptr.size()) {
+    return {};
+  }
 
   for (int i = 0; i < block_size; i++) {
     int16_t samples[2];
-    const auto b = *in_ptr++;
+    const auto b = std::to_integer<uint8_t>(in_ptr.front());
+    in_ptr = in_ptr.subspan(1);
 
     // The nibble is the low or high half of the byte: a 4-bit pattern.
     uint8_t nibble = b & 0xF;
@@ -147,18 +151,20 @@ static const uint8_t* DecodeADPCMBlock(ChannelState& chan, int block_size,
 
   return in_ptr;
 }
-
-static const uint8_t* DecodeWestwoodBlock(
+static std::span<const std::byte> DecodeWestwoodBlock(
     const ChannelState& chan, int block_size,
-    const uint8_t* in_ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) {
+    std::span<const std::byte> in_ptr) {
   int prev_sample = 0x80;  // Previous sample (starting value).
-
-  const auto* in_end = in_ptr + block_size;
+  if (block_size < 0 || base::ToSize(block_size) > in_ptr.size()) {
+    return {};
+  }
+  const auto remaining = in_ptr.subspan(base::ToSize(block_size));
+  in_ptr = in_ptr.first(base::ToSize(block_size));
 
   uint8_t sample_buf[4];
-
-  while (in_ptr != in_end) {
-    auto code = *in_ptr++;  // Get code byte
+  while (!in_ptr.empty()) {
+    auto code = std::to_integer<uint8_t>(in_ptr.front());
+    in_ptr = in_ptr.subspan(1);  // Get code byte
     auto data = code & 0x3FU;
     code >>= 6U;
 
@@ -183,12 +189,12 @@ static const uint8_t* DecodeWestwoodBlock(
         data++;
 
         // put samples
-        SDL_AudioStreamPut(chan.stream, in_ptr, static_cast<int>(data));
-
-        in_ptr += data;
-
-        // Set "previous" value.
-        prev_sample = in_ptr[-1];
+        if (data > in_ptr.size()) {
+          return {};
+        }
+        SDL_AudioStreamPut(chan.stream, in_ptr.data(), static_cast<int>(data));
+        prev_sample = std::to_integer<uint8_t>(in_ptr[data - 1]);
+        in_ptr = in_ptr.subspan(data);
       }
     } else {
       // Check to see if this is a 4 bit delta code sequence.
@@ -198,10 +204,14 @@ static const uint8_t* DecodeWestwoodBlock(
         // number of nibble packed delta bytes to process.
 
         do {
-          uint8_t deltacodes = *in_ptr++;
+          if (in_ptr.empty()) {
+            return {};
+          }
+          auto deltacodes = std::to_integer<uint8_t>(in_ptr.front());
+          in_ptr = in_ptr.subspan(1);
 
           for (int i = 0; i < 2; i++, deltacodes >>= 4) {
-            prev_sample += ww_4bitdecode[deltacodes & 0xF];
+            prev_sample += base::At(ww_4bitdecode, deltacodes & 0xF);
 
             if (prev_sample < 0) {
               prev_sample = 0;
@@ -220,10 +230,14 @@ static const uint8_t* DecodeWestwoodBlock(
         // number of packed delta bytes to process.
 
         do {
-          uint8_t deltacodes = *in_ptr++;
+          if (in_ptr.empty()) {
+            return {};
+          }
+          auto deltacodes = std::to_integer<uint8_t>(in_ptr.front());
+          in_ptr = in_ptr.subspan(1);
 
           for (int i = 0; i < 4; i++, deltacodes >>= 2) {
-            prev_sample += ww_2bitdecode[deltacodes & 3];
+            prev_sample += base::At(ww_2bitdecode, deltacodes & 3);
 
             if (prev_sample < 0) {
               prev_sample = 0;
@@ -246,8 +260,7 @@ static const uint8_t* DecodeWestwoodBlock(
       }
     }
   }
-
-  return in_ptr;
+  return remaining.subspan(0);
 }
 
 static bool RefillStream(ChannelState& chan) {
@@ -262,14 +275,21 @@ static bool RefillStream(ChannelState& chan) {
   // read blocks until we have enough samples
   while (samples_to_gen > 0) {
     // read a block
+    if (chan.in_ptr.size() < 8) {
+      return false;
+    }
     const auto block_in_size = port::ReadUnaligned<uint16_t>(chan.in_ptr);
-    const auto block_out_size = port::ReadUnaligned<uint16_t>(chan.in_ptr + 2);
-    chan.in_ptr += 8;  // there's also a 0000DEAF magic value
+    const auto block_out_size =
+        port::ReadUnaligned<uint16_t>(chan.in_ptr.subspan(2));
+    chan.in_ptr = chan.in_ptr.subspan(8);
+    if (block_in_size > chan.in_ptr.size() || block_out_size == 0) {
+      return false;  // there's also a 0000DEAF magic value
+    }
 
     if (block_in_size == block_out_size)  // raw block
     {
-      SDL_AudioStreamPut(chan.stream, chan.in_ptr, block_in_size);
-      chan.in_ptr += block_in_size;
+      SDL_AudioStreamPut(chan.stream, chan.in_ptr.data(), block_in_size);
+      chan.in_ptr = chan.in_ptr.subspan(block_in_size);
     } else if (chan.compression == SCOMP_SOS) {  // ADPCM
       chan.in_ptr = DecodeADPCMBlock(chan, block_in_size, chan.in_ptr);
     } else if (chan.compression == SCOMP_WESTWOOD) {
@@ -311,7 +331,14 @@ static void ResetStream(ChannelState& chan, const AUDHeaderType* header) {
 }
 
 static void SDL_Audio_Callback(void* /*userdata*/, Uint8* stream, int len) {
-  memset(stream, 0, base::ToSize(len));
+  if (len < 0) {
+    return;
+  }
+  // SDL supplies len writable bytes for the duration of this callback.
+  const auto output_bytes =
+      // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
+      std::as_writable_bytes(std::span(stream, base::ToSize(len)));
+  std::ranges::fill(output_bytes, std::byte{});
 
   // let VQA do its thing
   if (ExtraCallback) {
@@ -325,13 +352,13 @@ static void SDL_Audio_Callback(void* /*userdata*/, Uint8* stream, int len) {
 
     // put more data into stream if needed
     // unless it's a file, we do that elsewhere
-    if (SDL_AudioStreamAvailable(chan.stream) < len && chan.in_ptr) {
+    if (SDL_AudioStreamAvailable(chan.stream) < len && !chan.in_ptr.empty()) {
       if (!RefillStream(chan) && !SDL_AudioStreamAvailable(chan.stream)) {
         // no more data, it's finished
         chan.playing = false;
         continue;
       }
-    } else if (!SDL_AudioStreamAvailable(chan.stream) && !chan.in_ptr &&
+    } else if (!SDL_AudioStreamAvailable(chan.stream) && chan.in_ptr.empty() &&
                chan.file_handle == -1) {
       // if there's no data, pointer or file handle, this is a finished file
       // stream
@@ -348,19 +375,22 @@ static void SDL_Audio_Callback(void* /*userdata*/, Uint8* stream, int len) {
       }
       chan.volume = static_cast<int16_t>(ToMixerAmplitude(chan.raw_volume));
     }
-
-    const int stream_len = SDL_AudioStreamGet(chan.stream, MixBuffer, len);
+    const int stream_len =
+        SDL_AudioStreamGet(chan.stream, MixBuffer.data(),
+                           std::min(len, static_cast<int>(MixBuffer.size())));
 
     // mix into buffer
     const int sample_count = stream_len / int{sizeof(int16_t)};
     for (int s = 0; s < sample_count; s++) {
       const base::ssize offset = s * base::ssize{sizeof(int16_t)};
-      const auto output = port::ReadUnaligned<int16_t>(stream + offset);
-      const auto input = port::ReadUnaligned<int16_t>(MixBuffer + offset);
+      const auto output = port::ReadUnaligned<int16_t>(
+          output_bytes.subspan(base::ToSize(offset)));
+      const auto input = port::ReadUnaligned<int16_t>(
+          std::span(MixBuffer).subspan(base::ToSize(offset)));
       // Floor division of a signed sample product keeps the mix rounding.
       const int mixed =
           (input * chan.volume) >> 15;  // NOLINT(bugprone-signed-bitwise)
-      port::WriteUnaligned(stream + offset,
+      port::WriteUnaligned(output_bytes.subspan(base::ToSize(offset)),
                            static_cast<int16_t>(output + mixed));
     }
   }
@@ -382,8 +412,7 @@ int File_Stream_Sample_Vol(const char* filename, int volume,
   }
 
   AUDHeaderType header;
-
-  if (ReadFileHandle(handle, &header, sizeof(header)) != sizeof(header)) {
+  if (ReadFileHandle(handle, base::ObjectBytes(header)) != sizeof(header)) {
     CloseFileHandle(handle);
     return -1;
   }
@@ -420,7 +449,7 @@ int File_Stream_Sample_Vol(const char* filename, int volume,
 
   chan.offset = 0;
   chan.length = header.UncompSize / channels / (bits / 8);
-  chan.in_ptr = nullptr;
+  chan.in_ptr = {};
 
   chan.file_handle = handle;
 
@@ -460,7 +489,8 @@ void Sound_Callback() {
     }
 
     uint16_t block_header[4];
-    if (ReadFileHandle(chan.file_handle, block_header, 8) != 8) {
+    if (ReadFileHandle(chan.file_handle, base::ObjectBytes(block_header)) !=
+        8) {
       // must be eof
 
       SDL_LockAudioDevice(AudioDevice);
@@ -472,15 +502,11 @@ void Sound_Callback() {
     } else {
       // read block
       const auto in_size = block_header[0];
-
-      auto* buf = new uint8_t[in_size];
-
-      ReadFileHandle(chan.file_handle, buf, in_size);
+      std::vector<std::byte> buf(in_size);
+      ReadFileHandle(chan.file_handle, buf);
 
       SDL_LockAudioDevice(AudioDevice);
       DecodeADPCMBlock(chan, in_size, buf);
-
-      delete[] buf;
 
       SDL_UnlockAudioDevice(AudioDevice);
     }
@@ -507,8 +533,7 @@ bool Audio_Init(void* /*window*/, int /*bits_per_sample*/, bool stereo,
     absl::PrintF("Audio_Init: %s\n", SDL_GetError());
     return false;
   }
-
-  MixBuffer = new uint8_t[ObtainedSpec.size];
+  MixBuffer.resize(ObtainedSpec.size);
 
   SDL_PauseAudioDevice(AudioDevice, 0);
 
@@ -519,8 +544,7 @@ bool Audio_Init(void* /*window*/, int /*bits_per_sample*/, bool stereo,
 
 void Sound_End() {
   SDL_CloseAudioDevice(AudioDevice);
-
-  delete[] MixBuffer;
+  MixBuffer.clear();
 
   for (const auto& chan : Channels) {
     SDL_FreeAudioStream(chan.stream);
@@ -568,20 +592,25 @@ void Stop_Sample_Playing(const void* sample) {
     }
   }
 }
-
-int Play_Sample(const void* sample, int priority, int volume, int16_t panloc) {
+int Play_Sample(std::span<const std::byte> sample, int priority, int volume,
+                int16_t panloc) {
   return Play_Sample_Handle(sample, priority, volume, panloc,
                             AcquireSampleHandle(priority));
 }
-
-int Play_Sample_Handle(const void* sample, int priority, int volume,
-                       int16_t /*panloc*/, int id) {
-  if (!Is_Valid_Handle(id) || !sample) {
+int Play_Sample_Handle(std::span<const std::byte> sample, int priority,
+                       int volume, int16_t /*panloc*/, int id) {
+  if (!Is_Valid_Handle(id) || sample.empty()) {
     return -1;
   }
 
   // play it
-  const auto* header = static_cast<const AUDHeaderType*>(sample);
+  if (sample.size() < sizeof(AUDHeaderType)) {
+    return -1;
+  }
+  AUDHeaderType header_storage{};
+  base::CopyBytes(base::ObjectBytes(header_storage), sample,
+                  sizeof(header_storage));
+  const auto* header = &header_storage;
   const int channels = header->Flags & AUD_FLAG_STEREO ? 2 : 1;
   const int bits = header->Flags & AUD_FLAG_16BIT ? 16 : 8;
 
@@ -603,8 +632,7 @@ int Play_Sample_Handle(const void* sample, int priority, int volume,
   // setup channel
   SDL_LockAudioDevice(AudioDevice);
   auto& chan = base::At(Channels, id);
-
-  chan.sample = sample;
+  chan.sample = sample.data();
   chan.playing = true;
   chan.priority = priority;
   chan.local_volume = volume;
@@ -620,7 +648,7 @@ int Play_Sample_Handle(const void* sample, int priority, int volume,
 
   chan.offset = 0;
   chan.length = header->UncompSize / channels / (bits / 8);
-  chan.in_ptr = static_cast<const uint8_t*>(sample) + sizeof(AUDHeaderType);
+  chan.in_ptr = sample.subspan(sizeof(AUDHeaderType));
 
   chan.compression = static_cast<SCompressType>(header->Compression);
 
@@ -639,7 +667,7 @@ int Set_Score_Vol(int volume) {
   ScoreVolume = volume;
 
   for (auto& chan : Channels) {
-    if (chan.playing && !chan.in_ptr)  // score is a file stream
+    if (chan.playing && chan.in_ptr.empty())  // score is a file stream
     {
       chan.raw_volume = chan.local_volume * ScoreVolume;
       chan.volume = static_cast<int16_t>(ToMixerAmplitude(chan.raw_volume));
@@ -702,49 +730,46 @@ AudioCallback* Get_Audio_Callback_Ptr() { return &ExtraCallback; }
 
 // TD
 // used for nod ending
-static int32_t Sample_Read(int fh, void* buffer, base::ssize size) {
-  AUDHeaderType RawHeader;
-
-  if (!buffer || fh == kInvalidHandle ||
-      size <= base::ssize{sizeof(RawHeader)}) {
+static int32_t Sample_Read(int fh, std::span<std::byte> buffer) {
+  AUDHeaderType header{};
+  if (buffer.size() <= sizeof(header) || fh == kInvalidHandle) {
     return 0;
   }
-
-  size -= base::ssize{sizeof(RawHeader)};
-  void* outbuffer = Add_Long_To_Pointer(
-      buffer, sizeof(RawHeader));  // Pointer to start of raw data.
-  int32_t actual_bytes_read = ReadFileHandle(
-      fh, &RawHeader,
-      sizeof(RawHeader));  // Actual bytes read in, including header
-  actual_bytes_read += ReadFileHandle(
-      fh, outbuffer,
-      static_cast<int32_t>(std::min<base::ssize>(size, RawHeader.Size)));
-  Mem_Copy(&RawHeader, buffer, sizeof(RawHeader));
-  return actual_bytes_read;
+  const int32_t header_read = ReadFileHandle(fh, base::ObjectBytes(header));
+  if (header_read != sizeof(header) || header.Size < 0) {
+    return 0;
+  }
+  const auto payload = buffer.subspan(sizeof(header));
+  const auto length = std::min(payload.size(), base::ToSize(header.Size));
+  const int32_t payload_read = ReadFileHandle(fh, payload.first(length));
+  base::CopyBytes(buffer, base::ObjectBytes(header), sizeof(header));
+  return header_read + payload_read;
 }
-
-void* Load_Sample(const char* filename) {
-  void* buffer = nullptr;
+std::span<std::byte> Load_Sample(const char* filename) {
+  std::span<std::byte> buffer;
 
   if (!filename || !FileExists(filename)) {
-    return nullptr;
+    return {};
   }
 
   const int fh = OpenFileHandle(filename, FileAccess::kRead);
   if (fh != kInvalidHandle) {
     const base::ssize size =
         base::ToSigned(FileHandleSize(fh)) + base::ssize{sizeof(AUDHeaderType)};
-    buffer = new char[base::ToSize(size)];
-    Sample_Read(fh, buffer, size);
+    auto* allocation = new std::byte[base::ToSize(size)];
+    // Exactly size bytes were allocated above and are released by Free_Sample.
+    // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
+    buffer = std::span(allocation, base::ToSize(size));
+    Sample_Read(fh, buffer);
 
     CloseFileHandle(fh);
   }
-  return buffer;
+  return buffer.subspan(0);
 }
 
 void Free_Sample(void* sample) {
   if (sample) {
     Stop_Sample_Playing(sample);
-    Free(sample);
+    delete[] static_cast<std::byte*>(sample);
   }
 }

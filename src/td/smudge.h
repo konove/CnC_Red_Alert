@@ -45,6 +45,7 @@ class ArchiveReader;
 class ArchiveWriter;
 
 #include <cstddef>
+#include <span>
 
 #include "absl/base/attributes.h"
 #include "td/defines.h"
@@ -92,7 +93,7 @@ class SmudgeClass : public ObjectClass {
   **	File I/O.
   */
   static void Read_INI(char* /*buffer*/);
-  static void Write_INI(char* /*buffer*/);
+  static void Write_INI(std::span<char> /*buffer*/);
   static const char* INI_Name() { return "SMUDGE"; }
   // Field-wise saved-game support, defined in ioobj.cc.
   template <class Archive>

@@ -58,7 +58,7 @@ int LcwBackend::Capacity(int block_size) {
 
 int LcwBackend::Compress(std::span<const std::byte> input,
                          std::span<std::byte> output) {
-  return LCW_Comp(input.data(), output.data(), static_cast<int>(input.size()));
+  return LCW_Comp(input, output);
 }
 
 int LcwBackend::Decompress(std::span<const std::byte> input,

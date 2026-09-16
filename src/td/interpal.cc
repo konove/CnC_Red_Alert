@@ -46,7 +46,10 @@
 #include "td/interpal.h"
 
 #include <algorithm>
+#include <cstddef>
+#include <span>
 
+#include "absl/log/check.h"
 #include "sdllib/file_access.h"
 #include "sdllib/gbuffer.h"
 #include "tech/game_file.h"
@@ -54,7 +57,7 @@
 bool InterpolationPaletteChanged = false;
 
 unsigned char PaletteInterpolationTable[SIZE_OF_PALETTE][SIZE_OF_PALETTE];
-unsigned char* InterpolationPalette;
+std::span<unsigned char> InterpolationPalette;
 
 /***********************************************************************************************
  * Read_Interpolatioin_Palette -- reads an interpolation palette table from disk
@@ -125,13 +128,15 @@ void Write_Interpolation_Palette(const char* palette_file_name) {
  * HISTORY: * 12/12/95 12:16PM ST : Created *
  *=============================================================================================*/
 
-void Increase_Palette_Luminance(unsigned char* palette, int red_percentage,
-                                int green_percentage, int blue_percentage,
-                                int cap) {
-  for (int i = 0; i < SIZE_OF_PALETTE * 3; i += 3) {
-    int red = *(palette + i);
-    int green = *(palette + i + 1);
-    int blue = *(palette + i + 2);
+void Increase_Palette_Luminance(std::span<unsigned char> palette,
+                                int red_percentage, int green_percentage,
+                                int blue_percentage, int cap) {
+  CHECK_GE(palette.size(), static_cast<std::size_t>(SIZE_OF_PALETTE) * 3);
+  for (std::size_t i = 0; i < static_cast<std::size_t>(SIZE_OF_PALETTE) * 3;
+       i += 3) {
+    int red = palette[i];
+    int green = palette[i + 1];
+    int blue = palette[i + 2];
 
     red += red * red_percentage / 100;
     green += green * green_percentage / 100;
@@ -141,9 +146,9 @@ void Increase_Palette_Luminance(unsigned char* palette, int red_percentage,
     green = std::min(cap, green);
     blue = std::min(cap, blue);
 
-    *(palette + i) = static_cast<unsigned char>(red);
-    *(palette + i + 1) = static_cast<unsigned char>(green);
-    *(palette + i + 2) = static_cast<unsigned char>(blue);
+    palette[i] = static_cast<unsigned char>(red);
+    palette[i + 1] = static_cast<unsigned char>(green);
+    palette[i + 2] = static_cast<unsigned char>(blue);
   }
 }
 
@@ -168,7 +173,7 @@ void Interpolate_2X_Scale(GraphicBufferClass* source,
                           const char* /*unused*/) {
   // Render using SDL scaling - palette already set via Update_Palette
   source->Lock();
-  WindowBuffer->Render_Scaled_Frame(source->Get_Offset(), source->Get_Width(),
+  WindowBuffer->Render_Scaled_Frame(source->Get_Bytes(), source->Get_Width(),
                                     source->Get_Height());
   source->Unlock();
 }

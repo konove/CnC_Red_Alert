@@ -65,6 +65,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <span>
 #include <string_view>
 #include <utility>
 
@@ -187,8 +188,8 @@ void MapEditClass::One_Time() {
   */
   HouseList = new ListClass(kPopupHouselist, kPopupHouseX, kPopupHouseY,
                             kPopupHouseW, kPopupHouseH, TPF_EFNT | TPF_NOSHADOW,
-                            MixArchive::Retrieve("EBTN-UP.SHP"),
-                            MixArchive::Retrieve("EBTN-DN.SHP"));
+                            MixArchive::RetrieveData("EBTN-UP.SHP"),
+                            MixArchive::RetrieveData("EBTN-DN.SHP"));
   for (const HousesType house : magic_enum::enum_values<HousesType>()) {
     HouseList->Add_Item(HouseTypeClass::As_Reference(house).IniName);
   }
@@ -196,10 +197,11 @@ void MapEditClass::One_Time() {
   /*
   **	The mission list box
   */
-  MissionList = new ListClass(
-      kPopupMissionlist, kPopupMissionX, kPopupMissionY, kPopupMissionW,
-      kPopupMissionH, TPF_EFNT | TPF_NOSHADOW,
-      MixArchive::Retrieve("EBTN-UP.SHP"), MixArchive::Retrieve("EBTN-DN.SHP"));
+  MissionList =
+      new ListClass(kPopupMissionlist, kPopupMissionX, kPopupMissionY,
+                    kPopupMissionW, kPopupMissionH, TPF_EFNT | TPF_NOSHADOW,
+                    MixArchive::RetrieveData("EBTN-UP.SHP"),
+                    MixArchive::RetrieveData("EBTN-DN.SHP"));
 
   for (const auto mission : MapEditMissions) {
     MissionList->Add_Item(MissionClass::Mission_Name(mission));
@@ -1519,7 +1521,7 @@ void MapEditClass::Main_Menu() {
     **	Invoke menu
     */
     Hide_Mouse();  // Do_Menu assumes the mouse is already hidden
-    const int selection = Do_Menu(&_menus[0], true);  // option the user picks
+    const int selection = Do_Menu(_menus, true);  // option the user picks
     Show_Mouse();
     if (UnknownKey == KN_ESC || UnknownKey == KN_LMOUSE ||
         UnknownKey == KN_RMOUSE) {
@@ -1702,7 +1704,7 @@ void MapEditClass::AI_Menu() {
     **	Invoke menu
     */
     Hide_Mouse();  // Do_Menu assumes the mouse is already hidden
-    const int selection = Do_Menu(&_menus[0], true);  // option the user picks
+    const int selection = Do_Menu(_menus, true);  // option the user picks
     Show_Mouse();
     if (UnknownKey == KN_ESC || UnknownKey == KN_LMOUSE ||
         UnknownKey == KN_RMOUSE) {
@@ -1866,7 +1868,7 @@ void MapEditClass::Detach(ObjectClass* object) {
   }
 }
 
-bool MapEditClass::Get_Waypoint_Name(char wayptname[]) {
+bool MapEditClass::Get_Waypoint_Name(std::span<char> wayptname) {
   /*
   **	Dialog & button dimensions
   */

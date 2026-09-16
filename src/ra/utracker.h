@@ -40,6 +40,9 @@
 #define CNC_RED_ALERT_RA_UTRACKER_H_
 
 #include <cstdint>
+#include <span>
+#include "absl/base/attributes.h"
+#include <vector>
 
 /*
 ** UnitTracker Class
@@ -58,15 +61,15 @@ class UnitTrackerClass {
   void Decrement_Unit_Total(int unit_type);
   void Clear_Unit_Total();
 
-  int Get_Unit_Total(int unit_type);
-  int32_t* Get_All_Totals();
+  [[nodiscard]] int Get_Unit_Total(int unit_type) const;
+  std::span<int32_t> Get_All_Totals() ABSL_ATTRIBUTE_LIFETIME_BOUND;
   [[nodiscard]] int Get_Unit_Count() const { return UnitCount; }
 
   void To_Network_Format();
   void To_PC_Format();
 
  private:
-  int32_t* UnitTotals;     // Allocate memory for the unit totals
+  std::vector<int32_t> UnitTotals;     // Allocate memory for the unit totals
   int UnitCount;           // Keep a record of how many unit entries there are
   int InNetworkFormat{0};  // The unit entries are in host format
 };

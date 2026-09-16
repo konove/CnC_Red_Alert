@@ -48,6 +48,9 @@
 
 #include "td/mouse.h"
 
+#include <cstddef>
+#include <span>
+
 #include "base/enum_array.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/shape.h"
@@ -62,7 +65,7 @@
 /*
 **	This points to the loaded mouse shapes.
 */
-const void* MouseClass::MouseShapes;
+std::span<const std::byte> MouseClass::MouseShapes;
 
 /*
 **	This is the timer that controls the mouse animation. It is always at a
@@ -175,8 +178,8 @@ bool MouseClass::Override_Mouse_Shape(MouseType mouse, bool wwsmall) {
   **	If the mouse shape is going to change, then inform the mouse driver of
   *the *	change.
   */
-  if (!startup ||
-      (MouseShapes && (mouse != CurrentMouseShape || wwsmall != IsSmall))) {
+  if (!startup || (!MouseShapes.empty() &&
+                   (mouse != CurrentMouseShape || wwsmall != IsSmall))) {
     startup = true;
 
     Timer.Set(control->FrameRate);
@@ -221,7 +224,7 @@ bool MouseClass::Override_Mouse_Shape(MouseType mouse, bool wwsmall) {
  *=============================================================================================*/
 void MouseClass::AI(KeyNumType& input, int x, int y) {
   //	bool doit = false;
-  const void* mouse_shape_ptr = nullptr;
+  std::span<const std::byte> mouse_shape_ptr;
   const MouseStruct* control = &MouseControl[CurrentMouseShape];
 
   if (control->FrameRate && Timer.Time() == 0) {
@@ -236,7 +239,7 @@ void MouseClass::AI(KeyNumType& input, int x, int y) {
     if (!IsSmall || control->SmallFrame != -1) {
       const int baseframe = IsSmall ? control->SmallFrame : control->StartFrame;
       mouse_shape_ptr = Extract_Shape(MouseShapes, baseframe + Frame);
-      if (mouse_shape_ptr) {
+      if (!mouse_shape_ptr.empty()) {
         Set_Mouse_Cursor(control->X, control->Y, mouse_shape_ptr);
       }
     }
@@ -287,7 +290,7 @@ void MouseClass::One_Time() {
   if (file.IsAvailable()) {
     MouseShapes = Load_Alloc_Data(file);
   } else {
-    MouseShapes = MixArchive::Retrieve("MOUSE.SHP");
+    MouseShapes = MixArchive::RetrieveData("MOUSE.SHP");
   }
 }
 

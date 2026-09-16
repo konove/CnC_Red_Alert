@@ -2,6 +2,7 @@
 #define CNC_RED_ALERT_TD_INIT_H_
 
 #include <cstdint>
+#include <span>
 
 void Uninit_Game();
 void Load_Title_Page(bool visible = false);
@@ -9,7 +10,7 @@ uint32_t Obfuscate(const char* string);
 void Anim_Init();
 bool Init_Game(int argc, char* argv[]);
 bool Select_Game(bool fade = false);
-bool Parse_Command_Line(int argc, char* argv[]);
+bool Parse_Command_Line(std::span<char*> arguments);
 void Parse_INI_File();
 int Version_Number();
 void Save_Recording_Values();

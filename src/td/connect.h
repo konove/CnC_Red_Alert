@@ -224,8 +224,10 @@
 #ifndef CNC_RED_ALERT_TD_CONNECT_H_
 #define CNC_RED_ALERT_TD_CONNECT_H_
 
+#include <cstddef>
 #include <cstdint>
 #include <span>
+#include <vector>
 
 #include "base/enum_array.h"
 #include "td/combuf.h"
@@ -291,9 +293,10 @@ class ConnectionClass {
   /*.....................................................................
   Send/Receive routines.
   .....................................................................*/
-  virtual int Send_Packet(void* buf, int buflen, int ack_req) = 0;
-  virtual int Receive_Packet(void* buf, int buflen) = 0;
-  virtual int Get_Packet(void* buf, int* buflen) = 0;
+  virtual int Send_Packet(std::span<const std::byte> buf, int buflen,
+                          int ack_req) = 0;
+  virtual int Receive_Packet(std::span<std::byte> buf, int buflen) = 0;
+  virtual int Get_Packet(std::span<std::byte> buf, int* buflen) = 0;
 
   /*.....................................................................
   The main polling routine for the connection.  Should be called as often
@@ -341,7 +344,7 @@ class ConnectionClass {
   This routine actually performs a hardware-dependent data send.  It's
   pure virtual, so it >must< be defined by a derived class.
   .....................................................................*/
-  virtual int Send(void* buf, int buflen) = 0;
+  virtual int Send(std::span<const std::byte> buf, int buflen) = 0;
 
   /*.....................................................................
   This is the maximum packet length, including our own internal header.
@@ -352,7 +355,7 @@ class ConnectionClass {
   Packet staging area; this is where the CommHeaderType gets tacked onto
   the application's packet before it's sent.
   .....................................................................*/
-  char* PacketBuf;
+  std::vector<std::byte> PacketBuf;
 
   /*.....................................................................
   This is the magic number assigned to this connection.  It is the first

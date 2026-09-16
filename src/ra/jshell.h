@@ -44,13 +44,16 @@
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
+#include <span>
 #include <string_view>
 #include <vector>
 
 #include "absl/base/attributes.h"
+#include "absl/log/check.h"
 #include "absl/strings/str_format.h"
 #include "absl/types/span.h"
 #include "base/numeric.h"
+#include "base/types.h"
 #include "port/ex_string.h"
 #include "port/format.h"
 #include "ra/compat.h"
@@ -146,42 +149,46 @@ T Bound(T original, T minval, T maxval) {
   return original;
 }
 
-inline void Set_Bit(void* array, int bit, int value) {
+// Bit indices must refer to the supplied word span.
+inline void Set_Bit(std::span<uint32_t> array, int bit, int value) {
+  CHECK_GE(bit, 0);
+  CHECK_LT(base::ToSize(bit / 32), array.size());
   if (value) {
-    static_cast<uint32_t*>(array)[bit / 32] |= base::Bit<uint32_t>(bit % 32);
+    array[base::ToSize(bit / 32)] |= base::Bit<uint32_t>(bit % 32);
   } else {
-    static_cast<uint32_t*>(array)[bit / 32] &= ~base::Bit<uint32_t>(bit % 32);
+    array[base::ToSize(bit / 32)] &= ~base::Bit<uint32_t>(bit % 32);
   }
 }
 
-inline bool Get_Bit(const void* array, int bit) {
-  return (static_cast<const uint32_t*>(array)[bit / 32] &
-          base::Bit<uint32_t>(bit % 32)) != 0;
+inline bool Get_Bit(std::span<const uint32_t> array, int bit) {
+  CHECK_GE(bit, 0);
+  CHECK_LT(base::ToSize(bit / 32), array.size());
+  return (array[base::ToSize(bit / 32)] & base::Bit<uint32_t>(bit % 32)) != 0;
 }
 
-inline int First_True_Bit(const void* array) {
-  const auto* array32 = static_cast<const uint32_t*>(array);
+// Returns -1 if no matching bit exists within the supplied words.
+inline int First_True_Bit(std::span<const uint32_t> array) {
   int off = 0;
-  while (true) {
-    const uint32_t v = *array32++;
-    const int pos = std::countr_zero(v);
+  for (const uint32_t word : array) {
+    const int pos = std::countr_zero(word);
     if (pos < 32) {
       return off + pos;
     }
     off += 32;
   }
+  return -1;
 }
-inline int First_False_Bit(const void* array) {
-  const auto* array32 = static_cast<const uint32_t*>(array);
+
+inline int First_False_Bit(std::span<const uint32_t> array) {
   int off = 0;
-  while (true) {
-    const uint32_t v = *array32++;
-    const int pos = std::countr_zero(~v);
+  for (const uint32_t word : array) {
+    const int pos = std::countr_zero(~word);
     if (pos < 32) {
       return off + pos;
     }
     off += 32;
   }
+  return -1;
 }
 
 // Tick sources for Ticker<T>. Each provides a Tick() function that
@@ -197,15 +204,15 @@ struct SystemTickSource {
 };
 
 template <class T>
-void Bubble_Sort(T* array, int count) {
-  if (array != nullptr && count > 1) {
+void Bubble_Sort(std::span<T> array, int count) {
+  if (count > 1) {
     bool swapflag = false;
 
     do {
       swapflag = false;
       for (int index = 0; index < count - 1; index++) {
         if (array[index] > array[index + 1]) {
-          T temp = array[index];
+          const auto temp = array[index];
           array[index] = array[index + 1];
           array[index + 1] = temp;
           swapflag = true;
@@ -216,15 +223,15 @@ void Bubble_Sort(T* array, int count) {
 }
 
 template <class T>
-void PBubble_Sort(T* array, int count) {
-  if (array != nullptr && count > 1) {
+void PBubble_Sort(T& array, int count) {
+  if (count > 1) {
     bool swapflag = false;
 
     do {
       swapflag = false;
       for (int index = 0; index < count - 1; index++) {
         if (*array[index] > *array[index + 1]) {
-          T temp = array[index];
+          const auto temp = array[index];
           array[index] = array[index + 1];
           array[index + 1] = temp;
           swapflag = true;
@@ -235,15 +242,16 @@ void PBubble_Sort(T* array, int count) {
 }
 
 template <class T>
-void PNBubble_Sort(T* array, int count) {
-  if (array != nullptr && count > 1) {
+void PNBubble_Sort(T& array, int count) {
+  if (count > 1) {
     bool swapflag = false;
 
     do {
       swapflag = false;
       for (int index = 0; index < count - 1; index++) {
-        if (stricmp(array[index]->Name(), array[index + 1]->Name()) > 0) {
-          T temp = array[index];
+        if (port::CompareIgnoreCase(array[index]->Name(),
+                                    array[index + 1]->Name()) > 0) {
+          const auto temp = array[index];
           array[index] = array[index + 1];
           array[index + 1] = temp;
           swapflag = true;
@@ -261,27 +269,30 @@ typedef struct {
 } TLucentType;
 
 int Load_Picture(const char* filename, BufferClass& scratchbuf,
-                 BufferClass& destbuf, unsigned char* palette,
+                 BufferClass& destbuf, std::span<unsigned char> palette,
                  PicturePlaneType format);
-void* Conquer_Build_Fading_Table(const PaletteClass& palette,
-                                 void* dest ABSL_ATTRIBUTE_LIFETIME_BOUND,
-                                 int color, int frac);
-void* Small_Icon(const void* iconptr, int iconnum);
+std::span<unsigned char> Conquer_Build_Fading_Table(
+    const PaletteClass& palette,
+    std::span<unsigned char> dest ABSL_ATTRIBUTE_LIFETIME_BOUND, int color,
+    int frac);
+std::span<const unsigned char> Small_Icon(std::span<const std::byte> iconptr,
+                                          int iconnum);
 void Set_Window(int window, int x, int y, int w, int h);
-void* Load_Alloc_Data(File& file);
+std::span<std::byte> Load_Alloc_Data(File& file);
 std::vector<std::byte> LoadAllocData(File& file);
 int32_t Load_Uncompress(File& file, BuffType& uncomp_buff, BuffType& dest_buff,
-                        void* reserved_data);
+                        std::span<unsigned char> reserved_data);
 int32_t Translucent_Table_Size(int count);
-void* Build_Translucent_Table(const PaletteClass& palette,
-                              const TLucentType* control, int count,
-                              void* buffer ABSL_ATTRIBUTE_LIFETIME_BOUND);
-void* Conquer_Build_Translucent_Table(
-    const PaletteClass& palette, const TLucentType* control, int count,
-    void* buffer ABSL_ATTRIBUTE_LIFETIME_BOUND);
-void* Make_Fading_Table(const PaletteClass& palette,
-                        void* dest ABSL_ATTRIBUTE_LIFETIME_BOUND, int color,
-                        int frac);
+std::span<unsigned char> Build_Translucent_Table(
+    const PaletteClass& palette, std::span<const TLucentType> control,
+    int count, std::span<unsigned char> buffer ABSL_ATTRIBUTE_LIFETIME_BOUND);
+std::span<unsigned char> Conquer_Build_Translucent_Table(
+    const PaletteClass& palette, std::span<const TLucentType> control,
+    int count, std::span<unsigned char> buffer ABSL_ATTRIBUTE_LIFETIME_BOUND);
+std::span<unsigned char> Make_Fading_Table(const PaletteClass& palette,
+                                           std::span<unsigned char> dest
+                                               ABSL_ATTRIBUTE_LIFETIME_BOUND,
+                                           int color, int frac);
 
 // Prints `format` with `args`, checked at compile time, to stderr and the
 // mono page, then exits with a failure code.
@@ -297,12 +308,13 @@ template <typename... Args>
 // The result is always null terminated and truncated rather than allowed to
 // overflow. Each conversion is checked against its argument; a format that
 // does not match `args` is copied unformatted (see port::FormatRuntime).
-void Format_Runtime_Text(char* buffer, size_t size, const char* format,
+void Format_Runtime_Text(std::span<char> buffer, size_t size,
+                         const char* format,
                          absl::Span<const absl::FormatArg> args = {});
 template <typename... Args>
   requires(sizeof...(Args) > 0)
-void Format_Runtime_Text(char* buffer, const size_t size, const char* format,
-                         const Args&... args) {
+void Format_Runtime_Text(std::span<char> buffer, const size_t size,
+                         const char* format, const Args&... args) {
   const auto packed = port::MakeFormatArgs(args...);
   Format_Runtime_Text(buffer, size, format, absl::MakeConstSpan(packed));
 }

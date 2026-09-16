@@ -41,7 +41,9 @@
 #ifndef CNC_RED_ALERT_TD_RADAR_H_
 #define CNC_RED_ALERT_TD_RADAR_H_
 
+#include <cstddef>
 #include <cstdint>
+#include <span>
 
 #include "sdllib/keyboard.h"
 #include "td/defines.h"
@@ -80,7 +82,7 @@ class RadarClass : public DisplayClass {
   CELL Click_Cell_Calc(int x, int y) override;
   void AI(KeyNumType& input, int x, int y) override;
   void Draw_It(bool forced = false) override;
-  void Refresh_Cells(CELL cell, const int16_t* list) override;
+  void Refresh_Cells(CELL cell, std::span<const int16_t> list) override;
   void Set_Map_Dimensions(int x, int y, int w, int h) override;
   //		virtual void Set_Tactical_Position(int x, int y, int leptonx=0,
   // int leptony=0); 		virtual void Set_Tactical_Position(CELL cell);
@@ -150,7 +152,7 @@ class RadarClass : public DisplayClass {
   uint8_t SpecialRadarFrame : 3 {0};
   uint8_t RadarAnimFrame : 6 = 0;
 
-  static const void* RadarAnim;
+  static std::span<const std::byte> RadarAnim;
 
   /*
   **	This gadget class is used for capturing input to the tactical map. All

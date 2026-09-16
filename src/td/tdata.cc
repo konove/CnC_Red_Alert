@@ -48,6 +48,7 @@
 
 #include <cstdint>
 #include <filesystem>
+#include <span>
 
 #include "base/enum_array.h"
 #include "base/numeric.h"
@@ -60,6 +61,7 @@
 #include "td/house.h"
 #include "td/inline.h"
 #include "td/jshell.h"
+#include "td/keyframe.h"
 #include "td/object.h"
 #include "td/terrain.h"
 #include "td/type.h"
@@ -167,7 +169,7 @@ static const TerrainTypeClass Tree4Class(
     false,  // Can it be the target of a move or attack order?
     true,   // Don't make a big deal about it if it gets destroyed?
     false,  // Is it immune to normal combat damage?
-    "T04", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List1, nullptr);
+    "T04", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List1, {});
 
 static const TerrainTypeClass Tree5Class(
     TERRAIN_TREE5, kTheaterFlagWinter | kTheaterFlagTemperate,
@@ -621,8 +623,8 @@ TerrainTypeClass::TerrainTypeClass(
     bool is_destroyable, bool is_transformable, bool is_flammable,
     bool is_crushable, bool is_selectable, bool is_legal_target,
     bool is_insignificant, bool is_immune, const char* ininame, int fullname,
-    int16_t strength, ArmorType armor, const int16_t* occupy,
-    const int16_t* overlap) noexcept
+    int16_t strength, ArmorType armor, std::span<const int16_t> occupy,
+    std::span<const int16_t> overlap) noexcept
     : ObjectTypeClass(true, is_flammable, is_crushable, true, is_selectable,
                       is_legal_target, is_insignificant, is_immune, fullname,
                       ininame, armor, strength),
@@ -659,7 +661,7 @@ void TerrainTypeClass::Init(TheaterType theater) {
       *specific, thus if *	it isn't loaded in this routine, it shouldn't
       *exist at all.
       */
-      terrain.Set_Image_Data(nullptr);
+      terrain.Set_Image_Data({});
 
       if ((terrain.Theater & base::Bit<uint8_t>(theater)) != 0) {
         /*
@@ -668,7 +670,7 @@ void TerrainTypeClass::Init(TheaterType theater) {
         const auto fullname = std::filesystem::path(terrain.IniName)
                                   .replace_extension(Theaters[theater].Suffix)
                                   .string();
-        terrain.Set_Image_Data(MixArchive::Retrieve(fullname));
+        terrain.Set_Image_Data(MixArchive::RetrieveData(fullname));
 
         IsTheaterShape = true;
         terrain.Set_Radar_Icon(
@@ -697,7 +699,7 @@ TerrainType TerrainTypeClass::From_Name(const char* name) {
 
   if (name) {
     for (TerrainType index = TERRAIN_TREE1; index < TERRAIN_COUNT; index++) {
-      if (stricmp(name, Pointers[index]->IniName) == 0) {
+      if (port::CompareIgnoreCase(name, Pointers[index]->IniName) == 0) {
         return index;
       }
     }
@@ -744,7 +746,7 @@ void TerrainTypeClass::Display(int x, int y, WindowNumberType window,
  *=============================================================================================*/
 void TerrainTypeClass::Prep_For_Add() {
   for (TerrainType index = TERRAIN_TREE1; index < TERRAIN_COUNT; index++) {
-    if (As_Reference(index).Get_Image_Data()) {
+    if (!As_Reference(index).Get_Image_Data().empty()) {
       Map.Add_To_List(&As_Reference(index));
     }
   }
@@ -790,20 +792,21 @@ ObjectClass* TerrainTypeClass::Create_One_Of(HouseClass* /*unused*/) const {
   return new TerrainClass(Type, -1);
 }
 
-const int16_t* TerrainTypeClass::Occupy_List(bool /*placement*/) const {
-  if (Occupy) {
+std::span<const int16_t> TerrainTypeClass::Occupy_List(
+    bool /*placement*/) const {
+  if (!Occupy.empty()) {
     return Occupy;
   }
 
   static const int16_t _simple[1] = {REFRESH_EOL};
-  return &_simple[0];
+  return _simple;
 }
 
-const int16_t* TerrainTypeClass::Overlap_List() const {
-  if (Overlap) {
+std::span<const int16_t> TerrainTypeClass::Overlap_List() const {
+  if (!Overlap.empty()) {
     return Overlap;
   }
 
   static const int16_t _simple[1] = {REFRESH_EOL};
-  return &_simple[0];
+  return _simple;
 }

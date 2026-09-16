@@ -46,6 +46,7 @@ class ArchiveWriter;
 
 #include <cstddef>
 #include <cstdint>
+#include <span>
 
 #include "absl/base/attributes.h"
 #include "base/enum_array.h"
@@ -251,7 +252,7 @@ class BuildingClass final : public TechnoClass {
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
   */
-  const void* Remap_Table() override;
+  std::span<const unsigned char> Remap_Table() override;
   int Exit_Object(TechnoClass* base) override;
   void Draw_It(int x, int y, WindowNumberType window) override;
   bool Mark(MarkType mark) override;
@@ -310,7 +311,7 @@ class BuildingClass final : public TechnoClass {
   **	File I/O.
   */
   static void Read_INI(char* buffer);
-  static void Write_INI(char* buffer);
+  static void Write_INI(std::span<char> buffer);
   static const char* INI_Name() { return "STRUCTURES"; }
   // Saves building state and checked references without scenario side effects.
   template <class Archive>

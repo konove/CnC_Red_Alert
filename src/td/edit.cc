@@ -47,8 +47,10 @@
 
 #include "td/edit.h"
 
+#include <algorithm>
 #include <cctype>
 #include <cstring>
+#include <span>
 #include <string_view>
 #include <utility>
 
@@ -103,8 +105,9 @@
  * OUTPUT:     none * WARNINGS:   none * HISTORY: * 01/05/1995 MML : Created. *
  *   01/21/1995 JLB : Modified. *
  *=============================================================================================*/
-EditClass::EditClass(int id, char* text, int max_len, TextPrintType flags,
-                     int x, int y, int w, int h, EditStyle style)
+EditClass::EditClass(int id, std::span<char> text, int max_len,
+                     TextPrintType flags, int x, int y, int w, int h,
+                     EditStyle style)
     : ControlClass(static_cast<unsigned>(id), x, y, w, h, kLeftPress),
       TextFlags(flags),
       EditFlags(style),
@@ -118,8 +121,8 @@ EditClass::EditClass(int id, char* text, int max_len, TextPrintType flags,
       Height = FontHeight + 2;
     }
     if (w == -1) {
-      if (!std::string_view(String).empty()) {
-        Width = String_Pixel_Width(String) + 6;
+      if (!std::string_view(String.data()).empty()) {
+        Width = String_Pixel_Width(String.data()) + 6;
       } else {
         Width = ((Char_Pixel_Width('X') + FontXSpacing) * (MaxLength + 1)) + 2;
       }
@@ -159,10 +162,10 @@ EditClass::~EditClass() {
  *                                                                                             *
  * OUTPUT:  none * WARNINGS:   none * HISTORY: * 01/21/1995 JLB : Created. *
  *=============================================================================================*/
-void EditClass::Set_Text(char* text, int max_len) {
+void EditClass::Set_Text(std::span<char> text, int max_len) {
   String = text;
-  MaxLength = max_len - 1;
-  Length = static_cast<int>(std::string_view(String).size());
+  MaxLength = std::min(max_len, static_cast<int>(text.size())) - 1;
+  Length = static_cast<int>(std::string_view(String.data()).size());
   Flag_To_Redraw();
 }
 
@@ -198,7 +201,7 @@ bool EditClass::Draw_Me(bool forced) {
     /*
     **	Display the text.
     */
-    Draw_Text(String);
+    Draw_Text(String.data());
 
     /*
     **	Display the mouse.
@@ -341,7 +344,7 @@ void EditClass::Draw_Background() {
  * HISTORY: * 01/21/1995 JLB : Created. *
  *=============================================================================================*/
 void EditClass::Draw_Text(const char* text) {
-  if (FontPtr == GradFont6Ptr) {
+  if (FontPtr.data() == GradFont6Ptr.data()) {
     const TextPrintType flags =
         Has_Focus() ? TPF_BRIGHT_COLOR : static_cast<TextPrintType>(0);
 
@@ -412,7 +415,7 @@ bool EditClass::Handle_Key(KeyASCIIType ascii) {
     case KA_BACKSPACE:
       if (Length) {
         Length--;
-        String[Length] = '\0';
+        String[base::ToSize(Length)] = '\0';
         Flag_To_Redraw();
       }
       break;
@@ -427,7 +430,7 @@ bool EditClass::Handle_Key(KeyASCIIType ascii) {
       /*
       **	Don't add a character if the length is greater than edit width.
       */
-      if (String_Pixel_Width(String) +
+      if (String_Pixel_Width(String.data()) +
               Char_Pixel_Width(static_cast<char>(ascii)) >=
           Width - 2) {
         break;
@@ -472,8 +475,8 @@ bool EditClass::Handle_Key(KeyASCIIType ascii) {
       *gadget's ID *	number from being returned just because the gadget has
       *been edited.
       */
-      String[Length++] = static_cast<char>(ascii);
-      String[Length] = '\0';
+      String[base::ToSize(Length++)] = static_cast<char>(ascii);
+      String[base::ToSize(Length)] = '\0';
       Flag_To_Redraw();
       break;
   }

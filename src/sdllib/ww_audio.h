@@ -36,7 +36,9 @@
 #ifndef CNC_RED_ALERT_SDLLIB_WW_AUDIO_H_
 #define CNC_RED_ALERT_SDLLIB_WW_AUDIO_H_
 
+#include <cstddef>
 #include <cstdint>
+#include <span>
 
 /*=========================================================================*/
 /* AUD file header type
@@ -98,10 +100,10 @@ void Stop_Sample(int handle);
 bool Sample_Status(int handle);
 bool Is_Sample_Playing(const void* sample);
 void Stop_Sample_Playing(const void* sample);
-int Play_Sample(const void* sample, int priority = 0xFF, int volume = 0xFF,
-                int16_t panloc = 0x0);
-int Play_Sample_Handle(const void* sample, int priority, int volume,
-                       int16_t panloc, int id);
+int Play_Sample(std::span<const std::byte> sample, int priority = 0xFF,
+                int volume = 0xFF, int16_t panloc = 0x0);
+int Play_Sample_Handle(std::span<const std::byte> sample, int priority,
+                       int volume, int16_t panloc, int id);
 int Set_Score_Vol(int volume);
 void Fade_Sample(int handle, int ticks);
 int AcquireSampleHandle(int priority);
@@ -109,7 +111,7 @@ int Get_Digi_Handle();
 bool Start_Primary_Sound_Buffer(bool forced);
 void Stop_Primary_Sound_Buffer();
 
-void* Load_Sample(const char* filename);
+std::span<std::byte> Load_Sample(const char* filename);
 void Free_Sample(void* sample);
 
 typedef void (*AudioCallback)(uint8_t* stream, int len);

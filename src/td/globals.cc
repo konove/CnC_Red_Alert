@@ -43,6 +43,7 @@
 #include <cstdint>
 #include <span>
 #include <string>
+#include <vector>
 
 #include "base/enum_array.h"
 #include "port/ex_string.h"
@@ -250,7 +251,7 @@ bool PlayerRestarts;
 **	is played at a time, this buffer is only as big as the largest speech
 **	sample that can be played.
 */
-void* SpeechBuffer;
+std::vector<std::byte> SpeechBuffer;
 
 /***************************************************************************
 **	This is a running accumulation of the number of ticks that were unused.
@@ -402,16 +403,17 @@ CELL CurrentCell = 0;
 **	pointers to the fonts. If it is NULL, then the font hasn't been loaded
 **	yet.
 */
-const void* Green12FontPtr;      // Green font for pressed in tabs
-const void* Green12GradFontPtr;  // Graduated green font for tabs
-const void* MapFontPtr;          // Standard very small font.
-const void* Font3Ptr;            // Standard very small font.
-const void* Font6Ptr;            // Standard small font.
-const void* Font8Ptr;            // 8 point proportional.
-const void* FontLEDPtr;          // LED fixed point font.
-const void* VCRFontPtr;          // VCR font pointer.
-const void* ScoreFontPtr;        // font for score & map selection screens
-const void* GradFont6Ptr;        // gradient 6 point font pointer.
+std::span<const std::byte> Green12FontPtr;  // Green font for pressed in tabs
+std::span<const std::byte> Green12GradFontPtr;  // Graduated green font for tabs
+std::span<const std::byte> MapFontPtr;          // Standard very small font.
+std::span<const std::byte> Font3Ptr;            // Standard very small font.
+std::span<const std::byte> Font6Ptr;            // Standard small font.
+std::span<const std::byte> Font8Ptr;            // 8 point proportional.
+std::span<const std::byte> FontLEDPtr;          // LED fixed point font.
+std::span<const std::byte> VCRFontPtr;          // VCR font pointer.
+std::span<const std::byte>
+    ScoreFontPtr;  // font for score & map selection screens
+std::span<const std::byte> GradFont6Ptr;  // gradient 6 point font pointer.
 
 /***************************************************************************
 **	This is the house that the human player is currently playing.
@@ -423,11 +425,11 @@ HouseClass* PlayerPtr;
 **	for pictures that do not use the game palette or are used for fading to
 **	black.
 */
-unsigned char* GamePalette;
-unsigned char* BlackPalette;
-unsigned char* WhitePalette;
-unsigned char* OriginalPalette;
-unsigned char* Palette;
+std::vector<unsigned char> GamePalette;
+std::vector<unsigned char> BlackPalette;
+std::vector<unsigned char> WhitePalette;
+std::vector<unsigned char> OriginalPalette;
+std::vector<unsigned char> Palette;
 
 /***************************************************************************
 **	These are the event queues. One is for holding events until they are
@@ -859,7 +861,7 @@ uint16_t GProductID;        // sender's Product ID
 ** The packet's size is IPX's max size (546), rounded down to accommodate
 ** the max number of events possible.
 */
-char* MetaPacket = nullptr;
+std::vector<std::byte> MetaPacket;
 int MetaSize =
     (546 - sizeof(CommHeaderType)) / sizeof(EventClass) * sizeof(EventClass);
 
@@ -909,7 +911,7 @@ GraphicBufferClass HiddenPage;
 GraphicViewPortClass SeenBuff(&VisiblePage, 0, 0, 640, 480);
 GraphicBufferClass ModeXBuff;
 GraphicViewPortClass HidPage(&HiddenPage, 0, 0, 640, 480);
-GraphicBufferClass SysMemPage(kDefaultScreenWidth, 200, nullptr);
+GraphicBufferClass SysMemPage(kDefaultScreenWidth, 200, {});
 bool SoundOn;
 CountDownTimerClass FrameTimer{0L};
 static CountDownTimerClass DebugTimer{0L};

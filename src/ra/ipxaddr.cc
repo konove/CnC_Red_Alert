@@ -50,7 +50,6 @@
 #include <cstring>
 
 #include "base/buffer.h"
-#include "port/bytes_of.h"
 #include "ra/_wsproto.h"
 #include "ra/ipx.h"
 #include "ra/wsproto.h"
@@ -212,9 +211,9 @@ void IPXAddressClass::Set_Address(IPXHeaderType* header) {
       break;
 
     case PROTOCOL_UDP: {
-      const unsigned char* addr = port::BytesOf(*header);
+      const auto addr = base::ObjectBytes(*header);
       base::FillBytes(base::ObjectBytes(NodeAddress), 0, 6);
-      memcpy(NodeAddress, addr, 4);
+      base::CopyBytes(base::ObjectBytes(NodeAddress), addr, 4);
       base::FillBytes(base::ObjectBytes(NetworkNumber), 0, 4);
       break;
     }
@@ -422,7 +421,8 @@ bool IPXAddressClass::operator!=(IPXAddressClass& addr) {
  *   12/19/1994 BR : Created.                                              *
  *=========================================================================*/
 bool IPXAddressClass::operator>(IPXAddressClass& addr) {
-  return memcmp(this, &addr, 10) > 0;
+  return base::CompareBytes(base::ObjectBytes(*this), base::ObjectBytes(addr),
+                            10) > 0;
 
 } /* end of operator> */
 
@@ -445,7 +445,8 @@ bool IPXAddressClass::operator>(IPXAddressClass& addr) {
  *   12/19/1994 BR : Created.                                              *
  *=========================================================================*/
 bool IPXAddressClass::operator<(IPXAddressClass& addr) {
-  return std::memcmp(this, &addr, 10) < 0;
+  return base::CompareBytes(base::ObjectBytes(*this), base::ObjectBytes(addr),
+                            10) < 0;
 
 } /* end of operator< */
 
@@ -468,7 +469,8 @@ bool IPXAddressClass::operator<(IPXAddressClass& addr) {
  *   12/19/1994 BR : Created.                                              *
  *=========================================================================*/
 bool IPXAddressClass::operator>=(IPXAddressClass& addr) {
-  return memcmp(this, &addr, 10) >= 0;
+  return base::CompareBytes(base::ObjectBytes(*this), base::ObjectBytes(addr),
+                            10) >= 0;
 
 } /* end of operator>= */
 
@@ -491,7 +493,8 @@ bool IPXAddressClass::operator>=(IPXAddressClass& addr) {
  *   12/19/1994 BR : Created.                                              *
  *=========================================================================*/
 bool IPXAddressClass::operator<=(IPXAddressClass& addr) {
-  return memcmp(this, &addr, 10) <= 0;
+  return base::CompareBytes(base::ObjectBytes(*this), base::ObjectBytes(addr),
+                            10) <= 0;
 
 } /* end of operator<= */
 

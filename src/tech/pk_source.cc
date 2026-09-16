@@ -21,6 +21,7 @@
 #include <memory>
 #include <span>
 
+#include "base/buffer.h"
 #include "base/numeric.h"
 #include "tech/blowfish.h"
 #include "tech/blowfish_source.h"
@@ -48,10 +49,14 @@ std::unique_ptr<BlowfishSource> MakePkDecryptSource(ByteSource& source,
 
   // Decrypt to get the blowfish key.
   char blowfish_key[kMaxKeyBlockSize];
-  key.Decrypt(encrypted_key, encrypted_len, blowfish_key);
+  if (key.Decrypt(
+          base::ObjectBytes(encrypted_key).first(base::ToSize(encrypted_len)),
+          base::ObjectBytes(blowfish_key)) < kBlowfishKeySize) {
+    return nullptr;
+  }
 
   // Create and configure the BlowfishSource.
   auto straw = std::make_unique<BlowfishSource>(CipherMode::kDecrypt, source);
-  straw->Key(blowfish_key, kBlowfishKeySize);
+  straw->Key(std::as_bytes(std::span(blowfish_key)).first(kBlowfishKeySize));
   return straw;
 }

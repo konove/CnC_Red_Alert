@@ -449,7 +449,7 @@ KeyNumType GadgetClass::Input() {
       ** time to create a screen shot using the PCX code (if it works)
       */
       GraphicBufferClass temp_page(
-          SeenBuff.Get_Width(), SeenBuff.Get_Height(), nullptr,
+          SeenBuff.Get_Width(), SeenBuff.Get_Height(), {},
           static_cast<int32_t>(SeenBuff.Get_Width()) * SeenBuff.Get_Height());
       char filename[30];
 

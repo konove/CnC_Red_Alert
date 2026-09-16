@@ -7,6 +7,8 @@
 #include <cstdint>
 #include <cstdio>
 #include <filesystem>
+#include <fstream>
+#include <ios>
 #include <span>
 #include <string>
 #include <vector>
@@ -68,10 +70,10 @@ class MixFileTest : public ::testing::Test {
         ".mix";
     path_ = std::filesystem::temp_directory_path() / name;
     const std::vector<char> bytes = image.Bytes();
-    FILE* file = std::fopen(path_.c_str(), "wb");
-    EXPECT_NE(file, nullptr);
-    std::fwrite(bytes.data(), 1, bytes.size(), file);
-    std::fclose(file);
+    std::ofstream file(path_, std::ios::binary);
+    EXPECT_TRUE(file.is_open());
+    file.write(bytes.data(), static_cast<std::streamsize>(bytes.size()));
+    file.close();
     return Mix::Register(path_.string());
   }
 

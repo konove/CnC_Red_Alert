@@ -40,6 +40,7 @@
 #ifndef CNC_RED_ALERT_RA_LIST_H_
 #define CNC_RED_ALERT_RA_LIST_H_
 
+#include <span>
 #include <algorithm>
 #include <cstddef>
 #include <string>
@@ -78,7 +79,7 @@
 class ListClass : public ControlClass {
  public:
   ListClass(int id, int x, int y, int w, int h, TextPrintType flags,
-            const void* up, const void* down);
+            std::span<const std::byte> up, std::span<const std::byte> down);
   // Not copyable -- see LinkClass.
   ListClass(const ListClass&) = delete;
   ~ListClass() override;
@@ -123,7 +124,7 @@ class ListClass : public ControlClass {
   virtual bool Remove_Scroll_Bar() final;
   virtual void Set_Selected_Index(int index);
   virtual void Set_Selected_Index(const char* text);
-  virtual void Set_Tabs(const int* tabs);
+  virtual void Set_Tabs(std::span<const int> tabs);
   virtual bool Set_View_Index(int index);
   virtual void Step(bool up);
   void Set_Position(int x, int y) override;
@@ -152,7 +153,7 @@ class ListClass : public ControlClass {
   **	<TAB> characters found in a list box string. The tabs are a series of
   **	pixel offsets from the starting pixel position of the text.
   */
-  const int* Tabs{nullptr};
+  std::span<const int> Tabs;
 
   // The items' text, in display order. Owned by the list.
   std::vector<std::string> List;
@@ -192,7 +193,7 @@ template <class T>
 class TListClass final : public ControlClass {
  public:
   TListClass(int id, int x, int y, int w, int h, TextPrintType flags,
-             const void* up, const void* down);
+             std::span<const std::byte> up, std::span<const std::byte> down);
   TListClass(const TListClass<T>&) = delete;
   ~TListClass() override;
   TListClass& operator=(const TListClass&) = delete;
@@ -220,7 +221,7 @@ class TListClass final : public ControlClass {
   bool Remove_Scroll_Bar();
   void Set_Selected_Index(int index);
   void Set_Selected_Index(T text);
-  void Set_Tabs(const int* tabs);
+  void Set_Tabs(std::span<const int> tabs);
   bool Set_View_Index(int index);
   void Step(bool up);
   void Set_Position(int x, int y) override;
@@ -248,7 +249,7 @@ class TListClass final : public ControlClass {
   **	<TAB> characters found in a list box string. The tabs are a series of
   **	pixel offsets from the starting pixel position of the text.
   */
-  const int* Tabs{nullptr};
+  std::span<const int> Tabs;
 
   /*
   **	The actual list of text pointers is maintained by this list manager.
@@ -288,7 +289,7 @@ class TListClass final : public ControlClass {
 
 template <class T>
 TListClass<T>::TListClass(int id, int x, int y, int w, int h,
-                          TextPrintType flags, const void* up, const void* down)
+                          TextPrintType flags, std::span<const std::byte> up, std::span<const std::byte> down)
     : ControlClass(static_cast<unsigned>(id), x, y, w, h,
                    kLeftPress | kLeftRelease | kKeyboard, false),
       TextFlags(flags),
@@ -641,7 +642,7 @@ bool TListClass<T>::Remove_Scroll_Bar() {
 }
 
 template <class T>
-void TListClass<T>::Set_Tabs(const int* tabs) {
+void TListClass<T>::Set_Tabs(std::span<const int> tabs) {
   Tabs = tabs;
 }
 

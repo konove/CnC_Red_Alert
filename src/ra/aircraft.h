@@ -42,6 +42,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <span>
 
 #include "absl/base/attributes.h"
 #include "ra/bullet.h"
@@ -158,7 +159,8 @@ class AircraftClass : public FootClass, public FlyClass {
   void Look(bool incremental = false) override;
   void Draw_Rotors(int x, int y, WindowNumberType window) const;
   int Exit_Object(TechnoClass* /*unit*/ /*unused*/) override;
-  [[nodiscard]] const int16_t* Overlap_List(bool redraw = false) const override;
+  [[nodiscard]] std::span<const int16_t> Overlap_List(
+      bool redraw = false) const override;
   void Draw_It(int x, int y, WindowNumberType window) const override;
   void Set_Speed(int speed) override;
 

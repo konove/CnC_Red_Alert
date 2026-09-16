@@ -10,6 +10,7 @@
 #include <string_view>
 #include <type_traits>
 
+#include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/seek_origin.h"
 #include "base/types.h"
@@ -39,15 +40,18 @@ class VqaIo {
   template <typename T>
     requires std::is_trivially_copyable_v<T>
   bool ReadObject(T& value) {
-    return Read(std::as_writable_bytes(std::span(&value, 1)));
+    return Read(base::ObjectBytes(value));
   }
 
   // Reads count bytes into a byte-sized buffer, which is what the decoders'
   // scratch buffers are.
   template <typename T>
     requires(sizeof(T) == 1 && std::is_trivially_copyable_v<T>)
-  bool Read(T* buffer, base::ssize count) {
-    return Read(std::as_writable_bytes(std::span(buffer, base::ToSize(count))));
+  bool Read(std::span<T> buffer, base::ssize count) {
+    if (count < 0 || base::ToSize(count) > buffer.size()) {
+      return false;
+    }
+    return Read(std::as_writable_bytes(buffer.first(base::ToSize(count))));
   }
 };
 

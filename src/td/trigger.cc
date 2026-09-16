@@ -69,14 +69,15 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <span>
 #include <string_view>
+#include <vector>
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "port/ex_string.h"
 #include "port/tokenizer.h"
 #include "reinf.h"
-#include "sdllib/shape.h"
 #include "td/anim.h"
 #include "td/building.h"
 #include "td/cell.h"
@@ -471,7 +472,7 @@ bool TriggerClass::Spring(EventType event, ObjectClass* obj) {
       break;
 
     case ACTION_DZ:
-      new AnimClass(ANIM_LZ_SMOKE, Cell_Coord(Waypoint[25]));
+      new AnimClass(ANIM_LZ_SMOKE, Cell_Coord(base::At(Waypoint, 25)));
       break;
 
     case ACTION_NONE:
@@ -650,13 +651,13 @@ bool TriggerClass::Spring(EventType event, CELL cell) {
       if (House == PlayerPtr->Class->House) {
         PlayerPtr->AirStrike.Forced_Charge(true);
         Map.Add(RTTI_SPECIAL, static_cast<int>(SPC_AIR_STRIKE));
-        Map.Column[1].Flag_To_Redraw();
+        base::At(Map.Column, 1).Flag_To_Redraw();
       }
       //			PlayerPtr->Make_Air_Strike_Available(true);
       break;
 
     case ACTION_DZ:
-      new AnimClass(ANIM_LZ_SMOKE, Cell_Coord(Waypoint[25]));
+      new AnimClass(ANIM_LZ_SMOKE, Cell_Coord(base::At(Waypoint, 25)));
       break;
 
     case ACTION_NONE:
@@ -843,7 +844,7 @@ bool TriggerClass::Spring(EventType event, HousesType house, int64_t data) {
       if (House == PlayerPtr->Class->House) {
         PlayerPtr->AirStrike.Forced_Charge(true);
         Map.Add(RTTI_SPECIAL, static_cast<int>(SPC_AIR_STRIKE));
-        Map.Column[1].Flag_To_Redraw();
+        base::At(Map.Column, 1).Flag_To_Redraw();
       }
       break;
 
@@ -851,7 +852,7 @@ bool TriggerClass::Spring(EventType event, HousesType house, int64_t data) {
       break;
 
     case ACTION_DZ:
-      new AnimClass(ANIM_LZ_SMOKE, Cell_Coord(Waypoint[25]));
+      new AnimClass(ANIM_LZ_SMOKE, Cell_Coord(base::At(Waypoint, 25)));
       break;
 
     case ACTION_WIN:
@@ -1008,15 +1009,14 @@ void TriggerClass::Read_INI(char* buffer) {
   /*
   **	Set 'tbuffer' to point just past the INI buffer
   */
-  const int len = static_cast<int>(std::string_view(buffer).size()) +
-                  2;             // Length of data in buffer.
-  char* tbuffer = buffer + len;  // Accumulation buffer of trigger IDs.
+  std::vector<char> key_storage(std::string_view(buffer).size() + 2);
+  auto key_cursor = std::span(key_storage);
+  char* tbuffer = key_cursor.data();  // Accumulation buffer of trigger IDs.
 
   /*
   **	Read all TRIGGER entry names into 'tbuffer'
   */
-  WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
-                            ShapeBufferSize - len, buffer);
+  WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, key_cursor, buffer);
 
   /*
   **	Loop for all trigger entries.
@@ -1035,8 +1035,10 @@ void TriggerClass::Read_INI(char* buffer) {
     /*
     **	Get the trigger entry.
     */
-    WWGetPrivateProfileString(INI_Name(), tbuffer, nullptr, buf,
-                              sizeof(buf) - 1, buffer);
+    WWGetPrivateProfileString(
+        INI_Name(), tbuffer, nullptr,
+        std::span(buf).first(static_cast<std::size_t>(sizeof(buf) - 1)),
+        buffer);
 
     /*
     **	Fill in the trigger.
@@ -1060,7 +1062,8 @@ void TriggerClass::Read_INI(char* buffer) {
     /*
     **	Go to next entry.
     */
-    tbuffer += std::string_view(tbuffer).size() + 1;
+    key_cursor = key_cursor.subspan(std::string_view(tbuffer).size() + 1);
+    tbuffer = key_cursor.data();
   }
 }
 
@@ -1150,7 +1153,7 @@ void TriggerClass::Fill_In(char* name, char* entry) {
  *                                                                                             *
  * HISTORY: * 11/28/1994 BR : Created. *
  *=============================================================================================*/
-void TriggerClass::Write_INI(char* buffer, bool refresh) {
+void TriggerClass::Write_INI(std::span<char> buffer, bool refresh) {
   char buf[128];
   const char* hname = nullptr;
   const char* tname = nullptr;
@@ -1217,7 +1220,7 @@ TriggerClass* TriggerClass::As_Pointer(const char* name) {
   for (int i = 0; i < Triggers.Count(); i++) {
     TriggerClass* trigger = Triggers.Ptr(i);
 
-    if (!stricmp(name, trigger->Name)) {
+    if (!port::CompareIgnoreCase(name, trigger->Name)) {
       return trigger;
     }
   }
@@ -1281,7 +1284,7 @@ EventType TriggerClass::Event_From_Name(const char* name) {
 
   for (int i = static_cast<int>(EVENT_NONE); i < static_cast<int>(EVENT_COUNT);
        i++) {
-    if (!stricmp(name, base::At(EventText, i + 1))) {
+    if (!port::CompareIgnoreCase(name, base::At(EventText, i + 1))) {
       return static_cast<EventType>(i);
     }
   }
@@ -1323,7 +1326,7 @@ TriggerClass::ActionType TriggerClass::Action_From_Name(const char* name) {
 
   for (int i = static_cast<int>(ACTION_NONE);
        i < static_cast<int>(ACTION_COUNT); i++) {
-    if (!stricmp(name, base::At(ActionText, i + 1))) {
+    if (!port::CompareIgnoreCase(name, base::At(ActionText, i + 1))) {
       return static_cast<ActionType>(i);
     }
   }

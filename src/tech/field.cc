@@ -34,9 +34,15 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 #include "tech/field.h"
 
+#include <algorithm>
+#include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <span>
 #include <string_view>
+
+#include "base/buffer.h"
+#include "port/unaligned.h"
 
 // htons/htonl
 #ifdef _WIN32
@@ -46,83 +52,75 @@
 #endif
 
 FieldClass::FieldClass(const char* id, char data)
-    : DataType(TYPE_CHAR),
-      Size(sizeof(data)),
-      Data(new char[Size]),
-      Next(nullptr) {
-  strncpy(ID, id, sizeof(ID));
+    : DataType(TYPE_CHAR), Size(sizeof(data)), Data(Size), Next(nullptr) {
+  std::ranges::copy(std::string_view(id).substr(0, sizeof(ID)), std::begin(ID));
 
-  memcpy(Data, &data, Size);
+  base::CopyBytes(Data, base::ObjectBytes(data), Size);
 }
 
 FieldClass::FieldClass(const char* id, unsigned char data)
     : DataType(TYPE_UNSIGNED_CHAR),
       Size(sizeof(data)),
-      Data(new char[Size]),
+      Data(Size),
       Next(nullptr) {
-  strncpy(ID, id, sizeof(ID));
+  std::ranges::copy(std::string_view(id).substr(0, sizeof(ID)), std::begin(ID));
 
-  memcpy(Data, &data, Size);
+  base::CopyBytes(Data, base::ObjectBytes(data), Size);
 }
 
 FieldClass::FieldClass(const char* id, int16_t data)
-    : DataType(TYPE_SHORT),
-      Size(sizeof(data)),
-      Data(new char[Size]),
-      Next(nullptr) {
-  strncpy(ID, id, sizeof(ID));
+    : DataType(TYPE_SHORT), Size(sizeof(data)), Data(Size), Next(nullptr) {
+  std::ranges::copy(std::string_view(id).substr(0, sizeof(ID)), std::begin(ID));
 
-  memcpy(Data, &data, Size);
+  base::CopyBytes(Data, base::ObjectBytes(data), Size);
 }
 
 FieldClass::FieldClass(const char* id, uint16_t data)
     : DataType(TYPE_UNSIGNED_SHORT),
       Size(sizeof(data)),
-      Data(new char[Size]),
+      Data(Size),
       Next(nullptr) {
-  strncpy(ID, id, sizeof(ID));
+  std::ranges::copy(std::string_view(id).substr(0, sizeof(ID)), std::begin(ID));
 
-  memcpy(Data, &data, Size);
+  base::CopyBytes(Data, base::ObjectBytes(data), Size);
 }
 
 FieldClass::FieldClass(const char* id, int32_t data)
-    : DataType(TYPE_LONG),
-      Size(sizeof(data)),
-      Data(new char[Size]),
-      Next(nullptr) {
-  strncpy(ID, id, sizeof(ID));
+    : DataType(TYPE_LONG), Size(sizeof(data)), Data(Size), Next(nullptr) {
+  std::ranges::copy(std::string_view(id).substr(0, sizeof(ID)), std::begin(ID));
 
-  memcpy(Data, &data, Size);
+  base::CopyBytes(Data, base::ObjectBytes(data), Size);
 }
 
 FieldClass::FieldClass(const char* id, uint32_t data)
     : DataType(TYPE_UNSIGNED_LONG),
       Size(sizeof(data)),
-      Data(new char[Size]),
+      Data(Size),
       Next(nullptr) {
-  strncpy(ID, id, sizeof(ID));
+  std::ranges::copy(std::string_view(id).substr(0, sizeof(ID)), std::begin(ID));
 
-  memcpy(Data, &data, Size);
+  base::CopyBytes(Data, base::ObjectBytes(data), Size);
 }
 
 FieldClass::FieldClass(const char* id, const char* data)
     : DataType(TYPE_STRING),
       Size(static_cast<uint16_t>(std::string_view(data).size() + 1)),
-      Data(new char[Size]),
+      Data(Size),
       Next(nullptr) {
-  strncpy(ID, id, sizeof(ID));
+  std::ranges::copy(std::string_view(id).substr(0, sizeof(ID)), std::begin(ID));
 
-  memcpy(Data, data, Size);
+  base::CopyBytes(Data, std::as_bytes(std::span(std::string_view(data))),
+                  Size - 1);
 }
 
-FieldClass::FieldClass(const char* id, void* data, int length)
+FieldClass::FieldClass(const char* id, std::span<const std::byte> data)
     : DataType(TYPE_CHUNK),
-      Size(static_cast<uint16_t>(length)),
-      Data(new char[Size]),
+      Size(static_cast<uint16_t>(data.size())),
+      Data(Size),
       Next(nullptr) {
-  strncpy(ID, id, sizeof(ID));
+  std::ranges::copy(std::string_view(id).substr(0, sizeof(ID)), std::begin(ID));
 
-  memcpy(Data, data, Size);
+  base::CopyBytes(Data, data, Size);
 }
 
 /**************************************************************************
@@ -151,13 +149,12 @@ void FieldClass::Host_To_Net() {
 
     case TYPE_SHORT:
     case TYPE_UNSIGNED_SHORT:
-      *static_cast<uint16_t*>(Data) = htons(*static_cast<uint16_t*>(Data));
+      port::WriteUnaligned(Data, htons(port::ReadUnaligned<uint16_t>(Data)));
       break;
 
     case TYPE_LONG:
     case TYPE_UNSIGNED_LONG:
-      *static_cast<uint32_t*>(Data) =
-          htonl(static_cast<std::uint32_t>(*static_cast<uint32_t*>(Data)));
+      port::WriteUnaligned(Data, htonl(port::ReadUnaligned<uint32_t>(Data)));
       break;
 
     //
@@ -207,13 +204,12 @@ void FieldClass::Net_To_Host() {
 
     case TYPE_SHORT:
     case TYPE_UNSIGNED_SHORT:
-      *static_cast<uint16_t*>(Data) = ntohs(*static_cast<uint16_t*>(Data));
+      port::WriteUnaligned(Data, ntohs(port::ReadUnaligned<uint16_t>(Data)));
       break;
 
     case TYPE_LONG:
     case TYPE_UNSIGNED_LONG:
-      *static_cast<uint32_t*>(Data) =
-          ntohl(static_cast<std::uint32_t>(*static_cast<uint32_t*>(Data)));
+      port::WriteUnaligned(Data, ntohl(port::ReadUnaligned<uint32_t>(Data)));
       break;
 
     //

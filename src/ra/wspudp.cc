@@ -51,9 +51,12 @@
 
 #include <cassert>
 #include <cerrno>
+#include <cstddef>
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
+#include <span>
+#include <string_view>
 
 #include "absl/strings/str_format.h"
 #include "base/buffer.h"
@@ -115,12 +118,10 @@ UDPInterfaceClass::UDPInterfaceClass() = default;
  *=============================================================================================*/
 UDPInterfaceClass::~UDPInterfaceClass() {
   while (BroadcastAddresses.Count()) {
-    delete[] BroadcastAddresses[0];
     BroadcastAddresses.Delete(0);
   }
 
   while (LocalAddresses.Count() > 0) {
-    delete[] LocalAddresses[0];
     LocalAddresses.Delete(0);
   }
 
@@ -141,17 +142,12 @@ UDPInterfaceClass::~UDPInterfaceClass() {
  *                                                                                             *
  * HISTORY: * 8/5/97 12:12PM ST : Created *
  *=============================================================================================*/
-void UDPInterfaceClass::Set_Broadcast_Address(const void* address) {
-  const char* ip_addr = static_cast<const char*>(address);
-  assert(strlen(ip_addr) <= strlen("xxx.xxx.xxx.xxx"));
+void UDPInterfaceClass::Set_Broadcast_Address(const char* address) {
+  const char* ip_addr = address;
+  assert(std::string_view(ip_addr).size() <=
+         std::string_view("xxx.xxx.xxx.xxx").size());
 
-  auto* baddr = new unsigned char[4];
-
-  uint32_t addr = inet_addr(ip_addr);
-  memcpy(baddr, &addr, 4);
-  if (!BroadcastAddresses.Add(baddr)) {
-    delete[] baddr;
-  }
+  BroadcastAddresses.Add(inet_addr(ip_addr));
 }
 
 /***********************************************************************************************
@@ -217,7 +213,6 @@ bool UDPInterfaceClass::Open_Socket(SOCKET /*unused*/) {
   ** Clear out any old local addresses from the local address list.
   */
   while (LocalAddresses.Count() > 0) {
-    delete[] LocalAddresses[0];
     LocalAddresses.Delete(0);
   }
 
@@ -227,8 +222,17 @@ bool UDPInterfaceClass::Open_Socket(SOCKET /*unused*/) {
   ** we send to ourselves.
   */
   for (const addrinfo* info = results; info != nullptr; info = info->ai_next) {
+    if (info->ai_family != AF_INET || info->ai_addr == nullptr ||
+        info->ai_addrlen < sizeof(sockaddr_in)) {
+      continue;
+    }
+    // getaddrinfo owns ai_addr and supplies its readable extent in ai_addrlen.
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+    const auto* bytes = reinterpret_cast<const std::byte*>(info->ai_addr);
+    // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
+    const std::span<const std::byte> address_bytes(bytes, info->ai_addrlen);
     const uint32_t address =
-        port::ReadUnaligned<sockaddr_in>(info->ai_addr).sin_addr.s_addr;
+        port::ReadUnaligned<sockaddr_in>(address_bytes).sin_addr.s_addr;
 
     char temp[128];
     absl::SNPrintF(temp, sizeof(temp),
@@ -239,11 +243,7 @@ bool UDPInterfaceClass::Open_Socket(SOCKET /*unused*/) {
                    static_cast<int>((address & 0xff000000) >> 24));
     absl::PrintF("%s", temp);
 
-    auto* a = new unsigned char[4];
-    port::WriteUnaligned(a, address);
-    if (!LocalAddresses.Add(a)) {
-      delete[] a;
-    }
+    LocalAddresses.Add(address);
   }
   freeaddrinfo(results);
 
@@ -276,7 +276,8 @@ bool UDPInterfaceClass::Open_Socket(SOCKET /*unused*/) {
  *                                                                                             *
  * HISTORY: * 3/20/96 3:00PM ST : Created *
  *=============================================================================================*/
-void UDPInterfaceClass::Broadcast(void* buffer, int buffer_len) {
+void UDPInterfaceClass::Broadcast(std::span<const std::byte> buffer,
+                                  int buffer_len) {
   for (int i = 0; i < BroadcastAddresses.Count(); i++) {
     /*
     ** Create a temporary holding area for the packet.
@@ -286,7 +287,8 @@ void UDPInterfaceClass::Broadcast(void* buffer, int buffer_len) {
     /*
     ** Copy the packet into the holding buffer.
     */
-    memcpy(packet->Buffer, buffer, base::ToSize(buffer_len));
+    base::CopyBytes(base::ObjectBytes(packet->Buffer), buffer,
+                    base::ToSize(buffer_len));
     packet->BufferLen = buffer_len;
 
     /*
@@ -299,7 +301,8 @@ void UDPInterfaceClass::Broadcast(void* buffer, int buffer_len) {
     */
     base::FillBytes(base::ObjectBytes(packet->Address), 0,
                     sizeof(packet->Address));
-    memcpy(packet->Address + 4, BroadcastAddresses[i], 4);
+    base::CopyBytes(base::ObjectBytes(packet->Address).subspan(4),
+                    base::ObjectBytes(BroadcastAddresses[i]), 4);
 
     /*
     ** Add it to our out list.
@@ -347,7 +350,7 @@ void UDPInterfaceClass::Event_Handler(int /*socket*/, SocketEvent event) {
         *away.
         */
         for (int i = 0; i < LocalAddresses.Count(); i++) {
-          if (!memcmp(LocalAddresses[i], &addr.sin_addr.s_addr, 4)) {
+          if (LocalAddresses[i] == addr.sin_addr.s_addr) {
             return;
           }
         }
@@ -361,7 +364,8 @@ void UDPInterfaceClass::Event_Handler(int /*socket*/, SocketEvent event) {
                         base::ObjectBytes(ReceiveBuffer), base::ToSize(rc));
         base::FillBytes(base::ObjectBytes(packet->Address), 0,
                         sizeof(packet->Address));
-        memcpy(packet->Address + 4, &addr.sin_addr.s_addr, 4);
+        base::CopyBytes(base::ObjectBytes(packet->Address).subspan(4),
+                        base::ObjectBytes(addr.sin_addr.s_addr), 4);
         if (!InBuffers.Add(packet)) {
           delete packet;
         }
@@ -389,7 +393,8 @@ void UDPInterfaceClass::Event_Handler(int /*socket*/, SocketEvent event) {
       */
       addr.sin_family = AF_INET;
       addr.sin_port = htons(static_cast<uint16_t>(PlanetWestwoodPortNumber));
-      memcpy(&addr.sin_addr.s_addr, packet->Address + 4, 4);
+      base::CopyBytes(base::ObjectBytes(addr.sin_addr.s_addr),
+                      base::ObjectBytes(packet->Address).subspan(4), 4);
 
       /*
       ** Send it.

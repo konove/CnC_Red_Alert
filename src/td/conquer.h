@@ -18,9 +18,12 @@
 #ifndef CNC_RED_ALERT_TD_CONQUER_H_
 #define CNC_RED_ALERT_TD_CONQUER_H_
 
+#include <cstddef>
 #include <cstdint>
 #include <memory>
+#include <span>
 #include <string>
+#include <vector>
 
 #include "sdllib/keyboard.h"
 #include "sdllib/shape.h"
@@ -794,7 +797,7 @@
 #define TXT_BONUS_MISSION_4 753                      // Bonus Mission 4
 #define TXT_BONUS_MISSION_5 754                      // Bonus Mission 5
 
-extern unsigned char* InterpolatedPalettes[100];
+extern std::vector<unsigned char> InterpolatedPalettes[100];
 extern bool PalettesRead;
 extern int PaletteCounter;
 
@@ -824,12 +827,12 @@ const char* Language_Name(const char* basename);
 SourceType Source_From_Name(const char* name);
 const char* Name_From_Source(SourceType source);
 FacingType KN_To_Facing(int input);
-const void* Get_Radar_Icon(const void* shapefile, int shapenum, int frames,
-                           int zoomfactor);
-void CC_Draw_Shape(const void* shapefile, int shapenum, int x, int y,
-                   WindowNumberType window, ShapeFlags_Type flags,
-                   const void* fadingdata = nullptr,
-                   const void* ghostdata = nullptr);
+std::vector<uint8_t> Get_Radar_Icon(std::span<const std::byte> shapefile,
+                                    int shapenum, int frames, int zoomfactor);
+void CC_Draw_Shape(std::span<const std::byte> shapefile, int shapenum, int x,
+                   int y, WindowNumberType window, ShapeFlags_Type flags,
+                   std::span<const uint8_t> fadingdata = {},
+                   std::span<const uint8_t> ghostdata = {});
 void Go_Editor(bool flag);
 
 char* CC_Get_Shape_Filename(const void* shapeptr);
@@ -840,13 +843,13 @@ void Bubba_Print(char* format, ...);
 void Heap_Dump_Check(const char* string);
 
 [[noreturn]] void Validate_Error(const char* name);
-const void* Hires_Retrieve(const char* name);
+std::span<const std::byte> Hires_Retrieve(const char* name);
 int Get_Resolution_Factor();
 
 // Processes the tactical map input codes.
 void Keyboard_Process(KeyNumType& input);
 // Tiles `shapefile`'s frame `shapenum` over the given rectangle.
-void CC_Texture_Fill(const void* shapefile, int shapenum, int xpos, int ypos,
-                     int width, int height);
+void CC_Texture_Fill(std::span<const std::byte> shapefile, int shapenum,
+                     int xpos, int ypos, int width, int height);
 
 #endif  // CNC_RED_ALERT_TD_CONQUER_H_

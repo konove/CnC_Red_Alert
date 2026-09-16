@@ -39,12 +39,15 @@
 
 #include "td/expand.h"
 
+#include <cstddef>
 #include <format>
+#include <span>
 #include <string>
 #include <vector>
 
 #include "base/array.h"
 #include "base/numeric.h"
+#include "port/bytes_of.h"
 #include "port/safe_string.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
@@ -82,7 +85,7 @@ bool Expansion_Present() {
 class EListClass : public ListClass {
  public:
   EListClass(int id, int x, int y, int w, int h, TextPrintType flags,
-             const void* up, const void* down)
+             std::span<const std::byte> up, std::span<const std::byte> down)
       : ListClass(id, x, y, w, h, flags, up, down) {}
   // Appends a line for `scenario`, returning its index.
   int Add_Scenario(int scenario, const std::string& text) {
@@ -142,8 +145,8 @@ bool Expansion_Dialog() {
 
   GadgetClass* buttons = nullptr;
 
-  const void* up_button = nullptr;
-  const void* down_button = nullptr;
+  std::span<const std::byte> up_button;
+  std::span<const std::byte> down_button;
 
   if (InMainLoop) {
     up_button = Hires_Retrieve("BTN-UP.SHP");
@@ -170,7 +173,7 @@ bool Expansion_Dialog() {
   /*
   **	Add in all the expansion scenarios.
   */
-  char* sbuffer = ShapeBuffer;
+  const auto sbuffer = port::CharBytes(ShapeBufferBytes);
   for (int index = 20; index < 60; index++) {
     char buffer[128];
     GameFile file;
@@ -185,8 +188,7 @@ bool Expansion_Dialog() {
       sbuffer[1000 + 1] = '\n';
       sbuffer[1000 + 2] = '\0';
 
-      WWGetPrivateProfileString("Basic", "Name", "x", buffer, sizeof(buffer),
-                                sbuffer);
+      WWGetPrivateProfileString("Basic", "Name", "x", buffer, sbuffer.data());
       list.Add_Scenario(index, std::format("GDI: {}", buffer));
     }
   }
@@ -205,8 +207,7 @@ bool Expansion_Dialog() {
       sbuffer[1000 + 1] = '\n';
       sbuffer[1000 + 2] = '\0';
 
-      WWGetPrivateProfileString("Basic", "Name", "x", buffer, sizeof(buffer),
-                                sbuffer);
+      WWGetPrivateProfileString("Basic", "Name", "x", buffer, sbuffer.data());
       list.Add_Scenario(index, std::format("NOD: {}", buffer));
     }
   }
@@ -302,8 +303,8 @@ bool Bonus_Dialog() {
 
   GadgetClass* buttons = nullptr;
 
-  const void* up_button = nullptr;
-  const void* down_button = nullptr;
+  std::span<const std::byte> up_button;
+  std::span<const std::byte> down_button;
 
   if (InMainLoop) {
     up_button = Hires_Retrieve("BTN-UP.SHP");

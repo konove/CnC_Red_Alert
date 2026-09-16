@@ -61,8 +61,10 @@
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
+#include <span>
 
 #include "base/array.h"
+#include "base/numeric.h"
 #include "port/ex_string.h"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
@@ -270,7 +272,7 @@ void BulletClass::operator delete(void* ptr) {
  * HISTORY: * 06/20/1994 JLB : Created. * 01/05/1995 JLB : Handles projectiles
  *with altitude.                                       *
  *=============================================================================================*/
-const int16_t* BulletClass::Occupy_List(bool /*placement*/) const {
+std::span<const int16_t> BulletClass::Occupy_List(bool /*placement*/) const {
   assert(Bullets.ID(this) == ID);
   assert(IsActive);
 
@@ -278,25 +280,25 @@ const int16_t* BulletClass::Occupy_List(bool /*placement*/) const {
   **	Super-gigundo units use the >= 64 coord spillage list logic.
   */
   if (Class->IsGigundo) {
-    static int16_t _list[] = {-1,
-                              0,
-                              1,
-                              (MAP_CELL_W * 1) - 1,
-                              MAP_CELL_W * 1,
-                              (MAP_CELL_W * 1) + 1,
-                              (-MAP_CELL_W * 1) - 1,
-                              -MAP_CELL_W * 1,
-                              (-MAP_CELL_W * 1) + 1,
-                              (MAP_CELL_W * 2) - 1,
-                              MAP_CELL_W * 2,
-                              (MAP_CELL_W * 2) + 1,
-                              (-MAP_CELL_W * 2) - 1,
-                              -MAP_CELL_W * 2,
-                              (-MAP_CELL_W * 2) + 1,
-                              (-MAP_CELL_W * 3) - 1,
-                              -MAP_CELL_W * 3,
-                              (-MAP_CELL_W * 3) + 1,
-                              kRefreshEol};
+    static const int16_t _list[] = {-1,
+                                    0,
+                                    1,
+                                    (MAP_CELL_W * 1) - 1,
+                                    MAP_CELL_W * 1,
+                                    (MAP_CELL_W * 1) + 1,
+                                    (-MAP_CELL_W * 1) - 1,
+                                    -MAP_CELL_W * 1,
+                                    (-MAP_CELL_W * 1) + 1,
+                                    (MAP_CELL_W * 2) - 1,
+                                    MAP_CELL_W * 2,
+                                    (MAP_CELL_W * 2) + 1,
+                                    (-MAP_CELL_W * 2) - 1,
+                                    -MAP_CELL_W * 2,
+                                    (-MAP_CELL_W * 2) + 1,
+                                    (-MAP_CELL_W * 3) - 1,
+                                    -MAP_CELL_W * 3,
+                                    (-MAP_CELL_W * 3) + 1,
+                                    kRefreshEol};
     return _list;
     //		return(Coord_Spillage_List(Coord, 64));
   }
@@ -307,12 +309,12 @@ const int16_t* BulletClass::Occupy_List(bool /*placement*/) const {
   */
   if (Height > 0) {
     static int16_t _list[25];
-    const int16_t* ptr = Coord_Spillage_List(Coord, 5);
+    std::span<const int16_t> ptr = Coord_Spillage_List(Coord, 5);
     int index = 0;
     const CELL cell1 = Coord_Cell(Coord);
 
-    while (ptr[index] != kRefreshEol) {
-      base::At(_list, index) = ptr[index];
+    while (ptr[base::ToSize(index)] != kRefreshEol) {
+      base::At(_list, index) = ptr[base::ToSize(index)];
       index++;
     }
 
@@ -320,9 +322,10 @@ const int16_t* BulletClass::Occupy_List(bool /*placement*/) const {
         Coord_Move(Coord, DIR_N, static_cast<uint16_t>(Height));
     const CELL cell2 = Coord_Cell(coord);
     ptr = Coord_Spillage_List(coord, 5);
-    while (*ptr != kRefreshEol) {
-      base::At(_list, index++) = static_cast<int16_t>(*ptr + (cell2 - cell1));
-      ptr++;
+    while (ptr.front() != kRefreshEol) {
+      base::At(_list, index++) =
+          static_cast<int16_t>(ptr.front() + (cell2 - cell1));
+      ptr = ptr.subspan(1);
     }
     base::At(_list, index) = kRefreshEol;
     return _list;
@@ -408,7 +411,7 @@ void BulletClass::AI() {
   COORDINATE coord = Coord;
   if (Class->IsFlameEquipped) {
     if (IsToAnimate) {
-      if (stricmp(Class->GraphicName, "FB1") == 0) {
+      if (port::CompareIgnoreCase(Class->GraphicName, "FB1") == 0) {
         new AnimClass(ANIM_FBALL_FADE, coord, 1);
       } else {
         new AnimClass(ANIM_SMOKE_PUFF, coord, 1);
@@ -562,8 +565,8 @@ void BulletClass::Draw_It(int x, int y, WindowNumberType window) const {
   **	If there is no shape loaded for this object, then
   **	it obviously can't be rendered -- just bail.
   */
-  const void* shapeptr = Get_Image_Data();
-  if (shapeptr == nullptr) {
+  const auto shapeptr = Get_Image_Data();
+  if (shapeptr.empty()) {
     return;
   }
 
@@ -581,12 +584,12 @@ void BulletClass::Draw_It(int x, int y, WindowNumberType window) const {
       CC_Draw_Shape(
           AnimTypeClass::As_Reference(ANIM_PARA_BOMB).Get_Image_Data(), 1,
           x + Lepton_To_Pixel(static_cast<LEPTON>(Height / 2)), y + 10, window,
-          SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING, nullptr,
+          SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING, {},
           DisplayClass::UnitShadow);
     } else {
       CC_Draw_Shape(
           shapeptr, shapenum, x, y, window,
-          SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING, nullptr,
+          SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING, {},
           DisplayClass::UnitShadow);
     }
     y -= Lepton_To_Pixel(static_cast<LEPTON>(Height));
@@ -603,10 +606,10 @@ void BulletClass::Draw_It(int x, int y, WindowNumberType window) const {
     CC_Draw_Shape(
         shapeptr, shapenum, x, y, window,
         flags | SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING,
-        nullptr, DisplayClass::FadingShade);
+        {}, DisplayClass::FadingShade);
   } else {
     CC_Draw_Shape(shapeptr, shapenum, x, y, window,
-                  flags | SHAPE_CENTER | SHAPE_WIN_REL, nullptr,
+                  flags | SHAPE_CENTER | SHAPE_WIN_REL, {},
                   DisplayClass::UnitShadow);
   }
 }
@@ -1078,7 +1081,7 @@ void BulletClass::Bullet_Explodes(bool forced) {
   }
 
   //				if (Payback && Payback->House == PlayerPtr &&
-  // stricmp(Class->Name(), "GPSSATELLITE") == 0) {
+  // port::CompareIgnoreCase(Class->Name(), "GPSSATELLITE") == 0) {
   if (Payback && Class->Type == BULLET_GPS_SATELLITE) {
     if (Payback->House == PlayerPtr) {
       if (!Map.Is_Radar_Active()) {

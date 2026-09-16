@@ -52,6 +52,10 @@
  *
  ****************************************************************************/
 
+#include "winvq/vqa32/vqaio.h"
+
+#include <span>
+
 #include <cstdint>
 #include <memory>
 #include <utility>
@@ -368,7 +372,7 @@ void VQA_GetInfo(VQAHandle* vqa, VQAInfo* info) {
   info->NumFrames = header->Frames;
   info->ImageHeight = header->ImageHeight;
   info->ImageWidth = header->ImageWidth;
-  info->ImageBuf = vqa->data->Drawer.ImageBuf;
+  info->ImageBuf = vqa->data->Drawer.ImageBuf.data();
 }
 
 /****************************************************************************

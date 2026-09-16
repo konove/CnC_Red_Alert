@@ -54,7 +54,9 @@
 #ifndef CNC_RED_ALERT_TD_IPXGCONN_H_
 #define CNC_RED_ALERT_TD_IPXGCONN_H_
 
+#include <cstddef>
 #include <cstdint>
+#include <span>
 
 #include "td/connect.h"
 #include "td/ipx.h"
@@ -117,13 +119,14 @@ class IPXGlobalConnClass : public IPXConnClass {
   // overriding them: a global packet carries a GlobalHeaderType with a magic
   // number and a destination address, which the base versions do not write.
   // NOLINTNEXTLINE(clang-diagnostic-overloaded-virtual)
-  virtual int Send_Packet(void* buf, int buflen, IPXAddressClass* address,
-                          int ack_req);
+  virtual int Send_Packet(std::span<const std::byte> buf, int buflen,
+                          IPXAddressClass* address, int ack_req);
   // NOLINTNEXTLINE(clang-diagnostic-overloaded-virtual)
-  virtual int Receive_Packet(void* buf, int buflen, IPXAddressClass* address);
+  virtual int Receive_Packet(std::span<std::byte> buf, int buflen,
+                             IPXAddressClass* address);
   // NOLINTNEXTLINE(clang-diagnostic-overloaded-virtual)
-  virtual int Get_Packet(void* buf, int* buflen, IPXAddressClass* address,
-                         uint16_t* product_id);
+  virtual int Get_Packet(std::span<std::byte> buf, int* buflen,
+                         IPXAddressClass* address, uint16_t* product_id);
 
   /*.....................................................................
   This is for telling the connection it can cross a bridge.
@@ -153,7 +156,7 @@ class IPXGlobalConnClass : public IPXConnClass {
   used in SequencedConnClass.  This special version sends to the address
   embedded within the GlobalHeaderType.
   .....................................................................*/
-  int Send(void* buf, int buflen) override;
+  int Send(std::span<const std::byte> buf, int buflen) override;
 
   /*.....................................................................
   This routine is overloaded from SequencedConnClass, because the

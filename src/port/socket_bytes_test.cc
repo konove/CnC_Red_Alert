@@ -1,6 +1,6 @@
 #include "port/socket_bytes.h"
 
-#include <cstring>
+#include "base/buffer.h"
 #include <type_traits>
 
 #include "gtest/gtest.h"
@@ -20,7 +20,7 @@ TEST(SocketBytes, ScalarAddressesTheObject) {
   EXPECT_EQ(static_cast<void*>(bytes), static_cast<void*>(&value));
 
   int copy = 0;
-  std::memcpy(&copy, bytes, sizeof(copy));
+  base::CopyBytes(base::ObjectBytes(copy), base::ObjectBytes(value), sizeof(copy));
   EXPECT_EQ(copy, value);
 }
 

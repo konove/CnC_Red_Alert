@@ -41,14 +41,16 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include <algorithm>
+#include <cstddef>
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
+#include <span>
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/enum_array.h"
-#include "base/numeric.h"
 #include "sdllib/shape.h"
 #include "sdllib/timer.h"
 #include "td/aircraft.h"
@@ -266,14 +268,15 @@ void Send_Statistics_Packet() {
     char fname[128];
     char namebuffer[40];
     char* abuffer = ShapeBuffer;
-    memset(abuffer, '\0', base::ToSize(ShapeBufferSize));
+    std::ranges::fill(ShapeBufferBytes, 0);
     absl::SNPrintF(fname, sizeof(fname), "%s.INI", ScenarioName);
     GameFile fileo;
     fileo.SetName(fname);
-    fileo.Read(abuffer, ShapeBufferSize - 1);
+    fileo.Read(ShapeBufferBytes.first(ShapeBufferBytes.size() - 1));
     fileo.Close();
-    WWGetPrivateProfileString("Basic", "Name", "Nulls-Ville", namebuffer, 40,
-                              abuffer);
+    WWGetPrivateProfileString(
+        "Basic", "Name", "Nulls-Ville",
+        std::span(namebuffer).first(static_cast<std::size_t>(40)), abuffer);
     stats.Add_Field(FIELD_SCENARIO, namebuffer);
     // stats.Add_Field(FIELD_SCENARIO, MPlayerScenarios[ScenarioIdx]);
 
@@ -290,8 +293,10 @@ void Send_Statistics_Packet() {
     **
     */
     CCDebugString("C&C95 - Adding stats field for completion status.\n");
-    const HouseClass* player1 = HouseClass::As_Pointer(MPlayerHouses[0]);
-    const HouseClass* player2 = HouseClass::As_Pointer(MPlayerHouses[1]);
+    const HouseClass* player1 =
+        HouseClass::As_Pointer(base::At(MPlayerHouses, 0));
+    const HouseClass* player2 =
+        HouseClass::As_Pointer(base::At(MPlayerHouses, 1));
 
     int completion = -1;
 
@@ -400,19 +405,22 @@ void Send_Statistics_Packet() {
         /*
         ** Player handle.
         */
-        field_player_handle[3] = static_cast<char>('1' + static_cast<char>(house));
+        base::At(field_player_handle, 3) =
+            static_cast<char>('1' + static_cast<char>(house));
         stats.Add_Field(field_player_handle, base::At(MPlayerNames, house));
 
         /*
         ** Player team. (NOD or GDI)
         */
-        field_player_team[3] = static_cast<char>('1' + static_cast<char>(house));
+        base::At(field_player_team, 3) =
+            static_cast<char>('1' + static_cast<char>(house));
         stats.Add_Field(field_player_team, houses[player->ActLike]);
 
         /*
         ** Player color
         */
-        field_player_color[3] = static_cast<char>('1' + static_cast<char>(house));
+        base::At(field_player_color, 3) =
+            static_cast<char>('1' + static_cast<char>(house));
         stats.Add_Field(
             field_player_color,
             static_cast<unsigned char>(static_cast<int>(player->Class->House) -
@@ -421,7 +429,8 @@ void Send_Statistics_Packet() {
         /*
         ** Player end credits.
         */
-        field_player_credits[3] = static_cast<char>('1' + static_cast<char>(house));
+        base::At(field_player_credits, 3) =
+            static_cast<char>('1' + static_cast<char>(house));
         stats.Add_Field(
             field_player_credits,
             static_cast<int32_t>(player->Credits + player->Tiberium));
@@ -429,28 +438,31 @@ void Send_Statistics_Packet() {
         /*
         ** Number of each unit/building type built
         */
-        field_player_infantry_bought[3] = static_cast<char>('1' + static_cast<char>(house));
-        field_player_units_bought[3] = static_cast<char>('1' + static_cast<char>(house));
-        field_player_planes_bought[3] = static_cast<char>('1' + static_cast<char>(house));
-        field_player_buildings_bought[3] = static_cast<char>('1' + static_cast<char>(house));
+        base::At(field_player_infantry_bought, 3) =
+            static_cast<char>('1' + static_cast<char>(house));
+        base::At(field_player_units_bought, 3) =
+            static_cast<char>('1' + static_cast<char>(house));
+        base::At(field_player_planes_bought, 3) =
+            static_cast<char>('1' + static_cast<char>(house));
+        base::At(field_player_buildings_bought, 3) =
+            static_cast<char>('1' + static_cast<char>(house));
 
         player->InfantryTotals->To_Network_Format();
         player->UnitTotals->To_Network_Format();
         player->AircraftTotals->To_Network_Format();
         player->BuildingTotals->To_Network_Format();
 
-        stats.Add_Field(field_player_infantry_bought,
-                        player->InfantryTotals->Get_All_Totals(),
-                        player->InfantryTotals->Get_Unit_Count() * 4);
+        stats.Add_Field(
+            field_player_infantry_bought,
+            std::as_bytes(player->InfantryTotals->Get_All_Totals()));
         stats.Add_Field(field_player_units_bought,
-                        player->UnitTotals->Get_All_Totals(),
-                        player->UnitTotals->Get_Unit_Count() * 4);
-        stats.Add_Field(field_player_planes_bought,
-                        player->AircraftTotals->Get_All_Totals(),
-                        player->AircraftTotals->Get_Unit_Count() * 4);
-        stats.Add_Field(field_player_buildings_bought,
-                        player->BuildingTotals->Get_All_Totals(),
-                        player->BuildingTotals->Get_Unit_Count() * 4);
+                        std::as_bytes(player->UnitTotals->Get_All_Totals()));
+        stats.Add_Field(
+            field_player_planes_bought,
+            std::as_bytes(player->AircraftTotals->Get_All_Totals()));
+        stats.Add_Field(
+            field_player_buildings_bought,
+            std::as_bytes(player->BuildingTotals->Get_All_Totals()));
 
         player->InfantryTotals->To_PC_Format();
         player->UnitTotals->To_PC_Format();
@@ -507,22 +519,25 @@ void Send_Statistics_Packet() {
         player->AircraftTotals->To_Network_Format();
         player->BuildingTotals->To_Network_Format();
 
-        field_player_infantry_left[3] = static_cast<char>('1' + static_cast<char>(house));
-        field_player_units_left[3] = static_cast<char>('1' + static_cast<char>(house));
-        field_player_planes_left[3] = static_cast<char>('1' + static_cast<char>(house));
-        field_player_buildings_left[3] = static_cast<char>('1' + static_cast<char>(house));
-        stats.Add_Field(field_player_infantry_left,
-                        player->InfantryTotals->Get_All_Totals(),
-                        player->InfantryTotals->Get_Unit_Count() * 4);
+        base::At(field_player_infantry_left, 3) =
+            static_cast<char>('1' + static_cast<char>(house));
+        base::At(field_player_units_left, 3) =
+            static_cast<char>('1' + static_cast<char>(house));
+        base::At(field_player_planes_left, 3) =
+            static_cast<char>('1' + static_cast<char>(house));
+        base::At(field_player_buildings_left, 3) =
+            static_cast<char>('1' + static_cast<char>(house));
+        stats.Add_Field(
+            field_player_infantry_left,
+            std::as_bytes(player->InfantryTotals->Get_All_Totals()));
         stats.Add_Field(field_player_units_left,
-                        player->UnitTotals->Get_All_Totals(),
-                        player->UnitTotals->Get_Unit_Count() * 4);
-        stats.Add_Field(field_player_planes_left,
-                        player->AircraftTotals->Get_All_Totals(),
-                        player->AircraftTotals->Get_Unit_Count() * 4);
-        stats.Add_Field(field_player_buildings_left,
-                        player->BuildingTotals->Get_All_Totals(),
-                        player->BuildingTotals->Get_Unit_Count() * 4);
+                        std::as_bytes(player->UnitTotals->Get_All_Totals()));
+        stats.Add_Field(
+            field_player_planes_left,
+            std::as_bytes(player->AircraftTotals->Get_All_Totals()));
+        stats.Add_Field(
+            field_player_buildings_left,
+            std::as_bytes(player->BuildingTotals->Get_All_Totals()));
 
         /*
         ** Number of enemy units/buildings of each type destroyed.
@@ -533,45 +548,51 @@ void Send_Statistics_Packet() {
         player->DestroyedAircraft->To_Network_Format();
         player->DestroyedBuildings->To_Network_Format();
 
-        field_player_infantry_killed[3] = static_cast<char>('1' + static_cast<char>(house));
-        field_player_units_killed[3] = static_cast<char>('1' + static_cast<char>(house));
-        field_player_planes_killed[3] = static_cast<char>('1' + static_cast<char>(house));
-        field_player_buildings_killed[3] = static_cast<char>('1' + static_cast<char>(house));
-        stats.Add_Field(field_player_infantry_killed,
-                        player->DestroyedInfantry->Get_All_Totals(),
-                        player->DestroyedInfantry->Get_Unit_Count() * 4);
-        stats.Add_Field(field_player_units_killed,
-                        player->DestroyedUnits->Get_All_Totals(),
-                        player->DestroyedUnits->Get_Unit_Count() * 4);
-        stats.Add_Field(field_player_planes_killed,
-                        player->DestroyedAircraft->Get_All_Totals(),
-                        player->DestroyedAircraft->Get_Unit_Count() * 4);
-        stats.Add_Field(field_player_buildings_killed,
-                        player->DestroyedBuildings->Get_All_Totals(),
-                        player->DestroyedBuildings->Get_Unit_Count() * 4);
+        base::At(field_player_infantry_killed, 3) =
+            static_cast<char>('1' + static_cast<char>(house));
+        base::At(field_player_units_killed, 3) =
+            static_cast<char>('1' + static_cast<char>(house));
+        base::At(field_player_planes_killed, 3) =
+            static_cast<char>('1' + static_cast<char>(house));
+        base::At(field_player_buildings_killed, 3) =
+            static_cast<char>('1' + static_cast<char>(house));
+        stats.Add_Field(
+            field_player_infantry_killed,
+            std::as_bytes(player->DestroyedInfantry->Get_All_Totals()));
+        stats.Add_Field(
+            field_player_units_killed,
+            std::as_bytes(player->DestroyedUnits->Get_All_Totals()));
+        stats.Add_Field(
+            field_player_planes_killed,
+            std::as_bytes(player->DestroyedAircraft->Get_All_Totals()));
+        stats.Add_Field(
+            field_player_buildings_killed,
+            std::as_bytes(player->DestroyedBuildings->Get_All_Totals()));
 
         /*
         ** Number and type of enemy buildings captured
         */
-        field_player_buildings_captured[3] = static_cast<char>('1' + static_cast<char>(house));
+        base::At(field_player_buildings_captured, 3) =
+            static_cast<char>('1' + static_cast<char>(house));
         player->CapturedBuildings->To_Network_Format();
-        stats.Add_Field(field_player_buildings_captured,
-                        player->CapturedBuildings->Get_All_Totals(),
-                        player->CapturedBuildings->Get_Unit_Count() * 4);
+        stats.Add_Field(
+            field_player_buildings_captured,
+            std::as_bytes(player->CapturedBuildings->Get_All_Totals()));
 
         /*
         ** Number of crates discovered and their contents
         */
-        field_player_crates_found[3] = static_cast<char>('1' + static_cast<char>(house));
+        base::At(field_player_crates_found, 3) =
+            static_cast<char>('1' + static_cast<char>(house));
         player->TotalCrates->To_Network_Format();
         stats.Add_Field(field_player_crates_found,
-                        player->TotalCrates->Get_All_Totals(),
-                        player->TotalCrates->Get_Unit_Count() * 4);
+                        std::as_bytes(player->TotalCrates->Get_All_Totals()));
 
         /*
         ** Amount of tiberium turned into credits
         */
-        field_player_harvested[3] = static_cast<char>('1' + static_cast<char>(house));
+        base::At(field_player_harvested, 3) =
+            static_cast<char>('1' + static_cast<char>(house));
         stats.Add_Field(field_player_harvested,
                         static_cast<uint32_t>(player->HarvestedCredits));
       }

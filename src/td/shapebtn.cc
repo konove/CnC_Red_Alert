@@ -42,6 +42,9 @@
 
 #include "td/shapebtn.h"
 
+#include <cstddef>
+#include <span>
+
 #include "sdllib/drawbuff.h"
 #include "sdllib/shape.h"
 #include "sdllib/ww_mouse.h"
@@ -92,7 +95,9 @@ ShapeButtonClass::ShapeButtonClass() noexcept
  *                                                                                             *
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
-ShapeButtonClass::ShapeButtonClass(unsigned id, const void* shape, int x, int y)
+ShapeButtonClass::ShapeButtonClass(unsigned id,
+                                   std::span<const std::byte> shape, int x,
+                                   int y)
     : ToggleClass(id, x, y, 0, 0), ReflectButtonState(false) {
   Width = 0;
   Height = 0;
@@ -100,9 +105,9 @@ ShapeButtonClass::ShapeButtonClass(unsigned id, const void* shape, int x, int y)
   Set_Shape(shape);
 }
 
-void ShapeButtonClass::Set_Shape(const void* data) {
+void ShapeButtonClass::Set_Shape(std::span<const std::byte> data) {
   ShapeData = data;
-  if (ShapeData) {
+  if (!ShapeData.empty()) {
     Width = Get_Build_Frame_Width(ShapeData);
     Height = Get_Build_Frame_Height(ShapeData);
   }
@@ -125,7 +130,7 @@ void ShapeButtonClass::Set_Shape(const void* data) {
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
 bool ShapeButtonClass::Draw_Me(bool forced) {
-  if (ControlClass::Draw_Me(forced) && ShapeData) {
+  if (ControlClass::Draw_Me(forced) && !ShapeData.empty()) {
     /*
     **	Hide the mouse.
     */

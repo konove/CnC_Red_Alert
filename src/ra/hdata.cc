@@ -49,9 +49,11 @@
  *- - - - - - - */
 
 #include <cstring>
+#include <span>
 
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
+#include "port/safe_string.h"
 #include "ra/ccini.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"
@@ -293,8 +295,7 @@ HouseTypeClass::HouseTypeClass(HousesType house, const char* ini, int fullname,
       ROFBias(1),
       CostBias(1),
       BuildSpeedBias(1) {
-  strncpy(Suffix, ext, 3);
-  Suffix[3] = '\0';
+  port::SafeCopy(Suffix, ext);
 }
 
 /***********************************************************************************************
@@ -398,8 +399,9 @@ void HouseTypeClass::Init_Heap() {
 HousesType HouseTypeClass::From_Name(const char* name) {
   if (name != nullptr) {
     for (const HousesType house : magic_enum::enum_values<HousesType>()) {
-      if (stricmp(As_Reference(house).IniName, name) == 0) {
-        //			if (stricmp(Pointers[house]->IniName, name) ==
+      if (port::CompareIgnoreCase(As_Reference(house).IniName, name) == 0) {
+        //			if
+        //(port::CompareIgnoreCase(Pointers[house]->IniName, name) ==
         // 0) {
         return house;
       }
@@ -455,7 +457,7 @@ HouseTypeClass& HouseTypeClass::As_Reference(HousesType house) {
  *                                                                                             *
  * HISTORY: * 06/03/1996 JLB : Created. *
  *=============================================================================================*/
-const unsigned char* HouseTypeClass::Remap_Table() const {
+std::span<const unsigned char> HouseTypeClass::Remap_Table() const {
   return ColorRemaps[RemapColor].RemapTable;
 }
 

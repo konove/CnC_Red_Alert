@@ -74,8 +74,11 @@
 #include <cstdlib>
 #include <iterator>
 #include <new>
+#include <span>
 
 #include "base/array.h"
+#include "base/buffer.h"
+#include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/anim.h"
 #include "ra/ccptr.h"
@@ -609,9 +612,9 @@ void MapClass::Sight_From(CELL cell, int sightrange, HouseClass* house,
   */
   int count = base::At(
       RadiusCount, sightrange);  // Counter for number of offsets to process.
-  const int* ptr = &RadiusOffset[0];  // Offset pointer.
+  std::span<const int> ptr(RadiusOffset);  // Offset pointer.
   if (incremental && (sightrange > 2)) {
-    ptr += base::At(RadiusCount, sightrange - 3);
+    ptr = ptr.subspan(base::ToSize(base::At(RadiusCount, sightrange - 3)));
     count -= base::At(RadiusCount, sightrange - 3);
   }
 
@@ -619,8 +622,8 @@ void MapClass::Sight_From(CELL cell, int sightrange, HouseClass* house,
   **	Process all offsets required for the desired scan.
   */
   while (count--) {
-    CELL const newcell =
-        static_cast<CELL>(cell + *ptr++);  // New cell with offset.
+    CELL const newcell = static_cast<CELL>(
+        cell + base::ConsumeFront(ptr));  // New cell with offset.
 
     /*
     **	Determine if the map edge has been wrapped. If so,
@@ -689,14 +692,14 @@ void MapClass::Jam_From(CELL cell, int jamrange, HouseClass* house) {
   */
   int count = base::At(RadiusCount,
                        jamrange);  // Counter for number of offsets to process.
-  const int* ptr = &RadiusOffset[0];  // Offset pointer.
+  std::span<const int> ptr(RadiusOffset);  // Offset pointer.
 
   /*
   **	Process all offsets required for the desired scan.
   */
   while (count--) {
-    CELL const newcell =
-        static_cast<CELL>(cell + *ptr++);  // New cell with offset.
+    CELL const newcell = static_cast<CELL>(
+        cell + base::ConsumeFront(ptr));  // New cell with offset.
 
     /*
     **	Determine if the map edge has been wrapped. If so,
@@ -771,14 +774,14 @@ void MapClass::UnJam_From(CELL cell, int jamrange, HouseClass* house) {
   */
   int count = base::At(RadiusCount,
                        jamrange);  // Counter for number of offsets to process.
-  const int* ptr = &RadiusOffset[0];  // Offset pointer.
+  std::span<const int> ptr(RadiusOffset);  // Offset pointer.
 
   /*
   **	Process all offsets required for the desired scan.
   */
   while (count--) {
-    CELL const newcell =
-        static_cast<CELL>(cell + *ptr++);  // New cell with offset.
+    CELL const newcell = static_cast<CELL>(
+        cell + base::ConsumeFront(ptr));  // New cell with offset.
 
     /*
     **	Determine if the map edge has been wrapped. If so,
@@ -883,9 +886,9 @@ void MapClass::Place_Down(CELL cell, ObjectClass* object) {
       object->In_Which_Layer() == LAYER_GROUND) {
     int16_t xlist[32];
     List_Copy(object->Occupy_List(), std::ssize(xlist), xlist);
-    const int16_t* list = xlist;
-    while (*list != kRefreshEol) {
-      const CELL newcell = static_cast<CELL>(cell + *list++);
+    std::span<const int16_t> list = xlist;
+    while (list.front() != kRefreshEol) {
+      const CELL newcell = static_cast<CELL>(cell + base::ConsumeFront(list));
       if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
         (*this)[newcell].Occupy_Down(object);
         (*this)[newcell].Recalc_Attributes();
@@ -895,8 +898,8 @@ void MapClass::Place_Down(CELL cell, ObjectClass* object) {
 
     List_Copy(object->Overlap_List(), std::ssize(xlist), xlist);
     list = xlist;
-    while (*list != kRefreshEol) {
-      const CELL newcell = static_cast<CELL>(cell + *list++);
+    while (list.front() != kRefreshEol) {
+      const CELL newcell = static_cast<CELL>(cell + base::ConsumeFront(list));
       if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
         (*this)[newcell].Overlap_Down(object);
         (*this)[newcell].Redraw_Objects();
@@ -932,9 +935,9 @@ void MapClass::Pick_Up(CELL cell, ObjectClass* object) {
       object->In_Which_Layer() == LAYER_GROUND) {
     int16_t xlist[32];
     List_Copy(object->Occupy_List(), std::ssize(xlist), xlist);
-    const int16_t* list = xlist;
-    while (*list != kRefreshEol) {
-      const CELL newcell = static_cast<CELL>(cell + *list++);
+    std::span<const int16_t> list = xlist;
+    while (list.front() != kRefreshEol) {
+      const CELL newcell = static_cast<CELL>(cell + base::ConsumeFront(list));
       if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
         (*this)[newcell].Occupy_Up(object);
         (*this)[newcell].Recalc_Attributes();
@@ -944,8 +947,8 @@ void MapClass::Pick_Up(CELL cell, ObjectClass* object) {
 
     List_Copy(object->Overlap_List(), std::ssize(xlist), xlist);
     list = xlist;
-    while (*list != kRefreshEol) {
-      const CELL newcell = static_cast<CELL>(cell + *list++);
+    while (list.front() != kRefreshEol) {
+      const CELL newcell = static_cast<CELL>(cell + base::ConsumeFront(list));
       if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
         (*this)[newcell].Overlap_Up(object);
         (*this)[newcell].Redraw_Objects();
@@ -981,9 +984,9 @@ void MapClass::Overlap_Down(CELL cell, ObjectClass* object) {
       object->In_Which_Layer() == LAYER_GROUND) {
     int16_t xlist[32];
     List_Copy(object->Overlap_List(), std::ssize(xlist), xlist);
-    const int16_t* list = xlist;
-    while (*list != kRefreshEol) {
-      const CELL newcell = static_cast<CELL>(cell + *list++);
+    std::span<const int16_t> list = xlist;
+    while (list.front() != kRefreshEol) {
+      const CELL newcell = static_cast<CELL>(cell + base::ConsumeFront(list));
       if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
         (*this)[newcell].Overlap_Down(object);
         (*this)[newcell].Redraw_Objects();
@@ -1018,9 +1021,9 @@ void MapClass::Overlap_Up(CELL cell, ObjectClass* object) {
       object->In_Which_Layer() == LAYER_GROUND) {
     int16_t xlist[32];
     List_Copy(object->Overlap_List(), std::ssize(xlist), xlist);
-    const int16_t* list = xlist;
-    while (*list != kRefreshEol) {
-      const CELL newcell = static_cast<CELL>(cell + *list++);
+    std::span<const int16_t> list = xlist;
+    while (list.front() != kRefreshEol) {
+      const CELL newcell = static_cast<CELL>(cell + base::ConsumeFront(list));
       if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
         (*this)[newcell].Overlap_Up(object);
         (*this)[newcell].Redraw_Objects();
@@ -1086,16 +1089,12 @@ int32_t MapClass::Overpass() {
 bool MapClass::Write_Binary(ByteSink& pipe) {
   LcwSink comp(CodecMode::kCompress, pipe);
 
-  CellClass* cellptr = &Array[0];
   for (int i = 0; i < MAP_CELL_TOTAL; i++) {
-    comp.WriteObject(cellptr->TType);
-    cellptr++;
+    comp.WriteObject(Array[i].TType);
   }
 
-  cellptr = &Array[0];
   for (int i = 0; i < MAP_CELL_TOTAL; i++) {
-    comp.WriteObject(cellptr->TIcon);
-    cellptr++;
+    comp.WriteObject(Array[i].TIcon);
   }
 
   return comp.Finish();
@@ -1119,31 +1118,24 @@ bool MapClass::Write_Binary(ByteSink& pipe) {
 bool MapClass::Read_Binary(ByteSource& straw) {
   LcwSource decomp(CodecMode::kDecompress, straw);
 
-  CellClass* cellptr = nullptr;
   switch (NewINIFormat) {
     default:
-      cellptr = &Array[0];
       for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
-        decomp.ReadObject(cellptr->TType);
-        cellptr++;
+        decomp.ReadObject(Array[cell].TType);
       }
-      cellptr = &Array[0];
       for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
-        decomp.ReadObject(cellptr->TIcon);
-        cellptr->Recalc_Attributes();
-        cellptr++;
+        decomp.ReadObject(Array[cell].TIcon);
+        Array[cell].Recalc_Attributes();
       }
       break;
 
     case 0:
     case 1:
     case 2:
-      cellptr = &Array[0];
       for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
-        decomp.ReadObject(cellptr->TType);
-        decomp.ReadObject(cellptr->TIcon);
-        cellptr->Recalc_Attributes();
-        cellptr++;
+        decomp.ReadObject(Array[cell].TType);
+        decomp.ReadObject(Array[cell].TIcon);
+        Array[cell].Recalc_Attributes();
       }
       break;
   }
@@ -1451,7 +1443,8 @@ bool MapClass::Validate() {
     if (ttype != TEMPLATE_NONE) {
       const TemplateTypeClass* tclass = &TemplateTypeClass::As_Reference(ttype);
       const unsigned char ticon = (*this)[cell].TIcon;
-      Mem_Copy(Get_Icon_Set_Map(tclass->Get_Image_Data()), map,
+      Mem_Copy(std::as_bytes(Get_Icon_Set_Map(tclass->Get_Image_Data())),
+               base::ObjectBytes(map),
                static_cast<size_t>(tclass->Width) * tclass->Height);
       if (ticon >= tclass->Width * tclass->Height ||
           base::At(map, ticon) == 0xff) {
@@ -2245,16 +2238,15 @@ int MapClass::Intact_Bridge_Count() const {
   **	Count all non-destroyed bridges on the map.
   */
   int count = 0;
-  const CellClass* cellptr = &(*this)[static_cast<CELL>(0)];
   for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
-    switch (cellptr->TType) {
+    switch (Array[cell].TType) {
       case TEMPLATE_BRIDGE1:
       case TEMPLATE_BRIDGE1H:
       case TEMPLATE_BRIDGE2:
       case TEMPLATE_BRIDGE2H:
       case TEMPLATE_BRIDGE_1A:
       case TEMPLATE_BRIDGE_1B:
-        if (cellptr->TIcon == 6) {
+        if (Array[cell].TIcon == 6) {
           count++;
         }
         break;
@@ -2262,8 +2254,6 @@ int MapClass::Intact_Bridge_Count() const {
       default:
         break;
     }
-
-    cellptr++;
   }
 
   return count;

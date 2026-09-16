@@ -45,6 +45,7 @@ class ArchiveReader;
 class ArchiveWriter;
 
 #include <cstddef>
+#include <span>
 
 #include "absl/base/attributes.h"
 #include "td/defines.h"
@@ -126,7 +127,7 @@ class TerrainClass final : public ObjectClass, public StageClass {
   */
   void Draw_It(int x, int y, WindowNumberType window) override;
   bool Mark(MarkType mark = MARK_CHANGE) override;
-  const unsigned char* Radar_Icon(CELL cell);
+  std::span<const uint8_t> Radar_Icon(CELL cell);
 
   /*
   **	User I/O.
@@ -156,7 +157,7 @@ class TerrainClass final : public ObjectClass, public StageClass {
   **	File I/O.
   */
   static void Read_INI(char* buffer);
-  static void Write_INI(char* buffer);
+  static void Write_INI(std::span<char> buffer);
   static const char* INI_Name() { return "TERRAIN"; }
   // Field-wise saved-game support, defined in ioobj.cc.
   template <class Archive>

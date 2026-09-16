@@ -43,8 +43,6 @@
 #include <cstddef>
 #include <span>
 
-int LCW_Uncomp(const void* source, void* dest, int length = 0);
-
 // Decodes one LCW stream from `source` into `dest` without reading or writing
 // outside either span. Returns the number of bytes written, or -1 if the
 // stream is malformed: an operation runs past either span, a back-reference
@@ -59,11 +57,9 @@ constexpr int LcwWorstCaseSize(int length) {
   return length + ((length + 62) / 63) + 1;
 }
 
-// Compresses `length` bytes from `source` into `dest` as one LCW stream ending
-// in the 0x80 marker, and returns the stream size. `dest` must hold
-// LcwWorstCaseSize(length) bytes.
-extern "C" {
-int __cdecl LCW_Comp(const void* source, void* dest, int length);
-}
+// Compresses in into out as one LCW stream ending in the 0x80 marker.
+// Returns the stream size, or -1 if out cannot hold
+// LcwWorstCaseSize(in.size()).
+int LCW_Comp(std::span<const std::byte> in, std::span<std::byte> out);
 
 #endif  // CNC_RED_ALERT_TECH_LCW_H_

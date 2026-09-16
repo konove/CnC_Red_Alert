@@ -42,6 +42,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <span>
 #include <string_view>
 
 #include "absl/log/log.h"
@@ -441,7 +442,7 @@ bool Load_Game(int id) {
     Map.Set_Cursor_Shape(Map.PendingObject->Occupy_List(true));
   } else {
     Map.PendingObject = nullptr;
-    Map.Set_Cursor_Shape(nullptr);
+    Map.Set_Cursor_Shape({});
   }
   Map.Init_IO();
   Map.Flag_To_Redraw(true);
@@ -476,11 +477,11 @@ static void Serialize_Misc_Values(Archive& ar) {
   ar(Waypoint, ScenDir, ScenVar, CarryOverMoney, CarryOverPercent, BuildLevel,
      BriefMovie, Views, EndCountDown, BriefingText, ActionMovie);
   if constexpr (Archive::kIsReading) {
-    WinMovie[sizeof(WinMovie) - 1] = '\0';
-    LoseMovie[sizeof(LoseMovie) - 1] = '\0';
-    BriefMovie[sizeof(BriefMovie) - 1] = '\0';
-    ActionMovie[sizeof(ActionMovie) - 1] = '\0';
-    BriefingText[sizeof(BriefingText) - 1] = '\0';
+    base::At(WinMovie, sizeof(WinMovie) - 1) = '\0';
+    base::At(LoseMovie, sizeof(LoseMovie) - 1) = '\0';
+    base::At(BriefMovie, sizeof(BriefMovie) - 1) = '\0';
+    base::At(ActionMovie, sizeof(ActionMovie) - 1) = '\0';
+    base::At(BriefingText, sizeof(BriefingText) - 1) = '\0';
     if (ScenDir < SCEN_DIR_EAST || ScenDir >= SCEN_DIR_COUNT ||
         ScenVar < SCEN_VAR_A ||
         (ScenVar >= SCEN_VAR_COUNT && ScenVar != SCEN_VAR_LOSE)) {
@@ -534,7 +535,8 @@ bool Load_Misc_Values(ArchiveReader& file) {
  * HISTORY:                                                                *
  *   01/12/1995 BR : Created.                                              *
  *=========================================================================*/
-bool Get_Savefile_Info(int id, char* buf, unsigned* scenp, HousesType* housep) {
+bool Get_Savefile_Info(int id, std::span<char> buf, unsigned* scenp,
+                       HousesType* housep) {
   DiskFile file;
   char name[kMaxFname + kMaxExt];
   int32_t version = 0;
@@ -558,14 +560,14 @@ bool Get_Savefile_Info(int id, char* buf, unsigned* scenp, HousesType* housep) {
       return false;
     }
 
-    descr_buf[kDescripMax - 1] = '\0';
+    base::At(descr_buf, kDescripMax - 1) = '\0';
     const auto description_length = std::string_view(descr_buf).size();
     if (description_length >= 2 &&
         base::At(descr_buf, description_length - 2) == '\r' &&
         base::At(descr_buf, description_length - 1) == '\n') {
       base::At(descr_buf, description_length - 2) = '\0';
     }
-    port::SafeCopy(buf, descr_buf, kDescripMax);
+    port::SafeCopy(std::span(buf).first(kDescripMax), descr_buf);
 
     if (!file.ReadObject(*scenp)) {
       file.Close();

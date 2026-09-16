@@ -42,6 +42,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <span>
 
 #include "absl/base/attributes.h"
 #include "ra/bullet.h"
@@ -207,7 +208,8 @@ class UnitClass final : public DriveClass {
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
   */
-  [[nodiscard]] const int16_t* Overlap_List(bool redraw = false) const override;
+  [[nodiscard]] std::span<const int16_t> Overlap_List(
+      bool redraw = false) const override;
   void Draw_It(int x, int y, WindowNumberType window) const override;
 
   /*

@@ -37,17 +37,19 @@
 
 #include "tech/pcx_file.h"
 
+#include <cstddef>
 #include <cstdint>
-#include <utility>
+#include <span>
 
 #include "base/array.h"
-#include "base/types.h"
+#include "base/buffer.h"
+#include "base/numeric.h"
 #include "sdllib/file.h"
 #include "sdllib/file_access.h"
 #include "sdllib/gbuffer.h"
-#include "sdllib/memflag.h"
 
-static void Write_Pcx_ScanLine(int file_handle, int scansize, const char* ptr);
+static void Write_Pcx_ScanLine(int file_handle,
+                               std::span<const uint8_t> pixels);
 
 /***************************************************************************
  * WRITE_PCX_FILE -- Write the data in ViewPort to a pcx file              *
@@ -69,7 +71,7 @@ static void Write_Pcx_ScanLine(int file_handle, int scansize, const char* ptr);
  *   08/01/1995 SKB : Copy the palette so it is not modified.              *
  *=========================================================================*/
 int Write_PCX_File(const char* name, GraphicViewPortClass& pic,
-                   const unsigned char* palette) {
+                   std::span<const unsigned char> palette) {
   unsigned char palcopy[256 * 3];
   unsigned i = 0;
   PCX_HEADER header = {10,  5,   1,  8, 0, 0,   319, 199,
@@ -84,26 +86,27 @@ int Write_PCX_File(const char* name, GraphicViewPortClass& pic,
   header.width = static_cast<int16_t>(pic.Get_Width() - 1);
   header.height = static_cast<int16_t>(pic.Get_Height() - 1);
   header.byte_per_line = static_cast<int16_t>(pic.Get_Width());
-  WriteFileHandle(file_handle, &header, sizeof(PCX_HEADER));
+  WriteFileHandle(file_handle, base::ObjectBytes(header));
 
   const int VP_Scan_Line = pic.Get_Width() + pic.Get_XAdd();
   GraphicBufferClass* Graphic_Buffer = pic.Get_Graphic_Buffer();
-  char* ptr = static_cast<char*>(Graphic_Buffer->Get_Buffer());
-  ptr += ((pic.Get_YPos() * VP_Scan_Line) + pic.Get_XPos());
-
+  const auto pixels = Graphic_Buffer->Get_Bytes().subspan(
+      base::ToSize((pic.Get_YPos() * VP_Scan_Line) + pic.Get_XPos()));
   for (i = 0; i < static_cast<unsigned>(header.height) + 1; i++) {
-    Write_Pcx_ScanLine(file_handle, header.byte_per_line,
-                       ptr + (static_cast<base::ssize>(i) * VP_Scan_Line));
+    Write_Pcx_ScanLine(
+        file_handle,
+        pixels.subspan(i * static_cast<std::size_t>(VP_Scan_Line),
+                       static_cast<std::size_t>(header.byte_per_line)));
   }
-
-  Mem_Copy(palette, palcopy, 256UL * 3);
+  base::CopyBytes(base::ObjectBytes(palcopy), std::as_bytes(palette),
+                  sizeof(palcopy));
   // Scale the 6-bit palette components to 8 bits.
   for (unsigned char& component : palcopy) {
     component = static_cast<unsigned char>(component << 2);
   }
   i = 0x0c;
-  WriteFileHandle(file_handle, &i, 1);
-  WriteFileHandle(file_handle, palcopy, 256 * sizeof(RGB));
+  WriteFileHandle(file_handle, base::ObjectBytes(i).first(1));
+  WriteFileHandle(file_handle, base::ObjectBytes(palcopy));
   CloseFileHandle(file_handle);
   return 0;
 }
@@ -123,23 +126,26 @@ int Write_PCX_File(const char* name, GraphicViewPortClass& pic,
  *=========================================================================*/
 
 constexpr int kPoolSize = 2048;
-void Write_Pcx_ScanLine(int file_handle, int scansize, const char* ptr) {
+void Write_Pcx_ScanLine(int file_handle, std::span<const uint8_t> pixels) {
   unsigned char pool[kPoolSize];
 
-  unsigned char* file_ptr = pool;
+  std::size_t used = 0;
+  if (pixels.empty()) {
+    return;
+  }
 
   const auto write_char = [&](unsigned char x) {
-    *file_ptr++ = x;
-    if (file_ptr >= base::Suffix(pool, kPoolSize).data()) {
-      WriteFileHandle(file_handle, pool, kPoolSize);
-      file_ptr = pool;
+    base::At(pool, used++) = x;
+    if (used >= kPoolSize) {
+      WriteFileHandle(file_handle, base::ObjectBytes(pool));
+      used = 0;
     }
   };
-  unsigned last = static_cast<unsigned char>(*ptr);
+  unsigned last = pixels.front();
   unsigned rle = 1;
 
-  for (unsigned i = 1; std::cmp_less(i, scansize); i++) {
-    const unsigned color = static_cast<unsigned char>(*++ptr);
+  for (unsigned i = 1; i < pixels.size(); i++) {
+    const unsigned color = pixels[i];
     if (color == last) {
       rle++;
       if (rle == 63) {
@@ -169,5 +175,5 @@ void Write_Pcx_ScanLine(int file_handle, int scansize, const char* ptr) {
     }
   }
 
-  WriteFileHandle(file_handle, pool, static_cast<int32_t>(file_ptr - pool));
+  WriteFileHandle(file_handle, base::ObjectBytes(pool).first(used));
 }

@@ -66,8 +66,10 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <span>
 
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "port/tokenizer.h"
 #include "td/building.h"
 #include "td/cell.h"
@@ -136,7 +138,9 @@ void BaseClass::Read_INI(char* buffer) {
   **	First, determine the house of the human player, and set the Base's house
   **	accordingly.
   */
-  WWGetPrivateProfileString("BASIC", "Player", "GoodGuy", buf, 20, buffer);
+  WWGetPrivateProfileString("BASIC", "Player", "GoodGuy",
+                            std::span(buf).first(static_cast<std::size_t>(20)),
+                            buffer);
   if (HouseTypeClass::From_Name(buf) == HOUSE_GOOD) {
     House = HOUSE_BAD;
   } else {
@@ -156,8 +160,10 @@ void BaseClass::Read_INI(char* buffer) {
     ** Get an INI entry
     */
     absl::SNPrintF(uname, sizeof(uname), "%03d", i);
-    WWGetPrivateProfileString(INI_Name(), uname, nullptr, buf, sizeof(buf) - 1,
-                              buffer);
+    WWGetPrivateProfileString(
+        INI_Name(), uname, nullptr,
+        std::span(buf).first(static_cast<std::size_t>(sizeof(buf) - 1)),
+        buffer);
 
     /*
     ** Set the node's building type
@@ -200,7 +206,7 @@ void BaseClass::Read_INI(char* buffer) {
  *                                                                                             *
  * HISTORY: * 03/24/1995 BRR : Created. *
  *=============================================================================================*/
-void BaseClass::Write_INI(char* buffer) {
+void BaseClass::Write_INI(std::span<char> buffer) {
   char buf[128];
   char uname[10];
 
@@ -264,10 +270,10 @@ BuildingClass* BaseClass::Get_Building(int index) {
   */
   const CELL cell = Coord_Cell(Nodes[index].Coord);
 
-  obj[0] = Map[cell].Cell_Building();
-  obj[1] = Map[cell].Overlappers[0];
-  obj[2] = Map[cell].Overlappers[1];
-  obj[3] = Map[cell].Overlappers[2];
+  base::At(obj, 0) = Map[cell].Cell_Building();
+  base::At(obj, 1) = base::At(Map[cell].Overlappers, 0);
+  base::At(obj, 2) = base::At(Map[cell].Overlappers, 1);
+  base::At(obj, 3) = base::At(Map[cell].Overlappers, 2);
 
   BuildingClass* bldg = nullptr;
   for (auto& i : obj) {

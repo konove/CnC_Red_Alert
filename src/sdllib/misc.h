@@ -38,8 +38,7 @@
 #define CNC_RED_ALERT_SDLLIB_MISC_H_
 
 #include <cstdint>
-#include <cstdlib>
-#include <ctime>
+#include <span>
 
 #include "absl/base/attributes.h"
 #include "sdllib/ww_win.h"
@@ -99,15 +98,15 @@ void Convert_HSV_To_RGB(unsigned int h, unsigned int s, unsigned int v,
 /*========================= Assembly Routines ==============================*/
 
 #ifdef __cplusplus
+std::span<uint8_t> Build_Fading_Table(
+    std::span<const uint8_t> palette,
+    std::span<uint8_t> dest ABSL_ATTRIBUTE_LIFETIME_BOUND, int color, int frac);
+
 extern "C" {
 #endif
 
 // Legacy byte generator state behind Random(); the games seed it.
 extern int RandNumb;
-
-void* Build_Fading_Table(const void* palette,
-                         void* dest ABSL_ATTRIBUTE_LIFETIME_BOUND, int color,
-                         int frac);
 
 extern int Clip_Rect(int* x, int* y, int* dw, int* dh, int width, int height);
 extern int Confine_Rect(int* x, int* y, int dw, int dh, int width, int height);

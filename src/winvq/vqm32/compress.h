@@ -19,7 +19,9 @@
 #ifndef CNC_RED_ALERT_WINVQ_VQM32_COMPRESS_H_
 #define CNC_RED_ALERT_WINVQ_VQM32_COMPRESS_H_
 
+#include <cstddef>
 #include <cstdint>
+#include <span>
 /****************************************************************************
  *
  *        C O N F I D E N T I A L -- W E S T W O O D  S T U D I O S
@@ -41,12 +43,15 @@
  ****************************************************************************/
 
 /* Prototypes */
+int32_t LCW_Uncompress(std::span<const std::byte> source,
+                       std::span<std::byte> dest);
+int32_t LCW_Uncompress(std::span<const unsigned char> source,
+                       std::span<unsigned char> dest);
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-int32_t __cdecl LCW_Uncompress(const void* source, void* dest, int32_t length);
 int32_t AudioZap(void* source, void* dest, int32_t size);
 int32_t __cdecl AudioUnzap(void* source, void* dest, int32_t /*unused*/);
 

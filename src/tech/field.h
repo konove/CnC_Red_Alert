@@ -38,9 +38,12 @@
 #ifndef CNC_RED_ALERT_TECH_FIELD_H_
 #define CNC_RED_ALERT_TECH_FIELD_H_
 
+#include <cstddef>
 #include <cstdint>
+#include <span>
+#include <vector>
 
-#define FIELD_HEADER_SIZE (sizeof(FieldClass) - (sizeof(void*) * 2))
+#define FIELD_HEADER_SIZE 8
 
 #define TYPE_CHAR 1
 #define TYPE_UNSIGNED_CHAR 2
@@ -62,7 +65,7 @@ class FieldClass {
   // packet reader default-constructs a field and then memcpy's only
   // FIELD_HEADER_SIZE bytes into it, which covers ID, DataType and Size but
   // not Data or Next.
-  FieldClass() : DataType(0), Size(0), Data(nullptr), Next(nullptr) {}
+  FieldClass() : DataType(0), Size(0), Next(nullptr) {}
   FieldClass(const char* id, char data);
   FieldClass(const char* id, unsigned char data);
   FieldClass(const char* id, int16_t data);
@@ -70,7 +73,7 @@ class FieldClass {
   FieldClass(const char* id, int32_t data);
   FieldClass(const char* id, uint32_t data);
   FieldClass(const char* id, const char* data);
-  FieldClass(const char* id, void* data, int length);
+  FieldClass(const char* id, std::span<const std::byte> data);
 
   void Host_To_Net();
   void Net_To_Host();
@@ -79,7 +82,7 @@ class FieldClass {
   char ID[4]{};               // id value of this field
   uint16_t DataType;          // id of the data type we are using
   uint16_t Size;              // size of the data portion of this field
-  void* Data;               // pointer to the data portion of this field
+  std::vector<std::byte> Data;  // pointer to the data portion of this field
   FieldClass* Next;         // pointer to the next field in the field list
 };
 

@@ -106,10 +106,11 @@ bool Get_Broadcast_Addresses() {
   Format_Window_String(title, SeenBuff.Get_Height(), width, height);
 
   GadgetClass* commands = nullptr;  // button list
-  ColorListClass ip_address_list(
-      kButtonIplist, d_ip_address_list_x, d_ip_address_list_y,
-      d_ip_address_list_w, d_ip_address_list_h, kTpfText,
-      MixArchive::Retrieve("BTN-UP.SHP"), MixArchive::Retrieve("BTN-DN.SHP"));
+  ColorListClass ip_address_list(kButtonIplist, d_ip_address_list_x,
+                                 d_ip_address_list_y, d_ip_address_list_w,
+                                 d_ip_address_list_h, kTpfText,
+                                 MixArchive::RetrieveData("BTN-UP.SHP"),
+                                 MixArchive::RetrieveData("BTN-DN.SHP"));
 
   TextButtonClass okbtn(kButtonOk, TXT_OK, kTpfButton, d_ok_x, d_ok_y, d_ok_w,
                         d_ok_h);
@@ -137,7 +138,10 @@ bool Get_Broadcast_Addresses() {
       entry++;
       char* temp = new char[128];
       absl::SNPrintF(entry_name, sizeof(entry_name), "%d", entry);
-      res = ip_ini.Get_String("IP_ADDRESSES", entry_name, "", temp, 128);
+      // temp owns exactly 128 allocated characters.
+      res = ip_ini.Get_String("IP_ADDRESSES", entry_name, "",
+                              // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
+                              std::span(temp, 128), 128);
       if (res) {
         ip_address_list.Add_Item(temp);
         char debug[128];

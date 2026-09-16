@@ -20,6 +20,7 @@
 #define CNC_RED_ALERT_SDLLIB_BUFFER_H_
 
 #include <cstdint>
+#include <span>
 
 #include "base/numeric.h"
 
@@ -32,7 +33,11 @@ class BufferClass {
   // Define the base constructor and destructors for the class
   BufferClass() : Buffer(nullptr), Size(0), Allocated(false) {}
   explicit BufferClass(int32_t size)
-      : Buffer(new uint8_t[base::ToSize(size)]), Size(size), Allocated(true) {}
+      : Buffer(new uint8_t[base::ToSize(size)]), Size(size), Allocated(true) {
+    // Buffer was allocated immediately above with exactly Size elements.
+    // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
+    bytes_ = std::span(static_cast<uint8_t*>(Buffer), base::ToSize(Size));
+  }
   ~BufferClass() {
     if (Allocated) {
       delete[] static_cast<uint8_t*>(Buffer);
@@ -47,8 +52,11 @@ class BufferClass {
   // define functions to get at the protected data members
   void* Get_Buffer() { return Buffer; }
   [[nodiscard]] int32_t Get_Size() const { return Size; }
+  // Returns the complete owned or caller-supplied allocation.
+  [[nodiscard]] std::span<uint8_t> Get_Bytes() { return bytes_; }
 
  protected:
+  std::span<uint8_t> bytes_;
   void* Buffer;
   int32_t Size;
   bool Allocated;

@@ -41,7 +41,9 @@
 #ifndef CNC_RED_ALERT_TD_TECHNO_H_
 #define CNC_RED_ALERT_TD_TECHNO_H_
 
+#include <cstddef>
 #include <cstdint>
+#include <span>
 
 #include "td/bullet.h"
 #include "td/cargo.h"
@@ -310,10 +312,10 @@ class TechnoClass : public RadioClass,
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
   */
-  virtual const void* Remap_Table();
+  virtual std::span<const unsigned char> Remap_Table();
   [[nodiscard]] VisualType Visual_Character(bool raw = false) const;
-  void Techno_Draw_Object(const void* shapefile, int shapenum, int x, int y,
-                          WindowNumberType window);
+  void Techno_Draw_Object(std::span<const std::byte> shapefile, int shapenum,
+                          int x, int y, WindowNumberType window);
   void Draw_It(int x, int y, WindowNumberType window) override;
   virtual void Draw_Pips(int x, int y, WindowNumberType window);
   void Hidden() override;

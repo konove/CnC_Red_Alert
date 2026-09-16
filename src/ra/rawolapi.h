@@ -28,6 +28,8 @@
 #include <cstddef>
 #include <cstdint>
 #include <ctime>
+#include <span>
+#include <string>
 
 // ajw wrapped these in a WOL namespace to keep wolapi's `struct Server` away
 // from Red Alert's global of that name, then had to take it out again --
@@ -66,6 +68,17 @@ inline const char* WolText(
   return reinterpret_cast<const char*>(text);
 }
 
+// Returns the full writable capacity of an IDL text array. The extent is
+// preserved by the array reference; char may alias its unsigned bytes.
+template <std::size_t N>
+// Clang cannot trace the aliased array storage through the span constructor.
+std::span<char> WolTextBuffer(
+    // NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-lifetimebound-violation)
+    unsigned char (&text ABSL_ATTRIBUTE_LIFETIME_BOUND)[N]) {
+  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast,clang-diagnostic-unsafe-buffer-usage-in-container)
+  return {reinterpret_cast<char*>(text), N};
+}
+
 // Returns `out` as the void** out-parameter that QueryInterface and
 // CoCreateInstance take. COM types that parameter as void** for every
 // interface; the object written through it is the T* the caller asked for by
@@ -89,7 +102,7 @@ void DebugChatDef(HRESULT hRes);
 
 int iChannelLobbyNumber(const char* szChannelName);
 #define REASONABLELOBBYINTERPRETEDNAMELEN 50
-void InterpretLobbyNumber(char* szLobbyNameToSet, int iLobby);
+void InterpretLobbyNumber(std::span<char> szLobbyNameToSet, int iLobby);
 
 class WolapiObject;
 
@@ -247,7 +260,7 @@ class RAChatEventSink
   User* pUserList{nullptr};  //	First element of user list, or null.
   User* pUserTail{nullptr};  //	Last element of user list, or null.
 
-  char* szMotd{nullptr};                  //	Message of the day.
+  std::string szMotd;                     //	Message of the day.
   HRESULT hresRequestConnectionError{0};  //	Used to pass error hresult.
 
   HRESULT hresRequestFindResult = 0;  //	Used to pass hresult.

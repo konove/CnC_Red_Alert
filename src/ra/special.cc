@@ -46,6 +46,7 @@
 #include <algorithm>
 #include <cstring>
 #include <iterator>
+#include <span>
 #include <string_view>
 #include <utility>
 
@@ -261,8 +262,8 @@ void Special_Dialog(bool simple) {
 */
 class PWEditClass : public EditClass {
  public:
-  PWEditClass(int id, char* text, int max_len, TextPrintType flags, int x,
-              int y, int w = -1, int h = -1)
+  PWEditClass(int id, std::span<char> text, int max_len, TextPrintType flags,
+              int x, int y, int w = -1, int h = -1)
       : EditClass(id, text, max_len, flags, x, y, w, h, kAlphanumeric) {}
 
  protected:
@@ -289,9 +290,10 @@ void PWEditClass::Draw_Text(const char* text) {
   char buffer[80];
 
   base::FillBytes(base::ObjectBytes(buffer), '\0', sizeof(buffer));
-  memset(buffer, '*', std::string_view(text).size());
+  base::FillBytes(base::ObjectBytes(buffer), '*',
+                  std::min(std::string_view(text).size(), sizeof(buffer) - 1));
 
-  if (FontPtr == GradFont6Ptr) {
+  if (FontPtr.data() == GradFont6Ptr.data()) {
     const TextPrintType flags =
         Has_Focus() ? TPF_BRIGHT_COLOR : static_cast<TextPrintType>(0);
 
@@ -389,9 +391,8 @@ const char* Fetch_Password(int caption, int message, int btext) {
   base::FillBytes(base::ObjectBytes(pbuffer), '\0', sizeof(pbuffer));
   const int editx = x + 52;
   const int editwidth = ((SeenBuff.Get_Width() / 2) - editx) * 2;
-  PWEditClass button2(2, &pbuffer[0], sizeof(pbuffer),
-                      TPF_6PT_GRAD | TPF_NOSHADOW, editx, y + height - 70,
-                      editwidth, 20);
+  PWEditClass button2(2, pbuffer, sizeof(pbuffer), TPF_6PT_GRAD | TPF_NOSHADOW,
+                      editx, y + height - 70, editwidth, 20);
 
   TextButtonClass* buttonlist = nullptr;
 

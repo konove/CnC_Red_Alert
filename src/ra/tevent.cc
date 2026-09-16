@@ -182,7 +182,7 @@ void EventChoiceClass::Draw_It(int /*unused*/, int x, int y, int width,
                                int height, bool selected,
                                TextPrintType flags) const {
   RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
-  static int _tabs[] = {13, 40};
+  static const int _tabs[] = {13, 40};
   if (Is_Font(flags, TPF_6PT_GRAD) || Is_Font(flags, TPF_EFNT)) {
     if (selected) {
       flags = flags | TPF_BRIGHT_COLOR;
@@ -698,7 +698,7 @@ NeedType Event_Needs(TEventType event) {
 TEventType Event_From_Name(const char* name) {
   if (name) {
     for (TEventType i = TEVENT_NONE; i < TEVENT_COUNT; i++) {
-      if (!stricmp(name, EventText[i])) {
+      if (!port::CompareIgnoreCase(name, EventText[i])) {
         return i;
       }
     }

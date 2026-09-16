@@ -41,6 +41,8 @@
 #ifndef CNC_RED_ALERT_TD_LIST_H_
 #define CNC_RED_ALERT_TD_LIST_H_
 
+#include <cstddef>
+#include <span>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -72,7 +74,7 @@
 class ListClass : public ControlClass {
  public:
   ListClass(int id, int x, int y, int w, int h, TextPrintType flags,
-            const void* up, const void* down);
+            std::span<const std::byte> up, std::span<const std::byte> down);
   ~ListClass() override;
   ListClass(const ListClass&) = delete;
   ListClass& operator=(const ListClass&) = delete;
@@ -121,7 +123,7 @@ class ListClass : public ControlClass {
   void Set_Item(int index, std::string_view text);
   virtual bool Remove_Scroll_Bar() final;
   virtual void Set_Selected_Index(int index);
-  virtual void Set_Tabs(const int* tabs);
+  virtual void Set_Tabs(std::span<const int> tabs);
   virtual bool Set_View_Index(int index);
   virtual void Step(bool up);
 
@@ -149,7 +151,7 @@ class ListClass : public ControlClass {
   **	<TAB> characters found in a list box string. The tabs are a series of
   **	pixel offsets from the starting pixel position of the text.
   */
-  const int* Tabs{nullptr};
+  std::span<const int> Tabs;
 
   // The items' text, in display order. Owned by the list.
   std::vector<std::string> List;

@@ -41,7 +41,10 @@
 #ifndef CNC_RED_ALERT_TD_EXTERNS_H_
 #define CNC_RED_ALERT_TD_EXTERNS_H_
 
+#include <cstddef>
 #include <cstdint>
+#include <span>
+#include <vector>
 
 #include "base/enum_array.h"
 #include "port/ex_string.h"
@@ -106,7 +109,7 @@ extern bool Debug_Smart_Print;
 extern bool Debug_Trap_Check_Heap;
 extern bool Debug_Instant_Build;
 
-extern const void* WarFactoryOverlay;
+extern std::span<const std::byte> WarFactoryOverlay;
 
 /*
 **	Dynamic global variables (these change or are initialized at run time).
@@ -136,7 +139,7 @@ extern bool PlayerLoses;
 extern bool PlayerRestarts;
 extern StructType SabotagedType;
 extern bool TempleIoned;
-extern void* SpeechBuffer;
+extern std::vector<std::byte> SpeechBuffer;
 extern bool PreserveVQAScreen;
 extern bool BreakoutAllowed;
 extern bool Brokeout;
@@ -190,16 +193,16 @@ extern BaseClass Base;
 /*
 **	Loaded data file pointers.
 */
-extern const void* Green12FontPtr;
-extern const void* Green12GradFontPtr;
-extern const void* MapFontPtr;
-extern const void* VCRFontPtr;
-extern const void* Font3Ptr;
-extern const void* Font6Ptr;
-extern const void* Font8Ptr;
-extern const void* FontLEDPtr;
-extern const void* ScoreFontPtr;
-extern const void* GradFont6Ptr;
+extern std::span<const std::byte> Green12FontPtr;
+extern std::span<const std::byte> Green12GradFontPtr;
+extern std::span<const std::byte> MapFontPtr;
+extern std::span<const std::byte> VCRFontPtr;
+extern std::span<const std::byte> Font3Ptr;
+extern std::span<const std::byte> Font6Ptr;
+extern std::span<const std::byte> Font8Ptr;
+extern std::span<const std::byte> FontLEDPtr;
+extern std::span<const std::byte> ScoreFontPtr;
+extern std::span<const std::byte> GradFont6Ptr;
 extern std::span<const std::byte> SystemStrings;
 
 /*
@@ -209,16 +212,16 @@ extern HousesType Whom;
 extern VQAConfig AnimControl;
 extern int64_t SpareTicks;
 extern int MonoPage;
-extern unsigned char* OriginalPalette;
+extern std::vector<unsigned char> OriginalPalette;
 extern int EndCountDown;
 extern bool SpecialFlag;
 extern int ScenarioInit;
 extern int32_t TutorFlags[2];
 extern HouseClass* PlayerPtr;
-extern unsigned char* BlackPalette;
-extern unsigned char* WhitePalette;
-extern unsigned char* GamePalette;
-extern unsigned char* Palette;
+extern std::vector<unsigned char> BlackPalette;
+extern std::vector<unsigned char> WhitePalette;
+extern std::vector<unsigned char> GamePalette;
+extern std::vector<unsigned char> Palette;
 extern int Scenario;
 extern ScenarioPlayerType ScenPlayer;
 extern ScenarioDirType ScenDir;
@@ -264,10 +267,10 @@ extern char CallWaitStrings[kCallWaitStringsNum][CALL_WAIT_STRING_MAX];
 ** Network/Modem globals
 */
 extern int ScenarioIdx;
-extern int ColorUsed[];
+extern int ColorUsed[MAX_MPLAYER_COLORS];
 extern char MPlayerName[MPLAYER_NAME_MAX];
-extern int MPlayerGColors[];
-extern int MPlayerTColors[];
+extern int MPlayerGColors[MAX_MPLAYER_COLORS];
+extern int MPlayerTColors[MAX_MPLAYER_COLORS];
 extern char MPlayerDescriptions[100][40];
 extern DynamicVectorClass<char*> MPlayerScenarios;
 extern DynamicVectorClass<int> MPlayerFilenum;
@@ -343,7 +346,7 @@ extern GlobalPacketType GPacket;
 extern int GPacketlen;
 extern IPXAddressClass GAddress;
 extern uint16_t GProductID;
-extern char* MetaPacket;
+extern std::vector<std::byte> MetaPacket;
 extern int MetaSize;
 extern DynamicVectorClass<NodeNameType*> Games;
 extern DynamicVectorClass<NodeNameType*> Players;
@@ -398,11 +401,7 @@ extern bool InMainLoop;  // True if in game state rather than menu state
 void CCDebugString(const char* string);
 extern void* PacketLater;
 void Load_Title_Screen(const char* name, GraphicViewPortClass* video_page,
-                       unsigned char* palette);
-
-extern "C" {
-extern bool IsTheaterShape;
-}
+                       std::span<unsigned char> palette);
 
 extern TheaterType LastTheater;
 extern TimerClass TickCount;

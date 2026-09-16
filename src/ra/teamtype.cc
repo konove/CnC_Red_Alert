@@ -61,6 +61,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include <string>
+
 #include "ra/teamtype.h"
 
 #include <cassert>
@@ -70,6 +72,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <iterator>
+#include <span>
 #include <string_view>
 #include <utility>
 
@@ -139,7 +142,7 @@ void TeamTypeClass::Draw_It(int /*unused*/, int x, int y, int width, int height,
                             bool selected, TextPrintType flags) const {
   if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
     RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
-    static int _tabs[] = {35, 60, 80, 100};
+    static const int _tabs[] = {35, 60, 80, 100};
     const uint32_t font = static_cast<uint32_t>(flags) & 0x0FU;
     if (font == static_cast<uint32_t>(TPF_6PT_GRAD) ||
         font == static_cast<uint32_t>(TPF_EFNT)) {
@@ -234,7 +237,7 @@ void TeamTypeClass::Init() { TeamTypes.Free_All(); }
 TeamTypeClass* TeamTypeClass::As_Pointer(const char* name) {
   if (name) {
     for (int index = 0; index < TeamTypes.Count(); index++) {
-      if (!stricmp(name, TeamTypes.Ptr(index)->IniName)) {
+      if (!port::CompareIgnoreCase(name, TeamTypes.Ptr(index)->IniName)) {
         return TeamTypes.Ptr(index);
       }
     }
@@ -261,7 +264,7 @@ TeamMissionType TeamTypeClass::Mission_From_Name(const char* name) {
   if (name) {
     for (TeamMissionType order = TMISSION_ATTACK; order < TMISSION_COUNT;
          order++) {
-      if (stricmp(TMissions[order], name) == 0) {
+      if (port::CompareIgnoreCase(TMissions[order], name) == 0) {
         return order;
       }
     }
@@ -473,7 +476,7 @@ TeamTypeClass* TeamTypeClass::Suggested_New_Team(
 TeamTypeClass* TeamTypeClass::From_Name(const char* name) {
   if (name) {
     for (int index = 0; index < TeamTypes.Count(); index++) {
-      if (stricmp(name, TeamTypes.Ptr(index)->IniName) == 0) {
+      if (port::CompareIgnoreCase(name, TeamTypes.Ptr(index)->IniName) == 0) {
         return TeamTypes.Ptr(index);
       }
     }
@@ -572,7 +575,7 @@ NeedType TeamMission_Needs(TeamMissionType tmtype) {
 void TeamMissionClass::Draw_It(int index, int x, int y, int width, int height,
                                bool selected, TextPrintType flags) const {
   RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
-  static int _tabs[] = {13, 40};
+  static const int _tabs[] = {13, 40};
   const uint32_t font = static_cast<uint32_t>(flags) & 0x0FU;
   if (font == static_cast<uint32_t>(TPF_6PT_GRAD) ||
       font == static_cast<uint32_t>(TPF_EFNT)) {
@@ -686,10 +689,11 @@ bool TeamTypeClass::Edit() {
   **	House ownership of this team.
   */
   char housetext[25] = "";
-  DropListClass housebtn(
-      kButtonHouse, housetext, sizeof(housetext), TPF_EFNT | TPF_NOSHADOW,
-      name_edt.X + name_edt.Width + kDSpacingX, name_edt.Y, 55, 8 * 5,
-      MixArchive::Retrieve("EBTN-UP.SHP"), MixArchive::Retrieve("EBTN-DN.SHP"));
+  DropListClass housebtn(kButtonHouse, housetext, sizeof(housetext),
+                         TPF_EFNT | TPF_NOSHADOW,
+                         name_edt.X + name_edt.Width + kDSpacingX, name_edt.Y,
+                         55, 8 * 5, MixArchive::RetrieveData("EBTN-UP.SHP"),
+                         MixArchive::RetrieveData("EBTN-DN.SHP"));
   for (const HousesType house : magic_enum::enum_values<HousesType>()) {
     housebtn.Add_Item(HouseTypeClass::As_Reference(house).IniName);
   }
@@ -762,10 +766,11 @@ bool TeamTypeClass::Edit() {
   **	Trigger to assign to each member of this team (when object joins team).
   */
   char trigtext[25] = "";
-  DropListClass triggerbtn(
-      kButtonTrigger, trigtext, sizeof(trigtext), TPF_EFNT | TPF_NOSHADOW,
-      kDDialogX + kDDialogW - 95, membersbtn.Y, 60, 8 * 5,
-      MixArchive::Retrieve("EBTN-UP.SHP"), MixArchive::Retrieve("EBTN-DN.SHP"));
+  DropListClass triggerbtn(kButtonTrigger, trigtext, sizeof(trigtext),
+                           TPF_EFNT | TPF_NOSHADOW, kDDialogX + kDDialogW - 95,
+                           membersbtn.Y, 60, 8 * 5,
+                           MixArchive::RetrieveData("EBTN-UP.SHP"),
+                           MixArchive::RetrieveData("EBTN-DN.SHP"));
   triggerbtn.Add_Item("<NONE>");
   for (int index = 0; index < TriggerTypes.Count(); index++) {
     triggerbtn.Add_Item(TriggerTypes.Ptr(index)->IniName);
@@ -840,10 +845,11 @@ bool TeamTypeClass::Edit() {
   *building/editing the *	team mission list.
   */
   char droptext[45];
-  DropListClass missionlist1(
-      kButtonMission1, droptext, sizeof(droptext), TPF_EFNT | TPF_NOSHADOW,
-      reinforcebtn.X, reinforcebtn.Y + 15, 170, 8 * 8,
-      MixArchive::Retrieve("EBTN-UP.SHP"), MixArchive::Retrieve("EBTN-DN.SHP"));
+  DropListClass missionlist1(kButtonMission1, droptext, sizeof(droptext),
+                             TPF_EFNT | TPF_NOSHADOW, reinforcebtn.X,
+                             reinforcebtn.Y + 15, 170, 8 * 8,
+                             MixArchive::RetrieveData("EBTN-UP.SHP"),
+                             MixArchive::RetrieveData("EBTN-DN.SHP"));
   for (TeamMissionType tm = TMISSION_ATTACK; tm < TMISSION_COUNT; tm++) {
     missionlist1.Add_Item(TeamTypeClass::Name_From_Mission(tm));
   }
@@ -861,10 +867,11 @@ bool TeamTypeClass::Edit() {
   //	arg_edt.Add(*commands);
 
   char qtext[55];
-  DropListClass qlist(
-      kButtonQuarry, qtext, sizeof(qtext), TPF_EFNT | TPF_NOSHADOW,
-      missionlist1.X + missionlist1.Width + 15, missionlist1.Y, 100, 5 * 8,
-      MixArchive::Retrieve("EBTN-UP.SHP"), MixArchive::Retrieve("EBTN-DN.SHP"));
+  DropListClass qlist(kButtonQuarry, qtext, sizeof(qtext),
+                      TPF_EFNT | TPF_NOSHADOW,
+                      missionlist1.X + missionlist1.Width + 15, missionlist1.Y,
+                      100, 5 * 8, MixArchive::RetrieveData("EBTN-UP.SHP"),
+                      MixArchive::RetrieveData("EBTN-DN.SHP"));
   for (const QuarryType q : magic_enum::enum_values<QuarryType>()) {
     qlist.Add_Item(QuarryName[q]);
   }
@@ -872,10 +879,11 @@ bool TeamTypeClass::Edit() {
   qlist.Add_Tail(*commands);
 
   char ftext[55];
-  DropListClass flist(
-      kButtonFormation, ftext, sizeof(ftext), TPF_EFNT | TPF_NOSHADOW,
-      missionlist1.X + missionlist1.Width + 15, missionlist1.Y, 100, 5 * 8,
-      MixArchive::Retrieve("EBTN-UP.SHP"), MixArchive::Retrieve("EBTN-DN.SHP"));
+  DropListClass flist(kButtonFormation, ftext, sizeof(ftext),
+                      TPF_EFNT | TPF_NOSHADOW,
+                      missionlist1.X + missionlist1.Width + 15, missionlist1.Y,
+                      100, 5 * 8, MixArchive::RetrieveData("EBTN-UP.SHP"),
+                      MixArchive::RetrieveData("EBTN-DN.SHP"));
   for (const FormationType f : magic_enum::enum_values<FormationType>()) {
     flist.Add_Item(FormationName[f]);
   }
@@ -883,10 +891,11 @@ bool TeamTypeClass::Edit() {
   flist.Add_Tail(*commands);
 
   char mtext[55];
-  DropListClass mlist(
-      kButtonMission, mtext, sizeof(mtext), TPF_EFNT | TPF_NOSHADOW,
-      missionlist1.X + missionlist1.Width + 15, missionlist1.Y, 100, 5 * 8,
-      MixArchive::Retrieve("EBTN-UP.SHP"), MixArchive::Retrieve("EBTN-DN.SHP"));
+  DropListClass mlist(kButtonMission, mtext, sizeof(mtext),
+                      TPF_EFNT | TPF_NOSHADOW,
+                      missionlist1.X + missionlist1.Width + 15, missionlist1.Y,
+                      100, 5 * 8, MixArchive::RetrieveData("EBTN-UP.SHP"),
+                      MixArchive::RetrieveData("EBTN-DN.SHP"));
   for (const MissionType m : magic_enum::enum_values<MissionType>()) {
     mlist.Add_Item(MissionClass::Mission_Name(m));
   }
@@ -895,13 +904,13 @@ bool TeamTypeClass::Edit() {
 
   TListClass<TeamMissionClass*> missionlist2(
       kButtonMission2, missionlist1.X + 60, missionlist1.Y + 22, 240, 8 * 7,
-      TPF_EFNT | TPF_NOSHADOW, MixArchive::Retrieve("EBTN-UP.SHP"),
-      MixArchive::Retrieve("EBTN-DN.SHP"));
+      TPF_EFNT | TPF_NOSHADOW, MixArchive::RetrieveData("EBTN-UP.SHP"),
+      MixArchive::RetrieveData("EBTN-DN.SHP"));
   for (int index = 0; index < MissionCount; index++) {
     missionlist2.Add_Item(new TeamMissionClass(base::At(MissionList, index)));
     //		missionlist2.Add_Item(&TeamMissions[MissionList[index].Mission]);
   }
-  static int tabs[] = {13, 40};  // list box tab stops
+  static const int tabs[] = {13, 40};  // list box tab stops
   missionlist2.Set_Tabs(tabs);
   missionlist2.Add_Tail(*commands);
 
@@ -1092,9 +1101,8 @@ bool TeamTypeClass::Edit() {
 
             case NEED_QUARRY:
               port::SafeCopy(
-                  qlist.Get_Text(),
-                  QuarryName[missionlist2.Current_Item()->Data.Quarry],
-                  base::ToSize(qlist.Get_Max_Length()));
+                  qlist.Get_Text_Buffer(),
+                  QuarryName[missionlist2.Current_Item()->Data.Quarry]);
               break;
 
             case NEED_WAYPOINT:
@@ -1150,9 +1158,10 @@ bool TeamTypeClass::Edit() {
 
             case NEED_WAYPOINT:
               tm->Data.Value = toupper(*arg_edt.Get_Text()) - 'A';
-              if (*(arg_edt.Get_Text() + 1)) {
+              if (std::string_view(arg_edt.Get_Text()).size() > 1) {
                 tm->Data.Value = (tm->Data.Value + 1) * 26;
-                tm->Data.Value += toupper(*(arg_edt.Get_Text() + 1)) - 'A';
+                tm->Data.Value +=
+                    toupper(std::string_view(arg_edt.Get_Text())[1]) - 'A';
               }
               if (tm->Data.Value < 0 ||
                   tm->Data.Value >= ScenarioClass::kHomeWaypoint) {
@@ -1201,9 +1210,10 @@ bool TeamTypeClass::Edit() {
 
             case NEED_WAYPOINT:
               tm->Data.Value = toupper(*arg_edt.Get_Text()) - 'A';
-              if (*(arg_edt.Get_Text() + 1)) {
+              if (std::string_view(arg_edt.Get_Text()).size() > 1) {
                 tm->Data.Value = (tm->Data.Value + 1) * 26;
-                tm->Data.Value += toupper(*(arg_edt.Get_Text() + 1)) - 'A';
+                tm->Data.Value +=
+                    toupper(std::string_view(arg_edt.Get_Text())[1]) - 'A';
               }
               if (tm->Data.Value < 0 ||
                   tm->Data.Value >= ScenarioClass::kHomeWaypoint) {
@@ -1253,9 +1263,10 @@ bool TeamTypeClass::Edit() {
 
             case NEED_WAYPOINT:
               tm->Data.Value = toupper(*arg_edt.Get_Text()) - 'A';
-              if (*(arg_edt.Get_Text() + 1)) {
+              if (std::string_view(arg_edt.Get_Text()).size() > 1) {
                 tm->Data.Value = (tm->Data.Value + 1) * 26;
-                tm->Data.Value += toupper(*(arg_edt.Get_Text() + 1)) - 'A';
+                tm->Data.Value +=
+                    toupper(std::string_view(arg_edt.Get_Text())[1]) - 'A';
               }
               if (tm->Data.Value < 0 ||
                   tm->Data.Value >= ScenarioClass::kHomeWaypoint) {
@@ -1310,7 +1321,7 @@ bool TeamTypeClass::Edit() {
       *box *	and place them into the team type object.
       */
       case ButtonKey(kButtonOk):
-        strtrim(name_edt.Get_Text());
+        strtrim(name_edt.Get_Text_Buffer());
         if (!std::string_view(name_edt.Get_Text()).empty()) {
           port::SafeCopy(IniName, name_edt.Get_Text());
         } else {
@@ -1346,7 +1357,7 @@ bool TeamTypeClass::Edit() {
             Origin = toupper(*originbtn.Get_Text()) - 'A';
           } else {
             Origin = (toupper(*originbtn.Get_Text()) + 1 - 'A') * 26;
-            Origin += toupper(*(originbtn.Get_Text() + 1)) - 'A';
+            Origin += toupper(std::string_view(originbtn.Get_Text())[1]) - 'A';
           }
         } else {
           Origin = -1;
@@ -1397,20 +1408,19 @@ bool TeamTypeClass::Edit() {
 
 int atoh(const char* str) {
   int retval = 0;
-  while (*str) {
+  for (const char chr : std::string_view(str)) {
     retval *= 16;
-    if (*str >= '0' && *str <= '9') {
-      retval += *str - '0';
+    if (chr >= '0' && chr <= '9') {
+      retval += chr - '0';
     } else {
-      if (*str >= 'a' && *str <= 'f') {
-        retval += 10 + (*str - 'a');
+      if (chr >= 'a' && chr <= 'f') {
+        retval += 10 + (chr - 'a');
       } else {
-        if (*str >= 'A' && *str <= 'F') {
-          retval += 10 + (*str - 'A');
+        if (chr >= 'A' && chr <= 'F') {
+          retval += 10 + (chr - 'A');
         }
       }
     }
-    str++;
   }
   return retval;
 }
@@ -1456,7 +1466,7 @@ const char* TeamTypeClass::Member_Description() const {
     }
 
     if (std::string_view(buffer).size() > 25) {
-      port::SafeCopy(&buffer[25 - 3], "...", 4);
+      port::SafeCopy(std::span(buffer).subspan(25 - 3, 4), "...");
     }
 
     return buffer;
@@ -1542,15 +1552,16 @@ const char* TeamMissionClass::Description(int index) const {
         break;
 
       case NEED_NUMBER:
-        absl::SNPrintF(buffer + std::string_view(buffer).size(),
-                       sizeof(buffer) - std::string_view(buffer).size(), "%d",
-                       Data.Value);
+        absl::SNPrintF(
+            std::span(buffer).subspan(std::string_view(buffer).size()).data(),
+            sizeof(buffer) - std::string_view(buffer).size(), "%d", Data.Value);
         break;
 
       case NEED_HEX_NUMBER:
-        absl::SNPrintF(buffer + std::string_view(buffer).size(),
-                       sizeof(buffer) - std::string_view(buffer).size(), "%x",
-                       static_cast<unsigned int>(Data.Value));
+        absl::SNPrintF(
+            std::span(buffer).subspan(std::string_view(buffer).size()).data(),
+            sizeof(buffer) - std::string_view(buffer).size(), "%x",
+            static_cast<unsigned int>(Data.Value));
         break;
 
       case NEED_QUARRY:
@@ -1559,14 +1570,15 @@ const char* TeamMissionClass::Description(int index) const {
 
       case NEED_WAYPOINT:
         if (Data.Value < 26) {
-          absl::SNPrintF(buffer + std::string_view(buffer).size(),
-                         sizeof(buffer) - std::string_view(buffer).size(), "%c",
-                         Data.Value + 'A');
+          absl::SNPrintF(
+              std::span(buffer).subspan(std::string_view(buffer).size()).data(),
+              sizeof(buffer) - std::string_view(buffer).size(), "%c",
+              Data.Value + 'A');
         } else {
-          absl::SNPrintF(buffer + std::string_view(buffer).size(),
-                         sizeof(buffer) - std::string_view(buffer).size(),
-                         "%c%c", (Data.Value / 26) + 'A' - 1,
-                         (Data.Value % 26) + 'A');
+          absl::SNPrintF(
+              std::span(buffer).subspan(std::string_view(buffer).size()).data(),
+              sizeof(buffer) - std::string_view(buffer).size(), "%c%c",
+              (Data.Value / 26) + 'A' - 1, (Data.Value % 26) + 'A');
         }
         break;
       default:
@@ -1834,11 +1846,9 @@ void TeamTypeClass::Write_INI(CCINIClass& ini) {
   for (int index = 0; index < TeamTypes.Count(); index++) {
     //	for (int index = TeamTypes.Count()-1; index >= 0; index--) {
     TeamTypeClass* team = TeamTypes.Ptr(index);
-    char buf[256];
-
-    buf[0] = 0;
+    std::string buf;
     team->Build_INI_Entry(buf);
-    ini.Put_String(INI_Name(), team->IniName, buf);
+    ini.Put_String(INI_Name(), team->IniName, buf.c_str());
   }
 }
 
@@ -1858,7 +1868,8 @@ void TeamTypeClass::Write_INI(CCINIClass& ini) {
  *                                                                                             *
  * HISTORY: * 07/30/1996 JLB : Created. *
  *=============================================================================================*/
-void TeamTypeClass::Build_INI_Entry(char* buf) {
+void TeamTypeClass::Build_INI_Entry(std::string& buf) {
+  buf.clear();
   uint32_t code = 0;
   code |= IsRoundAbout ? 0x0001U : 0U;
   code |= IsSuicide ? 0x0002U : 0U;
@@ -1869,31 +1880,25 @@ void TeamTypeClass::Build_INI_Entry(char* buf) {
   /*
   **	Output the general data for this team type.
   */
-  absl::SNPrintF(buf, sizeof(buf), "%d,%d,%d,%d,%d,%d,%d", House, code,
-                 RecruitPriority, InitNum, MaxAllowed, Origin,
-                 TriggerTypes.Logical_ID(Trigger));
-  buf += std::string_view(buf).size();
+  absl::StrAppendFormat(&buf, "%d,%d,%d,%d,%d,%d,%d", House, code,
+                        RecruitPriority, InitNum, MaxAllowed, Origin,
+                        TriggerTypes.Logical_ID(Trigger));
 
   /*
   **	For every class in the team, record the class's name & desired count
   */
-  absl::SNPrintF(buf, sizeof(buf), ",%d", ClassCount);
-  buf += std::string_view(buf).size();
+  absl::StrAppendFormat(&buf, ",%d", ClassCount);
   for (int i = 0; i < ClassCount; i++) {
-    absl::SNPrintF(buf, sizeof(buf), ",%s:%d",
-                   base::At(Members, i).Class->IniName,
-                   base::At(Members, i).Quantity);
-    buf += std::string_view(buf).size();
+    absl::StrAppendFormat(&buf, ",%s:%d", base::At(Members, i).Class->IniName,
+                          base::At(Members, i).Quantity);
   }
 
   /*
   **	Record the # of missions, and each mission name & argument value.
   */
-  absl::SNPrintF(buf, sizeof(buf), ",%d", MissionCount);
-  buf += std::string_view(buf).size();
+  absl::StrAppendFormat(&buf, ",%d", MissionCount);
   for (int i = 0; i < MissionCount; i++) {
-    absl::SNPrintF(buf, sizeof(buf), ",%d:%d", base::At(MissionList, i).Mission,
-                   base::At(MissionList, i).Data.Value);
-    buf += std::string_view(buf).size();
+    absl::StrAppendFormat(&buf, ",%d:%d", base::At(MissionList, i).Mission,
+                          base::At(MissionList, i).Data.Value);
   }
 }

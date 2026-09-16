@@ -40,7 +40,9 @@
 #ifndef CNC_RED_ALERT_RA_POWER_H_
 #define CNC_RED_ALERT_RA_POWER_H_
 
+#include <cstddef>
 #include <cstdint>
+#include <span>
 
 #include "ra/defines.h"
 #include "ra/display.h"
@@ -65,7 +67,7 @@ class PowerClass : public RadarClass {
   void Init_Clear() override;  // Clears all to known state
   void Draw_It(bool complete = false) override;
   void AI(KeyNumType& input, int x, int y) override;
-  void Refresh_Cells(CELL cell, const int16_t* list) override;
+  void Refresh_Cells(CELL cell, std::span<const int16_t> list) override;
   void Flash_Power();
 
   bool IsPowerToRedraw : 1 {false};
@@ -125,8 +127,8 @@ class PowerClass : public RadarClass {
   /*
   **	Points to the shape to use for the "desired" power level indicator.
   */
-  static const void* PowerShape;
-  static const void* PowerBarShape;
+  static std::span<const std::byte> PowerShape;
+  static std::span<const std::byte> PowerBarShape;
 };
 
 #endif  // CNC_RED_ALERT_RA_POWER_H_

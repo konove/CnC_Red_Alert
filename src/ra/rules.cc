@@ -62,6 +62,7 @@
 
 #include "base/enum_array.h"
 #include "magic_enum/magic_enum.hpp"
+#include "port/safe_string.h"
 #include "port/tokenizer.h"
 #include "ra/anim.h"
 #include "ra/bench_util.h"
@@ -708,7 +709,7 @@ bool RulesClass::Powerups(CCINIClass& ini) {
         port::Tokenizer tokens(buffer, ",");
         char* token = tokens.Next();
         if (token) {
-          strtrim(token);
+          strtrim(port::MutableCString(token));
           CrateShares[crate] = tech::ParseInteger<int>(token).value_or(0);
         }
 
@@ -717,7 +718,7 @@ bool RulesClass::Powerups(CCINIClass& ini) {
         */
         token = tokens.Next();
         if (token) {
-          strtrim(token);
+          strtrim(port::MutableCString(token));
           CrateAnims[crate] = Anim_From_Name(token);
         }
 
@@ -726,10 +727,11 @@ bool RulesClass::Powerups(CCINIClass& ini) {
         */
         token = tokens.Next();
         if (token != nullptr) {
-          if (strpbrk(token, ".%") != nullptr) {
+          if ((std::string_view(token).contains('.') ||
+               std::string_view(token).contains('%'))) {
             CrateData[crate] = fixed::FromString(token) * 256;
           } else {
-            strtrim(token);
+            strtrim(port::MutableCString(token));
             CrateData[crate] = tech::ParseInteger<int>(token).value_or(0);
           }
         }

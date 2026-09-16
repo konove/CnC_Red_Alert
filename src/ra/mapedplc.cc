@@ -56,7 +56,9 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <span>
 
+#include "base/array.h"
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/base.h"
@@ -250,9 +252,10 @@ int MapEditClass::Placement_Dialog() {
   **	Buttons
   */
 
-  ListClass housebtn(
-      kButtonHouse, kGdiX, kGdiY, 60, 8 * 16, TPF_EFNT | TPF_NOSHADOW,
-      MixArchive::Retrieve("EBTN-UP.SHP"), MixArchive::Retrieve("EBTN-DN.SHP"));
+  ListClass housebtn(kButtonHouse, kGdiX, kGdiY, 60, 8 * 16,
+                     TPF_EFNT | TPF_NOSHADOW,
+                     MixArchive::RetrieveData("EBTN-UP.SHP"),
+                     MixArchive::RetrieveData("EBTN-DN.SHP"));
   for (const HousesType each_house : magic_enum::enum_values<HousesType>()) {
     housebtn.Add_Item(HouseTypeClass::As_Reference(each_house).IniName);
   }
@@ -304,7 +307,8 @@ int MapEditClass::Placement_Dialog() {
   */
   TypeOffset[0] = 0;
   for (i = 1; i < kNumEditClasses; i++) {
-    TypeOffset[i] = TypeOffset[i - 1] + NumType[i - 1];
+    base::At(TypeOffset, i) =
+        base::At(TypeOffset, i - 1) + base::At(NumType, i - 1);
   }
 
   /*
@@ -322,8 +326,8 @@ int MapEditClass::Placement_Dialog() {
     LastChoice = 0;
   }
   const ObjectTypeClass* curobj =
-      Objects[LastChoice];  // Working object pointer.  // current object to
-                            // choose
+      base::At(Objects, LastChoice);  // Working object pointer.  // current
+                                      // object to choose
 
   ControlClass* commands = &nextbtn;
   housebtn.Add_Tail(*commands);
@@ -375,10 +379,14 @@ int MapEditClass::Placement_Dialog() {
       **	- draw the shape
       **	- reset the window dimensions
       */
-      WindowList[static_cast<int>(WINDOW_EDITOR)][kWindowX] = kPictureX;
-      WindowList[static_cast<int>(WINDOW_EDITOR)][kWindowY] = kPictureY;
-      WindowList[static_cast<int>(WINDOW_EDITOR)][kWindowWidth] = kPictureW;
-      WindowList[static_cast<int>(WINDOW_EDITOR)][kWindowHeight] = kPictureH;
+      base::At(WindowList[static_cast<int>(WINDOW_EDITOR)], kWindowX) =
+          kPictureX;
+      base::At(WindowList[static_cast<int>(WINDOW_EDITOR)], kWindowY) =
+          kPictureY;
+      base::At(WindowList[static_cast<int>(WINDOW_EDITOR)], kWindowWidth) =
+          kPictureW;
+      base::At(WindowList[static_cast<int>(WINDOW_EDITOR)], kWindowHeight) =
+          kPictureH;
       Change_Window(static_cast<int>(WINDOW_EDITOR));
       Draw_Box(kPictureX, kPictureY, kPictureW, kPictureH, BOXSTYLE_DOWN,
                false);
@@ -397,11 +405,11 @@ int MapEditClass::Placement_Dialog() {
       /*
       **	Draw a box for every cell occupied
       */
-      const int16_t* occupy =
+      std::span<const int16_t> occupy =
           curobj->Occupy_List();  // ptr into object's OccupyList
-      while ((*occupy) != kRefreshEol) {
-        const int cell = (*occupy);  // cell index for parsing OccupyList
-        occupy++;
+      while (occupy.front() != kRefreshEol) {
+        const int cell = occupy.front();  // cell index for parsing OccupyList
+        occupy = occupy.subspan(1);
         x = kGridX + ((cell % MAP_CELL_W) * kGridblockW);
         y = kGridY + ((cell / MAP_CELL_W) * kGridblockH);
         LogicPage->Fill_Rect(x, y, x + kGridblockW - 1, y + kGridblockH - 1,
@@ -438,7 +446,7 @@ int MapEditClass::Placement_Dialog() {
       */
       i = 0;
       for (typeindex = 0; typeindex < kNumEditClasses; typeindex++) {
-        i += NumType[typeindex];
+        i += base::At(NumType, typeindex);
         if (LastChoice < i) {
           break;
         }
@@ -534,7 +542,7 @@ int MapEditClass::Placement_Dialog() {
         if (LastChoice == ObjCount) {
           LastChoice = 0;
         }
-        curobj = Objects[LastChoice];
+        curobj = base::At(Objects, LastChoice);
 
         nextbtn.Turn_Off();
         display = true;
@@ -553,7 +561,7 @@ int MapEditClass::Placement_Dialog() {
         if (LastChoice < 0) {
           LastChoice = ObjCount - 1;
         }
-        curobj = Objects[LastChoice];
+        curobj = base::At(Objects, LastChoice);
         prevbtn.Turn_Off();
         display = true;
         break;
@@ -579,7 +587,7 @@ int MapEditClass::Placement_Dialog() {
         /*
         **	If no objects of that type, do nothing
         */
-        if (NumType[typeindex] == 0) {
+        if (base::At(NumType, typeindex) == 0) {
           display = true;
           break;
         }
@@ -587,8 +595,8 @@ int MapEditClass::Placement_Dialog() {
         /*
         **	Set current object
         */
-        LastChoice = TypeOffset[typeindex];
-        curobj = Objects[LastChoice];
+        LastChoice = base::At(TypeOffset, typeindex);
+        curobj = base::At(Objects, LastChoice);
         display = true;
         break;
 
@@ -604,8 +612,8 @@ int MapEditClass::Placement_Dialog() {
         /*
         **	Set current object
         */
-        LastChoice = TypeOffset[typeindex];
-        curobj = Objects[LastChoice];
+        LastChoice = base::At(TypeOffset, typeindex);
+        curobj = base::At(Objects, LastChoice);
         display = true;
         break;
 
@@ -621,8 +629,8 @@ int MapEditClass::Placement_Dialog() {
         /*
         **	Set current object
         */
-        LastChoice = TypeOffset[typeindex];
-        curobj = Objects[LastChoice];
+        LastChoice = base::At(TypeOffset, typeindex);
+        curobj = base::At(Objects, LastChoice);
         display = true;
         break;
 
@@ -635,7 +643,7 @@ int MapEditClass::Placement_Dialog() {
         /*
         **	Set current object
         */
-        curobj = Objects[LastChoice];
+        curobj = base::At(Objects, LastChoice);
         display = true;
         break;
 
@@ -714,7 +722,8 @@ void MapEditClass::Start_Placement() {
   */
   TypeOffset[0] = 0;
   for (int i = 1; i < kNumEditClasses; i++) {
-    TypeOffset[i] = TypeOffset[i - 1] + NumType[i - 1];
+    base::At(TypeOffset, i) =
+        base::At(TypeOffset, i - 1) + base::At(NumType, i - 1);
   }
 
   /*
@@ -728,13 +737,13 @@ void MapEditClass::Start_Placement() {
     if (LastChoice >= ObjCount) {
       LastChoice = ObjCount - 1;
     }
-    PendingObject = Objects[LastChoice];
+    PendingObject = base::At(Objects, LastChoice);
     PendingHouse = LastHouse;
     PendingObjectPtr =
         PendingObject->Create_One_Of(HouseClass::As_Pointer(LastHouse));
   } else {
     LastChoice = std::clamp(LastChoice, TypeOffset[7], ObjCount - 1);
-    PendingObject = Objects[LastChoice];
+    PendingObject = base::At(Objects, LastChoice);
     PendingHouse = LastHouse = Base.House;
     PendingObjectPtr =
         PendingObject->Create_One_Of(HouseClass::As_Pointer(LastHouse));
@@ -809,13 +818,14 @@ int MapEditClass::Place_Object() {
     **	Loop through all cells this template will occupy
     */
     bool okflag = true;  // OK to place a template?
-    const int16_t* occupy =
+    std::span<const int16_t> occupy =
         PendingObject->Occupy_List();  // ptr into template's OccupyList
-    while ((*occupy) != kRefreshEol) {
+    while (occupy.front() != kRefreshEol) {
       /*
       **	Check this cell for an occupier
       */
-      template_cell = static_cast<CELL>((ZoneCell + ZoneOffset) + (*occupy));
+      template_cell =
+          static_cast<CELL>((ZoneCell + ZoneOffset) + occupy.front());
       if ((*this)[template_cell].Cell_Occupier()) {
         ObjectClass* occupier =
             (*this)[template_cell].Cell_Occupier();  // occupying object
@@ -840,8 +850,8 @@ int MapEditClass::Place_Object() {
         (*this)[template_cell].TType =
             dynamic_cast<const TemplateTypeClass*>(PendingObject)->Type;
         (*this)[template_cell].TIcon = static_cast<unsigned char>(
-            Cell_X(*occupy) +
-            (Cell_Y(*occupy) *
+            Cell_X(occupy.front()) +
+            (Cell_Y(occupy.front()) *
              dynamic_cast<const TemplateTypeClass*>(PendingObject)->Width));
         (*this)[template_cell].Recalc_Attributes();
 
@@ -864,7 +874,7 @@ int MapEditClass::Place_Object() {
         */
         occupier->Mark(MARK_DOWN);
       }
-      occupy++;
+      occupy = occupy.subspan(1);
     }
 
     /*
@@ -877,11 +887,12 @@ int MapEditClass::Place_Object() {
         **	smudge & overlay.
         */
         occupy = PendingObject->Occupy_List();
-        while ((*occupy) != kRefreshEol) {
+        while (occupy.front() != kRefreshEol) {
           /*
           **	Get cell for this occupy item
           */
-          template_cell = static_cast<CELL>((ZoneCell + ZoneOffset) + (*occupy));
+          template_cell =
+              static_cast<CELL>((ZoneCell + ZoneOffset) + occupy.front());
 
           /*
           **	Clear smudge & overlay
@@ -897,7 +908,7 @@ int MapEditClass::Place_Object() {
           (*this)[template_cell].Wall_Update();
           (*this)[template_cell].Concrete_Calc();
 
-          occupy++;
+          occupy = occupy.subspan(1);
         }
 
         /*
@@ -906,7 +917,7 @@ int MapEditClass::Place_Object() {
         PendingObjectPtr = nullptr;
         PendingObject = nullptr;
         PendingHouse = HOUSE_NONE;
-        Set_Cursor_Shape(nullptr);
+        Set_Cursor_Shape({});
         // ScenarioInit--;
         TotalValue = Overpass();
         Flag_To_Redraw(false);
@@ -960,7 +971,7 @@ int MapEditClass::Place_Object() {
       PendingObjectPtr = nullptr;
       PendingObject = nullptr;
       PendingHouse = HOUSE_NONE;
-      Set_Cursor_Shape(nullptr);
+      Set_Cursor_Shape({});
       // ScenarioInit--;
       return 0;
     }
@@ -997,7 +1008,7 @@ int MapEditClass::Place_Object() {
     PendingObjectPtr = nullptr;
     PendingObject = nullptr;
     PendingHouse = HOUSE_NONE;
-    Set_Cursor_Shape(nullptr);
+    Set_Cursor_Shape({});
     // ScenarioInit--;
     return 0;
   }
@@ -1032,7 +1043,7 @@ void MapEditClass::Cancel_Placement() {
   /*
   **	Restore cursor shape
   */
-  Set_Cursor_Shape(nullptr);
+  Set_Cursor_Shape({});
 
   /*
   **	Redraw the map to erase old leftovers
@@ -1090,7 +1101,7 @@ void MapEditClass::Place_Next() {
     /*
     **	Create placement object
     */
-    PendingObject = Objects[LastChoice];
+    PendingObject = base::At(Objects, LastChoice);
     PendingHouse = LastHouse;
     PendingObjectPtr =
         PendingObject->Create_One_Of(HouseClass::As_Pointer(PendingHouse));
@@ -1103,7 +1114,7 @@ void MapEditClass::Place_Next() {
   **	Set the new cursor shape
   */
   Set_Cursor_Pos();
-  Set_Cursor_Shape(nullptr);
+  Set_Cursor_Shape({});
   Set_Cursor_Shape(PendingObject->Occupy_List());
 
   /*
@@ -1165,7 +1176,7 @@ void MapEditClass::Place_Prev() {
     /*
     **	Create placement object
     */
-    PendingObject = Objects[LastChoice];
+    PendingObject = base::At(Objects, LastChoice);
     PendingHouse = LastHouse;
     PendingObjectPtr =
         PendingObject->Create_One_Of(HouseClass::As_Pointer(PendingHouse));
@@ -1178,7 +1189,7 @@ void MapEditClass::Place_Prev() {
   **	Set the new cursor shape
   */
   Set_Cursor_Pos();
-  Set_Cursor_Shape(nullptr);
+  Set_Cursor_Shape({});
   Set_Cursor_Shape(PendingObject->Occupy_List());
 
   /*
@@ -1222,7 +1233,8 @@ void MapEditClass::Place_Next_Category() {
   **	Go to next category in Objects list
   */
   int i = LastChoice;
-  while (Objects[i]->What_Am_I() == Objects[LastChoice]->What_Am_I()) {
+  while (base::At(Objects, i)->What_Am_I() ==
+         base::At(Objects, LastChoice)->What_Am_I()) {
     i++;
     if (i == ObjCount) {
       i = 0;
@@ -1244,7 +1256,7 @@ void MapEditClass::Place_Next_Category() {
     /*
     **	Create placement object
     */
-    PendingObject = Objects[LastChoice];
+    PendingObject = base::At(Objects, LastChoice);
     PendingHouse = LastHouse;
     PendingObjectPtr =
         PendingObject->Create_One_Of(HouseClass::As_Pointer(PendingHouse));
@@ -1265,7 +1277,7 @@ void MapEditClass::Place_Next_Category() {
   **	Set the new cursor shape
   */
   Set_Cursor_Pos();
-  Set_Cursor_Shape(nullptr);
+  Set_Cursor_Shape({});
   Set_Cursor_Shape(PendingObject->Occupy_List());
 
   /*
@@ -1313,7 +1325,8 @@ void MapEditClass::Place_Prev_Category() {
   /*
   **	Scan for start of this category
   */
-  while (Objects[i]->What_Am_I() == Objects[LastChoice]->What_Am_I()) {
+  while (base::At(Objects, i)->What_Am_I() ==
+         base::At(Objects, LastChoice)->What_Am_I()) {
     i--;
     if (i < 0) {
       i = ObjCount - 1;
@@ -1329,7 +1342,8 @@ void MapEditClass::Place_Prev_Category() {
   /*
   **	Scan for the previous category
   */
-  while (Objects[i]->What_Am_I() == Objects[LastChoice]->What_Am_I()) {
+  while (base::At(Objects, i)->What_Am_I() ==
+         base::At(Objects, LastChoice)->What_Am_I()) {
     i--;
     if (i < 0) {
       i = ObjCount - 1;
@@ -1356,7 +1370,7 @@ void MapEditClass::Place_Prev_Category() {
     /*
     **	Create placement object
     */
-    PendingObject = Objects[LastChoice];
+    PendingObject = base::At(Objects, LastChoice);
     PendingHouse = LastHouse;
     PendingObjectPtr =
         PendingObject->Create_One_Of(HouseClass::As_Pointer(PendingHouse));
@@ -1377,7 +1391,7 @@ void MapEditClass::Place_Prev_Category() {
   **	Set the new cursor shape
   */
   Set_Cursor_Pos();
-  Set_Cursor_Shape(nullptr);
+  Set_Cursor_Shape({});
   Set_Cursor_Shape(PendingObject->Occupy_List());
 
   /*
@@ -1424,14 +1438,14 @@ void MapEditClass::Place_Home() {
     /*
     **	Get house for this object type
     */
-    if (!Verify_House(LastHouse, Objects[LastChoice])) {
-      LastHouse = Cycle_House(LastHouse, Objects[LastChoice]);
+    if (!Verify_House(LastHouse, base::At(Objects, LastChoice))) {
+      LastHouse = Cycle_House(LastHouse, base::At(Objects, LastChoice));
     }
 
     /*
     **	Create placement object
     */
-    PendingObject = Objects[LastChoice];
+    PendingObject = base::At(Objects, LastChoice);
     PendingHouse = LastHouse;
     PendingObjectPtr =
         PendingObject->Create_One_Of(HouseClass::As_Pointer(PendingHouse));
@@ -1452,7 +1466,7 @@ void MapEditClass::Place_Home() {
   **	Set the new cursor shape
   */
   Set_Cursor_Pos();
-  Set_Cursor_Shape(nullptr);
+  Set_Cursor_Shape({});
   Set_Cursor_Shape(PendingObject->Occupy_List());
 
   /*

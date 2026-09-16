@@ -52,10 +52,13 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include <cstddef>
 #include <cstdint>
 #include <filesystem>
+#include <span>
 #include <string>
 
+#include "base/array.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
 #include "port/ex_string.h"
@@ -133,28 +136,28 @@ static int MiniGunnerDos[kDoCount][3] = {
 };
 
 static const InfantryTypeClass E1(
-    INFANTRY_E1,           // Infantry type number.
-    TXT_E1,                // Translate name number for infantry type.
-    "E1",                  // INI name for infantry.
-    1,                     // Build level.
-    kStructFlagNone,          // Building prerequisite.
-    false,                 // Is this a female type?
-    true,                  // Is a leader type?
-    true,                  // Has crawling animation frames?
-    false,                 // Is this a civlian?
-    false,                 // Always use the given name for the infantry?
-    false,                 // Is this a "fraidycat" run-away type infantry?
-    false,                 // Can this infantry type capture a building?
-    false,                 // Theater specific graphic image?
-    -1,                    // Number of shots it has (default).
-    &MiniGunnerDos[0][0],  // Ptr to minigunner 'DO' table above
-    2,                     // Frame of projectile launch.
-    2,                     // Frame of projectile launch while prone.
-    50,                    // Strength of infantry (in damage points).
-    1,                     // Sight range.
-    100,                   // Cost of infantry (in credits).
-    1,                     // Scenario when they first appear.
-    80, 10,                // Risk/Reward of this infantry unit.
+    INFANTRY_E1,      // Infantry type number.
+    TXT_E1,           // Translate name number for infantry type.
+    "E1",             // INI name for infantry.
+    1,                // Build level.
+    kStructFlagNone,  // Building prerequisite.
+    false,            // Is this a female type?
+    true,             // Is a leader type?
+    true,             // Has crawling animation frames?
+    false,            // Is this a civlian?
+    false,            // Always use the given name for the infantry?
+    false,            // Is this a "fraidycat" run-away type infantry?
+    false,            // Can this infantry type capture a building?
+    false,            // Theater specific graphic image?
+    -1,               // Number of shots it has (default).
+    MiniGunnerDos,    // Ptr to minigunner 'DO' table above
+    2,                // Frame of projectile launch.
+    2,                // Frame of projectile launch while prone.
+    50,               // Strength of infantry (in damage points).
+    1,                // Sight range.
+    100,              // Cost of infantry (in credits).
+    1,                // Scenario when they first appear.
+    80, 10,           // Risk/Reward of this infantry unit.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
         kHouseFlagBad,  // Who can own this infantry unit.
@@ -202,28 +205,28 @@ static int GrenadierDos[kDoCount][3] = {
 };
 
 static const InfantryTypeClass E2(
-    INFANTRY_E2,          // Infantry type number.
-    TXT_E2,               // Translate name number for infantry type.
-    "E2",                 // INI name for infantry.
-    1,                    // Build level.
-    kStructFlagNone,         // Building prerequisite.
-    false,                // Is this a female type?
-    true,                 // Is a leader type?
-    true,                 // Has crawling animation frames?
-    false,                // Is this a civlian?
-    false,                // Always use the given name for the infantry?
-    false,                // Is this a "fraidycat" run-away type infantry?
-    false,                // Can this infantry type capture a building?
-    false,                // Theater specific graphic image?
-    -1,                   // Number of shots it has (default).
-    &GrenadierDos[0][0],  // Ptr to grenadier DO table (above)
-    14,                   // Frame of projectile launch.
-    6,                    // Frame of projectile launch while prone.
-    50,                   // Strength of infantry (in damage points).
-    1,                    // Sight range.
-    160,                  // Cost of infantry (in credits).
-    3,                    // Scenario when they first appear.
-    80, 10,               // Risk/Reward of this infantry unit.
+    INFANTRY_E2,      // Infantry type number.
+    TXT_E2,           // Translate name number for infantry type.
+    "E2",             // INI name for infantry.
+    1,                // Build level.
+    kStructFlagNone,  // Building prerequisite.
+    false,            // Is this a female type?
+    true,             // Is a leader type?
+    true,             // Has crawling animation frames?
+    false,            // Is this a civlian?
+    false,            // Always use the given name for the infantry?
+    false,            // Is this a "fraidycat" run-away type infantry?
+    false,            // Can this infantry type capture a building?
+    false,            // Theater specific graphic image?
+    -1,               // Number of shots it has (default).
+    GrenadierDos,     // Ptr to grenadier DO table (above)
+    14,               // Frame of projectile launch.
+    6,                // Frame of projectile launch while prone.
+    50,               // Strength of infantry (in damage points).
+    1,                // Sight range.
+    160,              // Cost of infantry (in credits).
+    3,                // Scenario when they first appear.
+    80, 10,           // Risk/Reward of this infantry unit.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagGood,  // Who can own this infantry unit.
@@ -271,28 +274,28 @@ static int BazookaDos[kDoCount][3] = {
 };
 
 static const InfantryTypeClass E3(
-    INFANTRY_E3,        // Infantry type number.
-    TXT_E3,             // Translate name number for infantry type.
-    "E3",               // INI name for infantry.
-    2,                  // Build level.
-    kStructFlagNone,       // Building prerequisite.
-    false,              // Is this a female type?
-    true,               // Is a leader type?
-    true,               // Has crawling animation frames?
-    false,              // Is this a civlian?
-    false,              // Always use the given name for the infantry?
-    false,              // Is this a "fraidycat" run-away type infantry?
-    false,              // Can this infantry type capture a building?
-    false,              // Theater specific graphic image?
-    -1,                 // Number of shots it has (default).
-    &BazookaDos[0][0],  // Ptr to DO table (above)
-    3,                  // Frame of projectile launch.
-    3,                  // Frame of projectile launch while prone.
-    25,                 // Strength of infantry (in damage points).
-    2,                  // Sight range.
-    300,                // Cost of infantry (in credits).
-    3,                  // Scenario when they first appear.
-    80, 10,             // Risk/Reward of this infantry unit.
+    INFANTRY_E3,      // Infantry type number.
+    TXT_E3,           // Translate name number for infantry type.
+    "E3",             // INI name for infantry.
+    2,                // Build level.
+    kStructFlagNone,  // Building prerequisite.
+    false,            // Is this a female type?
+    true,             // Is a leader type?
+    true,             // Has crawling animation frames?
+    false,            // Is this a civlian?
+    false,            // Always use the given name for the infantry?
+    false,            // Is this a "fraidycat" run-away type infantry?
+    false,            // Can this infantry type capture a building?
+    false,            // Theater specific graphic image?
+    -1,               // Number of shots it has (default).
+    BazookaDos,       // Ptr to DO table (above)
+    3,                // Frame of projectile launch.
+    3,                // Frame of projectile launch while prone.
+    25,               // Strength of infantry (in damage points).
+    2,                // Sight range.
+    300,              // Cost of infantry (in credits).
+    3,                // Scenario when they first appear.
+    80, 10,           // Risk/Reward of this infantry unit.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
         kHouseFlagBad,  // Who can own this infantry unit.
@@ -340,28 +343,28 @@ static int FlamethrowerDos[kDoCount][3] = {
 };
 
 static const InfantryTypeClass E4(
-    INFANTRY_E4,             // Infantry type number.
-    TXT_E4,                  // Translate name number for infantry type.
-    "E4",                    // INI name for infantry.
-    1,                       // Build level.
-    kStructFlagNone,            // Building prerequisite.
-    false,                   // Is this a female type?
-    true,                    // Is a leader type?
-    true,                    // Has crawling animation frames?
-    false,                   // Is this a civlian?
-    false,                   // Always use the given name for the infantry?
-    false,                   // Is this a "fraidycat" run-away type infantry?
-    false,                   // Can this infantry type capture a building?
-    false,                   // Theater specific graphic image?
-    -1,                      // Number of shots it has (default).
-    &FlamethrowerDos[0][0],  // ptr to DO table (above)
-    2,                       // Frame of projectile launch.
-    0,                       // Frame of projectile launch while prone.
-    70,                      // Strength of infantry (in damage points).
-    1,                       // Sight range.
-    200,                     // Cost of infantry (in credits).
-    5,                       // Scenario when they first appear.
-    80, 10,                  // Risk/Reward of this infantry unit.
+    INFANTRY_E4,      // Infantry type number.
+    TXT_E4,           // Translate name number for infantry type.
+    "E4",             // INI name for infantry.
+    1,                // Build level.
+    kStructFlagNone,  // Building prerequisite.
+    false,            // Is this a female type?
+    true,             // Is a leader type?
+    true,             // Has crawling animation frames?
+    false,            // Is this a civlian?
+    false,            // Always use the given name for the infantry?
+    false,            // Is this a "fraidycat" run-away type infantry?
+    false,            // Can this infantry type capture a building?
+    false,            // Theater specific graphic image?
+    -1,               // Number of shots it has (default).
+    FlamethrowerDos,  // ptr to DO table (above)
+    2,                // Frame of projectile launch.
+    0,                // Frame of projectile launch while prone.
+    70,               // Strength of infantry (in damage points).
+    1,                // Sight range.
+    200,              // Cost of infantry (in credits).
+    5,                // Scenario when they first appear.
+    80, 10,           // Risk/Reward of this infantry unit.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagBad,  // Who can own this infantry unit.
@@ -407,28 +410,28 @@ static int ChemwarriorDos[kDoCount][3] = {
 };
 
 static const InfantryTypeClass E5(
-    INFANTRY_E5,            // Infantry type number.
-    TXT_E5,                 // Translate name number for infantry type.
-    "E5",                   // INI name for infantry.
-    7,                      // Build level.
-    kStructFlagEye,            // Building prerequisite.
-    false,                  // Is this a female type?
-    true,                   // Is a leader type?
-    true,                   // Has crawling animation frames?
-    false,                  // Is this a civlian?
-    false,                  // Always use the given name for the infantry?
-    true,                   // Is this a "fraidycat" run-away type infantry?
-    false,                  // Can this infantry type capture a building?
-    false,                  // Theater specific graphic image?
-    -1,                     // Number of shots it has (default).
-    &ChemwarriorDos[0][0],  // ptr to DO table
-    2,                      // Frame of projectile launch.
-    0,                      // Frame of projectile launch while prone.
-    70,                     // Strength of infantry (in damage points).
-    1,                      // Sight range.
-    300,                    // Cost of infantry (in credits).
-    99,                     // Scenario when they first appear.
-    80, 10,                 // Risk/Reward of this infantry unit.
+    INFANTRY_E5,     // Infantry type number.
+    TXT_E5,          // Translate name number for infantry type.
+    "E5",            // INI name for infantry.
+    7,               // Build level.
+    kStructFlagEye,  // Building prerequisite.
+    false,           // Is this a female type?
+    true,            // Is a leader type?
+    true,            // Has crawling animation frames?
+    false,           // Is this a civlian?
+    false,           // Always use the given name for the infantry?
+    true,            // Is this a "fraidycat" run-away type infantry?
+    false,           // Can this infantry type capture a building?
+    false,           // Theater specific graphic image?
+    -1,              // Number of shots it has (default).
+    ChemwarriorDos,  // ptr to DO table
+    2,               // Frame of projectile launch.
+    0,               // Frame of projectile launch while prone.
+    70,              // Strength of infantry (in damage points).
+    1,               // Sight range.
+    300,             // Cost of infantry (in credits).
+    99,              // Scenario when they first appear.
+    80, 10,          // Risk/Reward of this infantry unit.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         //	kHouseFlagGood|
@@ -475,28 +478,28 @@ static int EngineerDos[kDoCount][3] = {
 };
 
 static const InfantryTypeClass E7(
-    INFANTRY_E7,         // Infantry type number.
-    TXT_E7,              // Translate name number for infantry type.
-    "E6",                // INI name for infantry.
-    3,                   // Build level.
-    kStructFlagNone,        // Building prerequisite.
-    false,               // Is this a female type?
-    false,               // Is a leader type?
-    false,               // Has crawling animation frames?
-    false,               // Is this a civlian?
-    false,               // Always use the given name for the infantry?
-    false,               // Is this a "fraidycat" run-away type infantry?
-    true,                // Can this infantry type capture a building?
-    false,               // Theater specific graphic image?
-    -1,                  // Number of shots it has (default).
-    &EngineerDos[0][0],  // ptr to DO table
-    3,                   // Frame of projectile launch.
-    3,                   // Frame of projectile launch while prone.
-    25,                  // Strength of infantry (in damage points).
-    2,                   // Sight range.
-    500,                 // Cost of infantry (in credits).
-    2,                   // Scenario when they first appear.
-    80, 75,              // Risk/Reward of this infantry unit.
+    INFANTRY_E7,      // Infantry type number.
+    TXT_E7,           // Translate name number for infantry type.
+    "E6",             // INI name for infantry.
+    3,                // Build level.
+    kStructFlagNone,  // Building prerequisite.
+    false,            // Is this a female type?
+    false,            // Is a leader type?
+    false,            // Has crawling animation frames?
+    false,            // Is this a civlian?
+    false,            // Always use the given name for the infantry?
+    false,            // Is this a "fraidycat" run-away type infantry?
+    true,             // Can this infantry type capture a building?
+    false,            // Theater specific graphic image?
+    -1,               // Number of shots it has (default).
+    EngineerDos,      // ptr to DO table
+    3,                // Frame of projectile launch.
+    3,                // Frame of projectile launch while prone.
+    25,               // Strength of infantry (in damage points).
+    2,                // Sight range.
+    500,              // Cost of infantry (in credits).
+    2,                // Scenario when they first appear.
+    80, 75,           // Risk/Reward of this infantry unit.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagBad |
         kHouseFlagGood,  // Who can own this infantry unit.
@@ -544,28 +547,28 @@ static int CommandoDos[kDoCount][3] = {
 
 };
 static const InfantryTypeClass Commando(
-    INFANTRY_RAMBO,      // Infantry type number.
-    TXT_RAMBO,           // Translate name number for infantry type.
-    "RMBO",              // INI name for infantry.
-    7,                   // Build level.
-    kStructFlagEye,         // Building prerequisite.
-    false,               // Is this a female type?
-    true,                // Is a leader type?
-    true,                // Has crawling animation frames?
-    false,               // Is this a civlian?
-    false,               // Always use the given name for the infantry?
-    false,               // Is this a "fraidycat" run-away type infantry?
-    true,                // Can this infantry type capture a building?
-    false,               // Theater specific graphic image?
-    -1,                  // Number of shots it has (default).
-    &CommandoDos[0][0],  // ptr to DO table
-    2,                   // Frame of projectile launch.
-    2,                   // Frame of projectile launch while prone.
-    80,                  // Strength of infantry (in damage points).
-    5,                   // Sight range.
-    1000,                // Cost of infantry (in credits).
-    98,                  // Scenario when they first appear.
-    80, 75,              // Risk/Reward of this infantry unit.
+    INFANTRY_RAMBO,  // Infantry type number.
+    TXT_RAMBO,       // Translate name number for infantry type.
+    "RMBO",          // INI name for infantry.
+    7,               // Build level.
+    kStructFlagEye,  // Building prerequisite.
+    false,           // Is this a female type?
+    true,            // Is a leader type?
+    true,            // Has crawling animation frames?
+    false,           // Is this a civlian?
+    false,           // Always use the given name for the infantry?
+    false,           // Is this a "fraidycat" run-away type infantry?
+    true,            // Can this infantry type capture a building?
+    false,           // Theater specific graphic image?
+    -1,              // Number of shots it has (default).
+    CommandoDos,     // ptr to DO table
+    2,               // Frame of projectile launch.
+    2,               // Frame of projectile launch while prone.
+    80,              // Strength of infantry (in damage points).
+    5,               // Sight range.
+    1000,            // Cost of infantry (in credits).
+    98,              // Scenario when they first appear.
+    80, 75,          // Risk/Reward of this infantry unit.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
         kHouseFlagBad,  // Who can own this infantry unit.
@@ -613,31 +616,31 @@ static int CivilianDos1[kDoCount][3] = {
 };
 
 static const InfantryTypeClass C1(
-    INFANTRY_C1,          // Infantry type number.
-    TXT_C1,               // Translate name number for infantry type.
-    "C1",                 // INI name for infantry.
-    99,                   // Build level.
-    kStructFlagNone,         // Building prerequisite.
-    false,                // Is this a female type?
-    true,                 // Is a leader type?
-    false,                // Has crawling animation frames?
-    true,                 // Is this a civlian?
-    true,                 // Always use the given name for the infantry?
-    true,                 // Is this a "fraidycat" run-away type infantry?
-    false,                // Can this infantry type capture a building?
-    false,                // Theater specific graphic image?
-    10,                   // Number of shots it has (default).
-    &CivilianDos1[0][0],  // ptr to DO table
-    2,                    // Frame of projectile launch.
-    0,                    // Frame of projectile launch while prone.
-    25,                   // Strength of infantry (in damage points).
-    0,                    // Sight range.
-    10,                   // Cost of infantry (in credits).
-    99,                   // Scenario when they first appear.
-    0, 1,                 // Risk/Reward of this infantry unit.
+    INFANTRY_C1,      // Infantry type number.
+    TXT_C1,           // Translate name number for infantry type.
+    "C1",             // INI name for infantry.
+    99,               // Build level.
+    kStructFlagNone,  // Building prerequisite.
+    false,            // Is this a female type?
+    true,             // Is a leader type?
+    false,            // Has crawling animation frames?
+    true,             // Is this a civlian?
+    true,             // Always use the given name for the infantry?
+    true,             // Is this a "fraidycat" run-away type infantry?
+    false,            // Can this infantry type capture a building?
+    false,            // Theater specific graphic image?
+    10,               // Number of shots it has (default).
+    CivilianDos1,     // ptr to DO table
+    2,                // Frame of projectile launch.
+    0,                // Frame of projectile launch while prone.
+    25,               // Strength of infantry (in damage points).
+    0,                // Sight range.
+    10,               // Cost of infantry (in credits).
+    99,               // Scenario when they first appear.
+    0, 1,             // Risk/Reward of this infantry unit.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
-        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood | kHouseFlagBad |
-        kHouseFlagNeutral,  // Who can own this infantry unit.
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
+        kHouseFlagBad | kHouseFlagNeutral,  // Who can own this infantry unit.
     WEAPON_PISTOL, WEAPON_NONE, MPH_SLOW_ISH);
 
 static int CivilianDos2[kDoCount][3] = {
@@ -678,31 +681,31 @@ static int CivilianDos2[kDoCount][3] = {
 };
 
 static const InfantryTypeClass C2(
-    INFANTRY_C2,          // Infantry type number.
-    TXT_C2,               // Translate name number for infantry type.
-    "C2",                 // INI name for infantry.
-    99,                   // Build level.
-    kStructFlagNone,         // Building prerequisite.
-    false,                // Is this a female type?
-    false,                // Is a leader type?
-    false,                // Has crawling animation frames?
-    true,                 // Is this a civlian?
-    true,                 // Always use the given name for the infantry?
-    true,                 // Is this a "fraidycat" run-away type infantry?
-    false,                // Can this infantry type capture a building?
-    false,                // Theater specific graphic image?
-    0,                    // Number of shots it has (default).
-    &CivilianDos2[0][0],  // ptr to DO table
-    2,                    // Frame of projectile launch.
-    0,                    // Frame of projectile launch while prone.
-    5,                    // Strength of infantry (in damage points).
-    0,                    // Sight range.
-    10,                   // Cost of infantry (in credits).
-    99,                   // Scenario when they first appear.
-    0, 1,                 // Risk/Reward of this infantry unit.
+    INFANTRY_C2,      // Infantry type number.
+    TXT_C2,           // Translate name number for infantry type.
+    "C2",             // INI name for infantry.
+    99,               // Build level.
+    kStructFlagNone,  // Building prerequisite.
+    false,            // Is this a female type?
+    false,            // Is a leader type?
+    false,            // Has crawling animation frames?
+    true,             // Is this a civlian?
+    true,             // Always use the given name for the infantry?
+    true,             // Is this a "fraidycat" run-away type infantry?
+    false,            // Can this infantry type capture a building?
+    false,            // Theater specific graphic image?
+    0,                // Number of shots it has (default).
+    CivilianDos2,     // ptr to DO table
+    2,                // Frame of projectile launch.
+    0,                // Frame of projectile launch while prone.
+    5,                // Strength of infantry (in damage points).
+    0,                // Sight range.
+    10,               // Cost of infantry (in credits).
+    99,               // Scenario when they first appear.
+    0, 1,             // Risk/Reward of this infantry unit.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
-        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood | kHouseFlagBad |
-        kHouseFlagNeutral,  // Who can own this infantry unit.
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
+        kHouseFlagBad | kHouseFlagNeutral,  // Who can own this infantry unit.
     WEAPON_NONE, WEAPON_NONE, MPH_SLOW_ISH);
 
 static int CivilianDos3[kDoCount][3] = {
@@ -744,31 +747,31 @@ static int CivilianDos3[kDoCount][3] = {
 };
 
 static const InfantryTypeClass C3(
-    INFANTRY_C3,          // Infantry type number.
-    TXT_C3,               // Translate name number for infantry type.
-    "C3",                 // INI name for infantry.
-    99,                   // Build level.
-    kStructFlagNone,         // Building prerequisite.
-    true,                 // Is this a female type?
-    false,                // Is a leader type?
-    false,                // Has crawling animation frames?
-    true,                 // Is this a civlian?
-    true,                 // Always use the given name for the infantry?
-    true,                 // Is this a "fraidycat" run-away type infantry?
-    false,                // Can this infantry type capture a building?
-    false,                // Theater specific graphic image?
-    0,                    // Number of shots it has (default).
-    &CivilianDos3[0][0],  // ptr to DO table
-    2,                    // Frame of projectile launch.
-    0,                    // Frame of projectile launch while prone.
-    5,                    // Strength of infantry (in damage points).
-    0,                    // Sight range.
-    10,                   // Cost of infantry (in credits).
-    99,                   // Scenario when they first appear.
-    0, 1,                 // Risk/Reward of this infantry unit.
+    INFANTRY_C3,      // Infantry type number.
+    TXT_C3,           // Translate name number for infantry type.
+    "C3",             // INI name for infantry.
+    99,               // Build level.
+    kStructFlagNone,  // Building prerequisite.
+    true,             // Is this a female type?
+    false,            // Is a leader type?
+    false,            // Has crawling animation frames?
+    true,             // Is this a civlian?
+    true,             // Always use the given name for the infantry?
+    true,             // Is this a "fraidycat" run-away type infantry?
+    false,            // Can this infantry type capture a building?
+    false,            // Theater specific graphic image?
+    0,                // Number of shots it has (default).
+    CivilianDos3,     // ptr to DO table
+    2,                // Frame of projectile launch.
+    0,                // Frame of projectile launch while prone.
+    5,                // Strength of infantry (in damage points).
+    0,                // Sight range.
+    10,               // Cost of infantry (in credits).
+    99,               // Scenario when they first appear.
+    0, 1,             // Risk/Reward of this infantry unit.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
-        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood | kHouseFlagBad |
-        kHouseFlagNeutral,  // Who can own this infantry unit.
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
+        kHouseFlagBad | kHouseFlagNeutral,  // Who can own this infantry unit.
     WEAPON_NONE, WEAPON_NONE, MPH_SLOW_ISH);
 
 static int CivilianDos4[kDoCount][3] = {
@@ -809,31 +812,31 @@ static int CivilianDos4[kDoCount][3] = {
 };
 
 static const InfantryTypeClass C4(
-    INFANTRY_C4,          // Infantry type number.
-    TXT_C4,               // Translate name number for infantry type.
-    "C4",                 // INI name for infantry.
-    99,                   // Build level.
-    kStructFlagNone,         // Building prerequisite.
-    true,                 // Is this a female type?
-    false,                // Is a leader type?
-    false,                // Has crawling animation frames?
-    true,                 // Is this a civlian?
-    true,                 // Always use the given name for the infantry?
-    true,                 // Is this a "fraidycat" run-away type infantry?
-    false,                // Can this infantry type capture a building?
-    false,                // Theater specific graphic image?
-    0,                    // Number of shots it has (default).
-    &CivilianDos4[0][0],  // ptr to DO table
-    2,                    // Frame of projectile launch.
-    0,                    // Frame of projectile launch while prone.
-    5,                    // Strength of infantry (in damage points).
-    0,                    // Sight range.
-    10,                   // Cost of infantry (in credits).
-    99,                   // Scenario when they first appear.
-    0, 1,                 // Risk/Reward of this infantry unit.
+    INFANTRY_C4,      // Infantry type number.
+    TXT_C4,           // Translate name number for infantry type.
+    "C4",             // INI name for infantry.
+    99,               // Build level.
+    kStructFlagNone,  // Building prerequisite.
+    true,             // Is this a female type?
+    false,            // Is a leader type?
+    false,            // Has crawling animation frames?
+    true,             // Is this a civlian?
+    true,             // Always use the given name for the infantry?
+    true,             // Is this a "fraidycat" run-away type infantry?
+    false,            // Can this infantry type capture a building?
+    false,            // Theater specific graphic image?
+    0,                // Number of shots it has (default).
+    CivilianDos4,     // ptr to DO table
+    2,                // Frame of projectile launch.
+    0,                // Frame of projectile launch while prone.
+    5,                // Strength of infantry (in damage points).
+    0,                // Sight range.
+    10,               // Cost of infantry (in credits).
+    99,               // Scenario when they first appear.
+    0, 1,             // Risk/Reward of this infantry unit.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
-        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood | kHouseFlagBad |
-        kHouseFlagNeutral,  // Who can own this infantry unit.
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
+        kHouseFlagBad | kHouseFlagNeutral,  // Who can own this infantry unit.
     WEAPON_NONE, WEAPON_NONE, MPH_SLOW_ISH);
 
 static int CivilianDos5[kDoCount][3] = {
@@ -874,31 +877,31 @@ static int CivilianDos5[kDoCount][3] = {
 };
 
 static const InfantryTypeClass C5(
-    INFANTRY_C5,          // Infantry type number.
-    TXT_C5,               // Translate name number for infantry type.
-    "C5",                 // INI name for infantry.
-    99,                   // Build level.
-    kStructFlagNone,         // Building prerequisite.
-    false,                // Is this a female type?
-    false,                // Is a leader type?
-    false,                // Has crawling animation frames?
-    true,                 // Is this a civlian?
-    true,                 // Always use the given name for the infantry?
-    true,                 // Is this a "fraidycat" run-away type infantry?
-    false,                // Can this infantry type capture a building?
-    false,                // Theater specific graphic image?
-    0,                    // Number of shots it has (default).
-    &CivilianDos5[0][0],  // ptr to DO table
-    2,                    // Frame of projectile launch.
-    0,                    // Frame of projectile launch while prone.
-    5,                    // Strength of infantry (in damage points).
-    0,                    // Sight range.
-    10,                   // Cost of infantry (in credits).
-    99,                   // Scenario when they first appear.
-    0, 1,                 // Risk/Reward of this infantry unit.
+    INFANTRY_C5,      // Infantry type number.
+    TXT_C5,           // Translate name number for infantry type.
+    "C5",             // INI name for infantry.
+    99,               // Build level.
+    kStructFlagNone,  // Building prerequisite.
+    false,            // Is this a female type?
+    false,            // Is a leader type?
+    false,            // Has crawling animation frames?
+    true,             // Is this a civlian?
+    true,             // Always use the given name for the infantry?
+    true,             // Is this a "fraidycat" run-away type infantry?
+    false,            // Can this infantry type capture a building?
+    false,            // Theater specific graphic image?
+    0,                // Number of shots it has (default).
+    CivilianDos5,     // ptr to DO table
+    2,                // Frame of projectile launch.
+    0,                // Frame of projectile launch while prone.
+    5,                // Strength of infantry (in damage points).
+    0,                // Sight range.
+    10,               // Cost of infantry (in credits).
+    99,               // Scenario when they first appear.
+    0, 1,             // Risk/Reward of this infantry unit.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
-        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood | kHouseFlagBad |
-        kHouseFlagNeutral,  // Who can own this infantry unit.
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
+        kHouseFlagBad | kHouseFlagNeutral,  // Who can own this infantry unit.
     WEAPON_NONE, WEAPON_NONE, MPH_SLOW_ISH);
 
 static int CivilianDos6[kDoCount][3] = {
@@ -939,31 +942,31 @@ static int CivilianDos6[kDoCount][3] = {
 };
 
 static const InfantryTypeClass C6(
-    INFANTRY_C6,          // Infantry type number.
-    TXT_C6,               // Translate name number for infantry type.
-    "C6",                 // INI name for infantry.
-    99,                   // Build level.
-    kStructFlagNone,         // Building prerequisite.
-    false,                // Is this a female type?
-    false,                // Is a leader type?
-    false,                // Has crawling animation frames?
-    true,                 // Is this a civlian?
-    true,                 // Always use the given name for the infantry?
-    true,                 // Is this a "fraidycat" run-away type infantry?
-    false,                // Can this infantry type capture a building?
-    false,                // Theater specific graphic image?
-    0,                    // Number of shots it has (default).
-    &CivilianDos6[0][0],  // ptr to DO table
-    2,                    // Frame of projectile launch.
-    0,                    // Frame of projectile launch while prone.
-    5,                    // Strength of infantry (in damage points).
-    0,                    // Sight range.
-    10,                   // Cost of infantry (in credits).
-    99,                   // Scenario when they first appear.
-    0, 1,                 // Risk/Reward of this infantry unit.
+    INFANTRY_C6,      // Infantry type number.
+    TXT_C6,           // Translate name number for infantry type.
+    "C6",             // INI name for infantry.
+    99,               // Build level.
+    kStructFlagNone,  // Building prerequisite.
+    false,            // Is this a female type?
+    false,            // Is a leader type?
+    false,            // Has crawling animation frames?
+    true,             // Is this a civlian?
+    true,             // Always use the given name for the infantry?
+    true,             // Is this a "fraidycat" run-away type infantry?
+    false,            // Can this infantry type capture a building?
+    false,            // Theater specific graphic image?
+    0,                // Number of shots it has (default).
+    CivilianDos6,     // ptr to DO table
+    2,                // Frame of projectile launch.
+    0,                // Frame of projectile launch while prone.
+    5,                // Strength of infantry (in damage points).
+    0,                // Sight range.
+    10,               // Cost of infantry (in credits).
+    99,               // Scenario when they first appear.
+    0, 1,             // Risk/Reward of this infantry unit.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
-        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood | kHouseFlagBad |
-        kHouseFlagNeutral,  // Who can own this infantry unit.
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
+        kHouseFlagBad | kHouseFlagNeutral,  // Who can own this infantry unit.
     WEAPON_NONE, WEAPON_NONE, MPH_SLOW_ISH);
 
 static int CivilianDos7[kDoCount][3] = {
@@ -1004,31 +1007,31 @@ static int CivilianDos7[kDoCount][3] = {
 };
 
 static const InfantryTypeClass C7(
-    INFANTRY_C7,          // Infantry type number.
-    TXT_C7,               // Translate name number for infantry type.
-    "C7",                 // INI name for infantry.
-    99,                   // Build level.
-    kStructFlagNone,         // Building prerequisite.
-    false,                // Is this a female type?
-    true,                 // Is a leader type?
-    false,                // Has crawling animation frames?
-    true,                 // Is this a civlian?
-    true,                 // Always use the given name for the infantry?
-    true,                 // Is this a "fraidycat" run-away type infantry?
-    false,                // Can this infantry type capture a building?
-    false,                // Theater specific graphic image?
-    10,                   // Number of shots it has (default).
-    &CivilianDos7[0][0],  // ptr to DO table
-    2,                    // Frame of projectile launch.
-    0,                    // Frame of projectile launch while prone.
-    5,                    // Strength of infantry (in damage points).
-    0,                    // Sight range.
-    10,                   // Cost of infantry (in credits).
-    99,                   // Scenario when they first appear.
-    0, 1,                 // Risk/Reward of this infantry unit.
+    INFANTRY_C7,      // Infantry type number.
+    TXT_C7,           // Translate name number for infantry type.
+    "C7",             // INI name for infantry.
+    99,               // Build level.
+    kStructFlagNone,  // Building prerequisite.
+    false,            // Is this a female type?
+    true,             // Is a leader type?
+    false,            // Has crawling animation frames?
+    true,             // Is this a civlian?
+    true,             // Always use the given name for the infantry?
+    true,             // Is this a "fraidycat" run-away type infantry?
+    false,            // Can this infantry type capture a building?
+    false,            // Theater specific graphic image?
+    10,               // Number of shots it has (default).
+    CivilianDos7,     // ptr to DO table
+    2,                // Frame of projectile launch.
+    0,                // Frame of projectile launch while prone.
+    5,                // Strength of infantry (in damage points).
+    0,                // Sight range.
+    10,               // Cost of infantry (in credits).
+    99,               // Scenario when they first appear.
+    0, 1,             // Risk/Reward of this infantry unit.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
-        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood | kHouseFlagBad |
-        kHouseFlagNeutral,  // Who can own this infantry unit.
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
+        kHouseFlagBad | kHouseFlagNeutral,  // Who can own this infantry unit.
     WEAPON_PISTOL, WEAPON_NONE, MPH_SLOW_ISH);
 
 static int CivilianDos8[kDoCount][3] = {
@@ -1069,31 +1072,31 @@ static int CivilianDos8[kDoCount][3] = {
 };
 
 static const InfantryTypeClass C8(
-    INFANTRY_C8,          // Infantry type number.
-    TXT_C8,               // Translate name number for infantry type.
-    "C8",                 // INI name for infantry.
-    99,                   // Build level.
-    kStructFlagNone,         // Building prerequisite.
-    false,                // Is this a female type?
-    false,                // Is a leader type?
-    false,                // Has crawling animation frames?
-    true,                 // Is this a civlian?
-    true,                 // Always use the given name for the infantry?
-    true,                 // Is this a "fraidycat" run-away type infantry?
-    false,                // Can this infantry type capture a building?
-    false,                // Theater specific graphic image?
-    0,                    // Number of shots it has (default).
-    &CivilianDos8[0][0],  // ptr to DO table
-    2,                    // Frame of projectile launch.
-    0,                    // Frame of projectile launch while prone.
-    5,                    // Strength of infantry (in damage points).
-    0,                    // Sight range.
-    10,                   // Cost of infantry (in credits).
-    99,                   // Scenario when they first appear.
-    0, 1,                 // Risk/Reward of this infantry unit.
+    INFANTRY_C8,      // Infantry type number.
+    TXT_C8,           // Translate name number for infantry type.
+    "C8",             // INI name for infantry.
+    99,               // Build level.
+    kStructFlagNone,  // Building prerequisite.
+    false,            // Is this a female type?
+    false,            // Is a leader type?
+    false,            // Has crawling animation frames?
+    true,             // Is this a civlian?
+    true,             // Always use the given name for the infantry?
+    true,             // Is this a "fraidycat" run-away type infantry?
+    false,            // Can this infantry type capture a building?
+    false,            // Theater specific graphic image?
+    0,                // Number of shots it has (default).
+    CivilianDos8,     // ptr to DO table
+    2,                // Frame of projectile launch.
+    0,                // Frame of projectile launch while prone.
+    5,                // Strength of infantry (in damage points).
+    0,                // Sight range.
+    10,               // Cost of infantry (in credits).
+    99,               // Scenario when they first appear.
+    0, 1,             // Risk/Reward of this infantry unit.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
-        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood | kHouseFlagBad |
-        kHouseFlagNeutral,  // Who can own this infantry unit.
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
+        kHouseFlagBad | kHouseFlagNeutral,  // Who can own this infantry unit.
     WEAPON_NONE, WEAPON_NONE, MPH_SLOW_ISH);
 
 static int CivilianDos9[kDoCount][3] = {
@@ -1134,31 +1137,31 @@ static int CivilianDos9[kDoCount][3] = {
 };
 
 static const InfantryTypeClass C9(
-    INFANTRY_C9,          // Infantry type number.
-    TXT_C9,               // Translate name number for infantry type.
-    "C9",                 // INI name for infantry.
-    99,                   // Build level.
-    kStructFlagNone,         // Building prerequisite.
-    false,                // Is this a female type?
-    false,                // Is a leader type?
-    false,                // Has crawling animation frames?
-    true,                 // Is this a civlian?
-    true,                 // Always use the given name for the infantry?
-    true,                 // Is this a "fraidycat" run-away type infantry?
-    false,                // Can this infantry type capture a building?
-    false,                // Theater specific graphic image?
-    0,                    // Number of shots it has (default).
-    &CivilianDos9[0][0],  // ptr to DO table
-    2,                    // Frame of projectile launch.
-    0,                    // Frame of projectile launch while prone.
-    5,                    // Strength of infantry (in damage points).
-    0,                    // Sight range.
-    10,                   // Cost of infantry (in credits).
-    99,                   // Scenario when they first appear.
-    0, 1,                 // Risk/Reward of this infantry unit.
+    INFANTRY_C9,      // Infantry type number.
+    TXT_C9,           // Translate name number for infantry type.
+    "C9",             // INI name for infantry.
+    99,               // Build level.
+    kStructFlagNone,  // Building prerequisite.
+    false,            // Is this a female type?
+    false,            // Is a leader type?
+    false,            // Has crawling animation frames?
+    true,             // Is this a civlian?
+    true,             // Always use the given name for the infantry?
+    true,             // Is this a "fraidycat" run-away type infantry?
+    false,            // Can this infantry type capture a building?
+    false,            // Theater specific graphic image?
+    0,                // Number of shots it has (default).
+    CivilianDos9,     // ptr to DO table
+    2,                // Frame of projectile launch.
+    0,                // Frame of projectile launch while prone.
+    5,                // Strength of infantry (in damage points).
+    0,                // Sight range.
+    10,               // Cost of infantry (in credits).
+    99,               // Scenario when they first appear.
+    0, 1,             // Risk/Reward of this infantry unit.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
-        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood | kHouseFlagBad |
-        kHouseFlagNeutral,  // Who can own this infantry unit.
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
+        kHouseFlagBad | kHouseFlagNeutral,  // Who can own this infantry unit.
     WEAPON_NONE, WEAPON_NONE, MPH_SLOW_ISH);
 
 static int NikoombaDos[kDoCount][3] = {
@@ -1201,31 +1204,31 @@ static int NikoombaDos[kDoCount][3] = {
 
 // Nikoomba
 static const InfantryTypeClass C10(
-    INFANTRY_C10,        // Infantry type number.
-    TXT_C10,             // Translate name number for infantry type.
-    "C10",               // INI name for infantry.
-    99,                  // Build level.
-    kStructFlagNone,        // Building prerequisite.
-    false,               // Is this a female type?
-    false,               // Is a leader type?
-    false,               // Has crawling animation frames?
-    true,                // Is this a civlian?
-    true,                // Always use the given name for the infantry?
-    true,                // Is this a "fraidycat" run-away type infantry?
-    false,               // Can this infantry type capture a building?
-    false,               // Theater specific graphic image?
-    0,                   // Number of shots it has (default).
-    &NikoombaDos[0][0],  // ptr to DO table
-    2,                   // Frame of projectile launch.
-    0,                   // Frame of projectile launch while prone.
-    50,                  // Strength of infantry (in damage points).
-    0,                   // Sight range.
-    10,                  // Cost of infantry (in credits).
-    99,                  // Scenario when they first appear.
-    0, 1,                // Risk/Reward of this infantry unit.
+    INFANTRY_C10,     // Infantry type number.
+    TXT_C10,          // Translate name number for infantry type.
+    "C10",            // INI name for infantry.
+    99,               // Build level.
+    kStructFlagNone,  // Building prerequisite.
+    false,            // Is this a female type?
+    false,            // Is a leader type?
+    false,            // Has crawling animation frames?
+    true,             // Is this a civlian?
+    true,             // Always use the given name for the infantry?
+    true,             // Is this a "fraidycat" run-away type infantry?
+    false,            // Can this infantry type capture a building?
+    false,            // Theater specific graphic image?
+    0,                // Number of shots it has (default).
+    NikoombaDos,      // ptr to DO table
+    2,                // Frame of projectile launch.
+    0,                // Frame of projectile launch while prone.
+    50,               // Strength of infantry (in damage points).
+    0,                // Sight range.
+    10,               // Cost of infantry (in credits).
+    99,               // Scenario when they first appear.
+    0, 1,             // Risk/Reward of this infantry unit.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
-        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood | kHouseFlagBad |
-        kHouseFlagNeutral,  // Who can own this infantry unit.
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
+        kHouseFlagBad | kHouseFlagNeutral,  // Who can own this infantry unit.
     WEAPON_NONE, WEAPON_NONE, MPH_SLOW_ISH);
 
 static int MoebiusDos[kDoCount][3] = {
@@ -1266,31 +1269,31 @@ static int MoebiusDos[kDoCount][3] = {
 };
 
 static const InfantryTypeClass Moebius(
-    INFANTRY_MOEBIUS,   // Infantry type number.
-    TXT_MOEBIUS,        // Translate name number for infantry type.
-    "MOEBIUS",          // INI name for infantry.
-    99,                 // Build level.
-    kStructFlagNone,       // Building prerequisite.
-    false,              // Is this a female type?
-    false,              // Is a leader type?
-    false,              // Has crawling animation frames?
-    true,               // Is this a civlian?
-    true,               // Always use the given name for the infantry?
-    true,               // Is this a "fraidycat" run-away type infantry?
-    false,              // Can this infantry type capture a building?
-    false,              // Theater specific graphic image?
-    0,                  // Number of shots it has (default).
-    &MoebiusDos[0][0],  // ptr to DO table
-    0,                  // Frame of projectile launch.
-    0,                  // Frame of projectile launch while prone.
-    50,                 // Strength of infantry (in damage points).
-    0,                  // Sight range.
-    10,                 // Cost of infantry (in credits).
-    99,                 // Scenario when they first appear.
-    0, 10,              // Risk/Reward of this infantry unit.
+    INFANTRY_MOEBIUS,  // Infantry type number.
+    TXT_MOEBIUS,       // Translate name number for infantry type.
+    "MOEBIUS",         // INI name for infantry.
+    99,                // Build level.
+    kStructFlagNone,   // Building prerequisite.
+    false,             // Is this a female type?
+    false,             // Is a leader type?
+    false,             // Has crawling animation frames?
+    true,              // Is this a civlian?
+    true,              // Always use the given name for the infantry?
+    true,              // Is this a "fraidycat" run-away type infantry?
+    false,             // Can this infantry type capture a building?
+    false,             // Theater specific graphic image?
+    0,                 // Number of shots it has (default).
+    MoebiusDos,        // ptr to DO table
+    0,                 // Frame of projectile launch.
+    0,                 // Frame of projectile launch while prone.
+    50,                // Strength of infantry (in damage points).
+    0,                 // Sight range.
+    10,                // Cost of infantry (in credits).
+    99,                // Scenario when they first appear.
+    0, 10,             // Risk/Reward of this infantry unit.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
-        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood | kHouseFlagBad |
-        kHouseFlagNeutral,  // Who can own this infantry unit.
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
+        kHouseFlagBad | kHouseFlagNeutral,  // Who can own this infantry unit.
     WEAPON_NONE, WEAPON_NONE, MPH_SLOW_ISH);
 
 static int DelphiDos[kDoCount][3] = {
@@ -1331,28 +1334,28 @@ static int DelphiDos[kDoCount][3] = {
 };
 
 static const InfantryTypeClass Delphi(
-    INFANTRY_DELPHI,   // Infantry type number.
-    TXT_DELPHI,        // Translate name number for infantry type.
-    "DELPHI",          // INI name for infantry.
-    99,                // Build level.
-    kStructFlagNone,      // Building prerequisite.
-    false,             // Is this a female type?
-    false,             // Is a leader type?
-    false,             // Has crawling animation frames?
-    true,              // Is this a civlian?
-    true,              // Always use the given name for the infantry?
-    true,              // Is this a "fraidycat" run-away type infantry?
-    false,             // Can this infantry type capture a building?
-    false,             // Theater specific graphic image?
-    10,                // Number of shots it has (default).
-    &DelphiDos[0][0],  // ptr to DO table
-    2,                 // Frame of projectile launch.
-    0,                 // Frame of projectile launch while prone.
-    25,                // Strength of infantry (in damage points).
-    0,                 // Sight range.
-    10,                // Cost of infantry (in credits).
-    99,                // Scenario when they first appear.
-    0, 0,              // Risk/Reward of this infantry unit.
+    INFANTRY_DELPHI,  // Infantry type number.
+    TXT_DELPHI,       // Translate name number for infantry type.
+    "DELPHI",         // INI name for infantry.
+    99,               // Build level.
+    kStructFlagNone,  // Building prerequisite.
+    false,            // Is this a female type?
+    false,            // Is a leader type?
+    false,            // Has crawling animation frames?
+    true,             // Is this a civlian?
+    true,             // Always use the given name for the infantry?
+    true,             // Is this a "fraidycat" run-away type infantry?
+    false,            // Can this infantry type capture a building?
+    false,            // Theater specific graphic image?
+    10,               // Number of shots it has (default).
+    DelphiDos,        // ptr to DO table
+    2,                // Frame of projectile launch.
+    0,                // Frame of projectile launch while prone.
+    25,               // Strength of infantry (in damage points).
+    0,                // Sight range.
+    10,               // Cost of infantry (in credits).
+    99,               // Scenario when they first appear.
+    0, 0,             // Risk/Reward of this infantry unit.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
         kHouseFlagNeutral,  // Who can own this infantry unit.
@@ -1396,28 +1399,28 @@ static int DrChanDos[kDoCount][3] = {
 };
 
 static const InfantryTypeClass DrChan(
-    INFANTRY_CHAN,     // Infantry type number.
-    TXT_CHAN,          // Translate name number for infantry type.
-    "CHAN",            // INI name for infantry.
-    99,                // Build level.
-    kStructFlagNone,      // Building prerequisite.
-    false,             // Is this a female type?
-    false,             // Is a leader type?
-    false,             // Has crawling animation frames?
-    true,              // Is this a civlian?
-    true,              // Always use the given name for the infantry?
-    true,              // Is this a "fraidycat" run-away type infantry?
-    false,             // Can this infantry type capture a building?
-    false,             // Theater specific graphic image?
-    10,                // Number of shots it has (default).
-    &DrChanDos[0][0],  // ptr to DO table
-    2,                 // Frame of projectile launch.
-    0,                 // Frame of projectile launch while prone.
-    25,                // Strength of infantry (in damage points).
-    0,                 // Sight range.
-    10,                // Cost of infantry (in credits).
-    99,                // Scenario when they first appear.
-    0, 1,              // Risk/Reward of this infantry unit.
+    INFANTRY_CHAN,    // Infantry type number.
+    TXT_CHAN,         // Translate name number for infantry type.
+    "CHAN",           // INI name for infantry.
+    99,               // Build level.
+    kStructFlagNone,  // Building prerequisite.
+    false,            // Is this a female type?
+    false,            // Is a leader type?
+    false,            // Has crawling animation frames?
+    true,             // Is this a civlian?
+    true,             // Always use the given name for the infantry?
+    true,             // Is this a "fraidycat" run-away type infantry?
+    false,            // Can this infantry type capture a building?
+    false,            // Theater specific graphic image?
+    10,               // Number of shots it has (default).
+    DrChanDos,        // ptr to DO table
+    2,                // Frame of projectile launch.
+    0,                // Frame of projectile launch while prone.
+    25,               // Strength of infantry (in damage points).
+    0,                // Sight range.
+    10,               // Cost of infantry (in credits).
+    99,               // Scenario when they first appear.
+    0, 1,             // Risk/Reward of this infantry unit.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
         kHouseFlagNeutral,  // Who can own this infantry unit.
@@ -1454,10 +1457,10 @@ InfantryTypeClass::InfantryTypeClass(
     InfantryType type, int name, const char* ininame, unsigned char level,
     uint64_t pre, bool is_female, bool is_leader, bool is_crawling,
     bool is_civilian, bool is_nominal, bool is_fraidycat, bool is_capture,
-    bool is_theater, int ammo, int* do_table, int firelaunch, int pronelaunch,
-    int16_t strength, int sightrange, int cost, int scenario, int risk,
-    int reward, int ownable, WeaponType primary, WeaponType secondary,
-    MPHType maxspeed) noexcept
+    bool is_theater, int ammo, const int (&do_table)[kDoCount][3],
+    int firelaunch, int pronelaunch, int16_t strength, int sightrange, int cost,
+    int scenario, int risk, int reward, int ownable, WeaponType primary,
+    WeaponType secondary, MPHType maxspeed) noexcept
     : TechnoTypeClass(name, ininame, level, pre, is_leader, true, is_nominal,
                       false, false, true, true, true, true, false, false,
                       is_theater, false, false, false, true, false, ammo,
@@ -1475,10 +1478,12 @@ InfantryTypeClass::InfantryTypeClass(
   **	Set the animation sequence custom values.
   */
 
+  size_t row = 0;
   for (auto& DoControl : DoControls) {
-    DoControl.Frame = *do_table++;
-    DoControl.Count = static_cast<unsigned char>(*do_table++);
-    DoControl.Jump = static_cast<unsigned char>(*do_table++);
+    const auto& entry = base::At(do_table, row++);
+    DoControl.Frame = base::At(entry, 0);
+    DoControl.Count = static_cast<unsigned char>(base::At(entry, 1));
+    DoControl.Jump = static_cast<unsigned char>(base::At(entry, 2));
   }
 
 #ifdef cuts  // ST - 10/3/95 10:09AM
@@ -1690,10 +1695,11 @@ bool InfantryTypeClass::Create_And_Place(CELL cell, HousesType house) const {
  *                                                                                             *
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
-const int16_t* InfantryTypeClass::Occupy_List(bool /*placement*/) const {
+std::span<const int16_t> InfantryTypeClass::Occupy_List(
+    bool /*placement*/) const {
   static const int16_t _list[] = {0, REFRESH_EOL};
 
-  return &_list[0];
+  return _list;
 }
 
 /***********************************************************************************************
@@ -1722,8 +1728,8 @@ void InfantryTypeClass::Display(int x, int y, WindowNumberType window,
                                 HousesType house) const {
   if (house != HOUSE_NONE) {
     int shape = 0;
-    const void* ptr = Get_Cameo_Data();
-    if (!ptr) {
+    auto ptr = Get_Cameo_Data();
+    if (ptr.empty()) {
       ptr = Get_Image_Data();
       shape = 2;
     }
@@ -1776,7 +1782,7 @@ InfantryType InfantryTypeClass::From_Name(const char* name) {
   if (name) {
     for (InfantryType classid = INFANTRY_E1; classid < INFANTRY_COUNT;
          classid++) {
-      if (stricmp(Pointers[classid]->IniName, name) == 0) {
+      if (port::CompareIgnoreCase(Pointers[classid]->IniName, name) == 0) {
         return classid;
       }
     }
@@ -1812,7 +1818,7 @@ void InfantryTypeClass::One_Time() {
     auto fullname = std::filesystem::path(uclass->IniName)
                         .replace_extension(".SHP")
                         .string();
-    uclass->Set_Image_Data(MixArchive::Retrieve(fullname));
+    uclass->Set_Image_Data(MixArchive::RetrieveData(fullname));
 
     /*
     **	The small build image icon sized shapes are always generic.
@@ -1825,7 +1831,7 @@ void InfantryTypeClass::One_Time() {
     }
     fullname =
         std::filesystem::path(filename).replace_extension(".SHP").string();
-    uclass->Set_Cameo_Data(MixArchive::Retrieve(fullname));
+    uclass->Set_Cameo_Data(MixArchive::RetrieveData(fullname));
   }
 }
 
@@ -1850,15 +1856,15 @@ void InfantryTypeClass::Init(TheaterType theater) {
 
       const InfantryTypeClass* uclass = &As_Reference(index);
 
-      uclass->Set_Cameo_Data(nullptr);
+      uclass->Set_Cameo_Data({});
 
       const auto filename = std::string(uclass->IniName).substr(0, 4) + "ICNH";
 
       const auto fullname = std::filesystem::path(filename)
                                 .replace_extension(Theaters[theater].Suffix)
                                 .string();
-      const void* cameo_ptr = MixArchive::Retrieve(fullname);
-      if (cameo_ptr) {
+      const auto cameo_ptr = MixArchive::RetrieveData(fullname);
+      if (!cameo_ptr.empty()) {
         uclass->Set_Cameo_Data(cameo_ptr);
       }
     }

@@ -65,6 +65,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
+#include <span>
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
@@ -138,7 +139,7 @@ MapEditClass::MapEditClass() {
     base::At(NumType, i) = 0;
     base::At(TypeOffset, i) = 0;
   }
-  Waypoint[kWayptHome] = 0;
+  base::At(Waypoint, kWayptHome) = 0;
   CurrentCell = 0;
   CurTrigger = nullptr;
   Changed = false;
@@ -241,7 +242,7 @@ void MapEditClass::One_Time() {
   /*........................................................................
   The health text label
   ........................................................................*/
-  HealthBuf[0] = 0;
+  base::At(HealthBuf, 0) = 0;
   HealthText = new TextLabelClass(
       HealthBuf, kPopupHealthX + (kPopupHealthW / 2),
       kPopupHealthY + kPopupHealthH + 1, kCcGreen,
@@ -341,7 +342,7 @@ void MapEditClass::Read_INI(char* buffer) {
  * HISTORY:                                                                *
  *   11/16/1994 BR : Created.                                              *
  *=========================================================================*/
-void MapEditClass::Write_INI(char* buffer) {
+void MapEditClass::Write_INI(std::span<char> buffer) {
   /*
   ----------------------- Invoke parent's Write_INI ------------------------
   */
@@ -414,35 +415,35 @@ bool MapEditClass::Add_To_List(const ObjectTypeClass* object) {
     */
     switch (object->What_Am_I()) {
       case RTTI_TEMPLATETYPE:
-        NumType[0]++;
+        base::At(NumType, 0)++;
         break;
 
       case RTTI_OVERLAYTYPE:
-        NumType[1]++;
+        base::At(NumType, 1)++;
         break;
 
       case RTTI_SMUDGETYPE:
-        NumType[2]++;
+        base::At(NumType, 2)++;
         break;
 
       case RTTI_TERRAINTYPE:
-        NumType[3]++;
+        base::At(NumType, 3)++;
         break;
 
       case RTTI_UNITTYPE:
-        NumType[4]++;
+        base::At(NumType, 4)++;
         break;
 
       case RTTI_INFANTRYTYPE:
-        NumType[5]++;
+        base::At(NumType, 5)++;
         break;
 
       case RTTI_AIRCRAFTTYPE:
-        NumType[6]++;
+        base::At(NumType, 6)++;
         break;
 
       case RTTI_BUILDINGTYPE:
-        NumType[7]++;
+        base::At(NumType, 7)++;
         break;
       default:
         break;
@@ -830,7 +831,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         ....................... Set map position ........................
         */
         ScenarioInit++;
-        Set_Tactical_Position(Cell_Coord(Waypoint[kWayptHome]));
+        Set_Tactical_Position(Cell_Coord(base::At(Waypoint, kWayptHome)));
         ScenarioInit--;
 
         /*
@@ -851,7 +852,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       ** Unflag the old Home Cell, if there are no other waypoints
       ** pointing to it
       */
-      cell = Waypoint[kWayptHome];
+      cell = base::At(Waypoint, kWayptHome);
 
       if (cell != -1) {
         found = 0;
@@ -870,7 +871,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       /*
       ** Now set the new Home cell
       */
-      Waypoint[kWayptHome] = Coord_Cell(TacticalCoord);
+      base::At(Waypoint, kWayptHome) = Coord_Cell(TacticalCoord);
       (*this)[Coord_Cell(TacticalCoord)].IsWaypoint = true;
       Flag_Cell(Coord_Cell(TacticalCoord));
       Changed = true;
@@ -882,7 +883,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     the Reinf. Cell to the same as the Home Cell (for display purposes.)
     ---------------------------------------------------------------------*/
     case (KN_R | KN_SHIFT_BIT):
-      if (CurrentCell == 0 || CurrentCell == Waypoint[kWayptHome]) {
+      if (CurrentCell == 0 || CurrentCell == base::At(Waypoint, kWayptHome)) {
         break;
       }
 
@@ -890,7 +891,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       ** Unflag the old Reinforcement Cell, if there are no other waypoints
       ** pointing to it
       */
-      cell = Waypoint[kWayptReinf];
+      cell = base::At(Waypoint, kWayptReinf);
 
       if (cell != -1) {
         found = 0;
@@ -908,7 +909,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       /*
       ** Now set the new Reinforcement cell
       */
-      Waypoint[kWayptReinf] = CurrentCell;
+      base::At(Waypoint, kWayptReinf) = CurrentCell;
       (*this)[CurrentCell].IsWaypoint = true;
       Flag_Cell(CurrentCell);
       Changed = true;
@@ -951,7 +952,8 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         ...............................................................*/
         cell = base::At(Waypoint, waypt_idx);
         if (cell != -1) {
-          if (Waypoint[kWayptHome] != cell && Waypoint[kWayptReinf] != cell) {
+          if (base::At(Waypoint, kWayptHome) != cell &&
+              base::At(Waypoint, kWayptReinf) != cell) {
             (*this)[cell].IsWaypoint = false;
           }
           Flag_Cell(cell);
@@ -1032,8 +1034,8 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         If there are no more waypoints on this cell, clear the cell's
         waypoint designation.
         ...............................................................*/
-        if (Waypoint[kWayptHome] != CurrentCell &&
-            Waypoint[kWayptReinf] != CurrentCell) {
+        if (base::At(Waypoint, kWayptHome) != CurrentCell &&
+            base::At(Waypoint, kWayptReinf) != CurrentCell) {
           (*this)[CurrentCell].IsWaypoint = false;
         }
         Changed = true;
@@ -1510,15 +1512,15 @@ void MapEditClass::Main_Menu() {
   /*
   --------------------------- Fill in menu items ---------------------------
   */
-  _menus[0] = "New Scenario";
-  _menus[1] = "Load Scenario";
-  _menus[2] = "Save Scenario";
-  _menus[3] = "Size Map";
-  _menus[4] = "Add Game Object";
-  _menus[5] = "Scenario Options";
-  _menus[6] = "AI Options";
-  _menus[7] = "Play Scenario";
-  _menus[8] = nullptr;
+  base::At(_menus, 0) = "New Scenario";
+  base::At(_menus, 1) = "Load Scenario";
+  base::At(_menus, 2) = "Save Scenario";
+  base::At(_menus, 3) = "Size Map";
+  base::At(_menus, 4) = "Add Game Object";
+  base::At(_menus, 5) = "Scenario Options";
+  base::At(_menus, 6) = "AI Options";
+  base::At(_menus, 7) = "Play Scenario";
+  base::At(_menus, 8) = nullptr;
 
   /*
   ----------------------------- Main Menu loop -----------------------------
@@ -1535,7 +1537,7 @@ void MapEditClass::Main_Menu() {
     ............................. Invoke menu .............................
     */
     Hide_Mouse();  // Do_Menu assumes the mouse is already hidden
-    const int selection = Do_Menu(&_menus[0], true);  // option the user picks
+    const int selection = Do_Menu(_menus, true);  // option the user picks
     Show_Mouse();
     if (UnknownKey == KN_ESC || UnknownKey == KN_LMOUSE ||
         UnknownKey == KN_RMOUSE) {
@@ -1694,12 +1696,12 @@ void MapEditClass::AI_Menu() {
   /*
   -------------------------- Fill in menu strings --------------------------
   */
-  _menus[0] = "Pre-Build a Base";
-  _menus[1] = "Import Triggers";
-  _menus[2] = "Edit Triggers";
-  _menus[3] = "Import Teams";
-  _menus[4] = "Edit Teams";
-  _menus[5] = nullptr;
+  base::At(_menus, 0) = "Pre-Build a Base";
+  base::At(_menus, 1) = "Import Triggers";
+  base::At(_menus, 2) = "Edit Triggers";
+  base::At(_menus, 3) = "Import Teams";
+  base::At(_menus, 4) = "Edit Teams";
+  base::At(_menus, 5) = nullptr;
 
   /*
   ----------------------------- Main Menu loop -----------------------------
@@ -1716,7 +1718,7 @@ void MapEditClass::AI_Menu() {
     ............................. Invoke menu .............................
     */
     Hide_Mouse();  // Do_Menu assumes the mouse is already hidden
-    const int selection = Do_Menu(&_menus[0], true);  // option the user picks
+    const int selection = Do_Menu(_menus, true);  // option the user picks
     Show_Mouse();
     if (UnknownKey == KN_ESC || UnknownKey == KN_LMOUSE ||
         UnknownKey == KN_RMOUSE) {

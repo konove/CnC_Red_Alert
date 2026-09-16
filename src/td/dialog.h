@@ -8,12 +8,13 @@
 #include "td/defines.h"
 #include "td/jshell.h"
 
-int Format_Window_String(char* string, int maxlinelen, int& width, int& height);
+int Format_Window_String(std::span<char> string, int max_line_len, int& width,
+                         int& height);
 extern void Dialog_Box(int x, int y, int w, int h);
 void Conquer_Clip_Text_Print(const char* /*text*/, int x, int y, int fore,
                              int back = kTBlack,
                              TextPrintType flag = TPF_8POINT | TPF_DROPSHADOW,
-                             int width = -1, const int* tabs = nullptr);
+                             int width = -1, std::span<const int> tabs = {});
 void Draw_Box(int x, int y, int w, int h, BoxStyleEnum up, bool filled);
 void Window_Box(WindowNumberType window, BoxStyleEnum style);
 // Prints `text`, formatted with `args` as printf would, with a drop shadow.

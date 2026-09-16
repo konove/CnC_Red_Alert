@@ -35,11 +35,14 @@
 
 #include <algorithm>
 #include <cstddef>
-#include <cstring>
+#include <span>
 #include <string>
 #include <string_view>
+#include <utility>
+#include <vector>
 
 #include "absl/base/attributes.h"
+#include "absl/log/check.h"
 #include "base/array.h"
 #include "base/numeric.h"
 #include "base/types.h"
@@ -82,12 +85,12 @@ const dib::Image& AsImage(const void* icon ABSL_ATTRIBUTE_LIFETIME_BOUND) {
 // grow. The caller must then not add the item's text either, or the two lists
 // stop lining up.
 bool AddItemExtras(DynamicVectorClass<IconList_ItemExtras*>& list,
-                   const char* szHelp, void* pIcon0, ICONKIND IconKind0,
+                   const char* szHelp, IconListIcon pIcon0, ICONKIND IconKind0,
                    const char* szExtraDataString, void* pvExtraData,
-                   RemapControlType* pColorRemap, void* pIcon1,
-                   ICONKIND IconKind1, void* pIcon2, ICONKIND IconKind2,
-                   void* pFixedIcon, ICONKIND FixedIconKind, int iXFixedIcon,
-                   int iYFixedIcon, int iFixedIconWidth) {
+                   RemapControlType* pColorRemap, IconListIcon pIcon1,
+                   ICONKIND IconKind1, IconListIcon pIcon2, ICONKIND IconKind2,
+                   IconListIcon pFixedIcon, ICONKIND FixedIconKind,
+                   int iXFixedIcon, int iYFixedIcon, int iFixedIconWidth) {
   auto* extras = new IconList_ItemExtras;
   extras->pIcon[0] = pIcon0;
   extras->IconKind[0] = IconKind0;
@@ -118,13 +121,13 @@ bool AddItemExtras(DynamicVectorClass<IconList_ItemExtras*>& list,
 }  // namespace
 
 static int Format_Window_String_New(const char* string, int maxlinelen,
-                                    int& width, int& height, char* szReturn,
-                                    int iExtraChars);
+                                    int& width, int& height,
+                                    std::span<char> output, int iExtraChars);
 
 //***********************************************************************************************
 IconListClass::IconListClass(int id, int x, int y, int w, int h,
-                             TextPrintType flags, const void* up,
-                             const void* down, bool wrap_text,
+                             TextPrintType flags, std::span<const std::byte> up,
+                             std::span<const std::byte> down, bool wrap_text,
                              int iSelectionType, int iMaxItemsSaved)
     : ListClass(id, x, y, w, h, flags, up, down), bWrapText(wrap_text) {
   //	Icons are the caller's: the list never owns what's on the other end of
@@ -172,12 +175,13 @@ int IconListClass::Add_Item(const char* text) {
 }
 
 int IconListClass::Add_Item(
-    const char* text, const char* szHelp, void* pIcon0, ICONKIND IconKind0,
-    const char* szExtraDataString /* = NULL */,
+    const char* text, const char* szHelp, IconListIcon pIcon0,
+    ICONKIND IconKind0, const char* szExtraDataString /* = NULL */,
     void* pvExtraDataPtr /* = NULL */,
-    RemapControlType* pColorRemap /* = NULL */, void* pIcon1 /* = NULL */,
-    ICONKIND IconKind1 /* = ICON_SHAPE */, void* pIcon2 /* = NULL */,
-    ICONKIND IconKind2 /* = ICON_SHAPE */, void* pFixedIcon /* = NULL */,
+    RemapControlType* pColorRemap /* = NULL */,
+    IconListIcon pIcon1 /* = NULL */, ICONKIND IconKind1 /* = ICON_SHAPE */,
+    IconListIcon pIcon2 /* = NULL */, ICONKIND IconKind2 /* = ICON_SHAPE */,
+    IconListIcon pFixedIcon /* = NULL */,
     ICONKIND FixedIconKind /* = ICON_SHAPE */, int iXFixedIcon /* = 0 */,
     int iYFixedIcon /* = 0 */, int iFixedIconWidth /* = -1 */) {
   if (text) {
@@ -190,14 +194,14 @@ int IconListClass::Add_Item(
       //	50 extra chars added for line breaks later, by
       //	Format_Window_String_New.
       const std::size_t iTextSize = std::string_view(text).size() + 51;
-      char* szText = new char[iTextSize];
-      port::SafeCopy(szText, text, iTextSize);
+      std::vector<char> szText(iTextSize);
+      port::SafeCopy(szText, text);
 
       int iWidthMax = 0;
       int iHeight = 0;
       //	Stupid usage of globals for font stuff... <grumble>
       if (TextFlags == TPF_TYPE) {
-        const void* pFontBefore = Set_Font(TypeFontPtr);
+        const std::span<const std::byte> pFontBefore = Set_Font(TypeFontPtr);
         const int FontXSpacingBefore = FontXSpacing;
         FontXSpacing = -2;
 
@@ -224,16 +228,16 @@ int IconListClass::Add_Item(
       }
 
       //	Each break character causes a line to be added to list.
-      port::Tokenizer tokens(szText, "\r\n\v\f");
-      const char* szNextChar = szText;
+      port::Tokenizer tokens(szText.data(), "\r\n\v\f");
+      std::size_t next_char = 0;
       while (const char* szToken = tokens.Next()) {
-        while (szNextChar < szToken) {
+        while (std::cmp_less(next_char, szToken - szText.data())) {
           //	We expected szToken to begin at szNextChar. Since it doesn't,
           // extra break 	characters must have been removed by the tokenizer as
           // they were adjacent. We want 	a line break for every break
           // character, so add lines for each space that 	szNextChar is
           // off by.
-          szNextChar++;
+          next_char++;
           Add_Item_Detail(" ", szHelp, pIcon0, IconKind0, szExtraDataString,
                           pvExtraDataPtr, pColorRemap, pIcon1, IconKind1,
                           pIcon2, IconKind2, pFixedIcon, FixedIconKind,
@@ -246,9 +250,9 @@ int IconListClass::Add_Item(
                                   iXFixedIcon, iYFixedIcon, iFixedIconWidth);
 
         //	Expect next token two chars after the end of this one.
-        szNextChar = szToken + std::string_view(szToken).size() + 1;
+        next_char = static_cast<std::size_t>(szToken - szText.data()) +
+                    std::string_view(szToken).size() + 1;
       }
-      delete[] szText;
       return iRetVal;  //	Last value returned by ListClass::Add_Item
     }  //	Add one item to list.
     if (!AddItemExtras(ExtrasList, szHelp, pIcon0, IconKind0, szExtraDataString,
@@ -284,11 +288,12 @@ int IconListClass::Add_Item(
 
 //***********************************************************************************************
 int IconListClass::Add_Item_Detail(
-    const char* szToken, const char* szHelp, void* pIcon0, ICONKIND IconKind0,
-    const char* szExtraDataString, void* pvExtraData,
-    RemapControlType* pColorRemap, void* pIcon1, ICONKIND IconKind1,
-    void* pIcon2, ICONKIND IconKind2, void* pFixedIcon, ICONKIND FixedIconKind,
-    int iXFixedIcon, int iYFixedIcon, int iFixedIconWidth) {
+    const char* szToken, const char* szHelp, IconListIcon pIcon0,
+    ICONKIND IconKind0, const char* szExtraDataString, void* pvExtraData,
+    RemapControlType* pColorRemap, IconListIcon pIcon1, ICONKIND IconKind1,
+    IconListIcon pIcon2, ICONKIND IconKind2, IconListIcon pFixedIcon,
+    ICONKIND FixedIconKind, int iXFixedIcon, int iYFixedIcon,
+    int iFixedIconWidth) {
   //	Broken out of above function as it is repeated.
 
   //	Add one item to list.
@@ -316,12 +321,13 @@ int IconListClass::Add_Item(int text) {
 
 //***********************************************************************************************
 int IconListClass::Add_Item(
-    int text, const char* szHelp, void* pIcon0, ICONKIND IconKind0,
+    int text, const char* szHelp, IconListIcon pIcon0, ICONKIND IconKind0,
     const char* szExtraDataString /* = NULL */,
     void* pvExtraDataPtr /* = NULL */,
-    RemapControlType* pColorRemap /* = NULL */, void* pIcon1 /* = NULL */,
-    ICONKIND IconKind1 /* = ICON_SHAPE */, void* pIcon2 /* = NULL */,
-    ICONKIND IconKind2 /* = ICON_SHAPE */, void* pFixedIcon /* = NULL */,
+    RemapControlType* pColorRemap /* = NULL */,
+    IconListIcon pIcon1 /* = NULL */, ICONKIND IconKind1 /* = ICON_SHAPE */,
+    IconListIcon pIcon2 /* = NULL */, ICONKIND IconKind2 /* = ICON_SHAPE */,
+    IconListIcon pFixedIcon /* = NULL */,
     ICONKIND FixedIconKind /* = ICON_SHAPE */, int iXFixedIcon /* = 0 */,
     int iYFixedIcon /* = 0 */, int iFixedIconWidth /* = -1 */) {
   return Add_Item(Text_String(text), szHelp, pIcon0, IconKind0,
@@ -389,7 +395,7 @@ void IconListClass::Draw_Entry(int index, int x, int y, int width,
         base::At(pExtras->IconKind, iIcon) == ICON_DIB) {
       //	Push text over to accommodate icon.
       const int iWidthIcon =
-          PREICONGAP + AsImage(base::At(pExtras->pIcon, iIcon)).Width();
+          PREICONGAP + AsImage(base::At(pExtras->pIcon, iIcon).image).Width();
       xText += iWidthIcon;
       width -= iWidthIcon;
       bIconsPresent = true;
@@ -406,11 +412,11 @@ void IconListClass::Draw_Entry(int index, int x, int y, int width,
     // appropriately. 	(Ignore others. This is a hack because having more than
     // one tab will now break this.) 	See local version of this same hack,
     // below.
-    const int* const TabsSave = Tabs;
-    int TempTabs = 0;
-    if (TabsSave != nullptr) {
-      TempTabs = *TabsSave - (xText - x);
-      Tabs = &TempTabs;
+    const auto TabsSave = Tabs;
+    int TempTabs[1] = {};
+    if (!TabsSave.empty()) {
+      TempTabs[0] = TabsSave.front() - (xText - x);
+      Tabs = TempTabs;
     }
     switch (iSelectType) {
       case 0:
@@ -462,27 +468,28 @@ void IconListClass::Draw_Entry(int index, int x, int y, int width,
     //	Tabs hack. If there are icons, and a tab, push back the FIRST tab
     // appropriately. 	(Ignore others. This is a hack because having more than
     // one tab will now break this.)
-    if (Tabs) {
-      const int tab = *Tabs - (xText - x);
+    if (!Tabs.empty()) {
+      const int tab[] = {Tabs.front() - (xText - x)};
       Conquer_Clip_Text_Print(Get_Item(index), xText, y, pRemap, kTBlack, flags,
-                              width, &tab);
+                              width, tab);
     } else {
       Conquer_Clip_Text_Print(Get_Item(index), xText, y, pRemap, kTBlack, flags,
-                              width, nullptr);
+                              width, {});
     }
   }
 
   //	Draw fixed position icon.
   if (pExtras->FixedIcon.pIcon) {
     if (pExtras->FixedIcon.IconKind == ICON_SHAPE) {
-      CC_Draw_Shape(pExtras->FixedIcon.pIcon, 0, x + pExtras->FixedIcon.xOffset,
+      CC_Draw_Shape(pExtras->FixedIcon.pIcon.shape, 0,
+                    x + pExtras->FixedIcon.xOffset,
                     y + pExtras->FixedIcon.yOffset, WINDOW_MAIN, SHAPE_NORMAL);
     }
     //	Put similar code in here for shapes if used...
     else {
-      DrawDib(AsImage(pExtras->FixedIcon.pIcon), x + pExtras->FixedIcon.xOffset,
-              y + pExtras->FixedIcon.yOffset, pExtras->FixedIcon.iWidth,
-              WINDOW_MAIN);
+      DrawDib(AsImage(pExtras->FixedIcon.pIcon.image),
+              x + pExtras->FixedIcon.xOffset, y + pExtras->FixedIcon.yOffset,
+              pExtras->FixedIcon.iWidth, WINDOW_MAIN);
     }
   }
 
@@ -491,12 +498,12 @@ void IconListClass::Draw_Entry(int index, int x, int y, int width,
     if (base::At(pExtras->pIcon, iIcon)) {
       x += PREICONGAP;
       if (base::At(pExtras->IconKind, iIcon) == ICON_SHAPE) {
-        CC_Draw_Shape(base::At(pExtras->pIcon, iIcon), 0, x, y, WINDOW_MAIN,
-                      SHAPE_NORMAL);
+        CC_Draw_Shape(base::At(pExtras->pIcon, iIcon).shape, 0, x, y,
+                      WINDOW_MAIN, SHAPE_NORMAL);
       }
       //	Put similar code in here for shapes if used...
       else {
-        const dib::Image& icon = AsImage(base::At(pExtras->pIcon, iIcon));
+        const dib::Image& icon = AsImage(base::At(pExtras->pIcon, iIcon).image);
         DrawDib(icon, x, y, kNoIconWidthLimit, WINDOW_MAIN);
         x += icon.Width();
       }
@@ -640,8 +647,7 @@ int IconListClass::Find(const char* szItemToFind) {
   //	Returns -1 if szItemToFind is not found as the text BEGINNING one of the
   // list entries, else index of item. 	Compare is case-sensitive.
   for (int i = 0; i < Count(); i++) {
-    if (strncmp(Get_Item(i), szItemToFind,
-                std::string_view(szItemToFind).size()) == 0) {
+    if (std::string_view(Get_Item(i)).starts_with(szItemToFind)) {
       return i;
     }
   }
@@ -671,7 +677,7 @@ bool IconListClass::Set_Item(unsigned int index, const char* szText) {
 
 //***********************************************************************************************
 bool IconListClass::Set_Icon(unsigned int index, unsigned int iIconNumber,
-                             void* pIcon, ICONKIND IconKind) {
+                             IconListIcon pIcon, ICONKIND IconKind) {
   if (index >= List.size()) {
     return false;
   }
@@ -744,8 +750,10 @@ int IconListClass::OffsetToIndex(int iIndex, int y) {
 // forces you to reset your machine, as in the original code...
 
 int Format_Window_String_New(const char* string, int maxlinelen, int& width,
-                             int& height, char* szReturn, int iExtraChars) {
-  const char* const szReturnStart = szReturn;
+                             int& height, std::span<char> output,
+                             int iExtraChars) {
+  std::size_t source = 0;
+  std::size_t dest = 0;
   int lines = 0;
   width = 0;
   height = 0;
@@ -755,18 +763,37 @@ int Format_Window_String_New(const char* string, int maxlinelen, int& width,
     return 0;
   }
 
+  const std::string_view input(string);
+  const auto character = [&input](std::size_t offset) {
+    return offset < input.size() ? input[offset] : '\0';
+  };
+  CHECK_GE(output.size(), input.size() + base::ToSize(iExtraChars) + 1);
+
   // While there are more letters left divide the line up.
-  while (*string) {
+  while (character(source)) {
     int linelen = 0;
     height += FontHeight + FontYSpacing;
     lines++;
 
     // While the current line is less then the max length...
-    *szReturn = *string;
-    linelen += Char_Pixel_Width(*string);
-    while (linelen < maxlinelen && *string != '\r' && *string != '\0') {
-      *++szReturn = *++string;
-      linelen += Char_Pixel_Width(*string);
+    output[dest] = character(source);
+    linelen += Char_Pixel_Width(character(source));
+    // A glyph wider than the whole line must still consume input. The old
+    // backward search could revisit it forever (or move before the input).
+    if (linelen >= maxlinelen && character(source) != '\r') {
+      ++source;
+      ++dest;
+      width = std::max(width, linelen);
+      if (source < input.size() && iExtraChars > 0) {
+        output[dest++] = '\r';
+        --iExtraChars;
+      }
+      continue;
+    }
+    while (linelen < maxlinelen && character(source) != '\r' &&
+           character(source) != '\0') {
+      output[++dest] = character(++source);
+      linelen += Char_Pixel_Width(character(source));
     }
 
     // if the line is too long...
@@ -774,30 +801,34 @@ int Format_Window_String_New(const char* string, int maxlinelen, int& width,
       /*
       **	Back up to an appropriate location to break.
       */
-      const char* stringOverEnd = string;
-      while (linelen > 0 && *string != ' ' && *string != '\r' &&
-             *string != '\0') {
-        linelen -= Char_Pixel_Width(*string--);
+      const std::size_t stringOverEnd = source;
+      while (linelen > 0 && character(source) != ' ' &&
+             character(source) != '\r' && character(source) != '\0') {
+        linelen -= Char_Pixel_Width(character(source));
+        if (source == 0) {
+          break;
+        }
+        --source;
       }
       if (linelen <= 0) {
         //	We could not find a nice break point.
         //	Go back one char from over-the-end point and add in a break
         // there.
-        string = stringOverEnd - 1;
+        source = stringOverEnd == 0 ? 0 : stringOverEnd - 1;
         if (iExtraChars > 0) {
           iExtraChars--;  //	One less to make use of later.
-        } else if (szReturn > szReturnStart) {
+        } else if (dest > 0) {
           //	We've used up all our extras characters.
           //	Put in a break below by wiping out a valid char here.
-          szReturn--;
+          --dest;
         }
       } else {
         //	Back up szReturn to same location. The back-up loop above stops
         //	once linelen reaches zero, so it can never walk further than the
         //	characters of this line -- but say so out loud rather than leave
         //	the pointer's lower bound resting on that argument.
-        const std::ptrdiff_t iBackUp = stringOverEnd - string;
-        szReturn -= std::min(iBackUp, szReturn - szReturnStart);
+        const std::size_t iBackUp = stringOverEnd - source;
+        dest -= std::min(iBackUp, dest);
       }
     }
 
@@ -809,10 +840,11 @@ int Format_Window_String_New(const char* string, int maxlinelen, int& width,
     /*
     **	Force a break at the end of the line.
     */
-    if (*string) {
-      *szReturn++ = '\r';
-      string++;
+    if (character(source)) {
+      output[dest++] = '\r';
+      ++source;
     }
   }
+  output[dest] = '\0';
   return lines;
 }

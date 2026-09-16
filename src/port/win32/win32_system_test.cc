@@ -116,9 +116,9 @@ TEST(Win32SystemTest, CreateProcessFailsAndClearsItsOutParameter) {
 
 TEST(Win32SystemTest, TheWorkingDirectoryCanBeReadAndChanged) {
   char before[MAX_PATH] = {};
-  const DWORD length = GetCurrentDirectory(sizeof(before), before);
+  const DWORD length = GetCurrentDirectory(before);
   ASSERT_GT(length, 0U);
-  EXPECT_EQ(std::strlen(before), length) << "the length excludes the null";
+  EXPECT_EQ(std::string_view(before).size(), length) << "the length excludes the null";
   EXPECT_EQ(std::filesystem::path(before), std::filesystem::current_path());
 
   const std::filesystem::path temp = std::filesystem::temp_directory_path();
@@ -131,11 +131,11 @@ TEST(Win32SystemTest, TheWorkingDirectoryCanBeReadAndChanged) {
 
 TEST(Win32SystemTest, TheWorkingDirectoryReportsFailureRatherThanTruncating) {
   char tiny[2] = {'x', 'x'};
-  EXPECT_EQ(GetCurrentDirectory(sizeof(tiny), tiny), 0U);
+  EXPECT_EQ(GetCurrentDirectory(tiny), 0U);
   EXPECT_EQ(tiny[0], 'x') << "a failed read must not touch the buffer";
 
-  EXPECT_EQ(GetCurrentDirectory(0, tiny), 0U);
-  EXPECT_EQ(GetCurrentDirectory(sizeof(tiny), nullptr), 0U);
+  EXPECT_EQ(GetCurrentDirectory({}), 0U);
+  EXPECT_EQ(GetCurrentDirectory({}), 0U);
 
   EXPECT_EQ(SetCurrentDirectory("no_such_directory_at_all"), FALSE);
   EXPECT_EQ(SetCurrentDirectory(nullptr), FALSE);

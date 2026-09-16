@@ -42,6 +42,7 @@
 #define CNC_RED_ALERT_TD_FOOT_H_
 
 #include <cstdint>
+#include <span>
 
 #include "td/defines.h"
 #include "td/ftimer.h"
@@ -310,7 +311,7 @@ class FootClass : public TechnoClass {
  private:
   int Passable_Cell(CELL cell, FacingType face, int threat,
                     MoveType threshhold);
-  PathType* Find_Path(CELL dest, FacingType* final_moves, int maxlen,
+  PathType* Find_Path(CELL dest, std::span<FacingType> final_moves, int maxlen,
                       MoveType threshhold);
   void Debug_Draw_Map(const char* txt, CELL start, CELL dest, bool pause) const;
   static void Debug_Draw_Path(PathType* path);

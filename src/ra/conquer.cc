@@ -28,6 +28,9 @@
 
 #include "ra/conquer.h"
 
+#include <absl/log/check.h>
+#include <absl/strings/str_cat.h>
+
 #include <algorithm>
 #include <array>
 #include <cassert>
@@ -522,19 +525,22 @@ static void Send_Network_Chat_Message(const int rc) {
   // message to every player we have a connection with.
   if (Session.MessageAddress.Is_Broadcast()) {
     char* ptr = &Session.GPacket.Message.Buf[0];
-    if (!strncmp(ptr, "SECRET UNITS ON ", 15) && NewUnitsEnabled) {
+    if (std::string_view(ptr).starts_with("SECRET UNITS ON ") &&
+        NewUnitsEnabled) {
       *ptr = 'X';  // force it to an odd hack so we know it was broadcast.
       Enable_Secret_Units();
     }
     for (int i = 0; i < Ipx.Num_Connections(); ++i) {
-      Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
+      Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
+                              sizeof(GlobalPacketType), 1,
                               Ipx.Connection_Address(Ipx.Connection_ID(i)));
       Ipx.Service();
     }
   } else {
     // Otherwise, MessageAddress contains the exact address to send to.
     // Send to that address only.
-    Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
+    Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
+                            sizeof(GlobalPacketType), 1,
                             &Session.MessageAddress);
     Ipx.Service();
   }
@@ -660,13 +666,10 @@ static void Message_Input(KeyNumType& input) {
     // (Note: The size of the SerialPacketType.Command must be the same as
     // the EventClass.Type!)
     if (Session.Type == GAME_NULL_MODEM || Session.Type == GAME_MODEM) {
-      // The modem layer hands back a raw byte buffer that the packet is built
-      // into in place; there is no portable alternative to the cast here.
-      auto* serial_packet =
-          // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-          reinterpret_cast<SerialPacketType*>(NullModem.BuildBuf);
+      SerialPacketType packet_storage{
+          .Command = SERIAL_MESSAGE, .Name = {}, .ID = 0, .ScenarioInfo = {}};
+      auto* serial_packet = &packet_storage;
 
-      serial_packet->Command = SERIAL_MESSAGE;
       port::SafeCopy(serial_packet->Name, Session.Players[0]->Name);
       serial_packet->ID = static_cast<unsigned char>(Session.ColorIdx);
 
@@ -681,13 +684,15 @@ static void Message_Input(KeyNumType& input) {
 
       // Send the message, and store this message in our LastMessage
       // buffer; the computer may send us a version of it later.
-      NullModem.Send_Message(NullModem.BuildBuf, sizeof(SerialPacketType), 1);
+      NullModem.Send_Message(base::ObjectBytes(packet_storage),
+                             sizeof(SerialPacketType), 1);
 
       // A chat message is how the secret units get switched on for everyone
       // at once: both ends recognize the phrase and enable them locally, so
       // the setting stays in step without a new packet type.
       const char* ptr = &serial_packet->Message.Message[0];
-      if (!strncmp(ptr, "SECRET UNITS ON ", 15) && NewUnitsEnabled) {
+      if (std::string_view(ptr).starts_with("SECRET UNITS ON ") &&
+          NewUnitsEnabled) {
         Enable_Secret_Units();
       }
       port::SafeCopy(Session.LastMessage, serial_packet->Message.Message);
@@ -1457,8 +1462,9 @@ void IPX_Call_Back() {
   // Read packets only if the game is "closed", so we don't steal global
   // messages from the connection dialogs.
   if ((!Session.NetOpen) &&
-      Ipx.Get_Global_Message(&Session.GPacket, &Session.GPacketlen,
-                             &Session.GAddress, &Session.GProductID) &&
+      Ipx.Get_Global_Message(base::ObjectBytes(Session.GPacket),
+                             &Session.GPacketlen, &Session.GAddress,
+                             &Session.GProductID) &&
       (Session.GProductID == IPXGlobalConnClass::kCommandAndConquer0))
 
   {
@@ -1493,8 +1499,8 @@ void IPX_Call_Back() {
                   static_cast<int>(Session.GPacket.Message.Color),
                   Session.GPacket.Message.Buf,
                   Rule.MessageDelay * kTicksPerMinute)) {
-            if (NewUnitsEnabled &&
-                !strncmp(Session.GPacket.Message.Buf, "XECRET UNITS ON ", 15)) {
+            if (NewUnitsEnabled && std::string_view(Session.GPacket.Message.Buf)
+                                       .starts_with("XECRET UNITS ON ")) {
               Session.GPacket.Message.Buf[0] = 'S';
               Enable_Secret_Units();
             }
@@ -1525,7 +1531,7 @@ void IPX_Call_Back() {
 SourceType Source_From_Name(const char* name) {
   if (name) {
     for (const SourceType source : magic_enum::enum_values<SourceType>()) {
-      if (stricmp(SourceName[source], name) == 0) {
+      if (port::CompareIgnoreCase(SourceName[source], name) == 0) {
         return source;
       }
     }
@@ -1543,7 +1549,7 @@ const char* Name_From_Source(const SourceType source) {
 TheaterType Theater_From_Name(const char* name) {
   if (name != nullptr) {
     for (const TheaterType index : magic_enum::enum_values<TheaterType>()) {
-      if (stricmp(name, Theaters[index].Name) == 0) {
+      if (port::CompareIgnoreCase(name, Theaters[index].Name) == 0) {
         return index;
       }
     }
@@ -1875,9 +1881,9 @@ bool Main_Loop() {
     }
 
     // Leaked for the same reason as frames above.
-    static auto& temp_page = *new GraphicBufferClass(
-        SeenBuff.Get_Width(), SeenBuff.Get_Height(), nullptr,
-        SeenBuff.Get_Width() * SeenBuff.Get_Height());
+    static auto& temp_page =
+        *new GraphicBufferClass(SeenBuff.Get_Width(), SeenBuff.Get_Height(), {},
+                                SeenBuff.Get_Width() * SeenBuff.Get_Height());
 
     const base::ssize size =
         static_cast<base::ssize>(SeenBuff.Get_Width()) * SeenBuff.Get_Height();
@@ -1887,8 +1893,9 @@ bool Main_Loop() {
       frames[base::ToSize(sequence)].resize(base::ToSize(size));
 
       SeenBuff.Blit(temp_page);
-      std::memcpy(frames[base::ToSize(sequence)].data(), temp_page.Get_Buffer(),
-                  base::ToSize(size));
+      base::CopyBytes(
+          std::as_writable_bytes(std::span(frames[base::ToSize(sequence)])),
+          std::as_bytes(temp_page.Get_Bytes()), size);
       sequence++;
     } else {
       Debug_MotionCapture = false;
@@ -1897,8 +1904,9 @@ bool Main_Loop() {
       char filename[30];
 
       for (base::ssize index = 0; index < sequence; index++) {
-        std::memcpy(temp_page.Get_Buffer(), frames[base::ToSize(index)].data(),
-                    base::ToSize(size));
+        base::CopyBytes(std::as_writable_bytes(temp_page.Get_Bytes()),
+                        std::as_bytes(std::span(frames[base::ToSize(index)])),
+                        size);
         absl::SNPrintF(filename, sizeof(filename), "cap%04zd.pcx", index);
         file.SetName(filename);
 
@@ -1956,10 +1964,14 @@ void Go_Editor(const bool flag) {
   }
 }
 
-void Rebuild_Interpolated_Palette(unsigned char* interpal) {
+void Rebuild_Interpolated_Palette(std::span<unsigned char> interpal) {
+  if (interpal.size() < 65536) {
+    return;
+  }
   for (int y = 0; y < 255; y++) {
     for (int x = y + 1; x < 256; x++) {
-      *(interpal + ((y * 256) + x)) = *(interpal + ((x * 256) + y));
+      interpal[base::ToSize((y * 256) + x)] =
+          interpal[base::ToSize((x * 256) + y)];
     }
   }
 }
@@ -1973,13 +1985,13 @@ int Load_Interpolated_Palettes(const char* filename, const bool add) {
 
   if (!add) {
     for (auto& InterpolatedPalette : InterpolatedPalettes) {
-      InterpolatedPalette = nullptr;
+      InterpolatedPalette.clear();
     }
     start_palette = 0;
   } else {
     for (start_palette = 0; start_palette < std::ssize(InterpolatedPalettes);
          start_palette++) {
-      if (!base::At(InterpolatedPalettes, start_palette)) {
+      if (base::At(InterpolatedPalettes, start_palette).empty()) {
         break;
       }
     }
@@ -1995,15 +2007,19 @@ int Load_Interpolated_Palettes(const char* filename, const bool add) {
     file.Open(FileAccess::kRead);
     file.ReadObject(num_palettes);
 
+    if (num_palettes < 0 ||
+        num_palettes > std::ssize(InterpolatedPalettes) - start_palette) {
+      file.Close();
+      return 0;
+    }
     for (int i = 0; i < num_palettes; i++) {
       // 256 x 256: the blended result for every pair of palette indices.
-      base::At(InterpolatedPalettes, i + start_palette) =
-          new unsigned char[65536]();
+      base::At(InterpolatedPalettes, i + start_palette).assign(65536, 0);
       // Only the lower triangle is stored, row y holding y + 1 entries;
       // Rebuild_Interpolated_Palette() mirrors it to fill the rest.
       for (int y = 0; y < 256; y++) {
-        file.Read(base::At(InterpolatedPalettes, i + start_palette) +
-                      (static_cast<base::ssize>(y) * 256),
+        file.Read(std::span(base::At(InterpolatedPalettes, i + start_palette))
+                      .subspan(base::ToSize(y) * 256),
                   y + 1);
       }
 
@@ -2020,10 +2036,7 @@ int Load_Interpolated_Palettes(const char* filename, const bool add) {
 
 void Free_Interpolated_Palettes() {
   for (auto& InterpolatedPalette : InterpolatedPalettes) {
-    if (InterpolatedPalette) {
-      delete[] InterpolatedPalette;
-      InterpolatedPalette = nullptr;
-    }
+    InterpolatedPalette.clear();
   }
 }
 
@@ -2079,11 +2092,11 @@ void Play_Movie(const char* name, const ThemeType theme, bool clear_screen) {
     if (IsVQ640) {
       AnimControl.ImageWidth = 640;
       AnimControl.ImageHeight = 400;
-      AnimControl.ImageBuf = VQ640.Get_Offset();
+      AnimControl.ImageBuf = VQ640.Get_Bytes();
     } else {
       AnimControl.ImageWidth = 320;
       AnimControl.ImageHeight = 200;
-      AnimControl.ImageBuf = SysMemPage.Get_Offset();
+      AnimControl.ImageBuf = SysMemPage.Get_Bytes();
     }
 
     if (!Debug_Quiet && Get_Digi_Handle() != -1) {
@@ -2164,15 +2177,15 @@ std::string Fading_Table_Name(const char* base, const TheaterType theater) {
 // non-transparent of the nine source pixels around its sample point (the
 // off_x/off_y offsets). Without that spread, anything thinner than the sample
 // step -- walls, most of a structure's outline -- would vanish at radar zoom.
-std::unique_ptr<char[]> Get_Radar_Icon(const void* shapefile,
-                                       const int shape_num, int frames,
-                                       const int zoom_factor) {
+std::vector<unsigned char> Get_Radar_Icon(std::span<const std::byte> shapefile,
+                                          const int shape_num, int frames,
+                                          const int zoom_factor) {
   static constexpr int off_x[] = {0, 0, -1, 1, 0, -1, 1, -1, 1};
   static constexpr int off_y[] = {0, 0, -1, 1, 0, -1, 1, -1, 1};
 
   // If there is no shape file, then there can be no radar icon imagery.
-  if (shapefile == nullptr) {
-    return nullptr;
+  if (shapefile.empty() || zoom_factor <= 0 || zoom_factor > 24) {
+    return {};
   }
 
   // Get the pixel width and height of the frame we built.  This will
@@ -2194,21 +2207,25 @@ std::unique_ptr<char[]> Get_Radar_Icon(const void* shapefile,
 
   // Allocate a position to store our icons.  If the alloc fails then
   // we don't add these icons to the set.
-  auto result = std::make_unique<char[]>(
-      base::ToSize((icon_width * icon_height * 9 * frames) + 2));
-  char* buffer = result.get();
-  *buffer++ = static_cast<char>(icon_width);
-  *buffer++ = static_cast<char>(icon_height);
+  if (frames < 0) {
+    return {};
+  }
+  std::vector<unsigned char> result(base::ToSize(
+      (int64_t{icon_width} * icon_height * zoom_factor * zoom_factor * frames) +
+      2));
+  auto output = result.begin();
+  *output++ = static_cast<unsigned char>(icon_width);
+  *output++ = static_cast<unsigned char>(icon_height);
   const int val = 24 / zoom_factor;
 
   for (int frame_num = 0; frame_num < frames; ++frame_num) {
     // Build the current frame.  If the frame can not be built then we
     // just need to skip past this set of icons and try to build the
     // next frame.
-    void* ptr =
+    const auto ptr =
         Build_Frame(shapefile, static_cast<uint16_t>(shape_num + frame_num),
-                    SysMemPage.Get_Buffer());
-    if (ptr != nullptr) {
+                    SysMemPage.Get_Bytes());
+    if (!ptr.empty()) {
       // Loop through the icon width and the icon height building icons
       // into the buffer pointer.  When the getx or gety falls outside of
       // the width and height of the shape, just insert transparent pixels.
@@ -2219,13 +2236,16 @@ std::unique_ptr<char[]> Get_Radar_Icon(const void* shapefile,
               const int getx = (icon_x * 24) + (x * val) + (zoom_factor / 2);
               const int gety = (icon_y * 24) + (y * val) + (zoom_factor / 2);
               if (getx < pixel_width && gety < pixel_height) {
-                char pixel = 0;
+                unsigned char pixel = 0;
                 for (int lp = 0; lp < 9; ++lp) {
+                  const int sample_x = getx - base::At(off_x, lp);
+                  const int sample_y = gety - base::At(off_y, lp);
+                  if (sample_x < 0 || sample_x >= pixel_width || sample_y < 0 ||
+                      sample_y >= pixel_height) {
+                    continue;
+                  }
                   pixel =
-                      *(static_cast<char*>(ptr) +
-                        (static_cast<base::ssize>(gety - base::At(off_y, lp)) *
-                         pixel_width) +
-                        getx - base::At(off_x, lp));
+                      ptr[base::ToSize((sample_y * pixel_width) + sample_x)];
 
                   if (pixel == kLtGreen) {
                     pixel = 0;
@@ -2234,60 +2254,59 @@ std::unique_ptr<char[]> Get_Radar_Icon(const void* shapefile,
                     break;
                   }
                 }
-                *buffer++ = pixel;
+                *output++ = pixel;
               } else {
-                *buffer++ = 0;
+                *output++ = 0;
               }
             }
           }
         }
       }
     } else {
-      buffer += static_cast<base::ssize>(icon_width * icon_height) * 9;
+      output += static_cast<base::ssize>(icon_width) * icon_height *
+                zoom_factor * zoom_factor;
     }
   }
   return result;
 }
 
-void CC_Draw_Shape(const void* shapefile, const int shape_num, const int x,
-                   const int y, const WindowNumberType window,
-                   ShapeFlags_Type flags, const void* fading_data,
-                   const void* ghostdata, const DirType rotation,
+void CC_Draw_Shape(std::span<const std::byte> shapefile, const int shape_num,
+                   const int x, const int y, const WindowNumberType window,
+                   ShapeFlags_Type flags, std::span<const uint8_t> fading_data,
+                   std::span<const uint8_t> ghostdata, const DirType rotation,
                    const int32_t scale) {
   // Special kludge for E3 to prevent crashes
   //
   // Callers that ask for ghosting or fading without supplying the table get
   // the display class's default rather than a null dereference.
-  if (base::Any(flags & SHAPE_GHOST) && !ghostdata) {
+  if (base::Any(flags & SHAPE_GHOST) && ghostdata.empty()) {
     ghostdata = DisplayClass::SpecialGhost;
   }
-  if (base::Any(flags & SHAPE_FADING) && !fading_data) {
+  if (base::Any(flags & SHAPE_FADING) && fading_data.empty()) {
     fading_data = DisplayClass::FadingShade;
   }
 
-  static unsigned char* x_buffer = nullptr;
+  static std::vector<uint8_t> x_buffer(kShapeBufferSize);
 
-  if (!x_buffer) {
-    x_buffer = new unsigned char[kShapeBufferSize];
-  }
-
-  if (shapefile != nullptr && shape_num != -1) {
+  if (!shapefile.empty() && shape_num != -1) {
     int width = Get_Build_Frame_Width(shapefile);
     int height = Get_Build_Frame_Height(shapefile);
 
     // In WIn95, build shape returns a pointer to the shape not its size
-    void* shape_pointer =
-        Build_Frame(shapefile, static_cast<uint16_t>(shape_num), ShapeBuffer);
-    if (shape_pointer) {
+    const auto shape_pointer = Build_Frame(
+        shapefile, static_cast<uint16_t>(shape_num), ShapeBufferBytes);
+    if (!shape_pointer.empty()) {
       GraphicViewPortClass draw_window(
           LogicPage->Get_Graphic_Buffer(),
-          base::At(WindowList[static_cast<int>(window)], kWindowX) +
+          base::At(base::At(WindowList, static_cast<int>(window)), kWindowX) +
               LogicPage->Get_XPos(),
-          base::At(WindowList[static_cast<int>(window)], kWindowY) +
+          base::At(base::At(WindowList, static_cast<int>(window)), kWindowY) +
               LogicPage->Get_YPos(),
-          base::At(WindowList[static_cast<int>(window)], kWindowWidth),
-          base::At(WindowList[static_cast<int>(window)], kWindowHeight));
-      auto* buffer = static_cast<unsigned char*>(shape_pointer);
+          base::At(base::At(WindowList, static_cast<int>(window)),
+                   kWindowWidth),
+          base::At(base::At(WindowList, static_cast<int>(window)),
+                   kWindowHeight));
+      auto buffer = shape_pointer;
 
       UseOldShapeDraw = false;
       // Rotation and scale handler.
@@ -2296,12 +2315,12 @@ void CC_Draw_Shape(const void* shapefile, const int shape_num, const int x,
       if (rotation != DIR_N || scale != 0x0100) {
         // Flag to use the old shape drawing
         UseOldShapeDraw = true;
-        buffer = static_cast<unsigned char*>(shape_pointer);
+        buffer = shape_pointer;
 
         const BitmapClass bm(width, height, buffer);
         width *= 2;
         height *= 2;
-        memset(x_buffer, '\0', kShapeBufferSize);
+        std::ranges::fill(x_buffer, uint8_t{0});
         GraphicBufferClass gb(width, height, x_buffer);
         const TPoint2D pt(width / 2, height / 2);
 
@@ -2327,19 +2346,21 @@ void CC_Draw_Shape(const void* shapefile, const int shape_num, const int x,
       // cloaked objects side by side do not ripple in lockstep.
       int pred_offset = static_cast<int>(Frame);
 
-      if (x >
-          base::At(WindowList[static_cast<int>(window)], kWindowWidth) * 4) {
+      if (x > base::At(base::At(WindowList, static_cast<int>(window)),
+                       kWindowWidth) *
+                  4) {
         pred_offset = -pred_offset;
       }
 
       if (draw_window.Lock()) {
         const ShapeEffects effects{
-            .ghost_table = static_cast<const uint8_t*>(ghostdata),
-            .fading_table = static_cast<const uint8_t*>(fading_data),
+            .ghost_table = ghostdata,
+            .fading_table = fading_data,
             .fading_count = 1,
             .predator_offset = pred_offset,
         };
-        Buffer_Frame_To_Page(x, y, width, height, buffer, draw_window,
+        Buffer_Frame_To_Page(x, y, width, height,
+                             std::as_writable_bytes(buffer), draw_window,
                              flags | SHAPE_TRANS, effects);
         draw_window.Unlock();
       }
@@ -2347,29 +2368,21 @@ void CC_Draw_Shape(const void* shapefile, const int shape_num, const int x,
   }
 }
 
-void CC_Draw_Shape(const std::span<const std::byte> shapefile,
-                   const int shape_num, const int x, const int y,
-                   const WindowNumberType window, const ShapeFlags_Type flags,
-                   const void* fading_data, const void* ghostdata,
-                   const DirType rotation, const int32_t scale) {
-  CC_Draw_Shape(shapefile.data(), shape_num, x, y, window, flags, fading_data,
-                ghostdata, rotation, scale);
-}
-
-Rect Shape_Dimensions(const void* shapedata, const int shape_num) {
+Rect Shape_Dimensions(std::span<const std::byte> shapedata,
+                      const int shape_num) {
   Rect rect;
 
-  if (shapedata == nullptr || shape_num < 0 ||
-      std::cmp_greater(shape_num, Get_Build_Frame_Count(shapedata))) {
+  if (shapedata.empty() || shape_num < 0 ||
+      std::cmp_greater_equal(shape_num, Get_Build_Frame_Count(shapedata))) {
     return rect;
   }
 
-  void* sh =
-      Build_Frame(shapedata, static_cast<uint16_t>(shape_num), ShapeBuffer);
-  if (sh == nullptr) {
+  const auto sh = Build_Frame(shapedata, static_cast<uint16_t>(shape_num),
+                              ShapeBufferBytes);
+  if (sh.empty()) {
     return rect;
   }
-  const char* shape = static_cast<const char*>(sh);
+  const auto shape = sh;
 
   const int width = Get_Build_Frame_Width(shapedata);
   const int height = Get_Build_Frame_Height(shapedata);
@@ -2385,7 +2398,7 @@ Rect Shape_Dimensions(const void* shapedata, const int shape_num) {
   // Find top edge of the shape.
   for (int y = 0; y <= y_limit; y++) {
     for (int x = 0; x <= x_limit; x++) {
-      if (shape[(y * width) + x] != 0) {
+      if (shape[base::ToSize((y * width) + x)] != 0) {
         rect.Y = y;
         rect.X = x;
         // Pushing y past the limit breaks the outer loop too -- the first row
@@ -2399,7 +2412,7 @@ Rect Shape_Dimensions(const void* shapedata, const int shape_num) {
   // Find bottom edge of the shape.
   for (int y = y_limit; y >= rect.Y; y--) {
     for (int x = x_limit; x >= 0; x--) {
-      if (shape[(y * width) + x] != 0) {
+      if (shape[base::ToSize((y * width) + x)] != 0) {
         rect.Height = y - rect.Y + 1;
         x_limit = x;
         y = rect.Y - 1;
@@ -2411,7 +2424,7 @@ Rect Shape_Dimensions(const void* shapedata, const int shape_num) {
   // Find left edge of the shape.
   for (int x = 0; x < rect.X; x++) {
     for (int y = rect.Y; y < rect.Y + rect.Height; y++) {
-      if (shape[(y * width) + x] != 0) {
+      if (shape[base::ToSize((y * width) + x)] != 0) {
         rect.X = x;
         x = rect.X;
         break;
@@ -2422,7 +2435,7 @@ Rect Shape_Dimensions(const void* shapedata, const int shape_num) {
   // Find the right edge of the shape.
   for (int x = width - 1; x >= x_limit; x--) {
     for (int y = rect.Y; y < rect.Y + rect.Height; y++) {
-      if (shape[(y * width) + x] != 0) {
+      if (shape[base::ToSize((y * width) + x)] != 0) {
         rect.Width = x - rect.X + 1;
         x = x_limit - 1;
         break;
@@ -2813,7 +2826,7 @@ constexpr int kDvdName = 4;
 bool Force_CD_Available(int cd_desired)  // ajw
 {
   static int _last = -1;
-  static const void* font;
+  static std::span<const std::byte> font;
   // Disc names as printed on the localized releases, in the language this
   // build was compiled for.
   static constexpr std::array<const char*, 5> kCdNames = [] {
@@ -3067,25 +3080,16 @@ bool Force_CD_Available(int cd_desired)  // ajw
   return true;
 }
 
-void* Hires_Load(const char* name) {
-  char filename[30];
-
-  absl::SNPrintF(filename, sizeof(filename), "H%s", name);
+std::span<std::byte> Hires_Load(const char* name) {
+  const std::string filename = absl::StrCat("H", name);
   GameFile file(filename);
-
-  if (file.IsAvailable()) {
-    const base::ssize length = file.Size();
-    char* return_ptr = new char[base::ToSize(length)];
-    file.Read(return_ptr, length);
-    return return_ptr;
-  }
-  return nullptr;
+  return file.IsAvailable() ? Load_Alloc_Data(file) : std::span<std::byte>{};
 }
 
 CrateType Crate_From_Name(const char* name) {
   if (name != nullptr) {
     for (const CrateType crate : magic_enum::enum_values<CrateType>()) {
-      if (stricmp(name, CrateNames[crate]) == 0) {
+      if (port::CompareIgnoreCase(name, CrateNames[crate]) == 0) {
         return crate;
       }
     }
@@ -3095,10 +3099,11 @@ CrateType Crate_From_Name(const char* name) {
 
 uint32_t Owner_From_Name(const char* text) {
   uint32_t ownable = 0;
-  if (stricmp(text, "soviet") == 0) {
+  if (port::CompareIgnoreCase(text, "soviet") == 0) {
     ownable |= kHouseFlagSoviet;
   } else {
-    if (stricmp(text, "allies") == 0 || stricmp(text, "allied") == 0) {
+    if (port::CompareIgnoreCase(text, "allies") == 0 ||
+        port::CompareIgnoreCase(text, "allied") == 0) {
       ownable |= kHouseFlagAllies;
     } else {
       const HousesType h = HouseTypeClass::From_Name(text);
@@ -3147,19 +3152,15 @@ void Shake_The_Screen(int shakes) {
   Show_Mouse();
 }
 
-void List_Copy(const int16_t* source, int len, int16_t* dest) {
-  if (source == nullptr || dest == nullptr) {
-    return;
-  }
-
-  while (len > 0) {
-    *dest = *source;
-    if (*dest == kRefreshEol) {
+void List_Copy(std::span<const int16_t> source, int len,
+               std::span<int16_t> dest) {
+  CHECK_GE(len, 0);
+  CHECK_LE(base::ToSize(len), dest.size());
+  for (std::size_t i = 0; i < base::ToSize(len) && i < source.size(); ++i) {
+    dest[i] = source[i];
+    if (source[i] == kRefreshEol) {
       break;
     }
-    dest++;
-    source++;
-    len--;
   }
 }
 

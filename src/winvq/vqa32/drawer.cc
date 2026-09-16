@@ -72,9 +72,10 @@
 
 #include <algorithm>
 #include <cstdint>
-#include <cstring>
+#include <span>
 
 #include "absl/log/check.h"
+#include "base/buffer.h"
 #include "base/numeric.h"
 #include "winvq/vqa32/unvq.h"
 #include "winvq/vqa32/vqafile.h"
@@ -90,9 +91,9 @@ static void Prepare_Frame(VQAData* vqabuf);
 
 static int32_t DrawFrame_Buffer(VQAHandle* vqa);
 
-static void __cdecl UnVQ_Nop(const unsigned char* codebook,
-                             const unsigned char* pointers,
-                             unsigned char* buffer, int blocksperrow,
+static void __cdecl UnVQ_Nop(std::span<const unsigned char> codebook,
+                             std::span<const unsigned char> pointers,
+                             std::span<unsigned char> buffer, int blocksperrow,
                              int numrows, int bufwidth);
 
 /****************************************************************************
@@ -330,8 +331,9 @@ static int32_t Select_Frame(VQAHandle* vqap) {
         /* Un-LCW if needed */
         if (curframe->Flags & VQAFRMF_PALCOMP) {
           curframe->PaletteSize =
-              LCW_Uncompress(curframe->Palette + curframe->PalOffset,
-                             curframe->Palette, vqabuf->Max_Pal_Size);
+              LCW_Uncompress(std::span(curframe->PaletteStorage)
+                                 .subspan(base::ToSize(curframe->PalOffset)),
+                             curframe->PaletteStorage);
 
           curframe->Flags &= ~VQAFRMF_PALCOMP;
         }
@@ -340,8 +342,9 @@ static int32_t Select_Frame(VQAHandle* vqap) {
         // Max_Pal_Size bytes, more than the 256-color copy holds.
         const int32_t stash_size = std::min(
             curframe->PaletteSize, int32_t{sizeof(drawer->Palette_24)});
-        memcpy(drawer->Palette_24, curframe->Palette,
-               base::ToSize(stash_size));
+        base::CopyBytes(base::ObjectBytes(drawer->Palette_24),
+                        std::as_bytes(std::span(curframe->PaletteStorage)),
+                        stash_size);
         drawer->CurPalSize = stash_size;
         drawer->Flags |= VQADRWF_SETPAL;
       }
@@ -400,8 +403,9 @@ static void Prepare_Frame(VQAData* vqabuf) {
   /* Decompress the codebook, if needed */
   if (codebook->Flags & VQACBF_CBCOMP) {
     /* Decompress the codebook. */
-    LCW_Uncompress(codebook->Buffer + codebook->CBOffset, codebook->Buffer,
-                   vqabuf->Max_CB_Size);
+    LCW_Uncompress(std::span(codebook->BufferStorage)
+                       .subspan(base::ToSize(codebook->CBOffset)),
+                   codebook->BufferStorage);
 
     /* Mark as uncompressed for the next time we use it */
     codebook->Flags &= ~VQACBF_CBCOMP;
@@ -410,8 +414,9 @@ static void Prepare_Frame(VQAData* vqabuf) {
   /* Decompress the palette, if needed */
   if (curframe->Flags & VQAFRMF_PALCOMP) {
     curframe->PaletteSize =
-        LCW_Uncompress(curframe->Palette + curframe->PalOffset,
-                       curframe->Palette, vqabuf->Max_Pal_Size);
+        LCW_Uncompress(std::span(curframe->PaletteStorage)
+                           .subspan(base::ToSize(curframe->PalOffset)),
+                       curframe->PaletteStorage);
 
     /* Mark as uncompressed */
     curframe->Flags &= ~VQAFRMF_PALCOMP;
@@ -419,8 +424,9 @@ static void Prepare_Frame(VQAData* vqabuf) {
 
   /* Decompress the pointer data, if needed */
   if (curframe->Flags & VQAFRMF_PTRCOMP) {
-    LCW_Uncompress(curframe->Pointers + curframe->PtrOffset, curframe->Pointers,
-                   vqabuf->Max_Ptr_Size);
+    LCW_Uncompress(std::span(curframe->PointersStorage)
+                       .subspan(base::ToSize(curframe->PtrOffset)),
+                   curframe->PointersStorage);
 
     /* Mark as uncompressed */
     curframe->Flags &= ~VQAFRMF_PTRCOMP;
@@ -481,9 +487,14 @@ static int32_t DrawFrame_Buffer(VQAHandle* vqa) {
   /* Dereference current frame for quicker access. */
   VQAFrameNode* curframe = drawer->CurFrame;
 
-  unsigned char* buff = drawer->ImageBuf + drawer->ScreenOffset;
+  if (drawer->ScreenOffset < 0 ||
+      base::ToSize(drawer->ScreenOffset) > drawer->ImageBuf.size()) {
+    return VQAERR_NOBUFFER;
+  }
+  const auto buff =
+      drawer->ImageBuf.subspan(base::ToSize(drawer->ScreenOffset));
 
-  unsigned char* pal = curframe->Palette;
+  const auto pal = std::span(curframe->PaletteStorage);
   const int32_t palsize = curframe->PaletteSize;
   const uint32_t slowpal =
       (config->OptionFlags & VQAOPTF_SLOWPAL) != 0 ? 1U : 0U;
@@ -496,8 +507,8 @@ static int32_t DrawFrame_Buffer(VQAHandle* vqa) {
   }
 
   /* Un-VQ the image */
-  vqabuf->UnVQ(curframe->Codebook->Buffer, curframe->Pointers, buff,
-               drawer->BlocksPerRow, drawer->NumRows, drawer->ImageWidth);
+  vqabuf->UnVQ(curframe->Codebook->BufferStorage, curframe->PointersStorage,
+               buff, drawer->BlocksPerRow, drawer->NumRows, drawer->ImageWidth);
 
   /* Update data for mono output */
   drawer->LastFrameNum = curframe->FrameNum;
@@ -510,7 +521,8 @@ static int32_t DrawFrame_Buffer(VQAHandle* vqa) {
 
   /* Invoke user's callback routine */
   if ((config->DrawerCallback != nullptr) &&
-      (config->DrawerCallback(drawer->ImageBuf, curframe->FrameNum) != 0)) {
+      (config->DrawerCallback(drawer->ImageBuf.data(), curframe->FrameNum) !=
+       0)) {
     return VQAERR_EOF;
   }
 
@@ -545,7 +557,7 @@ static int32_t DrawFrame_Buffer(VQAHandle* vqa) {
  *
  ****************************************************************************/
 
-static void UnVQ_Nop(const unsigned char* /*codebook*/,
-                     const unsigned char* /*pointers*/,
-                     unsigned char* /*buffer*/, int /*blocksperrow*/,
+static void UnVQ_Nop(std::span<const unsigned char> /*codebook*/,
+                     std::span<const unsigned char> /*pointers*/,
+                     std::span<unsigned char> /*buffer*/, int /*blocksperrow*/,
                      int /*numrows*/, int /*bufwidth*/) {}

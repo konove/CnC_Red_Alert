@@ -43,10 +43,12 @@
 
 #include <cstdio>
 #include <cstring>
+#include <span>
 #include <vector>
 
 #include "absl/strings/str_format.h"
 #include "base/numeric.h"
+#include "port/safe_string.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
@@ -196,23 +198,23 @@ void SoundControlsClass::Process() {
   */
   char filename[30];
   if (factor == 1) {
-    strcpy(filename, "BTN-ST.SHP");
+    port::SafeCopy(filename, "BTN-ST.SHP");
   } else {
-    strcpy(filename, "BTN-STH.SHP");
+    port::SafeCopy(filename, "BTN-STH.SHP");
   }
-  ShapeButtonClass stopbtn(kButtonStop, MixArchive::Retrieve(filename),
+  ShapeButtonClass stopbtn(kButtonStop, MixArchive::RetrieveData(filename),
                            Option_X + Stop_X, Option_Y + Stop_Y);
 
   /*
   **	Start playing button.
   */
   if (factor == 1) {
-    strcpy(filename, "BTN-PL.SHP");
+    port::SafeCopy(filename, "BTN-PL.SHP");
   } else {
-    strcpy(filename, "BTN-PLH.SHP");
+    port::SafeCopy(filename, "BTN-PLH.SHP");
   }
 
-  ShapeButtonClass playbtn(kButtonPlay, MixArchive::Retrieve(filename),
+  ShapeButtonClass playbtn(kButtonPlay, MixArchive::RetrieveData(filename),
                            Option_X + Play_X, Option_Y + Play_Y);
 
   /*
@@ -325,7 +327,7 @@ void SoundControlsClass::Process() {
       }
     }
   }
-  static int _tabs[] = {55 * factor, 72 * factor, 90 * factor};
+  static const int _tabs[] = {55 * factor, 72 * factor, 90 * factor};
   listbox.Set_Tabs(_tabs);
 
   /*

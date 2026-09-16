@@ -47,6 +47,10 @@
 #define CNC_RED_ALERT_RA_QUEUE_H_
 
 #include <cstdint>
+#include <cstddef>
+#include <span>
+#include "base/buffer.h"
+#include "base/array.h"
 
 #include "absl/base/attributes.h"
 #include "ra/defines.h"
@@ -185,7 +189,7 @@ void QueueClass<T, size>::Init() {
 template <class T, int size>
 bool QueueClass<T, size>::Add(const T& q) {
   if (Count_ < size) {
-    Array[Tail] = q;
+    base::At(Array, Tail) = q;
     Tail = (Tail + 1) % size;
     Count_++;
     return true;
@@ -243,7 +247,7 @@ int QueueClass<T, size>::Next() {
  *=============================================================================================*/
 template <class T, int size>
 T& QueueClass<T, size>::operator[](int index) {
-  return Array[(Head + index) % size];
+  return base::At(Array, (Head + index) % size);
 }
 
 /***********************************************************************************************
@@ -267,7 +271,7 @@ T& QueueClass<T, size>::operator[](int index) {
  *=============================================================================================*/
 template <class T, int size>
 T& QueueClass<T, size>::First() {
-  return Array[Head];
+  return base::At(Array, Head);
 }
 
 template <class T, int size>
@@ -298,8 +302,8 @@ void Queue_AI();
 
 // Decode the events packed in `buf` onto DoList. Return the number of events
 // read.
-int Extract_Uncompressed_Events(void* buf, int bufsize);
-int Extract_Compressed_Events(void* buf, int bufsize);
+int Extract_Uncompressed_Events(std::span<const std::byte> buf, int bufsize);
+int Extract_Compressed_Events(std::span<const std::byte> buf, int bufsize);
 void Add_CRC(uint32_t* crc, uint32_t val);
 
 #endif  // CNC_RED_ALERT_RA_QUEUE_H_

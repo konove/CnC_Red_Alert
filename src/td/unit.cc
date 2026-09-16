@@ -114,6 +114,9 @@
 #include <cstdlib>
 #include <cstring>
 #include <iterator>
+#include <span>
+#include <string_view>
+#include <vector>
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
@@ -1389,13 +1392,13 @@ bool UnitClass::Unload_Hovercraft_Process() {
             *direction.
             */
             ScenarioInit++;
-            if (u->Unlimbo(
-                    Coord_Add(Coord & 0xFF00FF00L, StoppingCoordAbs[count]),
-                    DIR_N)) {
+            if (u->Unlimbo(Coord_Add(Coord & 0xFF00FF00L,
+                                     base::At(StoppingCoordAbs, count)),
+                           DIR_N)) {
               u->Assign_Mission(MISSION_MOVE);
               u->NavCom = ::As_Target(cell);
-              u->Path[0] = Dir_Facing(u->PrimaryFacing.Current());
-              u->Path[1] = FACING_NONE;
+              base::At(u->Path, 0) = Dir_Facing(u->PrimaryFacing.Current());
+              base::At(u->Path, 1) = FACING_NONE;
               u->Set_Speed(0x80);
               u->IsUnloading = true;
 
@@ -1487,9 +1490,10 @@ bool UnitClass::Goto_Clear_Spot() {
         -MAP_CELL_W * 4,       -(MAP_CELL_W * 4) + 1, -(MAP_CELL_W * 4) - 1,
         -(MAP_CELL_W * 4) + 2, -(MAP_CELL_W * 4) - 2, 0};
 
-    int* ptr = &_offsets[0];
-    while (*ptr) {
-      const CELL cell = static_cast<CELL>(Coord_Cell(Coord) + *ptr++);
+    std::span<int> ptr = _offsets;
+    while (!ptr.empty() && ptr.front()) {
+      const CELL cell =
+          static_cast<CELL>(Coord_Cell(Coord) + base::ConsumeFront(ptr));
 
       if (BuildingTypeClass::As_Reference(STRUCT_CONST).Legal_Placement(cell)) {
         Assign_Destination(::As_Target(cell));
@@ -1817,7 +1821,7 @@ void UnitClass::Per_Cell_Process(bool center) {
   **	Certain units require some setup time after they come to a halt.
   */
   if (Special.IsDefenderAdvantage && /*center &&*/ !Target_Legal(NavCom) &&
-      Path[0] == FACING_NONE) {
+      base::At(Path, 0) == FACING_NONE) {
     if (*this == UNIT_MLRS || *this == UNIT_ARTY || *this == UNIT_MSAM) {
       Arm = static_cast<unsigned char>(Rearm_Delay(false) * 2);
     }
@@ -1889,9 +1893,9 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) {
   /*
   **	Verify the legality of the unit class.
   */
-  const void* shapefile =
+  const auto shapefile =
       Class->Get_Image_Data();  // Working shape file pointer.
-  if (!shapefile) {
+  if (shapefile.empty()) {
     return;
   }
 
@@ -1924,14 +1928,14 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) {
           case FACING_NE:
           case FACING_E:
           case FACING_SE:
-            shapenum = BodyShape[tfacing] + 96;
+            shapenum = base::At(BodyShape, tfacing) + 96;
             shapestart = 0;
             // xx -= 4;
             break;
 
           case FACING_W:
           default:
-            shapenum = BodyShape[tfacing];
+            shapenum = base::At(BodyShape, tfacing);
             shapestart = 6;
             xx += 4;
             break;
@@ -1964,17 +1968,17 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) {
       if (IsHarvesting && !PrimaryFacing.Is_Rotating() && !NavCom &&
           !IsDriving) {
         static const char _hstage[6] = {0, 1, 2, 3, 2, 1};
-        shapenum = 32 + ((BodyShape[facing] + 2) / 4 * 4) +
-                   _hstage[Fetch_Stage() % std::ssize(_hstage)];
+        shapenum = 32 + ((base::At(BodyShape, facing) + 2) / 4 * 4) +
+                   base::At(_hstage, Fetch_Stage() % std::ssize(_hstage));
       } else {
-        shapenum = BodyShape[facing];
+        shapenum = base::At(BodyShape, facing);
         if (Class->IsAnimating) {
           shapenum = Fetch_Stage();
         }
         if (Class->IsPieceOfEight) {
           shapenum = 0;
           if (facing) {
-            shapenum = BodyShape[24 + facing];
+            shapenum = base::At(BodyShape, 24 + facing);
           }
           if (IsDriving) {
             shapenum = Fetch_Stage() + 16 + (shapenum * 8);
@@ -2041,7 +2045,7 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) {
       **	Determine which turret shape to use. This depends on if there
       **	is any firing animation in progress.
       */
-      shapenum = BodyShape[tfacing] + 32;
+      shapenum = base::At(BodyShape, tfacing) + 32;
 
       /*
       **	The shape to use for the rocket launcher is dependant on the
@@ -2093,7 +2097,7 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) {
         int y1 = 0;
 
         if (Map.Coord_To_Pixel(Coord_Add(Coord_Add(Coord, 0xFF80FF80L),
-                                         StoppingCoordAbs[counter++]),
+                                         base::At(StoppingCoordAbs, counter++)),
                                x1, y1)) {
           u->Draw_It(x1, y1, WINDOW_TACTICAL);
         }
@@ -2110,7 +2114,7 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) {
   *else.
   */
   if (Flagged != HOUSE_NONE) {
-    CC_Draw_Shape(MixArchive::Retrieve("FLAGFLY.SHP"),
+    CC_Draw_Shape(MixArchive::RetrieveData("FLAGFLY.SHP"),
                   static_cast<int>(Frame % 14), x, y, window,
                   SHAPE_CENTER | SHAPE_FADING | SHAPE_GHOST,
                   HouseClass::As_Pointer(Flagged)->Remap_Table(false, false),
@@ -2375,7 +2379,7 @@ int UnitClass::Mission_Unload() {
     case UNIT_MCV:
       switch (Status) {
         case 0:
-          Path[0] = FACING_NONE;
+          base::At(Path, 0) = FACING_NONE;
           Status = 1;
           break;
 
@@ -2667,7 +2671,7 @@ void UnitClass::Look(bool incremental) {
  * HISTORY: * 05/26/1994 JLB : Created. * 06/19/1994 JLB : Uses
  *Coord_Spillable_List function.                                      *
  *=============================================================================================*/
-const int16_t* UnitClass::Overlap_List() const {
+std::span<const int16_t> UnitClass::Overlap_List() const {
   Validate();
   static const int16_t _gunboat[] = {-3, -2, 2, 3, REFRESH_EOL};
 
@@ -2675,7 +2679,7 @@ const int16_t* UnitClass::Overlap_List() const {
   **	The gunboat is a special case.
   */
   if (*this == UNIT_GUNBOAT) {
-    return &_gunboat[0];
+    return _gunboat;
   }
 
   int size = ICON_PIXEL_W;
@@ -2685,7 +2689,7 @@ const int16_t* UnitClass::Overlap_List() const {
   if (IsSelected || Class->IsGigundo || IsAnimAttached) {
     size = ICON_PIXEL_W * 2;
   }
-  return Coord_Spillage_List(Coord, size) + 1;
+  return Coord_Spillage_List(Coord, size).subspan(1);
 }
 
 #ifdef NEVER
@@ -3241,8 +3245,11 @@ void UnitClass::Response_Select() {
   Validate();
   static const VocType _response[] = {VOC_VEHIC,  VOC_UNIT,   VOC_YESSIR,
                                       VOC_YESSIR, VOC_YESSIR, VOC_AWAIT};
-  VocType response = _response[Sim_Random_Pick(
-      0, static_cast<int>(sizeof(_response) / sizeof(_response[0])) - 1)];
+  VocType response = base::At(
+      _response,
+      Sim_Random_Pick(0, static_cast<int>(sizeof(_response) /
+                                          sizeof(base::At(_response, 0))) -
+                             1));
 
   if (*this == UNIT_TRIC || *this == UNIT_TREX || *this == UNIT_RAPT ||
       *this == UNIT_STEG) {
@@ -3272,8 +3279,11 @@ void UnitClass::Response_Move() {
   Validate();
   static const VocType _response[] = {VOC_MOVEOUT, VOC_MOVEOUT, VOC_MOVEOUT,
                                       VOC_ACKNOWL, VOC_AFFIRM,  VOC_AFFIRM};
-  VocType response = _response[Sim_Random_Pick(
-      0, static_cast<int>(sizeof(_response) / sizeof(_response[0])) - 1)];
+  VocType response = base::At(
+      _response,
+      Sim_Random_Pick(0, static_cast<int>(sizeof(_response) /
+                                          sizeof(base::At(_response, 0))) -
+                             1));
 
   if (*this == UNIT_TRIC || *this == UNIT_TREX || *this == UNIT_RAPT ||
       *this == UNIT_STEG) {
@@ -3303,8 +3313,11 @@ void UnitClass::Response_Attack() {
   Validate();
   static const VocType _response[] = {VOC_AFFIRM, VOC_ACKNOWL, VOC_YESSIR,
                                       VOC_YESSIR, VOC_YESSIR};
-  VocType response = _response[Sim_Random_Pick(
-      0, static_cast<int>(sizeof(_response) / sizeof(_response[0])) - 1)];
+  VocType response = base::At(
+      _response,
+      Sim_Random_Pick(0, static_cast<int>(sizeof(_response) /
+                                          sizeof(base::At(_response, 0))) -
+                             1));
 
   if (*this == UNIT_TRIC || *this == UNIT_TREX || *this == UNIT_RAPT ||
       *this == UNIT_STEG) {
@@ -3449,15 +3462,16 @@ bool UnitClass::Can_Player_Move() const {
 void UnitClass::Read_INI(char* buffer) {
   char buf[128];
 
-  const int len =
-      static_cast<int>(strlen(buffer)) + 2;  // Length of data in buffer.
-  char* tbuffer = buffer + len;              // Accumulation buffer of unit IDs.
+  std::vector<char> key_storage(std::string_view(buffer).size() + 2);
+  auto key_cursor = std::span(key_storage);
+  char* tbuffer = key_cursor.data();  // Accumulation buffer of unit IDs.
 
-  WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
-                            ShapeBufferSize - len, buffer);
+  WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, key_cursor, buffer);
   while (*tbuffer != '\0') {
-    WWGetPrivateProfileString(INI_Name(), tbuffer, nullptr, buf,
-                              sizeof(buf) - 1, buffer);
+    WWGetPrivateProfileString(
+        INI_Name(), tbuffer, nullptr,
+        std::span(buf).first(static_cast<std::size_t>(sizeof(buf) - 1)),
+        buffer);
     port::Tokenizer tokens(buf, ",\r\n");
     const HousesType inhouse =
         HouseTypeClass::From_Name(tokens.Next(","));  // Unit house.
@@ -3517,7 +3531,8 @@ void UnitClass::Read_INI(char* buffer) {
         }
       }
     }
-    tbuffer += strlen(tbuffer) + 1;
+    key_cursor = key_cursor.subspan(std::string_view(tbuffer).size() + 1);
+    tbuffer = key_cursor.data();
   }
 }
 
@@ -3538,21 +3553,22 @@ void UnitClass::Read_INI(char* buffer) {
  *                                                                                             *
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
-void UnitClass::Write_INI(char* buffer) {
+void UnitClass::Write_INI(std::span<char> buffer) {
   char uname[10];
   char buf[128];
 
   /*
   **	First, clear out all existing unit data from the ini file.
   */
-  char* tbuffer =
-      buffer + strlen(buffer) + 2;  // Accumulation buffer of unit IDs.
-  WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
-                            ShapeBufferSize - static_cast<int>(strlen(buffer)),
-                            buffer);
+  std::vector<char> key_storage(std::string_view(buffer.data()).size() + 2);
+  auto key_cursor = std::span(key_storage);
+  char* tbuffer = key_cursor.data();  // Accumulation buffer of unit IDs.
+  WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, key_cursor,
+                            buffer.data());
   while (*tbuffer != '\0') {
     WWWritePrivateProfileString(INI_Name(), tbuffer, nullptr, buffer);
-    tbuffer += strlen(tbuffer) + 1;
+    key_cursor = key_cursor.subspan(std::string_view(tbuffer).size() + 1);
+    tbuffer = key_cursor.data();
   }
 
   /*
@@ -3976,7 +3992,7 @@ void UnitClass::APC_Open_Door() {
  *                                                                                             *
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
-const void* UnitClass::Remap_Table() {
+std::span<const unsigned char> UnitClass::Remap_Table() {
   Validate();
   if (*this == UNIT_MCV || *this == UNIT_HARVESTER) {
     return House->Remap_Table(IsBlushing, false);

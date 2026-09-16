@@ -38,11 +38,14 @@
 #include "tech/packet.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <span>
+#include <string_view>
 
+#include "base/buffer.h"
 #include "base/numeric.h"
-#include "port/safe_string.h"
 #include "port/unaligned.h"
 #include "tech/field.h"
 
@@ -104,61 +107,41 @@ void PacketClass::Add_Field(FieldClass* field) {
  * HISTORY:                                                               *
  *   04/22/1996 PWG : Created.                                            *
  *========================================================================*/
-PacketClass::PacketClass(char* curbuf) : Head(nullptr) {
-  //
-  // Pull the size and packet ID out of the linear packet stream.
-  //
-  std::memcpy(&Size, curbuf, sizeof(Size));
-  curbuf += sizeof(Size);
-  Size = ntohs(Size);
-  std::memcpy(&ID, curbuf, sizeof(ID));
-  curbuf += sizeof(ID);
-  ID = static_cast<int16_t>(ntohs(static_cast<uint16_t>(ID)));
-
-  //
-  // Calculate the remaining size so that we can loop through the
-  //   packets and extract them.
-  //
-  int remaining_size = Size - 4;
-
-  //
-  // Loop through the linear packet until we run out of room and
-  // create a field for each.
-  //
-  while (remaining_size > 0) {
+PacketClass::PacketClass(std::span<const std::byte> curbuf)
+    : Size(0), ID(0), Head(nullptr) {
+  if (curbuf.size() < 4) {
+    return;
+  }
+  Size = ntohs(port::ReadUnaligned<uint16_t>(curbuf));
+  ID = static_cast<int16_t>(
+      ntohs(port::ReadUnaligned<uint16_t>(curbuf.subspan(2))));
+  if (Size < 4 || Size > curbuf.size()) {
+    return;
+  }
+  curbuf = curbuf.first(Size).subspan(4);
+  while (curbuf.size() >= FIELD_HEADER_SIZE) {
     auto* field = new FieldClass;
-
-    //
-    // Copy the adjusted header into the buffer and then advance the buffer
-    //
-    memcpy(field, curbuf, FIELD_HEADER_SIZE);
-    curbuf += FIELD_HEADER_SIZE;
-    remaining_size -= FIELD_HEADER_SIZE;
-
-    //
-    // Copy the data into the buffer
-    //
-    const int size = ntohs(field->Size);
-    field->Data = new char[base::ToSize(size)];
-    memcpy(field->Data, curbuf, base::ToSize(size));
-    curbuf += size;
-    remaining_size -= size;
-    //
-    // Make sure we allow for the pad bytes.
-    //
-    const int pad = (4 - (ntohs(field->Size) % 4)) % 4;
-    curbuf += pad;
-    remaining_size -= pad;
-
-    //
-    // Convert the field back to the host format
-    //
+    base::CopyBytes(base::ObjectBytes(field->ID), curbuf, 4);
+    field->DataType = port::ReadUnaligned<uint16_t>(curbuf.subspan(4));
+    field->Size = port::ReadUnaligned<uint16_t>(curbuf.subspan(6));
+    curbuf = curbuf.subspan(FIELD_HEADER_SIZE);
+    const std::size_t size = ntohs(field->Size);
+    const std::size_t pad = (4 - (size % 4)) % 4;
+    if (size + pad > curbuf.size()) {
+      delete field;
+      return;
+    }
+    const int type = ntohs(field->DataType);
+    if (((type == TYPE_CHAR || type == TYPE_UNSIGNED_CHAR) && size != 1) ||
+        ((type == TYPE_SHORT || type == TYPE_UNSIGNED_SHORT) && size != 2) ||
+        ((type == TYPE_LONG || type == TYPE_UNSIGNED_LONG) && size != 4)) {
+      delete field;
+      return;
+    }
+    field->Data.assign(curbuf.begin(),
+                       curbuf.begin() + static_cast<std::ptrdiff_t>(size));
+    curbuf = curbuf.subspan(size + pad);
     field->Net_To_Host();
-
-    //
-    // Finally add the field to the field list in the packet
-    // structure.
-    //
     Add_Field(field);
   }
 }
@@ -202,15 +185,17 @@ char* PacketClass::Create_Comms_Packet(int& size) {
   // packet.
   //
   char* retval = new char[base::ToSize(size)];
-  char* curbuf = retval;
+  // retval owns exactly size bytes allocated immediately above.
+  // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
+  auto curbuf = std::as_writable_bytes(std::span(retval, base::ToSize(size)));
 
   //
   // write the size into the packet header
   //
   port::WriteUnaligned(curbuf, htons(static_cast<uint16_t>(size)));
-  curbuf += sizeof(uint16_t);
+  curbuf = curbuf.subspan(sizeof(uint16_t));
   port::WriteUnaligned(curbuf, htons(static_cast<uint16_t>(ID)));
-  curbuf += sizeof(int16_t);
+  curbuf = curbuf.subspan(sizeof(int16_t));
 
   //
   // Ok now that the actual header information has been written we need to write
@@ -226,14 +211,16 @@ char* PacketClass::Create_Comms_Packet(int& size) {
     //
     // Copy the adjusted header into the buffer and then advance the buffer
     //
-    memcpy(curbuf, current, FIELD_HEADER_SIZE);
-    curbuf += FIELD_HEADER_SIZE;
+    base::CopyBytes(curbuf, base::ObjectBytes(current->ID), 4);
+    port::WriteUnaligned(curbuf.subspan(4), current->DataType);
+    port::WriteUnaligned(curbuf.subspan(6), current->Size);
+    curbuf = curbuf.subspan(FIELD_HEADER_SIZE);
 
     //
     // Copy the data into the buffer and then advance the buffer
     //
-    memcpy(curbuf, current->Data, ntohs(current->Size));
-    curbuf += ntohs(current->Size);
+    base::CopyBytes(curbuf, current->Data, ntohs(current->Size));
+    curbuf = curbuf.subspan(ntohs(current->Size));
 
     //
     // Finally take care of any pad bytes by setting them to 0
@@ -245,8 +232,8 @@ char* PacketClass::Create_Comms_Packet(int& size) {
     // to zeros, so it looks like a pad.
     //
     if (pad) {
-      memset(curbuf, 0, base::ToSize(pad));
-      curbuf += pad;
+      std::ranges::fill(curbuf.first(base::ToSize(pad)), std::byte{0});
+      curbuf = curbuf.subspan(base::ToSize(pad));
     }
 
     current->Net_To_Host();
@@ -267,7 +254,10 @@ char* PacketClass::Create_Comms_Packet(int& size) {
  *========================================================================*/
 FieldClass* PacketClass::Find_Field(const char* id) {
   for (FieldClass* current = Head; current; current = current->Next) {
-    if (strncmp(id, current->ID, 4) == 0) {
+    if (std::string_view(id).substr(0, 4) ==
+        std::string_view(current->ID, static_cast<std::size_t>(
+                                          std::ranges::find(current->ID, '\0') -
+                                          std::begin(current->ID)))) {
       return current;
     }
   }
@@ -292,7 +282,7 @@ FieldClass* PacketClass::Find_Field(const char* id) {
 bool PacketClass::Get_Field(const char* id, char& data) {
   const FieldClass* field = Find_Field(id);
   if (field) {
-    data = *static_cast<char*>(field->Data);
+    data = port::ReadUnaligned<char>(field->Data);
   }
   return field != nullptr;
 }
@@ -315,7 +305,7 @@ bool PacketClass::Get_Field(const char* id, char& data) {
 bool PacketClass::Get_Field(const char* id, unsigned char& data) {
   const FieldClass* field = Find_Field(id);
   if (field) {
-    data = *static_cast<unsigned char*>(field->Data);
+    data = port::ReadUnaligned<unsigned char>(field->Data);
   }
   return field != nullptr;
 }
@@ -338,7 +328,7 @@ bool PacketClass::Get_Field(const char* id, unsigned char& data) {
 bool PacketClass::Get_Field(const char* id, int16_t& data) {
   const FieldClass* field = Find_Field(id);
   if (field) {
-    data = *static_cast<int16_t*>(field->Data);
+    data = port::ReadUnaligned<int16_t>(field->Data);
   }
   return field != nullptr;
 }
@@ -361,7 +351,7 @@ bool PacketClass::Get_Field(const char* id, int16_t& data) {
 bool PacketClass::Get_Field(const char* id, uint16_t& data) {
   const FieldClass* field = Find_Field(id);
   if (field) {
-    data = *static_cast<uint16_t*>(field->Data);
+    data = port::ReadUnaligned<uint16_t>(field->Data);
   }
   return field != nullptr;
 }
@@ -384,7 +374,7 @@ bool PacketClass::Get_Field(const char* id, uint16_t& data) {
 bool PacketClass::Get_Field(const char* id, int32_t& data) {
   const FieldClass* field = Find_Field(id);
   if (field) {
-    data = *static_cast<int32_t*>(field->Data);
+    data = port::ReadUnaligned<int32_t>(field->Data);
   }
   return field != nullptr;
 }
@@ -407,10 +397,19 @@ bool PacketClass::Get_Field(const char* id, int32_t& data) {
  * HISTORY:                                                               *
  *   04/23/1996 PWG : Created.                                            *
  *========================================================================*/
-bool PacketClass::Get_Field(const char* id, char* data, size_t data_size) {
+bool PacketClass::Get_Field(const char* id, std::span<char> data) {
   const FieldClass* field = Find_Field(id);
   if (field) {
-    port::SafeCopy(data, static_cast<char*>(field->Data), data_size);
+    const auto terminator = std::ranges::find(field->Data, std::byte{0});
+    const auto count =
+        static_cast<std::size_t>(terminator - field->Data.begin());
+    if (!data.empty()) {
+      const auto copied = std::min(count, data.size() - 1);
+      for (std::size_t i = 0; i < copied; ++i) {
+        data[i] = static_cast<char>(field->Data[i]);
+      }
+      data[copied] = '\0';
+    }
   }
   return field != nullptr;
 }
@@ -433,7 +432,7 @@ bool PacketClass::Get_Field(const char* id, char* data, size_t data_size) {
 bool PacketClass::Get_Field(const char* id, uint32_t& data) {
   const FieldClass* field = Find_Field(id);
   if (field) {
-    data = *static_cast<uint32_t*>(field->Data);
+    data = port::ReadUnaligned<uint32_t>(field->Data);
   }
   return field != nullptr;
 }
@@ -454,11 +453,13 @@ bool PacketClass::Get_Field(const char* id, uint32_t& data) {
  * HISTORY:                                                               *
  *   6/4/96 4:46PM ST : Created                                           *
  *========================================================================*/
-bool PacketClass::Get_Field(const char* id, void* data, int& length) {
+bool PacketClass::Get_Field(const char* id, std::span<std::byte> data,
+                            int& length) {
   const FieldClass* field = Find_Field(id);
   if (field) {
-    memcpy(data, field->Data,
-           base::ToSize(std::min(static_cast<int>(field->Size), length)));
+    base::CopyBytes(
+        data, field->Data,
+        std::min({data.size(), field->Data.size(), base::ToSize(length)}));
     length = static_cast<int>(field->Size);
   }
   return field != nullptr;

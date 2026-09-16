@@ -1,18 +1,21 @@
 // Ownership semantics of ListClass items: the list copies what it is given.
+#include "td/list.h"
+
 #include <string>
 #include <string_view>
 
 #include "gtest/gtest.h"
 #include "td/cheklist.h"
 #include "td/defines.h"
-#include "td/list.h"
+#include "td/msglist.h"
+#include "td/txtlabel.h"
 
 namespace {
 
 class TdListClassTest : public testing::Test {
  protected:
   // No scroll arrow shapes: the tests never draw.
-  ListClass list_{0, 0, 0, 100, 60, TPF_6POINT, nullptr, nullptr};
+  ListClass list_{0, 0, 0, 100, 60, TPF_6POINT, {}, {}};
 };
 
 TEST_F(TdListClassTest, AddItemCopiesTheText) {
@@ -92,14 +95,14 @@ TEST_F(TdListClassTest, ClearRemovesEverything) {
 }
 
 TEST(TdCheckListClassTest, CheckItemWritesTheGlyphIntoTheOwnedText) {
-  CheckListClass list(0, 0, 0, 100, 60, TPF_6POINT, nullptr, nullptr);
+  CheckListClass list(0, 0, 0, 100, 60, TPF_6POINT, {}, {});
   const std::string source = " trigger";
   list.Add_Item(source.c_str());
 
   list.Check_Item(0, 1);
   EXPECT_TRUE(list.Is_Checked(0));
   EXPECT_EQ(list.Get_Item(0)[0], CheckListClass::kCheckChar);
-  EXPECT_STREQ(list.Get_Item(0) + 1, "trigger");
+  EXPECT_EQ(std::string_view(list.Get_Item(0)).substr(1), "trigger");
   EXPECT_EQ(source, " trigger");
 
   list.Check_Item(0, 0);
@@ -108,6 +111,44 @@ TEST(TdCheckListClassTest, CheckItemWritesTheGlyphIntoTheOwnedText) {
 
   list.Check_Item(3, 1);
   EXPECT_FALSE(list.Is_Checked(3));
+}
+
+TEST(TdMessageListTest, OversizedEditPrefixIsClampedToOwnedStorage) {
+  MessageListClass messages;
+  messages.Init(0, 0, 4, 80, 8);
+  std::string prefix(300, 'x');
+  ASSERT_NE(messages.Add_Edit(0, TPF_6POINT, prefix.data(), 100), nullptr);
+  ASSERT_NE(messages.Get_Edit_Buf(), nullptr);
+  EXPECT_STREQ(messages.Get_Edit_Buf(), "");
+}
+
+TEST(TdMessageListTest, TailMergesIntoMatchingPlayersOwnedBuffer) {
+  MessageListClass messages;
+  messages.Init(0, 0, 4, 80, 8);
+  char head[] = "Alice:abcdefghijklmnopqrstuvw";
+  char tail[] = "Alice:tail";
+  auto* label = messages.Add_Message(head, 0, TPF_6POINT, -1,
+                                     MESSAGE_HEAD_MAGIC_NUMBER, 123);
+  ASSERT_NE(label, nullptr);
+  EXPECT_EQ(messages.Add_Message(tail, 0, TPF_6POINT, -1,
+                                 MESSAGE_HEAD_MAGIC_NUMBER + 1, 123),
+            label);
+  EXPECT_EQ(std::string_view(label->Text), "Alice:abcdefghijklmnopqrstuvwtail");
+  EXPECT_EQ(messages.Num_Messages(), 1);
+}
+
+TEST(TdMessageListTest, MatchingCrcDoesNotMergeDifferentPlayers) {
+  MessageListClass messages;
+  messages.Init(0, 0, 4, 80, 8);
+  char head[] = "Alice:head";
+  char tail[] = "Bob:tail";
+  auto* label = messages.Add_Message(head, 0, TPF_6POINT, -1,
+                                     MESSAGE_HEAD_MAGIC_NUMBER, 123);
+  ASSERT_NE(label, nullptr);
+  EXPECT_NE(messages.Add_Message(tail, 0, TPF_6POINT, -1,
+                                 MESSAGE_HEAD_MAGIC_NUMBER + 1, 123),
+            label);
+  EXPECT_EQ(messages.Num_Messages(), 2);
 }
 
 }  // namespace

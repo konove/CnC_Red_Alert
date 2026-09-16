@@ -19,6 +19,7 @@
 #include "tech/fixed.h"
 
 #include <charconv>
+#include <cstddef>
 #include <cstdint>
 #include <string>
 #include <string_view>
@@ -29,7 +30,9 @@
 // Parses leading digits from a string_view into an int. Returns 0 on failure.
 static int ParseInt(const std::string_view s) {
   int value = 0;
-  std::from_chars(s.data(), s.data() + s.size(), value);
+  // from_chars takes a begin/end pair, not a terminated C string.
+  // NOLINTNEXTLINE(bugprone-suspicious-stringview-data-usage)
+  std::from_chars(s.data(), s.substr(s.size()).data(), value);
   return value;
 }
 
@@ -59,10 +62,13 @@ fixed fixed::FromString(const std::string_view str_in) {
     const auto frac_part = str.substr(dot + 1);
     // Count digits parsed to determine the decimal base (10^n).
     int frac = 0;
+    // from_chars takes a begin/end pair, not a terminated C string.
+    // NOLINTBEGIN(bugprone-suspicious-stringview-data-usage)
     const auto [ptr, ec] = std::from_chars(
-        frac_part.data(), frac_part.data() + frac_part.size(), frac);
+        frac_part.data(), frac_part.substr(frac_part.size()).data(), frac);
+    // NOLINTEND(bugprone-suspicious-stringview-data-usage)
     int base = 1;
-    for (const auto* i = frac_part.data(); i < ptr; ++i) {
+    for (std::ptrdiff_t i = 0; i < ptr - frac_part.data(); ++i) {
       base *= 10;
     }
     result.raw_ |= static_cast<uint16_t>(256 * frac / base);

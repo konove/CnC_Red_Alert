@@ -120,7 +120,12 @@
 #ifndef CNC_RED_ALERT_SDLLIB_GBUFFER_H_
 #define CNC_RED_ALERT_SDLLIB_GBUFFER_H_
 
+#include "base/numeric.h"
+
+#include <cstddef>
+
 #include <cstdint>
+#include <span>
 
 #include "absl/base/attributes.h"
 #include "absl/strings/str_cat.h"
@@ -216,6 +221,7 @@ class GraphicViewPortClass {
    */
   /*===================================================================*/
   std::uint8_t* Get_Offset();
+  std::span<uint8_t> Get_Pixels();
   [[nodiscard]] int Get_Height() const;
   [[nodiscard]] int Get_Width() const;
   [[nodiscard]] int Get_XAdd() const;
@@ -242,7 +248,8 @@ class GraphicViewPortClass {
   void Buffer_Put_Pixel(int x, int y, unsigned char color);
   int Get_Pixel(int x, int y);
   void Clear(unsigned char color = 0);
-  int32_t To_Buffer(int x, int y, int w, int h, void* buff, int32_t size);
+  int32_t To_Buffer(int x, int y, int w, int h, std::span<uint8_t> buff,
+                    int32_t size);
   int32_t To_Buffer(int x, int y, int w, int h, BufferClass* buff);
   int32_t To_Buffer(BufferClass* buff);
   bool Blit(GraphicViewPortClass& dest, int x_pixel, int y_pixel, int dx_pixel,
@@ -253,13 +260,13 @@ class GraphicViewPortClass {
 
   bool Scale(GraphicViewPortClass& dest, int src_x, int src_y, int dst_x,
              int dst_y, int src_w, int src_h, int dst_w, int dst_h,
-             bool trans = false, const unsigned char* remap = nullptr);
+             bool trans = false, std::span<const uint8_t> remap = {});
   bool Scale(GraphicViewPortClass& dest, int src_x, int src_y, int dst_x,
              int dst_y, int src_w, int src_h, int dst_w, int dst_h,
-             const unsigned char* remap);
+             std::span<const uint8_t> remap);
   bool Scale(GraphicViewPortClass& dest, bool trans = false,
-             const unsigned char* remap = nullptr);
-  bool Scale(GraphicViewPortClass& dest, const unsigned char* remap);
+             std::span<const uint8_t> remap = {});
+  bool Scale(GraphicViewPortClass& dest, std::span<const uint8_t> remap);
 
   void Print(const char* string, int x_pixel, int y_pixel, int fcolor,
              int bcolor);
@@ -274,11 +281,12 @@ class GraphicViewPortClass {
   void Draw_Rect(int sx, int sy, int dx, int dy, unsigned char color);
   void Fill_Rect(int sx, int sy, int dx, int dy, unsigned char color);
 
-  void Remap(int sx, int sy, int width, int height, void* remap);
-  void Remap(void* remap);
+  void Remap(int sx, int sy, int width, int height,
+             std::span<const uint8_t> remap);
+  void Remap(std::span<const uint8_t> remap);
 
-  void Draw_Stamp(const void* icondata, int icon, int x_pixel, int y_pixel,
-                  const void* remap, int clip_window);
+  void Draw_Stamp(std::span<const std::byte> icondata, int icon, int x_pixel,
+                  int y_pixel, std::span<const uint8_t> remap, int clip_window);
 
   //
   // New members to lock and unlock the direct draw video memory
@@ -337,8 +345,8 @@ class GraphicViewPortClass {
 /*=========================================================================*/
 class GraphicBufferClass : public GraphicViewPortClass, public BufferClass {
  public:
-  GraphicBufferClass(int w, int h, void* buffer, int32_t size);
-  GraphicBufferClass(int w, int h, void* buffer = nullptr);
+  GraphicBufferClass(int w, int h, std::span<uint8_t> buffer, int32_t size);
+  GraphicBufferClass(int w, int h, std::span<uint8_t> buffer = {});
   GraphicBufferClass();
   ~GraphicBufferClass();
 
@@ -347,7 +355,8 @@ class GraphicBufferClass : public GraphicViewPortClass, public BufferClass {
   GraphicBufferClass(GraphicBufferClass&&) = delete;
   GraphicBufferClass& operator=(GraphicBufferClass&&) = delete;
 
-  void Init(int w, int h, void* buffer, int32_t size, GBC_Enum flags);
+  void Init(int w, int h, std::span<uint8_t> buffer, int32_t size,
+            GBC_Enum flags);
   void Un_Init();
 
   // Locks and unlocks the underlying SDL surface. Callers normally use the
@@ -366,12 +375,12 @@ class GraphicBufferClass : public GraphicViewPortClass, public BufferClass {
     return WindowTexture != nullptr;
   }
   void Update_Window_Surface(bool end_frame);
-  void Update_Palette(const std::uint8_t* palette);
+  void Update_Palette(std::span<const uint8_t> palette);
   [[nodiscard]] const void* Get_Palette() const;
 
   // Render paletted frame data with SDL texture scaling (for VQA movies, etc.)
   // Uses the palette already set via Update_Palette.
-  void Render_Scaled_Frame(const std::uint8_t* paletted_data, int width,
+  void Render_Scaled_Frame(std::span<const uint8_t> paletted_data, int width,
                            int height);
   void Destroy_VQA_Texture();
 
@@ -387,7 +396,7 @@ class GraphicBufferClass : public GraphicViewPortClass, public BufferClass {
 
 extern GraphicBufferClass* WindowBuffer;
 
-void Do_Set_Palette(void* palette);
+void Do_Set_Palette(std::span<const uint8_t> palette);
 
 inline int GraphicViewPortClass::Get_LockCount() const { return LockCount; }
 
@@ -464,6 +473,16 @@ inline bool GraphicViewPortClass::Unlock() {
  *   06/07/1994 PWG : Created.                                             *
  *=========================================================================*/
 inline std::uint8_t* GraphicViewPortClass::Get_Offset() { return Offset; }
+inline std::span<uint8_t> GraphicViewPortClass::Get_Pixels() {
+  if (GraphicBuff == nullptr) {
+    return {};
+  }
+  const auto pixels = GraphicBuff->Get_Bytes();
+  if (this == GraphicBuff) {
+    return GraphicBuff->Get_Bytes();
+  }
+  return pixels.subspan(base::ToSize((YPos * (Width + XAdd + Pitch)) + XPos));
+}
 
 /***************************************************************************
  * GVPC::GET_HEIGHT -- Gets the height of a virtual viewport instance      *
@@ -557,7 +576,7 @@ inline void GraphicViewPortClass::Buffer_Put_Pixel(const int x, const int y,
                                                    const unsigned char color) {
   if (x >= 0 && y >= 0 && x < Get_Width() && y < Get_Height()) {
     const base::ssize pitch = Get_XAdd() + Get_Width() + Get_Pitch();
-    *(Get_Offset() + x + (y * pitch)) = color;
+    Get_Pixels()[base::ToSize(x + (y * pitch))] = color;
   }
 }
 
@@ -579,7 +598,8 @@ inline void GraphicViewPortClass::Clear(unsigned char color) {
 }
 
 inline int32_t GraphicViewPortClass::To_Buffer(int x, int y, int w, int h,
-                                               void* buff, int32_t size) {
+                                               std::span<uint8_t> buff,
+                                               int32_t size) {
   int32_t return_code = 0;
   if (Lock()) {
     return_code = Buffer_To_Buffer(this, x, y, w, h, buff, size);
@@ -590,11 +610,11 @@ inline int32_t GraphicViewPortClass::To_Buffer(int x, int y, int w, int h,
 
 inline int32_t GraphicViewPortClass::To_Buffer(int x, int y, int w, int h,
                                                BufferClass* buff) {
-  return To_Buffer(x, y, w, h, buff->Get_Buffer(), buff->Get_Size());
+  return To_Buffer(x, y, w, h, buff->Get_Bytes(), buff->Get_Size());
 }
 
 inline int32_t GraphicViewPortClass::To_Buffer(BufferClass* buff) {
-  return To_Buffer(0, 0, Width, Height, buff->Get_Buffer(), buff->Get_Size());
+  return To_Buffer(0, 0, Width, Height, buff->Get_Bytes(), buff->Get_Size());
 }
 
 inline bool GraphicViewPortClass::Blit(GraphicViewPortClass& dest, int x_pixel,
@@ -629,7 +649,7 @@ inline bool GraphicViewPortClass::Scale(GraphicViewPortClass& dest, int src_x,
                                         int src_y, int dst_x, int dst_y,
                                         int src_w, int src_h, int dst_w,
                                         int dst_h, bool trans,
-                                        const unsigned char* remap) {
+                                        std::span<const uint8_t> remap) {
   bool return_code = false;
   if (Lock()) {
     if (dest.Lock()) {
@@ -646,19 +666,20 @@ inline bool GraphicViewPortClass::Scale(GraphicViewPortClass& dest, int src_x,
 inline bool GraphicViewPortClass::Scale(GraphicViewPortClass& dest, int src_x,
                                         int src_y, int dst_x, int dst_y,
                                         int src_w, int src_h, int dst_w,
-                                        int dst_h, const unsigned char* remap) {
+                                        int dst_h,
+                                        std::span<const uint8_t> remap) {
   return Scale(dest, src_x, src_y, dst_x, dst_y, src_w, src_h, dst_w, dst_h,
                false, remap);
 }
 
 inline bool GraphicViewPortClass::Scale(GraphicViewPortClass& dest, bool trans,
-                                        const unsigned char* remap) {
+                                        std::span<const uint8_t> remap) {
   return Scale(dest, 0, 0, 0, 0, Width, Height, dest.Get_Width(),
                dest.Get_Height(), trans, remap);
 }
 
 inline bool GraphicViewPortClass::Scale(GraphicViewPortClass& dest,
-                                        const unsigned char* remap) {
+                                        std::span<const uint8_t> remap) {
   return Scale(dest, 0, 0, 0, 0, Width, Height, dest.Get_Width(),
                dest.Get_Height(), false, remap);
 }
@@ -677,23 +698,24 @@ inline void GraphicViewPortClass::Print(int num, int x_pixel, int y_pixel,
   Print(absl::StrCat(num).c_str(), x_pixel, y_pixel, fcolor, bcolor);
 }
 
-inline void GraphicViewPortClass::Draw_Stamp(const void* icondata, int icon,
-                                             int x_pixel, int y_pixel,
-                                             const void* remap,
-                                             int clip_window) {
+inline void GraphicViewPortClass::Draw_Stamp(
+    std::span<const std::byte> icondata, int icon, int x_pixel, int y_pixel,
+    const std::span<const uint8_t> remap, int clip_window) {
   if (Lock()) {
 #ifdef TD
-    Buffer_Draw_Stamp_Clip(this, icondata, icon, x_pixel, y_pixel, remap,
-                           base::At(WindowList[clip_window], kWindowX) * 8,
-                           base::At(WindowList[clip_window], kWindowY),
-                           base::At(WindowList[clip_window], kWindowWidth) * 8,
-                           base::At(WindowList[clip_window], kWindowHeight));
+    Buffer_Draw_Stamp_Clip(
+        this, icondata, icon, x_pixel, y_pixel, remap,
+        base::At(base::At(WindowList, clip_window), kWindowX) * 8,
+        base::At(base::At(WindowList, clip_window), kWindowY),
+        base::At(base::At(WindowList, clip_window), kWindowWidth) * 8,
+        base::At(base::At(WindowList, clip_window), kWindowHeight));
 #else
-    Buffer_Draw_Stamp_Clip(this, icondata, icon, x_pixel, y_pixel, remap,
-                           base::At(WindowList[clip_window], kWindowX),
-                           base::At(WindowList[clip_window], kWindowY),
-                           base::At(WindowList[clip_window], kWindowWidth),
-                           base::At(WindowList[clip_window], kWindowHeight));
+    Buffer_Draw_Stamp_Clip(
+        this, icondata, icon, x_pixel, y_pixel, remap,
+        base::At(base::At(WindowList, clip_window), kWindowX),
+        base::At(base::At(WindowList, clip_window), kWindowY),
+        base::At(base::At(WindowList, clip_window), kWindowWidth),
+        base::At(base::At(WindowList, clip_window), kWindowHeight));
 #endif
   }
   Unlock();
@@ -716,14 +738,14 @@ inline void GraphicViewPortClass::Fill_Rect(int sx, int sy, int dx, int dy,
 }
 
 inline void GraphicViewPortClass::Remap(int sx, int sy, int width, int height,
-                                        void* remap) {
+                                        std::span<const uint8_t> remap) {
   if (Lock()) {
     Buffer_Remap(this, sx, sy, width, height, remap);
   }
   Unlock();
 }
 
-inline void GraphicViewPortClass::Remap(void* remap) {
+inline void GraphicViewPortClass::Remap(std::span<const uint8_t> remap) {
   Remap(0, 0, Width, Height, remap);
 }
 
@@ -750,7 +772,8 @@ inline int GraphicViewPortClass::Get_Pitch() const {
  * HISTORY:                                                                *
  *   01/12/1995 PWG : Created.                                             *
  *=========================================================================*/
-inline int32_t Buffer_To_Page(int x, int y, int w, int h, const void* Buffer,
+inline int32_t Buffer_To_Page(int x, int y, int w, int h,
+                              std::span<const uint8_t> Buffer,
                               GraphicViewPortClass& view) {
   int32_t return_code = 0;
   if (view.Lock()) {
@@ -819,7 +842,7 @@ inline int32_t BufferClass::To_Page(int x, int y, int w, int h,
                                     GraphicViewPortClass& view) {
   int32_t return_code = 0;
   if (view.Lock()) {
-    return_code = Buffer_To_Page(x, y, w, h, Buffer, &view);
+    return_code = Buffer_To_Page(x, y, w, h, Get_Bytes(), &view);
   }
   view.Unlock();
   return return_code;

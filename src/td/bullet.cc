@@ -57,8 +57,10 @@
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
+#include <span>
 
 #include "base/array.h"
+#include "base/numeric.h"
 #include "rand.h"
 #include "sdllib/shape.h"
 #include "td/aircraft.h"
@@ -218,7 +220,7 @@ BulletClass::BulletClass(BulletType id)
  * HISTORY: * 06/20/1994 JLB : Created. * 01/05/1995 JLB : Handles projectiles
  *with altitude.                                       *
  *=============================================================================================*/
-const int16_t* BulletClass::Occupy_List(bool /*placement*/) const {
+std::span<const int16_t> BulletClass::Occupy_List(bool /*placement*/) const {
   Validate();
   switch (*this) {
     case BULLET_FLAME:
@@ -231,12 +233,12 @@ const int16_t* BulletClass::Occupy_List(bool /*placement*/) const {
     default:
       if (Altitude) {
         static CELL _list[10];
-        const int16_t* ptr = Coord_Spillage_List(Coord, 5);
+        std::span<const int16_t> ptr = Coord_Spillage_List(Coord, 5);
         int index = 0;
         const CELL cell1 = Coord_Cell(Coord);
 
-        while (ptr[index] != REFRESH_EOL) {
-          base::At(_list, index) = ptr[index];
+        while (ptr[base::ToSize(index)] != REFRESH_EOL) {
+          base::At(_list, index) = ptr[base::ToSize(index)];
           index++;
         }
 
@@ -244,9 +246,9 @@ const int16_t* BulletClass::Occupy_List(bool /*placement*/) const {
         coord = Coord_Sub(Coord, coord);
         const CELL cell2 = Coord_Cell(coord);
         ptr = Coord_Spillage_List(coord, 5);
-        while (*ptr != REFRESH_EOL) {
+        while (ptr.front() != REFRESH_EOL) {
           base::At(_list, index++) =
-              static_cast<CELL>(*ptr++ + (cell2 - cell1));
+              static_cast<CELL>(base::ConsumeFront(ptr) + (cell2 - cell1));
         }
         base::At(_list, index) = REFRESH_EOL;
         return _list;
@@ -500,8 +502,8 @@ void BulletClass::Draw_It(int x, int y, WindowNumberType window) {
   **	If there is no shape loaded for this object, then
   **	it obviously can't be rendered -- just bail.
   */
-  const void* shapeptr = Class->Get_Image_Data();
-  if (!shapeptr) {
+  const auto shapeptr = Class->Get_Image_Data();
+  if (shapeptr.empty()) {
     return;
   }
 
@@ -532,7 +534,7 @@ void BulletClass::Draw_It(int x, int y, WindowNumberType window) {
   if (Altitude) {
     CC_Draw_Shape(shapeptr, shapenum, x, y, window,
                   SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING,
-                  nullptr, MouseClass::FadingShade);
+                  {}, MouseClass::FadingShade);
     y -= Lepton_To_Pixel(Altitude);
   }
 
@@ -544,7 +546,7 @@ void BulletClass::Draw_It(int x, int y, WindowNumberType window) {
     flags = SHAPE_GHOST;
   }
   CC_Draw_Shape(shapeptr, shapenum, x, y, window,
-                flags | SHAPE_CENTER | SHAPE_WIN_REL, nullptr,
+                flags | SHAPE_CENTER | SHAPE_WIN_REL, {},
                 MouseClass::UnitShadow);
 }
 

@@ -408,7 +408,7 @@ void MissionClass::Assign_Mission(MissionType order) {
 MissionType MissionClass::Mission_From_Name(const char* name) {
   if (name) {
     for (const MissionType order : magic_enum::enum_values<MissionType>()) {
-      if (stricmp(Missions[order], name) == 0) {
+      if (port::CompareIgnoreCase(Missions[order], name) == 0) {
         return order;
       }
     }

@@ -48,11 +48,15 @@
  *                                                                         				*
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - */
+#include <algorithm>
+#include <array>
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
+#include <span>
 #include <string_view>
 
+#include "base/array.h"
 #include "port/safe_string.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
@@ -123,6 +127,7 @@ void Check_From_WChat(const char* wchat_name) {
 
   char default_string[] = {"Error"};
   char key_string[256];
+  std::array<char, 8192> ini_storage{};
   char* ini_file = nullptr;
   DiskFile wchat_file;
 
@@ -132,7 +137,7 @@ void Check_From_WChat(const char* wchat_name) {
   ** the DDE server.
   */
   if (wchat_name) {
-    ini_file = new char[8192];
+    ini_file = ini_storage.data();
   } else {
 #ifdef _WIN32
     ini_file = DDEServer.Get_MPlayer_Game_Info();
@@ -148,20 +153,20 @@ void Check_From_WChat(const char* wchat_name) {
     ** Read the ini file from disk if we founf it there
     */
     if (wchat_name) {
-      wchat_file.Read(ini_file, wchat_file.Size());
+      wchat_file.Read(std::span(ini_storage).first(ini_storage.size() - 1),
+                      std::min<int64_t>(wchat_file.Size(), 8191));
     }
 
     /*
     ** Get the IP address
     */
-    key_string[0] = 0;
+    base::At(key_string, 0) = 0;
 
     WWGetPrivateProfileString("Internet", "Address", default_string, key_string,
-                              sizeof(key_string), ini_file);
+                              ini_file);
 
     if ((std::string_view(key_string) == default_string)) {
       if (wchat_name) {
-        delete[] ini_file;
       }
       return;
     }
@@ -170,14 +175,13 @@ void Check_From_WChat(const char* wchat_name) {
     /*
     ** Get the port number
     */
-    key_string[0] = 0;
+    base::At(key_string, 0) = 0;
 
     WWGetPrivateProfileString("Internet", "Port", default_string, key_string,
-                              sizeof(key_string), ini_file);
+                              ini_file);
 
     if ((std::string_view(key_string) == default_string)) {
       if (wchat_name) {
-        delete[] ini_file;
       }
       return;
     }
@@ -187,19 +191,18 @@ void Check_From_WChat(const char* wchat_name) {
     /*
     ** Get host or client
     */
-    key_string[0] = 0;
+    base::At(key_string, 0) = 0;
 
     WWGetPrivateProfileString("Internet", "Host", default_string, key_string,
-                              sizeof(key_string), ini_file);
+                              ini_file);
 
     if ((std::string_view(key_string) == default_string)) {
       if (wchat_name) {
-        delete[] ini_file;
       }
       return;
     }
 
-    PlanetWestwoodIsHost = strchr(key_string, '1') != nullptr;
+    PlanetWestwoodIsHost = std::string_view(key_string).contains('1');
 
     UseVirtualSubnetServer =
         WWGetPrivateProfileInt("Internet", "UseVSS", 0, ini_file) != 0;
@@ -208,7 +211,6 @@ void Check_From_WChat(const char* wchat_name) {
   }
 
   if (wchat_name) {
-    delete[] ini_file;
   }
 
 #else  // DEMO
@@ -240,6 +242,7 @@ void Check_From_WChat(const char* wchat_name) {
  *   01/11/1996 BRR : Created.                                             *
  *=========================================================================*/
 int Read_Game_Options(const char* name) {
+  std::array<char, 8192> ini_storage{};
   char* buffer = nullptr;
 
   char filename[256] = {"INVALID.123"};
@@ -257,9 +260,9 @@ int Read_Game_Options(const char* name) {
     return 0;
   }
   if (name) {
-    buffer = new char[8192];  // INI staging buffer pointer.
-    memset(buffer, '\0', 8192);
-    file.Read(buffer, 8192 - 1);
+    buffer = ini_storage.data();  // INI staging buffer pointer.
+
+    file.Read(std::span(ini_storage).first(8191));
     file.Close();
   } else {
 #ifdef _WIN32
@@ -270,8 +273,7 @@ int Read_Game_Options(const char* name) {
   /*------------------------------------------------------------------------
   Get the player's name
   ------------------------------------------------------------------------*/
-  WWGetPrivateProfileString("Options", "Handle", "Noname", MPlayerName,
-                            sizeof(MPlayerName), buffer);
+  WWGetPrivateProfileString("Options", "Handle", "Noname", MPlayerName, buffer);
   port::SafeCopy(MPlayerGameName, MPlayerName);
   MPlayerColorIdx = WWGetPrivateProfileInt("Options", "Color", 0, buffer);
   MPlayerPrefColor = MPlayerColorIdx;
@@ -318,7 +320,6 @@ int Read_Game_Options(const char* name) {
       WWGetPrivateProfileInt("Timing", "SendRate", 3, buffer);
 
   if (name) {
-    delete[] buffer;
   }
   return 1;
 }

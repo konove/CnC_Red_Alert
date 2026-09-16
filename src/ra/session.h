@@ -40,6 +40,7 @@
 #define CNC_RED_ALERT_RA_SESSION_H_
 
 #include <cstdint>
+#include <span>
 
 #include "absl/base/attributes.h"
 #include "base/enum_array.h"
@@ -462,6 +463,10 @@ class MultiMission {
     return Filename;
   }
   [[nodiscard]] const char* Get_Digest() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return Digest;
+  }
+  [[nodiscard]] std::span<const char> Get_Digest_Bytes() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return Digest;
   }
   [[nodiscard]] bool Get_Official() const { return IsOfficial; }

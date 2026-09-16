@@ -220,8 +220,8 @@ GameType Select_MPlayer_Game() {
   //	Fill array of button ptrs
   //------------------------------------------------------------------------
   int curbutton = 0;
-  buttons[0] = &modemserialbtn;
-  buttons[1] = &skirmishbtn;
+  base::At(buttons, 0) = &modemserialbtn;
+  base::At(buttons, 1) = &skirmishbtn;
   int iButton = 2;
   if (has_ipx) {
     base::At(buttons, iButton++) = &ipxbtn;
@@ -360,7 +360,7 @@ GameType Select_MPlayer_Game() {
       if (selection == kButtonCancel && !has_ipx) {
         curbutton--;
       }
-      DCHECK(buttons[curbutton] != nullptr);
+      DCHECK(base::At(buttons, curbutton) != nullptr);
       base::At(buttons, curbutton)->Turn_On();
       base::At(buttons, curbutton)->IsPressed = true;
       base::At(buttons, curbutton)->Draw_Me(true);
@@ -563,8 +563,8 @@ int Surrender_Dialog(const char* text) {
   commands = &okbtn;
   cancelbtn.Add_Tail(*commands);
 
-  buttons[0] = &okbtn;
-  buttons[1] = &cancelbtn;
+  base::At(buttons, 0) = &okbtn;
+  base::At(buttons, 1) = &cancelbtn;
   base::At(buttons, curbutton)->Turn_On();
 
   //------------------------------------------------------------------------
@@ -746,8 +746,8 @@ int Abort_Dialog() {
   commands = &yesbtn;
   nobtn.Add_Tail(*commands);
 
-  buttons[0] = &yesbtn;
-  buttons[1] = &nobtn;
+  base::At(buttons, 0) = &yesbtn;
+  base::At(buttons, 1) = &nobtn;
   base::At(buttons, curbutton)->Turn_On();
 
   //------------------------------------------------------------------------

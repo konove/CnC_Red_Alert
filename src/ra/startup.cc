@@ -45,6 +45,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <filesystem>
+#include <span>
 #include <string_view>
 
 #include "absl/base/log_severity.h"
@@ -135,7 +136,7 @@ int main(int argc, char* argv[])
   absl::SetStderrThreshold(absl::LogSeverityAtLeast::kInfo);
 
   if (Ram_Free(MEM_NORMAL) < 7000000) {
-    fputs(kLanguageText.no_ram, stdout);
+    absl::PrintF("%s", kLanguageText.no_ram);
 
     return EXIT_FAILURE;
   }
@@ -251,7 +252,11 @@ int main(int argc, char* argv[])
     }
   }
 
-  if (Parse_Command_Line(argc, argv)) {
+  // The process entry point supplies argc valid argv elements. Windows builds
+  // populate the local array and count above under the same contract.
+  // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
+  const std::span arguments(argv, static_cast<size_t>(argc));
+  if (Parse_Command_Line(arguments)) {
     InitTickTimer();
     DiskFile cfile(kConfigFileName);
 
@@ -262,8 +267,9 @@ int main(int argc, char* argv[])
     */
     if (Disk_Space_Available() < kInitFreeDiskSpace) {
       // pretty unlikely, but print something anyway
-      fputs(kLanguageText.insufficient_disk, stdout);
-      puts(MustHaveDiskSpaceText(kInitFreeDiskSpace / (1024 * 1024)).c_str());
+      absl::PrintF("%s", kLanguageText.insufficient_disk);
+      absl::PrintF("%s\n",
+                   MustHaveDiskSpaceText(kInitFreeDiskSpace / (1024 * 1024)));
       ShutdownTickTimer();
       return EXIT_FAILURE;
     }
@@ -292,8 +298,8 @@ int main(int argc, char* argv[])
       */
       Memory_Error = &Memory_Error_Handler;
 
-      WindowList[0][kWindowWidth] = SeenBuff.Get_Width();
-      WindowList[0][kWindowHeight] = SeenBuff.Get_Height();
+      base::At(WindowList[0], kWindowWidth) = SeenBuff.Get_Width();
+      base::At(WindowList[0], kWindowHeight) = SeenBuff.Get_Height();
       base::At(WindowList[static_cast<int>(WINDOW_EDITOR)], kWindowWidth) =
           SeenBuff.Get_Width();
       base::At(WindowList[static_cast<int>(WINDOW_EDITOR)], kWindowHeight) =
@@ -364,7 +370,7 @@ int main(int argc, char* argv[])
 
       return EXIT_SUCCESS;
     }
-    puts(kLanguageText.setup_first);
+    absl::PrintF("%s\n", kLanguageText.setup_first);
     Keyboard->Get();
 
     ShutdownTickTimer();
@@ -402,9 +408,9 @@ bool InitDDraw() {
   }
 
   {
-    VisiblePage.Init(ScreenWidth, ScreenHeight, nullptr, 0,
+    VisiblePage.Init(ScreenWidth, ScreenHeight, {}, 0,
                      GBC_VISIBLE | GBC_VIDEOMEM);
-    HiddenPage.Init(ScreenWidth, ScreenHeight, nullptr, 0, GBC_NONE);
+    HiddenPage.Init(ScreenWidth, ScreenHeight, {}, 0, GBC_NONE);
   }
 
   if (ScreenHeight == 480) {
@@ -447,8 +453,8 @@ void __cdecl Prog_End() {
   // destructors when it frees its buffer, so RAII members (unique_ptr, variant
   // holding vector) must be released explicitly before global destruction.
   const auto reset_object_type = [](ObjectTypeClass* obj) {
-    obj->DimensionData.reset();
-    obj->RadarIcon.reset();
+    obj->DimensionData.clear();
+    obj->RadarIcon.clear();
     obj->ClearImage();
   };
   for (int i = 0; i < AircraftTypes.Count(); i++) {

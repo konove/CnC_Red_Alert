@@ -17,6 +17,22 @@ template class DynamicVectorClass<void*>;
 template class VectorClass<char>;
 
 namespace {
+TEST(VectorStorageTest, BorrowedStorageRetainsExtentAndDoesNotGrow) {
+  int first = 1;
+  int second = 2;
+  void* storage[2] = {};
+  DynamicVectorClass<void*> values(2, storage);
+  EXPECT_TRUE(values.Add(&first));
+  EXPECT_TRUE(values.Add_Head(&second));
+  EXPECT_EQ(values[0], &second);
+  EXPECT_EQ(values[1], &first);
+  EXPECT_FALSE(values.Add(nullptr));
+  EXPECT_TRUE(values.Resize(4));
+  EXPECT_EQ(values[0], &second);
+  EXPECT_EQ(values[1], &first);
+  EXPECT_TRUE(values.Add(nullptr));
+  EXPECT_EQ(values.Count(), 3);
+}
 
 struct FieldObject {
   int32_t value = 0;

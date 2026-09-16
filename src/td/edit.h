@@ -42,6 +42,7 @@
 #define CNC_RED_ALERT_TD_EDIT_H_
 
 #include <cstdint>
+#include <span>
 
 #include "absl/base/attributes.h"
 #include "base/attributes.h"
@@ -60,9 +61,9 @@ class EditClass : public ControlClass {
   };
   using enum EditStyle;
 
-  EditClass(int id, char* text ABSL_ATTRIBUTE_LIFETIME_BOUND, int max_len,
-            TextPrintType flags, int x, int y, int w = -1, int h = -1,
-            EditStyle style = ALPHANUMERIC);
+  EditClass(int id, std::span<char> text ABSL_ATTRIBUTE_LIFETIME_BOUND,
+            int max_len, TextPrintType flags, int x, int y, int w = -1,
+            int h = -1, EditStyle style = ALPHANUMERIC);
   ~EditClass() override;
   EditClass(const EditClass&) = delete;
   EditClass& operator=(const EditClass&) = delete;
@@ -70,7 +71,7 @@ class EditClass : public ControlClass {
   EditClass& operator=(EditClass&&) = delete;
 
   bool Draw_Me(bool forced) override;
-  virtual void Set_Text(char* text, int max_len);
+  virtual void Set_Text(std::span<char> text, int max_len);
   void Set_Color(int color) { Color = color; }
 
   void Set_Read_Only(bool rdonly) { IsReadOnly = rdonly; }
@@ -91,7 +92,7 @@ class EditClass : public ControlClass {
   **	Pointer to text staging buffer and the maximum length of the string it
   **	can contain.
   */
-  char* String;
+  std::span<char> String;
   int MaxLength = 0;
 
   /*

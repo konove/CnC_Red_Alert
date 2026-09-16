@@ -215,7 +215,7 @@ void ActionChoiceClass::Draw_It(int /*unused*/, int x, int y, int width,
                                 int height, bool selected,
                                 TextPrintType flags) const {
   RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
-  static int _tabs[] = {13, 40};
+  static const int _tabs[] = {13, 40};
   const uint32_t font = static_cast<uint32_t>(flags) & 0x0FU;
   if (font == static_cast<uint32_t>(TPF_6PT_GRAD) ||
       font == static_cast<uint32_t>(TPF_EFNT)) {
@@ -412,7 +412,9 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
       const char* message =
           base::At(TutorialTextOffsets, Data.Value) == 0xFFFF
               ? nullptr
-              : TutorialTextData + base::At(TutorialTextOffsets, Data.Value);
+              : std::span(TutorialTextData)
+                    .subspan(base::At(TutorialTextOffsets, Data.Value))
+                    .data();
       Session.Messages.Add_Message(
           nullptr, 0, message, PCOLOR_GREEN,
           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
@@ -827,7 +829,7 @@ TActionType Action_From_Name(const char* name) {
   }
 
   for (TActionType i = TACTION_NONE; i < TACTION_COUNT; i++) {
-    if (!stricmp(name, ActionText[i])) {
+    if (!port::CompareIgnoreCase(name, ActionText[i])) {
       return i;
     }
   }

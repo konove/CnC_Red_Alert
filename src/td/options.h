@@ -41,6 +41,8 @@
 #ifndef CNC_RED_ALERT_TD_OPTIONS_H_
 #define CNC_RED_ALERT_TD_OPTIONS_H_
 
+#include <span>
+
 class OptionsClass {
  public:
   static constexpr int kMaxScrollSetting = 7;
@@ -94,7 +96,8 @@ class OptionsClass {
   bool IsFreeScroll : 1 {false};         // Allow free direction scrolling?
 
  protected:
-  static void Adjust_Palette(void* oldpal, void* newpal,
+  static void Adjust_Palette(std::span<const unsigned char> oldpal,
+                             std::span<unsigned char> newpal,
                              unsigned char brightness, unsigned char color,
                              unsigned char tint, unsigned char contrast);
 

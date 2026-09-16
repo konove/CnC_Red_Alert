@@ -48,6 +48,7 @@
 
 #include <cassert>
 #include <cstddef>
+#include <span>
 #include <utility>
 
 #include "ra/cell.h"
@@ -97,9 +98,9 @@ bool TemplateClass::Mark(MarkType mark) {
   assert(IsActive);
 
   static bool noup = false;
-  const void* iset = Get_Image_Data();
-  if (iset && ObjectClass::Mark(mark)) {
-    const void* map = Get_Icon_Set_Map(iset);
+  const auto iset = Get_Image_Data();
+  if (!iset.empty() && ObjectClass::Mark(mark)) {
+    const auto map = Get_Icon_Set_Map(iset);
 
     for (int y = 0; std::cmp_less(y, Class->Height); y++) {
       for (int x = 0; std::cmp_less(x, Class->Width); x++) {
@@ -114,8 +115,8 @@ bool TemplateClass::Mark(MarkType mark) {
           *no real *	icon is associated with this logical position, then
           *don't do any action *	since none is required.
           */
-          const char* mapptr = static_cast<const char*>(map);
-          const bool real = mapptr[number] != -1;
+          const bool real = static_cast<size_t>(number) < map.size() &&
+                            map[static_cast<size_t>(number)] != std::byte{0xff};
 
           if (real) {
             /*

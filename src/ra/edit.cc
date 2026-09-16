@@ -20,11 +20,15 @@
 
 #include "ra/edit.h"
 
+#include <algorithm>
 #include <cctype>
 #include <cstring>
+#include <span>
+#include <stdexcept>
 #include <string_view>
 #include <utility>
 
+#include "base/numeric.h"
 #include "ra/conquer.h"
 #include "ra/control.h"
 #include "ra/defines.h"
@@ -38,16 +42,27 @@
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 
-EditClass::EditClass(const int id, char* text, const int max_len,
+namespace {
+void PrepareEditBuffer(std::span<char>& buffer, int capacity) {
+  if (buffer.empty() || capacity <= 0) {
+    throw std::invalid_argument("empty edit buffer");
+  }
+  buffer = buffer.first(std::min(buffer.size(), static_cast<size_t>(capacity)));
+  buffer.back() = '\0';
+}
+}  // namespace
+
+EditClass::EditClass(const int id, std::span<char> text, const int max_len,
                      const TextPrintType flags, const int x, const int y,
                      const int w, const int h, const EditStyle style)
     : ControlClass(static_cast<unsigned>(id), x, y, w, h, kLeftPress),
       TextFlags(flags & ~TPF_CENTER),
       EditFlags(style),
       String(text),
-      MaxLength(max_len - 1),
-      Length(static_cast<int>(std::string_view(String).size())),
+      MaxLength(std::min(max_len, static_cast<int>(text.size())) - 1),
       Color(Get_Color_Scheme()) {
+  PrepareEditBuffer(String, max_len);
+  Length = static_cast<int>(std::string_view(String.data()).size());
   GadgetClass::Flag_To_Redraw();
 
   if (w == -1 || h == -1) {
@@ -57,8 +72,8 @@ EditClass::EditClass(const int id, char* text, const int max_len,
       Height = FontHeight + 1;
     }
     if (w == -1) {
-      if (!std::string_view(String).empty()) {
-        Width = String_Pixel_Width(String) + 6;
+      if (!std::string_view(String.data()).empty()) {
+        Width = String_Pixel_Width(String.data()) + 6;
       } else {
         Width = ((Char_Pixel_Width('X') + FontXSpacing) * (MaxLength + 1)) + 2;
       }
@@ -74,10 +89,11 @@ EditClass::~EditClass() {
   }
 }
 
-void EditClass::Set_Text(char* text, const int max_len) {
+void EditClass::Set_Text(std::span<char> text, const int max_len) {
   String = text;
-  MaxLength = max_len - 1;
-  Length = static_cast<int>(std::string_view(String).size());
+  PrepareEditBuffer(String, max_len);
+  MaxLength = static_cast<int>(String.size()) - 1;
+  Length = static_cast<int>(std::string_view(String.data()).size());
   Flag_To_Redraw();
 }
 
@@ -88,7 +104,7 @@ bool EditClass::Draw_Me(const bool forced) {
     }
 
     Draw_Background();
-    Draw_Text(String);
+    Draw_Text(String.data());
 
     if (LogicPage == &SeenBuff) {
       Conditional_Show_Mouse();
@@ -184,13 +200,13 @@ bool EditClass::Handle_Key(KeyASCIIType ascii) {
     case KA_BACKSPACE:
       if (Length) {
         Length--;
-        String[Length] = '\0';
+        String[base::ToSize(Length)] = '\0';
         Flag_To_Redraw();
       }
       break;
 
     default:
-      if (String_Pixel_Width(String) +
+      if (String_Pixel_Width(String.data()) +
               Char_Pixel_Width(static_cast<char>(ascii)) >=
           Width - 2) {
         break;
@@ -222,8 +238,8 @@ bool EditClass::Handle_Key(KeyASCIIType ascii) {
 
       // Manual redraw needed because the event flag was cleared to prevent
       // the gadget ID from being returned on every keystroke.
-      String[Length++] = static_cast<char>(ascii);
-      String[Length] = '\0';
+      String[base::ToSize(Length++)] = static_cast<char>(ascii);
+      String[base::ToSize(Length)] = '\0';
       Flag_To_Redraw();
       break;
   }
@@ -232,8 +248,8 @@ bool EditClass::Handle_Key(KeyASCIIType ascii) {
 
 void EditClass::Set_Focus() {
   Length = 0;
-  if (String) {
-    Length = static_cast<int>(std::string_view(String).size());
+  if (!String.empty()) {
+    Length = static_cast<int>(std::string_view(String.data()).size());
   }
   ControlClass::Set_Focus();
 }

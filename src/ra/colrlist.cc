@@ -44,6 +44,9 @@
 
 #include "ra/colrlist.h"
 
+#include <cstddef>
+#include <span>
+
 #include "base/numeric.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"
@@ -76,8 +79,9 @@
  * HISTORY:          01/05/1995 MML : Created.                             *
  *=========================================================================*/
 ColorListClass::ColorListClass(int id, int x, int y, int w, int h,
-                               TextPrintType flags, const void* up,
-                               const void* down)
+                               TextPrintType flags,
+                               std::span<const std::byte> up,
+                               std::span<const std::byte> down)
     : ListClass(id, x, y, w, h, flags, up, down) {}
 
 /***************************************************************************

@@ -43,23 +43,16 @@
 
 #include "td/keyframe.h"
 
+#include <cstddef>
 #include <cstdint>
-#include <cstring>
-#include <utility>
+#include <span>
 
-#include "base/array.h"
-#include "base/types.h"
+#include "base/buffer.h"
+#include "port/unaligned.h"
 #include "sdllib/iff.h"
-#include "sdllib/memflag.h"
 #include "sdllib/wsa.h"
 #include "td/defines.h"
-#include "td/externs.h"
 #include "tech/2keyfbuf.h"
-
-#define SUBFRAMEOFFS 7  // 3 1/2 frame offsets loaded (2 offsets/frame)
-
-#define Apply_Delta(buffer, delta) \
-  Apply_XOR_Delta(static_cast<char*>(buffer), static_cast<const char*>(delta))
 
 typedef struct {
   uint16_t frames;
@@ -71,16 +64,14 @@ typedef struct {
   int16_t flags;
 } KeyFrameHeaderType;
 
-// Byte offset of the frame offset table, which follows the header.
-constexpr base::ssize kKeyFrameHeaderSize =
-    base::ssize{sizeof(KeyFrameHeaderType)};
-
 // The uncompressed-shape cache was never finished: nothing sets
 // UseBigShapeBuffer, so Build_Frame always decodes into the caller's buffer.
 // tech/2keyfbuf.cc still reads these three to choose its draw path, so the
 // definitions stay.
 char* BigShapeBufferStart = nullptr;
+std::span<char> BigShapeBufferBytes;
 char* TheaterShapeBufferStart = nullptr;
+std::span<char> TheaterShapeBufferBytes;
 bool UseBigShapeBuffer = false;
 // Set by the type classes around Build_Frame for theater-specific shapes; only
 // the uncompressed-shape cache ever read it.
@@ -91,198 +82,108 @@ static int Length;
 
 int Get_Last_Frame_Length() { return Length; }
 
-void* Build_Frame(const void* dataptr, uint16_t framenumber, void* buffptr) {
-  uint32_t offset[SUBFRAMEOFFS];
-  // Offsets into the 24-bit frame data, so int32_t never overflows.
-  uint16_t currframe = 0;
+namespace {
+KeyFrameHeaderType Header(std::span<const std::byte> data) {
+  KeyFrameHeaderType header{};
+  if (data.size() >= sizeof(header)) {
+    base::CopyBytes(base::ObjectBytes(header), data, sizeof(header));
+  }
+  return header;
+}
 
-  //
-  // valid pointer??
-  //
-  Length = 0;
-  if (!dataptr || !buffptr) {
-    return nullptr;
+bool FrameEntry(std::span<const std::byte> data, uint16_t frame,
+                uint32_t& offset, uint32_t& reference) {
+  const auto entry = sizeof(KeyFrameHeaderType) + (size_t{frame} * 8);
+  if (entry > data.size() || data.size() - entry < 8) {
+    return false;
+  }
+  offset = port::ReadUnaligned<uint32_t>(data.subspan(entry));
+  reference = port::ReadUnaligned<uint32_t>(data.subspan(entry + 4));
+  return true;
+}
+}  // namespace
+
+std::span<uint8_t> Build_Frame(std::span<const std::byte> data, uint16_t frame,
+                               std::span<uint8_t> destination) {
+  const auto header = Header(data);
+  const auto pixels = size_t{header.width} * header.height;
+  if (frame >= header.frames || pixels == 0 || pixels > destination.size()) {
+    return {};
+  }
+  const auto output = destination.first(pixels);
+  uint32_t offset = 0;
+  uint32_t reference = 0;
+  if (!FrameEntry(data, frame, offset, reference)) {
+    return {};
+  }
+  const auto flags = static_cast<uint8_t>(offset >> 24);
+  const size_t palette_bytes =
+      (static_cast<uint16_t>(header.flags) & 1U) != 0 ? 768 : 0;
+
+  if ((flags & kKfKeyFrame) != 0) {
+    const auto start =
+        static_cast<size_t>(offset & 0x00ffffffU) + palette_bytes;
+    if (start >= data.size()) {
+      return {};
+    }
+    LCW_Uncompress(data.subspan(start), std::as_writable_bytes(output));
+    return output.subspan(0);
   }
 
-  //
-  // look at header then check that frame to build is not greater
-  // than total frames
-  //
-  const auto* keyfr = static_cast<const KeyFrameHeaderType*>(dataptr);
-
-  if (framenumber >= keyfr->frames) {
-    return nullptr;
-  }
-
-  // calc buff size
-  const uint16_t buffsize = keyfr->width * keyfr->height;
-
-  // get offset into data
-  const char* ptr = static_cast<const char*>(Add_Long_To_Pointer(
-      dataptr, (base::ssize{framenumber} * 8) + kKeyFrameHeaderSize));
-  Mem_Copy(ptr, &offset[0], 12L);
-  const auto frameflags = static_cast<uint8_t>(offset[0] >> 24);
-
-  if (frameflags & kKfKeyFrame) {
-    ptr = static_cast<const char*>(
-        Add_Long_To_Pointer(dataptr, offset[0] & 0x00FFFFFFL));
-
-    if ((static_cast<uint16_t>(keyfr->flags) & 1U) != 0) {
-      ptr = static_cast<const char*>(Add_Long_To_Pointer(ptr, 768L));
-    }
-    LCW_Uncompress(ptr, buffptr, buffsize);
-  } else {  // key delta or delta
-
-    if (frameflags & kKfDelta) {
-      currframe = static_cast<uint16_t>(offset[1]);
-
-      ptr = static_cast<const char*>(Add_Long_To_Pointer(
-          dataptr, (base::ssize{currframe} * 8) + kKeyFrameHeaderSize));
-      Mem_Copy(ptr, &offset[0], SUBFRAMEOFFS * sizeof(uint32_t));
-    }
-
-    // key frame
-    const auto offcurr = static_cast<int32_t>(offset[1] & 0x00FFFFFF);
-
-    // key delta
-    int32_t offdiff = static_cast<int32_t>(offset[0] & 0x00FFFFFF) - offcurr;
-
-    ptr = static_cast<const char*>(Add_Long_To_Pointer(dataptr, offcurr));
-
-    if ((static_cast<uint16_t>(keyfr->flags) & 1U) != 0) {
-      ptr = static_cast<const char*>(Add_Long_To_Pointer(ptr, 768L));
-    }
-
-    const int32_t length = LCW_Uncompress(ptr, buffptr, buffsize);
-
-    if (std::cmp_greater(length, buffsize)) {
-      return nullptr;
-    }
-
-    // The DOS build rebased ptr whenever the next delta crossed a 64K
-    // segment. ptr + offdiff is the same address either way, so a flat
-    // address space needs no rebasing.
-    Apply_Delta(buffptr, Add_Long_To_Pointer(ptr, offdiff));
-
-    if (frameflags & kKfDelta) {
-      // adjust to delta after the keydelta
-
-      currframe++;
-      uint16_t subframe = 2;
-
-      while (currframe <= framenumber) {
-        offdiff =
-            static_cast<int32_t>(base::At(offset, subframe) & 0x00FFFFFF) -
-            offcurr;
-
-        Apply_Delta(buffptr, Add_Long_To_Pointer(ptr, offdiff));
-
-        currframe++;
-        subframe += 2;
-
-        if (subframe >= SUBFRAMEOFFS - 1 && currframe <= framenumber) {
-          Mem_Copy(Add_Long_To_Pointer(dataptr, (base::ssize{currframe} * 8) +
-                                                    kKeyFrameHeaderSize),
-                   &offset[0], SUBFRAMEOFFS * sizeof(uint32_t));
-          subframe = 0;
-        }
-      }
+  uint16_t first_delta = frame;
+  if ((flags & kKfDelta) != 0) {
+    first_delta = static_cast<uint16_t>(reference);
+    if (first_delta > frame ||
+        !FrameEntry(data, first_delta, offset, reference)) {
+      return {};
     }
   }
-
-  return buffptr;
+  const auto key_offset =
+      static_cast<size_t>(reference & 0x00ffffffU) + palette_bytes;
+  if (key_offset >= data.size()) {
+    return {};
+  }
+  LCW_Uncompress(data.subspan(key_offset), std::as_writable_bytes(output));
+  for (uint32_t current = first_delta; current <= frame; ++current) {
+    if (!FrameEntry(data, static_cast<uint16_t>(current), offset, reference)) {
+      return {};
+    }
+    // Palette bytes were also added to the delta base in the original format.
+    const auto delta_offset =
+        static_cast<size_t>(offset & 0x00ffffffU) + palette_bytes;
+    if (delta_offset >= data.size()) {
+      return {};
+    }
+    Apply_XOR_Delta(output, data.subspan(delta_offset));
+  }
+  return output.subspan(0);
 }
 
-/***********************************************************************************************
- * Get_Build_Frame_Count -- Fetches the number of frames in data block. *
- *                                                                                             *
- *    Use this routine to determine the number of shapes within the data block.
- **
- *                                                                                             *
- * INPUT:   dataptr  -- Pointer to the keyframe shape data block. *
- *                                                                                             *
- * OUTPUT:  Returns with the number of shapes in the data block. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 06/25/1995 JLB : Commented. *
- *=============================================================================================*/
-uint16_t Get_Build_Frame_Count(const void* dataptr) {
-  if (dataptr) {
-    return static_cast<const KeyFrameHeaderType*>(dataptr)->frames;
-  }
-  return 0;
+uint16_t Get_Build_Frame_Count(std::span<const std::byte> data) {
+  return Header(data).frames;
+}
+uint16_t Get_Build_Frame_X(std::span<const std::byte> data) {
+  return Header(data).x;
+}
+uint16_t Get_Build_Frame_Y(std::span<const std::byte> data) {
+  return Header(data).y;
+}
+uint16_t Get_Build_Frame_Width(std::span<const std::byte> data) {
+  return Header(data).width;
+}
+uint16_t Get_Build_Frame_Height(std::span<const std::byte> data) {
+  return Header(data).height;
 }
 
-uint16_t Get_Build_Frame_X(const void* dataptr) {
-  if (dataptr) {
-    return static_cast<const KeyFrameHeaderType*>(dataptr)->x;
+bool Get_Build_Frame_Palette(std::span<const std::byte> data,
+                             std::span<uint8_t> palette) {
+  const auto header = Header(data);
+  const auto start =
+      (size_t{header.frames} * 8) + 16 + sizeof(KeyFrameHeaderType);
+  if ((static_cast<uint16_t>(header.flags) & 1U) == 0 || palette.size() < 768 ||
+      start > data.size() || data.size() - start < 768) {
+    return false;
   }
-  return 0;
-}
-
-uint16_t Get_Build_Frame_Y(const void* dataptr) {
-  if (dataptr) {
-    return static_cast<const KeyFrameHeaderType*>(dataptr)->y;
-  }
-  return 0;
-}
-
-/***********************************************************************************************
- * Get_Build_Frame_Width -- Fetches the width of the shape image. *
- *                                                                                             *
- *    Use this routine to fetch the width of the shapes within the keyframe
- *shape data block.  * All shapes within the block have the same width. *
- *                                                                                             *
- * INPUT:   dataptr  -- Pointer to the keyframe shape data block. *
- *                                                                                             *
- * OUTPUT:  Returns with the width of the shapes in the block -- expressed in
- *pixels.          *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 06/25/1995 JLB : Commented *
- *=============================================================================================*/
-uint16_t Get_Build_Frame_Width(const void* dataptr) {
-  if (dataptr) {
-    return static_cast<const KeyFrameHeaderType*>(dataptr)->width;
-  }
-  return 0;
-}
-
-/***********************************************************************************************
- * Get_Build_Frame_Height -- Fetches the height of the shape image. *
- *                                                                                             *
- *    Use this routine to fetch the height of the shapes within the keyframe
- *shape data block. * All shapes within the block have the same height. *
- *                                                                                             *
- * INPUT:   dataptr  -- Pointer to the keyframe shape data block. *
- *                                                                                             *
- * OUTPUT:  Returns with the height of the shapes in the block -- expressed in
- *pixels.         *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 06/25/1995 JLB : Commented *
- *=============================================================================================*/
-uint16_t Get_Build_Frame_Height(const void* dataptr) {
-  if (dataptr) {
-    return static_cast<const KeyFrameHeaderType*>(dataptr)->height;
-  }
-  return 0;
-}
-
-bool Get_Build_Frame_Palette(const void* dataptr, void* palette) {
-  if (dataptr && (static_cast<uint16_t>(
-                      static_cast<const KeyFrameHeaderType*>(dataptr)->flags) &
-                  1U) != 0) {
-    const char* ptr = static_cast<const char*>(Add_Long_To_Pointer(
-        dataptr, ((static_cast<int32_t>(sizeof(uint32_t)) * 2) *
-                  static_cast<const KeyFrameHeaderType*>(dataptr)->frames) +
-                     16 + sizeof(KeyFrameHeaderType)));
-
-    memcpy(palette, ptr, 768L);
-    return true;
-  }
-  return false;
+  base::CopyBytes(std::as_writable_bytes(palette), data.subspan(start), 768);
+  return true;
 }

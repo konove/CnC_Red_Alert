@@ -48,7 +48,6 @@
 #include <cstdint>
 
 #include "base/numeric.h"
-#include "base/types.h"
 #include "port/safe_string.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"
@@ -198,7 +197,7 @@ void StaticButtonClass::Set_Text(const char* text, bool resize) {
     Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack, PrintFlags);
     Width = String_Pixel_Width(String);
     Height = FontHeight + FontYSpacing;
-    Background = Buffer();
+    Background.clear();
   }
 }
 
@@ -224,11 +223,11 @@ void StaticButtonClass::Draw_Background() {
   **	If the background hasn't been recorded from the buffer, then
   **	allocate and record the background image now.
   */
-  if (Background.Get_Buffer() == nullptr && Width > 0 && Height > 0) {
-    Background = Buffer(static_cast<base::ssize>(Width) * Height);
-    if (Background.Get_Buffer() != nullptr) {
+  if (Background.empty() && Width > 0 && Height > 0) {
+    Background.resize(base::ToSize(Width) * base::ToSize(Height));
+    if (!Background.empty()) {
       LogicPage->To_Buffer(X, Y, Width, Height, Background,
-                           static_cast<int32_t>(Background.Get_Size()));
+                           static_cast<int32_t>(Background.size()));
     }
   }
 
@@ -236,7 +235,7 @@ void StaticButtonClass::Draw_Background() {
   **	If there is a background image present, then restore it to the buffer
   *now.
   */
-  if (Background.Get_Buffer() != nullptr && LogicPage->Lock()) {
+  if (!Background.empty() && LogicPage->Lock()) {
     Buffer_To_Page(X, Y, Width, Height, Background, *LogicPage);
     LogicPage->Unlock();
   }

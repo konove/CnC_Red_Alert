@@ -48,7 +48,9 @@
 
 #include "ra/power.h"
 
+#include <cstddef>
 #include <cstdint>
+#include <span>
 
 #include "base/array.h"
 #include "ra/bench_util.h"
@@ -70,8 +72,8 @@
 /*
 **	Points to the shape to use for the "desired" power level indicator.
 */
-const void* PowerClass::PowerShape;
-const void* PowerClass::PowerBarShape;
+std::span<const std::byte> PowerClass::PowerShape;
+std::span<const std::byte> PowerClass::PowerBarShape;
 
 PowerClass::PowerButtonClass PowerClass::PowerButton;
 
@@ -142,8 +144,8 @@ void PowerClass::One_Time() {
   PowerButton.Y = kPowerY * 2;
   PowerButton.Width = (kPowerWidth * 2) - 1;
   PowerButton.Height = kPowerHeight * 2;
-  PowerShape = MixArchive::Retrieve("POWER.SHP");
-  PowerBarShape = MixArchive::Retrieve("POWERBAR.SHP");
+  PowerShape = MixArchive::RetrieveData("POWER.SHP");
+  PowerBarShape = MixArchive::RetrieveData("POWERBAR.SHP");
 }
 
 /***********************************************************************************************
@@ -171,7 +173,7 @@ void PowerClass::Draw_It(bool complete) {
       if (Map.IsSidebarActive) {
         IsPowerToRedraw = false;
         ShapeFlags_Type flags = SHAPE_NORMAL;
-        const void* remap = nullptr;
+        std::span<const unsigned char> remap;
 
         if (FlashTimer.Value() > 1 && (FlashTimer.Value() % 3) % 2 != 0) {
           flags = flags | SHAPE_FADING;
@@ -374,8 +376,8 @@ void PowerClass::AI(KeyNumType& input, int x, int y) {
  *                                                                                             *
  * HISTORY: * 06/01/1995 JLB : Created. *
  *=============================================================================================*/
-void PowerClass::Refresh_Cells(CELL cell, const int16_t* list) {
-  if (*list == kRefreshSidebar) {
+void PowerClass::Refresh_Cells(CELL cell, std::span<const int16_t> list) {
+  if (list.front() == kRefreshSidebar) {
     IsPowerToRedraw = true;
     Flag_To_Redraw(false);
   }

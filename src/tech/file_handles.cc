@@ -9,7 +9,6 @@
 #include <string_view>
 
 #include "base/array.h"
-#include "base/numeric.h"
 #include "base/seek_origin.h"
 #include "sdllib/file.h"
 #include "sdllib/file_access.h"
@@ -54,18 +53,16 @@ void __cdecl CloseFileHandle(int handle) {
   }
 }
 
-int32_t __cdecl ReadFileHandle(int handle, void* buffer, int32_t size) {
+int32_t __cdecl ReadFileHandle(int handle, std::span<std::byte> buffer) {
   if (GameFile* const file = OpenFileForHandle(handle)) {
-    return static_cast<int32_t>(file->Read(
-        std::span(static_cast<std::byte*>(buffer), base::ToSize(size))));
+    return static_cast<int32_t>(file->Read(buffer));
   }
   return 0;
 }
 
-int32_t __cdecl WriteFileHandle(int handle, const void* buffer, int32_t size) {
+int32_t __cdecl WriteFileHandle(int handle, std::span<const std::byte> buffer) {
   if (GameFile* const file = OpenFileForHandle(handle)) {
-    return static_cast<int32_t>(file->Write(
-        std::span(static_cast<const std::byte*>(buffer), base::ToSize(size))));
+    return static_cast<int32_t>(file->Write(buffer));
   }
   return 0;
 }

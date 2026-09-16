@@ -24,6 +24,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <iterator>
+#include <span>
 
 #include "base/array.h"
 #include "base/trig.h"
@@ -36,8 +37,9 @@
 #include "ra/target.h"
 #include "tech/rect.h"
 
-const int16_t* Coord_Spillage_List(const COORDINATE coord, const Rect& rect,
-                                   const bool no_center) {
+std::span<const int16_t> Coord_Spillage_List(const COORDINATE coord,
+                                             const Rect& rect,
+                                             const bool no_center) {
   if (!rect.Is_Valid()) {
     static constexpr int16_t _list[] = {kRefreshEol};
     return _list;
@@ -66,13 +68,13 @@ const int16_t* Coord_Spillage_List(const COORDINATE coord, const Rect& rect,
 
   int count = 0;
   static int16_t offsets[128];
-  int16_t* ptr = offsets;
+  std::span<int16_t> ptr(offsets);
   for (int yy = cell_top; yy <= cell_bottom; yy++) {
     for (int xx = cell_left; xx <= cell_right; xx++) {
       if (const auto offset =
               static_cast<int16_t>(XY_Cell(xx, yy) - origin_cell);
           !no_center || offset != 0) {
-        *ptr++ = offset;
+        base::ConsumeFront(ptr) = offset;
         count++;
         if (count + 2 >= std::ssize(offsets)) {
           break;
@@ -84,7 +86,7 @@ const int16_t* Coord_Spillage_List(const COORDINATE coord, const Rect& rect,
     }
   }
 
-  *ptr = kRefreshEol;
+  ptr.front() = kRefreshEol;
   return offsets;
 }
 
@@ -136,7 +138,8 @@ int Distance(const TARGET target1, const TARGET target2) {
   return Distance(As_Coord(target1), As_Coord(target2));
 }
 
-const int16_t* Coord_Spillage_List(const COORDINATE coord, int maxsize) {
+std::span<const int16_t> Coord_Spillage_List(const COORDINATE coord,
+                                             int maxsize) {
   static const int16_t
       kFacingOffsets[static_cast<int>(magic_enum::enum_count<FacingType>()) +
                      1][5] = {
@@ -175,7 +178,7 @@ const int16_t* Coord_Spillage_List(const COORDINATE coord, int maxsize) {
         +((2 * MAP_CELL_W) - 2), +((2 * MAP_CELL_W) - 1),
         +(2 * MAP_CELL_W),       +((2 * MAP_CELL_W) + 1),
         +((2 * MAP_CELL_W) + 2), kRefreshEol};
-    return &_gigundo[0];
+    return _gigundo;
   }
 
   // Objects between 1-2 tiles: compute overlap by checking which cell
@@ -216,7 +219,7 @@ const int16_t* Coord_Spillage_List(const COORDINATE coord, int maxsize) {
       base::At(computed_offsets, index++) = -(MAP_CELL_W - 1);
     }
     base::At(computed_offsets, index) = kRefreshEol;
-    return &computed_offsets[0];
+    return computed_offsets;
   }
 
   // Lepton threshold: how far from cell center before spilling into neighbors.
@@ -239,9 +242,7 @@ const int16_t* Coord_Spillage_List(const COORDINATE coord, int maxsize) {
     index += 1;  // Spilling West.
   }
 
-  return base::Suffix(base::At(kFacingOffsets, base::At(kSpillToFacing, index)),
-                      0)
-      .data();
+  return base::At(kFacingOffsets, base::At(kSpillToFacing, index));
 }
 
 CELL Coord_Cell(COORDINATE coord) {

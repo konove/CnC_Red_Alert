@@ -46,6 +46,9 @@
 #ifndef CNC_RED_ALERT_TD_TCPIP_H_
 #define CNC_RED_ALERT_TD_TCPIP_H_
 
+#include <cstddef>
+#include <span>
+
 #ifdef _WIN32
 #include <winsock.h>
 
@@ -116,8 +119,8 @@ class TcpipManagerClass {
   void Message_Handler(HWND window, UINT message, UINT wParam, LONG lParam);
 #endif
   void Copy_To_In_Buffer(int bytes);
-  int Read(void* buffer, int buffer_len);
-  void Write(void* buffer, int buffer_len);
+  int Read(std::span<std::byte> buffer, int buffer_len);
+  void Write(std::span<const std::byte> buffer, int buffer_len);
   bool Add_Client();
   void Close();
   void Set_Host_Address(char* address);

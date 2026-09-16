@@ -109,8 +109,10 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <span>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
@@ -380,9 +382,9 @@ void AircraftClass::Draw_It(int x, int y, WindowNumberType window) {
   /*
   **	Verify the legality of the unit class.
   */
-  const void* shapefile =
+  const auto shapefile =
       Class->Get_Image_Data();  // Working shape file pointer.
-  if (!shapefile) {
+  if (shapefile.empty()) {
     return;
   }
   shapenum = base::At(BodyShape, facing);
@@ -421,7 +423,7 @@ void AircraftClass::Draw_It(int x, int y, WindowNumberType window) {
   if (Visual_Character() <= VISUAL_DARKEN) {
     CC_Draw_Shape(shapefile, shapenum, x + 1, y + 2, window,
                   SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING,
-                  MouseClass::FadingShade, nullptr);
+                  MouseClass::FadingShade, {});
   }
 
   /*
@@ -465,20 +467,20 @@ void AircraftClass::Draw_It(int x, int y, WindowNumberType window) {
       base::MovePoint(xx, yy, static_cast<uint8_t>(SecondaryFacing.Current()),
                       static_cast<int16_t>(_stretch[face]));
       CC_Draw_Shape(AircraftTypeClass::RRotorData, shapenum, xx, yy - 2, window,
-                    flags, nullptr, MouseClass::UnitShadow);
+                    flags, {}, MouseClass::UnitShadow);
 
       base::MovePoint(xx, yy,
                       static_cast<uint8_t>(SecondaryFacing.Current() + DIR_S),
                       static_cast<int16_t>(_stretch[face] * 2));
       CC_Draw_Shape(AircraftTypeClass::LRotorData, shapenum, xx, yy - 2, window,
-                    flags, nullptr, MouseClass::UnitShadow);
+                    flags, {}, MouseClass::UnitShadow);
 
     } else {
       /*
       **	Single rotor centered about shape.
       */
       CC_Draw_Shape(AircraftTypeClass::RRotorData, shapenum, x,
-                    y - Altitude - 2, window, flags, nullptr,
+                    y - Altitude - 2, window, flags, {},
                     MouseClass::UnitShadow);
     }
   }
@@ -504,15 +506,16 @@ void AircraftClass::Draw_It(int x, int y, WindowNumberType window) {
 void AircraftClass::Read_INI(char* buffer) {
   char buf[128];
 
-  const int len = static_cast<int>(std::string_view(buffer).size()) +
-                  2;                         // Length of data in buffer.
-  char* tbuffer = buffer + len;              // Accumulation buffer of unit IDs.
+  std::vector<char> key_storage(std::string_view(buffer).size() + 2);
+  auto key_cursor = std::span(key_storage);
+  char* tbuffer = key_cursor.data();  // Accumulation buffer of unit IDs.
 
-  WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
-                            ShapeBufferSize - len, buffer);
+  WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, key_cursor, buffer);
   while (*tbuffer != '\0') {
-    WWGetPrivateProfileString(INI_Name(), tbuffer, nullptr, buf,
-                              sizeof(buf) - 1, buffer);
+    WWGetPrivateProfileString(
+        INI_Name(), tbuffer, nullptr,
+        std::span(buf).first(static_cast<std::size_t>(sizeof(buf) - 1)),
+        buffer);
     port::Tokenizer tokens(buf, ",");
     const HousesType inhouse =
         HouseTypeClass::From_Name(tokens.Next());  // Unit house.
@@ -549,7 +552,8 @@ void AircraftClass::Read_INI(char* buffer) {
         }
       }
     }
-    tbuffer += std::string_view(tbuffer).size() + 1;
+    key_cursor = key_cursor.subspan(std::string_view(tbuffer).size() + 1);
+    tbuffer = key_cursor.data();
   }
 }
 
@@ -569,22 +573,22 @@ void AircraftClass::Read_INI(char* buffer) {
  *                                                                                             *
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
-void AircraftClass::Write_INI(char* buffer) {
+void AircraftClass::Write_INI(std::span<char> buffer) {
   char uname[10];
   char buf[128];
 
   /*
   **	First, clear out all existing unit data from the ini file.
   */
-  char* tbuffer = buffer + std::string_view(buffer).size() +
-                  2;  // Accumulation buffer of unit IDs.
-  WWGetPrivateProfileString(
-      INI_Name(), nullptr, nullptr, tbuffer,
-      ShapeBufferSize - static_cast<int>(std::string_view(buffer).size()),
-      buffer);
+  std::vector<char> key_storage(std::string_view(buffer.data()).size() + 2);
+  auto key_cursor = std::span(key_storage);
+  char* tbuffer = key_cursor.data();  // Accumulation buffer of unit IDs.
+  WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, key_cursor,
+                            buffer.data());
   while (*tbuffer != '\0') {
     WWWritePrivateProfileString(INI_Name(), tbuffer, nullptr, buffer);
-    tbuffer += std::string_view(tbuffer).size() + 1;
+    key_cursor = key_cursor.subspan(std::string_view(tbuffer).size() + 1);
+    tbuffer = key_cursor.data();
   }
 
   /*
@@ -966,7 +970,7 @@ bool AircraftClass::Mark(MarkType mark) {
  *                                                                                             *
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
-const int16_t* AircraftClass::Overlap_List() const {
+std::span<const int16_t> AircraftClass::Overlap_List() const {
   Validate();
   static const int16_t _list[] = {-(MAP_CELL_W - 1),
                                   -MAP_CELL_W,
@@ -1163,7 +1167,8 @@ int AircraftClass::Mission_Unload() {
           Status = kUnloadPassengers;
         } else {
           if (!Is_LZ_Clear(NavCom)) {
-            Assign_Destination(New_LZ(::As_Target(Waypoint[kWayptReinf])));
+            Assign_Destination(
+                New_LZ(::As_Target(base::At(Waypoint, kWayptReinf))));
           } else {
             if (Altitude == kFlightLevel) {
               Status = kFlyToLz;
@@ -3468,8 +3473,11 @@ void AircraftClass::Response_Attack() {
   Validate();
   static const VocType _response[] = {VOC_AFFIRM, VOC_ACKNOWL, VOC_YESSIR,
                                       VOC_YESSIR, VOC_YESSIR};
-  const VocType response = _response[Sim_Random_Pick(
-      0, static_cast<int>(sizeof(_response) / sizeof(_response[0])) - 1)];
+  const VocType response = base::At(
+      _response,
+      Sim_Random_Pick(0, static_cast<int>(sizeof(_response) /
+                                          sizeof(base::At(_response, 0))) -
+                             1));
   if (AllowVoice) {
     Sound_Effect(response, 0, -(Aircraft.ID(this) + 1));
   }
@@ -3492,8 +3500,11 @@ void AircraftClass::Response_Move() {
   Validate();
   static const VocType _response[] = {VOC_MOVEOUT, VOC_MOVEOUT, VOC_MOVEOUT,
                                       VOC_ACKNOWL, VOC_AFFIRM,  VOC_AFFIRM};
-  const VocType response = _response[Sim_Random_Pick(
-      0, static_cast<int>(sizeof(_response) / sizeof(_response[0])) - 1)];
+  const VocType response = base::At(
+      _response,
+      Sim_Random_Pick(0, static_cast<int>(sizeof(_response) /
+                                          sizeof(base::At(_response, 0))) -
+                             1));
   if (AllowVoice) {
     Sound_Effect(response, 0, -(Aircraft.ID(this) + 1));
   }
@@ -3516,8 +3527,11 @@ void AircraftClass::Response_Select() {
   Validate();
   static const VocType _response[] = {VOC_VEHIC,  VOC_UNIT,   VOC_YESSIR,
                                       VOC_YESSIR, VOC_YESSIR, VOC_AWAIT};
-  const VocType response = _response[Sim_Random_Pick(
-      0, static_cast<int>(sizeof(_response) / sizeof(_response[0])) - 1)];
+  const VocType response = base::At(
+      _response,
+      Sim_Random_Pick(0, static_cast<int>(sizeof(_response) /
+                                          sizeof(base::At(_response, 0))) -
+                             1));
   if (AllowVoice) {
     Sound_Effect(response, 0, -(Aircraft.ID(this) + 1));
   }

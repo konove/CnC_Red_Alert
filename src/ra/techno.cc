@@ -159,13 +159,16 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cstddef>
 #include <cstdint>
 #include <cstring>
 #include <iterator>
-#include <memory>
+#include <span>
+#include <string_view>
 #include <utility>
 
 #include "absl/log/check.h"
+#include "base/array.h"
 #include "base/numeric.h"
 #include "port/safe_string.h"
 #include "ra/aircraft.h"
@@ -226,7 +229,6 @@
 #include "sdllib/shape.h"
 #include "sdllib/ww_win.h"
 #include "sdllib/wwstd.h"
-#include "tech/rect.h"
 
 /***************************************************************************
 **	Cloaking control values.
@@ -237,10 +239,10 @@
 **	These are the pointers to the special shape data that the units may
 *need.
 */
-const void* TechnoTypeClass::WakeShapes = nullptr;
-const void* TechnoTypeClass::TurretShapes = nullptr;
-const void* TechnoTypeClass::SamShapes = nullptr;
-const void* TechnoTypeClass::MGunShapes = nullptr;
+std::span<const std::byte> TechnoTypeClass::WakeShapes = {};
+std::span<const std::byte> TechnoTypeClass::TurretShapes = {};
+std::span<const std::byte> TechnoTypeClass::SamShapes = {};
+std::span<const std::byte> TechnoTypeClass::MGunShapes = {};
 
 // Xlat Tables for French and German
 // Translated unit and building names for the Aftermath additions, as pairs
@@ -301,8 +303,9 @@ static const char* const kFrenchNameOverrides[] = {
     nullptr,
 };
 
-[[maybe_unused]] static const char* const* const kNameOverrides =
-    config::kIsGerman ? kGermanNameOverrides : kFrenchNameOverrides;
+[[maybe_unused]] static const std::span<const char* const> kNameOverrides =
+    config::kIsGerman ? std::span<const char* const>(kGermanNameOverrides)
+                      : std::span<const char* const>(kFrenchNameOverrides);
 
 /***************************************************************************
 **	Which shape to use depending on which facing is controlled by these
@@ -1231,10 +1234,13 @@ void TechnoClass::Draw_It(int x, int y, WindowNumberType window) const {
   if (IsSelected) {
     GraphicViewPortClass draw_window(
         LogicPage->Get_Graphic_Buffer(),
-        WindowList[static_cast<int>(window)][kWindowX] + LogicPage->Get_XPos(),
-        WindowList[static_cast<int>(window)][kWindowY] + LogicPage->Get_YPos(),
-        WindowList[static_cast<int>(window)][kWindowWidth],
-        WindowList[static_cast<int>(window)][kWindowHeight]);
+        base::At(base::At(WindowList, static_cast<int>(window)), kWindowX) +
+            LogicPage->Get_XPos(),
+        base::At(base::At(WindowList, static_cast<int>(window)), kWindowY) +
+            LogicPage->Get_YPos(),
+        base::At(base::At(WindowList, static_cast<int>(window)), kWindowWidth),
+        base::At(base::At(WindowList, static_cast<int>(window)),
+                 kWindowHeight));
 
     /*
     **	The infantry select box should be a bit higher than normal.
@@ -2066,7 +2072,8 @@ int TechnoClass::Evaluate_Just_Cell(CELL cell) const {
   **	Even then, if the difficulty indicates that it shouldn't search for wall
   **	targets, then don't allow it to do so.
   */
-  if (!Rule.Diff[static_cast<int>(House->Difficulty)].IsWallDestroyer) {
+  if (!base::At(Rule.Diff, static_cast<int>(House->Difficulty))
+           .IsWallDestroyer) {
     BEnd(BENCH_EVAL_WALL);
     return 0;
   }
@@ -3095,7 +3102,8 @@ int TechnoClass::Rearm_Delay(bool second, int which) const {
  *facing conversion and distance routines.                   *
  *=============================================================================================*/
 bool TechnoClass::Electric_Zap(TARGET target, int which,
-                               COORDINATE source_coord, unsigned char* remap) {
+                               COORDINATE source_coord,
+                               std::span<const unsigned char> remap) {
   int x = 0;
   int y = 0;
   int x1 = 0;
@@ -3177,14 +3185,16 @@ bool TechnoClass::Electric_Zap(TARGET target, int which,
         ** draw it and move the x & y coords in the right
         ** direction for the next piece.
         */
-        x += _xadd[facing][lastfacing];
-        y += _yadd[facing][lastfacing];
-        if (remap != nullptr) {
-          CC_Draw_Shape(LightningShapes, _shape[facing] + (shots ? 4 : 0), x, y,
+        x += base::At(base::At(_xadd, facing), lastfacing);
+        y += base::At(base::At(_yadd, facing), lastfacing);
+        if (!remap.empty()) {
+          CC_Draw_Shape(LightningShapes,
+                        base::At(_shape, facing) + (shots ? 4 : 0), x, y,
                         WINDOW_TACTICAL,
                         SHAPE_FADING | SHAPE_CENTER | SHAPE_WIN_REL, remap);
         } else {
-          CC_Draw_Shape(LightningShapes, _shape[facing] + (shots ? 4 : 0), x, y,
+          CC_Draw_Shape(LightningShapes,
+                        base::At(_shape, facing) + (shots ? 4 : 0), x, y,
                         WINDOW_TACTICAL, SHAPE_CENTER | SHAPE_WIN_REL);
         }
         lastfacing = facing;
@@ -4422,27 +4432,27 @@ VisualType TechnoClass::Visual_Character(bool raw) const {
   return VISUAL_HIDDEN;
 }
 
-void TechnoClass::Techno_Draw_Object(const void* shapefile, int shapenum, int x,
-                                     int y, WindowNumberType window,
-                                     DirType rotation, int scale) const {
+void TechnoClass::Techno_Draw_Object(std::span<const std::byte> shapefile,
+                                     int shapenum, int x, int y,
+                                     WindowNumberType window, DirType rotation,
+                                     int scale) const {
   assert(IsActive);
 
-  if (shapefile != nullptr) {
+  if (!shapefile.empty()) {
     const VisualType visual = Visual_Character();
-    const void* remap = Remap_Table();
-    const void* shadow = MouseClass::UnitShadow;
+    auto remap = Remap_Table();
+    std::span<const unsigned char> shadow = MouseClass::UnitShadow;
 
     // Lazily cache per-frame bounding rectangles in the type class. Only do
     // this when the shapefile matches the type's own image data, because the
     // cache is shared across all instances of this type.
     const TechnoTypeClass* ttype = Techno_Type_Class();
-    if (shapefile == ttype->Get_Image_Data() &&
+    if (shapenum >= 0 && shapefile.data() == ttype->Get_Image_Data().data() &&
         shapenum < Get_Build_Frame_Count(shapefile) - 1) {
-      if (ttype->DimensionData == nullptr) {
-        ttype->DimensionData =
-            std::make_unique<Rect[]>(Get_Build_Frame_Count(shapefile));
+      if (ttype->DimensionData.empty()) {
+        ttype->DimensionData.resize(Get_Build_Frame_Count(shapefile));
       }
-      if (ttype->DimensionData != nullptr &&
+      if (base::ToSize(shapenum) < ttype->DimensionData.size() &&
           !ttype->DimensionData[base::ToSize(shapenum)].Is_Valid()) {
         ttype->DimensionData[base::ToSize(shapenum)] = Shape_Dimensions(shapefile, shapenum);
       }
@@ -4477,8 +4487,8 @@ void TechnoClass::Techno_Draw_Object(const void* shapefile, int shapenum, int x,
       if (visual == VISUAL_SHADOWY) {
         CC_Draw_Shape(
             shapefile, shapenum, x, y, window,
-            SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING | SHAPE_PREDATOR,
-            nullptr, Map.FadingShade, rotation, scale);
+            SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING | SHAPE_PREDATOR, {},
+            Map.FadingShade, rotation, scale);
       } else {
         CC_Draw_Shape(shapefile, shapenum, x, y, window,
                       SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING | SHAPE_GHOST,
@@ -4493,8 +4503,8 @@ void TechnoClass::Techno_Draw_Object(const void* shapefile, int shapenum, int x,
     }
     if (visual != VISUAL_NORMAL && visual != VISUAL_HIDDEN) {
       CC_Draw_Shape(shapefile, shapenum, x, y, window,
-                    SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_WIN_REL, nullptr,
-                    nullptr, rotation, scale);
+                    SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_WIN_REL, {}, {},
+                    rotation, scale);
     }
 #else
     switch (visual) {
@@ -4515,8 +4525,8 @@ void TechnoClass::Techno_Draw_Object(const void* shapefile, int shapenum, int x,
       case VISUAL_RIPPLE:
         CC_Draw_Shape(
             shapefile, shapenum, x, y, window,
-            SHAPE_PREDATOR | SHAPE_FADING | SHAPE_CENTER | SHAPE_WIN_REL,
-            nullptr, MouseClass::FadingShade, rotation, scale);
+            SHAPE_PREDATOR | SHAPE_FADING | SHAPE_CENTER | SHAPE_WIN_REL, {},
+            MouseClass::FadingShade, rotation, scale);
         break;
 
       case VISUAL_HIDDEN:
@@ -4527,7 +4537,7 @@ void TechnoClass::Techno_Draw_Object(const void* shapefile, int shapenum, int x,
   }
 }
 
-const void* TechnoClass::Remap_Table() const {
+std::span<const unsigned char> TechnoClass::Remap_Table() const {
   assert(IsActive);
 
   if (Techno_Type_Class()->IsRemappable) {
@@ -4680,7 +4690,7 @@ int TechnoClass::Value() const {
   **	In early missions, contents of transports are not figured
   **	into the total value.
   */
-  if ((Rule.Diff[static_cast<int>(House->Difficulty)].IsContentScan ||
+  if ((base::At(Rule.Diff, static_cast<int>(House->Difficulty)).IsContentScan ||
        House->IQ >= Rule.IQContentScan) &&
       Is_Something_Attached()) {
     const FootClass* object = Attached_Object();
@@ -4925,8 +4935,8 @@ void TechnoClass::Base_Is_Attacked(TechnoClass* enemy) {
       }
 
       if (count < std::ssize(defender)) {
-        defender[count] = infantry;
-        value[count] = threat;
+        base::At(defender, count) = infantry;
+        base::At(value, count) = threat;
         count++;
         continue;
       }
@@ -4935,12 +4945,12 @@ void TechnoClass::Base_Is_Attacked(TechnoClass* enemy) {
         int newweakest = threat;
 
         for (int lp = 0; lp < count; lp++) {
-          if (value[lp] == weakest) {
-            value[lp] = threat;
-            defender[lp] = static_cast<FootClass*>(infantry);
+          if (base::At(value, lp) == weakest) {
+            base::At(value, lp) = threat;
+            base::At(defender, lp) = static_cast<FootClass*>(infantry);
             continue;
           }
-          newweakest = std::min(value[lp], newweakest);
+          newweakest = std::min(base::At(value, lp), newweakest);
         }
         weakest = newweakest;
       }
@@ -5014,8 +5024,8 @@ void TechnoClass::Base_Is_Attacked(TechnoClass* enemy) {
       }
 
       if (count < std::ssize(defender)) {
-        defender[count] = unit;
-        value[count] = threat;
+        base::At(defender, count) = unit;
+        base::At(value, count) = threat;
         count++;
         continue;
       }
@@ -5023,12 +5033,12 @@ void TechnoClass::Base_Is_Attacked(TechnoClass* enemy) {
         int newweakest = threat;
 
         for (int lp = 0; lp < count; lp++) {
-          if (value[lp] == weakest) {
-            value[lp] = threat;
-            defender[lp] = static_cast<FootClass*>(unit);
+          if (base::At(value, lp) == weakest) {
+            base::At(value, lp) = threat;
+            base::At(defender, lp) = static_cast<FootClass*>(unit);
             continue;
           }
-          newweakest = std::min(value[lp], newweakest);
+          newweakest = std::min(base::At(value, lp), newweakest);
         }
         weakest = newweakest;
       }
@@ -5042,25 +5052,25 @@ void TechnoClass::Base_Is_Attacked(TechnoClass* enemy) {
     */
     for (int lp = 0; lp < count - 1; lp++) {
       for (int lp2 = lp + 1; lp2 < count; lp2++) {
-        if (value[lp] < value[lp2]) {
-          std::swap(value[lp], value[lp2]);
+        if (base::At(value, lp) < base::At(value, lp2)) {
+          std::swap(base::At(value, lp), base::At(value, lp2));
 
-          FootClass* temp = defender[lp];
-          defender[lp] = defender[lp2];
-          defender[lp2] = temp;
+          FootClass* temp = base::At(defender, lp);
+          base::At(defender, lp) = base::At(defender, lp2);
+          base::At(defender, lp2) = temp;
         }
       }
     }
 
     for (int lp = 0; lp < count; lp++) {
       if (Percent_Chance(50)) {
-        defender[lp]->Assign_Mission(MISSION_RESCUE);
+        base::At(defender, lp)->Assign_Mission(MISSION_RESCUE);
       } else {
-        defender[lp]->Assign_Mission(MISSION_GUARD_AREA);
-        defender[lp]->ArchiveTarget = As_Target();
+        base::At(defender, lp)->Assign_Mission(MISSION_GUARD_AREA);
+        base::At(defender, lp)->ArchiveTarget = As_Target();
       }
-      defender[lp]->Assign_Target(enemy->As_Target());
-      risktotal += defender[lp]->Risk();
+      base::At(defender, lp)->Assign_Target(enemy->As_Target());
+      risktotal += base::At(defender, lp)->Risk();
       if (risktotal > desired) {
         break;
       }
@@ -6257,7 +6267,9 @@ int TechnoTypeClass::Cost_Of() const { return Cost; }
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-const void* TechnoTypeClass::Get_Cameo_Data() const { return CameoData; }
+std::span<const std::byte> TechnoTypeClass::Get_Cameo_Data() const {
+  return CameoData;
+}
 
 /***********************************************************************************************
  * TechnoTypeClass::Repair_Cost -- Fetches the cost to repair one step. *
@@ -6372,11 +6384,11 @@ bool TechnoTypeClass::Read_INI(CCINIClass& ini) {
     const int id = ((static_cast<int>(RTTI) + 1) * 100) + ID;
 
     ini.Get_String(Name(), "Name", "", buffer, sizeof(buffer));
-    if (strlen(buffer) > 0) {
+    if (!std::string_view(buffer).empty()) {
       if constexpr (!config::kIsEnglish) {
-        for (int xx = 0; kNameOverrides[xx] != nullptr; xx++) {
-          if (!strcmp(kNameOverrides[xx], buffer)) {
-            port::SafeCopy(buffer, kNameOverrides[xx + 1]);
+        for (int xx = 0; kNameOverrides[base::ToSize(xx)] != nullptr; xx++) {
+          if ((std::string_view(kNameOverrides[base::ToSize(xx)]) == buffer)) {
+            port::SafeCopy(buffer, kNameOverrides[base::ToSize(xx + 1)]);
             break;
           }
         }
@@ -6386,9 +6398,9 @@ bool TechnoTypeClass::Read_INI(CCINIClass& ini) {
       **	Insert the new name text into the buffer list.
       */
       for (int index = 0; index < std::ssize(NameOverride); index++) {
-        if (NameIDOverride[index] == 0) {
-          NameOverride[index] = port::CloneString(buffer);
-          NameIDOverride[index] = id;
+        if (base::At(NameIDOverride, index) == 0) {
+          base::At(NameOverride, index) = port::CloneString(buffer);
+          base::At(NameIDOverride, index) = id;
           break;
         }
       }
@@ -6464,11 +6476,11 @@ bool TechnoTypeClass::Legal_Placement(CELL pos) const {
   *of *	obstacles. If this check passes for all foundation squares, only
   *then does the *	routine return that it is legal to place.
   */
-  const int16_t* offset = Occupy_List(true);
+  std::span<const int16_t> offset = Occupy_List(true);
   const bool build = What_Am_I() == RTTI_BUILDINGTYPE;
 
-  while (offset != nullptr && *offset != kRefreshEol) {
-    const CELL cell = static_cast<CELL>(pos + *offset++);
+  while (!offset.empty() && offset.front() != kRefreshEol) {
+    const CELL cell = static_cast<CELL>(pos + base::ConsumeFront(offset));
     if (!Map.In_Radar(cell)) {
       return false;
     }

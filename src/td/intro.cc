@@ -40,12 +40,15 @@
 
 #include "td/intro.h"
 
+#include <algorithm>
+#include <cstddef>
 #include <cstring>
+#include <span>
 
+#include "port/bytes_of.h"
 #include "sdllib/font.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/memflag.h"
 #include "sdllib/misc.h"
 #include "sdllib/timer.h"
 #include "sdllib/wsa.h"
@@ -108,37 +111,36 @@ void Choose_Side() {
   GameFileVqaIo nodbrief_io;  // Must outlive the open players.
   bool gdibrief = false;
   bool nodbrief = false;  // Movie opened successfully?
-  const void* speech = nullptr;
+  std::span<const std::byte> speech;
   bool speechplaying = false;
   const int oldfontxspacing = FontXSpacing;
   int setpalette = 0;
 
-  TextPrintBuffer = new GraphicBufferClass(
-      SeenBuff.Get_Width(), SeenBuff.Get_Height(), static_cast<void*>(nullptr));
+  TextPrintBuffer =
+      new GraphicBufferClass(SeenBuff.Get_Width(), SeenBuff.Get_Height(), {});
   TextPrintBuffer->Clear();
   BlitList.Clear();
-  PseudoSeenBuff =
-      new GraphicBufferClass(320, 200, static_cast<void*>(nullptr));
+  PseudoSeenBuff = new GraphicBufferClass(320, 200, {});
   int frame = 0;
   int endframe = 255;
   bool lettersdone = false;
 
   Hide_Mouse();
   /* Change to the six-point font for Text_Print */
-  const void* oldfont = Set_Font(ScoreFontPtr);
+  const std::span<const std::byte> oldfont = Set_Font(ScoreFontPtr);
 
   Call_Back();
 
   GameFile f("STRUGGLE.AUD");
-  void* staticaud = Load_Alloc_Data(f);
+  const auto staticaud = Load_Alloc_Data(f);
   f.Open("GDI_SLCT.AUD");
-  void* speechg = Load_Alloc_Data(f);
+  const auto speechg = Load_Alloc_Data(f);
   f.Open("NOD_SLCT.AUD");
-  void* speechn = Load_Alloc_Data(f);
+  const auto speechn = Load_Alloc_Data(f);
 
-  //	staticaud = MixArchive::Retrieve("STRUGGLE.AUD");
-  //	speechg = MixArchive::Retrieve("GDI_SLCT.AUD");
-  //	speechn = MixArchive::Retrieve("NOD_SLCT.AUD");
+  //	staticaud = MixArchive::RetrieveData("STRUGGLE.AUD");
+  //	speechg = MixArchive::RetrieveData("GDI_SLCT.AUD");
+  //	speechn = MixArchive::RetrieveData("NOD_SLCT.AUD");
 
   if (Special.IsFromInstall) {
     {
@@ -151,7 +153,7 @@ void Choose_Side() {
 
   // anim = Open_Animation("CHOOSE.WSA",NULL,0L,(WSAOpenType)(WSA_OPEN_FROM_MEM
   // | WSA_OPEN_TO_PAGE),Palette);
-  void* anim = Open_Animation("CHOOSE.WSA", nullptr, 0L,
+  void* anim = Open_Animation("CHOOSE.WSA", {}, 0L,
                               WSA_OPEN_FROM_DISK | WSA_OPEN_TO_PAGE, Palette);
   Call_Back();
 
@@ -200,7 +202,8 @@ void Choose_Side() {
     Show_Mouse();
   }
 
-  while (endframe != frame || (speechplaying && Is_Sample_Playing(speech))) {
+  while (endframe != frame ||
+         (speechplaying && Is_Sample_Playing(speech.data()))) {
     Animate_Frame(anim, SysMemPage, frame++);
     if (setpalette) {
       Wait_Vert_Blank();
@@ -212,7 +215,7 @@ void Choose_Side() {
     /*
     ** If the sample has stopped or is about to then restart it
     */
-    if (!Is_Sample_Playing(staticaud) || !sample_timer.Time()) {
+    if (!Is_Sample_Playing(staticaud.data()) || !sample_timer.Time()) {
       Stop_Sample(statichandle);
       statichandle = Play_Sample(staticaud, 255, 64);
       sample_timer.Set(0x3f);
@@ -318,16 +321,16 @@ void Choose_Side() {
     ** Make sure the screen's fully clear after the movie plays
     */
     VisiblePage.Clear();
-    memset(BlackPalette, 0x01, 768);
+    std::ranges::fill(BlackPalette, 0x01);
     Set_Palette(BlackPalette);
-    memset(BlackPalette, 0x00, 768);
+    std::ranges::fill(BlackPalette, 0x00);
   } else {
     PreserveVQAScreen = true;
   }
   Stop_Sample(statichandle);
-  Free(staticaud);
-  Free(speechg);
-  Free(speechn);
+  delete[] port::CharBytes(std::span(staticaud)).data();
+  delete[] port::CharBytes(std::span(speechg)).data();
+  delete[] port::CharBytes(std::span(speechn)).data();
 
   Set_Font(oldfont);
   FontXSpacing = oldfontxspacing;

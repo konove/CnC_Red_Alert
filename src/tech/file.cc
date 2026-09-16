@@ -17,6 +17,6 @@ std::vector<std::byte> File::ReadBytes(const base::ssize count) {
 
 std::string File::ReadString(const base::ssize count) {
   std::string text(base::ToSize(count), '\0');
-  text.resize(base::ToSize(Read(text.data(), count)));
+  text.resize(base::ToSize(Read(std::span(text))));
   return text;
 }

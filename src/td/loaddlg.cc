@@ -47,12 +47,16 @@
 
 #include <algorithm>
 #include <charconv>
+#include <cstddef>
 #include <cstdio>
 #include <cstring>
 #include <filesystem>
+#include <memory>
+#include <span>
 #include <string_view>
 
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "port/safe_string.h"
 #include "sdllib/file.h"
 #include "sdllib/gbuffer.h"
@@ -207,8 +211,8 @@ bool LoadOptionsClass::Process() {
   char game_descr[40] = {0};  // save-game description
   char fname[13];             // for generating filename to delete
 
-  const void* up_button = nullptr;
-  const void* down_button = nullptr;
+  std::span<const std::byte> up_button;
+  std::span<const std::byte> down_button;
 
   if (InMainLoop || factor == 1) {
     up_button = Hires_Retrieve("BTN-UP.SHP");
@@ -485,7 +489,7 @@ bool LoadOptionsClass::Process() {
           if (game_idx != 0) {
             port::SafeCopy(game_descr, listbtn.Get_Item(game_idx));
           } else {
-            game_descr[0] = 0;
+            base::At(game_descr, 0) = 0;
           }
           editbtn.Set_Text(game_descr, 40);
         }
@@ -595,12 +599,11 @@ void LoadOptionsClass::Fill_List(ListClass* list) {
 
     fdata = new FileEntryClass;
 
-    fdata->Descr[0] = '\0';
+    base::At(fdata->Descr, 0) = '\0';
     if (!ok) {
       port::SafeCopy(fdata->Descr, Text_String(TXT_OLD_GAME));
     }
-    strncat(fdata->Descr, descr,
-            sizeof(fdata->Descr) - std::string_view(fdata->Descr).size() - 1);
+    port::SafeAppend(fdata->Descr, descr);
     fdata->Valid = ok;
     fdata->Scenario = scenario;
     fdata->House = house;
@@ -645,10 +648,10 @@ void LoadOptionsClass::Fill_List(ListClass* list) {
   ** Now sort the list in order of Date/Time (newest first, oldest last)
   */
   if (Files.Count() > 0) {
-    std::sort(&Files[0], &Files[0] + Files.Count(),
-              [](const FileEntryClass* left, const FileEntryClass* right) {
-                return left->DateTime > right->DateTime;
-              });
+    std::ranges::sort(Files.ActiveElements(), [](const FileEntryClass* left,
+                                                 const FileEntryClass* right) {
+      return left->DateTime > right->DateTime;
+    });
   }
 
   /*
@@ -675,7 +678,8 @@ int LoadOptionsClass::Num_From_Ext(const char* fname) {
 
   int num = 0;
   if (ext.size() > 1) {  // Has more than just '.'
-    std::from_chars(ext.data() + 1, ext.data() + ext.size(), num);
+    ext.erase(0, 1);
+    std::from_chars(ext.data(), std::to_address(ext.end()), num);
   }
   return num;
 }

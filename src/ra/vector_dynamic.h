@@ -13,10 +13,10 @@
 template <typename T>
 class DynamicVectorClass : public VectorClass<T> {
  public:
-  explicit DynamicVectorClass(base::ssize size = 0, T* array = nullptr);
+  explicit DynamicVectorClass(base::ssize size = 0, std::span<T> array = {});
 
   // Change maximum size of vector.
-  bool Resize(base::ssize newsize, T* array = nullptr) override;
+  bool Resize(base::ssize newsize, std::span<T> array = {}) override;
 
   // Resets and frees the vector array.
   void Clear() override {
@@ -26,6 +26,14 @@ class DynamicVectorClass : public VectorClass<T> {
 
   // Fetch number of "allocated" vector objects.
   [[nodiscard]] base::ssize Count() const { return ActiveCount; }
+
+  [[nodiscard]] std::span<T> ActiveElements() {
+    return this->Elements().first(base::ToSize(ActiveCount));
+  }
+  [[nodiscard]] std::span<const T> ActiveElements() const {
+    return this->Elements().first(base::ToSize(ActiveCount));
+  }
+
 
   // Add object to vector (growing as necessary).
   bool Add(const T& object);
@@ -70,12 +78,12 @@ class DynamicVectorClass : public VectorClass<T> {
 // Implementation details only below here
 
 template <class T>
-DynamicVectorClass<T>::DynamicVectorClass(base::ssize size, T* array)
+DynamicVectorClass<T>::DynamicVectorClass(base::ssize size, std::span<T> array)
     : VectorClass<T>(size, array) {}
 
 // Resizes capacity. Truncates ActiveCount if new size is smaller.
 template <class T>
-bool DynamicVectorClass<T>::Resize(base::ssize newsize, T* array) {
+bool DynamicVectorClass<T>::Resize(base::ssize newsize, std::span<T> array) {
   if (VectorClass<T>::Resize(newsize, array)) {
     if (this->Length() < ActiveCount) {
       ActiveCount = this->Length();
@@ -124,8 +132,9 @@ bool DynamicVectorClass<T>::Add_Head(const T& object) {
   // Shift by assignment rather than a raw byte move, both so that a non-trivial
   // T is handled correctly (matching Delete()) and to avoid the void* round
   // trip. For a trivially copyable T this still compiles down to a memmove.
-  std::move_backward(this->Vector, this->Vector + ActiveCount,
-                     this->Vector + ActiveCount + 1);
+  const auto elements = this->Elements();
+  std::move_backward(elements.begin(), elements.begin() + ActiveCount,
+                     elements.begin() + ActiveCount + 1);
   (*this)[0] = object;
   ActiveCount++;
   return true;

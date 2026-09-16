@@ -52,8 +52,10 @@
  *- - - - - - - */
 
 #include <algorithm>
+#include <cstddef>
 #include <cstdint>
 #include <filesystem>
+#include <span>
 #include <string>
 
 #include "base/enum_array.h"
@@ -79,7 +81,7 @@
 #include "tech/game_file.h"
 #include "tech/mix_archive.h"
 
-const void* UnitTypeClass::WakeShapes = nullptr;
+std::span<const std::byte> UnitTypeClass::WakeShapes = {};
 
 // Visceroid
 static const UnitTypeClass UnitVisceroid(
@@ -1327,14 +1329,14 @@ UnitTypeClass::UnitTypeClass(
  *                                                                                             *
  * HISTORY: * 05/14/1994 JLB : Created. *
  *=============================================================================================*/
-const int16_t* UnitTypeClass::Occupy_List(bool /*placement*/) const {
+std::span<const int16_t> UnitTypeClass::Occupy_List(bool /*placement*/) const {
   static const int16_t _simple[] = {0, REFRESH_EOL};
   static const int16_t _gun[] = {0, -1, 1, REFRESH_EOL};
 
   if (Type == UNIT_GUNBOAT) {
-    return &_gun[0];
+    return _gun;
   }
-  return &_simple[0];
+  return _simple;
 }
 
 /***********************************************************************************************
@@ -1356,7 +1358,7 @@ const int16_t* UnitTypeClass::Occupy_List(bool /*placement*/) const {
 UnitType UnitTypeClass::From_Name(const char* name) {
   if (name) {
     for (UnitType classid = UNIT_HTANK; classid < UNIT_COUNT; classid++) {
-      if (stricmp(Pointers[classid]->IniName, name) == 0) {
+      if (port::CompareIgnoreCase(Pointers[classid]->IniName, name) == 0) {
         return classid;
       }
     }
@@ -1386,8 +1388,8 @@ UnitType UnitTypeClass::From_Name(const char* name) {
 void UnitTypeClass::Display(int x, int y, WindowNumberType window,
                             HousesType house) const {
   int shape = 0;
-  const void* ptr = Get_Cameo_Data();
-  if (!ptr) {
+  auto ptr = Get_Cameo_Data();
+  if (ptr.empty()) {
     ptr = Get_Image_Data();
     shape = IsChunkyShape ? 0 : 5;
   }
@@ -1413,7 +1415,7 @@ void UnitTypeClass::Display(int x, int y, WindowNumberType window,
  *=============================================================================================*/
 void UnitTypeClass::Prep_For_Add() {
   for (UnitType index = UNIT_HTANK; index < UNIT_COUNT; index++) {
-    if (As_Reference(index).Get_Image_Data() != nullptr) {
+    if (!As_Reference(index).Get_Image_Data().empty()) {
       Map.Add_To_List(&As_Reference(index));
     }
   }
@@ -1440,7 +1442,7 @@ void UnitTypeClass::One_Time() {
     const UnitTypeClass& uclass = As_Reference(index);
     const GameFile file;
 
-    const void* ptr = nullptr;  // Shape pointer and set pointer.
+    std::span<const std::byte> ptr;  // Shape pointer and set pointer.
 
     int largest = 0;  // Largest dimension of shape (so far).
     if (uclass.IsBuildable) {
@@ -1455,7 +1457,7 @@ void UnitTypeClass::One_Time() {
       }
       const auto fullname =
           std::filesystem::path(filename).replace_extension(".SHP").string();
-      uclass.Set_Cameo_Data(MixArchive::Retrieve(fullname));
+      uclass.Set_Cameo_Data(MixArchive::RetrieveData(fullname));
     }
 
     /*
@@ -1465,13 +1467,13 @@ void UnitTypeClass::One_Time() {
       const auto fullname = std::filesystem::path(uclass.IniName)
                                 .replace_extension(".SHP")
                                 .string();
-      ptr = MixArchive::Retrieve(fullname);
+      ptr = MixArchive::RetrieveData(fullname);
     } else {
-      ptr = nullptr;
+      ptr = {};
     }
 
     uclass.Set_Image_Data(ptr);
-    if (ptr) {
+    if (!ptr.empty()) {
       if (index == UNIT_MLRS || index == UNIT_MSAM) {
         largest = 26;
       } else {
@@ -1488,8 +1490,8 @@ void UnitTypeClass::One_Time() {
   /*
   **	Load the wake shapes in at this time.
   */
-  if (!WakeShapes) {
-    WakeShapes = MixArchive::Retrieve("WAKE.SHP");
+  if (WakeShapes.empty()) {
+    WakeShapes = MixArchive::RetrieveData("WAKE.SHP");
   }
 }
 
@@ -1513,15 +1515,15 @@ void UnitTypeClass::Init(TheaterType theater) {
     for (UnitType index = UNIT_HTANK; index < UNIT_COUNT; index++) {
       const UnitTypeClass& uclass = As_Reference(index);
 
-      uclass.Set_Cameo_Data(nullptr);
+      uclass.Set_Cameo_Data({});
 
       if (uclass.IsBuildable) {
         const auto fullname =
             std::filesystem::path(std::string(uclass.IniName) + "ICNH")
                 .replace_extension(".VQA")
                 .string();
-        const void* cameo_ptr = MixArchive::Retrieve(fullname);
-        if (cameo_ptr) {
+        const auto cameo_ptr = MixArchive::RetrieveData(fullname);
+        if (!cameo_ptr.empty()) {
           uclass.Set_Cameo_Data(cameo_ptr);
         }
       }

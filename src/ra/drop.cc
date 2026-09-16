@@ -37,6 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include <cstddef>
+#include <span>
 #include "ra/drop.h"
 
 #include "base/numeric.h"
@@ -51,9 +53,9 @@
 #include "sdllib/font.h"
 #include "sdllib/keyboard.h"
 
-DropListClass::DropListClass(int id, char* text, int max_len,
+DropListClass::DropListClass(int id, std::span<char> text, int max_len,
                              TextPrintType flags, int x, int y, int w, int h,
-                             const void* up, const void* down)
+                             std::span<const std::byte> up, std::span<const std::byte> down)
     : EditClass(id, text, max_len, flags, x, y, w, 18, kAlphanumeric),
 
       ListHeight(h),
@@ -97,7 +99,7 @@ DropListClass* DropListClass::Remove() {
 }
 
 int DropListClass::Add_Item(const char* text) {
-  port::SafeCopy(String, text, base::ToSize(MaxLength));
+  port::SafeCopy(std::span(String).first(base::ToSize(MaxLength)), text);
   Flag_To_Redraw();
   return List.Add_Item(text);
 }
@@ -109,7 +111,7 @@ int DropListClass::Current_Index() { return List.Current_Index(); }
 void DropListClass::Set_Selected_Index(int index) {
   if (static_cast<unsigned>(index) < static_cast<unsigned>(List.Count())) {
     List.Set_Selected_Index(index);
-    port::SafeCopy(String, List.Get_Item(Current_Index()), base::ToSize(MaxLength));
+    port::SafeCopy(std::span(String).first(base::ToSize(MaxLength)), List.Get_Item(Current_Index()));
   } else {
     String[0] = '\0';
   }
@@ -129,7 +131,7 @@ void DropListClass::Peer_To_Peer(unsigned flags, KeyNumType& key,
   }
 
   if (&whom == &List) {
-    port::SafeCopy(String, List.Current_Item(), base::ToSize(MaxLength));
+    port::SafeCopy(std::span(String).first(base::ToSize(MaxLength)), List.Current_Item());
     Flag_To_Redraw();
     key = ButtonKey(static_cast<int>(ID));
   }
@@ -163,7 +165,7 @@ void DropListClass::Set_Position(int x, int y) {
 void DropListClass::Set_Selected_Index(const char* text) {
   if (text) {
     for (int index = 0; index < Count(); index++) {
-      if (stricmp(text, List.Get_Item(index)) == 0) {
+      if (port::CompareIgnoreCase(text, List.Get_Item(index)) == 0) {
         Set_Selected_Index(index);
         break;
       }

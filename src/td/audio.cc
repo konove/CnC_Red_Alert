@@ -48,6 +48,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <filesystem>
+#include <span>
 
 #include "base/enum_array.h"
 #include "sdllib/ww_audio.h"
@@ -432,12 +433,12 @@ int Sound_Effect(VocType voc, VolType volume, int variation,
   const auto name = std::filesystem::path(SoundEffectName[voc].Name)
                         .replace_extension(ext)
                         .string();
-  const void* ptr = MixArchive::Retrieve(name);
+  const auto ptr = MixArchive::RetrieveData(name);
 
   /*
   **	If the sound data pointer is not null, then presume that it is valid.
   */
-  if (ptr) {
+  if (!ptr.empty()) {
     const int vol = static_cast<int>(volume);
     return Play_Sample(ptr,
                        Fixed_To_Cardinal(SoundEffectName[voc].Priority, vol),
@@ -592,7 +593,7 @@ void Speak_AI() {
     return;
   }
 
-  if (!Is_Sample_Playing(SpeechBuffer)) {
+  if (!Is_Sample_Playing(SpeechBuffer.data())) {
     CurrentVoice = VOX_NONE;
     if (SpeakQueue != VOX_NONE) {
       if (SpeakQueue != _last) {
@@ -600,8 +601,7 @@ void Speak_AI() {
                               .replace_extension(".AUD")
                               .string();
 
-        if (GameFile(name).Read(static_cast<char*>(SpeechBuffer),
-                                SPEECH_BUFFER_SIZE)) {
+        if (GameFile(name).Read(std::span(SpeechBuffer), SPEECH_BUFFER_SIZE)) {
           Play_Sample(SpeechBuffer, 254, Options.Volume);
         }
         _last = SpeakQueue;
@@ -630,7 +630,7 @@ void Speak_AI() {
 void Stop_Speaking() {
   SpeakQueue = VOX_NONE;
   if (SampleType != SAMPLE_NONE) {
-    Stop_Sample_Playing(SpeechBuffer);
+    Stop_Sample_Playing(SpeechBuffer.data());
   }
 }
 
@@ -652,5 +652,5 @@ void Stop_Speaking() {
 bool Is_Speaking() {
   Speak_AI();
   return SampleType != SAMPLE_NONE &&
-         (SpeakQueue != VOX_NONE || Is_Sample_Playing(SpeechBuffer));
+         (SpeakQueue != VOX_NONE || Is_Sample_Playing(SpeechBuffer.data()));
 }

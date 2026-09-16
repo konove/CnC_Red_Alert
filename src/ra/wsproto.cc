@@ -64,12 +64,15 @@
 
 #include <cassert>
 #include <cerrno>
+#include <cstddef>
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
+#include <span>
 #include <utility>
 
 #include "absl/strings/str_format.h"
+#include "base/buffer.h"
 #include "base/numeric.h"
 #include "port/socket_bytes.h"
 #include "ra/externs.h"
@@ -362,7 +365,8 @@ bool WinsockInterfaceClass::Init() {
  *                                                                                             *
  * HISTORY: * 3/20/96 2:58PM ST : Created *
  *=============================================================================================*/
-int WinsockInterfaceClass::Read(void* buffer, int& buffer_len, void* address,
+int WinsockInterfaceClass::Read(std::span<std::byte> buffer, int& buffer_len,
+                                std::span<std::byte> address,
                                 int& address_len) {
   /*
   ** Call the message loop in case there are any outstanding winsock READ
@@ -389,8 +393,10 @@ int WinsockInterfaceClass::Read(void* buffer, int& buffer_len, void* address,
   /*
   ** Copy the data and the address it came from into the supplied buffers.
   */
-  memcpy(buffer, packet->Buffer, base::ToSize(packet->BufferLen));
-  memcpy(address, packet->Address, sizeof(packet->Address));
+  base::CopyBytes(buffer, base::ObjectBytes(packet->Buffer),
+                  base::ToSize(packet->BufferLen));
+  base::CopyBytes(address, base::ObjectBytes(packet->Address),
+                  sizeof(packet->Address));
 
   /*
   ** Return the length of the packet in buffer_len.
@@ -421,8 +427,9 @@ int WinsockInterfaceClass::Read(void* buffer, int& buffer_len, void* address,
  *                                                                                             *
  * HISTORY: * 3/20/96 3:00PM ST : Created *
  *=============================================================================================*/
-void WinsockInterfaceClass::WriteTo(void* buffer, int buffer_len,
-                                    void* address) {
+void WinsockInterfaceClass::WriteTo(std::span<const std::byte> buffer,
+                                    int buffer_len,
+                                    const IPXAddressClass& address) {
   /*
   ** Create a temporary holding area for the packet.
   */
@@ -431,12 +438,13 @@ void WinsockInterfaceClass::WriteTo(void* buffer, int buffer_len,
   /*
   ** Copy the packet into the holding buffer.
   */
-  memcpy(packet->Buffer, buffer, base::ToSize(buffer_len));
+  base::CopyBytes(base::ObjectBytes(packet->Buffer), buffer,
+                  base::ToSize(buffer_len));
   packet->BufferLen = buffer_len;
   packet->IsBroadcast = false;
   //	memcpy ( packet->Address, address, sizeof (packet->Address) );
-  memcpy(
-      packet->Address, address,
+  base::CopyBytes(
+      base::ObjectBytes(packet->Address), base::ObjectBytes(address),
       sizeof(
           IPXAddressClass));  // Steve Tall has revised WriteTo due to this bug.
 
@@ -470,7 +478,8 @@ void WinsockInterfaceClass::WriteTo(void* buffer, int buffer_len,
  *                                                                                             *
  * HISTORY: * 3/20/96 3:00PM ST : Created *
  *=============================================================================================*/
-void WinsockInterfaceClass::Broadcast(void* buffer, int buffer_len) {
+void WinsockInterfaceClass::Broadcast(std::span<const std::byte> buffer,
+                                      int buffer_len) {
   /*
   ** Create a temporary holding area for the packet.
   */
@@ -479,7 +488,8 @@ void WinsockInterfaceClass::Broadcast(void* buffer, int buffer_len) {
   /*
   ** Copy the packet into the holding buffer.
   */
-  memcpy(packet->Buffer, buffer, base::ToSize(buffer_len));
+  base::CopyBytes(base::ObjectBytes(packet->Buffer), buffer,
+                  base::ToSize(buffer_len));
   packet->BufferLen = buffer_len;
 
   /*

@@ -1,6 +1,8 @@
 #ifndef CNC_RED_ALERT_RA_DIALOG_H_
 #define CNC_RED_ALERT_RA_DIALOG_H_
 
+#include <span>
+
 #include "absl/strings/str_format.h"
 #include "absl/types/span.h"
 #include "port/format.h"
@@ -21,14 +23,14 @@ void Draw_Caption(const char* text, int x, int y, int w);
 // "width" receives the pixel width of the widest resulting line and "height"
 // the total pixel height of all lines. Returns the number of lines, or 0 if
 // "string" is nullptr.
-int Format_Window_String(char* string, int max_line_len, int& width,
+int Format_Window_String(std::span<char> string, int max_line_len, int& width,
                          int& height);
 extern void Dialog_Box(int x, int y, int w, int h);
 void Conquer_Clip_Text_Print(const char* /*text*/, int x, int y,
                              RemapControlType* fore, int back = kTBlack,
                              TextPrintType flag = static_cast<TextPrintType>(
                                  TPF_8POINT | TPF_DROPSHADOW),
-                             int width = -1, const int* tabs = nullptr);
+                             int width = -1, std::span<const int> tabs = {});
 // Draws a bordered box to the current LogicPage.
 //
 // "x,y" is the upper left corner and "w,h" the size, both in pixels. "up"

@@ -42,6 +42,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <span>
 
 #include "absl/base/attributes.h"
 #include "base/enum_array.h"
@@ -263,7 +264,7 @@ class BuildingClass : public TechnoClass {
   **	Query functions.
   */
   [[nodiscard]] int Value() const override;
-  [[nodiscard]] const void* Get_Image_Data() const override;
+  [[nodiscard]] std::span<const std::byte> Get_Image_Data() const override;
   [[nodiscard]] int How_Many_Survivors() const override;
   [[nodiscard]] DirType Turret_Facing() const override;
   CELL Find_Exit_Cell(const TechnoClass* techno) const override;
@@ -277,7 +278,8 @@ class BuildingClass : public TechnoClass {
     return *Class;
   }
   [[nodiscard]] DirType Fire_Direction() const override;
-  [[nodiscard]] const int16_t* Overlap_List(bool redraw = false) const override;
+  [[nodiscard]] std::span<const int16_t> Overlap_List(
+      bool redraw = false) const override;
   [[nodiscard]] int Shape_Number() const;
   [[nodiscard]] int Power_Output() const;
   [[nodiscard]] CELL Check_Point(CheckPointType cp) const;

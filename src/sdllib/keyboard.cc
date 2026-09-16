@@ -6,7 +6,9 @@
 #include <SDL_mouse.h>
 #include <SDL_scancode.h>
 
+#include <cstddef>
 #include <cstdint>
+#include <span>
 
 #include "base/array.h"
 #include "sdllib/ww_mouse.h"
@@ -147,8 +149,11 @@ bool WWKeyboardClass::Down(int key) {
   int numkeys = 0;
   const auto* keys = SDL_GetKeyboardState(&numkeys);
 
-  if (key < numkeys) {
-    return keys[key] != 0;
+  if (key >= 0 && key < numkeys) {
+    // SDL_GetKeyboardState returns exactly numkeys state bytes.
+    // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
+    const std::span states(keys, static_cast<size_t>(numkeys));
+    return states[static_cast<size_t>(key)] != 0;
   }
 
   return false;

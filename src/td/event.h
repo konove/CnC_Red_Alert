@@ -44,6 +44,7 @@
 #include <cstdint>
 #include <cstring>
 
+#include "base/buffer.h"
 #include "base/enum_array.h"
 #include "td/defines.h"
 #include "td/special.h"
@@ -216,7 +217,9 @@ class EventClass {
   // Member initializers cannot reach padding. Every other constructor delegates
   // here so fresh commands also clear IsExecuted and all unused payload bytes.
   // NOLINTNEXTLINE(cert-oop57-cpp)
-  EventClass() { std::memset(this, 0, sizeof(EventClass)); }
+  EventClass() {
+    base::FillBytes(base::ObjectBytes(*this), 0, sizeof(EventClass));
+  }
   explicit EventClass(SpecialClass data);
   EventClass(EventType type, TARGET target);
   explicit EventClass(EventType type);

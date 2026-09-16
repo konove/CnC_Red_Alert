@@ -74,10 +74,12 @@
 #include "ra/vessel.h"
 
 #include <cassert>
+#include <cstddef>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <span>
 #include <utility>
 
 #include "absl/strings/str_format.h"
@@ -438,8 +440,8 @@ void VesselClass::Draw_It(int x, int y, WindowNumberType window) const {
   /*
   **	Verify the legality of the unit class.
   */
-  const void* shapefile = Get_Image_Data();
-  if (shapefile == nullptr) {
+  auto shapefile = Get_Image_Data();
+  if (shapefile.empty()) {
     return;
   }
 
@@ -573,11 +575,11 @@ void VesselClass::Debug_Dump(MonoClass* mono) const {
  *                                                                                             *
  * HISTORY: * 03/20/1996 JLB : Created. *
  *=============================================================================================*/
-const int16_t* VesselClass::Overlap_List(bool /*redraw*/) const {
+std::span<const int16_t> VesselClass::Overlap_List(bool /*redraw*/) const {
   assert(Vessels.ID(this) == ID);
   assert(IsActive);
 
-  return Coord_Spillage_List(Coord, 56) + 1;
+  return Coord_Spillage_List(Coord, 56).subspan(1);
 }
 
 /***********************************************************************************************

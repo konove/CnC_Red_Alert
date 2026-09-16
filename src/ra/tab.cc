@@ -44,6 +44,9 @@
 
 #include "ra/tab.h"
 
+#include <cstddef>
+#include <span>
+
 #include "ra/conquer.h"
 #include "ra/credits.h"
 #include "ra/defines.h"
@@ -65,7 +68,7 @@
 #include "tech/fixed.h"
 #include "tech/mix_archive.h"
 
-const void* TabClass::TabShape = nullptr;
+std::span<const std::byte> TabClass::TabShape = {};
 
 /***********************************************************************************************
  * TabClass::TabClass -- Default construct for the tab button class. *
@@ -286,7 +289,7 @@ void TabClass::Set_Active(int select) {
 void TabClass::One_Time() {
   SidebarClass::One_Time();
   const DiskFile file("tabs.shp");
-  TabShape = MixArchive::Retrieve("TABS.SHP");
+  TabShape = MixArchive::RetrieveData("TABS.SHP");
 }
 
 void TabClass::Flash_Money() {

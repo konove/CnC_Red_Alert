@@ -84,7 +84,7 @@ class MonoClass {
   static void Enable() { Enabled = true; }
   static void Disable() { Enabled = false; }
   static bool Is_Enabled() { return Enabled; }
-  static MonoClass* Get_Current() { return PageUsage[0]; }
+  static MonoClass* Get_Current() { return base::At(PageUsage, 0); }
 
   void Sub_Window(int x = 0, int y = 0, int w = -1, int h = -1);
   void Fill_Attrib(int x, int y, int w, int h, MonoAttribute attrib);

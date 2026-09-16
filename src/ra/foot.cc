@@ -415,9 +415,9 @@ bool FootClass::Basic_Path() {
           auto* inf = dynamic_cast<InfantryClass*>(obj);
           if (inf->NavCom == NavCom && inf->Path[0] != FACING_NONE) {
             if (Coord_Cell(inf->Head_To_Coord()) == Coord_Cell(inf->Coord)) {
-              Mem_Copy(&inf->Path[1], Path, sizeof(Path) - sizeof(Path[0]));
+              Mem_Copy(std::as_bytes(std::span(inf->Path).subspan(1)), std::as_writable_bytes(std::span(Path)), sizeof(Path) - sizeof(Path[0]));
             } else {
-              Mem_Copy(inf->Path, Path, sizeof(Path));
+              Mem_Copy(std::as_bytes(std::span(inf->Path)), std::as_writable_bytes(std::span(Path)), sizeof(Path));
             }
             if (Path[0] != FACING_NONE) {
               skip_path = true;
@@ -468,9 +468,9 @@ bool FootClass::Basic_Path() {
       */
       for (;;) {
         path =
-            Find_Path(cell, &workpath1[0], sizeof(workpath1), PathThreshhold);
+            Find_Path(cell, workpath1, sizeof(workpath1), PathThreshhold);
         if (path && path->Cost) {
-          memcpy(&path1, path, sizeof(path1));
+          path1 = *path;
           found1 = true;
           break;
         }
@@ -491,7 +491,7 @@ bool FootClass::Basic_Path() {
       **	list.
       */
       if (found1) {
-        memcpy(&Path[0], &workpath1[0],
+        base::CopyBytes(base::ObjectBytes(Path), base::ObjectBytes(workpath1),
                base::ToSize(std::min(path->Length, static_cast<int>(sizeof(Path)))));
       }
 
@@ -2003,8 +2003,8 @@ void FootClass::Detach(TARGET target, bool all) {
     if (base::At(NavQueue, index) == target) {
       base::At(NavQueue, index) = kTargetNone;
       if (index < std::ssize(NavQueue) - 1) {
-        memmove(base::Suffix(NavQueue, index).data(),
-                base::Suffix(NavQueue, index + 1).data(),
+        base::MoveBytes(std::as_writable_bytes(base::Suffix(NavQueue, index)),
+                std::as_bytes(base::Suffix(NavQueue, index + 1)),
                 base::ToSize(std::ssize(NavQueue) - index - 1) *
                     sizeof(NavQueue[0]));
         index--;

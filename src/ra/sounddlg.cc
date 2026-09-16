@@ -77,8 +77,8 @@ class MusicListClass : public ListClass {
  public:
   MusicListClass(int id, int x, int y, int w, int h)
       : ListClass(id, x, y, w, h, TPF_6PT_GRAD | TPF_NOSHADOW,
-                  MixArchive::Retrieve("BTN-UP.SHP"),
-                  MixArchive::Retrieve("BTN-DN.SHP")) {}
+                  MixArchive::RetrieveData("BTN-UP.SHP"),
+                  MixArchive::RetrieveData("BTN-DN.SHP")) {}
   ~MusicListClass() override = default;
   MusicListClass(const MusicListClass&) = delete;
   MusicListClass& operator=(const MusicListClass&) = delete;
@@ -185,13 +185,13 @@ void SoundControlsClass::Process() {
   /*
   **	Stop playing button.
   */
-  ShapeButtonClass stopbtn(kButtonStop, MixArchive::Retrieve("BTN-ST.SHP"),
+  ShapeButtonClass stopbtn(kButtonStop, MixArchive::RetrieveData("BTN-ST.SHP"),
                            option_x + stop_x, option_y + stop_y);
 
   /*
   **	Start playing button.
   */
-  ShapeButtonClass playbtn(kButtonPlay, MixArchive::Retrieve("BTN-PL.SHP"),
+  ShapeButtonClass playbtn(kButtonPlay, MixArchive::RetrieveData("BTN-PL.SHP"),
                            option_x + play_x, option_y + play_y);
 
   /*
@@ -305,7 +305,7 @@ void SoundControlsClass::Process() {
       }
     }
   }
-  static int _tabs[] = {55 * 2, 144, 180};
+  static const int _tabs[] = {55 * 2, 144, 180};
   listbox.Set_Tabs(_tabs);
 
   /*

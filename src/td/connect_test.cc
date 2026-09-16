@@ -2,8 +2,12 @@
 #include "td/connect.h"
 
 #include <array>
+#include <cstddef>
 #include <cstdint>
+#include <span>
 
+#include "absl/base/attributes.h"
+#include "base/buffer.h"
 #include "gtest/gtest.h"
 #include "port/unaligned.h"
 #include "td/combuf.h"
@@ -28,7 +32,7 @@ class TestConnection : public NonSequencedConnClass {
   [[nodiscard]] int sent_count() const { return sent_count_; }
 
  protected:
-  int Send(void* /*buf*/, int /*buflen*/) override {
+  int Send(std::span<const std::byte> /*buf*/, int /*buflen*/) override {
     ++sent_count_;
     return 1;
   }
@@ -47,19 +51,20 @@ Packet MakePacket(ConnectionClass::ConnectionEnum code, uint32_t id,
   header.Code = static_cast<unsigned char>(code);
   header.PacketID = id;
   Packet packet{};
-  port::WriteUnaligned(packet.data(), header);
+  port::WriteUnaligned(base::ObjectBytes(packet), header);
   packet.back() = payload;
   return packet;
 }
 
 // Queues a header-only packet for sending and returns its queue entry.
-SendQueueType* QueueHeader(CommBufferClass& queue,
+SendQueueType* QueueHeader(CommBufferClass& queue ABSL_ATTRIBUTE_LIFETIME_BOUND,
                            ConnectionClass::ConnectionEnum code,
                            int64_t first_time) {
   CommHeaderType header{};
   header.MagicNumber = kMagic;
   header.Code = static_cast<unsigned char>(code);
-  if (queue.Queue_Send(&header, static_cast<int>(sizeof(header))) == 0) {
+  if (queue.Queue_Send(base::ObjectBytes(header),
+                       static_cast<int>(sizeof(header))) == 0) {
     return nullptr;
   }
   SendQueueType* entry = queue.Get_Send(queue.Num_Send() - 1);
@@ -77,38 +82,38 @@ TEST(NonSequencedConnTest, DeliversAckRequiredPacketsInIdOrder) {
   TestConnection connection;
   Packet second = MakePacket(ConnectionClass::PACKET_DATA_ACK, 1, 'b');
   Packet first = MakePacket(ConnectionClass::PACKET_DATA_ACK, 0, 'a');
-  EXPECT_TRUE(connection.Receive_Packet(second.data(),
+  EXPECT_TRUE(connection.Receive_Packet(base::ObjectBytes(second),
                                         static_cast<int>(second.size())));
-  EXPECT_TRUE(
-      connection.Receive_Packet(first.data(), static_cast<int>(first.size())));
+  EXPECT_TRUE(connection.Receive_Packet(base::ObjectBytes(first),
+                                        static_cast<int>(first.size())));
   EXPECT_EQ(connection.sent_count(), 2);
 
   char payload = 0;
   int length = 0;
-  ASSERT_TRUE(connection.Get_Packet(&payload, &length));
+  ASSERT_TRUE(connection.Get_Packet(base::ObjectBytes(payload), &length));
   EXPECT_EQ(length, 1);
   EXPECT_EQ(payload, 'a');
-  ASSERT_TRUE(connection.Get_Packet(&payload, &length));
+  ASSERT_TRUE(connection.Get_Packet(base::ObjectBytes(payload), &length));
   EXPECT_EQ(payload, 'b');
-  EXPECT_FALSE(connection.Get_Packet(&payload, &length));
+  EXPECT_FALSE(connection.Get_Packet(base::ObjectBytes(payload), &length));
 }
 
 TEST(NonSequencedConnTest, DropsResendOfDeliveredPacket) {
   TestConnection connection;
   Packet packet = MakePacket(ConnectionClass::PACKET_DATA_ACK, 0, 'a');
-  EXPECT_TRUE(
-      connection.Receive_Packet(packet.data(), static_cast<int>(packet.size())));
+  EXPECT_TRUE(connection.Receive_Packet(base::ObjectBytes(packet),
+                                        static_cast<int>(packet.size())));
 
   char payload = 0;
   int length = 0;
-  ASSERT_TRUE(connection.Get_Packet(&payload, &length));
+  ASSERT_TRUE(connection.Get_Packet(base::ObjectBytes(payload), &length));
   EXPECT_EQ(payload, 'a');
 
   // The resend is still ACKed, but must not be delivered a second time.
-  EXPECT_TRUE(
-      connection.Receive_Packet(packet.data(), static_cast<int>(packet.size())));
+  EXPECT_TRUE(connection.Receive_Packet(base::ObjectBytes(packet),
+                                        static_cast<int>(packet.size())));
   EXPECT_EQ(connection.sent_count(), 2);
-  EXPECT_FALSE(connection.Get_Packet(&payload, &length));
+  EXPECT_FALSE(connection.Get_Packet(base::ObjectBytes(payload), &length));
 }
 
 TEST(NonSequencedConnTest, OldestUnackedSendFindsPacketsAfterLongUptime) {
@@ -141,6 +146,57 @@ TEST(NonSequencedConnTest, OldestUnackedSendReturnsNullWhenNothingPending) {
   CommBufferClass empty(4, 4, 64);
   std::array<CommBufferClass*, 2> queues{nullptr, &empty};
   EXPECT_EQ(ConnectionClass::OldestUnackedSend(queues), nullptr);
+}
+
+TEST(ConnectionTest, RejectsLengthsBeyondTheSuppliedStorage) {
+  TestConnection connection;
+  Packet packet = MakePacket(ConnectionClass::PACKET_DATA_NOACK, 0, 'x');
+  EXPECT_FALSE(connection.Receive_Packet(base::ObjectBytes(packet).first(1),
+                                         static_cast<int>(packet.size())));
+  EXPECT_FALSE(connection.Send_Packet(base::ObjectBytes(packet), -1, 0));
+  EXPECT_FALSE(connection.Send_Packet(base::ObjectBytes(packet),
+                                      static_cast<int>(packet.size()) + 1, 0));
+  EXPECT_EQ(connection.Queue->Num_Receive(), 0);
+  EXPECT_EQ(connection.Queue->Num_Send(), 0);
+}
+
+TEST(ConnectionTest, ShortDestinationDoesNotConsumeReceivedPacket) {
+  TestConnection connection;
+  Packet packet = MakePacket(ConnectionClass::PACKET_DATA_ACK, 0, 'x');
+  ASSERT_TRUE(connection.Receive_Packet(base::ObjectBytes(packet),
+                                        static_cast<int>(packet.size())));
+  int length = 0;
+  EXPECT_FALSE(connection.Get_Packet({}, &length));
+  char payload = 0;
+  ASSERT_TRUE(connection.Get_Packet(base::ObjectBytes(payload), &length));
+  EXPECT_EQ(payload, 'x');
+  EXPECT_EQ(length, 1);
+}
+
+TEST(CommBufferTest, RejectsInvalidInputAndQueueIndices) {
+  CommBufferClass queue(2, 2, 8);
+  const uint32_t value = 0x12345678;
+  EXPECT_FALSE(queue.Queue_Send(base::ObjectBytes(value), -1));
+  EXPECT_FALSE(queue.Queue_Send(base::ObjectBytes(value), 5));
+  EXPECT_EQ(queue.Get_Send(-1), nullptr);
+  EXPECT_EQ(queue.Get_Receive(0), nullptr);
+  EXPECT_FALSE(queue.UnQueue_Send({}, nullptr, 2));
+  EXPECT_EQ(queue.Num_Send(), 0);
+}
+
+TEST(CommBufferTest, ShortDestinationLeavesThePacketQueued) {
+  CommBufferClass queue(2, 2, 8);
+  const uint32_t value = 0x12345678;
+  ASSERT_TRUE(queue.Queue_Send(base::ObjectBytes(value), sizeof(value)));
+  uint16_t small = 0;
+  int length = 0;
+  EXPECT_FALSE(queue.UnQueue_Send(base::ObjectBytes(small), &length, 0));
+  EXPECT_EQ(queue.Num_Send(), 1);
+  uint32_t output = 0;
+  ASSERT_TRUE(queue.UnQueue_Send(base::ObjectBytes(output), &length, 0));
+  EXPECT_EQ(output, value);
+  EXPECT_EQ(length, sizeof(value));
+  EXPECT_EQ(queue.Num_Send(), 0);
 }
 
 }  // namespace

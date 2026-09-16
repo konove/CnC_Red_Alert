@@ -1,6 +1,7 @@
 #ifndef CNC_RED_ALERT_RA_NETDLG_H_
 #define CNC_RED_ALERT_RA_NETDLG_H_
 #include <cstdint>
+#include <span>
 
 #include "ra/ipxaddr.h"
 #include "ra/session.h"
@@ -14,6 +15,6 @@ uint32_t Compute_Name_CRC(const char* name);
 void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
                           int timeval);
 
-extern const char* const* EngMisStr;
+extern const std::span<const char* const> EngMisStr;
 
 #endif  // CNC_RED_ALERT_RA_NETDLG_H_

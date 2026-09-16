@@ -44,7 +44,10 @@
 #include <algorithm>
 #include <cstdint>
 #include <cstring>
+#include <span>
 
+#include "base/array.h"
+#include "base/buffer.h"
 #include "rand.h"
 #include "td/aircraft.h"
 #include "td/building.h"
@@ -150,14 +153,17 @@ void LogicClass::Debug_Dump(MonoClass* mono) {
   **	Advance to the next recorded performance record. If the record buffer
   **	is full then throw out the oldest record.
   */
-  memcpy(&_record[0], &_record[1], sizeof(_record[0]) * (RECORDCOUNT - 1));
+  base::MoveBytes(std::as_writable_bytes(base::Suffix(_record, 0)),
+                  std::as_bytes(base::Suffix(_record, 1)),
+                  sizeof(_record[0]) * (RECORDCOUNT - 1));
 
   /*
   **	Fill in the data for the current frame's performance record.
   */
   SpareTicks = std::min(SpareTicks, static_cast<int64_t>(kTimerSecond));
-  _record[RECORDCOUNT - 1].Graphic = Fixed_To_Cardinal(
-      RECORDHEIGHT, Cardinal_To_Fixed(kTimerSecond, static_cast<int>(SpareTicks)));
+  base::At(_record, RECORDCOUNT - 1).Graphic = Fixed_To_Cardinal(
+      RECORDHEIGHT,
+      Cardinal_To_Fixed(kTimerSecond, static_cast<int>(SpareTicks)));
 
   /*
   **	Draw the bars across the performance record screen.
@@ -168,11 +174,11 @@ void LogicClass::Debug_Dump(MonoClass* mono) {
       char str[2];
       int index = 0;
 
-      index += (_record[column].Graphic >= row) ? 1 : 0;
-      index += (_record[column].Graphic >= row + 1) ? 2 : 0;
+      index += (base::At(_record, column).Graphic >= row) ? 1 : 0;
+      index += (base::At(_record, column).Graphic >= row + 1) ? 2 : 0;
 
-      str[1] = '\0';
-      str[0] = static_cast<char>(_barchar[index]);
+      base::At(str, 1) = '\0';
+      base::At(str, 0) = static_cast<char>(base::At(_barchar, index));
       mono->Text_Print(str, 37 + column, 21 - (row / 2));
     }
   }

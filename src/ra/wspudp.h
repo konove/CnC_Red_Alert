@@ -39,6 +39,10 @@
 #ifndef CNC_RED_ALERT_RA_WSPUDP_H_
 #define CNC_RED_ALERT_RA_WSPUDP_H_
 
+#include <cstddef>
+#include <cstdint>
+#include <span>
+
 #include "ra/vector_dynamic.h"
 #include "ra/wsproto.h"
 #include "sdllib/net_select.h"
@@ -57,8 +61,8 @@ class UDPInterfaceClass : public WinsockInterfaceClass {
   UDPInterfaceClass& operator=(UDPInterfaceClass&&) = delete;
   void Event_Handler(int /*unused*/, SocketEvent /*event*/ /*unused*/) override;
   bool Open_Socket(SOCKET socketnum) override;
-  void Set_Broadcast_Address(const void* address) override;
-  void Broadcast(void* buffer, int buffer_len) override;
+  void Set_Broadcast_Address(const char* address) override;
+  void Broadcast(std::span<const std::byte> buffer, int buffer_len) override;
 
   ProtocolEnum Get_Protocol() override { return PROTOCOL_UDP; }
 
@@ -68,12 +72,12 @@ class UDPInterfaceClass : public WinsockInterfaceClass {
   /*
   ** Address to use when broadcasting a packet.
   */
-  DynamicVectorClass<unsigned char*> BroadcastAddresses;
+  DynamicVectorClass<uint32_t> BroadcastAddresses;
 
   /*
   ** List of local addresses.
   */
-  DynamicVectorClass<unsigned char*> LocalAddresses;
+  DynamicVectorClass<uint32_t> LocalAddresses;
 };
 
 bool Get_Broadcast_Addresses();

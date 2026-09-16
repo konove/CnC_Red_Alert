@@ -24,6 +24,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
+#include <string>
 #include <string_view>
 #include <utility>
 
@@ -33,6 +34,7 @@
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
+#include "port/format.h"
 #include "port/random_seed.h"
 #include "port/tokenizer.h"
 #include "port/win32/win32_types.h"
@@ -354,21 +356,22 @@ void WOL_GameSetupDialog::Initialize() {
   pToolTip = pToolTip->next;
   pToolTip->next = pWO->pTTipHelp;
 
-  pILPlayers = new IconListClass(kButtonPlayerlist, d_playerlist_x,
-                                 d_playerlist_y, d_playerlist_w, d_playerlist_h,
-                                 TPF_TYPE, MixArchive::Retrieve("BTN-UP.SHP"),
-                                 MixArchive::Retrieve("BTN-DN.SHP"), true, 2);
+  pILPlayers = new IconListClass(
+      kButtonPlayerlist, d_playerlist_x, d_playerlist_y, d_playerlist_w,
+      d_playerlist_h, TPF_TYPE, MixArchive::RetrieveData("BTN-UP.SHP"),
+      MixArchive::RetrieveData("BTN-DN.SHP"), true, 2);
   //	ListClass scenariolist(kButtonScenariolist, d_scenariolist_x,
   // d_scenariolist_y, d_scenariolist_w, d_scenariolist_h, kTpfText,
-  // MixArchive::Retrieve("BTN-UP.SHP"), MixArchive::Retrieve("BTN-DN.SHP"));
+  // MixArchive::RetrieveData("BTN-UP.SHP"),
+  // MixArchive::RetrieveData("BTN-DN.SHP"));
   pILScens = new IconListClass(
       kButtonScenariolist, d_scenariolist_x, d_scenariolist_y, d_scenariolist_w,
-      d_scenariolist_h, TPF_TYPE, MixArchive::Retrieve("BTN-UP.SHP"),
-      MixArchive::Retrieve("BTN-DN.SHP"), true, 1);
+      d_scenariolist_h, TPF_TYPE, MixArchive::RetrieveData("BTN-UP.SHP"),
+      MixArchive::RetrieveData("BTN-DN.SHP"), true, 1);
   pILDisc =
       new IconListClass(kButtonDisclist, d_disc_x, d_disc_y, d_disc_w, d_disc_h,
-                        TPF_TYPE, MixArchive::Retrieve("BTN-UP.SHP"),
-                        MixArchive::Retrieve("BTN-DN.SHP"), true, 0, 300);
+                        TPF_TYPE, MixArchive::RetrieveData("BTN-UP.SHP"),
+                        MixArchive::RetrieveData("BTN-DN.SHP"), true, 0, 300);
 
   pEditSend = new EditClass(kButtonSendedit, szSendBuffer, MAXCHATSENDLENGTH,
                             kTpfText, d_send_x, d_send_y, d_send_w, d_send_h);
@@ -385,8 +388,8 @@ void WOL_GameSetupDialog::Initialize() {
                                    d_aiplayers_y, d_aiplayers_w, d_aiplayers_h);
   pCheckListOptions = new CheckListClass(
       kButtonParams, d_options_x, d_options_y, d_options_w, d_options_h,
-      kTpfText, MixArchive::Retrieve("BTN-UP.SHP"),
-      MixArchive::Retrieve("BTN-DN.SHP"));
+      kTpfText, MixArchive::RetrieveData("BTN-UP.SHP"),
+      MixArchive::RetrieveData("BTN-DN.SHP"));
   //	pTextBtnOk = new TextButtonClass( BUTTON_OK, TXT_OK, kTpfButton, d_ok_x,
   // d_ok_y, 60*2 ); 	TextButtonClass loadbtn(kButtonLoad,
   // TXT_LOAD_BUTTON, kTpfButton, d_load_x, d_load_y, 60*2);
@@ -448,8 +451,8 @@ void WOL_GameSetupDialog::Initialize() {
   Fancy_Text_Print("", 0, 0, nullptr, 0, kTpfText);
   pDropListHouse = new DropListClass(
       kButtonHouse, szHouseBuffer, sizeof(szHouseBuffer), kTpfText, d_house_x,
-      d_house_y, d_house_w, d_house_h, MixArchive::Retrieve("BTN-UP.SHP"),
-      MixArchive::Retrieve("BTN-DN.SHP"));
+      d_house_y, d_house_w, d_house_h, MixArchive::RetrieveData("BTN-UP.SHP"),
+      MixArchive::RetrieveData("BTN-DN.SHP"));
 
   //	ajw - This checkbox is not used. Could be turned on, though.
   pCheckAftermathUnits = new BigCheckBoxClass(
@@ -472,14 +475,14 @@ void WOL_GameSetupDialog::Initialize() {
   bSlowUnitBuildRate = true;
 
 #define TABSPACING 38
-  pShpBtnScenarioRA =
-      new ShapeButtonClass(kButtonScenarioRa, MixArchive::Retrieve("tabra.shp"),
-                           d_scenariolist_x, d_scenariolist_y - d_tab_h);
+  pShpBtnScenarioRA = new ShapeButtonClass(
+      kButtonScenarioRa, MixArchive::RetrieveData("tabra.shp"),
+      d_scenariolist_x, d_scenariolist_y - d_tab_h);
   pShpBtnScenarioCS = new ShapeButtonClass(
-      kButtonScenarioCs, MixArchive::Retrieve("tabcs.shp"),
+      kButtonScenarioCs, MixArchive::RetrieveData("tabcs.shp"),
       d_scenariolist_x + TABSPACING, d_scenariolist_y - d_tab_h);
   pShpBtnScenarioAM = new ShapeButtonClass(
-      kButtonScenarioAm, MixArchive::Retrieve("tabam.shp"),
+      kButtonScenarioAm, MixArchive::RetrieveData("tabam.shp"),
       d_scenariolist_x + TABSPACING, d_scenariolist_y - d_tab_h);
 
   int iScenarioUserTabPos = 0;
@@ -494,7 +497,7 @@ void WOL_GameSetupDialog::Initialize() {
   }
 
   pShpBtnScenarioUser = new ShapeButtonClass(
-      kButtonScenarioUser, MixArchive::Retrieve("tabus.shp"),
+      kButtonScenarioUser, MixArchive::RetrieveData("tabus.shp"),
       iScenarioUserTabPos, d_scenariolist_y - d_tab_h);
 
   //	Change draw behavior of tab buttons.
@@ -536,8 +539,8 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
 
   char szScenarioNameDisplay[300];
 
-  int tabs[] = {77 * 2};       // tabs for player list box
-  int optiontabs[] = {8 * 2};  // tabs for option list box
+  const int tabs[] = {77 * 2};       // tabs for player list box
+  const int optiontabs[] = {8 * 2};  // tabs for option list box
 
   const GameFile loadfile("SAVEGAME.NET");
   RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
@@ -635,9 +638,10 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         if constexpr (!config::kIsEnglish) {
           // Show the translation when the table has one; otherwise the
           // English description stands.
-          for (int j = 0; EngMisStr[j] != nullptr; j++) {
-            if ((std::string_view(szScenarioNameShow) == EngMisStr[j])) {
-              szScenarioNameShow = EngMisStr[j + 1];
+          for (int j = 0; EngMisStr[base::ToSize(j)] != nullptr; j++) {
+            if ((std::string_view(szScenarioNameShow) ==
+                 EngMisStr[base::ToSize(j)])) {
+              szScenarioNameShow = EngMisStr[base::ToSize(j + 1)];
               break;
             }
           }
@@ -647,9 +651,9 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
           if (IsMissionCounterstrike(Session.Scenarios[i]->Get_Filename())) {
             //					debugprint( " ----------------
             // Adding scenario %s as CS\n", szScenarioNameShow );
-            ar_szScenarios[static_cast<int>(SCENARIO_CS)].Add(
-                szScenarioNameShow);
-            ar_szScenIndexes[static_cast<int>(SCENARIO_CS)].Add(i);
+            base::At(ar_szScenarios, static_cast<int>(SCENARIO_CS))
+                .Add(szScenarioNameShow);
+            base::At(ar_szScenIndexes, static_cast<int>(SCENARIO_CS)).Add(i);
           } else if (IsMissionAftermath(Session.Scenarios[i]->Get_Filename())) {
             //					debugprint( " ----------------
             // Adding scenario %s as AM\n", szScenarioNameShow ); 	If this
@@ -657,23 +661,23 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
             // that have 	special AM units on them.
             if (pWO->GameInfoCurrent.GameKind == CREATEGAMEINFO::AMGAME ||
                 !bSpecialAftermathScenario(pMMission->Description())) {
-              ar_szScenarios[static_cast<int>(SCENARIO_AM)].Add(
-                  szScenarioNameShow);
-              ar_szScenIndexes[static_cast<int>(SCENARIO_AM)].Add(i);
+              base::At(ar_szScenarios, static_cast<int>(SCENARIO_AM))
+                  .Add(szScenarioNameShow);
+              base::At(ar_szScenIndexes, static_cast<int>(SCENARIO_AM)).Add(i);
             }
           } else {
             //					debugprint( " ----------------
             // Adding scenario %s as RA\n", szScenarioNameShow );
-            ar_szScenarios[static_cast<int>(SCENARIO_RA)].Add(
-                szScenarioNameShow);
-            ar_szScenIndexes[static_cast<int>(SCENARIO_RA)].Add(i);
+            base::At(ar_szScenarios, static_cast<int>(SCENARIO_RA))
+                .Add(szScenarioNameShow);
+            base::At(ar_szScenIndexes, static_cast<int>(SCENARIO_RA)).Add(i);
           }
         } else {
           //				debugprint( " ---------------- Adding
           // scenario %s as User\n", szScenarioNameShow );
-          ar_szScenarios[static_cast<int>(SCENARIO_USER)].Add(
-              szScenarioNameShow);
-          ar_szScenIndexes[static_cast<int>(SCENARIO_USER)].Add(i);
+          base::At(ar_szScenarios, static_cast<int>(SCENARIO_USER))
+              .Add(szScenarioNameShow);
+          base::At(ar_szScenIndexes, static_cast<int>(SCENARIO_USER)).Add(i);
         }
       }
 
@@ -1017,15 +1021,15 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         switch (pWO->GameInfoCurrent.GameKind) {
           case CREATEGAMEINFO::RAGAME:
             szGameKind = TXT_WOL_CG_RAGAME;
-            pIcon = IconImage(pWO->OldRAGameTypeInfos[0]);
+            pIcon = IconImage(base::At(pWO->OldRAGameTypeInfos, 0));
             break;
           case CREATEGAMEINFO::CSGAME:
             szGameKind = TXT_WOL_CG_CSGAME;
-            pIcon = IconImage(pWO->OldRAGameTypeInfos[1]);
+            pIcon = IconImage(base::At(pWO->OldRAGameTypeInfos, 1));
             break;
           case CREATEGAMEINFO::AMGAME:
             szGameKind = TXT_WOL_CG_AMGAME;
-            pIcon = IconImage(pWO->OldRAGameTypeInfos[2]);
+            pIcon = IconImage(base::At(pWO->OldRAGameTypeInfos, 2));
             break;
           default:
             //					debugprint( "Illegal
@@ -1054,7 +1058,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
                            d_gamekind_x + iGameInfoSecondColumnX,
                            d_gamekind_y + (iGameInfoSpacingY * 1), scheme,
                            kTBlack, TPF_TYPE);
-          DrawDibIfLoaded(pWO->DibIconInfos[kDibiconTournament],
+          DrawDibIfLoaded(base::At(pWO->DibIconInfos, kDibiconTournament),
                           d_gamekind_x + iGameInfoSecondColumnX - 16,
                           d_gamekind_y + (iGameInfoSpacingY * 1) - 2, 100,
                           WINDOW_MAIN);
@@ -1069,7 +1073,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
                            d_gamekind_x + iGameInfoSecondColumnX,
                            d_gamekind_y + (iGameInfoSpacingY * 2), scheme,
                            kTBlack, TPF_TYPE);
-          DrawDibIfLoaded(pWO->DibIconInfos[kDibiconPrivate],
+          DrawDibIfLoaded(base::At(pWO->DibIconInfos, kDibiconPrivate),
                           d_gamekind_x + iGameInfoSecondColumnX - 16,
                           d_gamekind_y + (iGameInfoSpacingY * 2) - 2, 100,
                           WINDOW_MAIN);
@@ -1146,15 +1150,17 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         if (*szScenarioDesc) {
           //	Language translation.
           int ii = 0;
-          for (; EngMisStr[ii] != nullptr; ii++) {
-            if ((std::string_view(szScenarioDesc) == EngMisStr[ii])) {
-              absl::SNPrintF(
-                  txt, sizeof(txt), "%s",
-                  config::kIsEnglish ? szScenarioDesc : EngMisStr[ii + 1]);
+          for (; EngMisStr[base::ToSize(ii)] != nullptr; ii++) {
+            if ((std::string_view(szScenarioDesc) ==
+                 EngMisStr[base::ToSize(ii)])) {
+              absl::SNPrintF(txt, sizeof(txt), "%s",
+                             config::kIsEnglish
+                                 ? szScenarioDesc
+                                 : EngMisStr[base::ToSize(ii + 1)]);
               break;
             }
           }
-          if (EngMisStr[ii] == nullptr) {
+          if (EngMisStr[base::ToSize(ii)] == nullptr) {
             absl::SNPrintF(txt, sizeof(txt), "%s", szScenarioDesc);
           }
           //					pStaticDescrip->Set_Text( txt,
@@ -1166,14 +1172,14 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
 
           if (bOfficial) {
             if (IsMissionCounterstrike(szScenarioFileName)) {
-              pIcon = IconImage(pWO->OldRAGameTypeInfos[1]);
+              pIcon = IconImage(base::At(pWO->OldRAGameTypeInfos, 1));
             } else if (IsMissionAftermath(szScenarioFileName)) {
-              pIcon = IconImage(pWO->OldRAGameTypeInfos[2]);
+              pIcon = IconImage(base::At(pWO->OldRAGameTypeInfos, 2));
             } else {
-              pIcon = IconImage(pWO->OldRAGameTypeInfos[0]);
+              pIcon = IconImage(base::At(pWO->OldRAGameTypeInfos, 0));
             }
           } else {
-            pIcon = IconImage(pWO->DibIconInfos[kDibiconUser]);
+            pIcon = IconImage(base::At(pWO->DibIconInfos, kDibiconUser));
           }
 
           DrawScenarioDescripIcon(pIcon);
@@ -1304,13 +1310,13 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
             break;
           }
 
-          if (Keyboard->MouseQX > cbox_x[0] &&
+          if (Keyboard->MouseQX > base::At(cbox_x, 0) &&
               Keyboard->MouseQX <
-                  (cbox_x[MAX_MPLAYER_COLORS - 1] + d_color_w) &&
+                  (base::At(cbox_x, MAX_MPLAYER_COLORS - 1) + d_color_w) &&
               Keyboard->MouseQY > d_color_y &&
               Keyboard->MouseQY < (d_color_y + d_color_h)) {
             Session.PrefColor = static_cast<PlayerColorType>(
-                (Keyboard->MouseQX - cbox_x[0]) / d_color_w);
+                (Keyboard->MouseQX - base::At(cbox_x, 0)) / d_color_w);
 
             //	Ensure that no one is using this color (to our knowledge).
             if (pILPlayers->FindColor(
@@ -1423,7 +1429,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         //	Enter has been pressed - was caught by pEditSend control.
         pWO->SendMessage(pEditSend->Get_Text(), *pILPlayers, false);
         //	Clear pEditSend, reset focus.
-        szSendBuffer[0] = 0;
+        base::At(szSendBuffer, 0) = 0;
         pEditSend->Set_Focus();
         //	Mark for redraw.
         pEditSend->Flag_To_Redraw();
@@ -1433,7 +1439,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         //	Enter has been pressed - was caught by pEditSend control.
         pWO->SendMessage(pEditSend->Get_Text(), *pILPlayers, true);
         //	Clear pEditSend, reset focus.
-        szSendBuffer[0] = 0;
+        base::At(szSendBuffer, 0) = 0;
         pEditSend->Set_Focus();
         //	Mark for redraw.
         pEditSend->Flag_To_Redraw();
@@ -1534,18 +1540,22 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         if ((Session.Options.Bases != 0) != pCheckListOptions->Is_Checked(0)) {
           Session.Options.Bases = pCheckListOptions->Is_Checked(0) ? 1 : 0;
           if (Session.Options.Bases) {
-            Session.Options.UnitCount =
-                static_cast<int>(Rescale(
-                static_cast<uint32_t>(Session.Options.UnitCount - SessionClass::CountMin[0]),
-                static_cast<uint32_t>(SessionClass::CountMax[0] - SessionClass::CountMin[0]),
-                static_cast<uint32_t>(SessionClass::CountMax[1] - SessionClass::CountMin[1])));
+            Session.Options.UnitCount = static_cast<int>(Rescale(
+                static_cast<uint32_t>(Session.Options.UnitCount -
+                                      base::At(SessionClass::CountMin, 0)),
+                static_cast<uint32_t>(base::At(SessionClass::CountMax, 0) -
+                                      base::At(SessionClass::CountMin, 0)),
+                static_cast<uint32_t>(base::At(SessionClass::CountMax, 1) -
+                                      base::At(SessionClass::CountMin, 1))));
           } else {
             pCheckListOptions->Check_Item(3, false);
-            Session.Options.UnitCount =
-                static_cast<int>(Rescale(
-                static_cast<uint32_t>(Session.Options.UnitCount - SessionClass::CountMin[1]),
-                static_cast<uint32_t>(SessionClass::CountMax[1] - SessionClass::CountMin[1]),
-                static_cast<uint32_t>(SessionClass::CountMax[0] - SessionClass::CountMin[0])));
+            Session.Options.UnitCount = static_cast<int>(Rescale(
+                static_cast<uint32_t>(Session.Options.UnitCount -
+                                      base::At(SessionClass::CountMin, 1)),
+                static_cast<uint32_t>(base::At(SessionClass::CountMax, 1) -
+                                      base::At(SessionClass::CountMin, 1)),
+                static_cast<uint32_t>(base::At(SessionClass::CountMax, 0) -
+                                      base::At(SessionClass::CountMin, 0))));
           }
           pGaugeCount->Set_Maximum(
               base::At(SessionClass::CountMax, Session.Options.Bases) -
@@ -2132,22 +2142,25 @@ bool WOL_GameSetupDialog::bAllPlayersReadyToGo() {
 
 //***********************************************************************************************
 void WOL_GameSetupDialog::ProcessGuestRequest(User* pUser,
-                                              const char* szRequest) {
+                                              const char* request_data) {
+  if (request_data == nullptr) {
+    return;
+  }
+  std::string_view szRequest(request_data);
   //	Game host processes a request that arrived as a privategameopt from one
   // of the guests. 	WOL_GAMEOPT_REQCOLOR format: 	2
   // WOL_GAMEOPT 	1 space 	2		color 	1
   // null-terminator 	debugprint( "ProcessGuestRequest. szRequest is '%s', len
   //%i.\n", szRequest, strlen( szRequest ) );
-  if (szRequest == nullptr || std::string_view(szRequest).size() < 3 ||
-      szRequest[2] != ' ') {
+  if (std::string_view(szRequest).size() < 3 || szRequest[2] != ' ') {
     return;
   }
-  const auto option = tech::ParseInteger<int>(std::string_view{szRequest, 2});
+  const auto option = tech::ParseInteger<int>(szRequest.substr(0, 2));
   if (!option) {
     return;
   }
   const auto opt = static_cast<WOL_GAMEOPT>(*option);
-  szRequest += 3;
+  szRequest.remove_prefix(3);
 
   switch (opt) {
     case WOL_GAMEOPT_REQCOLOR: {
@@ -2273,20 +2286,22 @@ void WOL_GameSetupDialog::ProcessGuestRequest(User* pUser,
 }
 
 //***********************************************************************************************
-void WOL_GameSetupDialog::ProcessInform(char* szInform) {
+void WOL_GameSetupDialog::ProcessInform(char* inform_data) {
+  auto szInform = port::MutableCString(inform_data);
   //	Process inform message arriving from game host.
   //	debugprint( "ProcessInform: '%s'\n", szInform );
   if (!bHost) {
-    if (szInform == nullptr || std::string_view(szInform).size() < 3 ||
+    if (szInform.empty() || std::string_view(szInform.data()).size() < 3 ||
         szInform[2] != ' ') {
       return;
     }
-    const auto option = tech::ParseInteger<int>(std::string_view{szInform, 2});
+    const auto option =
+        tech::ParseInteger<int>(std::string_view{szInform.data(), 2});
     if (!option) {
       return;
     }
     const auto opt = static_cast<WOL_GAMEOPT>(*option);
-    szInform += 3;
+    szInform = szInform.subspan(3);
     switch (opt) {
       case WOL_GAMEOPT_INFCOLOR: {
         //	WOL_GAMEOPT_INFCOLOR format:
@@ -2295,20 +2310,22 @@ void WOL_GameSetupDialog::ProcessInform(char* szInform) {
         //	2		color
         //	1		space
         //	string	name of player
-        if (std::string_view(szInform).size() < 3 || szInform[2] != ' ') {
+        if (std::string_view(szInform.data()).size() < 3 ||
+            szInform[2] != ' ') {
           return;
         }
         const auto color =
-            tech::ParseInteger<int>(std::string_view{szInform, 2});
+            tech::ParseInteger<int>(std::string_view{szInform.data(), 2});
         if (!color || *color < 0 ||
             std::cmp_greater_equal(*color,
                                    magic_enum::enum_count<PlayerColorType>())) {
           return;
         }
         const auto Color = static_cast<PlayerColorType>(*color);
-        szInform += 3;
-        SetPlayerColor(szInform, Color);  //	(szInform is now sitting at the
-                                          // start of the name string.)
+        szInform = szInform.subspan(3);
+        SetPlayerColor(szInform.data(),
+                       Color);  //	(szInform is now sitting at the
+                                // start of the name string.)
         Sound_Effect(VOC_OPTIONS_CHANGED);
         break;
       }
@@ -2316,28 +2333,29 @@ void WOL_GameSetupDialog::ProcessInform(char* szInform) {
                                   // it refers to me. I've already set my own
                                   // house.
       {
-        if (std::string_view(szInform).size() < 10 || szInform[6] != ' ' ||
-            szInform[9] != ' ') {
+        if (std::string_view(szInform.data()).size() < 10 ||
+            szInform[6] != ' ' || szInform[9] != ' ') {
           return;
         }
         const auto param_id =
-            tech::ParseInteger<int>(std::string_view{szInform, 6});
+            tech::ParseInteger<int>(std::string_view{szInform.data(), 6});
         if (!param_id || *param_id < 0) {
           return;
         }
         nGuestLastParamID = *param_id;
-        szInform += 7;
+        szInform = szInform.subspan(7);
         const auto house =
-            tech::ParseInteger<int>(std::string_view{szInform, 2});
+            tech::ParseInteger<int>(std::string_view{szInform.data(), 2});
         if (!house || *house < 0 ||
             std::cmp_greater_equal(*house,
                                    magic_enum::enum_count<HousesType>())) {
           return;
         }
         const auto House = static_cast<HousesType>(*house);
-        szInform += 3;
-        SetPlayerHouse(szInform, House);  //	(szInform is now sitting at the
-                                          // start of the name string.)
+        szInform = szInform.subspan(3);
+        SetPlayerHouse(szInform.data(),
+                       House);  //	(szInform is now sitting at the
+                                // start of the name string.)
         ClearAllAccepts();
         Sound_Effect(VOC_OPTIONS_CHANGED);
         break;
@@ -2345,13 +2363,14 @@ void WOL_GameSetupDialog::ProcessInform(char* szInform) {
       case WOL_GAMEOPT_INFACCEPT:  //	Note: In theory, I could ignore this if
                                    // it refers to me.
         //	A guest has accepted.
-        SetPlayerAccepted(szInform, true);  //	(szInform is now sitting at the
-                                            // start of the name string.)
+        SetPlayerAccepted(szInform.data(),
+                          true);  //	(szInform is now sitting at the
+                                  // start of the name string.)
         break;
       case WOL_GAMEOPT_INFPARAMS:
         //	Game params have changed.
         bParamsReceived = true;
-        if (!AcceptParams(szInform)) {
+        if (!AcceptParams(szInform.data())) {
           bLeaveDueToRulesMismatchTrigger = true;
         }
         SetSpecialControlStates();
@@ -2363,18 +2382,20 @@ void WOL_GameSetupDialog::ProcessInform(char* szInform) {
       case WOL_GAMEOPT_INFNEWGUESTPLAYERINFO:
         //	I have just joined and have received a message with info on all
         // players in game.
-        AcceptNewGuestPlayerInfo(szInform);
+        AcceptNewGuestPlayerInfo(szInform.data());
         Sound_Effect(VOC_OPTIONS_CHANGED);
         break;
       case WOL_GAMEOPT_INFSTART: {
         //	Host tells us to wait for start of game.
         //			debugprint( "Guest received
         // WOL_GAMEOPT_INFSTART.\n" );
-        nGuestLastParamID = tech::ParseInteger<int>(szInform).value_or(0);
+        nGuestLastParamID =
+            tech::ParseInteger<int>(std::string_view(szInform.data()))
+                .value_or(0);
         //	The following check is not necessary. Rules.ini, if manually
         // replaced by a cheater, is not reloaded. 	So prior checks (that
         // occur on game params receives) are sufficient.
-        // szInform += 7;
+        // szInform = szInform.subspan(7);
         //			//	Check rules.ini compatibility.
         //			int iRulesID = atoi( szInform );
         //			if( RuleINI.Get_Unique_ID() != iRulesID )
@@ -2437,7 +2458,7 @@ void WOL_GameSetupDialog::ProcessInform(char* szInform) {
         break;
       case WOL_GAMEOPT_INFGO:
         //	Host says start game right now.
-        port::SafeCopy(szTriggerGameStartInfo, szInform);
+        port::SafeCopy(szTriggerGameStartInfo, szInform.data());
         //	If we are in a modal dialog, we must have arrived here through
         // Call_Back()'s PumpMessages. Set global that will 	force a cancel
         // out of the dialog.
@@ -2532,7 +2553,7 @@ void WOL_GameSetupDialog::SendParams() {
       //		strlen(
       //(char*)GParamsLastSent.GPacket.ScenarioInfo.FileDigest ),
       // not null-terminated!
-      GParamsLastSent.GPacket.ScenarioInfo.FileDigest[0] ? 1 : 0,
+      base::At(GParamsLastSent.GPacket.ScenarioInfo.FileDigest, 0) ? 1 : 0,
       GParamsLastSent.GPacket.ScenarioInfo.FileDigest,
       GParamsLastSent.GPacket.ScenarioInfo.OfficialScenario,
       GParamsLastSent.GPacket.ScenarioInfo.Credits,
@@ -2594,11 +2615,14 @@ bool WOL_GameSetupDialog::AcceptParams(char* szParams) {
     return false;
   }
   //	Read in string.
-  memcpy(Session.Options.ScenarioDescription, szRemaining, base::ToSize(iLen));
+  port::SafeCopy(Session.Options.ScenarioDescription,
+                 std::string_view(szRemaining).substr(0, base::ToSize(iLen)));
   //	Null-terminate.
   base::At(Session.Options.ScenarioDescription, iLen) = 0;
   //	Resume parsing after the string.
-  tokens = port::Tokenizer(szRemaining + iLen + 1, " ");
+  tokens = port::Tokenizer(
+      port::MutableCString(szRemaining).subspan(base::ToSize(iLen) + 1).data(),
+      " ");
 
   // debugprint( "scenario description is '%s'\n",
   // Session.Options.ScenarioDescription ); debugprint( "remaining: '%s'\n",
@@ -2648,7 +2672,10 @@ bool WOL_GameSetupDialog::AcceptParams(char* szParams) {
     if (!szToken) {
       return false;
     }
-    strncpy(Session.ScenarioDigest, szToken, sizeof(Session.ScenarioDigest));
+    std::ranges::fill(Session.ScenarioDigest, 0);
+    std::ranges::copy(
+        std::string_view(szToken).substr(0, sizeof(Session.ScenarioDigest)),
+        std::begin(Session.ScenarioDigest));
   }
 
   szToken = tokens.Next();
@@ -2811,9 +2838,9 @@ void WOL_GameSetupDialog::SetGParamsToCurrent(GAMEPARAMS& GParams) const {
       GParams.GPacket.ScenarioInfo.ShortFileName,
       Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
   //	Digest is not null-terminated.
-  strncpy(GParams.GPacket.ScenarioInfo.FileDigest,
-          Session.Scenarios[Session.Options.ScenarioIndex]->Get_Digest(),
-          sizeof(GParams.GPacket.ScenarioInfo.FileDigest));
+  std::ranges::copy(
+      Session.Scenarios[Session.Options.ScenarioIndex]->Get_Digest_Bytes(),
+      std::begin(GParams.GPacket.ScenarioInfo.FileDigest));
   GParams.GPacket.ScenarioInfo.OfficialScenario =
       Session.Scenarios[Session.Options.ScenarioIndex]->Get_Official();
   GParams.GPacket.ScenarioInfo.Credits = Session.Options.Credits;
@@ -2856,8 +2883,12 @@ bool operator==(const GlobalPacketType& gp1, const GlobalPacketType& gp2) {
     return false;
   }
   //	Digest is not null-terminated...
-  if (strncmp(gp1.ScenarioInfo.FileDigest, gp2.ScenarioInfo.FileDigest,
-              sizeof(gp1.ScenarioInfo.FileDigest)) != 0) {
+  const std::string_view digest1(gp1.ScenarioInfo.FileDigest,
+                                 sizeof(gp1.ScenarioInfo.FileDigest));
+  const std::string_view digest2(gp2.ScenarioInfo.FileDigest,
+                                 sizeof(gp2.ScenarioInfo.FileDigest));
+  if (digest1.substr(0, digest1.find('\0')) !=
+      digest2.substr(0, digest2.find('\0'))) {
     return false;
   }
 
@@ -3087,12 +3118,9 @@ bool WOL_GameSetupDialog::InformAboutCancelStart() {
 void WOL_GameSetupDialog::OnGuestJoin(User* pUser) {
   //	A guest (not myself) has entered the game channel.
   //	debugprint( "OnGuestJoin()\n" );
-  char* szPrint = new char[std::string_view(TXT_WOL_PLAYERJOINEDGAME).size() +
-                           std::string_view(WolText(pUser->name)).size() + 5];
-  Format_Runtime_Text(szPrint, sizeof(szPrint), TXT_WOL_PLAYERJOINEDGAME,
-                      WolText(pUser->name));
-  WOL_PrintMessage(*pILDisc, szPrint, WOLCOLORREMAP_LOCALMACHINEMESS);
-  delete[] szPrint;
+  const std::string szPrint =
+      port::FormatRuntime(TXT_WOL_PLAYERJOINEDGAME, WolText(pUser->name));
+  WOL_PrintMessage(*pILDisc, szPrint.c_str(), WOLCOLORREMAP_LOCALMACHINEMESS);
 
   ClearAllAccepts();
 
@@ -3135,7 +3163,7 @@ void WOL_GameSetupDialog::OnGuestJoin(User* pUser) {
     for (int i = 0; i < pILPlayers->Count(); i++) {
       char szSendPiece[100];
       char szPlayerName[WOL_NAME_LEN_MAX];
-      WolapiObject::PullPlayerName_Into_From(szPlayerName, sizeof(szPlayerName),
+      WolapiObject::PullPlayerName_Into_From(szPlayerName,
                                              pILPlayers->Get_Item(i));
       //			InformAboutPlayerColor( szPlayerName,
       // PlayerColorTypeOf( pILPlayers->Get_Item_Color( i ) ), pUser );
@@ -3218,12 +3246,16 @@ void WOL_GameSetupDialog::AcceptNewGuestPlayerInfo(char* szMsg) {
 
     //	Read in string.
     char szPlayerName[50];
-    memcpy(szPlayerName, szRemaining, base::ToSize(iLen));
+    port::SafeCopy(szPlayerName,
+                   std::string_view(szRemaining).substr(0, base::ToSize(iLen)));
     //	Null-terminate.
     base::At(szPlayerName, iLen) = 0;
 
     //	Resume parsing after the name.
-    tokens = port::Tokenizer(szRemaining + iLen + 1, " ");
+    tokens = port::Tokenizer(port::MutableCString(szRemaining)
+                                 .subspan(base::ToSize(iLen) + 1)
+                                 .data(),
+                             " ");
 
     //	Read color.
     szToken = tokens.Next();
@@ -3594,7 +3626,7 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
   for (int iItem = 0; iItem < pILPlayers->Count(); iItem++) {
     //	The following is not very efficient, but doesn't have to be. Better in
     // this case to keep it clear and simple.
-    WolapiObject::PullPlayerName_Into_From(szPlayerName, sizeof(szPlayerName),
+    WolapiObject::PullPlayerName_Into_From(szPlayerName,
                                            pILPlayers->Get_Item(iItem));
     if (std::string_view(szPlayerName) != pWO->szMyName &&
         GetPlayerColor(szPlayerName) != PCOLOR_NONE) {
@@ -3854,7 +3886,8 @@ int ScenarioIndex_From_Filename(const char* szScenarioFilename) {
   //	Returns the scenario index that matches the scenario filename, or -1 if
   // no match found.
   for (int index = 0; index < Session.Scenarios.Count(); index++) {
-    if (stricmp(szScenarioFilename, Session.Scenarios[index]->Get_Filename()) ==
+    if (port::CompareIgnoreCase(szScenarioFilename,
+                                Session.Scenarios[index]->Get_Filename()) ==
         0) {
       return index;
     }

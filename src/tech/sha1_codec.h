@@ -15,7 +15,7 @@
 class Sha1Codec {
  public:
   bool Process(std::span<const std::byte> in, ByteSink& out) {
-    engine_.Hash(in.data(), static_cast<int32_t>(in.size()));
+    engine_.Hash(in);
     return out.Write(in);
   }
   // Nothing is ever buffered.

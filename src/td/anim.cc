@@ -60,9 +60,12 @@
 #include "td/anim.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <cstdint>
 #include <cstdlib>
+#include <span>
 
+#include "base/array.h"
 #include "rand.h"
 #include "sdllib/misc.h"
 #include "sdllib/shape.h"
@@ -250,11 +253,11 @@ bool AnimClass::Render(bool forced) {
 void AnimClass::Draw_It(int x, int y, WindowNumberType window) {
   Validate();
   if (!IsInvisible) {
-    const void* shapefile = Class->Get_Image_Data();
-    if (shapefile) {
-      const void* transtable = nullptr;
+    const auto shapefile = Class->Get_Image_Data();
+    if (!shapefile.empty()) {
+      std::span<const uint8_t> transtable;
       const int shapenum = Class->Start + Fetch_Stage();
-      const void* remap = nullptr;
+      std::span<const unsigned char> remap;
 
       /*
       **	Some animations require special fixups.
@@ -280,10 +283,10 @@ void AnimClass::Draw_It(int x, int y, WindowNumberType window) {
       **	If the translucent table hasn't been determined yet, then check
       *to see if it *	should use the white or normal translucent tables.
       */
-      if (!transtable && Class->IsWhiteTrans) {
+      if (transtable.empty() && Class->IsWhiteTrans) {
         transtable = MouseClass::WhiteTranslucentTable;
       }
-      if (!transtable && Class->IsTranslucent) {
+      if (transtable.empty() && Class->IsTranslucent) {
         transtable = MouseClass::TranslucentTable;
       }
 
@@ -294,9 +297,9 @@ void AnimClass::Draw_It(int x, int y, WindowNumberType window) {
       ShapeFlags_Type flags = SHAPE_CENTER | SHAPE_WIN_REL;
       if (IsAlternate) {
         flags = flags | SHAPE_FADING;
-        remap = MouseClass::RemapTables[HOUSE_GOOD][0];
+        remap = base::At(MouseClass::RemapTables[HOUSE_GOOD], 0);
       }
-      if (transtable) {
+      if (!transtable.empty()) {
         flags = flags | SHAPE_GHOST;
       }
 
@@ -348,7 +351,7 @@ bool AnimClass::Mark(MarkType mark) {
  *                                                                                             *
  * HISTORY: * 03/19/1995 JLB : Created. *
  *=============================================================================================*/
-const int16_t* AnimClass::Overlap_List() const {
+std::span<const int16_t> AnimClass::Overlap_List() const {
   Validate();
   static const int16_t OverlapN[] = {0,
                                      -MAP_CELL_W,
@@ -498,9 +501,9 @@ const int16_t* AnimClass::Overlap_List() const {
  *                                                                                             *
  * HISTORY: * 03/19/1995 JLB : Created. *
  *=============================================================================================*/
-const int16_t* AnimClass::Occupy_List(bool /*placement*/) const {
+std::span<const int16_t> AnimClass::Occupy_List(bool /*placement*/) const {
   Validate();
-  static int16_t _simple[] = {REFRESH_EOL};
+  static const int16_t _simple[] = {REFRESH_EOL};
 
   return _simple;
 }

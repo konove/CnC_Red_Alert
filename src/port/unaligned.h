@@ -3,7 +3,10 @@
 #ifndef CNC_RED_ALERT_PORT_UNALIGNED_H_
 #define CNC_RED_ALERT_PORT_UNALIGNED_H_
 
-#include <cstring>
+#include <cstddef>
+#include <span>
+
+#include "base/buffer.h"
 #include <type_traits>
 
 namespace port {
@@ -12,9 +15,9 @@ namespace port {
 // The source must be non-null and contain a valid representation of T.
 template <typename T>
   requires std::is_trivially_copyable_v<T>
-T ReadUnaligned(const void* source) {
+T ReadUnaligned(std::span<const std::byte> source) {
   T value{};
-  std::memcpy(&value, source, sizeof(value));
+  base::CopyBytes(base::ObjectBytes(value), source, sizeof(value));
   return value;
 }
 
@@ -22,8 +25,8 @@ T ReadUnaligned(const void* source) {
 // The destination must be non-null. Byte order is unchanged.
 template <typename T>
   requires std::is_trivially_copyable_v<T>
-void WriteUnaligned(void* destination, const T& value) {
-  std::memcpy(destination, &value, sizeof(value));
+void WriteUnaligned(std::span<std::byte> destination, const T& value) {
+  base::CopyBytes(destination, base::ObjectBytes(value), sizeof(value));
 }
 
 }  // namespace port

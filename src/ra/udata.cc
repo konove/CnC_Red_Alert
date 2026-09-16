@@ -981,7 +981,7 @@ void UnitTypeClass::Init_Heap() {
 UnitType UnitTypeClass::From_Name(const char* name) {
   if (name != nullptr) {
     for (const UnitType classid : magic_enum::enum_values<UnitType>()) {
-      if (stricmp(As_Reference(classid).IniName, name) == 0) {
+      if (port::CompareIgnoreCase(As_Reference(classid).IniName, name) == 0) {
         return classid;
       }
     }
@@ -1011,8 +1011,8 @@ UnitType UnitTypeClass::From_Name(const char* name) {
 void UnitTypeClass::Display(int x, int y, WindowNumberType window,
                             HousesType /*unused*/) const {
   int shape = 0;
-  const void* ptr = Get_Cameo_Data();
-  if (ptr == nullptr) {
+  auto ptr = Get_Cameo_Data();
+  if (ptr.empty()) {
     ptr = Get_Image_Data();
     shape = Rotation / 6;
   }
@@ -1036,7 +1036,7 @@ void UnitTypeClass::Display(int x, int y, WindowNumberType window,
  *=============================================================================================*/
 void UnitTypeClass::Prep_For_Add() {
   for (const UnitType index : magic_enum::enum_values<UnitType>()) {
-    if (As_Reference(index).Get_Image_Data() != nullptr) {
+    if (!As_Reference(index).Get_Image_Data().empty()) {
       Map.Add_To_List(&As_Reference(index));
     }
   }
@@ -1078,10 +1078,10 @@ void UnitTypeClass::One_Time() {
     if (datafile.IsAvailable()) {
       uclass.CameoData = Load_Alloc_Data(datafile);
     } else {
-      uclass.CameoData = MixArchive::Retrieve(fullname);
+      uclass.CameoData = MixArchive::RetrieveData(fullname);
     }
 #else
-    uclass.CameoData = MixArchive::Retrieve(fullname);
+    uclass.CameoData = MixArchive::RetrieveData(fullname);
 #endif
     //		}
 
@@ -1103,8 +1103,8 @@ void UnitTypeClass::One_Time() {
 #endif
     // Read the shape pointer back from the owner rather than from a local the
     // store just moved from.
-    const void* ptr = uclass.GetImageSpan().data();
-    if (ptr != nullptr) {
+    const auto ptr = uclass.GetImageSpan();
+    if (!ptr.empty()) {
       largest = std::max(largest, static_cast<int>(Get_Build_Frame_Width(ptr)));
       largest =
           std::max(largest, static_cast<int>(Get_Build_Frame_Height(ptr)));
@@ -1116,17 +1116,17 @@ void UnitTypeClass::One_Time() {
   /*
   **	Load any custom shapes at this time.
   */
-  if (WakeShapes == nullptr) {
-    WakeShapes = MixArchive::Retrieve("WAKE.SHP");
+  if (WakeShapes.empty()) {
+    WakeShapes = MixArchive::RetrieveData("WAKE.SHP");
   }
-  if (TurretShapes == nullptr) {
-    TurretShapes = MixArchive::Retrieve("TURR.SHP");
+  if (TurretShapes.empty()) {
+    TurretShapes = MixArchive::RetrieveData("TURR.SHP");
   }
-  if (SamShapes == nullptr) {
-    SamShapes = MixArchive::Retrieve("SSAM.SHP");
+  if (SamShapes.empty()) {
+    SamShapes = MixArchive::RetrieveData("SSAM.SHP");
   }
-  if (MGunShapes == nullptr) {
-    MGunShapes = MixArchive::Retrieve("MGUN.SHP");
+  if (MGunShapes.empty()) {
+    MGunShapes = MixArchive::RetrieveData("MGUN.SHP");
   }
 }
 

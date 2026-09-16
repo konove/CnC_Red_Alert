@@ -58,8 +58,10 @@
 #define CNC_RED_ALERT_TD_VECTOR_H_
 
 #include <cstddef>
+#include <span>
 
 #include "absl/log/check.h"
+#include "base/numeric.h"
 #include "base/types.h"
 
 // IWYU pragma: no_include "td/cell.h"
@@ -84,7 +86,7 @@ class VectorClass {
   // clang suggests lifetimebound here, but its lifetimebound-violation check
   // cannot verify it.
   // NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-intra-tu-constructor-suggestions)
-  explicit VectorClass(base::ssize size = 0, T* array = nullptr);
+  explicit VectorClass(base::ssize size = 0, std::span<T> array = {});
   VectorClass(const VectorClass& /*vector*/);  // Copy constructor.
   virtual ~VectorClass();
   VectorClass(VectorClass&&) = delete;
@@ -92,11 +94,11 @@ class VectorClass {
 
   T& operator[](base::ssize index) {
     DCHECK(index >= 0 && index < VectorMax);
-    return Vector[index];
+    return Elements()[base::ToSize(index)];
   }
   const T& operator[](base::ssize index) const {
     DCHECK(index >= 0 && index < VectorMax);
-    return Vector[index];
+    return Elements()[base::ToSize(index)];
   }
   VectorClass& operator=(const VectorClass& /*vector*/);
 
@@ -109,13 +111,22 @@ class VectorClass {
 
  public:
   virtual bool operator==(const VectorClass& /*vector*/) const;
-  virtual bool Resize(base::ssize newsize, T* array = nullptr);
+  virtual bool Resize(base::ssize newsize, std::span<T> array = {});
   virtual void Clear();
   [[nodiscard]] base::ssize Length() const { return VectorMax; }
   virtual int ID(const T* ptr);  // Pointer based identification.
   virtual int ID(const T& object);  // Value based identification.
 
  protected:
+  // The pointer and count retain their historical serialized layout. Every
+  // allocation sets both together; external storage is supplied as a span and
+  // checked by the constructor/Resize before this owner borrows it.
+  [[nodiscard]] std::span<T> Elements() const {
+    CHECK_GE(VectorMax, 0);
+    CHECK(Vector != nullptr || VectorMax == 0);
+    // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
+    return {Vector, base::ToSize(VectorMax)};
+  }
   /*
   **	This is a pointer to the allocated vector array of elements.
   */
@@ -124,9 +135,7 @@ class VectorClass {
   /*
   **	This is the maximum number of elements allowed in this vector.
   */
-  // Stays 32-bit: this member is byte-serialized as part of the save format
-  // (see src/td/heap_layout_test.cc), so widening it changes sizeof() for every
-  // containing type. The public interface below is signed regardless.
+  // The count is byte-serialized with the pointer; preserve its existing type.
   base::ssize VectorMax{0};
 
   /*
@@ -149,10 +158,10 @@ class VectorClass {
 template <class T>
 class DynamicVectorClass : public VectorClass<T> {
  public:
-  explicit DynamicVectorClass(base::ssize size = 0, T* array = nullptr);
+  explicit DynamicVectorClass(base::ssize size = 0, std::span<T> array = {});
 
   // Change maximum size of vector.
-  bool Resize(base::ssize newsize, T* array = nullptr) override;
+  bool Resize(base::ssize newsize, std::span<T> array = {}) override;
 
   // Resets and frees the vector array.
   void Clear() override {
@@ -162,6 +171,14 @@ class DynamicVectorClass : public VectorClass<T> {
 
   // Fetch number of "allocated" vector objects.
   [[nodiscard]] base::ssize Count() const { return ActiveCount; }
+
+  [[nodiscard]] std::span<T> ActiveElements() {
+    return this->Elements().first(base::ToSize(ActiveCount));
+  }
+  [[nodiscard]] std::span<const T> ActiveElements() const {
+    return this->Elements().first(base::ToSize(ActiveCount));
+  }
+
 
   // Add object to vector (growing as necessary).
   bool Add(const T& object);

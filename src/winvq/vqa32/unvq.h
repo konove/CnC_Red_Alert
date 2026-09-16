@@ -42,12 +42,16 @@
  *
  ****************************************************************************/
 
-void UnVQ_4x2(const unsigned char* codebook, const unsigned char* pointers,
-              unsigned char* buffer, int blocksperrow, int numrows,
+#include <span>
+
+void UnVQ_4x2(std::span<const unsigned char> codebook,
+              std::span<const unsigned char> pointers,
+              std::span<unsigned char> buffer, int blocksperrow, int numrows,
               int bufwidth);
 
-void UnVQ_4x4(const unsigned char* codebook, const unsigned char* pointers,
-              unsigned char* buffer, int blocksperrow, int numrows,
+void UnVQ_4x4(std::span<const unsigned char> codebook,
+              std::span<const unsigned char> pointers,
+              std::span<unsigned char> buffer, int blocksperrow, int numrows,
               int bufwidth);
 
 #endif  // CNC_RED_ALERT_WINVQ_VQA32_UNVQ_H_

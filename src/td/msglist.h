@@ -58,6 +58,7 @@
 #define CNC_RED_ALERT_TD_MSGLIST_H_
 
 #include <cstdint>
+#include <span>
 
 #include "absl/base/attributes.h"
 #include "sdllib/keyboard.h"
@@ -111,7 +112,7 @@ class MessageListClass {
   int MaxChars{0};                       // max allowed chars per message
   int Height{0};                         // height in pixels
   TextLabelClass* EditLabel{nullptr};    // ptr to current edit label
-  char* EditBuf{nullptr};                // ptr to current edit buffer
+  std::span<char> EditBuf;               // ptr to current edit buffer
   int EditCurPos{0};                     // current edit position
   int EditInitPos{0};                    // initial edit position
   int Width = 0;                // Maximum width in pixels of editable string
@@ -121,6 +122,7 @@ class MessageListClass {
   ** both the message, and for the "To" prefix on edited messages, or
   ** the "From:" prefix on received messages.
   */
+  static std::span<char> Text_Storage(const TextLabelClass& label);
   static char MessageBuffers[MAX_NUM_MESSAGES][MAX_MESSAGE_LENGTH + 30];
   static char BufferAvail[MAX_NUM_MESSAGES];
 };

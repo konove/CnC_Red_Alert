@@ -26,6 +26,8 @@
  * HISTORY:    07/17/1998 ajw : Created.
  *=========================================================================*/
 
+#include <span>
+
 #include "ra/edit.h"
 
 // Set by WOLEditClass::Action when Tab is pressed, and cleared by whoever
@@ -35,10 +37,9 @@ extern bool bTabKeyPressedHack;
 
 class WOLEditClass : public EditClass {
  public:
-  WOLEditClass(int id, char* text, int max_len, TextPrintType flags, int x,
-               int y, int w, int h, EditStyle style)
+  WOLEditClass(int id, std::span<char> text, int max_len, TextPrintType flags,
+               int x, int y, int w, int h, EditStyle style)
       : EditClass(id, text, max_len, flags, x, y, w, h, style) {}
-
 
  protected:
   bool Action(unsigned flags, KeyNumType& key) override;  //	Override of base

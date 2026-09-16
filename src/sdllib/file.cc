@@ -1,9 +1,11 @@
 #include "sdllib/file.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <cstdint>
 #include <cstdio>
 #include <filesystem>
+#include <span>
 #include <string>
 #include <system_error>
 #include <vector>
@@ -44,17 +46,21 @@ void IO_Close_File(void* handle) {
   fclose(file);
 }
 
-bool IO_Read_File(void* handle, void* buffer, size_t count,
+bool IO_Read_File(void* handle, std::span<std::byte> buffer,
                   size_t& actual_read) {
   auto* file = static_cast<FILE*>(handle);
-  actual_read = fread(buffer, 1, count, file);
+  // The C API receives the exact writable range carried by buffer.
+  // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-libc-call)
+  actual_read = fread(buffer.data(), 1, buffer.size(), file);
   return ferror(file) == 0;
 }
 
-bool IO_Write_File(void* handle, const void* buffer, size_t count,
+bool IO_Write_File(void* handle, std::span<const std::byte> buffer,
                    size_t& actual_written) {
   auto* file = static_cast<FILE*>(handle);
-  actual_written = fwrite(buffer, 1, count, file);
+  // The C API receives the exact readable range carried by buffer.
+  // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-libc-call)
+  actual_written = fwrite(buffer.data(), 1, buffer.size(), file);
   return ferror(file) == 0;
 }
 

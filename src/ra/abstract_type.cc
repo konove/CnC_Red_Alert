@@ -4,6 +4,7 @@
 
 #include "base/array.h"
 #include "base/types.h"
+#include "port/safe_string.h"
 #include "ra/defines.h"
 #include "ra/externs.h"
 #include "ra/type.h"
@@ -11,8 +12,7 @@
 AbstractTypeClass::AbstractTypeClass(const RTTIType rtti, const int id,
                                      const int name, const char* ini) noexcept
     : RTTI(rtti), ID(id), FullName(name) {
-  strncpy(IniName, ini, sizeof(IniName));
-  IniName[sizeof(IniName) - 1] = '\0';
+  port::SafeCopy(IniName, ini);
 }
 
 COORDINATE AbstractTypeClass::Coord_Fixup(const COORDINATE coord) const {

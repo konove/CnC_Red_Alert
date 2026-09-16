@@ -100,6 +100,7 @@
 #include <algorithm>
 #include <array>
 #include <cassert>
+#include <cstddef>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
@@ -561,22 +562,24 @@ int InfantryClass::Shape_Number() const {
   int shapenum =
       Fetch_Stage() %
       std::max(
-          static_cast<int>(Class->DoControls[static_cast<int>(doit)].Count), 1);
+          static_cast<int>(
+              Class->DoControls[base::ToSize(static_cast<int>(doit))].Count),
+          1);
 
   /*
   **	If facing makes a difference, then the shape number will be incremented
   **	by the facing accordingly.
   */
-  if (Class->DoControls[static_cast<int>(doit)].Jump) {
+  if (Class->DoControls[base::ToSize(static_cast<int>(doit))].Jump) {
     shapenum += base::At(HumanShape, Dir_To_32(PrimaryFacing.Current())) *
-                Class->DoControls[static_cast<int>(doit)].Jump;
+                Class->DoControls[base::ToSize(static_cast<int>(doit))].Jump;
   }
 
   /*
   **	Finally, the shape number is biased according to the starting frame
   *number for *	that action in the infantry shape file.
   */
-  shapenum += Class->DoControls[static_cast<int>(doit)].Frame;
+  shapenum += Class->DoControls[base::ToSize(static_cast<int>(doit))].Frame;
 
   /*
   **	Return with the final infantry shape number.
@@ -613,9 +616,9 @@ void InfantryClass::Draw_It(int x, int y, WindowNumberType window) const {
   *imagery for it. If *	there is no shape image, then it certainly can't be
   *drawn -- bail.
   */
-  const void* shapefile = Get_Image_Data();
+  const auto shapefile = Get_Image_Data();
 
-  if (shapefile == nullptr) {
+  if (shapefile.empty()) {
     return;
   }
 
@@ -730,7 +733,7 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
                 House->SuperWeapon[SPC_SONAR_PULSE].Enable(false, true, false);
                 if (IsOwnedByPlayer) {
                   Map.Add(RTTI_SPECIAL, static_cast<int>(SPC_SONAR_PULSE));
-                  Map.Column[1].Flag_To_Redraw();
+                  base::At(Map.Column, 1).Flag_To_Redraw();
                 }
               }
             }
@@ -1046,10 +1049,10 @@ void InfantryClass::Assign_Destination(TARGET target) {
         }
       }
     } else {
-      Path[0] = FACING_NONE;
+      base::At(Path, 0) = FACING_NONE;
     }
   } else {
-    Path[0] = FACING_NONE;
+    base::At(Path, 0) = FACING_NONE;
   }
   FootClass::Assign_Destination(target);
 }
@@ -1075,7 +1078,7 @@ void InfantryClass::Assign_Target(TARGET target) {
   assert(Infantry.ID(this) == ID);
   assert(IsActive);
 
-  Path[0] = FACING_NONE;
+  base::At(Path, 0) = FACING_NONE;
   if (Class->IsDog &&
       (As_Object(target) && As_Object(target)->What_Am_I() != RTTI_INFANTRY)) {
     target = kTargetNone;
@@ -1483,7 +1486,7 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType /*from*/) const {
  *                                                                                             *
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
-const int16_t* InfantryClass::Overlap_List(bool /*redraw*/) const {
+std::span<const int16_t> InfantryClass::Overlap_List(bool /*redraw*/) const {
   assert(Infantry.ID(this) == ID);
   assert(IsActive);
 
@@ -1876,7 +1879,7 @@ bool InfantryClass::Do_Action(DoType todo, bool force) {
   assert(IsActive);
 
   if (todo == DO_NOTHING ||
-      Class->DoControls[static_cast<int>(todo)].Count == 0) {
+      Class->DoControls[base::ToSize(static_cast<int>(todo))].Count == 0) {
     return false;
   }
 
@@ -2289,24 +2292,26 @@ void InfantryClass::Response_Select() {
     Sound_Effect(response, fixed(1), ID + 1);
 
   } else {
-    static VocType _eng_response[] = {VOC_ENG_YES, VOC_ENG_ENG};
-    static VocType _ein_response[] = {VOC_E_AH};
-    static VocType _dog_response[] = {VOC_DOG_YES};
-    static VocType _spy_response[] = {VOC_SPY_COMMANDER, VOC_SPY_YESSIR};
-    static VocType _medic_response[] = {VOC_MED_REPORTING, VOC_MED_YESSIR};
-    static VocType _tanya_response[] = {VOC_TANYA_YEA, VOC_TANYA_YES,
-                                        VOC_TANYA_WHATS};
-    static VocType _thief_response[] = {VOC_THIEF_YEA, VOC_THIEF_WHAT};
-    static VocType _default_response[] = {VOC_ACKNOWL, VOC_REPORT, VOC_REPORT,
-                                          VOC_YESSIR,  VOC_YESSIR, VOC_READY,
-                                          VOC_AWAIT};
-    static VocType _stavros[] = {VOC_STAVCMDR, VOC_STAVYES};
-    static VocType _mechanic_response[] = {VOC_MECHHOWDY1, VOC_MECHHUH1,
-                                           VOC_MECHLAFF1};
-    static VocType _shock_response[] = {VOC_STYES1, VOC_STJUMP1, VOC_STJUICE1};
+    static const VocType _eng_response[] = {VOC_ENG_YES, VOC_ENG_ENG};
+    static const VocType _ein_response[] = {VOC_E_AH};
+    static const VocType _dog_response[] = {VOC_DOG_YES};
+    static const VocType _spy_response[] = {VOC_SPY_COMMANDER, VOC_SPY_YESSIR};
+    static const VocType _medic_response[] = {VOC_MED_REPORTING,
+                                              VOC_MED_YESSIR};
+    static const VocType _tanya_response[] = {VOC_TANYA_YEA, VOC_TANYA_YES,
+                                              VOC_TANYA_WHATS};
+    static const VocType _thief_response[] = {VOC_THIEF_YEA, VOC_THIEF_WHAT};
+    static const VocType _default_response[] = {
+        VOC_ACKNOWL, VOC_REPORT, VOC_REPORT, VOC_YESSIR,
+        VOC_YESSIR,  VOC_READY,  VOC_AWAIT};
+    static const VocType _stavros[] = {VOC_STAVCMDR, VOC_STAVYES};
+    static const VocType _mechanic_response[] = {VOC_MECHHOWDY1, VOC_MECHHUH1,
+                                                 VOC_MECHLAFF1};
+    static const VocType _shock_response[] = {VOC_STYES1, VOC_STJUMP1,
+                                              VOC_STJUICE1};
 
     int size = 0;
-    const VocType* response = nullptr;
+    std::span<const VocType> response;
     HousesType house = PlayerPtr->ActLike;
     switch (Class->Type) {
       case INFANTRY_GENERAL:
@@ -2371,9 +2376,9 @@ void InfantryClass::Response_Select() {
         size = std::ssize(_default_response);
         break;
     }
-    if (response != nullptr) {
-      Sound_Effect(response[Sim_Random_Pick(0, size - 1)], fixed(1), ID + 1, 0,
-                   house);
+    if (!response.empty()) {
+      Sound_Effect(response[base::ToSize(Sim_Random_Pick(0, size - 1))],
+                   fixed(1), ID + 1, 0, house);
     }
   }
 }
@@ -2406,12 +2411,12 @@ void InfantryClass::Response_Move() {
     Sound_Effect(response, fixed(1), ID + 1);
 
   } else {
-    static VocType _eng_response[] = {VOC_ENG_AFFIRM, VOC_ENG_AFFIRM};
-    static VocType _ein_response[] = {VOC_E_OK, VOC_E_YES};
-    static VocType _dog_response[] = {VOC_DOG_BARK};
-    static VocType _spy_response[] = {VOC_SPY_ONWAY, VOC_SPY_KING,
-                                      VOC_SPY_INDEED};
-    static VocType _medic_response[] = {VOC_MED_AFFIRM, VOC_MED_MOVEOUT};
+    static const VocType _eng_response[] = {VOC_ENG_AFFIRM, VOC_ENG_AFFIRM};
+    static const VocType _ein_response[] = {VOC_E_OK, VOC_E_YES};
+    static const VocType _dog_response[] = {VOC_DOG_BARK};
+    static const VocType _spy_response[] = {VOC_SPY_ONWAY, VOC_SPY_KING,
+                                            VOC_SPY_INDEED};
+    static const VocType _medic_response[] = {VOC_MED_AFFIRM, VOC_MED_MOVEOUT};
     // Only the English speech set has the "rock and roll" line.
     static constexpr auto _tanya_response = [] {
       if constexpr (config::kIsEnglish) {
@@ -2420,17 +2425,17 @@ void InfantryClass::Response_Move() {
         return std::array{VOC_TANYA_THERE, VOC_TANYA_GIVE};
       }
     }();
-    static VocType _thief_response[] = {VOC_THIEF_MOVEOUT, VOC_THIEF_OKAY,
-                                        VOC_THIEF_AFFIRM};
-    static VocType _default_response[] = {VOC_ROGER, VOC_RIGHT_AWAY, VOC_UGOTIT,
-                                          VOC_AFFIRM, VOC_AFFIRM};
-    static VocType _stavros[] = {VOC_STAVMOV, VOC_STAVCRSE};
-    static VocType _mechanic[] = {VOC_MECHYES1, VOC_MECHRISE1, VOC_MECHHEAR1,
-                                  VOC_MECHBOSS1};
-    static VocType _shock[] = {VOC_STPOWER1, VOC_STDANCE1, VOC_STCHRGE1};
+    static const VocType _thief_response[] = {VOC_THIEF_MOVEOUT, VOC_THIEF_OKAY,
+                                              VOC_THIEF_AFFIRM};
+    static const VocType _default_response[] = {
+        VOC_ROGER, VOC_RIGHT_AWAY, VOC_UGOTIT, VOC_AFFIRM, VOC_AFFIRM};
+    static const VocType _stavros[] = {VOC_STAVMOV, VOC_STAVCRSE};
+    static const VocType _mechanic[] = {VOC_MECHYES1, VOC_MECHRISE1,
+                                        VOC_MECHHEAR1, VOC_MECHBOSS1};
+    static const VocType _shock[] = {VOC_STPOWER1, VOC_STDANCE1, VOC_STCHRGE1};
 
     int size = 0;
-    const VocType* response = nullptr;
+    std::span<const VocType> response;
     HousesType house = PlayerPtr->ActLike;
     switch (Class->Type) {
       case INFANTRY_GENERAL:
@@ -2484,7 +2489,7 @@ void InfantryClass::Response_Move() {
         break;
 
       case INFANTRY_TANYA:
-        response = _tanya_response.data();
+        response = _tanya_response;
         size = std::ssize(_tanya_response);
         break;
 
@@ -2498,9 +2503,9 @@ void InfantryClass::Response_Move() {
         size = std::ssize(_default_response);
         break;
     }
-    if (response != nullptr) {
-      Sound_Effect(response[Sim_Random_Pick(0, size - 1)], fixed(1), ID + 1, 0,
-                   house);
+    if (!response.empty()) {
+      Sound_Effect(response[base::ToSize(Sim_Random_Pick(0, size - 1))],
+                   fixed(1), ID + 1, 0, house);
     }
   }
 }
@@ -2534,12 +2539,12 @@ void InfantryClass::Response_Attack() {
     Sound_Effect(response, fixed(1), ID + 1);
 
   } else {
-    static VocType _eng_response[] = {VOC_ENG_AFFIRM, VOC_ENG_AFFIRM};
-    static VocType _dog_response[] = {VOC_DOG_GROWL2};
-    static VocType _ein_response[] = {VOC_E_OK, VOC_E_YES};
-    static VocType _spy_response[] = {VOC_SPY_ONWAY, VOC_SPY_KING,
-                                      VOC_SPY_INDEED};
-    static VocType _medic_response[] = {VOC_MED_AFFIRM, VOC_MED_MOVEOUT};
+    static const VocType _eng_response[] = {VOC_ENG_AFFIRM, VOC_ENG_AFFIRM};
+    static const VocType _dog_response[] = {VOC_DOG_GROWL2};
+    static const VocType _ein_response[] = {VOC_E_OK, VOC_E_YES};
+    static const VocType _spy_response[] = {VOC_SPY_ONWAY, VOC_SPY_KING,
+                                            VOC_SPY_INDEED};
+    static const VocType _medic_response[] = {VOC_MED_AFFIRM, VOC_MED_MOVEOUT};
     static constexpr auto _tanya_response = [] {
       if constexpr (config::kIsEnglish) {
         return std::array{VOC_TANYA_CHEW, VOC_TANYA_CHING, VOC_TANYA_LAUGH};
@@ -2548,18 +2553,18 @@ void InfantryClass::Response_Attack() {
                           VOC_TANYA_ROCK};
       }
     }();
-    static VocType _thief_response[] = {VOC_NONE};
-    static VocType _default_response[] = {
+    static const VocType _thief_response[] = {VOC_NONE};
+    static const VocType _default_response[] = {
         VOC_RIGHT_AWAY, VOC_AFFIRM, VOC_AFFIRM, VOC_UGOTIT,
         VOC_NO_PROB,    VOC_YESSIR, VOC_YESSIR, VOC_YESSIR};
-    static VocType _stavros[] = {VOC_STAVCRSE};
-    static VocType _mechanic[] = {VOC_MECHYEEHAW1, VOC_MECHHOTDIG1,
-                                  VOC_MECHWRENCH1};
-    static VocType _shock[] = {VOC_STLIGHT1, VOC_STBURN1, VOC_STCRISP1,
-                               VOC_STSHOCK1};
+    static const VocType _stavros[] = {VOC_STAVCRSE};
+    static const VocType _mechanic[] = {VOC_MECHYEEHAW1, VOC_MECHHOTDIG1,
+                                        VOC_MECHWRENCH1};
+    static const VocType _shock[] = {VOC_STLIGHT1, VOC_STBURN1, VOC_STCRISP1,
+                                     VOC_STSHOCK1};
 
     int size = 0;
-    const VocType* response = nullptr;
+    std::span<const VocType> response;
     HousesType house = PlayerPtr->ActLike;
     switch (Class->Type) {
       case INFANTRY_GENERAL:
@@ -2613,7 +2618,7 @@ void InfantryClass::Response_Attack() {
         break;
 
       case INFANTRY_TANYA:
-        response = _tanya_response.data();
+        response = _tanya_response;
         size = std::ssize(_tanya_response);
         break;
 
@@ -2627,9 +2632,9 @@ void InfantryClass::Response_Attack() {
         size = std::ssize(_default_response);
         break;
     }
-    if (response != nullptr) {
-      Sound_Effect(response[Sim_Random_Pick(0, size - 1)], fixed(1), ID + 1, 0,
-                   house);
+    if (!response.empty()) {
+      Sound_Effect(response[base::ToSize(Sim_Random_Pick(0, size - 1))],
+                   fixed(1), ID + 1, 0, house);
     }
   }
 }
@@ -2808,12 +2813,13 @@ ActionType InfantryClass::What_Action(ObjectClass* object) {
         if (object->What_Am_I() == RTTI_BUILDING) {
           const CELL cell = As_Cell(object->As_Target());
           const int targzone = Map[As_Cell(As_Target())].Zones[Class->MZone];
-          const int16_t* list =
+          std::span<const int16_t> list =
               dynamic_cast<const BuildingClass*>(object)->Class->Occupy_List(
                   false);
           bool found = false;
-          while (*list != kRefreshEol && !found) {
-            const CELL newcell = static_cast<CELL>(cell + *list++);
+          while (list.front() != kRefreshEol && !found) {
+            const CELL newcell =
+                static_cast<CELL>(cell + base::ConsumeFront(list));
             for (const FacingType i : magic_enum::enum_values<FacingType>()) {
               if (std::cmp_equal(
                       Map[Adjacent_Cell(newcell, i)].Zones[Class->MZone],
@@ -3442,7 +3448,7 @@ void InfantryClass::Firing_AI() {
           */
           if (TarCom == NavCom) {
             NavCom = kTargetNone;
-            Path[0] = FACING_NONE;
+            base::At(Path, 0) = FACING_NONE;
           }
           break;
         default:
@@ -3510,7 +3516,8 @@ void InfantryClass::Firing_AI() {
  *=============================================================================================*/
 void InfantryClass::Doing_AI() {
   if (Doing == DO_NOTHING ||
-      Fetch_Stage() >= Class->DoControls[static_cast<int>(Doing)].Count) {
+      Fetch_Stage() >=
+          Class->DoControls[base::ToSize(static_cast<int>(Doing))].Count) {
     switch (Doing) {
       default:
         if (IsDriving) {
@@ -3552,7 +3559,8 @@ void InfantryClass::Doing_AI() {
       case DO_EXPLOSION2_DEATH:
       case DO_GRENADE_DEATH:
       case DO_FIRE_DEATH:
-        if (Fetch_Stage() >= Class->DoControls[static_cast<int>(Doing)].Count) {
+        if (Fetch_Stage() >=
+            Class->DoControls[base::ToSize(static_cast<int>(Doing))].Count) {
           if (Doing == DO_GUN_DEATH && !Class->IsDog && Height == 0) {
             new AnimClass(ANIM_CORPSE1,
                           Coord_Add(Center_Coord(), XYP_Coord(-2, 4)));
@@ -3639,10 +3647,10 @@ void InfantryClass::Movement_AI() {
         **	to be entered. If not, then abort the path and try
         **	again.
         */
-        if (Path[0] != FACING_NONE &&
+        if (base::At(Path, 0) != FACING_NONE &&
             Can_Enter_Cell(Adjacent_Cell(Coord_Cell(Center_Coord()),
-                                         Path[0])) != MOVE_OK) {
-          Path[0] = FACING_NONE;
+                                         base::At(Path, 0))) != MOVE_OK) {
+          base::At(Path, 0) = FACING_NONE;
         }
 
         /*
@@ -3659,7 +3667,7 @@ void InfantryClass::Movement_AI() {
         /*
         **	Find a path to follow if one isn't already calculated.
         */
-        if (Path[0] == FACING_NONE) {
+        if (base::At(Path, 0) == FACING_NONE) {
           /*
           **	Calculate the path from the current location to the
           **	destination indicated by the navigation computer. If there
@@ -3732,7 +3740,7 @@ void InfantryClass::Movement_AI() {
         **	Determine the coordinate to head to based on the infantry's
         **	current location and the next location in the path.
         */
-        COORDINATE acoord = Adjacent_Cell(Coord, Path[0]);
+        COORDINATE acoord = Adjacent_Cell(Coord, base::At(Path, 0));
         const CELL acell = Coord_Cell(acoord);
 
         if (Can_Enter_Cell(acell) != MOVE_OK) {
@@ -3762,7 +3770,7 @@ void InfantryClass::Movement_AI() {
             }
           }
 
-          Path[0] = FACING_NONE;
+          base::At(Path, 0) = FACING_NONE;
           Stop_Driver();
           if (IsNewNavCom) {
             Sound_Effect(VOC_SCOLD);
@@ -3814,8 +3822,9 @@ void InfantryClass::Movement_AI() {
       if (Distance(Head_To_Coord()) < 0x0010) {
         base::MoveBytes(std::as_writable_bytes(base::Suffix(Path, 0)),
                         std::as_bytes(base::Suffix(Path, 1)),
-                        sizeof(Path) - sizeof(Path[0]));
-        Path[(sizeof(Path) / sizeof(Path[0])) - 1] = FACING_NONE;
+                        sizeof(Path) - sizeof(base::At(Path, 0)));
+        base::At(Path, (sizeof(Path) / sizeof(base::At(Path, 0))) - 1) =
+            FACING_NONE;
         Coord = Head_To_Coord();
         Per_Cell_Process(PCP_END);
         if (!IsActive || IsInLimbo) {
@@ -3833,7 +3842,7 @@ void InfantryClass::Movement_AI() {
             Enter_Idle_Mode();
           }
           // Stop_Driver();
-          Path[0] = FACING_NONE;
+          base::At(Path, 0) = FACING_NONE;
         }
       } else {
         int movespeed = Speed;
@@ -3898,9 +3907,9 @@ void InfantryClass::Movement_AI() {
  *                                                                                             *
  * HISTORY: * 08/06/1996 JLB : Created. *
  *=============================================================================================*/
-const void* InfantryClass::Get_Image_Data() const {
+std::span<const std::byte> InfantryClass::Get_Image_Data() const {
   if (!IsOwnedByPlayer && *this == INFANTRY_SPY) {
-    return MixArchive::Retrieve("E1.SHP");
+    return MixArchive::RetrieveData("E1.SHP");
   }
   return TechnoClass::Get_Image_Data();
 }

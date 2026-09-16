@@ -1,7 +1,11 @@
+#include "base/flags.h"
+
+#include <cstddef>
 #include <cstdint>
 #include <cstdlib>
-#include <cstring>
+#include <span>
 
+#include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/types.h"
 #include "sdllib/memflag.h"
@@ -22,8 +26,9 @@ void Free(void* pointer) {
   }
 }
 
-void Mem_Copy(const void* source, void* dest, size_t bytes_to_copy) {
-  memcpy(dest, source, bytes_to_copy);
+void Mem_Copy(std::span<const std::byte> source, std::span<std::byte> dest,
+              size_t bytes_to_copy) {
+  base::CopyBytes(dest, source, bytes_to_copy);
 }
 
 void* Resize_Alloc(void* original_ptr, base::ssize new_size_in_bytes) {

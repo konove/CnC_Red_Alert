@@ -42,6 +42,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <span>
 
 #include "absl/base/attributes.h"
 #include "ra/ccptr.h"
@@ -103,9 +104,9 @@ class AnimClass final : public ObjectClass, public StageClass {
   [[nodiscard]] const ObjectTypeClass& Class_Of() const override {
     return *Class;
   }
-  [[nodiscard]] const int16_t* Occupy_List(
+  [[nodiscard]] std::span<const int16_t> Occupy_List(
       bool /*placement*/ = false) const override;
-  [[nodiscard]] const int16_t* Overlap_List(
+  [[nodiscard]] std::span<const int16_t> Overlap_List(
       bool /*redraw*/ = false) const override;
   void Draw_It(int x, int y, WindowNumberType window) const override;
   void AI() override;

@@ -41,7 +41,9 @@
 #define CNC_RED_ALERT_TECH_BLOWFISH_H_
 
 #include <climits>
+#include <cstddef>
 #include <cstdint>
+#include <span>
 
 // Whether a Blowfish link encrypts or decrypts what passes it.
 enum class CipherMode { kEncrypt, kDecrypt };
@@ -66,15 +68,17 @@ class BlowfishEngine {
   BlowfishEngine(BlowfishEngine&&) = delete;
   BlowfishEngine& operator=(BlowfishEngine&&) = delete;
 
-  void Submit_Key(const void* key, int length);
+  void Submit_Key(std::span<const std::byte> key);
 
-  // Encrypts (decrypts) `length` bytes from the source buffer into the
+  // Encrypts (decrypts) all bytes from the source buffer into the
   // destination buffer and returns how many bytes were processed. Only whole
   // 8-byte blocks are transformed; a trailing partial block is copied as is.
-  // The destination must not be null: to work in place, pass the same
-  // non-const buffer as both arguments. Without a key the data is copied.
-  int Encrypt(const void* plaintext, int length, void* cyphertext);
-  int Decrypt(const void* cyphertext, int length, void* plaintext);
+  // The destination must be at least as large as the source. To work in place,
+  // pass the same buffer as both arguments. Without a key the data is copied.
+  int Encrypt(std::span<const std::byte> plaintext,
+              std::span<std::byte> cyphertext);
+  int Decrypt(std::span<const std::byte> cyphertext,
+              std::span<std::byte> plaintext);
 
   /*
   **	This is the maximum key length supported.
@@ -86,8 +90,9 @@ class BlowfishEngine {
 
   void Sub_Key_Encrypt(uint32_t& left, uint32_t& right);
 
-  void Process_Block(const void* plaintext, void* cyphertext,
-                     const uint32_t* ptable);
+  void Process_Block(std::span<const std::byte> plaintext,
+                     std::span<std::byte> cyphertext,
+                     std::span<const uint32_t> ptable);
   void Initialize_Tables();
 
   static constexpr int kRounds = 16;

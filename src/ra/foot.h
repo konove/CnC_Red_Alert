@@ -40,6 +40,9 @@
 #ifndef CNC_RED_ALERT_RA_FOOT_H_
 #define CNC_RED_ALERT_RA_FOOT_H_
 
+#include <span>
+
+#include "base/array.h"
 #include <cstdint>
 
 #include "ra/ccptr.h"
@@ -319,7 +322,7 @@ class FootClass : public TechnoClass {
         FormationSpeed(SPEED_FOOT),
         FormationMaxSpeed(MPH_IMMOBILE),
         HeadToCoord(0) {
-    Path[0] = FACING_NONE;
+    base::At(Path, 0) = FACING_NONE;
   }
 
  public:
@@ -421,7 +424,7 @@ class FootClass : public TechnoClass {
  private:
   int Passable_Cell(CELL cell, FacingType face, int threat,
                     MoveType threshhold);
-  PathType* Find_Path(CELL dest, FacingType* final_moves, int maxlen,
+  PathType* Find_Path(CELL dest, std::span<FacingType> final_moves, int maxlen,
                       MoveType threshhold);
   void Debug_Draw_Map(const char* txt, CELL start, CELL dest, bool pause);
   void Debug_Draw_Path(PathType* path);

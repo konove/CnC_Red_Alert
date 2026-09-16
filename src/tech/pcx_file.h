@@ -43,6 +43,7 @@ Buff);
 #define CNC_RED_ALERT_TECH_PCX_FILE_H_
 
 #include <cstdint>
+#include <span>
 
 #include "sdllib/buffer.h"
 #include "sdllib/gbuffer.h"
@@ -73,11 +74,11 @@ typedef struct {
 } PCX_HEADER;
 
 GraphicBufferClass* Read_PCX_File(const char* name,
-                                  unsigned char* palette = nullptr,
-                                  void* buff = nullptr, int32_t size = 0);
+                                  std::span<uint8_t> palette = {},
+                                  std::span<uint8_t> buff = {}, int32_t size = 0);
 GraphicBufferClass* Read_PCX_File(char* name, BufferClass& Buff,
                                   char* palette = nullptr);
 int Write_PCX_File(const char* name, GraphicViewPortClass& pic,
-                   const unsigned char* palette);
+                   std::span<const unsigned char> palette);
 
 #endif  // CNC_RED_ALERT_TECH_PCX_FILE_H_

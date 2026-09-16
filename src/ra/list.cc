@@ -62,6 +62,8 @@
 #include "ra/list.h"
 
 #include <algorithm>
+#include <cstddef>
+#include <span>
 #include <string_view>
 
 #include "base/numeric.h"
@@ -102,7 +104,8 @@
  * HISTORY:          01/05/1995 MML : Created.                             *
  *=========================================================================*/
 ListClass::ListClass(int id, int x, int y, int w, int h, TextPrintType flags,
-                     const void* up, const void* down)
+                     std::span<const std::byte> up,
+                     std::span<const std::byte> down)
     : ControlClass(static_cast<unsigned>(id), x, y, w, h,
                    kLeftPress | kLeftRelease | kKeyboard, false),
       TextFlags(flags),
@@ -671,7 +674,7 @@ bool ListClass::Remove_Scroll_Bar() {
  *                                                                                             *
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-void ListClass::Set_Tabs(const int* tabs) { Tabs = tabs; }
+void ListClass::Set_Tabs(std::span<const int> tabs) { Tabs = tabs; }
 
 /***********************************************************************************************
  * ListClass::Draw_Entry -- Draws a list box text line as indicated. *
@@ -908,7 +911,7 @@ void ListClass::Flag_To_Redraw() {
 void ListClass::Set_Selected_Index(const char* text) {
   if (text && Count() > 0) {
     for (int index = 0; index < Count(); index++) {
-      if (stricmp(List[base::ToSize(index)].c_str(), text) == 0) {
+      if (port::CompareIgnoreCase(List[base::ToSize(index)], text) == 0) {
         Set_Selected_Index(index);
         break;
       }

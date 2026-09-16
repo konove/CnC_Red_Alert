@@ -40,15 +40,17 @@
 #ifndef CNC_RED_ALERT_RA_SHAPEBTN_H_
 #define CNC_RED_ALERT_RA_SHAPEBTN_H_
 
+#include <cstddef>
+#include <span>
 #include "ra/toggle.h"
 
 class ShapeButtonClass final : public ToggleClass {
  public:
   ShapeButtonClass() noexcept;
-  ShapeButtonClass(unsigned id, const void* shapes, int x, int y);
+  ShapeButtonClass(unsigned id, std::span<const std::byte> shapes, int x, int y);
   bool Draw_Me(bool forced = false) override;
-  void Set_Shape(const void* data);
-  const void* Get_Shape_Data() { return ShapeData; }
+  void Set_Shape(std::span<const std::byte> data);
+  std::span<const std::byte> Get_Shape_Data() { return ShapeData; }
 
   static constexpr int kUpShape = 0;  // Shape to use when button is "up".
   static constexpr int kDownShape =
@@ -63,6 +65,6 @@ class ShapeButtonClass final : public ToggleClass {
   **	This points to the shape data file. This file contains the appropriate
   *shapes *	for this button in the offsets specified above.
   */
-  const void* ShapeData = nullptr;
+  std::span<const std::byte> ShapeData;
 };
 #endif  // CNC_RED_ALERT_RA_SHAPEBTN_H_

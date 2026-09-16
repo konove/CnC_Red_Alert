@@ -39,6 +39,11 @@
 #ifndef CNC_RED_ALERT_RA_WSPROTO_H_
 #define CNC_RED_ALERT_RA_WSPROTO_H_
 
+#include <cstddef>
+#include <span>
+
+class IPXAddressClass;
+
 #include "ra/vector_dynamic.h"
 
 #ifdef _WIN32
@@ -104,10 +109,11 @@ class WinsockInterfaceClass {
   void Close();
 
   virtual void Close_Socket() final;
-  virtual int Read(void* buffer, int& buffer_len, void* address,
-                   int& address_len);
-  virtual void WriteTo(void* buffer, int buffer_len, void* address);
-  virtual void Broadcast(void* buffer, int buffer_len);
+  virtual int Read(std::span<std::byte> buffer, int& buffer_len,
+                   std::span<std::byte> address, int& address_len);
+  virtual void WriteTo(std::span<const std::byte> buffer, int buffer_len,
+                       const IPXAddressClass& address);
+  virtual void Broadcast(std::span<const std::byte> buffer, int buffer_len);
   virtual void Discard_In_Buffers();
   virtual void Discard_Out_Buffers();
   virtual bool Start_Listening();
@@ -116,7 +122,7 @@ class WinsockInterfaceClass {
   virtual void Stop_Listening() final;
   virtual void Clear_Socket_Error(SOCKET socket);
   virtual bool Set_Socket_Options();
-  virtual void Set_Broadcast_Address(const void* /*unused*/) {}
+  virtual void Set_Broadcast_Address(const char* /*unused*/) {}
 
   virtual ProtocolEnum Get_Protocol() { return PROTOCOL_NONE; }
 

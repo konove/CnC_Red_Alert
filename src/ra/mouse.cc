@@ -49,6 +49,8 @@
 #include "ra/mouse.h"
 
 #include <cassert>
+#include <cstddef>
+#include <span>
 
 #include "base/enum_array.h"
 #include "magic_enum/magic_enum.hpp"
@@ -65,7 +67,7 @@
 /*
 **	This points to the loaded mouse shapes.
 */
-const void* MouseClass::MouseShapes;
+std::span<const std::byte> MouseClass::MouseShapes;
 
 /*
 **	This is the timer that controls the mouse animation. It is always at a
@@ -213,8 +215,8 @@ bool MouseClass::Override_Mouse_Shape(MouseType mouse, bool wsmall) {
   **	If the mouse shape is going to change, then inform the mouse driver of
   *the *	change.
   */
-  if (!startup ||
-      (MouseShapes && (mouse != CurrentMouseShape || wsmall != IsSmall))) {
+  if (!startup || (!MouseShapes.empty() &&
+                   (mouse != CurrentMouseShape || wsmall != IsSmall))) {
     startup = true;
 
     AnimTimer.Set(control->FrameRate);
@@ -294,7 +296,7 @@ void MouseClass::AI(KeyNumType& input, int x, int y) {
 void MouseClass::One_Time() {
   ScrollClass::One_Time();
 
-  MouseShapes = MixArchive::Retrieve("MOUSE.SHP");
+  MouseShapes = MixArchive::RetrieveData("MOUSE.SHP");
 }
 
 /***********************************************************************************************

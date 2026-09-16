@@ -75,22 +75,25 @@
 #include "td/radar.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <filesystem>
+#include <span>
 #include <string>
 #include <string_view>
 #include <utility>
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
+#include "base/buffer.h"
 #include "base/numeric.h"
+#include "port/unaligned.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/memflag.h"
 #include "sdllib/misc.h"
 #include "sdllib/shape.h"
 #include "sdllib/ww_mouse.h"
@@ -125,7 +128,7 @@
 // void const * RadarClass::CoverShape;
 RadarClass::TacticalClass RadarClass::RadarButton;
 
-const void* RadarClass::RadarAnim = nullptr;
+std::span<const std::byte> RadarClass::RadarAnim = {};
 
 static bool FullRedraw = false;
 
@@ -582,14 +585,14 @@ void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) const {
   ** loop through the list and take care of rendering the correct icon.
   */
   for (int lp = 0; lp < listidx; lp++) {
-    const unsigned char* icon = base::At(list, lp)->Radar_Icon(cell);
-    if (!icon) {
+    const auto icon = base::At(list, lp)->Radar_Icon(cell);
+    if (icon.empty()) {
       continue;
     }
 
     Buffer_To_Page(0, 0, 3, 3, icon, IconStage);
     IconStage.Scale(*LogicPage, 0, 0, x, y, 3, 3, ZoomFactor, ZoomFactor, true,
-                    &FadingBrighten[0]);
+                    FadingBrighten);
   }
 }
 
@@ -677,17 +680,17 @@ void RadarClass::Render_Overlay(CELL cell, int x, int y, int size) {
     const OverlayTypeClass* otype = &OverlayTypeClass::As_Reference(overlay);
 
     if (otype->IsRadarVisible) {
-      const unsigned char* icon = otype->Radar_Icon((*this)[cell].OverlayData);
-      if (!icon) {
+      const auto icon = otype->Radar_Icon((*this)[cell].OverlayData);
+      if (icon.empty()) {
         return;
       }
       Buffer_To_Page(0, 0, 3, 3, icon, IconStage);
       if (otype->IsTiberium) {
         IconStage.Scale(*LogicPage, 0, 0, x, y, 3, 3, size, size, true,
-                        &FadingGreen[0]);
+                        FadingGreen);
       } else {
         IconStage.Scale(*LogicPage, 0, 0, x, y, 3, 3, size, size, true,
-                        &FadingBrighten[0]);
+                        FadingBrighten);
       }
     }
   }
@@ -847,36 +850,36 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
     */
     if (color == kTBlack) {
       if (ZoomFactor > 1) {
-        const void* ptr = nullptr;
-        int32_t offset = 0;
-        int icon = 0;
-
-        if (cellptr->TType != TEMPLATE_NONE) {
-          ptr =
-              TemplateTypeClass::As_Reference(cellptr->TType).Get_Image_Data();
-          icon = cellptr->TIcon;
-        } else {
-          ptr =
-              TemplateTypeClass::As_Reference(TEMPLATE_CLEAR1).Get_Image_Data();
-          icon = cellptr->Clear_Icon();
+        const auto data = TemplateTypeClass::As_Reference(
+                              cellptr->TType != TEMPLATE_NONE ? cellptr->TType
+                                                              : TEMPLATE_CLEAR1)
+                              .Get_Image_Data();
+        const int logical_icon = cellptr->TType != TEMPLATE_NONE
+                                     ? cellptr->TIcon
+                                     : cellptr->Clear_Icon();
+        // The icon map and pixel offsets belong to the serialized iconset.
+        if (data.size() >= 32 && logical_icon >= 0) {
+          const auto map_offset =
+              port::ReadUnaligned<uint32_t>(data.subspan(28));
+          const auto pixel_offset =
+              port::ReadUnaligned<uint32_t>(data.subspan(12));
+          const auto map_index = static_cast<std::size_t>(map_offset) +
+                                 static_cast<std::size_t>(logical_icon);
+          if (map_index < data.size()) {
+            const auto icon = std::to_integer<std::size_t>(data[map_index]);
+            const auto start = static_cast<std::size_t>(pixel_offset) +
+                               (icon * std::size_t{24} * 24);
+            if (start <= data.size() &&
+                data.size() - start >= std::size_t{24} * 24) {
+              Buffer_To_Page(0, 0, 24, 24,
+                             base::UnsignedBytes(
+                                 data.subspan(start, std::size_t{24} * 24)),
+                             TileStage);
+              TileStage.Scale(*LogicPage, 0, 0, x, y, 24, 24, ZoomFactor,
+                              ZoomFactor, true);
+            }
+          }
         }
-
-        /*
-        **	Convert the logical icon number into the actual icon number.
-        */
-        Mem_Copy(Add_Long_To_Pointer(ptr, 28), &offset, sizeof(offset));
-        unsigned char icon_byte = 0;
-        Mem_Copy(Add_Long_To_Pointer(ptr, offset + icon), &icon_byte,
-                 sizeof(icon_byte));
-        icon = icon_byte;
-
-        Mem_Copy(Add_Long_To_Pointer(ptr, 12), &offset, sizeof(offset));
-        ptr = Add_Long_To_Pointer(ptr, offset + (icon * (24 * 24)));
-
-        const auto* data = static_cast<const unsigned char*>(ptr);
-        Buffer_To_Page(0, 0, 24, 24, data, TileStage);
-        TileStage.Scale(*LogicPage, 0, 0, x, y, 24, 24, ZoomFactor, ZoomFactor,
-                        true);
 
       } else {
         if (LogicPage->Lock()) {
@@ -1575,8 +1578,8 @@ bool RadarClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
  *                                                                                             *
  * HISTORY: * 01/01/1995 JLB : Created. *
  *=============================================================================================*/
-void RadarClass::Refresh_Cells(CELL cell, const int16_t* list) {
-  if (*list == REFRESH_SIDEBAR) {
+void RadarClass::Refresh_Cells(CELL cell, std::span<const int16_t> list) {
+  if (list.front() == REFRESH_SIDEBAR) {
     IsRadarToRedraw = true;
     Flag_To_Redraw(false);
   }
@@ -1661,7 +1664,7 @@ void RadarClass::Set_Radar_Position(CELL cell) {
           */
           GraphicBufferClass temp_surface;
           temp_surface.Init(((RadarWidth + 16) / 16) * 16,
-                            ((RadarHeight + 16) / 16) * 16, nullptr, 0,
+                            ((RadarHeight + 16) / 16) * 16, {}, 0,
                             GBC_VIDEOMEM);
 
           HidPage.Blit(
@@ -1897,14 +1900,14 @@ void RadarClass::Draw_Names() const {
     if (ptr->IsDefeated) {
       color = kGrey;
     } else {
-      color = MPlayerTColors[c_idx];
+      color = base::At(MPlayerTColors, c_idx);
     }
     const TextPrintType style = TPF_6PT_GRAD | TPF_NOSHADOW | TPF_USE_GRAD_PAL;
 
     /*
     **	Initialize our message
     */
-    txt[0] = 0;
+    base::At(txt, 0) = 0;
 
     /*
     **	If the house is non-human, generate the message
@@ -1932,8 +1935,8 @@ void RadarClass::Draw_Names() const {
     */
     if (!std::string_view(txt).empty()) {
       if (std::string_view(txt).size() > 9) {
-        txt[9] = '.';
-        txt[10] = '\0';
+        base::At(txt, 9) = '.';
+        base::At(txt, 10) = '\0';
       }
       Fancy_Text_Print(txt, RadX + RadOffX, y, color, kBlack, style);
 

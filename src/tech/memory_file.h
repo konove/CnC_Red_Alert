@@ -44,6 +44,7 @@
 #include <cstdio>
 #include <span>
 #include <string_view>
+#include <vector>
 
 #include "absl/base/attributes.h"
 #include "base/seek_origin.h"
@@ -56,9 +57,11 @@
 // Originally RAMFILE.H (class RAMFileClass).
 class MemoryFile final : public File {
  public:
-  // Wraps size bytes at buffer. A null buffer with a positive size allocates a
-  // scratch buffer of that size, which is only useful for writing.
-  MemoryFile(void* buffer ABSL_ATTRIBUTE_LIFETIME_BOUND, base::ssize size);
+  // Wraps caller-owned storage, which must outlive this file.
+  explicit MemoryFile(
+      std::span<std::byte> buffer ABSL_ATTRIBUTE_LIFETIME_BOUND);
+  // Allocates scratch storage of size bytes.
+  explicit MemoryFile(base::ssize size);
 
   MemoryFile(const MemoryFile&) = delete;
   MemoryFile& operator=(const MemoryFile&) = delete;
@@ -88,7 +91,8 @@ class MemoryFile final : public File {
 
  private:
   // The memory the "file" lives in.
-  char* buffer_;
+  std::vector<std::byte> owned_buffer_;
+  std::span<std::byte> buffer_;
 
   // Size of buffer_. The file occupying it may be smaller.
   base::ssize capacity_;
@@ -104,8 +108,6 @@ class MemoryFile final : public File {
 
   bool is_open_ = false;
 
-  // The constructor allocated buffer_, so the destructor must delete it.
-  bool owns_buffer_ = false;
 };
 
 #endif  // CNC_RED_ALERT_TECH_MEMORY_FILE_H_

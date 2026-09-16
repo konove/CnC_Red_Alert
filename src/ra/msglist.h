@@ -95,7 +95,10 @@
 #ifndef CNC_RED_ALERT_RA_MSGLIST_H_
 #define CNC_RED_ALERT_RA_MSGLIST_H_
 
+#include <span>
+
 #include "absl/base/attributes.h"
+#include "base/array.h"
 #include "ra/defines.h"
 #include "sdllib/keyboard.h"
 
@@ -162,9 +165,9 @@ class MessageListClass {
                            const char* to, char cursor = 0,
                            int width = 640) ABSL_ATTRIBUTE_LIFETIME_BOUND;
   void Remove_Edit();
-  char* Get_Edit_Buf() ABSL_ATTRIBUTE_LIFETIME_BOUND;
+  char* Get_Edit_Buf();
   char* Get_Overflow_Buf() ABSL_ATTRIBUTE_LIFETIME_BOUND { return OverflowBuf; }
-  void Clear_Overflow_Buf() { OverflowBuf[0] = 0; }
+  void Clear_Overflow_Buf() { base::At(OverflowBuf, 0) = 0; }
   [[nodiscard]] int Is_Edit() const { return IsEdit; }
   void Set_Edit_Color(PlayerColorType color);
 
@@ -183,8 +186,8 @@ class MessageListClass {
   //.....................................................................
   // Message parsing
   //.....................................................................
-  static int Trim_Message(char* dest, char* src, int min_chars, int max_chars,
-                          int scandir);
+  static int Trim_Message(std::span<char> dest, std::span<char> src,
+                          int min_chars, int max_chars, int scandir);
 
   //.....................................................................
   // Compute the y-coord of the message list

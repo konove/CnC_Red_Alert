@@ -71,9 +71,13 @@
 
 #include <algorithm>
 #include <array>
+#include <cstddef>
 #include <cstdint>
+#include <span>
+#include <utility>
 
 #include "base/array.h"
+#include "base/buffer.h"
 #include "base/numeric.h"
 #include "port/unaligned.h"
 #include "td/combuf.h"
@@ -679,9 +683,9 @@ int IPXManagerClass::Connection_Index(int id) {
  * HISTORY:                                                                *
  *   01/25/1995 BR : Created.                                              *
  *=========================================================================*/
-int IPXManagerClass::Send_Global_Message(void* buf, int buflen, int ack_req,
+int IPXManagerClass::Send_Global_Message(std::span<const std::byte> buf,
+                                         int buflen, int ack_req,
                                          IPXAddressClass* address) {
-
   /*
   ------------ Error if IPX not installed or not Listening -----------------
   */
@@ -719,7 +723,7 @@ int IPXManagerClass::Send_Global_Message(void* buf, int buflen, int ack_req,
  * HISTORY:                                                                *
  *   01/25/1995 BR : Created.                                              *
  *=========================================================================*/
-int IPXManagerClass::Get_Global_Message(void* buf, int* buflen,
+int IPXManagerClass::Get_Global_Message(std::span<std::byte> buf, int* buflen,
                                         IPXAddressClass* address,
                                         uint16_t* product_id) {
   /*
@@ -754,7 +758,8 @@ int IPXManagerClass::Get_Global_Message(void* buf, int* buflen,
  * HISTORY:                                                                *
  *   01/25/1995 BR : Created.                                              *
  *=========================================================================*/
-int IPXManagerClass::Send_Private_Message(void* buf, int buflen, int ack_req,
+int IPXManagerClass::Send_Private_Message(std::span<const std::byte> buf,
+                                          int buflen, int ack_req,
                                           int conn_id) {
   int i = 0;            // loop counter
   int connect_idx = 0;  // index of channel to send to, if specified
@@ -873,7 +878,8 @@ int IPXManagerClass::Send_Private_Message(void* buf, int buflen, int ack_req,
  * HISTORY:                                                                *
  *   01/25/1995 BR : Created.                                              *
  *=========================================================================*/
-int IPXManagerClass::Get_Private_Message(void* buf, int* buflen, int* conn_id) {
+int IPXManagerClass::Get_Private_Message(std::span<std::byte> buf, int* buflen,
+                                         int* conn_id) {
   int i = 0;
   int rc = 0;
   int c_id = 0;
@@ -980,10 +986,11 @@ int IPXManagerClass::Service() {
   // returned.
   IPXHeaderType header_storage{};  // Copy of the received IPX header.
   IPXHeaderType* cur_header_buf = nullptr;
-  const unsigned char* cur_data_buf = nullptr;
+  std::span<std::byte> cur_data_buf;
 
   if (Winsock.Get_Connected()) {
-    while ((recv_length = Winsock.Read(temp_receive_buffer, 1024)) != 0) {
+    while ((recv_length = Winsock.Read(base::ObjectBytes(temp_receive_buffer),
+                                       1024)) != 0) {
 #ifdef VIRTUAL_SUBNET_SERVER
       /*
       ** Get a pointer to the data header and swap the bit mask
@@ -992,7 +999,7 @@ int IPXManagerClass::Service() {
       unsigned short* swapptr = (unsigned short*)cur_header_buf;
       *swapptr = ntohs(*swapptr);
 
-      cur_data_buf = &temp_receive_buffer[2];
+      cur_data_buf = base::ObjectBytes(temp_receive_buffer).subspan(2);
 
       /*.....................................................................
       Compute the length of the packet (byte-swap the length in the IPX hdr)
@@ -1000,7 +1007,7 @@ int IPXManagerClass::Service() {
       packetlen = recv_length - 2;
 #else  // VIRTUAL_SUBNET_SERVER
       cur_header_buf = nullptr;
-      cur_data_buf = &temp_receive_buffer[0];
+      cur_data_buf = base::ObjectBytes(temp_receive_buffer);
 
       /*.....................................................................
       Compute the length of the packet (byte-swap the length in the IPX hdr)
@@ -1018,12 +1025,17 @@ int IPXManagerClass::Service() {
       Examine the Magic Number of the received packet to determine if this
       packet goes into the Global Queue, or into one of the Private Queues
       .....................................................................*/
+      if (std::cmp_less(packetlen, sizeof(CommHeaderType)) ||
+          base::ToSize(packetlen) > cur_data_buf.size()) {
+        continue;
+      }
+      cur_data_buf = cur_data_buf.first(base::ToSize(packetlen));
       packet_storage = port::ReadUnaligned<CommHeaderType>(cur_data_buf);
       if (packet->MagicNumber == GlobalChannel->Magic_Num()) {
         /*..................................................................
         Put the packet in the Global Queue
         ..................................................................*/
-        if (!GlobalChannel->Receive_Packet(packet, packetlen, &address)) {
+        if (!GlobalChannel->Receive_Packet(cur_data_buf, packetlen, &address)) {
           ReceiveOverflows++;
         }
       } else {
@@ -1038,7 +1050,8 @@ int IPXManagerClass::Service() {
 #else   // VIRTUAL_SUBNET_SERVER
             if (base::At(Connection, i)->Address == address) {
 #endif  // VIRTUAL_SUBNET_SERVER
-              if (!base::At(Connection, i)->Receive_Packet(packet, packetlen)) {
+              if (!base::At(Connection, i)
+                       ->Receive_Packet(cur_data_buf, packetlen)) {
                 ReceiveOverflows++;
               }
               break;
@@ -1048,10 +1061,12 @@ int IPXManagerClass::Service() {
       }
     }
   } else {
-    while (IPX_Get_Outstanding_Buffer95(&temp_receive_buffer[0])) {
-      header_storage = port::ReadUnaligned<IPXHeaderType>(temp_receive_buffer);
+    while (IPX_Get_Outstanding_Buffer95(&base::At(temp_receive_buffer, 0))) {
+      header_storage = port::ReadUnaligned<IPXHeaderType>(
+          base::ObjectBytes(temp_receive_buffer));
       cur_header_buf = &header_storage;
-      cur_data_buf = &temp_receive_buffer[sizeof(IPXHeaderType)];
+      cur_data_buf =
+          base::ObjectBytes(temp_receive_buffer).subspan(sizeof(IPXHeaderType));
 
       /*.....................................................................
       Compute the length of the packet (byte-swap the length in the IPX hdr)
@@ -1069,13 +1084,18 @@ int IPXManagerClass::Service() {
       Examine the Magic Number of the received packet to determine if this
       packet goes into the Global Queue, or into one of the Private Queues
       .....................................................................*/
+      if (std::cmp_less(packetlen, sizeof(CommHeaderType)) ||
+          base::ToSize(packetlen) > cur_data_buf.size()) {
+        continue;
+      }
+      cur_data_buf = cur_data_buf.first(base::ToSize(packetlen));
       packet_storage = port::ReadUnaligned<CommHeaderType>(cur_data_buf);
 
       if (packet->MagicNumber == GlobalChannel->Magic_Num()) {
         /*..................................................................
         Put the packet in the Global Queue
         ..................................................................*/
-        if (!GlobalChannel->Receive_Packet(packet, packetlen, &address)) {
+        if (!GlobalChannel->Receive_Packet(cur_data_buf, packetlen, &address)) {
           ReceiveOverflows++;
         }
       } else {
@@ -1085,7 +1105,8 @@ int IPXManagerClass::Service() {
           ..................................................................*/
           for (i = 0; i < NumConnections; i++) {
             if (base::At(Connection, i)->Address == address) {
-              if (!base::At(Connection, i)->Receive_Packet(packet, packetlen)) {
+              if (!base::At(Connection, i)
+                       ->Receive_Packet(cur_data_buf, packetlen)) {
                 ReceiveOverflows++;
               }
               break;
@@ -1140,7 +1161,7 @@ int IPXManagerClass::Service() {
       /*..................................................................
       Put the packet in the Global Queue
       ..................................................................*/
-      if (!GlobalChannel->Receive_Packet(packet, packetlen, &address)) {
+      if (!GlobalChannel->Receive_Packet(cur_data_buf, packetlen, &address)) {
         ReceiveOverflows++;
       }
     } else {
@@ -1150,7 +1171,7 @@ int IPXManagerClass::Service() {
         ..................................................................*/
         for (i = 0; i < NumConnections; i++) {
           if (Connection[i]->Address == address) {
-            if (!Connection[i]->Receive_Packet(packet, packetlen)) {
+            if (!Connection[i]->Receive_Packet(cur_data_buf, packetlen)) {
               ReceiveOverflows++;
             }
             break;
@@ -1186,7 +1207,7 @@ int IPXManagerClass::Service() {
   from being clogged by one un-ACK'd outgoing packet.
   ------------------------------------------------------------------------*/
   if (GlobalChannel && (!GlobalChannel->Service())) {
-    GlobalChannel->Queue->UnQueue_Send(nullptr, nullptr, 0);
+    GlobalChannel->Queue->UnQueue_Send({}, {}, 0);
     rc = 0;
   }
 
@@ -1534,13 +1555,15 @@ void IPXManagerClass::Reset_Response_Time() {
  * HISTORY:                                                                *
  *   05/04/1995 BRR : Created.                                             *
  *=========================================================================*/
-void* IPXManagerClass::Oldest_Send() {
+std::span<const std::byte> IPXManagerClass::Oldest_Send() {
   std::array<CommBufferClass*, CONNECT_MAX> queues{};
   for (int i = 0; i < NumConnections; i++) {
     queues[base::ToSize(i)] = base::At(Connection, i)->Queue;
   }
   const SendQueueType* oldest = ConnectionClass::OldestUnackedSend(queues);
-  return oldest != nullptr ? oldest->Buffer : nullptr;
+  return oldest != nullptr
+             ? std::span(oldest->Buffer).first(base::ToSize(oldest->BufLen))
+             : std::span<const std::byte>{};
 
 } /* end of Oldest_Send */
 
@@ -1810,7 +1833,7 @@ int IPXManagerClass::Alloc_RealMode_Mem() {
   Copy the Real-mode code into our memory buffer
   ------------------------------------------------------------------------*/
   p = (char*)(((long)Segment) << 4);
-  memcpy(p, realmode, realmodelen);
+  base::CopyBytes(p, realmode, realmodelen);
   p += realmodelen;
 
   /*------------------------------------------------------------------------

@@ -72,22 +72,22 @@
 #include <cstring>
 #include <ctime>
 #include <iterator>
-#include <memory>
 #include <span>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "absl/log/log.h"
 #include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/buffer.h"
-#include "base/numeric.h"
 #include "base/types.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "port/platform.h"
 #include "port/random_seed.h"
+#include "port/safe_string.h"
 #include "port/tokenizer.h"
 #include "ra/_wsproto.h"
 #include "ra/ccini.h"
@@ -148,7 +148,6 @@
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 #include "tech/archive.h"
-#include "tech/bench.h"
 #include "tech/buff.h"
 #include "tech/crc.h"
 #include "tech/file_sink.h"
@@ -198,6 +197,8 @@ static bool Save_Recording_Values(GameFile& file);
 #include "ra/wol_main.h"
 #include "ra/wolapiob.h"
 
+static std::vector<uint8_t> shape_storage;
+
 /***********************************************************************************************
  * Load_Prolog_Page -- Loads the special pre-prolog "please wait" page. *
  *                                                                                             *
@@ -244,7 +245,7 @@ bool Init_Game(int /*unused*/, char* /*unused*/[]) {
   */
   if constexpr (config::kCheatKeysEnabled) {
     if (Processor() >= 2) {
-      Benches = new Benchmark[magic_enum::enum_count<BenchType>()];
+      Benches.resize(magic_enum::enum_count<BenchType>());
     }
   }
 
@@ -350,10 +351,14 @@ bool Init_Game(int /*unused*/, char* /*unused*/[]) {
     VisiblePage.Clear();
     //		Mono_Printf("Playing Intro\n");
     Play_Intro();
-    memset(CurrentPalette, 0x01, 768);
+    base::FillBytes(
+        std::as_writable_bytes(PaletteClass::CurrentPalette.bytes()), 0x01,
+        768);
     WhitePalette.Set();
   } else {
-    memset(CurrentPalette, 0x01, 768);
+    base::FillBytes(
+        std::as_writable_bytes(PaletteClass::CurrentPalette.bytes()), 0x01,
+        768);
   }
 
   /*
@@ -489,7 +494,7 @@ bool Select_Game(bool /*fade*/) {
   PlayerLoses = false;
   Session.ObiWan = false;
   Debug_Unshroud = false;
-  Map.Set_Cursor_Shape(nullptr);
+  Map.Set_Cursor_Shape({});
   Map.PendingObjectPtr = nullptr;
   Map.PendingObject = nullptr;
   Map.PendingHouse = HOUSE_NONE;
@@ -1245,7 +1250,7 @@ static void Play_Intro(bool sequenced) {
  *                                                                                             *
  * HISTORY: * 12/20/1994 JLB : Created. *
  *=============================================================================================*/
-GraphicBufferClass VQ640(640, 400, nullptr);
+GraphicBufferClass VQ640(640, 400, {});
 void Anim_Init() {
   /* Configure player with INI file */
   VQA_DefaultConfig(&AnimControl);
@@ -1262,11 +1267,11 @@ void Anim_Init() {
   AnimControl.EventHandler = VQ_Event_Handler;
   AnimControl.ImageWidth = 320;
   AnimControl.ImageHeight = 200;
-  AnimControl.ImageBuf = SysMemPage.Get_Offset();
+  AnimControl.ImageBuf = SysMemPage.Get_Bytes();
   if (IsVQ640) {
     AnimControl.ImageWidth = 640;
     AnimControl.ImageHeight = 400;
-    AnimControl.ImageBuf = VQ640.Get_Offset();
+    AnimControl.ImageBuf = VQ640.Get_Bytes();
   }
   AnimControl.Vmode = 0;
   AnimControl.OptionFlags |= VQAOPTF_CAPTIONS | VQAOPTF_EVA;
@@ -1300,7 +1305,7 @@ void Anim_Init() {
  *                                                                                             *
  * HISTORY: * 03/18/1995 JLB : Created. *
  *=============================================================================================*/
-bool Parse_Command_Line(int argc, char* argv[]) {
+bool Parse_Command_Line(std::span<char*> arguments) {
   /*
   **	Parse the command line and set globals to reflect the parameters
   **	passed in.
@@ -1311,32 +1316,37 @@ bool Parse_Command_Line(int argc, char* argv[]) {
   MapEditorActive = false;
   Debug_Unshroud = false;
 
-  for (int index = 1; index < argc; index++) {
-    const std::string original_arg = argv[index];  // Copy for preserving case.
-    char* string = strupr(argv[index]);      // Pointer to argument.
+  for (auto* const argument :
+       arguments.subspan(std::min(size_t{1}, arguments.size()))) {
+    const std::string original_arg = argument;  // Copy for preserving case.
+    const std::string_view string = strupr(argument);
 
     /*
     **	Print usage text only if requested.
     */
-    if (stricmp("/?", string) == 0 || stricmp("-?", string) == 0 ||
-        stricmp("-h", string) == 0 || stricmp("/h", string) == 0) {
+    if (port::CompareIgnoreCase("/?", string) == 0 ||
+        port::CompareIgnoreCase("-?", string) == 0 ||
+        port::CompareIgnoreCase("-h", string) == 0 ||
+        port::CompareIgnoreCase("/h", string) == 0) {
       /*
       **	Unrecognized command line parameter... Display usage
       **	and then exit.
       */
-      puts(kLanguageText.options);
+      absl::PrintF("%s\n", kLanguageText.options);
       return false;
     }
 
     bool processed = true;
-    const uint32_t ob = Obfuscate(string);
+    const uint32_t ob = Obfuscate(argument);
 
     /*
     **	Check to see if the parameter is a cheat enabling one.
     */
-    const uint32_t* optr = &CheatCodes[0];
-    while (*optr) {
-      if (*optr++ == ob) {
+    for (const uint32_t code : CheatCodes) {
+      if (code == 0) {
+        break;
+      }
+      if (code == ob) {
         Debug_Playtest = true;
         Debug_Flag = true;
         break;
@@ -1346,9 +1356,11 @@ bool Parse_Command_Line(int argc, char* argv[]) {
     /*
     **	Check to see if the parameter is a cheat enabling one.
     */
-    optr = &PlayCodes[0];
-    while (*optr) {
-      if (*optr++ == ob) {
+    for (const uint32_t code : PlayCodes) {
+      if (code == 0) {
+        break;
+      }
+      if (code == ob) {
         Debug_Playtest = true;
         Debug_Flag = true;
         break;
@@ -1359,9 +1371,11 @@ bool Parse_Command_Line(int argc, char* argv[]) {
     **	Check to see if the parameter is a scenario editor
     **	enabling one.
     */
-    optr = &EditorCodes[0];
-    while (*optr) {
-      if (*optr++ == ob) {
+    for (const uint32_t code : EditorCodes) {
+      if (code == 0) {
+        break;
+      }
+      if (code == ob) {
         MapEditorActive = true;
         Debug_Unshroud = true;
         Debug_Flag = true;
@@ -1399,7 +1413,7 @@ bool Parse_Command_Line(int argc, char* argv[]) {
       /*
       **	Scenario Editor Mode
       */
-      if (stricmp(string, "-CHECKMAP") == 0) {
+      if (port::CompareIgnoreCase(string, "-CHECKMAP") == 0) {
         Debug_Check_Map = true;
         continue;
       }
@@ -1408,7 +1422,7 @@ bool Parse_Command_Line(int argc, char* argv[]) {
     /*
     **	File search path override.
     */
-    if (strstr(string, "-CD")) {
+    if (string.contains("-CD")) {
       // Use original arg to preserve case-sensitive path on Unix systems
       SearchPaths::Add(original_arg.substr(3));
       continue;
@@ -1417,7 +1431,7 @@ bool Parse_Command_Line(int argc, char* argv[]) {
     /*
     **	Specify destination connection for network play
     */
-    if (strstr(string, "-DESTNET")) {
+    if (string.contains("-DESTNET")) {
       NetNumType net;
       NetNodeType node;
 
@@ -1425,7 +1439,8 @@ bool Parse_Command_Line(int argc, char* argv[]) {
       ** Scan the command-line string, pulling off each address piece
       */
       int i = 0;
-      port::Tokenizer tokens(string + 8, ".");
+      port::Tokenizer tokens(port::MutableCString(argument).subspan(8).data(),
+                             ".");
       while (const char* p = tokens.Next()) {
         const auto byte = tech::ParseHex<uint8_t>(p);
         if (!byte || i >= 10) {
@@ -1455,9 +1470,9 @@ bool Parse_Command_Line(int argc, char* argv[]) {
     /*
     **	Specify socket ID, as an offset from 0x4000.
     */
-    if (strstr(string, "-SOCKET")) {
-      const auto offset =
-          tech::ParseInteger<int>(string + std::string_view("-SOCKET").size());
+    if (string.contains("-SOCKET")) {
+      const auto offset = tech::ParseInteger<int>(
+          string.substr(std::string_view("-SOCKET").size()));
       if (offset && *offset >= 0 && *offset < 0x4000) {
         Ipx.Set_Socket(static_cast<uint16_t>(*offset + 0x4000));
       }
@@ -1467,7 +1482,7 @@ bool Parse_Command_Line(int argc, char* argv[]) {
     /*
     **	Set the Net Stealth option
     */
-    if (strstr(string, "-STEALTH")) {
+    if (string.contains("-STEALTH")) {
       Session.NetStealth = true;
       continue;
     }
@@ -1475,7 +1490,7 @@ bool Parse_Command_Line(int argc, char* argv[]) {
     /*
     **	Set the Net Protection option
     */
-    if (strstr(string, "-MESSAGES")) {
+    if (string.contains("-MESSAGES")) {
       Session.NetProtect = false;
       continue;
     }
@@ -1483,7 +1498,7 @@ bool Parse_Command_Line(int argc, char* argv[]) {
     /*
     **	Allow "attract" mode
     */
-    if (strstr(string, "-ATTRACT")) {
+    if (string.contains("-ATTRACT")) {
       Session.Attract = true;
       continue;
     }
@@ -1491,16 +1506,16 @@ bool Parse_Command_Line(int argc, char* argv[]) {
     /*
     ** Set screen to 640x480 instead of 640x400
     */
-    if (strstr(string, "-480")) {
+    if (string.contains("-480")) {
       ScreenHeight = 480;
       continue;
     }
 
     if constexpr (config::kCheatKeysEnabled) {
       // Specify the random number seed (for debugging)
-      if (strstr(string, "-SEED")) {
+      if (string.contains("-SEED")) {
         CustomSeed = tech::ParseInteger<uint16_t>(
-                         string + std::string_view("-SEED").size())
+                         string.substr(std::string_view("-SEED").size()))
                          .value_or(CustomSeed);
         continue;
       }
@@ -1516,24 +1531,25 @@ bool Parse_Command_Line(int argc, char* argv[]) {
     */
     // Developer switches for save-game checks; see Select_Game and
     // Main_Loop.
-    if (strncmp(string, "-LOADGAME", 9) == 0) {
-      DebugLoadGame = tech::ParseInteger<int>(string + 9).value_or(-1);
+    if (string.starts_with("-LOADGAME")) {
+      DebugLoadGame = tech::ParseInteger<int>(string.substr(9)).value_or(-1);
       continue;
     }
-    if (strncmp(string, "-QUITFRAME", 10) == 0) {
-      DebugQuitAtFrame = tech::ParseInteger<int>(string + 10).value_or(-1);
+    if (string.starts_with("-QUITFRAME")) {
+      DebugQuitAtFrame =
+          tech::ParseInteger<int>(string.substr(10)).value_or(-1);
       continue;
     }
-    if (strncmp(string, "-NEWGAME", 8) == 0) {
-      DebugNewGame = string + 8;
+    if (string.starts_with("-NEWGAME")) {
+      DebugNewGame = string.substr(8);
       continue;
     }
-    if (strncmp(string, "-SAVESLOT", 9) == 0) {
-      DebugSaveSlot = tech::ParseInteger<int>(string + 9).value_or(-1);
+    if (string.starts_with("-SAVESLOT")) {
+      DebugSaveSlot = tech::ParseInteger<int>(string.substr(9)).value_or(-1);
       continue;
     }
 
-    if (strstr(string, "-NOMOUSEGRAB")) {
+    if (string.contains("-NOMOUSEGRAB")) {
       NoMouseGrab = true;
     }
 
@@ -1541,10 +1557,7 @@ bool Parse_Command_Line(int argc, char* argv[]) {
     **	Special command line control parsing.
     */
     if (absl::StartsWithIgnoreCase(string, "-X")) {
-      string += std::string_view("-X").size();
-      while (*string) {
-        const char code = *string++;
-
+      for (const char code : string.substr(2)) {
         if constexpr (config::kCheatKeysEnabled) {
           switch (code) {
             case 'M':
@@ -1573,7 +1586,7 @@ bool Parse_Command_Line(int argc, char* argv[]) {
         if (code == 'Q') {
           Debug_Quiet = true;
         } else {
-          puts(kLanguageText.invalid_option);
+          absl::PrintF("%s\n", kLanguageText.invalid_option);
           return false;
         }
       }
@@ -1626,8 +1639,7 @@ uint32_t Obfuscate(const char* string) {
   **	Copy key phrase into a working buffer. This hides any transformation
   *done *	to the string.
   */
-  strncpy(buffer, string, sizeof(buffer));
-  buffer[sizeof(buffer) - 1] = '\0';
+  port::SafeCopy(buffer, string);
   int length = static_cast<int>(std::string_view(buffer).size());
 
   /*
@@ -1901,18 +1913,18 @@ static void Init_Color_Remaps() {
   */
 
   SysMemPage.Clear();
-  Load_Picture("PALETTE.CPS", SysMemPage, SysMemPage, nullptr, BM_DEFAULT);
+  Load_Picture("PALETTE.CPS", SysMemPage, SysMemPage, {}, BM_DEFAULT);
   SysMemPage.Blit(HidPage);
   for (const PlayerColorType pcolor :
        magic_enum::enum_values<PlayerColorType>()) {
-    unsigned char* ptr = ColorRemaps[pcolor].RemapTable;
+    auto& ptr = ColorRemaps[pcolor].RemapTable;
 
     for (int color = 0; color < 256; color++) {
-      ptr[color] = static_cast<unsigned char>(color);
+      base::At(ptr, color) = static_cast<unsigned char>(color);
     }
 
     for (int index = 0; index < 16; index++) {
-      ptr[HidPage.Get_Pixel(index, 0)] = static_cast<unsigned char>(
+      base::At(ptr, HidPage.Get_Pixel(index, 0)) = static_cast<unsigned char>(
           HidPage.Get_Pixel(index, static_cast<int>(pcolor)));
     }
     for (int index = 0; index < 6; index++) {
@@ -2064,9 +2076,9 @@ static void Init_Heaps() {
   **	be played.
   */
   for (int index = 0; index < std::ssize(SpeechBuffer); index++) {
-    base::At(SpeechBuffer, index) = new char[kSpeechBufferSize];
+    base::At(SpeechBuffer, index).resize(kSpeechBufferSize);
     base::At(SpeechRecord, index) = VOX_NONE;
-    assert(SpeechBuffer[index] != nullptr);
+    assert(!base::At(SpeechBuffer, index).empty());
   }
 
   /*
@@ -2099,7 +2111,7 @@ static void Init_Expansion_Files() {
     do {
       // scores shouldn't be loaded here but may be found if main has been
       // extracted
-      if (stricmp(state.name, "scores.mix") == 0) {
+      if (port::CompareIgnoreCase(state.name, "scores.mix") == 0) {
         continue;
       }
       MixArchive::Register(state.name, &FastKey);
@@ -2170,20 +2182,20 @@ static void Init_One_Time_Systems() {
  * HISTORY: * 06/03/1996 JLB : Created. *
  *=============================================================================================*/
 static void Init_Fonts() {
-  Metal12FontPtr = MixArchive::Retrieve("12METFNT.FNT");
-  MapFontPtr = MixArchive::Retrieve("HELP.FNT");
-  Font6Ptr = MixArchive::Retrieve("6POINT.FNT");
-  GradFont6Ptr = MixArchive::Retrieve("GRAD6FNT.FNT");
-  EditorFont = MixArchive::Retrieve("EDITFNT.FNT");
-  Font8Ptr = MixArchive::Retrieve("8POINT.FNT");
+  Metal12FontPtr = MixArchive::RetrieveData("12METFNT.FNT");
+  MapFontPtr = MixArchive::RetrieveData("HELP.FNT");
+  Font6Ptr = MixArchive::RetrieveData("6POINT.FNT");
+  GradFont6Ptr = MixArchive::RetrieveData("GRAD6FNT.FNT");
+  EditorFont = MixArchive::RetrieveData("EDITFNT.FNT");
+  Font8Ptr = MixArchive::RetrieveData("8POINT.FNT");
   FontPtr = Font8Ptr;
   Set_Font(FontPtr);
-  Font3Ptr = MixArchive::Retrieve("3POINT.FNT");
-  ScoreFontPtr = MixArchive::Retrieve("SCOREFNT.FNT");
-  FontLEDPtr = MixArchive::Retrieve("LED.FNT");
-  VCRFontPtr = MixArchive::Retrieve("VCR.FNT");
+  Font3Ptr = MixArchive::RetrieveData("3POINT.FNT");
+  ScoreFontPtr = MixArchive::RetrieveData("SCOREFNT.FNT");
+  FontLEDPtr = MixArchive::RetrieveData("LED.FNT");
+  VCRFontPtr = MixArchive::RetrieveData("VCR.FNT");
   TypeFontPtr =
-      MixArchive::Retrieve("8POINT.FNT");  //("TYPE.FNT"); //VG 10/17/96
+      MixArchive::RetrieveData("8POINT.FNT");  //("TYPE.FNT"); //VG 10/17/96
 }
 
 /***********************************************************************************************
@@ -2515,7 +2527,8 @@ static void Bootstrap() {
   **	and ShapeBufferSize to these values, so it can be accessed for other
   **	purposes.
   */
-  Set_Shape_Buffer(new unsigned char[kShapeBufferSize], kShapeBufferSize);
+  shape_storage.resize(kShapeBufferSize);
+  Set_Shape_Buffer(shape_storage);
 
   // The .ENG suffix is the same in every language build: localized releases
   // ship a translated CONQUER.ENG under the same name.
@@ -2525,8 +2538,8 @@ static void Bootstrap() {
   /*
   **	Default palette initialization.
   */
-  const void* palette_data = MixArchive::Retrieve("TEMPERAT.PAL");
-  if (!palette_data) {
+  const auto palette_data = MixArchive::RetrieveData("TEMPERAT.PAL");
+  if (palette_data.empty()) {
     // Missing data files are a user setup problem, not a bug: report and exit
     // quietly rather than abort with a stack trace.
     LOG(QFATAL) << "Cannot find TEMPERAT.PAL: game data files not found. "
@@ -2534,7 +2547,8 @@ static void Bootstrap() {
                    "-CD\"<Steam library>/steamapps/common/Command & Conquer "
                    "Red Alert\"";
   }
-  memmove(&GamePalette[0], palette_data, 768L);
+  base::CopyBytes(std::as_writable_bytes(GamePalette.bytes()), palette_data,
+                  768);
   WhitePalette[0] = BlackPalette[0];
   //	GamePalette.Set();
 
@@ -2576,8 +2590,8 @@ static void Init_Mouse() {
   ** to set one of our own.
   */
   if (MouseInstalled) {
-    const void* temp_mouse_shapes = MixArchive::Retrieve("MOUSE.SHP");
-    if (temp_mouse_shapes) {
+    const auto temp_mouse_shapes = MixArchive::RetrieveData("MOUSE.SHP");
+    if (!temp_mouse_shapes.empty()) {
       Set_Mouse_Cursor(0, 0, Extract_Shape(temp_mouse_shapes, 0));
       while (Get_Mouse_State() > 1) {
         Show_Mouse();
@@ -2634,32 +2648,23 @@ static void Init_Bulk_Data() {
   INIClass ini;
   GameFile fc("TUTORIAL.INI");
   ini.Load(fc);
-  int totallen = 0;
-  for (int index = 0; index < std::ssize(TutorialTextOffsets); index++) {
+  TutorialTextData.clear();
+  for (int index = 0; index < std::ssize(TutorialTextOffsets); ++index) {
     base::At(TutorialTextOffsets, index) = 0xFFFF;
-
     char buffer[128];
     char num[10];
     absl::SNPrintF(num, sizeof(num), "%d", index);
     if (ini.Get_String("Tutorial", num, "", buffer, sizeof(buffer))) {
-      totallen += static_cast<int>(std::string_view(buffer).size()) + 1;
+      const auto text = std::string_view(buffer);
+      if (TutorialTextData.size() + text.size() + 1 > 0xFFFF) {
+        break;
+      }
+      base::At(TutorialTextOffsets, index) =
+          static_cast<uint16_t>(TutorialTextData.size());
+      TutorialTextData.insert(TutorialTextData.end(), text.begin(), text.end());
+      TutorialTextData.push_back('\0');
     }
   }
-
-  // now allocate and copy
-  char* const text_data = new char[base::ToSize(totallen)];
-  char* textptr = text_data;
-
-  for (int index = 0; index < std::ssize(TutorialTextOffsets); index++) {
-    char num[10];
-    absl::SNPrintF(num, sizeof(num), "%d", index);
-    const int textoffset = static_cast<int>(textptr - text_data);
-    if (ini.Get_String("Tutorial", num, "", textptr, totallen - textoffset)) {
-      base::At(TutorialTextOffsets, index) = static_cast<uint16_t>(textoffset);
-      textptr += std::string_view(textptr).size() + 1;
-    }
-  }
-  TutorialTextData = text_data;
 
   /*
   **	Perform one-time game system initializations.
@@ -2684,7 +2689,7 @@ static void Init_Bulk_Data() {
  *=============================================================================================*/
 static void Init_Keys() {
   std::string keys = GetKeys();
-  MemoryFile file(keys.data(), std::ssize(keys));
+  MemoryFile file(std::as_writable_bytes(std::span(keys)));
   INIClass ini;
   ini.Load(file);
 
@@ -2780,13 +2785,16 @@ void Extract(const char* filename, const char* outname) {
   inFile.Open();
   outFile.Open(FileAccess::kWrite);
 
-  const auto buffer = std::make_unique<char[]>(32768);
+  std::array<char, 32768> buffer{};
 
   int64_t size = inFile.Size();
 
   while (size > 0) {
-    const base::ssize bytes = inFile.Read(buffer.get(), 32768);
-    outFile.Write(buffer.get(), bytes);
+    const base::ssize bytes = inFile.Read(std::span(buffer), 32768);
+    if (bytes <= 0) {
+      break;
+    }
+    outFile.Write(std::span(buffer), bytes);
     size -= bytes;
   }
 }

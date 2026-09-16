@@ -52,6 +52,7 @@
 #include <cstring>
 
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
@@ -233,15 +234,16 @@ int MapEditClass::New_Scenario() {
   /*
   **	Set the Home & Reinforcement Cells to the center of the map
   */
-  Scen.Waypoint[ScenarioClass::kReinforcementWaypoint] =
+  base::At(Scen.Waypoint, ScenarioClass::kReinforcementWaypoint) =
       XY_Cell(MapCellX + (MapCellWidth / 2), MapCellY + (MapCellHeight / 2));
-  Scen.Waypoint[ScenarioClass::kHomeWaypoint] =
+  base::At(Scen.Waypoint, ScenarioClass::kHomeWaypoint) =
       XY_Cell(MapCellX + (MapCellWidth / 2), MapCellY + (MapCellHeight / 2));
   (*this)[TacticalCoord].IsWaypoint = true;
   Flag_Cell(Coord_Cell(TacticalCoord));
 
-  Set_Tactical_Position(Cell_Coord(static_cast<CELL>(
-      Scen.Waypoint[ScenarioClass::kHomeWaypoint] - (MAP_CELL_W * 8) - 10)));
+  Set_Tactical_Position(Cell_Coord(
+      static_cast<CELL>(base::At(Scen.Waypoint, ScenarioClass::kHomeWaypoint) -
+                        (MAP_CELL_W * 8) - 10)));
   ScenarioInit--;
 
   return 0;
@@ -324,9 +326,9 @@ int MapEditClass::Load_Scenario() {
     **	Read the INI
     */
     if (!Read_Scenario_INI(Scen.ScenarioName)) {
-      if (Scen.Scenario < 20 && Scen.ScenarioName[2] == 'G') {
+      if (Scen.Scenario < 20 && base::At(Scen.ScenarioName, 2) == 'G') {
         WWMessageBox().Process("Please insert Red Alert CD1");
-      } else if (Scen.Scenario < 20 && Scen.ScenarioName[2] == 'U') {
+      } else if (Scen.Scenario < 20 && base::At(Scen.ScenarioName, 2) == 'U') {
         WWMessageBox().Process("Please insert Red Alert CD2");
       } else {
         WWMessageBox().Process("Unable to read scenario!");
@@ -625,16 +627,16 @@ int MapEditClass::Load_Scenario() {
     } else {
       const char first = static_cast<char>(scen_nump / 36);
       const char second = static_cast<char>(scen_nump % 36);
-      scen_buf[0] = static_cast<char>(first + 'A');
+      base::At(scen_buf, 0) = static_cast<char>(first + 'A');
       // Mono_Printf("picking map, scen# = %d, first = %c, second = %d
       // (numeric)\n",scen_nump,
       // scen_buf[0],second);Keyboard->Get();Keyboard->Get();
       if (second < 10) {
-        scen_buf[1] = static_cast<char>(second + '0');
+        base::At(scen_buf, 1) = static_cast<char>(second + '0');
       } else {
-        scen_buf[1] = static_cast<char>((second - 10) + 'A');
+        base::At(scen_buf, 1) = static_cast<char>((second - 10) + 'A');
       }
-      scen_buf[2] = 0;
+      base::At(scen_buf, 2) = 0;
     }
     editbtn.Set_Text(scen_buf, 5);
 
@@ -706,7 +708,7 @@ int MapEditClass::Load_Scenario() {
             break;
         }
       } else {
-        switch (Scen.ScenarioName[2]) {
+        switch (base::At(Scen.ScenarioName, 2)) {
           case 'G':
             gdibtn.Turn_On();
             break;
@@ -898,11 +900,11 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Save selections & return
     */
-    if (scen_buf[0] <= '9' && scen_buf[1] <= '9') {
+    if (base::At(scen_buf, 0) <= '9' && base::At(scen_buf, 1) <= '9') {
       scen_nump = tech::ParseInteger<int>(scen_buf).value_or(0);
     } else {
-      char first = scen_buf[0];
-      char second = scen_buf[1];
+      char first = base::At(scen_buf, 0);
+      char second = base::At(scen_buf, 1);
       if (first <= '9') {
         first -= '0';
       } else {
@@ -1285,9 +1287,13 @@ int MapEditClass::Load_Scenario() {
           **	Draw Home location
           */
           LogicPage->Put_Pixel(
-              kDBordX1 + Cell_X(Scen.Waypoint[ScenarioClass::kHomeWaypoint]) +
+              kDBordX1 +
+                  Cell_X(
+                      base::At(Scen.Waypoint, ScenarioClass::kHomeWaypoint)) +
                   1,
-              kDBordY1 + Cell_Y(Scen.Waypoint[ScenarioClass::kHomeWaypoint]) +
+              kDBordY1 +
+                  Cell_Y(
+                      base::At(Scen.Waypoint, ScenarioClass::kHomeWaypoint)) +
                   1,
               kWhite);
 
@@ -1578,27 +1584,31 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Clip Home Cell to new map size
     */
-    if (Cell_X(Scen.Waypoint[ScenarioClass::kHomeWaypoint]) < MapCellX) {
-      Scen.Waypoint[ScenarioClass::kHomeWaypoint] = XY_Cell(
-          MapCellX, Cell_Y(Scen.Waypoint[ScenarioClass::kHomeWaypoint]));
+    if (Cell_X(base::At(Scen.Waypoint, ScenarioClass::kHomeWaypoint)) <
+        MapCellX) {
+      base::At(Scen.Waypoint, ScenarioClass::kHomeWaypoint) = XY_Cell(
+          MapCellX,
+          Cell_Y(base::At(Scen.Waypoint, ScenarioClass::kHomeWaypoint)));
     }
 
-    if (Cell_X(Scen.Waypoint[ScenarioClass::kHomeWaypoint]) >
+    if (Cell_X(base::At(Scen.Waypoint, ScenarioClass::kHomeWaypoint)) >
         MapCellX + MapCellWidth - 1) {
-      Scen.Waypoint[ScenarioClass::kHomeWaypoint] =
-          XY_Cell(MapCellX + MapCellWidth - 1,
-                  Cell_Y(Scen.Waypoint[ScenarioClass::kHomeWaypoint]));
+      base::At(Scen.Waypoint, ScenarioClass::kHomeWaypoint) = XY_Cell(
+          MapCellX + MapCellWidth - 1,
+          Cell_Y(base::At(Scen.Waypoint, ScenarioClass::kHomeWaypoint)));
     }
 
-    if (Cell_Y(Scen.Waypoint[ScenarioClass::kHomeWaypoint]) < MapCellY) {
-      Scen.Waypoint[ScenarioClass::kHomeWaypoint] = XY_Cell(
-          Cell_X(Scen.Waypoint[ScenarioClass::kHomeWaypoint]), MapCellY);
+    if (Cell_Y(base::At(Scen.Waypoint, ScenarioClass::kHomeWaypoint)) <
+        MapCellY) {
+      base::At(Scen.Waypoint, ScenarioClass::kHomeWaypoint) =
+          XY_Cell(Cell_X(base::At(Scen.Waypoint, ScenarioClass::kHomeWaypoint)),
+                  MapCellY);
     }
 
-    if (Cell_Y(Scen.Waypoint[ScenarioClass::kHomeWaypoint]) >
+    if (Cell_Y(base::At(Scen.Waypoint, ScenarioClass::kHomeWaypoint)) >
         MapCellY + MapCellHeight - 1) {
-      Scen.Waypoint[ScenarioClass::kHomeWaypoint] =
-          XY_Cell(Cell_X(Scen.Waypoint[ScenarioClass::kHomeWaypoint]),
+      base::At(Scen.Waypoint, ScenarioClass::kHomeWaypoint) =
+          XY_Cell(Cell_X(base::At(Scen.Waypoint, ScenarioClass::kHomeWaypoint)),
                   MapCellY + MapCellHeight - 1);
     }
 
@@ -1704,8 +1714,8 @@ int MapEditClass::Load_Scenario() {
     DropListClass theaterbtn(kListTheater, theatertext, sizeof(theatertext) - 1,
                              TPF_EFNT | TPF_NOSHADOW, kDDialogX + 30,
                              kDDialogY + 30, 65, 8 * 5,
-                             MixArchive::Retrieve("EBTN-UP.SHP"),
-                             MixArchive::Retrieve("EBTN-DN.SHP"));
+                             MixArchive::RetrieveData("EBTN-UP.SHP"),
+                             MixArchive::RetrieveData("EBTN-DN.SHP"));
     for (const TheaterType t : magic_enum::enum_values<TheaterType>()) {
       theaterbtn.Add_Item(Theaters[t].Name);
     }
@@ -1838,8 +1848,8 @@ int MapEditClass::Load_Scenario() {
     DropListClass intro(kButtonIntro, introtext, sizeof(introtext),
                         TPF_EFNT | TPF_NOSHADOW, theaterbtn.X,
                         theaterbtn.Y + theaterbtn.Height + 24, 50, 7 * 10,
-                        MixArchive::Retrieve("EBTN-UP.SHP"),
-                        MixArchive::Retrieve("EBTN-DN.SHP"));
+                        MixArchive::RetrieveData("EBTN-UP.SHP"),
+                        MixArchive::RetrieveData("EBTN-DN.SHP"));
     intro.Add_Item("<none>");
     for (const VQType v : magic_enum::enum_values<VQType>()) {
       intro.Add_Item(VQName[v]);
@@ -1853,8 +1863,8 @@ int MapEditClass::Load_Scenario() {
     DropListClass briefing(kButtonBriefing, brieftext, sizeof(brieftext),
                            TPF_EFNT | TPF_NOSHADOW, intro.X + intro.Width + 10,
                            intro.Y, 50, 7 * 10,
-                           MixArchive::Retrieve("EBTN-UP.SHP"),
-                           MixArchive::Retrieve("EBTN-DN.SHP"));
+                           MixArchive::RetrieveData("EBTN-UP.SHP"),
+                           MixArchive::RetrieveData("EBTN-DN.SHP"));
     briefing.Add_Item("<none>");
     for (const VQType v : magic_enum::enum_values<VQType>()) {
       briefing.Add_Item(VQName[v]);
@@ -1865,8 +1875,8 @@ int MapEditClass::Load_Scenario() {
     DropListClass action(kButtonAction, actiontext, sizeof(actiontext),
                          TPF_EFNT | TPF_NOSHADOW,
                          briefing.X + briefing.Width + 10, briefing.Y, 50,
-                         7 * 10, MixArchive::Retrieve("EBTN-UP.SHP"),
-                         MixArchive::Retrieve("EBTN-DN.SHP"));
+                         7 * 10, MixArchive::RetrieveData("EBTN-UP.SHP"),
+                         MixArchive::RetrieveData("EBTN-DN.SHP"));
     action.Add_Item("<none>");
     for (const VQType v : magic_enum::enum_values<VQType>()) {
       action.Add_Item(VQName[v]);
@@ -1876,8 +1886,9 @@ int MapEditClass::Load_Scenario() {
     char wintext[kMaxFname + kMaxExt];
     DropListClass win(kButtonWin, wintext, sizeof(wintext),
                       TPF_EFNT | TPF_NOSHADOW, action.X + action.Width + 10,
-                      action.Y, 50, 7 * 10, MixArchive::Retrieve("EBTN-UP.SHP"),
-                      MixArchive::Retrieve("EBTN-DN.SHP"));
+                      action.Y, 50, 7 * 10,
+                      MixArchive::RetrieveData("EBTN-UP.SHP"),
+                      MixArchive::RetrieveData("EBTN-DN.SHP"));
     win.Add_Item("<none>");
     for (const VQType v : magic_enum::enum_values<VQType>()) {
       win.Add_Item(VQName[v]);
@@ -1887,8 +1898,8 @@ int MapEditClass::Load_Scenario() {
     char losetext[kMaxFname + kMaxExt];
     DropListClass lose(kButtonLose, losetext, sizeof(losetext),
                        TPF_EFNT | TPF_NOSHADOW, win.X + win.Width + 10, win.Y,
-                       50, 7 * 10, MixArchive::Retrieve("EBTN-UP.SHP"),
-                       MixArchive::Retrieve("EBTN-DN.SHP"));
+                       50, 7 * 10, MixArchive::RetrieveData("EBTN-UP.SHP"),
+                       MixArchive::RetrieveData("EBTN-DN.SHP"));
     lose.Add_Item("<none>");
     for (const VQType v : magic_enum::enum_values<VQType>()) {
       lose.Add_Item(VQName[v]);
@@ -1900,8 +1911,8 @@ int MapEditClass::Load_Scenario() {
     */
     ListClass housebtn(kButtonHouse, kDDialogX + 30, kDDialogY + 105, 55,
                        7 * 10, TPF_EFNT | TPF_NOSHADOW,
-                       MixArchive::Retrieve("EBTN-UP.SHP"),
-                       MixArchive::Retrieve("EBTN-DN.SHP"));
+                       MixArchive::RetrieveData("EBTN-UP.SHP"),
+                       MixArchive::RetrieveData("EBTN-DN.SHP"));
     for (const HousesType h : magic_enum::enum_values<HousesType>()) {
       housebtn.Add_Item(HouseTypeClass::As_Reference(h).IniName);
     }
@@ -1914,8 +1925,8 @@ int MapEditClass::Load_Scenario() {
     DropListClass basebtn(kButtonBase, basetext, sizeof(basetext),
                           TPF_EFNT | TPF_NOSHADOW, kDDialogX + 30,
                           kDDialogY + 80, 65, 7 * 10,
-                          MixArchive::Retrieve("EBTN-UP.SHP"),
-                          MixArchive::Retrieve("EBTN-DN.SHP"));
+                          MixArchive::RetrieveData("EBTN-UP.SHP"),
+                          MixArchive::RetrieveData("EBTN-DN.SHP"));
     for (const HousesType h : magic_enum::enum_values<HousesType>()) {
       basebtn.Add_Item(HouseTypeClass::As_Reference(h).IniName);
     }
@@ -1930,8 +1941,8 @@ int MapEditClass::Load_Scenario() {
     DropListClass themebtn(kButtonTheme, themetext, sizeof(themetext),
                            TPF_EFNT | TPF_NOSHADOW,
                            basebtn.X + basebtn.Width + 30, basebtn.Y, 85,
-                           7 * 10, MixArchive::Retrieve("EBTN-UP.SHP"),
-                           MixArchive::Retrieve("EBTN-DN.SHP"));
+                           7 * 10, MixArchive::RetrieveData("EBTN-UP.SHP"),
+                           MixArchive::RetrieveData("EBTN-DN.SHP"));
     themebtn.Add_Item("<none>");
     for (const ThemeType th : magic_enum::enum_values<ThemeType>()) {
       themebtn.Add_Item(ThemeClass::Full_Name(th));
@@ -1983,8 +1994,8 @@ int MapEditClass::Load_Scenario() {
     */
     ListClass sourcebtn(kButtonSource, housebtn.X + housebtn.Width + 15,
                         maxunit.Y + 20, 100, 7 * 4, TPF_EFNT | TPF_NOSHADOW,
-                        MixArchive::Retrieve("EBTN-UP.SHP"),
-                        MixArchive::Retrieve("EBTN-DN.SHP"));
+                        MixArchive::RetrieveData("EBTN-UP.SHP"),
+                        MixArchive::RetrieveData("EBTN-DN.SHP"));
     for (const SourceType source : magic_enum::enum_values<SourceType>()) {
       if (source > SOURCE_WEST) {
         break;
@@ -2009,8 +2020,8 @@ int MapEditClass::Load_Scenario() {
     */
     CheckListClass allies(kButtonAllies, techlevel.X + techlevel.Width + 5,
                           housebtn.Y, 65, 7 * 10, TPF_EFNT | TPF_NOSHADOW,
-                          MixArchive::Retrieve("EBTN-UP.SHP"),
-                          MixArchive::Retrieve("EBTN-DN.SHP"));
+                          MixArchive::RetrieveData("EBTN-UP.SHP"),
+                          MixArchive::RetrieveData("EBTN-DN.SHP"));
     for (const HousesType h : magic_enum::enum_values<HousesType>()) {
       allies.Add_Item(HouseTypeClass::As_Reference(h).IniName);
       if (hdata[house].Allies & base::Bit<uint32_t>(h)) {
@@ -2024,8 +2035,8 @@ int MapEditClass::Load_Scenario() {
     */
     CheckListClass control(kButtonControl, allies.X + allies.Width + 10,
                            housebtn.Y, 65, 7 * 10, TPF_EFNT | TPF_NOSHADOW,
-                           MixArchive::Retrieve("EBTN-UP.SHP"),
-                           MixArchive::Retrieve("EBTN-DN.SHP"));
+                           MixArchive::RetrieveData("EBTN-UP.SHP"),
+                           MixArchive::RetrieveData("EBTN-DN.SHP"));
     for (const HousesType h : magic_enum::enum_values<HousesType>()) {
       control.Add_Item(HouseTypeClass::As_Reference(h).IniName);
       if (HouseClass::As_Pointer(h)->IsPlayerControl) {
@@ -2400,8 +2411,8 @@ int MapEditClass::Load_Scenario() {
       }
     }
     PlayerPtr->IsPlayerControl = true;
-    strncpy(Scen.Description, desc.Get_Text(), sizeof(Scen.Description));
-    Scen.Description[sizeof(Scen.Description) - 1] = '\0';
+    port::SafeCopy(Scen.Description, desc.Get_Text());
+    base::At(Scen.Description, sizeof(Scen.Description) - 1) = '\0';
     Scen.IntroMovie = VQType(intro.Current_Index() - 1);
     Scen.BriefMovie = VQType(briefing.Current_Index() - 1);
     Scen.ActionMovie = VQType(action.Current_Index() - 1);
@@ -2685,8 +2696,8 @@ int MapEditClass::Load_Scenario() {
 
     TListClass<CCPtr<TriggerTypeClass> > triggerlist(
         kTriggerList, kDListX, kDListY, kDListW, kDListH,
-        TPF_EFNT | TPF_NOSHADOW, MixArchive::Retrieve("EBTN-UP.SHP"),
-        MixArchive::Retrieve("EBTN-DN.SHP"));
+        TPF_EFNT | TPF_NOSHADOW, MixArchive::RetrieveData("EBTN-UP.SHP"),
+        MixArchive::RetrieveData("EBTN-DN.SHP"));
 
     TextButtonClass editbtn(kButtonEdit, "Edit", kTpfEButton, kDEditX, kDEditY,
                             kDEditW, kDEditH);
@@ -2709,7 +2720,7 @@ int MapEditClass::Load_Scenario() {
       triggerlist.Add_Item(CCPtr<TriggerTypeClass>(TriggerTypes.Ptr(i)));
     }
 
-    PNBubble_Sort(&triggerlist[0], triggerlist.Count());
+    PNBubble_Sort(triggerlist, triggerlist.Count());
 
     if (CurTrigger) {
       triggerlist.Set_Selected_Index(CCPtr<TriggerTypeClass>(CurTrigger));

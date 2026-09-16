@@ -5,6 +5,8 @@
 
 #ifdef _WIN32
 #include <winsock.h>
+
+#include <iterator>
 #else
 #include <sys/select.h>
 #include <sys/time.h>
@@ -25,9 +27,20 @@ static std::forward_list<SocketInfo>::iterator Find_Socket(int socket) {
 }
 
 bool Socket_Register_Select(int socket, SocketCallback callback, void* data) {
-  if (!callback) {
+  if (!callback || socket < 0) {
     return false;
   }
+
+#ifdef _WIN32
+  // Winsock stores a counted array of socket handles, not descriptor bits.
+  if (std::distance(Sockets.begin(), Sockets.end()) >= FD_SETSIZE) {
+    return false;
+  }
+#else
+  if (socket >= FD_SETSIZE) {
+    return false;
+  }
+#endif
 
   if (Find_Socket(socket) != Sockets.end()) {
     return false;
@@ -58,19 +71,22 @@ void Socket_Check_Write(int socket, bool check) {
 void Socket_Select() {
   // something something poll something
 
-  fd_set read_set;
-  fd_set write_set;
-  fd_set err_set;
+  fd_set read_set{};
+  fd_set write_set{};
+  fd_set err_set{};
   int max_fd = -1;
-  FD_ZERO(&read_set);
-  FD_ZERO(&write_set);
-  FD_ZERO(&err_set);
 
   for (const auto& sock : Sockets) {
+    // Registration validates the descriptor (POSIX) or entry count (Winsock).
+    // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage)
     FD_SET(sock.socket, &read_set);
     if (sock.check_write) {
+      // Registration validates the descriptor (POSIX) or entry count (Winsock).
+      // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage)
       FD_SET(sock.socket, &write_set);
     }
+    // Registration validates the descriptor (POSIX) or entry count (Winsock).
+    // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage)
     FD_SET(sock.socket, &err_set);
     max_fd = std::max(sock.socket, max_fd);
   }
@@ -82,14 +98,20 @@ void Socket_Select() {
   const int ready =
       select(max_fd + 1, &read_set, &write_set, &err_set, &timeout);
 
-  if (ready) {
+  if (ready > 0) {
     for (const auto& sock : Sockets) {
+      // Registration validates the descriptor (POSIX) or entry count (Winsock).
+      // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage)
       if (FD_ISSET(sock.socket, &read_set)) {
         sock.callback(sock.socket, SOCKEV_READ, sock.data);
       }
+      // Registration validates the descriptor (POSIX) or entry count (Winsock).
+      // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage)
       if (FD_ISSET(sock.socket, &write_set)) {
         sock.callback(sock.socket, SOCKEV_WRITE, sock.data);
       }
+      // Registration validates the descriptor (POSIX) or entry count (Winsock).
+      // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage)
       if (FD_ISSET(sock.socket, &err_set)) {
         sock.callback(sock.socket, SOCKEV_ERROR, sock.data);
       }

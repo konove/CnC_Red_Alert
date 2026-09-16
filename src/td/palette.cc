@@ -1,18 +1,21 @@
 #include "td/palette.h"
 
 #include <algorithm>
-#include <cstring>
+#include <cstddef>
+#include <span>
 
+#include "absl/log/check.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/timer.h"
 #include "sdllib/ww_win.h"
 #include "td/externs.h"
-#include <cstddef>
 
 unsigned char CurrentPalette[3 * 256];
 
-void Fade_Palette_To(unsigned char* palette, int fade, void (*callback)()) {
-  if (fade) {
+void Fade_Palette_To(std::span<const unsigned char> palette, int fade,
+                     void (*callback)()) {
+  CHECK_GE(palette.size(), sizeof(CurrentPalette));
+  if (fade > 0) {
     // fade to new palette
     const auto start_time = TickCount.Time();
 
@@ -22,14 +25,11 @@ void Fade_Palette_To(unsigned char* palette, int fade, void (*callback)()) {
       const int cur_time =
           std::min<int>(static_cast<int>(TickCount.Time() - start_time), fade);
 
-      const unsigned char* old_ptr = CurrentPalette;
-      const unsigned char* new_ptr = palette;
-      unsigned char* out_ptr = fade_palette;
-
-      for (int c = 0; c < 256 * 3; c++) {
-        const int new_val = *new_ptr++ & 0x3F;
-        const int old_val = *old_ptr++ & 0x3F;
-        *out_ptr++ = static_cast<unsigned char>(
+      for (std::size_t c = 0; c < palette.size() && c < sizeof(CurrentPalette);
+           ++c) {
+        const int new_val = palette[c] & 0x3F;
+        const int old_val = std::span(CurrentPalette)[c] & 0x3F;
+        (std::span(fade_palette))[c] = static_cast<unsigned char>(
             old_val + ((new_val - old_val) * cur_time / fade));
       }
 
@@ -50,7 +50,9 @@ void Fade_Palette_To(unsigned char* palette, int fade, void (*callback)()) {
   Set_Palette(palette);
 }
 
-void Set_Palette(void* palette) {
-  memcpy(CurrentPalette, palette, static_cast<std::size_t>(256) * 3);
+void Set_Palette(std::span<const unsigned char> palette) {
+  CHECK_GE(palette.size(), sizeof(CurrentPalette));
+  std::ranges::copy(palette.first(sizeof(CurrentPalette)),
+                    std::span(CurrentPalette).begin());
   Do_Set_Palette(palette);
 }

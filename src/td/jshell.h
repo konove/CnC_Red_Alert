@@ -45,12 +45,16 @@
 #include <bit>
 #include <cstddef>
 #include <cstdint>
+#include <span>
 #include <string_view>
+#include <vector>
 
 #include "absl/base/attributes.h"
+#include "absl/log/check.h"
 #include "absl/strings/str_format.h"
 #include "absl/types/span.h"
 #include "base/numeric.h"
+#include "base/types.h"
 #include "port/format.h"
 #include "sdllib/buffer.h"
 #include "sdllib/iff.h"
@@ -117,75 +121,46 @@ T operator~(T t1) {
   return static_cast<T>(~static_cast<unsigned>(t1));
 }
 
-inline void Set_Bit(void* array, int bit, int value) {
-  /*
-  #pragma aux Set_Bit parm [esi] [ecx] [eax] \
-          modify [esi ebx] = 			\
-          "mov	ebx,ecx"					\
-          "shr	ebx,5"					\
-          "and	ecx,01Fh"				\
-          "btr	[esi+ebx*4],ecx"		\
-          "or	eax,eax"					\
-          "jz	ok"						\
-          "bts	[esi+ebx*4],ecx"		\
-          "ok:"
-  */
+// Bit indices must refer to the supplied word span.
+inline void Set_Bit(std::span<uint32_t> array, int bit, int value) {
+  CHECK_GE(bit, 0);
+  CHECK_LT(base::ToSize(bit / 32), array.size());
   if (value) {
-    static_cast<uint32_t*>(array)[bit / 32] |= base::Bit<uint32_t>(bit % 32);
+    array[base::ToSize(bit / 32)] |= base::Bit<uint32_t>(bit % 32);
   } else {
-    static_cast<uint32_t*>(array)[bit / 32] &= ~base::Bit<uint32_t>(bit % 32);
+    array[base::ToSize(bit / 32)] &= ~base::Bit<uint32_t>(bit % 32);
   }
 }
 
-inline bool Get_Bit(const void* array, int bit) {
-  /*
-          "mov	ebx,eax"					\
-          "shr	ebx,5"					\
-          "and	eax,01Fh"				\
-          "bt	[esi+ebx*4],eax"		\
-          "setc	al"
-  */
-  return (static_cast<const uint32_t*>(array)[bit / 32] &
-          base::Bit<uint32_t>(bit % 32)) != 0;
+inline bool Get_Bit(std::span<const uint32_t> array, int bit) {
+  CHECK_GE(bit, 0);
+  CHECK_LT(base::ToSize(bit / 32), array.size());
+  return (array[base::ToSize(bit / 32)] & base::Bit<uint32_t>(bit % 32)) != 0;
 }
 
-inline int First_True_Bit(const void* array) {
-  /*
-  #pragma aux First_True_Bit parm [esi] \
-          modify [esi ebx] \
-          value [eax]		= 				\
-          "mov	eax,-32"					\
-          "again:"							\
-          "add	eax,32"					\
-          "mov	ebx,[esi]"				\
-          "add	esi,4"					\
-          "bsf	ebx,ebx"					\
-          "jz	again"					\
-          "add	eax,ebx"
-  */
-  const auto* array32 = static_cast<const uint32_t*>(array);
+// Returns -1 if no matching bit exists within the supplied words.
+inline int First_True_Bit(std::span<const uint32_t> array) {
   int off = 0;
-  while (true) {
-    const uint32_t v = *array32++;
-    const int pos = std::countr_zero(v);
+  for (const uint32_t word : array) {
+    const int pos = std::countr_zero(word);
     if (pos < 32) {
       return off + pos;
     }
     off += 32;
   }
+  return -1;
 }
 
-inline int First_False_Bit(const void* array) {
-  const auto* array32 = static_cast<const uint32_t*>(array);
+inline int First_False_Bit(std::span<const uint32_t> array) {
   int off = 0;
-  while (true) {
-    const uint32_t v = *array32++;
-    const int pos = std::countr_zero(~v);
+  for (const uint32_t word : array) {
+    const int pos = std::countr_zero(~word);
     if (pos < 32) {
       return off + pos;
     }
     off += 32;
   }
+  return -1;
 }
 
 inline int Bound(int original, int minval, int maxval) {
@@ -214,12 +189,13 @@ template <typename... Args>
 // The result is always null terminated and truncated rather than allowed to
 // overflow. Each conversion is checked against its argument; a format that
 // does not match `args` is copied unformatted (see port::FormatRuntime).
-void Format_Runtime_Text(char* buffer, size_t size, const char* format,
+void Format_Runtime_Text(std::span<char> buffer, size_t size,
+                         const char* format,
                          absl::Span<const absl::FormatArg> args = {});
 template <typename... Args>
   requires(sizeof...(Args) > 0)
-void Format_Runtime_Text(char* buffer, const size_t size, const char* format,
-                         const Args&... args) {
+void Format_Runtime_Text(std::span<char> buffer, const size_t size,
+                         const char* format, const Args&... args) {
   const auto packed = port::MakeFormatArgs(args...);
   Format_Runtime_Text(buffer, size, format, absl::MakeConstSpan(packed));
 }
@@ -232,21 +208,28 @@ typedef struct {
 } TLucentType;
 
 int Load_Picture(const char* filename, BufferClass& scratchbuf,
-                 BufferClass& destbuf, unsigned char* palette,
+                 BufferClass& destbuf, std::span<unsigned char> palette,
                  PicturePlaneType format);
-void* Small_Icon(const void* iconptr, int iconnum);
+std::span<const unsigned char> Small_Icon(std::span<const std::byte> iconptr,
+                                          int iconnum);
 void Set_Window(int window, int x, int y, int w, int h);
 // Allocates a buffer, reads the file into it, and null-terminates.
 // Returns ownership of the buffer. Caller must delete[].
-void* Load_Alloc_Data(File& file);
+std::span<std::byte> Load_Alloc_Data(File& file);
+
+// Reads a file into owned byte storage.
+std::vector<std::byte> LoadAllocData(File& file);
 int32_t Load_Uncompress(File& file, BufferClass& uncomp_buff,
-                        BufferClass& dest_buff, void* reserved_data);
+                        BufferClass& dest_buff,
+                        std::span<unsigned char> reserved_data);
 int32_t Translucent_Table_Size(int count);
-void* Build_Translucent_Table(const void* palette, const TLucentType* control,
-                              int count,
-                              void* buffer ABSL_ATTRIBUTE_LIFETIME_BOUND);
-void* Conquer_Build_Translucent_Table(
-    const void* palette, const TLucentType* control, int count,
-    void* buffer ABSL_ATTRIBUTE_LIFETIME_BOUND);
+std::span<unsigned char> Build_Translucent_Table(
+    std::span<const unsigned char> palette,
+    std::span<const TLucentType> control, int count,
+    std::span<unsigned char> buffer ABSL_ATTRIBUTE_LIFETIME_BOUND);
+std::span<unsigned char> Conquer_Build_Translucent_Table(
+    std::span<const unsigned char> palette,
+    std::span<const TLucentType> control, int count,
+    std::span<unsigned char> buffer ABSL_ATTRIBUTE_LIFETIME_BOUND);
 
 #endif  // CNC_RED_ALERT_TD_JSHELL_H_

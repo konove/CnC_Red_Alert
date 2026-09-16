@@ -1,5 +1,8 @@
 #include "port/safe_string.h"
 
+#include <span>
+#include <string_view>
+
 #include "gtest/gtest.h"
 
 namespace port {
@@ -9,35 +12,35 @@ namespace {
 
 TEST(SafeCopyTest, BasicCopy) {
   char dest[10];
-  SafeCopy(dest, "hello", sizeof(dest));
+  SafeCopy(dest, "hello");
   EXPECT_STREQ(dest, "hello");
 }
 
 TEST(SafeCopyTest, TruncatesLongString) {
   char dest[6];
-  SafeCopy(dest, "hello world", sizeof(dest));
+  SafeCopy(dest, "hello world");
   EXPECT_STREQ(dest, "hello");
 }
 
 TEST(SafeCopyTest, ExactFit) {
   char dest[6];
-  SafeCopy(dest, "hello", sizeof(dest));
+  SafeCopy(dest, "hello");
   EXPECT_STREQ(dest, "hello");
 }
 
 TEST(SafeCopyTest, NullDestDoesNothing) {
-  SafeCopy(nullptr, "hello", 10);  // Should not crash.
+  SafeCopy({}, "hello");  // Should not crash.
 }
 
 TEST(SafeCopyTest, ZeroSizeDoesNothing) {
   char dest[10] = "unchanged";
-  SafeCopy(dest, "hello", 0);
+  SafeCopy(std::span(dest).first(0), "hello");
   EXPECT_STREQ(dest, "unchanged");
 }
 
 TEST(SafeCopyTest, NullSrcSetsEmpty) {
   char dest[10] = "original";
-  SafeCopy(dest, nullptr, sizeof(dest));
+  SafeCopy(dest, nullptr);
   EXPECT_STREQ(dest, "");
 }
 
@@ -51,35 +54,35 @@ TEST(SafeCopyTest, TemplateOverload) {
 
 TEST(SafeAppendTest, BasicAppend) {
   char dest[20] = "hello";
-  SafeAppend(dest, " world", sizeof(dest));
+  SafeAppend(dest, " world");
   EXPECT_STREQ(dest, "hello world");
 }
 
 TEST(SafeAppendTest, TruncatesOnOverflow) {
   char dest[10] = "hello";
-  SafeAppend(dest, " world", sizeof(dest));
+  SafeAppend(dest, " world");
   EXPECT_STREQ(dest, "hello wor");
 }
 
 TEST(SafeAppendTest, AppendToEmpty) {
   char dest[10] = "";
-  SafeAppend(dest, "hello", sizeof(dest));
+  SafeAppend(dest, "hello");
   EXPECT_STREQ(dest, "hello");
 }
 
 TEST(SafeAppendTest, NullDestDoesNothing) {
-  SafeAppend(nullptr, "hello", 10);  // Should not crash.
+  SafeAppend({}, "hello");  // Should not crash.
 }
 
 TEST(SafeAppendTest, NullSrcDoesNothing) {
   char dest[10] = "hello";
-  SafeAppend(dest, nullptr, sizeof(dest));
+  SafeAppend(dest, nullptr);
   EXPECT_STREQ(dest, "hello");
 }
 
 TEST(SafeAppendTest, ZeroSizeDoesNothing) {
   char dest[10] = "hello";
-  SafeAppend(dest, " world", 0);
+  SafeAppend(std::span(dest).first(0), " world");
   EXPECT_STREQ(dest, "hello");
 }
 
@@ -87,6 +90,38 @@ TEST(SafeAppendTest, TemplateOverload) {
   char dest[20] = "hello";
   SafeAppend(dest, " world");
   EXPECT_STREQ(dest, "hello world");
+}
+
+TEST(SafeCopyTest, PadsUnusedCapacity) {
+  char dest[6] = {'x', 'x', 'x', 'x', 'x', 'x'};
+  SafeCopy(dest, "a");
+  EXPECT_EQ(dest[1], '\0');
+  EXPECT_EQ(dest[5], '\0');
+}
+
+TEST(SafeAppendTest, TerminatesInitiallyUnterminatedBuffer) {
+  char dest[3] = {'a', 'b', 'c'};
+  SafeAppend(dest, "d");
+  EXPECT_STREQ(dest, "ab");
+}
+
+TEST(MutableCStringTest, IncludesTerminatorAndHandlesNull) {
+  char text[] = "abc";
+  const auto view = MutableCString(text);
+  EXPECT_EQ(view.size(), 4U);
+  EXPECT_EQ(view.back(), '\0');
+  view[1] = 'X';
+  EXPECT_STREQ(text, "aXc");
+  EXPECT_TRUE(MutableCString(nullptr).empty());
+}
+
+TEST(SafeCopyTest, CopiesAndAppendsBoundedUnterminatedInput) {
+  const char input[] = {'a', 'b', 'c'};
+  const std::string_view source{std::span(input)};
+  char dest[8];
+  SafeCopy(dest, source);
+  SafeAppend(dest, source.substr(1));
+  EXPECT_STREQ(dest, "abcbc");
 }
 
 // CloneString tests

@@ -18,6 +18,8 @@
 #ifndef CNC_RED_ALERT_PORT_WIN32_WIN32_SYSTEM_H_
 #define CNC_RED_ALERT_PORT_WIN32_WIN32_SYSTEM_H_
 
+#include <span>
+
 #ifdef _WIN32
 
 #include <windows.h>
@@ -56,7 +58,8 @@ BOOL DeleteFile(LPCSTR file_name);
 // terminator. Returns the length written, or 0 if it does not fit or cannot
 // be read -- the Win32 contract, minus the "return the size needed" case,
 // which no caller here uses.
-DWORD GetCurrentDirectory(DWORD buffer_length, LPSTR buffer);
+// Returns the path length, or zero if the bounded destination cannot hold it.
+DWORD GetCurrentDirectory(std::span<char> buffer);
 
 // Changes the working directory. Returns FALSE if the path is not a directory
 // this process can enter.

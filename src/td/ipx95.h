@@ -46,6 +46,7 @@
 #ifndef CNC_RED_ALERT_TD_IPX95_H_
 #define CNC_RED_ALERT_TD_IPX95_H_
 
+#include <cstddef>
 #include <cstdint>
 
 extern "C" {
@@ -53,11 +54,11 @@ extern bool __stdcall IPX_Initialise();
 extern bool __stdcall IPX_Get_Outstanding_Buffer95(unsigned char* buffer);
 extern void __stdcall IPX_Shut_Down95();
 extern int __stdcall IPX_Send_Packet95(unsigned char* /*unused*/,
-                                       unsigned char* /*unused*/,
+                                       const std::byte* /*unused*/,
                                        int /*unused*/,
                                        unsigned char* /*unused*/,
                                        unsigned char* /*unused*/);
-extern int __stdcall IPX_Broadcast_Packet95(unsigned char* /*unused*/,
+extern int __stdcall IPX_Broadcast_Packet95(const std::byte* /*unused*/,
                                             int /*unused*/);
 extern bool __stdcall IPX_Start_Listening95();
 extern int __stdcall IPX_Open_Socket95(int socket);

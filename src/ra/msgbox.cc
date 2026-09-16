@@ -43,9 +43,11 @@
 #include <algorithm>
 #include <cstdint>
 #include <cstring>
+#include <vector>
 
 #include "base/array.h"
 #include "base/numeric.h"
+#include "port/safe_string.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
@@ -94,7 +96,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   int retval = -1;
   int selection = 0;
   TextButtonClass* buttons[3] = {};
-  char* back = nullptr;
+  std::vector<uint8_t> back;
   bool display = true;  // display level
   int realval[5];
 
@@ -142,7 +144,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   **	These dimensions will control how the dialog box looks.
   */
   buffer[BUFFSIZE - 1] = 0;
-  strncpy(buffer, msg, BUFFSIZE - 1);
+  port::SafeCopy(buffer, msg);
   Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack, kTpfText);
   int width = 0;
   int height = 0;
@@ -229,7 +231,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   */
   Hide_Mouse();
   if (preserve) {
-    back = new char[base::ToSize(width * height)];
+    back.resize(base::ToSize(width * height));
     SeenBuff.To_Buffer(x, y, width, height, back,
                        static_cast<int32_t>(width) * height);
   }
@@ -439,8 +441,8 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
     }
     SeenBuff.Unlock();
 
-    delete[] back;
-    back = nullptr;
+    back.clear();
+
     Show_Mouse();
   }
   return retval;

@@ -47,10 +47,12 @@
 #include "sdllib/ww_audio.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <cstdint>
 #include <cstdlib>
 #include <filesystem>
 #include <iterator>
+#include <span>
 #include <string>
 
 #include "absl/log/log.h"
@@ -409,7 +411,7 @@ VocType Voc_From_Name(const char* name) {
   }
 
   for (const VocType voc : magic_enum::enum_values<VocType>()) {
-    if (stricmp(name, SoundEffectName[voc].Name) == 0) {
+    if (port::CompareIgnoreCase(name, SoundEffectName[voc].Name) == 0) {
       return voc;
     }
   }
@@ -601,12 +603,12 @@ int Sound_Effect(VocType voc, fixed volume, int variation, int16_t pan_value,
   const auto name = std::filesystem::path(SoundEffectName[voc].Name)
                         .replace_extension(ext)
                         .string();
-  const void* ptr = MixArchive::Retrieve(name);
+  const auto ptr = MixArchive::RetrieveData(name);
 
   /*
   **	If the sound data pointer is not nullptr, then presume that it is valid.
   */
-  if (ptr != nullptr) {
+  if (!ptr.empty()) {
     volume.Sub_Saturate(1);
     return Play_Sample(ptr, SoundEffectName[voc].Priority * volume,
                        volume * 256, pan_value);
@@ -846,14 +848,14 @@ void Speak_AI() {
     return;
   }
 
-  if (!Is_Sample_Playing(base::At(SpeechBuffer, _index))) {
+  if (!Is_Sample_Playing(base::At(SpeechBuffer, _index).data())) {
     CurrentVoice = VOX_NONE;
     if (SpeakQueue != VOX_NONE) {
       /*
       **	Try to find a previously loaded copy of the EVA speech in one of
       *the *	speech buffers.
       */
-      const void* speech = nullptr;
+      std::span<const std::byte> speech;
       for (size_t index = 0; index < std::size(SpeechRecord); index++) {
         if (base::At(SpeechRecord, index) == SpeakQueue) {
           // _index tracks the buffer being played, so move it to the cached
@@ -869,7 +871,7 @@ void Speak_AI() {
       **	If a previous copy could not be located, then load the requested
       **	voice into the oldest buffer available.
       */
-      if (speech == nullptr) {
+      if (speech.empty()) {
         _index = static_cast<int>((_index + 1) % std::ssize(SpeechRecord));
 
         const auto name = std::filesystem::path(Speech[SpeakQueue])
@@ -877,9 +879,7 @@ void Speak_AI() {
                               .string();
 
         GameFile file(name);
-        if (file.IsAvailable() &&
-            file.Read(static_cast<char*>(base::At(SpeechBuffer, _index)),
-                      kSpeechBufferSize)) {
+        if (file.IsAvailable() && file.Read(base::At(SpeechBuffer, _index))) {
           speech = base::At(SpeechBuffer, _index);
           base::At(SpeechRecord, _index) = SpeakQueue;
         }
@@ -888,7 +888,7 @@ void Speak_AI() {
       /*
       **	Since the speech file was loaded, play it.
       */
-      if (speech != nullptr) {
+      if (!speech.empty()) {
         Play_Sample(speech, 254, Options.Volume * 256);
         CurrentVoice = SpeakQueue;
       }
@@ -915,7 +915,7 @@ void Speak_AI() {
 void Stop_Speaking() {
   SpeakQueue = VOX_NONE;
   for (auto& index : SpeechBuffer) {
-    Stop_Sample_Playing(index);
+    Stop_Sample_Playing(index.data());
   }
 }
 
@@ -938,7 +938,7 @@ bool Is_Speaking() {
   Speak_AI();
   return !Debug_Quiet && SampleType != SAMPLE_NONE &&
          (SpeakQueue != VOX_NONE ||
-          std::ranges::any_of(SpeechBuffer, [](const void* buffer) {
-            return Is_Sample_Playing(buffer);
+          std::ranges::any_of(SpeechBuffer, [](const auto& buffer) {
+            return Is_Sample_Playing(buffer.data());
           }));
 }

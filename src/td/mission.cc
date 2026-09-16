@@ -352,7 +352,7 @@ MissionType MissionClass::Mission_From_Name(const char* name) {
 
   if (name) {
     for (MissionType order = MISSION_SLEEP; order < MISSION_COUNT; order++) {
-      if (stricmp(Missions[order], name) == 0) {
+      if (port::CompareIgnoreCase(Missions[order], name) == 0) {
         return order;
       }
     }

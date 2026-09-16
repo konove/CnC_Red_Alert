@@ -52,11 +52,12 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <span>
 #include <string_view>
+#include <vector>
 
 #include "absl/strings/str_format.h"
 #include "port/tokenizer.h"
-#include "sdllib/shape.h"
 #include "td/cell.h"
 #include "td/config.h"
 #include "td/conquer.h"
@@ -344,16 +345,17 @@ bool OverlayClass::Mark(MarkType mark) {
 void OverlayClass::Read_INI(char* buffer) {
   char buf[128];
 
-  const int len = static_cast<int>(std::string_view(buffer).size()) +
-                  2;  // Length of data in buffer.
-  char* tbuffer = buffer + len;
+  std::vector<char> key_storage(std::string_view(buffer).size() + 2);
+  auto key_cursor = std::span(key_storage);
+  char* tbuffer = key_cursor.data();
 
-  WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
-                            ShapeBufferSize - len, buffer);
+  WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, key_cursor, buffer);
   while (*tbuffer != '\0') {
     CELL const cell = tech::ParseInteger<CELL>(tbuffer).value_or(0);
-    WWGetPrivateProfileString(INI_Name(), tbuffer, nullptr, buf,
-                              sizeof(buf) - 1, buffer);
+    WWGetPrivateProfileString(
+        INI_Name(), tbuffer, nullptr,
+        std::span(buf).first(static_cast<std::size_t>(sizeof(buf) - 1)),
+        buffer);
     port::Tokenizer tokens(buf, ",\n\r");
     const OverlayType classid = OverlayTypeClass::From_Name(tokens.Next());
 
@@ -372,7 +374,8 @@ void OverlayClass::Read_INI(char* buffer) {
       new OverlayClass(classid, cell);
     }
 
-    tbuffer += std::string_view(tbuffer).size() + 1;
+    key_cursor = key_cursor.subspan(std::string_view(tbuffer).size() + 1);
+    tbuffer = key_cursor.data();
   }
 }
 
@@ -390,22 +393,22 @@ void OverlayClass::Read_INI(char* buffer) {
  *                                                                                             *
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
-void OverlayClass::Write_INI(char* buffer) {
+void OverlayClass::Write_INI(std::span<char> buffer) {
   char uname[10];
   char buf[128];
 
   /*
   **	First, clear out all existing unit data from the ini file.
   */
-  char* tbuffer = buffer + std::string_view(buffer).size() +
-                  2;  // Accumulation buffer of unit IDs.
-  WWGetPrivateProfileString(
-      INI_Name(), nullptr, nullptr, tbuffer,
-      ShapeBufferSize - static_cast<int>(std::string_view(buffer).size()),
-      buffer);
+  std::vector<char> key_storage(std::string_view(buffer.data()).size() + 2);
+  auto key_cursor = std::span(key_storage);
+  char* tbuffer = key_cursor.data();  // Accumulation buffer of unit IDs.
+  WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, key_cursor,
+                            buffer.data());
   while (*tbuffer != '\0') {
     WWWritePrivateProfileString(INI_Name(), tbuffer, nullptr, buffer);
-    tbuffer += std::string_view(tbuffer).size() + 1;
+    key_cursor = key_cursor.subspan(std::string_view(tbuffer).size() + 1);
+    tbuffer = key_cursor.data();
   }
 
   /*

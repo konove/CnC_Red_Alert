@@ -3,11 +3,29 @@
 #include <algorithm>
 #include <cctype>
 #include <compare>
-#include <cstring>
+#include <cstddef>
 #include <functional>  // IWYU pragma: keep
 #include <ranges>
-#include <span>
 #include <string_view>
+
+#include "port/safe_string.h"
+
+int port::CompareIgnoreCase(std::string_view view1, std::string_view view2) {
+  const auto cmp = [](const unsigned char chr_a,
+                      const unsigned char chr_b) noexcept {
+    return std::tolower(chr_a) <=> std::tolower(chr_b);
+  };
+  const auto result = std::lexicographical_compare_three_way(
+      view1.begin(), view1.end(), view2.begin(), view2.end(), cmp);
+
+  if (result == std::strong_ordering::less) {
+    return -1;
+  }
+  if (result == std::strong_ordering::greater) {
+    return 1;
+  }
+  return 0;
+}
 
 #ifndef _WIN32
 
@@ -37,7 +55,7 @@ int stricmp(const char* string1, const char* string2) {
   return 1;
 }
 
-int strnicmp(const char* string1, const char* string2, const size_t count) {
+int strnicmp(const char* string1, const char* string2, const std::size_t count) {
   std::string_view view1(string1);
   std::string_view view2(string2);
 
@@ -67,46 +85,26 @@ int strnicmp(const char* string1, const char* string2, const size_t count) {
   return 1;
 }
 
-// TODO(konove): Replace all usage of this function with absl::EqualsIgnoreCase
-int memicmp(const void* buffer1, const void* buffer2, const size_t count) {
-  const auto view1 =
-      std::span(static_cast<const unsigned char*>(buffer1), count);
-  const auto view2 =
-      std::span(static_cast<const unsigned char*>(buffer2), count);
-
-  const auto cmp = [](const unsigned char chr_a,
-                      const unsigned char chr_b) noexcept {
-    return std::tolower(chr_a) <=> std::tolower(chr_b);
-  };
-  const auto result = std::lexicographical_compare_three_way(
-      view1.begin(), view1.end(), view2.begin(), view2.end(), cmp);
-
-  if (result == std::strong_ordering::less) {
-    return -1;
-  }
-  if (result == std::strong_ordering::greater) {
-    return 1;
-  }
-  return 0;
-}
-
 // TODO(konove): Replace all usage of this function with absl::AsciiStrToUpper
 char* strupr(char* str) {
-  std::transform(str, str + std::string_view(str).size(), str,
+  const auto text = port::MutableCString(str);
+  std::ranges::transform(text.first(text.size() - 1), text.begin(),
                  [](const unsigned char chr) { return std::toupper(chr); });
   return str;
 }
 
 // TODO(konove): Replace all usage of this function with absl::AsciiStrToLower
 char* strlwr(char* str) {
-  std::transform(str, str + std::string_view(str).size(), str,
+  const auto text = port::MutableCString(str);
+  std::ranges::transform(text.first(text.size() - 1), text.begin(),
                  [](const unsigned char chr) { return std::tolower(chr); });
   return str;
 }
 
 // TODO(konove): Replace all usage of this function with std::reverse
 char* strrev(char* str) {
-  std::reverse(str, str + std::string_view(str).size());
+  const auto text = port::MutableCString(str);
+  std::ranges::reverse(text.first(text.size() - 1));
   return str;
 }
 

@@ -42,7 +42,8 @@
 #define CNC_RED_ALERT_TD_REGION_H_
 
 #include <cstdint>
-#include <cstring>
+
+#include "base/buffer.h"
 
 class RegionClass {
  public:
@@ -52,16 +53,24 @@ class RegionClass {
     ar(Threat);
   }
   bool operator!=(const RegionClass& region) {
-    return memcmp(this, &region, sizeof(RegionClass)) != 0;
+    return base::CompareBytes(base::ObjectBytes(*this),
+                              base::ObjectBytes(region),
+                              sizeof(RegionClass)) != 0;
   }
   bool operator==(const RegionClass& region) {
-    return memcmp(this, &region, sizeof(RegionClass)) == 0;
+    return base::CompareBytes(base::ObjectBytes(*this),
+                              base::ObjectBytes(region),
+                              sizeof(RegionClass)) == 0;
   }
   bool operator>(const RegionClass& region) {
-    return memcmp(this, &region, sizeof(RegionClass)) > 0;
+    return base::CompareBytes(base::ObjectBytes(*this),
+                              base::ObjectBytes(region),
+                              sizeof(RegionClass)) > 0;
   }
   bool operator<(const RegionClass& region) {
-    return memcmp(this, &region, sizeof(RegionClass)) < 0;
+    return base::CompareBytes(base::ObjectBytes(*this),
+                              base::ObjectBytes(region),
+                              sizeof(RegionClass)) < 0;
   }
 
   void Reset_Threat() { Threat = 0; }

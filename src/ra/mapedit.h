@@ -178,7 +178,7 @@ class MapEditClass : public MouseClass {
   **	mapedit.cpp
   */
   MapEditClass();
-  static bool Get_Waypoint_Name(char wayptname[]);
+  static bool Get_Waypoint_Name(std::span<char> wayptname);
   void Update_Waypoint(int waypt_idx);
 
   void One_Time() override;  // One-time init

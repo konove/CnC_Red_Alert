@@ -1,3 +1,4 @@
+#include <cstddef>
 #include <cstdint>
 
 #include "td/ipx95.h"
@@ -11,13 +12,13 @@ bool __stdcall IPX_Get_Outstanding_Buffer95(unsigned char* /*buffer*/) {
 void __stdcall IPX_Shut_Down95() {}
 
 int __stdcall IPX_Send_Packet95(unsigned char* /*unused*/,
-                                unsigned char* /*unused*/, int /*unused*/,
+                                const std::byte* /*unused*/, int /*unused*/,
                                 unsigned char* /*unused*/,
                                 unsigned char* /*unused*/) {
   return 0;
 }
 
-int __stdcall IPX_Broadcast_Packet95(unsigned char* /*unused*/,
+int __stdcall IPX_Broadcast_Packet95(const std::byte* /*unused*/,
                                      int /*unused*/) {
   return 0;
 }

@@ -4,7 +4,6 @@
 
 #include <algorithm>
 #include <cstddef>
-#include <cstring>
 #include <iterator>
 #include <memory>
 #include <span>
@@ -12,6 +11,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/seek_origin.h"
 #include "base/types.h"
@@ -52,7 +52,7 @@ DiskStream::~DiskStream() { IO_Close_File(handle_); }
 
 base::ssize DiskStream::Read(const std::span<std::byte> buffer) {
   size_t bytes_read = 0;
-  if (!IO_Read_File(handle_, buffer.data(), buffer.size(), bytes_read)) {
+  if (!IO_Read_File(handle_, buffer, bytes_read)) {
     failed_ = true;
   }
   return base::ToSigned(bytes_read);
@@ -60,7 +60,7 @@ base::ssize DiskStream::Read(const std::span<std::byte> buffer) {
 
 base::ssize DiskStream::Write(const std::span<const std::byte> buffer) {
   size_t bytes_written = 0;
-  if (!IO_Write_File(handle_, buffer.data(), buffer.size(), bytes_written)) {
+  if (!IO_Write_File(handle_, buffer, bytes_written)) {
     failed_ = true;
   }
   return base::ToSigned(bytes_written);
@@ -80,7 +80,7 @@ base::ssize MemoryStream::Read(const std::span<std::byte> buffer) {
   const base::ssize count =
       std::min(std::ssize(buffer), std::ssize(bytes_) - position_);
   if (count > 0) {
-    std::memcpy(buffer.data(), bytes_.data() + position_, base::ToSize(count));
+    base::CopyBytes(buffer, bytes_.subspan(base::ToSize(position_)), count);
     position_ += count;
   }
   return count;

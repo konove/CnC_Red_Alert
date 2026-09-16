@@ -56,7 +56,7 @@ constexpr std::array<uint8_t, 16> kKey = {1, 2,  3,  4,  5,  6,  7,  8,
 std::vector<uint8_t> EncryptWithPipe(const std::vector<uint8_t>& plain) {
   RecordingSink sink;
   BlowfishSink pipe(CipherMode::kEncrypt, sink);
-  pipe.Key(kKey.data(), kKey.size());
+  pipe.Key(std::as_bytes(std::span(kKey)));
   pipe.Write(std::as_bytes(std::span(plain)));
   pipe.Flush();
   return sink.bytes;
@@ -66,7 +66,7 @@ std::vector<uint8_t> DecryptWithStraw(const std::vector<uint8_t>& cipher,
                                       int chunk_size) {
   SpanSource source(std::as_bytes(std::span(cipher)));
   BlowfishSource straw(CipherMode::kDecrypt, source);
-  straw.Key(kKey.data(), kKey.size());
+  straw.Key(std::as_bytes(std::span(kKey)));
   return Drain(straw, chunk_size);
 }
 
@@ -83,10 +83,12 @@ TEST(BlowfishStreamTest, EncryptsEachWholeBlockIndependently) {
   const std::vector<uint8_t> cipher = EncryptWithPipe(plain);
 
   BlowfishEngine engine;
-  engine.Submit_Key(kKey.data(), kKey.size());
+  engine.Submit_Key(std::as_bytes(std::span(kKey)));
   std::array<uint8_t, 16> expected{};
-  engine.Encrypt(plain.data(), 8, expected.data());
-  engine.Encrypt(plain.data() + 8, 8, expected.data() + 8);
+  engine.Encrypt(std::as_bytes(std::span(plain)).first(8),
+                 std::as_writable_bytes(std::span(expected)).first(8));
+  engine.Encrypt(std::as_bytes(std::span(plain)).subspan(8, 8),
+                 std::as_writable_bytes(std::span(expected)).subspan(8, 8));
   EXPECT_EQ(cipher, std::vector<uint8_t>(expected.begin(), expected.end()));
 }
 
@@ -99,14 +101,14 @@ TEST(BlowfishStreamTest, ShortTailPassesThroughBothWays) {
 
   SpanSource source(std::as_bytes(std::span(plain)));
   BlowfishSource straw(CipherMode::kEncrypt, source);
-  straw.Key(kKey.data(), kKey.size());
+  straw.Key(std::as_bytes(std::span(kKey)));
   EXPECT_EQ(Drain(straw, 7), cipher);
 
   EXPECT_EQ(DecryptWithStraw(cipher, 7), plain);
 
   RecordingSink decrypted;
   BlowfishSink pipe(CipherMode::kDecrypt, decrypted);
-  pipe.Key(kKey.data(), kKey.size());
+  pipe.Key(std::as_bytes(std::span(kKey)));
   pipe.Write(std::as_bytes(std::span(cipher)));
   pipe.Flush();
   EXPECT_EQ(decrypted.bytes, plain);
@@ -135,7 +137,7 @@ TEST(BlowfishStreamTest, OneByteAtATimeMatchesBulk) {
 
   RecordingSink sink;
   BlowfishSink pipe(CipherMode::kEncrypt, sink);
-  pipe.Key(kKey.data(), kKey.size());
+  pipe.Key(std::as_bytes(std::span(kKey)));
   for (const uint8_t& byte : plain) {
     pipe.WriteObject(byte);
   }

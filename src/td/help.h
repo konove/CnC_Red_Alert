@@ -42,6 +42,7 @@
 #define CNC_RED_ALERT_TD_HELP_H_
 
 #include <cstdint>
+#include <span>
 
 #include "sdllib/keyboard.h"
 #include "sdllib/timer.h"
@@ -68,7 +69,7 @@ class HelpClass : public TabClass {
   void Help_Text(int text, int x = -1, int y = -1, int color = kLtGrey,
                  bool quick = false, int cost = 0) override;
   void Set_Cost(int cost);
-  [[nodiscard]] const int16_t* Overlap_List() const;
+  [[nodiscard]] std::span<const int16_t> Overlap_List() const;
 
   /*
   **	File I/O.

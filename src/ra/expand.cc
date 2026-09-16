@@ -39,12 +39,16 @@
 
 #include "ra/expand.h"
 
+#include <cstddef>
 #include <cstdio>
+#include <span>
 #include <vector>
 
 #include "absl/base/attributes.h"
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "base/numeric.h"
+#include "port/bytes_of.h"
 #include "port/safe_string.h"
 #include "ra/config.h"
 #include "ra/conquer.h"
@@ -224,8 +228,10 @@ static const char* const kFrenchMissionNames[] = {
 
 // The name table for this build's language, indexed by scenario number minus
 // kMissionNameOffset. English builds take the name from the INI instead.
-[[maybe_unused]] static const char* const* const kTranslatedMissionNames =
-    config::kIsGerman ? kGermanMissionNames : kFrenchMissionNames;
+[[maybe_unused]] static const std::span<const char* const>
+    kTranslatedMissionNames =
+        config::kIsGerman ? std::span<const char* const>(kGermanMissionNames)
+                          : std::span<const char* const>(kFrenchMissionNames);
 inline constexpr int kMissionNameOffset = 20;
 
 #define kOptionWidth 560
@@ -245,7 +251,7 @@ struct EObjectClass {
 class EListClass : public ListClass {
  public:
   EListClass(int id, int x, int y, int w, int h, TextPrintType flags,
-             const void* up, const void* down)
+             std::span<const std::byte> up, std::span<const std::byte> down)
       : ListClass(id, x, y, w, h, flags, up, down) {}
   // Appends a copy of `obj`, returning its index.
   int Add_Object(const EObjectClass& obj) {
@@ -338,8 +344,8 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
 
   EListClass list(202, kOptionX + 35, kOptionY + 30, kOptionWidth - 70,
                   kOptionHeight - 85, kTpfButton,
-                  MixArchive::Retrieve("BTN-UP.SHP"),
-                  MixArchive::Retrieve("BTN-DN.SHP"));
+                  MixArchive::RetrieveData("BTN-UP.SHP"),
+                  MixArchive::RetrieveData("BTN-DN.SHP"));
   buttons = &ok;
   cancel.Add(*buttons);
   list.Add(*buttons);
@@ -350,11 +356,11 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
   GameFile file;
   char buffer[128];
   char buffer2[128];
-  char* sbuffer = ShapeBuffer;
+  const auto sbuffer = port::CharBytes(ShapeBufferBytes);
   for (int index = 20; index < 36 + 18; index++) {
 #ifndef CS_DEBUG
-    port::SafeCopy(buffer, ExpandNames[index - 20]);
-    port::SafeCopy(buffer2, ExpandNames[index - 20]);
+    port::SafeCopy(buffer, base::At(ExpandNames, index - 20));
+    port::SafeCopy(buffer2, base::At(ExpandNames, index - 20));
 #else
     port::SafeCopy(buffer, TestNames2[index]);
     port::SafeCopy(buffer2, TestNames2[index]);
@@ -385,12 +391,12 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
           sbuffer[2000 + 1] = '\n';
           sbuffer[2000 + 2] = '\0';
           WWGetPrivateProfileString("Basic", "Name", "x", buffer,
-                                    sizeof(buffer), sbuffer);
+                                    sbuffer.data());
           if constexpr (config::kIsEnglish) {
             port::SafeCopy(obj.Name, buffer);
           } else {
-            port::SafeCopy(obj.Name,
-                           kTranslatedMissionNames[index - kMissionNameOffset]);
+            port::SafeCopy(obj.Name, kTranslatedMissionNames[base::ToSize(
+                                         index - kMissionNameOffset)]);
           }
           port::SafeCopy(obj.FullName, buffer2);
           obj.House = HOUSE_GOOD;
@@ -405,12 +411,12 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
           sbuffer[2000 + 1] = '\n';
           sbuffer[2000 + 2] = '\0';
           WWGetPrivateProfileString("Basic", "Name", "x", buffer,
-                                    sizeof(buffer), sbuffer);
+                                    sbuffer.data());
           if constexpr (config::kIsEnglish) {
             port::SafeCopy(obj.Name, buffer);
           } else {
-            port::SafeCopy(obj.Name,
-                           kTranslatedMissionNames[index - kMissionNameOffset]);
+            port::SafeCopy(obj.Name, kTranslatedMissionNames[base::ToSize(
+                                         index - kMissionNameOffset)]);
           }
           port::SafeCopy(obj.FullName, buffer2);
           obj.House = HOUSE_BAD;

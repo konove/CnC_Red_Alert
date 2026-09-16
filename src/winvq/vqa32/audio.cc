@@ -63,10 +63,13 @@
  *
  ****************************************************************************/
 
+#include <vector>
+
 #include <chrono>
 #include <cstdint>
-#include <cstring>
+#include <span>
 
+#include "base/buffer.h"
 #include "base/numeric.h"
 #include "winvq/vqa32/vqaplay.h"
 #include "winvq/vqa32/vqaplayp.h"
@@ -109,7 +112,11 @@ static void VQA_Audio_Callback(uint8_t* stream, int len) {
   auto* config = &VQAP->config;
 
   while (SDL_AudioStreamAvailable(SDLStream) < len) {
-    SDL_AudioStreamPut(SDLStream, audio->Buffer + audio->PlayPosition,
+    SDL_AudioStreamPut(SDLStream,
+                       audio->Buffer
+                           .subspan(base::ToSize(audio->PlayPosition),
+                                    base::ToSize(config->HMIBufSize))
+                           .data(),
                        config->HMIBufSize);
 
     /* Compute the 'NextBlock' index */
@@ -123,9 +130,9 @@ static void VQA_Audio_Callback(uint8_t* stream, int len) {
      * buffer play position & the 'CurBlock' value.
      * If not, don't change anything and replay this block.
      */
-    if (audio->IsLoaded[audio->NextBlock] == 1) {
+    if (audio->IsLoadedStorage[base::ToSize(audio->NextBlock)] == 1) {
       /* Update this block's status to loadable (0) */
-      audio->IsLoaded[audio->CurBlock] = 0;
+      audio->IsLoadedStorage[base::ToSize(audio->CurBlock)] = 0;
 
       /* Update position within audio buffer */
       audio->PlayPosition += config->HMIBufSize;
@@ -489,7 +496,7 @@ int32_t CopyAudio(VQAHandle* vqap) {
   /* If audio is disabled, or if we're playing from a VOC file, or if
    * there's no Audio Buffer, or if there's no data to copy, just return 0
    */
-  if ((config->OptionFlags & VQAOPTF_AUDIO) == 0 || audio->Buffer == nullptr ||
+  if ((config->OptionFlags & VQAOPTF_AUDIO) == 0 || audio->Buffer.empty() ||
       audio->TempBufLen == 0) {
     return 0;
   }
@@ -504,7 +511,7 @@ int32_t CopyAudio(VQAHandle* vqap) {
   }
 
   /* If 'endblock' hasn't played yet, return VQAERR_SLEEPING */
-  if (audio->IsLoaded[endblock] == 1) {
+  if (audio->IsLoadedStorage[base::ToSize(endblock)] == 1) {
     return VQAERR_SLEEPING;
   }
 
@@ -518,8 +525,10 @@ int32_t CopyAudio(VQAHandle* vqap) {
    */
   if (startblock <= endblock) {
     /* Copy data */
-    memcpy(audio->Buffer + audio->AudBufPos, audio->TempBuf,
-           base::ToSize(audio->TempBufLen));
+    base::CopyBytes(std::as_writable_bytes(
+                        audio->Buffer.subspan(base::ToSize(audio->AudBufPos))),
+                    std::as_bytes(std::span(audio->TempBufStorage)),
+                    audio->TempBufLen);
 
     /* Adjust current load position */
     audio->AudBufPos += audio->TempBufLen;
@@ -529,7 +538,7 @@ int32_t CopyAudio(VQAHandle* vqap) {
 
     /* Set all blocks to loaded */
     for (int32_t i = startblock; i < endblock; i++) {
-      audio->IsLoaded[i] = 1;
+      audio->IsLoadedStorage[base::ToSize(i)] = 1;
     }
 
     SDL_UnlockAudioDevice(config->AudioDeviceID);
@@ -540,10 +549,16 @@ int32_t CopyAudio(VQAHandle* vqap) {
   const int32_t len2 = audio->TempBufLen - len1;
 
   /* Copy 1st piece into end of Audio Buffer */
-  memcpy(audio->Buffer + audio->AudBufPos, audio->TempBuf, base::ToSize(len1));
+  base::CopyBytes(std::as_writable_bytes(
+                      audio->Buffer.subspan(base::ToSize(audio->AudBufPos))),
+                  std::as_bytes(std::span(audio->TempBufStorage)), len1);
 
   /* Copy 2nd piece into start of Audio Buffer */
-  memcpy(audio->Buffer, audio->TempBuf + len1, base::ToSize(len2));
+  base::CopyBytes(
+      std::as_writable_bytes(audio->Buffer),
+      std::as_bytes(
+          std::span(audio->TempBufStorage).subspan(base::ToSize(len1))),
+      len2);
 
   /* Adjust load position */
   audio->AudBufPos = len2;
@@ -553,11 +568,11 @@ int32_t CopyAudio(VQAHandle* vqap) {
 
   /* Set blocks to loaded */
   for (int32_t i = startblock; i < audio->NumAudBlocks; i++) {
-    audio->IsLoaded[i] = 1;
+    audio->IsLoadedStorage[base::ToSize(i)] = 1;
   }
 
   for (int32_t i = 0; i < endblock; i++) {
-    audio->IsLoaded[i] = 1;
+    audio->IsLoadedStorage[base::ToSize(i)] = 1;
   }
 
   SDL_UnlockAudioDevice(config->AudioDeviceID);

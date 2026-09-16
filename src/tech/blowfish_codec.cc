@@ -2,20 +2,20 @@
 
 #include <algorithm>
 #include <cstddef>
-#include <cstring>
 #include <iterator>
 #include <span>
 
+#include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/types.h"
 #include "tech/blowfish.h"
 #include "tech/byte_sink.h"
 
-void BlowfishCodec::Key(const void* key, int length) {
+void BlowfishCodec::Key(std::span<const std::byte> key) {
   if (!engine_.has_value()) {
     engine_.emplace();
   }
-  engine_->Submit_Key(key, length);
+  engine_->Submit_Key(key);
 }
 
 bool BlowfishCodec::Process(std::span<const std::byte> in, ByteSink& out) {
@@ -26,14 +26,14 @@ bool BlowfishCodec::Process(std::span<const std::byte> in, ByteSink& out) {
   bool written = true;
   while (!in.empty()) {
     const base::ssize take = std::min(kBlockSize - count_, std::ssize(in));
-    std::memcpy(block_.data() + count_, in.data(), base::ToSize(take));
+    base::CopyBytes(std::span(block_).subspan(base::ToSize(count_)), in, take);
     count_ += take;
     in = in.subspan(base::ToSize(take));
     if (count_ == kBlockSize) {
       if (mode_ == CipherMode::kDecrypt) {
-        engine.Decrypt(block_.data(), kBlockSize, block_.data());
+        engine.Decrypt(block_, block_);
       } else {
-        engine.Encrypt(block_.data(), kBlockSize, block_.data());
+        engine.Encrypt(block_, block_);
       }
       written = out.Write(block_) && written;
       count_ = 0;

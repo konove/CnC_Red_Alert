@@ -132,7 +132,9 @@
 #ifndef CNC_RED_ALERT_TD_IPXMGR_H_
 #define CNC_RED_ALERT_TD_IPXMGR_H_
 
+#include <cstddef>
 #include <cstdint>
+#include <span>
 
 /*
 ********************************* Includes **********************************
@@ -209,14 +211,16 @@ class IPXManagerClass : public ConnManClass {
   /*.....................................................................
   This is how the application sends & receives messages.
   .....................................................................*/
-  int Send_Global_Message(void* buf, int buflen, int ack_req = 0,
-                          IPXAddressClass* address = nullptr);
-  int Get_Global_Message(void* buf, int* buflen, IPXAddressClass* address,
-                         uint16_t* product_id);
+  int Send_Global_Message(std::span<const std::byte> buf, int buflen,
+                          int ack_req = 0, IPXAddressClass* address = nullptr);
+  int Get_Global_Message(std::span<std::byte> buf, int* buflen,
+                         IPXAddressClass* address, uint16_t* product_id);
 
-  int Send_Private_Message(void* buf, int buflen, int ack_req = 1,
+  int Send_Private_Message(std::span<const std::byte> buf, int buflen,
+                           int ack_req = 1,
                            int conn_id = kConnectionNone) override;
-  int Get_Private_Message(void* buf, int* buflen, int* conn_id) override;
+  int Get_Private_Message(std::span<std::byte> buf, int* buflen,
+                          int* conn_id) override;
 
   /*.....................................................................
   The main polling routine; should be called as often as possible.
@@ -256,7 +260,7 @@ class IPXManagerClass : public ConnManClass {
   /*.....................................................................
   This routine returns a pointer to the oldest non-ACK'd buffer I've sent.
   .....................................................................*/
-  void* Oldest_Send();
+  std::span<const std::byte> Oldest_Send();
 
   /*.....................................................................
   Debug routines

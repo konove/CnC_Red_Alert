@@ -6,9 +6,11 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <span>
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
+#include "base/buffer.h"
 #include "port/bytes_of.h"
 #include "ra/externs.h"
 #include "sdllib/gbuffer.h"
@@ -37,14 +39,14 @@ void PaletteClass::Set(int fade, void (*callback)()) {
       const int cur_time = static_cast<int>(
           std::min<int64_t>(TickCount.Value() - start_time, fade));
 
-      const unsigned char* old_ptr = CurrentPalette;
-      const unsigned char* new_ptr = *this;
-      unsigned char* out_ptr = fade_palette;
+      const auto old_bytes = CurrentPalette.bytes();
+      const auto new_bytes = bytes();
+      const auto out_bytes = fade_palette.bytes();
 
       for (int c = 0; c < COLOR_COUNT * 3; c++) {
-        const int new_val = *new_ptr++ & 0x3F;
-        const int old_val = *old_ptr++ & 0x3F;
-        *out_ptr++ = static_cast<unsigned char>(
+        const int new_val = new_bytes[static_cast<size_t>(c)] & 0x3F;
+        const int old_val = old_bytes[static_cast<size_t>(c)] & 0x3F;
+        out_bytes[static_cast<size_t>(c)] = static_cast<unsigned char>(
             old_val + ((new_val - old_val) * cur_time / fade));
       }
 
@@ -119,7 +121,11 @@ PaletteClass::operator const unsigned char*() const {
   return port::BytesOf(data_);
 }
 
-void Set_Palette(void* palette) {
-  memcpy(&PaletteClass::CurrentPalette, palette, static_cast<std::size_t>(PaletteClass::COLOR_COUNT) * 3);
+void Set_Palette(std::span<const unsigned char> palette) {
+  if (palette.size() < static_cast<size_t>(PaletteClass::COLOR_COUNT) * 3) {
+    return;
+  }
+  base::CopyBytes(std::as_writable_bytes(PaletteClass::CurrentPalette.bytes()),
+                  std::as_bytes(palette), PaletteClass::COLOR_COUNT * 3);
   Do_Set_Palette(palette);
 }

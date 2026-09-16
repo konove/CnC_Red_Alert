@@ -58,6 +58,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <span>
 #include <string>
 
 #include "magic_enum/magic_enum.hpp"
@@ -75,8 +76,8 @@
 #include "sdllib/shape.h"
 #include "tech/mix_archive.h"
 
-const void* AircraftTypeClass::LRotorData = nullptr;
-const void* AircraftTypeClass::RRotorData = nullptr;
+std::span<const std::byte> AircraftTypeClass::LRotorData = {};
+std::span<const std::byte> AircraftTypeClass::RRotorData = {};
 
 // Badger bomber
 static const AircraftTypeClass BadgerPlane(
@@ -371,7 +372,7 @@ void AircraftTypeClass::Init_Heap() {
 AircraftType AircraftTypeClass::From_Name(const char* name) {
   if (name != nullptr) {
     for (const AircraftType classid : magic_enum::enum_values<AircraftType>()) {
-      if (stricmp(As_Reference(classid).IniName, name) == 0) {
+      if (port::CompareIgnoreCase(As_Reference(classid).IniName, name) == 0) {
         return classid;
       }
     }
@@ -388,15 +389,15 @@ void AircraftTypeClass::One_Time() {
 
     // Load cameo icon: "<GraphicName>ICON.SHP"
     const auto cameo_file = std::string(uclass.Graphic_Name()) + "ICON.SHP";
-    uclass.CameoData = MixArchive::Retrieve(cameo_file);
+    uclass.CameoData = MixArchive::RetrieveData(cameo_file);
 
     // Load aircraft shape: "<GraphicName>.SHP"
     const auto shape_file = std::string(uclass.Graphic_Name()) + ".SHP";
     uclass.SetBorrowedImage(MixArchive::RetrieveData(shape_file));
   }
 
-  LRotorData = MixArchive::Retrieve("LROTOR.SHP");
-  RRotorData = MixArchive::Retrieve("RROTOR.SHP");
+  LRotorData = MixArchive::RetrieveData("LROTOR.SHP");
+  RRotorData = MixArchive::RetrieveData("RROTOR.SHP");
 }
 
 /***********************************************************************************************
@@ -438,7 +439,7 @@ ObjectClass* AircraftTypeClass::Create_One_Of(HouseClass* house) const {
  *=============================================================================================*/
 void AircraftTypeClass::Prep_For_Add() {
   for (const AircraftType index : magic_enum::enum_values<AircraftType>()) {
-    if (As_Reference(index).Get_Image_Data()) {
+    if (!As_Reference(index).Get_Image_Data().empty()) {
       Map.Add_To_List(&As_Reference(index));
     }
   }
@@ -467,8 +468,8 @@ void AircraftTypeClass::Prep_For_Add() {
 void AircraftTypeClass::Display(int x, int y, WindowNumberType window,
                                 HousesType /*unused*/) const {
   int shape = 0;
-  const void* ptr = Get_Cameo_Data();
-  if (ptr == nullptr) {
+  auto ptr = Get_Cameo_Data();
+  if (ptr.empty()) {
     ptr = Get_Image_Data();
     shape = 5;
   }
@@ -491,7 +492,8 @@ void AircraftTypeClass::Display(int x, int y, WindowNumberType window,
  *                                                                                             *
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
-const int16_t* AircraftTypeClass::Occupy_List(bool /*placement*/) const {
+std::span<const int16_t> AircraftTypeClass::Occupy_List(
+    bool /*placement*/) const {
   static const int16_t _list[] = {0, kRefreshEol};
   return _list;
 }
@@ -511,7 +513,7 @@ const int16_t* AircraftTypeClass::Occupy_List(bool /*placement*/) const {
  *                                                                                             *
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
-const int16_t* AircraftTypeClass::Overlap_List() const {
+std::span<const int16_t> AircraftTypeClass::Overlap_List() const {
   static const int16_t _list[] = {
       -(MAP_CELL_W - 1), -MAP_CELL_W, -(MAP_CELL_W + 1), -1,         1,
       (MAP_CELL_W - 1),  MAP_CELL_W,  (MAP_CELL_W + 1),  kRefreshEol};

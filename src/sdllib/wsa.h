@@ -46,7 +46,10 @@
 #ifndef CNC_RED_ALERT_SDLLIB_WSA_H_
 #define CNC_RED_ALERT_SDLLIB_WSA_H_
 
+#include <cstddef>
+
 #include <cstdint>
+#include <span>
 
 #include "absl/base/attributes.h"
 #include "base/attributes.h"
@@ -88,9 +91,10 @@ inline constexpr bool base::kIsFlagEnum<WSAOpenType> = true;
 /*=========================================================================*/
 
 void* Open_Animation(const char* file_name,
-                     char* user_buffer ABSL_ATTRIBUTE_LIFETIME_BOUND,
+                     std::span<uint8_t> user_buffer
+                         ABSL_ATTRIBUTE_LIFETIME_BOUND,
                      int32_t user_buffer_size, WSAOpenType user_flags,
-                     unsigned char* palette = nullptr);
+                     std::span<uint8_t> palette = {});
 void Close_Animation(void* handle);
 bool Animate_Frame(void* handle, GraphicViewPortClass& view, int frame_number,
                    int x_pixel = 0, int y_pixel = 0,
@@ -103,10 +107,12 @@ int Get_Animation_Frame_Count(void* handle);
  */
 /*=========================================================================*/
 
-extern "C" {
-unsigned int Apply_XOR_Delta(void* target, const void* delta);
-void Apply_XOR_Delta_To_Page_Or_Viewport(void* target, void* delta, int width,
-                                         int nextrow, int copy);
-}
+unsigned int Apply_XOR_Delta(std::span<uint8_t> target,
+                             std::span<const std::byte> delta);
+unsigned int Apply_XOR_Delta(std::span<uint8_t> target,
+                             std::span<const uint8_t> delta);
+void Apply_XOR_Delta_To_Page_Or_Viewport(std::span<uint8_t> target,
+                                         std::span<const uint8_t> delta,
+                                         int width, int nextrow, int copy);
 
 #endif  // CNC_RED_ALERT_SDLLIB_WSA_H_

@@ -53,16 +53,19 @@
 #include "td/score.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
+#include <span>
 #include <string_view>
 #include <utility>
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/buffer.h"
-#include "base/types.h"
+#include "base/numeric.h"
+#include "port/bytes_of.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/file_access.h"
 #include "sdllib/font.h"
@@ -118,14 +121,14 @@
 #define MAX_FAMENAME_LENGTH 12
 
 static struct InfantryAnim {
-  int xpos;
-  int ypos;
-  const void* shapefile;
-  const void* remap;
-  int anim;
-  int stage;
-  char delay;
-  const InfantryTypeClass* Class;
+  int xpos{};
+  int ypos{};
+  std::span<const std::byte> shapefile;
+  std::span<const uint8_t> remap;
+  int anim{};
+  int stage{};
+  char delay{};
+  const InfantryTypeClass* Class{};
 } InfantryMan[NUMINFANTRYMEN];
 static void Draw_InfantryMen();
 static void Draw_InfantryMan(int index);
@@ -135,7 +138,7 @@ static void Animate_Cursor(int pos, int ypos);
 static void Animate_Score_Objs();
 static void Cycle_Wait_Click();
 
-static const void* Beepy6;
+static std::span<const std::byte> Beepy6;
 
 bool ControlQ;  // cheat key to skip past score/mapsel screens
 
@@ -299,15 +302,22 @@ struct Fame {
 
 ScoreAnimClass* ScoreObjs[MAXSCOREOBJS];
 
-ScoreAnimClass::ScoreAnimClass(int x, int y, const void* data)
+ScoreAnimClass::ScoreAnimClass(int x, int y, std::span<const std::byte> data)
     : XPos(x), YPos(y), DataPtr(data) {
+  Timer.Set(0);
+  Timer.Start();
+}
+
+ScoreAnimClass::ScoreAnimClass(int x, int y, const char* text)
+    : XPos(x), YPos(y), TextData(text) {
   BlitList.Add(x * 2, y * 2, x * 2, y * 2, 2 * String_Pixel_Width(Text()), 16);
 
   Timer.Set(0);
   Timer.Start();
 }
 
-ScoreTimeClass::ScoreTimeClass(int xpos, int ypos, const void* data, int max,
+ScoreTimeClass::ScoreTimeClass(int xpos, int ypos,
+                               std::span<const std::byte> data, int max,
                                int timer)
     : ScoreAnimClass(xpos, ypos, data), MaxStage(max), TimerReset(timer) {
   Stage = 0;
@@ -321,19 +331,20 @@ void ScoreTimeClass::Update() {
     }
     GraphicViewPortClass* oldpage = LogicPage;
     Set_Logic_Page(PseudoSeenBuff);
-    CC_Draw_Shape(DataPtr, Stage, XPos, YPos, WINDOW_MAIN, SHAPE_WIN_REL,
-                  nullptr, nullptr);
+    CC_Draw_Shape(DataPtr, Stage, XPos, YPos, WINDOW_MAIN, SHAPE_WIN_REL, {},
+                  {});
     Set_Logic_Page(oldpage);
   }
 }
 
-ScoreCredsClass::ScoreCredsClass(int xpos, int ypos, const void* data, int max,
+ScoreCredsClass::ScoreCredsClass(int xpos, int ypos,
+                                 std::span<const std::byte> data, int max,
                                  int timer)
     : ScoreAnimClass(xpos, ypos, data),
       MaxStage(max),
       TimerReset(timer),
-      CashTurn(MixArchive::Retrieve("CASHTURN.AUD")),
-      Clock1(MixArchive::Retrieve("CLOCK1.AUD")) {
+      CashTurn(MixArchive::RetrieveData("CASHTURN.AUD")),
+      Clock1(MixArchive::RetrieveData("CLOCK1.AUD")) {
   Stage = 0;
 }
 
@@ -352,22 +363,24 @@ void ScoreCredsClass::Update() {
         Play_Sample(CashTurn, 255, Options.Normalize_Sound(70));
       }
     }
-    CC_Draw_Shape(DataPtr, Stage, XPos, YPos, WINDOW_MAIN, SHAPE_WIN_REL,
-                  nullptr, nullptr);
+    CC_Draw_Shape(DataPtr, Stage, XPos, YPos, WINDOW_MAIN, SHAPE_WIN_REL, {},
+                  {});
     Set_Logic_Page(oldpage);
   }
 }
 
 ScorePrintClass::ScorePrintClass(int string, int xpos, int ypos,
-                                 const void* palette, int background)
+                                 std::span<const uint8_t> palette,
+                                 int background)
     : ScoreAnimClass(xpos, ypos, Text_String(string)),
       Background(background),
       PrimaryPalette(palette) {
   Stage = 0;
 }
 
-ScorePrintClass::ScorePrintClass(const void* string, int xpos, int ypos,
-                                 const void* palette, int background)
+ScorePrintClass::ScorePrintClass(const char* string, int xpos, int ypos,
+                                 std::span<const uint8_t> palette,
+                                 int background)
     : ScoreAnimClass(xpos, ypos, string),
       Background(background),
       PrimaryPalette(palette) {
@@ -376,10 +389,11 @@ ScorePrintClass::ScorePrintClass(const void* string, int xpos, int ypos,
 
 void ScorePrintClass::Update() {
   static char localstr[2] = {0, 0};
-  static char _whitepal[] = {0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F,
-                             0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F};
+  static const unsigned char _whitepal[] = {0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F,
+                                            0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F,
+                                            0x0F, 0x0F, 0x0F, 0x0F};
 
-  if (Stage && Text()[Stage - 1] == 0) {
+  if (Stage && Text_At(Stage - 1) == 0) {
     for (auto& ScoreObj : ScoreObjs) {
       if (ScoreObj == this) {
         ScoreObj = nullptr;
@@ -397,12 +411,12 @@ void ScorePrintClass::Update() {
 
     const int pos = XPos + (Stage * 6);
     if (Stage) {
-      localstr[0] = Text()[Stage - 1];
+      base::At(localstr, 0) = Text_At(Stage - 1);
 
       /*
       ** Clear out the white letter overlay
       */
-      static const char _blackpal[] = {
+      static const unsigned char _blackpal[] = {
           kBlack, kBlack, kBlack, kBlack, kBlack, kBlack, kBlack, kBlack,
           kBlack, kBlack, kBlack, kBlack, kBlack, kBlack, kBlack, kBlack};
       Set_Font_Palette(_blackpal);
@@ -417,8 +431,8 @@ void ScorePrintClass::Update() {
       TextPrintBuffer->Print(localstr, 2 * (pos - 6), 2 * YPos, kTBlack,
                              kTBlack);
     }
-    if (Text()[Stage]) {
-      localstr[0] = Text()[Stage];
+    if (Text_At(Stage)) {
+      base::At(localstr, 0) = Text_At(Stage);
       Set_Font_Palette(_whitepal);
       TextPrintBuffer->Print(localstr, pos * 2, 2 * (YPos - 1), kTBlack,
                              kTBlack);
@@ -432,15 +446,17 @@ void ScorePrintClass::Update() {
 }
 
 MultiStagePrintClass::MultiStagePrintClass(int string, int xpos, int ypos,
-                                           const void* palette, int background)
+                                           std::span<const uint8_t> palette,
+                                           int background)
     : ScoreAnimClass(xpos, ypos, Text_String(string)),
       Background(background),
       PrimaryPalette(palette) {
   Stage = 0;
 }
 
-MultiStagePrintClass::MultiStagePrintClass(const void* string, int xpos,
-                                           int ypos, const void* palette,
+MultiStagePrintClass::MultiStagePrintClass(const char* string, int xpos,
+                                           int ypos,
+                                           std::span<const uint8_t> palette,
                                            int background)
     : ScoreAnimClass(xpos, ypos, string),
       Background(background),
@@ -450,10 +466,11 @@ MultiStagePrintClass::MultiStagePrintClass(const void* string, int xpos,
 
 void MultiStagePrintClass::Update() {
   static char localstr[2] = {0, 0};
-  static char _whitepal[] = {0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F,
-                             0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F};
+  static const unsigned char _whitepal[] = {0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F,
+                                            0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F,
+                                            0x0F, 0x0F, 0x0F, 0x0F};
 
-  if (Stage && Text()[Stage - 1] == 0) {
+  if (Stage && Text_At(Stage - 1) == 0) {
     for (auto& ScoreObj : ScoreObjs) {
       if (ScoreObj == this) {
         ScoreObj = nullptr;
@@ -475,12 +492,12 @@ void MultiStagePrintClass::Update() {
     for (int wibble = 0; wibble < 10; wibble++) {
       const int pos = XPos + (Stage * 6);
       if (Stage) {
-        localstr[0] = Text()[Stage - 1];
+        base::At(localstr, 0) = Text_At(Stage - 1);
 
         /*
         ** Clear out the white letter overlay
         */
-        static const char _blackpal[] = {
+        static const unsigned char _blackpal[] = {
             kBlack, kBlack, kBlack, kBlack, kBlack, kBlack, kBlack, kBlack,
             kBlack, kBlack, kBlack, kBlack, kBlack, kBlack, kBlack, kBlack};
         Set_Font_Palette(_blackpal);
@@ -495,8 +512,8 @@ void MultiStagePrintClass::Update() {
         TextPrintBuffer->Print(localstr, 2 * (pos - 6), 2 * YPos, kTBlack,
                                kTBlack);
       }
-      if (Text()[Stage]) {
-        localstr[0] = Text()[Stage];
+      if (Text_At(Stage)) {
+        base::At(localstr, 0) = Text_At(Stage);
         Set_Font_Palette(_whitepal);
         TextPrintBuffer->Print(localstr, pos * 2, 2 * (YPos - 1), kTBlack,
                                kTBlack);
@@ -507,16 +524,16 @@ void MultiStagePrintClass::Update() {
       }
       Stage++;
 
-      if (Text()[Stage - 1] == 0) {
+      if (Text_At(Stage - 1) == 0) {
         break;
       }
     }
   }
 }
 
-ScoreScaleClass::ScoreScaleClass(const void* string, int xpos, int ypos,
-                                 const unsigned char palette[])
-    : ScoreAnimClass(xpos, ypos, string), Palette(&palette[0]) {
+ScoreScaleClass::ScoreScaleClass(const char* string, int xpos, int ypos,
+                                 std::span<const uint8_t> palette)
+    : ScoreAnimClass(xpos, ypos, string), Palette(palette) {
   Stage = 5;
 }
 
@@ -660,8 +677,8 @@ void ScoreClass::Presentation() {
   //	int gdikilled, nodkilled, civkilled, max, i, k, shapenum;
   int i = 0;
   int max = 0;
-  const void* yellowptr = nullptr;
-  const void* redptr = nullptr;
+  std::span<const std::byte> yellowptr = {};
+  std::span<const std::byte> redptr = {};
   GameFile file("HALLFAME.DAT");
   struct Fame hallfame[NUMFAMENAMES];
   const int oldfontxspacing = FontXSpacing;
@@ -682,10 +699,9 @@ void ScoreClass::Presentation() {
     return;
   }
 
-  PseudoSeenBuff =
-      new GraphicBufferClass(320, 200, static_cast<void*>(nullptr));
-  TextPrintBuffer = new GraphicBufferClass(
-      SeenBuff.Get_Width(), SeenBuff.Get_Height(), static_cast<void*>(nullptr));
+  PseudoSeenBuff = new GraphicBufferClass(320, 200, {});
+  TextPrintBuffer =
+      new GraphicBufferClass(SeenBuff.Get_Width(), SeenBuff.Get_Height(), {});
   TextPrintBuffer->Clear();
   BlitList.Clear();
 
@@ -703,14 +719,14 @@ void ScoreClass::Presentation() {
 
   Set_Logic_Page(SysMemPage);
 
-  const void* country4 = MixArchive::Retrieve("COUNTRY4.AUD");
-  const void* sfx4 = MixArchive::Retrieve("SFX4.AUD");
-  Beepy6 = MixArchive::Retrieve("BEEPY6.AUD");
+  const auto country4 = MixArchive::RetrieveData("COUNTRY4.AUD");
+  const auto sfx4 = MixArchive::RetrieveData("SFX4.AUD");
+  Beepy6 = MixArchive::RetrieveData("BEEPY6.AUD");
 
   /*
   ** Load the background for the score screen
   */
-  void* anim = Open_Animation(base::At(ScreenNames, house), nullptr, 0L,
+  void* anim = Open_Animation(base::At(ScreenNames, house), {}, 0L,
                               WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, Palette);
 
   const int minutes = static_cast<int>(ElapsedTime / kTimerMinute) + 1;
@@ -778,12 +794,12 @@ void ScoreClass::Presentation() {
 
   // Load up the shapes for the Nod score screen
   if (player_house == HOUSE_GOOD) {
-    yellowptr = MixArchive::Retrieve("BAR3YLW.SHP");
-    redptr = MixArchive::Retrieve("BAR3RED.SHP");
+    yellowptr = MixArchive::RetrieveData("BAR3YLW.SHP");
+    redptr = MixArchive::RetrieveData("BAR3RED.SHP");
   }
 
   /* Change to the six-point font for Text_Print */
-  const void* oldfont = Set_Font(ScoreFontPtr);
+  const std::span<const std::byte> oldfont = Set_Font(ScoreFontPtr);
   Call_Back();
 
   /* --- Now display the background animation --- */
@@ -814,13 +830,13 @@ void ScoreClass::Presentation() {
   /*
   ** Background's up, so now load various shapes and animations
   */
-  const void* timeshape = MixArchive::Retrieve("TIME.SHP");
-  ScoreObjs[0] = new ScoreTimeClass(233, 2, timeshape, 30, 4);
+  const auto timeshape = MixArchive::RetrieveData("TIME.SHP");
+  base::At(ScoreObjs, 0) = new ScoreTimeClass(233, 2, timeshape, 30, 4);
 
-  const void* hiscore1shape = MixArchive::Retrieve("HISCORE1.SHP");
-  const void* hiscore2shape = MixArchive::Retrieve("HISCORE2.SHP");
-  ScoreObjs[1] = new ScoreTimeClass(4, 97, hiscore1shape, 10, 4);
-  ScoreObjs[2] = new ScoreTimeClass(8, 172, hiscore2shape, 10, 4);
+  const auto hiscore1shape = MixArchive::RetrieveData("HISCORE1.SHP");
+  const auto hiscore2shape = MixArchive::RetrieveData("HISCORE2.SHP");
+  base::At(ScoreObjs, 1) = new ScoreTimeClass(4, 97, hiscore1shape, 10, 4);
+  base::At(ScoreObjs, 2) = new ScoreTimeClass(8, 172, hiscore2shape, 10, 4);
 
   /* Now display the stuff */
   PseudoSeenBuff->Blit(SysMemPage);
@@ -829,9 +845,8 @@ void ScoreClass::Presentation() {
     /*
     ** load the logo
     */
-    const void* logoptr = MixArchive::Retrieve("LOGOS.SHP");
-    CC_Draw_Shape(logoptr, 1, 0, 0, WINDOW_MAIN, SHAPE_WIN_REL, nullptr,
-                  nullptr);
+    const auto logoptr = MixArchive::RetrieveData("LOGOS.SHP");
+    CC_Draw_Shape(logoptr, 1, 0, 0, WINDOW_MAIN, SHAPE_WIN_REL, {}, {});
 
     Bit_It_In(0, 0, 128, 104 - 16, &SysMemPage, PseudoSeenBuff, 1);
   }
@@ -990,8 +1005,8 @@ void ScoreClass::Presentation() {
   ** remove their data, move everyone down a notch, and set index = where
   ** their info goes
   */
-  if (hallfame[NUMFAMENAMES - 1].score >= total) {
-    hallfame[NUMFAMENAMES - 1].score = 0;
+  if (base::At(hallfame, NUMFAMENAMES - 1).score >= total) {
+    base::At(hallfame, NUMFAMENAMES - 1).score = 0;
   }
   int index = 0;
   for (index = 0; index < NUMFAMENAMES; index++) {
@@ -1006,9 +1021,9 @@ void ScoreClass::Presentation() {
       //			hallfame[index].level = BuildLevel;
       // hallfame[index].name[0] = 0;	// blank out the name
       base::FillBytes(base::ObjectBytes(base::At(hallfame, index).name), ' ',
-                      sizeof(hallfame[index].name) - 1);
+                      sizeof(base::At(hallfame, index).name) - 1);
       base::At(base::At(hallfame, index).name,
-               sizeof(hallfame[index].name) - 1) = 0;
+               sizeof(base::At(hallfame, index).name) - 1) = 0;
       break;
     }
   }
@@ -1022,17 +1037,19 @@ void ScoreClass::Presentation() {
     Alloc_Object(new ScorePrintClass(base::At(hallfame, j).name, HALLFAME_X,
                                      HALLFAME_Y + (j * 8), bluepal));
     if (base::At(hallfame, j).score) {
-      char* str = static_cast<char*>(SysMemPage.Get_Buffer()) +
-                  (static_cast<base::ssize>(j) * 32);
-      absl::SNPrintF(str, 16, "%d", base::At(hallfame, j).score);
-      Alloc_Object(new ScorePrintClass(str, HALLFAME_X + (6 * 15),
+      const auto str = port::CharBytes(SysMemPage.Get_Bytes())
+                           .subspan(base::ToSize(j) * 32, 32);
+      absl::SNPrintF(str.data(), 16, "%d", base::At(hallfame, j).score);
+      Alloc_Object(new ScorePrintClass(str.data(), HALLFAME_X + (6 * 15),
                                        HALLFAME_Y + (j * 8), bluepal, kBlack));
       if (base::At(hallfame, j).level < 20) {
-        absl::SNPrintF(str + 16, 16, "%d", base::At(hallfame, j).level);
+        absl::SNPrintF(str.subspan(16).data(), 16, "%d",
+                       base::At(hallfame, j).level);
       } else {
-        absl::SNPrintF(str + 16, 16, "**");
+        absl::SNPrintF(str.subspan(16).data(), 16, "**");
       }
-      Alloc_Object(new ScorePrintClass(str + 16, HALLFAME_X + (6 * 12),
+      Alloc_Object(new ScorePrintClass(str.subspan(16).data(),
+                                       HALLFAME_X + (6 * 12),
                                        HALLFAME_Y + (j * 8), bluepal, kBlack));
       Call_Back_Delay(13);
     }
@@ -1121,11 +1138,13 @@ void Cycle_Wait_Click() {
             static_cast<uint32_t>(NullModem.Response_Time());
         sendpacket.ID = static_cast<unsigned char>(ModemGameToPlay);
 
-        NullModem.Send_Message(&sendpacket, sizeof(sendpacket), 0);
+        NullModem.Send_Message(base::ObjectBytes(sendpacket),
+                               sizeof(sendpacket), 0);
         timingtime = TickCount.Time();
       }
 
-      if (NullModem.Get_Message(&receivepacket, &packetlen) > 0) {
+      if (NullModem.Get_Message(base::ObjectBytes(receivepacket), &packetlen) >
+          0) {
         // throw packet away
       }
 
@@ -1146,9 +1165,12 @@ void Cycle_Wait_Click() {
       const unsigned char b = Palette[(233 * 3) + 2];
 
       for (int i = 233; i < 237; i++) {
-        Palette[(i * 3) + 0] = Palette[((i + 1) * 3) + 0];
-        Palette[(i * 3) + 1] = Palette[((i + 1) * 3) + 1];
-        Palette[(i * 3) + 2] = Palette[((i + 1) * 3) + 2];
+        Palette[base::ToSize((i * 3) + 0)] =
+            Palette[base::ToSize(((i + 1) * 3) + 0)];
+        Palette[base::ToSize((i * 3) + 1)] =
+            Palette[base::ToSize(((i + 1) * 3) + 1)];
+        Palette[base::ToSize((i * 3) + 2)] =
+            Palette[base::ToSize(((i + 1) * 3) + 2)];
       }
       Palette[(237 * 3) + 0] = r;
       Palette[(237 * 3) + 1] = g;
@@ -1163,10 +1185,9 @@ void Cycle_Wait_Click() {
 // Not const: plays the score screen animation.
 // NOLINTNEXTLINE(readability-make-member-function-const)
 void ScoreClass::Do_Nod_Buildings_Graph() {
-
-  const void* factptr = MixArchive::Retrieve("FACT.SHP");
-  const void* rmboptr = MixArchive::Retrieve("RMBO.SHP");
-  const void* fball1ptr = MixArchive::Retrieve("FBALL1.SHP");
+  const auto factptr = MixArchive::RetrieveData("FACT.SHP");
+  const auto rmboptr = MixArchive::RetrieveData("RMBO.SHP");
+  const auto fball1ptr = MixArchive::RetrieveData("FBALL1.SHP");
   const InfantryTypeClass* ramboclass =
       &InfantryTypeClass::As_Reference(INFANTRY_E5);
 
@@ -1227,7 +1248,7 @@ void ScoreClass::Do_Nod_Buildings_Graph() {
         CC_Draw_Shape(
             fball1ptr, shapeindex, 10, 10, WINDOW_MAIN,
             SHAPE_FADING | SHAPE_CENTER | SHAPE_WIN_REL,  //|SHAPE_GHOST,
-            ScoreRemapFBall, nullptr);
+            ScoreRemapFBall, {});
       }
       if (i > 64) {
         shapeindex = (i - 64) / 2;
@@ -1235,7 +1256,7 @@ void ScoreClass::Do_Nod_Buildings_Graph() {
           CC_Draw_Shape(
               fball1ptr, shapeindex, 50, 30, WINDOW_MAIN,
               SHAPE_FADING | SHAPE_CENTER | SHAPE_WIN_REL,  //|SHAPE_GHOST,
-              ScoreRemapFBall, nullptr);
+              ScoreRemapFBall, {});
         }
       }
     }
@@ -1255,7 +1276,7 @@ void ScoreClass::Do_Nod_Buildings_Graph() {
     /*
     ** Extra font related stuff. ST - 7/29/96 2:22PM
     */
-    Interpolate_2X_Scale(PseudoSeenBuff, &HidPage, nullptr);
+    Interpolate_2X_Scale(PseudoSeenBuff, &HidPage, {});
     BlitList.Update();
     WWMouse->Draw_Mouse(&HidPage);
     HidPage.Blit(SeenBuff);
@@ -1296,8 +1317,9 @@ void ScoreClass::Do_Nod_Buildings_Graph() {
  *   05/03/1995 BWG : Created.                                             *
  *=========================================================================*/
 
-void ScoreClass::Do_GDI_Graph(const void* yellowptr, const void* redptr,
-                              int gkilled, int nkilled, int ypos) {
+void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
+                              std::span<const std::byte> redptr, int gkilled,
+                              int nkilled, int ypos) {
   int gdikilled = gkilled;
   int nodkilled = nkilled;
 
@@ -1321,16 +1343,15 @@ void ScoreClass::Do_GDI_Graph(const void* yellowptr, const void* redptr,
   // Draw the white-flash shape on the hidpage
   Set_Logic_Page(SysMemPage);
   SysMemPage.Fill_Rect(0, 0, 124, 9, kTBlack);
-  CC_Draw_Shape(redptr, 120, 0, 0, WINDOW_MAIN, SHAPE_WIN_REL, nullptr,
-                nullptr);
+  CC_Draw_Shape(redptr, 120, 0, 0, WINDOW_MAIN, SHAPE_WIN_REL, {}, {});
   Set_Logic_Page(PseudoSeenBuff);
 
   BlitList.Add(594, 2 * (ypos + 2), 594, 2 * (ypos + 2), 5 * 12, 12);
 
   for (int i = 1; i <= gdikilled; i++) {
     if (i != gdikilled) {
-      CC_Draw_Shape(yellowptr, i, 172, ypos, WINDOW_MAIN, SHAPE_WIN_REL,
-                    nullptr, nullptr);
+      CC_Draw_Shape(yellowptr, i, 172, ypos, WINDOW_MAIN, SHAPE_WIN_REL, {},
+                    {});
     } else {
       SysMemPage.Blit(*PseudoSeenBuff, 0, 0, 172, ypos, 3 + gdikilled, 9);
     }
@@ -1341,8 +1362,8 @@ void ScoreClass::Do_GDI_Graph(const void* yellowptr, const void* redptr,
       Call_Back_Delay(2);
     }
   }
-  CC_Draw_Shape(yellowptr, gdikilled, 172, ypos, WINDOW_MAIN, SHAPE_WIN_REL,
-                nullptr, nullptr);
+  CC_Draw_Shape(yellowptr, gdikilled, 172, ypos, WINDOW_MAIN, SHAPE_WIN_REL, {},
+                {});
   Count_Up_Print("%d", gkilled, gkilled, 297, ypos + 2);
   if (!Check_Key()) {
     Call_Back_Delay(40);
@@ -1351,8 +1372,8 @@ void ScoreClass::Do_GDI_Graph(const void* yellowptr, const void* redptr,
   BlitList.Add(594, 2 * (ypos + 14), 594, 2 * (ypos + 14), 5 * 12, 12);
   for (int i = 1; i <= nodkilled; i++) {
     if (i != nodkilled) {
-      CC_Draw_Shape(redptr, i, 172, ypos + 12, WINDOW_MAIN, SHAPE_WIN_REL,
-                    nullptr, nullptr);
+      CC_Draw_Shape(redptr, i, 172, ypos + 12, WINDOW_MAIN, SHAPE_WIN_REL, {},
+                    {});
     } else {
       SysMemPage.Blit(*PseudoSeenBuff, 0, 0, 172, ypos + 12, 3 + nodkilled, 9);
     }
@@ -1370,7 +1391,7 @@ void ScoreClass::Do_GDI_Graph(const void* yellowptr, const void* redptr,
   ** Make sure accurate count is printed at end
   */
   CC_Draw_Shape(redptr, nodkilled, 172, ypos + 12, WINDOW_MAIN, SHAPE_WIN_REL,
-                nullptr, nullptr);
+                {}, {});
   Count_Up_Print("%d", nkilled, nkilled, 297, ypos + 14);
   if (!Check_Key()) {
     Call_Back_Delay(40);
@@ -1380,9 +1401,8 @@ void ScoreClass::Do_GDI_Graph(const void* yellowptr, const void* redptr,
 // Not const: plays the score screen animation.
 // NOLINTNEXTLINE(readability-make-member-function-const)
 void ScoreClass::Do_Nod_Casualties_Graph() {
-
-  const void* e1ptr = MixArchive::Retrieve("E1.SHP");
-  const void* c1ptr = MixArchive::Retrieve("C1.SHP");
+  const auto e1ptr = MixArchive::RetrieveData("E1.SHP");
+  const auto c1ptr = MixArchive::RetrieveData("C1.SHP");
 
   int gdikilled = GKilled;
   int nodkilled = NKilled;
@@ -1447,7 +1467,7 @@ void ScoreClass::Do_Nod_Casualties_Graph() {
   /*
   ** Extra font related stuff. ST - 7/29/96 2:22PM
   */
-  Interpolate_2X_Scale(PseudoSeenBuff, &HidPage, nullptr);
+  Interpolate_2X_Scale(PseudoSeenBuff, &HidPage, {});
   BlitList.Update();
   WWMouse->Draw_Mouse(&HidPage);
   HidPage.Blit(SeenBuff);
@@ -1512,7 +1532,7 @@ void ScoreClass::Do_Nod_Casualties_Graph() {
   }
 }
 
-void ScoreClass::Show_Credits(int house, const unsigned char pal[]) {
+void ScoreClass::Show_Credits(int house, std::span<const unsigned char> pal) {
   static const int _credsx[2] = {276, 276};
   static const int _credsy[2] = {173, 58};
   static const int _credpx[2] = {228, 236};
@@ -1526,8 +1546,7 @@ void ScoreClass::Show_Credits(int house, const unsigned char pal[]) {
   static const int _credty[2] = {179 - 12, 62};
 #endif
 
-
-  const void* credshape = MixArchive::Retrieve("CREDS.SHP");
+  const auto credshape = MixArchive::RetrieveData("CREDS.SHP");
 
   Alloc_Object(new ScorePrintClass(TXT_SCORE_ENDCRED, base::At(_credtx, house),
                                    base::At(_credty, house), pal));
@@ -1668,13 +1687,13 @@ void ScoreClass::Count_Up_Print(const char* str, int percent, int max, int xpos,
  *                                                                                             *
  * HISTORY: * 05/15/1995 BWG : Created. *
  *=============================================================================================*/
-void ScoreClass::Input_Name(char str[], int xpos, int ypos,
-                            const unsigned char pal[]) {
+void ScoreClass::Input_Name(std::span<char> str, int xpos, int ypos,
+                            std::span<const unsigned char> pal) {
   int key = 0;
   int ascii = 0;
   int index = 0;
 
-  const void* keystrok = MixArchive::Retrieve("KEYSTROK.AUD");
+  const auto keystrok = MixArchive::RetrieveData("KEYSTROK.AUD");
 
   /*
   ** Ready the hidpage so it can restore background under zoomed letters
@@ -1688,7 +1707,7 @@ void ScoreClass::Input_Name(char str[], int xpos, int ypos,
     /*
     ** Extra font related stuff. ST - 7/29/96 2:22PM
     */
-    Interpolate_2X_Scale(PseudoSeenBuff, &HidPage, nullptr);
+    Interpolate_2X_Scale(PseudoSeenBuff, &HidPage, {});
     BlitList.Update();
     HidPage.Blit(SeenBuff);
 
@@ -1706,13 +1725,13 @@ void ScoreClass::Input_Name(char str[], int xpos, int ypos,
       ** turn it into a space instead.
       */
       if ((key == KA_BACKSPACE && index == MAX_FAMENAME_LENGTH - 2) &&
-          (str[index] && str[index] != 32)) {
+          (str[base::ToSize(index)] && str[base::ToSize(index)] != 32)) {
         key = 32;
       }
 
       if (key == KA_BACKSPACE) {  // if (key == KN_BACKSPACE) {
         if (index) {
-          str[--index] = 0;
+          str[base::ToSize(--index)] = 0;
 
           const int xposindex6 = xpos + (index * 6);
 
@@ -1740,12 +1759,13 @@ void ScoreClass::Input_Name(char str[], int xpos, int ypos,
           TextPrintBuffer->Fill_Rect(2 * (xpos + (index * 6)), ypos * 2,
                                      2 * (xpos + (index * 6) + 6),
                                      2 * (ypos + 6), kBlack);
-          str[index] = static_cast<char>(ascii);
-          str[index + 1] = 0;
+          str[base::ToSize(index)] = static_cast<char>(ascii);
+          str[base::ToSize(index + 1)] = 0;
 
           Play_Sample(keystrok, 255, Options.Normalize_Sound(255));
           const int objindex = Alloc_Object(
-              new ScoreScaleClass(str + index, xpos + (index * 6), ypos, pal));
+              new ScoreScaleClass(str.subspan(base::ToSize(index)).data(),
+                                  xpos + (index * 6), ypos, pal));
           while (base::At(ScoreObjs, objindex)) {
             Call_Back_Delay(1);
           }
@@ -2035,7 +2055,7 @@ void Call_Back_Delay(int time) {
     // BlitList.Update();
     //}else{
     Animate_Score_Objs();
-    Interpolate_2X_Scale(PseudoSeenBuff, &HidPage, nullptr);
+    Interpolate_2X_Scale(PseudoSeenBuff, &HidPage, {});
     BlitList.Update();
     WWMouse->Draw_Mouse(&HidPage);
     HidPage.Blit(SeenBuff);
@@ -2057,7 +2077,7 @@ void Animate_Score_Objs() {
 static char* Int_Print(int a) {
   static char str[10];
 
-  absl::SNPrintF(str, 16, "%d", a);
+  absl::SNPrintF(str, sizeof(str), "%d", a);
   return str;
 }
 
@@ -2110,8 +2130,8 @@ void Multi_Score_Presentation() {
   // static char const
   // _yellowpal[]={0x0,0x0,0x05,0x0,0xEE,0x0,0xF1,0x0,0xF2,0x0,0x0,0x0,0x0,0x0,0x7D,0x0};
 
-  static const unsigned char* _colors[] = {yellowpal,  redpal,   bluepal,
-                                           _orangepal, greenpal, _graypal};
+  static const std::span<const unsigned char> _colors[] = {
+      yellowpal, redpal, bluepal, _orangepal, greenpal, _graypal};
 
   const int oldfontxspacing = FontXSpacing;
 
@@ -2119,10 +2139,9 @@ void Multi_Score_Presentation() {
   Map.Override_Mouse_Shape(MOUSE_NORMAL);
   Theme.Queue_Song(THEME_WIN1);
 
-  PseudoSeenBuff =
-      new GraphicBufferClass(320, 200, static_cast<void*>(nullptr));
-  TextPrintBuffer = new GraphicBufferClass(
-      SeenBuff.Get_Width(), SeenBuff.Get_Height(), static_cast<void*>(nullptr));
+  PseudoSeenBuff = new GraphicBufferClass(320, 200, {});
+  TextPrintBuffer =
+      new GraphicBufferClass(SeenBuff.Get_Width(), SeenBuff.Get_Height(), {});
   BlitList.Clear();
 
   SysMemPage.Clear();
@@ -2132,7 +2151,7 @@ void Multi_Score_Presentation() {
 
   Set_Palette(BlackPalette);
 
-  void* anim = Open_Animation("MLTIPLYR.WSA", nullptr, 0L,
+  void* anim = Open_Animation("MLTIPLYR.WSA", {}, 0L,
                               WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, Palette);
   Hide_Mouse();
 
@@ -2155,7 +2174,7 @@ void Multi_Score_Presentation() {
   Close_Animation(anim);
 
   /* Change to the six-point font for Text_Print */
-  const void* oldfont = Set_Font(ScoreFontPtr);
+  const std::span<const std::byte> oldfont = Set_Font(ScoreFontPtr);
   Call_Back();
 
   Set_Logic_Page(*PseudoSeenBuff);
@@ -2175,7 +2194,7 @@ void Multi_Score_Presentation() {
   int y = 41;
   for (auto& i : MPlayerScore) {
     if (!std::string_view(i.Name).empty()) {
-      const unsigned char* pal = base::At(_colors, i.Color);
+      const auto pal = base::At(_colors, i.Color);
 
       Alloc_Object(new ScorePrintClass(i.Name, 15, y, pal));
       Call_Back_Delay(20);

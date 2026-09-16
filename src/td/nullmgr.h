@@ -42,6 +42,10 @@
 #ifndef CNC_RED_ALERT_TD_NULLMGR_H_
 #define CNC_RED_ALERT_TD_NULLMGR_H_
 
+#include <cstddef>
+#include <span>
+#include <vector>
+
 /*
 ********************************* Includes **********************************
 */
@@ -71,10 +75,10 @@ class NullModemClass : public ConnManClass {
   static constexpr int kModemCmd0 = 2;
   static constexpr int kModemCmdError = 3;
 
-  char* BuildBuf{nullptr};
+  std::vector<std::byte> BuildBuf;
   int MaxLen;
 
-  char* EchoBuf{nullptr};
+  std::vector<char> EchoBuf;
   int EchoSize{500};
   int EchoCount = 0;
 
@@ -121,17 +125,19 @@ class NullModemClass : public ConnManClass {
   /*
   **	This is how the application sends & receives messages.
   */
-  int Send_Message(void* buf, int buflen, int ack_req = 1);
-  int Get_Message(void* buf, int* buflen);
+  int Send_Message(std::span<const std::byte> buf, int buflen, int ack_req = 1);
+  int Get_Message(std::span<std::byte> buf, int* buflen);
 
   /*
   ** These are for compatibility
   */
-  int Send_Private_Message(void* buf, int buflen, int ack_req = 1,
+  int Send_Private_Message(std::span<const std::byte> buf, int buflen,
+                           int ack_req = 1,
                            int /*conn_id*/ = kConnectionNone) override {
     return Send_Message(buf, buflen, ack_req);
   }
-  int Get_Private_Message(void* buf, int* buflen, int* /*conn_id*/) override {
+  int Get_Private_Message(std::span<std::byte> buf, int* buflen,
+                          int* /*conn_id*/) override {
     return Get_Message(buf, buflen);
   }
 
@@ -149,7 +155,7 @@ class NullModemClass : public ConnManClass {
   int Num_Receive();
   int32_t Response_Time() override;
   void Reset_Response_Time() override;
-  void* Oldest_Send();
+  std::span<const std::byte> Oldest_Send();
   void Configure_Debug(int index, int offset, int size, const char** names,
                        int maxnames) override;
   void Mono_Debug_Print(int index, int refresh = 0) override;
@@ -213,7 +219,7 @@ class NullModemClass : public ConnManClass {
   **	RXSize is the allocated size of the RX buffer.
   **	RXCount is the # of characters we currently have in our buffer.
   */
-  char* RXBuf{nullptr};
+  std::vector<char> RXBuf;
   int RXSize = 0;
   int RXCount = 0;
 

@@ -82,27 +82,29 @@ std::vector<uint8_t> Repeats(int size) {
 void ExpectRoundTrip(const std::vector<uint8_t>& plain) {
   const int size = static_cast<int>(plain.size());
   std::vector<uint8_t> packed(static_cast<std::size_t>(LcwWorstCaseSize(size)));
-  const int packed_size = LCW_Comp(plain.data(), packed.data(), size);
+  const int packed_size = LCW_Comp(std::as_bytes(std::span(plain)),
+                                   std::as_writable_bytes(std::span(packed)));
   ASSERT_GT(packed_size, 0);
   ASSERT_LE(packed_size, LcwWorstCaseSize(size));
 
   std::vector<uint8_t> unpacked(plain.size());
-  EXPECT_EQ(LcwUncompBounded(
-                std::as_bytes(std::span(packed.data(),
-                                        static_cast<std::size_t>(packed_size))),
-                std::as_writable_bytes(std::span(unpacked))),
+  EXPECT_EQ(LcwUncompBounded(std::as_bytes(std::span(packed).first(
+                                 static_cast<std::size_t>(packed_size))),
+                             std::as_writable_bytes(std::span(unpacked))),
             size);
   EXPECT_EQ(unpacked, plain);
 
   std::vector<uint8_t> legacy(plain.size() + 1);
-  EXPECT_EQ(LCW_Uncomp(packed.data(), legacy.data(), size), size);
+  EXPECT_EQ(LcwUncompBounded(std::as_bytes(std::span(packed)),
+                             std::as_writable_bytes(std::span(legacy))),
+            size);
   legacy.pop_back();
   EXPECT_EQ(legacy, plain);
 }
 
 TEST(LcwCompTest, EmptyInputIsJustTheEndMarker) {
   std::vector<uint8_t> packed(1);
-  EXPECT_EQ(LCW_Comp(nullptr, packed.data(), 0), 1);
+  EXPECT_EQ(LCW_Comp({}, std::as_writable_bytes(std::span(packed))), 1);
   EXPECT_EQ(packed[0], 0x80);
 }
 
@@ -142,7 +144,9 @@ TEST(LcwCompTest, RoundTripsPastSixteenBitPositions) {
 TEST(LcwCompTest, CompressesRedundantData) {
   const std::vector<uint8_t> zeros(8192, 0);
   std::vector<uint8_t> packed(static_cast<std::size_t>(LcwWorstCaseSize(8192)));
-  EXPECT_LE(LCW_Comp(zeros.data(), packed.data(), 8192), 8);
+  EXPECT_LE(LCW_Comp(std::as_bytes(std::span(zeros)),
+                     std::as_writable_bytes(std::span(packed))),
+            8);
   ExpectRoundTrip(zeros);
 }
 

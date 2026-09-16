@@ -38,72 +38,86 @@
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
-#include <cstring>
+#include <span>
 
 #include "sdllib/iff.h"
 
-extern "C" {
-
-// Decodes into at most length bytes and returns the decoded prefix. Invalid
-// back-references stop decoding. Source must contain complete commands: this
-// legacy API has no compressed size with which to check source bounds.
-int32_t __cdecl LCW_Uncompress(const void* source, void* dest, int32_t length) {
-  if (length <= 0) {
-    return 0;
-  }
-
-  const auto* source_ptr = static_cast<const unsigned char*>(source);
-  auto* output = static_cast<unsigned char*>(dest);
-  int32_t written = 0;
-  while (written < length) {
-    const unsigned char opcode = *source_ptr++;
-    int count = 0;
-    int offset = 0;
+int32_t LCW_Uncompress(std::span<const std::byte> source,
+                       std::span<std::byte> dest) {
+  std::size_t written = 0;
+  while (written < dest.size() && !source.empty()) {
+    const auto opcode = std::to_integer<unsigned char>(source.front());
+    source = source.subspan(1);
+    std::size_t count = 0;
+    std::size_t offset = 0;
     if (!(opcode & 0x80)) {
+      if (source.empty()) {
+        break;
+      }
       count = (opcode >> 4) + 3;
-      const int distance = *source_ptr++ + ((opcode & 0x0f) * 256);
+      const std::size_t distance =
+          std::to_integer<unsigned char>(source.front()) +
+          ((opcode & 0x0f) * 256);
+      source = source.subspan(1);
       if (distance == 0 || distance > written) {
-        return written;
+        break;
       }
       offset = written - distance;
     } else if (!(opcode & 0x40)) {
       if (opcode == 0x80) {
-        return written;
+        break;
       }
-      count = std::min<int>(opcode & 0x3f, length - written);
+      count = std::min<std::size_t>(opcode & 0x3f, dest.size() - written);
+      count = std::min(count, source.size());
       // Forward copies preserve the legacy in-place decompression behavior.
-      for (int i = 0; i < count; ++i) {
-        output[written++] = *source_ptr++;
+      for (std::size_t i = 0; i < count; ++i) {
+        dest[written++] = source[i];
       }
+      source = source.subspan(count);
       continue;
     } else if (opcode == 0xfe) {
-      count = source_ptr[0] + (source_ptr[1] << 8);
-      const unsigned char value = source_ptr[2];
-      source_ptr += 3;
-      count = std::min<int>(count, length - written);
-      std::memset(output + written, value, static_cast<std::size_t>(count));
+      if (source.size() < 3) {
+        break;
+      }
+      count = std::to_integer<std::size_t>(source[0]) +
+              (std::to_integer<std::size_t>(source[1]) << 8);
+      const std::byte value = source[2];
+      source = source.subspan(3);
+      count = std::min(count, dest.size() - written);
+      std::ranges::fill(dest.subspan(written, count), value);
       written += count;
       continue;
     } else {
       if (opcode == 0xff) {
-        count = source_ptr[0] + (source_ptr[1] << 8);
-        source_ptr += 2;
+        if (source.size() < 2) {
+          break;
+        }
+        count = std::to_integer<std::size_t>(source[0]) +
+                (std::to_integer<std::size_t>(source[1]) << 8);
+        source = source.subspan(2);
       } else {
         count = (opcode & 0x3f) + 3;
       }
-      offset = source_ptr[0] + (source_ptr[1] << 8);
-      source_ptr += 2;
+      if (source.size() < 2) {
+        break;
+      }
+      offset = std::to_integer<std::size_t>(source[0]) +
+               (std::to_integer<std::size_t>(source[1]) << 8);
+      source = source.subspan(2);
       // A zero-length copy does not access its offset.
       if (count != 0 && offset >= written) {
-        return written;
+        break;
       }
     }
-
-    count = std::min<int>(count, length - written);
-    for (int i = 0; i < count; ++i) {
-      output[written++] = output[offset++];
+    count = std::min(count, dest.size() - written);
+    for (std::size_t i = 0; i < count; ++i) {
+      dest[written++] = dest[offset++];
     }
   }
-  return written;
+  return static_cast<int32_t>(written);
 }
+
+int32_t LCW_Uncompress(std::span<const unsigned char> source,
+                       std::span<unsigned char> dest) {
+  return LCW_Uncompress(std::as_bytes(source), std::as_writable_bytes(dest));
 }

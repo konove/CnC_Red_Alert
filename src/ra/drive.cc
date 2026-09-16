@@ -584,7 +584,7 @@ void DriveClass::Assign_Destination(TARGET target) {
   */
   FootClass::Assign_Destination(target);
 
-  Path[0] = FACING_NONE;  // Force recalculation of path.
+  base::At(Path, 0) = FACING_NONE;  // Force recalculation of path.
   if (!IsDriving && Mission != MISSION_UNLOAD) {
     Start_Of_Move();
   }
@@ -650,9 +650,11 @@ bool DriveClass::While_Moving() {
     } else {
       tracknum = track->Track;
     }
-    const TrackType* ptr = base::At(RawTracks, tracknum - 1)
-                               .Track;    // Pointer to coord offset values.
-    const FacingType nextface = Path[0];  // Next facing queued in path.
+    std::span<const TrackType> ptr =
+        base::At(RawTracks, tracknum - 1)
+            .Track;  // Pointer to coord offset values.
+    const FacingType nextface =
+        base::At(Path, 0);  // Next facing queued in path.
 
     /*
     **	Determine if there is a turn coming up. If there is
@@ -673,9 +675,9 @@ bool DriveClass::While_Moving() {
 
       actual -= PIXEL_LEPTON_W;
 
-      COORDINATE const offset = ptr[TrackIndex].Offset;
+      COORDINATE const offset = ptr[base::ToSize(TrackIndex)].Offset;
       if (offset || !TrackIndex) {
-        DirType dir = ptr[TrackIndex].Facing;
+        DirType dir = ptr[base::ToSize(TrackIndex)].Facing;
         Coord = Smooth_Turn(offset, dir);
 
         PrimaryFacing.Set(dir);
@@ -738,9 +740,9 @@ bool DriveClass::While_Moving() {
                   base::MoveBytes(std::as_writable_bytes(base::Suffix(Path, 0)),
                                   std::as_bytes(base::Suffix(Path, 1)),
                                   kConquerPathMax - 1);
-                  Path[kConquerPathMax - 1] = FACING_NONE;
+                  base::At(Path, kConquerPathMax - 1) = FACING_NONE;
                 } else {
-                  Path[0] = FACING_NONE;
+                  base::At(Path, 0) = FACING_NONE;
                   TrackNumber = -1;
                   actual = 0;
                 }
@@ -830,7 +832,7 @@ void DriveClass::Per_Cell_Process(PCPType why) {
     if (As_Cell(NavCom) == cell) {
       IsTurretLockedDown = false;
       NavCom = kTargetNone;
-      Path[0] = FACING_NONE;
+      base::At(Path, 0) = FACING_NONE;
     }
 
     Lay_Track();
@@ -864,7 +866,7 @@ void DriveClass::Per_Cell_Process(PCPType why) {
 bool DriveClass::Start_Of_Move() {
   assert(IsActive);
 
-  FacingType facing = Path[0];  // Direction movement will commence.
+  FacingType facing = base::At(Path, 0);  // Direction movement will commence.
 
   if (!Target_Legal(NavCom) && facing == FACING_NONE) {
     IsTurretLockedDown = false;
@@ -885,7 +887,7 @@ bool DriveClass::Start_Of_Move() {
     const int dist = Lepton_To_Cell(static_cast<LEPTON>(Distance(NavCom)));
     if (dist < std::ssize(Path)) {
       base::At(Path, dist) = FACING_NONE;
-      facing = Path[0];  // Maybe needed.
+      facing = base::At(Path, 0);  // Maybe needed.
     }
   }
 
@@ -990,7 +992,8 @@ bool DriveClass::Start_Of_Move() {
     **	blocked by a friendly temporary blockage, then cause that blockage
     **	to scatter.
     */
-    const CELL cell = Adjacent_Cell(Coord_Cell(Center_Coord()), Path[0]);
+    const CELL cell =
+        Adjacent_Cell(Coord_Cell(Center_Coord()), base::At(Path, 0));
     if (Map.In_Radar(cell)) {
       const MoveType ok = Can_Enter_Cell(cell);
       if (ok == MOVE_TEMP) {
@@ -1013,7 +1016,7 @@ bool DriveClass::Start_Of_Move() {
     }
 
     TryTryAgain = kPathRetry;
-    facing = Path[0];
+    facing = base::At(Path, 0);
   }
 
   /*
@@ -1073,7 +1076,7 @@ bool DriveClass::Start_Of_Move() {
 
     Stop_Driver();
     if (cando != MOVE_MOVING_BLOCK) {
-      Path[0] = FACING_NONE;  // Path is blocked!
+      base::At(Path, 0) = FACING_NONE;  // Path is blocked!
     }
 
     /*
@@ -1134,7 +1137,7 @@ bool DriveClass::Start_Of_Move() {
   **	occupied AS this unit is moving into it.
   */
   if (cando != MOVE_OK) {
-    Path[0] = FACING_NONE;  // Path is blocked!
+    base::At(Path, 0) = FACING_NONE;  // Path is blocked!
     TrackNumber = -1;
     dest = 0;
   } else {
@@ -1143,7 +1146,7 @@ bool DriveClass::Start_Of_Move() {
     /*
     **	Determine which track to use (based on recorded path).
     */
-    FacingType nextface = Path[1];
+    FacingType nextface = base::At(Path, 1);
     if (nextface == FACING_NONE) {
       nextface = facing;
     }
@@ -1153,7 +1156,7 @@ bool DriveClass::Start_Of_Move() {
                    static_cast<int>(magic_enum::enum_count<FacingType>())) +
                   static_cast<int>(nextface);
     if (base::At(TrackControl, TrackNumber).Track == 0) {
-      Path[0] = FACING_NONE;
+      base::At(Path, 0) = FACING_NONE;
       TrackNumber = -1;
       return true;
     }
@@ -1195,7 +1198,7 @@ bool DriveClass::Start_Of_Move() {
           Map[destcell].Shimmer();
         }
 
-        Path[0] = FACING_NONE;  // Path is blocked!
+        base::At(Path, 0) = FACING_NONE;  // Path is blocked!
         TrackNumber = -1;
         dest = 0;
         if (cando == MOVE_DESTROYABLE) {
@@ -1220,7 +1223,7 @@ bool DriveClass::Start_Of_Move() {
         base::MoveBytes(std::as_writable_bytes(base::Suffix(Path, 0)),
                         std::as_bytes(base::Suffix(Path, 2)),
                         kConquerPathMax - 2);
-        Path[kConquerPathMax - 2] = FACING_NONE;
+        base::At(Path, kConquerPathMax - 2) = FACING_NONE;
         IsPlanningToLook = true;
       }
     } else {
@@ -1228,14 +1231,14 @@ bool DriveClass::Start_Of_Move() {
                       std::as_bytes(base::Suffix(Path, 1)),
                       kConquerPathMax - 1);
     }
-    Path[kConquerPathMax - 1] = FACING_NONE;
+    base::At(Path, kConquerPathMax - 1) = FACING_NONE;
   }
 
   IsNewNavCom = false;
   TrackIndex = 0;
   if (!Start_Driver(dest)) {
     TrackNumber = -1;
-    Path[0] = FACING_NONE;
+    base::At(Path, 0) = FACING_NONE;
     Set_Speed(0);
   }
   return false;
@@ -1299,7 +1302,8 @@ void DriveClass::AI() {
     if (!IsActive) {
       return;
     }
-    if (TrackNumber == -1 && (Target_Legal(NavCom) || Path[0] != FACING_NONE) &&
+    if (TrackNumber == -1 &&
+        (Target_Legal(NavCom) || base::At(Path, 0) != FACING_NONE) &&
         (What_Am_I() != RTTI_UNIT ||
          !dynamic_cast<UnitClass*>(this)->IsDumping)) {
       Start_Of_Move();
@@ -1337,7 +1341,7 @@ void DriveClass::AI() {
       */
       if ((Mission != MISSION_GUARD || Target_Legal(NavCom)) &&
           Mission != MISSION_UNLOAD) {
-        if (Target_Legal(NavCom) || Path[0] != FACING_NONE) {
+        if (Target_Legal(NavCom) || base::At(Path, 0) != FACING_NONE) {
           /*
           **	Double check to make sure that the movement destination is
           **	in a zone that this unit can travel to. If not, then abort
@@ -1414,13 +1418,15 @@ void DriveClass::Mark_Track(COORDINATE headto, MarkType type) {
       */
       const int tracknum = base::At(TrackControl, TrackNumber).Track;
       if (tracknum) {
-        const TrackType* ptr = base::At(RawTracks, tracknum - 1).Track;
+        const std::span<const TrackType> ptr =
+            base::At(RawTracks, tracknum - 1).Track;
         const int cellidx = base::At(RawTracks, tracknum - 1).Cell;
         if (cellidx > -1) {
-          DirType dir = ptr[cellidx].Facing;
+          DirType dir = ptr[base::ToSize(cellidx)].Facing;
 
           if (TrackIndex < cellidx && cellidx != -1) {
-            const COORDINATE offset = Smooth_Turn(ptr[cellidx].Offset, dir);
+            const COORDINATE offset =
+                Smooth_Turn(ptr[base::ToSize(cellidx)].Offset, dir);
             Map[offset].Flag.Occupy.Vehicle = value;
           }
         }

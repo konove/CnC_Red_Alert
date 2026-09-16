@@ -118,7 +118,9 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cstddef>
 #include <cstdint>
+#include <span>
 
 #include "base/numeric.h"
 #include "ra/abstract.h"
@@ -166,9 +168,9 @@
 **	Selected objects have a special marking box around them. This is the
 *shapes that are *	used for this purpose.
 */
-const void* ObjectTypeClass::SelectShapes = nullptr;
+std::span<const std::byte> ObjectTypeClass::SelectShapes = {};
 
-const void* ObjectTypeClass::PipShapes = nullptr;
+std::span<const std::byte> ObjectTypeClass::PipShapes = {};
 
 /***********************************************************************************************
  * ObjectClass::ObjectClass -- Default constructor for objects. *
@@ -216,7 +218,7 @@ ObjectClass::ObjectClass(RTTIType rtti, int id)
  *                                                                                             *
  * HISTORY: * 08/06/1996 JLB : Created. *
  *=============================================================================================*/
-const void* ObjectClass::Get_Image_Data() const {
+std::span<const std::byte> ObjectClass::Get_Image_Data() const {
   return Class_Of().Get_Image_Data();
 }
 
@@ -1829,10 +1831,10 @@ bool ObjectClass::Attach_Trigger(TriggerClass* trigger) {
 }
 
 // These can't be made inline (for various reasons).
-const int16_t* ObjectClass::Occupy_List(bool placement) const {
+std::span<const int16_t> ObjectClass::Occupy_List(bool placement) const {
   return Class_Of().Occupy_List(placement);
 };
-const int16_t* ObjectClass::Overlap_List(bool /*unused*/) const {
+std::span<const int16_t> ObjectClass::Overlap_List(bool /*unused*/) const {
   return Class_Of().Overlap_List();
 };
 BuildingClass* ObjectClass::Who_Can_Build_Me(bool intheory, bool legal) const {
@@ -2004,7 +2006,9 @@ int ObjectTypeClass::Time_To_Build() const { return 0; }
  *                                                                                             *
  * HISTORY: * 07/19/1995 JLB : Created. *
  *=============================================================================================*/
-const void* ObjectTypeClass::Get_Cameo_Data() const { return nullptr; }
+std::span<const std::byte> ObjectTypeClass::Get_Cameo_Data() const {
+  return {};
+}
 
 /***********************************************************************************************
  * ObjectTypeClass::Occupy_List -- Returns with simple occupation list for
@@ -2023,7 +2027,7 @@ const void* ObjectTypeClass::Get_Cameo_Data() const { return nullptr; }
  *                                                                                             *
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
-const int16_t* ObjectTypeClass::Occupy_List(bool /*unused*/) const {
+std::span<const int16_t> ObjectTypeClass::Occupy_List(bool /*unused*/) const {
   static const int16_t _list[] = {0, kRefreshEol};
   return _list;
 }
@@ -2046,7 +2050,7 @@ const int16_t* ObjectTypeClass::Occupy_List(bool /*unused*/) const {
  *                                                                                             *
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
-const int16_t* ObjectTypeClass::Overlap_List() const {
+std::span<const int16_t> ObjectTypeClass::Overlap_List() const {
   static const int16_t _list[] = {kRefreshEol};
   return _list;
 }
@@ -2067,17 +2071,17 @@ const int16_t* ObjectTypeClass::Overlap_List() const {
  * HISTORY: * 11/01/1994 JLB : Created. *
  *=============================================================================================*/
 void ObjectTypeClass::One_Time() {
-  SelectShapes = MixArchive::Retrieve("SELECT.SHP");
+  SelectShapes = MixArchive::RetrieveData("SELECT.SHP");
 
 #ifndef NDEBUG
   DiskFile file("PIPS.SHP");
   if (file.IsAvailable()) {
     PipShapes = Load_Alloc_Data(file);
   } else {
-    PipShapes = MixArchive::Retrieve("PIPS.SHP");
+    PipShapes = MixArchive::RetrieveData("PIPS.SHP");
   }
 #else
-  PipShapes = MixArchive::Retrieve("PIPS.SHP");
+  PipShapes = MixArchive::RetrieveData("PIPS.SHP");
 #endif
 }
 

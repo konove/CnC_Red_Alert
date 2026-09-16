@@ -39,6 +39,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <span>
 
 enum class PicturePlaneType {
   BM_AMIGA = 0,  // Bit plane format (8K per bitplane).
@@ -77,19 +78,17 @@ typedef struct {
 } CompHeaderType;
 #pragma pack(pop)
 
-size_t Uncompress_Data(void* src, void* dst);
+size_t Uncompress_Data(std::span<const unsigned char> src,
+                       std::span<unsigned char> dst);
 
 /*========================= Assembly Functions ============================*/
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+// Decodes a bounded LCW stream, returning the number of output bytes.
+int32_t LCW_Uncompress(std::span<const std::byte> source,
+                       std::span<std::byte> dest);
+int32_t LCW_Uncompress(std::span<const unsigned char> source,
+                       std::span<unsigned char> dest);
 
-extern int32_t LCW_Uncompress(const void* source, void* dest, int32_t length);
-
-#ifdef __cplusplus
-}
-#endif
 /*=========================================================================*/
 
 #endif  // CNC_RED_ALERT_SDLLIB_IFF_H_

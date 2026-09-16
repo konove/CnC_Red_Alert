@@ -1135,7 +1135,7 @@ void HouseClass::AI() {
       */
       if (IonCannon.Remove()) {
         if (this == PlayerPtr) {
-          Map.Column[1].Flag_To_Redraw();
+          base::At(Map.Column, 1).Flag_To_Redraw();
         }
         IsRecalcNeeded = true;
       }
@@ -1152,7 +1152,7 @@ void HouseClass::AI() {
       *affect *	the sidebar, then flag the sidebar to be redrawn.
       */
       if (IonCannon.AI(this == PlayerPtr) && (this == PlayerPtr)) {
-        Map.Column[1].Flag_To_Redraw();
+        base::At(Map.Column, 1).Flag_To_Redraw();
       }
     }
 
@@ -1178,7 +1178,7 @@ void HouseClass::AI() {
       */
       if (this == PlayerPtr) {
         Map.Add(RTTI_SPECIAL, static_cast<int>(SPC_ION_CANNON));
-        Map.Column[1].Flag_To_Redraw();
+        base::At(Map.Column, 1).Flag_To_Redraw();
       }
     }
   }
@@ -1198,7 +1198,7 @@ void HouseClass::AI() {
       if (NukeStrike.Remove(true)) {
         IsRecalcNeeded = true;
         if (this == PlayerPtr) {
-          Map.Column[1].Flag_To_Redraw();
+          base::At(Map.Column, 1).Flag_To_Redraw();
         }
       }
     } else {
@@ -1214,7 +1214,7 @@ void HouseClass::AI() {
       *affect *	the sidebar, then flag the sidebar to be redrawn.
       */
       if (NukeStrike.AI(this == PlayerPtr) && (this == PlayerPtr)) {
-        Map.Column[1].Flag_To_Redraw();
+        base::At(Map.Column, 1).Flag_To_Redraw();
       }
     }
 
@@ -1238,7 +1238,7 @@ void HouseClass::AI() {
       */
       if (this == PlayerPtr) {
         Map.Add(RTTI_SPECIAL, static_cast<int>(SPC_NUCLEAR_BOMB));
-        Map.Column[1].Flag_To_Redraw();
+        base::At(Map.Column, 1).Flag_To_Redraw();
       }
     }
   }
@@ -1249,7 +1249,7 @@ void HouseClass::AI() {
   */
   if (AirStrike.Is_Present()) {
     if (AirStrike.AI(this == PlayerPtr) && (this == PlayerPtr)) {
-      Map.Column[1].Flag_To_Redraw();
+      base::At(Map.Column, 1).Flag_To_Redraw();
     }
 
     /*
@@ -1269,7 +1269,7 @@ void HouseClass::AI() {
       AirStrike.Forced_Charge(this == PlayerPtr);
       if (this == PlayerPtr) {
         Map.Add(RTTI_SPECIAL, static_cast<int>(SPC_AIR_STRIKE));
-        Map.Column[1].Flag_To_Redraw();
+        base::At(Map.Column, 1).Flag_To_Redraw();
       }
     }
   }
@@ -1719,15 +1719,20 @@ void HouseClass::Read_INI(char* buffer) {
     p->MaxUnit = maxunit;
     p->Credits = static_cast<int64_t>(credits) * 100;
     p->InitialCredits = p->Credits;
-    WWGetPrivateProfileString(hname, "Edge", "", buf, sizeof(buf) - 1, buffer);
+    WWGetPrivateProfileString(
+        hname, "Edge", "",
+        std::span(buf).first(static_cast<std::size_t>(sizeof(buf) - 1)),
+        buffer);
     p->Edge = Source_From_Name(buf);
     if (p->Edge == SOURCE_NONE) {
       p->Edge = SOURCE_NORTH;
     }
 
     if (GameToPlay == GAME_NORMAL) {
-      WWGetPrivateProfileString(hname, "Allies", "", buf, sizeof(buf) - 1,
-                                buffer);
+      WWGetPrivateProfileString(
+          hname, "Allies", "",
+          std::span(buf).first(static_cast<std::size_t>(sizeof(buf) - 1)),
+          buffer);
       if (!std::string_view(buf).empty()) {
         port::Tokenizer tokens(buf, ", \t");
         const char* tok = tokens.Next();
@@ -1766,7 +1771,7 @@ void HouseClass::Read_INI(char* buffer) {
  *                                                                                             *
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
-void HouseClass::Write_INI(char* buffer) {
+void HouseClass::Write_INI(std::span<char> buffer) {
   for (HousesType i = HOUSE_FIRST; i < HOUSE_COUNT; i++) {
     const HouseClass* p = As_Pointer(i);
 
@@ -1922,9 +1927,9 @@ void HouseClass::Make_Ally(HousesType house) {
 
       Format_Runtime_Text(buffer, sizeof(buffer), Text_String(TXT_HAS_ALLIED),
                           Name, As_Pointer(house)->Name);
-      Messages.Add_Message(buffer, MPlayerTColors[static_cast<int>(RemapColor)],
-                           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-                           1200, 0, 0);
+      Messages.Add_Message(
+          buffer, base::At(MPlayerTColors, static_cast<int>(RemapColor)),
+          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200, 0, 0);
       Map.Flag_To_Redraw(false);
     }
   }
@@ -1959,9 +1964,9 @@ void HouseClass::Make_Enemy(HousesType house) {
 
       Format_Runtime_Text(buffer, sizeof(buffer), Text_String(TXT_AT_WAR), Name,
                           enemy->Name);
-      Messages.Add_Message(buffer, MPlayerTColors[static_cast<int>(RemapColor)],
-                           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-                           600, 0, 0);
+      Messages.Add_Message(
+          buffer, base::At(MPlayerTColors, static_cast<int>(RemapColor)),
+          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600, 0, 0);
       Map.Flag_To_Redraw(false);
     }
   }
@@ -1987,10 +1992,11 @@ void HouseClass::Make_Enemy(HousesType house) {
  *                                                                                             *
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
-const unsigned char* HouseClass::Remap_Table(bool blushing, bool unit) const {
+std::span<const unsigned char> HouseClass::Remap_Table(bool blushing,
+                                                       bool unit) const {
   Validate();
   if (blushing) {
-    return &MouseClass::FadingLight[0];
+    return MouseClass::FadingLight;
   }
 
   /*
@@ -2062,8 +2068,6 @@ void HouseClass::Adjust_Threat(int region, int threat) {
   // orthogonally, full in the center.
   static const int _thr[] = {4, 2, 4, 2, 1, 2, 4, 2, 4};
   bool neg = false;
-  const int* val = &_val[0];
-  const int* thr = &_thr[0];
 
   if (threat < 0) {
     threat = -threat;
@@ -2073,9 +2077,8 @@ void HouseClass::Adjust_Threat(int region, int threat) {
   }
 
   for (int lp = 0; lp < 9; lp++) {
-    base::At(Regions, region + *val).Adjust_Threat(threat / *thr, neg);
-    val++;
-    thr++;
+    base::At(Regions, region + base::At(_val, lp))
+        .Adjust_Threat(threat / base::At(_thr, lp), neg);
   }
 }
 
@@ -2255,8 +2258,8 @@ ProdFailType HouseClass::Suspend_Production(RTTIType type) {
   */
   if (PlayerPtr == this) {
     Map.SidebarClass::IsSidebarToRedraw = true;
-    Map.Column[0].IsToRedraw = true;
-    Map.Column[1].IsToRedraw = true;
+    base::At(Map.Column, 0).IsToRedraw = true;
+    base::At(Map.Column, 1).IsToRedraw = true;
     Map.Flag_To_Redraw(false);
   }
 
@@ -2343,7 +2346,7 @@ ProdFailType HouseClass::Abandon_Production(RTTIType type) {
       Map.PendingObjectPtr = nullptr;
       Map.PendingObject = nullptr;
       Map.PendingHouse = HOUSE_NONE;
-      Map.Set_Cursor_Shape(nullptr);
+      Map.Set_Cursor_Shape({});
     }
   }
 
@@ -2644,7 +2647,7 @@ bool HouseClass::Place_Object(RTTIType type, CELL cell) {
 
             if (PlayerPtr == this) {
               Sound_Effect(VOC_SLAM);
-              Map.Set_Cursor_Shape(nullptr);
+              Map.Set_Cursor_Shape({});
               Map.PendingObjectPtr = nullptr;
               Map.PendingObject = nullptr;
               Map.PendingHouse = HOUSE_NONE;
@@ -3719,7 +3722,7 @@ void HouseClass::MPlayer_Defeated() {
     .....................................................................*/
     Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_PLAYER_DEFEATED),
                         MPlayerName);
-    Messages.Add_Message(txt, MPlayerTColors[MPlayerColorIdx],
+    Messages.Add_Message(txt, base::At(MPlayerTColors, MPlayerColorIdx),
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600,
                          0, 0);
     Map.Flag_To_Redraw(false);
@@ -3743,7 +3746,9 @@ void HouseClass::MPlayer_Defeated() {
       }
 
       Messages.Add_Message(
-          txt, MPlayerTColors[static_cast<int>(MPlayerID_To_ColorIndex(id))],
+          txt,
+          base::At(MPlayerTColors,
+                   static_cast<int>(MPlayerID_To_ColorIndex(id))),
           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600, 0, 0);
       Map.Flag_To_Redraw(false);
     }
@@ -3830,8 +3835,8 @@ void HouseClass::MPlayer_Defeated() {
       Search for this player's name in the MPlayerScore array
       ..................................................................*/
       for (int j = 0; j < MPlayerNumScores; j++) {
-        if (!stricmp(base::At(MPlayerNames, i),
-                     base::At(MPlayerScore, j).Name)) {
+        if (!port::CompareIgnoreCase(base::At(MPlayerNames, i),
+                                     base::At(MPlayerScore, j).Name)) {
           base::At(score_index, i) = j;
           break;
         }

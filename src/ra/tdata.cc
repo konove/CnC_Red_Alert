@@ -56,6 +56,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <filesystem>
+#include <span>
 
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
@@ -70,6 +71,7 @@
 #include "ra/mapedit.h"
 #include "ra/object.h"
 #include "ra/terrain.h"
+#include "ra/keyframe.h"
 #include "ra/type.h"
 #include "sdllib/shape.h"
 #include "tech/mix_archive.h"
@@ -117,92 +119,92 @@ static const TerrainTypeClass Mine(
     XYP_COORD(12, 24),  // Center base coordinate offset.
     true,               // Is it immune to normal combat damage?
     false,              // Is based on the water?
-    "MINE", TXT_ORE_MINE, List10, nullptr);
+    "MINE", TXT_ORE_MINE, List10, {});
 static const TerrainTypeClass Boxes01(
     TERRAIN_BOXES01, kTheaterFlagInterior,
     XYP_COORD(12, 24),  // Center base coordinate offset.
     true,               // Is it immune to normal combat damage?
     false,              // Is based on the water?
-    "BOXES01", TXT_CRATES, List10, nullptr);
+    "BOXES01", TXT_CRATES, List10, {});
 static const TerrainTypeClass Boxes02(
     TERRAIN_BOXES02, kTheaterFlagInterior,
     XYP_COORD(12, 24),  // Center base coordinate offset.
     true,               // Is it immune to normal combat damage?
     false,              // Is based on the water?
-    "BOXES02", TXT_CRATES, List10, nullptr);
+    "BOXES02", TXT_CRATES, List10, {});
 static const TerrainTypeClass Boxes03(
     TERRAIN_BOXES03, kTheaterFlagInterior,
     XYP_COORD(12, 24),  // Center base coordinate offset.
     true,               // Is it immune to normal combat damage?
     false,              // Is based on the water?
-    "BOXES03", TXT_CRATES, List10, nullptr);
+    "BOXES03", TXT_CRATES, List10, {});
 static const TerrainTypeClass Boxes04(
     TERRAIN_BOXES04, kTheaterFlagInterior,
     XYP_COORD(12, 24),  // Center base coordinate offset.
     true,               // Is it immune to normal combat damage?
     false,              // Is based on the water?
-    "BOXES04", TXT_CRATES, List10, nullptr);
+    "BOXES04", TXT_CRATES, List10, {});
 static const TerrainTypeClass Boxes05(
     TERRAIN_BOXES05, kTheaterFlagInterior,
     XYP_COORD(12, 24),  // Center base coordinate offset.
     true,               // Is it immune to normal combat damage?
     false,              // Is based on the water?
-    "BOXES05", TXT_CRATES, List10, nullptr);
+    "BOXES05", TXT_CRATES, List10, {});
 static const TerrainTypeClass Boxes06(
     TERRAIN_BOXES06, kTheaterFlagInterior,
     XYP_COORD(12, 24),  // Center base coordinate offset.
     true,               // Is it immune to normal combat damage?
     false,              // Is based on the water?
-    "BOXES06", TXT_CRATES, List10, nullptr);
+    "BOXES06", TXT_CRATES, List10, {});
 static const TerrainTypeClass Boxes07(
     TERRAIN_BOXES07, kTheaterFlagInterior,
     XYP_COORD(12, 24),  // Center base coordinate offset.
     true,               // Is it immune to normal combat damage?
     false,              // Is based on the water?
-    "BOXES07", TXT_CRATES, List10, nullptr);
+    "BOXES07", TXT_CRATES, List10, {});
 static const TerrainTypeClass Boxes08(
     TERRAIN_BOXES08, kTheaterFlagInterior,
     XYP_COORD(12, 24),  // Center base coordinate offset.
     true,               // Is it immune to normal combat damage?
     false,              // Is based on the water?
-    "BOXES08", TXT_CRATES, List10, nullptr);
+    "BOXES08", TXT_CRATES, List10, {});
 static const TerrainTypeClass Boxes09(
     TERRAIN_BOXES09, kTheaterFlagInterior,
     XYP_COORD(12, 24),  // Center base coordinate offset.
     true,               // Is it immune to normal combat damage?
     false,              // Is based on the water?
-    "BOXES09", TXT_CRATES, List10, nullptr);
+    "BOXES09", TXT_CRATES, List10, {});
 
 static const TerrainTypeClass Ice01(
     TERRAIN_ICE01, kTheaterFlagSnow,
     XYP_COORD(24, 24),  // Center base coordinate offset.
     true,               // Is it immune to normal combat damage?
     true,               // Is based on the water?
-    "ICE01", TXT_ICE, List1111, nullptr);
+    "ICE01", TXT_ICE, List1111, {});
 static const TerrainTypeClass Ice02(
     TERRAIN_ICE02, kTheaterFlagSnow,
     XYP_COORD(12, 24),  // Center base coordinate offset.
     true,               // Is it immune to normal combat damage?
     true,               // Is based on the water?
-    "ICE02", TXT_ICE, List1010, nullptr);
+    "ICE02", TXT_ICE, List1010, {});
 static const TerrainTypeClass Ice03(
     TERRAIN_ICE03, kTheaterFlagSnow,
     XYP_COORD(24, 12),  // Center base coordinate offset.
     true,               // Is it immune to normal combat damage?
     true,               // Is based on the water?
-    "ICE03", TXT_ICE, List11, nullptr);
+    "ICE03", TXT_ICE, List11, {});
 static const TerrainTypeClass Ice04(
     TERRAIN_ICE04, kTheaterFlagSnow,
     XYP_COORD(12, 12),  // Center base coordinate offset.
     true,               // Is it immune to normal combat damage?
     true,               // Is based on the water?
-    "ICE04", TXT_ICE, List10, nullptr);
+    "ICE04", TXT_ICE, List10, {});
 static const TerrainTypeClass Ice05(
     TERRAIN_ICE05, kTheaterFlagSnow,
     XYP_COORD(12, 12),  // Center base coordinate offset.
     true,               // Is it immune to normal combat damage?
     true,               // Is based on the water?
-    "ICE05", TXT_ICE, List10, nullptr);
+    "ICE05", TXT_ICE, List10, {});
 
 static const TerrainTypeClass Tree1Class(
     TERRAIN_TREE1, kTheaterFlagTemperate | kTheaterFlagSnow,
@@ -362,8 +364,9 @@ static const TerrainTypeClass Clump5Class(
 TerrainTypeClass::TerrainTypeClass(TerrainType terrain, uint32_t theater,
                                    COORDINATE centerbase, bool is_immune,
                                    bool is_water, const char* ininame,
-                                   int fullname, const int16_t* occupy,
-                                   const int16_t* overlap) noexcept
+                                   int fullname,
+                                   std::span<const int16_t> occupy,
+                                   std::span<const int16_t> overlap) noexcept
     : ObjectTypeClass(RTTI_TERRAINTYPE, static_cast<int>(terrain), true, true,
                       false, false, true, is_immune, true, fullname, ininame),
       Type(terrain),
@@ -555,7 +558,7 @@ void TerrainTypeClass::Init(TheaterType theater) {
 TerrainType TerrainTypeClass::From_Name(const char* name) {
   if (name != nullptr) {
     for (const TerrainType index : magic_enum::enum_values<TerrainType>()) {
-      if (stricmp(name, As_Reference(index).IniName) == 0) {
+      if (port::CompareIgnoreCase(name, As_Reference(index).IniName) == 0) {
         return index;
       }
     }
@@ -604,7 +607,7 @@ void TerrainTypeClass::Display(int x, int y, WindowNumberType window,
  *=============================================================================================*/
 void TerrainTypeClass::Prep_For_Add() {
   for (const TerrainType index : magic_enum::enum_values<TerrainType>()) {
-    if (As_Reference(index).Get_Image_Data()) {
+    if (!As_Reference(index).Get_Image_Data().empty()) {
       Map.Add_To_List(&As_Reference(index));
     }
   }
@@ -667,13 +670,14 @@ ObjectClass* TerrainTypeClass::Create_One_Of(HouseClass* /*unused*/) const {
  *                                                                                             *
  * HISTORY: * 09/20/1995 JLB : Created. *
  *=============================================================================================*/
-const int16_t* TerrainTypeClass::Occupy_List(bool /*placement*/) const {
-  if (Occupy != nullptr) {
+std::span<const int16_t> TerrainTypeClass::Occupy_List(
+    bool /*placement*/) const {
+  if (!Occupy.empty()) {
     return Occupy;
   }
 
   static const int16_t _simple[1] = {kRefreshEol};
-  return &_simple[0];
+  return _simple;
 }
 
 /***********************************************************************************************
@@ -695,13 +699,13 @@ const int16_t* TerrainTypeClass::Occupy_List(bool /*placement*/) const {
  *                                                                                             *
  * HISTORY: * 09/20/1995 JLB : Created. *
  *=============================================================================================*/
-const int16_t* TerrainTypeClass::Overlap_List() const {
-  if (Overlap != nullptr) {
+std::span<const int16_t> TerrainTypeClass::Overlap_List() const {
+  if (!Overlap.empty()) {
     return Overlap;
   }
 
   static const int16_t _simple[1] = {kRefreshEol};
-  return &_simple[0];
+  return _simple;
 }
 
 /***********************************************************************************************

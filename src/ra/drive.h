@@ -174,7 +174,7 @@ class DriveClass : public FootClass {
   } TrackType;
 
   typedef struct {
-    const TrackType* Track;  // Pointer to track list.
+    std::span<const TrackType> Track;  // Pointer to track list.
     int Jump;                // Index where track jumping is allowed.
     int Entry;               // Entry point if jumping to this track.
     int Cell;                // Per cell process should occur at this index.

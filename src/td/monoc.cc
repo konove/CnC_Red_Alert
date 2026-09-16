@@ -54,7 +54,7 @@
 // #pragma inline
 #include "td/monoc.h"
 
-#include <cstddef>
+#include <algorithm>
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
@@ -64,6 +64,7 @@
 
 #include "base/array.h"
 #include "base/buffer.h"
+#include "base/numeric.h"
 
 // extern void output(short port, short data);
 // #pragma aux output parm [dx] [ax] =		\
@@ -330,9 +331,11 @@ void MonoClass::Scroll(int lines) {
     return;
   }
 
-  memmove(
-      (MonoRAM + Offset(0, 0)), (MonoRAM + Offset(0, lines)),
-      (static_cast<std::size_t>(kLines - lines)) * kColumns * sizeof(CellType));
+  lines = std::min(lines, kLines);
+  base::MoveBytes(
+      base::ObjectBytes(MonoRAM).subspan(base::ToSize(Offset(0, 0))),
+      base::ObjectBytes(MonoRAM).subspan(base::ToSize(Offset(0, lines))),
+      base::ToSize(kLines - lines) * kColumns * sizeof(CellType));
 
   //	DOSSegmentClass::Copy(MonoSegment, Offset(0, lines), MonoSegment,
   // Offset(0, 0), (kLines-lines)*kColumns*sizeof(CellType));
@@ -392,15 +395,14 @@ void MonoClass::Print(const char* ptr) {
     return;
   }
 
-  const char* text = ptr;
   cell.Attribute = Attrib;
   //	optr = Offset(X, Y);
-  while (*text) {
+  for (const char character : std::string_view(ptr)) {
     /*
     **	Sometimes the character string is used for cursor control instead
     **	of plain text output. Check for this case.
     */
-    switch (*text) {
+    switch (character) {
       /*
       **	The "return" code behaves as it did in the old C library
       **	mono system. That is, it returns the cursor position to
@@ -433,7 +435,7 @@ void MonoClass::Print(const char* ptr) {
       *scrolled *	upward a line.
       */
       default:
-        cell.Character = static_cast<unsigned char>(*text);
+        cell.Character = static_cast<unsigned char>(character);
         Store_Cell(cell, X, Y);
         //				MonoSegment.Copy_Word_To(*(short*)&cell,
         // optr); 				optr += sizeof(CellType);
@@ -450,7 +452,6 @@ void MonoClass::Print(const char* ptr) {
         }
         break;
     }
-    text++;
   }
 
   Set_Cursor(X, Y);
@@ -526,7 +527,10 @@ void MonoClass::Print(int text) { Print(Text_String(text)); }
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
 MonoClass& MonoClass::operator=(const MonoClass& src) {
-  memcpy((MonoRAM + src.Offset(0, 0)), (MonoRAM + Offset(0, 0)), kSizeOfPage);
+  base::CopyBytes(
+      base::ObjectBytes(MonoRAM).subspan(base::ToSize(src.Offset(0, 0))),
+      base::ObjectBytes(MonoRAM).subspan(base::ToSize(Offset(0, 0))),
+      kSizeOfPage);
   //	DOSSegmentClass::Copy(MonoSegment, src.Offset(0, 0), MonoSegment,
   // Offset(0,0), kSizeOfPage);
   Set_Cursor(src.X, src.Y);
@@ -568,8 +572,13 @@ void MonoClass::View() {
 
     base::CopyBytes(std::as_writable_bytes(base::Suffix(temp, 0)),
                     base::ObjectBytes(MonoRAM), kSizeOfPage);
-    memcpy(MonoRAM, (MonoRAM + Offset(0, 0)), kSizeOfPage);
-    memcpy((MonoRAM + Offset(0, 0)), &temp[0], kSizeOfPage);
+    base::CopyBytes(
+        base::ObjectBytes(MonoRAM),
+        base::ObjectBytes(MonoRAM).subspan(base::ToSize(Offset(0, 0))),
+        kSizeOfPage);
+    base::CopyBytes(
+        base::ObjectBytes(MonoRAM).subspan(base::ToSize(Offset(0, 0))),
+        base::ObjectBytes(temp), kSizeOfPage);
 
     //		DOSSegmentClass::Swap(MonoSegment, Offset(0, 0), MonoSegment, 0,
     // kSizeOfPage);
@@ -580,12 +589,15 @@ void MonoClass::View() {
     **	Just copy the new page over since the display page is not assigned
     **	to a real monochrome page object.
     */
-    memcpy(MonoRAM, (MonoRAM + Offset(0, 0)), kSizeOfPage);
+    base::CopyBytes(
+        base::ObjectBytes(MonoRAM),
+        base::ObjectBytes(MonoRAM).subspan(base::ToSize(Offset(0, 0))),
+        kSizeOfPage);
     //		DOSSegmentClass::Copy(MonoSegment, Offset(0, 0), MonoSegment, 0,
     // kSizeOfPage);
   }
   base::At(PageUsage, Page) = displace;
-  PageUsage[0] = this;
+  base::At(PageUsage, 0) = this;
   Page = 0;
 
   Set_Cursor(X, Y);

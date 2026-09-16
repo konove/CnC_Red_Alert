@@ -69,12 +69,14 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <span>
 #include <string>
 #include <string_view>
 
 #include "absl/strings/str_format.h"
 #include "absl/types/span.h"
 #include "base/array.h"
+#include "base/buffer.h"
 #include "base/numeric.h"
 #include "port/format.h"
 #include "ra/inline.h"
@@ -173,19 +175,21 @@ void MonoClass::Pan(int cols) {
 
   if (cols > 0) {
     for (int index = SubY; index < SubY + SubH; index++) {
-      memmove(
-          base::Suffix(base::At(Page_Ptr()->Data, index), SubX).data(),
-          base::Suffix(base::At(Page_Ptr()->Data, index), SubX + cols).data(),
-          sizeof(CellType) * base::ToSize(SubW - cols));
+      base::MoveBytes(std::as_writable_bytes(base::Suffix(
+                          base::At(Page_Ptr()->Data, index), SubX)),
+                      std::as_bytes(base::Suffix(
+                          base::At(Page_Ptr()->Data, index), SubX + cols)),
+                      sizeof(CellType) * base::ToSize(SubW - cols));
       for (int cc = SubX + SubW - cols; cc < SubX + SubW; cc++) {
         base::At(base::At(Page_Ptr()->Data, index), cc) = cell;
       }
     }
   } else {
     for (int index = SubY; index < SubY + SubH; index++) {
-      memmove(
-          base::Suffix(base::At(Page_Ptr()->Data, index), SubX - cols).data(),
-          base::Suffix(base::At(Page_Ptr()->Data, index), SubX).data(),
+      base::MoveBytes(
+          std::as_writable_bytes(
+              base::Suffix(base::At(Page_Ptr()->Data, index), SubX - cols)),
+          std::as_bytes(base::Suffix(base::At(Page_Ptr()->Data, index), SubX)),
           sizeof(CellType) * base::ToSize(SubW + cols));
       for (int cc = SubX; cc < SubX - cols; cc++) {
         base::At(base::At(Page_Ptr()->Data, index), cc) = cell;
@@ -474,10 +478,11 @@ void MonoClass::Scroll(int lines) {
 
   if (lines > 0) {
     for (int row = 0; row < SubH - lines; row++) {
-      memmove(
-          base::Suffix(base::At(Page_Ptr()->Data, SubY + row), SubX).data(),
-          base::Suffix(base::At(Page_Ptr()->Data, SubY + row + 1), SubX).data(),
-          base::ToSize(SubW) * sizeof(CellType));
+      base::MoveBytes(std::as_writable_bytes(base::Suffix(
+                          base::At(Page_Ptr()->Data, SubY + row), SubX)),
+                      std::as_bytes(base::Suffix(
+                          base::At(Page_Ptr()->Data, SubY + row + 1), SubX)),
+                      base::ToSize(SubW) * sizeof(CellType));
     }
     for (int frow = SubH - lines; frow < SubH; frow++) {
       for (int cc = 0; cc < SubW; cc++) {
@@ -486,10 +491,11 @@ void MonoClass::Scroll(int lines) {
     }
   } else {
     for (int row = SubH - 1; row >= -lines; row--) {
-      memmove(
-          base::Suffix(base::At(Page_Ptr()->Data, SubY + row), SubX).data(),
-          base::Suffix(base::At(Page_Ptr()->Data, SubY + row - 1), SubX).data(),
-          base::ToSize(SubW) * sizeof(CellType));
+      base::MoveBytes(std::as_writable_bytes(base::Suffix(
+                          base::At(Page_Ptr()->Data, SubY + row), SubX)),
+                      std::as_bytes(base::Suffix(
+                          base::At(Page_Ptr()->Data, SubY + row - 1), SubX)),
+                      base::ToSize(SubW) * sizeof(CellType));
     }
     for (int frow = 0; frow < -lines; frow++) {
       for (int cc = 0; cc < SubW; cc++) {
@@ -566,10 +572,9 @@ void MonoClass::Print(const char* ptr) {
     return;
   }
 
-  const char* text = ptr;
   cell.Attribute = static_cast<unsigned char>(Attrib);
-  while (*text) {
-    cell.Character = static_cast<unsigned char>(*text);
+  for (const char character : std::string_view(ptr)) {
+    cell.Character = static_cast<unsigned char>(character);
 
     /*
     **	Sometimes the character string is used for cursor control instead
@@ -624,7 +629,6 @@ void MonoClass::Print(const char* ptr) {
         Set_Cursor(0, Y + 1);
         break;
     }
-    text++;
   }
 }
 
@@ -730,7 +734,7 @@ void MonoClass::Print(int text) { Print(Text_String(text)); }
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
 MonoClass& MonoClass::operator=(const MonoClass& src) {
-  memmove(Page_Ptr(), src.Page_Ptr(), sizeof(MonoPageType));
+  *Page_Ptr() = *src.Page_Ptr();
   Set_Cursor(src.X, src.Y);
   return *this;
 }
@@ -780,7 +784,7 @@ void MonoClass::View() {
     **	Just copy the new page over since the display page is not assigned
     **	to a real monochrome page object.
     */
-    memmove(Raw_Ptr(0), Page_Ptr(), sizeof(MonoPageType));
+    *Raw_Ptr(0) = *Page_Ptr();
   }
   base::At(PageUsage, Page) = displace;
   PageUsage[0] = this;

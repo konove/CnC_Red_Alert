@@ -42,6 +42,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <span>
 
 #include "absl/base/attributes.h"
 #include "base/enum_array.h"
@@ -156,7 +157,7 @@ class InfantryClass final : public FootClass {
   **	Query functions.
   */
   [[nodiscard]] bool Is_Ready_To_Random_Animate() const override;
-  [[nodiscard]] const void* Get_Image_Data() const override;
+  [[nodiscard]] std::span<const std::byte> Get_Image_Data() const override;
   [[nodiscard]] int Shape_Number() const;
   [[nodiscard]] const ObjectTypeClass& Class_Of() const override;
   [[nodiscard]] int Full_Name() const override;
@@ -173,7 +174,8 @@ class InfantryClass final : public FootClass {
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
   */
-  [[nodiscard]] const int16_t* Overlap_List(bool redraw = false) const override;
+  [[nodiscard]] std::span<const int16_t> Overlap_List(
+      bool redraw = false) const override;
   void Draw_It(int x, int y, WindowNumberType window) const override;
 
   /*

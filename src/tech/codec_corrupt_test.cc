@@ -1,6 +1,7 @@
 // Tests that the block-based LCW, LZW and LZO decoders stop cleanly on corrupt
 // block headers and payloads instead of reading or writing past their buffers.
 
+#include <algorithm>
 #include <array>
 #include <cstddef>
 #include <cstdint>
@@ -43,7 +44,8 @@ std::vector<uint8_t> Drain(ByteSource& straw) {
   for (base::ssize count = straw.Read(std::as_writable_bytes(std::span(chunk)));
        count != 0;
        count = straw.Read(std::as_writable_bytes(std::span(chunk)))) {
-    result.insert(result.end(), chunk.begin(), chunk.begin() + count);
+    std::ranges::copy(std::span(chunk).first(static_cast<std::size_t>(count)),
+                      std::back_inserter(result));
   }
   return result;
 }
