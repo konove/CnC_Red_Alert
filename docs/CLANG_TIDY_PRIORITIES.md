@@ -1,6 +1,6 @@
 # Clang-tidy priorities
 
-Updated: 2026-09-15, against [`.clang-tidy`](../.clang-tidy) and clang-tidy 23.1.2.
+Updated: 2026-09-16, against [`.clang-tidy`](../.clang-tidy) and clang-tidy 23.1.2.
 
 This tracks **all 102 currently excluded check names** and completed entries, in recommended work
 order. Priorities reflect likely defect prevention, relevance to this engine, and the cost of useful
@@ -58,7 +58,7 @@ comes from the installed tool, since the online documentation follows LLVM devel
 | Check                                                      | Status  | Reason / result                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | ---------------------------------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- | -------------------------------------------------------------------- |
 | `clang-diagnostic-lifetime-safety-use-after-free`          | Enabled | Commit `Stop returning freed projectiles from the firing code`: clear the bullet pointer when unlimbo fails and read the recoil flag before the free.                                                                                                                                                                                                                                                                                                                                                   |
-| `clang-diagnostic-lifetime-safety-invalidation`            | Skipped | Commit `Clear the screen buffer globals their owners delete`: fix the eight dangling-global findings, but retain the exclusion because LLVM 23.1.2 flags two consecutive `push_back` calls. See review below.                                                                                                                                                                                                                                                                                           |
+| `clang-diagnostic-lifetime-safety-invalidation`            | Enabled | Commit `Enable lifetime invalidation checking with scoped LLVM workarounds`: annotate confirmed LLVM 23 container false positives and remove the global exclusion. Plan [LIFETIME_INVALIDATION_PLAN.md](LIFETIME_INVALIDATION_PLAN.md); see review below.                                                                                                                                                                                                                                               |
 | `clang-diagnostic-lifetime-safety-use-after-scope-moved`   | Enabled | Commit `Take the unit shape pointer from its owner and enable moved-storage checking`: store the shape data first, then read the pointer back, instead of holding one into a moved-from local.                                                                                                                                                                                                                                                                                                          |
 | `bugprone-parent-virtual-call`                             | Enabled | Commit `Document the deliberate grandparent dispatches and enable parent virtual call checking`: drop TD's duplicate mission dump; the other twelve skips are intentional and now say why.                                                                                                                                                                                                                                                                                                              |
 | `cppcoreguidelines-interfaces-global-init`                 | Enabled | Commit `Enable cross-unit global initialization checking`: TD's house table is the only report and is safe on two counts; it is annotated, and the check now guards the rest of the tree.                                                                                                                                                                                                                                                                                                               |
@@ -422,12 +422,39 @@ Both strict game builds passed, and all 482 CTest tests in the rebuilt suite pas
 seven new regressions. The RA save/load smoke check matched 240 object positions; TD matched 5,742
 game states.
 
-### Container invalidation check policy (2026-09-11)
+### Container invalidation check enabled (2026-09-16)
 
-`clang-diagnostic-lifetime-safety-invalidation` remains excluded after review. The isolated sweep of
-890 project translation units, including 431 generated header checks, produced 13 findings in 9
-files. Eight were real and are fixed; the remaining five are a blanket false positive that makes the
-check unusable as it stands.
+The global exclusion is removed in commit
+`Enable lifetime invalidation checking with scoped LLVM workarounds`. The plan is
+[LIFETIME_INVALIDATION_PLAN.md](LIFETIME_INVALIDATION_PLAN.md).
+
+The isolated sweep covered 952 project translation units, including 454 generated header checks, and
+reported 16 sites in nine files. All are confirmed LLVM 23.1.2 false positives: nine byte-appending
+test helpers, two INI string writers, the RA capture-frame vector, and four loops clearing palette
+vectors inside fixed arrays across both games. None retains a pointer, reference, or iterator into
+invalidated element storage. Mutating a container does not invalidate the container object or a
+reference to it; clearing an inner vector does not invalidate an iterator over the outer array.
+
+Each site now has a check-specific `NOLINTNEXTLINE` on the reported declaration or statement, with
+its lifetime justification. These are local compiler workarounds, not changes to container
+ownership, byte encodings, or runtime behavior. Revisit them after a toolchain upgrade. The
+diagnostic remains enabled everywhere else.
+
+A standalone probe confirms both the valid-vector false positive and detection of an actual element
+reference used after `clear()` and a global retaining a deleted object. With the repository
+configuration and the strict build's existing `-Weverything`, these produce lifetime-invalidation
+errors; restoring only the old exclusion suppresses those errors.
+
+The nine affected files pass the isolated recheck. The final full-configuration sweep passed all 952
+translation units, both strict game builds passed, and all 547 CTest tests passed. Source changes
+are comments only; no runtime behavior or save/load format changed.
+
+### Previous container invalidation policy (2026-09-11; superseded above)
+
+`clang-diagnostic-lifetime-safety-invalidation` remained excluded after that review. The isolated
+sweep of 890 project translation units, including 431 generated header checks, produced 13 findings
+in 9 files. Eight were real and are fixed; the remaining five are a blanket false positive that
+makes the check unusable as it stands.
 
 In LLVM 23.1.2 the diagnostic treats any mutating member call as invalidating the container object
 itself, rather than the references and iterators into it. Two consecutive `push_back` calls are

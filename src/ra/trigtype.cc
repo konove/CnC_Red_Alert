@@ -2023,6 +2023,9 @@ void TriggerTypeClass::Write_INI(CCINIClass& ini) {
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
+// LLVM 23 treats assignment as invalidating the string reference itself. No
+// pointer, reference or iterator into its old character storage is retained.
+// NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-invalidation)
 void TriggerTypeClass::Build_INI_Entry(std::string& buffer) const {
   /*
   ** Build the root portion of the trigger event.

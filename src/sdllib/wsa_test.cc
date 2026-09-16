@@ -73,12 +73,18 @@ int32_t LCW_Uncompress(std::span<const unsigned char> /*source*/,
 
 namespace {
 
+// LLVM 23 mistakes element invalidation for invalidating the vector reference;
+// no element reference or iterator is retained across these appends.
+// NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-invalidation)
 void PutUint16(std::vector<char>& out, int value) {
   const auto bits = static_cast<uint32_t>(value);
   out.push_back(static_cast<char>(bits & 0xff));
   out.push_back(static_cast<char>((bits >> 8) & 0xff));
 }
 
+// LLVM 23 mistakes element invalidation for invalidating the vector reference;
+// no element reference or iterator is retained across these appends.
+// NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-invalidation)
 void PutUint32(std::vector<char>& out, int64_t value) {
   const auto bits = static_cast<uint64_t>(value);
   for (unsigned shift = 0; shift < 32; shift += 8) {

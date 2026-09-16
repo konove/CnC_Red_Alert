@@ -105,6 +105,9 @@ void AppendBytes(std::vector<uint8_t>& out, const char* text) {
   out.insert(out.end(), view.begin(), view.end());
 }
 
+// LLVM 23 mistakes element invalidation for invalidating the vector reference;
+// no element reference or iterator is retained across these appends.
+// NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-invalidation)
 void AppendBigEndian32(std::vector<uint8_t>& out, uint32_t value) {
   out.push_back(static_cast<uint8_t>(value >> 24));
   out.push_back(static_cast<uint8_t>(value >> 16));

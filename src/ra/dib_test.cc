@@ -8,11 +8,17 @@
 
 namespace {
 
+// LLVM 23 mistakes element invalidation for invalidating the vector reference;
+// no element reference or iterator is retained across these appends.
+// NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-invalidation)
 void PutU16(std::vector<std::uint8_t>& out, std::uint16_t value) {
   out.push_back(static_cast<std::uint8_t>(value & 0xFFU));
   out.push_back(static_cast<std::uint8_t>(value >> 8U));
 }
 
+// LLVM 23 mistakes element invalidation for invalidating the vector reference;
+// no element reference or iterator is retained across these appends.
+// NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-invalidation)
 void PutU32(std::vector<std::uint8_t>& out, std::uint32_t value) {
   for (unsigned shift = 0; shift < 32; shift += 8) {
     out.push_back(static_cast<std::uint8_t>((value >> shift) & 0xFFU));

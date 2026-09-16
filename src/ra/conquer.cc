@@ -1868,6 +1868,9 @@ bool Main_Loop() {
     // One captured screen per element. Empty between runs. Deliberately leaked
     // rather than given static storage duration with a destructor, which would
     // run at exit after the graphics system is already gone.
+    // LLVM 23 treats resize as invalidating the vector itself. The reference
+    // remains valid, and element views are acquired only after resizing.
+    // NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-invalidation)
     static auto& frames = *new std::vector<std::vector<char>>();
     // Doubles as the frame counter and the end-of-run signal: reaching
     // frames.size() ends the capture and flushes to disk.
@@ -1984,6 +1987,9 @@ int Load_Interpolated_Palettes(const char* filename, const bool add) {
   GameFile file(filename);
 
   if (!add) {
+    // Clearing an inner vector does not invalidate the outer array's iterator.
+    // LLVM 23 incorrectly propagates the element invalidation to the array.
+    // NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-invalidation)
     for (auto& InterpolatedPalette : InterpolatedPalettes) {
       InterpolatedPalette.clear();
     }
@@ -2035,6 +2041,9 @@ int Load_Interpolated_Palettes(const char* filename, const bool add) {
 }
 
 void Free_Interpolated_Palettes() {
+  // Clearing an inner vector does not invalidate the outer array's iterator.
+  // LLVM 23 incorrectly propagates the element invalidation to the array.
+  // NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-invalidation)
   for (auto& InterpolatedPalette : InterpolatedPalettes) {
     InterpolatedPalette.clear();
   }

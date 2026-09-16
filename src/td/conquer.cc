@@ -2025,6 +2025,9 @@ int Load_Interpolated_Palettes(const char* filename, bool add) {
   //	DiskFile	*palette_file;
 
   if (!add) {
+    // Clearing an inner vector does not invalidate the outer array's iterator.
+    // LLVM 23 incorrectly propagates the element invalidation to the array.
+    // NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-invalidation)
     for (auto& InterpolatedPalette : InterpolatedPalettes) {
       InterpolatedPalette.clear();
     }
@@ -2069,6 +2072,9 @@ int Load_Interpolated_Palettes(const char* filename, bool add) {
 }
 
 void Free_Interpolated_Palettes() {
+  // Clearing an inner vector does not invalidate the outer array's iterator.
+  // LLVM 23 incorrectly propagates the element invalidation to the array.
+  // NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-invalidation)
   for (auto& InterpolatedPalette : InterpolatedPalettes) {
     InterpolatedPalette.clear();
     InterpolatedPalette.shrink_to_fit();

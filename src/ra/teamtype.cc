@@ -1868,6 +1868,9 @@ void TeamTypeClass::Write_INI(CCINIClass& ini) {
  *                                                                                             *
  * HISTORY: * 07/30/1996 JLB : Created. *
  *=============================================================================================*/
+// LLVM 23 treats clear as invalidating the string reference itself. No pointer,
+// reference or iterator into its old character storage is retained.
+// NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-invalidation)
 void TeamTypeClass::Build_INI_Entry(std::string& buf) {
   buf.clear();
   uint32_t code = 0;
