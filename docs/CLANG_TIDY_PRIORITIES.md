@@ -77,7 +77,7 @@ comes from the installed tool, since the online documentation follows LLVM devel
 | `readability-math-missing-parentheses`                     | Enabled | Commit `Parenthesize mixed-precedence arithmetic`: 2,513 sites, applied with the check's own fix-its plus 16 manual edits the fix-its could not reach; no behavior change (see the review below).                                                                                                                                                                                                                                                                                                       |
 | `bugprone-branch-clone`                                    | Enabled | Commit `Merge duplicate branches and enable branch clone checking`: 43 sites, none a copy/paste bug; stack identical case labels, join repeated condition bodies, and collapse four identical if/else pairs. See review below.                                                                                                                                                                                                                                                                          |
 | `clang-diagnostic-sign-conversion`                         | Enabled | Commit `Enable sign conversion checking`: 2,414 reports, fixed mostly at the type: signed heap and vector indices, money, text widths and fixed-point helpers, connection timing with an explicit `-1` "no limit", and the VQA player's `long` fields. Library parameters take `base::ToSize`/`base::ToSigned`; packets, recordings and saves keep their widths. See review below.                                                                                                                      |
-| `bugprone-signed-bitwise`                                  | Skipped | Commit `Document sign and parameter check policy`: 3,715 reports even with `IgnorePositiveIntegerLiterals`; about 1,800 are enum flag ORs in the unit and building data tables, the rest deliberate bit manipulation in the VQA loader, blitters and crypto. See review below.                                                                                                                                                                                                                          |
+| `bugprone-signed-bitwise`                                  | Enabled | Commits `Add base::Bit and make the flag constants unsigned` through `Enable bugprone-signed-bitwise`: 3,363 sites; the flag constants and their holders are unsigned, index-to-bit shifts go through `base::Bit`, shift arithmetic on numbers is arithmetic; 13 floor-division shifts of signed values stay under `NOLINT`. The `base::Bit` check found the building scans wrapping past 64 types. See review below.                                                                                   |
 | `hicpp-signed-bitwise`                                     | Legacy  | Unavailable in LLVM 23; review with `bugprone-signed-bitwise` on older tools.                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | `clang-diagnostic-switch-enum`                             | Skipped | Commit `Document variadic and thread-safety check policy`: all 293 reports are switches that already have a deliberate default over large type enums (up to 102 values); `-Wswitch` and `-Wswitch-default` already require an explicit fallback.                                                                                                                                                                                                                                                        |
 | `clang-diagnostic-switch`                                  | Enabled | Commit `Give every switch a fallback and switch on key numbers as integers`: 792 reports; 639 were gadget-ID `ButtonKey()` cases in 98 `KeyNumType` switches, which now switch on the integer key number; the 153 unhandled-enumerator switches get the default below.                                                                                                                                                                                                                                  |
@@ -1591,6 +1591,57 @@ Verification: the isolated sweep over all 488 source translation units reports n
 strict build; CTest (463 tests); the RA save/load smoke test (240 positions, plus the fixture load)
 and the TD smoke test with every fixture (5,742 to 6,371 states). The excluded-name count drops from
 104 to 103.
+
+### Signed bitwise enablement (2026-09-15)
+
+`bugprone-signed-bitwise` is now enforced with `IgnorePositiveIntegerLiterals: true`; the plan is
+[SIGNED_BITWISE_PLAN.md](SIGNED_BITWISE_PLAN.md). The 2026-09-12 policy kept it out because 1,800 of
+its reports were OR'd flag constants in the data tables and named "making the flag enums unsigned"
+as the useful version. That is what this pass did, without a flag-type redesign. Since C++20 both
+shift directions are defined on signed values, so what the check enforces is `CLAUDE.md`'s own
+integer rule: bit patterns and flags in unsigned types, `int` for numbers.
+
+A fresh sweep found 3,363 sites (TD 2,101, RA 902, tech 172, sdllib 156, winvq 27, base 5):
+
+- **Flag constants (1,909).** TD's `1 << HOUSE_X` macros are `inline constexpr uint32_t`/`uint64_t`
+  constants named like RA's (`kHouseFlagMulti1`, `kStructFlagWeap`), RA's `int` flag constants and
+  the `WWKEY_*_BIT` modifiers are `uint32_t`, `ShapeFlags_Type`, `BlitFlags`, `EditStyle` and
+  `FileAccess` have a fixed unsigned underlying type, and the holders follow: `Ownable`,
+  `Get_Ownable`, `Get_Owners`/`Put_Owners`, `Owner_From_Name`, `Allies`, `RadarSpied`, the theater,
+  theme-owner, zone and threat masks, the modem status. The data-table rows are untouched. Three
+  `STRUCTF_CIV` macros named enumerators that do not exist and are gone.
+- **A bit from an index (about 200).** `1 << house`, `1L << Class->Type` and the loop forms go
+  through `base::Bit<T>(index)` (`base/numeric.h`), the one place a signed index becomes a shift
+  count, checked against the width in debug builds. The 64-bit house scans go through `ScanBit`, see
+  below.
+- **Arithmetic (about 350).** `>> 1`, `<< 3` and the resolution-factor shifts on widths, lengths and
+  counts are `/ 2`, `* 8` and a `scale` computed once; `& 0x01` on a frame counter is `% 2`;
+  ring-buffer wraps are `% size`; `(x + 3) & ~3` is `/ 4 * 4`. 13 right shifts of values that can be
+  negative (`base/trig.h`, the ADPCM and audio mix, the fading table, the facing difference, the
+  predator offset) are floor divisions and keep the shift under `NOLINT` with a comment.
+- **Bit patterns in unsigned types (about 900).** Clip codes, codec words, shroud and overlay
+  indices, facing composites, key numbers where they are masked, the CRC and cipher in each game's
+  `Obfuscate`; `XYP_COORD` is `Pixel_Offset_Coord`, and the target, cell and coordinate packers cast
+  each component once and combine in `uint32_t`; `FacingType` arithmetic wraps through `AsFacing`
+  (TD) and `WrapFacing` (RA) instead of `& 7`; `cell & 0xF000` legality tests are range checks.
+
+The `base::Bit` check found a defect: `1L << Class->Type` for the building scans (`BScan` and the
+active and old variants) with 87 RA and 67 TD building types on a 64-bit `long`. x86 masks the
+count, so the civilian buildings from `STRUCT_V14` on, the barrels, the ant structures and TD's last
+walls set the bits of `STRUCT_ADVANCED_TECH` through `STRUCT_V6` and satisfied prerequisites they do
+not provide (the original 32-bit `long` wrapped at 32). `ScanBit(type)` in each `defines.h` returns
+0 for a type past 64; nothing names those types in a prerequisite, trigger or AI test. A second
+suspected defect is recorded as a `TODO` in `tech/2keyfbuf.cc`: a negative predator offset becomes
+`~0xFF | k` and indexes `BFPredTable` about 126 entries before its start, before `BFPredNegTable`
+too. The arithmetic is unchanged.
+
+Behavior is otherwise preserved: every shift rewritten as arithmetic is on a non-negative value, and
+`Put_Buildings` now takes the `uint64_t` mask `Get_Buildings` returns instead of the low 32 bits.
+
+Verification: the isolated sweep over all 502 source translation units reports nothing; the full
+strict build with the check enabled; CTest (465 tests); the RA save/load smoke test (240 positions,
+plus the fixture load) and the TD smoke test with every fixture (5,742 to 6,371 states). The
+excluded-name count drops from 96 to 95, counted as the `-name` lines under `Checks`.
 
 ### Nodiscard review (2026-09-12)
 

@@ -3,6 +3,9 @@
 Written 2026-09-15 against `.clang-tidy` and clang-tidy 23.1.2. Companion to the row in
 [CLANG_TIDY_PRIORITIES.md](CLANG_TIDY_PRIORITIES.md).
 
+**Status: complete (2026-09-15).** The check is enabled; the results are in the "Signed bitwise
+enablement" review in CLANG_TIDY_PRIORITIES.md.
+
 ## Context
 
 The row was skipped on 2026-09-12 with 3,715 reports: about 1,800 were OR'd flag enumerators in the
