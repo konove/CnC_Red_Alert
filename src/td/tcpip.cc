@@ -312,7 +312,7 @@ int TcpipManagerClass::Read(void* buffer, int buffer_len) {
     bytes_copied =
         std::min(ReceiveBuffers[RXBufferTail++].DataLength, buffer_len);
 
-    RXBufferTail &= WS_NUM_RX_BUFFERS - 1;
+    RXBufferTail %= WS_NUM_RX_BUFFERS;
   }
 
   return bytes_copied;
@@ -342,7 +342,7 @@ void TcpipManagerClass::Write(void* buffer, int buffer_len) {
     TransmitBuffers[TXBufferHead].InUse = true;
     TransmitBuffers[TXBufferHead++].DataLength =
         std::min(buffer_len, WS_INTERNET_BUFFER_LEN);
-    TXBufferHead &= WS_NUM_TX_BUFFERS - 1;
+    TXBufferHead %= WS_NUM_TX_BUFFERS;
   }
 
   Keyboard::Check();
@@ -461,7 +461,7 @@ void TcpipManagerClass::Copy_To_In_Buffer(int bytes) {
     ReceiveBuffers[RXBufferHead].InUse = true;
     ReceiveBuffers[RXBufferHead++].DataLength =
         std::min(bytes, WS_INTERNET_BUFFER_LEN);
-    RXBufferHead &= WS_NUM_RX_BUFFERS - 1;
+    RXBufferHead %= WS_NUM_RX_BUFFERS;
   }
 }
 

@@ -68,7 +68,7 @@
  * HISTORY: * 03/08/1996 JLB : Created. *
  *=============================================================================================*/
 DirType Desired_Facing8(int x1, int y1, int x2, int y2) {
-  int index = 0;  // Facing composite value.
+  unsigned index = 0;  // Facing composite value.
 
   /*
   **	Figure the absolute X difference. This determines
@@ -76,7 +76,7 @@ DirType Desired_Facing8(int x1, int y1, int x2, int y2) {
   */
   int xdiff = x2 - x1;
   if (xdiff < 0) {
-    index |= 0x00C0;
+    index |= 0x00C0U;
     xdiff = -xdiff;
   }
 
@@ -87,7 +87,7 @@ DirType Desired_Facing8(int x1, int y1, int x2, int y2) {
   */
   int ydiff = y1 - y2;
   if (ydiff < 0) {
-    index ^= 0x0040;
+    index ^= 0x0040U;
     ydiff = -ydiff;
   }
 
@@ -119,13 +119,13 @@ DirType Desired_Facing8(int x1, int y1, int x2, int y2) {
   **	Determine if the facing is closer to the Y axis or
   **	the X axis.
   */
-  int adder = index & 0x0040;
+  unsigned adder = index & 0x0040U;
   if (xdiff == bigger) {
-    adder ^= 0x0040;
+    adder ^= 0x0040U;
   }
   index += adder;
 
-  return AsDirection(index);
+  return AsDirection(static_cast<int>(index));
 }
 
 /***********************************************************************************************
@@ -152,7 +152,7 @@ DirType Desired_Facing8(int x1, int y1, int x2, int y2) {
  * HISTORY: * 03/08/1996 JLB : Created. *
  *=============================================================================================*/
 DirType Desired_Facing256(int srcx, int srcy, int dstx, int dsty) {
-  int composite = 0;  // Facing built from intermediate calculations.
+  unsigned composite = 0;  // Facing built from intermediate calculations.
 
   /*
   **	Fetch the absolute X difference. This also gives a clue as
@@ -160,7 +160,7 @@ DirType Desired_Facing256(int srcx, int srcy, int dstx, int dsty) {
   */
   int xdiff = dstx - srcx;
   if (xdiff < 0) {
-    composite |= 0x00C0;
+    composite |= 0x00C0U;
     xdiff = -xdiff;
   }
 
@@ -170,7 +170,7 @@ DirType Desired_Facing256(int srcx, int srcy, int dstx, int dsty) {
   */
   int ydiff = srcy - dsty;
   if (ydiff < 0) {
-    composite ^= 0x0040;
+    composite ^= 0x0040U;
     ydiff = -ydiff;
   }
 
@@ -212,21 +212,18 @@ DirType Desired_Facing256(int srcx, int srcy, int dstx, int dsty) {
   **	to the X or Y axis, we must make an adjustment toward the
   **	subsequent quadrant if necessary.
   */
-  int adder = composite & 0x0040;
-  if (xdiff > ydiff) {
-    adder ^= 0x0040;
-  }
+  const unsigned adder = (composite & 0x0040U) ^ (xdiff > ydiff ? 0x0040U : 0U);
   if (adder) {
-    frac = adder - frac - 1;
+    frac = static_cast<int>(adder) - frac - 1;
   }
 
   /*
   **	Integrate the fraction value into the quadrant.
   */
-  composite += frac;
+  composite += static_cast<unsigned>(frac);
 
   /*
   **	Return with the final facing value.
   */
-  return AsDirection(composite);
+  return AsDirection(static_cast<int>(composite));
 }

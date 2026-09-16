@@ -84,6 +84,7 @@
 #include <utility>
 
 #include "absl/strings/str_format.h"
+#include "base/numeric.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
@@ -167,22 +168,23 @@ RadarClass::RadarClass() = default;
  *=============================================================================================*/
 void RadarClass::One_Time() {
   const int factor = Get_Resolution_Factor();
-  RadWidth = 80 << factor;
-  RadHeight = 70 << factor;
+  const int scale = static_cast<int>(base::Bit<uint32_t>(factor));
+  RadWidth = 80 * scale;
+  RadHeight = 70 * scale;
   RadX = SeenBuff.Get_Width() - RadWidth;
-  RadY = Map.Get_Tab_Height() - (1 << factor);
-  RadPWidth = 64 << factor;
-  RadPHeight = 64 << factor;
+  RadY = Map.Get_Tab_Height() - scale;
+  RadPWidth = 64 * scale;
+  RadPHeight = 64 * scale;
   if (factor) {
     RadOffX = 16;
     RadOffY = 7;
     RadIWidth = 128;
     RadIHeight = 128;
   } else {
-    RadOffX = 4 << factor;
-    RadOffY = 1 << factor;
-    RadIWidth = 72 << factor;
-    RadIHeight = 69 << factor;
+    RadOffX = 4 * scale;
+    RadOffY = scale;
+    RadIWidth = 72 * scale;
+    RadIHeight = 69 * scale;
   }
 
   DisplayClass::One_Time();
@@ -626,8 +628,8 @@ void RadarClass::Render_Infantry(CELL cell, int x, int y, int size) const {
             xoff = Coord_XLepton(obj->Coord) / divisor;
             yoff = Coord_YLepton(obj->Coord) / divisor;
             if (ZoomFactor >= 6) {
-              xoff <<= 1;
-              yoff <<= 1;
+              xoff *= 2;
+              yoff *= 2;
             }
           } else {
             xoff = 0;
@@ -861,8 +863,10 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
         **	Convert the logical icon number into the actual icon number.
         */
         Mem_Copy(Add_Long_To_Pointer(ptr, 28), &offset, sizeof(offset));
-        Mem_Copy(Add_Long_To_Pointer(ptr, offset + icon), &icon, sizeof(char));
-        icon &= 0x00FF;
+        unsigned char icon_byte = 0;
+        Mem_Copy(Add_Long_To_Pointer(ptr, offset + icon), &icon_byte,
+                 sizeof(icon_byte));
+        icon = icon_byte;
 
         Mem_Copy(Add_Long_To_Pointer(ptr, 12), &offset, sizeof(offset));
         ptr = Add_Long_To_Pointer(ptr, offset + (icon * (24 * 24)));
@@ -1654,8 +1658,8 @@ void RadarClass::Set_Radar_Position(CELL cell) {
           ** Blit it in 2 stages using an intermediate buffer.
           */
           GraphicBufferClass temp_surface;
-          temp_surface.Init((RadarWidth + 16) & ~0xF,
-                            (RadarHeight + 16) & ~0xF, nullptr, 0,
+          temp_surface.Init(((RadarWidth + 16) / 16) * 16,
+                            ((RadarHeight + 16) / 16) * 16, nullptr, 0,
                             GBC_VIDEOMEM);
 
           HidPage.Blit(

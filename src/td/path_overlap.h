@@ -6,6 +6,7 @@
 #include <cstdint>
 
 #include "absl/log/check.h"
+#include "base/numeric.h"
 
 // Overlap bitmaps are arrays of 32-bit words: cell N lives in word N / 32, at
 // bit N % 32.
@@ -19,11 +20,11 @@
 constexpr int OverlapWordCount(int cell_count) { return (cell_count + 31) / 32; }
 
 // Returns the index of the word holding `cell`. `cell` must be non-negative.
-constexpr int OverlapWord(int cell) { return cell >> 5; }
+constexpr int OverlapWord(int cell) { return cell / 32; }
 
 // Returns the mask selecting `cell`'s bit within its word.
 constexpr uint32_t OverlapMask(int cell) {
-  return uint32_t{1} << (cell & 31);
+  return base::Bit<uint32_t>(cell % 32);
 }
 
 // Returns whether `cell` is marked in the bitmap `words`.

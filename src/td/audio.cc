@@ -335,17 +335,17 @@ void Sound_Effect(VocType voc, COORDINATE coord, int variation) {
     distance = std::min<int>(distance, MAP_CELL_W);
     distance = Cardinal_To_Fixed(MAP_CELL_W, distance);
     distance = std::min(distance, 0xFF);
-    distance ^= 0xFF;
+    distance = 0xFF - distance;
 
     distance /= 2;
     distance = std::max(distance, 25);
 
     pan_value = Cell_X(cell_pos);
     pan_value -= Coord_XCell(Map.TacticalCoord) +
-                 (Lepton_To_Cell(Map.TacLeptonWidth) >> 1);
-    if (std::abs(pan_value) > Lepton_To_Cell(Map.TacLeptonWidth >> 1)) {
+                 (Lepton_To_Cell(Map.TacLeptonWidth) / 2);
+    if (std::abs(pan_value) > Lepton_To_Cell(Map.TacLeptonWidth / 2)) {
       pan_value *= 0x8000;
-      pan_value /= MAP_CELL_W >> 2;
+      pan_value /= MAP_CELL_W / 4;
       pan_value = Bound(pan_value, -0x7FFF, 0x7FFF);
       //			pan_value  = std::max((int)pan_value,
       //(int)-0x7FFF); 			pan_value  = std::min((int)pan_value,

@@ -41,14 +41,17 @@
 #ifndef CNC_RED_ALERT_TD_EDIT_H_
 #define CNC_RED_ALERT_TD_EDIT_H_
 
+#include <cstdint>
+
 #include "absl/base/attributes.h"
+#include "base/attributes.h"
 #include "sdllib/keyboard.h"
 #include "td/control.h"
 #include "td/defines.h"
 
 class EditClass : public ControlClass {
  public:
-  typedef enum EditStyle {
+  typedef enum CNC_FLAG_ENUM EditStyle : uint32_t {
     ALPHA = 0x0001,      // Edit accepts alphabetic characters.
     NUMERIC = 0x0002,    // Edit accepts numbers.
     MISC = 0x0004,       // Edit accepts misc graphic characters.

@@ -324,8 +324,8 @@ bool AircraftClass::Unlimbo(COORDINATE coord, DirType dir) {
     **	Ensure that the owning house knows about the
     **	new object.
     */
-    House->AScan |= 1L << Class->Type;
-    House->ActiveAScan |= 1L << Class->Type;
+    House->AScan |= ScanBit(Class->Type);
+    House->ActiveAScan |= ScanBit(Class->Type);
 
     /*
     **	Forces the body of the helicopter to face the correct direction.
@@ -1416,8 +1416,7 @@ int AircraftClass::Mission_Retreat() {
       *results. Use this value to head the aircraft *	toward the "friendly"
       *map edge.
       */
-      PrimaryFacing.Set_Desired(
-          static_cast<DirType>((House->Edge & 0x03) << 6));
+      PrimaryFacing.Set_Desired(Facing_Dir(AsFacing(House->Edge * 2)));
       SecondaryFacing.Set_Desired(PrimaryFacing.Desired());
       Status = KEEP_FLYING;
       break;

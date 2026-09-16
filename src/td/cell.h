@@ -47,6 +47,7 @@ class ArchiveWriter;
 #include <cstdint>
 
 #include "absl/base/attributes.h"
+#include "base/numeric.h"
 #include "td/building.h"
 #include "td/defines.h"
 #include "td/foot.h"
@@ -208,7 +209,7 @@ class CellClass {
   [[nodiscard]] ObjectClass* Cell_Occupier() const;
   static int Spot_Index(COORDINATE coord);
   [[nodiscard]] bool Is_Spot_Free(int spot_index) const {
-    return (Flag.Composite & 1 << spot_index) == 0;
+    return (Flag.Composite & base::Bit<uint8_t>(spot_index)) == 0;
   }
   [[nodiscard]] COORDINATE Closest_Free_Spot(COORDINATE coord,
                                              bool any = false) const;

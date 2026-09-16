@@ -316,7 +316,6 @@ void FootClass::Debug_Dump(MonoClass* mono) const {
  *Simplified.                                                              *
  *=============================================================================================*/
 void FootClass::Set_Speed(int speed) {
-  speed &= 0xFF;
   Speed = static_cast<unsigned char>(speed);
 }
 
@@ -406,8 +405,7 @@ bool FootClass::Basic_Path() {
           static_cast<unsigned>(::Direction(cell, Coord_Cell(Coord))) >> 5);
 
       for (const int index : _faceadjust) {
-        CELL const cell2 =
-            Adjacent_Cell(cell, static_cast<FacingType>(f2 + index & 0x7));
+        CELL const cell2 = Adjacent_Cell(cell, AsFacing(f2 + index));
         if (Can_Enter_Cell(cell2, FACING_NONE) <= MOVE_CLOAK) {
           cell = cell2;
           break;

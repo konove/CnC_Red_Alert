@@ -277,9 +277,9 @@ void Window_Box(WindowNumberType window, BoxStyleEnum style) {
       {0, 1}    // 10 Simple 1 pixel box.
   };
 
-  const int x = WindowList[window][WINDOWX] << 3;
+  const int x = WindowList[window][WINDOWX] * 8;
   const int y = WindowList[window][WINDOWY];
-  const int w = WindowList[window][WINDOWWIDTH] << 3;
+  const int w = WindowList[window][WINDOWWIDTH] * 8;
   const int h = WindowList[window][WINDOWHEIGHT];  // Window dimensions.
 
   /*
@@ -297,8 +297,8 @@ void Window_Box(WindowNumberType window, BoxStyleEnum style) {
   **	Draw the second border if requested.
   */
   if (border) {
-    Draw_Box(x + border, y + border, w - (border << 1), h - (border << 1),
-             style, false);
+    Draw_Box(x + border, y + border, w - (border * 2), h - (border * 2), style,
+             false);
   }
 
   /*
@@ -410,7 +410,7 @@ void Simple_Text_Print(const char* text, int x, int y, int fore,
     **	according to the color index specified.
     */
     if (flag & TPF_USE_GRAD_PAL) {
-      memcpy(&fontpalette[0], _textfontpal[(fore & 0x0f)], 16);
+      memcpy(&fontpalette[0], _textfontpal[fore % 16], 16);
     } else {
       /*
       **	Special adjustment for fonts that have gradient artwork. When
@@ -421,11 +421,11 @@ void Simple_Text_Print(const char* text, int x, int y, int fore,
     }
 
     if (flag & TPF_MEDIUM_COLOR) {
-      fore = _textpalmedium[fore & 0x0F];
+      fore = _textpalmedium[fore % 16];
       memset(&fontpalette[4], fore, 12);
     } else {
       if (flag & TPF_BRIGHT_COLOR) {
-        fore = _textpalbright[fore & 0x0F];
+        fore = _textpalbright[fore % 16];
         memset(&fontpalette[4], fore, 12);
       } else {
         fore = fontpalette[1];
@@ -559,7 +559,7 @@ void Simple_Text_Print(const char* text, int x, int y, int fore,
   if (text && *text) {
     switch (flag & (TPF_CENTER | TPF_RIGHT)) {
       case TPF_CENTER:
-        x -= String_Pixel_Width(tempstr) >> 1;
+        x -= String_Pixel_Width(tempstr) / 2;
         break;
 
       case TPF_RIGHT:

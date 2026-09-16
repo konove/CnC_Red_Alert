@@ -568,9 +568,9 @@ void DisplayClass::Set_View_Dimensions(int x, int y, int width, int height) {
 
   TacPixelX = x;
   TacPixelY = y;
-  WindowList[WINDOW_TACTICAL][WINDOWX] = x >> 3;
+  WindowList[WINDOW_TACTICAL][WINDOWX] = x / 8;
   WindowList[WINDOW_TACTICAL][WINDOWY] = y;
-  WindowList[WINDOW_TACTICAL][WINDOWWIDTH] = width >> 3;
+  WindowList[WINDOW_TACTICAL][WINDOWWIDTH] = width / 8;
   WindowList[WINDOW_TACTICAL][WINDOWHEIGHT] = height;
   if (Window == WINDOW_TACTICAL) {
     Change_Window(0);
@@ -1398,7 +1398,7 @@ int DisplayClass::Cell_Shadow(CELL cell) {
     **	Check the cardinal directions first. This will either result
     **	in a solution or the flag to check the diagonals.
     */
-    int index = 0;
+    uint32_t index = 0;
     cellptr--;
     if (cellptr->IsMapped) {
       index |= 0x08;
@@ -2441,7 +2441,7 @@ CELL DisplayClass::Calculated_Cell(SourceType dir, HousesType house) {
         if ((*this)[cell].Cell_Techno()) {
           for (int radius = 1; radius < 7; radius++) {
             const CELL newcell =
-                Coord_Cell(Coord_Scatter(Cell_Coord(cell), radius << 8, true));
+                Coord_Cell(Coord_Scatter(Cell_Coord(cell), radius * 256, true));
             if (In_Radar(newcell) && !(*this)[newcell].Cell_Techno()) {
               cell = newcell;
               break;
@@ -2563,7 +2563,7 @@ CELL DisplayClass::Calculated_Cell(SourceType dir, HousesType house) {
     **	The selected edge cell must be unoccupied and if this is for
     **	the player, then it must be on an accessible map cell.
     */
-    cell &= 0x0FFF;
+    cell = static_cast<CELL>(static_cast<uint32_t>(cell) & 0x0FFFU);
     if (cell && (*this)[cell].Cell_Techno()) {
       cell = 0;
     }
@@ -3503,8 +3503,8 @@ void DisplayClass::Compute_Start_Pos() {
   for (int i = 0; i < Buildings.Count(); i++) {
     const BuildingClass* bldgp = Buildings.Ptr(i);
     if (!bldgp->IsInLimbo && bldgp->House == PlayerPtr) {
-      x += static_cast<int32_t>(Coord_XCell(bldgp->Coord)) << 4;
-      y += static_cast<int32_t>(Coord_YCell(bldgp->Coord)) << 4;
+      x += static_cast<int32_t>(Coord_XCell(bldgp->Coord)) * 16;
+      y += static_cast<int32_t>(Coord_YCell(bldgp->Coord)) * 16;
       num += 16;
     }
   }

@@ -74,6 +74,7 @@
 #include <cstring>
 
 #include "absl/strings/str_format.h"
+#include "base/numeric.h"
 #include "base/types.h"
 #include "port/tokenizer.h"
 #include "rand.h"
@@ -634,7 +635,7 @@ void TerrainClass::Debug_Dump(MonoClass* mono) const {
  *=============================================================================================*/
 bool TerrainClass::Unlimbo(COORDINATE coord, DirType dir) {
   Validate();
-  if (Class->Theater & 1 << Map.Theater) {
+  if ((Class->Theater & base::Bit<uint8_t>(Map.Theater)) != 0) {
     return ObjectClass::Unlimbo(coord, dir);
   }
   return false;

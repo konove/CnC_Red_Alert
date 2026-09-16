@@ -41,11 +41,15 @@ void* Conquer_Build_Fading_Table(const void* palette, void* dest, int color,
     const uint8_t origred = pal8[(remap_index * 3) + 0];
     const uint8_t origgreen = pal8[(remap_index * 3) + 1];
 
-    int tmp = (origred - targetred) * (frac >> 1);
-    const int idealred = origred - (tmp >> 7);
+    // The products can be negative; the shifts floor them as the original
+    // table builder did, so the palette comes out identical.
+    int tmp = (origred - targetred) * (frac / 2);
+    const int idealred =
+        origred - (tmp >> 7);  // NOLINT(bugprone-signed-bitwise)
 
-    tmp = (origgreen - targetgreen) * (frac >> 1);
-    const int idealgreen = origgreen - (tmp >> 7);
+    tmp = (origgreen - targetgreen) * (frac / 2);
+    const int idealgreen =
+        origgreen - (tmp >> 7);  // NOLINT(bugprone-signed-bitwise)
 
     // Sweep through a limited set of existing colors to find the closest
     // matching color.

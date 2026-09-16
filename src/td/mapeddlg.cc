@@ -56,6 +56,7 @@
 #include <cstring>
 
 #include "absl/strings/str_format.h"
+#include "base/numeric.h"
 #include "port/safe_string.h"
 #include "port/tokenizer.h"
 #include "sdllib/drawbuff.h"
@@ -1686,7 +1687,7 @@ int MapEditClass::Scenario_Dialog() {
   /*
   ....................... Theater-changing variables .......................
   */
-  unsigned char theater_mask = 0;  // template/terrain mask
+  uint32_t theater_mask = 0;  // template/terrain mask
   /*........................................................................
   Buttons
   ........................................................................*/
@@ -2110,7 +2111,7 @@ int MapEditClass::Scenario_Dialog() {
       if ((*this)[i].TType != TEMPLATE_NONE) {
         theater_mask =
             TemplateTypeClass::As_Reference((*this)[i].TType).Theater;
-        if ((theater_mask & (1 << theater)) == 0) {
+        if ((theater_mask & base::Bit<uint32_t>(theater)) == 0) {
           (*this)[i].TType = TEMPLATE_NONE;
           (*this)[i].TIcon = 0;
         }
@@ -2123,7 +2124,7 @@ int MapEditClass::Scenario_Dialog() {
           (*this)[i].Cell_Terrain();  // cell's terrain pointer
       if (terrain) {
         theater_mask = terrain->Class->Theater;
-        if ((theater_mask & (1 << theater)) == 0) {
+        if ((theater_mask & base::Bit<uint32_t>(theater)) == 0) {
           delete terrain;
         }
       }

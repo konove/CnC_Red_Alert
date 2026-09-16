@@ -135,9 +135,9 @@ bool LoadOptionsClass::Process() {
   const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
   const int d_dialog_w = 250 * factor;
   const int d_dialog_h = 156 * factor;
-  const int d_dialog_x = (SeenBuff.Get_Width() - d_dialog_w) >> 1;
-  const int d_dialog_y = (SeenBuff.Get_Height() - d_dialog_h) >> 1;
-  const int d_dialog_cx = d_dialog_x + (d_dialog_w >> 1);
+  const int d_dialog_x = (SeenBuff.Get_Width() - d_dialog_w) / 2;
+  const int d_dialog_y = (SeenBuff.Get_Height() - d_dialog_h) / 2;
+  const int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);
   const int d_txt8_h = 11 * factor;
   const int d_margin = 7 * factor;
 

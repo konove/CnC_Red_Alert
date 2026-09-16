@@ -288,7 +288,7 @@ bool OverlayClass::Mark(MarkType mark) {
               **	Possibly add concrete to adjacent cells depending on
               *whether this *	concrete is in an odd or even row.
               */
-              if (Cell_X(cell) & 0x01) {
+              if (Cell_X(cell) % 2 != 0) {
                 newcell = Adjacent_Cell(cellptr->Cell_Number(), FACING_W);
               } else {
                 newcell = Adjacent_Cell(cellptr->Cell_Number(), FACING_E);

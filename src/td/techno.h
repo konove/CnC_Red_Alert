@@ -280,9 +280,9 @@ class TechnoClass : public RadioClass,
   virtual bool Captured(HouseClass* newowner);
   ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
                          TechnoClass* source) override;
-  bool Evaluate_Cell(ThreatType method, int mask, CELL cell, int range,
+  bool Evaluate_Cell(ThreatType method, uint32_t mask, CELL cell, int range,
                      const TechnoClass** object, int& value) const;
-  bool Evaluate_Object(ThreatType method, int mask, int range,
+  bool Evaluate_Object(ThreatType method, uint32_t mask, int range,
                        const TechnoClass* object, int& value) const;
 
   /*

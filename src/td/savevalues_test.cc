@@ -67,7 +67,7 @@ void Restore(T& value, const std::array<uint8_t, 64>& bytes) {
 
 TEST(TdSaveValuesTest, CountdownReanchorsAndKeepsWideRemainingTime) {
   Frame = 100;
-  TCountDownTimerClass timer(int64_t{1} << 40);
+  TCountDownTimerClass timer(int64_t{1} * 1024 * 1024 * 1024 * 1024);
   Frame += 17;
   const int64_t remaining = timer.Time();
   const auto bytes = Save(timer);
@@ -317,7 +317,8 @@ TEST(TdSaveValuesTest,
 }
 
 TEST(TdSaveValuesTest, RegionPreservesWideAndNegativeThreat) {
-  for (int64_t threat : {int64_t{1} << 40, int64_t{-17}}) {
+  for (int64_t threat :
+       {int64_t{1} * 1024 * 1024 * 1024 * 1024, int64_t{-17}}) {
     std::array<uint8_t, 64> bytes{};
     SpanSink sink(std::as_writable_bytes(std::span(bytes)));
     ArchiveWriter writer(sink);
@@ -466,7 +467,7 @@ TEST(TdSaveValuesTest, ScorePreservesEveryCounterAndWideElapsedTime) {
   score.NKilled = 2; score.GKilled = 3; score.CKilled = 4;
   score.NBKilled = 5; score.GBKilled = 6; score.CBKilled = 7;
   score.NHarvested = 8; score.GHarvested = 9; score.CHarvested = 10;
-  score.ElapsedTime = (int64_t{1} << 40) + 11;
+  score.ElapsedTime = (int64_t{1} * 1024 * 1024 * 1024 * 1024) + 11;
   const auto bytes = Save(score);
   ScoreClass restored{};
   Restore(restored, bytes);

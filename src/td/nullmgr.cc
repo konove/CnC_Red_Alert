@@ -1418,8 +1418,8 @@ DialStatusType NullModemClass::Dial_Modem(char* string, DialMethodType method,
       BUTTON_CANCEL, TXT_CANCEL,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       x + ((width -
-            (String_Pixel_Width(Text_String(TXT_CANCEL)) + (8 * factor))) >>
-           1),
+            (String_Pixel_Width(Text_String(TXT_CANCEL)) + (8 * factor))) /
+           2),
       y + height - (FontHeight + FontYSpacing + (2 * factor)) - (5 * factor));
 
   // Timer_Test(__LINE__, __FILE__);
@@ -1665,8 +1665,8 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
       BUTTON_CANCEL, TXT_CANCEL,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       x + ((width -
-            (String_Pixel_Width(Text_String(TXT_CANCEL)) + (8 * factor))) >>
-           1),
+            (String_Pixel_Width(Text_String(TXT_CANCEL)) + (8 * factor))) /
+           2),
       y + height - (FontHeight + FontYSpacing + (2 * factor)) - (5 * factor));
 
   /*
@@ -2127,12 +2127,12 @@ int NullModemClass::Change_IRQ_Priority(int /*unused*/) {
  *                                                                                             *
  * HISTORY: * 8/2/96 3:06PM ST : Documented / Win32 support added *
  *=============================================================================================*/
-int NullModemClass::Get_Modem_Status() {
+unsigned NullModemClass::Get_Modem_Status() {
   char buffer[81];
 
   // modemstatus = GetModemStatus( Port );
   // Modem status is a small bit mask (CTS/DSR/RI/CD).
-  int modemstatus = static_cast<int>(SerialPort->Get_Modem_Status());
+  unsigned modemstatus = SerialPort->Get_Modem_Status();
 
   const int status =
       Send_Modem_Command("AT", '\r', buffer, 81, DEFAULT_TIMEOUT, 1);

@@ -168,8 +168,8 @@ void LogicClass::Debug_Dump(MonoClass* mono) {
       char str[2];
       int index = 0;
 
-      index |= (_record[column].Graphic >= row) ? 0x01 : 0x00;
-      index |= (_record[column].Graphic >= row + 1) ? 0x02 : 0x00;
+      index += (_record[column].Graphic >= row) ? 1 : 0;
+      index += (_record[column].Graphic >= row + 1) ? 2 : 0;
 
       str[1] = '\0';
       str[0] = static_cast<char>(_barchar[index]);
@@ -246,9 +246,9 @@ void LogicClass::AI() {
     const UnitClass* unit = Units.Ptr(index);
     if (unit->IsLocked && (GameToPlay != GAME_NORMAL || !unit->House->IsHuman ||
                            unit->IsDiscoveredByPlayer)) {
-      unit->House->NewUScan |= 1L << unit->Class->Type;
+      unit->House->NewUScan |= ScanBit(unit->Class->Type);
       if (!unit->IsInLimbo) {
-        unit->House->NewActiveUScan |= 1L << unit->Class->Type;
+        unit->House->NewActiveUScan |= ScanBit(unit->Class->Type);
       }
     }
   }
@@ -257,9 +257,9 @@ void LogicClass::AI() {
     if (infantry->IsLocked &&
         (GameToPlay != GAME_NORMAL || !infantry->House->IsHuman ||
          infantry->IsDiscoveredByPlayer)) {
-      infantry->House->NewIScan |= 1L << infantry->Class->Type;
+      infantry->House->NewIScan |= ScanBit(infantry->Class->Type);
       if (!infantry->IsInLimbo) {
-        infantry->House->NewActiveIScan |= 1L << infantry->Class->Type;
+        infantry->House->NewActiveIScan |= ScanBit(infantry->Class->Type);
       }
     }
   }
@@ -268,9 +268,9 @@ void LogicClass::AI() {
     if (aircraft->IsLocked &&
         (GameToPlay != GAME_NORMAL || !aircraft->House->IsHuman ||
          aircraft->IsDiscoveredByPlayer)) {
-      aircraft->House->NewAScan |= 1L << aircraft->Class->Type;
+      aircraft->House->NewAScan |= ScanBit(aircraft->Class->Type);
       if (!aircraft->IsInLimbo) {
-        aircraft->House->NewActiveAScan |= 1L << aircraft->Class->Type;
+        aircraft->House->NewActiveAScan |= ScanBit(aircraft->Class->Type);
       }
     }
   }
@@ -279,9 +279,9 @@ void LogicClass::AI() {
     if (building->IsLocked &&
         (GameToPlay != GAME_NORMAL || !building->House->IsHuman ||
          building->IsDiscoveredByPlayer)) {
-      building->House->NewBScan |= 1L << building->Class->Type;
+      building->House->NewBScan |= ScanBit(building->Class->Type);
       if (!building->IsInLimbo) {
-        building->House->NewActiveBScan |= 1L << building->Class->Type;
+        building->House->NewActiveBScan |= ScanBit(building->Class->Type);
       }
     }
   }

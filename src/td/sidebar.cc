@@ -236,9 +236,9 @@ void SidebarClass::One_Time() {
   *drawing *	code so that as the sidebar buildable buttons scroll, they get
   *properly *	clipped at the top and bottom edges.
   */
-  WindowList[WINDOW_SIDEBAR][WINDOWX] = (SideX + PowWidth) >> 3;
+  WindowList[WINDOW_SIDEBAR][WINDOWX] = (SideX + PowWidth) / 8;
   WindowList[WINDOW_SIDEBAR][WINDOWY] = SideY + 1 + TopHeight;
-  WindowList[WINDOW_SIDEBAR][WINDOWWIDTH] = SideWidth >> 3;
+  WindowList[WINDOW_SIDEBAR][WINDOWWIDTH] = SideWidth / 8;
   WindowList[WINDOW_SIDEBAR][WINDOWHEIGHT] =
       (MaxVisible * (StripClass::OBJECT_HEIGHT * factor)) - 1;
 
@@ -247,7 +247,7 @@ void SidebarClass::One_Time() {
   **	the upper left corner.
   */
   const int width =
-      SideWidth - PowWidth - ((StripClass::STRIP_WIDTH * factor) << 1);
+      SideWidth - PowWidth - ((StripClass::STRIP_WIDTH * factor) * 2);
   const int spacing = width / 3;
 
   Column[0].X = SideX + PowWidth + spacing;
@@ -1054,13 +1054,14 @@ SidebarClass::StripClass::StripClass(const InitClass& /*unused*/) {
  *=============================================================================================*/
 void SidebarClass::StripClass::One_Time(int /*unused*/) {
   static const char* _file[3] = {"ION", "ATOM", "BOMB"};
-  const int factor = Get_Resolution_Factor();
+  const int scale =
+      static_cast<int>(base::Bit<uint32_t>(Get_Resolution_Factor()));
 
-  ObjectWidth = OBJECT_WIDTH << factor;
-  ObjectHeight = OBJECT_HEIGHT << factor;
-  StripWidth = STRIP_WIDTH << factor;
-  LeftEdgeOffset = (StripWidth - ObjectWidth) >> 1;
-  ButtonSpacingOffset = (StripWidth - ((BUTTON_WIDTH << factor) << 1)) / 3;
+  ObjectWidth = OBJECT_WIDTH * scale;
+  ObjectHeight = OBJECT_HEIGHT * scale;
+  StripWidth = STRIP_WIDTH * scale;
+  LeftEdgeOffset = (StripWidth - ObjectWidth) / 2;
+  ButtonSpacingOffset = (StripWidth - ((BUTTON_WIDTH * scale) * 2)) / 3;
 
   LogoShapes = Hires_Retrieve("STRIP.SHP");
   ClockShapes = Hires_Retrieve("CLOCK.SHP");
@@ -1831,7 +1832,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
           */
           CC_Draw_Shape(ObjectTypeClass::PipShapes, PIP_READY,
                         x - (WindowList[WINDOW_SIDEBAR][WINDOWX] * 8) +
-                            LeftEdgeOffset + (ObjectWidth >> 1),
+                            LeftEdgeOffset + (ObjectWidth / 2),
                         y - WindowList[WINDOW_SIDEBAR][WINDOWY] + ObjectHeight -
                             Get_Build_Frame_Height(ObjectTypeClass::PipShapes) -
                             8,
@@ -1854,7 +1855,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
             CC_Draw_Shape(
                 ObjectTypeClass::PipShapes, PIP_HOLDING,
                 x - (WindowList[WINDOW_SIDEBAR][WINDOWX] * 8) + LeftEdgeOffset +
-                    (ObjectWidth >> 1),
+                    (ObjectWidth / 2),
                 y - WindowList[WINDOW_SIDEBAR][WINDOWY] + ObjectHeight -
                     Get_Build_Frame_Height(ObjectTypeClass::PipShapes) -
                     8,  // Moved up now that icons have names on them
@@ -2021,10 +2022,11 @@ bool SidebarClass::StripClass::Recalc() {
  *=============================================================================================*/
 SidebarClass::StripClass::SelectClass::SelectClass() noexcept
     : ControlClass(0, 0, 0, 0, 0, LEFTPRESS | RIGHTPRESS | LEFTUP) {
-  const int factor = Get_Resolution_Factor();
+  const int scale =
+      static_cast<int>(base::Bit<uint32_t>(Get_Resolution_Factor()));
 
-  Width = OBJECT_WIDTH << factor;
-  Height = OBJECT_HEIGHT << factor;
+  Width = OBJECT_WIDTH * scale;
+  Height = OBJECT_HEIGHT * scale;
 }
 
 /***********************************************************************************************
@@ -2049,11 +2051,12 @@ SidebarClass::StripClass::SelectClass::SelectClass() noexcept
  *=============================================================================================*/
 void SidebarClass::StripClass::SelectClass::Set_Owner(StripClass& strip,
                                                       int index) {
-  const int factor = Get_Resolution_Factor();
+  const int scale =
+      static_cast<int>(base::Bit<uint32_t>(Get_Resolution_Factor()));
   Strip = &strip;
   Index = index;
   X = strip.X;
-  Y = strip.Y + (index * (OBJECT_HEIGHT << factor));
+  Y = strip.Y + (index * (OBJECT_HEIGHT * scale));
 }
 
 /***********************************************************************************************

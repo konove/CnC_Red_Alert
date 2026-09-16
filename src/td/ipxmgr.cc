@@ -118,9 +118,9 @@ IPXManagerClass::IPXManagerClass(int glb_maxlen, int pvt_maxlen,
       Pvt_MaxPacketLen(pvt_maxlen),
       Pvt_NumPackets(pvt_num_packets),
       ProductID(product_id),
-      Socket(static_cast<uint16_t>((socket & 0x00ff) << 8 |
-                                   (socket & 0xff00) >> 8)) {
-
+      Socket(static_cast<uint16_t>(
+          (static_cast<uint32_t>(socket) & 0x00ffU) << 8 |
+          (static_cast<uint32_t>(socket) & 0xff00U) >> 8)) {
   /*........................................................................
   Get the user's IPX local connection number
   ........................................................................*/
@@ -1055,8 +1055,8 @@ int IPXManagerClass::Service() {
       /*.....................................................................
       Compute the length of the packet (byte-swap the length in the IPX hdr)
       .....................................................................*/
-      packetlen =
-          (cur_header_buf->Length & 0xff) << 8 | cur_header_buf->Length >> 8;
+      const auto length = static_cast<uint32_t>(cur_header_buf->Length);
+      packetlen = static_cast<int>((length & 0xffU) << 8 | length >> 8);
       packetlen -= sizeof(IPXHeaderType);
 
       /*.....................................................................

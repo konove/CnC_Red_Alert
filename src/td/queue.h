@@ -183,7 +183,7 @@ template <class T, int size>
 bool QueueClass<T, size>::Add(const T& q) {
   if (Count_ < size) {
     Array[Tail] = q;
-    Tail = (Tail + 1) & (size - 1);
+    Tail = (Tail + 1) % size;
     Count_++;
     return true;
   }
@@ -212,7 +212,7 @@ bool QueueClass<T, size>::Add(const T& q) {
 template <class T, int size>
 int QueueClass<T, size>::Next() {
   if (Count_) {
-    Head = (Head + 1) & (size - 1);
+    Head = (Head + 1) % size;
     Count_--;
   }
   return Count_;
@@ -242,7 +242,7 @@ int QueueClass<T, size>::Next() {
  *=============================================================================================*/
 template <class T, int size>
 T& QueueClass<T, size>::operator[](int index) {
-  return Array[(Head + index) & (size - 1)];
+  return Array[(Head + index) % size];
 }
 
 /***********************************************************************************************

@@ -187,14 +187,14 @@ const int16_t* Coord_Spillage_List(COORDINATE coord, int maxsize) {
   // pairs can never both be set. That keeps index away from the -1 entries in
   // _SpillTable, which stand for combinations that cannot occur.
   if (y > posval) {
-    index |= 0x08;  // Spilling South.
+    index += 8;  // Spilling South.
   } else if (y < -posval) {
-    index |= 0x04;  // Spilling North.
+    index += 4;  // Spilling North.
   }
   if (x > posval) {
-    index |= 0x02;  // Spilling East.
+    index += 2;  // Spilling East.
   } else if (x < -posval) {
-    index |= 0x01;  // Spilling West.
+    index += 1;  // Spilling West.
   }
 
   return &MoveSpillage[SpillTable[index]][0];

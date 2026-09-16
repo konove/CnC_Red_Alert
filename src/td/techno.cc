@@ -137,6 +137,7 @@
 #include <cstdint>
 #include <utility>
 
+#include "base/numeric.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
@@ -254,7 +255,7 @@ TechnoTypeClass::TechnoTypeClass(
   */
 
   if (primary != WEAPON_NONE) {
-    Risk = Weapons[primary].Attack * (Weapons[primary].Range >> 4) /
+    Risk = Weapons[primary].Attack * (Weapons[primary].Range / 16) /
            Weapons[primary].ROF;
   }
 }
@@ -868,9 +869,9 @@ void TechnoClass::Draw_It(int x, int y, WindowNumberType window) {
   if (IsSelected || Special.IsBarOn) {
     GraphicViewPortClass draw_window(
         LogicPage->Get_Graphic_Buffer(),
-        (WindowList[window][WINDOWX] << 3) + LogicPage->Get_XPos(),
+        (WindowList[window][WINDOWX] * 8) + LogicPage->Get_XPos(),
         WindowList[window][WINDOWY] + LogicPage->Get_YPos(),
-        WindowList[window][WINDOWWIDTH] << 3, WindowList[window][WINDOWHEIGHT]);
+        WindowList[window][WINDOWWIDTH] * 8, WindowList[window][WINDOWHEIGHT]);
 
     /*
     **	The infantry select box should be a bit higher than normal.
@@ -1122,7 +1123,7 @@ bool TechnoClass::In_Range(COORDINATE coord, int which) const {
  * HISTORY: * 06/30/1995 JLB : Created. * 07/14/1995 JLB : Forces SAM site to
  *not fire on landed aircraft.                          *
  *=============================================================================================*/
-bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
+bool TechnoClass::Evaluate_Object(ThreatType method, uint32_t mask, int range,
                                   const TechnoClass* object, int& value) const {
   /*
   **	An object in limbo can never be a valid target.
@@ -1164,7 +1165,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
   *mask *	value.
   */
   const RTTIType otype = object->What_Am_I();
-  if (!(1 << otype & mask)) {
+  if ((base::Bit<uint32_t>(otype) & mask) == 0) {
     return false;  // Mask failure.
   }
 
@@ -1197,7 +1198,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
   */
   if (otype == RTTI_AIRCRAFT && What_Am_I() == RTTI_BUILDING &&
       *dynamic_cast<const BuildingClass*>(this) == STRUCT_SAM) {
-    if (dynamic_cast<const AircraftClass*>(object)->Altitude == 0) {
+    if (dynamic_cast<const AircraftClass&>(*object).Altitude == 0) {
       return false;
     }
   }
@@ -1251,7 +1252,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
         break;
 
       case RTTI_BUILDING:
-        if (!dynamic_cast<const BuildingTypeClass*>(tclass)->Capacity) {
+        if (!dynamic_cast<const BuildingTypeClass&>(*tclass).Capacity) {
           return false;
         }
         break;
@@ -1338,7 +1339,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
  *                                                                                             *
  * HISTORY: * 06/19/1995 JLB : Created. *
  *=============================================================================================*/
-bool TechnoClass::Evaluate_Cell(ThreatType method, int mask, CELL cell,
+bool TechnoClass::Evaluate_Cell(ThreatType method, uint32_t mask, CELL cell,
                                 int range, const TechnoClass** object,
                                 int& value) const {
   *object = nullptr;
@@ -1347,7 +1348,7 @@ bool TechnoClass::Evaluate_Cell(ThreatType method, int mask, CELL cell,
   /*
   **	If the cell is not on the legal map, then always ignore it.
   */
-  if (cell & 0xF000) {
+  if (cell < 0 || cell >= MAP_CELL_TOTAL) {
     return false;
   }
   if (!Map.In_Radar(cell)) {
@@ -1405,25 +1406,28 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method) const {
   **	Build a quick elimination mask. If the RTTI of the object doesn't
   **	qualify with this mask, then we KNOW that it shouldn't be considered.
   */
-  int mask = 0;
+  uint32_t allowed = 0;
   if (method & THREAT_CIVILIANS) {
-    mask |= 1 << RTTI_BUILDING | 1 << RTTI_INFANTRY | 1 << RTTI_UNIT;
+    allowed |= base::Bit<uint32_t>(RTTI_BUILDING) |
+               base::Bit<uint32_t>(RTTI_INFANTRY) |
+               base::Bit<uint32_t>(RTTI_UNIT);
   }
   if (method & THREAT_AIR) {
-    mask |= 1 << RTTI_AIRCRAFT;
+    allowed |= base::Bit<uint32_t>(RTTI_AIRCRAFT);
   }
   if (method & THREAT_CAPTURE) {
-    mask |= 1 << RTTI_BUILDING;
+    allowed |= base::Bit<uint32_t>(RTTI_BUILDING);
   }
   if (method & THREAT_BUILDINGS) {
-    mask |= 1 << RTTI_BUILDING;
+    allowed |= base::Bit<uint32_t>(RTTI_BUILDING);
   }
   if (method & THREAT_INFANTRY) {
-    mask |= 1 << RTTI_INFANTRY;
+    allowed |= base::Bit<uint32_t>(RTTI_INFANTRY);
   }
   if (method & THREAT_VEHICLES) {
-    mask |= 1 << RTTI_UNIT;
+    allowed |= base::Bit<uint32_t>(RTTI_UNIT);
   }
+  uint32_t mask = allowed;
 
   /*
   **	Limit area target scans use a method where the actual map cells are
@@ -1469,8 +1473,9 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method) const {
     **	valid target. A landed aircraft is considered a vehicle.
     */
     if (method & THREAT_VEHICLES) {
-      mask |= 1 << RTTI_AIRCRAFT;
+      allowed |= base::Bit<uint32_t>(RTTI_AIRCRAFT);
     }
+    mask = allowed;
 
     /*
     **	Radiate outward from the object's location, looking for the best
@@ -3475,9 +3480,7 @@ void TechnoClass::Base_Is_Attacked(TechnoClass* enemy) {
     for (int lp = 0; lp < count - 1; lp++) {
       for (int lp2 = lp + 1; lp2 < count; lp2++) {
         if (value[lp] < value[lp2]) {
-          value[lp] ^= value[lp2];
-          value[lp2] ^= value[lp];
-          value[lp] ^= value[lp2];
+          std::swap(value[lp], value[lp2]);
 
           FootClass* temp = defender[lp];
           defender[lp] = defender[lp2];
@@ -3928,7 +3931,7 @@ BuildingClass* TechnoClass::Find_Docking_Bay(StructType b, bool friendly) {
   **	type in thi house's inventory. If not, then don't bother to scan
   **	for one.
   */
-  if (House->BScan & 1L << b) {
+  if ((House->BScan & ScanBit(b)) != 0) {
     int bestval = -1;
 
     /*

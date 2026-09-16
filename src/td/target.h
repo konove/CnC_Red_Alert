@@ -66,14 +66,14 @@ typedef enum KindType {
 } KindType;
 
 #define TARGET_MANTISSA 12  // Bits of value precision.
-#define TARGET_MANTISSA_MASK (~((~0) << TARGET_MANTISSA))
-#define TARGET_EXPONENT ((sizeof(TARGET) * 8) - TARGET_MANTISSA)
-#define TARGET_EXPONENT_MASK (~(((unsigned)(~0)) >> TARGET_EXPONENT))
+inline constexpr unsigned kTargetMantissaMask = (1U << TARGET_MANTISSA) - 1;
 
 inline KindType Target_Kind(TARGET a) {
   return static_cast<KindType>(static_cast<unsigned>(a) >> TARGET_MANTISSA);
 }
-inline int Target_Value(TARGET a) { return a & TARGET_MANTISSA_MASK; }
+inline int Target_Value(TARGET a) {
+  return static_cast<int>(a & kTargetMantissaMask);
+}
 
 inline bool Is_Target_Team(TARGET a) { return Target_Kind(a) == KIND_TEAM; }
 inline bool Is_Target_TeamType(TARGET a) {
@@ -108,9 +108,7 @@ inline TARGET Build_Target(KindType kind, int value) {
   return static_cast<TARGET>(static_cast<unsigned>(kind) << TARGET_MANTISSA |
                              static_cast<unsigned>(value));
 }
-inline TARGET As_Target(CELL cell) {
-  return static_cast<TARGET>(KIND_CELL << TARGET_MANTISSA | cell);
-}
+inline TARGET As_Target(CELL cell) { return Build_Target(KIND_CELL, cell); }
 
 class UnitClass;
 class InfantryClass;

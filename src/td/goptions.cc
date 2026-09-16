@@ -308,8 +308,8 @@ void GameOptionsClass::Process() {
       Fancy_Text_Print(
           "%s\rV.%d%s",
           ((WindowList[WINDOW_EDITOR][WINDOWX] +
-            WindowList[WINDOW_EDITOR][WINDOWWIDTH])
-           << 3) -
+            WindowList[WINDOW_EDITOR][WINDOWWIDTH]) *
+           8) -
               (3 * resfactor),
           WindowList[WINDOW_EDITOR][WINDOWY] +
               WindowList[WINDOW_EDITOR][WINDOWHEIGHT] -

@@ -781,6 +781,14 @@ typedef enum StructType {
   STRUCT_COUNT,
 } StructType;
 
+// The bit for `type` in the 64-bit house scans (HouseClass::BScan and the
+// unit, infantry and aircraft scans), or 0 for a building type past the 64
+// the scans can hold: the last walls, which no prerequisite or AI test names.
+// The original shifted by the full index and wrapped.
+constexpr uint64_t ScanBit(int type) noexcept {
+  return type < 64 ? base::Bit<uint64_t>(type) : uint64_t{0};
+}
+
 // Bit masks over StructType for the building scans and prerequisites.
 inline constexpr uint64_t kStructFlagNone = 0;
 inline constexpr uint64_t kStructFlagAdvancedPower =
@@ -1896,29 +1904,32 @@ enum FacingType : int8_t {
   FACING_COUNT,  // Total of 8 directions (0..7).
 };
 
+// Wraps any facing arithmetic result onto the eight compass points. Negative
+// values wrap the same way the two's complement mask always did.
+constexpr FacingType AsFacing(const int facing) {
+  return static_cast<FacingType>(static_cast<unsigned>(facing) & 0x07U);
+}
+
 inline FacingType operator+(FacingType f1, FacingType f2) {
-  return static_cast<FacingType>((static_cast<int>(f1) + static_cast<int>(f2)) &
-                                 0x07);
+  return AsFacing(static_cast<int>(f1) + static_cast<int>(f2));
 }
 inline FacingType operator+(FacingType f1, int f2) {
-  return static_cast<FacingType>((static_cast<int>(f1) + f2) & 0x07);
+  return AsFacing(static_cast<int>(f1) + f2);
 }
 
 inline FacingType operator-(FacingType f1, FacingType f2) {
-  return static_cast<FacingType>((static_cast<int>(f1) - static_cast<int>(f2)) &
-                                 0x07);
+  return AsFacing(static_cast<int>(f1) - static_cast<int>(f2));
 }
 inline FacingType operator-(FacingType f1, int f2) {
-  return static_cast<FacingType>((static_cast<int>(f1) - f2) & 0x07);
+  return AsFacing(static_cast<int>(f1) - f2);
 }
 
 inline FacingType operator+=(FacingType& f1, FacingType f2) {
-  f1 = static_cast<FacingType>((static_cast<int>(f1) + static_cast<int>(f2)) &
-                               0x07);
+  f1 = AsFacing(static_cast<int>(f1) + static_cast<int>(f2));
   return f1;
 }
 inline FacingType operator+=(FacingType& f1, int f2) {
-  f1 = static_cast<FacingType>((static_cast<int>(f1) + f2) & 0x07);
+  f1 = AsFacing(static_cast<int>(f1) + f2);
   return f1;
 }
 
@@ -1943,7 +1954,7 @@ typedef enum DirType : uint8_t {
 // the analyzer's named-enumerator model of the enum is set aside.
 constexpr DirType AsDirection(const int angle) {
   // NOLINTNEXTLINE(clang-analyzer-optin.core.EnumCastOutOfRange)
-  return static_cast<DirType>(angle & 0xFF);
+  return static_cast<DirType>(static_cast<unsigned>(angle) & 0xFFU);
 }
 constexpr DirType operator+(const DirType f1, const DirType f2) {
   return AsDirection(static_cast<int>(f1) + static_cast<int>(f2));

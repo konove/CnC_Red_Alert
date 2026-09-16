@@ -118,6 +118,7 @@
 #include <utility>
 
 #include "absl/log/check.h"
+#include "base/numeric.h"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "port/tokenizer.h"
@@ -514,7 +515,8 @@ HouseClass::~HouseClass() {
 bool HouseClass::Can_Build(const TechnoTypeClass* type,
                            HousesType house) const {
   Validate();
-  if (!type || !type->IsBuildable || !(1L << house & type->Ownable)) {
+  if (!type || !type->IsBuildable ||
+      (base::Bit<uint16_t>(house) & type->Ownable) == 0) {
     return false;
   }
 
@@ -1081,11 +1083,10 @@ void HouseClass::AI() {
         SpeakMaxedDelay.Set(Options.Normalize_Delay(SPEAK_DELAY));
       }
     }
-    if (SpeakPowerDelay.Expired() && Power_Fraction() < 0x0100) {
-      if (BScan & kStructFlagConst) {
-        Speak(VOX_LOW_POWER);
-        SpeakPowerDelay.Set(Options.Normalize_Delay(SPEAK_DELAY));
-      }
+    if (SpeakPowerDelay.Expired() && Power_Fraction() < 0x0100 &&
+        (BScan & kStructFlagConst) != 0) {
+      Speak(VOX_LOW_POWER);
+      SpeakPowerDelay.Set(Options.Normalize_Delay(SPEAK_DELAY));
     }
   }
 
@@ -1806,7 +1807,7 @@ void HouseClass::Write_INI(char* buffer) {
 bool HouseClass::Is_Ally(HousesType house) const {
   Validate();
   if (house != HOUSE_NONE) {
-    return (1 << house & Allies) != 0;
+    return (base::Bit<uint32_t>(house) & Allies) != 0;
   }
   return false;
 }
@@ -1882,7 +1883,7 @@ void HouseClass::Make_Ally(HousesType house) {
       return;
     }
 
-    Allies |= 1 << house;
+    Allies |= base::Bit<uint32_t>(house);
 
     if constexpr (config::kCheatKeysEnabled) {
       if (Debug_Flag) {
@@ -1942,9 +1943,9 @@ void HouseClass::Make_Enemy(HousesType house) {
   Validate();
   if (house != HOUSE_NONE && Is_Ally(house)) {
     HouseClass* enemy = As_Pointer(house);
-    Allies &= ~(1U << house);
+    Allies &= ~base::Bit<uint32_t>(house);
     if (enemy && enemy->Is_Ally(this)) {
-      enemy->Allies &= ~(1U << Class->House);
+      enemy->Allies &= ~base::Bit<uint32_t>(Class->House);
     }
 
     if (enemy && (Debug_Flag || GameToPlay != GAME_NORMAL) && !ScenarioInit) {
@@ -2051,7 +2052,9 @@ void HouseClass::Adjust_Threat(int region, int threat) {
   static const int _val[] = {
       -MAP_REGION_WIDTH - 1, -MAP_REGION_WIDTH, -MAP_REGION_WIDTH + 1, -1, 0, 1,
       MAP_REGION_WIDTH - 1,  MAP_REGION_WIDTH,  MAP_REGION_WIDTH + 1};
-  static const int _thr[] = {2, 1, 2, 1, 0, 1, 2, 1, 2};
+  // Divisor of the threat for each neighbor: quarter diagonally, half
+  // orthogonally, full in the center.
+  static const int _thr[] = {4, 2, 4, 2, 1, 2, 4, 2, 4};
   bool neg = false;
   const int* val = &_val[0];
   const int* thr = &_thr[0];
@@ -2064,7 +2067,7 @@ void HouseClass::Adjust_Threat(int region, int threat) {
   }
 
   for (int lp = 0; lp < 9; lp++) {
-    Regions[region + *val].Adjust_Threat(threat >> *thr, neg);
+    Regions[region + *val].Adjust_Threat(threat / *thr, neg);
     val++;
     thr++;
   }
@@ -3110,7 +3113,7 @@ void HouseClass::Add_Nuke_Piece(int piece) {
       piece = 3;
     }
   }
-  NukePieces |= 1 << (piece - 1);
+  NukePieces |= base::Bit<uint8_t>(piece - 1);
   //	Init_Nuke_Bomb(false);
 }
 
@@ -3132,7 +3135,7 @@ void HouseClass::Add_Nuke_Piece(int piece) {
  *=============================================================================================*/
 bool HouseClass::Does_Enemy_Building_Exist(StructType btype) const {
   Validate();
-  const uint64_t bflag = uint64_t{1} << btype;
+  const auto bflag = ScanBit(btype);
   for (HousesType index = HOUSE_FIRST; index < HOUSE_COUNT; index++) {
     const HouseClass* house = As_Pointer(index);
 

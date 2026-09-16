@@ -60,6 +60,7 @@
 #include <utility>
 
 #include "absl/strings/str_format.h"
+#include "base/numeric.h"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "port/tokenizer.h"
@@ -891,15 +892,14 @@ const TeamTypeClass* TeamTypeClass::Suggested_New_Team(HouseClass* house,
       for (int ctype = 0; std::cmp_less(ctype, ttype->ClassCount); ctype++) {
         switch (ttype->Class[ctype]->What_Am_I()) {
           case RTTI_INFANTRYTYPE:
-            ineeded |= uint64_t{1}
-                       << dynamic_cast<const InfantryTypeClass*>(
-                              ttype->Class[ctype])->Type;
+            ineeded |= base::Bit<uint64_t>(
+                dynamic_cast<const InfantryTypeClass*>(ttype->Class[ctype])
+                    ->Type);
             break;
 
           case RTTI_UNITTYPE:
-            uneeded |= uint64_t{1}
-                       << dynamic_cast<const UnitTypeClass*>(
-                              ttype->Class[ctype])->Type;
+            uneeded |= base::Bit<uint64_t>(
+                dynamic_cast<const UnitTypeClass*>(ttype->Class[ctype])->Type);
             break;
           default:
             break;

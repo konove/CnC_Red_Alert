@@ -75,7 +75,7 @@ class TextLabelClass : public GadgetClass {
   char* Text;
   int Color;
   int PixWidth{-1};
-  char Segments{0};
+  uint8_t Segments{0};
   uint16_t CRC = 0;
 };
 

@@ -302,7 +302,7 @@ FireErrorType TurretClass::Can_Fire(TARGET target, int which) const {
     }
 
     if (BulletTypeClass::As_Reference(weapon->Fires).IsHoming) {
-      diff >>= 2;
+      diff /= 4;
     }
     if (diff < 8) {
       return DriveClass::Can_Fire(target, which);

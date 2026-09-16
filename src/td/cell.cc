@@ -89,6 +89,7 @@
 #include <iterator>
 #include <utility>
 
+#include "base/numeric.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
 #include "sdllib/gbuffer.h"
@@ -1130,26 +1131,27 @@ void CellClass::Concrete_Calc() {
   static FacingType _odd[5] = {FACING_N, FACING_NE, FACING_E, FACING_SE,
                                FACING_S};
   FacingType* ptr = nullptr;  // Working pointer into adjacent cell list.
-  int index = 0;              // Constructed bit index.
+  uint32_t index = 0;         // Constructed bit index.
   int icon = 0;               // Icon number.
   bool isodd = false;         // Is this for the odd column?
 
-#define OF_N 0x01
-#define OF_NE 0x02
-#define OF_E 0x04
-#define OF_SE 0x08
-#define OF_S 0x10
-
-#define EF_N 0x01
-#define EF_NW 0x10
-#define EF_W 0x08
-#define EF_SW 0x04
-#define EF_S 0x02
+  // Adjacent-cell bits for an odd column...
+  constexpr uint32_t kOddN = 0x01;
+  constexpr uint32_t kOddNE = 0x02;
+  constexpr uint32_t kOddE = 0x04;
+  constexpr uint32_t kOddSE = 0x08;
+  constexpr uint32_t kOddS = 0x10;
+  // ...and for an even column, in the order of _even and _odd above.
+  constexpr uint32_t kEvenN = 0x01;
+  constexpr uint32_t kEvenNW = 0x10;
+  constexpr uint32_t kEvenW = 0x08;
+  constexpr uint32_t kEvenSW = 0x04;
+  constexpr uint32_t kEvenS = 0x02;
 
   /*
   **	Determine if the even or odd row logic is necessary.
   */
-  isodd = (Cell_Number() & 0x01) != 0;
+  isodd = Cell_Number() % 2 != 0;
 
   /*
   **	Fetch correct pointer depending on whether this is for an
@@ -1172,7 +1174,7 @@ void CellClass::Concrete_Calc() {
     //					cellptr->Concrete == C_UPDOWN_LEFT) {
 
     if (cellptr.Overlay == OVERLAY_CONCRETE) {
-      index |= 1 << i;
+      index |= base::Bit<uint32_t>(i);
     }
   }
 
@@ -1186,36 +1188,36 @@ void CellClass::Concrete_Calc() {
     */
     if (isodd) {
       switch (index) {
-        case OF_NE:
-        case OF_N | OF_NE:
-        case OF_E | OF_N:
-        case OF_E | OF_NE:
-        case OF_N | OF_NE | OF_E:
-        case OF_S | OF_N | OF_NE:
+        case kOddNE:
+        case kOddN | kOddNE:
+        case kOddE | kOddN:
+        case kOddE | kOddNE:
+        case kOddN | kOddNE | kOddE:
+        case kOddS | kOddN | kOddNE:
           icon = C_RIGHT_UP;  // right - up
           break;
 
-        case OF_SE:
-        case OF_E | OF_SE:
-        case OF_S | OF_SE:
-        case OF_S | OF_E:
-        case OF_S | OF_SE | OF_E:
-        case OF_S | OF_SE | OF_N:
+        case kOddSE:
+        case kOddE | kOddSE:
+        case kOddS | kOddSE:
+        case kOddS | kOddE:
+        case kOddS | kOddSE | kOddE:
+        case kOddS | kOddSE | kOddN:
           icon = C_RIGHT_DOWN;  // right - down
           break;
 
-        case OF_SE | OF_NE:
-        case OF_SE | OF_NE | OF_N:
-        case OF_SE | OF_NE | OF_S:
-        case OF_SE | OF_NE | OF_S | OF_N:
-        case OF_SE | OF_E | OF_N:
-        case OF_SE | OF_E | OF_NE | OF_N:
-        case OF_S | OF_E | OF_N:
-        case OF_S | OF_E | OF_NE:
-        case OF_S | OF_E | OF_NE | OF_N:
-        case OF_S | OF_SE | OF_E | OF_N:
-        case OF_S | OF_SE | OF_E | OF_NE | OF_N:
-        case OF_S | OF_SE | OF_E | OF_NE:
+        case kOddSE | kOddNE:
+        case kOddSE | kOddNE | kOddN:
+        case kOddSE | kOddNE | kOddS:
+        case kOddSE | kOddNE | kOddS | kOddN:
+        case kOddSE | kOddE | kOddN:
+        case kOddSE | kOddE | kOddNE | kOddN:
+        case kOddS | kOddE | kOddN:
+        case kOddS | kOddE | kOddNE:
+        case kOddS | kOddE | kOddNE | kOddN:
+        case kOddS | kOddSE | kOddE | kOddN:
+        case kOddS | kOddSE | kOddE | kOddNE | kOddN:
+        case kOddS | kOddSE | kOddE | kOddNE:
           icon = C_RIGHT_UPDOWN;  // right - up - down
           break;
 
@@ -1225,36 +1227,36 @@ void CellClass::Concrete_Calc() {
       }
     } else {
       switch (index) {
-        case EF_NW:
-        case EF_NW | EF_N:
-        case EF_W | EF_N:
-        case EF_NW | EF_W | EF_N:
-        case EF_NW | EF_W:
-        case EF_NW | EF_S | EF_N:
+        case kEvenNW:
+        case kEvenNW | kEvenN:
+        case kEvenW | kEvenN:
+        case kEvenNW | kEvenW | kEvenN:
+        case kEvenNW | kEvenW:
+        case kEvenNW | kEvenS | kEvenN:
           icon = C_LEFT_UP;  // left - up
           break;
 
-        case EF_SW:
-        case EF_SW | EF_S:
-        case EF_W | EF_S:
-        case EF_W | EF_SW | EF_S:
-        case EF_W | EF_SW:
-        case EF_SW | EF_S | EF_N:
+        case kEvenSW:
+        case kEvenSW | kEvenS:
+        case kEvenW | kEvenS:
+        case kEvenW | kEvenSW | kEvenS:
+        case kEvenW | kEvenSW:
+        case kEvenSW | kEvenS | kEvenN:
           icon = C_LEFT_DOWN;  // left - down
           break;
 
-        case EF_NW | EF_SW:
-        case EF_NW | EF_SW | EF_N:
-        case EF_NW | EF_SW | EF_S:
-        case EF_NW | EF_SW | EF_S | EF_N:
-        case EF_W | EF_S | EF_N:
-        case EF_W | EF_SW | EF_N:
-        case EF_W | EF_SW | EF_S | EF_N:
-        case EF_NW | EF_W | EF_S:
-        case EF_NW | EF_W | EF_S | EF_N:
-        case EF_NW | EF_W | EF_SW | EF_S | EF_N:
-        case EF_NW | EF_W | EF_SW | EF_N:
-        case EF_NW | EF_W | EF_SW | EF_S:
+        case kEvenNW | kEvenSW:
+        case kEvenNW | kEvenSW | kEvenN:
+        case kEvenNW | kEvenSW | kEvenS:
+        case kEvenNW | kEvenSW | kEvenS | kEvenN:
+        case kEvenW | kEvenS | kEvenN:
+        case kEvenW | kEvenSW | kEvenN:
+        case kEvenW | kEvenSW | kEvenS | kEvenN:
+        case kEvenNW | kEvenW | kEvenS:
+        case kEvenNW | kEvenW | kEvenS | kEvenN:
+        case kEvenNW | kEvenW | kEvenSW | kEvenS | kEvenN:
+        case kEvenNW | kEvenW | kEvenSW | kEvenN:
+        case kEvenNW | kEvenW | kEvenSW | kEvenS:
           icon = C_LEFT_UPDOWN;  // left - up - down
           break;
 
@@ -1268,17 +1270,17 @@ void CellClass::Concrete_Calc() {
     // Presume that no concrete piece is needed.
     icon = C_NONE;
     if (isodd) {
-      index &= ~(OF_NE | OF_SE);  // Ignore diagonals.
+      index &= ~(kOddNE | kOddSE);  // Ignore diagonals.
       switch (index) {
-        case OF_N | OF_E:
+        case kOddN | kOddE:
           icon = C_UP_RIGHT;  // up right
           break;
 
-        case OF_E | OF_S:
+        case kOddE | kOddS:
           icon = C_DOWN_RIGHT;  // down right
           break;
 
-        case OF_N | OF_E | OF_S:
+        case kOddN | kOddE | kOddS:
           icon = C_UPDOWN_RIGHT;  // up/down right
           break;
 
@@ -1286,17 +1288,17 @@ void CellClass::Concrete_Calc() {
           break;
       }
     } else {
-      index &= ~(EF_NW | EF_SW);  // Ignore diagonals.
+      index &= ~(kEvenNW | kEvenSW);  // Ignore diagonals.
       switch (index) {
-        case EF_N | EF_W:
+        case kEvenN | kEvenW:
           icon = C_UP_LEFT;  // up left
           break;
 
-        case EF_W | EF_S:
+        case kEvenW | kEvenS:
           icon = C_DOWN_LEFT;  // down left
           break;
 
-        case EF_N | EF_W | EF_S:
+        case kEvenN | kEvenW | kEvenS:
           icon = C_UPDOWN_LEFT;  // up/down left
           break;
 
@@ -1354,19 +1356,19 @@ void CellClass::Wall_Update() {
 
     if (newcell.Overlay != OVERLAY_NONE &&
         OverlayTypeClass::As_Reference(newcell.Overlay).IsWall) {
-      int icon = 0;
+      uint32_t icon = 0;
 
       /*
       **	Build the icon number according to walls located in the adjacent
       **	cells.
       */
-      for (unsigned i = 0; i < 4; i++) {
+      for (int i = 0; i < 4; i++) {
         if (newcell.Adjacent_Cell(_offsets[i]).Overlay == newcell.Overlay) {
-          icon |= 1 << i;
+          icon |= base::Bit<uint32_t>(i);
         }
       }
       newcell.OverlayData =
-          static_cast<unsigned char>((newcell.OverlayData & 0xFFF0) | icon);
+          static_cast<unsigned char>((newcell.OverlayData & 0xFFF0U) | icon);
       //			newcell.OverlayData = icon;
 
       /*
@@ -1567,10 +1569,10 @@ int CellClass::Spot_Index(COORDINATE coord) {
   */
   int index = 0;
   if (Coord_X(rel) > 0x80) {
-    index |= 0x01;
+    index += 1;
   }
   if (Coord_Y(rel) > 0x80) {
-    index |= 0x02;
+    index += 2;
   }
   return index + 1;
 }
@@ -1684,8 +1686,8 @@ COORDINATE CellClass::Closest_Free_Spot(COORDINATE coord, bool any) const {
  *=============================================================================================*/
 int CellClass::Clear_Icon() const {
   Validate();
-  const CELL cell = Cell_Number();
-  return (cell & 0x03) | (cell >> 4 & 0x0C);
+  // Two bits of the X cell and two of the Y cell pick one of 16 icons.
+  return (Cell_X(Cell_Number()) % 4) + ((Cell_Y(Cell_Number()) % 4) * 4);
 }
 
 /***********************************************************************************************
@@ -2065,7 +2067,8 @@ bool CellClass::Goodie_Check(FootClass* object) {
                 Random_Pick(UNIT_HTANK, static_cast<UnitType>(UNIT_COUNT - 1));
             if (utype != UNIT_MCV || MPlayerBases) {
               utp = &UnitTypeClass::As_Reference(utype);
-              if (utp->IsCrateGoodie && utp->Ownable & 1 << object->Owner() &&
+              if (utp->IsCrateGoodie &&
+                  (utp->Ownable & base::Bit<uint16_t>(object->Owner())) != 0 &&
                   utp->Level <= BuildLevel + 2) {
                 break;
               }

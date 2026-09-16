@@ -1123,7 +1123,7 @@ void Cycle_Wait_Click() {
       Keyboard::Clear();
     }
 
-    counter = (counter + 1) & 7;
+    counter = (counter + 1) % 8;
 
     if (counter == 0) {
       const unsigned char r = Palette[(233 * 3) + 0];
@@ -1207,7 +1207,7 @@ void ScoreClass::Do_Nod_Buildings_Graph() {
     */
     if (i >= 61) {
       const int firecount = Extract_Shape_Count(fball1ptr);
-      int shapeindex = (i - 61) >> 1;
+      int shapeindex = (i - 61) / 2;
       if (shapeindex < firecount) {
         CC_Draw_Shape(
             fball1ptr, shapeindex, 10, 10, WINDOW_MAIN,
@@ -1215,7 +1215,7 @@ void ScoreClass::Do_Nod_Buildings_Graph() {
             ScoreRemapFBall, nullptr);
       }
       if (i > 64) {
-        shapeindex = (i - 64) >> 1;
+        shapeindex = (i - 64) / 2;
         if (shapeindex < firecount) {
           CC_Draw_Shape(
               fball1ptr, shapeindex, 50, 30, WINDOW_MAIN,
@@ -1230,7 +1230,7 @@ void ScoreClass::Do_Nod_Buildings_Graph() {
     CC_Draw_Shape(rmboptr,
                   ramboclass->DoControls[DO_WALK].Frame +
                       (ramboclass->DoControls[DO_WALK].Jump * 6) +
-                      ((i >> 1) % ramboclass->DoControls[DO_WALK].Count),
+                      ((i / 2) % ramboclass->DoControls[DO_WALK].Count),
                   i + 32, 40, WINDOW_MAIN,
                   SHAPE_FADING | SHAPE_CENTER | SHAPE_WIN_REL,  //|SHAPE_GHOST,
                   ScoreRemapYellow, MouseClass::UnitShadow);
@@ -1745,7 +1745,7 @@ void ScoreClass::Input_Name(char str[], int xpos, int ypos,
 
 void Animate_Cursor(int pos, int ypos) {
   static int _lastpos;
-  static int _state;
+  static bool _state;
   static CountDownTimerClass _timer;
 
   ypos += 7;  // move cursor to bottom of letter
@@ -1759,7 +1759,7 @@ void Animate_Cursor(int pos, int ypos) {
                                2 * (HALLFAME_X + (_lastpos * 6) + 5),
                                (2 * ypos) + 1, BLACK);
     _lastpos = pos;
-    _state = 0;
+    _state = false;
   }
 
   PseudoSeenBuff->Draw_Line(HALLFAME_X + (pos * 6), ypos,
@@ -1773,7 +1773,7 @@ void Animate_Cursor(int pos, int ypos) {
   ** Toggle the color of the cursor, green or black, if it's time to do so.
   */
   if (!_timer.Time()) {
-    _state ^= 1;
+    _state = !_state;
     _timer.Set(5);
   }
 }

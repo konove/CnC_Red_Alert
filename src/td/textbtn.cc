@@ -343,7 +343,7 @@ void TextButtonClass::Draw_Text(const char* text) {
                                  : TPF_USE_GRAD_PAL | TPF_MEDIUM_COLOR;
       }();
 
-      Fancy_Text_Print(text, X + (Width >> 1) - 1, Y + 1, color, TBLACK,
+      Fancy_Text_Print(text, X + (Width / 2) - 1, Y + 1, color, TBLACK,
                        PrintFlags | flags | TPF_CENTER);
     } else {
       if (IsDisabled) {
@@ -361,7 +361,7 @@ void TextButtonClass::Draw_Text(const char* text) {
         }
       }
 
-      Fancy_Text_Print(text, X + (Width >> 1) - 1, Y + 1, IsOn ? RED : color,
+      Fancy_Text_Print(text, X + (Width / 2) - 1, Y + 1, IsOn ? RED : color,
                        TBLACK, PrintFlags | TPF_CENTER);
     }
   }

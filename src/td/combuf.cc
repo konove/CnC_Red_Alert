@@ -613,10 +613,10 @@ void CommBufferClass::Add_Delay(int64_t delay) {
   if (NumDelay == 256) {
     DelaySum -= MeanDelay;
     DelaySum += delay;
-    if ((DelaySum & 0x00ff) > 127) {
+    if (DelaySum % 256 > 127) {
       roundoff = 1;
     }
-    MeanDelay = (DelaySum >> 8) + roundoff;
+    MeanDelay = (DelaySum / 256) + roundoff;
   } else {
     NumDelay++;
     DelaySum += delay;

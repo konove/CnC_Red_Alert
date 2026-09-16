@@ -711,7 +711,7 @@ static void Queue_AI_Multiplayer() {
   //------------------------------------------------------------------------
   // Adjust connection timing parameters every 128 frames.
   //------------------------------------------------------------------------
-  else if ((Frame & 0x007f) == 0) {
+  else if (Frame % 128 == 0) {
     //
     // If we're using the new spiffy protocol, do proper timing handling.
     // If we're the net "master", compute our desired frame rate & new
@@ -741,7 +741,7 @@ static void Queue_AI_Multiplayer() {
   //	Compute the Game's CRC
   //------------------------------------------------------------------------
   Compute_Game_CRC();
-  CRC[Frame & 0x001f] = GameCRC;
+  CRC[Frame % 32] = GameCRC;
   // unsigned long save_crc = GameCRC;
   // Print_CRCs((EventClass *)NULL);
   // GameCRC = save_crc;
@@ -776,12 +776,12 @@ static void Queue_AI_Multiplayer() {
   //------------------------------------------------------------------------
   //	Frame-sync'ing: wait until it's OK to advance to the next frame.
   //------------------------------------------------------------------------
-  rc = Wait_For_Players(0, net, MPlayerMaxAhead << 3,
-                        std::max<int>(static_cast<int>(net->Response_Time()) * 3,
-                                      FRAMESYNC_DLG_TIME * timeout_factor),
-                        FRAMESYNC_TIMEOUT * (timeout_factor * 2),
-                        multi_packet_buf, my_sent, their_frame, their_sent,
-                        their_recv);
+  rc = Wait_For_Players(
+      0, net, MPlayerMaxAhead * 8,
+      std::max<int>(static_cast<int>(net->Response_Time()) * 3,
+                    FRAMESYNC_DLG_TIME * timeout_factor),
+      FRAMESYNC_TIMEOUT * (timeout_factor * 2), multi_packet_buf, my_sent,
+      their_frame, their_sent, their_recv);
 
   if (rc != RC_NORMAL) {
     if (rc == RC_NOT_RESPONDING) {
@@ -3120,7 +3120,7 @@ static int Execute_DoList(int /*unused*/, HousesType /*unused*/,
         else if (DoList[j].Type == EventClass::FRAMEINFO) {
           if (std::cmp_equal(DoList[j].Frame, Frame) &&
               DoList[j].Data.FrameInfo.Delay < 32) {
-            index = (DoList[j].Frame - DoList[j].Data.FrameInfo.Delay) & 0x001f;
+            index = (DoList[j].Frame - DoList[j].Data.FrameInfo.Delay) % 32;
             if (CRC[index] != DoList[j].Data.FrameInfo.CRC) {
               Print_CRCs(&DoList[j]);
               if (CCMessageBox().Process(TXT_OUT_OF_SYNC, TXT_CONTINUE,
@@ -3333,7 +3333,7 @@ static void Queue_Playback() {
   //	Compute the Game's CRC
   //------------------------------------------------------------------------
   Compute_Game_CRC();
-  CRC[Frame & 0x001f] = GameCRC;
+  CRC[Frame % 32] = GameCRC;
 
   //------------------------------------------------------------------------
   //	Don't read anything the first time through (since the Queue_AI_Network
@@ -3526,7 +3526,7 @@ void Print_CRCs(EventClass* /*ev*/) {
   Mono_Set_Cursor(0, 0);
 
   char filename[80];
-  absl::SNPrintF(filename, sizeof(filename), "CRC%02ld.TXT", Frame & 0x1f);
+  absl::SNPrintF(filename, sizeof(filename), "CRC%02d.TXT", Frame % 32);
 
   FILE* fp = fopen(filename, "wt");  //"OUT.TXT","wt");
   if (fp == nullptr) {

@@ -658,7 +658,7 @@ void Debug_Key(unsigned input) {
         if (CurrentObject.Count() && CurrentObject[0]->Is_Techno()) {
           const auto& ttype = dynamic_cast<const TechnoTypeClass&>(
               CurrentObject[0]->Class_Of());
-          const int sight = ttype.SightRange << 8;
+          const int sight = ttype.SightRange * 256;
           int weapon = 0;
           if (ttype.Primary != WEAPON_NONE) {
             weapon = Weapons[ttype.Primary].Range;

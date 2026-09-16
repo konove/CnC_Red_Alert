@@ -832,9 +832,9 @@ bool ObjectClass::Render(bool forced) {
         **	relative, so add the window's x-coord to 'x'.
         */
         if (Debug_Map && Trigger) {
-          Fancy_Text_Print(Trigger->Get_Name(), x + (static_cast<int>(WinX) << 3), y,
-                           PINK,
-                           TBLACK, TPF_CENTER | TPF_NOSHADOW | TPF_6POINT);
+          Fancy_Text_Print(Trigger->Get_Name(),
+                           x + (static_cast<int>(WinX) * 8), y, PINK, TBLACK,
+                           TPF_CENTER | TPF_NOSHADOW | TPF_6POINT);
         }
       }
 
@@ -1232,8 +1232,8 @@ ResultType ObjectClass::Take_Damage(int& damage, int distance,
     *to below *	half strength or if it is now down to one hit point.
     */
     if (oldstrength > damage) {
-      if (oldstrength >= maxstrength >> 1 &&
-          oldstrength - damage < maxstrength >> 1) {
+      if (oldstrength >= maxstrength / 2 &&
+          oldstrength - damage < maxstrength / 2) {
         result = RESULT_HALF;
       }
     } else {

@@ -49,6 +49,7 @@
 #include <cstdint>
 #include <filesystem>
 
+#include "base/numeric.h"
 #include "port/ex_string.h"
 #include "sdllib/shape.h"
 #include "td/conquer.h"
@@ -113,453 +114,454 @@ static const int16_t List11110[] = {0, 1, 2, 3, REFRESH_EOL};
 
 static const TerrainTypeClass Tree1Class(
     TERRAIN_TREE1, kTheaterFlagWinter | kTheaterFlagTemperate,
-    XYP_COORD(11, 41),  // Center base coordinate offset.
-    false,              // Spawns Tiberium spontaneously?
-    true,               // Does it have destruction animation?
-    false,              // Does it have transformation (blossom tree) anim?
-    true,               // Does it catch fire?
-    false,              // Is this object crushable by heavy vehicles?
-    false,              // Can this object be selected by the player?
-    false,              // Can it be the target of a move or attack order?
-    true,               // Don't make a big deal about it if it gets destroyed?
-    false,              // Is it immune to normal combat damage?
+    Pixel_Offset_Coord(11, 41),  // Center base coordinate offset.
+    false,                       // Spawns Tiberium spontaneously?
+    true,                        // Does it have destruction animation?
+    false,  // Does it have transformation (blossom tree) anim?
+    true,   // Does it catch fire?
+    false,  // Is this object crushable by heavy vehicles?
+    false,  // Can this object be selected by the player?
+    false,  // Can it be the target of a move or attack order?
+    true,   // Don't make a big deal about it if it gets destroyed?
+    false,  // Is it immune to normal combat damage?
     "T01", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List0010, List1001);
 
 static const TerrainTypeClass Tree2Class(
     TERRAIN_TREE2, kTheaterFlagWinter | kTheaterFlagTemperate,
-    XYP_COORD(11, 44),  // Center base coordinate offset.
-    false,              // Spawns Tiberium spontaneously?
-    true,               // Does it have destruction animation?
-    false,              // Does it have transformation (blossom tree) anim?
-    true,               // Does it catch fire?
-    false,              // Is this object crushable by heavy vehicles?
-    false,              // Can this object be selected by the player?
-    false,              // Can it be the target of a move or attack order?
-    true,               // Don't make a big deal about it if it gets destroyed?
-    false,              // Is it immune to normal combat damage?
+    Pixel_Offset_Coord(11, 44),  // Center base coordinate offset.
+    false,                       // Spawns Tiberium spontaneously?
+    true,                        // Does it have destruction animation?
+    false,  // Does it have transformation (blossom tree) anim?
+    true,   // Does it catch fire?
+    false,  // Is this object crushable by heavy vehicles?
+    false,  // Can this object be selected by the player?
+    false,  // Can it be the target of a move or attack order?
+    true,   // Don't make a big deal about it if it gets destroyed?
+    false,  // Is it immune to normal combat damage?
     "T02", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List0010, List1001);
 
 static const TerrainTypeClass Tree3Class(
     TERRAIN_TREE3, kTheaterFlagWinter | kTheaterFlagTemperate,
-    XYP_COORD(12, 45),  // Center base coordinate offset.
-    false,              // Spawns Tiberium spontaneously?
-    true,               // Does it have destruction animation?
-    false,              // Does it have transformation (blossom tree) anim?
-    true,               // Does it catch fire?
-    false,              // Is this object crushable by heavy vehicles?
-    false,              // Can this object be selected by the player?
-    false,              // Can it be the target of a move or attack order?
-    true,               // Don't make a big deal about it if it gets destroyed?
-    false,              // Is it immune to normal combat damage?
+    Pixel_Offset_Coord(12, 45),  // Center base coordinate offset.
+    false,                       // Spawns Tiberium spontaneously?
+    true,                        // Does it have destruction animation?
+    false,  // Does it have transformation (blossom tree) anim?
+    true,   // Does it catch fire?
+    false,  // Is this object crushable by heavy vehicles?
+    false,  // Can this object be selected by the player?
+    false,  // Can it be the target of a move or attack order?
+    true,   // Don't make a big deal about it if it gets destroyed?
+    false,  // Is it immune to normal combat damage?
     "T03", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List0010, List1001);
 
 static const TerrainTypeClass Tree4Class(
     TERRAIN_TREE4, kTheaterFlagDesert,
-    XYP_COORD(8, 9),  // Center base coordinate offset.
-    false,            // Spawns Tiberium spontaneously?
-    true,             // Does it have destruction animation?
-    false,            // Does it have transformation (blossom tree) anim?
-    true,             // Does it catch fire?
-    false,            // Is this object crushable by heavy vehicles?
-    false,            // Can this object be selected by the player?
-    false,            // Can it be the target of a move or attack order?
-    true,             // Don't make a big deal about it if it gets destroyed?
-    false,            // Is it immune to normal combat damage?
+    Pixel_Offset_Coord(8, 9),  // Center base coordinate offset.
+    false,                     // Spawns Tiberium spontaneously?
+    true,                      // Does it have destruction animation?
+    false,  // Does it have transformation (blossom tree) anim?
+    true,   // Does it catch fire?
+    false,  // Is this object crushable by heavy vehicles?
+    false,  // Can this object be selected by the player?
+    false,  // Can it be the target of a move or attack order?
+    true,   // Don't make a big deal about it if it gets destroyed?
+    false,  // Is it immune to normal combat damage?
     "T04", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List1, nullptr);
 
 static const TerrainTypeClass Tree5Class(
     TERRAIN_TREE5, kTheaterFlagWinter | kTheaterFlagTemperate,
-    XYP_COORD(15, 41),  // Center base coordinate offset.
-    false,              // Spawns Tiberium spontaneously?
-    true,               // Does it have destruction animation?
-    false,              // Does it have transformation (blossom tree) anim?
-    true,               // Does it catch fire?
-    false,              // Is this object crushable by heavy vehicles?
-    false,              // Can this object be selected by the player?
-    false,              // Can it be the target of a move or attack order?
-    true,               // Don't make a big deal about it if it gets destroyed?
-    false,              // Is it immune to normal combat damage?
+    Pixel_Offset_Coord(15, 41),  // Center base coordinate offset.
+    false,                       // Spawns Tiberium spontaneously?
+    true,                        // Does it have destruction animation?
+    false,  // Does it have transformation (blossom tree) anim?
+    true,   // Does it catch fire?
+    false,  // Is this object crushable by heavy vehicles?
+    false,  // Can this object be selected by the player?
+    false,  // Can it be the target of a move or attack order?
+    true,   // Don't make a big deal about it if it gets destroyed?
+    false,  // Is it immune to normal combat damage?
     "T05", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List0010, List1001);
 
 static const TerrainTypeClass Tree6Class(
     TERRAIN_TREE6, kTheaterFlagWinter | kTheaterFlagTemperate,
-    XYP_COORD(16, 37),  // Center base coordinate offset.
-    false,              // Spawns Tiberium spontaneously?
-    true,               // Does it have destruction animation?
-    false,              // Does it have transformation (blossom tree) anim?
-    true,               // Does it catch fire?
-    false,              // Is this object crushable by heavy vehicles?
-    false,              // Can this object be selected by the player?
-    false,              // Can it be the target of a move or attack order?
-    true,               // Don't make a big deal about it if it gets destroyed?
-    false,              // Is it immune to normal combat damage?
+    Pixel_Offset_Coord(16, 37),  // Center base coordinate offset.
+    false,                       // Spawns Tiberium spontaneously?
+    true,                        // Does it have destruction animation?
+    false,  // Does it have transformation (blossom tree) anim?
+    true,   // Does it catch fire?
+    false,  // Is this object crushable by heavy vehicles?
+    false,  // Can this object be selected by the player?
+    false,  // Can it be the target of a move or attack order?
+    true,   // Don't make a big deal about it if it gets destroyed?
+    false,  // Is it immune to normal combat damage?
     "T06", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List0010, List1001);
 
 static const TerrainTypeClass Tree7Class(
     TERRAIN_TREE7, kTheaterFlagWinter | kTheaterFlagTemperate,
-    XYP_COORD(15, 41),  // Center base coordinate offset.
-    false,              // Spawns Tiberium spontaneously?
-    true,               // Does it have destruction animation?
-    false,              // Does it have transformation (blossom tree) anim?
-    true,               // Does it catch fire?
-    false,              // Is this object crushable by heavy vehicles?
-    false,              // Can this object be selected by the player?
-    false,              // Can it be the target of a move or attack order?
-    true,               // Don't make a big deal about it if it gets destroyed?
-    false,              // Is it immune to normal combat damage?
+    Pixel_Offset_Coord(15, 41),  // Center base coordinate offset.
+    false,                       // Spawns Tiberium spontaneously?
+    true,                        // Does it have destruction animation?
+    false,  // Does it have transformation (blossom tree) anim?
+    true,   // Does it catch fire?
+    false,  // Is this object crushable by heavy vehicles?
+    false,  // Can this object be selected by the player?
+    false,  // Can it be the target of a move or attack order?
+    true,   // Don't make a big deal about it if it gets destroyed?
+    false,  // Is it immune to normal combat damage?
     "T07", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List0010, List1001);
 
 static const TerrainTypeClass Tree8Class(
-    TERRAIN_TREE8, kTheaterFlagWinter | kTheaterFlagTemperate | kTheaterFlagDesert,
-    XYP_COORD(14, 22),  // Center base coordinate offset.
-    false,              // Spawns Tiberium spontaneously?
-    true,               // Does it have destruction animation?
-    false,              // Does it have transformation (blossom tree) anim?
-    true,               // Does it catch fire?
-    false,              // Is this object crushable by heavy vehicles?
-    false,              // Can this object be selected by the player?
-    false,              // Can it be the target of a move or attack order?
-    true,               // Don't make a big deal about it if it gets destroyed?
-    false,              // Is it immune to normal combat damage?
+    TERRAIN_TREE8,
+    kTheaterFlagWinter | kTheaterFlagTemperate | kTheaterFlagDesert,
+    Pixel_Offset_Coord(14, 22),  // Center base coordinate offset.
+    false,                       // Spawns Tiberium spontaneously?
+    true,                        // Does it have destruction animation?
+    false,  // Does it have transformation (blossom tree) anim?
+    true,   // Does it catch fire?
+    false,  // Is this object crushable by heavy vehicles?
+    false,  // Can this object be selected by the player?
+    false,  // Can it be the target of a move or attack order?
+    true,   // Don't make a big deal about it if it gets destroyed?
+    false,  // Is it immune to normal combat damage?
     "T08", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List10, List01);
 
 static const TerrainTypeClass Tree9Class(
     TERRAIN_TREE9, kTheaterFlagDesert,
-    XYP_COORD(11, 22),  // Center base coordinate offset.
-    false,              // Spawns Tiberium spontaneously?
-    true,               // Does it have destruction animation?
-    false,              // Does it have transformation (blossom tree) anim?
-    true,               // Does it catch fire?
-    false,              // Is this object crushable by heavy vehicles?
-    false,              // Can this object be selected by the player?
-    false,              // Can it be the target of a move or attack order?
-    true,               // Don't make a big deal about it if it gets destroyed?
-    false,              // Is it immune to normal combat damage?
+    Pixel_Offset_Coord(11, 22),  // Center base coordinate offset.
+    false,                       // Spawns Tiberium spontaneously?
+    true,                        // Does it have destruction animation?
+    false,  // Does it have transformation (blossom tree) anim?
+    true,   // Does it catch fire?
+    false,  // Is this object crushable by heavy vehicles?
+    false,  // Can this object be selected by the player?
+    false,  // Can it be the target of a move or attack order?
+    true,   // Don't make a big deal about it if it gets destroyed?
+    false,  // Is it immune to normal combat damage?
     "T09", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List10, List01);
 
 static const TerrainTypeClass Tree10Class(
     TERRAIN_TREE10, kTheaterFlagWinter | kTheaterFlagTemperate,
-    XYP_COORD(25, 43),  // Center base coordinate offset.
-    false,              // Spawns Tiberium spontaneously?
-    true,               // Does it have destruction animation?
-    false,              // Does it have transformation (blossom tree) anim?
-    true,               // Does it catch fire?
-    false,              // Is this object crushable by heavy vehicles?
-    false,              // Can this object be selected by the player?
-    false,              // Can it be the target of a move or attack order?
-    true,               // Don't make a big deal about it if it gets destroyed?
-    false,              // Is it immune to normal combat damage?
+    Pixel_Offset_Coord(25, 43),  // Center base coordinate offset.
+    false,                       // Spawns Tiberium spontaneously?
+    true,                        // Does it have destruction animation?
+    false,  // Does it have transformation (blossom tree) anim?
+    true,   // Does it catch fire?
+    false,  // Is this object crushable by heavy vehicles?
+    false,  // Can this object be selected by the player?
+    false,  // Can it be the target of a move or attack order?
+    true,   // Don't make a big deal about it if it gets destroyed?
+    false,  // Is it immune to normal combat damage?
     "T10", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List0011, List1100);
 
 static const TerrainTypeClass Tree11Class(
     TERRAIN_TREE11, kTheaterFlagWinter | kTheaterFlagTemperate,
-    XYP_COORD(23, 44),  // Center base coordinate offset.
-    false,              // Spawns Tiberium spontaneously?
-    true,               // Does it have destruction animation?
-    false,              // Does it have transformation (blossom tree) anim?
-    true,               // Does it catch fire?
-    false,              // Is this object crushable by heavy vehicles?
-    false,              // Can this object be selected by the player?
-    false,              // Can it be the target of a move or attack order?
-    true,               // Don't make a big deal about it if it gets destroyed?
-    false,              // Is it immune to normal combat damage?
+    Pixel_Offset_Coord(23, 44),  // Center base coordinate offset.
+    false,                       // Spawns Tiberium spontaneously?
+    true,                        // Does it have destruction animation?
+    false,  // Does it have transformation (blossom tree) anim?
+    true,   // Does it catch fire?
+    false,  // Is this object crushable by heavy vehicles?
+    false,  // Can this object be selected by the player?
+    false,  // Can it be the target of a move or attack order?
+    true,   // Don't make a big deal about it if it gets destroyed?
+    false,  // Is it immune to normal combat damage?
     "T11", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List0011, List1100);
 
 static const TerrainTypeClass Tree12Class(
     TERRAIN_TREE12, kTheaterFlagWinter | kTheaterFlagTemperate,
-    XYP_COORD(14, 36),  // Center base coordinate offset.
-    false,              // Spawns Tiberium spontaneously?
-    true,               // Does it have destruction animation?
-    false,              // Does it have transformation (blossom tree) anim?
-    true,               // Does it catch fire?
-    false,              // Is this object crushable by heavy vehicles?
-    false,              // Can this object be selected by the player?
-    false,              // Can it be the target of a move or attack order?
-    true,               // Don't make a big deal about it if it gets destroyed?
-    false,              // Is it immune to normal combat damage?
+    Pixel_Offset_Coord(14, 36),  // Center base coordinate offset.
+    false,                       // Spawns Tiberium spontaneously?
+    true,                        // Does it have destruction animation?
+    false,  // Does it have transformation (blossom tree) anim?
+    true,   // Does it catch fire?
+    false,  // Is this object crushable by heavy vehicles?
+    false,  // Can this object be selected by the player?
+    false,  // Can it be the target of a move or attack order?
+    true,   // Don't make a big deal about it if it gets destroyed?
+    false,  // Is it immune to normal combat damage?
     "T12", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List0010, List1001);
 
 static const TerrainTypeClass Tree13Class(
     TERRAIN_TREE13, kTheaterFlagWinter | kTheaterFlagTemperate,
-    XYP_COORD(19, 40),  // Center base coordinate offset.
-    false,              // Spawns Tiberium spontaneously?
-    true,               // Does it have destruction animation?
-    false,              // Does it have transformation (blossom tree) anim?
-    true,               // Does it catch fire?
-    false,              // Is this object crushable by heavy vehicles?
-    false,              // Can this object be selected by the player?
-    false,              // Can it be the target of a move or attack order?
-    true,               // Don't make a big deal about it if it gets destroyed?
-    false,              // Is it immune to normal combat damage?
+    Pixel_Offset_Coord(19, 40),  // Center base coordinate offset.
+    false,                       // Spawns Tiberium spontaneously?
+    true,                        // Does it have destruction animation?
+    false,  // Does it have transformation (blossom tree) anim?
+    true,   // Does it catch fire?
+    false,  // Is this object crushable by heavy vehicles?
+    false,  // Can this object be selected by the player?
+    false,  // Can it be the target of a move or attack order?
+    true,   // Don't make a big deal about it if it gets destroyed?
+    false,  // Is it immune to normal combat damage?
     "T13", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List0010, List1101);
 
 static const TerrainTypeClass Tree14Class(
     TERRAIN_TREE14, kTheaterFlagWinter | kTheaterFlagTemperate,
-    XYP_COORD(19, 40),  // Center base coordinate offset.
-    false,              // Spawns Tiberium spontaneously?
-    true,               // Does it have destruction animation?
-    false,              // Does it have transformation (blossom tree) anim?
-    true,               // Does it catch fire?
-    false,              // Is this object crushable by heavy vehicles?
-    false,              // Can this object be selected by the player?
-    false,              // Can it be the target of a move or attack order?
-    true,               // Don't make a big deal about it if it gets destroyed?
-    false,              // Is it immune to normal combat damage?
+    Pixel_Offset_Coord(19, 40),  // Center base coordinate offset.
+    false,                       // Spawns Tiberium spontaneously?
+    true,                        // Does it have destruction animation?
+    false,  // Does it have transformation (blossom tree) anim?
+    true,   // Does it catch fire?
+    false,  // Is this object crushable by heavy vehicles?
+    false,  // Can this object be selected by the player?
+    false,  // Can it be the target of a move or attack order?
+    true,   // Don't make a big deal about it if it gets destroyed?
+    false,  // Is it immune to normal combat damage?
     "T14", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List0011, List1100);
 
 static const TerrainTypeClass Tree15Class(
     TERRAIN_TREE15, kTheaterFlagWinter | kTheaterFlagTemperate,
-    XYP_COORD(19, 40),  // Center base coordinate offset.
-    false,              // Spawns Tiberium spontaneously?
-    true,               // Does it have destruction animation?
-    false,              // Does it have transformation (blossom tree) anim?
-    true,               // Does it catch fire?
-    false,              // Is this object crushable by heavy vehicles?
-    false,              // Can this object be selected by the player?
-    false,              // Can it be the target of a move or attack order?
-    true,               // Don't make a big deal about it if it gets destroyed?
-    false,              // Is it immune to normal combat damage?
+    Pixel_Offset_Coord(19, 40),  // Center base coordinate offset.
+    false,                       // Spawns Tiberium spontaneously?
+    true,                        // Does it have destruction animation?
+    false,  // Does it have transformation (blossom tree) anim?
+    true,   // Does it catch fire?
+    false,  // Is this object crushable by heavy vehicles?
+    false,  // Can this object be selected by the player?
+    false,  // Can it be the target of a move or attack order?
+    true,   // Don't make a big deal about it if it gets destroyed?
+    false,  // Is it immune to normal combat damage?
     "T15", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List0011, List1100);
 
 static const TerrainTypeClass Tree16Class(
     TERRAIN_TREE16, kTheaterFlagWinter | kTheaterFlagTemperate,
-    XYP_COORD(13, 36),  // Center base coordinate offset.
-    false,              // Spawns Tiberium spontaneously?
-    true,               // Does it have destruction animation?
-    false,              // Does it have transformation (blossom tree) anim?
-    true,               // Does it catch fire?
-    false,              // Is this object crushable by heavy vehicles?
-    false,              // Can this object be selected by the player?
-    false,              // Can it be the target of a move or attack order?
-    true,               // Don't make a big deal about it if it gets destroyed?
-    false,              // Is it immune to normal combat damage?
+    Pixel_Offset_Coord(13, 36),  // Center base coordinate offset.
+    false,                       // Spawns Tiberium spontaneously?
+    true,                        // Does it have destruction animation?
+    false,  // Does it have transformation (blossom tree) anim?
+    true,   // Does it catch fire?
+    false,  // Is this object crushable by heavy vehicles?
+    false,  // Can this object be selected by the player?
+    false,  // Can it be the target of a move or attack order?
+    true,   // Don't make a big deal about it if it gets destroyed?
+    false,  // Is it immune to normal combat damage?
     "T16", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List0010, List1001);
 
 static const TerrainTypeClass Tree17Class(
     TERRAIN_TREE17, kTheaterFlagWinter | kTheaterFlagTemperate,
-    XYP_COORD(18, 44),  // Center base coordinate offset.
-    false,              // Spawns Tiberium spontaneously?
-    true,               // Does it have destruction animation?
-    false,              // Does it have transformation (blossom tree) anim?
-    true,               // Does it catch fire?
-    false,              // Is this object crushable by heavy vehicles?
-    false,              // Can this object be selected by the player?
-    false,              // Can it be the target of a move or attack order?
-    true,               // Don't make a big deal about it if it gets destroyed?
-    false,              // Is it immune to normal combat damage?
+    Pixel_Offset_Coord(18, 44),  // Center base coordinate offset.
+    false,                       // Spawns Tiberium spontaneously?
+    true,                        // Does it have destruction animation?
+    false,  // Does it have transformation (blossom tree) anim?
+    true,   // Does it catch fire?
+    false,  // Is this object crushable by heavy vehicles?
+    false,  // Can this object be selected by the player?
+    false,  // Can it be the target of a move or attack order?
+    true,   // Don't make a big deal about it if it gets destroyed?
+    false,  // Is it immune to normal combat damage?
     "T17", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List0010, List1001);
 
 static const TerrainTypeClass Tree18Class(
     TERRAIN_TREE18, kTheaterFlagDesert,
-    XYP_COORD(33, 40),  // Center base coordinate offset.
-    false,              // Spawns Tiberium spontaneously?
-    true,               // Does it have destruction animation?
-    false,              // Does it have transformation (blossom tree) anim?
-    true,               // Does it catch fire?
-    false,              // Is this object crushable by heavy vehicles?
-    false,              // Can this object be selected by the player?
-    false,              // Can it be the target of a move or attack order?
-    true,               // Don't make a big deal about it if it gets destroyed?
-    false,              // Is it immune to normal combat damage?
+    Pixel_Offset_Coord(33, 40),  // Center base coordinate offset.
+    false,                       // Spawns Tiberium spontaneously?
+    true,                        // Does it have destruction animation?
+    false,  // Does it have transformation (blossom tree) anim?
+    true,   // Does it catch fire?
+    false,  // Is this object crushable by heavy vehicles?
+    false,  // Can this object be selected by the player?
+    false,  // Can it be the target of a move or attack order?
+    true,   // Don't make a big deal about it if it gets destroyed?
+    false,  // Is it immune to normal combat damage?
     "T18", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List000010, List111101);
 
 static const TerrainTypeClass Split1Class(
     TERRAIN_BLOSSOMTREE1, kTheaterFlagTemperate | kTheaterFlagWinter,
-    XYP_COORD(18, 44),  // Center base coordinate offset.
-    true,               // Spawns Tiberium spontaneously?
-    false,              // Does it have destruction animation?
-    true,               // Does it have transformation (blossom tree) anim?
-    false,              // Does it catch fire?
-    false,              // Is this object crushable by heavy vehicles?
-    false,              // Can this object be selected by the player?
-    false,              // Can it be the target of a move or attack order?
-    true,               // Don't make a big deal about it if it gets destroyed?
-    true,               // Is it immune to normal combat damage?
+    Pixel_Offset_Coord(18, 44),  // Center base coordinate offset.
+    true,                        // Spawns Tiberium spontaneously?
+    false,                       // Does it have destruction animation?
+    true,   // Does it have transformation (blossom tree) anim?
+    false,  // Does it catch fire?
+    false,  // Is this object crushable by heavy vehicles?
+    false,  // Can this object be selected by the player?
+    false,  // Can it be the target of a move or attack order?
+    true,   // Don't make a big deal about it if it gets destroyed?
+    true,   // Is it immune to normal combat damage?
     "SPLIT2", TXT_BLOSSOM_TREE, TREE_NORMAL, ARMOR_WOOD, List0010, List1101);
 
 static const TerrainTypeClass Split2Class(
     TERRAIN_BLOSSOMTREE2,
     kTheaterFlagTemperate | kTheaterFlagWinter | kTheaterFlagDesert,
-    XYP_COORD(18, 44),  // Center base coordinate offset.
-    true,               // Spawns Tiberium spontaneously?
-    false,              // Does it have destruction animation?
-    true,               // Does it have transformation (blossom tree) anim?
-    false,              // Does it catch fire?
-    false,              // Is this object crushable by heavy vehicles?
-    false,              // Can this object be selected by the player?
-    false,              // Can it be the target of a move or attack order?
-    true,               // Don't make a big deal about it if it gets destroyed?
-    true,               // Is it immune to normal combat damage?
+    Pixel_Offset_Coord(18, 44),  // Center base coordinate offset.
+    true,                        // Spawns Tiberium spontaneously?
+    false,                       // Does it have destruction animation?
+    true,   // Does it have transformation (blossom tree) anim?
+    false,  // Does it catch fire?
+    false,  // Is this object crushable by heavy vehicles?
+    false,  // Can this object be selected by the player?
+    false,  // Can it be the target of a move or attack order?
+    true,   // Don't make a big deal about it if it gets destroyed?
+    true,   // Is it immune to normal combat damage?
     "SPLIT3", TXT_BLOSSOM_TREE, TREE_NORMAL, ARMOR_WOOD, List0010, List1101);
 
 static const TerrainTypeClass Clump1Class(
     TERRAIN_CLUMP1, kTheaterFlagWinter | kTheaterFlagTemperate,
-    XYP_COORD(28, 41),  // Center base coordinate offset.
-    false,              // Spawns Tiberium spontaneously?
-    false,              // Does it have destruction animation?
-    false,              // Does it have transformation (blossom tree) anim?
-    false,              // Does it catch fire?
-    false,              // Is this object crushable by heavy vehicles?
-    false,              // Can this object be selected by the player?
-    false,              // Can it be the target of a move or attack order?
-    true,               // Don't make a big deal about it if it gets destroyed?
-    true,               // Is it immune to normal combat damage?
+    Pixel_Offset_Coord(28, 41),  // Center base coordinate offset.
+    false,                       // Spawns Tiberium spontaneously?
+    false,                       // Does it have destruction animation?
+    false,  // Does it have transformation (blossom tree) anim?
+    false,  // Does it catch fire?
+    false,  // Is this object crushable by heavy vehicles?
+    false,  // Can this object be selected by the player?
+    false,  // Can it be the target of a move or attack order?
+    true,   // Don't make a big deal about it if it gets destroyed?
+    true,   // Is it immune to normal combat damage?
     "TC01", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List000110, List110001);
 
 static const TerrainTypeClass Clump2Class(
     TERRAIN_CLUMP2, kTheaterFlagWinter | kTheaterFlagTemperate,
-    XYP_COORD(38, 41),  // Center base coordinate offset.
-    false,              // Spawns Tiberium spontaneously?
-    false,              // Does it have destruction animation?
-    false,              // Does it have transformation (blossom tree) anim?
-    false,              // Does it catch fire?
-    false,              // Is this object crushable by heavy vehicles?
-    false,              // Can this object be selected by the player?
-    false,              // Can it be the target of a move or attack order?
-    true,               // Don't make a big deal about it if it gets destroyed?
-    true,               // Is it immune to normal combat damage?
+    Pixel_Offset_Coord(38, 41),  // Center base coordinate offset.
+    false,                       // Spawns Tiberium spontaneously?
+    false,                       // Does it have destruction animation?
+    false,  // Does it have transformation (blossom tree) anim?
+    false,  // Does it catch fire?
+    false,  // Is this object crushable by heavy vehicles?
+    false,  // Can this object be selected by the player?
+    false,  // Can it be the target of a move or attack order?
+    true,   // Don't make a big deal about it if it gets destroyed?
+    true,   // Is it immune to normal combat damage?
     "TC02", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List010110, List101001);
 
 static const TerrainTypeClass Clump3Class(
     TERRAIN_CLUMP3, kTheaterFlagWinter | kTheaterFlagTemperate,
-    XYP_COORD(33, 35),  // Center base coordinate offset.
-    false,              // Spawns Tiberium spontaneously?
-    false,              // Does it have destruction animation?
-    false,              // Does it have transformation (blossom tree) anim?
-    false,              // Does it catch fire?
-    false,              // Is this object crushable by heavy vehicles?
-    false,              // Can this object be selected by the player?
-    false,              // Can it be the target of a move or attack order?
-    true,               // Don't make a big deal about it if it gets destroyed?
-    true,               // Is it immune to normal combat damage?
+    Pixel_Offset_Coord(33, 35),  // Center base coordinate offset.
+    false,                       // Spawns Tiberium spontaneously?
+    false,                       // Does it have destruction animation?
+    false,  // Does it have transformation (blossom tree) anim?
+    false,  // Does it catch fire?
+    false,  // Is this object crushable by heavy vehicles?
+    false,  // Can this object be selected by the player?
+    false,  // Can it be the target of a move or attack order?
+    true,   // Don't make a big deal about it if it gets destroyed?
+    true,   // Is it immune to normal combat damage?
     "TC03", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List110110, List001);
 
 static const TerrainTypeClass Clump4Class(
     TERRAIN_CLUMP4, kTheaterFlagWinter | kTheaterFlagTemperate,
-    XYP_COORD(44, 49),  // Center base coordinate offset.
-    false,              // Spawns Tiberium spontaneously?
-    false,              // Does it have destruction animation?
-    false,              // Does it have transformation (blossom tree) anim?
-    false,              // Does it catch fire?
-    false,              // Is this object crushable by heavy vehicles?
-    false,              // Can this object be selected by the player?
-    false,              // Can it be the target of a move or attack order?
-    true,               // Don't make a big deal about it if it gets destroyed?
-    true,               // Is it immune to normal combat damage?
+    Pixel_Offset_Coord(44, 49),  // Center base coordinate offset.
+    false,                       // Spawns Tiberium spontaneously?
+    false,                       // Does it have destruction animation?
+    false,  // Does it have transformation (blossom tree) anim?
+    false,  // Does it catch fire?
+    false,  // Is this object crushable by heavy vehicles?
+    false,  // Can this object be selected by the player?
+    false,  // Can it be the target of a move or attack order?
+    true,   // Don't make a big deal about it if it gets destroyed?
+    true,   // Is it immune to normal combat damage?
     "TC04", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List000011101000,
     List111000010110);
 
 static const TerrainTypeClass Clump5Class(
     TERRAIN_CLUMP5, kTheaterFlagWinter | kTheaterFlagTemperate,
-    XYP_COORD(49, 58),  // Center base coordinate offset.
-    false,              // Spawns Tiberium spontaneously?
-    false,              // Does it have destruction animation?
-    false,              // Does it have transformation (blossom tree) anim?
-    false,              // Does it catch fire?
-    false,              // Is this object crushable by heavy vehicles?
-    false,              // Can this object be selected by the player?
-    false,              // Can it be the target of a move or attack order?
-    true,               // Don't make a big deal about it if it gets destroyed?
-    true,               // Is it immune to normal combat damage?
+    Pixel_Offset_Coord(49, 58),  // Center base coordinate offset.
+    false,                       // Spawns Tiberium spontaneously?
+    false,                       // Does it have destruction animation?
+    false,  // Does it have transformation (blossom tree) anim?
+    false,  // Does it catch fire?
+    false,  // Is this object crushable by heavy vehicles?
+    false,  // Can this object be selected by the player?
+    false,  // Can it be the target of a move or attack order?
+    true,   // Don't make a big deal about it if it gets destroyed?
+    true,   // Is it immune to normal combat damage?
     "TC05", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List001011100110,
     List110000011001);
 
 static const TerrainTypeClass Rock1Class(
     TERRAIN_ROCK1, kTheaterFlagDesert,
-    XYP_COORD(33, 41),  // Center base coordinate offset.
-    false,              // Spawns Tiberium spontaneously?
-    false,              // Does it have destruction animation?
-    false,              // Does it have transformation (blossom tree) anim?
-    false,              // Does it catch fire?
-    false,              // Is this object crushable by heavy vehicles?
-    false,              // Can this object be selected by the player?
-    false,              // Can it be the target of a move or attack order?
-    true,               // Don't make a big deal about it if it gets destroyed?
-    true,               // Is it immune to normal combat damage?
+    Pixel_Offset_Coord(33, 41),  // Center base coordinate offset.
+    false,                       // Spawns Tiberium spontaneously?
+    false,                       // Does it have destruction animation?
+    false,  // Does it have transformation (blossom tree) anim?
+    false,  // Does it catch fire?
+    false,  // Is this object crushable by heavy vehicles?
+    false,  // Can this object be selected by the player?
+    false,  // Can it be the target of a move or attack order?
+    true,   // Don't make a big deal about it if it gets destroyed?
+    true,   // Is it immune to normal combat damage?
     "ROCK1", TXT_ROCK, 1000, ARMOR_STEEL, List0011, List111001);
 
 static const TerrainTypeClass Rock2Class(
     TERRAIN_ROCK2, kTheaterFlagDesert,
-    XYP_COORD(24, 23),  // Center base coordinate offset.
-    false,              // Spawns Tiberium spontaneously?
-    false,              // Does it have destruction animation?
-    false,              // Does it have transformation (blossom tree) anim?
-    false,              // Does it catch fire?
-    false,              // Is this object crushable by heavy vehicles?
-    false,              // Can this object be selected by the player?
-    false,              // Can it be the target of a move or attack order?
-    true,               // Don't make a big deal about it if it gets destroyed?
-    true,               // Is it immune to normal combat damage?
+    Pixel_Offset_Coord(24, 23),  // Center base coordinate offset.
+    false,                       // Spawns Tiberium spontaneously?
+    false,                       // Does it have destruction animation?
+    false,  // Does it have transformation (blossom tree) anim?
+    false,  // Does it catch fire?
+    false,  // Is this object crushable by heavy vehicles?
+    false,  // Can this object be selected by the player?
+    false,  // Can it be the target of a move or attack order?
+    true,   // Don't make a big deal about it if it gets destroyed?
+    true,   // Is it immune to normal combat damage?
     "ROCK2", TXT_ROCK, 1000, ARMOR_STEEL, List1100, List001);
 
 static const TerrainTypeClass Rock3Class(
     TERRAIN_ROCK3, kTheaterFlagDesert,
-    XYP_COORD(20, 39),  // Center base coordinate offset.
-    false,              // Spawns Tiberium spontaneously?
-    false,              // Does it have destruction animation?
-    false,              // Does it have transformation (blossom tree) anim?
-    false,              // Does it catch fire?
-    false,              // Is this object crushable by heavy vehicles?
-    false,              // Can this object be selected by the player?
-    false,              // Can it be the target of a move or attack order?
-    true,               // Don't make a big deal about it if it gets destroyed?
-    true,               // Is it immune to normal combat damage?
+    Pixel_Offset_Coord(20, 39),  // Center base coordinate offset.
+    false,                       // Spawns Tiberium spontaneously?
+    false,                       // Does it have destruction animation?
+    false,  // Does it have transformation (blossom tree) anim?
+    false,  // Does it catch fire?
+    false,  // Is this object crushable by heavy vehicles?
+    false,  // Can this object be selected by the player?
+    false,  // Can it be the target of a move or attack order?
+    true,   // Don't make a big deal about it if it gets destroyed?
+    true,   // Is it immune to normal combat damage?
     "ROCK3", TXT_ROCK, 1000, ARMOR_STEEL, List000110, List110001);
 
 static const TerrainTypeClass Rock4Class(
     TERRAIN_ROCK4, kTheaterFlagDesert,
-    XYP_COORD(12, 20),  // Center base coordinate offset.
-    false,              // Spawns Tiberium spontaneously?
-    false,              // Does it have destruction animation?
-    false,              // Does it have transformation (blossom tree) anim?
-    false,              // Does it catch fire?
-    false,              // Is this object crushable by heavy vehicles?
-    false,              // Can this object be selected by the player?
-    false,              // Can it be the target of a move or attack order?
-    true,               // Don't make a big deal about it if it gets destroyed?
-    true,               // Is it immune to normal combat damage?
+    Pixel_Offset_Coord(12, 20),  // Center base coordinate offset.
+    false,                       // Spawns Tiberium spontaneously?
+    false,                       // Does it have destruction animation?
+    false,  // Does it have transformation (blossom tree) anim?
+    false,  // Does it catch fire?
+    false,  // Is this object crushable by heavy vehicles?
+    false,  // Can this object be selected by the player?
+    false,  // Can it be the target of a move or attack order?
+    true,   // Don't make a big deal about it if it gets destroyed?
+    true,   // Is it immune to normal combat damage?
     "ROCK4", TXT_ROCK, 1000, ARMOR_STEEL, List10, List01);
 
 static const TerrainTypeClass Rock5Class(
     TERRAIN_ROCK5, kTheaterFlagDesert,
-    XYP_COORD(17, 19),  // Center base coordinate offset.
-    false,              // Spawns Tiberium spontaneously?
-    false,              // Does it have destruction animation?
-    false,              // Does it have transformation (blossom tree) anim?
-    false,              // Does it catch fire?
-    false,              // Is this object crushable by heavy vehicles?
-    false,              // Can this object be selected by the player?
-    false,              // Can it be the target of a move or attack order?
-    true,               // Don't make a big deal about it if it gets destroyed?
-    true,               // Is it immune to normal combat damage?
+    Pixel_Offset_Coord(17, 19),  // Center base coordinate offset.
+    false,                       // Spawns Tiberium spontaneously?
+    false,                       // Does it have destruction animation?
+    false,  // Does it have transformation (blossom tree) anim?
+    false,  // Does it catch fire?
+    false,  // Is this object crushable by heavy vehicles?
+    false,  // Can this object be selected by the player?
+    false,  // Can it be the target of a move or attack order?
+    true,   // Don't make a big deal about it if it gets destroyed?
+    true,   // Is it immune to normal combat damage?
     "ROCK5", TXT_ROCK, 1000, ARMOR_STEEL, List10, List01);
 
 static const TerrainTypeClass Rock6Class(
     TERRAIN_ROCK6, kTheaterFlagDesert,
-    XYP_COORD(28, 40),  // Center base coordinate offset.
-    false,              // Spawns Tiberium spontaneously?
-    false,              // Does it have destruction animation?
-    false,              // Does it have transformation (blossom tree) anim?
-    false,              // Does it catch fire?
-    false,              // Is this object crushable by heavy vehicles?
-    false,              // Can this object be selected by the player?
-    false,              // Can it be the target of a move or attack order?
-    true,               // Don't make a big deal about it if it gets destroyed?
-    true,               // Is it immune to normal combat damage?
+    Pixel_Offset_Coord(28, 40),  // Center base coordinate offset.
+    false,                       // Spawns Tiberium spontaneously?
+    false,                       // Does it have destruction animation?
+    false,  // Does it have transformation (blossom tree) anim?
+    false,  // Does it catch fire?
+    false,  // Is this object crushable by heavy vehicles?
+    false,  // Can this object be selected by the player?
+    false,  // Can it be the target of a move or attack order?
+    true,   // Don't make a big deal about it if it gets destroyed?
+    true,   // Is it immune to normal combat damage?
     "ROCK6", TXT_ROCK, 1000, ARMOR_STEEL, List000111, List110000);
 
 static const TerrainTypeClass Rock7Class(
     TERRAIN_ROCK7, kTheaterFlagDesert,
-    XYP_COORD(57, 22),  // Center base coordinate offset.
-    false,              // Spawns Tiberium spontaneously?
-    false,              // Does it have destruction animation?
-    false,              // Does it have transformation (blossom tree) anim?
-    false,              // Does it catch fire?
-    false,              // Is this object crushable by heavy vehicles?
-    false,              // Can this object be selected by the player?
-    false,              // Can it be the target of a move or attack order?
-    true,               // Don't make a big deal about it if it gets destroyed?
-    true,               // Is it immune to normal combat damage?
+    Pixel_Offset_Coord(57, 22),  // Center base coordinate offset.
+    false,                       // Spawns Tiberium spontaneously?
+    false,                       // Does it have destruction animation?
+    false,  // Does it have transformation (blossom tree) anim?
+    false,  // Does it catch fire?
+    false,  // Is this object crushable by heavy vehicles?
+    false,  // Can this object be selected by the player?
+    false,  // Can it be the target of a move or attack order?
+    true,   // Don't make a big deal about it if it gets destroyed?
+    true,   // Is it immune to normal combat damage?
     "ROCK7", TXT_ROCK, 1000, ARMOR_STEEL, List11110, List00001);
 
 const TerrainTypeClass* const TerrainTypeClass::Pointers[TERRAIN_COUNT] = {
@@ -657,7 +659,7 @@ void TerrainTypeClass::Init(TheaterType theater) {
       */
       terrain.Set_Image_Data(nullptr);
 
-      if (terrain.Theater & 1 << theater) {
+      if ((terrain.Theater & base::Bit<uint8_t>(theater)) != 0) {
         /*
         **	Load in the appropriate object shape data.
         */

@@ -25,17 +25,17 @@ uint16_t LegacyWord(COORDINATE coord, int index) {
 }
 
 COORDINATE LegacySnap(COORDINATE coord) {
-  return static_cast<COORDINATE>(
-      MakeLong(static_cast<uint16_t>((LegacyWord(coord, 1) & 0xFF00) | 0x80),
-               static_cast<uint16_t>((LegacyWord(coord, 0) & 0xFF00) | 0x80)));
+  return static_cast<COORDINATE>(MakeLong(
+      static_cast<uint16_t>((LegacyWord(coord, 1) & 0xFF00U) | 0x80U),
+      static_cast<uint16_t>((LegacyWord(coord, 0) & 0xFF00U) | 0x80U)));
 }
 
 COORDINATE LegacyMid(COORDINATE coord1, COORDINATE coord2) {
   return static_cast<COORDINATE>(MakeLong(
-      static_cast<uint16_t>((LegacyWord(coord1, 1) + LegacyWord(coord2, 1)) >>
-                            1),
-      static_cast<uint16_t>((LegacyWord(coord1, 0) + LegacyWord(coord2, 0)) >>
-                            1)));
+      static_cast<uint16_t>((LegacyWord(coord1, 1) + LegacyWord(coord2, 1)) /
+                            2),
+      static_cast<uint16_t>((LegacyWord(coord1, 0) + LegacyWord(coord2, 0)) /
+                            2)));
 }
 
 int LegacyDirDiff(DirType dir1, DirType dir2) {

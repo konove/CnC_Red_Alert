@@ -48,6 +48,7 @@
 #include <cctype>
 #include <cstdint>
 
+#include "base/numeric.h"
 #include "sdllib/font.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
@@ -105,15 +106,20 @@ static int Select_To_Entry(int select, uint32_t bitfield, int index) {
     return select;               /*		then it as is		*/
   }
 
-  int placement = 0;                              /* current pos zero		*/
-  while (select) {                                /* while still ones		*/
-    if (bitfield & (1L << (placement + index))) { /* if this flagged then
-                                                   */
-      select--;                                   /* decrement counter		*/
+  // Bits past the field read as clear, as they did when the probe was a
+  // 64-bit shift masked to 32 bits.
+  const auto is_set = [bitfield](const int bit) {
+    return bit < 32 && (bitfield & base::Bit<uint32_t>(bit)) != 0;
+  };
+
+  int placement = 0;                 /* current pos zero		*/
+  while (select) {                   /* while still ones		*/
+    if (is_set(placement + index)) { /* if this flagged then	*/
+      select--;                      /* decrement counter		*/
     }
     placement++; /* and we moved a place	*/
   }
-  while (!(bitfield & (1L << (placement + index)))) {
+  while (!is_set(placement + index)) {
     placement++;
   }
 
@@ -229,7 +235,7 @@ int Find_Menu_Items(int maxitems, unsigned long field, char index) {
 void Setup_Menu(const MenuConfig& menu, const char* labels[],
                 const uint32_t visible_items, const int bit_offset,
                 const int line_spacing) {
-  const int menu_x = (static_cast<int>(WinX) + menu.x) << 3;
+  const int menu_x = (static_cast<int>(WinX) + menu.x) * 8;
   const int menu_y = static_cast<int>(WinY) + menu.y;
 
   const int selected_entry =
@@ -273,10 +279,10 @@ int Check_Menu(MenuConfig& menu, const char* text[], uint32_t field,
   int newitem = item = menu.selected % (maxitem + 1); /* find selected */
   int select = -1;                                    /* no selection made		*/
   const int menuskip = FontHeight + MenuSkip;         /* calc new font height	*/
-  const int halfskip = MenuSkip >> 1;                 /* adjustment for menus	*/
+  const int halfskip = MenuSkip / 2;                  /* adjustment for menus	*/
 
   const int menuy = static_cast<int>(WinY) + menu.y; /* get the absolute */
-  const int menux = (static_cast<int>(WinX) + menu.x) << 3; /* coords of menu */
+  const int menux = (static_cast<int>(WinX) + menu.x) * 8; /* coords of menu */
   const int normcol = menu.normal_color;
   const int litcol = menu.highlight_color;
 
@@ -298,7 +304,7 @@ int Check_Menu(MenuConfig& menu, const char* text[], uint32_t field,
   **	out the new selected item, and continue forward.
   */
   /* get menu coords from the menu */
-  const int mx1 = (static_cast<int>(WinX) << 3) + (menu.x * FontWidth);
+  const int mx1 = (static_cast<int>(WinX) * 8) + (menu.x * FontWidth);
   const int my1 = static_cast<int>(WinY) + menu.y - halfskip;
   const int mx2 = mx1 + (menu.item_width * FontWidth) -
                   1; /*		structure as		*/
@@ -371,7 +377,7 @@ int Check_Menu(MenuConfig& menu, const char* text[], uint32_t field,
     default:
       for (int menu_item = 0; menu_item < menu.item_count; menu_item++) {
         if (toupper(*text[Select_To_Entry(menu_item, field, index)]) ==
-            toupper(Keyboard::To_ASCII(static_cast<KeyNumType>(key & 0x0FF)))) {
+            toupper(Keyboard::To_ASCII(static_cast<KeyNumType>(key % 256)))) {
           newitem = select = menu_item;
           break;
         }
@@ -460,14 +466,14 @@ int Do_Menu(const char** strings, bool blue) {
     ptr++;
   }
   length += 7;
-  menu_config.item_width = length >> 3;
+  menu_config.item_width = length / 8;
 
   /*
   **	Adjust the window values to match the size of the
   **	specified menu.
   */
   WindowList[WINDOW_MENU][WINDOWWIDTH] = menu_config.item_width + 2;
-  WindowList[WINDOW_MENU][WINDOWX] = 19 - (length >> 4);
+  WindowList[WINDOW_MENU][WINDOWX] = 19 - (length / 16);
   WindowList[WINDOW_MENU][WINDOWY] =
       174 - (menu_config.item_count * (FontHeight + FontYSpacing));
   WindowList[WINDOW_MENU][WINDOWHEIGHT] =

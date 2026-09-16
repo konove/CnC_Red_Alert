@@ -12,7 +12,8 @@ inline HousesType MPlayerID_To_HousesType(uint16_t id) {
   return static_cast<HousesType>(id & 0x000f);
 }
 inline uint16_t Build_MPlayerID(int c_idx, HousesType htype) {
-  return static_cast<uint16_t>(c_idx << 4 | htype);
+  return static_cast<uint16_t>(static_cast<unsigned>(c_idx) << 4 |
+                               static_cast<unsigned>(htype));
 }
 
 GameType Select_MPlayer_Game();

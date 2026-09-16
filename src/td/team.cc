@@ -368,7 +368,7 @@ void TeamClass::AI() {
                      (MapEditClass::Cell_Threat(cell, House->Class->House) + 1);
 
           if (*b == STRUCT_REPAIR) {
-            dist >>= 1;
+            dist /= 2;
           }
           if (dist < max) {
             cell = Member->Safety_Point(Center, cell, 2, 4);

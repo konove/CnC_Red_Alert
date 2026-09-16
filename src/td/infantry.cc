@@ -101,6 +101,7 @@
 #include <cstring>
 
 #include "absl/strings/str_format.h"
+#include "base/numeric.h"
 #include "port/tokenizer.h"
 #include "sdllib/shape.h"
 #include "td/aircraft.h"
@@ -463,7 +464,7 @@ ResultType InfantryClass::Take_Damage(int& damage, int distance,
   **	Prone infantry take only half damage, but never below one damage point.
   */
   if (IsProne && damage) {
-    damage >>= 1;
+    damage /= 2;
     //		damage = std::max(damage, 1);
   }
 
@@ -2466,8 +2467,8 @@ bool InfantryClass::Unlimbo(COORDINATE coord, DirType facing) {
     **	Ensure that the owning house knows about the
     **	new object.
     */
-    House->IScan |= 1L << Class->Type;
-    House->ActiveIScan |= 1L << Class->Type;
+    House->IScan |= ScanBit(Class->Type);
+    House->ActiveIScan |= ScanBit(Class->Type);
 
     /*
     **	If there is no sight range, then this object isn't discovered by the
@@ -2717,7 +2718,7 @@ COORDINATE InfantryClass::Fire_Coord(int /*unused*/) const {
   if (Class->Type == INFANTRY_E4) {
     return Coord;  // special case for flame thrower guy
   }
-  return Coord_Add(Coord, XYP_COORD(0, -5));
+  return Coord_Add(Coord, Pixel_Offset_Coord(0, -5));
 }
 
 /***************************************************************************
@@ -3168,7 +3169,7 @@ void InfantryClass::Set_Occupy_Bit(CELL cell, int spot_index) {
   /*
   ** Set the occupy postion for the spot that we passed in
   */
-  Map[cell].Flag.Composite |= 1 << spot_index;
+  Map[cell].Flag.Composite |= base::Bit<uint8_t>(spot_index);
 
   /*
   ** Record the type of infantry that now owns the cell
@@ -3195,7 +3196,8 @@ void InfantryClass::Clear_Occupy_Bit(CELL cell, int spot_index) {
   /*
   ** Clear the occupy bit for the infantry in that cell
   */
-  Map[cell].Flag.Composite &= ~(1 << spot_index);
+  Map[cell].Flag.Composite &=
+      static_cast<uint8_t>(~base::Bit<uint8_t>(spot_index));
 
   /*
   ** If he was the last infantry recorded in the cell then

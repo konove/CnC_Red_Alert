@@ -288,7 +288,7 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
     case SOURCE_EAST:
     case SOURCE_WEST: {
       const auto eface =
-          static_cast<FacingType>(source << 1);  // Facing to enter map.
+          static_cast<FacingType>(source * 2);  // Facing to enter map.
 
       if (airtransport) {
         ScenarioInit++;

@@ -118,15 +118,15 @@ void* Build_Frame(const void* dataptr, uint16_t framenumber, void* buffptr) {
 
   // get offset into data
   const char* ptr = static_cast<const char*>(Add_Long_To_Pointer(
-      dataptr, (int32_t{framenumber} << 3) + kKeyFrameHeaderSize));
+      dataptr, (base::ssize{framenumber} * 8) + kKeyFrameHeaderSize));
   Mem_Copy(ptr, &offset[0], 12L);
-  const char frameflags = static_cast<char>(offset[0] >> 24);
+  const auto frameflags = static_cast<uint8_t>(offset[0] >> 24);
 
   if (frameflags & KF_KEYFRAME) {
     ptr = static_cast<const char*>(
         Add_Long_To_Pointer(dataptr, offset[0] & 0x00FFFFFFL));
 
-    if (keyfr->flags & 1) {
+    if ((static_cast<uint16_t>(keyfr->flags) & 1U) != 0) {
       ptr = static_cast<const char*>(Add_Long_To_Pointer(ptr, 768L));
     }
     LCW_Uncompress(ptr, buffptr, buffsize);
@@ -136,7 +136,7 @@ void* Build_Frame(const void* dataptr, uint16_t framenumber, void* buffptr) {
       currframe = static_cast<uint16_t>(offset[1]);
 
       ptr = static_cast<const char*>(Add_Long_To_Pointer(
-          dataptr, (int32_t{currframe} << 3) + kKeyFrameHeaderSize));
+          dataptr, (base::ssize{currframe} * 8) + kKeyFrameHeaderSize));
       Mem_Copy(ptr, &offset[0], SUBFRAMEOFFS * sizeof(uint32_t));
     }
 
@@ -148,7 +148,7 @@ void* Build_Frame(const void* dataptr, uint16_t framenumber, void* buffptr) {
 
     ptr = static_cast<const char*>(Add_Long_To_Pointer(dataptr, offcurr));
 
-    if (keyfr->flags & 1) {
+    if ((static_cast<uint16_t>(keyfr->flags) & 1U) != 0) {
       ptr = static_cast<const char*>(Add_Long_To_Pointer(ptr, 768L));
     }
 
@@ -178,7 +178,7 @@ void* Build_Frame(const void* dataptr, uint16_t framenumber, void* buffptr) {
         subframe += 2;
 
         if (subframe >= SUBFRAMEOFFS - 1 && currframe <= framenumber) {
-          Mem_Copy(Add_Long_To_Pointer(dataptr, (int32_t{currframe} << 3) +
+          Mem_Copy(Add_Long_To_Pointer(dataptr, (base::ssize{currframe} * 8) +
                                                     kKeyFrameHeaderSize),
                    &offset[0], SUBFRAMEOFFS * sizeof(uint32_t));
           subframe = 0;
@@ -270,9 +270,11 @@ uint16_t Get_Build_Frame_Height(const void* dataptr) {
 }
 
 bool Get_Build_Frame_Palette(const void* dataptr, void* palette) {
-  if (dataptr && static_cast<const KeyFrameHeaderType*>(dataptr)->flags & 1) {
+  if (dataptr && (static_cast<uint16_t>(
+                      static_cast<const KeyFrameHeaderType*>(dataptr)->flags) &
+                  1U) != 0) {
     const char* ptr = static_cast<const char*>(Add_Long_To_Pointer(
-        dataptr, ((static_cast<int32_t>(sizeof(uint32_t)) << 1) *
+        dataptr, ((static_cast<int32_t>(sizeof(uint32_t)) * 2) *
                   static_cast<const KeyFrameHeaderType*>(dataptr)->frames) +
                      16 + sizeof(KeyFrameHeaderType)));
 

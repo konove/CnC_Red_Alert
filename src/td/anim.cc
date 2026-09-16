@@ -174,10 +174,10 @@ COORDINATE AnimClass::Sort_Y() const {
     return Coord_Add(Object->Sort_Y(), 0x00010000L);
   }
   if (*this == ANIM_MOVE_FLASH) {
-    return Coord_Add(Center_Coord(), XYP_COORD(0, -24));
+    return Coord_Add(Center_Coord(), Pixel_Offset_Coord(0, -24));
   }
   if (*this == ANIM_LZ_SMOKE) {
-    return Coord_Add(Center_Coord(), XYP_COORD(0, 14));
+    return Coord_Add(Center_Coord(), Pixel_Offset_Coord(0, 14));
   }
   return Coord;
 }
@@ -1067,12 +1067,14 @@ void AnimClass::Middle() {
   */
   if (Class->IsFlameThrower) {
     COORDINATE c2 = Coord_Move(
-        Center_Coord(), static_cast<DirType>((Class->Type - ANIM_FLAME_N) << 5),
+        Center_Coord(),
+        Facing_Dir(static_cast<FacingType>(Class->Type - ANIM_FLAME_N)),
         0x00E0);
     const COORDINATE c3 = Map.Closest_Free_Spot(
-        Coord_Move(Center_Coord(),
-                   static_cast<DirType>((Class->Type - ANIM_FLAME_N) << 5),
-                   0x0140),
+        Coord_Move(
+            Center_Coord(),
+            Facing_Dir(static_cast<FacingType>(Class->Type - ANIM_FLAME_N)),
+            0x0140),
         true);
 
     c2 = Map.Closest_Free_Spot(c2, true);

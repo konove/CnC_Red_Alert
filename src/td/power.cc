@@ -53,6 +53,7 @@
 
 #include <cstdint>
 
+#include "base/numeric.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
@@ -138,11 +139,12 @@ void PowerClass::One_Time() {
   RadarClass::One_Time();
 
   const int factor = Get_Resolution_Factor();
+  const int scale = static_cast<int>(base::Bit<uint32_t>(factor));
   PowX = SeenBuff.Get_Width() - Map.RadWidth;
-  PowY = Map.RadY + Map.RadHeight + (13 << factor);
-  PowWidth = 8 << factor;
+  PowY = Map.RadY + Map.RadHeight + (13 * scale);
+  PowWidth = 8 * scale;
   PowHeight = SeenBuff.Get_Height() - PowY;
-  PowLineSpace = 5 << factor;
+  PowLineSpace = 5 * scale;
   PowLineWidth = PowWidth - 4;
 
   PowerButton.X = PowX;

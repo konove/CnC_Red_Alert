@@ -1441,8 +1441,8 @@ bool BuildingClass::Unlimbo(COORDINATE coord, DirType dir) {
     **	Ensure that the owning house knows about the
     **	new object.
     */
-    House->BScan |= 1L << Class->Type;
-    House->ActiveBScan |= 1L << Class->Type;
+    House->BScan |= ScanBit(Class->Type);
+    House->ActiveBScan |= ScanBit(Class->Type);
 
     /*
     **	Update the total factory type, assuming this building has a factory.
@@ -3180,10 +3180,10 @@ COORDINATE BuildingClass::Center_Coord() const {
 COORDINATE BuildingClass::Docking_Coord() const {
   Validate();
   if (*this == STRUCT_HELIPAD) {
-    return Coord_Add(Coord, XYP_COORD(24, 18));
+    return Coord_Add(Coord, Pixel_Offset_Coord(24, 18));
   }
   if (*this == STRUCT_AIRSTRIP) {
-    return Coord_Add(Coord, XYP_COORD(18, 30));
+    return Coord_Add(Coord, Pixel_Offset_Coord(18, 30));
   }
   return TechnoClass::Docking_Coord();
 }
@@ -3748,7 +3748,8 @@ int BuildingClass::Mission_Deconstruction() {
             auto* infantry = new InfantryClass(typ, House->Class->House);
             if (infantry) {
               ScenarioInit++;
-              COORDINATE coord = Coord_Add(Center_Coord(), XYP_COORD(0, -12));
+              COORDINATE coord =
+                  Coord_Add(Center_Coord(), Pixel_Offset_Coord(0, -12));
               coord = Map[Coord_Cell(coord)].Closest_Free_Spot(coord, false);
 
               if (infantry->Unlimbo(coord, DIR_N)) {

@@ -56,6 +56,7 @@
 #include <filesystem>
 #include <string>
 
+#include "base/numeric.h"
 #include "port/ex_string.h"
 #include "sdllib/shape.h"
 #include "td/building.h"
@@ -1901,7 +1902,7 @@ BuildingClass* InfantryTypeClass::Who_Can_Build_Me(bool intheory, bool legal,
         building->House->Class->House == house &&
         building->Mission != MISSION_DECONSTRUCTION &&
         building->Class->ToBuild == RTTI_INFANTRYTYPE &&
-        1L << building->ActLike & Ownable &&
+        (base::Bit<uint16_t>(building->ActLike) & Ownable) != 0 &&
         (!legal || building->House->Can_Build(Type, building->ActLike)) &&
         (intheory || !building->In_Radio_Contact())) {
       anybuilding = building;

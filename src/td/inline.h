@@ -41,21 +41,31 @@ template <std::integral T>
 /*
 **	Inline miscellaneous functions.
 */
-#define XYP_COORD(x, y)                               \
-  COORDINATE((((x) * ICON_LEPTON_W) / CELL_PIXEL_W) + \
-             ((((y) * ICON_LEPTON_H) / CELL_PIXEL_H) << 16))
+// Packs a pixel offset into a COORDINATE, truncating each component to whole
+// leptons (XYP_Coord rounds instead). Negative offsets wrap in their 16-bit
+// component, as the packed sum always did.
+constexpr COORDINATE Pixel_Offset_Coord(int x, int y) noexcept {
+  const auto x_lepton =
+      static_cast<uint32_t>((x * ICON_LEPTON_W) / CELL_PIXEL_W);
+  const auto y_lepton =
+      static_cast<uint32_t>((y * ICON_LEPTON_H) / CELL_PIXEL_H);
+  return static_cast<COORDINATE>((y_lepton << 16) + x_lepton);
+}
 inline FacingType Dir_Facing(DirType facing) {
-  return static_cast<FacingType>(
-      (static_cast<unsigned char>(facing + 0x10) & 0xFF) >> 5);
+  // Rounds to the nearest of the eight facings; the DirType sum wraps.
+  return static_cast<FacingType>(static_cast<unsigned>(facing + 0x10) >> 5);
 }
 inline DirType Facing_Dir(FacingType facing) {
-  return static_cast<DirType>(static_cast<int>(facing) << 5);
+  return static_cast<DirType>(static_cast<int>(facing) * 32);
 }
-inline int Cell_To_Lepton(int cell) { return cell << 8; }
+inline int Cell_To_Lepton(int cell) { return cell * 256; }
 inline int Lepton_To_Cell(int lepton) {
   return static_cast<unsigned>(lepton + 0x0080) >> 8;
 }
-inline CELL XY_Cell(int x, int y) { return static_cast<CELL>(y << 6 | x); }
+inline CELL XY_Cell(int x, int y) {
+  return static_cast<CELL>(static_cast<unsigned>(y) << 6 |
+                           static_cast<unsigned>(x));
+}
 inline COORDINATE XY_Coord(int x, int y) {
   return static_cast<COORDINATE>(
       MakeLong(static_cast<uint16_t>(y), static_cast<uint16_t>(x)));
@@ -98,18 +108,20 @@ inline COORDINATE Coord_Sub(COORDINATE coord1, COORDINATE coord2) {
                static_cast<uint16_t>(Coord_X(coord1) - Coord_X(coord2))));
 }
 inline COORDINATE Coord_Snap(COORDINATE coord) {
-  return static_cast<COORDINATE>(MakeLong((HighWord(coord) & 0xFF00) | 0x80,
-                                          (LowWord(coord) & 0xFF00) | 0x80));
+  return static_cast<COORDINATE>(MakeLong((HighWord(coord) & 0xFF00U) | 0x80U,
+                                          (LowWord(coord) & 0xFF00U) | 0x80U));
 }
 inline COORDINATE Coord_Mid(COORDINATE coord1, COORDINATE coord2) {
   return static_cast<COORDINATE>(
-      MakeLong((HighWord(coord1) + HighWord(coord2)) >> 1,
-               (LowWord(coord1) + LowWord(coord2)) >> 1));
+      MakeLong((HighWord(coord1) + HighWord(coord2)) / 2,
+               (LowWord(coord1) + LowWord(coord2)) / 2));
 }
+// The coordinate of the cell's center: each component is the cell index in
+// the high byte and the lepton offset 0x80 in the low byte.
 inline COORDINATE Cell_Coord(CELL cell) {
   return static_cast<COORDINATE>(
-      MakeLong(static_cast<uint16_t>((cell & 0x0FC0) << 2 | 0x80),
-               static_cast<uint16_t>((((cell & 0x003F) << 1) + 1) << 7)));
+      MakeLong(static_cast<uint16_t>((Cell_Y(cell) * 256) + 0x80),
+               static_cast<uint16_t>((Cell_X(cell) * 256) + 0x80)));
 }
 inline COORDINATE XYPixel_Coord(int x, int y) {
   return static_cast<COORDINATE>(
@@ -136,7 +148,7 @@ inline DirType Direction(CELL cell1, CELL cell2) {
                          Cell_Y(cell2));
 }
 inline COORDINATE Adjacent_Cell(COORDINATE coord, FacingType dir) {
-  return Coord_Snap(Coord_Add(AdjacentCoord[dir & 0x07], coord));
+  return Coord_Snap(Coord_Add(AdjacentCoord[AsFacing(dir)], coord));
 }
 inline COORDINATE Adjacent_Cell(COORDINATE coord, DirType dir) {
   return Adjacent_Cell(coord, Dir_Facing(dir));
@@ -144,7 +156,7 @@ inline COORDINATE Adjacent_Cell(COORDINATE coord, DirType dir) {
 inline CELL Adjacent_Cell(CELL cell, FacingType dir) {
   // Masked like the COORDINATE overload above, so that FACING_NONE (-1) does
   // not index before the start of the table.
-  return static_cast<CELL>(cell + AdjacentCell[dir & 0x07]);
+  return static_cast<CELL>(cell + AdjacentCell[AsFacing(dir)]);
 }
 inline CELL Adjacent_Cell(CELL cell, DirType dir) {
   return static_cast<CELL>(cell + AdjacentCell[Dir_Facing(dir)]);
@@ -207,9 +219,9 @@ inline int Distance(COORDINATE coord1, COORDINATE coord2) {
     diff2 = -diff2;
   }
   if (diff1 > diff2) {
-    return diff1 + (diff2 >> 1);
+    return diff1 + (diff2 / 2);
   }
-  return diff2 + (diff1 >> 1);
+  return diff2 + (diff1 / 2);
 }
 
 /***********************************************************************************************
@@ -237,9 +249,9 @@ inline int Distance(CELL coord1, CELL coord2) {
     diff2 = -diff2;
   }
   if (diff1 > diff2) {
-    return diff1 + (diff2 >> 1);
+    return diff1 + (diff2 / 2);
   }
-  return diff2 + (diff1 >> 1);
+  return diff2 + (diff1 / 2);
 }
 
 #endif  // CNC_RED_ALERT_TD_INLINE_H_

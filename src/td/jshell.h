@@ -50,6 +50,7 @@
 #include "absl/base/attributes.h"
 #include "absl/strings/str_format.h"
 #include "absl/types/span.h"
+#include "base/numeric.h"
 #include "port/format.h"
 #include "sdllib/buffer.h"
 #include "sdllib/iff.h"
@@ -105,15 +106,15 @@ T operator--(T& a, int) {
 }
 template <class T>
 constexpr T operator|(T t1, T t2) noexcept {
-  return static_cast<T>(static_cast<int>(t1) | static_cast<int>(t2));
+  return static_cast<T>(static_cast<unsigned>(t1) | static_cast<unsigned>(t2));
 }
 template <class T>
 T operator&(T t1, T t2) {
-  return static_cast<T>(static_cast<int>(t1) & static_cast<int>(t2));
+  return static_cast<T>(static_cast<unsigned>(t1) & static_cast<unsigned>(t2));
 }
 template <class T>
 T operator~(T t1) {
-  return static_cast<T>(~static_cast<int>(t1));
+  return static_cast<T>(~static_cast<unsigned>(t1));
 }
 
 inline void Set_Bit(void* array, int bit, int value) {
@@ -130,11 +131,9 @@ inline void Set_Bit(void* array, int bit, int value) {
           "ok:"
   */
   if (value) {
-    static_cast<uint32_t*>(array)[static_cast<unsigned>(bit) >> 5] |=
-        1U << (bit & 0x1F);
+    static_cast<uint32_t*>(array)[bit / 32] |= base::Bit<uint32_t>(bit % 32);
   } else {
-    static_cast<uint32_t*>(array)[static_cast<unsigned>(bit) >> 5] &=
-        ~(1U << (bit & 0x1F));
+    static_cast<uint32_t*>(array)[bit / 32] &= ~base::Bit<uint32_t>(bit % 32);
   }
 }
 
@@ -146,8 +145,8 @@ inline bool Get_Bit(const void* array, int bit) {
           "bt	[esi+ebx*4],eax"		\
           "setc	al"
   */
-  return (static_cast<const uint32_t*>(array)[static_cast<unsigned>(bit) >> 5] &
-          1 << (bit & 0x1F)) != 0;
+  return (static_cast<const uint32_t*>(array)[bit / 32] &
+          base::Bit<uint32_t>(bit % 32)) != 0;
 }
 
 inline int First_True_Bit(const void* array) {

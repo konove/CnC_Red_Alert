@@ -330,7 +330,7 @@ void BulletClass::AI() {
   *but *	they only do so every other game frame (improves game speed and
   *makes *	missiles not so deadly).
   */
-  if (Frame & 0x01 && Class->IsHoming && Target_Legal(TarCom)) {
+  if (Frame % 2 != 0 && Class->IsHoming && Target_Legal(TarCom)) {
     PrimaryFacing.Set_Desired(Direction256(Coord, As_Coord(TarCom)));
   }
 
@@ -710,7 +710,7 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
       speed = MPH_IMMOBILE;
     }
     if (Class->IsArcing) {
-      speed = Class->MaxSpeed + (Distance(tcoord) >> 5);
+      speed = Class->MaxSpeed + (Distance(tcoord) / 32);
 
       /*
       **	Set minimum speed (i.e., distance) for arcing projectiles.

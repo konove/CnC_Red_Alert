@@ -206,7 +206,7 @@ std::vector<uint8_t> MapFields(int32_t growth_count = 2) {
   int32_t width = 60;
   int32_t height = 59;
   int32_t spread_count = 1;
-  int64_t total = (int64_t{1} << 40) + 17;
+  int64_t total = (int64_t{1} * 1024 * 1024 * 1024 * 1024) + 17;
   int16_t scan = 3072;
   int16_t growth[] = {100, 200};
   int16_t spread = 300;
@@ -227,7 +227,7 @@ TEST_F(TdArchiveRoundTripTest, MapMembersPreserveWideValueAndPopulatedScanLists)
   EXPECT_EQ(map.MapCellY, 2);
   EXPECT_EQ(map.MapCellWidth, 60);
   EXPECT_EQ(map.MapCellHeight, 59);
-  EXPECT_EQ(map.TotalValue, (int64_t{1} << 40) + 17);
+  EXPECT_EQ(map.TotalValue, (int64_t{1} * 1024 * 1024 * 1024 * 1024) + 17);
   EXPECT_EQ(Save(map), bytes);
 }
 
@@ -243,8 +243,8 @@ TEST_F(TdArchiveRoundTripTest, MapRejectsOversizedScanListBeforeReadingEntries) 
 
 TEST_F(TdArchiveRoundTripTest, HouseRestoresEconomyFlagsTimersAndTypeIdentity) {
   auto& house = *PlayerPtr;
-  house.Credits = (int64_t{1} << 40) + 123;
-  house.InitialCredits = (int64_t{1} << 39) + 456;
+  house.Credits = (int64_t{1} * 1024 * 1024 * 1024 * 1024) + 123;
+  house.InitialCredits = (int64_t{1} * 512 * 1024 * 1024 * 1024) + 456;
   house.IsHuman = true;
   house.IsAlerted = true;
   house.NukePieces = 5;

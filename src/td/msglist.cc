@@ -51,6 +51,7 @@
 #include <cstdint>
 #include <cstring>
 
+#include "base/numeric.h"
 #include "base/types.h"
 #include "port/safe_string.h"
 #include "sdllib/font.h"
@@ -246,7 +247,7 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
           ** If this message segment hasnt already come through then add it to
           *the existing text
           */
-          if (!(txtlabel->Segments & 1 << position)) {
+          if ((txtlabel->Segments & base::Bit<uint8_t>(position)) == 0) {
             /*
             ** Search for the ':' to find the actual message after the players
             *name
@@ -261,7 +262,7 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
               /*
               ** Flag this string segment as complete
               */
-              txtlabel->Segments = static_cast<char>(txtlabel->Segments | (1 << position));
+              txtlabel->Segments |= base::Bit<uint8_t>(position);
               return txtlabel;
             }
           } else {
@@ -401,7 +402,7 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
             (((COMPAT_MESSAGE_LENGTH - 4) * MAX_MESSAGE_SEGMENTS) - 1)) = 0;
         }
         position = magic_number - MESSAGE_HEAD_MAGIC_NUMBER;
-        txtlabel->Segments = static_cast<char>(1 << position);
+        txtlabel->Segments = base::Bit<uint8_t>(position);
       }
 
       txtlabel->Text = MessageBuffers[i];

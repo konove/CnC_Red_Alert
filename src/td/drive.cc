@@ -121,9 +121,10 @@ void DriveClass::Do_Turn(DirType dir) {
     */
     if (Special.IsThreePoint && TrackNumber == -1 &&
         Class->Speed == SPEED_WHEEL) {
-      int facediff =
-          PrimaryFacing.Difference(dir) >>
-          5;  // Signed difference between current and desired facing.
+      // Signed difference between current and desired facing, in eighths;
+      // the shift floors negative differences as the original did.
+      // NOLINTNEXTLINE(bugprone-signed-bitwise)
+      int facediff = PrimaryFacing.Difference(dir) >> 5;
       facediff = Bound(facediff, -2, 2);
       if (facediff) {
         const FacingType face =
@@ -1081,8 +1082,8 @@ bool DriveClass::Start_Of_Move() {
   /*
   **	A damaged unit has a reduced speed.
   */
-  if (Class->MaxStrength >> 1 > Strength) {
-    speed -= speed >> 2;  // Three quarters speed.
+  if (Class->MaxStrength / 2 > Strength) {
+    speed -= speed / 4;  // Three quarters speed.
   }
   if (std::cmp_not_equal(speed, Speed) /* || !SpeedAdd*/) {
     Set_Speed(speed);  // Full speed.
@@ -1345,9 +1346,10 @@ void DriveClass::Fixup_Path(PathType* path) {
   **	If the original path starts in the same direction as the unit, then
   **	there is no problem to resolve -- abort.
   */
-  int facediff =
-      PrimaryFacing.Difference(static_cast<DirType>(path->Command[0] << 5)) >>
-      5;  // The facing difference value (0..4 | 0..-4).
+  // The facing difference value (0..4 | 0..-4); the shift floors negative
+  // differences as the original did.
+  // NOLINTNEXTLINE(bugprone-signed-bitwise)
+  int facediff = PrimaryFacing.Difference(Facing_Dir(path->Command[0])) >> 5;
 
   if (!facediff) {
     return;
@@ -2047,29 +2049,29 @@ const DriveClass::TrackType DriveClass::Track12[] = {
 **	Drive out of weapon's factory.
 */
 const DriveClass::TrackType DriveClass::Track13[] = {
-    {XYP_COORD(10, -21), static_cast<DirType>(DIR_SW - 10)},
-    {XYP_COORD(10, -21), static_cast<DirType>(DIR_SW - 10)},
-    {XYP_COORD(10, -20), static_cast<DirType>(DIR_SW - 10)},
-    {XYP_COORD(10, -20), static_cast<DirType>(DIR_SW - 10)},
-    {XYP_COORD(9, -18), static_cast<DirType>(DIR_SW - 10)},
-    {XYP_COORD(9, -18), static_cast<DirType>(DIR_SW - 10)},
-    {XYP_COORD(9, -17), static_cast<DirType>(DIR_SW - 10)},
-    {XYP_COORD(8, -16), static_cast<DirType>(DIR_SW - 10)},
-    {XYP_COORD(8, -15), static_cast<DirType>(DIR_SW - 10)},
-    {XYP_COORD(7, -14), static_cast<DirType>(DIR_SW - 10)},
-    {XYP_COORD(7, -13), static_cast<DirType>(DIR_SW - 10)},
-    {XYP_COORD(6, -12), static_cast<DirType>(DIR_SW - 10)},
-    {XYP_COORD(6, -11), static_cast<DirType>(DIR_SW - 10)},
-    {XYP_COORD(5, -10), static_cast<DirType>(DIR_SW - 10)},
-    {XYP_COORD(5, -9), static_cast<DirType>(DIR_SW - 10)},
-    {XYP_COORD(4, -8), static_cast<DirType>(DIR_SW - 10)},
-    {XYP_COORD(4, -7), static_cast<DirType>(DIR_SW - 10)},
-    {XYP_COORD(3, -6), static_cast<DirType>(DIR_SW - 10)},
-    {XYP_COORD(3, -5), static_cast<DirType>(DIR_SW - 9)},
-    {XYP_COORD(2, -4), static_cast<DirType>(DIR_SW - 7)},
-    {XYP_COORD(2, -3), static_cast<DirType>(DIR_SW - 5)},
-    {XYP_COORD(1, -2), static_cast<DirType>(DIR_SW - 3)},
-    {XYP_COORD(1, -1), static_cast<DirType>(DIR_SW - 1)},
+    {Pixel_Offset_Coord(10, -21), static_cast<DirType>(DIR_SW - 10)},
+    {Pixel_Offset_Coord(10, -21), static_cast<DirType>(DIR_SW - 10)},
+    {Pixel_Offset_Coord(10, -20), static_cast<DirType>(DIR_SW - 10)},
+    {Pixel_Offset_Coord(10, -20), static_cast<DirType>(DIR_SW - 10)},
+    {Pixel_Offset_Coord(9, -18), static_cast<DirType>(DIR_SW - 10)},
+    {Pixel_Offset_Coord(9, -18), static_cast<DirType>(DIR_SW - 10)},
+    {Pixel_Offset_Coord(9, -17), static_cast<DirType>(DIR_SW - 10)},
+    {Pixel_Offset_Coord(8, -16), static_cast<DirType>(DIR_SW - 10)},
+    {Pixel_Offset_Coord(8, -15), static_cast<DirType>(DIR_SW - 10)},
+    {Pixel_Offset_Coord(7, -14), static_cast<DirType>(DIR_SW - 10)},
+    {Pixel_Offset_Coord(7, -13), static_cast<DirType>(DIR_SW - 10)},
+    {Pixel_Offset_Coord(6, -12), static_cast<DirType>(DIR_SW - 10)},
+    {Pixel_Offset_Coord(6, -11), static_cast<DirType>(DIR_SW - 10)},
+    {Pixel_Offset_Coord(5, -10), static_cast<DirType>(DIR_SW - 10)},
+    {Pixel_Offset_Coord(5, -9), static_cast<DirType>(DIR_SW - 10)},
+    {Pixel_Offset_Coord(4, -8), static_cast<DirType>(DIR_SW - 10)},
+    {Pixel_Offset_Coord(4, -7), static_cast<DirType>(DIR_SW - 10)},
+    {Pixel_Offset_Coord(3, -6), static_cast<DirType>(DIR_SW - 10)},
+    {Pixel_Offset_Coord(3, -5), static_cast<DirType>(DIR_SW - 9)},
+    {Pixel_Offset_Coord(2, -4), static_cast<DirType>(DIR_SW - 7)},
+    {Pixel_Offset_Coord(2, -3), static_cast<DirType>(DIR_SW - 5)},
+    {Pixel_Offset_Coord(1, -2), static_cast<DirType>(DIR_SW - 3)},
+    {Pixel_Offset_Coord(1, -1), static_cast<DirType>(DIR_SW - 1)},
 
     {0x00000000L, DIR_SW}};
 

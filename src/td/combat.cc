@@ -41,8 +41,10 @@
 
 #include "td/combat.h"
 
+#include <cstdint>
 #include <iterator>
 
+#include "base/numeric.h"
 #include "td/cell.h"
 #include "td/const.h"
 #include "td/defines.h"
@@ -103,9 +105,9 @@ int Modify_Damage(int damage, WarheadType warhead, ArmorType armor,
   if (damage) {
     //		if (distance < 0x0010) damage *= 2;			//
     // Double damage for direct hits.
-    distance >>= whead->SpreadFactor;
+    distance /= static_cast<int>(base::Bit<uint32_t>(whead->SpreadFactor));
     distance = Bound(distance, 0, 16);
-    damage >>= distance;
+    damage /= static_cast<int>(base::Bit<uint32_t>(distance));
   }
 
   /*

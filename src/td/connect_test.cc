@@ -16,7 +16,7 @@ constexpr uint16_t kMagic = 0x1234;
 // A tick count past 2^32. ConnectionClass::Time() counts 60ths of a second
 // from steady_clock, which on Linux starts at boot, so it reaches this after
 // about 828 days of uptime.
-constexpr int64_t kLongUptimeTicks = int64_t{1} << 33;
+constexpr int64_t kLongUptimeTicks = int64_t{1} * 8 * 1024 * 1024 * 1024;
 
 // A connection that counts sends instead of touching a network device.
 class TestConnection : public NonSequencedConnClass {

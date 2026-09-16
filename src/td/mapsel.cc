@@ -1166,7 +1166,7 @@ void Map_Selection() {
 
     countryshape = nullptr;
 
-    Print_Statistics(color & 0x7F, _countryx[xshuffled_rows],
+    Print_Statistics(color % 128, _countryx[xshuffled_rows],
                      _countryy[xshuffled_rows]);
   } else {
     GameFile(house == HOUSE_GOOD ? "DARK_B.PAL" : "DARK_SA.PAL")
@@ -1537,9 +1537,9 @@ void Cycle_Call_Back_Delay(int time, unsigned char* pal) {
   static int _counter;
 
   while (time--) {
-    _counter = ++_counter & 3;
+    _counter = (_counter + 1) % 4;
 
-    if (!(_counter & 3)) {
+    if (_counter == 0) {
       const unsigned char r = pal[(249 * 3) + 0];
       const unsigned char g = pal[(249 * 3) + 1];
       const unsigned char b = pal[(249 * 3) + 2];
@@ -1620,7 +1620,7 @@ void Bit_It_In(const int x, const int y, const int w, const int h,
   // the next batch is drawn.
   for (int line = 0; line < h; line++) {
     int row_offset = line;
-    if (line & 1) {
+    if (line % 2 != 0) {
       int remaining = delay;
       do {
         Call_Back_Delay(remaining ? 1 : 0);

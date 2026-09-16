@@ -678,9 +678,9 @@ int MapClass::Cell_Distance(CELL cell1, CELL cell2) {
   }
 
   if (x > y) {
-    return x + (y >> 1);
+    return x + (y / 2);
   }
-  return y + (x >> 1);
+  return y + (x / 2);
 }
 
 /***********************************************************************************************
@@ -702,7 +702,7 @@ int MapClass::Cell_Distance(CELL cell1, CELL cell2) {
  *Speeded up.                                                              *
  *=============================================================================================*/
 bool MapClass::In_Radar(CELL cell) const {
-  if (cell & 0xF000) {
+  if (cell < 0 || cell >= MAP_CELL_TOTAL) {
     return false;
   }
   return static_cast<unsigned>(Cell_X(cell) - MapCellX) <

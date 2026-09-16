@@ -1423,8 +1423,9 @@ TheaterType Theater_From_Name(const char* name) {
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
 FacingType KN_To_Facing(int input) {
-  input &= ~(KN_ALT_BIT | KN_SHIFT_BIT | KN_CTRL_BIT);
-  switch (input) {
+  const uint32_t key = static_cast<uint32_t>(input) &
+                       ~(WWKEY_ALT_BIT | WWKEY_SHIFT_BIT | WWKEY_CTRL_BIT);
+  switch (key) {
     case KN_LEFT:
       return FACING_W;
 
@@ -2461,9 +2462,9 @@ void CC_Draw_Shape(const void* shapefile, int shapenum, int x, int y,
     if (shape_size) {
       GraphicViewPortClass draw_window(
           LogicPage->Get_Graphic_Buffer(),
-          (WindowList[window][WINDOWX] << 3) + LogicPage->Get_XPos(),
+          (WindowList[window][WINDOWX] * 8) + LogicPage->Get_XPos(),
           WindowList[window][WINDOWY] + LogicPage->Get_YPos(),
-          WindowList[window][WINDOWWIDTH] << 3,
+          WindowList[window][WINDOWWIDTH] * 8,
           WindowList[window][WINDOWHEIGHT]);
 
       char* shape_pointer = static_cast<char*>(shape_size);
@@ -2480,7 +2481,7 @@ void CC_Draw_Shape(const void* shapefile, int shapenum, int x, int y,
 
       int predoffset = static_cast<int>(Frame);
 
-      if (x > WindowList[window][WINDOWWIDTH] << 2) {
+      if (x > WindowList[window][WINDOWWIDTH] * 4) {
         predoffset = -predoffset;
       }
 

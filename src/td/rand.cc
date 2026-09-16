@@ -114,7 +114,7 @@ int Sim_Random() {
       0x56, 0x11, 0x71, 0x6a,
   };
 
-  SimRandIndex = (SimRandIndex + 1) & 0xff;
+  SimRandIndex = (SimRandIndex + 1) % 256;
   return _randvals[SimRandIndex];
 }
 

@@ -52,6 +52,7 @@
 #include <cstdint>
 #include <filesystem>
 
+#include "base/numeric.h"
 #include "port/ex_string.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
@@ -1343,7 +1344,7 @@ void TemplateTypeClass::Init(TheaterType theater) {
     const TemplateTypeClass& tplate = As_Reference(index);
 
     tplate.Set_Image_Data(nullptr);
-    if (tplate.Theater & 1 << theater) {
+    if ((tplate.Theater & base::Bit<uint8_t>(theater)) != 0) {
       // Fully constructed iconset name.
       const auto fullname = std::filesystem::path(tplate.IniName)
                                 .replace_extension(Theaters[theater].Suffix)
@@ -1388,7 +1389,7 @@ void TemplateTypeClass::Display(int x, int y, WindowNumberType window,
     x -= (w / 2) * ICON_PIXEL_W;
     y -= (h / 2) * ICON_PIXEL_H;
   }
-  x += WindowList[window][WINDOWX] << 3;
+  x += WindowList[window][WINDOWX] * 8;
   y += WindowList[window][WINDOWY];
 
   Mem_Copy(Get_Icon_Set_Map(Get_Image_Data()), map,

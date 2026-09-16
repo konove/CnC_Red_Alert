@@ -769,8 +769,8 @@ bool UnitClass::Unlimbo(COORDINATE coord, DirType dir) {
     **	Ensure that the owning house knows about the
     **	new object.
     */
-    House->UScan |= 1L << Class->Type;
-    House->ActiveUScan |= 1L << Class->Type;
+    House->UScan |= ScanBit(Class->Type);
+    House->ActiveUScan |= ScanBit(Class->Type);
 
     /*
     **	If it starts off the edge of the map, then it already starts cloaked.
@@ -2913,9 +2913,9 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType /*unused*/) const {
 
       if (House->Is_Ally(obj)) {
         if (is_moving) {
-          const int face = Dir_Facing(PrimaryFacing);
-          const int techface =
-              Dir_Facing(dynamic_cast<const FootClass*>(obj)->PrimaryFacing) ^
+          const FacingType face = Dir_Facing(PrimaryFacing);
+          const FacingType techface =
+              Dir_Facing(dynamic_cast<const FootClass*>(obj)->PrimaryFacing) +
               4;
           if (face == techface && Distance(obj) <= 0x1FF) {
             return MOVE_NO;

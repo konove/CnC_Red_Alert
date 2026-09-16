@@ -62,6 +62,7 @@
 #include <cstdint>
 #include <cstdlib>
 
+#include "base/numeric.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/wwstd.h"
 #include "td/audio.h"
@@ -97,8 +98,9 @@ CreditClass::CreditClass() = default;
 // #define XX (320 - 120)
 // #define WW 50
 void CreditClass::Graphic_Logic(bool forced) {
-  const int factor = Get_Resolution_Factor();
-  const int xx = SeenBuff.Get_Width() - (120 << factor);
+  const int scale =
+      static_cast<int>(base::Bit<uint32_t>(Get_Resolution_Factor()));
+  const int xx = SeenBuff.Get_Width() - (120 * scale);
   if (forced || IsToRedraw) {
     /*
     **	Play a sound effect when the money display changes, but only if a sound
@@ -172,7 +174,7 @@ void CreditClass::AI(bool forced) {
     */
     int64_t adder = Credits - Current;
     adder = std::abs(adder);
-    adder >>= 5;
+    adder /= 32;
     adder = Bound(static_cast<int>(adder), 1L, 71 + 72);
     if (Current > Credits) {
       adder = -adder;
