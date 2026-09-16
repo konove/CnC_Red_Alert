@@ -49,7 +49,7 @@
 **	intermediate goals. Each goal (or target if you will) can be one of the
 **	following kinds.
 */
-typedef enum KindType {
+enum class KindType {
   KIND_NONE,
   KIND_CELL,
   KIND_UNIT,
@@ -63,7 +63,8 @@ typedef enum KindType {
   KIND_TRIGGER,
   KIND_TEAM,
   KIND_TEAMTYPE
-} KindType;
+};
+using enum KindType;
 
 #define TARGET_MANTISSA 12  // Bits of value precision.
 inline constexpr unsigned kTargetMantissaMask = (1U << TARGET_MANTISSA) - 1;

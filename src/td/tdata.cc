@@ -49,6 +49,7 @@
 #include <cstdint>
 #include <filesystem>
 
+#include "base/enum_array.h"
 #include "base/numeric.h"
 #include "port/ex_string.h"
 #include "sdllib/shape.h"
@@ -564,39 +565,40 @@ static const TerrainTypeClass Rock7Class(
     true,   // Is it immune to normal combat damage?
     "ROCK7", TXT_ROCK, 1000, ARMOR_STEEL, List11110, List00001);
 
-const TerrainTypeClass* const TerrainTypeClass::Pointers[TERRAIN_COUNT] = {
-    &Tree1Class,   //	TERRAIN_TREE1
-    &Tree2Class,   //	TERRAIN_TREE2
-    &Tree3Class,   //	TERRAIN_TREE3
-    &Tree4Class,   //	TERRAIN_TREE4
-    &Tree5Class,   //	TERRAIN_TREE5
-    &Tree6Class,   //	TERRAIN_TREE6
-    &Tree7Class,   //	TERRAIN_TREE7
-    &Tree8Class,   //	TERRAIN_TREE8
-    &Tree9Class,   //	TERRAIN_TREE9
-    &Tree10Class,  //	TERRAIN_TREE10
-    &Tree11Class,  //	TERRAIN_TREE11
-    &Tree12Class,  //	TERRAIN_TREE12
-    &Tree13Class,  //	TERRAIN_TREE13
-    &Tree14Class,  //	TERRAIN_TREE14
-    &Tree15Class,  //	TERRAIN_TREE15
-    &Tree16Class,  //	TERRAIN_TREE16
-    &Tree17Class,  //	TERRAIN_TREE17
-    &Tree18Class,  //	TERRAIN_TREE18
-    &Split1Class,  // TERRAIN_BLOSSOMTREE1
-    &Split2Class,  // TERRAIN_BLOSSOMTREE2
-    &Clump1Class,  //	TERRAIN_CLUMP1
-    &Clump2Class,  //	TERRAIN_CLUMP2
-    &Clump3Class,  //	TERRAIN_CLUMP3
-    &Clump4Class,  //	TERRAIN_CLUMP4
-    &Clump5Class,  //	TERRAIN_CLUMP5
-    &Rock1Class,   //	TERRAIN_ROCK1
-    &Rock2Class,   //	TERRAIN_ROCK2
-    &Rock3Class,   //	TERRAIN_ROCK3
-    &Rock4Class,   //	TERRAIN_ROCK4
-    &Rock5Class,   //	TERRAIN_ROCK5
-    &Rock6Class,   //	TERRAIN_ROCK6
-    &Rock7Class    //	TERRAIN_ROCK7
+const base::EnumArray<TerrainType, const TerrainTypeClass*, kTerrainCount>
+    TerrainTypeClass::Pointers = {
+        &Tree1Class,   //	TERRAIN_TREE1
+        &Tree2Class,   //	TERRAIN_TREE2
+        &Tree3Class,   //	TERRAIN_TREE3
+        &Tree4Class,   //	TERRAIN_TREE4
+        &Tree5Class,   //	TERRAIN_TREE5
+        &Tree6Class,   //	TERRAIN_TREE6
+        &Tree7Class,   //	TERRAIN_TREE7
+        &Tree8Class,   //	TERRAIN_TREE8
+        &Tree9Class,   //	TERRAIN_TREE9
+        &Tree10Class,  //	TERRAIN_TREE10
+        &Tree11Class,  //	TERRAIN_TREE11
+        &Tree12Class,  //	TERRAIN_TREE12
+        &Tree13Class,  //	TERRAIN_TREE13
+        &Tree14Class,  //	TERRAIN_TREE14
+        &Tree15Class,  //	TERRAIN_TREE15
+        &Tree16Class,  //	TERRAIN_TREE16
+        &Tree17Class,  //	TERRAIN_TREE17
+        &Tree18Class,  //	TERRAIN_TREE18
+        &Split1Class,  // TERRAIN_BLOSSOMTREE1
+        &Split2Class,  // TERRAIN_BLOSSOMTREE2
+        &Clump1Class,  //	TERRAIN_CLUMP1
+        &Clump2Class,  //	TERRAIN_CLUMP2
+        &Clump3Class,  //	TERRAIN_CLUMP3
+        &Clump4Class,  //	TERRAIN_CLUMP4
+        &Clump5Class,  //	TERRAIN_CLUMP5
+        &Rock1Class,   //	TERRAIN_ROCK1
+        &Rock2Class,   //	TERRAIN_ROCK2
+        &Rock3Class,   //	TERRAIN_ROCK3
+        &Rock4Class,   //	TERRAIN_ROCK4
+        &Rock5Class,   //	TERRAIN_ROCK5
+        &Rock6Class,   //	TERRAIN_ROCK6
+        &Rock7Class    //	TERRAIN_ROCK7
 };
 
 /***********************************************************************************************

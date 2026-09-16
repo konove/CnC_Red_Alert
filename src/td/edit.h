@@ -51,13 +51,14 @@
 
 class EditClass : public ControlClass {
  public:
-  typedef enum CNC_FLAG_ENUM EditStyle : uint32_t {
+  enum class CNC_FLAG_ENUM EditStyle : uint32_t {
     ALPHA = 0x0001,      // Edit accepts alphabetic characters.
     NUMERIC = 0x0002,    // Edit accepts numbers.
     MISC = 0x0004,       // Edit accepts misc graphic characters.
     UPPERCASE = 0x0008,  // Force to upper case.
     ALPHANUMERIC = ALPHA | NUMERIC | MISC,
-  } EditStyle;
+  };
+  using enum EditStyle;
 
   EditClass(int id, char* text ABSL_ATTRIBUTE_LIFETIME_BOUND, int max_len,
             TextPrintType flags, int x, int y, int w = -1, int h = -1,
@@ -102,7 +103,7 @@ class EditClass : public ControlClass {
   /*
   **	This is the desired color of the edit control.
   */
-  int Color{CC_GREEN};
+  int Color{kCcGreen};
 
   bool Action(unsigned flags, KeyNumType& key) override;
   virtual void Draw_Background();

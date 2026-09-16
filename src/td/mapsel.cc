@@ -486,7 +486,7 @@ void Map_Selection() {
   // persisting it between calls changes nothing.
   static unsigned char localpalette[768];
   bool lastscenario = false;
-  const int house = PlayerPtr->Class->House;
+  const HousesType house = PlayerPtr->Class->House;
   int attackxcoord = 0;
 
   static const int _countryx[] = {195, 217, 115, 167, 244, 97, 130, 142, 171,
@@ -535,7 +535,7 @@ void Map_Selection() {
   }
 
   // Check if they're even entitled to map selection this time
-  if (CountryArray[scenario].Choices[ScenDir] == 0) {
+  if (CountryArray[scenario].Choices[static_cast<int>(ScenDir)] == 0) {
     delete[] progresspalette;
     delete[] grey2palette;
     return;
@@ -609,8 +609,8 @@ void Map_Selection() {
   Animate_Frame(greyearth, SysMemPage, 0);
 
   Bit_It_In(0, 0, 320, 200, &SysMemPage, PseudoSeenBuff);
-  PseudoSeenBuff->Put_Pixel(237, 92, TBLACK);
-  PseudoSeenBuff->Put_Pixel(237, 93, TBLACK);
+  PseudoSeenBuff->Put_Pixel(237, 92, kTBlack);
+  PseudoSeenBuff->Put_Pixel(237, 93, kTBlack);
 
   Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, "MAP1.PAL");
 
@@ -714,13 +714,13 @@ void Map_Selection() {
       case 16:
         TextPrintBuffer->Fill_Rect(
             0, 20, 2 * String_Pixel_Width(Text_String(TXT_READING_IMAGE_DATA)),
-            2 * (10 + 12), BLACK);
+            2 * (10 + 12), kBlack);
         break;
 
       case 17:
         TextPrintBuffer->Fill_Rect(
             0, 20, 2 * String_Pixel_Width(Text_String(TXT_READING_IMAGE_DATA)),
-            2 * (10 + 12), TBLACK);
+            2 * (10 + 12), kTBlack);
         Alloc_Object(
             new MultiStagePrintClass("ANALYZING", 0, 10, _othergreenpal));
         break;
@@ -728,13 +728,13 @@ void Map_Selection() {
       case 33:
         TextPrintBuffer->Fill_Rect(
             0, 20, 2 * String_Pixel_Width(Text_String(TXT_ANALYZING)),
-            2 * (10 + 12), BLACK);
+            2 * (10 + 12), kBlack);
         break;
 
       case 34:
         TextPrintBuffer->Fill_Rect(
             0, 20, 2 * String_Pixel_Width(Text_String(TXT_ANALYZING)),
-            2 * (10 + 12), TBLACK);
+            2 * (10 + 12), kTBlack);
         Alloc_Object(new MultiStagePrintClass(
             Text_String(TXT_ENHANCING_IMAGE_DATA), 0, 10, _othergreenpal));
         break;
@@ -743,14 +743,14 @@ void Map_Selection() {
         TextPrintBuffer->Fill_Rect(
             0, 20,
             2 * String_Pixel_Width(Text_String(TXT_ENHANCING_IMAGE_DATA)),
-            2 * (10 + 12), BLACK);
+            2 * (10 + 12), kBlack);
         break;
 
       case 45:
         TextPrintBuffer->Fill_Rect(
             0, 20,
             2 * String_Pixel_Width(Text_String(TXT_ENHANCING_IMAGE_DATA)),
-            2 * (10 + 12), TBLACK);
+            2 * (10 + 12), kTBlack);
         Alloc_Object(new MultiStagePrintClass(
             Text_String(TXT_ISOLATING_OPERATIONAL_THEATER), 0, 10,
             _othergreenpal));
@@ -760,14 +760,14 @@ void Map_Selection() {
         TextPrintBuffer->Fill_Rect(0, 20,
                                    2 * String_Pixel_Width(Text_String(
                                            TXT_ISOLATING_OPERATIONAL_THEATER)),
-                                   2 * (10 + 12), BLACK);
+                                   2 * (10 + 12), kBlack);
         break;
 
       case 71:
         TextPrintBuffer->Fill_Rect(0, 20,
                                    2 * String_Pixel_Width(Text_String(
                                            TXT_ISOLATING_OPERATIONAL_THEATER)),
-                                   2 * (10 + 12), TBLACK);
+                                   2 * (10 + 12), kTBlack);
         Alloc_Object(new MultiStagePrintClass(
             Text_String(TXT_ESTABLISHING_TRADITIONAL_BOUNDARIES), 0, 10,
             _othergreenpal));
@@ -788,12 +788,12 @@ void Map_Selection() {
   TextPrintBuffer->Fill_Rect(0, 20,
                              2 * String_Pixel_Width(Text_String(
                                      TXT_ESTABLISHING_TRADITIONAL_BOUNDARIES)),
-                             2 * (10 + 24), BLACK);
+                             2 * (10 + 24), kBlack);
   Call_Back_Delay(1);
   TextPrintBuffer->Fill_Rect(0, 20,
                              2 * String_Pixel_Width(Text_String(
                                      TXT_ESTABLISHING_TRADITIONAL_BOUNDARIES)),
-                             2 * (10 + 24), TBLACK);
+                             2 * (10 + 24), kTBlack);
   Call_Back_Delay(1);
 
   Close_Animation(anim);
@@ -822,7 +822,7 @@ void Map_Selection() {
   /*
   ** Now show territories as they existed last scenario
   */
-  int startframe = CountryArray[scenario].Start[ScenDir];
+  int startframe = CountryArray[scenario].Start[static_cast<int>(ScenDir)];
   if (startframe) {
     Animate_Frame(progress, SysMemPage, startframe);
     SysMemPage.Blit(*PseudoSeenBuff);
@@ -855,12 +855,13 @@ void Map_Selection() {
   ** Now dissolve in second advance of territories
   */
 #ifdef FRENCH
-  PseudoSeenBuff->Fill_Rect(xcoord, 0, xcoord + 6 * 16 + 10, 8, BLACK);
+  PseudoSeenBuff->Fill_Rect(xcoord, 0, xcoord + 6 * 16 + 10, 8, kBlack);
   TextPrintBuffer->Fill_Rect(xcoord * 2, 0, 2 * (xcoord + 6 * 16 + 10), 16,
-                             BLACK);
+                             kBlack);
 #else
-  PseudoSeenBuff->Fill_Rect(xcoord, 0, xcoord + (6 * 16), 8, BLACK);
-  TextPrintBuffer->Fill_Rect(2 * xcoord, 0, 2 * (xcoord + (6 * 16)), 16, BLACK);
+  PseudoSeenBuff->Fill_Rect(xcoord, 0, xcoord + (6 * 16), 8, kBlack);
+  TextPrintBuffer->Fill_Rect(2 * xcoord, 0, 2 * (xcoord + (6 * 16)), 16,
+                             kBlack);
 #endif
 
   Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, nullptr);
@@ -885,18 +886,18 @@ void Map_Selection() {
   }
 //	Set_Font(oldfont);
 #ifdef FRENCH
-  PseudoSeenBuff->Fill_Rect(xcoord, 12, xcoord + 6 * 16 + 10, 20, BLACK);
+  PseudoSeenBuff->Fill_Rect(xcoord, 12, xcoord + 6 * 16 + 10, 20, kBlack);
   TextPrintBuffer->Fill_Rect(2 * xcoord, 24, 2 * (xcoord + 6 * 16 + 10), 40,
-                             BLACK);
+                             kBlack);
 #else
-  PseudoSeenBuff->Fill_Rect(xcoord, 12, xcoord + (6 * 16), 20, BLACK);
+  PseudoSeenBuff->Fill_Rect(xcoord, 12, xcoord + (6 * 16), 20, kBlack);
   TextPrintBuffer->Fill_Rect(2 * xcoord, 24, 2 * (xcoord + (6 * 16)), 40,
-                             BLACK);
+                             kBlack);
 #endif
 
   Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, nullptr);
 
-  startframe = CountryArray[scenario].ContAnim[ScenDir];
+  startframe = CountryArray[scenario].ContAnim[static_cast<int>(ScenDir)];
 
   /*
   ** Now print the text over the page
@@ -916,17 +917,17 @@ void Map_Selection() {
   */
   if (lastscenario) {
 #if (defined(GERMAN) || defined(FRENCH))
-    SysMemPage.Fill_Rect(0, 160, 20 * 6, 186, TBLACK);
-    PseudoSeenBuff->Fill_Rect(0, 160, 20 * 6, 186, TBLACK);
-    TextPrintBuffer->Fill_Rect(0, 320, 40 * 6, 372, BLACK);
-    SeenBuff.Fill_Rect(0, 320, 40 * 6, 372, TBLACK);
-    HidPage.Fill_Rect(0, 320, 40 * 6, 372, TBLACK);
+    SysMemPage.Fill_Rect(0, 160, 20 * 6, 186, kTBlack);
+    PseudoSeenBuff->Fill_Rect(0, 160, 20 * 6, 186, kTBlack);
+    TextPrintBuffer->Fill_Rect(0, 320, 40 * 6, 372, kBlack);
+    SeenBuff.Fill_Rect(0, 320, 40 * 6, 372, kTBlack);
+    HidPage.Fill_Rect(0, 320, 40 * 6, 372, kTBlack);
 #else
-    SysMemPage.Fill_Rect(0, 160, 20 * 6, 176, TBLACK);
-    PseudoSeenBuff->Fill_Rect(0, 160, 20 * 6, 176, TBLACK);
-    TextPrintBuffer->Fill_Rect(0, 320, 40 * 6, 352, BLACK);
-    SeenBuff.Fill_Rect(0, 320, 40 * 6, 352, TBLACK);
-    HidPage.Fill_Rect(0, 320, 40 * 6, 352, TBLACK);
+    SysMemPage.Fill_Rect(0, 160, 20 * 6, 176, kTBlack);
+    PseudoSeenBuff->Fill_Rect(0, 160, 20 * 6, 176, kTBlack);
+    TextPrintBuffer->Fill_Rect(0, 320, 40 * 6, 352, kBlack);
+    SeenBuff.Fill_Rect(0, 320, 40 * 6, 352, kTBlack);
+    HidPage.Fill_Rect(0, 320, 40 * 6, 352, kTBlack);
 #endif
     BlitList.Clear();
     Bit_It_In(0, 0, 320, 200, &SysMemPage, PseudoSeenBuff);
@@ -984,20 +985,20 @@ void Map_Selection() {
           if (house == HOUSE_GOOD) {
             TextPrintBuffer->Fill_Rect(
                 0, 20, 2 * String_Pixel_Width(Text_String(TXT_ENHANCING_IMAGE)),
-                2 * (10 + 12), BLACK);
+                2 * (10 + 12), kBlack);
           } else {
 #ifdef FRENCH
             TextPrintBuffer->Fill_Rect(
                 360, 20,
                 2 * (180 +
                      String_Pixel_Width(Text_String(TXT_ENHANCING_IMAGE))),
-                2 * (10 + 12), BLACK);
+                2 * (10 + 12), kBlack);
 #else
             TextPrintBuffer->Fill_Rect(
                 420, 20,
                 2 * (210 +
                      String_Pixel_Width(Text_String(TXT_ENHANCING_IMAGE))),
-                2 * (10 + 12), BLACK);
+                2 * (10 + 12), kBlack);
 #endif  //(FRENCH)
           }
           break;
@@ -1006,20 +1007,20 @@ void Map_Selection() {
           if (house == HOUSE_GOOD) {
             TextPrintBuffer->Fill_Rect(
                 0, 20, 2 * String_Pixel_Width(Text_String(TXT_ENHANCING_IMAGE)),
-                2 * (10 + 12), TBLACK);
+                2 * (10 + 12), kTBlack);
           } else {
 #ifdef FRENCH
             TextPrintBuffer->Fill_Rect(
                 360, 20,
                 2 * (180 +
                      String_Pixel_Width(Text_String(TXT_ENHANCING_IMAGE))),
-                2 * (10 + 12), TBLACK);
+                2 * (10 + 12), kTBlack);
 #else
             TextPrintBuffer->Fill_Rect(
                 420, 20,
                 2 * (210 +
                      String_Pixel_Width(Text_String(TXT_ENHANCING_IMAGE))),
-                2 * (10 + 12), TBLACK);
+                2 * (10 + 12), kTBlack);
 #endif  //(FRENCH)
           }
           break;
@@ -1043,13 +1044,13 @@ void Map_Selection() {
   Play_Sample(beepy6, 255, Options.Normalize_Sound(90));
   if (!lastscenario) {
 #if (defined(GERMAN) || defined(FRENCH))
-    SysMemPage.Fill_Rect(0, 160, 20 * 6, 186, TBLACK);
-    PseudoSeenBuff->Fill_Rect(0, 160, 20 * 6, 186, TBLACK);
-    TextPrintBuffer->Fill_Rect(0, 320, 40 * 6, 372, BLACK);
+    SysMemPage.Fill_Rect(0, 160, 20 * 6, 186, kTBlack);
+    PseudoSeenBuff->Fill_Rect(0, 160, 20 * 6, 186, kTBlack);
+    TextPrintBuffer->Fill_Rect(0, 320, 40 * 6, 372, kBlack);
 #else
-    SysMemPage.Fill_Rect(0, 160, 20 * 6, 176, TBLACK);
-    PseudoSeenBuff->Fill_Rect(0, 160, 20 * 6, 176, TBLACK);
-    TextPrintBuffer->Fill_Rect(0, 320, 40 * 6, 352, BLACK);
+    SysMemPage.Fill_Rect(0, 160, 20 * 6, 176, kTBlack);
+    PseudoSeenBuff->Fill_Rect(0, 160, 20 * 6, 176, kTBlack);
+    TextPrintBuffer->Fill_Rect(0, 320, 40 * 6, 352, kBlack);
 #endif
   }
 
@@ -1090,19 +1091,23 @@ void Map_Selection() {
 
     // Check for the mouse button
     if (Keyboard::Check() && ((Keyboard::Get() & 0x10FF) == KN_LMOUSE)) {
-      for (selection = 0; selection < CountryArray[scenario].Choices[ScenDir];
+      for (selection = 0;
+           selection <
+           CountryArray[scenario].Choices[static_cast<int>(ScenDir)];
            selection++) {
         color = SysMemPage.Get_Pixel(Get_Mouse_X() / 2, Get_Mouse_Y() / 2);
 
         /*
         ** Special hack for Egypt the second time through
         */
-        if ((CountryArray[scenario].CountryColor[ScenDir][selection] == 0xA0) &&
+        if ((CountryArray[scenario]
+                 .CountryColor[static_cast<int>(ScenDir)][selection] == 0xA0) &&
             (color == 0x80 || color == 0x81)) {
           color = 0xA0;
         }
 
-        if (CountryArray[scenario].CountryColor[ScenDir][selection] == color) {
+        if (CountryArray[scenario]
+                .CountryColor[static_cast<int>(ScenDir)][selection] == color) {
           Play_Sample(world2, 255, Options.Normalize_Sound(90));
           done = 1;
           break;
@@ -1111,8 +1116,10 @@ void Map_Selection() {
       }
     }
   }
-  ScenVar = CountryArray[scenario].CountryVariant[ScenDir][selection];
-  ScenDir = CountryArray[scenario].CountryDir[ScenDir][selection];
+  ScenVar = CountryArray[scenario]
+                .CountryVariant[static_cast<int>(ScenDir)][selection];
+  ScenDir =
+      CountryArray[scenario].CountryDir[static_cast<int>(ScenDir)][selection];
 
   if (!lastscenario) {
     Close_Animation(progress);
@@ -1126,14 +1133,14 @@ void Map_Selection() {
     Hide_Mouse();
     // erase "Select country to attack"
     PseudoSeenBuff->Fill_Rect(attackxcoord, 160, attackxcoord + (17 * 6), 178,
-                              BLACK);
+                              kBlack);
     TextPrintBuffer->Fill_Rect(2 * attackxcoord, 320,
-                               2 * (attackxcoord + (17 * 6)), 2 * 178, BLACK);
+                               2 * (attackxcoord + (17 * 6)), 2 * 178, kBlack);
 #if (defined(GERMAN) || defined(FRENCH))
     PseudoSeenBuff->Fill_Rect(attackxcoord + (17 * 6), 160,
-                              attackxcoord + (21 * 6), 178, BLACK);
+                              attackxcoord + (21 * 6), 178, kBlack);
     TextPrintBuffer->Fill_Rect(2 * attackxcoord + (17 * 6 * 2), 320,
-                               2 * (attackxcoord + (21 * 6)), 2 * 178, BLACK);
+                               2 * (attackxcoord + (21 * 6)), 2 * 178, kBlack);
 #endif  // GERMAN
 
     Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, nullptr);
@@ -1143,7 +1150,8 @@ void Map_Selection() {
     */
     Set_Logic_Page(SysMemPage);
     europe->Blit(SysMemPage);
-    const int shape = CountryArray[scenario].CountryShape[ScenDir][selection];
+    const int shape = CountryArray[scenario]
+                          .CountryShape[static_cast<int>(ScenDir)][selection];
     const int xshuffled_rows = shape + (house == HOUSE_GOOD ? 0 : 18);
     CC_Draw_Shape(countryshape, shape, _countryx[xshuffled_rows],
                   _countryy[xshuffled_rows], WINDOW_MAIN,
@@ -1183,15 +1191,15 @@ void Map_Selection() {
     Hide_Mouse();
 #if (defined(GERMAN) || defined(FRENCH))
     PseudoSeenBuff->Fill_Rect(attackxcoord, 160, 319, 178,
-                              BLACK);  // erase "Select country to attack"
+                              kBlack);  // erase "Select country to attack"
     TextPrintBuffer->Fill_Rect(2 * attackxcoord, 320, 639, 356,
-                               BLACK);  // erase "Select country to attack"
+                               kBlack);  // erase "Select country to attack"
 #else
     PseudoSeenBuff->Fill_Rect(attackxcoord, 160, attackxcoord + (17 * 6), 199,
-                              BLACK);  // erase "Select country to attack"
+                              kBlack);  // erase "Select country to attack"
     TextPrintBuffer->Fill_Rect(2 * attackxcoord, 320,
                                2 * (attackxcoord + (17 * 6)), 398,
-                               BLACK);  // erase "Select country to attack"
+                               kBlack);  // erase "Select country to attack"
 #endif
     Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, nullptr);
 

@@ -70,13 +70,13 @@
 //		"out	dx,al"
 
 int MonoClass::Enabled = 0;
-MonoClass* MonoClass::PageUsage[MAX_MONO_PAGES] = {
+MonoClass* MonoClass::PageUsage[kMaxMonoPages] = {
     nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr};
 
 /*
 **	These are the IBM linedraw characters.
 */
-const MonoClass::BoxDataType MonoClass::CharData[COUNT] = {
+const MonoClass::BoxDataType MonoClass::CharData[static_cast<int>(COUNT)] = {
     {0xDA, 0xC4, 0xBF, 0xB3, 0xD9, 0xC4, 0xC0, 0xB3},  // Single line
     {0xD5, 0xCD, 0xB8, 0xB3, 0xBE, 0xCD, 0xD4, 0xB3},  // Double horz.
     {0xD6, 0xC4, 0xB7, 0xBA, 0xBD, 0xC4, 0xD3, 0xBA},  // Double vert.
@@ -105,14 +105,14 @@ MonoClass::MonoClass() {
   int index = 0;
 
   X = Y = 0;
-  for (index = 0; index < MAX_MONO_PAGES; index++) {
+  for (index = 0; index < kMaxMonoPages; index++) {
     if (!PageUsage[index]) {
       PageUsage[index] = this;
       Page = index;
       break;
     }
   }
-  if (index == MAX_MONO_PAGES) {
+  if (index == kMaxMonoPages) {
     // Major error message should pop up here!
     delete this;
   }
@@ -173,10 +173,10 @@ void MonoClass::Draw_Box(int x, int y, int w, int h, char attrib,
   **	Draw the horizontal lines.
   */
   for (int xpos = 0; xpos < w - 2; xpos++) {
-    cell.Character = CharData[thick].TopEdge;
+    cell.Character = CharData[static_cast<int>(thick)].TopEdge;
     Store_Cell(cell, x + xpos + 1, y);
     //		MonoSegment.Copy_Word_To(*(short*)&cell, Offset(x+xpos+1, y));
-    cell.Character = CharData[thick].BottomEdge;
+    cell.Character = CharData[static_cast<int>(thick)].BottomEdge;
     Store_Cell(cell, x + xpos + 1, y + h - 1);
     //		MonoSegment.Copy_Word_To(*(short*)&cell, Offset(x+xpos+1,
     // y+h-1));
@@ -186,10 +186,10 @@ void MonoClass::Draw_Box(int x, int y, int w, int h, char attrib,
   **	Draw the vertical lines.
   */
   for (int ypos = 0; ypos < h - 2; ypos++) {
-    cell.Character = CharData[thick].LeftEdge;
+    cell.Character = CharData[static_cast<int>(thick)].LeftEdge;
     Store_Cell(cell, x, y + ypos + 1);
     //		MonoSegment.Copy_Word_To(*(short*)&cell, Offset(x, y+ypos+1));
-    cell.Character = CharData[thick].RightEdge;
+    cell.Character = CharData[static_cast<int>(thick)].RightEdge;
     Store_Cell(cell, x + w - 1, y + ypos + 1);
     //		MonoSegment.Copy_Word_To(*(short*)&cell, Offset(x+w-1,
     // y+ypos+1));
@@ -199,16 +199,16 @@ void MonoClass::Draw_Box(int x, int y, int w, int h, char attrib,
   **	Draw the four corners.
   */
   if (w > 1 && h > 1) {
-    cell.Character = CharData[thick].UpperLeft;
+    cell.Character = CharData[static_cast<int>(thick)].UpperLeft;
     Store_Cell(cell, x, y);
     //		MonoSegment.Copy_Word_To(*(short*)&cell, Offset(x, y));
-    cell.Character = CharData[thick].UpperRight;
+    cell.Character = CharData[static_cast<int>(thick)].UpperRight;
     Store_Cell(cell, x + w - 1, y);
     //		MonoSegment.Copy_Word_To(*(short*)&cell, Offset(x+w-1, y));
-    cell.Character = CharData[thick].BottomRight;
+    cell.Character = CharData[static_cast<int>(thick)].BottomRight;
     Store_Cell(cell, x + w - 1, y + h - 1);
     //		MonoSegment.Copy_Word_To(*(short*)&cell, Offset(x+w-1, y+h-1));
-    cell.Character = CharData[thick].BottomLeft;
+    cell.Character = CharData[static_cast<int>(thick)].BottomLeft;
     Store_Cell(cell, x, y + h - 1);
     //		MonoSegment.Copy_Word_To(*(short*)&cell, Offset(x, y+h-1));
   }
@@ -235,17 +235,17 @@ void MonoClass::Draw_Box(int x, int y, int w, int h, char attrib,
  *=============================================================================================*/
 void MonoClass::Set_Cursor([[maybe_unused]] int x, [[maybe_unused]] int y) {
 #ifdef FIX_ME_LATER
-  int pos = (y * COLUMNS) + x;
+  int pos = (y * kColumns) + x;
 
   if (!Enabled) {
     return;
   }
 
-  X = (char)(x % COLUMNS);
-  Y = (char)(y % LINES);
+  X = (char)(x % kColumns);
+  Y = (char)(y % kLines);
 
   if (Page == 0) {
-    _DX = CONTROL_PORT;
+    _DX = kControlPort;
     _AX = (short)(0x0E | (pos & 0xFF00));
     asm {
 			out	dx,al
@@ -254,7 +254,7 @@ void MonoClass::Set_Cursor([[maybe_unused]] int x, [[maybe_unused]] int y) {
 			out	dx,al
     }
 
-    _DX = CONTROL_PORT;
+    _DX = kControlPort;
     _AX = (short)(0x0F | (pos << 8));
     asm {
 			out	dx,al
@@ -296,8 +296,8 @@ void MonoClass::Clear() {
   cell.Character = ' ';
 
   //	offset = Offset(0, 0);
-  for (int y = 0; y < LINES; y++) {
-    for (int x = 0; x < COLUMNS; x++) {
+  for (int y = 0; y < kLines; y++) {
+    for (int x = 0; x < kColumns; x++) {
       Store_Cell(cell, x, y);
     }
   }
@@ -329,17 +329,17 @@ void MonoClass::Scroll(int lines) {
 
   memmove(
       (MonoRAM + Offset(0, 0)), (MonoRAM + Offset(0, lines)),
-      (static_cast<std::size_t>(LINES - lines)) * COLUMNS * sizeof(CellType));
+      (static_cast<std::size_t>(kLines - lines)) * kColumns * sizeof(CellType));
 
   //	DOSSegmentClass::Copy(MonoSegment, Offset(0, lines), MonoSegment,
-  // Offset(0, 0), (LINES-lines)*COLUMNS*sizeof(CellType));
+  // Offset(0, 0), (kLines-lines)*kColumns*sizeof(CellType));
 
   Y--;
   cell.Attribute = Attrib;
   cell.Character = ' ';
 
-  for (int l = LINES - lines; l < LINES; l++) {
-    for (int index = 0; index < COLUMNS; index++) {
+  for (int l = kLines - lines; l < kLines; l++) {
+    for (int index = 0; index < kColumns; index++) {
       Store_Cell(cell, index, l);
       //			MonoSegment.Copy_Word_To(*(short*)&cell,
       // Offset(index, l));
@@ -406,7 +406,7 @@ void MonoClass::Print(const char* ptr) {
       case '\r':
         X = startcol;
         Y++;
-        Scroll(Y - (LINES - 1));
+        Scroll(Y - (kLines - 1));
         //				optr = Offset(X, Y);
         break;
 
@@ -418,7 +418,7 @@ void MonoClass::Print(const char* ptr) {
       case '\n':
         X = 0;
         Y++;
-        Scroll(Y - (LINES - 1));
+        Scroll(Y - (kLines - 1));
         //				optr = Offset(X, Y);
         break;
 
@@ -436,12 +436,12 @@ void MonoClass::Print(const char* ptr) {
         // optr); 				optr += sizeof(CellType);
 
         X++;
-        if (X >= COLUMNS) {
+        if (X >= kColumns) {
           X = 0;
           Y++;
 
-          if (Y > LINES - 1) {
-            Scroll(Y - (LINES - 1));
+          if (Y > kLines - 1) {
+            Scroll(Y - (kLines - 1));
             //						optr = Offset(X, Y);
           }
         }
@@ -523,9 +523,9 @@ void MonoClass::Print(int text) { Print(Text_String(text)); }
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
 MonoClass& MonoClass::operator=(const MonoClass& src) {
-  memcpy((MonoRAM + src.Offset(0, 0)), (MonoRAM + Offset(0, 0)), SIZE_OF_PAGE);
+  memcpy((MonoRAM + src.Offset(0, 0)), (MonoRAM + Offset(0, 0)), kSizeOfPage);
   //	DOSSegmentClass::Copy(MonoSegment, src.Offset(0, 0), MonoSegment,
-  // Offset(0,0), SIZE_OF_PAGE);
+  // Offset(0,0), kSizeOfPage);
   Set_Cursor(src.X, src.Y);
   return *this;
 }
@@ -561,14 +561,14 @@ void MonoClass::View() {
   */
   MonoClass* displace = Get_Current();  // The page that is being displaced.
   if (displace) {
-    char temp[SIZE_OF_PAGE];
+    char temp[kSizeOfPage];
 
-    memcpy(&temp[0], MonoRAM, SIZE_OF_PAGE);
-    memcpy(MonoRAM, (MonoRAM + Offset(0, 0)), SIZE_OF_PAGE);
-    memcpy((MonoRAM + Offset(0, 0)), &temp[0], SIZE_OF_PAGE);
+    memcpy(&temp[0], MonoRAM, kSizeOfPage);
+    memcpy(MonoRAM, (MonoRAM + Offset(0, 0)), kSizeOfPage);
+    memcpy((MonoRAM + Offset(0, 0)), &temp[0], kSizeOfPage);
 
     //		DOSSegmentClass::Swap(MonoSegment, Offset(0, 0), MonoSegment, 0,
-    // SIZE_OF_PAGE);
+    // kSizeOfPage);
     displace->Page = Page;
 
   } else {
@@ -576,9 +576,9 @@ void MonoClass::View() {
     **	Just copy the new page over since the display page is not assigned
     **	to a real monochrome page object.
     */
-    memcpy(MonoRAM, (MonoRAM + Offset(0, 0)), SIZE_OF_PAGE);
+    memcpy(MonoRAM, (MonoRAM + Offset(0, 0)), kSizeOfPage);
     //		DOSSegmentClass::Copy(MonoSegment, Offset(0, 0), MonoSegment, 0,
-    // SIZE_OF_PAGE);
+    // kSizeOfPage);
   }
   PageUsage[Page] = displace;
   PageUsage[0] = this;

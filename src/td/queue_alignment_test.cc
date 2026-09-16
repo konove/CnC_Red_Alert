@@ -38,7 +38,7 @@ TEST_F(QueueAlignmentTest, ReceivesPacketHeaderAtOddAddress) {
       bytes{};
   CommHeaderType header{};
   header.MagicNumber = 0x1234;
-  header.Code = ConnectionClass::PACKET_DATA_NOACK;
+  header.Code = static_cast<unsigned char>(ConnectionClass::PACKET_DATA_NOACK);
   header.PacketID = 7;
   port::WriteUnaligned(bytes.data() + 1, header);
   bytes[1 + sizeof(header)] = 0x6b;
@@ -57,7 +57,7 @@ TEST_F(QueueAlignmentTest, ExtractsCompressedFrameAndPayloadFromOddAddress) {
   EventClass frame;
   frame.Type = EventClass::FRAMEINFO;
   frame.Frame = 123;
-  frame.ID = HOUSE_GOOD;
+  frame.ID = static_cast<unsigned>(HOUSE_GOOD);
   frame.MPlayerID = 7;
   frame.Data.FrameInfo.Delay = 4;
   const auto header_size =
@@ -74,7 +74,7 @@ TEST_F(QueueAlignmentTest, ExtractsCompressedFrameAndPayloadFromOddAddress) {
   EXPECT_EQ(DoList[0].Type, EventClass::FRAMEINFO);
   EXPECT_EQ(DoList[1].Type, EventClass::RESPONSE_TIME);
   EXPECT_EQ(DoList[1].Frame, 123);
-  EXPECT_EQ(DoList[1].ID, HOUSE_GOOD);
+  EXPECT_EQ(DoList[1].ID, static_cast<unsigned>(HOUSE_GOOD));
   EXPECT_EQ(DoList[1].MPlayerID, 7);
   EXPECT_EQ(DoList[1].Data.FrameInfo.Delay, 9);
 }

@@ -142,7 +142,7 @@ IPXManagerClass::IPXManagerClass(int glb_maxlen, int pvt_maxlen,
 
   SendOverflows = 0;
   ReceiveOverflows = 0;
-  BadConnection = IPXConnClass::CONNECTION_NONE;
+  BadConnection = IPXConnClass::kConnectionNone;
 
   /*........................................................................
   Init timing parameters
@@ -530,7 +530,7 @@ int IPXManagerClass::Num_Connections() {
   ** If we are connected to the VSS then dont coumt that in the number of
   *connections.
   */
-  if (Connection_Index(VSS_ID) == IPXConnClass::CONNECTION_NONE) {
+  if (Connection_Index(VSS_ID) == IPXConnClass::kConnectionNone) {
     return (NumConnections);
   } else {
     return (NumConnections - 1);
@@ -551,7 +551,7 @@ int IPXManagerClass::Num_Connections() {
  **
  *                                                                         *
  * OUTPUT:                                                                 *
- *		ID for that connection, CONNECTION_NONE if invalid index
+ *		ID for that connection, kConnectionNone if invalid index
  **
  *                                                                         *
  * WARNINGS:                                                               *
@@ -565,7 +565,7 @@ int IPXManagerClass::Connection_ID(int index) {
   if (index >= 0 && index < NumConnections) {
     return Connection[index]->ID;
   }
-  return IPXConnClass::CONNECTION_NONE;
+  return IPXConnClass::kConnectionNone;
 }
 
 /***************************************************************************
@@ -635,7 +635,7 @@ IPXAddressClass* IPXManagerClass::Connection_Address(int id) {
  **
  *                                                                         *
  * OUTPUT:                                                                 *
- *		index for this connection, CONNECTION_NONE if not found
+ *		index for this connection, kConnectionNone if not found
  **
  *                                                                         *
  * WARNINGS:                                                               *
@@ -652,7 +652,7 @@ int IPXManagerClass::Connection_Index(int id) {
     }
   }
 
-  return IPXConnClass::CONNECTION_NONE;
+  return IPXConnClass::kConnectionNone;
 
 } /* end of Connection_Index */
 
@@ -738,7 +738,7 @@ int IPXManagerClass::Get_Global_Message(void* buf, int* buflen,
  * INPUT:                                                                  *
  *		buf			buffer to send
  ** buflen		length of 'buf'
- ** conn_id		connection ID to send to (CONNECTION_NONE = all)
+ ** conn_id		connection ID to send to (kConnectionNone = all)
  ** ack_req		1 = ACK required; 0 = no ACK required
  **
  *                                                                         *
@@ -768,7 +768,7 @@ int IPXManagerClass::Send_Private_Message(void* buf, int buflen, int ack_req,
   /*------------------------------------------------------------------------
   Send the message to all connections
   ------------------------------------------------------------------------*/
-  if (conn_id == IPXConnClass::CONNECTION_NONE) {
+  if (conn_id == IPXConnClass::kConnectionNone) {
     /*
     ** If this is an internet game and no ack is reqired then we only need to
     *send *	 the packet to the VSS and it will forward it to all the other
@@ -830,7 +830,7 @@ int IPXManagerClass::Send_Private_Message(void* buf, int buflen, int ack_req,
       Send the message to the specified connection
       ------------------------------------------------------------------------*/
   connect_idx = Connection_Index(conn_id);
-  if (connect_idx == IPXConnClass::CONNECTION_NONE) {
+  if (connect_idx == IPXConnClass::kConnectionNone) {
     SendOverflows++;
     return 0;
   }
@@ -1203,7 +1203,7 @@ int IPXManagerClass::Service() {
   }
 
   if (rc) {
-    BadConnection = IPXConnClass::CONNECTION_NONE;
+    BadConnection = IPXConnClass::kConnectionNone;
   }
 
   return rc;
@@ -1218,7 +1218,7 @@ int IPXManagerClass::Service() {
  **
  *                                                                         *
  * OUTPUT:                                                                 *
- *		ID of bad connection; CONNECTION_NONE if none.
+ *		ID of bad connection; kConnectionNone if none.
  **
  *                                                                         *
  * WARNINGS:                                                               *
@@ -1326,9 +1326,9 @@ int IPXManagerClass::Private_Num_Send(int id) {
   /*------------------------------------------------------------------------
   If connection ID specified, return that connection's # of packets
   ------------------------------------------------------------------------*/
-  if (id != IPXConnClass::CONNECTION_NONE) {
+  if (id != IPXConnClass::kConnectionNone) {
     i = Connection_Index(id);
-    if (i != IPXConnClass::CONNECTION_NONE) {
+    if (i != IPXConnClass::kConnectionNone) {
       return Connection[i]->Queue->Num_Send();
     }
     return 0;
@@ -1375,9 +1375,9 @@ int IPXManagerClass::Private_Num_Receive(int id) {
   /*------------------------------------------------------------------------
   If connection ID specified, return that connection's # of packets
   ------------------------------------------------------------------------*/
-  if (id != IPXConnClass::CONNECTION_NONE) {
+  if (id != IPXConnClass::kConnectionNone) {
     i = Connection_Index(id);
-    if (i != IPXConnClass::CONNECTION_NONE) {
+    if (i != IPXConnClass::kConnectionNone) {
       return Connection[i]->Queue->Num_Receive();
     }
     return 0;

@@ -131,7 +131,9 @@ void DriveClass::Do_Turn(DirType dir) {
             Dir_Facing(PrimaryFacing);  // Current facing (ordinal value).
 
         IsOnShortTrack = true;
-        Force_Track((face * FACING_COUNT) + (face + facediff), Coord);
+        Force_Track((static_cast<int>(face) * kFacingCount) +
+                        (static_cast<int>(face) + facediff),
+                    Coord);
 
         Path[0] = FACING_NONE;
         Set_Speed(0xFF);  // Full speed.
@@ -187,7 +189,7 @@ void DriveClass::Force_Track(int track, COORDINATE coord) {
  *=============================================================================================*/
 int DriveClass::Tiberium_Load() const {
   if (*this == UNIT_HARVESTER) {
-    return Cardinal_To_Fixed(UnitTypeClass::STEP_COUNT, Tiberium);
+    return Cardinal_To_Fixed(UnitTypeClass::kStepCount, Tiberium);
   }
   return 0x0000;
 }
@@ -440,21 +442,21 @@ COORDINATE DriveClass::Smooth_Turn(COORDINATE adj, DirType* dir) {
   int x = Coord_X(adj);
   int y = Coord_Y(adj);
 
-  if (flags & F_T) {
+  if (base::Any(flags & F_T)) {
     const int temp = x;
     x = y;
     y = temp;
-    workdir = static_cast<DirType>(DIR_W - workdir);
+    workdir = AsDirection(static_cast<int>(DIR_W) - static_cast<int>(workdir));
   }
 
-  if (flags & F_X) {
+  if (base::Any(flags & F_X)) {
     x = -x;
-    workdir = static_cast<DirType>(-workdir);
+    workdir = AsDirection(-static_cast<int>(workdir));
   }
 
-  if (flags & F_Y) {
+  if (base::Any(flags & F_Y)) {
     y = -y;
-    workdir = static_cast<DirType>(DIR_S - workdir);
+    workdir = AsDirection(static_cast<int>(DIR_S) - static_cast<int>(workdir));
   }
 
   *dir = workdir;
@@ -616,9 +618,11 @@ bool DriveClass::While_Moving() {
   ** Slow the unit down if he's carrying a flag.
   */
   if (dynamic_cast<UnitClass*>(this)->Flagged != HOUSE_NONE) {
-    actual = SpeedAccum + Fixed_To_Cardinal(Class->MaxSpeed / 2, Speed);
+    actual = SpeedAccum +
+             Fixed_To_Cardinal(static_cast<int>(Class->MaxSpeed) / 2, Speed);
   } else {
-    actual = SpeedAccum + Fixed_To_Cardinal(Class->MaxSpeed, Speed);
+    actual = SpeedAccum +
+             Fixed_To_Cardinal(static_cast<int>(Class->MaxSpeed), Speed);
   }
 
   if (actual > PIXEL_LEPTON_W) {
@@ -678,7 +682,8 @@ bool DriveClass::While_Moving() {
         if (*this != UNIT_GUNBOAT && nextface != FACING_NONE && adj &&
             RawTracks[tracknum - 1].Jump == TrackIndex && TrackIndex) {
           const int tnum =
-              (Dir_Facing(track->Facing) * FACING_COUNT) + nextface;
+              (static_cast<int>(Dir_Facing(track->Facing)) * kFacingCount) +
+              static_cast<int>(nextface);
           const TurnTrackType* newtrack =
               &TrackControl[tnum];  // Proposed jump-to track.
           if (newtrack->Track && RawTracks[newtrack->Track - 1].Entry) {
@@ -953,7 +958,7 @@ bool DriveClass::Start_Of_Move() {
       }
     }
 
-    TryTryAgain = PATH_RETRY;
+    TryTryAgain = kPathRetry;
     facing = Path[0];
   }
 
@@ -1109,13 +1114,14 @@ bool DriveClass::Start_Of_Move() {
     }
 
     IsOnShortTrack = false;
-    TrackNumber = (facing * FACING_COUNT) + nextface;
+    TrackNumber =
+        (static_cast<int>(facing) * kFacingCount) + static_cast<int>(nextface);
     if (TrackControl[TrackNumber].Track == 0) {
       Path[0] = FACING_NONE;
       TrackNumber = -1;
       return true;
     }
-    if (TrackControl[TrackNumber].Flag & F_D) {
+    if (base::Any(TrackControl[TrackNumber].Flag & F_D)) {
       /*
       **	If the middle cell of a two cell track contains a crate,
       **	the check for goodies before movement starts.
@@ -1355,18 +1361,15 @@ void DriveClass::Fixup_Path(PathType* path) {
     return;
   }
 
-  if (Dir_Facing(PrimaryFacing) & FACING_NE) {
-    ptr = &_dpath[static_cast<FacingType>(std::abs(facediff)) - FACING_NE]
-                 [1];  // Pointer to path adjust list.
-    counter =
-        static_cast<int>(_dpath[static_cast<FacingType>(std::abs(facediff)) -
-                                FACING_NE][0]);  // Number of path adjusts.
+  // The diagonal facings are the odd ones.
+  if (static_cast<int>(Dir_Facing(PrimaryFacing)) % 2 != 0) {
+    ptr = &_dpath[std::abs(facediff) - 1][1];  // Pointer to path adjust list.
+    counter = static_cast<int>(
+        _dpath[std::abs(facediff) - 1][0]);  // Number of path adjusts.
   } else {
-    ptr = &_path[static_cast<FacingType>(std::abs(facediff)) - FACING_NE]
-                [1];  // Pointer to path adjust list.
-    counter =
-        static_cast<int>(_path[static_cast<FacingType>(std::abs(facediff)) -
-                               FACING_NE][0]);  // Number of path adjusts.
+    ptr = &_path[std::abs(facediff) - 1][1];  // Pointer to path adjust list.
+    counter = static_cast<int>(
+        _path[std::abs(facediff) - 1][0]);  // Number of path adjusts.
   }
   FacingType* ptr2 = ptr;  // Copy of new path list pointer.
 
@@ -1566,10 +1569,10 @@ int DriveClass::Offload_Tiberium_Bail() {
   if (Tiberium) {
     Tiberium--;
     if (House->IsHuman) {
-      return UnitTypeClass::FULL_LOAD_CREDITS / UnitTypeClass::STEP_COUNT;
+      return UnitTypeClass::kFullLoadCredits / UnitTypeClass::kStepCount;
     }
-    return UnitTypeClass::FULL_LOAD_CREDITS +
-           (UnitTypeClass::FULL_LOAD_CREDITS / 3 / UnitTypeClass::STEP_COUNT);
+    return UnitTypeClass::kFullLoadCredits +
+           (UnitTypeClass::kFullLoadCredits / 3 / UnitTypeClass::kStepCount);
   }
   return 0;
 }
@@ -2049,29 +2052,52 @@ const DriveClass::TrackType DriveClass::Track12[] = {
 **	Drive out of weapon's factory.
 */
 const DriveClass::TrackType DriveClass::Track13[] = {
-    {Pixel_Offset_Coord(10, -21), static_cast<DirType>(DIR_SW - 10)},
-    {Pixel_Offset_Coord(10, -21), static_cast<DirType>(DIR_SW - 10)},
-    {Pixel_Offset_Coord(10, -20), static_cast<DirType>(DIR_SW - 10)},
-    {Pixel_Offset_Coord(10, -20), static_cast<DirType>(DIR_SW - 10)},
-    {Pixel_Offset_Coord(9, -18), static_cast<DirType>(DIR_SW - 10)},
-    {Pixel_Offset_Coord(9, -18), static_cast<DirType>(DIR_SW - 10)},
-    {Pixel_Offset_Coord(9, -17), static_cast<DirType>(DIR_SW - 10)},
-    {Pixel_Offset_Coord(8, -16), static_cast<DirType>(DIR_SW - 10)},
-    {Pixel_Offset_Coord(8, -15), static_cast<DirType>(DIR_SW - 10)},
-    {Pixel_Offset_Coord(7, -14), static_cast<DirType>(DIR_SW - 10)},
-    {Pixel_Offset_Coord(7, -13), static_cast<DirType>(DIR_SW - 10)},
-    {Pixel_Offset_Coord(6, -12), static_cast<DirType>(DIR_SW - 10)},
-    {Pixel_Offset_Coord(6, -11), static_cast<DirType>(DIR_SW - 10)},
-    {Pixel_Offset_Coord(5, -10), static_cast<DirType>(DIR_SW - 10)},
-    {Pixel_Offset_Coord(5, -9), static_cast<DirType>(DIR_SW - 10)},
-    {Pixel_Offset_Coord(4, -8), static_cast<DirType>(DIR_SW - 10)},
-    {Pixel_Offset_Coord(4, -7), static_cast<DirType>(DIR_SW - 10)},
-    {Pixel_Offset_Coord(3, -6), static_cast<DirType>(DIR_SW - 10)},
-    {Pixel_Offset_Coord(3, -5), static_cast<DirType>(DIR_SW - 9)},
-    {Pixel_Offset_Coord(2, -4), static_cast<DirType>(DIR_SW - 7)},
-    {Pixel_Offset_Coord(2, -3), static_cast<DirType>(DIR_SW - 5)},
-    {Pixel_Offset_Coord(1, -2), static_cast<DirType>(DIR_SW - 3)},
-    {Pixel_Offset_Coord(1, -1), static_cast<DirType>(DIR_SW - 1)},
+    {Pixel_Offset_Coord(10, -21),
+     static_cast<DirType>(static_cast<int>(DIR_SW) - 10)},
+    {Pixel_Offset_Coord(10, -21),
+     static_cast<DirType>(static_cast<int>(DIR_SW) - 10)},
+    {Pixel_Offset_Coord(10, -20),
+     static_cast<DirType>(static_cast<int>(DIR_SW) - 10)},
+    {Pixel_Offset_Coord(10, -20),
+     static_cast<DirType>(static_cast<int>(DIR_SW) - 10)},
+    {Pixel_Offset_Coord(9, -18),
+     static_cast<DirType>(static_cast<int>(DIR_SW) - 10)},
+    {Pixel_Offset_Coord(9, -18),
+     static_cast<DirType>(static_cast<int>(DIR_SW) - 10)},
+    {Pixel_Offset_Coord(9, -17),
+     static_cast<DirType>(static_cast<int>(DIR_SW) - 10)},
+    {Pixel_Offset_Coord(8, -16),
+     static_cast<DirType>(static_cast<int>(DIR_SW) - 10)},
+    {Pixel_Offset_Coord(8, -15),
+     static_cast<DirType>(static_cast<int>(DIR_SW) - 10)},
+    {Pixel_Offset_Coord(7, -14),
+     static_cast<DirType>(static_cast<int>(DIR_SW) - 10)},
+    {Pixel_Offset_Coord(7, -13),
+     static_cast<DirType>(static_cast<int>(DIR_SW) - 10)},
+    {Pixel_Offset_Coord(6, -12),
+     static_cast<DirType>(static_cast<int>(DIR_SW) - 10)},
+    {Pixel_Offset_Coord(6, -11),
+     static_cast<DirType>(static_cast<int>(DIR_SW) - 10)},
+    {Pixel_Offset_Coord(5, -10),
+     static_cast<DirType>(static_cast<int>(DIR_SW) - 10)},
+    {Pixel_Offset_Coord(5, -9),
+     static_cast<DirType>(static_cast<int>(DIR_SW) - 10)},
+    {Pixel_Offset_Coord(4, -8),
+     static_cast<DirType>(static_cast<int>(DIR_SW) - 10)},
+    {Pixel_Offset_Coord(4, -7),
+     static_cast<DirType>(static_cast<int>(DIR_SW) - 10)},
+    {Pixel_Offset_Coord(3, -6),
+     static_cast<DirType>(static_cast<int>(DIR_SW) - 10)},
+    {Pixel_Offset_Coord(3, -5),
+     static_cast<DirType>(static_cast<int>(DIR_SW) - 9)},
+    {Pixel_Offset_Coord(2, -4),
+     static_cast<DirType>(static_cast<int>(DIR_SW) - 7)},
+    {Pixel_Offset_Coord(2, -3),
+     static_cast<DirType>(static_cast<int>(DIR_SW) - 5)},
+    {Pixel_Offset_Coord(1, -2),
+     static_cast<DirType>(static_cast<int>(DIR_SW) - 3)},
+    {Pixel_Offset_Coord(1, -1),
+     static_cast<DirType>(static_cast<int>(DIR_SW) - 1)},
 
     {0x00000000L, DIR_SW}};
 

@@ -44,6 +44,7 @@
 #include <span>
 #include <string>
 
+#include "base/enum_array.h"
 #include "port/ex_string.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
@@ -280,7 +281,7 @@ bool TempleIoned = false;
 **	This is the monochrome debug page array. The various monochrome data
 **	screens are located here.
 */
-MonoClass MonoArray[MonoClass::MAX_MONO_PAGES];
+MonoClass MonoArray[MonoClass::kMaxMonoPages];
 int MonoPage;  // The current page.
 
 /***************************************************************************
@@ -441,7 +442,8 @@ QueueClass<EventClass, MAX_EVENTS * 8> DoList;
 **	These are arrays/lists of trigger pointers for each cell & the houses.
 */
 DynamicVectorClass<TriggerClass*> CellTriggers;
-DynamicVectorClass<TriggerClass*> HouseTriggers[HOUSE_COUNT];
+base::EnumArray<HousesType, DynamicVectorClass<TriggerClass*>, kHouseCount>
+    HouseTriggers;
 
 /***************************************************************************
 **	This is an array of waypoints; each waypoint corresponds to a letter of
@@ -451,7 +453,7 @@ DynamicVectorClass<TriggerClass*> HouseTriggers[HOUSE_COUNT];
 ** shouldn't be needed often; usually, you know the waypoint & you want the
 *CELL.
 */
-CELL Waypoint[WAYPT_COUNT];
+CELL Waypoint[kWayptCount];
 
 /***************************************************************************
 **	This is the list of BuildingTypes that define the AI's base.
@@ -501,9 +503,10 @@ SerialSettingsType SerialDefaults;  // serial port default settings
 
 ModemGameType ModemGameToPlay;  // type of modem play Dialer, answerer, null
 
-const char* DialMethodCheck[DIAL_METHODS] = {"T", "P"};
+const base::EnumArray<DialMethodType, const char*, kDialMethods>
+    DialMethodCheck = {"T", "P"};
 
-char CallWaitStrings[CALL_WAIT_STRINGS_NUM][CALL_WAIT_STRING_MAX] = {
+char CallWaitStrings[kCallWaitStringsNum][CALL_WAIT_STRING_MAX] = {
     "*70,", "70#,", "1170,", "CUSTOM -                "};
 
 /***************************************************************************
@@ -536,12 +539,12 @@ int MPlayerGColors[MAX_MPLAYER_COLORS] = {
 };
 
 int MPlayerTColors[MAX_MPLAYER_COLORS] = {
-    CC_GDI_COLOR,   // Yellow
-    CC_NOD_COLOR,   // Red
-    CC_BLUE_GREEN,  // BlueGreen
-    CC_ORANGE,      // Orange	//26
-    CC_GREEN,       // Green
-    CC_BLUE_GREY,   // Blue
+    kCcGdiColor,   // Yellow
+    kCcNodColor,   // Red
+    kCcBlueGreen,  // BlueGreen
+    kCcOrange,     // Orange	//26
+    kCcGreen,      // Green
+    kCcBlueGrey,   // Blue
 };
 
 /***************************************************************************
@@ -791,7 +794,7 @@ IPXManagerClass Ipx(sizeof(GlobalPacketType),  // size of Global Channel packets
                     10,             // # entries in Global Queue
                     8,              // # entries in Private Queues
                     VIRGIN_SOCKET,  // Socket ID #
-                    IPXGlobalConnClass::COMMAND_AND_CONQUER);  // Product ID #
+                    IPXGlobalConnClass::kCommandAndConquer);  // Product ID #
 
 // #if(TIMING_FIX)
 //
@@ -878,14 +881,14 @@ int WindowList[][8] = {
        cursor y */
 
     /* do not change the first 2 entries!! they are necc. to the system */
-    {0, 0, 40, 200, WHITE, BLACK, 0, 0},  /* screen window */
-    {1, 75, 38, 100, WHITE, BLACK, 0, 0}, /* DOS Error window */
+    {0, 0, 40, 200, kWhite, kBlack, 0, 0},  /* screen window */
+    {1, 75, 38, 100, kWhite, kBlack, 0, 0}, /* DOS Error window */
 
     // Tactical map.
-    {0, 0, 40, 200, WHITE, LTGREY, 0, 0},
+    {0, 0, 40, 200, kWhite, kLtGrey, 0, 0},
 
     // Initial menu window.
-    {12, 199 - 42, 16, 42, LTGREY, GREY, 0, 0},
+    {12, 199 - 42, 16, 42, kLtGrey, kGrey, 0, 0},
 
     // Sidebar clipping window.
     {0, 0, 0, 0, 0, 0, 0, 0},

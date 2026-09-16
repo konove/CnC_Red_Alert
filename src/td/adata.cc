@@ -42,6 +42,7 @@
 
 #include <filesystem>
 
+#include "base/enum_array.h"
 #include "td/conquer.h"
 #include "td/defines.h"
 #include "td/jshell.h"
@@ -2176,29 +2177,34 @@ static const AnimTypeClass ChemBall(
     VOC_FLAMER1,     // Sound effect to play.
     ANIM_NONE);
 
-const AnimTypeClass* const AnimTypeClass::Pointers[ANIM_COUNT] = {
-    &FBall1,       &Grenade,      &Frag1,        &Frag3,        &VehHit1,
-    &VehHit2,      &VehHit3,      &ArtExp1,      &Napalm1,      &Napalm2,
-    &Napalm3,      &SmokePuff,    &Piff,         &PiffPiff,     &FlameN,
-    &FlameNE,      &FlameE,       &FlameSE,      &FlameS,       &FlameSW,
-    &FlameW,       &FlameNW,      &ChemN,        &ChemNE,       &ChemE,
-    &ChemSE,       &ChemS,        &ChemSW,       &ChemW,        &ChemNW,
-    &Fire3,        &Fire2,        &Fire1,        &Fire4,        &Gunfire,
+const base::EnumArray<AnimType, const AnimTypeClass*, kAnimCount>
+    AnimTypeClass::Pointers = {
+        &FBall1,      &Grenade,      &Frag1,     &Frag3,
+        &VehHit1,     &VehHit2,      &VehHit3,   &ArtExp1,
+        &Napalm1,     &Napalm2,      &Napalm3,   &SmokePuff,
+        &Piff,        &PiffPiff,     &FlameN,    &FlameNE,
+        &FlameE,      &FlameSE,      &FlameS,    &FlameSW,
+        &FlameW,      &FlameNW,      &ChemN,     &ChemNE,
+        &ChemE,       &ChemSE,       &ChemS,     &ChemSW,
+        &ChemW,       &ChemNW,       &Fire3,     &Fire2,
+        &Fire1,       &Fire4,        &Gunfire,
 #ifdef NEVER
-    &E1RotFire,    &E1RotGrenade, &E1RotGun,     &E1RotExp,     &E2RotFire,
-    &E2RotGrenade, &E2RotGun,     &E2RotExp,     &E3RotFire,    &E3RotGrenade,
-    &E3RotGun,     &E3RotExp,     &E4RotFire,    &E4RotGrenade, &E4RotGun,
-    &E4RotExp,
+        &E1RotFire,   &E1RotGrenade, &E1RotGun,  &E1RotExp,
+        &E2RotFire,   &E2RotGrenade, &E2RotGun,  &E2RotExp,
+        &E3RotFire,   &E3RotGrenade, &E3RotGun,  &E3RotExp,
+        &E4RotFire,   &E4RotGrenade, &E4RotGun,  &E4RotExp,
 #endif
-    &SmokeM,       &BurnSmall,    &BurnMed,      &BurnBig,      &OnFireSmall,
-    &OnFireMed,    &OnFireBig,    &SAMN,         &SAMNE,        &SAME,
-    &SAMSE,        &SAMS,         &SAMSW,        &SAMW,         &SAMNW,
-    &GUNN,         &GUNNE,        &GUNE,         &GUNSE,        &GUNS,
-    &GUNSW,        &GUNW,         &GUNNW,        &LZSmoke,      &IonCannon,
-    &AtomBomb,     &CDeviator,    &CDollar,      &CEarth,       &CEmpulse,
-    &CInvun,       &CMine,        &CRapid,       &CStealth,     &CMissile,
-    &AtomDoor,     &MoveFlash,    &OilFieldBurn, &TricDie,      &TRexDie,
-    &StegDie,      &RaptDie,      &ChemBall};
+        &SmokeM,      &BurnSmall,    &BurnMed,   &BurnBig,
+        &OnFireSmall, &OnFireMed,    &OnFireBig, &SAMN,
+        &SAMNE,       &SAME,         &SAMSE,     &SAMS,
+        &SAMSW,       &SAMW,         &SAMNW,     &GUNN,
+        &GUNNE,       &GUNE,         &GUNSE,     &GUNS,
+        &GUNSW,       &GUNW,         &GUNNW,     &LZSmoke,
+        &IonCannon,   &AtomBomb,     &CDeviator, &CDollar,
+        &CEarth,      &CEmpulse,     &CInvun,    &CMine,
+        &CRapid,      &CStealth,     &CMissile,  &AtomDoor,
+        &MoveFlash,   &OilFieldBurn, &TricDie,   &TRexDie,
+        &StegDie,     &RaptDie,      &ChemBall};
 
 /***********************************************************************************************
  * AnimTypeClass::AnimTypeClass -- Constructor for animation types. *

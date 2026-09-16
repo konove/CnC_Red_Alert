@@ -381,9 +381,9 @@ void Do_Win() {
   */
   Set_Logic_Page(SeenBuff);
 #if !(defined(GERMAN) || defined(FRENCH))
-  Fancy_Text_Print(TXT_MISSION, x, y, WHITE, TBLACK, TPF_CENTER | TPF_VCR);
+  Fancy_Text_Print(TXT_MISSION, x, y, kWhite, kTBlack, TPF_CENTER | TPF_VCR);
 #endif
-  Fancy_Text_Print(TXT_SCENARIO_WON, x, y + 30, WHITE, TBLACK,
+  Fancy_Text_Print(TXT_SCENARIO_WON, x, y + 30, kWhite, kTBlack,
                    TPF_CENTER | TPF_VCR);
   CountDownTimer.Set(int64_t{kTimerSecond} * 3);
   Stop_Speaking();
@@ -602,8 +602,8 @@ void Do_Lose() {
   **	Announce win to player.
   */
   Set_Logic_Page(SeenBuff);
-  Fancy_Text_Print(TXT_MISSION, x, y, WHITE, TBLACK, TPF_CENTER | TPF_VCR);
-  Fancy_Text_Print(TXT_SCENARIO_LOST, x, y + 30, WHITE, TBLACK,
+  Fancy_Text_Print(TXT_MISSION, x, y, kWhite, kTBlack, TPF_CENTER | TPF_VCR);
+  Fancy_Text_Print(TXT_SCENARIO_LOST, x, y + 30, kWhite, kTBlack,
                    TPF_CENTER | TPF_VCR);
   CountDownTimer.Set(int64_t{kTimerSecond} * 3);
   Stop_Speaking();

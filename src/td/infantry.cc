@@ -101,6 +101,7 @@
 #include <cstring>
 
 #include "absl/strings/str_format.h"
+#include "base/enum_array.h"
 #include "base/numeric.h"
 #include "port/tokenizer.h"
 #include "sdllib/shape.h"
@@ -161,42 +162,43 @@ static int Infantry_Punch_Damage[] = {4, 7};
 **	specifies the frame rate as well as if the animation can be aborted.
 */
 // interruptable, mobile, randomstart, rate
-const DoStruct InfantryClass::MasterDoControls[DO_COUNT] = {
-    {true, false, false, 0},   // DO_STAND_READY
-    {true, false, false, 0},   // DO_STAND_GUARD
-    {true, false, false, 0},   // DO_PRONE
-    {true, true, true, 2},     // DO_WALK
-    {true, false, false, 1},   // DO_FIRE_WEAPON
-    {false, true, false, 2},   // DO_LIE_DOWN
-    {true, true, true, 2},     // DO_CRAWL
-    {false, false, false, 3},  // DO_GET_UP
-    {true, false, false, 1},   // DO_FIRE_PRONE
-    {true, false, false, 2},   // DO_IDLE1
-    {true, false, false, 2},   // DO_IDLE2
-    {false, false, false, 2},  // DO_ON_GUARD
-    {true, false, false, 2},   // DO_FIGHT_READY
-    {false, false, false, 2},  // DO_PUNCH
-    {false, false, false, 2},  // DO_KICK
-    {false, false, false, 2},  // DO_PUNCH_HIT1
-    {false, false, false, 2},  // DO_PUNCH_HIT2
-    {false, false, false, 1},  // DO_PUNCH_DEATH
-    {false, false, false, 2},  // DO_KICK_HIT1
-    {false, false, false, 2},  // DO_KICK_HIT2
-    {false, false, false, 1},  // DO_KICK_DEATH
-    {false, false, false, 2},  // DO_READY_WEAPON
-    {false, false, false, 2},  // DO_GUN_DEATH
-    {false, false, false, 2},  // DO_EXPLOSION_DEATH
-    {false, false, false, 2},  // DO_EXPLOSION2_DEATH
-    {false, false, false, 2},  // DO_GRENADE_DEATH
-    {false, false, false, 2},  // DO_FIRE_DEATH
-    {false, false, false, 2},  // DO_GESTURE1
-    {false, false, false, 2},  // DO_SALUTE1
-    {false, false, false, 2},  // DO_GESTURE2
-    {false, false, false, 2},  // DO_SALUTE2
-    {true, false, false, 2},   // DO_PULL_GUN
-    {true, false, false, 2},   // DO_PLEAD
-    {true, false, false, 2},   // DO_PLEAD_DEATH
-};
+const base::EnumArray<DoType, DoStruct, kDoCount>
+    InfantryClass::MasterDoControls = {{
+        {true, false, false, 0},   // DO_STAND_READY
+        {true, false, false, 0},   // DO_STAND_GUARD
+        {true, false, false, 0},   // DO_PRONE
+        {true, true, true, 2},     // DO_WALK
+        {true, false, false, 1},   // DO_FIRE_WEAPON
+        {false, true, false, 2},   // DO_LIE_DOWN
+        {true, true, true, 2},     // DO_CRAWL
+        {false, false, false, 3},  // DO_GET_UP
+        {true, false, false, 1},   // DO_FIRE_PRONE
+        {true, false, false, 2},   // DO_IDLE1
+        {true, false, false, 2},   // DO_IDLE2
+        {false, false, false, 2},  // DO_ON_GUARD
+        {true, false, false, 2},   // DO_FIGHT_READY
+        {false, false, false, 2},  // DO_PUNCH
+        {false, false, false, 2},  // DO_KICK
+        {false, false, false, 2},  // DO_PUNCH_HIT1
+        {false, false, false, 2},  // DO_PUNCH_HIT2
+        {false, false, false, 1},  // DO_PUNCH_DEATH
+        {false, false, false, 2},  // DO_KICK_HIT1
+        {false, false, false, 2},  // DO_KICK_HIT2
+        {false, false, false, 1},  // DO_KICK_DEATH
+        {false, false, false, 2},  // DO_READY_WEAPON
+        {false, false, false, 2},  // DO_GUN_DEATH
+        {false, false, false, 2},  // DO_EXPLOSION_DEATH
+        {false, false, false, 2},  // DO_EXPLOSION2_DEATH
+        {false, false, false, 2},  // DO_GRENADE_DEATH
+        {false, false, false, 2},  // DO_FIRE_DEATH
+        {false, false, false, 2},  // DO_GESTURE1
+        {false, false, false, 2},  // DO_SALUTE1
+        {false, false, false, 2},  // DO_GESTURE2
+        {false, false, false, 2},  // DO_SALUTE2
+        {true, false, false, 2},   // DO_PULL_GUN
+        {true, false, false, 2},   // DO_PLEAD
+        {true, false, false, 2},   // DO_PLEAD_DEATH
+    }};
 
 /***********************************************************************************************
  * InfantryClass::Validate -- validates infantry pointer.
@@ -353,7 +355,7 @@ InfantryClass::InfantryClass(InfantryType classid, HousesType house)
   ** Keep count of the number of units created. Dont track civilians.
   */
   if (!Class->IsCivilian && GameToPlay == GAME_INTERNET) {
-    House->InfantryTotals->Increment_Unit_Total(classid);
+    House->InfantryTotals->Increment_Unit_Total(static_cast<int>(classid));
   }
 }
 
@@ -1392,7 +1394,7 @@ void InfantryClass::AI() {
             Stop_Driver();
             return;
           }
-          TryTryAgain = PATH_RETRY;
+          TryTryAgain = kPathRetry;
         }
 
         /*
@@ -1501,8 +1503,8 @@ void InfantryClass::AI() {
         **	Advance the infantry as far as it should go.
         */
         Coord = Coord_Move(Coord, Direction(Head_To_Coord()),
-                           static_cast<uint16_t>(
-                               Fixed_To_Cardinal(Class->MaxSpeed, movespeed)));
+                           static_cast<uint16_t>(Fixed_To_Cardinal(
+                               static_cast<int>(Class->MaxSpeed), movespeed)));
       }
       Mark(MARK_DOWN);
     }
@@ -2467,8 +2469,8 @@ bool InfantryClass::Unlimbo(COORDINATE coord, DirType facing) {
     **	Ensure that the owning house knows about the
     **	new object.
     */
-    House->IScan |= ScanBit(Class->Type);
-    House->ActiveIScan |= ScanBit(Class->Type);
+    House->IScan |= ScanBit(static_cast<int>(Class->Type));
+    House->ActiveIScan |= ScanBit(static_cast<int>(Class->Type));
 
     /*
     **	If there is no sight range, then this object isn't discovered by the

@@ -11,7 +11,7 @@
 int Format_Window_String(char* string, int maxlinelen, int& width, int& height);
 extern void Dialog_Box(int x, int y, int w, int h);
 void Conquer_Clip_Text_Print(const char* /*text*/, int x, int y, int fore,
-                             int back = TBLACK,
+                             int back = kTBlack,
                              TextPrintType flag = TPF_8POINT | TPF_DROPSHADOW,
                              int width = -1, const int* tabs = nullptr);
 void Draw_Box(int x, int y, int w, int h, BoxStyleEnum up, bool filled);

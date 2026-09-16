@@ -75,20 +75,21 @@ bool ConfirmationClass::Process(int text) { return Process(Text_String(text)); }
 bool ConfirmationClass::Process(const char* string) {
   const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
 
-  enum { NUM_OF_BUTTONS = 2 };
+  constexpr int kNumOfButtons = 2;
 
   char buffer[80 * 3];
   bool result = true;
   int width = 0;
   int height = 0;
   int selection = 0;
-  TextButtonClass* buttons[NUM_OF_BUTTONS];
+  TextButtonClass* buttons[kNumOfButtons];
 
   /*
   **	Set up the window.  Window x-coords are in bytes not pixels.
   */
   port::SafeCopy(buffer, string);
-  Fancy_Text_Print(TXT_NONE, 0, 0, TBLACK, TBLACK, TPF_6PT_GRAD | TPF_NOSHADOW);
+  Fancy_Text_Print(TXT_NONE, 0, 0, kTBlack, kTBlack,
+                   TPF_6PT_GRAD | TPF_NOSHADOW);
   Format_Window_String(buffer, 200 * factor, width, height);
   width += 60 * factor;
   height += 60 * factor;
@@ -106,10 +107,10 @@ bool ConfirmationClass::Process(const char* string) {
       std::max<int>(String_Pixel_Width(Text_String(TXT_YES)) + 8, 30);
 
   TextButtonClass yesbtn(
-      BUTTON_YES, TXT_YES, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+      kButtonYes, TXT_YES, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       x + (10 * factor), y + height - (bheight + (5 * factor)), bwidth);
 
-  TextButtonClass nobtn(BUTTON_NO, TXT_NO,
+  TextButtonClass nobtn(kButtonNo, TXT_NO,
                         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
                         x + width - (bwidth + (10 * factor)),
                         y + height - (bheight + (5 * factor)), bwidth);
@@ -125,16 +126,16 @@ bool ConfirmationClass::Process(const char* string) {
   **	This causes left mouse button clicking within the confines of the dialog
   *to *	be ignored if it wasn't recognized by any other button or slider.
   */
-  GadgetClass dialog(x, y, width, height, GadgetClass::LEFTPRESS);
+  GadgetClass dialog(x, y, width, height, GadgetClass::kLeftPress);
   dialog.Add_Tail(yesbtn);
 
   /*
   **	This causes a right click anywhere or a left click outside the dialog
   *region *	to be equivalent to clicking on the return to options dialog.
   */
-  ControlClass background(BUTTON_NO, 0, 0, SeenBuff.Get_Width(),
+  ControlClass background(kButtonNo, 0, 0, SeenBuff.Get_Width(),
                           SeenBuff.Get_Height(),
-                          GadgetClass::LEFTPRESS | GadgetClass::RIGHTPRESS);
+                          GadgetClass::kLeftPress | GadgetClass::kRightPress);
   background.Add_Tail(yesbtn);
 
   /*
@@ -177,8 +178,8 @@ bool ConfirmationClass::Process(const char* string) {
       */
       Dialog_Box(x, y, width, height);
       Draw_Caption(TXT_CONFIRMATION, x, y, width);
-      Fancy_Text_Print(buffer, x + (20 * factor), y + (30 * factor), CC_GREEN,
-                       TBLACK, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+      Fancy_Text_Print(buffer, x + (20 * factor), y + (30 * factor), kCcGreen,
+                       kTBlack, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
       /*
       **	Draw the titles.
@@ -197,14 +198,14 @@ bool ConfirmationClass::Process(const char* string) {
     **	Process Input.
     */
     switch (static_cast<int>(input)) {
-      case ButtonKey(BUTTON_YES):
-        selection = BUTTON_YES;
+      case ButtonKey(kButtonYes):
+        selection = kButtonYes;
         pressed = true;
         break;
 
       case KN_ESC:
-      case ButtonKey(BUTTON_NO):
-        selection = BUTTON_NO;
+      case ButtonKey(kButtonNo):
+        selection = kButtonNo;
         pressed = true;
         break;
 
@@ -214,7 +215,7 @@ bool ConfirmationClass::Process(const char* string) {
 
         curbutton--;
         if (curbutton < 0) {
-          curbutton = NUM_OF_BUTTONS - 1;
+          curbutton = kNumOfButtons - 1;
         }
 
         buttons[curbutton]->Turn_On();
@@ -226,7 +227,7 @@ bool ConfirmationClass::Process(const char* string) {
         buttons[curbutton]->Flag_To_Redraw();
 
         curbutton++;
-        if (curbutton > NUM_OF_BUTTONS - 1) {
+        if (curbutton > kNumOfButtons - 1) {
           curbutton = 0;
         }
 
@@ -235,7 +236,7 @@ bool ConfirmationClass::Process(const char* string) {
         break;
 
       case KN_RETURN:
-        selection = curbutton + BUTTON_YES;
+        selection = curbutton + kButtonYes;
         pressed = true;
         break;
 
@@ -245,12 +246,12 @@ bool ConfirmationClass::Process(const char* string) {
 
     if (pressed) {
       switch (selection) {
-        case BUTTON_YES:
+        case kButtonYes:
           result = true;
           process = false;
           break;
 
-        case BUTTON_NO:
+        case kButtonNo:
           result = false;
           process = false;
           break;

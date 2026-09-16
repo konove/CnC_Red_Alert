@@ -89,9 +89,8 @@ class ConnManClass {
   /*.....................................................................
   Various useful enums:
   .....................................................................*/
-  enum IPXConnTag {
-    CONNECTION_NONE = -1,  // value of an invalid connection ID
-  };
+  static constexpr int kConnectionNone =
+      -1;  // value of an invalid connection ID
 
   /*.....................................................................
   Constructor/Destructor.  These currently do nothing.
@@ -116,7 +115,7 @@ class ConnManClass {
   Sending & receiving data
   .....................................................................*/
   virtual int Send_Private_Message(void* buf, int buflen, int ack_req = 1,
-                                   int conn_id = CONNECTION_NONE) = 0;
+                                   int conn_id = kConnectionNone) = 0;
   virtual int Get_Private_Message(void* buf, int* buflen, int* conn_id) = 0;
 
   /*.....................................................................
@@ -131,8 +130,8 @@ class ConnManClass {
   .....................................................................*/
   virtual int Global_Num_Send() = 0;
   virtual int Global_Num_Receive() = 0;
-  virtual int Private_Num_Send(int id = CONNECTION_NONE) = 0;
-  virtual int Private_Num_Receive(int id = CONNECTION_NONE) = 0;
+  virtual int Private_Num_Send(int id = kConnectionNone) = 0;
+  virtual int Private_Num_Receive(int id = kConnectionNone) = 0;
 
   /*.....................................................................
   Timing management

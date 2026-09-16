@@ -43,6 +43,7 @@ class ArchiveWriter;
 #include <cstddef>
 
 #include "absl/base/attributes.h"
+#include "base/enum_array.h"
 #include "td/defines.h"
 #include "td/house.h"
 #include "td/target.h"
@@ -57,7 +58,7 @@ class ArchiveWriter;
 /*
 **	TeamMissionType: the various missions that a team can have.
 */
-typedef enum TeamMissionType {
+enum class TeamMissionType {
   TMISSION_NONE = -1,
   TMISSION_ATTACKBASE,       // Attack nearest enemy base.
   TMISSION_ATTACKUNITS,      // Attack all enemy units.
@@ -74,7 +75,8 @@ typedef enum TeamMissionType {
   TMISSION_ATTACKTARCOM,  // attack tarcom
   TMISSION_UNLOAD,        // Unload at current location.
   TMISSION_COUNT,
-} TeamMissionType;
+};
+using enum TeamMissionType;
 
 /*
 **	This structure contains one team mission value & its argument.
@@ -99,7 +101,8 @@ typedef struct TeamMissionTag {
 */
 class TeamTypeClass : public AbstractTypeClass {
  public:
-  enum TeamTypeClassEnums { MAX_TEAM_CLASSCOUNT = 5, MAX_TEAM_MISSIONS = 20 };
+  static constexpr int kMaxTeamClasscount = 5;
+  static constexpr int kMaxTeamMissions = 20;
 
   /*
   **	Constructor/Destructor
@@ -255,7 +258,7 @@ class TeamTypeClass : public AbstractTypeClass {
   **	The mission list for this team
   */
   int MissionCount = 0;
-  TeamMissionStruct MissionList[MAX_TEAM_MISSIONS]{};
+  TeamMissionStruct MissionList[kMaxTeamMissions]{};
 
   /*
   **	Number of different classes in the team
@@ -265,15 +268,17 @@ class TeamTypeClass : public AbstractTypeClass {
   /*
   **	Array of object types comprising the team
   */
-  const TechnoTypeClass* Class[MAX_TEAM_CLASSCOUNT]{};
+  const TechnoTypeClass* Class[kMaxTeamClasscount]{};
 
   /*
   **	Desired # of each type of object comprising the team
   */
-  unsigned char DesiredNum[MAX_TEAM_CLASSCOUNT]{};
+  unsigned char DesiredNum[kMaxTeamClasscount]{};
 
  private:
-  static const char* TMissions[TMISSION_COUNT];
+  static base::EnumArray<TeamMissionType, const char*,
+                         static_cast<int>(TMISSION_COUNT)>
+      TMissions;
 };
 
 extern template void TeamTypeClass::Serialize<ArchiveWriter>(ArchiveWriter&);

@@ -168,8 +168,6 @@
 #include "td/ccdde.h"
 #endif
 
-#define SHAPE_TRANS 0x40
-
 /****************************************
 **	Function prototypes for this module **
 *****************************************/
@@ -673,7 +671,8 @@ void Keyboard_Process(KeyNumType& input) {
       if ((GameToPlay != GAME_NORMAL || Debug_Flag) &&
           (CurrentObject.Count() && !PlayerPtr->IsDefeated) &&
           (CurrentObject[0]->Owner() != PlayerPtr->Class->House)) {
-        OutList.Add(EventClass(EventClass::ALLY, CurrentObject[0]->Owner()));
+        OutList.Add(EventClass(EventClass::ALLY,
+                               static_cast<int>(CurrentObject[0]->Owner())));
       }
 
       break;
@@ -1203,7 +1202,7 @@ void Call_Back() {
   /*
   **	Score maintenance
   */
-  if (SampleType) {
+  if (SampleType != SAMPLE_NONE) {
     Theme.AI();
     Speak_AI();
   }
@@ -1221,7 +1220,7 @@ void Call_Back() {
     */
     if ((!NetOpen) &&
         Ipx.Get_Global_Message(&GPacket, &GPacketlen, &GAddress, &GProductID) &&
-        (GProductID == IPXGlobalConnClass::COMMAND_AND_CONQUER))
+        (GProductID == IPXGlobalConnClass::kCommandAndConquer))
 
     {
       /*
@@ -1265,7 +1264,8 @@ void Call_Back() {
                 GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 4);
             crc = port::ReadUnaligned<uint16_t>(GPacket.Message.Buf +
                                                 COMPAT_MESSAGE_LENGTH - 2);
-            color = MPlayerID_To_ColorIndex(GPacket.Message.ID);
+            color =
+                static_cast<int>(MPlayerID_To_ColorIndex(GPacket.Message.ID));
             Messages.Add_Message(
                 txt, MPlayerTColors[color],
                 TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600,
@@ -1373,7 +1373,7 @@ SourceType Source_From_Name(const char* name) {
  * HISTORY: * 11/15/1994 BR : Created. *
  *=============================================================================================*/
 const char* Name_From_Source(SourceType source) {
-  if (static_cast<unsigned>(source) < SOURCE_COUNT) {
+  if (static_cast<unsigned>(source) < static_cast<unsigned>(SOURCE_COUNT)) {
     return SourceName[source];
   }
   return "None";
@@ -1560,7 +1560,7 @@ bool Main_Loop() {
   *start one *	playing. This is usually the symptom of there being no
   *transition score.
   */
-  if (SampleType && Theme.What_Is_Playing() == THEME_NONE) {
+  if (SampleType != SAMPLE_NONE && Theme.What_Is_Playing() == THEME_NONE) {
     Theme.Queue_Song(THEME_PICK_ANOTHER);
   }
 
@@ -1705,14 +1705,16 @@ bool Main_Loop() {
     for (int index = 0; index < Units.Count(); ++index) {
       const UnitClass* unit = Units.Ptr(index);
       LOG(INFO) << "frame " << Frame << " unit " << unit->Class->IniName
-                << " coord " << unit->Coord << " mission " << unit->Mission
-                << " navcom " << unit->NavCom;
+                << " coord " << unit->Coord << " mission "
+                << static_cast<int>(unit->Mission) << " navcom "
+                << unit->NavCom;
     }
     for (int index = 0; index < Infantry.Count(); ++index) {
       const InfantryClass* infantry = Infantry.Ptr(index);
       LOG(INFO) << "frame " << Frame << " infantry " << Infantry.ID(infantry)
                 << " coord " << infantry->Coord << " mission "
-                << infantry->Mission << " navcom " << infantry->NavCom;
+                << static_cast<int>(infantry->Mission) << " navcom "
+                << infantry->NavCom;
     }
     // Compare every serialized field of migrated objects in smoke runs.
     const auto log_heap = [](auto& heap, const char* kind) {
@@ -2330,7 +2332,7 @@ const void* Get_Radar_Icon(const void* shapefile, int shapenum, int frames,
                   pixel = *static_cast<const char*>(Add_Long_To_Pointer(
                       ptr,
                       ((gety - _offy[lp]) * pixel_width) + getx - _offx[lp]));
-                  if (pixel == LTGREEN) {
+                  if (pixel == kLtGreen) {
                     pixel = 0;
                   }
                   if (pixel) {
@@ -2462,10 +2464,12 @@ void CC_Draw_Shape(const void* shapefile, int shapenum, int x, int y,
     if (shape_size) {
       GraphicViewPortClass draw_window(
           LogicPage->Get_Graphic_Buffer(),
-          (WindowList[window][WINDOWX] * 8) + LogicPage->Get_XPos(),
-          WindowList[window][WINDOWY] + LogicPage->Get_YPos(),
-          WindowList[window][WINDOWWIDTH] * 8,
-          WindowList[window][WINDOWHEIGHT]);
+          (WindowList[static_cast<int>(window)][kWindowX] * 8) +
+              LogicPage->Get_XPos(),
+          WindowList[static_cast<int>(window)][kWindowY] +
+              LogicPage->Get_YPos(),
+          WindowList[static_cast<int>(window)][kWindowWidth] * 8,
+          WindowList[static_cast<int>(window)][kWindowHeight]);
 
       char* shape_pointer = static_cast<char*>(shape_size);
 
@@ -2481,7 +2485,7 @@ void CC_Draw_Shape(const void* shapefile, int shapenum, int x, int y,
 
       int predoffset = static_cast<int>(Frame);
 
-      if (x > WindowList[window][WINDOWWIDTH] * 4) {
+      if (x > WindowList[static_cast<int>(window)][kWindowWidth] * 4) {
         predoffset = -predoffset;
       }
 

@@ -42,7 +42,8 @@
 */
 class PhoneEntryClass {
  public:
-  enum PhoneEntryEnum { PHONE_MAX_NAME = 21, PHONE_MAX_NUM = 21 };
+  static constexpr int kPhoneMaxName = 21;
+  static constexpr int kPhoneMaxNum = 21;
 
   PhoneEntryClass() = default;
 
@@ -66,8 +67,8 @@ class PhoneEntryClass {
   }
 
   SerialSettingsType Settings = {};
-  char Name[PHONE_MAX_NAME] = {};   // destination person's name
-  char Number[PHONE_MAX_NUM] = {};  // phone #
+  char Name[kPhoneMaxName] = {};   // destination person's name
+  char Number[kPhoneMaxNum] = {};  // phone #
 };
 
 #endif  // CNC_RED_ALERT_TD_PHONE_H_

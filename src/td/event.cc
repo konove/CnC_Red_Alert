@@ -59,6 +59,7 @@
 #include <utility>
 
 #include "absl/strings/str_format.h"
+#include "base/enum_array.h"
 #include "td/anim.h"
 #include "td/audio.h"
 #include "td/building.h"
@@ -86,42 +87,47 @@
 #include "td/ccdde.h"
 #endif
 
-unsigned char EventClass::EventLength[LAST_EVENT] = {
-    0,                                          // EMPTY
-    size_of(EventClass, Data.General),          // ALLY
-    size_of(EventClass, Data.MegaMission),      // MEGAMISSION
-    size_of(EventClass, Data.Target),           // IDLE
-    size_of(EventClass, Data.Target),           // SCATTER
-    0,                                          // DESTRUCT
-    0,                                          // DEPLOY
-    size_of(EventClass, Data.Place),            // PLACE
-    0,                                          // OPTIONS
-    size_of(EventClass, Data.General),          // GAMESPEED
-    size_of(EventClass, Data.Specific),         // PRODUCE
-    size_of(EventClass, Data.Specific.Type),    // SUSPEND
-    size_of(EventClass, Data.Specific.Type),    // ABANDON
-    size_of(EventClass, Data.Target),           // PRIMARY
-    size_of(EventClass, Data.Special),          // SPECIAL_PLACE
-    0,                                          // EXIT
-    size_of(EventClass, Data.Anim),             // ANIMATION
-    size_of(EventClass, Data.Target),           // REPAIR
-    size_of(EventClass, Data.Target),           // SELL
-    size_of(EventClass, Data.Options),          // SPECIAL
-    0,                                          // FRAMESYNC
-    0,                                          //	MESSAGE
-    size_of(EventClass, Data.FrameInfo.Delay),  // RESPONSE_TIME
-    size_of(EventClass, Data.FrameInfo),        // FRAMEINFO
-    size_of(EventClass, Data.Timing),           // TIMING
-    size_of(EventClass, Data.ProcessTime),      // PROCESS_TIME
+base::EnumArray<EventClass::EventType, unsigned char,
+                static_cast<int>(EventClass::LAST_EVENT)>
+    EventClass::EventLength = {
+        0,                                          // EMPTY
+        size_of(EventClass, Data.General),          // ALLY
+        size_of(EventClass, Data.MegaMission),      // MEGAMISSION
+        size_of(EventClass, Data.Target),           // IDLE
+        size_of(EventClass, Data.Target),           // SCATTER
+        0,                                          // DESTRUCT
+        0,                                          // DEPLOY
+        size_of(EventClass, Data.Place),            // PLACE
+        0,                                          // OPTIONS
+        size_of(EventClass, Data.General),          // GAMESPEED
+        size_of(EventClass, Data.Specific),         // PRODUCE
+        size_of(EventClass, Data.Specific.Type),    // SUSPEND
+        size_of(EventClass, Data.Specific.Type),    // ABANDON
+        size_of(EventClass, Data.Target),           // PRIMARY
+        size_of(EventClass, Data.Special),          // SPECIAL_PLACE
+        0,                                          // EXIT
+        size_of(EventClass, Data.Anim),             // ANIMATION
+        size_of(EventClass, Data.Target),           // REPAIR
+        size_of(EventClass, Data.Target),           // SELL
+        size_of(EventClass, Data.Options),          // SPECIAL
+        0,                                          // FRAMESYNC
+        0,                                          //	MESSAGE
+        size_of(EventClass, Data.FrameInfo.Delay),  // RESPONSE_TIME
+        size_of(EventClass, Data.FrameInfo),        // FRAMEINFO
+        size_of(EventClass, Data.Timing),           // TIMING
+        size_of(EventClass, Data.ProcessTime),      // PROCESS_TIME
 };
 
-const char* EventClass::EventNames[LAST_EVENT] = {
-    "EMPTY",        "ALLY",      "MEGAMISSION",   "IDLE",      "SCATTER",
-    "DESTRUCT",     "DEPLOY",    "PLACE",         "OPTIONS",   "GAMESPEED",
-    "PRODUCE",      "SUSPEND",   "ABANDON",       "PRIMARY",   "SPECIAL_PLACE",
-    "EXIT",         "ANIMATION", "REPAIR",        "SELL",      "SPECIAL",
-    "FRAMESYNC",    "MESSAGE",   "RESPONSE_TIME", "FRAMEINFO", "TIMING",
-    "PROCESS_TIME",
+base::EnumArray<EventClass::EventType, const char*,
+                static_cast<int>(EventClass::LAST_EVENT)>
+    EventClass::EventNames = {
+        "EMPTY",     "ALLY",         "MEGAMISSION",   "IDLE",
+        "SCATTER",   "DESTRUCT",     "DEPLOY",        "PLACE",
+        "OPTIONS",   "GAMESPEED",    "PRODUCE",       "SUSPEND",
+        "ABANDON",   "PRIMARY",      "SPECIAL_PLACE", "EXIT",
+        "ANIMATION", "REPAIR",       "SELL",          "SPECIAL",
+        "FRAMESYNC", "MESSAGE",      "RESPONSE_TIME", "FRAMEINFO",
+        "TIMING",    "PROCESS_TIME",
 };
 
 /***********************************************************************************************
@@ -403,7 +409,7 @@ void EventClass::Execute() {
   char txt[80];
   int i = 0;
   // #if (0)
-  if (static_cast<unsigned>(Type) > PROCESS_TIME) {
+  if (Type > PROCESS_TIME) {
     char tempbuf[128];
     absl::SNPrintF(tempbuf, sizeof(tempbuf), "Packet type %d received\n", Type);
     CCDebugString(tempbuf);
@@ -456,9 +462,9 @@ void EventClass::Execute() {
 
       Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_SPECIAL_WARNING),
                           sender->Name);
-      Messages.Add_Message(txt, MPlayerTColors[sender->RemapColor],
-                           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-                           1200, 0, 0);
+      Messages.Add_Message(
+          txt, MPlayerTColors[static_cast<int>(sender->RemapColor)],
+          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200, 0, 0);
       Map.Flag_To_Redraw(false);
     } break;
 

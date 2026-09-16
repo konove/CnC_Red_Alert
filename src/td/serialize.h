@@ -97,17 +97,17 @@ class TechnoTypePtr {
 namespace td_save_detail {
 
 // Each supported type enum indexes a static table, with no holes below COUNT.
-constexpr int TypeCount(HousesType /*unused*/) { return HOUSE_COUNT; }
-constexpr int TypeCount(StructType /*unused*/) { return STRUCT_COUNT; }
-constexpr int TypeCount(UnitType /*unused*/) { return UNIT_COUNT; }
-constexpr int TypeCount(InfantryType /*unused*/) { return INFANTRY_COUNT; }
-constexpr int TypeCount(BulletType /*unused*/) { return BULLET_COUNT; }
-constexpr int TypeCount(TerrainType /*unused*/) { return TERRAIN_COUNT; }
-constexpr int TypeCount(TemplateType /*unused*/) { return TEMPLATE_COUNT; }
-constexpr int TypeCount(AnimType /*unused*/) { return ANIM_COUNT; }
-constexpr int TypeCount(AircraftType /*unused*/) { return AIRCRAFT_COUNT; }
-constexpr int TypeCount(OverlayType /*unused*/) { return OVERLAY_COUNT; }
-constexpr int TypeCount(SmudgeType /*unused*/) { return SMUDGE_COUNT; }
+constexpr int TypeCount(HousesType /*unused*/) { return kHouseCount; }
+constexpr int TypeCount(StructType /*unused*/) { return kStructCount; }
+constexpr int TypeCount(UnitType /*unused*/) { return kUnitCount; }
+constexpr int TypeCount(InfantryType /*unused*/) { return kInfantryCount; }
+constexpr int TypeCount(BulletType /*unused*/) { return kBulletCount; }
+constexpr int TypeCount(TerrainType /*unused*/) { return kTerrainCount; }
+constexpr int TypeCount(TemplateType /*unused*/) { return kTemplateCount; }
+constexpr int TypeCount(AnimType /*unused*/) { return kAnimCount; }
+constexpr int TypeCount(AircraftType /*unused*/) { return kAircraftCount; }
+constexpr int TypeCount(OverlayType /*unused*/) { return kOverlayCount; }
+constexpr int TypeCount(SmudgeType /*unused*/) { return kSmudgeCount; }
 
 }  // namespace td_save_detail
 

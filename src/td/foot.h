@@ -194,7 +194,8 @@ class FootClass : public TechnoClass {
   **	that a findpath won't be calculated until this timer expires.
   */
   TCountDownTimerClass PathDelay;
-  enum { PATH_DELAY = 15, PATH_RETRY = 10 };
+  static constexpr int kPathDelay = 15;
+  static constexpr int kPathRetry = 10;
   int TryTryAgain;  // Number of retry attempts remaining.
 
   /*

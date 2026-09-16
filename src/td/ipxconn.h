@@ -66,10 +66,10 @@ class IPXConnClass : public NonSequencedConnClass {
   /*.....................................................................
   Various useful enums:
   .....................................................................*/
-  enum IPXConnTag {
-    CONN_NAME_MAX = 40,    // max # chars allowed for connection name
-    CONNECTION_NONE = -1,  // value of an invalid connection ID
-  };
+  static constexpr int kConnNameMax =
+      40;  // max # chars allowed for connection name
+  static constexpr int kConnectionNone =
+      -1;  // value of an invalid connection ID
 
   /*.....................................................................
   Constructor/destructor.
@@ -123,7 +123,7 @@ class IPXConnClass : public NonSequencedConnClass {
   Each IPX Connection can have a Name & Unique numerical ID
   .....................................................................*/
   int ID;
-  char Name[CONN_NAME_MAX]{};
+  char Name[kConnNameMax]{};
 
   /*
   -------------------------- Protected Interface ---------------------------

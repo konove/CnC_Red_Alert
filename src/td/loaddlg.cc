@@ -171,24 +171,23 @@ bool LoadOptionsClass::Process() {
   /*
   **	Button enumerations
   */
-  enum {
-    BUTTON_LOAD = 100,
-    BUTTON_SAVE,
-    BUTTON_DELETE,
-    BUTTON_CANCEL,
-    BUTTON_LIST,
-    BUTTON_EDIT,
-  };
+  constexpr int kButtonLoad = 100;
+  constexpr int kButtonSave = 101;
+  constexpr int kButtonDelete = 102;
+  constexpr int kButtonCancel = 103;
+  constexpr int kButtonList = 104;
+  constexpr int kButtonEdit = 105;
 
   /*
   **	Redraw values: in order from "top" to "bottom" layer of the dialog
   */
-  enum RedrawType {
+  enum class RedrawType {
     REDRAW_NONE = 0,
     REDRAW_BUTTONS = 1,
     REDRAW_BACKGROUND = 2,
     REDRAW_ALL = REDRAW_BACKGROUND
   };
+  using enum RedrawType;
 
   /*
   **	Dialog variables
@@ -225,17 +224,17 @@ bool LoadOptionsClass::Process() {
 
   if (Style == LOAD) {
     btn_txt = TXT_LOAD_BUTTON;
-    btn_id = BUTTON_LOAD;
+    btn_id = kButtonLoad;
     caption = TXT_LOAD_MISSION;
   } else {
     if (Style == SAVE) {
       btn_txt = TXT_SAVE_BUTTON;
-      btn_id = BUTTON_SAVE;
+      btn_id = kButtonSave;
       caption = TXT_SAVE_MISSION;
       list_ht -= 30;
     } else {
       btn_txt = TXT_DELETE_BUTTON;
-      btn_id = BUTTON_DELETE;
+      btn_id = kButtonDelete;
       caption = TXT_DELETE_MISSION;
     }
   }
@@ -244,14 +243,14 @@ bool LoadOptionsClass::Process() {
                          TPF_6PT_GRAD | TPF_CENTER | TPF_NOSHADOW, d_button_x,
                          d_button_y, d_button_w);
 
-  TextButtonClass cancelbtn(BUTTON_CANCEL, TXT_CANCEL,
+  TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL,
                             TPF_6PT_GRAD | TPF_CENTER | TPF_NOSHADOW,
                             d_cancel_x, d_cancel_y, d_cancel_w);
 
-  ListClass listbtn(BUTTON_LIST, d_list_x, d_list_y, d_list_w, list_ht,
+  ListClass listbtn(kButtonList, d_list_x, d_list_y, d_list_w, list_ht,
                     TPF_6PT_GRAD | TPF_NOSHADOW, up_button, down_button);
 
-  EditClass editbtn(BUTTON_EDIT, game_descr, 40,
+  EditClass editbtn(kButtonEdit, game_descr, 40,
                     TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_edit_x,
                     d_edit_y, d_edit_w, -1, EditClass::ALPHANUMERIC);
 
@@ -336,8 +335,8 @@ bool LoadOptionsClass::Process() {
 
       if (Style == SAVE) {
         Fancy_Text_Print(
-            TXT_MISSION_DESCRIPTION, d_dialog_cx, d_edit_y - d_txt8_h, CC_GREEN,
-            TBLACK,
+            TXT_MISSION_DESCRIPTION, d_dialog_cx, d_edit_y - d_txt8_h, kCcGreen,
+            kTBlack,
             TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_CENTER | TPF_NOSHADOW);
       }
 
@@ -374,15 +373,15 @@ bool LoadOptionsClass::Process() {
     if (input == KN_RETURN) {
       switch (Style) {
         case SAVE:
-          input = ButtonKey(BUTTON_SAVE);
+          input = ButtonKey(kButtonSave);
           break;
 
         case LOAD:
-          input = ButtonKey(BUTTON_LOAD);
+          input = ButtonKey(kButtonLoad);
           break;
 
         case WWDELETE:
-          input = ButtonKey(BUTTON_DELETE);
+          input = ButtonKey(kButtonDelete);
           break;
         default:
           break;
@@ -397,7 +396,7 @@ bool LoadOptionsClass::Process() {
       ** Load: if load fails, present a message, and stay in the dialog
       ** to allow the user to try another game
       */
-      case ButtonKey(BUTTON_LOAD):
+      case ButtonKey(kButtonLoad):
         game_idx = listbtn.Current_Index();
         game_num = Files[game_idx]->Num;
         if (Files[game_idx]->Valid) {
@@ -419,7 +418,7 @@ bool LoadOptionsClass::Process() {
       /*
       ** Save: Save the game & exit the dialog
       */
-      case ButtonKey(BUTTON_SAVE):
+      case ButtonKey(kButtonSave):
         if (!strlen(game_descr)) {
           CCMessageBox().Process(TXT_MUSTENTER_DESCRIPTION);
           firsttime = true;
@@ -450,7 +449,7 @@ bool LoadOptionsClass::Process() {
       ** Delete: delete the file & stay in the dialog, to allow the user
       ** to delete multiple files.
       */
-      case ButtonKey(BUTTON_DELETE):
+      case ButtonKey(kButtonDelete):
         game_idx = listbtn.Current_Index();
         game_num = Files[game_idx]->Num;
         if (CCMessageBox().Process(TXT_DELETE_FILE_QUERY, TXT_YES, TXT_NO) ==
@@ -471,7 +470,7 @@ bool LoadOptionsClass::Process() {
       ** item; if so, and if we're in SAVE mode, copy the list item into
       ** the save-game description field.
       */
-      case ButtonKey(BUTTON_LIST):
+      case ButtonKey(kButtonList):
         if (Style != SAVE) {
           break;
         }
@@ -495,7 +494,7 @@ bool LoadOptionsClass::Process() {
       ** ESC/Cancel: break
       */
       case KN_ESC:
-      case ButtonKey(BUTTON_CANCEL):
+      case ButtonKey(kButtonCancel):
         cancel = true;
         process = false;
         break;

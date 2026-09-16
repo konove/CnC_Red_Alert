@@ -399,26 +399,30 @@ void ScorePrintClass::Update() {
       /*
       ** Clear out the white letter overlay
       */
-      static const char _blackpal[] = {BLACK, BLACK, BLACK, BLACK, BLACK, BLACK,
-                                       BLACK, BLACK, BLACK, BLACK, BLACK, BLACK,
-                                       BLACK, BLACK, BLACK, BLACK};
+      static const char _blackpal[] = {
+          kBlack, kBlack, kBlack, kBlack, kBlack, kBlack, kBlack, kBlack,
+          kBlack, kBlack, kBlack, kBlack, kBlack, kBlack, kBlack, kBlack};
       Set_Font_Palette(_blackpal);
-      TextPrintBuffer->Print(localstr, 2 * (pos - 6), 2 * (YPos - 1), TBLACK,
-                             TBLACK);
-      TextPrintBuffer->Print(localstr, 2 * (pos - 6), 2 * (YPos + 1), TBLACK,
-                             TBLACK);
-      TextPrintBuffer->Print(localstr, 2 * (pos - 6 + 1), 2 * YPos, TBLACK,
-                             TBLACK);
+      TextPrintBuffer->Print(localstr, 2 * (pos - 6), 2 * (YPos - 1), kTBlack,
+                             kTBlack);
+      TextPrintBuffer->Print(localstr, 2 * (pos - 6), 2 * (YPos + 1), kTBlack,
+                             kTBlack);
+      TextPrintBuffer->Print(localstr, 2 * (pos - 6 + 1), 2 * YPos, kTBlack,
+                             kTBlack);
 
       Set_Font_Palette(PrimaryPalette);
-      TextPrintBuffer->Print(localstr, 2 * (pos - 6), 2 * YPos, TBLACK, TBLACK);
+      TextPrintBuffer->Print(localstr, 2 * (pos - 6), 2 * YPos, kTBlack,
+                             kTBlack);
     }
     if (Text()[Stage]) {
       localstr[0] = Text()[Stage];
       Set_Font_Palette(_whitepal);
-      TextPrintBuffer->Print(localstr, pos * 2, 2 * (YPos - 1), TBLACK, TBLACK);
-      TextPrintBuffer->Print(localstr, pos * 2, 2 * (YPos + 1), TBLACK, TBLACK);
-      TextPrintBuffer->Print(localstr, (pos + 1) * 2, 2 * YPos, TBLACK, TBLACK);
+      TextPrintBuffer->Print(localstr, pos * 2, 2 * (YPos - 1), kTBlack,
+                             kTBlack);
+      TextPrintBuffer->Print(localstr, pos * 2, 2 * (YPos + 1), kTBlack,
+                             kTBlack);
+      TextPrintBuffer->Print(localstr, (pos + 1) * 2, 2 * YPos, kTBlack,
+                             kTBlack);
     }
     Stage++;
   }
@@ -474,29 +478,29 @@ void MultiStagePrintClass::Update() {
         ** Clear out the white letter overlay
         */
         static const char _blackpal[] = {
-            BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK,
-            BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, BLACK};
+            kBlack, kBlack, kBlack, kBlack, kBlack, kBlack, kBlack, kBlack,
+            kBlack, kBlack, kBlack, kBlack, kBlack, kBlack, kBlack, kBlack};
         Set_Font_Palette(_blackpal);
-        TextPrintBuffer->Print(localstr, 2 * (pos - 6), 2 * (YPos - 1), TBLACK,
-                               TBLACK);
-        TextPrintBuffer->Print(localstr, 2 * (pos - 6), 2 * (YPos + 1), TBLACK,
-                               TBLACK);
-        TextPrintBuffer->Print(localstr, 2 * (pos - 6 + 1), 2 * YPos, TBLACK,
-                               TBLACK);
+        TextPrintBuffer->Print(localstr, 2 * (pos - 6), 2 * (YPos - 1), kTBlack,
+                               kTBlack);
+        TextPrintBuffer->Print(localstr, 2 * (pos - 6), 2 * (YPos + 1), kTBlack,
+                               kTBlack);
+        TextPrintBuffer->Print(localstr, 2 * (pos - 6 + 1), 2 * YPos, kTBlack,
+                               kTBlack);
 
         Set_Font_Palette(PrimaryPalette);
-        TextPrintBuffer->Print(localstr, 2 * (pos - 6), 2 * YPos, TBLACK,
-                               TBLACK);
+        TextPrintBuffer->Print(localstr, 2 * (pos - 6), 2 * YPos, kTBlack,
+                               kTBlack);
       }
       if (Text()[Stage]) {
         localstr[0] = Text()[Stage];
         Set_Font_Palette(_whitepal);
-        TextPrintBuffer->Print(localstr, pos * 2, 2 * (YPos - 1), TBLACK,
-                               TBLACK);
-        TextPrintBuffer->Print(localstr, pos * 2, 2 * (YPos + 1), TBLACK,
-                               TBLACK);
-        TextPrintBuffer->Print(localstr, (pos + 1) * 2, 2 * YPos, TBLACK,
-                               TBLACK);
+        TextPrintBuffer->Print(localstr, pos * 2, 2 * (YPos - 1), kTBlack,
+                               kTBlack);
+        TextPrintBuffer->Print(localstr, pos * 2, 2 * (YPos + 1), kTBlack,
+                               kTBlack);
+        TextPrintBuffer->Print(localstr, (pos + 1) * 2, 2 * YPos, kTBlack,
+                               kTBlack);
       }
       Stage++;
 
@@ -531,8 +535,8 @@ void ScoreScaleClass::Update() {
     }
     if (Stage) {
       Set_Font_Palette(Palette);
-      TextPrintBuffer->Fill_Rect(0, 0, 14, 14, TBLACK);
-      TextPrintBuffer->Print(Text(), 0, 0, TBLACK, TBLACK);
+      TextPrintBuffer->Fill_Rect(0, 0, 14, 14, kTBlack);
+      TextPrintBuffer->Print(Text(), 0, 0, kTBlack, kTBlack);
       TextPrintBuffer->Scale(HidPage, 0, 0, _destx[Stage] * 2, YPos * 2, 10, 10,
                              _destw[Stage] * 2, _destw[Stage] * 2, true);
 
@@ -548,7 +552,7 @@ void ScoreScaleClass::Update() {
           ScoreObj = nullptr;
         }
       }
-      TextPrintBuffer->Print(Text(), XPos * 2, YPos * 2, TBLACK, TBLACK);
+      TextPrintBuffer->Print(Text(), XPos * 2, YPos * 2, kTBlack, kTBlack);
       // TextPrintBuffer->Blit(HidPage, XPos * 2, YPos * 2, XPos
       // * 2, YPos * 2,2 * 6, 2 * 6);
       // BlitList.Add (XPos, YPos, XPos, YPos, 6,6);
@@ -654,13 +658,14 @@ void ScoreClass::Presentation() {
   GameFile file("HALLFAME.DAT");
   struct Fame hallfame[NUMFAMENAMES];
   const int oldfontxspacing = FontXSpacing;
-  const int house = PlayerPtr->Class->House;  // 0 or 1
+  const HousesType player_house = PlayerPtr->Class->House;
+  const int house = static_cast<int>(player_house);  // 0 or 1
   char inter_pal[15];
 
   /*
   ** Choose an appropriate palette file for the interpolation
   */
-  if (house == HOUSE_GOOD) {
+  if (player_house == HOUSE_GOOD) {
     absl::SNPrintF(inter_pal, sizeof(inter_pal), "SCORPAL1.PAL");
   } else {
     absl::SNPrintF(inter_pal, sizeof(inter_pal), "SNODPAL1.PAL");
@@ -709,15 +714,15 @@ void ScoreClass::Presentation() {
   int leadership = 0;
   for (int index = 0; index < Logic.Count(); index++) {
     const ObjectClass* object = Logic[index];
-    if (object->Owner() == house) {
+    if (object->Owner() == player_house) {
       leadership++;
     }
   }
 
   HouseClass* houses[3];
   for (int index = 0; index < 3; index++) {
-    houses[index] =
-        HouseClass::As_Pointer(static_cast<HousesType>(HOUSE_GOOD + index));
+    houses[index] = HouseClass::As_Pointer(
+        static_cast<HousesType>(static_cast<int>(HOUSE_GOOD) + index));
   }
 
   GKilled = static_cast<int>(HouseClass::As_Pointer(HOUSE_GOOD)->UnitsLost);
@@ -745,10 +750,10 @@ void ScoreClass::Presentation() {
   /*
   **	Determine efficiency rating.
   */
-  int efficiency = Cardinal_To_Fixed(
-      (house == HOUSE_GOOD ? GHarvested : NHarvested) +
-          static_cast<int>(PlayerPtr->InitialCredits) + 1,
-      static_cast<int>(PlayerPtr->Available_Money()) + 1);
+  int efficiency =
+      Cardinal_To_Fixed((player_house == HOUSE_GOOD ? GHarvested : NHarvested) +
+                            static_cast<int>(PlayerPtr->InitialCredits) + 1,
+                        static_cast<int>(PlayerPtr->Available_Money()) + 1);
   if (!efficiency) {
     efficiency++;
   }
@@ -765,7 +770,7 @@ void ScoreClass::Presentation() {
   total *= BuildLevel + 1;
 
   // Load up the shapes for the Nod score screen
-  if (house == HOUSE_GOOD) {
+  if (player_house == HOUSE_GOOD) {
     yellowptr = MixArchive::Retrieve("BAR3YLW.SHP");
     redptr = MixArchive::Retrieve("BAR3RED.SHP");
   }
@@ -813,7 +818,7 @@ void ScoreClass::Presentation() {
   /* Now display the stuff */
   PseudoSeenBuff->Blit(SysMemPage);
 
-  if (house == HOUSE_BAD) {
+  if (player_house == HOUSE_BAD) {
     /*
     ** load the logo
     */
@@ -868,7 +873,7 @@ void ScoreClass::Presentation() {
 
   Call_Back_Delay(60);
 
-  if (house == HOUSE_BAD) {
+  if (player_house == HOUSE_BAD) {
     Show_Credits(house, greenpal);
   }
 
@@ -882,7 +887,7 @@ void ScoreClass::Presentation() {
   Alloc_Object(new ScorePrintClass(TXT_SCORE_CASU, _casuax[house],
                                    _casuay[house], redpal));
   Call_Back_Delay(9);
-  if (house == HOUSE_BAD) {
+  if (player_house == HOUSE_BAD) {
     Alloc_Object(new ScorePrintClass(TXT_SCORE_NEUT, 200, 114, redpal));
     Call_Back_Delay(4);
   }
@@ -894,7 +899,7 @@ void ScoreClass::Presentation() {
   Call_Back_Delay(6);
 
   Set_Font_Palette(redpal);
-  if (house == HOUSE_BAD) {
+  if (player_house == HOUSE_BAD) {
     Do_Nod_Casualties_Graph();
   } else {
     Do_GDI_Graph(yellowptr, redptr, GKilled + CKilled, NKilled, 88);
@@ -906,7 +911,7 @@ void ScoreClass::Presentation() {
   ** Print out stats on buildings destroyed
   */
   Play_Sample(sfx4, 255, Options.Normalize_Sound(90));
-  if (house == HOUSE_GOOD) {
+  if (player_house == HOUSE_GOOD) {
     Alloc_Object(new ScorePrintClass(TXT_SCORE_BUIL, 144, 126, greenpal));
     Call_Back_Delay(9);
   } else {
@@ -922,7 +927,7 @@ void ScoreClass::Presentation() {
                                    _bldgny[house], greenpal));
   Call_Back_Delay(7);
 
-  if (house == HOUSE_BAD) {
+  if (player_house == HOUSE_BAD) {
     Call_Back_Delay(6);
     Set_Font_Palette(greenpal);
     Do_Nod_Buildings_Graph();
@@ -939,7 +944,7 @@ void ScoreClass::Presentation() {
     Keyboard::Clear();
   }
 
-  if (house == HOUSE_GOOD) {
+  if (player_house == HOUSE_GOOD) {
     Show_Credits(house, greenpal);
   }
 
@@ -1011,14 +1016,14 @@ void ScoreClass::Presentation() {
                   (static_cast<base::ssize>(j) * 32);
       absl::SNPrintF(str, 16, "%d", hallfame[j].score);
       Alloc_Object(new ScorePrintClass(str, HALLFAME_X + (6 * 15),
-                                       HALLFAME_Y + (j * 8), bluepal, BLACK));
+                                       HALLFAME_Y + (j * 8), bluepal, kBlack));
       if (hallfame[j].level < 20) {
         absl::SNPrintF(str + 16, 16, "%d", hallfame[j].level);
       } else {
         absl::SNPrintF(str + 16, 16, "**");
       }
       Alloc_Object(new ScorePrintClass(str + 16, HALLFAME_X + (6 * 12),
-                                       HALLFAME_Y + (j * 8), bluepal, BLACK));
+                                       HALLFAME_Y + (j * 8), bluepal, kBlack));
       Call_Back_Delay(13);
     }
   }
@@ -1104,7 +1109,7 @@ void Cycle_Wait_Click() {
         sendpacket.Command = SERIAL_SCORE_SCREEN;
         sendpacket.ResponseTime =
             static_cast<uint32_t>(NullModem.Response_Time());
-        sendpacket.ID = ModemGameToPlay;
+        sendpacket.ID = static_cast<unsigned char>(ModemGameToPlay);
 
         NullModem.Send_Message(&sendpacket, sizeof(sendpacket), 0);
         timingtime = TickCount.Time();
@@ -1168,12 +1173,12 @@ void ScoreClass::Do_Nod_Buildings_Graph() {
   BlitList.Add(2 * (BUILDING_X + 8), 2 * (BUILDING_Y + 24),
                2 * (BUILDING_X + 8), 2 * (BUILDING_Y + 24), 5 * 12, 12);
 
-  TextPrintBuffer->Print(0, (BUILDING_X + 8) * 2, BUILDING_Y * 2, TBLACK,
-                         TBLACK);
-  TextPrintBuffer->Print(0, (BUILDING_X + 8) * 2, (BUILDING_Y + 12) * 2, TBLACK,
-                         TBLACK);
-  TextPrintBuffer->Print(0, (BUILDING_X + 8) * 2, (BUILDING_Y + 24) * 2, TBLACK,
-                         TBLACK);
+  TextPrintBuffer->Print(0, (BUILDING_X + 8) * 2, BUILDING_Y * 2, kTBlack,
+                         kTBlack);
+  TextPrintBuffer->Print(0, (BUILDING_X + 8) * 2, (BUILDING_Y + 12) * 2,
+                         kTBlack, kTBlack);
+  TextPrintBuffer->Print(0, (BUILDING_X + 8) * 2, (BUILDING_Y + 24) * 2,
+                         kTBlack, kTBlack);
 
   /*
   ** Here's the animation/draw loop for blowing up the factory
@@ -1305,7 +1310,7 @@ void ScoreClass::Do_GDI_Graph(const void* yellowptr, const void* redptr,
 
   // Draw the white-flash shape on the hidpage
   Set_Logic_Page(SysMemPage);
-  SysMemPage.Fill_Rect(0, 0, 124, 9, TBLACK);
+  SysMemPage.Fill_Rect(0, 0, 124, 9, kTBlack);
   CC_Draw_Shape(redptr, 120, 0, 0, WINDOW_MAIN, SHAPE_WIN_REL, nullptr,
                 nullptr);
   Set_Logic_Page(PseudoSeenBuff);
@@ -1481,7 +1486,7 @@ void ScoreClass::Do_Nod_Casualties_Graph() {
   int k = 1;
   while (k) {
     for (int i = k = 0; i < NUMINFANTRYMEN; i++) {
-      if (InfantryMan[i].anim >= DO_GUN_DEATH) {
+      if (InfantryMan[i].anim >= static_cast<int>(DO_GUN_DEATH)) {
         k = 1;
       }
     }
@@ -1585,7 +1590,7 @@ void ScoreClass::Print_Minutes(int minutes) {
     Format_Runtime_Text(str, sizeof(str), Text_String(TXT_SCORE_TIMEFORMAT2),
                         minutes);
   }
-  TextPrintBuffer->Print(str, 550, 18, TBLACK, TBLACK);
+  TextPrintBuffer->Print(str, 550, 18, kTBlack, kTBlack);
 }
 
 /***********************************************************************************************
@@ -1622,8 +1627,8 @@ void ScoreClass::Count_Up_Print(const char* str, int percent, int max, int xpos,
   //	HidPage.Blit(SeenBuff, 0, 0, xpos, ypos, width, 8);
 
   TextPrintBuffer->Fill_Rect(xpos * 2, ypos * 2, (xpos + width) * 2,
-                             (ypos + 7) * 2, BLACK);
-  TextPrintBuffer->Print(destbuf, xpos * 2, ypos * 2, WHITE, TBLACK);
+                             (ypos + 7) * 2, kBlack);
+  TextPrintBuffer->Print(destbuf, xpos * 2, ypos * 2, kWhite, kTBlack);
 
   // TextPrintBuffer->Blit(*TextPrintBuffer, xpos * 2, ypos * 2,
   // 0, 0, width * 2, 8 * 2); TextPrintBuffer->Print(destbuf, 0,
@@ -1699,12 +1704,12 @@ void ScoreClass::Input_Name(char str[], int xpos, int ypos,
           const int xposindex6 = xpos + (index * 6);
 
           PseudoSeenBuff->Fill_Rect(xposindex6, ypos, xposindex6 + 6, ypos + 6,
-                                    TBLACK);
+                                    kTBlack);
           SysMemPage.Fill_Rect(xposindex6, ypos, xposindex6 + 6, ypos + 6,
-                               TBLACK);
+                               kTBlack);
           TextPrintBuffer->Fill_Rect(xposindex6 * 2, ypos * 2,
                                      (xposindex6 + 6) * 2, (ypos + 6) * 2,
-                                     BLACK);
+                                     kBlack);
         }
 
       } else if (key != KA_RETURN) {  // else if (key != KN_RETURN &&
@@ -1716,12 +1721,12 @@ void ScoreClass::Input_Name(char str[], int xpos, int ypos,
         // if (ascii >='A' && ascii<='Z' || ascii == ' ') {
         if ((ascii >= '!' && ascii <= KA_TILDA) || ascii == ' ') {
           PseudoSeenBuff->Fill_Rect(xpos + (index * 6), ypos,
-                                    xpos + (index * 6) + 6, ypos + 5, TBLACK);
+                                    xpos + (index * 6) + 6, ypos + 5, kTBlack);
           SysMemPage.Fill_Rect(xpos + (index * 6), ypos, xpos + (index * 6) + 6,
-                               ypos + 5, TBLACK);
+                               ypos + 5, kTBlack);
           TextPrintBuffer->Fill_Rect(2 * (xpos + (index * 6)), ypos * 2,
                                      2 * (xpos + (index * 6) + 6),
-                                     2 * (ypos + 6), BLACK);
+                                     2 * (ypos + 6), kBlack);
           str[index] = static_cast<char>(ascii);
           str[index + 1] = 0;
 
@@ -1754,20 +1759,20 @@ void Animate_Cursor(int pos, int ypos) {
   // draw right away
   if (pos != _lastpos) {
     PseudoSeenBuff->Draw_Line(HALLFAME_X + (_lastpos * 6), ypos,
-                              HALLFAME_X + (_lastpos * 6) + 5, ypos, TBLACK);
+                              HALLFAME_X + (_lastpos * 6) + 5, ypos, kTBlack);
     TextPrintBuffer->Fill_Rect(2 * (HALLFAME_X + (_lastpos * 6)), 2 * ypos,
                                2 * (HALLFAME_X + (_lastpos * 6) + 5),
-                               (2 * ypos) + 1, BLACK);
+                               (2 * ypos) + 1, kBlack);
     _lastpos = pos;
     _state = false;
   }
 
   PseudoSeenBuff->Draw_Line(HALLFAME_X + (pos * 6), ypos,
                             HALLFAME_X + (pos * 6) + 5, ypos,
-                            _state ? LTBLUE : TBLACK);
+                            _state ? kLtBlue : kTBlack);
   TextPrintBuffer->Fill_Rect(2 * (HALLFAME_X + (pos * 6)), 2 * ypos,
                              2 * (HALLFAME_X + (pos * 6) + 5), (2 * ypos) + 1,
-                             _state ? LTBLUE : BLACK);
+                             _state ? kLtBlue : kBlack);
 
   /*
   ** Toggle the color of the cursor, green or black, if it's time to do so.
@@ -1838,7 +1843,9 @@ void Draw_InfantryMan(int index) {
 
   const int stage =
       InfantryMan[index].stage +
-      InfantryMan[index].Class->DoControls[InfantryMan[index].anim].Frame;
+      InfantryMan[index]
+          .Class->DoControls[static_cast<DoType>(InfantryMan[index].anim)]
+          .Frame;
 
   CC_Draw_Shape(InfantryMan[index].shapefile, stage, InfantryMan[index].xpos,
                 InfantryMan[index].ypos, WINDOW_MAIN,
@@ -1849,17 +1856,18 @@ void Draw_InfantryMan(int index) {
   */
   if (--InfantryMan[index].delay < 0) {
     InfantryMan[index].delay = 3;
-    if (std::cmp_greater_equal(++InfantryMan[index].stage,
-                               InfantryMan[index]
-                                   .Class->DoControls[InfantryMan[index].anim]
-                                   .Count)) {
+    if (std::cmp_greater_equal(
+            ++InfantryMan[index].stage,
+            InfantryMan[index]
+                .Class->DoControls[static_cast<DoType>(InfantryMan[index].anim)]
+                .Count)) {
       /*
       ** was he playing a death anim? If so, and it's done, erase him
       */
-      if (InfantryMan[index].anim >= DO_GUN_DEATH) {
+      if (InfantryMan[index].anim >= static_cast<int>(DO_GUN_DEATH)) {
         InfantryMan[index].anim = -1;
       } else {
-        New_Infantry_Anim(index, DO_STAND_READY);
+        New_Infantry_Anim(index, static_cast<int>(DO_STAND_READY));
       }
     }
   }
@@ -1882,7 +1890,7 @@ void Draw_InfantryMan(int index) {
 void New_Infantry_Anim(int index, int anim) {
   InfantryMan[index].anim = anim;
   InfantryMan[index].stage = 0;
-  if (anim >= DO_GUN_DEATH) {
+  if (anim >= static_cast<int>(DO_GUN_DEATH)) {
     InfantryMan[index].delay = 1;  // start right away
   } else {
     InfantryMan[index].delay = static_cast<char>(Random() & 15);
@@ -1907,18 +1915,19 @@ void New_Infantry_Anim(int index, int anim) {
  *=========================================================================*/
 void Draw_Bar_Graphs(int i, int gkilled, int nkilled, int ckilled) {
   if (gkilled) {
-    LogicPage->Fill_Rect(0, 0 + 4, 0 + std::min(i, gkilled), 0 + 5, LTCYAN);
+    LogicPage->Fill_Rect(0, 0 + 4, 0 + std::min(i, gkilled), 0 + 5, kLtCyan);
     LogicPage->Draw_Line(0 + 1, 0 + 6, 0 + std::min(i, gkilled) + 1, 0 + 6,
-                         TBLACK);
+                         kTBlack);
     LogicPage->Draw_Line(0 + std::min(i, gkilled) + 1, 0 + 5,
-                         0 + std::min(i, gkilled) + 1, 0 + 5, TBLACK);
+                         0 + std::min(i, gkilled) + 1, 0 + 5, kTBlack);
     if (i <= gkilled) {
       const int anim = InfantryMan[i / 11].anim;
-      if (anim != -1 && anim < DO_GUN_DEATH) {
+      if (anim != -1 && anim < static_cast<int>(DO_GUN_DEATH)) {
         if (i / 11) {
-          New_Infantry_Anim(i / 11, DO_GUN_DEATH + (Random() & 3));
+          New_Infantry_Anim(i / 11,
+                            static_cast<int>(DO_GUN_DEATH) + (Random() & 3));
         } else {
-          New_Infantry_Anim(i / 11, DO_GUN_DEATH);
+          New_Infantry_Anim(i / 11, static_cast<int>(DO_GUN_DEATH));
         }
         //				Sound_Effect(Random_Pick(VOC_SCREAM1,
         // VOC_SCREAM5));
@@ -1926,19 +1935,20 @@ void Draw_Bar_Graphs(int i, int gkilled, int nkilled, int ckilled) {
     }
   }
   if (nkilled) {
-    LogicPage->Fill_Rect(0, 0 + 16, 0 + std::min(i, nkilled), 0 + 17, RED);
+    LogicPage->Fill_Rect(0, 0 + 16, 0 + std::min(i, nkilled), 0 + 17, kRed);
     LogicPage->Draw_Line(0 + 1, 0 + 18, 0 + std::min(i, nkilled) + 1, 0 + 18,
-                         TBLACK);
+                         kTBlack);
     LogicPage->Draw_Line(0 + std::min(i, nkilled) + 1, 0 + 17,
-                         0 + std::min(i, nkilled) + 1, 0 + 17, TBLACK);
+                         0 + std::min(i, nkilled) + 1, 0 + 17, kTBlack);
     if (i <= nkilled) {
       const int anim = InfantryMan[(NUMINFANTRYMEN / 3) + (i / 11)].anim;
-      if (anim != -1 && anim < DO_GUN_DEATH) {
+      if (anim != -1 && anim < static_cast<int>(DO_GUN_DEATH)) {
         if (i / 11) {
           New_Infantry_Anim((NUMINFANTRYMEN / 3) + (i / 11),
-                            DO_GUN_DEATH + (Random() & 3));
+                            static_cast<int>(DO_GUN_DEATH) + (Random() & 3));
         } else {
-          New_Infantry_Anim((NUMINFANTRYMEN / 3) + (i / 11), DO_GUN_DEATH);
+          New_Infantry_Anim((NUMINFANTRYMEN / 3) + (i / 11),
+                            static_cast<int>(DO_GUN_DEATH));
         }
         //				Sound_Effect(Random_Pick(VOC_SCREAM1,
         // VOC_SCREAM5));
@@ -1947,19 +1957,20 @@ void Draw_Bar_Graphs(int i, int gkilled, int nkilled, int ckilled) {
   }
 
   if (ckilled) {
-    LogicPage->Fill_Rect(0, 0 + 28, 0 + std::min(i, ckilled), 0 + 29, RED);
+    LogicPage->Fill_Rect(0, 0 + 28, 0 + std::min(i, ckilled), 0 + 29, kRed);
     LogicPage->Draw_Line(0 + 1, 0 + 30, 0 + std::min(i, ckilled) + 1, 0 + 30,
-                         TBLACK);
+                         kTBlack);
     LogicPage->Draw_Line(0 + std::min(i, ckilled) + 1, 0 + 29,
-                         0 + std::min(i, ckilled) + 1, 0 + 29, TBLACK);
+                         0 + std::min(i, ckilled) + 1, 0 + 29, kTBlack);
     if (i <= ckilled) {
       const int anim = InfantryMan[(NUMINFANTRYMEN * 2 / 3) + (i / 11)].anim;
-      if (anim != -1 && anim < DO_GUN_DEATH) {
+      if (anim != -1 && anim < static_cast<int>(DO_GUN_DEATH)) {
         if (i / 11) {
           New_Infantry_Anim((NUMINFANTRYMEN * 2 / 3) + (i / 11),
-                            DO_GUN_DEATH + (Random() & 3));
+                            static_cast<int>(DO_GUN_DEATH) + (Random() & 3));
         } else {
-          New_Infantry_Anim((NUMINFANTRYMEN * 2 / 3) + (i / 11), DO_GUN_DEATH);
+          New_Infantry_Anim((NUMINFANTRYMEN * 2 / 3) + (i / 11),
+                            static_cast<int>(DO_GUN_DEATH));
         }
         //				Sound_Effect(Random_Pick(VOC_SCREAM1,
         // VOC_SCREAM5));

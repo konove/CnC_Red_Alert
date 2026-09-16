@@ -48,6 +48,7 @@ class ArchiveWriter;
 #include <cstdint>
 
 #include "absl/base/attributes.h"
+#include "base/enum_array.h"
 #include "td/bullet.h"
 #include "td/cell.h"
 #include "td/defines.h"
@@ -268,8 +269,7 @@ class InfantryClass final : public FootClass {
   static const int HumanShape[32];
 
  private:
-  static const DoStruct MasterDoControls[DO_COUNT];
-
+  static const base::EnumArray<DoType, DoStruct, kDoCount> MasterDoControls;
 };
 
 extern template void InfantryClass::Serialize<ArchiveWriter>(ArchiveWriter&);

@@ -24,12 +24,13 @@
 
 class LEDClass {
  public:
-  typedef enum ControlType {
+  enum class ControlType {
     LED_NOCHANGE,  // Do nothing (just query).
     LED_OFF,       // Turn LED off.
     LED_ON,        // Turn LED on.
     LED_TOGGLE     // Toggle LED state.
-  } ControlType;
+  };
+  using enum ControlType;
 
  protected:
   static int Shift_Control(ControlType control, char bit);

@@ -68,6 +68,7 @@
 #include <filesystem>
 #include <string>
 
+#include "base/enum_array.h"
 #include "base/numeric.h"
 #include "port/ex_string.h"
 #include "sdllib/shape.h"
@@ -3490,76 +3491,77 @@ static const BuildingTypeClass Wood(
     nullptr          // OVERLAPLIST:List of overlap cell offset.
 );
 
-const BuildingTypeClass* const BuildingTypeClass::Pointers[STRUCT_COUNT] = {
-    &ClassWeapon,         //	STRUCT_WEAP
-    &ClassGTower,         //	STRUCT_GTOWER
-    &ClassATower,         //	STRUCT_ATOWER
-    &ClassObelisk,        //	STRUCT_OBLISK
-    &ClassCommand,        //	STRUCT_RADAR
-    &ClassTurret,         //	STRUCT_TURRET
-    &ClassConst,          //	STRUCT_CONST
-    &ClassRefinery,       //	STRUCT_REFINERY
-    &ClassStorage,        //	STRUCT_STORAGE
-    &ClassHelipad,        //	STRUCT_HELIPAD
-    &ClassSAM,            //	STRUCT_SAM
-    &ClassAirStrip,       //	STRUCT_AIRSTRIP
-    &ClassPower,          //	STRUCT_POWER
-    &ClassAdvancedPower,  //	STRUCT_POWER
-    &ClassHospital,       //	STRUCT_HOSPITAL
-    &ClassBarracks,       //	STRUCT_BARRACKS
-    &ClassTanker,         //	STRUCT_TANKER
-    &ClassRepair,         //	STRUCT_REPAIR
-    &ClassBioLab,         //	STRUCT_BIO_LAB
-    &ClassHand,           //	STRUCT_HAND
-    &ClassTemple,         // STRUCT_TEMPLE
-    &ClassEye,            //	STRUCT_EYE
-    &ClassMission,        //	STRUCT_MISSION
+const base::EnumArray<StructType, const BuildingTypeClass*, kStructCount>
+    BuildingTypeClass::Pointers = {
+        &ClassWeapon,         //	STRUCT_WEAP
+        &ClassGTower,         //	STRUCT_GTOWER
+        &ClassATower,         //	STRUCT_ATOWER
+        &ClassObelisk,        //	STRUCT_OBLISK
+        &ClassCommand,        //	STRUCT_RADAR
+        &ClassTurret,         //	STRUCT_TURRET
+        &ClassConst,          //	STRUCT_CONST
+        &ClassRefinery,       //	STRUCT_REFINERY
+        &ClassStorage,        //	STRUCT_STORAGE
+        &ClassHelipad,        //	STRUCT_HELIPAD
+        &ClassSAM,            //	STRUCT_SAM
+        &ClassAirStrip,       //	STRUCT_AIRSTRIP
+        &ClassPower,          //	STRUCT_POWER
+        &ClassAdvancedPower,  //	STRUCT_POWER
+        &ClassHospital,       //	STRUCT_HOSPITAL
+        &ClassBarracks,       //	STRUCT_BARRACKS
+        &ClassTanker,         //	STRUCT_TANKER
+        &ClassRepair,         //	STRUCT_REPAIR
+        &ClassBioLab,         //	STRUCT_BIO_LAB
+        &ClassHand,           //	STRUCT_HAND
+        &ClassTemple,         // STRUCT_TEMPLE
+        &ClassEye,            //	STRUCT_EYE
+        &ClassMission,        //	STRUCT_MISSION
 
-    &ClassV01,  //	STRUCT_V1
-    &ClassV02,  //	STRUCT_V2
-    &ClassV03,  //	STRUCT_V3
-    &ClassV04,  //	STRUCT_V4
-    &ClassV05,  //	STRUCT_V5
-    &ClassV06,  //	STRUCT_V6
-    &ClassV07,  //	STRUCT_V7
-    &ClassV08,  //	STRUCT_V8
-    &ClassV09,  //	STRUCT_V9
-    &ClassV10,  //	STRUCT_V10
-    &ClassV11,  //	STRUCT_V11
-    &ClassV12,  //	STRUCT_V12
-    &ClassV13,  //	STRUCT_V13
-    &ClassV14,  //	STRUCT_V14
-    &ClassV15,  //	STRUCT_V15
-    &ClassV16,  //	STRUCT_V16
-    &ClassV17,  //	STRUCT_V17
-    &ClassV18,  //	STRUCT_V18
-    &ClassV19,  //	STRUCT_PUMP
-    &ClassV20,  //	STRUCT_V20
-    &ClassV21,  //	STRUCT_V21
-    &ClassV22,  //	STRUCT_V22
-    &ClassV23,  //	STRUCT_V23
-    &ClassV24,  //	STRUCT_V24
-    &ClassV25,  //	STRUCT_V25
-    &ClassV26,  //	STRUCT_V26
-    &ClassV27,  //	STRUCT_V27
-    &ClassV28,  //	STRUCT_V28
-    &ClassV29,  //	STRUCT_V29
-    &ClassV30,  //	STRUCT_V30
-    &ClassV31,  //	STRUCT_V31
-    &ClassV32,  //	STRUCT_V32
-    &ClassV33,  //	STRUCT_V33
-    &ClassV34,  //	STRUCT_V34
-    &ClassV35,  //	STRUCT_V35
-    &ClassV36,  //	STRUCT_V36
-    &ClassV37,  //	STRUCT_V37
+        &ClassV01,  //	STRUCT_V1
+        &ClassV02,  //	STRUCT_V2
+        &ClassV03,  //	STRUCT_V3
+        &ClassV04,  //	STRUCT_V4
+        &ClassV05,  //	STRUCT_V5
+        &ClassV06,  //	STRUCT_V6
+        &ClassV07,  //	STRUCT_V7
+        &ClassV08,  //	STRUCT_V8
+        &ClassV09,  //	STRUCT_V9
+        &ClassV10,  //	STRUCT_V10
+        &ClassV11,  //	STRUCT_V11
+        &ClassV12,  //	STRUCT_V12
+        &ClassV13,  //	STRUCT_V13
+        &ClassV14,  //	STRUCT_V14
+        &ClassV15,  //	STRUCT_V15
+        &ClassV16,  //	STRUCT_V16
+        &ClassV17,  //	STRUCT_V17
+        &ClassV18,  //	STRUCT_V18
+        &ClassV19,  //	STRUCT_PUMP
+        &ClassV20,  //	STRUCT_V20
+        &ClassV21,  //	STRUCT_V21
+        &ClassV22,  //	STRUCT_V22
+        &ClassV23,  //	STRUCT_V23
+        &ClassV24,  //	STRUCT_V24
+        &ClassV25,  //	STRUCT_V25
+        &ClassV26,  //	STRUCT_V26
+        &ClassV27,  //	STRUCT_V27
+        &ClassV28,  //	STRUCT_V28
+        &ClassV29,  //	STRUCT_V29
+        &ClassV30,  //	STRUCT_V30
+        &ClassV31,  //	STRUCT_V31
+        &ClassV32,  //	STRUCT_V32
+        &ClassV33,  //	STRUCT_V33
+        &ClassV34,  //	STRUCT_V34
+        &ClassV35,  //	STRUCT_V35
+        &ClassV36,  //	STRUCT_V36
+        &ClassV37,  //	STRUCT_V37
 #ifdef OBSOLETE
-    &ClassRoad,  // STRUCT_ROAD
+        &ClassRoad,  // STRUCT_ROAD
 #endif
-    &Sandbag,   // STRUCT_SANDBAG_WALL
-    &Cyclone,   //	STRUCT_CYCLONE_WALL
-    &Brick,     // STRUCT_BRICK_WALL
-    &Barbwire,  // STRUCT_BARBWIRE_WALL
-    &Wood,      //	STRUCT_WOOD_WALL
+        &Sandbag,   // STRUCT_SANDBAG_WALL
+        &Cyclone,   //	STRUCT_CYCLONE_WALL
+        &Brick,     // STRUCT_BRICK_WALL
+        &Barbwire,  // STRUCT_BARBWIRE_WALL
+        &Wood,      //	STRUCT_WOOD_WALL
 };
 
 const void* WarFactoryOverlay;
@@ -4096,11 +4098,20 @@ void BuildingTypeClass::Init(TheaterType theater) {
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
 void BuildingTypeClass::Dimensions(int& width, int& height) const {
-  static const struct {
+  struct Dimension {
     int Width;
     int Height;
-  } _dimensions[BSIZE_COUNT] = {{1, 1}, {2, 1}, {1, 2}, {2, 2}, {2, 3},
-                                {3, 2}, {3, 3}, {4, 2}, {5, 5}};
+  };
+  static const base::EnumArray<BSizeType, Dimension, kBsizeCount> _dimensions =
+      {{{1, 1},
+        {2, 1},
+        {1, 2},
+        {2, 2},
+        {2, 3},
+        {3, 2},
+        {3, 3},
+        {4, 2},
+        {5, 5}}};
 
   width = _dimensions[Size].Width * ICON_PIXEL_W;
   width -= width / 5;
@@ -4243,7 +4254,8 @@ const int16_t* BuildingTypeClass::Overlap_List() const {
  * HISTORY: * 02/23/1995 JLB : Created. *
  *=============================================================================================*/
 int BuildingTypeClass::Width() const {
-  static const int width[BSIZE_COUNT] = {1, 2, 1, 2, 2, 3, 3, 4, 5};
+  static const base::EnumArray<BSizeType, int, kBsizeCount> width = {
+      1, 2, 1, 2, 2, 3, 3, 4, 5};
   return width[Size];
 }
 
@@ -4261,7 +4273,8 @@ int BuildingTypeClass::Width() const {
  * HISTORY: * 02/23/1995 JLB : Created. *
  *=============================================================================================*/
 int BuildingTypeClass::Height() const {
-  static const int height[BSIZE_COUNT] = {1, 1, 2, 2, 3, 2, 3, 2, 5};
+  static const base::EnumArray<BSizeType, int, kBsizeCount> height = {
+      1, 1, 2, 2, 3, 2, 3, 2, 5};
   return height[Size];
 }
 
@@ -4281,10 +4294,10 @@ int BuildingTypeClass::Height() const {
  * HISTORY: * 02/23/1995 JLB : Created. *
  *=============================================================================================*/
 int BuildingTypeClass::Repair_Cost() const {
-  int cost = Raw_Cost() * REPAIR_STEP / MaxStrength;
+  int cost = Raw_Cost() * kRepairStep / MaxStrength;
   cost /= 2;
   cost = std::max(cost, 1);
-  cost = Fixed_To_Cardinal(cost, REPAIR_PERCENT);
+  cost = Fixed_To_Cardinal(cost, kRepairPercent);
   return std::max(cost, 1);
 }
 
@@ -4303,7 +4316,7 @@ int BuildingTypeClass::Repair_Cost() const {
  *                                                                                             *
  * HISTORY: * 02/23/1995 JLB : Created. *
  *=============================================================================================*/
-int BuildingTypeClass::Repair_Step() const { return REPAIR_STEP; }
+int BuildingTypeClass::Repair_Step() const { return kRepairStep; }
 
 /***********************************************************************************************
  * BuildingTypeClass::Bib_And_Offset -- Determines the bib and appropriate cell

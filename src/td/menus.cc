@@ -242,7 +242,7 @@ void Setup_Menu(const MenuConfig& menu, const char* labels[],
       Select_To_Entry(menu.selected, visible_items, bit_offset);
   const int item_count = menu.item_count;
 
-  Fancy_Text_Print(0, 0, 0, TBLACK, TBLACK, TPF_8POINT | TPF_DROPSHADOW);
+  Fancy_Text_Print(0, 0, 0, kTBlack, kTBlack, TPF_8POINT | TPF_DROPSHADOW);
   Hide_Mouse();
   for (int i = 0; i < item_count; i++) {
     const int text_index = Select_To_Entry(i, visible_items, bit_offset);
@@ -251,7 +251,7 @@ void Setup_Menu(const MenuConfig& menu, const char* labels[],
                      text_index == selected_entry && MenuUpdate
                          ? menu.highlight_color
                          : menu.normal_color,
-                     TBLACK, TPF_8POINT | TPF_DROPSHADOW);
+                     kTBlack, TPF_8POINT | TPF_DROPSHADOW);
   }
   MenuSkip = line_spacing;
   Show_Mouse();
@@ -390,11 +390,11 @@ int Check_Menu(MenuConfig& menu, const char* text[], uint32_t field,
     Hide_Mouse();
     idx = Select_To_Entry(item, field, index);
     drawy = menuy + (item * menuskip);
-    Fancy_Text_Print(text[idx], menux, drawy, normcol, TBLACK,
+    Fancy_Text_Print(text[idx], menux, drawy, normcol, kTBlack,
                      TPF_8POINT | TPF_DROPSHADOW);
     idx = Select_To_Entry(newitem, field, index);
     drawy = menuy + (newitem * menuskip);
-    Fancy_Text_Print(text[idx], menux, drawy, litcol, TBLACK,
+    Fancy_Text_Print(text[idx], menux, drawy, litcol, kTBlack,
                      TPF_8POINT | TPF_DROPSHADOW);
     Show_Mouse(); /* resurrect the mouse	*/
   }
@@ -403,7 +403,7 @@ int Check_Menu(MenuConfig& menu, const char* text[], uint32_t field,
     idx = Select_To_Entry(select, field, index);
     Hide_Mouse(); /* get rid of the mouse	*/
     drawy = menuy + (newitem * menuskip);
-    Flash_Line(text[idx], menux, drawy, normcol, litcol, TBLACK);
+    Flash_Line(text[idx], menux, drawy, normcol, litcol, kTBlack);
     Show_Mouse();
     select = idx;
   }
@@ -472,17 +472,18 @@ int Do_Menu(const char** strings, bool blue) {
   **	Adjust the window values to match the size of the
   **	specified menu.
   */
-  WindowList[WINDOW_MENU][WINDOWWIDTH] = menu_config.item_width + 2;
-  WindowList[WINDOW_MENU][WINDOWX] = 19 - (length / 16);
-  WindowList[WINDOW_MENU][WINDOWY] =
+  WindowList[static_cast<int>(WINDOW_MENU)][kWindowWidth] =
+      menu_config.item_width + 2;
+  WindowList[static_cast<int>(WINDOW_MENU)][kWindowX] = 19 - (length / 16);
+  WindowList[static_cast<int>(WINDOW_MENU)][kWindowY] =
       174 - (menu_config.item_count * (FontHeight + FontYSpacing));
-  WindowList[WINDOW_MENU][WINDOWHEIGHT] =
+  WindowList[static_cast<int>(WINDOW_MENU)][kWindowHeight] =
       (menu_config.item_count * FontHeight) + 5 /*11*/;
 
   /*
   **	Display the menu.
   */
-  Change_Window(WINDOW_MENU);
+  Change_Window(static_cast<int>(WINDOW_MENU));
   Show_Mouse();
   Window_Box(WINDOW_MENU, blue ? BOXSTYLE_BLUE_UP : BOXSTYLE_RAISED);
   Setup_Menu(menu_config, strings, 0xFFFFL, 0, 0);
@@ -504,7 +505,7 @@ int Do_Menu(const char** strings, bool blue) {
   Hide_Mouse();
 
   HidPage.Blit(SeenBuff);
-  Change_Window(WINDOW_MAIN);
+  Change_Window(static_cast<int>(WINDOW_MAIN));
   Map.Flag_To_Redraw(true);
   return selection;
 }
@@ -528,79 +529,69 @@ int Do_Menu(const char** strings, bool blue) {
  *   05/17/1995 BRR : Created.                                             *
  *=========================================================================*/
 int Main_Menu(int timeout) {
-  enum {
-    D_DIALOG_W = 304,
-    D_DIALOG_H = 272,
-    D_DIALOG_X = 170,
-    D_DIALOG_Y = 0,
-    D_DIALOG_CX = D_DIALOG_X + (D_DIALOG_W / 2),
-
-    D_START_W = 250,
-    D_START_H = 18,
-    D_START_X = 196,
-    D_START_Y = 70,
-
+  constexpr int kDialogW = 304;
+  constexpr int kDialogH = 272;
+  constexpr int kDialogX = 170;
+  constexpr int kDialogY = 0;
+  constexpr int kStartW = 250;
+  constexpr int kStartH = 18;
+  constexpr int kStartX = 196;
+  [[maybe_unused]] constexpr int kStartY = 70;
 #ifdef BONUS_MISSIONS
-    D_BONUS_W = 250,
-    D_BONUS_H = 18,
-    D_BONUS_X = 196,
-    D_BONUS_Y = 0,
+  constexpr int kBonusW = 250;
+  constexpr int kBonusH = 18;
+  constexpr int kBonusX = 196;
 #endif  // BONUS_MISSIONS
-
-    D_INTERNET_W = 250,
-    D_INTERNET_H = 18,
-    D_INTERNET_X = 196,
-    D_INTERNET_Y = 72,
-
-    D_LOAD_W = 250,
-    D_LOAD_H = 18,
-    D_LOAD_X = 196,
-    D_LOAD_Y = 106,
-
-    D_MULTI_W = 250,
-    D_MULTI_H = 18,
-    D_MULTI_X = 196,
-    D_MULTI_Y = 142,
-
-    D_INTRO_W = 250,
-    D_INTRO_H = 18,
-    D_INTRO_X = 196,
-    D_INTRO_Y = 178,
+  constexpr int kInternetW = 250;
+  constexpr int kInternetH = 18;
+  constexpr int kInternetX = 196;
+  [[maybe_unused]] constexpr int kInternetY = 72;
+  constexpr int kLoadW = 250;
+  constexpr int kLoadH = 18;
+  constexpr int kLoadX = 196;
+  [[maybe_unused]] constexpr int kLoadY = 106;
+  constexpr int kMultiW = 250;
+  constexpr int kMultiH = 18;
+  constexpr int kMultiX = 196;
+  [[maybe_unused]] constexpr int kMultiY = 142;
+  constexpr int kIntroW = 250;
+  constexpr int kIntroH = 18;
+  constexpr int kIntroX = 196;
+  [[maybe_unused]] constexpr int kIntroY = 178;
 #if (defined(GERMAN) || defined(FRENCH))
-    D_EXIT_W = 166,
+  constexpr int kExitW = 166;
 #else
-    D_EXIT_W = 126,
+  constexpr int kExitW = 126;
 #endif
-    D_EXIT_H = 18,
+  constexpr int kExitH = 18;
 #if (defined(GERMAN) || defined(FRENCH))
-    D_EXIT_X = 236,
+  constexpr int kExitX = 236;
 #else
-    D_EXIT_X = 256,
+  constexpr int kExitX = 256;
 #endif
-    D_EXIT_Y = 222,
-
-  };
+  [[maybe_unused]] constexpr int kExitY = 222;
 
 #ifdef NEWMENU
   int starty = 50;
 #endif
 
-  enum {
 #ifdef NEWMENU
-    BUTTON_EXPAND = 100,
-    BUTTON_START,
+  constexpr int kButtonExpand = 100;
+  constexpr int kButtonStart = kButtonExpand + 1;
 #ifdef BONUS_MISSIONS
-    BUTTON_BONUS,
-#endif  // BONUS_MISSIONS
-    BUTTON_INTERNET,
+  constexpr int kButtonBonus = kButtonStart + 1;
+  constexpr int kButtonInternet = kButtonBonus + 1;
 #else
-    BUTTON_START = 100,
+  constexpr int kButtonInternet = kButtonStart + 1;
+#endif  // BONUS_MISSIONS
+  constexpr int kButtonLoad = kButtonInternet + 1;
+#else
+  constexpr int kButtonStart = 100;
+  constexpr int kButtonLoad = kButtonStart + 1;
 #endif
-    BUTTON_LOAD,
-    BUTTON_MULTI,
-    BUTTON_INTRO,
-    BUTTON_EXIT,
-  };
+  constexpr int kButtonMulti = kButtonLoad + 1;
+  constexpr int kButtonIntro = kButtonMulti + 1;
+  constexpr int kButtonExit = kButtonIntro + 1;
 
 #ifdef NEWMENU
   const bool expansions = Expansion_Present();
@@ -632,64 +623,64 @@ int Main_Menu(int timeout) {
     ystep -= 4;
   }
   TextButtonClass expandbtn(
-      BUTTON_EXPAND, TXT_NEW_MISSIONS,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_START_X,
-      starty, D_START_W, D_START_H);
+      kButtonExpand, TXT_NEW_MISSIONS,
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kStartX,
+      starty, kStartW, kStartH);
   if (expansions) {
     starty += ystep;
   }
 
   TextButtonClass startbtn(
-      BUTTON_START, TXT_START_NEW_GAME,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_START_X,
-      starty, D_START_W, D_START_H);
+      kButtonStart, TXT_START_NEW_GAME,
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kStartX,
+      starty, kStartW, kStartH);
   starty += ystep;
 
 #ifdef BONUS_MISSIONS
   TextButtonClass bonusbtn(
-      BUTTON_BONUS, TXT_BONUS_MISSIONS,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_BONUS_X,
-      starty, D_BONUS_W, D_BONUS_H);
+      kButtonBonus, TXT_BONUS_MISSIONS,
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kBonusX,
+      starty, kBonusW, kBonusH);
   starty += ystep;
 #endif  // BONUS_MISSIONS
 
   TextButtonClass internetbutton(
-      BUTTON_INTERNET, TXT_INTERNET,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_INTERNET_X,
-      starty, D_INTERNET_W, D_INTERNET_H);
+      kButtonInternet, TXT_INTERNET,
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kInternetX,
+      starty, kInternetW, kInternetH);
   starty += ystep;
 
   TextButtonClass loadbtn(
-      BUTTON_LOAD, TXT_LOAD_MISSION,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_LOAD_X,
-      starty, D_LOAD_W, D_LOAD_H);
+      kButtonLoad, TXT_LOAD_MISSION,
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kLoadX,
+      starty, kLoadW, kLoadH);
   starty += ystep;
 #else
 
   TextButtonClass startbtn(
-      BUTTON_START, TXT_START_NEW_GAME,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_START_X,
-      D_START_Y, D_START_W, D_START_H);
+      kButtonStart, TXT_START_NEW_GAME,
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kStartX,
+      kStartY, kStartW, kStartH);
 
   TextButtonClass loadbtn(
-      BUTTON_LOAD, TXT_LOAD_MISSION,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_LOAD_X,
-      D_LOAD_Y, D_LOAD_W, D_LOAD_H);
+      kButtonLoad, TXT_LOAD_MISSION,
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kLoadX,
+      kLoadY, kLoadW, kLoadH);
 
 #endif
 
 #ifdef DEMO
   TextButtonClass multibtn(
-      BUTTON_MULTI, TXT_ORDER_INFO,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_MULTI_X,
-      D_MULTI_Y, D_MULTI_W, D_MULTI_H);
+      kButtonMulti, TXT_ORDER_INFO,
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kMultiX,
+      kMultiY, kMultiW, kMultiH);
 #else
 
 #ifdef NEWMENU
   TextButtonClass multibtn(
-      BUTTON_MULTI, TXT_MULTIPLAYER_GAME,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_MULTI_X,
-      starty, D_MULTI_W, D_MULTI_H);
+      kButtonMulti, TXT_MULTIPLAYER_GAME,
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kMultiX,
+      starty, kMultiW, kMultiH);
   starty += ystep;
 
   // TextButtonClass internetbutton(BUTTON_INTERNET, TXT_INTERNET,
@@ -698,54 +689,54 @@ int Main_Menu(int timeout) {
   // starty += ystep;
 #else
   TextButtonClass multibtn(
-      BUTTON_MULTI, TXT_MULTIPLAYER_GAME,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_MULTI_X,
-      D_MULTI_Y, D_MULTI_W, D_MULTI_H);
+      kButtonMulti, TXT_MULTIPLAYER_GAME,
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kMultiX,
+      kMultiY, kMultiW, kMultiH);
 #endif
 #endif
 
 #ifdef NEWMENU
 #ifdef DEMO
   TextButtonClass introbtn(
-      BUTTON_INTRO, TXT_JUST_INTRO,
+      kButtonIntro, TXT_JUST_INTRO,
 #else   // DEMO
   TextButtonClass introbtn(
-      BUTTON_INTRO, TXT_INTRO,
+      kButtonIntro, TXT_INTRO,
 #endif  // DEMO
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_INTRO_X,
-      starty, D_INTRO_W, D_INTRO_H);
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kIntroX,
+      starty, kIntroW, kIntroH);
   starty += ystep;
 
   TextButtonClass exitbtn(
-      BUTTON_EXIT, TXT_EXIT_GAME,
+      kButtonExit, TXT_EXIT_GAME,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
 #if (defined(GERMAN) || defined(FRENCH))
       // D_EXIT_X, starty);
-      D_EXIT_X, starty, D_EXIT_W, D_EXIT_H);
+      kExitX, starty, kExitW, kExitH);
 #else
-      D_EXIT_X, starty, D_EXIT_W, D_EXIT_H);
+      kExitX, starty, kExitW, kExitH);
 #endif
 
 #else
 
 #ifdef DEMO
   TextButtonClass introbtn(
-      BUTTON_INTRO, TXT_JUST_INTRO,
+      kButtonIntro, TXT_JUST_INTRO,
 #else   // DEMO
   TextButtonClass introbtn(
-      BUTTON_INTRO, TXT_INTRO,
+      kButtonIntro, TXT_INTRO,
 #endif  // DEMO
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_INTRO_X,
-      D_INTRO_Y, D_INTRO_W, D_INTRO_H);
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kIntroX,
+      kIntroY, kIntroW, kIntroH);
 
   TextButtonClass exitbtn(
-      BUTTON_EXIT, TXT_EXIT_GAME,
+      kButtonExit, TXT_EXIT_GAME,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
 #if (defined(GERMAN) || defined(FRENCH))
       // D_EXIT_X, D_EXIT_Y);
-      D_EXIT_X, D_EXIT_Y, D_EXIT_W, D_EXIT_H);
+      kExitX, kExitY, kExitW, kExitH);
 #else
-      D_EXIT_X, D_EXIT_Y, D_EXIT_W, D_EXIT_H);
+      kExitX, kExitY, kExitW, kExitH);
 #endif
 #endif
 
@@ -810,7 +801,7 @@ int Main_Menu(int timeout) {
 
   Keyboard::Clear();
 
-  Fancy_Text_Print(TXT_NONE, 0, 0, CC_GREEN, TBLACK,
+  Fancy_Text_Print(TXT_NONE, 0, 0, kCcGreen, kTBlack,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
   while (Get_Mouse_State() > 0) {
     Show_Mouse();
@@ -858,17 +849,17 @@ int Main_Menu(int timeout) {
       **	Display the title and text overlay for the menu.
       */
       Set_Logic_Page(HidPage);
-      Dialog_Box(D_DIALOG_X, D_DIALOG_Y, D_DIALOG_W, D_DIALOG_H);
-      Draw_Caption(TXT_NONE, D_DIALOG_X, D_DIALOG_Y, D_DIALOG_W);
+      Dialog_Box(kDialogX, kDialogY, kDialogW, kDialogH);
+      Draw_Caption(TXT_NONE, kDialogX, kDialogY, kDialogW);
       if constexpr (config::kVirginCheatKeysEnabled) {
 #ifdef DEMO
         Version_Number();
-        Fancy_Text_Print("Demo%s", D_DIALOG_X + D_DIALOG_W - 10,
-                         D_DIALOG_Y + D_DIALOG_H - 20, GREY, TBLACK,
+        Fancy_Text_Print("Demo%s", kDialogX + kDialogW - 10,
+                         kDialogY + kDialogH - 20, kGrey, kTBlack,
                          TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT, VersionText);
 #else
-        Fancy_Text_Print("V.%d%s", D_DIALOG_X + D_DIALOG_W - 10,
-                         D_DIALOG_Y + D_DIALOG_H - 20, GREY, TBLACK,
+        Fancy_Text_Print("V.%d%s", kDialogX + kDialogW - 10,
+                         kDialogY + kDialogH - 20, kGrey, kTBlack,
                          TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
                          Version_Number(), VersionText, FOREIGN_VERSION_NUMBER);
 #endif
@@ -880,12 +871,12 @@ int Main_Menu(int timeout) {
       } else {
 #ifdef DEMO
         Version_Number();
-        Fancy_Text_Print("Demo%s", D_DIALOG_X + D_DIALOG_W - 10,
-                         D_DIALOG_Y + D_DIALOG_H - 20, GREY, TBLACK,
+        Fancy_Text_Print("Demo%s", kDialogX + kDialogW - 10,
+                         kDialogY + kDialogH - 20, kGrey, kTBlack,
                          TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT, VersionText);
 #else
-        Fancy_Text_Print("V.%d%s", D_DIALOG_X + D_DIALOG_W - 10,
-                         D_DIALOG_Y + D_DIALOG_H - 20, GREY, TBLACK,
+        Fancy_Text_Print("V.%d%s", kDialogX + kDialogW - 10,
+                         kDialogY + kDialogH - 20, kGrey, kTBlack,
                          TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
                          Version_Number(), VersionText);
 #endif
@@ -909,23 +900,23 @@ int Main_Menu(int timeout) {
     input = commands->Input();
     switch (static_cast<int>(input)) {
 #ifdef NEWMENU
-      case ButtonKey(BUTTON_EXPAND):
-      case ButtonKey(BUTTON_INTERNET):
+      case ButtonKey(kButtonExpand):
+      case ButtonKey(kButtonInternet):
 #else
-#define BUTTON_EXPAND BUTTON_START
+#define kButtonExpand kButtonStart
 #endif
-      case ButtonKey(BUTTON_START):
+      case ButtonKey(kButtonStart):
 #ifdef BONUS_MISSIONS
-      case ButtonKey(BUTTON_BONUS):
+      case ButtonKey(kButtonBonus):
 #endif  // BONUS_MISSIONS
-      case ButtonKey(BUTTON_LOAD):
-      case ButtonKey(BUTTON_MULTI):
-      case ButtonKey(BUTTON_INTRO):
-      case ButtonKey(BUTTON_EXIT):
-        retval = (input & 0x7FFF) - BUTTON_EXPAND;
+      case ButtonKey(kButtonLoad):
+      case ButtonKey(kButtonMulti):
+      case ButtonKey(kButtonIntro):
+      case ButtonKey(kButtonExit):
+        retval = (input & 0x7FFF) - kButtonExpand;
 #ifdef DEMO
         // The demo shifts every button after Start up by one.
-        if (input != ButtonKey(BUTTON_START)) {
+        if (input != ButtonKey(kButtonStart)) {
           retval += 1;
         }
 #endif  // DEMO

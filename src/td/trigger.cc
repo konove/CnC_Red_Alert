@@ -110,32 +110,32 @@ static void Do_All_To_Hunt();
 /*
 ********************************** Globals **********************************
 */
-static const char* EventText[EVENT_COUNT + 1] = {
+static const char* EventText[static_cast<int>(EVENT_COUNT) + 1] = {
     "None",          "Player Enters", "Discovered",    "Attacked",
     "Destroyed",     "Any",           "House Discov.", "Units Destr.",
     "Bldgs Destr.",  "All Destr.",    "Credits",       "Time",
     "# Bldgs Dstr.", "# Units Dstr.", "No Factories",  "Civ. Evac.",
     "Built It"};
 
-static const char* ActionText[TriggerClass::ACTION_COUNT + 1] = {
-    "None",
-    "Win",
-    "Lose",
-    "Production",
-    "Create Team",
-    "Dstry Teams",
-    "All to Hunt",
-    "Reinforce.",
-    "DZ at 'Z'",
-    "Airstrike",
-    "Nuclear Missile",
-    "Ion Cannon",
-    "Dstry Trig 'XXXX'",
-    "Dstry Trig 'YYYY'",
-    "Dstry Trig 'ZZZZ'",
-    "Autocreate",
-    "Cap=Win/Des=Lose",
-    "Allow Win"};
+static const char* ActionText[static_cast<int>(TriggerClass::ACTION_COUNT) +
+                              1] = {"None",
+                                    "Win",
+                                    "Lose",
+                                    "Production",
+                                    "Create Team",
+                                    "Dstry Teams",
+                                    "All to Hunt",
+                                    "Reinforce.",
+                                    "DZ at 'Z'",
+                                    "Airstrike",
+                                    "Nuclear Missile",
+                                    "Ion Cannon",
+                                    "Dstry Trig 'XXXX'",
+                                    "Dstry Trig 'YYYY'",
+                                    "Dstry Trig 'ZZZZ'",
+                                    "Autocreate",
+                                    "Cap=Win/Des=Lose",
+                                    "Allow Win"};
 
 /***********************************************************************************************
  * TriggerClass::Validate -- validates trigger pointer
@@ -316,10 +316,10 @@ bool TriggerClass::Action_Need_Team(ActionType action) {
  *=============================================================================================*/
 TriggerClass::~TriggerClass() {
   if (GameActive && House != HOUSE_NONE && Action == ACTION_ALLOWWIN) {
-    if (Houses.Ptr(House)->Blockage) {
-      Houses.Ptr(House)->Blockage--;
+    if (HouseClass::As_Pointer(House)->Blockage) {
+      HouseClass::As_Pointer(House)->Blockage--;
     }
-    Houses.Ptr(House)->BorrowedTime = int64_t{kTicksPerSecond} * 4;
+    HouseClass::As_Pointer(House)->BorrowedTime = int64_t{kTicksPerSecond} * 4;
   }
 }
 
@@ -647,7 +647,7 @@ bool TriggerClass::Spring(EventType event, CELL cell) {
       HouseClass::As_Pointer(House)->AirStrike.Enable(false, true);
       if (House == PlayerPtr->Class->House) {
         PlayerPtr->AirStrike.Forced_Charge(true);
-        Map.Add(RTTI_SPECIAL, SPC_AIR_STRIKE);
+        Map.Add(RTTI_SPECIAL, static_cast<int>(SPC_AIR_STRIKE));
         Map.Column[1].Flag_To_Redraw();
       }
       //			PlayerPtr->Make_Air_Strike_Available(true);
@@ -840,7 +840,7 @@ bool TriggerClass::Spring(EventType event, HousesType house, int64_t data) {
       PlayerPtr->AirStrike.Enable(false, true);
       if (House == PlayerPtr->Class->House) {
         PlayerPtr->AirStrike.Forced_Charge(true);
-        Map.Add(RTTI_SPECIAL, SPC_AIR_STRIKE);
+        Map.Add(RTTI_SPECIAL, static_cast<int>(SPC_AIR_STRIKE));
         Map.Column[1].Flag_To_Redraw();
       }
       break;
@@ -1277,7 +1277,8 @@ EventType TriggerClass::Event_From_Name(const char* name) {
     return EVENT_NONE;
   }
 
-  for (int i = EVENT_NONE; i < EVENT_COUNT; i++) {
+  for (int i = static_cast<int>(EVENT_NONE); i < static_cast<int>(EVENT_COUNT);
+       i++) {
     if (!stricmp(name, EventText[i + 1])) {
       return static_cast<EventType>(i);
     }
@@ -1298,7 +1299,7 @@ EventType TriggerClass::Event_From_Name(const char* name) {
  * HISTORY: * 11/29/1994 BR : Created. *
  *=============================================================================================*/
 const char* TriggerClass::Name_From_Event(EventType event) {
-  return EventText[event + 1];
+  return EventText[static_cast<int>(event) + 1];
 }
 
 /***********************************************************************************************
@@ -1318,7 +1319,8 @@ TriggerClass::ActionType TriggerClass::Action_From_Name(const char* name) {
     return ACTION_NONE;
   }
 
-  for (int i = ACTION_NONE; i < ACTION_COUNT; i++) {
+  for (int i = static_cast<int>(ACTION_NONE);
+       i < static_cast<int>(ACTION_COUNT); i++) {
     if (!stricmp(name, ActionText[i + 1])) {
       return static_cast<ActionType>(i);
     }
@@ -1339,7 +1341,7 @@ TriggerClass::ActionType TriggerClass::Action_From_Name(const char* name) {
  * HISTORY: * 11/29/1994 BR : Created. *
  *=============================================================================================*/
 const char* TriggerClass::Name_From_Action(ActionType action) {
-  return ActionText[action + 1];
+  return ActionText[static_cast<int>(action) + 1];
 }
 
 /***********************************************************************************************

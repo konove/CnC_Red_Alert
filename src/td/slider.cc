@@ -218,7 +218,7 @@ bool SliderClass::Action(unsigned flags, KeyNumType& key) {
   *direction. Otherwise, let normal *	processing take place -- the slider then
   *"sticks" and the thumb moves according to *	mouse position.
   */
-  if (flags & LEFTPRESS) {
+  if (flags & kLeftPress) {
     int mouse = 0;  // Mouse pixel position.
     int edge = 0;   // Edge of slider.
 
@@ -253,7 +253,7 @@ bool SliderClass::Action(unsigned flags, KeyNumType& key) {
   }
 
   /*
-  **  CHANGE GAUGECLASS::ACTION -- REMOVE (LEFTRELEASE) FROM IF STMT
+  **  CHANGE GAUGECLASS::ACTION -- REMOVE (kLeftRelease) FROM IF STMT
   */
   return GaugeClass::Action(flags, key);
 }
@@ -382,7 +382,7 @@ bool SliderClass::Draw_Me(bool forced) {
  *=============================================================================================*/
 void SliderClass::Peer_To_Peer(unsigned flags, KeyNumType& /*unused*/,
                                ControlClass& whom) {
-  if (flags & LEFTRELEASE) {
+  if (flags & kLeftRelease) {
     if (&whom == PlusGadget) {
       Step(false);
     }

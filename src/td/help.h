@@ -65,7 +65,7 @@ class HelpClass : public TabClass {
   bool Scroll_Map(DirType facing, int& distance, bool really) override;
   void Set_Tactical_Position(COORDINATE coord) override;
 
-  void Help_Text(int text, int x = -1, int y = -1, int color = LTGREY,
+  void Help_Text(int text, int x = -1, int y = -1, int color = kLtGrey,
                  bool quick = false, int cost = 0) override;
   void Set_Cost(int cost);
   [[nodiscard]] const int16_t* Overlap_List() const;
@@ -126,7 +126,7 @@ class HelpClass : public TabClass {
   **	This is the background color to use for the help text. It can change
   *according *	to the message displayed.
   */
-  int Color{LTGREY};
+  int Color{kLtGrey};
 
   /*
   **	This countdown timer controls when the help text will pop up. If the
@@ -142,12 +142,12 @@ class HelpClass : public TabClass {
   */
   static int16_t OverlapList[30];
 
-  enum HelpClassEnum {
-    HELP_DELAY = kTimerSecond *
-                 1,  // The countdown timer delay before help text pops up.
-    Y_OFFSET = 0,    // The Y pixel offset from cursor for help text print.
-    X_OFFSET = 10,   // The X pixel offset from cursor for help text print.
-  };
+  static constexpr int kHelpDelay =
+      kTimerSecond * 1;  // The countdown timer delay before help text pops up.
+  static constexpr int kYOffset =
+      0;  // The Y pixel offset from cursor for help text print.
+  static constexpr int kXOffset =
+      10;  // The X pixel offset from cursor for help text print.
 };
 
 #endif  // CNC_RED_ALERT_TD_HELP_H_

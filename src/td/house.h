@@ -48,6 +48,7 @@ class ArchiveWriter;
 #include <cstdint>
 
 #include "absl/base/attributes.h"
+#include "base/enum_array.h"
 #include "td/defines.h"
 #include "td/ftimer.h"
 #include "td/jshell.h"
@@ -381,9 +382,9 @@ class HouseClass {
   ** For multiplayer games, each house needs to keep track of how many
   ** objects of each other house they've killed.
   */
-  unsigned UnitsKilled[HOUSE_COUNT]{};
+  base::EnumArray<HousesType, unsigned, kHouseCount> UnitsKilled{};
   unsigned UnitsLost = 0;
-  unsigned BuildingsKilled[HOUSE_COUNT]{};
+  base::EnumArray<HousesType, unsigned, kHouseCount> BuildingsKilled{};
   unsigned BuildingsLost = 0;
 
   /*
@@ -585,11 +586,9 @@ class HouseClass {
   **	This is the standard delay time between announcements concerning the
   **	state of the base or other intermittent house related events.
   */
-  enum SpeakDelayEnum {
-    SPEAK_DELAY = kTicksPerMinute * 2,
-    TEAM_DELAY = kTicksPerMinute / 10,
-    DAMAGE_DELAY = kTicksPerMinute
-  };
+  static constexpr int kSpeakDelay = kTicksPerMinute * 2;
+  static constexpr int kTeamDelay = kTicksPerMinute / 10;
+  static constexpr int kDamageDelay = kTicksPerMinute;
 
   /*
   **	General low-power related damaged is doled out whenever this timer

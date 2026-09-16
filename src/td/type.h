@@ -45,6 +45,7 @@
 #include <cstring>
 
 #include "absl/base/attributes.h"
+#include "base/enum_array.h"
 #include "td/defines.h"
 #include "td/object.h"
 
@@ -107,28 +108,28 @@ class WarheadTypeClass {
   **	over distance. The larger the number, the less the damage is reduced
   **	the farther the distance from the source of the damage.
   */
-  int SpreadFactor;
+  int SpreadFactor = 0;
 
   /*
   **	If this warhead type can destroy walls, then this flag will be true.
   */
-  bool IsWallDestroyer;
+  bool IsWallDestroyer = false;
 
   /*
   **	If this warhead can destroy wooden walls, then this flag will be true.
   */
-  bool IsWoodDestroyer;
+  bool IsWoodDestroyer = false;
 
   /*
   **	Does this warhead damage tiberium?
   */
-  bool IsTiberiumDestroyer;
+  bool IsTiberiumDestroyer = false;
 
   /*
   **	The warhead damage is reduced depending on the the type of armor the
   **	defender has. This table is what gives weapons their "character".
   */
-  unsigned char Modifier[ARMOR_COUNT];
+  base::EnumArray<ArmorType, unsigned char, kArmorCount> Modifier{};
 };
 
 /**********************************************************************
@@ -205,7 +206,8 @@ class HouseTypeClass {
   static const HouseTypeClass& As_Reference(HousesType house);
 
  private:
-  static const HouseTypeClass* const Pointers[HOUSE_COUNT];
+  static const base::EnumArray<HousesType, const HouseTypeClass*, kHouseCount>
+      Pointers;
 };
 
 /***************************************************************************
@@ -566,174 +568,175 @@ class TechnoTypeClass : public ObjectTypeClass {
 **	is a derived class that elaborates these additional data elements.
 */
 class BuildingTypeClass : public TechnoTypeClass {
-  enum BuildingTypeClassRepairEnums {
     // REPAIR_COST=1,				// Cost to repair a single
     // "step".
-    REPAIR_PERCENT = 102,  // 40% fixed point number.
-    REPAIR_STEP = 5        // Number of damage points recovered per "step".
-  };
+    static constexpr int kRepairPercent = 102;  // 40% fixed point number.
+    static constexpr int kRepairStep =
+        5;  // Number of damage points recovered per "step".
 
- public:
-  /*
-  **	This flag controls whether the building is equiped with a dirt
-  **	bib or not. A building with a bib has a dirt patch automatically
-  **	attached to the structure when it is placed.
-  */
-  bool IsBibbed : 1;
+   public:
+    /*
+    **	This flag controls whether the building is equiped with a dirt
+    **	bib or not. A building with a bib has a dirt patch automatically
+    **	attached to the structure when it is placed.
+    */
+    bool IsBibbed : 1;
 
-  /*
-  **	If this building is a special wall type, such that it exists as a
-  *building *	for purposes of construction but transforms into an overlay wall
-  *object when *	it is placed on the map, then this flag will be true.
-  */
-  bool IsWall : 1;
+    /*
+    **	If this building is a special wall type, such that it exists as a
+    *building *	for purposes of construction but transforms into an overlay wall
+    *object when *	it is placed on the map, then this flag will be true.
+    */
+    bool IsWall : 1;
 
-  /*
-  **	Some buildings are producers. This flag will be true in that case.
-  *Producer, *	or factory, type buildings have special logic performed.
-  */
-  bool IsFactory : 1;
+    /*
+    **	Some buildings are producers. This flag will be true in that case.
+    *Producer, *	or factory, type buildings have special logic performed.
+    */
+    bool IsFactory : 1;
 
-  /*
-  **	Buildings can have either simple or complex damage stages. If simple,
-  **	then the second to the last frame is the half damage stage, and the last
-  **	frame is the complete damage stage. For non-simple damage, buildings
-  **	have a complete animation set for damaged as well as undamaged
-  *condition. *	Turrets, oil pumps, and repair facilities are a few examples.
-  */
-  bool IsSimpleDamage : 1;
+    /*
+    **	Buildings can have either simple or complex damage stages. If simple,
+    **	then the second to the last frame is the half damage stage, and the last
+    **	frame is the complete damage stage. For non-simple damage, buildings
+    **	have a complete animation set for damaged as well as undamaged
+    *condition. *	Turrets, oil pumps, and repair facilities are a few
+    * examples.
+    */
+    bool IsSimpleDamage : 1;
 
-  /*
-  **	Some buildings can be placed directly on raw ground. Such buildings
-  *don't require *	and are not affected by concrete or lack thereof.
-  *Typically, concrete itself is *	considered sturdy. The same goes for
-  *walls and similar generic type structures. *	The more sophisticated buildings
-  *are greatly affected by lack of concrete and thus *	would have this flag set
-  *to false.
-  */
-  bool IsSturdy : 1;
+    /*
+    **	Some buildings can be placed directly on raw ground. Such buildings
+    *don't require *	and are not affected by concrete or lack thereof.
+    *Typically, concrete itself is *	considered sturdy. The same goes for
+    *walls and similar generic type structures. *	The more sophisticated
+    * buildings are greatly affected by lack of concrete and thus *	would
+    * have this flag set to false.
+    */
+    bool IsSturdy : 1;
 
-  /*
-  **	Certain building types can be captures by enemy infantry. For those
-  **	building types, this flag will be true. Typically, military or hardened
-  **	structures such as turrets cannot be captured.
-  */
-  bool IsCaptureable : 1;
+    /*
+    **	Certain building types can be captures by enemy infantry. For those
+    **	building types, this flag will be true. Typically, military or hardened
+    **	structures such as turrets cannot be captured.
+    */
+    bool IsCaptureable : 1;
 
-  /*
-  **	If this building really only has cosmetic idle animation, then this flag
-  *will be *	true if this animation should run at a relatively constant rate
-  *regardless of game *	speed setting.
-  */
-  bool IsRegulated : 1;
+    /*
+    **	If this building really only has cosmetic idle animation, then this flag
+    *will be *	true if this animation should run at a relatively constant rate
+    *regardless of game *	speed setting.
+    */
+    bool IsRegulated : 1;
 
-  /*
-  **	This flag specifies the type of object this factory building can
-  *"produce". For non *	factory buildings, this value will be RTTI_NONE.
-  */
-  RTTIType ToBuild;
+    /*
+    **	This flag specifies the type of object this factory building can
+    *"produce". For non *	factory buildings, this value will be RTTI_NONE.
+    */
+    RTTIType ToBuild;
 
-  /*
-  **	For building that produce ground units (infantry and vehicles), there is
-  *a default *	exit poit defined. This point is where the object is first
-  *placed on the map. *	Typically, this is located next to a door. The unit will
-  *then travel on to a clear *	terrain area and enter normal game processing.
-  */
-  COORDINATE ExitPoint;
+    /*
+    **	For building that produce ground units (infantry and vehicles), there is
+    *a default *	exit poit defined. This point is where the object is
+    * first placed on the map. *	Typically, this is located next to a
+    * door. The unit will then travel on to a clear *	terrain area and enter
+    * normal game processing.
+    */
+    COORDINATE ExitPoint;
 
-  /*
-  **	When determine which cell to head toward when exiting a building, use
-  *the *	list elaborated by this variable. There are directions of exit
-  *that are *	more suitable than others. This list is here to inform the
-  *system which *	directions those are.
-  */
-  const int16_t* ExitList;
+    /*
+    **	When determine which cell to head toward when exiting a building, use
+    *the *	list elaborated by this variable. There are directions of exit
+    *that are *	more suitable than others. This list is here to inform the
+    *system which *	directions those are.
+    */
+    const int16_t* ExitList;
 
-  /*
-  **	This is the structure type identifier. It can serve as a unique
-  **	identification number for building types.
-  */
-  StructType Type;
+    /*
+    **	This is the structure type identifier. It can serve as a unique
+    **	identification number for building types.
+    */
+    StructType Type;
 
-  /*
-  **	This is a bitflag that represents which unit types can enter this
-  **	building. Determine if a unit can enter by taking 1 and shifting it
-  **	left by the unit type ID. If the corresponding bit is set, then that
-  **	unit type can enter this building.
-  */
-  uint32_t CanEnter;
+    /*
+    **	This is a bitflag that represents which unit types can enter this
+    **	building. Determine if a unit can enter by taking 1 and shifting it
+    **	left by the unit type ID. If the corresponding bit is set, then that
+    **	unit type can enter this building.
+    */
+    uint32_t CanEnter;
 
-  /*
-  **	This is the starting facing to give this building when it first
-  **	gets constructed. The facing matches the final stage of the
-  **	construction animation.
-  */
-  DirType StartFace;
+    /*
+    **	This is the starting facing to give this building when it first
+    **	gets constructed. The facing matches the final stage of the
+    **	construction animation.
+    */
+    DirType StartFace;
 
-  /*
-  **	This is the Tiberium storage capacity of the building. The sum of all
-  **	building's storage capacity is used to determine how much Tiberium can
-  **	be accumulated.
-  */
-  int Capacity;
+    /*
+    **	This is the Tiberium storage capacity of the building. The sum of all
+    **	building's storage capacity is used to determine how much Tiberium can
+    **	be accumulated.
+    */
+    int Capacity;
 
-  /*
-  **	Each building type produces and consumes power. These values tell how
-  **	much.
-  */
-  int Power;
-  int Drain;
+    /*
+    **	Each building type produces and consumes power. These values tell how
+    **	much.
+    */
+    int Power;
+    int Drain;
 
-  /*
-  **	This is the size of the building. This size value is a rough indication
-  **	of the building's "footprint".
-  */
-  BSizeType Size;
+    /*
+    **	This is the size of the building. This size value is a rough indication
+    **	of the building's "footprint".
+    */
+    BSizeType Size;
 
-  /**********************************************************************
-  **	For each stage that a building may be in, its animation is controlled
-  **	by this structure. It dictates the starting and length of the animation
-  **	frames needed for the specified state. In addition it specifies how long
-  **	to delay between changes in animation. With this data it is possible to
-  **	control the appearance of all normal buildings. Turrets and SAM sites
-  *are *	an exception since their animation is not merely cosmetic.
-  */
-  typedef struct {
-    int Start;  // Starting frame of animation.
-    int Count;  // Number of frames in this animation.
-    int Rate;   // Number of ticks to delay between each frame.
-  } AnimControlType;
+    /**********************************************************************
+    **	For each stage that a building may be in, its animation is controlled
+    **	by this structure. It dictates the starting and length of the animation
+    **	frames needed for the specified state. In addition it specifies how long
+    **	to delay between changes in animation. With this data it is possible to
+    **	control the appearance of all normal buildings. Turrets and SAM sites
+    *are *	an exception since their animation is not merely cosmetic.
+    */
+    typedef struct {
+      int Start;  // Starting frame of animation.
+      int Count;  // Number of frames in this animation.
+      int Rate;   // Number of ticks to delay between each frame.
+    } AnimControlType;
   // Resolved when the theater loads; the table itself stays const.
-  mutable AnimControlType Anims[BSTATE_COUNT]{};
+    mutable base::EnumArray<BStateType, AnimControlType, kBstateCount> Anims{};
 
-  /*
-  **	This is a mask flag used to determine if all the necessary prerequisite
-  **	buildings have been built.
-  */
-  //		long Prerequisite;
+    /*
+    **	This is a mask flag used to determine if all the necessary prerequisite
+    **	buildings have been built.
+    */
+    //		long Prerequisite;
 
-  /*---------------------------------------------------------------------------
-  **	This is the building type explicit constructor.
-  */
-  BuildingTypeClass(
-      StructType type, int name, const char* ininame, COORDINATE exitpoint,
-      unsigned char level, uint64_t pre, bool is_scanner, bool is_regulated,
-      bool is_bibbed, bool is_nominal, bool is_wall, bool is_factory,
-      bool is_captureable, bool is_flammable, bool is_simpledamage,
-      bool is_stealthy, bool is_selectable, bool is_legal_target,
-      bool is_insignificant, bool is_immune, bool is_theater,
-      bool is_turret_equipped, bool is_twoshooter, bool is_repairable,
-      bool is_buildable, bool is_crew, bool is_sturdy, RTTIType tobuild,
-      DirType sframe, int16_t strength, int sightrange, int cost, int scenario,
-      int risk, int reward, int ownable, WeaponType primary,
-      WeaponType secondary, ArmorType armor, uint32_t canenter, int capacity,
-      int power, int drain, BSizeType size,
-      const int16_t* exitlist ABSL_ATTRIBUTE_LIFETIME_BOUND,
-      const int16_t* sizelist ABSL_ATTRIBUTE_LIFETIME_BOUND,
-      const int16_t* overlap ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept;
-  [[nodiscard]] RTTIType What_Am_I() const override {
-    return RTTI_BUILDINGTYPE;
-  }
+    /*---------------------------------------------------------------------------
+    **	This is the building type explicit constructor.
+    */
+    BuildingTypeClass(
+        StructType type, int name, const char* ininame, COORDINATE exitpoint,
+        unsigned char level, uint64_t pre, bool is_scanner, bool is_regulated,
+        bool is_bibbed, bool is_nominal, bool is_wall, bool is_factory,
+        bool is_captureable, bool is_flammable, bool is_simpledamage,
+        bool is_stealthy, bool is_selectable, bool is_legal_target,
+        bool is_insignificant, bool is_immune, bool is_theater,
+        bool is_turret_equipped, bool is_twoshooter, bool is_repairable,
+        bool is_buildable, bool is_crew, bool is_sturdy, RTTIType tobuild,
+        DirType sframe, int16_t strength, int sightrange, int cost,
+        int scenario, int risk, int reward, int ownable, WeaponType primary,
+        WeaponType secondary, ArmorType armor, uint32_t canenter, int capacity,
+        int power, int drain, BSizeType size,
+        const int16_t* exitlist ABSL_ATTRIBUTE_LIFETIME_BOUND,
+        const int16_t* sizelist ABSL_ATTRIBUTE_LIFETIME_BOUND,
+        const int16_t* overlap ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept;
+    [[nodiscard]] RTTIType What_Am_I() const override {
+      return RTTI_BUILDINGTYPE;
+    }
   // objects compare directly against their type ID.
   // NOLINTNEXTLINE(*-explicit-constructor)
   operator StructType() const { return Type; }
@@ -792,7 +795,9 @@ class BuildingTypeClass : public TechnoTypeClass {
   */
   const int16_t* OverlapList;
 
-  static const BuildingTypeClass* const Pointers[STRUCT_COUNT];
+  static const base::EnumArray<StructType, const BuildingTypeClass*,
+                               kStructCount>
+      Pointers;
 
   /*
   **	The construction animation graphic data pointer is
@@ -813,13 +818,13 @@ class BuildingTypeClass : public TechnoTypeClass {
 */
 class UnitTypeClass : public TechnoTypeClass {
  public:
-  enum UnitTypeClassRepairEnums {
-    TIBERIUM_STEP = 25,  // Credits per step of Tiberium.
-    STEP_COUNT = 28,     // Number of steps a harvester can carry.
-    FULL_LOAD_CREDITS = TIBERIUM_STEP * STEP_COUNT,
-    REPAIR_PERCENT = 102,  // 40% fixed point number.
-    REPAIR_STEP = 4        // Number of damage points recovered per "step".
-  };
+  static constexpr int kTiberiumStep = 25;  // Credits per step of Tiberium.
+  static constexpr int kStepCount =
+      28;  // Number of steps a harvester can carry.
+  static constexpr int kFullLoadCredits = kTiberiumStep * kStepCount;
+  static constexpr int kRepairPercent = 102;  // 40% fixed point number.
+  static constexpr int kRepairStep =
+      4;  // Number of damage points recovered per "step".
 
   /*
   **	If this unit can appear out of a crate, then this flag will be true.
@@ -991,7 +996,8 @@ class UnitTypeClass : public TechnoTypeClass {
   static const void* WakeShapes;
 
  private:
-  static const UnitTypeClass* const Pointers[UNIT_COUNT];
+  static const base::EnumArray<UnitType, const UnitTypeClass*, kUnitCount>
+      Pointers;
 };
 
 /***************************************************************************
@@ -1001,7 +1007,9 @@ class UnitTypeClass : public TechnoTypeClass {
 */
 class InfantryTypeClass : public TechnoTypeClass {
  private:
-  static const InfantryTypeClass* const Pointers[INFANTRY_COUNT];
+  static const base::EnumArray<InfantryType, const InfantryTypeClass*,
+                               kInfantryCount>
+      Pointers;
 
  public:
   /*
@@ -1047,7 +1055,7 @@ class InfantryTypeClass : public TechnoTypeClass {
   **	This is an array of the various animation frame data for the actions
   *that *	the infantry may perform.
   */
-  DoInfoStruct DoControls[DO_COUNT]{};
+  base::EnumArray<DoType, DoInfoStruct, kDoCount> DoControls{};
 
   /*
   **	There are certain units with special animation sequences built into the
@@ -1255,7 +1263,8 @@ class BulletTypeClass : public ObjectTypeClass {
   }
 
  private:
-  static const BulletTypeClass* const Pointers[BULLET_COUNT];
+  static const base::EnumArray<BulletType, const BulletTypeClass*, kBulletCount>
+      Pointers;
 };
 
 /****************************************************************************
@@ -1343,7 +1352,9 @@ class TerrainTypeClass : public ObjectTypeClass {
   const int16_t* Occupy;
   const int16_t* Overlap;
 
-  static const TerrainTypeClass* const Pointers[TERRAIN_COUNT];
+  static const base::EnumArray<TerrainType, const TerrainTypeClass*,
+                               kTerrainCount>
+      Pointers;
 };
 
 /****************************************************************************
@@ -1417,7 +1428,9 @@ class TemplateTypeClass : public ObjectTypeClass {
                HousesType house = HOUSE_NONE) const override;
 
  private:
-  static const TemplateTypeClass* const Pointers[TEMPLATE_COUNT];
+  static const base::EnumArray<TemplateType, const TemplateTypeClass*,
+                               kTemplateCount>
+      Pointers;
 };
 
 /****************************************************************************
@@ -1585,17 +1598,17 @@ class AnimTypeClass : public ObjectTypeClass {
   }
 
  private:
-  static const AnimTypeClass* const Pointers[ANIM_COUNT];
+  static const base::EnumArray<AnimType, const AnimTypeClass*, kAnimCount>
+      Pointers;
 };
 
 /****************************************************************************
 **	The various aircraft types are controlled by this list.
 */
 class AircraftTypeClass : public TechnoTypeClass {
-  enum UnitTypeClassRepairEnums {
-    REPAIR_PERCENT = 102,  // 40% fixed point number.
-    REPAIR_STEP = 2        // Number of damage points recovered per "step".
-  };
+  static constexpr int kRepairPercent = 102;  // 40% fixed point number.
+  static constexpr int kRepairStep =
+      2;  // Number of damage points recovered per "step".
 
  public:
   /*
@@ -1690,7 +1703,9 @@ class AircraftTypeClass : public TechnoTypeClass {
   static const void* RRotorData;
 
  private:
-  static const AircraftTypeClass* const Pointers[AIRCRAFT_COUNT];
+  static const base::EnumArray<AircraftType, const AircraftTypeClass*,
+                               kAircraftCount>
+      Pointers;
 };
 
 /****************************************************************************
@@ -1805,7 +1820,9 @@ class OverlayTypeClass : public ObjectTypeClass {
                HousesType house = HOUSE_NONE) const override;
 
  private:
-  static const OverlayTypeClass* const Pointers[OVERLAY_COUNT];
+  static const base::EnumArray<OverlayType, const OverlayTypeClass*,
+                               kOverlayCount>
+      Pointers;
 };
 
 /****************************************************************************
@@ -1875,7 +1892,8 @@ class SmudgeTypeClass : public ObjectTypeClass {
                HousesType house = HOUSE_NONE) const override;
 
  private:
-  static const SmudgeTypeClass* const Pointers[SMUDGE_COUNT];
+  static const base::EnumArray<SmudgeType, const SmudgeTypeClass*, kSmudgeCount>
+      Pointers;
 };
 
 #endif  // CNC_RED_ALERT_TD_TYPE_H_

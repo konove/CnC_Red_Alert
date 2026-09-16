@@ -67,7 +67,6 @@
 #include "base/numeric.h"
 #include "sdllib/keyboard.h"
 #include "td/defines.h"
-#include "td/gadget.h"
 #include "td/list.h"
 
 CheckListClass::CheckListClass(int id, int x, int y, int w, int h,
@@ -94,7 +93,7 @@ CheckListClass::CheckListClass(int id, int x, int y, int w, int h,
 void CheckListClass::Check_Item(int index, int checked) {
   // The glyph lives in the item's first character, which the list now owns.
   if (index >= 0 && index < Count() && !List[base::ToSize(index)].empty()) {
-    List[base::ToSize(index)][0] = checked ? CHECK_CHAR : UNCHECK_CHAR;
+    List[base::ToSize(index)][0] = checked ? kCheckChar : kUncheckChar;
     Flag_To_Redraw();
   }
 }
@@ -116,7 +115,7 @@ void CheckListClass::Check_Item(int index, int checked) {
  *=========================================================================*/
 bool CheckListClass::Is_Checked(int index) const {
   return index >= 0 && index < Count() && !List[base::ToSize(index)].empty() &&
-         List[base::ToSize(index)][0] == CHECK_CHAR;
+         List[base::ToSize(index)][0] == kCheckChar;
 }
 
 /***************************************************************************
@@ -153,7 +152,7 @@ bool CheckListClass::Action(unsigned flags, KeyNumType& key) {
   **	Now, if this event was a left-press, toggle the checked state of the
   **	current item.
   */
-  if (flags & LEFTPRESS) {
+  if (flags & kLeftPress) {
     if (Is_Checked(SelectedIndex)) {
       Check_Item(SelectedIndex, 0);
     } else {

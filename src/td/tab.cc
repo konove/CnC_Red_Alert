@@ -112,16 +112,16 @@ void TabClass::Draw_It(bool complete) {
 
   if (complete || IsTabToRedraw) {
     if (LogicPage->Lock()) {
-      LogicPage->Fill_Rect(0, 0, rightx, Tab_Height - 2, BLACK);
+      LogicPage->Fill_Rect(0, 0, rightx, Tab_Height - 2, kBlack);
       CC_Draw_Shape(TabShape, 0, 0, 0, WINDOW_MAIN, SHAPE_NORMAL);
       CC_Draw_Shape(TabShape, 0, width - Eva_Width, 0, WINDOW_MAIN,
                     SHAPE_NORMAL);
       Draw_Credits_Tab();
-      LogicPage->Draw_Line(0, Tab_Height - 1, rightx, Tab_Height - 1, BLACK);
+      LogicPage->Draw_Line(0, Tab_Height - 1, rightx, Tab_Height - 1, kBlack);
 
-      Fancy_Text_Print(TXT_TAB_BUTTON_CONTROLS, Eva_Width / 2, 0, 11, TBLACK,
+      Fancy_Text_Print(TXT_TAB_BUTTON_CONTROLS, Eva_Width / 2, 0, 11, kTBlack,
                        TPF_GREEN12_GRAD | TPF_CENTER | TPF_USE_GRAD_PAL);
-      Fancy_Text_Print(TXT_TAB_SIDEBAR, width - (Eva_Width / 2), 0, 11, TBLACK,
+      Fancy_Text_Print(TXT_TAB_SIDEBAR, width - (Eva_Width / 2), 0, 11, kTBlack,
                        TPF_GREEN12_GRAD | TPF_CENTER | TPF_USE_GRAD_PAL);
     }
     LogicPage->Unlock();
@@ -151,7 +151,7 @@ void TabClass::Draw_Credits_Tab() {
 
 void TabClass::Hilite_Tab(int /*tab*/) {
   CC_Draw_Shape(TabShape, 1, 0, 0, WINDOW_MAIN, SHAPE_NORMAL);
-  Fancy_Text_Print(TXT_TAB_BUTTON_CONTROLS, 80, 0, 11, TBLACK,
+  Fancy_Text_Print(TXT_TAB_BUTTON_CONTROLS, 80, 0, 11, kTBlack,
                    TPF_GREEN12 | TPF_CENTER | TPF_USE_GRAD_PAL);
 }
 

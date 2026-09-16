@@ -43,6 +43,7 @@
 
 #include <filesystem>
 
+#include "base/enum_array.h"
 #include "td/conquer.h"
 #include "td/defines.h"
 #include "td/jshell.h"
@@ -495,26 +496,27 @@ static const BulletTypeClass ClassTRexBite(
 **	This is the array of pointers to the static data associated with
 **	each bullet (projectile) type.
 */
-const BulletTypeClass* const BulletTypeClass::Pointers[BULLET_COUNT] = {
-    &ClassSniper,      //	BULLET_SNIPER
-    &ClassBullet,      //	BULLET_BULLET
-    &ClassAPDS,        //	BULLET_APDS
-    &Class120mm,       //	BULLET_HE
-    &ClassMissile,     //	BULLET_SSM
-    &ClassMissile2,    //	BULLET_SSM2
-    &ClassPatriot,     //	BULLET_SAM
-    &ClassDragon,      //	BULLET_TOW
-    &ClassFlame,       // BULLET_FLAME
-    &ClassChem,        // BULLET_CHEMSPRAY
-    &ClassNapalm,      // BULLET_NAPALM
-    &ClassGrenade,     // BULLET_GRENADE
-    &ClassLaser,       // BULLET_LASER
-    &ClassNukeUp,      // BULLET_NUKE_UP
-    &ClassNukeDown,    // BULLET_NUKE_DOWN
-    &ClassHonestJohn,  // BULLET_HONEST_JOHN
-    &ClassSpreadfire,  // BULLET_SPREADFIRE
-    &ClassHeadButt,    // BULLET_HEADBUTT
-    &ClassTRexBite,    // BULLET_TREXBITE
+const base::EnumArray<BulletType, const BulletTypeClass*, kBulletCount>
+    BulletTypeClass::Pointers = {
+        &ClassSniper,      //	BULLET_SNIPER
+        &ClassBullet,      //	BULLET_BULLET
+        &ClassAPDS,        //	BULLET_APDS
+        &Class120mm,       //	BULLET_HE
+        &ClassMissile,     //	BULLET_SSM
+        &ClassMissile2,    //	BULLET_SSM2
+        &ClassPatriot,     //	BULLET_SAM
+        &ClassDragon,      //	BULLET_TOW
+        &ClassFlame,       // BULLET_FLAME
+        &ClassChem,        // BULLET_CHEMSPRAY
+        &ClassNapalm,      // BULLET_NAPALM
+        &ClassGrenade,     // BULLET_GRENADE
+        &ClassLaser,       // BULLET_LASER
+        &ClassNukeUp,      // BULLET_NUKE_UP
+        &ClassNukeDown,    // BULLET_NUKE_DOWN
+        &ClassHonestJohn,  // BULLET_HONEST_JOHN
+        &ClassSpreadfire,  // BULLET_SPREADFIRE
+        &ClassHeadButt,    // BULLET_HEADBUTT
+        &ClassTRexBite,    // BULLET_TREXBITE
 };
 
 /***********************************************************************************************

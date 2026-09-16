@@ -681,7 +681,7 @@ int MessageListClass::Input(KeyNumType& input) {
           ** Verify that the additional character would not overrun the on
           *screen edit box.
           */
-          Fancy_Text_Print(TXT_NONE, 0, 0, EditLabel->Color, TBLACK,
+          Fancy_Text_Print(TXT_NONE, 0, 0, EditLabel->Color, kTBlack,
                            EditLabel->Style);
           const int width = String_Pixel_Width(EditBuf);
           if (width >= Width) {

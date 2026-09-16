@@ -66,12 +66,10 @@ class NullModemClass : public ConnManClass {
   ---------------------------- Public Interface ----------------------------
   */
  public:
-  enum SendModemEnum {
-    MODEM_CMD_TIMEOUT = 0,
-    MODEM_CMD_OK,
-    MODEM_CMD_0,
-    MODEM_CMD_ERROR
-  };
+  static constexpr int kModemCmdTimeout = 0;
+  static constexpr int kModemCmdOk = 1;
+  static constexpr int kModemCmd0 = 2;
+  static constexpr int kModemCmdError = 3;
 
   char* BuildBuf{nullptr};
   int MaxLen;
@@ -130,7 +128,7 @@ class NullModemClass : public ConnManClass {
   ** These are for compatibility
   */
   int Send_Private_Message(void* buf, int buflen, int ack_req = 1,
-                           int /*conn_id*/ = CONNECTION_NONE) override {
+                           int /*conn_id*/ = kConnectionNone) override {
     return Send_Message(buf, buflen, ack_req);
   }
   int Get_Private_Message(void* buf, int* buflen, int* /*conn_id*/) override {
@@ -161,10 +159,10 @@ class NullModemClass : public ConnManClass {
   */
   int Global_Num_Send() override { return Num_Send(); }
   int Global_Num_Receive() override { return Num_Receive(); }
-  int Private_Num_Send(int /*id*/ = CONNECTION_NONE) override {
+  int Private_Num_Send(int /*id*/ = kConnectionNone) override {
     return Num_Send();
   }
-  int Private_Num_Receive(int /*id*/ = CONNECTION_NONE) override {
+  int Private_Num_Receive(int /*id*/ = kConnectionNone) override {
     return Num_Receive();
   }
 

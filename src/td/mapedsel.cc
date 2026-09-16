@@ -379,7 +379,7 @@ void MapEditClass::Popup_Controls() {
   ........................ Set house button states .........................
   */
   if (Buttons) {
-    Set_House_Buttons(owner, Buttons, POPUP_GDI);
+    Set_House_Buttons(owner, Buttons, kPopupGdi);
   }
 
   switch (objtype->What_Am_I()) {

@@ -56,6 +56,7 @@
 #include <filesystem>
 #include <string>
 
+#include "base/enum_array.h"
 #include "base/numeric.h"
 #include "port/ex_string.h"
 #include "sdllib/shape.h"
@@ -1229,29 +1230,30 @@ static const UnitTypeClass UnitSteg(
 **	This is the array of pointers to the static data associated with each
 **	vehicle type.
 */
-const UnitTypeClass* const UnitTypeClass::Pointers[UNIT_COUNT] = {
-    &UnitHTank,      //	UNIT_HTANK
-    &UnitMTank,      //	UNIT_MTANK
-    &UnitLTank,      //	UNIT_LTANK
-    &UnitSTank,      //	UNIT_STANK
-    &UnitFTank,      //	UNIT_FTANK
-    &UnitVisceroid,  // UNIT_VICE
-    &UnitAPC,        //	UNIT_APC
-    &UnitMLRS,       //	UNIT_MLRS
-    &UnitJeep,       //	UNIT_JEEP
-    &UnitBuggy,      //	UNIT_BUGGY
-    &UnitHarvester,  //	UNIT_HARVESTER
-    &UnitArty,       //	UNIT_ARTY
-    &UnitSAM,        //	UNIT_MSAM
-    &UnitHover,      //	UNIT_HOVER
-    &UnitMHQ,        //	UNIT_MHQ
-    &UnitGunBoat,    //	UNIT_GUNBOAT
-    &UnitMCV,        // UNIT_MCV
-    &UnitBike,       // UNIT_BIKE
-    &UnitTric,       // UNIT_TRIC
-    &UnitTrex,       // UNIT_TREX
-    &UnitRapt,       // UNIT_RAPT
-    &UnitSteg,       // UNIT_STEG
+const base::EnumArray<UnitType, const UnitTypeClass*, kUnitCount>
+    UnitTypeClass::Pointers = {
+        &UnitHTank,      //	UNIT_HTANK
+        &UnitMTank,      //	UNIT_MTANK
+        &UnitLTank,      //	UNIT_LTANK
+        &UnitSTank,      //	UNIT_STANK
+        &UnitFTank,      //	UNIT_FTANK
+        &UnitVisceroid,  // UNIT_VICE
+        &UnitAPC,        //	UNIT_APC
+        &UnitMLRS,       //	UNIT_MLRS
+        &UnitJeep,       //	UNIT_JEEP
+        &UnitBuggy,      //	UNIT_BUGGY
+        &UnitHarvester,  //	UNIT_HARVESTER
+        &UnitArty,       //	UNIT_ARTY
+        &UnitSAM,        //	UNIT_MSAM
+        &UnitHover,      //	UNIT_HOVER
+        &UnitMHQ,        //	UNIT_MHQ
+        &UnitGunBoat,    //	UNIT_GUNBOAT
+        &UnitMCV,        // UNIT_MCV
+        &UnitBike,       // UNIT_BIKE
+        &UnitTric,       // UNIT_TRIC
+        &UnitTrex,       // UNIT_TREX
+        &UnitRapt,       // UNIT_RAPT
+        &UnitSteg,       // UNIT_STEG
 };
 
 /***********************************************************************************************
@@ -1682,7 +1684,7 @@ void UnitTypeClass::Dimensions(int& width, int& height) const {
  * HISTORY: * 04/03/1995 BWG : Created. *
  *=============================================================================================*/
 int UnitTypeClass::Repair_Cost() const {
-  return Fixed_To_Cardinal(Cost / (MaxStrength / REPAIR_STEP), REPAIR_PERCENT);
+  return Fixed_To_Cardinal(Cost / (MaxStrength / kRepairStep), kRepairPercent);
 }
 
 /***********************************************************************************************
@@ -1700,7 +1702,7 @@ int UnitTypeClass::Repair_Cost() const {
  *                                                                                             *
  * HISTORY: * 04/03/1995 BWG : Created. *
  *=============================================================================================*/
-int UnitTypeClass::Repair_Step() const { return REPAIR_STEP; }
+int UnitTypeClass::Repair_Step() const { return kRepairStep; }
 
 /***********************************************************************************************
  * UnitTypeClass::Max_Pips -- Fetches the maximum pips allowed for this unit. *
@@ -1720,7 +1722,7 @@ int UnitTypeClass::Repair_Step() const { return REPAIR_STEP; }
  *=============================================================================================*/
 int UnitTypeClass::Max_Pips() const {
   if (Type == UNIT_HARVESTER) {
-    return FULL_LOAD_CREDITS / 100;
+    return kFullLoadCredits / 100;
   }
 
   if (IsTransporter) {

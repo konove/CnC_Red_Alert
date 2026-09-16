@@ -43,26 +43,24 @@
 
 class SaveOptionsClass {
  private:
-  enum SaveOptionsClassEnums {
-    BUTTON_CANCEL = 200,
-    BUTTON_SAVE,
-    OPTION_WIDTH = 216,
-    OPTION_HEIGHT = 122,
-    OPTION_X = (320 - OPTION_WIDTH) / 2 & ~7,
-    OPTION_Y = (200 - OPTION_HEIGHT) / 2,
-    NUMBER_OF_BUTTONS = 2,
-    CAPTION_Y_POS = 5,
-    BORDER1_LEN = 49,
-    BUTTON_CANCEL_X = 90,
-    BUTTON_CANCEL_Y = 103,
-    LISTBOX_X = 40,
-    LISTBOX_Y = 24,
-    LISTBOX_W = 136,
-    LISTBOX_H = 72
-  };
+  static constexpr int kButtonCancel = 200;
+  static constexpr int kButtonSave = 201;
+  static constexpr int kOptionWidth = 216;
+  static constexpr int kOptionHeight = 122;
+  static constexpr int kOptionX = (320 - kOptionWidth) / 2 / 8 * 8;
+  static constexpr int kOptionY = (200 - kOptionHeight) / 2;
+  static constexpr int kNumberOfButtons = 2;
+  static constexpr int kCaptionYPos = 5;
+  static constexpr int kBorder1Len = 49;
+  static constexpr int kButtonCancelX = 90;
+  static constexpr int kButtonCancelY = 103;
+  static constexpr int kListboxX = 40;
+  static constexpr int kListboxY = 24;
+  static constexpr int kListboxW = 136;
+  static constexpr int kListboxH = 72;
 
  public:
-  SaveOptionsClass() {}
+  SaveOptionsClass() = default;
   void Process();
 };
 

@@ -65,10 +65,10 @@
 class ControlClass : public GadgetClass {
  public:
   ControlClass(unsigned id, int x, int y, int w, int h,
-               unsigned flags = LEFTPRESS | RIGHTPRESS,
+               unsigned flags = kLeftPress | kRightPress,
                bool sticky = false) noexcept;
   //		static ControlClass * Create_One_Of(unsigned id, int x, int y,
-  // int w, int h, unsigned flags=LEFTPRESS|RIGHTPRESS, bool sticky=false);
+  // int w, int h, unsigned flags=kLeftPress|kRightPress, bool sticky=false);
 
   virtual void Make_Peer(GadgetClass& gadget);
 

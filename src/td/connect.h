@@ -227,6 +227,7 @@
 #include <cstdint>
 #include <span>
 
+#include "base/enum_array.h"
 #include "td/combuf.h"
 
 #define CONN_DEBUG 0
@@ -263,12 +264,13 @@ class ConnectionClass {
   /*.....................................................................
   These are the possible values for the Code field of the CommHeaderType:
   .....................................................................*/
-  enum ConnectionEnum {
+  enum class ConnectionEnum {
     PACKET_DATA_ACK,    // this is a data packet requiring an ACK
     PACKET_DATA_NOACK,  // this is a data packet not requiring an ACK
     PACKET_ACK,         // this is an ACK for a packet
     PACKET_COUNT,       // for computational purposes
   };
+  using enum ConnectionEnum;
 
   /*.....................................................................
   Constructor/destructor.
@@ -378,7 +380,9 @@ class ConnectionClass {
   /*.....................................................................
   Names of all packet commands
   .....................................................................*/
-  static const char* Commands[PACKET_COUNT];
+  static base::EnumArray<ConnectionEnum, const char*,
+                         static_cast<int>(PACKET_COUNT)>
+      Commands;
 };
 
 #endif  // CNC_RED_ALERT_TD_CONNECT_H_

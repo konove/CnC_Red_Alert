@@ -51,6 +51,7 @@
 #include <cstring>
 #include <utility>
 
+#include "base/numeric.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
 #include "sdllib/keyboard.h"
@@ -103,14 +104,14 @@
  *=============================================================================================*/
 EditClass::EditClass(int id, char* text, int max_len, TextPrintType flags,
                      int x, int y, int w, int h, EditStyle style)
-    : ControlClass(static_cast<unsigned>(id), x, y, w, h, LEFTPRESS),
+    : ControlClass(static_cast<unsigned>(id), x, y, w, h, kLeftPress),
       TextFlags(flags),
       EditFlags(style),
       String(text) {
   EditClass::Set_Text(text, max_len);
 
   if (w == -1 || h == -1) {
-    Fancy_Text_Print(TXT_NONE, 0, 0, TBLACK, TBLACK, TextFlags);
+    Fancy_Text_Print(TXT_NONE, 0, 0, kTBlack, kTBlack, TextFlags);
 
     if (h == -1) {
       Height = FontHeight + 2;
@@ -241,8 +242,8 @@ bool EditClass::Action(unsigned flags, KeyNumType& key) {
   *to *	this gadget. The event flag is cleared so that no button ID number is
   *returned.
   */
-  if (flags & LEFTPRESS) {
-    flags &= ~LEFTPRESS;
+  if (flags & kLeftPress) {
+    flags &= ~kLeftPress;
     Set_Focus();
     Flag_To_Redraw();  // force to draw cursor
   }
@@ -252,7 +253,7 @@ bool EditClass::Action(unsigned flags, KeyNumType& key) {
   *but if the *	RETURN key is pressed, then the button ID number is returned
   *from the Input() *	function.
   */
-  if (flags & KEYBOARD && Has_Focus()) {
+  if (flags & kKeyboard && Has_Focus()) {
     /*
     **	Process the keyboard character. If indicated, consume this keyboard
     *event *	so that the edit gadget ID number is not returned.
@@ -271,9 +272,9 @@ bool EditClass::Action(unsigned flags, KeyNumType& key) {
       if (key & WWKEY_VK_BIT && ascii >= '0' && ascii <= '9') {
         key = static_cast<KeyNumType>(key & ~WWKEY_VK_BIT);
 
-        if ((!(flags & LEFTRELEASE) && !(flags & RIGHTRELEASE)) &&
+        if ((!(flags & kLeftRelease) && !(flags & kRightRelease)) &&
             Handle_Key(ascii)) {
-          flags &= ~KEYBOARD;
+          flags &= ~kKeyboard;
           key = KN_NONE;
         }
 
@@ -283,16 +284,16 @@ bool EditClass::Action(unsigned flags, KeyNumType& key) {
         */
         if ((!(key & WWKEY_VK_BIT) && ascii >= ' ' && ascii <= 127) ||
             key == KN_RETURN || key == KN_BACKSPACE) {
-          if ((!(flags & LEFTRELEASE) && !(flags & RIGHTRELEASE)) &&
+          if ((!(flags & kLeftRelease) && !(flags & kRightRelease)) &&
               Handle_Key(Keyboard::To_ASCII(key))) {
-            flags &= ~KEYBOARD;
+            flags &= ~kKeyboard;
             key = KN_NONE;
           }
 
         } else {
           // if (key & WWKEY_RLS_BIT){
-          //	if ( (!(flags & LEFTRELEASE)) && (!(flags & RIGHTRELEASE))){
-          flags &= ~KEYBOARD;
+          //	if ( (!(flags & kLeftRelease)) && (!(flags & kRightRelease))){
+          flags &= ~kKeyboard;
           key = KN_NONE;
           //	}
           //}
@@ -343,22 +344,22 @@ void EditClass::Draw_Text(const char* text) {
     const TextPrintType flags =
         Has_Focus() ? TPF_BRIGHT_COLOR : static_cast<TextPrintType>(0);
 
-    Conquer_Clip_Text_Print(text, X + 1, Y + 1, Color, TBLACK,
+    Conquer_Clip_Text_Print(text, X + 1, Y + 1, Color, kTBlack,
                             TextFlags | flags, Width - 2);
 
     if (Has_Focus() && std::cmp_less(strlen(text), MaxLength) &&
         String_Pixel_Width(text) + String_Pixel_Width("_") < Width - 2) {
       Conquer_Clip_Text_Print("_", X + 1 + String_Pixel_Width(text), Y + 1,
-                              Color, TBLACK, TextFlags | flags);
+                              Color, kTBlack, TextFlags | flags);
     }
   } else {
-    Conquer_Clip_Text_Print(text, X + 1, Y + 1, Has_Focus() ? BLUE : WHITE,
-                            TBLACK, TextFlags, Width - 2);
+    Conquer_Clip_Text_Print(text, X + 1, Y + 1, Has_Focus() ? kBlue : kWhite,
+                            kTBlack, TextFlags, Width - 2);
 
     if (Has_Focus() && std::cmp_less(strlen(text), MaxLength) &&
         String_Pixel_Width(text) + String_Pixel_Width("_") < Width - 2) {
       Conquer_Clip_Text_Print("_", X + 1 + String_Pixel_Width(text), Y + 1,
-                              BLUE, TBLACK, TextFlags);
+                              kBlue, kTBlack, TextFlags);
     }
   }
 }
@@ -451,13 +452,13 @@ bool EditClass::Handle_Key(KeyASCIIType ascii) {
       **	If this is an upper case only edit gadget, then force the
       *alphabetic *	character to upper case.
       */
-      if (EditFlags & UPPERCASE && isalpha(ascii)) {
+      if (base::Any(EditFlags & UPPERCASE) && isalpha(ascii)) {
         ascii = static_cast<KeyASCIIType>(toupper(ascii));
       }
 
-      if ((!(EditFlags & NUMERIC) || !isdigit(ascii)) &&
-          (!(EditFlags & ALPHA) || !isalpha(ascii)) &&
-          (!(EditFlags & MISC) || isalnum(ascii)) && ascii != ' ') {
+      if ((!base::Any(EditFlags & NUMERIC) || !isdigit(ascii)) &&
+          (!base::Any(EditFlags & ALPHA) || !isalpha(ascii)) &&
+          (!base::Any(EditFlags & MISC) || isalnum(ascii)) && ascii != ' ') {
         break;
       }
 

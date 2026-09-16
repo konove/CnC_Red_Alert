@@ -50,7 +50,7 @@
 
 // A list box whose items each carry a check mark the user can toggle by
 // clicking. The mark is the item's first character: add items with a leading
-// space (UNCHECK_CHAR) and Check_Item swaps it for CHECK_CHAR.
+// space (kUncheckChar) and Check_Item swaps it for kCheckChar.
 class CheckListClass : public ListClass {
  public:
   /*---------------------------------------------------------------------
@@ -74,10 +74,8 @@ class CheckListClass : public ListClass {
   This defines the ASCII value of the checkmark character & non-checkmark
   character.
   ---------------------------------------------------------------------*/
-  enum CheckListClassEnum {
-    CHECK_CHAR = '\3',
-    UNCHECK_CHAR = ' ',
-  };
+  static constexpr char kCheckChar = '\3';
+  static constexpr char kUncheckChar = ' ';
 
   void Set_Read_Only(bool rdonly) { IsReadOnly = rdonly; }
 

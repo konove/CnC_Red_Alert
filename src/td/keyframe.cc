@@ -122,7 +122,7 @@ void* Build_Frame(const void* dataptr, uint16_t framenumber, void* buffptr) {
   Mem_Copy(ptr, &offset[0], 12L);
   const auto frameflags = static_cast<uint8_t>(offset[0] >> 24);
 
-  if (frameflags & KF_KEYFRAME) {
+  if (frameflags & kKfKeyFrame) {
     ptr = static_cast<const char*>(
         Add_Long_To_Pointer(dataptr, offset[0] & 0x00FFFFFFL));
 
@@ -132,7 +132,7 @@ void* Build_Frame(const void* dataptr, uint16_t framenumber, void* buffptr) {
     LCW_Uncompress(ptr, buffptr, buffsize);
   } else {  // key delta or delta
 
-    if (frameflags & KF_DELTA) {
+    if (frameflags & kKfDelta) {
       currframe = static_cast<uint16_t>(offset[1]);
 
       ptr = static_cast<const char*>(Add_Long_To_Pointer(
@@ -163,7 +163,7 @@ void* Build_Frame(const void* dataptr, uint16_t framenumber, void* buffptr) {
     // address space needs no rebasing.
     Apply_Delta(buffptr, Add_Long_To_Pointer(ptr, offdiff));
 
-    if (frameflags & KF_DELTA) {
+    if (frameflags & kKfDelta) {
       // adjust to delta after the keydelta
 
       currframe++;

@@ -237,8 +237,9 @@ bool SmudgeClass::Mark(MarkType mark) {
                 *the *	specified coordinate as possible.
                 */
                 if (Class->IsCrater) {
-                  cell->Smudge = static_cast<SmudgeType>(
-                      SMUDGE_CRATER1 + CellClass::Spot_Index(Coord));
+                  cell->Smudge =
+                      static_cast<SmudgeType>(static_cast<int>(SMUDGE_CRATER1) +
+                                              CellClass::Spot_Index(Coord));
                 } else {
                   cell->Smudge = Class->Type;
                 }

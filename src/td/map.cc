@@ -976,7 +976,7 @@ bool MapClass::Read_Binary(const char* root, uint32_t* crc)
     cellptr->Recalc_Attributes();
 
 #ifndef DEMO
-    Add_CRC(crc, cellptr->TType);
+    Add_CRC(crc, static_cast<uint32_t>(cellptr->TType));
     Add_CRC(crc, cellptr->TIcon);
 #endif
 

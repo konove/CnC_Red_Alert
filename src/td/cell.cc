@@ -186,7 +186,7 @@ int CellClass::Cell_Color(bool override) const {
   }
 
   if (override) {
-    return TBLACK;
+    return kTBlack;
   }
   return Ground[Land_Type()].Color;
 }
@@ -665,7 +665,7 @@ void CellClass::Occupy_Up(ObjectClass* object) {
 #ifdef NEVER
       int x, y;
       if (Map.Coord_To_Pixel(Cell_Coord(), x, y)) {
-        SeenBuff.Put_Pixel(x, y, BLUE);
+        SeenBuff.Put_Pixel(x, y, kBlue);
       }
 #endif
       break;
@@ -873,7 +873,7 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
     FontXSpacing -= 2;
     Fancy_Text_Print("%d\r%2X%c\r%02X.%02X",
                      Map.TacPixelX + x + (ICON_PIXEL_W >> 1), Map.TacPixelY + y,
-                     WHITE, TBLACK, TPF_6POINT | TPF_NOSHADOW | TPF_CENTER,
+                     kWhite, kTBlack, TPF_6POINT | TPF_NOSHADOW | TPF_CENTER,
                      cell, Flag.Composite, Cell_Occupier() ? '*' : ' ', Overlay,
                      OverlayData);
     FontXSpacing += 2;
@@ -884,12 +884,12 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
         **	Set up the remap table for this icon.
         */
         if (Debug_Map && Debug_Passable) {
-          if (::Ground[Land].Cost[0] == 0 ||
+          if (::Ground[Land].Cost[SPEED_FOOT] == 0 ||
               (Cell_Occupier() != nullptr &&
                Cell_Occupier()->What_Am_I() != RTTI_INFANTRY)) {  // impassable
             remap = MapEditClass::FadingRed;
           } else {
-            if (::Ground[Land].Cost[0] > 0x70) {  // pretty passable
+            if (::Ground[Land].Cost[SPEED_FOOT] > 0x70) {  // pretty passable
               remap = MapEditClass::FadingGreen;
             } else {
               remap = MapEditClass::FadingYellow;  // moderately passable
@@ -906,7 +906,7 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
       */
       if (ttype->Get_Image_Data()) {
         LogicPage->Draw_Stamp(ttype->Get_Image_Data(), icon, x, y, nullptr,
-                              WINDOW_TACTICAL);
+                              static_cast<int>(WINDOW_TACTICAL));
         if (remap) {
           LogicPage->Remap(x + Map.TacPixelX, y + Map.TacPixelY, ICON_PIXEL_W,
                            ICON_PIXEL_H, remap);
@@ -923,7 +923,7 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
         if (Debug_Map && CurrentCell == Cell_Number()) {
           LogicPage->Draw_Rect(x + Map.TacPixelX, y + Map.TacPixelY,
                                Map.TacPixelX + x + CELL_PIXEL_W - 1,
-                               Map.TacPixelY + y + CELL_PIXEL_H - 1, YELLOW);
+                               Map.TacPixelY + y + CELL_PIXEL_H - 1, kYellow);
         }
       }
 
@@ -987,7 +987,7 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
           if (IsTrigger) {
             trig = Get_Trigger();
             Fancy_Text_Print(trig->Get_Name(), x + Map.TacPixelX,
-                             y + Map.TacPixelY, PINK, TBLACK,
+                             y + Map.TacPixelY, kPink, kTBlack,
                              TPF_NOSHADOW | TPF_6POINT);
           }
 
@@ -1001,20 +1001,20 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
                 waypt[1] = 0;
                 Fancy_Text_Print(waypt, Map.TacPixelX + x + (CELL_PIXEL_W / 2),
                                  Map.TacPixelY + y + (CELL_PIXEL_H / 2) - 3,
-                                 YELLOW, TBLACK,
+                                 kYellow, kTBlack,
                                  TPF_NOSHADOW | TPF_6POINT | TPF_CENTER);
                 break;
               }
             }
-            if (Waypoint[WAYPT_HOME] == Cell_Number()) {
+            if (Waypoint[kWayptHome] == Cell_Number()) {
               Fancy_Text_Print("Home", Map.TacPixelX + x,
-                               Map.TacPixelY + y + CELL_PIXEL_H - 7, WHITE,
-                               TBLACK, TPF_NOSHADOW | TPF_6POINT);
+                               Map.TacPixelY + y + CELL_PIXEL_H - 7, kWhite,
+                               kTBlack, TPF_NOSHADOW | TPF_6POINT);
             }
-            if (Waypoint[WAYPT_REINF] == Cell_Number()) {
+            if (Waypoint[kWayptReinf] == Cell_Number()) {
               Fancy_Text_Print("Reinf", Map.TacPixelX + x,
-                               Map.TacPixelY + y + CELL_PIXEL_H - 7, WHITE,
-                               TBLACK, TPF_NOSHADOW | TPF_6POINT);
+                               Map.TacPixelY + y + CELL_PIXEL_H - 7, kWhite,
+                               kTBlack, TPF_NOSHADOW | TPF_6POINT);
             }
           }
         }
@@ -1034,10 +1034,10 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
         */
         if (Map.ProximityCheck && Is_Generally_Clear()) {
           LogicPage->Draw_Stamp(MouseClass::TransIconset, 0, x, y, nullptr,
-                                WINDOW_TACTICAL);
+                                static_cast<int>(WINDOW_TACTICAL));
         } else {
           LogicPage->Draw_Stamp(MouseClass::TransIconset, 2, x, y, nullptr,
-                                WINDOW_TACTICAL);
+                                static_cast<int>(WINDOW_TACTICAL));
         }
 
         if constexpr (config::kScenarioEditorEnabled) {
@@ -1061,7 +1061,8 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
                                            Map.ZoneCell + Map.ZoneOffset))) *
                        tptr->Width);
                   LogicPage->Draw_Stamp(tptr->Get_Image_Data(), icon, x, y,
-                                        nullptr, WINDOW_TACTICAL);
+                                        nullptr,
+                                        static_cast<int>(WINDOW_TACTICAL));
                 }
                 break;
 
@@ -1194,7 +1195,7 @@ void CellClass::Concrete_Calc() {
         case kOddE | kOddNE:
         case kOddN | kOddNE | kOddE:
         case kOddS | kOddN | kOddNE:
-          icon = C_RIGHT_UP;  // right - up
+          icon = kCRightUp;  // right - up
           break;
 
         case kOddSE:
@@ -1203,7 +1204,7 @@ void CellClass::Concrete_Calc() {
         case kOddS | kOddE:
         case kOddS | kOddSE | kOddE:
         case kOddS | kOddSE | kOddN:
-          icon = C_RIGHT_DOWN;  // right - down
+          icon = kCRightDown;  // right - down
           break;
 
         case kOddSE | kOddNE:
@@ -1218,11 +1219,11 @@ void CellClass::Concrete_Calc() {
         case kOddS | kOddSE | kOddE | kOddN:
         case kOddS | kOddSE | kOddE | kOddNE | kOddN:
         case kOddS | kOddSE | kOddE | kOddNE:
-          icon = C_RIGHT_UPDOWN;  // right - up - down
+          icon = kCRightUpdown;  // right - up - down
           break;
 
         default:
-          icon = C_RIGHT;  // right
+          icon = kCRight;  // right
           break;
       }
     } else {
@@ -1233,7 +1234,7 @@ void CellClass::Concrete_Calc() {
         case kEvenNW | kEvenW | kEvenN:
         case kEvenNW | kEvenW:
         case kEvenNW | kEvenS | kEvenN:
-          icon = C_LEFT_UP;  // left - up
+          icon = kCLeftUp;  // left - up
           break;
 
         case kEvenSW:
@@ -1242,7 +1243,7 @@ void CellClass::Concrete_Calc() {
         case kEvenW | kEvenSW | kEvenS:
         case kEvenW | kEvenSW:
         case kEvenSW | kEvenS | kEvenN:
-          icon = C_LEFT_DOWN;  // left - down
+          icon = kCLeftDown;  // left - down
           break;
 
         case kEvenNW | kEvenSW:
@@ -1257,31 +1258,31 @@ void CellClass::Concrete_Calc() {
         case kEvenNW | kEvenW | kEvenSW | kEvenS | kEvenN:
         case kEvenNW | kEvenW | kEvenSW | kEvenN:
         case kEvenNW | kEvenW | kEvenSW | kEvenS:
-          icon = C_LEFT_UPDOWN;  // left - up - down
+          icon = kCLeftUpdown;  // left - up - down
           break;
 
         default:
-          icon = C_LEFT;  // left
+          icon = kCLeft;  // left
           break;
       }
     }
 
   } else {
     // Presume that no concrete piece is needed.
-    icon = C_NONE;
+    icon = kCNone;
     if (isodd) {
       index &= ~(kOddNE | kOddSE);  // Ignore diagonals.
       switch (index) {
         case kOddN | kOddE:
-          icon = C_UP_RIGHT;  // up right
+          icon = kCUpRight;  // up right
           break;
 
         case kOddE | kOddS:
-          icon = C_DOWN_RIGHT;  // down right
+          icon = kCDownRight;  // down right
           break;
 
         case kOddN | kOddE | kOddS:
-          icon = C_UPDOWN_RIGHT;  // up/down right
+          icon = kCUpdownRight;  // up/down right
           break;
 
         default:
@@ -1291,15 +1292,15 @@ void CellClass::Concrete_Calc() {
       index &= ~(kEvenNW | kEvenSW);  // Ignore diagonals.
       switch (index) {
         case kEvenN | kEvenW:
-          icon = C_UP_LEFT;  // up left
+          icon = kCUpLeft;  // up left
           break;
 
         case kEvenW | kEvenS:
-          icon = C_DOWN_LEFT;  // down left
+          icon = kCDownLeft;  // down left
           break;
 
         case kEvenN | kEvenW | kEvenS:
-          icon = C_UPDOWN_LEFT;  // up/down left
+          icon = kCUpdownLeft;  // up/down left
           break;
 
         default:
@@ -1311,17 +1312,17 @@ void CellClass::Concrete_Calc() {
     **	If any kind of fixup piece is needed, then add concrete
     **	to this location RECURSIVELY!
     */
-    if (icon != C_NONE) {
+    if (icon != kCNone) {
       OverlayTypeClass::As_Reference(OVERLAY_CONCRETE)
           .Create_And_Place(Cell_Number());
-      icon = C_NONE;
+      icon = kCNone;
     }
   }
 
   /*
   **	Update the icon on the map.
   */
-  if (icon != C_NONE && std::cmp_not_equal(OverlayData, icon)) {
+  if (icon != kCNone && std::cmp_not_equal(OverlayData, icon)) {
     OverlayData = static_cast<unsigned char>(icon);
     // Array[cell].Base = 0;
     Redraw_Objects();
@@ -1739,7 +1740,7 @@ void CellClass::Incoming(COORDINATE threat, bool forced) {
  *=============================================================================================*/
 int CellClass::Adjacent_Offset(FacingType face) const {
   Validate();
-  if (static_cast<unsigned>(face) >= FACING_COUNT) {
+  if (static_cast<unsigned>(face) >= static_cast<unsigned>(kFacingCount)) {
     return 0;
   }
 
@@ -1835,7 +1836,7 @@ int32_t CellClass::Tiberium_Adjust(bool pregame) {
 
     OverlayData = static_cast<unsigned char>(_adj[count]);
     return (static_cast<int32_t>(OverlayData + 1)) *
-           UnitTypeClass::TIBERIUM_STEP;
+           UnitTypeClass::kTiberiumStep;
   }
 
   return 0;
@@ -1859,31 +1860,28 @@ int32_t CellClass::Tiberium_Adjust(bool pregame) {
  *=============================================================================================*/
 bool CellClass::Goodie_Check(FootClass* object) {
   Validate();
-  enum {
-    MONEY,         // Cash award.
-    UNIT,          // A free unit.
-    NUKE,          // A nuclear device that explodes.
-    ION,           // Calls forth an ion blast on discoverer.
-    NUKE_MISSILE,  // Gets a one time nuclear missile options.
-    ION_BLAST,     // Gets a one time ion blast option.
-    AIR_STRIKE,    // Gets a one time air strike option.
-    HEAL_BASE,     // Heals the player's entire base.
-    CLOAK,         // Units in region gain cloak ability.
-    EXPLOSION,     // Conventional explosion.
-    NAPALM,        // A napalm explosion.
-    SQUAD,         // A mixed squad of friendly infantry appear.
-    VISCEROID,     // A visceroid appears!
-    DARKNESS,      // Shroud the entire map.
-    REVEAL,        // Reveal the entire map.
-    TOTAL_CRATES,
-  };
+  constexpr int kMoney = 0;        // Cash award.
+  constexpr int kUnit = 1;         // A free unit.
+  constexpr int kNuke = 2;         // A nuclear device that explodes.
+  constexpr int kIon = 3;          // Calls forth an ion blast on discoverer.
+  constexpr int kNukeMissile = 4;  // Gets a one time nuclear missile options.
+  constexpr int kIonBlast = 5;     // Gets a one time ion blast option.
+  constexpr int kAirStrike = 6;    // Gets a one time air strike option.
+  constexpr int kHealBase = 7;     // Heals the player's entire base.
+  constexpr int kCloak = 8;        // Units in region gain cloak ability.
+  constexpr int kExplosion = 9;    // Conventional explosion.
+  constexpr int kNapalm = 10;      // A napalm explosion.
+  constexpr int kSquad = 11;       // A mixed squad of friendly infantry appear.
+  constexpr int kVisceroid = 12;   // A visceroid appears!
+  constexpr int kDarkness = 13;    // Shroud the entire map.
+  constexpr int kReveal = 14;      // Reveal the entire map.
   static const int _what[] = {
-      DARKNESS, DARKNESS, REVEAL, REVEAL, NUKE,
+      kDarkness, kDarkness, kReveal, kReveal, kNuke,
       //		ION,ION,
-      NUKE_MISSILE, ION_BLAST, ION_BLAST, AIR_STRIKE, AIR_STRIKE, AIR_STRIKE,
-      AIR_STRIKE, HEAL_BASE, HEAL_BASE, CLOAK, CLOAK, EXPLOSION, EXPLOSION,
-      EXPLOSION, EXPLOSION, NAPALM, NAPALM, NAPALM, SQUAD, SQUAD, SQUAD, SQUAD,
-      SQUAD, UNIT, UNIT, UNIT, UNIT, UNIT, VISCEROID};
+      kNukeMissile, kIonBlast, kIonBlast, kAirStrike, kAirStrike, kAirStrike,
+      kAirStrike, kHealBase, kHealBase, kCloak, kCloak, kExplosion, kExplosion,
+      kExplosion, kExplosion, kNapalm, kNapalm, kNapalm, kSquad, kSquad, kSquad,
+      kSquad, kSquad, kUnit, kUnit, kUnit, kUnit, kUnit, kVisceroid};
 
   if (object && Overlay != OVERLAY_NONE &&
       OverlayTypeClass::As_Reference(Overlay).IsCrate) {
@@ -1907,7 +1905,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
     } else {
       UnitClass* unit = nullptr;
       int damage = 0;
-      int what = MONEY;
+      int what = kMoney;
 
       if (GameToPlay != GAME_NORMAL &&
           (Random_Pick(1, 2) == 1 || !object->House->BScan)) {
@@ -1922,7 +1920,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
                 kStructFlagConst &&
             object->House->Available_Money() <
                 BuildingTypeClass::As_Reference(STRUCT_REFINERY).Cost) {
-          what = MONEY;
+          what = kMoney;
         }
 
         /*
@@ -1934,26 +1932,26 @@ bool CellClass::Goodie_Check(FootClass* object) {
             object->House->Available_Money() >
                 BuildingTypeClass::As_Reference(STRUCT_REFINERY).Cost +
                     BuildingTypeClass::As_Reference(STRUCT_POWER).Cost) {
-          what = UNIT;
+          what = kUnit;
         }
 
         while (what == -1) {
           what = _what[Random_Pick(
               0, static_cast<int>((sizeof(_what) / sizeof(_what[0])) - 1))];
 
-          if (what == REVEAL && object->House->IsVisionary) {
+          if (what == kReveal && object->House->IsVisionary) {
             what = -1;
           }
-          if (what == AIR_STRIKE && object->House->AirStrike.Is_Present()) {
+          if (what == kAirStrike && object->House->AirStrike.Is_Present()) {
             what = -1;
           }
-          if (what == NUKE_MISSILE && object->House->NukeStrike.Is_Present()) {
+          if (what == kNukeMissile && object->House->NukeStrike.Is_Present()) {
             what = -1;
           }
-          if (what == ION_BLAST && object->House->IonCannon.Is_Present()) {
+          if (what == kIonBlast && object->House->IonCannon.Is_Present()) {
             what = -1;
           }
-          if (what == CLOAK && object->IsCloakable) {
+          if (what == kCloak && object->IsCloakable) {
             what = -1;
           }
         }
@@ -1985,7 +1983,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
         /*
         **	Give the player money.
         */
-        case MONEY:
+        case kMoney:
           new AnimClass(ANIM_CRATE_DOLLAR, Cell_Coord());
           if (GameToPlay == GAME_NORMAL) {
             HouseClass::As_Pointer(object->Owner())->Refund_Money(2000);
@@ -1998,7 +1996,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
         /*
         **	Shroud the world in blackness.
         */
-        case DARKNESS:
+        case kDarkness:
           new AnimClass(ANIM_CRATE_EMPULSE, Cell_Coord());
           if (object->House == PlayerPtr) {
             for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
@@ -2024,7 +2022,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
         /*
         **	Reveal the entire map.
         */
-        case REVEAL:
+        case kReveal:
           new AnimClass(ANIM_CRATE_EMPULSE, Cell_Coord());
           object->House->IsVisionary = true;
           if (object->House == PlayerPtr) {
@@ -2037,7 +2035,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
         /*
         **	Try to create a unit where the crate was.
         */
-        case UNIT: {
+        case kUnit: {
           const UnitTypeClass* utp = nullptr;
 
           /*
@@ -2064,7 +2062,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
 
           while (!utp) {
             const UnitType utype =
-                Random_Pick(UNIT_HTANK, static_cast<UnitType>(UNIT_COUNT - 1));
+                Random_Pick(UNIT_HTANK, static_cast<UnitType>(kUnitCount - 1));
             if (utype != UNIT_MCV || MPlayerBases) {
               utp = &UnitTypeClass::As_Reference(utype);
               if (utp->IsCrateGoodie &&
@@ -2089,7 +2087,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
         /*
         **	Create a squad of miscellanous composition.
         */
-        case SQUAD:
+        case kSquad:
           for (int index = 0; index < 5; index++) {
             static const InfantryType _inf[] = {
                 INFANTRY_E1, INFANTRY_E1, INFANTRY_E1, INFANTRY_E1,
@@ -2105,25 +2103,25 @@ bool CellClass::Goodie_Check(FootClass* object) {
         /*
         **	Sometimes an explosion of great magnitude occurs.
         */
-        case NUKE:
+        case kNuke:
           new AnimClass(ANIM_ATOM_BLAST, Cell_Coord());
           break;
 
         /*
         **	Sometimes an explosion of great magnitude occurs.
         */
-        case ION:
+        case kIon:
           new AnimClass(ANIM_ION_CANNON, Cell_Coord());
           break;
 
         /*
         **	A nuclear missile was discovered. Add it to the sidebar.
         */
-        case NUKE_MISSILE:
+        case kNukeMissile:
           new AnimClass(ANIM_CRATE_MISSILE, Cell_Coord());
           if (object->House->NukeStrike.Enable(true) &&
               object->IsOwnedByPlayer) {
-            Map.Add(RTTI_SPECIAL, SPC_NUCLEAR_BOMB);
+            Map.Add(RTTI_SPECIAL, static_cast<int>(SPC_NUCLEAR_BOMB));
             Map.Column[1].Flag_To_Redraw();
           }
 
@@ -2132,11 +2130,11 @@ bool CellClass::Goodie_Check(FootClass* object) {
         /*
         **	A one time ion blast was discovered. Add it to the sidebar.
         */
-        case ION_BLAST:
+        case kIonBlast:
           new AnimClass(ANIM_CRATE_EARTH, Cell_Coord());
           if (object->House->IonCannon.Enable(true) &&
               object->IsOwnedByPlayer) {
-            Map.Add(RTTI_SPECIAL, SPC_ION_CANNON);
+            Map.Add(RTTI_SPECIAL, static_cast<int>(SPC_ION_CANNON));
             Map.Column[1].Flag_To_Redraw();
           }
 
@@ -2145,11 +2143,11 @@ bool CellClass::Goodie_Check(FootClass* object) {
         /*
         **	A one time air strike can be called int. Add it to the sidebar.
         */
-        case AIR_STRIKE:
+        case kAirStrike:
           new AnimClass(ANIM_CRATE_DEVIATOR, Cell_Coord());
           if (object->House->AirStrike.Enable(true) &&
               object->IsOwnedByPlayer) {
-            Map.Add(RTTI_SPECIAL, SPC_AIR_STRIKE);
+            Map.Add(RTTI_SPECIAL, static_cast<int>(SPC_AIR_STRIKE));
             Map.Column[1].Flag_To_Redraw();
           }
 
@@ -2158,7 +2156,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
         /*
         **	A group of explosions are triggered around the crate.
         */
-        case EXPLOSION:
+        case kExplosion:
           damage = 400;
           object->Take_Damage(damage, 0, WARHEAD_HE);
           for (int index = 0; index < 5; index++) {
@@ -2173,7 +2171,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
         /*
         **	A napalm blast is triggered.
         */
-        case NAPALM:
+        case kNapalm:
           coord = Coord_Mid(Cell_Coord(), object->Center_Coord());
           new AnimClass(ANIM_NAPALM3, coord);
           damage = 600;
@@ -2183,7 +2181,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
         /*
         **	A visceroid appears and, boy, he's angry!
         */
-        case VISCEROID:
+        case kVisceroid:
           unit = new UnitClass(UNIT_VICE, HOUSE_JP);
           if (unit) {
             if (unit->Unlimbo(Cell_Coord())) {
@@ -2197,7 +2195,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
         **	All objects within a certain range will gain the ability to
         *cloak.
         */
-        case CLOAK:
+        case kCloak:
           new AnimClass(ANIM_CRATE_STEALTH, Cell_Coord());
           for (int index = 0; index < MouseClass::Layer[LAYER_GROUND].Count();
                index++) {
@@ -2213,7 +2211,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
         /*
         **	All of the player's objects heal up.
         */
-        case HEAL_BASE:
+        case kHealBase:
           new AnimClass(ANIM_CRATE_INVUN, Cell_Coord());
           for (int index = 0; index < Logic.Count(); index++) {
             ObjectClass* obj = Logic[index];

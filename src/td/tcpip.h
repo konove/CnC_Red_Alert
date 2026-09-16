@@ -126,7 +126,7 @@ class TcpipManagerClass {
 
   [[nodiscard]] bool Get_Connected() const { return Connected; }
 
-  typedef enum ConnectStatusEnum {
+  enum class ConnectStatusEnum {
     CONNECTED_OK = 0,
     NOT_CONNECTING,
     CONNECTING,
@@ -137,7 +137,8 @@ class TcpipManagerClass {
     UNABLE_TO_ACCEPT_CLIENT,
     UNABLE_TO_CONNECT,
     CONNECTION_LOST
-  } ConnectStatusEnum;
+  };
+  using enum ConnectStatusEnum;
 
   ConnectStatusEnum Get_Connection_Status() { return ConnectStatus; }
 

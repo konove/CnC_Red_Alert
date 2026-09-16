@@ -204,64 +204,61 @@ int MapEditClass::Select_Team(const char* caption) {
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
-  enum {
-    D_DIALOG_W = 528,                             // dialog width
-    D_DIALOG_H = 290,                             // dialog height
-    D_DIALOG_X = ((640 - D_DIALOG_W) / 2),        // centered x-coord
-    D_DIALOG_Y = ((400 - D_DIALOG_H) / 2),        // centered y-coord
-    D_DIALOG_CX = D_DIALOG_X + (D_DIALOG_W / 2),  // coord of x-center
+  constexpr int kDialogW = 528;                         // dialog width
+  constexpr int kDialogH = 290;                         // dialog height
+  constexpr int kDialogX = ((640 - kDialogW) / 2);      // centered x-coord
+  constexpr int kDialogY = ((400 - kDialogH) / 2);      // centered y-coord
+  constexpr int kDialogCx = kDialogX + (kDialogW / 2);  // coord of x-center
 
-    D_TXT8_H = 22,  // ht of 8-pt text
-    D_MARGIN = 14,  // margin width/height
+  constexpr int kTxt8H = 22;   // ht of 8-pt text
+  constexpr int kMargin = 14;  // margin width/height
 
-    D_LIST_W = 500,
-    D_LIST_H = 208,
-    D_LIST_X = D_DIALOG_X + D_MARGIN,
-    D_LIST_Y = D_DIALOG_Y + D_MARGIN + D_TXT8_H,
+  constexpr int kListW = 500;
+  constexpr int kListH = 208;
+  constexpr int kListX = kDialogX + kMargin;
+  constexpr int kListY = kDialogY + kMargin + kTxt8H;
 
-    D_EDIT_W = 90,
-    D_EDIT_H = 18,
-    D_EDIT_X = D_DIALOG_X + (D_DIALOG_W / 8) - (D_EDIT_W / 2),
-    D_EDIT_Y = D_DIALOG_Y + D_DIALOG_H - D_MARGIN - D_EDIT_H,
+  constexpr int kEditW = 90;
+  constexpr int kEditH = 18;
+  constexpr int kEditX = kDialogX + (kDialogW / 8) - (kEditW / 2);
+  constexpr int kEditY = kDialogY + kDialogH - kMargin - kEditH;
 
-    D_NEW_W = 90,
-    D_NEW_H = 18,
-    D_NEW_X = D_DIALOG_X + ((D_DIALOG_W / 8) * 3) - (D_NEW_W / 2),
-    D_NEW_Y = D_DIALOG_Y + D_DIALOG_H - D_MARGIN - D_NEW_H,
+  constexpr int kNewW = 90;
+  constexpr int kNewH = 18;
+  constexpr int kNewX = kDialogX + ((kDialogW / 8) * 3) - (kNewW / 2);
+  constexpr int kNewY = kDialogY + kDialogH - kMargin - kNewH;
 
-    D_DELETE_W = 90,
-    D_DELETE_H = 18,
-    D_DELETE_X = D_DIALOG_X + ((D_DIALOG_W / 8) * 5) - (D_DELETE_W / 2),
-    D_DELETE_Y = D_DIALOG_Y + D_DIALOG_H - D_MARGIN - D_DELETE_H,
+  constexpr int kDeleteW = 90;
+  constexpr int kDeleteH = 18;
+  constexpr int kDeleteX = kDialogX + ((kDialogW / 8) * 5) - (kDeleteW / 2);
+  constexpr int kDeleteY = kDialogY + kDialogH - kMargin - kDeleteH;
 
-    D_OK_W = 90,
-    D_OK_H = 18,
-    D_OK_X = D_DIALOG_X + ((D_DIALOG_W / 8) * 7) - (D_OK_W / 2),
-    D_OK_Y = D_DIALOG_Y + D_DIALOG_H - D_MARGIN - D_OK_H,
+  constexpr int kOkW = 90;
+  constexpr int kOkH = 18;
+  constexpr int kOkX = kDialogX + ((kDialogW / 8) * 7) - (kOkW / 2);
+  constexpr int kOkY = kDialogY + kDialogH - kMargin - kOkH;
 
-    TEAMTXT_LEN = 43,  // max length of a team entry
-  };
+  constexpr int kTeamtxtLen = 43;  // max length of a team entry
 
   /*........................................................................
   Button enumerations:
   ........................................................................*/
-  enum {
-    TEAM_LIST = 100,
-    BUTTON_EDIT,
-    BUTTON_NEW,
-    BUTTON_DELETE,
-    BUTTON_OK,
-  };
+  constexpr int kTeamList = 100;
+  constexpr int kButtonEdit = 101;
+  constexpr int kButtonNew = 102;
+  constexpr int kButtonDelete = 103;
+  constexpr int kButtonOk = 104;
 
   /*........................................................................
   Redraw values: in order from "top" to "bottom" layer of the dialog
   ........................................................................*/
-  typedef enum {
+  enum class RedrawType {
     REDRAW_NONE = 0,
     REDRAW_BUTTONS = 1,
     REDRAW_BACKGROUND = 2,
     REDRAW_ALL = REDRAW_BACKGROUND
-  } RedrawType;
+  };
+  using enum RedrawType;
   /*........................................................................
   Dialog variables
   ........................................................................*/
@@ -278,30 +275,30 @@ int MapEditClass::Select_Team(const char* caption) {
   ........................................................................*/
   GadgetClass* commands = nullptr;  // the button list
 
-  ListClass teamlist(TEAM_LIST, D_LIST_X, D_LIST_Y, D_LIST_W, D_LIST_H,
+  ListClass teamlist(kTeamList, kListX, kListY, kListW, kListH,
                      TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
                      Hires_Retrieve("BTN-UP.SHP"),
                      Hires_Retrieve("BTN-DN.SHP"));
 
   TextButtonClass editbtn(
-      BUTTON_EDIT, "Edit",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_EDIT_X,
-      D_EDIT_Y, D_EDIT_W, D_EDIT_H);
+      kButtonEdit, "Edit",
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kEditX,
+      kEditY, kEditW, kEditH);
 
   TextButtonClass newbtn(
-      BUTTON_NEW, "New",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_NEW_X,
-      D_NEW_Y, D_NEW_W, D_NEW_H);
+      kButtonNew, "New",
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kNewX, kNewY,
+      kNewW, kNewH);
 
   TextButtonClass deletebtn(
-      BUTTON_DELETE, "Delete",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_DELETE_X,
-      D_DELETE_Y, D_DELETE_W, D_DELETE_H);
+      kButtonDelete, "Delete",
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kDeleteX,
+      kDeleteY, kDeleteW, kDeleteH);
 
   TextButtonClass okbtn(
-      BUTTON_OK, TXT_OK,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_OK_X,
-      D_OK_Y, D_OK_W, D_OK_H);
+      kButtonOk, TXT_OK,
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kOkX, kOkY,
+      kOkW, kOkH);
 
   /*
   ------------------------------- Initialize -------------------------------
@@ -345,7 +342,7 @@ int MapEditClass::Select_Team(const char* caption) {
       (+ 3 for the ", " and the NULL; +3 again for the "..." for the next
       entry)
       ..................................................................*/
-      if (strlen(txt) + strlen(teamtext[i]) + 6 < TEAMTXT_LEN) {
+      if (strlen(txt) + strlen(teamtext[i]) + 6 < kTeamtxtLen) {
         if (j > 0) {
           port::SafeAppend(teamtext[i], ", ", kTeamNameSize);
         }
@@ -418,20 +415,20 @@ int MapEditClass::Select_Team(const char* caption) {
     /*
     ...................... Refresh display if needed ......................
     */
-    if (display) {
+    if (display != REDRAW_NONE) {
       /*
       ...................... Display the dialog box ......................
       */
       Hide_Mouse();
       if (display >= REDRAW_BACKGROUND) {
-        Dialog_Box(D_DIALOG_X, D_DIALOG_Y, D_DIALOG_W, D_DIALOG_H);
-        Draw_Caption(TXT_NONE, D_DIALOG_X, D_DIALOG_Y, D_DIALOG_W);
+        Dialog_Box(kDialogX, kDialogY, kDialogW, kDialogH);
+        Draw_Caption(TXT_NONE, kDialogX, kDialogY, kDialogW);
 
         /*
         ....................... Draw the captions .......................
         */
         Fancy_Text_Print(
-            caption, D_DIALOG_CX, D_DIALOG_Y + D_MARGIN, CC_GREEN, TBLACK,
+            caption, kDialogCx, kDialogY + kMargin, kCcGreen, kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
       /*
@@ -453,32 +450,32 @@ int MapEditClass::Select_Team(const char* caption) {
     ............................ Process input ............................
     */
     switch (static_cast<int>(input)) {
-      case ButtonKey(TEAM_LIST):
+      case ButtonKey(kTeamList):
         def_idx = teamlist.Current_Index();
         if (def_idx < TeamTypes.Count()) {
           CurTeam = TeamTypes.Ptr(def_idx);
         }
         break;
 
-      case ButtonKey(BUTTON_EDIT):
+      case ButtonKey(kButtonEdit):
         if (CurTeam) {  // only allow if there's one selected
           process = false;
           edit_team = true;
         }
         break;
 
-      case ButtonKey(BUTTON_NEW):
+      case ButtonKey(kButtonNew):
         process = false;
         new_team = true;
         break;
 
-      case ButtonKey(BUTTON_DELETE):
+      case ButtonKey(kButtonDelete):
         process = false;
         del_team = true;
         break;
 
       case KN_RETURN:
-      case ButtonKey(BUTTON_OK):
+      case ButtonKey(kButtonOk):
         process = false;
         break;
       default:
@@ -552,203 +549,200 @@ int MapEditClass::Edit_Team() {
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
-  enum {
-    D_DIALOG_W = 516,
-    D_DIALOG_H = 376,
-    D_DIALOG_X = ((640 - D_DIALOG_W) / 2),
-    D_DIALOG_Y = ((400 - D_DIALOG_H) / 2),
-    D_DIALOG_CX = D_DIALOG_X + (D_DIALOG_W / 2),
+  constexpr int kDialogW = 516;
+  constexpr int kDialogH = 376;
+  constexpr int kDialogX = ((640 - kDialogW) / 2);
+  constexpr int kDialogY = ((400 - kDialogH) / 2);
+  constexpr int kDialogCx = kDialogX + (kDialogW / 2);
 
-    D_TXT8_H = 22,
-    D_MARGIN = 14,
+  constexpr int kTxt8H = 22;
+  constexpr int kMargin = 14;
 
-    D_NAME_W = 120,
-    D_NAME_H = 18,
-    D_NAME_X = D_DIALOG_X + D_MARGIN + 100,
-    D_NAME_Y = D_DIALOG_Y + D_MARGIN + D_TXT8_H,
+  constexpr int kNameW = 120;
+  constexpr int kNameH = 18;
+  constexpr int kNameX = kDialogX + kMargin + 100;
+  constexpr int kNameY = kDialogY + kMargin + kTxt8H;
 
-    D_PRIORITY_W = 120,
-    D_PRIORITY_H = 18,
-    D_PRIORITY_X = D_DIALOG_X + D_MARGIN + 100,
-    D_PRIORITY_Y = D_NAME_Y + D_NAME_H,
+  constexpr int kPriorityW = 120;
+  constexpr int kPriorityH = 18;
+  constexpr int kPriorityX = kDialogX + kMargin + 100;
+  constexpr int kPriorityY = kNameY + kNameH;
 
-    D_MAXNUM_W = 120,
-    D_MAXNUM_H = 18,
-    D_MAXNUM_X = D_DIALOG_X + D_MARGIN + 100,
-    D_MAXNUM_Y = D_PRIORITY_Y + D_PRIORITY_H,
+  constexpr int kMaxnumW = 120;
+  constexpr int kMaxnumH = 18;
+  constexpr int kMaxnumX = kDialogX + kMargin + 100;
+  constexpr int kMaxnumY = kPriorityY + kPriorityH;
 
-    D_INITNUM_W = 120,
-    D_INITNUM_H = 18,
-    D_INITNUM_X = D_DIALOG_X + D_MARGIN + 100,
-    D_INITNUM_Y = D_MAXNUM_Y + D_MAXNUM_H,
+  constexpr int kInitnumW = 120;
+  constexpr int kInitnumH = 18;
+  constexpr int kInitnumX = kDialogX + kMargin + 100;
+  constexpr int kInitnumY = kMaxnumY + kMaxnumH;
 
-    D_FEAR_W = 120,
-    D_FEAR_H = 18,
-    D_FEAR_X = D_DIALOG_X + D_MARGIN + 100,
-    D_FEAR_Y = D_INITNUM_Y + D_INITNUM_H,
+  constexpr int kFearW = 120;
+  constexpr int kFearH = 18;
+  constexpr int kFearX = kDialogX + kMargin + 100;
+  constexpr int kFearY = kInitnumY + kInitnumH;
 
-    D_GDI_W = 100,
-    D_GDI_H = 18,
-    D_GDI_X = D_NAME_X + D_NAME_W + D_MARGIN,
-    D_GDI_Y = D_NAME_Y + D_NAME_H + (D_NAME_H / 2),
+  constexpr int kGdiW = 100;
+  constexpr int kGdiH = 18;
+  constexpr int kGdiX = kNameX + kNameW + kMargin;
+  constexpr int kGdiY = kNameY + kNameH + (kNameH / 2);
 
-    D_NOD_W = 100,
-    D_NOD_H = 18,
-    D_NOD_X = D_NAME_X + D_NAME_W + D_MARGIN,
-    D_NOD_Y = D_GDI_Y + D_GDI_H,
+  constexpr int kNodW = 100;
+  constexpr int kNodH = 18;
+  constexpr int kNodX = kNameX + kNameW + kMargin;
+  constexpr int kNodY = kGdiY + kGdiH;
 
-    D_NEU_W = 100,
-    D_NEU_H = 18,
-    D_NEU_X = D_NAME_X + D_NAME_W + D_MARGIN,
-    D_NEU_Y = D_NOD_Y + D_NOD_H,
+  constexpr int kNeuW = 100;
+  constexpr int kNeuH = 18;
+  constexpr int kNeuX = kNameX + kNameW + kMargin;
+  constexpr int kNeuY = kNodY + kNodH;
 
-    D_MULTI1_W = 50,
-    D_MULTI1_H = 18,
-    D_MULTI1_X = D_GDI_X,
-    D_MULTI1_Y = D_GDI_Y,
+  constexpr int kMulti1W = 50;
+  constexpr int kMulti1H = 18;
+  constexpr int kMulti1X = kGdiX;
+  constexpr int kMulti1Y = kGdiY;
 
-    D_MULTI2_W = 50,
-    D_MULTI2_H = 18,
-    D_MULTI2_X = D_GDI_X + D_MULTI2_W,
-    D_MULTI2_Y = D_GDI_Y,
+  constexpr int kMulti2W = 50;
+  constexpr int kMulti2H = 18;
+  constexpr int kMulti2X = kGdiX + kMulti2W;
+  constexpr int kMulti2Y = kGdiY;
 
-    D_MULTI3_W = 50,
-    D_MULTI3_H = 18,
-    D_MULTI3_X = D_NOD_X,
-    D_MULTI3_Y = D_NOD_Y,
+  constexpr int kMulti3W = 50;
+  constexpr int kMulti3H = 18;
+  constexpr int kMulti3X = kNodX;
+  constexpr int kMulti3Y = kNodY;
 
-    D_MULTI4_W = 50,
-    D_MULTI4_H = 18,
-    D_MULTI4_X = D_NOD_X + D_MULTI4_W,
-    D_MULTI4_Y = D_NOD_Y,
+  constexpr int kMulti4W = 50;
+  constexpr int kMulti4H = 18;
+  constexpr int kMulti4X = kNodX + kMulti4W;
+  constexpr int kMulti4Y = kNodY;
 
-    D_ROUNDABOUT_W = 130,
-    D_ROUNDABOUT_H = 18,
-    D_ROUNDABOUT_X = D_DIALOG_X + D_DIALOG_W - D_MARGIN - D_ROUNDABOUT_W,
-    D_ROUNDABOUT_Y = D_DIALOG_Y + D_MARGIN + D_TXT8_H - 10,
+  constexpr int kRoundaboutW = 130;
+  constexpr int kRoundaboutH = 18;
+  constexpr int kRoundaboutX = kDialogX + kDialogW - kMargin - kRoundaboutW;
+  constexpr int kRoundaboutY = kDialogY + kMargin + kTxt8H - 10;
 
-    D_LEARNING_W = D_ROUNDABOUT_W,
-    D_LEARNING_H = 18,
-    D_LEARNING_X = D_ROUNDABOUT_X,
-    D_LEARNING_Y = D_ROUNDABOUT_Y + D_ROUNDABOUT_H,
+  constexpr int kLearningW = kRoundaboutW;
+  constexpr int kLearningH = 18;
+  constexpr int kLearningX = kRoundaboutX;
+  constexpr int kLearningY = kRoundaboutY + kRoundaboutH;
 
-    D_SUICIDE_W = D_ROUNDABOUT_W,
-    D_SUICIDE_H = 18,
-    D_SUICIDE_X = D_ROUNDABOUT_X,
-    D_SUICIDE_Y = D_LEARNING_Y + D_LEARNING_H,
+  constexpr int kSuicideW = kRoundaboutW;
+  constexpr int kSuicideH = 18;
+  constexpr int kSuicideX = kRoundaboutX;
+  constexpr int kSuicideY = kLearningY + kLearningH;
 
-    D_AUTOCREATE_W = D_ROUNDABOUT_W,
-    D_AUTOCREATE_H = 18,
-    D_AUTOCREATE_X = D_ROUNDABOUT_X,
-    D_AUTOCREATE_Y = D_SUICIDE_Y + D_SUICIDE_H,
+  constexpr int kAutocreateW = kRoundaboutW;
+  constexpr int kAutocreateH = 18;
+  constexpr int kAutocreateX = kRoundaboutX;
+  constexpr int kAutocreateY = kSuicideY + kSuicideH;
 
-    D_MERCENARY_W = D_ROUNDABOUT_W,
-    D_MERCENARY_H = 18,
-    D_MERCENARY_X = D_ROUNDABOUT_X,
-    D_MERCENARY_Y = D_AUTOCREATE_Y + D_AUTOCREATE_H,
+  constexpr int kMercenaryW = kRoundaboutW;
+  constexpr int kMercenaryH = 18;
+  constexpr int kMercenaryX = kRoundaboutX;
+  constexpr int kMercenaryY = kAutocreateY + kAutocreateH;
 
-    D_PREBUILT_W = D_ROUNDABOUT_W,
-    D_PREBUILT_H = 18,
-    D_PREBUILT_X = D_ROUNDABOUT_X,
-    D_PREBUILT_Y = D_MERCENARY_Y + D_MERCENARY_H,
+  constexpr int kPrebuiltW = kRoundaboutW;
+  constexpr int kPrebuiltH = 18;
+  constexpr int kPrebuiltX = kRoundaboutX;
+  constexpr int kPrebuiltY = kMercenaryY + kMercenaryH;
 
-    D_REINFORCE_W = D_ROUNDABOUT_W,
-    D_REINFORCE_H = 18,
-    D_REINFORCE_X = D_ROUNDABOUT_X,
-    D_REINFORCE_Y = D_PREBUILT_Y + D_PREBUILT_H,
+  constexpr int kReinforceW = kRoundaboutW;
+  constexpr int kReinforceH = 18;
+  constexpr int kReinforceX = kRoundaboutX;
+  constexpr int kReinforceY = kPrebuiltY + kPrebuiltH;
 
-    D_MISSION1_W = 180,
-    D_MISSION1_H = 128,
-    D_MISSION1_X = D_DIALOG_X + D_MARGIN,
-    D_MISSION1_Y = D_REINFORCE_Y + D_REINFORCE_H + D_MARGIN,
+  constexpr int kMission1W = 180;
+  constexpr int kMission1H = 128;
+  constexpr int kMission1X = kDialogX + kMargin;
+  constexpr int kMission1Y = kReinforceY + kReinforceH + kMargin;
 
-    D_MISSION2_W = 180,
-    D_MISSION2_H = 128,
-    D_MISSION2_X = D_DIALOG_X + D_DIALOG_W - D_MARGIN - D_MISSION2_W,
-    D_MISSION2_Y = D_MISSION1_Y,
+  constexpr int kMission2W = 180;
+  constexpr int kMission2H = 128;
+  constexpr int kMission2X = kDialogX + kDialogW - kMargin - kMission2W;
+  constexpr int kMission2Y = kMission1Y;
 
-    D_ADD_W = 100,
-    D_ADD_H = 18,
-    D_ADD_X = D_MISSION1_X + D_MISSION1_W + D_MARGIN,
-    D_ADD_Y = D_MISSION1_Y + D_ADD_H,
+  constexpr int kAddW = 100;
+  constexpr int kAddH = 18;
+  constexpr int kAddX = kMission1X + kMission1W + kMargin;
+  constexpr int kAddY = kMission1Y + kAddH;
 
-    D_INSERT_W = 100,
-    D_INSERT_H = 18,
-    D_INSERT_X = D_MISSION1_X + D_MISSION1_W + D_MARGIN,
-    D_INSERT_Y = D_ADD_Y + D_ADD_H,
+  constexpr int kInsertW = 100;
+  constexpr int kInsertH = 18;
+  constexpr int kInsertX = kMission1X + kMission1W + kMargin;
+  constexpr int kInsertY = kAddY + kAddH;
 
-    D_DEL_W = 100,
-    D_DEL_H = 18,
-    D_DEL_X = D_MISSION1_X + D_MISSION1_W + D_MARGIN,
-    D_DEL_Y = D_INSERT_Y + D_INSERT_H,
+  constexpr int kDelW = 100;
+  constexpr int kDelH = 18;
+  constexpr int kDelX = kMission1X + kMission1W + kMargin;
+  constexpr int kDelY = kInsertY + kInsertH;
 
-    D_ARG_W = 100,
-    D_ARG_H = 18,
-    D_ARG_X = D_MISSION1_X + D_MISSION1_W + D_MARGIN,
-    D_ARG_Y = D_DEL_Y + D_DEL_H,
+  constexpr int kArgW = 100;
+  constexpr int kArgH = 18;
+  constexpr int kArgX = kMission1X + kMission1W + kMargin;
+  constexpr int kArgY = kDelY + kDelH;
 
-    D_MEMBERS_W = 100,
-    D_MEMBERS_H = 18,
-    D_MEMBERS_X = D_DIALOG_X + (D_DIALOG_W / 6) - (D_MEMBERS_W / 2),
-    D_MEMBERS_Y = D_DIALOG_Y + D_DIALOG_H - D_MARGIN - D_MEMBERS_H,
+  constexpr int kMembersW = 100;
+  constexpr int kMembersH = 18;
+  constexpr int kMembersX = kDialogX + (kDialogW / 6) - (kMembersW / 2);
+  constexpr int kMembersY = kDialogY + kDialogH - kMargin - kMembersH;
 
-    D_CANCEL_W = 100,
-    D_CANCEL_H = 18,
-    D_CANCEL_X = D_DIALOG_X + ((D_DIALOG_W / 6) * 3) - (D_CANCEL_W / 2),
-    D_CANCEL_Y = D_DIALOG_Y + D_DIALOG_H - D_MARGIN - D_CANCEL_H,
+  constexpr int kCancelW = 100;
+  constexpr int kCancelH = 18;
+  constexpr int kCancelX = kDialogX + ((kDialogW / 6) * 3) - (kCancelW / 2);
+  constexpr int kCancelY = kDialogY + kDialogH - kMargin - kCancelH;
 
-    D_OK_W = 100,
-    D_OK_H = 18,
-    D_OK_X = D_DIALOG_X + ((D_DIALOG_W / 6) * 5) - (D_OK_W / 2),
-    D_OK_Y = D_DIALOG_Y + D_DIALOG_H - D_MARGIN - D_OK_H,
-  };
+  constexpr int kOkW = 100;
+  constexpr int kOkH = 18;
+  constexpr int kOkX = kDialogX + ((kDialogW / 6) * 5) - (kOkW / 2);
+  constexpr int kOkY = kDialogY + kDialogH - kMargin - kOkH;
 
   /*........................................................................
   Button enumerations:
   ........................................................................*/
-  enum {
-    BUTTON_NAME = 100,
-    BUTTON_RECRUIT,
-    BUTTON_MAXNUM,
-    BUTTON_INITNUM,
-    BUTTON_FEAR,
-    BUTTON_GDI,
-    BUTTON_NOD,
-    BUTTON_NEU,
-    BUTTON_JP,  // placeholder
-    BUTTON_MULTI1,
-    BUTTON_MULTI2,
-    BUTTON_MULTI3,
-    BUTTON_MULTI4,
-    BUTTON_MULTI5,
-    BUTTON_MULTI6,
-    BUTTON_ROUNDABOUT,
-    BUTTON_LEARNING,
-    BUTTON_SUICIDE,
-    BUTTON_AUTO,
-    BUTTON_MERCENARY,
-    BUTTON_PREBUILT,
-    BUTTON_REINFORCE,
-    BUTTON_MISSION1,
-    BUTTON_MISSION2,
-    BUTTON_ADD,
-    BUTTON_INSERT,
-    BUTTON_DEL,
-    BUTTON_ARG,
-    BUTTON_MEMBERS,
-    BUTTON_OK,
-    BUTTON_CANCEL,
-  };
+  constexpr int kButtonName = 100;
+  constexpr int kButtonRecruit = 101;
+  constexpr int kButtonMaxnum = 102;
+  constexpr int kButtonInitnum = 103;
+  constexpr int kButtonFear = 104;
+  constexpr int kButtonGdi = 105;
+  constexpr int kButtonNod = 106;
+  constexpr int kButtonNeu = 107;
+  [[maybe_unused]] constexpr int kButtonJp = 108;  // placeholder
+  constexpr int kButtonMulti1 = 109;
+  constexpr int kButtonMulti2 = 110;
+  constexpr int kButtonMulti3 = 111;
+  constexpr int kButtonMulti4 = 112;
+  [[maybe_unused]] constexpr int kButtonMulti5 = 113;
+  [[maybe_unused]] constexpr int kButtonMulti6 = 114;
+  constexpr int kButtonRoundabout = 115;
+  constexpr int kButtonLearning = 116;
+  constexpr int kButtonSuicide = 117;
+  constexpr int kButtonAuto = 118;
+  constexpr int kButtonMercenary = 119;
+  constexpr int kButtonPrebuilt = 120;
+  constexpr int kButtonReinforce = 121;
+  constexpr int kButtonMission1 = 122;
+  constexpr int kButtonMission2 = 123;
+  constexpr int kButtonAdd = 124;
+  constexpr int kButtonInsert = 125;
+  constexpr int kButtonDel = 126;
+  constexpr int kButtonArg = 127;
+  constexpr int kButtonMembers = 128;
+  constexpr int kButtonOk = 129;
+  constexpr int kButtonCancel = 130;
 
   /*........................................................................
   Redraw values: in order from "top" to "bottom" layer of the dialog
   ........................................................................*/
-  typedef enum {
+  enum class RedrawType {
     REDRAW_NONE = 0,
     REDRAW_BUTTONS = 1,
     REDRAW_BACKGROUND = 2,
     REDRAW_ALL = REDRAW_BACKGROUND
-  } RedrawType;
+  };
+  using enum RedrawType;
 
   /*........................................................................
   Dialog variables:
@@ -759,8 +753,8 @@ int MapEditClass::Edit_Team() {
   char maxnum_buf[4];
   char initnum_buf[4];
   char fear_buf[4];
-  TeamMissionStruct missions[TeamTypeClass::MAX_TEAM_MISSIONS];
-  char missionbuf[TeamTypeClass::MAX_TEAM_MISSIONS][20];
+  TeamMissionStruct missions[TeamTypeClass::kMaxTeamMissions];
+  char missionbuf[TeamTypeClass::kMaxTeamMissions][20];
 
   char arg_buf[4] = {0};
   static int tabs[] = {130, 180};  // list box tab stops
@@ -769,142 +763,140 @@ int MapEditClass::Edit_Team() {
   /*........................................................................
   Buttons:
   ........................................................................*/
-  EditClass name_edt(BUTTON_NAME, name_buf, 8,
-                     TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_NAME_X,
-                     D_NAME_Y, D_NAME_W, D_NAME_H, EditClass::ALPHANUMERIC);
+  EditClass name_edt(kButtonName, name_buf, 8,
+                     TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kNameX,
+                     kNameY, kNameW, kNameH, EditClass::ALPHANUMERIC);
 
-  EditClass recr_edt(BUTTON_RECRUIT, recr_buf, 3,
-                     TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
-                     D_PRIORITY_X, D_PRIORITY_Y, D_PRIORITY_W, D_PRIORITY_H,
-                     EditClass::NUMERIC);
+  EditClass recr_edt(kButtonRecruit, recr_buf, 3,
+                     TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kPriorityX,
+                     kPriorityY, kPriorityW, kPriorityH, EditClass::NUMERIC);
 
-  EditClass maxnum_edt(BUTTON_MAXNUM, maxnum_buf, 3,
-                       TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
-                       D_MAXNUM_X, D_MAXNUM_Y, D_MAXNUM_W, D_MAXNUM_H,
-                       EditClass::NUMERIC);
+  EditClass maxnum_edt(kButtonMaxnum, maxnum_buf, 3,
+                       TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kMaxnumX,
+                       kMaxnumY, kMaxnumW, kMaxnumH, EditClass::NUMERIC);
 
-  EditClass initnum_edt(BUTTON_INITNUM, initnum_buf, 3,
+  EditClass initnum_edt(kButtonInitnum, initnum_buf, 3,
                         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
-                        D_INITNUM_X, D_INITNUM_Y, D_INITNUM_W, D_INITNUM_H,
+                        kInitnumX, kInitnumY, kInitnumW, kInitnumH,
                         EditClass::NUMERIC);
 
-  EditClass fear_edt(BUTTON_FEAR, fear_buf, 3,
-                     TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_FEAR_X,
-                     D_FEAR_Y, D_FEAR_W, D_FEAR_H, EditClass::NUMERIC);
+  EditClass fear_edt(kButtonFear, fear_buf, 3,
+                     TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kFearX,
+                     kFearY, kFearW, kFearH, EditClass::NUMERIC);
 
   TextButtonClass gdibtn(
-      BUTTON_GDI, "GDI",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_GDI_X,
-      D_GDI_Y, D_GDI_W, D_GDI_H);
+      kButtonGdi, "GDI",
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kGdiX, kGdiY,
+      kGdiW, kGdiH);
 
   TextButtonClass nodbtn(
-      BUTTON_NOD, "NOD",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_NOD_X,
-      D_NOD_Y, D_NOD_W, D_NOD_H);
+      kButtonNod, "NOD",
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kNodX, kNodY,
+      kNodW, kNodH);
 
   TextButtonClass neubtn(
-      BUTTON_NEU, "NEUTRAL",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_NEU_X,
-      D_NEU_Y, D_NEU_W, D_NEU_H);
+      kButtonNeu, "NEUTRAL",
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kNeuX, kNeuY,
+      kNeuW, kNeuH);
 
   const TextButtonClass multi1btn(
-      BUTTON_MULTI1, "M1",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_MULTI1_X,
-      D_MULTI1_Y, D_MULTI1_W, D_MULTI1_H);
+      kButtonMulti1, "M1",
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kMulti1X,
+      kMulti1Y, kMulti1W, kMulti1H);
 
   const TextButtonClass multi2btn(
-      BUTTON_MULTI2, "M2",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_MULTI2_X,
-      D_MULTI2_Y, D_MULTI2_W, D_MULTI2_H);
+      kButtonMulti2, "M2",
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kMulti2X,
+      kMulti2Y, kMulti2W, kMulti2H);
 
   const TextButtonClass multi3btn(
-      BUTTON_MULTI3, "M3",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_MULTI3_X,
-      D_MULTI3_Y, D_MULTI3_W, D_MULTI3_H);
+      kButtonMulti3, "M3",
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kMulti3X,
+      kMulti3Y, kMulti3W, kMulti3H);
 
   const TextButtonClass multi4btn(
-      BUTTON_MULTI4, "M4",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_MULTI4_X,
-      D_MULTI4_Y, D_MULTI4_W, D_MULTI4_H);
+      kButtonMulti4, "M4",
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kMulti4X,
+      kMulti4Y, kMulti4W, kMulti4H);
 
   TextButtonClass roundbtn(
-      BUTTON_ROUNDABOUT, "Roundabout",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
-      D_ROUNDABOUT_X, D_ROUNDABOUT_Y, D_ROUNDABOUT_W, D_ROUNDABOUT_H);
+      kButtonRoundabout, "Roundabout",
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kRoundaboutX,
+      kRoundaboutY, kRoundaboutW, kRoundaboutH);
 
   TextButtonClass learnbtn(
-      BUTTON_LEARNING, "Learning",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_LEARNING_X,
-      D_LEARNING_Y, D_LEARNING_W, D_LEARNING_H);
+      kButtonLearning, "Learning",
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kLearningX,
+      kLearningY, kLearningW, kLearningH);
 
   TextButtonClass suicidebtn(
-      BUTTON_SUICIDE, "Suicide",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_SUICIDE_X,
-      D_SUICIDE_Y, D_SUICIDE_W, D_SUICIDE_H);
+      kButtonSuicide, "Suicide",
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kSuicideX,
+      kSuicideY, kSuicideW, kSuicideH);
 
   TextButtonClass autocreatebtn(
-      BUTTON_AUTO, "Autocreate",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
-      D_AUTOCREATE_X, D_AUTOCREATE_Y, D_AUTOCREATE_W, D_AUTOCREATE_H);
+      kButtonAuto, "Autocreate",
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kAutocreateX,
+      kAutocreateY, kAutocreateW, kAutocreateH);
 
   TextButtonClass mercbtn(
-      BUTTON_MERCENARY, "Mercenary",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
-      D_MERCENARY_X, D_MERCENARY_Y, D_MERCENARY_W, D_MERCENARY_H);
+      kButtonMercenary, "Mercenary",
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kMercenaryX,
+      kMercenaryY, kMercenaryW, kMercenaryH);
 
   TextButtonClass prebuiltbtn(
-      BUTTON_PREBUILT, "Prebuild",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_PREBUILT_X,
-      D_PREBUILT_Y, D_PREBUILT_W, D_PREBUILT_H);
+      kButtonPrebuilt, "Prebuild",
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kPrebuiltX,
+      kPrebuiltY, kPrebuiltW, kPrebuiltH);
 
   TextButtonClass reinforcebtn(
-      BUTTON_REINFORCE, "Reinforce",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
-      D_REINFORCE_X, D_REINFORCE_Y, D_REINFORCE_W, D_REINFORCE_H);
+      kButtonReinforce, "Reinforce",
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kReinforceX,
+      kReinforceY, kReinforceW, kReinforceH);
 
   ListClass missionlist1(
-      BUTTON_MISSION1, D_MISSION1_X, D_MISSION1_Y, D_MISSION1_W, D_MISSION1_H,
+      kButtonMission1, kMission1X, kMission1Y, kMission1W, kMission1H,
       TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       Hires_Retrieve("BTN-UP.SHP"), Hires_Retrieve("BTN-DN.SHP"));
 
   ListClass missionlist2(
-      BUTTON_MISSION2, D_MISSION2_X, D_MISSION2_Y, D_MISSION2_W, D_MISSION2_H,
+      kButtonMission2, kMission2X, kMission2Y, kMission2W, kMission2H,
       TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       Hires_Retrieve("BTN-UP.SHP"), Hires_Retrieve("BTN-DN.SHP"));
 
   TextButtonClass addbtn(
-      BUTTON_ADD, "Add >>",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_ADD_X,
-      D_ADD_Y, D_ADD_W, D_ADD_H);
+      kButtonAdd, "Add >>",
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kAddX, kAddY,
+      kAddW, kAddH);
 
   TextButtonClass insertbtn(
-      BUTTON_INSERT, "Insert",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_INSERT_X,
-      D_INSERT_Y, D_INSERT_W, D_INSERT_H);
+      kButtonInsert, "Insert",
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kInsertX,
+      kInsertY, kInsertW, kInsertH);
 
   TextButtonClass delbtn(
-      BUTTON_DEL, "Delete",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_DEL_X,
-      D_DEL_Y, D_DEL_W, D_DEL_H);
+      kButtonDel, "Delete",
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kDelX, kDelY,
+      kDelW, kDelH);
 
-  EditClass arg_edt(BUTTON_ARG, arg_buf, 4,
-                    TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_ARG_X,
-                    D_ARG_Y, D_ARG_W, D_ARG_H, EditClass::ALPHANUMERIC);
+  EditClass arg_edt(kButtonArg, arg_buf, 4,
+                    TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kArgX,
+                    kArgY, kArgW, kArgH, EditClass::ALPHANUMERIC);
 
   TextButtonClass membersbtn(
-      BUTTON_MEMBERS, "Members",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_MEMBERS_X,
-      D_MEMBERS_Y, D_MEMBERS_W, D_MEMBERS_H);
+      kButtonMembers, "Members",
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kMembersX,
+      kMembersY, kMembersW, kMembersH);
 
   TextButtonClass okbtn(
-      BUTTON_OK, TXT_OK,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_OK_X,
-      D_OK_Y, D_OK_W, D_OK_H);
+      kButtonOk, TXT_OK,
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kOkX, kOkY,
+      kOkW, kOkH);
 
   TextButtonClass cancelbtn(
-      BUTTON_CANCEL, TXT_CANCEL,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_CANCEL_X,
-      D_CANCEL_Y, D_CANCEL_W, D_CANCEL_H);
+      kButtonCancel, TXT_CANCEL,
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kCancelX,
+      kCancelY, kCancelW, kCancelH);
 
   /*
   ------------------------------- Initialize -------------------------------
@@ -931,7 +923,7 @@ int MapEditClass::Edit_Team() {
   /*
   ......................... Fill in mission lists ..........................
   */
-  for (i = 0; i < TMISSION_COUNT; i++) {
+  for (i = 0; i < static_cast<int>(TMISSION_COUNT); i++) {
     missionlist1.Add_Item(
         TeamTypeClass::Name_From_Mission(static_cast<TeamMissionType>(i)));
   }
@@ -1019,7 +1011,7 @@ int MapEditClass::Edit_Team() {
   delbtn.Add_Tail(*commands);
   arg_edt.Add_Tail(*commands);
 
-  Set_House_Buttons(house, commands, BUTTON_GDI);
+  Set_House_Buttons(house, commands, kButtonGdi);
 
   /*
   -------------------------- Main Processing Loop --------------------------
@@ -1045,40 +1037,40 @@ int MapEditClass::Edit_Team() {
     /*
     ...................... Refresh display if needed ......................
     */
-    if (display) {
+    if (display != REDRAW_NONE) {
       /*
       ...................... Display the dialog box ......................
       */
       Hide_Mouse();
       if (display >= REDRAW_BACKGROUND) {
-        Dialog_Box(D_DIALOG_X, D_DIALOG_Y, D_DIALOG_W, D_DIALOG_H);
+        Dialog_Box(kDialogX, kDialogY, kDialogW, kDialogH);
 
-        Draw_Caption(TXT_NONE, D_DIALOG_X, D_DIALOG_Y, D_DIALOG_W);
+        Draw_Caption(TXT_NONE, kDialogX, kDialogY, kDialogW);
         /*
         ....................... Draw the captions .......................
         */
         Fancy_Text_Print(
-            "Team Edit", D_DIALOG_CX, D_DIALOG_Y + D_MARGIN, CC_GREEN, TBLACK,
+            "Team Edit", kDialogCx, kDialogY + kMargin, kCcGreen, kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
-            "Name", D_NAME_X - 5, D_NAME_Y, CC_GREEN, TBLACK,
+            "Name", kNameX - 5, kNameY, kCcGreen, kTBlack,
             TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
-            "Priority", D_PRIORITY_X - 5, D_PRIORITY_Y, CC_GREEN, TBLACK,
+            "Priority", kPriorityX - 5, kPriorityY, kCcGreen, kTBlack,
             TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
-            "Max Num", D_MAXNUM_X - 5, D_MAXNUM_Y, CC_GREEN, TBLACK,
+            "Max Num", kMaxnumX - 5, kMaxnumY, kCcGreen, kTBlack,
             TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
-            "Init Num", D_INITNUM_X - 5, D_INITNUM_Y, CC_GREEN, TBLACK,
+            "Init Num", kInitnumX - 5, kInitnumY, kCcGreen, kTBlack,
             TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
-            "Fear", D_FEAR_X - 5, D_FEAR_Y, CC_GREEN, TBLACK,
+            "Fear", kFearX - 5, kFearY, kCcGreen, kTBlack,
             TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
       /*
@@ -1100,17 +1092,17 @@ int MapEditClass::Edit_Team() {
     ............................ Process input ............................
     */
     switch (static_cast<int>(input)) {
-      case ButtonKey(BUTTON_NAME):
-      case ButtonKey(BUTTON_RECRUIT):
-      case ButtonKey(BUTTON_MAXNUM):
-      case ButtonKey(BUTTON_INITNUM):
-      case ButtonKey(BUTTON_FEAR):
+      case ButtonKey(kButtonName):
+      case ButtonKey(kButtonRecruit):
+      case ButtonKey(kButtonMaxnum):
+      case ButtonKey(kButtonInitnum):
+      case ButtonKey(kButtonFear):
         break;
 
       /*..................................................................
       Toggle RoundAbout
       ..................................................................*/
-      case ButtonKey(BUTTON_ROUNDABOUT):
+      case ButtonKey(kButtonRoundabout):
         if (roundabout) {
           roundabout = 0;
           roundbtn.Turn_Off();
@@ -1123,7 +1115,7 @@ int MapEditClass::Edit_Team() {
       /*..................................................................
       Toggle Learning
       ..................................................................*/
-      case ButtonKey(BUTTON_LEARNING):
+      case ButtonKey(kButtonLearning):
         if (learning) {
           learning = 0;
           learnbtn.Turn_Off();
@@ -1136,7 +1128,7 @@ int MapEditClass::Edit_Team() {
       /*..................................................................
       Toggle Suicide
       ..................................................................*/
-      case ButtonKey(BUTTON_SUICIDE):
+      case ButtonKey(kButtonSuicide):
         if (suicide) {
           suicide = 0;
           suicidebtn.Turn_Off();
@@ -1149,7 +1141,7 @@ int MapEditClass::Edit_Team() {
       /*..................................................................
       Toggle Spy
       ..................................................................*/
-      case ButtonKey(BUTTON_AUTO):
+      case ButtonKey(kButtonAuto):
         if (autocreate) {
           autocreate = 0;
           autocreatebtn.Turn_Off();
@@ -1162,7 +1154,7 @@ int MapEditClass::Edit_Team() {
       /*..................................................................
       Toggle Mercenary
       ..................................................................*/
-      case ButtonKey(BUTTON_MERCENARY):
+      case ButtonKey(kButtonMercenary):
         if (mercenary) {
           mercenary = 0;
           mercbtn.Turn_Off();
@@ -1172,7 +1164,7 @@ int MapEditClass::Edit_Team() {
         }
         break;
 
-      case ButtonKey(BUTTON_PREBUILT):
+      case ButtonKey(kButtonPrebuilt):
         if (prebuilt) {
           prebuilt = 0;
           prebuiltbtn.Turn_Off();
@@ -1182,7 +1174,7 @@ int MapEditClass::Edit_Team() {
         }
         break;
 
-      case ButtonKey(BUTTON_REINFORCE):
+      case ButtonKey(kButtonReinforce):
         if (reinforce) {
           reinforce = 0;
           reinforcebtn.Turn_Off();
@@ -1195,14 +1187,14 @@ int MapEditClass::Edit_Team() {
       /*..................................................................
       Select a Mission on the left-hand mission list
       ..................................................................*/
-      case ButtonKey(BUTTON_MISSION1):
+      case ButtonKey(kButtonMission1):
         break;
 
       /*..................................................................
       Select a Mission on the right-hand mission list; update the Argument
       field to reflect the current value
       ..................................................................*/
-      case ButtonKey(BUTTON_MISSION2):
+      case ButtonKey(kButtonMission2):
         if (missionlist2.Count() > 0 &&
             missionlist2.Current_Index() != curmission) {
           curmission = missionlist2.Current_Index();
@@ -1221,15 +1213,15 @@ int MapEditClass::Edit_Team() {
       /*..................................................................
       Copy mission from left list box to right list box
       ..................................................................*/
-      case ButtonKey(BUTTON_ADD):
-      case ButtonKey(BUTTON_INSERT):
-        if (missioncount < TeamTypeClass::MAX_TEAM_MISSIONS) {
+      case ButtonKey(kButtonAdd):
+      case ButtonKey(kButtonInsert):
+        if (missioncount < TeamTypeClass::kMaxTeamMissions) {
           /*
           ** Set 'i' to the position we're going to add into; this will
           ** be just AFTER the current item if we're adding, and it will
           ** be the current item if we're inserting.
           */
-          if (input == ButtonKey(BUTTON_ADD)) {
+          if (input == ButtonKey(kButtonAdd)) {
             i = missionlist2.Current_Index() + 1;
             i = std::max(i, 0);
             i = std::min(i, missioncount);
@@ -1252,7 +1244,8 @@ int MapEditClass::Edit_Team() {
           ** Set the Mission value based on 1st list box's index
           */
           missions[i].Mission = static_cast<TeamMissionType>(
-              TMISSION_ATTACKBASE + missionlist1.Current_Index());
+              static_cast<int>(TMISSION_ATTACKBASE) +
+              missionlist1.Current_Index());
 
           /*
           ** Set the missions argument field
@@ -1280,7 +1273,7 @@ int MapEditClass::Edit_Team() {
       /*..................................................................
       Delete mission from right-hand list box
       ..................................................................*/
-      case ButtonKey(BUTTON_DEL):
+      case ButtonKey(kButtonDel):
         if (missioncount > 0) {
           i = missionlist2.Current_Index();
           if (i < 0 || i >= missioncount) {
@@ -1314,22 +1307,22 @@ int MapEditClass::Edit_Team() {
       /*..................................................................
       Set house
       ..................................................................*/
-      case ButtonKey(BUTTON_GDI):
-      case ButtonKey(BUTTON_NOD):
-      case ButtonKey(BUTTON_NEU):
-      case ButtonKey(BUTTON_MULTI1):
-      case ButtonKey(BUTTON_MULTI2):
-      case ButtonKey(BUTTON_MULTI3):
-      case ButtonKey(BUTTON_MULTI4):
+      case ButtonKey(kButtonGdi):
+      case ButtonKey(kButtonNod):
+      case ButtonKey(kButtonNeu):
+      case ButtonKey(kButtonMulti1):
+      case ButtonKey(kButtonMulti2):
+      case ButtonKey(kButtonMulti3):
+      case ButtonKey(kButtonMulti4):
         house = static_cast<HousesType>(static_cast<int>(input & ~KN_BUTTON) -
-                                        BUTTON_GDI);
-        Set_House_Buttons(house, commands, BUTTON_GDI);
+                                        kButtonGdi);
+        Set_House_Buttons(house, commands, kButtonGdi);
         break;
 
       /*..................................................................
       Invoke the members dialog
       ..................................................................*/
-      case ButtonKey(BUTTON_MEMBERS):
+      case ButtonKey(kButtonMembers):
         /*
         .................... Take editor focus away .....................
         */
@@ -1349,7 +1342,7 @@ int MapEditClass::Edit_Team() {
       /*..................................................................
       OK: return
       ..................................................................*/
-      case ButtonKey(BUTTON_OK):
+      case ButtonKey(kButtonOk):
         cancel = false;
         process = false;
         break;
@@ -1357,7 +1350,7 @@ int MapEditClass::Edit_Team() {
       /*..................................................................
       Cancel: return
       ..................................................................*/
-      case ButtonKey(BUTTON_CANCEL):
+      case ButtonKey(kButtonCancel):
         cancel = true;
         process = false;
         break;
@@ -1457,38 +1450,35 @@ int MapEditClass::Edit_Team() {
 /*
 **	Dialog & button dimensions
 */
-enum {
-  D_DIALOG_W = 608,
-  D_DIALOG_X = ((640 - D_DIALOG_W) / 2),
-  D_DIALOG_CX = D_DIALOG_X + (D_DIALOG_W / 2),
+constexpr int kDialogW = 608;
+constexpr int kDialogX = ((640 - kDialogW) / 2);
+constexpr int kDialogCx = kDialogX + (kDialogW / 2);
 
-  D_TXT6_H = 14,
-  D_MARGIN = 14,
+constexpr int kTxt6H = 14;
+constexpr int kMargin = 14;
 
 #ifdef TEENSY_WEENSY
   // D_PICTURE_W = 32,
   // D_PICTURE_H = 24,
-  D_PICTURE_W = 64,  // 9 pictures / row, 16 pixel margin on each side
-  D_PICTURE_H = 48,
+constexpr int kPictureW = 64;  // 9 pictures / row, 16 pixel margin on each side
+constexpr int kPictureH = 48;
 #else
   // D_PICTURE_W = 32,
   // D_PICTURE_H = 30,
-  D_PICTURE_W = 64,
-  D_PICTURE_H = 60,
+constexpr int kPictureW = 64;
+constexpr int kPictureH = 60;
 #endif
-  D_ROW_H = (D_PICTURE_H + 6),
+constexpr int kRowH = (kPictureH + 6);
 
-  D_OK_W = 100,
-  D_OK_H = 18,
-  D_OK_X = D_DIALOG_CX - 10 - D_OK_W,
-  D_OK_Y = 0,
+constexpr int kOkW = 100;
+constexpr int kOkH = 18;
+constexpr int kOkX = kDialogCx - 10 - kOkW;
+constexpr int kOkY = 0;
 
-  D_CANCEL_W = 100,
-  D_CANCEL_H = 18,
-  D_CANCEL_X = D_DIALOG_CX + 10,
-  D_CANCEL_Y = 0,
-
-};
+constexpr int kCancelW = 100;
+constexpr int kCancelH = 18;
+constexpr int kCancelX = kDialogCx + 10;
+constexpr int kCancelY = 0;
 
 /***************************************************************************
  * MapEditClass::Team_Members -- Team members dialog                       *
@@ -1512,10 +1502,8 @@ int MapEditClass::Team_Members(HousesType house) {
   /*
   **	Button enumerations:
   */
-  enum {
-    BUTTON_OK = 100,
-    BUTTON_CANCEL,
-  };
+  constexpr int kButtonOk = 100;
+  constexpr int kButtonCancel = 101;
 
   /*
   **	Redraw values: in order from "top" to "bottom" layer of the dialog
@@ -1523,12 +1511,13 @@ int MapEditClass::Team_Members(HousesType house) {
   **	the requested redraw level to see if it's supposed to draw; if it's
   **	>= its level, it redraws.
   */
-  typedef enum {
+  enum class RedrawType {
     REDRAW_NONE = 0,
     REDRAW_BUTTONS = 1,
     REDRAW_BACKGROUND = 2,
     REDRAW_ALL = REDRAW_BACKGROUND
-  } RedrawType;
+  };
+  using enum RedrawType;
 
   /*
   ............................ Dialog variables ............................
@@ -1566,21 +1555,21 @@ int MapEditClass::Team_Members(HousesType house) {
   */
 
   TextButtonClass okbtn(
-      BUTTON_OK, TXT_OK,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_OK_X,
-      D_OK_Y, D_OK_W, D_OK_H);
+      kButtonOk, TXT_OK,
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kOkX, kOkY,
+      kOkW, kOkH);
 
   TextButtonClass cancelbtn(
-      BUTTON_CANCEL, TXT_CANCEL,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_CANCEL_X,
-      D_CANCEL_Y, D_CANCEL_W, D_CANCEL_H);
+      kButtonCancel, TXT_CANCEL,
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kCancelX,
+      kCancelY, kCancelW, kCancelH);
 
   /*
   **	Set up the team data arrays (ObjectTypeClass pointers & count)
   */
   const auto** teamclass =
-      new const TechnoTypeClass*[MAX_TEAM_CLASSES];  // array of team classes
-  int* teamcount = new int[MAX_TEAM_CLASSES];        // array of class counts
+      new const TechnoTypeClass*[kMaxTeamClasses];  // array of team classes
+  int* teamcount = new int[kMaxTeamClasses];        // array of class counts
 
   /*
   **	Fill in the ObjectTypeClass array with all available object type ptrs,
@@ -1650,7 +1639,7 @@ int MapEditClass::Team_Members(HousesType house) {
   **	Compute picture rows & cols.
   */
   const int numcols =
-      (D_DIALOG_W - 16) / D_PICTURE_W;  // # units displayed horizontally
+      (kDialogW - 16) / kPictureW;  // # units displayed horizontally
   const int numrows =
       (maxclasses + numcols - 1) / numcols;  // # units displayed vertically
 
@@ -1658,17 +1647,17 @@ int MapEditClass::Team_Members(HousesType house) {
   //	Dialog's height = top margin + label + picture rows +
   // margin + label + margin + btn
   //
-  int dlg_h = (D_MARGIN + D_TXT6_H + D_MARGIN + (numrows * D_ROW_H) + D_MARGIN +
-               D_TXT6_H + D_MARGIN + D_OK_H + D_MARGIN);  // dialog height
+  int dlg_h = (kMargin + kTxt6H + kMargin + (numrows * kRowH) + kMargin +
+               kTxt6H + kMargin + kOkH + kMargin);  // dialog height
   dlg_h = std::min(dlg_h, 400);
   const int dlg_y = (400 - dlg_h) / 2;
   const int dlg_picture_top =
-      dlg_y + D_MARGIN + D_TXT6_H + D_MARGIN;  // coord of top of pictures
-  const int msg_y = dlg_y + D_MARGIN + D_TXT6_H + D_MARGIN +
-                    (numrows * D_ROW_H) + D_MARGIN;  // y-coord for object names
+      dlg_y + kMargin + kTxt6H + kMargin;  // coord of top of pictures
+  const int msg_y = dlg_y + kMargin + kTxt6H + kMargin + (numrows * kRowH) +
+                    kMargin;  // y-coord for object names
 
-  okbtn.Y = dlg_y + dlg_h - D_MARGIN - D_OK_H;
-  cancelbtn.Y = dlg_y + dlg_h - D_MARGIN - D_CANCEL_H;
+  okbtn.Y = dlg_y + dlg_h - kMargin - kOkH;
+  cancelbtn.Y = dlg_y + dlg_h - kMargin - kCancelH;
 
   /*
   **	Draw to SeenBuff.
@@ -1717,7 +1706,7 @@ int MapEditClass::Team_Members(HousesType house) {
     /*
     **	Refresh display if needed.
     */
-    if (display) {
+    if (display != REDRAW_NONE) {
       /*
       **	Display the dialog box.
       */
@@ -1726,10 +1715,10 @@ int MapEditClass::Team_Members(HousesType house) {
         /*
         **	Display the constant background of this dialog.
         */
-        Dialog_Box(D_DIALOG_X, dlg_y, D_DIALOG_W, dlg_h);
-        Draw_Caption(TXT_NONE, D_DIALOG_X, dlg_y, D_DIALOG_W);
+        Dialog_Box(kDialogX, dlg_y, kDialogW, dlg_h);
+        Draw_Caption(TXT_NONE, kDialogX, dlg_y, kDialogW);
         Fancy_Text_Print(
-            "Team Members", D_DIALOG_CX, dlg_y + D_MARGIN, CC_GREEN, TBLACK,
+            "Team Members", kDialogCx, dlg_y + kMargin, kCcGreen, kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         //
@@ -1739,14 +1728,14 @@ int MapEditClass::Team_Members(HousesType house) {
           //
           //	Display the object along with any count value for it.
           //
-          Draw_Member(teamclass[i], i, teamcount[i], house, D_DIALOG_X + 16,
+          Draw_Member(teamclass[i], i, teamcount[i], house, kDialogX + 16,
                       dlg_picture_top);
         }
 
         if (static_cast<unsigned>(curclass) < static_cast<unsigned>(maxclasses)) {
           Fancy_Text_Print(
-              teamclass[curclass]->Full_Name(), D_DIALOG_X + (D_DIALOG_W / 2),
-              msg_y, CC_TAN, TBLACK,
+              teamclass[curclass]->Full_Name(), kDialogX + (kDialogW / 2),
+              msg_y, kCcTan, kTBlack,
               TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
         }
       }
@@ -1800,14 +1789,14 @@ int MapEditClass::Team_Members(HousesType house) {
       /*
       **	OK: save values & return.
       */
-      case ButtonKey(BUTTON_OK):
+      case ButtonKey(kButtonOk):
         process = false;
         break;
 
       /*
       **	Cancel: abort & return.
       */
-      case ButtonKey(BUTTON_CANCEL):
+      case ButtonKey(kButtonCancel):
         cancel = true;
         process = false;
         break;
@@ -1816,8 +1805,8 @@ int MapEditClass::Team_Members(HousesType house) {
         /*
         **	Compute new 'curclass' based on mouse position.
         */
-        i = ((Get_Mouse_X() - 16 - D_DIALOG_X) / D_PICTURE_W) +
-            (((Get_Mouse_Y() - dlg_picture_top) / D_ROW_H) * numcols);
+        i = ((Get_Mouse_X() - 16 - kDialogX) / kPictureW) +
+            (((Get_Mouse_Y() - dlg_picture_top) / kRowH) * numcols);
 
         /*
         **	If it's changed, update class label.
@@ -1829,14 +1818,13 @@ int MapEditClass::Team_Members(HousesType house) {
           **	Clear out the previously printed name of the item.
           */
           Hide_Mouse();
-          LogicPage->Fill_Rect(D_DIALOG_X + 8, msg_y,
-                               D_DIALOG_X + D_DIALOG_W - 9, msg_y + D_TXT6_H,
-                               BLACK);
+          LogicPage->Fill_Rect(kDialogX + 8, msg_y, kDialogX + kDialogW - 9,
+                               msg_y + kTxt6H, kBlack);
 
           if (static_cast<unsigned>(curclass) < static_cast<unsigned>(maxclasses)) {
             Fancy_Text_Print(
-                teamclass[curclass]->Full_Name(), D_DIALOG_X + (D_DIALOG_W / 2),
-                msg_y, CC_GREEN, TBLACK,
+                teamclass[curclass]->Full_Name(), kDialogX + (kDialogW / 2),
+                msg_y, kCcGreen, kTBlack,
                 TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
           }
 
@@ -1875,7 +1863,7 @@ int MapEditClass::Team_Members(HousesType house) {
           /*
           **	Don't allow more classes than we can handle.
           */
-          if (numclasses == TeamTypeClass::MAX_TEAM_CLASSCOUNT) {
+          if (numclasses == TeamTypeClass::kMaxTeamClasscount) {
             continue;
           }
           numclasses++;
@@ -1886,7 +1874,7 @@ int MapEditClass::Team_Members(HousesType house) {
         **	Update number label.
         */
         Draw_Member(teamclass[curclass], curclass, teamcount[curclass], house,
-                    D_DIALOG_X + 16, dlg_picture_top);
+                    kDialogX + 16, dlg_picture_top);
       }
 
     } else {
@@ -1917,7 +1905,7 @@ int MapEditClass::Team_Members(HousesType house) {
         **	Update number label.
         */
         Draw_Member(teamclass[curclass], curclass, teamcount[curclass], house,
-                    D_DIALOG_X + 16, dlg_picture_top);
+                    kDialogX + 16, dlg_picture_top);
       }
     }
   }
@@ -1979,26 +1967,25 @@ int MapEditClass::Team_Members(HousesType house) {
  *=============================================================================================*/
 void MapEditClass::Draw_Member(const TechnoTypeClass* ptr, int index, int quant,
                                HousesType house, int pic_x, int pic_y) {
-  const int numcols = (D_DIALOG_W - 32) / D_PICTURE_W;
+  const int numcols = (kDialogW - 32) / kPictureW;
   const int col = index % numcols;
   const int row = index / numcols;
-  const int x = pic_x + (col * D_PICTURE_W);
-  const int y = pic_y + (row * D_ROW_H);
+  const int x = pic_x + (col * kPictureW);
+  const int y = pic_y + (row * kRowH);
 
-  WindowList[WINDOW_EDITOR][WINDOWX] = 0;
-  WindowList[WINDOW_EDITOR][WINDOWY] = 0;
-  WindowList[WINDOW_EDITOR][WINDOWWIDTH] = 640 / 8;
-  WindowList[WINDOW_EDITOR][WINDOWHEIGHT] = 400;
-  Change_Window(WINDOW_EDITOR);
+  WindowList[static_cast<int>(WINDOW_EDITOR)][kWindowX] = 0;
+  WindowList[static_cast<int>(WINDOW_EDITOR)][kWindowY] = 0;
+  WindowList[static_cast<int>(WINDOW_EDITOR)][kWindowWidth] = 640 / 8;
+  WindowList[static_cast<int>(WINDOW_EDITOR)][kWindowHeight] = 400;
+  Change_Window(static_cast<int>(WINDOW_EDITOR));
 
   Hide_Mouse();
-  Draw_Box(x, y, D_PICTURE_W, D_PICTURE_H, BOXSTYLE_GREEN_DOWN, true);
+  Draw_Box(x, y, kPictureW, kPictureH, BOXSTYLE_GREEN_DOWN, true);
 
-  ptr->Display(x + (D_PICTURE_W / 2), y + (D_PICTURE_H / 2), WINDOW_EDITOR,
-               house);
+  ptr->Display(x + (kPictureW / 2), y + (kPictureH / 2), WINDOW_EDITOR, house);
 
   if (quant > 0) {
-    Fancy_Text_Print("%d", x + 1, y + D_PICTURE_H - 16, CC_GREEN, TBLACK,
+    Fancy_Text_Print("%d", x + 1, y + kPictureH - 16, kCcGreen, kTBlack,
                      TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_DROPSHADOW, quant);
   }
 
@@ -2025,7 +2012,7 @@ void MapEditClass::Draw_Member(const TechnoTypeClass* ptr, int index, int quant,
  *=========================================================================*/
 void MapEditClass::Build_Mission_List(
     int missioncount, TeamMissionStruct* missions,
-    char missionbuf[TeamTypeClass::MAX_TEAM_MISSIONS][20], ListClass* list) {
+    char missionbuf[TeamTypeClass::kMaxTeamMissions][20], ListClass* list) {
   /*
   ** Start with an empty list
   */

@@ -41,10 +41,8 @@
 
 class ConfirmationClass {
  private:
-  enum ConfirmationClassEnum {
-    BUTTON_YES = 1,  // Button number for "Options menu"
-    BUTTON_NO,       // Button number for "Options menu"
-  };
+  static constexpr int kButtonYes = 1;  // Button number for "Options menu"
+  static constexpr int kButtonNo = 2;   // Button number for "Options menu"
 
  public:
   ConfirmationClass() = default;

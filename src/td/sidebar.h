@@ -81,11 +81,9 @@ class SidebarClass : public PowerClass {
   int ButtonThreeWidth = 0;  // Button width.
   int ButtonHeight = 0;  // Button width.
 
-  enum SideBarClassEnums {
-    BUTTON_ACTIVATOR = 100,  // Button ID for the activator.
-    SIDEBARWIDTH = 80,
-    COLUMNS = 2,  // Number of side strips on sidebar.
-  };
+  static constexpr int kButtonActivator = 100;  // Button ID for the activator.
+  static constexpr int kSidebarwidth = 80;
+  static constexpr int kColumns = 2;  // Number of side strips on sidebar.
 
   SidebarClass();
 
@@ -164,33 +162,39 @@ class SidebarClass : public PowerClass {
     /*
     **	Working numbers used when rendering and processing the side strip.
     */
-    enum SideBarGeneralEnums {
-      BUTTON_UP = 200,
-      BUTTON_DOWN = 210,
-      BUTTON_SELECT = 220,
-      MAX_BUILDABLES = 30,  // Maximum number of object types in sidebar.
-      OBJECT_HEIGHT = 24,   // Pixel height of each buildable object.
-      OBJECT_WIDTH = 32,    // Pixel width of each buildable object.
-      STRIP_WIDTH = 35,     // Width of strip (not counting border lines).
-      MAX_VISIBLE = 4,      // Number of object slots visible at any one time.
-      SCROLL_RATE = 8,  // The pixel jump while scrolling (larger is faster).
-      BUTTON_SPACING_OFFSET = 4,  // spacing info for buttons
-      UP_X_OFFSET = 2,            // Scroll up arrow coordinates.
-      UP_Y_OFFSET = (MAX_VISIBLE * OBJECT_HEIGHT) + 1,
-      DOWN_X_OFFSET = 18,  // Scroll down arrow coordinates.
-      DOWN_Y_OFFSET = (MAX_VISIBLE * OBJECT_HEIGHT) + 1,
-      BUTTON_WIDTH = 16,   // Width of the mini-scroll button.
-      BUTTON_HEIGHT = 12,  // Height of the mini-scroll button.
-      // LEFT_EDGE_OFFSET=2,			// Offset from left edge for
-      // building shapes.
-      TEXT_X_OFFSET = 18,  // X offset to print "ready" text.
-      TEXT_Y_OFFSET = 15,  // Y offset to print "ready" text.
-      TEXT_COLOR = 255,    // Color to use for the "Ready" text.
-      // BUTTON_SPACING_OFFSET = 4, // spacing info for buttons
-      // LEFT_EDGE_OFFSET=0,			// Offset from left edge for
-      // building shapes. BUTTON_SPACING_OFFSET = 0, // spacing info for buttons
-
-    };
+    static constexpr int kButtonUp = 200;
+    static constexpr int kButtonDown = 210;
+    static constexpr int kButtonSelect = 220;
+    static constexpr int kMaxBuildables =
+        30;  // Maximum number of object types in sidebar.
+    static constexpr int kObjectHeight =
+        24;  // Pixel height of each buildable object.
+    static constexpr int kObjectWidth =
+        32;  // Pixel width of each buildable object.
+    static constexpr int kStripWidth =
+        35;  // Width of strip (not counting border lines).
+    static constexpr int kMaxVisible =
+        4;  // Number of object slots visible at any one time.
+    static constexpr int kScrollRate =
+        8;  // The pixel jump while scrolling (larger is faster).
+    static constexpr int kButtonSpacingOffset = 4;  // spacing info for buttons
+    static constexpr int kUpXOffset = 2;  // Scroll up arrow coordinates.
+    static constexpr int kUpYOffset = (kMaxVisible * kObjectHeight) + 1;
+    static constexpr int kDownXOffset = 18;  // Scroll down arrow coordinates.
+    static constexpr int kDownYOffset = (kMaxVisible * kObjectHeight) + 1;
+    static constexpr int kButtonWidth = 16;  // Width of the mini-scroll button.
+    static constexpr int kButtonHeight =
+        12;  // Height of the mini-scroll button.
+             // LEFT_EDGE_OFFSET=2,			// Offset from left edge
+             // for building shapes.
+    static constexpr int kTextXOffset = 18;  // X offset to print "ready" text.
+    static constexpr int kTextYOffset = 15;  // Y offset to print "ready" text.
+    static constexpr int kTextColor =
+        255;  // Color to use for the "Ready" text.
+              // kButtonSpacingOffset = 4, // spacing info for buttons
+              // LEFT_EDGE_OFFSET=0,			// Offset from left edge
+              // for building shapes. kButtonSpacingOffset = 0, // spacing info
+              // for buttons
 
     /*
     **	This is the coordinate of the upper left corner that this side strip
@@ -212,10 +216,9 @@ class SidebarClass : public PowerClass {
     /*
     **	Shape numbers for the shapes in the STRIP.SHP file.
     */
-    enum SideBarStipShapeEnums {
-      SB_BLANK,  // The blank rectangle to use if there are no objects present.
-      SB_FRAME
-    };
+    static constexpr int kSbBlank =
+        0;  // The blank rectangle to use if there are no objects present.
+    static constexpr int kSbFrame = 1;
 
     /*
     **	If this particular side strip needs to be redrawn, then this flag
@@ -288,7 +291,7 @@ class SidebarClass : public PowerClass {
       RTTIType BuildableType;
       int Factory;  // Production manager.
     } BuildType;
-    BuildType Buildables[MAX_BUILDABLES]{};
+    BuildType Buildables[kMaxBuildables]{};
 
     /*
     **	Pointer to the shape data for small versions of the logos. These are
@@ -315,9 +318,9 @@ class SidebarClass : public PowerClass {
     */
     static TheaterType LastTheater;
 
-    static ShapeButtonClass UpButton[COLUMNS];
-    static ShapeButtonClass DownButton[COLUMNS];
-    static SelectClass SelectButton[COLUMNS][MAX_VISIBLE];
+    static ShapeButtonClass UpButton[kColumns];
+    static ShapeButtonClass DownButton[kColumns];
+    static SelectClass SelectButton[kColumns][kMaxVisible];
 
     /*
     **	This points to the shapes that are used for the clock overlay. This
@@ -325,7 +328,7 @@ class SidebarClass : public PowerClass {
     */
     static char ClockTranslucentTable[(1 + 1) * 256];
 
-  } Column[COLUMNS];
+  } Column[kColumns];
 
   /*
   **	If the sidebar is active then this flag is true.
@@ -341,8 +344,8 @@ class SidebarClass : public PowerClass {
   class SBGadgetClass : public GadgetClass {
    public:
     //				SBGadgetClass() : GadgetClass(SIDE_X+8,
-    // SIDE_Y, SIDE_WIDTH-1, SIDE_HEIGHT-1, LEFTUP) {};
-    SBGadgetClass() noexcept : GadgetClass(0, 0, 0, 0, LEFTUP) {}
+    // SIDE_Y, SIDE_WIDTH-1, SIDE_HEIGHT-1, kLeftUp) {};
+    SBGadgetClass() noexcept : GadgetClass(0, 0, 0, 0, kLeftUp) {}
 
    protected:
     bool Action(unsigned flags, KeyNumType& key) override;

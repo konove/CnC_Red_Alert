@@ -72,10 +72,10 @@
 #include "td/gadget.h"
 #include "td/globals.h"
 #include "td/inline.h"
-#include "td/jshell.h"
 
 Dial8Class::Dial8Class(int id, int x, int y, int w, int h, DirType dir)
-    : ControlClass(static_cast<unsigned>(id), x, y, w, h, LEFTPRESS | LEFTHELD | LEFTRELEASE, true),
+    : ControlClass(static_cast<unsigned>(id), x, y, w, h,
+                   kLeftPress | kLeftHeld | kLeftRelease, true),
       FaceX(X + (Width / 2)),
       FaceY(Y + (Height / 2)),
       Direction(dir),
@@ -169,7 +169,7 @@ bool Dial8Class::Action(unsigned flags, KeyNumType& key) {
   */
   Sticky_Process(flags);
 
-  if (flags & LEFTPRESS) {
+  if (flags & kLeftPress) {
     is_sel = 1;
   }
 
@@ -181,7 +181,7 @@ bool Dial8Class::Action(unsigned flags, KeyNumType& key) {
   *substitues *	  'key' with the button ID if any flags are set, or 0 if no
   *flags are set
   */
-  if (flags & LEFTPRESS || (flags & LEFTHELD && is_sel)) {
+  if (flags & kLeftPress || (flags & kLeftHeld && is_sel)) {
     /*
     **	Get new dial position (0-255)
     */
@@ -209,9 +209,9 @@ bool Dial8Class::Action(unsigned flags, KeyNumType& key) {
   }
   /*
    **	Otherwise, no events have occurred; kill the event if it's a
-   *LEFTRELEASE, *	and return
+   *kLeftRelease, *	and return
    */
-  if (flags & LEFTRELEASE) {
+  if (flags & kLeftRelease) {
     key = KN_NONE;
     is_sel = 0;
   }
@@ -257,10 +257,11 @@ bool Dial8Class::Draw_Me(bool forced) {
     /*
     **	Draw the hand & its shadow.
     */
-    LogicPage->Draw_Line(FaceX + 1, FaceY + 1, FaceLine[Facing][0] + 1,
-                         FaceLine[Facing][1] + 1, CC_GREEN_SHADOW);
-    LogicPage->Draw_Line(FaceX, FaceY, FaceLine[Facing][0], FaceLine[Facing][1],
-                         CC_LIGHT_GREEN);
+    LogicPage->Draw_Line(
+        FaceX + 1, FaceY + 1, FaceLine[static_cast<int>(Facing)][0] + 1,
+        FaceLine[static_cast<int>(Facing)][1] + 1, kCcGreenShadow);
+    LogicPage->Draw_Line(FaceX, FaceY, FaceLine[static_cast<int>(Facing)][0],
+                         FaceLine[static_cast<int>(Facing)][1], kCcLightGreen);
 
     /*
     **	Restore the mouse.

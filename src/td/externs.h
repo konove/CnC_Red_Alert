@@ -43,6 +43,7 @@
 
 #include <cstdint>
 
+#include "base/enum_array.h"
 #include "port/ex_string.h"
 #include "sdllib/playcd.h"
 #include "td/aircraft.h"
@@ -146,7 +147,7 @@ extern GameOptionsClass Options;
 extern LogicClass Logic;
 extern MapEditClass Map;
 extern ScoreClass Score;
-extern MonoClass MonoArray[MonoClass::MAX_MONO_PAGES];
+extern MonoClass MonoArray[MonoClass::kMaxMonoPages];
 extern MixArchive* ScoreMix;
 extern MixArchive* TheaterData;
 extern MixArchive* LowTheaterData;
@@ -178,9 +179,11 @@ extern QueueClass<EventClass, MAX_EVENTS * 8> DoList;
 
 extern DynamicVectorClass<ObjectClass*> CurrentObject;
 extern DynamicVectorClass<TriggerClass*> CellTriggers;
-extern DynamicVectorClass<TriggerClass*> HouseTriggers[HOUSE_COUNT];
+extern base::EnumArray<HousesType, DynamicVectorClass<TriggerClass*>,
+                       kHouseCount>
+    HouseTriggers;
 
-extern CELL Waypoint[WAYPT_COUNT];
+extern CELL Waypoint[kWayptCount];
 
 extern BaseClass Base;
 
@@ -251,10 +254,11 @@ extern int CurPhoneIdx;
 extern DynamicVectorClass<char*> InitStrings;
 extern SerialSettingsType SerialDefaults;
 extern ModemGameType ModemGameToPlay;
-extern const char* DialMethodCheck[DIAL_METHODS];
+extern const base::EnumArray<DialMethodType, const char*, kDialMethods>
+    DialMethodCheck;
 // CALL_WAIT_CUSTOM is edited in place by the serial-settings dialog, so
 // these are writable buffers rather than pointers to literals.
-extern char CallWaitStrings[CALL_WAIT_STRINGS_NUM][CALL_WAIT_STRING_MAX];
+extern char CallWaitStrings[kCallWaitStringsNum][CALL_WAIT_STRING_MAX];
 
 /*
 ** Network/Modem globals

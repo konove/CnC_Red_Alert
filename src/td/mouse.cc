@@ -48,6 +48,7 @@
 
 #include "td/mouse.h"
 
+#include "base/enum_array.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/shape.h"
 #include "sdllib/timer.h"
@@ -127,9 +128,9 @@ void MouseClass::Mouse_Small(bool wwsmall) {
           control->X, control->Y,
           Extract_Shape(MouseShapes, control->SmallFrame + (Frame / 4)));
     } else {
-      Set_Mouse_Cursor(MouseControl[MOUSE_NORMAL].X,
-                       MouseControl[MOUSE_NORMAL].Y,
-                       Extract_Shape(MouseShapes, MOUSE_NORMAL));
+      Set_Mouse_Cursor(
+          MouseControl[MOUSE_NORMAL].X, MouseControl[MOUSE_NORMAL].Y,
+          Extract_Shape(MouseShapes, static_cast<int>(MOUSE_NORMAL)));
     }
   } else {
     Set_Mouse_Cursor(
@@ -314,41 +315,42 @@ void MouseClass::Init_Clear() {
 **	This array of structures is used to control the mouse animation
 **	sequences.
 */
-MouseClass::MouseStruct MouseClass::MouseControl[MOUSE_COUNT] = {
-    {0, 1, 0, 86, 0, 0},    //	MOUSE_NORMAL
-    {1, 1, 0, -1, 15, 0},   //	MOUSE_N
-    {2, 1, 0, -1, 29, 0},   //	MOUSE_NE
-    {3, 1, 0, -1, 29, 12},  //	MOUSE_E
-    {4, 1, 0, -1, 29, 23},  //	MOUSE_SE
-    {5, 1, 0, -1, 15, 23},  //	MOUSE_S
-    {6, 1, 0, -1, 0, 23},   //	MOUSE_SW
-    {7, 1, 0, -1, 0, 13},   //	MOUSE_W
-    {8, 1, 0, -1, 0, 0},    //	MOUSE_NW
+base::EnumArray<MouseType, MouseClass::MouseStruct, kMouseCount>
+    MouseClass::MouseControl = {{
+        {0, 1, 0, 86, 0, 0},    //	MOUSE_NORMAL
+        {1, 1, 0, -1, 15, 0},   //	MOUSE_N
+        {2, 1, 0, -1, 29, 0},   //	MOUSE_NE
+        {3, 1, 0, -1, 29, 12},  //	MOUSE_E
+        {4, 1, 0, -1, 29, 23},  //	MOUSE_SE
+        {5, 1, 0, -1, 15, 23},  //	MOUSE_S
+        {6, 1, 0, -1, 0, 23},   //	MOUSE_SW
+        {7, 1, 0, -1, 0, 13},   //	MOUSE_W
+        {8, 1, 0, -1, 0, 0},    //	MOUSE_NW
 
-    {130, 1, 0, -1, 15, 0},   //	MOUSE_NO_N
-    {131, 1, 0, -1, 29, 0},   //	MOUSE_NO_NE
-    {132, 1, 0, -1, 29, 12},  //	MOUSE_NO_E
-    {133, 1, 0, -1, 29, 23},  //	MOUSE_NO_SE
-    {134, 1, 0, -1, 15, 23},  //	MOUSE_NO_S
-    {135, 1, 0, -1, 0, 23},   //	MOUSE_NO_SW
-    {136, 1, 0, -1, 0, 13},   //	MOUSE_NO_W
-    {137, 1, 0, -1, 0, 0},    //	MOUSE_NO_NW
+        {130, 1, 0, -1, 15, 0},   //	MOUSE_NO_N
+        {131, 1, 0, -1, 29, 0},   //	MOUSE_NO_NE
+        {132, 1, 0, -1, 29, 12},  //	MOUSE_NO_E
+        {133, 1, 0, -1, 29, 23},  //	MOUSE_NO_SE
+        {134, 1, 0, -1, 15, 23},  //	MOUSE_NO_S
+        {135, 1, 0, -1, 0, 23},   //	MOUSE_NO_SW
+        {136, 1, 0, -1, 0, 13},   //	MOUSE_NO_W
+        {137, 1, 0, -1, 0, 0},    //	MOUSE_NO_NW
 
-    {11, 1, 0, 27, 15, 12},    //	MOUSE_NO_MOVE
-    {10, 1, 0, 26, 15, 12},    //	MOUSE_CAN_MOVE
-    {119, 3, 4, 148, 15, 12},  //	MOUSE_ENTER
-    {53, 9, 4, -1, 15, 12},    //	MOUSE_DEPLOY
-    {12, 6, 4, -1, 15, 12},    //	MOUSE_CAN_SELECT
-    {18, 8, 4, 140, 15, 12},   //	MOUSE_CAN_ATTACK
-    {62, 24, 2, -1, 15, 12},   //	MOUSE_SELL_BACK
-    {154, 24, 2, -1, 15, 12},  //	MOUSE_SELL_UNIT
-    {29, 24, 2, -1, 15, 12},   //	MOUSE_REPAIR
-    {126, 1, 0, -1, 15, 12},   //	MOUSE_NO_REPAIR
-    {125, 1, 0, -1, 15, 12},   //	MOUSE_NO_SELL_BACK
-    {87, 1, 0, 151, 0, 0},     //	MOUSE_RADAR_CURSOR
-    {103, 16, 2, -1, 15, 12},  //	MOUSE_ION_CANNON
-    {96, 7, 4, -1, 15, 12},    //	MOUSE_NUCLEAR_BOMB
-    {88, 8, 2, -1, 15, 12},    //	MOUSE_AIR_STRIKE
-    {122, 3, 4, 127, 15, 12},  //	MOUSE_DEMOLITIONS
-    {153, 1, 0, 152, 15, 12},  //	MOUSE_AREA_GUARD
-};
+        {11, 1, 0, 27, 15, 12},    //	MOUSE_NO_MOVE
+        {10, 1, 0, 26, 15, 12},    //	MOUSE_CAN_MOVE
+        {119, 3, 4, 148, 15, 12},  //	MOUSE_ENTER
+        {53, 9, 4, -1, 15, 12},    //	MOUSE_DEPLOY
+        {12, 6, 4, -1, 15, 12},    //	MOUSE_CAN_SELECT
+        {18, 8, 4, 140, 15, 12},   //	MOUSE_CAN_ATTACK
+        {62, 24, 2, -1, 15, 12},   //	MOUSE_SELL_BACK
+        {154, 24, 2, -1, 15, 12},  //	MOUSE_SELL_UNIT
+        {29, 24, 2, -1, 15, 12},   //	MOUSE_REPAIR
+        {126, 1, 0, -1, 15, 12},   //	MOUSE_NO_REPAIR
+        {125, 1, 0, -1, 15, 12},   //	MOUSE_NO_SELL_BACK
+        {87, 1, 0, 151, 0, 0},     //	MOUSE_RADAR_CURSOR
+        {103, 16, 2, -1, 15, 12},  //	MOUSE_ION_CANNON
+        {96, 7, 4, -1, 15, 12},    //	MOUSE_NUCLEAR_BOMB
+        {88, 8, 2, -1, 15, 12},    //	MOUSE_AIR_STRIKE
+        {122, 3, 4, 127, 15, 12},  //	MOUSE_DEMOLITIONS
+        {153, 1, 0, 152, 15, 12},  //	MOUSE_AREA_GUARD
+    }};

@@ -274,8 +274,8 @@ int Read_Game_Options(const char* name) {
   port::SafeCopy(MPlayerGameName, MPlayerName);
   MPlayerColorIdx = WWGetPrivateProfileInt("Options", "Color", 0, buffer);
   MPlayerPrefColor = MPlayerColorIdx;
-  MPlayerHouse = static_cast<HousesType>(
-      WWGetPrivateProfileInt("Options", "Side", HOUSE_GOOD, buffer));
+  MPlayerHouse = static_cast<HousesType>(WWGetPrivateProfileInt(
+      "Options", "Side", static_cast<int>(HOUSE_GOOD), buffer));
 
   MPlayerCredits = WWGetPrivateProfileInt("Options", "Credits", 0, buffer);
   MPlayerBases = WWGetPrivateProfileInt("Options", "Bases", 0, buffer);
@@ -445,7 +445,8 @@ bool Do_The_Internet_Menu_Thang() {
   // than the shared string table.
   char buffer[80 * 3];
   port::SafeCopy(buffer, Text_String(TXT_CONNECTING));
-  Fancy_Text_Print(TXT_NONE, 0, 0, TBLACK, TBLACK, TPF_6PT_GRAD | TPF_NOSHADOW);
+  Fancy_Text_Print(TXT_NONE, 0, 0, kTBlack, kTBlack,
+                   TPF_6PT_GRAD | TPF_NOSHADOW);
   Format_Window_String(buffer, SeenBuff.Get_Height(), width, height);
 
 #if (defined(GERMAN) || defined(FRENCH))
@@ -457,9 +458,7 @@ bool Do_The_Internet_Menu_Thang() {
   /*
   ** Button Enumerations
   */
-  enum {
-    BUTTON_CANCEL = 100,
-  };
+  constexpr int kButtonCancel = 100;
 
   /*
   ** Buttons
@@ -468,7 +467,7 @@ bool Do_The_Internet_Menu_Thang() {
   // // button list
 
   TextButtonClass cancelbtn(
-      BUTTON_CANCEL, TXT_CANCEL,
+      kButtonCancel, TXT_CANCEL,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       // #if (GERMAN | FRENCH)
       //		d_cancel_x, d_cancel_y);
@@ -478,7 +477,7 @@ bool Do_The_Internet_Menu_Thang() {
 
   // buttons = &cancelbtn;
 
-  Fancy_Text_Print(TXT_NONE, 0, 0, CC_GREEN, TBLACK,
+  Fancy_Text_Print(TXT_NONE, 0, 0, kCcGreen, kTBlack,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   char users_name[256];
@@ -553,7 +552,7 @@ bool Do_The_Internet_Menu_Thang() {
       Draw_Caption(TXT_NONE, d_dialog_x, d_dialog_y, d_dialog_w);
 
       Fancy_Text_Print(buffer, d_dialog_cx - (width / 2),
-                       d_dialog_y + (25 * factor), CC_GREEN, TBLACK,
+                       d_dialog_y + (25 * factor), kCcGreen, kTBlack,
                        TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
       // cancelbtn.Zap();
@@ -592,7 +591,7 @@ bool Do_The_Internet_Menu_Thang() {
       ** Cancel. Just return to the main menu
       */
       case KN_ESC:
-      case ButtonKey(BUTTON_CANCEL):
+      case ButtonKey(kButtonCancel):
         process = false;
 #ifdef _WIN32
         Send_Data_To_DDE_Server(packet, strlen(packet),

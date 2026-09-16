@@ -80,12 +80,12 @@ void DoorClass::AI() {
     if (Control.Fetch_Stage() >= Stages) {
       Control.Set_Rate(0);
       switch (State) {
-        case IS_OPENING:
-          State = IS_OPEN;
+        case kIsOpening:
+          State = kIsOpen;
           break;
 
-        case IS_CLOSING:
-          State = IS_CLOSED;
+        case kIsClosing:
+          State = kIsClosed;
           break;
         default:
           break;
@@ -115,9 +115,9 @@ void DoorClass::AI() {
  *=============================================================================================*/
 bool DoorClass::Open_Door(int rate, int stages) {
   switch (State) {
-    case IS_CLOSED:
-    case IS_CLOSING:
-      State = IS_OPENING;
+    case kIsClosed:
+    case kIsClosing:
+      State = kIsOpening;
       Stages = static_cast<unsigned char>(stages - 1);
       Control.Set_Stage(0);
       Control.Set_Rate(static_cast<unsigned char>(rate));
@@ -148,9 +148,9 @@ bool DoorClass::Open_Door(int rate, int stages) {
  *=============================================================================================*/
 bool DoorClass::Close_Door(int rate, int stages) {
   switch (State) {
-    case IS_OPEN:
-    case IS_OPENING:
-      State = IS_CLOSING;
+    case kIsOpen:
+    case kIsOpening:
+      State = kIsClosing;
       Stages = static_cast<unsigned char>(stages - 1);
       Control.Set_Stage(0);
       Control.Set_Rate(static_cast<unsigned char>(rate));
@@ -181,16 +181,16 @@ bool DoorClass::Close_Door(int rate, int stages) {
  *=============================================================================================*/
 int DoorClass::Door_Stage() const {
   switch (State) {
-    case IS_CLOSING:
+    case kIsClosing:
       return Stages - 1 - Control.Fetch_Stage();
 
-    case IS_CLOSED:
+    case kIsClosed:
       return 0;
 
-    case IS_OPENING:
+    case kIsOpening:
       return Control.Fetch_Stage();
 
-    case IS_OPEN:
+    case kIsOpen:
       return Stages - 1;
     default:
       break;

@@ -50,6 +50,7 @@
 
 #include <cstdint>
 
+#include "base/enum_array.h"
 #include "td/config.h"
 #include "td/defines.h"
 #include "td/globals.h"
@@ -57,40 +58,40 @@
 #include "td/monoc.h"
 #include "td/techno.h"  // IWYU pragma: keep
 
-const char* RadioClass::Messages[RADIO_COUNT] = {
-    "hisssss",
-    "Roger.",
-    "Come in.",
-    "Over and out.",
-    "Requesting transport.",
-    "Attach to transport.",
-    "I've got a delivery for you.",
-    "I'm performing load/unload maneuver. Be careful.",
-    "I'm clear.",
-    "You are clear to unload. Driving away now.",
-    "Am unable to comply.",
-    "I'm starting construction now... act busy.",
-    "I've finished construction. You are free.",
-    "We bumped, redraw yourself please.",
-    "I'm trying to load up now.",
-    "May I become a passenger?",
-    "Are you ready to receive shipment?",
-    "Are you trying to become a passenger?",
-    "Move to location X.",
-    "Do you need to move?",
-    "All right already. Now what?",
-    "I'm a passenger now.",
-    "Backup into refinery now.",
-    "Run away!",
-    "Tether established.",
-    "Tether broken.",
-    "Repair one step.",
-    "Are you prepared to fight?",
-    "Attack this target please.",
-    "Reload one step.",
-    "Take this kick! You... You...",
-    "Take this punch! You... You...",
-    "Fancy a little fisticuffs, eh?"};
+base::EnumArray<RadioMessageType, const char*, kRadioCount>
+    RadioClass::Messages = {"hisssss",
+                            "Roger.",
+                            "Come in.",
+                            "Over and out.",
+                            "Requesting transport.",
+                            "Attach to transport.",
+                            "I've got a delivery for you.",
+                            "I'm performing load/unload maneuver. Be careful.",
+                            "I'm clear.",
+                            "You are clear to unload. Driving away now.",
+                            "Am unable to comply.",
+                            "I'm starting construction now... act busy.",
+                            "I've finished construction. You are free.",
+                            "We bumped, redraw yourself please.",
+                            "I'm trying to load up now.",
+                            "May I become a passenger?",
+                            "Are you ready to receive shipment?",
+                            "Are you trying to become a passenger?",
+                            "Move to location X.",
+                            "Do you need to move?",
+                            "All right already. Now what?",
+                            "I'm a passenger now.",
+                            "Backup into refinery now.",
+                            "Run away!",
+                            "Tether established.",
+                            "Tether broken.",
+                            "Repair one step.",
+                            "Are you prepared to fight?",
+                            "Attack this target please.",
+                            "Reload one step.",
+                            "Take this kick! You... You...",
+                            "Take this punch! You... You...",
+                            "Fancy a little fisticuffs, eh?"};
 
 /***********************************************************************************************
  * RadioClass::Debug_Dump -- Displays the current status of the radio to the

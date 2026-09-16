@@ -287,8 +287,8 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
     case SOURCE_SOUTH:
     case SOURCE_EAST:
     case SOURCE_WEST: {
-      const auto eface =
-          static_cast<FacingType>(source * 2);  // Facing to enter map.
+      const auto eface = static_cast<FacingType>(static_cast<int>(source) *
+                                                 2);  // Facing to enter map.
 
       if (airtransport) {
         ScenarioInit++;
@@ -577,7 +577,7 @@ bool Create_Special_Reinforcement(const HouseClass* house,
             (another->What_Am_I() != RTTI_UNITTYPE ||
              dynamic_cast<const UnitTypeClass*>(another)->Type != UNIT_HOVER)) {
           team->MissionList[0].Mission = TMISSION_UNLOAD;
-          team->MissionList[0].Argument = WAYPT_REINF;
+          team->MissionList[0].Argument = kWayptReinf;
         }
       } else {
         team->MissionList[0].Mission = mission;

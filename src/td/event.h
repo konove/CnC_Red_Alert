@@ -44,6 +44,7 @@
 #include <cstdint>
 #include <cstring>
 
+#include "base/enum_array.h"
 #include "td/defines.h"
 #include "td/special.h"
 
@@ -59,7 +60,7 @@ class EventClass {
   /*
   **	All external events are identified by these labels.
   */
-  typedef enum EventType {
+  enum class EventType {
     EMPTY,
 
     ALLY,           // Make allie of specified house.
@@ -95,7 +96,8 @@ class EventClass {
     TIMING,        // new timing values for all systems to use
     PROCESS_TIME,  // a system's average processing time, in ticks per frame
     LAST_EVENT,    // one past the last event
-  } EventType;
+  };
+  using enum EventType;
 
   EventType Type = EMPTY;  // Type of queue command object.
 
@@ -231,8 +233,10 @@ class EventClass {
   // Process the event.
   void Execute();
 
-  static unsigned char EventLength[LAST_EVENT];
-  static const char* EventNames[LAST_EVENT];
+  static base::EnumArray<EventType, unsigned char, static_cast<int>(LAST_EVENT)>
+      EventLength;
+  static base::EnumArray<EventType, const char*, static_cast<int>(LAST_EVENT)>
+      EventNames;
 };
 
 #endif  // CNC_RED_ALERT_TD_EVENT_H_

@@ -156,7 +156,7 @@ class MapClass : public GScreenClass {
   */
   bool IsForwardScan : 1 = false;
 
-  enum MapEnum { SCAN_AMOUNT = MAP_CELL_TOTAL };
+  static constexpr int kScanAmount = MAP_CELL_TOTAL;
 };
 
 int Terrain_Cost(CELL cell, FacingType facing);

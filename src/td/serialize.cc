@@ -185,19 +185,26 @@ void TechnoTypePtr::Serialize(ArchiveWriter& ar) {
     switch (ref_->What_Am_I()) {
       case RTTI_INFANTRYTYPE:
         target = Build_Target(
-            KIND_INFANTRY, dynamic_cast<const InfantryTypeClass*>(ref_)->Type);
+            KIND_INFANTRY,
+            static_cast<int>(
+                dynamic_cast<const InfantryTypeClass*>(ref_)->Type));
         break;
       case RTTI_UNITTYPE:
-        target = Build_Target(KIND_UNIT,
-                              dynamic_cast<const UnitTypeClass*>(ref_)->Type);
+        target = Build_Target(
+            KIND_UNIT,
+            static_cast<int>(dynamic_cast<const UnitTypeClass*>(ref_)->Type));
         break;
       case RTTI_AIRCRAFTTYPE:
         target = Build_Target(
-            KIND_AIRCRAFT, dynamic_cast<const AircraftTypeClass*>(ref_)->Type);
+            KIND_AIRCRAFT,
+            static_cast<int>(
+                dynamic_cast<const AircraftTypeClass*>(ref_)->Type));
         break;
       case RTTI_BUILDINGTYPE:
         target = Build_Target(
-            KIND_BUILDING, dynamic_cast<const BuildingTypeClass*>(ref_)->Type);
+            KIND_BUILDING,
+            static_cast<int>(
+                dynamic_cast<const BuildingTypeClass*>(ref_)->Type));
         break;
       default:
         break;
@@ -215,27 +222,27 @@ void TechnoTypePtr::Serialize(ArchiveReader& ar) {
   const auto index = Target_Value(target);
   switch (Target_Kind(target)) {
     case KIND_INFANTRY:
-      if (index < INFANTRY_COUNT) {
+      if (index < kInfantryCount) {
         ref_ =
             &InfantryTypeClass::As_Reference(static_cast<InfantryType>(index));
         return;
       }
       break;
     case KIND_UNIT:
-      if (index < UNIT_COUNT) {
+      if (index < kUnitCount) {
         ref_ = &UnitTypeClass::As_Reference(static_cast<UnitType>(index));
         return;
       }
       break;
     case KIND_AIRCRAFT:
-      if (index < AIRCRAFT_COUNT) {
+      if (index < kAircraftCount) {
         ref_ =
             &AircraftTypeClass::As_Reference(static_cast<AircraftType>(index));
         return;
       }
       break;
     case KIND_BUILDING:
-      if (index < STRUCT_COUNT) {
+      if (index < kStructCount) {
         ref_ = &BuildingTypeClass::As_Reference(static_cast<StructType>(index));
         return;
       }

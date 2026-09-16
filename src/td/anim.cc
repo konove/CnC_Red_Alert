@@ -79,7 +79,6 @@
 #include "td/goptions.h"
 #include "td/heap.h"
 #include "td/inline.h"
-#include "td/jshell.h"
 #include "td/keyframe.h"
 #include "td/logic.h"
 #include "td/mapedit.h"
@@ -1068,12 +1067,14 @@ void AnimClass::Middle() {
   if (Class->IsFlameThrower) {
     COORDINATE c2 = Coord_Move(
         Center_Coord(),
-        Facing_Dir(static_cast<FacingType>(Class->Type - ANIM_FLAME_N)),
+        Facing_Dir(static_cast<FacingType>(static_cast<int>(Class->Type) -
+                                           static_cast<int>(ANIM_FLAME_N))),
         0x00E0);
     const COORDINATE c3 = Map.Closest_Free_Spot(
         Coord_Move(
             Center_Coord(),
-            Facing_Dir(static_cast<FacingType>(Class->Type - ANIM_FLAME_N)),
+            Facing_Dir(static_cast<FacingType>(static_cast<int>(Class->Type) -
+                                               static_cast<int>(ANIM_FLAME_N))),
             0x0140),
         true);
 

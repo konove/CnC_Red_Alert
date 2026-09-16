@@ -53,7 +53,7 @@ class ArchiveWriter;
 #include "td/teamtype.h"
 #include "tech/file.h"
 
-typedef enum EventType {
+enum class EventType {
   EVENT_NONE = -1,
 
   /*
@@ -88,11 +88,12 @@ typedef enum EventType {
   EVENT_BUILD = 15,                 // If specified building has been built.
 
   EVENT_COUNT = 16,
-} EventType;
+};
+using enum EventType;
 
 class TriggerClass {
  public:
-  typedef enum ActionType {
+  enum class ActionType {
     ACTION_NONE = -1,
 
     ACTION_WIN,               // player wins!
@@ -116,13 +117,15 @@ class TriggerClass {
     ACTION_ALLOWWIN,        // Allows winning if triggered.
 
     ACTION_COUNT,
-  } ActionType;
+  };
+  using enum ActionType;
 
-  typedef enum PersistantType {
+  enum class PersistantType {
     VOLATILE = 0,
     SEMIPERSISTANT = 1,
     PERSISTANT = 2,
-  } PersistantType;
+  };
+  using enum PersistantType;
 
   /*
   ** Functions:

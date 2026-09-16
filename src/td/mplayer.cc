@@ -151,29 +151,28 @@ GameType Select_MPlayer_Game() {
   /*........................................................................
   Button enumerations:
   ........................................................................*/
-  enum {
-    BUTTON_MODEMSERIAL = 100,
-    BUTTON_IPX = 101,
-    BUTTON_CANCEL = 102,
+  constexpr int kButtonModemserial = 100;
+  constexpr int kButtonIpx = 101;
+  constexpr int kButtonCancel = 102;
 
-    NUM_OF_BUTTONS = 3,
-  };
-  int number_of_buttons = NUM_OF_BUTTONS;
+  constexpr int kNumOfButtons = 3;
+  int number_of_buttons = kNumOfButtons;
   /*........................................................................
   Redraw values: in order from "top" to "bottom" layer of the dialog
   ........................................................................*/
-  typedef enum {
+  enum class RedrawType {
     REDRAW_NONE = 0,
     REDRAW_BUTTONS = 1,     // includes map interior & coord values
     REDRAW_BACKGROUND = 2,  // includes box, map bord, key, coord labels, btns
     REDRAW_ALL = REDRAW_BACKGROUND
-  } RedrawType;
+  };
+  using enum RedrawType;
   /*........................................................................
   Dialog variables:
   ........................................................................*/
   GameType retval = GAME_NORMAL;  // return value
   int selection = 0;
-  TextButtonClass* buttons[NUM_OF_BUTTONS];
+  TextButtonClass* buttons[kNumOfButtons];
 
   /*........................................................................
   Buttons
@@ -188,16 +187,16 @@ GameType Select_MPlayer_Game() {
   }
 
   TextButtonClass modemserialbtn(
-      BUTTON_MODEMSERIAL, TXT_MODEM_SERIAL,
+      kButtonModemserial, TXT_MODEM_SERIAL,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       d_modemserial_x, d_modemserial_y, d_modemserial_w, d_modemserial_h);
   TextButtonClass ipxbtn(
-      BUTTON_IPX, TXT_NETWORK,
+      kButtonIpx, TXT_NETWORK,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_ipx_x,
       d_ipx_y, d_ipx_w, d_ipx_h);
 
   TextButtonClass cancelbtn(
-      BUTTON_CANCEL, TXT_CANCEL,
+      kButtonCancel, TXT_CANCEL,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_cancel_x,
       d_cancel_y, d_cancel_w, d_cancel_h);
 
@@ -232,7 +231,7 @@ GameType Select_MPlayer_Game() {
 
   Keyboard::Clear();
 
-  Fancy_Text_Print(TXT_NONE, 0, 0, CC_GREEN, TBLACK,
+  Fancy_Text_Print(TXT_NONE, 0, 0, kCcGreen, kTBlack,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   /*
@@ -259,7 +258,7 @@ GameType Select_MPlayer_Game() {
     /*
     ...................... Refresh display if needed ......................
     */
-    if (display) {
+    if (display != REDRAW_NONE) {
       Hide_Mouse();
       if (display >= REDRAW_BACKGROUND) {
         /*
@@ -292,19 +291,19 @@ GameType Select_MPlayer_Game() {
     ............................ Process input ............................
     */
     switch (static_cast<int>(input)) {
-      case ButtonKey(BUTTON_MODEMSERIAL):
-        selection = BUTTON_MODEMSERIAL;
+      case ButtonKey(kButtonModemserial):
+        selection = kButtonModemserial;
         pressed = true;
         break;
 
-      case ButtonKey(BUTTON_IPX):
-        selection = BUTTON_IPX;
+      case ButtonKey(kButtonIpx):
+        selection = kButtonIpx;
         pressed = true;
         break;
 
       case KN_ESC:
-      case ButtonKey(BUTTON_CANCEL):
-        selection = BUTTON_CANCEL;
+      case ButtonKey(kButtonCancel):
+        selection = kButtonCancel;
         pressed = true;
         break;
 
@@ -359,7 +358,7 @@ GameType Select_MPlayer_Game() {
       buttons[curbutton]->Draw_Me(true);
 
       switch (selection) {
-        case BUTTON_MODEMSERIAL:
+        case kButtonModemserial:
 
           //
           // Pop up the modem/serial/com port dialog
@@ -374,12 +373,12 @@ GameType Select_MPlayer_Game() {
           }
           break;
 
-        case BUTTON_IPX:
+        case kButtonIpx:
           retval = GAME_IPX;
           process = false;
           break;
 
-        case BUTTON_CANCEL:
+        case kButtonCancel:
           retval = GAME_NORMAL;
           process = false;
           break;
@@ -456,8 +455,8 @@ void Read_MultiPlayer_Settings() {
     ------------------------------------------------------------------------*/
     MPlayerPrefColor =
         WWGetPrivateProfileInt("MultiPlayer", "Color", 0, buffer);
-    MPlayerHouse = static_cast<HousesType>(
-        WWGetPrivateProfileInt("MultiPlayer", "Side", HOUSE_GOOD, buffer));
+    MPlayerHouse = static_cast<HousesType>(WWGetPrivateProfileInt(
+        "MultiPlayer", "Side", static_cast<int>(HOUSE_GOOD), buffer));
     CurPhoneIdx =
         WWGetPrivateProfileInt("MultiPlayer", "PhoneIndex", -1, buffer);
   } else {
@@ -497,8 +496,8 @@ void Read_MultiPlayer_Settings() {
 
   // find dial method
 
-  for (i = 0; i < DIAL_METHODS; i++) {
-    if (!stricmp(buf, DialMethodCheck[i])) {
+  for (i = 0; i < kDialMethods; i++) {
+    if (!stricmp(buf, DialMethodCheck[static_cast<DialMethodType>(i)])) {
       SerialDefaults.DialMethod = static_cast<DialMethodType>(i);
       break;
     }
@@ -506,7 +505,7 @@ void Read_MultiPlayer_Settings() {
 
   // if method not found set to touch tone
 
-  if (i == DIAL_METHODS) {
+  if (i == kDialMethods) {
     SerialDefaults.DialMethod = DIAL_TOUCH_TONE;
   }
 
@@ -514,7 +513,7 @@ void Read_MultiPlayer_Settings() {
       WWGetPrivateProfileInt("SerialDefaults", "InitStringIndex", 0, buffer);
 
   SerialDefaults.CallWaitStringIndex = WWGetPrivateProfileInt(
-      "SerialDefaults", "CallWaitStringIndex", CALL_WAIT_CUSTOM, buffer);
+      "SerialDefaults", "CallWaitStringIndex", kCallWaitCustom, buffer);
 
   WWGetPrivateProfileString("SerialDefaults", "CallWaitString", "",
                             SerialDefaults.CallWaitString, CWAITSTRBUF_MAX,
@@ -667,8 +666,8 @@ void Read_MultiPlayer_Settings() {
 
       // find dial method
 
-      for (i = 0; i < DIAL_METHODS; i++) {
-        if (!stricmp(buf, DialMethodCheck[i])) {
+      for (i = 0; i < kDialMethods; i++) {
+        if (!stricmp(buf, DialMethodCheck[static_cast<DialMethodType>(i)])) {
           phone->Settings.DialMethod = static_cast<DialMethodType>(i);
           break;
         }
@@ -676,7 +675,7 @@ void Read_MultiPlayer_Settings() {
 
       // if method not found set to touch tone
 
-      if (i == DIAL_METHODS) {
+      if (i == kDialMethods) {
         phone->Settings.DialMethod = DIAL_TOUCH_TONE;
       }
     } else {
@@ -696,7 +695,7 @@ void Read_MultiPlayer_Settings() {
       phone->Settings.CallWaitStringIndex =
           tech::ParseInteger<int>(tokenptr).value_or(0);
     } else {
-      phone->Settings.CallWaitStringIndex = CALL_WAIT_CUSTOM;
+      phone->Settings.CallWaitStringIndex = kCallWaitCustom;
     }
 
     tokenptr = tokens.Next();
@@ -720,8 +719,8 @@ void Read_MultiPlayer_Settings() {
   if (PlaybackGame) {
     TrapFrame = WWGetPrivateProfileInt("SyncBug", "Frame", 0x7fffffff, buffer);
 
-    TrapObjType = static_cast<RTTIType>(
-        WWGetPrivateProfileInt("SyncBug", "Type", RTTI_NONE, buffer));
+    TrapObjType = static_cast<RTTIType>(WWGetPrivateProfileInt(
+        "SyncBug", "Type", static_cast<int>(RTTI_NONE), buffer));
     WWGetPrivateProfileString("SyncBug", "Type", "NONE", buf, 80, buffer);
     if (!stricmp(buf, "AIRCRAFT")) {
       TrapObjType = RTTI_AIRCRAFT;
@@ -790,7 +789,8 @@ void Write_MultiPlayer_Settings() {
   ------------------------------------------------------------------------*/
   WWWritePrivateProfileInt("MultiPlayer", "PhoneIndex", CurPhoneIdx, buffer);
   WWWritePrivateProfileInt("MultiPlayer", "Color", MPlayerPrefColor, buffer);
-  WWWritePrivateProfileInt("MultiPlayer", "Side", MPlayerHouse, buffer);
+  WWWritePrivateProfileInt("MultiPlayer", "Side",
+                           static_cast<int>(MPlayerHouse), buffer);
   WWWritePrivateProfileString("MultiPlayer", "Handle", MPlayerName, buffer);
 
   /*------------------------------------------------------------------------
@@ -999,7 +999,8 @@ void Computer_Message() {
   /*------------------------------------------------------------------------
   Find the computer house that the message will be from
   ------------------------------------------------------------------------*/
-  for (HousesType house = HOUSE_MULTI1; house < HOUSE_MULTI1 + MPlayerMax;
+  for (HousesType house = HOUSE_MULTI1;
+       static_cast<int>(house) < static_cast<int>(HOUSE_MULTI1) + MPlayerMax;
        house++) {
     HouseClass* ptr = HouseClass::As_Pointer(house);
 
@@ -1010,7 +1011,7 @@ void Computer_Message() {
     /*.....................................................................
     Decode this house's color
     .....................................................................*/
-    const int color = MPlayerTColors[ptr->RemapColor];
+    const int color = MPlayerTColors[static_cast<int>(ptr->RemapColor)];
 
     /*.....................................................................
     We now have a 1/4 chance of echoing one of the human players' messages
@@ -1178,20 +1179,19 @@ int Surrender_Dialog() {
   /*........................................................................
   Button enumerations
   ........................................................................*/
-  enum {
-    BUTTON_OK = 100,
-    BUTTON_CANCEL,
-  };
+  constexpr int kButtonOk = 100;
+  constexpr int kButtonCancel = 101;
 
   /*........................................................................
   Redraw values: in order from "top" to "bottom" layer of the dialog
   ........................................................................*/
-  typedef enum {
+  enum class RedrawType {
     REDRAW_NONE = 0,
     REDRAW_BUTTONS = 1,
     REDRAW_BACKGROUND = 2,
     REDRAW_ALL = REDRAW_BACKGROUND
-  } RedrawType;
+  };
+  using enum RedrawType;
 
   /*........................................................................
   Dialog variables
@@ -1204,12 +1204,12 @@ int Surrender_Dialog() {
   ControlClass* commands = nullptr;  // the button list
 
   TextButtonClass okbtn(
-      BUTTON_OK, TXT_OK,
+      kButtonOk, TXT_OK,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_ok_x,
       d_ok_y, d_ok_w, d_ok_h);
 
   TextButtonClass cancelbtn(
-      BUTTON_CANCEL, TXT_CANCEL,
+      kButtonCancel, TXT_CANCEL,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_cancel_x,
       d_cancel_y, d_cancel_w, d_cancel_h);
 
@@ -1251,7 +1251,7 @@ int Surrender_Dialog() {
     /*
     ...................... Refresh display if needed ......................
     */
-    if (display) {
+    if (display != REDRAW_NONE) {
       /*
       ...................... Display the dialog box ......................
       */
@@ -1265,7 +1265,7 @@ int Surrender_Dialog() {
         */
         Fancy_Text_Print(
             Text_String(TXT_SURRENDER), d_dialog_cx, d_dialog_y + d_topmargin,
-            CC_GREEN, TBLACK,
+            kCcGreen, kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
 
@@ -1289,13 +1289,13 @@ int Surrender_Dialog() {
     */
     switch (static_cast<int>(input)) {
       case KN_RETURN:
-      case ButtonKey(BUTTON_OK):
+      case ButtonKey(kButtonOk):
         retcode = 1;
         process = false;
         break;
 
       case KN_ESC:
-      case ButtonKey(BUTTON_CANCEL):
+      case ButtonKey(kButtonCancel):
         retcode = 0;
         process = false;
         break;

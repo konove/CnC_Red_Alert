@@ -88,22 +88,16 @@ class IPXGlobalConnClass : public IPXConnClass {
   /*.....................................................................
   Here are some useful enums:
   .....................................................................*/
-  enum GlobalConnectionEnum {
-    /*..................................................................
-    This is the magic number for all Global Connections.  Having the
-    same magic number across products lets us ID different products
-    on the net.
-    ..................................................................*/
-    GLOBAL_MAGICNUM = 0x1234,
-    /*..................................................................
-    These are the values used for the ProductID field in the Global
-    Message structure.  It also should be the Magic Number used for the
-    private connections within that product.
-    This list should be continually updated & kept current.  Never ever
-    ever use an old product ID for your product!
-    ..................................................................*/
-    COMMAND_AND_CONQUER = 0xaa01,
-  };
+  // This is the magic number for all Global Connections.  Having the
+  // same magic number across products lets us ID different products
+  // on the net.
+  static constexpr int kGlobalMagicnum = 0x1234;
+  // These are the values used for the ProductID field in the Global
+  // Message structure.  It also should be the Magic Number used for the
+  // private connections within that product.
+  // This list should be continually updated & kept current.  Never ever
+  // ever use an old product ID for your product!
+  static constexpr int kCommandAndConquer = 0xaa01;
 
   /*.....................................................................
   Constructor/destructor.

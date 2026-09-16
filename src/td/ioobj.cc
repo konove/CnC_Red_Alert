@@ -152,8 +152,8 @@ void TeamTypeClass::Serialize(Archive& ar) {
     IsPrebuilt = prebuilt;
     IsReinforcable = reinforcable;
     IsTransient = transient;
-    if (!active || MissionCount < 0 || MissionCount > MAX_TEAM_MISSIONS ||
-        ClassCount > MAX_TEAM_CLASSCOUNT || House < HOUSE_NONE ||
+    if (!active || MissionCount < 0 || MissionCount > kMaxTeamMissions ||
+        ClassCount > kMaxTeamClasscount || House < HOUSE_NONE ||
         House >= HOUSE_COUNT) {
       ar.Fail("invalid team type state");
       return;

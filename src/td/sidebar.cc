@@ -146,14 +146,13 @@ char SidebarClass::StripClass::ClockTranslucentTable[(1 + 1) * 256];
 */
 TheaterType SidebarClass::StripClass::LastTheater = THEATER_NONE;
 
-typedef enum ButtonNumberType {
-  BUTTON_RADAR = 100,
-  BUTTON_REPAIR,
-  BUTTON_DEMOLISH,
-  BUTTON_UPGRADE,
-  BUTTON_SELECT,
-  BUTTON_ZOOM
-} ButtonNumberType;
+// Gadget IDs of the sidebar buttons.
+[[maybe_unused]] constexpr int kButtonRadar = 100;
+constexpr int kButtonRepair = 101;
+[[maybe_unused]] constexpr int kButtonDemolish = 102;
+constexpr int kButtonUpgrade = 103;
+[[maybe_unused]] constexpr int kButtonSelect = 104;
+constexpr int kButtonZoom = 105;
 
 /*
 ** Sidebar buttons
@@ -162,10 +161,10 @@ SidebarClass::SBGadgetClass SidebarClass::Background;
 ShapeButtonClass SidebarClass::Repair;
 ShapeButtonClass SidebarClass::Upgrade;
 ShapeButtonClass SidebarClass::Zoom;
-ShapeButtonClass SidebarClass::StripClass::UpButton[COLUMNS];
-ShapeButtonClass SidebarClass::StripClass::DownButton[COLUMNS];
+ShapeButtonClass SidebarClass::StripClass::UpButton[kColumns];
+ShapeButtonClass SidebarClass::StripClass::DownButton[kColumns];
 SidebarClass::StripClass::SelectClass
-    SidebarClass::StripClass::SelectButton[COLUMNS][MAX_VISIBLE];
+    SidebarClass::StripClass::SelectButton[kColumns][kMaxVisible];
 
 /*
 ** Shape data pointers
@@ -218,7 +217,7 @@ void SidebarClass::One_Time() {
   ** variable resolutions.
   */
   const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
-  SideBarWidth = SIDEBARWIDTH * factor;
+  SideBarWidth = kSidebarwidth * factor;
   SideX = SeenBuff.Get_Width() - SideBarWidth;
   SideY = Map.RadY + Map.RadHeight + (factor - 1);
   SideWidth = SeenBuff.Get_Width() - SideX;
@@ -236,24 +235,26 @@ void SidebarClass::One_Time() {
   *drawing *	code so that as the sidebar buildable buttons scroll, they get
   *properly *	clipped at the top and bottom edges.
   */
-  WindowList[WINDOW_SIDEBAR][WINDOWX] = (SideX + PowWidth) / 8;
-  WindowList[WINDOW_SIDEBAR][WINDOWY] = SideY + 1 + TopHeight;
-  WindowList[WINDOW_SIDEBAR][WINDOWWIDTH] = SideWidth / 8;
-  WindowList[WINDOW_SIDEBAR][WINDOWHEIGHT] =
-      (MaxVisible * (StripClass::OBJECT_HEIGHT * factor)) - 1;
+  WindowList[static_cast<int>(WINDOW_SIDEBAR)][kWindowX] =
+      (SideX + PowWidth) / 8;
+  WindowList[static_cast<int>(WINDOW_SIDEBAR)][kWindowY] =
+      SideY + 1 + TopHeight;
+  WindowList[static_cast<int>(WINDOW_SIDEBAR)][kWindowWidth] = SideWidth / 8;
+  WindowList[static_cast<int>(WINDOW_SIDEBAR)][kWindowHeight] =
+      (MaxVisible * (StripClass::kObjectHeight * factor)) - 1;
 
   /*
   **	Set up the coordinates for the sidebar strips. These coordinates are for
   **	the upper left corner.
   */
   const int width =
-      SideWidth - PowWidth - ((StripClass::STRIP_WIDTH * factor) * 2);
+      SideWidth - PowWidth - ((StripClass::kStripWidth * factor) * 2);
   const int spacing = width / 3;
 
   Column[0].X = SideX + PowWidth + spacing;
   Column[0].Y = SideY + TopHeight + 1;
   Column[1].X =
-      Column[0].X + (StripClass::STRIP_WIDTH * factor) + spacing - (factor - 1);
+      Column[0].X + (StripClass::kStripWidth * factor) + spacing - (factor - 1);
   Column[1].Y = SideY + TopHeight + 1;
 
   Column[0].One_Time(0);
@@ -314,7 +315,8 @@ void SidebarClass::Init_IO() {
     oldfont = Set_Font(Font6Ptr);
     oldx = FontXSpacing;
     FontXSpacing = -1;
-    Fancy_Text_Print(TXT_NONE, 0, 0, TBLACK, TBLACK, TPF_6POINT | TPF_NOSHADOW);
+    Fancy_Text_Print(TXT_NONE, 0, 0, kTBlack, kTBlack,
+                     TPF_6POINT | TPF_NOSHADOW);
 
     int maxwidth = String_Pixel_Width(Text_String(TXT_REPAIR_BUTTON)) + 8;
     maxwidth = std::max<int>(
@@ -326,7 +328,7 @@ void SidebarClass::Init_IO() {
     Zoom.Width = maxwidth;
 
     Repair.IsSticky = true;
-    Repair.ID = BUTTON_REPAIR;
+    Repair.ID = kButtonRepair;
     Repair.X = 484;
     Repair.Y = 160;
     Repair.IsPressed = false;
@@ -344,7 +346,7 @@ void SidebarClass::Init_IO() {
 #endif
 
     Upgrade.IsSticky = true;
-    Upgrade.ID = BUTTON_UPGRADE;
+    Upgrade.ID = kButtonUpgrade;
     Upgrade.X = 480 + 57;
     Upgrade.Y = 160;
     Upgrade.IsPressed = false;
@@ -362,7 +364,7 @@ void SidebarClass::Init_IO() {
 #endif
 
     Zoom.IsSticky = true;
-    Zoom.ID = BUTTON_ZOOM;
+    Zoom.ID = kButtonZoom;
     Zoom.X = 480 + 110;
     Zoom.Y = 160;
     Zoom.IsPressed = false;
@@ -810,11 +812,11 @@ void SidebarClass::AI(KeyNumType& input, int x, int y) {
       Activate_Repair(0);
     }
 
-    if (input == ButtonKey(BUTTON_REPAIR)) {
+    if (input == ButtonKey(kButtonRepair)) {
       Repair_Mode_Control(-1);
     }
 
-    if (input == ButtonKey(BUTTON_ZOOM)) {
+    if (input == ButtonKey(kButtonZoom)) {
       /*
       ** If radar is active, cycle as follows:
       ** Zoomed => not zoomed
@@ -839,7 +841,7 @@ void SidebarClass::AI(KeyNumType& input, int x, int y) {
       }
     }
 
-    if (input == ButtonKey(BUTTON_UPGRADE)) {
+    if (input == ButtonKey(kButtonUpgrade)) {
       Sell_Mode_Control(-1);
     }
 
@@ -1057,11 +1059,11 @@ void SidebarClass::StripClass::One_Time(int /*unused*/) {
   const int scale =
       static_cast<int>(base::Bit<uint32_t>(Get_Resolution_Factor()));
 
-  ObjectWidth = OBJECT_WIDTH * scale;
-  ObjectHeight = OBJECT_HEIGHT * scale;
-  StripWidth = STRIP_WIDTH * scale;
+  ObjectWidth = kObjectWidth * scale;
+  ObjectHeight = kObjectHeight * scale;
+  StripWidth = kStripWidth * scale;
   LeftEdgeOffset = (StripWidth - ObjectWidth) / 2;
-  ButtonSpacingOffset = (StripWidth - ((BUTTON_WIDTH * scale) * 2)) / 3;
+  ButtonSpacingOffset = (StripWidth - ((kButtonWidth * scale) * 2)) / 3;
 
   LogoShapes = Hires_Retrieve("STRIP.SHP");
   ClockShapes = Hires_Retrieve("CLOCK.SHP");
@@ -1149,23 +1151,23 @@ void SidebarClass::StripClass::Init_IO(int id) {
   ID = id;
 
   UpButton[ID].IsSticky = true;
-  UpButton[ID].ID = static_cast<unsigned>(BUTTON_UP + id);
+  UpButton[ID].ID = static_cast<unsigned>(kButtonUp + id);
   UpButton[ID].X = X + ButtonSpacingOffset + 1;
-  UpButton[ID].Y = Y + (MAX_VISIBLE * ObjectHeight) - 1;
+  UpButton[ID].Y = Y + (kMaxVisible * ObjectHeight) - 1;
 
   UpButton[ID].Set_Shape(Hires_Retrieve("STRIPUP.SHP"));
 
   DownButton[ID].IsSticky = true;
-  DownButton[ID].ID = static_cast<unsigned>(BUTTON_DOWN + id);
+  DownButton[ID].ID = static_cast<unsigned>(kButtonDown + id);
   DownButton[ID].X =
       UpButton[ID].X + UpButton[ID].Width + ButtonSpacingOffset - 2;
-  DownButton[ID].Y = Y + (MAX_VISIBLE * ObjectHeight) - 1;
+  DownButton[ID].Y = Y + (kMaxVisible * ObjectHeight) - 1;
 
   DownButton[ID].Set_Shape(Hires_Retrieve("STRIPDN.SHP"));
 
-  for (int index = 0; index < MAX_VISIBLE; index++) {
+  for (int index = 0; index < kMaxVisible; index++) {
     SelectClass& g = SelectButton[ID][index];
-    g.ID = BUTTON_SELECT;
+    g.ID = kButtonSelect;
     g.X = X;
     g.Y = Y + (ObjectHeight * index);
     g.Width = ObjectWidth;
@@ -1235,7 +1237,7 @@ void SidebarClass::StripClass::Activate() {
   DownButton[ID].Zap();
   Map.Add_A_Button(DownButton[ID]);
 
-  for (int index = 0; index < MAX_VISIBLE; index++) {
+  for (int index = 0; index < kMaxVisible; index++) {
     SelectButton[ID][index].Zap();
     Map.Add_A_Button(SelectButton[ID][index]);
   }
@@ -1262,7 +1264,7 @@ void SidebarClass::StripClass::Activate() {
 void SidebarClass::StripClass::Deactivate() {
   Map.Remove_A_Button(UpButton[ID]);
   Map.Remove_A_Button(DownButton[ID]);
-  for (int index = 0; index < MAX_VISIBLE; index++) {
+  for (int index = 0; index < kMaxVisible; index++) {
     Map.Remove_A_Button(SelectButton[ID][index]);
   }
 }
@@ -1359,7 +1361,7 @@ static int sortfunc(const void* ptr1, const void* ptr2) {
  * HISTORY: * 12/31/1994 JLB : Created. *
  *=============================================================================================*/
 bool SidebarClass::StripClass::Add(RTTIType type, int id) {
-  if (BuildableCount <= MAX_BUILDABLES) {
+  if (BuildableCount <= kMaxBuildables) {
     for (int index = 0; index < BuildableCount; index++) {
       if (Buildables[index].BuildableType == type &&
           Buildables[index].BuildableID == id) {
@@ -1409,7 +1411,7 @@ bool SidebarClass::StripClass::Scroll(bool up) {
     Scroller++;
   }
 #ifdef NEVER
-  if (BuildableCount <= MAX_VISIBLE) {
+  if (BuildableCount <= kMaxVisible) {
     return (false);
   }
 
@@ -1426,7 +1428,7 @@ bool SidebarClass::StripClass::Scroll(bool up) {
     TopIndex--;
     Slid = 0;
   } else {
-    if (TopIndex + MAX_VISIBLE >= BuildableCount) {
+    if (TopIndex + kMaxVisible >= BuildableCount) {
       return (false);
     }
 
@@ -1503,7 +1505,7 @@ bool SidebarClass::StripClass::AI(KeyNumType& input, int /*unused*/,
   **	logic handler. This might result in up or down scrolling.
   */
   if (!IsScrolling && Scroller) {
-    if (BuildableCount <= MAX_VISIBLE) {
+    if (BuildableCount <= kMaxVisible) {
       Scroller = 0;
     } else {
       /*
@@ -1523,7 +1525,7 @@ bool SidebarClass::StripClass::AI(KeyNumType& input, int /*unused*/,
         }
 
       } else {
-        if (TopIndex + MAX_VISIBLE >= BuildableCount) {
+        if (TopIndex + kMaxVisible >= BuildableCount) {
           Scroller = 0;
         } else {
           Scroller--;
@@ -1540,14 +1542,14 @@ bool SidebarClass::StripClass::AI(KeyNumType& input, int /*unused*/,
   */
   if (IsScrolling) {
     if (IsScrollingDown) {
-      Slid -= SCROLL_RATE;
+      Slid -= kScrollRate;
       if (Slid <= 0) {
         IsScrolling = false;
         Slid = 0;
         TopIndex++;
       }
     } else {
-      Slid += SCROLL_RATE;
+      Slid += kScrollRate;
       if (Slid >= ObjectHeight) {
         IsScrolling = false;
         Slid = 0;
@@ -1653,7 +1655,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
     *the strip
     ** has a full complement of icons.	ST - 10/7/96 6:03PM
     */
-    if (BuildableCount < MAX_VISIBLE) {
+    if (BuildableCount < kMaxVisible) {
       CC_Draw_Shape(LogoShapes, ID, X + 3, Y - 1, WINDOW_MAIN,
                     SHAPE_WIN_REL | SHAPE_NORMAL, nullptr);
     }
@@ -1669,7 +1671,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
     *render *	them. Their Y offset may be adjusted if the strip is in the
     *process of scrolling.
     */
-    for (int i = 0; i < MAX_VISIBLE + (IsScrolling ? 1 : 0); i++) {
+    for (int i = 0; i < kMaxVisible + (IsScrolling ? 1 : 0); i++) {
       bool production = false;
       bool completed = false;
       int stage = 0;
@@ -1751,21 +1753,21 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
           shapenum = 0;
 
           switch (spc) {
-            case SPC_ION_CANNON:
+            case static_cast<int>(SPC_ION_CANNON):
               production = true;
               completed = PlayerPtr->IonCannon.Is_Ready();
               stage = PlayerPtr->IonCannon.Anim_Stage();
               darken = false;
               break;
 
-            case SPC_AIR_STRIKE:
+            case static_cast<int>(SPC_AIR_STRIKE):
               production = true;
               completed = PlayerPtr->AirStrike.Is_Ready();
               stage = PlayerPtr->AirStrike.Anim_Stage();
               darken = false;
               break;
 
-            case SPC_NUCLEAR_BOMB:
+            case static_cast<int>(SPC_NUCLEAR_BOMB):
               production = true;
               completed = PlayerPtr->NukeStrike.Is_Ready();
               stage = PlayerPtr->NukeStrike.Anim_Stage();
@@ -1778,11 +1780,11 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
 
         if (!obj && !spc) {
           shapefile = LogoShapes;
-          shapenum = SB_BLANK;
+          shapenum = kSbBlank;
         }
       } else {
         shapefile = LogoShapes;
-        shapenum = SB_BLANK;
+        shapenum = kSbBlank;
         production = false;
       }
 
@@ -1795,12 +1797,14 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
       ** Dont draw blank shapes over the new 640x400 sidebar art - ST 5/1/96
       *6:01PM
       */
-      if (shapenum != SB_BLANK || shapefile != LogoShapes) {
+      if (shapenum != kSbBlank || shapefile != LogoShapes) {
         IsTheaterShape = true;  // This shape is theater specific
         CC_Draw_Shape(
             shapefile, shapenum,
-            x - (WindowList[WINDOW_SIDEBAR][WINDOWX] * 8) + LeftEdgeOffset,
-            y - WindowList[WINDOW_SIDEBAR][WINDOWY], WINDOW_SIDEBAR,
+            x - (WindowList[static_cast<int>(WINDOW_SIDEBAR)][kWindowX] * 8) +
+                LeftEdgeOffset,
+            y - WindowList[static_cast<int>(WINDOW_SIDEBAR)][kWindowY],
+            WINDOW_SIDEBAR,
             SHAPE_NORMAL | SHAPE_WIN_REL |
                 (remapper ? SHAPE_FADING : SHAPE_NORMAL),
             remapper);
@@ -1813,10 +1817,11 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
         if (darken) {
           CC_Draw_Shape(
               ClockShapes, 0,
-              x - (WindowList[WINDOW_SIDEBAR][WINDOWX] * 8) + LeftEdgeOffset,
-              y - WindowList[WINDOW_SIDEBAR][WINDOWY], WINDOW_SIDEBAR,
-              SHAPE_NORMAL | SHAPE_WIN_REL | SHAPE_GHOST, nullptr,
-              ClockTranslucentTable);
+              x - (WindowList[static_cast<int>(WINDOW_SIDEBAR)][kWindowX] * 8) +
+                  LeftEdgeOffset,
+              y - WindowList[static_cast<int>(WINDOW_SIDEBAR)][kWindowY],
+              WINDOW_SIDEBAR, SHAPE_NORMAL | SHAPE_WIN_REL | SHAPE_GHOST,
+              nullptr, ClockTranslucentTable);
         }
       }
 
@@ -1830,38 +1835,43 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
           /*
           **	Display text showing that the object is ready to place.
           */
-          CC_Draw_Shape(ObjectTypeClass::PipShapes, PIP_READY,
-                        x - (WindowList[WINDOW_SIDEBAR][WINDOWX] * 8) +
-                            LeftEdgeOffset + (ObjectWidth / 2),
-                        y - WindowList[WINDOW_SIDEBAR][WINDOWY] + ObjectHeight -
-                            Get_Build_Frame_Height(ObjectTypeClass::PipShapes) -
-                            8,
-                        WINDOW_SIDEBAR, SHAPE_CENTER);
+          CC_Draw_Shape(
+              ObjectTypeClass::PipShapes, static_cast<int>(PIP_READY),
+              x - (WindowList[static_cast<int>(WINDOW_SIDEBAR)][kWindowX] * 8) +
+                  LeftEdgeOffset + (ObjectWidth / 2),
+              y - WindowList[static_cast<int>(WINDOW_SIDEBAR)][kWindowY] +
+                  ObjectHeight -
+                  Get_Build_Frame_Height(ObjectTypeClass::PipShapes) - 8,
+              WINDOW_SIDEBAR, SHAPE_CENTER);
           //					Fancy_Text_Print(TXT_READY,
-          // x+TEXT_X_OFFSET, y+TEXT_Y_OFFSET, TEXT_COLOR, TBLACK,
+          // x+kTextXOffset, y+kTextYOffset, kTextColor, TBLACK,
           // TPF_6POINT|TPF_CENTER|TPF_NOSHADOW);
         } else {
           CC_Draw_Shape(
               ClockShapes, stage + 1,
-              x - (WindowList[WINDOW_SIDEBAR][WINDOWX] * 8) + LeftEdgeOffset,
-              y - WindowList[WINDOW_SIDEBAR][WINDOWY], WINDOW_SIDEBAR,
-              SHAPE_NORMAL | SHAPE_WIN_REL | SHAPE_GHOST, nullptr,
-              ClockTranslucentTable);
+              x - (WindowList[static_cast<int>(WINDOW_SIDEBAR)][kWindowX] * 8) +
+                  LeftEdgeOffset,
+              y - WindowList[static_cast<int>(WINDOW_SIDEBAR)][kWindowY],
+              WINDOW_SIDEBAR, SHAPE_NORMAL | SHAPE_WIN_REL | SHAPE_GHOST,
+              nullptr, ClockTranslucentTable);
           /*
           **	Display text showing that the construction is temporarily on
           *hold.
           */
           if (factory && !factory->Is_Building()) {
             CC_Draw_Shape(
-                ObjectTypeClass::PipShapes, PIP_HOLDING,
-                x - (WindowList[WINDOW_SIDEBAR][WINDOWX] * 8) + LeftEdgeOffset +
-                    (ObjectWidth / 2),
-                y - WindowList[WINDOW_SIDEBAR][WINDOWY] + ObjectHeight -
+                ObjectTypeClass::PipShapes, static_cast<int>(PIP_HOLDING),
+                x -
+                    (WindowList[static_cast<int>(WINDOW_SIDEBAR)][kWindowX] *
+                     8) +
+                    LeftEdgeOffset + (ObjectWidth / 2),
+                y - WindowList[static_cast<int>(WINDOW_SIDEBAR)][kWindowY] +
+                    ObjectHeight -
                     Get_Build_Frame_Height(ObjectTypeClass::PipShapes) -
                     8,  // Moved up now that icons have names on them
                 WINDOW_SIDEBAR, SHAPE_CENTER);
             //						Fancy_Text_Print(TXT_HOLDING,
-            // x+TEXT_X_OFFSET, y+TEXT_Y_OFFSET, TEXT_COLOR, TBLACK,
+            // x+kTextXOffset, y+kTextYOffset, kTextColor, TBLACK,
             // TPF_6POINT|TPF_CENTER|TPF_NOSHADOW);
           }
         }
@@ -1910,15 +1920,15 @@ bool SidebarClass::StripClass::Recalc() {
            nullptr;
     } else {
       switch (Buildables[index].BuildableID) {
-        case SPC_ION_CANNON:
+        case static_cast<int>(SPC_ION_CANNON):
           ok = PlayerPtr->IonCannon.Is_Present();
           break;
 
-        case SPC_NUCLEAR_BOMB:
+        case static_cast<int>(SPC_NUCLEAR_BOMB):
           ok = PlayerPtr->NukeStrike.Is_Present();
           break;
 
-        case SPC_AIR_STRIKE:
+        case static_cast<int>(SPC_AIR_STRIKE):
           ok = PlayerPtr->AirStrike.Is_Present();
           break;
 
@@ -1931,7 +1941,7 @@ bool SidebarClass::StripClass::Recalc() {
     }
     else {
       switch (Buildables[index].BuildableID) {
-        case SPC_ION_CANNON:
+        case static_cast<int>(SPC_ION_CANNON):
           ok = (PlayerPtr->BScan & kStructFlagEye) != 0 ||
                PlayerPtr->IonOneTimeFlag;
           if (!ok) {
@@ -1939,7 +1949,7 @@ bool SidebarClass::StripClass::Recalc() {
           }
           break;
 
-        case SPC_NUCLEAR_BOMB:
+        case static_cast<int>(SPC_NUCLEAR_BOMB):
           ok = (PlayerPtr->BScan & kStructFlagTemple) != 0 &&
                PlayerPtr->Has_Nuke_Device();
           ok = ok || PlayerPtr->NukeOneTimeFlag;
@@ -1948,7 +1958,7 @@ bool SidebarClass::StripClass::Recalc() {
           }
           break;
 
-        case SPC_AIR_STRIKE:
+        case static_cast<int>(SPC_AIR_STRIKE):
           //					ok = (PlayerPtr->BScan &
           // kStructFlagSam) == 0; 					ok =
           //! PlayerPtr->Does_Enemy_Building_Exist(STRUCT_SAM);
@@ -2021,12 +2031,12 @@ bool SidebarClass::StripClass::Recalc() {
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
 SidebarClass::StripClass::SelectClass::SelectClass() noexcept
-    : ControlClass(0, 0, 0, 0, 0, LEFTPRESS | RIGHTPRESS | LEFTUP) {
+    : ControlClass(0, 0, 0, 0, 0, kLeftPress | kRightPress | kLeftUp) {
   const int scale =
       static_cast<int>(base::Bit<uint32_t>(Get_Resolution_Factor()));
 
-  Width = OBJECT_WIDTH * scale;
-  Height = OBJECT_HEIGHT * scale;
+  Width = kObjectWidth * scale;
+  Height = kObjectHeight * scale;
 }
 
 /***********************************************************************************************
@@ -2040,7 +2050,7 @@ SidebarClass::StripClass::SelectClass::SelectClass() noexcept
  * INPUT:   strip    -- Reference to the strip that owns this buildable button.
  **
  *                                                                                             *
- *          index    -- The index (0 .. MAX_VISIBLE-1) of this button. This is
+ *          index    -- The index (0 .. kMaxVisible-1) of this button. This is
  *used to let     * the owning strip know what index this button refers to. *
  *                                                                                             *
  * OUTPUT:  none *
@@ -2056,7 +2066,7 @@ void SidebarClass::StripClass::SelectClass::Set_Owner(StripClass& strip,
   Strip = &strip;
   Index = index;
   X = strip.X;
-  Y = strip.Y + (index * (OBJECT_HEIGHT * scale));
+  Y = strip.Y + (index * (kObjectHeight * scale));
 }
 
 /***********************************************************************************************
@@ -2138,39 +2148,39 @@ bool SidebarClass::StripClass::SelectClass::Action(unsigned flags,
     /*
     **	Display the help text if the mouse is over the button.
     */
-    if (flags & LEFTUP) {
+    if (flags & kLeftUp) {
       switch (spc) {
-        case SPC_ION_CANNON:
-          Map.Help_Text(TXT_ION_CANNON, X, Y, CC_GREEN, true);
+        case static_cast<int>(SPC_ION_CANNON):
+          Map.Help_Text(TXT_ION_CANNON, X, Y, kCcGreen, true);
           break;
 
-        case SPC_NUCLEAR_BOMB:
-          Map.Help_Text(TXT_NUKE_STRIKE, X, Y, CC_GREEN, true);
+        case static_cast<int>(SPC_NUCLEAR_BOMB):
+          Map.Help_Text(TXT_NUKE_STRIKE, X, Y, kCcGreen, true);
           break;
 
-        case SPC_AIR_STRIKE:
-          Map.Help_Text(TXT_AIR_STRIKE, X, Y, CC_GREEN, true);
+        case static_cast<int>(SPC_AIR_STRIKE):
+          Map.Help_Text(TXT_AIR_STRIKE, X, Y, kCcGreen, true);
           break;
         default:
           break;
       }
-      flags &= ~LEFTUP;
+      flags &= ~kLeftUp;
     }
 
     /*
     **	A right mouse button signals "cancel".  If we are in targetting
     ** mode then we don't want to be any more.
     */
-    if (flags & RIGHTPRESS) {
+    if (flags & kRightPress) {
       Map.IsTargettingMode = 0;
     }
     /*
     **	A left mouse press signal "activate".  If our weapon type is
     ** available then we should activate it.
     */
-    if (flags & LEFTPRESS) {
+    if (flags & kLeftPress) {
       switch (spc) {
-        case SPC_ION_CANNON:
+        case static_cast<int>(SPC_ION_CANNON):
           if (PlayerPtr->IonCannon.Is_Ready()) {
             Map.IsTargettingMode = static_cast<uint8_t>(spc);
             Unselect_All();
@@ -2180,7 +2190,7 @@ bool SidebarClass::StripClass::SelectClass::Action(unsigned flags,
           }
           break;
 
-        case SPC_AIR_STRIKE:
+        case static_cast<int>(SPC_AIR_STRIKE):
           if (PlayerPtr->AirStrike.Is_Ready()) {
             Map.IsTargettingMode = static_cast<uint8_t>(spc);
             Unselect_All();
@@ -2190,7 +2200,7 @@ bool SidebarClass::StripClass::SelectClass::Action(unsigned flags,
           }
           break;
 
-        case SPC_NUCLEAR_BOMB:
+        case static_cast<int>(SPC_NUCLEAR_BOMB):
           if (PlayerPtr->NukeStrike.Is_Ready()) {
             Map.IsTargettingMode = static_cast<uint8_t>(spc);
             Unselect_All();
@@ -2209,10 +2219,10 @@ bool SidebarClass::StripClass::SelectClass::Action(unsigned flags,
       /*
       **	Display the help text if the mouse is over the button.
       */
-      if (flags & LEFTUP) {
-        Map.Help_Text(choice->Full_Name(), X, Y, CC_GREEN, true,
+      if (flags & kLeftUp) {
+        Map.Help_Text(choice->Full_Name(), X, Y, kCcGreen, true,
                       choice->Cost_Of());
-        flags &= ~LEFTUP;
+        flags &= ~kLeftUp;
       }
 
       /*
@@ -2224,7 +2234,7 @@ bool SidebarClass::StripClass::SelectClass::Action(unsigned flags,
       *factory *	manager deleted, and the object under construction is
       *returned to *	the free pool.
       */
-      if ((flags & RIGHTPRESS) && factory) {
+      if ((flags & kRightPress) && factory) {
         /*
         **	Cancels placement mode if the sidebar factory is abandoned or
         **	suspended.
@@ -2245,7 +2255,7 @@ bool SidebarClass::StripClass::SelectClass::Action(unsigned flags,
         }
       }
 
-      if (flags & LEFTPRESS) {
+      if (flags & kLeftPress) {
         /*
         **	If there is already a factory attached to this strip but the
         *player didn't click *	on the icon that has the attached factory, then

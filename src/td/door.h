@@ -59,12 +59,11 @@ class DoorClass {
   /*
   **	This is the door state.
   */
-  enum {
-    IS_CLOSED,   // Door is closed.
-    IS_OPENING,  // Door is in the process of opening.
-    IS_OPEN,     // Door is fully open.
-    IS_CLOSING   //	Door is in the process of closing.
-  } State{IS_CLOSED};
+  static constexpr int kIsClosed = 0;   // Door is closed.
+  static constexpr int kIsOpening = 1;  // Door is in the process of opening.
+  static constexpr int kIsOpen = 2;     // Door is fully open.
+  static constexpr int kIsClosing = 3;  // Door is in the process of closing.
+  int State = kIsClosed;
 
   /*
   **	If the animation for this door indicates that the object it is
@@ -89,12 +88,12 @@ class DoorClass {
   void Clear_Redraw_Flag() { IsToRedraw = false; }
   void AI();
   [[nodiscard]] int Door_Stage() const;
-  bool Is_Door_Opening() { return State == IS_OPENING; }
-  bool Is_Door_Closing() { return State == IS_CLOSING; }
+  [[nodiscard]] bool Is_Door_Opening() const { return State == kIsOpening; }
+  [[nodiscard]] bool Is_Door_Closing() const { return State == kIsClosing; }
   bool Open_Door(int rate, int stages);
   bool Close_Door(int rate, int stages);
-  bool Is_Door_Open() { return State == IS_OPEN; }
-  bool Is_Door_Closed() { return State == IS_CLOSED; }
+  [[nodiscard]] bool Is_Door_Open() const { return State == kIsOpen; }
+  [[nodiscard]] bool Is_Door_Closed() const { return State == kIsClosed; }
   bool Is_Ready_To_Open();
 
   /*

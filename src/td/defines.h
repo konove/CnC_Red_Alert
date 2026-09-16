@@ -45,6 +45,7 @@
 #include <utility>
 
 #include "base/attributes.h"
+#include "base/enum_array.h"
 #include "base/numeric.h"
 #include "sdllib/wwstd.h"
 #include "td/special.h"
@@ -155,7 +156,7 @@
 /**********************************************************************
 **	These enumerations are used to implement RTTI.
 */
-typedef enum RTTIType {
+enum class RTTIType {
   RTTI_NONE = 0,
   RTTI_INFANTRY,
   RTTI_INFANTRYTYPE,
@@ -182,7 +183,8 @@ typedef enum RTTIType {
   RTTI_TERRAINTYPE,
   RTTI_OBJECT,
   RTTI_SPECIAL
-} RTTIType;
+};
+using enum RTTIType;
 
 /**********************************************************************
 **	This is the size of the speech buffer. This value should be as large
@@ -251,21 +253,23 @@ inline constexpr CELL MAP_CELL_TOTAL{MAP_CELL_W * MAP_CELL_H};
 **	These are the various return conditions that production may
 **	produce.
 */
-typedef enum ProdFailType {
+enum class ProdFailType {
   PROD_OK,       //	Production request successful.
   PROD_LIMIT,    //	Failed with production capacity limit reached.
   PROD_ILLEGAL,  //	Failed because of illegal request.
   PROD_CANT,     //	Faile because unable to comply (busy or occupied).
-} ProdFailType;
+};
+using enum ProdFailType;
 
 // These are the special weapons that can be used in the game. The common thread
 // with these weapons is that they are controlled through the sidebar mechanism.
-typedef enum SpecialWeaponType {
+enum class SpecialWeaponType {
   SPC_NONE,
   SPC_ION_CANNON,    //	Particle beam from satellite (Akira effect).
   SPC_NUCLEAR_BOMB,  //	Tactical nuclear weapon.
   SPC_AIR_STRIKE     //	Conventional air strike.
-} SpecialWeaponType;
+};
+using enum SpecialWeaponType;
 
 /**********************************************************************
 **	These defines control the rate of ion cannon and airstrike recharging.
@@ -281,7 +285,7 @@ typedef enum SpecialWeaponType {
 **	return value, appropriate action may be chosen.
 **	NOTE: If this changes, update the static array in Find_Path module.
 */
-typedef enum MoveType {
+enum class MoveType {
   MOVE_OK,            // No blockage.
   MOVE_CLOAK,         // A cloaked blocking enemy object.
   MOVE_MOVING_BLOCK,  // Blocked, but only temporarily.
@@ -290,14 +294,16 @@ typedef enum MoveType {
   MOVE_NO,            // Strictly prohibited terrain.
 
   MOVE_COUNT
-} MoveType;
+};
+using enum MoveType;
+inline constexpr int kMoveCount = static_cast<int>(MOVE_COUNT);
 
 /**********************************************************************
 **	These are the themes that the game can play. They must be in exact
 **	same order as specified in the CONQUER.TXT file as well as the filename
 **	list located in the ThemeClass.
 */
-typedef enum ThemeType {
+enum class ThemeType {
   THEME_PICK_ANOTHER = -2,
   THEME_NONE = -1,
   THEME_AIRSTRIKE = 0,
@@ -340,13 +346,15 @@ typedef enum ThemeType {
 
   THEME_COUNT = 37,
   THEME_LAST = THEME_BFEARED,
-} ThemeType;
+};
+using enum ThemeType;
+inline constexpr int kThemeCount = static_cast<int>(THEME_COUNT);
 
 /**********************************************************************
 **	This is the various threat scan methods that can be used when looking
 **	for targets.
 */
-typedef enum CNC_FLAG_ENUM ThreatType {
+enum class CNC_FLAG_ENUM ThreatType {
   THREAT_NORMAL = 0x0000,    // Any distance threat scan?
   THREAT_RANGE = 0x0001,     // Limit scan to weapon range?
   THREAT_AREA = 0x0002,      // Limit scan to general area (twice weapon range)?
@@ -358,7 +366,8 @@ typedef enum CNC_FLAG_ENUM ThreatType {
   THREAT_BOATS = 0x0080,      // Scan for gunboats?
   THREAT_CIVILIANS = 0x0100,  // Consider civilians to be primary target?
   THREAT_CAPTURE = 0x0200,    // Consider capturable buildings only?
-} ThreatType;
+};
+using enum ThreatType;
 
 #define THREAT_GROUND (THREAT_VEHICLES | THREAT_BUILDINGS | THREAT_INFANTRY)
 
@@ -367,7 +376,7 @@ typedef enum CNC_FLAG_ENUM ThreatType {
 **	By examining this value it can be determined what should be done
 **	to fix the reason why firing wasn't allowed.
 */
-typedef enum FireErrorType {
+enum class FireErrorType {
   FIRE_OK,        // Weapon is allowed to fire.
   FIRE_AMMO,      // No ammo available to fire?
   FIRE_FACING,    // Not correctly facing target?
@@ -379,7 +388,8 @@ typedef enum FireErrorType {
   FIRE_RANGE,     // Is the target out of range?
   FIRE_CLOAKED,   // Is the shooter currently cloaked?
   FIRE_BUSY       // Is shooter currently doing something else?
-} FireErrorType;
+};
+using enum FireErrorType;
 
 /**********************************************************************
 **	If an object can cloak, then it will be in one of these states.
@@ -387,32 +397,34 @@ typedef enum FireErrorType {
 **	UNCLOAKED state. This state controls how the obect transitions between
 **	cloaked and uncloaked conditions.
 */
-typedef enum CloakType {
+enum class CloakType {
   UNCLOAKED,  // Completely visible (normal state).
   CLOAKING,   // In process of claoking.
   CLOAKED,    // Completely cloaked (invisible).
   UNCLOAKING  // In process of uncloaking.
-} CloakType;
+};
+using enum CloakType;
 
 /**********************************************************************
 **	For units that are cloaking, these value specify the visual character
 **	of the object.
 */
-typedef enum VisualType {
+enum class VisualType {
   VISUAL_NORMAL,      // Completely visible -- normal.
   VISUAL_INDISTINCT,  // The edges shimmer and become indistinct.
   VISUAL_DARKEN,      // Color and texture is muted along with shimmering.
   VISUAL_SHADOWY,     // Body is translucent in addition to shimmering.
   VISUAL_RIPPLE,      // Just a ripple (true predator effect).
   VISUAL_HIDDEN,      // Nothing at all is visible.
-} VisualType;
+};
+using enum VisualType;
 
 /**********************************************************************
 **	These missions enumerate the various state machines that can apply to
 **	a game object. Only one of these state machines is active at any one
 **	time.
 */
-typedef enum MissionType {
+enum class MissionType {
   MISSION_NONE = -1,
 
   MISSION_SLEEP,           // Do nothing whatsoever.
@@ -439,14 +451,16 @@ typedef enum MissionType {
   MISSION_MISSILE,
 
   MISSION_COUNT,
-} MissionType;
+};
+using enum MissionType;
+inline constexpr int kMissionCount = static_cast<int>(MISSION_COUNT);
 
 /**********************************************************************
 **	These are the enumerated animation sequences that a building may
 **	be processing. These serve to control the way that a building
 **	appears.
 */
-typedef enum BStateType {
+enum class BStateType {
   BSTATE_NONE = -1,
   BSTATE_CONSTRUCTION,  // Construction animation.
   BSTATE_IDLE,          // Idle animation.
@@ -456,7 +470,9 @@ typedef enum BStateType {
   BSTATE_AUX2,          // Auxiliary animation.
 
   BSTATE_COUNT
-} BStateType;
+};
+using enum BStateType;
+inline constexpr int kBstateCount = static_cast<int>(BSTATE_COUNT);
 
 /**********************************************************************
 **	Whenever a unit is selected and a click occurs over another object
@@ -465,7 +481,7 @@ typedef enum BStateType {
 **	mouse cursor looks when "hovering" over the spot that clicking would
 **	occur at.
 */
-typedef enum ActionType {
+enum class ActionType {
   ACTION_NONE,    // Either undefined action or "do nothing".
   ACTION_MOVE,    // Can move there or at least try to.
   ACTION_NOMOVE,  // Special case for movable object, but illegal mouse
@@ -489,19 +505,22 @@ typedef enum ActionType {
   ACTION_GUARD_AREA,     // Guard the area/object clicked on.
 
   ACTION_COUNT
-} ActionType;
+};
+using enum ActionType;
+inline constexpr int kActionCount = static_cast<int>(ACTION_COUNT);
 
 /**********************************************************************
 **	When a unit gets damaged, the result of the damage is returned as
 **	this type. It can range from no damage taken to complete destruction.
 */
-typedef enum ResultType {
+enum class ResultType {
   RESULT_NONE,   // No damage was taken by the target.
   RESULT_LIGHT,  // Some damage was taken, but no state change occurred.
   RESULT_HALF,  // Damaged to below half strength (only returned on transition).
   RESULT_MAJOR,      // Damaged down to 1 hit point.
   RESULT_DESTROYED,  // Damaged to complete destruction.
-} ResultType;
+};
+using enum ResultType;
 
 /**********************************************************************
 **	These are the special concrete control defines. They enumerate the
@@ -509,29 +528,27 @@ typedef enum ResultType {
 */
 // DEBUG === convert this to be zero based so that a nulled cell is the
 //			 	 default cell.
-enum ConcreteEnum {
-  C_NONE = -1,
-  C_LEFT = 0,
-  C_RIGHT = 1,
-  C_RIGHT_UPDOWN = 2,
-  C_LEFT_UPDOWN = 3,
-  C_UP_RIGHT = 4,
-  C_UP_LEFT = 5,
-  C_DOWN_RIGHT = 6,
-  C_DOWN_LEFT = 7,
-  C_RIGHT_DOWN = 8,
-  C_LEFT_DOWN = 9,
-  C_RIGHT_UP = 10,
-  C_LEFT_UP = 11,
-  C_UPDOWN_RIGHT = 12,
-  C_UPDOWN_LEFT = 13
-};
+inline constexpr int kCNone = -1;
+inline constexpr int kCLeft = 0;
+inline constexpr int kCRight = 1;
+inline constexpr int kCRightUpdown = 2;
+inline constexpr int kCLeftUpdown = 3;
+inline constexpr int kCUpRight = 4;
+inline constexpr int kCUpLeft = 5;
+inline constexpr int kCDownRight = 6;
+inline constexpr int kCDownLeft = 7;
+inline constexpr int kCRightDown = 8;
+inline constexpr int kCLeftDown = 9;
+inline constexpr int kCRightUp = 10;
+inline constexpr int kCLeftUp = 11;
+inline constexpr int kCUpdownRight = 12;
+inline constexpr int kCUpdownLeft = 13;
 
 /**********************************************************************
 **	Units that move can move at different speeds. These enumerate the
 **	different speeds that a unit can move.
 */
-typedef enum MPHType {
+enum class MPHType {
   MPH_IMMOBILE = 0,
   MPH_VERY_SLOW = 5,
   MPH_KINDA_SLOW = 6,
@@ -545,14 +562,15 @@ typedef enum MPHType {
   MPH_ROCKET = 60,
   MPH_VERY_FAST = 100,
   MPH_LIGHT_SPEED = 255
-} MPHType;
+};
+using enum MPHType;
 
 /**********************************************************************
 **	General audio volume is enumerated by these identifiers. Since small
 **	volume variations are usually unnoticable when specifying the volume
 **	to play a sample, this enumeration list creates more readable code.
 */
-typedef enum VolType {
+enum class VolType {
   VOL_OFF = 0,
   VOL_0 = VOL_OFF,
   VOL_1 = 0x19,
@@ -566,13 +584,14 @@ typedef enum VolType {
   VOL_9 = 0xE6,
   VOL_10 = 0xFF,
   VOL_FULL = VOL_10
-} VolType;
+};
+using enum VolType;
 
 /**********************************************************************
 **	The houses that can be played are listed here. Each has their own
 **	personality and strengths.
 */
-typedef enum HousesType : int8_t {
+enum class HousesType : int8_t {
   HOUSE_NONE = -1,
   HOUSE_GOOD = 0,     // Global Defense Initiative
   HOUSE_BAD = 1,      // Brotherhood of Nod
@@ -587,7 +606,9 @@ typedef enum HousesType : int8_t {
 
   HOUSE_COUNT = 10,
   HOUSE_FIRST = HOUSE_GOOD
-} HousesType;
+};
+using enum HousesType;
+inline constexpr int kHouseCount = static_cast<int>(HOUSE_COUNT);
 
 // Bit masks over HousesType for the Ownable fields of the type tables.
 inline constexpr uint32_t kHouseFlagGood = base::Bit<uint32_t>(HOUSE_GOOD);
@@ -602,7 +623,7 @@ inline constexpr uint32_t kHouseFlagMulti4 = base::Bit<uint32_t>(HOUSE_MULTI4);
 inline constexpr uint32_t kHouseFlagMulti5 = base::Bit<uint32_t>(HOUSE_MULTI5);
 inline constexpr uint32_t kHouseFlagMulti6 = base::Bit<uint32_t>(HOUSE_MULTI6);
 
-typedef enum PlayerColorType {
+enum class PlayerColorType {
   REMAP_NONE = -1,
   REMAP_YELLOW = 0,
   REMAP_FIRST = REMAP_YELLOW,
@@ -614,14 +635,16 @@ typedef enum PlayerColorType {
   REMAP_LAST = REMAP_BLUE,
 
   REMAP_COUNT = 6
-} PlayerColorType;
+};
+using enum PlayerColorType;
+inline constexpr int kRemapCount = static_cast<int>(REMAP_COUNT);
 
 /**********************************************************************
 ** These are the types of games that can be played.  GDI & NOD are the
 ** usual human-vs-computer games; 2-Player games are network or modem,
 ** with 2 players; multi-player games are network with > 2 players.
 */
-typedef enum ScenarioPlayerEnum {
+enum class ScenarioPlayerType {
   SCEN_PLAYER_NONE = -1,
   SCEN_PLAYER_GDI,
   SCEN_PLAYER_NOD,
@@ -629,22 +652,24 @@ typedef enum ScenarioPlayerEnum {
   SCEN_PLAYER_2PLAYER,
   SCEN_PLAYER_MPLAYER,
   SCEN_PLAYER_COUNT,
-} ScenarioPlayerType;
+};
+using enum ScenarioPlayerType;
 
 /**********************************************************************
 ** These are the directional parameters for a scenario.
 */
-typedef enum ScenarioDirEnum {
+enum class ScenarioDirType {
   SCEN_DIR_NONE = -1,
   SCEN_DIR_EAST,
   SCEN_DIR_WEST,
   SCEN_DIR_COUNT,
-} ScenarioDirType;
+};
+using enum ScenarioDirType;
 
 /**********************************************************************
 ** These are the random variations of a scenario.
 */
-typedef enum ScenarioVarEnum {
+enum class ScenarioVarType {
   SCEN_VAR_NONE = -1,
   SCEN_VAR_A,
   SCEN_VAR_B,
@@ -652,27 +677,30 @@ typedef enum ScenarioVarEnum {
   SCEN_VAR_D,
   SCEN_VAR_COUNT,  // comes before the Lose value!
   SCEN_VAR_LOSE,
-} ScenarioVarType;
+};
+using enum ScenarioVarType;
 
 /**********************************************************************
 **	The objects to be drawn on the map are grouped into layers. These
 **	enumerated values specify those layers. The ground layer is sorted
 **	from back to front.
 */
-typedef enum LayerType {
+enum class LayerType {
   LAYER_NONE = -1,
   LAYER_GROUND,  // Touching the ground type object (units & buildings).
   LAYER_AIR,     // Flying above the ground (explosions & flames).
   LAYER_TOP,     // Topmost layer (aircraft & bullets).
 
   LAYER_COUNT,
-} LayerType;
+};
+using enum LayerType;
+inline constexpr int kLayerCount = static_cast<int>(LAYER_COUNT);
 
 /**********************************************************************
 **	This enumerates the various bullet types. These types specify bullet's
 **	visual and explosive characteristics.
 */
-typedef enum BulletType {
+enum class BulletType {
   BULLET_NONE = -1,
   BULLET_SNIPER,       // Sniper bullet.
   BULLET_BULLET,       // Small arms
@@ -695,13 +723,15 @@ typedef enum BulletType {
   BULLET_TREXBITE,     // Tyrannosaurus Rex's bite - especially bad for infantry
 
   BULLET_COUNT,
-} BulletType;
+};
+using enum BulletType;
+inline constexpr int kBulletCount = static_cast<int>(BULLET_COUNT);
 
 /**********************************************************************
 **	All game buildings (structures) are enumerated here. This includes
 **	civilian structures as well.
 */
-typedef enum StructType {
+enum class StructType {
   STRUCT_NONE = -1,
   STRUCT_WEAP,
   STRUCT_GTOWER,
@@ -779,7 +809,9 @@ typedef enum StructType {
   STRUCT_WOOD_WALL,
 
   STRUCT_COUNT,
-} StructType;
+};
+using enum StructType;
+inline constexpr int kStructCount = static_cast<int>(STRUCT_COUNT);
 
 // The bit for `type` in the 64-bit house scans (HouseClass::BScan and the
 // unit, infantry and aircraft scans), or 0 for a building type past the 64
@@ -836,7 +868,7 @@ inline constexpr uint64_t kStructFlagMission =
 **	a transparent icon. It is placed over the terrain but usually falls
 **	"under" buildings, trees, and units.
 */
-typedef enum OverlayType : int8_t {
+enum class OverlayType : int8_t {
   OVERLAY_NONE = -1,
   OVERLAY_CONCRETE,       // Concrete.
   OVERLAY_SANDBAG_WALL,   // Piled sandbags.
@@ -870,13 +902,15 @@ typedef enum OverlayType : int8_t {
   OVERLAY_STEEL_CRATE,    //	Steel goodie crate.
 
   OVERLAY_COUNT,
-} OverlayType;
+};
+using enum OverlayType;
+inline constexpr int kOverlayCount = static_cast<int>(OVERLAY_COUNT);
 
 /**********************************************************************
 **	This specifies the infantry in the game. The "E" designation is
 **	similar to the army classification of enlisted soldiers.
 */
-typedef enum InfantryType {
+enum class InfantryType {
   INFANTRY_NONE = -1,
   INFANTRY_E1,     // Mini-gun armed.
   INFANTRY_E2,     // Grenade thrower.
@@ -901,13 +935,15 @@ typedef enum InfantryType {
   INFANTRY_CHAN,     // Dr. Chan
 
   INFANTRY_COUNT,
-} InfantryType;
+};
+using enum InfantryType;
+inline constexpr int kInfantryCount = static_cast<int>(INFANTRY_COUNT);
 
 /**********************************************************************
 **	The game units are enumerated here. These include not only traditional
 **	vehicles, but also hovercraft and gunboats.
 */
-typedef enum UnitType {
+enum class UnitType {
   UNIT_NONE = -1,
   UNIT_HTANK,      // Heavy tank (Mammoth).
   UNIT_MTANK,      // Medium tank (M1).
@@ -933,7 +969,9 @@ typedef enum UnitType {
   UNIT_STEG,       //	Stegasaurus
 
   UNIT_COUNT,
-} UnitType;
+};
+using enum UnitType;
+inline constexpr int kUnitCount = static_cast<int>(UNIT_COUNT);
 
 // Bit masks over UnitType for the unit scans and prerequisites.
 inline constexpr uint64_t kUnitFlagHtank = base::Bit<uint64_t>(UNIT_HTANK);
@@ -964,7 +1002,7 @@ inline constexpr uint64_t kUnitFlagSteg = base::Bit<uint64_t>(UNIT_STEG);
 **	The various aircraft types are enumerated here. These include
 *helicopters *	as well as traditional aircraft.
 */
-typedef enum AircraftType {
+enum class AircraftType {
   AIRCRAFT_TRANSPORT = 0,   // Transport helicopter.
   AIRCRAFT_A10 = 1,         // Ground attack plane.
   AIRCRAFT_HELICOPTER = 2,  // Apache gunship.
@@ -973,7 +1011,9 @@ typedef enum AircraftType {
 
   AIRCRAFT_COUNT = 5,
   AIRCRAFT_NONE = -1,
-} AircraftType;
+};
+using enum AircraftType;
+inline constexpr int kAircraftCount = static_cast<int>(AIRCRAFT_COUNT);
 
 // Bit masks over AircraftType for the aircraft scans.
 inline constexpr uint64_t kAircraftFlagTransport =
@@ -992,7 +1032,7 @@ inline constexpr uint64_t kAircraftFlagOrca =
 **	terrain is broken up into icons, is not transparent, and is drawn
 **	as the bottom most layer, then it is a template.
 */
-typedef enum TemplateType : uint8_t {
+enum class TemplateType : uint8_t {
   TEMPLATE_CLEAR1 = 0,
   TEMPLATE_WATER = 1,  // This must be the first non-clear template.
   TEMPLATE_WATER2 = 2,
@@ -1221,14 +1261,16 @@ typedef enum TemplateType : uint8_t {
 
   TEMPLATE_COUNT = 216,
   TEMPLATE_NONE = 255,
-} TemplateType;
+};
+using enum TemplateType;
+inline constexpr int kTemplateCount = static_cast<int>(TEMPLATE_COUNT);
 
 /**********************************************************************
 **	The three dimensional terrain objects are enumerated here. These
 **	objects function similar to buildings in that they can be driven
 **	behind and can take damage on an individual basis.
 */
-typedef enum TerrainType {
+enum class TerrainType {
   TERRAIN_NONE = -1,
   TERRAIN_TREE1,
   TERRAIN_TREE2,
@@ -1264,14 +1306,16 @@ typedef enum TerrainType {
   TERRAIN_ROCK7,
 
   TERRAIN_COUNT,
-} TerrainType;
+};
+using enum TerrainType;
+inline constexpr int kTerrainCount = static_cast<int>(TERRAIN_COUNT);
 
 /**********************************************************************
 **	Smudges are enumerated here. Smudges are transparent icons that are
 **	drawn over the underlying terrain in order to give the effect of
 **	alterations to the terrin. Craters are a good example of this.
 */
-typedef enum SmudgeType {
+enum class SmudgeType {
   SMUDGE_NONE = -1,
   SMUDGE_CRATER1,
   SMUDGE_CRATER2,
@@ -1290,13 +1334,15 @@ typedef enum SmudgeType {
   SMUDGE_BIB3,
 
   SMUDGE_COUNT,
-} SmudgeType;
+};
+using enum SmudgeType;
+inline constexpr int kSmudgeCount = static_cast<int>(SMUDGE_COUNT);
 
 /**********************************************************************
 **	Animations are enumerated here. Animations are the high speed and
 **	short lived effects that occur with explosions and fire.
 */
-typedef enum AnimType {
+enum class AnimType {
   ANIM_NONE = -1,
   ANIM_FBALL1 = 0,    // Large fireball explosion (bulges rightward).
   ANIM_GRENADE = 1,   // Genade (dirt type) explosion.
@@ -1398,13 +1444,15 @@ typedef enum AnimType {
 
   ANIM_COUNT = 78,
   ANIM_FIRST = 0
-} AnimType;
+};
+using enum AnimType;
+inline constexpr int kAnimCount = static_cast<int>(ANIM_COUNT);
 
 /****************************************************************************
 **	Infantry can be performing various activities. These can range from
 *simple *	idle animations to physical hand to hand combat.
 */
-typedef enum DoType {
+enum class DoType {
   DO_NOTHING = -1,  // Not performing any choreographed sequence.
   DO_STAND_READY = 0,
   DO_STAND_GUARD = 1,
@@ -1444,7 +1492,9 @@ typedef enum DoType {
 
   DO_COUNT = 34,
   DO_FIRST = 0
-} DoType;
+};
+using enum DoType;
+inline constexpr int kDoCount = static_cast<int>(DO_COUNT);
 
 /*
 **	This structure is associated with each maneuver type. It tells whether
@@ -1468,7 +1518,7 @@ typedef struct {
 **	units and buildings. Some of these require a response from the receiver
 **	and some don't.
 */
-typedef enum RadioMessageType {
+enum class RadioMessageType {
   RADIO_STATIC,      // "hisssss" -- non-message
   RADIO_ROGER,       // "Roger."
   RADIO_HELLO,       // "Come in. I wish to talk."
@@ -1506,7 +1556,9 @@ typedef enum RadioMessageType {
   RADIO_PREPARE_TO_BOX,  // "Fancy a little fisticuffs, eh?"
 
   RADIO_COUNT
-} RadioMessageType;
+};
+using enum RadioMessageType;
+inline constexpr int kRadioCount = static_cast<int>(RADIO_COUNT);
 
 /****************************************************************************
 **	These are custom C&C specific types. The CELL (declared above, with the
@@ -1523,23 +1575,24 @@ inline constexpr TARGET kTargetNone{};
 *the *	defines for the two types of selected unit boxes. One is for infantry
 *and *	the other is for regular units.
 */
-typedef enum SelectEnum {
-  SELECT_NONE = -1,
-  SELECT_INFANTRY = 0,            // Small infantry selection box.
-  SELECT_UNIT = 1,                // Big unit selection box.
-  SELECT_BUILDING = SELECT_UNIT,  // Custom box for buildings.
-  SELECT_TERRAIN = SELECT_UNIT,   // Custom box for terrain objects.
-  SELECT_WRENCH = 2,              // A building is repairing overlay graphic.
-
-  SELECT_COUNT = 3
-} SelectEnum;
+// Selection box shapes in SelectShapes.
+inline constexpr int kSelectNone = -1;
+inline constexpr int kSelectInfantry = 0;  // Small infantry selection box.
+inline constexpr int kSelectUnit = 1;      // Big unit selection box.
+inline constexpr int kSelectBuilding =
+    kSelectUnit;  // Custom box for buildings.
+inline constexpr int kSelectTerrain =
+    kSelectUnit;  // Custom box for terrain objects.
+inline constexpr int kSelectWrench =
+    2;  // A building is repairing overlay graphic.
+inline constexpr int kSelectCount = 3;
 
 /****************************************************************************
 **	The pip shapes and text shapes are enumerated according to the following
 **	type. These special shapes are drawn over special objects or in other
 *places *	where shape technology is needed.
 */
-typedef enum PipEnum {
+enum class PipEnum {
   PIP_EMPTY,     // Empty pip spot.
   PIP_FULL,      // Full pip spot.
   PIP_PRIMARY,   // "Primary" building marker.
@@ -1548,7 +1601,8 @@ typedef enum PipEnum {
   PIP_ENGINEER,  // Full pip with engineer coloring.
   PIP_CIVILIAN,  // Full pip with civilian coloring.
   PIP_COMMANDO   // Full pip with commando coloring.
-} PipEnum;
+};
+using enum PipEnum;
 
 /****************************************************************************
 **	The mouse cursor can be in different states. These states are listed
@@ -1556,7 +1610,7 @@ typedef enum PipEnum {
 **	is controlled by passing one of these values to the appropriate
 **	MouseClass member function.
 */
-typedef enum MouseType {
+enum class MouseType {
   MOUSE_NORMAL,
   MOUSE_N,
   MOUSE_NE,
@@ -1592,7 +1646,9 @@ typedef enum MouseType {
   MOUSE_DEMOLITIONS,
   MOUSE_AREA_GUARD,
   MOUSE_COUNT
-} MouseType;
+};
+using enum MouseType;
+inline constexpr int kMouseCount = static_cast<int>(MOUSE_COUNT);
 
 /**********************************************************************
 **	This structure is used to control the box relief style drawn by
@@ -1605,7 +1661,7 @@ typedef struct {
   int Corner;     // Corner color (transition).
 } BoxStyleType;
 
-typedef enum BoxStyleEnum {
+enum class BoxStyleEnum {
   BOXSTYLE_DOWN,              // Typical depressed edge border.
   BOXSTYLE_RAISED,            // Typical raised edge border.
   BOXSTYLE_BLUE_UP,           // Raised blue border.
@@ -1620,14 +1676,16 @@ typedef enum BoxStyleEnum {
   BOXSTYLE_GREEN_BORDER,      // main dialog box.
 
   BOXSTYLE_COUNT
-} BoxStyleEnum;
+};
+using enum BoxStyleEnum;
+inline constexpr int kBoxstyleCount = static_cast<int>(BOXSTYLE_COUNT);
 
 /**********************************************************************
 **	Damage, as inflicted by projectiles, has different characteristics.
 **	These are the different "warhead" types that can be assigned to the
 **	various projectiles in the game.
 */
-typedef enum WarheadType {
+enum class WarheadType {
   WARHEAD_NONE = -1,
 
   WARHEAD_SA,     // Small arms -- good against infantry.
@@ -1644,14 +1702,16 @@ typedef enum WarheadType {
   WARHEAD_FEEDME,        // T-Rex eats people, hurts vehicles/buildings
 
   WARHEAD_COUNT
-} WarheadType;
+};
+using enum WarheadType;
+inline constexpr int kWarheadCount = static_cast<int>(WARHEAD_COUNT);
 
 /**********************************************************************
 **	This enumerates the various weapon types. The weapon is characterized
 **	by the projectile it launches, the damage it does, and the rate of
 **	fire.
 */
-typedef enum WeaponType {
+enum class WeaponType {
   WEAPON_NONE = -1,
 
   WEAPON_RIFLE,
@@ -1681,7 +1741,9 @@ typedef enum WeaponType {
   WEAPON_TREX,
 
   WEAPON_COUNT
-} WeaponType;
+};
+using enum WeaponType;
+inline constexpr int kWeaponCount = static_cast<int>(WEAPON_COUNT);
 
 /**********************************************************************
 **	The various armor types are best suited to defend against a limited
@@ -1689,7 +1751,7 @@ typedef enum WeaponType {
 **	combination of armor and weaponry. Each vehicle or building has armor
 **	rated according to one of the following types.
 */
-typedef enum ArmorType {
+enum class ArmorType {
   ARMOR_NONE,      // Vulnerable to SA and HE.
   ARMOR_WOOD,      // Vulnerable to HE and Fire.
   ARMOR_ALUMINUM,  // Vulnerable to AP and SA.
@@ -1697,7 +1759,9 @@ typedef enum ArmorType {
   ARMOR_CONCRETE,  // Vulnerable to HE and AP.
 
   ARMOR_COUNT
-} ArmorType;
+};
+using enum ArmorType;
+inline constexpr int kArmorCount = static_cast<int>(ARMOR_COUNT);
 
 /**********************************************************************
 **	Working MCGA colors that give a pleasing effect for beveled edges and
@@ -1729,7 +1793,7 @@ typedef enum ArmorType {
 /**********************************************************************
 **	These are the control flags for Fancy_Text_Print function.
 */
-typedef enum CNC_FLAG_ENUM TextPrintType {
+enum class CNC_FLAG_ENUM TextPrintType {
   TPF_LASTPOINT = 0x0000,     // Use previous font point value.
   TPF_6POINT = 0x0001,        // Use 6 point font.
   TPF_8POINT = 0x0002,        // Use 8 point font.
@@ -1750,7 +1814,8 @@ typedef enum CNC_FLAG_ENUM TextPrintType {
   TPF_MEDIUM_COLOR = 0x1000,  // Use medium color for all text gradient
   TPF_BRIGHT_COLOR = 0x2000,  // Use bright color for all text gradient
   TPF_USE_GRAD_PAL = 0x4000   // Use a gradient palette based on fore color
-} TextPrintType;
+};
+using enum TextPrintType;
 
 /**********************************************************************
 **	These control the maximum number of objects in the game. Make sure that
@@ -1795,7 +1860,7 @@ inline constexpr int kEachBuildingMax = kBuildingMax / 4;
 *classifications. *	This is true, even if it is undergoing a temporary
 *transition.
 */
-typedef enum LandType {
+enum class LandType {
   LAND_CLEAR,     // "Clear" terrain.
   LAND_ROAD,      // Road terrain.
   LAND_WATER,     // Water.
@@ -1805,12 +1870,14 @@ typedef enum LandType {
   LAND_BEACH,     //	Beach terrain.
 
   LAND_COUNT
-} LandType;
+};
+using enum LandType;
+inline constexpr int kLandCount = static_cast<int>(LAND_COUNT);
 
 /**********************************************************************
 **	The theaters of operation are as follows.
 */
-typedef enum TheaterType {
+enum class TheaterType {
   THEATER_NONE = -1,
   THEATER_DESERT,
   THEATER_JUNGLE,
@@ -1818,7 +1885,9 @@ typedef enum TheaterType {
   THEATER_WINTER,
 
   THEATER_COUNT,
-} TheaterType;
+};
+using enum TheaterType;
+inline constexpr int kTheaterCount = static_cast<int>(THEATER_COUNT);
 
 // Bit masks over TheaterType for the Theater fields of the type tables.
 inline constexpr uint32_t kTheaterFlagDesert =
@@ -1841,7 +1910,7 @@ typedef struct {
 **	The trailing number is this define is the width and height
 *(respectively) *	of the building in cells.
 */
-typedef enum BSizeType {
+enum class BSizeType {
   BSIZE_NONE = -1,
   BSIZE_11 = 0,
   BSIZE_21 = 1,
@@ -1854,7 +1923,9 @@ typedef enum BSizeType {
   BSIZE_55 = 8,
 
   BSIZE_COUNT = 9
-} BSizeType;
+};
+using enum BSizeType;
+inline constexpr int kBsizeCount = static_cast<int>(BSIZE_COUNT);
 
 /**********************************************************************
 ** When objects are manipulated on the map that are marked as being
@@ -1862,20 +1933,21 @@ typedef enum BSizeType {
 ** or when an object's rendering (not logical) size changes, due to
 ** its being selected or having an animation attached (overlap up/down).
 */
-typedef enum MarkType {
+enum class MarkType {
   MARK_UP,            //	Removed from the map.
   MARK_DOWN,          //	Placed on the map.
   MARK_CHANGE,        //	Altered in place on the map.
   MARK_OVERLAP_DOWN,  // Mark overlap cells on the map
   MARK_OVERLAP_UP,    // Clear overlap cells on the map
-} MarkType;
+};
+using enum MarkType;
 
 /****************************************************************************
 **	Window number definition list. Each window should be referred to by
 **	the value given in this list.
 */
 // Allow window number enums to be passed to library functions.
-typedef enum WindowNumberType {
+enum class WindowNumberType {
   WINDOW_MAIN,      // Full screen window.
   WINDOW_ERROR,     // Library error window.
   WINDOW_TACTICAL,  // Tactical map window.
@@ -1883,14 +1955,15 @@ typedef enum WindowNumberType {
   WINDOW_SIDEBAR,   // Sidebar (buildable list) window.
   WINDOW_EDITOR,    // Scenario editor window.
   WINDOW_CUSTOM     // Window that can be altered depending on circumstances
-} WindowNumberType;
+};
+using enum WindowNumberType;
 
 /****************************************************************************
 **	For every cell there are 8 adjacent cells. Use these direction numbers
 **	when referring to adjacent cells. This comes into play when moving
 **	between cells and in the Desired_Facing() algorithm.
 */
-enum FacingType : int8_t {
+enum class FacingType : int8_t {
   FACING_NONE = -1,
   FACING_N,   // North
   FACING_NE,  // North-East
@@ -1903,6 +1976,8 @@ enum FacingType : int8_t {
 
   FACING_COUNT,  // Total of 8 directions (0..7).
 };
+using enum FacingType;
+inline constexpr int kFacingCount = static_cast<int>(FACING_COUNT);
 
 // Wraps any facing arithmetic result onto the eight compass points. Negative
 // values wrap the same way the two's complement mask always did.
@@ -1933,7 +2008,7 @@ inline FacingType operator+=(FacingType& f1, int f2) {
   return f1;
 }
 
-typedef enum DirType : uint8_t {
+enum class DirType : uint8_t {
   DIR_MIN = 0,
   DIR_N = 0,
   DIR_NE = 1 << 5,
@@ -1946,7 +2021,8 @@ typedef enum DirType : uint8_t {
   DIR_W = 6 << 5,
   DIR_NW = 7 << 5,
   DIR_MAX = 254
-} DirType;
+};
+using enum DirType;
 
 // Builds a direction from any angle, wrapping it to the 256-step circle.
 // Every value is a valid DirType; only the compass points are named. This is
@@ -1991,7 +2067,7 @@ inline constexpr int64_t kTimerMinute = int64_t{kTimerSecond} * 60;
 **	its physical speed, but the means by which it travels (wheels, tracks,
 **	wings, etc). This is used to determine the movement table.
 */
-typedef enum SpeedType {
+enum class SpeedType {
   SPEED_NONE = -1,
 
   SPEED_FOOT = 0,       // Bipedal.
@@ -2004,12 +2080,14 @@ typedef enum SpeedType {
 
   SPEED_COUNT = 7,
   SPEED_FIRST = SPEED_FOOT
-} SpeedType;
+};
+using enum SpeedType;
+inline constexpr int kSpeedCount = static_cast<int>(SPEED_COUNT);
 
 /**********************************************************************
 **	These are the sound effect digitized sample file names.
 */
-typedef enum VocType {
+enum class VocType {
   VOC_NONE = -1,
 
   VOC_RAMBO_PRESENT = 0,  //	"I've got a present for	ya"
@@ -2149,9 +2227,11 @@ typedef enum VocType {
 
   VOC_COUNT = 108,
   VOC_BUILD_SELECT = VOC_TARGET,
-} VocType;
+};
+using enum VocType;
+inline constexpr int kVocCount = static_cast<int>(VOC_COUNT);
 
-typedef enum VoxType : int8_t {
+enum class VoxType : int8_t {
   VOX_NONE = -1,
   VOX_ACCOMPLISHED,   //	mission accomplished
   VOX_FAIL,           //	your mission has failed
@@ -2256,7 +2336,9 @@ typedef enum VoxType : int8_t {
   //	VOX_MULTI_OFFLINE		= VOX_GOLD_OFFLINE,
   //	VOX_MULTI_LOST			= VOX_GOLD_LOST,
   //	VOX_MULTI_WON			= VOX_GOLD_WON,
-} VoxType;
+};
+using enum VoxType;
+inline constexpr int kVoxCount = static_cast<int>(VOX_COUNT);
 
 #define NUM_MULTI_VOICES 6
 /****************************************************************************
@@ -2264,7 +2346,7 @@ typedef enum VoxType : int8_t {
 **	data originates in the scenario INI file but is then carried throughout
 **	any saved games.
 */
-typedef enum SourceType {
+enum class SourceType {
   SOURCE_NONE = -1,  // No defined source (error condition).
   SOURCE_FIRST = 0,
 
@@ -2281,18 +2363,21 @@ typedef enum SourceType {
   SOURCE_OCEAN = 10,            // Enters from ocean map edge.
 
   SOURCE_COUNT = 11
-} SourceType;
+};
+using enum SourceType;
+inline constexpr int kSourceCount = static_cast<int>(SOURCE_COUNT);
 
 /****************************************************************************
 **	Each type of terrain has certain characteristics. These are indicated
 **	by the structure below. For every element of terrain there is a
 **	corresponding GroundType structure.
 */
-typedef struct {
-  int Color;                        // Radar map (map editor) id color.
-  unsigned char Cost[SPEED_COUNT];  // Terrain effect cost (normal).
-  bool Build;                       // Can build on this terrain?
-} GroundType;
+struct GroundType {
+  int Color = 0;  // Radar map (map editor) id color.
+  base::EnumArray<SpeedType, unsigned char, kSpeedCount>
+      Cost{};          // Terrain effect cost (normal).
+  bool Build = false;  // Can build on this terrain?
+};
 
 /**************************************************************************
 **	Find_Path returns with a pointer to this structure.
@@ -2311,11 +2396,9 @@ typedef struct {
 ** These are special indices into the Waypoint array; slots 0-25 are
 ** reserved for letter-designated Waypoints, the others are special.
 */
-typedef enum WaypointEnum {
-  WAYPT_HOME = 26,  // Home-cell for this scenario
-  WAYPT_REINF,      // cell where reinforcements arrive
-  WAYPT_COUNT,
-} WaypointType;
+inline constexpr int kWayptHome = 26;   // Home-cell for this scenario
+inline constexpr int kWayptReinf = 27;  // cell where reinforcements arrive
+inline constexpr int kWayptCount = 28;
 
 /****************************************************************************
 **	Max # of players total, including the game's owner
@@ -2325,13 +2408,14 @@ typedef enum WaypointEnum {
 /****************************************************************************
 **	These are the possible types of multiplayer games supported.
 */
-typedef enum GameEnum {
+enum class GameType {
   GAME_NORMAL,      // not multiplayer
   GAME_MODEM,       // modem game
   GAME_NULL_MODEM,  // NULL-modem
   GAME_IPX,         // IPX Network game
   GAME_INTERNET     // WInsock game
-} GameType;
+};
+using enum GameType;
 
 #define MPLAYER_BUILD_LEVEL_MAX 7
 
@@ -2348,13 +2432,14 @@ typedef enum GameEnum {
 /****************************************************************************
 ** This defines the various possible communications protocols.
 */
-typedef enum CommProtocolEnum {
+enum class CommProtocolType {
   COMM_PROTOCOL_SINGLE_NO_COMP = 0,  // single frame with no compression
   COMM_PROTOCOL_SINGLE_E_COMP = 1,   // single frame with event compression
   COMM_PROTOCOL_MULTI_E_COMP = 2,    // multiple frame with event compression
   COMM_PROTOCOL_COUNT = 3,
   DEFAULT_COMM_PROTOCOL = COMM_PROTOCOL_SINGLE_NO_COMP,
-} CommProtocolType;
+};
+using enum CommProtocolType;
 
 /****************************************************************************
 ** Min value for MaxAhead, for both net & modem; only applies for
@@ -2397,36 +2482,33 @@ typedef enum CommProtocolEnum {
 // Max length of modem name in list box.
 #define MODEM_NAME_MAX (PORTBUF_MAX - 1)
 
-typedef enum DetectPortType {
-  PORT_VALID = 0,
-  PORT_INVALID,
-  PORT_IRQ_INUSE
-} DetectPortType;
+enum class DetectPortType { PORT_VALID = 0, PORT_INVALID, PORT_IRQ_INUSE };
+using enum DetectPortType;
 
-typedef enum DialStatusType {
+enum class DialStatusType {
   DIAL_CONNECTED = 0,
   DIAL_NO_CARRIER,
   DIAL_BUSY,
   DIAL_ERROR,
   DIAL_NO_DIAL_TONE,
   DIAL_CANCELED
-} DialStatusType;
+};
+using enum DialStatusType;
 
-typedef enum DialMethodType {
+enum class DialMethodType {
   DIAL_TOUCH_TONE = 0,
   DIAL_PULSE,
 
   DIAL_METHODS
-} DialMethodType;
+};
+using enum DialMethodType;
+inline constexpr int kDialMethods = static_cast<int>(DIAL_METHODS);
 
-typedef enum CallWaitStringType {
-  CALL_WAIT_TONE_1 = 0,
-  CALL_WAIT_TONE_2,
-  CALL_WAIT_PULSE,
-  CALL_WAIT_CUSTOM,
-
-  CALL_WAIT_STRINGS_NUM
-} CallWaitStringType;
+inline constexpr int kCallWaitTone1 = 0;
+inline constexpr int kCallWaitTone2 = 1;
+inline constexpr int kCallWaitPulse = 2;
+inline constexpr int kCallWaitCustom = 3;
+inline constexpr int kCallWaitStringsNum = 4;
 
 /****************************************************************************
 **	This structure defines the settings for the serial port.
@@ -2449,7 +2531,7 @@ typedef struct {
 /****************************************************************************
 **	These are the various commands sent during startup of a Serial game.
 */
-typedef enum SerialCommandType {
+enum class SerialCommandType {
   SERIAL_CONNECT = 100,       // Are you there?  Hello?  McFly?
   SERIAL_GAME_OPTIONS = 101,  // Hey, dudes, here's some new game options
   SERIAL_SIGN_OFF = 102,  // Bogus, dudes, my boss is coming; I'm outta here!
@@ -2459,7 +2541,8 @@ typedef enum SerialCommandType {
   SERIAL_SCORE_SCREEN = 106,  // player at score screen
   SERIAL_READY_TO_GO = 107,   // Host is ready to start the game
   SERIAL_LAST_COMMAND = 108   // last command
-} SerialCommandType;
+};
+using enum SerialCommandType;
 
 //
 // how much time (ticks) to go by before sending another packet
@@ -2493,14 +2576,15 @@ typedef struct {
   unsigned char ID;                     // ID of sender of message
 } SerialPacketType;
 
-typedef enum ModemGameType {
+enum class ModemGameType {
   MODEM_NULL_HOST = 0,
   MODEM_NULL_JOIN = 1,
   MODEM_DIALER = 2,
   MODEM_ANSWERER = 3,
   INTERNET_HOST = MODEM_NULL_HOST,
   INTERNET_JOIN = MODEM_NULL_JOIN
-} ModemGameType;
+};
+using enum ModemGameType;
 
 /****************************************************************************
 **	This is the max number of events supported on one frame.
@@ -2510,7 +2594,7 @@ typedef enum ModemGameType {
 /****************************************************************************
 **	These are the various commands sent over the network's Global Channel.
 */
-typedef enum NetCommandType {
+enum class NetCommandType {
   NET_QUERY_GAME,     // Hey, what games are out there?
   NET_ANSWER_GAME,    // Yo, Here's my game's name!
   NET_QUERY_PLAYER,   // Hey, what players are in this game?
@@ -2523,7 +2607,8 @@ typedef enum NetCommandType {
   NET_GO,             // OK, dudes, jump into the game loop!
   NET_MESSAGE,        // Here's a message
   NET_PING,           // I'm pinging you to take a time measurement
-} NetCommandType;
+};
+using enum NetCommandType;
 
 /****************************************************************************
 **	These is the structure sent over the network Global Channel.
@@ -2578,14 +2663,13 @@ typedef struct {
   int Color;
 } MPlayerScoreType;
 
-typedef enum {
-  KF_NUMBER = 0x08,
-  KF_UNCOMP = 0x10,
-  KF_DELTA = 0x20,
-  KF_KEYDELTA = 0x40,
-  KF_KEYFRAME = 0x80,
-  KF_MASK = 0xF0
-} KeyFrameType;
+// Frame flags in the high byte of a key-frame shape's offset table.
+inline constexpr uint8_t kKfNumber = 0x08;
+inline constexpr uint8_t kKfUncomp = 0x10;
+inline constexpr uint8_t kKfDelta = 0x20;
+inline constexpr uint8_t kKfKeyDelta = 0x40;
+inline constexpr uint8_t kKfKeyFrame = 0x80;
+inline constexpr uint8_t kKfMask = 0xF0;
 
 //--------------------------------------------------------------------
 // New Config structure for .CFG files
@@ -2606,31 +2690,29 @@ typedef struct {
 **	These are the types of dialogs that can pop up outside of the main loop,
 ** an call the game in the background.
 */
-typedef enum {
+enum class SpecialDialogType {
   SDLG_NONE,
   SDLG_OPTIONS,
   SDLG_SURRENDER,
   SDLG_SPECIAL,
-} SpecialDialogType;
+};
+using enum SpecialDialogType;
 
-typedef enum {
-  CC_GDI_COLOR = YELLOW,
-  CC_NOD_COLOR = RED,
-  CC_BLUE_GREEN = CYAN,
-  CC_BLUE_GREY = LTBLUE,
-  CC_ORANGE = PURPLE,
-  CC_GREEN = GREEN,
-  CC_TAN = BROWN,
-
-  CC_GREEN_SHADOW = 140,
-  CC_GREEN_BKGD = 141,
-  CC_GREEN_CORNERS = CC_GREEN_BKGD,
-  CC_LIGHT_GREEN = 159,
-  CC_GREEN_BOX = CC_LIGHT_GREEN,
-  CC_BRIGHT_GREEN = 167,
-  CC_UNDERLINE = CC_BRIGHT_GREEN,
-  CC_GREEN_BAR = CC_BRIGHT_GREEN,
-} CCPaletteType;
+inline constexpr int kCcGdiColor = kYellow;
+inline constexpr int kCcNodColor = kRed;
+inline constexpr int kCcBlueGreen = kCyan;
+inline constexpr int kCcBlueGrey = kLtBlue;
+inline constexpr int kCcOrange = kPurple;
+inline constexpr int kCcGreen = kGreen;
+inline constexpr int kCcTan = kBrown;
+inline constexpr int kCcGreenShadow = 140;
+inline constexpr int kCcGreenBkgd = 141;
+inline constexpr int kCcGreenCorners = kCcGreenBkgd;
+inline constexpr int kCcLightGreen = 159;
+inline constexpr int kCcGreenBox = kCcLightGreen;
+inline constexpr int kCcBrightGreen = 167;
+inline constexpr int kCcUnderline = kCcBrightGreen;
+inline constexpr int kCcGreenBar = kCcBrightGreen;
 
 /****************************************************************************
 **	These specify the shape numbers in the OPTIONS.SHP file. These shapes
@@ -2638,7 +2720,7 @@ typedef enum {
 *pairs. *	For dialog box shapes, they are left image / right image paired.
 *For buttons, *	they are up / down paired.
 */
-typedef enum OptionControlType {
+enum class OptionControlType {
   OPTION_NONE = -1,          // No fancy shmancy shape.
   OPTION_DIALOG = 0,         // Small dialog boxes.
   OPTION_CONTROLS = 2,       // Large dialog boxes, game controls.
@@ -2659,7 +2741,9 @@ typedef enum OptionControlType {
   OPTION_BUTTON_NOD = 30,    // Huh?
 
   OPTION_COUNT = 31
-} OptionControlType;
+};
+using enum OptionControlType;
+inline constexpr int kOptionCount = static_cast<int>(OPTION_COUNT);
 
 #define TOTAL_CRATE_TYPES 15
 

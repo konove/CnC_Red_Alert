@@ -279,7 +279,7 @@ bool SuperClass::AI(bool player) {
  **
  *                                                                                             *
  *    This will return the current animation stage for this super weapon. The
- *value will be    * between zero (uncharged) to ANIMATION_STAGES (fully
+ *value will be    * between zero (uncharged) to kAnimationStages (fully
  *charged). Use this value to render   * the appropriate graphic on the sidebar.
  **
  *                                                                                             *
@@ -295,7 +295,7 @@ bool SuperClass::AI(bool player) {
 int SuperClass::Anim_Stage() const {
   if (IsPresent) {
     if (IsReady) {
-      return ANIMATION_STAGES;
+      return kAnimationStages;
     }
     int time = static_cast<int>(Control.Time());
     if (IsSuspended) {
@@ -303,7 +303,7 @@ int SuperClass::Anim_Stage() const {
     }
 
     return Fixed_To_Cardinal(
-        ANIMATION_STAGES, Cardinal_To_Fixed(RechargeTime, RechargeTime - time));
+        kAnimationStages, Cardinal_To_Fixed(RechargeTime, RechargeTime - time));
   }
   return 0;
 }

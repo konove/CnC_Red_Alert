@@ -122,7 +122,8 @@ class RadarClass : public DisplayClass {
   /*
   **	Radar map constant values.
   */
-  enum RadarClassEnums { RADAR_ACTIVATED_FRAME = 22, MAX_RADAR_FRAMES = 41 };
+  static constexpr int kRadarActivatedFrame = 22;
+  static constexpr int kMaxRadarFrames = 41;
 
   /*
   **	If the radar map must be completely redrawn, then this flag will be
@@ -158,9 +159,10 @@ class RadarClass : public DisplayClass {
   class TacticalClass : public GadgetClass {
    public:
     TacticalClass() noexcept
-        : GadgetClass(0, 0, 0, 0,
-                      LEFTPRESS | LEFTRELEASE | LEFTHELD | LEFTUP | RIGHTPRESS,
-                      true) {}
+        : GadgetClass(
+              0, 0, 0, 0,
+              kLeftPress | kLeftRelease | kLeftHeld | kLeftUp | kRightPress,
+              true) {}
 
    protected:
     bool Action(unsigned flags, KeyNumType& key) override;
@@ -215,8 +217,8 @@ class RadarClass : public DisplayClass {
   */
   int PixelPtr{0};
   int ZoomFactor = 0;
-  enum PixelStackEnums { PIXELSTACK = 200 };
-  CELL PixelStack[PIXELSTACK]{};
+  static constexpr int kPixelstack = 200;
+  CELL PixelStack[kPixelstack]{};
 };
 
 class ArchiveReader;

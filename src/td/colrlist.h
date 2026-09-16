@@ -54,13 +54,14 @@ class ColorListClass : public ListClass {
   /*********************************************************************
   ** These enums are the ways a selected item can be drawn
   */
-  typedef enum SelectEnum {
+  enum class SelectStyleType {
     SELECT_NONE,       // selected items aren't drawn differently
     SELECT_HIGHLIGHT,  // item is highlighted
     SELECT_BOX,        // draw a box around the item
     SELECT_BAR,        // draw a bar behind the item
     SELECT_INVERT,     // draw the string inverted
-  } SelectStyleType;
+  };
+  using enum SelectStyleType;
 
   ColorListClass(int id, int x, int y, int w, int h, TextPrintType flags,
                  const void* up, const void* down);
@@ -70,8 +71,8 @@ class ColorListClass : public ListClass {
   ColorListClass(ColorListClass&&) = delete;
   ColorListClass& operator=(ColorListClass&&) = delete;
 
-  int Add_Item(const char* text) override { return Add_Item(text, WHITE); }
-  int Add_Item(int text) override { return Add_Item(text, WHITE); }
+  int Add_Item(const char* text) override { return Add_Item(text, kWhite); }
+  int Add_Item(int text) override { return Add_Item(text, kWhite); }
   virtual int Add_Item(const char* text, char color);
   virtual int Add_Item(int text, char color);
   void Remove_Item(const char* text) override { ListClass::Remove_Item(text); }

@@ -74,7 +74,6 @@
 #include "td/globals.h"
 #include "td/heap.h"
 #include "td/inline.h"
-#include "td/jshell.h"
 #include "td/mapedit.h"
 #include "td/mouse.h"
 #include "td/object.h"
@@ -658,7 +657,7 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
           scatterdist = std::min(scatterdist, 0x0080);
         }
 
-        dir = static_cast<DirType>(dir + (Random_Pick(0, 10) - 5) & 0x00FF);
+        dir = AsDirection(static_cast<int>(dir) + (Random_Pick(0, 10) - 5));
         tcoord = Coord_Scatter(tcoord, Random_Pick(0, scatterdist));
       } else {
         tcoord = Coord_Move(tcoord, dir,
@@ -694,7 +693,8 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
     int range = 0xFF;
     if (!Class->Range) {
       if (!Class->IsDropping) {
-        range = (::Distance(tcoord, Coord) / Class->MaxSpeed) + 4;
+        range =
+            (::Distance(tcoord, Coord) / static_cast<int>(Class->MaxSpeed)) + 4;
       }
     } else {
       range = Class->Range;
@@ -705,12 +705,12 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
     **	certian projectiles alter speed according to the distance to the
     **	target.
     */
-    int speed = Class->MaxSpeed;
-    if (speed == MPH_LIGHT_SPEED) {
-      speed = MPH_IMMOBILE;
+    int speed = static_cast<int>(Class->MaxSpeed);
+    if (speed == static_cast<int>(MPH_LIGHT_SPEED)) {
+      speed = static_cast<int>(MPH_IMMOBILE);
     }
     if (Class->IsArcing) {
-      speed = Class->MaxSpeed + (Distance(tcoord) / 32);
+      speed = static_cast<int>(Class->MaxSpeed) + (Distance(tcoord) / 32);
 
       /*
       **	Set minimum speed (i.e., distance) for arcing projectiles.

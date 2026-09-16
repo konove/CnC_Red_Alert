@@ -57,6 +57,8 @@
 
 #include "absl/strings/str_format.h"
 #include "absl/types/span.h"
+#include "base/enum_array.h"
+#include "base/numeric.h"
 #include "port/format.h"
 #include "port/safe_string.h"
 #include "sdllib/drawbuff.h"
@@ -112,36 +114,39 @@ void Dialog_Box(int x, int y, int w, int h) {
  *=============================================================================================*/
 
 void Draw_Box(int x, int y, int w, int h, BoxStyleEnum up, bool filled) {
-  static const BoxStyleType ButtonColors[BOXSTYLE_COUNT] = {
+  static const base::EnumArray<BoxStyleEnum, BoxStyleType, kBoxstyleCount>
+      ButtonColors = {{
 
-      // Filler, Shadow, Hilite, Corner colors
+          // Filler, Shadow, Hilite, Corner colors
 
-      {LTGREY, WHITE, GREY, LTGREY},   // 0 Button is down.
-      {LTGREY, GREY, WHITE, LTGREY},   // 1 Button is up w/border.
-      {LTBLUE, BLUE, LTCYAN, LTBLUE},  // 2 Raised blue.
-      {GREY, WHITE, BLACK, GREY},      // 3 Button is disabled down.
-      {GREY, BLACK, WHITE, LTGREY},    // 4 Button is disabled up.
-      {LTGREY, GREY, WHITE, LTGREY},   // 5 Button is up w/arrows.
-      //{ CC_GREEN_BKGD, CC_LIGHT_GREEN, CC_GREEN_SHADOW,  CC_GREEN_CORNERS },
-      //// 6 Button is down.
-      //{ CC_GREEN_BKGD, CC_GREEN_SHADOW, CC_LIGHT_GREEN,  CC_GREEN_CORNERS },
-      //// 7 Button is up w/border.
-      {CC_GREEN_BKGD, 14, 12, 13},  // 6 Button is down.
-      {CC_GREEN_BKGD, 12, 14, 13},  // 7 Button is up w/border.
-      {GREY, WHITE, BLACK, GREY},   // 8 Button is disabled down.
-      {GREY, BLACK, LTGREY, GREY},  // 9 Button is disabled up.
-      //{ BLACK,  CC_GREEN_BOX, CC_GREEN_BOX,  BLACK},	// 10 List box.
-      //{ BLACK,  CC_GREEN_BOX, CC_GREEN_BOX,  BLACK},	// 11 Menu box.
-      {BLACK, 14, 14, BLACK},  // 10 List box.
-      {BLACK, 14, 14, BLACK},  // 11 Menu box.
-  };
+          {kLtGrey, kWhite, kGrey, kLtGrey},   // 0 Button is down.
+          {kLtGrey, kGrey, kWhite, kLtGrey},   // 1 Button is up w/border.
+          {kLtBlue, kBlue, kLtCyan, kLtBlue},  // 2 Raised blue.
+          {kGrey, kWhite, kBlack, kGrey},      // 3 Button is disabled down.
+          {kGrey, kBlack, kWhite, kLtGrey},    // 4 Button is disabled up.
+          {kLtGrey, kGrey, kWhite, kLtGrey},   // 5 Button is up w/arrows.
+          //{ CC_GREEN_BKGD, CC_LIGHT_GREEN, CC_GREEN_SHADOW,  CC_GREEN_CORNERS
+          //},
+          //// 6 Button is down.
+          //{ CC_GREEN_BKGD, CC_GREEN_SHADOW, CC_LIGHT_GREEN,  CC_GREEN_CORNERS
+          //},
+          //// 7 Button is up w/border.
+          {kCcGreenBkgd, 14, 12, 13},       // 6 Button is down.
+          {kCcGreenBkgd, 12, 14, 13},       // 7 Button is up w/border.
+          {kGrey, kWhite, kBlack, kGrey},   // 8 Button is disabled down.
+          {kGrey, kBlack, kLtGrey, kGrey},  // 9 Button is disabled up.
+          //{ BLACK,  CC_GREEN_BOX, CC_GREEN_BOX,  BLACK},	// 10 List box.
+          //{ BLACK,  CC_GREEN_BOX, CC_GREEN_BOX,  BLACK},	// 11 Menu box.
+          {kBlack, 14, 14, kBlack},  // 10 List box.
+          {kBlack, 14, 14, kBlack},  // 11 Menu box.
+      }};
 
   w--;
   h--;
   const BoxStyleType& style = ButtonColors[up];
 
   if (filled) {
-    if (style.Filler == CC_GREEN_BKGD) {
+    if (style.Filler == kCcGreenBkgd) {
       CC_Texture_Fill(MixArchive::Retrieve("BTEXTURE.SHP"), InMainLoop ? 1 : 0,
                       x, y, w, h);
     } else {
@@ -262,25 +267,26 @@ int Format_Window_String(char* string, int maxlinelen, int& width,
  *appropriate enumeration parameters.                                *
  *=============================================================================================*/
 void Window_Box(WindowNumberType window, BoxStyleEnum style) {
+  static const base::EnumArray<BoxStyleEnum, int[2], kBoxstyleCount> _border = {
+      {
+          {0, 0},   // 0 Simple beveled edge.
+          {2, 4},   // 1 Wide raised border.
+          {1, 1},   // 2 Thick beveled edge.
+          {2, 1},   // 3 Thin raised border.
+          {0, 0},   // 4 Simple beveled edge.
+          {20, 0},  // 5 Simple beveled edge.
+          {0, 0},   // 6 Simple beveled edge.
+          {2, 4},   // 7 Wide raised border.
+          {0, 0},   // 8 Simple beveled edge.
+          {20, 0},  // 9 Simple beveled edge.
+          {0, 1}    // 10 Simple 1 pixel box.
+      }};
 
-  static const int _border[BOXSTYLE_COUNT][2] = {
-      {0, 0},   // 0 Simple beveled edge.
-      {2, 4},   // 1 Wide raised border.
-      {1, 1},   // 2 Thick beveled edge.
-      {2, 1},   // 3 Thin raised border.
-      {0, 0},   // 4 Simple beveled edge.
-      {20, 0},  // 5 Simple beveled edge.
-      {0, 0},   // 6 Simple beveled edge.
-      {2, 4},   // 7 Wide raised border.
-      {0, 0},   // 8 Simple beveled edge.
-      {20, 0},  // 9 Simple beveled edge.
-      {0, 1}    // 10 Simple 1 pixel box.
-  };
-
-  const int x = WindowList[window][WINDOWX] * 8;
-  const int y = WindowList[window][WINDOWY];
-  const int w = WindowList[window][WINDOWWIDTH] * 8;
-  const int h = WindowList[window][WINDOWHEIGHT];  // Window dimensions.
+  const int x = WindowList[static_cast<int>(window)][kWindowX] * 8;
+  const int y = WindowList[static_cast<int>(window)][kWindowY];
+  const int w = WindowList[static_cast<int>(window)][kWindowWidth] * 8;
+  const int h = WindowList[static_cast<int>(window)]
+                          [kWindowHeight];  // Window dimensions.
 
   /*
   **	If it is to be rendered to the seenpage, then
@@ -372,7 +378,7 @@ void Simple_Text_Print(const char* text, int x, int y, int fore,
   unsigned char fontpalette[16];  // Working font palette array.
   memset(&fontpalette[0], back, 16);
 
-  if ((flag & 0xf) == TPF_VCR) {
+  if ((flag & static_cast<TextPrintType>(0xF)) == TPF_VCR) {
     fontpalette[3] = 12;
     fontpalette[9] = 15;
     fontpalette[10] = 200;
@@ -403,13 +409,14 @@ void Simple_Text_Print(const char* text, int x, int y, int fore,
   /*
   **	A gradient font always requires special fixups for the palette.
   */
-  if ((flag & 0xf) == TPF_6PT_GRAD || (flag & 0xf) == TPF_GREEN12_GRAD ||
-      (flag & 0xf) == TPF_GREEN12) {
+  if ((flag & static_cast<TextPrintType>(0xF)) == TPF_6PT_GRAD ||
+      (flag & static_cast<TextPrintType>(0xF)) == TPF_GREEN12_GRAD ||
+      (flag & static_cast<TextPrintType>(0xF)) == TPF_GREEN12) {
     /*
     **	If a gradient palette was requested, then fill in the font palette array
     **	according to the color index specified.
     */
-    if (flag & TPF_USE_GRAD_PAL) {
+    if (base::Any(flag & TPF_USE_GRAD_PAL)) {
       memcpy(&fontpalette[0], _textfontpal[fore % 16], 16);
     } else {
       /*
@@ -420,11 +427,11 @@ void Simple_Text_Print(const char* text, int x, int y, int fore,
       memset(&fontpalette[4], fore, 12);
     }
 
-    if (flag & TPF_MEDIUM_COLOR) {
+    if (base::Any(flag & TPF_MEDIUM_COLOR)) {
       fore = _textpalmedium[fore % 16];
       memset(&fontpalette[4], fore, 12);
     } else {
-      if (flag & TPF_BRIGHT_COLOR) {
+      if (base::Any(flag & TPF_BRIGHT_COLOR)) {
         fore = _textpalbright[fore % 16];
         memset(&fontpalette[4], fore, 12);
       } else {
@@ -436,7 +443,7 @@ void Simple_Text_Print(const char* text, int x, int y, int fore,
   /*
   **	Change the current font if it differs from the font desired.
   */
-  const int point =
+  const TextPrintType point =
       flag & static_cast<TextPrintType>(0x000F);  // Requested font size.
   xspace = 1;
   yspace = 0;
@@ -496,8 +503,9 @@ void Simple_Text_Print(const char* text, int x, int y, int fore,
   /*
   **	Change the current font palette according to the dropshadow flags.
   */
-  const int shadow = flag & (TPF_NOSHADOW | TPF_DROPSHADOW | TPF_FULLSHADOW |
-                             TPF_LIGHTSHADOW);  // Requested shadow value.
+  const TextPrintType shadow =
+      flag & (TPF_NOSHADOW | TPF_DROPSHADOW | TPF_FULLSHADOW |
+              TPF_LIGHTSHADOW);  // Requested shadow value.
   switch (shadow) {
     /*
     **	The text is rendered plain.
@@ -514,7 +522,7 @@ void Simple_Text_Print(const char* text, int x, int y, int fore,
     **	drop shadow.
     */
     case TPF_DROPSHADOW:
-      fontpalette[2] = BLACK;
+      fontpalette[2] = kBlack;
       fontpalette[3] = static_cast<unsigned char>(back);
       xspace -= 1;
       break;
@@ -534,8 +542,8 @@ void Simple_Text_Print(const char* text, int x, int y, int fore,
     **	when the text will be over a non-plain background.
     */
     case TPF_FULLSHADOW:
-      fontpalette[2] = BLACK;
-      fontpalette[3] = BLACK;
+      fontpalette[2] = kBlack;
+      fontpalette[3] = kBlack;
       xspace -= 1;
       break;
 
@@ -696,7 +704,7 @@ void Conquer_Clip_Text_Print(const char* text, int x, int y, int fore,
     **	Set the font and spacing characteristics according to the flag
     **	value passed in.
     */
-    Simple_Text_Print(nullptr, 0, 0, TBLACK, TBLACK, flag);
+    Simple_Text_Print(nullptr, 0, 0, kTBlack, kTBlack, flag);
 
     char* source = &buffer[0];
     int offset = 0;

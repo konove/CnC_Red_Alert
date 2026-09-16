@@ -42,71 +42,70 @@
 #define CNC_RED_ALERT_TD_SOUNDDLG_H_
 
 class SoundControlsClass {
-  enum SoundControlsClassEnums {
 #ifdef FRENCH
-    OPTION_WIDTH = 308,
+  static constexpr int kOptionWidth = 308;
 #else
-    OPTION_WIDTH = 292,
+  static constexpr int kOptionWidth = 292;
 #endif
-    OPTION_HEIGHT = 146,
+  static constexpr int kOptionHeight = 146;
 
-    OPTION_X = (320 - OPTION_WIDTH) / 2,
-    OPTION_Y = (200 - OPTION_HEIGHT) / 2,
+  static constexpr int kOptionX = (320 - kOptionWidth) / 2;
+  static constexpr int kOptionY = (200 - kOptionHeight) / 2;
 
-    LISTBOX_X = 1,
-    LISTBOX_Y = 54,
-    LISTBOX_W = 290,
-    LISTBOX_H = 72,
+  static constexpr int kListboxX = 1;
+  static constexpr int kListboxY = 54;
+  static constexpr int kListboxW = 290;
+  static constexpr int kListboxH = 72;
 
-    BUTTON_WIDTH = 85,
-    BUTTON_X = OPTION_WIDTH - (BUTTON_WIDTH + 7),  // Options button x pos
-    BUTTON_Y = 130,                                // Options button y pos
+  static constexpr int kButtonWidth = 85;
+  static constexpr int kButtonX =
+      kOptionWidth - (kButtonWidth + 7);  // Options button x pos
+  static constexpr int kButtonY = 130;    // Options button y pos
 
-    STOP_X = 5,    // Stop button X.
-    STOP_Y = 129,  //	Stop button Y.
+  static constexpr int kStopX = 5;    // Stop button X.
+  static constexpr int kStopY = 129;  //	Stop button Y.
 
-    PLAY_X = 23,
-    PLAY_Y = 129,
+  static constexpr int kPlayX = 23;
+  static constexpr int kPlayY = 129;
 
-    ONOFF_WIDTH = 25,
+  static constexpr int kOnoffWidth = 25;
 #ifdef GERMAN
-    SHUFFLE_X = 79,  // BGA:91,
+  static constexpr int kShuffleX = 79;  // BGA:91,
 #else
 #ifdef FRENCH
-    SHUFFLE_X = 99,
+  static constexpr int kShuffleX = 99;
 #else
-    SHUFFLE_X = 91,
+  static constexpr int kShuffleX = 91;
 #endif
 #endif
-    SHUFFLE_Y = 130,
+  static constexpr int kShuffleY = 130;
 
 #ifdef FRENCH
-    REPEAT_X = 174,
+  static constexpr int kRepeatX = 174;
 #else
-    REPEAT_X = 166,
+  static constexpr int kRepeatX = 166;
 #endif
-    REPEAT_Y = 130,
+  static constexpr int kRepeatY = 130;
 
-    MSLIDER_X = 147,
-    MSLIDER_Y = 28,
-    MSLIDER_W = 108,
-    MSLIDER_HEIGHT = 5,
+  static constexpr int kMsliderX = 147;
+  static constexpr int kMsliderY = 28;
+  static constexpr int kMsliderW = 108;
+  static constexpr int kMsliderHeight = 5;
 
-    FXSLIDER_X = 147,
-    FXSLIDER_Y = 40,
-    FXSLIDER_W = 108,
-    FXSLIDER_HEIGHT = 5,
+  static constexpr int kFxsliderX = 147;
+  static constexpr int kFxsliderY = 40;
+  static constexpr int kFxsliderW = 108;
+  static constexpr int kFxsliderHeight = 5;
 
-    BUTTON_STOP = 605,
-    BUTTON_PLAY = 606,
-    BUTTON_SHUFFLE = 607,
-    BUTTON_REPEAT = 608,
-    BUTTON_OPTIONS = 609,
-    SLIDER_MUSIC = 610,
-    //		SLIDER_SPEECH,
-    SLIDER_SOUND = 611,
-    BUTTON_LISTBOX = 612,
-  };
+  static constexpr int kButtonStop = 605;
+  static constexpr int kButtonPlay = 606;
+  static constexpr int kButtonShuffle = 607;
+  static constexpr int kButtonRepeat = 608;
+  static constexpr int kButtonOptions = 609;
+  static constexpr int kSliderMusic = 610;
+  //		SLIDER_SPEECH,
+  static constexpr int kSliderSound = 611;
+  static constexpr int kButtonListbox = 612;
 
  public:
   SoundControlsClass() = default;

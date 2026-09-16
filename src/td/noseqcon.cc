@@ -187,10 +187,12 @@ int NonSequencedConnClass::Send_Packet(void* buf, int buflen, int ack_req) {
   Set the packet ID to the appropriate counter value.
   ........................................................................*/
   if (ack_req) {
-    port::AlignedObject<CommHeaderType>(PacketBuf)->Code = PACKET_DATA_ACK;
+    port::AlignedObject<CommHeaderType>(PacketBuf)->Code =
+        static_cast<unsigned char>(PACKET_DATA_ACK);
     port::AlignedObject<CommHeaderType>(PacketBuf)->PacketID = NumSendAck;
   } else {
-    port::AlignedObject<CommHeaderType>(PacketBuf)->Code = PACKET_DATA_NOACK;
+    port::AlignedObject<CommHeaderType>(PacketBuf)->Code =
+        static_cast<unsigned char>(PACKET_DATA_NOACK);
     port::AlignedObject<CommHeaderType>(PacketBuf)->PacketID = NumSendNoAck;
   }
 
@@ -263,7 +265,7 @@ int NonSequencedConnClass::Receive_Packet(void* buf, int buflen) {
   /*------------------------------------------------------------------------
   Handle an incoming ACK
   ------------------------------------------------------------------------*/
-  if (packet->Code == PACKET_ACK) {
+  if (packet->Code == static_cast<unsigned char>(PACKET_ACK)) {
     for (int i = 0; i < Queue->Num_Send(); i++) {
       /*
       ....................... Get queue entry ptr ........................
@@ -279,7 +281,7 @@ int NonSequencedConnClass::Receive_Packet(void* buf, int buflen) {
         .............. If ACK is for this entry, mark it ................
         */
         if (packet->PacketID == entry_data->PacketID &&
-            entry_data->Code == PACKET_DATA_ACK) {
+            entry_data->Code == static_cast<unsigned char>(PACKET_DATA_ACK)) {
           // Smart_Printf( "Received ACK for %d \n", packet->PacketID );
           send_entry->IsACK = 1;
           break;
@@ -299,7 +301,7 @@ int NonSequencedConnClass::Receive_Packet(void* buf, int buflen) {
   /*------------------------------------------------------------------------
   Handle an incoming PACKET_DATA_NOACK packet
   ------------------------------------------------------------------------*/
-  if (packet->Code == PACKET_DATA_NOACK) {
+  if (packet->Code == static_cast<unsigned char>(PACKET_DATA_NOACK)) {
     /*---------------------------------------------------------------------
     If there's only one slot left, don't tie up the queue with this packet
     ---------------------------------------------------------------------*/
@@ -326,7 +328,7 @@ int NonSequencedConnClass::Receive_Packet(void* buf, int buflen) {
   /*------------------------------------------------------------------------
   Handle an incoming PACKET_DATA_ACK packet
   ------------------------------------------------------------------------*/
-  if (packet->Code == PACKET_DATA_ACK) {
+  if (packet->Code == static_cast<unsigned char>(PACKET_DATA_ACK)) {
     // Smart_Printf( "Looking at ID %d, LastSeqID=%d \n", packet->PacketID,
     // LastSeqID );
     /*....................................................................
@@ -350,7 +352,7 @@ int NonSequencedConnClass::Receive_Packet(void* buf, int buflen) {
           /*...........................................................
           Packet is found; it's a resend
           ...........................................................*/
-          if (entry_data->Code == PACKET_DATA_ACK &&
+          if (entry_data->Code == static_cast<unsigned char>(PACKET_DATA_ACK) &&
               entry_data->PacketID == packet->PacketID) {
             // Smart_Printf( "It's a resend\n" );
             save_packet = 0;
@@ -411,7 +413,8 @@ int NonSequencedConnClass::Receive_Packet(void* buf, int buflen) {
               /*......................................................
               Entry is found
               ......................................................*/
-              if (entry_data->Code == PACKET_DATA_ACK &&
+              if (entry_data->Code ==
+                      static_cast<unsigned char>(PACKET_DATA_ACK) &&
                   entry_data->PacketID == LastSeqID + 1) {
                 LastSeqID = entry_data->PacketID;
                 found = 1;
@@ -427,7 +430,7 @@ int NonSequencedConnClass::Receive_Packet(void* buf, int buflen) {
     Send an ACK, regardless of whether this was a resend or not.
     ---------------------------------------------------------------------*/
     ackpacket.MagicNumber = Magic_Num();
-    ackpacket.Code = PACKET_ACK;
+    ackpacket.Code = static_cast<unsigned char>(PACKET_ACK);
     ackpacket.PacketID = packet->PacketID;
     // Smart_Printf( "Sending ACK for %d \n", packet->PacketID );
     Send(&ackpacket, sizeof(CommHeaderType));
@@ -480,7 +483,7 @@ int NonSequencedConnClass::Get_Packet(void* buf, int* buflen) {
       If this is a DATA_ACK packet, its ID must be one greater than
       the last one we read.
       ..................................................................*/
-      if (entry_data->Code == PACKET_DATA_ACK &&
+      if (entry_data->Code == static_cast<unsigned char>(PACKET_DATA_ACK) &&
           entry_data->PacketID == LastReadID + 1) {
         LastReadID = entry_data->PacketID;
         rec_entry->IsRead = 1;
@@ -496,7 +499,7 @@ int NonSequencedConnClass::Get_Packet(void* buf, int* buflen) {
       /*..................................................................
       If this is a DATA_NOACK packet, who cares what the ID is?
       ..................................................................*/
-      if (entry_data->Code == PACKET_DATA_NOACK) {
+      if (entry_data->Code == static_cast<unsigned char>(PACKET_DATA_NOACK)) {
         rec_entry->IsRead = 1;
 
         packetlen = rec_entry->BufLen - static_cast<int>(sizeof(CommHeaderType));
@@ -552,7 +555,7 @@ int NonSequencedConnClass::Service_Send_Queue() {
       ................ Update this queue's response time .................
       */
       packet_hdr = port::AlignedObject<CommHeaderType>(send_entry->Buffer);
-      if (packet_hdr->Code == PACKET_DATA_ACK) {
+      if (packet_hdr->Code == static_cast<unsigned char>(PACKET_DATA_ACK)) {
         Queue->Add_Delay(Time() - send_entry->FirstTime);
       }
       /*
@@ -600,7 +603,7 @@ int NonSequencedConnClass::Service_Send_Queue() {
         it will just be removed from the queue.
         ...............................................................*/
         packet_hdr = port::AlignedObject<CommHeaderType>(send_entry->Buffer);
-        if (packet_hdr->Code == PACKET_DATA_NOACK) {
+        if (packet_hdr->Code == static_cast<unsigned char>(PACKET_DATA_NOACK)) {
           send_entry->IsACK = 1;
         }
       }
@@ -667,7 +670,7 @@ int NonSequencedConnClass::Service_Receive_Queue() {
       auto* packet_hdr = port::AlignedObject<CommHeaderType>(
           rec_entry->Buffer);  // packet header
 
-      if (packet_hdr->Code == PACKET_DATA_NOACK) {
+      if (packet_hdr->Code == static_cast<unsigned char>(PACKET_DATA_NOACK)) {
         Queue->UnQueue_Receive(nullptr, nullptr, i);
         i--;
       } else {

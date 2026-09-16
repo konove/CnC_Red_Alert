@@ -60,6 +60,7 @@
 #include <utility>
 
 #include "absl/strings/str_format.h"
+#include "base/enum_array.h"
 #include "base/numeric.h"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
@@ -81,20 +82,21 @@
 /*
 ********************************** Globals **********************************
 */
-const char* TeamTypeClass::TMissions[TMISSION_COUNT] = {
-    "Attack Base",
-    "Attack Units",
-    "Attack Civil.",
-    "Rampage",
-    "Defend Base",
-    //	"Harvest",
-    "Move",
-    "Move to Cell",
-    "Retreat",
-    "Guard",
-    "Loop",
-    "Attack Tarcom",
-    "Unload",
+base::EnumArray<TeamMissionType, const char*, static_cast<int>(TMISSION_COUNT)>
+    TeamTypeClass::TMissions = {
+        "Attack Base",
+        "Attack Units",
+        "Attack Civil.",
+        "Rampage",
+        "Defend Base",
+        //	"Harvest",
+        "Move",
+        "Move to Cell",
+        "Retreat",
+        "Guard",
+        "Loop",
+        "Attack Tarcom",
+        "Unload",
 };
 
 /***********************************************************************************************
@@ -304,7 +306,7 @@ void TeamTypeClass::Fill_In(char* name, char* entry) {
   ------------------------ 11th token: Class count -------------------------
   */
   const int num_classes = tech::ParseInteger<int>(tokens.Next()).value_or(-1);
-  if (num_classes < 0 || num_classes > MAX_TEAM_CLASSCOUNT) {
+  if (num_classes < 0 || num_classes > kMaxTeamClasscount) {
     ClassCount = 0;
     MissionCount = 0;
     return;
@@ -363,7 +365,7 @@ void TeamTypeClass::Fill_In(char* name, char* entry) {
   ----------------------- next token: Mission count ------------------------
   */
   MissionCount = tech::ParseInteger<int>(tokens.Next()).value_or(-1);
-  if (MissionCount < 0 || MissionCount > MAX_TEAM_MISSIONS) {
+  if (MissionCount < 0 || MissionCount > kMaxTeamMissions) {
     ClassCount = 0;
     MissionCount = 0;
     return;
@@ -608,7 +610,7 @@ void TeamTypeClass::Read_Old_INI(char* buffer) {
     int index = 0;
     char* p1 = tokens.Next(",:");  // parsing pointer
     char* p2 = tokens.Next(",:");  // parsing pointer
-    while (p1 && p2 && index < MAX_TEAM_CLASSCOUNT) {
+    while (p1 && p2 && index < kMaxTeamClasscount) {
       const TechnoTypeClass* otype = nullptr;  // ptr to type of object
 
       /*
@@ -746,9 +748,10 @@ void TeamTypeClass::Remove() {
 TeamMissionType TeamTypeClass::Mission_From_Name(const char* name) {
 
   if (name) {
-    for (int order = TMISSION_ATTACKBASE; order < TMISSION_COUNT; order++) {
+    for (TeamMissionType order = TMISSION_ATTACKBASE; order < TMISSION_COUNT;
+         order++) {
       if (stricmp(TMissions[order], name) == 0) {
-        return static_cast<TeamMissionType>(order);
+        return order;
       }
     }
   }

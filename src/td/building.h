@@ -48,6 +48,7 @@ class ArchiveWriter;
 #include <cstdint>
 
 #include "absl/base/attributes.h"
+#include "base/enum_array.h"
 #include "td/bullet.h"
 #include "td/defines.h"
 #include "td/factory.h"
@@ -327,8 +328,7 @@ class BuildingClass final : public TechnoClass {
  private:
   void Drop_Debris(TARGET source = kTargetNone);
 
-  static const COORDINATE CenterOffset[BSIZE_COUNT];
-
+  static const base::EnumArray<BSizeType, COORDINATE, kBsizeCount> CenterOffset;
 };
 
 extern template void BuildingClass::Serialize<ArchiveWriter>(ArchiveWriter&);

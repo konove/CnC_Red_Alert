@@ -156,7 +156,7 @@ FootClass::FootClass()
       SuspendedNavCom(kTargetNone),
       Team(nullptr),
       Member(nullptr),
-      TryTryAgain(PATH_RETRY),
+      TryTryAgain(kPathRetry),
       HeadToCoord(0) {
   for (auto& facing : Path) {
     facing = FACING_NONE;
@@ -221,7 +221,7 @@ FootClass::FootClass(HousesType house)
       Team(nullptr),
       Group(kNoGroup),
       Member(nullptr),
-      TryTryAgain(PATH_RETRY),
+      TryTryAgain(kPathRetry),
       HeadToCoord(0L) {
   for (auto& facing : Path) {
     facing = FACING_NONE;
@@ -405,7 +405,8 @@ bool FootClass::Basic_Path() {
           static_cast<unsigned>(::Direction(cell, Coord_Cell(Coord))) >> 5);
 
       for (const int index : _faceadjust) {
-        CELL const cell2 = Adjacent_Cell(cell, AsFacing(f2 + index));
+        CELL const cell2 =
+            Adjacent_Cell(cell, AsFacing(static_cast<int>(f2) + index));
         if (Can_Enter_Cell(cell2, FACING_NONE) <= MOVE_CLOAK) {
           cell = cell2;
           break;
@@ -557,7 +558,7 @@ bool FootClass::Basic_Path() {
     }
 #endif
 
-    PathDelay = PATH_DELAY;
+    PathDelay = kPathDelay;
     if (Path[0] != FACING_NONE) {
       return true;
     }

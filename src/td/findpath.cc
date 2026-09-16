@@ -60,6 +60,7 @@
 #include <cstring>
 
 #include "absl/log/check.h"
+#include "base/enum_array.h"
 #include "base/numeric.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
@@ -140,11 +141,11 @@ static inline void Draw_Cell_Point(CELL cell, bool passable, int threat_stage,
 
       if (Map.Coord_To_Pixel(Cell_Coord(cell), x, y)) {
         if (threat_stage > 2) {
-          SeenBuff.Put_Pixel(x, y, passable ? LTGREEN : RED);
+          SeenBuff.Put_Pixel(x, y, passable ? kLtGreen : kRed);
         } else {
           SeenBuff.Put_Pixel(
               x, y,
-              static_cast<unsigned char>(passable ? 9 + threat_stage : RED));
+              static_cast<unsigned char>(passable ? 9 + threat_stage : kRed));
         }
       }
     } else {
@@ -152,7 +153,7 @@ static inline void Draw_Cell_Point(CELL cell, bool passable, int threat_stage,
       const int y = cell / 64;
       if (!overide) {
         SeenBuff.Put_Pixel(64 + (x * 3) + 1, 8 + (y * 3) + 1,
-                           passable ? WHITE : BLACK);
+                           passable ? kWhite : kBlack);
       } else {
         SeenBuff.Put_Pixel(64 + (x * 3) + 1, 8 + (y * 3) + 1,
                            static_cast<unsigned char>(overide));
@@ -309,12 +310,12 @@ bool FootClass::Unravel_Loop(PathType* path, CELL& cell, FacingType& dir,
       ** if we left the line on a diagonal.  If we did then we need to fix
       ** it up.
       */
-      if (curr_dir % 2 != 0 && curr_pos != path->LastFixup) {
+      if (static_cast<int>(curr_dir) % 2 != 0 && curr_pos != path->LastFixup) {
         cell = curr_pos;
         dir = *(list - 1);
         path->Length = idx;
         path->LastFixup = curr_pos;
-        Draw_Cell_Point(curr_pos, true, -1, CYAN);
+        Draw_Cell_Point(curr_pos, true, -1, kCyan);
         return true;
       }
 
@@ -334,7 +335,7 @@ bool FootClass::Unravel_Loop(PathType* path, CELL& cell, FacingType& dir,
     /*
     ** Mark cell on the map
     */
-    Draw_Cell_Point(curr_pos, true, -1, LTCYAN);
+    Draw_Cell_Point(curr_pos, true, -1, kLtCyan);
 
     /*
     ** Adjust to the next list position and direction.
@@ -390,7 +391,7 @@ bool FootClass::Register_Cell(PathType* path, CELL cell, FacingType dir,
       const CELL pos = Adjacent_Cell(cell, Opposite(dir));
       Clear_Overlap(path, pos);
       path->Length--;
-      Draw_Cell_Point(pos, true, -1, BLUE);
+      Draw_Cell_Point(pos, true, -1, kBlue);
     } else {
       /*
       ** If this overlap is in the same place as we had our last overlap
@@ -440,7 +441,7 @@ bool FootClass::Register_Cell(PathType* path, CELL cell, FacingType dir,
         pos = Adjacent_Cell(pos, *list);
         path->Cost -= Passable_Cell(pos, *list, -1, threshhold);
         Clear_Overlap(path, pos);
-        Draw_Cell_Point(pos, true, -1, LTBLUE);
+        Draw_Cell_Point(pos, true, -1, kLtBlue);
         idx++;
         list++;
       }
@@ -485,7 +486,7 @@ bool FootClass::Register_Cell(PathType* path, CELL cell, FacingType dir,
       CELL pos = Adjacent_Cell(cell, Opposite(dir));
       path->Overlap[pos >> 5] &= ~(1 << ((pos & 31) - 1));
       path->Length--;
-      Draw_Cell_Point(pos, true, -1, BLUE);
+      Draw_Cell_Point(pos, true, -1, kBlue);
     } else {
       /*
       ** If this overlap is in the same place as we had our last overlap
@@ -525,7 +526,7 @@ bool FootClass::Register_Cell(PathType* path, CELL cell, FacingType dir,
         pos = Adjacent_Cell(pos, *list);
         path->Cost -= Passable_Cell(pos, *list, -1, threshhold);
         path->Overlap[pos >> 5] &= ~(1 << ((pos & 31) - 1));
-        Draw_Cell_Point(pos, true, -1, LTBLUE);
+        Draw_Cell_Point(pos, true, -1, kLtBlue);
         idx++;
         list++;
       }
@@ -791,13 +792,13 @@ PathType* FootClass::Find_Path(CELL dest, FacingType* final_moves, int maxlen,
         ** did.
         */
         if (Debug_Find_Path && DrawPath) {
-          Fancy_Text_Print("   Left", 0, 92, WHITE, BLACK, TPF_6POINT);
-          Fancy_Text_Print("Total Steps", 0, 100, WHITE, BLACK, TPF_6POINT);
+          Fancy_Text_Print("   Left", 0, 92, kWhite, kBlack, TPF_6POINT);
+          Fancy_Text_Print("Total Steps", 0, 100, kWhite, kBlack, TPF_6POINT);
           if (left) {
-            Fancy_Text_Print("    %d", 0, 108, WHITE, BLACK, TPF_6POINT,
+            Fancy_Text_Print("    %d", 0, 108, kWhite, kBlack, TPF_6POINT,
                              pleft.Length);
           } else {
-            Fancy_Text_Print("   FAIL", 0, 108, WHITE, BLACK, TPF_6POINT);
+            Fancy_Text_Print("   FAIL", 0, 108, kWhite, kBlack, TPF_6POINT);
           }
         }
 
@@ -819,13 +820,13 @@ PathType* FootClass::Find_Path(CELL dest, FacingType* final_moves, int maxlen,
         ** did.
         */
         if (Debug_Find_Path && DrawPath) {
-          Fancy_Text_Print("  Right", 0, 92, WHITE, BLACK, TPF_6POINT);
-          Fancy_Text_Print("Total Steps", 0, 100, WHITE, BLACK, TPF_6POINT);
+          Fancy_Text_Print("  Right", 0, 92, kWhite, kBlack, TPF_6POINT);
+          Fancy_Text_Print("Total Steps", 0, 100, kWhite, kBlack, TPF_6POINT);
           if (right) {
-            Fancy_Text_Print("    %d", 0, 108, WHITE, BLACK, TPF_6POINT,
+            Fancy_Text_Print("    %d", 0, 108, kWhite, kBlack, TPF_6POINT,
                              pright.Length);
           } else {
-            Fancy_Text_Print("   FAIL", 0, 108, WHITE, BLACK, TPF_6POINT);
+            Fancy_Text_Print("   FAIL", 0, 108, kWhite, kBlack, TPF_6POINT);
           }
         }
 
@@ -1042,7 +1043,8 @@ bool FootClass::Follow_Edge(CELL start, CELL target, PathType* path,
       **	will happen if the destination it is at the corner edge of an
       **	impassable that we are moving around.
       */
-      if (newdir & FACING_NE) {
+      // The diagonal facings are the odd ones.
+      if (static_cast<int>(newdir) % 2 != 0) {
         // int	x,y;
 
         CELL checkcell = Adjacent_Cell(
@@ -1133,7 +1135,7 @@ bool FootClass::Follow_Edge(CELL start, CELL target, PathType* path,
           break;
         }
       }
-      Draw_Cell_Point(newcell, false, threat_stage, forcefail ? BROWN : 0);
+      Draw_Cell_Point(newcell, false, threat_stage, forcefail ? kBrown : 0);
       if (newcell == target) {
         forceout = true;
         break;
@@ -1164,7 +1166,8 @@ bool FootClass::Follow_Edge(CELL start, CELL target, PathType* path,
         ** attaining this square, we were moving turned farther in the
         ** search direction then we really were.
         */
-        newdir = Next_Direction(newdir, static_cast<FacingType>(search * 2));
+        newdir = Next_Direction(
+            newdir, static_cast<FacingType>(static_cast<int>(search) * 2));
       }
       /*
       ** Find out which side of the line this cell is on.  If it is on
@@ -1259,13 +1262,13 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
   *first command facing.
   */
 #ifdef DIAGONAL
-  static const FacingType _trans[FACING_COUNT] = {
+  static const base::EnumArray<FacingType, FacingType, kFacingCount> _trans = {
       static_cast<FacingType>(0),  static_cast<FacingType>(0),
       static_cast<FacingType>(1),  static_cast<FacingType>(2),
       static_cast<FacingType>(3),  kEmptyCommand,
       static_cast<FacingType>(-1), static_cast<FacingType>(0)};  // Smoothing.
 #else
-  static FacingType _trans[FACING_COUNT] = {
+  static base::EnumArray<FacingType, FacingType, kFacingCount> _trans = {
       (FacingType)0, (FacingType)0, (FacingType)0, (FacingType)2,
       (FacingType)3, kEmptyCommand, (FacingType)0, (FacingType)0};
 #endif
@@ -1337,7 +1340,7 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
       *a facing *	offset to more directly travel toward the immediate
       *destination cell.
       */
-      if (newcmd) {
+      if (newcmd != FACING_N) {
         /*
         **	Optimizations differ when dealing with diagonals. Especially
         *when dealing *	with diagonals of 90 degrees. In such a case, 90 degree
@@ -1345,7 +1348,8 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
         *passable. The distance travelled *	is the same, but the path is
         *less circuitous.
         */
-        if (*cmd1 & FACING_NE) {
+        // The diagonal facings are the odd ones.
+        if (static_cast<int>(*cmd1) % 2 != 0) {
           /*
           **	Diagonal optimizations are always only 45
           **	degree adjustments.
@@ -1358,7 +1362,7 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
           **	Diagonal 90 degree changes can be smoothed, although
           **	the path isn't any shorter.
           */
-          if (std::abs(newcmd) == 1) {
+          if (std::abs(static_cast<int>(newcmd)) == 1) {
             if (Passable_Cell(Adjacent_Cell(cell, newdir), newdir, -1,
                               threshhold)) {
               *cmd2 = newdir;
@@ -1420,7 +1424,7 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
         if (Map.Coord_To_Pixel(Cell_Coord(cell), x, y)) {
           Map.Coord_To_Pixel(Cell_Coord(Adjacent_Cell(cell, *cmd2)), x1, y1);
           Set_Logic_Page(SeenBuff);
-          LogicPage->Draw_Line(x, y + 8, x1, y1 + 8, GREY);
+          LogicPage->Draw_Line(x, y + 8, x1, y1 + 8, kGrey);
         }
       }
 #endif
@@ -1453,7 +1457,7 @@ CELL FootClass::Safety_Point(CELL src, CELL dst, int start, int max) const {
       next = Adjacent_Cell(next, dir);
     }
 
-    if (dir % 2 != 0) {
+    if (static_cast<int>(dir) % 2 != 0) {
       /*
       ** If our direction is diagonal than we need to check
       ** only one side which is as long as both of the old sides
@@ -1461,7 +1465,7 @@ CELL FootClass::Safety_Point(CELL src, CELL dst, int start, int max) const {
       */
       for (int lp = 0; lp < dist * 2; lp++) {
         next = Adjacent_Cell(next, dir + 3);
-        if (!Can_Enter_Cell(next)) {
+        if (Can_Enter_Cell(next) == MOVE_OK) {
           return next;
         }
       }
@@ -1472,14 +1476,14 @@ CELL FootClass::Safety_Point(CELL src, CELL dst, int start, int max) const {
       */
       for (int lp = 0; lp < dist; lp++) {
         next = Adjacent_Cell(next, dir + 2);
-        if (!Can_Enter_Cell(next)) {
+        if (Can_Enter_Cell(next) == MOVE_OK) {
           return next;
         }
       }
 
       for (int lp = 0; lp < dist; lp++) {
         next = Adjacent_Cell(next, dir + 4);
-        if (!Can_Enter_Cell(next)) {
+        if (Can_Enter_Cell(next) == MOVE_OK) {
           return next;
         }
       }
@@ -1510,7 +1514,7 @@ int FootClass::Passable_Cell(CELL cell, FacingType face, int threat,
     }
   }
 
-  static const int _value[MOVE_COUNT] = {
+  static const base::EnumArray<MoveType, int, kMoveCount> _value = {
       1,   //	MOVE_OK
       1,   //	MOVE_CLOAK
       3,   //	MOVE_MOVING_BLOCK
@@ -1577,34 +1581,34 @@ void FootClass::Debug_Draw_Map(const char* txt, CELL start, CELL dest,
   GraphicViewPortClass* page = Set_Logic_Page(SeenBuff);
 
   VisiblePage.Clear();
-  Fancy_Text_Print(txt, 160, 0, WHITE, BLACK, TPF_8POINT | TPF_CENTER);
+  Fancy_Text_Print(txt, 160, 0, kWhite, kBlack, TPF_8POINT | TPF_CENTER);
   for (int x = 0; x < 64; x++) {
     for (int y = 0; y < 64; y++) {
       int color = 0;
 
       switch (Can_Enter_Cell(XY_Cell(x, y))) {
         case MOVE_OK:
-          color = GREEN;
+          color = kGreen;
           break;
         case MOVE_MOVING_BLOCK:
-          color = LTGREEN;
+          color = kLtGreen;
           break;
 
         case MOVE_DESTROYABLE:
-          color = YELLOW;
+          color = kYellow;
           break;
         case MOVE_TEMP:
-          color = BROWN;
+          color = kBrown;
           break;
         default:
-          color = RED;
+          color = kRed;
           break;
       }
       if (XY_Cell(x, y) == start) {
-        color = LTBLUE;
+        color = kLtBlue;
       }
       if (XY_Cell(x, y) == dest) {
-        color = BLUE;
+        color = kBlue;
       }
       Fat_Put_Pixel(64 + (x * 3), 8 + (y * 3), static_cast<uint8_t>(color), 3,
                     SeenBuff);

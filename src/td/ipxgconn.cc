@@ -89,7 +89,7 @@ IPXGlobalConnClass::IPXGlobalConnClass(int numsend, int numreceive, int maxlen,
     : IPXConnClass(numsend, numreceive,
                    maxlen + static_cast<int>(sizeof(GlobalHeaderType) -
                                              sizeof(CommHeaderType)),
-                   GLOBAL_MAGICNUM,  // magic number for this connection
+                   kGlobalMagicnum,  // magic number for this connection
                    nullptr,          // IPX Address (none)
                    0,                // Connection ID
                    ""),
@@ -136,10 +136,10 @@ int IPXGlobalConnClass::Send_Packet(void* buf, int buflen,
   ------------------------------------------------------------------------*/
   if (ack_req && address != nullptr) {
     port::AlignedObject<GlobalHeaderType>(PacketBuf)->Header.Code =
-        PACKET_DATA_ACK;
+        static_cast<unsigned char>(PACKET_DATA_ACK);
   } else {
     port::AlignedObject<GlobalHeaderType>(PacketBuf)->Header.Code =
-        PACKET_DATA_NOACK;
+        static_cast<unsigned char>(PACKET_DATA_NOACK);
   }
 
   /*------------------------------------------------------------------------
@@ -228,8 +228,8 @@ int IPXGlobalConnClass::Receive_Packet(void* buf, int buflen,
     have nothing to do with the packet's ID.  The application must deal
     with this by being able to handle multiple receipts of the same packet.
     .....................................................................*/
-    case PACKET_DATA_ACK:
-    case PACKET_DATA_NOACK:
+    case static_cast<unsigned char>(PACKET_DATA_ACK):
+    case static_cast<unsigned char>(PACKET_DATA_NOACK):
       packet->Address = *address;
       port::WriteUnaligned(buf, packet_storage);
       Queue->Queue_Receive(buf, buflen);
@@ -241,7 +241,7 @@ int IPXGlobalConnClass::Receive_Packet(void* buf, int buflen,
     (if we re-sent before we received the other system's first ACK, this
     ACK will be a leftover)
     .....................................................................*/
-    case PACKET_ACK:
+    case static_cast<unsigned char>(PACKET_ACK):
       for (int i = 0; i < Queue->Num_Send(); i++) {
         /*
         ..................... Get queue entry ptr .......................
@@ -257,7 +257,8 @@ int IPXGlobalConnClass::Receive_Packet(void* buf, int buflen,
         .............. If ACK is for this entry, mark it ................
         */
         if (packet->Header.PacketID == entry_data->Header.PacketID &&
-            entry_data->Header.Code == PACKET_DATA_ACK) {
+            entry_data->Header.Code ==
+                static_cast<unsigned char>(PACKET_DATA_ACK)) {
           send_entry->IsACK = 1;
           break;
         }
@@ -439,7 +440,8 @@ int IPXGlobalConnClass::Service_Receive_Queue() {
   ------------------------------------------------------------------------*/
   auto* packet_hdr = port::AlignedObject<GlobalHeaderType>(
       rec_entry->Buffer);  // packet header
-  if (packet_hdr->Header.Code == PACKET_DATA_NOACK) {
+  if (packet_hdr->Header.Code ==
+      static_cast<unsigned char>(PACKET_DATA_NOACK)) {
     rec_entry->IsACK = 1;
   }
 
@@ -451,7 +453,7 @@ int IPXGlobalConnClass::Service_Receive_Queue() {
   ------------------------------------------------------------------------*/
   if (rec_entry->IsACK == 0) {
     ackpacket.Header.MagicNumber = MagicNum;
-    ackpacket.Header.Code = PACKET_ACK;
+    ackpacket.Header.Code = static_cast<unsigned char>(PACKET_ACK);
     ackpacket.Header.PacketID = packet_hdr->Header.PacketID;
     ackpacket.Address = packet_hdr->Address;
     ackpacket.ProductID = ProductID;

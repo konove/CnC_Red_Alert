@@ -66,6 +66,7 @@
  *=============================================================================================*/
 #include "td/mission.h"
 
+#include "base/enum_array.h"
 #include "port/ex_string.h"
 #include "td/config.h"
 #include "td/defines.h"
@@ -431,10 +432,11 @@ bool MissionClass::Restore_Mission() {
 **	a unit can have. The system initiated orders have no use for the ASCII
 *name *	associated, but they are listed here for completeness sake.
 */
-const char* MissionClass::Missions[MISSION_COUNT] = {
-    "Sleep",  "Attack",   "Move",         "Retreat", "Guard",
-    "Sticky", "Enter",    "Capture",      "Harvest", "Area Guard",
-    "Return", "Stop",     "Ambush",       "Hunt",    "Timed Hunt",
-    "Unload", "Sabotage", "Construction", "Selling", "Repair",
-    "Rescue", "Missile",
+base::EnumArray<MissionType, const char*, kMissionCount>
+    MissionClass::Missions = {
+        "Sleep",  "Attack",   "Move",         "Retreat", "Guard",
+        "Sticky", "Enter",    "Capture",      "Harvest", "Area Guard",
+        "Return", "Stop",     "Ambush",       "Hunt",    "Timed Hunt",
+        "Unload", "Sabotage", "Construction", "Selling", "Repair",
+        "Rescue", "Missile",
 };

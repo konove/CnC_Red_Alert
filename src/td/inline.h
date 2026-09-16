@@ -130,7 +130,9 @@ inline COORDINATE XYPixel_Coord(int x, int y) {
                static_cast<uint16_t>(x * ICON_LEPTON_W /
                                      ICON_PIXEL_W) /*+LEPTON_OFFSET_X*/));
 }
-inline int Facing_To_32(DirType facing) { return Facing32[facing]; }
+inline int Facing_To_32(DirType facing) {
+  return Facing32[static_cast<int>(facing)];
+}
 inline DirType Direction256(COORDINATE coord1, COORDINATE coord2) {
   return Desired_Facing256(Coord_X(coord1), Coord_Y(coord1), Coord_X(coord2),
                            Coord_Y(coord2));
@@ -148,7 +150,8 @@ inline DirType Direction(CELL cell1, CELL cell2) {
                          Cell_Y(cell2));
 }
 inline COORDINATE Adjacent_Cell(COORDINATE coord, FacingType dir) {
-  return Coord_Snap(Coord_Add(AdjacentCoord[AsFacing(dir)], coord));
+  return Coord_Snap(
+      Coord_Add(AdjacentCoord[AsFacing(static_cast<int>(dir))], coord));
 }
 inline COORDINATE Adjacent_Cell(COORDINATE coord, DirType dir) {
   return Adjacent_Cell(coord, Dir_Facing(dir));
@@ -156,7 +159,8 @@ inline COORDINATE Adjacent_Cell(COORDINATE coord, DirType dir) {
 inline CELL Adjacent_Cell(CELL cell, FacingType dir) {
   // Masked like the COORDINATE overload above, so that FACING_NONE (-1) does
   // not index before the start of the table.
-  return static_cast<CELL>(cell + AdjacentCell[AsFacing(dir)]);
+  return static_cast<CELL>(cell +
+                           AdjacentCell[AsFacing(static_cast<int>(dir))]);
 }
 inline CELL Adjacent_Cell(CELL cell, DirType dir) {
   return static_cast<CELL>(cell + AdjacentCell[Dir_Facing(dir)]);

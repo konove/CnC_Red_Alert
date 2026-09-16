@@ -106,7 +106,7 @@
 ListClass::ListClass(int id, int x, int y, int w, int h, TextPrintType flags,
                      const void* up, const void* down)
     : ControlClass(static_cast<unsigned>(id), x, y, w, h,
-                   LEFTPRESS | LEFTRELEASE | KEYBOARD, false),
+                   kLeftPress | kLeftRelease | kKeyboard, false),
       TextFlags(flags),
       LineHeight(FontHeight + FontYSpacing - 1),
       LineCount((h - 1) / LineHeight),
@@ -130,7 +130,7 @@ ListClass::ListClass(int id, int x, int y, int w, int h, TextPrintType flags,
   **	Set the list box to a default state.
   */
 
-  Fancy_Text_Print(TXT_NONE, 0, 0, TBLACK, TBLACK, TextFlags);
+  Fancy_Text_Print(TXT_NONE, 0, 0, kTBlack, kTBlack, TextFlags);
 }
 
 /***********************************************************************************************
@@ -282,16 +282,16 @@ void ListClass::Remove_Item(int index) {
  * HISTORY:          01/05/1995 MML : Created.                             *
  *=========================================================================*/
 bool ListClass::Action(unsigned flags, KeyNumType& key) {
-  if (flags & LEFTRELEASE) {
+  if (flags & kLeftRelease) {
     key = KN_NONE;
-    flags &= ~LEFTRELEASE;
+    flags &= ~kLeftRelease;
     ControlClass::Action(flags, key);
     return true;
   }
   /*	--------------------------------------------------
    **			Handle keyboard events here.
    */
-  if (flags & KEYBOARD) {
+  if (flags & kKeyboard) {
     /*
     **	Process the keyboard character. If indicated, consume this
     *keyboard event *	so that the edit gadget ID number is not returned.
@@ -303,7 +303,7 @@ bool ListClass::Action(unsigned flags, KeyNumType& key) {
       Step_Selected_Index(1);
       key = KN_NONE;
     } else {
-      flags &= ~KEYBOARD;
+      flags &= ~kKeyboard;
     }
 
   } else {
@@ -498,7 +498,7 @@ int ListClass::Current_Index() const { return SelectedIndex; }
  *=============================================================================================*/
 void ListClass::Peer_To_Peer(unsigned flags, KeyNumType& /*unused*/,
                              ControlClass& whom) {
-  if (flags & LEFTRELEASE) {
+  if (flags & kLeftRelease) {
     if (&whom == &UpGadget) {
       Step(true);
     }
@@ -677,26 +677,26 @@ void ListClass::Set_Tabs(const int* tabs) { Tabs = tabs; }
  * OUTPUT:  none * WARNINGS:   none * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
 void ListClass::Draw_Entry(int index, int x, int y, int width, bool selected) {
-  if (TextFlags & TPF_6PT_GRAD) {
+  if (base::Any(TextFlags & TPF_6PT_GRAD)) {
     TextPrintType flags = TextFlags;
 
     if (selected) {
       flags = flags | TPF_BRIGHT_COLOR;
       LogicPage->Fill_Rect(x, y, x + width - 1, y + LineHeight - 1,
-                           CC_GREEN_SHADOW);
+                           kCcGreenShadow);
     } else {
-      if (!(flags & TPF_USE_GRAD_PAL)) {
+      if (!base::Any(flags & TPF_USE_GRAD_PAL)) {
         flags = flags | TPF_MEDIUM_COLOR;
       }
     }
 
-    Conquer_Clip_Text_Print(List[base::ToSize(index)].c_str(), x, y, CC_GREEN,
-                            TBLACK, flags, width, Tabs);
+    Conquer_Clip_Text_Print(List[base::ToSize(index)].c_str(), x, y, kCcGreen,
+                            kTBlack, flags, width, Tabs);
 
   } else {
     Conquer_Clip_Text_Print(List[base::ToSize(index)].c_str(), x, y,
-                            selected ? BLUE : WHITE, TBLACK, TextFlags, width,
-                            Tabs);
+                            selected ? kBlue : kWhite, kTBlack, TextFlags,
+                            width, Tabs);
   }
 }
 

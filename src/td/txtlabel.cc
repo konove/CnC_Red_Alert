@@ -82,9 +82,9 @@ TextLabelClass::TextLabelClass(char* txt, int x, int y, int color,
 bool TextLabelClass::Draw_Me(bool forced) {
   if (GadgetClass::Draw_Me(forced)) {
     if (PixWidth == -1) {
-      Fancy_Text_Print("%s", X, Y, Color, TBLACK, Style, Text);
+      Fancy_Text_Print("%s", X, Y, Color, kTBlack, Style, Text);
     } else {
-      Conquer_Clip_Text_Print(Text, X, Y, Color, TBLACK, Style, PixWidth);
+      Conquer_Clip_Text_Print(Text, X, Y, Color, kTBlack, Style, PixWidth);
     }
     return true;
   }

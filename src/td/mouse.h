@@ -44,6 +44,7 @@
 class ArchiveReader;
 class ArchiveWriter;
 
+#include "base/enum_array.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/timer.h"
 #include "td/defines.h"
@@ -104,7 +105,7 @@ class MouseClass : public ScrollClass {
   **	The control frames and rates for the various mouse pointers are stored
   **	in this static array.
   */
-  static MouseStruct MouseControl[MOUSE_COUNT];
+  static base::EnumArray<MouseType, MouseStruct, kMouseCount> MouseControl;
 
   /*
   **	If the small representation of the mouse is active, then this flag is

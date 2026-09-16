@@ -196,10 +196,12 @@ void PowerClass::Draw_It(bool complete) {
       /*
       ** Create a clip region to draw the unfilled section of the bar
       */
-      WindowList[WINDOW_CUSTOM][WINDOWX] = 0;
-      WindowList[WINDOW_CUSTOM][WINDOWY] = 0;
-      WindowList[WINDOW_CUSTOM][WINDOWWIDTH] = SeenBuff.Get_Width();
-      WindowList[WINDOW_CUSTOM][WINDOWHEIGHT] = bottom - power_height;
+      WindowList[static_cast<int>(WINDOW_CUSTOM)][kWindowX] = 0;
+      WindowList[static_cast<int>(WINDOW_CUSTOM)][kWindowY] = 0;
+      WindowList[static_cast<int>(WINDOW_CUSTOM)][kWindowWidth] =
+          SeenBuff.Get_Width();
+      WindowList[static_cast<int>(WINDOW_CUSTOM)][kWindowHeight] =
+          bottom - power_height;
 
       /*
       ** Draw the unfilled section
@@ -211,9 +213,11 @@ void PowerClass::Draw_It(bool complete) {
       /*
       ** Set up the clip region for the filled section
       */
-      WindowList[WINDOW_CUSTOM][WINDOWY] = bottom - power_height;
-      WindowList[WINDOW_CUSTOM][WINDOWHEIGHT] =
-          SeenBuff.Get_Height() - WindowList[WINDOW_CUSTOM][WINDOWY];
+      WindowList[static_cast<int>(WINDOW_CUSTOM)][kWindowY] =
+          bottom - power_height;
+      WindowList[static_cast<int>(WINDOW_CUSTOM)][kWindowHeight] =
+          SeenBuff.Get_Height() -
+          WindowList[static_cast<int>(WINDOW_CUSTOM)][kWindowY];
 
       /*
       ** What color is the filled section?
@@ -231,13 +235,15 @@ void PowerClass::Draw_It(bool complete) {
         /*
         ** Draw the filled section
         */
-        CC_Draw_Shape(PowerBarShape, 2 + power_color, PowX,
-                      PowY - WindowList[WINDOW_CUSTOM][WINDOWY], WINDOW_CUSTOM,
-                      SHAPE_WIN_REL);
+        CC_Draw_Shape(
+            PowerBarShape, 2 + power_color, PowX,
+            PowY - WindowList[static_cast<int>(WINDOW_CUSTOM)][kWindowY],
+            WINDOW_CUSTOM, SHAPE_WIN_REL);
 
-        CC_Draw_Shape(PowerBarShape, 3 + power_color, PowX,
-                      PowY - WindowList[WINDOW_CUSTOM][WINDOWY] + 100,
-                      WINDOW_CUSTOM, SHAPE_WIN_REL);
+        CC_Draw_Shape(
+            PowerBarShape, 3 + power_color, PowX,
+            PowY - WindowList[static_cast<int>(WINDOW_CUSTOM)][kWindowY] + 100,
+            WINDOW_CUSTOM, SHAPE_WIN_REL);
       }
 
       /*
@@ -390,7 +396,7 @@ void PowerClass::Refresh_Cells(CELL cell, const int16_t* list) {
  *=========================================================================*/
 int PowerClass::Power_Height(int value) const {
   const int num =
-      value / POWER_STEP_LEVEL;  // figure out the initial num of DRAIN_VALUE's
+      value / kPowerStepLevel;   // figure out the initial num of DRAIN_VALUE's
   int retval = 0;                // currently there is no power
 
   /*
@@ -398,16 +404,16 @@ int PowerClass::Power_Height(int value) const {
   ** of each.
   */
   for (int lp = 0; lp < num; lp++) {
-    retval = retval + ((PowHeight - 2 - retval) / POWER_STEP_FACTOR);
-    value -= POWER_STEP_LEVEL;
+    retval = retval + ((PowHeight - 2 - retval) / kPowerStepFactor);
+    value -= kPowerStepLevel;
   }
 
   /*
   ** Adjust the retval to factor in the remainder
   */
   if (value) {
-    retval = retval + ((PowHeight - 2 - retval) / POWER_STEP_FACTOR * value /
-                       POWER_STEP_LEVEL);
+    retval = retval + ((PowHeight - 2 - retval) / kPowerStepFactor * value /
+                       kPowerStepLevel);
   }
 
   retval = Bound(retval, 0, PowHeight - 2);
@@ -444,9 +450,9 @@ bool PowerClass::PowerButtonClass::Action(unsigned flags, KeyNumType& key) {
   */
   Map.Override_Mouse_Shape(MOUSE_NORMAL);
   if (PlayerPtr->Power_Fraction() < 0x0100 && PlayerPtr->Power > 0) {
-    Map.Help_Text(TXT_POWER_OUTPUT_LOW, -1, -1, CC_GREEN);
+    Map.Help_Text(TXT_POWER_OUTPUT_LOW, -1, -1, kCcGreen);
   } else {
-    Map.Help_Text(TXT_POWER_OUTPUT, -1, -1, CC_GREEN);
+    Map.Help_Text(TXT_POWER_OUTPUT, -1, -1, kCcGreen);
   }
   GadgetClass::Action(flags, key);
   return true;

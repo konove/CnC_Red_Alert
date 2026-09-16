@@ -175,8 +175,8 @@ void SidebarClass::StripClass::Serialize(Archive& ar) {
   bool building = IsBuilding;
   ar(building, Flasher, TopIndex, BuildableCount);
   if constexpr (Archive::kIsReading) {
-    if (BuildableCount < 0 || BuildableCount > MAX_BUILDABLES ||
-        TopIndex < 0 || TopIndex >= MAX_BUILDABLES) {
+    if (BuildableCount < 0 || BuildableCount > kMaxBuildables || TopIndex < 0 ||
+        TopIndex >= kMaxBuildables) {
       ar.Fail("invalid sidebar count or scroll position");
       return;
     }
@@ -240,7 +240,7 @@ void RadarClass::ResetTransientUiState() {
   IsRadarActivating = false;
   IsRadarDeactivating = false;
   SpecialRadarFrame = 0;
-  RadarAnimFrame = IsRadarActive ? RADAR_ACTIVATED_FRAME : 0;
+  RadarAnimFrame = IsRadarActive ? kRadarActivatedFrame : 0;
   PixelPtr = 0;
   std::ranges::fill(PixelStack, 0);
 }
@@ -279,7 +279,7 @@ void HelpClass::ResetTransientUiState() {
   IsRight = false;
   Cost = X = Y = DrawX = DrawY = Width = 0;
   Text = TXT_NONE;
-  Color = LTGREY;
+  Color = kLtGrey;
   CountDownTimer.Set(0);
   OverlapList[0] = REFRESH_EOL;
 }

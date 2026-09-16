@@ -222,7 +222,7 @@ void FactoryClass::operator delete(void* ptr) {
  *=============================================================================================*/
 void FactoryClass::AI() {
   Validate();
-  if (!IsSuspended && (Object != nullptr || SpecialItem)) {
+  if (!IsSuspended && (Object != nullptr || SpecialItem != SPC_NONE)) {
     int stages = 1;
 
     /*
@@ -276,13 +276,13 @@ void FactoryClass::AI() {
           Balance -= cost;
         }
         if (Debug_Instant_Build) {
-          Set_Stage(STEP_COUNT);
+          Set_Stage(kStepCount);
         }
         /*
         **	If the production has completed, then suspend further
         *production.
         */
-        if (Fetch_Stage() == STEP_COUNT) {
+        if (Fetch_Stage() == kStepCount) {
           IsSuspended = true;
           Set_Rate(0);
           Get_House()->Spend_Money(Balance);
@@ -407,7 +407,7 @@ bool FactoryClass::Set(const int& type, HouseClass& house) {
   /*
   **	Create an object of the type requested.
   */
-  SpecialItem = type;
+  SpecialItem = static_cast<SpecialWeaponType>(type);
   House = house.Class->House;
   Balance = 0;
 
@@ -440,7 +440,7 @@ void FactoryClass::Set(TechnoClass& object) {
   House = Object->House->Class->House;
   Balance = 0;
   Set_Rate(0);
-  Set_Stage(STEP_COUNT);
+  Set_Stage(kStepCount);
   IsDifferent = true;
   IsSuspended = true;
 }
@@ -491,7 +491,8 @@ bool FactoryClass::Suspend() {
  *=============================================================================================*/
 bool FactoryClass::Start() {
   Validate();
-  if (((Object || SpecialItem) && IsSuspended && !Has_Completed()) &&
+  if (((Object || SpecialItem != SPC_NONE) && IsSuspended &&
+       !Has_Completed()) &&
       (Get_House()->Available_Money() >= Cost_Per_Tick())) {
     int time = 0;
 
@@ -505,7 +506,7 @@ bool FactoryClass::Start() {
     frac = Bound(frac, 0x0010, 0x0100);
     int rate = time * 256 / frac;
 
-    rate /= STEP_COUNT;
+    rate /= kStepCount;
     rate = Bound(rate, 1, 255);
 
     Set_Rate(static_cast<unsigned char>(rate));
@@ -552,7 +553,7 @@ bool FactoryClass::Abandon() {
       Object = nullptr;
       ScenarioInit--;
     }
-    if (SpecialItem) {
+    if (SpecialItem != SPC_NONE) {
       SpecialItem = SPC_NONE;
     }
 
@@ -578,7 +579,7 @@ bool FactoryClass::Abandon() {
  * INPUT:   none *
  *                                                                                             *
  * OUTPUT:  Returns a completion step number beteen 0 (uncompleted), to
- *STEP_COUNT (completed) *
+ *kStepCount (completed) *
  *                                                                                             *
  * WARNINGS:   none *
  *                                                                                             *
@@ -608,10 +609,10 @@ int FactoryClass::Completion() {
  *=============================================================================================*/
 bool FactoryClass::Has_Completed() {
   Validate();
-  if (Object && Fetch_Stage() == STEP_COUNT) {
+  if (Object && Fetch_Stage() == kStepCount) {
     return true;
   }
-  if (SpecialItem && Fetch_Stage() == STEP_COUNT) {
+  if (SpecialItem != SPC_NONE && Fetch_Stage() == kStepCount) {
     return true;
   }
   return false;
@@ -647,7 +648,7 @@ TechnoClass* FactoryClass::Get_Object() const {
  *=========================================================================*/
 int FactoryClass::Get_Special_Item() const {
   Validate();
-  return SpecialItem;
+  return static_cast<int>(SpecialItem);
 }
 
 /***********************************************************************************************
@@ -669,7 +670,7 @@ int FactoryClass::Get_Special_Item() const {
 int FactoryClass::Cost_Per_Tick() {
   Validate();
   if (Object) {
-    const int steps = STEP_COUNT - Fetch_Stage();
+    const int steps = kStepCount - Fetch_Stage();
     if (steps) {
       return Balance / steps;
     }
@@ -698,7 +699,7 @@ int FactoryClass::Cost_Per_Tick() {
  *=============================================================================================*/
 bool FactoryClass::Completed() {
   Validate();
-  if (Object && Fetch_Stage() == STEP_COUNT) {
+  if (Object && Fetch_Stage() == kStepCount) {
     Object = nullptr;
     IsSuspended = true;
     IsDifferent = true;
@@ -707,7 +708,7 @@ bool FactoryClass::Completed() {
     return true;
   }
 
-  if (SpecialItem && Fetch_Stage() == STEP_COUNT) {
+  if (SpecialItem != SPC_NONE && Fetch_Stage() == kStepCount) {
     SpecialItem = SPC_NONE;
     IsSuspended = true;
     IsDifferent = true;

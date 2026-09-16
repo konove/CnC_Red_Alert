@@ -43,7 +43,8 @@
 
 class OptionsClass {
  public:
-  enum { MAX_SCROLL_SETTING = 7, MAX_SPEED_SETTING = 7 };
+  static constexpr int kMaxScrollSetting = 7;
+  static constexpr int kMaxSpeedSetting = 7;
 
   OptionsClass();
 

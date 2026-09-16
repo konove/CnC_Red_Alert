@@ -123,13 +123,13 @@ void GameOptionsClass::Process() {
     int Text;        // Text number to use for this button.
     bool Multiplay;  // Allowed in multiplayer version?
   } _constants[] = {
-      {BUTTON_LOAD, TXT_LOAD_MISSION, false},
-      {BUTTON_SAVE, TXT_SAVE_MISSION, false},
-      {BUTTON_DELETE, TXT_DELETE_MISSION, true},
-      {BUTTON_GAME, TXT_GAME_CONTROLS, true},
-      {BUTTON_QUIT, TXT_QUIT_MISSION, true},
-      {BUTTON_RESUME, TXT_RESUME_MISSION, true},
-      {BUTTON_RESTATE, TXT_RESTATE_MISSION, false},
+      {kButtonLoad, TXT_LOAD_MISSION, false},
+      {kButtonSave, TXT_SAVE_MISSION, false},
+      {kButtonDelete, TXT_DELETE_MISSION, true},
+      {kButtonGame, TXT_GAME_CONTROLS, true},
+      {kButtonQuit, TXT_QUIT_MISSION, true},
+      {kButtonResume, TXT_RESUME_MISSION, true},
+      {kButtonRestate, TXT_RESTATE_MISSION, false},
   };
 
   /*
@@ -197,17 +197,17 @@ void GameOptionsClass::Process() {
     g = g->Get_Next();
   }
 #ifdef FRENCH
-  buttonsel[BUTTON_RESUME - 1]->Width = 104 * resfactor;
+  buttonsel[kButtonResume - 1]->Width = 104 * resfactor;
 #else
-  buttonsel[BUTTON_RESUME - 1]->Width = 90 * resfactor;
+  buttonsel[kButtonResume - 1]->Width = 90 * resfactor;
 #endif
-  buttonsel[BUTTON_RESUME - 1]->X = OptionX + (5 * resfactor);
+  buttonsel[kButtonResume - 1]->X = OptionX + (5 * resfactor);
 
   if (GameToPlay == GAME_NORMAL) {
-    buttonsel[BUTTON_RESTATE - 1]->Width = 90 * resfactor;
-    buttonsel[BUTTON_RESTATE - 1]->X =
+    buttonsel[kButtonRestate - 1]->Width = 90 * resfactor;
+    buttonsel[kButtonRestate - 1]->X =
         OptionX + OptionWidth -
-        (buttonsel[BUTTON_RESTATE - 1]->Width + (5 * resfactor));
+        (buttonsel[kButtonRestate - 1]->Width + (5 * resfactor));
   }
 
   /*
@@ -215,21 +215,21 @@ void GameOptionsClass::Process() {
   *to *	be ignored if it wasn't recognized by any other button or slider.
   */
   (new GadgetClass(OptionX, OptionY, OptionWidth, OptionHeight,
-                   GadgetClass::LEFTPRESS))
+                   GadgetClass::kLeftPress))
       ->Add_Tail(*buttons);
 
   /*
   **	This cause a right click anywhere or a left click outside the dialog
   *region *	to be equivalent to clicking on the return to game button.
   */
-  (new ControlClass(BUTTON_RESUME, 0, 0, SeenBuff.Get_Width(),
+  (new ControlClass(kButtonResume, 0, 0, SeenBuff.Get_Width(),
                     SeenBuff.Get_Height(),
-                    GadgetClass::LEFTPRESS | GadgetClass::RIGHTPRESS))
+                    GadgetClass::kLeftPress | GadgetClass::kRightPress))
       ->Add_Tail(*buttons);
 
   Keyboard::Clear();
 
-  Fancy_Text_Print(TXT_NONE, 0, 0, CC_GREEN, TBLACK,
+  Fancy_Text_Print(TXT_NONE, 0, 0, kCcGreen, kTBlack,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   /*
@@ -274,7 +274,8 @@ void GameOptionsClass::Process() {
       /*
       **	Reset up the window.  Window x-coords are in bytes not pixels.
       */
-      Set_Window(WINDOW_EDITOR, OptionX, OptionY, OptionWidth, OptionHeight);
+      Set_Window(static_cast<int>(WINDOW_EDITOR), OptionX, OptionY, OptionWidth,
+                 OptionHeight);
       Hide_Mouse();
 
       /*
@@ -293,28 +294,29 @@ void GameOptionsClass::Process() {
       */
 #ifdef DEMO
       Version_Number();
-      Fancy_Text_Print("DEMO%s",
-                       ((WindowList[WINDOW_EDITOR][WINDOWX] +
-                         WindowList[WINDOW_EDITOR][WINDOWWIDTH])
-                        << 3) -
-                           3 * resfactor,
-                       WindowList[WINDOW_EDITOR][WINDOWY] +
-                           WindowList[WINDOW_EDITOR][WINDOWHEIGHT] -
-                           ((GameToPlay == GAME_NORMAL) ? (32 * resfactor)
-                                                        : (24 * resfactor)),
-                       GREY, TBLACK, TPF_6POINT | TPF_NOSHADOW | TPF_RIGHT,
-                       ScenarioName, VersionText);
+      Fancy_Text_Print(
+          "DEMO%s",
+          ((WindowList[static_cast<int>(WINDOW_EDITOR)][kWindowX] +
+            WindowList[static_cast<int>(WINDOW_EDITOR)][kWindowWidth])
+           << 3) -
+              3 * resfactor,
+          WindowList[static_cast<int>(WINDOW_EDITOR)][kWindowY] +
+              WindowList[static_cast<int>(WINDOW_EDITOR)][kWindowHeight] -
+              ((GameToPlay == GAME_NORMAL) ? (32 * resfactor)
+                                           : (24 * resfactor)),
+          kGrey, kTBlack, TPF_6POINT | TPF_NOSHADOW | TPF_RIGHT, ScenarioName,
+          VersionText);
 #else
       Fancy_Text_Print(
           "%s\rV.%d%s",
-          ((WindowList[WINDOW_EDITOR][WINDOWX] +
-            WindowList[WINDOW_EDITOR][WINDOWWIDTH]) *
+          ((WindowList[static_cast<int>(WINDOW_EDITOR)][kWindowX] +
+            WindowList[static_cast<int>(WINDOW_EDITOR)][kWindowWidth]) *
            8) -
               (3 * resfactor),
-          WindowList[WINDOW_EDITOR][WINDOWY] +
-              WindowList[WINDOW_EDITOR][WINDOWHEIGHT] -
+          WindowList[static_cast<int>(WINDOW_EDITOR)][kWindowY] +
+              WindowList[static_cast<int>(WINDOW_EDITOR)][kWindowHeight] -
               (GameToPlay == GAME_NORMAL ? 32 * resfactor : 24 * resfactor),
-          GREY, TBLACK, TPF_6POINT | TPF_NOSHADOW | TPF_RIGHT, ScenarioName,
+          kGrey, kTBlack, TPF_6POINT | TPF_NOSHADOW | TPF_RIGHT, ScenarioName,
           Version_Number(), VersionText);
 #endif
 
@@ -333,39 +335,39 @@ void GameOptionsClass::Process() {
     **	Process Input.
     */
     switch (static_cast<int>(input)) {
-      case ButtonKey(BUTTON_RESTATE):
-        selection = BUTTON_RESTATE;
+      case ButtonKey(kButtonRestate):
+        selection = kButtonRestate;
         pressed = true;
         break;
 
-      case ButtonKey(BUTTON_LOAD):
-        selection = BUTTON_LOAD;
+      case ButtonKey(kButtonLoad):
+        selection = kButtonLoad;
         pressed = true;
         break;
 
-      case ButtonKey(BUTTON_SAVE):
-        selection = BUTTON_SAVE;
+      case ButtonKey(kButtonSave):
+        selection = kButtonSave;
         pressed = true;
         break;
 
-      case ButtonKey(BUTTON_DELETE):
-        selection = BUTTON_DELETE;
+      case ButtonKey(kButtonDelete):
+        selection = kButtonDelete;
         pressed = true;
         break;
 
-      case ButtonKey(BUTTON_QUIT):
-        selection = BUTTON_QUIT;
+      case ButtonKey(kButtonQuit):
+        selection = kButtonQuit;
         pressed = true;
         break;
 
-      case ButtonKey(BUTTON_GAME):
-        selection = BUTTON_GAME;
+      case ButtonKey(kButtonGame):
+        selection = kButtonGame;
         pressed = true;
         break;
 
       case KN_ESC:
-      case ButtonKey(BUTTON_RESUME):
-        selection = BUTTON_RESUME;
+      case ButtonKey(kButtonResume):
+        selection = kButtonResume;
         pressed = true;
         break;
 
@@ -374,14 +376,14 @@ void GameOptionsClass::Process() {
         buttonsel[curbutton - 1]->Flag_To_Redraw();
         curbutton--;
         if (GameToPlay == GAME_NORMAL) {
-          if (curbutton < BUTTON_LOAD) {
-            curbutton = BUTTON_COUNT - 1;
+          if (curbutton < kButtonLoad) {
+            curbutton = kButtonCount - 1;
           }
         } else {
-          if (curbutton < BUTTON_DELETE) {
-            curbutton = BUTTON_RESUME;
+          if (curbutton < kButtonDelete) {
+            curbutton = kButtonResume;
             //						curbutton =
-            //(BUTTON_COUNT-1);
+            //(kButtonCount-1);
           }
         }
         buttonsel[curbutton - 1]->Turn_On();
@@ -393,12 +395,12 @@ void GameOptionsClass::Process() {
         buttonsel[curbutton - 1]->Flag_To_Redraw();
         curbutton++;
         if (GameToPlay == GAME_NORMAL) {
-          if (curbutton >= BUTTON_COUNT) {
-            curbutton = BUTTON_LOAD;
+          if (curbutton >= kButtonCount) {
+            curbutton = kButtonLoad;
           }
         } else {
-          if (curbutton > BUTTON_RESUME) {
-            curbutton = BUTTON_DELETE;
+          if (curbutton > kButtonResume) {
+            curbutton = kButtonDelete;
           }
         }
         buttonsel[curbutton - 1]->Turn_On();
@@ -424,7 +426,7 @@ void GameOptionsClass::Process() {
       buttonsel[curbutton - 1]->Flag_To_Redraw();
 
       switch (selection) {
-        case BUTTON_RESTATE:
+        case kButtonRestate:
           display = true;
 #ifdef JAPANESE
           if (!Restate_Mission(ScenarioName, TXT_VIDEO,
@@ -451,19 +453,19 @@ void GameOptionsClass::Process() {
           }
           break;
 
-        case BUTTON_LOAD:
+        case kButtonLoad:
           display = true;
           if (LoadOptionsClass(LoadOptionsClass::LOAD).Process()) {
             process = false;
           }
           break;
 
-        case BUTTON_SAVE:
+        case kButtonSave:
           display = true;
           LoadOptionsClass(LoadOptionsClass::SAVE).Process();
           break;
 
-        case BUTTON_DELETE:
+        case kButtonDelete:
           display = true;
           if (GameToPlay != GAME_NORMAL) {
             if (Surrender_Dialog()) {
@@ -475,7 +477,7 @@ void GameOptionsClass::Process() {
           }
           break;
 
-        case BUTTON_QUIT:
+        case kButtonQuit:
           if (GameToPlay == GAME_NORMAL) {
 #ifdef JAPANESE
             switch (CCMessageBox().Process(TXT_CONFIRM_EXIT, TXT_YES, TXT_NO,
@@ -510,12 +512,12 @@ void GameOptionsClass::Process() {
           }
           break;
 
-        case BUTTON_GAME:
+        case kButtonGame:
           display = true;
           GameControlsClass::Process();
           break;
 
-        case BUTTON_RESUME:
+        case kButtonResume:
           // Save_Settings();
           process = false;
           display = true;
@@ -630,8 +632,8 @@ void Draw_Caption(int text, int x, int y, int w) {
   **	Draw the filigree at the corners of the dialog.
   */
   if (option != OPTION_NONE) {
-    CC_Draw_Shape(MixArchive::Retrieve("OPTIONS.SHP"), option, x + 12, y + 11,
-                  WINDOW_MAIN, SHAPE_CENTER);
+    CC_Draw_Shape(MixArchive::Retrieve("OPTIONS.SHP"), static_cast<int>(option),
+                  x + 12, y + 11, WINDOW_MAIN, SHAPE_CENTER);
     CC_Draw_Shape(MixArchive::Retrieve("OPTIONS.SHP"),
                   static_cast<int>(option) + 1, x + w - 14, y + 11, WINDOW_MAIN,
                   SHAPE_CENTER);
@@ -642,7 +644,7 @@ void Draw_Caption(int text, int x, int y, int w) {
   */
   if (text != TXT_NONE) {
     Fancy_Text_Print(
-        text, (w / 2) + x, (5 * factor) + y, CC_GREEN, TBLACK,
+        text, (w / 2) + x, (5 * factor) + y, kCcGreen, kTBlack,
         TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
     const int length = String_Pixel_Width(Text_String(text));
@@ -650,6 +652,6 @@ void Draw_Caption(int text, int x, int y, int w) {
                          y + FontHeight + FontYSpacing + (5 * factor),
                          x + (w / 2) + (length / 2),
                          y + FontHeight + FontYSpacing + (5 * factor),
-                         CC_GREEN);
+                         kCcGreen);
   }
 }

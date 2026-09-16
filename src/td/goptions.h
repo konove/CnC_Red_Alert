@@ -44,20 +44,15 @@
 #include "td/options.h"
 
 class GameOptionsClass : public OptionsClass {
-  enum GameOptionsButtonEnum {
-    BUTTON_LOAD = 1,
-    BUTTON_SAVE,
-    BUTTON_DELETE,
-    BUTTON_GAME,
-    BUTTON_QUIT,
-    BUTTON_RESUME,
-    BUTTON_RESTATE,
+  static constexpr int kButtonLoad = 1;
+  static constexpr int kButtonSave = 2;
+  static constexpr int kButtonDelete = 3;
+  static constexpr int kButtonGame = 4;
+  static constexpr int kButtonQuit = 5;
+  static constexpr int kButtonResume = 6;
+  static constexpr int kButtonRestate = 7;
 
-    BUTTON_COUNT,
-  };
-
-  enum GameOptionsEnum {
-  };
+  static constexpr int kButtonCount = 8;
 
  public:
   GameOptionsClass() = default;

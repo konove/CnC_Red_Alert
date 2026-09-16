@@ -67,7 +67,7 @@ apply_dotenv_settings(td_archive_roundtrip_test)
 add_gtest(
     NAME td_saveload_test
     SOURCES savevalues_test.cc cellvalues.cc scorevalues.cc door.cc flasher.cc fuse.cc super.cc fixedmath.cc rand.cc
-    LIBS tech
+    LIBS base tech
 )
 
 target_compile_definitions(td_saveload_test PRIVATE TD=1)
@@ -96,14 +96,14 @@ target_compile_definitions(td_connect_test PRIVATE TD=1)
 add_gtest(
     NAME td_coord_inline_test
     SOURCES coord_inline_test.cc
-    LIBS absl::check absl::log
+    LIBS base absl::check absl::log
 )
 target_compile_definitions(td_coord_inline_test PRIVATE TD=1)
 
 add_gtest(
     NAME td_path_overlap_test
     SOURCES path_overlap_test.cc
-    LIBS absl::check absl::log
+    LIBS base absl::check absl::log
 )
 target_compile_definitions(td_path_overlap_test PRIVATE TD=1)
 

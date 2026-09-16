@@ -186,18 +186,19 @@
 /*---------------------------------------------------------------------------
 The possible states of the join-game dialog
 ---------------------------------------------------------------------------*/
-typedef enum {
+enum class JoinStateType {
   JOIN_REJECTED = -1,  // we've been rejected
   JOIN_NOTHING,        // we're not trying to join a game
   JOIN_WAIT_CONFIRM,   // we're asking to join, & waiting for confirmation
   JOIN_CONFIRMED,      // we've been confirmed
   JOIN_GAME_START,     // the game we've joined is starting
-} JoinStateType;
+};
+using enum JoinStateType;
 
 /*---------------------------------------------------------------------------
 The possible return codes from Get_Join_Responses()
 ---------------------------------------------------------------------------*/
-typedef enum {
+enum class JoinEventType {
   EV_NONE,            // nothing happened
   EV_STATE_CHANGE,    // Join dialog is in a new state
   EV_NEW_GAME,        // a new game was detected
@@ -206,7 +207,8 @@ typedef enum {
   EV_GAME_SIGNOFF,    // a gamed owner has signed off
   EV_GAME_OPTIONS,    // a game options packet was received
   EV_MESSAGE,         // a message was received
-} JoinEventType;
+};
+using enum JoinEventType;
 
 // Size of the heap buffers holding the "xxx's Game" entries of the game list:
 // a player name plus room for the surrounding text and brackets.
@@ -431,7 +433,8 @@ void Destroy_Connection(int id, int error) {
   if (strlen(txt)) {
     Messages.Add_Message(
         txt,
-        MPlayerTColors[MPlayerID_To_ColorIndex(static_cast<unsigned char>(id))],
+        MPlayerTColors[static_cast<int>(
+            MPlayerID_To_ColorIndex(static_cast<unsigned char>(id)))],
         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600, 0, 0);
     Map.Flag_To_Redraw(false);
   }
@@ -472,7 +475,8 @@ void Destroy_Connection(int id, int error) {
     absl::SNPrintF(txt, sizeof(txt), "%s", Text_String(TXT_JUST_YOU_AND_ME));
     Messages.Add_Message(
         txt,
-        MPlayerTColors[MPlayerID_To_ColorIndex(static_cast<unsigned char>(id))],
+        MPlayerTColors[static_cast<int>(
+            MPlayerID_To_ColorIndex(static_cast<unsigned char>(id)))],
         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600, 0, 0);
     Map.Flag_To_Redraw(false);
   }
@@ -848,29 +852,28 @@ static int Net_Join_Dialog() {
   /*........................................................................
   Button Enumerations
   ........................................................................*/
-  enum {
-    BUTTON_NAME = 100,
-    BUTTON_GDI,
-    BUTTON_NOD,
-    BUTTON_GAMELIST,
-    BUTTON_PLAYERLIST,
-    BUTTON_JOIN,
-    BUTTON_CANCEL,
-    BUTTON_NEW,
-    BUTTON_SEND,
-  };
+  constexpr int kButtonName = 100;
+  constexpr int kButtonGdi = 101;
+  constexpr int kButtonNod = 102;
+  constexpr int kButtonGamelist = 103;
+  constexpr int kButtonPlayerlist = 104;
+  constexpr int kButtonJoin = 105;
+  constexpr int kButtonCancel = 106;
+  constexpr int kButtonNew = 107;
+  constexpr int kButtonSend = 108;
 
   /*........................................................................
   Redraw values: in order from "top" to "bottom" layer of the dialog
   ........................................................................*/
-  typedef enum {
+  enum class RedrawType {
     REDRAW_NONE = 0,
     REDRAW_MESSAGE = 1,
     REDRAW_COLORS = 2,
     REDRAW_BUTTONS = 3,
     REDRAW_BACKGROUND = 4,
     REDRAW_ALL = REDRAW_BACKGROUND
-  } RedrawType;
+  };
+  using enum RedrawType;
 
   /*........................................................................
   Dialog variables
@@ -929,31 +932,31 @@ static int Net_Join_Dialog() {
   ........................................................................*/
   GadgetClass* commands = nullptr;  // button list
 
-  EditClass name_edt(BUTTON_NAME, namebuf, MPLAYER_NAME_MAX,
+  EditClass name_edt(kButtonName, namebuf, MPLAYER_NAME_MAX,
                      TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_name_x,
                      d_name_y, d_name_w, d_name_h, EditClass::ALPHANUMERIC);
 
   TextButtonClass gdibtn(
-      BUTTON_GDI, TXT_G_D_I,
+      kButtonGdi, TXT_G_D_I,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_gdi_x,
       d_gdi_y, d_gdi_w, d_gdi_h);
 
   TextButtonClass nodbtn(
-      BUTTON_NOD, TXT_N_O_D,
+      kButtonNod, TXT_N_O_D,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_nod_x,
       d_nod_y, d_nod_w, d_nod_h);
 
   ListClass gamelist(
-      BUTTON_GAMELIST, d_gamelist_x, d_gamelist_y, d_gamelist_w, d_gamelist_h,
+      kButtonGamelist, d_gamelist_x, d_gamelist_y, d_gamelist_w, d_gamelist_h,
       TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, up_button, down_button);
 
-  ColorListClass playerlist(BUTTON_PLAYERLIST, d_playerlist_x, d_playerlist_y,
+  ColorListClass playerlist(kButtonPlayerlist, d_playerlist_x, d_playerlist_y,
                             d_playerlist_w, d_playerlist_h,
                             TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
                             up_button, down_button);
 
   TextButtonClass joinbtn(
-      BUTTON_JOIN, TXT_JOIN,
+      kButtonJoin, TXT_JOIN,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
 #ifdef FRENCH
       d_join_x, d_join_y);
@@ -962,7 +965,7 @@ static int Net_Join_Dialog() {
 #endif
 
   TextButtonClass cancelbtn(
-      BUTTON_CANCEL, TXT_CANCEL,
+      kButtonCancel, TXT_CANCEL,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       // #if (GERMAN | FRENCH)
       //		d_cancel_x, d_cancel_y);
@@ -971,12 +974,12 @@ static int Net_Join_Dialog() {
   // #endif
 
   TextButtonClass newbtn(
-      BUTTON_NEW, TXT_NEW,
+      kButtonNew, TXT_NEW,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_new_x,
       d_new_y, d_new_w, d_new_h);
 
   TextButtonClass sendbtn(
-      BUTTON_SEND, TXT_SEND_MESSAGE,
+      kButtonSend, TXT_SEND_MESSAGE,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       // #if (GERMAN | FRENCH)
       //		d_send_x, d_send_y);
@@ -1002,7 +1005,7 @@ static int Net_Join_Dialog() {
     nodbtn.Turn_On();
   }
 
-  Fancy_Text_Print("", 0, 0, CC_GREEN, TBLACK,
+  Fancy_Text_Print("", 0, 0, kCcGreen, kTBlack,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   Messages.Init(d_message_x + 2, d_message_y + 2, 4, MAX_MESSAGE_LENGTH,
@@ -1048,7 +1051,7 @@ static int Net_Join_Dialog() {
     /*
     ...................... Refresh display if needed ......................
     */
-    if (display) {
+    if (display != REDRAW_NONE) {
       Hide_Mouse();
       /*
       .................. Redraw backgound & dialog box ...................
@@ -1065,38 +1068,38 @@ static int Net_Join_Dialog() {
         Draw_Caption(TXT_JOIN_NETWORK_GAME, d_dialog_x, d_dialog_y, d_dialog_w);
 
         Fancy_Text_Print(
-            TXT_YOUR_NAME, d_name_x - 5, d_name_y + 1, CC_GREEN, TBLACK,
+            TXT_YOUR_NAME, d_name_x - 5, d_name_y + 1, kCcGreen, kTBlack,
             TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
-            TXT_SIDE_COLON, d_gdi_x - 5, d_gdi_y + 1, CC_GREEN, TBLACK,
+            TXT_SIDE_COLON, d_gdi_x - 5, d_gdi_y + 1, kCcGreen, kTBlack,
             TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
-            TXT_COLOR_COLON, cbox_x[0] - 5, d_color_y + 1, CC_GREEN, TBLACK,
+            TXT_COLOR_COLON, cbox_x[0] - 5, d_color_y + 1, kCcGreen, kTBlack,
             TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
             TXT_GAMES, d_gamelist_x + (d_gamelist_w / 2),
-            d_gamelist_y - d_txt6_h, CC_GREEN, TBLACK,
+            d_gamelist_y - d_txt6_h, kCcGreen, kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
             TXT_PLAYERS, d_playerlist_x + (d_playerlist_w / 2),
-            d_playerlist_y - d_txt6_h, CC_GREEN, TBLACK,
+            d_playerlist_y - d_txt6_h, kCcGreen, kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         /*...............................................................
         Join-state-specific labels:
         ...............................................................*/
         if (joinstate > JOIN_NOTHING) {
-          Fancy_Text_Print(namebuf, d_name_x, d_name_y + 1, CC_GREEN, TBLACK,
+          Fancy_Text_Print(namebuf, d_name_x, d_name_y + 1, kCcGreen, kTBlack,
                            TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
           if (MPlayerHouse == HOUSE_GOOD) {
-            Fancy_Text_Print(TXT_G_D_I, d_gdi_x, d_gdi_y + 1, CC_GREEN, TBLACK,
+            Fancy_Text_Print(TXT_G_D_I, d_gdi_x, d_gdi_y + 1, kCcGreen, kTBlack,
                              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
           } else {
-            Fancy_Text_Print(TXT_N_O_D, d_gdi_x, d_gdi_y + 1, CC_GREEN, TBLACK,
+            Fancy_Text_Print(TXT_N_O_D, d_gdi_x, d_gdi_y + 1, kCcGreen, kTBlack,
                              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
           }
         }
@@ -1173,7 +1176,7 @@ static int Net_Join_Dialog() {
 
         LogicPage->Fill_Rect(d_dialog_x + 2, d_msg1_y,
                              d_dialog_x + d_dialog_w - 4, d_msg5_y + d_txt6_h,
-                             BLACK);
+                             kBlack);
 
         if (joinstate == JOIN_CONFIRMED && parms_received) {
           /*............................................................
@@ -1185,14 +1188,14 @@ static int Net_Join_Dialog() {
                            MPlayerScenarios[ScenarioIdx]);
 
             Fancy_Text_Print(
-                txt, d_dialog_cx, d_msg1_y, CC_GREEN, TBLACK,
+                txt, d_dialog_cx, d_msg1_y, kCcGreen, kTBlack,
                 TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW | TPF_CENTER);
           } else {
             absl::SNPrintF(txt, sizeof(txt), "%s %s", p,
                            Text_String(TXT_NOT_FOUND));
 
             Fancy_Text_Print(
-                txt, d_dialog_cx, d_msg1_y, CC_NOD_COLOR, TBLACK,
+                txt, d_dialog_cx, d_msg1_y, kCcNodColor, kTBlack,
                 TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW | TPF_CENTER);
           }
 
@@ -1202,7 +1205,7 @@ static int Net_Join_Dialog() {
           p = Text_String(TXT_START_CREDITS_COLON);
           absl::SNPrintF(txt, sizeof(txt), "%s %d", p, MPlayerCredits);
           Fancy_Text_Print(
-              txt, d_dialog_cx, d_msg2_y, CC_GREEN, TBLACK,
+              txt, d_dialog_cx, d_msg2_y, kCcGreen, kTBlack,
               TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW | TPF_CENTER);
 
           /*............................................................
@@ -1212,7 +1215,7 @@ static int Net_Join_Dialog() {
           absl::SNPrintF(txt, sizeof(txt), "%s %d", p, MPlayerUnitCount);
           Fancy_Text_Print(
               txt, d_dialog_x + (d_dialog_w / 4) - String_Pixel_Width(p),
-              d_msg3_y, CC_GREEN, TBLACK,
+              d_msg3_y, kCcGreen, kTBlack,
               TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
           p = Text_String(TXT_LEVEL);
@@ -1224,7 +1227,7 @@ static int Net_Join_Dialog() {
           Fancy_Text_Print(txt,
                            d_dialog_x + d_dialog_w - (d_dialog_w / 4) -
                                String_Pixel_Width(p),
-                           d_msg3_y, CC_GREEN, TBLACK,
+                           d_msg3_y, kCcGreen, kTBlack,
                            TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
           /*............................................................
@@ -1238,7 +1241,7 @@ static int Net_Join_Dialog() {
           }
           Fancy_Text_Print(
               txt, d_dialog_x + (d_dialog_w / 4) - String_Pixel_Width(p),
-              d_msg4_y, CC_GREEN, TBLACK,
+              d_msg4_y, kCcGreen, kTBlack,
               TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
           /*............................................................
@@ -1253,7 +1256,7 @@ static int Net_Join_Dialog() {
 
           Fancy_Text_Print(
               txt, d_dialog_x + (d_dialog_w / 4) - String_Pixel_Width(p),
-              d_msg5_y, CC_GREEN, TBLACK,
+              d_msg5_y, kCcGreen, kTBlack,
               TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
           /*............................................................
@@ -1269,7 +1272,7 @@ static int Net_Join_Dialog() {
           Fancy_Text_Print(txt,
                            d_dialog_x + d_dialog_w - (d_dialog_w / 4) -
                                String_Pixel_Width(p),
-                           d_msg4_y, CC_GREEN, TBLACK,
+                           d_msg4_y, kCcGreen, kTBlack,
                            TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
           /*............................................................
@@ -1290,7 +1293,7 @@ static int Net_Join_Dialog() {
           Fancy_Text_Print(txt,
                            d_dialog_x + d_dialog_w - (d_dialog_w / 4) -
                                String_Pixel_Width(p),
-                           d_msg5_y, CC_GREEN, TBLACK,
+                           d_msg5_y, kCcGreen, kTBlack,
                            TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         } else {
@@ -1299,7 +1302,7 @@ static int Net_Join_Dialog() {
           ...............................................................*/
           if (joinstate == JOIN_REJECTED) {
             Fancy_Text_Print(
-                TXT_REQUEST_DENIED, d_dialog_cx, d_msg3_y, CC_GREEN, TBLACK,
+                TXT_REQUEST_DENIED, d_dialog_cx, d_msg3_y, kCcGreen, kTBlack,
                 TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
           }
         }
@@ -1349,7 +1352,7 @@ static int Net_Join_Dialog() {
       - Clear the player list
       - Send an immediate player query
       ------------------------------------------------------------------*/
-      case ButtonKey(BUTTON_GAMELIST):
+      case ButtonKey(kButtonGamelist):
         if (joinstate == JOIN_CONFIRMED) {
           gamelist.Set_Selected_Index(game_index);
         } else {
@@ -1364,13 +1367,13 @@ static int Net_Join_Dialog() {
       /*------------------------------------------------------------------
       House Buttons: set the player's desired House
       ------------------------------------------------------------------*/
-      case ButtonKey(BUTTON_GDI):
+      case ButtonKey(kButtonGdi):
         MPlayerHouse = HOUSE_GOOD;
         gdibtn.Turn_On();
         nodbtn.Turn_Off();
         break;
 
-      case ButtonKey(BUTTON_NOD):
+      case ButtonKey(kButtonNod):
         MPlayerHouse = HOUSE_BAD;
         gdibtn.Turn_Off();
         nodbtn.Turn_On();
@@ -1380,7 +1383,7 @@ static int Net_Join_Dialog() {
       JOIN: send a join request packet & switch to waiting-for-confirmation
       mode.  (Request_To_Join fills in MPlayerName with my namebuf.)
       ------------------------------------------------------------------*/
-      case ButtonKey(BUTTON_JOIN):
+      case ButtonKey(kButtonJoin):
         name_edt.Clear_Focus();
         name_edt.Flag_To_Redraw();
 
@@ -1405,7 +1408,7 @@ static int Net_Join_Dialog() {
           break;
         }
         [[fallthrough]];
-      case ButtonKey(BUTTON_CANCEL):
+      case ButtonKey(kButtonCancel):
         memset(&GPacket, 0, sizeof(GlobalPacketType));
 
         GPacket.Command = NET_SIGN_OFF;
@@ -1471,7 +1474,7 @@ static int Net_Join_Dialog() {
       /*------------------------------------------------------------------
       NEW: bail out with return code 1
       ------------------------------------------------------------------*/
-      case ButtonKey(BUTTON_NEW):
+      case ButtonKey(kButtonNew):
         /*
         .................. Force user to enter a name ...................
         */
@@ -1517,7 +1520,7 @@ static int Net_Join_Dialog() {
         ...............................................................*/
         if (Messages.Get_Edit_Buf() == nullptr) {
           if ((input == KN_M && joinstate == JOIN_CONFIRMED) ||
-              input == ButtonKey(BUTTON_SEND) || input == KN_F4) {
+              input == ButtonKey(kButtonSend) || input == KN_F4) {
             memset(txt, 0, 80);
 
             port::SafeCopy(txt, Text_String(TXT_TO_ALL));  // "To All:"
@@ -1542,7 +1545,7 @@ static int Net_Join_Dialog() {
           'Send', translate our input to a Return so Messages.Input() will
           work properly.
           ...............................................................*/
-          if (input == ButtonKey(BUTTON_SEND)) {
+          if (input == ButtonKey(kButtonSend)) {
             input = KN_RETURN;
           }
 
@@ -2284,7 +2287,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
   ------------------------------------------------------------------------*/
   const int rc =
       Ipx.Get_Global_Message(&GPacket, &GPacketlen, &GAddress, &GProductID);
-  if (!rc || GProductID != IPXGlobalConnClass::COMMAND_AND_CONQUER) {
+  if (!rc || GProductID != IPXGlobalConnClass::kCommandAndConquer) {
     return EV_NONE;
   }
 
@@ -2621,7 +2624,8 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
         GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 4);
     const auto crc = port::ReadUnaligned<uint16_t>(GPacket.Message.Buf +
                                                    COMPAT_MESSAGE_LENGTH - 2);
-    const int color = MPlayerID_To_ColorIndex(GPacket.Message.ID);
+    const int color =
+        static_cast<int>(MPlayerID_To_ColorIndex(GPacket.Message.ID));
     Messages.Add_Message(txt, MPlayerTColors[color],
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200,
                          magic_number, crc);
@@ -2807,33 +2811,32 @@ static int Net_New_Dialog() {
   /*........................................................................
   Button Enumerations
   ........................................................................*/
-  enum {
-    BUTTON_PLAYERLIST = 100,
-    BUTTON_SCENARIOLIST,
-    BUTTON_REJECT,
-    BUTTON_COUNT,
-    BUTTON_LEVEL,
-    BUTTON_CREDITS,
-    BUTTON_BASES,
-    BUTTON_TIBERIUM,
-    BUTTON_GOODIES,
-    BUTTON_GHOSTS,
-    BUTTON_OK,
-    BUTTON_CANCEL,
-    BUTTON_SEND,
-  };
+  constexpr int kButtonPlayerlist = 100;
+  constexpr int kButtonScenariolist = 101;
+  constexpr int kButtonReject = 102;
+  constexpr int kButtonCount = 103;
+  constexpr int kButtonLevel = 104;
+  constexpr int kButtonCredits = 105;
+  constexpr int kButtonBases = 106;
+  constexpr int kButtonTiberium = 107;
+  constexpr int kButtonGoodies = 108;
+  constexpr int kButtonGhosts = 109;
+  constexpr int kButtonOk = 110;
+  constexpr int kButtonCancel = 111;
+  constexpr int kButtonSend = 112;
 
   /*........................................................................
   Redraw values: in order from "top" to "bottom" layer of the dialog
   ........................................................................*/
-  typedef enum {
+  enum class RedrawType {
     REDRAW_NONE = 0,
     REDRAW_UNIT_COUNT = 1,
     REDRAW_MESSAGE = 2,
     REDRAW_BUTTONS = 3,
     REDRAW_BACKGROUND = 4,
     REDRAW_ALL = REDRAW_BACKGROUND
-  } RedrawType;
+  };
+  using enum RedrawType;
 
   /*........................................................................
   Dialog variables
@@ -2882,23 +2885,23 @@ static int Net_New_Dialog() {
     down_button = Hires_Retrieve("BTN-DN2.SHP");
   }
 
-  ColorListClass playerlist(BUTTON_PLAYERLIST, d_playerlist_x, d_playerlist_y,
+  ColorListClass playerlist(kButtonPlayerlist, d_playerlist_x, d_playerlist_y,
                             d_playerlist_w, d_playerlist_h,
                             TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
                             up_button, down_button);
 
-  ListClass scenariolist(BUTTON_SCENARIOLIST, d_scenariolist_x,
+  ListClass scenariolist(kButtonScenariolist, d_scenariolist_x,
                          d_scenariolist_y, d_scenariolist_w, d_scenariolist_h,
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
                          up_button, down_button);
 
-  EditClass credit_edt(BUTTON_CREDITS, credbuf, CREDITSBUF_MAX,
+  EditClass credit_edt(kButtonCredits, credbuf, CREDITSBUF_MAX,
                        TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
                        d_credits_x, d_credits_y, d_credits_w, d_credits_h,
                        EditClass::ALPHANUMERIC);
 
   TextButtonClass rejectbtn(
-      BUTTON_REJECT, TXT_REJECT,
+      kButtonReject, TXT_REJECT,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       // #if (GERMAN | FRENCH)
       //		d_reject_x, d_reject_y);
@@ -2906,39 +2909,39 @@ static int Net_New_Dialog() {
       d_reject_x, d_reject_y, d_reject_w, d_reject_h);
   // #endif
 
-  GaugeClass countgauge(BUTTON_COUNT, d_count_x, d_count_y, d_count_w,
+  GaugeClass countgauge(kButtonCount, d_count_x, d_count_y, d_count_w,
                         d_count_h);
 
-  GaugeClass levelgauge(BUTTON_LEVEL, d_level_x, d_level_y, d_level_w,
+  GaugeClass levelgauge(kButtonLevel, d_level_x, d_level_y, d_level_w,
                         d_level_h);
 
   TextButtonClass basesbtn(
-      BUTTON_BASES, TXT_BASES_OFF,
+      kButtonBases, TXT_BASES_OFF,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_bases_x,
       d_bases_y, d_bases_w, d_bases_h);
 
   TextButtonClass tiberiumbtn(
-      BUTTON_TIBERIUM, TXT_TIBERIUM_OFF,
+      kButtonTiberium, TXT_TIBERIUM_OFF,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_tiberium_x,
       d_tiberium_y, d_tiberium_w, d_tiberium_h);
 
   TextButtonClass goodiesbtn(
-      BUTTON_GOODIES, TXT_CRATES_OFF,
+      kButtonGoodies, TXT_CRATES_OFF,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_goodies_x,
       d_goodies_y, d_goodies_w, d_goodies_h);
 
   TextButtonClass ghostsbtn(
-      BUTTON_GHOSTS, TXT_AI_PLAYERS_OFF,
+      kButtonGhosts, TXT_AI_PLAYERS_OFF,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_ghosts_x,
       d_ghosts_y, d_ghosts_w, d_ghosts_h);
 
   TextButtonClass okbtn(
-      BUTTON_OK, TXT_OK,
+      kButtonOk, TXT_OK,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_ok_x,
       d_ok_y, d_ok_w, d_ok_h);
 
   TextButtonClass cancelbtn(
-      BUTTON_CANCEL, TXT_CANCEL,
+      kButtonCancel, TXT_CANCEL,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       // #if (GERMAN | FRENCH)
       //		d_cancel_x, d_cancel_y);
@@ -2947,7 +2950,7 @@ static int Net_New_Dialog() {
   // #endif
 
   TextButtonClass sendbtn(
-      BUTTON_SEND, TXT_SEND_MESSAGE,
+      kButtonSend, TXT_SEND_MESSAGE,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       // #if (GERMAN | FRENCH)
       //		d_send_x, d_send_y);
@@ -3050,7 +3053,7 @@ static int Net_New_Dialog() {
     ColorUsed[i] = 0;  // init all colors to available
   }
   ColorUsed[MPlayerColorIdx] = 1;  // set my color to used
-  playerlist.Set_Selected_Style(ColorListClass::SELECT_BAR, CC_GREEN_SHADOW);
+  playerlist.Set_Selected_Style(ColorListClass::SELECT_BAR, kCcGreenShadow);
 
   /*........................................................................
   Init random-number generator, & create a seed to be used for all random
@@ -3112,12 +3115,12 @@ static int Net_New_Dialog() {
                            d_count_y + 12, 0);
       absl::SNPrintF(txt, sizeof(txt), "%d", MPlayerUnitCount);
       Fancy_Text_Print(txt, d_count_x + d_count_w + (2 * factor), d_count_y,
-                       CC_GREEN, TBLACK,
+                       kCcGreen, kTBlack,
                        TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
       display = REDRAW_NONE;
     }
 
-    if (display) {
+    if (display != REDRAW_NONE) {
       Hide_Mouse();
       /*
       .................. Redraw backgound & dialog box ...................
@@ -3138,25 +3141,25 @@ static int Net_New_Dialog() {
 
         Fancy_Text_Print(
             TXT_PLAYERS, d_playerlist_x + (d_playerlist_w / 2),
-            d_playerlist_y - d_txt6_h, CC_GREEN, TBLACK,
+            d_playerlist_y - d_txt6_h, kCcGreen, kTBlack,
             TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_CENTER);
 
         Fancy_Text_Print(
             TXT_SCENARIOS, d_scenariolist_x + (d_scenariolist_w / 2),
-            d_scenariolist_y - d_txt6_h, CC_GREEN, TBLACK,
+            d_scenariolist_y - d_txt6_h, kCcGreen, kTBlack,
             TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_CENTER);
 
         Fancy_Text_Print(
-            TXT_COUNT, d_count_x - (2 * factor), d_count_y, CC_GREEN, TBLACK,
+            TXT_COUNT, d_count_x - (2 * factor), d_count_y, kCcGreen, kTBlack,
             TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_RIGHT);
 
         absl::SNPrintF(txt, sizeof(txt), "%d", MPlayerUnitCount);
         Fancy_Text_Print(txt, d_count_x + d_count_w + (2 * factor), d_count_y,
-                         CC_GREEN, TBLACK,
+                         kCcGreen, kTBlack,
                          TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
 
         Fancy_Text_Print(
-            TXT_LEVEL, d_level_x - (2 * factor), d_level_y, CC_GREEN, TBLACK,
+            TXT_LEVEL, d_level_x - (2 * factor), d_level_y, kCcGreen, kTBlack,
             TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_RIGHT);
 
         if (BuildLevel <= MPLAYER_BUILD_LEVEL_MAX) {
@@ -3165,12 +3168,12 @@ static int Net_New_Dialog() {
           absl::SNPrintF(txt, sizeof(txt), "**");
         }
         Fancy_Text_Print(txt, d_level_x + d_level_w + (2 * factor), d_level_y,
-                         CC_GREEN, TBLACK,
+                         kCcGreen, kTBlack,
                          TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
 
         Fancy_Text_Print(
             TXT_START_CREDITS_COLON, d_credits_x - (5 * factor),
-            d_credits_y + (1 * factor), CC_GREEN, TBLACK,
+            d_credits_y + (1 * factor), kCcGreen, kTBlack,
             TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_RIGHT);
       }
 
@@ -3210,7 +3213,7 @@ static int Net_New_Dialog() {
       /*------------------------------------------------------------------
       New Scenario selected.
       ------------------------------------------------------------------*/
-      case ButtonKey(BUTTON_SCENARIOLIST):
+      case ButtonKey(kButtonScenariolist):
         if (scenariolist.Current_Index() != ScenarioIdx) {
           ScenarioIdx = scenariolist.Current_Index();
           MPlayerCredits = tech::ParseInteger<int>(credbuf).value_or(0);
@@ -3222,7 +3225,7 @@ static int Net_New_Dialog() {
       Reject the currently-selected player (don't allow rejecting myself,
       who will be the first entry in the list)
       ------------------------------------------------------------------*/
-      case ButtonKey(BUTTON_REJECT):
+      case ButtonKey(kButtonReject):
         index = playerlist.Current_Index();
         if (index == 0) {
           CCMessageBox().Process(TXT_CANT_REJECT_SELF, TXT_OOPS);
@@ -3245,18 +3248,18 @@ static int Net_New_Dialog() {
       /*------------------------------------------------------------------
       User adjusts max # units
       ------------------------------------------------------------------*/
-      case ButtonKey(BUTTON_COUNT):
+      case ButtonKey(kButtonCount):
         MPlayerUnitCount =
             countgauge.Get_Value() + MPlayerCountMin[MPlayerBases];
 
         Hide_Mouse();
         LogicPage->Fill_Rect(d_count_x + d_count_w + (2 * factor), d_count_y,
                              d_count_x + d_count_w + (14 * factor),
-                             d_count_y + (6 * factor), BLACK);
+                             d_count_y + (6 * factor), kBlack);
 
         absl::SNPrintF(txt, sizeof(txt), "%d", MPlayerUnitCount);
         Fancy_Text_Print(txt, d_count_x + d_count_w + (2 * factor), d_count_y,
-                         CC_GREEN, TBLACK,
+                         kCcGreen, kTBlack,
                          TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
         Show_Mouse();
 
@@ -3266,14 +3269,14 @@ static int Net_New_Dialog() {
       /*------------------------------------------------------------------
       User adjusts build level
       ------------------------------------------------------------------*/
-      case ButtonKey(BUTTON_LEVEL):
+      case ButtonKey(kButtonLevel):
         BuildLevel = std::min(levelgauge.Get_Value() + 1,
                                             MPLAYER_BUILD_LEVEL_MAX);
 
         Hide_Mouse();
         LogicPage->Fill_Rect(d_level_x + d_level_w + (2 * factor), d_level_y,
                              d_level_x + d_level_w + (14 * factor),
-                             d_level_y + (6 * factor), BLACK);
+                             d_level_y + (6 * factor), kBlack);
 
         if (BuildLevel <= MPLAYER_BUILD_LEVEL_MAX) {
           absl::SNPrintF(txt, sizeof(txt), "%d", BuildLevel);
@@ -3281,7 +3284,7 @@ static int Net_New_Dialog() {
           absl::SNPrintF(txt, sizeof(txt), "**");
         }
         Fancy_Text_Print(txt, d_level_x + d_level_w + (2 * factor), d_level_y,
-                         CC_GREEN, TBLACK,
+                         kCcGreen, kTBlack,
                          TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
         Show_Mouse();
 
@@ -3291,7 +3294,7 @@ static int Net_New_Dialog() {
       /*------------------------------------------------------------------
       User edits the credits value; retransmit new game options
       ------------------------------------------------------------------*/
-      case ButtonKey(BUTTON_CREDITS):
+      case ButtonKey(kButtonCredits):
         MPlayerCredits = tech::ParseInteger<int>(credbuf).value_or(0);
         transmit = 1;
         break;
@@ -3304,7 +3307,7 @@ static int Net_New_Dialog() {
         using the current gauge setting
       - Change the unit count gauge limit & value
       ------------------------------------------------------------------*/
-      case ButtonKey(BUTTON_BASES):
+      case ButtonKey(kButtonBases):
         if (MPlayerBases) {
           MPlayerBases = 0;
           basesbtn.Turn_Off();
@@ -3338,7 +3341,7 @@ static int Net_New_Dialog() {
       /*------------------------------------------------------------------
       Toggle tiberium
       ------------------------------------------------------------------*/
-      case ButtonKey(BUTTON_TIBERIUM):
+      case ButtonKey(kButtonTiberium):
         if (MPlayerTiberium) {
           MPlayerTiberium = 0;
           Special.IsTGrowth = 0;
@@ -3359,7 +3362,7 @@ static int Net_New_Dialog() {
       /*------------------------------------------------------------------
       Toggle goodies
       ------------------------------------------------------------------*/
-      case ButtonKey(BUTTON_GOODIES):
+      case ButtonKey(kButtonGoodies):
         if (MPlayerGoodies) {
           MPlayerGoodies = 0;
           goodiesbtn.Turn_Off();
@@ -3376,7 +3379,7 @@ static int Net_New_Dialog() {
       /*------------------------------------------------------------------
       Toggle ghosts/capture-the-flag
       ------------------------------------------------------------------*/
-      case ButtonKey(BUTTON_GHOSTS):
+      case ButtonKey(kButtonGhosts):
         if (!MPlayerGhosts &&
             !Special.IsCaptureTheFlag) {  // ghosts OFF => ghosts ON
           MPlayerGhosts = 1;
@@ -3406,7 +3409,7 @@ static int Net_New_Dialog() {
       /*------------------------------------------------------------------
       OK: exit loop with true status
       ------------------------------------------------------------------*/
-      case ButtonKey(BUTTON_OK):
+      case ButtonKey(kButtonOk):
         /*...............................................................
         If a new player has joined in the last second, don't allow
         an OK; force a wait longer than 1 second (to give all players
@@ -3439,7 +3442,7 @@ static int Net_New_Dialog() {
           break;
         }
         [[fallthrough]];
-      case ButtonKey(BUTTON_CANCEL):
+      case ButtonKey(kButtonCancel):
         memset(&GPacket, 0, sizeof(GlobalPacketType));
 
         GPacket.Command = NET_SIGN_OFF;
@@ -3493,7 +3496,7 @@ static int Net_New_Dialog() {
         F4/SEND/'M' = send a message
         ...............................................................*/
         if (Messages.Get_Edit_Buf() == nullptr) {
-          if (input == KN_M || input == ButtonKey(BUTTON_SEND) ||
+          if (input == KN_M || input == ButtonKey(kButtonSend) ||
               input == KN_F4) {
             memset(txt, 0, 80);
 
@@ -3515,7 +3518,7 @@ static int Net_New_Dialog() {
           'Send', translate our input to a Return so Messages.Input() will
           work properly.
           ...............................................................*/
-          if (input == ButtonKey(BUTTON_SEND)) {
+          if (input == ButtonKey(kButtonSend)) {
             input = KN_RETURN;
           }
         }
@@ -3853,7 +3856,7 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist) {
   ------------------------------------------------------------------------*/
   const int rc =
       Ipx.Get_Global_Message(&GPacket, &GPacketlen, &GAddress, &GProductID);
-  if (!rc || GProductID != IPXGlobalConnClass::COMMAND_AND_CONQUER) {
+  if (!rc || GProductID != IPXGlobalConnClass::kCommandAndConquer) {
     return EV_NONE;
   }
 
@@ -4002,7 +4005,8 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist) {
         GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 4);
     const auto crc = port::ReadUnaligned<uint16_t>(GPacket.Message.Buf +
                                                    COMPAT_MESSAGE_LENGTH - 2);
-    const int color = MPlayerID_To_ColorIndex(GPacket.Message.ID);
+    const int color =
+        static_cast<int>(MPlayerID_To_ColorIndex(GPacket.Message.ID));
     Messages.Add_Message(txt, MPlayerTColors[color],
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200,
                          magic_number, crc);
@@ -4085,7 +4089,7 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
   ------------------------------------------------------------------------*/
   if (fresh) {
     Fancy_Text_Print(
-        "", 0, 0, CC_GREEN, TBLACK,
+        "", 0, 0, kCcGreen, kTBlack,
         TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
     if (reconn) {
       const int id = Ipx.Connection_ID(oldest_index);
@@ -4112,16 +4116,16 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
     Dialog_Box(x, y, w, h);
 
     Fancy_Text_Print(
-        buf1, 160 * factor, y + (d_margin * 2), CC_GREEN, BLACK,
+        buf1, 160 * factor, y + (d_margin * 2), kCcGreen, kBlack,
         TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
     Fancy_Text_Print(
-        buf2, 160 * factor, y + (d_margin * 2) + d_txt6_h + d_margin, CC_GREEN,
-        BLACK, TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+        buf2, 160 * factor, y + (d_margin * 2) + d_txt6_h + d_margin, kCcGreen,
+        kBlack, TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
     Fancy_Text_Print(
         buf3, 160 * factor, y + (d_margin * 2) + ((d_txt6_h + d_margin) * 2),
-        CC_GREEN, BLACK,
+        kCcGreen, kBlack,
         TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
     Show_Mouse();
@@ -4140,10 +4144,10 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
                          y + (d_margin * 2) + d_txt6_h + d_margin,
                          (160 * factor) + (pixwidth / 2) + 12,
                          y + (d_margin * 2) + (d_txt6_h * 2) + d_margin,
-                         TBLACK);
+                         kTBlack);
     Fancy_Text_Print(
-        buf2, 160 * factor, y + (d_margin * 2) + d_txt6_h + d_margin, CC_GREEN,
-        BLACK, TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+        buf2, 160 * factor, y + (d_margin * 2) + d_txt6_h + d_margin, kCcGreen,
+        kBlack, TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
     Show_Mouse();
   }
@@ -4239,7 +4243,8 @@ static int Net_Fake_New_Dialog() {
   // than the shared string table.
   char buffer[80 * 3];
   port::SafeCopy(buffer, Text_String(TXT_CONNECTING));
-  Fancy_Text_Print(TXT_NONE, 0, 0, TBLACK, TBLACK, TPF_6PT_GRAD | TPF_NOSHADOW);
+  Fancy_Text_Print(TXT_NONE, 0, 0, kTBlack, kTBlack,
+                   TPF_6PT_GRAD | TPF_NOSHADOW);
   Format_Window_String(buffer, SeenBuff.Get_Height(), width, height);
 
 #if (defined(GERMAN) || defined(FRENCH))
@@ -4251,21 +4256,20 @@ static int Net_Fake_New_Dialog() {
   /*........................................................................
   Button Enumerations
   ........................................................................*/
-  enum {
-    BUTTON_CANCEL = 100,
-    BUTTON_PLAYERLIST,
-  };
+  constexpr int kButtonCancel = 100;
+  constexpr int kButtonPlayerlist = 101;
 
   /*........................................................................
   Redraw values: in order from "top" to "bottom" layer of the dialog
   ........................................................................*/
-  typedef enum {
+  enum class RedrawType {
     REDRAW_NONE = 0,
     REDRAW_MESSAGE = 1,
     REDRAW_BUTTONS = 2,
     REDRAW_BACKGROUND = 3,
     REDRAW_ALL = REDRAW_BACKGROUND
-  } RedrawType;
+  };
+  using enum RedrawType;
 
   /*........................................................................
   Dialog variables
@@ -4307,13 +4311,13 @@ static int Net_Fake_New_Dialog() {
   Buttons
   ........................................................................*/
 
-  ColorListClass playerlist(BUTTON_PLAYERLIST, d_playerlist_x, d_playerlist_y,
+  ColorListClass playerlist(kButtonPlayerlist, d_playerlist_x, d_playerlist_y,
                             d_playerlist_w, d_playerlist_h,
                             TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
                             up_button, down_button);
 
   TextButtonClass cancelbtn(
-      BUTTON_CANCEL, TXT_CANCEL,
+      kButtonCancel, TXT_CANCEL,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       // #if (GERMAN | FRENCH)
       //		d_cancel_x, d_cancel_y);
@@ -4350,7 +4354,7 @@ static int Net_Fake_New_Dialog() {
     ColorUsed[i] = 0;  // init all colors to available
   }
   ColorUsed[MPlayerColorIdx] = 1;  // set my color to used
-  playerlist.Set_Selected_Style(ColorListClass::SELECT_BAR, CC_GREEN_SHADOW);
+  playerlist.Set_Selected_Style(ColorListClass::SELECT_BAR, kCcGreenShadow);
 
   /*........................................................................
   Init random-number generator, & create a seed to be used for all random
@@ -4423,7 +4427,7 @@ static int Net_Fake_New_Dialog() {
     /*
     ...................... Refresh display if needed ......................
     */
-    if (display) {
+    if (display != REDRAW_NONE) {
       Hide_Mouse();
       /*
       .................. Redraw backgound & dialog box ...................
@@ -4440,7 +4444,7 @@ static int Net_Fake_New_Dialog() {
         Draw_Caption(TXT_NONE, d_dialog_x, d_dialog_y, d_dialog_w);
 
         Fancy_Text_Print(buffer, d_dialog_cx - (width / 2),
-                         d_dialog_y + (25 * factor), CC_GREEN, TBLACK,
+                         d_dialog_y + (25 * factor), kCcGreen, kTBlack,
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
 
@@ -4468,7 +4472,7 @@ static int Net_Fake_New_Dialog() {
       CANCEL: send a SIGN_OFF, bail out with error code
       ------------------------------------------------------------------*/
       case KN_ESC:
-      case ButtonKey(BUTTON_CANCEL):
+      case ButtonKey(kButtonCancel):
         memset(&GPacket, 0, sizeof(GlobalPacketType));
 
         GPacket.Command = NET_SIGN_OFF;
@@ -4844,7 +4848,8 @@ static int Net_Fake_Join_Dialog() {
   // than the shared string table.
   char buffer[80 * 3];
   port::SafeCopy(buffer, Text_String(TXT_CONNECTING));
-  Fancy_Text_Print(TXT_NONE, 0, 0, TBLACK, TBLACK, TPF_6PT_GRAD | TPF_NOSHADOW);
+  Fancy_Text_Print(TXT_NONE, 0, 0, kTBlack, kTBlack,
+                   TPF_6PT_GRAD | TPF_NOSHADOW);
   Format_Window_String(buffer, SeenBuff.Get_Height(), width, height);
 
 #if (defined(GERMAN) || defined(FRENCH))
@@ -4856,23 +4861,22 @@ static int Net_Fake_Join_Dialog() {
   /*........................................................................
   Button Enumerations
   ........................................................................*/
-  enum {
-    BUTTON_CANCEL = 100,
-    BUTTON_GAMELIST,
-    BUTTON_PLAYERLIST,
-  };
+  constexpr int kButtonCancel = 100;
+  constexpr int kButtonGamelist = 101;
+  constexpr int kButtonPlayerlist = 102;
 
   /*........................................................................
   Redraw values: in order from "top" to "bottom" layer of the dialog
   ........................................................................*/
-  typedef enum {
+  enum class RedrawType {
     REDRAW_NONE = 0,
     REDRAW_MESSAGE = 1,
     REDRAW_COLORS = 2,
     REDRAW_BUTTONS = 3,
     REDRAW_BACKGROUND = 4,
     REDRAW_ALL = REDRAW_BACKGROUND
-  } RedrawType;
+  };
+  using enum RedrawType;
 
   /*........................................................................
   Dialog variables
@@ -4915,17 +4919,17 @@ static int Net_Fake_Join_Dialog() {
   ........................................................................*/
   GadgetClass* commands = nullptr;  // button list
 
-  ColorListClass playerlist(BUTTON_PLAYERLIST, d_playerlist_x, d_playerlist_y,
+  ColorListClass playerlist(kButtonPlayerlist, d_playerlist_x, d_playerlist_y,
                             d_playerlist_w, d_playerlist_h,
                             TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
                             up_button, down_button);
 
   ListClass gamelist(
-      BUTTON_GAMELIST, d_gamelist_x, d_gamelist_y, d_gamelist_w, d_gamelist_h,
+      kButtonGamelist, d_gamelist_x, d_gamelist_y, d_gamelist_w, d_gamelist_h,
       TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, up_button, down_button);
 
   TextButtonClass cancelbtn(
-      BUTTON_CANCEL, TXT_CANCEL,
+      kButtonCancel, TXT_CANCEL,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       // #if (GERMAN | FRENCH)
       //		d_cancel_x, d_cancel_y);
@@ -4941,7 +4945,7 @@ static int Net_Fake_Join_Dialog() {
 
   playerlist.Set_Selected_Style(ColorListClass::SELECT_NONE);
 
-  Fancy_Text_Print("", 0, 0, CC_GREEN, TBLACK,
+  Fancy_Text_Print("", 0, 0, kCcGreen, kTBlack,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   /*
@@ -4994,7 +4998,7 @@ static int Net_Fake_Join_Dialog() {
     /*
     ...................... Refresh display if needed ......................
     */
-    if (display) {
+    if (display != REDRAW_NONE) {
       Hide_Mouse();
       /*
       .................. Redraw backgound & dialog box ...................
@@ -5011,7 +5015,7 @@ static int Net_Fake_Join_Dialog() {
         Draw_Caption(TXT_NONE, d_dialog_x, d_dialog_y, d_dialog_w);
 
         Fancy_Text_Print(buffer, d_dialog_cx - (width / 2),
-                         d_dialog_y + (25 * factor), CC_GREEN, TBLACK,
+                         d_dialog_y + (25 * factor), kCcGreen, kTBlack,
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         /*
@@ -5050,7 +5054,7 @@ static int Net_Fake_Join_Dialog() {
       - If we're part of a game, stay in this dialog; otherwise, exit
       ------------------------------------------------------------------*/
       case KN_ESC:
-      case ButtonKey(BUTTON_CANCEL):
+      case ButtonKey(kButtonCancel):
         memset(&GPacket, 0, sizeof(GlobalPacketType));
 
         GPacket.Command = NET_SIGN_OFF;

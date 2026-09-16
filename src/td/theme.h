@@ -41,6 +41,7 @@
 #ifndef CNC_RED_ALERT_TD_THEME_H_
 #define CNC_RED_ALERT_TD_THEME_H_
 
+#include "base/enum_array.h"
 #include "td/defines.h"
 
 class ThemeClass {
@@ -62,16 +63,16 @@ class ThemeClass {
     bool Available;    // Is the score available?
   } ThemeControl;
 
-  static ThemeControl _themes[THEME_COUNT];
+  static base::EnumArray<ThemeType, ThemeControl, kThemeCount> _themes;
 
-  enum { THEME_DELAY = kTimerSecond };
+  static constexpr int kThemeDelay = kTimerSecond;
 
  public:
   ThemeClass();
 
   static ThemeType From_Name(const char* name);
   static int Track_Length(ThemeType theme);
-  static int Max_Themes() { return THEME_COUNT; }
+  static int Max_Themes() { return kThemeCount; }
   [[nodiscard]] static const char* Full_Name(ThemeType theme);
   [[nodiscard]] static const char* Base_Name(ThemeType theme);
   void AI();

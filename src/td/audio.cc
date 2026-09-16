@@ -49,6 +49,7 @@
 #include <cstdlib>
 #include <filesystem>
 
+#include "base/enum_array.h"
 #include "sdllib/ww_audio.h"
 #include "td/defines.h"
 #include "td/externs.h"
@@ -64,240 +65,254 @@
 /***************************************************************************
 **	Controls what special effects may occur on the sound effect.
 */
-typedef enum {
+enum class ContextType {
   IN_NOVAR,  // No variation or alterations allowed.
   IN_JUV,    // Juvenile sound effect alternate option.
   IN_VAR,    // Infantry variance response modification.
-} ContextType;
+};
+using enum ContextType;
 
-static struct {
+struct SoundEffectEntry {
   const char* Name;   // Digitized voice file name.
   int Priority;       // Playback priority of this sample.
   ContextType Where;  // In what game context does this sample exist.
-} SoundEffectName[VOC_COUNT] = {
-
-    /*
-    **	Special voices (typically associated with the commando).
-    */
-    {"BOMBIT1", 20, IN_NOVAR},  //	VOC_RAMBO_PRESENT		"I've
-                                // got a present for	ya"
-    {"CMON1", 20, IN_NOVAR},    //	VOC_RAMBO_CMON			"c'mon"
-    {"GOTIT1", 20,
-     IN_NOVAR},  //	VOC_RAMBO_UGOTIT		"you got it" *
-    {"KEEPEM1", 20,
-     IN_NOVAR},                //	VOC_RAMBO_COMIN		"keep 'em commin'"
-    {"LAUGH1", 20, IN_NOVAR},  //	VOC_RAMBO_LAUGH		"hahaha"
-    {"LEFTY1", 20,
-     IN_NOVAR},  //	VOC_RAMBO_LEFTY		"that was left handed" *
-    {"NOPRBLM1", 20,
-     IN_NOVAR},  //	VOC_RAMBO_NOPROB		"no problem"
-                 //	{"OHSH1",		20, IN_NOVAR},		//
-                 // VOC_RAMBO_OHSH "oh shiiiiii...."
-    {"ONIT1", 20,
-     IN_NOVAR},                  //	VOC_RAMBO_ONIT			"I'm on it"
-    {"RAMYELL1", 20, IN_NOVAR},  //	VOC_RAMBO_YELL "ahhhhhhh"
-    {"ROKROLL1", 20,
-     IN_NOVAR},  //	VOC_RAMBO_ROCK			"time to rock and roll"
-    {"TUFFGUY1", 20,
-     IN_NOVAR},               //	VOC_RAMBO_TUFF			"real tuff guy" *
-    {"YEAH1", 20, IN_NOVAR},  //	VOC_RAMBO_YEA			"yea" *
-    {"YES1", 20, IN_NOVAR},   //	VOC_RAMBO_YES			"yes" *
-    {"YO1", 20, IN_NOVAR},    //	VOC_RAMBO_YO			"yo"
-
-    /*
-    **	Civilian voices (technicians too).
-    */
-    {"GIRLOKAY", 20, IN_NOVAR},  //	VOC_GIRL_OKAY
-    {"GIRLYEAH", 20, IN_NOVAR},  //	VOC_GIRL_YEAH
-    {"GUYOKAY1", 20, IN_NOVAR},  //	VOC_GUY_OKAY
-    {"GUYYEAH1", 20, IN_NOVAR},  //	VOC_GUY_YEAH
-
-    /*
-    **	Infantry and vehicle responses.
-    */
-    {"2DANGR1", 10, IN_VAR},  //	VOC_2DANGER
-                              //"negative, too dangerous"
-    {"ACKNO", 10, IN_VAR},    //	VOC_ACKNOWL			"acknowledged"
-    {"AFFIRM1", 10,
-     IN_VAR},  //	VOC_AFFIRM			"affirmative"
-    {"AWAIT1", 10,
-     IN_VAR},  //	VOC_AWAIT1			"awaiting orders"
-               //	{"BACKUP",		10,	IN_VAR},	//
-               // VOC_BACKUP "send backup"
-               //	{"HELP",			10,	IN_VAR},
-               //// VOC_HELP "send help"
-    {"MOVOUT1", 10,
-     IN_VAR},                 //	VOC_MOVEOUT			"movin' out"
-    {"NEGATV1", 10, IN_VAR},  //	VOC_NEGATIVE		"negative"
-    {"NOPROB", 10, IN_VAR},   // VOC_NO_PROB			"not a problem"
-    {"READY", 10,
-     IN_VAR},  // VOC_READY			"ready and waiting"
-    {"REPORT1", 10,
-     IN_VAR},                 //	VOC_REPORT			"reporting"
-    {"RITWAWA", 10, IN_VAR},  // VOC_RIGHT_AWAY		"right away sir"
-    {"ROGER", 10, IN_VAR},    // VOC_ROGER			"roger"
-                              //	{"SIR1",			10,	IN_VAR},
-                              ////	VOC_SIR1 "sir?"
-                              //	{"SQUAD1",		10,	IN_VAR},
-                              ////	VOC_SQUAD1 "squad reporting"
-                              //	{"TARGET1",		10,	IN_VAR},
-                              ////	VOC_PRACTICE "target practice"
-    {"UGOTIT", 10, IN_VAR},   // VOC_UGOTIT			"you got it"
-    {"UNIT1", 10, IN_VAR},    //	VOC_UNIT1			"unit reporting"
-    {"VEHIC1", 10,
-     IN_VAR},  //	VOC_VEHIC1			"vehicle reporting"
-    {"YESSIR1", 10,
-     IN_VAR},  //	VOC_YESSIR			"yes sir"
-
-    /*
-    **	Sound effects that have a juvenile counterpart.
-    */
-    {"BAZOOK1", 1, IN_JUV},  // VOC_BAZOOKA			Gunfire
-    {"BLEEP2", 1, IN_JUV},   // VOC_BLEEP			Clean metal bing
-    {"BOMB1", 1, IN_JUV},    // VOC_BOMB1			Crunchy parachute bomb
-                             // type explosion
-    {"BUTTON", 1,
-     IN_JUV},  // VOC_BUTTON			Dungeon Master button click
-    {"COMCNTR1", 10,
-     IN_JUV},                  // VOC_RADAR_ON		Elecronic static with beeps
-    {"CONSTRU2", 10, IN_JUV},  // VOC_CONSTRUCTION	construction sounds
-    {"CRUMBLE", 1,
-     IN_JUV},                // VOC_CRUMBLE			muffled crumble sound
-    {"FLAMER2", 4, IN_JUV},  // VOC_FLAMER1			flame thrower
-    {"GUN18", 4, IN_JUV},    // VOC_RIFLE			rifle shot
-    {"GUN19", 4, IN_JUV},    // VOC_M60				machine gun
-                             // burst -- 6 rounds
-    {"GUN20", 4,
-     IN_JUV},  // VOC_GUN20			bat hitting heavy metal door
-    {"GUN5", 4,
-     IN_JUV},                 // VOC_M60A				medium machine gun burst
-    {"GUN8", 4, IN_JUV},      // VOC_MINI				mini gun burst
-    {"GUNCLIP1", 1, IN_JUV},  // VOC_RELOAD			gun clip reload
-    {"HVYDOOR1", 5, IN_JUV},  // VOC_SLAM				metal
-                              // plates slamming together
-    {"HVYGUN10", 1,
-     IN_JUV},             //	VOC_HVYGUN10		loud sharp cannon
-    {"ION1", 1, IN_JUV},  // VOC_ION_CANNON		partical beam
-    {"MGUN11", 1,
-     IN_JUV},              // VOC_MGUN11			alternate tripple burst
-    {"MGUN2", 1, IN_JUV},  // VOC_MGUN2			M-16 tripple burst
-    {"NUKEMISL", 1,
-     IN_JUV},  //	VOC_NUKE_FIRE		long missile sound
-    {"NUKEXPLO", 1,
-     IN_JUV},                 //	VOC_NUKE_EXPLODE	long but not loud explosion
-    {"OBELRAY1", 1, IN_JUV},  //	VOC_LASER			humming
-                              // star wars laser beam
-    {"OBELPOWR", 1,
-     IN_JUV},  // VOC_LASER_POWER	warming-up sound of star wars laser beam
-    {"POWRDN1", 1, IN_JUV},  //	VOC_RADAR_OFF		doom door slide
-    {"RAMGUN2", 1,
-     IN_JUV},                 //	VOC_SNIPER			silenced rifle fire
-    {"ROCKET1", 1, IN_JUV},   //	VOC_ROCKET1			rocket launch
-                              // variation #1
-    {"ROCKET2", 1, IN_JUV},   //	VOC_ROCKET2			rocket launch
-                              // variation #2
-    {"SAMMOTR2", 1, IN_JUV},  // VOC_MOTOR			dentists drill
-    {"SCOLD2", 1, IN_JUV},    // VOC_SCOLD			cannot perform
-                              // action feedback tone
-    {"SIDBAR1C", 1, IN_JUV},  // VOC_SIDEBAR_OPEN	xylophone clink
-    {"SIDBAR2C", 1, IN_JUV},  // VOC_SIDEBAR_CLOSE	xylophone clink
-    {"SQUISH2", 1,
-     IN_JUV},  // VOC_SQUISH2			crushing infantry
-    {"TNKFIRE2", 1,
-     IN_JUV},                 // VOC_TANK1			sharp tank fire with recoil
-    {"TNKFIRE3", 1, IN_JUV},  // VOC_TANK2			sharp tank fire
-    {"TNKFIRE4", 1, IN_JUV},  // VOC_TANK3			sharp tank fire
-    {"TNKFIRE6", 1,
-     IN_JUV},  // VOC_TANK4			big gun tank fire
-    {"TONE15", 0,
-     IN_JUV},  // VOC_UP				credits counting up
-    {"TONE16", 0,
-     IN_JUV},               // VOC_DOWN				credits counting down
-    {"TONE2", 1, IN_JUV},   // VOC_TARGET			target sound
-    {"TONE5", 10, IN_JUV},  // VOC_SONAR			sonar echo
-    {"TOSS", 1, IN_JUV},    // VOC_TOSS				air swish
-    {"TRANS1", 1, IN_JUV},  // VOC_CLOAK			stealth tank
-    {"TREEBRN1", 1,
-     IN_JUV},                 // VOC_BURN				burning crackle
-    {"TURRFIR5", 1, IN_JUV},  // VOC_TURRET			muffled gunfire
-    {"XPLOBIG4", 5,
-     IN_JUV},  //	VOC_XPLOBIG4		very long muffled explosion
-    {"XPLOBIG6", 5,
-     IN_JUV},  //	VOC_XPLOBIG6		very long muffled explosion
-    {"XPLOBIG7", 5,
-     IN_JUV},  //	VOC_XPLOBIG7		very long muffled explosion
-    {"XPLODE", 1,
-     IN_JUV},              // VOC_XPLODE			long soft muffled explosion
-    {"XPLOS", 4, IN_JUV},  // VOC_XPLOS			short crunchy explosion
-    {"XPLOSML2", 5,
-     IN_JUV},  //	VOC_XPLOSML2		muffled mechanical explosion
-
-    /*
-    **	Generic sound effects (no variations).
-    */
-    {"NUYELL1", 10,
-     IN_NOVAR},  // VOC_SCREAM1			short infantry scream
-    {"NUYELL3", 10,
-     IN_NOVAR},  // VOC_SCREAM3			short infantry scream
-    {"NUYELL4", 10,
-     IN_NOVAR},  // VOC_SCREAM4			short infantry scream
-    {"NUYELL5", 10,
-     IN_NOVAR},  // VOC_SCREAM5			short infantry scream
-    {"NUYELL6", 10,
-     IN_NOVAR},  // VOC_SCREAM6			short infantry scream
-    {"NUYELL7", 10,
-     IN_NOVAR},  // VOC_SCREAM7			short infantry scream
-    {"NUYELL10", 10,
-     IN_NOVAR},  // VOC_SCREAM10		short infantry scream
-    {"NUYELL11", 10,
-     IN_NOVAR},  // VOC_SCREAM11		short infantry scream
-    {"NUYELL12", 10,
-     IN_NOVAR},  // VOC_SCREAM12		short infantry scream
-    {"YELL1", 1,
-     IN_NOVAR},  // VOC_YELL1			long infantry scream
-
-    {"MYES1", 10, IN_NOVAR},    // VOC_YES				"Yes?"
-    {"MCOMND1", 10, IN_NOVAR},  // VOC_COMMANDER		"Commander?"
-    {"MHELLO1", 10, IN_NOVAR},  //	VOC_HELLO			"Hello?"
-    {"MHMMM1", 10,
-     IN_NOVAR},  //	VOC_HMMM				"Hmmm?"
-                 //	{"MHASTE1", 	10,	IN_NOVAR},	//
-                 // VOC_PROCEED1 "I will proceed, post haste."
-                 //	{"MONCE1", 		10,	IN_NOVAR},	//
-                 // VOC_PROCEED2 "I will proceed, at once."
-                 //	{"MIMMD1", 		10,	IN_NOVAR},	//
-                 // VOC_PROCEED3 "I will proceed, immediately."
-                 //	{"MPLAN1", 		10,	IN_NOVAR},	//
-                 // VOC_EXCELLENT1 "That is an excellent plan."
-                 //	{"MPLAN2", 		10,	IN_NOVAR},	//
-                 // VOC_EXCELLENT2 "Yes, that is an excellent plan."
-    {"MPLAN3", 10,
-     IN_NOVAR},  //	VOC_EXCELLENT3		"A wonderful plan."
-                 //	{"MACTION1", 	10,	IN_NOVAR},	//
-                 // VOC_EXCELLENT4 "Astounding plan of action commander."
-                 //	{"MREMARK1", 	10,	IN_NOVAR},	//
-                 // VOC_EXCELLENT5 "Remarkable contrivance."
-    {"MCOURSE1", 10, IN_NOVAR},  // VOC_OF_COURSE		"Of course."
-    {"MYESYES1", 10, IN_NOVAR},  // VOC_YESYES			"Yes yes yes."
-    {"MTIBER1", 10,
-     IN_NOVAR},  //	VOC_QUIP1			"Mind the Tiberium."
-                 //	{"MMG1", 		10,	IN_NOVAR},	//
-                 // VOC_QUIP2 "A most remarkable  Metasequoia Glyptostroboides."
-    {"MTHANKS1", 10,
-     IN_NOVAR},  //	VOC_THANKS			"Thank you."
-
-    {"CASHTURN", 1,
-     IN_NOVAR},                //	VOC_CASHTURN		Sound of money being piled up.
-    {"BLEEP2", 10, IN_NOVAR},  //	VOC_BLEEPY3			Clean
-                               // computer bleep sound.
-    {"DINOMOUT", 10,
-     IN_NOVAR},  //	VOC_DINOMOUT		Movin' out in dino-speak.
-    {"DINOYES", 10,
-     IN_NOVAR},  //	VOC_DINOYES			Yes Sir in dino-speak.
-    {"DINOATK1", 10,
-     IN_NOVAR},                  //	VOC_DINOATK1		Dino attack sound.
-    {"DINODIE1", 10, IN_NOVAR},  //	VOC_DINODIE1		Dino die sound.
 };
+static base::EnumArray<VocType, SoundEffectEntry, kVocCount> SoundEffectName = {
+    {
+
+        /*
+        **	Special voices (typically associated with the commando).
+        */
+        {"BOMBIT1", 20, IN_NOVAR},  //	VOC_RAMBO_PRESENT		"I've
+                                    // got a present for	ya"
+        {"CMON1", 20, IN_NOVAR},    //	VOC_RAMBO_CMON			"c'mon"
+        {"GOTIT1", 20,
+         IN_NOVAR},  //	VOC_RAMBO_UGOTIT		"you got it" *
+        {"KEEPEM1", 20,
+         IN_NOVAR},                //	VOC_RAMBO_COMIN		"keep 'em commin'"
+        {"LAUGH1", 20, IN_NOVAR},  //	VOC_RAMBO_LAUGH		"hahaha"
+        {"LEFTY1", 20,
+         IN_NOVAR},  //	VOC_RAMBO_LEFTY		"that was left handed" *
+        {"NOPRBLM1", 20,
+         IN_NOVAR},  //	VOC_RAMBO_NOPROB		"no problem"
+                     //	{"OHSH1",		20, IN_NOVAR},		//
+                     // VOC_RAMBO_OHSH "oh shiiiiii...."
+        {"ONIT1", 20,
+         IN_NOVAR},                  //	VOC_RAMBO_ONIT			"I'm on it"
+        {"RAMYELL1", 20, IN_NOVAR},  //	VOC_RAMBO_YELL "ahhhhhhh"
+        {"ROKROLL1", 20,
+         IN_NOVAR},  //	VOC_RAMBO_ROCK			"time to rock and roll"
+        {"TUFFGUY1", 20,
+         IN_NOVAR},               //	VOC_RAMBO_TUFF			"real tuff guy" *
+        {"YEAH1", 20, IN_NOVAR},  //	VOC_RAMBO_YEA			"yea" *
+        {"YES1", 20, IN_NOVAR},   //	VOC_RAMBO_YES			"yes" *
+        {"YO1", 20, IN_NOVAR},    //	VOC_RAMBO_YO			"yo"
+
+        /*
+        **	Civilian voices (technicians too).
+        */
+        {"GIRLOKAY", 20, IN_NOVAR},  //	VOC_GIRL_OKAY
+        {"GIRLYEAH", 20, IN_NOVAR},  //	VOC_GIRL_YEAH
+        {"GUYOKAY1", 20, IN_NOVAR},  //	VOC_GUY_OKAY
+        {"GUYYEAH1", 20, IN_NOVAR},  //	VOC_GUY_YEAH
+
+        /*
+        **	Infantry and vehicle responses.
+        */
+        {"2DANGR1", 10, IN_VAR},  //	VOC_2DANGER
+                                  //"negative, too dangerous"
+        {"ACKNO", 10,
+         IN_VAR},  //	VOC_ACKNOWL			"acknowledged"
+        {"AFFIRM1", 10,
+         IN_VAR},  //	VOC_AFFIRM			"affirmative"
+        {"AWAIT1", 10,
+         IN_VAR},  //	VOC_AWAIT1			"awaiting orders"
+                   //	{"BACKUP",		10,	IN_VAR},	//
+                   // VOC_BACKUP "send backup"
+                   //	{"HELP",			10,	IN_VAR},
+                   //// VOC_HELP "send help"
+        {"MOVOUT1", 10,
+         IN_VAR},                 //	VOC_MOVEOUT			"movin' out"
+        {"NEGATV1", 10, IN_VAR},  //	VOC_NEGATIVE		"negative"
+        {"NOPROB", 10, IN_VAR},   // VOC_NO_PROB			"not a problem"
+        {"READY", 10,
+         IN_VAR},  // VOC_READY			"ready and waiting"
+        {"REPORT1", 10,
+         IN_VAR},                 //	VOC_REPORT			"reporting"
+        {"RITWAWA", 10, IN_VAR},  // VOC_RIGHT_AWAY		"right away sir"
+        {"ROGER", 10,
+         IN_VAR},                // VOC_ROGER			"roger"
+                                 //	{"SIR1",			10,	IN_VAR},
+                                 ////	VOC_SIR1 "sir?"
+                                 //	{"SQUAD1",		10,	IN_VAR},
+                                 ////	VOC_SQUAD1 "squad reporting"
+                                 //	{"TARGET1",		10,	IN_VAR},
+                                 ////	VOC_PRACTICE "target practice"
+        {"UGOTIT", 10, IN_VAR},  // VOC_UGOTIT			"you got it"
+        {"UNIT1", 10,
+         IN_VAR},  //	VOC_UNIT1			"unit reporting"
+        {"VEHIC1", 10,
+         IN_VAR},  //	VOC_VEHIC1			"vehicle reporting"
+        {"YESSIR1", 10,
+         IN_VAR},  //	VOC_YESSIR			"yes sir"
+
+        /*
+        **	Sound effects that have a juvenile counterpart.
+        */
+        {"BAZOOK1", 1, IN_JUV},  // VOC_BAZOOKA			Gunfire
+        {"BLEEP2", 1, IN_JUV},   // VOC_BLEEP			Clean metal bing
+        {"BOMB1", 1, IN_JUV},    // VOC_BOMB1			Crunchy
+                                 // parachute bomb type explosion
+        {"BUTTON", 1, IN_JUV},   // VOC_BUTTON			Dungeon Master
+                                 // button click
+        {"COMCNTR1", 10,
+         IN_JUV},                  // VOC_RADAR_ON		Elecronic static with beeps
+        {"CONSTRU2", 10, IN_JUV},  // VOC_CONSTRUCTION	construction sounds
+        {"CRUMBLE", 1,
+         IN_JUV},                // VOC_CRUMBLE			muffled crumble sound
+        {"FLAMER2", 4, IN_JUV},  // VOC_FLAMER1			flame thrower
+        {"GUN18", 4, IN_JUV},    // VOC_RIFLE			rifle shot
+        {"GUN19", 4, IN_JUV},    // VOC_M60				machine
+                                 // gun burst -- 6 rounds
+        {"GUN20", 4,
+         IN_JUV},  // VOC_GUN20			bat hitting heavy metal door
+        {"GUN5", 4,
+         IN_JUV},  // VOC_M60A				medium machine gun burst
+        {"GUN8", 4,
+         IN_JUV},                 // VOC_MINI				mini gun burst
+        {"GUNCLIP1", 1, IN_JUV},  // VOC_RELOAD			gun clip reload
+        {"HVYDOOR1", 5, IN_JUV},  // VOC_SLAM				metal
+                                  // plates slamming together
+        {"HVYGUN10", 1,
+         IN_JUV},             //	VOC_HVYGUN10		loud sharp cannon
+        {"ION1", 1, IN_JUV},  // VOC_ION_CANNON		partical beam
+        {"MGUN11", 1,
+         IN_JUV},  // VOC_MGUN11			alternate tripple burst
+        {"MGUN2", 1,
+         IN_JUV},  // VOC_MGUN2			M-16 tripple burst
+        {"NUKEMISL", 1,
+         IN_JUV},  //	VOC_NUKE_FIRE		long missile sound
+        {"NUKEXPLO", 1,
+         IN_JUV},  //	VOC_NUKE_EXPLODE	long but not loud explosion
+        {"OBELRAY1", 1, IN_JUV},  //	VOC_LASER			humming
+                                  // star wars laser beam
+        {"OBELPOWR", 1,
+         IN_JUV},  // VOC_LASER_POWER	warming-up sound of star wars laser beam
+        {"POWRDN1", 1, IN_JUV},  //	VOC_RADAR_OFF		doom door slide
+        {"RAMGUN2", 1,
+         IN_JUV},  //	VOC_SNIPER			silenced rifle fire
+        {"ROCKET1", 1,
+         IN_JUV},  //	VOC_ROCKET1			rocket launch
+                   // variation #1
+        {"ROCKET2", 1,
+         IN_JUV},                 //	VOC_ROCKET2			rocket launch
+                                  // variation #2
+        {"SAMMOTR2", 1, IN_JUV},  // VOC_MOTOR			dentists drill
+        {"SCOLD2", 1, IN_JUV},    // VOC_SCOLD			cannot perform
+                                  // action feedback tone
+        {"SIDBAR1C", 1, IN_JUV},  // VOC_SIDEBAR_OPEN	xylophone clink
+        {"SIDBAR2C", 1, IN_JUV},  // VOC_SIDEBAR_CLOSE	xylophone clink
+        {"SQUISH2", 1,
+         IN_JUV},  // VOC_SQUISH2			crushing infantry
+        {"TNKFIRE2", 1,
+         IN_JUV},                 // VOC_TANK1			sharp tank fire with recoil
+        {"TNKFIRE3", 1, IN_JUV},  // VOC_TANK2			sharp tank fire
+        {"TNKFIRE4", 1, IN_JUV},  // VOC_TANK3			sharp tank fire
+        {"TNKFIRE6", 1,
+         IN_JUV},  // VOC_TANK4			big gun tank fire
+        {"TONE15", 0,
+         IN_JUV},  // VOC_UP				credits counting up
+        {"TONE16", 0,
+         IN_JUV},               // VOC_DOWN				credits counting down
+        {"TONE2", 1, IN_JUV},   // VOC_TARGET			target sound
+        {"TONE5", 10, IN_JUV},  // VOC_SONAR			sonar echo
+        {"TOSS", 1,
+         IN_JUV},               // VOC_TOSS				air swish
+        {"TRANS1", 1, IN_JUV},  // VOC_CLOAK			stealth tank
+        {"TREEBRN1", 1,
+         IN_JUV},                 // VOC_BURN				burning crackle
+        {"TURRFIR5", 1, IN_JUV},  // VOC_TURRET			muffled gunfire
+        {"XPLOBIG4", 5,
+         IN_JUV},  //	VOC_XPLOBIG4		very long muffled explosion
+        {"XPLOBIG6", 5,
+         IN_JUV},  //	VOC_XPLOBIG6		very long muffled explosion
+        {"XPLOBIG7", 5,
+         IN_JUV},               //	VOC_XPLOBIG7		very long muffled explosion
+        {"XPLODE", 1, IN_JUV},  // VOC_XPLODE			long soft
+                                // muffled explosion
+        {"XPLOS", 4,
+         IN_JUV},  // VOC_XPLOS			short crunchy explosion
+        {"XPLOSML2", 5,
+         IN_JUV},  //	VOC_XPLOSML2		muffled mechanical explosion
+
+        /*
+        **	Generic sound effects (no variations).
+        */
+        {"NUYELL1", 10,
+         IN_NOVAR},  // VOC_SCREAM1			short infantry scream
+        {"NUYELL3", 10,
+         IN_NOVAR},  // VOC_SCREAM3			short infantry scream
+        {"NUYELL4", 10,
+         IN_NOVAR},  // VOC_SCREAM4			short infantry scream
+        {"NUYELL5", 10,
+         IN_NOVAR},  // VOC_SCREAM5			short infantry scream
+        {"NUYELL6", 10,
+         IN_NOVAR},  // VOC_SCREAM6			short infantry scream
+        {"NUYELL7", 10,
+         IN_NOVAR},  // VOC_SCREAM7			short infantry scream
+        {"NUYELL10", 10,
+         IN_NOVAR},  // VOC_SCREAM10		short infantry scream
+        {"NUYELL11", 10,
+         IN_NOVAR},  // VOC_SCREAM11		short infantry scream
+        {"NUYELL12", 10,
+         IN_NOVAR},  // VOC_SCREAM12		short infantry scream
+        {"YELL1", 1,
+         IN_NOVAR},  // VOC_YELL1			long infantry scream
+
+        {"MYES1", 10, IN_NOVAR},    // VOC_YES				"Yes?"
+        {"MCOMND1", 10, IN_NOVAR},  // VOC_COMMANDER		"Commander?"
+        {"MHELLO1", 10, IN_NOVAR},  //	VOC_HELLO			"Hello?"
+        {"MHMMM1", 10,
+         IN_NOVAR},  //	VOC_HMMM				"Hmmm?"
+                     //	{"MHASTE1", 	10,	IN_NOVAR},	//
+                     // VOC_PROCEED1 "I will proceed, post haste."
+                     //	{"MONCE1", 		10,	IN_NOVAR},	//
+                     // VOC_PROCEED2 "I will proceed, at once."
+                     //	{"MIMMD1", 		10,	IN_NOVAR},	//
+                     // VOC_PROCEED3 "I will proceed, immediately."
+                     //	{"MPLAN1", 		10,	IN_NOVAR},	//
+                     // VOC_EXCELLENT1 "That is an excellent plan."
+                     //	{"MPLAN2", 		10,	IN_NOVAR},	//
+                     // VOC_EXCELLENT2 "Yes, that is an excellent plan."
+        {"MPLAN3", 10,
+         IN_NOVAR},  //	VOC_EXCELLENT3		"A wonderful plan."
+                     //	{"MACTION1", 	10,	IN_NOVAR},	//
+                     // VOC_EXCELLENT4 "Astounding plan of action commander."
+                     //	{"MREMARK1", 	10,	IN_NOVAR},	//
+                     // VOC_EXCELLENT5 "Remarkable contrivance."
+        {"MCOURSE1", 10, IN_NOVAR},  // VOC_OF_COURSE		"Of course."
+        {"MYESYES1", 10,
+         IN_NOVAR},  // VOC_YESYES			"Yes yes yes."
+        {"MTIBER1", 10,
+         IN_NOVAR},  //	VOC_QUIP1			"Mind the Tiberium."
+                     //	{"MMG1", 		10,	IN_NOVAR},	//
+                     // VOC_QUIP2 "A most remarkable  Metasequoia
+                     // Glyptostroboides."
+        {"MTHANKS1", 10,
+         IN_NOVAR},  //	VOC_THANKS			"Thank you."
+
+        {"CASHTURN", 1,
+         IN_NOVAR},  //	VOC_CASHTURN		Sound of money being piled up.
+        {"BLEEP2", 10, IN_NOVAR},  //	VOC_BLEEPY3			Clean
+                                   // computer bleep sound.
+        {"DINOMOUT", 10,
+         IN_NOVAR},  //	VOC_DINOMOUT		Movin' out in dino-speak.
+        {"DINOYES", 10,
+         IN_NOVAR},  //	VOC_DINOYES			Yes Sir in dino-speak.
+        {"DINOATK1", 10,
+         IN_NOVAR},                  //	VOC_DINOATK1		Dino attack sound.
+        {"DINODIE1", 10, IN_NOVAR},  //	VOC_DINODIE1		Dino die sound.
+    }};
 
 /***********************************************************************************************
  * Sound_Effect -- Plays a sound effect in the tactical map. *
@@ -423,9 +438,10 @@ int Sound_Effect(VocType voc, VolType volume, int variation,
   **	If the sound data pointer is not null, then presume that it is valid.
   */
   if (ptr) {
+    const int vol = static_cast<int>(volume);
     return Play_Sample(ptr,
-                       Fixed_To_Cardinal(SoundEffectName[voc].Priority, volume),
-                       volume, pan_value);
+                       Fixed_To_Cardinal(SoundEffectName[voc].Priority, vol),
+                       vol, pan_value);
   }
   return -1;
 }
@@ -433,7 +449,7 @@ int Sound_Effect(VocType voc, VolType volume, int variation,
 /*
 **	This elaborates all the EVA speech voices.
 */
-static const char* Speech[VOX_COUNT] = {
+static const base::EnumArray<VoxType, const char*, kVoxCount> Speech = {
     "ACCOM1",    //	mission accomplished
     "FAIL1",     //	your mission has failed
     "BLDG1",     //	unable to comply, building in progress
@@ -549,7 +565,7 @@ static VoxType CurrentVoice = VOX_NONE;
  * HISTORY: * 11/12/1994 JLB : Created. *
  *=============================================================================================*/
 void Speak(VoxType voice) {
-  if (Options.Volume && SampleType != 0 && voice != VOX_NONE &&
+  if (Options.Volume && SampleType != SAMPLE_NONE && voice != VOX_NONE &&
       voice != SpeakQueue && voice != CurrentVoice && SpeakQueue == VOX_NONE) {
     SpeakQueue = voice;
   }
@@ -572,7 +588,7 @@ void Speak(VoxType voice) {
  *=============================================================================================*/
 void Speak_AI() {
   static VoxType _last = VOX_NONE;
-  if (SampleType == 0) {
+  if (SampleType == SAMPLE_NONE) {
     return;
   }
 
@@ -613,7 +629,7 @@ void Speak_AI() {
  *=============================================================================================*/
 void Stop_Speaking() {
   SpeakQueue = VOX_NONE;
-  if (SampleType != 0) {
+  if (SampleType != SAMPLE_NONE) {
     Stop_Sample_Playing(SpeechBuffer);
   }
 }
@@ -635,6 +651,6 @@ void Stop_Speaking() {
  *=============================================================================================*/
 bool Is_Speaking() {
   Speak_AI();
-  return SampleType != 0 &&
+  return SampleType != SAMPLE_NONE &&
          (SpeakQueue != VOX_NONE || Is_Sample_Playing(SpeechBuffer));
 }

@@ -98,13 +98,13 @@ TEST(TdCheckListClassTest, CheckItemWritesTheGlyphIntoTheOwnedText) {
 
   list.Check_Item(0, 1);
   EXPECT_TRUE(list.Is_Checked(0));
-  EXPECT_EQ(list.Get_Item(0)[0], CheckListClass::CHECK_CHAR);
+  EXPECT_EQ(list.Get_Item(0)[0], CheckListClass::kCheckChar);
   EXPECT_STREQ(list.Get_Item(0) + 1, "trigger");
   EXPECT_EQ(source, " trigger");
 
   list.Check_Item(0, 0);
   EXPECT_FALSE(list.Is_Checked(0));
-  EXPECT_EQ(list.Get_Item(0)[0], CheckListClass::UNCHECK_CHAR);
+  EXPECT_EQ(list.Get_Item(0)[0], CheckListClass::kUncheckChar);
 
   list.Check_Item(3, 1);
   EXPECT_FALSE(list.Is_Checked(3));

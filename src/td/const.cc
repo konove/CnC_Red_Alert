@@ -40,11 +40,12 @@
 
 #include "td/const.h"
 
+#include "base/enum_array.h"
 #include "sdllib/wwstd.h"
 #include "td/defines.h"
 #include "td/type.h"
 
-const char* SourceName[SOURCE_COUNT] = {
+const base::EnumArray<SourceType, const char*, kSourceCount> SourceName = {
     "North", "East",    "South",     "West",     "Shipping", "Beach",
     "Air",   "Visible", "EnemyBase", "HomeBase", "Ocean",
 };
@@ -67,7 +68,7 @@ const COORDINATE StoppingCoordAbs[5] = {
 **
 **	bullet type				dmg,	rof,	range,	sound
 */
-const WeaponTypeClass Weapons[WEAPON_COUNT] = {
+const base::EnumArray<WeaponType, WeaponTypeClass, kWeaponCount> Weapons = {{
     {BULLET_SNIPER, 125, 40, 0x0580, VOC_SNIPER,
      ANIM_NONE},  //	WEAPON_RIFLE
     {BULLET_SPREADFIRE, 25, 50, 0x0400, VOC_MINI,
@@ -107,7 +108,7 @@ const WeaponTypeClass Weapons[WEAPON_COUNT] = {
      ANIM_NONE},  //	WEAPON_HONEST_JOHN
     {BULLET_HEADBUTT, 100, 30, 0x0180, VOC_DINOATK1, ANIM_NONE},  // WEAPON_STEG
     {BULLET_TREXBITE, 155, 30, 0x0180, VOC_DINOATK1, ANIM_NONE},  // WEAPON_TREX
-};
+}};
 
 /***************************************************************************
 **	These are the various warheads.
@@ -116,71 +117,83 @@ const WeaponTypeClass Weapons[WEAPON_COUNT] = {
 *defense table}
 **           -vs- {none, wood, aluminum, steel, concrete}
 */
-const WarheadTypeClass Warheads[WARHEAD_COUNT] = {
-    {2,
-     false,
-     false,
-     false,
-     {0xFF, 0x80, 0x90, 0x40, 0x40}},  //	WARHEAD_SA
-                                       // Small arms -- good against infantry.
-    {6,
-     true,
-     true,
-     true,
-     {0xE0, 0xC0, 0x90, 0x40,
-      0xFF}},  //	WARHEAD_HE					High
-               // explosive -- good against buildings & infantry.
-    {6,
-     true,
-     true,
-     false,
-     {0x40, 0xC0, 0xC0, 0xFF, 0x80}},  //	WARHEAD_AP
-                                       // Armor piercing -- good against armor.
-    {8,
-     false,
-     true,
-     true,
-     {0xE0, 0xFF, 0xB0, 0x40, 0x80}},  //	WARHEAD_FIRE
-                                       // Incendiary -- Good against flammables.
-    {4,
-     false,
-     false,
-     false,
-     {0xFF, 0xFF, 0xFF, 0xFF,
-      0xFF}},  //	WARHEAD_LASER				Light
-               // Amplification of Stimulated Emission by Radiation.
-    {7,
-     true,
-     true,
-     true,
-     {0xFF, 0xFF, 0xC0, 0xC0, 0xC0}},  //	WARHEAD_PB
-                                       // Particle beam (neutron beam).
-    {4,
-     false,
-     false,
-     false,
-     {0xFF, 0x20, 0x20, 0x10, 0x10}},  //	WARHEAD_FIST
-                                       // Punching in hand-to-hand combat.
-    {4,
-     false,
-     false,
-     false,
-     {0xFF, 0x20, 0x20, 0x10, 0x10}},  //	WARHEAD_FOOT
-                                       // Kicking in hand-to-hand combat.
-    {4,
-     false,
-     false,
-     false,
-     {0xFF, 0x08, 0x08, 0x08,
-      0x08}},  //	WARHEAD_HOLLOW_POINT		Sniper bullet type.
-    {255,
-     false,
-     false,
-     false,
-     {0xFF, 0x01, 0x01, 0x01, 0x01}},                        //	WARHEAD_SPORE
-    {1, true, true, false, {0xFF, 0xC0, 0x80, 0x20, 0x08}},  //	WARHEAD_HEADBUTT
-    {1, true, true, false, {0xFF, 0xC0, 0x80, 0x20, 0x08}},  //	WARHEAD_FEEDME
-};
+const base::EnumArray<WarheadType, WarheadTypeClass, kWarheadCount> Warheads = {
+    {
+        {2,
+         false,
+         false,
+         false,
+         {0xFF, 0x80, 0x90, 0x40,
+          0x40}},  //	WARHEAD_SA
+                   // Small arms -- good against infantry.
+        {6,
+         true,
+         true,
+         true,
+         {0xE0, 0xC0, 0x90, 0x40,
+          0xFF}},  //	WARHEAD_HE					High
+                   // explosive -- good against buildings & infantry.
+        {6,
+         true,
+         true,
+         false,
+         {0x40, 0xC0, 0xC0, 0xFF,
+          0x80}},  //	WARHEAD_AP
+                   // Armor piercing -- good against armor.
+        {8,
+         false,
+         true,
+         true,
+         {0xE0, 0xFF, 0xB0, 0x40,
+          0x80}},  //	WARHEAD_FIRE
+                   // Incendiary -- Good against flammables.
+        {4,
+         false,
+         false,
+         false,
+         {0xFF, 0xFF, 0xFF, 0xFF,
+          0xFF}},  //	WARHEAD_LASER				Light
+                   // Amplification of Stimulated Emission by Radiation.
+        {7,
+         true,
+         true,
+         true,
+         {0xFF, 0xFF, 0xC0, 0xC0, 0xC0}},  //	WARHEAD_PB
+                                           // Particle beam (neutron beam).
+        {4,
+         false,
+         false,
+         false,
+         {0xFF, 0x20, 0x20, 0x10, 0x10}},  //	WARHEAD_FIST
+                                           // Punching in hand-to-hand combat.
+        {4,
+         false,
+         false,
+         false,
+         {0xFF, 0x20, 0x20, 0x10, 0x10}},  //	WARHEAD_FOOT
+                                           // Kicking in hand-to-hand combat.
+        {4,
+         false,
+         false,
+         false,
+         {0xFF, 0x08, 0x08, 0x08,
+          0x08}},  //	WARHEAD_HOLLOW_POINT		Sniper bullet type.
+        {255,
+         false,
+         false,
+         false,
+         {0xFF, 0x01, 0x01, 0x01, 0x01}},  //	WARHEAD_SPORE
+        {1,
+         true,
+         true,
+         false,
+         {0xFF, 0xC0, 0x80, 0x20, 0x08}},  //	WARHEAD_HEADBUTT
+        {1,
+         true,
+         true,
+         false,
+         {0xFF, 0xC0, 0x80, 0x20, 0x08}},  //	WARHEAD_FEEDME
+    }};
 
 /***************************************************************************
 **	Converts pixel values (cell relative) into the appropriate lepton (sub
@@ -196,7 +209,7 @@ const unsigned char Pixel2Lepton[24] = {
 **	offset that, when added to another cell, will achieve the adjacent cell
 **	in the indexed direction.
 */
-const CELL AdjacentCell[FACING_COUNT] = {
+const base::EnumArray<FacingType, CELL, kFacingCount> AdjacentCell = {
     -MAP_CELL_W,        // North
     -(MAP_CELL_W - 1),  // North East
     1,                  // East
@@ -207,7 +220,7 @@ const CELL AdjacentCell[FACING_COUNT] = {
     -(MAP_CELL_W + 1)   // North West
 };
 
-const COORDINATE AdjacentCoord[FACING_COUNT] = {
+const base::EnumArray<FacingType, COORDINATE, kFacingCount> AdjacentCoord = {
     0xFF000000L, 0xFF000100L, 0x00000100L, 0x01000100L,
     0x01000000L, 0x0100FF00L, 0x0000FF00L, 0xFF00FF00L};
 
@@ -295,7 +308,7 @@ const unsigned char Facing32[256] = {
 #define S4 0xA0
 #define S5 0xC0
 #define S6 0xFF
-GroundType Ground[LAND_COUNT] = {
+base::EnumArray<LandType, GroundType, kLandCount> Ground = {{
     //						Foot
     //						|		Tracked
     //						|		|
@@ -308,23 +321,23 @@ GroundType Ground[LAND_COUNT] = {
     // Hover
     //						|		| | | | |
     // float  build
-    {66, {S3, S3, S3, S4, S6, S5, S1}, true},     // LAND_CLEAR
-    {68, {S5, S4, S4, S4, S6, S5, S1}, true},     // LAND_ROAD
-    {BLUE, {S1, S1, S1, S1, S6, S5, S6}, false},  // LAND_WATER
-    {GREY, {S1, S1, S1, S1, S6, S1, S1}, false},  // LAND_ROCK
-    {GREY, {S1, S1, S1, S1, S6, S1, S1}, false},  // LAND_WALL
-    {143, {S3, S3, S3, S4, S6, S5, S1}, false},   // LAND_TIBERIUM
-    {66, {S3, S3, S3, S4, S6, S5, S1}, false},    // LAND_BEACH
-};
+    {66, {S3, S3, S3, S4, S6, S5, S1}, true},      // LAND_CLEAR
+    {68, {S5, S4, S4, S4, S6, S5, S1}, true},      // LAND_ROAD
+    {kBlue, {S1, S1, S1, S1, S6, S5, S6}, false},  // LAND_WATER
+    {kGrey, {S1, S1, S1, S1, S6, S1, S1}, false},  // LAND_ROCK
+    {kGrey, {S1, S1, S1, S1, S6, S1, S1}, false},  // LAND_WALL
+    {143, {S3, S3, S3, S4, S6, S5, S1}, false},    // LAND_TIBERIUM
+    {66, {S3, S3, S3, S4, S6, S5, S1}, false},     // LAND_BEACH
+}};
 
 /***************************************************************************
 **	These are the names of the theaters.
 */
-const TheaterDataType Theaters[THEATER_COUNT] = {
-    {"DESERT", "DESERT", "DES"},
-    {"JUNGLE", "JUNGLE", "JUN"},
-    {"TEMPERATE", "TEMPERAT", "TEM"},
-    {"WINTER", "WINTER", "WIN"}};
+const base::EnumArray<TheaterType, TheaterDataType, kTheaterCount> Theaters = {
+    {{"DESERT", "DESERT", "DES"},
+     {"JUNGLE", "JUNGLE", "JUN"},
+     {"TEMPERATE", "TEMPERAT", "TEM"},
+     {"WINTER", "WINTER", "WIN"}}};
 
 /***************************************************************************
 ** These are the remap tables that are used to convert the units/buildings

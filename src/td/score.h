@@ -153,10 +153,10 @@ class ScorePrintClass : public ScoreAnimClass {
   void Update() override;
   ScorePrintClass(const void* string, int xpos, int ypos,
                   const void* palette ABSL_ATTRIBUTE_LIFETIME_BOUND,
-                  int background = TBLACK);
+                  int background = kTBlack);
   ScorePrintClass(int string, int xpos, int ypos,
                   const void* palette ABSL_ATTRIBUTE_LIFETIME_BOUND,
-                  int background = TBLACK);
+                  int background = kTBlack);
   ~ScorePrintClass() override = default;
   ScorePrintClass(const ScorePrintClass&) = delete;
   ScorePrintClass& operator=(const ScorePrintClass&) = delete;
@@ -171,10 +171,10 @@ class MultiStagePrintClass : public ScoreAnimClass {
   void Update() override;
   MultiStagePrintClass(const void* string, int xpos, int ypos,
                        const void* palette ABSL_ATTRIBUTE_LIFETIME_BOUND,
-                       int background = TBLACK);
+                       int background = kTBlack);
   MultiStagePrintClass(int string, int xpos, int ypos,
                        const void* palette ABSL_ATTRIBUTE_LIFETIME_BOUND,
-                       int background = TBLACK);
+                       int background = kTBlack);
   ~MultiStagePrintClass() override = default;
   MultiStagePrintClass(const MultiStagePrintClass&) = delete;
   MultiStagePrintClass& operator=(const MultiStagePrintClass&) = delete;

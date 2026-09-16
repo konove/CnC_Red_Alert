@@ -47,6 +47,7 @@
 
 #include "td/textbtn.h"
 
+#include "base/numeric.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
 #include "sdllib/gbuffer.h"
@@ -89,7 +90,7 @@ TextButtonClass::TextButtonClass(unsigned id, const char* text,
       String(text),
       PrintFlags(style) {
   if (w == -1 || h == -1) {
-    Fancy_Text_Print(TXT_NONE, 0, 0, TBLACK, TBLACK, PrintFlags);
+    Fancy_Text_Print(TXT_NONE, 0, 0, kTBlack, kTBlack, PrintFlags);
     if (w == -1) {
       Width = String_Pixel_Width(String) + 8;
       //			if (SeenBuff.Get_Width() != 320) Width *= 2;
@@ -160,7 +161,7 @@ TextButtonClass::TextButtonClass(unsigned id, int text, TextPrintType style,
   Set_Text(text);
 
   if (w == -1 || h == -1) {
-    Fancy_Text_Print(TXT_NONE, 0, 0, TBLACK, TBLACK, PrintFlags);
+    Fancy_Text_Print(TXT_NONE, 0, 0, kTBlack, kTBlack, PrintFlags);
     if (w == -1) {
       Width = String_Pixel_Width(String) + 8;
       //			if (SeenBuff.Get_Width() != 320) Width *= 2;
@@ -236,7 +237,7 @@ void TextButtonClass::Set_Text(const char* text, bool resize) {
   String = text;
   Flag_To_Redraw();
   if (resize && String) {
-    Fancy_Text_Print(TXT_NONE, 0, 0, TBLACK, TBLACK, PrintFlags);
+    Fancy_Text_Print(TXT_NONE, 0, 0, kTBlack, kTBlack, PrintFlags);
     Width = String_Pixel_Width(String) + 8;
     Height = FontHeight + FontYSpacing + 2;
   }
@@ -287,7 +288,7 @@ void TextButtonClass::Draw_Background() {
   **	Draw a border if selected style.
   */
   if (IsBlackBorder) {
-    LogicPage->Draw_Rect(X - 1, Y - 1, X + Width + 2, Y + Height + 2, BLACK);
+    LogicPage->Draw_Rect(X - 1, Y - 1, X + Width + 2, Y + Height + 2, kBlack);
   }
 
   /*
@@ -295,7 +296,7 @@ void TextButtonClass::Draw_Background() {
   */
   const BoxStyleEnum style = [this] {
     // if (FontPtr == GradFont6Ptr) {
-    if (PrintFlags & TPF_6PT_GRAD) {
+    if (base::Any(PrintFlags & TPF_6PT_GRAD)) {
       if (IsDisabled) {
         return BOXSTYLE_GREEN_DIS_RAISED;
       }
@@ -332,8 +333,8 @@ void TextButtonClass::Draw_Text(const char* text) {
   if (String) {
     int color = 0;
     // if (FontPtr == GradFont6Ptr) {
-    if (PrintFlags & TPF_6PT_GRAD) {
-      color = CC_GREEN;
+    if (base::Any(PrintFlags & TPF_6PT_GRAD)) {
+      color = kCcGreen;
 
       const TextPrintType flags = [this] {
         if (IsDisabled) {
@@ -343,26 +344,26 @@ void TextButtonClass::Draw_Text(const char* text) {
                                  : TPF_USE_GRAD_PAL | TPF_MEDIUM_COLOR;
       }();
 
-      Fancy_Text_Print(text, X + (Width / 2) - 1, Y + 1, color, TBLACK,
+      Fancy_Text_Print(text, X + (Width / 2) - 1, Y + 1, color, kTBlack,
                        PrintFlags | flags | TPF_CENTER);
     } else {
       if (IsDisabled) {
         //				color = DKGREY;
-        color = LTGREY;
+        color = kLtGrey;
       } else {
         if (IsPressed) {
-          if (PrintFlags & TPF_NOSHADOW) {
-            color = GREY;
+          if (base::Any(PrintFlags & TPF_NOSHADOW)) {
+            color = kGrey;
           } else {
-            color = LTGREY;
+            color = kLtGrey;
           }
         } else {
-          color = WHITE;
+          color = kWhite;
         }
       }
 
-      Fancy_Text_Print(text, X + (Width / 2) - 1, Y + 1, IsOn ? RED : color,
-                       TBLACK, PrintFlags | TPF_CENTER);
+      Fancy_Text_Print(text, X + (Width / 2) - 1, Y + 1, IsOn ? kRed : color,
+                       kTBlack, PrintFlags | TPF_CENTER);
     }
   }
 }

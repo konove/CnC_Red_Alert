@@ -118,6 +118,7 @@
 #include <utility>
 
 #include "absl/log/check.h"
+#include "base/enum_array.h"
 #include "base/numeric.h"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
@@ -399,7 +400,7 @@ HouseClass::HouseClass(HousesType house)
   CreditsSpent = 0;
   CurBuildings = 0;
   CurUnits = 0;
-  DamageTime = DAMAGE_DELAY;
+  DamageTime = kDamageDelay;
   Drain = 0;
   Edge = SOURCE_NORTH;
   FlagHome = 0;
@@ -449,7 +450,7 @@ HouseClass::HouseClass(HousesType house)
   SpeakPowerDelay = 1;
   SpecialFactories = 0;
   SpecialFactory = -1;
-  TeamTime = TEAM_DELAY;
+  TeamTime = kTeamDelay;
   Tiberium = 0;
   TriggerTime = 0;
   UnitFactories = 0;
@@ -1012,7 +1013,7 @@ void HouseClass::AI() {
       }
     }
 
-    TeamTime.Set(TEAM_DELAY);
+    TeamTime.Set(kTeamDelay);
   }
 
   /*
@@ -1060,7 +1061,7 @@ void HouseClass::AI() {
         }
       }
     }
-    DamageTime.Set(DAMAGE_DELAY);
+    DamageTime.Set(kDamageDelay);
   }
 
   /*
@@ -1080,13 +1081,13 @@ void HouseClass::AI() {
       if (Capacity - Tiberium < 300 && Capacity > 500 &&
           BScan & (kStructFlagRefinery | kStructFlagConst)) {
         Speak(VOX_NEED_MO_CAPACITY);
-        SpeakMaxedDelay.Set(Options.Normalize_Delay(SPEAK_DELAY));
+        SpeakMaxedDelay.Set(Options.Normalize_Delay(kSpeakDelay));
       }
     }
     if (SpeakPowerDelay.Expired() && Power_Fraction() < 0x0100 &&
         (BScan & kStructFlagConst) != 0) {
       Speak(VOX_LOW_POWER);
-      SpeakPowerDelay.Set(Options.Normalize_Delay(SPEAK_DELAY));
+      SpeakPowerDelay.Set(Options.Normalize_Delay(kSpeakDelay));
     }
   }
 
@@ -1171,7 +1172,7 @@ void HouseClass::AI() {
       **	Flag the sidebar to be redrawn if necessary.
       */
       if (this == PlayerPtr) {
-        Map.Add(RTTI_SPECIAL, SPC_ION_CANNON);
+        Map.Add(RTTI_SPECIAL, static_cast<int>(SPC_ION_CANNON));
         Map.Column[1].Flag_To_Redraw();
       }
     }
@@ -1231,7 +1232,7 @@ void HouseClass::AI() {
       **	Flag the sidebar to be redrawn if necessary.
       */
       if (this == PlayerPtr) {
-        Map.Add(RTTI_SPECIAL, SPC_NUCLEAR_BOMB);
+        Map.Add(RTTI_SPECIAL, static_cast<int>(SPC_NUCLEAR_BOMB));
         Map.Column[1].Flag_To_Redraw();
       }
     }
@@ -1262,7 +1263,7 @@ void HouseClass::AI() {
     if (AirStrike.Enable(false, this == PlayerPtr)) {
       AirStrike.Forced_Charge(this == PlayerPtr);
       if (this == PlayerPtr) {
-        Map.Add(RTTI_SPECIAL, SPC_AIR_STRIKE);
+        Map.Add(RTTI_SPECIAL, static_cast<int>(SPC_AIR_STRIKE));
         Map.Column[1].Flag_To_Redraw();
       }
     }
@@ -1298,7 +1299,7 @@ void HouseClass::AI() {
     **	Check for just built the building trigger event.
     */
     if ((JustBuilt != STRUCT_NONE) &&
-        t->Spring(EVENT_BUILD, Class->House, JustBuilt)) {
+        t->Spring(EVENT_BUILD, Class->House, static_cast<int>(JustBuilt))) {
       JustBuilt = STRUCT_NONE;
       continue;
     }
@@ -1477,7 +1478,7 @@ void HouseClass::Attacked() {
   Validate();
   if (SpeakAttackDelay.Expired() && PlayerPtr->Class->House == Class->House) {
     Speak(VOX_BASE_UNDER_ATTACK);
-    SpeakAttackDelay.Set(Options.Normalize_Delay(SPEAK_DELAY));
+    SpeakAttackDelay.Set(Options.Normalize_Delay(kSpeakDelay));
 
     /*
     **	If there is a trigger event associated with being attacked, process it
@@ -1916,7 +1917,7 @@ void HouseClass::Make_Ally(HousesType house) {
 
       Format_Runtime_Text(buffer, sizeof(buffer), Text_String(TXT_HAS_ALLIED),
                           Name, As_Pointer(house)->Name);
-      Messages.Add_Message(buffer, MPlayerTColors[RemapColor],
+      Messages.Add_Message(buffer, MPlayerTColors[static_cast<int>(RemapColor)],
                            TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
                            1200, 0, 0);
       Map.Flag_To_Redraw(false);
@@ -1953,7 +1954,7 @@ void HouseClass::Make_Enemy(HousesType house) {
 
       Format_Runtime_Text(buffer, sizeof(buffer), Text_String(TXT_AT_WAR), Name,
                           enemy->Name);
-      Messages.Add_Message(buffer, MPlayerTColors[RemapColor],
+      Messages.Add_Message(buffer, MPlayerTColors[static_cast<int>(RemapColor)],
                            TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
                            600, 0, 0);
       Map.Flag_To_Redraw(false);
@@ -2731,7 +2732,7 @@ void HouseClass::Init_Ion_Cannon(SpecialControlType control) {
         IonOldStage = -1;
         IonControl.Set(ION_CANNON_GONE_TIME);
         if (PlayerPtr == this) {
-          Map.Add(RTTI_SPECIAL, SPC_ION_CANNON);
+          Map.Add(RTTI_SPECIAL, static_cast<int>(SPC_ION_CANNON));
           if (!ScenarioInit) {
             Speak(VOX_ION_CHARGING);
           }
@@ -3017,7 +3018,7 @@ void HouseClass::Init_Air_Strike(bool first_time, bool one_time_effect) {
 
     if (first_time) {
       if (PlayerPtr == this) {
-        Map.Add(RTTI_SPECIAL, SPC_AIR_STRIKE);
+        Map.Add(RTTI_SPECIAL, static_cast<int>(SPC_AIR_STRIKE));
       }
       AirControl.Set(0);
     } else {
@@ -3135,7 +3136,7 @@ void HouseClass::Add_Nuke_Piece(int piece) {
  *=============================================================================================*/
 bool HouseClass::Does_Enemy_Building_Exist(StructType btype) const {
   Validate();
-  const auto bflag = ScanBit(btype);
+  const auto bflag = ScanBit(static_cast<int>(btype));
   for (HousesType index = HOUSE_FIRST; index < HOUSE_COUNT; index++) {
     const HouseClass* house = As_Pointer(index);
 
@@ -3192,9 +3193,9 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
           techno = nullptr;
         }
 
-        int counter[UNIT_COUNT];
+        base::EnumArray<UnitType, int, kUnitCount> counter{};
         if (GameToPlay == GAME_NORMAL) {
-          memset(counter, 0x00, sizeof(counter));
+          counter = {};
         } else {
           for (UnitType index = UNIT_HTANK; index < UNIT_COUNT; index++) {
             if (Can_Build(index, Class->House) &&
@@ -3245,7 +3246,7 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
             for (int subindex = 0; std::cmp_less(subindex, team->ClassCount);
                  subindex++) {
               if (team->Class[subindex]->What_Am_I() == RTTI_UNITTYPE) {
-                const int subtype =
+                const UnitType subtype =
                     dynamic_cast<const UnitTypeClass*>(team->Class[subindex])
                         ->Type;
                 counter[subtype] =
@@ -3277,7 +3278,7 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
         */
         int bestval = -1;
         int bestcount = 0;
-        UnitType bestlist[UNIT_COUNT];
+        UnitType bestlist[kUnitCount];
         for (UnitType utype = UNIT_HTANK; utype < UNIT_COUNT; utype++) {
           if (counter[utype] > 0 && Can_Build(utype, Class->House) &&
               UnitTypeClass::As_Reference(utype).Cost_Of() <=
@@ -3308,9 +3309,9 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
     case RTTI_INFANTRY:
     case RTTI_INFANTRYTYPE:
       if (CurUnits < MaxUnit) {
-        int counter[INFANTRY_COUNT];
+        base::EnumArray<InfantryType, int, kInfantryCount> counter{};
         if (GameToPlay == GAME_NORMAL) {
-          memset(counter, 0x00, sizeof(counter));
+          counter = {};
         } else {
           for (InfantryType index = INFANTRY_E1; index < INFANTRY_COUNT;
                index++) {
@@ -3359,9 +3360,10 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
             for (int subindex = 0; std::cmp_less(subindex, team->ClassCount);
                  subindex++) {
               if (team->Class[subindex]->What_Am_I() == RTTI_INFANTRYTYPE) {
-                const int subtype = dynamic_cast<const InfantryTypeClass*>(
-                                        team->Class[subindex])
-                                        ->Type;
+                const InfantryType subtype =
+                    dynamic_cast<const InfantryTypeClass*>(
+                        team->Class[subindex])
+                        ->Type;
                 //									counter[subtype]
                 //= 1;
                 counter[subtype] =
@@ -3394,7 +3396,7 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
         */
         int bestval = -1;
         int bestcount = 0;
-        InfantryType bestlist[INFANTRY_COUNT];
+        InfantryType bestlist[kInfantryCount];
         for (InfantryType utype = INFANTRY_E1; utype < INFANTRY_COUNT;
              utype++) {
           if (counter[utype] > 0 && Can_Build(utype, Class->House) &&
@@ -3555,7 +3557,7 @@ bool HouseClass::Flag_Attach(CELL cell, bool set_home) {
         **	Clockwise search.
         */
         if (clockwise) {
-          rot = static_cast<FacingType>(GameRandomRange(FACING_N, FACING_NW));
+          rot = Random_Pick(FACING_N, FACING_NW);
           for (FacingType fcounter = FACING_N; fcounter <= FACING_NW;
                fcounter++) {
             newcell = Coord_Cell(Coord_Move(Cell_Coord(cell), Facing_Dir(rot),
@@ -3575,7 +3577,7 @@ bool HouseClass::Flag_Attach(CELL cell, bool set_home) {
           /*
           **	Counter-clockwise search
           */
-          rot = static_cast<FacingType>(GameRandomRange(FACING_N, FACING_NW));
+          rot = Random_Pick(FACING_N, FACING_NW);
           for (FacingType fcounter = FACING_NW; fcounter >= FACING_N;
                fcounter--) {
             newcell = Coord_Cell(Coord_Move(Cell_Coord(cell), Facing_Dir(rot),
@@ -3730,9 +3732,9 @@ void HouseClass::MPlayer_Defeated() {
         }
       }
 
-      Messages.Add_Message(txt, MPlayerTColors[MPlayerID_To_ColorIndex(id)],
-                           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-                           600, 0, 0);
+      Messages.Add_Message(
+          txt, MPlayerTColors[static_cast<int>(MPlayerID_To_ColorIndex(id))],
+          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600, 0, 0);
       Map.Flag_To_Redraw(false);
     }
   }
@@ -3743,7 +3745,8 @@ void HouseClass::MPlayer_Defeated() {
   int num_alive = 0;
   int num_humans = 0;
   for (i = 0; i < MPlayerMax; i++) {
-    hptr = As_Pointer(static_cast<HousesType>(HOUSE_MULTI1 + i));
+    hptr =
+        As_Pointer(static_cast<HousesType>(static_cast<int>(HOUSE_MULTI1) + i));
     if (hptr && hptr->IsDefeated == 0) {
       if (hptr->IsHuman) {
         num_humans++;
@@ -3761,7 +3764,8 @@ void HouseClass::MPlayer_Defeated() {
     /*.....................................................................
     Get a pointer to this house
     .....................................................................*/
-    hptr = As_Pointer(static_cast<HousesType>(HOUSE_MULTI1 + i));
+    hptr =
+        As_Pointer(static_cast<HousesType>(static_cast<int>(HOUSE_MULTI1) + i));
     if (!hptr || hptr->IsDefeated) {
       continue;
     }
@@ -3771,7 +3775,8 @@ void HouseClass::MPlayer_Defeated() {
     isn't allied with, then all_allies will be false
     .....................................................................*/
     for (int j = 0; j < MPlayerMax; j++) {
-      HouseClass* hptr2 = As_Pointer(static_cast<HousesType>(HOUSE_MULTI1 + j));
+      HouseClass* hptr2 = As_Pointer(
+          static_cast<HousesType>(static_cast<int>(HOUSE_MULTI1) + j));
       if (!hptr2) {
         continue;
       }
@@ -3873,7 +3878,7 @@ void HouseClass::MPlayer_Defeated() {
       Init this player's color to his last-used color index
       ..................................................................*/
       MPlayerScore[score_index[i]].Color =
-          MPlayerID_To_ColorIndex(MPlayerID[i]);
+          static_cast<int>(MPlayerID_To_ColorIndex(MPlayerID[i]));
     }
 
     /*---------------------------------------------------------------------
@@ -4028,8 +4033,7 @@ void HouseClass::Blowup_All() {
       count = 0;
       while (Infantry.Ptr(i) == iptr && iptr->Strength) {
         damage = 0x7fff;
-        const auto warhead =
-            static_cast<WarheadType>(GameRandomRange(WARHEAD_SA, WARHEAD_FIRE));
+        const auto warhead = Random_Pick(WARHEAD_SA, WARHEAD_FIRE);
         Explosion_Damage(iptr->Center_Coord(), damage, nullptr, warhead);
         if (iptr->IsActive) {
           damage = 0x7fff;

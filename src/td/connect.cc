@@ -46,6 +46,7 @@
 #include <cstdint>
 #include <span>
 
+#include "base/enum_array.h"
 #include "base/numeric.h"
 #include "port/aligned_buffer.h"
 #include "td/combuf.h"
@@ -53,7 +54,9 @@
 /*
 ********************************* Globals ***********************************
 */
-const char* ConnectionClass::Commands[PACKET_COUNT] = {"ADATA", "NDATA", "ACK"};
+base::EnumArray<ConnectionClass::ConnectionEnum, const char*,
+                static_cast<int>(ConnectionClass::PACKET_COUNT)>
+    ConnectionClass::Commands = {"ADATA", "NDATA", "ACK"};
 
 /***************************************************************************
  * ConnectionClass::ConnectionClass -- class constructor                   *
@@ -236,7 +239,8 @@ SendQueueType* ConnectionClass::OldestUnackedSend(
       }
       const CommHeaderType* packet =
           port::AlignedObject<CommHeaderType>(entry->Buffer);
-      if (packet->Code == PACKET_DATA_ACK && entry->IsACK == 0) {
+      if (packet->Code == static_cast<unsigned char>(PACKET_DATA_ACK) &&
+          entry->IsACK == 0) {
         if (oldest == nullptr || entry->FirstTime < oldest->FirstTime) {
           oldest = entry;
         }
@@ -266,8 +270,8 @@ SendQueueType* ConnectionClass::OldestUnackedSend(
  *   05/31/1995 BRR : Created.                                             *
  *=========================================================================*/
 const char* ConnectionClass::Command_Name(int command) {
-  if (command >= 0 && command < PACKET_COUNT) {
-    return Commands[command];
+  if (command >= 0 && command < static_cast<int>(PACKET_COUNT)) {
+    return Commands[static_cast<ConnectionEnum>(command)];
   }
   return nullptr;
 }

@@ -141,7 +141,7 @@ static char TheirName[MPLAYER_NAME_MAX];
 static unsigned char TheirColor;
 static HousesType TheirHouse;
 static unsigned char TheirID;
-static char DialString[CWAITSTRBUF_MAX + PhoneEntryClass::PHONE_MAX_NUM - 1];
+static char DialString[CWAITSTRBUF_MAX + PhoneEntryClass::kPhoneMaxNum - 1];
 static SerialSettingsType* DialSettings;
 
 #define SHOW_MONO 0
@@ -259,9 +259,7 @@ int Test_Null_Modem() {
   /*........................................................................
   Button Enumerations
   ........................................................................*/
-  enum {
-    BUTTON_CANCEL = 100,
-  };
+  constexpr int kButtonCancel = 100;
 
   /*........................................................................
   Dialog variables
@@ -286,7 +284,8 @@ int Test_Null_Modem() {
   **	These dimensions will control how the dialog box looks.
   */
   port::SafeCopy(buffer, Text_String(TXT_WAITING_CONNECT));
-  Fancy_Text_Print(TXT_NONE, 0, 0, TBLACK, TBLACK, TPF_6PT_GRAD | TPF_NOSHADOW);
+  Fancy_Text_Print(TXT_NONE, 0, 0, kTBlack, kTBlack,
+                   TPF_6PT_GRAD | TPF_NOSHADOW);
   Format_Window_String(buffer, 200 * factor, width, height);
 
   width = std::max(width, 50 * factor);
@@ -297,7 +296,7 @@ int Test_Null_Modem() {
   const int y = ((200 * factor) - height) / 2;
 
   TextButtonClass cancelbtn(
-      BUTTON_CANCEL, TXT_CANCEL,
+      kButtonCancel, TXT_CANCEL,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       x + ((width -
             (String_Pixel_Width(Text_String(TXT_CANCEL)) + (8 * factor))) /
@@ -326,8 +325,8 @@ int Test_Null_Modem() {
   Dialog_Box(x, y, width, height);
   Draw_Caption(TXT_NONE, x, y, width);
 
-  Fancy_Text_Print(buffer, x + (20 * factor), y + (25 * factor), CC_GREEN,
-                   TBLACK, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+  Fancy_Text_Print(buffer, x + (20 * factor), y + (25 * factor), kCcGreen,
+                   kTBlack, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   commands->Draw_All();
   while (Get_Mouse_State() > 0) {
@@ -477,7 +476,7 @@ int Test_Null_Modem() {
     */
     switch (static_cast<int>(input)) {
       case KN_ESC:
-      case ButtonKey(BUTTON_CANCEL):
+      case ButtonKey(kButtonCancel):
         // Smart_Printf( "Canceled waiting for SERIAL_CONNECT\n" );
         retval = 0;
         process = false;
@@ -574,7 +573,7 @@ int Reconnect_Modem() {
 
     case MODEM_DIALER:
       modemstatus = NullModemClass::Get_Modem_Status();
-      if (modemstatus & CD_SET) {
+      if (modemstatus & kCdSet) {
         // Smart_Printf( "Dial Modem connection error!  Attempting
         // reconnect....\n" );
         status = Reconnect_Null_Modem();
@@ -585,7 +584,7 @@ int Reconnect_Modem() {
 
     case MODEM_ANSWERER:
       modemstatus = NullModemClass::Get_Modem_Status();
-      if (modemstatus & CD_SET) {
+      if (modemstatus & kCdSet) {
         // Smart_Printf( "Answer Modem connection error!  Attempting
         // reconnect....\n" );
         status = Reconnect_Null_Modem();
@@ -623,9 +622,7 @@ static int Reconnect_Null_Modem() {
   /*........................................................................
   Button Enumerations
   ........................................................................*/
-  enum {
-    BUTTON_CANCEL = 100,
-  };
+  constexpr int kButtonCancel = 100;
 
   /*........................................................................
   Dialog variables
@@ -649,7 +646,8 @@ static int Reconnect_Null_Modem() {
   **	These dimensions will control how the dialog box looks.
   */
   port::SafeCopy(buffer, Text_String(TXT_NULL_CONNERR_CHECK_CABLES));
-  Fancy_Text_Print(TXT_NONE, 0, 0, TBLACK, TBLACK, TPF_6PT_GRAD | TPF_NOSHADOW);
+  Fancy_Text_Print(TXT_NONE, 0, 0, kTBlack, kTBlack,
+                   TPF_6PT_GRAD | TPF_NOSHADOW);
   Format_Window_String(buffer, 200, width, height);
 
   width = std::max(width, 50);
@@ -660,7 +658,7 @@ static int Reconnect_Null_Modem() {
   const int y = (200 - height) / 2;
 
   TextButtonClass cancelbtn(
-      BUTTON_CANCEL, TXT_CANCEL,
+      kButtonCancel, TXT_CANCEL,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       x + ((width - (String_Pixel_Width(Text_String(TXT_CANCEL)) + 8)) / 2),
       y + height - (FontHeight + FontYSpacing + 2) - 5);
@@ -686,7 +684,7 @@ static int Reconnect_Null_Modem() {
   Dialog_Box(x, y, width, height);
   Draw_Caption(TXT_NONE, x, y, width);
 
-  Fancy_Text_Print(buffer, x + 20, y + 25, CC_GREEN, TBLACK,
+  Fancy_Text_Print(buffer, x + 20, y + 25, kCcGreen, kTBlack,
                    TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   commands->Draw_All();
@@ -722,7 +720,7 @@ static int Reconnect_Null_Modem() {
     */
     switch (static_cast<int>(input)) {
       case KN_ESC:
-      case ButtonKey(BUTTON_CANCEL):
+      case ButtonKey(kButtonCancel):
         retval = 0;
         process = false;
         break;
@@ -849,7 +847,8 @@ void Destroy_Null_Connection(int id, int error) {
   if (strlen(txt)) {
     Messages.Add_Message(
         txt,
-        MPlayerTColors[MPlayerID_To_ColorIndex(static_cast<unsigned char>(id))],
+        MPlayerTColors[static_cast<int>(
+            MPlayerID_To_ColorIndex(static_cast<unsigned char>(id)))],
         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600, 0, 0);
     Map.Flag_To_Redraw(false);
   }
@@ -884,7 +883,8 @@ void Destroy_Null_Connection(int id, int error) {
     absl::SNPrintF(txt, sizeof(txt), "%s", Text_String(TXT_JUST_YOU_AND_ME));
     Messages.Add_Message(
         txt,
-        MPlayerTColors[MPlayerID_To_ColorIndex(static_cast<unsigned char>(id))],
+        MPlayerTColors[static_cast<int>(
+            MPlayerID_To_ColorIndex(static_cast<unsigned char>(id)))],
         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600, 0, 0);
     Map.Flag_To_Redraw(false);
   }
@@ -962,25 +962,24 @@ GameType Select_Serial_Dialog() {
   /*........................................................................
   Button Enumerations
   ........................................................................*/
-  enum {
-    BUTTON_DIAL = 100,
-    BUTTON_ANSWER = 101,
-    BUTTON_NULLMODEM = 102,
-    BUTTON_SETTINGS = 103,
-    BUTTON_CANCEL = 104,
+  constexpr int kButtonDial = 100;
+  constexpr int kButtonAnswer = 101;
+  constexpr int kButtonNullmodem = 102;
+  constexpr int kButtonSettings = 103;
+  constexpr int kButtonCancel = 104;
 
-    NUM_OF_BUTTONS = 5,
-  };
+  constexpr int kNumOfButtons = 5;
 
   /*........................................................................
   Redraw values: in order from "top" to "bottom" layer of the dialog
   ........................................................................*/
-  typedef enum {
+  enum class RedrawType {
     REDRAW_NONE = 0,
     REDRAW_BUTTONS = 1,
     REDRAW_BACKGROUND = 2,
     REDRAW_ALL = REDRAW_BACKGROUND
-  } RedrawType;
+  };
+  using enum RedrawType;
 
   /*........................................................................
   Dialog variables
@@ -990,7 +989,7 @@ GameType Select_Serial_Dialog() {
   GameType retval = GAME_NORMAL;  // return value
 
   int selection = 0;
-  TextButtonClass* buttons[NUM_OF_BUTTONS];
+  TextButtonClass* buttons[kNumOfButtons];
 
   SerialSettingsType* settings = nullptr;
   bool selectsettings = false;
@@ -1000,27 +999,27 @@ GameType Select_Serial_Dialog() {
   ........................................................................*/
 
   TextButtonClass dialbtn(
-      BUTTON_DIAL, TXT_DIAL_MODEM,
+      kButtonDial, TXT_DIAL_MODEM,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_dial_x,
       d_dial_y, d_dial_w, d_dial_h);
 
   TextButtonClass answerbtn(
-      BUTTON_ANSWER, TXT_ANSWER_MODEM,
+      kButtonAnswer, TXT_ANSWER_MODEM,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_answer_x,
       d_answer_y, d_answer_w, d_answer_h);
 
   TextButtonClass nullmodembtn(
-      BUTTON_NULLMODEM, TXT_NULL_MODEM,
+      kButtonNullmodem, TXT_NULL_MODEM,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       d_nullmodem_x, d_nullmodem_y, d_nullmodem_w, d_nullmodem_h);
 
   TextButtonClass settingsbtn(
-      BUTTON_SETTINGS, TXT_SETTINGS,
+      kButtonSettings, TXT_SETTINGS,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_settings_x,
       d_settings_y, d_settings_w, d_settings_h);
 
   TextButtonClass cancelbtn(
-      BUTTON_CANCEL, TXT_CANCEL,
+      kButtonCancel, TXT_CANCEL,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       // #if (GERMAN | FRENCH)
       //		d_cancel_x, d_cancel_y);
@@ -1070,7 +1069,7 @@ GameType Select_Serial_Dialog() {
 
   Keyboard::Clear();
 
-  Fancy_Text_Print(TXT_NONE, 0, 0, CC_GREEN, TBLACK,
+  Fancy_Text_Print(TXT_NONE, 0, 0, kCcGreen, kTBlack,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   Debug_Smart_Print = true;
@@ -1102,7 +1101,7 @@ GameType Select_Serial_Dialog() {
     /*
     ...................... Refresh display if needed ......................
     */
-    if (display) {
+    if (display != REDRAW_NONE) {
       Hide_Mouse();
       if (display >= REDRAW_BACKGROUND) {
         /*
@@ -1137,29 +1136,29 @@ GameType Select_Serial_Dialog() {
     ............................ Process input ............................
     */
     switch (static_cast<int>(input)) {
-      case ButtonKey(BUTTON_DIAL):
-        selection = BUTTON_DIAL;
+      case ButtonKey(kButtonDial):
+        selection = kButtonDial;
         pressed = true;
         break;
 
-      case ButtonKey(BUTTON_ANSWER):
-        selection = BUTTON_ANSWER;
+      case ButtonKey(kButtonAnswer):
+        selection = kButtonAnswer;
         pressed = true;
         break;
 
-      case ButtonKey(BUTTON_NULLMODEM):
-        selection = BUTTON_NULLMODEM;
+      case ButtonKey(kButtonNullmodem):
+        selection = kButtonNullmodem;
         pressed = true;
         break;
 
-      case ButtonKey(BUTTON_SETTINGS):
-        selection = BUTTON_SETTINGS;
+      case ButtonKey(kButtonSettings):
+        selection = kButtonSettings;
         pressed = true;
         break;
 
       case KN_ESC:
-      case ButtonKey(BUTTON_CANCEL):
-        selection = BUTTON_CANCEL;
+      case ButtonKey(kButtonCancel):
+        selection = kButtonCancel;
         pressed = true;
         break;
 
@@ -1168,7 +1167,7 @@ GameType Select_Serial_Dialog() {
         buttons[curbutton]->Flag_To_Redraw();
         curbutton--;
         if (curbutton < 0) {
-          curbutton = NUM_OF_BUTTONS - 1;
+          curbutton = kNumOfButtons - 1;
         }
         buttons[curbutton]->Turn_On();
         buttons[curbutton]->Flag_To_Redraw();
@@ -1178,7 +1177,7 @@ GameType Select_Serial_Dialog() {
         buttons[curbutton]->Turn_Off();
         buttons[curbutton]->Flag_To_Redraw();
         curbutton++;
-        if (curbutton > NUM_OF_BUTTONS - 1) {
+        if (curbutton > kNumOfButtons - 1) {
           curbutton = 0;
         }
         buttons[curbutton]->Turn_On();
@@ -1186,7 +1185,7 @@ GameType Select_Serial_Dialog() {
         break;
 
       case KN_RETURN:
-        selection = curbutton + BUTTON_DIAL;
+        selection = curbutton + kButtonDial;
         pressed = true;
         break;
 
@@ -1200,13 +1199,13 @@ GameType Select_Serial_Dialog() {
       //
       buttons[curbutton]->Turn_Off();
       buttons[curbutton]->Flag_To_Redraw();
-      curbutton = selection - BUTTON_DIAL;
+      curbutton = selection - kButtonDial;
       buttons[curbutton]->Turn_On();
       buttons[curbutton]->IsPressed = true;
       buttons[curbutton]->Draw_Me(true);
 
       switch (selection) {
-        case BUTTON_DIAL:
+        case kButtonDial:
 
           if (selectsettings) {
             CCMessageBox().Process(TXT_SELECT_SETTINGS);
@@ -1226,7 +1225,7 @@ GameType Select_Serial_Dialog() {
             SerialPort = new WinModemClass;
 
             if (Init_Null_Modem(settings)) {
-              if (settings->CallWaitStringIndex == CALL_WAIT_CUSTOM) {
+              if (settings->CallWaitStringIndex == kCallWaitCustom) {
                 port::SafeCopy(DialString, settings->CallWaitString);
               } else {
                 port::SafeCopy(DialString,
@@ -1258,7 +1257,7 @@ GameType Select_Serial_Dialog() {
           display = REDRAW_ALL;
           break;
 
-        case BUTTON_ANSWER:
+        case kButtonAnswer:
 
           if (selectsettings) {
             CCMessageBox().Process(TXT_SELECT_SETTINGS);
@@ -1296,7 +1295,7 @@ GameType Select_Serial_Dialog() {
           display = REDRAW_ALL;
           break;
 
-        case BUTTON_NULLMODEM:
+        case kButtonNullmodem:
 
           if (selectsettings) {
             CCMessageBox().Process(TXT_SELECT_SETTINGS);
@@ -1350,7 +1349,7 @@ GameType Select_Serial_Dialog() {
           display = REDRAW_ALL;
           break;
 
-        case BUTTON_SETTINGS:
+        case kButtonSettings:
           if (Com_Settings_Dialog(&SerialDefaults)) {
             Write_MultiPlayer_Settings();
 
@@ -1368,7 +1367,7 @@ GameType Select_Serial_Dialog() {
           display = REDRAW_ALL;
           break;
 
-        case BUTTON_CANCEL:
+        case kButtonCancel:
           retval = GAME_NORMAL;
           process = false;
           break;
@@ -1432,20 +1431,19 @@ static void Advanced_Modem_Settings(SerialSettingsType* settings) {
   const int d_ok_x = d_dialog_x + (d_dialog_w / 2) - (d_ok_w / 2);
   const int d_ok_y = d_dialog_y + d_dialog_h - 24;
 
-  enum {
-    BUTTON_COMPRESSION = 100,
-    BUTTON_ERROR_CORRECTION,
-    BUTTON_HARDWARE_FLOW_CONTROL,
-    BUTTON_DEFAULT,
-    BUTTON_OK,
-  };
+  constexpr int kButtonCompression = 100;
+  constexpr int kButtonErrorCorrection = 101;
+  constexpr int kButtonHardwareFlowControl = 102;
+  constexpr int kButtonDefault = 103;
+  constexpr int kButtonOk = 104;
 
-  typedef enum {
+  enum class RedrawType {
     REDRAW_NONE = 0,
     REDRAW_BUTTONS = 1,
     REDRAW_BACKGROUND = 2,
     REDRAW_ALL = REDRAW_BACKGROUND,
-  } RedrawType;
+  };
+  using enum RedrawType;
 
   /*
   ** Yes/No strings
@@ -1470,29 +1468,29 @@ static void Advanced_Modem_Settings(SerialSettingsType* settings) {
   ** Create the buttons
   */
   TextButtonClass compressionbutton(
-      BUTTON_COMPRESSION, compress_text,
+      kButtonCompression, compress_text,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       d_compression_x, d_compression_y, d_compression_w, d_compression_h);
 
   TextButtonClass errorcorrectionbutton(
-      BUTTON_ERROR_CORRECTION, correction_text,
+      kButtonErrorCorrection, correction_text,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       d_errorcorrection_x, d_errorcorrection_y, d_errorcorrection_w,
       d_errorcorrection_h);
 
   TextButtonClass hardwareflowcontrolbutton(
-      BUTTON_HARDWARE_FLOW_CONTROL, flowcontrol_text,
+      kButtonHardwareFlowControl, flowcontrol_text,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       d_hardwareflowcontrol_x, d_hardwareflowcontrol_y, d_hardwareflowcontrol_w,
       d_hardwareflowcontrol_h);
 
   TextButtonClass defaultbutton(
-      BUTTON_DEFAULT, TXT_DEFAULT,
+      kButtonDefault, TXT_DEFAULT,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_default_x,
       d_default_y, d_default_w, d_default_h);
 
   TextButtonClass okbutton(
-      BUTTON_OK, TXT_OK,
+      kButtonOk, TXT_OK,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_ok_x,
       d_ok_y, d_ok_w, d_ok_h);
 
@@ -1530,7 +1528,7 @@ static void Advanced_Modem_Settings(SerialSettingsType* settings) {
     /*
     ...................... Refresh display if needed ......................
     */
-    if (display) {
+    if (display != REDRAW_NONE) {
       Hide_Mouse();
       /*
       .................. Redraw backgound & dialog box ...................
@@ -1544,7 +1542,7 @@ static void Advanced_Modem_Settings(SerialSettingsType* settings) {
         // init font variables
 
         Fancy_Text_Print(
-            TXT_NONE, 0, 0, TBLACK, TBLACK,
+            TXT_NONE, 0, 0, kTBlack, kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         /*...............................................................
@@ -1555,17 +1553,17 @@ static void Advanced_Modem_Settings(SerialSettingsType* settings) {
 
         Fancy_Text_Print(
             TXT_DATA_COMPRESSION, d_compression_x - 26, d_compression_y + 2,
-            CC_GREEN, TBLACK,
+            kCcGreen, kTBlack,
             TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
             TXT_ERROR_CORRECTION, d_errorcorrection_x - 26,
-            d_errorcorrection_y + 2, CC_GREEN, TBLACK,
+            d_errorcorrection_y + 2, kCcGreen, kTBlack,
             TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
             TXT_HARDWARE_FLOW_CONTROL, d_hardwareflowcontrol_x - 26,
-            d_hardwareflowcontrol_y + 2, CC_GREEN, TBLACK,
+            d_hardwareflowcontrol_y + 2, kCcGreen, kTBlack,
             TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
 
@@ -1591,28 +1589,28 @@ static void Advanced_Modem_Settings(SerialSettingsType* settings) {
     ---------------------------- Process input ----------------------------
     */
     switch (static_cast<int>(input)) {
-      case ButtonKey(BUTTON_COMPRESSION):
+      case ButtonKey(kButtonCompression):
         settings->Compression = !settings->Compression;
         port::SafeCopy(compress_text, settings->Compression
                                           ? Text_String(TXT_ON)
                                           : Text_String(TXT_OFF));
         break;
 
-      case ButtonKey(BUTTON_ERROR_CORRECTION):
+      case ButtonKey(kButtonErrorCorrection):
         settings->ErrorCorrection = !settings->ErrorCorrection;
         port::SafeCopy(correction_text, settings->ErrorCorrection
                                             ? Text_String(TXT_ON)
                                             : Text_String(TXT_OFF));
         break;
 
-      case ButtonKey(BUTTON_HARDWARE_FLOW_CONTROL):
+      case ButtonKey(kButtonHardwareFlowControl):
         settings->HardwareFlowControl = !settings->HardwareFlowControl;
         port::SafeCopy(flowcontrol_text, settings->HardwareFlowControl
                                              ? Text_String(TXT_ON)
                                              : Text_String(TXT_OFF));
         break;
 
-      case ButtonKey(BUTTON_DEFAULT):
+      case ButtonKey(kButtonDefault):
         settings->Compression = false;
         settings->ErrorCorrection = false;
         settings->HardwareFlowControl = true;
@@ -1632,7 +1630,7 @@ static void Advanced_Modem_Settings(SerialSettingsType* settings) {
         display = std::max(display, REDRAW_BUTTONS);
         break;
 
-      case ButtonKey(BUTTON_OK):
+      case ButtonKey(kButtonOk):
         process = false;
         break;
       default:
@@ -1846,36 +1844,35 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   /*........................................................................
   Button Enumerations
   ........................................................................*/
-  enum {
-    BUTTON_PORT = 100,
-    BUTTON_PORTLIST,
-    BUTTON_IRQ,
-    BUTTON_IRQLIST,
-    BUTTON_BAUD,
-    BUTTON_BAUDLIST,
-    BUTTON_INITSTR,
-    BUTTON_INITSTRLIST,
-    BUTTON_ADD,
-    BUTTON_DELETE,
-    BUTTON_CWAITSTR,
-    BUTTON_CWAITSTRLIST,
-    BUTTON_TONE,
-    BUTTON_PULSE,
-    BUTTON_SAVE,
-    BUTTON_ADVANCED,
-    BUTTON_INITTYPE,
-    BUTTON_CANCEL,
-  };
+  constexpr int kButtonPort = 100;
+  constexpr int kButtonPortlist = 101;
+  [[maybe_unused]] constexpr int kButtonIrq = 102;
+  [[maybe_unused]] constexpr int kButtonIrqlist = 103;
+  constexpr int kButtonBaud = 104;
+  constexpr int kButtonBaudlist = 105;
+  constexpr int kButtonInitstr = 106;
+  constexpr int kButtonInitstrlist = 107;
+  constexpr int kButtonAdd = 108;
+  constexpr int kButtonDelete = 109;
+  constexpr int kButtonCwaitstr = 110;
+  constexpr int kButtonCwaitstrlist = 111;
+  constexpr int kButtonTone = 112;
+  constexpr int kButtonPulse = 113;
+  constexpr int kButtonSave = 114;
+  constexpr int kButtonAdvanced = 115;
+  [[maybe_unused]] constexpr int kButtonInittype = 116;
+  constexpr int kButtonCancel = 117;
 
   /*........................................................................
   Redraw values: in order from "top" to "bottom" layer of the dialog
   ........................................................................*/
-  typedef enum {
+  enum class RedrawType {
     REDRAW_NONE = 0,
     REDRAW_BUTTONS = 1,
     REDRAW_BACKGROUND = 2,
     REDRAW_ALL = REDRAW_BACKGROUND
-  } RedrawType;
+  };
+  using enum RedrawType;
 
   static const char* portname[4] = {"COM1 - 3F8", "COM2 - 2F8", "COM3 - 3E8",
                                     "COM4 - 2E8"};
@@ -1925,7 +1922,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   int baud_index = 1;  // index of currently-selected baud (default = 19200)
   int initstr_index =
       0;  // index of currently-selected modem init (default = "ATZ")
-  int cwaitstr_index = CALL_WAIT_CUSTOM;  // index of currently-selected call
+  int cwaitstr_index = kCallWaitCustom;   // index of currently-selected call
                                           // waiting (default = "")
   int rc = 0;                             // -1 = user cancelled, 1 = New
   int i = 0;                              // loop counter
@@ -1951,44 +1948,44 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   ........................................................................*/
   GadgetClass* commands = nullptr;  // button list
 
-  EditClass port_edt(BUTTON_PORT, portbuf, PORTBUF_MAX,
+  EditClass port_edt(kButtonPort, portbuf, PORTBUF_MAX,
                      TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_port_x,
                      d_port_y, d_port_w, d_port_h, EditClass::ALPHANUMERIC);
 
   ListClass portlist(
-      BUTTON_PORTLIST, d_portlist_x, d_portlist_y, d_portlist_w, d_portlist_h,
+      kButtonPortlist, d_portlist_x, d_portlist_y, d_portlist_w, d_portlist_h,
       TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, up_button, down_button);
 
 #ifdef EDIT_IRQ
-  EditClass irq_edt(BUTTON_IRQ, irqbuf, IRQBUF_MAX,
+  EditClass irq_edt(kButtonIrq, irqbuf, IRQBUF_MAX,
                     TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_irq_x,
                     d_irq_y, d_irq_w, d_irq_h, EditClass::NUMERIC);
 
-  ListClass irqlist(BUTTON_IRQLIST, d_irqlist_x, d_irqlist_y, d_irqlist_w,
+  ListClass irqlist(kButtonIrqlist, d_irqlist_x, d_irqlist_y, d_irqlist_w,
                     d_irqlist_h, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
                     up_button, down_button);
 #endif  // EDIT_IRQ
 
-  EditClass baud_edt(BUTTON_BAUD, baudbuf, BAUDBUF_MAX,
+  EditClass baud_edt(kButtonBaud, baudbuf, BAUDBUF_MAX,
                      TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_baud_x,
                      d_baud_y, d_baud_w, d_baud_h, EditClass::NUMERIC);
 
   ListClass baudlist(
-      BUTTON_BAUDLIST, d_baudlist_x, d_baudlist_y, d_baudlist_w, d_baudlist_h,
+      kButtonBaudlist, d_baudlist_x, d_baudlist_y, d_baudlist_w, d_baudlist_h,
       TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, up_button, down_button);
 
-  EditClass initstr_edt(BUTTON_INITSTR, initstrbuf, INITSTRBUF_MAX,
+  EditClass initstr_edt(kButtonInitstr, initstrbuf, INITSTRBUF_MAX,
                         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
                         d_initstr_x, d_initstr_y, d_initstr_w, d_initstr_h,
                         EditClass::ALPHANUMERIC);
 
-  ListClass initstrlist(BUTTON_INITSTRLIST, d_initstrlist_x, d_initstrlist_y,
+  ListClass initstrlist(kButtonInitstrlist, d_initstrlist_x, d_initstrlist_y,
                         d_initstrlist_w, d_initstrlist_h,
                         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
                         up_button, down_button);
 
   TextButtonClass addbtn(
-      BUTTON_ADD, TXT_ADD,
+      kButtonAdd, TXT_ADD,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       // #ifdef FRENCH
       //		d_add_x, d_add_y);
@@ -1997,7 +1994,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   // #endif
 
   TextButtonClass deletebtn(
-      BUTTON_DELETE, TXT_DELETE_BUTTON,
+      kButtonDelete, TXT_DELETE_BUTTON,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       // #ifdef FRENCH
       //		d_delete_x, d_delete_y);
@@ -2005,28 +2002,28 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
       d_delete_x, d_delete_y, d_delete_w, d_delete_h);
   // #endif
 
-  EditClass cwaitstr_edt(BUTTON_CWAITSTR, cwaitstrbuf, CWAITSTRBUF_MAX,
+  EditClass cwaitstr_edt(kButtonCwaitstr, cwaitstrbuf, CWAITSTRBUF_MAX,
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
                          d_cwaitstr_x, d_cwaitstr_y, d_cwaitstr_w, d_cwaitstr_h,
                          EditClass::ALPHANUMERIC);
 
-  ListClass cwaitstrlist(BUTTON_CWAITSTRLIST, d_cwaitstrlist_x,
+  ListClass cwaitstrlist(kButtonCwaitstrlist, d_cwaitstrlist_x,
                          d_cwaitstrlist_y, d_cwaitstrlist_w, d_cwaitstrlist_h,
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
                          up_button, down_button);
 
   TextButtonClass tonebtn(
-      BUTTON_TONE, TXT_TONE_BUTTON,
+      kButtonTone, TXT_TONE_BUTTON,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_tone_x,
       d_tone_y, d_tone_w, d_tone_h);
 
   TextButtonClass pulsebtn(
-      BUTTON_PULSE, TXT_PULSE_BUTTON,
+      kButtonPulse, TXT_PULSE_BUTTON,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_pulse_x,
       d_pulse_y, d_pulse_w, d_pulse_h);
 
   TextButtonClass savebtn(
-      BUTTON_SAVE, TXT_SAVE_BUTTON,
+      kButtonSave, TXT_SAVE_BUTTON,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       // #if (GERMAN | FRENCH)
       //		d_save_x, d_save_y);
@@ -2035,16 +2032,16 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   // #endif
 
   TextButtonClass cancelbtn(
-      BUTTON_CANCEL, TXT_CANCEL,
+      kButtonCancel, TXT_CANCEL,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       // #if (GERMAN | FRENCH)
       //		d_cancel_x, d_cancel_y);
       // #else
       d_cancel_x, d_cancel_y, d_cancel_w, d_cancel_h);
-// #endif
+  // #endif
 
   TextButtonClass advancedbutton(
-      BUTTON_ADVANCED, TXT_ADVANCED,
+      kButtonAdvanced, TXT_ADVANCED,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_advanced_x,
       d_advanced_y, d_advanced_w, d_advanced_h);
 
@@ -2263,8 +2260,8 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   ........................................................................*/
 
   cwaitstr_index = tempsettings.CallWaitStringIndex;
-  for (i = 0; i < CALL_WAIT_STRINGS_NUM; i++) {
-    if (i == CALL_WAIT_CUSTOM) {
+  for (i = 0; i < kCallWaitStringsNum; i++) {
+    if (i == kCallWaitCustom) {
       item = CallWaitStrings[i];
       temp = strchr(item, '-');
       if (temp) {
@@ -2349,7 +2346,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
     /*
     ...................... Refresh display if needed ......................
     */
-    if (display) {
+    if (display != REDRAW_NONE) {
       Hide_Mouse();
       /*
       .................. Redraw backgound & dialog box ...................
@@ -2363,7 +2360,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         // init font variables
 
         Fancy_Text_Print(
-            TXT_NONE, 0, 0, TBLACK, TBLACK,
+            TXT_NONE, 0, 0, kTBlack, kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         /*...............................................................
@@ -2372,26 +2369,28 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         Draw_Caption(TXT_SETTINGS, d_dialog_x, d_dialog_y, d_dialog_w);
 
         Fancy_Text_Print(
-            TXT_PORT_COLON, d_port_x - 3, d_port_y + (1 * factor), CC_GREEN,
-            TBLACK, TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+            TXT_PORT_COLON, d_port_x - 3, d_port_y + (1 * factor), kCcGreen,
+            kTBlack,
+            TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
 #ifdef EDIT_IRQ
         Fancy_Text_Print(
-            TXT_IRQ_COLON, d_irq_x - 3, d_irq_y + 1 * factor, CC_GREEN, TBLACK,
+            TXT_IRQ_COLON, d_irq_x - 3, d_irq_y + 1 * factor, kCcGreen, kTBlack,
             TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 #endif  // EDIT_IRQ
 
         Fancy_Text_Print(
-            TXT_BAUD_COLON, d_baud_x - 3, d_baud_y + (1 * factor), CC_GREEN,
-            TBLACK, TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+            TXT_BAUD_COLON, d_baud_x - 3, d_baud_y + (1 * factor), kCcGreen,
+            kTBlack,
+            TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
             TXT_INIT_STRING, d_initstr_x, d_initstr_y - d_txt6_h - (3 * factor),
-            CC_GREEN, TBLACK, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+            kCcGreen, kTBlack, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(TXT_CWAIT_STRING, d_cwaitstr_x,
-                         d_cwaitstr_y - d_txt6_h - (3 * factor), CC_GREEN,
-                         TBLACK,
+                         d_cwaitstr_y - d_txt6_h - (3 * factor), kCcGreen,
+                         kTBlack,
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
 
@@ -2441,12 +2440,12 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
     ---------------------------- Process input ----------------------------
     */
     switch (static_cast<int>(input)) {
-      case ButtonKey(BUTTON_ADVANCED):
+      case ButtonKey(kButtonAdvanced):
         Advanced_Modem_Settings(&tempsettings);
         display = REDRAW_ALL;
         break;
 
-      case ButtonKey(BUTTON_PORT):
+      case ButtonKey(kButtonPort):
         if (port_index < 4) {
           const char* const current = portlist.Current_Item();
           const char* const space = strchr(current, ' ');
@@ -2546,7 +2545,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         }
         break;
 
-      case ButtonKey(BUTTON_PORTLIST):
+      case ButtonKey(kButtonPortlist):
         if (portlist.Current_Index() != port_index) {
           port_index = portlist.Current_Index();
           const char* const current = portlist.Current_Item();
@@ -2612,7 +2611,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         break;
 
 #ifdef EDIT_IRQ
-      case ButtonKey(BUTTON_IRQ):
+      case ButtonKey(kButtonIrq):
         item = (char*)irqlist.Current_Item();
         if (irq_index < 4) {
           temp = strchr(item, ' ');
@@ -2639,7 +2638,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         baud_edt.Flag_To_Redraw();
         break;
 
-      case ButtonKey(BUTTON_IRQLIST):
+      case ButtonKey(kButtonIrqlist):
         if (irqlist.Current_Index() != irq_index) {
           irq_index = irqlist.Current_Index();
           item = (char*)irqlist.Current_Item();
@@ -2677,7 +2676,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         break;
 #endif  // EDIT_IRQ
 
-      case ButtonKey(BUTTON_BAUD):
+      case ButtonKey(kButtonBaud):
         strncpy(baudbuf, baudlist.Current_Item(), BAUDBUF_MAX);
         baud_edt.Set_Text(baudbuf, BAUDBUF_MAX);
         initstr_edt.Set_Focus();
@@ -2685,7 +2684,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         display = REDRAW_BUTTONS;
         break;
 
-      case ButtonKey(BUTTON_BAUDLIST):
+      case ButtonKey(kButtonBaudlist):
         if (baudlist.Current_Index() != baud_index) {
           baud_index = baudlist.Current_Index();
           strncpy(baudbuf, baudlist.Current_Item(), BAUDBUF_MAX);
@@ -2695,7 +2694,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         }
         break;
 
-      case ButtonKey(BUTTON_INITSTRLIST):
+      case ButtonKey(kButtonInitstrlist):
         if (initstrlist.Current_Index() != initstr_index) {
           initstr_index = initstrlist.Current_Index();
           strncpy(initstrbuf, initstrlist.Current_Item(), INITSTRBUF_MAX);
@@ -2709,7 +2708,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
       /*------------------------------------------------------------------
       Add a new InitString entry
       ------------------------------------------------------------------*/
-      case ButtonKey(BUTTON_ADD):
+      case ButtonKey(kButtonAdd):
 
         item = new char[INITSTRBUF_MAX];
         memset(item, 0, INITSTRBUF_MAX);
@@ -2739,7 +2738,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
       /*------------------------------------------------------------------
       Delete the current InitString entry
       ------------------------------------------------------------------*/
-      case ButtonKey(BUTTON_DELETE):
+      case ButtonKey(kButtonDelete):
 
         if (InitStrings.Count() && initstr_index != -1) {
           InitStrings.Delete(initstr_index);
@@ -2748,9 +2747,9 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         }
         break;
 
-      case ButtonKey(BUTTON_CWAITSTR):
-        if (cwaitstr_index >= CALL_WAIT_CUSTOM) {
-          item = CallWaitStrings[CALL_WAIT_CUSTOM];
+      case ButtonKey(kButtonCwaitstr):
+        if (cwaitstr_index >= kCallWaitCustom) {
+          item = CallWaitStrings[kCallWaitCustom];
           temp = strchr(item, '-');
           if (temp) {
             pos = static_cast<int>(temp - item) + 2;
@@ -2762,7 +2761,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         }
         break;
 
-      case ButtonKey(BUTTON_CWAITSTRLIST):
+      case ButtonKey(kButtonCwaitstrlist):
         if (cwaitstrlist.Current_Index() != cwaitstr_index) {
           cwaitstr_index = cwaitstrlist.Current_Index();
           const char* const current = cwaitstrlist.Current_Item();
@@ -2788,13 +2787,13 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         display = REDRAW_BUTTONS;
         break;
 
-      case ButtonKey(BUTTON_TONE):
+      case ButtonKey(kButtonTone):
         tempsettings.DialMethod = DIAL_TOUCH_TONE;
         tonebtn.Turn_On();
         pulsebtn.Turn_Off();
         break;
 
-      case ButtonKey(BUTTON_PULSE):
+      case ButtonKey(kButtonPulse):
         tempsettings.DialMethod = DIAL_PULSE;
         tonebtn.Turn_Off();
         pulsebtn.Turn_On();
@@ -2804,7 +2803,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
       SAVE: save the com settings
       ------------------------------------------------------------------*/
       case KN_RETURN:
-      case ButtonKey(BUTTON_SAVE):
+      case ButtonKey(kButtonSave):
         switch (port_index) {
           case 0:
             tempsettings.Port = 0x3f8;
@@ -2871,7 +2870,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         tempsettings.InitStringIndex = initstr_index;
         tempsettings.CallWaitStringIndex = cwaitstr_index;
 
-        item = CallWaitStrings[CALL_WAIT_CUSTOM];
+        item = CallWaitStrings[kCallWaitCustom];
         temp = strchr(item, '-');
         if (temp) {
           pos = static_cast<int>(temp - item) + 2;
@@ -2904,7 +2903,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
       CANCEL: send a SIGN_OFF, bail out with error code
       ------------------------------------------------------------------*/
       case KN_ESC:
-      case ButtonKey(BUTTON_CANCEL):
+      case ButtonKey(kButtonCancel):
         process = false;
         rc = 0;
         break;
@@ -3172,34 +3171,33 @@ int Com_Scenario_Dialog() {
   /*........................................................................
   Button Enumerations
   ........................................................................*/
-  enum {
-    BUTTON_NAME = 100,
-    BUTTON_GDI,
-    BUTTON_NOD,
-    BUTTON_CREDITS,
-    BUTTON_SCENARIOLIST,
-    BUTTON_COUNT,
-    BUTTON_LEVEL,
-    BUTTON_BASES,
-    BUTTON_TIBERIUM,
-    BUTTON_GOODIES,
-    BUTTON_GHOSTS,
-    BUTTON_OK,
-    BUTTON_CANCEL,
-    BUTTON_SEND,
-  };
+  constexpr int kButtonName = 100;
+  constexpr int kButtonGdi = 101;
+  constexpr int kButtonNod = 102;
+  constexpr int kButtonCredits = 103;
+  constexpr int kButtonScenariolist = 104;
+  constexpr int kButtonCount = 105;
+  constexpr int kButtonLevel = 106;
+  constexpr int kButtonBases = 107;
+  constexpr int kButtonTiberium = 108;
+  constexpr int kButtonGoodies = 109;
+  constexpr int kButtonGhosts = 110;
+  constexpr int kButtonOk = 111;
+  constexpr int kButtonCancel = 112;
+  constexpr int kButtonSend = 113;
 
   /*........................................................................
   Redraw values: in order from "top" to "bottom" layer of the dialog
   ........................................................................*/
-  typedef enum {
+  enum class RedrawType {
     REDRAW_NONE = 0,
     REDRAW_MESSAGE = 1,
     REDRAW_COLORS = 2,
     REDRAW_BUTTONS = 3,
     REDRAW_BACKGROUND = 4,
     REDRAW_ALL = REDRAW_BACKGROUND
-  } RedrawType;
+  };
+  using enum RedrawType;
 
   /*........................................................................
   Dialog variables
@@ -3258,63 +3256,63 @@ int Com_Scenario_Dialog() {
   Buttons
   ........................................................................*/
 
-  EditClass name_edt(BUTTON_NAME, namebuf, MPLAYER_NAME_MAX,
+  EditClass name_edt(kButtonName, namebuf, MPLAYER_NAME_MAX,
                      TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_name_x,
                      d_name_y, d_name_w, d_name_h, EditClass::ALPHANUMERIC);
 
   TextButtonClass gdibtn(
-      BUTTON_GDI, TXT_G_D_I,
+      kButtonGdi, TXT_G_D_I,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_gdi_x,
       d_gdi_y, d_gdi_w, d_gdi_h);
 
   TextButtonClass nodbtn(
-      BUTTON_NOD, TXT_N_O_D,
+      kButtonNod, TXT_N_O_D,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_nod_x,
       d_nod_y, d_nod_w, d_nod_h);
 
-  EditClass credit_edt(BUTTON_CREDITS, credbuf, CREDITSBUF_MAX,
+  EditClass credit_edt(kButtonCredits, credbuf, CREDITSBUF_MAX,
                        TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
                        d_credits_x, d_credits_y, d_credits_w, d_credits_h,
                        EditClass::ALPHANUMERIC);
 
-  ListClass scenariolist(BUTTON_SCENARIOLIST, d_scenariolist_x,
+  ListClass scenariolist(kButtonScenariolist, d_scenariolist_x,
                          d_scenariolist_y, d_scenariolist_w, d_scenariolist_h,
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
                          up_button, down_button);
 
-  GaugeClass countgauge(BUTTON_COUNT, d_count_x, d_count_y, d_count_w,
+  GaugeClass countgauge(kButtonCount, d_count_x, d_count_y, d_count_w,
                         d_count_h);
 
-  GaugeClass levelgauge(BUTTON_LEVEL, d_level_x, d_level_y, d_level_w,
+  GaugeClass levelgauge(kButtonLevel, d_level_x, d_level_y, d_level_w,
                         d_level_h);
 
   TextButtonClass basesbtn(
-      BUTTON_BASES, TXT_BASES_OFF,
+      kButtonBases, TXT_BASES_OFF,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_bases_x,
       d_bases_y, d_bases_w, d_bases_h);
 
   TextButtonClass tiberiumbtn(
-      BUTTON_TIBERIUM, TXT_TIBERIUM_OFF,
+      kButtonTiberium, TXT_TIBERIUM_OFF,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_tiberium_x,
       d_tiberium_y, d_tiberium_w, d_tiberium_h);
 
   TextButtonClass goodiesbtn(
-      BUTTON_GOODIES, TXT_CRATES_OFF,
+      kButtonGoodies, TXT_CRATES_OFF,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_goodies_x,
       d_goodies_y, d_goodies_w, d_goodies_h);
 
   TextButtonClass ghostsbtn(
-      BUTTON_GHOSTS, TXT_AI_PLAYERS_OFF,
+      kButtonGhosts, TXT_AI_PLAYERS_OFF,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_ghosts_x,
       d_ghosts_y, d_ghosts_w, d_ghosts_h);
 
   TextButtonClass okbtn(
-      BUTTON_OK, TXT_OK,
+      kButtonOk, TXT_OK,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_ok_x,
       d_ok_y, d_ok_w, d_ok_h);
 
   TextButtonClass cancelbtn(
-      BUTTON_CANCEL, TXT_CANCEL,
+      kButtonCancel, TXT_CANCEL,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       // #if (GERMAN | FRENCH)
       //		d_cancel_x, d_cancel_y);
@@ -3323,7 +3321,7 @@ int Com_Scenario_Dialog() {
   // #endif
 
   TextButtonClass sendbtn(
-      BUTTON_SEND, TXT_SEND_MESSAGE,
+      kButtonSend, TXT_SEND_MESSAGE,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       // #if (GERMAN | FRENCH)
       //		d_send_x, d_send_y);
@@ -3452,7 +3450,7 @@ int Com_Scenario_Dialog() {
   }
 
   if (strlen(ModemRXString) > 0) {
-    Messages.Add_Message(ModemRXString, CC_TAN,
+    Messages.Add_Message(ModemRXString, kCcTan,
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200,
                          0, 0);
   }
@@ -3502,7 +3500,7 @@ int Com_Scenario_Dialog() {
     /*
     ...................... Refresh display if needed ......................
     */
-    if (display) {
+    if (display != REDRAW_NONE) {
       Hide_Mouse();
       /*
       .................. Redraw backgound & dialog box ...................
@@ -3513,7 +3511,7 @@ int Com_Scenario_Dialog() {
         // init font variables
 
         Fancy_Text_Print(
-            TXT_NONE, 0, 0, TBLACK, TBLACK,
+            TXT_NONE, 0, 0, kTBlack, kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         /*...............................................................
@@ -3533,35 +3531,35 @@ int Com_Scenario_Dialog() {
 
         Fancy_Text_Print(
             TXT_YOUR_NAME, d_name_x - (5 * factor), d_name_y + (1 * factor),
-            CC_GREEN, TBLACK,
+            kCcGreen, kTBlack,
             TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
             TXT_SIDE_COLON, d_gdi_x - (5 * factor), d_gdi_y + (1 * factor),
-            CC_GREEN, TBLACK,
+            kCcGreen, kTBlack,
             TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
             TXT_START_CREDITS_COLON, d_credits_x - (5 * factor),
-            d_credits_y + (1 * factor), CC_GREEN, TBLACK,
+            d_credits_y + (1 * factor), kCcGreen, kTBlack,
             TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
             TXT_COLOR_COLON, cbox_x[0] - (5 * factor), d_color_y + (1 * factor),
-            CC_GREEN, TBLACK,
+            kCcGreen, kTBlack,
             TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
             TXT_SCENARIOS, d_scenariolist_x + (d_scenariolist_w / 2),
-            d_scenariolist_y - d_txt6_h, CC_GREEN, TBLACK,
+            d_scenariolist_y - d_txt6_h, kCcGreen, kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
-            TXT_COUNT, d_count_x - (3 * factor), d_count_y, CC_GREEN, TBLACK,
+            TXT_COUNT, d_count_x - (3 * factor), d_count_y, kCcGreen, kTBlack,
             TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_RIGHT);
 
         Fancy_Text_Print(
-            TXT_LEVEL, d_level_x - (3 * factor), d_level_y, CC_GREEN, TBLACK,
+            TXT_LEVEL, d_level_x - (3 * factor), d_level_y, kCcGreen, kTBlack,
             TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_RIGHT);
       }
 
@@ -3597,7 +3595,7 @@ int Com_Scenario_Dialog() {
 
         LogicPage->Fill_Rect(d_dialog_x + (2 * factor), d_opponent_y,
                              d_dialog_x + d_dialog_w - (4 * factor),
-                             d_opponent_y + d_txt6_h, BLACK);
+                             d_opponent_y + d_txt6_h, kBlack);
 
         if (parms_received) {
           if (oppscorescreen) {
@@ -3607,12 +3605,12 @@ int Com_Scenario_Dialog() {
             const int txtwidth = String_Pixel_Width(txt);
 
             Fancy_Text_Print(txt, d_dialog_cx - (txtwidth / 2), d_opponent_y,
-                             CC_GREEN, TBLACK,
+                             kCcGreen, kTBlack,
                              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
           } else {
             Fancy_Text_Print(
                 TXT_OPPONENT_COLON, d_opponent_x - (3 * factor), d_opponent_y,
-                CC_GREEN, TBLACK,
+                kCcGreen, kTBlack,
                 TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
             if (TheirHouse == HOUSE_GOOD) {
@@ -3624,14 +3622,14 @@ int Com_Scenario_Dialog() {
             }
 
             Fancy_Text_Print(txt, d_opponent_x, d_opponent_y,
-                             MPlayerTColors[TheirColor], TBLACK,
+                             MPlayerTColors[TheirColor], kTBlack,
                              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
           }
         }
 
         absl::SNPrintF(txt, sizeof(txt), "%d ", MPlayerUnitCount);
         Fancy_Text_Print(txt, d_count_x + d_count_w + (3 * factor), d_count_y,
-                         CC_GREEN, BLACK,
+                         kCcGreen, kBlack,
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         if (BuildLevel <= MPLAYER_BUILD_LEVEL_MAX) {
@@ -3640,7 +3638,7 @@ int Com_Scenario_Dialog() {
           absl::SNPrintF(txt, sizeof(txt), "**");
         }
         Fancy_Text_Print(txt, d_level_x + d_level_w + (3 * factor), d_level_y,
-                         CC_GREEN, BLACK,
+                         kCcGreen, kBlack,
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
 
@@ -3691,7 +3689,7 @@ int Com_Scenario_Dialog() {
       /*------------------------------------------------------------------
       User edits the name field; retransmit new game options
       ------------------------------------------------------------------*/
-      case ButtonKey(BUTTON_NAME):
+      case ButtonKey(kButtonName):
         if (!ready_to_go) {
           credit_edt.Clear_Focus();
           credit_edt.Flag_To_Redraw();
@@ -3705,7 +3703,7 @@ int Com_Scenario_Dialog() {
       /*------------------------------------------------------------------
       House Buttons: set the player's desired House
       ------------------------------------------------------------------*/
-      case ButtonKey(BUTTON_GDI):
+      case ButtonKey(kButtonGdi):
         if (!ready_to_go) {
           MPlayerHouse = HOUSE_GOOD;
           gdibtn.Turn_On();
@@ -3716,7 +3714,7 @@ int Com_Scenario_Dialog() {
         }
         break;
 
-      case ButtonKey(BUTTON_NOD):
+      case ButtonKey(kButtonNod):
         if (!ready_to_go) {
           MPlayerHouse = HOUSE_BAD;
           gdibtn.Turn_Off();
@@ -3730,7 +3728,7 @@ int Com_Scenario_Dialog() {
       /*------------------------------------------------------------------
       User edits the credits value; retransmit new game options
       ------------------------------------------------------------------*/
-      case ButtonKey(BUTTON_CREDITS):
+      case ButtonKey(kButtonCredits):
         if (!ready_to_go) {
           name_edt.Clear_Focus();
           name_edt.Flag_To_Redraw();
@@ -3743,7 +3741,7 @@ int Com_Scenario_Dialog() {
       /*------------------------------------------------------------------
       New Scenario selected.
       ------------------------------------------------------------------*/
-      case ButtonKey(BUTTON_SCENARIOLIST):
+      case ButtonKey(kButtonScenariolist):
         if (scenariolist.Current_Index() != ScenarioIdx && !ready_to_go) {
           ScenarioIdx = scenariolist.Current_Index();
           MPlayerCredits = tech::ParseInteger<int>(credbuf).value_or(0);
@@ -3755,7 +3753,7 @@ int Com_Scenario_Dialog() {
       /*------------------------------------------------------------------
       User adjusts max # units
       ------------------------------------------------------------------*/
-      case ButtonKey(BUTTON_COUNT):
+      case ButtonKey(kButtonCount):
         if (!ready_to_go) {
           MPlayerUnitCount =
               countgauge.Get_Value() + MPlayerCountMin[MPlayerBases];
@@ -3767,7 +3765,7 @@ int Com_Scenario_Dialog() {
       /*------------------------------------------------------------------
       User adjusts build level
       ------------------------------------------------------------------*/
-      case ButtonKey(BUTTON_LEVEL):
+      case ButtonKey(kButtonLevel):
         if (!ready_to_go) {
           BuildLevel = std::min(levelgauge.Get_Value() + 1,
                                               MPLAYER_BUILD_LEVEL_MAX);
@@ -3779,7 +3777,7 @@ int Com_Scenario_Dialog() {
       /*------------------------------------------------------------------
       Toggle bases
       ------------------------------------------------------------------*/
-      case ButtonKey(BUTTON_BASES):
+      case ButtonKey(kButtonBases):
         if (!ready_to_go) {
           if (MPlayerBases) {
             MPlayerBases = 0;
@@ -3816,7 +3814,7 @@ int Com_Scenario_Dialog() {
       /*------------------------------------------------------------------
       Toggle tiberium
       ------------------------------------------------------------------*/
-      case ButtonKey(BUTTON_TIBERIUM):
+      case ButtonKey(kButtonTiberium):
         if (!ready_to_go) {
           if (MPlayerTiberium) {
             MPlayerTiberium = 0;
@@ -3840,7 +3838,7 @@ int Com_Scenario_Dialog() {
       /*------------------------------------------------------------------
       Toggle goodies
       ------------------------------------------------------------------*/
-      case ButtonKey(BUTTON_GOODIES):
+      case ButtonKey(kButtonGoodies):
         if (!ready_to_go) {
           if (MPlayerGoodies) {
             MPlayerGoodies = 0;
@@ -3860,7 +3858,7 @@ int Com_Scenario_Dialog() {
       /*------------------------------------------------------------------
       Toggle ghosts
       ------------------------------------------------------------------*/
-      case ButtonKey(BUTTON_GHOSTS):
+      case ButtonKey(kButtonGhosts):
         if (!ready_to_go) {
           if (!MPlayerGhosts &&
               !Special.IsCaptureTheFlag) {  // ghosts OFF => ghosts ON
@@ -3888,7 +3886,7 @@ int Com_Scenario_Dialog() {
       /*------------------------------------------------------------------
       OK: exit loop with true status
       ------------------------------------------------------------------*/
-      case ButtonKey(BUTTON_OK):
+      case ButtonKey(kButtonOk):
         if (!ready_to_go) {
           //
           // make sure we got a game options packet from the other player
@@ -3900,7 +3898,7 @@ int Com_Scenario_Dialog() {
             // force transmitting of game options packet one last time
 
             SendPacket.Command = SERIAL_READY_TO_GO;
-            SendPacket.ID = ModemGameToPlay;
+            SendPacket.ID = static_cast<unsigned char>(ModemGameToPlay);
             NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 1);
 
             starttime = TickCount.Time();
@@ -3939,7 +3937,7 @@ int Com_Scenario_Dialog() {
         }
 
         [[fallthrough]];
-      case ButtonKey(BUTTON_CANCEL):
+      case ButtonKey(kButtonCancel):
         if (!ready_to_go) {
           process = false;
           rc = 0;
@@ -3958,7 +3956,7 @@ int Com_Scenario_Dialog() {
         F4/SEND/'M' = send a message
         ...............................................................*/
         if (Messages.Get_Edit_Buf() == nullptr) {
-          if (input == KN_M || input == ButtonKey(BUTTON_SEND) ||
+          if (input == KN_M || input == ButtonKey(kButtonSend) ||
               input == KN_F4) {
             memset(txt, 0, 80);
 
@@ -3977,7 +3975,7 @@ int Com_Scenario_Dialog() {
             break;
           }
         } else {
-          if (input == ButtonKey(BUTTON_SEND)) {
+          if (input == ButtonKey(kButtonSend)) {
             input = KN_RETURN;
           }
         }
@@ -4136,7 +4134,7 @@ int Com_Scenario_Dialog() {
       SendPacket.Seed = Seed;
       SendPacket.Special = Special;
       SendPacket.GameSpeed = Options.GameSpeed;
-      SendPacket.ID = ModemGameToPlay;
+      SendPacket.ID = static_cast<unsigned char>(ModemGameToPlay);
 
       NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 1);
 
@@ -4162,7 +4160,7 @@ int Com_Scenario_Dialog() {
       SendPacket.Command = SERIAL_TIMING;
       SendPacket.ResponseTime =
           static_cast<uint32_t>(NullModem.Response_Time());
-      SendPacket.ID = ModemGameToPlay;
+      SendPacket.ID = static_cast<unsigned char>(ModemGameToPlay);
 
       NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 0);
       timingtime = TickCount.Time();
@@ -4183,7 +4181,7 @@ int Com_Scenario_Dialog() {
       if (ReceivePacket.Command >= SERIAL_CONNECT &&
           ReceivePacket.Command < SERIAL_LAST_COMMAND &&
           ReceivePacket.Command != SERIAL_MESSAGE &&
-          ReceivePacket.ID == ModemGameToPlay) {
+          ReceivePacket.ID == static_cast<unsigned char>(ModemGameToPlay)) {
         CCMessageBox().Process(TXT_SYSTEM_NOT_RESPONDING);
 
         // to skip the other system not responding msg
@@ -4300,7 +4298,9 @@ int Com_Scenario_Dialog() {
             crc = port::ReadUnaligned<uint16_t>(ReceivePacket.Message +
                                                 COMPAT_MESSAGE_LENGTH - 2);
             Messages.Add_Message(
-                txt, MPlayerTColors[MPlayerID_To_ColorIndex(ReceivePacket.ID)],
+                txt,
+                MPlayerTColors[static_cast<int>(
+                    MPlayerID_To_ColorIndex(ReceivePacket.ID))],
                 TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200,
                 magic_number, crc);
             if (display != REDRAW_ALL) {
@@ -4433,7 +4433,7 @@ int Com_Scenario_Dialog() {
                    MPlayerMaxAhead);
     CCDebugString(flip);
 
-    SendPacket.ID = ModemGameToPlay;
+    SendPacket.ID = static_cast<unsigned char>(ModemGameToPlay);
 
     NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 1);
 
@@ -4458,7 +4458,7 @@ int Com_Scenario_Dialog() {
       .....................................................................*/
       SendPacket.Command = SERIAL_SIGN_OFF;
       SendPacket.Color = MPlayerLocalID;  // use Color for ID
-      SendPacket.ID = ModemGameToPlay;
+      SendPacket.ID = static_cast<unsigned char>(ModemGameToPlay);
       NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 1);
 
       starttime = TickCount.Time();
@@ -4470,7 +4470,7 @@ int Com_Scenario_Dialog() {
 
         if ((NullModem.Get_Message(&ReceivePacket, &packetlen) > 0) &&
             (ReceivePacket.Command == SERIAL_SIGN_OFF &&
-             ReceivePacket.ID == ModemGameToPlay))
+             ReceivePacket.ID == static_cast<unsigned char>(ModemGameToPlay)))
         // are we getting our own packets back??
 
         {
@@ -4608,25 +4608,24 @@ int Com_Show_Scenario_Dialog() {
   /*........................................................................
   Button Enumerations
   ........................................................................*/
-  enum {
-    BUTTON_NAME = 100,
-    BUTTON_GDI,
-    BUTTON_NOD,
-    BUTTON_CANCEL,
-    BUTTON_SEND,
-  };
+  constexpr int kButtonName = 100;
+  constexpr int kButtonGdi = 101;
+  constexpr int kButtonNod = 102;
+  constexpr int kButtonCancel = 103;
+  constexpr int kButtonSend = 104;
 
   /*........................................................................
   Redraw values: in order from "top" to "bottom" layer of the dialog
   ........................................................................*/
-  typedef enum {
+  enum class RedrawType {
     REDRAW_NONE = 0,
     REDRAW_MESSAGE = 1,
     REDRAW_COLORS = 2,
     REDRAW_BUTTONS = 3,
     REDRAW_BACKGROUND = 4,
     REDRAW_ALL = REDRAW_BACKGROUND
-  } RedrawType;
+  };
+  using enum RedrawType;
 
   /*........................................................................
   Dialog variables
@@ -4669,22 +4668,22 @@ int Com_Show_Scenario_Dialog() {
   Buttons
   ........................................................................*/
 
-  EditClass name_edt(BUTTON_NAME, namebuf, MPLAYER_NAME_MAX,
+  EditClass name_edt(kButtonName, namebuf, MPLAYER_NAME_MAX,
                      TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_name_x,
                      d_name_y, d_name_w, d_name_h, EditClass::ALPHANUMERIC);
 
   TextButtonClass gdibtn(
-      BUTTON_GDI, TXT_G_D_I,
+      kButtonGdi, TXT_G_D_I,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_gdi_x,
       d_gdi_y, d_gdi_w, d_gdi_h);
 
   TextButtonClass nodbtn(
-      BUTTON_NOD, TXT_N_O_D,
+      kButtonNod, TXT_N_O_D,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_nod_x,
       d_nod_y, d_nod_w, d_nod_h);
 
   TextButtonClass cancelbtn(
-      BUTTON_CANCEL, TXT_CANCEL,
+      kButtonCancel, TXT_CANCEL,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       // #if (GERMAN | FRENCH)
       //		d_cancel_x, d_cancel_y);
@@ -4693,7 +4692,7 @@ int Com_Show_Scenario_Dialog() {
   // #endif
 
   TextButtonClass sendbtn(
-      BUTTON_SEND, TXT_SEND_MESSAGE,
+      kButtonSend, TXT_SEND_MESSAGE,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       // #if (GERMAN | FRENCH)
       //		d_send_x, d_send_y);
@@ -4727,7 +4726,7 @@ int Com_Show_Scenario_Dialog() {
     nodbtn.Turn_On();
   }
 
-  Fancy_Text_Print("", 0, 0, CC_GREEN, TBLACK,
+  Fancy_Text_Print("", 0, 0, kCcGreen, kTBlack,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   int transmit = 1;  // 1 = re-transmit new game options
@@ -4747,7 +4746,7 @@ int Com_Show_Scenario_Dialog() {
   }
 
   if (strlen(ModemRXString) > 0) {
-    Messages.Add_Message(ModemRXString, CC_TAN,
+    Messages.Add_Message(ModemRXString, kCcTan,
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200,
                          0, 0);
   }
@@ -4795,7 +4794,7 @@ int Com_Show_Scenario_Dialog() {
     /*
     ...................... Refresh display if needed ......................
     */
-    if (display) {
+    if (display != REDRAW_NONE) {
       Hide_Mouse();
       /*
       .................. Redraw backgound & dialog box ...................
@@ -4820,17 +4819,17 @@ int Com_Show_Scenario_Dialog() {
 
         Fancy_Text_Print(
             TXT_YOUR_NAME, d_name_x - (5 * factor), d_name_y + (1 * factor),
-            CC_GREEN, TBLACK,
+            kCcGreen, kTBlack,
             TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
             TXT_SIDE_COLON, d_gdi_x - (5 * factor), d_gdi_y + (1 * factor),
-            CC_GREEN, TBLACK,
+            kCcGreen, kTBlack,
             TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
             TXT_COLOR_COLON, cbox_x[0] - (5 * factor), d_color_y + (1 * factor),
-            CC_GREEN, TBLACK,
+            kCcGreen, kTBlack,
             TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
 
@@ -4866,7 +4865,7 @@ int Com_Show_Scenario_Dialog() {
 
         LogicPage->Fill_Rect(d_dialog_x + (2 * factor), d_opponent_y,
                              d_dialog_x + d_dialog_w - (4 * factor),
-                             d_ghosts_y + d_txt6_h, BLACK);
+                             d_ghosts_y + d_txt6_h, kBlack);
 
         if (parms_received) {
           if (oppscorescreen) {
@@ -4876,7 +4875,7 @@ int Com_Show_Scenario_Dialog() {
             const int txtwidth = String_Pixel_Width(txt);
 
             Fancy_Text_Print(txt, d_dialog_cx - (txtwidth / 2), d_opponent_y,
-                             CC_GREEN, TBLACK,
+                             kCcGreen, kTBlack,
                              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
           } else {
             /*............................................................
@@ -4884,7 +4883,7 @@ int Com_Show_Scenario_Dialog() {
             ............................................................*/
             Fancy_Text_Print(
                 TXT_OPPONENT_COLON, d_dialog_cx - (3 * factor), d_opponent_y,
-                CC_GREEN, TBLACK,
+                kCcGreen, kTBlack,
                 TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
             if (TheirHouse == HOUSE_GOOD) {
@@ -4896,7 +4895,7 @@ int Com_Show_Scenario_Dialog() {
             }
 
             Fancy_Text_Print(txt, d_dialog_cx, d_opponent_y,
-                             MPlayerTColors[TheirColor], TBLACK,
+                             MPlayerTColors[TheirColor], kTBlack,
                              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
             /*............................................................
@@ -4904,19 +4903,20 @@ int Com_Show_Scenario_Dialog() {
             ............................................................*/
             Fancy_Text_Print(
                 TXT_SCENARIO_COLON, d_dialog_cx - (3 * factor), d_scenario_y,
-                CC_GREEN, TBLACK,
+                kCcGreen, kTBlack,
                 TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
             if (ScenarioIdx != -1) {
               absl::SNPrintF(txt, sizeof(txt), "%s",
                              MPlayerScenarios[ScenarioIdx]);
 
-              Fancy_Text_Print(txt, d_dialog_cx, d_scenario_y, CC_GREEN, TBLACK,
+              Fancy_Text_Print(txt, d_dialog_cx, d_scenario_y, kCcGreen,
+                               kTBlack,
                                TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
             } else {
               port::SafeCopy(txt, Text_String(TXT_NOT_FOUND));
 
-              Fancy_Text_Print(txt, d_dialog_cx, d_scenario_y, RED, TBLACK,
+              Fancy_Text_Print(txt, d_dialog_cx, d_scenario_y, kRed, kTBlack,
                                TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
             }
 
@@ -4925,11 +4925,11 @@ int Com_Show_Scenario_Dialog() {
             ............................................................*/
             Fancy_Text_Print(
                 TXT_START_CREDITS_COLON, d_dialog_cx - (3 * factor),
-                d_credits_y, CC_GREEN, TBLACK,
+                d_credits_y, kCcGreen, kTBlack,
                 TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
             absl::SNPrintF(txt, sizeof(txt), "%d", MPlayerCredits);
-            Fancy_Text_Print(txt, d_dialog_cx, d_credits_y, CC_GREEN, TBLACK,
+            Fancy_Text_Print(txt, d_dialog_cx, d_credits_y, kCcGreen, kTBlack,
                              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
             /*............................................................
@@ -4937,12 +4937,12 @@ int Com_Show_Scenario_Dialog() {
             ............................................................*/
 
             Fancy_Text_Print(
-                TXT_COUNT, d_dialog_cx - (3 * factor), d_count_y, CC_GREEN,
-                TBLACK,
+                TXT_COUNT, d_dialog_cx - (3 * factor), d_count_y, kCcGreen,
+                kTBlack,
                 TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
             absl::SNPrintF(txt, sizeof(txt), "%d ", MPlayerUnitCount);
-            Fancy_Text_Print(txt, d_dialog_cx, d_count_y, CC_GREEN, TBLACK,
+            Fancy_Text_Print(txt, d_dialog_cx, d_count_y, kCcGreen, kTBlack,
                              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
             /*............................................................
@@ -4950,8 +4950,8 @@ int Com_Show_Scenario_Dialog() {
             ............................................................*/
 
             Fancy_Text_Print(
-                TXT_LEVEL, d_dialog_cx - (3 * factor), d_level_y, CC_GREEN,
-                TBLACK,
+                TXT_LEVEL, d_dialog_cx - (3 * factor), d_level_y, kCcGreen,
+                kTBlack,
                 TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
             if (BuildLevel <= MPLAYER_BUILD_LEVEL_MAX) {
@@ -4959,7 +4959,7 @@ int Com_Show_Scenario_Dialog() {
             } else {
               absl::SNPrintF(txt, sizeof(txt), "**");
             }
-            Fancy_Text_Print(txt, d_dialog_cx, d_level_y, CC_GREEN, TBLACK,
+            Fancy_Text_Print(txt, d_dialog_cx, d_level_y, kCcGreen, kTBlack,
                              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
             /*............................................................
@@ -4967,7 +4967,7 @@ int Com_Show_Scenario_Dialog() {
             ............................................................*/
             Fancy_Text_Print(
                 TXT_BASES_COLON, d_dialog_cx - (3 * factor), d_bases_y,
-                CC_GREEN, TBLACK,
+                kCcGreen, kTBlack,
                 TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
             if (MPlayerBases) {
@@ -4975,7 +4975,7 @@ int Com_Show_Scenario_Dialog() {
             } else {
               port::SafeCopy(txt, Text_String(TXT_OFF));
             }
-            Fancy_Text_Print(txt, d_dialog_cx, d_bases_y, CC_GREEN, TBLACK,
+            Fancy_Text_Print(txt, d_dialog_cx, d_bases_y, kCcGreen, kTBlack,
                              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
             /*............................................................
@@ -4983,7 +4983,7 @@ int Com_Show_Scenario_Dialog() {
             ............................................................*/
             Fancy_Text_Print(
                 TXT_TIBERIUM_COLON, d_dialog_cx - (3 * factor), d_tiberium_y,
-                CC_GREEN, TBLACK,
+                kCcGreen, kTBlack,
                 TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
             if (MPlayerTiberium) {
@@ -4991,7 +4991,7 @@ int Com_Show_Scenario_Dialog() {
             } else {
               port::SafeCopy(txt, Text_String(TXT_OFF));
             }
-            Fancy_Text_Print(txt, d_dialog_cx, d_tiberium_y, CC_GREEN, TBLACK,
+            Fancy_Text_Print(txt, d_dialog_cx, d_tiberium_y, kCcGreen, kTBlack,
                              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
             /*............................................................
@@ -4999,7 +4999,7 @@ int Com_Show_Scenario_Dialog() {
             ............................................................*/
             Fancy_Text_Print(
                 TXT_CRATES_COLON, d_dialog_cx - (3 * factor), d_goodies_y,
-                CC_GREEN, TBLACK,
+                kCcGreen, kTBlack,
                 TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
             if (MPlayerGoodies) {
@@ -5007,7 +5007,7 @@ int Com_Show_Scenario_Dialog() {
             } else {
               port::SafeCopy(txt, Text_String(TXT_OFF));
             }
-            Fancy_Text_Print(txt, d_dialog_cx, d_goodies_y, CC_GREEN, TBLACK,
+            Fancy_Text_Print(txt, d_dialog_cx, d_goodies_y, kCcGreen, kTBlack,
                              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
             /*............................................................
@@ -5017,11 +5017,12 @@ int Com_Show_Scenario_Dialog() {
               port::SafeCopy(txt, Text_String(TXT_CAPTURE_THE_FLAG));
               port::SafeAppend(txt, ":");
               Fancy_Text_Print(
-                  txt, d_dialog_cx - (3 * factor), d_ghosts_y, CC_GREEN, TBLACK,
+                  txt, d_dialog_cx - (3 * factor), d_ghosts_y, kCcGreen,
+                  kTBlack,
                   TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
               port::SafeCopy(txt, Text_String(TXT_ON));
-              Fancy_Text_Print(txt, d_dialog_cx, d_ghosts_y, CC_GREEN, TBLACK,
+              Fancy_Text_Print(txt, d_dialog_cx, d_ghosts_y, kCcGreen, kTBlack,
                                TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
             } else {
               /*............................................................
@@ -5029,7 +5030,7 @@ int Com_Show_Scenario_Dialog() {
               ............................................................*/
               Fancy_Text_Print(
                   TXT_AI_PLAYERS_COLON, d_dialog_cx - (3 * factor), d_ghosts_y,
-                  CC_GREEN, TBLACK,
+                  kCcGreen, kTBlack,
                   TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
               if (MPlayerGhosts) {
@@ -5037,7 +5038,7 @@ int Com_Show_Scenario_Dialog() {
               } else {
                 port::SafeCopy(txt, Text_String(TXT_OFF));
               }
-              Fancy_Text_Print(txt, d_dialog_cx, d_ghosts_y, CC_GREEN, TBLACK,
+              Fancy_Text_Print(txt, d_dialog_cx, d_ghosts_y, kCcGreen, kTBlack,
                                TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
             }
           }
@@ -5100,7 +5101,7 @@ int Com_Show_Scenario_Dialog() {
       /*------------------------------------------------------------------
       House Buttons: set the player's desired House
       ------------------------------------------------------------------*/
-      case ButtonKey(BUTTON_GDI):
+      case ButtonKey(kButtonGdi):
         if (!ready_to_go) {
           MPlayerHouse = HOUSE_GOOD;
           gdibtn.Turn_On();
@@ -5110,7 +5111,7 @@ int Com_Show_Scenario_Dialog() {
         }
         break;
 
-      case ButtonKey(BUTTON_NOD):
+      case ButtonKey(kButtonNod):
         if (!ready_to_go) {
           MPlayerHouse = HOUSE_BAD;
           gdibtn.Turn_Off();
@@ -5123,7 +5124,7 @@ int Com_Show_Scenario_Dialog() {
       /*------------------------------------------------------------------
       User edits the name value; retransmit
       ------------------------------------------------------------------*/
-      case ButtonKey(BUTTON_NAME):
+      case ButtonKey(kButtonName):
         if (!ready_to_go) {
           port::SafeCopy(MPlayerName, namebuf);
           transmit = 1;
@@ -5142,7 +5143,7 @@ int Com_Show_Scenario_Dialog() {
         }
 
         [[fallthrough]];
-      case ButtonKey(BUTTON_CANCEL):
+      case ButtonKey(kButtonCancel):
         if (!ready_to_go) {
           process = false;
           rc = 0;
@@ -5158,7 +5159,7 @@ int Com_Show_Scenario_Dialog() {
           F4/SEND/'M' = send a message
           ...............................................................*/
           if (Messages.Get_Edit_Buf() == nullptr) {
-            if (input == KN_M || input == ButtonKey(BUTTON_SEND) ||
+            if (input == KN_M || input == ButtonKey(kButtonSend) ||
                 input == KN_F4) {
               memset(txt, 0, 80);
 
@@ -5176,7 +5177,7 @@ int Com_Show_Scenario_Dialog() {
               break;
             }
           } else {
-            if (input == ButtonKey(BUTTON_SEND)) {
+            if (input == ButtonKey(kButtonSend)) {
               input = KN_RETURN;
             }
           }
@@ -5312,7 +5313,7 @@ int Com_Show_Scenario_Dialog() {
 #endif
       SendPacket.House = MPlayerHouse;
       SendPacket.Color = static_cast<unsigned char>(MPlayerColorIdx);
-      SendPacket.ID = ModemGameToPlay;
+      SendPacket.ID = static_cast<unsigned char>(ModemGameToPlay);
 
       NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 1);
 
@@ -5327,7 +5328,7 @@ int Com_Show_Scenario_Dialog() {
       SendPacket.Command = SERIAL_TIMING;
       SendPacket.ResponseTime =
           static_cast<uint32_t>(NullModem.Response_Time());
-      SendPacket.ID = ModemGameToPlay;
+      SendPacket.ID = static_cast<unsigned char>(ModemGameToPlay);
 
       NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 0);
       timingtime = TickCount.Time();
@@ -5348,7 +5349,7 @@ int Com_Show_Scenario_Dialog() {
       if (ReceivePacket.Command >= SERIAL_CONNECT &&
           ReceivePacket.Command < SERIAL_LAST_COMMAND &&
           ReceivePacket.Command != SERIAL_MESSAGE &&
-          ReceivePacket.ID == ModemGameToPlay) {
+          ReceivePacket.ID == static_cast<unsigned char>(ModemGameToPlay)) {
         CCMessageBox().Process(TXT_SYSTEM_NOT_RESPONDING);
 
         // to skip the other system not responding msg
@@ -5535,7 +5536,9 @@ int Com_Show_Scenario_Dialog() {
             crc = port::ReadUnaligned<uint16_t>(ReceivePacket.Message +
                                                 COMPAT_MESSAGE_LENGTH - 2);
             Messages.Add_Message(
-                txt, MPlayerTColors[MPlayerID_To_ColorIndex(ReceivePacket.ID)],
+                txt,
+                MPlayerTColors[static_cast<int>(
+                    MPlayerID_To_ColorIndex(ReceivePacket.ID))],
                 TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200,
                 magic_number, crc);
             display = REDRAW_MESSAGE;
@@ -5644,7 +5647,7 @@ int Com_Show_Scenario_Dialog() {
       .....................................................................*/
       SendPacket.Command = SERIAL_SIGN_OFF;
       SendPacket.Color = MPlayerLocalID;  // use Color for ID
-      SendPacket.ID = ModemGameToPlay;
+      SendPacket.ID = static_cast<unsigned char>(ModemGameToPlay);
       NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 1);
 
       starttime = TickCount.Time();
@@ -5656,7 +5659,7 @@ int Com_Show_Scenario_Dialog() {
 
         if ((NullModem.Get_Message(&ReceivePacket, &packetlen) > 0) &&
             (ReceivePacket.Command == SERIAL_SIGN_OFF &&
-             ReceivePacket.ID == ModemGameToPlay))
+             ReceivePacket.ID == static_cast<unsigned char>(ModemGameToPlay)))
         // are we getting our own packets back??
 
         {
@@ -5742,7 +5745,7 @@ static int Phone_Dialog() {
   const int d_delete_y = d_phonelist_y + d_phonelist_h + d_margin;
 
   const int d_numedit_w =
-      ((PhoneEntryClass::PHONE_MAX_NUM - 1) * 6 * factor) + (3 * factor);
+      ((PhoneEntryClass::kPhoneMaxNum - 1) * 6 * factor) + (3 * factor);
   const int d_numedit_h = 9 * factor;
   const int d_numedit_x = d_dialog_cx - (d_numedit_w / 2);
   const int d_numedit_y = d_add_y + d_add_h + d_margin;
@@ -5760,25 +5763,24 @@ static int Phone_Dialog() {
   /*........................................................................
   Button Enumerations
   ........................................................................*/
-  enum {
-    BUTTON_PHONELIST = 100,
-    BUTTON_ADD,
-    BUTTON_EDIT,
-    BUTTON_DELETE,
-    BUTTON_DIAL,
-    BUTTON_CANCEL,
-    BUTTON_NUMEDIT,
-  };
+  constexpr int kButtonPhonelist = 100;
+  constexpr int kButtonAdd = 101;
+  constexpr int kButtonEdit = 102;
+  constexpr int kButtonDelete = 103;
+  constexpr int kButtonDial = 104;
+  constexpr int kButtonCancel = 105;
+  constexpr int kButtonNumedit = 106;
 
   /*........................................................................
   Redraw values: in order from "top" to "bottom" layer of the dialog
   ........................................................................*/
-  typedef enum {
+  enum class RedrawType {
     REDRAW_NONE = 0,
     REDRAW_BUTTONS = 1,
     REDRAW_BACKGROUND = 2,
     REDRAW_ALL = REDRAW_BACKGROUND
-  } RedrawType;
+  };
+  using enum RedrawType;
 
   /*........................................................................
   Dialog variables
@@ -5786,7 +5788,7 @@ static int Phone_Dialog() {
   RedrawType display = REDRAW_ALL;  // redraw level
   bool process = true;              // process while true
 
-  char phone_num[PhoneEntryClass::PHONE_MAX_NUM] = {
+  char phone_num[PhoneEntryClass::kPhoneMaxNum] = {
       0};  // buffer for editing phone #
   int rc = 0;
   int tabs[] = {123 * factor, 207 * factor};  // tabs for list box
@@ -5810,13 +5812,13 @@ static int Phone_Dialog() {
     down_button = Hires_Retrieve("BTN-DN2.SHP");
   }
 
-  ListClass phonelist(BUTTON_PHONELIST, d_phonelist_x, d_phonelist_y,
+  ListClass phonelist(kButtonPhonelist, d_phonelist_x, d_phonelist_y,
                       d_phonelist_w, d_phonelist_h,
                       TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, up_button,
                       down_button);
 
   TextButtonClass addbtn(
-      BUTTON_ADD, TXT_ADD,
+      kButtonAdd, TXT_ADD,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       // #ifdef FRENCH
       //		d_add_x-4, d_add_y);
@@ -5825,12 +5827,12 @@ static int Phone_Dialog() {
   // #endif
 
   TextButtonClass editbtn(
-      BUTTON_EDIT, TXT_EDIT,
+      kButtonEdit, TXT_EDIT,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_edit_x,
       d_edit_y, d_edit_w, d_edit_h);
 
   TextButtonClass deletebtn(
-      BUTTON_DELETE, TXT_DELETE_BUTTON,
+      kButtonDelete, TXT_DELETE_BUTTON,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       // #ifdef FRENCH
       //		d_delete_x, d_delete_y);
@@ -5839,13 +5841,13 @@ static int Phone_Dialog() {
   // #endif
 
   TextButtonClass dialbtn(
-      BUTTON_DIAL, TXT_DIAL,
+      kButtonDial, TXT_DIAL,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       /* ###Change collision detected! C:\PROJECTS\CODE\NULLDLG.CPP... */
       d_dial_x, d_dial_y, d_dial_w, d_dial_h);
 
   TextButtonClass cancelbtn(
-      BUTTON_CANCEL, TXT_CANCEL,
+      kButtonCancel, TXT_CANCEL,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       // #if (GERMAN | FRENCH)
       //		d_cancel_x, d_cancel_y);
@@ -5853,7 +5855,7 @@ static int Phone_Dialog() {
       d_cancel_x, d_cancel_y, d_cancel_w, d_cancel_h);
   // #endif
 
-  EditClass numedit(BUTTON_NUMEDIT, phone_num, PhoneEntryClass::PHONE_MAX_NUM,
+  EditClass numedit(kButtonNumedit, phone_num, PhoneEntryClass::kPhoneMaxNum,
                     TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_numedit_x,
                     d_numedit_y, d_numedit_w, d_numedit_h,
                     EditClass::ALPHANUMERIC);
@@ -5905,7 +5907,7 @@ static int Phone_Dialog() {
     /*
     ...................... Refresh display if needed ......................
     */
-    if (display) {
+    if (display != REDRAW_NONE) {
       Hide_Mouse();
       /*
       .................. Redraw backgound & dialog box ...................
@@ -5919,7 +5921,7 @@ static int Phone_Dialog() {
         // init font variables
 
         Fancy_Text_Print(
-            TXT_NONE, 0, 0, TBLACK, TBLACK,
+            TXT_NONE, 0, 0, kTBlack, kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         /*...............................................................
@@ -5962,7 +5964,7 @@ static int Phone_Dialog() {
       /*------------------------------------------------------------------
       New phone listing selected.
       ------------------------------------------------------------------*/
-      case ButtonKey(BUTTON_PHONELIST):
+      case ButtonKey(kButtonPhonelist):
         /*...............................................................
         Detect a change in the selected item; update CurPhoneIdx, and
         the edit box buffer.
@@ -5970,7 +5972,7 @@ static int Phone_Dialog() {
         if (phonelist.Current_Index() != CurPhoneIdx) {
           CurPhoneIdx = phonelist.Current_Index();
           port::SafeCopy(phone_num, PhoneBook[CurPhoneIdx]->Number);
-          numedit.Set_Text(phone_num, PhoneEntryClass::PHONE_MAX_NUM);
+          numedit.Set_Text(phone_num, PhoneEntryClass::kPhoneMaxNum);
           changed = 1;
         }
         break;
@@ -5978,7 +5980,7 @@ static int Phone_Dialog() {
       /*------------------------------------------------------------------
       Add a new entry
       ------------------------------------------------------------------*/
-      case ButtonKey(BUTTON_ADD):
+      case ButtonKey(kButtonAdd):
 
         /*...............................................................
         Allocate a new phone book entry
@@ -5991,7 +5993,7 @@ static int Phone_Dialog() {
         p_entry->Settings.Baud = -1;
         p_entry->Settings.DialMethod = DIAL_TOUCH_TONE;
         p_entry->Settings.InitStringIndex = 0;
-        p_entry->Settings.CallWaitStringIndex = CALL_WAIT_CUSTOM;
+        p_entry->Settings.CallWaitStringIndex = kCallWaitCustom;
         p_entry->Settings.CallWaitString[0] = 0;
 
         /*...............................................................
@@ -6008,7 +6010,7 @@ static int Phone_Dialog() {
             if (p_entry == PhoneBook[i]) {
               CurPhoneIdx = i;
               port::SafeCopy(phone_num, PhoneBook[CurPhoneIdx]->Number);
-              numedit.Set_Text(phone_num, PhoneEntryClass::PHONE_MAX_NUM);
+              numedit.Set_Text(phone_num, PhoneEntryClass::kPhoneMaxNum);
               phonelist.Set_Selected_Index(CurPhoneIdx);
             }
           }
@@ -6025,7 +6027,7 @@ static int Phone_Dialog() {
       /*------------------------------------------------------------------
       Edit the current entry
       ------------------------------------------------------------------*/
-      case ButtonKey(BUTTON_EDIT):
+      case ButtonKey(kButtonEdit):
 
         /*...............................................................
         Do nothing if no entry is selected.
@@ -6055,7 +6057,7 @@ static int Phone_Dialog() {
             if (PhoneBook[CurPhoneIdx] == PhoneBook[i]) {
               CurPhoneIdx = i;
               port::SafeCopy(phone_num, PhoneBook[CurPhoneIdx]->Number);
-              numedit.Set_Text(phone_num, PhoneEntryClass::PHONE_MAX_NUM);
+              numedit.Set_Text(phone_num, PhoneEntryClass::kPhoneMaxNum);
               phonelist.Set_Selected_Index(CurPhoneIdx);
             }
           }
@@ -6068,7 +6070,7 @@ static int Phone_Dialog() {
       /*------------------------------------------------------------------
       Delete the current entry
       ------------------------------------------------------------------*/
-      case ButtonKey(BUTTON_DELETE):
+      case ButtonKey(kButtonDelete):
 
         /*...............................................................
         Do nothing if no entry is selected.
@@ -6085,7 +6087,7 @@ static int Phone_Dialog() {
 
         if (CurPhoneIdx == -1) {
           *phone_num = 0;
-          numedit.Set_Text(phone_num, PhoneEntryClass::PHONE_MAX_NUM);
+          numedit.Set_Text(phone_num, PhoneEntryClass::kPhoneMaxNum);
         }
         changed = 1;
         break;
@@ -6098,7 +6100,7 @@ static int Phone_Dialog() {
         dialbtn.Draw_Me(true);
         [[fallthrough]];
 
-      case ButtonKey(BUTTON_DIAL):
+      case ButtonKey(kButtonDial):
 
         /*...............................................................
         If no item is selected, just dial the number in the phone #
@@ -6123,7 +6125,7 @@ static int Phone_Dialog() {
           p_entry->Settings.Baud = -1;
           p_entry->Settings.DialMethod = DIAL_TOUCH_TONE;
           p_entry->Settings.InitStringIndex = 0;
-          p_entry->Settings.CallWaitStringIndex = CALL_WAIT_CUSTOM;
+          p_entry->Settings.CallWaitStringIndex = kCallWaitCustom;
           p_entry->Settings.CallWaitString[0] = 0;
 
           PhoneBook.Add(p_entry);
@@ -6147,7 +6149,7 @@ static int Phone_Dialog() {
       CANCEL: bail out
       ------------------------------------------------------------------*/
       case KN_ESC:
-      case ButtonKey(BUTTON_CANCEL):
+      case ButtonKey(kButtonCancel):
         process = false;
         rc = 0;
         break;
@@ -6269,8 +6271,8 @@ static void Build_Phone_Listbox(ListClass* list, EditClass* edit, char* buf) {
   ........................................................................*/
   if (CurPhoneIdx > -1) {
     port::SafeCopy(buf, PhoneBook[CurPhoneIdx]->Number,
-                   PhoneEntryClass::PHONE_MAX_NUM);
-    edit->Set_Text(buf, PhoneEntryClass::PHONE_MAX_NUM);
+                   PhoneEntryClass::kPhoneMaxNum);
+    edit->Set_Text(buf, PhoneEntryClass::kPhoneMaxNum);
     list->Set_Selected_Index(CurPhoneIdx);
   }
 }
@@ -6307,14 +6309,14 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
   const int d_margin = 7 * factor;  // margin width/height
 
   const int d_name_w =
-      ((PhoneEntryClass::PHONE_MAX_NAME - 1) * 6) + (3 * factor);
+      ((PhoneEntryClass::kPhoneMaxName - 1) * 6) + (3 * factor);
   const int d_name_h = 9 * factor;
   const int d_name_x =
       d_dialog_x + ((d_dialog_w - d_name_w) * 3 / 4) - (5 * factor);
   const int d_name_y = d_dialog_y + (25 * factor);
 
   const int d_number_w =
-      ((PhoneEntryClass::PHONE_MAX_NUM - 1) * 6) + (3 * factor);
+      ((PhoneEntryClass::kPhoneMaxNum - 1) * 6) + (3 * factor);
   const int d_number_h = 9 * factor;
   const int d_number_x =
       d_dialog_x + ((d_dialog_w - d_number_w) * 3 / 4) - (5 * factor);
@@ -6359,24 +6361,23 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
   /*........................................................................
   Button Enumerations
   ........................................................................*/
-  enum {
-    BUTTON_NAME = 100,
-    BUTTON_NUMBER,
-    BUTTON_DEFAULT,
-    BUTTON_CUSTOM,
-    BUTTON_SAVE,
-    BUTTON_CANCEL,
-  };
+  constexpr int kButtonName = 100;
+  constexpr int kButtonNumber = 101;
+  constexpr int kButtonDefault = 102;
+  constexpr int kButtonCustom = 103;
+  constexpr int kButtonSave = 104;
+  constexpr int kButtonCancel = 105;
 
   /*........................................................................
   Redraw values: in order from "top" to "bottom" layer of the dialog
   ........................................................................*/
-  typedef enum {
+  enum class RedrawType {
     REDRAW_NONE = 0,
     REDRAW_BUTTONS = 1,
     REDRAW_BACKGROUND = 2,
     REDRAW_ALL = REDRAW_BACKGROUND
-  } RedrawType;
+  };
+  using enum RedrawType;
 
   /*........................................................................
   Dialog variables
@@ -6384,9 +6385,9 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
   RedrawType display = REDRAW_ALL;  // redraw level
   bool process = true;              // process while true
 
-  char namebuf[PhoneEntryClass::PHONE_MAX_NAME] = {
+  char namebuf[PhoneEntryClass::kPhoneMaxName] = {
       0};  // buffer for editing name
-  char numbuf[PhoneEntryClass::PHONE_MAX_NUM] = {
+  char numbuf[PhoneEntryClass::kPhoneMaxNum] = {
       0};  // buffer for editing phone #
   int rc = 0;
   SerialSettingsType settings;
@@ -6397,32 +6398,32 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
   Buttons
   ........................................................................*/
 
-  EditClass nameedit(BUTTON_NAME, namebuf, PhoneEntryClass::PHONE_MAX_NAME,
+  EditClass nameedit(kButtonName, namebuf, PhoneEntryClass::kPhoneMaxName,
                      TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_name_x,
                      d_name_y, d_name_w, d_name_h, EditClass::ALPHANUMERIC);
 
-  EditClass numedit(BUTTON_NUMBER, numbuf, PhoneEntryClass::PHONE_MAX_NUM,
+  EditClass numedit(kButtonNumber, numbuf, PhoneEntryClass::kPhoneMaxNum,
                     TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_number_x,
                     d_number_y, d_number_w, d_number_h,
                     EditClass::ALPHANUMERIC);
 
   TextButtonClass defaultbtn(
-      BUTTON_DEFAULT, TXT_DEFAULT_SETTINGS,
+      kButtonDefault, TXT_DEFAULT_SETTINGS,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_default_x,
       d_default_y, d_default_w, d_default_h);
 
   TextButtonClass custombtn(
-      BUTTON_CUSTOM, TXT_CUSTOM_SETTINGS,
+      kButtonCustom, TXT_CUSTOM_SETTINGS,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_custom_x,
       d_custom_y, d_custom_w, d_custom_h);
 
   TextButtonClass savebtn(
-      BUTTON_SAVE, TXT_SAVE_BUTTON,
+      kButtonSave, TXT_SAVE_BUTTON,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_save_x,
       d_save_y, d_save_w, d_save_h);
 
   TextButtonClass cancelbtn(
-      BUTTON_CANCEL, TXT_CANCEL,
+      kButtonCancel, TXT_CANCEL,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_cancel_x,
       d_cancel_y, d_cancel_w, d_cancel_h);
 
@@ -6456,10 +6457,10 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
   }
 
   port::SafeCopy(namebuf, phone->Name);
-  nameedit.Set_Text(namebuf, PhoneEntryClass::PHONE_MAX_NAME);
+  nameedit.Set_Text(namebuf, PhoneEntryClass::kPhoneMaxName);
 
   port::SafeCopy(numbuf, phone->Number);
-  numedit.Set_Text(numbuf, PhoneEntryClass::PHONE_MAX_NUM);
+  numedit.Set_Text(numbuf, PhoneEntryClass::kPhoneMaxNum);
 
   /*
   ---------------------------- Processing loop -----------------------------
@@ -6483,7 +6484,7 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
     /*
     ...................... Refresh display if needed ......................
     */
-    if (display) {
+    if (display != REDRAW_NONE) {
       Hide_Mouse();
       /*
       .................. Redraw backgound & dialog box ...................
@@ -6497,7 +6498,7 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
         // init font variables
 
         Fancy_Text_Print(
-            TXT_NONE, 0, 0, TBLACK, TBLACK,
+            TXT_NONE, 0, 0, kTBlack, kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         /*...............................................................
@@ -6506,11 +6507,11 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
         Draw_Caption(TXT_PHONE_LISTING, d_dialog_x, d_dialog_y, d_dialog_w);
 
         Fancy_Text_Print(
-            TXT_NAME_COLON, d_name_x - 5, d_name_y + 1, CC_GREEN, TBLACK,
+            TXT_NAME_COLON, d_name_x - 5, d_name_y + 1, kCcGreen, kTBlack,
             TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
-            TXT_NUMBER_COLON, d_number_x - 5, d_number_y + 1, CC_GREEN, TBLACK,
+            TXT_NUMBER_COLON, d_number_x - 5, d_number_y + 1, kCcGreen, kTBlack,
             TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
       /*
@@ -6539,7 +6540,7 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
     ---------------------------- Process input ----------------------------
     */
     switch (static_cast<int>(input)) {
-      case ButtonKey(BUTTON_NAME):
+      case ButtonKey(kButtonName):
         numedit.Set_Focus();
         numedit.Flag_To_Redraw();
         break;
@@ -6552,7 +6553,7 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
       /*------------------------------------------------------------------
       Use Default Serial Settings
       ------------------------------------------------------------------*/
-      case ButtonKey(BUTTON_DEFAULT):
+      case ButtonKey(kButtonDefault):
         custombtn.Turn_Off();
         defaultbtn.Turn_On();
         custom = 0;
@@ -6561,7 +6562,7 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
       /*------------------------------------------------------------------
       Use Custom Serial Settings
       ------------------------------------------------------------------*/
-      case ButtonKey(BUTTON_CUSTOM):
+      case ButtonKey(kButtonCustom):
         if (Com_Settings_Dialog(&settings)) {
           custombtn.Turn_On();
           defaultbtn.Turn_Off();
@@ -6574,7 +6575,7 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
       CANCEL: bail out
       ------------------------------------------------------------------*/
       case KN_ESC:
-      case ButtonKey(BUTTON_CANCEL):
+      case ButtonKey(kButtonCancel):
         process = false;
         rc = 0;
         break;
@@ -6583,7 +6584,7 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
       Save: save changes
       ------------------------------------------------------------------*/
       case KN_RETURN:
-      case ButtonKey(BUTTON_SAVE):
+      case ButtonKey(kButtonSave):
         process = false;
         rc = 1;
         break;
@@ -6615,7 +6616,7 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
       phone->Settings.Baud = -1;
       phone->Settings.DialMethod = DIAL_TOUCH_TONE;
       phone->Settings.InitStringIndex = 0;
-      phone->Settings.CallWaitStringIndex = CALL_WAIT_CUSTOM;
+      phone->Settings.CallWaitStringIndex = kCallWaitCustom;
       phone->Settings.CallWaitString[0] = 0;
     }
   }
@@ -6638,13 +6639,13 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
 
   const unsigned carrier = NullModemClass::Get_Modem_Status();
   if (reconnect) {
-    if (carrier & CD_SET) {
+    if (carrier & kCdSet) {
       connected = true;
       ModemService = true;
       return connected;
     }
   } else {
-    if (carrier & CD_SET) {
+    if (carrier & kCdSet) {
       NullModem.Hangup_Modem();
       ModemService = false;
     }
@@ -6810,13 +6811,13 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
 
   const unsigned carrier = NullModemClass::Get_Modem_Status();
   if (reconnect) {
-    if (carrier & CD_SET) {
+    if (carrier & kCdSet) {
       connected = true;
       ModemService = true;
       return connected;
     }
   } else {
-    if (carrier & CD_SET) {
+    if (carrier & kCdSet) {
       NullModem.Hangup_Modem();
       ModemService = false;
     }

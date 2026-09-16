@@ -223,7 +223,8 @@ COORDINATE Coord_Move(COORDINATE start, DirType dir, uint16_t distance) {
   auto x = static_cast<int16_t>(Coord_X(start));
   auto y = static_cast<int16_t>(Coord_Y(start));
 
-  base::MovePoint(x, y, dir, static_cast<int16_t>(distance));
+  base::MovePoint(x, y, static_cast<uint8_t>(dir),
+                  static_cast<int16_t>(distance));
   return XY_Coord(x, y);
 }
 

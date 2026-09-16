@@ -82,32 +82,32 @@ class MonoClass {
   /*
   **	These private constants are used in the various monochrome operations.
   */
-  enum MonoClassPortEnums {
-    CONTROL_PORT = 0x03B4,  // CRTC control register.
-    DATA_PORT = 0x03B5,     // CRTC data register.
-    COLUMNS = 80,           // Number of columns.
-    LINES = 25,             // Number of lines.
-    SIZE_OF_PAGE = static_cast<std::size_t>(LINES) * COLUMNS * sizeof(CellType),  // Entire page size.
-    DEFAULT_ATTRIBUTE = 0x02  // Normal white on black color attribute.
-  };
+  static constexpr int kControlPort = 0x03B4;  // CRTC control register.
+  static constexpr int kDataPort = 0x03B5;     // CRTC data register.
+  static constexpr int kColumns = 80;          // Number of columns.
+  static constexpr int kLines = 25;            // Number of lines.
+  static constexpr int kSizeOfPage =
+      kLines * kColumns *
+      static_cast<int>(sizeof(CellType));  // Entire page size.
+  static constexpr int kDefaultAttribute =
+      0x02;  // Normal white on black color attribute.
 
  public:
-  enum MonoClassPageEnums {
-    MAX_MONO_PAGES = 16,  // Maximum RAM pages on mono card.
-    SEGMENT = 0xB000      // Monochrome screen segment.
-  };
+  static constexpr int kMaxMonoPages = 16;  // Maximum RAM pages on mono card.
+  static constexpr int kSegment = 0xB000;   // Monochrome screen segment.
 
   /*
   **	These are the various box styles that may be used.
   */
-  typedef enum BoxStyleType {
+  enum class BoxStyleType {
     SINGLE,       // Single thickness.
     DOUBLE_HORZ,  // Double thick on the horizontal axis.
     DOUBLE_VERT,  // Double thick on the vertical axis.
     DOUBLE,       // Double thickness.
 
     COUNT
-  } BoxStyleType;
+  };
+  using enum BoxStyleType;
 
   MonoClass();
   ~MonoClass();
@@ -119,7 +119,7 @@ class MonoClass {
   static int Is_Enabled() { return Enabled; }
   static MonoClass* Get_Current() { return PageUsage[0]; }
 
-  void Draw_Box(int x, int y, int w, int h, char attrib = DEFAULT_ATTRIBUTE,
+  void Draw_Box(int x, int y, int w, int h, char attrib = kDefaultAttribute,
                 BoxStyleType thick = SINGLE);
   void Set_Default_Attribute(char attrib) { Attrib = attrib; }
   void Clear();
@@ -134,8 +134,8 @@ class MonoClass {
     }
   }
   void Text_Print(const char* text, int x, int y,
-                  char attrib = DEFAULT_ATTRIBUTE);
-  void Text_Print(int text, int x, int y, char attrib = DEFAULT_ATTRIBUTE);
+                  char attrib = kDefaultAttribute);
+  void Text_Print(int text, int x, int y, char attrib = kDefaultAttribute);
   void View();
   [[nodiscard]] int Get_X() const { return X; }
   [[nodiscard]] int Get_Y() const { return Y; }
@@ -155,15 +155,15 @@ class MonoClass {
  private:
   char X;       // Cursor X position.
   char Y;       // Cursor Y position.
-  char Attrib{DEFAULT_ATTRIBUTE};  // Normal attribute to use if none specified.
+  char Attrib{kDefaultAttribute};  // Normal attribute to use if none specified.
   int Page;     // The current page to write to.
 
   /*
   **	Helper functions to help with display operations.
   */
   [[nodiscard]] int Offset(int x = 0, int y = 0) const {
-    return (SIZE_OF_PAGE * Page) +
-           (static_cast<int>(sizeof(CellType)) * (x + (y * COLUMNS)));
+    return (kSizeOfPage * Page) +
+           (static_cast<int>(sizeof(CellType)) * (x + (y * kColumns)));
   }
   void Scroll(int lines);
   void Store_Cell(CellType& cell, int x, int y) {
@@ -176,7 +176,7 @@ class MonoClass {
   **	enabling mono output no longer writes to a fixed address.
   */
   inline static char
-      MonoRAM[static_cast<std::size_t>(MAX_MONO_PAGES) * SIZE_OF_PAGE]{};
+      MonoRAM[static_cast<std::size_t>(kMaxMonoPages) * kSizeOfPage]{};
 
   /*
   ** This the the arrays of characters used for drawing boxes.
@@ -189,7 +189,7 @@ class MonoClass {
   *visible, *	they can be shuffled around between the actual locations. The
   *first entry *	in this table is the one that is visible.
   */
-  static MonoClass* PageUsage[MAX_MONO_PAGES];
+  static MonoClass* PageUsage[kMaxMonoPages];
 
   /*
   **	If this is true, then monochrome output is allowed. It defaults to false

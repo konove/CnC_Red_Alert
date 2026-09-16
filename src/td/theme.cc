@@ -57,6 +57,7 @@
 #include <cstring>
 #include <filesystem>
 
+#include "base/enum_array.h"
 #include "port/ex_string.h"
 #include "sdllib/ww_audio.h"
 #include "td/conquer.h"
@@ -73,47 +74,48 @@
 /*
 **	These are the actual filename list for the theme sample files.
 */
-ThemeClass::ThemeControl ThemeClass::_themes[THEME_COUNT] = {
-    {"AIRSTRIK", TXT_THEME_AIRSTRIKE, 0, 200, false, false, false, true},
-    {"80MX226M", TXT_THEME_80MX, 0, 248, false, false, false, true},
-    {"CHRG226M", TXT_THEME_CHRG, 0, 256, true, false, false, true},
-    {"CREP226M", TXT_THEME_CREP, 0, 222, true, false, false, true},
-    {"DRIL226M", TXT_THEME_DRIL, 0, 272, true, false, false, true},
-    {"DRON226M", TXT_THEME_DRON, 0, 275, true, false, false, true},
-    {"FIST226M", TXT_THEME_FIST, 0, 212, true, false, false, true},
-    {"RECN226M", TXT_THEME_RECON, 0, 261, true, false, false, true},
-    {"VOIC226M", TXT_THEME_VOICE, 0, 306, true, false, false, true},
-    {"HEAVYG", TXT_THEME_HEAVYG, 0, 180, true, false, false, true},
-    {"J1", TXT_THEME_J1, 4, 187, true, false, false, true},
-    //	{"J1",			TXT_THEME_J1,			4,
-    // 187,	false,	false,false,true},
-    {"JDI_V2", TXT_THEME_JDI_V2, 5, 183, true, false, false, true},
-    {"RADIO", TXT_THEME_RADIO, 6, 183, true, false, false, true},
-    {"RAIN", TXT_THEME_RAIN, 7, 156, true, false, false, true},
-    {"AOI", TXT_THEME_AOI, 0, 168, true, true, false, true},
-    {"CCTHANG", TXT_THEME_CCTHANG, 12, 193, true, false, false, true},
-    {"DIE", TXT_THEME_DIE, 11, 162, false, false, false, true},
-    {"FWP", TXT_THEME_FWP, 10, 53, true, false, false, true},
-    {"IND", TXT_THEME_IND, 1, 175, true, false, false, true},
-    {"IND2", TXT_THEME_IND2, 1, 38, true, false, false, true},
-    {"JUSTDOIT", TXT_THEME_JUSTDOIT, 9, 142, true, false, false, true},
-    {"LINEFIRE", TXT_THEME_LINEFIRE, 8, 125, true, false, false, true},
-    {"MARCH", TXT_THEME_MARCH, 7, 157, true, false, false, true},
-    {"TARGET", TXT_THEME_TARGET, 0, 173, true, false, false, true},
-    {"NOMERCY", TXT_THEME_NOMERCY, 2, 204, true, false, false, true},
-    {"OTP", TXT_THEME_OTP, 3, 182, true, false, false, true},
-    {"PRP", TXT_THEME_PRP, 4, 211, true, false, false, true},
-    {"ROUT", TXT_THEME_ROUT, 12, 121, false, true, false, true},
-    {"HEART", TXT_THEME_HEART, 5, 206, false, true, false, true},
-    {"STOPTHEM", TXT_THEME_STOPTHEM, 0, 190, true, false, false, true},
-    {"TROUBLE", TXT_THEME_TROUBLE, 6, 191, true, true, false, true},
-    {"WARFARE", TXT_THEME_WARFARE, 0, 182, true, false, false, true},
-    {"BEFEARED", TXT_THEME_BEFEARED, 13, 164, false, true, false, true},
-    {"I_AM", TXT_THEME_IAM, 6, 161, false, false, false, true},
-    {"WIN1", TXT_THEME_WIN1, 0, 41, false, true, true, true},
-    {"MAP1", TXT_THEME_WIN1, 0, 61, false, false, true, true},
-    {"VALKYRIE", TXT_THEME_VALK, 0, 306, false, false, true, true},
-};
+base::EnumArray<ThemeType, ThemeClass::ThemeControl, kThemeCount>
+    ThemeClass::_themes = {{
+        {"AIRSTRIK", TXT_THEME_AIRSTRIKE, 0, 200, false, false, false, true},
+        {"80MX226M", TXT_THEME_80MX, 0, 248, false, false, false, true},
+        {"CHRG226M", TXT_THEME_CHRG, 0, 256, true, false, false, true},
+        {"CREP226M", TXT_THEME_CREP, 0, 222, true, false, false, true},
+        {"DRIL226M", TXT_THEME_DRIL, 0, 272, true, false, false, true},
+        {"DRON226M", TXT_THEME_DRON, 0, 275, true, false, false, true},
+        {"FIST226M", TXT_THEME_FIST, 0, 212, true, false, false, true},
+        {"RECN226M", TXT_THEME_RECON, 0, 261, true, false, false, true},
+        {"VOIC226M", TXT_THEME_VOICE, 0, 306, true, false, false, true},
+        {"HEAVYG", TXT_THEME_HEAVYG, 0, 180, true, false, false, true},
+        {"J1", TXT_THEME_J1, 4, 187, true, false, false, true},
+        //	{"J1",			TXT_THEME_J1,			4,
+        // 187,	false,	false,false,true},
+        {"JDI_V2", TXT_THEME_JDI_V2, 5, 183, true, false, false, true},
+        {"RADIO", TXT_THEME_RADIO, 6, 183, true, false, false, true},
+        {"RAIN", TXT_THEME_RAIN, 7, 156, true, false, false, true},
+        {"AOI", TXT_THEME_AOI, 0, 168, true, true, false, true},
+        {"CCTHANG", TXT_THEME_CCTHANG, 12, 193, true, false, false, true},
+        {"DIE", TXT_THEME_DIE, 11, 162, false, false, false, true},
+        {"FWP", TXT_THEME_FWP, 10, 53, true, false, false, true},
+        {"IND", TXT_THEME_IND, 1, 175, true, false, false, true},
+        {"IND2", TXT_THEME_IND2, 1, 38, true, false, false, true},
+        {"JUSTDOIT", TXT_THEME_JUSTDOIT, 9, 142, true, false, false, true},
+        {"LINEFIRE", TXT_THEME_LINEFIRE, 8, 125, true, false, false, true},
+        {"MARCH", TXT_THEME_MARCH, 7, 157, true, false, false, true},
+        {"TARGET", TXT_THEME_TARGET, 0, 173, true, false, false, true},
+        {"NOMERCY", TXT_THEME_NOMERCY, 2, 204, true, false, false, true},
+        {"OTP", TXT_THEME_OTP, 3, 182, true, false, false, true},
+        {"PRP", TXT_THEME_PRP, 4, 211, true, false, false, true},
+        {"ROUT", TXT_THEME_ROUT, 12, 121, false, true, false, true},
+        {"HEART", TXT_THEME_HEART, 5, 206, false, true, false, true},
+        {"STOPTHEM", TXT_THEME_STOPTHEM, 0, 190, true, false, false, true},
+        {"TROUBLE", TXT_THEME_TROUBLE, 6, 191, true, true, false, true},
+        {"WARFARE", TXT_THEME_WARFARE, 0, 182, true, false, false, true},
+        {"BEFEARED", TXT_THEME_BEFEARED, 13, 164, false, true, false, true},
+        {"I_AM", TXT_THEME_IAM, 6, 161, false, false, false, true},
+        {"WIN1", TXT_THEME_WIN1, 0, 41, false, true, true, true},
+        {"MAP1", TXT_THEME_WIN1, 0, 61, false, false, true, true},
+        {"VALKYRIE", TXT_THEME_VALK, 0, 306, false, false, true, true},
+    }};
 
 /***********************************************************************************************
  * ThemeClass::Base_Name -- Fetches the base filename for the theme specified. *
@@ -191,7 +193,7 @@ const char* ThemeClass::Full_Name(ThemeType theme) {
  *as it is about to play it.                           *
  *=============================================================================================*/
 void ThemeClass::AI() {
-  if (SampleType && !Debug_Quiet) {
+  if (SampleType != SAMPLE_NONE && !Debug_Quiet) {
     if (ScoresPresent && Options.ScoreVolume && !Still_Playing() &&
         Pending != THEME_NONE) {
       /*
@@ -279,14 +281,14 @@ ThemeType ThemeClass::Next_Song(ThemeType theme) {
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
 void ThemeClass::Queue_Song(ThemeType theme) {
-  if (ScoresPresent && SampleType && !Debug_Quiet &&
+  if (ScoresPresent && SampleType != SAMPLE_NONE && !Debug_Quiet &&
       (Pending == THEME_NONE || Pending == THEME_PICK_ANOTHER)) {
     if (!Options.ScoreVolume && theme != THEME_NONE) {
       return;
     }
 
     Pending = theme;
-    Fade_Sample(Current, THEME_DELAY);
+    Fade_Sample(Current, kThemeDelay);
   }
 }
 
@@ -307,7 +309,8 @@ void ThemeClass::Queue_Song(ThemeType theme) {
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
 int ThemeClass::Play_Song(ThemeType theme) {
-  if (ScoresPresent && SampleType && !Debug_Quiet && Options.ScoreVolume) {
+  if (ScoresPresent && SampleType != SAMPLE_NONE && !Debug_Quiet &&
+      Options.ScoreVolume) {
     Stop();
     Score = theme;
     if (theme >= THEME_AIRSTRIKE) {
@@ -384,7 +387,7 @@ const char* ThemeClass::Theme_File_Name(ThemeType theme) {
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
 int ThemeClass::Track_Length(ThemeType theme) {
-  if (static_cast<unsigned>(theme) < THEME_COUNT) {
+  if (static_cast<unsigned>(theme) < static_cast<unsigned>(kThemeCount)) {
     return _themes[theme].Duration;
   }
   return 0;
@@ -405,7 +408,8 @@ int ThemeClass::Track_Length(ThemeType theme) {
  * HISTORY: * 09/08/1994 JLB : Created. *
  *=============================================================================================*/
 void ThemeClass::Stop() {
-  if ((ScoresPresent && SampleType && !Debug_Quiet) && (Current != -1)) {
+  if ((ScoresPresent && SampleType != SAMPLE_NONE && !Debug_Quiet) &&
+      (Current != -1)) {
     Stop_Sample(Current);
     Current = -1;
     Score = THEME_NONE;
@@ -427,7 +431,8 @@ void ThemeClass::Stop() {
  * HISTORY: * 12/20/1994 JLB : Created. *
  *=============================================================================================*/
 bool ThemeClass::Still_Playing() const {
-  if (ScoresPresent && SampleType && Current != -1 && !Debug_Quiet) {
+  if (ScoresPresent && SampleType != SAMPLE_NONE && Current != -1 &&
+      !Debug_Quiet) {
     return Sample_Status(Current);
   }
   return false;

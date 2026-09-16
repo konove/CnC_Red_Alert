@@ -46,6 +46,7 @@
 #include <cstring>
 
 #include "absl/strings/str_format.h"
+#include "base/enum_array.h"
 #include "base/numeric.h"
 #include "sdllib/shape.h"
 #include "sdllib/timer.h"
@@ -141,15 +142,13 @@
 constexpr unsigned char kPacketTypeHostGameInfo = 50;
 constexpr unsigned char kPacketTypeGuestGameInfo = 51;
 
-enum {
-  COMPLETION_CONNECTION_LOST,
-  COMPLETION_PLAYER_1_WON,
-  COMPLETION_PLAYER_1_WON_BY_RESIGNATION,
-  COMPLETION_PLAYER_1_WON_BY_DISCONNECTION,
-  COMPLETION_PLAYER_2_WON,
-  COMPLETION_PLAYER_2_WON_BY_RESIGNATION,
-  COMPLETION_PLAYER_2_WON_BY_DISCONNECTION
-};
+constexpr int kCompletionConnectionLost = 0;
+constexpr int kCompletionPlayer1Won = 1;
+constexpr int kCompletionPlayer1WonByResignation = 2;
+constexpr int kCompletionPlayer1WonByDisconnection = 3;
+constexpr int kCompletionPlayer2Won = 4;
+constexpr int kCompletionPlayer2WonByResignation = 5;
+constexpr int kCompletionPlayer2WonByDisconnection = 6;
 
 extern "C" char CPUType;
 
@@ -199,8 +198,8 @@ void Send_Statistics_Packet() {
   static char field_player_crates_found[5] = {"CRA?"};
   static char field_player_harvested[5] = {"HRV?"};
 
-  static const char* houses[] = {"GDI", "NOD", "NUT", "JUR", "M01",
-                                 "M02", "M03", "M04", "M05", "M06"};
+  static const base::EnumArray<HousesType, const char*, kHouseCount> houses = {
+      "GDI", "NOD", "NUT", "JUR", "M01", "M02", "M03", "M04", "M05", "M06"};
 
   CCDebugString("C&C95 - In Send_Statistics_Packet.\n");
 
@@ -296,18 +295,18 @@ void Send_Statistics_Packet() {
     int completion = -1;
 
     if (ConnectionLost) {
-      completion = COMPLETION_CONNECTION_LOST;
+      completion = kCompletionConnectionLost;
       CCDebugString("C&C95 - Completion status is connection lost.\n");
     } else {
       if (player1 && player2) {
         if (player1->IGaveUp) {
-          completion = COMPLETION_PLAYER_2_WON_BY_DISCONNECTION;
+          completion = kCompletionPlayer2WonByDisconnection;
           CCDebugString(
               "C&C95 - Completion status is player 1 disconnected.\n");
         }
 
         if (player2->IGaveUp) {
-          completion = COMPLETION_PLAYER_1_WON_BY_DISCONNECTION;
+          completion = kCompletionPlayer1WonByDisconnection;
           CCDebugString(
               "C&C95 - Completion status is player 2 disconnected.\n");
         }
@@ -316,13 +315,13 @@ void Send_Statistics_Packet() {
           /*
           ** Player 1 won. Find out how.
           */
-          completion = COMPLETION_PLAYER_1_WON;
+          completion = kCompletionPlayer1Won;
           if (player2->Resigned) {
-            completion = COMPLETION_PLAYER_1_WON_BY_RESIGNATION;
+            completion = kCompletionPlayer1WonByResignation;
             CCDebugString("C&C95 - Completion status is player 2 resigned.\n");
           } else {
             if (player2->IGaveUp) {
-              completion = COMPLETION_PLAYER_1_WON_BY_DISCONNECTION;
+              completion = kCompletionPlayer1WonByDisconnection;
               CCDebugString(
                   "C&C95 - Completion status is player 2 disconnected.\n");
             }
@@ -333,14 +332,14 @@ void Send_Statistics_Packet() {
             /*
             ** Player 2 won. Find out how.
             */
-            completion = COMPLETION_PLAYER_2_WON;
+            completion = kCompletionPlayer2Won;
             if (player1->Resigned) {
-              completion = COMPLETION_PLAYER_2_WON_BY_RESIGNATION;
+              completion = kCompletionPlayer2WonByResignation;
               CCDebugString(
                   "C&C95 - Completion status is player 1 resigned.\n");
             } else {
               if (player1->IGaveUp) {
-                completion = COMPLETION_PLAYER_2_WON_BY_DISCONNECTION;
+                completion = kCompletionPlayer2WonByDisconnection;
                 CCDebugString(
                     "C&C95 - Completion status is player 1 disconnected.\n");
               }
@@ -414,7 +413,8 @@ void Send_Statistics_Packet() {
         field_player_color[3] = static_cast<char>('1' + static_cast<char>(house));
         stats.Add_Field(
             field_player_color,
-            static_cast<unsigned char>(player->Class->House - HOUSE_MULTI1));
+            static_cast<unsigned char>(static_cast<int>(player->Class->House) -
+                                       static_cast<int>(HOUSE_MULTI1)));
 
         /*
         ** Player end credits.
@@ -470,14 +470,16 @@ void Send_Statistics_Packet() {
         for (int index = 0; index < Units.Count(); index++) {
           const UnitClass* unit = Units.Ptr(index);
           if (unit->House == player) {
-            player->UnitTotals->Increment_Unit_Total(unit->Class->Type);
+            player->UnitTotals->Increment_Unit_Total(
+                static_cast<int>(unit->Class->Type));
           }
         }
 
         for (int index = 0; index < Infantry.Count(); index++) {
           const InfantryClass* infantry = Infantry.Ptr(index);
           if (infantry->House == player && !infantry->Class->IsCivilian) {
-            player->InfantryTotals->Increment_Unit_Total(infantry->Class->Type);
+            player->InfantryTotals->Increment_Unit_Total(
+                static_cast<int>(infantry->Class->Type));
           }
         }
 
@@ -485,14 +487,16 @@ void Send_Statistics_Packet() {
           const AircraftClass* aircraft = Aircraft.Ptr(index);
           if (aircraft->House == player &&
               aircraft->Class->Type != AIRCRAFT_CARGO) {
-            player->AircraftTotals->Increment_Unit_Total(aircraft->Class->Type);
+            player->AircraftTotals->Increment_Unit_Total(
+                static_cast<int>(aircraft->Class->Type));
           }
         }
 
         for (int index = 0; index < Buildings.Count(); index++) {
           const BuildingClass* building = Buildings.Ptr(index);
           if (building->House == player) {
-            player->BuildingTotals->Increment_Unit_Total(building->Class->Type);
+            player->BuildingTotals->Increment_Unit_Total(
+                static_cast<int>(building->Class->Type));
           }
         }
 
@@ -582,8 +586,8 @@ void Send_Statistics_Packet() {
     ** If a player disconnected then dont send the packet at this time - save it
     *for later
     */
-    if (completion == COMPLETION_PLAYER_1_WON_BY_DISCONNECTION ||
-        completion == COMPLETION_PLAYER_2_WON_BY_DISCONNECTION) {
+    if (completion == kCompletionPlayer1WonByDisconnection ||
+        completion == kCompletionPlayer2WonByDisconnection) {
       PacketLater = packet;
       CCDebugString("C&C95 - Flagging to send the packet later.\n");
       return;

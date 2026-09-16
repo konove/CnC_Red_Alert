@@ -120,7 +120,7 @@ void CreditClass::Graphic_Logic(bool forced) {
     // LogicPage->Fill_Rect(xx-(20 << factor), 1 << factor, xx+(20 << factor), 6
     // << factor, LTGREY);
     TabClass::Draw_Credits_Tab();
-    Fancy_Text_Print("%ld", xx, 0, 11, TBLACK,
+    Fancy_Text_Print("%ld", xx, 0, 11, kTBlack,
                      TPF_GREEN12_GRAD | TPF_CENTER | TPF_USE_GRAD_PAL, Current);
 
     IsToRedraw = false;

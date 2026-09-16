@@ -99,6 +99,7 @@
 #include <vector>
 
 #include "absl/strings/str_format.h"
+#include "base/enum_array.h"
 #include "base/numeric.h"
 #include "base/types.h"
 #include "sdllib/drawbuff.h"
@@ -153,7 +154,7 @@
 **	These layer control elements are used to group the displayable objects
 **	so that proper overlap can be obtained.
 */
-LayerClass DisplayClass::Layer[LAYER_COUNT];
+base::EnumArray<LayerType, LayerClass, kLayerCount> DisplayClass::Layer;
 
 /*
 ** Fading tables
@@ -161,7 +162,8 @@ LayerClass DisplayClass::Layer[LAYER_COUNT];
 unsigned char DisplayClass::FadingBrighten[256];
 unsigned char DisplayClass::FadingShade[256];
 unsigned char DisplayClass::FadingLight[256];
-unsigned char DisplayClass::RemapTables[HOUSE_COUNT][3][256];
+base::EnumArray<HousesType, unsigned char[3][256], kHouseCount>
+    DisplayClass::RemapTables;
 unsigned char DisplayClass::FadingGreen[256];
 unsigned char DisplayClass::FadingYellow[256];
 unsigned char DisplayClass::FadingRed[256];
@@ -428,13 +430,12 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   /*
   **	Create the shadow color used by aircraft.
   */
-  Conquer_Build_Fading_Table(GamePalette, &SpecialGhost[256], BLACK, 100);
+  Conquer_Build_Fading_Table(GamePalette, &SpecialGhost[256], kBlack, 100);
   for (int index = 0; index < 256; index++) {
     SpecialGhost[index] = 0;
   }
 
-  Build_Fading_Table(GamePalette, FadingBrighten, WHITE, 25);
-
+  Build_Fading_Table(GamePalette, FadingBrighten, kWhite, 25);
 
   /*
   **	Adjust the palette according to the visual control option settings.
@@ -568,11 +569,11 @@ void DisplayClass::Set_View_Dimensions(int x, int y, int width, int height) {
 
   TacPixelX = x;
   TacPixelY = y;
-  WindowList[WINDOW_TACTICAL][WINDOWX] = x / 8;
-  WindowList[WINDOW_TACTICAL][WINDOWY] = y;
-  WindowList[WINDOW_TACTICAL][WINDOWWIDTH] = width / 8;
-  WindowList[WINDOW_TACTICAL][WINDOWHEIGHT] = height;
-  if (Window == WINDOW_TACTICAL) {
+  WindowList[static_cast<int>(WINDOW_TACTICAL)][kWindowX] = x / 8;
+  WindowList[static_cast<int>(WINDOW_TACTICAL)][kWindowY] = y;
+  WindowList[static_cast<int>(WINDOW_TACTICAL)][kWindowWidth] = width / 8;
+  WindowList[static_cast<int>(WINDOW_TACTICAL)][kWindowHeight] = height;
+  if (Window == static_cast<unsigned>(WINDOW_TACTICAL)) {
     Change_Window(0);
     Change_Window(static_cast<int>(Window));
   }
@@ -1074,7 +1075,7 @@ void DisplayClass::Read_INI(char* buffer) {
   /*
   **	Read the Waypoint entries.
   */
-  for (int i = 0; i < WAYPT_COUNT; i++) {
+  for (int i = 0; i < kWayptCount; i++) {
     absl::SNPrintF(buf, sizeof(buf), "%d", i);
     Waypoint[i] = static_cast<CELL>(WWGetPrivateProfileInt("Waypoints", buf, -1, buffer));
     if (Waypoint[i] != -1) {
@@ -1086,11 +1087,11 @@ void DisplayClass::Read_INI(char* buffer) {
   **	Set the starting position (do this after Init(), which clears the cells'
   **	IsWaypoint flags).
   */
-  if (Waypoint[WAYPT_HOME] == -1) {
-    Waypoint[WAYPT_HOME] = XY_Cell(MapCellX, MapCellY);
+  if (Waypoint[kWayptHome] == -1) {
+    Waypoint[kWayptHome] = XY_Cell(MapCellX, MapCellY);
   }
-  Set_Tactical_Position(Cell_Coord(Waypoint[WAYPT_HOME]) & 0xFF00FF00L);
-  Views[0] = Views[1] = Views[2] = Views[3] = Waypoint[WAYPT_HOME];
+  Set_Tactical_Position(Cell_Coord(Waypoint[kWayptHome]) & 0xFF00FF00L);
+  Views[0] = Views[1] = Views[2] = Views[3] = Waypoint[kWayptHome];
 
   /*
   **	Read the cell trigger names, and assign TriggerClass pointers
@@ -1170,7 +1171,7 @@ void DisplayClass::Write_INI(char* buffer) {
   /*
   **	Save the Waypoint entries.
   */
-  for (int i = 0; i < WAYPT_COUNT; i++) {
+  for (int i = 0; i < kWayptCount; i++) {
     absl::SNPrintF(entry, sizeof(entry), "%d", i);
     WWWritePrivateProfileInt("Waypoints", entry, Waypoint[i], buffer);
   }
@@ -1996,7 +1997,7 @@ void DisplayClass::Draw_It(bool forced) {
     */
     if (IsRubberBand) {
       LogicPage->Draw_Rect(BandX + TacPixelX, BandY + TacPixelY,
-                           NewX + TacPixelX, NewY + TacPixelY, WHITE);
+                           NewX + TacPixelX, NewY + TacPixelY, kWhite);
     }
     /*
     **	Clear the redraw flags so that normal redraw flag setting can resume.
@@ -2177,7 +2178,7 @@ void DisplayClass::Redraw_Shadow_Rects() {
                             Lepton_To_Pixel(TacLeptonHeight)) >= 0) {
                 LogicPage->Fill_Rect(TacPixelX + xpixel, TacPixelY + ypixel,
                                      TacPixelX + xpixel + ww - 1,
-                                     TacPixelY + ypixel + hh - 1, BLACK);
+                                     TacPixelY + ypixel + hh - 1, kBlack);
               }
             }
           }
@@ -2433,7 +2434,7 @@ CELL DisplayClass::Calculated_Cell(SourceType dir, HousesType house) {
       **	Drop in at a random location.
       */
       case SOURCE_AIR:
-        cell = Waypoint[WAYPT_REINF];
+        cell = Waypoint[kWayptReinf];
         if (cell < 1) {
           cell = Coord_Cell(TacticalCoord);
           return cell;
@@ -2747,7 +2748,7 @@ bool DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
   *used. Other *	events must use the current mouse position globals.
   */
   bool edge = false;
-  if (flags & (LEFTPRESS | LEFTRELEASE | RIGHTPRESS | RIGHTRELEASE)) {
+  if (flags & (kLeftPress | kLeftRelease | kRightPress | kRightRelease)) {
     x = ActiveKeyboard->MouseQX;
     y = ActiveKeyboard->MouseQY;
   } else {
@@ -2839,15 +2840,15 @@ bool DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
         }
       }
 
-      if (Map.IsTargettingMode == SPC_ION_CANNON) {
+      if (Map.IsTargettingMode == static_cast<uint8_t>(SPC_ION_CANNON)) {
         action = ACTION_ION;
       }
 
-      if (Map.IsTargettingMode == SPC_NUCLEAR_BOMB) {
+      if (Map.IsTargettingMode == static_cast<uint8_t>(SPC_NUCLEAR_BOMB)) {
         action = ACTION_NUKE_BOMB;
       }
 
-      if (Map.IsTargettingMode == SPC_AIR_STRIKE) {
+      if (Map.IsTargettingMode == static_cast<uint8_t>(SPC_AIR_STRIKE)) {
         action = ACTION_AIR_STRIKE;
       }
 
@@ -2866,7 +2867,7 @@ bool DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
     /*
     **	A right mouse button press cancels the current action or selection.
     */
-    if (flags & RIGHTPRESS) {
+    if (flags & kRightPress) {
       Map.Mouse_Right_Press();
     }
 
@@ -2875,8 +2876,8 @@ bool DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
     *know about it, *	then it must be informed. Do this by faking a mouse
     *release event.
     */
-    if (flags & LEFTUP && Map.IsRubberBand) {
-      flags |= LEFTRELEASE;
+    if (flags & kLeftUp && Map.IsRubberBand) {
+      flags |= kLeftRelease;
     }
 
     /*
@@ -2884,7 +2885,7 @@ bool DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
     *processed. *	The shape changes depending on what object the mouse is
     *currently over and what *	object is currently selected.
     */
-    if ((!edge) && (flags & LEFTUP)) {
+    if ((!edge) && (flags & kLeftUp)) {
       Map.Mouse_Left_Up(shadow, object, action);
     }
 
@@ -2892,7 +2893,7 @@ bool DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
     **	Normal actions occur when the mouse button is released. The press event
     *is *	intercepted and possible rubber-band mode is flagged.
     */
-    if (flags & LEFTRELEASE) {
+    if (flags & kLeftRelease) {
       Map.Mouse_Left_Release(cell, x, y, object, action);
     }
 
@@ -2902,7 +2903,7 @@ bool DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
     **	mode can be made. Rubber band mode starts when the mouse is
     **	held down and moved a certain minimum distance.
     */
-    if (!edge && flags & LEFTPRESS) {
+    if (!edge && flags & kLeftPress) {
       Map.Mouse_Left_Press(x, y);
     }
 
@@ -2911,7 +2912,7 @@ bool DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
     **	start. If rubber band mode is already active, then update the size
     **	and flag the map to redraw it.
     */
-    if (flags & LEFTHELD) {
+    if (flags & kLeftHeld) {
       Map.Mouse_Left_Held(x, y);
     }
   }
@@ -3134,18 +3135,18 @@ void DisplayClass::Mouse_Left_Up(bool shadow, ObjectClass* object,
     **	system of the text name for the object under the mouse.
     */
     if (object) {
-      int color = LTGREY;
+      int color = kLtGrey;
 
       /*
       **	Fetch the appropriate background color for help text.
       */
       if (PlayerPtr->Is_Ally(object)) {
-        color = CC_GREEN;
+        color = kCcGreen;
       } else {
         if (object->Owner() == HOUSE_NONE || object->Owner() == HOUSE_NEUTRAL) {
-          color = LTGREY;
+          color = kLtGrey;
         } else {
-          color = PINK;
+          color = kPink;
         }
       }
 
@@ -3331,16 +3332,16 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
           }
         }
         if (action == ACTION_ION) {
-          OutList.Add(
-              EventClass(EventClass::SPECIAL_PLACE, SPC_ION_CANNON, cell));
+          OutList.Add(EventClass(EventClass::SPECIAL_PLACE,
+                                 static_cast<int>(SPC_ION_CANNON), cell));
         }
         if (action == ACTION_NUKE_BOMB) {
-          OutList.Add(
-              EventClass(EventClass::SPECIAL_PLACE, SPC_NUCLEAR_BOMB, cell));
+          OutList.Add(EventClass(EventClass::SPECIAL_PLACE,
+                                 static_cast<int>(SPC_NUCLEAR_BOMB), cell));
         }
         if (action == ACTION_AIR_STRIKE) {
-          OutList.Add(
-              EventClass(EventClass::SPECIAL_PLACE, SPC_AIR_STRIKE, cell));
+          OutList.Add(EventClass(EventClass::SPECIAL_PLACE,
+                                 static_cast<int>(SPC_AIR_STRIKE), cell));
         }
       }
 

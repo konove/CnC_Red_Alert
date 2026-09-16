@@ -572,7 +572,7 @@ bool Init_Game(int /*unused*/, char* /*unused*/[]) {
   **	Cache the main game data. This operation can take a very long time.
   */
   MixArchive::Cache("CONQUER.MIX");
-  if (SampleType != 0 && !Debug_Quiet) {
+  if (SampleType != SAMPLE_NONE && !Debug_Quiet) {
     MixArchive::Cache("SOUNDS.MIX");
     if (Special.IsJuvenile) {
       (void)MixArchive::Register("ZOUNDS.MIX");
@@ -747,23 +747,23 @@ bool Select_Game(bool fade) {
   if (DebugQuitAtFrame >= 0 && DebugNewGame.empty() && DebugLoadGame < 0) {
     return false;
   }
-  enum {
-    SEL_TIMEOUT = -1,  // main menu timeout--go into attract mode
+  constexpr int kSelTimeout = -1;  // main menu timeout--go into attract mode
 #ifdef NEWMENU
-    SEL_NEW_SCENARIO,  // Expansion scenario to play.
+  constexpr int kSelNewScenario =
+      kSelTimeout + 1;  // Expansion scenario to play.
 #endif
-    SEL_START_NEW_GAME,  // start a new game
+  constexpr int kSelStartNewGame = kSelNewScenario + 1;  // start a new game
 #ifdef BONUS_MISSIONS
-    SEL_BONUS_MISSIONS,
+  constexpr int kSelBonusMissions = kSelStartNewGame + 1;
 #endif  // BONUS_MISSIONS
-    SEL_INTERNET,
-    SEL_LOAD_MISSION,      // load a saved game
-    SEL_MULTIPLAYER_GAME,  // play modem/null-modem/network game
-    SEL_INTRO,             // replay the intro
-    SEL_EXIT,              // exit to DOS
-    SEL_FAME,              // view the hall of fame
-    SEL_NONE,              // placeholder default value
-  };
+  constexpr int kSelInternet = kSelBonusMissions + 1;
+  constexpr int kSelLoadMission = kSelInternet + 1;  // load a saved game
+  constexpr int kSelMultiplayerGame =
+      kSelLoadMission + 1;  // play modem/null-modem/network game
+  constexpr int kSelIntro = kSelMultiplayerGame + 1;  // replay the intro
+  constexpr int kSelExit = kSelIntro + 1;             // exit to DOS
+  constexpr int kSelFame = kSelExit + 1;              // view the hall of fame
+  constexpr int kSelNone = kSelFame + 1;  // placeholder default value
   bool gameloaded = false;  // Has the game been loaded from the menu?
   int selection = 0;        // the default selection
   bool process = true;      // false = break out of while loop
@@ -840,9 +840,9 @@ bool Select_Game(bool fade) {
   **	menu by pre-setting 'selection'.
   */
   if (GameToPlay == GAME_NORMAL) {
-    selection = SEL_NONE;
+    selection = kSelNone;
   } else {
-    selection = SEL_MULTIPLAYER_GAME;
+    selection = kSelMultiplayerGame;
   }
 
   /*
@@ -876,7 +876,7 @@ bool Select_Game(bool fade) {
     if (SpawnedFromWChat) {
       Special.IsFromInstall =
           false;  // Dont play intro if we were spawned from wchat
-      selection = SEL_INTERNET;
+      selection = kSelInternet;
       Theme.Queue_Song(THEME_NONE);
       GameToPlay = GAME_INTERNET;
       display = false;
@@ -937,18 +937,18 @@ bool Select_Game(bool fade) {
         if constexpr (config::kVirginCheatKeysEnabled) {
           Fancy_Text_Print(
               "V.%d%s", SeenBuff.Get_Width() - 1, SeenBuff.Get_Height() - 10,
-              GREY, TBLACK, TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
+              kGrey, kTBlack, TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
               Version_Number(), VersionText, FOREIGN_VERSION_NUMBER);
         } else {
 #ifdef DEMO
           Version_Number();
           Fancy_Text_Print("DEMO V%s", SeenBuff.Get_Width() - 1,
-                           SeenBuff.Get_Height() - 10, GREY, TBLACK,
+                           SeenBuff.Get_Height() - 10, kGrey, kTBlack,
                            TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
                            VersionText);
 #else
           Fancy_Text_Print("V.%d%s", SeenBuff.Get_Width() - 1,
-                           SeenBuff.Get_Height() - 10, GREY, TBLACK,
+                           SeenBuff.Get_Height() - 10, kGrey, kTBlack,
                            TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
                            Version_Number(), VersionText);
 #endif
@@ -961,7 +961,7 @@ bool Select_Game(bool fade) {
       **	Display menu and fetch selection from player.
       */
       if (Special.IsFromInstall) {
-        selection = SEL_START_NEW_GAME;
+        selection = kSelStartNewGame;
         Theme.Queue_Song(THEME_NONE);
       }
 
@@ -971,7 +971,7 @@ bool Select_Game(bool fade) {
       */
       if (Special.IsFromWChat && DDEServer.Get_MPlayer_Game_Info()) {
         Check_From_WChat(NULL);
-        selection = SEL_MULTIPLAYER_GAME;
+        selection = kSelMultiplayerGame;
         Theme.Queue_Song(THEME_NONE);
         GameToPlay = GAME_INTERNET;
       } else {
@@ -991,7 +991,7 @@ bool Select_Game(bool fade) {
       }
 #endif
 
-      if (selection == SEL_NONE) {
+      if (selection == kSelNone) {
         //				selection = Main_Menu(0);
         selection = Main_Menu(ATTRACT_MODE_TIMEOUT);
       }
@@ -1000,7 +1000,7 @@ bool Select_Game(bool fade) {
       switch (selection) {
 #ifdef NEWMENU
 
-        case SEL_INTERNET:
+        case kSelInternet:
           /*
           ** Only call up the internet menu code if we dont already have connect
           *info from WChat
@@ -1012,11 +1012,11 @@ bool Select_Game(bool fade) {
                 DDEServer.Get_MPlayer_Game_Info()) {
               DLOG(INFO) << "C&C95 - About to call Check_From_WChat.";
               Check_From_WChat(NULL);
-              selection = SEL_MULTIPLAYER_GAME;
+              selection = kSelMultiplayerGame;
               display = false;
               GameToPlay = GAME_INTERNET;
             } else {
-              selection = SEL_NONE;
+              selection = kSelNone;
               display = true;
             }
           } else {
@@ -1024,7 +1024,7 @@ bool Select_Game(bool fade) {
             Check_From_WChat(NULL);
             display = false;
             GameToPlay = GAME_INTERNET;
-            selection = SEL_MULTIPLAYER_GAME;
+            selection = kSelMultiplayerGame;
           }
 #endif
           break;
@@ -1032,7 +1032,7 @@ bool Select_Game(bool fade) {
         /*
         **	Pick an expansion scenario.
         */
-        case SEL_NEW_SCENARIO:
+        case kSelNewScenario:
           CarryOverMoney = 0;
           if (Expansion_Dialog()) {
             Theme.Fade_Out();
@@ -1041,7 +1041,7 @@ bool Select_Game(bool fade) {
             process = false;
           } else {
             display = true;
-            selection = SEL_NONE;
+            selection = kSelNone;
           }
           break;
 
@@ -1050,7 +1050,7 @@ bool Select_Game(bool fade) {
         /*
         **	User selected to play a bonus scenario.
         */
-        case SEL_BONUS_MISSIONS:
+        case kSelBonusMissions:
           CarryOverMoney = 0;
 
           /*
@@ -1075,7 +1075,7 @@ bool Select_Game(bool fade) {
             process = false;
           } else {
             display = true;
-            selection = SEL_NONE;
+            selection = kSelNone;
           }
           break;
 
@@ -1086,7 +1086,7 @@ bool Select_Game(bool fade) {
         /*
         **	SEL_START_NEW_GAME: Play the game
         */
-        case SEL_START_NEW_GAME:
+        case kSelStartNewGame:
           CarryOverMoney = 0;
 
 #ifdef DEMO
@@ -1136,7 +1136,7 @@ bool Select_Game(bool fade) {
         /*
         **	Load a saved game.
         */
-        case SEL_LOAD_MISSION:
+        case kSelLoadMission:
           if (LoadOptionsClass(LoadOptionsClass::LOAD).Process()) {
             // Theme.Fade_Out();
             Theme.Queue_Song(THEME_AOI);
@@ -1144,7 +1144,7 @@ bool Select_Game(bool fade) {
             gameloaded = true;
           } else {
             display = true;
-            selection = SEL_NONE;
+            selection = kSelNone;
           }
           break;
 
@@ -1152,7 +1152,7 @@ bool Select_Game(bool fade) {
         **	SEL_MULTIPLAYER_GAME: set 'GameToPlay' to NULL-modem, modem, or
         **	network play.
         */
-        case SEL_MULTIPLAYER_GAME:
+        case kSelMultiplayerGame:
 
 #ifdef DEMO
           Hide_Mouse();
@@ -1169,7 +1169,7 @@ bool Select_Game(bool fade) {
           Show_Mouse();
           display = true;
           fade = true;
-          selection = SEL_NONE;
+          selection = kSelNone;
 #else
           switch (GameToPlay) {
             /*
@@ -1181,7 +1181,7 @@ bool Select_Game(bool fade) {
               GameToPlay = Select_MPlayer_Game();
               if (GameToPlay == GAME_NORMAL) {  // 'Cancel'
                 display = true;
-                selection = SEL_NONE;
+                selection = kSelNone;
               }
               break;
 
@@ -1198,7 +1198,7 @@ bool Select_Game(bool fade) {
                     GameToPlay = Select_Serial_Dialog();
                     if (GameToPlay == GAME_NORMAL) {  // user hit Cancel
                       display = true;
-                      selection = SEL_NONE;
+                      selection = kSelNone;
                     }
                   }
                 } else {
@@ -1206,7 +1206,7 @@ bool Select_Game(bool fade) {
                     GameToPlay = Select_Serial_Dialog();
                     if (GameToPlay == GAME_NORMAL) {  // user hit Cancel
                       display = true;
-                      selection = SEL_NONE;
+                      selection = kSelNone;
                     }
                   }
                 }
@@ -1214,7 +1214,7 @@ bool Select_Game(bool fade) {
                 GameToPlay = Select_MPlayer_Game();
                 if (GameToPlay == GAME_NORMAL) {  // 'Cancel'
                   display = true;
-                  selection = SEL_NONE;
+                  selection = kSelNone;
                 }
               }
               break;
@@ -1274,7 +1274,7 @@ bool Select_Game(bool fade) {
                 } else {
                   DLOG(INFO) << "C&C95 - Winsock failed to initialise.";
                   GameToPlay = GAME_NORMAL;
-                  selection = SEL_EXIT;
+                  selection = kSelExit;
                   Special.IsFromWChat = false;
                   break;
                 }
@@ -1305,7 +1305,7 @@ bool Select_Game(bool fade) {
                    */
                   Winsock.Close();
                   GameToPlay = GAME_NORMAL;
-                  selection = SEL_NONE;
+                  selection = kSelNone;
 #ifdef _WIN32
                   DDEServer.Delete_MPlayer_Game_Info();  // Make sure we dont
                                                          // go round in an
@@ -1328,7 +1328,7 @@ bool Select_Game(bool fade) {
                  */
                 Winsock.Close();
                 GameToPlay = GAME_NORMAL;
-                selection = SEL_NONE;
+                selection = kSelNone;
 #ifdef _WIN32
                 DDEServer.Delete_MPlayer_Game_Info();  // Make sure we dont
                                                        // go round in an
@@ -1340,7 +1340,7 @@ bool Select_Game(bool fade) {
               GameToPlay = Select_MPlayer_Game();
               if (GameToPlay == GAME_NORMAL) {  // 'Cancel'
                 display = true;
-                selection = SEL_NONE;
+                selection = kSelNone;
               }
               break;
 
@@ -1379,7 +1379,7 @@ bool Select_Game(bool fade) {
               } else {  // user hit cancel, or init failed
                 GameToPlay = GAME_NORMAL;
                 display = true;
-                selection = SEL_NONE;
+                selection = kSelNone;
               }
               break;
             default:
@@ -1391,7 +1391,7 @@ bool Select_Game(bool fade) {
         /*
         **	Play a VQ
         */
-        case SEL_INTRO:
+        case kSelIntro:
           Theme.Fade_Out();
           Theme.Stop();
           Call_Back();
@@ -1481,13 +1481,13 @@ bool Select_Game(bool fade) {
           ScenarioInit--;
           display = true;
           fade = true;
-          selection = SEL_NONE;
+          selection = kSelNone;
           break;
 
         /*
         **	Exit to DOS.
         */
-        case SEL_EXIT:
+        case kSelExit:
 #ifdef JAPANESE
           Hide_Mouse();
 #endif
@@ -1501,10 +1501,10 @@ bool Select_Game(bool fade) {
         /*
         **	Display the hall of fame.
         */
-        case SEL_FAME:
+        case kSelFame:
           break;
 
-        case SEL_TIMEOUT:
+        case kSelTimeout:
           if (AllowAttract && RecordFile.IsAvailable()) {
             PlaybackGame = true;
             if (RecordFile.Open(FileAccess::kRead)) {
@@ -1513,10 +1513,10 @@ bool Select_Game(bool fade) {
               Theme.Fade_Out();
             } else {
               PlaybackGame = false;
-              selection = SEL_NONE;
+              selection = kSelNone;
             }
           } else {
-            selection = SEL_NONE;
+            selection = kSelNone;
           }
           break;
 
@@ -1610,7 +1610,7 @@ bool Select_Game(bool fade) {
     */
     Hide_Mouse();
 
-    if (selection != SEL_START_NEW_GAME) {
+    if (selection != kSelStartNewGame) {
       Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
       HiddenPage.Clear();
       VisiblePage.Clear();

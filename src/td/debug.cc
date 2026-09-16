@@ -480,12 +480,13 @@ void Debug_Key(unsigned input) {
 
             for (index = 0; index < 12; index++) {
               LogicPage->Put_Pixel((_gridx[index] + XCENTER) - (32 + 64),
-                                   (_gridy[index] + YCENTER) - (32 + 64), GREY);
+                                   (_gridy[index] + YCENTER) - (32 + 64),
+                                   kGrey);
             }
           }
 
           // Get facing #1.
-          LogicPage->Print("Facing #1 (0-7)?", 0, 0, WHITE, BLACK);
+          LogicPage->Print("Facing #1 (0-7)?", 0, 0, kWhite, kBlack);
           input = Keyboard::Get();
           if (input == KA_ESC) {
             break;
@@ -496,10 +497,10 @@ void Debug_Key(unsigned input) {
           // 0); 						input =
           // std::min(input, 7);
           f1 = input;
-          Int_Print(f1, 100, 0, WHITE, BLACK);
+          Int_Print(f1, 100, 0, kWhite, kBlack);
 
           // Get facing #2.
-          LogicPage->Print("Facing #2 (0-7)?", 0, 10, WHITE, BLACK);
+          LogicPage->Print("Facing #2 (0-7)?", 0, 10, kWhite, kBlack);
           input = Keyboard::Get();
           if (input == KA_ESC) {
             break;
@@ -510,11 +511,11 @@ void Debug_Key(unsigned input) {
           // 0); 						input =
           // std::min(input, 7);
           f2 = input;
-          Int_Print(f2, 100, 10, WHITE, BLACK);
+          Int_Print(f2, 100, 10, kWhite, kBlack);
 
           track = &TrackControl[f1][f2];
           if (track->Track == 0) {
-            LogicPage->Print("Undefined track.", 0, 30, WHITE, BLACK);
+            LogicPage->Print("Undefined track.", 0, 30, kWhite, kBlack);
           } else {
             int index;  // Track index counter.
 
@@ -526,7 +527,7 @@ void Debug_Key(unsigned input) {
               x = (int)(coord & 0xFFFF);
               y = (int)((coord >> 16) & 0xFFFF);
               LogicPage->Put_Pixel(XCENTER + (x >> 2), YCENTER + (y >> 2),
-                                   WHITE);
+                                   kWhite);
               Delay(1);
               index++;
             }
@@ -680,7 +681,7 @@ void Debug_Key(unsigned input) {
                     y)) {
               Map.Coord_To_Pixel(
                   Coord_Move(center, r2, static_cast<uint16_t>(sight)), x1, y1);
-              LogicPage->Draw_Line(x, y + 8, x1, y1 + 8, WHITE);
+              LogicPage->Draw_Line(x, y + 8, x1, y1 + 8, kWhite);
             }
             if (Map.Coord_To_Pixel(
                     Coord_Move(center2, r1, static_cast<uint16_t>(weapon)), x,
@@ -688,7 +689,7 @@ void Debug_Key(unsigned input) {
               Map.Coord_To_Pixel(
                   Coord_Move(center2, r2, static_cast<uint16_t>(weapon)), x1,
                   y1);
-              LogicPage->Draw_Line(x, y + 8, x1, y1 + 8, RED);
+              LogicPage->Draw_Line(x, y + 8, x1, y1 + 8, kRed);
             }
           }
         }

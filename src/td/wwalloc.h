@@ -22,11 +22,13 @@
 #ifndef CNC_RED_ALERT_TD_WWALLOC_H_
 #define CNC_RED_ALERT_TD_WWALLOC_H_
 
+#include <cstdint>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-typedef enum MemoryFlagType {
+enum class MemoryFlagType {
   MEM_NORMAL = 0x0000,   // Default memory (normal).
   MEM_PUBLIC = 0x0000,   // Default memory (normal).
   MEM_CHIP = 0x0000,     // Graphic & sound buffer memory (Amiga).
@@ -39,23 +41,24 @@ typedef enum MemoryFlagType {
   MEM_XMS = 0x0040,      // XMS memory.
   MEM_EMS = 0x0080,      // EMS memory (not implemented).
   MEM_X = 0x8000         // Here to force this enum to be unsigned sized.
-} MemoryFlagType;
+};
+using enum MemoryFlagType;
 MemoryFlagType operator|(MemoryFlagType, MemoryFlagType);
 MemoryFlagType operator&(MemoryFlagType, MemoryFlagType);
 MemoryFlagType operator~(MemoryFlagType);
 
 /* Prototypes for functions defined in this file */
-void* __cdecl Alloc(unsigned long bytes_to_alloc, MemoryFlagType flags);
+void* __cdecl Alloc(uint64_t bytes_to_alloc, MemoryFlagType flags);
 void __cdecl Free(void* pointer);
 void* __cdecl Resize_Alloc(const void* original_ptr,
-                           unsigned long new_size_in_bytes);
-long Ram_Free(MemoryFlagType flag);
-long Total_Ram_Free(MemoryFlagType flag);
-long __cdecl Heap_Size(MemoryFlagType flag);
+                           uint64_t new_size_in_bytes);
+int64_t Ram_Free(MemoryFlagType flag);
+int64_t Total_Ram_Free(MemoryFlagType flag);
+int64_t __cdecl Heap_Size(MemoryFlagType flag);
 
-extern unsigned long __cdecl MinRam;  // Record of least memory at worst case.
-extern unsigned long __cdecl MaxRam;  // Record of total allocated at worst
-                                      // case.
+extern uint64_t __cdecl MinRam;  // Record of least memory at worst case.
+extern uint64_t __cdecl MaxRam;  // Record of total allocated at worst
+                                 // case.
 
 #ifdef __cplusplus
 }

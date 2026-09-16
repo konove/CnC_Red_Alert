@@ -159,7 +159,7 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
           direction = Desired_Facing256(SeenBuff.Get_Width() / 2,
                                         SeenBuff.Get_Height() / 2, altx, alty);
         }
-        const int control = Dir_Facing(direction);
+        const int control = static_cast<int>(Dir_Facing(direction));
 
         /*
         **	The mouse is over a scroll region so set the mouse shape
@@ -203,11 +203,13 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
         int distance = _rate[rate] / 2;
 
         if (!Scroll_Map(direction, distance, false)) {
-          Override_Mouse_Shape(static_cast<MouseType>(MOUSE_NO_N + control),
-                               false);
+          Override_Mouse_Shape(
+              static_cast<MouseType>(static_cast<int>(MOUSE_NO_N) + control),
+              false);
         } else {
-          Override_Mouse_Shape(static_cast<MouseType>(MOUSE_N + control),
-                               false);
+          Override_Mouse_Shape(
+              static_cast<MouseType>(static_cast<int>(MOUSE_N) + control),
+              false);
 
           /*
           **	If the mouse button is pressed or auto scrolling is active, then

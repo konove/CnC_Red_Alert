@@ -135,10 +135,10 @@ void* Small_Icon(const void* iconptr, int iconnum) {
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
 void Set_Window(int window, int x, int y, int w, int h) {
-  WindowList[window][WINDOWWIDTH] = w / 8;
-  WindowList[window][WINDOWHEIGHT] = h;
-  WindowList[window][WINDOWX] = x / 8;
-  WindowList[window][WINDOWY] = y;
+  WindowList[window][kWindowWidth] = w / 8;
+  WindowList[window][kWindowHeight] = h;
+  WindowList[window][kWindowX] = x / 8;
+  WindowList[window][kWindowY] = y;
 }
 
 /***********************************************************************************************

@@ -133,11 +133,11 @@ MapEditClass::MapEditClass() {
   **	Init data members.
   */
 
-  for (int i = 0; i < NUM_EDIT_CLASSES; i++) {
+  for (int i = 0; i < kNumEditClasses; i++) {
     NumType[i] = 0;
     TypeOffset[i] = 0;
   }
-  Waypoint[WAYPT_HOME] = 0;
+  Waypoint[kWayptHome] = 0;
   CurrentCell = 0;
   CurTrigger = nullptr;
   Changed = false;
@@ -170,56 +170,56 @@ void MapEditClass::One_Time() {
   /*........................................................................
   The map: a single large "button"
   ........................................................................*/
-  // MapArea = new ControlClass(MAP_AREA,0,8,312,192, GadgetClass::LEFTPRESS |
-  // GadgetClass::LEFTRELEASE, false);
-  MapArea = new ControlClass(MAP_AREA, 0, 16, 624, 384,
-                             GadgetClass::LEFTPRESS | GadgetClass::LEFTRELEASE,
-                             false);
+  // MapArea = new ControlClass(kMapArea,0,8,312,192, GadgetClass::kLeftPress |
+  // GadgetClass::kLeftRelease, false);
+  MapArea = new ControlClass(
+      kMapArea, 0, 16, 624, 384,
+      GadgetClass::kLeftPress | GadgetClass::kLeftRelease, false);
 
   /*........................................................................
   House buttons
   ........................................................................*/
   GDIButton = new TextButtonClass(
-      POPUP_GDI, "GDI",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, POPUP_GDI_X,
-      POPUP_GDI_Y, POPUP_GDI_W, POPUP_GDI_H);
+      kPopupGdi, "GDI",
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kPopupGdiX,
+      kPopupGdiY, kPopupGdiW, kPopupGdiH);
 
   NODButton = new TextButtonClass(
-      POPUP_NOD, "NOD",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, POPUP_NOD_X,
-      POPUP_NOD_Y, POPUP_NOD_W, POPUP_NOD_H);
+      kPopupNod, "NOD",
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kPopupNodX,
+      kPopupNodY, kPopupNodW, kPopupNodH);
 
   NeutralButton = new TextButtonClass(
-      POPUP_NEUTRAL, "Neutral",
+      kPopupNeutral, "Neutral",
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
-      POPUP_NEUTRAL_X, POPUP_NEUTRAL_Y, POPUP_NEUTRAL_W, POPUP_NEUTRAL_H);
+      kPopupNeutralX, kPopupNeutralY, kPopupNeutralW, kPopupNeutralH);
 
   Multi1Button = new TextButtonClass(
-      POPUP_MULTI1, "M1",
+      kPopupMulti1, "M1",
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
-      POPUP_MULTI1_X, POPUP_MULTI1_Y, POPUP_MULTI1_W, POPUP_MULTI1_H);
+      kPopupMulti1X, kPopupMulti1Y, kPopupMulti1W, kPopupMulti1H);
 
   Multi2Button = new TextButtonClass(
-      POPUP_MULTI2, "M2",
+      kPopupMulti2, "M2",
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
-      POPUP_MULTI2_X, POPUP_MULTI2_Y, POPUP_MULTI2_W, POPUP_MULTI2_H);
+      kPopupMulti2X, kPopupMulti2Y, kPopupMulti2W, kPopupMulti2H);
 
   Multi3Button = new TextButtonClass(
-      POPUP_MULTI3, "M3",
+      kPopupMulti3, "M3",
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
-      POPUP_MULTI3_X, POPUP_MULTI3_Y, POPUP_MULTI3_W, POPUP_MULTI3_H);
+      kPopupMulti3X, kPopupMulti3Y, kPopupMulti3W, kPopupMulti3H);
 
   Multi4Button = new TextButtonClass(
-      POPUP_MULTI4, "M4",
+      kPopupMulti4, "M4",
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
-      POPUP_MULTI4_X, POPUP_MULTI4_Y, POPUP_MULTI4_W, POPUP_MULTI4_H);
+      kPopupMulti4X, kPopupMulti4Y, kPopupMulti4W, kPopupMulti4H);
 
   /*........................................................................
   The mission list box
   ........................................................................*/
   MissionList = new ListClass(
-      POPUP_MISSIONLIST, POPUP_MISSION_X, POPUP_MISSION_Y, POPUP_MISSION_W,
-      POPUP_MISSION_H, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+      kPopupMissionlist, kPopupMissionX, kPopupMissionY, kPopupMissionW,
+      kPopupMissionH, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       Hires_Retrieve("BTN-UP.SHP"), Hires_Retrieve("BTN-DN.SHP"));
 
   for (const auto mission : MapEditMissions) {
@@ -230,8 +230,8 @@ void MapEditClass::One_Time() {
   The health bar
   ........................................................................*/
   HealthGauge =
-      new TriColorGaugeClass(POPUP_HEALTHGAUGE, POPUP_HEALTH_X, POPUP_HEALTH_Y,
-                             POPUP_HEALTH_W, POPUP_HEALTH_H);
+      new TriColorGaugeClass(kPopupHealthgauge, kPopupHealthX, kPopupHealthY,
+                             kPopupHealthW, kPopupHealthH);
   HealthGauge->Use_Thumb(true);
   HealthGauge->Set_Maximum(0x100);
   HealthGauge->Set_Red_Limit(0x3f - 1);
@@ -242,27 +242,27 @@ void MapEditClass::One_Time() {
   ........................................................................*/
   HealthBuf[0] = 0;
   HealthText = new TextLabelClass(
-      HealthBuf, POPUP_HEALTH_X + (POPUP_HEALTH_W / 2),
-      POPUP_HEALTH_Y + POPUP_HEALTH_H + 1, CC_GREEN,
+      HealthBuf, kPopupHealthX + (kPopupHealthW / 2),
+      kPopupHealthY + kPopupHealthH + 1, kCcGreen,
       TPF_CENTER | TPF_FULLSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
 
   /*........................................................................
   The facing dial
   ........................................................................*/
   FacingDial =
-      new Dial8Class(POPUP_FACINGDIAL, POPUP_FACEBOX_X, POPUP_FACEBOX_Y,
-                     POPUP_FACEBOX_W, POPUP_FACEBOX_H, static_cast<DirType>(0));
+      new Dial8Class(kPopupFacingdial, kPopupFaceboxX, kPopupFaceboxY,
+                     kPopupFaceboxW, kPopupFaceboxH, static_cast<DirType>(0));
 
   /*........................................................................
   The base percent-built slider & its label
   ........................................................................*/
-  BaseGauge = new GaugeClass(POPUP_BASEPERCENT, POPUP_BASE_X, POPUP_BASE_Y,
-                             POPUP_BASE_W, POPUP_BASE_H);
+  BaseGauge = new GaugeClass(kPopupBasepercent, kPopupBaseX, kPopupBaseY,
+                             kPopupBaseW, kPopupBaseH);
   // TextLabelClass keeps the pointer in its non-const Text member, so the
   // caption needs storage that outlives this call and is not a literal.
   static char base_caption[] = "Base:";
   BaseLabel = new TextLabelClass(
-      base_caption, POPUP_BASE_X - 3, POPUP_BASE_Y, CC_GREEN,
+      base_caption, kPopupBaseX - 3, kPopupBaseY, kCcGreen,
       TPF_RIGHT | TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
   BaseGauge->Set_Maximum(100);
   BaseGauge->Set_Value(BasePercent);
@@ -405,7 +405,7 @@ bool MapEditClass::Add_To_List(const ObjectTypeClass* object) {
   /*
   **	Add the object if there's room.
   */
-  if (object && ObjCount < MAX_EDIT_OBJECTS) {
+  if (object && ObjCount < kMaxEditObjects) {
     Objects[ObjCount++] = object;
 
     /*
@@ -490,11 +490,11 @@ bool MapEditClass::Add_To_List(const ObjectTypeClass* object) {
  *      SHIFT|ALT|ARROW:      moves object in that direction               *
  *      DELETE               deletes currently-selected object             *
  * Object-editing controls:                                                *
- *      POPUP_GDI:            makes GDI the owner of this object           *
- *      POPUP_NOD:            makes NOD the owner of this object           *
- *      POPUP_MISSIONLIST:   sets that mission for this object             *
- *      POPUP_HEALTHGAUGE:   sets that health value for this object        *
- *      POPUP_FACINGDIAL:      sets the object's facing                    *
+ *      kPopupGdi:            makes GDI the owner of this object           *
+ *      kPopupNod:            makes NOD the owner of this object           *
+ *      kPopupMissionlist:   sets that mission for this object             *
+ *      kPopupHealthgauge:   sets that health value for this object        *
+ *      kPopupFacingdial:      sets the object's facing                    *
  *                                                                         *
  * Changed is set when you:                                                *
  *      - place an object                                                  *
@@ -829,7 +829,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         ....................... Set map position ........................
         */
         ScenarioInit++;
-        Set_Tactical_Position(Cell_Coord(Waypoint[WAYPT_HOME]));
+        Set_Tactical_Position(Cell_Coord(Waypoint[kWayptHome]));
         ScenarioInit--;
 
         /*
@@ -850,12 +850,12 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       ** Unflag the old Home Cell, if there are no other waypoints
       ** pointing to it
       */
-      cell = Waypoint[WAYPT_HOME];
+      cell = Waypoint[kWayptHome];
 
       if (cell != -1) {
         found = 0;
-        for (int i = 0; i < WAYPT_COUNT; i++) {
-          if (i != WAYPT_HOME && Waypoint[i] == cell) {
+        for (int i = 0; i < kWayptCount; i++) {
+          if (i != kWayptHome && Waypoint[i] == cell) {
             found = 1;
           }
         }
@@ -869,7 +869,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       /*
       ** Now set the new Home cell
       */
-      Waypoint[WAYPT_HOME] = Coord_Cell(TacticalCoord);
+      Waypoint[kWayptHome] = Coord_Cell(TacticalCoord);
       (*this)[Coord_Cell(TacticalCoord)].IsWaypoint = true;
       Flag_Cell(Coord_Cell(TacticalCoord));
       Changed = true;
@@ -881,7 +881,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     the Reinf. Cell to the same as the Home Cell (for display purposes.)
     ---------------------------------------------------------------------*/
     case (KN_R | KN_SHIFT_BIT):
-      if (CurrentCell == 0 || CurrentCell == Waypoint[WAYPT_HOME]) {
+      if (CurrentCell == 0 || CurrentCell == Waypoint[kWayptHome]) {
         break;
       }
 
@@ -889,12 +889,12 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       ** Unflag the old Reinforcement Cell, if there are no other waypoints
       ** pointing to it
       */
-      cell = Waypoint[WAYPT_REINF];
+      cell = Waypoint[kWayptReinf];
 
       if (cell != -1) {
         found = 0;
-        for (int i = 0; i < WAYPT_COUNT; i++) {
-          if (i != WAYPT_REINF && Waypoint[i] == cell) {
+        for (int i = 0; i < kWayptCount; i++) {
+          if (i != kWayptReinf && Waypoint[i] == cell) {
             found = 1;
           }
         }
@@ -907,7 +907,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       /*
       ** Now set the new Reinforcement cell
       */
-      Waypoint[WAYPT_REINF] = CurrentCell;
+      Waypoint[kWayptReinf] = CurrentCell;
       (*this)[CurrentCell].IsWaypoint = true;
       Flag_Cell(CurrentCell);
       Changed = true;
@@ -950,7 +950,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         ...............................................................*/
         cell = Waypoint[waypt_idx];
         if (cell != -1) {
-          if (Waypoint[WAYPT_HOME] != cell && Waypoint[WAYPT_REINF] != cell) {
+          if (Waypoint[kWayptHome] != cell && Waypoint[kWayptReinf] != cell) {
             (*this)[cell].IsWaypoint = false;
           }
           Flag_Cell(cell);
@@ -975,7 +975,8 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       ------------------------------------------------------------------*/
       if (CurrentCell != 0) {
         waypt_idx = (KN_To_KA(input & 0xff) - KA_1);
-        house = static_cast<HousesType>(HOUSE_MULTI1 + waypt_idx);
+        house =
+            static_cast<HousesType>(static_cast<int>(HOUSE_MULTI1) + waypt_idx);
         if (HouseClass::As_Pointer(house)) {
           HouseClass::As_Pointer(house)->Flag_Attach(CurrentCell, true);
         }
@@ -986,7 +987,8 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         ------------------------------------------------------------------*/
         if (CurrentObject[0] != nullptr) {
           waypt_idx = (KN_To_KA(input & 0xff) - KA_1);
-          house = static_cast<HousesType>(HOUSE_MULTI1 + waypt_idx);
+          house = static_cast<HousesType>(static_cast<int>(HOUSE_MULTI1) +
+                                          waypt_idx);
           if (HouseClass::As_Pointer(house) &&
               CurrentObject[0]->What_Am_I() == RTTI_UNIT) {
             HouseClass::As_Pointer(house)->Flag_Attach(
@@ -1017,7 +1019,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         that waypoint.
         ...............................................................*/
         for (int i = 0; i < MAX_PLAYERS; i++) {
-          house = static_cast<HousesType>(HOUSE_MULTI1 + i);
+          house = static_cast<HousesType>(static_cast<int>(HOUSE_MULTI1) + i);
           if (HouseClass::As_Pointer(house) &&
               CurrentCell == HouseClass::As_Pointer(house)->FlagHome) {
             HouseClass::As_Pointer(house)->Flag_Remove(As_Target(CurrentCell),
@@ -1029,8 +1031,8 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         If there are no more waypoints on this cell, clear the cell's
         waypoint designation.
         ...............................................................*/
-        if (Waypoint[WAYPT_HOME] != CurrentCell &&
-            Waypoint[WAYPT_REINF] != CurrentCell) {
+        if (Waypoint[kWayptHome] != CurrentCell &&
+            Waypoint[kWayptReinf] != CurrentCell) {
           (*this)[CurrentCell].IsWaypoint = false;
         }
         Changed = true;
@@ -1062,7 +1064,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     - Toggle LMouseDown
     - release any grabbed object
     ---------------------------------------------------------------------*/
-    case ButtonKey(MAP_AREA):
+    case ButtonKey(kMapArea):
       /*
       ------------------------- Left Button DOWN -------------------------
       */
@@ -1209,18 +1211,18 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     /*---------------------------------------------------------------------
     Object-Editing button: House Button
     ---------------------------------------------------------------------*/
-    case ButtonKey(POPUP_GDI):
-    case ButtonKey(POPUP_NOD):
-    case ButtonKey(POPUP_NEUTRAL):
-    case ButtonKey(POPUP_MULTI1):
-    case ButtonKey(POPUP_MULTI2):
-    case ButtonKey(POPUP_MULTI3):
-    case ButtonKey(POPUP_MULTI4):
+    case ButtonKey(kPopupGdi):
+    case ButtonKey(kPopupNod):
+    case ButtonKey(kPopupNeutral):
+    case ButtonKey(kPopupMulti1):
+    case ButtonKey(kPopupMulti2):
+    case ButtonKey(kPopupMulti3):
+    case ButtonKey(kPopupMulti4):
       /*..................................................................
       Convert input value into a house value; assume HOUSE_GOOD is 0
       ..................................................................*/
       house = static_cast<HousesType>(static_cast<int>(input & ~KN_BUTTON) -
-                                      POPUP_GDI);
+                                      kPopupGdi);
       /*..................................................................
       If that house doesn't own this object, try to transfer it
       ..................................................................*/
@@ -1228,7 +1230,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         Changed = true;
       }
 
-      Set_House_Buttons(CurrentObject[0]->Owner(), Buttons, POPUP_GDI);
+      Set_House_Buttons(CurrentObject[0]->Owner(), Buttons, kPopupGdi);
       HiddenPage.Clear();
       Flag_To_Redraw(true);
       input = KN_NONE;
@@ -1237,7 +1239,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     /*---------------------------------------------------------------------
     Object-Editing button: Mission
     ---------------------------------------------------------------------*/
-    case ButtonKey(POPUP_MISSIONLIST):
+    case ButtonKey(kPopupMissionlist):
       if (CurrentObject[0]->Is_Techno()) {
         /*
         ........................ Set new mission ........................
@@ -1256,7 +1258,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     /*---------------------------------------------------------------------
     Object-Editing button: Health
     ---------------------------------------------------------------------*/
-    case ButtonKey(POPUP_HEALTHGAUGE):
+    case ButtonKey(kPopupHealthgauge):
       if (CurrentObject[0]->Is_Techno()) {
         /*
         .......... Derive strength from current gauge reading ...........
@@ -1292,7 +1294,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     /*---------------------------------------------------------------------
     Object-Editing button: Facing
     ---------------------------------------------------------------------*/
-    case ButtonKey(POPUP_FACINGDIAL):
+    case ButtonKey(kPopupFacingdial):
       if (CurrentObject[0]->Is_Techno()) {
         auto* techno = dynamic_cast<TechnoClass*>(CurrentObject[0]);
         if (FacingDial->Get_Direction() != techno->PrimaryFacing.Get()) {
@@ -1322,7 +1324,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     /*---------------------------------------------------------------------
     Object-Editing button: Facing
     ---------------------------------------------------------------------*/
-    case ButtonKey(POPUP_BASEPERCENT):
+    case ButtonKey(kPopupBasepercent):
       if (BaseGauge->Get_Value() != BasePercent) {
         BasePercent = BaseGauge->Get_Value();
         Build_Base_To(BasePercent);
@@ -1370,12 +1372,12 @@ void MapEditClass::Draw_It(bool forced) {
   //
   // Erase scrags at top of screen
   //
-  LogicPage->Fill_Rect(0, 0, 640, 16, BLACK);
+  LogicPage->Fill_Rect(0, 0, 640, 16, kBlack);
 
   /*
   **	Display the total value of all Tiberium on the map.
   */
-  Fancy_Text_Print("Tiberium=%ld   ", 0, 0, CC_GREEN, BLACK,
+  Fancy_Text_Print("Tiberium=%ld   ", 0, 0, kCcGreen, kBlack,
                    TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, TotalValue);
 
   /*------------------------------------------------------------------------
@@ -1408,7 +1410,7 @@ void MapEditClass::Draw_It(bool forced) {
     ......................... print the label ..........................
     */
     Fancy_Text_Print(
-        buf, 320, 0, CC_TAN, TBLACK,
+        buf, 320, 0, kCcTan, kTBlack,
         TPF_CENTER | TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
   }
 }
@@ -1501,7 +1503,7 @@ bool MapEditClass::Mouse_Moved() {
  *   10/20/1994 BR : Created.                                              *
  *=========================================================================*/
 void MapEditClass::Main_Menu() {
-  const char* _menus[MAX_MAIN_MENU_NUM + 1];
+  const char* _menus[kMaxMainMenuNum + 1];
   int rc = 0;
 
   /*
@@ -1686,7 +1688,7 @@ void MapEditClass::Main_Menu() {
  *   11/29/1994 BR : Created.                                              *
  *=========================================================================*/
 void MapEditClass::AI_Menu() {
-  const char* _menus[MAX_AI_MENU_NUM + 1];
+  const char* _menus[kMaxAiMenuNum + 1];
 
   /*
   -------------------------- Fill in menu strings --------------------------

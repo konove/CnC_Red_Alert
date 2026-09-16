@@ -133,163 +133,160 @@ int MapEditClass::Placement_Dialog() {
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
-  enum {
-    D_DIALOG_W = 480,
-    D_DIALOG_H = 360,
-    D_DIALOG_X = ((640 - D_DIALOG_W) / 2),
-    D_DIALOG_Y = ((400 - D_DIALOG_H) / 2),
-    D_DIALOG_CX = D_DIALOG_X + (D_DIALOG_W / 2),
+  constexpr int kDialogW = 480;
+  constexpr int kDialogH = 360;
+  constexpr int kDialogX = ((640 - kDialogW) / 2);
+  constexpr int kDialogY = ((400 - kDialogH) / 2);
+  [[maybe_unused]] constexpr int kDialogCx = kDialogX + (kDialogW / 2);
 
-    D_TXT8_H = 22,
-    D_MARGIN = 14,
+  constexpr int kTxt8H = 22;
+  constexpr int kMargin = 14;
 
-    D_PICTURE_W = 304,  // must be divisible by 8!
-    D_PICTURE_H = 210,
-    D_PICTURE_X = D_DIALOG_X + 16,  // must start on a byte boundary!
-    D_PICTURE_Y = D_DIALOG_Y + D_MARGIN + D_TXT8_H + D_MARGIN,
-    D_PICTURE_CX = D_PICTURE_X + (D_PICTURE_W / 2),
+  constexpr int kPictureW = 304;  // must be divisible by 8!
+  constexpr int kPictureH = 210;
+  constexpr int kPictureX = kDialogX + 16;  // must start on a byte boundary!
+  constexpr int kPictureY = kDialogY + kMargin + kTxt8H + kMargin;
+  constexpr int kPictureCx = kPictureX + (kPictureW / 2);
 
-    D_GDI_W = 90,
-    D_GDI_H = 18,
-    D_GDI_X = D_DIALOG_X + D_MARGIN,
-    D_GDI_Y = D_DIALOG_Y + D_MARGIN,
+  constexpr int kGdiW = 90;
+  constexpr int kGdiH = 18;
+  constexpr int kGdiX = kDialogX + kMargin;
+  constexpr int kGdiY = kDialogY + kMargin;
 
-    D_NOD_W = 90,
-    D_NOD_H = 18,
-    D_NOD_X = D_GDI_X + D_GDI_W,
-    D_NOD_Y = D_DIALOG_Y + D_MARGIN,
+  constexpr int kNodW = 90;
+  constexpr int kNodH = 18;
+  constexpr int kNodX = kGdiX + kGdiW;
+  constexpr int kNodY = kDialogY + kMargin;
 
-    D_NEUTRAL_W = 90,
-    D_NEUTRAL_H = 18,
-    D_NEUTRAL_X = D_NOD_X + D_NOD_W,
-    D_NEUTRAL_Y = D_DIALOG_Y + D_MARGIN,
+  constexpr int kNeutralW = 90;
+  constexpr int kNeutralH = 18;
+  constexpr int kNeutralX = kNodX + kNodW;
+  constexpr int kNeutralY = kDialogY + kMargin;
 
-    D_MULTI1_W = 44,
-    D_MULTI1_H = 18,
-    D_MULTI1_X = D_GDI_X,
-    D_MULTI1_Y = D_GDI_Y,
+  constexpr int kMulti1W = 44;
+  constexpr int kMulti1H = 18;
+  constexpr int kMulti1X = kGdiX;
+  constexpr int kMulti1Y = kGdiY;
 
-    D_MULTI2_W = 44,
-    D_MULTI2_H = 18,
-    D_MULTI2_X = D_MULTI1_X + D_MULTI1_W,
-    D_MULTI2_Y = D_GDI_Y,
+  constexpr int kMulti2W = 44;
+  constexpr int kMulti2H = 18;
+  constexpr int kMulti2X = kMulti1X + kMulti1W;
+  constexpr int kMulti2Y = kGdiY;
 
-    D_MULTI3_W = 44,
-    D_MULTI3_H = 18,
-    D_MULTI3_X = D_MULTI2_X + D_MULTI2_W,
-    D_MULTI3_Y = D_GDI_Y,
+  constexpr int kMulti3W = 44;
+  constexpr int kMulti3H = 18;
+  constexpr int kMulti3X = kMulti2X + kMulti2W;
+  constexpr int kMulti3Y = kGdiY;
 
-    D_MULTI4_W = 44,
-    D_MULTI4_H = 18,
-    D_MULTI4_X = D_MULTI3_X + D_MULTI3_W,
-    D_MULTI4_Y = D_GDI_Y,
+  constexpr int kMulti4W = 44;
+  constexpr int kMulti4H = 18;
+  constexpr int kMulti4X = kMulti3X + kMulti3W;
+  constexpr int kMulti4Y = kGdiY;
 
-    D_LEFT_W = 90,
-    D_LEFT_H = 18,
-    D_LEFT_X = D_PICTURE_CX - 5 - D_LEFT_W,
-    D_LEFT_Y = D_PICTURE_Y + D_PICTURE_H + D_MARGIN,
+  constexpr int kLeftW = 90;
+  constexpr int kLeftH = 18;
+  constexpr int kLeftX = kPictureCx - 5 - kLeftW;
+  constexpr int kLeftY = kPictureY + kPictureH + kMargin;
 
-    D_RIGHT_W = 90,
-    D_RIGHT_H = 18,
-    D_RIGHT_X = D_PICTURE_CX + 5,
-    D_RIGHT_Y = D_PICTURE_Y + D_PICTURE_H + D_MARGIN,
+  constexpr int kRightW = 90;
+  constexpr int kRightH = 18;
+  constexpr int kRightX = kPictureCx + 5;
+  constexpr int kRightY = kPictureY + kPictureH + kMargin;
 
-    D_TEMPLATE_W = 140,
-    D_TEMPLATE_H = 18,
-    D_TEMPLATE_X = D_DIALOG_X + D_DIALOG_W - D_MARGIN - D_TEMPLATE_W,
-    D_TEMPLATE_Y = D_PICTURE_Y,
+  constexpr int kTemplateW = 140;
+  constexpr int kTemplateH = 18;
+  constexpr int kTemplateX = kDialogX + kDialogW - kMargin - kTemplateW;
+  constexpr int kTemplateY = kPictureY;
 
-    D_OVERLAY_W = 140,
-    D_OVERLAY_H = 18,
-    D_OVERLAY_X = D_DIALOG_X + D_DIALOG_W - D_MARGIN - D_OVERLAY_W,
-    D_OVERLAY_Y = D_TEMPLATE_Y + D_TEMPLATE_H,
+  constexpr int kOverlayW = 140;
+  constexpr int kOverlayH = 18;
+  constexpr int kOverlayX = kDialogX + kDialogW - kMargin - kOverlayW;
+  constexpr int kOverlayY = kTemplateY + kTemplateH;
 
-    D_SMUDGE_W = 140,
-    D_SMUDGE_H = 18,
-    D_SMUDGE_X = D_DIALOG_X + D_DIALOG_W - D_MARGIN - D_SMUDGE_W,
-    D_SMUDGE_Y = D_OVERLAY_Y + D_OVERLAY_H,
+  constexpr int kSmudgeW = 140;
+  constexpr int kSmudgeH = 18;
+  constexpr int kSmudgeX = kDialogX + kDialogW - kMargin - kSmudgeW;
+  constexpr int kSmudgeY = kOverlayY + kOverlayH;
 
-    D_TERRAIN_W = 140,
-    D_TERRAIN_H = 18,
-    D_TERRAIN_X = D_DIALOG_X + D_DIALOG_W - D_MARGIN - D_TERRAIN_W,
-    D_TERRAIN_Y = D_SMUDGE_Y + D_SMUDGE_H,
+  constexpr int kTerrainW = 140;
+  constexpr int kTerrainH = 18;
+  constexpr int kTerrainX = kDialogX + kDialogW - kMargin - kTerrainW;
+  constexpr int kTerrainY = kSmudgeY + kSmudgeH;
 
-    D_UNIT_W = 140,
-    D_UNIT_H = 18,
-    D_UNIT_X = D_DIALOG_X + D_DIALOG_W - D_MARGIN - D_UNIT_W,
-    D_UNIT_Y = D_TERRAIN_Y + D_TERRAIN_H,
+  constexpr int kUnitW = 140;
+  constexpr int kUnitH = 18;
+  constexpr int kUnitX = kDialogX + kDialogW - kMargin - kUnitW;
+  constexpr int kUnitY = kTerrainY + kTerrainH;
 
-    D_INFANTRY_W = 140,
-    D_INFANTRY_H = 18,
-    D_INFANTRY_X = D_DIALOG_X + D_DIALOG_W - D_MARGIN - D_INFANTRY_W,
-    D_INFANTRY_Y = D_UNIT_Y + D_UNIT_H,
+  constexpr int kInfantryW = 140;
+  constexpr int kInfantryH = 18;
+  constexpr int kInfantryX = kDialogX + kDialogW - kMargin - kInfantryW;
+  constexpr int kInfantryY = kUnitY + kUnitH;
 
-    D_AIRCRAFT_W = 140,
-    D_AIRCRAFT_H = 18,
-    D_AIRCRAFT_X = D_DIALOG_X + D_DIALOG_W - D_MARGIN - D_AIRCRAFT_W,
-    D_AIRCRAFT_Y = D_INFANTRY_Y + D_INFANTRY_H,
+  constexpr int kAircraftW = 140;
+  constexpr int kAircraftH = 18;
+  constexpr int kAircraftX = kDialogX + kDialogW - kMargin - kAircraftW;
+  constexpr int kAircraftY = kInfantryY + kInfantryH;
 
-    D_BUILDING_W = 140,
-    D_BUILDING_H = 18,
-    D_BUILDING_X = D_DIALOG_X + D_DIALOG_W - D_MARGIN - D_BUILDING_W,
-    D_BUILDING_Y = D_AIRCRAFT_Y + D_AIRCRAFT_H,
+  constexpr int kBuildingW = 140;
+  constexpr int kBuildingH = 18;
+  constexpr int kBuildingX = kDialogX + kDialogW - kMargin - kBuildingW;
+  constexpr int kBuildingY = kAircraftY + kAircraftH;
 
-    D_OK_W = 90,
-    D_OK_H = 18,
-    D_OK_X = D_PICTURE_CX - D_OK_W - 5,
-    D_OK_Y = D_DIALOG_Y + D_DIALOG_H - D_OK_H - D_MARGIN,
+  constexpr int kOkW = 90;
+  constexpr int kOkH = 18;
+  constexpr int kOkX = kPictureCx - kOkW - 5;
+  constexpr int kOkY = kDialogY + kDialogH - kOkH - kMargin;
 
-    D_CANCEL_W = 90,
-    D_CANCEL_H = 18,
-    D_CANCEL_X = D_PICTURE_CX + 5,
-    D_CANCEL_Y = D_DIALOG_Y + D_DIALOG_H - D_CANCEL_H - D_MARGIN,
+  constexpr int kCancelW = 90;
+  constexpr int kCancelH = 18;
+  constexpr int kCancelX = kPictureCx + 5;
+  constexpr int kCancelY = kDialogY + kDialogH - kCancelH - kMargin;
 
-  };
   /*........................................................................
   Grid Dimensions
   ........................................................................*/
-  enum {
-    GRIDSIZE = 10,
-    GRIDBLOCK_W = 6,
-    GRIDBLOCK_H = 6,
-    D_GRID_X = D_DIALOG_X + D_DIALOG_W - (GRIDSIZE * GRIDBLOCK_W) - D_MARGIN,
-    D_GRID_Y = D_DIALOG_Y + D_DIALOG_H - (GRIDSIZE * GRIDBLOCK_H) - D_MARGIN,
-  };
+  constexpr int kGridsize = 10;
+  constexpr int kGridblockW = 6;
+  constexpr int kGridblockH = 6;
+  constexpr int kGridX =
+      kDialogX + kDialogW - (kGridsize * kGridblockW) - kMargin;
+  constexpr int kGridY =
+      kDialogY + kDialogH - (kGridsize * kGridblockH) - kMargin;
   /*........................................................................
   Button enumerations:
   ........................................................................*/
-  enum {
-    BUTTON_GDI = 100,
-    BUTTON_NOD,
-    BUTTON_NEUTRAL,
-    BUTTON_JP,  // placeholder
-    BUTTON_MULTI1,
-    BUTTON_MULTI2,
-    BUTTON_MULTI3,
-    BUTTON_MULTI4,
-    BUTTON_NEXT,
-    BUTTON_PREV,
-    BUTTON_OK,
-    BUTTON_CANCEL,
-    BUTTON_TEMPLATE,
-    BUTTON_OVERLAY,
-    BUTTON_SMUDGE,
-    BUTTON_TERRAIN,
-    BUTTON_UNIT,
-    BUTTON_INFANTRY,
-    BUTTON_AIRCRAFT,
-    BUTTON_BUILDING,
-  };
+  constexpr int kButtonGdi = 100;
+  constexpr int kButtonNod = 101;
+  constexpr int kButtonNeutral = 102;
+  [[maybe_unused]] constexpr int kButtonJp = 103;  // placeholder
+  constexpr int kButtonMulti1 = 104;
+  constexpr int kButtonMulti2 = 105;
+  constexpr int kButtonMulti3 = 106;
+  constexpr int kButtonMulti4 = 107;
+  constexpr int kButtonNext = 108;
+  constexpr int kButtonPrev = 109;
+  constexpr int kButtonOk = 110;
+  constexpr int kButtonCancel = 111;
+  constexpr int kButtonTemplate = 112;
+  constexpr int kButtonOverlay = 113;
+  constexpr int kButtonSmudge = 114;
+  constexpr int kButtonTerrain = 115;
+  constexpr int kButtonUnit = 116;
+  constexpr int kButtonInfantry = 117;
+  constexpr int kButtonAircraft = 118;
+  constexpr int kButtonBuilding = 119;
   /*........................................................................
   Redraw values: in order from "top" to "bottom" layer of the dialog
   ........................................................................*/
-  typedef enum {
+  enum class RedrawType {
     REDRAW_NONE = 0,
     REDRAW_BUTTONS = 1,
     REDRAW_OBJECT = 2,
     REDRAW_BACKGROUND = 3,
     REDRAW_ALL = REDRAW_BACKGROUND
-  } RedrawType;
+  };
+  using enum RedrawType;
   /*........................................................................
   Dialog variables
   ........................................................................*/
@@ -303,99 +300,99 @@ int MapEditClass::Placement_Dialog() {
   ........................................................................*/
 
   TextButtonClass gdibtn(
-      BUTTON_GDI, "GDI",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_GDI_X,
-      D_GDI_Y, D_GDI_W, D_GDI_H);
+      kButtonGdi, "GDI",
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kGdiX, kGdiY,
+      kGdiW, kGdiH);
 
   TextButtonClass nodbtn(
-      BUTTON_NOD, "NOD",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_NOD_X,
-      D_NOD_Y, D_NOD_W, D_NOD_H);
+      kButtonNod, "NOD",
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kNodX, kNodY,
+      kNodW, kNodH);
 
   TextButtonClass neutbtn(
-      BUTTON_NEUTRAL, "Neutral",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_NEUTRAL_X,
-      D_NEUTRAL_Y, D_NEUTRAL_W, D_NEUTRAL_H);
+      kButtonNeutral, "Neutral",
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kNeutralX,
+      kNeutralY, kNeutralW, kNeutralH);
 
   TextButtonClass multi1btn(
-      BUTTON_MULTI1, "M1",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_MULTI1_X,
-      D_MULTI1_Y, D_MULTI1_W, D_MULTI1_H);
+      kButtonMulti1, "M1",
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kMulti1X,
+      kMulti1Y, kMulti1W, kMulti1H);
 
   TextButtonClass multi2btn(
-      BUTTON_MULTI2, "M2",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_MULTI2_X,
-      D_MULTI2_Y, D_MULTI2_W, D_MULTI2_H);
+      kButtonMulti2, "M2",
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kMulti2X,
+      kMulti2Y, kMulti2W, kMulti2H);
 
   TextButtonClass multi3btn(
-      BUTTON_MULTI3, "M3",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_MULTI3_X,
-      D_MULTI3_Y, D_MULTI3_W, D_MULTI3_H);
+      kButtonMulti3, "M3",
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kMulti3X,
+      kMulti3Y, kMulti3W, kMulti3H);
 
   TextButtonClass multi4btn(
-      BUTTON_MULTI4, "M4",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_MULTI4_X,
-      D_MULTI4_Y, D_MULTI4_W, D_MULTI4_H);
+      kButtonMulti4, "M4",
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kMulti4X,
+      kMulti4Y, kMulti4W, kMulti4H);
 
   TextButtonClass nextbtn(
-      BUTTON_NEXT, TXT_RIGHT,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_RIGHT_X,
-      D_RIGHT_Y, D_RIGHT_W, D_RIGHT_H);
+      kButtonNext, TXT_RIGHT,
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kRightX,
+      kRightY, kRightW, kRightH);
 
   TextButtonClass prevbtn(
-      BUTTON_PREV, TXT_LEFT,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_LEFT_X,
-      D_LEFT_Y, D_LEFT_W, D_LEFT_H);
+      kButtonPrev, TXT_LEFT,
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kLeftX,
+      kLeftY, kLeftW, kLeftH);
 
   TextButtonClass okbtn(
-      BUTTON_OK, TXT_OK,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_OK_X,
-      D_OK_Y, D_OK_W, D_OK_H);
+      kButtonOk, TXT_OK,
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kOkX, kOkY,
+      kOkW, kOkH);
 
   TextButtonClass cancelbtn(
-      BUTTON_CANCEL, TXT_CANCEL,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_CANCEL_X,
-      D_CANCEL_Y, D_CANCEL_W, D_CANCEL_H);
+      kButtonCancel, TXT_CANCEL,
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kCancelX,
+      kCancelY, kCancelW, kCancelH);
 
   TextButtonClass templatebtn(
-      BUTTON_TEMPLATE, "Template",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_TEMPLATE_X,
-      D_TEMPLATE_Y, D_TEMPLATE_W, D_TEMPLATE_H);
+      kButtonTemplate, "Template",
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kTemplateX,
+      kTemplateY, kTemplateW, kTemplateH);
 
   TextButtonClass overlaybtn(
-      BUTTON_OVERLAY, "Overlay",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_OVERLAY_X,
-      D_OVERLAY_Y, D_OVERLAY_W, D_OVERLAY_H);
+      kButtonOverlay, "Overlay",
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kOverlayX,
+      kOverlayY, kOverlayW, kOverlayH);
 
   TextButtonClass smudgebtn(
-      BUTTON_SMUDGE, "Smudge",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_SMUDGE_X,
-      D_SMUDGE_Y, D_SMUDGE_W, D_SMUDGE_H);
+      kButtonSmudge, "Smudge",
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kSmudgeX,
+      kSmudgeY, kSmudgeW, kSmudgeH);
 
   TextButtonClass terrainbtn(
-      BUTTON_TERRAIN, "Terrain",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_TERRAIN_X,
-      D_TERRAIN_Y, D_TERRAIN_W, D_TERRAIN_H);
+      kButtonTerrain, "Terrain",
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kTerrainX,
+      kTerrainY, kTerrainW, kTerrainH);
 
   TextButtonClass unitbtn(
-      BUTTON_UNIT, "Unit",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_UNIT_X,
-      D_UNIT_Y, D_UNIT_W, D_UNIT_H);
+      kButtonUnit, "Unit",
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kUnitX,
+      kUnitY, kUnitW, kUnitH);
 
   TextButtonClass infantrybtn(
-      BUTTON_INFANTRY, "Infantry",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_INFANTRY_X,
-      D_INFANTRY_Y, D_INFANTRY_W, D_INFANTRY_H);
+      kButtonInfantry, "Infantry",
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kInfantryX,
+      kInfantryY, kInfantryW, kInfantryH);
 
   TextButtonClass aircraftbtn(
-      BUTTON_AIRCRAFT, "Aircraft",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_AIRCRAFT_X,
-      D_AIRCRAFT_Y, D_AIRCRAFT_W, D_AIRCRAFT_H);
+      kButtonAircraft, "Aircraft",
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kAircraftX,
+      kAircraftY, kAircraftW, kAircraftH);
 
   TextButtonClass buildingbtn(
-      BUTTON_BUILDING, "Building",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_BUILDING_X,
-      D_BUILDING_Y, D_BUILDING_W, D_BUILDING_H);
+      kButtonBuilding, "Building",
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kBuildingX,
+      kBuildingY, kBuildingW, kBuildingH);
 
   /*------------------------------------------------------------------------
   Initialize addable objects list; we must do this every time in case one
@@ -415,7 +412,7 @@ int MapEditClass::Placement_Dialog() {
   Compute offset of each class type in the Objects array
   ........................................................................*/
   TypeOffset[0] = 0;
-  for (i = 1; i < NUM_EDIT_CLASSES; i++) {
+  for (i = 1; i < kNumEditClasses; i++) {
     TypeOffset[i] = TypeOffset[i - 1] + NumType[i - 1];
   }
 
@@ -471,7 +468,7 @@ int MapEditClass::Placement_Dialog() {
   /*
   ..................... Set the buttons for this house .....................
   */
-  Set_House_Buttons(LastHouse, commands, BUTTON_GDI);
+  Set_House_Buttons(LastHouse, commands, kButtonGdi);
 
   /*
   -------------------------- Main processing loop --------------------------
@@ -502,8 +499,8 @@ int MapEditClass::Placement_Dialog() {
       */
       Hide_Mouse();
       if (display >= REDRAW_BACKGROUND) {
-        Dialog_Box(D_DIALOG_X, D_DIALOG_Y, D_DIALOG_W, D_DIALOG_H);
-        Draw_Caption(TXT_NONE, D_DIALOG_X, D_DIALOG_Y, D_DIALOG_W);
+        Dialog_Box(kDialogX, kDialogY, kDialogW, kDialogH);
+        Draw_Caption(TXT_NONE, kDialogX, kDialogY, kDialogW);
       }
 
       /*------------------------------------------------------------------
@@ -514,12 +511,13 @@ int MapEditClass::Placement_Dialog() {
       - reset the window dimensions
       ------------------------------------------------------------------*/
       if (display >= REDRAW_OBJECT) {
-        WindowList[WINDOW_EDITOR][WINDOWX] = D_PICTURE_X >> 3;
-        WindowList[WINDOW_EDITOR][WINDOWY] = D_PICTURE_Y;
-        WindowList[WINDOW_EDITOR][WINDOWWIDTH] = D_PICTURE_W >> 3;
-        WindowList[WINDOW_EDITOR][WINDOWHEIGHT] = D_PICTURE_H;
-        Change_Window(WINDOW_EDITOR);
-        Draw_Box(D_PICTURE_X, D_PICTURE_Y, D_PICTURE_W, D_PICTURE_H,
+        WindowList[static_cast<int>(WINDOW_EDITOR)][kWindowX] = kPictureX / 8;
+        WindowList[static_cast<int>(WINDOW_EDITOR)][kWindowY] = kPictureY;
+        WindowList[static_cast<int>(WINDOW_EDITOR)][kWindowWidth] =
+            kPictureW / 8;
+        WindowList[static_cast<int>(WINDOW_EDITOR)][kWindowHeight] = kPictureH;
+        Change_Window(static_cast<int>(WINDOW_EDITOR));
+        Draw_Box(kPictureX, kPictureY, kPictureW, kPictureH,
                  BOXSTYLE_GREEN_DOWN, true);
         curobj->Display(ScreenWidth * 4, ScreenHeight / 2, WINDOW_EDITOR,
                         LastHouse);
@@ -527,9 +525,9 @@ int MapEditClass::Placement_Dialog() {
         /*
         ........................ Erase the grid .........................
         */
-        LogicPage->Fill_Rect(D_GRID_X - (GRIDBLOCK_W * 2), D_GRID_Y,
-                             D_GRID_X + (GRIDSIZE * GRIDBLOCK_W),
-                             D_GRID_Y + (GRIDSIZE * GRIDBLOCK_H), BLACK);
+        LogicPage->Fill_Rect(kGridX - (kGridblockW * 2), kGridY,
+                             kGridX + (kGridsize * kGridblockW),
+                             kGridY + (kGridsize * kGridblockH), kBlack);
 
         /*
         .............. Draw a box for every cell occupied ...............
@@ -539,25 +537,24 @@ int MapEditClass::Placement_Dialog() {
         while ((*occupy) != REFRESH_EOL) {
           const int cell = (*occupy);  // cell index for parsing OccupyList
           occupy++;
-          x = D_GRID_X + ((cell % MAP_CELL_W) * GRIDBLOCK_W);
-          y = D_GRID_Y + ((cell / MAP_CELL_W) * GRIDBLOCK_H);
-          LogicPage->Fill_Rect(x, y, x + GRIDBLOCK_W - 1, y + GRIDBLOCK_H - 1,
-                               CC_BRIGHT_GREEN);
+          x = kGridX + ((cell % MAP_CELL_W) * kGridblockW);
+          y = kGridY + ((cell / MAP_CELL_W) * kGridblockH);
+          LogicPage->Fill_Rect(x, y, x + kGridblockW - 1, y + kGridblockH - 1,
+                               kCcBrightGreen);
         }
 
         /*
         ..................... Draw the grid itself ......................
         */
-        for (y = 0; y <= GRIDSIZE; y++) {
-          for (x = 0; x <= GRIDSIZE; x++) {
-            LogicPage->Draw_Line(D_GRID_X + (x * GRIDBLOCK_W), D_GRID_Y,
-                                 D_GRID_X + (x * GRIDBLOCK_W),
-                                 D_GRID_Y + (GRIDSIZE * GRIDBLOCK_H),
-                                 CC_GREEN_SHADOW);
+        for (y = 0; y <= kGridsize; y++) {
+          for (x = 0; x <= kGridsize; x++) {
+            LogicPage->Draw_Line(
+                kGridX + (x * kGridblockW), kGridY, kGridX + (x * kGridblockW),
+                kGridY + (kGridsize * kGridblockH), kCcGreenShadow);
           }
-          LogicPage->Draw_Line(D_GRID_X, D_GRID_Y + (y * GRIDBLOCK_H),
-                               D_GRID_X + (GRIDSIZE * GRIDBLOCK_W),
-                               D_GRID_Y + (y * GRIDBLOCK_H), CC_GREEN_SHADOW);
+          LogicPage->Draw_Line(kGridX, kGridY + (y * kGridblockH),
+                               kGridX + (kGridsize * kGridblockW),
+                               kGridY + (y * kGridblockH), kCcGreenShadow);
         }
 
         /*...............................................................
@@ -566,8 +563,8 @@ int MapEditClass::Placement_Dialog() {
         functions won't work!
         ...............................................................*/
         Fancy_Text_Print(
-            curobj->Full_Name(), D_PICTURE_CX, D_PICTURE_Y + D_MARGIN, CC_GREEN,
-            TBLACK,
+            curobj->Full_Name(), kPictureCx, kPictureY + kMargin, kCcGreen,
+            kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
 
@@ -581,7 +578,7 @@ int MapEditClass::Placement_Dialog() {
         the category button states.
         ...............................................................*/
         i = 0;
-        for (typeindex = 0; typeindex < NUM_EDIT_CLASSES; typeindex++) {
+        for (typeindex = 0; typeindex < kNumEditClasses; typeindex++) {
           i += NumType[typeindex];
           if (LastChoice < i) {
             break;
@@ -595,36 +592,36 @@ int MapEditClass::Placement_Dialog() {
         infantrybtn.Turn_Off();
         aircraftbtn.Turn_Off();
         buildingbtn.Turn_Off();
-        switch (typeindex + BUTTON_TEMPLATE) {
-          case BUTTON_TEMPLATE:
+        switch (typeindex + kButtonTemplate) {
+          case kButtonTemplate:
             templatebtn.Turn_On();
             break;
 
-          case BUTTON_OVERLAY:
+          case kButtonOverlay:
             overlaybtn.Turn_On();
             break;
 
-          case BUTTON_SMUDGE:
+          case kButtonSmudge:
             smudgebtn.Turn_On();
             break;
 
-          case BUTTON_TERRAIN:
+          case kButtonTerrain:
             terrainbtn.Turn_On();
             break;
 
-          case BUTTON_UNIT:
+          case kButtonUnit:
             unitbtn.Turn_On();
             break;
 
-          case BUTTON_INFANTRY:
+          case kButtonInfantry:
             infantrybtn.Turn_On();
             break;
 
-          case BUTTON_AIRCRAFT:
+          case kButtonAircraft:
             aircraftbtn.Turn_On();
             break;
 
-          case BUTTON_BUILDING:
+          case kButtonBuilding:
             buildingbtn.Turn_On();
             break;
           default:
@@ -652,20 +649,20 @@ int MapEditClass::Placement_Dialog() {
       /*
       ---------------------------- GDI House -----------------------------
       */
-      case ButtonKey(BUTTON_GDI):
-      case ButtonKey(BUTTON_NOD):
-      case ButtonKey(BUTTON_NEUTRAL):
-      case ButtonKey(BUTTON_MULTI1):
-      case ButtonKey(BUTTON_MULTI2):
-      case ButtonKey(BUTTON_MULTI3):
-      case ButtonKey(BUTTON_MULTI4): {
+      case ButtonKey(kButtonGdi):
+      case ButtonKey(kButtonNod):
+      case ButtonKey(kButtonNeutral):
+      case ButtonKey(kButtonMulti1):
+      case ButtonKey(kButtonMulti2):
+      case ButtonKey(kButtonMulti3):
+      case ButtonKey(kButtonMulti4): {
         const auto house = static_cast<HousesType>(
-            static_cast<int>(input & ~KN_BUTTON) - BUTTON_GDI);
+            static_cast<int>(input & ~KN_BUTTON) - kButtonGdi);
         /*
         ............... ignore if invalid for this object ...............
         */
         if (!Verify_House(house, curobj)) {
-          Set_House_Buttons(LastHouse, commands, BUTTON_GDI);
+          Set_House_Buttons(LastHouse, commands, kButtonGdi);
           break;
         }
 
@@ -673,7 +670,7 @@ int MapEditClass::Placement_Dialog() {
         ...................... Set flags & buttons ......................
         */
         LastHouse = house;
-        Set_House_Buttons(LastHouse, commands, BUTTON_GDI);
+        Set_House_Buttons(LastHouse, commands, kButtonGdi);
         display = REDRAW_OBJECT;
         break;
       }
@@ -682,7 +679,7 @@ int MapEditClass::Placement_Dialog() {
       --------------------------- Next in list ---------------------------
       */
       case KN_RIGHT:
-      case ButtonKey(BUTTON_NEXT):
+      case ButtonKey(kButtonNext):
         /*
         ..................... Increment to next obj .....................
         */
@@ -697,7 +694,7 @@ int MapEditClass::Placement_Dialog() {
         */
         if (!Verify_House(LastHouse, curobj)) {
           LastHouse = Cycle_House(LastHouse, curobj);
-          Set_House_Buttons(LastHouse, commands, BUTTON_GDI);
+          Set_House_Buttons(LastHouse, commands, kButtonGdi);
         }
 
         nextbtn.Turn_Off();
@@ -708,7 +705,7 @@ int MapEditClass::Placement_Dialog() {
       ------------------------- Previous in list -------------------------
       */
       case KN_LEFT:
-      case ButtonKey(BUTTON_PREV):
+      case ButtonKey(kButtonPrev):
         /*
         ..................... Decrement to prev obj .....................
         */
@@ -723,7 +720,7 @@ int MapEditClass::Placement_Dialog() {
         */
         if (!Verify_House(LastHouse, curobj)) {
           LastHouse = Cycle_House(LastHouse, curobj);
-          Set_House_Buttons(LastHouse, commands, BUTTON_GDI);
+          Set_House_Buttons(LastHouse, commands, kButtonGdi);
         }
 
         prevbtn.Turn_Off();
@@ -733,18 +730,18 @@ int MapEditClass::Placement_Dialog() {
       /*
       ----------------------- Select a class type ------------------------
       */
-      case ButtonKey(BUTTON_TEMPLATE):
-      case ButtonKey(BUTTON_OVERLAY):
-      case ButtonKey(BUTTON_SMUDGE):
-      case ButtonKey(BUTTON_TERRAIN):
-      case ButtonKey(BUTTON_UNIT):
-      case ButtonKey(BUTTON_INFANTRY):
-      case ButtonKey(BUTTON_AIRCRAFT):
-      case ButtonKey(BUTTON_BUILDING):
+      case ButtonKey(kButtonTemplate):
+      case ButtonKey(kButtonOverlay):
+      case ButtonKey(kButtonSmudge):
+      case ButtonKey(kButtonTerrain):
+      case ButtonKey(kButtonUnit):
+      case ButtonKey(kButtonInfantry):
+      case ButtonKey(kButtonAircraft):
+      case ButtonKey(kButtonBuilding):
         /*
         ...................... Find index of class ......................
         */
-        typeindex = input - ButtonKey(BUTTON_TEMPLATE);
+        typeindex = input - ButtonKey(kButtonTemplate);
 
         /*
         ............ If no objects of that type, do nothing .............
@@ -765,7 +762,7 @@ int MapEditClass::Placement_Dialog() {
         */
         if (!Verify_House(LastHouse, curobj)) {
           LastHouse = Cycle_House(LastHouse, curobj);
-          Set_House_Buttons(LastHouse, commands, BUTTON_GDI);
+          Set_House_Buttons(LastHouse, commands, kButtonGdi);
         }
 
         display = REDRAW_OBJECT;
@@ -776,7 +773,7 @@ int MapEditClass::Placement_Dialog() {
       */
       case KN_PGDN:
         typeindex++;
-        if (typeindex == NUM_EDIT_CLASSES) {
+        if (typeindex == kNumEditClasses) {
           typeindex = 0;
         }
 
@@ -791,7 +788,7 @@ int MapEditClass::Placement_Dialog() {
         */
         if (!Verify_House(LastHouse, curobj)) {
           LastHouse = Cycle_House(LastHouse, curobj);
-          Set_House_Buttons(LastHouse, commands, BUTTON_GDI);
+          Set_House_Buttons(LastHouse, commands, kButtonGdi);
         }
 
         display = REDRAW_OBJECT;
@@ -803,7 +800,7 @@ int MapEditClass::Placement_Dialog() {
       case KN_PGUP:
         typeindex--;
         if (typeindex < 0) {
-          typeindex = NUM_EDIT_CLASSES - 1;
+          typeindex = kNumEditClasses - 1;
         }
 
         /*
@@ -817,7 +814,7 @@ int MapEditClass::Placement_Dialog() {
         */
         if (!Verify_House(LastHouse, curobj)) {
           LastHouse = Cycle_House(LastHouse, curobj);
-          Set_House_Buttons(LastHouse, commands, BUTTON_GDI);
+          Set_House_Buttons(LastHouse, commands, kButtonGdi);
         }
 
         display = REDRAW_OBJECT;
@@ -837,7 +834,7 @@ int MapEditClass::Placement_Dialog() {
         */
         if (!Verify_House(LastHouse, curobj)) {
           LastHouse = Cycle_House(LastHouse, curobj);
-          Set_House_Buttons(LastHouse, commands, BUTTON_GDI);
+          Set_House_Buttons(LastHouse, commands, kButtonGdi);
         }
         display = REDRAW_OBJECT;
         break;
@@ -846,7 +843,7 @@ int MapEditClass::Placement_Dialog() {
       -------------------------------- OK --------------------------------
       */
       case KN_RETURN:
-      case ButtonKey(BUTTON_OK):
+      case ButtonKey(kButtonOk):
         cancel = false;
         process = false;
         break;
@@ -855,7 +852,7 @@ int MapEditClass::Placement_Dialog() {
       ------------------------------ Cancel ------------------------------
       */
       case KN_ESC:
-      case ButtonKey(BUTTON_CANCEL):
+      case ButtonKey(kButtonCancel):
         cancel = true;
         process = false;
         break;
@@ -914,7 +911,7 @@ void MapEditClass::Start_Placement() {
   Compute offset of each class type in the Objects array
   ........................................................................*/
   TypeOffset[0] = 0;
-  for (int i = 1; i < NUM_EDIT_CLASSES; i++) {
+  for (int i = 1; i < kNumEditClasses; i++) {
     TypeOffset[i] = TypeOffset[i - 1] + NumType[i - 1];
   }
 
@@ -1758,7 +1755,7 @@ void MapEditClass::Set_House_Buttons(HousesType house, GadgetClass* btnlist,
     /*
     **	Compute the desired button ID; get a pointer to the button
     */
-    const int id = h + base_id;
+    const int id = static_cast<int>(h) + base_id;
     auto* btn = dynamic_cast<TextButtonClass*>(
         btnlist->Extract_Gadget(static_cast<unsigned>(id)));
     if (btn) {

@@ -63,7 +63,7 @@ class AircraftClass : public FootClass, public FlyClass {
   RTTIType What_Am_I() const override { return RTTI_AIRCRAFT; }
 
   static void Init();
-  enum { FLIGHT_LEVEL = 24 };
+  static constexpr int kFlightLevel = 24;
 
   int Mission_Attack() override;
   int Mission_Unload() override;
@@ -175,7 +175,7 @@ class AircraftClass : public FootClass, public FlyClass {
   **	the aircraft has landed. The altitude for normal aircraft is at
   **	Flight_Level().
   */
-  int Altitude = FLIGHT_LEVEL;
+  int Altitude = kFlightLevel;
 
  private:
   /*

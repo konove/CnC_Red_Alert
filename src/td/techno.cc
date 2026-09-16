@@ -869,9 +869,11 @@ void TechnoClass::Draw_It(int x, int y, WindowNumberType window) {
   if (IsSelected || Special.IsBarOn) {
     GraphicViewPortClass draw_window(
         LogicPage->Get_Graphic_Buffer(),
-        (WindowList[window][WINDOWX] * 8) + LogicPage->Get_XPos(),
-        WindowList[window][WINDOWY] + LogicPage->Get_YPos(),
-        WindowList[window][WINDOWWIDTH] * 8, WindowList[window][WINDOWHEIGHT]);
+        (WindowList[static_cast<int>(window)][kWindowX] * 8) +
+            LogicPage->Get_XPos(),
+        WindowList[static_cast<int>(window)][kWindowY] + LogicPage->Get_YPos(),
+        WindowList[static_cast<int>(window)][kWindowWidth] * 8,
+        WindowList[static_cast<int>(window)][kWindowHeight]);
 
     /*
     **	The infantry select box should be a bit higher than normal.
@@ -905,7 +907,7 @@ void TechnoClass::Draw_It(int x, int y, WindowNumberType window) {
       */
       draw_window.Remap(xx + 1, yy + 1, width - 1, 3 - 1,
                         MouseClass::FadingShade);
-      draw_window.Draw_Rect(xx, yy, xx + width - 1, yy + 3, BLACK);
+      draw_window.Draw_Rect(xx, yy, xx + width - 1, yy + 3, kBlack);
 
       /*
       **	Determine the width of the interior strength
@@ -916,12 +918,12 @@ void TechnoClass::Draw_It(int x, int y, WindowNumberType window) {
 
       pwidth = Bound(pwidth, 1, width - 2);
 
-      int color = LTGREEN;  // The color to give the interior of the bargraph.
+      int color = kLtGreen;  // The color to give the interior of the bargraph.
       if (ratio < 0x7F) {
-        color = YELLOW;
+        color = kYellow;
       }
       if (ratio < 0x3F) {
-        color = RED;
+        color = kRed;
       }
       draw_window.Fill_Rect(xx + 1, yy + 1, xx + pwidth, yy + (3 - 1),
                             static_cast<unsigned char>(color));
@@ -940,23 +942,23 @@ void TechnoClass::Draw_It(int x, int y, WindowNumberType window) {
 
       // Upper left corner.
       draw_window.Draw_Line(x - lx, fudge + y - ly, x - lx + dx, fudge + y - ly,
-                            WHITE);
+                            kWhite);
       draw_window.Draw_Line(x - lx, fudge + y - ly, x - lx, fudge + y - ly + dy,
-                            WHITE);
+                            kWhite);
 
       // Upper right corner.
       draw_window.Draw_Line(x + lx, fudge + y - ly, x + lx - dx, fudge + y - ly,
-                            WHITE);
+                            kWhite);
       draw_window.Draw_Line(x + lx, fudge + y - ly, x + lx, fudge + y - ly + dy,
-                            WHITE);
+                            kWhite);
 
       // Lower right corner.
-      draw_window.Draw_Line(x + lx, y + ly, x + lx - dx, y + ly, WHITE);
-      draw_window.Draw_Line(x + lx, y + ly, x + lx, y + ly - dy, WHITE);
+      draw_window.Draw_Line(x + lx, y + ly, x + lx - dx, y + ly, kWhite);
+      draw_window.Draw_Line(x + lx, y + ly, x + lx, y + ly - dy, kWhite);
 
       // Lower left corner.
-      draw_window.Draw_Line(x - lx, y + ly, x - lx + dx, y + ly, WHITE);
-      draw_window.Draw_Line(x - lx, y + ly, x - lx, y + ly - dy, WHITE);
+      draw_window.Draw_Line(x - lx, y + ly, x - lx + dx, y + ly, kWhite);
+      draw_window.Draw_Line(x - lx, y + ly, x - lx, y + ly - dy, kWhite);
 
       if (House->Is_Ally(PlayerPtr)) {
         Draw_Pips(x - lx + 5, y + ly - 3, window);
@@ -1206,7 +1208,8 @@ bool TechnoClass::Evaluate_Object(ThreatType method, uint32_t mask, int range,
   /*
   **	If only allowed to attack civilians, then eliminate all other types.
   */
-  if (method & THREAT_CIVILIANS && object->Owner() != HOUSE_NEUTRAL) {
+  if (base::Any(method & THREAT_CIVILIANS) &&
+      object->Owner() != HOUSE_NEUTRAL) {
     return false;
   }
 
@@ -1214,7 +1217,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, uint32_t mask, int range,
   **	If the scan is limited to capturable buildings only, then bail if the
   *examined *	object isn't a capturable building.
   */
-  if (method & THREAT_CAPTURE &&
+  if (base::Any(method & THREAT_CAPTURE) &&
       (otype != RTTI_BUILDING ||
        !dynamic_cast<const BuildingTypeClass*>(tclass)->IsCaptureable)) {
     return false;
@@ -1223,7 +1226,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, uint32_t mask, int range,
   /*
   **	If not allowed to attack boats, then eliminate them from consideration.
   */
-  if (!(method & THREAT_BOATS) && otype == RTTI_UNIT) {
+  if (!base::Any(method & THREAT_BOATS) && otype == RTTI_UNIT) {
     const SpeedType speed = dynamic_cast<const UnitTypeClass&>(*tclass).Speed;
     if (speed == SPEED_HOVER || speed == SPEED_FLOAT) {
       return false;
@@ -1243,7 +1246,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, uint32_t mask, int range,
   **	If the search is restricted to Tiberium processing objects, then
   **	perform the special qualification check now.
   */
-  if (method & THREAT_TIBERIUM) {
+  if (base::Any(method & THREAT_TIBERIUM)) {
     switch (otype) {
       case RTTI_UNIT:
         if (!dynamic_cast<const UnitTypeClass&>(*tclass).IsToHarvest) {
@@ -1407,24 +1410,24 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method) const {
   **	qualify with this mask, then we KNOW that it shouldn't be considered.
   */
   uint32_t allowed = 0;
-  if (method & THREAT_CIVILIANS) {
+  if (base::Any(method & THREAT_CIVILIANS)) {
     allowed |= base::Bit<uint32_t>(RTTI_BUILDING) |
                base::Bit<uint32_t>(RTTI_INFANTRY) |
                base::Bit<uint32_t>(RTTI_UNIT);
   }
-  if (method & THREAT_AIR) {
+  if (base::Any(method & THREAT_AIR)) {
     allowed |= base::Bit<uint32_t>(RTTI_AIRCRAFT);
   }
-  if (method & THREAT_CAPTURE) {
+  if (base::Any(method & THREAT_CAPTURE)) {
     allowed |= base::Bit<uint32_t>(RTTI_BUILDING);
   }
-  if (method & THREAT_BUILDINGS) {
+  if (base::Any(method & THREAT_BUILDINGS)) {
     allowed |= base::Bit<uint32_t>(RTTI_BUILDING);
   }
-  if (method & THREAT_INFANTRY) {
+  if (base::Any(method & THREAT_INFANTRY)) {
     allowed |= base::Bit<uint32_t>(RTTI_INFANTRY);
   }
-  if (method & THREAT_VEHICLES) {
+  if (base::Any(method & THREAT_VEHICLES)) {
     allowed |= base::Bit<uint32_t>(RTTI_UNIT);
   }
   uint32_t mask = allowed;
@@ -1434,8 +1437,8 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method) const {
   **	examined for occupants. The occupant is then examined in turn. The
   **	best target within the area is returned as a target.
   */
-  if (method & (THREAT_AREA | THREAT_RANGE)) {
-    const int range = Threat_Range(method & THREAT_RANGE ? 0 : 1);
+  if (base::Any(method & (THREAT_AREA | THREAT_RANGE))) {
+    const int range = Threat_Range(base::Any(method & THREAT_RANGE) ? 0 : 1);
 
     //		int range = std::max(Weapon_Range(0), Weapon_Range(1));
     //		if (!(method & THREAT_RANGE)) range *= 2;
@@ -1454,7 +1457,7 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method) const {
     *time. *	Scanning by cell is not possible for aircraft since they are not
     *recorded *	at the cell level.
     */
-    if (method & THREAT_AIR) {
+    if (base::Any(method & THREAT_AIR)) {
       for (int index = 0; index < Aircraft.Count(); index++) {
         const TechnoClass* object = Aircraft.Ptr(index);
 
@@ -1472,7 +1475,7 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method) const {
     **	potential target. This is only true if vehicles are considered a
     **	valid target. A landed aircraft is considered a vehicle.
     */
-    if (method & THREAT_VEHICLES) {
+    if (base::Any(method & THREAT_VEHICLES)) {
       allowed |= base::Bit<uint32_t>(RTTI_AIRCRAFT);
     }
     mask = allowed;
@@ -2125,7 +2128,8 @@ BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
       case ANIM_CHEM_N:
       case ANIM_FLAME_N:
         a = static_cast<AnimType>(
-            a + static_cast<int>(Dir_Facing(Fire_Direction())));
+            static_cast<int>(a) +
+            static_cast<int>(Dir_Facing(Fire_Direction())));
         break;
       default:
         break;
@@ -2761,7 +2765,8 @@ void TechnoClass::Record_The_Kill(TechnoClass* source) {
       if (source) {
         if (GameToPlay == GAME_INTERNET) {
           source->House->DestroyedBuildings->Increment_Unit_Total(
-              dynamic_cast<BuildingClass*>(this)->Class->Type);
+              static_cast<int>(
+                  dynamic_cast<BuildingClass*>(this)->Class->Type));
         }
         source->House->BuildingsKilled[Owner()]++;
       }
@@ -2780,7 +2785,8 @@ void TechnoClass::Record_The_Kill(TechnoClass* source) {
       if (source) {
         if (GameToPlay == GAME_INTERNET) {
           source->House->DestroyedAircraft->Increment_Unit_Total(
-              dynamic_cast<AircraftClass*>(this)->Class->Type);
+              static_cast<int>(
+                  dynamic_cast<AircraftClass*>(this)->Class->Type));
         }
         source->House->UnitsKilled[Owner()]++;
       }
@@ -2798,7 +2804,8 @@ void TechnoClass::Record_The_Kill(TechnoClass* source) {
       if (source) {
         if (GameToPlay == GAME_INTERNET) {
           source->House->DestroyedInfantry->Increment_Unit_Total(
-              dynamic_cast<InfantryClass*>(this)->Class->Type);
+              static_cast<int>(
+                  dynamic_cast<InfantryClass*>(this)->Class->Type));
         }
         source->House->UnitsKilled[Owner()]++;
       }
@@ -2816,7 +2823,7 @@ void TechnoClass::Record_The_Kill(TechnoClass* source) {
       if (source) {
         if (GameToPlay == GAME_INTERNET) {
           source->House->DestroyedUnits->Increment_Unit_Total(
-              dynamic_cast<UnitClass*>(this)->Class->Type);
+              static_cast<int>(dynamic_cast<UnitClass*>(this)->Class->Type));
         }
         source->House->UnitsKilled[Owner()]++;
       }
@@ -3719,7 +3726,8 @@ bool TechnoClass::Target_Something_Nearby(ThreatType threat) {
   **	Determine that if there is an existing target it is still legal
   **	and within range.
   */
-  if (Target_Legal(TarCom) && (threat & THREAT_RANGE && !In_Range(TarCom))) {
+  if (Target_Legal(TarCom) &&
+      (base::Any(threat & THREAT_RANGE) && !In_Range(TarCom))) {
     Assign_Target(kTargetNone);
   }
 
@@ -3876,8 +3884,8 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) {
         }
         object = object->Next;
       }
-      CC_Draw_Shape(ObjectTypeClass::PipShapes, pip, x + (index * 3), y, window,
-                    SHAPE_CENTER | SHAPE_WIN_REL);
+      CC_Draw_Shape(ObjectTypeClass::PipShapes, static_cast<int>(pip),
+                    x + (index * 3), y, window, SHAPE_CENTER | SHAPE_WIN_REL);
     }
 
   } else {
@@ -3888,8 +3896,8 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) {
     const int pips = Pip_Count();
     for (int index = 0; index < Class_Of().Max_Pips(); index++) {
       CC_Draw_Shape(ObjectTypeClass::PipShapes,
-                    index < pips ? PIP_FULL : PIP_EMPTY, x + (index * 3), y,
-                    window, SHAPE_CENTER | SHAPE_WIN_REL);
+                    static_cast<int>(index < pips ? PIP_FULL : PIP_EMPTY),
+                    x + (index * 3), y, window, SHAPE_CENTER | SHAPE_WIN_REL);
     }
   }
 
@@ -3897,7 +3905,8 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) {
   **	Display whether this unit is a leader unit or not.
   */
   if (IsLeader) {
-    CC_Draw_Shape(ObjectTypeClass::PipShapes, PIP_PRIMARY, x - 2, y - 3, window,
+    CC_Draw_Shape(ObjectTypeClass::PipShapes, static_cast<int>(PIP_PRIMARY),
+                  x - 2, y - 3, window,
                   /*SHAPE_CENTER|*/ SHAPE_WIN_REL);
   }
 }
@@ -3931,7 +3940,7 @@ BuildingClass* TechnoClass::Find_Docking_Bay(StructType b, bool friendly) {
   **	type in thi house's inventory. If not, then don't bother to scan
   **	for one.
   */
-  if ((House->BScan & ScanBit(b)) != 0) {
+  if ((House->BScan & ScanBit(static_cast<int>(b))) != 0) {
     int bestval = -1;
 
     /*
@@ -4010,7 +4019,7 @@ int TechnoClass::Refund_Amount() const {
   **	account for the credits of the load.
   */
   cost +=
-      Fixed_To_Cardinal(UnitTypeClass::FULL_LOAD_CREDITS, Tiberium_Load()) / 2;
+      Fixed_To_Cardinal(UnitTypeClass::kFullLoadCredits, Tiberium_Load()) / 2;
 
   if (House->IsHuman) {
     cost /= 2;

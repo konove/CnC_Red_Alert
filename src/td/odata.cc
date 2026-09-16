@@ -56,6 +56,7 @@
 #include <filesystem>
 #include <string>
 
+#include "base/enum_array.h"
 #include "port/ex_string.h"
 #include "sdllib/shape.h"
 #include "td/conquer.h"
@@ -584,37 +585,38 @@ static const OverlayTypeClass SteelCrate(
     true    // Is this a crate?
 );
 
-const OverlayTypeClass* const OverlayTypeClass::Pointers[OVERLAY_COUNT] = {
-    &Concrete,    //	OVERLAY_CONCRETE
-    &Sandbag,     //	OVERLAY_SANDBAG_WALL
-    &Cyclone,     //	OVERLAY_CYCLONE_WALL
-    &Brick,       //	OVERLAY_BRICK_WALL
-    &Barbwire,    //	OVERLAY_BARBWIRE_WALL
-    &Wood,        //	OVERLAY_WOOD_WALL
-    &Tiberium1,   //	OVERLAY_TIBERIUM1
-    &Tiberium2,   //	OVERLAY_TIBERIUM2
-    &Tiberium3,   //	OVERLAY_TIBERIUM3
-    &Tiberium4,   //	OVERLAY_TIBERIUM4
-    &Tiberium5,   //	OVERLAY_TIBERIUM5
-    &Tiberium6,   //	OVERLAY_TIBERIUM6
-    &Tiberium7,   //	OVERLAY_TIBERIUM7
-    &Tiberium8,   //	OVERLAY_TIBERIUM8
-    &Tiberium9,   //	OVERLAY_TIBERIUM9
-    &Tiberium10,  //	OVERLAY_TIBERIUM10
-    &Tiberium11,  //	OVERLAY_TIBERIUM11
-    &Tiberium12,  //	OVERLAY_TIBERIUM12
-    &Road,        // OVERLAY_ROAD
-    &Squish,      // OVERLAY_SQUISH
-    &V12,         //	OVERLAY_V12
-    &V13,         //	OVERLAY_V13
-    &V14,         //	OVERLAY_V14
-    &V15,         //	OVERLAY_V15
-    &V16,         //	OVERLAY_V16
-    &V17,         //	OVERLAY_V17
-    &V18,         //	OVERLAY_V18
-    &FlagSpot,    //	OVERLAY_FLAG_SPOT
-    &WoodCrate,   // OVERLAY_WOOD_CRATE
-    &SteelCrate,  // OVERLAY_STEEL_CRATE
+const base::EnumArray<OverlayType, const OverlayTypeClass*, kOverlayCount>
+    OverlayTypeClass::Pointers = {
+        &Concrete,    //	OVERLAY_CONCRETE
+        &Sandbag,     //	OVERLAY_SANDBAG_WALL
+        &Cyclone,     //	OVERLAY_CYCLONE_WALL
+        &Brick,       //	OVERLAY_BRICK_WALL
+        &Barbwire,    //	OVERLAY_BARBWIRE_WALL
+        &Wood,        //	OVERLAY_WOOD_WALL
+        &Tiberium1,   //	OVERLAY_TIBERIUM1
+        &Tiberium2,   //	OVERLAY_TIBERIUM2
+        &Tiberium3,   //	OVERLAY_TIBERIUM3
+        &Tiberium4,   //	OVERLAY_TIBERIUM4
+        &Tiberium5,   //	OVERLAY_TIBERIUM5
+        &Tiberium6,   //	OVERLAY_TIBERIUM6
+        &Tiberium7,   //	OVERLAY_TIBERIUM7
+        &Tiberium8,   //	OVERLAY_TIBERIUM8
+        &Tiberium9,   //	OVERLAY_TIBERIUM9
+        &Tiberium10,  //	OVERLAY_TIBERIUM10
+        &Tiberium11,  //	OVERLAY_TIBERIUM11
+        &Tiberium12,  //	OVERLAY_TIBERIUM12
+        &Road,        // OVERLAY_ROAD
+        &Squish,      // OVERLAY_SQUISH
+        &V12,         //	OVERLAY_V12
+        &V13,         //	OVERLAY_V13
+        &V14,         //	OVERLAY_V14
+        &V15,         //	OVERLAY_V15
+        &V16,         //	OVERLAY_V16
+        &V17,         //	OVERLAY_V17
+        &V18,         //	OVERLAY_V18
+        &FlagSpot,    //	OVERLAY_FLAG_SPOT
+        &WoodCrate,   // OVERLAY_WOOD_CRATE
+        &SteelCrate,  // OVERLAY_STEEL_CRATE
 };
 
 /***********************************************************************************************

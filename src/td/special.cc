@@ -60,10 +60,10 @@
 #include "td/textbtn.h"
 #include <iterator>
 
-#define OPTION_WIDTH 236
-#define OPTION_HEIGHT 162
-#define OPTION_X ((320 - OPTION_WIDTH) / 2)
-#define OPTION_Y ((200 - OPTION_HEIGHT) / 2)
+#define kOptionWidth 236
+#define kOptionHeight 162
+#define kOptionX ((320 - kOptionWidth) / 2)
+#define kOptionY ((200 - kOptionHeight) / 2)
 
 void Special_Dialog() {
   SpecialClass oldspecial = Special;
@@ -88,18 +88,18 @@ void Special_Dialog() {
       {TXT_SHOW_NAMES, false, nullptr},
   };
 
-  TextButtonClass ok(200, TXT_OK, TPF_6PT_GRAD | TPF_NOSHADOW, OPTION_X + 5,
-                     OPTION_Y + OPTION_HEIGHT - 15);
+  TextButtonClass ok(200, TXT_OK, TPF_6PT_GRAD | TPF_NOSHADOW, kOptionX + 5,
+                     kOptionY + kOptionHeight - 15);
   TextButtonClass cancel(201, TXT_CANCEL, TPF_6PT_GRAD | TPF_NOSHADOW,
-                         OPTION_X + OPTION_WIDTH - 50,
-                         OPTION_Y + OPTION_HEIGHT - 15);
+                         kOptionX + kOptionWidth - 50,
+                         kOptionY + kOptionHeight - 15);
   buttons = &ok;
   cancel.Add(*buttons);
 
   for (int index = 0; index < std::ssize(_options); index++) {
     _options[index].Button =
-        new CheckBoxClass(static_cast<unsigned>(100 + index), OPTION_X + 7,
-                          OPTION_Y + 20 + (index * 10));
+        new CheckBoxClass(static_cast<unsigned>(100 + index), kOptionX + 7,
+                          kOptionY + 20 + (index * 10));
     if (_options[index].Button) {
       _options[index].Button->Add(*buttons);
 
@@ -196,12 +196,12 @@ void Special_Dialog() {
       display = false;
 
       Hide_Mouse();
-      Dialog_Box(OPTION_X, OPTION_Y, OPTION_WIDTH, OPTION_HEIGHT);
-      Draw_Caption(TXT_SPECIAL_OPTIONS, OPTION_X, OPTION_Y, OPTION_WIDTH);
+      Dialog_Box(kOptionX, kOptionY, kOptionWidth, kOptionHeight);
+      Draw_Caption(TXT_SPECIAL_OPTIONS, kOptionX, kOptionY, kOptionWidth);
 
       for (const auto& _option : _options) {
         Fancy_Text_Print(_option.Description, _option.Button->X + 10,
-                         _option.Button->Y, CC_GREEN, TBLACK,
+                         _option.Button->Y, kCcGreen, kTBlack,
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
       buttons->Draw_All();

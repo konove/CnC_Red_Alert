@@ -56,6 +56,7 @@
 #include <filesystem>
 #include <string>
 
+#include "base/enum_array.h"
 #include "base/numeric.h"
 #include "port/ex_string.h"
 #include "sdllib/shape.h"
@@ -94,7 +95,7 @@
 
 // Minigunners
 
-static int MiniGunnerDos[DO_COUNT][3] = {
+static int MiniGunnerDos[kDoCount][3] = {
     {0, 1, 1},     // DO_STAND_READY
     {8, 1, 1},     // DO_STAND_GUARD
     {192, 1, 8},   // DO_PRONE
@@ -163,7 +164,7 @@ static const InfantryTypeClass E1(
 
 // Grenadiers
 
-static int GrenadierDos[DO_COUNT][3] = {
+static int GrenadierDos[kDoCount][3] = {
     {0, 1, 1},     // DO_STAND_READY
     {8, 1, 1},     // DO_STAND_GUARD
     {288, 1, 12},  // DO_PRONE
@@ -232,7 +233,7 @@ static const InfantryTypeClass E2(
 
 // Bazooka
 
-static int BazookaDos[DO_COUNT][3] = {
+static int BazookaDos[kDoCount][3] = {
     {0, 1, 1},      // DO_STAND_READY
     {8, 1, 1},      // DO_STAND_GUARD
     {192, 1, 10},   // DO_PRONE
@@ -301,7 +302,7 @@ static const InfantryTypeClass E3(
 
 // Flamethrower
 
-static int FlamethrowerDos[DO_COUNT][3] = {
+static int FlamethrowerDos[kDoCount][3] = {
     {0, 1, 1},      // DO_STAND_READY
     {8, 1, 1},      // DO_STAND_GUARD
     {256, 1, 16},   // DO_PRONE
@@ -368,7 +369,7 @@ static const InfantryTypeClass E4(
 
 // Chemwarrior
 
-static int ChemwarriorDos[DO_COUNT][3] = {
+static int ChemwarriorDos[kDoCount][3] = {
     {0, 1, 1},      // DO_STAND_READY
     {8, 1, 1},      // DO_STAND_GUARD
     {256, 1, 16},   // DO_PRONE
@@ -436,7 +437,7 @@ static const InfantryTypeClass E5(
 
 // Engineer
 
-static int EngineerDos[DO_COUNT][3] = {
+static int EngineerDos[kDoCount][3] = {
     {0, 1, 1},     // DO_STAND_READY
     {8, 1, 1},     // DO_STAND_GUARD
     {82, 1, 4},    // DO_PRONE
@@ -505,7 +506,7 @@ static const InfantryTypeClass E7(
 
 // Commandos
 
-static int CommandoDos[DO_COUNT][3] = {
+static int CommandoDos[kDoCount][3] = {
     {0, 1, 1},     // DO_STAND_READY
     {8, 1, 1},     // DO_STAND_GUARD
     {160, 1, 4},   // DO_PRONE
@@ -574,7 +575,7 @@ static const InfantryTypeClass Commando(
 
 // Civilians
 
-static int CivilianDos1[DO_COUNT][3] = {
+static int CivilianDos1[kDoCount][3] = {
     {0, 1, 1},     // DO_STAND_READY
     {0, 1, 1},     // DO_STAND_GUARD
     {0, 1, 1},     // DO_PRONE				// N/A
@@ -639,7 +640,7 @@ static const InfantryTypeClass C1(
         kHouseFlagNeutral,  // Who can own this infantry unit.
     WEAPON_PISTOL, WEAPON_NONE, MPH_SLOW_ISH);
 
-static int CivilianDos2[DO_COUNT][3] = {
+static int CivilianDos2[kDoCount][3] = {
     {0, 1, 1},     // DO_STAND_READY
     {0, 1, 1},     // DO_STAND_GUARD
     {0, 1, 1},     // DO_PRONE				// N/A
@@ -704,7 +705,7 @@ static const InfantryTypeClass C2(
         kHouseFlagNeutral,  // Who can own this infantry unit.
     WEAPON_NONE, WEAPON_NONE, MPH_SLOW_ISH);
 
-static int CivilianDos3[DO_COUNT][3] = {
+static int CivilianDos3[kDoCount][3] = {
     {0, 1, 1},     // DO_STAND_READY
     {0, 1, 1},     // DO_STAND_GUARD
     {0, 1, 1},     // DO_PRONE				// N/A
@@ -770,7 +771,7 @@ static const InfantryTypeClass C3(
         kHouseFlagNeutral,  // Who can own this infantry unit.
     WEAPON_NONE, WEAPON_NONE, MPH_SLOW_ISH);
 
-static int CivilianDos4[DO_COUNT][3] = {
+static int CivilianDos4[kDoCount][3] = {
     {0, 1, 1},     // DO_STAND_READY
     {0, 1, 1},     // DO_STAND_GUARD
     {0, 1, 1},     // DO_PRONE				// N/A
@@ -835,7 +836,7 @@ static const InfantryTypeClass C4(
         kHouseFlagNeutral,  // Who can own this infantry unit.
     WEAPON_NONE, WEAPON_NONE, MPH_SLOW_ISH);
 
-static int CivilianDos5[DO_COUNT][3] = {
+static int CivilianDos5[kDoCount][3] = {
     {0, 1, 1},     // DO_STAND_READY
     {0, 1, 1},     // DO_STAND_GUARD
     {0, 1, 1},     // DO_PRONE				// N/A
@@ -900,7 +901,7 @@ static const InfantryTypeClass C5(
         kHouseFlagNeutral,  // Who can own this infantry unit.
     WEAPON_NONE, WEAPON_NONE, MPH_SLOW_ISH);
 
-static int CivilianDos6[DO_COUNT][3] = {
+static int CivilianDos6[kDoCount][3] = {
     {0, 1, 1},     // DO_STAND_READY
     {0, 1, 1},     // DO_STAND_GUARD
     {0, 1, 1},     // DO_PRONE				// N/A
@@ -965,7 +966,7 @@ static const InfantryTypeClass C6(
         kHouseFlagNeutral,  // Who can own this infantry unit.
     WEAPON_NONE, WEAPON_NONE, MPH_SLOW_ISH);
 
-static int CivilianDos7[DO_COUNT][3] = {
+static int CivilianDos7[kDoCount][3] = {
     {0, 1, 1},     // DO_STAND_READY
     {0, 1, 1},     // DO_STAND_GUARD
     {0, 1, 1},     // DO_PRONE				// N/A
@@ -1030,7 +1031,7 @@ static const InfantryTypeClass C7(
         kHouseFlagNeutral,  // Who can own this infantry unit.
     WEAPON_PISTOL, WEAPON_NONE, MPH_SLOW_ISH);
 
-static int CivilianDos8[DO_COUNT][3] = {
+static int CivilianDos8[kDoCount][3] = {
     {0, 1, 1},     // DO_STAND_READY
     {0, 1, 1},     // DO_STAND_GUARD
     {0, 1, 1},     // DO_PRONE				// N/A
@@ -1095,7 +1096,7 @@ static const InfantryTypeClass C8(
         kHouseFlagNeutral,  // Who can own this infantry unit.
     WEAPON_NONE, WEAPON_NONE, MPH_SLOW_ISH);
 
-static int CivilianDos9[DO_COUNT][3] = {
+static int CivilianDos9[kDoCount][3] = {
     {0, 1, 1},     // DO_STAND_READY
     {0, 1, 1},     // DO_STAND_GUARD
     {0, 1, 1},     // DO_PRONE				// N/A
@@ -1160,7 +1161,7 @@ static const InfantryTypeClass C9(
         kHouseFlagNeutral,  // Who can own this infantry unit.
     WEAPON_NONE, WEAPON_NONE, MPH_SLOW_ISH);
 
-static int NikoombaDos[DO_COUNT][3] = {
+static int NikoombaDos[kDoCount][3] = {
     {0, 1, 1},     // DO_STAND_READY
     {0, 1, 1},     // DO_STAND_GUARD
     {0, 1, 1},     // DO_PRONE				// N/A
@@ -1227,7 +1228,7 @@ static const InfantryTypeClass C10(
         kHouseFlagNeutral,  // Who can own this infantry unit.
     WEAPON_NONE, WEAPON_NONE, MPH_SLOW_ISH);
 
-static int MoebiusDos[DO_COUNT][3] = {
+static int MoebiusDos[kDoCount][3] = {
     {0, 1, 1},     // DO_STAND_READY
     {0, 1, 1},     // DO_STAND_GUARD
     {0, 1, 1},     // DO_PRONE				// N/A
@@ -1292,7 +1293,7 @@ static const InfantryTypeClass Moebius(
         kHouseFlagNeutral,  // Who can own this infantry unit.
     WEAPON_NONE, WEAPON_NONE, MPH_SLOW_ISH);
 
-static int DelphiDos[DO_COUNT][3] = {
+static int DelphiDos[kDoCount][3] = {
     {0, 1, 1},     // DO_STAND_READY
     {0, 1, 1},     // DO_STAND_GUARD
     {0, 1, 1},     // DO_PRONE				// N/A
@@ -1357,7 +1358,7 @@ static const InfantryTypeClass Delphi(
         kHouseFlagNeutral,  // Who can own this infantry unit.
     WEAPON_PISTOL, WEAPON_NONE, MPH_SLOW_ISH);
 
-static int DrChanDos[DO_COUNT][3] = {
+static int DrChanDos[kDoCount][3] = {
     {0, 1, 1},     // DO_STAND_READY
     {0, 1, 1},     // DO_STAND_GUARD
     {0, 1, 1},     // DO_PRONE				// N/A
@@ -1426,11 +1427,12 @@ static const InfantryTypeClass DrChan(
 **	This is the array of pointers to the static data associated with each
 **	infantry type.
 */
-const InfantryTypeClass* const InfantryTypeClass::Pointers[INFANTRY_COUNT] = {
-    &E1, &E2, &E3, &E4, &E5,
-    //	&E6,
-    &E7, &Commando, &C1, &C2, &C3, &C4, &C5, &C6, &C7, &C8, &C9, &C10, &Moebius,
-    &Delphi, &DrChan};
+const base::EnumArray<InfantryType, const InfantryTypeClass*, kInfantryCount>
+    InfantryTypeClass::Pointers = {&E1, &E2, &E3, &E4, &E5,
+                                   //	&E6,
+                                   &E7, &Commando, &C1, &C2, &C3, &C4, &C5, &C6,
+                                   &C7, &C8, &C9, &C10, &Moebius, &Delphi,
+                                   &DrChan};
 
 /***********************************************************************************************
  * InfantryTypeClass::InfantryTypeClass -- Constructor for infantry type class

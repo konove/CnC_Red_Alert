@@ -110,25 +110,25 @@ class EListClass : public ListClass {
 };
 
 void EListClass::Draw_Entry(int index, int x, int y, int width, bool selected) {
-  if (TextFlags & TPF_6PT_GRAD) {
+  if (base::Any(TextFlags & TPF_6PT_GRAD)) {
     TextPrintType flags = TextFlags;
 
     if (selected) {
       flags = flags | TPF_BRIGHT_COLOR;
       LogicPage->Fill_Rect(x, y, x + width - 1, y + LineHeight - 1,
-                           CC_GREEN_SHADOW);
+                           kCcGreenShadow);
     } else {
-      if (!(flags & TPF_USE_GRAD_PAL)) {
+      if (!base::Any(flags & TPF_USE_GRAD_PAL)) {
         flags = flags | TPF_MEDIUM_COLOR;
       }
     }
 
-    Conquer_Clip_Text_Print(Get_Item(index), x, y, CC_GREEN, TBLACK, flags,
+    Conquer_Clip_Text_Print(Get_Item(index), x, y, kCcGreen, kTBlack, flags,
                             width, Tabs);
 
   } else {
-    Conquer_Clip_Text_Print(Get_Item(index), x, y, selected ? BLUE : WHITE,
-                            TBLACK, TextFlags, width, Tabs);
+    Conquer_Clip_Text_Print(Get_Item(index), x, y, selected ? kBlue : kWhite,
+                            kTBlack, TextFlags, width, Tabs);
   }
 }
 

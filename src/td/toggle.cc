@@ -47,7 +47,6 @@
 #include "sdllib/ww_mouse.h"
 #include "td/control.h"
 #include "td/gadget.h"
-#include "td/jshell.h"
 
 /***********************************************************************************************
  * ToggleClass::ToggleClass -- Normal constructor for toggle button gadgets. *
@@ -69,7 +68,7 @@
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
 ToggleClass::ToggleClass(unsigned id, int x, int y, int w, int h) noexcept
-    : ControlClass(id, x, y, w, h, LEFTPRESS | LEFTRELEASE, true) {}
+    : ControlClass(id, x, y, w, h, kLeftPress | kLeftRelease, true) {}
 
 /***********************************************************************************************
  * ToggleClass::Turn_On -- Turns the toggle button to the "ON" state. *
@@ -163,23 +162,23 @@ bool ToggleClass::Action(unsigned flags, KeyNumType& key) {
   **	Flag the button to show the pressed down imagery if this mouse button
   **	was pressed over this gadget.
   */
-  if (flags & LEFTPRESS) {
+  if (flags & kLeftPress) {
     IsPressed = true;
     Flag_To_Redraw();
-    flags &= ~LEFTPRESS;
+    flags &= ~kLeftPress;
     ControlClass::Action(flags, key);
     key = KN_NONE;  // erase the event
     return true;    // stop processing other buttons now
   }
 
-  if (flags & LEFTRELEASE) {
+  if (flags & kLeftRelease) {
     if (IsPressed) {
       if (IsToggleType) {
         IsOn = !static_cast<bool>(IsOn);
       }
       IsPressed = false;
     } else {
-      flags &= ~LEFTRELEASE;
+      flags &= ~kLeftRelease;
     }
   }
 

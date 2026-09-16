@@ -45,6 +45,7 @@
 */
 #include <cstring>
 
+#include "base/enum_array.h"
 #include "port/ex_string.h"
 #include "td/conquer.h"
 #include "td/const.h"
@@ -195,9 +196,10 @@ static const HouseTypeClass HouseMulti6(
 );
 // NOLINTEND(cppcoreguidelines-interfaces-global-init)
 
-const HouseTypeClass* const HouseTypeClass::Pointers[HOUSE_COUNT] = {
-    &HouseGood,   &HouseBad,    &HouseCivilian, &HouseJP,     &HouseMulti1,
-    &HouseMulti2, &HouseMulti3, &HouseMulti4,   &HouseMulti5, &HouseMulti6,
+const base::EnumArray<HousesType, const HouseTypeClass*, kHouseCount>
+    HouseTypeClass::Pointers = {
+        &HouseGood,   &HouseBad,    &HouseCivilian, &HouseJP,     &HouseMulti1,
+        &HouseMulti2, &HouseMulti3, &HouseMulti4,   &HouseMulti5, &HouseMulti6,
 };
 
 /***********************************************************************************************

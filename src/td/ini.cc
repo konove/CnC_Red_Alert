@@ -195,7 +195,7 @@ void Set_Scenario_Name(char* buf, int scenario, ScenarioPlayerType player,
     */
     for (i = SCEN_VAR_A; i < SCEN_VAR_COUNT; i++) {
       absl::SNPrintF(fname, sizeof(fname), "SC%c%02d%c%c.INI", c_player,
-                     scenario, c_dir, 'A' + i);
+                     scenario, c_dir, 'A' + static_cast<int>(i));
       if (!GameFile(fname).IsAvailable()) {
         break;
       }
@@ -204,7 +204,7 @@ void Set_Scenario_Name(char* buf, int scenario, ScenarioPlayerType player,
     if (i == SCEN_VAR_A) {
       c_var = 'X';  // indicates an error
     } else {
-      c_var = static_cast<char>('A' + Random_Pick(0, i - 1));
+      c_var = static_cast<char>('A' + Random_Pick(0, static_cast<int>(i) - 1));
     }
   } else {
     switch (var) {
@@ -605,7 +605,8 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
         }
 
         for (int i = 0; i < MPlayerMax; i++) {
-          const auto house = static_cast<HousesType>(i + HOUSE_MULTI1);
+          const auto house =
+              static_cast<HousesType>(i + static_cast<int>(HOUSE_MULTI1));
           HouseClass* housep = HouseClass::As_Pointer(house);
           housep->BlitzTime = GameRandomRange(rndmin, rndmax);
         }
@@ -820,7 +821,7 @@ static void Assign_Houses() {
     **	Set the house, preferred house (GDI/NOD), color, and actual house;
     **	get a pointer to the house instance
     */
-    house = static_cast<HousesType>(j + HOUSE_MULTI1);
+    house = static_cast<HousesType>(j + static_cast<int>(HOUSE_MULTI1));
     pref_house = MPlayerID_To_HousesType(MPlayerID[i]);
     color = MPlayerID_To_ColorIndex(MPlayerID[i]);
     housep = HouseClass::As_Pointer(house);
@@ -830,7 +831,7 @@ static void Assign_Houses() {
     **	Mark this house & color as used
     */
     house_used[j] = true;
-    color_used[color] = true;
+    color_used[static_cast<int>(color)] = true;
 
     /*
     **	Set the house's IsHuman, Credits, ActLike, & RemapTable
@@ -857,11 +858,12 @@ static void Assign_Houses() {
       **	Set the house, preferred house (GDI/NOD), and color; get a
       *pointer *	to the house instance
       */
-      house = static_cast<HousesType>(i + HOUSE_MULTI1);
-      pref_house = static_cast<HousesType>(GameRandomRange(0, 1) + HOUSE_GOOD);
+      house = static_cast<HousesType>(i + static_cast<int>(HOUSE_MULTI1));
+      pref_house = static_cast<HousesType>(GameRandomRange(0, 1) +
+                                           static_cast<int>(HOUSE_GOOD));
       for (;;) {
         color = Random_Pick(REMAP_FIRST, REMAP_LAST);
-        if (!color_used[color]) {
+        if (!color_used[static_cast<int>(color)]) {
           break;
         }
       }
@@ -871,7 +873,7 @@ static void Assign_Houses() {
       **	Mark this house & color as used
       */
       house_used[i] = true;
-      color_used[color] = true;
+      color_used[static_cast<int>(color)] = true;
 
       /*
       **	Set the house's IsHuman, Credits, ActLike, & RemapTable
@@ -884,14 +886,15 @@ static void Assign_Houses() {
   /*
   **	Now make all computer-owned houses allies of each other.
   */
-  for (house = HOUSE_MULTI1; house < HOUSE_MULTI1 + MPlayerMax; house++) {
+  const auto last_house =
+      static_cast<HousesType>(static_cast<int>(HOUSE_MULTI1) + MPlayerMax);
+  for (house = HOUSE_MULTI1; house < last_house; house++) {
     housep = HouseClass::As_Pointer(house);
     if (housep->IsHuman) {
       continue;
     }
 
-    for (HousesType house2 = HOUSE_MULTI1; house2 < HOUSE_MULTI1 + MPlayerMax;
-         house2++) {
+    for (HousesType house2 = HOUSE_MULTI1; house2 < last_house; house2++) {
       HouseClass* housep2 = HouseClass::As_Pointer(house2);
       if (housep2->IsHuman) {
         continue;
@@ -914,7 +917,8 @@ static void Assign_Houses() {
  *=============================================================================================*/
 static void Remove_AI_Players() {
   for (int i = 0; i < MAX_PLAYERS; i++) {
-    const auto house = static_cast<HousesType>(i + HOUSE_MULTI1);
+    const auto house =
+        static_cast<HousesType>(i + static_cast<int>(HOUSE_MULTI1));
     HouseClass* housep = HouseClass::As_Pointer(house);
     if (!static_cast<bool>(housep->IsHuman)) {
       housep->Clobber_All();
@@ -964,10 +968,8 @@ static void Remove_AI_Players() {
  * HISTORY: * 06/09/1995 BRR : Created. *
  *=============================================================================================*/
 static void Create_Units() {
-  enum {
-    NUM_UNIT_CATEGORIES = 8,
-    NUM_INFANTRY_CATEGORIES = 5,
-  };
+  constexpr int kNumUnitCategories = 8;
+  constexpr int kNumInfantryCategories = 5;
 
   static const struct {
     int MinLevel;
@@ -981,8 +983,7 @@ static void Create_Units() {
       {5, 1, UNIT_JEEP, 1, UNIT_BIKE},   {5, 2, UNIT_JEEP, 1, UNIT_FTANK},
       {6, 1, UNIT_MSAM, 1, UNIT_MSAM},   {7, 1, UNIT_HTANK, 2, UNIT_STANK},
   };
-  static int
-      num_units[NUM_UNIT_CATEGORIES];  // # of each type of unit to create
+  static int num_units[kNumUnitCategories];  // # of each type of unit to create
 
   static const struct {
     int MinLevel;
@@ -997,8 +998,8 @@ static void Create_Units() {
       {5, 1, INFANTRY_E3, 1, INFANTRY_E4},
       {7, 1, INFANTRY_RAMBO, 1, INFANTRY_RAMBO},
   };
-  static int num_infantry[NUM_INFANTRY_CATEGORIES];  // # of each type of
-                                                     // infantry to create
+  static int num_infantry[kNumInfantryCategories];  // # of each type of
+                                                    // infantry to create
 
   CELL waypts[26];
   CELL sorted_waypts[26];
@@ -1014,12 +1015,12 @@ static void Create_Units() {
   /*------------------------------------------------------------------------
   For the current BuildLevel, find the max allowable index into the tables
   ------------------------------------------------------------------------*/
-  for (int i = 0; i < NUM_UNIT_CATEGORIES; i++) {
+  for (int i = 0; i < kNumUnitCategories; i++) {
     if (BuildLevel >= utable[i].MinLevel) {
       u_limit = i;
     }
   }
-  for (int i = 0; i < NUM_INFANTRY_CATEGORIES; i++) {
+  for (int i = 0; i < kNumInfantryCategories; i++) {
     if (BuildLevel >= utable[i].MinLevel) {
       i_limit = i;
     }
@@ -1103,7 +1104,9 @@ static void Create_Units() {
   ON, are treated as though bases are OFF (since we have no base-building
   AI logic.)
   ------------------------------------------------------------------------*/
-  for (HousesType h = HOUSE_MULTI1; h < HOUSE_MULTI1 + MPlayerMax; h++) {
+  const auto last_house =
+      static_cast<HousesType>(static_cast<int>(HOUSE_MULTI1) + MPlayerMax);
+  for (HousesType h = HOUSE_MULTI1; h < last_house; h++) {
     /*.....................................................................
     Get a pointer to this house; if there is none, go to the next house
     .....................................................................*/
@@ -1342,8 +1345,7 @@ bool Scan_Place_Object(ObjectClass* obj, CELL cell) {
     /*.....................................................................
     Pick a random starting direction
     .....................................................................*/
-    auto rot = static_cast<FacingType>(
-        GameRandomRange(FACING_N, FACING_NW));  // for object placement
+    auto rot = Random_Pick(FACING_N, FACING_NW);  // for object placement
     /*.....................................................................
     Try all directions twice
     .....................................................................*/

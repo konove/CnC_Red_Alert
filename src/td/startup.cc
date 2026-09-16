@@ -327,8 +327,8 @@ int main(int argc, char* argv[])
       CCDebugString("C&C95 - Setting palette.\n");
       /////////Set_Palette(Palette);
 
-      WindowList[0][WINDOWWIDTH] = SeenBuff.Get_Width() / 8;
-      WindowList[0][WINDOWHEIGHT] = SeenBuff.Get_Height();
+      WindowList[0][kWindowWidth] = SeenBuff.Get_Width() / 8;
+      WindowList[0][kWindowHeight] = SeenBuff.Get_Height();
 
       /*
       ** Install the memory error handler

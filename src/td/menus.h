@@ -11,8 +11,8 @@ struct MenuConfig {
   int item_width = 12;
   int item_count = 3;
   int selected = 0;
-  int normal_color = WHITE;
-  int highlight_color = PINK;
+  int normal_color = kWhite;
+  int highlight_color = kPink;
 };
 
 void Setup_Menu(const MenuConfig& menu, const char* labels[],

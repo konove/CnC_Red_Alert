@@ -22,6 +22,7 @@
 #include <filesystem>
 #include <string>
 
+#include "base/enum_array.h"
 #include "base/numeric.h"
 #include "port/ex_string.h"
 #include "sdllib/shape.h"
@@ -242,8 +243,9 @@ static const AircraftTypeClass CargoPlane(
     MISSION_HUNT     // Default mission for aircraft.
 );
 
-const AircraftTypeClass* const AircraftTypeClass::Pointers[AIRCRAFT_COUNT] = {
-    &TransportHeli, &AttackPlane, &AttackHeli, &CargoPlane, &OrcaHeli,
+const base::EnumArray<AircraftType, const AircraftTypeClass*, kAircraftCount>
+    AircraftTypeClass::Pointers = {
+        &TransportHeli, &AttackPlane, &AttackHeli, &CargoPlane, &OrcaHeli,
 };
 
 AircraftTypeClass::AircraftTypeClass(
@@ -373,10 +375,10 @@ BuildingClass* AircraftTypeClass::Who_Can_Build_Me(bool /*unused*/, bool legal,
 }
 
 int AircraftTypeClass::Repair_Cost() const {
-  return Fixed_To_Cardinal(Cost / (MaxStrength / REPAIR_STEP), REPAIR_PERCENT);
+  return Fixed_To_Cardinal(Cost / (MaxStrength / kRepairStep), kRepairPercent);
 }
 
-int AircraftTypeClass::Repair_Step() const { return REPAIR_STEP; }
+int AircraftTypeClass::Repair_Step() const { return kRepairStep; }
 
 int AircraftTypeClass::Max_Pips() const {
   if (IsTransporter) {

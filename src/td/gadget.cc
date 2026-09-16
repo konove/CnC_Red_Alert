@@ -123,7 +123,7 @@ GadgetClass::GadgetClass(int x, int y, int w, int h, unsigned flags,
                          bool sticky) noexcept
     : X(x), Y(y), Width(w), Height(h), IsSticky(sticky), Flags(flags) {
   if (IsSticky) {
-    Flags |= LEFTPRESS | LEFTRELEASE;
+    Flags |= kLeftPress | kLeftRelease;
   }
 }
 
@@ -147,7 +147,7 @@ GadgetClass::~GadgetClass() {
   // that override; a derived class that needs more does it in its own
   // destructor, while the object is still of that type.
   if (Focused == this) {
-    Flags &= ~KEYBOARD;
+    Flags &= ~kKeyboard;
     Focused = nullptr;
   }
 }
@@ -182,8 +182,9 @@ bool GadgetClass::Clicked_On(KeyNumType& key, unsigned flags, int mousex,
   *button *	before calling the associated action function. This is the
   *typical action for *	buttons.
   */
-  if (this == StuckOn || flags & KEYBOARD ||
-      (flags && static_cast<unsigned>(mousex - X) < static_cast<unsigned>(Width) &&
+  if (this == StuckOn || flags & kKeyboard ||
+      (flags &&
+       static_cast<unsigned>(mousex - X) < static_cast<unsigned>(Width) &&
        static_cast<unsigned>(mousey - Y) < static_cast<unsigned>(Height))) {
     return Action(flags, key);
   }
@@ -491,16 +492,16 @@ KeyNumType GadgetClass::Input() {
   unsigned flags = 0;
   if (key) {
     if (key == KN_LMOUSE) {
-      flags |= LEFTPRESS;
+      flags |= kLeftPress;
     }
     if (key == KN_RMOUSE) {
-      flags |= RIGHTPRESS;
+      flags |= kRightPress;
     }
     if (key == (KN_LMOUSE | KN_RLSE_BIT)) {
-      flags |= LEFTRELEASE;
+      flags |= kLeftRelease;
     }
     if (key == (KN_RMOUSE | KN_RLSE_BIT)) {
-      flags |= RIGHTRELEASE;
+      flags |= kRightRelease;
     }
   }
 
@@ -509,13 +510,13 @@ KeyNumType GadgetClass::Input() {
   **	the keyboard. Flag this fact.
   */
   if (key && !flags) {
-    flags |= KEYBOARD;
+    flags |= kKeyboard;
   }
 
   /*
   **	Mouse button up or down action is ignored if there is a keyboard event.
   *This *	allows keyboard events to fall through normally even if the
-  *mouse is over a *	gadget that is flagged for LEFTUP or RIGHTUP.
+  *mouse is over a *	gadget that is flagged for kLeftUp or kRightUp.
   */
   if (!key) {
     /*
@@ -526,14 +527,14 @@ KeyNumType GadgetClass::Input() {
     *-- set the flag *	accordingly.
     */
     if (Keyboard::Down(KN_LMOUSE)) {
-      flags |= LEFTHELD;
+      flags |= kLeftHeld;
     } else {
-      flags |= LEFTUP;
+      flags |= kLeftUp;
     }
     if (Keyboard::Down(KN_RMOUSE)) {
-      flags |= RIGHTHELD;
+      flags |= kRightHeld;
     } else {
-      flags |= RIGHTUP;
+      flags |= kRightUp;
     }
   }
 
@@ -551,7 +552,7 @@ KeyNumType GadgetClass::Input() {
     **	If there is a gadget that has the keyboard focus, then route all
     *keyboard *	events to it.
     */
-    if (Focused && flags & KEYBOARD) {
+    if (Focused && flags & kKeyboard) {
       Focused->Draw_Me(false);
       Focused->Clicked_On(key, flags, mousex, mousey);
       if (Focused) {
@@ -665,10 +666,10 @@ void GadgetClass::Flag_To_Redraw() { IsToRepaint = true; }
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
 void GadgetClass::Sticky_Process(unsigned flags) {
-  if (IsSticky && flags & LEFTPRESS) {
+  if (IsSticky && flags & kLeftPress) {
     StuckOn = this;
   }
-  if (StuckOn == this && flags & LEFTRELEASE) {
+  if (StuckOn == this && flags & kLeftRelease) {
     StuckOn = nullptr;
   }
 }
@@ -694,7 +695,7 @@ void GadgetClass::Set_Focus() {
     Focused->Flag_To_Redraw();
     Focused->Clear_Focus();
   }
-  Flags |= KEYBOARD;
+  Flags |= kKeyboard;
   Focused = this;
 }
 
@@ -716,7 +717,7 @@ void GadgetClass::Set_Focus() {
  *=============================================================================================*/
 void GadgetClass::Clear_Focus() {
   if (Focused == this) {
-    Flags &= ~KEYBOARD;
+    Flags &= ~kKeyboard;
     Focused = nullptr;
   }
 }

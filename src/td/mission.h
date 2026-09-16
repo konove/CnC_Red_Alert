@@ -41,6 +41,7 @@
 #ifndef CNC_RED_ALERT_TD_MISSION_H_
 #define CNC_RED_ALERT_TD_MISSION_H_
 
+#include "base/enum_array.h"
 #include "td/defines.h"
 #include "td/ftimer.h"
 #include "td/object.h"
@@ -136,7 +137,7 @@ class MissionClass : public ObjectClass {
   /*
   **	These are the order names as ASCII strings.
   */
-  static const char* Missions[MISSION_COUNT];
+  static base::EnumArray<MissionType, const char*, kMissionCount> Missions;
 };
 
 class ArchiveReader;

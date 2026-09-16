@@ -91,7 +91,6 @@
 #include "td/goptions.h"
 #include "td/heap.h"
 #include "td/inline.h"
-#include "td/jshell.h"
 #include "td/keyframe.h"
 #include "td/mapedit.h"
 #include "td/monoc.h"

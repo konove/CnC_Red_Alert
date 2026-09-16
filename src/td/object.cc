@@ -810,7 +810,7 @@ bool ObjectClass::Render(bool forced) {
               }
               cell = Adjacent_Cell(cell, index);
               if (Map.Coord_To_Pixel(Cell_Coord(cell), x, y)) {
-                LogicPage->Draw_Line(oldx, 8 + oldy, x, 8 + y, BLACK);
+                LogicPage->Draw_Line(oldx, 8 + oldy, x, 8 + y, kBlack);
               }
               oldx = x;
               oldy = y;
@@ -833,7 +833,7 @@ bool ObjectClass::Render(bool forced) {
         */
         if (Debug_Map && Trigger) {
           Fancy_Text_Print(Trigger->Get_Name(),
-                           x + (static_cast<int>(WinX) * 8), y, PINK, TBLACK,
+                           x + (static_cast<int>(WinX) * 8), y, kPink, kTBlack,
                            TPF_CENTER | TPF_NOSHADOW | TPF_6POINT);
         }
       }

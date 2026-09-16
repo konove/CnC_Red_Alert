@@ -44,6 +44,7 @@
 #include <cstdint>
 #include <vector>
 
+#include "base/enum_array.h"
 #include "base/numeric.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/wwstd.h"
@@ -87,7 +88,7 @@ class DisplayClass : public MapClass {
   **	These layer control elements are used to group the displayable objects
   **	so that proper overlap can be obtained.
   */
-  static LayerClass Layer[LAYER_COUNT];
+  static base::EnumArray<LayerType, LayerClass, kLayerCount> Layer;
 
   /*
   **	This records the position and shape of a placement cursor to display
@@ -112,7 +113,8 @@ class DisplayClass : public MapClass {
   static unsigned char FadingBrighten[256];
   static unsigned char FadingShade[256];
   static unsigned char FadingLight[256];
-  static unsigned char RemapTables[HOUSE_COUNT][3][256];
+  static base::EnumArray<HousesType, unsigned char[3][256], kHouseCount>
+      RemapTables;
   static unsigned char FadingGreen[256];
   static unsigned char FadingYellow[256];
   static unsigned char FadingRed[256];
@@ -150,7 +152,7 @@ class DisplayClass : public MapClass {
   virtual bool Map_Cell(CELL cell, HouseClass* house);
   virtual CELL Click_Cell_Calc(int x, int y);
   virtual void Help_Text(int /*unused*/, int /*unused*/ = -1,
-                         int /*unused*/ = -1, int /*unused*/ = YELLOW,
+                         int /*unused*/ = -1, int /*unused*/ = kYellow,
                          bool /*unused*/ = false, int /*unused*/ = 0) {}
   [[nodiscard]] virtual MouseType Get_Mouse_Shape() const = 0;
   virtual bool Scroll_Map(DirType facing, int& distance, bool really);
@@ -280,9 +282,10 @@ class DisplayClass : public MapClass {
   class TacticalClass : public GadgetClass {
    public:
     TacticalClass() noexcept
-        : GadgetClass(0, 0, 0, 0,
-                      LEFTPRESS | LEFTRELEASE | LEFTHELD | LEFTUP | RIGHTPRESS,
-                      true) {}
+        : GadgetClass(
+              0, 0, 0, 0,
+              kLeftPress | kLeftRelease | kLeftHeld | kLeftUp | kRightPress,
+              true) {}
 
    protected:
     bool Action(unsigned flags, KeyNumType& key) override;
