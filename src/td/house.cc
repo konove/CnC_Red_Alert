@@ -532,23 +532,23 @@ bool HouseClass::Can_Build(const TechnoTypeClass* type,
   // The mask used to live in an int, so only its low 32 bits, sign-extended,
   // take part in the checks below.
   auto pre = static_cast<uint64_t>(static_cast<int32_t>(type->Pre));
-  if (flags & STRUCTF_ADVANCED_POWER) {
-    flags |= STRUCTF_POWER;
+  if (flags & kStructFlagAdvancedPower) {
+    flags |= kStructFlagPower;
   }
-  if (flags & STRUCTF_HAND) {
-    flags |= STRUCTF_BARRACKS;
+  if (flags & kStructFlagHand) {
+    flags |= kStructFlagBarracks;
   }
-  if (flags & STRUCTF_OBELISK) {
-    flags |= STRUCTF_ATOWER;
+  if (flags & kStructFlagObelisk) {
+    flags |= kStructFlagAtower;
   }
-  if (flags & STRUCTF_TEMPLE) {
-    flags |= STRUCTF_EYE;
+  if (flags & kStructFlagTemple) {
+    flags |= kStructFlagEye;
   }
-  if (flags & STRUCTF_AIRSTRIP) {
-    flags |= STRUCTF_WEAP;
+  if (flags & kStructFlagAirstrip) {
+    flags |= kStructFlagWeap;
   }
-  if (flags & STRUCTF_SAM) {
-    flags |= STRUCTF_HELIPAD;
+  if (flags & kStructFlagSam) {
+    flags |= kStructFlagHelipad;
   }
 
   /*
@@ -571,7 +571,7 @@ bool HouseClass::Can_Build(const TechnoTypeClass* type,
   if (house == HOUSE_BAD && type->What_Am_I() == RTTI_UNITTYPE &&
       dynamic_cast<const UnitTypeClass*>(type)->Type == UNIT_STANK &&
       level == 11) {
-    pre = STRUCTF_MISSION;
+    pre = kStructFlagMission;
     level = type->Scenario;
   }
 
@@ -994,7 +994,7 @@ void HouseClass::AI() {
         if (Special.IsJurassic && AreThingiesEnabled) {
           obj = new UnitClass(Random_Pick(UNIT_TRIC, UNIT_STEG), HOUSE_JP);
         } else {
-          if ((BuildLevel >= 7) && (!(UScan & UNITF_VICE))) {
+          if ((BuildLevel >= 7) && (!(UScan & kUnitFlagVice))) {
             obj = new UnitClass(UNIT_VICE, HOUSE_JP);
           }
         }
@@ -1027,8 +1027,8 @@ void HouseClass::AI() {
     */
     if (GameToPlay == GAME_NORMAL && Frame > 5 &&
         (!IsHuman && BuildLevel <= 6) &&
-        (ActiveBScan & STRUCTF_REFINERY) != 0 &&
-        (UScan & UNITF_HARVESTER) == 0 && !IsFreeHarvester) {
+        (ActiveBScan & kStructFlagRefinery) != 0 &&
+        (UScan & kUnitFlagHarvester) == 0 && !IsFreeHarvester) {
       IsFreeHarvester = true;
       FreeHarvester = kTicksPerMinute * 2;
     }
@@ -1076,13 +1076,13 @@ void HouseClass::AI() {
     if (SpeakMaxedDelay.Expired() && IsMaxedOut) {
       IsMaxedOut = false;
       if (Capacity - Tiberium < 300 && Capacity > 500 &&
-          BScan & (STRUCTF_REFINERY | STRUCTF_CONST)) {
+          BScan & (kStructFlagRefinery | kStructFlagConst)) {
         Speak(VOX_NEED_MO_CAPACITY);
         SpeakMaxedDelay.Set(Options.Normalize_Delay(SPEAK_DELAY));
       }
     }
     if (SpeakPowerDelay.Expired() && Power_Fraction() < 0x0100) {
-      if (BScan & STRUCTF_CONST) {
+      if (BScan & kStructFlagConst) {
         Speak(VOX_LOW_POWER);
         SpeakPowerDelay.Set(Options.Normalize_Delay(SPEAK_DELAY));
       }
@@ -1120,7 +1120,7 @@ void HouseClass::AI() {
   **	being destroyed is a good example of this.
   */
   if (IonCannon.Is_Present()) {
-    if (!(ActiveBScan & STRUCTF_EYE) && !IonCannon.Is_One_Time()) {
+    if (!(ActiveBScan & kStructFlagEye) && !IonCannon.Is_One_Time()) {
       /*
       **	Remove the ion cannon when there is no advanced communication
       *facility. *	Note that this will not remove the one time created ion
@@ -1161,7 +1161,7 @@ void HouseClass::AI() {
     **	If there is no ion cannon present, but there is an advanced communcation
     **	center available, then make the ion cannon available as well.
     */
-    if (ActiveBScan & STRUCTF_EYE &&
+    if (ActiveBScan & kStructFlagEye &&
         (ActLike == HOUSE_GOOD || GameToPlay != GAME_NORMAL) &&
         (IsHuman || GameToPlay != GAME_NORMAL)) {
       IonCannon.Enable(false, this == PlayerPtr, Power_Fraction() < 0x0100);
@@ -1182,7 +1182,7 @@ void HouseClass::AI() {
   **	being destroyed is a good example of this.
   */
   if (NukeStrike.Is_Present()) {
-    if (!(ActiveBScan & STRUCTF_TEMPLE) &&
+    if (!(ActiveBScan & kStructFlagTemple) &&
         (!NukeStrike.Is_One_Time() || GameToPlay == GAME_NORMAL)) {
       /*
       **	Remove the nuke strike when there is no Temple of Nod.
@@ -1223,7 +1223,7 @@ void HouseClass::AI() {
     **	If there is no nuke strike present, but there is a Temple of Nod
     **	available, then make the nuke strike strike available.
     */
-    if (ActiveBScan & STRUCTF_TEMPLE && Has_Nuke_Device() && IsHuman) {
+    if (ActiveBScan & kStructFlagTemple && Has_Nuke_Device() && IsHuman) {
       NukeStrike.Enable(GameToPlay == GAME_NORMAL, this == PlayerPtr);
 
       /*
@@ -1337,9 +1337,9 @@ void HouseClass::AI() {
     */
     if (!EndCountDown) {
       // Gunboats and unarmed aircraft do not count as surviving forces.
-      constexpr uint64_t kGunboatFlag = UNITF_GUNBOAT;
+      constexpr uint64_t kGunboatFlag = kUnitFlagGunboat;
       constexpr uint64_t kUnarmedAircraftFlags =
-          AIRCRAFTF_TRANSPORT | AIRCRAFTF_CARGO | AIRCRAFTF_A10;
+          kAircraftFlagTransport | kAircraftFlagCargo | kAircraftFlagA10;
       /*
       **	All buildings destroyed checker.
       */
@@ -1384,8 +1384,8 @@ void HouseClass::AI() {
     /*
     **	All factories destroyed check.
     */
-    if (!(BScan & (STRUCTF_AIRSTRIP | STRUCTF_HAND | STRUCTF_WEAP |
-                   STRUCTF_BARRACKS)) &&
+    if (!(BScan & (kStructFlagAirstrip | kStructFlagHand | kStructFlagWeap |
+                   kStructFlagBarracks)) &&
         t->Spring(EVENT_NOFACTORIES, Class->House)) {
       continue;
     }
@@ -1398,7 +1398,7 @@ void HouseClass::AI() {
   */
   if (PlayerPtr == this) {
     if (Map.Is_Radar_Active()) {
-      if (BScan & (STRUCTF_RADAR | STRUCTF_EYE)) {
+      if (BScan & (kStructFlagRadar | kStructFlagEye)) {
         if (Power_Fraction() < 0x0100) {
           Map.Radar_Activate(0);
         }
@@ -1406,7 +1406,7 @@ void HouseClass::AI() {
         Map.Radar_Activate(0);
       }
     } else {
-      if (BScan & (STRUCTF_RADAR | STRUCTF_EYE)) {
+      if (BScan & (kStructFlagRadar | kStructFlagEye)) {
         if (Power_Fraction() >= 0x0100) {
           Map.Radar_Activate(1);
         }
@@ -1430,14 +1430,14 @@ void HouseClass::AI() {
     /*
     **	Remove the ion cannon if necessary.
     */
-    if (IonCannon.Is_Present() && !(BScan & STRUCTF_EYE)) {
+    if (IonCannon.Is_Present() && !(BScan & kStructFlagEye)) {
       IonCannon.Remove();
     }
 
     /*
     **	Remove the nuclear bomb if necessary.
     */
-    if (NukeStrike.Is_Present() && !(BScan & STRUCTF_TEMPLE)) {
+    if (NukeStrike.Is_Present() && !(BScan & kStructFlagTemple)) {
       NukeStrike.Remove();
     }
 #endif
@@ -3180,8 +3180,8 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
         **	harvester if possible. Never replace harvesters if the game
         **	is in easy mode.
         */
-        if (!Special.IsEasy && !IsHuman && ActiveBScan & STRUCTF_REFINERY &&
-            !(UScan & UNITF_HARVESTER)) {
+        if (!Special.IsEasy && !IsHuman && ActiveBScan & kStructFlagRefinery &&
+            !(UScan & kUnitFlagHarvester)) {
           techno = &UnitTypeClass::As_Reference(UNIT_HARVESTER);
           if (std::cmp_less_equal(techno->Scenario, BuildLevel)) {
             break;

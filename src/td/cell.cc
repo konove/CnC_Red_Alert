@@ -1916,8 +1916,8 @@ bool CellClass::Goodie_Check(FootClass* object) {
         *and no legitmate means *	to make any more money, then give money
         *to build a refinery.
         */
-        if ((object->House->BScan & (STRUCTF_CONST | STRUCTF_REFINERY)) ==
-                STRUCTF_CONST &&
+        if ((object->House->BScan & (kStructFlagConst | kStructFlagRefinery)) ==
+                kStructFlagConst &&
             object->House->Available_Money() <
                 BuildingTypeClass::As_Reference(STRUCT_REFINERY).Cost) {
           what = MONEY;
@@ -1928,7 +1928,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
         *(probably).
         */
         if (Random_Pick(0, 1) == 0 && MPlayerBases &&
-            !(object->House->UScan & UNITF_MCV) && object->House->BScan == 0 &&
+            !(object->House->UScan & kUnitFlagMcv) && object->House->BScan == 0 &&
             object->House->Available_Money() >
                 BuildingTypeClass::As_Reference(STRUCT_REFINERY).Cost +
                     BuildingTypeClass::As_Reference(STRUCT_POWER).Cost) {
@@ -2043,7 +2043,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
           *than enough *	money to rebuild a new base. Of course, if he
           *already has an MCV, then don't *	give him another one.
           */
-          if (MPlayerBases && !(object->House->UScan & UNITF_MCV) &&
+          if (MPlayerBases && !(object->House->UScan & kUnitFlagMcv) &&
               object->House->BScan == 0 &&
               object->House->Available_Money() >
                   BuildingTypeClass::As_Reference(STRUCT_REFINERY).Cost +
@@ -2055,8 +2055,8 @@ bool CellClass::Goodie_Check(FootClass* object) {
           **	If the player has a base and a refinery, but no harvester, then
           *give him *	a free one.
           */
-          if (!utp && object->House->BScan & STRUCTF_REFINERY &&
-              !(object->House->UScan & UNITF_HARVESTER)) {
+          if (!utp && object->House->BScan & kStructFlagRefinery &&
+              !(object->House->UScan & kUnitFlagHarvester)) {
             utp = &UnitTypeClass::As_Reference(UNIT_HARVESTER);
           }
 

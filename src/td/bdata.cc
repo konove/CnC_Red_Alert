@@ -169,7 +169,7 @@ static const BuildingTypeClass ClassTemple(
     "TMPL",           // NAME:			Short name of the structure.
     XYP_COORD(0, 0),  // Exit point for produced units.
     7,                // Build level.
-    STRUCTF_RADAR,    // Building prerequisite.
+    kStructFlagRadar,    // Building prerequisite.
     false,            // Has ability to detect adjacent cloaked objects?
     false,            // Animation rate is regulated for constant speed?
     true,             // Requires a bib dirt patch?
@@ -198,9 +198,9 @@ static const BuildingTypeClass ClassTemple(
     3000,             // COST:			Cost to purchase.
     13,               // SCENARIO:	Starting availability scenario.
     0, 20,            // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP |
-        HOUSEF_BAD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
+        kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_ALUMINUM,  // ARMOR:		Armor type
     0,               // CANENTER:	Units that can enter building.
@@ -219,7 +219,7 @@ static const BuildingTypeClass ClassEye(
     "EYE",            // NAME:			Short name of the structure.
     XYP_COORD(0, 0),  // Exit point for produced units.
     7,                // Build level.
-    STRUCTF_RADAR,    // Building prerequisite.
+    kStructFlagRadar,    // Building prerequisite.
     false,            // Has ability to detect adjacent cloaked objects?
     true,             // Animation rate is regulated for constant speed?
     true,             // Requires a bib dirt patch?
@@ -248,9 +248,9 @@ static const BuildingTypeClass ClassEye(
     2800,                       // COST:			Cost to purchase.
     13,                         // SCENARIO:	Starting availability scenario.
     0, 100,                     // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP |
-        HOUSEF_GOOD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
+        kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_WOOD,  // ARMOR:		Armor type
     0,           // CANENTER:	Units that can enter building.
@@ -272,7 +272,7 @@ static const BuildingTypeClass ClassWeapon(
               ((CELL_PIXEL_H * 3) - (CELL_PIXEL_H / 2)) -
                   21),  // Exit point for produced units.
     2,                  // Build level.
-    STRUCTF_REFINERY,   // Building prerequisite.
+    kStructFlagRefinery,   // Building prerequisite.
     false,              // Has ability to detect adjacent cloaked objects?
     false,              // Animation rate is regulated for constant speed?
     true,               // Requires a bib dirt patch?
@@ -305,9 +305,9 @@ static const BuildingTypeClass ClassWeapon(
     2000,   // COST:			Cost to purchase.
     5,      // SCENARIO:	Starting availability scenario.
     0, 86,  // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP |
-        HOUSEF_GOOD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
+        kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_ALUMINUM,  // ARMOR:		Armor type
     0,               // CANENTER:	Units that can enter building.
@@ -326,7 +326,7 @@ static const BuildingTypeClass ClassGTower(
     "GTWR",            // NAME:			Short name of the structure.
     XYP_COORD(0, 0),   // Exit point for produced units.
     2,                 // Build level.
-    STRUCTF_BARRACKS,  // Building prerequisite.
+    kStructFlagBarracks,  // Building prerequisite.
     true,              // Has ability to detect adjacent cloaked objects?
     false,             // Animation rate is regulated for constant speed?
     false,             // Requires a bib dirt patch?
@@ -355,9 +355,9 @@ static const BuildingTypeClass ClassGTower(
     500,               // COST:			Cost to purchase.
     7,                 // SCENARIO:	Starting availability scenario.
     100, 25,           // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP |
-        HOUSEF_GOOD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
+        kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_CHAIN_GUN, WEAPON_NONE,
     //	WEAPON_M60MG,WEAPON_NONE,
     ARMOR_WOOD,  // ARMOR:		Armor type
@@ -377,7 +377,7 @@ static const BuildingTypeClass ClassATower(
     "ATWR",            // NAME:			Short name of the structure.
     XYP_COORD(0, 0),   // Exit point for produced units.
     4,                 // Build level.
-    STRUCTF_RADAR,     // Building prerequisite.
+    kStructFlagRadar,     // Building prerequisite.
     true,              // Has ability to detect adjacent cloaked objects?
     false,             // Animation rate is regulated for constant speed?
     false,             // Requires a bib dirt patch?
@@ -406,9 +406,9 @@ static const BuildingTypeClass ClassATower(
     1000,              // COST:			Cost to purchase.
     13,                // SCENARIO:	Starting availability scenario.
     100, 30,           // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP |
-        HOUSEF_GOOD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
+        kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_TOW_TWO, WEAPON_NONE,
     //	WEAPON_TOMAHAWK,WEAPON_NONE,
     ARMOR_ALUMINUM,  // ARMOR:		Armor type
@@ -428,7 +428,7 @@ static const BuildingTypeClass ClassObelisk(
     "OBLI",           // NAME:			Short name of the structure.
     XYP_COORD(0, 0),  // Exit point for produced units.
     4,                // Build level.
-    STRUCTF_RADAR,    // Building prerequisite.
+    kStructFlagRadar,    // Building prerequisite.
     true,             // Has ability to detect adjacent cloaked objects?
     false,            // Animation rate is regulated for constant speed?
     false,            // Requires a bib dirt patch?
@@ -457,9 +457,9 @@ static const BuildingTypeClass ClassObelisk(
     1500,             // COST:			Cost to purchase.
     11,               // SCENARIO:	Starting availability scenario.
     100, 35,          // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP |
-        HOUSEF_BAD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
+        kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_OBELISK_LASER, WEAPON_NONE,
     ARMOR_ALUMINUM,  // ARMOR:		Armor type
     0,               // CANENTER:	Units that can enter building.
@@ -478,7 +478,7 @@ static const BuildingTypeClass ClassTurret(
     "GUN",             // NAME:			Short name of the structure.
     XYP_COORD(0, 0),   // Exit point for produced units.
     2,                 // Build level.
-    STRUCTF_BARRACKS,  // Building prerequisite.
+    kStructFlagBarracks,  // Building prerequisite.
     true,              // Has ability to detect adjacent cloaked objects?
     false,             // Animation rate is regulated for constant speed?
     false,             // Requires a bib dirt patch?
@@ -515,9 +515,9 @@ static const BuildingTypeClass ClassTurret(
 #endif
     8,        // SCENARIO:	Starting availability scenario.
     300, 26,  // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP |
-        HOUSEF_BAD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
+        kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_TURRET_GUN, WEAPON_NONE,
     ARMOR_STEEL,  // ARMOR:		Armor type
     0,            // CANENTER:	Units that can enter building.
@@ -536,7 +536,7 @@ static const BuildingTypeClass ClassConst(
     "FACT",             // NAME:			Short name of the structure.
     XYP_COORD(0, 0),    // Exit point for produced units.
     99,                 // Build level.
-    STRUCTF_NONE,       // Building prerequisite.
+    kStructFlagNone,       // Building prerequisite.
     false,              // Has ability to detect adjacent cloaked objects?
     false,              // Animation rate is regulated for constant speed?
     true,               // Requires a bib dirt patch?
@@ -565,9 +565,9 @@ static const BuildingTypeClass ClassConst(
     5000,               // COST:			Cost to purchase.
     1,                  // SCENARIO:	Starting availability scenario.
     0, 70,              // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_GOOD |
-        HOUSEF_BAD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
+        kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_WOOD,  // ARMOR:		Armor type
     0,           // CANENTER:	Units that can enter building.
@@ -586,7 +586,7 @@ static const BuildingTypeClass ClassRefinery(
     "PROC",           // NAME:			Short name of the structure.
     XYP_COORD(0, 0),  // Exit point for produced units.
     1,                // Build level.
-    STRUCTF_POWER,    // Building prerequisite.
+    kStructFlagPower,    // Building prerequisite.
     false,            // Has ability to detect adjacent cloaked objects?
     false,            // Animation rate is regulated for constant speed?
     true,             // Requires a bib dirt patch?
@@ -615,9 +615,9 @@ static const BuildingTypeClass ClassRefinery(
     2000,             // COST:			Cost to purchase.
     2,                // SCENARIO:	Starting availability scenario.
     0, 55,            // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_GOOD |
-        HOUSEF_BAD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
+        kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_WOOD,     // ARMOR:		Armor type
     0,              // CANENTER:	Units that can enter building.
@@ -636,7 +636,7 @@ static const BuildingTypeClass ClassStorage(
     "SILO",            // NAME:			Short name of the structure.
     XYP_COORD(0, 0),   // Exit point for produced units.
     1,                 // Build level.
-    STRUCTF_REFINERY,  // Building prerequisite.
+    kStructFlagRefinery,  // Building prerequisite.
     false,             // Has ability to detect adjacent cloaked objects?
     false,             // Animation rate is regulated for constant speed?
     true,              // Requires a bib dirt patch?
@@ -667,9 +667,9 @@ static const BuildingTypeClass ClassStorage(
                        //// COST:			Cost to purchase.
     2,                 // SCENARIO:	Starting availability scenario.
     0, 16,             // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_GOOD |
-        HOUSEF_BAD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
+        kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_WOOD,  // ARMOR:		Armor type
     0,           // CANENTER:	Units that can enter building.
@@ -688,7 +688,7 @@ static const BuildingTypeClass ClassHelipad(
     "HPAD",             // NAME:			Short name of the structure.
     XYP_COORD(0, 0),    // Exit point for produced units.
     6,                  // Build level.
-    STRUCTF_BARRACKS,   // Building prerequisite.
+    kStructFlagBarracks,   // Building prerequisite.
     false,              // Has ability to detect adjacent cloaked objects?
     false,              // Animation rate is regulated for constant speed?
     true,               // Requires a bib dirt patch?
@@ -717,9 +717,9 @@ static const BuildingTypeClass ClassHelipad(
     1500,               // COST:			Cost to purchase.
     10,                 // SCENARIO:	Starting availability scenario.
     0, 65,              // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_BAD |
-        HOUSEF_GOOD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagBad |
+        kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_WOOD,  // ARMOR:		Armor type
     0,           // CANENTER:	Units that can enter building.
@@ -738,7 +738,7 @@ static const BuildingTypeClass ClassCommand(
     "HQ",              // NAME:			Short name of the structure.
     XYP_COORD(0, 0),   // Exit point for produced units.
     2,                 // Build level.
-    STRUCTF_REFINERY,  // Building prerequisite.
+    kStructFlagRefinery,  // Building prerequisite.
     true,              // Has ability to detect adjacent cloaked objects?
     true,              // Animation rate is regulated for constant speed?
     true,              // Requires a bib dirt patch?
@@ -767,9 +767,9 @@ static const BuildingTypeClass ClassCommand(
     1000,                       // COST:			Cost to purchase.
     3,                          // SCENARIO:	Starting availability scenario.
     0, 20,                      // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_GOOD |
-        HOUSEF_BAD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
+        kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_WOOD,  // ARMOR:		Armor type
     0,           // CANENTER:	Units that can enter building.
@@ -788,7 +788,7 @@ static const BuildingTypeClass ClassSAM(
     "SAM",             // NAME:			Short name of the structure.
     XYP_COORD(0, 0),   // Exit point for produced units.
     6,                 // Build level.
-    STRUCTF_BARRACKS,  // Building prerequisite.
+    kStructFlagBarracks,  // Building prerequisite.
     false,             // Has ability to detect adjacent cloaked objects?
     false,             // Animation rate is regulated for constant speed?
     false,             // Requires a bib dirt patch?
@@ -817,9 +817,9 @@ static const BuildingTypeClass ClassSAM(
     750,               // COST:			Cost to purchase.
     5,                 // SCENARIO:	Starting availability scenario.
     300, 40,           // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP |
-        HOUSEF_BAD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
+        kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NIKE, WEAPON_NONE,
     ARMOR_STEEL,  // ARMOR:		Armor type
     0,            // CANENTER:	Units that can enter building.
@@ -838,7 +838,7 @@ static const BuildingTypeClass ClassAirStrip(
     "AFLD",            // NAME:			Short name of the structure.
     XYP_COORD(0, 0),   // Exit point for produced units.
     2,                 // Build level.
-    STRUCTF_REFINERY,  // Building prerequisite.
+    kStructFlagRefinery,  // Building prerequisite.
     false,             // Has ability to detect adjacent cloaked objects?
     true,              // Animation rate is regulated for constant speed?
     true,              // Requires a bib dirt patch?
@@ -867,9 +867,9 @@ static const BuildingTypeClass ClassAirStrip(
     2000,              // COST:			Cost to purchase.
     5,                 // SCENARIO:	Starting availability scenario.
     300, 86,           // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP |
-        HOUSEF_BAD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
+        kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_STEEL,   // ARMOR:		Armor type
     0,             // CANENTER:	Units that can enter building.
@@ -888,7 +888,7 @@ static const BuildingTypeClass ClassPower(
     "NUKE",           // NAME:			Short name of the structure.
     XYP_COORD(0, 0),  // Exit point for produced units.
     0,                // Build level.
-    STRUCTF_NONE,     // Building prerequisite.
+    kStructFlagNone,     // Building prerequisite.
     false,            // Has ability to detect adjacent cloaked objects?
     true,             // Animation rate is regulated for constant speed?
     true,             // Requires a bib dirt patch?
@@ -917,9 +917,9 @@ static const BuildingTypeClass ClassPower(
     300,              // COST:			Cost to purchase.
     1,                // SCENARIO:	Starting availability scenario.
     0, 50,            // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_BAD |
-        HOUSEF_GOOD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagBad |
+        kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_WOOD,  // ARMOR:		Armor type
     0,           // CANENTER:	Units that can enter building.
@@ -939,7 +939,7 @@ static const BuildingTypeClass ClassAdvancedPower(
     "NUK2",              // NAME:			Short name of the structure.
     XYP_COORD(0, 0),     // Exit point for produced units.
     5,                   // Build level.
-    STRUCTF_POWER,       // PREREQ:		Buildings that must exist first.
+    kStructFlagPower,       // PREREQ:		Buildings that must exist first.
     false,               // Has ability to detect adjacent cloaked objects?
     true,                // Animation rate is regulated for constant speed?
     true,                // Requires a bib dirt patch?
@@ -968,9 +968,9 @@ static const BuildingTypeClass ClassAdvancedPower(
     700,                 // COST:			Cost to purchase.
     13,                  // SCENARIO:	Starting availability scenario.
     0, 75,               // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_BAD |
-        HOUSEF_GOOD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagBad |
+        kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_WOOD,  // ARMOR:		Armor type
     0,           // CANENTER:	Units that can enter building.
@@ -989,7 +989,7 @@ static const BuildingTypeClass ClassHospital(
     "HOSP",            // NAME:			Short name of the structure.
     XYP_COORD(0, 0),   // Exit point for produced units.
     99,                // Build level.
-    STRUCTF_BARRACKS,  // PREREQ:		Buildings that must exist first.
+    kStructFlagBarracks,  // PREREQ:		Buildings that must exist first.
     false,             // Has ability to detect adjacent cloaked objects?
     true,              // Animation rate is regulated for constant speed?
     true,              // Requires a bib dirt patch?
@@ -1018,9 +1018,9 @@ static const BuildingTypeClass ClassHospital(
     500,               // COST:			Cost to purchase.
     99,                // SCENARIO:	Starting availability scenario.
     0, 20,             // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_BAD |
-        HOUSEF_GOOD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagBad |
+        kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_WOOD,  // ARMOR:		Armor type
     0,           // CANENTER:	Units that can enter building.
@@ -1039,7 +1039,7 @@ static const BuildingTypeClass ClassBioLab(
     "BIO",             // NAME:			Short name of the structure.
     XYP_COORD(0, 0),   // Exit point for produced units.
     99,                // Build level.
-    STRUCTF_HOSPITAL,  // PREREQ:		Buildings that must exist first.
+    kStructFlagHospital,  // PREREQ:		Buildings that must exist first.
     false,             // Has ability to detect adjacent cloaked objects?
     true,              // Animation rate is regulated for constant speed?
     true,              // Requires a bib dirt patch?
@@ -1068,9 +1068,9 @@ static const BuildingTypeClass ClassBioLab(
     500,               // COST:			Cost to purchase.
     99,                // SCENARIO:	Starting availability scenario.
     0, 1,              // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP |
-        HOUSEF_BAD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
+        kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_WOOD,  // ARMOR:		Armor type
     0,           // CANENTER:	Units that can enter building.
@@ -1089,7 +1089,7 @@ static const BuildingTypeClass ClassBarracks(
     "PYLE",             // NAME:			Short name of the structure.
     XYP_COORD(30, 33),  // Exit point for produced units.
     0,                  // Build level.
-    STRUCTF_POWER,      // Building prerequisite.
+    kStructFlagPower,      // Building prerequisite.
     false,              // Has ability to detect adjacent cloaked objects?
     true,               // Animation rate is regulated for constant speed?
     true,               // Requires a bib dirt patch?
@@ -1118,9 +1118,9 @@ static const BuildingTypeClass ClassBarracks(
     300,                // COST:			Cost to purchase.
     1,                  // SCENARIO:	Starting availability scenario.
     0, 60,              // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP |
-        HOUSEF_GOOD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
+        kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_WOOD,   // ARMOR:		Armor type
     0,            // CANENTER:	Units that can enter building.
@@ -1139,7 +1139,7 @@ static const BuildingTypeClass ClassHand(
     "HAND",             // NAME:			Short name of the structure.
     XYP_COORD(36, 63),  // Exit point for produced units.
     0,                  // Build level.
-    STRUCTF_POWER,      // Building prerequisite.
+    kStructFlagPower,      // Building prerequisite.
     false,              // Has ability to detect adjacent cloaked objects?
     true,               // Animation rate is regulated for constant speed?
     true,               // Requires a bib dirt patch?
@@ -1168,9 +1168,9 @@ static const BuildingTypeClass ClassHand(
     300,                // COST:			Cost to purchase.
     2,                  // SCENARIO:	Starting availability scenario.
     0, 61,              // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP |
-        HOUSEF_BAD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
+        kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_WOOD,  // ARMOR:		Armor type
     0,           // CANENTER:	Units that can enter building.
@@ -1189,7 +1189,7 @@ static const BuildingTypeClass ClassTanker(
     "ARCO",           // NAME:			Short name of the structure.
     XYP_COORD(0, 0),  // Exit point for produced units.
     99,               // Build level.
-    STRUCTF_POWER,    // PREREQ:		Buildings that must exist first.
+    kStructFlagPower,    // PREREQ:		Buildings that must exist first.
     false,            // Has ability to detect adjacent cloaked objects?
     true,             // Animation rate is regulated for constant speed?
     false,            // Requires a bib dirt patch?
@@ -1218,9 +1218,9 @@ static const BuildingTypeClass ClassTanker(
     0,                // COST:			Cost to purchase.
     0,                // SCENARIO:	Starting availability scenario.
     0, 1,             // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP |
-        HOUSEF_NEUTRAL,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
+        kHouseFlagNeutral,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_WOOD,  // ARMOR:		Armor type
     0,           // CANENTER:	Units that can enter building.
@@ -1239,7 +1239,7 @@ static const BuildingTypeClass ClassRepair(
     "FIX",            // NAME:			Short name of the structure.
     XYP_COORD(0, 0),  // Exit point for produced units.
     5,                // Build level.
-    STRUCTF_POWER,    // PREREQ:		Buildings that must exist first.
+    kStructFlagPower,    // PREREQ:		Buildings that must exist first.
     false,            // Has ability to detect adjacent cloaked objects?
     true,             // Animation rate is regulated for constant speed?
     true,             // Requires a bib dirt patch?
@@ -1268,9 +1268,9 @@ static const BuildingTypeClass ClassRepair(
     1200,             // COST:			Cost to purchase.
     8,                // SCENARIO:	Starting availability scenario.
     0, 46,            // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_GOOD |
-        HOUSEF_BAD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
+        kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_WOOD,  // ARMOR:		Armor type
     0,           // CANENTER:	Units that can enter building.
@@ -1288,7 +1288,7 @@ static const BuildingTypeClass ClassRoad(
     STRUCT_ROAD,
     TXT_ROAD,         // NAME:			Short name of the structure.
     "ROAD",           // NAME:			Short name of the structure.
-    STRUCTF_NONE,     // PREREQ:		Buildings that must exist first.
+    kStructFlagNone,     // PREREQ:		Buildings that must exist first.
     XYP_COORD(0, 0),  // Exit point for produced units.
     99,               // Build level.
     0,                // Building prerequisite.
@@ -1320,9 +1320,9 @@ static const BuildingTypeClass ClassRoad(
     50,               // COST:			Cost to purchase.
     99,               // SCENARIO:	Starting availability scenario.
     0, 0,             // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_GOOD |
-        HOUSEF_BAD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
+        kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_NONE,  // ARMOR:		Armor type
     0,           // CANENTER:	Units that can enter building.
@@ -1343,7 +1343,7 @@ static const BuildingTypeClass ClassV01(
     "V01",            // NAME:			Short name of the structure.
     XYP_COORD(0, 0),  // Exit point for produced units.
     99,               // Build level.
-    STRUCTF_NONE,     // PREREQ:		Buildings that must exist first.
+    kStructFlagNone,     // PREREQ:		Buildings that must exist first.
     false,            // Has ability to detect adjacent cloaked objects?
     true,             // Animation rate is regulated for constant speed?
     false,            // Requires a bib dirt patch?
@@ -1372,9 +1372,9 @@ static const BuildingTypeClass ClassV01(
     0,                // COST:			Cost to purchase.
     0,                // SCENARIO:	Starting availability scenario.
     0, 2,             // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP |
-        HOUSEF_NEUTRAL,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
+        kHouseFlagNeutral,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_WOOD,  // ARMOR:		Armor type
     0,           // CANENTER:	Units that can enter building.
@@ -1393,7 +1393,7 @@ static const BuildingTypeClass ClassV02(
     "V02",            // NAME:			Short name of the structure.
     XYP_COORD(0, 0),  // Exit point for produced units.
     99,               // Build level.
-    STRUCTF_NONE,     // PREREQ:		Buildings that must exist first.
+    kStructFlagNone,     // PREREQ:		Buildings that must exist first.
     false,            // Has ability to detect adjacent cloaked objects?
     true,             // Animation rate is regulated for constant speed?
     false,            // Requires a bib dirt patch?
@@ -1422,9 +1422,9 @@ static const BuildingTypeClass ClassV02(
     0,                // COST:			Cost to purchase.
     0,                // SCENARIO:	Starting availability scenario.
     0, 2,             // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP |
-        HOUSEF_NEUTRAL,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
+        kHouseFlagNeutral,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_WOOD,  // ARMOR:		Armor type
     0,           // CANENTER:	Units that can enter building.
@@ -1443,7 +1443,7 @@ static const BuildingTypeClass ClassV03(
     "V03",            // NAME:			Short name of the structure.
     XYP_COORD(0, 0),  // Exit point for produced units.
     99,               // Build level.
-    STRUCTF_NONE,     // PREREQ:		Buildings that must exist first.
+    kStructFlagNone,     // PREREQ:		Buildings that must exist first.
     false,            // Has ability to detect adjacent cloaked objects?
     true,             // Animation rate is regulated for constant speed?
     false,            // Requires a bib dirt patch?
@@ -1472,9 +1472,9 @@ static const BuildingTypeClass ClassV03(
     0,                // COST:			Cost to purchase.
     0,                // SCENARIO:	Starting availability scenario.
     0, 2,             // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP |
-        HOUSEF_NEUTRAL,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
+        kHouseFlagNeutral,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_WOOD,  // ARMOR:		Armor type
     0,           // CANENTER:	Units that can enter building.
@@ -1493,7 +1493,7 @@ static const BuildingTypeClass ClassV04(
     "V04",            // NAME:			Short name of the structure.
     XYP_COORD(0, 0),  // Exit point for produced units.
     99,               // Build level.
-    STRUCTF_NONE,     // PREREQ:		Buildings that must exist first.
+    kStructFlagNone,     // PREREQ:		Buildings that must exist first.
     false,            // Has ability to detect adjacent cloaked objects?
     true,             // Animation rate is regulated for constant speed?
     false,            // Requires a bib dirt patch?
@@ -1522,9 +1522,9 @@ static const BuildingTypeClass ClassV04(
     0,                // COST:			Cost to purchase.
     0,                // SCENARIO:	Starting availability scenario.
     0, 2,             // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP |
-        HOUSEF_NEUTRAL,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
+        kHouseFlagNeutral,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_WOOD,  // ARMOR:		Armor type
     0,           // CANENTER:	Units that can enter building.
@@ -1543,7 +1543,7 @@ static const BuildingTypeClass ClassV05(
     "V05",            // NAME:			Short name of the structure.
     XYP_COORD(0, 0),  // Exit point for produced units.
     99,               // Build level.
-    STRUCTF_NONE,     // PREREQ:		Buildings that must exist first.
+    kStructFlagNone,     // PREREQ:		Buildings that must exist first.
     false,            // Has ability to detect adjacent cloaked objects?
     true,             // Animation rate is regulated for constant speed?
     false,            // Requires a bib dirt patch?
@@ -1572,9 +1572,9 @@ static const BuildingTypeClass ClassV05(
     0,                // COST:			Cost to purchase.
     0,                // SCENARIO:	Starting availability scenario.
     0, 2,             // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP |
-        HOUSEF_NEUTRAL,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
+        kHouseFlagNeutral,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_WOOD,  // ARMOR:		Armor type
     0,           // CANENTER:	Units that can enter building.
@@ -1593,7 +1593,7 @@ static const BuildingTypeClass ClassV06(
     "V06",            // NAME:			Short name of the structure.
     XYP_COORD(0, 0),  // Exit point for produced units.
     99,               // Build level.
-    STRUCTF_NONE,     // PREREQ:		Buildings that must exist first.
+    kStructFlagNone,     // PREREQ:		Buildings that must exist first.
     false,            // Has ability to detect adjacent cloaked objects?
     true,             // Animation rate is regulated for constant speed?
     false,            // Requires a bib dirt patch?
@@ -1622,9 +1622,9 @@ static const BuildingTypeClass ClassV06(
     0,                // COST:			Cost to purchase.
     0,                // SCENARIO:	Starting availability scenario.
     0, 2,             // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP |
-        HOUSEF_NEUTRAL,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
+        kHouseFlagNeutral,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_WOOD,  // ARMOR:		Armor type
     0,           // CANENTER:	Units that can enter building.
@@ -1643,7 +1643,7 @@ static const BuildingTypeClass ClassV07(
     "V07",            // NAME:			Short name of the structure.
     XYP_COORD(0, 0),  // Exit point for produced units.
     99,               // Build level.
-    STRUCTF_NONE,     // PREREQ:		Buildings that must exist first.
+    kStructFlagNone,     // PREREQ:		Buildings that must exist first.
     false,            // Has ability to detect adjacent cloaked objects?
     true,             // Animation rate is regulated for constant speed?
     false,            // Requires a bib dirt patch?
@@ -1672,9 +1672,9 @@ static const BuildingTypeClass ClassV07(
     0,                // COST:			Cost to purchase.
     0,                // SCENARIO:	Starting availability scenario.
     0, 2,             // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP |
-        HOUSEF_NEUTRAL,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
+        kHouseFlagNeutral,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_WOOD,  // ARMOR:		Armor type
     0,           // CANENTER:	Units that can enter building.
@@ -1693,7 +1693,7 @@ static const BuildingTypeClass ClassV08(
     "V08",            // NAME:			Short name of the structure.
     XYP_COORD(0, 0),  // Exit point for produced units.
     99,               // Build level.
-    STRUCTF_NONE,     // PREREQ:		Buildings that must exist first.
+    kStructFlagNone,     // PREREQ:		Buildings that must exist first.
     false,            // Has ability to detect adjacent cloaked objects?
     true,             // Animation rate is regulated for constant speed?
     false,            // Requires a bib dirt patch?
@@ -1722,9 +1722,9 @@ static const BuildingTypeClass ClassV08(
     0,                // COST:			Cost to purchase.
     0,                // SCENARIO:	Starting availability scenario.
     0, 2,             // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP |
-        HOUSEF_NEUTRAL,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
+        kHouseFlagNeutral,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_WOOD,  // ARMOR:		Armor type
     0,           // CANENTER:	Units that can enter building.
@@ -1743,7 +1743,7 @@ static const BuildingTypeClass ClassV09(
     "V09",            // NAME:			Short name of the structure.
     XYP_COORD(0, 0),  // Exit point for produced units.
     99,               // Build level.
-    STRUCTF_NONE,     // PREREQ:		Buildings that must exist first.
+    kStructFlagNone,     // PREREQ:		Buildings that must exist first.
     false,            // Has ability to detect adjacent cloaked objects?
     true,             // Animation rate is regulated for constant speed?
     false,            // Requires a bib dirt patch?
@@ -1772,9 +1772,9 @@ static const BuildingTypeClass ClassV09(
     0,                // COST:			Cost to purchase.
     0,                // SCENARIO:	Starting availability scenario.
     0, 2,             // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP |
-        HOUSEF_NEUTRAL,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
+        kHouseFlagNeutral,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_WOOD,  // ARMOR:		Armor type
     0,           // CANENTER:	Units that can enter building.
@@ -1793,7 +1793,7 @@ static const BuildingTypeClass ClassV10(
     "V10",            // NAME:			Short name of the structure.
     XYP_COORD(0, 0),  // Exit point for produced units.
     99,               // Build level.
-    STRUCTF_NONE,     // PREREQ:		Buildings that must exist first.
+    kStructFlagNone,     // PREREQ:		Buildings that must exist first.
     false,            // Has ability to detect adjacent cloaked objects?
     true,             // Animation rate is regulated for constant speed?
     false,            // Requires a bib dirt patch?
@@ -1822,9 +1822,9 @@ static const BuildingTypeClass ClassV10(
     0,                // COST:			Cost to purchase.
     0,                // SCENARIO:	Starting availability scenario.
     0, 2,             // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP |
-        HOUSEF_NEUTRAL,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
+        kHouseFlagNeutral,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_WOOD,  // ARMOR:		Armor type
     0,           // CANENTER:	Units that can enter building.
@@ -1843,7 +1843,7 @@ static const BuildingTypeClass ClassV11(
     "V11",            // NAME:			Short name of the structure.
     XYP_COORD(0, 0),  // Exit point for produced units.
     99,               // Build level.
-    STRUCTF_NONE,     // PREREQ:		Buildings that must exist first.
+    kStructFlagNone,     // PREREQ:		Buildings that must exist first.
     false,            // Has ability to detect adjacent cloaked objects?
     true,             // Animation rate is regulated for constant speed?
     false,            // Requires a bib dirt patch?
@@ -1872,9 +1872,9 @@ static const BuildingTypeClass ClassV11(
     0,                // COST:			Cost to purchase.
     0,                // SCENARIO:	Starting availability scenario.
     0, 2,             // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP |
-        HOUSEF_NEUTRAL,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
+        kHouseFlagNeutral,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_WOOD,  // ARMOR:		Armor type
     0,           // CANENTER:	Units that can enter building.
@@ -1893,7 +1893,7 @@ static const BuildingTypeClass ClassV12(
     "V12",            // NAME:			Short name of the structure.
     XYP_COORD(0, 0),  // Exit point for produced units.
     99,               // Build level.
-    STRUCTF_NONE,     // PREREQ:		Buildings that must exist first.
+    kStructFlagNone,     // PREREQ:		Buildings that must exist first.
     false,            // Has ability to detect adjacent cloaked objects?
     true,             // Animation rate is regulated for constant speed?
     false,            // Requires a bib dirt patch?
@@ -1922,9 +1922,9 @@ static const BuildingTypeClass ClassV12(
     0,                // COST:			Cost to purchase.
     0,                // SCENARIO:	Starting availability scenario.
     0, 2,             // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP |
-        HOUSEF_NEUTRAL,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
+        kHouseFlagNeutral,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_WOOD,  // ARMOR:		Armor type
     0,           // CANENTER:	Units that can enter building.
@@ -1943,7 +1943,7 @@ static const BuildingTypeClass ClassV13(
     "V13",            // NAME:			Short name of the structure.
     XYP_COORD(0, 0),  // Exit point for produced units.
     99,               // Build level.
-    STRUCTF_NONE,     // PREREQ:		Buildings that must exist first.
+    kStructFlagNone,     // PREREQ:		Buildings that must exist first.
     false,            // Has ability to detect adjacent cloaked objects?
     true,             // Animation rate is regulated for constant speed?
     false,            // Requires a bib dirt patch?
@@ -1972,9 +1972,9 @@ static const BuildingTypeClass ClassV13(
     0,                // COST:			Cost to purchase.
     0,                // SCENARIO:	Starting availability scenario.
     0, 2,             // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP |
-        HOUSEF_NEUTRAL,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
+        kHouseFlagNeutral,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_WOOD,  // ARMOR:		Armor type
     0,           // CANENTER:	Units that can enter building.
@@ -1993,7 +1993,7 @@ static const BuildingTypeClass ClassV14(
     "V14",            // NAME:			Short name of the structure.
     XYP_COORD(0, 0),  // Exit point for produced units.
     99,               // Build level.
-    STRUCTF_NONE,     // PREREQ:		Buildings that must exist first.
+    kStructFlagNone,     // PREREQ:		Buildings that must exist first.
     false,            // Has ability to detect adjacent cloaked objects?
     true,             // Animation rate is regulated for constant speed?
     false,            // Requires a bib dirt patch?
@@ -2022,9 +2022,9 @@ static const BuildingTypeClass ClassV14(
     0,                // COST:			Cost to purchase.
     0,                // SCENARIO:	Starting availability scenario.
     0, 2,             // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP |
-        HOUSEF_NEUTRAL,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
+        kHouseFlagNeutral,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_WOOD,  // ARMOR:		Armor type
     0,           // CANENTER:	Units that can enter building.
@@ -2043,7 +2043,7 @@ static const BuildingTypeClass ClassV15(
     "V15",            // NAME:			Short name of the structure.
     XYP_COORD(0, 0),  // Exit point for produced units.
     99,               // Build level.
-    STRUCTF_NONE,     // PREREQ:		Buildings that must exist first.
+    kStructFlagNone,     // PREREQ:		Buildings that must exist first.
     false,            // Has ability to detect adjacent cloaked objects?
     true,             // Animation rate is regulated for constant speed?
     false,            // Requires a bib dirt patch?
@@ -2072,9 +2072,9 @@ static const BuildingTypeClass ClassV15(
     0,                // COST:			Cost to purchase.
     0,                // SCENARIO:	Starting availability scenario.
     0, 2,             // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP |
-        HOUSEF_NEUTRAL,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
+        kHouseFlagNeutral,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_WOOD,  // ARMOR:		Armor type
     0,           // CANENTER:	Units that can enter building.
@@ -2093,7 +2093,7 @@ static const BuildingTypeClass ClassV16(
     "V16",            // NAME:			Short name of the structure.
     XYP_COORD(0, 0),  // Exit point for produced units.
     99,               // Build level.
-    STRUCTF_NONE,     // PREREQ:		Buildings that must exist first.
+    kStructFlagNone,     // PREREQ:		Buildings that must exist first.
     false,            // Has ability to detect adjacent cloaked objects?
     true,             // Animation rate is regulated for constant speed?
     false,            // Requires a bib dirt patch?
@@ -2122,9 +2122,9 @@ static const BuildingTypeClass ClassV16(
     0,                // COST:			Cost to purchase.
     0,                // SCENARIO:	Starting availability scenario.
     0, 2,             // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP |
-        HOUSEF_NEUTRAL,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
+        kHouseFlagNeutral,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_WOOD,  // ARMOR:		Armor type
     0,           // CANENTER:	Units that can enter building.
@@ -2143,7 +2143,7 @@ static const BuildingTypeClass ClassV17(
     "V17",            // NAME:			Short name of the structure.
     XYP_COORD(0, 0),  // Exit point for produced units.
     99,               // Build level.
-    STRUCTF_NONE,     // PREREQ:		Buildings that must exist first.
+    kStructFlagNone,     // PREREQ:		Buildings that must exist first.
     false,            // Has ability to detect adjacent cloaked objects?
     true,             // Animation rate is regulated for constant speed?
     false,            // Requires a bib dirt patch?
@@ -2172,9 +2172,9 @@ static const BuildingTypeClass ClassV17(
     0,                // COST:			Cost to purchase.
     0,                // SCENARIO:	Starting availability scenario.
     0, 2,             // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP |
-        HOUSEF_NEUTRAL,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
+        kHouseFlagNeutral,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_WOOD,  // ARMOR:		Armor type
     0,           // CANENTER:	Units that can enter building.
@@ -2193,7 +2193,7 @@ static const BuildingTypeClass ClassV18(
     "V18",            // NAME:			Short name of the structure.
     XYP_COORD(0, 0),  // Exit point for produced units.
     99,               // Build level.
-    STRUCTF_NONE,     // PREREQ:		Buildings that must exist first.
+    kStructFlagNone,     // PREREQ:		Buildings that must exist first.
     false,            // Has ability to detect adjacent cloaked objects?
     true,             // Animation rate is regulated for constant speed?
     false,            // Requires a bib dirt patch?
@@ -2222,9 +2222,9 @@ static const BuildingTypeClass ClassV18(
     0,                // COST:			Cost to purchase.
     0,                // SCENARIO:	Starting availability scenario.
     0, 2,             // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP |
-        HOUSEF_NEUTRAL,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
+        kHouseFlagNeutral,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_WOOD,  // ARMOR:		Armor type
     0,           // CANENTER:	Units that can enter building.
@@ -2243,7 +2243,7 @@ static const BuildingTypeClass ClassV19(
     "V19",            // NAME:			Short name of the structure.
     XYP_COORD(0, 0),  // Exit point for produced units.
     99,               // Build level.
-    STRUCTF_NONE,     // PREREQ:		Buildings that must exist first.
+    kStructFlagNone,     // PREREQ:		Buildings that must exist first.
     false,            // Has ability to detect adjacent cloaked objects?
     true,             // Animation rate is regulated for constant speed?
     false,            // Requires a bib dirt patch?
@@ -2272,9 +2272,9 @@ static const BuildingTypeClass ClassV19(
     0,                // COST:			Cost to purchase.
     0,                // SCENARIO:	Starting availability scenario.
     0, 2,             // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_NEUTRAL |
-        HOUSEF_GOOD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
+        kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_WOOD,  // ARMOR:		Armor type
     0,           // CANENTER:	Units that can enter building.
@@ -2293,7 +2293,7 @@ static const BuildingTypeClass ClassV20(
     "V20",            // NAME:			Short name of the structure.
     XYP_COORD(0, 0),  // Exit point for produced units.
     99,               // Build level.
-    STRUCTF_NONE,     // PREREQ:		Buildings that must exist first.
+    kStructFlagNone,     // PREREQ:		Buildings that must exist first.
     false,            // Has ability to detect adjacent cloaked objects?
     true,             // Animation rate is regulated for constant speed?
     false,            // Requires a bib dirt patch?
@@ -2322,9 +2322,9 @@ static const BuildingTypeClass ClassV20(
     0,                // COST:			Cost to purchase.
     0,                // SCENARIO:	Starting availability scenario.
     0, 2,             // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_NEUTRAL |
-        HOUSEF_GOOD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
+        kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_WOOD,  // ARMOR:		Armor type
     0,           // CANENTER:	Units that can enter building.
@@ -2343,7 +2343,7 @@ static const BuildingTypeClass ClassV21(
     "V21",            // NAME:			Short name of the structure.
     XYP_COORD(0, 0),  // Exit point for produced units.
     99,               // Build level.
-    STRUCTF_NONE,     // PREREQ:		Buildings that must exist first.
+    kStructFlagNone,     // PREREQ:		Buildings that must exist first.
     false,            // Has ability to detect adjacent cloaked objects?
     true,             // Animation rate is regulated for constant speed?
     false,            // Requires a bib dirt patch?
@@ -2372,9 +2372,9 @@ static const BuildingTypeClass ClassV21(
     0,                // COST:			Cost to purchase.
     0,                // SCENARIO:	Starting availability scenario.
     0, 2,             // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_NEUTRAL |
-        HOUSEF_GOOD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
+        kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_WOOD,  // ARMOR:		Armor type
     0,           // CANENTER:	Units that can enter building.
@@ -2393,7 +2393,7 @@ static const BuildingTypeClass ClassV22(
     "V22",            // NAME:			Short name of the structure.
     XYP_COORD(0, 0),  // Exit point for produced units.
     99,               // Build level.
-    STRUCTF_NONE,     // PREREQ:		Buildings that must exist first.
+    kStructFlagNone,     // PREREQ:		Buildings that must exist first.
     false,            // Has ability to detect adjacent cloaked objects?
     true,             // Animation rate is regulated for constant speed?
     false,            // Requires a bib dirt patch?
@@ -2422,9 +2422,9 @@ static const BuildingTypeClass ClassV22(
     0,                // COST:			Cost to purchase.
     0,                // SCENARIO:	Starting availability scenario.
     0, 2,             // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_NEUTRAL |
-        HOUSEF_GOOD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
+        kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_WOOD,  // ARMOR:		Armor type
     0,           // CANENTER:	Units that can enter building.
@@ -2443,7 +2443,7 @@ static const BuildingTypeClass ClassV23(
     "V23",            // NAME:			Short name of the structure.
     XYP_COORD(0, 0),  // Exit point for produced units.
     99,               // Build level.
-    STRUCTF_NONE,     // PREREQ:		Buildings that must exist first.
+    kStructFlagNone,     // PREREQ:		Buildings that must exist first.
     false,            // Has ability to detect adjacent cloaked objects?
     true,             // Animation rate is regulated for constant speed?
     false,            // Requires a bib dirt patch?
@@ -2472,9 +2472,9 @@ static const BuildingTypeClass ClassV23(
     0,                // COST:			Cost to purchase.
     0,                // SCENARIO:	Starting availability scenario.
     0, 2,             // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_NEUTRAL |
-        HOUSEF_GOOD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
+        kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_WOOD,  // ARMOR:		Armor type
     0,           // CANENTER:	Units that can enter building.
@@ -2493,7 +2493,7 @@ static const BuildingTypeClass ClassV24(
     "V24",            // NAME:			Short name of the structure.
     XYP_COORD(0, 0),  // Exit point for produced units.
     99,               // Build level.
-    STRUCTF_NONE,     // PREREQ:		Buildings that must exist first.
+    kStructFlagNone,     // PREREQ:		Buildings that must exist first.
     false,            // Has ability to detect adjacent cloaked objects?
     true,             // Animation rate is regulated for constant speed?
     false,            // Requires a bib dirt patch?
@@ -2522,9 +2522,9 @@ static const BuildingTypeClass ClassV24(
     0,                // COST:			Cost to purchase.
     0,                // SCENARIO:	Starting availability scenario.
     0, 2,             // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_NEUTRAL |
-        HOUSEF_GOOD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
+        kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_WOOD,  // ARMOR:		Armor type
     0,           // CANENTER:	Units that can enter building.
@@ -2543,7 +2543,7 @@ static const BuildingTypeClass ClassV25(
     "V25",            // NAME:			Short name of the structure.
     XYP_COORD(0, 0),  // Exit point for produced units.
     99,               // Build level.
-    STRUCTF_NONE,     // PREREQ:		Buildings that must exist first.
+    kStructFlagNone,     // PREREQ:		Buildings that must exist first.
     false,            // Has ability to detect adjacent cloaked objects?
     true,             // Animation rate is regulated for constant speed?
     false,            // Requires a bib dirt patch?
@@ -2572,9 +2572,9 @@ static const BuildingTypeClass ClassV25(
     0,                // COST:			Cost to purchase.
     0,                // SCENARIO:	Starting availability scenario.
     0, 2,             // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_NEUTRAL |
-        HOUSEF_GOOD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
+        kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_WOOD,  // ARMOR:		Armor type
     0,           // CANENTER:	Units that can enter building.
@@ -2593,7 +2593,7 @@ static const BuildingTypeClass ClassV26(
     "V26",            // NAME:			Short name of the structure.
     XYP_COORD(0, 0),  // Exit point for produced units.
     99,               // Build level.
-    STRUCTF_NONE,     // PREREQ:		Buildings that must exist first.
+    kStructFlagNone,     // PREREQ:		Buildings that must exist first.
     false,            // Has ability to detect adjacent cloaked objects?
     true,             // Animation rate is regulated for constant speed?
     false,            // Requires a bib dirt patch?
@@ -2622,9 +2622,9 @@ static const BuildingTypeClass ClassV26(
     0,                // COST:			Cost to purchase.
     0,                // SCENARIO:	Starting availability scenario.
     0, 2,             // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_NEUTRAL |
-        HOUSEF_GOOD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
+        kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_WOOD,  // ARMOR:		Armor type
     0,           // CANENTER:	Units that can enter building.
@@ -2643,7 +2643,7 @@ static const BuildingTypeClass ClassV27(
     "V27",            // NAME:			Short name of the structure.
     XYP_COORD(0, 0),  // Exit point for produced units.
     99,               // Build level.
-    STRUCTF_NONE,     // PREREQ:		Buildings that must exist first.
+    kStructFlagNone,     // PREREQ:		Buildings that must exist first.
     false,            // Has ability to detect adjacent cloaked objects?
     true,             // Animation rate is regulated for constant speed?
     false,            // Requires a bib dirt patch?
@@ -2672,9 +2672,9 @@ static const BuildingTypeClass ClassV27(
     0,                // COST:			Cost to purchase.
     0,                // SCENARIO:	Starting availability scenario.
     0, 2,             // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_NEUTRAL |
-        HOUSEF_GOOD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
+        kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_WOOD,  // ARMOR:		Armor type
     0,           // CANENTER:	Units that can enter building.
@@ -2693,7 +2693,7 @@ static const BuildingTypeClass ClassV28(
     "V28",            // NAME:			Short name of the structure.
     XYP_COORD(0, 0),  // Exit point for produced units.
     99,               // Build level.
-    STRUCTF_NONE,     // PREREQ:		Buildings that must exist first.
+    kStructFlagNone,     // PREREQ:		Buildings that must exist first.
     false,            // Has ability to detect adjacent cloaked objects?
     true,             // Animation rate is regulated for constant speed?
     false,            // Requires a bib dirt patch?
@@ -2722,9 +2722,9 @@ static const BuildingTypeClass ClassV28(
     0,                // COST:			Cost to purchase.
     0,                // SCENARIO:	Starting availability scenario.
     0, 2,             // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_NEUTRAL |
-        HOUSEF_GOOD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
+        kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_WOOD,  // ARMOR:		Armor type
     0,           // CANENTER:	Units that can enter building.
@@ -2743,7 +2743,7 @@ static const BuildingTypeClass ClassV29(
     "V29",            // NAME:			Short name of the structure.
     XYP_COORD(0, 0),  // Exit point for produced units.
     99,               // Build level.
-    STRUCTF_NONE,     // PREREQ:		Buildings that must exist first.
+    kStructFlagNone,     // PREREQ:		Buildings that must exist first.
     false,            // Has ability to detect adjacent cloaked objects?
     true,             // Animation rate is regulated for constant speed?
     false,            // Requires a bib dirt patch?
@@ -2772,9 +2772,9 @@ static const BuildingTypeClass ClassV29(
     0,                // COST:			Cost to purchase.
     0,                // SCENARIO:	Starting availability scenario.
     0, 2,             // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_NEUTRAL |
-        HOUSEF_GOOD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
+        kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_WOOD,  // ARMOR:		Armor type
     0,           // CANENTER:	Units that can enter building.
@@ -2793,7 +2793,7 @@ static const BuildingTypeClass ClassV30(
     "V30",            // NAME:			Short name of the structure.
     XYP_COORD(0, 0),  // Exit point for produced units.
     99,               // Build level.
-    STRUCTF_NONE,     // PREREQ:		Buildings that must exist first.
+    kStructFlagNone,     // PREREQ:		Buildings that must exist first.
     false,            // Has ability to detect adjacent cloaked objects?
     true,             // Animation rate is regulated for constant speed?
     false,            // Requires a bib dirt patch?
@@ -2822,9 +2822,9 @@ static const BuildingTypeClass ClassV30(
     0,                // COST:			Cost to purchase.
     0,                // SCENARIO:	Starting availability scenario.
     0, 2,             // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_NEUTRAL |
-        HOUSEF_GOOD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
+        kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_WOOD,  // ARMOR:		Armor type
     0,           // CANENTER:	Units that can enter building.
@@ -2843,7 +2843,7 @@ static const BuildingTypeClass ClassV31(
     "V31",            // NAME:			Short name of the structure.
     XYP_COORD(0, 0),  // Exit point for produced units.
     99,               // Build level.
-    STRUCTF_NONE,     // PREREQ:		Buildings that must exist first.
+    kStructFlagNone,     // PREREQ:		Buildings that must exist first.
     false,            // Has ability to detect adjacent cloaked objects?
     true,             // Animation rate is regulated for constant speed?
     false,            // Requires a bib dirt patch?
@@ -2872,9 +2872,9 @@ static const BuildingTypeClass ClassV31(
     0,                // COST:			Cost to purchase.
     0,                // SCENARIO:	Starting availability scenario.
     0, 2,             // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_NEUTRAL |
-        HOUSEF_GOOD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
+        kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_WOOD,  // ARMOR:		Armor type
     0,           // CANENTER:	Units that can enter building.
@@ -2893,7 +2893,7 @@ static const BuildingTypeClass ClassV32(
     "V32",            // NAME:			Short name of the structure.
     XYP_COORD(0, 0),  // Exit point for produced units.
     99,               // Build level.
-    STRUCTF_NONE,     // PREREQ:		Buildings that must exist first.
+    kStructFlagNone,     // PREREQ:		Buildings that must exist first.
     false,            // Has ability to detect adjacent cloaked objects?
     true,             // Animation rate is regulated for constant speed?
     false,            // Requires a bib dirt patch?
@@ -2922,9 +2922,9 @@ static const BuildingTypeClass ClassV32(
     0,                // COST:			Cost to purchase.
     0,                // SCENARIO:	Starting availability scenario.
     0, 2,             // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_NEUTRAL |
-        HOUSEF_GOOD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
+        kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_WOOD,  // ARMOR:		Armor type
     0,           // CANENTER:	Units that can enter building.
@@ -2943,7 +2943,7 @@ static const BuildingTypeClass ClassV33(
     "V33",            // NAME:			Short name of the structure.
     XYP_COORD(0, 0),  // Exit point for produced units.
     99,               // Build level.
-    STRUCTF_NONE,     // PREREQ:		Buildings that must exist first.
+    kStructFlagNone,     // PREREQ:		Buildings that must exist first.
     false,            // Has ability to detect adjacent cloaked objects?
     true,             // Animation rate is regulated for constant speed?
     false,            // Requires a bib dirt patch?
@@ -2972,9 +2972,9 @@ static const BuildingTypeClass ClassV33(
     0,                // COST:			Cost to purchase.
     0,                // SCENARIO:	Starting availability scenario.
     0, 2,             // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_NEUTRAL |
-        HOUSEF_GOOD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
+        kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_WOOD,  // ARMOR:		Armor type
     0,           // CANENTER:	Units that can enter building.
@@ -2993,7 +2993,7 @@ static const BuildingTypeClass ClassV34(
     "V34",            // NAME:			Short name of the structure.
     XYP_COORD(0, 0),  // Exit point for produced units.
     99,               // Build level.
-    STRUCTF_NONE,     // PREREQ:		Buildings that must exist first.
+    kStructFlagNone,     // PREREQ:		Buildings that must exist first.
     false,            // Has ability to detect adjacent cloaked objects?
     true,             // Animation rate is regulated for constant speed?
     false,            // Requires a bib dirt patch?
@@ -3022,9 +3022,9 @@ static const BuildingTypeClass ClassV34(
     0,                // COST:			Cost to purchase.
     0,                // SCENARIO:	Starting availability scenario.
     0, 2,             // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_NEUTRAL |
-        HOUSEF_GOOD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
+        kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_WOOD,  // ARMOR:		Armor type
     0,           // CANENTER:	Units that can enter building.
@@ -3043,7 +3043,7 @@ static const BuildingTypeClass ClassV35(
     "V35",            // NAME:			Short name of the structure.
     XYP_COORD(0, 0),  // Exit point for produced units.
     99,               // Build level.
-    STRUCTF_NONE,     // PREREQ:		Buildings that must exist first.
+    kStructFlagNone,     // PREREQ:		Buildings that must exist first.
     false,            // Has ability to detect adjacent cloaked objects?
     true,             // Animation rate is regulated for constant speed?
     false,            // Requires a bib dirt patch?
@@ -3072,9 +3072,9 @@ static const BuildingTypeClass ClassV35(
     0,                // COST:			Cost to purchase.
     0,                // SCENARIO:	Starting availability scenario.
     0, 2,             // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_NEUTRAL |
-        HOUSEF_GOOD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
+        kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_WOOD,  // ARMOR:		Armor type
     0,           // CANENTER:	Units that can enter building.
@@ -3093,7 +3093,7 @@ static const BuildingTypeClass ClassV36(
     "V36",            // NAME:			Short name of the structure.
     XYP_COORD(0, 0),  // Exit point for produced units.
     99,               // Build level.
-    STRUCTF_NONE,     // PREREQ:		Buildings that must exist first.
+    kStructFlagNone,     // PREREQ:		Buildings that must exist first.
     false,            // Has ability to detect adjacent cloaked objects?
     true,             // Animation rate is regulated for constant speed?
     false,            // Requires a bib dirt patch?
@@ -3122,9 +3122,9 @@ static const BuildingTypeClass ClassV36(
     0,                // COST:			Cost to purchase.
     0,                // SCENARIO:	Starting availability scenario.
     0, 2,             // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_NEUTRAL |
-        HOUSEF_GOOD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
+        kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_WOOD,  // ARMOR:		Armor type
     0,           // CANENTER:	Units that can enter building.
@@ -3142,7 +3142,7 @@ static const BuildingTypeClass ClassV37(
     "V37",            // NAME:			Short name of the structure.
     XYP_COORD(0, 0),  // Exit point for produced units.
     99,               // Build level.
-    STRUCTF_NONE,     // PREREQ:		Buildings that must exist first.
+    kStructFlagNone,     // PREREQ:		Buildings that must exist first.
     false,            // Has ability to detect adjacent cloaked objects?
     true,             // Animation rate is regulated for constant speed?
     false,            // Requires a bib dirt patch?
@@ -3171,9 +3171,9 @@ static const BuildingTypeClass ClassV37(
     0,                // COST:			Cost to purchase.
     0,                // SCENARIO:	Starting availability scenario.
     0, 2,             // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_NEUTRAL |
-        HOUSEF_GOOD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
+        kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_WOOD,    // ARMOR:		Armor type
     0,             // CANENTER:	Units that can enter building.
@@ -3191,7 +3191,7 @@ static const BuildingTypeClass ClassMission(
     "MISS",           // NAME:			Short name of the structure.
     XYP_COORD(0, 0),  // Exit point for produced units.
     99,               // Build level.
-    STRUCTF_NONE,     // PREREQ:		Buildings that must exist first.
+    kStructFlagNone,     // PREREQ:		Buildings that must exist first.
     true,             // Has ability to detect adjacent cloaked objects?
     true,             // Animation rate is regulated for constant speed?
     true,             // Requires a bib dirt patch?
@@ -3220,10 +3220,10 @@ static const BuildingTypeClass ClassMission(
     1000,             // COST:			Cost to purchase.
     0,                // SCENARIO:	Starting availability scenario.
     0, 2,             // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_BAD |
-        HOUSEF_NEUTRAL |
-        HOUSEF_GOOD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagBad |
+        kHouseFlagNeutral |
+        kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_WOOD,  // ARMOR:		Armor type
     0,           // CANENTER:	Units that can enter building.
@@ -3243,7 +3243,7 @@ static const BuildingTypeClass Sandbag(
     "SBAG",            // NAME:			Short name of the structure.
     XYP_COORD(0, 0),   // Exit point for produced units.
     2,                 // Build level.
-    STRUCTF_NONE,      // PREREQ:		Buildings that must exist first.
+    kStructFlagNone,      // PREREQ:		Buildings that must exist first.
     false,             // Has ability to detect adjacent cloaked objects?
     false,             // Animation rate is regulated for constant speed?
     false,             // Requires a bib dirt patch?
@@ -3272,9 +3272,9 @@ static const BuildingTypeClass Sandbag(
     50,                // COST:			Cost to purchase.
     5,                 // SCENARIO:	Starting availability scenario.
     0, 0,              // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_GOOD |
-        HOUSEF_BAD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
+        kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_ALUMINUM,  // ARMOR:		Armor type
     0,               // CANENTER:	Units that can enter building.
@@ -3293,7 +3293,7 @@ static const BuildingTypeClass Cyclone(
     "CYCL",            // NAME:			Short name of the structure.
     XYP_COORD(0, 0),   // Exit point for produced units.
     5,                 // Build level.
-    STRUCTF_NONE,      // PREREQ:		Buildings that must exist first.
+    kStructFlagNone,      // PREREQ:		Buildings that must exist first.
     false,             // Has ability to detect adjacent cloaked objects?
     false,             // Animation rate is regulated for constant speed?
     false,             // Requires a bib dirt patch?
@@ -3322,9 +3322,9 @@ static const BuildingTypeClass Cyclone(
     75,                // COST:			Cost to purchase.
     9,                 // SCENARIO:	Starting availability scenario.
     0, 0,              // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_GOOD |
-        HOUSEF_BAD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
+        kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_ALUMINUM,  // ARMOR:		Armor type
     0,               // CANENTER:	Units that can enter building.
@@ -3343,7 +3343,7 @@ static const BuildingTypeClass Brick(
     "BRIK",           // NAME:			Short name of the structure.
     XYP_COORD(0, 0),  // Exit point for produced units.
     7,                // Build level.
-    STRUCTF_NONE,     // PREREQ:		Buildings that must exist first.
+    kStructFlagNone,     // PREREQ:		Buildings that must exist first.
     false,            // Has ability to detect adjacent cloaked objects?
     false,            // Animation rate is regulated for constant speed?
     false,            // Requires a bib dirt patch?
@@ -3372,9 +3372,9 @@ static const BuildingTypeClass Brick(
     100,              // COST:			Cost to purchase.
     13,               // SCENARIO:	Starting availability scenario.
     0, 0,             // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_BAD |
-        HOUSEF_GOOD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagBad |
+        kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_ALUMINUM,  // ARMOR:		Armor type
     0,               // CANENTER:	Units that can enter building.
@@ -3394,7 +3394,7 @@ static const BuildingTypeClass Barbwire(
     "BARB",             // NAME:			Short name of the structure.
     XYP_COORD(0, 0),    // Exit point for produced units.
     98,                 // Build level.
-    STRUCTF_NONE,       // PREREQ:		Buildings that must exist first.
+    kStructFlagNone,       // PREREQ:		Buildings that must exist first.
     false,              // Has ability to detect adjacent cloaked objects?
     false,              // Animation rate is regulated for constant speed?
     false,              // Requires a bib dirt patch?
@@ -3423,10 +3423,10 @@ static const BuildingTypeClass Barbwire(
     25,                 // COST:			Cost to purchase.
     98,                 // SCENARIO:	Starting availability scenario.
     0, 0,               // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_BAD | HOUSEF_JP |
-        HOUSEF_NEUTRAL |
-        HOUSEF_GOOD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagBad | kHouseFlagJp |
+        kHouseFlagNeutral |
+        kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_ALUMINUM,  // ARMOR:		Armor type
     0,               // CANENTER:	Units that can enter building.
@@ -3445,7 +3445,7 @@ static const BuildingTypeClass Wood(
     "WOOD",           // NAME:			Short name of the structure.
     XYP_COORD(0, 0),  // Exit point for produced units.
     99,               // Build level.
-    STRUCTF_NONE,     // PREREQ:		Buildings that must exist first.
+    kStructFlagNone,     // PREREQ:		Buildings that must exist first.
     false,            // Has ability to detect adjacent cloaked objects?
     false,            // Animation rate is regulated for constant speed?
     false,            // Requires a bib dirt patch?
@@ -3474,9 +3474,9 @@ static const BuildingTypeClass Wood(
     25,               // COST:			Cost to purchase.
     98,               // SCENARIO:	Starting availability scenario.
     0, 0,             // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_NEUTRAL |
-        HOUSEF_GOOD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
+        kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_ALUMINUM,  // ARMOR:		Armor type
     0,               // CANENTER:	Units that can enter building.

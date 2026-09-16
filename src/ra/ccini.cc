@@ -105,6 +105,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "port/tokenizer.h"
@@ -424,10 +425,10 @@ bool CCINIClass::Put_MPHType(const char* section, const char* entry,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-int32_t CCINIClass::Get_Owners(const char* section, const char* entry,
-                               int32_t defvalue) const {
+uint32_t CCINIClass::Get_Owners(const char* section, const char* entry,
+                                uint32_t defvalue) const {
   char buffer[128];
-  int32_t ownable = defvalue;
+  uint32_t ownable = defvalue;
 
   if (Get_String(section, entry, "", buffer, sizeof(buffer))) {
     ownable = 0;
@@ -460,7 +461,7 @@ int32_t CCINIClass::Get_Owners(const char* section, const char* entry,
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
 bool CCINIClass::Put_Owners(const char* section, const char* entry,
-                            int32_t value) {
+                            uint32_t value) {
   std::string buffer;
   // Optimization: avoid repeated allocations for small strings
   buffer.reserve(128);
@@ -484,7 +485,7 @@ bool CCINIClass::Put_Owners(const char* section, const char* entry,
 
   // Iterate through House Types
   for (int i = 0; std::cmp_less(i, magic_enum::enum_count<HousesType>()); ++i) {
-    if ((value & 1L << i) != 0) {
+    if ((value & base::Bit<uint32_t>(i)) != 0) {
       const auto house = static_cast<HousesType>(i);
       append(HouseTypeClass::As_Reference(house).Name());
     }
@@ -1434,15 +1435,15 @@ uint64_t CCINIClass::Get_Buildings(const char* section, const char* entry,
  * HISTORY: * 07/11/1996 JLB : Created. *
  *=============================================================================================*/
 bool CCINIClass::Put_Buildings(const char* section, const char* entry,
-                               const int32_t value) {
+                               const uint64_t value) {
   // We reserve 256 bytes to prevent reallocations for typical lists.
   std::string buffer;
   buffer.reserve(256);
 
-  // The input 'value' is a 'long', so it can only represent
-  // the first 32 buildings (Indices 0 to 31).
+  // The mask matches Get_Buildings: one bit per StructType, so only the
+  // first 64 types can be expressed.
   constexpr int limit =
-      std::min(32, static_cast<int>(magic_enum::enum_count<StructType>()));
+      std::min(64, static_cast<int>(magic_enum::enum_count<StructType>()));
 
   const auto append = [&](const std::string_view name) {
     if (!buffer.empty()) {
@@ -1451,10 +1452,8 @@ bool CCINIClass::Put_Buildings(const char* section, const char* entry,
     buffer += name;
   };
 
-  for (size_t i = 0; i < limit; ++i) {
-    // Check if the bit at index 'i' is set.
-    // We use 1L (long) to match the type of 'value'.
-    if ((value & 1L << i) != 0) {
+  for (int i = 0; i < limit; ++i) {
+    if ((value & base::Bit<uint64_t>(i)) != 0) {
       const auto index = static_cast<StructType>(i);
 
       // Access the building name safely

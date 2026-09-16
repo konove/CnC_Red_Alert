@@ -5239,7 +5239,7 @@ bool TechnoClass::Is_Allowed_To_Retaliate(const TechnoClass* source) const {
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-int TechnoClass::Get_Ownable() const {
+uint32_t TechnoClass::Get_Ownable() const {
   assert(IsActive);
 
   return dynamic_cast<const TechnoTypeClass&>(Class_Of()).Get_Ownable();
@@ -6187,7 +6187,7 @@ int TechnoTypeClass::Raw_Cost() const { return Cost; }
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-int TechnoTypeClass::Get_Ownable() const {
+uint32_t TechnoTypeClass::Get_Ownable() const {
   if (IsDoubleOwned && Session.Type != GAME_NORMAL) {
     return Ownable | kHouseFlagSoviet | kHouseFlagAllies;
   }

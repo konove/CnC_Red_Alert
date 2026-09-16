@@ -610,7 +610,7 @@ int Get_CD_Index(int cd_drive, int timeout);
 // Converts an INI owner specification into a house bitfield, one bit per
 // HousesType. The names "soviet", "allies" and "allied" expand to every house
 // on that side rather than to a single house.
-int Owner_From_Name(const char* text);
+uint32_t Owner_From_Name(const char* text);
 
 // Converts an ASCII crate name into a crate type, defaulting to CRATE_MONEY
 // when the name is unrecognized.

@@ -3080,23 +3080,21 @@ CrateType Crate_From_Name(const char* name) {
   return CRATE_MONEY;
 }
 
-int Owner_From_Name(const char* text) {
-  // Accumulated unsigned: this is a bit pattern, and the house masks reach
-  // the sign bit once enough houses are set.
-  unsigned ownable = 0;
+uint32_t Owner_From_Name(const char* text) {
+  uint32_t ownable = 0;
   if (stricmp(text, "soviet") == 0) {
-    ownable |= static_cast<unsigned>(kHouseFlagSoviet);
+    ownable |= kHouseFlagSoviet;
   } else {
     if (stricmp(text, "allies") == 0 || stricmp(text, "allied") == 0) {
-      ownable |= static_cast<unsigned>(kHouseFlagAllies);
+      ownable |= kHouseFlagAllies;
     } else {
       const HousesType h = HouseTypeClass::From_Name(text);
       if (h != HOUSE_NONE && (h < HOUSE_MULTI1 || h > HOUSE_MULTI8)) {
-        ownable |= 1U << static_cast<unsigned>(h);
+        ownable |= base::Bit<uint32_t>(h);
       }
     }
   }
-  return static_cast<int>(ownable);
+  return ownable;
 }
 
 // Shows the screen two pixels up, centred, or two pixels down, picking a

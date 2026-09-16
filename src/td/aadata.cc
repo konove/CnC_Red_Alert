@@ -47,7 +47,7 @@ static const AircraftTypeClass AttackPlane(
     TXT_A10,       // Translated text number for aircraft.
     "A10",         // INI name of aircraft.
     99,            // Build level.
-    STRUCTF_NONE,  // Building prerequisite.
+    kStructFlagNone,  // Building prerequisite.
     false,         // Is a leader type?
     false,         // Does it fire a pair of shots in quick succession?
     false,         // Is this a typical transport vehicle?
@@ -71,9 +71,9 @@ static const AircraftTypeClass AttackPlane(
     800,           // Credit cost to construct.
     0,             // The scenario this becomes available.
     10, 1,         // Risk, reward when calculating AI.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_GOOD |
-        HOUSEF_BAD,  // Who can own this aircraft type.
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
+        kHouseFlagBad,  // Who can own this aircraft type.
     WEAPON_NAPALM, WEAPON_NONE,
     ARMOR_ALUMINUM,  // Armor type of this aircraft.
     MPH_FAST,        // Maximum speed of aircraft.
@@ -87,7 +87,7 @@ static const AircraftTypeClass TransportHeli(
     TXT_TRANS,           // Translated text number for aircraft.
     "TRAN",              // INI name of aircraft.
     6,                   // Build level.
-    STRUCTF_HELIPAD,     // Building prerequisite.
+    kStructFlagHelipad,     // Building prerequisite.
     false,               // Is a leader type?
     false,               // Does it fire a pair of shots in quick succession?
     true,                //	Is this a typical transport vehicle?
@@ -111,9 +111,9 @@ static const AircraftTypeClass TransportHeli(
     1500,                // Credit cost to construct.
     98,                  // The scenario this becomes available.
     10, 80,              // Risk, reward when calculating AI.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_BAD |
-        HOUSEF_GOOD,  // Who can own this aircraft type.
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagBad |
+        kHouseFlagGood,  // Who can own this aircraft type.
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_ALUMINUM,   // Armor type of this aircraft.
     MPH_MEDIUM_FAST,  // Maximum speed of aircraft.
@@ -127,7 +127,7 @@ static const AircraftTypeClass AttackHeli(
     TXT_HELI,             // Translated text number for aircraft.
     "HELI",               // INI name of aircraft.
     6,                    // Build level.
-    STRUCTF_HELIPAD,      // Building prerequisite.
+    kStructFlagHelipad,      // Building prerequisite.
     true,                 // Is a leader type?
     true,                 // Does it fire a pair of shots in quick succession?
     false,                //	Is this a typical transport vehicle?
@@ -151,9 +151,9 @@ static const AircraftTypeClass AttackHeli(
     1200,                 // Credit cost to construct.
     10,                   // The scenario this becomes available.
     10, 80,               // Risk, reward when calculating AI.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP |
-        HOUSEF_BAD,  // Who can own this aircraft type.
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
+        kHouseFlagBad,  // Who can own this aircraft type.
     WEAPON_CHAIN_GUN, WEAPON_NONE,
     ARMOR_STEEL,  // Armor type of this aircraft.
     MPH_FAST,     // Maximum speed of aircraft.
@@ -167,7 +167,7 @@ static const AircraftTypeClass OrcaHeli(
     TXT_ORCA,         // Translated text number for aircraft.
     "ORCA",           // INI name of aircraft.
     6,                // Build level.
-    STRUCTF_HELIPAD,  // Building prerequisite.
+    kStructFlagHelipad,  // Building prerequisite.
     true,             // Is a leader type?
     true,             // Does it fire a pair of shots in quick succession?
     false,            //	Is this a typical transport vehicle?
@@ -191,9 +191,9 @@ static const AircraftTypeClass OrcaHeli(
     1200,             // Credit cost to construct.
     10,               // The scenario this becomes available.
     10, 80,           // Risk, reward when calculating AI.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP |
-        HOUSEF_GOOD,  // Who can own this aircraft type.
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
+        kHouseFlagGood,  // Who can own this aircraft type.
     WEAPON_DRAGON, WEAPON_NONE,
     ARMOR_STEEL,  // Armor type of this aircraft.
     MPH_FAST,     // Maximum speed of aircraft.
@@ -207,7 +207,7 @@ static const AircraftTypeClass CargoPlane(
     TXT_C17,         // Translated text number for aircraft.
     "C17",           // INI name of aircraft.
     99,              // Build level.
-    STRUCTF_NONE,    // Building prerequisite.
+    kStructFlagNone,    // Building prerequisite.
     false,           // Is a leader type?
     false,           // Does it fire a pair of shots in quick succession?
     true,            //	Is this a typical transport vehicle?
@@ -231,9 +231,9 @@ static const AircraftTypeClass CargoPlane(
     800,             // Credit cost to construct.
     0,               // The scenario this becomes available.
     10, 1,           // Risk, reward when calculating AI.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_GOOD |
-        HOUSEF_BAD,  // Who can own this aircraft type.
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
+        kHouseFlagBad,  // Who can own this aircraft type.
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_ALUMINUM,  // Armor type of this aircraft.
     MPH_FAST,        // Maximum speed of aircraft.

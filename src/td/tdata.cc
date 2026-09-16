@@ -112,7 +112,7 @@ static const int16_t List111101[] = {
 static const int16_t List11110[] = {0, 1, 2, 3, REFRESH_EOL};
 
 static const TerrainTypeClass Tree1Class(
-    TERRAIN_TREE1, THEATERF_WINTER | THEATERF_TEMPERATE,
+    TERRAIN_TREE1, kTheaterFlagWinter | kTheaterFlagTemperate,
     XYP_COORD(11, 41),  // Center base coordinate offset.
     false,              // Spawns Tiberium spontaneously?
     true,               // Does it have destruction animation?
@@ -126,7 +126,7 @@ static const TerrainTypeClass Tree1Class(
     "T01", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List0010, List1001);
 
 static const TerrainTypeClass Tree2Class(
-    TERRAIN_TREE2, THEATERF_WINTER | THEATERF_TEMPERATE,
+    TERRAIN_TREE2, kTheaterFlagWinter | kTheaterFlagTemperate,
     XYP_COORD(11, 44),  // Center base coordinate offset.
     false,              // Spawns Tiberium spontaneously?
     true,               // Does it have destruction animation?
@@ -140,7 +140,7 @@ static const TerrainTypeClass Tree2Class(
     "T02", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List0010, List1001);
 
 static const TerrainTypeClass Tree3Class(
-    TERRAIN_TREE3, THEATERF_WINTER | THEATERF_TEMPERATE,
+    TERRAIN_TREE3, kTheaterFlagWinter | kTheaterFlagTemperate,
     XYP_COORD(12, 45),  // Center base coordinate offset.
     false,              // Spawns Tiberium spontaneously?
     true,               // Does it have destruction animation?
@@ -154,7 +154,7 @@ static const TerrainTypeClass Tree3Class(
     "T03", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List0010, List1001);
 
 static const TerrainTypeClass Tree4Class(
-    TERRAIN_TREE4, THEATERF_DESERT,
+    TERRAIN_TREE4, kTheaterFlagDesert,
     XYP_COORD(8, 9),  // Center base coordinate offset.
     false,            // Spawns Tiberium spontaneously?
     true,             // Does it have destruction animation?
@@ -168,7 +168,7 @@ static const TerrainTypeClass Tree4Class(
     "T04", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List1, nullptr);
 
 static const TerrainTypeClass Tree5Class(
-    TERRAIN_TREE5, THEATERF_WINTER | THEATERF_TEMPERATE,
+    TERRAIN_TREE5, kTheaterFlagWinter | kTheaterFlagTemperate,
     XYP_COORD(15, 41),  // Center base coordinate offset.
     false,              // Spawns Tiberium spontaneously?
     true,               // Does it have destruction animation?
@@ -182,7 +182,7 @@ static const TerrainTypeClass Tree5Class(
     "T05", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List0010, List1001);
 
 static const TerrainTypeClass Tree6Class(
-    TERRAIN_TREE6, THEATERF_WINTER | THEATERF_TEMPERATE,
+    TERRAIN_TREE6, kTheaterFlagWinter | kTheaterFlagTemperate,
     XYP_COORD(16, 37),  // Center base coordinate offset.
     false,              // Spawns Tiberium spontaneously?
     true,               // Does it have destruction animation?
@@ -196,7 +196,7 @@ static const TerrainTypeClass Tree6Class(
     "T06", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List0010, List1001);
 
 static const TerrainTypeClass Tree7Class(
-    TERRAIN_TREE7, THEATERF_WINTER | THEATERF_TEMPERATE,
+    TERRAIN_TREE7, kTheaterFlagWinter | kTheaterFlagTemperate,
     XYP_COORD(15, 41),  // Center base coordinate offset.
     false,              // Spawns Tiberium spontaneously?
     true,               // Does it have destruction animation?
@@ -210,7 +210,7 @@ static const TerrainTypeClass Tree7Class(
     "T07", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List0010, List1001);
 
 static const TerrainTypeClass Tree8Class(
-    TERRAIN_TREE8, THEATERF_WINTER | THEATERF_TEMPERATE | THEATERF_DESERT,
+    TERRAIN_TREE8, kTheaterFlagWinter | kTheaterFlagTemperate | kTheaterFlagDesert,
     XYP_COORD(14, 22),  // Center base coordinate offset.
     false,              // Spawns Tiberium spontaneously?
     true,               // Does it have destruction animation?
@@ -224,7 +224,7 @@ static const TerrainTypeClass Tree8Class(
     "T08", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List10, List01);
 
 static const TerrainTypeClass Tree9Class(
-    TERRAIN_TREE9, THEATERF_DESERT,
+    TERRAIN_TREE9, kTheaterFlagDesert,
     XYP_COORD(11, 22),  // Center base coordinate offset.
     false,              // Spawns Tiberium spontaneously?
     true,               // Does it have destruction animation?
@@ -238,7 +238,7 @@ static const TerrainTypeClass Tree9Class(
     "T09", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List10, List01);
 
 static const TerrainTypeClass Tree10Class(
-    TERRAIN_TREE10, THEATERF_WINTER | THEATERF_TEMPERATE,
+    TERRAIN_TREE10, kTheaterFlagWinter | kTheaterFlagTemperate,
     XYP_COORD(25, 43),  // Center base coordinate offset.
     false,              // Spawns Tiberium spontaneously?
     true,               // Does it have destruction animation?
@@ -252,7 +252,7 @@ static const TerrainTypeClass Tree10Class(
     "T10", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List0011, List1100);
 
 static const TerrainTypeClass Tree11Class(
-    TERRAIN_TREE11, THEATERF_WINTER | THEATERF_TEMPERATE,
+    TERRAIN_TREE11, kTheaterFlagWinter | kTheaterFlagTemperate,
     XYP_COORD(23, 44),  // Center base coordinate offset.
     false,              // Spawns Tiberium spontaneously?
     true,               // Does it have destruction animation?
@@ -266,7 +266,7 @@ static const TerrainTypeClass Tree11Class(
     "T11", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List0011, List1100);
 
 static const TerrainTypeClass Tree12Class(
-    TERRAIN_TREE12, THEATERF_WINTER | THEATERF_TEMPERATE,
+    TERRAIN_TREE12, kTheaterFlagWinter | kTheaterFlagTemperate,
     XYP_COORD(14, 36),  // Center base coordinate offset.
     false,              // Spawns Tiberium spontaneously?
     true,               // Does it have destruction animation?
@@ -280,7 +280,7 @@ static const TerrainTypeClass Tree12Class(
     "T12", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List0010, List1001);
 
 static const TerrainTypeClass Tree13Class(
-    TERRAIN_TREE13, THEATERF_WINTER | THEATERF_TEMPERATE,
+    TERRAIN_TREE13, kTheaterFlagWinter | kTheaterFlagTemperate,
     XYP_COORD(19, 40),  // Center base coordinate offset.
     false,              // Spawns Tiberium spontaneously?
     true,               // Does it have destruction animation?
@@ -294,7 +294,7 @@ static const TerrainTypeClass Tree13Class(
     "T13", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List0010, List1101);
 
 static const TerrainTypeClass Tree14Class(
-    TERRAIN_TREE14, THEATERF_WINTER | THEATERF_TEMPERATE,
+    TERRAIN_TREE14, kTheaterFlagWinter | kTheaterFlagTemperate,
     XYP_COORD(19, 40),  // Center base coordinate offset.
     false,              // Spawns Tiberium spontaneously?
     true,               // Does it have destruction animation?
@@ -308,7 +308,7 @@ static const TerrainTypeClass Tree14Class(
     "T14", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List0011, List1100);
 
 static const TerrainTypeClass Tree15Class(
-    TERRAIN_TREE15, THEATERF_WINTER | THEATERF_TEMPERATE,
+    TERRAIN_TREE15, kTheaterFlagWinter | kTheaterFlagTemperate,
     XYP_COORD(19, 40),  // Center base coordinate offset.
     false,              // Spawns Tiberium spontaneously?
     true,               // Does it have destruction animation?
@@ -322,7 +322,7 @@ static const TerrainTypeClass Tree15Class(
     "T15", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List0011, List1100);
 
 static const TerrainTypeClass Tree16Class(
-    TERRAIN_TREE16, THEATERF_WINTER | THEATERF_TEMPERATE,
+    TERRAIN_TREE16, kTheaterFlagWinter | kTheaterFlagTemperate,
     XYP_COORD(13, 36),  // Center base coordinate offset.
     false,              // Spawns Tiberium spontaneously?
     true,               // Does it have destruction animation?
@@ -336,7 +336,7 @@ static const TerrainTypeClass Tree16Class(
     "T16", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List0010, List1001);
 
 static const TerrainTypeClass Tree17Class(
-    TERRAIN_TREE17, THEATERF_WINTER | THEATERF_TEMPERATE,
+    TERRAIN_TREE17, kTheaterFlagWinter | kTheaterFlagTemperate,
     XYP_COORD(18, 44),  // Center base coordinate offset.
     false,              // Spawns Tiberium spontaneously?
     true,               // Does it have destruction animation?
@@ -350,7 +350,7 @@ static const TerrainTypeClass Tree17Class(
     "T17", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List0010, List1001);
 
 static const TerrainTypeClass Tree18Class(
-    TERRAIN_TREE18, THEATERF_DESERT,
+    TERRAIN_TREE18, kTheaterFlagDesert,
     XYP_COORD(33, 40),  // Center base coordinate offset.
     false,              // Spawns Tiberium spontaneously?
     true,               // Does it have destruction animation?
@@ -364,7 +364,7 @@ static const TerrainTypeClass Tree18Class(
     "T18", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List000010, List111101);
 
 static const TerrainTypeClass Split1Class(
-    TERRAIN_BLOSSOMTREE1, THEATERF_TEMPERATE | THEATERF_WINTER,
+    TERRAIN_BLOSSOMTREE1, kTheaterFlagTemperate | kTheaterFlagWinter,
     XYP_COORD(18, 44),  // Center base coordinate offset.
     true,               // Spawns Tiberium spontaneously?
     false,              // Does it have destruction animation?
@@ -379,7 +379,7 @@ static const TerrainTypeClass Split1Class(
 
 static const TerrainTypeClass Split2Class(
     TERRAIN_BLOSSOMTREE2,
-    THEATERF_TEMPERATE | THEATERF_WINTER | THEATERF_DESERT,
+    kTheaterFlagTemperate | kTheaterFlagWinter | kTheaterFlagDesert,
     XYP_COORD(18, 44),  // Center base coordinate offset.
     true,               // Spawns Tiberium spontaneously?
     false,              // Does it have destruction animation?
@@ -393,7 +393,7 @@ static const TerrainTypeClass Split2Class(
     "SPLIT3", TXT_BLOSSOM_TREE, TREE_NORMAL, ARMOR_WOOD, List0010, List1101);
 
 static const TerrainTypeClass Clump1Class(
-    TERRAIN_CLUMP1, THEATERF_WINTER | THEATERF_TEMPERATE,
+    TERRAIN_CLUMP1, kTheaterFlagWinter | kTheaterFlagTemperate,
     XYP_COORD(28, 41),  // Center base coordinate offset.
     false,              // Spawns Tiberium spontaneously?
     false,              // Does it have destruction animation?
@@ -407,7 +407,7 @@ static const TerrainTypeClass Clump1Class(
     "TC01", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List000110, List110001);
 
 static const TerrainTypeClass Clump2Class(
-    TERRAIN_CLUMP2, THEATERF_WINTER | THEATERF_TEMPERATE,
+    TERRAIN_CLUMP2, kTheaterFlagWinter | kTheaterFlagTemperate,
     XYP_COORD(38, 41),  // Center base coordinate offset.
     false,              // Spawns Tiberium spontaneously?
     false,              // Does it have destruction animation?
@@ -421,7 +421,7 @@ static const TerrainTypeClass Clump2Class(
     "TC02", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List010110, List101001);
 
 static const TerrainTypeClass Clump3Class(
-    TERRAIN_CLUMP3, THEATERF_WINTER | THEATERF_TEMPERATE,
+    TERRAIN_CLUMP3, kTheaterFlagWinter | kTheaterFlagTemperate,
     XYP_COORD(33, 35),  // Center base coordinate offset.
     false,              // Spawns Tiberium spontaneously?
     false,              // Does it have destruction animation?
@@ -435,7 +435,7 @@ static const TerrainTypeClass Clump3Class(
     "TC03", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List110110, List001);
 
 static const TerrainTypeClass Clump4Class(
-    TERRAIN_CLUMP4, THEATERF_WINTER | THEATERF_TEMPERATE,
+    TERRAIN_CLUMP4, kTheaterFlagWinter | kTheaterFlagTemperate,
     XYP_COORD(44, 49),  // Center base coordinate offset.
     false,              // Spawns Tiberium spontaneously?
     false,              // Does it have destruction animation?
@@ -450,7 +450,7 @@ static const TerrainTypeClass Clump4Class(
     List111000010110);
 
 static const TerrainTypeClass Clump5Class(
-    TERRAIN_CLUMP5, THEATERF_WINTER | THEATERF_TEMPERATE,
+    TERRAIN_CLUMP5, kTheaterFlagWinter | kTheaterFlagTemperate,
     XYP_COORD(49, 58),  // Center base coordinate offset.
     false,              // Spawns Tiberium spontaneously?
     false,              // Does it have destruction animation?
@@ -465,7 +465,7 @@ static const TerrainTypeClass Clump5Class(
     List110000011001);
 
 static const TerrainTypeClass Rock1Class(
-    TERRAIN_ROCK1, THEATERF_DESERT,
+    TERRAIN_ROCK1, kTheaterFlagDesert,
     XYP_COORD(33, 41),  // Center base coordinate offset.
     false,              // Spawns Tiberium spontaneously?
     false,              // Does it have destruction animation?
@@ -479,7 +479,7 @@ static const TerrainTypeClass Rock1Class(
     "ROCK1", TXT_ROCK, 1000, ARMOR_STEEL, List0011, List111001);
 
 static const TerrainTypeClass Rock2Class(
-    TERRAIN_ROCK2, THEATERF_DESERT,
+    TERRAIN_ROCK2, kTheaterFlagDesert,
     XYP_COORD(24, 23),  // Center base coordinate offset.
     false,              // Spawns Tiberium spontaneously?
     false,              // Does it have destruction animation?
@@ -493,7 +493,7 @@ static const TerrainTypeClass Rock2Class(
     "ROCK2", TXT_ROCK, 1000, ARMOR_STEEL, List1100, List001);
 
 static const TerrainTypeClass Rock3Class(
-    TERRAIN_ROCK3, THEATERF_DESERT,
+    TERRAIN_ROCK3, kTheaterFlagDesert,
     XYP_COORD(20, 39),  // Center base coordinate offset.
     false,              // Spawns Tiberium spontaneously?
     false,              // Does it have destruction animation?
@@ -507,7 +507,7 @@ static const TerrainTypeClass Rock3Class(
     "ROCK3", TXT_ROCK, 1000, ARMOR_STEEL, List000110, List110001);
 
 static const TerrainTypeClass Rock4Class(
-    TERRAIN_ROCK4, THEATERF_DESERT,
+    TERRAIN_ROCK4, kTheaterFlagDesert,
     XYP_COORD(12, 20),  // Center base coordinate offset.
     false,              // Spawns Tiberium spontaneously?
     false,              // Does it have destruction animation?
@@ -521,7 +521,7 @@ static const TerrainTypeClass Rock4Class(
     "ROCK4", TXT_ROCK, 1000, ARMOR_STEEL, List10, List01);
 
 static const TerrainTypeClass Rock5Class(
-    TERRAIN_ROCK5, THEATERF_DESERT,
+    TERRAIN_ROCK5, kTheaterFlagDesert,
     XYP_COORD(17, 19),  // Center base coordinate offset.
     false,              // Spawns Tiberium spontaneously?
     false,              // Does it have destruction animation?
@@ -535,7 +535,7 @@ static const TerrainTypeClass Rock5Class(
     "ROCK5", TXT_ROCK, 1000, ARMOR_STEEL, List10, List01);
 
 static const TerrainTypeClass Rock6Class(
-    TERRAIN_ROCK6, THEATERF_DESERT,
+    TERRAIN_ROCK6, kTheaterFlagDesert,
     XYP_COORD(28, 40),  // Center base coordinate offset.
     false,              // Spawns Tiberium spontaneously?
     false,              // Does it have destruction animation?
@@ -549,7 +549,7 @@ static const TerrainTypeClass Rock6Class(
     "ROCK6", TXT_ROCK, 1000, ARMOR_STEEL, List000111, List110000);
 
 static const TerrainTypeClass Rock7Class(
-    TERRAIN_ROCK7, THEATERF_DESERT,
+    TERRAIN_ROCK7, kTheaterFlagDesert,
     XYP_COORD(57, 22),  // Center base coordinate offset.
     false,              // Spawns Tiberium spontaneously?
     false,              // Does it have destruction animation?

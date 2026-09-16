@@ -9,6 +9,7 @@
 
 #include <concepts>
 #include <cstddef>
+#include <limits>
 #include <utility>
 
 #include "absl/log/check.h"
@@ -39,6 +40,22 @@ constexpr std::size_t ToSize(std::integral auto value) {
 constexpr ssize ToSigned(std::integral auto value) {
   DCHECK(std::in_range<ssize>(value));
   return static_cast<ssize>(value);
+}
+
+// Returns the value of unsigned type T with only bit `index` set: the flag
+// for an index enum value (a house, a building type) or a loop counter. This
+// is the one place a signed index becomes a shift count.
+//
+// The index must be non-negative and below the width of T; debug builds check
+// this.
+//
+// Example:
+//   allies |= base::Bit<uint32_t>(house);
+//   if ((BScan & base::Bit<uint64_t>(STRUCT_WEAP)) != 0) ...
+template <std::unsigned_integral T>
+constexpr T Bit(int index) {
+  DCHECK(index >= 0 && index < std::numeric_limits<T>::digits);
+  return static_cast<T>(T{1} << static_cast<unsigned>(index));
 }
 
 }  // namespace base

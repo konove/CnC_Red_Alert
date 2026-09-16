@@ -350,7 +350,7 @@ class TechnoClass : public RadioClass,
   [[nodiscard]] virtual int Risk() const;
   [[nodiscard]] virtual int Threat_Range(int control) const;
   [[nodiscard]] int Value() const override;
-  [[nodiscard]] int Get_Ownable() const override;
+  [[nodiscard]] uint32_t Get_Ownable() const override;
 
   /*
   **	User I/O.

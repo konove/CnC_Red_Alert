@@ -56,6 +56,7 @@
 #include "ra/rules.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <cstdlib>
 #include <cstring>
 
@@ -803,7 +804,8 @@ bool RulesClass::Themes(CCINIClass& ini) {
       if (ini.Is_Present(THEMECONTROL, ThemeClass::Base_Name(theme))) {
         char buffer[128];
         int scen = 1;
-        int owners = kHouseFlagAllies | kHouseFlagSoviet | kHouseFlagOthers;
+        uint32_t owners =
+            kHouseFlagAllies | kHouseFlagSoviet | kHouseFlagOthers;
 
         ini.Get_String(THEMECONTROL, ThemeClass::Base_Name(theme), "", buffer,
                        sizeof(buffer));

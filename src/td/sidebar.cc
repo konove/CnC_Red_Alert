@@ -1931,7 +1931,7 @@ bool SidebarClass::StripClass::Recalc() {
     else {
       switch (Buildables[index].BuildableID) {
         case SPC_ION_CANNON:
-          ok = (PlayerPtr->BScan & STRUCTF_EYE) != 0 ||
+          ok = (PlayerPtr->BScan & kStructFlagEye) != 0 ||
                PlayerPtr->IonOneTimeFlag;
           if (!ok) {
             PlayerPtr->Remove_Ion_Cannon();
@@ -1939,7 +1939,7 @@ bool SidebarClass::StripClass::Recalc() {
           break;
 
         case SPC_NUCLEAR_BOMB:
-          ok = (PlayerPtr->BScan & STRUCTF_TEMPLE) != 0 &&
+          ok = (PlayerPtr->BScan & kStructFlagTemple) != 0 &&
                PlayerPtr->Has_Nuke_Device();
           ok = ok || PlayerPtr->NukeOneTimeFlag;
           if (!ok) {
@@ -1949,7 +1949,7 @@ bool SidebarClass::StripClass::Recalc() {
 
         case SPC_AIR_STRIKE:
           //					ok = (PlayerPtr->BScan &
-          // STRUCTF_SAM) == 0; 					ok =
+          // kStructFlagSam) == 0; 					ok =
           //! PlayerPtr->Does_Enemy_Building_Exist(STRUCT_SAM);
           ok = (PlayerPtr->AirPresent /*&& !PlayerPtr->Does_Enemy_Building_Exist(STRUCT_SAM)*/) || PlayerPtr->AirOneTimeFlag;
           if (!ok) {

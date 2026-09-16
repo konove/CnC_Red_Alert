@@ -54,11 +54,13 @@
 
 #include "ra/theme.h"
 
+#include <cstdint>
 #include <cstring>
 #include <filesystem>
 #include <iterator>
 #include <string>
 
+#include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "ra/conquer.h"
@@ -511,7 +513,7 @@ bool ThemeClass::Is_Allowed(ThemeType index) {
   *then presume this test *	passes.
   */
   if (PlayerPtr != nullptr &&
-      (1 << PlayerPtr->ActLike & _themes[index].Owner) == 0) {
+      (base::Bit<uint32_t>(PlayerPtr->ActLike) & _themes[index].Owner) == 0) {
     return false;
   }
 
@@ -620,7 +622,8 @@ void ThemeClass::Scan() {
  *                                                                                             *
  * HISTORY: * 08/12/1996 JLB : Created. *
  *=============================================================================================*/
-void ThemeClass::Set_Theme_Data(ThemeType theme, int scenario, int owners) {
+void ThemeClass::Set_Theme_Data(ThemeType theme, int scenario,
+                                uint32_t owners) {
   if (theme != THEME_NONE) {
     _themes[theme].Normal = true;
     _themes[theme].Scenario = scenario;

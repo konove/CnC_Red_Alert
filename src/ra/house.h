@@ -99,7 +99,7 @@ class HouseStaticClass {
   **	start. Various forces during play may adjust the ally state
   **	of this house.
   */
-  int Allies{0};
+  uint32_t Allies{0};
 
   /*
   **	This is the maximum number allowed to be built by this house. The

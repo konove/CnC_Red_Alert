@@ -135,7 +135,7 @@ static const InfantryTypeClass E1(
     TXT_E1,                // Translate name number for infantry type.
     "E1",                  // INI name for infantry.
     1,                     // Build level.
-    STRUCTF_NONE,          // Building prerequisite.
+    kStructFlagNone,          // Building prerequisite.
     false,                 // Is this a female type?
     true,                  // Is a leader type?
     true,                  // Has crawling animation frames?
@@ -153,9 +153,9 @@ static const InfantryTypeClass E1(
     100,                   // Cost of infantry (in credits).
     1,                     // Scenario when they first appear.
     80, 10,                // Risk/Reward of this infantry unit.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_GOOD |
-        HOUSEF_BAD,  // Who can own this infantry unit.
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
+        kHouseFlagBad,  // Who can own this infantry unit.
     WEAPON_M16, WEAPON_NONE,
     MPH_SLOW  // Maximum speed of infantry.
 );
@@ -204,7 +204,7 @@ static const InfantryTypeClass E2(
     TXT_E2,               // Translate name number for infantry type.
     "E2",                 // INI name for infantry.
     1,                    // Build level.
-    STRUCTF_NONE,         // Building prerequisite.
+    kStructFlagNone,         // Building prerequisite.
     false,                // Is this a female type?
     true,                 // Is a leader type?
     true,                 // Has crawling animation frames?
@@ -222,9 +222,9 @@ static const InfantryTypeClass E2(
     160,                  // Cost of infantry (in credits).
     3,                    // Scenario when they first appear.
     80, 10,               // Risk/Reward of this infantry unit.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP |
-        HOUSEF_GOOD,  // Who can own this infantry unit.
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
+        kHouseFlagGood,  // Who can own this infantry unit.
     WEAPON_GRENADE, WEAPON_NONE,
     MPH_SLOW_ISH  // Maximum speed of infantry.
 );
@@ -273,7 +273,7 @@ static const InfantryTypeClass E3(
     TXT_E3,             // Translate name number for infantry type.
     "E3",               // INI name for infantry.
     2,                  // Build level.
-    STRUCTF_NONE,       // Building prerequisite.
+    kStructFlagNone,       // Building prerequisite.
     false,              // Is this a female type?
     true,               // Is a leader type?
     true,               // Has crawling animation frames?
@@ -291,9 +291,9 @@ static const InfantryTypeClass E3(
     300,                // Cost of infantry (in credits).
     3,                  // Scenario when they first appear.
     80, 10,             // Risk/Reward of this infantry unit.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_GOOD |
-        HOUSEF_BAD,  // Who can own this infantry unit.
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
+        kHouseFlagBad,  // Who can own this infantry unit.
     WEAPON_DRAGON, WEAPON_NONE,
     MPH_KINDA_SLOW  // Maximum speed of infantry.
 );
@@ -342,7 +342,7 @@ static const InfantryTypeClass E4(
     TXT_E4,                  // Translate name number for infantry type.
     "E4",                    // INI name for infantry.
     1,                       // Build level.
-    STRUCTF_NONE,            // Building prerequisite.
+    kStructFlagNone,            // Building prerequisite.
     false,                   // Is this a female type?
     true,                    // Is a leader type?
     true,                    // Has crawling animation frames?
@@ -360,9 +360,9 @@ static const InfantryTypeClass E4(
     200,                     // Cost of infantry (in credits).
     5,                       // Scenario when they first appear.
     80, 10,                  // Risk/Reward of this infantry unit.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP |
-        HOUSEF_BAD,  // Who can own this infantry unit.
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
+        kHouseFlagBad,  // Who can own this infantry unit.
     WEAPON_FLAMETHROWER, WEAPON_NONE, MPH_SLOW_ISH);
 
 // Chemwarrior
@@ -409,7 +409,7 @@ static const InfantryTypeClass E5(
     TXT_E5,                 // Translate name number for infantry type.
     "E5",                   // INI name for infantry.
     7,                      // Build level.
-    STRUCTF_EYE,            // Building prerequisite.
+    kStructFlagEye,            // Building prerequisite.
     false,                  // Is this a female type?
     true,                   // Is a leader type?
     true,                   // Has crawling animation frames?
@@ -427,10 +427,10 @@ static const InfantryTypeClass E5(
     300,                    // Cost of infantry (in credits).
     99,                     // Scenario when they first appear.
     80, 10,                 // Risk/Reward of this infantry unit.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP |
-        //	HOUSEF_GOOD|
-        HOUSEF_BAD,  // Who can own this infantry unit.
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
+        //	kHouseFlagGood|
+        kHouseFlagBad,  // Who can own this infantry unit.
     WEAPON_CHEMSPRAY, WEAPON_NONE, MPH_SLOW);
 
 // Engineer
@@ -477,7 +477,7 @@ static const InfantryTypeClass E7(
     TXT_E7,              // Translate name number for infantry type.
     "E6",                // INI name for infantry.
     3,                   // Build level.
-    STRUCTF_NONE,        // Building prerequisite.
+    kStructFlagNone,        // Building prerequisite.
     false,               // Is this a female type?
     false,               // Is a leader type?
     false,               // Has crawling animation frames?
@@ -495,9 +495,9 @@ static const InfantryTypeClass E7(
     500,                 // Cost of infantry (in credits).
     2,                   // Scenario when they first appear.
     80, 75,              // Risk/Reward of this infantry unit.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_BAD |
-        HOUSEF_GOOD,  // Who can own this infantry unit.
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagBad |
+        kHouseFlagGood,  // Who can own this infantry unit.
     WEAPON_NONE, WEAPON_NONE,
     MPH_SLOW  // Maximum speed of infantry.
 );
@@ -546,7 +546,7 @@ static const InfantryTypeClass Commando(
     TXT_RAMBO,           // Translate name number for infantry type.
     "RMBO",              // INI name for infantry.
     7,                   // Build level.
-    STRUCTF_EYE,         // Building prerequisite.
+    kStructFlagEye,         // Building prerequisite.
     false,               // Is this a female type?
     true,                // Is a leader type?
     true,                // Has crawling animation frames?
@@ -564,9 +564,9 @@ static const InfantryTypeClass Commando(
     1000,                // Cost of infantry (in credits).
     98,                  // Scenario when they first appear.
     80, 75,              // Risk/Reward of this infantry unit.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_GOOD |
-        HOUSEF_BAD,  // Who can own this infantry unit.
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
+        kHouseFlagBad,  // Who can own this infantry unit.
     WEAPON_RIFLE, WEAPON_NONE,
     MPH_SLOW_ISH  // Maximum speed of infantry.
 );
@@ -615,7 +615,7 @@ static const InfantryTypeClass C1(
     TXT_C1,               // Translate name number for infantry type.
     "C1",                 // INI name for infantry.
     99,                   // Build level.
-    STRUCTF_NONE,         // Building prerequisite.
+    kStructFlagNone,         // Building prerequisite.
     false,                // Is this a female type?
     true,                 // Is a leader type?
     false,                // Has crawling animation frames?
@@ -633,9 +633,9 @@ static const InfantryTypeClass C1(
     10,                   // Cost of infantry (in credits).
     99,                   // Scenario when they first appear.
     0, 1,                 // Risk/Reward of this infantry unit.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_GOOD | HOUSEF_BAD |
-        HOUSEF_NEUTRAL,  // Who can own this infantry unit.
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood | kHouseFlagBad |
+        kHouseFlagNeutral,  // Who can own this infantry unit.
     WEAPON_PISTOL, WEAPON_NONE, MPH_SLOW_ISH);
 
 static int CivilianDos2[DO_COUNT][3] = {
@@ -680,7 +680,7 @@ static const InfantryTypeClass C2(
     TXT_C2,               // Translate name number for infantry type.
     "C2",                 // INI name for infantry.
     99,                   // Build level.
-    STRUCTF_NONE,         // Building prerequisite.
+    kStructFlagNone,         // Building prerequisite.
     false,                // Is this a female type?
     false,                // Is a leader type?
     false,                // Has crawling animation frames?
@@ -698,9 +698,9 @@ static const InfantryTypeClass C2(
     10,                   // Cost of infantry (in credits).
     99,                   // Scenario when they first appear.
     0, 1,                 // Risk/Reward of this infantry unit.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_GOOD | HOUSEF_BAD |
-        HOUSEF_NEUTRAL,  // Who can own this infantry unit.
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood | kHouseFlagBad |
+        kHouseFlagNeutral,  // Who can own this infantry unit.
     WEAPON_NONE, WEAPON_NONE, MPH_SLOW_ISH);
 
 static int CivilianDos3[DO_COUNT][3] = {
@@ -746,7 +746,7 @@ static const InfantryTypeClass C3(
     TXT_C3,               // Translate name number for infantry type.
     "C3",                 // INI name for infantry.
     99,                   // Build level.
-    STRUCTF_NONE,         // Building prerequisite.
+    kStructFlagNone,         // Building prerequisite.
     true,                 // Is this a female type?
     false,                // Is a leader type?
     false,                // Has crawling animation frames?
@@ -764,9 +764,9 @@ static const InfantryTypeClass C3(
     10,                   // Cost of infantry (in credits).
     99,                   // Scenario when they first appear.
     0, 1,                 // Risk/Reward of this infantry unit.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_GOOD | HOUSEF_BAD |
-        HOUSEF_NEUTRAL,  // Who can own this infantry unit.
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood | kHouseFlagBad |
+        kHouseFlagNeutral,  // Who can own this infantry unit.
     WEAPON_NONE, WEAPON_NONE, MPH_SLOW_ISH);
 
 static int CivilianDos4[DO_COUNT][3] = {
@@ -811,7 +811,7 @@ static const InfantryTypeClass C4(
     TXT_C4,               // Translate name number for infantry type.
     "C4",                 // INI name for infantry.
     99,                   // Build level.
-    STRUCTF_NONE,         // Building prerequisite.
+    kStructFlagNone,         // Building prerequisite.
     true,                 // Is this a female type?
     false,                // Is a leader type?
     false,                // Has crawling animation frames?
@@ -829,9 +829,9 @@ static const InfantryTypeClass C4(
     10,                   // Cost of infantry (in credits).
     99,                   // Scenario when they first appear.
     0, 1,                 // Risk/Reward of this infantry unit.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_GOOD | HOUSEF_BAD |
-        HOUSEF_NEUTRAL,  // Who can own this infantry unit.
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood | kHouseFlagBad |
+        kHouseFlagNeutral,  // Who can own this infantry unit.
     WEAPON_NONE, WEAPON_NONE, MPH_SLOW_ISH);
 
 static int CivilianDos5[DO_COUNT][3] = {
@@ -876,7 +876,7 @@ static const InfantryTypeClass C5(
     TXT_C5,               // Translate name number for infantry type.
     "C5",                 // INI name for infantry.
     99,                   // Build level.
-    STRUCTF_NONE,         // Building prerequisite.
+    kStructFlagNone,         // Building prerequisite.
     false,                // Is this a female type?
     false,                // Is a leader type?
     false,                // Has crawling animation frames?
@@ -894,9 +894,9 @@ static const InfantryTypeClass C5(
     10,                   // Cost of infantry (in credits).
     99,                   // Scenario when they first appear.
     0, 1,                 // Risk/Reward of this infantry unit.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_GOOD | HOUSEF_BAD |
-        HOUSEF_NEUTRAL,  // Who can own this infantry unit.
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood | kHouseFlagBad |
+        kHouseFlagNeutral,  // Who can own this infantry unit.
     WEAPON_NONE, WEAPON_NONE, MPH_SLOW_ISH);
 
 static int CivilianDos6[DO_COUNT][3] = {
@@ -941,7 +941,7 @@ static const InfantryTypeClass C6(
     TXT_C6,               // Translate name number for infantry type.
     "C6",                 // INI name for infantry.
     99,                   // Build level.
-    STRUCTF_NONE,         // Building prerequisite.
+    kStructFlagNone,         // Building prerequisite.
     false,                // Is this a female type?
     false,                // Is a leader type?
     false,                // Has crawling animation frames?
@@ -959,9 +959,9 @@ static const InfantryTypeClass C6(
     10,                   // Cost of infantry (in credits).
     99,                   // Scenario when they first appear.
     0, 1,                 // Risk/Reward of this infantry unit.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_GOOD | HOUSEF_BAD |
-        HOUSEF_NEUTRAL,  // Who can own this infantry unit.
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood | kHouseFlagBad |
+        kHouseFlagNeutral,  // Who can own this infantry unit.
     WEAPON_NONE, WEAPON_NONE, MPH_SLOW_ISH);
 
 static int CivilianDos7[DO_COUNT][3] = {
@@ -1006,7 +1006,7 @@ static const InfantryTypeClass C7(
     TXT_C7,               // Translate name number for infantry type.
     "C7",                 // INI name for infantry.
     99,                   // Build level.
-    STRUCTF_NONE,         // Building prerequisite.
+    kStructFlagNone,         // Building prerequisite.
     false,                // Is this a female type?
     true,                 // Is a leader type?
     false,                // Has crawling animation frames?
@@ -1024,9 +1024,9 @@ static const InfantryTypeClass C7(
     10,                   // Cost of infantry (in credits).
     99,                   // Scenario when they first appear.
     0, 1,                 // Risk/Reward of this infantry unit.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_GOOD | HOUSEF_BAD |
-        HOUSEF_NEUTRAL,  // Who can own this infantry unit.
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood | kHouseFlagBad |
+        kHouseFlagNeutral,  // Who can own this infantry unit.
     WEAPON_PISTOL, WEAPON_NONE, MPH_SLOW_ISH);
 
 static int CivilianDos8[DO_COUNT][3] = {
@@ -1071,7 +1071,7 @@ static const InfantryTypeClass C8(
     TXT_C8,               // Translate name number for infantry type.
     "C8",                 // INI name for infantry.
     99,                   // Build level.
-    STRUCTF_NONE,         // Building prerequisite.
+    kStructFlagNone,         // Building prerequisite.
     false,                // Is this a female type?
     false,                // Is a leader type?
     false,                // Has crawling animation frames?
@@ -1089,9 +1089,9 @@ static const InfantryTypeClass C8(
     10,                   // Cost of infantry (in credits).
     99,                   // Scenario when they first appear.
     0, 1,                 // Risk/Reward of this infantry unit.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_GOOD | HOUSEF_BAD |
-        HOUSEF_NEUTRAL,  // Who can own this infantry unit.
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood | kHouseFlagBad |
+        kHouseFlagNeutral,  // Who can own this infantry unit.
     WEAPON_NONE, WEAPON_NONE, MPH_SLOW_ISH);
 
 static int CivilianDos9[DO_COUNT][3] = {
@@ -1136,7 +1136,7 @@ static const InfantryTypeClass C9(
     TXT_C9,               // Translate name number for infantry type.
     "C9",                 // INI name for infantry.
     99,                   // Build level.
-    STRUCTF_NONE,         // Building prerequisite.
+    kStructFlagNone,         // Building prerequisite.
     false,                // Is this a female type?
     false,                // Is a leader type?
     false,                // Has crawling animation frames?
@@ -1154,9 +1154,9 @@ static const InfantryTypeClass C9(
     10,                   // Cost of infantry (in credits).
     99,                   // Scenario when they first appear.
     0, 1,                 // Risk/Reward of this infantry unit.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_GOOD | HOUSEF_BAD |
-        HOUSEF_NEUTRAL,  // Who can own this infantry unit.
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood | kHouseFlagBad |
+        kHouseFlagNeutral,  // Who can own this infantry unit.
     WEAPON_NONE, WEAPON_NONE, MPH_SLOW_ISH);
 
 static int NikoombaDos[DO_COUNT][3] = {
@@ -1203,7 +1203,7 @@ static const InfantryTypeClass C10(
     TXT_C10,             // Translate name number for infantry type.
     "C10",               // INI name for infantry.
     99,                  // Build level.
-    STRUCTF_NONE,        // Building prerequisite.
+    kStructFlagNone,        // Building prerequisite.
     false,               // Is this a female type?
     false,               // Is a leader type?
     false,               // Has crawling animation frames?
@@ -1221,9 +1221,9 @@ static const InfantryTypeClass C10(
     10,                  // Cost of infantry (in credits).
     99,                  // Scenario when they first appear.
     0, 1,                // Risk/Reward of this infantry unit.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_GOOD | HOUSEF_BAD |
-        HOUSEF_NEUTRAL,  // Who can own this infantry unit.
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood | kHouseFlagBad |
+        kHouseFlagNeutral,  // Who can own this infantry unit.
     WEAPON_NONE, WEAPON_NONE, MPH_SLOW_ISH);
 
 static int MoebiusDos[DO_COUNT][3] = {
@@ -1268,7 +1268,7 @@ static const InfantryTypeClass Moebius(
     TXT_MOEBIUS,        // Translate name number for infantry type.
     "MOEBIUS",          // INI name for infantry.
     99,                 // Build level.
-    STRUCTF_NONE,       // Building prerequisite.
+    kStructFlagNone,       // Building prerequisite.
     false,              // Is this a female type?
     false,              // Is a leader type?
     false,              // Has crawling animation frames?
@@ -1286,9 +1286,9 @@ static const InfantryTypeClass Moebius(
     10,                 // Cost of infantry (in credits).
     99,                 // Scenario when they first appear.
     0, 10,              // Risk/Reward of this infantry unit.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_GOOD | HOUSEF_BAD |
-        HOUSEF_NEUTRAL,  // Who can own this infantry unit.
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood | kHouseFlagBad |
+        kHouseFlagNeutral,  // Who can own this infantry unit.
     WEAPON_NONE, WEAPON_NONE, MPH_SLOW_ISH);
 
 static int DelphiDos[DO_COUNT][3] = {
@@ -1333,7 +1333,7 @@ static const InfantryTypeClass Delphi(
     TXT_DELPHI,        // Translate name number for infantry type.
     "DELPHI",          // INI name for infantry.
     99,                // Build level.
-    STRUCTF_NONE,      // Building prerequisite.
+    kStructFlagNone,      // Building prerequisite.
     false,             // Is this a female type?
     false,             // Is a leader type?
     false,             // Has crawling animation frames?
@@ -1351,9 +1351,9 @@ static const InfantryTypeClass Delphi(
     10,                // Cost of infantry (in credits).
     99,                // Scenario when they first appear.
     0, 0,              // Risk/Reward of this infantry unit.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_GOOD |
-        HOUSEF_NEUTRAL,  // Who can own this infantry unit.
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
+        kHouseFlagNeutral,  // Who can own this infantry unit.
     WEAPON_PISTOL, WEAPON_NONE, MPH_SLOW_ISH);
 
 static int DrChanDos[DO_COUNT][3] = {
@@ -1398,7 +1398,7 @@ static const InfantryTypeClass DrChan(
     TXT_CHAN,          // Translate name number for infantry type.
     "CHAN",            // INI name for infantry.
     99,                // Build level.
-    STRUCTF_NONE,      // Building prerequisite.
+    kStructFlagNone,      // Building prerequisite.
     false,             // Is this a female type?
     false,             // Is a leader type?
     false,             // Has crawling animation frames?
@@ -1416,9 +1416,9 @@ static const InfantryTypeClass DrChan(
     10,                // Cost of infantry (in credits).
     99,                // Scenario when they first appear.
     0, 1,              // Risk/Reward of this infantry unit.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_GOOD |
-        HOUSEF_NEUTRAL,  // Who can own this infantry unit.
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
+        kHouseFlagNeutral,  // Who can own this infantry unit.
     WEAPON_NONE, WEAPON_NONE, MPH_SLOW_ISH);
 
 /*

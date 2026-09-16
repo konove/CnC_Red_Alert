@@ -45,6 +45,7 @@
 #include <utility>
 
 #include "base/attributes.h"
+#include "base/numeric.h"
 #include "sdllib/wwstd.h"
 #include "td/special.h"
 
@@ -588,16 +589,18 @@ typedef enum HousesType : int8_t {
   HOUSE_FIRST = HOUSE_GOOD
 } HousesType;
 
-#define HOUSEF_GOOD (1 << HOUSE_GOOD)
-#define HOUSEF_BAD (1 << HOUSE_BAD)
-#define HOUSEF_NEUTRAL (1 << HOUSE_NEUTRAL)
-#define HOUSEF_JP (1 << HOUSE_JP)
-#define HOUSEF_MULTI1 (1 << HOUSE_MULTI1)
-#define HOUSEF_MULTI2 (1 << HOUSE_MULTI2)
-#define HOUSEF_MULTI3 (1 << HOUSE_MULTI3)
-#define HOUSEF_MULTI4 (1 << HOUSE_MULTI4)
-#define HOUSEF_MULTI5 (1 << HOUSE_MULTI5)
-#define HOUSEF_MULTI6 (1 << HOUSE_MULTI6)
+// Bit masks over HousesType for the Ownable fields of the type tables.
+inline constexpr uint32_t kHouseFlagGood = base::Bit<uint32_t>(HOUSE_GOOD);
+inline constexpr uint32_t kHouseFlagBad = base::Bit<uint32_t>(HOUSE_BAD);
+inline constexpr uint32_t kHouseFlagNeutral =
+    base::Bit<uint32_t>(HOUSE_NEUTRAL);
+inline constexpr uint32_t kHouseFlagJp = base::Bit<uint32_t>(HOUSE_JP);
+inline constexpr uint32_t kHouseFlagMulti1 = base::Bit<uint32_t>(HOUSE_MULTI1);
+inline constexpr uint32_t kHouseFlagMulti2 = base::Bit<uint32_t>(HOUSE_MULTI2);
+inline constexpr uint32_t kHouseFlagMulti3 = base::Bit<uint32_t>(HOUSE_MULTI3);
+inline constexpr uint32_t kHouseFlagMulti4 = base::Bit<uint32_t>(HOUSE_MULTI4);
+inline constexpr uint32_t kHouseFlagMulti5 = base::Bit<uint32_t>(HOUSE_MULTI5);
+inline constexpr uint32_t kHouseFlagMulti6 = base::Bit<uint32_t>(HOUSE_MULTI6);
 
 typedef enum PlayerColorType {
   REMAP_NONE = -1,
@@ -778,33 +781,47 @@ typedef enum StructType {
   STRUCT_COUNT,
 } StructType;
 
-#define STRUCTF_NONE 0L
-#define STRUCTF_ADVANCED_POWER (1L << STRUCT_ADVANCED_POWER)
-#define STRUCTF_REPAIR (1L << STRUCT_REPAIR)
-#define STRUCTF_EYE (1L << STRUCT_EYE)
-#define STRUCTF_TEMPLE (1L << STRUCT_TEMPLE)
-#define STRUCTF_HAND (1L << STRUCT_HAND)
-#define STRUCTF_BIO_LAB (1L << STRUCT_BIO_LAB)
-#define STRUCTF_OBELISK (1L << STRUCT_OBELISK)
-#define STRUCTF_ATOWER (1L << STRUCT_ATOWER)
-#define STRUCTF_WEAP (1L << STRUCT_WEAP)
-#define STRUCTF_GTOWER (1L << STRUCT_GTOWER)
-#define STRUCTF_RADAR (1L << STRUCT_RADAR)
-#define STRUCTF_TURRET (1L << STRUCT_TURRET)
-#define STRUCTF_CIV1 (1L << STRUCT_CIV1)
-#define STRUCTF_CIV2 (1L << STRUCT_CIV2)
-#define STRUCTF_CIV3 (1L << STRUCT_CIV3)
-#define STRUCTF_CONST (1L << STRUCT_CONST)
-#define STRUCTF_REFINERY (1L << STRUCT_REFINERY)
-#define STRUCTF_STORAGE (1L << STRUCT_STORAGE)
-#define STRUCTF_HELIPAD (1L << STRUCT_HELIPAD)
-#define STRUCTF_SAM (1L << STRUCT_SAM)
-#define STRUCTF_AIRSTRIP (1L << STRUCT_AIRSTRIP)
-#define STRUCTF_POWER (1L << STRUCT_POWER)
-#define STRUCTF_HOSPITAL (1L << STRUCT_HOSPITAL)
-#define STRUCTF_BARRACKS (1L << STRUCT_BARRACKS)
-#define STRUCTF_TANKER (1L << STRUCT_TANKER)
-#define STRUCTF_MISSION (1L << STRUCT_MISSION)
+// Bit masks over StructType for the building scans and prerequisites.
+inline constexpr uint64_t kStructFlagNone = 0;
+inline constexpr uint64_t kStructFlagAdvancedPower =
+    base::Bit<uint64_t>(STRUCT_ADVANCED_POWER);
+inline constexpr uint64_t kStructFlagRepair =
+    base::Bit<uint64_t>(STRUCT_REPAIR);
+inline constexpr uint64_t kStructFlagEye = base::Bit<uint64_t>(STRUCT_EYE);
+inline constexpr uint64_t kStructFlagTemple =
+    base::Bit<uint64_t>(STRUCT_TEMPLE);
+inline constexpr uint64_t kStructFlagHand = base::Bit<uint64_t>(STRUCT_HAND);
+inline constexpr uint64_t kStructFlagBioLab =
+    base::Bit<uint64_t>(STRUCT_BIO_LAB);
+inline constexpr uint64_t kStructFlagObelisk =
+    base::Bit<uint64_t>(STRUCT_OBELISK);
+inline constexpr uint64_t kStructFlagAtower =
+    base::Bit<uint64_t>(STRUCT_ATOWER);
+inline constexpr uint64_t kStructFlagWeap = base::Bit<uint64_t>(STRUCT_WEAP);
+inline constexpr uint64_t kStructFlagGtower =
+    base::Bit<uint64_t>(STRUCT_GTOWER);
+inline constexpr uint64_t kStructFlagRadar = base::Bit<uint64_t>(STRUCT_RADAR);
+inline constexpr uint64_t kStructFlagTurret =
+    base::Bit<uint64_t>(STRUCT_TURRET);
+inline constexpr uint64_t kStructFlagConst = base::Bit<uint64_t>(STRUCT_CONST);
+inline constexpr uint64_t kStructFlagRefinery =
+    base::Bit<uint64_t>(STRUCT_REFINERY);
+inline constexpr uint64_t kStructFlagStorage =
+    base::Bit<uint64_t>(STRUCT_STORAGE);
+inline constexpr uint64_t kStructFlagHelipad =
+    base::Bit<uint64_t>(STRUCT_HELIPAD);
+inline constexpr uint64_t kStructFlagSam = base::Bit<uint64_t>(STRUCT_SAM);
+inline constexpr uint64_t kStructFlagAirstrip =
+    base::Bit<uint64_t>(STRUCT_AIRSTRIP);
+inline constexpr uint64_t kStructFlagPower = base::Bit<uint64_t>(STRUCT_POWER);
+inline constexpr uint64_t kStructFlagHospital =
+    base::Bit<uint64_t>(STRUCT_HOSPITAL);
+inline constexpr uint64_t kStructFlagBarracks =
+    base::Bit<uint64_t>(STRUCT_BARRACKS);
+inline constexpr uint64_t kStructFlagTanker =
+    base::Bit<uint64_t>(STRUCT_TANKER);
+inline constexpr uint64_t kStructFlagMission =
+    base::Bit<uint64_t>(STRUCT_MISSION);
 
 /**********************************************************************
 **	The overlays are enumerated here. An overlay functions similarly to
@@ -910,28 +927,30 @@ typedef enum UnitType {
   UNIT_COUNT,
 } UnitType;
 
-#define UNITF_HTANK (1L << UNIT_HTANK)
-#define UNITF_MTANK (1L << UNIT_MTANK)
-#define UNITF_LTANK (1L << UNIT_LTANK)
-#define UNITF_STANK (1L << UNIT_STANK)
-#define UNITF_FTANK (1L << UNIT_FTANK)
-#define UNITF_APC (1L << UNIT_APC)
-#define UNITF_MLRS (1L << UNIT_MLRS)
-#define UNITF_JEEP (1L << UNIT_JEEP)
-#define UNITF_BUGGY (1L << UNIT_BUGGY)
-#define UNITF_HARVESTER (1L << UNIT_HARVESTER)
-#define UNITF_ARTY (1L << UNIT_ARTY)
-#define UNITF_MSAM (1L << UNIT_MSAM)
-#define UNITF_HOVER (1L << UNIT_HOVER)
-#define UNITF_MHQ (1L << UNIT_MHQ)
-#define UNITF_GUNBOAT (1L << UNIT_GUNBOAT)
-#define UNITF_MCV (1L << UNIT_MCV)
-#define UNITF_BIKE (1L << UNIT_BIKE)
-#define UNITF_VICE (1L << UNIT_VICE)
-#define UNITF_TRIC (1L << UNIT_TRIC)
-#define UNITF_TREX (1L << UNIT_TREX)
-#define UNITF_RAPT (1L << UNIT_RAPT)
-#define UNITF_STEG (1L << UNIT_STEG)
+// Bit masks over UnitType for the unit scans and prerequisites.
+inline constexpr uint64_t kUnitFlagHtank = base::Bit<uint64_t>(UNIT_HTANK);
+inline constexpr uint64_t kUnitFlagMtank = base::Bit<uint64_t>(UNIT_MTANK);
+inline constexpr uint64_t kUnitFlagLtank = base::Bit<uint64_t>(UNIT_LTANK);
+inline constexpr uint64_t kUnitFlagStank = base::Bit<uint64_t>(UNIT_STANK);
+inline constexpr uint64_t kUnitFlagFtank = base::Bit<uint64_t>(UNIT_FTANK);
+inline constexpr uint64_t kUnitFlagApc = base::Bit<uint64_t>(UNIT_APC);
+inline constexpr uint64_t kUnitFlagMlrs = base::Bit<uint64_t>(UNIT_MLRS);
+inline constexpr uint64_t kUnitFlagJeep = base::Bit<uint64_t>(UNIT_JEEP);
+inline constexpr uint64_t kUnitFlagBuggy = base::Bit<uint64_t>(UNIT_BUGGY);
+inline constexpr uint64_t kUnitFlagHarvester =
+    base::Bit<uint64_t>(UNIT_HARVESTER);
+inline constexpr uint64_t kUnitFlagArty = base::Bit<uint64_t>(UNIT_ARTY);
+inline constexpr uint64_t kUnitFlagMsam = base::Bit<uint64_t>(UNIT_MSAM);
+inline constexpr uint64_t kUnitFlagHover = base::Bit<uint64_t>(UNIT_HOVER);
+inline constexpr uint64_t kUnitFlagMhq = base::Bit<uint64_t>(UNIT_MHQ);
+inline constexpr uint64_t kUnitFlagGunboat = base::Bit<uint64_t>(UNIT_GUNBOAT);
+inline constexpr uint64_t kUnitFlagMcv = base::Bit<uint64_t>(UNIT_MCV);
+inline constexpr uint64_t kUnitFlagBike = base::Bit<uint64_t>(UNIT_BIKE);
+inline constexpr uint64_t kUnitFlagVice = base::Bit<uint64_t>(UNIT_VICE);
+inline constexpr uint64_t kUnitFlagTric = base::Bit<uint64_t>(UNIT_TRIC);
+inline constexpr uint64_t kUnitFlagTrex = base::Bit<uint64_t>(UNIT_TREX);
+inline constexpr uint64_t kUnitFlagRapt = base::Bit<uint64_t>(UNIT_RAPT);
+inline constexpr uint64_t kUnitFlagSteg = base::Bit<uint64_t>(UNIT_STEG);
 
 /**********************************************************************
 **	The various aircraft types are enumerated here. These include
@@ -948,11 +967,16 @@ typedef enum AircraftType {
   AIRCRAFT_NONE = -1,
 } AircraftType;
 
-#define AIRCRAFTF_TRANSPORT (1L << AIRCRAFT_TRANSPORT)
-#define AIRCRAFTF_A10 (1L << AIRCRAFT_A10)
-#define AIRCRAFTF_HELICOPTER (1L << AIRCRAFT_HELICOPTER)
-#define AIRCRAFTF_CARGO (1L << AIRCRAFT_CARGO)
-#define AIRCRAFTF_ORCA (1L << AIRCRAFT_ORCA)
+// Bit masks over AircraftType for the aircraft scans.
+inline constexpr uint64_t kAircraftFlagTransport =
+    base::Bit<uint64_t>(AIRCRAFT_TRANSPORT);
+inline constexpr uint64_t kAircraftFlagA10 = base::Bit<uint64_t>(AIRCRAFT_A10);
+inline constexpr uint64_t kAircraftFlagHelicopter =
+    base::Bit<uint64_t>(AIRCRAFT_HELICOPTER);
+inline constexpr uint64_t kAircraftFlagCargo =
+    base::Bit<uint64_t>(AIRCRAFT_CARGO);
+inline constexpr uint64_t kAircraftFlagOrca =
+    base::Bit<uint64_t>(AIRCRAFT_ORCA);
 
 /**********************************************************************
 **	The game templates are enumerated here. These are the underlying
@@ -1788,10 +1812,15 @@ typedef enum TheaterType {
   THEATER_COUNT,
 } TheaterType;
 
-#define THEATERF_DESERT (1 << THEATER_DESERT)
-#define THEATERF_JUNGLE (1 << THEATER_JUNGLE)
-#define THEATERF_TEMPERATE (1 << THEATER_TEMPERATE)
-#define THEATERF_WINTER (1 << THEATER_WINTER)
+// Bit masks over TheaterType for the Theater fields of the type tables.
+inline constexpr uint32_t kTheaterFlagDesert =
+    base::Bit<uint32_t>(THEATER_DESERT);
+inline constexpr uint32_t kTheaterFlagJungle =
+    base::Bit<uint32_t>(THEATER_JUNGLE);
+inline constexpr uint32_t kTheaterFlagTemperate =
+    base::Bit<uint32_t>(THEATER_TEMPERATE);
+inline constexpr uint32_t kTheaterFlagWinter =
+    base::Bit<uint32_t>(THEATER_WINTER);
 
 typedef struct {
   char Name[16];

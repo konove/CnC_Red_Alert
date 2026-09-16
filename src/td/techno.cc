@@ -326,7 +326,7 @@ int TechnoTypeClass::Time_To_Build(HousesType house) const {
   **	Fudge factor, so that Nod builds a bit faster if the object must be
   *delivered to *	an airfield.
   */
-  if (What_Am_I() == RTTI_UNITTYPE && !(Ownable & HOUSEF_GOOD)) {
+  if (What_Am_I() == RTTI_UNITTYPE && !(Ownable & kHouseFlagGood)) {
     return cost - (cost / 4);
   }
 

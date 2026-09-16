@@ -134,6 +134,9 @@ CheckOptions:
   # 585 findings the project has already decided against; real narrowing is not
   # affected.
   bugprone-narrowing-conversions.WarnOnEquivalentBitWidth: false
+  # `flags & 0xFF` on an unsigned mask is the intended spelling. The option
+  # exempts only the literal; a signed variable next to it is still reported.
+  bugprone-signed-bitwise.IgnorePositiveIntegerLiterals: true
   # The engine's singleton globals allocate while constructing: screen buffers,
   # the dynamic vectors behind the trigger and player lists, the INI parsers,
   # the network managers and the map/display chain that owns them. They are

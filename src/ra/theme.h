@@ -58,7 +58,7 @@ class ThemeClass {
     bool Normal;       // Allowed in normal game play?
     bool Repeat;       // Always repeat this score?
     bool Available;    // Is the score available?
-    int Owner;  // What houses are allowed to play this theme (bit field)?
+    uint32_t Owner;  // What houses are allowed to play this theme (bit field)?
   } ThemeControl;
 
   static ThemeControl _themes[magic_enum::enum_count<ThemeType>()];
@@ -84,7 +84,7 @@ class ThemeClass {
   void AI();
   void Fade_Out() { Queue_Song(THEME_QUIET); }
   void Queue_Song(ThemeType theme);
-  static void Set_Theme_Data(ThemeType theme, int scenario, int owners);
+  static void Set_Theme_Data(ThemeType theme, int scenario, uint32_t owners);
   void Stop();
   void Suspend();
 };

@@ -359,7 +359,7 @@ static const TerrainTypeClass Clump5Class(
  *                                                                                             *
  * HISTORY: * 07/19/1994 JLB : Created. *
  *=============================================================================================*/
-TerrainTypeClass::TerrainTypeClass(TerrainType terrain, int theater,
+TerrainTypeClass::TerrainTypeClass(TerrainType terrain, uint32_t theater,
                                    COORDINATE centerbase, bool is_immune,
                                    bool is_water, const char* ininame,
                                    int fullname, const int16_t* occupy,

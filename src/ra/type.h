@@ -122,7 +122,7 @@ class AbstractTypeClass {
   }
   // Returns a bit flag of houses allowed to own this type. Base allows all;
   // derived classes override to restrict ownership.
-  [[nodiscard]] virtual int Get_Ownable() const;
+  [[nodiscard]] virtual uint32_t Get_Ownable() const;
 };
 
 /**********************************************************************
@@ -561,7 +561,7 @@ class TechnoTypeClass : public ObjectTypeClass {
   **	to take possession of an object type otherwise not normally allowed.
   **	This event usually occurs as a result of capture.
   */
-  int32_t Ownable{0};
+  uint32_t Ownable{0};
 
   /*
   **	This is the small icon image that is used to display the object in
@@ -625,7 +625,7 @@ class TechnoTypeClass : public ObjectTypeClass {
   [[nodiscard]] const void* Get_Cameo_Data() const override;
   [[nodiscard]] int Cost_Of() const override;
   [[nodiscard]] int Time_To_Build() const override;
-  [[nodiscard]] int Get_Ownable() const override;
+  [[nodiscard]] uint32_t Get_Ownable() const override;
   virtual bool Read_INI(CCINIClass& ini);
 
   /*
@@ -1557,7 +1557,7 @@ class TerrainTypeClass : public ObjectTypeClass {
   *object is *	valid for. If the bit (1 << TheaterType) is true, then this
   *terrain object *	is allowed.
   */
-  int Theater;
+  uint32_t Theater;
 
   /*
   **	Does this terrain object get placed on the water instead of the ground?
@@ -1566,8 +1566,8 @@ class TerrainTypeClass : public ObjectTypeClass {
 
   //----------------------------------------------------------------
   TerrainTypeClass(
-      TerrainType terrain, int theater, COORDINATE centerbase, bool is_immune,
-      bool is_water, const char* ininame, int fullname,
+      TerrainType terrain, uint32_t theater, COORDINATE centerbase,
+      bool is_immune, bool is_water, const char* ininame, int fullname,
       const int16_t* occupy ABSL_ATTRIBUTE_LIFETIME_BOUND,
       const int16_t* overlap ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept;
 

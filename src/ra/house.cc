@@ -160,6 +160,7 @@
 
 #include "absl/base/attributes.h"
 #include "absl/log/check.h"
+#include "base/numeric.h"
 #include "base/types.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
@@ -887,12 +888,12 @@ bool HouseClass::Can_Build(const ObjectTypeClass* type,
   /*
   **	Special hack to get certain objects to exist for both sides in the game.
   */
-  const int own = type->Get_Ownable();
+  const uint32_t own = type->Get_Ownable();
 
   /*
   **	Check to see if this owner can build the object type specified.
   */
-  if ((1L << house & own) == 0) {
+  if ((base::Bit<uint32_t>(house) & own) == 0) {
     return false;
   }
 
@@ -2166,7 +2167,7 @@ void HouseClass::Make_Ally(HousesType house) {
     }
 
     if (ScenarioInit) {
-      Control.Allies = static_cast<int>(Control.Allies | (1L << house));
+      Control.Allies |= base::Bit<uint32_t>(house);
     }
 
     if (Session.Type != GAME_NORMAL && !ScenarioInit) {
@@ -2260,20 +2261,20 @@ void HouseClass::Make_Enemy(HousesType house) {
 
   if (house != HOUSE_NONE && Is_Ally(house)) {
     HouseClass* enemy = As_Pointer(house);
-    Allies &= ~(1L << house);
+    Allies &= ~base::Bit<uint32_t>(house);
 
     if (ScenarioInit) {
-      Control.Allies = static_cast<int>(Control.Allies & ~(1L << house));
+      Control.Allies &= ~base::Bit<uint32_t>(house);
     }
 
     /*
     **	Breaking an alliance is a bilateral event.
     */
     if (enemy != nullptr && enemy->Is_Ally(this)) {
-      enemy->Allies &= ~(1L << Class->House);
+      enemy->Allies &= ~base::Bit<uint32_t>(Class->House);
 
       if (ScenarioInit) {
-        Control.Allies = static_cast<int>(Control.Allies & ~(1L << Class->House));
+        Control.Allies &= ~base::Bit<uint32_t>(Class->House);
       }
     }
 
@@ -6986,12 +6987,12 @@ void HouseClass::Read_INI(CCINIClass& ini) {
     p->Control.Edge = ini.Get_SourceType(hname, "Edge", SOURCE_NORTH);
     p->IsPlayerControl = ini.Get_Bool(hname, "PlayerControl", false);
 
-    const int owners =
-        static_cast<int>(ini.Get_Owners(hname, "Allies", 1 << HOUSE_NEUTRAL));
+    const uint32_t owners =
+        ini.Get_Owners(hname, "Allies", base::Bit<uint32_t>(HOUSE_NEUTRAL));
     p->Make_Ally(index);
     p->Make_Ally(HOUSE_NEUTRAL);
     for (const HousesType h : magic_enum::enum_values<HousesType>()) {
-      if ((owners & 1 << h) != 0) {
+      if ((owners & base::Bit<uint32_t>(h)) != 0) {
         p->Make_Ally(h);
       }
     }
@@ -7073,7 +7074,8 @@ void HouseClass::Write_INI(CCINIClass& ini) {
 
       ini.Put_Owners(
           name, "Allies",
-          p->Control.Allies & ~(1 << p->Class->House | 1 << HOUSE_NEUTRAL));
+          p->Control.Allies & ~(base::Bit<uint32_t>(p->Class->House) |
+                                base::Bit<uint32_t>(HOUSE_NEUTRAL)));
     }
   }
 }

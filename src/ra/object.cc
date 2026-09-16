@@ -403,7 +403,7 @@ LayerType ObjectClass::In_Which_Layer() const {
  *                                                                                             *
  * HISTORY: * 08/13/1995 JLB : Created. *
  *=============================================================================================*/
-int ObjectClass::Get_Ownable() const {
+uint32_t ObjectClass::Get_Ownable() const {
   assert(IsActive);
 
   return kHouseFlagAllies | kHouseFlagSoviet | kHouseFlagOthers;

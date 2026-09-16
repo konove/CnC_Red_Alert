@@ -1609,7 +1609,7 @@ ObjectClass* MapClass::Close_Object(COORDINATE coord) const {
  *                                                                                             *
  * HISTORY: * 09/22/1995 JLB : Created. *
  *=============================================================================================*/
-bool MapClass::Zone_Reset(int method) {
+bool MapClass::Zone_Reset(uint32_t method) {
   /*
   **	Zero out all zones to a null state.
   */

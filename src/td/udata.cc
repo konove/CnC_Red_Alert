@@ -86,7 +86,7 @@ static const UnitTypeClass UnitVisceroid(
     "VICE",         // NAME:			Text name of this unit type.
     ANIM_NAPALM2,   // EXPLOSION:	Type of explosion when destroyed.
     99,             // Build level.
-    STRUCTF_NONE,   // Building prerequisite.
+    kStructFlagNone,   // Building prerequisite.
     false,          // Can this be a goodie surprise from a crate?
     true,           // Is a leader type?
     false,          // Only has eight facings?
@@ -119,10 +119,10 @@ static const UnitTypeClass UnitVisceroid(
     800,     // COST:			Cost to build (Credits).
     1,       // SCENARIO:	Starting availability scenario.
     80, 20,  // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_GOOD | HOUSEF_BAD |
-        HOUSEF_NEUTRAL |
-        HOUSEF_JP,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagGood | kHouseFlagBad |
+        kHouseFlagNeutral |
+        kHouseFlagJp,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_CHEMSPRAY, WEAPON_NONE,
     ARMOR_WOOD,   // ARMOR:		Armor type
     SPEED_TRACK,  // MOVE:			Locomotion type.
@@ -139,7 +139,7 @@ static const UnitTypeClass UnitFTank(
     "FTNK",         // NAME:			Text name of this unit type.
     ANIM_NAPALM3,   // EXPLOSION:	Type of explosion when destroyed.
     4,              // Build level.
-    STRUCTF_RADAR,  // Building prerequisite.
+    kStructFlagRadar,  // Building prerequisite.
     true,           // Can this be a goodie surprise from a crate?
     true,           // Is a leader type?
     false,          // Only has eight facings?
@@ -172,9 +172,9 @@ static const UnitTypeClass UnitFTank(
     800,     // COST:			Cost to build (Credits).
     9,       // SCENARIO:	Starting availability scenario.
     80, 66,  // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP |
-        HOUSEF_BAD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
+        kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_FLAME_TONGUE, WEAPON_NONE,
     ARMOR_STEEL,  // ARMOR:		Armor type
     SPEED_TRACK,  // MOVE:			Locomotion type.
@@ -191,7 +191,7 @@ static const UnitTypeClass UnitSTank(
     "STNK",         // NAME:			Text name of this unit type.
     ANIM_FRAG2,     // EXPLOSION:	Type of explosion when destroyed.
     5,              // Build level.
-    STRUCTF_RADAR,  // Building prerequisite.
+    kStructFlagRadar,  // Building prerequisite.
     true,           // Can this be a goodie surprise from a crate?
     true,           // Is a leader type?
     false,          // Only has eight facings?
@@ -224,9 +224,9 @@ static const UnitTypeClass UnitSTank(
     900,     // COST:			Cost to build (Credits).
     12,      // SCENARIO:	Starting availability scenario.
     80, 81,  // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP |
-        HOUSEF_BAD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
+        kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_DRAGON, WEAPON_NONE,
     ARMOR_ALUMINUM,   // ARMOR:		Armor type
     SPEED_TRACK,      // MOVE:			Locomotion type.
@@ -243,7 +243,7 @@ static const UnitTypeClass UnitLTank(
     "LTNK",        // NAME:			Text name of this unit type.
     ANIM_FRAG1,    // EXPLOSION:	Type of explosion when destroyed.
     3,             // Build level.
-    STRUCTF_NONE,  // Building prerequisite.
+    kStructFlagNone,  // Building prerequisite.
     true,          // Can this be a goodie surprise from a crate?
     true,          // Is a leader type?
     false,         // Only has eight facings?
@@ -276,9 +276,9 @@ static const UnitTypeClass UnitLTank(
     600,           // COST:			Cost to build (Credits).
     5,             // SCENARIO:	Starting availability scenario.
     80, 56,        // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP |
-        HOUSEF_BAD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
+        kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_75MM, WEAPON_NONE,
     ARMOR_STEEL,  // ARMOR:		Armor type
     SPEED_TRACK,  // MOVE:			Locomotion type.
@@ -295,7 +295,7 @@ static const UnitTypeClass UnitMTank(
     "MTNK",        // NAME:			Text name of this unit type.
     ANIM_FRAG2,    // EXPLOSION:	Type of explosion when destroyed.
     3,             // Build level.
-    STRUCTF_NONE,  // Building prerequisite.
+    kStructFlagNone,  // Building prerequisite.
     true,          // Can this be a goodie surprise from a crate?
     true,          // Is a leader type?
     false,         // Only has eight facings?
@@ -328,9 +328,9 @@ static const UnitTypeClass UnitMTank(
     800,           // COST:			Cost to build (Credits).
     7,             // SCENARIO:	Starting availability scenario.
     80, 62,        // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP |
-        HOUSEF_GOOD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
+        kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_105MM, WEAPON_NONE,
     ARMOR_STEEL,  // ARMOR:		Armor type
     SPEED_TRACK,  // MOVE:			Locomotion type.
@@ -347,7 +347,7 @@ static const UnitTypeClass UnitHTank(
     "HTNK",          // NAME:			Text name of this unit type.
     ANIM_ART_EXP1,   // EXPLOSION:	Type of explosion when destroyed.
     5,               // Build level.
-    STRUCTF_REPAIR,  // Building prerequisite.
+    kStructFlagRepair,  // Building prerequisite.
     true,            // Can this be a goodie surprise from a crate?
     true,            // Is a leader type?
     false,           // Only has eight facings?
@@ -380,9 +380,9 @@ static const UnitTypeClass UnitHTank(
     1500,    // COST:			Cost to build (Credits).
     13,      // SCENARIO:	Starting availability scenario.
     80, 80,  // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP |
-        HOUSEF_GOOD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
+        kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_120MM, WEAPON_MAMMOTH_TUSK,
     ARMOR_STEEL,      // ARMOR:		Armor type
     SPEED_TRACK,      // MOVE:			Locomotion type.
@@ -399,7 +399,7 @@ static const UnitTypeClass UnitMHQ(
     "MHQ",         // NAME:			Text name of this unit type.
     ANIM_FRAG2,    // EXPLOSION:	Type of explosion when destroyed.
     99,            // Build level.
-    STRUCTF_NONE,  // Building prerequisite.
+    kStructFlagNone,  // Building prerequisite.
     false,         // Can this be a goodie surprise from a crate?
     false,         // Is a leader type?
     false,         // Only has eight facings?
@@ -432,9 +432,9 @@ static const UnitTypeClass UnitMHQ(
     600,           // COST:			Cost to build (Credits).
     99,            // SCENARIO:	Starting availability scenario.
     80, 100,       // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_GOOD |
-        HOUSEF_BAD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
+        kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_ALUMINUM,  // ARMOR:		Armor type
     SPEED_TRACK,     // MOVE:			Locomotion type.
@@ -451,7 +451,7 @@ static const UnitTypeClass UnitHover(
     "LST",         // NAME:			Text name of this unit type.
     ANIM_FBALL1,   // EXPLOSION:	Type of explosion when destroyed.
     99,            // Build level.
-    STRUCTF_NONE,  // Building prerequisite.
+    kStructFlagNone,  // Building prerequisite.
     false,         // Can this be a goodie surprise from a crate?
     false,         // Is a leader type?
     false,         // Only has eight facings?
@@ -485,9 +485,9 @@ static const UnitTypeClass UnitHover(
     300,           // COST:			Cost to build (Credits).
     99,            // SCENARIO:	Starting availability scenario.
     80, 40,        // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_GOOD |
-        HOUSEF_BAD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
+        kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_ALUMINUM,   // ARMOR:		Armor type
     SPEED_HOVER,      // MOVE:			Locomotion type.
@@ -504,7 +504,7 @@ static const UnitTypeClass UnitSAM(
     "MLRS",          // NAME:			Text name of this unit type.
     ANIM_FRAG2,      // EXPLOSION:	Type of explosion when destroyed.
     7,               // Build level.
-    STRUCTF_ATOWER,  // Building prerequisite.
+    kStructFlagAtower,  // Building prerequisite.
     true,            // Can this be a goodie surprise from a crate?
     true,            // Is a leader type?
     false,           // Only has eight facings?
@@ -537,10 +537,10 @@ static const UnitTypeClass UnitSAM(
     750,     // COST:			Cost to build (Credits).
     98,      // SCENARIO:	Starting availability scenario.
     80, 30,  // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP |
-        //	HOUSEF_GOOD|
-        HOUSEF_BAD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
+        //	kHouseFlagGood|
+        kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_HONEST_JOHN, WEAPON_NONE,
     ARMOR_ALUMINUM,  // ARMOR:		Armor type
     SPEED_TRACK,     // MOVE:			Locomotion type.
@@ -557,7 +557,7 @@ static const UnitTypeClass UnitArty(
     "ARTY",         // NAME:			Text name of this unit type.
     ANIM_ART_EXP1,  // EXPLOSION:	Type of explosion when destroyed.
     6,              // Build level.
-    STRUCTF_NONE,   // Building prerequisite.
+    kStructFlagNone,   // Building prerequisite.
     true,           // Can this be a goodie surprise from a crate?
     true,           // Is a leader type?
     false,          // Only has eight facings?
@@ -590,9 +590,9 @@ static const UnitTypeClass UnitArty(
     450,     // COST:			Cost to build (Credits).
     9,       // SCENARIO:	Starting availability scenario.
     80, 73,  // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP |
-        HOUSEF_BAD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
+        kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_155MM, WEAPON_NONE,
     ARMOR_ALUMINUM,   // ARMOR:		Armor type
     SPEED_TRACK,      // MOVE:			Locomotion type.
@@ -609,7 +609,7 @@ static const UnitTypeClass UnitHarvester(
     "HARV",            // NAME:			Text name of this unit type.
     ANIM_FBALL1,       // EXPLOSION:	Type of explosion when destroyed.
     2,                 // Build level.
-    STRUCTF_REFINERY,  // Building prerequisite.
+    kStructFlagRefinery,  // Building prerequisite.
     true,              // Can this be a goodie surprise from a crate?
     false,             // Is a leader type?
     false,             // Only has eight facings?
@@ -644,9 +644,9 @@ static const UnitTypeClass UnitHarvester(
     1400,    // COST:			Cost to build (Credits).
     7,       // SCENARIO:	Starting availability scenario.
     80, 85,  // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_GOOD |
-        HOUSEF_BAD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
+        kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_ALUMINUM,   // ARMOR:		Armor type
     SPEED_WHEEL,      // MOVE:			Locomotion type.
@@ -663,7 +663,7 @@ static const UnitTypeClass UnitMCV(
     "MCV",        // NAME:			Text name of this unit type.
     ANIM_FBALL1,  // EXPLOSION:	Type of explosion when destroyed.
     7,            // Build level.
-    STRUCTF_EYE,  // Building prerequisite.
+    kStructFlagEye,  // Building prerequisite.
     true,         // Can this be a goodie surprise from a crate?
     false,        // Is a leader type?
     false,        // Only has eight facings?
@@ -696,9 +696,9 @@ static const UnitTypeClass UnitMCV(
     5000,         // COST:			Cost to build (Credits).
     15,           // SCENARIO:	Starting availability scenario.
     80, 86,       // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_GOOD |
-        HOUSEF_BAD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
+        kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
     ARMOR_ALUMINUM,   // ARMOR:		Armor type
     SPEED_WHEEL,      // MOVE:			Locomotion type.
@@ -715,7 +715,7 @@ static const UnitTypeClass UnitJeep(
     "JEEP",        // NAME:			Text name of this unit type.
     ANIM_FRAG1,    // EXPLOSION:	Type of explosion when destroyed.
     2,             // Build level.
-    STRUCTF_NONE,  // Building prerequisite.
+    kStructFlagNone,  // Building prerequisite.
     true,          // Can this be a goodie surprise from a crate?
     true,          // Is a leader type?
     false,         // Only has eight facings?
@@ -748,9 +748,9 @@ static const UnitTypeClass UnitJeep(
     400,           // COST:			Cost to build (Credits).
     5,             // SCENARIO:	Starting availability scenario.
     80, 41,        // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP |
-        HOUSEF_GOOD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
+        kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_M60MG, WEAPON_NONE,
     ARMOR_ALUMINUM,   // ARMOR:		Armor type
     SPEED_WHEEL,      // MOVE:			Locomotion type.
@@ -767,7 +767,7 @@ static const UnitTypeClass UnitBuggy(
     "BGGY",          // NAME:			Text name of this unit type.
     ANIM_FRAG1,      // EXPLOSION:	Type of explosion when destroyed.
     4,               // Build level.
-    STRUCTF_NONE,    // Building prerequisite.
+    kStructFlagNone,    // Building prerequisite.
     true,            // Can this be a goodie surprise from a crate?
     true,            // Is a leader type?
     false,           // Only has eight facings?
@@ -800,9 +800,9 @@ static const UnitTypeClass UnitBuggy(
     300,     // COST:			Cost to build (Credits).
     5,       // SCENARIO:	Starting availability scenario.
     80, 42,  // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP |
-        HOUSEF_BAD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
+        kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_M60MG, WEAPON_NONE,
     ARMOR_ALUMINUM,   // ARMOR:		Armor type
     SPEED_WHEEL,      // MOVE:			Locomotion type.
@@ -819,7 +819,7 @@ static const UnitTypeClass UnitBike(
     "BIKE",        // NAME:			Text name of this unit type.
     ANIM_FRAG1,    // EXPLOSION:	Type of explosion when destroyed.
     2,             // Build level.
-    STRUCTF_NONE,  // Building prerequisite.
+    kStructFlagNone,  // Building prerequisite.
     true,          // Can this be a goodie surprise from a crate?
     true,          // Is a leader type?
     false,         // Only has eight facings?
@@ -856,9 +856,9 @@ static const UnitTypeClass UnitBike(
     500,     // COST:			Cost to build (Credits).
     5,       // SCENARIO:	Starting availability scenario.
     80, 45,  // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP |
-        HOUSEF_BAD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
+        kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_DRAGON, WEAPON_NONE,
     ARMOR_WOOD,   // ARMOR:		Armor type
     SPEED_WHEEL,  // MOVE:			Locomotion type.
@@ -875,7 +875,7 @@ static const UnitTypeClass UnitMLRS(
     "MSAM",         // NAME:			Text name of this unit type.
     ANIM_ART_EXP1,  // EXPLOSION:	Type of explosion when destroyed.
     7,              // Build level.
-    STRUCTF_EYE,    // Building prerequisite.
+    kStructFlagEye,    // Building prerequisite.
     true,           // Can this be a goodie surprise from a crate?
     true,           // Is a leader type?
     false,          // Only has eight facings?
@@ -908,9 +908,9 @@ static const UnitTypeClass UnitMLRS(
     800,     // COST:			Cost to build (Credits).
     11,      // SCENARIO:	Starting availability scenario.
     80, 72,  // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_BAD |
-        HOUSEF_GOOD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagBad |
+        kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_MLRS, WEAPON_NONE,
     ARMOR_ALUMINUM,  // ARMOR:		Armor type
     SPEED_TRACK,     // MOVE:			Locomotion type.
@@ -927,7 +927,7 @@ static const UnitTypeClass UnitAPC(
     "APC",             // NAME:			Text name of this unit type.
     ANIM_FRAG2,        // EXPLOSION:	Type of explosion when destroyed.
     4,                 // Build level.
-    STRUCTF_BARRACKS,  // Building prerequisite.
+    kStructFlagBarracks,  // Building prerequisite.
     true,              // Can this be a goodie surprise from a crate?
     true,              // Is a leader type?
     false,             // Only has eight facings?
@@ -960,9 +960,9 @@ static const UnitTypeClass UnitAPC(
     700,     // COST:			Cost to build (Credits).
     5,       // SCENARIO:	Starting availability scenario.
     80, 15,  // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_BAD | HOUSEF_JP |
-        HOUSEF_GOOD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagBad | kHouseFlagJp |
+        kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_M60MG, WEAPON_NONE,
     ARMOR_STEEL,        // ARMOR:		Armor type
     SPEED_TRACK,        // MOVE:			Locomotion type.
@@ -979,7 +979,7 @@ static const UnitTypeClass UnitGunBoat(
     "BOAT",        // NAME:			Text name of this unit type.
     ANIM_FBALL1,   // EXPLOSION:	Type of explosion when destroyed.
     99,            // Build level.
-    STRUCTF_NONE,  // Building prerequisite.
+    kStructFlagNone,  // Building prerequisite.
     false,         // Can this be a goodie surprise from a crate?
     true,          // Is a leader type?
     false,         // Only has eight facings?
@@ -1012,9 +1012,9 @@ static const UnitTypeClass UnitGunBoat(
     300,           // COST:			Cost to build (Credits).
     99,            // SCENARIO:	Starting availability scenario.
     80, 40,        // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_MULTI1 | HOUSEF_MULTI2 | HOUSEF_MULTI3 | HOUSEF_MULTI4 |
-        HOUSEF_MULTI5 | HOUSEF_MULTI6 | HOUSEF_JP | HOUSEF_GOOD |
-        HOUSEF_BAD,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
+        kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_TOMAHAWK, WEAPON_NONE,
     ARMOR_STEEL,   // ARMOR:		Armor type
     SPEED_FLOAT,   // MOVE:			Locomotion type.
@@ -1031,7 +1031,7 @@ static const UnitTypeClass UnitTric(
     "TRIC",         // NAME:			Text name of this unit type.
     ANIM_TRIC_DIE,  // EXPLOSION:	Type of explosion when destroyed.
     99,             // Build level.
-    STRUCTF_NONE,   // Building prerequisite.
+    kStructFlagNone,   // Building prerequisite.
     false,          // Can this be a goodie surprise from a crate?
     true,           // Is a leader type?
     true,           // Only has eight facings?
@@ -1064,7 +1064,7 @@ static const UnitTypeClass UnitTric(
     0,          // COST:			Cost to build (Credits).
     99,         // SCENARIO:	Starting availability scenario.
     50, 50,     // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_JP,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagJp,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_STEG, WEAPON_NONE,
     ARMOR_STEEL,   // ARMOR:		Armor type
     SPEED_TRACK,   // MOVE:			Locomotion type.
@@ -1081,7 +1081,7 @@ static const UnitTypeClass UnitTrex(
     "TREX",         // NAME:			Text name of this unit type.
     ANIM_TREX_DIE,  // EXPLOSION:	Type of explosion when destroyed.
     99,             // Build level.
-    STRUCTF_NONE,   // Building prerequisite.
+    kStructFlagNone,   // Building prerequisite.
     false,          // Can this be a goodie surprise from a crate?
     true,           // Is a leader type?
     true,           // Only has eight facings?
@@ -1114,7 +1114,7 @@ static const UnitTypeClass UnitTrex(
     0,          // COST:			Cost to build (Credits).
     99,         // SCENARIO:	Starting availability scenario.
     50, 50,     // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_JP,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagJp,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_TREX, WEAPON_NONE,
     ARMOR_STEEL,   // ARMOR:		Armor type
     SPEED_TRACK,   // MOVE:			Locomotion type.
@@ -1131,7 +1131,7 @@ static const UnitTypeClass UnitRapt(
     "RAPT",         // NAME:			Text name of this unit type.
     ANIM_RAPT_DIE,  // EXPLOSION:	Type of explosion when destroyed.
     99,             // Build level.
-    STRUCTF_NONE,   // Building prerequisite.
+    kStructFlagNone,   // Building prerequisite.
     false,          // Can this be a goodie surprise from a crate?
     true,           // Is a leader type?
     true,           // Only has eight facings?
@@ -1164,7 +1164,7 @@ static const UnitTypeClass UnitRapt(
     0,          // COST:			Cost to build (Credits).
     99,         // SCENARIO:	Starting availability scenario.
     50, 50,     // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_JP,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagJp,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_TREX, WEAPON_NONE,
     ARMOR_STEEL,   // ARMOR:		Armor type
     SPEED_TRACK,   // MOVE:			Locomotion type.
@@ -1181,7 +1181,7 @@ static const UnitTypeClass UnitSteg(
     "STEG",         // NAME:			Text name of this unit type.
     ANIM_STEG_DIE,  // EXPLOSION:	Type of explosion when destroyed.
     99,             // Build level.
-    STRUCTF_NONE,   // Building prerequisite.
+    kStructFlagNone,   // Building prerequisite.
     false,          // Can this be a goodie surprise from a crate?
     true,           // Is a leader type?
     true,           // Only has eight facings?
@@ -1214,7 +1214,7 @@ static const UnitTypeClass UnitSteg(
     0,          // COST:			Cost to build (Credits).
     99,         // SCENARIO:	Starting availability scenario.
     50, 50,     // RISK/RWRD:	Risk/reward rating values.
-    HOUSEF_JP,  // OWNABLE:		Ownable by house (bit field).
+    kHouseFlagJp,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_STEG, WEAPON_NONE,
     ARMOR_STEEL,   // ARMOR:		Armor type
     SPEED_TRACK,   // MOVE:			Locomotion type.

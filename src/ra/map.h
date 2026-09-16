@@ -97,7 +97,7 @@ class MapClass : public GScreenClass {
   bool Write_Binary(ByteSink& pipe);
   bool Place_Random_Crate();
   bool Remove_Crate(CELL cell);
-  bool Zone_Reset(int method);
+  bool Zone_Reset(uint32_t method);
   bool Zone_Cell(CELL cell, int zone);
   int Zone_Span(CELL cell, int zone, MZoneType check);
   bool Destroy_Bridge_At(CELL cell);

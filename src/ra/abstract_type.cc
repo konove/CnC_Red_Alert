@@ -29,6 +29,6 @@ int AbstractTypeClass::Full_Name() const {
   return FullName;
 }
 
-int AbstractTypeClass::Get_Ownable() const {
+uint32_t AbstractTypeClass::Get_Ownable() const {
   return kHouseFlagAllies | kHouseFlagSoviet | kHouseFlagOthers;
 }

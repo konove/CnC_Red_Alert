@@ -103,13 +103,12 @@ class CCINIClass : public INIClass {
                               WarheadType defvalue) const;
   WeaponType Get_WeaponType(const char* section, const char* entry,
                             WeaponType defvalue) const;
-  int32_t Get_Owners(const char* section, const char* entry,
-                     int32_t defvalue) const;
+  uint32_t Get_Owners(const char* section, const char* entry,
+                      uint32_t defvalue) const;
   CrateType Get_CrateType(const char* section, const char* entry,
                           CrateType defvalue) const;
 
-  bool Put_Buildings(const char* section, const char* entry,
-                     std::int32_t value);
+  bool Put_Buildings(const char* section, const char* entry, uint64_t value);
   bool Put_AnimType(const char* section, const char* entry, AnimType value);
   bool Put_UnitType(const char* section, const char* entry, UnitType value);
   bool Put_ArmorType(const char* section, const char* entry, ArmorType value);
@@ -120,7 +119,7 @@ class CCINIClass : public INIClass {
   bool Put_VQType(const char* section, const char* entry, VQType value);
   bool Put_OverlayType(const char* section, const char* entry,
                        OverlayType value);
-  bool Put_Owners(const char* section, const char* entry, int32_t value);
+  bool Put_Owners(const char* section, const char* entry, uint32_t value);
   bool Put_SourceType(const char* section, const char* entry, SourceType value);
   bool Put_TerrainType(const char* section, const char* entry,
                        TerrainType value);

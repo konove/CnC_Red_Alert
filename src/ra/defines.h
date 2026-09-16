@@ -42,6 +42,7 @@
 #include <utility>
 
 #include "base/attributes.h"
+#include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
 #include "tech/fixed.h"
 
@@ -404,11 +405,12 @@ enum MZoneType {
 };
 
 // Bit masks over MZoneType for Map.Zone_Reset and zone checks.
-inline constexpr int kZoneFlagNormal = 1 << MZONE_NORMAL;
-inline constexpr int kZoneFlagCrusher = 1 << MZONE_CRUSHER;
-inline constexpr int kZoneFlagDestroyer = 1 << MZONE_DESTROYER;
-inline constexpr int kZoneFlagWater = 1 << MZONE_WATER;
-inline constexpr int kZoneFlagAll =
+inline constexpr uint32_t kZoneFlagNormal = base::Bit<uint32_t>(MZONE_NORMAL);
+inline constexpr uint32_t kZoneFlagCrusher = base::Bit<uint32_t>(MZONE_CRUSHER);
+inline constexpr uint32_t kZoneFlagDestroyer =
+    base::Bit<uint32_t>(MZONE_DESTROYER);
+inline constexpr uint32_t kZoneFlagWater = base::Bit<uint32_t>(MZONE_WATER);
+inline constexpr uint32_t kZoneFlagAll =
     kZoneFlagNormal | kZoneFlagCrusher | kZoneFlagDestroyer | kZoneFlagWater;
 
 /**********************************************************************
@@ -829,33 +831,37 @@ enum HousesType : int8_t {
 };
 
 // House bit masks over HousesType, for owner lists.
-inline constexpr int kHouseFlagEngland = 1 << HOUSE_ENGLAND;
-inline constexpr int kHouseFlagSpain = 1 << HOUSE_SPAIN;
-inline constexpr int kHouseFlagGreece = 1 << HOUSE_GREECE;
-inline constexpr int kHouseFlagUssr = 1 << HOUSE_USSR;
-inline constexpr int kHouseFlagUkraine = 1 << HOUSE_UKRAINE;
-inline constexpr int kHouseFlagGermany = 1 << HOUSE_GERMANY;
-inline constexpr int kHouseFlagFrance = 1 << HOUSE_FRANCE;
-inline constexpr int kHouseFlagTurkey = 1 << HOUSE_TURKEY;
-inline constexpr int kHouseFlagGood = 1 << HOUSE_GOOD;
-inline constexpr int kHouseFlagBad = 1 << HOUSE_BAD;
-inline constexpr int kHouseFlagNeutral = 1 << HOUSE_NEUTRAL;
-inline constexpr int kHouseFlagJp = 1 << HOUSE_JP;
-inline constexpr int kHouseFlagMulti1 = 1 << HOUSE_MULTI1;
-inline constexpr int kHouseFlagMulti2 = 1 << HOUSE_MULTI2;
-inline constexpr int kHouseFlagMulti3 = 1 << HOUSE_MULTI3;
-inline constexpr int kHouseFlagMulti4 = 1 << HOUSE_MULTI4;
-inline constexpr int kHouseFlagMulti5 = 1 << HOUSE_MULTI5;
-inline constexpr int kHouseFlagMulti6 = 1 << HOUSE_MULTI6;
-inline constexpr int kHouseFlagMulti7 = 1 << HOUSE_MULTI7;
-inline constexpr int kHouseFlagMulti8 = 1 << HOUSE_MULTI8;
-inline constexpr int kHouseFlagNone = 0;
-inline constexpr int kHouseFlagAllies =
+inline constexpr uint32_t kHouseFlagEngland =
+    base::Bit<uint32_t>(HOUSE_ENGLAND);
+inline constexpr uint32_t kHouseFlagSpain = base::Bit<uint32_t>(HOUSE_SPAIN);
+inline constexpr uint32_t kHouseFlagGreece = base::Bit<uint32_t>(HOUSE_GREECE);
+inline constexpr uint32_t kHouseFlagUssr = base::Bit<uint32_t>(HOUSE_USSR);
+inline constexpr uint32_t kHouseFlagUkraine =
+    base::Bit<uint32_t>(HOUSE_UKRAINE);
+inline constexpr uint32_t kHouseFlagGermany =
+    base::Bit<uint32_t>(HOUSE_GERMANY);
+inline constexpr uint32_t kHouseFlagFrance = base::Bit<uint32_t>(HOUSE_FRANCE);
+inline constexpr uint32_t kHouseFlagTurkey = base::Bit<uint32_t>(HOUSE_TURKEY);
+inline constexpr uint32_t kHouseFlagGood = base::Bit<uint32_t>(HOUSE_GOOD);
+inline constexpr uint32_t kHouseFlagBad = base::Bit<uint32_t>(HOUSE_BAD);
+inline constexpr uint32_t kHouseFlagNeutral =
+    base::Bit<uint32_t>(HOUSE_NEUTRAL);
+inline constexpr uint32_t kHouseFlagJp = base::Bit<uint32_t>(HOUSE_JP);
+inline constexpr uint32_t kHouseFlagMulti1 = base::Bit<uint32_t>(HOUSE_MULTI1);
+inline constexpr uint32_t kHouseFlagMulti2 = base::Bit<uint32_t>(HOUSE_MULTI2);
+inline constexpr uint32_t kHouseFlagMulti3 = base::Bit<uint32_t>(HOUSE_MULTI3);
+inline constexpr uint32_t kHouseFlagMulti4 = base::Bit<uint32_t>(HOUSE_MULTI4);
+inline constexpr uint32_t kHouseFlagMulti5 = base::Bit<uint32_t>(HOUSE_MULTI5);
+inline constexpr uint32_t kHouseFlagMulti6 = base::Bit<uint32_t>(HOUSE_MULTI6);
+inline constexpr uint32_t kHouseFlagMulti7 = base::Bit<uint32_t>(HOUSE_MULTI7);
+inline constexpr uint32_t kHouseFlagMulti8 = base::Bit<uint32_t>(HOUSE_MULTI8);
+inline constexpr uint32_t kHouseFlagNone = 0;
+inline constexpr uint32_t kHouseFlagAllies =
     kHouseFlagEngland | kHouseFlagSpain | kHouseFlagGreece | kHouseFlagGermany |
     kHouseFlagFrance | kHouseFlagTurkey | kHouseFlagGood;
-inline constexpr int kHouseFlagSoviet =
+inline constexpr uint32_t kHouseFlagSoviet =
     kHouseFlagUssr | kHouseFlagUkraine | kHouseFlagBad;
-inline constexpr int kHouseFlagOthers =
+inline constexpr uint32_t kHouseFlagOthers =
     kHouseFlagNeutral | kHouseFlagJp | kHouseFlagMulti1 | kHouseFlagMulti2 |
     kHouseFlagMulti3 | kHouseFlagMulti4 | kHouseFlagMulti5 | kHouseFlagMulti6 |
     kHouseFlagMulti7 | kHouseFlagMulti8;
@@ -1065,31 +1071,37 @@ enum StructType {
 // Building bit masks over StructType, matching HouseClass::BScan. The enum
 // has more than 32 entries, so the masks are 64 bits wide.
 inline constexpr uint64_t kStructFlagNone = 0;
-inline constexpr uint64_t kStructFlagAdvancedTech = uint64_t{1}
-                                                    << STRUCT_ADVANCED_TECH;
-inline constexpr uint64_t kStructFlagIronCurtain = uint64_t{1}
-                                                   << STRUCT_IRON_CURTAIN;
-inline constexpr uint64_t kStructFlagWeap = uint64_t{1} << STRUCT_WEAP;
-inline constexpr uint64_t kStructFlagChronosphere = uint64_t{1}
-                                                    << STRUCT_CHRONOSPHERE;
-inline constexpr uint64_t kStructFlagRadar = uint64_t{1} << STRUCT_RADAR;
-inline constexpr uint64_t kStructFlagConst = uint64_t{1} << STRUCT_CONST;
-inline constexpr uint64_t kStructFlagRefinery = uint64_t{1} << STRUCT_REFINERY;
-inline constexpr uint64_t kStructFlagHelipad = uint64_t{1} << STRUCT_HELIPAD;
-inline constexpr uint64_t kStructFlagSam = uint64_t{1} << STRUCT_SAM;
-inline constexpr uint64_t kStructFlagAirstrip = uint64_t{1} << STRUCT_AIRSTRIP;
-inline constexpr uint64_t kStructFlagPower = uint64_t{1} << STRUCT_POWER;
-inline constexpr uint64_t kStructFlagAdvancedPower = uint64_t{1}
-                                                     << STRUCT_ADVANCED_POWER;
-inline constexpr uint64_t kStructFlagSovietTech = uint64_t{1}
-                                                  << STRUCT_SOVIET_TECH;
-inline constexpr uint64_t kStructFlagBarracks = uint64_t{1} << STRUCT_BARRACKS;
-inline constexpr uint64_t kStructFlagTent = uint64_t{1} << STRUCT_TENT;
-inline constexpr uint64_t kStructFlagRepair = uint64_t{1} << STRUCT_REPAIR;
-inline constexpr uint64_t kStructFlagMslo = uint64_t{1} << STRUCT_MSLO;
-inline constexpr uint64_t kStructFlagFakeConst = uint64_t{1}
-                                                 << STRUCT_FAKECONST;
-inline constexpr uint64_t kStructFlagFakeWeap = uint64_t{1} << STRUCT_FAKEWEAP;
+inline constexpr uint64_t kStructFlagAdvancedTech =
+    base::Bit<uint64_t>(STRUCT_ADVANCED_TECH);
+inline constexpr uint64_t kStructFlagIronCurtain =
+    base::Bit<uint64_t>(STRUCT_IRON_CURTAIN);
+inline constexpr uint64_t kStructFlagWeap = base::Bit<uint64_t>(STRUCT_WEAP);
+inline constexpr uint64_t kStructFlagChronosphere =
+    base::Bit<uint64_t>(STRUCT_CHRONOSPHERE);
+inline constexpr uint64_t kStructFlagRadar = base::Bit<uint64_t>(STRUCT_RADAR);
+inline constexpr uint64_t kStructFlagConst = base::Bit<uint64_t>(STRUCT_CONST);
+inline constexpr uint64_t kStructFlagRefinery =
+    base::Bit<uint64_t>(STRUCT_REFINERY);
+inline constexpr uint64_t kStructFlagHelipad =
+    base::Bit<uint64_t>(STRUCT_HELIPAD);
+inline constexpr uint64_t kStructFlagSam = base::Bit<uint64_t>(STRUCT_SAM);
+inline constexpr uint64_t kStructFlagAirstrip =
+    base::Bit<uint64_t>(STRUCT_AIRSTRIP);
+inline constexpr uint64_t kStructFlagPower = base::Bit<uint64_t>(STRUCT_POWER);
+inline constexpr uint64_t kStructFlagAdvancedPower =
+    base::Bit<uint64_t>(STRUCT_ADVANCED_POWER);
+inline constexpr uint64_t kStructFlagSovietTech =
+    base::Bit<uint64_t>(STRUCT_SOVIET_TECH);
+inline constexpr uint64_t kStructFlagBarracks =
+    base::Bit<uint64_t>(STRUCT_BARRACKS);
+inline constexpr uint64_t kStructFlagTent = base::Bit<uint64_t>(STRUCT_TENT);
+inline constexpr uint64_t kStructFlagRepair =
+    base::Bit<uint64_t>(STRUCT_REPAIR);
+inline constexpr uint64_t kStructFlagMslo = base::Bit<uint64_t>(STRUCT_MSLO);
+inline constexpr uint64_t kStructFlagFakeConst =
+    base::Bit<uint64_t>(STRUCT_FAKECONST);
+inline constexpr uint64_t kStructFlagFakeWeap =
+    base::Bit<uint64_t>(STRUCT_FAKEWEAP);
 
 /**********************************************************************
 **	The overlays are enumerated here. An overlay functions similarly to
@@ -1163,7 +1175,7 @@ enum InfantryType {
 };
 
 // Infantry bit mask over InfantryType, matching HouseClass::IScan.
-inline constexpr uint64_t kInfantryFlagDog = uint64_t{1} << INFANTRY_DOG;
+inline constexpr uint64_t kInfantryFlagDog = base::Bit<uint64_t>(INFANTRY_DOG);
 
 /**********************************************************************
 **	The game units are enumerated here. These include not only traditional
@@ -1199,8 +1211,9 @@ enum UnitType {
 };
 
 // Unit bit masks over UnitType, matching HouseClass::UScan.
-inline constexpr uint64_t kUnitFlagHarvester = uint64_t{1} << UNIT_HARVESTER;
-inline constexpr uint64_t kUnitFlagMcv = uint64_t{1} << UNIT_MCV;
+inline constexpr uint64_t kUnitFlagHarvester =
+    base::Bit<uint64_t>(UNIT_HARVESTER);
+inline constexpr uint64_t kUnitFlagMcv = base::Bit<uint64_t>(UNIT_MCV);
 
 /**********************************************************************
 **	The naval vessels are enumerated below.
@@ -2324,9 +2337,11 @@ enum TheaterType {
 };
 
 // Theater bit masks over TheaterType, for the object type tables.
-inline constexpr int kTheaterFlagTemperate = 1 << THEATER_TEMPERATE;
-inline constexpr int kTheaterFlagSnow = 1 << THEATER_SNOW;
-inline constexpr int kTheaterFlagInterior = 1 << THEATER_INTERIOR;
+inline constexpr uint32_t kTheaterFlagTemperate =
+    base::Bit<uint32_t>(THEATER_TEMPERATE);
+inline constexpr uint32_t kTheaterFlagSnow = base::Bit<uint32_t>(THEATER_SNOW);
+inline constexpr uint32_t kTheaterFlagInterior =
+    base::Bit<uint32_t>(THEATER_INTERIOR);
 
 struct TheaterDataType {
   char Name[16];

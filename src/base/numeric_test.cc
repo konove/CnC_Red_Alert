@@ -31,7 +31,28 @@ TEST(ToSignedTest, PreservesRepresentableValues) {
   static_assert(ToSigned(3U) == 3);
 }
 
+enum Index { kFirst, kSecond, kLast = 31 };
+
+TEST(BitTest, SetsTheIndexedBit) {
+  EXPECT_EQ(Bit<uint32_t>(0), 1U);
+  EXPECT_EQ(Bit<uint32_t>(kSecond), 2U);
+  EXPECT_EQ(Bit<uint32_t>(kLast), 0x80000000U);
+  EXPECT_EQ(Bit<uint64_t>(63), uint64_t{1} << 63);
+  EXPECT_EQ(Bit<uint8_t>(7), uint8_t{0x80});
+  static_assert(Bit<uint32_t>(kFirst) == 1U);
+  static_assert((Bit<uint64_t>(40) | Bit<uint64_t>(1)) ==
+                (uint64_t{1} << 40 | 2U));
+}
+
 #ifndef NDEBUG
+TEST(BitDeathTest, RejectsIndicesOutsideTheWidth) {
+  // The switch is inside GoogleTest's macro.
+  // NOLINTNEXTLINE(clang-diagnostic-switch-default)
+  EXPECT_DEATH(Bit<uint32_t>(32), "digits");
+  // NOLINTNEXTLINE(clang-diagnostic-switch-default)
+  EXPECT_DEATH(Bit<uint32_t>(-1), "index >= 0");
+}
+
 TEST(ToSizeDeathTest, RejectsNegativeValues) {
   // The switch is inside GoogleTest's macro.
   // NOLINTNEXTLINE(clang-diagnostic-switch-default)

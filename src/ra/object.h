@@ -198,7 +198,7 @@ class ObjectClass : public AbstractClass {
            RTTI == RTTI_INFANTRY || RTTI == RTTI_VESSEL ||
            RTTI == RTTI_AIRCRAFT;
   }
-  [[nodiscard]] virtual int Get_Ownable() const;
+  [[nodiscard]] virtual uint32_t Get_Ownable() const;
   [[nodiscard]] virtual const ObjectTypeClass& Class_Of() const = 0;
   [[nodiscard]] const char* Name() const override;
   [[nodiscard]] virtual int Full_Name() const;

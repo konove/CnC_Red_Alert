@@ -110,893 +110,893 @@ static const char slope111111[] = {0, 1, 2, 3, 4, 5, -1};
 static const char slope1[] = {0, -1};
 
 static const TemplateTypeClass Empty(TEMPLATE_CLEAR1,
-                                     THEATERF_WINTER | THEATERF_DESERT |
-                                         THEATERF_TEMPERATE | THEATERF_JUNGLE,
+                                     kTheaterFlagWinter | kTheaterFlagDesert |
+                                         kTheaterFlagTemperate | kTheaterFlagJungle,
                                      "CLEAR1", TXT_CLEAR, LAND_CLEAR, 1, 1,
                                      LAND_CLEAR, nullptr);
 static const TemplateTypeClass Clear(TEMPLATE_CLEAR1,
-                                     THEATERF_WINTER | THEATERF_DESERT |
-                                         THEATERF_TEMPERATE | THEATERF_JUNGLE,
+                                     kTheaterFlagWinter | kTheaterFlagDesert |
+                                         kTheaterFlagTemperate | kTheaterFlagJungle,
                                      "CLEAR1", TXT_CLEAR, LAND_CLEAR, 1, 1,
                                      LAND_CLEAR, nullptr);
 static const TemplateTypeClass Road1(TEMPLATE_ROAD1,
-                                     THEATERF_WINTER | THEATERF_DESERT |
-                                         THEATERF_TEMPERATE,
+                                     kTheaterFlagWinter | kTheaterFlagDesert |
+                                         kTheaterFlagTemperate,
                                      "D01", TXT_ROAD, LAND_CLEAR, 2, 2,
                                      LAND_CLEAR, nullptr);
 static const TemplateTypeClass Road2(TEMPLATE_ROAD2,
-                                     THEATERF_WINTER | THEATERF_DESERT |
-                                         THEATERF_TEMPERATE,
+                                     kTheaterFlagWinter | kTheaterFlagDesert |
+                                         kTheaterFlagTemperate,
                                      "D02", TXT_ROAD, LAND_CLEAR, 2, 2,
                                      LAND_CLEAR, nullptr);
 static const TemplateTypeClass Road3(TEMPLATE_ROAD3,
-                                     THEATERF_WINTER | THEATERF_DESERT |
-                                         THEATERF_TEMPERATE,
+                                     kTheaterFlagWinter | kTheaterFlagDesert |
+                                         kTheaterFlagTemperate,
                                      "D03", TXT_ROAD, LAND_CLEAR, 1, 2,
                                      LAND_CLEAR, nullptr);
 static const TemplateTypeClass Road4(TEMPLATE_ROAD4,
-                                     THEATERF_WINTER | THEATERF_DESERT |
-                                         THEATERF_TEMPERATE,
+                                     kTheaterFlagWinter | kTheaterFlagDesert |
+                                         kTheaterFlagTemperate,
                                      "D04", TXT_ROAD, LAND_CLEAR, 2, 2,
                                      LAND_CLEAR, nullptr);
 static const TemplateTypeClass Road5(TEMPLATE_ROAD5,
-                                     THEATERF_WINTER | THEATERF_DESERT |
-                                         THEATERF_TEMPERATE,
+                                     kTheaterFlagWinter | kTheaterFlagDesert |
+                                         kTheaterFlagTemperate,
                                      "D05", TXT_ROAD, LAND_CLEAR, 3, 4,
                                      LAND_CLEAR, nullptr);
 static const TemplateTypeClass Road6(TEMPLATE_ROAD6,
-                                     THEATERF_WINTER | THEATERF_DESERT |
-                                         THEATERF_TEMPERATE,
+                                     kTheaterFlagWinter | kTheaterFlagDesert |
+                                         kTheaterFlagTemperate,
                                      "D06", TXT_ROAD, LAND_CLEAR, 2, 3,
                                      LAND_CLEAR, nullptr);
 static const TemplateTypeClass Road7(TEMPLATE_ROAD7,
-                                     THEATERF_WINTER | THEATERF_DESERT |
-                                         THEATERF_TEMPERATE,
+                                     kTheaterFlagWinter | kTheaterFlagDesert |
+                                         kTheaterFlagTemperate,
                                      "D07", TXT_ROAD, LAND_CLEAR, 3, 2,
                                      LAND_CLEAR, nullptr);
 static const TemplateTypeClass Road8(TEMPLATE_ROAD8,
-                                     THEATERF_WINTER | THEATERF_DESERT |
-                                         THEATERF_TEMPERATE,
+                                     kTheaterFlagWinter | kTheaterFlagDesert |
+                                         kTheaterFlagTemperate,
                                      "D08", TXT_ROAD, LAND_CLEAR, 3, 2,
                                      LAND_CLEAR, nullptr);
 static const TemplateTypeClass Road9(TEMPLATE_ROAD9,
-                                     THEATERF_WINTER | THEATERF_DESERT |
-                                         THEATERF_TEMPERATE,
+                                     kTheaterFlagWinter | kTheaterFlagDesert |
+                                         kTheaterFlagTemperate,
                                      "D09", TXT_ROAD, LAND_CLEAR, 4, 3,
                                      LAND_CLEAR, nullptr);
 static const TemplateTypeClass Road10(TEMPLATE_ROAD10,
-                                      THEATERF_WINTER | THEATERF_DESERT |
-                                          THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagDesert |
+                                          kTheaterFlagTemperate,
                                       "D10", TXT_ROAD, LAND_CLEAR, 4, 2,
                                       LAND_CLEAR, nullptr);
 static const TemplateTypeClass Road11(TEMPLATE_ROAD11,
-                                      THEATERF_WINTER | THEATERF_DESERT |
-                                          THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagDesert |
+                                          kTheaterFlagTemperate,
                                       "D11", TXT_ROAD, LAND_CLEAR, 2, 3,
                                       LAND_CLEAR, nullptr);
 static const TemplateTypeClass Road12(TEMPLATE_ROAD12,
-                                      THEATERF_WINTER | THEATERF_DESERT |
-                                          THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagDesert |
+                                          kTheaterFlagTemperate,
                                       "D12", TXT_ROAD, LAND_CLEAR, 2, 2,
                                       LAND_CLEAR, nullptr);
 static const TemplateTypeClass Road13(TEMPLATE_ROAD13,
-                                      THEATERF_WINTER | THEATERF_DESERT |
-                                          THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagDesert |
+                                          kTheaterFlagTemperate,
                                       "D13", TXT_ROAD, LAND_CLEAR, 4, 3,
                                       LAND_CLEAR, nullptr);
 static const TemplateTypeClass Road14(TEMPLATE_ROAD14,
-                                      THEATERF_WINTER | THEATERF_DESERT |
-                                          THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagDesert |
+                                          kTheaterFlagTemperate,
                                       "D14", TXT_ROAD, LAND_CLEAR, 3, 3,
                                       LAND_CLEAR, nullptr);
 static const TemplateTypeClass Road15(TEMPLATE_ROAD15,
-                                      THEATERF_WINTER | THEATERF_DESERT |
-                                          THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagDesert |
+                                          kTheaterFlagTemperate,
                                       "D15", TXT_ROAD, LAND_CLEAR, 3, 3,
                                       LAND_CLEAR, nullptr);
 static const TemplateTypeClass Road16(TEMPLATE_ROAD16,
-                                      THEATERF_WINTER | THEATERF_DESERT |
-                                          THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagDesert |
+                                          kTheaterFlagTemperate,
                                       "D16", TXT_ROAD, LAND_CLEAR, 3, 3,
                                       LAND_CLEAR, nullptr);
 static const TemplateTypeClass Road17(TEMPLATE_ROAD17,
-                                      THEATERF_WINTER | THEATERF_DESERT |
-                                          THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagDesert |
+                                          kTheaterFlagTemperate,
                                       "D17", TXT_ROAD, LAND_CLEAR, 3, 2,
                                       LAND_CLEAR, nullptr);
 static const TemplateTypeClass Road18(TEMPLATE_ROAD18,
-                                      THEATERF_WINTER | THEATERF_DESERT |
-                                          THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagDesert |
+                                          kTheaterFlagTemperate,
                                       "D18", TXT_ROAD, LAND_CLEAR, 3, 3,
                                       LAND_CLEAR, nullptr);
 static const TemplateTypeClass Road19(TEMPLATE_ROAD19,
-                                      THEATERF_WINTER | THEATERF_DESERT |
-                                          THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagDesert |
+                                          kTheaterFlagTemperate,
                                       "D19", TXT_ROAD, LAND_CLEAR, 3, 3,
                                       LAND_CLEAR, nullptr);
 static const TemplateTypeClass Road20(TEMPLATE_ROAD20,
-                                      THEATERF_WINTER | THEATERF_DESERT |
-                                          THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagDesert |
+                                          kTheaterFlagTemperate,
                                       "D20", TXT_ROAD, LAND_CLEAR, 3, 3,
                                       LAND_CLEAR, nullptr);
 static const TemplateTypeClass Road21(TEMPLATE_ROAD21,
-                                      THEATERF_WINTER | THEATERF_DESERT |
-                                          THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagDesert |
+                                          kTheaterFlagTemperate,
                                       "D21", TXT_ROAD, LAND_CLEAR, 3, 2,
                                       LAND_CLEAR, nullptr);
 static const TemplateTypeClass Road22(TEMPLATE_ROAD22,
-                                      THEATERF_WINTER | THEATERF_DESERT |
-                                          THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagDesert |
+                                          kTheaterFlagTemperate,
                                       "D22", TXT_ROAD, LAND_CLEAR, 3, 3,
                                       LAND_CLEAR, nullptr);
 static const TemplateTypeClass Road23(TEMPLATE_ROAD23,
-                                      THEATERF_WINTER | THEATERF_DESERT |
-                                          THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagDesert |
+                                          kTheaterFlagTemperate,
                                       "D23", TXT_ROAD, LAND_CLEAR, 3, 3,
                                       LAND_CLEAR, nullptr);
 static const TemplateTypeClass Road24(TEMPLATE_ROAD24,
-                                      THEATERF_WINTER | THEATERF_DESERT |
-                                          THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagDesert |
+                                          kTheaterFlagTemperate,
                                       "D24", TXT_ROAD, LAND_CLEAR, 3, 3,
                                       LAND_CLEAR, nullptr);
 static const TemplateTypeClass Road25(TEMPLATE_ROAD25,
-                                      THEATERF_WINTER | THEATERF_DESERT |
-                                          THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagDesert |
+                                          kTheaterFlagTemperate,
                                       "D25", TXT_ROAD, LAND_CLEAR, 3, 3,
                                       LAND_CLEAR, nullptr);
 static const TemplateTypeClass Road26(TEMPLATE_ROAD26,
-                                      THEATERF_WINTER | THEATERF_DESERT |
-                                          THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagDesert |
+                                          kTheaterFlagTemperate,
                                       "D26", TXT_ROAD, LAND_CLEAR, 2, 2,
                                       LAND_CLEAR, nullptr);
 static const TemplateTypeClass Road27(TEMPLATE_ROAD27,
-                                      THEATERF_WINTER | THEATERF_DESERT |
-                                          THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagDesert |
+                                          kTheaterFlagTemperate,
                                       "D27", TXT_ROAD, LAND_CLEAR, 2, 2,
                                       LAND_CLEAR, nullptr);
 static const TemplateTypeClass Road28(TEMPLATE_ROAD28,
-                                      THEATERF_WINTER | THEATERF_DESERT |
-                                          THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagDesert |
+                                          kTheaterFlagTemperate,
                                       "D28", TXT_ROAD, LAND_CLEAR, 2, 2,
                                       LAND_CLEAR, nullptr);
 static const TemplateTypeClass Road29(TEMPLATE_ROAD29,
-                                      THEATERF_WINTER | THEATERF_DESERT |
-                                          THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagDesert |
+                                          kTheaterFlagTemperate,
                                       "D29", TXT_ROAD, LAND_CLEAR, 2, 2,
                                       LAND_CLEAR, nullptr);
 static const TemplateTypeClass Road30(TEMPLATE_ROAD30,
-                                      THEATERF_WINTER | THEATERF_DESERT |
-                                          THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagDesert |
+                                          kTheaterFlagTemperate,
                                       "D30", TXT_ROAD, LAND_CLEAR, 2, 2,
                                       LAND_CLEAR, nullptr);
 static const TemplateTypeClass Road31(TEMPLATE_ROAD31,
-                                      THEATERF_WINTER | THEATERF_DESERT |
-                                          THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagDesert |
+                                          kTheaterFlagTemperate,
                                       "D31", TXT_ROAD, LAND_CLEAR, 2, 2,
                                       LAND_CLEAR, nullptr);
 static const TemplateTypeClass Road32(TEMPLATE_ROAD32,
-                                      THEATERF_WINTER | THEATERF_DESERT |
-                                          THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagDesert |
+                                          kTheaterFlagTemperate,
                                       "D32", TXT_ROAD, LAND_CLEAR, 2, 2,
                                       LAND_CLEAR, nullptr);
 static const TemplateTypeClass Road33(TEMPLATE_ROAD33,
-                                      THEATERF_WINTER | THEATERF_DESERT |
-                                          THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagDesert |
+                                          kTheaterFlagTemperate,
                                       "D33", TXT_ROAD, LAND_CLEAR, 2, 2,
                                       LAND_CLEAR, nullptr);
 static const TemplateTypeClass Road34(TEMPLATE_ROAD34,
-                                      THEATERF_WINTER | THEATERF_DESERT |
-                                          THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagDesert |
+                                          kTheaterFlagTemperate,
                                       "D34", TXT_ROAD, LAND_CLEAR, 3, 3,
                                       LAND_CLEAR, nullptr);
 static const TemplateTypeClass Road35(TEMPLATE_ROAD35,
-                                      THEATERF_WINTER | THEATERF_DESERT |
-                                          THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagDesert |
+                                          kTheaterFlagTemperate,
                                       "D35", TXT_ROAD, LAND_CLEAR, 3, 3,
                                       LAND_CLEAR, nullptr);
 static const TemplateTypeClass Road36(TEMPLATE_ROAD36,
-                                      THEATERF_WINTER | THEATERF_DESERT |
-                                          THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagDesert |
+                                          kTheaterFlagTemperate,
                                       "D36", TXT_ROAD, LAND_CLEAR, 2, 2,
                                       LAND_CLEAR, nullptr);
 static const TemplateTypeClass Road37(TEMPLATE_ROAD37,
-                                      THEATERF_WINTER | THEATERF_DESERT |
-                                          THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagDesert |
+                                          kTheaterFlagTemperate,
                                       "D37", TXT_ROAD, LAND_CLEAR, 2, 2,
                                       LAND_CLEAR, nullptr);
 static const TemplateTypeClass Road38(TEMPLATE_ROAD38,
-                                      THEATERF_WINTER | THEATERF_DESERT |
-                                          THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagDesert |
+                                          kTheaterFlagTemperate,
                                       "D38", TXT_ROAD, LAND_CLEAR, 2, 2,
                                       LAND_CLEAR, nullptr);
 static const TemplateTypeClass Road39(TEMPLATE_ROAD39,
-                                      THEATERF_WINTER | THEATERF_DESERT |
-                                          THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagDesert |
+                                          kTheaterFlagTemperate,
                                       "D39", TXT_ROAD, LAND_CLEAR, 2, 2,
                                       LAND_CLEAR, nullptr);
 static const TemplateTypeClass Road40(TEMPLATE_ROAD40,
-                                      THEATERF_WINTER | THEATERF_DESERT |
-                                          THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagDesert |
+                                          kTheaterFlagTemperate,
                                       "D40", TXT_ROAD, LAND_CLEAR, 2, 2,
                                       LAND_CLEAR, nullptr);
 static const TemplateTypeClass Road41(TEMPLATE_ROAD41,
-                                      THEATERF_WINTER | THEATERF_DESERT |
-                                          THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagDesert |
+                                          kTheaterFlagTemperate,
                                       "D41", TXT_ROAD, LAND_CLEAR, 2, 2,
                                       LAND_CLEAR, nullptr);
 static const TemplateTypeClass Road42(TEMPLATE_ROAD42,
-                                      THEATERF_WINTER | THEATERF_DESERT |
-                                          THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagDesert |
+                                          kTheaterFlagTemperate,
                                       "D42", TXT_ROAD, LAND_CLEAR, 2, 2,
                                       LAND_CLEAR, nullptr);
 static const TemplateTypeClass Road43(TEMPLATE_ROAD43,
-                                      THEATERF_WINTER | THEATERF_DESERT |
-                                          THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagDesert |
+                                          kTheaterFlagTemperate,
                                       "D43", TXT_ROAD, LAND_CLEAR, 2, 2,
                                       LAND_CLEAR, nullptr);
 static const TemplateTypeClass Water(TEMPLATE_WATER,
-                                     THEATERF_WINTER | THEATERF_TEMPERATE |
-                                         THEATERF_DESERT,
+                                     kTheaterFlagWinter | kTheaterFlagTemperate |
+                                         kTheaterFlagDesert,
                                      "W1", TXT_WATER, LAND_WATER, 1, 1,
                                      LAND_WATER, nullptr);
 static const TemplateTypeClass Water2(TEMPLATE_WATER2,
-                                      THEATERF_WINTER | THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagTemperate,
                                       "W2", TXT_WATER, LAND_WATER, 2, 2,
                                       LAND_WATER, nullptr);
 static const TemplateTypeClass Shore1(TEMPLATE_SHORE1,
-                                      THEATERF_WINTER | THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagTemperate,
                                       "SH1", TXT_WATER, LAND_WATER, 3, 3,
                                       LAND_BEACH, slope111111);
 static const TemplateTypeClass Shore2(TEMPLATE_SHORE2,
-                                      THEATERF_WINTER | THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagTemperate,
                                       "SH2", TXT_WATER, LAND_ROCK, 3, 3,
                                       LAND_BEACH, slope111);
 static const TemplateTypeClass Shore3(TEMPLATE_SHORE3,
-                                      THEATERF_WINTER | THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagTemperate,
                                       "SH3", TXT_WATER, LAND_ROCK, 1, 1,
                                       LAND_WATER, nullptr);
 static const TemplateTypeClass Shore4(TEMPLATE_SHORE4,
-                                      THEATERF_WINTER | THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagTemperate,
                                       "SH4", TXT_WATER, LAND_ROCK, 2, 1,
                                       LAND_WATER, nullptr);
 static const TemplateTypeClass Shore5(TEMPLATE_SHORE5,
-                                      THEATERF_WINTER | THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagTemperate,
                                       "SH5", TXT_WATER, LAND_WATER, 3, 3,
                                       LAND_BEACH, slope111111);
 static const TemplateTypeClass Shore6(TEMPLATE_SHORE6,
-                                      THEATERF_WINTER | THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagTemperate,
                                       "SH6", TXT_WATER, LAND_WATER, 3, 3,
                                       LAND_BEACH, slope111111);
 static const TemplateTypeClass Shore7(TEMPLATE_SHORE7,
-                                      THEATERF_WINTER | THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagTemperate,
                                       "SH7", TXT_WATER, LAND_WATER, 2, 2,
                                       LAND_BEACH, slope1);
 static const TemplateTypeClass Shore8(TEMPLATE_SHORE8,
-                                      THEATERF_WINTER | THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagTemperate,
                                       "SH8", TXT_WATER, LAND_WATER, 3, 3,
                                       LAND_BEACH, slope11111111);
 static const TemplateTypeClass Shore9(TEMPLATE_SHORE9,
-                                      THEATERF_WINTER | THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagTemperate,
                                       "SH9", TXT_WATER, LAND_WATER, 3, 3,
                                       LAND_BEACH, slope111111011);
 static const TemplateTypeClass Shore10(TEMPLATE_SHORE10,
-                                       THEATERF_WINTER | THEATERF_TEMPERATE,
+                                       kTheaterFlagWinter | kTheaterFlagTemperate,
                                        "SH10", TXT_WATER, LAND_WATER, 2, 2,
                                        LAND_BEACH, slope01);
 static const TemplateTypeClass Shore11(TEMPLATE_SHORE11,
-                                       THEATERF_WINTER | THEATERF_TEMPERATE,
+                                       kTheaterFlagWinter | kTheaterFlagTemperate,
                                        "SH11", TXT_WATER, LAND_WATER, 3, 3,
                                        LAND_BEACH, slope1001);
 static const TemplateTypeClass Shore12(TEMPLATE_SHORE12,
-                                       THEATERF_WINTER | THEATERF_TEMPERATE,
+                                       kTheaterFlagWinter | kTheaterFlagTemperate,
                                        "SH12", TXT_WATER, LAND_WATER, 3, 3,
                                        LAND_BEACH, slope000001001);
 static const TemplateTypeClass Shore13(TEMPLATE_SHORE13,
-                                       THEATERF_WINTER | THEATERF_TEMPERATE,
+                                       kTheaterFlagWinter | kTheaterFlagTemperate,
                                        "SH13", TXT_WATER, LAND_WATER, 3, 3,
                                        LAND_BEACH, slope0000001);
 static const TemplateTypeClass Shore14(TEMPLATE_SHORE14,
-                                       THEATERF_WINTER | THEATERF_TEMPERATE,
+                                       kTheaterFlagWinter | kTheaterFlagTemperate,
                                        "SH14", TXT_WATER, LAND_ROCK, 3, 3,
                                        LAND_BEACH, slope00000011);
 static const TemplateTypeClass Shore15(TEMPLATE_SHORE15,
-                                       THEATERF_WINTER | THEATERF_TEMPERATE,
+                                       kTheaterFlagWinter | kTheaterFlagTemperate,
                                        "SH15", TXT_WATER, LAND_ROCK, 3, 3,
                                        LAND_BEACH, slope000000101);
 static const TemplateTypeClass Shore16(TEMPLATE_SHORE16,
-                                       THEATERF_WINTER | THEATERF_TEMPERATE,
+                                       kTheaterFlagWinter | kTheaterFlagTemperate,
                                        "SH16", TXT_WATER, LAND_ROCK, 3, 2,
                                        LAND_ROCK, nullptr);
 static const TemplateTypeClass Shore17(TEMPLATE_SHORE17,
-                                       THEATERF_WINTER | THEATERF_TEMPERATE |
-                                           THEATERF_DESERT,
+                                       kTheaterFlagWinter | kTheaterFlagTemperate |
+                                           kTheaterFlagDesert,
                                        "SH17", TXT_WATER, LAND_WATER, 2, 2,
                                        LAND_WATER, nullptr);
 static const TemplateTypeClass Shore18(TEMPLATE_SHORE18,
-                                       THEATERF_WINTER | THEATERF_TEMPERATE |
-                                           THEATERF_DESERT,
+                                       kTheaterFlagWinter | kTheaterFlagTemperate |
+                                           kTheaterFlagDesert,
                                        "SH18", TXT_WATER, LAND_WATER, 2, 2,
                                        LAND_WATER, nullptr);
-static const TemplateTypeClass Shore19(TEMPLATE_SHORE19, THEATERF_DESERT,
+static const TemplateTypeClass Shore19(TEMPLATE_SHORE19, kTheaterFlagDesert,
                                        "SH19", TXT_WATER, LAND_ROCK, 3, 2,
                                        LAND_ROCK, nullptr);
-static const TemplateTypeClass Shore20(TEMPLATE_SHORE20, THEATERF_DESERT,
+static const TemplateTypeClass Shore20(TEMPLATE_SHORE20, kTheaterFlagDesert,
                                        "SH20", TXT_WATER, LAND_ROCK, 4, 1,
                                        LAND_ROCK, nullptr);
-static const TemplateTypeClass Shore21(TEMPLATE_SHORE21, THEATERF_DESERT,
+static const TemplateTypeClass Shore21(TEMPLATE_SHORE21, kTheaterFlagDesert,
                                        "SH21", TXT_WATER, LAND_ROCK, 3, 1,
                                        LAND_ROCK, nullptr);
-static const TemplateTypeClass Shore22(TEMPLATE_SHORE22, THEATERF_DESERT,
+static const TemplateTypeClass Shore22(TEMPLATE_SHORE22, kTheaterFlagDesert,
                                        "SH22", TXT_WATER, LAND_ROCK, 6, 2,
                                        LAND_ROCK, nullptr);
-static const TemplateTypeClass Shore23(TEMPLATE_SHORE23, THEATERF_DESERT,
+static const TemplateTypeClass Shore23(TEMPLATE_SHORE23, kTheaterFlagDesert,
                                        "SH23", TXT_WATER, LAND_ROCK, 2, 2,
                                        LAND_CLEAR, slope01);
-static const TemplateTypeClass Shore24(TEMPLATE_SHORE24, THEATERF_DESERT,
+static const TemplateTypeClass Shore24(TEMPLATE_SHORE24, kTheaterFlagDesert,
                                        "SH24", TXT_WATER, LAND_ROCK, 3, 3,
                                        LAND_CLEAR, slope000001);
-static const TemplateTypeClass Shore25(TEMPLATE_SHORE25, THEATERF_DESERT,
+static const TemplateTypeClass Shore25(TEMPLATE_SHORE25, kTheaterFlagDesert,
                                        "SH25", TXT_WATER, LAND_ROCK, 3, 2,
                                        LAND_CLEAR, slope0001);
-static const TemplateTypeClass Shore26(TEMPLATE_SHORE26, THEATERF_DESERT,
+static const TemplateTypeClass Shore26(TEMPLATE_SHORE26, kTheaterFlagDesert,
                                        "SH26", TXT_WATER, LAND_ROCK, 3, 2,
                                        LAND_CLEAR, nullptr);
-static const TemplateTypeClass Shore27(TEMPLATE_SHORE27, THEATERF_DESERT,
+static const TemplateTypeClass Shore27(TEMPLATE_SHORE27, kTheaterFlagDesert,
                                        "SH27", TXT_WATER, LAND_ROCK, 4, 1,
                                        LAND_CLEAR, nullptr);
-static const TemplateTypeClass Shore28(TEMPLATE_SHORE28, THEATERF_DESERT,
+static const TemplateTypeClass Shore28(TEMPLATE_SHORE28, kTheaterFlagDesert,
                                        "SH28", TXT_WATER, LAND_ROCK, 3, 1,
                                        LAND_CLEAR, nullptr);
-static const TemplateTypeClass Shore29(TEMPLATE_SHORE29, THEATERF_DESERT,
+static const TemplateTypeClass Shore29(TEMPLATE_SHORE29, kTheaterFlagDesert,
                                        "SH29", TXT_WATER, LAND_ROCK, 6, 2,
                                        LAND_CLEAR, slope00000001);
-static const TemplateTypeClass Shore30(TEMPLATE_SHORE30, THEATERF_DESERT,
+static const TemplateTypeClass Shore30(TEMPLATE_SHORE30, kTheaterFlagDesert,
                                        "SH30", TXT_WATER, LAND_ROCK, 2, 2,
                                        LAND_CLEAR, nullptr);
-static const TemplateTypeClass Shore31(TEMPLATE_SHORE31, THEATERF_DESERT,
+static const TemplateTypeClass Shore31(TEMPLATE_SHORE31, kTheaterFlagDesert,
                                        "SH31", TXT_WATER, LAND_ROCK, 3, 3,
                                        LAND_CLEAR, nullptr);
 static const TemplateTypeClass Shore32(TEMPLATE_SHORE32,
-                                       THEATERF_TEMPERATE | THEATERF_WINTER,
+                                       kTheaterFlagTemperate | kTheaterFlagWinter,
                                        "SH32", TXT_WATER, LAND_CLEAR, 3, 3,
                                        LAND_WATER, slope1);
 static const TemplateTypeClass Shore33(TEMPLATE_SHORE33,
-                                       THEATERF_TEMPERATE | THEATERF_WINTER,
+                                       kTheaterFlagTemperate | kTheaterFlagWinter,
                                        "SH33", TXT_WATER, LAND_CLEAR, 3, 3,
                                        LAND_WATER, slope001);
 static const TemplateTypeClass Shore34(TEMPLATE_SHORE34,
-                                       THEATERF_TEMPERATE | THEATERF_WINTER,
+                                       kTheaterFlagTemperate | kTheaterFlagWinter,
                                        "SH34", TXT_WATER, LAND_CLEAR, 3, 3,
                                        LAND_WATER, slope001001001);
 static const TemplateTypeClass Shore35(TEMPLATE_SHORE35,
-                                       THEATERF_TEMPERATE | THEATERF_WINTER,
+                                       kTheaterFlagTemperate | kTheaterFlagWinter,
                                        "SH35", TXT_WATER, LAND_CLEAR, 3, 3,
                                        LAND_WATER, slope1001001);
-static const TemplateTypeClass Shore36(TEMPLATE_SHORE36, THEATERF_DESERT,
+static const TemplateTypeClass Shore36(TEMPLATE_SHORE36, kTheaterFlagDesert,
                                        "SH36", TXT_WATER, LAND_CLEAR, 1, 1,
                                        LAND_CLEAR, nullptr);
-static const TemplateTypeClass Shore37(TEMPLATE_SHORE37, THEATERF_DESERT,
+static const TemplateTypeClass Shore37(TEMPLATE_SHORE37, kTheaterFlagDesert,
                                        "SH37", TXT_WATER, LAND_CLEAR, 1, 1,
                                        LAND_CLEAR, nullptr);
-static const TemplateTypeClass Shore38(TEMPLATE_SHORE38, THEATERF_DESERT,
+static const TemplateTypeClass Shore38(TEMPLATE_SHORE38, kTheaterFlagDesert,
                                        "SH38", TXT_WATER, LAND_CLEAR, 1, 1,
                                        LAND_CLEAR, nullptr);
-static const TemplateTypeClass Shore39(TEMPLATE_SHORE39, THEATERF_DESERT,
+static const TemplateTypeClass Shore39(TEMPLATE_SHORE39, kTheaterFlagDesert,
                                        "SH39", TXT_WATER, LAND_CLEAR, 1, 1,
                                        LAND_CLEAR, nullptr);
-static const TemplateTypeClass Shore40(TEMPLATE_SHORE40, THEATERF_DESERT,
+static const TemplateTypeClass Shore40(TEMPLATE_SHORE40, kTheaterFlagDesert,
                                        "SH40", TXT_WATER, LAND_WATER, 3, 3,
                                        LAND_CLEAR, slope1);
-static const TemplateTypeClass Shore41(TEMPLATE_SHORE41, THEATERF_DESERT,
+static const TemplateTypeClass Shore41(TEMPLATE_SHORE41, kTheaterFlagDesert,
                                        "SH41", TXT_WATER, LAND_CLEAR, 3, 3,
                                        LAND_WATER, slope1101101);
-static const TemplateTypeClass Shore42(TEMPLATE_SHORE42, THEATERF_DESERT,
+static const TemplateTypeClass Shore42(TEMPLATE_SHORE42, kTheaterFlagDesert,
                                        "SH42", TXT_WATER, LAND_WATER, 1, 2,
                                        LAND_CLEAR, nullptr);
-static const TemplateTypeClass Shore43(TEMPLATE_SHORE43, THEATERF_DESERT,
+static const TemplateTypeClass Shore43(TEMPLATE_SHORE43, kTheaterFlagDesert,
                                        "SH43", TXT_WATER, LAND_WATER, 1, 3,
                                        LAND_CLEAR, nullptr);
-static const TemplateTypeClass Shore44(TEMPLATE_SHORE44, THEATERF_DESERT,
+static const TemplateTypeClass Shore44(TEMPLATE_SHORE44, kTheaterFlagDesert,
                                        "SH44", TXT_WATER, LAND_WATER, 1, 3,
                                        LAND_CLEAR, nullptr);
-static const TemplateTypeClass Shore45(TEMPLATE_SHORE45, THEATERF_DESERT,
+static const TemplateTypeClass Shore45(TEMPLATE_SHORE45, kTheaterFlagDesert,
                                        "SH45", TXT_WATER, LAND_WATER, 1, 2,
                                        LAND_CLEAR, nullptr);
-static const TemplateTypeClass Shore46(TEMPLATE_SHORE46, THEATERF_DESERT,
+static const TemplateTypeClass Shore46(TEMPLATE_SHORE46, kTheaterFlagDesert,
                                        "SH46", TXT_WATER, LAND_WATER, 3, 3,
                                        LAND_CLEAR, slope1101);
-static const TemplateTypeClass Shore47(TEMPLATE_SHORE47, THEATERF_DESERT,
+static const TemplateTypeClass Shore47(TEMPLATE_SHORE47, kTheaterFlagDesert,
                                        "SH47", TXT_WATER, LAND_WATER, 3, 3,
                                        LAND_CLEAR, nullptr);
-static const TemplateTypeClass Shore48(TEMPLATE_SHORE48, THEATERF_DESERT,
+static const TemplateTypeClass Shore48(TEMPLATE_SHORE48, kTheaterFlagDesert,
                                        "SH48", TXT_WATER, LAND_WATER, 3, 3,
                                        LAND_CLEAR, nullptr);
-static const TemplateTypeClass Shore49(TEMPLATE_SHORE49, THEATERF_DESERT,
+static const TemplateTypeClass Shore49(TEMPLATE_SHORE49, kTheaterFlagDesert,
                                        "SH49", TXT_WATER, LAND_WATER, 3, 3,
                                        LAND_CLEAR, nullptr);
-static const TemplateTypeClass Shore50(TEMPLATE_SHORE50, THEATERF_DESERT,
+static const TemplateTypeClass Shore50(TEMPLATE_SHORE50, kTheaterFlagDesert,
                                        "SH50", TXT_WATER, LAND_WATER, 4, 3,
                                        LAND_CLEAR, slope00000001);
-static const TemplateTypeClass Shore51(TEMPLATE_SHORE51, THEATERF_DESERT,
+static const TemplateTypeClass Shore51(TEMPLATE_SHORE51, kTheaterFlagDesert,
                                        "SH51", TXT_WATER, LAND_WATER, 4, 3,
                                        LAND_CLEAR, nullptr);
-static const TemplateTypeClass Shore52(TEMPLATE_SHORE52, THEATERF_DESERT,
+static const TemplateTypeClass Shore52(TEMPLATE_SHORE52, kTheaterFlagDesert,
                                        "SH52", TXT_WATER, LAND_WATER, 4, 3,
                                        LAND_CLEAR, nullptr);
-static const TemplateTypeClass Shore53(TEMPLATE_SHORE53, THEATERF_DESERT,
+static const TemplateTypeClass Shore53(TEMPLATE_SHORE53, kTheaterFlagDesert,
                                        "SH53", TXT_WATER, LAND_WATER, 4, 3,
                                        LAND_CLEAR, slope11101);
-static const TemplateTypeClass Shore54(TEMPLATE_SHORE54, THEATERF_DESERT,
+static const TemplateTypeClass Shore54(TEMPLATE_SHORE54, kTheaterFlagDesert,
                                        "SH54", TXT_WATER, LAND_WATER, 3, 2,
                                        LAND_CLEAR, slope1);
-static const TemplateTypeClass Shore55(TEMPLATE_SHORE55, THEATERF_DESERT,
+static const TemplateTypeClass Shore55(TEMPLATE_SHORE55, kTheaterFlagDesert,
                                        "SH55", TXT_WATER, LAND_WATER, 3, 2,
                                        LAND_CLEAR, slope001);
-static const TemplateTypeClass Shore56(TEMPLATE_SHORE56, THEATERF_DESERT,
+static const TemplateTypeClass Shore56(TEMPLATE_SHORE56, kTheaterFlagDesert,
                                        "SH56", TXT_WATER, LAND_WATER, 3, 2,
                                        LAND_CLEAR, nullptr);
-static const TemplateTypeClass Shore57(TEMPLATE_SHORE57, THEATERF_DESERT,
+static const TemplateTypeClass Shore57(TEMPLATE_SHORE57, kTheaterFlagDesert,
                                        "SH57", TXT_WATER, LAND_WATER, 3, 2,
                                        LAND_CLEAR, nullptr);
-static const TemplateTypeClass Shore58(TEMPLATE_SHORE58, THEATERF_DESERT,
+static const TemplateTypeClass Shore58(TEMPLATE_SHORE58, kTheaterFlagDesert,
                                        "SH58", TXT_WATER, LAND_WATER, 2, 3,
                                        LAND_CLEAR, nullptr);
-static const TemplateTypeClass Shore59(TEMPLATE_SHORE59, THEATERF_DESERT,
+static const TemplateTypeClass Shore59(TEMPLATE_SHORE59, kTheaterFlagDesert,
                                        "SH59", TXT_WATER, LAND_WATER, 2, 3,
                                        LAND_CLEAR, slope1);
-static const TemplateTypeClass Shore60(TEMPLATE_SHORE60, THEATERF_DESERT,
+static const TemplateTypeClass Shore60(TEMPLATE_SHORE60, kTheaterFlagDesert,
                                        "SH60", TXT_WATER, LAND_WATER, 2, 3,
                                        LAND_CLEAR, slope000101);
-static const TemplateTypeClass Shore61(TEMPLATE_SHORE61, THEATERF_DESERT,
+static const TemplateTypeClass Shore61(TEMPLATE_SHORE61, kTheaterFlagDesert,
                                        "SH61", TXT_WATER, LAND_WATER, 2, 3,
                                        LAND_CLEAR, slope01);
-static const TemplateTypeClass Shore62(TEMPLATE_SHORE62, THEATERF_DESERT,
+static const TemplateTypeClass Shore62(TEMPLATE_SHORE62, kTheaterFlagDesert,
                                        "SH62", TXT_WATER, LAND_WATER, 6, 1,
                                        LAND_CLEAR, nullptr);
-static const TemplateTypeClass Shore63(TEMPLATE_SHORE63, THEATERF_DESERT,
+static const TemplateTypeClass Shore63(TEMPLATE_SHORE63, kTheaterFlagDesert,
                                        "SH63", TXT_WATER, LAND_WATER, 4, 1,
                                        LAND_CLEAR, nullptr);
 static const TemplateTypeClass Boulder1(TEMPLATE_BOULDER1,
-                                        THEATERF_WINTER | THEATERF_TEMPERATE |
-                                            THEATERF_DESERT,
+                                        kTheaterFlagWinter | kTheaterFlagTemperate |
+                                            kTheaterFlagDesert,
                                         "B1", TXT_SLOPE, LAND_ROCK, 1, 1,
                                         LAND_ROCK, nullptr);
 static const TemplateTypeClass Boulder2(TEMPLATE_BOULDER2,
-                                        THEATERF_WINTER | THEATERF_TEMPERATE |
-                                            THEATERF_DESERT,
+                                        kTheaterFlagWinter | kTheaterFlagTemperate |
+                                            kTheaterFlagDesert,
                                         "B2", TXT_SLOPE, LAND_ROCK, 2, 1,
                                         LAND_ROCK, nullptr);
 static const TemplateTypeClass Boulder3(TEMPLATE_BOULDER3,
-                                        THEATERF_WINTER | THEATERF_TEMPERATE,
+                                        kTheaterFlagWinter | kTheaterFlagTemperate,
                                         "B3", TXT_SLOPE, LAND_ROCK, 3, 1,
                                         LAND_ROCK, nullptr);
-static const TemplateTypeClass Boulder4(TEMPLATE_BOULDER4, THEATERF_TEMPERATE,
+static const TemplateTypeClass Boulder4(TEMPLATE_BOULDER4, kTheaterFlagTemperate,
                                         "B4", TXT_SLOPE, LAND_ROCK, 1, 1,
                                         LAND_ROCK, nullptr);
-static const TemplateTypeClass Boulder5(TEMPLATE_BOULDER5, THEATERF_TEMPERATE,
+static const TemplateTypeClass Boulder5(TEMPLATE_BOULDER5, kTheaterFlagTemperate,
                                         "B5", TXT_SLOPE, LAND_ROCK, 1, 1,
                                         LAND_ROCK, nullptr);
-static const TemplateTypeClass Boulder6(TEMPLATE_BOULDER6, THEATERF_TEMPERATE,
+static const TemplateTypeClass Boulder6(TEMPLATE_BOULDER6, kTheaterFlagTemperate,
                                         "B6", TXT_SLOPE, LAND_ROCK, 1, 1,
                                         LAND_ROCK, nullptr);
 static const TemplateTypeClass Slope1(TEMPLATE_SLOPE1,
-                                      THEATERF_WINTER | THEATERF_DESERT |
-                                          THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagDesert |
+                                          kTheaterFlagTemperate,
                                       "S01", TXT_SLOPE, LAND_ROCK, 2, 2,
                                       LAND_CLEAR, slope001);
 static const TemplateTypeClass Slope2(TEMPLATE_SLOPE2,
-                                      THEATERF_WINTER | THEATERF_DESERT |
-                                          THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagDesert |
+                                          kTheaterFlagTemperate,
                                       "S02", TXT_SLOPE, LAND_ROCK, 2, 3,
                                       LAND_CLEAR, slope01);
 static const TemplateTypeClass Slope3(TEMPLATE_SLOPE3,
-                                      THEATERF_WINTER | THEATERF_DESERT |
-                                          THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagDesert |
+                                          kTheaterFlagTemperate,
                                       "S03", TXT_SLOPE, LAND_ROCK, 2, 2,
                                       LAND_ROCK, nullptr);
 static const TemplateTypeClass Slope4(TEMPLATE_SLOPE4,
-                                      THEATERF_WINTER | THEATERF_DESERT |
-                                          THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagDesert |
+                                          kTheaterFlagTemperate,
                                       "S04", TXT_SLOPE, LAND_ROCK, 2, 2,
                                       LAND_ROCK, nullptr);
 static const TemplateTypeClass Slope5(TEMPLATE_SLOPE5,
-                                      THEATERF_WINTER | THEATERF_DESERT |
-                                          THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagDesert |
+                                          kTheaterFlagTemperate,
                                       "S05", TXT_SLOPE, LAND_ROCK, 2, 2,
                                       LAND_ROCK, nullptr);
 static const TemplateTypeClass Slope6(TEMPLATE_SLOPE6,
-                                      THEATERF_WINTER | THEATERF_DESERT |
-                                          THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagDesert |
+                                          kTheaterFlagTemperate,
                                       "S06", TXT_SLOPE, LAND_ROCK, 2, 3,
                                       LAND_CLEAR, slope1);
 static const TemplateTypeClass Slope7(TEMPLATE_SLOPE7,
-                                      THEATERF_WINTER | THEATERF_DESERT |
-                                          THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagDesert |
+                                          kTheaterFlagTemperate,
                                       "S07", TXT_SLOPE, LAND_ROCK, 2, 2,
                                       LAND_ROCK, nullptr);
 static const TemplateTypeClass Slope8(TEMPLATE_SLOPE8,
-                                      THEATERF_WINTER | THEATERF_DESERT |
-                                          THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagDesert |
+                                          kTheaterFlagTemperate,
                                       "S08", TXT_SLOPE, LAND_ROCK, 2, 2,
                                       LAND_CLEAR, slope01);
 static const TemplateTypeClass Slope9(TEMPLATE_SLOPE9,
-                                      THEATERF_WINTER | THEATERF_DESERT |
-                                          THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagDesert |
+                                          kTheaterFlagTemperate,
                                       "S09", TXT_SLOPE, LAND_ROCK, 3, 2,
                                       LAND_CLEAR, slope0001);
 static const TemplateTypeClass Slope10(TEMPLATE_SLOPE10,
-                                       THEATERF_WINTER | THEATERF_DESERT |
-                                           THEATERF_TEMPERATE,
+                                       kTheaterFlagWinter | kTheaterFlagDesert |
+                                           kTheaterFlagTemperate,
                                        "S10", TXT_SLOPE, LAND_ROCK, 2, 2,
                                        LAND_ROCK, nullptr);
 static const TemplateTypeClass Slope11(TEMPLATE_SLOPE11,
-                                       THEATERF_WINTER | THEATERF_DESERT |
-                                           THEATERF_TEMPERATE,
+                                       kTheaterFlagWinter | kTheaterFlagDesert |
+                                           kTheaterFlagTemperate,
                                        "S11", TXT_SLOPE, LAND_ROCK, 2, 2,
                                        LAND_ROCK, nullptr);
 static const TemplateTypeClass Slope12(TEMPLATE_SLOPE12,
-                                       THEATERF_WINTER | THEATERF_DESERT |
-                                           THEATERF_TEMPERATE,
+                                       kTheaterFlagWinter | kTheaterFlagDesert |
+                                           kTheaterFlagTemperate,
                                        "S12", TXT_SLOPE, LAND_ROCK, 2, 2,
                                        LAND_ROCK, nullptr);
 static const TemplateTypeClass Slope13(TEMPLATE_SLOPE13,
-                                       THEATERF_WINTER | THEATERF_DESERT |
-                                           THEATERF_TEMPERATE,
+                                       kTheaterFlagWinter | kTheaterFlagDesert |
+                                           kTheaterFlagTemperate,
                                        "S13", TXT_SLOPE, LAND_ROCK, 3, 2,
                                        LAND_CLEAR, slope000001);
 static const TemplateTypeClass Slope14(TEMPLATE_SLOPE14,
-                                       THEATERF_WINTER | THEATERF_DESERT |
-                                           THEATERF_TEMPERATE,
+                                       kTheaterFlagWinter | kTheaterFlagDesert |
+                                           kTheaterFlagTemperate,
                                        "S14", TXT_SLOPE, LAND_ROCK, 2, 2,
                                        LAND_CLEAR, slope0111);
 static const TemplateTypeClass Slope15(TEMPLATE_SLOPE15,
-                                       THEATERF_WINTER | THEATERF_DESERT |
-                                           THEATERF_TEMPERATE,
+                                       kTheaterFlagWinter | kTheaterFlagDesert |
+                                           kTheaterFlagTemperate,
                                        "S15", TXT_SLOPE, LAND_ROCK, 2, 2,
                                        LAND_CLEAR, slope01);
 static const TemplateTypeClass Slope16(TEMPLATE_SLOPE16,
-                                       THEATERF_WINTER | THEATERF_DESERT |
-                                           THEATERF_TEMPERATE,
+                                       kTheaterFlagWinter | kTheaterFlagDesert |
+                                           kTheaterFlagTemperate,
                                        "S16", TXT_SLOPE, LAND_ROCK, 2, 3,
                                        LAND_ROCK, nullptr);
 static const TemplateTypeClass Slope17(TEMPLATE_SLOPE17,
-                                       THEATERF_WINTER | THEATERF_DESERT |
-                                           THEATERF_TEMPERATE,
+                                       kTheaterFlagWinter | kTheaterFlagDesert |
+                                           kTheaterFlagTemperate,
                                        "S17", TXT_SLOPE, LAND_ROCK, 2, 2,
                                        LAND_ROCK, nullptr);
 static const TemplateTypeClass Slope18(TEMPLATE_SLOPE18,
-                                       THEATERF_WINTER | THEATERF_DESERT |
-                                           THEATERF_TEMPERATE,
+                                       kTheaterFlagWinter | kTheaterFlagDesert |
+                                           kTheaterFlagTemperate,
                                        "S18", TXT_SLOPE, LAND_ROCK, 2, 2,
                                        LAND_ROCK, nullptr);
 static const TemplateTypeClass Slope19(TEMPLATE_SLOPE19,
-                                       THEATERF_WINTER | THEATERF_DESERT |
-                                           THEATERF_TEMPERATE,
+                                       kTheaterFlagWinter | kTheaterFlagDesert |
+                                           kTheaterFlagTemperate,
                                        "S19", TXT_SLOPE, LAND_ROCK, 2, 2,
                                        LAND_ROCK, nullptr);
 static const TemplateTypeClass Slope20(TEMPLATE_SLOPE20,
-                                       THEATERF_WINTER | THEATERF_DESERT |
-                                           THEATERF_TEMPERATE,
+                                       kTheaterFlagWinter | kTheaterFlagDesert |
+                                           kTheaterFlagTemperate,
                                        "S20", TXT_SLOPE, LAND_ROCK, 2, 3,
                                        LAND_CLEAR, slope000001);
 static const TemplateTypeClass Slope21(TEMPLATE_SLOPE21,
-                                       THEATERF_WINTER | THEATERF_DESERT |
-                                           THEATERF_TEMPERATE,
+                                       kTheaterFlagWinter | kTheaterFlagDesert |
+                                           kTheaterFlagTemperate,
                                        "S21", TXT_SLOPE, LAND_ROCK, 1, 2,
                                        LAND_ROCK, nullptr);
 static const TemplateTypeClass Slope22(TEMPLATE_SLOPE22,
-                                       THEATERF_WINTER | THEATERF_DESERT |
-                                           THEATERF_TEMPERATE,
+                                       kTheaterFlagWinter | kTheaterFlagDesert |
+                                           kTheaterFlagTemperate,
                                        "S22", TXT_SLOPE, LAND_ROCK, 2, 1,
                                        LAND_ROCK, nullptr);
 static const TemplateTypeClass Slope23(TEMPLATE_SLOPE23,
-                                       THEATERF_WINTER | THEATERF_DESERT |
-                                           THEATERF_TEMPERATE,
+                                       kTheaterFlagWinter | kTheaterFlagDesert |
+                                           kTheaterFlagTemperate,
                                        "S23", TXT_SLOPE, LAND_ROCK, 3, 2,
                                        LAND_CLEAR, slope000001);
 static const TemplateTypeClass Slope24(TEMPLATE_SLOPE24,
-                                       THEATERF_WINTER | THEATERF_DESERT |
-                                           THEATERF_TEMPERATE,
+                                       kTheaterFlagWinter | kTheaterFlagDesert |
+                                           kTheaterFlagTemperate,
                                        "S24", TXT_SLOPE, LAND_ROCK, 2, 2,
                                        LAND_ROCK, nullptr);
 static const TemplateTypeClass Slope25(TEMPLATE_SLOPE25,
-                                       THEATERF_WINTER | THEATERF_DESERT |
-                                           THEATERF_TEMPERATE,
+                                       kTheaterFlagWinter | kTheaterFlagDesert |
+                                           kTheaterFlagTemperate,
                                        "S25", TXT_SLOPE, LAND_ROCK, 2, 2,
                                        LAND_ROCK, nullptr);
 static const TemplateTypeClass Slope26(TEMPLATE_SLOPE26,
-                                       THEATERF_WINTER | THEATERF_DESERT |
-                                           THEATERF_TEMPERATE,
+                                       kTheaterFlagWinter | kTheaterFlagDesert |
+                                           kTheaterFlagTemperate,
                                        "S26", TXT_SLOPE, LAND_ROCK, 2, 2,
                                        LAND_ROCK, nullptr);
 static const TemplateTypeClass Slope27(TEMPLATE_SLOPE27,
-                                       THEATERF_WINTER | THEATERF_DESERT |
-                                           THEATERF_TEMPERATE,
+                                       kTheaterFlagWinter | kTheaterFlagDesert |
+                                           kTheaterFlagTemperate,
                                        "S27", TXT_SLOPE, LAND_ROCK, 3, 2,
                                        LAND_CLEAR, slope0011);
 static const TemplateTypeClass Slope28(TEMPLATE_SLOPE28,
-                                       THEATERF_WINTER | THEATERF_DESERT |
-                                           THEATERF_TEMPERATE,
+                                       kTheaterFlagWinter | kTheaterFlagDesert |
+                                           kTheaterFlagTemperate,
                                        "S28", TXT_SLOPE, LAND_ROCK, 2, 2,
                                        LAND_ROCK, nullptr);
 static const TemplateTypeClass Slope29(TEMPLATE_SLOPE29,
-                                       THEATERF_WINTER | THEATERF_DESERT |
-                                           THEATERF_TEMPERATE,
+                                       kTheaterFlagWinter | kTheaterFlagDesert |
+                                           kTheaterFlagTemperate,
                                        "S29", TXT_SLOPE, LAND_ROCK, 2, 2,
                                        LAND_ROCK, nullptr);
 static const TemplateTypeClass Slope30(TEMPLATE_SLOPE30,
-                                       THEATERF_WINTER | THEATERF_DESERT |
-                                           THEATERF_TEMPERATE,
+                                       kTheaterFlagWinter | kTheaterFlagDesert |
+                                           kTheaterFlagTemperate,
                                        "S30", TXT_SLOPE, LAND_ROCK, 2, 2,
                                        LAND_ROCK, nullptr);
 static const TemplateTypeClass Slope31(TEMPLATE_SLOPE31,
-                                       THEATERF_WINTER | THEATERF_DESERT |
-                                           THEATERF_TEMPERATE,
+                                       kTheaterFlagWinter | kTheaterFlagDesert |
+                                           kTheaterFlagTemperate,
                                        "S31", TXT_SLOPE, LAND_ROCK, 2, 2,
                                        LAND_ROCK, nullptr);
 static const TemplateTypeClass Slope32(TEMPLATE_SLOPE32,
-                                       THEATERF_WINTER | THEATERF_DESERT |
-                                           THEATERF_TEMPERATE,
+                                       kTheaterFlagWinter | kTheaterFlagDesert |
+                                           kTheaterFlagTemperate,
                                        "S32", TXT_SLOPE, LAND_ROCK, 2, 2,
                                        LAND_ROCK, nullptr);
 static const TemplateTypeClass Slope33(TEMPLATE_SLOPE33,
-                                       THEATERF_WINTER | THEATERF_DESERT |
-                                           THEATERF_TEMPERATE,
+                                       kTheaterFlagWinter | kTheaterFlagDesert |
+                                           kTheaterFlagTemperate,
                                        "S33", TXT_SLOPE, LAND_ROCK, 2, 2,
                                        LAND_ROCK, nullptr);
 static const TemplateTypeClass Slope34(TEMPLATE_SLOPE34,
-                                       THEATERF_WINTER | THEATERF_DESERT |
-                                           THEATERF_TEMPERATE,
+                                       kTheaterFlagWinter | kTheaterFlagDesert |
+                                           kTheaterFlagTemperate,
                                        "S34", TXT_SLOPE, LAND_ROCK, 2, 2,
                                        LAND_ROCK, nullptr);
 static const TemplateTypeClass Slope35(TEMPLATE_SLOPE35,
-                                       THEATERF_WINTER | THEATERF_DESERT |
-                                           THEATERF_TEMPERATE,
+                                       kTheaterFlagWinter | kTheaterFlagDesert |
+                                           kTheaterFlagTemperate,
                                        "S35", TXT_SLOPE, LAND_ROCK, 2, 2,
                                        LAND_ROCK, nullptr);
 static const TemplateTypeClass Slope36(TEMPLATE_SLOPE36,
-                                       THEATERF_WINTER | THEATERF_DESERT |
-                                           THEATERF_TEMPERATE,
+                                       kTheaterFlagWinter | kTheaterFlagDesert |
+                                           kTheaterFlagTemperate,
                                        "S36", TXT_SLOPE, LAND_ROCK, 2, 2,
                                        LAND_ROCK, nullptr);
 static const TemplateTypeClass Slope37(TEMPLATE_SLOPE37,
-                                       THEATERF_WINTER | THEATERF_DESERT |
-                                           THEATERF_TEMPERATE,
+                                       kTheaterFlagWinter | kTheaterFlagDesert |
+                                           kTheaterFlagTemperate,
                                        "S37", TXT_SLOPE, LAND_ROCK, 2, 2,
                                        LAND_ROCK, nullptr);
 static const TemplateTypeClass Slope38(TEMPLATE_SLOPE38,
-                                       THEATERF_WINTER | THEATERF_DESERT |
-                                           THEATERF_TEMPERATE,
+                                       kTheaterFlagWinter | kTheaterFlagDesert |
+                                           kTheaterFlagTemperate,
                                        "S38", TXT_SLOPE, LAND_ROCK, 2, 2,
                                        LAND_ROCK, nullptr);
-static const TemplateTypeClass Brush1(TEMPLATE_BRUSH1, THEATERF_DESERT, "BR1",
+static const TemplateTypeClass Brush1(TEMPLATE_BRUSH1, kTheaterFlagDesert, "BR1",
                                       TXT_BRUSH, LAND_ROCK, 1, 1, LAND_ROCK,
                                       nullptr);
-static const TemplateTypeClass Brush2(TEMPLATE_BRUSH2, THEATERF_DESERT, "BR2",
+static const TemplateTypeClass Brush2(TEMPLATE_BRUSH2, kTheaterFlagDesert, "BR2",
                                       TXT_BRUSH, LAND_ROCK, 1, 1, LAND_ROCK,
                                       nullptr);
-static const TemplateTypeClass Brush3(TEMPLATE_BRUSH3, THEATERF_DESERT, "BR3",
+static const TemplateTypeClass Brush3(TEMPLATE_BRUSH3, kTheaterFlagDesert, "BR3",
                                       TXT_BRUSH, LAND_ROCK, 1, 1, LAND_ROCK,
                                       nullptr);
-static const TemplateTypeClass Brush4(TEMPLATE_BRUSH4, THEATERF_DESERT, "BR4",
+static const TemplateTypeClass Brush4(TEMPLATE_BRUSH4, kTheaterFlagDesert, "BR4",
                                       TXT_BRUSH, LAND_ROCK, 1, 1, LAND_ROCK,
                                       nullptr);
-static const TemplateTypeClass Brush5(TEMPLATE_BRUSH5, THEATERF_DESERT, "BR5",
+static const TemplateTypeClass Brush5(TEMPLATE_BRUSH5, kTheaterFlagDesert, "BR5",
                                       TXT_BRUSH, LAND_ROCK, 1, 1, LAND_ROCK,
                                       nullptr);
-static const TemplateTypeClass Brush6(TEMPLATE_BRUSH6, THEATERF_DESERT, "BR6",
+static const TemplateTypeClass Brush6(TEMPLATE_BRUSH6, kTheaterFlagDesert, "BR6",
                                       TXT_BRUSH, LAND_ROCK, 2, 2, LAND_ROCK,
                                       nullptr);
-static const TemplateTypeClass Brush7(TEMPLATE_BRUSH7, THEATERF_DESERT, "BR7",
+static const TemplateTypeClass Brush7(TEMPLATE_BRUSH7, kTheaterFlagDesert, "BR7",
                                       TXT_BRUSH, LAND_ROCK, 2, 2, LAND_ROCK,
                                       nullptr);
-static const TemplateTypeClass Brush8(TEMPLATE_BRUSH8, THEATERF_DESERT, "BR8",
+static const TemplateTypeClass Brush8(TEMPLATE_BRUSH8, kTheaterFlagDesert, "BR8",
                                       TXT_BRUSH, LAND_ROCK, 3, 2, LAND_ROCK,
                                       nullptr);
-static const TemplateTypeClass Brush9(TEMPLATE_BRUSH9, THEATERF_DESERT, "BR9",
+static const TemplateTypeClass Brush9(TEMPLATE_BRUSH9, kTheaterFlagDesert, "BR9",
                                       TXT_BRUSH, LAND_ROCK, 3, 2, LAND_ROCK,
                                       nullptr);
-static const TemplateTypeClass Brush10(TEMPLATE_BRUSH10, THEATERF_DESERT,
+static const TemplateTypeClass Brush10(TEMPLATE_BRUSH10, kTheaterFlagDesert,
                                        "BR10", TXT_BRUSH, LAND_ROCK, 2, 1,
                                        LAND_ROCK, nullptr);
 static const TemplateTypeClass Patch1(TEMPLATE_PATCH1,
-                                      THEATERF_TEMPERATE | THEATERF_DESERT,
+                                      kTheaterFlagTemperate | kTheaterFlagDesert,
                                       "P01", TXT_PATCH, LAND_CLEAR, 1, 1,
                                       LAND_CLEAR, nullptr);
 static const TemplateTypeClass Patch2(TEMPLATE_PATCH2,
-                                      THEATERF_TEMPERATE | THEATERF_DESERT,
+                                      kTheaterFlagTemperate | kTheaterFlagDesert,
                                       "P02", TXT_PATCH, LAND_ROCK, 1, 1,
                                       LAND_CLEAR, nullptr);
 static const TemplateTypeClass Patch3(TEMPLATE_PATCH3,
-                                      THEATERF_TEMPERATE | THEATERF_DESERT,
+                                      kTheaterFlagTemperate | kTheaterFlagDesert,
                                       "P03", TXT_PATCH, LAND_CLEAR, 1, 1,
                                       LAND_CLEAR, nullptr);
 static const TemplateTypeClass Patch4(TEMPLATE_PATCH4,
-                                      THEATERF_TEMPERATE | THEATERF_DESERT,
+                                      kTheaterFlagTemperate | kTheaterFlagDesert,
                                       "P04", TXT_PATCH, LAND_ROCK, 1, 1,
                                       LAND_CLEAR, nullptr);
-static const TemplateTypeClass Patch5(TEMPLATE_PATCH5, THEATERF_DESERT, "P05",
+static const TemplateTypeClass Patch5(TEMPLATE_PATCH5, kTheaterFlagDesert, "P05",
                                       TXT_PATCH, LAND_CLEAR, 2, 2, LAND_CLEAR,
                                       nullptr);
-static const TemplateTypeClass Patch6(TEMPLATE_PATCH6, THEATERF_DESERT, "P06",
+static const TemplateTypeClass Patch6(TEMPLATE_PATCH6, kTheaterFlagDesert, "P06",
                                       TXT_PATCH, LAND_CLEAR, 6, 4, LAND_CLEAR,
                                       nullptr);
 static const TemplateTypeClass Patch7(TEMPLATE_PATCH7,
-                                      THEATERF_WINTER | THEATERF_TEMPERATE |
-                                          THEATERF_DESERT,
+                                      kTheaterFlagWinter | kTheaterFlagTemperate |
+                                          kTheaterFlagDesert,
                                       "P07", TXT_PATCH, LAND_CLEAR, 4, 2,
                                       LAND_CLEAR, nullptr);
 static const TemplateTypeClass Patch8(TEMPLATE_PATCH8,
-                                      THEATERF_WINTER | THEATERF_TEMPERATE |
-                                          THEATERF_DESERT,
+                                      kTheaterFlagWinter | kTheaterFlagTemperate |
+                                          kTheaterFlagDesert,
                                       "P08", TXT_PATCH, LAND_CLEAR, 3, 2,
                                       LAND_CLEAR, nullptr);
 static const TemplateTypeClass Patch13(TEMPLATE_PATCH13,
-                                       THEATERF_WINTER | THEATERF_TEMPERATE,
+                                       kTheaterFlagWinter | kTheaterFlagTemperate,
                                        "P13", TXT_PATCH, LAND_CLEAR, 3, 2,
                                        LAND_CLEAR, nullptr);
 static const TemplateTypeClass Patch14(TEMPLATE_PATCH14,
-                                       THEATERF_WINTER | THEATERF_TEMPERATE,
+                                       kTheaterFlagWinter | kTheaterFlagTemperate,
                                        "P14", TXT_PATCH, LAND_CLEAR, 2, 1,
                                        LAND_CLEAR, nullptr);
 static const TemplateTypeClass Patch15(TEMPLATE_PATCH15,
-                                       THEATERF_WINTER | THEATERF_TEMPERATE,
+                                       kTheaterFlagWinter | kTheaterFlagTemperate,
                                        "P15", TXT_PATCH, LAND_CLEAR, 1, 1,
                                        LAND_CLEAR, nullptr);
-static const TemplateTypeClass Patch16(TEMPLATE_PATCH16, THEATERF_WINTER, "P16",
+static const TemplateTypeClass Patch16(TEMPLATE_PATCH16, kTheaterFlagWinter, "P16",
                                        TXT_PATCH, LAND_CLEAR, 2, 2, LAND_CLEAR,
                                        nullptr);
-static const TemplateTypeClass Patch17(TEMPLATE_PATCH17, THEATERF_WINTER, "P17",
+static const TemplateTypeClass Patch17(TEMPLATE_PATCH17, kTheaterFlagWinter, "P17",
                                        TXT_PATCH, LAND_CLEAR, 4, 2, LAND_CLEAR,
                                        nullptr);
-static const TemplateTypeClass Patch18(TEMPLATE_PATCH18, THEATERF_WINTER, "P18",
+static const TemplateTypeClass Patch18(TEMPLATE_PATCH18, kTheaterFlagWinter, "P18",
                                        TXT_PATCH, LAND_CLEAR, 4, 3, LAND_CLEAR,
                                        nullptr);
-static const TemplateTypeClass Patch19(TEMPLATE_PATCH19, THEATERF_WINTER, "P19",
+static const TemplateTypeClass Patch19(TEMPLATE_PATCH19, kTheaterFlagWinter, "P19",
                                        TXT_PATCH, LAND_CLEAR, 4, 3, LAND_CLEAR,
                                        nullptr);
-static const TemplateTypeClass Patch20(TEMPLATE_PATCH20, THEATERF_WINTER, "P20",
+static const TemplateTypeClass Patch20(TEMPLATE_PATCH20, kTheaterFlagWinter, "P20",
                                        TXT_PATCH, LAND_CLEAR, 4, 3, LAND_CLEAR,
                                        nullptr);
 static const TemplateTypeClass River1(TEMPLATE_RIVER1,
-                                      THEATERF_WINTER | THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagTemperate,
                                       "RV01", TXT_RIVER, LAND_WATER, 5, 4,
                                       LAND_CLEAR, nullptr);
 static const TemplateTypeClass River2(TEMPLATE_RIVER2,
-                                      THEATERF_WINTER | THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagTemperate,
                                       "RV02", TXT_RIVER, LAND_WATER, 5, 3,
                                       LAND_ROCK, nullptr);
 static const TemplateTypeClass River3(TEMPLATE_RIVER3,
-                                      THEATERF_WINTER | THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagTemperate,
                                       "RV03", TXT_RIVER, LAND_WATER, 4, 4,
                                       LAND_CLEAR, slope00000001);
 static const TemplateTypeClass River4(TEMPLATE_RIVER4,
-                                      THEATERF_WINTER | THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagTemperate,
                                       "RV04", TXT_RIVER, LAND_WATER, 4, 4,
                                       LAND_ROCK, nullptr);
 static const TemplateTypeClass River5(TEMPLATE_RIVER5,
-                                      THEATERF_WINTER | THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagTemperate,
                                       "RV05", TXT_RIVER, LAND_WATER, 3, 3,
                                       LAND_ROCK, nullptr);
 static const TemplateTypeClass River6(TEMPLATE_RIVER6,
-                                      THEATERF_WINTER | THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagTemperate,
                                       "RV06", TXT_RIVER, LAND_WATER, 3, 2,
                                       LAND_ROCK, nullptr);
 static const TemplateTypeClass River7(TEMPLATE_RIVER7,
-                                      THEATERF_WINTER | THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagTemperate,
                                       "RV07", TXT_RIVER, LAND_WATER, 3, 2,
                                       LAND_ROCK, nullptr);
 static const TemplateTypeClass River8(TEMPLATE_RIVER8,
-                                      THEATERF_WINTER | THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagTemperate,
                                       "RV08", TXT_RIVER, LAND_WATER, 2, 2,
                                       LAND_ROCK, nullptr);
 static const TemplateTypeClass River9(TEMPLATE_RIVER9,
-                                      THEATERF_WINTER | THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagTemperate,
                                       "RV09", TXT_RIVER, LAND_WATER, 2, 2,
                                       LAND_ROCK, nullptr);
 static const TemplateTypeClass River10(TEMPLATE_RIVER10,
-                                       THEATERF_WINTER | THEATERF_TEMPERATE,
+                                       kTheaterFlagWinter | kTheaterFlagTemperate,
                                        "RV10", TXT_RIVER, LAND_WATER, 2, 2,
                                        LAND_ROCK, nullptr);
 static const TemplateTypeClass River11(TEMPLATE_RIVER11,
-                                       THEATERF_WINTER | THEATERF_TEMPERATE,
+                                       kTheaterFlagWinter | kTheaterFlagTemperate,
                                        "RV11", TXT_RIVER, LAND_WATER, 2, 2,
                                        LAND_ROCK, nullptr);
 static const TemplateTypeClass River12(TEMPLATE_RIVER12,
-                                       THEATERF_WINTER | THEATERF_TEMPERATE,
+                                       kTheaterFlagWinter | kTheaterFlagTemperate,
                                        "RV12", TXT_RIVER, LAND_WATER, 3, 4,
                                        LAND_ROCK, nullptr);
 static const TemplateTypeClass River13(TEMPLATE_RIVER13,
-                                       THEATERF_WINTER | THEATERF_TEMPERATE,
+                                       kTheaterFlagWinter | kTheaterFlagTemperate,
                                        "RV13", TXT_RIVER, LAND_WATER, 4, 4,
                                        LAND_ROCK, nullptr);
-static const TemplateTypeClass River14(TEMPLATE_RIVER14, THEATERF_DESERT,
+static const TemplateTypeClass River14(TEMPLATE_RIVER14, kTheaterFlagDesert,
                                        "RV14", TXT_RIVER, LAND_WATER, 4, 3,
                                        LAND_ROCK, nullptr);
-static const TemplateTypeClass River15(TEMPLATE_RIVER15, THEATERF_DESERT,
+static const TemplateTypeClass River15(TEMPLATE_RIVER15, kTheaterFlagDesert,
                                        "RV15", TXT_RIVER, LAND_WATER, 4, 3,
                                        LAND_ROCK, nullptr);
-static const TemplateTypeClass River16(TEMPLATE_RIVER16, THEATERF_DESERT,
+static const TemplateTypeClass River16(TEMPLATE_RIVER16, kTheaterFlagDesert,
                                        "RV16", TXT_RIVER, LAND_WATER, 6, 4,
                                        LAND_ROCK, nullptr);
-static const TemplateTypeClass River17(TEMPLATE_RIVER17, THEATERF_DESERT,
+static const TemplateTypeClass River17(TEMPLATE_RIVER17, kTheaterFlagDesert,
                                        "RV17", TXT_RIVER, LAND_WATER, 6, 5,
                                        LAND_ROCK, nullptr);
-static const TemplateTypeClass River18(TEMPLATE_RIVER18, THEATERF_DESERT,
+static const TemplateTypeClass River18(TEMPLATE_RIVER18, kTheaterFlagDesert,
                                        "RV18", TXT_RIVER, LAND_WATER, 4, 4,
                                        LAND_ROCK, nullptr);
-static const TemplateTypeClass River19(TEMPLATE_RIVER19, THEATERF_DESERT,
+static const TemplateTypeClass River19(TEMPLATE_RIVER19, kTheaterFlagDesert,
                                        "RV19", TXT_RIVER, LAND_WATER, 4, 4,
                                        LAND_ROCK, nullptr);
-static const TemplateTypeClass River20(TEMPLATE_RIVER20, THEATERF_DESERT,
+static const TemplateTypeClass River20(TEMPLATE_RIVER20, kTheaterFlagDesert,
                                        "RV20", TXT_RIVER, LAND_WATER, 6, 8,
                                        LAND_ROCK, nullptr);
-static const TemplateTypeClass River21(TEMPLATE_RIVER21, THEATERF_DESERT,
+static const TemplateTypeClass River21(TEMPLATE_RIVER21, kTheaterFlagDesert,
                                        "RV21", TXT_RIVER, LAND_WATER, 5, 8,
                                        LAND_ROCK, nullptr);
-static const TemplateTypeClass River22(TEMPLATE_RIVER22, THEATERF_DESERT,
+static const TemplateTypeClass River22(TEMPLATE_RIVER22, kTheaterFlagDesert,
                                        "RV22", TXT_RIVER, LAND_WATER, 3, 3,
                                        LAND_ROCK, nullptr);
-static const TemplateTypeClass River23(TEMPLATE_RIVER23, THEATERF_DESERT,
+static const TemplateTypeClass River23(TEMPLATE_RIVER23, kTheaterFlagDesert,
                                        "RV23", TXT_RIVER, LAND_WATER, 3, 3,
                                        LAND_ROCK, nullptr);
-static const TemplateTypeClass River24(TEMPLATE_RIVER24, THEATERF_DESERT,
+static const TemplateTypeClass River24(TEMPLATE_RIVER24, kTheaterFlagDesert,
                                        "RV24", TXT_RIVER, LAND_WATER, 3, 3,
                                        LAND_ROCK, nullptr);
-static const TemplateTypeClass River25(TEMPLATE_RIVER25, THEATERF_DESERT,
+static const TemplateTypeClass River25(TEMPLATE_RIVER25, kTheaterFlagDesert,
                                        "RV25", TXT_RIVER, LAND_WATER, 3, 3,
                                        LAND_ROCK, nullptr);
 static const TemplateTypeClass Ford1(TEMPLATE_FORD1,
-                                     THEATERF_WINTER | THEATERF_DESERT |
-                                         THEATERF_TEMPERATE,
+                                     kTheaterFlagWinter | kTheaterFlagDesert |
+                                         kTheaterFlagTemperate,
                                      "FORD1", TXT_RIVER, LAND_WATER, 3, 3,
                                      LAND_CLEAR, slope001111001);
 static const TemplateTypeClass Ford2(TEMPLATE_FORD2,
-                                     THEATERF_WINTER | THEATERF_DESERT |
-                                         THEATERF_TEMPERATE,
+                                     kTheaterFlagWinter | kTheaterFlagDesert |
+                                         kTheaterFlagTemperate,
                                      "FORD2", TXT_RIVER, LAND_WATER, 3, 3,
                                      LAND_CLEAR, slope111010011);
 static const TemplateTypeClass Falls1(TEMPLATE_FALLS1,
-                                      THEATERF_WINTER | THEATERF_DESERT |
-                                          THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagDesert |
+                                          kTheaterFlagTemperate,
                                       "FALLS1", TXT_RIVER, LAND_WATER, 3, 3,
                                       LAND_CLEAR, slope1);
 static const TemplateTypeClass Falls2(TEMPLATE_FALLS2,
-                                      THEATERF_WINTER | THEATERF_DESERT |
-                                          THEATERF_TEMPERATE,
+                                      kTheaterFlagWinter | kTheaterFlagDesert |
+                                          kTheaterFlagTemperate,
                                       "FALLS2", TXT_RIVER, LAND_WATER, 3, 2,
                                       LAND_CLEAR, nullptr);
 static const TemplateTypeClass Bridge1(TEMPLATE_BRIDGE1,
-                                       THEATERF_WINTER | THEATERF_TEMPERATE,
+                                       kTheaterFlagWinter | kTheaterFlagTemperate,
                                        "BRIDGE1", TXT_RIVER, LAND_WATER, 4, 4,
                                        LAND_CLEAR, slope00110010010011);
 static const TemplateTypeClass Bridge1d(TEMPLATE_BRIDGE1D,
-                                        THEATERF_WINTER | THEATERF_TEMPERATE,
+                                        kTheaterFlagWinter | kTheaterFlagTemperate,
                                         "BRIDGE1D", TXT_RIVER, LAND_WATER, 4, 4,
                                         LAND_CLEAR, slope00110000000011);
 static const TemplateTypeClass Bridge2(TEMPLATE_BRIDGE2,
-                                       THEATERF_WINTER | THEATERF_TEMPERATE,
+                                       kTheaterFlagWinter | kTheaterFlagTemperate,
                                        "BRIDGE2", TXT_RIVER, LAND_WATER, 5, 5,
                                        LAND_CLEAR,
                                        slope1100001000001000001100011);
 static const TemplateTypeClass Bridge2d(TEMPLATE_BRIDGE2D,
-                                        THEATERF_WINTER | THEATERF_TEMPERATE,
+                                        kTheaterFlagWinter | kTheaterFlagTemperate,
                                         "BRIDGE2D", TXT_RIVER, LAND_WATER, 5, 5,
                                         LAND_CLEAR,
                                         slope1100000000000000001100011);
-static const TemplateTypeClass Bridge3(TEMPLATE_BRIDGE3, THEATERF_DESERT,
+static const TemplateTypeClass Bridge3(TEMPLATE_BRIDGE3, kTheaterFlagDesert,
                                        "BRIDGE3", TXT_RIVER, LAND_WATER, 6, 5,
                                        LAND_CLEAR,
                                        slope00011010010100100001000011);
-static const TemplateTypeClass Bridge3d(TEMPLATE_BRIDGE3D, THEATERF_DESERT,
+static const TemplateTypeClass Bridge3d(TEMPLATE_BRIDGE3D, kTheaterFlagDesert,
                                         "BRIDGE3D", TXT_RIVER, LAND_WATER, 6, 5,
                                         LAND_CLEAR,
                                         slope00011010000100000001000011);
-static const TemplateTypeClass Bridge4(TEMPLATE_BRIDGE4, THEATERF_DESERT,
+static const TemplateTypeClass Bridge4(TEMPLATE_BRIDGE4, kTheaterFlagDesert,
                                        "BRIDGE4", TXT_RIVER, LAND_WATER, 6, 4,
                                        LAND_CLEAR,
                                        slope01000000100000010000001);
-static const TemplateTypeClass Bridge4d(TEMPLATE_BRIDGE4D, THEATERF_DESERT,
+static const TemplateTypeClass Bridge4d(TEMPLATE_BRIDGE4D, kTheaterFlagDesert,
                                         "BRIDGE4D", TXT_RIVER, LAND_WATER, 6, 4,
                                         LAND_CLEAR,
                                         slope01000000000000000000001);

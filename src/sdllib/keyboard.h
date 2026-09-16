@@ -41,14 +41,14 @@
 union SDL_Event;
 
 // Modifier and state bits combined with a key number. They are flags, not an
-// enumeration, so they stay plain integers and mix with KeyNumType freely.
-inline constexpr int WWKEY_SHIFT_BIT = 0x100;
-inline constexpr int WWKEY_CTRL_BIT = 0x200;
-inline constexpr int WWKEY_ALT_BIT = 0x400;
-inline constexpr int WWKEY_RLS_BIT = 0x800;
-inline constexpr int WWKEY_VK_BIT = 0x1000;
-inline constexpr int WWKEY_DBL_BIT = 0x2000;
-inline constexpr int WWKEY_BTN_BIT = 0x8000;
+// enumeration, so they are unsigned bit masks that mix with KeyNumType freely.
+inline constexpr uint32_t WWKEY_SHIFT_BIT = 0x100;
+inline constexpr uint32_t WWKEY_CTRL_BIT = 0x200;
+inline constexpr uint32_t WWKEY_ALT_BIT = 0x400;
+inline constexpr uint32_t WWKEY_RLS_BIT = 0x800;
+inline constexpr uint32_t WWKEY_VK_BIT = 0x1000;
+inline constexpr uint32_t WWKEY_DBL_BIT = 0x2000;
+inline constexpr uint32_t WWKEY_BTN_BIT = 0x8000;
 
 class WWKeyboardClass {
  public:

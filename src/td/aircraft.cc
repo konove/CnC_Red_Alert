@@ -1046,7 +1046,7 @@ int AircraftClass::Mission_Unload() {
             **	If there are no more airstrips, regardless of busy state, then
             **	abort this transport plane completely.
             */
-            if (!(House->ActiveBScan & STRUCTF_AIRSTRIP)) {
+            if (!(House->ActiveBScan & kStructFlagAirstrip)) {
               Assign_Mission(MISSION_RETREAT);
             }
 
