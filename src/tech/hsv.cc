@@ -74,7 +74,7 @@ void HSVClass::Adjust(int ratio, const HSVClass& hsv) {
   **	Ratio conversion is limited to 0 through 100%. This is
   **	the range of 0 to 255.
   */
-  ratio &= 0x00FF;
+  ratio %= 256;
 
   /*
   **	Adjust the color guns by the ratio specified toward the

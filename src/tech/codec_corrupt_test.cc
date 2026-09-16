@@ -52,10 +52,10 @@ std::vector<uint8_t> Drain(ByteSource& straw) {
 // payload.
 std::vector<uint8_t> Block(int comp_count, int uncomp_count,
                            const std::vector<uint8_t>& payload) {
-  std::vector<uint8_t> block = {static_cast<uint8_t>(comp_count & 0xff),
-                                static_cast<uint8_t>(comp_count >> 8),
-                                static_cast<uint8_t>(uncomp_count & 0xff),
-                                static_cast<uint8_t>(uncomp_count >> 8)};
+  std::vector<uint8_t> block = {static_cast<uint8_t>(comp_count % 256),
+                                static_cast<uint8_t>(comp_count / 256),
+                                static_cast<uint8_t>(uncomp_count % 256),
+                                static_cast<uint8_t>(uncomp_count / 256)};
   block.insert(block.end(), payload.begin(), payload.end());
   return block;
 }
@@ -95,8 +95,8 @@ std::vector<uint8_t> Compress(const std::vector<uint8_t>& plain) {
 std::vector<uint8_t> LzwCodes(const std::vector<int>& codes) {
   std::vector<uint8_t> bytes;
   for (const int code : codes) {
-    bytes.push_back(static_cast<uint8_t>(code & 0xff));
-    bytes.push_back(static_cast<uint8_t>(code >> 8));
+    bytes.push_back(static_cast<uint8_t>(code % 256));
+    bytes.push_back(static_cast<uint8_t>(code / 256));
   }
   return bytes;
 }
@@ -127,8 +127,8 @@ void ExpectTruncationsFail() {
   }
   const std::vector<uint8_t> encoded = Compress<PipeType>(plain);
   const auto count_at = [&encoded](base::ssize at) {
-    return encoded[static_cast<std::size_t>(at)] |
-           (encoded[static_cast<std::size_t>(at + 1)] << 8);
+    return encoded[static_cast<std::size_t>(at)] +
+           (encoded[static_cast<std::size_t>(at + 1)] * 256);
   };
   const base::ssize first_block_end = 4 + count_at(0);
   for (const base::ssize cut : {base::ssize{2}, base::ssize{4}, base::ssize{9},

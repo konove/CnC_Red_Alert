@@ -1,5 +1,7 @@
 #include "sdllib/keyboard.h"
 
+#include <cstdint>
+
 #include "gtest/gtest.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
@@ -29,7 +31,7 @@ TEST_F(KeyboardTest, CheckReportsThePendingKeyNumber) {
 
 TEST_F(KeyboardTest, CheckKeepsTheModifierBitsOfThePendingKey) {
   const int shifted =
-      static_cast<int>(KN_A) | static_cast<int>(WWKEY_SHIFT_BIT);
+      static_cast<int>(static_cast<uint32_t>(KN_A) | WWKEY_SHIFT_BIT);
   ASSERT_TRUE(keyboard.Put(shifted));
 
   EXPECT_EQ(keyboard.Check(), shifted);

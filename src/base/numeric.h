@@ -53,7 +53,7 @@ constexpr ssize ToSigned(std::integral auto value) {
 //   allies |= base::Bit<uint32_t>(house);
 //   if ((BScan & base::Bit<uint64_t>(STRUCT_WEAP)) != 0) ...
 template <std::unsigned_integral T>
-constexpr T Bit(int index) {
+constexpr T Bit(int index) noexcept {
   DCHECK(index >= 0 && index < std::numeric_limits<T>::digits);
   return static_cast<T>(T{1} << static_cast<unsigned>(index));
 }

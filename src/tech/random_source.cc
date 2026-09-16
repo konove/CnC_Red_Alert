@@ -155,9 +155,9 @@ void RandomSource::Seed_Bit(int seed) {
       std::as_writable_bytes(std::span(Random));
   std::byte& target = seed_bytes[base::ToSize(
       SeedBits / CHAR_BIT % static_cast<int>(sizeof(Random)))];
-  const std::byte frac = std::byte{1} << (SeedBits & (CHAR_BIT - 1));
+  const std::byte frac = std::byte{1} << (SeedBits % CHAR_BIT);
 
-  if (seed & 0x01) {
+  if (seed % 2 != 0) {
     target ^= frac;
   }
   SeedBits++;
@@ -181,9 +181,10 @@ void RandomSource::Seed_Bit(int seed) {
  * HISTORY: * 07/10/1996 JLB : Created. *
  *=============================================================================================*/
 void RandomSource::Seed_Byte(char seed) {
+  auto bits = static_cast<uint8_t>(seed);
   for (int index = 0; index < CHAR_BIT; index++) {
-    Seed_Bit(seed);
-    seed >>= 1;
+    Seed_Bit(bits);
+    bits >>= 1;
   }
 }
 
@@ -201,9 +202,10 @@ void RandomSource::Seed_Byte(char seed) {
  * HISTORY: * 07/10/1996 JLB : Created. *
  *=============================================================================================*/
 void RandomSource::Seed_Short(int16_t seed) {
+  auto bits = static_cast<uint16_t>(seed);
   for (int index = 0; std::cmp_less(index, sizeof(seed) * CHAR_BIT); index++) {
-    Seed_Bit(seed);
-    seed >>= 1;
+    Seed_Bit(bits);
+    bits >>= 1;
   }
 }
 
@@ -221,9 +223,10 @@ void RandomSource::Seed_Short(int16_t seed) {
  * HISTORY: * 07/10/1996 JLB : Created. *
  *=============================================================================================*/
 void RandomSource::Seed_Long(int32_t seed) {
+  auto bits = static_cast<uint32_t>(seed);
   for (int index = 0; std::cmp_less(index, sizeof(seed) * CHAR_BIT); index++) {
-    Seed_Bit(static_cast<int>(seed));
-    seed >>= 1;
+    Seed_Bit(static_cast<int>(bits % 2));
+    bits >>= 1;
   }
 }
 

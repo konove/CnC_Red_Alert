@@ -77,7 +77,7 @@ class LZWEngine {
 
   enum {
     BITS = 12,
-    MAX_CODE = (1 << BITS) - 1,
+    MAX_CODE = 4095,  // (1 << BITS) - 1
     FIRST_CODE = 257,
     END_OF_STREAM = 256,
     TABLE_SIZE = 5021

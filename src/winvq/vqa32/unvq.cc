@@ -39,7 +39,7 @@ void UnVQ_4x2(const unsigned char* codebook, const unsigned char* pointers,
                              col32);  // Write 2st row to dest
       } else {
         // Draw multi-color block
-        const int index = (cb << 8 | v) * 8;
+        const int index = ((cb * 256) + v) * 8;
         const auto row1 = port::ReadUnaligned<uint32_t>(
             codebook + index);  // Read 1st row of codeword
         const auto row2 = port::ReadUnaligned<uint32_t>(
@@ -95,7 +95,7 @@ void UnVQ_4x4(const unsigned char* codebook, const unsigned char* pointers,
                              col32);  // Write 4th row to dest
       } else {
         // Draw multi-color block
-        const int index = (cb << 8 | v) * 16;
+        const int index = ((cb * 256) + v) * 16;
         const auto row1 = port::ReadUnaligned<uint32_t>(
             codebook + index);  // Read 1st row of codeword
         const auto row2 = port::ReadUnaligned<uint32_t>(

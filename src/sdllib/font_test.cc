@@ -47,8 +47,8 @@ std::vector<uint8_t> MakeTestFont() {
   blob[25] = 4;
 
   // Height table (unaligned): packed as (drawn rows << 8) | blank rows above.
-  WriteWord(blob, 27, (6 << 8) | 2);  // glyph 0: 6 rows drawn, 2 blank above
-  WriteWord(blob, 29, (8 << 8) | 0);  // glyph 1: 8 rows drawn, 0 blank above
+  WriteWord(blob, 27, (6 * 256) + 2);  // glyph 0: 6 rows drawn, 2 blank above
+  WriteWord(blob, 29, (8 * 256) + 0);  // glyph 1: 8 rows drawn, 0 blank above
 
   // Glyph data: arbitrary marker bytes.
   blob[31] = 0xAB;

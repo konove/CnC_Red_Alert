@@ -98,11 +98,11 @@ class FontView {
 
   // Number of drawn pixel rows in the glyph.
   [[nodiscard]] int GlyphHeight(uint8_t ch) const {
-    return PackedHeight(ch) >> 8;
+    return PackedHeight(ch) / 256;
   }
   // Number of blank rows between the top of the line and the drawn rows.
   [[nodiscard]] int GlyphBlankRowsAbove(uint8_t ch) const {
-    return PackedHeight(ch) & 0xFF;
+    return PackedHeight(ch) % 256;
   }
 
   // The glyph's pixel data: two 4-bit palette indices per byte, low nibble

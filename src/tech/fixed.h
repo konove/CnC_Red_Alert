@@ -44,7 +44,7 @@ class fixed {
   constexpr fixed(const int numerator, const int denominator) noexcept
       : raw_(denominator == 0
                  ? uint16_t{0}
-                 : static_cast<uint16_t>((numerator << 8) / denominator)) {}
+                 : static_cast<uint16_t>((numerator * 256) / denominator)) {}
 
   // Constructs from a whole number (fractional part set to zero).
   explicit fixed(const uint8_t value) noexcept
@@ -63,7 +63,7 @@ class fixed {
   }
 
   // Returns the value rounded to the nearest whole integer.
-  [[nodiscard]] int ToInt() const { return (raw_ + kRoundingBias) >> 8; }
+  [[nodiscard]] int ToInt() const { return (raw_ + kRoundingBias) / 256; }
 
   // Accessors for the whole and fractional parts.
   [[nodiscard]] uint8_t whole() const { return raw_ >> 8; }
@@ -81,7 +81,7 @@ class fixed {
   // In-place arithmetic operators.
   fixed& operator*=(const fixed& rvalue) {
     // Divide by 256 to remove extra 8.8 scale factor.
-    raw_ = static_cast<uint16_t>((raw_ * rvalue.raw_) >> 8);
+    raw_ = static_cast<uint16_t>((raw_ * rvalue.raw_) / 256);
     return *this;
   }
   fixed& operator*=(const int rvalue) {
@@ -105,7 +105,7 @@ class fixed {
     return *this;
   }
   fixed& operator+=(const int rvalue) {
-    raw_ += static_cast<uint16_t>(rvalue << 8);
+    raw_ += static_cast<uint16_t>(rvalue * 256);
     return *this;
   }
   fixed& operator-=(const fixed& rvalue) {
@@ -113,7 +113,7 @@ class fixed {
     return *this;
   }
   fixed& operator-=(const int rvalue) {
-    raw_ -= static_cast<uint16_t>(rvalue << 8);
+    raw_ -= static_cast<uint16_t>(rvalue * 256);
     return *this;
   }
 
@@ -184,12 +184,12 @@ class fixed {
   bool operator!() const { return raw_ == 0; }
 
   // Comparison to integers (scales integer to 8.8 for accurate comparison).
-  bool operator<(const int rvalue) const { return raw_ < rvalue << 8; }
-  bool operator>(const int rvalue) const { return raw_ > rvalue << 8; }
-  bool operator<=(const int rvalue) const { return raw_ <= rvalue << 8; }
-  bool operator>=(const int rvalue) const { return raw_ >= rvalue << 8; }
-  bool operator==(const int rvalue) const { return raw_ == rvalue << 8; }
-  bool operator!=(const int rvalue) const { return raw_ != rvalue << 8; }
+  bool operator<(const int rvalue) const { return raw_ < rvalue * 256; }
+  bool operator>(const int rvalue) const { return raw_ > rvalue * 256; }
+  bool operator<=(const int rvalue) const { return raw_ <= rvalue * 256; }
+  bool operator>=(const int rvalue) const { return raw_ >= rvalue * 256; }
+  bool operator==(const int rvalue) const { return raw_ == rvalue * 256; }
+  bool operator!=(const int rvalue) const { return raw_ != rvalue * 256; }
 
   // Commutative friend operators for int-on-left expressions (e.g., 5 * f).
   friend int operator*(const int lvalue, const fixed& rvalue) {

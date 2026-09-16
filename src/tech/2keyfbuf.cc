@@ -21,7 +21,7 @@ struct ShapeHeaderType {
   int shape_buffer;     // 0 or 1
 };
 
-enum BlitFlags {
+enum BlitFlags : uint32_t {
   BLIT_TRANSPARENT = 1,
   BLIT_GHOST = 2,
   BLIT_FADING = 4,
@@ -30,17 +30,23 @@ enum BlitFlags {
   BLIT_SKIP = 16,
 
   BLIT_OLD = BLIT_TRANSPARENT | BLIT_GHOST | BLIT_FADING |
-             BLIT_PREDATOR,  // the first four, used for "old" draw
-  BLIT_ALL =
-      BLIT_TRANSPARENT | BLIT_GHOST | BLIT_FADING | BLIT_PREDATOR | BLIT_SKIP
+      BLIT_PREDATOR,  // the first four, used for "old" draw
+  BLIT_ALL = BLIT_TRANSPARENT | BLIT_GHOST | BLIT_FADING | BLIT_PREDATOR |
+      BLIT_SKIP
 };
 
 // the one in jshell isn't const enough
 static constexpr BlitFlags operator|(BlitFlags t1, BlitFlags t2) {
-  return static_cast<BlitFlags>(static_cast<int>(t1) | static_cast<int>(t2));
+  return static_cast<BlitFlags>(static_cast<uint32_t>(t1) |
+                                static_cast<uint32_t>(t2));
 }
 
-#define PRED_MASK 0xE
+// The predator table walk is legacy signed byte-offset arithmetic from the
+// assembler blitter: a negative predator offset is meant to walk backwards
+// into BFPredNegTable, so these masks stay on the signed value.
+// TODO: a negative offset becomes ~0xFF | k and indexes BFPredTable at
+// about -126, well before BFPredNegTable; that read is out of bounds.
+constexpr int PRED_MASK = 0xE;
 
 static int BFPredOffset;
 static int BFPartialCount;
@@ -52,19 +58,19 @@ static int16_t BFPredNegTable[]{-1, -3, -2, -5, -2, -4, -3, -1,
 static int16_t BFPredTable[]{1, 3, 2, 5, 2, 3, 4, 1};
 
 // copied from blit funcs
-static inline int Make_Code(int x, int y, int w, int h) {
-  return (x < 0 ? 0b1000 : 0) | (x >= w ? 0b0100 : 0) | (y < 0 ? 0b0010 : 0) |
-         (y >= h ? 0b0001 : 0);
+static inline uint32_t Make_Code(int x, int y, int w, int h) {
+  return (x < 0 ? 0b1000U : 0U) | (x >= w ? 0b0100U : 0U) |
+         (y < 0 ? 0b0010U : 0U) | (y >= h ? 0b0001U : 0U);
 }
 
 static void Setup_Shape_Header(int pixel_width, int pixel_height, char* src,
-                               ShapeHeaderType* headers, int flags,
+                               ShapeHeaderType* headers, uint32_t flags,
                                const uint8_t* /*Translucent*/,
                                const uint8_t* IsTranslucent) {
-  headers->draw_flags = static_cast<unsigned>(ShapeEffectFlags(flags));
+  headers->draw_flags = ShapeEffectFlags(flags);
   auto* ptr = port::BytesOf(*headers) + sizeof(ShapeHeaderType);
   do {
-    int line_flags = 0;
+    uint32_t line_flags = 0;
     int trans_count = 0;
     int x_count = pixel_width;
     do {
@@ -99,7 +105,7 @@ static void Setup_Shape_Header(int pixel_width, int pixel_height, char* src,
 
 // single helper that handles all combinations
 // templated on flags to avoid writing every combination
-template <int flags>
+template <uint32_t flags>
 static void Do_Old_Blit(int line_count, int pixel_count, uint8_t* src_offset,
                         uint8_t* dst_offset, int src_adjust_width,
                         int dst_adjust_width, const uint8_t* Translucent,
@@ -112,12 +118,14 @@ static void Do_Old_Blit(int line_count, int pixel_count, uint8_t* src_offset,
       if (pixel || !(flags & BLIT_TRANSPARENT)) {
         if (flags & BLIT_PREDATOR) {
           const int pred = BFPartialCount + BFPartialPred;
-          BFPartialCount = pred & 0xFF;
+          BFPartialCount = pred % 256;
           // is this a predator pixel?
-          if (pred >> 8) {
+          if (pred >= 256) {
             // pick up a color offset a pseudo-random amount from the current
             // viewport address
+            // NOLINTNEXTLINE(bugprone-signed-bitwise)
             pixel = dst_offset[BFPredTable[BFPredOffset >> 1]];
+            // NOLINTNEXTLINE(bugprone-signed-bitwise)
             BFPredOffset = (BFPredOffset + 2) & PRED_MASK;
           }
         }
@@ -125,7 +133,7 @@ static void Do_Old_Blit(int line_count, int pixel_count, uint8_t* src_offset,
         if (flags & BLIT_GHOST) {
           const uint8_t is_trans = IsTranslucent[pixel];
           if (is_trans != 0xFF) {  // is it a translucent color?
-            pixel = Translucent[is_trans << 8 | *dst_offset];
+            pixel = Translucent[(is_trans * 256) + *dst_offset];
           }
         }
 
@@ -147,7 +155,7 @@ static void Do_Old_Blit(int line_count, int pixel_count, uint8_t* src_offset,
 }
 
 void Buffer_Frame_To_Page(int x, int y, const int w, const int h, void* src,
-                          GraphicViewPortClass& dest, int flags,
+                          GraphicViewPortClass& dest, uint32_t flags,
                           const ShapeEffects& effects) {
   if (!src) {
     return;
@@ -177,7 +185,7 @@ void Buffer_Frame_To_Page(int x, int y, const int w, const int h, void* src,
   }
   // else just use the old shape drawing system
 
-  int jflags = 0;  // clear jump flags
+  uint32_t jflags = 0;  // clear jump flags
 
   // See if we need to center the frame
   if (flags & SHAPE_CENTER) {
@@ -224,11 +232,11 @@ void Buffer_Frame_To_Page(int x, int y, const int w, const int h, void* src,
     // save address of fading tbl
     FadingTable = effects.fading_table;
     // get fade num, no need for more than 63
-    FadingNum = effects.fading_count & 0x3F;
+    FadingNum = effects.fading_count % 64;
     jflags |= BLIT_FADING;
 
     if (!FadingNum) {
-      flags &= ~SHAPE_FADING;  // don't fade
+      flags &= ~uint32_t{SHAPE_FADING};  // don't fade
     }
 
     // ShapeJumpTableAddress[4] = Single_Line_Single_Fade
@@ -245,12 +253,13 @@ void Buffer_Frame_To_Page(int x, int y, const int w, const int h, void* src,
     int offset = effects.predator_offset;
     jflags |= BLIT_PREDATOR;
 
-    offset <<= 1;
+    offset *= 2;
 
     if (offset < 0) {
+      // NOLINTNEXTLINE(bugprone-signed-bitwise)
       offset = (-offset & PRED_MASK) | ~0xFF;  // will be ffffff00-ffffff0E
     } else {
-      offset &= PRED_MASK;
+      offset &= PRED_MASK;  // NOLINT(bugprone-signed-bitwise)
     }
 
     BFPredOffset = offset;
@@ -266,7 +275,7 @@ void Buffer_Frame_To_Page(int x, int y, const int w, const int h, void* src,
 
   // is this a partial pred?
   if (flags & SHAPE_PARTIAL) {
-    BFPartialPred = effects.partial_predator & 0xFF;
+    BFPartialPred = effects.partial_predator % 256;
   }
 
   // clip dest
@@ -278,9 +287,9 @@ void Buffer_Frame_To_Page(int x, int y, const int w, const int h, void* src,
   int dst_x1 = x + w;
   int dst_y1 = y + h;
 
-  const int code0 =
+  const uint32_t code0 =
       Make_Code(dst_x0, dst_y0, dest.Get_Width(), dest.Get_Height());
-  const int code1 =
+  const uint32_t code1 =
       Make_Code(dst_x1, dst_y1, dest.Get_Width() + 1, dest.Get_Height() + 1);
 
   // outside
@@ -443,5 +452,4 @@ void Buffer_Frame_To_Page(int x, int y, const int w, const int h, void* src,
                  header_pointer->draw_flags & BLIT_ALL,
                  static_cast<int>(use_all_flags));
   }
-
 }

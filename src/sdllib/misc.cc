@@ -66,10 +66,10 @@ void* Build_Fading_Table(const void* palette, void* dest, int color, int frac) {
     const uint8_t origred = pal8[(remap_index * 3) + 0];
     const uint8_t origgreen = pal8[(remap_index * 3) + 1];
 
-    auto tmp = static_cast<uint16_t>((origred - targetred) * (frac >> 1));
+    auto tmp = static_cast<uint16_t>((origred - targetred) * (frac / 2));
     const auto idealred = static_cast<uint8_t>(origred - (tmp >> 7));
 
-    tmp = static_cast<uint16_t>((origgreen - targetgreen) * (frac >> 1));
+    tmp = static_cast<uint16_t>((origgreen - targetgreen) * (frac / 2));
     const auto idealgreen = static_cast<uint8_t>(origgreen - (tmp >> 7));
 
     // Sweep through the entire existing palette to find the closest
@@ -149,19 +149,19 @@ uint8_t Random() {
   std::memcpy(r.data(), &RandNumb, sizeof(RandNumb));
 
   uint8_t tmp = r[0] >> 1;
-  const int c = tmp & 1;
+  const uint8_t c = tmp & 1;
   tmp >>= 1;
 
-  const int c1 = r[2] & 0x80;
-  r[2] = static_cast<uint8_t>(r[2] << 1 | c);
+  const uint8_t c1 = r[2] & 0x80;
+  r[2] = static_cast<uint8_t>((r[2] * 2) + c);
 
-  const int c2 = r[1] & 0x80;
-  r[1] = static_cast<uint8_t>(r[1] << 1 | c1 >> 7);
+  const uint8_t c2 = r[1] & 0x80;
+  r[1] = static_cast<uint8_t>((r[1] * 2) + (c1 / 128));
 
   tmp = static_cast<uint8_t>(tmp - (r[0] + (1 - c2)));
-  const int c3 = tmp & 1;
+  const uint8_t c3 = tmp & 1;
 
-  r[0] = static_cast<uint8_t>(r[0] >> 1 | c3 << 7);
+  r[0] = static_cast<uint8_t>((r[0] / 2) + (c3 * 128));
 
   std::memcpy(&RandNumb, r.data(), sizeof(RandNumb));
   return r[0] ^ r[1];

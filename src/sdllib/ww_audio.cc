@@ -119,20 +119,21 @@ static const uint8_t* DecodeADPCMBlock(ChannelState& chan, int block_size,
     int16_t samples[2];
     const auto b = *in_ptr++;
 
-    int nibble = b & 0xF;
+    // The nibble is the low or high half of the byte: a 4-bit pattern.
+    uint8_t nibble = b & 0xF;
     int step = ima_adpcm_step_table[chan.step];
     chan.step = static_cast<int8_t>(clamp(chan.step + ima_adpcm_index_table[nibble], 0, 88));
 
-    int diff = (((((nibble & 7) * 2) + 1) * step) >> 3) * (nibble & 8 ? -1 : 1);
+    int diff = (((((nibble & 7) * 2) + 1) * step) / 8) * (nibble & 8 ? -1 : 1);
     chan.predictor = static_cast<int16_t>(clamp(chan.predictor + diff, -32768, 32767));
 
     samples[0] = chan.predictor;
 
-    nibble = b >> 4;
+    nibble = static_cast<uint8_t>(b >> 4);
     step = ima_adpcm_step_table[chan.step];
     chan.step = static_cast<int8_t>(clamp(chan.step + ima_adpcm_index_table[nibble], 0, 88));
 
-    diff = (((((nibble & 7) * 2) + 1) * step) >> 3) * (nibble & 8 ? -1 : 1);
+    diff = (((((nibble & 7) * 2) + 1) * step) / 8) * (nibble & 8 ? -1 : 1);
     chan.predictor = static_cast<int16_t>(clamp(chan.predictor + diff, -32768, 32767));
 
     samples[1] = chan.predictor;
@@ -352,9 +353,11 @@ static void SDL_Audio_Callback(void* /*userdata*/, Uint8* stream, int len) {
       const base::ssize offset = s * base::ssize{sizeof(int16_t)};
       const auto output = port::ReadUnaligned<int16_t>(stream + offset);
       const auto input = port::ReadUnaligned<int16_t>(MixBuffer + offset);
-      port::WriteUnaligned(
-          stream + offset,
-          static_cast<int16_t>(output + ((input * chan.volume) >> 15)));
+      // Floor division of a signed sample product keeps the mix rounding.
+      const int mixed =
+          (input * chan.volume) >> 15;  // NOLINT(bugprone-signed-bitwise)
+      port::WriteUnaligned(stream + offset,
+                           static_cast<int16_t>(output + mixed));
     }
   }
 }

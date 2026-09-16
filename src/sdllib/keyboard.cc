@@ -15,7 +15,8 @@
 // Excludes toggle modifiers (Caps Lock, Num Lock, Scroll Lock) so that their
 // state doesn't interfere with keyboard handling.
 constexpr SDL_Keymod kInputModifierMask =
-    static_cast<SDL_Keymod>(KMOD_SHIFT | KMOD_CTRL | KMOD_ALT | KMOD_GUI);
+    static_cast<SDL_Keymod>(uint32_t{KMOD_SHIFT} | uint32_t{KMOD_CTRL} |
+                            uint32_t{KMOD_ALT} | uint32_t{KMOD_GUI});
 
 WWKeyboardClass::WWKeyboardClass() = default;
 
@@ -39,7 +40,7 @@ int WWKeyboardClass::Get() {
 }
 
 bool WWKeyboardClass::Put(int key) {
-  const int temp = (Tail + 1) & 255;
+  const int temp = (Tail + 1) % 256;
   if (temp != Head) {
     Buffer[Tail] = static_cast<uint16_t>(key);
 
@@ -92,13 +93,16 @@ bool WWKeyboardClass::Put_Key_Message(unsigned vk_key, bool release) {
 }
 
 int WWKeyboardClass::To_ASCII(int num) {
-  if (num & WWKEY_RLS_BIT) {
+  // A key number is a key code in the low byte with modifier bits above it.
+  const auto bits = static_cast<uint32_t>(num);
+  if (bits & WWKEY_RLS_BIT) {
     return 0;
   }
 
   // this isn't great but we can't do much better without rewriting everything
   // to use textinput events (SDL3 would allow passing the mods in)
-  const int key = SDL_GetKeyFromScancode(static_cast<SDL_Scancode>(num & 0xFF));
+  const int key =
+      SDL_GetKeyFromScancode(static_cast<SDL_Scancode>(bits & 0xFF));
 
   if (key <= SDLK_z) {
     return key;
@@ -150,7 +154,7 @@ bool WWKeyboardClass::Down(int key) {
 }
 
 bool WWKeyboardClass::Is_Mouse_Key(int key) {
-  key &= 0xFF;
+  key = static_cast<int>(static_cast<uint32_t>(key) & 0xFF);
   return key == VK_LBUTTON || key == VK_MBUTTON || key == VK_RBUTTON;
 }
 
@@ -196,14 +200,14 @@ int WWKeyboardClass::Buff_Get() {
   const int temp = Buffer[Head];       // get key out of the buffer
   int newhead = Head;                  // save off head for manipulation
   if (Is_Mouse_Key(temp)) {            // if key is a mouse then
-    MouseQX = Buffer[(Head + 1) & 255];  //		get the x and y pos
-    MouseQY = Buffer[(Head + 2) & 255];  //		from the buffer
+    MouseQX = Buffer[(Head + 1) % 256];  //		get the x and y pos
+    MouseQY = Buffer[(Head + 2) % 256];  //		from the buffer
     newhead += 3;                      //		adjust head forward
   } else {
     newhead += 1;  //		adjust head forward
   }
 
-  newhead &= 255;
+  newhead %= 256;
   Head = newhead;
   return temp;
 }

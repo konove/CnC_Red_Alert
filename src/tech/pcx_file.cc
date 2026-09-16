@@ -138,7 +138,7 @@ void Write_Pcx_ScanLine(int file_handle, int scansize, const char* ptr) {
   unsigned rle = 1;
 
   for (unsigned i = 1; std::cmp_less(i, scansize); i++) {
-    const unsigned color = 0xff & *++ptr;
+    const unsigned color = static_cast<unsigned char>(*++ptr);
     if (color == last) {
       rle++;
       if (rle == 63) {

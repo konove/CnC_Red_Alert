@@ -517,7 +517,7 @@ typedef enum KeyNumType {
 constexpr KeyNumType ButtonKey(const int id) {
   // A gadget ID is not a key code, so the value never names an enumerator.
   // NOLINTNEXTLINE(clang-analyzer-optin.core.EnumCastOutOfRange)
-  return static_cast<KeyNumType>(id | static_cast<int>(KN_BUTTON));
+  return static_cast<KeyNumType>(static_cast<uint32_t>(id) | KN_BUTTON);
 }
 
 // A key number is a key code in the low bits with the KN_*_BIT modifier and
@@ -528,15 +528,17 @@ constexpr KeyNumType ButtonKey(const int id) {
 constexpr KeyNumType operator|(const KeyNumType a,
                                const KeyNumType b) noexcept {
   // NOLINTNEXTLINE(clang-analyzer-optin.core.EnumCastOutOfRange)
-  return static_cast<KeyNumType>(static_cast<int>(a) | static_cast<int>(b));
+  return static_cast<KeyNumType>(static_cast<uint32_t>(a) |
+                                 static_cast<uint32_t>(b));
 }
 inline KeyNumType operator&(const KeyNumType a, const KeyNumType b) noexcept {
   // NOLINTNEXTLINE(clang-analyzer-optin.core.EnumCastOutOfRange)
-  return static_cast<KeyNumType>(static_cast<int>(a) & static_cast<int>(b));
+  return static_cast<KeyNumType>(static_cast<uint32_t>(a) &
+                                 static_cast<uint32_t>(b));
 }
 inline KeyNumType operator~(const KeyNumType a) noexcept {
   // NOLINTNEXTLINE(clang-analyzer-optin.core.EnumCastOutOfRange)
-  return static_cast<KeyNumType>(~static_cast<int>(a));
+  return static_cast<KeyNumType>(~static_cast<uint32_t>(a));
 }
 
 #endif  // CNC_RED_ALERT_SDLLIB_KEYBOARD_H_

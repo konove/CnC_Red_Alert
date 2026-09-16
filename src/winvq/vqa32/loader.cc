@@ -79,6 +79,7 @@
 
 #include "base/numeric.h"
 #include "base/seek_origin.h"
+#include "base/types.h"
 #include "sdllib/ww_win.h"
 #include "winvq/vqa32/vqafile.h"
 #include "winvq/vqa32/vqaplay.h"
@@ -913,8 +914,9 @@ int32_t VQA_SeekFrame(VQAHandle* vqa, int32_t framenum, int32_t /*fromwhere*/) {
       for (int32_t i = framenum; i >= 0; i--) {
         if (vqabuf->Foff[i] & VQAFINF_PAL) {
           /* Seek to the palette frame. */
-          rc = vqap->io->Seek(VQAFRAME_OFFSET(vqabuf->Foff[i]),
-                              SeekOrigin::kBegin)
+          rc = vqap->io->Seek(
+                   static_cast<base::ssize>(VQAFRAME_OFFSET(vqabuf->Foff[i])),
+                   SeekOrigin::kBegin)
                    ? VQAERR_NONE
                    : VQAERR_SEEK;
 
@@ -962,8 +964,9 @@ int32_t VQA_SeekFrame(VQAHandle* vqa, int32_t framenum, int32_t /*fromwhere*/) {
       /* Seek to the start of the group containing the partial codebooks for
        * the target frame.
        */
-      if (vqap->io->Seek(VQAFRAME_OFFSET(vqabuf->Foff[group]),
-                         SeekOrigin::kBegin)) {
+      if (vqap->io->Seek(
+              static_cast<base::ssize>(VQAFRAME_OFFSET(vqabuf->Foff[group])),
+              SeekOrigin::kBegin)) {
         /* Throw away any audio frames that were loaded. */
         if (config->OptionFlags & VQAOPTF_AUDIO && audio->Buffer != nullptr) {
           memset(audio->IsLoaded, 0,
@@ -1099,19 +1102,20 @@ static VQAData* AllocBuffers(const VQAHeader* header, VQAConfig* config) {
   vqa->Drawer.LastTime = -VQA_TIMETICKS;
 
   /* Set maximum codebook size. */
+  // The sizes are rounded down to a multiple of four.
   vqa->Max_CB_Size =
-      ((header->CBentries * header->BlockWidth * header->BlockHeight) + 250) &
-      0xFFFC;
+      ((header->CBentries * header->BlockWidth * header->BlockHeight) + 250) /
+      4 * 4;
 
   /* Set maximum palette size. */
-  vqa->Max_Pal_Size = (768 + 1024) & 0xFFFC;
+  vqa->Max_Pal_Size = (768 + 1024) / 4 * 4;
 
   /* Set maximum vector pointers size. */
-  vqa->Max_Ptr_Size = (((header->ImageWidth / header->BlockWidth) *
-                        (header->ImageHeight / header->BlockHeight) *
-                        int{sizeof(int16_t)}) +
-                       1024) &
-                      0xFFFC;
+  vqa->Max_Ptr_Size =
+      (((header->ImageWidth / header->BlockWidth) *
+        (header->ImageHeight / header->BlockHeight) * int{sizeof(int16_t)}) +
+       1024) /
+      4 * 4;
 
   /* Set the frame number of the frame containing the last codebook. */
   vqa->Loader.LastCBFrame =

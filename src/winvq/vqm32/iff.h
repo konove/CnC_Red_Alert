@@ -117,8 +117,9 @@ typedef struct IFFHandle {
 
 // Packs four characters into the little-endian chunk identifier word.
 constexpr int32_t MakeId(char a, char b, char c, char d) {
-  return (int32_t{d} << 24) | (int32_t{c} << 16) | (int32_t{b} << 8) |
-         int32_t{a};
+  return static_cast<int32_t>(
+      (static_cast<uint32_t>(d) << 24) | (static_cast<uint32_t>(c) << 16) |
+      (static_cast<uint32_t>(b) << 8) | static_cast<uint32_t>(a));
 }
 
 /* Universal IFF identifiers */

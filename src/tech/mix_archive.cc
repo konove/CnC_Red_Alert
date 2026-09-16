@@ -59,8 +59,9 @@ bool MixArchive::Open(std::string_view filename, const PKey* key) {
 
   if (alternate.First == 0) {
     // Extended Format
-    has_digest_ = (alternate.Second & 0x01) != 0;
-    is_encrypted_ = (alternate.Second & 0x02) != 0;
+    const auto flags = static_cast<uint32_t>(alternate.Second);
+    has_digest_ = (flags & 0x01) != 0;
+    is_encrypted_ = (flags & 0x02) != 0;
 
     if (is_encrypted_) {
       assert(key != nullptr);

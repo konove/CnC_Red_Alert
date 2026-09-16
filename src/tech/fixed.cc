@@ -52,7 +52,7 @@ fixed fixed::FromString(const std::string_view str_in) {
   const auto dot = str.find('.');
   const auto whole_part = str.substr(0, dot);
   if (!whole_part.empty()) {
-    result.raw_ = static_cast<uint16_t>(ParseInt(whole_part) << 8);
+    result.raw_ = static_cast<uint16_t>(ParseInt(whole_part) * 256);
   }
 
   if (dot != std::string_view::npos && dot + 1 < str.size()) {

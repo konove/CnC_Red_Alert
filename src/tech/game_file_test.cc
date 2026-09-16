@@ -29,13 +29,15 @@ constexpr const char* kPackedName = "GAME_FILE_TEST.BIN";
 constexpr const char* kInnerName = "GAME_FILE_TEST_INNER.MIX";
 
 void PutInt16(std::vector<char>& out, int value) {
-  out.push_back(static_cast<char>(value & 0xff));
-  out.push_back(static_cast<char>((value >> 8) & 0xff));
+  const auto bits = static_cast<uint32_t>(value);
+  out.push_back(static_cast<char>(bits & 0xff));
+  out.push_back(static_cast<char>((bits >> 8) & 0xff));
 }
 
 void PutInt32(std::vector<char>& out, int64_t value) {
-  for (int shift = 0; shift < 32; shift += 8) {
-    out.push_back(static_cast<char>((value >> shift) & 0xff));
+  const auto bits = static_cast<uint64_t>(value);
+  for (unsigned shift = 0; shift < 32; shift += 8) {
+    out.push_back(static_cast<char>((bits >> shift) & 0xff));
   }
 }
 

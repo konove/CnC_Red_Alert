@@ -114,8 +114,8 @@ class BlockCodec {
     const int packed = backend_.Compress(
         std::span(input_).first(base::ToSize(count_)), output_);
     const std::array<std::byte, kHeaderSize> header = {
-        static_cast<std::byte>(packed), static_cast<std::byte>(packed >> 8),
-        static_cast<std::byte>(count_), static_cast<std::byte>(count_ >> 8)};
+        static_cast<std::byte>(packed), static_cast<std::byte>(packed / 256),
+        static_cast<std::byte>(count_), static_cast<std::byte>(count_ / 256)};
     count_ = 0;
     const bool header_written = out.Write(header);
     return out.Write(std::span(output_).first(base::ToSize(packed))) &&
@@ -123,10 +123,10 @@ class BlockCodec {
   }
 
   void ReadHeader() {
-    comp_count_ = std::to_integer<int>(input_[0]) |
-                  (std::to_integer<int>(input_[1]) << 8);
-    uncomp_count_ = std::to_integer<int>(input_[2]) |
-                    (std::to_integer<int>(input_[3]) << 8);
+    comp_count_ = std::to_integer<int>(input_[0]) +
+                  (std::to_integer<int>(input_[1]) * 256);
+    uncomp_count_ = std::to_integer<int>(input_[2]) +
+                    (std::to_integer<int>(input_[3]) * 256);
     count_ = 0;
     have_header_ = true;
     // A corrupt header must not size reads or writes past the buffers.

@@ -151,7 +151,7 @@ const uint16_t* XMP_Halves(
 static int Byte_Precision(uint32_t value) {
   int byte_count = 0;
   for (byte_count = sizeof(value); byte_count; byte_count--) {
-    if (value >> ((byte_count - 1) * 8)) {
+    if (value >> (8U * static_cast<unsigned>(byte_count - 1))) {
       break;
     }
   }
@@ -187,11 +187,11 @@ int XMP_DER_Length_Encode(uint32_t length, unsigned char* output) {
     output[header_length++] = static_cast<unsigned char>(length);
   } else {
     output[header_length++] =
-        static_cast<unsigned char>(Byte_Precision(length) | 0x80);
+        static_cast<unsigned char>(Byte_Precision(length) + 0x80);
     for (int byte_counter = Byte_Precision(length); byte_counter;
          --byte_counter) {
-      output[header_length++] =
-          static_cast<unsigned char>(length >> ((byte_counter - 1) * 8));
+      output[header_length++] = static_cast<unsigned char>(
+          length >> (8U * static_cast<unsigned>(byte_counter - 1)));
     }
   }
   return header_length;
@@ -274,7 +274,7 @@ void XMP_DER_Decode(uint32_t* result, const unsigned char* input,
       }
       byte_count = *input++;
       if (length > 1) {
-        byte_count = byte_count << 8 | *input++;
+        byte_count = (byte_count * 256) + *input++;
       }
     }
     if (byte_count <= precision * static_cast<int>(sizeof(uint32_t))) {
@@ -676,14 +676,15 @@ void XMP_Shift_Right_Bits(uint32_t* number, int bits, int precision) {
   if (bits < UNITSIZE) {
     number += precision;
     uint32_t carry = 0;
-    const uint32_t bitmask = (1 << bits) - 1;
-    const int unbits = UNITSIZE - bits;
+    const uint32_t bitmask = base::Bit<uint32_t>(bits) - 1;
+    const auto shift = static_cast<unsigned>(bits);
+    const unsigned unshift = UNITSIZE - shift;
 
     while (precision--) {
       number--;
       const uint32_t temp = *number & bitmask;
-      *number >>= bits;
-      *number |= carry << unbits;
+      *number >>= shift;
+      *number |= carry << unshift;
       carry = temp;
     }
     return;
@@ -693,7 +694,7 @@ void XMP_Shift_Right_Bits(uint32_t* number, int bits, int precision) {
   **	General purpose slow right.
   */
   const int digits_to_shift = bits / UNITSIZE;
-  const int bits_to_shift = bits % UNITSIZE;
+  const auto bits_to_shift = static_cast<unsigned>(bits % UNITSIZE);
 
   for (int index = digits_to_shift; index < precision - 1; index++) {
     *number = *(number + digits_to_shift) >> bits_to_shift |
@@ -761,12 +762,14 @@ void XMP_Shift_Left_Bits(uint32_t* number, int bits, int precision) {
   */
   if (bits < UNITSIZE) {
     uint32_t carry = 0;
-    const uint32_t bitmask = ~(static_cast<uint32_t>(-1) >> bits);
-    const int unbits = UNITSIZE - bits; /* shift bits must be <= UNITSIZE */
+    const auto shift = static_cast<unsigned>(bits);
+    const uint32_t bitmask = ~(static_cast<uint32_t>(-1) >> shift);
+    const unsigned unshift =
+        UNITSIZE - shift; /* shift bits must be <= UNITSIZE */
 
     while (precision--) {
       const uint32_t temp = *number & bitmask;
-      *number = *number << bits | carry >> unbits;
+      *number = *number << shift | carry >> unshift;
       carry = temp;
       number++;
     }
@@ -777,7 +780,7 @@ void XMP_Shift_Left_Bits(uint32_t* number, int bits, int precision) {
   **	General purpose slow left;
   */
   const int digits_to_shift = bits / UNITSIZE;
-  const int bits_to_shift = bits % UNITSIZE;
+  const auto bits_to_shift = static_cast<unsigned>(bits % UNITSIZE);
 
   number += precision - 1;
   for (int index = digits_to_shift; index < precision - 1; index++) {
@@ -1137,7 +1140,7 @@ bool XMP_Sub(uint32_t* result, const uint32_t* left_number,
     right_number_ptr++;
     left_number_ptr++;
     *result_ptr++ = static_cast<uint16_t>(x);
-    borrow = (1L << 16 & x) != 0L;
+    borrow = (x & (uint32_t{1} << 16)) != 0;
   }
   return borrow;
 }
@@ -1179,7 +1182,7 @@ bool XMP_Sub_Int(uint32_t* result, const uint32_t* left_number,
                        static_cast<uint32_t>(borrow);
     left_number_ptr++;
     *result_ptr++ = static_cast<uint16_t>(x);
-    borrow = (1L << 16 & x) != 0L;
+    borrow = (x & (uint32_t{1} << 16)) != 0;
 
     right_number = 0;
   }
@@ -2133,10 +2136,10 @@ uint16_t mp_quo_digit(const uint16_t* dividend) {
   uint64_t q = (q0 >> 16) + (q1 >> 1) + (q2 >> 1) + 1;
 
   /*      Compute the most significant term and add in the others */
-  q = (q >> (16 - 2)) + (((dividend[0] ^ kSemiMask) *
-                          static_cast<uint64_t>(reciprical_high_digit))
-                         << 1);
-  q >>= modulus_shift;
+  q = (q >> 14) + (((dividend[0] ^ kSemiMask) *
+                    static_cast<uint64_t>(reciprical_high_digit))
+                   << 1);
+  q >>= static_cast<unsigned>(modulus_shift);
 
   /*      Prevent overflow and then wipe out the intermediate results. */
   return static_cast<uint16_t>(
@@ -2483,7 +2486,8 @@ void XMP_Randomize(uint32_t* result, ByteSource& rng, int total_bits,
   // Clear the bits above total_bits in a partial last byte. The digits are
   // little-endian, so that byte holds the number's top bits.
   if (const int leftover = total_bits % 8; leftover != 0) {
-    bytes.back() &= std::byte{static_cast<unsigned char>((1U << leftover) - 1)};
+    bytes.back() &= std::byte{
+        static_cast<unsigned char>(base::Bit<uint32_t>(leftover) - 1)};
   }
 }
 

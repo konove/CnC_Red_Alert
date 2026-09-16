@@ -39,6 +39,7 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <cstdint>
 #include <cstring>
 #include <span>
 #include <vector>
@@ -163,7 +164,7 @@ int LcwUncompBounded(std::span<const std::byte> source,
   base::ssize out = 0;
 
   const auto byte_at = [&](base::ssize offset) {
-    return std::to_integer<int>(in_bytes[in + offset]);
+    return std::to_integer<uint8_t>(in_bytes[in + offset]);
   };
   // Copies forward one byte at a time so a reference that overlaps the bytes
   // it is producing repeats a pattern, as the encoder intends.
@@ -179,7 +180,7 @@ int LcwUncompBounded(std::span<const std::byte> source,
   };
 
   while (in < in_size) {
-    const int op_code = byte_at(0);
+    const uint8_t op_code = byte_at(0);
     ++in;
 
     if ((op_code & 0x80) == 0) {
@@ -187,7 +188,7 @@ int LcwUncompBounded(std::span<const std::byte> source,
       if (in_size - in < 1) {
         return -1;
       }
-      const base::ssize offset = ((op_code & 0x0f) << 8) + byte_at(0);
+      const base::ssize offset = ((op_code & 0x0f) * 256) + byte_at(0);
       in += 1;
       if (!copy_back(out - offset, (op_code >> 4) + 3)) {
         return -1;
@@ -212,7 +213,7 @@ int LcwUncompBounded(std::span<const std::byte> source,
       if (in_size - in < 3) {
         return -1;
       }
-      const base::ssize count = byte_at(0) + (byte_at(1) << 8);
+      const base::ssize count = byte_at(0) + (byte_at(1) * 256);
       if (count > out_size - out) {
         return -1;
       }
@@ -224,8 +225,8 @@ int LcwUncompBounded(std::span<const std::byte> source,
       if (in_size - in < 4) {
         return -1;
       }
-      const base::ssize count = byte_at(0) + (byte_at(1) << 8);
-      const base::ssize from = byte_at(2) + (byte_at(3) << 8);
+      const base::ssize count = byte_at(0) + (byte_at(1) * 256);
+      const base::ssize from = byte_at(2) + (byte_at(3) * 256);
       in += 4;
       if (!copy_back(from, count)) {
         return -1;
@@ -235,7 +236,7 @@ int LcwUncompBounded(std::span<const std::byte> source,
       if (in_size - in < 2) {
         return -1;
       }
-      const base::ssize from = byte_at(0) + (byte_at(1) << 8);
+      const base::ssize from = byte_at(0) + (byte_at(1) * 256);
       in += 2;
       if (!copy_back(from, (op_code & 0x3f) + 3)) {
         return -1;
@@ -289,7 +290,9 @@ Choice BestReference(int length, int distance, int position) {
 }
 
 int HashAt(const unsigned char* in, int pos) {
-  return ((in[pos] << 8) ^ (in[pos + 1] << 4) ^ in[pos + 2]) & (kHashSize - 1);
+  const uint32_t hash =
+      (uint32_t{in[pos]} << 8) ^ (uint32_t{in[pos + 1]} << 4) ^ in[pos + 2];
+  return static_cast<int>(hash % kHashSize);
 }
 
 }  // namespace
@@ -365,25 +368,25 @@ int __cdecl LCW_Comp(const void* source, void* dest, int length) {
 
     switch (best.kind) {
       case Choice::kShort:
-        put(((best.count - 3) << 4) | (best.from >> 8));
-        put(best.from & 0xff);
+        put(((best.count - 3) * 16) + (best.from / 256));
+        put(best.from % 256);
         break;
       case Choice::kMedium:
-        put(0xc0 | (best.count - 3));
-        put(best.from & 0xff);
-        put(best.from >> 8);
+        put(0xc0 + (best.count - 3));
+        put(best.from % 256);
+        put(best.from / 256);
         break;
       case Choice::kLong:
         put(0xff);
-        put(best.count & 0xff);
-        put(best.count >> 8);
-        put(best.from & 0xff);
-        put(best.from >> 8);
+        put(best.count % 256);
+        put(best.count / 256);
+        put(best.from % 256);
+        put(best.from / 256);
         break;
       case Choice::kFill:
         put(0xfe);
-        put(best.count & 0xff);
-        put(best.count >> 8);
+        put(best.count % 256);
+        put(best.count / 256);
         put(in[pos]);
         break;
       case Choice::kLiteral:

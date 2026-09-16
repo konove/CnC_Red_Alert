@@ -40,6 +40,7 @@
 #include "tech/lzw.h"
 
 #include <cstddef>
+#include <cstdint>
 #include <span>
 
 #include "tech/span_sink.h"
@@ -197,7 +198,9 @@ int LZWEngine::Uncompress(std::span<const std::byte> input,
 }
 
 int LZWEngine::Make_LZW_Hash(CodeType code, unsigned char character) {
-  return static_cast<int>(character) << (BITS - 8) ^ static_cast<int>(code);
+  constexpr unsigned kShift = BITS - 8;
+  return static_cast<int>((uint32_t{character} << kShift) ^
+                          static_cast<uint32_t>(code));
 }
 
 int LZWEngine::Find_Child_Node(CodeType parent_code,

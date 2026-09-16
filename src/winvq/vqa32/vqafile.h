@@ -84,8 +84,8 @@ struct VQAHeader {
 /* VQA header flag definitions */
 #define VQAHDB_AUDIO 0    /* Audio track present. */
 #define VQAHDB_ALTAUDIO 1 /* Alternate audio track present. */
-#define VQAHDF_AUDIO (1 << VQAHDB_AUDIO)
-#define VQAHDF_ALTAUDIO (1 << VQAHDB_ALTAUDIO)
+#define VQAHDF_AUDIO (1U << VQAHDB_AUDIO)
+#define VQAHDF_ALTAUDIO (1U << VQAHDB_ALTAUDIO)
 
 /* Frame information (FINF) chunk definitions
  *
@@ -102,13 +102,13 @@ struct VQAHeader {
 #define VQAFINB_PAL 30
 #define VQAFINB_SYNC 29
 #define VQAFINF_KEY (1L << VQAFINB_KEY)
-#define VQAFINF_PAL (1L << VQAFINB_PAL)
+#define VQAFINF_PAL (uint32_t{1} << VQAFINB_PAL)
 #define VQAFINF_SYNC (1L << VQAFINB_SYNC)
 
 /* FINF related defines and macros. */
-#define VQAFINF_OFFSET 0x0FFFFFFFL
+#define VQAFINF_OFFSET 0x0FFFFFFFU
 #define VQAFINF_FLAGS 0xF0000000L
-#define VQAFRAME_OFFSET(a) ((((a) & VQAFINF_OFFSET) << 1))
+#define VQAFRAME_OFFSET(a) (((a) & VQAFINF_OFFSET) * 2)
 
 /* VQ vector pointer codes. */
 #define VPC_ONE_SINGLE 0xF000    /* One single color block */

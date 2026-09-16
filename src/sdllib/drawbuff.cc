@@ -20,9 +20,11 @@ bool OverlappedVideoBlits = true;
 
 GraphicBufferClass* WindowBuffer = nullptr;
 
-static inline int Make_Code(int x, int y, int w, int h) {
-  return (x < 0 ? 0b1000 : 0) | (x >= w ? 0b0100 : 0) | (y < 0 ? 0b0010 : 0) |
-         (y >= h ? 0b0001 : 0);
+// Cohen-Sutherland outcode of (x, y) against a w by h window: bits for
+// left, right, top and bottom.
+static inline uint32_t Make_Code(int x, int y, int w, int h) {
+  return (x < 0 ? 0b1000U : 0U) | (x >= w ? 0b0100U : 0U) |
+         (y < 0 ? 0b0010U : 0U) | (y >= h ? 0b0001U : 0U);
 }
 
 int Buffer_Get_Pixel(void* thisptr, int x, int y) {
@@ -70,10 +72,10 @@ int32_t Buffer_To_Buffer(void* thisptr, int x_pixel, int y_pixel,
   int src_x1 = x_pixel + pixel_width;
   int src_y1 = y_pixel + pixel_height;
 
-  const int code0 =
+  const uint32_t code0 =
       Make_Code(src_x0, src_y0, vp_src->Get_Width(), vp_src->Get_Height());
-  const int code1 = Make_Code(src_x1, src_y1, vp_src->Get_Width() + 1,
-                              vp_src->Get_Height() + 1);
+  const uint32_t code1 = Make_Code(src_x1, src_y1, vp_src->Get_Width() + 1,
+                                   vp_src->Get_Height() + 1);
 
   // outside
   if (code0 & code1) {
@@ -139,10 +141,10 @@ int32_t Buffer_To_Page(int dx_pixel, int dy_pixel, int pixel_width,
   int dst_x1 = dx_pixel + pixel_width;
   int dst_y1 = dy_pixel + pixel_height;
 
-  const int code0 =
+  const uint32_t code0 =
       Make_Code(dst_x0, dst_y0, vp_dst->Get_Width(), vp_dst->Get_Height());
-  const int code1 = Make_Code(dst_x1, dst_y1, vp_dst->Get_Width() + 1,
-                              vp_dst->Get_Height() + 1);
+  const uint32_t code1 = Make_Code(dst_x1, dst_y1, vp_dst->Get_Width() + 1,
+                                   vp_dst->Get_Height() + 1);
 
   // outside
   if (code0 & code1) {
@@ -209,10 +211,10 @@ bool Linear_Blit_To_Linear(void* thisptr, void* dest, int x_pixel, int y_pixel,
   int src_x1 = x_pixel + pixel_width;
   int src_y1 = y_pixel + pixel_height;
 
-  int code0 =
+  uint32_t code0 =
       Make_Code(src_x0, src_y0, vp_src->Get_Width(), vp_src->Get_Height());
-  int code1 = Make_Code(src_x1, src_y1, vp_src->Get_Width() + 1,
-                        vp_src->Get_Height() + 1);
+  uint32_t code1 = Make_Code(src_x1, src_y1, vp_src->Get_Width() + 1,
+                             vp_src->Get_Height() + 1);
 
   // outside
   if (code0 & code1) {
@@ -363,10 +365,10 @@ bool Linear_Scale_To_Linear(void* thisptr, void* dest, int src_x, int src_y,
   int dst_y1 = dst_y + dst_h;
 
   // clip source
-  int code0 =
+  uint32_t code0 =
       Make_Code(src_x0, src_y0, vp_src->Get_Width(), vp_src->Get_Height());
-  int code1 = Make_Code(src_x1, src_y1, vp_src->Get_Width() + 1,
-                        vp_src->Get_Height() + 1);
+  uint32_t code1 = Make_Code(src_x1, src_y1, vp_src->Get_Width() + 1,
+                             vp_src->Get_Height() + 1);
 
   // outside
   if (code0 & code1) {
@@ -433,7 +435,7 @@ bool Linear_Scale_To_Linear(void* thisptr, void* dest, int src_x, int src_y,
   const int dy_frac = src_h % dst_h;
   int dy_acc = -dst_h;
 
-  const int dx_frac = (src_w << 16) / dst_w;
+  const int dx_frac = (src_w * 65536) / dst_w;
 
   if (dst_x1 <= dst_x0 || dst_y1 <= dst_y0) {
     return true;
@@ -448,7 +450,7 @@ bool Linear_Scale_To_Linear(void* thisptr, void* dest, int src_x, int src_y,
       int x = 0;
       auto* out = dst_offset;
       do {
-        const uint8_t pixel = src_offset[x >> 16];
+        const uint8_t pixel = src_offset[x / 65536];
 
         if (pixel) {
           *out = remap[pixel];
@@ -474,7 +476,7 @@ bool Linear_Scale_To_Linear(void* thisptr, void* dest, int src_x, int src_y,
       int x = 0;
       auto* out = dst_offset;
       do {
-        const uint8_t pixel = src_offset[x >> 16];
+        const uint8_t pixel = src_offset[x / 65536];
 
         if (pixel) {
           *out = pixel;
@@ -500,7 +502,7 @@ bool Linear_Scale_To_Linear(void* thisptr, void* dest, int src_x, int src_y,
       int x = 0;
       auto* out = dst_offset;
       do {
-        *out++ = remap[src_offset[x >> 16]];
+        *out++ = remap[src_offset[x / 65536]];
         x += dx_frac;
       } while (--counter_x);
 
@@ -520,7 +522,7 @@ bool Linear_Scale_To_Linear(void* thisptr, void* dest, int src_x, int src_y,
       int x = 0;
       auto* out = dst_offset;
       do {
-        *out++ = src_offset[x >> 16];
+        *out++ = src_offset[x / 65536];
         x += dx_frac;
       } while (--counter_x);
 
@@ -641,7 +643,7 @@ void Buffer_Print(void* thisptr, const char* str, int x, int y, int fcolor,
           --cols_left;
 
           if (cols_left > 0) {
-            const uint8_t right = FontPalette[(pixel_pair & 0xF0) >> 4];
+            const uint8_t right = FontPalette[pixel_pair >> 4];
             if (right != 0) {
               *draw_ptr = right;
             }
@@ -673,8 +675,8 @@ void Buffer_Draw_Line(void* thisptr, int sx, int sy, int dx, int dy,
   const int height = vp_dst->Get_Height();
 
   // this is different to the original asm, but reused from blits
-  const int code0 = Make_Code(sx, sy, width, height);
-  const int code1 = Make_Code(dx, dy, width, height);
+  const uint32_t code0 = Make_Code(sx, sy, width, height);
+  const uint32_t code1 = Make_Code(dx, dy, width, height);
 
   if (code0 & code1) {
     return;
@@ -789,7 +791,7 @@ void Buffer_Draw_Line(void* thisptr, int sx, int sy, int dx, int dy,
 
   if (x_dist < y_dist) {
     int count = y_dist;
-    int accum = y_dist >> 1;
+    int accum = y_dist / 2;
     while (true) {
       *ptr = color;
       if (--count == 0) {
@@ -805,7 +807,7 @@ void Buffer_Draw_Line(void* thisptr, int sx, int sy, int dx, int dy,
     }
   } else {
     int count = x_dist;
-    int accum = x_dist >> 1;
+    int accum = x_dist / 2;
     while (true) {
       *ptr = color;
       if (--count == 0) {
@@ -877,10 +879,10 @@ void Buffer_Remap(void* thisptr, int sx, int sy, int width, int height,
   int dst_x1 = sx + width;
   int dst_y1 = sy + height;
 
-  const int code0 =
+  const uint32_t code0 =
       Make_Code(dst_x0, dst_y0, vp_dst->Get_Width(), vp_dst->Get_Height());
-  const int code1 = Make_Code(dst_x1, dst_y1, vp_dst->Get_Width() + 1,
-                              vp_dst->Get_Height() + 1);
+  const uint32_t code1 = Make_Code(dst_x1, dst_y1, vp_dst->Get_Width() + 1,
+                                   vp_dst->Get_Height() + 1);
 
   // outside
   if (code0 & code1) {
@@ -933,8 +935,8 @@ int Clip_Rect(int* x, int* y, int* dw, int* dh, int width, int height) {
   int x1 = *x + *dw;
   int y1 = *y + *dh;
 
-  const int code0 = Make_Code(x0, y0, width, height);
-  const int code1 = Make_Code(x1, y1, width + 1, height + 1);
+  const uint32_t code0 = Make_Code(x0, y0, width, height);
+  const uint32_t code1 = Make_Code(x1, y1, width + 1, height + 1);
 
   // outside
   if (code0 & code1) {

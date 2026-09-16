@@ -59,7 +59,7 @@ Shape drawing flags:
 - The low byte is for coordinate transformations.
 - The high byte is for drawing effects.
 ---------------------------------------------------------------------------*/
-typedef enum CNC_FLAG_ENUM {
+typedef enum CNC_FLAG_ENUM : uint32_t {
   SHAPE_NORMAL = 0x0000,        // Standard shape
   SHAPE_HORZ_REV = 0x0001,      // Flipped horizontally
   SHAPE_VERT_REV = 0x0002,      // Flipped vertically

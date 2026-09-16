@@ -81,7 +81,7 @@ TEST(XmpRandomizeTest, ClearsBitsAboveTheRequestedCount) {
     XMP_Randomize(digits.data(), rng, bits, kPrecision);
 
     const uint64_t value = digits[0] | (uint64_t{digits[1]} << 32);
-    EXPECT_EQ(value >> bits, 0U) << bits;
+    EXPECT_EQ(value >> static_cast<unsigned>(bits), 0U) << bits;
     EXPECT_EQ(digits[kPrecision], 0xffffffffU) << bits;
   }
 }

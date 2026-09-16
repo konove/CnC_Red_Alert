@@ -180,7 +180,7 @@ void VQA_Configure_Drawer(VQAHandle* vqap) {
   drawer->BlocksPerRow = header->ImageWidth / header->BlockWidth;
   drawer->NumRows = header->ImageHeight / header->BlockHeight;
   drawer->NumBlocks = drawer->BlocksPerRow * drawer->NumRows;
-  const int32_t blkdim = BLOCK_DIM(header->BlockWidth, header->BlockHeight);
+  const uint32_t blkdim = BLOCK_DIM(header->BlockWidth, header->BlockHeight);
 
   /* Initialize draw routine vectors to a NOP routine in order to prevent
    * a crash.

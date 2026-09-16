@@ -1,5 +1,7 @@
 #include "tech/2keyfbuf.h"
 
+#include <cstdint>
+
 #include "gtest/gtest.h"
 #include "sdllib/shape.h"
 
@@ -27,20 +29,23 @@ TEST(ShapeEffectFlagsTest, KeepsOnlyTheFourEffectBits) {
 
 TEST(ShapeEffectFlagsTest, DropsFlagsTheLineCacheDoesNotDependOn) {
   EXPECT_EQ(ShapeEffectFlags(SHAPE_NORMAL), 0);
-  EXPECT_EQ(ShapeEffectFlags(SHAPE_HORZ_REV | SHAPE_VERT_REV | SHAPE_SCALING |
-                             SHAPE_WIN_REL | SHAPE_CENTER | SHAPE_PRIORITY |
-                             SHAPE_SHADOW | SHAPE_PARTIAL | SHAPE_COLOR),
+  EXPECT_EQ(ShapeEffectFlags(uint32_t{SHAPE_HORZ_REV} | SHAPE_VERT_REV |
+                             SHAPE_SCALING | SHAPE_WIN_REL | SHAPE_CENTER |
+                             SHAPE_PRIORITY | SHAPE_SHADOW | SHAPE_PARTIAL |
+                             SHAPE_COLOR),
             0);
-  EXPECT_EQ(ShapeEffectFlags(SHAPE_CENTER | SHAPE_GHOST | SHAPE_COLOR),
-            SHAPE_GHOST);
+  EXPECT_EQ(
+      ShapeEffectFlags(uint32_t{SHAPE_CENTER} | SHAPE_GHOST | SHAPE_COLOR),
+      SHAPE_GHOST);
 }
 
 TEST(ShapeEffectFlagsTest, CombinesTheRequestedEffects) {
   EXPECT_EQ(ShapeEffectFlags(SHAPE_TRANS | SHAPE_FADING),
             SHAPE_TRANS | SHAPE_FADING);
-  EXPECT_EQ(ShapeEffectFlags(SHAPE_TRANS | SHAPE_FADING | SHAPE_PREDATOR |
-                             SHAPE_GHOST),
-            SHAPE_TRANS | SHAPE_FADING | SHAPE_PREDATOR | SHAPE_GHOST);
+  EXPECT_EQ(
+      ShapeEffectFlags(uint32_t{SHAPE_TRANS} | SHAPE_FADING | SHAPE_PREDATOR |
+                       SHAPE_GHOST),
+      uint32_t{SHAPE_TRANS} | SHAPE_FADING | SHAPE_PREDATOR | SHAPE_GHOST);
 }
 
 // The regression itself: a shape drawn twice with the same flags must produce
@@ -48,9 +53,9 @@ TEST(ShapeEffectFlagsTest, CombinesTheRequestedEffects) {
 // the old reading expression this held only when all four effects were asked
 // for.
 TEST(ShapeEffectFlagsTest, TheSameFlagsAlwaysAgreeWithTheStoredKey) {
-  constexpr int kAllEffects =
-      SHAPE_TRANS | SHAPE_FADING | SHAPE_PREDATOR | SHAPE_GHOST;
-  for (int flags = 0; flags <= 0xFFFF; flags++) {
+  constexpr uint32_t kAllEffects =
+      uint32_t{SHAPE_TRANS} | SHAPE_FADING | SHAPE_PREDATOR | SHAPE_GHOST;
+  for (uint32_t flags = 0; flags <= 0xFFFF; flags++) {
     // Only the effects this shape actually asked for may appear in the key.
     // The broken reading expression added the other three unconditionally.
     EXPECT_EQ(ShapeEffectFlags(flags), flags & kAllEffects)

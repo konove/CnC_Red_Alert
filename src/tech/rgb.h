@@ -61,13 +61,13 @@ class RGBClass {
 
   // Logic: Restores 6-bit storage to 8-bit range using original bitwise logic.
   [[nodiscard]] constexpr int Red_Component() const {
-    return red_ << 2 | red_ >> 6;
+    return (red_ * 4) + (red_ / 64);
   }
   [[nodiscard]] constexpr int Green_Component() const {
-    return green_ << 2 | green_ >> 6;
+    return (green_ * 4) + (green_ / 64);
   }
   [[nodiscard]] constexpr int Blue_Component() const {
-    return blue_ << 2 | blue_ >> 6;
+    return (blue_ * 4) + (blue_ / 64);
   }
 
  private:

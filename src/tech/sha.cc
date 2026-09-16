@@ -167,9 +167,11 @@ void SHAEngine::Hash(const void* data, int32_t length) {
   Process_Partial(data, length);
 }
 
-#define Reverse_LONG(a)                                       \
-  ((((a) >> 24) & 0x000000FFL) | (((a) >> 8) & 0x0000FF00L) | \
-   (((a) << 8) & 0x00FF0000L) | (((a) << 24) & 0xFF000000L))
+// Byte-swaps a 32-bit word.
+static constexpr uint32_t Reverse_LONG(uint32_t a) {
+  return ((a >> 24) & 0x000000FFU) | ((a >> 8) & 0x0000FF00U) |
+         ((a << 8) & 0x00FF0000U) | ((a << 24) & 0xFF000000U);
+}
 
 /***********************************************************************************************
  * SHAEngine::Digest -- Fetch the current digest. *
@@ -233,14 +235,14 @@ Sha1Digest SHAEngine::Digest() const {
   memset(&partial[partialcount], '\0',
          base::ToSize(SRC_BLOCK_SIZE - partialcount));
   port::WriteUnaligned(&partial[SRC_BLOCK_SIZE - 4],
-                       static_cast<uint32_t>(Reverse_LONG((length * 8))));
+                       Reverse_LONG(static_cast<uint32_t>(length * 8)));
   Process_Block(&partial[0], acc);
 
   // Each word is stored most significant byte first.
   for (std::size_t word = 0; word < acc.size(); ++word) {
     for (std::size_t byte = 0; byte < 4; ++byte) {
       FinalResult[(word * 4) + byte] =
-          static_cast<std::byte>(acc[word] >> (24 - (8 * byte)));
+          static_cast<std::byte>(acc[word] >> (24U - (8U * byte)));
     }
   }
   IsCached = true;
@@ -255,9 +257,10 @@ Sha1Digest SHAEngine::Digest() const {
 *same parameters and declaration attributes.
 */
 template <class T>
-static T rotl(T X, int n) {
-  return static_cast<T>(X << n | static_cast<unsigned>(X) >>
-                                     (static_cast<int>(sizeof(T) * 8) - n));
+static T rotl(T X, unsigned n) {
+  return static_cast<T>(X << n |
+                        static_cast<unsigned>(X) >>
+                            (static_cast<unsigned>(sizeof(T) * 8) - n));
 }
 // unsigned long _RTLENTRY _rotl(unsigned long X, int n)
 //{

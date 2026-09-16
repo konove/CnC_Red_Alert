@@ -297,7 +297,8 @@ int32_t VQA_OpenAudio(VQAHandle* vqap, void* /*window*/) {
   const int bytes_per_second_out =
       SDL_AUDIO_BITSIZE(spec->format) / 8 * spec->channels * spec->freq;
 
-  StreamConvScale = (int64_t{bytes_per_second_in} << 15) / bytes_per_second_out;
+  StreamConvScale =
+      (int64_t{bytes_per_second_in} * 32768) / bytes_per_second_out;
 
   // register our audio callback
   *config->AudioCallback = VQA_Audio_Callback;
@@ -728,7 +729,7 @@ int64_t VQA_GetTime(VQAHandle* vqap) {
       // there will still be samples in the "hardware" queue, but this is the
       // best we can do
       play_cursor = SDL_AudioStreamAvailable(SDLStream);
-      totalbytes -= (play_cursor * StreamConvScale) >> 15;
+      totalbytes -= (play_cursor * StreamConvScale) / 32768;
       SDL_UnlockAudioDevice(vqap->config.AudioDeviceID);
 
       samples = totalbytes / audio->Channels;

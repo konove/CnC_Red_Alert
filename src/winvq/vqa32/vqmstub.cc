@@ -59,7 +59,8 @@ bool DecompressVqaSosData(SosCompressInfo* info, int32_t uncomp_size) {
     for (int i = 0; i < 2; ++i) {
       // 1. Extract Nibble
       // Low nibble (bits 0-3) first, then High nibble (bits 4-7)
-      const int nibble = i == 0 ? raw_byte & 0x0F : raw_byte >> 4;
+      const auto nibble =
+          static_cast<std::uint8_t>(i == 0 ? raw_byte & 0x0F : raw_byte >> 4);
 
       // 2. Get current step size
       const int step = kImaAdpcmStepTable[info->step_index];
@@ -72,7 +73,7 @@ bool DecompressVqaSosData(SosCompressInfo* info, int32_t uncomp_size) {
       // Formula: ( (nibble * 2 + 1) * step ) / 8
       // Note: The logic (nibble & 7) masks out the sign bit for calculation
       const int sign = nibble & 8 ? -1 : 1;
-      const int diff = (((((nibble & 7) * 2) + 1) * step) >> 3) * sign;
+      const int diff = (((((nibble & 7) * 2) + 1) * step) / 8) * sign;
 
       // 5. Update and Clamp Predicted Value
       info->predicted = std::clamp(info->predicted + diff, -32768, 32767);

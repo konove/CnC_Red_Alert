@@ -24,15 +24,15 @@
 // If we need more then 8 flags for the flags variable, we can combine
 // USER_ALLOCATED with SYS_ALLOCATED  and combine FILE with RESIDENT.
 //
-#define WSA_USER_ALLOCATED 0x01
-#define WSA_SYS_ALLOCATED 0x02
-#define WSA_FILE 0x04
-#define WSA_RESIDENT 0x08
-#define WSA_TARGET_IN_BUFFER 0x10
-#define WSA_LINEAR_ONLY 0x20
-#define WSA_FRAME_0_ON_PAGE 0x40
-#define WSA_PALETTE_PRESENT 0x100
-#define WSA_FRAME_0_IS_DELTA 0x200
+#define WSA_USER_ALLOCATED 0x01U
+#define WSA_SYS_ALLOCATED 0x02U
+#define WSA_FILE 0x04U
+#define WSA_RESIDENT 0x08U
+#define WSA_TARGET_IN_BUFFER 0x10U
+#define WSA_LINEAR_ONLY 0x20U
+#define WSA_FRAME_0_ON_PAGE 0x40U
+#define WSA_PALETTE_PRESENT 0x100U
+#define WSA_FRAME_0_IS_DELTA 0x200U
 
 // These are used to call Apply_XOR_Delta_To_Page_Or_Viewport() to setup flags
 // parameter.  If These change, make sure and change their values in lp_asm.asm.
@@ -50,7 +50,7 @@ typedef struct {
   char* delta_buffer;
   char* file_buffer;
   char file_name[13];
-  int16_t flags;
+  uint16_t flags;
   // New fields that animate does not know about below this point. SEE
   // kExtraBytesAnimateDoesNotKnowAbout
   int16_t file_handle;
@@ -78,7 +78,7 @@ typedef struct {
   uint16_t pixel_width;
   uint16_t pixel_height;
   uint16_t largest_frame_size;
-  int16_t flags;
+  uint16_t flags;
   uint32_t frame0_offset;
   uint32_t frame0_end;
   /* unsigned long data_seek_offset, unsigned short frame_size ... */
@@ -108,7 +108,7 @@ void* Open_Animation(const char* file_name, char* user_buffer,
    */
   /*======================================================================*/
 
-  int anim_flags = 0;
+  uint16_t anim_flags = 0;
   const int fh = OpenFileHandle(file_name, FileAccess::kRead);
   if (fh == kInvalidHandle) {
     return nullptr;
@@ -286,7 +286,7 @@ void* Open_Animation(const char* file_name, char* user_buffer,
 
   // Figure how much room the frame offsets take up in the file.
   // Add 2 - one for the wrap around and one for the final end offset.
-  const int offsets_size = (file_header.total_frames + 2) << 2;
+  const int offsets_size = (file_header.total_frames + 2) * 4;
 
   // Can the user_buffer_size handle the maximum case buffer?
   if (user_buffer_size == max_buffer_size) {
@@ -350,7 +350,7 @@ void* Open_Animation(const char* file_name, char* user_buffer,
   LCW_Uncompress(delta_back, delta_buffer, sys_header->largest_frame_size);
 
   // Finally set the flags,
-  sys_header->flags = static_cast<int16_t>(anim_flags);
+  sys_header->flags = anim_flags;
 
   // return valid handle
   return user_buffer;
@@ -559,17 +559,18 @@ unsigned int Apply_XOR_Delta(void* target, const void* delta) {
       // By now, we know it must be a LONGDUMP, SHORTSKIP, LONGRUN, or LONGSKIP
       b &= 0x7F;
       if (b == 0) {
-        int count = udelta[0] | udelta[1] << 8;  // get word code
+        // get word code
+        const uint32_t code = udelta[0] | uint32_t{udelta[1]} << 8;
         udelta += 2;
 
-        if (!count) {
+        if (!code) {
           return 0;  // long count of zero means stop
         }
 
-        if (count & 0x8000) {
-          if (count & 0x4000) {
+        if (code & 0x8000) {
+          if (code & 0x4000) {
             // LONGRUN
-            count &= 0x3FFF;
+            int count = static_cast<int>(code & 0x3FFF);
             const uint8_t xor_b = *udelta++;  // get XOR byte
             do {
               *source_ptr =
@@ -578,7 +579,7 @@ unsigned int Apply_XOR_Delta(void* target, const void* delta) {
             } while (--count);
           } else {
             // LONGDUMP
-            count &= 0x7FFF;
+            int count = static_cast<int>(code & 0x7FFF);
             do {
               const uint8_t xor_b = *udelta++;  // get delta XOR byte
               *source_ptr = static_cast<uint8_t>(
@@ -587,7 +588,7 @@ unsigned int Apply_XOR_Delta(void* target, const void* delta) {
             } while (--count);
           }
         } else {  // LONGSKIP
-          source_ptr += count;
+          source_ptr += code;
         }
       } else {  // SHORTSKIP
         source_ptr += b;
@@ -638,17 +639,18 @@ void Apply_XOR_Delta_To_Page_Or_Viewport(void* target, void* delta, int width,
         // LONGSKIP
         b &= 0x7F;
         if (b == 0) {
-          int count = udelta[0] | udelta[1] << 8;  // get word code
+          // get word code
+          const uint32_t code = udelta[0] | uint32_t{udelta[1]} << 8;
           udelta += 2;
 
-          if (!count) {
+          if (!code) {
             return;  // long count of zero means stop
           }
 
-          if (count & 0x8000) {
-            if (count & 0x4000) {
+          if (code & 0x8000) {
+            if (code & 0x4000) {
               // LONGRUN
-              count &= 0x3FFF;
+              int count = static_cast<int>(code & 0x3FFF);
               const uint8_t xor_b = *udelta++;  // get XOR byte
               do {
                 *source_ptr ^= xor_b;  // XOR that byte
@@ -662,7 +664,7 @@ void Apply_XOR_Delta_To_Page_Or_Viewport(void* target, void* delta, int width,
               } while (--count);
             } else {
               // LONGDUMP
-              count &= 0x7FFF;
+              int count = static_cast<int>(code & 0x7FFF);
               do {
                 const uint8_t xor_b = *udelta++;  // get delta XOR byte
                 *source_ptr ^= xor_b;       // xor that byte on the dest
@@ -678,7 +680,7 @@ void Apply_XOR_Delta_To_Page_Or_Viewport(void* target, void* delta, int width,
           } else {
             // LONGSKIP
             source_ptr -= x;  // go back to beginning or row.
-            x += count;
+            x += static_cast<int>(code);
             while (x >= width) {
               x -= width;
               source_ptr += nextrow;
@@ -736,17 +738,18 @@ void Apply_XOR_Delta_To_Page_Or_Viewport(void* target, void* delta, int width,
         // LONGSKIP
         b &= 0x7F;
         if (b == 0) {
-          int count = udelta[0] | udelta[1] << 8;  // get word code
+          // get word code
+          const uint32_t code = udelta[0] | uint32_t{udelta[1]} << 8;
           udelta += 2;
 
-          if (!count) {
+          if (!code) {
             return;  // long count of zero means stop
           }
 
-          if (count & 0x8000) {
-            if (count & 0x4000) {
+          if (code & 0x8000) {
+            if (code & 0x4000) {
               // LONGRUN
-              count &= 0x3FFF;
+              int count = static_cast<int>(code & 0x3FFF);
               const uint8_t xor_b = *udelta++;  // get byte
               do {
                 *source_ptr = xor_b;  // store that byte
@@ -760,7 +763,7 @@ void Apply_XOR_Delta_To_Page_Or_Viewport(void* target, void* delta, int width,
               } while (--count);
             } else {
               // LONGDUMP
-              count &= 0x7FFF;
+              int count = static_cast<int>(code & 0x7FFF);
               do {
                 const uint8_t xor_b = *udelta++;  // get delta byte
                 *source_ptr = xor_b;        // store that byte
@@ -776,7 +779,7 @@ void Apply_XOR_Delta_To_Page_Or_Viewport(void* target, void* delta, int width,
           } else {
             // LONGSKIP
             source_ptr -= x;  // go back to beginning or row.
-            x += count;
+            x += static_cast<int>(code);
             while (x >= width) {
               x -= width;
               source_ptr += nextrow;
@@ -834,7 +837,7 @@ static int64_t Get_File_Frame_Offset(int file_handle, int frame,
                                      int palette_adjust) {
   uint32_t offset = 0;
 
-  SeekFileHandle(file_handle, (frame << 2) + kWsaFileHeaderSize, SEEK_SET);
+  SeekFileHandle(file_handle, (frame * 4) + kWsaFileHeaderSize, SEEK_SET);
 
   if (ReadFileHandle(file_handle, &offset, sizeof(uint32_t)) !=
       sizeof(uint32_t)) {

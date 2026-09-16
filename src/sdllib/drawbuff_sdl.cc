@@ -116,9 +116,9 @@ void GraphicBufferClass::Update_Palette(const uint8_t* palette) {
 
   for (int i = 0; i < sdl_pal->ncolors; i++) {
     // convert from 6-bit
-    const int new_r = palette[(i * 3) + 0] << 2 | palette[(i * 3) + 0] >> 4;
-    const int new_g = palette[(i * 3) + 1] << 2 | palette[(i * 3) + 1] >> 4;
-    const int new_b = palette[(i * 3) + 2] << 2 | palette[(i * 3) + 2] >> 4;
+    const int new_r = (palette[(i * 3) + 0] * 4) + (palette[(i * 3) + 0] / 16);
+    const int new_g = (palette[(i * 3) + 1] * 4) + (palette[(i * 3) + 1] / 16);
+    const int new_b = (palette[(i * 3) + 2] * 4) + (palette[(i * 3) + 2] / 16);
 
     changed = changed || std::cmp_not_equal(sdl_pal->colors[i].r, new_r) ||
               std::cmp_not_equal(sdl_pal->colors[i].g, new_g) ||

@@ -21,6 +21,8 @@
 
 #include <cstdint>
 
+#include "base/numeric.h"
+
 // A deterministic linear congruential pseudo-random number generator.
 //
 // The exact recurrence must never change. Multiplayer peers advance the
@@ -52,7 +54,8 @@ class RandomClass {
 
   // Mask selecting the low kSignificantBits bits, i.e. the value range of a
   // single draw ([0, kSignificantMask]).
-  static constexpr int kSignificantMask = (1 << kSignificantBits) - 1;
+  static constexpr uint32_t kSignificantMask =
+      base::Bit<uint32_t>(kSignificantBits) - 1;
 
   // Coefficients of the linear congruential recurrence (the classic ANSI-C
   // constants). Changing these breaks multiplayer sync and saved games.
@@ -60,7 +63,7 @@ class RandomClass {
   static constexpr uint32_t kAddend = 0x00003039;
 
   // Number of low, least-random bits discarded from the seed on each draw.
-  static constexpr int kThrowAwayBits = 10;
+  static constexpr unsigned kThrowAwayBits = 10;
 
   // Generator state. Kept trivially copyable so it can be serialized directly.
   uint32_t seed_;

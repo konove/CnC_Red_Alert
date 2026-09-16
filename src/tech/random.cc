@@ -22,6 +22,8 @@
 #include <cstdint>
 #include <utility>
 
+#include "base/numeric.h"
+
 RandomClass::RandomClass(const uint32_t seed) noexcept : seed_(seed) {}
 
 int RandomClass::Next() {
@@ -51,17 +53,19 @@ int RandomClass::InRange(int low, int high) {
   // gives the highest set bit plus one, so the mask is the smallest 2^n - 1
   // that covers the (windowed) magnitude. The width floors at one bit so the
   // mask is never empty even when the magnitude has no bits inside the window.
-  const int magnitude = (high - low) & kSignificantMask;
+  const auto magnitude =
+      static_cast<int>(static_cast<uint32_t>(high - low) & kSignificantMask);
   const int high_bit =
       magnitude == 0 ? 1 : std::bit_width(static_cast<uint32_t>(magnitude));
-  const int mask = (1 << high_bit) - 1;
+  const auto mask = static_cast<int>(base::Bit<uint32_t>(high_bit) - 1);
 
   // Reject-sample masked draws until one lands within the magnitude. Masking to
   // a power-of-two range keeps every draw uniform; rejection then trims the
   // excess without the bias that taking a modulo of the range would introduce.
   int pick = magnitude + 1;
   while (pick > magnitude) {
-    pick = Next() & mask;
+    pick = static_cast<int>(static_cast<uint32_t>(Next()) &
+                            static_cast<uint32_t>(mask));
   }
 
   // Bias the in-range pick up to the requested starting point.

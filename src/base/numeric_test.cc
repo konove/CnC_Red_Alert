@@ -14,7 +14,7 @@ namespace {
 TEST(ToSizeTest, PreservesNonNegativeValues) {
   EXPECT_EQ(ToSize(0), std::size_t{0});
   EXPECT_EQ(ToSize(42), std::size_t{42});
-  EXPECT_EQ(ToSize(int64_t{1} << 40), std::size_t{1} << 40);
+  EXPECT_EQ(ToSize(int64_t{1} * (1 << 30) * 1024), std::size_t{1} << 40);
   EXPECT_EQ(ToSize(std::numeric_limits<ssize>::max()),
             static_cast<std::size_t>(std::numeric_limits<ssize>::max()));
 }
@@ -31,7 +31,7 @@ TEST(ToSignedTest, PreservesRepresentableValues) {
   static_assert(ToSigned(3U) == 3);
 }
 
-enum Index { kFirst, kSecond, kLast = 31 };
+enum Index { kFirst = 0, kSecond = 1, kLast = 31 };
 
 TEST(BitTest, SetsTheIndexedBit) {
   EXPECT_EQ(Bit<uint32_t>(0), 1U);

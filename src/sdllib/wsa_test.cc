@@ -66,13 +66,15 @@ int32_t LCW_Uncompress(const void* /*source*/, void* /*dest*/,
 namespace {
 
 void PutUint16(std::vector<char>& out, int value) {
-  out.push_back(static_cast<char>(value & 0xff));
-  out.push_back(static_cast<char>((value >> 8) & 0xff));
+  const auto bits = static_cast<uint32_t>(value);
+  out.push_back(static_cast<char>(bits & 0xff));
+  out.push_back(static_cast<char>((bits >> 8) & 0xff));
 }
 
 void PutUint32(std::vector<char>& out, int64_t value) {
-  for (int shift = 0; shift < 32; shift += 8) {
-    out.push_back(static_cast<char>((value >> shift) & 0xff));
+  const auto bits = static_cast<uint64_t>(value);
+  for (unsigned shift = 0; shift < 32; shift += 8) {
+    out.push_back(static_cast<char>((bits >> shift) & 0xff));
   }
 }
 

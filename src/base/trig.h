@@ -74,18 +74,28 @@ inline constexpr int16_t kCos256[256] = {
 // clang-format on
 
 // Move a point by `distance` leptons in the given direction.
-// The >> 7 (divide by 128) exactly cancels the amplitude-128 scaling.
+// The >> 7 (divide by 128) exactly cancels the amplitude-128 scaling. It is a
+// floor division of a signed product, which `/ 128` (rounding toward zero)
+// would change for the negative quadrants.
 inline void MovePoint(int16_t& x, int16_t& y, const uint8_t dir,
                       const int16_t distance) {
-  x = static_cast<int16_t>(x + ((kSin256[dir] * distance) >> 7));
-  y = static_cast<int16_t>(y - ((kCos256[dir] * distance) >> 7));
+  const int dx =
+      (kSin256[dir] * distance) >> 7;  // NOLINT(bugprone-signed-bitwise)
+  const int dy =
+      (kCos256[dir] * distance) >> 7;  // NOLINT(bugprone-signed-bitwise)
+  x = static_cast<int16_t>(x + dx);
+  y = static_cast<int16_t>(y - dy);
 }
 
 // Like MovePoint but halves Y for 2:1 isometric projection (turret offsets).
 inline void MovePointIsometric(int16_t& x, int16_t& y, const uint8_t dir,
                                const int16_t distance) {
-  x = static_cast<int16_t>(x + ((kSin256[dir] * distance) >> 7));
-  y = static_cast<int16_t>(y - (((kCos256[dir] / 2) * distance) >> 7));
+  const int dx =
+      (kSin256[dir] * distance) >> 7;  // NOLINT(bugprone-signed-bitwise)
+  const int dy =
+      ((kCos256[dir] / 2) * distance) >> 7;  // NOLINT(bugprone-signed-bitwise)
+  x = static_cast<int16_t>(x + dx);
+  y = static_cast<int16_t>(y - dy);
 }
 
 }  // namespace base

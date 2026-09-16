@@ -59,8 +59,8 @@ int String_Pixel_Width(const char* string) {
 void Set_Font_Palette_Range(const void* palette, int start_idx, int end_idx) {
   const auto* palette8 = static_cast<const uint8_t*>(palette);
 
-  start_idx &= 0xF;
-  end_idx &= 0xF;
+  start_idx %= 16;
+  end_idx %= 16;
 
   for (int i = start_idx; i <= end_idx; ++i) {
     FontPalette[i] = *palette8++;

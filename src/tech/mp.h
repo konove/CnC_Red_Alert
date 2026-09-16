@@ -135,7 +135,7 @@ int XMP_DER_Encode(const uint32_t* from, unsigned char* output, int precision);
 void XMP_DER_Decode(uint32_t* result, const unsigned char* input,
                     int precision);
 
-inline int XMP_Digits_To_Bits(int digits) { return digits << LOG_UNITSIZE; }
+inline int XMP_Digits_To_Bits(int digits) { return digits * UNITSIZE; }
 
 inline int XMP_Bits_To_Digits(int bits) {
   return (bits + (UNITSIZE - 1)) / UNITSIZE;
@@ -145,7 +145,7 @@ inline uint32_t XMP_Bits_To_Mask(int bits) {
   if (!bits) {
     return 0;
   }
-  return 1 << ((bits - 1) % UNITSIZE);
+  return base::Bit<uint32_t>((bits - 1) % UNITSIZE);
 }
 
 inline bool XMP_Is_Negative(const uint32_t* r, int precision) {
@@ -157,12 +157,11 @@ inline bool XMP_Test_Eq_Int(const uint32_t* r, int i, int p) {
 }
 
 inline void XMP_Set_Bit(uint32_t* r, int bit) {
-  r[bit >> LOG_UNITSIZE] |= static_cast<uint32_t>(1) << (bit & (UNITSIZE - 1));
+  r[bit / UNITSIZE] |= base::Bit<uint32_t>(bit % UNITSIZE);
 }
 
 inline bool XMP_Test_Bit(const uint32_t* r, int bit) {
-  return (r[bit >> LOG_UNITSIZE] & static_cast<uint32_t>(1)
-                                       << (bit & (UNITSIZE - 1))) != 0;
+  return (r[bit / UNITSIZE] & base::Bit<uint32_t>(bit % UNITSIZE)) != 0;
 }
 
 // Misc functions.
