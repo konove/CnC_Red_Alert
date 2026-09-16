@@ -423,8 +423,7 @@ void ChronalVortexClass::AI() {
           }
         }
       }
-      Animate++;
-      Animate &= 1;
+      Animate = (Animate + 1) % 2;
     }
   }
 }

@@ -576,10 +576,10 @@ bool WinsockInterfaceClass::Set_Socket_Options() {
   u_long mode = 1;
   ioctlsocket(Socket, FIONBIO, &mode);
 #else
-  const int flags = fcntl(Socket, F_GETFL, 0);
+  const auto flags = static_cast<uint32_t>(fcntl(Socket, F_GETFL, 0));
   // POSIX declares fcntl with a trailing "..." for its optional argument.
   // NOLINTNEXTLINE(cppcoreguidelines-pro-type-vararg)
-  fcntl(Socket, F_SETFL, flags | O_NONBLOCK);
+  fcntl(Socket, F_SETFL, static_cast<int>(flags | O_NONBLOCK));
 #endif
 
   return true;

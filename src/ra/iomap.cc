@@ -70,10 +70,15 @@ bool CellClass::Should_Save() const {
 
 template <class Archive>
 void CellClass::Serialize(Archive& ar) {
-  auto flags = static_cast<uint8_t>(IsPlot | (IsCursorHere << 1) |
-                                    (IsMapped << 2) | (IsVisible << 3) |
-                                    (IsWaypoint << 4) | (IsRadarCursor << 5) |
-                                    (IsFlagged << 6) | (IsToShroud << 7));
+  uint8_t flags = 0;
+  flags |= IsPlot ? 0x01U : 0U;
+  flags |= IsCursorHere ? 0x02U : 0U;
+  flags |= IsMapped ? 0x04U : 0U;
+  flags |= IsVisible ? 0x08U : 0U;
+  flags |= IsWaypoint ? 0x10U : 0U;
+  flags |= IsRadarCursor ? 0x20U : 0U;
+  flags |= IsFlagged ? 0x40U : 0U;
+  flags |= IsToShroud ? 0x80U : 0U;
   ar(flags, Jammed, Trigger, TType, TIcon, Overlay, OverlayData, Smudge,
      SmudgeData, Owner, InfType, ObjectPtr(OccupierPtr));
   if constexpr (Archive::kIsReading) {

@@ -575,7 +575,7 @@ class HouseClass {
   ** This is used for the other side to be able to update their radar
   ** map based on the cells that this house's units reveal.
   */
-  int RadarSpied = 0;
+  uint32_t RadarSpied = 0;
 
   /*
   ** Running score, based on units destroyed and units lost.

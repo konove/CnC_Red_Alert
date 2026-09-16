@@ -86,6 +86,7 @@
 
 #include "absl/log/check.h"
 #include "absl/strings/str_format.h"
+#include "base/numeric.h"
 #include "base/types.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
@@ -985,9 +986,10 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
     **	Determine what (if any) vehicle or unit should be rendered in this blip.
     */
     int color = TBLACK;  // Color of the pixel to plot.
-    const int housebit = 1 << PlayerPtr->Class->House;
-    const int celljammed = (*this)[cell].Jammed;
-    const int jammed = celljammed & (0xFFFF - housebit);
+    const auto housebit = base::Bit<uint16_t>(PlayerPtr->Class->House);
+    const uint16_t celljammed = (*this)[cell].Jammed;
+    const auto jammed =
+        static_cast<uint16_t>(celljammed & static_cast<uint16_t>(~housebit));
     if (!jammed && ((*this)[cell].IsMapped || Debug_Unshroud)) {
       // 		if (!jammed && ((*this)[cell].IsVisible ||
       // Debug_Unshroud)) {
@@ -1035,7 +1037,7 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
         /*
         **	Convert the logical icon number into the actual icon number.
         */
-        icon &= 0x00FF;
+        icon %= 256;
         icon = *(iconset->Map_Data() + icon);
 
         const unsigned char* data = icondata + (static_cast<base::ssize>(icon) *
@@ -1318,7 +1320,7 @@ void RadarClass::Cell_XY_To_Radar_Pixel(int cellx, int celly, int& x,
  * HISTORY: * 11/09/1995 BWG : Created. *
  *=============================================================================================*/
 bool RadarClass::Jam_Cell(CELL cell, HouseClass* house /*KO, bool shadeit*/) {
-  const auto jam = static_cast<uint16_t>(1 << house->Class->House);
+  const auto jam = base::Bit<uint16_t>(house->Class->House);
   (*this)[cell].Jammed |= jam;
   if (house != PlayerPtr) {
     Shroud_Cell(cell /*KO, shadeit*/);
@@ -1344,9 +1346,9 @@ bool RadarClass::Jam_Cell(CELL cell, HouseClass* house /*KO, bool shadeit*/) {
  * HISTORY: * 11/09/1995 BWG : Created. *
  *=============================================================================================*/
 bool RadarClass::UnJam_Cell(CELL cell, HouseClass* house) {
-  const auto jam = static_cast<uint16_t>(1 << house->Class->House);
+  const auto jam = base::Bit<uint16_t>(house->Class->House);
   (*this)[cell].Redraw_Objects();
-  (*this)[cell].Jammed &= 0xFFFF - jam;
+  (*this)[cell].Jammed &= static_cast<uint16_t>(~jam);
   Radar_Pixel(cell);
   return true;
 }
@@ -1939,8 +1941,8 @@ void RadarClass::Set_Radar_Position(CELL cell) {
           ** Create a temporary intermediate surface
           */
           GraphicBufferClass temp_surface;
-          temp_surface.Init((RadarWidth + 16) & ~0xF,
-                            (RadarHeight + 16) & ~0xF, nullptr, 0,
+          temp_surface.Init(((RadarWidth + 16) / 16) * 16,
+                            ((RadarHeight + 16) / 16) * 16, nullptr, 0,
                             GBC_VIDEOMEM);
 
           /*
@@ -2126,7 +2128,7 @@ void RadarClass::Player_Names(bool on) {
  *=============================================================================================*/
 bool RadarClass::Spy_Next_House() {
   bool tospy = false;
-  const int spiedby = 1 << PlayerPtr->Class->House;
+  const auto spiedby = base::Bit<uint32_t>(PlayerPtr->Class->House);
 
   IsPlayerNames = false;
   IsRadarToRedraw = true;
@@ -2203,7 +2205,7 @@ bool RadarClass::Draw_House_Info() {
   y += 14;
 
   HouseClass* ptr = HouseClass::As_Pointer(SpyingOn);
-  if (ptr && ptr->RadarSpied & 1 << PlayerPtr->Class->House) {
+  if (ptr && ptr->RadarSpied & base::Bit<uint32_t>(PlayerPtr->Class->House)) {
     const PlayerColorType c_idx = ptr->RemapColor;
     RemapControlType* color = &ColorRemaps[c_idx];
     const TextPrintType style = TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW;

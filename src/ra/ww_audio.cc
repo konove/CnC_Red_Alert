@@ -54,6 +54,7 @@
 #include <string>
 
 #include "absl/log/log.h"
+#include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "ra/config.h"
@@ -486,7 +487,7 @@ void Sound_Effect(VocType voc, COORDINATE coord, int variation,
                  (Lepton_To_Cell(Map.TacLeptonWidth) / 2);
     if (std::abs(pan_value) > Lepton_To_Cell(Map.TacLeptonWidth / 2)) {
       pan_value *= 0x8000;
-      pan_value /= MAP_CELL_W >> 2;
+      pan_value /= MAP_CELL_W / 4;
       pan_value = Bound(pan_value, -0x7FFF, 0x7FFF);
     } else {
       pan_value = 0;
@@ -560,7 +561,7 @@ int Sound_Effect(VocType voc, fixed volume, int variation, int16_t pan_value,
     /*
     **	Change the extension based on the variation and house accent requested.
     */
-    if ((1 << house & kHouseFlagAllies) != 0) {
+    if ((base::Bit<uint32_t>(house) & kHouseFlagAllies) != 0) {
       /*
       **	For infantry, use a variation on the response. For vehicles,
       *always *	use the vehicle response table.

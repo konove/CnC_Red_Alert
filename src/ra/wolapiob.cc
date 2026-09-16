@@ -1623,7 +1623,8 @@ bool WolapiObject::ChannelCreate(
     //	lobby number to return to in the lower three bytes.
     //	Note: If lobby number is -1 (no lobby to return to), it's encoded as
     // 0x00FFFFFF
-    ChannelNew.reserved = (iLobby & 0x00FFFFFF) | GameKind;
+    ChannelNew.reserved =
+        (static_cast<uint32_t>(iLobby) & 0x00FFFFFFU) | GameKind;
     port::SafeCopy(WolText(ChannelNew.name), szChannelName,
                    sizeof(ChannelNew.name));
   }

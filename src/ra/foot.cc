@@ -291,8 +291,7 @@ void FootClass::Debug_Dump(MonoClass* mono) const {
 void FootClass::Set_Speed(int speed) {
   assert(IsActive);
 
-  speed &= 0xFF;
-  Speed = speed;
+  Speed = static_cast<int>(static_cast<uint32_t>(speed) & 0xFFU);
 }
 
 /***********************************************************************************************

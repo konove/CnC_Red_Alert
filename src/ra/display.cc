@@ -1386,7 +1386,7 @@ int DisplayClass::Cell_Shadow(CELL cell) const {
       9,  9,  11, 11, 22, 22, 11, 11, 13, 13, -2, -2, 13, 13, -2, -2,
       9,  9,  11, 11, 22, 22, 11, 11, 13, 13, -2, -2, 13, 13, -2, -2};
 
-  int index = 0;
+  uint32_t index = 0;  // One bit per unmapped neighbor, 0x80 = north.
   int value = -1;
 
   /*
@@ -1479,7 +1479,7 @@ bool DisplayClass::Map_Cell(CELL cell, HouseClass* house) {
   ** facility, to see if his mapping is applicable to us.
   */
   if (house && house != PlayerPtr) {
-    if (house->RadarSpied & 1 << PlayerPtr->Class->House) {
+    if (house->RadarSpied & base::Bit<uint32_t>(PlayerPtr->Class->House)) {
       house = PlayerPtr;
     }
     if (Session.Type == GAME_NORMAL && house->Is_Ally(PlayerPtr)) {
@@ -4028,7 +4028,7 @@ void DisplayClass::Repair_Mode_Control(int control) {
  *function.                                            *
  *=============================================================================================*/
 bool DisplayClass::In_View(CELL cell) const {
-  if (cell & 0xC000) {
+  if (cell < 0 || cell >= MAP_CELL_TOTAL) {
     return false;
   }
 
@@ -4227,7 +4227,7 @@ void DisplayClass::Encroach_Shadow() {
  *=============================================================================================*/
 void DisplayClass::Shroud_Cell(CELL cell /*KO, bool shadeit*/) {
   if (PlayerPtr->IsGPSActive &&
-      ((*this)[cell].Jammed & 1 << PlayerPtr->Class->House)) {
+      ((*this)[cell].Jammed & base::Bit<uint16_t>(PlayerPtr->Class->House))) {
     return;
   }
 

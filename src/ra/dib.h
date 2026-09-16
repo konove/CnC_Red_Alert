@@ -60,7 +60,7 @@ class Image {
 
   // Bytes per row including the padding to a four-byte boundary.
   [[nodiscard]] base::ssize Stride() const {
-    return (static_cast<base::ssize>(width_) + 3) & ~base::ssize{3};
+    return (static_cast<base::ssize>(width_) + 3) / 4 * 4;
   }
 
   // The pixels, bottom row first, Stride() bytes per row.

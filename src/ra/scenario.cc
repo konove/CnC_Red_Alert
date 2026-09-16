@@ -1210,7 +1210,8 @@ BriefingAction Restate_Mission() {
 static constexpr int kButton1 = 1;
 static constexpr int kButton2 = 2;
 static constexpr int kButton3 = 3;
-static constexpr int kButtonFlag = 0x8000;
+static constexpr uint32_t kButtonFlag =
+    0x8000;  // Set in a pressed button's key.
 
 // Maximum characters to display per page of briefing text.
 static constexpr size_t kMaxCharsPerPage = 512;
@@ -1362,7 +1363,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
   *(or none) may *	actually be added to the button list.
   */
   TextButtonClass button1(kButton1, b1txt, kTpfButton,
-                          x + (numbuttons == 1 ? (width - bwidth) >> 1 : 10),
+                          x + (numbuttons == 1 ? (width - bwidth) / 2 : 10),
                           y + height - (bheight + 5), bwidth);
 
   TextButtonClass button2(kButton2, b2txt, kTpfButton,
@@ -1371,7 +1372,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
 
   TextButtonClass button3(kButton3, b3txt, kTpfButton, 0,
                           y + height - (bheight + 5));
-  button3.X = x + ((width - button3.Width) >> 1);
+  button3.X = x + ((width - button3.Width) / 2);
 
   TextButtonClass* buttonlist = nullptr;
   int curbutton = 0;
@@ -1472,8 +1473,8 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
 
       // Fetch and process input.
       const KeyNumType input = buttonlist->Input();  // user input
-      switch (static_cast<int>(input)) {
-        case kButton1 | kButtonFlag:
+      switch (static_cast<uint32_t>(input)) {
+        case kButtonFlag | uint32_t{kButton1}:
           selection = realval[0];
           pressed = true;
           break;
@@ -1488,12 +1489,12 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
           }
           break;
 
-        case kButton2 | kButtonFlag:
+        case kButtonFlag | uint32_t{kButton2}:
           selection = kButton2;
           pressed = true;
           break;
 
-        case kButton3 | kButtonFlag:
+        case kButtonFlag | uint32_t{kButton3}:
           selection = realval[1];
           pressed = true;
           break;

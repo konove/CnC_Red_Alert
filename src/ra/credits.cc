@@ -252,7 +252,7 @@ void CreditClass::AI(bool forced) {
     }
 
     adder = std::abs(adder);
-    adder >>= 3;
+    adder /= 8;
     //		adder >>= 4;
     //		adder >>= 5;
     adder = Bound(adder, 1, 71 + 72);

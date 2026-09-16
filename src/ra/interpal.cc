@@ -154,9 +154,9 @@ static void Create_Palette_Interpolation_Table() {
       //
       // Now calculate the RGB halfway between the first and second colors.
       //
-      const int dest_r = (first_r + second_r) >> 1;
-      const int dest_g = (first_g + second_g) >> 1;
-      const int dest_b = (first_b + second_b) >> 1;
+      const int dest_r = (first_r + second_r) / 2;
+      const int dest_g = (first_g + second_g) / 2;
+      const int dest_b = (first_b + second_b) / 2;
 
       //
       // Now find the color in the palette that most closely matches the

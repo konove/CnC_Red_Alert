@@ -2313,7 +2313,7 @@ void CC_Draw_Shape(const void* shapefile, const int shape_num, const int x,
       // cloaked objects side by side do not ripple in lockstep.
       int pred_offset = static_cast<int>(Frame);
 
-      if (x > WindowList[window][WINDOWWIDTH] << 2) {
+      if (x > WindowList[window][WINDOWWIDTH] * 4) {
         pred_offset = -pred_offset;
       }
 

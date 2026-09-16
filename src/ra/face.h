@@ -67,7 +67,7 @@ typedef enum DirType : uint8_t {
 // the analyzer's named-enumerator model of the enum is set aside.
 constexpr DirType AsDirection(const int angle) {
   // NOLINTNEXTLINE(clang-analyzer-optin.core.EnumCastOutOfRange)
-  return static_cast<DirType>(angle & 0xFF);
+  return static_cast<DirType>(static_cast<uint32_t>(angle) & 0xFFU);
 }
 
 // Operators that allow simple math with DirType.

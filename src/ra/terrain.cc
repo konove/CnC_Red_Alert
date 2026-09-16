@@ -70,6 +70,7 @@
 #include <cstdlib>
 
 #include "absl/strings/str_format.h"
+#include "base/numeric.h"
 #include "base/types.h"
 #include "ra/anim.h"
 #include "ra/ccini.h"
@@ -571,7 +572,7 @@ bool TerrainClass::Unlimbo(COORDINATE coord, DirType dir) {
   assert(Terrains.ID(this) == ID);
   assert(IsActive);
 
-  if (Class->Theater & 1 << Scen.Theater) {
+  if (Class->Theater & base::Bit<uint32_t>(Scen.Theater)) {
     return ObjectClass::Unlimbo(coord, dir);
   }
   return false;

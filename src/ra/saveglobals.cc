@@ -39,19 +39,19 @@ void ScenarioClass::Serialize(Archive& ar) {
   ar(flags);
   if constexpr (Archive::kIsReading) {
     sync_rng_.set_seed(seed);
-    IsBridgeChanged = (flags & (1 << 0)) != 0;
-    IsGlobalChanged = (flags & (1 << 1)) != 0;
-    IsToCarryOver = (flags & (1 << 2)) != 0;
-    IsToInherit = (flags & (1 << 3)) != 0;
-    IsTanyaEvac = (flags & (1 << 4)) != 0;
-    IsEndOfGame = (flags & (1 << 5)) != 0;
-    IsInheritTimer = (flags & (1 << 6)) != 0;
-    IsNoSpyPlane = (flags & (1 << 7)) != 0;
-    IsSkipScore = (flags & (1 << 8)) != 0;
-    IsOneTimeOnly = (flags & (1 << 9)) != 0;
-    IsNoMapSel = (flags & (1 << 10)) != 0;
-    IsTruckCrate = (flags & (1 << 11)) != 0;
-    IsMoneyTiberium = (flags & (1 << 12)) != 0;
+    IsBridgeChanged = (flags & (1U << 0)) != 0;
+    IsGlobalChanged = (flags & (1U << 1)) != 0;
+    IsToCarryOver = (flags & (1U << 2)) != 0;
+    IsToInherit = (flags & (1U << 3)) != 0;
+    IsTanyaEvac = (flags & (1U << 4)) != 0;
+    IsEndOfGame = (flags & (1U << 5)) != 0;
+    IsInheritTimer = (flags & (1U << 6)) != 0;
+    IsNoSpyPlane = (flags & (1U << 7)) != 0;
+    IsSkipScore = (flags & (1U << 8)) != 0;
+    IsOneTimeOnly = (flags & (1U << 9)) != 0;
+    IsNoMapSel = (flags & (1U << 10)) != 0;
+    IsTruckCrate = (flags & (1U << 11)) != 0;
+    IsMoneyTiberium = (flags & (1U << 12)) != 0;
     IsFadingBW = IsFadingColor = false;
     FadeTimer.Set(0);
     AutoSonarTimer.Set(0);
@@ -156,14 +156,14 @@ void SpecialClass::Serialize(Archive& ar) {
   flags |= static_cast<uint8_t>(IsTSpread << 7);
   ar(flags);
   if constexpr (Archive::kIsReading) {
-    IsShadowGrow = (flags & (1 << 0)) != 0;
-    IsSpeedBuild = (flags & (1 << 1)) != 0;
-    IsFromInstall = (flags & (1 << 2)) != 0;
-    IsCaptureTheFlag = (flags & (1 << 3)) != 0;
-    IsInert = (flags & (1 << 4)) != 0;
-    IsThreePoint = (flags & (1 << 5)) != 0;
-    IsTGrowth = (flags & (1 << 6)) != 0;
-    IsTSpread = (flags & (1 << 7)) != 0;
+    IsShadowGrow = (flags & (1U << 0)) != 0;
+    IsSpeedBuild = (flags & (1U << 1)) != 0;
+    IsFromInstall = (flags & (1U << 2)) != 0;
+    IsCaptureTheFlag = (flags & (1U << 3)) != 0;
+    IsInert = (flags & (1U << 4)) != 0;
+    IsThreePoint = (flags & (1U << 5)) != 0;
+    IsTGrowth = (flags & (1U << 6)) != 0;
+    IsTSpread = (flags & (1U << 7)) != 0;
   }
 }
 template void SpecialClass::Serialize(ArchiveWriter&);

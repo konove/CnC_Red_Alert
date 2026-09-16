@@ -14,8 +14,8 @@ void PutU16(std::vector<std::uint8_t>& out, std::uint16_t value) {
 }
 
 void PutU32(std::vector<std::uint8_t>& out, std::uint32_t value) {
-  for (int i = 0; i < 4; ++i) {
-    out.push_back(static_cast<std::uint8_t>((value >> (8 * i)) & 0xFFU));
+  for (unsigned shift = 0; shift < 32; shift += 8) {
+    out.push_back(static_cast<std::uint8_t>((value >> shift) & 0xFFU));
   }
 }
 
@@ -25,7 +25,7 @@ std::vector<std::uint8_t> MakeBmp(int width, int height, int colors = 2,
                                   std::uint16_t signature = 0x4D42,
                                   std::uint16_t bit_count = 8,
                                   std::uint32_t compression = 0) {
-  const int stride = (width + 3) & ~3;
+  const int stride = (width + 3) / 4 * 4;
   const std::uint32_t table_bytes = static_cast<std::uint32_t>(colors) * 4U;
   const std::uint32_t bits_offset = 14U + 40U + table_bytes;
 

@@ -336,7 +336,7 @@ void TextButtonClass::Draw_Text(const char* text) {
                                : TPF_USE_GRAD_PAL | TPF_MEDIUM_COLOR;
     }();
 
-    Fancy_Text_Print(text, X + (Width >> 1) - 1, Y + 1, scheme, TBLACK,
+    Fancy_Text_Print(text, X + (Width / 2) - 1, Y + 1, scheme, TBLACK,
                      PrintFlags | flags | TPF_CENTER);
   }
 }

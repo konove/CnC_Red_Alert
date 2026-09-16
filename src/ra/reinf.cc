@@ -458,7 +458,7 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
   **	them there.
   */
   const auto eface =
-      static_cast<FacingType>(source << 1);  // Facing to enter map.
+      static_cast<FacingType>(source * 2);  // Facing to enter map.
 
   CELL cell = Map.Calculated_Cell(source, teamtype->Origin, -1,
                                   object->Techno_Type_Class()->Speed);

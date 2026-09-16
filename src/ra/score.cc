@@ -746,7 +746,7 @@ void Cycle_Wait_Click(bool cycle) {
     }
 
     if (cycle) {
-      counter = ++counter & 7;
+      counter = (counter + 1) % 8;
       if (counter == 0 && Options.IsPaletteScroll) {
         const RGBClass rgb = ScorePalette[233];
         for (int i = 233; i < 237; i++) {
@@ -830,8 +830,7 @@ void ScoreClass::Do_Nod_Buildings_Graph() {
     CC_Draw_Shape(tanya_shape,
                   ramboclass->DoControls[DO_WALK].Frame +
                       (ramboclass->DoControls[DO_WALK].Jump * 6) +
-                      ((i >> 1) %
-                       ramboclass->DoControls[DO_WALK].Count),
+                      ((i / 2) % ramboclass->DoControls[DO_WALK].Count),
                   i + 32, 40, WINDOW_MAIN,
                   SHAPE_FADING | SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST,
                   ColorRemaps[PCOLOR_RED].RemapTable, DisplayClass::UnitShadow);
@@ -998,7 +997,7 @@ void ScoreClass::Do_Nod_Casualties_Graph() {
     InfantryMan[i + 0].anim = InfantryMan[i + r].anim = 0;
     InfantryMan[i + 0].stage = InfantryMan[i + r].stage = 0;
     InfantryMan[i + 0].delay = InfantryMan[i + r].delay =
-        static_cast<char>(local_rng.Next() & 0x1F);
+        static_cast<char>(local_rng.Next() % 32);
     InfantryMan[i + 0].Class = InfantryMan[i + r].Class =
         &InfantryTypeClass::As_Reference(INFANTRY_E1);
   }
@@ -1292,7 +1291,7 @@ void Animate_Cursor(int pos, int ypos) {
   ** Toggle the color of the cursor, green or black, if it's time to do so.
   */
   if (_timer.IsFinished()) {
-    _state ^= 1;
+    _state = _state == 0 ? 1 : 0;
     _timer.Set(5);
   }
 }
@@ -1403,7 +1402,7 @@ void New_Infantry_Anim(int index, int anim) {
   if (anim >= DO_GUN_DEATH) {
     InfantryMan[index].delay = 1;  // start right away
   } else {
-    InfantryMan[index].delay = static_cast<char>(local_rng.Next() & 15);
+    InfantryMan[index].delay = static_cast<char>(local_rng.Next() % 16);
   }
 }
 
@@ -1443,7 +1442,7 @@ void Draw_Bar_Graphs(int i, int gkilled, int nkilled) {
         if (i / 11) {
           // Cosmetic death animations use the non-sync RNG so they cannot
           // perturb game logic; pick one of the 4 gun-death variants at random.
-          New_Infantry_Anim(i / 11, DO_GUN_DEATH + (local_rng.Next() & 3));
+          New_Infantry_Anim(i / 11, DO_GUN_DEATH + (local_rng.Next() % 4));
         } else {
           New_Infantry_Anim(i / 11, DO_GUN_DEATH);
         }
@@ -1464,7 +1463,7 @@ void Draw_Bar_Graphs(int i, int gkilled, int nkilled) {
       if (anim != -1 && anim < DO_GUN_DEATH) {
         if (i / 11) {
           New_Infantry_Anim((NUMINFANTRYMEN / 2) + (i / 11),
-                            DO_GUN_DEATH + (local_rng.Next() & 3));
+                            DO_GUN_DEATH + (local_rng.Next() % 4));
         } else {
           New_Infantry_Anim((NUMINFANTRYMEN / 2) + (i / 11), DO_GUN_DEATH);
         }

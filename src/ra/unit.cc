@@ -949,8 +949,8 @@ bool UnitClass::Unlimbo(COORDINATE coord, DirType dir) {
     **	Ensure that the owning house knows about the
     **	new object.
     */
-    House->UScan |= 1L << Class->Type;
-    House->ActiveUScan |= 1L << Class->Type;
+    House->UScan |= ScanBit(Class->Type);
+    House->ActiveUScan |= ScanBit(Class->Type);
 
     /*
     **	If it starts off the edge of the map, then it already starts cloaked.
@@ -1906,7 +1906,7 @@ int UnitClass::Shape_Number() const {
     /*
     **	The starting frame is based on the facing of the unit.
     */
-    shapenum = ((BodyShape[facing] + 2) / 4) & 0x07;
+    shapenum = ((BodyShape[facing] + 2) / 4) % 8;
 
     /*
     **	If the unit is driving, then it has an animation adjustment to the frame
@@ -2059,7 +2059,7 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) const {
       if (*this == UNIT_MGG) {
         int x2 = x;
         int y2 = y;
-        shapenum = static_cast<int>(32 + (Frame & 7));
+        shapenum = static_cast<int>(32 + (Frame % 8));
         Class->Turret_Adjust(PrimaryFacing, x2, y2);
         Techno_Draw_Object(shapefile, shapenum, x2, y2, window);
       } else {
@@ -2686,7 +2686,7 @@ int UnitClass::Mission_Unload() {
       }
 
       if ((Arm.HasTimeLeft() && !Gold) || IronCurtainCountDown.HasTimeLeft()) {
-        Set_Stage(Fetch_Stage() & 1);
+        Set_Stage(Fetch_Stage() % 2);
         return 1;
       }
 
@@ -3164,8 +3164,9 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType /*from*/) const {
         if (is_moving) {
           const int face = Dir_Facing(PrimaryFacing);
           const int techface =
-              Dir_Facing(dynamic_cast<const FootClass*>(obj)->PrimaryFacing) ^
-              4;
+              (Dir_Facing(dynamic_cast<const FootClass*>(obj)->PrimaryFacing) +
+               4) %
+              8;
           if (face == techface && Distance(obj) <= 0x1FF) {
             return MOVE_NO;
           }
@@ -4125,7 +4126,7 @@ FireErrorType UnitClass::Can_Fire(TARGET target, int which) const {
     diff = std::abs(diff);
 
     if (weapon->Bullet->ROT != 0) {
-      diff >>= 2;
+      diff /= 4;
     }
     if (diff < 8) {
       return DriveClass::Can_Fire(target, which);

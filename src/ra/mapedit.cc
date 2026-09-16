@@ -1765,7 +1765,7 @@ bool MapEditClass::Verify_House(HousesType house,
   /*
   **	Verify that new house can own this object
   */
-  return ((objtype->Get_Ownable() & (1 << house)) != 0);
+  return ((objtype->Get_Ownable() & base::Bit<uint32_t>(house)) != 0);
 }
 
 /***************************************************************************

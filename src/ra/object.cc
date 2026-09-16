@@ -120,6 +120,7 @@
 #include <cassert>
 #include <cstdint>
 
+#include "base/numeric.h"
 #include "ra/abstract.h"
 #include "ra/anim.h"
 #include "ra/building.h"
@@ -1546,8 +1547,8 @@ ResultType ObjectClass::Take_Damage(int& damage, int distance,
     *to below *	half strength or if it is now down to one hit point.
     */
     if (oldstrength > damage) {
-      if (oldstrength >= maxstrength >> 1 &&
-          oldstrength - damage < maxstrength >> 1) {
+      if (oldstrength >= maxstrength / 2 &&
+          oldstrength - damage < maxstrength / 2) {
         result = RESULT_HALF;
       }
     } else {
@@ -2119,7 +2120,7 @@ BuildingClass* ObjectTypeClass::Who_Can_Build_Me(bool intheory, bool legal,
         building->Class->ToBuild == RTTI &&
         building->Mission != MISSION_DECONSTRUCTION &&
         building->MissionQueue != MISSION_DECONSTRUCTION &&
-        1L << building->ActLike & Get_Ownable() &&
+        (base::Bit<uint32_t>(building->ActLike) & Get_Ownable()) != 0 &&
         (!legal || building->House->Can_Build(this, building->ActLike)) &&
         (intheory || !building->In_Radio_Contact())) {
       // BG: Hack so only kennels can build dogs, and no other, and barracks can

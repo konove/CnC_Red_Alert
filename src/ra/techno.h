@@ -393,10 +393,10 @@ class TechnoClass : public RadioClass,
   ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
                          TechnoClass* source = nullptr,
                          bool forced = false) override;
-  bool Evaluate_Cell(ThreatType method, int mask, CELL cell, int range,
+  bool Evaluate_Cell(ThreatType method, uint32_t mask, CELL cell, int range,
                      const TechnoClass** object, int& value,
                      int zone = 0) const;
-  bool Evaluate_Object(ThreatType method, int mask, int range,
+  bool Evaluate_Object(ThreatType method, uint32_t mask, int range,
                        const TechnoClass* object, int& value,
                        int zone = -1) const;
   [[nodiscard]] int Evaluate_Just_Cell(CELL cell) const;

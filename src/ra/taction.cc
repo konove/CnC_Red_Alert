@@ -49,6 +49,7 @@
 #include "ra/taction.h"
 
 #include <cassert>
+#include <cstdint>
 #include <cstdlib>
 #include <cstring>
 #include <format>
@@ -335,7 +336,8 @@ void TActionClass::Read_INI(port::Tokenizer& tokens) {
   if (Action == TACTION_PLAY_SOUND &&
       (Data.Value < 0 ||
        std::cmp_greater_equal(Data.Value, magic_enum::enum_count<VocType>()))) {
-    const int fixed = Data.Value & 0xFF;
+    const int fixed =
+        static_cast<int>(static_cast<uint32_t>(Data.Value) & 0xFFU);
     if (fixed >= 0 && std::cmp_less(fixed, magic_enum::enum_count<VocType>())) {
       DLOG(WARNING) << "Read_INI: Fixed corrupted sound value " << Data.Value
                     << " -> " << fixed;

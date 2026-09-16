@@ -189,7 +189,7 @@ static void Write_Pcx_ScanLine(File& file, int scansize, const char* ptr) {
   unsigned char rle = 1;
   unsigned char c = 0;
   for (int i = 1; i < scansize; i++) {
-    const auto color = static_cast<unsigned char>(0xff & *++ptr);
+    const auto color = static_cast<unsigned char>(*++ptr);
     if (color == last) {
       rle++;
       if (rle == rle_max_run) {

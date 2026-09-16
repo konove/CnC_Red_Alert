@@ -132,7 +132,7 @@ constexpr FacingType kCounterclockwise = static_cast<FacingType>(-1);
 // static bool DrawPath;
 
 static inline FacingType Opposite(FacingType face) {
-  return static_cast<FacingType>(face ^ 4);
+  return static_cast<FacingType>((face + 4) % 8);
 }
 
 static FacingType Next_Direction(FacingType current, FacingType delta) {
@@ -275,7 +275,7 @@ bool FootClass::Unravel_Loop(PathType* path, CELL& cell, FacingType& dir,
       ** if we left the line on a diagonal.  If we did then we need to fix
       ** it up.
       */
-      if (curr_dir & 1 && curr_pos != path->LastFixup) {
+      if (curr_dir % 2 != 0 && curr_pos != path->LastFixup) {
         cell = curr_pos;
         dir = *(list - 1);
         path->Length = idx;
@@ -601,7 +601,7 @@ PathType* FootClass::Find_Path(CELL dest, FacingType* final_moves, int maxlen,
             if (threat != -1) {
               switch (threat_stage++) {
                 case 0:
-                  threat = unit_threat >> 1;
+                  threat = unit_threat / 2;
                   break;
 
                 case 1:
@@ -682,7 +682,7 @@ PathType* FootClass::Find_Path(CELL dest, FacingType* final_moves, int maxlen,
             if (threat != -1) {
               switch (threat_stage++) {
                 case 0:
-                  threat = unit_threat >> 1;
+                  threat = unit_threat / 2;
                   break;
 
                 case 1:
@@ -907,7 +907,7 @@ bool FootClass::Follow_Edge(CELL start, CELL target, PathType* path,
         const int checkval = Point_Relative_To_Line(checkx, checky, startx,
                                                     starty, targetx, targety);
         if (checkval && !online) {
-          forcefail = (checkval ^ oldval) < 0;
+          forcefail = (checkval < 0) != (oldval < 0);
         } else {
           forcefail = false;
         }
@@ -916,7 +916,7 @@ bool FootClass::Follow_Edge(CELL start, CELL target, PathType* path,
         ** because we could be trying to escape from a culdesack!
         */
         if (forcefail && path->Length > 0 &&
-            static_cast<FacingType>(newdir ^ 4) ==
+            static_cast<FacingType>((newdir + 4) % 8) ==
                 path->Command[path->Length - 1]) {
           forcefail = false;
         }
@@ -1244,7 +1244,7 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
 
 CELL FootClass::Safety_Point(CELL src, CELL dst, int start, int max) const {
   const FacingType dir =
-      static_cast<FacingType>((CELL_FACING(src, dst) ^ 4)) - 1;
+      static_cast<FacingType>((CELL_FACING(src, dst) + 4) % 8) - 1;
 
   /*
   ** Loop through the different acceptable distances.
@@ -1259,13 +1259,13 @@ CELL FootClass::Safety_Point(CELL src, CELL dst, int start, int max) const {
       next = Adjacent_Cell(next, dir);
     }
 
-    if (dir & 1) {
+    if (dir % 2 != 0) {
       /*
       ** If our direction is diagonal than we need to check
       ** only one side which is as long as both of the old sides
       ** together.
       */
-      for (int lp = 0; lp < dist << 1; lp++) {
+      for (int lp = 0; lp < dist * 2; lp++) {
         next = Adjacent_Cell(next, dir + 3);
         if (!Can_Enter_Cell(next)) {
           return next;

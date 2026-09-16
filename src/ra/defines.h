@@ -632,7 +632,7 @@ enum CNC_FLAG_ENUM ThreatType {
 };
 
 inline constexpr auto kThreatGround = static_cast<ThreatType>(
-    THREAT_VEHICLES | THREAT_BUILDINGS | THREAT_INFANTRY);
+    uint32_t{THREAT_VEHICLES} | THREAT_BUILDINGS | THREAT_INFANTRY);
 
 /**********************************************************************
 **	These return values are used when determine if firing is legal.
@@ -1067,6 +1067,15 @@ enum StructType {
   STRUCT_LARVA1,
   STRUCT_LARVA2
 };
+
+// The bit for `type` in the 64-bit house scans (HouseClass::BScan and the
+// unit, infantry, aircraft and vessel scans), or 0 for a building type past
+// the 64 the scans can hold: the civilian buildings from STRUCT_V14 on, the
+// barrels and the ant structures, which no prerequisite, trigger or AI test
+// names. The original shifted by the full index and wrapped.
+constexpr uint64_t ScanBit(int type) noexcept {
+  return type < 64 ? base::Bit<uint64_t>(type) : uint64_t{0};
+}
 
 // Building bit masks over StructType, matching HouseClass::BScan. The enum
 // has more than 32 entries, so the masks are 64 bits wide.
@@ -2273,10 +2282,10 @@ enum CNC_FLAG_ENUM TextPrintType {
 };
 
 // Standard button text print flags.
-inline constexpr auto kTpfButton =
-    static_cast<TextPrintType>(TPF_CENTER | TPF_6PT_GRAD | TPF_NOSHADOW);
+inline constexpr auto kTpfButton = static_cast<TextPrintType>(
+    uint32_t{TPF_CENTER} | TPF_6PT_GRAD | TPF_NOSHADOW);
 inline constexpr auto kTpfEButton =
-    static_cast<TextPrintType>(TPF_CENTER | TPF_EFNT | TPF_NOSHADOW);
+    static_cast<TextPrintType>(uint32_t{TPF_CENTER} | TPF_EFNT | TPF_NOSHADOW);
 inline constexpr auto kTpfText =
     static_cast<TextPrintType>(TPF_6PT_GRAD | TPF_NOSHADOW);
 
@@ -2414,29 +2423,32 @@ enum FacingType : int8_t {
   FACING_NW   // North-West
 };
 
+// Wraps a facing sum or difference onto the eight compass facings. Negative
+// values wrap the same way the old low-three-bits mask did (-1 is FACING_NW).
+constexpr FacingType WrapFacing(const int facing) {
+  return static_cast<FacingType>(((facing % 8) + 8) % 8);
+}
+
 inline FacingType operator+(const FacingType f1, const FacingType f2) {
-  return static_cast<FacingType>((static_cast<int>(f1) + static_cast<int>(f2)) &
-                                 0x07);
+  return WrapFacing(static_cast<int>(f1) + static_cast<int>(f2));
 }
 inline FacingType operator+(const FacingType f1, const int f2) {
-  return static_cast<FacingType>((static_cast<int>(f1) + f2) & 0x07);
+  return WrapFacing(static_cast<int>(f1) + f2);
 }
 
 inline FacingType operator-(const FacingType f1, const FacingType f2) {
-  return static_cast<FacingType>((static_cast<int>(f1) - static_cast<int>(f2)) &
-                                 0x07);
+  return WrapFacing(static_cast<int>(f1) - static_cast<int>(f2));
 }
 inline FacingType operator-(const FacingType f1, const int f2) {
-  return static_cast<FacingType>((static_cast<int>(f1) - f2) & 0x07);
+  return WrapFacing(static_cast<int>(f1) - f2);
 }
 
 inline FacingType operator+=(FacingType& f1, const FacingType f2) {
-  f1 = static_cast<FacingType>((static_cast<int>(f1) + static_cast<int>(f2)) &
-                               0x07);
+  f1 = WrapFacing(static_cast<int>(f1) + static_cast<int>(f2));
   return f1;
 }
 inline FacingType operator+=(FacingType& f1, const int f2) {
-  f1 = static_cast<FacingType>((static_cast<int>(f1) + f2) & 0x07);
+  f1 = WrapFacing(static_cast<int>(f1) + f2);
   return f1;
 }
 

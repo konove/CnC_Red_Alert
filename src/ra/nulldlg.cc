@@ -336,7 +336,7 @@ int Test_Null_Modem() {
 
   TextButtonClass cancelbtn(
       BUTTON_CANCEL, TXT_CANCEL, kTpfButton,
-      x + ((width - (String_Pixel_Width(Text_String(TXT_CANCEL)) + 16)) >> 1),
+      x + ((width - (String_Pixel_Width(Text_String(TXT_CANCEL)) + 16)) / 2),
       y + height - (FontHeight + FontYSpacing + 4) - 20);
 
   /*
@@ -553,7 +553,7 @@ int Test_Null_Modem() {
  *=========================================================================*/
 int Reconnect_Modem() {
   int status = 0;
-  int modemstatus = 0;
+  uint32_t modemstatus = 0;
 
   switch (Session.ModemType) {
     case MODEM_NULL_HOST:
@@ -648,7 +648,7 @@ static int Reconnect_Null_Modem() {
 
   TextButtonClass cancelbtn(
       BUTTON_CANCEL, TXT_CANCEL, kTpfButton,
-      x + ((width - (String_Pixel_Width(Text_String(TXT_CANCEL)) + 16)) >> 1),
+      x + ((width - (String_Pixel_Width(Text_String(TXT_CANCEL)) + 16)) / 2),
       y + height - (FontHeight + FontYSpacing + 4) - 20);
 
   /*
@@ -6857,21 +6857,21 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
 
   DialSettings = settings;
 
-  int modemstatus = NullModemClass::Get_Modem_Status();
+  const auto carrier = NullModemClass::Get_Modem_Status();
   if (reconnect) {
-    if (modemstatus & CD_SET) {
+    if (carrier & CD_SET) {
       connected = true;
       Session.ModemService = true;
       return connected;
     }
-  } else if (modemstatus & CD_SET) {
+  } else if (carrier & CD_SET) {
     NullModem.Hangup_Modem();
     Session.ModemService = false;
   }
 
   NullModemClass::Setup_Modem_Echo(Modem_Echo);
 
-  modemstatus = NullModem.Detect_Modem(settings, reconnect);
+  int modemstatus = NullModem.Detect_Modem(settings, reconnect);
   if (!modemstatus) {
     NullModemClass::Remove_Modem_Echo();
     NullModemClass::Print_EchoBuf();
@@ -7029,21 +7029,21 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
 
   DialSettings = settings;
 
-  int modemstatus = NullModemClass::Get_Modem_Status();
+  const auto carrier = NullModemClass::Get_Modem_Status();
   if (reconnect) {
-    if (modemstatus & CD_SET) {
+    if (carrier & CD_SET) {
       connected = true;
       Session.ModemService = true;
       return connected;
     }
-  } else if (modemstatus & CD_SET) {
+  } else if (carrier & CD_SET) {
     NullModem.Hangup_Modem();
     Session.ModemService = false;
   }
 
   NullModemClass::Setup_Modem_Echo(Modem_Echo);
 
-  modemstatus = NullModem.Detect_Modem(settings, reconnect);
+  int modemstatus = NullModem.Detect_Modem(settings, reconnect);
   if (!modemstatus) {
     NullModemClass::Remove_Modem_Echo();
     NullModemClass::Print_EchoBuf();
@@ -7211,7 +7211,7 @@ void Hex_Dump_Data(const char* buffer, int length) {
       c = ptr[i];
       itoh(c, buff);
 
-      if (!(i & 0x3) && i) {
+      if (i % 4 == 0 && i) {
         Smart_Printf("│ ");
       }
 
@@ -7245,12 +7245,12 @@ void Hex_Dump_Data(const char* buffer, int length) {
       if (i < length) {
         c = ptr[i];
         itoh(c, buff);
-        if (!(i & 0x3) && i) {
+        if (i % 4 == 0 && i) {
           Smart_Printf("│ ");
         }
         Smart_Printf("%s ", buff);
       } else {
-        if (!(i & 0x3) && i) {
+        if (i % 4 == 0 && i) {
           Smart_Printf("  ");
         }
         Smart_Printf("   ");
@@ -7283,9 +7283,9 @@ void itoh(int i, char* s) {
     *s++ = '0';
     *s++ = '0';
   } else {
-    for (int loop = 1; loop >= 0; loop--) {
-      const int nibble = i >> (loop << 2) & 0x000F;
-
+    const auto bits = static_cast<uint32_t>(i);
+    const uint32_t nibbles[] = {(bits >> 4) & 0xFU, bits & 0xFU};
+    for (const uint32_t nibble : nibbles) {
       /* decimal range */
       if (nibble < 10) {
         *s++ = static_cast<char>('0' + nibble);

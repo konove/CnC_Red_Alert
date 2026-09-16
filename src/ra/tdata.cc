@@ -57,6 +57,7 @@
 #include <cstdint>
 #include <filesystem>
 
+#include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "ra/conquer.h"
@@ -519,7 +520,7 @@ void TerrainTypeClass::Init(TheaterType theater) {
       */
       terrain.ClearImage();
 
-      if (terrain.Theater & 1 << theater) {
+      if (terrain.Theater & base::Bit<uint32_t>(theater)) {
         /*
         **	Load in the appropriate object shape data.
         */

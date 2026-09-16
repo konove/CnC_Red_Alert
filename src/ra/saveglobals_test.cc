@@ -28,6 +28,9 @@ WinsockInterfaceClass* PacketTransport = nullptr;
 
 namespace {
 
+// An elapsed time that needs more than 32 bits: 2^40 ticks.
+constexpr int64_t kLargeElapsedTime = 1'099'511'627'776;
+
 static_assert(std::is_trivially_default_constructible_v<SpecialClass>);
 
 class GlobalsSink : public ByteSink {
@@ -68,7 +71,7 @@ TEST(SaveGlobalsTest, ScorePreservesWideCountersAndPausedTime) {
   ScoreClass score;
   score.NKilled = 17;
   score.GHarvested = 123456;
-  score.ElapsedTime = int64_t{1} << 40;
+  score.ElapsedTime = kLargeElapsedTime;
   GlobalsSink timer_data;
   ArchiveWriter timer_writer(timer_data);
   int64_t elapsed = 9876543210;
@@ -86,7 +89,7 @@ TEST(SaveGlobalsTest, ScorePreservesWideCountersAndPausedTime) {
   ASSERT_TRUE(ReadValue(loaded, pipe.bytes));
   EXPECT_EQ(loaded.NKilled, 17);
   EXPECT_EQ(loaded.GHarvested, 123456);
-  EXPECT_EQ(loaded.ElapsedTime, int64_t{1} << 40);
+  EXPECT_EQ(loaded.ElapsedTime, kLargeElapsedTime);
   EXPECT_EQ(loaded.RealTime.Value(), elapsed);
   EXPECT_FALSE(loaded.RealTime.IsRunning());
 

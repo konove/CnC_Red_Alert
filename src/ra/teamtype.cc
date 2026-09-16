@@ -1676,10 +1676,10 @@ void TeamTypeClass::Fill_In(const char* name, char* entry) {
   House = static_cast<HousesType>(
       tech::ParseInteger<int>(tokens.Next()).value_or(0));
 
-  int code = 0;
+  uint32_t code = 0;
   switch (NewINIFormat) {
     default:
-      code = tech::ParseInteger<int>(tokens.Next()).value_or(0);
+      code = tech::ParseInteger<uint32_t>(tokens.Next()).value_or(0);
       IsRoundAbout = (code & 0x0001) != 0;
       IsSuicide = (code & 0x0002) != 0;
       IsAutocreate = (code & 0x0004) != 0;
@@ -1856,12 +1856,12 @@ void TeamTypeClass::Write_INI(CCINIClass& ini) {
  * HISTORY: * 07/30/1996 JLB : Created. *
  *=============================================================================================*/
 void TeamTypeClass::Build_INI_Entry(char* buf) {
-  int code = 0;
-  code |= IsRoundAbout ? 0x0001 : 0;
-  code |= IsSuicide ? 0x0002 : 0;
-  code |= IsAutocreate ? 0x0004 : 0;
-  code |= IsPrebuilt ? 0x0008 : 0;
-  code |= IsReinforcable ? 0x0010 : 0;
+  uint32_t code = 0;
+  code |= IsRoundAbout ? 0x0001U : 0U;
+  code |= IsSuicide ? 0x0002U : 0U;
+  code |= IsAutocreate ? 0x0004U : 0U;
+  code |= IsPrebuilt ? 0x0008U : 0U;
+  code |= IsReinforcable ? 0x0010U : 0U;
 
   /*
   **	Output the general data for this team type.

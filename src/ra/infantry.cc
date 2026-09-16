@@ -108,6 +108,7 @@
 #include <utility>
 
 #include "absl/strings/str_format.h"
+#include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/tokenizer.h"
 #include "ra/anim.h"
@@ -701,7 +702,7 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
           }
 
           if (*this == INFANTRY_SPY) {
-            const unsigned housespy = 1U << House->Class->House;
+            const auto housespy = base::Bit<uint32_t>(House->Class->House);
 
             if (tech->Trigger.Is_Valid()) {
               tech->Trigger->Spring(TEVENT_SPIED, this);
@@ -2134,8 +2135,8 @@ bool InfantryClass::Unlimbo(COORDINATE coord, DirType facing) {
     **	Ensure that the owning house knows about the
     **	new object.
     */
-    House->IScan |= 1L << Class->Type;
-    House->ActiveIScan |= 1L << Class->Type;
+    House->IScan |= ScanBit(Class->Type);
+    House->ActiveIScan |= ScanBit(Class->Type);
 
     /*
     **	If there is no sight range, then this object isn't discovered by the
@@ -2904,7 +2905,7 @@ void InfantryClass::Set_Occupy_Bit(CELL cell, int spot_index) {
   /*
   ** Set the occupy position for the spot that we passed in
   */
-  Map[cell].Flag.Composite |= 1 << spot_index;
+  Map[cell].Flag.Composite |= base::Bit<uint8_t>(spot_index);
 
   /*
   ** Record the type of infantry that now owns the cell
@@ -2931,7 +2932,8 @@ void InfantryClass::Clear_Occupy_Bit(CELL cell, int spot_index) {
   /*
   ** Clear the occupy bit for the infantry in that cell
   */
-  Map[cell].Flag.Composite &= ~(1 << spot_index);
+  Map[cell].Flag.Composite &=
+      static_cast<uint8_t>(~base::Bit<uint8_t>(spot_index));
 
   /*
   ** If he was the last infantry recorded in the cell then

@@ -57,6 +57,7 @@
 #include <filesystem>
 #include <span>
 
+#include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "ra/compat.h"
@@ -1832,7 +1833,7 @@ void TemplateTypeClass::Init(TheaterType theater) {
     TemplateTypeClass& tplate = As_Reference(index);
 
     tplate.ClearImage();
-    if (tplate.Theater & 1 << theater) {
+    if (tplate.Theater & base::Bit<uint32_t>(theater)) {
       const auto fullname = std::filesystem::path(tplate.IniName)
                                 .replace_extension(Theaters[theater].Suffix)
                                 .string();

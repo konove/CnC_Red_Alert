@@ -1401,7 +1401,7 @@ uint64_t CCINIClass::Get_Buildings(const char* section, const char* entry,
     while (const char* token = tokens.Next()) {
       const StructType building = BuildingTypeClass::From_Name(token);
       if (building != STRUCT_NONE) {
-        pre |= uint64_t{1} << building;
+        pre |= base::Bit<uint64_t>(building);
       }
     }
   } else {

@@ -700,7 +700,7 @@ static void Queue_AI_Multiplayer() {
   //	Compute the Game's CRC
   //------------------------------------------------------------------------
   Compute_Game_CRC();
-  CRC[Frame & 0x001f] = GameCRC;
+  CRC[Frame % 32] = GameCRC;
 
   //------------------------------------------------------------------------
   //	If we've just started a game, or loaded a multiplayer game, we must
@@ -802,7 +802,7 @@ static void Queue_AI_Multiplayer() {
   // Adjust connection timing parameters every 128 frames.
   //------------------------------------------------------------------------
 
-  else if ((Frame & 0x007f) == 0) {
+  else if (Frame % 128 == 0) {
     //
     // If we're using the new spiffy protocol, do proper timing handling.
     // If we're the net "master", compute our desired frame rate & new
@@ -866,7 +866,7 @@ static void Queue_AI_Multiplayer() {
           : FRAMESYNC_TIMEOUT;
 
   rc = Wait_For_Players(
-      0, net, Session.MaxAhead << 3,
+      0, net, Session.MaxAhead * 8,
       std::max<int>(static_cast<int>(net->Response_Time()) * 3,
                     FRAMESYNC_DLG_TIME * timeout_factor),
       iFramesyncTimeout * (2 * timeout_factor), multi_packet_buf, my_sent,
@@ -3453,7 +3453,10 @@ static int Execute_DoList(int max_houses, HousesType base_house,
           }
           if (check_crc && std::cmp_equal(DoList[j].Frame, Frame) &&
               DoList[j].Data.FrameInfo.Delay < 32) {
-            index = (DoList[j].Frame - DoList[j].Data.FrameInfo.Delay) & 0x001f;
+            // The delay is below 32, so adding a full turn keeps the
+            // difference non-negative before wrapping onto the CRC ring.
+            index =
+                (DoList[j].Frame - DoList[j].Data.FrameInfo.Delay + 32) % 32;
             if (CRC[index] != DoList[j].Data.FrameInfo.CRC) {
               Print_CRCs(&DoList[j]);
 
@@ -3657,7 +3660,7 @@ static void Queue_Playback() {
   //	Compute the Game's CRC
   //------------------------------------------------------------------------
   Compute_Game_CRC();
-  CRC[Frame & 0x001f] = GameCRC;
+  CRC[Frame % 32] = GameCRC;
 
   //------------------------------------------------------------------------
   // If we've reached the CRC print frame, do so & exit

@@ -624,9 +624,9 @@ inline COORDINATE Coord_Mid(COORDINATE coord1, COORDINATE coord2) {
  * HISTORY: * 08/26/1996 JLB : Created. *
  *=============================================================================================*/
 inline FacingType Dir_Facing(DirType facing) {
+  // The byte wrap folds the last sixteenth of the circle back onto north.
   return static_cast<FacingType>(
-      (static_cast<unsigned char>(static_cast<int>(facing) + 0x10) & 0xFF) >>
-      5);
+      static_cast<uint8_t>(static_cast<int>(facing) + 0x10) / 32);
 }
 
 /***********************************************************************************************
@@ -644,7 +644,7 @@ inline FacingType Dir_Facing(DirType facing) {
  * HISTORY: * 08/26/1996 JLB : Created. *
  *=============================================================================================*/
 inline DirType Facing_Dir(FacingType facing) {
-  return static_cast<DirType>(static_cast<int>(facing) << 5);
+  return static_cast<DirType>(static_cast<int>(facing) * 32);
 }
 
 /***********************************************************************************************
@@ -767,7 +767,7 @@ inline DirType Direction8(COORDINATE coord1, COORDINATE coord2) {
  *=============================================================================================*/
 inline COORDINATE Adjacent_Cell(COORDINATE coord, FacingType dir) {
   return Coord_Snap(
-      Coord_Add(AdjacentCoord[static_cast<int>(dir) & 0x07], coord));
+      Coord_Add(AdjacentCoord[WrapFacing(static_cast<int>(dir))], coord));
 }
 
 /***********************************************************************************************
@@ -809,9 +809,10 @@ inline COORDINATE Adjacent_Cell(COORDINATE coord, DirType dir) {
  * HISTORY: * 08/26/1996 JLB : Created. *
  *=============================================================================================*/
 inline CELL Adjacent_Cell(CELL cell, FacingType dir) {
-  // Masked like the COORDINATE overload above, so that FACING_NONE (-1) does
+  // Wrapped like the COORDINATE overload above, so that FACING_NONE (-1) does
   // not index before the start of the table.
-  return static_cast<CELL>(cell + AdjacentCell[static_cast<int>(dir) & 0x07]);
+  return static_cast<CELL>(cell +
+                           AdjacentCell[WrapFacing(static_cast<int>(dir))]);
 }
 
 /***********************************************************************************************
@@ -852,7 +853,7 @@ inline CELL Adjacent_Cell(CELL cell, DirType dir) {
  *=============================================================================================*/
 inline FacingType Dir_To_8(DirType facing) {
   return static_cast<FacingType>(
-      static_cast<unsigned char>(static_cast<int>(facing) | 0x10) >> 5);
+      static_cast<uint8_t>(static_cast<uint32_t>(facing) | 0x10U) / 32);
 }
 
 /***********************************************************************************************

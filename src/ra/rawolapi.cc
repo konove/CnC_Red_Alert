@@ -719,7 +719,11 @@ bool RAChatEventSink::bSpecialMessage(const char* szMessage) {
   memcpy(szCode, &szMessage[4], 4);
   szCode[4] = 0;
   const int iCode = tech::ParseInteger<int>(szCode).value_or(0);
-  return iCode == (((today.month * 99) ^ (today.day * 33)) ^ today.year);
+  // The code mixes the date fields as bit patterns.
+  const uint32_t expected = (static_cast<uint32_t>(today.month * 99) ^
+                             static_cast<uint32_t>(today.day * 33)) ^
+                            static_cast<uint32_t>(today.year);
+  return std::cmp_equal(iCode, expected);
 }
 
 //***********************************************************************************************

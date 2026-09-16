@@ -131,6 +131,7 @@
 #include <utility>
 
 #include "absl/strings/str_format.h"
+#include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/tokenizer.h"
 #include "ra/aircraft.h"
@@ -624,7 +625,7 @@ void BuildingClass::Draw_It(int x, int y, WindowNumberType window) const {
   /*
   ** If this is a factory that we're spying on, show what it's producing
   */
-  if (SpiedBy & 1 << PlayerPtr->Class->House && IsSelected) {
+  if (SpiedBy & base::Bit<uint32_t>(PlayerPtr->Class->House) && IsSelected) {
     /*
     **	Fetch the factory that is associate with this building. For computer
     *controlled buildings, the *	factory pointer is integral to the
@@ -1203,8 +1204,8 @@ bool BuildingClass::Unlimbo(COORDINATE coord, DirType dir) {
     **	Ensure that the owning house knows about the
     **	new object.
     */
-    House->BScan |= 1L << Class->Type;
-    House->ActiveBScan |= 1L << Class->Type;
+    House->BScan |= ScanBit(Class->Type);
+    House->ActiveBScan |= ScanBit(Class->Type);
 
     /*
     **	Recalculate the center point of the house's base.
@@ -3025,8 +3026,8 @@ bool BuildingClass::Captured(HouseClass* newowner) {
     ** Make sure the capturer isn't spying on his own building, and if
     ** it was a radar facility, update the target house's RadarSpied field.
     */
-    if (SpiedBy & 1 << newowner->Class->House) {
-      SpiedBy -= 1 << newowner->Class->House;
+    if (SpiedBy & base::Bit<uint32_t>(newowner->Class->House)) {
+      SpiedBy &= ~base::Bit<uint32_t>(newowner->Class->House);
       if (*this == STRUCT_RADAR) {
         Update_Radar_Spied();
       }
@@ -3155,8 +3156,8 @@ bool BuildingClass::Captured(HouseClass* newowner) {
     ** If it was spied upon by the player who just captured it, clear the
     ** spiedby flag for that house.
     */
-    if (SpiedBy & 1 << newowner->Class->House) {
-      SpiedBy &= ~(1U << newowner->Class->House);
+    if (SpiedBy & base::Bit<uint32_t>(newowner->Class->House)) {
+      SpiedBy &= ~base::Bit<uint32_t>(newowner->Class->House);
     }
 
     /*
@@ -5640,8 +5641,8 @@ void BuildingClass::Remove_Gap_Effect() {
 }
 
 const int16_t* BuildingClass::Overlap_List(bool redraw) const {
-  if ((SpiedBy & 1 << PlayerPtr->Class->House) != 0 && IsSelected &&
-      (*this == STRUCT_BARRACKS || *this == STRUCT_TENT)) {
+  if ((SpiedBy & base::Bit<uint32_t>(PlayerPtr->Class->House)) != 0 &&
+      IsSelected && (*this == STRUCT_BARRACKS || *this == STRUCT_TENT)) {
     static const int16_t _list[] = {-1, 2, (MAP_CELL_W * 1) - 1,
                                     (MAP_CELL_W * 1) + 2, kRefreshEol};
     return _list;

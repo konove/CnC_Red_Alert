@@ -66,7 +66,7 @@ class TestScreen {
 // An 8-bit BMP whose pixel at column x of the bottom-up row y is
 // `first + (y * width) + x`.
 std::vector<std::uint8_t> MakeBmp(int width, int height, std::uint8_t first) {
-  const int stride = (width + 3) & ~3;
+  const int stride = (width + 3) / 4 * 4;
   const std::uint32_t bits_offset = 14 + 40 + (2 * 4);
 
   std::vector<std::uint8_t> bmp;
@@ -75,8 +75,8 @@ std::vector<std::uint8_t> MakeBmp(int width, int height, std::uint8_t first) {
     bmp.push_back(static_cast<std::uint8_t>(v >> 8U));
   };
   const auto put32 = [&bmp](std::uint32_t v) {
-    for (int i = 0; i < 4; ++i) {
-      bmp.push_back(static_cast<std::uint8_t>((v >> (8 * i)) & 0xFFU));
+    for (unsigned shift = 0; shift < 32; shift += 8) {
+      bmp.push_back(static_cast<std::uint8_t>((v >> shift) & 0xFFU));
     }
   };
 

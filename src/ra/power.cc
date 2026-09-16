@@ -172,7 +172,7 @@ void PowerClass::Draw_It(bool complete) {
         ShapeFlags_Type flags = SHAPE_NORMAL;
         const void* remap = nullptr;
 
-        if (FlashTimer.Value() > 1 && ((FlashTimer.Value() % 3) & 0x01) != 0) {
+        if (FlashTimer.Value() > 1 && (FlashTimer.Value() % 3) % 2 != 0) {
           flags = flags | SHAPE_FADING;
           remap = FadingRed;
         }

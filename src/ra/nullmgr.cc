@@ -1329,7 +1329,7 @@ DialStatusType NullModemClass::Dial_Modem(const char* string,
 
   TextButtonClass cancelbtn(
       BUTTON_CANCEL, TXT_CANCEL, kTpfButton,
-      x + ((width - (String_Pixel_Width(Text_String(TXT_CANCEL)) + 16)) >> 1),
+      x + ((width - (String_Pixel_Width(Text_String(TXT_CANCEL)) + 16)) / 2),
       y + height - (FontHeight + FontYSpacing + 4) - 20);
 
   /*------------------------------------------------------------------------
@@ -1527,7 +1527,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
 
   TextButtonClass cancelbtn(
       BUTTON_CANCEL, TXT_CANCEL, kTpfButton,
-      x + ((width - (String_Pixel_Width(Text_String(TXT_CANCEL)) + 16)) >> 1),
+      x + ((width - (String_Pixel_Width(Text_String(TXT_CANCEL)) + 16)) / 2),
       y + height - (FontHeight + FontYSpacing + 4) - 20);
 
   /*------------------------------------------------------------------------
@@ -1975,11 +1975,11 @@ int NullModemClass::Change_IRQ_Priority(int /*irq*/) {
  *                                                                                             *
  * HISTORY: * 8/2/96 3:06PM ST : Documented / Win32 support added *
  *=============================================================================================*/
-int NullModemClass::Get_Modem_Status() {
+uint32_t NullModemClass::Get_Modem_Status() {
   char buffer[81];
 
   // Modem status is a small bit mask (CTS/DSR/RI/CD).
-  int modemstatus = static_cast<int>(SerialPort->Get_Modem_Status());
+  uint32_t modemstatus = SerialPort->Get_Modem_Status();
 
   const int status =
       Send_Modem_Command("AT", '\r', buffer, 81, DEFAULT_TIMEOUT, 1);

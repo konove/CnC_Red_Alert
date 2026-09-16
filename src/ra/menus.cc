@@ -43,6 +43,7 @@
 #include <cctype>
 #include <cstdint>
 
+#include "base/numeric.h"
 #include "ra/compat.h"
 #include "ra/conquer.h"
 #include "ra/control.h"
@@ -107,14 +108,14 @@ static int Select_To_Entry(int selection, const uint32_t enabled_mask,
   // Count through enabled bits until we've passed 'selection' enabled entries.
   int entry_index = 0;
   while (selection) {
-    if (enabled_mask & 1L << (entry_index + start_bit)) {
+    if (enabled_mask & base::Bit<uint32_t>(entry_index + start_bit)) {
       selection--;
     }
     entry_index++;
   }
 
   // Skip any disabled entries at current position.
-  while (!(enabled_mask & 1L << (entry_index + start_bit))) {
+  while (!(enabled_mask & base::Bit<uint32_t>(entry_index + start_bit))) {
     entry_index++;
   }
 
@@ -229,7 +230,7 @@ int Check_Menu(int menu, const char* text[], char* /*unused*/, uint32_t field,
   int newitem = item = menuptr[MSELECTED] % (maxitem + 1); /* find selected */
   int select = -1;                            /* no selection made		*/
   const int menuskip = FontHeight + MenuSkip; /* calc new font height	*/
-  const int halfskip = MenuSkip >> 1;         /* adjustment for menus	*/
+  const int halfskip = MenuSkip / 2;          /* adjustment for menus	*/
 
   const int menuy =
       static_cast<int>(WinY) + menuptr[MENUY]; /* get the absolute */
@@ -243,10 +244,10 @@ int Check_Menu(int menu, const char* text[], char* /*unused*/, uint32_t field,
   **	present. If no keystroke is pending then simple mouse tracking will
   **	be done.
   */
-  int key = 0;
+  uint32_t key = 0;  // Key number with its modifier bits.
   UnknownKey = 0;
   if (Keyboard->Check()) {
-    key = Keyboard->Get() &
+    key = static_cast<uint32_t>(Keyboard->Get()) &
           ~(WWKEY_SHIFT_BIT | WWKEY_ALT_BIT |
             WWKEY_CTRL_BIT); /* mask off all but release bit	*/
   }
@@ -304,7 +305,8 @@ int Check_Menu(int menu, const char* text[], char* /*unused*/, uint32_t field,
                                 mx2, my2)) {
         newitem = (Keyboard->MouseQY - my1) / menuskip;
       } else {
-        UnknownKey = key;  //	Pass the unprocessed button click back.
+        UnknownKey =
+            static_cast<int>(key);  //	Pass the unprocessed button click back.
         break;
       }
       [[fallthrough]];
@@ -333,12 +335,12 @@ int Check_Menu(int menu, const char* text[], char* /*unused*/, uint32_t field,
       for (idx = 0; idx < menuptr[ITEMSHIGH]; idx++) {
         if (toupper(*text[Select_To_Entry(idx, field, index)]) ==
             toupper(KeyboardClass::To_ASCII(
-                static_cast<KeyNumType>(key & 0x0FF)))) {
+                static_cast<KeyNumType>(key & 0xFFU)))) {
           newitem = select = idx;
           break;
         }
       }
-      UnknownKey = key;
+      UnknownKey = static_cast<int>(key);
       break;
   }
 
@@ -422,14 +424,14 @@ int Do_Menu(const char** strings, bool /*unused*/) {
     ptr++;
   }
   length += 7;
-  MenuList[0][ITEMWIDTH] = length >> 3;
+  MenuList[0][ITEMWIDTH] = length / 8;
 
   /*
   **	Adjust the window values to match the size of the
   **	specified menu.
   */
   WindowList[WINDOW_MENU][WINDOWWIDTH] = (MenuList[0][ITEMWIDTH] + 2) * 8;
-  WindowList[WINDOW_MENU][WINDOWX] = (19 - (length >> 4)) * 8;
+  WindowList[WINDOW_MENU][WINDOWX] = (19 - (length / 16)) * 8;
   WindowList[WINDOW_MENU][WINDOWY] =
       174 - (MenuList[0][ITEMSHIGH] * (FontHeight + FontYSpacing));
   WindowList[WINDOW_MENU][WINDOWHEIGHT] =

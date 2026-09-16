@@ -469,7 +469,7 @@ void Show_Who_Was_Responsible() {
         */
       case 9:
         column += 8;
-        column &= 0xfffffff8;
+        column -= column % 8;
         break;
 
       default:
@@ -575,7 +575,7 @@ void Show_Who_Was_Responsible() {
         } else {
           if (ch == 9) {
             column += 7;
-            column &= 0xfffffff8;
+            column -= column % 8;
           }
         }
         break;

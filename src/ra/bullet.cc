@@ -397,7 +397,7 @@ void BulletClass::AI() {
   *but *	they only do so every other game frame (improves game speed and
   *makes *	missiles not so deadly).
   */
-  if (Frame & 0x01 && Class->ROT != 0 && Target_Legal(TarCom)) {
+  if (Frame % 2 != 0 && Class->ROT != 0 && Target_Legal(TarCom)) {
     PrimaryFacing.Set_Desired(Direction256(Coord, As_Coord(TarCom)));
   }
 

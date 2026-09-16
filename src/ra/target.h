@@ -41,7 +41,9 @@
 #define CNC_RED_ALERT_RA_TARGET_H_
 
 #include <bit>
+#include <cstdint>
 
+#include "base/numeric.h"
 #include "ra/abstract.h"
 #include "ra/ccini.h"
 #include "ra/defines.h"
@@ -143,7 +145,7 @@ class xTargetClass {
 
   void Invalidate() {
     Target.Sub.Exponent = RTTI_NONE;
-    Target.Sub.Mantissa = (1 << kTargetMantissaBits) - 1;
+    Target.Sub.Mantissa = base::Bit<uint32_t>(kTargetMantissaBits) - 1;
   }
   [[nodiscard]] bool Is_Valid() const {
     return Target.Sub.Exponent != RTTI_NONE;

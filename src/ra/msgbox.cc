@@ -178,7 +178,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   */
   // DOS BUILD GERMAN BUTTONS NEED TO ONE ON TOP OF THE OTHER  VG 11/6/96
   TextButtonClass button1(BUTTON_1, b1txt, kTpfButton,
-                          x + (numbuttons == 1 ? (width - bwidth) >> 1 : 40),
+                          x + (numbuttons == 1 ? (width - bwidth) / 2 : 40),
                           y + height - (bheight + 30), bwidth);
 
   /*
@@ -193,7 +193,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   */
   TextButtonClass button3(BUTTON_3, b3txt, kTpfButton, 0,
                           y + height - (bheight + 30));
-  button3.X = x + ((width - button3.Width) >> 1);
+  button3.X = x + ((width - button3.Width) / 2);
 
   TextButtonClass* buttonlist = nullptr;
   int curbutton = 0;

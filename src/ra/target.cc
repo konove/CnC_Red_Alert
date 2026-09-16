@@ -64,6 +64,7 @@
 #include "ra/target.h"
 
 #include <cassert>
+#include <cstdint>
 
 #include "ra/abstract.h"
 #include "ra/aircraft.h"
@@ -546,10 +547,10 @@ COORDINATE As_Coord(TARGET target) {
     *target number is *	actually the cell index number.
     */
     if (Is_Target_Cell(target)) {
-      const int v = Target_Value(target);
+      const auto v = static_cast<uint32_t>(Target_Value(target));
 
-      const int x = ((v & 0x0FFF) << 4) + 0x0008;
-      const int y = ((v >> 12 & 0x0FFF) << 4) + 0x0008;
+      const int x = static_cast<int>((v & 0x0FFFU) * 16) + 0x0008;
+      const int y = static_cast<int>(((v >> 12U) & 0x0FFFU) * 16) + 0x0008;
       return XY_Coord(static_cast<LEPTON>(x), static_cast<LEPTON>(y));
     }
 
@@ -811,16 +812,10 @@ ObjectClass* xTargetClass::As_Object() const {
  * HISTORY: * 03/05/1996 JLB : Created. *
  *=============================================================================================*/
 TARGET As_Target(CELL cell) {
-  int x = Cell_X(cell);
-  int y = Cell_Y(cell);
+  const uint32_t x = (static_cast<uint32_t>(Cell_X(cell)) * 16) + 0x0008;
+  const uint32_t y = (static_cast<uint32_t>(Cell_Y(cell)) * 16) + 0x0008;
 
-  x <<= 4;
-  y <<= 4;
-
-  x += 0x0008;
-  y += 0x0008;
-
-  return Build_Target(RTTI_CELL, y << 12 | x);
+  return Build_Target(RTTI_CELL, static_cast<int>(y << 12U | x));
 }
 
 /***********************************************************************************************
@@ -839,13 +834,10 @@ TARGET As_Target(CELL cell) {
  * HISTORY: * 03/05/1996 JLB : Created. *
  *=============================================================================================*/
 TARGET As_Target(COORDINATE coord) {
-  int x = Coord_X(coord);
-  int y = Coord_Y(coord);
+  const uint32_t x = Coord_X(coord) / 16;
+  const uint32_t y = Coord_Y(coord) / 16;
 
-  x >>= 4;
-  y >>= 4;
-
-  return Build_Target(RTTI_CELL, y << 12 | x);
+  return Build_Target(RTTI_CELL, static_cast<int>(y << 12U | x));
 }
 
 /***********************************************************************************************

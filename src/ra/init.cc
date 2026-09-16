@@ -1649,12 +1649,13 @@ uint32_t Obfuscate(const char* string) {
   **	process also forces the key phrase to be an even multiple of four.
   **	This is necessary to support the cypher process that occurs later.
   */
-  if (length < 16 || length & 0x03) {
-    const int maxlen = std::max((length + 3) & 0x00FC, 16);
+  if (length < 16 || length % 4 != 0) {
+    const int maxlen = std::max(((length + 3) / 4) * 4, 16);
     int index = 0;
     for (index = length; index < maxlen; index++) {
-      buffer[index] = static_cast<char>(
-          'A' + ((('?' ^ buffer[index - length]) + index) % 26));
+      const int mixed = static_cast<uint8_t>('?') ^
+                        static_cast<uint8_t>(buffer[index - length]);
+      buffer[index] = static_cast<char>('A' + ((mixed + index) % 26));
     }
     length = index;
     buffer[length] = '\0';
@@ -1664,13 +1665,13 @@ uint32_t Obfuscate(const char* string) {
   **	Transform the buffer into a number. This transformation is character
   **	order dependant.
   */
-  auto code = static_cast<int32_t>(CrcEngine::Compute(buffer));
+  uint32_t code = CrcEngine::Compute(buffer);
 
   /*
   **	Record a copy of this initial transformation to be used in a later
   **	self referential transformation.
   */
-  const int32_t copy = code;
+  const uint32_t copy = code;
 
   /*
   **	Reverse the character string and combine with the previous
@@ -1696,9 +1697,10 @@ uint32_t Obfuscate(const char* string) {
   for (int index = 0; index < length; index++) {
     code ^= static_cast<unsigned char>(buffer[index]);
     const auto temp = static_cast<unsigned char>(code);
-    buffer[index] = static_cast<char>(buffer[index] ^ temp);
+    buffer[index] =
+        static_cast<char>(static_cast<uint8_t>(buffer[index]) ^ temp);
     code >>= 8;
-    code = static_cast<int>(code | static_cast<int32_t>(temp) << 24);
+    code |= uint32_t{temp} << 24;
   }
 
   /*
@@ -1713,10 +1715,11 @@ uint32_t Obfuscate(const char* string) {
     static const unsigned char _addbits[] = {0x10, 0x00, 0x00, 0x80,
                                              0x40, 0x00, 0x00, 0x04};
 
-    buffer[index] = static_cast<char>(buffer[index] |
+    buffer[index] = static_cast<char>(static_cast<uint8_t>(buffer[index]) |
                                       _addbits[index % std::ssize(_addbits)]);
     buffer[index] = static_cast<char>(
-        buffer[index] & ~_lossbits[index % std::ssize(_lossbits)]);
+        static_cast<uint8_t>(buffer[index]) &
+        static_cast<uint8_t>(~_lossbits[index % std::ssize(_lossbits)]));
   }
 
   /*
@@ -1730,38 +1733,39 @@ uint32_t Obfuscate(const char* string) {
   *hackers.
   */
   for (int index = 0; index < length; index += 4) {
-    // The original read these bytes as signed char. Reading them as unsigned
-    // yields the same result: the transformation below uses only +, * and ^,
-    // whose low 8 bits depend only on the low 8 bits of their operands, and
-    // only those low 8 bits are stored back into the buffer.
-    const int16_t key1 = static_cast<unsigned char>(buffer[index]);
-    const int16_t key2 = static_cast<unsigned char>(buffer[index + 1]);
-    const int16_t key3 = static_cast<unsigned char>(buffer[index + 2]);
-    const int16_t key4 = static_cast<unsigned char>(buffer[index + 3]);
-    int16_t val1 = key1;
-    int16_t val2 = key2;
-    int16_t val3 = key3;
-    int16_t val4 = key4;
+    // The original read these bytes as signed char and computed in signed
+    // 16-bit values. Unsigned ones give the same result: the transformation
+    // below uses only +, * and ^, whose low 8 bits depend only on the low 8
+    // bits of their operands, and only those low 8 bits are stored back into
+    // the buffer.
+    const uint16_t key1 = static_cast<unsigned char>(buffer[index]);
+    const uint16_t key2 = static_cast<unsigned char>(buffer[index + 1]);
+    const uint16_t key3 = static_cast<unsigned char>(buffer[index + 2]);
+    const uint16_t key4 = static_cast<unsigned char>(buffer[index + 3]);
+    uint16_t val1 = key1;
+    uint16_t val2 = key2;
+    uint16_t val3 = key3;
+    uint16_t val4 = key4;
 
-    val1 = static_cast<int16_t>(val1 * key1);
-    val2 = static_cast<int16_t>(val2 + key2);
-    val3 = static_cast<int16_t>(val3 + key3);
-    val4 = static_cast<int16_t>(val4 * key4);
+    val1 = static_cast<uint16_t>(val1 * key1);
+    val2 = static_cast<uint16_t>(val2 + key2);
+    val3 = static_cast<uint16_t>(val3 + key3);
+    val4 = static_cast<uint16_t>(val4 * key4);
 
-    const int16_t s3 = val3;
-    val3 = static_cast<int16_t>(val3 ^ val1);
-    val3 = static_cast<int16_t>(val3 * key1);
-    const int16_t s2 = val2;
-    val2 = static_cast<int16_t>(val2 ^ val4);
-    val2 = static_cast<int16_t>(val2 + val3);
-    val2 = static_cast<int16_t>(val2 * key3);
-    val3 = static_cast<int16_t>(val3 + val2);
+    const uint16_t s3 = val3;
+    val3 = static_cast<uint16_t>(val3 ^ val1);
+    val3 = static_cast<uint16_t>(val3 * key1);
+    const uint16_t s2 = val2;
+    val2 = static_cast<uint16_t>(val2 ^ val4);
+    val2 = static_cast<uint16_t>(val2 + val3);
+    val2 = static_cast<uint16_t>(val2 * key3);
+    val3 = static_cast<uint16_t>(val3 + val2);
 
-    val1 = static_cast<int16_t>(val1 ^ val2);
-    val4 = static_cast<int16_t>(val4 ^ val3);
+    val1 = static_cast<uint16_t>(val1 ^ val2);
+    val4 = static_cast<uint16_t>(val4 ^ val3);
 
-    val2 = static_cast<int16_t>(val2 ^ s3);
-    val3 = static_cast<int16_t>(val3 ^ s2);
+    val2 = static_cast<uint16_t>(val2 ^ s3);
+    val3 = static_cast<uint16_t>(val3 ^ s2);
 
     buffer[index] = static_cast<char>(val1);
     buffer[index + 1] = static_cast<char>(val2);
@@ -1773,12 +1777,7 @@ uint32_t Obfuscate(const char* string) {
   **	Convert this final vector into a cypher key code to be
   **	returned by this routine.
   */
-  code = static_cast<int32_t>(CrcEngine::Compute(buffer));
-
-  /*
-  **	Return the final code value.
-  */
-  return static_cast<uint32_t>(code);
+  return CrcEngine::Compute(buffer);
 }
 
 /***************************************************************************
@@ -1946,35 +1945,24 @@ static void Init_Color_Remaps() {
   for (int color = 0; color < 256; color++) {
     GreyScheme.RemapTable[color] = static_cast<unsigned char>(color);
   }
+  // The palette index in the low byte of the pixel read from the grey row.
+  const auto GreyPixel = [](int x) {
+    return static_cast<uint8_t>(HidPage.Get_Pixel(x, PCOLOR_GREY));
+  };
   for (int index = 0; index < 6; index++) {
-    GreyScheme.FontRemap[10 + index] =
-        HidPage.Get_Pixel(9 + index, PCOLOR_GREY) & 0x00FF;
+    GreyScheme.FontRemap[10 + index] = GreyPixel(9 + index);
   }
-  GreyScheme.BrightColor = HidPage.Get_Pixel(3, PCOLOR_GREY) & 0x00FF;
-  GreyScheme.Color = HidPage.Get_Pixel(7, PCOLOR_GREY) & 0x00FF;
+  GreyScheme.BrightColor = GreyPixel(3);
+  GreyScheme.Color = GreyPixel(7);
 
-  GreyScheme.Shadow =
-      ColorRemaps[PCOLOR_GREY]
-          .RemapTable[HidPage.Get_Pixel(15, PCOLOR_GREY) & 0x00FF];
-  GreyScheme.Background =
-      ColorRemaps[PCOLOR_GREY]
-          .RemapTable[HidPage.Get_Pixel(14, PCOLOR_GREY) & 0x00FF];
-  GreyScheme.Corners =
-      ColorRemaps[PCOLOR_GREY]
-          .RemapTable[HidPage.Get_Pixel(13, PCOLOR_GREY) & 0x00FF];
-  GreyScheme.Highlight =
-      ColorRemaps[PCOLOR_GREY]
-          .RemapTable[HidPage.Get_Pixel(9, PCOLOR_GREY) & 0x00FF];
-  GreyScheme.Bright =
-      ColorRemaps[PCOLOR_GREY]
-          .RemapTable[HidPage.Get_Pixel(5, PCOLOR_GREY) & 0x00FF];
-  GreyScheme.Underline =
-      ColorRemaps[PCOLOR_GREY]
-          .RemapTable[HidPage.Get_Pixel(5, PCOLOR_GREY) & 0x00FF];
-  GreyScheme.Bar = ColorRemaps[PCOLOR_GREY]
-                       .RemapTable[HidPage.Get_Pixel(11, PCOLOR_GREY) & 0x00FF];
-  GreyScheme.Box = ColorRemaps[PCOLOR_GREY]
-                       .RemapTable[HidPage.Get_Pixel(11, PCOLOR_GREY) & 0x00FF];
+  GreyScheme.Shadow = ColorRemaps[PCOLOR_GREY].RemapTable[GreyPixel(15)];
+  GreyScheme.Background = ColorRemaps[PCOLOR_GREY].RemapTable[GreyPixel(14)];
+  GreyScheme.Corners = ColorRemaps[PCOLOR_GREY].RemapTable[GreyPixel(13)];
+  GreyScheme.Highlight = ColorRemaps[PCOLOR_GREY].RemapTable[GreyPixel(9)];
+  GreyScheme.Bright = ColorRemaps[PCOLOR_GREY].RemapTable[GreyPixel(5)];
+  GreyScheme.Underline = ColorRemaps[PCOLOR_GREY].RemapTable[GreyPixel(5)];
+  GreyScheme.Bar = ColorRemaps[PCOLOR_GREY].RemapTable[GreyPixel(11)];
+  GreyScheme.Box = ColorRemaps[PCOLOR_GREY].RemapTable[GreyPixel(11)];
 
   /*
   ** Set up the metallic remap table for the font that prints over the tabs

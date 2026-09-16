@@ -1320,7 +1320,8 @@ void TechnoClass::Draw_It(int x, int y, WindowNumberType window) const {
       // Lower left corner.
       draw_window.Draw_Line(x - lx, y + ly, x - lx + dx, y + ly, WHITE);
       draw_window.Draw_Line(x - lx, y + ly, x - lx, y + ly - dy, WHITE);
-      if (House->Is_Ally(PlayerPtr) || SpiedBy & 1 << PlayerPtr->Class->House) {
+      if (House->Is_Ally(PlayerPtr) ||
+          SpiedBy & base::Bit<uint32_t>(PlayerPtr->Class->House)) {
         Draw_Pips(x - lx + 5, y + ly - 3, window);
       }
     }
@@ -1596,7 +1597,7 @@ fixed TechnoClass::Area_Modify(CELL cell) const {
  *   10/05/1995 JLB : Gives greater weight to designated enemy house targets. *
  *   02/16/1996 JLB : Added additional threat checks. *
  *=============================================================================================*/
-bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
+bool TechnoClass::Evaluate_Object(ThreatType method, uint32_t mask, int range,
                                   const TechnoClass* object, int& value,
                                   int zone) const {
   assert(IsActive);
@@ -1691,7 +1692,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
   *mask *	value.
   */
   const RTTIType otype = object->What_Am_I();
-  if (!(1 << otype & mask)) {
+  if ((base::Bit<uint32_t>(otype) & mask) == 0) {
     BEnd(BENCH_EVAL_OBJECT);
     return false;  // Mask failure.
   }
@@ -1955,7 +1956,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
  * HISTORY: * 06/19/1995 JLB : Created. * 09/22/1995 JLB : Zone checking
  *enabled.                                                   *
  *=============================================================================================*/
-bool TechnoClass::Evaluate_Cell(ThreatType method, int mask, CELL cell,
+bool TechnoClass::Evaluate_Cell(ThreatType method, uint32_t mask, CELL cell,
                                 int range, const TechnoClass** object,
                                 int& value, int zone) const {
   assert(IsActive);
@@ -2198,32 +2199,33 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method)  // const
   **	Build a quick elimination mask. If the RTTI of the object doesn't
   **	qualify with this mask, then we KNOW that it shouldn't be considered.
   */
-  int mask = 0;
+  uint32_t mask = 0;
   if (method & THREAT_CIVILIANS) {
-    mask |= 1 << RTTI_BUILDING | 1 << RTTI_INFANTRY | 1 << RTTI_UNIT;
+    mask |= base::Bit<uint32_t>(RTTI_BUILDING) |
+            base::Bit<uint32_t>(RTTI_INFANTRY) | base::Bit<uint32_t>(RTTI_UNIT);
   }
   if (method & THREAT_AIR) {
-    mask |= 1 << RTTI_AIRCRAFT;
+    mask |= base::Bit<uint32_t>(RTTI_AIRCRAFT);
   }
   if (method & THREAT_CAPTURE) {
-    mask |= 1 << RTTI_BUILDING;
+    mask |= base::Bit<uint32_t>(RTTI_BUILDING);
   }
   if (method &
       (THREAT_CIVILIANS | THREAT_BUILDINGS | THREAT_FACTORIES | THREAT_POWER |
        THREAT_FAKES | THREAT_BASE_DEFENSE | THREAT_TIBERIUM)) {
-    mask |= 1 << RTTI_BUILDING;
+    mask |= base::Bit<uint32_t>(RTTI_BUILDING);
   }
   if (method & (THREAT_CIVILIANS | THREAT_INFANTRY | THREAT_BASE_DEFENSE)) {
-    mask |= 1 << RTTI_INFANTRY;
+    mask |= base::Bit<uint32_t>(RTTI_INFANTRY);
   }
   if (method & THREAT_VEHICLES) {
-    mask |= 1 << RTTI_UNIT;
+    mask |= base::Bit<uint32_t>(RTTI_UNIT);
   }
   if (method & THREAT_BASE_DEFENSE) {
-    mask |= 1 << RTTI_BUILDING;
+    mask |= base::Bit<uint32_t>(RTTI_BUILDING);
   }
   if (method & THREAT_BOATS) {
-    mask |= 1 << RTTI_VESSEL;
+    mask |= base::Bit<uint32_t>(RTTI_VESSEL);
   }
 
   /*
@@ -2274,7 +2276,7 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method)  // const
     **	valid target. A landed aircraft is considered a vehicle.
     */
     if (method & THREAT_VEHICLES) {
-      mask |= 1 << RTTI_AIRCRAFT;
+      mask |= base::Bit<uint32_t>(RTTI_AIRCRAFT);
     }
 
     /*
@@ -2412,7 +2414,7 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method)  // const
     *top map layer *	is NOT scanned since that layer will probably contain
     *more bullets and animations *	than aircraft.
     */
-    if (mask & 1L << RTTI_AIRCRAFT) {
+    if (mask & base::Bit<uint32_t>(RTTI_AIRCRAFT)) {
       for (int index = 0; index < Aircraft.Count(); index++) {
         const TechnoClass* object = Aircraft.Ptr(index);
 
@@ -2431,7 +2433,7 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method)  // const
     **	valid target. A landed aircraft is considered a vehicle.
     */
     if (method & THREAT_VEHICLES) {
-      mask |= 1 << RTTI_AIRCRAFT;
+      mask |= base::Bit<uint32_t>(RTTI_AIRCRAFT);
     }
 
     /*
@@ -3163,7 +3165,7 @@ bool TechnoClass::Electric_Zap(TARGET target, int which,
             default:
               break;
           }
-          facing &= 7;
+          facing = (facing + 8) % 8;  // Wrap -1 and 8 back onto 0..7.
         }
 
         /*
@@ -5034,9 +5036,7 @@ void TechnoClass::Base_Is_Attacked(TechnoClass* enemy) {
     for (int lp = 0; lp < count - 1; lp++) {
       for (int lp2 = lp + 1; lp2 < count; lp2++) {
         if (value[lp] < value[lp2]) {
-          value[lp] ^= value[lp2];
-          value[lp2] ^= value[lp];
-          value[lp] ^= value[lp2];
+          std::swap(value[lp], value[lp2]);
 
           FootClass* temp = defender[lp];
           defender[lp] = defender[lp2];
@@ -5773,7 +5773,7 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) const {
   ** factory-producing item or whatever.
   */
   if (What_Am_I() == RTTI_BUILDING) {
-    unsigned spiedby = SpiedBy & (1U << PlayerPtr->Class->House);
+    unsigned spiedby = SpiedBy & base::Bit<uint32_t>(PlayerPtr->Class->House);
 
     /*
     ** If it's an ore refinery or other such storage-capable building,
@@ -5784,7 +5784,8 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) const {
       for (int index = 0; index < Buildings.Count(); index++) {
         const BuildingClass* building = Buildings.Ptr(index);
         if (building->House == House && building->Class->Capacity) {
-          spiedby |= building->SpiedBy & 1 << PlayerPtr->Class->House;
+          spiedby |=
+              building->SpiedBy & base::Bit<uint32_t>(PlayerPtr->Class->House);
         }
       }
     }

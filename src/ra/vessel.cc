@@ -386,7 +386,8 @@ int VesselClass::Shape_Number() const {
   /*
   **	For eight facing units, adjust the facing number accordingly.
   */
-  int shapenum = BodyShape[static_cast<base::ssize>(Dir_To_16(PrimaryFacing)) * 2] >> 1;
+  int shapenum =
+      BodyShape[static_cast<base::ssize>(Dir_To_16(PrimaryFacing)) * 2] / 2;
 
   /*
   **	Special case code for transport. The north/south facing is in frame
@@ -1141,7 +1142,7 @@ FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
     diff = std::abs(diff);
 
     if (weapon->Bullet->ROT != 0) {
-      diff >>= 2;
+      diff /= 4;
     }
     if (diff > 8) {
       return FIRE_FACING;

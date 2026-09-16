@@ -180,7 +180,7 @@ class NullModemClass : public ConnManClass {
   static void Remove_Abort_Modem();
 
   static int Change_IRQ_Priority(int irq);
-  static int Get_Modem_Status();
+  static uint32_t Get_Modem_Status();
   static int Send_Modem_Command(const char* command, char terminator,
                                 char* buffer, int buflen, int delay,
                                 int retries);

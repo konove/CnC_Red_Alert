@@ -43,6 +43,7 @@
 #include <cstdint>
 
 #include "absl/base/attributes.h"
+#include "base/numeric.h"
 #include "base/types.h"
 #include "ra/ccptr.h"
 #include "ra/config.h"
@@ -270,7 +271,7 @@ class CellClass {
                                       bool ignorevehicles, int zone = -1,
                                       MZoneType check = MZONE_NORMAL) const;
   [[nodiscard]] bool Is_Spot_Free(int spot_index) const {
-    return (Flag.Composite & 1 << spot_index) == 0;
+    return (Flag.Composite & base::Bit<uint8_t>(spot_index)) == 0;
   }
   [[nodiscard]] int Cell_Color(bool override = false) const;
   [[nodiscard]] int Clear_Icon() const;

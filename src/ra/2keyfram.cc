@@ -62,7 +62,7 @@ struct KeyFrameHeaderType {
   uint16_t width;
   uint16_t height;
   uint16_t largest_frame_size;
-  int16_t flags;
+  uint16_t flags;
 };
 
 // Byte offset of the frame offset table, which follows the header.
@@ -102,9 +102,9 @@ void* Build_Frame(const void* dataptr, const uint16_t framenumber,
 
   // get offset into data
   const auto* ptr = static_cast<const char*>(Add_Long_To_Pointer(
-      dataptr, (int32_t{framenumber} << 3) + kKeyFrameHeaderSize));
+      dataptr, (base::ssize{framenumber} * 8) + kKeyFrameHeaderSize));
   Mem_Copy(ptr, &offset[0], 12);
-  const char frameflags = static_cast<char>(offset[0] >> 24);
+  const auto frameflags = static_cast<uint8_t>(offset[0] >> 24);
 
   if (frameflags & KF_KEYFRAME) {
     ptr = static_cast<const char*>(
@@ -122,7 +122,7 @@ void* Build_Frame(const void* dataptr, const uint16_t framenumber,
       currframe = static_cast<uint16_t>(offset[1]);
 
       ptr = static_cast<const char*>(Add_Long_To_Pointer(
-          dataptr, (int32_t{currframe} << 3) + kKeyFrameHeaderSize));
+          dataptr, (base::ssize{currframe} * 8) + kKeyFrameHeaderSize));
       Mem_Copy(ptr, &offset[0], kSubFrameOffs * sizeof(uint32_t));
     }
 
@@ -165,9 +165,8 @@ void* Build_Frame(const void* dataptr, const uint16_t framenumber,
         subframe += 2;
 
         if (subframe >= kSubFrameOffs - 1 && currframe <= framenumber) {
-          Mem_Copy(Add_Long_To_Pointer(dataptr,
-                                       (int32_t{currframe} << 3) +
-                                           kKeyFrameHeaderSize),
+          Mem_Copy(Add_Long_To_Pointer(dataptr, (base::ssize{currframe} * 8) +
+                                                    kKeyFrameHeaderSize),
                    &offset[0], kSubFrameOffs * sizeof(uint32_t));
           subframe = 0;
         }

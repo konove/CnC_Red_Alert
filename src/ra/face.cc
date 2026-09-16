@@ -41,6 +41,8 @@
 
 #include "ra/face.h"
 
+#include <cstdint>
+
 #include "absl/log/check.h"
 
 /***********************************************************************************************
@@ -68,7 +70,7 @@
  * HISTORY: * 03/08/1996 JLB : Created. *
  *=============================================================================================*/
 DirType Desired_Facing8(int x1, int y1, int x2, int y2) {
-  int index = 0;  // Facing composite value.
+  uint32_t index = 0;  // Facing composite value.
 
   /*
   **	Figure the absolute X difference. This determines
@@ -119,13 +121,13 @@ DirType Desired_Facing8(int x1, int y1, int x2, int y2) {
   **	Determine if the facing is closer to the Y axis or
   **	the X axis.
   */
-  int adder = index & 0x0040;
+  uint32_t adder = index & 0x0040;
   if (xdiff == bigger) {
     adder ^= 0x0040;
   }
   index += adder;
 
-  return AsDirection(index);
+  return AsDirection(static_cast<int>(index));
 }
 
 /***********************************************************************************************
@@ -152,7 +154,7 @@ DirType Desired_Facing8(int x1, int y1, int x2, int y2) {
  * HISTORY: * 03/08/1996 JLB : Created. *
  *=============================================================================================*/
 DirType Desired_Facing256(int srcx, int srcy, int dstx, int dsty) {
-  int composite = 0;  // Facing built from intermediate calculations.
+  uint32_t composite = 0;  // Facing built from intermediate calculations.
 
   /*
   **	Fetch the absolute X difference. This also gives a clue as
@@ -212,21 +214,21 @@ DirType Desired_Facing256(int srcx, int srcy, int dstx, int dsty) {
   **	to the X or Y axis, we must make an adjustment toward the
   **	subsequent quadrant if necessary.
   */
-  int adder = composite & 0x0040;
+  uint32_t adder = composite & 0x0040;
   if (xdiff > ydiff) {
     adder ^= 0x0040;
   }
   if (adder) {
-    frac = adder - frac - 1;
+    frac = static_cast<int>(adder) - frac - 1;
   }
 
   /*
   **	Integrate the fraction value into the quadrant.
   */
-  composite += frac;
+  composite += static_cast<uint32_t>(frac);
 
   /*
   **	Return with the final facing value.
   */
-  return AsDirection(composite);
+  return AsDirection(static_cast<int>(composite));
 }

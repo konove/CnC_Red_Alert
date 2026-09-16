@@ -208,8 +208,8 @@ void LogicClass::Debug_Dump(MonoClass* mono) {
       char str[2];
       int index = 0;
 
-      index |= (graph >= row) ? 0x01 : 0x00;
-      index |= (graph >= row + 1) ? 0x02 : 0x00;
+      index += (graph >= row) ? 1 : 0;
+      index += (graph >= row + 1) ? 2 : 0;
 
       str[1] = '\0';
       str[0] = static_cast<char>(_barchar[index]);

@@ -376,7 +376,7 @@ const char* Fetch_Password(int caption, int message, int btext) {
   /*
   **	Create the "ok" and password edit buttons.
   */
-  TextButtonClass button1(1, btext, kTpfButton, x + ((width - bwidth) >> 1),
+  TextButtonClass button1(1, btext, kTpfButton, x + ((width - bwidth) / 2),
                           y + height - (bheight + 10), bwidth);
 
   static char pbuffer[45];

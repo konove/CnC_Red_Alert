@@ -395,7 +395,7 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
       **	Verify that the structure has been built.
       */
       case TEVENT_BUILDING_EXISTS:
-        if ((hptr->ActiveBScan & 1 << Data.Structure) == 0) {
+        if ((hptr->ActiveBScan & ScanBit(Data.Structure)) == 0) {
           return false;
         }
         //				if (hptr->Get_Quantity(Data.Structure)

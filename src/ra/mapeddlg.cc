@@ -2045,7 +2045,7 @@ int MapEditClass::Load_Scenario() {
                           MixArchive::Retrieve("EBTN-DN.SHP"));
     for (const HousesType h : magic_enum::enum_values<HousesType>()) {
       allies.Add_Item(HouseTypeClass::As_Reference(h).IniName);
-      if (hdata[house].Allies & (1L << h)) {
+      if (hdata[house].Allies & base::Bit<uint32_t>(h)) {
         allies.Check_Item(h, true);
       }
     }
@@ -2140,7 +2140,7 @@ int MapEditClass::Load_Scenario() {
         sourcebtn.Set_Selected_Index(hstatic->Edge);
         maxunit.Set_Value(hstatic->MaxUnit + hstatic->MaxInfantry);
         for (const HousesType h : magic_enum::enum_values<HousesType>()) {
-          allies.Check_Item(h, (hstatic->Allies & (1L << h)) != 0);
+          allies.Check_Item(h, (hstatic->Allies & base::Bit<uint32_t>(h)) != 0);
         }
         smarties.Set_Value(hstatic->IQ);
 

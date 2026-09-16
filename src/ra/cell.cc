@@ -96,6 +96,7 @@
 #include <iterator>
 #include <utility>
 
+#include "base/numeric.h"
 #include "config.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/anim.h"
@@ -1391,19 +1392,19 @@ void CellClass::Wall_Update() {
 
     if (newcell.Overlay != OVERLAY_NONE &&
         OverlayTypeClass::As_Reference(newcell.Overlay).IsWall) {
-      int icon = 0;
+      uint32_t icon = 0;
 
       /*
       **	Build the icon number according to walls located in the adjacent
       **	cells.
       */
-      for (unsigned i = 0; i < 4; i++) {
+      for (int i = 0; i < 4; i++) {
         if (newcell.Adjacent_Cell(_offsets[i]).Overlay == newcell.Overlay) {
-          icon |= 1 << i;
+          icon |= base::Bit<uint32_t>(i);
         }
       }
       newcell.OverlayData =
-          static_cast<unsigned char>((newcell.OverlayData & 0xFFF0) | icon);
+          static_cast<unsigned char>((newcell.OverlayData & 0xF0U) | icon);
 
       /*
       **	Handle special cases for the incomplete damaged wall sets. If a
@@ -1605,10 +1606,10 @@ int CellClass::Spot_Index(COORDINATE coord) {
   */
   int index = 0;
   if (Coord_X(rel) > 0x80) {
-    index |= 0x01;
+    index += 1;
   }
   if (Coord_Y(rel) > 0x80) {
-    index |= 0x02;
+    index += 2;
   }
   return index + 1;
 }
@@ -1725,7 +1726,7 @@ int CellClass::Clear_Icon() const {
   assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
   const CELL cell = Cell_Number();
-  return (Cell_X(cell) & 0x03) | (Cell_Y(cell) & 0x03) << 2;
+  return (Cell_X(cell) % 4) + ((Cell_Y(cell) % 4) * 4);
   //	return((cell & 0x03) | ((unsigned(cell)>>5) & 0x0C));
 }
 
@@ -2283,8 +2284,9 @@ bool CellClass::Goodie_Check(FootClass* object) {
           if (utype != UNIT_MCV || Session.Options.Bases) {
             utp = &UnitTypeClass::As_Reference(utype);
             if (utp->IsCrateGoodie &&
-                utp->Ownable &
-                    1 << HouseClass::As_Pointer(object->Owner())->ActLike) {
+                (utp->Ownable &
+                 base::Bit<uint32_t>(
+                     HouseClass::As_Pointer(object->Owner())->ActLike)) != 0) {
               break;
             }
             utp = nullptr;
@@ -2665,12 +2667,12 @@ bool CellClass::Is_Clear_To_Move(SpeedType loco, bool ignoreinfantry,
   **	Check the occupy bits for passable legality. If ignore infantry is true,
   *then *	don't consider infnatry.
   */
-  int composite = Flag.Composite;
+  uint32_t composite = Flag.Composite;
   if (ignoreinfantry) {
-    composite &= 0xE0;  // Drop the infantry occupation bits.
+    composite &= 0xE0U;  // Drop the infantry occupation bits.
   }
   if (ignorevehicles) {
-    composite &= 0x5F;  // Drop the vehicle/building bit.
+    composite &= 0x5FU;  // Drop the vehicle/building bit.
   }
   if (composite != 0) {
     return false;

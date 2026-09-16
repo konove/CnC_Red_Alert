@@ -604,7 +604,7 @@ void Simple_Text_Print(const char* text, int x, int y,
   if (text && *text) {
     switch (flag & (TPF_CENTER | TPF_RIGHT)) {
       case TPF_CENTER:
-        x -= String_Pixel_Width(text) >> 1;
+        x -= String_Pixel_Width(text) / 2;
         break;
 
       case TPF_RIGHT:

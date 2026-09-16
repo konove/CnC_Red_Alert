@@ -1659,7 +1659,7 @@ void HouseClass::Super_Weapon_Handler() {
   **	being destroyed is a good example of this.
   */
   if (SuperWeapon[SPC_SONAR_PULSE].Is_Present()) {
-    const unsigned usspy = 1U << Class->House;
+    const auto usspy = base::Bit<uint32_t>(Class->House);
     bool present = false;
     bool powered = false;
     for (int q = 0; q < Buildings.Count() && !powered; q++) {
@@ -2085,7 +2085,7 @@ bool HouseClass::Is_Ally(HousesType house) const {
   CHECK_EQ(Houses.ID(this), ID);
 
   if (house != HOUSE_NONE) {
-    return (1 << house & Allies) != 0;
+    return (base::Bit<uint32_t>(house) & Allies) != 0;
   }
   return false;
 }
@@ -2157,7 +2157,7 @@ void HouseClass::Make_Ally(HousesType house) {
   CHECK_EQ(Houses.ID(this), ID);
 
   if (Is_Allowed_To_Ally(house)) {
-    Allies |= 1L << house;
+    Allies |= base::Bit<uint32_t>(house);
 
     /*
     **	Don't consider the newfound ally to be an enemy -- of course.
@@ -2381,10 +2381,12 @@ void HouseClass::Adjust_Threat(int region, int threat) {
   static const int _val[] = {
       -kMapRegionWidth - 1, -kMapRegionWidth, -kMapRegionWidth + 1, -1, 0, 1,
       kMapRegionWidth - 1,  kMapRegionWidth,  kMapRegionWidth + 1};
-  static const int _thr[] = {2, 1, 2, 1, 0, 1, 2, 1, 2};
+  // Divisor for each neighbor: a quarter for the corners, half for the
+  // edges, the full threat for the center.
+  static const int _div[] = {4, 2, 4, 2, 1, 2, 4, 2, 4};
   bool neg = false;
   const int* val = &_val[0];
-  const int* thr = &_thr[0];
+  const int* div = &_div[0];
 
   if (threat < 0) {
     threat = -threat;
@@ -2394,9 +2396,9 @@ void HouseClass::Adjust_Threat(int region, int threat) {
   }
 
   for (int lp = 0; lp < 9; lp++) {
-    Regions[region + *val].Adjust_Threat(threat >> *thr, neg);
+    Regions[region + *val].Adjust_Threat(threat / *div, neg);
     val++;
-    thr++;
+    div++;
   }
 }
 
@@ -3214,7 +3216,7 @@ void HouseClass::Detach(TARGET target, bool /*unused*/) {
 bool HouseClass::Does_Enemy_Building_Exist(StructType btype) const {
   CHECK_EQ(Houses.ID(this), ID);
 
-  uint64_t bflag = uint64_t{1} << btype;
+  const auto bflag = ScanBit(btype);
   return std::ranges::any_of(
       magic_enum::enum_values<HousesType>(), [&](HousesType index) {
         const HouseClass* house = As_Pointer(index);
@@ -6241,7 +6243,7 @@ void HouseClass::Tracking_Add(const TechnoClass* techno) {
       building =
           dynamic_cast<const BuildingTypeClass&>(techno->Class_Of()).Type;
       BQuantity[building]++;
-      BScan |= 1L << building;
+      BScan |= ScanBit(building);
       if (Session.Type == GAME_INTERNET) {
         BuildingTotals->Increment_Unit_Total(techno->Class_Of().ID);
       }
@@ -6252,7 +6254,7 @@ void HouseClass::Tracking_Add(const TechnoClass* techno) {
       aircraft =
           dynamic_cast<const AircraftTypeClass&>(techno->Class_Of()).Type;
       AQuantity[aircraft]++;
-      AScan |= 1L << aircraft;
+      AScan |= ScanBit(aircraft);
       if (Session.Type == GAME_INTERNET) {
         AircraftTotals->Increment_Unit_Total(techno->Class_Of().ID);
       }
@@ -6273,7 +6275,7 @@ void HouseClass::Tracking_Add(const TechnoClass* techno) {
             Session.Type == GAME_INTERNET) {
           InfantryTotals->Increment_Unit_Total(techno->Class_Of().ID);
         }
-        IScan |= 1L << infantry;
+        IScan |= ScanBit(infantry);
       }
       break;
 
@@ -6285,7 +6287,7 @@ void HouseClass::Tracking_Add(const TechnoClass* techno) {
         quant -= kOriginalUnitCount;
       }
       UQuantity[quant]++;
-      UScan |= 1L << unit;
+      UScan |= ScanBit(unit);
       if (Session.Type == GAME_INTERNET) {
         UnitTotals->Increment_Unit_Total(techno->Class_Of().ID);
       }
@@ -6299,7 +6301,7 @@ void HouseClass::Tracking_Add(const TechnoClass* techno) {
         quant -= kOriginalVesselCount;
       }
       VQuantity[quant]++;
-      VScan |= 1L << vessel;
+      VScan |= ScanBit(vessel);
       if (Session.Type == GAME_INTERNET) {
         VesselTotals->Increment_Unit_Total(techno->Class_Of().ID);
       }
@@ -6566,58 +6568,58 @@ void HouseClass::Recalc_Attributes() {
   */
   for (int index = 0; index < Units.Count(); index++) {
     const UnitClass* unit = Units.Ptr(index);
-    unit->House->UScan |= 1L << unit->Class->Type;
+    unit->House->UScan |= ScanBit(unit->Class->Type);
     if ((unit->IsLocked &&
          (Session.Type != GAME_NORMAL || !unit->House->IsHuman ||
           unit->IsDiscoveredByPlayer)) &&
         (!unit->IsInLimbo)) {
-      unit->House->ActiveUScan |= 1L << unit->Class->Type;
+      unit->House->ActiveUScan |= ScanBit(unit->Class->Type);
     }
   }
   for (int index = 0; index < Infantry.Count(); index++) {
     const InfantryClass* infantry = Infantry.Ptr(index);
-    infantry->House->IScan |= 1L << infantry->Class->Type;
+    infantry->House->IScan |= ScanBit(infantry->Class->Type);
     if ((infantry->IsLocked &&
          (Session.Type != GAME_NORMAL || !infantry->House->IsHuman ||
           infantry->IsDiscoveredByPlayer)) &&
         (!infantry->IsInLimbo)) {
-      infantry->House->ActiveIScan |= 1L << infantry->Class->Type;
-      infantry->House->OldIScan |= 1L << infantry->Class->Type;
+      infantry->House->ActiveIScan |= ScanBit(infantry->Class->Type);
+      infantry->House->OldIScan |= ScanBit(infantry->Class->Type);
     }
   }
   for (int index = 0; index < Aircraft.Count(); index++) {
     const AircraftClass* aircraft = Aircraft.Ptr(index);
-    aircraft->House->AScan |= 1L << aircraft->Class->Type;
+    aircraft->House->AScan |= ScanBit(aircraft->Class->Type);
     if ((aircraft->IsLocked &&
          (Session.Type != GAME_NORMAL || !aircraft->House->IsHuman ||
           aircraft->IsDiscoveredByPlayer)) &&
         (!aircraft->IsInLimbo)) {
-      aircraft->House->ActiveAScan |= 1L << aircraft->Class->Type;
-      aircraft->House->OldAScan |= 1L << aircraft->Class->Type;
+      aircraft->House->ActiveAScan |= ScanBit(aircraft->Class->Type);
+      aircraft->House->OldAScan |= ScanBit(aircraft->Class->Type);
     }
   }
   for (int index = 0; index < Buildings.Count(); index++) {
     const BuildingClass* building = Buildings.Ptr(index);
     if (building->Class->Type < 32) {
-      building->House->BScan |= 1L << building->Class->Type;
+      building->House->BScan |= ScanBit(building->Class->Type);
       if ((building->IsLocked &&
            (Session.Type != GAME_NORMAL || !building->House->IsHuman ||
             building->IsDiscoveredByPlayer)) &&
           (!building->IsInLimbo)) {
-        building->House->ActiveBScan |= 1L << building->Class->Type;
-        building->House->OldBScan |= 1L << building->Class->Type;
+        building->House->ActiveBScan |= ScanBit(building->Class->Type);
+        building->House->OldBScan |= ScanBit(building->Class->Type);
       }
     }
   }
   for (int index = 0; index < Vessels.Count(); index++) {
     const VesselClass* vessel = Vessels.Ptr(index);
-    vessel->House->VScan |= 1L << vessel->Class->Type;
+    vessel->House->VScan |= ScanBit(vessel->Class->Type);
     if ((vessel->IsLocked &&
          (Session.Type != GAME_NORMAL || !vessel->House->IsHuman ||
           vessel->IsDiscoveredByPlayer)) &&
         (!vessel->IsInLimbo)) {
-      vessel->House->ActiveVScan |= 1L << vessel->Class->Type;
-      vessel->House->OldVScan |= 1L << vessel->Class->Type;
+      vessel->House->ActiveVScan |= ScanBit(vessel->Class->Type);
+      vessel->House->OldVScan |= ScanBit(vessel->Class->Type);
     }
   }
 }
@@ -7435,7 +7437,7 @@ void HouseClass::Update_Spied_Power_Plants() {
         auto* bldg = dynamic_cast<BuildingClass*>(tech);
         if (!bldg->IsOwnedByPlayer &&
             (*bldg == STRUCT_POWER || *bldg == STRUCT_ADVANCED_POWER)) {
-          if (bldg->SpiedBy & 1 << PlayerPtr->Class->House) {
+          if (bldg->SpiedBy & base::Bit<uint32_t>(PlayerPtr->Class->House)) {
             bldg->Mark(MARK_CHANGE);
           }
         }
