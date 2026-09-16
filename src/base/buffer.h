@@ -35,6 +35,20 @@ auto ObjectBytes(T& object) {
   }
 }
 
+// Views an existing span's object representation as unsigned bytes. The size
+// comes from the span itself; callers cannot supply an unrelated raw extent.
+template <class T, std::size_t Extent>
+  requires(std::is_trivially_copyable_v<T> && !std::is_volatile_v<T>)
+auto UnsignedBytes(std::span<T, Extent> objects) {
+  using Byte = std::conditional_t<std::is_const_v<T>, const unsigned char,
+                                  unsigned char>;
+  // Unsigned char may alias any object representation. Both pointer and byte
+  // extent come from the same live span, including for an empty view.
+  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast,clang-diagnostic-unsafe-buffer-usage-in-container)
+  return std::span<Byte>(reinterpret_cast<Byte*>(objects.data()),
+                         objects.size_bytes());
+}
+
 // Copies count bytes, checking both spans before access. The ranges must not
 // overlap unless their starts are identical; use MoveBytes for overlap.
 inline void CopyBytes(std::span<std::byte> dest,

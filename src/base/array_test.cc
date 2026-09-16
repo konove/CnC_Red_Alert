@@ -34,15 +34,32 @@ TEST(ArrayTest, SuffixIncludesTheOnePastPosition) {
 
 TEST(ArrayDeathTest, RejectsInvalidIndices) {
   // The switch is inside GoogleTest's macro.
-  // NOLINTNEXTLINE(clang-diagnostic-switch-default)
+  // NOLINTNEXTLINE(clang-diagnostic-switch-default,clang-diagnostic-unsafe-buffer-usage-in-libc-call)
   EXPECT_DEATH((void)base::At(kValues, -1), "Check failed");
   // The switch is inside GoogleTest's macro.
-  // NOLINTNEXTLINE(clang-diagnostic-switch-default)
+  // NOLINTNEXTLINE(clang-diagnostic-switch-default,clang-diagnostic-unsafe-buffer-usage-in-libc-call)
   EXPECT_DEATH((void)base::At(kValues, 3), "Check failed");
   // The switch is inside GoogleTest's macro.
-  // NOLINTNEXTLINE(clang-diagnostic-switch-default)
+  // NOLINTNEXTLINE(clang-diagnostic-switch-default,clang-diagnostic-unsafe-buffer-usage-in-libc-call)
   EXPECT_DEATH((void)base::At(kValues, static_cast<std::size_t>(-1)),
                "Check failed");
+}
+
+TEST(ArrayTest, ConsumeFrontPreservesStorageAndAdvancesExtent) {
+  int values[] = {7, 9};
+  std::span<int> remaining(values);
+  base::ConsumeFront(remaining) = 8;
+  EXPECT_EQ(values[0], 8);
+  ASSERT_EQ(remaining.size(), 1U);
+  EXPECT_EQ(base::ConsumeFront(remaining), 9);
+  EXPECT_TRUE(remaining.empty());
+}
+
+TEST(ArrayDeathTest, RejectsConsumingAnEmptyView) {
+  std::span<int> remaining;
+  // GoogleTest formats failure diagnostics inside its death-test macro.
+  // NOLINTNEXTLINE(clang-diagnostic-switch-default,clang-diagnostic-unsafe-buffer-usage-in-libc-call)
+  EXPECT_DEATH((void)base::ConsumeFront(remaining), "Check failed");
 }
 
 }  // namespace

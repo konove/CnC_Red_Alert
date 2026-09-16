@@ -5,6 +5,7 @@
 #include <array>
 #include <cstddef>
 #include <span>
+#include <type_traits>
 
 #include "gtest/gtest.h"
 
@@ -14,6 +15,22 @@ template <class T>
 concept HasObjectBytes = requires(T& object) { base::ObjectBytes(object); };
 static_assert(!HasObjectBytes<unsigned char*>);
 static_assert(HasObjectBytes<unsigned char[4]>);
+
+TEST(BufferTest, UnsignedBytesRetainsExtentAliasingAndConstness) {
+  std::array<unsigned char, 4> values = {1, 2, 3, 4};
+  const auto middle = base::UnsignedBytes(std::span(values).subspan(1, 2));
+  ASSERT_EQ(middle.size(), 2);
+  middle[0] = 9;
+  EXPECT_EQ(values[0], 1);
+  EXPECT_EQ(values[1], 9);
+  EXPECT_EQ(values[3], 4);
+  const auto immutable =
+      base::UnsignedBytes(std::span<const unsigned char>(values));
+  static_assert(
+      std::is_same_v<decltype(immutable)::element_type, const unsigned char>);
+  EXPECT_EQ(immutable.size(), values.size());
+  EXPECT_TRUE(base::UnsignedBytes(std::span<int>{}).empty());
+}
 
 TEST(BufferTest, PreservesObjectAndArrayExtent) {
   unsigned char values[4] = {1, 2, 3, 4};

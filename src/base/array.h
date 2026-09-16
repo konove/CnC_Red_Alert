@@ -38,6 +38,19 @@ constexpr std::span<T> Suffix(T (&array)[N], std::integral auto index) {
   return std::span(array).subspan(static_cast<std::size_t>(index));
 }
 
+// Consumes one element of an existing bounded view. The referenced storage
+// remains owned by the original array/container; an empty view is rejected.
+template <class T>
+// Clang cannot follow the element reference through libstdc++ span::front.
+constexpr T& ConsumeFront(
+    // NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-lifetimebound-violation)
+    std::span<T>& remaining ABSL_ATTRIBUTE_LIFETIME_BOUND) {
+  CHECK(!remaining.empty());
+  T& value = remaining.front();
+  remaining = remaining.subspan(1);
+  return value;
+}
+
 }  // namespace base
 
 #endif  // CNC_RED_ALERT_BASE_ARRAY_H_
