@@ -97,7 +97,7 @@ ScrollClass::ScrollClass() { Counter.Set(SCROLL_DELAY); }
 void ScrollClass::AI(KeyNumType& input, int x, int y) {
   bool player_scrolled = false;
   static DirType direction;
-  int rate;
+  int rate = 0;
 
   /*
   **	If rubber band mode is in progress, then don't allow scrolling of the

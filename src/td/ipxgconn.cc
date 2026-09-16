@@ -203,10 +203,6 @@ int IPXGlobalConnClass::Send_Packet(void* buf, int buflen,
  *=========================================================================*/
 int IPXGlobalConnClass::Receive_Packet(void* buf, int buflen,
                                        IPXAddressClass* address) {
-  GlobalHeaderType* packet;      // ptr to this packet
-  SendQueueType* send_entry;     // ptr to send entry header
-  GlobalHeaderType* entry_data;  // ptr to queue entry data
-  int i;
 
   /*
   --------------------------- Check the magic # ----------------------------
@@ -215,7 +211,7 @@ int IPXGlobalConnClass::Receive_Packet(void* buf, int buflen,
     return 0;
   }
   auto packet_storage = port::ReadUnaligned<GlobalHeaderType>(buf);
-  packet = &packet_storage;
+  GlobalHeaderType* packet = &packet_storage;  // ptr to this packet
   if (packet->Header.MagicNumber != MagicNum) {
     return 0;
   }
@@ -246,15 +242,17 @@ int IPXGlobalConnClass::Receive_Packet(void* buf, int buflen,
     ACK will be a leftover)
     .....................................................................*/
     case PACKET_ACK:
-      for (i = 0; i < Queue->Num_Send(); i++) {
+      for (int i = 0; i < Queue->Num_Send(); i++) {
         /*
         ..................... Get queue entry ptr .......................
         */
-        send_entry = Queue->Get_Send(i);
+        SendQueueType* send_entry =
+            Queue->Get_Send(i);  // ptr to send entry header
         /*
         ............. If ptr is valid, get ptr to its data ..............
         */
-        entry_data = port::AlignedObject<GlobalHeaderType>(send_entry->Buffer);
+        auto* entry_data = port::AlignedObject<GlobalHeaderType>(
+            send_entry->Buffer);  // ptr to queue entry data
         /*
         .............. If ACK is for this entry, mark it ................
         */
@@ -302,9 +300,6 @@ int IPXGlobalConnClass::Receive_Packet(void* buf, int buflen,
 int IPXGlobalConnClass::Get_Packet(void* buf, int* buflen,
                                    IPXAddressClass* address,
                                    uint16_t* product_id) {
-  ReceiveQueueType* rec_entry;  // ptr to receive entry header
-  GlobalHeaderType* packet;
-  int packetlen;  // size of received packet
 
   /*
   ------------------------ Return if nothing to do -------------------------
@@ -316,7 +311,8 @@ int IPXGlobalConnClass::Get_Packet(void* buf, int* buflen,
   /*
   ------------------ Get ptr to the next available entry -------------------
   */
-  rec_entry = Queue->Get_Receive(0);
+  ReceiveQueueType* rec_entry =
+      Queue->Get_Receive(0);  // ptr to receive entry header
 
   /*
   ------------------------ Read it if it's un-read -------------------------
@@ -330,8 +326,10 @@ int IPXGlobalConnClass::Get_Packet(void* buf, int* buflen,
     /*
     .......................... Copy data packet ...........................
     */
-    packet = port::AlignedObject<GlobalHeaderType>(rec_entry->Buffer);
-    packetlen = rec_entry->BufLen - static_cast<int>(sizeof(GlobalHeaderType));
+    auto* packet = port::AlignedObject<GlobalHeaderType>(rec_entry->Buffer);
+    const int packetlen =
+        rec_entry->BufLen -
+        static_cast<int>(sizeof(GlobalHeaderType));  // size of received packet
     if (packetlen > 0) {
       memcpy(buf, rec_entry->Buffer + sizeof(GlobalHeaderType),
              base::ToSize(packetlen));
@@ -372,14 +370,13 @@ int IPXGlobalConnClass::Get_Packet(void* buf, int* buflen,
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
 int IPXGlobalConnClass::Send(void* buf, int buflen) {
-  IPXAddressClass* addr;
-  int rc;
+  int rc = 0;
 
   /*------------------------------------------------------------------------
   Extract the packet's embedded IPX address
   ------------------------------------------------------------------------*/
   auto header = port::ReadUnaligned<GlobalHeaderType>(buf);
-  addr = &header.Address;
+  IPXAddressClass* addr = &header.Address;
 
   /*------------------------------------------------------------------------
   If it's a broadcast address, broadcast it
@@ -427,13 +424,12 @@ int IPXGlobalConnClass::Send(void* buf, int buflen) {
  *=========================================================================*/
 int IPXGlobalConnClass::Service_Receive_Queue() {
   GlobalHeaderType ackpacket;    // ACK packet to send
-  ReceiveQueueType* rec_entry;   // ptr to receive entry header
-  GlobalHeaderType* packet_hdr;  // packet header
 
   /*------------------------------------------------------------------------
   Get a pointer to the next received entry
   ------------------------------------------------------------------------*/
-  rec_entry = Queue->Get_Receive(0);
+  ReceiveQueueType* rec_entry =
+      Queue->Get_Receive(0);  // ptr to receive entry header
   if (rec_entry == nullptr) {
     return 1;
   }
@@ -441,7 +437,8 @@ int IPXGlobalConnClass::Service_Receive_Queue() {
   /*------------------------------------------------------------------------
   If this packet doesn't require an ACK, mark it as ACK'd.
   ------------------------------------------------------------------------*/
-  packet_hdr = port::AlignedObject<GlobalHeaderType>(rec_entry->Buffer);
+  auto* packet_hdr = port::AlignedObject<GlobalHeaderType>(
+      rec_entry->Buffer);  // packet header
   if (packet_hdr->Header.Code == PACKET_DATA_NOACK) {
     rec_entry->IsACK = 1;
   }

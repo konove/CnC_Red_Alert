@@ -452,7 +452,7 @@ bool Select_Game(bool /*fade*/) {
   };
 
   bool gameloaded = false;  // Has the game been loaded from the menu?
-  int selection;            // the default selection
+  int selection = 0;        // the default selection
   bool process = true;      // false = break out of while loop
   bool display = true;
 
@@ -1651,7 +1651,7 @@ uint32_t Obfuscate(const char* string) {
   */
   if (length < 16 || length & 0x03) {
     const int maxlen = std::max((length + 3) & 0x00FC, 16);
-    int index;
+    int index = 0;
     for (index = length; index < maxlen; index++) {
       buffer[index] = static_cast<char>(
           'A' + ((('?' ^ buffer[index - length]) + index) % 26));
@@ -2226,7 +2226,7 @@ static void Init_CDROM_Access() {
     ** If there are no search drives specified then we must be playing
     ** off cd, so read files from there.
     */
-    int error;
+    int error = 0;
 
     do {
       error = SearchPaths::Add("?:\\");

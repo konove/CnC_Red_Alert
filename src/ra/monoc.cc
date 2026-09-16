@@ -110,7 +110,7 @@ const MonoClass::BoxDataType MonoClass::CharData[COUNT] = {
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
 MonoClass::MonoClass() {
-  int index;
+  int index = 0;
 
   for (index = 0; index < MAX_MONO_PAGES; index++) {
     if (!PageUsage[index]) {
@@ -554,14 +554,13 @@ void MonoClass::Printf(const int text,
  *=============================================================================================*/
 void MonoClass::Print(const char* ptr) {
   const int startcol = X;
-  const char* text;
   CellType cell{};
 
   if (!ptr || !Enabled) {
     return;
   }
 
-  text = ptr;
+  const char* text = ptr;
   cell.Attribute = Attrib;
   while (*text) {
     cell.Character = static_cast<unsigned char>(*text);

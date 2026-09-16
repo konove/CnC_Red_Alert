@@ -125,13 +125,12 @@ int MapEditClass::New_Scenario() {
   ScenarioPlayerType player = ScenPlayer;
   ScenarioDirType dir = ScenDir;
   ScenarioVarType var = ScenVar;
-  int rc;
-  HousesType house;
 
   /*
   ------------------------ Prompt for scenario info ------------------------
   */
-  rc = Pick_Scenario("New Scenario", &scen_num, &player, &dir, &var, 1);
+  const int rc =
+      Pick_Scenario("New Scenario", &scen_num, &player, &dir, &var, 1);
   if (rc != 0) {
     return (-1);
   }
@@ -153,7 +152,7 @@ int MapEditClass::New_Scenario() {
   /*
   ----------------------------- Create houses ------------------------------
   */
-  for (house = HOUSE_FIRST; house < HOUSE_COUNT; house++) {
+  for (HousesType house = HOUSE_FIRST; house < HOUSE_COUNT; house++) {
     new HouseClass(house);
   }
 
@@ -232,12 +231,12 @@ int MapEditClass::Load_Scenario() {
   ScenarioPlayerType player = ScenPlayer;
   ScenarioDirType dir = ScenDir;
   ScenarioVarType var = ScenVar;
-  int rc;
 
   /*
   ------------------------ Prompt for scenario info ------------------------
   */
-  rc = Pick_Scenario("Load Scenario", &scen_num, &player, &dir, &var, 1);
+  const int rc =
+      Pick_Scenario("Load Scenario", &scen_num, &player, &dir, &var, 1);
   if (rc != 0) {
     return (-1);
   }
@@ -317,14 +316,12 @@ int MapEditClass::Save_Scenario() {
   ScenarioPlayerType player = ScenPlayer;
   ScenarioDirType dir = ScenDir;
   ScenarioVarType var = ScenVar;
-  int rc;
-  FILE* fp;
   char fname[13];
 
   /*
   ------------------------ Prompt for scenario info ------------------------
   */
-  rc = Pick_Scenario("Save Scenario", &scen_num, &player, &dir, &var, 0);
+  int rc = Pick_Scenario("Save Scenario", &scen_num, &player, &dir, &var, 0);
   if (rc != 0) {
     return (-1);
   }
@@ -333,7 +330,7 @@ int MapEditClass::Save_Scenario() {
   ------------------- Warning if scenario already exists -------------------
   */
   Set_Scenario_Name(fname, scen_num, player, dir, var);
-  fp = fopen(fname, "rb");
+  FILE* fp = fopen(fname, "rb");
   if (fp) {
     fclose(fp);
     rc = CCMessageBox().Process("File exists. Replace?", TXT_YES, TXT_NO);
@@ -543,9 +540,6 @@ int MapEditClass::Pick_Scenario(const char* caption, int* scen_nump,
   /*........................................................................
   Dialog variables
   ........................................................................*/
-  RedrawType display;  // requested redraw level
-  bool process;        // loop while true
-  KeyNumType input;
   bool cancel = false;  // true = user cancels
   /*........................................................................
   Other Variables
@@ -713,8 +707,8 @@ int MapEditClass::Pick_Scenario(const char* caption, int* scen_nump,
   /*
   -------------------------- Main Processing Loop --------------------------
   */
-  display = REDRAW_ALL;
-  process = true;
+  RedrawType display = REDRAW_ALL;  // requested redraw level
+  bool process = true;              // loop while true
   while (process) {
     /*
     ** If we have just received input focus again after running in the
@@ -768,7 +762,7 @@ int MapEditClass::Pick_Scenario(const char* caption, int* scen_nump,
     /*
     ........................... Get user input ............................
     */
-    input = commands->Input();
+    const KeyNumType input = commands->Input();
 
     /*
     ............................ Process input ............................
@@ -985,26 +979,19 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
   /*........................................................................
   Dialog variables:
   ........................................................................*/
-  bool process;         // Loop while true
-  RedrawType display;   // requested redraw level
   bool cancel = false;  // true = user cancels
-  KeyNumType input;     // user input
   int grabbed = 0;      // 1=TLeft,2=TRight,3=BRight,4=BLeft
-  int map_x1;           // map coords x1, pixel coords
-  int map_x2;           // map coords x2, pixel coords
-  int map_y1;           // map coords y1, pixel coords
-  int map_y2;           // map coords y2, pixel coords
-  int delta1;
-  int delta2;  // mouse-click proximity
+  int map_x1 = 0;       // map coords x1, pixel coords
+  int map_y1 = 0;       // map coords y1, pixel coords
+  int delta1 = 0;
+  int delta2 = 0;  // mouse-click proximity
   int mx = 0;
   int my = 0;  // last-saved mouse coords
   char txt[40];
-  int txt_x;
-  int txt_y;              // for displaying text
-  int index;              // for drawing map symbology
-  CELL cell;              // for drawing map symbology
-  int color;              // for drawing map symbology
-  ObjectClass* occupier;  // cell's occupier
+  int txt_x = 0;
+  int txt_y = 0;                    // for displaying text
+  int color = 0;                    // for drawing map symbology
+  ObjectClass* occupier = nullptr;  // cell's occupier
   /*........................................................................
   Buttons
   ........................................................................*/
@@ -1040,8 +1027,8 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
     map_y1 = D_BORD_Y1 + y + 1;
   }
 
-  map_x2 = map_x1 + w - 1;
-  map_y2 = map_y1 + h - 1;
+  int map_x2 = map_x1 + w - 1;  // map coords x2, pixel coords
+  int map_y2 = map_y1 + h - 1;  // map coords y2, pixel coords
 
   /*
   ------------------------- Build the button list --------------------------
@@ -1052,8 +1039,8 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
   /*------------------------------------------------------------------------
   Main processing loop
   ------------------------------------------------------------------------*/
-  display = REDRAW_ALL;
-  process = true;
+  RedrawType display = REDRAW_ALL;  // requested redraw level
+  bool process = true;              // Loop while true
   while (process) {
     /*
     ** If we have just received input focus again after running in the
@@ -1091,12 +1078,12 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
         LogicPage->Lock();
         LogicPage->Draw_Rect(D_BORD_X1, D_BORD_Y1, D_BORD_X2, D_BORD_Y2,
                              CC_GREEN_SHADOW);
-        for (index = D_BORD_X1; index < D_BORD_X2;
+        for (int index = D_BORD_X1; index < D_BORD_X2;
              index += (320 / ICON_PIXEL_W)) {
           LogicPage->Put_Pixel(index, D_BORD_Y1 - 1, CC_GREEN_SHADOW);
           LogicPage->Put_Pixel(index, D_BORD_Y2 + 1, CC_GREEN_SHADOW);
         }
-        for (index = D_BORD_Y1; index < D_BORD_Y2 - 8;
+        for (int index = D_BORD_Y1; index < D_BORD_Y2 - 8;
              index += (200 / ICON_PIXEL_H)) {
           LogicPage->Put_Pixel(D_BORD_X1 - 1, index, CC_GREEN_SHADOW);
           LogicPage->Put_Pixel(D_BORD_X2 + 1, index, CC_GREEN_SHADOW);
@@ -1180,7 +1167,7 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
         /*...............................................................
         Draw Land map symbols (use color according to Ground[] array).
         ...............................................................*/
-        for (cell = 0; cell < MAP_CELL_TOTAL; cell++) {
+        for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
           occupier = (*this)[cell].Cell_Occupier();
           if (occupier == nullptr) {
             color = Ground[(*this)[cell].Land_Type()].Color;
@@ -1230,7 +1217,7 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
         that specified in the house type class object.
         DKGREEN = terrain object
         ...............................................................*/
-        for (cell = 0; cell < MAP_CELL_TOTAL; cell++) {
+        for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
           occupier = (*this)[cell].Cell_Occupier();
           if (occupier) {
             color = GREEN;
@@ -1294,7 +1281,7 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
     /*
     ------------------------- Process user input --------------------------
     */
-    input = commands->Input();
+    const KeyNumType input = commands->Input();  // user input
     /*.....................................................................
     Normal button processing: This is done when the mouse button is NOT
     being held down ('grabbed' is 0).
@@ -1683,20 +1670,15 @@ int MapEditClass::Scenario_Dialog() {
   /*........................................................................
   Dialog variables:
   ........................................................................*/
-  KeyNumType input;     // input from user
-  bool process;         // loop while true
-  RedrawType display;   // true = re-draw everything
   bool cancel = false;  // true = user cancels
   /*
   .......................... Scenario parameters ...........................
   */
-  TheaterType theater;       // DisplayClass::Theater
-  TheaterType orig_theater;  // original theater
-  int64_t gdi_credits;       // HouseClass::As_Pointer(HouseType)->Credits
-  int64_t nod_credits;       // HouseClass::As_Pointer(HouseType)->Credits
-  int64_t neut_credits;      // HouseClass::As_Pointer(HouseType)->Credits
-  SourceType gdi_edge;       // HouseClass::As_Pointer(HouseType)->Edge
-  SourceType nod_edge;       // HouseClass::As_Pointer(HouseType)->Edge
+  int64_t gdi_credits = 0;   // HouseClass::As_Pointer(HouseType)->Credits
+  int64_t nod_credits = 0;   // HouseClass::As_Pointer(HouseType)->Credits
+  int64_t neut_credits = 0;  // HouseClass::As_Pointer(HouseType)->Credits
+  SourceType gdi_edge = SOURCE_NONE;  // HouseClass::As_Pointer(HouseType)->Edge
+  SourceType nod_edge = SOURCE_NONE;  // HouseClass::As_Pointer(HouseType)->Edge
   char level_buf[10] = {0};
   char gdicred_buf[10] = {0};
   char nodcred_buf[10] = {0};
@@ -1704,9 +1686,7 @@ int MapEditClass::Scenario_Dialog() {
   /*
   ....................... Theater-changing variables .......................
   */
-  unsigned char theater_mask;  // template/terrain mask
-  TerrainClass* terrain;       // cell's terrain pointer
-  CELL i;                      // loop counter
+  unsigned char theater_mask = 0;  // template/terrain mask
   /*........................................................................
   Buttons
   ........................................................................*/
@@ -1799,7 +1779,7 @@ int MapEditClass::Scenario_Dialog() {
   /*
   ............................ Init parameters .............................
   */
-  orig_theater = Theater;
+  const TheaterType orig_theater = Theater;  // original theater
   if (ScenPlayer != SCEN_PLAYER_MPLAYER) {
     gdi_credits = HouseClass::As_Pointer(HOUSE_GOOD)->Credits / 1000L;
     nod_credits = HouseClass::As_Pointer(HOUSE_BAD)->Credits / 1000L;
@@ -1885,8 +1865,8 @@ int MapEditClass::Scenario_Dialog() {
   /*
   -------------------------- Main Processing Loop --------------------------
   */
-  display = REDRAW_ALL;
-  process = true;
+  RedrawType display = REDRAW_ALL;  // true = re-draw everything
+  bool process = true;              // loop while true
   while (process) {
     /*
     ** If we have just received input focus again after running in the
@@ -1966,7 +1946,7 @@ int MapEditClass::Scenario_Dialog() {
     /*
     ........................... Get user input ............................
     */
-    input = commands->Input();
+    const KeyNumType input = commands->Input();  // input from user
 
     /*
     ............................ Process input ............................
@@ -2116,13 +2096,13 @@ int MapEditClass::Scenario_Dialog() {
     theater; if not compatible, set TType to TEMPLATE_NONE & TIcon to 0
   - Then, re-initialize the TypeClasses for the new Theater
   ........................................................................*/
-  theater =
-      static_cast<TheaterType>(THEATER_NONE + 1 + theaterbtn.Current_Index());
+  const auto theater = static_cast<TheaterType>(
+      THEATER_NONE + 1 + theaterbtn.Current_Index());  // DisplayClass::Theater
   if (theater != orig_theater) {
     /*
     ....................... Loop through all cells ........................
     */
-    for (i = 0; i < MAP_CELL_TOTAL; i++) {
+    for (CELL i = 0; i < MAP_CELL_TOTAL; i++) {
       /*..................................................................
       If this cell has a template icon & that template isn't compatible
       with this theater, set the icon to NONE
@@ -2139,7 +2119,8 @@ int MapEditClass::Scenario_Dialog() {
       If this cell has terrain in it, and that terrain isn't compatible
       with this theater, delete the terrain object.
       ..................................................................*/
-      terrain = (*this)[i].Cell_Terrain();
+      TerrainClass* terrain =
+          (*this)[i].Cell_Terrain();  // cell's terrain pointer
       if (terrain) {
         theater_mask = terrain->Class->Theater;
         if ((theater_mask & (1 << theater)) == 0) {
@@ -2183,7 +2164,6 @@ int MapEditClass::Scenario_Dialog() {
  *   11/29/1994 BR : Created.                                              *
  *=========================================================================*/
 void MapEditClass::Handle_Triggers() {
-  int rc;
 
   /*------------------------------------------------------------------------
   Trigger dialog processing loop:
@@ -2198,7 +2178,7 @@ void MapEditClass::Handle_Triggers() {
     /*
     ........................... Select trigger ............................
     */
-    rc = Select_Trigger();
+    const int rc = Select_Trigger();
 
     /*
     ............................. 'OK'; break .............................
@@ -2362,15 +2342,10 @@ int MapEditClass::Select_Trigger() {
   /*........................................................................
   Dialog variables:
   ........................................................................*/
-  RedrawType display;                       // requested redraw level
-  bool process;                             // loop while true
   char* trigtext[kTriggerMax + 1] = {};     // text for defined triggers
-  KeyNumType input;                         // user input
   bool edit_trig = false;                   // true = user wants to edit
   bool new_trig = false;                    // true = user wants to new
   bool del_trig = false;                    // true = user wants to new
-  int i;                                    // loop counter
-  int def_idx;                              // default list index
   static int tabs[] = {70, 240, 390, 440};  // list box tab stops
 
   /*........................................................................
@@ -2411,8 +2386,8 @@ int MapEditClass::Select_Trigger() {
   /*
   ......................... Fill in trigger names ..........................
   */
-  def_idx = 0;
-  for (i = 0; i < Triggers.Count(); i++) {
+  int def_idx = 0;  // default list index
+  for (int i = 0; i < Triggers.Count(); i++) {
     /*.....................................................................
     Generate string for this trigger
     - Name can be up to 4 characters
@@ -2470,7 +2445,7 @@ int MapEditClass::Select_Trigger() {
   /*
   .......................... Fill in the list box ..........................
   */
-  for (i = 0; i < Triggers.Count(); i++) {
+  for (int i = 0; i < Triggers.Count(); i++) {
     triggerlist.Add_Item(trigtext[i]);
   }
   triggerlist.Set_Selected_Index(def_idx);
@@ -2503,8 +2478,8 @@ int MapEditClass::Select_Trigger() {
   /*
   -------------------------- Main Processing Loop --------------------------
   */
-  display = REDRAW_ALL;
-  process = true;
+  RedrawType display = REDRAW_ALL;  // requested redraw level
+  bool process = true;              // loop while true
   while (process) {
     /*
     ** If we have just received input focus again after running in the
@@ -2554,7 +2529,7 @@ int MapEditClass::Select_Trigger() {
     /*
     ........................... Get user input ............................
     */
-    input = commands->Input();
+    const KeyNumType input = commands->Input();  // user input
 
     /*
     ............................ Process input ............................
@@ -2600,7 +2575,7 @@ int MapEditClass::Select_Trigger() {
   Flag_To_Redraw(true);
   Render();
 
-  for (i = 0; i < Triggers.Count(); i++) {
+  for (int i = 0; i < Triggers.Count(); i++) {
     delete[] trigtext[i];
   }
 
@@ -2794,19 +2769,11 @@ int MapEditClass::Edit_Trigger() {
   /*........................................................................
   Dialog variables:
   ........................................................................*/
-  RedrawType display;                       // requested redraw level
-  bool process;                             // loop while true
-  KeyNumType input;                         // user input
   bool cancel = false;                      // true = user cancels
-  int i;                                    // loop counter
-  EventType event_idx;                      // index for event list
-  TriggerClass::ActionType action_idx;      // index for action list
   char namebuf[5];                          // name of this trigger
   char databuf[10];                         // for credit/time-based triggers
-  HousesType house;                         // house for this trigger
   const char* eventnames[EVENT_COUNT + 1];  // names of events
   const char* actionnames[TriggerClass::ACTION_COUNT + 1];  // names of actions
-  TriggerClass::PersistantType persistant;  // trigger's persistence level
 
   /*........................................................................
   These flags enable various controls for each EventType.
@@ -2912,12 +2879,14 @@ int MapEditClass::Edit_Trigger() {
   /*
   ....................... Set default button states ........................
   */
-  event_idx = CurTrigger->Event;  // event list
+  EventType event_idx =
+      CurTrigger->Event;  // index for event list  // event list
   if (event_idx == EVENT_NONE) {
     event_idx = EVENT_PLAYER_ENTERED;
   }
 
-  action_idx = CurTrigger->Action;  // action list
+  TriggerClass::ActionType action_idx =
+      CurTrigger->Action;  // index for action list  // action list
   if (action_idx == TriggerClass::ACTION_NONE) {
     action_idx = TriggerClass::ACTION_WIN;
   }
@@ -2931,9 +2900,10 @@ int MapEditClass::Edit_Trigger() {
     data_edt.Set_Text(databuf, 8);
   }
 
-  house = CurTrigger->House;  // House
+  HousesType house = CurTrigger->House;  // house for this trigger  // House
 
-  persistant = CurTrigger->IsPersistant;
+  TriggerClass::PersistantType persistant =
+      CurTrigger->IsPersistant;  // trigger's persistence level
 
   volatilebtn.Turn_Off();
   persistbtn.Turn_Off();
@@ -2957,13 +2927,13 @@ int MapEditClass::Edit_Trigger() {
   /*
   ......................... Fill in the list boxes .........................
   */
-  for (i = 0; i < EVENT_COUNT; i++) {
+  for (int i = 0; i < EVENT_COUNT; i++) {
     eventnames[i] = TriggerClass::Name_From_Event(static_cast<EventType>(i));
     eventlist.Add_Item(eventnames[i]);
   }
   eventlist.Set_Selected_Index(event_idx);
 
-  for (i = 0; i < TriggerClass::ACTION_COUNT; i++) {
+  for (int i = 0; i < TriggerClass::ACTION_COUNT; i++) {
     actionnames[i] = TriggerClass::Name_From_Action(
         static_cast<TriggerClass::ActionType>(i));
     actionlist.Add_Item(actionnames[i]);
@@ -2973,8 +2943,8 @@ int MapEditClass::Edit_Trigger() {
   /*
   -------------------------- Main Processing Loop --------------------------
   */
-  display = REDRAW_ALL;
-  process = true;
+  RedrawType display = REDRAW_ALL;  // requested redraw level
+  bool process = true;              // loop while true
   while (process) {
     /*
     ** If we have just received input focus again after running in the
@@ -3104,7 +3074,7 @@ int MapEditClass::Edit_Trigger() {
     /*
     ........................... Get user input ............................
     */
-    input = commands->Input();
+    const KeyNumType input = commands->Input();  // user input
 
     /*
     ............................ Process input ............................
@@ -3337,24 +3307,13 @@ int MapEditClass::Import_Triggers() {
   /*........................................................................
   Dialog variables:
   ........................................................................*/
-  RedrawType display;  // requested redraw level
-  bool process;        // loop while true
-  KeyNumType input;    // user input
   bool cancel = false;
   static int tabs[] = {70, 220, 370, 420};  // list box tab stops
   DynamicVectorClass<char*> trignames;      // list of INI trigger names
-  char* inibuf;                             // working INI buffer
   GameFile file;                            // file for reading the INI file
   char buf[128];                            // for reading an INI entry
-  char* tbuffer;          // Accumulation buffer of trigger IDs.
-  int len;                // Length of data in buffer.
-  TriggerClass* trigger;  // Working trigger pointer.
   constexpr int kItemSize = 60;
   char item[kItemSize];  // for adding to list box
-  char* eventptr;
-  char* actionptr;
-  char* houseptr;
-  int i;
   /*........................................................................
   Buttons
   ........................................................................*/
@@ -3383,7 +3342,7 @@ int MapEditClass::Import_Triggers() {
   /*........................................................................
   Read the file into the staging buffer
   ........................................................................*/
-  inibuf = new char[30000];
+  char* inibuf = new char[30000];  // working INI buffer
   memset(inibuf, '\0', 30000);
   file.SetName("MASTER.INI");
   if (!file.IsAvailable()) {
@@ -3397,8 +3356,9 @@ int MapEditClass::Import_Triggers() {
   /*........................................................................
   Read all entry names in the Triggers section into a temp buffer
   ........................................................................*/
-  len = static_cast<int>(strlen(inibuf)) + 2;
-  tbuffer = inibuf + len;
+  const int len =
+      static_cast<int>(strlen(inibuf)) + 2;  // Length of data in buffer.
+  char* tbuffer = inibuf + len;  // Accumulation buffer of trigger IDs.
   WWGetPrivateProfileString(TriggerClass::INI_Name(), nullptr, nullptr, tbuffer,
                             30000 - len, inibuf);
 
@@ -3417,10 +3377,10 @@ int MapEditClass::Import_Triggers() {
     ** Parse the INI entry
     */
     port::Tokenizer tokens(buf, ",");
-    eventptr = tokens.Next();
-    actionptr = tokens.Next();
+    char* eventptr = tokens.Next();
+    char* actionptr = tokens.Next();
     tokens.Next();  // data, unused
-    houseptr = tokens.Next();
+    char* houseptr = tokens.Next();
 
     /*
     ** Generate the descriptive string
@@ -3472,8 +3432,8 @@ int MapEditClass::Import_Triggers() {
   /*
   -------------------------- Main Processing Loop --------------------------
   */
-  display = REDRAW_ALL;
-  process = true;
+  RedrawType display = REDRAW_ALL;  // requested redraw level
+  bool process = true;              // loop while true
   while (process) {
     /*
     ** If we have just received input focus again after running in the
@@ -3521,7 +3481,7 @@ int MapEditClass::Import_Triggers() {
     /*
     ........................... Get user input ............................
     */
-    input = commands->Input();
+    const KeyNumType input = commands->Input();  // user input
 
     /*
     ............................ Process input ............................
@@ -3558,7 +3518,7 @@ int MapEditClass::Import_Triggers() {
   ........................................................................*/
   if (!cancel) {
     tbuffer = inibuf + len;
-    i = 0;
+    int i = 0;
     while (*tbuffer != '\0') {
       /*
       ** If this item is checked on the list, create a new trigger
@@ -3568,7 +3528,7 @@ int MapEditClass::Import_Triggers() {
         WWGetPrivateProfileString(TriggerClass::INI_Name(), tbuffer, nullptr,
                                   buf, sizeof(buf) - 1, inibuf);
 
-        trigger = new TriggerClass();
+        auto* trigger = new TriggerClass();  // Working trigger pointer.
         trigger->Fill_In(tbuffer, buf);
 
         if (trigger->House != HOUSE_NONE) {
@@ -3677,24 +3637,14 @@ int MapEditClass::Import_Teams() {
   /*........................................................................
   Dialog variables:
   ........................................................................*/
-  RedrawType display;  // requested redraw level
-  bool process;        // loop while true
-  KeyNumType input;    // user input
   bool cancel = false;
   static int tabs[] = {120, 180};       // list box tab stops
   DynamicVectorClass<char*> teamnames;  // list of INI team names
-  char* inibuf;                         // working INI buffer
   GameFile file;                        // file for reading the INI file
   char buf[128];                        // for reading an INI entry
-  char* tbuffer;                        // Accumulation buffer of team IDs.
-  int len;                              // Length of data in buffer.
-  TeamTypeClass* team;                  // Working team pointer.
   constexpr int kItemSize = 60;
   char item[kItemSize];  // for adding to list box
-  char* houseptr;
-  char* classptr;
-  int numclasses;
-  int i;
+  int i = 0;
   /*........................................................................
   Buttons
   ........................................................................*/
@@ -3723,7 +3673,7 @@ int MapEditClass::Import_Teams() {
   /*........................................................................
   Read the file into the staging buffer
   ........................................................................*/
-  inibuf = new char[30000];
+  char* inibuf = new char[30000];  // working INI buffer
   memset(inibuf, '\0', 30000);
   file.SetName("MASTER.INI");
   if (!file.IsAvailable()) {
@@ -3737,8 +3687,9 @@ int MapEditClass::Import_Teams() {
   /*........................................................................
   Read all entry names in the TeamTypes section into a temp buffer
   ........................................................................*/
-  len = static_cast<int>(strlen(inibuf)) + 2;
-  tbuffer = inibuf + len;
+  const int len =
+      static_cast<int>(strlen(inibuf)) + 2;  // Length of data in buffer.
+  char* tbuffer = inibuf + len;              // Accumulation buffer of team IDs.
   WWGetPrivateProfileString(TeamTypeClass::INI_Name(), nullptr, nullptr,
                             tbuffer, 30000 - len, inibuf);
 
@@ -3757,11 +3708,11 @@ int MapEditClass::Import_Teams() {
     ** Parse the INI entry
     */
     port::Tokenizer tokens(buf, ",");
-    houseptr = tokens.Next();
+    char* houseptr = tokens.Next();
     for (i = 0; i < 9; i++) {
       tokens.Next();  // flags and counts, unused
     }
-    numclasses = tech::ParseInteger<int>(tokens.Next()).value_or(0);
+    const int numclasses = tech::ParseInteger<int>(tokens.Next()).value_or(0);
 
     /*
     ** Generate the descriptive string
@@ -3776,7 +3727,7 @@ int MapEditClass::Import_Teams() {
     }
     port::SafeAppend(item, "\t", kItemSize);
 
-    classptr = tokens.Next();
+    char* classptr = tokens.Next();
     for (i = 0; i < numclasses; i++) {
       if (strlen(item) + strlen(classptr) < kItemSize) {
         port::SafeAppend(item, classptr, kItemSize);
@@ -3813,8 +3764,8 @@ int MapEditClass::Import_Teams() {
   /*
   -------------------------- Main Processing Loop --------------------------
   */
-  display = REDRAW_ALL;
-  process = true;
+  RedrawType display = REDRAW_ALL;  // requested redraw level
+  bool process = true;              // loop while true
   while (process) {
     /*
     ** If we have just received input focus again after running in the
@@ -3862,7 +3813,7 @@ int MapEditClass::Import_Teams() {
     /*
     ........................... Get user input ............................
     */
-    input = commands->Input();
+    const KeyNumType input = commands->Input();  // user input
 
     /*
     ............................ Process input ............................
@@ -3909,7 +3860,7 @@ int MapEditClass::Import_Teams() {
         WWGetPrivateProfileString(TeamTypeClass::INI_Name(), tbuffer, nullptr,
                                   buf, sizeof(buf) - 1, inibuf);
 
-        team = new TeamTypeClass();
+        auto* team = new TeamTypeClass();  // Working team pointer.
         team->Fill_In(tbuffer, buf);
       }
 

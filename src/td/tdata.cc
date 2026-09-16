@@ -690,10 +690,9 @@ void TerrainTypeClass::Init(TheaterType theater) {
  * HISTORY: * 05/16/1994 JLB : Created. *
  *=============================================================================================*/
 TerrainType TerrainTypeClass::From_Name(const char* name) {
-  TerrainType index;
 
   if (name) {
-    for (index = TERRAIN_TREE1; index < TERRAIN_COUNT; index++) {
+    for (TerrainType index = TERRAIN_TREE1; index < TERRAIN_COUNT; index++) {
       if (stricmp(name, Pointers[index]->IniName) == 0) {
         return index;
       }

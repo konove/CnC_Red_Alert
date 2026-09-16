@@ -11,12 +11,6 @@
 
 void* Conquer_Build_Fading_Table(const void* palette, void* dest, int color,
                                  int frac) {
-  int matchvalue;
-  uint8_t targetred;
-  uint8_t targetgreen;
-  int idealred;
-  int idealgreen;
-  int matchcolor;
 
   const int ALLOWED_COUNT = 16;
   const int ALLOWED_START = 256 - ALLOWED_COUNT;
@@ -32,8 +26,8 @@ void* Conquer_Build_Fading_Table(const void* palette, void* dest, int color,
 
   // Record the target gun values.
   const auto* pal8 = static_cast<const uint8_t*>(palette);
-  targetred = pal8[(color * 3) + 0];
-  targetgreen = pal8[(color * 3) + 0];
+  const uint8_t targetred = pal8[(color * 3) + 0];
+  const uint8_t targetgreen = pal8[(color * 3) + 0];
 
   // Main loop
 
@@ -42,22 +36,22 @@ void* Conquer_Build_Fading_Table(const void* palette, void* dest, int color,
   // Transparent black never gets remapped.
   *dptr++ = 0;
 
-  int remap_index;
+  int remap_index = 0;
   for (remap_index = 1; remap_index < ALLOWED_START; remap_index++) {
     const uint8_t origred = pal8[(remap_index * 3) + 0];
     const uint8_t origgreen = pal8[(remap_index * 3) + 1];
 
     int tmp = (origred - targetred) * (frac >> 1);
-    idealred = origred - (tmp >> 7);
+    const int idealred = origred - (tmp >> 7);
 
     tmp = (origgreen - targetgreen) * (frac >> 1);
-    idealgreen = origgreen - (tmp >> 7);
+    const int idealgreen = origgreen - (tmp >> 7);
 
     // Sweep through a limited set of existing colors to find the closest
     // matching color.
 
-    matchcolor = color;  // Default color (self).
-    matchvalue = INT_MAX;     // Ridiculous match value init.
+    int matchcolor = color;    // Default color (self).
+    int matchvalue = INT_MAX;  // Ridiculous match value init.
 
     const auto* palptr = pal8 + (static_cast<base::ssize>(ALLOWED_START) * 3);
 

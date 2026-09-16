@@ -251,7 +251,6 @@ int NullModemClass::Init(int port, int /*unused*/, char* dev_name, int baud,
   RXCount = 0;
   EchoCount = 0;
 
-  int i;
 
   /*
   ** Create a new modem class for our com port
@@ -269,7 +268,7 @@ int NullModemClass::Init(int port, int /*unused*/, char* dev_name, int baud,
   static char com_ids[9][5] = {"COM1", "COM2", "COM3", "COM4", "COM5",
                                "COM6", "COM7", "COM8", "COM9"};
 
-  const char* device;
+  const char* device = nullptr;
 
   switch (port) {
     case 0x3f8:
@@ -304,7 +303,7 @@ int NullModemClass::Init(int port, int /*unused*/, char* dev_name, int baud,
         delete ModemRegistry;
         ModemRegistry = nullptr;
       }
-      for (i = 0; i < 10; i++) {
+      for (int i = 0; i < 10; i++) {
         ModemRegistry = new ModemRegistryEntryClass(i);
         if (ModemRegistry->Get_Modem_Name() &&
             (!strcmp(dev_name, ModemRegistry->Get_Modem_Name()))) {
@@ -435,7 +434,6 @@ DetectPortType NullModemClass::Detect_Port(SerialSettingsType* settings) {
   static char com_ids[9][5] = {"COM1", "COM2", "COM3", "COM4", "COM5",
                                "COM6", "COM7", "COM8", "COM9"};
 
-  int i;
 
   /*
   ** Create a new modem class for our com port
@@ -456,7 +454,7 @@ DetectPortType NullModemClass::Detect_Port(SerialSettingsType* settings) {
   /*
   ** Translate the port address into a usable device name
   */
-  const char* device;
+  const char* device = nullptr;
 
   switch (settings->Port) {
     case 0x3f8:
@@ -491,7 +489,7 @@ DetectPortType NullModemClass::Detect_Port(SerialSettingsType* settings) {
         delete ModemRegistry;
         ModemRegistry = nullptr;
       }
-      for (i = 0; i < 10; i++) {
+      for (int i = 0; i < 10; i++) {
         ModemRegistry = new ModemRegistryEntryClass(i);
         if (ModemRegistry->Get_Modem_Name() &&
             (!strcmp(device, ModemRegistry->Get_Modem_Name()))) {
@@ -632,13 +630,12 @@ void NullModemClass::Set_Timing(int32_t retrydelta, int32_t maxretries,
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
 int NullModemClass::Send_Message(void* buf, int buflen, int ack_req) {
-  int rc;
 
   if (NumConnections == 0) {
     return 0;
   }
 
-  rc = Connection->Send_Packet(buf, buflen, ack_req);
+  const int rc = Connection->Send_Packet(buf, buflen, ack_req);
   if (!rc) {
     SendOverflows++;
   }
@@ -694,10 +691,8 @@ int NullModemClass::Get_Message(void* buf, int* buflen) {
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
 int NullModemClass::Service() {
-  int pos;  // current position in RXBuf
-  int i;    // loop counter
+  int i = 0;  // loop counter
   // int status;
-  uint16_t length;
   SerialHeaderType header;  // decoded packet start, length
   SerialCRCType crc;        // decoded packet CRC
   const char moredata = 0;
@@ -728,7 +723,7 @@ int NullModemClass::Service() {
   /*------------------------------------------------------------------------
   Now scan the buffer for the start of a packet.
   ------------------------------------------------------------------------*/
-  pos = -1;
+  int pos = -1;  // current position in RXBuf
   for (i = 0; i <= RXCount - static_cast<int>(sizeof(int16_t)); i++) {
     if (port::ReadUnaligned<uint16_t>(RXBuf + i) == PACKET_SERIAL_START) {
       pos = i;
@@ -779,7 +774,7 @@ int NullModemClass::Service() {
     return Connection->Service();
   }
 
-  length = header.Length;
+  const uint16_t length = header.Length;
 
   /*........................................................................
   Special case: if the length comes out too long for us to process:
@@ -961,15 +956,13 @@ void NullModemClass::Reset_Response_Time() {
  *   05/01/1995 BRR : Created.                                             *
  *=========================================================================*/
 void* NullModemClass::Oldest_Send() {
-  int i;
-  SendQueueType* send_entry;  // ptr to send entry header
-  CommHeaderType* packet;
   void* buf = nullptr;
 
-  for (i = 0; i < Connection->Queue->Num_Send(); i++) {
-    send_entry = Connection->Queue->Get_Send(i);
+  for (int i = 0; i < Connection->Queue->Num_Send(); i++) {
+    SendQueueType* send_entry =
+        Connection->Queue->Get_Send(i);  // ptr to send entry header
     if (send_entry) {
-      packet = port::AlignedObject<CommHeaderType>(send_entry->Buffer);
+      auto* packet = port::AlignedObject<CommHeaderType>(send_entry->Buffer);
       if (packet->Code == ConnectionClass::PACKET_DATA_ACK &&
           send_entry->IsACK == 0) {
         buf = send_entry->Buffer;
@@ -1101,13 +1094,10 @@ void NullModemClass::Mono_Debug_Print(int /*index*/, int refresh) {
  *   06/02/1995 DRD : Created.                                             *
  *=========================================================================*/
 int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
-  int status;
   int error_count = 0;
 
-  int x;
-  int y;
-  int width;
-  int height;  // dialog dimensions
+  int width = 0;
+  int height = 0;  // dialog dimensions
   char buffer[80 * 3];
 
   const int factor = SeenBuff.Get_Width() / 320;
@@ -1125,8 +1115,8 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
   width += 40 * factor;
   height += 60 * factor;
 
-  x = (SeenBuff.Get_Width() - width) / 2;
-  y = (SeenBuff.Get_Height() - height) / 2;
+  const int x = (SeenBuff.Get_Width() - width) / 2;
+  const int y = (SeenBuff.Get_Height() - height) / 2;
 
   /*
   ------------------------------- Initialize -------------------------------
@@ -1182,7 +1172,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
   ** turned on verbose result codes we should get an 'OK' back.
   **
   */
-  status = Send_Modem_Command("AT", '\r', buffer, 81, DEFAULT_TIMEOUT, 2);
+  int status = Send_Modem_Command("AT", '\r', buffer, 81, DEFAULT_TIMEOUT, 2);
 
   if (status < ASSUCCESS) {
     /*
@@ -1209,14 +1199,13 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
     ** This character acts as a carriage return/pause.
     */
     char* istr = new char[str_length];
-    char* tokenptr;
     port::SafeCopy(istr, InitStrings[settings->InitStringIndex], str_length);
 
     /*
     ** Tokenise the string and send it in chunks
     */
     port::Tokenizer tokens(istr, "|");
-    tokenptr = tokens.Next();
+    char* tokenptr = tokens.Next();
     while (tokenptr) {
       status =
           Send_Modem_Command(tokenptr, '\r', buffer, 81, DEFAULT_TIMEOUT, 1);
@@ -1392,13 +1381,10 @@ DialStatusType NullModemClass::Dial_Modem(char* string, DialMethodType method,
   bool process = true;  // process while true
 
   // int status;
-  int delay;
   DialStatusType dialstatus = DIAL_ERROR;
 
-  int x;
-  int y;
-  int width;
-  int height;  // dialog dimensions
+  int width = 0;
+  int height = 0;  // dialog dimensions
   char buffer[80 * 3];
 
   Input = KN_NONE;
@@ -1425,8 +1411,8 @@ DialStatusType NullModemClass::Dial_Modem(char* string, DialMethodType method,
   width += 40 * factor;
   height += 60 * factor;
 
-  x = (SeenBuff.Get_Width() - width) / 2;
-  y = (SeenBuff.Get_Height() - height) / 2;
+  const int x = (SeenBuff.Get_Width() - width) / 2;
+  const int y = (SeenBuff.Get_Height() - height) / 2;
 
   TextButtonClass cancelbtn(
       BUTTON_CANCEL, TXT_CANCEL,
@@ -1514,7 +1500,7 @@ DialStatusType NullModemClass::Dial_Modem(char* string, DialMethodType method,
   -------------------------- Main Processing Loop --------------------------
   */
   process = true;
-  delay = ModemWaitCarrier;
+  int delay = ModemWaitCarrier;
   CCDebugString("C&C95 - About to enter main process loop.\n");
   while (process) {
     // Timer_Test(__LINE__, __FILE__);
@@ -1645,18 +1631,14 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
   bool process = true;              // process while true
 
   // int status;
-  int delay;
   DialStatusType dialstatus = DIAL_ERROR;
   bool ring = false;
 
-  int x;
-  int y;
-  int width;
-  int height;  // dialog dimensions
+  int width = 0;
+  int height = 0;  // dialog dimensions
   char text_buffer[80 * 3];
   char comm_buffer[80 * 3];
 
-  int text_width;
 
   /*
   **	Determine the dimensions of the text to be used for the dialog box.
@@ -1671,13 +1653,13 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
   Fancy_Text_Print(TXT_NONE, 0, 0, TBLACK, TBLACK, TPF_6PT_GRAD | TPF_NOSHADOW);
   Format_Window_String(text_buffer, SeenBuff.Get_Height(), width, height);
 
-  text_width = width;
+  int text_width = width;
   width = std::max(width, 50 * factor);
   width += 40 * factor;
   height += 60 * factor;
 
-  x = (SeenBuff.Get_Width() - width) / 2;
-  y = (SeenBuff.Get_Height() - height) / 2;
+  int x = (SeenBuff.Get_Width() - width) / 2;
+  int y = (SeenBuff.Get_Height() - height) / 2;
 
   TextButtonClass cancelbtn(
       BUTTON_CANCEL, TXT_CANCEL,
@@ -1718,7 +1700,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
   -------------------------- Main Processing Loop --------------------------
   */
   process = true;
-  delay = 60000;
+  int delay = 60000;
   while (process) {
     /*
     ** If we have just received input focus again after running in the
@@ -1878,8 +1860,6 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
 // Not const: hangs up through the serial port.
 // NOLINTNEXTLINE(readability-make-member-function-const)
 bool NullModemClass::Hangup_Modem() {
-  int status;
-  int delay;
   char buffer[81];
   char escape[4];
 
@@ -1888,7 +1868,7 @@ bool NullModemClass::Hangup_Modem() {
   */
   ModemService = false;
 
-  status = Send_Modem_Command("AT", '\r', buffer, 81, DEFAULT_TIMEOUT, 1);
+  int status = Send_Modem_Command("AT", '\r', buffer, 81, DEFAULT_TIMEOUT, 1);
 
   if (status == MODEM_CMD_OK) {
     ModemService = true;
@@ -1910,7 +1890,7 @@ bool NullModemClass::Hangup_Modem() {
     return true;
   }
 
-  delay = ModemGuardTime;
+  int delay = ModemGuardTime;
   while (delay > 0) {
     // delay = HMInputLine( Port, delay, buffer, 81 );
     delay = SerialPort->Get_Modem_Result(delay, buffer, 81);
@@ -2148,15 +2128,14 @@ int NullModemClass::Change_IRQ_Priority(int /*unused*/) {
  * HISTORY: * 8/2/96 3:06PM ST : Documented / Win32 support added *
  *=============================================================================================*/
 int NullModemClass::Get_Modem_Status() {
-  int modemstatus;
-  int status;
   char buffer[81];
 
   // modemstatus = GetModemStatus( Port );
   // Modem status is a small bit mask (CTS/DSR/RI/CD).
-  modemstatus = static_cast<int>(SerialPort->Get_Modem_Status());
+  int modemstatus = static_cast<int>(SerialPort->Get_Modem_Status());
 
-  status = Send_Modem_Command("AT", '\r', buffer, 81, DEFAULT_TIMEOUT, 1);
+  const int status =
+      Send_Modem_Command("AT", '\r', buffer, 81, DEFAULT_TIMEOUT, 1);
 
   if (status == MODEM_CMD_OK) {
     modemstatus &= ~CD_SET;

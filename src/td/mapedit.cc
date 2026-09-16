@@ -520,16 +520,11 @@ bool MapEditClass::Add_To_List(const ObjectTypeClass* object) {
  *   10/20/1994 BR : Created.                                              *
  *=========================================================================*/
 void MapEditClass::AI(KeyNumType& input, int x, int y) {
-  int rc;
-  MissionType mission;
-  int strength;
-  CELL cell;
-  int i;
-  int found;            // for removing a waypoint label
-  int waypt_idx;        // for labelling a waypoint
-  BaseNodeClass* node;  // for removing from an AI Base
-  HousesType house;
-
+  int rc = 0;
+  CELL cell = 0;
+  int found = 0;      // for removing a waypoint label
+  int waypt_idx = 0;  // for labelling a waypoint
+  HousesType house = HOUSE_NONE;
   /*------------------------------------------------------------------------
   Trap 'F2' regardless of whether we're in game or editor mode
   ------------------------------------------------------------------------*/
@@ -859,7 +854,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
 
       if (cell != -1) {
         found = 0;
-        for (i = 0; i < WAYPT_COUNT; i++) {
+        for (int i = 0; i < WAYPT_COUNT; i++) {
           if (i != WAYPT_HOME && Waypoint[i] == cell) {
             found = 1;
           }
@@ -898,7 +893,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
 
       if (cell != -1) {
         found = 0;
-        for (i = 0; i < WAYPT_COUNT; i++) {
+        for (int i = 0; i < WAYPT_COUNT; i++) {
           if (i != WAYPT_REINF && Waypoint[i] == cell) {
             found = 1;
           }
@@ -1011,7 +1006,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         Loop through letter waypoints; if this cell is one of them,
         clear that waypoint.
         ...............................................................*/
-        for (i = 0; i < 26; i++) {
+        for (int i = 0; i < 26; i++) {
           if (Waypoint[i] == CurrentCell) {
             Waypoint[i] = -1;
           }
@@ -1021,7 +1016,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         Loop through flag home values; if this cell is one of them, clear
         that waypoint.
         ...............................................................*/
-        for (i = 0; i < MAX_PLAYERS; i++) {
+        for (int i = 0; i < MAX_PLAYERS; i++) {
           house = static_cast<HousesType>(HOUSE_MULTI1 + i);
           if (HouseClass::As_Pointer(house) &&
               CurrentCell == HouseClass::As_Pointer(house)->FlagHome) {
@@ -1162,7 +1157,8 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
           if (CurrentObject[0]->What_Am_I() == RTTI_BUILDING) {
             auto* building = dynamic_cast<BuildingClass*>(CurrentObject[0]);
             if (Base.Is_Node(building)) {
-              node = Base.Get_Node(building);
+              BaseNodeClass* node =
+                  Base.Get_Node(building);  // for removing from an AI Base
               Base.Nodes.Delete(*node);
             }
           }
@@ -1246,7 +1242,8 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         /*
         ........................ Set new mission ........................
         */
-        mission = MapEditMissions[base::ToSize(MissionList->Current_Index())];
+        const MissionType mission =
+            MapEditMissions[base::ToSize(MissionList->Current_Index())];
         if (CurrentObject[0]->Get_Mission() != mission) {
           dynamic_cast<TechnoClass*>(CurrentObject[0])->Set_Mission(mission);
           Changed = true;
@@ -1264,9 +1261,8 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         /*
         .......... Derive strength from current gauge reading ...........
         */
-        strength = Fixed_To_Cardinal(
-            CurrentObject[0]->Class_Of().MaxStrength,
-            HealthGauge->Get_Value());
+        int strength = Fixed_To_Cardinal(
+            CurrentObject[0]->Class_Of().MaxStrength, HealthGauge->Get_Value());
 
         /*
         ........................... Clip to 1 ...........................
@@ -1363,9 +1359,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
  *   11/17/1994 BR : Created.                                              *
  *=========================================================================*/
 void MapEditClass::Draw_It(bool forced) {
-  const char* label;
   char buf[40];
-  const char* tptr;
 
   MouseClass::Draw_It(forced);
 
@@ -1405,8 +1399,8 @@ void MapEditClass::Draw_It(bool forced) {
     /*
     ------------------ Display the object's name & ID ------------------
     */
-    label = Text_String(CurrentObject[0]->Full_Name());
-    tptr = label;
+    const char* label = Text_String(CurrentObject[0]->Full_Name());
+    const char* tptr = label;
     absl::SNPrintF(buf, sizeof(buf), "%s (%d)", tptr,
                    CurrentObject[0]->As_Target());
 
@@ -1508,9 +1502,7 @@ bool MapEditClass::Mouse_Moved() {
  *=========================================================================*/
 void MapEditClass::Main_Menu() {
   const char* _menus[MAX_MAIN_MENU_NUM + 1];
-  int selection;  // option the user picks
-  bool process;   // menu stays up while true
-  int rc;
+  int rc = 0;
 
   /*
   --------------------------- Fill in menu items ---------------------------
@@ -1529,7 +1521,7 @@ void MapEditClass::Main_Menu() {
   ----------------------------- Main Menu loop -----------------------------
   */
   Override_Mouse_Shape(MOUSE_NORMAL);  // display default mouse cursor
-  process = true;
+  bool process = true;                 // menu stays up while true
   while (process) {
     /*
     ................ Invoke game callback, to update music ................
@@ -1540,7 +1532,7 @@ void MapEditClass::Main_Menu() {
     ............................. Invoke menu .............................
     */
     Hide_Mouse();  // Do_Menu assumes the mouse is already hidden
-    selection = Do_Menu(&_menus[0], true);
+    const int selection = Do_Menu(&_menus[0], true);  // option the user picks
     Show_Mouse();
     if (UnknownKey == KN_ESC || UnknownKey == KN_LMOUSE ||
         UnknownKey == KN_RMOUSE) {
@@ -1694,8 +1686,6 @@ void MapEditClass::Main_Menu() {
  *   11/29/1994 BR : Created.                                              *
  *=========================================================================*/
 void MapEditClass::AI_Menu() {
-  int selection;  // option the user picks
-  bool process;   // menu stays up while true
   const char* _menus[MAX_AI_MENU_NUM + 1];
 
   /*
@@ -1712,7 +1702,7 @@ void MapEditClass::AI_Menu() {
   ----------------------------- Main Menu loop -----------------------------
   */
   Override_Mouse_Shape(MOUSE_NORMAL);  // display default mouse cursor
-  process = true;
+  bool process = true;                 // menu stays up while true
   while (process) {
     /*
     ................ Invoke game callback, to update music ................
@@ -1723,7 +1713,7 @@ void MapEditClass::AI_Menu() {
     ............................. Invoke menu .............................
     */
     Hide_Mouse();  // Do_Menu assumes the mouse is already hidden
-    selection = Do_Menu(&_menus[0], true);
+    const int selection = Do_Menu(&_menus[0], true);  // option the user picks
     Show_Mouse();
     if (UnknownKey == KN_ESC || UnknownKey == KN_LMOUSE ||
         UnknownKey == KN_RMOUSE) {
@@ -1829,13 +1819,12 @@ bool MapEditClass::Verify_House(HousesType house,
  *=========================================================================*/
 HousesType MapEditClass::Cycle_House(HousesType curhouse,
                                      const ObjectTypeClass* objtype) {
-  HousesType count;  // prevents an infinite loop
 
   /*------------------------------------------------------------------------
   Loop through all house types, starting with the one after 'curhouse';
   return the first one that's valid
   ------------------------------------------------------------------------*/
-  count = HOUSE_NONE;
+  HousesType count = HOUSE_NONE;  // prevents an infinite loop
   while (true) {
     /*
     .......................... Go to next house ...........................

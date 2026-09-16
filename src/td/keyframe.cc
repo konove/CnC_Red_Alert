@@ -91,15 +91,9 @@ static int Length;
 int Get_Last_Frame_Length() { return Length; }
 
 void* Build_Frame(const void* dataptr, uint16_t framenumber, void* buffptr) {
-  const char* ptr;
   uint32_t offset[SUBFRAMEOFFS];
   // Offsets into the 24-bit frame data, so int32_t never overflows.
-  int32_t offcurr;
-  int32_t offdiff;
-  uint16_t buffsize;
   uint16_t currframe = 0;
-  uint16_t subframe;
-  char frameflags;
 
   //
   // valid pointer??
@@ -120,13 +114,13 @@ void* Build_Frame(const void* dataptr, uint16_t framenumber, void* buffptr) {
   }
 
   // calc buff size
-  buffsize = keyfr->width * keyfr->height;
+  const uint16_t buffsize = keyfr->width * keyfr->height;
 
   // get offset into data
-  ptr = static_cast<const char*>(Add_Long_To_Pointer(
+  const char* ptr = static_cast<const char*>(Add_Long_To_Pointer(
       dataptr, (int32_t{framenumber} << 3) + kKeyFrameHeaderSize));
   Mem_Copy(ptr, &offset[0], 12L);
-  frameflags = static_cast<char>(offset[0] >> 24);
+  const char frameflags = static_cast<char>(offset[0] >> 24);
 
   if (frameflags & KF_KEYFRAME) {
     ptr = static_cast<const char*>(
@@ -147,10 +141,10 @@ void* Build_Frame(const void* dataptr, uint16_t framenumber, void* buffptr) {
     }
 
     // key frame
-    offcurr = static_cast<int32_t>(offset[1] & 0x00FFFFFF);
+    const auto offcurr = static_cast<int32_t>(offset[1] & 0x00FFFFFF);
 
     // key delta
-    offdiff = static_cast<int32_t>(offset[0] & 0x00FFFFFF) - offcurr;
+    int32_t offdiff = static_cast<int32_t>(offset[0] & 0x00FFFFFF) - offcurr;
 
     ptr = static_cast<const char*>(Add_Long_To_Pointer(dataptr, offcurr));
 
@@ -173,7 +167,7 @@ void* Build_Frame(const void* dataptr, uint16_t framenumber, void* buffptr) {
       // adjust to delta after the keydelta
 
       currframe++;
-      subframe = 2;
+      uint16_t subframe = 2;
 
       while (currframe <= framenumber) {
         offdiff = static_cast<int32_t>(offset[subframe] & 0x00FFFFFF) - offcurr;

@@ -239,10 +239,9 @@ void WinsockInterfaceClass::Stop_Listening() {
  * HISTORY: * 8/5/97 11:55AM ST : Created *
  *=============================================================================================*/
 void WinsockInterfaceClass::Discard_In_Buffers() {
-  WinsockBufferType* packet;
 
   while (InBuffers.Count()) {
-    packet = InBuffers[0];
+    WinsockBufferType* packet = InBuffers[0];
     delete packet;
     InBuffers.Delete(0);
   }
@@ -263,10 +262,9 @@ void WinsockInterfaceClass::Discard_In_Buffers() {
  * HISTORY: * 8/5/97 11:55AM ST : Created *
  *=============================================================================================*/
 void WinsockInterfaceClass::Discard_Out_Buffers() {
-  WinsockBufferType* packet;
 
   while (OutBuffers.Count()) {
-    packet = OutBuffers[0];
+    WinsockBufferType* packet = OutBuffers[0];
     delete packet;
     OutBuffers.Delete(0);
   }
@@ -517,7 +515,7 @@ void WinsockInterfaceClass::Broadcast(void* buffer, int buffer_len) {
  * HISTORY: * 8/5/97 12:05PM ST : Created *
  *=============================================================================================*/
 void WinsockInterfaceClass::Clear_Socket_Error(SOCKET socket) {
-  uint32_t error_code;
+  uint32_t error_code = 0;
   socklen_t length = 4;
 
   getsockopt(socket, SOL_SOCKET, SO_ERROR, SocketBytes(error_code), &length);

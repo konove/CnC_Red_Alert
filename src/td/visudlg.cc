@@ -99,8 +99,6 @@ void VisualControlsClass::Process() {
   **	Variables.
   */
   int selection = 0;
-  bool pressed;
-  int curbutton;
   TextButtonClass* buttons[NUM_OF_BUTTONS];
   SliderClass* buttonsliders[NUM_OF_BUTTONS];
 
@@ -178,7 +176,7 @@ void VisualControlsClass::Process() {
                           GadgetClass::LEFTPRESS | GadgetClass::RIGHTPRESS);
   background.Add_Tail(optionsbtn);
 
-  curbutton = 0;
+  int curbutton = 0;
   buttons[0] = nullptr;
   buttons[1] = nullptr;
   buttons[2] = nullptr;
@@ -199,7 +197,7 @@ void VisualControlsClass::Process() {
   bool display = true;
   bool process = true;
   bool partial = true;
-  pressed = false;
+  bool pressed = false;
   while (process) {
     /*
     **	Invoke game callback.

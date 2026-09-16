@@ -295,17 +295,12 @@ void TextButtonClass::Draw_Background() {
   /*
   **	Draw the body & set text color.
   */
-  BoxStyleEnum style;
-
-  if (IsDisabled) {
-    style = config::kWolapiEnabled ? BOXSTYLE_BOX : BOXSTYLE_DIS_RAISED;
-  } else {
-    if (IsPressed) {
-      style = BOXSTYLE_DOWN;
-    } else {
-      style = BOXSTYLE_RAISED;
+  const BoxStyleEnum style = [this] {
+    if (IsDisabled) {
+      return config::kWolapiEnabled ? BOXSTYLE_BOX : BOXSTYLE_DIS_RAISED;
     }
-  }
+    return IsPressed ? BOXSTYLE_DOWN : BOXSTYLE_RAISED;
+  }();
 
   Draw_Box(X, Y, Width, Height, style, true);
 }
@@ -333,17 +328,13 @@ void TextButtonClass::Draw_Text(const char* text) {
   **	Display the text.
   */
   if (String) {
-    TextPrintType flags;
-
-    if (IsDisabled) {
-      flags = static_cast<TextPrintType>(0);
-    } else {
-      if (IsPressed || IsOn) {
-        flags = TPF_USE_GRAD_PAL | TPF_BRIGHT_COLOR;
-      } else {
-        flags = TPF_USE_GRAD_PAL | TPF_MEDIUM_COLOR;
+    const TextPrintType flags = [this] {
+      if (IsDisabled) {
+        return static_cast<TextPrintType>(0);
       }
-    }
+      return IsPressed || IsOn ? TPF_USE_GRAD_PAL | TPF_BRIGHT_COLOR
+                               : TPF_USE_GRAD_PAL | TPF_MEDIUM_COLOR;
+    }();
 
     Fancy_Text_Print(text, X + (Width >> 1) - 1, Y + 1, scheme, TBLACK,
                      PrintFlags | flags | TPF_CENTER);

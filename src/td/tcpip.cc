@@ -243,7 +243,6 @@ bool TcpipManagerClass::Init() {
  *=============================================================================================*/
 
 void TcpipManagerClass::Start_Server() {
-  int i;
   // struct sockaddr_in addr;
 
   Start_Client();
@@ -261,12 +260,12 @@ void TcpipManagerClass::Start_Server() {
   RXBufferHead = 0;
   RXBufferTail = 0;
 
-  for (i = 0; i < WS_NUM_TX_BUFFERS; i++) {
-    TransmitBuffers[i].InUse = false;
+  for (auto& buffer : TransmitBuffers) {
+    buffer.InUse = false;
   }
 
-  for (i = 0; i < WS_NUM_RX_BUFFERS; i++) {
-    ReceiveBuffers[i].InUse = false;
+  for (auto& buffer : ReceiveBuffers) {
+    buffer.InUse = false;
   }
 
   /*
@@ -365,14 +364,13 @@ void TcpipManagerClass::Write(void* buffer, int buffer_len) {
 
 bool TcpipManagerClass::Add_Client() {
   struct sockaddr_in addr{};
-  socklen_t addrsize;
   // Socket boolean options use an int, not the one-byte C++ bool type.
   const int no_delay = 1;
 
   /*
   ** Accept the connection. If there is an error then dont do anything else
   */
-  addrsize = sizeof(addr);
+  socklen_t addrsize = sizeof(addr);
   ConnectSocket = accept(ListenSocket, SocketAddress(addr), &addrsize);
   if (ConnectSocket == INVALID_SOCKET) {
     // Show_Error("accept", WSAGetLastError());
@@ -501,7 +499,6 @@ void TcpipManagerClass::Set_Host_Address(char* address) {
 
 void TcpipManagerClass::Start_Client() {
   struct sockaddr_in addr{};
-  int i;
 
   addr.sin_family = AF_INET;
   addr.sin_port = 0;
@@ -520,12 +517,12 @@ void TcpipManagerClass::Start_Client() {
   RXBufferHead = 0;
   RXBufferTail = 0;
 
-  for (i = 0; i < WS_NUM_TX_BUFFERS; i++) {
-    TransmitBuffers[i].InUse = false;
+  for (auto& buffer : TransmitBuffers) {
+    buffer.InUse = false;
   }
 
-  for (i = 0; i < WS_NUM_RX_BUFFERS; i++) {
-    ReceiveBuffers[i].InUse = false;
+  for (auto& buffer : ReceiveBuffers) {
+    buffer.InUse = false;
   }
 
   Connected = false;
@@ -593,7 +590,7 @@ void TcpipManagerClass::Close_Socket(SOCKET s) {
 void TcpipManagerClass::Set_Protocol_UDP(bool state) { UseUDP = state; }
 
 void TcpipManagerClass::Clear_Socket_Error(SOCKET socket) {
-  uint32_t error_code;
+  uint32_t error_code = 0;
   socklen_t length = 4;
 
   getsockopt(socket, SOL_SOCKET, SO_ERROR, SocketBytes(error_code), &length);

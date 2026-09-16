@@ -118,19 +118,13 @@ static void __cdecl UnVQ_Nop(const unsigned char* codebook,
  ****************************************************************************/
 
 void VQA_Configure_Drawer(VQAHandle* vqap) {
-  VQAData* vqabuf;
-  VQAConfig* config;
-  VQAHeader* header;
-  VQADrawer* drawer;
-  uint32_t origin;
-  int32_t blkdim;
 
   /* Dereference commonly used data members for quicker access. */
-  vqabuf = vqap->data;
-  drawer = &vqabuf->Drawer;
-  header = &vqap->header;
-  config = &vqap->config;
-  origin = config->DrawFlags & VQACFGF_ORIGIN;
+  VQAData* vqabuf = vqap->data;
+  VQADrawer* drawer = &vqabuf->Drawer;
+  VQAHeader* header = &vqap->header;
+  VQAConfig* config = &vqap->config;
+  const uint32_t origin = config->DrawFlags & VQACFGF_ORIGIN;
 
   /*-------------------------------------------------------------------------
    * SET THE DRAW POSITION OF THE MOVIE.
@@ -186,7 +180,7 @@ void VQA_Configure_Drawer(VQAHandle* vqap) {
   drawer->BlocksPerRow = header->ImageWidth / header->BlockWidth;
   drawer->NumRows = header->ImageHeight / header->BlockHeight;
   drawer->NumBlocks = drawer->BlocksPerRow * drawer->NumRows;
-  blkdim = BLOCK_DIM(header->BlockWidth, header->BlockHeight);
+  const int32_t blkdim = BLOCK_DIM(header->BlockWidth, header->BlockHeight);
 
   /* Initialize draw routine vectors to a NOP routine in order to prevent
    * a crash.
@@ -246,18 +240,12 @@ void VQA_Configure_Drawer(VQAHandle* vqap) {
  ****************************************************************************/
 
 static int32_t Select_Frame(VQAHandle* vqap) {
-  VQAData* vqabuf;
-  VQADrawer* drawer;
-  VQAConfig* config;
-  VQAFrameNode* curframe;
-  int64_t desiredframe;
-  int64_t curtime;
 
   /* Dereference commonly used data members for quicker access. */
-  config = &vqap->config;
-  vqabuf = vqap->data;
-  drawer = &vqabuf->Drawer;
-  curframe = drawer->CurFrame;
+  VQAConfig* config = &vqap->config;
+  VQAData* vqabuf = vqap->data;
+  VQADrawer* drawer = &vqabuf->Drawer;
+  VQAFrameNode* curframe = drawer->CurFrame;
 
   /* Make sure the current frame is drawable. If the frame is not ready
    * then we must wait for the loader to catch up.
@@ -274,11 +262,11 @@ static int32_t Select_Frame(VQAHandle* vqap) {
   }
 
   /* Find the frame # we should play (rounded to nearest frame): */
-  curtime = VQA_GetTime(vqap);
+  const int64_t curtime = VQA_GetTime(vqap);
   //	desiredframe = ((curtime * config->FrameRate) / VQA_TIMETICKS);
   // MEG MOD 06.22.95 - Should look for the desired frame to draw, not load,
   // right?
-  desiredframe = curtime * config->DrawRate / VQA_TIMETICKS;
+  const int64_t desiredframe = curtime * config->DrawRate / VQA_TIMETICKS;
 
   /* Handle the cases where the player is going so fast that it's not time
    * to draw this frame yet.
@@ -403,14 +391,11 @@ static int32_t Select_Frame(VQAHandle* vqap) {
  ****************************************************************************/
 
 static void Prepare_Frame(VQAData* vqabuf) {
-  VQADrawer* drawer;
-  VQAFrameNode* curframe;
-  VQACBNode* codebook;
 
   /* Dereference commonly used data members for quicker access. */
-  drawer = &vqabuf->Drawer;
-  curframe = drawer->CurFrame;
-  codebook = curframe->Codebook;
+  VQADrawer* drawer = &vqabuf->Drawer;
+  VQAFrameNode* curframe = drawer->CurFrame;
+  VQACBNode* codebook = curframe->Codebook;
 
   /* Decompress the codebook, if needed */
   if (codebook->Flags & VQACBF_CBCOMP) {
@@ -464,11 +449,6 @@ static void Prepare_Frame(VQAData* vqabuf) {
 
 extern void __cdecl Set_Palette(void* palette);
 static int32_t DrawFrame_Buffer(VQAHandle* vqa) {
-  VQAFrameNode* curframe;
-  unsigned char* pal;
-  int32_t palsize;
-  uint32_t slowpal;
-  unsigned char* buff;
 
   auto* vqa_handle_p = vqa;
   /* Dereference data members for quicker access. */
@@ -499,13 +479,14 @@ static int32_t DrawFrame_Buffer(VQAHandle* vqa) {
   }
 
   /* Dereference current frame for quicker access. */
-  curframe = drawer->CurFrame;
+  VQAFrameNode* curframe = drawer->CurFrame;
 
-  buff = drawer->ImageBuf + drawer->ScreenOffset;
+  unsigned char* buff = drawer->ImageBuf + drawer->ScreenOffset;
 
-  pal = curframe->Palette;
-  palsize = curframe->PaletteSize;
-  slowpal = (config->OptionFlags & VQAOPTF_SLOWPAL) != 0 ? 1U : 0U;
+  unsigned char* pal = curframe->Palette;
+  const int32_t palsize = curframe->PaletteSize;
+  const uint32_t slowpal =
+      (config->OptionFlags & VQAOPTF_SLOWPAL) != 0 ? 1U : 0U;
 
   /* Set the palette if necessary */
   if (curframe->Flags & VQAFRMF_PALETTE || drawer->Flags & VQADRWF_SETPAL) {

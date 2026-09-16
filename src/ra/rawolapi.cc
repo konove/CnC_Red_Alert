@@ -973,7 +973,7 @@ bool RAChatEventSink::DownloadUpdates(Update* pUpdateList, int iUpdates) {
   bool bReturn = true;
   //	This is all like WolapiObject::bSetupCOMStuff().
   // debugprint( "Do all the COM crap.\n" );
-  IDownload* pDownload;
+  IDownload* pDownload = nullptr;
   CoCreateInstance(CLSID_Download, nullptr, CLSCTX_INPROC_SERVER, IID_IDownload,
                    ComOut(&pDownload));
   DCHECK(pDownload);
@@ -986,7 +986,7 @@ bool RAChatEventSink::DownloadUpdates(Update* pUpdateList, int iUpdates) {
   DCHECK(SUCCEEDED(hRes));
   hRes = pContainer->FindConnectionPoint(IID_IDownloadEvent, &pConnectionPoint);
   DCHECK(SUCCEEDED(hRes));
-  DWORD dwDownloadAdvise;
+  DWORD dwDownloadAdvise = 0;
   hRes = pConnectionPoint->Advise(static_cast<IDownloadEvent*>(pDownloadSink),
                                   &dwDownloadAdvise);
   DCHECK(SUCCEEDED(hRes));
@@ -1883,7 +1883,7 @@ int RANetUtilEventSink::GetUserRank(const char* szName, bool bRankRA) const {
   //	Searches for szName in ladder list, returns player rank if found, else
   // 0. 	Slow linear search. 	If bRankRA, returns RA rank, else
   // returns AM rank. 	debugprint( "GetUserRank: Asked for %s, ", szName );
-  Ladder* pLad;
+  Ladder* pLad = nullptr;
   if (bRankRA) {
     pLad = pLadderList;
   } else {

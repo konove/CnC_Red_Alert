@@ -414,10 +414,6 @@ bool Process_Global_Packet(GlobalPacketType* packet, IPXAddressClass* address) {
  * HISTORY: * 04/22/1995 BR : Created. *
  *=============================================================================================*/
 void Destroy_Connection(int id, int error) {
-  int i;
-  int j;
-  HousesType house;
-  HouseClass* housep;
   char txt[80];
 
   /*------------------------------------------------------------------------
@@ -445,20 +441,20 @@ void Destroy_Connection(int id, int error) {
   ------------------------------------------------------------------------*/
   Ipx.Delete_Connection(id);
 
-  for (i = 0; i < MPlayerCount; i++) {
+  for (int i = 0; i < MPlayerCount; i++) {
     if (MPlayerID[i] == static_cast<unsigned char>(id)) {
       /*..................................................................
       Turn the player's house over to the computer's AI
       ..................................................................*/
-      house = MPlayerHouses[i];
-      housep = HouseClass::As_Pointer(house);
+      const HousesType house = MPlayerHouses[i];
+      HouseClass* housep = HouseClass::As_Pointer(house);
       housep->IsHuman = false;
       housep->IsStarted = true;
 
       /*..................................................................
       Move arrays back by one
       ..................................................................*/
-      for (j = i; j < MPlayerCount - 1; j++) {
+      for (int j = i; j < MPlayerCount - 1; j++) {
         MPlayerID[j] = MPlayerID[j + 1];
         MPlayerHouses[j] = MPlayerHouses[j + 1];
         port::SafeCopy(MPlayerNames[j], MPlayerNames[j + 1]);
@@ -499,8 +495,6 @@ void Destroy_Connection(int id, int error) {
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
 bool Remote_Connect() {
-  int rc;
-  bool stealth;  // original state of NetStealth flag
 
   /*------------------------------------------------------------------------
   Init network timing parameters; these values should work for both a "real"
@@ -514,7 +508,7 @@ bool Remote_Connect() {
   Save the original value of the NetStealth flag, so we can turn stealth
   off for now (during this portion of the dialogs, we must show ourselves)
   ------------------------------------------------------------------------*/
-  stealth = NetStealth;
+  const bool stealth = NetStealth;  // original state of NetStealth flag
   NetStealth = false;
 
   /*------------------------------------------------------------------------
@@ -540,7 +534,7 @@ bool Remote_Connect() {
     /*---------------------------------------------------------------------
     Pop up the network Join/New dialog
     ---------------------------------------------------------------------*/
-    rc = Net_Join_Dialog();
+    const int rc = Net_Join_Dialog();
 
     /*---------------------------------------------------------------------
     -1 = user selected Cancel
@@ -595,7 +589,6 @@ bool Remote_Connect() {
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
 bool Server_Remote_Connect() {
-  bool stealth;  // original state of NetStealth flag
 
   /*------------------------------------------------------------------------
   Init network timing parameters; these values should work for both a "real"
@@ -609,7 +602,7 @@ bool Server_Remote_Connect() {
   Save the original value of the NetStealth flag, so we can turn stealth
   off for now (during this portion of the dialogs, we must show ourselves)
   ------------------------------------------------------------------------*/
-  stealth = NetStealth;
+  const bool stealth = NetStealth;  // original state of NetStealth flag
   NetStealth = false;
 
   /*------------------------------------------------------------------------
@@ -650,8 +643,6 @@ bool Server_Remote_Connect() {
  * HISTORY: * 02/14/1995 ST : Created. *
  *=============================================================================================*/
 bool Client_Remote_Connect() {
-  int rc;
-  bool stealth;  // original state of NetStealth flag
 
   /*------------------------------------------------------------------------
   Init network timing parameters; these values should work for both a "real"
@@ -665,7 +656,7 @@ bool Client_Remote_Connect() {
   Save the original value of the NetStealth flag, so we can turn stealth
   off for now (during this portion of the dialogs, we must show ourselves)
   ------------------------------------------------------------------------*/
-  stealth = NetStealth;
+  const bool stealth = NetStealth;  // original state of NetStealth flag
   NetStealth = false;
 
   /*------------------------------------------------------------------------
@@ -682,7 +673,7 @@ bool Client_Remote_Connect() {
   /*---------------------------------------------------------------------
   Pop up the network Join/New dialog
   ---------------------------------------------------------------------*/
-  rc = Net_Fake_Join_Dialog();
+  const int rc = Net_Fake_Join_Dialog();
   Write_MultiPlayer_Settings();
 
   NetStealth = stealth;
@@ -886,7 +877,7 @@ static int Net_Join_Dialog() {
   ........................................................................*/
   RedrawType display = REDRAW_ALL;  // redraw level
   bool process = true;              // process while true
-  KeyNumType input;
+  KeyNumType input = KN_NONE;
   const int cbox_x[] = {d_gdi_x,
                         d_gdi_x + d_color_w,
                         d_gdi_x + (d_color_w * 2),
@@ -900,13 +891,12 @@ static int Net_Join_Dialog() {
   int game_index = -1;                     // index of currently-selected game
   int join_index = -1;                     // index of game we're joining
   int rc = 0;                              // -1 = user cancelled, 1 = New
-  JoinEventType event;                     // event from incoming packet
-  int i;
-  int j;  // loop counter
+  int i = 0;
+  int j = 0;  // loop counter
   char txt[80];
-  const char* p;
+  const char* p = nullptr;
   int parms_received = 0;  // 1 = game options received
-  int found;
+  int found = 0;
 
   unsigned char tmp_id[MAX_PLAYERS] =
       {};                    // temp storage for sorting player ID's
@@ -914,17 +904,17 @@ static int Net_Join_Dialog() {
   unsigned char min_id = 0;  // for sorting player ID's
   unsigned char id = 0;      // connection ID
   char item[kGameListItemSize];
-  int64_t starttime;
+  int64_t starttime = 0;
 
-  NodeNameType* who;
+  NodeNameType* who = nullptr;
 
-  int message_length;
-  int sent_so_far;
-  uint16_t magic_number;
-  uint16_t crc;
+  int message_length = 0;
+  int sent_so_far = 0;
+  uint16_t magic_number = 0;
+  uint16_t crc = 0;
 
-  const void* up_button;
-  const void* down_button;
+  const void* up_button = nullptr;
+  const void* down_button = nullptr;
 
   if (InMainLoop) {
     up_button = Hires_Retrieve("BTN-UP.SHP");
@@ -1584,8 +1574,6 @@ static int Net_Join_Dialog() {
             If 'input' returned 3, it means send the current message.
             ...............................................................*/
             if (i == 3) {
-              int32_t actual_message_size;
-              char* the_string;
 
               sent_so_far = 0;
               magic_number = MESSAGE_HEAD_MAGIC_NUMBER;
@@ -1603,11 +1591,11 @@ static int Net_Join_Dialog() {
                 /*
                 ** Steve I's stuff for splitting message on word boundries
                 */
-                actual_message_size = COMPAT_MESSAGE_LENGTH - 5;
+                int32_t actual_message_size = COMPAT_MESSAGE_LENGTH - 5;
 
                 /* Start at the end of the message and find a space with 10
                  * chars. */
-                the_string = GPacket.Message.Buf;
+                char* the_string = GPacket.Message.Buf;
                 while (COMPAT_MESSAGE_LENGTH - 5 - actual_message_size < 10 &&
                        the_string[actual_message_size] != ' ') {
                   --actual_message_size;
@@ -1677,7 +1665,8 @@ static int Net_Join_Dialog() {
     /*---------------------------------------------------------------------
     Process incoming packets
     ---------------------------------------------------------------------*/
-    event = Get_Join_Responses(&joinstate, &gamelist, &playerlist, join_index);
+    const JoinEventType event =
+        Get_Join_Responses(&joinstate, &gamelist, &playerlist, join_index);
     /*.....................................................................
     If we've changed state, redraw everything; if we're starting the game,
     break out of the loop.  If we've just joined, send out a player query
@@ -1992,7 +1981,6 @@ static int Net_Join_Dialog() {
  * HISTORY:                                                                *
  *=========================================================================*/
 static void Clear_Game_List(ListClass* gamelist) {
-  int i;
 
   /*------------------------------------------------------------------------
   Clear the list box
@@ -2002,7 +1990,7 @@ static void Clear_Game_List(ListClass* gamelist) {
   /*------------------------------------------------------------------------
   Clear the 'Games' Vector
   ------------------------------------------------------------------------*/
-  for (i = 0; i < Games.Count(); i++) {
+  for (int i = 0; i < Games.Count(); i++) {
     delete Games[i];
   }
 
@@ -2032,7 +2020,6 @@ static void Clear_Game_List(ListClass* gamelist) {
  * HISTORY:                                                                *
  *=========================================================================*/
 static void Clear_Player_List(ListClass* playerlist) {
-  int i;
 
   /*------------------------------------------------------------------------
   Clear the list box
@@ -2042,7 +2029,7 @@ static void Clear_Player_List(ListClass* playerlist) {
   /*------------------------------------------------------------------------
   Clear the 'Players' Vector
   ------------------------------------------------------------------------*/
-  for (i = 0; i < Players.Count(); i++) {
+  for (int i = 0; i < Players.Count(); i++) {
     delete Players[i];
   }
 
@@ -2078,7 +2065,6 @@ static void Clear_Player_List(ListClass* playerlist) {
 static bool Request_To_Join(const char* playername, int join_index,
                             ListClass* /*playerlist*/, HousesType house,
                             int color) {
-  int i;
 
   /*
   --------------------------- Validate join_index --------------------------
@@ -2107,7 +2093,7 @@ static bool Request_To_Join(const char* playername, int join_index,
   /*
   ------------------------ Make sure name is unique ------------------------
   */
-  for (i = 0; i < Players.Count(); i++) {
+  for (int i = 0; i < Players.Count(); i++) {
     if (!stricmp(playername, Players[i]->Name)) {
       CCMessageBox().Process(TXT_NAME_MUSTBE_UNIQUE);
       return false;
@@ -2117,7 +2103,7 @@ static bool Request_To_Join(const char* playername, int join_index,
   /*
   ----------------------------- Check version #'s --------------------------
   */
-  int v;
+  int v = 0;
 #ifdef PATCH
   if (IsV107) {
     v = 1;
@@ -2286,21 +2272,18 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
                                         ListClass* gamelist,
                                         ColorListClass* playerlist,
                                         int join_index) {
-  int rc;
   char item[kGameListItemSize];  // general-purpose string
-  NodeNameType* who;  // node to add to Games or Players
-  int i;
-  int found;
+  NodeNameType* who = nullptr;   // node to add to Games or Players
+  int i = 0;
+  int found = 0;
   JoinEventType retcode = EV_NONE;
   char txt[80];
-  int color;
-  uint16_t magic_number;
-  uint16_t crc;
 
   /*------------------------------------------------------------------------
   If there is no incoming packet, just return
   ------------------------------------------------------------------------*/
-  rc = Ipx.Get_Global_Message(&GPacket, &GPacketlen, &GAddress, &GProductID);
+  const int rc =
+      Ipx.Get_Global_Message(&GPacket, &GPacketlen, &GAddress, &GProductID);
   if (!rc || GProductID != IPXGlobalConnClass::COMMAND_AND_CONQUER) {
     return EV_NONE;
   }
@@ -2634,11 +2617,11 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
   else if (GPacket.Command == NET_MESSAGE) {
     Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_FROM), GPacket.Name,
                         GPacket.Message.Buf);
-    magic_number = port::ReadUnaligned<uint16_t>(GPacket.Message.Buf +
-                                                 COMPAT_MESSAGE_LENGTH - 4);
-    crc = port::ReadUnaligned<uint16_t>(GPacket.Message.Buf +
-                                        COMPAT_MESSAGE_LENGTH - 2);
-    color = MPlayerID_To_ColorIndex(GPacket.Message.ID);
+    const auto magic_number = port::ReadUnaligned<uint16_t>(
+        GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 4);
+    const auto crc = port::ReadUnaligned<uint16_t>(GPacket.Message.Buf +
+                                                   COMPAT_MESSAGE_LENGTH - 2);
+    const int color = MPlayerID_To_ColorIndex(GPacket.Message.ID);
     Messages.Add_Message(txt, MPlayerTColors[color],
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200,
                          magic_number, crc);
@@ -2857,17 +2840,15 @@ static int Net_New_Dialog() {
   ........................................................................*/
   RedrawType display = REDRAW_ALL;  // redraw level
   bool process = true;              // process while true
-  KeyNumType input;
+  KeyNumType input = KN_NONE;
 
   char credbuf[CREDITSBUF_MAX];  // for credit edit box
-  int old_cred;                  // old value in credits buffer
-  int transmit;                  // 1 = re-transmit new game options
 
   int64_t ok_timer = 0;  // for timing OK button
-  int index;          // index for rejecting a player
+  int index = 0;         // index for rejecting a player
   int rc = 0;
-  int i;
-  int j;
+  int i = 0;
+  int j = 0;
   char item[kGameListItemSize];
   int tabs[] = {77 * factor};  // tabs for player list box
 
@@ -2879,21 +2860,19 @@ static int Net_New_Dialog() {
   unsigned char min_id = 0;  // for sorting player ID's
   unsigned char id = 0;      // connection ID
   char txt[80];
-  JoinEventType whahoppa;     // event generated by received packets
   static int first_time = 1;  // 1 = 1st time this dialog is run
 
-  int message_length;
-  int sent_so_far;
-  uint16_t magic_number;
-  uint16_t crc;
+  int message_length = 0;
+  int sent_so_far = 0;
+  uint16_t magic_number = 0;
+  uint16_t crc = 0;
 
   /*........................................................................
   Buttons
   ........................................................................*/
-  GadgetClass* commands;  // button list
 
-  const void* up_button;
-  const void* down_button;
+  const void* up_button = nullptr;
+  const void* down_button = nullptr;
 
   if (InMainLoop) {
     up_button = Hires_Retrieve("BTN-UP.SHP");
@@ -2979,7 +2958,7 @@ static int Net_New_Dialog() {
   /*
   ------------------------- Build the button list --------------------------
   */
-  commands = &playerlist;
+  GadgetClass* commands = &playerlist;  // button list
   scenariolist.Add_Tail(*commands);
   credit_edt.Add_Tail(*commands);
   rejectbtn.Add_Tail(*commands);
@@ -3040,7 +3019,7 @@ static int Net_New_Dialog() {
 
   absl::SNPrintF(credbuf, sizeof(credbuf), "%d", MPlayerCredits);
   credit_edt.Set_Text(credbuf, CREDITSBUF_MAX);
-  old_cred = MPlayerCredits;
+  int old_cred = MPlayerCredits;  // old value in credits buffer
 
   levelgauge.Set_Maximum(MPLAYER_BUILD_LEVEL_MAX - 1);
   levelgauge.Set_Value(BuildLevel - 1);
@@ -3054,7 +3033,7 @@ static int Net_New_Dialog() {
   ........................................................................*/
   Special.IsTGrowth = static_cast<unsigned>(MPlayerTiberium);
   Special.IsTSpread = static_cast<unsigned>(MPlayerTiberium);
-  transmit = 0;
+  int transmit = 0;  // 1 = re-transmit new game options
 
   /*........................................................................
   Init scenario description list box
@@ -3572,8 +3551,6 @@ static int Net_New_Dialog() {
         If 'input' returned 3, it means send the current message.
         ...............................................................*/
         else if (i == 3) {
-          int32_t actual_message_size;
-          char* the_string;
 
           sent_so_far = 0;
           magic_number = MESSAGE_HEAD_MAGIC_NUMBER;
@@ -3590,11 +3567,11 @@ static int Net_New_Dialog() {
             /*
             ** Steve I's stuff for splitting message on word boundries
             */
-            actual_message_size = COMPAT_MESSAGE_LENGTH - 5;
+            int32_t actual_message_size = COMPAT_MESSAGE_LENGTH - 5;
 
             /* Start at the end of the message and find a space with 10 chars.
              */
-            the_string = GPacket.Message.Buf;
+            char* the_string = GPacket.Message.Buf;
             while (COMPAT_MESSAGE_LENGTH - 5 - actual_message_size < 10 &&
                    the_string[actual_message_size] != ' ') {
               --actual_message_size;
@@ -3660,7 +3637,7 @@ static int Net_New_Dialog() {
     /*---------------------------------------------------------------------
     Process incoming packets
     ---------------------------------------------------------------------*/
-    whahoppa = Get_NewGame_Responses(&playerlist);
+    const JoinEventType whahoppa = Get_NewGame_Responses(&playerlist);
     if (whahoppa == EV_NEW_PLAYER) {
       ok_timer = TickCount.Time();
       transmit = 1;
@@ -3867,22 +3844,15 @@ static int Net_New_Dialog() {
  *   04/18/1995 BRR : Created.                                             *
  *=========================================================================*/
 static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist) {
-  int rc;
   char item[kGameListItemSize];  // general-purpose string
-  NodeNameType* who;  // node to add to Players Vector
-  int i;
-  int found;
   JoinEventType retval = EV_NONE;
-  int resend;
   char txt[80];
-  int color;
-  uint16_t magic_number;
-  uint16_t crc;
 
   /*------------------------------------------------------------------------
   If there is no incoming packet, just return
   ------------------------------------------------------------------------*/
-  rc = Ipx.Get_Global_Message(&GPacket, &GPacketlen, &GAddress, &GProductID);
+  const int rc =
+      Ipx.Get_Global_Message(&GPacket, &GPacketlen, &GAddress, &GProductID);
   if (!rc || GProductID != IPXGlobalConnClass::COMMAND_AND_CONQUER) {
     return EV_NONE;
   }
@@ -3906,9 +3876,9 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist) {
       received my CONFIRM_JOIN packet (since it was sent with an ACK
       required), so we can ignore this resend.
     .....................................................................*/
-    found = 0;
-    resend = 0;
-    for (i = 0; i < Players.Count(); i++) {
+    int found = 0;
+    int resend = 0;
+    for (int i = 0; i < Players.Count(); i++) {
       if (!strcmp(Players[i]->Name, GPacket.Name)) {
         if (Players[i]->Address != GAddress) {
           found = 1;
@@ -3941,7 +3911,7 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist) {
       /*..................................................................
       Add node to the Vector list
       ..................................................................*/
-      who = new NodeNameType;
+      auto* who = new NodeNameType;  // node to add to Players Vector
       port::SafeCopy(who->Name, GPacket.Name);
       who->Address = GAddress;
       who->Player.House = GPacket.PlayerInfo.House;
@@ -3956,7 +3926,7 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist) {
         who->Player.Color =
             static_cast<unsigned char>(GPacket.PlayerInfo.Color);
       } else {
-        for (i = 0; i < MAX_MPLAYER_COLORS; i++) {
+        for (int i = 0; i < MAX_MPLAYER_COLORS; i++) {
           if (ColorUsed[i] == 0) {
             who->Player.Color = static_cast<unsigned char>(i);
             break;
@@ -3998,7 +3968,7 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist) {
   the player list, & remove it if found
   ------------------------------------------------------------------------*/
   else if (GPacket.Command == NET_SIGN_OFF) {
-    for (i = 0; i < Players.Count(); i++) {
+    for (int i = 0; i < Players.Count(); i++) {
       /*
       ....................... Name found; remove it ......................
       */
@@ -4028,11 +3998,11 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist) {
   else if (GPacket.Command == NET_MESSAGE) {
     Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_FROM), GPacket.Name,
                         GPacket.Message.Buf);
-    magic_number = port::ReadUnaligned<uint16_t>(GPacket.Message.Buf +
-                                                 COMPAT_MESSAGE_LENGTH - 4);
-    crc = port::ReadUnaligned<uint16_t>(GPacket.Message.Buf +
-                                        COMPAT_MESSAGE_LENGTH - 2);
-    color = MPlayerID_To_ColorIndex(GPacket.Message.ID);
+    const auto magic_number = port::ReadUnaligned<uint16_t>(
+        GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH - 4);
+    const auto crc = port::ReadUnaligned<uint16_t>(GPacket.Message.Buf +
+                                                   COMPAT_MESSAGE_LENGTH - 2);
+    const int color = MPlayerID_To_ColorIndex(GPacket.Message.ID);
     Messages.Add_Message(txt, MPlayerTColors[color],
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200,
                          magic_number, crc);
@@ -4063,12 +4033,11 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist) {
 uint32_t Compute_Name_CRC(const char* name) {
   char buf[80];
   uint32_t crc = 0L;
-  int i;
 
   port::SafeCopy(buf, name);
   strupr(buf);
 
-  for (i = 0; std::cmp_less(i, strlen(buf)); i++) {
+  for (int i = 0; std::cmp_less(i, strlen(buf)); i++) {
     Add_CRC(&crc, static_cast<uint32_t>(buf[i]));
   }
 
@@ -4103,10 +4072,8 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
   static int y;
   static int w;
   static int h;
-  int id;
   char buf1[40] = {0};
   char buf2[40] = {0};
-  const char* buf3;
 
   const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
 
@@ -4121,7 +4088,7 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
         "", 0, 0, CC_GREEN, TBLACK,
         TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
     if (reconn) {
-      id = Ipx.Connection_ID(oldest_index);
+      const int id = Ipx.Connection_ID(oldest_index);
       Format_Runtime_Text(buf1, sizeof(buf1),
                           Text_String(TXT_RECONNECTING_TO),
                           Ipx.Connection_Name(id));
@@ -4131,7 +4098,7 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
     }
     Format_Runtime_Text(buf2, sizeof(buf2), Text_String(TXT_TIME_ALLOWED),
                         timeval + 1);
-    buf3 = Text_String(TXT_PRESS_ESC);
+    const char* buf3 = Text_String(TXT_PRESS_ESC);
 
     w = std::max<int>(String_Pixel_Width(buf1), String_Pixel_Width(buf2));
     w = std::max<int>(String_Pixel_Width(buf3), w);
@@ -4305,15 +4272,14 @@ static int Net_Fake_New_Dialog() {
   ........................................................................*/
   RedrawType display = REDRAW_ALL;  // redraw level
   bool process = true;              // process while true
-  KeyNumType input;
+  KeyNumType input = KN_NONE;
 
   char credbuf[CREDITSBUF_MAX];  // for credit edit box
-  int transmit;                  // 1 = re-transmit new game options
 
   int64_t ok_timer = 0;  // for timing OK button
   int rc = 0;
-  int i;
-  int j;
+  int i = 0;
+  int j = 0;
   char item[kGameListItemSize];
   int tabs[] = {77 * factor};  // tabs for player list box
 
@@ -4324,10 +4290,10 @@ static int Net_Fake_New_Dialog() {
   int min_index = 0;         // for sorting player ID's
   unsigned char min_id = 0;  // for sorting player ID's
   unsigned char id = 0;      // connection ID
-  JoinEventType whahoppa;    // event generated by received packets
+  JoinEventType whahoppa = EV_NONE;  // event generated by received packets
 
-  const void* up_button;
-  const void* down_button;
+  const void* up_button = nullptr;
+  const void* down_button = nullptr;
 
   if (InMainLoop) {
     up_button = Hires_Retrieve("BTN-UP.SHP");
@@ -4340,7 +4306,6 @@ static int Net_Fake_New_Dialog() {
   /*........................................................................
   Buttons
   ........................................................................*/
-  GadgetClass* commands;  // button list
 
   ColorListClass playerlist(BUTTON_PLAYERLIST, d_playerlist_x, d_playerlist_y,
                             d_playerlist_w, d_playerlist_h,
@@ -4360,7 +4325,7 @@ static int Net_Fake_New_Dialog() {
   /*
   ------------------------- Build the button list --------------------------
   */
-  commands = &playerlist;
+  GadgetClass* commands = &playerlist;  // button list
   cancelbtn.Add_Tail(*commands);
 
   playerlist.Set_Tabs(tabs);
@@ -4376,7 +4341,7 @@ static int Net_Fake_New_Dialog() {
   ........................................................................*/
   Special.IsTGrowth = static_cast<unsigned>(MPlayerTiberium);
   Special.IsTSpread = static_cast<unsigned>(MPlayerTiberium);
-  transmit = 0;
+  int transmit = 0;  // 1 = re-transmit new game options
 
   /*........................................................................
   Init player color-used flags
@@ -4914,15 +4879,15 @@ static int Net_Fake_Join_Dialog() {
   ........................................................................*/
   RedrawType display = REDRAW_ALL;  // redraw level
   bool process = true;              // process while true
-  KeyNumType input;
+  KeyNumType input = KN_NONE;
 
   JoinStateType joinstate = JOIN_NOTHING;  // current "state" of this dialog
   int game_index = -1;                     // index of currently-selected game
   int join_index = -1;                     // index of game we're joining
   int rc = 0;                              // -1 = user cancelled, 1 = New
-  JoinEventType event;                     // event from incoming packet
-  int i;
-  int j;  // loop counter
+  JoinEventType event = EV_NONE;           // event from incoming packet
+  int i = 0;
+  int j = 0;  // loop counter
 
   unsigned char tmp_id[MAX_PLAYERS] =
       {};                    // temp storage for sorting player ID's
@@ -4930,12 +4895,12 @@ static int Net_Fake_Join_Dialog() {
   unsigned char min_id = 0;  // for sorting player ID's
   unsigned char id = 0;      // connection ID
   char item[kGameListItemSize];
-  int64_t starttime;
+  int64_t starttime = 0;
 
-  NodeNameType* who;
+  NodeNameType* who = nullptr;
 
-  const void* up_button;
-  const void* down_button;
+  const void* up_button = nullptr;
+  const void* down_button = nullptr;
 
   if (InMainLoop) {
     up_button = Hires_Retrieve("BTN-UP.SHP");

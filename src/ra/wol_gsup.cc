@@ -479,7 +479,7 @@ void WOL_GameSetupDialog::Initialize() {
       BUTTON_SCENARIO_AM, MixArchive::Retrieve("tabam.shp"),
       d_scenariolist_x + TABSPACING, d_scenariolist_y - d_tab_h);
 
-  int iScenarioUserTabPos;
+  int iScenarioUserTabPos = 0;
   if (pWO->GameInfoCurrent.GameKind == CREATEGAMEINFO::CSGAME ||
       pWO->GameInfoCurrent.GameKind == CREATEGAMEINFO::AMGAME ||
       (pWO->GameInfoCurrent.GameKind == CREATEGAMEINFO::RAGAME &&
@@ -527,13 +527,12 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
 
   display = REDRAW_ALL;  // redraw level
   bProcess = true;       // process while true
-  KeyNumType input;
+  KeyNumType input = KN_NONE;
 
   DWORD timeWaitingToStartTimeout = 0;  //	Set when the wait begins.
 
   char szScenarioNameDisplay[300];
 
-  int i;
   int tabs[] = {77 * 2};       // tabs for player list box
   int optiontabs[] = {8 * 2};  // tabs for option list box
 
@@ -625,7 +624,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       //------------------------------------------------------------------------
       //	Set up array of lists of available scenarios.
       //------------------------------------------------------------------------
-      for (i = 0; i < Session.Scenarios.Count(); i++) {
+      for (int i = 0; i < Session.Scenarios.Count(); i++) {
         //	Reworking of the loop previously used for language translation.
         //(What a hack I have inherited...)
         MultiMission* pMMission = Session.Scenarios[i];
@@ -1005,8 +1004,8 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
                          d_color_y - d_txt6_h, scheme, TBLACK,
                          TPF_CENTER | kTpfText);
 
-        const char* szGameKind;
-        const dib::Image* pIcon;
+        const char* szGameKind = nullptr;
+        const dib::Image* pIcon = nullptr;
         switch (pWO->GameInfoCurrent.GameKind) {
           case CREATEGAMEINFO::RAGAME:
             szGameKind = TXT_WOL_CG_RAGAME;
@@ -1081,7 +1080,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       //	Draw the color boxes
       //..................................................................
       if (display >= REDRAW_COLORS) {
-        for (i = 0; i < MAX_MPLAYER_COLORS; i++) {
+        for (int i = 0; i < MAX_MPLAYER_COLORS; i++) {
           LogicPage->Fill_Rect(
               cbox_x[i] + 1, d_color_y + 1, cbox_x[i] + 1 + d_color_w - 4,
               d_color_y + 1 + d_color_h - 2, ColorRemaps[i].Box);
@@ -1116,9 +1115,9 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       if (display >= REDRAW_PARMS) {
         char txt[80];
 
-        const char* szScenarioDesc;
-        bool bOfficial;
-        const char* szScenarioFileName;
+        const char* szScenarioDesc = nullptr;
+        bool bOfficial = false;
+        const char* szScenarioFileName = nullptr;
         if (!bHost) {
           szScenarioDesc = Session.Options.ScenarioDescription;
           bOfficial = Session.ScenarioIsOfficial;
@@ -2553,9 +2552,8 @@ bool WOL_GameSetupDialog::AcceptParams(char* szParams) {
   // happened once in test...)
 
   port::Tokenizer tokens(szParams, " ");
-  const char* szToken;
 
-  szToken = tokens.Next();
+  const char* szToken = tokens.Next();
   nGuestLastParamID = tech::ParseInteger<int>(szToken).value_or(0);
 
   //	Read in length of following string.
@@ -3172,9 +3170,8 @@ void WOL_GameSetupDialog::AcceptNewGuestPlayerInfo(char* szMsg) {
   //	Process a received WOL_GAMEOPT_INFNEWGUESTPLAYERINFO message.
   //	szMsg has already been stripped of 2 bytes header.
   port::Tokenizer tokens(szMsg, " ");
-  const char* szToken;
 
-  szToken = tokens.Next();
+  const char* szToken = tokens.Next();
   const auto player_count = tech::ParseInteger<int>(szToken);
   if (!player_count || *player_count < 0 || *player_count > 8 ||
       strlen(szToken) != 2) {

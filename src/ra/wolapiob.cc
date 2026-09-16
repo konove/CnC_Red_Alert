@@ -187,7 +187,6 @@ WolapiObject::~WolapiObject() {
 bool WolapiObject::bSetupCOMStuff() {
   //	debugprint( "++++Begin WolapiObject::bSetupCOMStuff\n" );
 
-  HRESULT hRes;
 
   //	Grab IChat, INetUtil, set up "sinks".
   //	debugprint( "CoCreateInstance\n" );
@@ -217,7 +216,7 @@ bool WolapiObject::bSetupCOMStuff() {
 
   // Get a connection point from the chat class for the chatsink.
   //	debugprint( "QueryInterface\n" );
-  hRes =
+  HRESULT hRes =
       pChat->QueryInterface(IID_IConnectionPointContainer, ComOut(&pContainer));
   if (!SUCCEEDED(hRes)) {
     return false;  //	Severe, essentially fatal.
@@ -273,7 +272,6 @@ bool WolapiObject::bSetupCOMStuff() {
 void WolapiObject::UnsetupCOMStuff() {
   //	debugprint( "----Begin WolapiObject::UnsetupCOMStuff\n" );
 
-  HRESULT hRes;
 
   //	If we could use ATL stuff, this would be different. (We'd use
   // AtlUnadvise.)
@@ -283,7 +281,7 @@ void WolapiObject::UnsetupCOMStuff() {
   IConnectionPointContainer* pContainer = nullptr;
 
   //	debugprint( "QueryInterface\n" );
-  hRes =
+  HRESULT hRes =
       pChat->QueryInterface(IID_IConnectionPointContainer, ComOut(&pContainer));
   DCHECK(SUCCEEDED(hRes));
   //	debugprint( "FindConnectionPoint\n" );
@@ -468,7 +466,7 @@ void WolapiObject::PrepareButtonsAndIcons() {
   //	All of the following is for the list of game icons...
 
   //	Load game icons from the wol api.
-  LPCSTR szSkus;
+  LPCSTR szSkus = nullptr;
   if (pChat->GetGametypeList(&szSkus) == S_OK) {
     const std::vector<std::string_view> skus =
         absl::StrSplit(szSkus, ',', absl::SkipEmpty());
@@ -502,11 +500,11 @@ void WolapiObject::PrepareButtonsAndIcons() {
 void WolapiObject::GetGameTypeInfo(int iGameType,
                                    WOL_GAMETYPEINFO& GameTypeInfo,
                                    std::span<const dib::Color> Palette) const {
-  unsigned char* pVirtualFile;
-  int iFileLength;
+  unsigned char* pVirtualFile = nullptr;
+  int iFileLength = 0;
   //	debugprint( "GetGametypeInfo, type %i\n", iGameType );
-  LPCSTR szName;
-  LPCSTR szURL;
+  LPCSTR szName = nullptr;
+  LPCSTR szURL = nullptr;
   pChat->GetGametypeInfo(static_cast<unsigned int>(iGameType), 12, &pVirtualFile, &iFileLength, &szName,
                          &szURL);
   GameTypeInfo.iGameType = iGameType;
@@ -889,7 +887,7 @@ void WolapiObject::ListChannels() {
       //	Show game channel.
       std::string show;
       char szHelp[200];
-      void* pGameKindIcon;
+      void* pGameKindIcon = nullptr;
       if (pChannel->type == GAME_TYPE) {
         //	Get RedAlert GameKind.
         const auto GameKind = static_cast<CREATEGAMEINFO::GAMEKIND>(
@@ -1105,8 +1103,8 @@ bool WolapiObject::ListChannelUsers() {
 
   bool bChannelOwnerFound = false;
 
-  bool bInLobby;
-  IconListClass* pListToUse;
+  bool bInLobby = false;
+  IconListClass* pListToUse = nullptr;
   if (CurrentLevel == WOL_LEVEL_INGAMECHANNEL) {
     bInLobby = false;
     pListToUse = pILPlayers;
@@ -1204,7 +1202,7 @@ bool WolapiObject::ListChannelUsers() {
         //	If we have had a chance to request pings to the player, there'll
         // be some avg. results waiting for us.
         int iLatencyBarWidth = 0;
-        int iLatency;
+        int iLatency = 0;
         if (CurrentLevel == WOL_LEVEL_INGAMECHANNEL) {
           const uint32_t UserIP = pChatSink->GetUserIP(WolText(pUser->name));
           //					debugprint( "player %s ip
@@ -1432,7 +1430,7 @@ void WolapiObject::RequestPlayerPings() {
     if (pUser && !(pUser->flags & CHAT_USER_MYSELF)) {
       const uint32_t UserIP = pChatSink->GetUserIP(WolText(pUser->name));
       if (UserIP) {
-        int iUnused;
+        int iUnused = 0;
         in_addr inaddrUser{};
         inaddrUser.s_addr = UserIP;
         const std::string szIP = port::Ipv4Text(inaddrUser);
@@ -1473,13 +1471,12 @@ void WolapiObject::SendMessage(const char* szMessage, IconListClass& ILUsers,
   // list of selected 	items. If the list turns out to be blank, send message
   // publicly.
   User* pUserListSend = nullptr;
-  User* pUserNew;
   User* pUserTail = nullptr;
   const int iCount = ILUsers.Count();
   int iPrivatePrintLen = 1;
   for (int i = 0; i != iCount; i++) {
     if (ILUsers.bItemIsMultiSelected(i)) {
-      pUserNew = new User;
+      User* pUserNew = new User;
       *pUserNew = *static_cast<const User*>(ILUsers.Get_Item_ExtraDataPtr(i));
       //			debugprint( "Copied %s for sendmessage.\n",
       // pUserNew->name );
@@ -1676,13 +1673,12 @@ bool WolapiObject::ChannelCreate(
 //***********************************************************************************************
 void WolapiObject::DoFindPage() {
   //	User presses find/page button.
-  SimpleEditDlgClass* pFindPageDlg;
 
   //	Ask user for user desired.
   Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK,
                    kTpfText);  //	Required before String_Pixel_Width()
                                // call, for god's sake.
-  pFindPageDlg = new SimpleEditDlgClass(
+  auto* pFindPageDlg = new SimpleEditDlgClass(
       400, TXT_WOL_PAGELOCATE, TXT_WOL_USERNAMEPROMPT, WOL_NAME_LEN_MAX);
   pFindPageDlg->SetButtons(TXT_WOL_LOCATE, Text_String(TXT_CANCEL),
                            TXT_WOL_PAGE);
@@ -1726,7 +1722,7 @@ void WolapiObject::DoFindPage() {
       case S_OK: {
         const char* szChannel = WolText(pChatSink->OnFindChannel.name);
         const int iLobby = iChannelLobbyNumber(szChannel);
-        char* szFound;
+        char* szFound = nullptr;
         if (iLobby != -1) {
           char szLobbyName[REASONABLELOBBYINTERPRETEDNAMELEN];
           InterpretLobbyNumber(szLobbyName, iLobby);
@@ -2016,7 +2012,7 @@ bool WolapiObject::DoHelp() {
   bPump_In_Call_Back = true;
   if (WWMessageBox().Process(TXT_WOL_HELPSHELL, TXT_YES, TXT_NO) == 0) {
     bPump_In_Call_Back = false;
-    const char* szURL;
+    const char* szURL = nullptr;
     if (pChat->GetHelpURL(&szURL) == S_OK) {
       return SpawnBrowser(szURL);
     }
@@ -2030,7 +2026,7 @@ bool WolapiObject::DoHelp() {
 //***********************************************************************************************
 bool WolapiObject::DoWebRegistration() {
   //	Get the executable name from the registry.
-  HKEY hKey;
+  HKEY hKey = nullptr;
   if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, "SOFTWARE\\Westwood\\Register", 0,
                    KEY_READ, &hKey) != ERROR_SUCCESS) {
     GenericErrorMessage();
@@ -2120,7 +2116,7 @@ bool WolapiObject::SpawnBrowser(const char* szURL) {
       ::WaitForInputIdle(pi.hProcess, 5000);
       bPump_In_Call_Back = true;
       for (;;) {
-        DWORD dwActive;
+        DWORD dwActive = 0;
         Call_Back();
         port::SleepMs(200);
         ::GetExitCodeProcess(pi.hProcess, &dwActive);
@@ -2439,7 +2435,7 @@ bool WolapiObject::OnEnteringChatChannel(const char* szChannelName,
                           ICON_SHAPE, CHANNELTYPE_LOBBIES);
   }
 
-  char* szMess;
+  char* szMess = nullptr;
   if (iLobby == -1) {
     CurrentLevel = WOL_LEVEL_INCHATCHANNEL;
     szMess = new char[strlen(TXT_WOL_YOUJOINED) + strlen(szChannelName) + 5];
@@ -2505,7 +2501,7 @@ void WolapiObject::OnExitingChatChannel() {
   //	debugprint( "*** OnExitingChatChannel() - szChannelNameCurrent '%s',
   // CurrentLevel %i\n", szChannelNameCurrent, CurrentLevel );
   const int iLobby = iChannelLobbyNumber(szChannelNameCurrent);
-  char* szMess;
+  char* szMess = nullptr;
   if (iLobby == -1) {
     szMess =
         new char[strlen(TXT_WOL_YOULEFT) + strlen(szChannelNameCurrent) + 5];
@@ -2852,10 +2848,9 @@ void WolapiObject::SaveChat() {
   // setup dialog (if necessary). 	This turns out to be the easiest and
   // most straightforward way to implement this.
   pChatSaveLast = pChatSaveList = nullptr;
-  CHATSAVE* pChatSaveNew;
 
   for (int i = 0; i != pILChat->Count(); i++) {
-    pChatSaveNew = new CHATSAVE;
+    auto* pChatSaveNew = new CHATSAVE;
     const char* szItem = pILChat->Get_Item(i);
     if (strlen(szItem) < SAVECHATWIDTH) {
       port::SafeCopy(pChatSaveNew->szText, szItem);
@@ -2885,8 +2880,7 @@ void WolapiObject::RestoreChat() {
 
 //***********************************************************************************************
 void WolapiObject::AddHostLeftMessageToSavedChat(const char* szName) {
-  CHATSAVE* pChatSaveNew;
-  pChatSaveNew = new CHATSAVE;
+  auto* pChatSaveNew = new CHATSAVE;
   Format_Runtime_Text(pChatSaveNew->szText, sizeof(pChatSaveNew->szText),
                       TXT_WOL_HOSTLEFTGAME, szName);
   pChatSaveNew->ItemExtras.pColorRemap =
@@ -2902,8 +2896,7 @@ void WolapiObject::AddHostLeftMessageToSavedChat(const char* szName) {
 
 //***********************************************************************************************
 void WolapiObject::AddMessageToSavedChat(const char* szMessage) {
-  CHATSAVE* pChatSaveNew;
-  pChatSaveNew = new CHATSAVE;
+  auto* pChatSaveNew = new CHATSAVE;
   port::SafeCopy(pChatSaveNew->szText, szMessage);
   pChatSaveNew->ItemExtras.pColorRemap =
       &ColorRemaps[WOLCOLORREMAP_LOCALMACHINEMESS];
@@ -2919,9 +2912,8 @@ void WolapiObject::AddMessageToSavedChat(const char* szMessage) {
 //***********************************************************************************************
 void WolapiObject::DeleteSavedChat() {
   //	See SaveChat()...
-  CHATSAVE* pChatSaveNext;
   while (pChatSaveList) {
-    pChatSaveNext = pChatSaveList->next;
+    CHATSAVE* pChatSaveNext = pChatSaveList->next;
     delete pChatSaveList;
     pChatSaveList = pChatSaveNext;
   }
@@ -3169,7 +3161,7 @@ bool WolapiObject::Pump_DisconnectPinging() {
     case PING_UNSTARTED: {
       //	Pings have yet to be requested.
       //	Ping game results server.
-      int iUnused;
+      int iUnused = 0;
       if (*szGameResServerHost1) {
         //			debugprint( "RequestPing ( gameres server )\n"
         //);
@@ -3245,10 +3237,10 @@ void WolapiObject::DisconnectPingResultsString(char* szStringToSet) {
 //***********************************************************************************************
 void WolapiObject::SetOptionDefaults() {
   //	Get stored defaults for options.
-  HKEY hKey;
+  HKEY hKey = nullptr;
   if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, Game_Registry_Key(), 0, KEY_READ,
                    &hKey) == ERROR_SUCCESS) {
-    DWORD dwValue;
+    DWORD dwValue = 0;
     DWORD dwBufSize = sizeof(DWORD);
     if (RegQueryValueEx(hKey, "WOLAPI Find Enabled", nullptr, nullptr,
                         port::BytesOf(dwValue), &dwBufSize) != ERROR_SUCCESS) {
@@ -3291,7 +3283,7 @@ void WolapiObject::SetOptions(bool bEnableFind, bool bEnablePage,
   bLangFilter = bLangFilterOn;
   bAllGamesShown = bShowAllGames;
 
-  HKEY hKey;
+  HKEY hKey = nullptr;
   if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, Game_Registry_Key(), 0, KEY_WRITE,
                    &hKey) == ERROR_SUCCESS) {
     DWORD dwValue = bFindEnabled ? 1 : 0;

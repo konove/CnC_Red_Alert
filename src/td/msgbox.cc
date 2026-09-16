@@ -99,11 +99,11 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   // #define BUFFSIZE (255)
   char buffer[BUFFSIZE];
   int retval = -1;   // The pressed button's index: 0, 1 or 2.
-  bool process;      // loop while true
-  KeyNumType input;  // user input
+  bool process = false;        // loop while true
+  KeyNumType input = KN_NONE;  // user input
   int selection = 0;
-  bool pressed;
-  int curbutton;
+  bool pressed = false;
+  int curbutton = 0;
   TextButtonClass* buttons[3];
   void* back = nullptr;
   bool display = false;  // display level
@@ -159,8 +159,8 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   */
   buffer[BUFFSIZE - 1] = 0;
   strncpy(buffer, msg, BUFFSIZE - 2);
-  int width;
-  int height;
+  int width = 0;
+  int height = 0;
 
 #ifdef JAPANESE
   if (IsPicture) {

@@ -57,10 +57,9 @@ bool BigCheckBoxClass::Draw_Me(bool forced) {
 
     const TextPrintType flags = TextFlags;
 
-    RemapControlType* pScheme;
 
     //		if( !IsDisabled )
-    pScheme = GadgetClass::Get_Color_Scheme();
+    RemapControlType* pScheme = GadgetClass::Get_Color_Scheme();
     //		else
     //		{
     //			pScheme = &GreyScheme;

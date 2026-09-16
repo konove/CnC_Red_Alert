@@ -283,9 +283,8 @@ AircraftType AircraftTypeClass::From_Name(const char* name) {
 }
 
 void AircraftTypeClass::One_Time() {
-  AircraftType index;
-
-  for (index = AIRCRAFT_TRANSPORT; index < AIRCRAFT_COUNT; index++) {
+  for (AircraftType index = AIRCRAFT_TRANSPORT; index < AIRCRAFT_COUNT;
+       index++) {
     const AircraftTypeClass& uclass = As_Reference(index);
 
     // Load the sidebar cameo icon (hi-res "ICNH" or lo-res "ICON").

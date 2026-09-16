@@ -416,19 +416,16 @@ void Show_Who_Was_Responsible() {
   int line = 0;
   int column = 0;
   char* cptr = credits;
-  char ch;
-  char lastchar;
-  char oldchar;
-  char* strstart;
-  char* strparse;
-  bool gotendstr;
-  int startcolumn;
-  int endcolumn;
-  int x;
+  char lastchar = 0;
+  char oldchar = 0;
+  char* strstart = nullptr;
+  char* strparse = nullptr;
+  bool gotendstr = false;
+  int startcolumn = 0;
+  int endcolumn = 0;
+  int x = 0;
   const int y = SeenBuff.Get_Height() + 2;
-  EgoClass* ego;
-  TextPrintType flags;
-
+  EgoClass* ego = nullptr;
   /*
   ** Search through the text file and extract the strings, using each string to
   *create
@@ -438,7 +435,7 @@ void Show_Who_Was_Responsible() {
     /*
     ** Search for text
     */
-    ch = *cptr++;
+    char ch = *cptr++;
     length--;
 
     /*
@@ -530,7 +527,7 @@ void Show_Who_Was_Responsible() {
         **
         ** If string is on the right hand side then left justify it.
         */
-        flags =
+        TextPrintType flags =
             TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_DROPSHADOW;  // TPF_NOSHADOW;
 
         if (startcolumn < 40 && endcolumn > 40) {

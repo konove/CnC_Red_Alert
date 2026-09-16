@@ -317,9 +317,7 @@ static struct {
  *dramatically when off screen.                         *
  *=============================================================================================*/
 void Sound_Effect(VocType voc, COORDINATE coord, int variation) {
-  int distance;
   CELL cell_pos = 0;
-  int pan_value;
 
   if (!Options.Volume || voc == VOC_NONE || !SoundOn ||
       SampleType == SAMPLE_NONE) {
@@ -329,8 +327,8 @@ void Sound_Effect(VocType voc, COORDINATE coord, int variation) {
     cell_pos = Coord_Cell(coord);
   }
 
-  distance = 0xFF;
-  pan_value = 0;
+  int distance = 0xFF;
+  int pan_value = 0;
   if (coord && !Map.In_View(cell_pos)) {
     distance =
         MapEditClass::Cell_Distance(cell_pos, Coord_Cell(Map.TacticalCoord));

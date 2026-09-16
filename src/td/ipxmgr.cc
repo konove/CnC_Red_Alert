@@ -120,7 +120,6 @@ IPXManagerClass::IPXManagerClass(int glb_maxlen, int pvt_maxlen,
       ProductID(product_id),
       Socket(static_cast<uint16_t>((socket & 0x00ff) << 8 |
                                    (socket & 0xff00) >> 8)) {
-  int i;
 
   /*........................................................................
   Get the user's IPX local connection number
@@ -136,8 +135,8 @@ IPXManagerClass::IPXManagerClass(int glb_maxlen, int pvt_maxlen,
   ........................................................................*/
   NumConnections = 0;
   CurConnection = 0;
-  for (i = 0; i < CONNECT_MAX; i++) {
-    Connection[i] = nullptr;
+  for (auto& i : Connection) {
+    i = nullptr;
   }
   GlobalChannel = nullptr;
 
@@ -173,7 +172,6 @@ IPXManagerClass::IPXManagerClass(int glb_maxlen, int pvt_maxlen,
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
 IPXManagerClass::~IPXManagerClass() {
-  int i;
 
   /*------------------------------------------------------------------------
   Stop all IPX events
@@ -190,7 +188,7 @@ IPXManagerClass::~IPXManagerClass() {
     delete GlobalChannel;
     GlobalChannel = nullptr;
   }
-  for (i = 0; i < NumConnections; i++) {
+  for (int i = 0; i < NumConnections; i++) {
     delete Connection[i];
     Connection[i] = nullptr;
   }
@@ -228,7 +226,6 @@ IPXManagerClass::~IPXManagerClass() {
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
 int IPXManagerClass::Init() {
-  int i;
 
   if (!(GameToPlay == GAME_INTERNET)) {
     /*
@@ -267,7 +264,7 @@ int IPXManagerClass::Init() {
     delete GlobalChannel;
     GlobalChannel = nullptr;
   }
-  for (i = 0; i < NumConnections; i++) {
+  for (int i = 0; i < NumConnections; i++) {
     delete Connection[i];
     Connection[i] = nullptr;
   }
@@ -364,7 +361,6 @@ int IPXManagerClass::Is_IPX() const { return IPXStatus; } /* end of Is_IPX */
  *=========================================================================*/
 void IPXManagerClass::Set_Timing(int32_t retrydelta, int32_t maxretries,
                                  int32_t timeout) {
-  int i;
 
   RetryDelta = retrydelta;
   MaxRetries = maxretries;
@@ -376,7 +372,7 @@ void IPXManagerClass::Set_Timing(int32_t retrydelta, int32_t maxretries,
     GlobalChannel->Set_TimeOut(Timeout);
   }
 
-  for (i = 0; i < NumConnections; i++) {
+  for (int i = 0; i < NumConnections; i++) {
     Connection[i]->Set_Retry_Delta(RetryDelta);
     Connection[i]->Set_Max_Retries(MaxRetries);
     Connection[i]->Set_TimeOut(Timeout);
@@ -461,8 +457,6 @@ bool IPXManagerClass::Create_Connection(int id, char* name,
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
 bool IPXManagerClass::Delete_Connection(int id) {
-  int i;
-  int j;
 
   /*
   ----------------------- Error if IPX not installed -----------------------
@@ -481,7 +475,7 @@ bool IPXManagerClass::Delete_Connection(int id) {
   /*
   ---------------------- Loop through all connections ----------------------
   */
-  for (i = 0; i < NumConnections; i++) {
+  for (int i = 0; i < NumConnections; i++) {
     /*
     ........................ If a match, delete it ........................
     */
@@ -490,7 +484,7 @@ bool IPXManagerClass::Delete_Connection(int id) {
       /*
       ................ Move array elements back one index ................
       */
-      for (j = i; j < NumConnections - 1; j++) {
+      for (int j = i; j < NumConnections - 1; j++) {
         Connection[j] = Connection[j + 1];
       }
       /*
@@ -593,9 +587,7 @@ int IPXManagerClass::Connection_ID(int index) {
  *   01/19/1995 BR : Created.                                              *
  *=========================================================================*/
 char* IPXManagerClass::Connection_Name(int id) {
-  int i;
-
-  for (i = 0; i < NumConnections; i++) {
+  for (int i = 0; i < NumConnections; i++) {
     if (Connection[i]->ID == id) {
       return Connection[i]->Name;
     }
@@ -625,9 +617,7 @@ char* IPXManagerClass::Connection_Name(int id) {
  *   01/19/1995 BR : Created.                                              *
  *=========================================================================*/
 IPXAddressClass* IPXManagerClass::Connection_Address(int id) {
-  int i;
-
-  for (i = 0; i < NumConnections; i++) {
+  for (int i = 0; i < NumConnections; i++) {
     if (Connection[i]->ID == id) {
       return &Connection[i]->Address;
     }
@@ -656,9 +646,7 @@ IPXAddressClass* IPXManagerClass::Connection_Address(int id) {
  *   01/25/1995 BR : Created.                                              *
  *=========================================================================*/
 int IPXManagerClass::Connection_Index(int id) {
-  int i;
-
-  for (i = 0; i < NumConnections; i++) {
+  for (int i = 0; i < NumConnections; i++) {
     if (Connection[i]->ID == id) {
       return i;
     }
@@ -692,7 +680,6 @@ int IPXManagerClass::Connection_Index(int id) {
  *=========================================================================*/
 int IPXManagerClass::Send_Global_Message(void* buf, int buflen, int ack_req,
                                          IPXAddressClass* address) {
-  int rc;
 
   /*
   ------------ Error if IPX not installed or not Listening -----------------
@@ -701,7 +688,7 @@ int IPXManagerClass::Send_Global_Message(void* buf, int buflen, int ack_req,
     return 0;
   }
 
-  rc = GlobalChannel->Send_Packet(buf, buflen, address, ack_req);
+  const int rc = GlobalChannel->Send_Packet(buf, buflen, address, ack_req);
   if (!rc) {
     SendOverflows++;
   }
@@ -768,8 +755,8 @@ int IPXManagerClass::Get_Global_Message(void* buf, int* buflen,
  *=========================================================================*/
 int IPXManagerClass::Send_Private_Message(void* buf, int buflen, int ack_req,
                                           int conn_id) {
-  int i;            // loop counter
-  int connect_idx;  // index of channel to send to, if specified
+  int i = 0;            // loop counter
+  int connect_idx = 0;  // index of channel to send to, if specified
 
   /*
   ------------ Error if IPX not installed or not Listening -----------------
@@ -886,9 +873,9 @@ int IPXManagerClass::Send_Private_Message(void* buf, int buflen, int ack_req,
  *   01/25/1995 BR : Created.                                              *
  *=========================================================================*/
 int IPXManagerClass::Get_Private_Message(void* buf, int* buflen, int* conn_id) {
-  int i;
-  int rc;
-  int c_id;
+  int i = 0;
+  int rc = 0;
+  int c_id = 0;
 #ifdef VIRTUAL_SUBNET_SERVER
   int vss = 0;
 #endif  // VIRTUAL_SUBNET_SERVER
@@ -975,16 +962,16 @@ int IPXManagerClass::Get_Private_Message(void* buf, int* buflen, int* conn_id) {
  *=========================================================================*/
 int IPXManagerClass::Service() {
   int rc = 1;
-  int i;
+  int i = 0;
   CommHeaderType packet_storage;
   CommHeaderType* packet = &packet_storage;
-  int packetlen;
+  int packetlen = 0;
   IPXAddressClass address;
 
 #ifndef NOT_FOR_WIN95
 
   unsigned char temp_receive_buffer[1024];
-  int recv_length;
+  int recv_length = 0;
 
   // Cursors into temp_receive_buffer above. The members of the same name are
   // the legacy DOS path's cursor over FirstHeaderBuf/FirstDataBuf; using them
@@ -1327,8 +1314,7 @@ int IPXManagerClass::Global_Num_Receive() {
  *   01/25/1995 BR : Created.                                              *
  *=========================================================================*/
 int IPXManagerClass::Private_Num_Send(int id) {
-  int i;
-  int maxnum;
+  int i = 0;
 
   /*
   ------------ Error if IPX not installed or not Listening -----------------
@@ -1350,7 +1336,7 @@ int IPXManagerClass::Private_Num_Send(int id) {
   /*------------------------------------------------------------------------
       Otherwise, return the max # of all connections
       ------------------------------------------------------------------------*/
-  maxnum = 0;
+  int maxnum = 0;
   for (i = 0; i < NumConnections; i++) {
     maxnum = std::max(Connection[i]->Queue->Num_Send(), maxnum);
   }
@@ -1377,8 +1363,7 @@ int IPXManagerClass::Private_Num_Send(int id) {
  *   01/25/1995 BR : Created.                                              *
  *=========================================================================*/
 int IPXManagerClass::Private_Num_Receive(int id) {
-  int i;
-  int maxnum;
+  int i = 0;
 
   /*
   ------------ Error if IPX not installed or not Listening -----------------
@@ -1400,7 +1385,7 @@ int IPXManagerClass::Private_Num_Receive(int id) {
   /*------------------------------------------------------------------------
       Otherwise, return the max # of all connections
       ------------------------------------------------------------------------*/
-  maxnum = 0;
+  int maxnum = 0;
   for (i = 0; i < NumConnections; i++) {
     maxnum = std::max(Connection[i]->Queue->Num_Receive(), maxnum);
   }
@@ -1454,9 +1439,9 @@ void IPXManagerClass::Set_Socket(uint16_t socket) {
  *   05/04/1995 BRR : Created.                                             *
  *=========================================================================*/
 int32_t IPXManagerClass::Response_Time() {
-  int32_t resp;
+  int32_t resp = 0;
   int32_t maxresp = 0;
-  int i;
+  int i = 0;
 #ifdef VIRTUAL_SUBNET_SERVER
   int vss = 0;
 
@@ -1520,9 +1505,7 @@ int32_t IPXManagerClass::Global_Response_Time() {
  *   05/04/1995 BRR : Created.                                             *
  *=========================================================================*/
 void IPXManagerClass::Reset_Response_Time() {
-  int i;
-
-  for (i = 0; i < NumConnections; i++) {
+  for (int i = 0; i < NumConnections; i++) {
     Connection[i]->Queue->Reset_Response_Time();
   }
 

@@ -332,7 +332,7 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
   **	they are assigned to.
   */
   const HouseClass* hptr = HouseClass::As_Pointer(house);
-  int index;
+  int index = 0;
   if (hptr != nullptr) {
     switch (Event) {
       /*
@@ -568,7 +568,7 @@ void TEventClass::Build_INI_Entry(std::string& buffer) const {
  * HISTORY: * 11/28/1995 JLB : Created. *
  *=============================================================================================*/
 void TEventClass::Read_INI(port::Tokenizer& tokens) {
-  const char* token;
+  const char* token = nullptr;
   switch (NewINIFormat) {
     default:
       Event = static_cast<TEventType>(

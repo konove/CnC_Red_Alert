@@ -219,7 +219,6 @@ void Shutdown_Modem() {
  *   08/03/1995 DRD : Created.                                             *
  *=========================================================================*/
 void Modem_Signoff() {
-  int64_t starttime;
   EventClass event;
 
   if (!PlaybackGame) {
@@ -230,7 +229,7 @@ void Modem_Signoff() {
     NullModem.Send_Message(&event, sizeof(EventClass), 0);
     NullModem.Send_Message(&event, sizeof(EventClass), 0);
 
-    starttime = TickCount.Time();
+    const int64_t starttime = TickCount.Time();
     while (TickCount.Time() - starttime < 30) {
       NullModem.Service();
     }
@@ -268,22 +267,19 @@ int Test_Null_Modem() {
   Dialog variables
   ........................................................................*/
   bool process = true;  // process while true
-  KeyNumType input;
+  KeyNumType input = KN_NONE;
 
   int retval = 0;
-  int64_t starttime;
-  int packetlen;
+  int64_t starttime = 0;
+  int packetlen = 0;
 
-  int x;
-  int y;
-  int width;
-  int height;  // dialog dimensions
+  int width = 0;
+  int height = 0;  // dialog dimensions
   char buffer[80 * 3];
 
   /*........................................................................
   Buttons
   ........................................................................*/
-  GadgetClass* commands;  // button list
 
   /*
   **	Determine the dimensions of the text to be used for the dialog box.
@@ -297,8 +293,8 @@ int Test_Null_Modem() {
   width += 40 * factor;
   height += 60 * factor;
 
-  x = ((320 * factor) - width) / 2;
-  y = ((200 * factor) - height) / 2;
+  const int x = ((320 * factor) - width) / 2;
+  const int y = ((200 * factor) - height) / 2;
 
   TextButtonClass cancelbtn(
       BUTTON_CANCEL, TXT_CANCEL,
@@ -317,7 +313,7 @@ int Test_Null_Modem() {
   /*
   ............................ Create the list .............................
   */
-  commands = &cancelbtn;
+  GadgetClass* commands = &cancelbtn;  // button list
 
   commands->Flag_List_To_Redraw();
 
@@ -567,8 +563,8 @@ int Test_Null_Modem() {
  *   04/29/1995 BRR : Created.                                             *
  *=========================================================================*/
 int Reconnect_Modem() {
-  int status;
-  int modemstatus;
+  int status = 0;
+  int modemstatus = 0;
 
   switch (ModemGameToPlay) {
     case MODEM_NULL_HOST:
@@ -635,23 +631,18 @@ static int Reconnect_Null_Modem() {
   Dialog variables
   ........................................................................*/
   bool process = true;  // process while true
-  KeyNumType input;
 
   int retval = 0;
-  int64_t starttime;
-  int64_t lastmsgtime;
-  int packetlen;
+  int64_t lastmsgtime = 0;
+  int packetlen = 0;
 
-  int x;
-  int y;
-  int width;
-  int height;  // dialog dimensions
+  int width = 0;
+  int height = 0;  // dialog dimensions
   char buffer[80 * 3];
 
   /*........................................................................
   Buttons
   ........................................................................*/
-  GadgetClass* commands;  // button list
 
   /*
   **	Determine the dimensions of the text to be used for the dialog box.
@@ -665,8 +656,8 @@ static int Reconnect_Null_Modem() {
   width += 40;
   height += 60;
 
-  x = (320 - width) / 2;
-  y = (200 - height) / 2;
+  const int x = (320 - width) / 2;
+  const int y = (200 - height) / 2;
 
   TextButtonClass cancelbtn(
       BUTTON_CANCEL, TXT_CANCEL,
@@ -683,7 +674,7 @@ static int Reconnect_Null_Modem() {
   /*
   ............................ Create the list .............................
   */
-  commands = &cancelbtn;
+  GadgetClass* commands = &cancelbtn;  // button list
 
   commands->Flag_List_To_Redraw();
 
@@ -704,7 +695,7 @@ static int Reconnect_Null_Modem() {
   /*
   -------------------------- Main Processing Loop --------------------------
   */
-  starttime = lastmsgtime = TickCount.Time();
+  int64_t starttime = lastmsgtime = TickCount.Time();
   while (process) {
     /*
     ** If we have just received input focus again after running in the
@@ -724,7 +715,7 @@ static int Reconnect_Null_Modem() {
     /*
     ........................... Get user input ............................
     */
-    input = commands->Input();
+    const KeyNumType input = commands->Input();
 
     /*
     ............................ Process input ............................
@@ -821,11 +812,6 @@ static int Reconnect_Null_Modem() {
  * HISTORY: * 07/31/1995 DRD : Created. *
  *=============================================================================================*/
 void Destroy_Null_Connection(int id, int error) {
-  int i;
-  int j;
-  int idx;
-  HousesType house;
-  HouseClass* housep;
   char txt[80];
 
   if (MPlayerCount == 1) {
@@ -834,8 +820,8 @@ void Destroy_Null_Connection(int id, int error) {
 
   // find index for id
 
-  idx = -1;
-  for (i = 0; i < MPlayerCount; i++) {
+  int idx = -1;
+  for (int i = 0; i < MPlayerCount; i++) {
     if (MPlayerID[i] == static_cast<unsigned char>(id)) {
       idx = i;
       break;
@@ -868,19 +854,19 @@ void Destroy_Null_Connection(int id, int error) {
     Map.Flag_To_Redraw(false);
   }
 
-  for (i = 0; i < MPlayerCount; i++) {
+  for (int i = 0; i < MPlayerCount; i++) {
     if (MPlayerID[i] == static_cast<unsigned char>(id)) {
       /*..................................................................
       Turn the player's house over to the computer's AI
       ..................................................................*/
-      house = MPlayerHouses[i];
-      housep = HouseClass::As_Pointer(house);
+      const HousesType house = MPlayerHouses[i];
+      HouseClass* housep = HouseClass::As_Pointer(house);
       housep->IsHuman = false;
 
       /*..................................................................
       Move arrays back by one
       ..................................................................*/
-      for (j = i; j < MPlayerCount - 1; j++) {
+      for (int j = i; j < MPlayerCount - 1; j++) {
         MPlayerID[j] = MPlayerID[j + 1];
         MPlayerHouses[j] = MPlayerHouses[j + 1];
         port::SafeCopy(MPlayerNames[j], MPlayerNames[j + 1]);
@@ -927,7 +913,7 @@ void Destroy_Null_Connection(int id, int error) {
  *   04/29/1995 BRR : Created.                                             *
  *=========================================================================*/
 GameType Select_Serial_Dialog() {
-  int rc;
+  int rc = 0;
 
   const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
   /*........................................................................
@@ -1001,21 +987,17 @@ GameType Select_Serial_Dialog() {
   ........................................................................*/
   RedrawType display = REDRAW_ALL;  // redraw level
   bool process = true;              // process while true
-  KeyNumType input;
   GameType retval = GAME_NORMAL;  // return value
 
   int selection = 0;
-  bool pressed;
-  int curbutton;
   TextButtonClass* buttons[NUM_OF_BUTTONS];
 
-  SerialSettingsType* settings;
+  SerialSettingsType* settings = nullptr;
   bool selectsettings = false;
 
   /*........................................................................
   Buttons
   ........................................................................*/
-  GadgetClass* commands;  // button list
 
   TextButtonClass dialbtn(
       BUTTON_DIAL, TXT_DIAL_MODEM,
@@ -1069,7 +1051,7 @@ GameType Select_Serial_Dialog() {
   /*
   ............................ Create the list .............................
   */
-  commands = &dialbtn;
+  GadgetClass* commands = &dialbtn;  // button list
   answerbtn.Add_Tail(*commands);
   nullmodembtn.Add_Tail(*commands);
   settingsbtn.Add_Tail(*commands);
@@ -1078,7 +1060,7 @@ GameType Select_Serial_Dialog() {
   /*
   ......................... Fill array of button ptrs ......................
   */
-  curbutton = 0;
+  int curbutton = 0;
   buttons[0] = &dialbtn;
   buttons[1] = &answerbtn;
   buttons[2] = &nullmodembtn;
@@ -1100,7 +1082,7 @@ GameType Select_Serial_Dialog() {
   */
   display = REDRAW_ALL;
   process = true;
-  pressed = false;
+  bool pressed = false;
   while (process) {
     /*
     ** If we have just received input focus again after running in the
@@ -1149,7 +1131,7 @@ GameType Select_Serial_Dialog() {
     /*
     ........................... Get user input ............................
     */
-    input = commands->Input();
+    const KeyNumType input = commands->Input();
 
     /*
     ............................ Process input ............................
@@ -1519,10 +1501,8 @@ static void Advanced_Modem_Settings(SerialSettingsType* settings) {
   */
   RedrawType display = REDRAW_ALL;  // redraw level
   bool process = true;              // process while true
-  KeyNumType input;
-  GadgetClass* commands;  // button list
 
-  commands = &okbutton;
+  GadgetClass* commands = &okbutton;  // button list
   defaultbutton.Add_Tail(*commands);
   compressionbutton.Add_Tail(*commands);
   errorcorrectionbutton.Add_Tail(*commands);
@@ -1605,7 +1585,7 @@ static void Advanced_Modem_Settings(SerialSettingsType* settings) {
     /*
     ........................... Get user input ............................
     */
-    input = commands->Input();
+    const KeyNumType input = commands->Input();
 
     /*
     ---------------------------- Process input ----------------------------
@@ -1925,9 +1905,9 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   ........................................................................*/
   RedrawType display = REDRAW_ALL;  // redraw level
   bool process = true;              // process while true
-  KeyNumType input;
-  char* item;  // general-purpose string
-  char* temp;  // general-purpose string
+  KeyNumType input = KN_NONE;
+  char* item = nullptr;  // general-purpose string
+  char* temp = nullptr;  // general-purpose string
 
   char portbuf[PORTBUF_MAX] = {0};  // buffer for port
 #ifdef EDIT_IRQ
@@ -1948,16 +1928,15 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   int cwaitstr_index = CALL_WAIT_CUSTOM;  // index of currently-selected call
                                           // waiting (default = "")
   int rc = 0;                             // -1 = user cancelled, 1 = New
-  int i;                                  // loop counter
-  int pos;
-  int len;
+  int i = 0;                              // loop counter
+  int pos = 0;
+  int len = 0;
   int firsttime = 1;
   SerialSettingsType tempsettings;
-  DetectPortType dpstatus;
   char init_text[32];
 
-  const void* up_button;
-  const void* down_button;
+  const void* up_button = nullptr;
+  const void* down_button = nullptr;
 
   if (InMainLoop) {
     up_button = Hires_Retrieve("BTN-UP.SHP");
@@ -1970,7 +1949,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   /*........................................................................
   Buttons
   ........................................................................*/
-  GadgetClass* commands;  // button list
+  GadgetClass* commands = nullptr;  // button list
 
   EditClass port_edt(BUTTON_PORT, portbuf, PORTBUF_MAX,
                      TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_port_x,
@@ -2903,19 +2882,21 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
 
         strncpy(tempsettings.CallWaitString, cwaitstrbuf, CWAITSTRBUF_MAX);
 
-        dpstatus = NullModemClass::Detect_Port(&tempsettings);
-
-        if (dpstatus == PORT_VALID) {
-          process = false;
-          rc = 1;
-        } else if (dpstatus == PORT_INVALID) {
-          CCMessageBox().Process(TXT_INVALID_SETTINGS);
-          firsttime = 1;
-          display = REDRAW_ALL;
-        } else if (dpstatus == PORT_IRQ_INUSE) {
-          CCMessageBox().Process(TXT_IRQ_ALREADY_IN_USE);
-          firsttime = 1;
-          display = REDRAW_ALL;
+        {
+          const DetectPortType dpstatus =
+              NullModemClass::Detect_Port(&tempsettings);
+          if (dpstatus == PORT_VALID) {
+            process = false;
+            rc = 1;
+          } else if (dpstatus == PORT_INVALID) {
+            CCMessageBox().Process(TXT_INVALID_SETTINGS);
+            firsttime = 1;
+            display = REDRAW_ALL;
+          } else if (dpstatus == PORT_IRQ_INUSE) {
+            CCMessageBox().Process(TXT_IRQ_ALREADY_IN_USE);
+            firsttime = 1;
+            display = REDRAW_ALL;
+          }
         }
         break;
 
@@ -2977,10 +2958,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
  *=========================================================================*/
 static void Build_Init_String_Listbox(ListClass* list, EditClass* edit,
                                       char* buf, int* index) {
-  int i;
-  int curidx;
-
-  curidx = *index;
+  int curidx = *index;
 
   /*........................................................................
   Clear the list
@@ -3000,7 +2978,7 @@ static void Build_Init_String_Listbox(ListClass* list, EditClass* edit,
   /*........................................................................
   Build the list
   ........................................................................*/
-  for (i = 0; i < InitStrings.Count(); i++) {
+  for (int i = 0; i < InitStrings.Count(); i++) {
     list->Add_Item(InitStrings[i]);
   }
   list->Flag_To_Redraw();
@@ -3228,12 +3206,10 @@ int Com_Scenario_Dialog() {
   ........................................................................*/
   RedrawType display = REDRAW_ALL;  // redraw level
   bool process = true;              // process while true
-  KeyNumType input;
+  KeyNumType input = KN_NONE;
 
   char namebuf[MPLAYER_NAME_MAX] = {0};  // buffer for player's name
   char credbuf[CREDITSBUF_MAX];          // for credit edit box
-  int old_cred;                          // old value in credits buffer
-  int transmit;                          // 1 = re-transmit new game options
   const int cbox_x[] = {d_gdi_x,
                         d_gdi_x + d_color_w,
                         d_gdi_x + (d_color_w * 2),
@@ -3245,31 +3221,30 @@ int Com_Scenario_Dialog() {
 
   int rc = 0;
   bool recsignedoff = false;
-  int i;
-  int version;
+  int i = 0;
+  int version = 0;
   char txt[80];
-  int64_t starttime;
-  int64_t timingtime;
-  int64_t lastmsgtime;
-  int64_t lastredrawtime;
+  int64_t starttime = 0;
+  int64_t timingtime = 0;
+  int64_t lastmsgtime = 0;
+  int64_t lastredrawtime = 0;
   int64_t transmittime = 0;
   // Same type as the packet field it is compared with and copied into.
-  decltype(SerialPacketType::ResponseTime) theirresponsetime;
-  int packetlen;
+  int packetlen = 0;
   static int first_time = 1;
   bool oppscorescreen = false;
   bool gameoptions = false;
   int64_t msg_timeout = 1200;  // init to 20 seconds
 
-  int message_length;
-  int sent_so_far;
-  uint16_t magic_number;
-  uint16_t crc;
+  int message_length = 0;
+  int sent_so_far = 0;
+  uint16_t magic_number = 0;
+  uint16_t crc = 0;
   bool ready_to_go = false;
   CountDownTimerClass ready_time;
 
-  const void* up_button;
-  const void* down_button;
+  const void* up_button = nullptr;
+  const void* down_button = nullptr;
 
   if (InMainLoop) {
     up_button = Hires_Retrieve("BTN-UP.SHP");
@@ -3282,7 +3257,6 @@ int Com_Scenario_Dialog() {
   /*........................................................................
   Buttons
   ........................................................................*/
-  GadgetClass* commands;  // button list
 
   EditClass name_edt(BUTTON_NAME, namebuf, MPLAYER_NAME_MAX,
                      TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_name_x,
@@ -3360,7 +3334,7 @@ int Com_Scenario_Dialog() {
   /*
   ------------------------- Build the button list --------------------------
   */
-  commands = &name_edt;
+  GadgetClass* commands = &name_edt;  // button list
   gdibtn.Add_Tail(*commands);
   nodbtn.Add_Tail(*commands);
   credit_edt.Add_Tail(*commands);
@@ -3434,7 +3408,7 @@ int Com_Scenario_Dialog() {
 
   absl::SNPrintF(credbuf, sizeof(credbuf), "%d", MPlayerCredits);
   credit_edt.Set_Text(credbuf, CREDITSBUF_MAX);
-  old_cred = MPlayerCredits;
+  int old_cred = MPlayerCredits;  // old value in credits buffer
 
   levelgauge.Set_Maximum(MPLAYER_BUILD_LEVEL_MAX - 1);
   levelgauge.Set_Value(BuildLevel - 1);
@@ -3448,7 +3422,7 @@ int Com_Scenario_Dialog() {
   ........................................................................*/
   Special.IsTGrowth = static_cast<unsigned>(MPlayerTiberium);
   Special.IsTSpread = static_cast<unsigned>(MPlayerTiberium);
-  transmit = 1;
+  int transmit = 1;  // 1 = re-transmit new game options
 
   /*........................................................................
   Init scenario description list box
@@ -3498,7 +3472,8 @@ int Com_Scenario_Dialog() {
   ---------------------------- Processing loop -----------------------------
   */
   NullModem.Reset_Response_Time();  // clear response time
-  theirresponsetime = 10000;        // initialize to an invalid value
+  decltype(SerialPacketType::ResponseTime) theirresponsetime =
+      10000;  // an invalid value
   timingtime = lastmsgtime = lastredrawtime = TickCount.Time();
   while (Get_Mouse_State() > 0) {
     Show_Mouse();
@@ -4037,8 +4012,6 @@ int Com_Scenario_Dialog() {
         If 'input' returned 3, it means send the current message.
         ...............................................................*/
         else if (i == 3) {
-          int32_t actual_message_size;
-          char* the_string;
 
           sent_so_far = 0;
           magic_number = MESSAGE_HEAD_MAGIC_NUMBER;
@@ -4057,11 +4030,11 @@ int Com_Scenario_Dialog() {
             /*
             ** Steve I's stuff for splitting message on word boundries
             */
-            actual_message_size = COMPAT_MESSAGE_LENGTH - 5;
+            int32_t actual_message_size = COMPAT_MESSAGE_LENGTH - 5;
 
             /* Start at the end of the message and find a space with 10 chars.
              */
-            the_string = SendPacket.Message;
+            char* the_string = SendPacket.Message;
             while (COMPAT_MESSAGE_LENGTH - 5 - actual_message_size < 10 &&
                    the_string[actual_message_size] != ' ') {
               --actual_message_size;
@@ -4660,11 +4633,9 @@ int Com_Show_Scenario_Dialog() {
   ........................................................................*/
   RedrawType display = REDRAW_ALL;  // redraw level
   bool process = true;              // process while true
-  KeyNumType input;
+  KeyNumType input = KN_NONE;
 
   char namebuf[MPLAYER_NAME_MAX] = {0};  // buffer for player's name
-  int transmit;                          // 1 = re-transmit new game options
-  int first;                             // 1 = no packets received yet
   const int cbox_x[] = {d_dialog_cx,
                         d_dialog_cx + d_color_w,
                         d_dialog_cx + (d_color_w * 2),
@@ -4676,28 +4647,27 @@ int Com_Show_Scenario_Dialog() {
 
   int rc = 0;
   int recsignedoff = 0;
-  int i;
-  int version;
+  int i = 0;
+  int version = 0;
   char txt[80];
-  int64_t starttime;
-  int64_t timingtime;
-  int64_t lastmsgtime;
-  int64_t lastredrawtime;
+  int64_t starttime = 0;
+  int64_t timingtime = 0;
+  int64_t lastmsgtime = 0;
+  int64_t lastredrawtime = 0;
   int64_t transmittime = 0;
-  int packetlen;
+  int packetlen = 0;
   bool oppscorescreen = false;
   int64_t msg_timeout = 1200;  // init to 20 seconds
 
-  int message_length;
-  int sent_so_far;
-  uint16_t magic_number;
-  uint16_t crc;
+  int message_length = 0;
+  int sent_so_far = 0;
+  uint16_t magic_number = 0;
+  uint16_t crc = 0;
   bool ready_to_go = false;
 
   /*........................................................................
   Buttons
   ........................................................................*/
-  GadgetClass* commands;  // button list
 
   EditClass name_edt(BUTTON_NAME, namebuf, MPLAYER_NAME_MAX,
                      TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_name_x,
@@ -4734,7 +4704,7 @@ int Com_Show_Scenario_Dialog() {
   /*
   ------------------------- Build the button list --------------------------
   */
-  commands = &name_edt;
+  GadgetClass* commands = &name_edt;  // button list
   gdibtn.Add_Tail(*commands);
   nodbtn.Add_Tail(*commands);
   cancelbtn.Add_Tail(*commands);
@@ -4760,8 +4730,8 @@ int Com_Show_Scenario_Dialog() {
   Fancy_Text_Print("", 0, 0, CC_GREEN, TBLACK,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
-  transmit = 1;
-  first = 1;
+  int transmit = 1;  // 1 = re-transmit new game options
+  int first = 1;     // 1 = no packets received yet
 
   /*........................................................................
   Init the message display system
@@ -5240,8 +5210,6 @@ int Com_Show_Scenario_Dialog() {
               If 'input' returned 3, it means send the current message.
               ...............................................................*/
               if (i == 3) {
-                int32_t actual_message_size;
-                char* the_string;
 
                 sent_so_far = 0;
                 magic_number = MESSAGE_HEAD_MAGIC_NUMBER;
@@ -5261,11 +5229,11 @@ int Com_Show_Scenario_Dialog() {
                   /*
                   ** Steve I's stuff for splitting message on word boundries
                   */
-                  actual_message_size = COMPAT_MESSAGE_LENGTH - 5;
+                  int32_t actual_message_size = COMPAT_MESSAGE_LENGTH - 5;
 
                   /* Start at the end of the message and find a space with 10
                    * chars. */
-                  the_string = GPacket.Message.Buf;
+                  char* the_string = GPacket.Message.Buf;
                   while (COMPAT_MESSAGE_LENGTH - 5 - actual_message_size < 10 &&
                          the_string[actual_message_size] != ' ') {
                     --actual_message_size;
@@ -5817,24 +5785,22 @@ static int Phone_Dialog() {
   ........................................................................*/
   RedrawType display = REDRAW_ALL;  // redraw level
   bool process = true;              // process while true
-  KeyNumType input;
 
   char phone_num[PhoneEntryClass::PHONE_MAX_NUM] = {
       0};  // buffer for editing phone #
   int rc = 0;
-  int i;
   int tabs[] = {123 * factor, 207 * factor};  // tabs for list box
-  PhoneEntryClass* p_entry;  // for creating / editing phonebook entries
+  PhoneEntryClass* p_entry =
+      nullptr;               // for creating / editing phonebook entries
   int changed = 0;           // 1 = save changes to INI file
   int firsttime = 0;
 
   /*........................................................................
   Buttons
   ........................................................................*/
-  GadgetClass* commands;  // button list
 
-  const void* up_button;
-  const void* down_button;
+  const void* up_button = nullptr;
+  const void* down_button = nullptr;
 
   if (InMainLoop) {
     up_button = Hires_Retrieve("BTN-UP.SHP");
@@ -5895,7 +5861,7 @@ static int Phone_Dialog() {
   /*
   ------------------------- Build the button list --------------------------
   */
-  commands = &phonelist;
+  GadgetClass* commands = &phonelist;  // button list
   addbtn.Add_Tail(*commands);
   editbtn.Add_Tail(*commands);
   deletebtn.Add_Tail(*commands);
@@ -5980,7 +5946,7 @@ static int Phone_Dialog() {
     /*
     ........................... Get user input ............................
     */
-    input = commands->Input();
+    KeyNumType input = commands->Input();
 
     if (firsttime) {
       numedit.Set_Focus();
@@ -6038,7 +6004,7 @@ static int Phone_Dialog() {
           /*............................................................
           Set the current listbox index to the newly-added item.
           ............................................................*/
-          for (i = 0; i < PhoneBook.Count(); i++) {
+          for (int i = 0; i < PhoneBook.Count(); i++) {
             if (p_entry == PhoneBook[i]) {
               CurPhoneIdx = i;
               port::SafeCopy(phone_num, PhoneBook[CurPhoneIdx]->Number);
@@ -6085,7 +6051,7 @@ static int Phone_Dialog() {
           /*............................................................
           Set the current listbox index to the newly-added item.
           ............................................................*/
-          for (i = 0; i < PhoneBook.Count(); i++) {
+          for (int i = 0; i < PhoneBook.Count(); i++) {
             if (PhoneBook[CurPhoneIdx] == PhoneBook[i]) {
               CurPhoneIdx = i;
               port::SafeCopy(phone_num, PhoneBook[CurPhoneIdx]->Number);
@@ -6165,7 +6131,7 @@ static int Phone_Dialog() {
           /*............................................................
           Set the current listbox index to the newly-added item.
           ............................................................*/
-          for (i = 0; i < PhoneBook.Count(); i++) {
+          for (int i = 0; i < PhoneBook.Count(); i++) {
             if (p_entry == PhoneBook[i]) {
               CurPhoneIdx = i;
             }
@@ -6232,7 +6198,6 @@ static int Phone_Dialog() {
  *   04/29/1995 BRR : Created.                                             *
  *=========================================================================*/
 static void Build_Phone_Listbox(ListClass* list, EditClass* edit, char* buf) {
-  int i;
   char item[80];
   char phonename[21];
   char phonenum[15];
@@ -6258,7 +6223,7 @@ static void Build_Phone_Listbox(ListClass* list, EditClass* edit, char* buf) {
   /*........................................................................
   Build the list
   ........................................................................*/
-  for (i = 0; i < PhoneBook.Count(); i++) {
+  for (int i = 0; i < PhoneBook.Count(); i++) {
     if (strlen(PhoneBook[i]->Name) == 0) {
       port::SafeCopy(phonename, " ");
     } else {
@@ -6418,7 +6383,6 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
   ........................................................................*/
   RedrawType display = REDRAW_ALL;  // redraw level
   bool process = true;              // process while true
-  KeyNumType input;
 
   char namebuf[PhoneEntryClass::PHONE_MAX_NAME] = {
       0};  // buffer for editing name
@@ -6432,7 +6396,6 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
   /*........................................................................
   Buttons
   ........................................................................*/
-  GadgetClass* commands;  // button list
 
   EditClass nameedit(BUTTON_NAME, namebuf, PhoneEntryClass::PHONE_MAX_NAME,
                      TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_name_x,
@@ -6466,7 +6429,7 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
   /*
   ------------------------- Build the button list --------------------------
   */
-  commands = &nameedit;
+  GadgetClass* commands = &nameedit;  // button list
   numedit.Add_Tail(*commands);
   defaultbtn.Add_Tail(*commands);
   custombtn.Add_Tail(*commands);
@@ -6563,7 +6526,7 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
     /*
     ........................... Get user input ............................
     */
-    input = commands->Input();
+    KeyNumType input = commands->Input();
 
     if (firsttime) {
       nameedit.Set_Focus();
@@ -6663,8 +6626,6 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
 
 static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
   bool connected = false;
-  DialStatusType dialstatus;
-  int modemstatus;
 
   /*
   **	Turn modem servicing off in the callback routine.
@@ -6675,7 +6636,7 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
 
   DialSettings = settings;
 
-  modemstatus = NullModemClass::Get_Modem_Status();
+  int modemstatus = NullModemClass::Get_Modem_Status();
   if (reconnect) {
     if (modemstatus & CD_SET) {
       connected = true;
@@ -6770,7 +6731,7 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
     SoundOn = false;
   }
 
-  dialstatus =
+  const DialStatusType dialstatus =
       NullModem.Dial_Modem(DialString, settings->DialMethod, reconnect);
 
   if (reconnect) {
@@ -6836,8 +6797,6 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
 
 static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
   bool connected = false;
-  DialStatusType dialstatus;
-  int modemstatus;
 
   /* ###Change collision detected! C:\PROJECTS\CODE\NULLDLG.CPP... */
   /*
@@ -6849,7 +6808,7 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
 
   DialSettings = settings;
 
-  modemstatus = NullModemClass::Get_Modem_Status();
+  int modemstatus = NullModemClass::Get_Modem_Status();
   if (reconnect) {
     if (modemstatus & CD_SET) {
       connected = true;
@@ -6945,7 +6904,7 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
     SoundOn = false;
   }
 
-  dialstatus = NullModem.Answer_Modem(reconnect);
+  const DialStatusType dialstatus = NullModem.Answer_Modem(reconnect);
 
   switch (dialstatus) {
     case DIAL_CONNECTED:
@@ -7023,18 +6982,17 @@ void Smart_Print(const std::string_view text) {
 }
 
 void Hex_Dump_Data(const char* buffer, int length) {
-  int i;
   int offset = 0;
   char buff[10];
   char ptr[16];
-  char c;
+  char c = 0;
 
   while (length >= 16) {
     memcpy(ptr, buffer + offset, 16);
 
     Smart_Printf("%05lX  ", offset);
 
-    for (i = 0; i < 16; i++) {
+    for (int i = 0; i < 16; i++) {
       c = ptr[i];
       itoh(c, buff);
 
@@ -7047,8 +7005,8 @@ void Hex_Dump_Data(const char* buffer, int length) {
 
     Smart_Printf("  ");
 
-    for (i = 0; i < 16; i++) {
-      c = ptr[i];
+    for (const char i : ptr) {
+      c = i;
 
       if (c && (c < 7 || c > 11) && c != 13) {
         Smart_Printf("%c", c);
@@ -7068,7 +7026,7 @@ void Hex_Dump_Data(const char* buffer, int length) {
 
     Smart_Printf("%05lX  ", offset);
 
-    for (i = 0; i < 16; i++) {
+    for (int i = 0; i < 16; i++) {
       if (i < length) {
         c = ptr[i];
         itoh(c, buff);
@@ -7086,7 +7044,7 @@ void Hex_Dump_Data(const char* buffer, int length) {
 
     Smart_Printf("  ");
 
-    for (i = 0; i < length; i++) {
+    for (int i = 0; i < length; i++) {
       c = ptr[i];
 
       if (c && (c < 7 || c > 11) && c != 13) {
@@ -7102,14 +7060,13 @@ void Hex_Dump_Data(const char* buffer, int length) {
 } /* end of Hex_Dump_Data */
 
 void itoh(int i, char* s) {
-  int nibble;
 
   if (i == 0) {
     *s++ = '0';
     *s++ = '0';
   } else {
     for (int loop = 1; loop >= 0; loop--) {
-      nibble = i >> (loop << 2) & 0x000F;
+      const int nibble = i >> (loop << 2) & 0x000F;
 
       /* decimal range */
       if (nibble < 10) {

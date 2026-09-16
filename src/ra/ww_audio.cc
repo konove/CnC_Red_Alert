@@ -464,7 +464,6 @@ const char* Voc_Name(VocType voc) {
 void Sound_Effect(VocType voc, COORDINATE coord, int variation,
                   HousesType house) {
   CELL cell_pos = 0;
-  int pan_value;
 
   if (Debug_Quiet || Options.Volume == 0 || voc == VOC_NONE || !SoundOn ||
       SampleType == SAMPLE_NONE) {
@@ -475,7 +474,7 @@ void Sound_Effect(VocType voc, COORDINATE coord, int variation,
   }
 
   fixed volume(1);
-  pan_value = 0;
+  int pan_value = 0;
   if (coord && !Map.In_View(cell_pos)) {
     const int distance = Distance(coord, Map.TacticalCoord) / CELL_LEPTON_W;
     fixed dfixed = fixed(distance, 128 + 64);

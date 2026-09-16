@@ -324,10 +324,10 @@ void Debug_Key(unsigned input) {
           const COORDINATE center2 = CurrentObject[0]->Fire_Coord(0);
 
           for (int r = 0; r < 255; r += 10) {
-            int x;
-            int y;
-            int x1;
-            int y1;
+            int x = 0;
+            int y = 0;
+            int x1 = 0;
+            int y1 = 0;
             const DirType r1 = AsDirection(r);
             const DirType r2 = AsDirection(r + 10);
 

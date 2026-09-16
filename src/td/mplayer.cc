@@ -118,7 +118,6 @@ void Show_Internet_Connection_Progress();
 GameType Select_MPlayer_Game() {
   const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
   bool ipx_avail = false;
-  int number_of_buttons;
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
@@ -159,7 +158,7 @@ GameType Select_MPlayer_Game() {
 
     NUM_OF_BUTTONS = 3,
   };
-  number_of_buttons = NUM_OF_BUTTONS;
+  int number_of_buttons = NUM_OF_BUTTONS;
   /*........................................................................
   Redraw values: in order from "top" to "bottom" layer of the dialog
   ........................................................................*/
@@ -172,13 +171,8 @@ GameType Select_MPlayer_Game() {
   /*........................................................................
   Dialog variables:
   ........................................................................*/
-  KeyNumType input;    // input from user
-  bool process;        // loop while true
-  RedrawType display;  // true = re-draw everything
   GameType retval = GAME_NORMAL;  // return value
   int selection = 0;
-  bool pressed;
-  int curbutton;
   TextButtonClass* buttons[NUM_OF_BUTTONS];
 
   /*........................................................................
@@ -224,7 +218,7 @@ GameType Select_MPlayer_Game() {
   /*
   ......................... Fill array of button ptrs ......................
   */
-  curbutton = 0;
+  int curbutton = 0;
   buttons[0] = &modemserialbtn;
   if (ipx_avail) {
     buttons[1] = &ipxbtn;
@@ -244,9 +238,9 @@ GameType Select_MPlayer_Game() {
   /*
   -------------------------- Main Processing Loop --------------------------
   */
-  display = REDRAW_ALL;
-  process = true;
-  pressed = false;
+  RedrawType display = REDRAW_ALL;  // true = re-draw everything
+  bool process = true;              // loop while true
+  bool pressed = false;
   while (process) {
     /*
     ** If we have just received input focus again after running in the
@@ -292,7 +286,7 @@ GameType Select_MPlayer_Game() {
     /*
     ........................... Get user input ............................
     */
-    input = commands->Input();
+    const KeyNumType input = commands->Input();  // input from user
 
     /*
     ............................ Process input ............................
@@ -411,15 +405,9 @@ GameType Select_MPlayer_Game() {
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
 void Read_MultiPlayer_Settings() {
-  char* buffer;            // INI staging buffer pointer.
-  char* tbuffer;           // Accumulation buffer of trigger IDs.
-  int len;                 // Length of data in buffer.
-  char* tokenptr;          // ptr to token
-  PhoneEntryClass* phone;  // a phone book entry
-  char* entry;             // a phone book entry
+  char* entry = nullptr;   // a phone book entry
   char buf[128];           // buffer for parsing INI entry
-  int i;
-  CELL cell;
+  int i = 0;
 
   /*------------------------------------------------------------------------
   Fetch working pointer to the INI staging buffer. Make sure that the buffer
@@ -427,7 +415,7 @@ void Read_MultiPlayer_Settings() {
   the HidPage may be needed for various uncompressions during the INI
   parsing.)
   ------------------------------------------------------------------------*/
-  buffer = ShapeBuffer;
+  char* buffer = ShapeBuffer;  // INI staging buffer pointer.
   memset(buffer, '\0', base::ToSize(ShapeBufferSize));
 
   /*------------------------------------------------------------------------
@@ -541,8 +529,8 @@ void Read_MultiPlayer_Settings() {
   /*------------------------------------------------------------------------
   Set 'tbuffer' to point past the actual INI data
   ------------------------------------------------------------------------*/
-  len = static_cast<int>(strlen(buffer)) + 2;
-  tbuffer = buffer + len;
+  int len = static_cast<int>(strlen(buffer)) + 2;  // Length of data in buffer.
+  char* tbuffer = buffer + len;  // Accumulation buffer of trigger IDs.
 
   /*------------------------------------------------------------------------
   Read all Base-Scenario names into 'tbuffer'
@@ -599,7 +587,7 @@ void Read_MultiPlayer_Settings() {
     /*.....................................................................
     Create a new phone book entry
     .....................................................................*/
-    phone = new PhoneEntryClass();
+    auto* phone = new PhoneEntryClass();  // a phone book entry
 
     /*.....................................................................
     Read the entire entry in
@@ -610,7 +598,7 @@ void Read_MultiPlayer_Settings() {
     Extract name, phone # & serial port settings
     .....................................................................*/
     port::Tokenizer tokens(buf, "|");
-    tokenptr = tokens.Next();
+    char* tokenptr = tokens.Next();  // ptr to token
     if (tokenptr) {
       port::SafeCopy(phone->Name, tokenptr);
       strupr(phone->Name);
@@ -760,7 +748,7 @@ void Read_MultiPlayer_Settings() {
     }
 
     WWGetPrivateProfileString("SyncBug", "Cell", "0", buf, 80, buffer);
-    cell = tech::ParseInteger<CELL>(buf).value_or(0);
+    CELL const cell = tech::ParseInteger<CELL>(buf).value_or(0);
     if (cell) {
       TrapCell = &Map[cell];
     }
@@ -779,9 +767,7 @@ void Read_MultiPlayer_Settings() {
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
 void Write_MultiPlayer_Settings() {
-  char* buffer;  // INI staging buffer pointer.
   GameFile file;
-  int i;
   char entrytext[4];
   char buf[128];  // buffer for parsing INI entry
 
@@ -789,7 +775,7 @@ void Write_MultiPlayer_Settings() {
   Get a working pointer to the INI staging buffer. Make sure that the buffer
   starts cleared out of any data.
   ------------------------------------------------------------------------*/
-  buffer = ShapeBuffer;
+  char* buffer = ShapeBuffer;  // INI staging buffer pointer.
   memset(buffer, '\0', base::ToSize(ShapeBufferSize));
 
   file.SetName("CONQUER.INI");
@@ -850,7 +836,7 @@ void Write_MultiPlayer_Settings() {
   Save all InitString entries.  In descending order so they come out in
   ascending order.
   ------------------------------------------------------------------------*/
-  for (i = static_cast<int>(InitStrings.Count()) - 1; i >= 0; i--) {
+  for (int i = static_cast<int>(InitStrings.Count()) - 1; i >= 0; i--) {
     absl::SNPrintF(buf, sizeof(buf), "%03d", i);
     WWWritePrivateProfileString("InitStrings", buf, InitStrings[i], buffer);
   }
@@ -864,7 +850,7 @@ void Write_MultiPlayer_Settings() {
   Save all Phone Book entries.
   Format: Entry=Name,PhoneNum,Port,IRQ,Baud,InitString
   ------------------------------------------------------------------------*/
-  for (i = static_cast<int>(PhoneBook.Count()) - 1; i >= 0; i--) {
+  for (int i = static_cast<int>(PhoneBook.Count()) - 1; i >= 0; i--) {
     absl::SNPrintF(buf, sizeof(buf), "%s|%s|%x|%d|%d|%d|%d|%d|%s|%d|%d|%s",
                    PhoneBook[i]->Name, PhoneBook[i]->Number,
                    static_cast<unsigned int>(PhoneBook[i]->Settings.Port),
@@ -901,9 +887,7 @@ void Write_MultiPlayer_Settings() {
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
 void Read_Scenario_Descriptions() {
-  char* buffer;  // INI staging buffer pointer.
   GameFile file;
-  int i;
   char fname[20];
 
   /*------------------------------------------------------------------------
@@ -916,7 +900,7 @@ void Read_Scenario_Descriptions() {
   Loop through all possible scenario numbers; if a file is available, add
   its number to the FileNum list.
   ------------------------------------------------------------------------*/
-  for (i = 0; i < 100; i++) {
+  for (int i = 0; i < 100; i++) {
     Set_Scenario_Name(ScenarioName, i, SCEN_PLAYER_MPLAYER, SCEN_DIR_EAST,
                       SCEN_VAR_A);
     absl::SNPrintF(fname, sizeof(fname), "%s.INI", ScenarioName);
@@ -931,12 +915,12 @@ void Read_Scenario_Descriptions() {
   Now, for every file in the FileNum list, read in the INI file, and extract
   its description.
   ------------------------------------------------------------------------*/
-  for (i = 0; i < MPlayerFilenum.Count(); i++) {
+  for (int i = 0; i < MPlayerFilenum.Count(); i++) {
     /*.....................................................................
     Fetch working pointer to the INI staging buffer. Make sure that the
     buffer is cleared out before proceeding.
     .....................................................................*/
-    buffer = ShapeBuffer;
+    char* buffer = ShapeBuffer;  // INI staging buffer pointer.
     memset(buffer, '\0', base::ToSize(ShapeBufferSize));
 
     /*.....................................................................
@@ -970,7 +954,6 @@ void Read_Scenario_Descriptions() {
  * HISTORY: * 06/05/1995 BRR : Created. *
  *=============================================================================================*/
 void Free_Scenario_Descriptions() {
-  int i;
 
   /*------------------------------------------------------------------------
   Clear the scenario descriptions & filenames
@@ -981,7 +964,7 @@ void Free_Scenario_Descriptions() {
   /*------------------------------------------------------------------------
   Clear the initstring entries
   ------------------------------------------------------------------------*/
-  for (i = 0; i < InitStrings.Count(); i++) {
+  for (int i = 0; i < InitStrings.Count(); i++) {
     delete InitStrings[i];
   }
   InitStrings.Clear();
@@ -989,7 +972,7 @@ void Free_Scenario_Descriptions() {
   /*------------------------------------------------------------------------
   Clear the dialing entries
   ------------------------------------------------------------------------*/
-  for (i = 0; i < PhoneBook.Count(); i++) {
+  for (int i = 0; i < PhoneBook.Count(); i++) {
     delete PhoneBook[i];
   }
   PhoneBook.Clear();
@@ -1011,16 +994,14 @@ void Free_Scenario_Descriptions() {
  *   06/06/1995 BRR : Created.                                             *
  *=========================================================================*/
 void Computer_Message() {
-  int color;
   char txt[160];
-  HousesType house;
-  HouseClass* ptr;
 
   /*------------------------------------------------------------------------
   Find the computer house that the message will be from
   ------------------------------------------------------------------------*/
-  for (house = HOUSE_MULTI1; house < HOUSE_MULTI1 + MPlayerMax; house++) {
-    ptr = HouseClass::As_Pointer(house);
+  for (HousesType house = HOUSE_MULTI1; house < HOUSE_MULTI1 + MPlayerMax;
+       house++) {
+    HouseClass* ptr = HouseClass::As_Pointer(house);
 
     if (!ptr || ptr->IsHuman || ptr->IsDefeated) {
       continue;
@@ -1029,7 +1010,7 @@ void Computer_Message() {
     /*.....................................................................
     Decode this house's color
     .....................................................................*/
-    color = MPlayerTColors[ptr->RemapColor];
+    const int color = MPlayerTColors[ptr->RemapColor];
 
     /*.....................................................................
     We now have a 1/4 chance of echoing one of the human players' messages
@@ -1083,16 +1064,12 @@ void Computer_Message() {
 static void Garble_Message(char* buf) {
   char txt[80];
   char punct[20];   // for punctuation
-  char* p;          // working ptr
-  int numwords;     // # words in the phrase
   char* words[40];  // ptrs to various words in the phrase
-  int i;
-  int j;
 
   /*------------------------------------------------------------------------
   Pull off any trailing punctuation
   ------------------------------------------------------------------------*/
-  p = buf + strlen(buf) - 1;
+  char* p = buf + strlen(buf) - 1;  // working ptr
   while (true) {
     if (p < buf) {
       break;
@@ -1116,8 +1093,8 @@ static void Garble_Message(char* buf) {
   port::SafeCopy(punct, p);
   p[0] = 0;
 
-  for (i = 0; i < 40; i++) {
-    words[i] = nullptr;
+  for (auto& word : words) {
+    word = nullptr;
   }
 
   /*------------------------------------------------------------------------
@@ -1130,7 +1107,7 @@ static void Garble_Message(char* buf) {
   ------------------------------------------------------------------------*/
   port::Tokenizer tokens(txt, " ");
   p = tokens.Next();
-  numwords = 0;
+  int numwords = 0;  // # words in the phrase
   while (p) {
     words[numwords] = p;
     numwords++;
@@ -1143,8 +1120,8 @@ static void Garble_Message(char* buf) {
   and will go out of sync.
   ------------------------------------------------------------------------*/
   buf[0] = 0;
-  for (i = 0; i < numwords; i++) {
-    j = Sim_IRandom(0, numwords);
+  for (int i = 0; i < numwords; i++) {
+    const int j = Sim_IRandom(0, numwords);
     if (words[j] == nullptr) {  // this word has been used already
       i--;
       continue;
@@ -1219,9 +1196,6 @@ int Surrender_Dialog() {
   /*........................................................................
   Dialog variables
   ........................................................................*/
-  RedrawType display;  // requested redraw level
-  bool process;        // loop while true
-  KeyNumType input;
   int retcode = 0;
 
   /*........................................................................
@@ -1253,8 +1227,8 @@ int Surrender_Dialog() {
   /*
   -------------------------- Main Processing Loop --------------------------
   */
-  display = REDRAW_ALL;
-  process = true;
+  RedrawType display = REDRAW_ALL;  // requested redraw level
+  bool process = true;              // loop while true
   while (process) {
     /*
     ** If we have just received input focus again after running in the
@@ -1308,7 +1282,7 @@ int Surrender_Dialog() {
     /*
     ........................... Get user input ............................
     */
-    input = commands->Input();
+    const KeyNumType input = commands->Input();
 
     /*
     ............................ Process input ............................

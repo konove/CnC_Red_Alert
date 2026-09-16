@@ -292,11 +292,9 @@ char* VersionClass::Version_Name() {
   //------------------------------------------------------------------------
   // Trim 0's off the minor version
   //------------------------------------------------------------------------
-  uint16_t adjusted_minor;
-  int i;
 
-  adjusted_minor = Minor_Version();
-  for (i = 0; i < 4; i++) {
+  uint16_t adjusted_minor = Minor_Version();
+  for (int i = 0; i < 4; i++) {
     if ((adjusted_minor & 0x000f) != 0) {
       break;
     }
@@ -362,20 +360,18 @@ void VersionClass::Read_Text_String() {
  *   10/26/1995 BRR : Created.                                             *
  *=========================================================================*/
 CommProtocolType VersionClass::Version_Protocol(uint32_t version) {
-  int i;
-  int j;
 
   //------------------------------------------------------------------------
   // Compute # entries in the VersionProtocol table
   //------------------------------------------------------------------------
-  j = sizeof(VersionProtocol) / sizeof(VersionProtocolType);
+  const int j = sizeof(VersionProtocol) / sizeof(VersionProtocolType);
 
   //------------------------------------------------------------------------
   // Search backwards through the table, finding the first entry for which
   // the given version # is >= the table's; this is the range containing
   // the given version number.
   //------------------------------------------------------------------------
-  for (i = j - 1; i >= 0; i--) {
+  for (int i = j - 1; i >= 0; i--) {
     if (version >= VersionProtocol[i].Version) {
       return VersionProtocol[i].Protocol;
     }

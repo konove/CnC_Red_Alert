@@ -198,14 +198,11 @@ inline CELL Coord_YCell(COORDINATE coord) {
  * HISTORY: * 05/27/1994 JLB : Created. *
  *=============================================================================================*/
 inline int Distance(COORDINATE coord1, COORDINATE coord2) {
-  int diff1;
-  int diff2;
-
-  diff1 = Coord_Y(coord1) - Coord_Y(coord2);
+  int diff1 = Coord_Y(coord1) - Coord_Y(coord2);
   if (diff1 < 0) {
     diff1 = -diff1;
   }
-  diff2 = Coord_X(coord1) - Coord_X(coord2);
+  int diff2 = Coord_X(coord1) - Coord_X(coord2);
   if (diff2 < 0) {
     diff2 = -diff2;
   }
@@ -231,14 +228,11 @@ inline int Distance(COORDINATE coord1, COORDINATE coord2) {
  * HISTORY: * 12/23/1994 JLB : Created. *
  *=============================================================================================*/
 inline int Distance(CELL coord1, CELL coord2) {
-  int diff1;
-  int diff2;
-
-  diff1 = Cell_Y(coord1) - Cell_Y(coord2);
+  int diff1 = Cell_Y(coord1) - Cell_Y(coord2);
   if (diff1 < 0) {
     diff1 = -diff1;
   }
-  diff2 = Cell_X(coord1) - Cell_X(coord2);
+  int diff2 = Cell_X(coord1) - Cell_X(coord2);
   if (diff2 < 0) {
     diff2 = -diff2;
   }

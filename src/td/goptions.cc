@@ -137,9 +137,9 @@ void GameOptionsClass::Process() {
   */
   TextButtonClass* buttons = nullptr;
   int selection = 0;
-  bool pressed;
+  bool pressed = false;
   int curbutton = 6;
-  int y;
+  int y = 0;
   TextButtonClass* buttonsel[sizeof(_constants) / sizeof(_constants[0])];
 
   Set_Logic_Page(SeenBuff);

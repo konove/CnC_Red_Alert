@@ -145,11 +145,10 @@ void Nod_Ending() {
   char* satpic = new char[64000];
 #endif  // NOT_FOR_WIN95
   const int oldfontxspacing = FontXSpacing;
-  const void* oldfont;
 
   Score.Presentation();
 
-  oldfont = Set_Font(ScoreFontPtr);
+  const void* oldfont = Set_Font(ScoreFontPtr);
   PseudoSeenBuff =
       new GraphicBufferClass(320, 200, static_cast<void*>(nullptr));
   TextPrintBuffer = new GraphicBufferClass(

@@ -577,12 +577,11 @@ BulletTypeClass::BulletTypeClass(
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
 void BulletTypeClass::One_Time() {
-  BulletType index;
 
   /*
   **	Load the bullet shapes.
   */
-  for (index = BULLET_SNIPER; index < BULLET_COUNT; index++) {
+  for (BulletType index = BULLET_SNIPER; index < BULLET_COUNT; index++) {
     const BulletTypeClass& bullet = As_Reference(index);
 
     if (!bullet.IsInvisible) {

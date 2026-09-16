@@ -94,13 +94,9 @@ IPXGlobalConnClass::IPXGlobalConnClass(int numsend, int numreceive, int maxlen,
                    sizeof(IPXAddressClass)),
       ProductID(product_id)  // extra storage for the sender's address
 {
-  int i;
-
-  for (i = 0; i < 4; i++) {
-    LastPacketID[i] = 0xffffffff;
+  for (unsigned int& i : LastPacketID) {
+    i = 0xffffffff;
   }
-  LastRXIndex = 0;
-
 } /* end of IPXGlobalConnClass */
 
 /***************************************************************************
@@ -209,12 +205,7 @@ int IPXGlobalConnClass::Send_Packet(void* buf, int buflen,
  *=========================================================================*/
 int IPXGlobalConnClass::Receive_Packet(void* buf, int buflen,
                                        IPXAddressClass* address) {
-  GlobalHeaderType* packet;      // ptr to this packet
-  SendQueueType* send_entry;     // ptr to send entry header
-  GlobalHeaderType* entry_data;  // ptr to queue entry data
   GlobalHeaderType ackpacket;    // ACK packet to send
-  int i;
-  int resend;
 
   /*------------------------------------------------------------------------
   Check the magic #
@@ -223,7 +214,7 @@ int IPXGlobalConnClass::Receive_Packet(void* buf, int buflen,
     return 0;
   }
   auto packet_storage = port::ReadUnaligned<GlobalHeaderType>(buf);
-  packet = &packet_storage;
+  GlobalHeaderType* packet = &packet_storage;  // ptr to this packet
   if (packet->Header.MagicNumber != MagicNum) {
     return 0;
   }
@@ -242,8 +233,8 @@ int IPXGlobalConnClass::Receive_Packet(void* buf, int buflen,
       //..................................................................
       // Check for a resend
       //..................................................................
-      resend = 0;
-      for (i = 0; i < 4; i++) {
+      int resend = 0;
+      for (int i = 0; i < 4; i++) {
         if (std::cmp_greater_equal(i, Queue->Receive_Total())) {
           break;
         }
@@ -307,16 +298,18 @@ int IPXGlobalConnClass::Receive_Packet(void* buf, int buflen,
     ACK will be a leftover)
     .....................................................................*/
     case PACKET_ACK:
-      for (i = 0; i < Queue->Num_Send(); i++) {
+      for (int i = 0; i < Queue->Num_Send(); i++) {
         /*...............................................................
         Get queue entry ptr
         ...............................................................*/
-        send_entry = Queue->Get_Send(i);
+        SendQueueType* send_entry =
+            Queue->Get_Send(i);  // ptr to send entry header
 
         /*...............................................................
         If ptr is valid, get ptr to its data
         ...............................................................*/
-        entry_data = port::AlignedObject<GlobalHeaderType>(send_entry->Buffer);
+        auto* entry_data = port::AlignedObject<GlobalHeaderType>(
+            send_entry->Buffer);  // ptr to queue entry data
 
         /*...............................................................
         If ACK is for this entry, mark it
@@ -365,9 +358,6 @@ int IPXGlobalConnClass::Receive_Packet(void* buf, int buflen,
 int IPXGlobalConnClass::Get_Packet(void* buf, int* buflen,
                                    IPXAddressClass* address,
                                    uint16_t* product_id) {
-  ReceiveQueueType* rec_entry;  // ptr to receive entry header
-  GlobalHeaderType* packet;
-  int packetlen;  // size of received packet
 
   /*------------------------------------------------------------------------
   Return if nothing to do
@@ -379,7 +369,8 @@ int IPXGlobalConnClass::Get_Packet(void* buf, int* buflen,
   /*------------------------------------------------------------------------
   Get ptr to the next available entry
   ------------------------------------------------------------------------*/
-  rec_entry = Queue->Get_Receive(0);
+  ReceiveQueueType* rec_entry =
+      Queue->Get_Receive(0);  // ptr to receive entry header
 
   /*------------------------------------------------------------------------
   Read it if it's un-read
@@ -393,8 +384,10 @@ int IPXGlobalConnClass::Get_Packet(void* buf, int* buflen,
     /*.....................................................................
     Copy data packet
     .....................................................................*/
-    packet = port::AlignedObject<GlobalHeaderType>(rec_entry->Buffer);
-    packetlen = rec_entry->BufLen - static_cast<int>(sizeof(GlobalHeaderType));
+    auto* packet = port::AlignedObject<GlobalHeaderType>(rec_entry->Buffer);
+    const int packetlen =
+        rec_entry->BufLen -
+        static_cast<int>(sizeof(GlobalHeaderType));  // size of received packet
     if (packetlen > 0) {
       memcpy(buf, rec_entry->Buffer + sizeof(GlobalHeaderType),
              base::ToSize(packetlen));
@@ -439,13 +432,12 @@ int IPXGlobalConnClass::Get_Packet(void* buf, int* buflen,
  *=========================================================================*/
 int IPXGlobalConnClass::Send(void* buf, int buflen, void* extrabuf,
                              int /*extralen*/) {
-  IPXAddressClass* addr;
-  int rc;
+  int rc = 0;
 
   /*------------------------------------------------------------------------
   Extract the packet's embedded IPX address
   ------------------------------------------------------------------------*/
-  addr = static_cast<IPXAddressClass*>(extrabuf);
+  auto* addr = static_cast<IPXAddressClass*>(extrabuf);
 
   /*------------------------------------------------------------------------
   If it's a broadcast address, broadcast it
@@ -491,14 +483,13 @@ int IPXGlobalConnClass::Send(void* buf, int buflen, void* extrabuf,
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
 int IPXGlobalConnClass::Service_Receive_Queue() {
-  int i;
-  ReceiveQueueType* rec_entry;  // ptr to receive entry header
 
   //------------------------------------------------------------------------
   // Remove all dead packets:  If a packet's been read, throw it away.
   //------------------------------------------------------------------------
-  for (i = 0; i < Queue->Num_Receive(); i++) {
-    rec_entry = Queue->Get_Receive(i);
+  for (int i = 0; i < Queue->Num_Receive(); i++) {
+    ReceiveQueueType* rec_entry =
+        Queue->Get_Receive(i);  // ptr to receive entry header
 
     if (rec_entry->IsRead) {
       Queue->UnQueue_Receive(nullptr, nullptr, i, nullptr, nullptr);

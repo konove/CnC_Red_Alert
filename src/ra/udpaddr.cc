@@ -93,10 +93,9 @@ bool Get_Broadcast_Addresses() {
   //------------------------------------------------------------------------
   RedrawType display = REDRAW_ALL;  // redraw level
   bool process = true;              // process while true
-  KeyNumType input;
 
-  int width;
-  int height;
+  int width = 0;
+  int height = 0;
 
   RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
 
@@ -210,7 +209,7 @@ bool Get_Broadcast_Addresses() {
     //.....................................................................
     //	Get user input
     //.....................................................................
-    input = commands->Input();
+    const KeyNumType input = commands->Input();
 
     //.....................................................................
     //	Process input

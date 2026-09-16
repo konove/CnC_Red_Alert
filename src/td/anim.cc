@@ -110,9 +110,7 @@
  *=============================================================================================*/
 int AnimClass::Validate() const {
   if constexpr (config::kCheatKeysEnabled) {
-    int num;
-
-    num = Anims.ID(this);
+    const int num = Anims.ID(this);
     if (num < 0 || num >= kAnimMax) {
       Validate_Error("ANIM");
     }
@@ -670,7 +668,7 @@ AnimClass::~AnimClass() {
       *that *	this animation is attached to. If there are no others, then
       *inform the *	attached object of this fact.
       */
-      int index;
+      int index = 0;
       for (index = 0; index < Anims.Count(); index++) {
         if (Anims.Ptr(index)->Object == to) {
           break;
@@ -1095,7 +1093,7 @@ void AnimClass::Middle() {
     }
   }
 
-  AnimClass* newanim;
+  AnimClass* newanim = nullptr;
 
   /*
   **	If this animation spawns side effects during its lifetime, then
@@ -1193,8 +1191,8 @@ TARGET AnimClass::As_Target() const {
  *=========================================================================*/
 COORDINATE AnimClass::Adjust_Coord(COORDINATE coord) {
   Validate();
-  int x;
-  int y;
+  int x = 0;
+  int y = 0;
 
   if (Class->Type == ANIM_ATOM_DOOR) {
     x = -1;

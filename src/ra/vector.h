@@ -168,7 +168,7 @@ void VectorClass<T>::Clear() {
 template <class T>
 bool VectorClass<T>::Resize(base::ssize newsize, T* array) {
   if (newsize > 0) {
-    T* newptr;
+    T* newptr = nullptr;
     if (!array) {
       newptr = new T[base::ToSize(newsize)]();  // Value initialized, see the constructor.
     } else {

@@ -135,7 +135,6 @@ void GameControlsClass::Process() {
   /*
   **	Dialog variables
   */
-  KeyNumType input;
 
   int gamespeed = static_cast<int>(Options.GameSpeed);
   int scrollrate = Options.ScrollRate;
@@ -143,12 +142,10 @@ void GameControlsClass::Process() {
   bool pressed = false;
   int curbutton = 0;
   TextButtonClass* buttons[BUTTON_COUNT - BUTTON_FIRST];
-  TextPrintType style;
 
   /*
   **	Buttons
   */
-  GadgetClass* commands;  // button list
 
   SliderClass gspeed_btn(BUTTON_SPEED, d_speed_x, d_speed_y, d_speed_w,
                          d_speed_h);
@@ -180,7 +177,7 @@ void GameControlsClass::Process() {
   /*
   **	Build button list
   */
-  commands = &okbtn;
+  GadgetClass* commands = &okbtn;  // button list
   gspeed_btn.Add_Tail(*commands);
   scrate_btn.Add_Tail(*commands);
   visual_btn.Add_Tail(*commands);
@@ -258,7 +255,7 @@ void GameControlsClass::Process() {
       /*
       **	Label the game speed slider
       */
-      style = TPF_6PT_GRAD | TPF_NOSHADOW | TPF_USE_GRAD_PAL;
+      TextPrintType style = TPF_6PT_GRAD | TPF_NOSHADOW | TPF_USE_GRAD_PAL;
       if (curbutton == BUTTON_SPEED - BUTTON_FIRST) {
         style = style | TPF_BRIGHT_COLOR;
       }
@@ -300,7 +297,7 @@ void GameControlsClass::Process() {
     /*
     **	Get user input.
     */
-    input = commands->Input();
+    const KeyNumType input = commands->Input();
 
     /*
     **	Process input.

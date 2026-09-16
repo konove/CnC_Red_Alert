@@ -166,7 +166,7 @@ static void Play_Intro(bool for_real = false);
  * HISTORY: * 10/07/1992 JLB : Created. *
  *=============================================================================================*/
 bool Init_Game(int /*unused*/, char* /*unused*/[]) {
-  const void* temp_mouse_shapes;
+  const void* temp_mouse_shapes = nullptr;
 
   /*
   **	Initialize the game object heaps.
@@ -375,7 +375,7 @@ bool Init_Game(int /*unused*/, char* /*unused*/[]) {
     ** If there are no search drives specified then we must be playing
     ** off cd, so read files from there.
     */
-    int error;
+    int error = 0;
 
     do {
       if (!CDList.Get_Number_Of_Drives()) {
@@ -765,11 +765,11 @@ bool Select_Game(bool fade) {
     SEL_NONE,              // placeholder default value
   };
   bool gameloaded = false;  // Has the game been loaded from the menu?
-  int selection;            // the default selection
+  int selection = 0;        // the default selection
   bool process = true;      // false = break out of while loop
   bool display = true;
   CountDownTimerClass count;
-  int cd_index;
+  int cd_index = 0;
 
   /*
   ** Enable the DDE Server so we can get internet start game packets from WChat
@@ -3038,7 +3038,7 @@ uint32_t Obfuscate(const char* string) {
   */
   if (length < 16 || length & 0x03) {
     const int maxlen = std::max((length + 3) & 0x00FC, 16);
-    int index;
+    int index = 0;
     for (index = length; index < maxlen; index++) {
       buffer[index] = static_cast<char>(
           'A' + ((('?' ^ buffer[index - length]) + index) % 26));

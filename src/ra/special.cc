@@ -288,13 +288,8 @@ void PWEditClass::Draw_Text(const char* text) {
   memset(buffer, '*', strlen(text));
 
   if (FontPtr == GradFont6Ptr) {
-    TextPrintType flags;
-
-    if (Has_Focus()) {
-      flags = TPF_BRIGHT_COLOR;
-    } else {
-      flags = static_cast<TextPrintType>(0);
-    }
+    const TextPrintType flags =
+        Has_Focus() ? TPF_BRIGHT_COLOR : static_cast<TextPrintType>(0);
 
     Conquer_Clip_Text_Print(buffer, X + 1, Y + 1, Color, TBLACK,
                             TextFlags | flags, Width - 2);
@@ -339,8 +334,6 @@ void PWEditClass::Draw_Text(const char* text) {
 #define BUFFSIZE (511)
 const char* Fetch_Password(int caption, int message, int btext) {
   char buffer[BUFFSIZE];
-  bool process;      // loop while true
-  KeyNumType input;  // user input
   const TextButtonClass ok;
 
   if (btext == TXT_NONE) {
@@ -354,14 +347,13 @@ const char* Fetch_Password(int caption, int message, int btext) {
   **	Examine the optional button parameters. Fetch the width and starting
   **	characters for each.
   */
-  int bwidth;
-  int bheight;  // button width and height
 
   /*
   **	Build the button list.
   */
-  bheight = FontHeight + FontYSpacing + 4;
-  bwidth = std::max(String_Pixel_Width(Text_String(btext)) + 16, 30 * 2);
+  const int bheight = FontHeight + FontYSpacing + 4;  // button width and height
+  const int bwidth =
+      std::max(String_Pixel_Width(Text_String(btext)) + 16, 30 * 2);
 
   /*
   **	Determine the dimensions of the text to be used for the dialog box.
@@ -370,8 +362,8 @@ const char* Fetch_Password(int caption, int message, int btext) {
   port::SafeCopy(buffer, Text_String(message));
   Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
-  int width;
-  int height;
+  int width = 0;
+  int height = 0;
   Format_Window_String(buffer, 255, width, height);
 
   width = std::max(width, 100);
@@ -428,7 +420,7 @@ const char* Fetch_Password(int caption, int message, int btext) {
   /*
   **	Main Processing Loop.
   */
-  process = true;
+  bool process = true;  // loop while true
   bool first = true;
   while (process) {
     /*
@@ -447,7 +439,7 @@ const char* Fetch_Password(int caption, int message, int btext) {
     /*
     **	Fetch and process input.
     */
-    input = buttonlist->Input();
+    const KeyNumType input = buttonlist->Input();  // user input
     if (first) {
       button2.Set_Focus();
       button2.Flag_To_Redraw();
@@ -510,8 +502,8 @@ int Fetch_Difficulty(bool amath) {
   }
   Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
-  int width;
-  int height;
+  int width = 0;
+  int height = 0;
   Format_Window_String(buffer, w - 120, width, height);
 
   /*

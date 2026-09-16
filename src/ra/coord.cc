@@ -154,8 +154,8 @@ const int16_t* Coord_Spillage_List(const COORDINATE coord, int maxsize) {
   static constexpr signed char kSpillToFacing[16] = {
       8, 6, 2, -1, 0, 7, 1, -1, 4, 5, 3, -1, -1, -1, -1, -1};
   int index = 0;
-  int x;
-  int y;
+  int x = 0;
+  int y = 0;
 
   // Objects larger than 2 tiles use a prebuilt 5x5 cell region.
   if (maxsize > ICON_PIXEL_W * 2) {

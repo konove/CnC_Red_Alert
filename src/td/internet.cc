@@ -483,9 +483,7 @@ bool Do_The_Internet_Menu_Thang() {
 
   char users_name[256];
   const int buffer_len = sizeof(users_name);
-  bool process;
-  bool display;
-  KeyNumType input;
+  KeyNumType input = KN_NONE;
 
   if (!Special.IsFromWChat && !SpawnedFromWChat) {
     /*
@@ -523,8 +521,8 @@ bool Do_The_Internet_Menu_Thang() {
   **
   */
 
-  process = true;
-  display = true;
+  bool process = true;
+  bool display = true;
 
   while (process) {
     /*

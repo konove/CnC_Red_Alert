@@ -3851,9 +3851,7 @@ void BuildingTypeClass::Prep_For_Add() {
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
 bool BuildingTypeClass::Create_And_Place(CELL cell, HousesType house) const {
-  BuildingClass* ptr;
-
-  ptr = new BuildingClass(Type, house);
+  auto* ptr = new BuildingClass(Type, house);
   if (ptr) {
     return ptr->Unlimbo(Cell_Coord(cell), DIR_N);
   }
@@ -3938,7 +3936,7 @@ void BuildingTypeClass::Init_Anim(BStateType state, int start, int count,
  *Converted to building type class member function.                        *
  *=============================================================================================*/
 bool BuildingTypeClass::Legal_Placement(CELL pos) const {
-  const int16_t* offset;  // Pointer to cell offset list.
+  const int16_t* offset = nullptr;  // Pointer to cell offset list.
 
   if (pos == -1) {
     return false;
@@ -4061,7 +4059,6 @@ void BuildingTypeClass::Init(TheaterType theater) {
       }
 
       if (Get_Resolution_Factor()) {
-        const void* cameo_ptr;
 
         classptr->Set_Cameo_Data(nullptr);
         const auto filename =
@@ -4071,7 +4068,7 @@ void BuildingTypeClass::Init(TheaterType theater) {
                                   .replace_extension(Theaters[theater].Suffix)
                                   .string();
 
-        cameo_ptr = MixArchive::Retrieve(fullname);
+        const void* cameo_ptr = MixArchive::Retrieve(fullname);
         if (cameo_ptr) {
           classptr->Set_Cameo_Data(cameo_ptr);
         }

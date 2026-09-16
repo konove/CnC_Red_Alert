@@ -41,13 +41,8 @@ void WOLEditClass::Draw_Text(const char* text) {
   //	Only difference between this and EditClass: cursor shows up when
   //	string is at MaxLength.
 
-  TextPrintType flags;
-
-  if (Has_Focus()) {
-    flags = TPF_BRIGHT_COLOR;
-  } else {
-    flags = static_cast<TextPrintType>(0);
-  }
+  const TextPrintType flags =
+      Has_Focus() ? TPF_BRIGHT_COLOR : static_cast<TextPrintType>(0);
 
   Conquer_Clip_Text_Print(text, X + 1, Y + 1, Color, TBLACK, TextFlags | flags,
                           Width - 2);

@@ -128,13 +128,12 @@
  *   10/21/1994 BR : Created.                                              *
  *=========================================================================*/
 int MapEditClass::New_Scenario() {
-  int scen_num;
-  ScenarioPlayerType player;
-  ScenarioDirType dir;
-  ScenarioVarType var;
+  int scen_num = 0;
+  ScenarioPlayerType player = SCEN_PLAYER_NONE;
+  ScenarioDirType dir = SCEN_DIR_NONE;
+  ScenarioVarType var = SCEN_VAR_NONE;
   Disect_Scenario_Name(Scen.ScenarioName, scen_num, player, dir, var);
 
-  int rc;
 
   /*
   **	Force the house save value to match the player house.
@@ -159,7 +158,7 @@ int MapEditClass::New_Scenario() {
   /*
   **	Prompt for scenario info
   */
-  rc = Pick_Scenario("New Scenario", scen_num, player, dir, var);
+  const int rc = Pick_Scenario("New Scenario", scen_num, player, dir, var);
   if (rc != 0) {
     return (-1);
   }
@@ -266,19 +265,17 @@ int MapEditClass::New_Scenario() {
  *   10/21/1994 BR : Created.                                              *
  *=========================================================================*/
 int MapEditClass::Load_Scenario() {
-  int scen_num;
-  ScenarioPlayerType player;
-  ScenarioDirType dir;
-  ScenarioVarType var;
+  int scen_num = 0;
+  ScenarioPlayerType player = SCEN_PLAYER_NONE;
+  ScenarioDirType dir = SCEN_DIR_NONE;
+  ScenarioVarType var = SCEN_VAR_NONE;
   Disect_Scenario_Name(Scen.ScenarioName, scen_num, player, dir, var);
 
-  int rc;
-  NodeNameType* who;  // node to add to Players
 
   /*
   **	Prompt for scenario info
   */
-  rc = Pick_Scenario("Load Scenario", scen_num, player, dir, var);
+  const int rc = Pick_Scenario("Load Scenario", scen_num, player, dir, var);
   if (rc != 0) {
     return (-1);
   }
@@ -304,7 +301,7 @@ int MapEditClass::Load_Scenario() {
   if (player == SCEN_PLAYER_MPLAYER) {
     Clear_Vector(&Session.Players);
 
-    who = new NodeNameType;
+    auto* who = new NodeNameType;  // node to add to Players
     port::SafeCopy(who->Name, Session.Handle);
     who->Player.House = Session.House;
     who->Player.Color = Session.ColorIdx;
@@ -364,21 +361,20 @@ int MapEditClass::Load_Scenario() {
    *   10/21/1994 BR : Created.                                              *
    *=========================================================================*/
   int MapEditClass::Save_Scenario() {
-    int scen_num;
-    ScenarioPlayerType player;
-    ScenarioDirType dir;
-    ScenarioVarType var;
+    int scen_num = 0;
+    ScenarioPlayerType player = SCEN_PLAYER_NONE;
+    ScenarioDirType dir = SCEN_DIR_NONE;
+    ScenarioVarType var = SCEN_VAR_NONE;
 
     Disect_Scenario_Name(Scen.ScenarioName, scen_num, player, dir, var);
 
-    int rc;
     //	FILE * fp;
     //	char fname[13];
 
     /*
     **	Prompt for scenario info
     */
-    rc = Pick_Scenario("Save Scenario", scen_num, player, dir, var);
+    const int rc = Pick_Scenario("Save Scenario", scen_num, player, dir, var);
     if (rc != 0) {
       return (-1);
     }
@@ -1052,26 +1048,21 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Dialog variables:
     */
-    RedrawType display;     // requested redraw level
     bool cancel = false;    // true = user cancels
-    KeyNumType input;       // user input
     int grabbed = 0;        // 1=TLeft,2=TRight,3=BRight,4=BLeft
-    int map_x1;             // map coords x1, pixel coords
-    int map_x2;             // map coords x2, pixel coords
-    int map_y1;             // map coords y1, pixel coords
-    int map_y2;             // map coords y2, pixel coords
-    int delta1;
-    int delta2;  // mouse-click proximity
+    int map_x1 = 0;         // map coords x1, pixel coords
+    int map_y1 = 0;         // map coords y1, pixel coords
+    int delta1 = 0;
+    int delta2 = 0;  // mouse-click proximity
     int mx = 0;
     int my = 0;  // last-saved mouse coords
                  //	char txt[40];
-    int txt_x;
-    int txt_y;              // for displaying text
-                            //	unsigned index;
-                            //// for drawing map symbology
-    CELL cell;              // for drawing map symbology
-    int color;              // for drawing map symbology
-    ObjectClass* occupier;  // cell's occupier
+    int txt_x = 0;
+    int txt_y = 0;                    // for displaying text
+                                      //	unsigned index;
+                                      //// for drawing map symbology
+    int color = 0;                    // for drawing map symbology
+    ObjectClass* occupier = nullptr;  // cell's occupier
     const RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
 
     /*
@@ -1105,8 +1096,8 @@ int MapEditClass::Load_Scenario() {
       map_y1 = D_BORD_Y1 + y + 1;
     }
 
-    map_x2 = map_x1 + w - 1;
-    map_y2 = map_y1 + h - 1;
+    int map_x2 = map_x1 + w - 1;  // map coords x2, pixel coords
+    int map_y2 = map_y1 + h - 1;  // map coords y2, pixel coords
 
     /*
     **	Build the button list
@@ -1117,7 +1108,7 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Main processing loop
     */
-    display = REDRAW_ALL;
+    RedrawType display = REDRAW_ALL;  // requested redraw level
     bool process = true;
     while (process) {
       /*
@@ -1252,7 +1243,7 @@ int MapEditClass::Load_Scenario() {
           /*
           **	Draw Land map symbols (use color according to Ground[] array).
           */
-          for (cell = 0; cell < MAP_CELL_TOTAL; cell++) {
+          for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
             occupier = (*this)[cell].Cell_Occupier();
             if (occupier == nullptr) {
               color = GroundColor[(*this)[cell].Land_Type()];
@@ -1300,7 +1291,7 @@ int MapEditClass::Load_Scenario() {
           **	that specified in the house type class object.
           **	DKGREEN = terrain object
           */
-          for (cell = 0; cell < MAP_CELL_TOTAL; cell++) {
+          for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
             occupier = (*this)[cell].Cell_Occupier();
             if (occupier) {
               color = DKGREEN;
@@ -1368,7 +1359,7 @@ int MapEditClass::Load_Scenario() {
       /*
       **	Process user input
       */
-      input = commands->Input();
+      const KeyNumType input = commands->Input();  // user input
 
       /*
       **	Normal button processing: This is done when the mouse button is
@@ -2468,8 +2459,7 @@ int MapEditClass::Load_Scenario() {
     */
     const auto theater = TheaterType(theaterbtn.Current_Index());
     if (theater != orig_theater) {
-      int theater_mask;            // template/terrain mask
-      TerrainClass* terrain;       // cell's terrain pointer
+      int theater_mask = 0;  // template/terrain mask
 
       /*
       **	Loop through all cells
@@ -2492,7 +2482,8 @@ int MapEditClass::Load_Scenario() {
         **	If this cell has terrain in it, and that terrain isn't
         *compatible *	with this theater, delete the terrain object.
         */
-        terrain = (*this)[i].Cell_Terrain();
+        TerrainClass* terrain =
+            (*this)[i].Cell_Terrain();  // cell's terrain pointer
         if (terrain != nullptr) {
           theater_mask = terrain->Class->Theater;
           if ((theater_mask & (1 << theater)) == 0) {
@@ -2544,7 +2535,6 @@ int MapEditClass::Load_Scenario() {
    *   11/29/1994 BR : Created.                                              *
    *=========================================================================*/
   void MapEditClass::Handle_Triggers() {
-    int rc;
 
     /*
     **	Trigger dialog processing loop:
@@ -2559,7 +2549,7 @@ int MapEditClass::Load_Scenario() {
       /*
       **	Select trigger
       */
-      rc = Select_Trigger();
+      const int rc = Select_Trigger();
 
       /*
       **	'OK'; break
@@ -2730,7 +2720,6 @@ int MapEditClass::Load_Scenario() {
     bool edit_trig = false;  // true = user wants to edit
     bool new_trig = false;   // true = user wants to new
     bool del_trig = false;   // true = user wants to new
-    int i;                   // loop counter
 
     /*
     **	Buttons
@@ -2759,7 +2748,7 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Fill in the list box
     */
-    for (i = 0; i < TriggerTypes.Count(); i++) {
+    for (int i = 0; i < TriggerTypes.Count(); i++) {
       triggerlist.Add_Item(CCPtr<TriggerTypeClass>(TriggerTypes.Ptr(i)));
     }
 

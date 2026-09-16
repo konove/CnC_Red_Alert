@@ -1622,7 +1622,6 @@ void TeamTypeClass::Detach(TARGET target, bool /*unused*/) {
  *   02/01/1995 BR : No del team if no classes (editor needs empty teams!) *
  *=========================================================================*/
 void TeamTypeClass::Read_INI(CCINIClass& ini) {
-  TeamTypeClass* team;  // Working team pointer.
   char buf[500];        // INI entry buffer
 
   const int len = ini.Entry_Count(INI_Name());
@@ -1631,7 +1630,7 @@ void TeamTypeClass::Read_INI(CCINIClass& ini) {
   **	Loop for all team entries, create and fill in.
   */
   for (int index = 0; index < len; index++) {
-    team = new TeamTypeClass();
+    auto* team = new TeamTypeClass();  // Working team pointer.
     if (team != nullptr) {
       const char* entry = ini.Get_Entry(INI_Name(), index);
       ini.Get_String(INI_Name(), entry, nullptr, buf, sizeof(buf));
@@ -1677,7 +1676,7 @@ void TeamTypeClass::Fill_In(const char* name, char* entry) {
   House = static_cast<HousesType>(
       tech::ParseInteger<int>(tokens.Next()).value_or(0));
 
-  int code;
+  int code = 0;
   switch (NewINIFormat) {
     default:
       code = tech::ParseInteger<int>(tokens.Next()).value_or(0);

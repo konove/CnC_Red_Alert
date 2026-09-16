@@ -368,7 +368,7 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
     Scen.Set_Scenario_Name(buffer);
     Scen.Scenario = index;
     file.SetName(buffer);
-    bool bOk;
+    bool bOk = false;
     if (index < 36) {
       bOk = bCounterstrike;
     } else {

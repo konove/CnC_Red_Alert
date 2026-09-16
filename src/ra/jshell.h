@@ -200,7 +200,7 @@ struct SystemTickSource {
 template <class T>
 void Bubble_Sort(T* array, int count) {
   if (array != nullptr && count > 1) {
-    bool swapflag;
+    bool swapflag = false;
 
     do {
       swapflag = false;
@@ -219,7 +219,7 @@ void Bubble_Sort(T* array, int count) {
 template <class T>
 void PBubble_Sort(T* array, int count) {
   if (array != nullptr && count > 1) {
-    bool swapflag;
+    bool swapflag = false;
 
     do {
       swapflag = false;
@@ -238,7 +238,7 @@ void PBubble_Sort(T* array, int count) {
 template <class T>
 void PNBubble_Sort(T* array, int count) {
   if (array != nullptr && count > 1) {
-    bool swapflag;
+    bool swapflag = false;
 
     do {
       swapflag = false;

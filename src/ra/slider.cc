@@ -234,8 +234,8 @@ bool SliderClass::Action(unsigned flags, KeyNumType& key) {
   *"sticks" and the thumb moves according to *	mouse position.
   */
   if (flags & LEFTPRESS) {
-    int mouse;  // Mouse pixel position.
-    int edge;   // Edge of slider.
+    int mouse = 0;  // Mouse pixel position.
+    int edge = 0;   // Edge of slider.
 
     if (IsHorizontal) {
       mouse = Get_Mouse_X();

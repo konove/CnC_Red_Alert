@@ -94,9 +94,7 @@
  *=============================================================================================*/
 int TemplateClass::Validate() const {
   if constexpr (config::kCheatKeysEnabled) {
-    int num;
-
-    num = Templates.ID(this);
+    const int num = Templates.ID(this);
     if (num < 0 || num >= kTemplateMax) {
       Validate_Error("TEMPLATE");
     }
@@ -121,24 +119,22 @@ int TemplateClass::Validate() const {
  * HISTORY: * 05/24/1994 JLB : Created. *
  *=============================================================================================*/
 void TemplateClass::Read_INI(char* buffer) {
-  char* tbuffer;  // Accumulation buffer of unit IDs.
-  int len;        // Size of data in buffer.
-  CELL cell;      // Cell of building.
   char buf[128];  // Working string staging buffer.
 
-  len = static_cast<int>(strlen(buffer)) + 2;
-  tbuffer = buffer + len;
+  const int len =
+      static_cast<int>(strlen(buffer)) + 2;  // Size of data in buffer.
+  char* tbuffer = buffer + len;              // Accumulation buffer of unit IDs.
 
   WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
                             ShapeBufferSize - len, buffer);
   while (*tbuffer != '\0') {
-    TemplateType temp;  // Terrain type.
-
-    cell = tech::ParseInteger<CELL>(tbuffer).value_or(0);
+    CELL const cell =
+        tech::ParseInteger<CELL>(tbuffer).value_or(0);  // Cell of building.
     WWGetPrivateProfileString(INI_Name(), tbuffer, nullptr, buf,
                               sizeof(buf) - 1, buffer);
     port::Tokenizer tokens(buf, ",\r\n");
-    temp = TemplateTypeClass::From_Name(tokens.Next());
+    const TemplateType temp =
+        TemplateTypeClass::From_Name(tokens.Next());  // Terrain type.
     if (temp != TEMPLATE_NONE) {
       new TemplateClass(temp, cell);
     }
@@ -163,12 +159,12 @@ void TemplateClass::Read_INI(char* buffer) {
 void TemplateClass::Write_INI(char* buffer) {
   char uname[10];
   char buf[127];
-  char* tbuffer;  // Accumulation buffer of unit IDs.
 
   /*
   **	First, clear out all existing template data from the ini file.
   */
-  tbuffer = buffer + strlen(buffer) + 2;
+  char* tbuffer =
+      buffer + strlen(buffer) + 2;  // Accumulation buffer of unit IDs.
   WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
                             ShapeBufferSize - static_cast<int>(strlen(buffer)),
                             buffer);
@@ -181,9 +177,7 @@ void TemplateClass::Write_INI(char* buffer) {
   **	Find all templates and write them to the file.
   */
   for (int index = 0; index < MAP_CELL_TOTAL; index++) {
-    CellClass* ptr;
-
-    ptr = &Map[index];
+    CellClass* ptr = &Map[index];
     if (ptr->TType != TEMPLATE_NONE && ptr->TIcon == 0) {
       absl::SNPrintF(uname, sizeof(uname), "%03d", index);
       absl::SNPrintF(buf, sizeof(buf), "%s",

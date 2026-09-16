@@ -161,13 +161,12 @@ ScoreTimeClass::ScoreTimeClass(int xpos, int ypos, const void* data, int maxval,
     : ScoreAnimClass(xpos, ypos, data), MaxStage(maxval), TimerReset(xtimer) {}
 
 void ScoreTimeClass::Update() {
-  GraphicViewPortClass* oldpage;
   if (AnimTimer.IsFinished()) {
     AnimTimer.Set(TimerReset);
     if (++Stage >= MaxStage) {
       Stage = 0;
     }
-    oldpage = LogicPage;
+    GraphicViewPortClass* oldpage = LogicPage;
     Set_Logic_Page(SeenBuff);
     CC_Draw_Shape(DataPtr, Stage, XPos, YPos, WINDOW_MAIN, SHAPE_WIN_REL,
                   nullptr, nullptr);
@@ -184,13 +183,12 @@ ScoreCredsClass::ScoreCredsClass(int xpos, int ypos, const void* data,
       Clock1(MixArchive::Retrieve("CLOCK1.AUD")) {}
 
 void ScoreCredsClass::Update() {
-  GraphicViewPortClass* oldpage;
   if (AnimTimer.IsFinished()) {
     AnimTimer.Set(TimerReset);
     if (++Stage >= MaxStage) {
       Stage = 0;
     }
-    oldpage = LogicPage;
+    GraphicViewPortClass* oldpage = LogicPage;
     Set_Logic_Page(SeenBuff);
     Play_Sample(Clock1, 255, Options.Normalize_Volume(130));
     CC_Draw_Shape(DataPtr, Stage, XPos, YPos, WINDOW_MAIN, SHAPE_WIN_REL,
@@ -287,10 +285,9 @@ void ScoreScaleClass::Update() {
 }
 
 int Alloc_Object(ScoreAnimClass* obj) {
-  int i;
-  int ret;
+  int ret = 0;
 
-  for (i = ret = 0; i < MAXSCOREOBJS; i++) {
+  for (int i = ret = 0; i < MAXSCOREOBJS; i++) {
     if (!ScoreObjs[i]) {
       ScoreObjs[i] = obj;
       ret = i;
@@ -339,12 +336,8 @@ void ScoreClass::Presentation() {
   static const int _bldggy[2] = {138, 138};
   static const int _bldgny[2] = {150, 150};
 
-  int i;
-  const void* yellowptr;
-  const void* redptr;
   GameFile file(kFameFileName);
   struct Fame hallfame[NUMFAMENAMES];
-  const void* oldfont;
   const int oldfontxspacing = FontXSpacing;
   const int house = (PlayerPtr->Class->House == HOUSE_USSR ||
                      PlayerPtr->Class->House == HOUSE_UKRAINE)
@@ -376,11 +369,11 @@ void ScoreClass::Presentation() {
   const int minutes = static_cast<int>(ElapsedTime / kTimerMinute) + 1;
 
   // Load up the shapes for the Nod score screen
-  yellowptr = MixArchive::Retrieve("BAR3BHR.SHP");
-  redptr = MixArchive::Retrieve("BAR3RHR.SHP");
+  const void* yellowptr = MixArchive::Retrieve("BAR3BHR.SHP");
+  const void* redptr = MixArchive::Retrieve("BAR3RHR.SHP");
 
   /* Change to the six-point font for Text_Print */
-  oldfont = Set_Font(ScoreFontPtr);
+  const void* oldfont = Set_Font(ScoreFontPtr);
   Call_Back();
 
   /* --- Now display the background animation --- */
@@ -489,7 +482,7 @@ void ScoreClass::Presentation() {
   total = std::clamp(total, -9999, 99999);
 
   Keyboard->Clear();
-  for (i = 0; i <= 130; i++) {
+  for (int i = 0; i <= 130; i++) {
     Set_Font_Palette(greenpal);
     const int lead = leadership * i / 100;
     Count_Up_Print("%3d%%", lead, leadership, 244, 26);
@@ -602,18 +595,18 @@ void ScoreClass::Presentation() {
     // hall of fame doesn't exist, so blank it out & write it
     file.Open(FileAccess::kWrite);
 
-    for (i = 0; i < NUMFAMENAMES; i++) {
-      hallfame[i].name[0] = static_cast<char>(hallfame[i].score = hallfame[i].level = 0);
-      hallfame[i].side = 0;
-      file.WriteObject(hallfame[i]);
+    for (auto& i : hallfame) {
+      i.name[0] = static_cast<char>(i.score = i.level = 0);
+      i.side = 0;
+      file.WriteObject(i);
     }
 
     file.Close();
   }
 
   file.Open(FileAccess::kRead);
-  for (i = 0; i < NUMFAMENAMES; i++) {
-    file.ReadObject(hallfame[i]);
+  for (auto& i : hallfame) {
+    file.ReadObject(i);
   }
   file.Close();
 
@@ -625,11 +618,11 @@ void ScoreClass::Presentation() {
   if (hallfame[NUMFAMENAMES - 1].score >= total) {
     hallfame[NUMFAMENAMES - 1].score = 0;
   }
-  int index;
+  int index = 0;
   for (index = 0; index < NUMFAMENAMES; index++) {
     if (total > hallfame[index].score) {
       if (index < NUMFAMENAMES - 1) {
-        for (i = NUMFAMENAMES - 1; i > index; i--) {
+        for (int i = NUMFAMENAMES - 1; i > index; i--) {
           hallfame[i] = hallfame[i - 1];
         }
       }
@@ -647,8 +640,8 @@ void ScoreClass::Presentation() {
   Set_Logic_Page(SeenBuff);
 
   char maststr[NUMFAMENAMES * 32];
-  const unsigned char* pal;
-  for (i = 0; i < NUMFAMENAMES; i++) {
+  const unsigned char* pal = nullptr;
+  for (int i = 0; i < NUMFAMENAMES; i++) {
     pal = hallfame[i].side ? redpal : bluepal;
     Alloc_Object(new ScorePrintClass(hallfame[i].name, HALLFAME_X,
                                      HALLFAME_Y + (i * 8), pal));
@@ -681,8 +674,8 @@ void ScoreClass::Presentation() {
     Input_Name(hallfame[index].name, HALLFAME_X, HALLFAME_Y + (index * 8), pal);
 
     file.Open(FileAccess::kWrite);
-    for (i = 0; i < NUMFAMENAMES; i++) {
-      file.WriteObject(hallfame[i]);
+    for (const auto& i : hallfame) {
+      file.WriteObject(i);
     }
     file.Close();
   } else {
@@ -694,10 +687,10 @@ void ScoreClass::Presentation() {
   Keyboard->Clear();
 
   /* get rid of all the animating objects */
-  for (i = 0; i < MAXSCOREOBJS; i++) {
-    if (ScoreObjs[i]) {
-      delete ScoreObjs[i];
-      ScoreObjs[i] = nullptr;
+  for (auto& ScoreObj : ScoreObjs) {
+    if (ScoreObj) {
+      delete ScoreObj;
+      ScoreObj = nullptr;
     }
   }
   BlackPalette.Set(kFadePaletteFast, nullptr);
@@ -721,7 +714,7 @@ void Cycle_Wait_Click(bool cycle) {
   int64_t timingtime = TickCount.Value();
   SerialPacketType sendpacket;
   SerialPacketType receivepacket;
-  int packetlen;
+  int packetlen = 0;
 
   Keyboard->Clear();
   while (minclicks || (!Keyboard->Check() && !ControlQ)) {
@@ -878,8 +871,6 @@ void ScoreClass::Do_Nod_Buildings_Graph() {
 
 void ScoreClass::Do_GDI_Graph(const void* yellowptr, const void* redptr,
                               int gkilled, int nkilled, int ypos) {
-  int i;
-  int maxval;
   const int xpos = 174;
   const int house = (PlayerPtr->Class->House == HOUSE_USSR ||
                      PlayerPtr->Class->House == HOUSE_UKRAINE)
@@ -896,7 +887,7 @@ void ScoreClass::Do_GDI_Graph(const void* yellowptr, const void* redptr,
   int gdikilled = gkilled;
   int nodkilled = nkilled;
 
-  maxval = std::max(gdikilled, nodkilled);
+  int maxval = std::max(gdikilled, nodkilled);
   if (!maxval) {
     maxval = 1;
   }
@@ -921,7 +912,7 @@ void ScoreClass::Do_GDI_Graph(const void* yellowptr, const void* redptr,
   Set_Logic_Page(SeenBuff);
   Set_Font_Palette(house ? redpal : bluepal);
 
-  for (i = 1; i <= gdikilled; i++) {
+  for (int i = 1; i <= gdikilled; i++) {
     if (i != gdikilled) {
       CC_Draw_Shape(yellowptr, i, xpos * 2, ypos * 2, WINDOW_MAIN,
                     SHAPE_WIN_REL, nullptr, nullptr);
@@ -941,7 +932,7 @@ void ScoreClass::Do_GDI_Graph(const void* yellowptr, const void* redptr,
   /*BG	if (!Keyboard->Check()) */ Call_Back_Delay(40);
 
   Set_Font_Palette(house ? bluepal : redpal);
-  for (i = 1; i <= nodkilled; i++) {
+  for (int i = 1; i <= nodkilled; i++) {
     if (i != nodkilled) {
       CC_Draw_Shape(redptr, i, xpos * 2, (ypos + 12) * 2, WINDOW_MAIN,
                     SHAPE_WIN_REL, nullptr, nullptr);
@@ -971,16 +962,12 @@ void ScoreClass::Do_GDI_Graph(const void* yellowptr, const void* redptr,
 // Not const: plays the score screen animation.
 // NOLINTNEXTLINE(readability-make-member-function-const)
 void ScoreClass::Do_Nod_Casualties_Graph() {
-  int i;
-  int gdikilled;
-  int nodkilled;
-  int maxval;
 
   const void* e1ptr = MixArchive::Retrieve("E1.SHP");
 
-  gdikilled = GKilled;
-  nodkilled = NKilled;
-  maxval = std::max(gdikilled, nodkilled);
+  int gdikilled = GKilled;
+  int nodkilled = NKilled;
+  int maxval = std::max(gdikilled, nodkilled);
 
   if (!maxval) {
     maxval = 1;
@@ -1001,7 +988,7 @@ void ScoreClass::Do_Nod_Casualties_Graph() {
   ** graphs of casualties.
   */
   const int r = NUMINFANTRYMEN / 2;
-  for (i = 0; i < NUMINFANTRYMEN / 2; i++) {
+  for (int i = 0; i < NUMINFANTRYMEN / 2; i++) {
     InfantryMan[i + 0].xpos = InfantryMan[i + r].xpos = (i * 10) + 7;
     InfantryMan[i + 0].ypos = 11;
     InfantryMan[i + r].ypos = 21;
@@ -1023,7 +1010,7 @@ void ScoreClass::Do_Nod_Casualties_Graph() {
   HidPage.Blit(SeenBuff, 0, 0, BARGRAPH_X, CASUALTY_Y, 320 - BARGRAPH_X, 34);
   Call_Back_Delay(40);
 
-  for (i = 1; i <= maxval; i++) {
+  for (int i = 1; i <= maxval; i++) {
     // Draw & update infantrymen 3 times for every tick on the graph (i)
     for (int index = 0; index < 3; index++) {
       Draw_InfantryMen();
@@ -1056,7 +1043,7 @@ void ScoreClass::Do_Nod_Casualties_Graph() {
   */
   int k = 1;
   while (k) {
-    for (i = k = 0; i < NUMINFANTRYMEN; i++) {
+    for (int i = k = 0; i < NUMINFANTRYMEN; i++) {
       if (InfantryMan[i].anim >= DO_GUN_DEATH) {
         k = 1;
       }
@@ -1079,10 +1066,6 @@ void ScoreClass::Show_Credits(int house, const unsigned char pal[]) {
                                  config::kIsGerman ? 162 : 182};
   static const int _credty[2] = {config::kIsGerman ? 173 : 179 - 12, 62};
 
-  int credobj;
-  int i;
-  int minval;
-  int add;
 
   const void* credshape =
       MixArchive::Retrieve(house ? "CREDSUHR.SHP" : "CREDSAHR.SHP");
@@ -1091,17 +1074,17 @@ void ScoreClass::Show_Credits(int house, const unsigned char pal[]) {
                                    _credty[house], pal));
   Call_Back_Delay(15);
 
-  credobj = Alloc_Object(
+  const int credobj = Alloc_Object(
       new ScoreCredsClass(_credsx[house], _credsy[house], credshape, 32, 2));
-  minval = static_cast<int>(PlayerPtr->Available_Money() / 100);
+  const int minval = static_cast<int>(PlayerPtr->Available_Money() / 100);
 
   /*
   ** Print out total credits left at end of scenario
   */
-  i = -50;
+  int i = -50;
 
   do {
-    add = 5;
+    int add = 5;
     if (PlayerPtr->Available_Money() - i > 100) {
       add += 15;
     }
@@ -1203,7 +1186,6 @@ void ScoreClass::Count_Up_Print(const char* str, int percent, int maxval,
 void ScoreClass::Input_Name(char str[], int xpos, int ypos,
                             const unsigned char pal[]) {
   int key = 0;
-  int ascii;
   int index = 0;
 
   const void* keystrok = MixArchive::Retrieve("KEYSTROK.AUD");
@@ -1256,7 +1238,7 @@ void ScoreClass::Input_Name(char str[], int xpos, int ypos,
 
       } else if (key != KA_RETURN) {  // else if (key != KN_RETURN &&
                                       // key!=KN_KEYPAD_RETURN) {
-        ascii = key;                  // ascii = KN_To_KA(key);
+        int ascii = key;              // ascii = KN_To_KA(key);
         if (ascii >= 'a' && ascii <= 'z') {
           ascii -= 'a' - 'A';
         }
@@ -1268,9 +1250,8 @@ void ScoreClass::Input_Name(char str[], int xpos, int ypos,
           str[index] = static_cast<char>(ascii);
           str[index + 1] = 0;
 
-          int objindex;
           Play_Sample(keystrok, 255, Options.Normalize_Volume(150));
-          objindex = Alloc_Object(
+          const int objindex = Alloc_Object(
               new ScoreScaleClass(str + index, xpos + (index * 6), ypos, pal));
           while (ScoreObjs[objindex]) {
             Call_Back_Delay(1);
@@ -1331,7 +1312,6 @@ void Animate_Cursor(int pos, int ypos) {
  *   04/13/1995 BWG : Created.                                             *
  *=========================================================================*/
 void Draw_InfantryMen() {
-  int k;
 
   // Only draw the infantrymen if we're playing USSR... Allies wouldn't execute
   //	people like that.
@@ -1345,7 +1325,7 @@ void Draw_InfantryMen() {
   /*
   ** Then draw all the infantrymen on the clean hidpage
   */
-  for (k = 0; k < NUMINFANTRYMEN; k++) {
+  for (int k = 0; k < NUMINFANTRYMEN; k++) {
     Draw_InfantryMan(k);
   }
   /*
@@ -1368,15 +1348,15 @@ void Draw_InfantryMen() {
  *   04/13/1995 BWG : Created.                                             *
  *=========================================================================*/
 void Draw_InfantryMan(int index) {
-  int stage;
 
   /* If the infantryman's dead, just abort this function */
   if (InfantryMan[index].anim == -1) {
     return;
   }
 
-  stage = InfantryMan[index].stage +
-          InfantryMan[index].Class->DoControls[InfantryMan[index].anim].Frame;
+  const int stage =
+      InfantryMan[index].stage +
+      InfantryMan[index].Class->DoControls[InfantryMan[index].anim].Frame;
 
   CC_Draw_Shape(InfantryMan[index].shapefile, stage, InfantryMan[index].xpos,
                 InfantryMan[index].ypos, WINDOW_MAIN,
@@ -1572,9 +1552,6 @@ void Multi_Score_Presentation() {
   auto* pseudoseenbuff =
       new GraphicBufferClass(320, 200, static_cast<void*>(nullptr));
 
-  int i;
-  int k;
-  const void* oldfont;
   const int oldfontxspacing = FontXSpacing;
 
   FontXSpacing = 0;
@@ -1608,7 +1585,7 @@ void Multi_Score_Presentation() {
   Close_Animation(anim);
 
   /* Change to the six-point font for Text_Print */
-  oldfont = Set_Font(ScoreFontPtr);
+  const void* oldfont = Set_Font(ScoreFontPtr);
   Call_Back();
 
   Set_Logic_Page(SeenBuff);
@@ -1639,33 +1616,33 @@ void Multi_Score_Presentation() {
   ** shown (which is known by Session.CurGame == MAX_MULTI_GAMES-1);
   */
   if (Session.CurGame == MAX_MULTI_GAMES - 1) {
-    for (i = 0; i < MAX_MULTI_NAMES; i++) {
-      for (k = 0; k < MAX_MULTI_GAMES - 1; k++) {
-        Session.Score[i].Kills[k] = Session.Score[i].Kills[k + 1];
+    for (auto& i : Session.Score) {
+      for (int k = 0; k < MAX_MULTI_GAMES - 1; k++) {
+        i.Kills[k] = i.Kills[k + 1];
       }
     }
   }
 
   int y = 41;
-  for (i = 0; i < MAX_MULTI_NAMES; i++) {
-    if (strlen(Session.Score[i].Name)) {
-      const int color = Session.Score[i].Color;
+  for (auto& i : Session.Score) {
+    if (strlen(i.Name)) {
+      const int color = i.Color;
       remap[8] = ColorRemaps[color].FontRemap[11];
       remap[6] = ColorRemaps[color].FontRemap[12];
       remap[4] = ColorRemaps[color].FontRemap[13];
       remap[2] = ColorRemaps[color].FontRemap[14];
       remap[14] = ColorRemaps[color].FontRemap[15];
 
-      Alloc_Object(new ScorePrintClass(Session.Score[i].Name, 15, y, remap));
+      Alloc_Object(new ScorePrintClass(i.Name, 15, y, remap));
       Call_Back_Delay(20);
 
-      Alloc_Object(
-          new ScorePrintClass(Int_Print(Session.Score[i].Wins), 118, y, remap));
+      Alloc_Object(new ScorePrintClass(Int_Print(i.Wins), 118, y, remap));
       Call_Back_Delay(6);
 
-      for (k = 0; k <= std::min(Session.CurGame, MAX_MULTI_GAMES - 2); k++) {
-        if (Session.Score[i].Kills[k] >= 0) {
-          Alloc_Object(new ScorePrintClass(Int_Print(Session.Score[i].Kills[k]),
+      for (int k = 0; k <= std::min(Session.CurGame, MAX_MULTI_GAMES - 2);
+           k++) {
+        if (i.Kills[k] >= 0) {
+          Alloc_Object(new ScorePrintClass(Int_Print(i.Kills[k]),
                                            225 + (24 * k), y, remap));
           Call_Back_Delay(6);
         }
@@ -1679,10 +1656,10 @@ void Multi_Score_Presentation() {
   Cycle_Wait_Click(false);
 
   /* get rid of all the animating objects */
-  for (i = 0; i < MAXSCOREOBJS; i++) {
-    if (ScoreObjs[i]) {
-      delete ScoreObjs[i];
-      ScoreObjs[i] = nullptr;
+  for (auto& ScoreObj : ScoreObjs) {
+    if (ScoreObj) {
+      delete ScoreObj;
+      ScoreObj = nullptr;
     }
   }
 

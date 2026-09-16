@@ -96,13 +96,13 @@
 void* Small_Icon(const void* iconptr, int iconnum) {
   static unsigned char _icon[9];
   const auto* iptr = static_cast<const IControl_Type*>(iconptr);
-  const unsigned char* data;
 
   if (iconptr) {
     iconnum = (static_cast<const unsigned char*>(iconptr) + iptr->Map)[iconnum];
-    data = &(static_cast<const unsigned char*>(iconptr) +
-             iptr->Icons)[static_cast<base::ssize>(iconnum) *
-                          (base::ssize{24} * 24)];
+    const unsigned char* data =
+        &(static_cast<const unsigned char*>(iconptr) +
+          iptr->Icons)[static_cast<base::ssize>(iconnum) *
+                       (base::ssize{24} * 24)];
     //		data = &iptr->Icons[iconnum*(24*24)];
 
     for (int index = 0; index < 9; index++) {
@@ -200,7 +200,7 @@ void Format_Runtime_Text(char* buffer, const size_t size, const char* format,
  *=============================================================================================*/
 int32_t Load_Uncompress(File& file, BuffType& uncomp_buff, BuffType& dest_buff,
                         void* reserved_data) {
-  uint16_t size;
+  uint16_t size = 0;
   void* sptr = uncomp_buff.Get_Buffer();
   void* dptr = dest_buff.Get_Buffer();
   bool opened = false;
@@ -360,8 +360,6 @@ int32_t Translucent_Table_Size(int count) { return 256 + (256 * count); }
 void* Build_Translucent_Table(const PaletteClass& palette,
                               const TLucentType* control, int count,
                               void* buffer) {
-  unsigned char* table;        // Remap table pointer.
-  int index;                   // Working color index.
 
   if (count && control && palette) {
     if (!buffer) {
@@ -370,12 +368,13 @@ void* Build_Translucent_Table(const PaletteClass& palette,
 
     if (buffer) {
       memset(buffer, -1, 256);
-      table = static_cast<unsigned char*>(buffer) + 256;
+      unsigned char* table =
+          static_cast<unsigned char*>(buffer) + 256;  // Remap table pointer.
 
       /*
       **	Build the individual remap tables for each translucent color.
       */
-      for (index = 0; index < count; index++) {
+      for (int index = 0; index < count; index++) {
         static_cast<unsigned char*>(buffer)[control[index].SourceColor] =
             static_cast<unsigned char>(index);
         Build_Fading_Table(palette, table, control[index].DestColor,
@@ -419,7 +418,6 @@ void* Build_Translucent_Table(const PaletteClass& palette,
 void* Conquer_Build_Translucent_Table(const PaletteClass& palette,
                                       const TLucentType* control, int count,
                                       void* buffer) {
-  unsigned char* table;  // Remap table pointer.
 
   if (count && control) {
     if (!buffer) {
@@ -428,7 +426,8 @@ void* Conquer_Build_Translucent_Table(const PaletteClass& palette,
 
     if (buffer) {
       memset(buffer, -1, 256);
-      table = static_cast<unsigned char*>(buffer) + 256;
+      unsigned char* table =
+          static_cast<unsigned char*>(buffer) + 256;  // Remap table pointer.
 
       /*
       **	Build the individual remap tables for each translucent color.

@@ -211,8 +211,6 @@ int CellClass::Cell_Color(bool override) const {
  *=============================================================================================*/
 TechnoClass* CellClass::Cell_Techno(int x, int y) const {
   Validate();
-  ObjectClass* object;
-  COORDINATE click;  // Coordinate of click relative to cell corner.
   TechnoClass* close = nullptr;
   int32_t distance = 0;  // Recorded closest distance.
 
@@ -221,17 +219,18 @@ TechnoClass* CellClass::Cell_Techno(int x, int y) const {
   *cell. This is *	actually the lower significant bits (leptons) of a
   *regular coordinate value.
   */
-  click = XY_Coord(Pixel_To_Lepton(x), Pixel_To_Lepton(y));
+  COORDINATE const click = XY_Coord(
+      Pixel_To_Lepton(x),
+      Pixel_To_Lepton(y));  // Coordinate of click relative to cell corner.
 
   if (Cell_Occupier()) {
-    object = Cell_Occupier();
+    ObjectClass* object = Cell_Occupier();
     while (object) {
       if (object->Is_Techno()) {
-        COORDINATE coord;  // Coordinate relative to cell corner.
-        int32_t dist;
-
-        coord = object->Center_Coord() & 0x00FF00FFL;
-        dist = Distance(coord, click);
+        COORDINATE const coord =
+            object->Center_Coord() &
+            0x00FF00FFL;  // Coordinate relative to cell corner.
+        const int32_t dist = Distance(coord, click);
         if (!close || dist < distance) {
           close = dynamic_cast<TechnoClass*>(object);
           distance = dist;
@@ -334,13 +333,12 @@ TerrainClass* CellClass::Cell_Terrain() const {
  *=============================================================================================*/
 ObjectClass* CellClass::Cell_Object(int x, int y) const {
   Validate();
-  ObjectClass* ptr;
 
   /*
   **	Hack so that aircraft landed on helipads can still be selected if
   *directly *	clicked on.
   */
-  ptr = Cell_Find_Object(RTTI_AIRCRAFT);
+  ObjectClass* ptr = Cell_Find_Object(RTTI_AIRCRAFT);
   if (ptr) {
     return ptr;
   }
@@ -555,7 +553,7 @@ void CellClass::Recalc_Attributes() {
  *=============================================================================================*/
 void CellClass::Occupy_Down(ObjectClass* object) {
   Validate();
-  ObjectClass* optr;
+  ObjectClass* optr = nullptr;
 
   /*
   **	If the specified object is already part of the occupation list, then
@@ -844,7 +842,7 @@ InfantryClass* CellClass::Cell_Infantry() const {
 void CellClass::Draw_It(int x, int y, int draw_type) const {
   Validate();
   const TemplateTypeClass* ttype = nullptr;
-  int icon;  // The icon number to use from the template set.
+  int icon = 0;  // The icon number to use from the template set.
   const CELL cell = Cell_Number();
   void* remap = nullptr;
   const TemplateTypeClass* tptr = nullptr;
@@ -1131,10 +1129,10 @@ void CellClass::Concrete_Calc() {
                                 FACING_NW};
   static FacingType _odd[5] = {FACING_N, FACING_NE, FACING_E, FACING_SE,
                                FACING_S};
-  FacingType* ptr;  // Working pointer into adjacent cell list.
-  int index;        // Constructed bit index.
-  int icon;         // Icon number.
-  bool isodd;       // Is this for the odd column?
+  FacingType* ptr = nullptr;  // Working pointer into adjacent cell list.
+  int index = 0;              // Constructed bit index.
+  int icon = 0;               // Icon number.
+  bool isodd = false;         // Is this for the odd column?
 
 #define OF_N 0x01
 #define OF_NE 0x02
@@ -1645,7 +1643,7 @@ COORDINATE CellClass::Closest_Free_Spot(COORDINATE coord, bool any) const {
   *determine *	the closest one to the coordinate requested. Use precalculated
   *table so that *	when the first free position is found, bail.
   */
-  unsigned char* sequence;
+  unsigned char* sequence = nullptr;
   if (spot_index == 0) {
     sequence = &_alternate[Random_Pick(0, 3)][0];
   } else {
@@ -1888,7 +1886,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
   if (object && Overlay != OVERLAY_NONE &&
       OverlayTypeClass::As_Reference(Overlay).IsCrate) {
     const bool steel = Overlay == OVERLAY_STEEL_CRATE;
-    COORDINATE coord;  // Temporary working coordinate value.
+    COORDINATE coord = 0;  // Temporary working coordinate value.
 
     /*
     **	A triggered crate is automatically destroyed regardless of who or how
@@ -1905,7 +1903,6 @@ bool CellClass::Goodie_Check(FootClass* object) {
       }
 
     } else {
-      int index;
       UnitClass* unit = nullptr;
       int damage = 0;
       int what = MONEY;
@@ -2090,7 +2087,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
         **	Create a squad of miscellanous composition.
         */
         case SQUAD:
-          for (index = 0; index < 5; index++) {
+          for (int index = 0; index < 5; index++) {
             static const InfantryType _inf[] = {
                 INFANTRY_E1, INFANTRY_E1, INFANTRY_E1, INFANTRY_E1,
                 INFANTRY_E1, INFANTRY_E1, INFANTRY_E2, INFANTRY_E3,
@@ -2161,7 +2158,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
         case EXPLOSION:
           damage = 400;
           object->Take_Damage(damage, 0, WARHEAD_HE);
-          for (index = 0; index < 5; index++) {
+          for (int index = 0; index < 5; index++) {
             const COORDINATE blast_coord =
                 Coord_Scatter(Cell_Coord(), Random_Pick(0, 0x0200));
             new AnimClass(ANIM_FBALL1, blast_coord);
@@ -2199,7 +2196,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
         */
         case CLOAK:
           new AnimClass(ANIM_CRATE_STEALTH, Cell_Coord());
-          for (index = 0; index < MouseClass::Layer[LAYER_GROUND].Count();
+          for (int index = 0; index < MouseClass::Layer[LAYER_GROUND].Count();
                index++) {
             ObjectClass* obj = MouseClass::Layer[LAYER_GROUND][index];
 
@@ -2215,7 +2212,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
         */
         case HEAL_BASE:
           new AnimClass(ANIM_CRATE_INVUN, Cell_Coord());
-          for (index = 0; index < Logic.Count(); index++) {
+          for (int index = 0; index < Logic.Count(); index++) {
             ObjectClass* obj = Logic[index];
 
             if (obj && object->Is_Techno() &&

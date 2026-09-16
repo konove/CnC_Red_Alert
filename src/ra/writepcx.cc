@@ -98,8 +98,6 @@ static const unsigned char rle_full_run =
 int Write_PCX_File(File& file, GraphicBufferClass& pic,
                    const PaletteClass* palette) {
   unsigned char palcopy[256 * sizeof(RGB)];
-  int VP_Scan_Line;
-  char* ptr;
   const PCX_HEADER header = {10,
                              5,
                              1,
@@ -132,8 +130,8 @@ int Write_PCX_File(File& file, GraphicBufferClass& pic,
   /*
   **	Write out the picture, line by line.
   */
-  VP_Scan_Line = pic.Get_Width() + pic.Get_XAdd();
-  ptr = static_cast<char*>(pic.Get_Buffer());
+  const int VP_Scan_Line = pic.Get_Width() + pic.Get_XAdd();
+  char* ptr = static_cast<char*>(pic.Get_Buffer());
   ptr += (pic.Get_YPos() * VP_Scan_Line) + pic.Get_XPos();
   for (int line = 0; line < header.height + 1; line++) {
     Write_Pcx_ScanLine(file, header.byte_per_line,
@@ -189,7 +187,7 @@ int Write_PCX_File(File& file, GraphicBufferClass& pic,
 static void Write_Pcx_ScanLine(File& file, int scansize, const char* ptr) {
   auto last = static_cast<unsigned char>(*ptr);
   unsigned char rle = 1;
-  unsigned char c;
+  unsigned char c = 0;
   for (int i = 1; i < scansize; i++) {
     const auto color = static_cast<unsigned char>(0xff & *++ptr);
     if (color == last) {

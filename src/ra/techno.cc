@@ -1252,14 +1252,12 @@ void TechnoClass::Draw_It(int x, int y, WindowNumberType window) const {
     **	Fetch the dimensions of the object. These dimensions will be used to
     *draw *	the selection box and the health bar.
     */
-    int width;
-    int height;
+    int width = 0;
+    int height = 0;
     Class_Of().Dimensions(width, height);
 
     if (Strength && (House->Is_Ally(PlayerPtr) || Rule.IsHealthBar)) {
       const fixed ratio = Health_Ratio();
-      int pwidth;  // Pixel width of bar interior.
-      int color;   // The color to give the interior of the bargraph.
 
       const int xx = x - (width / 2);
       const int yy = y - (height / 2);
@@ -1275,11 +1273,11 @@ void TechnoClass::Draw_It(int x, int y, WindowNumberType window) const {
       **	Determine the width of the interior strength
       **	graph.
       */
-      pwidth = (width - 2) * ratio;
+      int pwidth = (width - 2) * ratio;  // Pixel width of bar interior.
 
       pwidth = Bound(pwidth, 1, width - 2);
 
-      color = LTGREEN;
+      int color = LTGREEN;  // The color to give the interior of the bargraph.
       if (ratio <= Rule.ConditionYellow) {
         color = YELLOW;
       }
@@ -1497,7 +1495,7 @@ fixed TechnoClass::Area_Modify(CELL cell) const {
     **	Scan the top and bottom rows of the "box".
     */
     for (int x = -radius; x <= radius; x++) {
-      CELL newcell;
+      CELL newcell = 0;
 
       if (Cell_X(cell) + x < Map.MapCellX) {
         continue;
@@ -1527,7 +1525,7 @@ fixed TechnoClass::Area_Modify(CELL cell) const {
     **	Scan the left and right columns of the "box".
     */
     for (int y = -(radius - 1); y < radius; y++) {
-      CELL newcell;
+      CELL newcell = 0;
 
       if (Cell_Y(cell) + y < Map.MapCellY) {
         continue;
@@ -2285,8 +2283,8 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method)  // const
     */
     CELL bestcell = -1;
     int bestcellvalue = 0;
-    const TechnoClass* object;
-    int value;
+    const TechnoClass* object = nullptr;
+    int value = 0;
     //		int rad = 1;
 
     // BG: Medics need to be able to look in their own cell too.
@@ -2299,7 +2297,7 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method)  // const
       **	Scan the top and bottom rows of the "box".
       */
       for (int x = -radius; x <= radius; x++) {
-        CELL newcell;
+        CELL newcell = 0;
 
         if (Cell_X(cell) + x < Map.MapCellX) {
           continue;
@@ -2347,7 +2345,7 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method)  // const
       **	Scan the left and right columns of the "box".
       */
       for (int y = -(radius - 1); y < radius; y++) {
-        CELL newcell;
+        CELL newcell = 0;
 
         if (Cell_Y(cell) + y < Map.MapCellY) {
           continue;
@@ -3097,7 +3095,7 @@ bool TechnoClass::Electric_Zap(TARGET target, int which,
   int y = 0;
   int x1 = 0;
   int y1 = 0;
-  COORDINATE source;
+  COORDINATE source = 0;
 
   if (source_coord != 0) {
     source = source_coord;
@@ -3214,12 +3212,9 @@ bool TechnoClass::Electric_Zap(TARGET target, int which,
 BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
   assert(IsActive);
 
-  BulletClass* bullet;      // Projectile.
-  DirType dir;              // The facing to impart upon the projectile.
-  COORDINATE target_coord;  // Coordinate of the target.
-  COORDINATE fire_coord;    // Coordinate of firing position.
+  DirType dir = DIR_N;          // The facing to impart upon the projectile.
+  COORDINATE target_coord = 0;  // Coordinate of the target.
   const TechnoTypeClass& tclass = *Techno_Type_Class();
-  ObjectClass* object;
   const WeaponTypeClass* weapon =
       which == 0 ? tclass.PrimaryWeapon : tclass.SecondaryWeapon;
 
@@ -3243,7 +3238,7 @@ BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
   /*
   **	Fetch the target coordinate for the target specified.
   */
-  object = As_Object(target);
+  ObjectClass* object = As_Object(target);
   if (object != nullptr) {
     target_coord = object->Target_Coord();
   } else {
@@ -3253,7 +3248,7 @@ BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
   /*
   **	Get the location where the projectile should appear.
   */
-  fire_coord = Fire_Coord(which);
+  COORDINATE fire_coord = Fire_Coord(which);  // Coordinate of firing position.
 
   /*
   **	If the projectile is a homing type (such as a missile), then it will
@@ -3288,9 +3283,10 @@ BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
     firespeed *= Rule.TurboBoost;
   }
 
-  bullet = new BulletClass(weapon->Bullet->Type, target, this, firepower,
-                           static_cast<WarheadType>(weapon->WarheadPtr->ID),
-                           firespeed);
+  auto* bullet =
+      new BulletClass(weapon->Bullet->Type, target, this, firepower,
+                      static_cast<WarheadType>(weapon->WarheadPtr->ID),
+                      firespeed);  // Projectile.
 
   if (bullet != nullptr) {
     /*
@@ -5042,8 +5038,7 @@ void TechnoClass::Base_Is_Attacked(TechnoClass* enemy) {
           value[lp2] ^= value[lp];
           value[lp] ^= value[lp2];
 
-          FootClass* temp;
-          temp = defender[lp];
+          FootClass* temp = defender[lp];
           defender[lp] = defender[lp2];
           defender[lp2] = temp;
         }
@@ -5813,7 +5808,7 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) const {
       /*
       **	Determine how many digits will be printed.
       */
-      int digits;
+      int digits = 0;
       int factor = 10;
       for (digits = 1; digits < 9; digits++) {
         if (money < factor) {

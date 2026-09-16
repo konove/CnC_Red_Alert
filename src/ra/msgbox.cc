@@ -91,10 +91,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
 #define BUFFSIZE (511)
   char buffer[BUFFSIZE];
   int retval = -1;
-  bool process;  // loop while true
   int selection = 0;
-  bool pressed;
-  int curbutton;
   TextButtonClass* buttons[3] = {};
   char* back = nullptr;
   bool display = true;  // display level
@@ -146,8 +143,8 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   buffer[BUFFSIZE - 1] = 0;
   strncpy(buffer, msg, BUFFSIZE - 1);
   Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, kTpfText);
-  int width;
-  int height;
+  int width = 0;
+  int height = 0;
   const int lines = Format_Window_String(buffer, 510, width, height);
   TextPrintType tpf = kTpfText;
 
@@ -199,7 +196,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   button3.X = x + ((width - button3.Width) >> 1);
 
   TextButtonClass* buttonlist = nullptr;
-  curbutton = 0;
+  int curbutton = 0;
 
   /*
   **	Add and initialize the buttons to the button list.
@@ -256,8 +253,8 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   **	Main Processing Loop.
   */
   if (buttonlist) {
-    process = true;
-    pressed = false;
+    bool process = true;  // loop while true
+    bool pressed = false;
     while (process) {
 
       if (display) {
@@ -365,11 +362,10 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
       }
 
       if (pressed) {
-        TextButtonClass* toggle;
         /*
         **	Turn all the buttons off.
         */
-        toggle = dynamic_cast<TextButtonClass*>(
+        auto* toggle = dynamic_cast<TextButtonClass*>(
             buttonlist->Extract_Gadget(BUTTON_1));
         if (toggle != nullptr) {
           toggle->Turn_Off();

@@ -451,12 +451,10 @@ static void Put_All(ByteSink& pipe, int save_net) {
  *=========================================================================*/
 bool Save_Game(int id, const char* descr, bool /*unused*/) {
   char name[kMaxFname + kMaxExt];
-  int scenario;
-  HousesType house;
   int save_net = 0;  // 1 = save network/modem game
 
-  scenario = Scen.Scenario;         // get current scenario #
-  house = PlayerPtr->Class->House;  // get current house
+  const int scenario = Scen.Scenario;          // get current scenario #
+  HousesType house = PlayerPtr->Class->House;  // get current house
 
   /*
   **	Generate the filename to save.  If 'id' is -1, it means save a
@@ -598,7 +596,7 @@ bool Save_Game(int id, const char* descr, bool /*unused*/) {
  *=========================================================================*/
 bool Load_Game(int id) {
   char name[kMaxFname + kMaxExt];
-  int i;
+  int i = 0;
   HousesType house = HOUSE_NONE;
   char descr_buf[kDescripMax];
   int load_net = 0;  // 1 = save network/modem game
@@ -1340,10 +1338,8 @@ bool Get_Savefile_Info(int id, char* buf, size_t buf_size, unsigned* scenp,
  *   09/29/1995 BRR : Created.                                             *
  *=========================================================================*/
 static bool Reconcile_Players() {
-  int i;
-  int found;
-  HousesType house;
-  HouseClass* housep;
+  int found = 0;
+  HouseClass* housep = nullptr;
 
   /*
   **	If there are no players, there's nothing to do.
@@ -1355,10 +1351,10 @@ static bool Reconcile_Players() {
   /*
   **	Make sure every name we're connected to can be found in a House
   */
-  for (i = 0; i < Session.Players.Count(); i++) {
+  for (int i = 0; i < Session.Players.Count(); i++) {
     found = 0;
-    for (house = HOUSE_MULTI1; house < HOUSE_MULTI1 + Session.MaxPlayers;
-         house++) {
+    for (HousesType house = HOUSE_MULTI1;
+         house < HOUSE_MULTI1 + Session.MaxPlayers; house++) {
       housep = HouseClass::As_Pointer(house);
       if (!housep) {
         continue;
@@ -1378,8 +1374,8 @@ static bool Reconcile_Players() {
   // Loop through all Houses; if we find a human-owned house that we're
   // not connected to, turn it over to the computer.
   //
-  for (house = HOUSE_MULTI1; house < HOUSE_MULTI1 + Session.MaxPlayers;
-       house++) {
+  for (HousesType house = HOUSE_MULTI1;
+       house < HOUSE_MULTI1 + Session.MaxPlayers; house++) {
     housep = HouseClass::As_Pointer(house);
     if (!housep) {
       continue;
@@ -1397,7 +1393,7 @@ static bool Reconcile_Players() {
     // its ID to this house.
     //
     found = 0;
-    for (i = 0; i < Session.Players.Count(); i++) {
+    for (int i = 0; i < Session.Players.Count(); i++) {
       if (!stricmp(Session.Players[i]->Name, housep->IniName)) {
         found = 1;
         Session.Players[i]->Player.ID = house;

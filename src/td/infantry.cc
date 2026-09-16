@@ -214,9 +214,7 @@ const DoStruct InfantryClass::MasterDoControls[DO_COUNT] = {
  *=============================================================================================*/
 int InfantryClass::Validate() const {
   if constexpr (config::kCheatKeysEnabled) {
-    int num;
-
-    num = Infantry.ID(this);
+    const int num = Infantry.ID(this);
     if (num < 0 || num >= kInfantryMax) {
       Validate_Error("INFANTRY");
     }
@@ -515,8 +513,8 @@ ResultType InfantryClass::Take_Damage(int& damage, int distance,
       Explosion_Damage(Coord, 80, nullptr, WARHEAD_HE);
     }
 
-    VocType sound;
-    VocType altsound;
+    VocType sound = VOC_NONE;
+    VocType altsound = VOC_NONE;
     if (*this == INFANTRY_RAMBO) {
       //			if (Sim_Random_Pick(0, 3) != 1) {
       sound = VOC_RAMBO_YELL;
@@ -655,13 +653,13 @@ ResultType InfantryClass::Take_Damage(int& damage, int distance,
  *=============================================================================================*/
 void InfantryClass::Draw_It(int x, int y, WindowNumberType window) {
   Validate();
-  const void* shapefile;  // Working shape file pointer.
   const int facing = Facing_To_32(PrimaryFacing.Current());
 
   /*
   **	Verify the legality of the unit class.
   */
-  shapefile = Class->Get_Image_Data();
+  const void* shapefile =
+      Class->Get_Image_Data();  // Working shape file pointer.
   if (!shapefile) {
     return;
   }
@@ -673,7 +671,6 @@ void InfantryClass::Draw_It(int x, int y, WindowNumberType window) {
   **	Fetch the basic body shape pointer. This requires taking into account
   **	the current animation stage.
   */
-  int shapenum;
   const int facenum = HumanShape[facing];
 
   /*
@@ -686,7 +683,7 @@ void InfantryClass::Draw_It(int x, int y, WindowNumberType window) {
     doit = DO_STAND_READY;
   }
 
-  shapenum = Class->DoControls[doit].Count;
+  int shapenum = Class->DoControls[doit].Count;
   shapenum = Fetch_Stage() % std::max(shapenum, 1);
   if (Class->DoControls[doit].Jump) {
     shapenum += facenum * Class->DoControls[doit].Jump;
@@ -927,10 +924,9 @@ void InfantryClass::Init() { Infantry.Free_All(); }
  *=============================================================================================*/
 void InfantryClass::Look(bool incremental) {
   Validate();
-  int sight;  // Number of cells to sight.
 
   if ((!IsInLimbo) && IsOwnedByPlayer) {
-    sight = Class->SightRange;
+    const int sight = Class->SightRange;  // Number of cells to sight.
 
     if (sight) {
       Map.Sight_From(Coord_Cell(Coord), sight, incremental);
@@ -1927,7 +1923,7 @@ FireErrorType InfantryClass::Can_Fire(TARGET target, int which) const {
  *=============================================================================================*/
 void InfantryClass::Enter_Idle_Mode(bool /*initial*/) {
   Validate();
-  MissionType order;
+  MissionType order = MISSION_NONE;
 
   if (Target_Legal(TarCom)) {
     order = MISSION_ATTACK;
@@ -2111,9 +2107,7 @@ void InfantryClass::Scatter(COORDINATE threat, bool forced) {
   }
 
   if (forced || Class->IsFraidyCat /*|| !(Random_Pick(1, 4) == 1)*/) {
-    FacingType toface;
-    FacingType newface;
-    CELL newcell;
+    FacingType toface = FACING_NONE;
 
     if (threat) {
       toface = Dir_Facing(Direction8(threat, Coord));
@@ -2131,8 +2125,8 @@ void InfantryClass::Scatter(COORDINATE threat, bool forced) {
     }
 
     for (FacingType face = FACING_N; face < FACING_COUNT; face++) {
-      newface = toface + face;
-      newcell = Adjacent_Cell(Coord_Cell(Coord), newface);
+      const FacingType newface = toface + face;
+      CELL const newcell = Adjacent_Cell(Coord_Cell(Coord), newface);
 
       if (Map.In_Radar(newcell) && Can_Enter_Cell(newcell) == MOVE_OK) {
         Assign_Mission(MISSION_MOVE);
@@ -2573,7 +2567,7 @@ TARGET InfantryClass::Greatest_Threat(ThreatType threat) const {
  *=============================================================================================*/
 void InfantryClass::Response_Select() {
   Validate();
-  VocType response;
+  VocType response = VOC_NONE;
   if (*this == INFANTRY_RAMBO) {
     static const VocType _response[] = {VOC_RAMBO_YEA, VOC_RAMBO_YES,
                                         VOC_RAMBO_YO};
@@ -2623,7 +2617,7 @@ void InfantryClass::Response_Select() {
  *=============================================================================================*/
 void InfantryClass::Response_Move() {
   Validate();
-  VocType response;
+  VocType response = VOC_NONE;
   if (*this == INFANTRY_RAMBO) {
     static const VocType _response[] = {VOC_RAMBO_UGOTIT, VOC_RAMBO_ONIT,
                                         VOC_RAMBO_NOPROB};
@@ -2673,7 +2667,7 @@ void InfantryClass::Response_Move() {
  *=============================================================================================*/
 void InfantryClass::Response_Attack() {
   Validate();
-  VocType response;
+  VocType response = VOC_NONE;
   if (*this == INFANTRY_RAMBO) {
     static const VocType _response[] = {VOC_RAMBO_NOPROB, VOC_RAMBO_UGOTIT,
                                         VOC_RAMBO_NOPROB, VOC_RAMBO_ONIT};
@@ -2752,7 +2746,7 @@ RadioMessageType InfantryClass::Receive_Message(RadioClass* from,
                                                 RadioMessageType message,
                                                 int32_t& param) {
   Validate();
-  int damage;
+  int damage = 0;
 
   switch (message) {
     case RADIO_OVER_OUT:
@@ -2946,15 +2940,11 @@ ActionType InfantryClass::What_Action(ObjectClass* object) {
  * HISTORY: * 05/24/1994 JLB : Created. *
  *=============================================================================================*/
 void InfantryClass::Read_INI(char* buffer) {
-  InfantryClass* infantry;  // Working infantry pointer.
-  char* tbuffer;            // Accumulation buffer of infantry IDs.
-  HousesType inhouse;       // Infantry house.
-  InfantryType classid;     // Infantry class.
-  int len;                  // Length of data in buffer.
   char buf[128];
 
-  len = static_cast<int>(strlen(buffer)) + 2;
-  tbuffer = buffer + len;
+  const int len =
+      static_cast<int>(strlen(buffer)) + 2;  // Length of data in buffer.
+  char* tbuffer = buffer + len;  // Accumulation buffer of infantry IDs.
 
   /*------------------------------------------------------------------------
   Read the entire INFANTRY INI section into HIDBUF
@@ -2973,15 +2963,18 @@ void InfantryClass::Read_INI(char* buffer) {
     **	1st token: house name.
     */
     port::Tokenizer tokens(buf, ",\n\r");
-    inhouse = HouseTypeClass::From_Name(tokens.Next());
+    const HousesType inhouse =
+        HouseTypeClass::From_Name(tokens.Next());  // Infantry house.
     if (inhouse != HOUSE_NONE) {
       /*
       **	2nd token: infantry type name.
       */
-      classid = InfantryTypeClass::From_Name(tokens.Next());
+      const InfantryType classid =
+          InfantryTypeClass::From_Name(tokens.Next());  // Infantry class.
 
       if (classid != INFANTRY_NONE) {
-        infantry = new InfantryClass(classid, inhouse);
+        auto* infantry =
+            new InfantryClass(classid, inhouse);  // Working infantry pointer.
         if (infantry) {
           /*
           **	3rd token: strength.
@@ -3056,15 +3049,14 @@ void InfantryClass::Read_INI(char* buffer) {
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
 void InfantryClass::Write_INI(char* buffer) {
-  int index;
   char uname[10];
   char buf[128];
-  char* tbuffer;  // Accumulation buffer of infantry IDs.
 
   /*
   **	First, clear out all existing infantry data from the ini file.
   */
-  tbuffer = buffer + strlen(buffer) + 2;
+  char* tbuffer =
+      buffer + strlen(buffer) + 2;  // Accumulation buffer of infantry IDs.
   WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
                             ShapeBufferSize - static_cast<int>(strlen(buffer)),
                             buffer);
@@ -3076,10 +3068,8 @@ void InfantryClass::Write_INI(char* buffer) {
   /*
   **	Write the infantry data out.
   */
-  for (index = 0; index < Infantry.Count(); index++) {
-    InfantryClass* infantry;
-
-    infantry = Infantry.Ptr(index);
+  for (int index = 0; index < Infantry.Count(); index++) {
+    InfantryClass* infantry = Infantry.Ptr(index);
     if (!infantry->IsInLimbo) {
       absl::SNPrintF(uname, sizeof(uname), "%03d", index);
       absl::SNPrintF(

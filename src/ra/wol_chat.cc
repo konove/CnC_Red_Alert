@@ -214,7 +214,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
   //------------------------------------------------------------------------
   RedrawType display = REDRAW_ALL;  // redraw level
   bool process = true;              // process while true
-  KeyNumType input;
+  KeyNumType input = KN_NONE;
 
   Stopwatch<SystemTickSource> lastclick_timer;
   int lastclick_idx = 0;  // index of item last clicked on
@@ -222,7 +222,6 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
   //------------------------------------------------------------------------
   //	Buttons
   //------------------------------------------------------------------------
-  GadgetClass* commands;  // button list
 
   const void* pShpExpand = MixArchive::Retrieve("exp.shp");
   const void* pShpUnexpand = MixArchive::Retrieve("unexp.shp");
@@ -253,7 +252,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
                           d_join_y, d_join_w);
   TextButtonClass BackBtn(BUTTON_BACK, TXT_WOL_BACK, kTpfButton, d_back_x,
                           d_back_y, d_back_w);
-  char* szRecordToStartWith;
+  char* szRecordToStartWith = nullptr;
   if (pWO->bShowRankRA) {
     szRecordToStartWith = pWO->szMyRecord;
   } else {
@@ -286,7 +285,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
   RankAMBtn.ReflectButtonState = true;
 
   //	Build the button list.
-  commands = pWO->pShpBtnDiscon;
+  GadgetClass* commands = pWO->pShpBtnDiscon;  // button list
   pWO->pShpBtnLeave->Add_Tail(*commands);
   pWO->pShpBtnRefresh->Add_Tail(*commands);
   pWO->pShpBtnSquelch->Add_Tail(*commands);
@@ -1347,7 +1346,7 @@ bool ExitChatChannel(WolapiObject* pWO) {
 //***********************************************************************************************
 // void CreateChatChannel( WolapiObject* pWO, bool bPrivate )
 void CreateChatChannel(WolapiObject* pWO) {
-  SimpleEditDlgClass* pEditDlg;
+  SimpleEditDlgClass* pEditDlg = nullptr;
   /*	if( !bPrivate )
           {
                   pEditDlg = new SimpleEditDlgClass( 300,
@@ -1407,7 +1406,7 @@ bool CreateGameChannel(WolapiObject* pWO, const CREATEGAMEINFO& cgi) {
     return false;
   }
 
-  const char* szKey;
+  const char* szKey = nullptr;
   if (*cgi.szPassword) {
     szKey = cgi.szPassword;
   } else {

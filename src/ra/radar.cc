@@ -631,8 +631,6 @@ void RadarClass::Draw_It(bool forced) {
 void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) const {
   TerrainClass* list[4] = {nullptr, nullptr, nullptr, nullptr};
   int listidx = 0;
-  int lp;
-  int lp2;
 
   ObjectClass* obj = Map[cell].Cell_Occupier();
 
@@ -648,7 +646,7 @@ void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) const {
   ** Now loop through all the occupiers and add them to the list if they
   ** are terrain type.
   */
-  for (lp = 0; lp < std::ssize(Map[cell].Overlappers); lp++) {
+  for (int lp = 0; lp < std::ssize(Map[cell].Overlappers); lp++) {
     obj = Map[cell].Overlappers[lp];
     if (obj && obj->What_Am_I() == RTTI_TERRAIN) {
       list[listidx++] = dynamic_cast<TerrainClass*>(obj);
@@ -676,8 +674,8 @@ void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) const {
   ** Sort the list by its sort Y value so that we can render in the proper
   ** order.
   */
-  for (lp = 0; lp < listidx - 1; lp++) {
-    for (lp2 = lp + 1; lp2 < listidx; lp2++) {
+  for (int lp = 0; lp < listidx - 1; lp++) {
+    for (int lp2 = lp + 1; lp2 < listidx; lp2++) {
       if (list[lp]->Sort_Y() > list[lp2]->Sort_Y()) {
         TerrainClass* terrain = list[lp];
         list[lp] = list[lp2];
@@ -689,7 +687,7 @@ void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) const {
   /*
   ** loop through the list and take care of rendering the correct icon.
   */
-  for (lp = 0; lp < listidx; lp++) {
+  for (int lp = 0; lp < listidx; lp++) {
     const unsigned char* icon = list[lp]->Radar_Icon(cell);
     if (!icon) {
       continue;
@@ -721,16 +719,14 @@ void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) const {
  * HISTORY: * 08/17/1995 JLB : Created. *
  *=============================================================================================*/
 void RadarClass::Render_Infantry(CELL cell, int x, int y, int size) {
-  ObjectClass* obj;
-
-  obj = Map[cell].Cell_Occupier();
+  ObjectClass* obj = Map[cell].Cell_Occupier();
   while (obj) {
     if (obj->Is_Techno() &&
         dynamic_cast<TechnoClass*>(obj)->Is_Visible_On_Radar()) {
       unsigned char color =
           ColorRemaps[dynamic_cast<TechnoClass*>(obj)->House->RemapColor].Bar;
-      int xoff;
-      int yoff;
+      int xoff = 0;
+      int yoff = 0;
       const int subsize = std::max(1, size / 3);
 
       switch (obj->What_Am_I()) {
@@ -825,8 +821,8 @@ void RadarClass::Render_Overlay(CELL cell, int x, int y, int size) {
  *   05/29/1995 PWG : Created.                                             *
  *=========================================================================*/
 void RadarClass::Zoom_Mode(CELL cell) {
-  int map_c_width;
-  int map_c_height;
+  int map_c_width = 0;
+  int map_c_height = 0;
 
   /*
   ** Set all of the initial zoom mode variables to the correct
@@ -956,8 +952,6 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
     cell = 1;
   }
 
-  int x;
-  int y;  // Coordinate of cell location.
 
   /*
   **	Perform any clipping on the cell coordinate.
@@ -974,8 +968,8 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
   ** If we are zoomed in then calculate the pixel based off of the portion
   ** of the map the radar is viewing.
   */
-  x = Cell_X(cell) - RadarX;
-  y = Cell_Y(cell) - RadarY;
+  int x = Cell_X(cell) - RadarX;
+  int y = Cell_Y(cell) - RadarY;  // Coordinate of cell location.
   if (static_cast<unsigned>(x) >= static_cast<unsigned>(RadarCellWidth) ||
       static_cast<unsigned>(y) >= static_cast<unsigned>(RadarCellHeight)) {
     return;
@@ -1238,8 +1232,6 @@ void RadarClass::Cursor_Cell(CELL cell, bool value) {
 
 void RadarClass::Mark_Radar(int x1, int y1, int x2, int y2, bool value,
                             int barlen) {
-  int x;
-  int y;
   /*
   ** First step is to convert pixel coordinates back to a CellX and CellY.
   */
@@ -1260,7 +1252,7 @@ void RadarClass::Mark_Radar(int x1, int y1, int x2, int y2, bool value,
     /*
     ** Do Horizontal action to upper and lower left corners.
     */
-    x = x1 + lp;
+    int x = x1 + lp;
     Cursor_Cell(XY_Cell(x, y1), value);
     Cursor_Cell(XY_Cell(x, y2), value);
     /*
@@ -1272,7 +1264,7 @@ void RadarClass::Mark_Radar(int x1, int y1, int x2, int y2, bool value,
     /*
     ** Do Vertical Action to left and right upper corners
     */
-    y = y1 + lp;
+    int y = y1 + lp;
     Cursor_Cell(XY_Cell(x1, y), value);
     Cursor_Cell(XY_Cell(x2, y), value);
 
@@ -1379,11 +1371,10 @@ bool RadarClass::UnJam_Cell(CELL cell, HouseClass* house) {
 void RadarClass::Radar_Cursor(bool forced) {
   static int _last_pos = -1;
   static int _last_frame = -1;
-  GraphicViewPortClass* oldpage;
-  int x1;
-  int y1;
-  int x2;
-  int y2;
+  int x1 = 0;
+  int y1 = 0;
+  int x2 = 0;
+  int y2 = 0;
 
   /*
   ** figure out these function calls as we will need to call them multiple
@@ -1467,7 +1458,7 @@ void RadarClass::Radar_Cursor(bool forced) {
   ** setup a graphic view port class so we can write all the pixels relative
   ** to 0,0 rather than relative to full screen coordinates.
   */
-  oldpage = Set_Logic_Page(HidPage);
+  GraphicViewPortClass* oldpage = Set_Logic_Page(HidPage);
   GraphicViewPortClass draw_window(
       LogicPage->Get_Graphic_Buffer(),
       RadX + RadOffX + BaseX + LogicPage->Get_XPos(),
@@ -1650,12 +1641,8 @@ void RadarClass::AI(KeyNumType& input, int x, int y) {
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
 bool RadarClass::RTacticalClass::Action(unsigned flags, KeyNumType& key) {
-  CELL cell;                      // cell num click happened over
-  int x;
-  int y;  // Sub cell pixel coordinates.
-  int cellx;
-  int celly;                      // Sub cell pixel coordinates.
-  bool shadow;                    // is the cell in shadow or not
+  int x = 0;
+  int y = 0;                      // Sub cell pixel coordinates.
   ObjectClass* object = nullptr;  // what object is in the cell
   ActionType action =
       ACTION_NONE;  // Action possible with currently selected object.
@@ -1712,13 +1699,15 @@ bool RadarClass::RTacticalClass::Action(unsigned flags, KeyNumType& key) {
   const int result = Map.Click_In_Radar(x, y, false);
 
   if (result == 1) {
-    cell = Map.RadarClass::Click_Cell_Calc(x, y);
+    CELL cell =
+        Map.RadarClass::Click_Cell_Calc(x, y);  // cell num click happened over
     if (cell != -1 && Map.In_Radar(cell)) {
-      shadow = !Map[cell].IsMapped && !Debug_Unshroud;
+      const bool shadow = !Map[cell].IsMapped &&
+                          !Debug_Unshroud;  // is the cell in shadow or not
       //			shadow	= (!Map[cell].IsVisible &&
       //! Debug_Unshroud);
-      cellx = 12;
-      celly = 12;
+      const int cellx = 12;
+      const int celly = 12;  // Sub cell pixel coordinates.
 
       /*
       **	Determine the object that the mouse is currently over.
@@ -1878,11 +1867,8 @@ void RadarClass::Refresh_Cells(CELL cell, const int16_t* list) {
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
 void RadarClass::Set_Radar_Position(CELL cell) {
-  int oldx;
-  int oldy;
-  int newx;
-  int newy;
-  int newcell;
+  int oldx = 0;
+  int oldy = 0;
 
   if (ZoomFactor != 1) {
     oldx = Cell_X(cell) - MapCellX;
@@ -1895,9 +1881,9 @@ void RadarClass::Set_Radar_Position(CELL cell) {
   Confine_Rect(&oldx, &oldy, RadarCellWidth, RadarCellHeight, MapCellWidth,
                MapCellHeight);
 
-  newx = oldx + MapCellX;
-  newy = oldy + MapCellY;
-  newcell = XY_Cell(newx, newy);
+  const int newx = oldx + MapCellX;
+  const int newy = oldy + MapCellY;
+  const int newcell = XY_Cell(newx, newy);
 
   if (RadarCell != newcell) {
     bool forced = false;
@@ -1977,8 +1963,8 @@ void RadarClass::Set_Radar_Position(CELL cell) {
         ** Now we need to flag the section of the map that is going to redraw.
         */
         if (radx != 0) {
-          int min;
-          int max;
+          int min = 0;
+          int max = 0;
           if (radx < 0) {  // this mean regen the right edge
             min = radw;
             max = radw + std::abs(radx);
@@ -1993,8 +1979,8 @@ void RadarClass::Set_Radar_Position(CELL cell) {
           }
         }
         if (newy != 0) {
-          int min;
-          int max;
+          int min = 0;
+          int max = 0;
           if (rady < 0) {  // this mean regen the bottom edge
             min = radh;
             max = radh + std::abs(rady);
@@ -2145,9 +2131,9 @@ bool RadarClass::Spy_Next_House() {
   IsPlayerNames = false;
   IsRadarToRedraw = true;
 
-  int maxhouse;  // One past the last house to consider.
-  HousesType firsthouse;
-  HousesType house;
+  int maxhouse = 0;  // One past the last house to consider.
+  HousesType firsthouse = HOUSE_NONE;
+  HousesType house = HOUSE_NONE;
 
   if (Session.Type == GAME_NORMAL) {
     firsthouse = HOUSE_SPAIN;
@@ -2196,7 +2182,6 @@ bool RadarClass::Spy_Next_House() {
  * HISTORY: * 03/20/1996 BWG : Created. *
  *=============================================================================================*/
 bool RadarClass::Draw_House_Info() {
-  int y;
   char txt[40];
   /*
   ** Do nothing if the sidebar isn't there
@@ -2206,7 +2191,7 @@ bool RadarClass::Draw_House_Info() {
   }
   CC_Draw_Shape(RadarFrame, 1, RadX, RadY + 2, WINDOW_MAIN,
                 SHAPE_NORMAL);
-  y = RadY + RadOffY + 4;
+  int y = RadY + RadOffY + 4;
 
   MouseClass::Repair.Draw_Me(true);
   MouseClass::Upgrade.Draw_Me(true);
@@ -2219,13 +2204,9 @@ bool RadarClass::Draw_House_Info() {
 
   HouseClass* ptr = HouseClass::As_Pointer(SpyingOn);
   if (ptr && ptr->RadarSpied & 1 << PlayerPtr->Class->House) {
-    PlayerColorType c_idx;
-    RemapControlType* color;
-    TextPrintType style;
-
-    c_idx = ptr->RemapColor;
-    color = &ColorRemaps[c_idx];
-    style = TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW;
+    const PlayerColorType c_idx = ptr->RemapColor;
+    RemapControlType* color = &ColorRemaps[c_idx];
+    const TextPrintType style = TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW;
 
     /*
     ** Print house's name below 'spy report'
@@ -2293,15 +2274,8 @@ bool RadarClass::Draw_House_Info() {
  * HISTORY: * 06/07/1995 BRR : Created. *
  *=============================================================================================*/
 void RadarClass::Draw_Names() const {
-  PlayerColorType c_idx;
-  HousesType house;
-  HouseClass* ptr;
-  int y;
   char txt[40];
-  int kills;
-  RemapControlType* color;
-  TextPrintType style;
-
+  RemapControlType* color = nullptr;
   /*
   ** Do nothing if the sidebar isn't there
   */
@@ -2314,7 +2288,7 @@ void RadarClass::Draw_Names() const {
   CC_Draw_Shape(RadarFrame, 1, RadX, RadY + 2, WINDOW_MAIN,
                 SHAPE_NORMAL);
 
-  y = RadY + RadOffY + 4;
+  int y = RadY + RadOffY + 4;
 
   Fancy_Text_Print(TXT_NAME_COLON, RadX + RadOffX, y, &ColorRemaps[PCOLOR_GREY],
                    TBLACK, TPF_6PT_GRAD | TPF_NOSHADOW);
@@ -2327,9 +2301,9 @@ void RadarClass::Draw_Names() const {
                        LTGREY);
   y += 4;
 
-  for (house = HOUSE_MULTI1; house < HOUSE_MULTI1 + Session.MaxPlayers;
-       house++) {
-    ptr = HouseClass::As_Pointer(house);
+  for (HousesType house = HOUSE_MULTI1;
+       house < HOUSE_MULTI1 + Session.MaxPlayers; house++) {
+    HouseClass* ptr = HouseClass::As_Pointer(house);
 
     if (!ptr) {
       continue;
@@ -2338,15 +2312,16 @@ void RadarClass::Draw_Names() const {
     /*
     **	Decode this house's color
     */
-    c_idx = ptr->RemapColor;
+    const PlayerColorType c_idx = ptr->RemapColor;
 
     if (ptr->IsDefeated) {
       color = &GreyScheme;
-      style = TPF_6PT_GRAD | TPF_NOSHADOW;
     } else {
       color = &ColorRemaps[c_idx];
-      style = TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW;
     }
+    const TextPrintType style =
+        ptr->IsDefeated ? TPF_6PT_GRAD | TPF_NOSHADOW
+                        : TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW;
 
     /*
     **	Initialize our message
@@ -2369,7 +2344,7 @@ void RadarClass::Draw_Names() const {
     }
     Fancy_Text_Print(txt, RadX + RadOffX, y, color, TBLACK, style);
 
-    kills = 0;
+    int kills = 0;
     for (const HousesType h : magic_enum::enum_values<HousesType>()) {
       kills += ptr->UnitsKilled[h];
       kills += ptr->BuildingsKilled[h];

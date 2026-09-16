@@ -213,8 +213,6 @@ template <class T>
 bool TFixedIHeapClass<T>::Save(ArchiveWriter& file)
   requires Serializable<T>
 {
-  int i;    // loop counter
-  int32_t idx;  // object index
 
   /*
   ** Save the number of instances of this class
@@ -225,12 +223,12 @@ bool TFixedIHeapClass<T>::Save(ArchiveWriter& file)
   /*
   ** Save each instance of this class
   */
-  for (i = 0; i < ActiveCount; i++) {
+  for (int i = 0; i < ActiveCount; i++) {
     /*
     ** Save the array index of the object, so it can be loaded back into the
     ** same array location (so TARGET translations will work)
     */
-    idx = ID(Ptr(i));
+    int32_t idx = ID(Ptr(i));  // object index
     file(idx);
 
     /*
@@ -257,10 +255,8 @@ template <class T>
 bool TFixedIHeapClass<T>::Load(ArchiveReader& file)
   requires Serializable<T>
 {
-  int i;    // loop counter
-  int32_t idx;  // object index
-  T* ptr;   // object pointer
-  int32_t a_count;
+  int32_t idx = 0;  // object index
+  int32_t a_count = 0;
 
   /*
   ** Read the number of instances of this class
@@ -281,7 +277,7 @@ bool TFixedIHeapClass<T>::Load(ArchiveReader& file)
   /*
   ** Read each class instance
   */
-  for (i = 0; i < a_count; i++) {
+  for (int i = 0; i < a_count; i++) {
     /*
     ** Read the object's array index
     */
@@ -297,7 +293,7 @@ bool TFixedIHeapClass<T>::Load(ArchiveReader& file)
       file.Fail("invalid heap slot");
       return false;
     }
-    ptr = static_cast<T*>((*this)[idx]);
+    T* ptr = static_cast<T*>((*this)[idx]);  // object pointer
     FreeFlag[base::ToSize(idx)] = true;
     ActiveCount++;
     ActivePointers.Add(ptr);

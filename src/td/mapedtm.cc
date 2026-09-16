@@ -96,7 +96,6 @@
  *   12/08/1994 BR : Created.                                              *
  *=========================================================================*/
 void MapEditClass::Handle_Teams(const char* caption) {
-  int rc;
 
   /*------------------------------------------------------------------------
   Team dialog processing loop:
@@ -111,7 +110,7 @@ void MapEditClass::Handle_Teams(const char* caption) {
     /*
     ............................. Select team .............................
     */
-    rc = Select_Team(caption);
+    const int rc = Select_Team(caption);
 
     /*
     ............................. 'OK'; break .............................
@@ -266,16 +265,10 @@ int MapEditClass::Select_Team(const char* caption) {
   /*........................................................................
   Dialog variables
   ........................................................................*/
-  RedrawType display;                // requested redraw level
-  bool process;                      // loop while true
   char* teamtext[kTeamTypeMax + 1] = {};  // text for defined teams
-  KeyNumType input;                  // user input
   bool edit_team = false;            // true = user wants to edit
   bool new_team = false;             // true = user wants to new
   bool del_team = false;             // true = user wants to new
-  int i;                             // loop counters
-  int j;
-  int def_idx;                     // default list index
   static int tabs[] = {120, 180};  // list box tab stops
   char txt[10];
   //	int housetxt;
@@ -318,8 +311,8 @@ int MapEditClass::Select_Team(const char* caption) {
   /*
   ........................... Fill in team names ...........................
   */
-  def_idx = 0;
-  for (i = 0; i < TeamTypes.Count(); i++) {
+  int def_idx = 0;  // default list index
+  for (int i = 0; i < TeamTypes.Count(); i++) {
     /*
     ................... Generate string for this team .....................
     */
@@ -342,7 +335,7 @@ int MapEditClass::Select_Team(const char* caption) {
     /*
     ................ Fill in class & count for all classes ................
     */
-    for (j = 0; std::cmp_less(j, TeamTypes.Ptr(i)->ClassCount); j++) {
+    for (int j = 0; std::cmp_less(j, TeamTypes.Ptr(i)->ClassCount); j++) {
       absl::SNPrintF(txt, sizeof(txt), "%s:%d",
                      TeamTypes.Ptr(i)->Class[j]->IniName,
                      TeamTypes.Ptr(i)->DesiredNum[j]);
@@ -404,8 +397,8 @@ int MapEditClass::Select_Team(const char* caption) {
   /*
   -------------------------- Main Processing Loop --------------------------
   */
-  display = REDRAW_ALL;
-  process = true;
+  RedrawType display = REDRAW_ALL;  // requested redraw level
+  bool process = true;              // loop while true
   while (process) {
     /*
     ** If we have just received input focus again after running in the
@@ -454,7 +447,7 @@ int MapEditClass::Select_Team(const char* caption) {
     /*
     ........................... Get user input ............................
     */
-    input = commands->Input();
+    const KeyNumType input = commands->Input();  // user input
 
     /*
     ............................ Process input ............................
@@ -500,7 +493,7 @@ int MapEditClass::Select_Team(const char* caption) {
   Flag_To_Redraw(true);
   Render();
 
-  for (i = 0; i < TeamTypes.Count(); i++) {
+  for (int i = 0; i < TeamTypes.Count(); i++) {
     delete[] teamtext[i];
   }
   if (edit_team) {
@@ -760,37 +753,22 @@ int MapEditClass::Edit_Team() {
   /*........................................................................
   Dialog variables:
   ........................................................................*/
-  RedrawType display;  // requested redraw level
-  bool process;        // loop while true
-  KeyNumType input;
   bool cancel = false;  // true = user cancels
   char name_buf[12];
   char recr_buf[4];
   char maxnum_buf[4];
   char initnum_buf[4];
   char fear_buf[4];
-  HousesType house;
-  int roundabout;
-  int learning;
-  int suicide;
-  int autocreate;
-  int mercenary;
-  int prebuilt;
-  int reinforce;
-  int missioncount;
   TeamMissionStruct missions[TeamTypeClass::MAX_TEAM_MISSIONS];
   char missionbuf[TeamTypeClass::MAX_TEAM_MISSIONS][20];
-  int curmission;  // currently-selected mission index
 
   char arg_buf[4] = {0};
   static int tabs[] = {130, 180};  // list box tab stops
-  int i;
-  int j;
+  int i = 0;
 
   /*........................................................................
   Buttons:
   ........................................................................*/
-  ControlClass* commands;
   EditClass name_edt(BUTTON_NAME, name_buf, 8,
                      TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_NAME_X,
                      D_NAME_Y, D_NAME_W, D_NAME_H, EditClass::ALPHANUMERIC);
@@ -941,14 +919,14 @@ int MapEditClass::Edit_Team() {
   absl::SNPrintF(maxnum_buf, sizeof(maxnum_buf), "%d", CurTeam->MaxAllowed);
   absl::SNPrintF(initnum_buf, sizeof(initnum_buf), "%d", CurTeam->InitNum);
   absl::SNPrintF(fear_buf, sizeof(fear_buf), "%d", CurTeam->Fear);
-  roundabout = CurTeam->IsRoundAbout;
-  learning = CurTeam->IsLearning;
-  suicide = CurTeam->IsSuicide;
-  house = CurTeam->House;
-  autocreate = CurTeam->IsAutocreate;
-  mercenary = CurTeam->IsMercenary;
-  prebuilt = CurTeam->IsPrebuilt;
-  reinforce = CurTeam->IsReinforcable;
+  int roundabout = CurTeam->IsRoundAbout;
+  int learning = CurTeam->IsLearning;
+  int suicide = CurTeam->IsSuicide;
+  HousesType house = CurTeam->House;
+  int autocreate = CurTeam->IsAutocreate;
+  int mercenary = CurTeam->IsMercenary;
+  int prebuilt = CurTeam->IsPrebuilt;
+  int reinforce = CurTeam->IsReinforcable;
 
   /*
   ......................... Fill in mission lists ..........................
@@ -958,13 +936,13 @@ int MapEditClass::Edit_Team() {
         TeamTypeClass::Name_From_Mission(static_cast<TeamMissionType>(i)));
   }
 
-  missioncount = CurTeam->MissionCount;
+  int missioncount = CurTeam->MissionCount;
   for (i = 0; i < missioncount; i++) {
     missions[i] = CurTeam->MissionList[i];
   }
   Build_Mission_List(missioncount, missions, missionbuf, &missionlist2);
 
-  curmission = 0;
+  int curmission = 0;  // currently-selected mission index
   if (missioncount) {
     if (missions[curmission].Mission == TMISSION_MOVE ||
         missions[curmission].Mission == TMISSION_UNLOAD) {
@@ -1012,7 +990,7 @@ int MapEditClass::Edit_Team() {
   /*
   ............................ Create the list .............................
   */
-  commands = &okbtn;
+  ControlClass* commands = &okbtn;
   cancelbtn.Add_Tail(*commands);
   membersbtn.Add_Tail(*commands);
 
@@ -1046,8 +1024,8 @@ int MapEditClass::Edit_Team() {
   /*
   -------------------------- Main Processing Loop --------------------------
   */
-  display = REDRAW_ALL;
-  process = true;
+  RedrawType display = REDRAW_ALL;  // requested redraw level
+  bool process = true;              // loop while true
   while (process) {
     /*
     ** If we have just received input focus again after running in the
@@ -1116,7 +1094,7 @@ int MapEditClass::Edit_Team() {
     /*
     ........................... Get user input ............................
     */
-    input = commands->Input();
+    const KeyNumType input = commands->Input();
 
     /*
     ............................ Process input ............................
@@ -1266,7 +1244,7 @@ int MapEditClass::Edit_Team() {
           /*
           ** Move all other missions forward in the array
           */
-          for (j = missioncount; j > i; j--) {
+          for (int j = missioncount; j > i; j--) {
             missions[j] = missions[j - 1];
           }
 
@@ -1312,7 +1290,7 @@ int MapEditClass::Edit_Team() {
           /*
           ** Move all missions back in the array
           */
-          for (j = i; j < missioncount - 1; j++) {
+          for (int j = i; j < missioncount - 1; j++) {
             missions[j] = missions[j + 1];
           }
           missioncount--;
@@ -1551,22 +1529,15 @@ int MapEditClass::Team_Members(HousesType house) {
     REDRAW_BACKGROUND = 2,
     REDRAW_ALL = REDRAW_BACKGROUND
   } RedrawType;
-  RedrawType display;  // requested redraw level
-  bool process;        // loop while true
 
   /*
   ............................ Dialog variables ............................
   */
-  KeyNumType input;     // user input
   bool cancel = false;  // true = user cancels
 
   /*
   ......................... Team display variables .........................
   */
-  const TechnoTypeClass** teamclass;  // array of team classes
-  int* teamcount;                     // array of class counts
-  int numcols;                        // # units displayed horizontally
-  int numrows;                        // # units displayed vertically
                                       //	int col;
   //// horizontal picture index 	int row;
   //// vertical picture index 	int x,y;
@@ -1574,23 +1545,12 @@ int MapEditClass::Team_Members(HousesType house) {
   /*
   **	Dialog dimensions.
   */
-  int dlg_y;
-  int dlg_h;            // dialog height
-  int dlg_picture_top;  // coord of top of pictures
-  int msg_y;            // y-coord for object names
 
   /*
   **	Values for parsing the classes.
   */
-  InfantryType i_id;
-  AircraftType a_id;
-  UnitType u_id;
   int curclass = -1;  // current index into 'teamclass'; can be invalid!
                       // (is based on current mouse position)
-  int numclasses;     // current # classes in the team (limited to <=5)
-  int maxclasses;     // max # classes available
-  int i;
-  int j;
 
   /*
   **	Values for timing when mouse held down.
@@ -1604,7 +1564,6 @@ int MapEditClass::Team_Members(HousesType house) {
   /*
   **	Buttons.
   */
-  ControlClass* commands;
 
   TextButtonClass okbtn(
       BUTTON_OK, TXT_OK,
@@ -1619,29 +1578,30 @@ int MapEditClass::Team_Members(HousesType house) {
   /*
   **	Set up the team data arrays (ObjectTypeClass pointers & count)
   */
-  teamclass = new const TechnoTypeClass*[MAX_TEAM_CLASSES];
-  teamcount = new int[MAX_TEAM_CLASSES];
+  const auto** teamclass =
+      new const TechnoTypeClass*[MAX_TEAM_CLASSES];  // array of team classes
+  int* teamcount = new int[MAX_TEAM_CLASSES];        // array of class counts
 
   /*
   **	Fill in the ObjectTypeClass array with all available object type ptrs,
   **	checking to be sure this house can own the object
   */
-  i = 0;
-  for (i_id = INFANTRY_E1; i_id < INFANTRY_COUNT; i_id++) {
+  int i = 0;
+  for (InfantryType i_id = INFANTRY_E1; i_id < INFANTRY_COUNT; i_id++) {
     if (Verify_House(house, &InfantryTypeClass::As_Reference(i_id))) {
       teamclass[i] = &InfantryTypeClass::As_Reference(i_id);
       i++;
     }
   }
 
-  for (a_id = AIRCRAFT_TRANSPORT; a_id < AIRCRAFT_COUNT; a_id++) {
+  for (AircraftType a_id = AIRCRAFT_TRANSPORT; a_id < AIRCRAFT_COUNT; a_id++) {
     if (Verify_House(house, &AircraftTypeClass::As_Reference(a_id))) {
       teamclass[i] = &AircraftTypeClass::As_Reference(a_id);
       i++;
     }
   }
 
-  for (u_id = UNIT_HTANK; u_id < UNIT_COUNT; u_id++) {
+  for (UnitType u_id = UNIT_HTANK; u_id < UNIT_COUNT; u_id++) {
     if (Verify_House(house, &UnitTypeClass::As_Reference(u_id))) {
       teamclass[i] = &UnitTypeClass::As_Reference(u_id);
       i++;
@@ -1651,14 +1611,14 @@ int MapEditClass::Team_Members(HousesType house) {
   /*
   **	Save max # classes.
   */
-  maxclasses = i;
+  const int maxclasses = i;  // max # classes available
 
   /*
   **	Fill in the 'count' array with data from the current team:
   **	- For every class in the current team, find that class type in the
   **	  'teamclass' array & set its count value
   */
-  for (j = 0; j < maxclasses; j++) {
+  for (int j = 0; j < maxclasses; j++) {
     teamcount[j] = 0;
   }
 
@@ -1669,7 +1629,7 @@ int MapEditClass::Team_Members(HousesType house) {
     /*
     **	Find this class in our array.
     */
-    for (j = 0; j < maxclasses; j++) {
+    for (int j = 0; j < maxclasses; j++) {
       /*
       **	Set the count; detect a match between the team's class & the
       **	'teamclass' array entry by comparing the actual pointers; typeid
@@ -1681,27 +1641,31 @@ int MapEditClass::Team_Members(HousesType house) {
       }
     }
   }
-  numclasses = CurTeam->ClassCount;
+  int numclasses =
+      CurTeam->ClassCount;  // current # classes in the team (limited to <=5)
 
   /*
   **	Set up the dialog dimensions based on number of classes we have to draw
   **
   **	Compute picture rows & cols.
   */
-  numcols = (D_DIALOG_W - 16) / D_PICTURE_W;
-  numrows = (maxclasses + numcols - 1) / numcols;
+  const int numcols =
+      (D_DIALOG_W - 16) / D_PICTURE_W;  // # units displayed horizontally
+  const int numrows =
+      (maxclasses + numcols - 1) / numcols;  // # units displayed vertically
 
   //
   //	Dialog's height = top margin + label + picture rows +
   // margin + label + margin + btn
   //
-  dlg_h = (D_MARGIN + D_TXT6_H + D_MARGIN + (numrows * D_ROW_H) + D_MARGIN +
-           D_TXT6_H + D_MARGIN + D_OK_H + D_MARGIN);
+  int dlg_h = (D_MARGIN + D_TXT6_H + D_MARGIN + (numrows * D_ROW_H) + D_MARGIN +
+               D_TXT6_H + D_MARGIN + D_OK_H + D_MARGIN);  // dialog height
   dlg_h = std::min(dlg_h, 400);
-  dlg_y = (400 - dlg_h) / 2;
-  dlg_picture_top = dlg_y + D_MARGIN + D_TXT6_H + D_MARGIN;
-  msg_y =
-      dlg_y + D_MARGIN + D_TXT6_H + D_MARGIN + (numrows * D_ROW_H) + D_MARGIN;
+  const int dlg_y = (400 - dlg_h) / 2;
+  const int dlg_picture_top =
+      dlg_y + D_MARGIN + D_TXT6_H + D_MARGIN;  // coord of top of pictures
+  const int msg_y = dlg_y + D_MARGIN + D_TXT6_H + D_MARGIN +
+                    (numrows * D_ROW_H) + D_MARGIN;  // y-coord for object names
 
   okbtn.Y = dlg_y + dlg_h - D_MARGIN - D_OK_H;
   cancelbtn.Y = dlg_y + dlg_h - D_MARGIN - D_CANCEL_H;
@@ -1726,14 +1690,14 @@ int MapEditClass::Team_Members(HousesType house) {
   /*
   **	Create the list.
   */
-  commands = &okbtn;
+  ControlClass* commands = &okbtn;
   cancelbtn.Add_Tail(*commands);
 
   /*
   **	Main Processing Loop.
   */
-  display = REDRAW_ALL;
-  process = true;
+  RedrawType display = REDRAW_ALL;  // requested redraw level
+  bool process = true;              // loop while true
   while (process) {
     /*
     ** If we have just received input focus again after running in the
@@ -1800,7 +1764,7 @@ int MapEditClass::Team_Members(HousesType house) {
     /*
     **	Get user input.
     */
-    input = commands->Input();
+    const KeyNumType input = commands->Input();  // user input
 
     /*
     **	Process input.
@@ -1964,7 +1928,7 @@ int MapEditClass::Team_Members(HousesType house) {
   if (!cancel) {
     CurTeam->ClassCount = static_cast<unsigned char>(numclasses);
     i = 0;  // current team class index
-    for (j = 0; j < maxclasses; j++) {
+    for (int j = 0; j < maxclasses; j++) {
       if (teamcount[j] > 0) {
         CurTeam->DesiredNum[i] = static_cast<unsigned char>(teamcount[j]);
         CurTeam->Class[i] = teamclass[j];

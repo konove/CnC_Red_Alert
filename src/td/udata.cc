@@ -1436,11 +1436,10 @@ void UnitTypeClass::One_Time() {
   for (UnitType index = UNIT_HTANK; index < UNIT_COUNT; index++) {
     const UnitTypeClass& uclass = As_Reference(index);
     const GameFile file;
-    int largest;  // Largest dimension of shape (so far).
 
-    const void* ptr;  // Shape pointer and set pointer.
+    const void* ptr = nullptr;  // Shape pointer and set pointer.
 
-    largest = 0;
+    int largest = 0;  // Largest dimension of shape (so far).
     if (uclass.IsBuildable) {
       /*
       **	Fetch the supporting data files for the unit.
@@ -1507,7 +1506,6 @@ void UnitTypeClass::One_Time() {
 
 void UnitTypeClass::Init(TheaterType theater) {
   if (Get_Resolution_Factor() && (theater != LastTheater)) {
-    const void* cameo_ptr;
 
     for (UnitType index = UNIT_HTANK; index < UNIT_COUNT; index++) {
       const UnitTypeClass& uclass = As_Reference(index);
@@ -1519,7 +1517,7 @@ void UnitTypeClass::Init(TheaterType theater) {
             std::filesystem::path(std::string(uclass.IniName) + "ICNH")
                 .replace_extension(".VQA")
                 .string();
-        cameo_ptr = MixArchive::Retrieve(fullname);
+        const void* cameo_ptr = MixArchive::Retrieve(fullname);
         if (cameo_ptr) {
           uclass.Set_Cameo_Data(cameo_ptr);
         }

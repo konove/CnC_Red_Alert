@@ -198,7 +198,6 @@ void LogicClass::Debug_Dump(MonoClass* mono) {
  *Esures that no object gets skipped if it was deleted.                    *
  *=============================================================================================*/
 void LogicClass::AI() {
-  int index;
 
   FramesPerSecond++;
 
@@ -213,7 +212,7 @@ void LogicClass::AI() {
   /*
   **	Team AI is processed.
   */
-  for (index = 0; index < Teams.Count(); index++) {
+  for (int index = 0; index < Teams.Count(); index++) {
     Teams.Ptr(index)->AI();
   }
 
@@ -222,7 +221,7 @@ void LogicClass::AI() {
   /*
   **	AI for all sentient objects is processed.
   */
-  for (index = 0; index < Count(); index++) {
+  for (int index = 0; index < Count(); index++) {
     ObjectClass* obj = (*this)[index];
 
     obj->AI();
@@ -243,7 +242,7 @@ void LogicClass::AI() {
   **	A second pass through the sentient objects is required so that the
   *appropriate scan *	bits will be set for the owner house.
   */
-  for (index = 0; index < Units.Count(); index++) {
+  for (int index = 0; index < Units.Count(); index++) {
     const UnitClass* unit = Units.Ptr(index);
     if (unit->IsLocked && (GameToPlay != GAME_NORMAL || !unit->House->IsHuman ||
                            unit->IsDiscoveredByPlayer)) {
@@ -253,7 +252,7 @@ void LogicClass::AI() {
       }
     }
   }
-  for (index = 0; index < Infantry.Count(); index++) {
+  for (int index = 0; index < Infantry.Count(); index++) {
     const InfantryClass* infantry = Infantry.Ptr(index);
     if (infantry->IsLocked &&
         (GameToPlay != GAME_NORMAL || !infantry->House->IsHuman ||
@@ -264,7 +263,7 @@ void LogicClass::AI() {
       }
     }
   }
-  for (index = 0; index < Aircraft.Count(); index++) {
+  for (int index = 0; index < Aircraft.Count(); index++) {
     const AircraftClass* aircraft = Aircraft.Ptr(index);
     if (aircraft->IsLocked &&
         (GameToPlay != GAME_NORMAL || !aircraft->House->IsHuman ||
@@ -275,7 +274,7 @@ void LogicClass::AI() {
       }
     }
   }
-  for (index = 0; index < Buildings.Count(); index++) {
+  for (int index = 0; index < Buildings.Count(); index++) {
     const BuildingClass* building = Buildings.Ptr(index);
     if (building->IsLocked &&
         (GameToPlay != GAME_NORMAL || !building->House->IsHuman ||
@@ -299,7 +298,7 @@ void LogicClass::AI() {
   /*
   **	Factory processing is performed.
   */
-  for (index = 0; index < Factories.Count(); index++) {
+  for (int index = 0; index < Factories.Count(); index++) {
     Factories.Ptr(index)->AI();
   }
 

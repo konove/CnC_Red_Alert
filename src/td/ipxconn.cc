@@ -453,7 +453,6 @@ int IPXConnClass::Send(void* buf, int buflen) {
  *   12/16/1994 BR : Created.                                              *
  *=========================================================================*/
 int IPXConnClass::Open_Socket(uint16_t socket) {
-  int rc;
 
   if (Winsock.Get_Connected()) {
     SocketOpen = 1;
@@ -467,7 +466,7 @@ int IPXConnClass::Open_Socket(uint16_t socket) {
   a previously-crashed program, so ignore the state of the SocketOpen
   flag for this call; use IPX to determine if the socket was already open.
   ------------------------------------------------------------------------*/
-  rc = IPX_Open_Socket(socket);
+  int rc = IPX_Open_Socket(socket);
   if (rc) {
     /*
     ................. If already open, close & reopen it ..................
@@ -563,7 +562,7 @@ int IPXConnClass::Send_To(void* buf, int buflen, IPXAddressClass* address,
                           NetNodeType immed) {
   NetNumType net;
   NetNodeType node;
-  int rc;
+  int rc = 0;
 
   unsigned char send_address[6];
 

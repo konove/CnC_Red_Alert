@@ -306,11 +306,11 @@ void SmudgeClass::Read_INI(CCINIClass& ini) {
   const int len = ini.Entry_Count(INI_Name());
   for (int index = 0; index < len; index++) {
     const char* entry = ini.Get_Entry(INI_Name(), index);
-    SmudgeType smudge;  // Smudge type.
 
     ini.Get_String(INI_Name(), entry, nullptr, buf, sizeof(buf));
     port::Tokenizer tokens(buf, ",");
-    smudge = SmudgeTypeClass::From_Name(tokens.Next());
+    const SmudgeType smudge =
+        SmudgeTypeClass::From_Name(tokens.Next());  // Smudge type.
     if (smudge != SMUDGE_NONE) {
       const char* ptr = tokens.Next();
       if (ptr != nullptr) {
@@ -352,9 +352,7 @@ void SmudgeClass::Write_INI(CCINIClass& ini) {
   **	Find all templates and write them to the file.
   */
   for (CELL index = 0; index < MAP_CELL_TOTAL; index++) {
-    CellClass* ptr;
-
-    ptr = &Map[index];
+    CellClass* ptr = &Map[index];
     if (ptr->Smudge != SMUDGE_NONE) {
       const SmudgeTypeClass* stype =
           &SmudgeTypeClass::As_Reference(ptr->Smudge);

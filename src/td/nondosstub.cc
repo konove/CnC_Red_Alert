@@ -145,9 +145,7 @@ void __cdecl SetPalette(unsigned char* palette, int32_t /*unused*/,
 
 void Load_Title_Screen(const char* name, GraphicViewPortClass* video_page,
                        unsigned char* palette) {
-  GraphicBufferClass* load_buffer;
-
-  load_buffer = Read_PCX_File(name, palette, nullptr, 0);
+  GraphicBufferClass* load_buffer = Read_PCX_File(name, palette, nullptr, 0);
 
   if (load_buffer) {
     load_buffer->Blit(*video_page);
@@ -245,8 +243,8 @@ GraphicBufferClass* Read_PCX_File(const char* name, unsigned char* palette,
   const int width = header.width - header.x + 1;
   int height = header.height - header.y + 1;
 
-  GraphicBufferClass* pic;
-  char* buffer;
+  GraphicBufferClass* pic = nullptr;
+  char* buffer = nullptr;
 
   if (Buff) {
     buffer = static_cast<char*>(Buff);

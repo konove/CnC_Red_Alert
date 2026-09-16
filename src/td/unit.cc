@@ -186,9 +186,7 @@
  *=============================================================================================*/
 int UnitClass::Validate() const {
   if constexpr (config::kCheatKeysEnabled) {
-    int num;
-
-    num = Units.ID(this);
+    const int num = Units.ID(this);
     if (num < 0 || num >= kUnitMax) {
       Validate_Error("UNIT");
     }
@@ -573,9 +571,8 @@ void UnitClass::AI() {
  *=============================================================================================*/
 FireErrorType UnitClass::Can_Fire(TARGET target, int which) const {
   Validate();
-  FireErrorType cf;
 
-  cf = TarComClass::Can_Fire(target, which);
+  FireErrorType cf = TarComClass::Can_Fire(target, which);
   /*
   ** If it's a dinosaur, when it's OK to fire we should start the firing
   ** animation, but wait for the proper attack stage before starting the
@@ -674,7 +671,7 @@ RadioMessageType UnitClass::Receive_Message(RadioClass* from,
         */
         if ((!IsDriving && !IsRotating && !IsTethered) &&
             (Transmit_Message(RADIO_NEED_TO_MOVE, from) == RADIO_ROGER)) {
-          CELL cell;
+          CELL cell = 0;
           const DirType dir = Desired_Load_Dir(from, cell);
 
           /*
@@ -1241,7 +1238,7 @@ void UnitClass::Active_Click_With(ActionType action, CELL cell) {
  *=============================================================================================*/
 void UnitClass::Enter_Idle_Mode(bool initial) {
   Validate();
-  MissionType order;
+  MissionType order = MISSION_NONE;
 
   /*
   **	A movement mission without a NavCom would be pointless to have a radio
@@ -1317,11 +1314,11 @@ void UnitClass::Enter_Idle_Mode(bool initial) {
  *=============================================================================================*/
 void UnitClass::Find_LZ() {
   Validate();
-  CELL cell;  // Map exit cell number.
 
   if (*this == UNIT_HOVER) {
     if (!IsRotating && Is_Something_Attached() && !Target_Legal(NavCom)) {
-      cell = Map.Calculated_Cell(SOURCE_BEACH, House->Class->House);
+      CELL const cell = Map.Calculated_Cell(
+          SOURCE_BEACH, House->Class->House);  // Map exit cell number.
       Assign_Destination(::As_Target(cell));
     }
   }
@@ -1350,8 +1347,6 @@ void UnitClass::Find_LZ() {
 bool UnitClass::Unload_Hovercraft_Process() {
   Validate();
   const bool unloaded = false;
-  FootClass* unit;  // The unit to be unloaded.
-  CELL cell;        // Cell to unload to.
 
   /*
   **	If the hovercraft is currently waiting for the last unit
@@ -1366,10 +1361,10 @@ bool UnitClass::Unload_Hovercraft_Process() {
     **	Only unload if the hovercraft has reached the beach.
     */
     if (!Target_Legal(NavCom)) {
-      cell =
-          Coord_Cell(Adjacent_Cell(Coord, Dir_Facing(PrimaryFacing.Current())));
+      CELL const cell = Coord_Cell(Adjacent_Cell(
+          Coord, Dir_Facing(PrimaryFacing.Current())));  // Cell to unload to.
 
-      unit = Attached_Object();
+      FootClass* unit = Attached_Object();  // The unit to be unloaded.
 
       Mark(MARK_UP);
       if (Map.In_Radar(cell) && !Map[cell].Cell_Unit()) {
@@ -1490,9 +1485,8 @@ bool UnitClass::Goto_Clear_Spot() {
         -(MAP_CELL_W * 3) - 1, -(MAP_CELL_W * 3) + 2, -(MAP_CELL_W * 3) - 2,
         -MAP_CELL_W * 4,       -(MAP_CELL_W * 4) + 1, -(MAP_CELL_W * 4) - 1,
         -(MAP_CELL_W * 4) + 2, -(MAP_CELL_W * 4) - 2, 0};
-    int* ptr;
 
-    ptr = &_offsets[0];
+    int* ptr = &_offsets[0];
     while (*ptr) {
       const CELL cell = static_cast<CELL>(Coord_Cell(Coord) + *ptr++);
 
@@ -1629,14 +1623,13 @@ bool UnitClass::Try_To_Deploy() {
 void UnitClass::Per_Cell_Process(bool center) {
   Validate();
   const CELL cell = Coord_Cell(Coord);
-  TechnoClass* whom;
-  HousesType house;
+  HousesType house = HOUSE_NONE;
 
   /*
   **	If this is a unit that is driving onto a building then the unit must
   *enter *	the building as the final step.
   */
-  whom = Contact_With_Whom();
+  TechnoClass* whom = Contact_With_Whom();
   if ((IsTethered && whom && center) &&
       (whom->What_Am_I() == RTTI_BUILDING && Mission == MISSION_ENTER) &&
       (whom == Map[cell].Cell_Building())) {
@@ -1888,15 +1881,15 @@ void UnitClass::Per_Cell_Process(bool center) {
  *=============================================================================================*/
 void UnitClass::Draw_It(int x, int y, WindowNumberType window) {
   Validate();
-  int shapenum;           // Working shape number.
-  const void* shapefile;  // Working shape file pointer.
+  int shapenum = 0;  // Working shape number.
   int facing = Facing_To_32(PrimaryFacing.Current());
   const int tfacing = Facing_To_32(SecondaryFacing.Current());
 
   /*
   **	Verify the legality of the unit class.
   */
-  shapefile = Class->Get_Image_Data();
+  const void* shapefile =
+      Class->Get_Image_Data();  // Working shape file pointer.
   if (!shapefile) {
     return;
   }
@@ -1922,12 +1915,10 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) {
       **	Special wake drawing occurs here.
       */
       if (*this == UNIT_GUNBOAT) {
-        int shapestart;
-        int xx;
-        int yy;
+        int shapestart = 0;
 
-        xx = x;
-        yy = y;
+        int xx = x;
+        const int yy = y;
         switch (Dir_Facing(PrimaryFacing.Current())) {
           case FACING_NE:
           case FACING_E:
@@ -2097,8 +2088,8 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) {
 
       int counter = 0;
       for (;;) {
-        int x1;
-        int y1;
+        int x1 = 0;
+        int y1 = 0;
 
         if (Map.Coord_To_Pixel(Coord_Add(Coord_Add(Coord, 0xFF80FF80L),
                                          StoppingCoordAbs[counter++]),
@@ -2286,8 +2277,8 @@ bool UnitClass::Harvesting() {
 int UnitClass::Mission_Unload() {
   Validate();
   enum { INITIAL_CHECK, MANEUVERING, OPENING_DOOR, UNLOADING, CLOSING_DOOR };
-  DirType dir;
-  CELL cell;
+  DirType dir = DIR_N;
+  CELL cell = 0;
 
   switch (Class->Type) {
     case UNIT_APC:
@@ -2676,7 +2667,6 @@ void UnitClass::Look(bool incremental) {
 const int16_t* UnitClass::Overlap_List() const {
   Validate();
   static const int16_t _gunboat[] = {-3, -2, 2, 3, REFRESH_EOL};
-  int size;
 
   /*
   **	The gunboat is a special case.
@@ -2685,7 +2675,7 @@ const int16_t* UnitClass::Overlap_List() const {
     return &_gunboat[0];
   }
 
-  size = ICON_PIXEL_W;
+  int size = ICON_PIXEL_W;
   if (IsSelected || IsFiring) {
     size += 24;
   }
@@ -3109,9 +3099,7 @@ void UnitClass::Scatter(COORDINATE threat, bool forced) {
   if (*this != UNIT_GUNBOAT && *this != UNIT_HOVER) {
     if ((!Target_Legal(TarCom) && !Target_Legal(NavCom)) || forced ||
         Random_Pick(1, 4) == 1) {
-      FacingType toface;
-      FacingType newface;
-      CELL newcell;
+      FacingType toface = FACING_NONE;
 
       if (threat) {
         toface = Dir_Facing(Direction8(threat, Coord));
@@ -3121,8 +3109,8 @@ void UnitClass::Scatter(COORDINATE threat, bool forced) {
       }
 
       for (FacingType face = FACING_N; face < FACING_COUNT; face++) {
-        newface = toface + face;
-        newcell = Adjacent_Cell(Coord_Cell(Coord), newface);
+        const FacingType newface = toface + face;
+        CELL const newcell = Adjacent_Cell(Coord_Cell(Coord), newface);
 
         if (Map.In_Radar(newcell) && Can_Enter_Cell(newcell) == MOVE_OK) {
           Assign_Destination(::As_Target(newcell));
@@ -3456,15 +3444,11 @@ bool UnitClass::Can_Player_Move() const {
  * HISTORY: * 05/24/1994 JLB : Created. *
  *=============================================================================================*/
 void UnitClass::Read_INI(char* buffer) {
-  UnitClass* unit;     // Working unit pointer.
-  char* tbuffer;       // Accumulation buffer of unit IDs.
-  HousesType inhouse;  // Unit house.
-  UnitType classid;    // Unit class.
-  int len;             // Length of data in buffer.
   char buf[128];
 
-  len = static_cast<int>(strlen(buffer)) + 2;
-  tbuffer = buffer + len;
+  const int len =
+      static_cast<int>(strlen(buffer)) + 2;  // Length of data in buffer.
+  char* tbuffer = buffer + len;              // Accumulation buffer of unit IDs.
 
   WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
                             ShapeBufferSize - len, buffer);
@@ -3472,12 +3456,14 @@ void UnitClass::Read_INI(char* buffer) {
     WWGetPrivateProfileString(INI_Name(), tbuffer, nullptr, buf,
                               sizeof(buf) - 1, buffer);
     port::Tokenizer tokens(buf, ",\r\n");
-    inhouse = HouseTypeClass::From_Name(tokens.Next(","));
+    const HousesType inhouse =
+        HouseTypeClass::From_Name(tokens.Next(","));  // Unit house.
     if (inhouse != HOUSE_NONE) {
-      classid = UnitTypeClass::From_Name(tokens.Next(","));
+      const UnitType classid =
+          UnitTypeClass::From_Name(tokens.Next(","));  // Unit class.
 
       if (classid != UNIT_NONE) {
-        unit = new UnitClass(classid, inhouse);
+        auto* unit = new UnitClass(classid, inhouse);  // Working unit pointer.
         if (unit) {
           /*
           **	Read the raw data.
@@ -3550,15 +3536,14 @@ void UnitClass::Read_INI(char* buffer) {
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
 void UnitClass::Write_INI(char* buffer) {
-  int index;
   char uname[10];
   char buf[128];
-  char* tbuffer;  // Accumulation buffer of unit IDs.
 
   /*
   **	First, clear out all existing unit data from the ini file.
   */
-  tbuffer = buffer + strlen(buffer) + 2;
+  char* tbuffer =
+      buffer + strlen(buffer) + 2;  // Accumulation buffer of unit IDs.
   WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
                             ShapeBufferSize - static_cast<int>(strlen(buffer)),
                             buffer);
@@ -3570,10 +3555,8 @@ void UnitClass::Write_INI(char* buffer) {
   /*
   **	Write the unit data out.
   */
-  for (index = 0; index < Units.Count(); index++) {
-    UnitClass* unit;
-
-    unit = Units.Ptr(index);
+  for (int index = 0; index < Units.Count(); index++) {
+    UnitClass* unit = Units.Ptr(index);
     if (!unit->IsInLimbo && unit->IsActive) {
       absl::SNPrintF(uname, sizeof(uname), "%03d", index);
       absl::SNPrintF(buf, sizeof(buf), "%s,%s,%d,%u,%d,%s,%s",
@@ -3600,21 +3583,20 @@ void UnitClass::Write_INI(char* buffer) {
 #define XYCELL(x, y) ((y) * MAP_CELL_W + (x))
 void UnitClass::Exit_Repair() {
   Validate();
-  int i;
-  CELL cell;
   bool found = false;
   static const int16_t ExitRepair[] = {
       XYCELL(0, -2), XYCELL(1, -1), XYCELL(2, 0),  XYCELL(1, 1),
       XYCELL(0, 2),  XYCELL(-1, 1), XYCELL(-2, 0), XYCELL(-1, -1)};
 
-  cell = static_cast<CELL>(Coord_Cell(Coord) + ExitRepair[Dir_Facing(PrimaryFacing.Current())]);
+  CELL cell = static_cast<CELL>(
+      Coord_Cell(Coord) + ExitRepair[Dir_Facing(PrimaryFacing.Current())]);
   if (Can_Enter_Cell(cell) == MOVE_OK) {
     found = true;
   }
 
   if (!found) {
-    for (i = 0; i < 8; i++) {
-      cell = static_cast<CELL>(Coord_Cell(Coord) + ExitRepair[i]);
+    for (const int16_t i : ExitRepair) {
+      cell = static_cast<CELL>(Coord_Cell(Coord) + i);
       if (Can_Enter_Cell(cell) == MOVE_OK) {
         found = true;
         break;
@@ -3735,12 +3717,8 @@ DirType UnitClass::Desired_Load_Dir(ObjectClass* passenger,
   *would be the direction *	of the potential passenger or the current
   *transport facing if it is going to unload.
   */
-  DirType faceto;
-  if (passenger) {
-    faceto = Direction(passenger);
-  } else {
-    faceto = PrimaryFacing.Current() + DIR_S;
-  }
+  const DirType faceto =
+      passenger ? Direction(passenger) : PrimaryFacing.Current() + DIR_S;
 
   /*
   **	Sweep through the adjacent cells in order to find the best candidate.

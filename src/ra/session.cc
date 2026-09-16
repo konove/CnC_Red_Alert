@@ -301,7 +301,6 @@ void SessionClass::Init() {}  // end of Init
  *   11/30/1995 BRR : Created.                                             *
  *=========================================================================*/
 int SessionClass::Create_Connections() {
-  int i;
 
   if (Session.Type != GAME_IPX && Session.Type != GAME_INTERNET) {
     return 0;
@@ -311,7 +310,7 @@ int SessionClass::Create_Connections() {
   // Loop through all entries in 'Players'.  To avoid connecting to myself,
   // skip the 1st entry.
   //------------------------------------------------------------------------
-  for (i = 1; i < Players.Count(); i++) {
+  for (int i = 1; i < Players.Count(); i++) {
     //.....................................................................
     // Make sure the name matches before creating the connection
     //.....................................................................
@@ -348,17 +347,14 @@ int SessionClass::Create_Connections() {
  *   11/29/1995 BRR : Created.                                             *
  *=========================================================================*/
 bool SessionClass::Am_I_Master() {
-  int i;
-  HousesType house;
-  HouseClass* hptr;
 
   //------------------------------------------------------------------------
   // Check every house; if PlayerPtr points to the first human house, we're
   // the master.
   //------------------------------------------------------------------------
-  for (i = 0; i < Session.MaxPlayers; i++) {
-    house = static_cast<HousesType>(HOUSE_MULTI1 + i);
-    hptr = HouseClass::As_Pointer(house);
+  for (int i = 0; i < Session.MaxPlayers; i++) {
+    const auto house = static_cast<HousesType>(HOUSE_MULTI1 + i);
+    HouseClass* hptr = HouseClass::As_Pointer(house);
     if (hptr->IsHuman) {
       return PlayerPtr == hptr;
     }
@@ -539,12 +535,9 @@ bool SessionClass::Load(GameFile& file) {
  *   02/14/1995 BR : Created.                                              *
  *=========================================================================*/
 void SessionClass::Read_MultiPlayer_Settings() {
-  char* tokenptr;          // ptr to token
-  PhoneEntryClass* phone;  // a phone book entry
-  char* entry;             // a phone book entry
+  char* entry = nullptr;   // a phone book entry
   char buf[128];           // buffer for parsing INI entry
-  int i;
-  CELL cell;
+  int i = 0;
 
   //	GameFile file (kConfigFileName);
 
@@ -647,7 +640,7 @@ void SessionClass::Read_MultiPlayer_Settings() {
     const int phonecount = ini.Entry_Count("PhoneBook");
     for (int index = 0; index < phonecount; index++) {
       //	Create a new phone book entry
-      phone = new PhoneEntryClass();
+      auto* phone = new PhoneEntryClass();  // a phone book entry
 
       //	Read the entire entry in
       ini.Get_String("PhoneBook", ini.Get_Entry("PhoneBook", index), nullptr,
@@ -655,7 +648,7 @@ void SessionClass::Read_MultiPlayer_Settings() {
 
       //	Extract name, phone # & serial port settings
       port::Tokenizer tokens(buf, "|");
-      tokenptr = tokens.Next();
+      char* tokenptr = tokens.Next();  // ptr to token
       if (tokenptr) {
         port::SafeCopy(phone->Name, tokenptr);
         strupr(phone->Name);
@@ -819,7 +812,7 @@ void SessionClass::Read_MultiPlayer_Settings() {
     TrapTarget = static_cast<TARGET>(tech::ParseHex<uint32_t>(buf).value_or(0));
 
     ini.Get_String("SyncBug", "Cell", "0", buf, 80);
-    cell = tech::ParseInteger<CELL>(buf).value_or(0);
+    CELL const cell = tech::ParseInteger<CELL>(buf).value_or(0);
     if (cell) {
       TrapCell = &Map[cell];
     }
@@ -1105,7 +1098,6 @@ void SessionClass::Read_Scenario_Descriptions() {
  *   06/05/1995 BRR : Created.                                             *
  *=========================================================================*/
 void SessionClass::Free_Scenario_Descriptions() {
-  int i;
 
   //------------------------------------------------------------------------
   //	Clear the scenario descriptions & filenames
@@ -1119,7 +1111,7 @@ void SessionClass::Free_Scenario_Descriptions() {
   //------------------------------------------------------------------------
   //	Clear the initstring entries
   //------------------------------------------------------------------------
-  for (i = 0; i < InitStrings.Count(); i++) {
+  for (int i = 0; i < InitStrings.Count(); i++) {
     delete[] InitStrings[i];
   }
   InitStrings.Clear();
@@ -1127,7 +1119,7 @@ void SessionClass::Free_Scenario_Descriptions() {
   //------------------------------------------------------------------------
   //	Clear the dialing entries
   //------------------------------------------------------------------------
-  for (i = 0; i < PhoneBook.Count(); i++) {
+  for (int i = 0; i < PhoneBook.Count(); i++) {
     delete PhoneBook[i];
   }
   PhoneBook.Clear();
@@ -1153,7 +1145,6 @@ void SessionClass::Free_Scenario_Descriptions() {
  *   06/02/1995 BRR : Created.                                             *
  *=========================================================================*/
 void SessionClass::Trap_Object() {
-  int i;
 
   //------------------------------------------------------------------------
   // Initialize
@@ -1166,7 +1157,7 @@ void SessionClass::Trap_Object() {
   //------------------------------------------------------------------------
   switch (TrapObjType) {
     case RTTI_AIRCRAFT:
-      for (i = 0; i < Aircraft.Count(); i++) {
+      for (int i = 0; i < Aircraft.Count(); i++) {
         if (Aircraft.Ptr(i)->Coord == TrapCoord ||
             Aircraft.Ptr(i)->As_Target() == TrapTarget) {
           TrapObject.Ptr.Aircraft = Aircraft.Ptr(i);
@@ -1176,7 +1167,7 @@ void SessionClass::Trap_Object() {
       break;
 
     case RTTI_ANIM:
-      for (i = 0; i < Anims.Count(); i++) {
+      for (int i = 0; i < Anims.Count(); i++) {
         if (Anims.Ptr(i)->Coord == TrapCoord ||
             Anims.Ptr(i)->As_Target() == TrapTarget) {
           TrapObject.Ptr.Anim = Anims.Ptr(i);
@@ -1186,7 +1177,7 @@ void SessionClass::Trap_Object() {
       break;
 
     case RTTI_BUILDING:
-      for (i = 0; i < Buildings.Count(); i++) {
+      for (int i = 0; i < Buildings.Count(); i++) {
         if (Buildings.Ptr(i)->Coord == TrapCoord ||
             Buildings.Ptr(i)->As_Target() == TrapTarget) {
           TrapObject.Ptr.Building = Buildings.Ptr(i);
@@ -1196,7 +1187,7 @@ void SessionClass::Trap_Object() {
       break;
 
     case RTTI_BULLET:
-      for (i = 0; i < Bullets.Count(); i++) {
+      for (int i = 0; i < Bullets.Count(); i++) {
         if (Bullets.Ptr(i)->Coord == TrapCoord ||
             Bullets.Ptr(i)->As_Target() == TrapTarget) {
           TrapObject.Ptr.Bullet = Bullets.Ptr(i);
@@ -1206,7 +1197,7 @@ void SessionClass::Trap_Object() {
       break;
 
     case RTTI_INFANTRY:
-      for (i = 0; i < Infantry.Count(); i++) {
+      for (int i = 0; i < Infantry.Count(); i++) {
         if (Infantry.Ptr(i)->Coord == TrapCoord ||
             Infantry.Ptr(i)->As_Target() == TrapTarget) {
           TrapObject.Ptr.Infantry = Infantry.Ptr(i);
@@ -1216,7 +1207,7 @@ void SessionClass::Trap_Object() {
       break;
 
     case RTTI_UNIT:
-      for (i = 0; i < Units.Count(); i++) {
+      for (int i = 0; i < Units.Count(); i++) {
         if (Units.Ptr(i)->Coord == TrapCoord ||
             Units.Ptr(i)->As_Target() == TrapTarget) {
           TrapObject.Ptr.Unit = Units.Ptr(i);
@@ -1229,7 +1220,7 @@ void SessionClass::Trap_Object() {
     // Last-ditch find-the-object-right-now-darnit loop
     //.....................................................................
     case RTTI_NONE:
-      for (i = 0; i < Aircraft.Count(); i++) {
+      for (int i = 0; i < Aircraft.Count(); i++) {
         if (Aircraft.Raw_Ptr(i)->Coord == TrapCoord ||
             Aircraft.Raw_Ptr(i)->As_Target() == TrapTarget) {
           TrapObject.Ptr.Aircraft = Aircraft.Raw_Ptr(i);
@@ -1237,7 +1228,7 @@ void SessionClass::Trap_Object() {
           return;
         }
       }
-      for (i = 0; i < Anims.Count(); i++) {
+      for (int i = 0; i < Anims.Count(); i++) {
         if (Anims.Raw_Ptr(i)->Coord == TrapCoord ||
             Anims.Raw_Ptr(i)->As_Target() == TrapTarget) {
           TrapObject.Ptr.Anim = Anims.Raw_Ptr(i);
@@ -1245,7 +1236,7 @@ void SessionClass::Trap_Object() {
           return;
         }
       }
-      for (i = 0; i < Buildings.Count(); i++) {
+      for (int i = 0; i < Buildings.Count(); i++) {
         if (Buildings.Raw_Ptr(i)->Coord == TrapCoord ||
             Buildings.Raw_Ptr(i)->As_Target() == TrapTarget) {
           TrapObject.Ptr.Building = Buildings.Raw_Ptr(i);
@@ -1253,7 +1244,7 @@ void SessionClass::Trap_Object() {
           return;
         }
       }
-      for (i = 0; i < Bullets.Count(); i++) {
+      for (int i = 0; i < Bullets.Count(); i++) {
         if (Bullets.Raw_Ptr(i)->Coord == TrapCoord ||
             Bullets.Raw_Ptr(i)->As_Target() == TrapTarget) {
           TrapObject.Ptr.Bullet = Bullets.Raw_Ptr(i);
@@ -1261,7 +1252,7 @@ void SessionClass::Trap_Object() {
           return;
         }
       }
-      for (i = 0; i < Infantry.Count(); i++) {
+      for (int i = 0; i < Infantry.Count(); i++) {
         if (Infantry.Raw_Ptr(i)->Coord == TrapCoord ||
             Infantry.Raw_Ptr(i)->As_Target() == TrapTarget) {
           TrapObject.Ptr.Infantry = Infantry.Raw_Ptr(i);
@@ -1269,7 +1260,7 @@ void SessionClass::Trap_Object() {
           return;
         }
       }
-      for (i = 0; i < Units.Count(); i++) {
+      for (int i = 0; i < Units.Count(); i++) {
         if (Units.Raw_Ptr(i)->Coord == TrapCoord ||
             Units.Raw_Ptr(i)->As_Target() == TrapTarget) {
           TrapObject.Ptr.Unit = Units.Raw_Ptr(i);
@@ -1303,14 +1294,13 @@ void SessionClass::Trap_Object() {
  *   12/07/1995 BRR : Created.                                             *
  *=========================================================================*/
 uint32_t SessionClass::Compute_Unique_ID() {
-  time_t tm;
-  uint32_t id;
+  time_t tm = 0;
 
   //------------------------------------------------------------------------
   // Start with the seconds since Jan 1, 1970 (system local time)
   //------------------------------------------------------------------------
   time(&tm);
-  id = static_cast<uint32_t>(tm);
+  auto id = static_cast<uint32_t>(tm);
 
   //------------------------------------------------------------------------
   // Now add in the free space on the hard drive

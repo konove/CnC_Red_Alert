@@ -255,8 +255,7 @@ BulletClass* TurretClass::Fire_At(TARGET target, int which) {
  *can't fire.                                        *
  *=============================================================================================*/
 FireErrorType TurretClass::Can_Fire(TARGET target, int which) const {
-  DirType dir;  // The facing to impart upon the projectile.
-  int diff;
+  int diff = 0;
   const FireErrorType fire = DriveClass::Can_Fire(target, which);
 
   if (fire == FIRE_OK) {
@@ -280,7 +279,8 @@ FireErrorType TurretClass::Can_Fire(TARGET target, int which) const {
       return FIRE_ROTATING;
     }
 
-    dir = Direction(target);
+    const DirType dir =
+        Direction(target);  // The facing to impart upon the projectile.
 
     /*
     **	Determine if the turret facing isn't too far off of facing the target.

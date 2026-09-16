@@ -422,10 +422,8 @@ ResultType InfantryClass::Take_Damage(int& damage, int distance,
     Assign_Mission(MISSION_GUARD);
     Commence();
 
-    VocType sound;
-    VocType altsound;
-    sound = Sim_Random_Pick(VOC_SCREAM1, VOC_SCREAM11);
-    altsound = VOC_YELL1;
+    VocType sound = Sim_Random_Pick(VOC_SCREAM1, VOC_SCREAM11);
+    VocType altsound = VOC_YELL1;
     if (*this == INFANTRY_TANYA) {
       sound = altsound = VOC_TANYA_DIE;
     }
@@ -881,13 +879,12 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
           Combat_Anim(Rule.APMineDamage, WARHEAD_HE, cellptr->Land_Type()),
           blcoord);
       delete bldng;
-      int damage;
       for (int index = 0; index < Infantry.Count(); index++) {
         InfantryClass* obj = Infantry.Ptr(index);
         if (obj != nullptr && !obj->IsInLimbo) {
           const int dist = ::Distance(obj->Coord, blcoord);
           if (dist <= 0xC0) {
-            damage = Rule.APMineDamage;
+            int damage = Rule.APMineDamage;
             obj->Take_Damage(damage, 0, WARHEAD_HE);
           }
         }
@@ -1799,7 +1796,7 @@ void InfantryClass::Scatter(COORDINATE threat, bool forced, bool nokidding) {
   }
 
   if (forced || Class->IsFraidyCat /*|| !(Random_Pick(1, 4) == 1)*/) {
-    FacingType toface;
+    FacingType toface = FACING_NONE;
 
     if (threat) {
       toface = Dir_Facing(Direction8(threat, Coord));
@@ -2398,12 +2395,7 @@ void InfantryClass::Response_Move() {
   }
 
   if (Class->IsCivilian && *this != INFANTRY_EINSTEIN) {
-    VocType response;
-    if (Class->IsFemale) {
-      response = VOC_GIRL_OKAY;
-    } else {
-      response = VOC_GUY_OKAY;
-    }
+    const VocType response = Class->IsFemale ? VOC_GIRL_OKAY : VOC_GUY_OKAY;
     Sound_Effect(response, fixed(1), ID + 1);
 
   } else {
@@ -2531,12 +2523,7 @@ void InfantryClass::Response_Attack() {
   }
 
   if (Class->IsCivilian && *this != INFANTRY_EINSTEIN) {
-    VocType response;
-    if (Class->IsFemale) {
-      response = VOC_GIRL_OKAY;
-    } else {
-      response = VOC_GUY_OKAY;
-    }
+    const VocType response = Class->IsFemale ? VOC_GIRL_OKAY : VOC_GUY_OKAY;
     Sound_Effect(response, fixed(1), ID + 1);
 
   } else {
@@ -3134,13 +3121,9 @@ const ObjectTypeClass& InfantryClass::Class_Of() const {
  * HISTORY: * 05/24/1994 JLB : Created. *
  *=============================================================================================*/
 void InfantryClass::Read_INI(CCINIClass& ini) {
-  InfantryClass* infantry;  // Working infantry pointer.
-  HousesType inhouse;       // Infantry house.
-  InfantryType classid;     // Infantry class.
   char buf[128];
-  char* validation;
-  DirType dir;
-  TriggerTypeClass* tp;
+  DirType dir = DIR_N;
+  TriggerTypeClass* tp = nullptr;
 
   const int len = ini.Entry_Count(INI_Name());
   for (int index = 0; index < len; index++) {
@@ -3155,15 +3138,18 @@ void InfantryClass::Read_INI(CCINIClass& ini) {
     **	1st token: house name.
     */
     port::Tokenizer tokens(buf, ",\n\r");
-    inhouse = HouseTypeClass::From_Name(tokens.Next());
+    const HousesType inhouse =
+        HouseTypeClass::From_Name(tokens.Next());  // Infantry house.
     if (inhouse != HOUSE_NONE) {
       /*
       **	2nd token: infantry type name.
       */
-      classid = InfantryTypeClass::From_Name(tokens.Next());
+      const InfantryType classid =
+          InfantryTypeClass::From_Name(tokens.Next());  // Infantry class.
 
       if (classid != INFANTRY_NONE) {
-        infantry = new InfantryClass(classid, inhouse);
+        auto* infantry =
+            new InfantryClass(classid, inhouse);  // Working infantry pointer.
         if (infantry != nullptr) {
           /*
           **	3rd token: strength.
@@ -3190,7 +3176,7 @@ void InfantryClass::Read_INI(CCINIClass& ini) {
           */
           const MissionType mission =
               Mission_From_Name(tokens.Next());
-          validation = tokens.Next();
+          char* validation = tokens.Next();
           if (validation) {
             dir = static_cast<DirType>(
                 tech::ParseInteger<int>(validation).value_or(0));

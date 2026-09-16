@@ -103,9 +103,7 @@
  *=============================================================================================*/
 int BulletClass::Validate() const {
   if constexpr (config::kCheatKeysEnabled) {
-    int num;
-
-    num = Bullets.ID(this);
+    const int num = Bullets.ID(this);
     if (num < 0 || num >= kBulletMax) {
       Validate_Error("BULLET");
     }
@@ -299,7 +297,6 @@ bool BulletClass::Mark(MarkType mark) {
  *=============================================================================================*/
 void BulletClass::AI() {
   Validate();
-  COORDINATE coord;
 
   ObjectClass::AI();
 
@@ -341,7 +338,7 @@ void BulletClass::AI() {
   **	Move the projectile forward according to its speed
   **	and direction.
   */
-  coord = Coord;
+  COORDINATE coord = Coord;
   if (Class->IsFlameEquipped) {
     if (IsToAnimate) {
       new AnimClass(ANIM_SMOKE_PUFF, coord, 1);

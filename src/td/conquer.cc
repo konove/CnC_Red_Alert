@@ -498,8 +498,8 @@ void Main_Game(int argc, char* argv[]) {
  *=============================================================================================*/
 extern int DebugColour;
 void Keyboard_Process(KeyNumType& input) {
-  ObjectClass* obj;
-  int index;
+  ObjectClass* obj = nullptr;
+  int index = 0;
 
   /*
   **	Don't do anything if there is not keyboard event.
@@ -815,15 +815,10 @@ void Keyboard_Process(KeyNumType& input) {
  *longer messages into multiple packets               *
  *=============================================================================================*/
 static void Message_Input(KeyNumType& input) {
-  int rc;
   char txt[MAX_MESSAGE_LENGTH + 12];
-  int id;
-  SerialPacketType* serial_packet;
-  int i;
-  int message_length;
-  int sent_so_far;
-  uint16_t magic_number;
-  uint16_t crc;
+  int sent_so_far = 0;
+  uint16_t magic_number = 0;
+  uint16_t crc = 0;
   const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
 
   /*
@@ -873,7 +868,7 @@ static void Message_Input(KeyNumType& input) {
         } else {
           if ((Messages.Get_Edit_Buf() == nullptr) &&
               (input - KN_F1 < Ipx.Num_Connections() && !MPlayerObiWan)) {
-            id = Ipx.Connection_ID(input - KN_F1);
+            const int id = Ipx.Connection_ID(input - KN_F1);
             MessageAddress = *Ipx.Connection_Address(id);
             Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_TO),
                                 Ipx.Connection_Name(id));
@@ -902,7 +897,7 @@ static void Message_Input(KeyNumType& input) {
   /*
   **	Process message-system input; send the message out if RETURN is hit.
   */
-  rc = Messages.Input(input);
+  const int rc = Messages.Input(input);
 
   /*
   **	If a single character has been added to an edit buffer, update the
@@ -935,10 +930,11 @@ static void Message_Input(KeyNumType& input) {
       port::SafeCopy(LastMessage, Messages.Get_Edit_Buf());
     }
 
-    message_length = static_cast<int>(strlen(Messages.Get_Edit_Buf()));
+    const int message_length =
+        static_cast<int>(strlen(Messages.Get_Edit_Buf()));
 
-    int32_t actual_message_size;
-    char* the_string;
+    int32_t actual_message_size = 0;
+    char* the_string = nullptr;
 
     /*
     **	Serial game: fill in a SerialPacketType & send it.
@@ -954,7 +950,7 @@ static void Message_Input(KeyNumType& input) {
                                   0xffff);
 
       while (sent_so_far < message_length) {
-        serial_packet =
+        auto* serial_packet =
             port::AlignedObject<SerialPacketType>(NullModem.BuildBuf);
 
         serial_packet->Command = SERIAL_MESSAGE;
@@ -1057,7 +1053,7 @@ static void Message_Input(KeyNumType& input) {
           *send *	the message to every player we have a connection with.
           */
           if (MessageAddress.Is_Broadcast()) {
-            for (i = 0; i < Ipx.Num_Connections(); i++) {
+            for (int i = 0; i < Ipx.Num_Connections(); i++) {
               Ipx.Send_Global_Message(
                   &GPacket, sizeof(GlobalPacketType), 1,
                   Ipx.Connection_Address(Ipx.Connection_ID(i)));
@@ -1197,11 +1193,11 @@ bool Color_Cycle() {
  *=============================================================================================*/
 void Call_Back() {
 #ifndef DEMO
-  int i;
-  int id;
-  int color;
-  uint16_t magic_number;
-  uint16_t crc;
+  int i = 0;
+  int id = 0;
+  int color = 0;
+  uint16_t magic_number = 0;
+  uint16_t crc = 0;
 #endif
 
   /*
@@ -1399,10 +1395,9 @@ const char* Name_From_Source(SourceType source) {
  * HISTORY: * 10/01/1994 JLB : Created. *
  *=============================================================================================*/
 TheaterType Theater_From_Name(const char* name) {
-  TheaterType index;
 
   if (name) {
-    for (index = THEATER_DESERT; index < THEATER_COUNT; index++) {
+    for (TheaterType index = THEATER_DESERT; index < THEATER_COUNT; index++) {
       if (stricmp(name, Theaters[index].Name) == 0) {
         return index;
       }
@@ -1487,8 +1482,8 @@ static void Sync_Delay() {
     if (SpecialDialog == SDLG_NONE) {
       WWMouse->Erase_Mouse(&HidPage, true);
       KeyNumType input = KN_NONE;
-      int x;
-      int y;
+      int x = 0;
+      int y = 0;
       WWMouse->Erase_Mouse(&HidPage, true);
       Map.Input(input, x, y);
       if (input) {
@@ -1516,10 +1511,9 @@ static void Sync_Delay() {
  *=============================================================================================*/
 
 bool Main_Loop() {
-  KeyNumType input;  // Player input.
-  int x;
-  int y;
-  int framedelay;
+  KeyNumType input = KN_NONE;  // Player input.
+  int x = 0;
+  int y = 0;
 
   //	InMainLoop = true;
 
@@ -1574,7 +1568,7 @@ bool Main_Loop() {
   *rate.
   */
   if (GameToPlay != GAME_NORMAL && CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
-    framedelay = 60 / DesiredFrameRate;
+    const int framedelay = 60 / DesiredFrameRate;
     FrameTimer.Set(framedelay);
   } else {
     FrameTimer.Set(Options.GameSpeed);
@@ -1826,9 +1820,9 @@ bool Main_Loop() {
   ** Is there a memory trasher altering the map??
   */
   if (Debug_Check_Map && (!Map.Validate())) {
-    const char* error_msg;
-    const char* stop_msg;
-    const char* continue_msg;
+    const char* error_msg = nullptr;
+    const char* stop_msg = nullptr;
+    const char* continue_msg = nullptr;
     if constexpr (config::kBuildLanguage == config::BuildLanguage::German) {
       error_msg = "Kartenfehler!";
       stop_msg = "Halt";
@@ -1875,10 +1869,10 @@ bool Map_Edit_Loop() {
   /*
   **	Get user input (keys, mouse clicks).
   */
-  KeyNumType input;
+  KeyNumType input = KN_NONE;
 
-  int x;
-  int y;
+  int x = 0;
+  int y = 0;
   Map.Input(input, x, y);
 
   /*
@@ -1983,8 +1977,7 @@ int PaletteCounter;
 
 int Load_Interpolated_Palettes(const char* filename, bool add) {
   int num_palettes = 0;
-  int i;
-  int start_palette;
+  int start_palette = 0;
 
   PalettesRead = false;
   GameFile file(filename);
@@ -1992,8 +1985,8 @@ int Load_Interpolated_Palettes(const char* filename, bool add) {
   //	DiskFile	*palette_file;
 
   if (!add) {
-    for (i = 0; i < std::ssize(InterpolatedPalettes); i++) {
-      InterpolatedPalettes[i] = nullptr;
+    for (auto& InterpolatedPalette : InterpolatedPalettes) {
+      InterpolatedPalette = nullptr;
     }
     start_palette = 0;
   } else {
@@ -2011,7 +2004,7 @@ int Load_Interpolated_Palettes(const char* filename, bool add) {
   file.Open(FileAccess::kRead);
   file.ReadObject(num_palettes);
 
-  for (i = 0; i < num_palettes; i++) {
+  for (int i = 0; i < num_palettes; i++) {
     InterpolatedPalettes[i + start_palette] = new unsigned char[65536]();
     for (int y = 0; y < 256; y++) {
       file.Read(InterpolatedPalettes[i + start_palette] +
@@ -2257,13 +2250,10 @@ const void* Get_Radar_Icon(const void* shapefile, int shapenum, int frames,
                            int zoomfactor) {
   static const int _offx[] = {0, 0, -1, 1, 0, -1, 1, -1, 1};
   static const int _offy[] = {0, 0, -1, 1, 0, -1, 1, -1, 1};
-  int lp;
-  int framelp;
   char pixel = 0;
 
   const char* retval = nullptr;
   char* buffer = nullptr;
-  const void* ptr;
 
   /*
   **	If there is no shape file, then there can be no radar icon imagery.
@@ -2313,14 +2303,15 @@ const void* Get_Radar_Icon(const void* shapefile, int shapenum, int frames,
   *buffer++ = static_cast<char>(icon_height);
   const int val = 24 / zoomfactor;
 
-  for (framelp = 0; framelp < frames; framelp++) {
+  for (int framelp = 0; framelp < frames; framelp++) {
     /*
     ** Build the current frame.  If the frame can not be built then we
     ** just need to skip past this set of icons and try to build the
     ** next frame.
     */
-    ptr = Build_Frame(shapefile, static_cast<uint16_t>(shapenum + framelp),
-                      SysMemPage.Get_Buffer());
+    const void* ptr =
+        Build_Frame(shapefile, static_cast<uint16_t>(shapenum + framelp),
+                    SysMemPage.Get_Buffer());
     if (ptr != nullptr) {
       /*
       ** Loop through the icon width and the icon height building icons
@@ -2334,7 +2325,7 @@ const void* Get_Radar_Icon(const void* shapefile, int shapenum, int frames,
               const int getx = (iconx * 24) + (x * val) + (zoomfactor / 2);
               const int gety = (icony * 24) + (y * val) + (zoomfactor / 2);
               if (getx < pixel_width && gety < pixel_height) {
-                for (lp = 0; lp < 9; lp++) {
+                for (int lp = 0; lp < 9; lp++) {
                   pixel = *static_cast<const char*>(Add_Long_To_Pointer(
                       ptr,
                       ((gety - _offy[lp]) * pixel_width) + getx - _offx[lp]));
@@ -2362,16 +2353,14 @@ const void* Get_Radar_Icon(const void* shapefile, int shapenum, int frames,
 
 void CC_Texture_Fill(const void* shapefile, int shapenum, int xpos, int ypos,
                      int width, int height) {
-  unsigned char* shape_pointer;
   // unsigned char	*shape_save;
-  void* shape_size;
   // int x,y;
 
   if (shapefile && shapenum != -1) {
     /*
     ** Build frame returns a pointer now instead of the shapes length
     */
-    shape_size =
+    void* shape_size =
         Build_Frame(shapefile, static_cast<uint16_t>(shapenum), ShapeBuffer);
     if (Get_Last_Frame_Length() > ShapeBufferSize) {
       Mono_Printf(
@@ -2381,7 +2370,7 @@ void CC_Texture_Fill(const void* shapefile, int shapenum, int xpos, int ypos,
     }
 
     if (shape_size) {
-      shape_pointer = static_cast<unsigned char*>(shape_size);
+      auto* shape_pointer = static_cast<unsigned char*>(shape_size);
       const int source_width = Get_Build_Frame_Width(shapefile);
       const int source_height = Get_Build_Frame_Height(shapefile);
 
@@ -2455,15 +2444,12 @@ void CC_Texture_Fill(const void* shapefile, int shapenum, int xpos, int ypos,
 void CC_Draw_Shape(const void* shapefile, int shapenum, int x, int y,
                    WindowNumberType window, ShapeFlags_Type flags,
                    const void* fadingdata, const void* ghostdata) {
-  int predoffset;
-  char* shape_pointer;
-  void* shape_size;
 
   if (shapefile && shapenum != -1) {
     /*
     ** Build frame returns a pointer now instead of the shapes length
     */
-    shape_size =
+    void* shape_size =
         Build_Frame(shapefile, static_cast<uint16_t>(shapenum), ShapeBuffer);
     if (Get_Last_Frame_Length() > ShapeBufferSize) {
       Mono_Printf(
@@ -2480,7 +2466,7 @@ void CC_Draw_Shape(const void* shapefile, int shapenum, int x, int y,
           WindowList[window][WINDOWWIDTH] << 3,
           WindowList[window][WINDOWHEIGHT]);
 
-      shape_pointer = static_cast<char*>(shape_size);
+      char* shape_pointer = static_cast<char*>(shape_size);
 
       /*
       **	Special shadow drawing code (used for aircraft and bullets).
@@ -2492,7 +2478,7 @@ void CC_Draw_Shape(const void* shapefile, int shapenum, int x, int y,
         ghostdata = MouseClass::SpecialGhost;
       }
 
-      predoffset = static_cast<int>(Frame);
+      int predoffset = static_cast<int>(Frame);
 
       if (x > WindowList[window][WINDOWWIDTH] << 2) {
         predoffset = -predoffset;
@@ -2570,13 +2556,12 @@ const TechnoTypeClass* Fetch_Techno_Type(RTTIType type, int id) {
  *   06/02/1995 BRR : Created.                                             *
  *=========================================================================*/
 void Trap_Object() {
-  int i;
 
   TrapObject.Ptr.All = nullptr;
 
   switch (TrapObjType) {
     case RTTI_AIRCRAFT:
-      for (i = 0; i < Aircraft.Count(); i++) {
+      for (int i = 0; i < Aircraft.Count(); i++) {
         if (Aircraft.Ptr(i)->Coord == TrapCoord ||
             Aircraft.Ptr(i) == TrapThis) {
           TrapObject.Ptr.Aircraft = Aircraft.Ptr(i);
@@ -2586,7 +2571,7 @@ void Trap_Object() {
       break;
 
     case RTTI_ANIM:
-      for (i = 0; i < Anims.Count(); i++) {
+      for (int i = 0; i < Anims.Count(); i++) {
         if (Anims.Ptr(i)->Coord == TrapCoord || Anims.Ptr(i) == TrapThis) {
           TrapObject.Ptr.Anim = Anims.Ptr(i);
           break;
@@ -2595,7 +2580,7 @@ void Trap_Object() {
       break;
 
     case RTTI_BUILDING:
-      for (i = 0; i < Buildings.Count(); i++) {
+      for (int i = 0; i < Buildings.Count(); i++) {
         if (Buildings.Ptr(i)->Coord == TrapCoord ||
             Buildings.Ptr(i) == TrapThis) {
           TrapObject.Ptr.Building = Buildings.Ptr(i);
@@ -2605,7 +2590,7 @@ void Trap_Object() {
       break;
 
     case RTTI_BULLET:
-      for (i = 0; i < Bullets.Count(); i++) {
+      for (int i = 0; i < Bullets.Count(); i++) {
         if (Bullets.Ptr(i)->Coord == TrapCoord || Bullets.Ptr(i) == TrapThis) {
           TrapObject.Ptr.Bullet = Bullets.Ptr(i);
           break;
@@ -2614,7 +2599,7 @@ void Trap_Object() {
       break;
 
     case RTTI_INFANTRY:
-      for (i = 0; i < Infantry.Count(); i++) {
+      for (int i = 0; i < Infantry.Count(); i++) {
         if (Infantry.Ptr(i)->Coord == TrapCoord ||
             Infantry.Ptr(i) == TrapThis) {
           TrapObject.Ptr.Infantry = Infantry.Ptr(i);
@@ -2624,7 +2609,7 @@ void Trap_Object() {
       break;
 
     case RTTI_UNIT:
-      for (i = 0; i < Units.Count(); i++) {
+      for (int i = 0; i < Units.Count(); i++) {
         if (Units.Ptr(i)->Coord == TrapCoord || Units.Ptr(i) == TrapThis) {
           TrapObject.Ptr.Unit = Units.Ptr(i);
           break;
@@ -2636,7 +2621,7 @@ void Trap_Object() {
     ** Last-ditch find-the-object-right-now-darnit loop
     */
     case RTTI_NONE:
-      for (i = 0; i < Aircraft.Count(); i++) {
+      for (int i = 0; i < Aircraft.Count(); i++) {
         if (Aircraft.Raw_Ptr(i)->Coord == TrapCoord ||
             Aircraft.Raw_Ptr(i) == TrapThis) {
           TrapObject.Ptr.Aircraft = Aircraft.Raw_Ptr(i);
@@ -2644,7 +2629,7 @@ void Trap_Object() {
           return;
         }
       }
-      for (i = 0; i < Anims.Count(); i++) {
+      for (int i = 0; i < Anims.Count(); i++) {
         if (Anims.Raw_Ptr(i)->Coord == TrapCoord ||
             Anims.Raw_Ptr(i) == TrapThis) {
           TrapObject.Ptr.Anim = Anims.Raw_Ptr(i);
@@ -2652,7 +2637,7 @@ void Trap_Object() {
           return;
         }
       }
-      for (i = 0; i < Buildings.Count(); i++) {
+      for (int i = 0; i < Buildings.Count(); i++) {
         if (Buildings.Raw_Ptr(i)->Coord == TrapCoord ||
             Buildings.Raw_Ptr(i) == TrapThis) {
           TrapObject.Ptr.Building = Buildings.Raw_Ptr(i);
@@ -2660,7 +2645,7 @@ void Trap_Object() {
           return;
         }
       }
-      for (i = 0; i < Bullets.Count(); i++) {
+      for (int i = 0; i < Bullets.Count(); i++) {
         if (Bullets.Raw_Ptr(i)->Coord == TrapCoord ||
             Bullets.Raw_Ptr(i) == TrapThis) {
           TrapObject.Ptr.Bullet = Bullets.Raw_Ptr(i);
@@ -2668,7 +2653,7 @@ void Trap_Object() {
           return;
         }
       }
-      for (i = 0; i < Infantry.Count(); i++) {
+      for (int i = 0; i < Infantry.Count(); i++) {
         if (Infantry.Raw_Ptr(i)->Coord == TrapCoord ||
             Infantry.Raw_Ptr(i) == TrapThis) {
           TrapObject.Ptr.Infantry = Infantry.Raw_Ptr(i);
@@ -2676,7 +2661,7 @@ void Trap_Object() {
           return;
         }
       }
-      for (i = 0; i < Units.Count(); i++) {
+      for (int i = 0; i < Units.Count(); i++) {
         if (Units.Raw_Ptr(i)->Coord == TrapCoord ||
             Units.Raw_Ptr(i) == TrapThis) {
           TrapObject.Ptr.Unit = Units.Raw_Ptr(i);
@@ -2768,7 +2753,6 @@ int32_t VQ_Event_Handler(uint32_t event, void* /*buffer*/, int32_t /*nbytes*/) {
  * HISTORY: * 06/27/1995 JLB : Created. *
  *=============================================================================================*/
 void Handle_Team(int team, int action) {
-  int index;
 
   AllowVoice = true;
   switch (action) {
@@ -2798,7 +2782,7 @@ void Handle_Team(int team, int action) {
             break;
         }
       }
-      for (index = 0; index < Units.Count(); index++) {
+      for (int index = 0; index < Units.Count(); index++) {
         UnitClass* obj = Units.Ptr(index);
         if ((obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
              obj->House == PlayerPtr) &&
@@ -2807,7 +2791,7 @@ void Handle_Team(int team, int action) {
           AllowVoice = false;
         }
       }
-      for (index = 0; index < Infantry.Count(); index++) {
+      for (int index = 0; index < Infantry.Count(); index++) {
         InfantryClass* obj = Infantry.Ptr(index);
         if ((obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
              obj->House == PlayerPtr) &&
@@ -2816,7 +2800,7 @@ void Handle_Team(int team, int action) {
           AllowVoice = false;
         }
       }
-      for (index = 0; index < Aircraft.Count(); index++) {
+      for (int index = 0; index < Aircraft.Count(); index++) {
         AircraftClass* obj = Aircraft.Ptr(index);
         if ((obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
              obj->House == PlayerPtr) &&
@@ -2839,7 +2823,7 @@ void Handle_Team(int team, int action) {
     **	Additive selection of team.
     */
     case 1:
-      for (index = 0; index < Units.Count(); index++) {
+      for (int index = 0; index < Units.Count(); index++) {
         UnitClass* obj = Units.Ptr(index);
         if ((obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
              obj->House == PlayerPtr) &&
@@ -2848,7 +2832,7 @@ void Handle_Team(int team, int action) {
           AllowVoice = false;
         }
       }
-      for (index = 0; index < Infantry.Count(); index++) {
+      for (int index = 0; index < Infantry.Count(); index++) {
         InfantryClass* obj = Infantry.Ptr(index);
         if ((obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
              obj->House == PlayerPtr) &&
@@ -2857,7 +2841,7 @@ void Handle_Team(int team, int action) {
           AllowVoice = false;
         }
       }
-      for (index = 0; index < Aircraft.Count(); index++) {
+      for (int index = 0; index < Aircraft.Count(); index++) {
         AircraftClass* obj = Aircraft.Ptr(index);
         if ((obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
              obj->House == PlayerPtr) &&
@@ -2872,7 +2856,7 @@ void Handle_Team(int team, int action) {
     **	Create the team.
     */
     case 2:
-      for (index = 0; index < Units.Count(); index++) {
+      for (int index = 0; index < Units.Count(); index++) {
         UnitClass* obj = Units.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->House == PlayerPtr) {
           if (std::cmp_equal(obj->Group, team)) {
@@ -2883,7 +2867,7 @@ void Handle_Team(int team, int action) {
           }
         }
       }
-      for (index = 0; index < Infantry.Count(); index++) {
+      for (int index = 0; index < Infantry.Count(); index++) {
         InfantryClass* obj = Infantry.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->House == PlayerPtr) {
           if (std::cmp_equal(obj->Group, team)) {
@@ -2894,7 +2878,7 @@ void Handle_Team(int team, int action) {
           }
         }
       }
-      for (index = 0; index < Aircraft.Count(); index++) {
+      for (int index = 0; index < Aircraft.Count(); index++) {
         AircraftClass* obj = Aircraft.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->House == PlayerPtr) {
           if (std::cmp_equal(obj->Group, team)) {
@@ -3003,12 +2987,7 @@ bool Force_CD_Available(int cd) {
   static const char* _volid[] = {"GDI", "NOD", "COVERT"};
 
   int new_cd_drive = 0;
-  int cd_index;
   char buffer[128];
-  int cd_drive;
-  int current_drive;
-  int drive_search_timeout;
-  bool old_in_main_loop;
 
   ThemeType theme_playing = THEME_NONE;
 
@@ -3023,8 +3002,8 @@ bool Force_CD_Available(int cd) {
   /*
   ** Find out if the CD in the current drive is the one we are looking for
   */
-  current_drive = SearchPaths::current_cd_drive();
-  cd_index = Get_CD_Index(current_drive, 1 * 60);
+  const int current_drive = SearchPaths::current_cd_drive();
+  int cd_index = Get_CD_Index(current_drive, 1 * 60);
   if ((cd_index >= 0) && (cd == cd_index || cd == -1)) {
     /*
     ** The required CD is still in the CD drive we used last time
@@ -3070,14 +3049,14 @@ bool Force_CD_Available(int cd) {
     /*
     ** Small timeout for the first pass through the drives
     */
-    drive_search_timeout = 2 * 60;
+    int drive_search_timeout = 2 * 60;
 
     for (;;) {
       /*
       ** Search all present CD drives for the required disc.
       */
       for (int i = 0; i < CDList.Get_Number_Of_Drives(); i++) {
-        cd_drive = CDList.Get_Next_CD_Drive();
+        const int cd_drive = CDList.Get_Next_CD_Drive();
         cd_index = Get_CD_Index(cd_drive, drive_search_timeout);
         /*
         ** We found a C&C cd - lets see if it was the one we were looking for
@@ -3136,7 +3115,7 @@ bool Force_CD_Available(int cd) {
       /*
       ** Pretend we are in the game, even if we arent
       */
-      old_in_main_loop = InMainLoop;
+      const bool old_in_main_loop = InMainLoop;
       InMainLoop = true;
 
       Keyboard::Clear();
@@ -3232,14 +3211,12 @@ void Validate_Error(const char* name) {
  * HISTORY: * 08/15/1995 BRR : Created. *
  *=============================================================================================*/
 static void Do_Record_Playback() {
-  int count;
-  TARGET tgt;
-  int i;
-  COORDINATE coord;
-  ObjectClass* obj;
-  uint32_t sum;
-  uint32_t sum2;
-  uint32_t ltgt;
+  int count = 0;
+  TARGET tgt = 0;
+  COORDINATE coord = 0;
+  uint32_t sum = 0;
+  uint32_t sum2 = 0;
+  uint32_t ltgt = 0;
 
   /*------------------------------------------------------------------------
   Record a game
@@ -3268,7 +3245,7 @@ static void Do_Record_Playback() {
     Save a CRC of the selected-object list.
     .....................................................................*/
     sum = 0;
-    for (i = 0; i < count; i++) {
+    for (int i = 0; i < count; i++) {
       ltgt = static_cast<uint32_t>(CurrentObject[i]->As_Target());
       sum += ltgt;
     }
@@ -3277,7 +3254,7 @@ static void Do_Record_Playback() {
     /*.....................................................................
     Save all selected objects.
     .....................................................................*/
-    for (i = 0; i < count; i++) {
+    for (int i = 0; i < count; i++) {
       tgt = CurrentObject[i]->As_Target();
       RecordFile.WriteObject(tgt);
     }
@@ -3306,7 +3283,7 @@ static void Do_Record_Playback() {
       Compute a CRC of the current object-selection list.
       ..................................................................*/
       sum = 0;
-      for (i = 0; i < CurrentObject.Count(); i++) {
+      for (int i = 0; i < CurrentObject.Count(); i++) {
         ltgt = static_cast<uint32_t>(CurrentObject[i]->As_Target());
         sum += ltgt;
       }
@@ -3322,9 +3299,9 @@ static void Do_Record_Playback() {
 
       AllowVoice = true;
 
-      for (i = 0; i < count; i++) {
+      for (int i = 0; i < count; i++) {
         if (RecordFile.ReadObject(tgt)) {
-          obj = As_Object(tgt);
+          ObjectClass* obj = As_Object(tgt);
           if (obj && sum2 != sum) {
             obj->Select();
             AllowVoice = false;

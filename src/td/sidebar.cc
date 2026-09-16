@@ -300,8 +300,8 @@ void SidebarClass::Init_Clear() {
  * HISTORY: * 12/24/1994 JLB : Created. *
  *=============================================================================================*/
 void SidebarClass::Init_IO() {
-  const void* oldfont;
-  int oldx;
+  const void* oldfont = nullptr;
+  int oldx = 0;
   PowerClass::Init_IO();
 
   /*
@@ -644,13 +644,12 @@ bool SidebarClass::Activate_Demolish(int control) {
  * HISTORY: * 11/17/1994 JLB : Created. *
  *=============================================================================================*/
 bool SidebarClass::Add(RTTIType type, int id) {
-  int column;
 
   /*
   ** Add the sidebar only if we're not in editor mode.
   */
   if (!Debug_Map) {
-    column = Which_Column(type);
+    const int column = Which_Column(type);
 
     if (Column[column].Add(type, id)) {
       Activate(1);
@@ -1188,7 +1187,6 @@ void SidebarClass::StripClass::Init_IO(int id) {
  *=============================================================================================*/
 void SidebarClass::StripClass::Init_Theater(TheaterType theater) {
   static const char* _file[3] = {"ION", "ATOM", "BOMB"};
-  const void* cameo_ptr;
 
   for (int lp = 0; lp < 3; lp++) {
     std::string filename;
@@ -1200,7 +1198,7 @@ void SidebarClass::StripClass::Init_Theater(TheaterType theater) {
     const auto fullname = std::filesystem::path(filename)
                               .replace_extension(Theaters[theater].Suffix)
                               .string();
-    cameo_ptr = MixArchive::Retrieve(fullname);
+    const void* cameo_ptr = MixArchive::Retrieve(fullname);
     if (cameo_ptr) {
       SpecialShapes[lp] = cameo_ptr;
     }
@@ -1891,7 +1889,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
  *sidebar when buildables removed.                        *
  *=============================================================================================*/
 bool SidebarClass::StripClass::Recalc() {
-  bool ok;
+  bool ok = false;
 
   if (Debug_Map || !BuildableCount) {
     return false;

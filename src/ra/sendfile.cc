@@ -125,8 +125,8 @@ bool Get_Scenario_File_From_Host(char* return_name, size_t dest_size,
   SerialPacketType receive_packet;
   GlobalPacketType net_send_packet;
   GlobalPacketType net_receive_packet;
-  int packet_len;
-  uint16_t product_id;
+  int packet_len = 0;
+  uint16_t product_id = 0;
 
   IPXAddressClass sender_address;
 
@@ -226,7 +226,7 @@ bool Get_Scenario_File_From_Host(char* return_name, size_t dest_size,
  *=============================================================================================*/
 bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
   // WWDebugString ("RA95 - In Receive_Remote_File\n");
-  uint16_t product_id;
+  uint16_t product_id = 0;
   IPXAddressClass sender_address;
 
   /*
@@ -248,8 +248,8 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
   const int d_progress_x = (SeenBuff.Get_Width() / 2) - (d_progress_w / 2);
   const int d_progress_y = d_dialog_y + 90;
 
-  int width;
-  int height;
+  int width = 0;
+  int height = 0;
 
   // Format_Window_String inserts line breaks in place, so format a copy
   // rather than the shared string table.
@@ -296,8 +296,6 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
 
   bool process = true;
   RedrawType display = REDRAW_ALL;  // redraw level
-  KeyNumType input;
-  GadgetClass* commands;  // button list
   bool return_code = false;
   int update_time = 0;
 
@@ -305,7 +303,7 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
 
   int last_received_block = -1;  // No blocks received yet
   int total_length = 0;
-  int packet_len;
+  int packet_len = 0;
 
   /*
   ** If the file name is already in use, use the temp file name
@@ -333,7 +331,7 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
   */
   save_file.Open(FileAccess::kWrite);
 
-  commands = &cancelbtn;
+  GadgetClass* commands = &cancelbtn;  // button list
   commands->Add_Tail(progress_meter);
 
   progress_meter.Set_Maximum(100);  // Max is 100%
@@ -448,7 +446,7 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
     }
 
     if (process) {
-      input = cancelbtn.Input();
+      const KeyNumType input = cancelbtn.Input();
 
       /*
       ---------------------------- Process input ----------------------------
@@ -519,8 +517,8 @@ bool Send_Remote_File(const char* file_name, int gametype) {
   const int d_progress_x = (SeenBuff.Get_Width() / 2) - (d_progress_w / 2);
   const int d_progress_y = d_dialog_y + (45 * factor);
 
-  int width;
-  int height;
+  int width = 0;
+  int height = 0;
 
   // Format_Window_String inserts line breaks in place, so format a copy
   // rather than the shared string table.
@@ -570,17 +568,10 @@ bool Send_Remote_File(const char* file_name, int gametype) {
 
   bool process = true;
   RedrawType display = REDRAW_ALL;  // redraw level
-  KeyNumType input;
-  GadgetClass* commands;  // button list
   bool return_code = false;
   int update_time = 0;
 
-  int file_length;
-  int block_number;
-  int max_chunk_size;
-  int total_blocks;
-
-  unsigned char* read_ptr;
+  unsigned char* read_ptr = nullptr;
 
   RemoteFileTransferType send_packet;
   SerialPacketType file_info;
@@ -594,7 +585,7 @@ bool Send_Remote_File(const char* file_name, int gametype) {
     // client\n");
     return false;
   }
-  file_length = static_cast<int>(send_file.Size());
+  int file_length = static_cast<int>(send_file.Size());
 
   response_timer.Set(RESPONSE_TIMEOUT);
 
@@ -640,18 +631,18 @@ bool Send_Remote_File(const char* file_name, int gametype) {
     }
   }
 
-  max_chunk_size = MAX_SEND_FILE_PACKET_SIZE;
-  total_blocks = (file_length + max_chunk_size - 1) / max_chunk_size;
+  const int max_chunk_size = MAX_SEND_FILE_PACKET_SIZE;
+  const int total_blocks = (file_length + max_chunk_size - 1) / max_chunk_size;
 
   send_file.Open(FileAccess::kRead);
 
-  commands = &cancelbtn;
+  GadgetClass* commands = &cancelbtn;  // button list
   commands->Add_Tail(progress_meter);
 
   progress_meter.Set_Maximum(100);  // Max is 100%
   progress_meter.Set_Value(0);      // Current is 0%
 
-  block_number = 0;
+  int block_number = 0;
 
   while (process) {
     /*
@@ -781,7 +772,7 @@ bool Send_Remote_File(const char* file_name, int gametype) {
     }
 
     if (process) {
-      input = cancelbtn.Input();
+      const KeyNumType input = cancelbtn.Input();
 
       /*
       ---------------------------- Process input ----------------------------

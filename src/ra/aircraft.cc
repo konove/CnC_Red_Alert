@@ -545,7 +545,7 @@ void AircraftClass::Draw_It(int x, int y, WindowNumberType window) const {
  *=============================================================================================*/
 void AircraftClass::Draw_Rotors(int x, int y, WindowNumberType window) const {
   ShapeFlags_Type flags = SHAPE_CENTER | SHAPE_WIN_REL;
-  int shapenum;
+  int shapenum = 0;
 
   /*
   **	The rotor shape number depends on whether the helicopter is idling
@@ -605,9 +605,6 @@ void AircraftClass::Draw_Rotors(int x, int y, WindowNumberType window) const {
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
 void AircraftClass::Read_INI(CCINIClass& ini) {
-  AircraftClass* air;    // Working unit pointer.
-  HousesType inhouse;    // Unit house.
-  AircraftType classid;  // Unit class.
   char buf[128];
 
   const int counter = ini.Entry_Count(INI_Name());
@@ -616,16 +613,19 @@ void AircraftClass::Read_INI(CCINIClass& ini) {
 
     ini.Get_String(INI_Name(), entry, nullptr, buf, sizeof(buf) - 1);
     port::Tokenizer tokens(buf, ",");
-    inhouse = HouseTypeClass::From_Name(tokens.Next());
+    const HousesType inhouse =
+        HouseTypeClass::From_Name(tokens.Next());  // Unit house.
     if (inhouse != HOUSE_NONE) {
-      classid = AircraftTypeClass::From_Name(tokens.Next());
+      const AircraftType classid =
+          AircraftTypeClass::From_Name(tokens.Next());  // Unit class.
 
       if (classid != AIRCRAFT_NONE) {
-        air = new AircraftClass(classid, inhouse);
+        auto* air =
+            new AircraftClass(classid, inhouse);  // Working unit pointer.
         if (air) {
-          COORDINATE coord;
-          int strength;
-          DirType dir;
+          COORDINATE coord = 0;
+          int strength = 0;
+          DirType dir = DIR_N;
 
           /*
           **	Read the raw data.
@@ -792,8 +792,8 @@ int AircraftClass::Mission_Hunt() {
       /*
       **	Dropping a stream of bombs phase.
       */
-      case DROP_BOMBS:
-        TARGET targ;
+      case DROP_BOMBS: {
+        TARGET targ = kTargetNone;
         switch (Can_Fire(TarCom, 0)) {
           case FIRE_OK:
             targ = ::As_Target(
@@ -847,6 +847,7 @@ int AircraftClass::Mission_Hunt() {
             break;
         }
         return 1;
+      }
 
       /*
       **	Pull away to regroup for possibly another attack or a retreat.
@@ -2085,7 +2086,7 @@ int AircraftClass::Process_Fly_To(bool slowdown, TARGET dest) {
     slowdown = false;
   }
 
-  COORDINATE coord;
+  COORDINATE coord = 0;
   if (Is_Target_Building(dest)) {
     coord = As_Building(dest)->Docking_Coord();
   } else {
@@ -2792,7 +2793,7 @@ RadioMessageType AircraftClass::Receive_Message(RadioClass* from,
           *out a good *	spot and tell it to go.
           */
           if (Transmit_Message(RADIO_NEED_TO_MOVE, from) == RADIO_ROGER) {
-            CELL cell;
+            CELL cell = 0;
             /*DirType dir =*/Desired_Load_Dir(from, cell);
 
             /*
@@ -3114,7 +3115,7 @@ TARGET AircraftClass::Good_Fire_Location(TARGET target) const {
         if (Map.In_Radar(newcell) &&
             (Session.Type != GAME_NORMAL || Map[newcell].IsVisible) &&
             Cell_Seems_Ok(newcell, true)) {
-          int dist;
+          int dist = 0;
           if (altcoord != 0) {
             dist = ::Distance(newcoord, altcoord);
           } else {
@@ -3323,8 +3324,7 @@ int AircraftClass::Mission_Enter() {
 
     case STACK:
       if (Class->IsFixedWing) {
-        int distance;
-        TARGET togo;
+        TARGET togo = 0;
 
         const BuildingClass* building = As_Building(NavCom);
         if (building) {
@@ -3333,7 +3333,7 @@ int AircraftClass::Mission_Enter() {
           togo = NavCom;
         }
 
-        distance = Process_Fly_To(true, togo);
+        const int distance = Process_Fly_To(true, togo);
         if (distance < 0x0080) {
           Status = DOWNWIND;
         }
@@ -3344,8 +3344,7 @@ int AircraftClass::Mission_Enter() {
 
     case DOWNWIND:
       if (Class->IsFixedWing) {
-        int distance;
-        TARGET togo;
+        TARGET togo = 0;
 
         Set_Speed(200);
         const BuildingClass* building = As_Building(NavCom);
@@ -3355,7 +3354,7 @@ int AircraftClass::Mission_Enter() {
           togo = NavCom;
         }
 
-        distance = Process_Fly_To(true, togo);
+        const int distance = Process_Fly_To(true, togo);
         if (distance < 0x0080) {
           Status = CROSSWIND;
         }
@@ -3366,8 +3365,7 @@ int AircraftClass::Mission_Enter() {
 
     case CROSSWIND:
       if (Class->IsFixedWing) {
-        int distance;
-        TARGET togo;
+        TARGET togo = 0;
 
         Set_Speed(140);
         const BuildingClass* building = As_Building(NavCom);
@@ -3377,7 +3375,7 @@ int AircraftClass::Mission_Enter() {
           togo = NavCom;
         }
 
-        distance = Process_Fly_To(true, togo);
+        const int distance = Process_Fly_To(true, togo);
         if (distance < 0x0080) {
           Status = TRAVEL;
         }

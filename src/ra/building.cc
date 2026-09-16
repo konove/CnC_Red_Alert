@@ -821,7 +821,7 @@ bool BuildingClass::Mark(MarkType mark) {
   if (TechnoClass::Mark(mark)) {
     const int16_t* occupy = Occupy_List();
     CELL cell = Coord_Cell(Coord);
-    SmudgeType bib;
+    SmudgeType bib = SMUDGE_NONE;
 
     switch (mark) {
       case MARK_UP:
@@ -1288,7 +1288,7 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
   assert(IsActive);
 
   ResultType res = RESULT_NONE;
-  int shakes;
+  int shakes = 0;
 
   if (this != source /*&& !Class->IsInsignificant*/) {
     if (source) {
@@ -1448,9 +1448,7 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
           const COORDINATE center = Center_Coord();
           const CELL cellcenter = Coord_Cell(center);
 
-          BulletClass* bullet;
-
-          bullet =
+          auto* bullet =
               new BulletClass(BULLET_INVISIBLE,
                               ::As_Target(Adjacent_Cell(cellcenter, FACING_N)),
                               nullptr, 200, WARHEAD_FIRE, MPH_MEDIUM_FAST);
@@ -1749,14 +1747,12 @@ void BuildingClass::Drop_Debris(TARGET source) {
   assert(Buildings.ID(this) == ID);
   assert(IsActive);
 
-  const CELL* offset;
-  CELL cell;
 
   /*
   **	Generate random survivors from the destroyed building.
   */
-  cell = Coord_Cell(Coord);
-  offset = Occupy_List();
+  CELL const cell = Coord_Cell(Coord);
+  const CELL* offset = Occupy_List();
   int odds = 2;
   if (Target_Legal(WhomToRepay)) {
     odds -= 1;
@@ -1766,9 +1762,7 @@ void BuildingClass::Drop_Debris(TARGET source) {
   }
   int count = How_Many_Survivors();
   while (*offset != kRefreshEol) {
-    CELL newcell;
-
-    newcell = static_cast<CELL>(cell + *offset++);
+    CELL const newcell = static_cast<CELL>(cell + *offset++);
     const CellClass* cellptr = &Map[newcell];
 
     /*
@@ -3121,7 +3115,7 @@ bool BuildingClass::Captured(HouseClass* newowner) {
       House->ToCapture = kTargetNone;
     }
 
-    SmudgeType bib;
+    SmudgeType bib = SMUDGE_NONE;
     CELL cell = Coord_Cell(Coord);
     if (Class->Bib_And_Offset(bib, cell)) {
       auto* smudge = new SmudgeClass(bib);
@@ -4453,7 +4447,7 @@ int BuildingClass::Mission_Unload() {
     CellClass* cellptr = &Map[cell];
     enum { INITIAL, CLEAR_BIB, OPEN, LEAVE, CLOSE };
     enum { DOOR_STAGES = 5, DOOR_RATE = 8 };
-    UnitClass* unit;
+    UnitClass* unit = nullptr;
     switch (Status) {
       /*
       **	Start the door opening.
@@ -4771,10 +4765,9 @@ CELL BuildingClass::Find_Exit_Cell(const TechnoClass* techno) const {
   assert(Buildings.ID(this) == ID);
   assert(IsActive);
 
-  const CELL* ptr;
   const CELL origin = Coord_Cell(Coord);
 
-  ptr = Class->ExitList;
+  const CELL* ptr = Class->ExitList;
   if (ptr != nullptr) {
     while (*ptr != kRefreshEol) {
       const CELL cell = static_cast<CELL>(origin + *ptr++);
@@ -4783,14 +4776,11 @@ CELL BuildingClass::Find_Exit_Cell(const TechnoClass* techno) const {
       }
     }
   } else {
-    int x1;
-    int x2;
-    int y1;
-    int y2;
-    CELL cell;
+    int x1 = 0;
+    CELL cell = 0;
 
-    y1 = -1;
-    y2 = Class->Height();
+    int y1 = -1;
+    const int y2 = Class->Height();
     for (x1 = -1; x1 <= Class->Width(); x1++) {
       cell = static_cast<CELL>(origin + x1 + (y1 * MAP_CELL_W));
       if (Map.In_Radar(cell) && techno->Can_Enter_Cell(cell) == MOVE_OK) {
@@ -4803,7 +4793,7 @@ CELL BuildingClass::Find_Exit_Cell(const TechnoClass* techno) const {
     }
 
     x1 = -1;
-    x2 = Class->Width();
+    const int x2 = Class->Width();
     for (y1 = -1; y1 <= Class->Height(); y1++) {
       cell = static_cast<CELL>(origin + (y1 * MAP_CELL_W) + x1);
       if (Map.In_Radar(cell) && techno->Can_Enter_Cell(cell) == MOVE_OK) {
@@ -4961,12 +4951,7 @@ void BuildingClass::Update_Radar_Spied() {
  * HISTORY: * 05/24/1994 JLB : Created. *
  *=============================================================================================*/
 void BuildingClass::Read_INI(CCINIClass& ini) {
-  BuildingClass* b;    // Working unit pointer.
-  HousesType bhouse;   // Building house.
-  StructType classid;  // Building type.
-  CELL cell;           // Cell of building.
   char buf[128];
-  char* trigname;  // building's trigger's name
 
   const int len = ini.Entry_Count(INI_Name());
   for (int index = 0; index < len; index++) {
@@ -4981,37 +4966,38 @@ void BuildingClass::Read_INI(CCINIClass& ini) {
     **	1st token: house name.
     */
     port::Tokenizer tokens(buf, ",");
-    bhouse = HouseTypeClass::From_Name(tokens.Next());
+    const HousesType bhouse =
+        HouseTypeClass::From_Name(tokens.Next());  // Building house.
 
     /*
     **	2nd token: building name.
     */
-    classid = BuildingTypeClass::From_Name(tokens.Next());
+    const StructType classid =
+        BuildingTypeClass::From_Name(tokens.Next());  // Building type.
 
     if (bhouse != HOUSE_NONE && classid != STRUCT_NONE) {
-      int strength;
-      DirType facing;
 
       /*
       **	3rd token: strength.
       */
-      strength = tech::ParseInteger<int>(tokens.Next()).value_or(0);
+      int strength = tech::ParseInteger<int>(tokens.Next()).value_or(0);
 
       /*
       **	4th token: cell #.
       */
-      cell = tech::ParseInteger<CELL>(tokens.Next()).value_or(0);
+      CELL const cell = tech::ParseInteger<CELL>(tokens.Next())
+                            .value_or(0);  // Cell of building.
 
       /*
       **	5th token: facing.
       */
-      facing = static_cast<DirType>(
+      const DirType facing = static_cast<DirType>(
           tech::ParseInteger<int>(tokens.Next()).value_or(0));
 
       /*
       **	6th token: triggername (can be nullptr).
       */
-      trigname = tokens.Next();
+      char* trigname = tokens.Next();  // building's trigger's name
 
       bool sellable = false;
       const char* token_pointer = tokens.Next();
@@ -5025,7 +5011,7 @@ void BuildingClass::Read_INI(CCINIClass& ini) {
         rebuild = tech::ParseInteger<int>(token_pointer).value_or(0) != 0;
       }
 
-      b = new BuildingClass(classid, bhouse);
+      auto* b = new BuildingClass(classid, bhouse);  // Working unit pointer.
       if (b) {
         TriggerTypeClass* tp = TriggerTypeClass::From_Name(trigname);
         if (tp) {

@@ -411,13 +411,9 @@ int OptionsClass::Get_Tint() const { return Tint; }
 void OptionsClass::Adjust_Palette(void* oldpal, void* newpal,
                                   unsigned char brightness, unsigned char color,
                                   unsigned char tint, unsigned char contrast) {
-  int index;
-  unsigned h;
-  unsigned s;
-  unsigned v;
-  unsigned r;
-  unsigned g;
-  unsigned b;
+  unsigned h = 0;
+  unsigned s = 0;
+  unsigned v = 0;
 
   if (!oldpal || !newpal) {
     return;
@@ -426,23 +422,22 @@ void OptionsClass::Adjust_Palette(void* oldpal, void* newpal,
   /*
   **	Adjust for palette.
   */
-  for (index = 0; index < 256; index++) {
+  for (int index = 0; index < 256; index++) {
     if (/*index == LTGREEN ||*/ index == 255) {
       memcpy(&static_cast<char*>(newpal)[static_cast<base::ssize>(index) * 3],
              &static_cast<char*>(oldpal)[static_cast<base::ssize>(index) * 3], 3);
     } else {
-      r = static_cast<unsigned char*>(oldpal)[(index * 3) + 0];
-      g = static_cast<unsigned char*>(oldpal)[(index * 3) + 1];
-      b = static_cast<unsigned char*>(oldpal)[(index * 3) + 2];
+      unsigned r = static_cast<unsigned char*>(oldpal)[(index * 3) + 0];
+      unsigned g = static_cast<unsigned char*>(oldpal)[(index * 3) + 1];
+      unsigned b = static_cast<unsigned char*>(oldpal)[(index * 3) + 2];
       Convert_RGB_To_HSV(r, g, b, &h, &s, &v);
 
       /*
       **	Adjust contrast by moving the value toward the center according
       *to the *	percentage indicated.
       */
-      int temp;
 
-      temp = v * brightness / 0x80;  // Brightness
+      int temp = v * brightness / 0x80;  // Brightness
       temp = Bound(temp, 0, 0xFF);
       v = static_cast<unsigned>(temp);
       temp =
@@ -475,7 +470,6 @@ void OptionsClass::Adjust_Palette(void* oldpal, void* newpal,
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
 void OptionsClass::Load_Settings() {
-  char* buffer;  // INI staging buffer pointer.
 
   /*
   **	Fetch working pointer to the INI staging buffer. Make sure that the
@@ -483,7 +477,7 @@ void OptionsClass::Load_Settings() {
   *this, since *	the HidPage may be needed for various uncompressions
   *during the INI *	parsing.)
   */
-  buffer = ShapeBuffer;
+  char* buffer = ShapeBuffer;  // INI staging buffer pointer.
   memset(buffer, '\0', base::ToSize(ShapeBufferSize));
 
   /*
@@ -659,14 +653,13 @@ void OptionsClass::Load_Settings() {
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
 void OptionsClass::Save_Settings() const {
-  char* buffer;  // INI staging buffer pointer.
   GameFile file;
 
   /*
   **	Get a working pointer to the INI staging buffer. Make sure that the
   *buffer *	starts cleared out of any data.
   */
-  buffer = ShapeBuffer;
+  char* buffer = ShapeBuffer;  // INI staging buffer pointer.
   memset(buffer, '\0', base::ToSize(ShapeBufferSize));
 
   file.SetName("CONQUER.INI");

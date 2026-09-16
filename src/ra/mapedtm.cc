@@ -85,7 +85,6 @@
  *   12/08/1994 BR : Created.                                              *
  *=========================================================================*/
 void MapEditClass::Handle_Teams(const char* caption) {
-  int rc;
 
   /*
   **	Team dialog processing loop:
@@ -100,7 +99,7 @@ void MapEditClass::Handle_Teams(const char* caption) {
     /*
     **	Select team
     */
-    rc = Select_Team(caption);
+    const int rc = Select_Team(caption);
 
     /*
     **	'OK'; break
@@ -502,13 +501,10 @@ int MapEditClass::Team_Members(HousesType house) {
     REDRAW_BACKGROUND = 2,
     REDRAW_ALL = REDRAW_BACKGROUND
   } RedrawType;
-  RedrawType display;  // requested redraw level
-  bool process;        // loop while true
 
   /*
   **	Dialog variables
   */
-  KeyNumType input;     // user input
   bool cancel = false;  // true = user cancels
   RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
 
@@ -517,21 +513,13 @@ int MapEditClass::Team_Members(HousesType house) {
   */
   const TechnoTypeClass* teamclass[MAX_TEAM_CLASSES] = {};  // team classes
   int teamcount[MAX_TEAM_CLASSES] = {};                     // class counts
-  int numcols;                        // # units displayed horizontally
 
   /*
   **	Dialog dimensions.
   */
-  int dlg_y;
-  int dlg_h;  // dialog height
-  int msg_y;  // y-coord for object names
 
   int curclass = -1;  // current index into 'teamclass'; can be invalid!
                       // (is based on current mouse position)
-  int numclasses;     // current # classes in the team (limited to <=5)
-  int maxclasses;     // max # classes available
-  int i;
-  int j;
 
   /*
   **	Values for timing when mouse held down.
@@ -545,7 +533,6 @@ int MapEditClass::Team_Members(HousesType house) {
   /*
   **	Buttons.
   */
-  ControlClass* commands;
 
   TextButtonClass okbtn(BUTTON_OK, TXT_OK, TPF_CENTER | TPF_EFNT | TPF_NOSHADOW,
                         D_OK_X, D_OK_Y, D_OK_W, D_OK_H);
@@ -557,7 +544,7 @@ int MapEditClass::Team_Members(HousesType house) {
   **	Fill in the ObjectTypeClass array with all available object type ptrs,
   **	checking to be sure this house can own the object
   */
-  i = 0;
+  int i = 0;
   for (const InfantryType i_id : magic_enum::enum_values<InfantryType>()) {
     teamclass[i] = &InfantryTypeClass::As_Reference(i_id);
     i++;
@@ -581,14 +568,14 @@ int MapEditClass::Team_Members(HousesType house) {
   /*
   **	Save max # classes.
   */
-  maxclasses = i;
+  const int maxclasses = i;  // max # classes available
 
   /*
   **	Fill in the 'count' array with data from the current team:
   **	- For every class in the current team, find that class type in the
   **	  'teamclass' array & set its count value
   */
-  for (j = 0; j < maxclasses; j++) {
+  for (int j = 0; j < maxclasses; j++) {
     teamcount[j] = 0;
   }
 
@@ -599,7 +586,7 @@ int MapEditClass::Team_Members(HousesType house) {
     /*
     **	Find this class in our array.
     */
-    for (j = 0; j < maxclasses; j++) {
+    for (int j = 0; j < maxclasses; j++) {
       /*
       **	Set the count; detect a match between the team's class & the
       **	'teamclass' array entry by comparing the actual pointers; typeid
@@ -611,22 +598,24 @@ int MapEditClass::Team_Members(HousesType house) {
       }
     }
   }
-  numclasses = CurTeam->ClassCount;
+  int numclasses =
+      CurTeam->ClassCount;  // current # classes in the team (limited to <=5)
 
   /*
   **	Set up the dialog dimensions based on number of classes we have to draw
   **
   **	Compute picture rows & cols.
   */
-  numcols = (D_DIALOG_W - 16) / D_PICTURE_W;
+  const int numcols =
+      (D_DIALOG_W - 16) / D_PICTURE_W;  // # units displayed horizontally
 
   /*
   **	Dialog's height = top margin + label + picture rows + margin + label +
   *margin + btn
   */
-  dlg_h = 400;
-  dlg_y = 0;
-  msg_y = dlg_y + dlg_h - 26 - 15;
+  const int dlg_h = 400;  // dialog height
+  const int dlg_y = 0;
+  const int msg_y = dlg_y + dlg_h - 26 - 15;  // y-coord for object names
 
   okbtn.Y = dlg_y + dlg_h - D_MARGIN - D_OK_H - 15;
   cancelbtn.Y = dlg_y + dlg_h - D_MARGIN - D_CANCEL_H - 15;
@@ -650,14 +639,14 @@ int MapEditClass::Team_Members(HousesType house) {
   /*
   **	Create the list.
   */
-  commands = &okbtn;
+  ControlClass* commands = &okbtn;
   cancelbtn.Add_Tail(*commands);
 
   /*
   **	Main Processing Loop.
   */
-  display = REDRAW_ALL;
-  process = true;
+  RedrawType display = REDRAW_ALL;  // requested redraw level
+  bool process = true;              // loop while true
   while (process) {
     /*
     **	Invoke game callback.
@@ -710,7 +699,7 @@ int MapEditClass::Team_Members(HousesType house) {
     /*
     **	Get user input.
     */
-    input = commands->Input();
+    const KeyNumType input = commands->Input();  // user input
 
     /*
     **	Process input.
@@ -871,7 +860,7 @@ int MapEditClass::Team_Members(HousesType house) {
   if (!cancel) {
     CurTeam->ClassCount = numclasses;
     i = 0;  // current team class index
-    for (j = 0; j < maxclasses; j++) {
+    for (int j = 0; j < maxclasses; j++) {
       if (teamcount[j] > 0) {
         CurTeam->Members[i].Quantity = teamcount[j];
         CurTeam->Members[i].Class = teamclass[j];

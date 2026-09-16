@@ -123,9 +123,7 @@
  *=============================================================================================*/
 int TerrainClass::Validate() const {
   if constexpr (config::kCheatKeysEnabled) {
-    int num;
-
-    num = Terrains.ID(this);
+    const int num = Terrains.ID(this);
     if (num < 0 || num >= kTerrainMax) {
       Validate_Error("TERRAIN");
     }
@@ -374,9 +372,8 @@ bool TerrainClass::Mark(MarkType mark) {
  *=============================================================================================*/
 void TerrainClass::Draw_It(int x, int y, WindowNumberType window) {
   Validate();
-  const void* shapedata;
 
-  shapedata = Class->Get_Image_Data();
+  const void* shapedata = Class->Get_Image_Data();
   if (shapedata) {
     int shapenum = 0;
 
@@ -440,13 +437,12 @@ void TerrainClass::Init() { Terrains.Free_All(); }
  *=============================================================================================*/
 MoveType TerrainClass::Can_Enter_Cell(CELL cell, FacingType /*unused*/) const {
   Validate();
-  const int16_t* offset;  // Pointer to cell offset list.
 
   if (static_cast<unsigned>(cell) >= MAP_CELL_TOTAL) {
     return MOVE_NO;
   }
 
-  offset = Occupy_List();
+  const int16_t* offset = Occupy_List();  // Pointer to cell offset list.
   while (*offset != REFRESH_EOL) {
     if (!Map[static_cast<CELL>(cell + *offset++)].Is_Generally_Clear()) {
       return MOVE_NO;
@@ -783,27 +779,23 @@ const unsigned char* TerrainClass::Radar_Icon(CELL cell) {
  * HISTORY: * 05/24/1994 JLB : Created. *
  *=============================================================================================*/
 void TerrainClass::Read_INI(char* buffer) {
-  char* tbuffer;  // Accumulation buffer of unit IDs.
-  int len;        // Size of data in buffer.
   char buf[128];
-  TerrainClass* tptr;
 
-  len = static_cast<int>(strlen(buffer)) + 2;
-  tbuffer = buffer + len;
+  const int len =
+      static_cast<int>(strlen(buffer)) + 2;  // Size of data in buffer.
+  char* tbuffer = buffer + len;              // Accumulation buffer of unit IDs.
 
   WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
                             ShapeBufferSize - len, buffer);
   while (*tbuffer != '\0') {
-    TerrainType terrain;  // Terrain type.
-    CELL cell;
-
-    cell = tech::ParseInteger<CELL>(tbuffer).value_or(0);
+    CELL const cell = tech::ParseInteger<CELL>(tbuffer).value_or(0);
     WWGetPrivateProfileString(INI_Name(), tbuffer, nullptr, buf,
                               sizeof(buf) - 1, buffer);
     port::Tokenizer tokens(buf, ",");
-    terrain = TerrainTypeClass::From_Name(tokens.Next());
+    const TerrainType terrain =
+        TerrainTypeClass::From_Name(tokens.Next());  // Terrain type.
     if (terrain != TERRAIN_NONE) {
-      tptr = new TerrainClass(terrain, cell);
+      auto* tptr = new TerrainClass(terrain, cell);
       tptr->Trigger = TriggerClass::As_Pointer(tokens.Next());
       if (tptr->Trigger) {
         tptr->Trigger->AttachCount++;
@@ -831,15 +823,14 @@ void TerrainClass::Read_INI(char* buffer) {
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
 void TerrainClass::Write_INI(char* buffer) {
-  int index;
   char uname[10];
   char buf[127];
-  char* tbuffer;  // Accumulation buffer of unit IDs.
 
   /*
   **	First, clear out all existing terrain data from the ini file.
   */
-  tbuffer = buffer + strlen(buffer) + 2;
+  char* tbuffer =
+      buffer + strlen(buffer) + 2;  // Accumulation buffer of unit IDs.
   WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
                             ShapeBufferSize - static_cast<int>(strlen(buffer)),
                             buffer);
@@ -851,10 +842,8 @@ void TerrainClass::Write_INI(char* buffer) {
   /*
   **	Write the terrain data out.
   */
-  for (index = 0; index < Terrains.Count(); index++) {
-    TerrainClass* terrain;
-
-    terrain = Terrains.Ptr(index);
+  for (int index = 0; index < Terrains.Count(); index++) {
+    TerrainClass* terrain = Terrains.Ptr(index);
     if (!terrain->IsInLimbo && terrain->IsActive) {
       absl::SNPrintF(uname, sizeof(uname), "%d", Coord_Cell(terrain->Coord));
       absl::SNPrintF(buf, sizeof(buf), "%s,%s", terrain->Class->IniName,

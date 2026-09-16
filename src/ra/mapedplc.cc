@@ -139,7 +139,7 @@
  *   05/12/1996 JLB : Handles hi-res.                                      *
  *=========================================================================*/
 int MapEditClass::Placement_Dialog() {
-  HousesType house;
+  HousesType house = HOUSE_NONE;
   RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
 
   /*
@@ -265,19 +265,14 @@ int MapEditClass::Placement_Dialog() {
   **	Dialog variables
   */
   bool cancel = false;            // true = user cancels
-  const ObjectTypeClass* curobj;  // Working object pointer.
-  int x;
-  int y;                          // for drawing the grid
-  KeyNumType input;               // user input
-  const int16_t* occupy;          // ptr into object's OccupyList
-  int cell;                       // cell index for parsing OccupyList
-  int i;
+  int x = 0;
+  int y = 0;  // for drawing the grid
+  int i = 0;
   int typeindex = 0;  // index of class type
 
   /*
   **	Buttons
   */
-  ControlClass* commands;
 
   ListClass housebtn(
       BUTTON_HOUSE, D_GDI_X, D_GDI_Y, 60, 8 * 16, TPF_EFNT | TPF_NOSHADOW,
@@ -357,9 +352,11 @@ int MapEditClass::Placement_Dialog() {
   if (LastChoice >= ObjCount) {
     LastChoice = 0;
   }
-  curobj = Objects[LastChoice];  // current object to choose
+  const ObjectTypeClass* curobj =
+      Objects[LastChoice];  // Working object pointer.  // current object to
+                            // choose
 
-  commands = &nextbtn;
+  ControlClass* commands = &nextbtn;
   housebtn.Add_Tail(*commands);
   prevbtn.Add_Tail(*commands);
   okbtn.Add_Tail(*commands);
@@ -431,9 +428,10 @@ int MapEditClass::Placement_Dialog() {
       /*
       **	Draw a box for every cell occupied
       */
-      occupy = curobj->Occupy_List();
+      const int16_t* occupy =
+          curobj->Occupy_List();  // ptr into object's OccupyList
       while ((*occupy) != kRefreshEol) {
-        cell = (*occupy);
+        const int cell = (*occupy);  // cell index for parsing OccupyList
         occupy++;
         x = D_GRID_X + ((cell % MAP_CELL_W) * GRIDBLOCK_W);
         y = D_GRID_Y + ((cell / MAP_CELL_W) * GRIDBLOCK_H);
@@ -538,7 +536,7 @@ int MapEditClass::Placement_Dialog() {
     /*
     **	Get user input
     */
-    input = commands->Input();
+    const KeyNumType input = commands->Input();  // user input
 
     /*
     **	Process user input
@@ -827,13 +825,8 @@ void MapEditClass::Start_Placement() {
  *   11/04/1994 BR : Created.                                              *
  *=========================================================================*/
 int MapEditClass::Place_Object() {
-  CELL template_cell;        // cell being checked for template
-  COORDINATE obj_coord;      // coord of occupier object
-  bool okflag;               // OK to place a template?
-  const int16_t* occupy;     // ptr into template's OccupyList
-  ObjectClass* occupier;     // occupying object
-  TemplateType save_ttype;   // for saving cell's TType
-  unsigned char save_ticon;  // for saving cell's TIcon
+  CELL template_cell = 0;    // cell being checked for template
+  COORDINATE obj_coord = 0;  // coord of occupier object
                              //	BaseNodeClass node;
                              //// for adding to an AI Base
 
@@ -848,15 +841,17 @@ int MapEditClass::Place_Object() {
     /*
     **	Loop through all cells this template will occupy
     */
-    okflag = true;
-    occupy = PendingObject->Occupy_List();
+    bool okflag = true;  // OK to place a template?
+    const int16_t* occupy =
+        PendingObject->Occupy_List();  // ptr into template's OccupyList
     while ((*occupy) != kRefreshEol) {
       /*
       **	Check this cell for an occupier
       */
       template_cell = static_cast<CELL>((ZoneCell + ZoneOffset) + (*occupy));
       if ((*this)[template_cell].Cell_Occupier()) {
-        occupier = (*this)[template_cell].Cell_Occupier();
+        ObjectClass* occupier =
+            (*this)[template_cell].Cell_Occupier();  // occupying object
 
         /*
         **	Save object's coordinates
@@ -871,8 +866,10 @@ int MapEditClass::Place_Object() {
         /*
         **	Set the cell's template values
         */
-        save_ttype = (*this)[template_cell].TType;
-        save_ticon = (*this)[template_cell].TIcon;
+        const TemplateType save_ttype =
+            (*this)[template_cell].TType;  // for saving cell's TType
+        const unsigned char save_ticon =
+            (*this)[template_cell].TIcon;  // for saving cell's TIcon
         (*this)[template_cell].TType =
             dynamic_cast<const TemplateTypeClass*>(PendingObject)->Type;
         (*this)[template_cell].TIcon = static_cast<unsigned char>(
@@ -1241,7 +1238,6 @@ void MapEditClass::Place_Prev() {
  *   11/03/1994 BR : Created.                                              *
  *=========================================================================*/
 void MapEditClass::Place_Next_Category() {
-  int i;
 
   /*
   ** Don't allow this command if we're building a base; the only valid
@@ -1258,7 +1254,7 @@ void MapEditClass::Place_Next_Category() {
   /*
   **	Go to next category in Objects list
   */
-  i = LastChoice;
+  int i = LastChoice;
   while (Objects[i]->What_Am_I() == Objects[LastChoice]->What_Am_I()) {
     i++;
     if (i == ObjCount) {
@@ -1329,7 +1325,6 @@ void MapEditClass::Place_Next_Category() {
  *   11/03/1994 BR : Created.                                              *
  *=========================================================================*/
 void MapEditClass::Place_Prev_Category() {
-  int i;
 
   /*
   ** Don't allow this command if we're building a base; the only valid
@@ -1346,7 +1341,7 @@ void MapEditClass::Place_Prev_Category() {
   /*
   **	Go to prev category in Objects list
   */
-  i = LastChoice;
+  int i = LastChoice;
 
   /*
   **	Scan for start of this category
@@ -1514,7 +1509,6 @@ void MapEditClass::Place_Home() {
  *   11/04/1994 BR : Created.                                              *
  *=========================================================================*/
 void MapEditClass::Toggle_House() {
-  TechnoClass* tp;
 
   /*
   ** Don't allow this command if we're building a base; the only valid
@@ -1539,7 +1533,7 @@ void MapEditClass::Toggle_House() {
   /*
   **	Change the house
   */
-  tp = dynamic_cast<TechnoClass*>(PendingObjectPtr);
+  auto* tp = dynamic_cast<TechnoClass*>(PendingObjectPtr);
   tp->House = HouseClass::As_Pointer(LastHouse);
 
   /*
@@ -1633,20 +1627,17 @@ void MapEditClass::Stop_Trigger_Placement() {
  *=========================================================================*/
 void MapEditClass::Place_Trigger() {
   ObjectClass* object = nullptr;  // Generic object clicked on.
-  int x;
-  int y;
-  CELL cell;  // Cell that was selected.
 
   /*
   **	See if an object was clicked on
   */
-  x = Keyboard->MouseQX;
-  y = Keyboard->MouseQY;
+  int x = Keyboard->MouseQX;
+  int y = Keyboard->MouseQY;
 
   /*
   **	Get cell for x,y
   */
-  cell = Click_Cell_Calc(x, y);
+  CELL const cell = Click_Cell_Calc(x, y);  // Cell that was selected.
 
   /*
   **	Convert x,y to offset from cell upper-left
@@ -1772,17 +1763,14 @@ void MapEditClass::Cancel_Base_Building() {
  *   12/01/1994 BR : Created.                                              *
  *=========================================================================*/
 void MapEditClass::Build_Base_To(int percent) {
-  int i;
-  int num_buildings;
-  const BuildingTypeClass* objtype;
-  BuildingClass* obj;
+  BuildingClass* obj = nullptr;
 
   // ScenarioInit++;
 
   /*
   ** Completely dismantle the base, so we start at a known point
   */
-  for (i = 0; i < Base.Nodes.Count(); i++) {
+  for (int i = 0; i < Base.Nodes.Count(); i++) {
     if (Base.Is_Built(i)) {
       obj = Base.Get_Building(i);
       delete obj;
@@ -1792,16 +1780,18 @@ void MapEditClass::Build_Base_To(int percent) {
   /*
   ** Compute number of buildings to build
   */
-  num_buildings = (static_cast<int>(Base.Nodes.Count()) * percent) / 100;
+  const int num_buildings =
+      (static_cast<int>(Base.Nodes.Count()) * percent) / 100;
 
   /*
   ** Build the base to the desired amount
   */
-  for (i = 0; i < num_buildings; i++) {
+  for (int i = 0; i < num_buildings; i++) {
     /*
     ** Get a ptr to the type of building to build, create one, and unlimbo it.
     */
-    objtype = &BuildingTypeClass::As_Reference(Base.Nodes[i].Type);
+    const BuildingTypeClass* objtype =
+        &BuildingTypeClass::As_Reference(Base.Nodes[i].Type);
     obj = dynamic_cast<BuildingClass*>(
         objtype->Create_One_Of(HouseClass::As_Pointer(Base.House)));
 

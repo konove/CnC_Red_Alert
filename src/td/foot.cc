@@ -385,8 +385,8 @@ bool FootClass::Mark(MarkType mark) {
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
 bool FootClass::Basic_Path() {
-  PathType* path;  // Pointer to path control structure.
-  CELL cell;
+  PathType* path = nullptr;  // Pointer to path control structure.
+  CELL cell = 0;
   const bool skip_path = false;
 
   Path[0] = FACING_NONE;
@@ -406,9 +406,8 @@ bool FootClass::Basic_Path() {
           static_cast<unsigned>(::Direction(cell, Coord_Cell(Coord))) >> 5);
 
       for (const int index : _faceadjust) {
-        CELL cell2;
-
-        cell2 = Adjacent_Cell(cell, static_cast<FacingType>(f2 + index & 0x7));
+        CELL const cell2 =
+            Adjacent_Cell(cell, static_cast<FacingType>(f2 + index & 0x7));
         if (Can_Enter_Cell(cell2, FACING_NONE) <= MOVE_CLOAK) {
           cell = cell2;
           break;
@@ -724,7 +723,7 @@ int FootClass::Mission_Hunt() {
  * HISTORY: * 07/18/1994 JLB : Created. *
  *=============================================================================================*/
 int FootClass::Mission_Timed_Hunt() {
-  int rndmax;
+  int rndmax = 0;
   int changed = 0;  // has the unit changed into Hunt mode?
 
   if (!House->IsHuman) {

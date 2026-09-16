@@ -113,9 +113,7 @@ const char* TeamTypeClass::TMissions[TMISSION_COUNT] = {
  *=============================================================================================*/
 int TeamTypeClass::Validate() const {
   if constexpr (config::kCheatKeysEnabled) {
-    int num;
-
-    num = TeamTypes.ID(this);
+    const int num = TeamTypes.ID(this);
     if (num < 0 || num >= kTeamTypeMax) {
       Validate_Error("TEAMTYPE");
     }
@@ -162,16 +160,14 @@ void TeamTypeClass::Init() { TeamTypes.Free_All(); }
  *   02/01/1995 BR : No del team if no classes (editor needs empty teams!) *
  *=========================================================================*/
 void TeamTypeClass::Read_INI(char* buffer) {
-  TeamTypeClass* team;  // Working team pointer.
-  char* tbuffer;        // Accumulation buffer of team names.
-  int len;              // Length of data in buffer.
   char buf[500];        // INI entry buffer
 
   /*------------------------------------------------------------------------
   Set 'tbuffer' to point just past the INI buffer
   ------------------------------------------------------------------------*/
-  len = static_cast<int>(strlen(buffer)) + 2;
-  tbuffer = buffer + len;
+  const int len =
+      static_cast<int>(strlen(buffer)) + 2;  // Length of data in buffer.
+  char* tbuffer = buffer + len;  // Accumulation buffer of team names.
 
   /*------------------------------------------------------------------------
   Read all TeamType entry names into 'tbuffer'
@@ -186,7 +182,7 @@ void TeamTypeClass::Read_INI(char* buffer) {
     /*
     ....................... Create a new team type ........................
     */
-    team = new TeamTypeClass();
+    auto* team = new TeamTypeClass();  // Working team pointer.
 
     /*
     ......................... Get the team entry ..........................
@@ -239,14 +235,8 @@ void TeamTypeClass::Read_INI(char* buffer) {
  *=============================================================================================*/
 void TeamTypeClass::Fill_In(char* name, char* entry) {
   Validate();
-  int num_classes;
-  char* p1;                      // parsing pointer
-  char* p2;                      // parsing pointer
-  int i;                         // loop counter
-  const TechnoTypeClass* otype;  // ptr to type of object
-  InfantryType i_id;             // infantry ID
-  UnitType u_id;                 // unit ID
-  AircraftType a_id;             // aircraft ID
+  char* p1 = nullptr;  // parsing pointer
+  char* p2 = nullptr;  // parsing pointer
   TeamMissionStruct mission;
 
   /*
@@ -312,7 +302,7 @@ void TeamTypeClass::Fill_In(char* name, char* entry) {
   /*
   ------------------------ 11th token: Class count -------------------------
   */
-  num_classes = tech::ParseInteger<int>(tokens.Next()).value_or(-1);
+  const int num_classes = tech::ParseInteger<int>(tokens.Next()).value_or(-1);
   if (num_classes < 0 || num_classes > MAX_TEAM_CLASSCOUNT) {
     ClassCount = 0;
     MissionCount = 0;
@@ -323,7 +313,7 @@ void TeamTypeClass::Fill_In(char* name, char* entry) {
   -------------- Loop through entries, setting class ptr & num -------------
   */
   ClassCount = 0;
-  for (i = 0; i < num_classes; i++) {
+  for (int i = 0; i < num_classes; i++) {
     p1 = tokens.Next(",:");
     p2 = tokens.Next(",:");
     if (p1 == nullptr || p2 == nullptr) {
@@ -331,12 +321,12 @@ void TeamTypeClass::Fill_In(char* name, char* entry) {
       MissionCount = 0;
       return;
     }
-    otype = nullptr;
+    const TechnoTypeClass* otype = nullptr;  // ptr to type of object
 
     /*
     ------------------- See if this is an infantry name -------------------
     */
-    i_id = InfantryTypeClass::From_Name(p1);
+    const InfantryType i_id = InfantryTypeClass::From_Name(p1);  // infantry ID
     if (i_id != INFANTRY_NONE) {
       otype = &InfantryTypeClass::As_Reference(i_id);
     }
@@ -344,7 +334,7 @@ void TeamTypeClass::Fill_In(char* name, char* entry) {
     /*
     ---------------------- See if this is a unit name ---------------------
     */
-    u_id = UnitTypeClass::From_Name(p1);
+    const UnitType u_id = UnitTypeClass::From_Name(p1);  // unit ID
     if (u_id != UNIT_NONE) {
       otype = &UnitTypeClass::As_Reference(u_id);
     }
@@ -352,7 +342,7 @@ void TeamTypeClass::Fill_In(char* name, char* entry) {
     /*
     ------------------- See if this is an aircraft name -------------------
     */
-    a_id = AircraftTypeClass::From_Name(p1);
+    const AircraftType a_id = AircraftTypeClass::From_Name(p1);  // aircraft ID
     if (a_id != AIRCRAFT_NONE) {
       otype = &AircraftTypeClass::As_Reference(a_id);
     }
@@ -378,7 +368,7 @@ void TeamTypeClass::Fill_In(char* name, char* entry) {
     return;
   }
 
-  for (i = 0; i < MissionCount; i++) {
+  for (int i = 0; i < MissionCount; i++) {
     p1 = tokens.Next(",:");
     p2 = tokens.Next(",:");
     if (p1 == nullptr || p2 == nullptr) {
@@ -423,11 +413,8 @@ void TeamTypeClass::Fill_In(char* name, char* entry) {
  *   12/07/1994 BR : Created.                                              *
  *=========================================================================*/
 void TeamTypeClass::Write_INI(char* buffer, bool refresh) {
-  int index;
-  int i;
   char buf[500];
-  TeamTypeClass* team;
-  const char* hname;
+  const char* hname = nullptr;
 
   /*------------------------------------------------------------------------
   First, clear out all existing teamtypes in the old-style format.
@@ -445,11 +432,11 @@ void TeamTypeClass::Write_INI(char* buffer, bool refresh) {
   Now write all the team data out
   ------------------------------------------------------------------------*/
   buf[0] = 0;
-  for (index = 0; index < TeamTypes.Count(); index++) {
+  for (int index = 0; index < TeamTypes.Count(); index++) {
     /*
     .................. Get ptr to next active teamtype ....................
     */
-    team = TeamTypes.Ptr(index);
+    TeamTypeClass* team = TeamTypes.Ptr(index);
 
     /*
     .......................... Find house's name ..........................
@@ -472,7 +459,7 @@ void TeamTypeClass::Write_INI(char* buffer, bool refresh) {
     /*.....................................................................
     For every class in the team, record the class's name & desired count
     .....................................................................*/
-    for (i = 0; std::cmp_less(i, team->ClassCount); i++) {
+    for (int i = 0; std::cmp_less(i, team->ClassCount); i++) {
       absl::SNPrintF(buf + strlen(buf), sizeof(buf) - strlen(buf), ",%s:%d",
                      team->Class[i]->IniName, team->DesiredNum[i]);
     }
@@ -482,7 +469,7 @@ void TeamTypeClass::Write_INI(char* buffer, bool refresh) {
     .....................................................................*/
     absl::SNPrintF(buf + strlen(buf), sizeof(buf) - strlen(buf), ",%d",
                    team->MissionCount);
-    for (i = 0; i < team->MissionCount; i++) {
+    for (int i = 0; i < team->MissionCount; i++) {
       absl::SNPrintF(buf + strlen(buf), sizeof(buf) - strlen(buf), ",%s:%d",
                      Name_From_Mission(team->MissionList[i].Mission),
                      team->MissionList[i].Argument);
@@ -524,23 +511,14 @@ void TeamTypeClass::Write_INI(char* buffer, bool refresh) {
  *   02/01/1995 BR : No del team if no classes (editor needs empty teams!) *
  *=========================================================================*/
 void TeamTypeClass::Read_Old_INI(char* buffer) {
-  TeamTypeClass* team;  // Working team pointer.
-  char* tbuffer;        // Accumulation buffer of team names.
-  int len;              // Length of data in buffer.
   char buf[256];        // INI entry buffer
-  char* p1;             // parsing pointer
-  char* p2;             // parsing pointer
-  int index;
-  const TechnoTypeClass* otype;  // ptr to type of object
-  InfantryType i_id;             // infantry ID
-  UnitType u_id;                 // unit ID
-  AircraftType a_id;             // infantry ID
 
   /*------------------------------------------------------------------------
   Set 'tbuffer' to point just past the INI buffer
   ------------------------------------------------------------------------*/
-  len = static_cast<int>(strlen(buffer)) + 2;
-  tbuffer = buffer + len;
+  const int len =
+      static_cast<int>(strlen(buffer)) + 2;  // Length of data in buffer.
+  char* tbuffer = buffer + len;  // Accumulation buffer of team names.
 
   /*------------------------------------------------------------------------
   Read all TeamType entry names into 'tbuffer'
@@ -555,7 +533,7 @@ void TeamTypeClass::Read_Old_INI(char* buffer) {
     /*
     ........................ Create a new trigger .........................
     */
-    team = new TeamTypeClass();
+    auto* team = new TeamTypeClass();  // Working team pointer.
 
     /*
     ............................ Set its name .............................
@@ -626,16 +604,17 @@ void TeamTypeClass::Read_Old_INI(char* buffer) {
     /*
     ............ Loop through entries, setting class ptr & num ............
     */
-    index = 0;
-    p1 = tokens.Next(",:");
-    p2 = tokens.Next(",:");
+    int index = 0;
+    char* p1 = tokens.Next(",:");  // parsing pointer
+    char* p2 = tokens.Next(",:");  // parsing pointer
     while (p1 && p2 && index < MAX_TEAM_CLASSCOUNT) {
-      otype = nullptr;
+      const TechnoTypeClass* otype = nullptr;  // ptr to type of object
 
       /*
       ................. See if this is an infantry name ..................
       */
-      i_id = InfantryTypeClass::From_Name(p1);
+      const InfantryType i_id =
+          InfantryTypeClass::From_Name(p1);  // infantry ID
       if (i_id != INFANTRY_NONE) {
         otype = &InfantryTypeClass::As_Reference(i_id);
       }
@@ -643,7 +622,7 @@ void TeamTypeClass::Read_Old_INI(char* buffer) {
       /*
       .................... See if this is a unit name ....................
       */
-      u_id = UnitTypeClass::From_Name(p1);
+      const UnitType u_id = UnitTypeClass::From_Name(p1);  // unit ID
       if (u_id != UNIT_NONE) {
         otype = &UnitTypeClass::As_Reference(u_id);
       }
@@ -651,7 +630,8 @@ void TeamTypeClass::Read_Old_INI(char* buffer) {
       /*
       ................. See if this is an aircraft name ..................
       */
-      a_id = AircraftTypeClass::From_Name(p1);
+      const AircraftType a_id =
+          AircraftTypeClass::From_Name(p1);  // infantry ID
       if (a_id != AIRCRAFT_NONE) {
         otype = &AircraftTypeClass::As_Reference(a_id);
       }
@@ -699,13 +679,12 @@ void TeamTypeClass::Read_Old_INI(char* buffer) {
  *   12/07/1994 BR : Created.                                              *
  *=========================================================================*/
 TeamTypeClass* TeamTypeClass::As_Pointer(char* name) {
-  int i;
 
   if (name == nullptr) {
     return nullptr;
   }
 
-  for (i = 0; i < TeamTypes.Count(); i++) {
+  for (int i = 0; i < TeamTypes.Count(); i++) {
     if (!stricmp(name, TeamTypes.Ptr(i)->IniName)) {
       return TeamTypes.Ptr(i);
     }
@@ -731,14 +710,12 @@ TeamTypeClass* TeamTypeClass::As_Pointer(char* name) {
  *=========================================================================*/
 void TeamTypeClass::Remove() {
   Validate();
-  int i;
-  TriggerClass* trigger;
 
   /*
   **	Remove all trigger references to this team.
   */
-  for (i = 0; i < Triggers.Count(); i++) {
-    trigger = Triggers.Ptr(i);
+  for (int i = 0; i < Triggers.Count(); i++) {
+    TriggerClass* trigger = Triggers.Ptr(i);
     if (trigger->Team == this) {
       trigger->Team = nullptr;
     }
@@ -766,10 +743,9 @@ void TeamTypeClass::Remove() {
  *   12/13/1994 BR : Created.                                              *
  *=========================================================================*/
 TeamMissionType TeamTypeClass::Mission_From_Name(const char* name) {
-  int order;
 
   if (name) {
-    for (order = TMISSION_ATTACKBASE; order < TMISSION_COUNT; order++) {
+    for (int order = TMISSION_ATTACKBASE; order < TMISSION_COUNT; order++) {
       if (stricmp(TMissions[order], name) == 0) {
         return static_cast<TeamMissionType>(order);
       }

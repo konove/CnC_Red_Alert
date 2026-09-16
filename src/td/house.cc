@@ -191,9 +191,7 @@
  *=============================================================================================*/
 int HouseClass::Validate() const {
   if constexpr (config::kCheatKeysEnabled) {
-    int num;
-
-    num = Houses.ID(this);
+    const int num = Houses.ID(this);
     if (num < 0 || num >= kHouseMax) {
       Validate_Error("HOUSE");
     }
@@ -941,45 +939,36 @@ void HouseClass::AI() {
 
     /*
     ** Also use this timer to detect if someone is sitting on my flag cell.
+    **	If this house's flag waypoint is a valid cell, see if there's
+    **	someone sitting on it.  If so, make the scatter.  If they
+    *refuse, *	blow them up.
     */
-    if (Special.IsCaptureTheFlag && GameToPlay != GAME_NORMAL) {
-      TechnoClass* techno;
-      int damage;
-      int count;
-      bool moving;
+    if (Special.IsCaptureTheFlag && GameToPlay != GAME_NORMAL && FlagHome) {
+      TechnoClass* techno = Map[FlagHome].Cell_Techno();
+      if (techno) {
+        bool moving = false;
+        techno->Scatter(0, true);
 
-      /*
-      **	If this house's flag waypoint is a valid cell, see if there's
-      **	someone sitting on it.  If so, make the scatter.  If they
-      *refuse, *	blow them up.
-      */
-      if (FlagHome) {
-        techno = Map[FlagHome].Cell_Techno();
-        if (techno) {
-          moving = false;
-          techno->Scatter(0, true);
+        /*
+        **	If the techno doesn't have a valid NavCom, he's not moving,
+        **	so blow him up.
+        */
+        if ((techno->What_Am_I() == RTTI_INFANTRY ||
+             techno->What_Am_I() == RTTI_UNIT) &&
+            Target_Legal(dynamic_cast<FootClass*>(techno)->NavCom)) {
+          moving = true;
+        }
 
-          /*
-          **	If the techno doesn't have a valid NavCom, he's not moving,
-          **	so blow him up.
-          */
-          if ((techno->What_Am_I() == RTTI_INFANTRY ||
-               techno->What_Am_I() == RTTI_UNIT) &&
-              Target_Legal(dynamic_cast<FootClass*>(techno)->NavCom)) {
-            moving = true;
-          }
-
-          /*
-          **	If the techno wasn't an infantry or unit (ie he's a building),
-          **	or he refuses to move, blow him up
-          */
-          if (!moving) {
-            count = 0;
-            while (!techno->IsInLimbo && count++ < 5) {
-              damage = 0x7fff;
-              Explosion_Damage(techno->Center_Coord(), damage, nullptr,
-                               WARHEAD_HE);
-            }
+        /*
+        **	If the techno wasn't an infantry or unit (ie he's a building),
+        **	or he refuses to move, blow him up
+        */
+        if (!moving) {
+          int count = 0;
+          while (!techno->IsInLimbo && count++ < 5) {
+            const int damage = 0x7fff;
+            Explosion_Damage(techno->Center_Coord(), damage, nullptr,
+                             WARHEAD_HE);
           }
         }
       }
@@ -991,7 +980,7 @@ void HouseClass::AI() {
     ** the center of the map.
     */
     if (GameToPlay != GAME_NORMAL && Class->House == HOUSE_JP) {
-      int rlimit;
+      int rlimit = 0;
 
       if (Special.IsJurassic && AreThingiesEnabled) {
         rlimit = 450;
@@ -1001,7 +990,6 @@ void HouseClass::AI() {
 
       if (GameRandomRange(0, rlimit) == 0) {
         UnitClass* obj = nullptr;
-        CELL cell;
 
         if (Special.IsJurassic && AreThingiesEnabled) {
           obj = new UnitClass(Random_Pick(UNIT_TRIC, UNIT_STEG), HOUSE_JP);
@@ -1012,8 +1000,9 @@ void HouseClass::AI() {
         }
 
         if (obj) {
-          cell = XY_Cell(Map.MapCellX + Random_Pick(0, Map.MapCellWidth - 1),
-                         Map.MapCellY + Random_Pick(0, Map.MapCellHeight - 1));
+          CELL const cell =
+              XY_Cell(Map.MapCellX + Random_Pick(0, Map.MapCellWidth - 1),
+                      Map.MapCellY + Random_Pick(0, Map.MapCellHeight - 1));
           if (!Scan_Place_Object(obj, cell)) {
             delete obj;
           }
@@ -1700,12 +1689,11 @@ void HouseClass::Silo_Redraw_Check(int64_t oldtib, int64_t oldcap) {
  * HISTORY: * 05/24/1994 JLB : Created. * 05/18/1995 JLB : Creates all houses. *
  *=============================================================================================*/
 void HouseClass::Read_INI(char* buffer) {
-  HouseClass* p;      // Pointer to current player data.
-  const char* hname;  //	Pointer to house name.
   char buf[128];
 
   for (HousesType index = HOUSE_FIRST; index < HOUSE_COUNT; index++) {
-    hname = HouseTypeClass::As_Reference(index).IniName;
+    const char* hname = HouseTypeClass::As_Reference(index)
+                            .IniName;  //	Pointer to house name.
     int maxunit =
         WWGetPrivateProfileInt(hname, "MaxUnit", kEachUnitMax, buffer);
 
@@ -1718,7 +1706,7 @@ void HouseClass::Read_INI(char* buffer) {
 
     const int credits = WWGetPrivateProfileInt(hname, "Credits", 0, buffer);
 
-    p = new HouseClass(index);
+    auto* p = new HouseClass(index);  // Pointer to current player data.
 
     p->MaxBuilding = maxbuilding;
     p->MaxUnit = maxunit;
@@ -2064,7 +2052,7 @@ void HouseClass::Adjust_Threat(int region, int threat) {
       -MAP_REGION_WIDTH - 1, -MAP_REGION_WIDTH, -MAP_REGION_WIDTH + 1, -1, 0, 1,
       MAP_REGION_WIDTH - 1,  MAP_REGION_WIDTH,  MAP_REGION_WIDTH + 1};
   static const int _thr[] = {2, 1, 2, 1, 0, 1, 2, 1, 2};
-  bool neg;
+  bool neg = false;
   const int* val = &_val[0];
   const int* thr = &_thr[0];
 
@@ -2104,7 +2092,7 @@ ProdFailType HouseClass::Begin_Production(RTTIType type, int id) {
   Validate();
   int* factory = nullptr;
   bool result = true;
-  FactoryClass* fptr;
+  FactoryClass* fptr = nullptr;
   const TechnoTypeClass* tech = Fetch_Techno_Type(type, id);
 
   switch (type) {
@@ -2427,7 +2415,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
   Validate();
   BuildingClass* launchsite = nullptr;
   AnimClass* anim = nullptr;
-  int index;
+  int index = 0;
   switch (id) {
     case SPC_ION_CANNON:
       if (IonCannon.Is_Ready()) {
@@ -2886,39 +2874,38 @@ void HouseClass::Remove_Ion_Cannon() {
  *=========================================================================*/
 void HouseClass::Clobber_All() {
   Validate();
-  int i;
 
-  for (i = 0; i < Aircraft.Count(); i++) {
+  for (int i = 0; i < Aircraft.Count(); i++) {
     if (Aircraft.Ptr(i)->House == this) {
       delete Aircraft.Ptr(i);
       i--;
     }
   }
-  for (i = 0; i < Units.Count(); i++) {
+  for (int i = 0; i < Units.Count(); i++) {
     if (Units.Ptr(i)->House == this) {
       delete Units.Ptr(i);
       i--;
     }
   }
-  for (i = 0; i < Infantry.Count(); i++) {
+  for (int i = 0; i < Infantry.Count(); i++) {
     if (Infantry.Ptr(i)->House == this) {
       delete Infantry.Ptr(i);
       i--;
     }
   }
-  for (i = 0; i < Buildings.Count(); i++) {
+  for (int i = 0; i < Buildings.Count(); i++) {
     if (Buildings.Ptr(i)->House == this) {
       delete Buildings.Ptr(i);
       i--;
     }
   }
-  for (i = 0; i < TeamTypes.Count(); i++) {
+  for (int i = 0; i < TeamTypes.Count(); i++) {
     if (TeamTypes.Ptr(i)->House == Class->House) {
       delete TeamTypes.Ptr(i);
       i--;
     }
   }
-  for (i = 0; i < Triggers.Count(); i++) {
+  for (int i = 0; i < Triggers.Count(); i++) {
     if (Triggers.Ptr(i)->House == Class->House) {
       delete Triggers.Ptr(i);
       i--;
@@ -3529,16 +3516,13 @@ bool HouseClass::Flag_Remove(TARGET target, bool set_home) {
  *=============================================================================================*/
 bool HouseClass::Flag_Attach(CELL cell, bool set_home) {
   Validate();
-  bool rc;
-  bool clockwise;
-  FacingType rot;
-  FacingType fcounter;
+  FacingType rot = FACING_NONE;
 
   /*
   **	Randomly decide if we're going to search cells clockwise or counter-
   **	clockwise
   */
-  clockwise = GameRandomRange(0, 1) != 0;
+  const bool clockwise = GameRandomRange(0, 1) != 0;
 
   /*
   **	Only continue if this cell is a legal placement cell.
@@ -3555,7 +3539,7 @@ bool HouseClass::Flag_Attach(CELL cell, bool set_home) {
     **	a nearby cell where it can be placed.
     */
     CELL newcell = cell;
-    rc = Map[newcell].Flag_Place(Class->House);
+    bool rc = Map[newcell].Flag_Place(Class->House);
     if (!rc) {
       /*
       **	Loop for increasing distance from the desired cell.
@@ -3569,7 +3553,8 @@ bool HouseClass::Flag_Attach(CELL cell, bool set_home) {
         */
         if (clockwise) {
           rot = static_cast<FacingType>(GameRandomRange(FACING_N, FACING_NW));
-          for (fcounter = FACING_N; fcounter <= FACING_NW; fcounter++) {
+          for (FacingType fcounter = FACING_N; fcounter <= FACING_NW;
+               fcounter++) {
             newcell = Coord_Cell(Coord_Move(Cell_Coord(cell), Facing_Dir(rot),
                                             static_cast<uint16_t>(dist * 256)));
             if (Map.In_Radar(newcell) &&
@@ -3588,7 +3573,8 @@ bool HouseClass::Flag_Attach(CELL cell, bool set_home) {
           **	Counter-clockwise search
           */
           rot = static_cast<FacingType>(GameRandomRange(FACING_N, FACING_NW));
-          for (fcounter = FACING_NW; fcounter >= FACING_N; fcounter--) {
+          for (FacingType fcounter = FACING_NW; fcounter >= FACING_N;
+               fcounter--) {
             newcell = Coord_Cell(Coord_Move(Cell_Coord(cell), Facing_Dir(rot),
                                             static_cast<uint16_t>(dist * 256)));
             if (Map.In_Radar(newcell) &&
@@ -3675,19 +3661,10 @@ bool HouseClass::Flag_Attach(UnitClass* object, bool set_home) {
 void HouseClass::MPlayer_Defeated() {
   Validate();
   char txt[80];
-  int i;
-  int j;
-  int k;
-  unsigned char id;
-  HousesType house;
-  HouseClass* hptr;
-  HouseClass* hptr2;
-  int num_alive;
-  int num_humans;
-  int all_allies;
-  int max_index;
-  int max_count;
-  int count;
+  int i = 0;
+  unsigned char id = 0;
+  HousesType house = HOUSE_NONE;
+  HouseClass* hptr = nullptr;
   int score_index[MAX_PLAYERS];  // array of each multi-player's index into
                                  // the score array
 
@@ -3760,8 +3737,8 @@ void HouseClass::MPlayer_Defeated() {
   /*------------------------------------------------------------------------
   Find out how many players are left alive.
   ------------------------------------------------------------------------*/
-  num_alive = 0;
-  num_humans = 0;
+  int num_alive = 0;
+  int num_humans = 0;
   for (i = 0; i < MPlayerMax; i++) {
     hptr = As_Pointer(static_cast<HousesType>(HOUSE_MULTI1 + i));
     if (hptr && hptr->IsDefeated == 0) {
@@ -3776,7 +3753,7 @@ void HouseClass::MPlayer_Defeated() {
   If all the houses left alive are allied with each other, then in reality
   there's only one player left:
   ------------------------------------------------------------------------*/
-  all_allies = 1;
+  int all_allies = 1;
   for (i = 0; i < MPlayerMax; i++) {
     /*.....................................................................
     Get a pointer to this house
@@ -3790,8 +3767,8 @@ void HouseClass::MPlayer_Defeated() {
     Loop through all houses; if there's one left alive that this house
     isn't allied with, then all_allies will be false
     .....................................................................*/
-    for (j = 0; j < MPlayerMax; j++) {
-      hptr2 = As_Pointer(static_cast<HousesType>(HOUSE_MULTI1 + j));
+    for (int j = 0; j < MPlayerMax; j++) {
+      HouseClass* hptr2 = As_Pointer(static_cast<HousesType>(HOUSE_MULTI1 + j));
       if (!hptr2) {
         continue;
       }
@@ -3834,7 +3811,7 @@ void HouseClass::MPlayer_Defeated() {
       /*..................................................................
       Search for this player's name in the MPlayerScore array
       ..................................................................*/
-      for (j = 0; j < MPlayerNumScores; j++) {
+      for (int j = 0; j < MPlayerNumScores; j++) {
         if (!stricmp(MPlayerNames[i], MPlayerScore[j].Name)) {
           score_index[i] = j;
           break;
@@ -3854,11 +3831,11 @@ void HouseClass::MPlayer_Defeated() {
           from this game backwards; the one with the most is the one that
           hasn't played the longest; replace him with this new guy.
           ...............................................................*/
-          max_index = 0;
-          max_count = 0;
-          for (j = 0; j < MPlayerNumScores; j++) {
-            count = 0;
-            for (k = MPlayerNumScores - 1; k >= 0; k--) {
+          int max_index = 0;
+          int max_count = 0;
+          for (int j = 0; j < MPlayerNumScores; j++) {
+            int count = 0;
+            for (int k = MPlayerNumScores - 1; k >= 0; k--) {
               if (MPlayerScore[j].Kills[k] == -1) {
                 count++;
               } else {
@@ -3878,8 +3855,8 @@ void HouseClass::MPlayer_Defeated() {
         ...............................................................*/
         MPlayerScore[score_index[i]].Wins = 0;
         port::SafeCopy(MPlayerScore[score_index[i]].Name, MPlayerNames[i]);
-        for (j = 0; j < MAX_MULTI_GAMES; j++) {
-          MPlayerScore[score_index[i]].Kills[j] = -1;
+        for (int& Kill : MPlayerScore[score_index[i]].Kills) {
+          Kill = -1;
         }
       }
 
@@ -3965,13 +3942,8 @@ void HouseClass::MPlayer_Defeated() {
  *=========================================================================*/
 void HouseClass::Blowup_All() {
   Validate();
-  int i;
-  int damage;
-  UnitClass* uptr;
-  InfantryClass* iptr;
-  BuildingClass* bptr;
-  int count;
-  WarheadType warhead;
+  int damage = 0;
+  int count = 0;
 
   /*
   **	Find everything owned by this house & blast it with a huge amount of
@@ -3979,9 +3951,9 @@ void HouseClass::Blowup_All() {
   *are killed *	too.  Using Explosion_Damage is like dropping a big bomb right
   *on the *	object; it will also damage anything around it.
   */
-  for (i = 0; i < Units.Count(); i++) {
+  for (int i = 0; i < Units.Count(); i++) {
     if (Units.Ptr(i)->House == this && !Units.Ptr(i)->IsInLimbo) {
-      uptr = Units.Ptr(i);
+      UnitClass* uptr = Units.Ptr(i);
 
       /*
       **	Some units can't be killed with one shot, so keep damaging them
@@ -4006,7 +3978,7 @@ void HouseClass::Blowup_All() {
   /*
   **	Destroy all aircraft owned by this house.
   */
-  for (i = 0; i < Aircraft.Count(); i++) {
+  for (int i = 0; i < Aircraft.Count(); i++) {
     if (Aircraft.Ptr(i)->House == this && !Aircraft.Ptr(i)->IsInLimbo) {
       AircraftClass* aptr = Aircraft.Ptr(i);
 
@@ -4022,9 +3994,9 @@ void HouseClass::Blowup_All() {
   **	Buildings don't delete themselves when they die; they shake the screen
   **	and begin a countdown, so don't decrement 'i' when it's destroyed.
   */
-  for (i = 0; i < Buildings.Count(); i++) {
+  for (int i = 0; i < Buildings.Count(); i++) {
     if (Buildings.Ptr(i)->House == this && !Buildings.Ptr(i)->IsInLimbo) {
-      bptr = Buildings.Ptr(i);
+      BuildingClass* bptr = Buildings.Ptr(i);
 
       count = 0;
       bptr->IsSurvivorless = true;
@@ -4046,14 +4018,15 @@ void HouseClass::Blowup_All() {
   **	Infantry should die by different types of warheads, so their death
   **	anims aren't all synchronized.
   */
-  for (i = 0; i < Infantry.Count(); i++) {
+  for (int i = 0; i < Infantry.Count(); i++) {
     if (Infantry.Ptr(i)->House == this && !Infantry.Ptr(i)->IsInLimbo) {
-      iptr = Infantry.Ptr(i);
+      InfantryClass* iptr = Infantry.Ptr(i);
 
       count = 0;
       while (Infantry.Ptr(i) == iptr && iptr->Strength) {
         damage = 0x7fff;
-        warhead = static_cast<WarheadType>(GameRandomRange(WARHEAD_SA, WARHEAD_FIRE));
+        const auto warhead =
+            static_cast<WarheadType>(GameRandomRange(WARHEAD_SA, WARHEAD_FIRE));
         Explosion_Damage(iptr->Center_Coord(), damage, nullptr, warhead);
         if (iptr->IsActive) {
           damage = 0x7fff;
@@ -4073,13 +4046,13 @@ void HouseClass::Blowup_All() {
   /*
   **	Just delete the teams & triggers for this house.
   */
-  for (i = 0; i < TeamTypes.Count(); i++) {
+  for (int i = 0; i < TeamTypes.Count(); i++) {
     if (TeamTypes.Ptr(i)->House == Class->House) {
       delete TeamTypes.Ptr(i);
       i--;
     }
   }
-  for (i = 0; i < Triggers.Count(); i++) {
+  for (int i = 0; i < Triggers.Count(); i++) {
     if (Triggers.Ptr(i)->House == Class->House) {
       delete Triggers.Ptr(i);
       i--;

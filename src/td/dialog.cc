@@ -197,7 +197,6 @@ void Draw_Box(int x, int y, int w, int h, BoxStyleEnum up, bool filled) {
  *=============================================================================================*/
 int Format_Window_String(char* string, int maxlinelen, int& width,
                          int& height) {
-  int linelen;
   int lines = 0;
   width = 0;
   height = 0;
@@ -209,7 +208,7 @@ int Format_Window_String(char* string, int maxlinelen, int& width,
 
   // While there are more letters left divide the line up.
   while (*string) {
-    linelen = 0;
+    int linelen = 0;
     height += FontHeight + FontYSpacing;
     lines++;
 
@@ -263,11 +262,6 @@ int Format_Window_String(char* string, int maxlinelen, int& width,
  *appropriate enumeration parameters.                                *
  *=============================================================================================*/
 void Window_Box(WindowNumberType window, BoxStyleEnum style) {
-  int x;
-  int y;
-  int w;
-  int h;           // Window dimensions.
-  int border;      // Width of border.
 
   static const int _border[BOXSTYLE_COUNT][2] = {
       {0, 0},   // 0 Simple beveled edge.
@@ -283,10 +277,10 @@ void Window_Box(WindowNumberType window, BoxStyleEnum style) {
       {0, 1}    // 10 Simple 1 pixel box.
   };
 
-  x = WindowList[window][WINDOWX] << 3;
-  y = WindowList[window][WINDOWY];
-  w = WindowList[window][WINDOWWIDTH] << 3;
-  h = WindowList[window][WINDOWHEIGHT];
+  const int x = WindowList[window][WINDOWX] << 3;
+  const int y = WindowList[window][WINDOWY];
+  const int w = WindowList[window][WINDOWWIDTH] << 3;
+  const int h = WindowList[window][WINDOWHEIGHT];  // Window dimensions.
 
   /*
   **	If it is to be rendered to the seenpage, then
@@ -297,7 +291,7 @@ void Window_Box(WindowNumberType window, BoxStyleEnum style) {
   }
 
   Draw_Box(x, y, w, h, style, true);
-  border = _border[style][1];
+  const int border = _border[style][1];  // Width of border.
 
   /*
   **	Draw the second border if requested.
@@ -375,8 +369,6 @@ void Simple_Text_Print(const char* text, int x, int y, int fore,
       0, 24, 2, 4, 0, 5, 0, 176, 127, 0, 201, 0, 0, 0, 0, 0};
   ///////////////////////#endif	//(0)
 
-  int point;                      // Requested font size.
-  int shadow;                     // Requested shadow value.
   unsigned char fontpalette[16];  // Working font palette array.
   memset(&fontpalette[0], back, 16);
 
@@ -444,7 +436,8 @@ void Simple_Text_Print(const char* text, int x, int y, int fore,
   /*
   **	Change the current font if it differs from the font desired.
   */
-  point = flag & static_cast<TextPrintType>(0x000F);
+  const int point =
+      flag & static_cast<TextPrintType>(0x000F);  // Requested font size.
   xspace = 1;
   yspace = 0;
 
@@ -503,8 +496,8 @@ void Simple_Text_Print(const char* text, int x, int y, int fore,
   /*
   **	Change the current font palette according to the dropshadow flags.
   */
-  shadow =
-      flag & (TPF_NOSHADOW | TPF_DROPSHADOW | TPF_FULLSHADOW | TPF_LIGHTSHADOW);
+  const int shadow = flag & (TPF_NOSHADOW | TPF_DROPSHADOW | TPF_FULLSHADOW |
+                             TPF_LIGHTSHADOW);  // Requested shadow value.
   switch (shadow) {
     /*
     **	The text is rendered plain.

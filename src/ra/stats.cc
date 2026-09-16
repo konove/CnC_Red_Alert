@@ -220,10 +220,8 @@ void Send_Statistics_Packet() {
   }
 
   PacketClass stats;
-  HouseClass* player;
   static int packet_size;
-  int index;
-  void* packet;
+  void* packet = nullptr;
 
   static char field_player_handle[5] = {"NAM?"};
   static char field_player_team[5] = {"SID?"};
@@ -571,7 +569,7 @@ void Send_Statistics_Packet() {
     //	only ever described two.
     constexpr int kHouseCount = config::kWolapiEnabled ? 8 : 2;
     for (int house = 0; house < kHouseCount; house++) {
-      player =
+      HouseClass* player =
           HouseClass::As_Pointer(static_cast<HousesType>(house + HOUSE_MULTI1));
 
       if (config::kWolapiEnabled && !player) {
@@ -674,21 +672,21 @@ void Send_Statistics_Packet() {
       /*
       ** Number of units remaining to player
       */
-      for (index = 0; index < Units.Count(); index++) {
+      for (int index = 0; index < Units.Count(); index++) {
         const UnitClass* unit = Units.Ptr(index);
         if (player == unit->House) {
           player->UnitTotals->Increment_Unit_Total(unit->Class->Type);
         }
       }
 
-      for (index = 0; index < Infantry.Count(); index++) {
+      for (int index = 0; index < Infantry.Count(); index++) {
         const InfantryClass* infantry = Infantry.Ptr(index);
         if (player == infantry->House && !infantry->Class->IsCivilian) {
           player->InfantryTotals->Increment_Unit_Total(infantry->Class->Type);
         }
       }
 
-      for (index = 0; index < Aircraft.Count(); index++) {
+      for (int index = 0; index < Aircraft.Count(); index++) {
         const AircraftClass* aircraft = Aircraft.Ptr(index);
         if (player == aircraft->House) {  // &&	aircraft->Class->Type !=
                                           // AIRCRAFT_CARGO){
@@ -696,14 +694,14 @@ void Send_Statistics_Packet() {
         }
       }
 
-      for (index = 0; index < Buildings.Count(); index++) {
+      for (int index = 0; index < Buildings.Count(); index++) {
         const BuildingClass* building = Buildings.Ptr(index);
         if (player == building->House) {
           player->BuildingTotals->Increment_Unit_Total(building->Class->Type);
         }
       }
 
-      for (index = 0; index < Vessels.Count(); index++) {
+      for (int index = 0; index < Vessels.Count(); index++) {
         const VesselClass* vessel = Vessels.Ptr(index);
         if (player == vessel->House) {
           player->VesselTotals->Increment_Unit_Total(vessel->Class->Type);
@@ -838,8 +836,8 @@ void Send_Statistics_Packet() {
     /*
     ** Send it.....
     */
-    const char* szGameResServer;
-    int iPort;
+    const char* szGameResServer = nullptr;
+    int iPort = 0;
     if (pWolapi->GameInfoCurrent.GameKind == CREATEGAMEINFO::AMGAME) {
       szGameResServer = pWolapi->szGameResServerHost2;
       iPort = pWolapi->iGameResServerPort2;

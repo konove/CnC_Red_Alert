@@ -206,7 +206,7 @@ void ColorListClass::Set_Selected_Style(SelectStyleType style, int color) {
  *=========================================================================*/
 void ColorListClass::Draw_Entry(int index, int x, int y, int width,
                                 bool selected) {
-  int color;
+  int color = 0;
 
   /*
   ** Draw a non-selected item in its color

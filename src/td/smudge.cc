@@ -89,9 +89,7 @@ HousesType SmudgeClass::ToOwn = HOUSE_NONE;
  *=============================================================================================*/
 int SmudgeClass::Validate() const {
   if constexpr (config::kCheatKeysEnabled) {
-    int num;
-
-    num = Smudges.ID(this);
+    const int num = Smudges.ID(this);
     if (num < 0 || num >= kSmudgeMax) {
       Validate_Error("SMUDGE");
     }
@@ -294,12 +292,12 @@ void SmudgeClass::Read_INI(char* buffer) {
   WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
                             ShapeBufferSize - len, buffer);
   while (*tbuffer != '\0') {
-    SmudgeType smudge;  // Smudge type.
 
     WWGetPrivateProfileString(INI_Name(), tbuffer, nullptr, buf,
                               sizeof(buf) - 1, buffer);
     port::Tokenizer tokens(buf, ",");
-    smudge = SmudgeTypeClass::From_Name(tokens.Next());
+    const SmudgeType smudge =
+        SmudgeTypeClass::From_Name(tokens.Next());  // Smudge type.
     if (smudge != SMUDGE_NONE) {
       const char* ptr = tokens.Next();
       if (ptr) {
@@ -337,12 +335,12 @@ void SmudgeClass::Read_INI(char* buffer) {
 void SmudgeClass::Write_INI(char* buffer) {
   char uname[10];
   char buf[127];
-  char* tbuffer;  // Accumulation buffer of unit IDs.
 
   /*
   **	First, clear out all existing template data from the ini file.
   */
-  tbuffer = buffer + strlen(buffer) + 2;
+  char* tbuffer =
+      buffer + strlen(buffer) + 2;  // Accumulation buffer of unit IDs.
   WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
                             ShapeBufferSize - static_cast<int>(strlen(buffer)),
                             buffer);
@@ -355,9 +353,7 @@ void SmudgeClass::Write_INI(char* buffer) {
   **	Find all templates and write them to the file.
   */
   for (CELL index = 0; index < MAP_CELL_TOTAL; index++) {
-    CellClass* ptr;
-
-    ptr = &Map[index];
+    CellClass* ptr = &Map[index];
     if (ptr->Smudge != SMUDGE_NONE) {
       const SmudgeTypeClass* stype =
           &SmudgeTypeClass::As_Reference(ptr->Smudge);

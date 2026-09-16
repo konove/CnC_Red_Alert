@@ -1016,10 +1016,9 @@ void ObjectClass::Sell_Back(int /*unused*/) { assert(IsActive); }
 void ObjectClass::Move(FacingType facing) {
   assert(IsActive);
 
-  COORDINATE coord;
 
   Mark(MARK_UP);
-  coord = Adjacent_Cell(Coord, facing);
+  COORDINATE const coord = Adjacent_Cell(Coord, facing);
   if (Can_Enter_Cell(Coord_Cell(coord)) == MOVE_OK) {
     Coord = coord;
   }
@@ -1151,8 +1150,8 @@ bool ObjectClass::Render(bool forced)  // const
 {
   assert(IsActive);
 
-  int x;
-  int y;
+  int x = 0;
+  int y = 0;
   const COORDINATE coord = Render_Coord();
 
   if (MapEditorActive || Debug_Unshroud ||
@@ -1676,7 +1675,7 @@ bool ObjectClass::Mark(MarkType mark) {
     int threat = 0;
     HousesType house = HOUSE_NONE;
     CELL cell = 0;
-    TechnoClass* tech;
+    TechnoClass* tech = nullptr;
     if (Is_Techno()) {
       tech = dynamic_cast<TechnoClass*>(this);
       threat = tech->Risk();

@@ -3265,9 +3265,7 @@ void BuildingTypeClass::Prep_For_Add() {
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
 bool BuildingTypeClass::Create_And_Place(CELL cell, HousesType house) const {
-  BuildingClass* ptr;
-
-  ptr = new BuildingClass(Type, house);
+  auto* ptr = new BuildingClass(Type, house);
   if (ptr != nullptr) {
     return ptr->Unlimbo(Cell_Coord(cell), DIR_N);
   }

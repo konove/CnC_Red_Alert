@@ -107,8 +107,8 @@ const int16_t* Coord_Spillage_List(COORDINATE coord, int maxsize) {
   static const int SpillTable[16] = {8, 6, 2, -1, 0,  7,  1,  -1,
                                      4, 5, 3, -1, -1, -1, -1, -1};
   int index = 0;
-  int x;
-  int y;
+  int x = 0;
+  int y = 0;
 
   /*
   **	For mondo-enourmo-gigundo objects, use a prebuilt mammoth table
@@ -250,10 +250,8 @@ COORDINATE Coord_Move(COORDINATE start, DirType dir, uint16_t distance) {
  * HISTORY: * 02/01/1992 JLB : Created. * 05/13/1992 JLB : Only uses Random(). *
  *=============================================================================================*/
 COORDINATE Coord_Scatter(COORDINATE coord, int distance, bool lock) {
-  COORDINATE newcoord;
-
-  newcoord = Coord_Move(coord, Random_Pick(DIR_N, DIR_MAX),
-                        static_cast<uint16_t>(distance));
+  COORDINATE newcoord = Coord_Move(coord, Random_Pick(DIR_N, DIR_MAX),
+                                   static_cast<uint16_t>(distance));
 
   if (newcoord & 0xC000C000L) {
     newcoord = coord;

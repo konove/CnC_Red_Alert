@@ -191,8 +191,8 @@ int IconListClass::Add_Item(
       char* szText = new char[iTextSize];
       port::SafeCopy(szText, text, iTextSize);
 
-      int iWidthMax;
-      int iHeight;
+      int iWidthMax = 0;
+      int iHeight = 0;
       //	Stupid usage of globals for font stuff... <grumble>
       if (TextFlags == TPF_TYPE) {
         const void* pFontBefore = Set_Font(TypeFontPtr);
@@ -741,7 +741,6 @@ int IconListClass::OffsetToIndex(int iIndex, int y) {
 int Format_Window_String_New(const char* string, int maxlinelen, int& width,
                              int& height, char* szReturn, int iExtraChars) {
   const char* const szReturnStart = szReturn;
-  int linelen;
   int lines = 0;
   width = 0;
   height = 0;
@@ -753,7 +752,7 @@ int Format_Window_String_New(const char* string, int maxlinelen, int& width,
 
   // While there are more letters left divide the line up.
   while (*string) {
-    linelen = 0;
+    int linelen = 0;
     height += FontHeight + FontYSpacing;
     lines++;
 

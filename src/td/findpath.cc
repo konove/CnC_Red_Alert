@@ -137,8 +137,8 @@ static inline void Draw_Cell_Point(CELL cell, bool passable, int threat_stage,
                                    int overide = 0) {
   if (DrawPath) {
     if (!Debug_Find_Path) {
-      int x;
-      int y;
+      int x = 0;
+      int y = 0;
 
       if (Map.Coord_To_Pixel(Cell_Coord(cell), x, y)) {
         if (threat_stage > 2) {
@@ -293,8 +293,6 @@ bool FootClass::Unravel_Loop(PathType* path, CELL& cell, FacingType& dir,
   int idx = path->Length;                      // start at the last position
   const FacingType* list =
       &path->Command[idx - 1];  // point to the last command
-  int checkx;
-  int checky;
   bool last_was_line = false;
 
   /*
@@ -303,8 +301,8 @@ bool FootClass::Unravel_Loop(PathType* path, CELL& cell, FacingType& dir,
   ** it.
   */
   while (idx) {
-    checkx = Cell_X(curr_pos);
-    checky = Cell_Y(curr_pos);
+    const int checkx = Cell_X(curr_pos);
+    const int checky = Cell_Y(curr_pos);
 
     if (!Point_Relative_To_Line(checkx, checky, sx, sy, dx, dy) ||
         last_was_line) {
@@ -374,7 +372,6 @@ bool FootClass::Unravel_Loop(PathType* path, CELL& cell, FacingType& dir,
  *=========================================================================*/
 bool FootClass::Register_Cell(PathType* path, CELL cell, FacingType dir,
                               int cost, MoveType threshhold) {
-  FacingType* list;
 
   /*
   ** See if this point has already been registered as on the list.  If so
@@ -410,7 +407,7 @@ bool FootClass::Register_Cell(PathType* path, CELL cell, FacingType dir,
       CELL pos = path->Start;
       int newlen = 0;
       int idx = 0;
-      list = path->Command;
+      FacingType* list = path->Command;
 
       /*
       ** Note that the cell has to be in this list, so theres no sense
@@ -571,25 +568,21 @@ PathType* FootClass::Find_Path(CELL dest, FacingType* final_moves, int maxlen,
                                MoveType threshhold) {
   const CELL source = Coord_Cell(Coord);  // Source expressed as cell
   static PathType path;             // Main path control.
-  CELL next;                        // Next cell to enter
-  CELL startcell;                   // Cell we started in
-  FacingType direction;             // Working direction of look ahead.
-  FacingType newdir;                // Tentative facing value.
+  FacingType newdir = FACING_NONE;  // Tentative facing value.
 
   bool left = false;
   bool                // Was leftward path legal?
       right = false;  // Was rightward path legal?
 
-  int len;                                    // Length of detour command list.
-  int unit_threat;                            // Calculated unit threat rating
-  int cost;                                   // Cost to enter the square
+  int len = 0;          // Length of detour command list.
+  int unit_threat = 0;  // Calculated unit threat rating
   FacingType moves_left[MAX_MLIST_SIZE + 2];
   FacingType                            // Counterclockwise move list.
       moves_right[MAX_MLIST_SIZE + 2];  // Clockwise move list.
   PathType pleft;
   PathType pright;                            // Path control structures.
-  PathType* which;                            // Which path to actually use.
-  int threat;
+  PathType* which = nullptr;                  // Which path to actually use.
+  int threat = 0;
   int threat_stage = 0;
 
   /*
@@ -646,7 +639,7 @@ PathType* FootClass::Find_Path(CELL dest, FacingType* final_moves, int maxlen,
   //	memset(path.Overlap, 0, 512);
   Set_Overlap(&path, source);
 
-  startcell = source;
+  CELL startcell = source;  // Cell we started in
 
   /*
   **	Account for trailing end of list command, so reduce the maximum
@@ -687,13 +680,15 @@ PathType* FootClass::Find_Path(CELL dest, FacingType* final_moves, int maxlen,
     **	Find the absolute correct direction to reach the next straight
     ** line cell and what cell it is.
     */
-    direction = CELL_FACING(startcell, dest);
-    next = Adjacent_Cell(startcell, direction);
+    const FacingType direction =
+        CELL_FACING(startcell, dest);  // Working direction of look ahead.
+    CELL next = Adjacent_Cell(startcell, direction);  // Next cell to enter
 
     /*
     **	If we can move here, then make this our next move.
     */
-    cost = Passable_Cell(next, direction, threat, threshhold);
+    const int cost = Passable_Cell(next, direction, threat,
+                                   threshhold);  // Cost to enter the square
     if (cost) {
       Draw_Cell_Point(next, true, threat_stage);
       Register_Cell(&path, next, direction, cost, threshhold);
@@ -987,25 +982,22 @@ bool FootClass::Follow_Edge(CELL start, CELL target, PathType* path,
                             FacingType search, FacingType olddir, int threat,
                             int threat_stage, int max_cells,
                             MoveType threshhold) {
-  FacingType newdir;  // Direction of facing before surrounding cell check.
-  CELL oldcell;
+  FacingType newdir =
+      FACING_NONE;  // Direction of facing before surrounding cell check.
+  CELL oldcell = 0;
   CELL                // Current cell.
-      newcell;        // Tentative new cell.
+      newcell = 0;    // Tentative new cell.
   int cost = 0;       // Working cost value.
-  int startx;
-  int starty;
   bool online = true;
-  int targetx;
-  int targety;
   int oldval = 0;
   int cellcount = 0;
   bool forceout = false;
   auto firstdir = static_cast<FacingType>(-1);
   CELL firstcell = -1;
-  startx = Cell_X(start);
-  starty = Cell_Y(start);
-  targetx = Cell_X(target);
-  targety = Cell_Y(target);
+  const int startx = Cell_X(start);
+  const int starty = Cell_Y(start);
+  const int targetx = Cell_X(target);
+  const int targety = Cell_Y(target);
 
   if (!path) {
     return false;
@@ -1038,9 +1030,7 @@ bool FootClass::Follow_Edge(CELL start, CELL target, PathType* path,
     */
     newdir = olddir;
     for (;;) {
-      bool forcefail;  // Is failure forced?
-
-      forcefail = false;
+      bool forcefail = false;  // Is failure forced?
 
 #ifdef DIAGONAL
       /*
@@ -1055,10 +1045,11 @@ bool FootClass::Follow_Edge(CELL start, CELL target, PathType* path,
       **	impassable that we are moving around.
       */
       if (newdir & FACING_NE) {
-        CELL checkcell;  // Non-diagonal check cell.
         // int	x,y;
 
-        checkcell = Adjacent_Cell(oldcell, Next_Direction(newdir, search));
+        CELL checkcell = Adjacent_Cell(
+            oldcell,
+            Next_Direction(newdir, search));  // Non-diagonal check cell.
 
         if (checkcell == target) {
           /*
@@ -1281,13 +1272,10 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
       (FacingType)0, (FacingType)0, (FacingType)0, (FacingType)2,
       (FacingType)3, kEmptyCommand, (FacingType)0, (FacingType)0};
 #endif
-  FacingType* cmd1;
+  FacingType* cmd1 = nullptr;
   FacingType  // Floating first command pointer.
-      * cmd2;
-  FacingType          // Floating second command pointer.
-      newcmd;         // Calculated new optimized command.
-  FacingType newdir;  // Tentative new direction for smoothing.
-  CELL cell;          // Working cell (as it moves along path).
+      * cmd2 = nullptr;
+  FacingType newdir = FACING_NONE;  // Tentative new direction for smoothing.
 
   /*
   **	Abort if there is any illegal parameter.
@@ -1302,7 +1290,7 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
   **	in the command list).
   */
   path->Command[path->Length] = END;  // Force end of list.
-  cell = path->Start;
+  CELL cell = path->Start;            // Working cell (as it moves along path).
   if (path->Length > 1) {
     cmd2 = path->Command + 1;
     while (*cmd2 != END) {
@@ -1331,7 +1319,7 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
       **	commands. Any other value is new direction and eliminate
       **	one command.
       */
-      newcmd = *cmd2 - *cmd1;
+      FacingType newcmd = *cmd2 - *cmd1;  // Calculated new optimized command.
       if (newcmd < FACING_N) {
         newcmd = newcmd + FACING_COUNT;
       }
@@ -1453,11 +1441,8 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
 }
 
 CELL FootClass::Safety_Point(CELL src, CELL dst, int start, int max) const {
-  FacingType dir;
-  CELL next;
-  int lp;
-
-  dir = static_cast<FacingType>((CELL_FACING(src, dst) ^ 4)) - 1;
+  const FacingType dir =
+      static_cast<FacingType>((CELL_FACING(src, dst) ^ 4)) - 1;
 
   /*
   ** Loop through the different acceptable distances.
@@ -1466,9 +1451,9 @@ CELL FootClass::Safety_Point(CELL src, CELL dst, int start, int max) const {
     /*
     ** Move to the starting location.
     */
-    next = dst;
+    CELL next = dst;
 
-    for (lp = 0; lp < dist; lp++) {
+    for (int lp = 0; lp < dist; lp++) {
       next = Adjacent_Cell(next, dir);
     }
 
@@ -1478,7 +1463,7 @@ CELL FootClass::Safety_Point(CELL src, CELL dst, int start, int max) const {
       ** only one side which is as long as both of the old sides
       ** together.
       */
-      for (lp = 0; lp < dist << 1; lp++) {
+      for (int lp = 0; lp < dist << 1; lp++) {
         next = Adjacent_Cell(next, dir + 3);
         if (!Can_Enter_Cell(next)) {
           return next;
@@ -1489,14 +1474,14 @@ CELL FootClass::Safety_Point(CELL src, CELL dst, int start, int max) const {
       ** If our direction is not diagonal than we need to check two
       ** sides so that we are checking a corner like location.
       */
-      for (lp = 0; lp < dist; lp++) {
+      for (int lp = 0; lp < dist; lp++) {
         next = Adjacent_Cell(next, dir + 2);
         if (!Can_Enter_Cell(next)) {
           return next;
         }
       }
 
-      for (lp = 0; lp < dist; lp++) {
+      for (int lp = 0; lp < dist; lp++) {
         next = Adjacent_Cell(next, dir + 4);
         if (!Can_Enter_Cell(next)) {
           return next;

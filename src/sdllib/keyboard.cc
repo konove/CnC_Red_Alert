@@ -139,7 +139,7 @@ bool WWKeyboardClass::Down(int key) {
     }
   }
 
-  int numkeys;
+  int numkeys = 0;
   const auto* keys = SDL_GetKeyboardState(&numkeys);
 
   if (key < numkeys) {

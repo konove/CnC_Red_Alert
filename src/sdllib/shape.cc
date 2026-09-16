@@ -19,7 +19,6 @@ int Extract_Shape_Count(const std::span<const std::byte> span) {
 
 const void* Extract_Shape(const void* buffer, int shape) {
   const auto* block = static_cast<const ShapeBlock_Type*>(buffer);
-  uint32_t offset;  // Offset of shape data, from start of block
   const char* bytebuf = static_cast<const char*>(buffer);
 
   /*
@@ -30,7 +29,8 @@ const void* Extract_Shape(const void* buffer, int shape) {
     return nullptr;
   }
 
-  offset = block->Offsets[shape];
+  const uint32_t offset =
+      block->Offsets[shape];  // Offset of shape data, from start of block
 
   return bytebuf + 2 + offset;
 }

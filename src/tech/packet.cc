@@ -66,12 +66,11 @@
  *   04/24/1996 PWG : Created.                                            *
  *========================================================================*/
 PacketClass::~PacketClass() {
-  FieldClass* current;
-  FieldClass* next;
+  FieldClass* next = nullptr;
   //
   // Loop through the entire field list and delete each entry.
   //
-  for (current = Head; current; current = next) {
+  for (FieldClass* current = Head; current; current = next) {
     next = current->Next;
     delete current;
   }
@@ -106,7 +105,6 @@ void PacketClass::Add_Field(FieldClass* field) {
  *   04/22/1996 PWG : Created.                                            *
  *========================================================================*/
 PacketClass::PacketClass(char* curbuf) : Head(nullptr) {
-  int remaining_size;
   //
   // Pull the size and packet ID out of the linear packet stream.
   //
@@ -121,7 +119,7 @@ PacketClass::PacketClass(char* curbuf) : Head(nullptr) {
   // Calculate the remaining size so that we can loop through the
   //   packets and extract them.
   //
-  remaining_size = Size - 4;
+  int remaining_size = Size - 4;
 
   //
   // Loop through the linear packet until we run out of room and
@@ -181,7 +179,6 @@ PacketClass::PacketClass(char* curbuf) : Head(nullptr) {
  *   04/22/1996 PWG : Created.                                            *
  *========================================================================*/
 char* PacketClass::Create_Comms_Packet(int& size) {
-  FieldClass* current;
 
   //
   // Size starts at four because that is the size of the packet header.
@@ -192,7 +189,7 @@ char* PacketClass::Create_Comms_Packet(int& size) {
   // Take a quick spin through and calculate the size of the packet we
   //   are building.
   //
-  for (current = Head; current; current = current->Next) {
+  for (FieldClass* current = Head; current; current = current->Next) {
     size +=
         static_cast<uint16_t>(FIELD_HEADER_SIZE);  // add in packet header size
     size += current->Size;       // add in data size
@@ -219,7 +216,7 @@ char* PacketClass::Create_Comms_Packet(int& size) {
   // Ok now that the actual header information has been written we need to write
   // out field information.
   //
-  for (current = Head; current; current = current->Next) {
+  for (FieldClass* current = Head; current; current = current->Next) {
     //
     // Temporarily convert the packet to net format (this saves alot of
     //   effort, and seems safe...)

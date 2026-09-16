@@ -267,8 +267,7 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
   **	them there.
   */
   bool placed = false;
-  CELL cell;
-  FacingType eface;
+  CELL cell = 0;
   switch (source) {
     case SOURCE_SHIPPING:
       cell = Map.Calculated_Cell(source, teamtype->House);
@@ -288,7 +287,8 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
     case SOURCE_SOUTH:
     case SOURCE_EAST:
     case SOURCE_WEST: {
-      eface = static_cast<FacingType>(source << 1);  // Facing to enter map.
+      const auto eface =
+          static_cast<FacingType>(source << 1);  // Facing to enter map.
 
       if (airtransport) {
         ScenarioInit++;
@@ -335,7 +335,7 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
           *location that it can *	be unlimboed at. If this fails, then
           *abort the whole placement process.
           */
-          FacingType adj;
+          FacingType adj = FACING_NONE;
           for (adj = FACING_N; adj < FACING_COUNT; adj++) {
             const CELL trycell = Adjacent_Cell(newcell, adj);
             if (!Map.In_Radar(trycell) &&
@@ -385,9 +385,8 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
         *find a cell that *	exactly lines up with the airfield they will
         *unload at.
         */
-        CELL newcell;
         ScenarioInit++;
-        newcell = Map.Calculated_Cell(
+        CELL newcell = Map.Calculated_Cell(
             HouseClass::As_Pointer(teamtype->House)->Edge, teamtype->House);
         ScenarioInit--;
         if (*thisone == AIRCRAFT_CARGO) {
@@ -639,7 +638,7 @@ int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
   ** Loop through the number of objects we are supposed to create and
   ** 	create and place them on the map.
   */
-  int sub;
+  int sub = 0;
   for (sub = 0; sub < number; sub++) {
     /*
     ** Create one of the required objects.  If this fails we could have

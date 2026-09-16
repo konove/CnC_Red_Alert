@@ -166,8 +166,8 @@ void WWMouseClass::Set_Cursor(int xhotspot, int yhotspot, const void* cursor) {
                         MouseCursor.begin() + original_size);
 
   CurrentScale = Get_Display_Scale();
-  int scaled_width;
-  int scaled_height;
+  int scaled_width = 0;
+  int scaled_height = 0;
   const uint8_t* scaled_cursor =
       Scale_Cursor_Nearest(OriginalCursor.data(), OriginalWidth, OriginalHeight,
                            CurrentScale, &scaled_width, &scaled_height);

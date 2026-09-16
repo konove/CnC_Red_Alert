@@ -423,8 +423,8 @@ void OptionsClass::Adjust_Palette(const PaletteClass& oldpal,
       **	Adjust contrast by moving the value toward the center according
       *to the *	percentage indicated.
       */
-      int temp;
-      temp = hsv.Value_Component() * (brightness * 256) / 0x80;  // Brightness
+      int temp =
+          hsv.Value_Component() * (brightness * 256) / 0x80;  // Brightness
       temp = Bound(temp, 0, 0xFF);
       int v = temp;
       temp = ((v - 0x80) * (contrast * 256) / 0x80) + 0x80;  // Contrast

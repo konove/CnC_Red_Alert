@@ -217,9 +217,7 @@ const COORDINATE BuildingClass::CenterOffset[BSIZE_COUNT] = {
  *=============================================================================================*/
 int BuildingClass::Validate() const {
   if constexpr (config::kCheatKeysEnabled) {
-    int num;
-
-    num = Buildings.ID(this);
+    const int num = Buildings.ID(this);
     if (num < 0 || num >= kBuildingMax) {
       Validate_Error("BUILDING");
     }
@@ -582,10 +580,9 @@ void BuildingClass::Debug_Dump(MonoClass* mono) const {
  *=============================================================================================*/
 void BuildingClass::Draw_It(int x, int y, WindowNumberType window) {
   Validate();
-  const void* shapefile;  // Pointer to loaded shape file.
-  int shapenum;
+  const void* shapefile = nullptr;  // Pointer to loaded shape file.
 
-  shapenum = Fetch_Stage();
+  int shapenum = Fetch_Stage();
 
   /*
   **	The shape file to use for rendering depends on whether the building
@@ -787,7 +784,7 @@ bool BuildingClass::Mark(MarkType mark) {
     const int16_t* offset = Overlap_List();
     const int16_t* occupy = Occupy_List();
     CELL cell = Coord_Cell(Coord);
-    SmudgeType bib;
+    SmudgeType bib = SMUDGE_NONE;
 
     switch (mark) {
       case MARK_UP:
@@ -886,11 +883,10 @@ bool BuildingClass::Mark(MarkType mark) {
  *=============================================================================================*/
 BulletClass* BuildingClass::Fire_At(TARGET target, int which) {
   Validate();
-  BulletClass* bullet;  // Projectile.
   const WeaponTypeClass* weapon =
       which == 0 ? &Weapons[Class->Primary] : &Weapons[Class->Secondary];
 
-  bullet = TechnoClass::Fire_At(target, which);
+  BulletClass* bullet = TechnoClass::Fire_At(target, which);  // Projectile.
   if (bullet) {
     if (*this == STRUCT_SAM) {
       auto* anim = new AnimClass(
@@ -914,14 +910,12 @@ BulletClass* BuildingClass::Fire_At(TARGET target, int which) {
             Fire_Coord(which));
       } else {
         if (weapon->Fires == BULLET_LASER) {
-          int x;
-          int y;
-          int x1;
-          int y1;
-          COORDINATE source;
-          COORDINATE dest;
-          source = Fire_Coord(which);
-          dest = As_Coord(target);
+          int x = 0;
+          int y = 0;
+          int x1 = 0;
+          int y1 = 0;
+          COORDINATE source = Fire_Coord(which);
+          COORDINATE dest = As_Coord(target);
           IsCharging = false;
           IsCharged = false;
           Set_Stage(0);
@@ -1531,7 +1525,7 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
                                       TechnoClass* source) {
   Validate();
   ResultType res = RESULT_NONE;
-  int shakes;
+  int shakes = 0;
 
   if (this != source) {
     if (source) {
@@ -1909,8 +1903,6 @@ BuildingClass::~BuildingClass() {
  *=============================================================================================*/
 void BuildingClass::Drop_Debris(TARGET source) {
   Validate();
-  const CELL* offset;
-  CELL cell;
 
   /*
   **	Special case for Moebius to run from destroyed technology
@@ -1938,8 +1930,8 @@ void BuildingClass::Drop_Debris(TARGET source) {
   /*
   **	Generate random survivors from the destroyed building.
   */
-  cell = Coord_Cell(Coord);
-  offset = Occupy_List();
+  CELL const cell = Coord_Cell(Coord);
+  const CELL* offset = Occupy_List();
   int odds = 2;
   if (Target_Legal(WhomToRepay)) {
     odds -= 1;
@@ -1948,9 +1940,7 @@ void BuildingClass::Drop_Debris(TARGET source) {
     odds += 6;
   }
   while (*offset != REFRESH_EOL) {
-    CELL newcell;
-
-    newcell = static_cast<CELL>(cell + *offset++);
+    CELL const newcell = static_cast<CELL>(cell + *offset++);
 
     /*
     **	Infantry could run out of a destroyed building.
@@ -2171,7 +2161,7 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
       } else {
         auto* air = dynamic_cast<AircraftClass*>(base);
 
-        CELL cell;
+        CELL cell = 0;
         if (Cell_X(Coord_Cell(Center_Coord())) - Map.MapCellX <
             Map.MapCellWidth / 2) {
           cell = XY_Cell(Map.MapCellX - 1,
@@ -2248,10 +2238,9 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
 
         case STRUCT_BARRACKS:
         case STRUCT_HAND:
-          CELL cell;
           bool found = false;
 
-          cell = Find_Exit_Cell(base);
+          CELL const cell = Find_Exit_Cell(base);
           if (cell) {
             found = true;
           }
@@ -3017,17 +3006,11 @@ void BuildingClass::Begin_Mode(BStateType bstate) {
  * HISTORY: * 05/24/1994 JLB : Created. *
  *=============================================================================================*/
 void BuildingClass::Read_INI(char* buffer) {
-  BuildingClass* b;    // Working unit pointer.
-  char* tbuffer;       // Accumulation buffer of unit IDs.
-  HousesType bhouse;   // Building house.
-  StructType classid;  // Building type.
-  int len;             // Size of data in buffer.
-  CELL cell;           // Cell of building.
   char buf[128];
-  char* trigname;  // building's trigger's name
 
-  len = static_cast<int>(strlen(buffer)) + 2;
-  tbuffer = buffer + len;
+  const int len =
+      static_cast<int>(strlen(buffer)) + 2;  // Size of data in buffer.
+  char* tbuffer = buffer + len;              // Accumulation buffer of unit IDs.
 
   /*
   **	Read the entire building INI section into HIDBUF
@@ -3046,39 +3029,40 @@ void BuildingClass::Read_INI(char* buffer) {
     **	1st token: house name.
     */
     port::Tokenizer tokens(buf, ",");
-    bhouse = HouseTypeClass::From_Name(tokens.Next());
+    const HousesType bhouse =
+        HouseTypeClass::From_Name(tokens.Next());  // Building house.
 
     /*
     **	2nd token: building name.
     */
-    classid = BuildingTypeClass::From_Name(tokens.Next());
+    const StructType classid =
+        BuildingTypeClass::From_Name(tokens.Next());  // Building type.
 
     if (bhouse != HOUSE_NONE && classid != STRUCT_NONE) {
-      int strength;
-      DirType facing;
 
       /*
       **	3rd token: strength.
       */
-      strength = tech::ParseInteger<int>(tokens.Next()).value_or(0);
+      int strength = tech::ParseInteger<int>(tokens.Next()).value_or(0);
 
       /*
       **	4th token: cell #.
       */
-      cell = tech::ParseInteger<CELL>(tokens.Next()).value_or(0);
+      CELL const cell = tech::ParseInteger<CELL>(tokens.Next())
+                            .value_or(0);  // Cell of building.
 
       /*
       **	5th token: facing.
       */
-      facing = static_cast<DirType>(
+      const DirType facing = static_cast<DirType>(
           tech::ParseInteger<int>(tokens.Next()).value_or(0));
 
       /*
       **	6th token: triggername (can be NULL).
       */
-      trigname = tokens.Next();
+      char* trigname = tokens.Next();  // building's trigger's name
 
-      b = new BuildingClass(classid, bhouse);
+      auto* b = new BuildingClass(classid, bhouse);  // Working unit pointer.
       if (b) {
         if (b->Unlimbo(Cell_Coord(cell), facing)) {
           strength = std::min(strength, 0x100);
@@ -3120,15 +3104,14 @@ void BuildingClass::Read_INI(char* buffer) {
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
 void BuildingClass::Write_INI(char* buffer) {
-  int index;
   char uname[10];
   char buf[127];
-  char* tbuffer;  // Accumulation buffer of unit IDs.
 
   /*
   **	First, clear out all existing building data from the ini file.
   */
-  tbuffer = buffer + strlen(buffer) + 2;
+  char* tbuffer =
+      buffer + strlen(buffer) + 2;  // Accumulation buffer of unit IDs.
   WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
                             ShapeBufferSize - static_cast<int>(strlen(buffer)),
                             buffer);
@@ -3140,10 +3123,8 @@ void BuildingClass::Write_INI(char* buffer) {
   /*
   **	Write the data out.
   */
-  for (index = 0; index < Buildings.Count(); index++) {
-    BuildingClass* building;
-
-    building = Buildings.Ptr(index);
+  for (int index = 0; index < Buildings.Count(); index++) {
+    BuildingClass* building = Buildings.Ptr(index);
     if (!building->IsInLimbo) {
       absl::SNPrintF(uname, sizeof(uname), "%03d", index);
       absl::SNPrintF(
@@ -3421,7 +3402,7 @@ bool BuildingClass::Captured(HouseClass* newowner) {
     IsCaptured = true;
     TechnoClass::Captured(newowner);
 
-    SmudgeType bib;
+    SmudgeType bib = SMUDGE_NONE;
     CELL cell = Coord_Cell(Coord);
     if (Class->Bib_And_Offset(bib, cell)) {
       auto* smudge = new SmudgeClass(bib);
@@ -4643,7 +4624,7 @@ int BuildingClass::Mission_Unload() {
   Validate();
   if (*this == STRUCT_WEAP) {
     enum { INITIAL, OPEN, LEAVE, CLOSE };
-    UnitClass* unit;
+    UnitClass* unit = nullptr;
     switch (Status) {
       case INITIAL:
         unit = dynamic_cast<UnitClass*>(Contact_With_Whom());
@@ -4947,10 +4928,9 @@ void BuildingClass::Hidden() {
 }
 
 CELL BuildingClass::Find_Exit_Cell(const TechnoClass* techno) const {
-  const CELL* ptr;
   const CELL origin = Coord_Cell(Coord);
 
-  ptr = Class->ExitList;
+  const CELL* ptr = Class->ExitList;
   if (ptr) {
     while (*ptr != REFRESH_EOL) {
       const CELL cell = static_cast<CELL>(origin + *ptr++);

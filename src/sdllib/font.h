@@ -114,7 +114,7 @@ class FontView {
  private:
   // Reads a little-endian uint16 with no alignment requirement.
   static uint16_t ReadWord(const uint8_t* data) {
-    uint16_t value;
+    uint16_t value = 0;
     std::memcpy(&value, data, sizeof(value));
     return value;
   }

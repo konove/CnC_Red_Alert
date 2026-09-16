@@ -70,16 +70,12 @@ static void Write_Pcx_ScanLine(int file_handle, int scansize, const char* ptr);
 int Write_PCX_File(const char* name, GraphicViewPortClass& pic,
                    const unsigned char* palette) {
   unsigned char palcopy[256 * 3];
-  unsigned i;
-  int file_handle;
-  int VP_Scan_Line;
-  char* ptr;
-  GraphicBufferClass* Graphic_Buffer;
+  unsigned i = 0;
   PCX_HEADER header = {10,  5,   1,  8, 0, 0,   319, 199,
                        320, 200, {}, 0, 1, 320, 1,   {}};
 
   // Open file name
-  file_handle = OpenFileHandle(name, FileAccess::kWrite);
+  const int file_handle = OpenFileHandle(name, FileAccess::kWrite);
   if (file_handle == -1) {
     return 0;
   }
@@ -89,9 +85,9 @@ int Write_PCX_File(const char* name, GraphicViewPortClass& pic,
   header.byte_per_line = static_cast<int16_t>(pic.Get_Width());
   WriteFileHandle(file_handle, &header, sizeof(PCX_HEADER));
 
-  VP_Scan_Line = pic.Get_Width() + pic.Get_XAdd();
-  Graphic_Buffer = pic.Get_Graphic_Buffer();
-  ptr = static_cast<char*>(Graphic_Buffer->Get_Buffer());
+  const int VP_Scan_Line = pic.Get_Width() + pic.Get_XAdd();
+  GraphicBufferClass* Graphic_Buffer = pic.Get_Graphic_Buffer();
+  char* ptr = static_cast<char*>(Graphic_Buffer->Get_Buffer());
   ptr += ((pic.Get_YPos() * VP_Scan_Line) + pic.Get_XPos());
 
   for (i = 0; i < static_cast<unsigned>(header.height) + 1; i++) {
@@ -127,14 +123,9 @@ int Write_PCX_File(const char* name, GraphicViewPortClass& pic,
 
 constexpr int kPoolSize = 2048;
 void Write_Pcx_ScanLine(int file_handle, int scansize, const char* ptr) {
-  unsigned i;
-  unsigned rle;
-  unsigned color;
-  unsigned last;
-  unsigned char* file_ptr;
   unsigned char pool[kPoolSize];
 
-  file_ptr = pool;
+  unsigned char* file_ptr = pool;
 
   const auto write_char = [&](unsigned char x) {
     *file_ptr++ = x;
@@ -143,11 +134,11 @@ void Write_Pcx_ScanLine(int file_handle, int scansize, const char* ptr) {
       file_ptr = pool;
     }
   };
-  last = static_cast<unsigned char>(*ptr);
-  rle = 1;
+  unsigned last = static_cast<unsigned char>(*ptr);
+  unsigned rle = 1;
 
-  for (i = 1; std::cmp_less(i, scansize); i++) {
-    color = 0xff & *++ptr;
+  for (unsigned i = 1; std::cmp_less(i, scansize); i++) {
+    const unsigned color = 0xff & *++ptr;
     if (color == last) {
       rle++;
       if (rle == 63) {

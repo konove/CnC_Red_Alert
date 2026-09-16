@@ -171,7 +171,6 @@ void PowerClass::One_Time() {
  *=============================================================================================*/
 void PowerClass::Draw_It(bool complete) {
   static const int _modtable[] = {0, -1, 0, 1, 0, -1, -2, -1, 0, 1, 2, 1, 0};
-  int power_color;
 
   //		PowX = TacPixelX + TacWidth*ICON_PIXEL_W;	// X position of
   // upper left corner of power bar.
@@ -218,7 +217,7 @@ void PowerClass::Draw_It(bool complete) {
       ** What color is the filled section?
       */
       if (power_height) {
-        power_color = 0;  // green
+        int power_color = 0;  // green
 
         if (PlayerPtr->Drain > PlayerPtr->Power) {
           power_color = 2;

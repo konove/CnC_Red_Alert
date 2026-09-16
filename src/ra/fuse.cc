@@ -102,7 +102,6 @@ void FuseClass::Arm_Fuse(COORDINATE location, COORDINATE target, int timeto,
  * HISTORY: * 04/24/1994 JLB : Created. *
  *=============================================================================================*/
 bool FuseClass::Fuse_Checkup(COORDINATE newlocation) {
-  int proximity;
 
   /*
   **	Always decrement the fuse timer.
@@ -124,7 +123,7 @@ bool FuseClass::Fuse_Checkup(COORDINATE newlocation) {
       return true;
     }
 
-    proximity = Distance(newlocation, HeadTo);
+    const int proximity = Distance(newlocation, HeadTo);
     if (proximity < 0x0010) {
       return true;
     }

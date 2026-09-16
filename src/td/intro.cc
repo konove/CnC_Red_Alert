@@ -102,23 +102,16 @@ void Choose_Side() {
                                            0x12, 0x1c, 0x14, 0x0,  0x0,  0x0,
                                            0x0,  0x0,  0x1C, 0x0};
 
-  void* anim;
   VqaPlayer gdibrief_player;
   VqaPlayer nodbrief_player;
   GameFileVqaIo gdibrief_io;
   GameFileVqaIo nodbrief_io;  // Must outlive the open players.
   bool gdibrief = false;
   bool nodbrief = false;  // Movie opened successfully?
-  void* staticaud;
-  const void* oldfont;
-  void* speechg;
-  void* speechn;
   const void* speech = nullptr;
-  int statichandle;
   bool speechplaying = false;
   const int oldfontxspacing = FontXSpacing;
   int setpalette = 0;
-  int gdi_start_palette;
 
   TextPrintBuffer = new GraphicBufferClass(
       SeenBuff.Get_Width(), SeenBuff.Get_Height(), static_cast<void*>(nullptr));
@@ -132,16 +125,16 @@ void Choose_Side() {
 
   Hide_Mouse();
   /* Change to the six-point font for Text_Print */
-  oldfont = Set_Font(ScoreFontPtr);
+  const void* oldfont = Set_Font(ScoreFontPtr);
 
   Call_Back();
 
   GameFile f("STRUGGLE.AUD");
-  staticaud = Load_Alloc_Data(f);
+  void* staticaud = Load_Alloc_Data(f);
   f.Open("GDI_SLCT.AUD");
-  speechg = Load_Alloc_Data(f);
+  void* speechg = Load_Alloc_Data(f);
   f.Open("NOD_SLCT.AUD");
-  speechn = Load_Alloc_Data(f);
+  void* speechn = Load_Alloc_Data(f);
 
   //	staticaud = MixArchive::Retrieve("STRUGGLE.AUD");
   //	speechg = MixArchive::Retrieve("GDI_SLCT.AUD");
@@ -158,8 +151,8 @@ void Choose_Side() {
 
   // anim = Open_Animation("CHOOSE.WSA",NULL,0L,(WSAOpenType)(WSA_OPEN_FROM_MEM
   // | WSA_OPEN_TO_PAGE),Palette);
-  anim = Open_Animation("CHOOSE.WSA", nullptr, 0L,
-                        WSA_OPEN_FROM_DISK | WSA_OPEN_TO_PAGE, Palette);
+  void* anim = Open_Animation("CHOOSE.WSA", nullptr, 0L,
+                              WSA_OPEN_FROM_DISK | WSA_OPEN_TO_PAGE, Palette);
   Call_Back();
 
   InterpolationPaletteChanged = true;
@@ -167,7 +160,7 @@ void Choose_Side() {
   Read_Interpolation_Palette("SIDES.PAL");
 
   nodbrief = Open_Movie(nodbrief_player, nodbrief_io, "NOD1PRE.VQA");
-  gdi_start_palette = Load_Interpolated_Palettes("NOD1PRE.VQP");
+  const int gdi_start_palette = Load_Interpolated_Palettes("NOD1PRE.VQP");
   Call_Back();
   gdibrief = Open_Movie(gdibrief_player, gdibrief_io, "GDI1.VQA");
   Load_Interpolated_Palettes("GDI1.VQP", true);
@@ -183,7 +176,7 @@ void Choose_Side() {
   // setpalette = 1;
   //}
 
-  statichandle = Play_Sample(staticaud, 255, 64);
+  int statichandle = Play_Sample(staticaud, 255, 64);
   CountDownTimerClass sample_timer;
   sample_timer.Set(0x3f);
   Alloc_Object(new ScorePrintClass(TXT_GDI_NAME, 0, 180, yellowpal));

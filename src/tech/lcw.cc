@@ -80,10 +80,8 @@
  *    03/20/1995 IML : Created.                                            *
  *=========================================================================*/
 int LCW_Uncomp(const void* source, void* dest, int /*unused*/) {
-  unsigned char* copy_ptr;
-  unsigned char op_code;
-  unsigned char data;
-  unsigned count;
+  unsigned char* copy_ptr = nullptr;
+  unsigned count = 0;
 
   /* Copy the source and destination ptrs. */
   const auto* source_ptr = static_cast<const unsigned char*>(source);
@@ -91,7 +89,7 @@ int LCW_Uncomp(const void* source, void* dest, int /*unused*/) {
 
   while (true) {
     /* Read in the operation code. */
-    op_code = *source_ptr++;
+    const unsigned char op_code = *source_ptr++;
 
     if (!(op_code & 0x80)) {
       /* Do a short copy from destination. */
@@ -120,7 +118,7 @@ int LCW_Uncomp(const void* source, void* dest, int /*unused*/) {
         if (op_code == 0xfe) {
           /* Do a long run. */
           count = *source_ptr + (static_cast<unsigned>(*(source_ptr + 1)) << 8);
-          data = *(source_ptr + 2);
+          const unsigned char data = *(source_ptr + 2);
           source_ptr += 3;
           std::memset(dest_ptr, data, count);
           dest_ptr += count;

@@ -845,7 +845,7 @@ RadioMessageType UnitClass::Receive_Message(RadioClass* from,
         */
         if ((!IsDriving && !IsRotating && !IsTethered) &&
             (Transmit_Message(RADIO_NEED_TO_MOVE, from) == RADIO_ROGER)) {
-          CELL cell;
+          CELL cell = 0;
           const DirType dir = Desired_Load_Dir(from, cell);
 
           /*
@@ -1424,9 +1424,8 @@ bool UnitClass::Goto_Clear_Spot() {
         -1, -2, -3, -4,
 
         1, 2, 3, 4, 0};
-    int* ptr;
 
-    ptr = &_offsets[0];
+    int* ptr = &_offsets[0];
     while (*ptr) {
       const CELL cell = static_cast<CELL>(Coord_Cell(Coord) + *ptr++);
       const CELL check_cell = Adjacent_Cell(cell, FACING_NW);
@@ -1609,7 +1608,6 @@ void UnitClass::Per_Cell_Process(PCPType why) {
   assert(IsActive);
 
   const CELL cell = Coord_Cell(Coord);
-  HousesType house;
 
   /*
   **	Check to see if this is merely the end of a rotation for the MCV as it
@@ -1785,7 +1783,8 @@ void UnitClass::Per_Cell_Process(PCPType why) {
       *flag's *	owner will be destroyed.
       */
       if (cell == HouseClass::As_Pointer(Owner())->FlagHome) {
-        house = Flagged;  // Flag_Remove will clear 'Flagged', so save it
+        const HousesType house =
+            Flagged;  // Flag_Remove will clear 'Flagged', so save it
         HouseClass::As_Pointer(house)->Flag_Remove(As_Target(), true);
         HouseClass::As_Pointer(house)->Flag_To_Die();
       }
@@ -1897,7 +1896,7 @@ int UnitClass::Shape_Number() const {
   assert(Units.ID(this) == ID);
   assert(IsActive);
 
-  int shapenum;  // Working shape number.
+  int shapenum = 0;  // Working shape number.
   const int facing = Dir_To_32(PrimaryFacing);
 
   /*
@@ -2021,8 +2020,6 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) const {
   assert(Units.ID(this) == ID);
   assert(IsActive);
 
-  int shapenum;           // Working shape number.
-  const void* shapefile;  // Working shape file pointer.
   const int tfacing = Dir_To_32(SecondaryFacing);
   const DirType rotation = DIR_N;
   const int scale = 0x0100;
@@ -2030,7 +2027,7 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) const {
   /*
   **	Verify the legality of the unit class.
   */
-  shapefile = Get_Image_Data();
+  const void* shapefile = Get_Image_Data();  // Working shape file pointer.
   if (shapefile == nullptr) {
     return;
   }
@@ -2040,7 +2037,7 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) const {
   **	with the render process.
   */
   if (Visual_Character() != VISUAL_HIDDEN) {
-    shapenum = Shape_Number();
+    int shapenum = Shape_Number();  // Working shape number.
 
     /*
     **	The artillery unit should have its entire body recoil when it fires.
@@ -2347,8 +2344,8 @@ int UnitClass::Mission_Unload() {
   assert(IsActive);
 
   enum { INITIAL_CHECK, MANEUVERING, OPENING_DOOR, UNLOADING, CLOSING_DOOR };
-  DirType dir;
-  CELL cell;
+  DirType dir = DIR_N;
+  CELL cell = 0;
 
   switch (Class->Type) {
     case UNIT_HARVESTER:
@@ -3558,21 +3555,20 @@ void UnitClass::Exit_Repair() {
   assert(Units.ID(this) == ID);
   assert(IsActive);
 
-  int i;
-  CELL cell;
   bool found = false;
   static const int16_t ExitRepair[] = {
       XYCELL(0, -2), XYCELL(1, -1), XYCELL(2, 0),  XYCELL(1, 1),
       XYCELL(0, 2),  XYCELL(-1, 1), XYCELL(-2, 0), XYCELL(-1, -1)};
 
-  cell = static_cast<CELL>(Coord_Cell(Coord) + ExitRepair[Dir_Facing(PrimaryFacing.Current())]);
+  CELL cell = static_cast<CELL>(
+      Coord_Cell(Coord) + ExitRepair[Dir_Facing(PrimaryFacing.Current())]);
   if (Can_Enter_Cell(cell) == MOVE_OK) {
     found = true;
   }
 
   if (!found) {
-    for (i = 0; i < 8; i++) {
-      cell = static_cast<CELL>(Coord_Cell(Coord) + ExitRepair[i]);
+    for (const int16_t i : ExitRepair) {
+      cell = static_cast<CELL>(Coord_Cell(Coord) + i);
       if (Can_Enter_Cell(cell) == MOVE_OK) {
         found = true;
         break;
@@ -3686,12 +3682,8 @@ DirType UnitClass::Desired_Load_Dir(ObjectClass* passenger,
   *would be the direction *	of the potential passenger or the current
   *transport facing if it is going to unload.
   */
-  DirType faceto;
-  if (passenger != nullptr) {
-    faceto = Direction(passenger);
-  } else {
-    faceto = PrimaryFacing.Current() + DIR_S;
-  }
+  const DirType faceto = passenger != nullptr ? Direction(passenger)
+                                              : PrimaryFacing.Current() + DIR_S;
 
   /*
   **	Sweep through the adjacent cells in order to find the best candidate.
@@ -4092,8 +4084,7 @@ FireErrorType UnitClass::Can_Fire(TARGET target, int which) const {
   assert(Units.ID(this) == ID);
   assert(IsActive);
 
-  DirType dir;  // The facing to impart upon the projectile.
-  int diff;
+  int diff = 0;
   const FireErrorType fire = DriveClass::Can_Fire(target, which);
 
   if (fire == FIRE_OK) {
@@ -4120,7 +4111,8 @@ FireErrorType UnitClass::Can_Fire(TARGET target, int which) const {
       return FIRE_ROTATING;
     }
 
-    dir = Direction(target);
+    const DirType dir =
+        Direction(target);  // The facing to impart upon the projectile.
 
     /*
     **	Determine if the turret facing isn't too far off of facing the target.
@@ -4564,9 +4556,6 @@ TARGET UnitClass::Greatest_Threat(ThreatType threat)  // const
  * HISTORY: * 05/24/1994 JLB : Created. *
  *=============================================================================================*/
 void UnitClass::Read_INI(CCINIClass& ini) {
-  UnitClass* unit;     // Working unit pointer.
-  HousesType inhouse;  // Unit house.
-  UnitType classid;    // Unit class.
   char buf[128];
 
   const int len = ini.Entry_Count(INI_Name());
@@ -4577,12 +4566,14 @@ void UnitClass::Read_INI(CCINIClass& ini) {
     ini.Get_String(INI_Name(), entry, nullptr, buf, sizeof(buf));
 
     port::Tokenizer tokens(buf, ",\r\n");
-    inhouse = HouseTypeClass::From_Name(tokens.Next());
+    const HousesType inhouse =
+        HouseTypeClass::From_Name(tokens.Next());  // Unit house.
     if (inhouse != HOUSE_NONE) {
-      classid = UnitTypeClass::From_Name(tokens.Next());
+      const UnitType classid =
+          UnitTypeClass::From_Name(tokens.Next());  // Unit class.
 
       if (classid != UNIT_NONE) {
-        unit = new UnitClass(classid, inhouse);
+        auto* unit = new UnitClass(classid, inhouse);  // Working unit pointer.
         if (unit != nullptr) {
           /*
           **	Read the raw data.
@@ -4862,16 +4853,15 @@ void UnitClass::Shroud_Regen() {
     static const int _ytab[] = {-3, -3, -3, -2, -2, -2, -2, -2, -1, -1, -1,
                                 -1, -1, 0,  0,  0,  0,  0,  1,  1,  1,  1,
                                 1,  2,  2,  2,  2,  2,  3,  3,  3};
-    int index;
-    int centerx;
-    int centery;
-    CELL trycell;
+    int centerx = 0;
+    int centery = 0;
+    CELL trycell = 0;
 
     // Only restore under the shroud if it's a valid field.
     if (ShroudBits != static_cast<unsigned>(-1L)) {
       centerx = Cell_X(ShroudCenter);
       centery = Cell_Y(ShroudCenter);
-      for (index = 30; index >= 0 && ShroudBits; index--) {
+      for (int index = 30; index >= 0 && ShroudBits; index--) {
         if (ShroudBits & 1) {
           trycell = XY_Cell(centerx + _xtab[index], centery + _ytab[index]);
           Map.UnJam_Cell(trycell, House);
@@ -4887,7 +4877,7 @@ void UnitClass::Shroud_Regen() {
       ShroudCenter = Coord_Cell(Center_Coord());
       centerx = Cell_X(ShroudCenter);
       centery = Cell_Y(ShroudCenter);
-      for (index = 0; index < 31; index++) {
+      for (int index = 0; index < 31; index++) {
         ShroudBits <<= 1;
         trycell = XY_Cell(centerx + _xtab[index], centery + _ytab[index]);
         if (Map[trycell].IsMapped) {

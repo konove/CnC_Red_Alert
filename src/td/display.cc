@@ -250,16 +250,12 @@ void DisplayClass::One_Time() {
   /*
   **	Allocate and initialize the remap tables needed for each "house".
   */
-  HousesType hindex;
-  int fade;
 
-  for (fade = 0; fade < 3; fade++) {
-    for (hindex = HOUSE_FIRST; hindex < HOUSE_COUNT; hindex++) {
-      int color;
-
+  for (int fade = 0; fade < 3; fade++) {
+    for (HousesType hindex = HOUSE_FIRST; hindex < HOUSE_COUNT; hindex++) {
       switch (fade) {
         case 0:
-          for (color = 0; color < 256; color++) {
+          for (int color = 0; color < 256; color++) {
             RemapTables[hindex][fade][color] =
                 static_cast<unsigned char>(color);
           }
@@ -616,8 +612,8 @@ void DisplayClass::Set_Cursor_Shape(const int16_t* list) {
   ZoneOffset = 0;
 
   if (list) {
-    int w;
-    int h;
+    int w = 0;
+    int h = 0;
     static int16_t _list[50];
 
     for (int i = 0; !i || list[i - 1] != REFRESH_EOL; i++) {
@@ -656,7 +652,6 @@ void DisplayClass::Set_Cursor_Shape(const int16_t* list) {
  *check.                                                  *
  *=============================================================================================*/
 bool DisplayClass::Passes_Proximity_Check(const ObjectTypeClass* object) {
-  const int16_t* ptr;
 
   /*
   ** In editor mode, the proximity check always passes.
@@ -674,7 +669,7 @@ bool DisplayClass::Passes_Proximity_Check(const ObjectTypeClass* object) {
   *adjacent *	cells to these are of friendly persuasion, then consider the
   *proximity check to *	have been a success.
   */
-  ptr = CursorSize;
+  const int16_t* ptr = CursorSize;
   while (*ptr != REFRESH_EOL) {
     const CELL cell = static_cast<CELL>(ZoneCell + ZoneOffset + *ptr++);
 
@@ -727,7 +722,7 @@ bool DisplayClass::Passes_Proximity_Check(const ObjectTypeClass* object) {
  *   02/28/1995 JLB : Forces placement cursor to fit on map. *
  *=============================================================================================*/
 CELL DisplayClass::Set_Cursor_Pos(CELL pos) {
-  CELL prevpos;  // Last position of cursor (for jump-back reasons).
+  CELL prevpos = 0;  // Last position of cursor (for jump-back reasons).
 
   /*
   **	Follow the mouse position if no cell number is provided.
@@ -746,8 +741,8 @@ CELL DisplayClass::Set_Cursor_Pos(CELL pos) {
   **	Adjusts the position so that the placement cursor is never partway off
   *the *	tactical map.
   */
-  int w;
-  int h;
+  int w = 0;
+  int h = 0;
   Get_Occupy_Dimensions(w, h, CursorSize);
 
   int x = static_cast<CELL>(Cell_X(static_cast<CELL>(pos + ZoneOffset)));
@@ -814,8 +809,6 @@ void DisplayClass::Get_Occupy_Dimensions(int& w, int& h, const int16_t* list) {
   int max_x = -MAP_CELL_W;
   int min_y = MAP_CELL_H;
   int max_y = -MAP_CELL_H;
-  int x;
-  int y;
 
   w = 0;
   h = 0;
@@ -830,8 +823,8 @@ void DisplayClass::Get_Occupy_Dimensions(int& w, int& h, const int16_t* list) {
       ** & Cell_Y(), because they use shifts to compute the values, and if the
       ** offset is negative we'll get a bogus coordinate!
       */
-      x = *list % MAP_CELL_W;
-      y = *list / MAP_CELL_H;
+      const int x = *list % MAP_CELL_W;
+      const int y = *list / MAP_CELL_H;
 
       max_x = std::max(max_x, x);
       min_x = std::min(min_x, x);
@@ -865,8 +858,7 @@ void DisplayClass::Get_Occupy_Dimensions(int& w, int& h, const int16_t* list) {
  *function.                                            *
  *=============================================================================================*/
 void DisplayClass::Cursor_Mark(CELL pos, bool on) {
-  const CELL* ptr;
-  CellClass* cellptr;
+  CellClass* cellptr = nullptr;
 
   if (pos == -1) {
     return;
@@ -876,7 +868,7 @@ void DisplayClass::Cursor_Mark(CELL pos, bool on) {
   **	For every cell in the CursorSize list, invoke its Redraw_Objects and
   **	toggle its IsCursorHere flag
   */
-  ptr = CursorSize;
+  const CELL* ptr = CursorSize;
   while (*ptr != REFRESH_EOL) {
     const CELL cell = static_cast<CELL>(pos + *ptr++);
     if (In_Radar(cell)) {
@@ -1037,12 +1029,8 @@ CELL DisplayClass::Click_Cell_Calc(int x, int y) {
  *=============================================================================================*/
 void DisplayClass::Read_INI(char* buffer) {
   char name[16];
-  int len;        // Length of data in buffer.
-  char* tbuffer;  // Accumulation buffer of Trigger names.
   const char* trigsection = "CellTriggers";
   char buf[20];  // trigger name for a cell
-  int cell;
-  int i;
 
   /*
   **	Read the map dimensions.
@@ -1086,7 +1074,7 @@ void DisplayClass::Read_INI(char* buffer) {
   /*
   **	Read the Waypoint entries.
   */
-  for (i = 0; i < WAYPT_COUNT; i++) {
+  for (int i = 0; i < WAYPT_COUNT; i++) {
     absl::SNPrintF(buf, sizeof(buf), "%d", i);
     Waypoint[i] = static_cast<CELL>(WWGetPrivateProfileInt("Waypoints", buf, -1, buffer));
     if (Waypoint[i] != -1) {
@@ -1107,8 +1095,11 @@ void DisplayClass::Read_INI(char* buffer) {
   /*
   **	Read the cell trigger names, and assign TriggerClass pointers
   */
-  len = static_cast<int>(strlen(buffer)) + 2;  // len is the length of the INI data
-  tbuffer = buffer + len;    // tbuffer is after the INI data
+  const int len =
+      static_cast<int>(strlen(buffer)) +
+      2;  // Length of data in buffer.  // len is the length of the INI data
+  char* tbuffer = buffer + len;  // Accumulation buffer of Trigger names.    //
+                                 // tbuffer is after the INI data
 
   /*
   **	Read all entry names into 'tbuffer'.
@@ -1129,7 +1120,7 @@ void DisplayClass::Read_INI(char* buffer) {
     /*
     **	Get cell # from entry name.
     */
-    cell = tech::ParseInteger<int>(tbuffer).value_or(0);
+    const int cell = tech::ParseInteger<int>(tbuffer).value_or(0);
     if (cell > 0 && cell < MAP_CELL_TOTAL && !(*this)[cell].IsTrigger) {
       /*
       **	Assign trigger pointer using trigger name.
@@ -1384,9 +1375,7 @@ void DisplayClass::Refresh_Cells(CELL cell, const int16_t* list) {
  *Converted to member function.                                            *
  *=============================================================================================*/
 int DisplayClass::Cell_Shadow(CELL cell) {
-  int index;
   int value = -1;
-  CellClass* cellptr;
   static const int CardShadow[16] = {-2, 0, 1,  2,  3, -1, 4,  -1,
                                      5,  6, -1, -1, 7, -1, -1, -1};
   static const int DiagShadow[16] = {-2, 8,  9,  -1, 10, -1, -1, -1,
@@ -1403,13 +1392,13 @@ int DisplayClass::Cell_Shadow(CELL cell) {
 
   const bool rightedge = Cell_X(cell) == MAP_CELL_W - 1;
 
-  cellptr = &(*this)[cell];
+  CellClass* cellptr = &(*this)[cell];
   if (!cellptr->IsMapped) {
     /*
     **	Check the cardinal directions first. This will either result
     **	in a solution or the flag to check the diagonals.
     */
-    index = 0;
+    int index = 0;
     cellptr--;
     if (cellptr->IsMapped) {
       index |= 0x08;
@@ -1506,10 +1495,7 @@ bool DisplayClass::Map_Cell(CELL cell, HouseClass* house) {
   **	all is ok.
   */
   for (FacingType dir = FACING_N; dir < FACING_COUNT; dir++) {
-    int shadow;
-    CELL c;
-
-    c = Adjacent_Cell(cell, dir);
+    CELL const c = Adjacent_Cell(cell, dir);
 
     // don't crash
     if (c < 0 || c >= Size) {
@@ -1517,7 +1503,7 @@ bool DisplayClass::Map_Cell(CELL cell, HouseClass* house) {
     }
 
     if (c != cell && !(*this)[c].IsMapped) {
-      shadow = Cell_Shadow(c);
+      const int shadow = Cell_Shadow(c);
 
       /*
       **	Either map the cell or mark it to be refreshed. It
@@ -1702,8 +1688,6 @@ ObjectClass* DisplayClass::Cell_Object(CELL cell, int x, int y) {
  *Rubber band drawing.                                                     *
  *=============================================================================================*/
 void DisplayClass::Draw_It(bool forced) {
-  int x;
-  int y;  // Working cell index values.
 
   MapClass::Draw_It(forced);
 
@@ -1833,9 +1817,9 @@ void DisplayClass::Draw_It(bool forced) {
           ** Flag the cells across the top of the visible area if required
           */
           if (redraw_top) {
-            for (y = starty; y <= starty + (CELL_PIXEL_H * extra_y);
+            for (int y = starty; y <= starty + (CELL_PIXEL_H * extra_y);
                  y += CELL_PIXEL_H) {
-              for (x = startx;
+              for (int x = startx;
                    x <= Lepton_To_Pixel(TacLeptonWidth) + (CELL_PIXEL_W * 2);
                    x += CELL_PIXEL_W) {
                 const CELL c = Click_Cell_Calc(
@@ -1855,11 +1839,11 @@ void DisplayClass::Draw_It(bool forced) {
           ** Flag the cells across the bottom of the visible area if required
           */
           if (redraw_bottom) {
-            for (y = Lepton_To_Pixel(TacLeptonHeight) -
-                     (CELL_PIXEL_H * (1 + extra_y));
+            for (int y = Lepton_To_Pixel(TacLeptonHeight) -
+                         (CELL_PIXEL_H * (1 + extra_y));
                  y <= Lepton_To_Pixel(TacLeptonHeight) + (CELL_PIXEL_H * 3);
                  y += CELL_PIXEL_H) {
-              for (x = startx;
+              for (int x = startx;
                    x <= Lepton_To_Pixel(TacLeptonWidth) + (CELL_PIXEL_W * 2);
                    x += CELL_PIXEL_W) {
                 const CELL c = Click_Cell_Calc(
@@ -1879,9 +1863,9 @@ void DisplayClass::Draw_It(bool forced) {
           ** Flag the cells down the left of the visible area if required
           */
           if (redraw_left) {
-            for (x = startx; x <= startx + (CELL_PIXEL_W * extra_x);
+            for (int x = startx; x <= startx + (CELL_PIXEL_W * extra_x);
                  x += CELL_PIXEL_W) {
-              for (y = starty;
+              for (int y = starty;
                    y <= Lepton_To_Pixel(TacLeptonHeight) + (CELL_PIXEL_H * 2);
                    y += CELL_PIXEL_H) {
                 const CELL c = Click_Cell_Calc(
@@ -1901,11 +1885,11 @@ void DisplayClass::Draw_It(bool forced) {
           ** Flag the cells down the right of the visible area if required
           */
           if (redraw_right) {
-            for (x = Lepton_To_Pixel(TacLeptonWidth) -
-                     (CELL_PIXEL_W * (extra_x + 1));
+            for (int x = Lepton_To_Pixel(TacLeptonWidth) -
+                         (CELL_PIXEL_W * (extra_x + 1));
                  x <= Lepton_To_Pixel(TacLeptonWidth) + (CELL_PIXEL_W * 3);
                  x += CELL_PIXEL_W) {
-              for (y = starty;
+              for (int y = starty;
                    y <= Lepton_To_Pixel(TacLeptonHeight) + (CELL_PIXEL_H * 2);
                    y += CELL_PIXEL_H) {
                 const CELL c = Click_Cell_Calc(
@@ -1930,10 +1914,10 @@ void DisplayClass::Draw_It(bool forced) {
           const int tactical_y = -Lepton_To_Pixel(Coord_YLepton(TacticalCoord));
           oldw -= 24;
           oldh -= 24;
-          for (y = tactical_y;
+          for (int y = tactical_y;
                y <= Lepton_To_Pixel(TacLeptonHeight) + (CELL_PIXEL_H * 2);
                y += CELL_PIXEL_H) {
-            for (x = tactical_x;
+            for (int x = tactical_x;
                  x <= Lepton_To_Pixel(TacLeptonWidth) + (CELL_PIXEL_W * 2);
                  x += CELL_PIXEL_W) {
               if (x <= oldx || x >= oldx + oldw || y <= oldy ||
@@ -2071,8 +2055,8 @@ void DisplayClass::Redraw_Icons(int draw_flags) {
       **	Only cells flagged to be redraw are examined.
       */
       if (In_View(cell) && Is_Cell_Flagged(cell)) {
-        int xpixel;
-        int ypixel;
+        int xpixel = 0;
+        int ypixel = 0;
 
         if (Coord_To_Pixel(coord, xpixel, ypixel)) {
           const CellClass* cellptr = &(*this)[Coord_Cell(coord)];
@@ -2128,8 +2112,8 @@ void DisplayClass::Redraw_Shadow() {
         **	Only cells flagged to be redraw are examined.
         */
         if (In_View(cell) && Is_Cell_Flagged(cell)) {
-          int xpixel;
-          int ypixel;
+          int xpixel = 0;
+          int ypixel = 0;
 
           if (Coord_To_Pixel(coord, xpixel, ypixel)) {
             const CellClass* cellptr = &(*this)[Coord_Cell(coord)];
@@ -2178,8 +2162,8 @@ void DisplayClass::Redraw_Shadow_Rects() {
         **	Only cells flagged to be redraw are examined.
         */
         if (In_View(cell) && Is_Cell_Flagged(cell)) {
-          int xpixel;
-          int ypixel;
+          int xpixel = 0;
+          int ypixel = 0;
 
           if (Coord_To_Pixel(coord, xpixel, ypixel)) {
             const CellClass* cellptr = &(*this)[Coord_Cell(coord)];
@@ -2357,9 +2341,9 @@ CELL DisplayClass::Calculated_Cell(SourceType dir, HousesType house) {
   CELL cell = 0;  // Working cell number.
 
   while (cell == 0) {
-    int x;
-    int y;
-    int index;
+    int x = 0;
+    int y = 0;
+    int index = 0;
 
     /*
     **	Select a candidate cell based on the desired method.
@@ -2698,7 +2682,7 @@ void DisplayClass::Refresh_Band() {
       y2 = temp;
     }
 
-    CELL cell;
+    CELL cell = 0;
     for (int y = y1; y <= y2 + CELL_PIXEL_H; y += CELL_PIXEL_H) {
       cell = Click_Cell_Calc(
           x1, Bound(y, 0, TacPixelY + Lepton_To_Pixel(TacLeptonHeight)));
@@ -2751,9 +2735,8 @@ void DisplayClass::Refresh_Band() {
  * HISTORY: * 02/17/1995 JLB : Created. *
  *=============================================================================================*/
 bool DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
-  int x;
-  int y;  // Sub cell pixel coordinates.
-  bool shadow;
+  int x = 0;
+  int y = 0;  // Sub cell pixel coordinates.
   ObjectClass* object = nullptr;
   ActionType action =
       ACTION_NONE;  // Action possible with currently selected object.
@@ -2779,7 +2762,7 @@ bool DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
   const CELL cell = Coord_Cell(coord);
   //	CELL cell = Map.Click_Cell_Calc(x, y);
   if (coord) {
-    shadow = !Map[cell].IsVisible && !Debug_Unshroud;
+    const bool shadow = !Map[cell].IsVisible && !Debug_Unshroud;
     x -= Map.TacPixelX;
     y -= Map.TacPixelY;
 
@@ -3151,7 +3134,6 @@ void DisplayClass::Mouse_Left_Up(bool shadow, ObjectClass* object,
     **	system of the text name for the object under the mouse.
     */
     if (object) {
-      int text;
       int color = LTGREY;
 
       /*
@@ -3171,7 +3153,7 @@ void DisplayClass::Mouse_Left_Up(bool shadow, ObjectClass* object,
       **	Fetch the name of the object. If it is an enemy object, then
       **	the exact identity is glossed over with a generic text.
       */
-      text = object->Full_Name();
+      int text = object->Full_Name();
       if ((object->Is_Techno() &&
            !dynamic_cast<const TechnoTypeClass&>(object->Class_Of())
                 .IsNominal) &&
@@ -3561,7 +3543,7 @@ void DisplayClass::Compute_Start_Pos() {
   **	Set our TacticalCell
   */
   Set_Tactical_Position(Cell_Coord(XY_Cell(static_cast<int>(x), static_cast<int>(y))));
-  for (short& View : Views) {
+  for (int16_t& View : Views) {
     View = Coord_Cell(TacticalCoord);
   }
 }

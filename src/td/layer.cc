@@ -91,9 +91,7 @@ bool LayerClass::Submit(ObjectClass* object, bool sort) {
 void LayerClass::Sort() {
   for (int index = 0; index < Count() - 1; index++) {
     if (*(*this)[index + 1] < *(*this)[index]) {
-      ObjectClass* temp;
-
-      temp = (*this)[index + 1];
+      ObjectClass* temp = (*this)[index + 1];
       (*this)[index + 1] = (*this)[index];
       (*this)[index] = temp;
     }
@@ -139,7 +137,7 @@ bool LayerClass::Sorted_Add(ObjectClass* const object) {
   **	There is room for the new object now. Add it to the right sorted
   *position.
   */
-  int index;
+  int index = 0;
   for (index = 0; index < ActiveCount; index++) {
     if (*(*this)[index] > *object) {
       break;

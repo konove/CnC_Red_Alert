@@ -134,9 +134,9 @@ void ToolTipClass::Show() {
   if (!bShowing) {
     Set_Font(TypeFontPtr);
     int xShowUse = xShow;
-    int yShowUse;
-    int wShowUse;
-    const char* szTipUse;
+    int yShowUse = 0;
+    int wShowUse = 0;
+    const char* szTipUse = nullptr;
     if (!bIconList) {
       yShowUse = yShow;
       wShowUse = wShow;
@@ -199,9 +199,9 @@ void ToolTipClass::Show() {
 //***********************************************************************************************
 void ToolTipClass::Unshow() {
   if (bShowing) {
-    int xShowUse;
-    int yShowUse;
-    int wShowUse;
+    int xShowUse = 0;
+    int yShowUse = 0;
+    int wShowUse = 0;
     if (!bIconList) {
       xShowUse = xShow;
       wShowUse = wShow;

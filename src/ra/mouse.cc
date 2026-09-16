@@ -198,7 +198,6 @@ bool MouseClass::Override_Mouse_Shape(MouseType mouse, bool wsmall) {
 
   const MouseStruct* control = &MouseControl[mouse];
   static bool startup = false;
-  int baseshp;
 
   /*
   **	Only certain mouse shapes have a small counterpart. If the requested
@@ -220,7 +219,7 @@ bool MouseClass::Override_Mouse_Shape(MouseType mouse, bool wsmall) {
     AnimTimer.Set(control->FrameRate);
     Frame = 0;
 
-    baseshp = wsmall ? control->SmallFrame : control->StartFrame;
+    int baseshp = wsmall ? control->SmallFrame : control->StartFrame;
     if (baseshp == -1) {
       baseshp = control->StartFrame;
     }

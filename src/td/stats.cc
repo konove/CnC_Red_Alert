@@ -176,10 +176,8 @@ void Send_Statistics_Packet() {
 #ifndef DEMO
 
   PacketClass stats;
-  HouseClass* player;
   static int packet_size;
-  int index;
-  void* packet;
+  void* packet = nullptr;
 
   static char field_player_handle[5] = {"NAM?"};
   static char field_player_team[5] = {"SID?"};
@@ -395,7 +393,7 @@ void Send_Statistics_Packet() {
     **
     */
     for (int house = 0; house < 2; house++) {
-      player = HouseClass::As_Pointer(MPlayerHouses[house]);
+      HouseClass* player = HouseClass::As_Pointer(MPlayerHouses[house]);
 
       if (player) {
         /*
@@ -469,21 +467,21 @@ void Send_Statistics_Packet() {
         /*
         ** Number of units remaining to player
         */
-        for (index = 0; index < Units.Count(); index++) {
+        for (int index = 0; index < Units.Count(); index++) {
           const UnitClass* unit = Units.Ptr(index);
           if (unit->House == player) {
             player->UnitTotals->Increment_Unit_Total(unit->Class->Type);
           }
         }
 
-        for (index = 0; index < Infantry.Count(); index++) {
+        for (int index = 0; index < Infantry.Count(); index++) {
           const InfantryClass* infantry = Infantry.Ptr(index);
           if (infantry->House == player && !infantry->Class->IsCivilian) {
             player->InfantryTotals->Increment_Unit_Total(infantry->Class->Type);
           }
         }
 
-        for (index = 0; index < Aircraft.Count(); index++) {
+        for (int index = 0; index < Aircraft.Count(); index++) {
           const AircraftClass* aircraft = Aircraft.Ptr(index);
           if (aircraft->House == player &&
               aircraft->Class->Type != AIRCRAFT_CARGO) {
@@ -491,7 +489,7 @@ void Send_Statistics_Packet() {
           }
         }
 
-        for (index = 0; index < Buildings.Count(); index++) {
+        for (int index = 0; index < Buildings.Count(); index++) {
           const BuildingClass* building = Buildings.Ptr(index);
           if (building->House == player) {
             player->BuildingTotals->Increment_Unit_Total(building->Class->Type);

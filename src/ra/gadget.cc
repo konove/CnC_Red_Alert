@@ -446,10 +446,8 @@ void GadgetClass::Draw_All(bool forced) {
  * HISTORY:    01/03/1995 MML : Created.                                   *
  *=========================================================================*/
 KeyNumType GadgetClass::Input() {
-  int mousex;
-  int mousey;
-  KeyNumType key;
-  unsigned flags;
+  int mousex = 0;
+  int mousey = 0;
   bool forced = false;
 
   /*
@@ -466,7 +464,7 @@ KeyNumType GadgetClass::Input() {
   /*
   **	Fetch any pending keyboard input.
   */
-  key = Keyboard->Check();
+  KeyNumType key = Keyboard->Check();
   if (key != 0) {
     key = Keyboard->Get();
   }
@@ -518,7 +516,7 @@ KeyNumType GadgetClass::Input() {
   **	Set the mouse button state flags. These will be passed to the individual
   **	buttons so that they can determine what action to perform (if any).
   */
-  flags = 0;
+  unsigned flags = 0;
   if (key) {
     if (key == KN_LMOUSE) {
       flags |= LEFTPRESS;

@@ -1392,7 +1392,7 @@ bool CCINIClass::Put_TerrainType(const char* section, const char* entry,
 uint64_t CCINIClass::Get_Buildings(const char* section, const char* entry,
                                    uint64_t defvalue) const {
   char buffer[128];
-  uint64_t pre;
+  uint64_t pre = 0;
 
   if (Get_String(section, entry, "", buffer, sizeof(buffer))) {
     pre = 0;

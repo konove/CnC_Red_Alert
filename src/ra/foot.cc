@@ -375,14 +375,13 @@ bool FootClass::Mark(MarkType mark) {
 bool FootClass::Basic_Path() {
   assert(IsActive);
 
-  PathType* path;  // Pointer to path control structure.
-  CELL cell;
+  PathType* path = nullptr;  // Pointer to path control structure.
   bool skip_path = false;
 
   Path[0] = FACING_NONE;
 
   if (Target_Legal(NavCom)) {
-    cell = As_Cell(NavCom);
+    CELL cell = As_Cell(NavCom);
 
     /*
     **	When the navigation computer is set to a location that is impassible,
@@ -2270,7 +2269,7 @@ void FootClass::Handle_Navigation_List() {
  *=============================================================================================*/
 void FootClass::Queue_Navigation_List(TARGET target) {
   if (Target_Legal(target)) {
-    int count;
+    int count = 0;
     for (count = 0; count < std::ssize(NavQueue); count++) {
       if (!Target_Legal(NavQueue[count])) {
         break;

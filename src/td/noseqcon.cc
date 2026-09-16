@@ -241,14 +241,11 @@ int NonSequencedConnClass::Send_Packet(void* buf, int buflen, int ack_req) {
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
 int NonSequencedConnClass::Receive_Packet(void* buf, int buflen) {
-  CommHeaderType* packet;       // ptr to packet header
-  SendQueueType* send_entry;    // ptr to send entry header
-  ReceiveQueueType* rec_entry;  // ptr to recv entry header
-  CommHeaderType* entry_data;   // ptr to queue entry data
+  ReceiveQueueType* rec_entry = nullptr;  // ptr to recv entry header
+  CommHeaderType* entry_data = nullptr;   // ptr to queue entry data
   CommHeaderType ackpacket;     // ACK packet to send
-  int i;
   int save_packet = 1;  // 0 = this is a resend
-  int found;
+  int found = 0;
 
   /*
   --------------------------- Check the magic # ----------------------------
@@ -257,7 +254,7 @@ int NonSequencedConnClass::Receive_Packet(void* buf, int buflen) {
     return 0;
   }
   auto packet_storage = port::ReadUnaligned<CommHeaderType>(buf);
-  packet = &packet_storage;
+  CommHeaderType* packet = &packet_storage;  // ptr to packet header
   if (packet->MagicNumber != MagicNum) {
     // Smart_Printf( "Bad Magic Number\n" );
     return 0;
@@ -267,11 +264,12 @@ int NonSequencedConnClass::Receive_Packet(void* buf, int buflen) {
   Handle an incoming ACK
   ------------------------------------------------------------------------*/
   if (packet->Code == PACKET_ACK) {
-    for (i = 0; i < Queue->Num_Send(); i++) {
+    for (int i = 0; i < Queue->Num_Send(); i++) {
       /*
       ....................... Get queue entry ptr ........................
       */
-      send_entry = Queue->Get_Send(i);
+      SendQueueType* send_entry =
+          Queue->Get_Send(i);  // ptr to send entry header
       /*
       ............... If ptr is valid, get ptr to its data ...............
       */
@@ -345,7 +343,7 @@ int NonSequencedConnClass::Receive_Packet(void* buf, int buflen) {
     ....................................................................*/
     else {
       save_packet = 1;
-      for (i = 0; i < Queue->Num_Receive(); i++) {
+      for (int i = 0; i < Queue->Num_Receive(); i++) {
         rec_entry = Queue->Get_Receive(i);
         if (rec_entry) {
           entry_data = port::AlignedObject<CommHeaderType>(rec_entry->Buffer);
@@ -403,7 +401,7 @@ int NonSequencedConnClass::Receive_Packet(void* buf, int buflen) {
         ............................................................*/
         do {
           found = 0;
-          for (i = 0; i < Queue->Num_Receive(); i++) {
+          for (int i = 0; i < Queue->Num_Receive(); i++) {
             rec_entry = Queue->Get_Receive(i);
 
             if (rec_entry) {
@@ -462,23 +460,21 @@ int NonSequencedConnClass::Receive_Packet(void* buf, int buflen) {
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
 int NonSequencedConnClass::Get_Packet(void* buf, int* buflen) {
-  ReceiveQueueType* rec_entry;  // ptr to receive entry header
-  int packetlen;                // size of received packet
-  CommHeaderType* entry_data;
-  int i;
+  int packetlen = 0;  // size of received packet
 
   /*------------------------------------------------------------------------
   Ensure that we read the packets in order.  LastReadID is the ID of the
   last PACKET_DATA_ACK packet we read.
   ------------------------------------------------------------------------*/
-  for (i = 0; i < Queue->Num_Receive(); i++) {
-    rec_entry = Queue->Get_Receive(i);
+  for (int i = 0; i < Queue->Num_Receive(); i++) {
+    ReceiveQueueType* rec_entry =
+        Queue->Get_Receive(i);  // ptr to receive entry header
 
     /*.....................................................................
     Only read this entry if it hasn't been yet
     .....................................................................*/
     if (rec_entry && rec_entry->IsRead == 0) {
-      entry_data = port::AlignedObject<CommHeaderType>(rec_entry->Buffer);
+      auto* entry_data = port::AlignedObject<CommHeaderType>(rec_entry->Buffer);
 
       /*..................................................................
       If this is a DATA_ACK packet, its ID must be one greater than
@@ -536,17 +532,14 @@ int NonSequencedConnClass::Get_Packet(void* buf, int* buflen) {
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
 int NonSequencedConnClass::Service_Send_Queue() {
-  int i;
-  int num_entries;
-  SendQueueType* send_entry;   // ptr to send queue entry
-  CommHeaderType* packet_hdr;  // packet header
-  int64_t curtime;             // current time
+  SendQueueType* send_entry = nullptr;   // ptr to send queue entry
+  CommHeaderType* packet_hdr = nullptr;  // packet header
   int bad_conn = 0;
 
   /*------------------------------------------------------------------------
   Remove any ACK'd packets from the queue
   ------------------------------------------------------------------------*/
-  for (i = 0; i < Queue->Num_Send(); i++) {
+  for (int i = 0; i < Queue->Num_Send(); i++) {
     /*
     ------------------------- Get this queue entry ------------------------
     */
@@ -574,9 +567,9 @@ int NonSequencedConnClass::Service_Send_Queue() {
   Loop through all entries in the Send queue.  [Re]Send any entries that
   need it.
   ------------------------------------------------------------------------*/
-  num_entries = Queue->Num_Send();
+  const int num_entries = Queue->Num_Send();
 
-  for (i = 0; i < num_entries; i++) {
+  for (int i = 0; i < num_entries; i++) {
     send_entry = Queue->Get_Send(i);
 
     if (send_entry->IsACK) {
@@ -588,7 +581,7 @@ int NonSequencedConnClass::Service_Send_Queue() {
     fields are init'd to 0 when a message is queue'd or unqueue'd, so the
     first time through, the delta time will appear large.)
     .....................................................................*/
-    curtime = Time();
+    const int64_t curtime = Time();  // current time
     if (curtime - send_entry->LastTime > RetryDelta) {
       /*
       ......................... Send the message .........................
@@ -659,9 +652,6 @@ int NonSequencedConnClass::Service_Send_Queue() {
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
 int NonSequencedConnClass::Service_Receive_Queue() {
-  ReceiveQueueType* rec_entry;  // ptr to receive entry header
-  CommHeaderType* packet_hdr;   // packet header
-  int i;
 
   /*------------------------------------------------------------------------
   Remove all dead packets.
@@ -669,11 +659,13 @@ int NonSequencedConnClass::Service_Receive_Queue() {
   PACKET_DATA_ACK: if it's been read, and its ID is older than LastSeqID,
   throw it away.
   ------------------------------------------------------------------------*/
-  for (i = 0; i < Queue->Num_Receive(); i++) {
-    rec_entry = Queue->Get_Receive(i);
+  for (int i = 0; i < Queue->Num_Receive(); i++) {
+    ReceiveQueueType* rec_entry =
+        Queue->Get_Receive(i);  // ptr to receive entry header
 
     if (rec_entry->IsRead) {
-      packet_hdr = port::AlignedObject<CommHeaderType>(rec_entry->Buffer);
+      auto* packet_hdr = port::AlignedObject<CommHeaderType>(
+          rec_entry->Buffer);  // packet header
 
       if (packet_hdr->Code == PACKET_DATA_NOACK) {
         Queue->UnQueue_Receive(nullptr, nullptr, i);

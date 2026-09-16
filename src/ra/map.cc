@@ -586,9 +586,6 @@ void MapClass::Set_Map_Dimensions(int x, int y, int w, int h) {
  *=============================================================================================*/
 void MapClass::Sight_From(CELL cell, int sightrange, HouseClass* house,
                           bool incremental) {
-  int xx;          // Center cell X coordinate (bounds checking).
-  const int* ptr;  // Offset pointer.
-  int count;       // Counter for number of offsets to process.
 
   /*
   **	Units that are off-map cannot sight.
@@ -603,14 +600,15 @@ void MapClass::Sight_From(CELL cell, int sightrange, HouseClass* house,
   /*
   **	Determine logical cell coordinate for center scan point.
   */
-  xx = Cell_X(cell);
+  const int xx = Cell_X(cell);  // Center cell X coordinate (bounds checking).
 
   /*
   **	Incremental scans only scan the outer rings. Full scans
   **	scan all internal cells as well.
   */
-  count = RadiusCount[sightrange];
-  ptr = &RadiusOffset[0];
+  int count =
+      RadiusCount[sightrange];  // Counter for number of offsets to process.
+  const int* ptr = &RadiusOffset[0];  // Offset pointer.
   if (incremental && (sightrange > 2)) {
     ptr += RadiusCount[sightrange - 3];
     count -= RadiusCount[sightrange - 3];
@@ -620,10 +618,8 @@ void MapClass::Sight_From(CELL cell, int sightrange, HouseClass* house,
   **	Process all offsets required for the desired scan.
   */
   while (count--) {
-    CELL newcell;  // New cell with offset.
-    int xdiff;     // New cell's X coordinate distance from center.
-
-    newcell = static_cast<CELL>(cell + *ptr++);
+    CELL const newcell =
+        static_cast<CELL>(cell + *ptr++);  // New cell with offset.
 
     /*
     **	Determine if the map edge has been wrapped. If so,
@@ -632,7 +628,8 @@ void MapClass::Sight_From(CELL cell, int sightrange, HouseClass* house,
     if (static_cast<unsigned>(newcell) >= MAP_CELL_TOTAL) {
       continue;
     }
-    xdiff = Cell_X(newcell) - xx;
+    int xdiff =
+        Cell_X(newcell) - xx;  // New cell's X coordinate distance from center.
     xdiff = std::abs(xdiff);
     if (xdiff > sightrange) {
       continue;
@@ -672,9 +669,6 @@ void MapClass::Sight_From(CELL cell, int sightrange, HouseClass* house,
  * HISTORY: * 11/09/1995 BWG : Created. *
  *=============================================================================================*/
 void MapClass::Jam_From(CELL cell, int jamrange, HouseClass* house) {
-  int xx;          // Center cell X coordinate (bounds checking).
-  const int* ptr;  // Offset pointer.
-  int count;       // Counter for number of offsets to process.
 
   /*
   **	Units that are off-map cannot jam.
@@ -686,23 +680,22 @@ void MapClass::Jam_From(CELL cell, int jamrange, HouseClass* house) {
   /*
   **	Determine logical cell coordinate for center scan point.
   */
-  xx = Cell_X(cell);
+  const int xx = Cell_X(cell);  // Center cell X coordinate (bounds checking).
 
   /*
   **	Incremental scans only scan the outer rings. Full scans
   **	scan all internal cells as well.
   */
-  count = RadiusCount[jamrange];
-  ptr = &RadiusOffset[0];
+  int count =
+      RadiusCount[jamrange];  // Counter for number of offsets to process.
+  const int* ptr = &RadiusOffset[0];  // Offset pointer.
 
   /*
   **	Process all offsets required for the desired scan.
   */
   while (count--) {
-    CELL newcell;  // New cell with offset.
-    int xdiff;     // New cell's X coordinate distance from center.
-
-    newcell = static_cast<CELL>(cell + *ptr++);
+    CELL const newcell =
+        static_cast<CELL>(cell + *ptr++);  // New cell with offset.
 
     /*
     **	Determine if the map edge has been wrapped. If so,
@@ -711,7 +704,8 @@ void MapClass::Jam_From(CELL cell, int jamrange, HouseClass* house) {
     if (static_cast<unsigned>(newcell) >= MAP_CELL_TOTAL) {
       continue;
     }
-    xdiff = Cell_X(newcell) - xx;
+    int xdiff =
+        Cell_X(newcell) - xx;  // New cell's X coordinate distance from center.
     xdiff = std::abs(xdiff);
     if (xdiff > jamrange) {
       continue;
@@ -757,9 +751,6 @@ void MapClass::Jam_From(CELL cell, int jamrange, HouseClass* house) {
  * HISTORY: * 11/09/1995 BWG : Created. *
  *=============================================================================================*/
 void MapClass::UnJam_From(CELL cell, int jamrange, HouseClass* house) {
-  int xx;          // Center cell X coordinate (bounds checking).
-  const int* ptr;  // Offset pointer.
-  int count;       // Counter for number of offsets to process.
 
   /*
   **	Units that are off-map cannot jam.
@@ -771,23 +762,22 @@ void MapClass::UnJam_From(CELL cell, int jamrange, HouseClass* house) {
   /*
   **	Determine logical cell coordinate for center scan point.
   */
-  xx = Cell_X(cell);
+  const int xx = Cell_X(cell);  // Center cell X coordinate (bounds checking).
 
   /*
   **	Incremental scans only scan the outer rings. Full scans
   **	scan all internal cells as well.
   */
-  count = RadiusCount[jamrange];
-  ptr = &RadiusOffset[0];
+  int count =
+      RadiusCount[jamrange];  // Counter for number of offsets to process.
+  const int* ptr = &RadiusOffset[0];  // Offset pointer.
 
   /*
   **	Process all offsets required for the desired scan.
   */
   while (count--) {
-    CELL newcell;  // New cell with offset.
-    int xdiff;     // New cell's X coordinate distance from center.
-
-    newcell = static_cast<CELL>(cell + *ptr++);
+    CELL const newcell =
+        static_cast<CELL>(cell + *ptr++);  // New cell with offset.
 
     /*
     **	Determine if the map edge has been wrapped. If so,
@@ -796,7 +786,8 @@ void MapClass::UnJam_From(CELL cell, int jamrange, HouseClass* house) {
     if (static_cast<unsigned>(newcell) >= MAP_CELL_TOTAL) {
       continue;
     }
-    xdiff = Cell_X(newcell) - xx;
+    int xdiff =
+        Cell_X(newcell) - xx;  // New cell's X coordinate distance from center.
     xdiff = std::abs(xdiff);
     if (xdiff > jamrange) {
       continue;
@@ -1127,17 +1118,16 @@ bool MapClass::Write_Binary(ByteSink& pipe) {
 bool MapClass::Read_Binary(ByteSource& straw) {
   LcwSource decomp(CodecMode::kDecompress, straw);
 
-  CELL cell;
-  CellClass* cellptr;
+  CellClass* cellptr = nullptr;
   switch (NewINIFormat) {
     default:
       cellptr = &Array[0];
-      for (cell = 0; cell < MAP_CELL_TOTAL; cell++) {
+      for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
         decomp.ReadObject(cellptr->TType);
         cellptr++;
       }
       cellptr = &Array[0];
-      for (cell = 0; cell < MAP_CELL_TOTAL; cell++) {
+      for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
         decomp.ReadObject(cellptr->TIcon);
         cellptr->Recalc_Attributes();
         cellptr++;
@@ -1148,7 +1138,7 @@ bool MapClass::Read_Binary(ByteSource& straw) {
     case 1:
     case 2:
       cellptr = &Array[0];
-      for (cell = 0; cell < MAP_CELL_TOTAL; cell++) {
+      for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
         decomp.ReadObject(cellptr->TType);
         decomp.ReadObject(cellptr->TIcon);
         cellptr->Recalc_Attributes();
@@ -1204,7 +1194,7 @@ void MapClass::Logic() {
   */
   int subcount = MAP_CELL_TOTAL / (Rule.GrowthRate * kTicksPerMinute);
   subcount = std::max(subcount, 1);
-  int index;
+  int index = 0;
   for (index = TiberiumScan; index < MAP_CELL_TOTAL; index++) {
     const CELL cell = static_cast<CELL>(index);
     if (In_Radar(cell)) {
@@ -1432,26 +1422,17 @@ bool MapClass::Remove_Crate(CELL cell) {
  *   07/08/1995 BRR : Created.                                             *
  *=========================================================================*/
 bool MapClass::Validate() {
-  CELL cell;
-  TemplateType ttype;
-  unsigned char ticon;
-  const TemplateTypeClass* tclass;
   unsigned char map[13 * 8];
-  OverlayType overlay;
-  SmudgeType smudge;
-  ObjectClass* obj;
-  LandType land;
-  int i;
 
   /*
   **	Check every cell on the map, even those that aren't displayed,
   **	in the hopes of detecting a memory trasher.
   */
-  for (cell = 0; cell < MAP_CELL_TOTAL; cell++) {
+  for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
     /*
     **	Validate Template & Icon data
     */
-    ttype = (*this)[cell].TType;
+    const TemplateType ttype = (*this)[cell].TType;
     if (ttype >= static_cast<int>(magic_enum::enum_count<TemplateType>()) &&
         ttype != TEMPLATE_NONE) {
       return false;
@@ -1464,8 +1445,8 @@ bool MapClass::Validate() {
     **	return an error.
     */
     if (ttype != TEMPLATE_NONE) {
-      tclass = &TemplateTypeClass::As_Reference(ttype);
-      ticon = (*this)[cell].TIcon;
+      const TemplateTypeClass* tclass = &TemplateTypeClass::As_Reference(ttype);
+      const unsigned char ticon = (*this)[cell].TIcon;
       Mem_Copy(Get_Icon_Set_Map(tclass->Get_Image_Data()), map,
                static_cast<size_t>(tclass->Width) * tclass->Height);
       if (ticon >= tclass->Width * tclass->Height || map[ticon] == 0xff) {
@@ -1476,7 +1457,7 @@ bool MapClass::Validate() {
     /*
     **	Validate Overlay
     */
-    overlay = (*this)[cell].Overlay;
+    const OverlayType overlay = (*this)[cell].Overlay;
     if (overlay < OVERLAY_NONE ||
         overlay >= static_cast<int>(magic_enum::enum_count<OverlayType>())) {
       return false;
@@ -1485,7 +1466,7 @@ bool MapClass::Validate() {
     /*
     **	Validate Smudge
     */
-    smudge = (*this)[cell].Smudge;
+    const SmudgeType smudge = (*this)[cell].Smudge;
     if (smudge < SMUDGE_NONE ||
         smudge >= static_cast<int>(magic_enum::enum_count<SmudgeType>())) {
       return false;
@@ -1494,7 +1475,7 @@ bool MapClass::Validate() {
     /*
     **	Validate LandType
     */
-    land = (*this)[cell].Land_Type();
+    const LandType land = (*this)[cell].Land_Type();
     if (land < LAND_CLEAR ||
         land >= static_cast<int>(magic_enum::enum_count<LandType>())) {
       return false;
@@ -1503,7 +1484,7 @@ bool MapClass::Validate() {
     /*
     **	Validate Occupier
     */
-    obj = (*this)[cell].Cell_Occupier();
+    ObjectClass* obj = (*this)[cell].Cell_Occupier();
     if (obj && (obj->IsInLimbo || static_cast<unsigned int>(Coord_Cell(
                                       obj->Coord)) >= MAP_CELL_TOTAL)) {
       return false;
@@ -1512,7 +1493,7 @@ bool MapClass::Validate() {
     /*
     **	Validate Overlappers
     */
-    for (i = 0; i < std::ssize((*this)[cell].CellClass::Overlappers); i++) {
+    for (int i = 0; i < std::ssize((*this)[cell].CellClass::Overlappers); i++) {
       obj = (*this)[cell].Overlappers[i];
       if (obj && (obj->IsInLimbo || static_cast<unsigned int>(Coord_Cell(
                                         obj->Coord)) >= MAP_CELL_TOTAL)) {
@@ -1851,8 +1832,8 @@ CELL MapClass::Nearby_Location(CELL cell, SpeedType speed, int zone,
   **	location that is generally clear.
   */
   for (int radius = 0; radius < MAP_CELL_W / 2; radius++) {
-    CELL newcell;
-    const CellClass* cellptr;
+    CELL newcell = 0;
+    const CellClass* cellptr = nullptr;
 
     /*
     **	Scan the top and bottom rows of the "box".
@@ -2165,11 +2146,9 @@ bool MapClass::Destroy_Bridge_At(CELL cell) {
           cellptr->TType == TEMPLATE_BRIDGE_2C ||
           (cellptr->TType >= TEMPLATE_BRIDGE_3C &&
            cellptr->TType <= TEMPLATE_BRIDGE_3E)) {
-        int x;
-        int y;
         int tdata = 0;
-        for (y = 0; y < h; y++) {
-          for (x = 0; x < w; x++) {
+        for (int y = 0; y < h; y++) {
+          for (int x = 0; x < w; x++) {
             const CellClass* ptr = &(*this)[static_cast<CELL>(cell + x)];
             if (ptr->TType == cellptr->TType ||
                 ptr->Land_Type() == LAND_RIVER ||

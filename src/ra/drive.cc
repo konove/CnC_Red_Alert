@@ -217,9 +217,7 @@ void DriveClass::Scatter(COORDINATE threat, bool forced, bool nokidding) {
         !dynamic_cast<UnitClass*>(this)->IsDumping) &&
        (!Target_Legal(NavCom) || (nokidding && !IsRotating))) &&
       (!Target_Legal(TarCom) || forced || Random_Pick(1, 4) == 1)) {
-    FacingType toface;
-    FacingType newface;
-    CELL newcell;
+    FacingType toface = FACING_NONE;
 
     if (threat != 0) {
       toface = Dir_Facing(Direction8(threat, Coord));
@@ -230,8 +228,8 @@ void DriveClass::Scatter(COORDINATE threat, bool forced, bool nokidding) {
     }
 
     for (const FacingType face : magic_enum::enum_values<FacingType>()) {
-      newface = toface + face;
-      newcell = Adjacent_Cell(Coord_Cell(Coord), newface);
+      const FacingType newface = toface + face;
+      CELL const newcell = Adjacent_Cell(Coord_Cell(Coord), newface);
 
       if (Map.In_Radar(newcell) && Can_Enter_Cell(newcell) == MOVE_OK) {
         Assign_Destination(::As_Target(newcell));
@@ -488,16 +486,13 @@ COORDINATE DriveClass::Smooth_Turn(COORDINATE adj, DirType& dir) {
   assert(IsActive);
 
   DirType workdir = dir;
-  int x;
-  int y;
-  int temp;
   const TrackControlType flags = TrackControl[TrackNumber].Flag;
 
-  x = Coord_X(adj);
-  y = Coord_Y(adj);
+  int x = Coord_X(adj);
+  int y = Coord_Y(adj);
 
   if (flags & F_T) {
-    temp = x;
+    const int temp = x;
     x = y;
     y = temp;
     workdir = DIR_W - workdir;
@@ -632,7 +627,7 @@ bool DriveClass::While_Moving() {
     maxspeed = FormationMaxSpeed;
   }
 
-  int actual;  // Working movement addition value.
+  int actual = 0;  // Working movement addition value.
   if (What_Am_I() == RTTI_UNIT &&
       dynamic_cast<UnitClass*>(this)->Flagged != HOUSE_NONE) {
     actual = SpeedAccum + static_cast<int>(maxspeed) / 2 * fixed(Speed, 256);
@@ -641,26 +636,24 @@ bool DriveClass::While_Moving() {
   }
 
   if (actual > PIXEL_LEPTON_W) {
-    const TurnTrackType* track;  // Track control pointer.
-    const TrackType* ptr;        // Pointer to coord offset values.
-    int tracknum;                // The track number being processed.
-    FacingType nextface;         // Next facing queued in path.
-    bool adj;                    // Is a turn coming up?
+    int tracknum = 0;  // The track number being processed.
 
-    track = &TrackControl[TrackNumber];
+    const TurnTrackType* track =
+        &TrackControl[TrackNumber];  // Track control pointer.
     if (IsOnShortTrack) {
       tracknum = track->StartTrack;
     } else {
       tracknum = track->Track;
     }
-    ptr = RawTracks[tracknum - 1].Track;
-    nextface = Path[0];
+    const TrackType* ptr =
+        RawTracks[tracknum - 1].Track;    // Pointer to coord offset values.
+    const FacingType nextface = Path[0];  // Next facing queued in path.
 
     /*
     **	Determine if there is a turn coming up. If there is
     **	a turn, then track jumping might occur.
     */
-    adj = false;
+    bool adj = false;  // Is a turn coming up?
     if (nextface != FACING_NONE && Dir_Facing(track->Facing) != nextface) {
       adj = true;
     }
@@ -672,14 +665,12 @@ bool DriveClass::While_Moving() {
     */
     Mark(MARK_UP);
     while (actual > PIXEL_LEPTON_W) {
-      COORDINATE offset;
-      DirType dir;
 
       actual -= PIXEL_LEPTON_W;
 
-      offset = ptr[TrackIndex].Offset;
+      COORDINATE const offset = ptr[TrackIndex].Offset;
       if (offset || !TrackIndex) {
-        dir = ptr[TrackIndex].Facing;
+        DirType dir = ptr[TrackIndex].Facing;
         Coord = Smooth_Turn(offset, dir);
 
         PrimaryFacing.Set(dir);
@@ -702,13 +693,12 @@ bool DriveClass::While_Moving() {
         */
         if (/**this != UNIT_GUNBOAT &&*/ nextface != FACING_NONE && adj &&
             RawTracks[tracknum - 1].Jump == TrackIndex && TrackIndex) {
-          const TurnTrackType* newtrack;  // Proposed jump-to track.
-          int tnum;
-
-          tnum = (Dir_Facing(track->Facing) *
-                  static_cast<int>(magic_enum::enum_count<FacingType>())) +
-                 static_cast<int>(nextface);
-          newtrack = &TrackControl[tnum];
+          const int tnum =
+              (Dir_Facing(track->Facing) *
+               static_cast<int>(magic_enum::enum_count<FacingType>())) +
+              static_cast<int>(nextface);
+          const TurnTrackType* newtrack =
+              &TrackControl[tnum];  // Proposed jump-to track.
           if (newtrack->Track && RawTracks[newtrack->Track - 1].Entry) {
             COORDINATE c = Head_To_Coord();
             const int oldspeed = Speed;
@@ -863,15 +853,7 @@ void DriveClass::Per_Cell_Process(PCPType why) {
 bool DriveClass::Start_Of_Move() {
   assert(IsActive);
 
-  FacingType facing;  // Direction movement will commence.
-  DirType dir;        // Desired actual facing toward destination.
-  int facediff;       // Difference between current and desired facing.
-  int speed;          // Speed of unit.
-  CELL destcell;      // Cell of destination.
-  LandType ground;    // Ground unit is entering.
-  COORDINATE dest;    // Destination coordinate.
-
-  facing = Path[0];
+  FacingType facing = Path[0];  // Direction movement will commence.
 
   if (!Target_Legal(NavCom) && facing == FACING_NONE) {
     IsTurretLockedDown = false;
@@ -886,17 +868,13 @@ bool DriveClass::Start_Of_Move() {
   **	Reduce the path length if the target is a unit and the
   **	range to the unit is less than the precalculated path steps.
   */
-  if (facing != FACING_NONE) {
-    int dist;
-
-    if (Is_Target_Vessel(NavCom) || Is_Target_Unit(NavCom) ||
-        Is_Target_Infantry(NavCom)) {
-      dist = Lepton_To_Cell(static_cast<LEPTON>(Distance(NavCom)));
-
-      if (dist < std::ssize(Path)) {
-        Path[dist] = FACING_NONE;
-        facing = Path[0];  // Maybe needed.
-      }
+  if (facing != FACING_NONE &&
+      (Is_Target_Vessel(NavCom) || Is_Target_Unit(NavCom) ||
+       Is_Target_Infantry(NavCom))) {
+    const int dist = Lepton_To_Cell(static_cast<LEPTON>(Distance(NavCom)));
+    if (dist < std::ssize(Path)) {
+      Path[dist] = FACING_NONE;
+      facing = Path[0];  // Maybe needed.
     }
   }
 
@@ -1030,14 +1008,16 @@ bool DriveClass::Start_Of_Move() {
   /*
   **	Determine the coordinate of the next cell to move into.
   */
-  dest = Adjacent_Cell(Coord, facing);
-  dir = Facing_Dir(facing);
+  COORDINATE dest = Adjacent_Cell(Coord, facing);  // Destination coordinate.
+  const DirType dir =
+      Facing_Dir(facing);  // Desired actual facing toward destination.
 
   /*
   **	Set the facing correctly if it isn't already correct. This
   **	means starting a rotation track if necessary.
   */
-  facediff = PrimaryFacing.Difference(dir);
+  const int facediff = PrimaryFacing.Difference(
+      dir);  // Difference between current and desired facing.
   if (facediff) {
     /*
     **	Request a change of facing.
@@ -1051,7 +1031,7 @@ bool DriveClass::Start_Of_Move() {
    **	reason), then abort the path list and set the speed to zero. The
    ** next time this routine is called, a new path will be generated.
    */
-  destcell = Coord_Cell(dest);
+  CELL destcell = Coord_Cell(dest);  // Cell of destination.
   Mark(MARK_UP);
   MoveType cando = Can_Enter_Cell(destcell, facing);
   Mark(MARK_DOWN);
@@ -1115,8 +1095,10 @@ bool DriveClass::Start_Of_Move() {
   /*
   **	Determine the speed that the unit can travel to the desired square.
   */
-  ground = Map[destcell].Land_Type();
-  speed = Ground[ground].Cost[Techno_Type_Class()->Speed] * 256;
+  const LandType ground =
+      Map[destcell].Land_Type();  // Ground unit is entering.
+  int speed =
+      Ground[ground].Cost[Techno_Type_Class()->Speed] * 256;  // Speed of unit.
 
   /* change speed if it's related to a team move */
   if (IsFormationMove) {

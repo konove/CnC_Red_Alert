@@ -1775,7 +1775,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
  *sidebar when buildables removed.                        *
  *=============================================================================================*/
 bool SidebarClass::StripClass::Recalc() {
-  bool ok;
+  bool ok = false;
 
   if (MapEditorActive || !BuildableCount) {
     return false;

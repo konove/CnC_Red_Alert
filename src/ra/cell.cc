@@ -238,8 +238,6 @@ int CellClass::Cell_Color(bool override) const {
 TechnoClass* CellClass::Cell_Techno(int x, int y) const {
   assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
-  ObjectClass* object;
-  COORDINATE click;  // Coordinate of click relative to cell corner.
   TechnoClass* close = nullptr;
   int32_t distance = 0;  // Recorded closest distance.
 
@@ -248,10 +246,12 @@ TechnoClass* CellClass::Cell_Techno(int x, int y) const {
   *cell. This is *	actually the lower significant bits (leptons) of a
   *regular coordinate value.
   */
-  click = XY_Coord(Pixel_To_Lepton(x), Pixel_To_Lepton(y));
+  COORDINATE const click = XY_Coord(
+      Pixel_To_Lepton(x),
+      Pixel_To_Lepton(y));  // Coordinate of click relative to cell corner.
 
   if (Cell_Occupier()) {
-    object = Cell_Occupier();
+    ObjectClass* object = Cell_Occupier();
     while (object) {
       if (object->Is_Techno()) {
         const COORDINATE coord = Coord_Fraction(object->Center_Coord());
@@ -361,13 +361,12 @@ TerrainClass* CellClass::Cell_Terrain() const {
 ObjectClass* CellClass::Cell_Object(int x, int y) const {
   assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
-  ObjectClass* ptr;
 
   /*
   **	Hack so that aircraft landed on helipads can still be selected if
   *directly *	clicked on.
   */
-  ptr = Cell_Find_Object(RTTI_AIRCRAFT);
+  ObjectClass* ptr = Cell_Find_Object(RTTI_AIRCRAFT);
   if (ptr) {
     return ptr;
   }
@@ -616,7 +615,6 @@ void CellClass::Occupy_Down(ObjectClass* object) {
   assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
   assert(object != nullptr && object->IsActive);
 
-  ObjectClass* optr;
 
   if (object == nullptr) {
     return;
@@ -629,7 +627,7 @@ void CellClass::Occupy_Down(ObjectClass* object) {
   *allowed to occupy the same cell, then this chain *	logic will fail.
   */
   if (object->What_Am_I() == RTTI_BUILDING && Cell_Occupier()) {
-    optr = Cell_Occupier();
+    ObjectClass* optr = Cell_Occupier();
     while (optr->Next != nullptr) {
       assert(optr != object);
       assert(optr->What_Am_I() != RTTI_BUILDING);
@@ -768,8 +766,7 @@ void CellClass::Overlap_Down(ObjectClass* object) {
     return;
   }
 
-  int index;
-  for (index = 0; index < std::ssize(Overlappers); index++) {
+  for (int index = 0; index < std::ssize(Overlappers); index++) {
     if (Overlappers[index] == object) {
       return;
     }
@@ -783,7 +780,7 @@ void CellClass::Overlap_Down(ObjectClass* object) {
   *somebody *	else out in this case.
   */
   if (!ptr && object->What_Am_I() == RTTI_BUILDING) {
-    for (index = 0; index < std::ssize(Overlappers); index++) {
+    for (int index = 0; index < std::ssize(Overlappers); index++) {
       switch (Overlappers[index]->What_Am_I()) {
         case RTTI_BUILDING:
         case RTTI_TERRAIN:
@@ -984,7 +981,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
     BStart(BENCH_CELL);
 
     const TemplateTypeClass* ttype = nullptr;
-    int icon;  // The icon number to use from the template set.
+    int icon = 0;  // The icon number to use from the template set.
     void* remap = nullptr;
 
     CellCount++;
@@ -1326,8 +1323,8 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
       */
       for (int index = 0; index < count; index++) {
         object = optr[index];
-        int xx;
-        int yy;
+        int xx = 0;
+        int yy = 0;
         if ((object->IsToDisplay &&
              (!object->Is_Techno() ||
               dynamic_cast<const TechnoClass*>(object)->Visual_Character() ==
@@ -1685,7 +1682,7 @@ COORDINATE CellClass::Closest_Free_Spot(COORDINATE coord, bool any) const {
   *determine *	the closest one to the coordinate requested. Use precalculated
   *table so that *	when the first free position is found, bail.
   */
-  unsigned char* sequence;
+  unsigned char* sequence = nullptr;
   if (spot_index == 0) {
     sequence = &_alternate[Random_Pick(0, 3)][0];
   } else {
@@ -1946,8 +1943,8 @@ bool CellClass::Goodie_Check(FootClass* object) {
       OverlayTypeClass::As_Reference(Overlay).IsCrate) {
     bool force_mcv = false;
     int force_money = 0;
-    int damage;
-    COORDINATE coord;
+    int damage = 0;
+    COORDINATE coord = 0;
 
     /*
     **	Determine the total number of shares for all the crate powerups. This is
@@ -2075,42 +2072,39 @@ bool CellClass::Goodie_Check(FootClass* object) {
           ** but as time goes on the chance goes up.
           */
           if (Session.Type != GAME_NORMAL) {
-            int i;
-            int ucount;
             int minunits = 1000;
             bool found_spot = false;
             const int64_t minutes =
                 std::min<int64_t>(Score.ElapsedTime / kTimerMinute, 100);
             if (Random_Pick(0, 100 - static_cast<int>(minutes)) == 0) {
-              for (i = 0;
+              for (int i = 0;
                    i < Session.Players.Count() + Session.Options.AIPlayers;
                    i++) {
-                ucount = 0;
+                int ucount = 0;
                 HouseClass* hptr = Houses.Ptr(i + HOUSE_MULTI1);
                 if (hptr != nullptr && !hptr->IsDefeated) {
-                  int j;
-                  for (j = 0;
+                  for (int j = 0;
                        std::cmp_less(j, magic_enum::enum_count<UnitType>());
                        j++) {
                     ucount += hptr->QuantityU(j);
                   }
-                  for (j = 0;
+                  for (int j = 0;
                        std::cmp_less(j, magic_enum::enum_count<InfantryType>());
                        j++) {
                     ucount += hptr->QuantityI(j);
                   }
-                  for (j = 0;
+                  for (int j = 0;
                        std::cmp_less(j, magic_enum::enum_count<AircraftType>());
                        j++) {
                     ucount += hptr->QuantityA(j);
                   }
-                  for (j = 0;
+                  for (int j = 0;
                        std::cmp_less(j, magic_enum::enum_count<VesselType>());
                        j++) {
                     ucount += hptr->QuantityV(j);
                   }
                   int bcount = 0;
-                  for (j = 0;
+                  for (int j = 0;
                        std::cmp_less(j, magic_enum::enum_count<StructType>());
                        j++) {
                     bcount += hptr->QuantityB(j);

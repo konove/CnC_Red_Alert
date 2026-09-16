@@ -256,7 +256,6 @@ bool BaseClass::Is_Built(int index) { return Get_Building(index) != nullptr; }
  * HISTORY: * 03/24/1995 BRR : Created. *
  *=============================================================================================*/
 BuildingClass* BaseClass::Get_Building(int index) {
-  BuildingClass* bldg;
   ObjectClass* obj[4];
 
   /*
@@ -270,7 +269,7 @@ BuildingClass* BaseClass::Get_Building(int index) {
   obj[2] = Map[cell].Overlappers[1];
   obj[3] = Map[cell].Overlappers[2];
 
-  bldg = nullptr;
+  BuildingClass* bldg = nullptr;
   for (auto& i : obj) {
     if (i && i->Coord == Nodes[index].Coord &&
         i->What_Am_I() == RTTI_BUILDING &&

@@ -161,13 +161,8 @@ GameType Select_MPlayer_Game() {
   //------------------------------------------------------------------------
   //	Dialog variables:
   //------------------------------------------------------------------------
-  KeyNumType input;               // input from user
-  bool process;                   // loop while true
-  RedrawType display;             // true = re-draw everything
   GameType retval = GAME_NORMAL;  // return value
   int selection = 0;
-  bool pressed;
-  int curbutton;
   TextButtonClass* buttons[NUM_OF_BUTTONS] = {};
 
   //------------------------------------------------------------------------
@@ -225,7 +220,7 @@ GameType Select_MPlayer_Game() {
   //------------------------------------------------------------------------
   //	Fill array of button ptrs
   //------------------------------------------------------------------------
-  curbutton = 0;
+  int curbutton = 0;
   buttons[0] = &modemserialbtn;
   buttons[1] = &skirmishbtn;
   int iButton = 2;
@@ -246,9 +241,9 @@ GameType Select_MPlayer_Game() {
   //------------------------------------------------------------------------
   //	Main Processing Loop
   //------------------------------------------------------------------------
-  display = REDRAW_ALL;
-  process = true;
-  pressed = false;
+  RedrawType display = REDRAW_ALL;  // true = re-draw everything
+  bool process = true;              // loop while true
+  bool pressed = false;
   while (process) {
     //.....................................................................
     //	Invoke game callback
@@ -288,7 +283,7 @@ GameType Select_MPlayer_Game() {
     //.....................................................................
     //	Get user input
     //.....................................................................
-    input = commands->Input();
+    const KeyNumType input = commands->Input();  // input from user
 
     //.....................................................................
     //	Process input
@@ -471,12 +466,11 @@ void Clear_Listbox(ListClass* list) { list->Clear(); }  // end of Clear_Listbox
  *   11/29/1995 BRR : Created.                                             *
  *=========================================================================*/
 void Clear_Vector(DynamicVectorClass<NodeNameType*>* vector) {
-  int i;
 
   //------------------------------------------------------------------------
   //	Clear the 'Players' Vector
   //------------------------------------------------------------------------
-  for (i = 0; i < vector->Count(); i++) {
+  for (int i = 0; i < vector->Count(); i++) {
     delete (*vector)[i];
   }
   vector->Clear();
@@ -564,9 +558,8 @@ int Surrender_Dialog(const char* text) {
   TextButtonClass cancelbtn(BUTTON_CANCEL, TXT_CANCEL, kTpfButton, D_CANCEL_X,
                             D_CANCEL_Y, D_CANCEL_W, D_CANCEL_H);
 
-  int curbutton;
   TextButtonClass* buttons[2];
-  curbutton = 0;
+  int curbutton = 0;
 
   //------------------------------------------------------------------------
   //	Initialize
@@ -754,9 +747,8 @@ int Abort_Dialog() {
   TextButtonClass nobtn(BUTTON_NO, TXT_NO, kTpfButton, D_NO_X, D_NO_Y, D_NO_W,
                         D_NO_H);
 
-  int curbutton;
   TextButtonClass* buttons[2];
-  curbutton = 0;
+  int curbutton = 0;
 
   //------------------------------------------------------------------------
   //	Initialize

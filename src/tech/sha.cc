@@ -297,13 +297,12 @@ void SHAEngine::Process_Block(const void* source, Accumulator& acc) {
   *working *	data that will be transformed by the secure hash algorithm.
   */
   const auto* data = static_cast<const uint32_t*>(source);
-  int index;
-  for (index = 0; std::cmp_less(index, SRC_BLOCK_SIZE / sizeof(uint32_t));
+  for (int index = 0; std::cmp_less(index, SRC_BLOCK_SIZE / sizeof(uint32_t));
        index++) {
     block[index] = Reverse_LONG(data[index]);
   }
 
-  for (index = SRC_BLOCK_SIZE / sizeof(uint32_t);
+  for (int index = SRC_BLOCK_SIZE / sizeof(uint32_t);
        std::cmp_less(index, PROC_BLOCK_SIZE / sizeof(uint32_t)); index++) {
     //		block[index] = _rotl(block[(index-3)&15] ^ block[(index-8)&15] ^
     // block[(index-14)&15] ^ block[(index-16)&15], 1);
@@ -318,7 +317,7 @@ void SHAEngine::Process_Block(const void* source, Accumulator& acc) {
   *buffer.
   */
   Accumulator alt = acc;
-  for (index = 0; std::cmp_less(index, PROC_BLOCK_SIZE / sizeof(uint32_t));
+  for (int index = 0; std::cmp_less(index, PROC_BLOCK_SIZE / sizeof(uint32_t));
        index++) {
     const uint32_t temp = rotl(alt[0], 5) +
                           Do_Function(index, alt[1], alt[2], alt[3]) + alt[4] +

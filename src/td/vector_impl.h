@@ -262,7 +262,7 @@ bool VectorClass<T>::Resize(base::ssize newsize, T* array) {
     **	Allocate a new vector of the size specified. The default constructor
     **	will be called for every object in this vector.
     */
-    T* newptr;
+    T* newptr = nullptr;
     if (!array) {
       newptr = new T[base::ToSize(newsize)];
     } else {

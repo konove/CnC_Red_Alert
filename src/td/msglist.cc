@@ -87,10 +87,8 @@ char MessageListClass::BufferAvail[MAX_NUM_MESSAGES];
  *   05/21/1995 BRR : Created.                                             *
  *=========================================================================*/
 MessageListClass::MessageListClass() {
-  int i;
-
-  for (i = 0; i < MAX_NUM_MESSAGES; i++) {
-    BufferAvail[i] = 1;
+  for (char& i : BufferAvail) {
+    i = 1;
   }
 }
 
@@ -131,13 +129,11 @@ MessageListClass::~MessageListClass() { Init(0, 0, 0, 0, 0); }
  *=========================================================================*/
 void MessageListClass::Init(int x, int y, int max_msg, int maxchars,
                             int height) {
-  TextLabelClass* txtlabel;
-  int i;
 
   /*------------------------------------------------------------------------
   Remove every entry in the list
   ------------------------------------------------------------------------*/
-  txtlabel = MessageList;
+  TextLabelClass* txtlabel = MessageList;
   while (txtlabel) {
     MessageList = dynamic_cast<TextLabelClass*>(txtlabel->Remove());
     delete txtlabel;
@@ -147,8 +143,8 @@ void MessageListClass::Init(int x, int y, int max_msg, int maxchars,
   /*------------------------------------------------------------------------
   Mark all buffers as available
   ------------------------------------------------------------------------*/
-  for (i = 0; i < MAX_NUM_MESSAGES; i++) {
-    BufferAvail[i] = 1;
+  for (char& i : BufferAvail) {
+    i = 1;
   }
 
   /*------------------------------------------------------------------------
@@ -191,20 +187,11 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
                                               TextPrintType style, int timeout,
                                               uint16_t magic_number,
                                               uint16_t crc) {
-  int num_msg;
-  TextLabelClass* txtlabel;
-  int x;
-  int y;
-  GadgetClass* gadg;
-  int i;
-  int j;
-  int found;
-  int position;
-  char* raw_string;
-  char* current_string;
-  char* s1;
-  char* s2;
-  bool same;
+  TextLabelClass* txtlabel = nullptr;
+  int y = 0;
+  GadgetClass* gadg = nullptr;
+  int position = 0;
+  char* raw_string = nullptr;
 
   /*------------------------------------------------------------------------
   Prevent a duplicate message.  (The IPXManager Global Channel cannot detect
@@ -239,10 +226,10 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
     while (txtlabel) {
       if (txtlabel->Color == color && txtlabel->Style == style &&
           txtlabel->CRC == crc) {
-        same = true;
+        bool same = true;
 
-        s1 = strchr(txtlabel->Text, ':');
-        s2 = strchr(txt, ':');
+        char* s1 = strchr(txtlabel->Text, ':');
+        char* s2 = strchr(txt, ':');
 
         if (s1 && s2) {
           *s1 = 0;
@@ -265,7 +252,7 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
             *name
             */
             raw_string = s2;
-            current_string = s1;
+            char* current_string = s1;
             if (raw_string++ && current_string++) {
               memcpy(current_string +
                          (static_cast<base::ssize>(position) *
@@ -294,7 +281,7 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
   Count the # of messages; if MaxMessages is going to be exceeded, remove
   the top-most message.
   ------------------------------------------------------------------------*/
-  num_msg = 0;
+  int num_msg = 0;
   if (MessageList) {
     gadg = MessageList;
     while (gadg) {
@@ -322,7 +309,7 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
     Remove this message from the list; mark its buffer as being available.
     .....................................................................*/
     MessageList = dynamic_cast<TextLabelClass*>(txtlabel->Remove());
-    for (i = 0; i < MAX_NUM_MESSAGES; i++) {
+    for (int i = 0; i < MAX_NUM_MESSAGES; i++) {
       if (txtlabel->Text == MessageBuffers[i]) {
         BufferAvail[i] = 1;
       }
@@ -346,7 +333,7 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
   /*------------------------------------------------------------------------
   Figure out the message's y-coordinate; put it below the other messages
   ------------------------------------------------------------------------*/
-  x = MessageX;
+  const int x = MessageX;
   y = MessageY;
   if (MessageList) {
     gadg = MessageList;
@@ -370,11 +357,11 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
   Find a buffer to store our message in; if there are none, don't add the
   message.
   ------------------------------------------------------------------------*/
-  found = 0;
+  int found = 0;
   txtlabel->Segments = 0;
   txtlabel->CRC = crc;
 
-  for (i = 0; i < MAX_NUM_MESSAGES; i++) {
+  for (int i = 0; i < MAX_NUM_MESSAGES; i++) {
     if (BufferAvail[i]) {
       BufferAvail[i] = 0;
       memset(MessageBuffers[i], 0, MAX_MESSAGE_LENGTH + 30);
@@ -396,7 +383,7 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
         }
 
         if (raw_string++) {
-          for (j = 0; j < 3; j++) {
+          for (int j = 0; j < 3; j++) {
             if (!(magic_number - j == MESSAGE_HEAD_MAGIC_NUMBER)) {
               memset(dest_str + (static_cast<base::ssize>(j) *
                                  (COMPAT_MESSAGE_LENGTH - 4)) /*+from_adjust*/,
@@ -526,17 +513,12 @@ char* MessageListClass::Get_Edit_Buf() {
  *   05/05/1995 BRR : Created.                                             *
  *=========================================================================*/
 int MessageListClass::Manage() {
-  TextLabelClass* txtlabel;
-  TextLabelClass* next;
   int changed = 0;
-  int y;
-  GadgetClass* gadg;
-  int i;
 
   /*------------------------------------------------------------------------
   Loop through all messages
   ------------------------------------------------------------------------*/
-  txtlabel = MessageList;
+  TextLabelClass* txtlabel = MessageList;
   while (txtlabel) {
     /*.....................................................................
     If this message's time is up, remove it from the list
@@ -553,9 +535,9 @@ int MessageListClass::Manage() {
       /*..................................................................
       Save the next ptr in the list; remove this entry
       ..................................................................*/
-      next = dynamic_cast<TextLabelClass*>(txtlabel->Get_Next());
+      auto* next = dynamic_cast<TextLabelClass*>(txtlabel->Get_Next());
       MessageList = dynamic_cast<TextLabelClass*>(txtlabel->Remove());
-      for (i = 0; i < MAX_NUM_MESSAGES; i++) {
+      for (int i = 0; i < MAX_NUM_MESSAGES; i++) {
         if (txtlabel->Text == MessageBuffers[i]) {
           BufferAvail[i] = 1;
         }
@@ -572,9 +554,9 @@ int MessageListClass::Manage() {
   If a changed has been made, recompute the y-coord of all messages
   ------------------------------------------------------------------------*/
   if (changed) {
-    y = MessageY;
+    int y = MessageY;
     if (MessageList) {
-      gadg = MessageList;
+      GadgetClass* gadg = MessageList;
       while (gadg) {
         gadg->Y = y;
         gadg = gadg->Get_Next();
@@ -606,7 +588,6 @@ int MessageListClass::Manage() {
  *   05/05/1995 BRR : Created.                                             *
  *=========================================================================*/
 int MessageListClass::Input(KeyNumType& input) {
-  KeyASCIIType ascii;
   int retcode = 0;
 
   /*------------------------------------------------------------------------
@@ -628,7 +609,8 @@ int MessageListClass::Input(KeyNumType& input) {
   If we're in 'edit mode', handle keys
   ------------------------------------------------------------------------*/
   if (EditLabel) {
-    ascii = static_cast<KeyASCIIType>(Keyboard::To_ASCII(input) & 0x00ff);
+    const auto ascii =
+        static_cast<KeyASCIIType>(Keyboard::To_ASCII(input) & 0x00ff);
 
     /*
     ** Allow numeric keypad presses to map to ascii numbers
@@ -754,13 +736,10 @@ void MessageListClass::Draw() {
  *   06/26/1995 BRR : Created.                                             *
  *=========================================================================*/
 int MessageListClass::Num_Messages() {
-  GadgetClass* gadg;
-  int num;
-
-  num = 0;
+  int num = 0;
 
   if (MessageList) {
-    gadg = MessageList;
+    GadgetClass* gadg = MessageList;
     while (gadg) {
       num++;
       gadg = gadg->Get_Next();
@@ -786,10 +765,9 @@ int MessageListClass::Num_Messages() {
  *   06/26/1995 BRR : Created.                                             *
  *=========================================================================*/
 void MessageListClass::Set_Width(int width) {
-  GadgetClass* gadg;
 
   if (MessageList) {
-    gadg = MessageList;
+    GadgetClass* gadg = MessageList;
     while (gadg) {
       dynamic_cast<TextLabelClass*>(gadg)->PixWidth = width;
       gadg = gadg->Get_Next();

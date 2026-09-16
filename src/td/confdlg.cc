@@ -79,13 +79,9 @@ bool ConfirmationClass::Process(const char* string) {
 
   char buffer[80 * 3];
   bool result = true;
-  int width;
-  int bwidth;
-  int bheight;  // button width and height
-  int height;
+  int width = 0;
+  int height = 0;
   int selection = 0;
-  bool pressed;
-  int curbutton;
   TextButtonClass* buttons[NUM_OF_BUTTONS];
 
   /*
@@ -105,8 +101,9 @@ bool ConfirmationClass::Process(const char* string) {
   **	Create Buttons.  Button coords are in pixels, but are window-relative.
   */
 
-  bheight = FontHeight + FontYSpacing + 2;
-  bwidth = std::max<int>(String_Pixel_Width(Text_String(TXT_YES)) + 8, 30);
+  const int bheight = FontHeight + FontYSpacing + 2;  // button width and height
+  const int bwidth =
+      std::max<int>(String_Pixel_Width(Text_String(TXT_YES)) + 8, 30);
 
   TextButtonClass yesbtn(
       BUTTON_YES, TXT_YES, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
@@ -119,7 +116,7 @@ bool ConfirmationClass::Process(const char* string) {
 
   nobtn.Add_Tail(yesbtn);
 
-  curbutton = 1;
+  int curbutton = 1;
   buttons[0] = &yesbtn;
   buttons[1] = &nobtn;
   buttons[curbutton]->Turn_On();
@@ -145,7 +142,7 @@ bool ConfirmationClass::Process(const char* string) {
   */
   bool display = true;
   bool process = true;
-  pressed = false;
+  bool pressed = false;
   while (process) {
     /*
     **	Invoke game callback.

@@ -195,7 +195,7 @@ int WOL_Main() {
 bool ReregisterWolapiDLL() {
   //	Attempt to reregister wolapi.dll.
   //	Returns true if we think we succeeded.
-  HKEY hKey;
+  HKEY hKey = nullptr;
   char szInstallPath[kMaxPath];
   if (::RegOpenKeyEx(HKEY_LOCAL_MACHINE, "Software\\Westwood\\WOLAPI", 0,
                      KEY_READ, &hKey) == ERROR_SUCCESS) {

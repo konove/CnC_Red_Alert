@@ -96,14 +96,11 @@
 bool Save_Game(int id, const char* descr) {
   DiskFile file;
   char name[kMaxFname + kMaxExt];
-  int i;
   int32_t version = 0;
-  int scenario;
-  HousesType house;
   char descr_buf[kDescripMax]{};
 
-  scenario = Scenario;              // get current scenario #
-  house = PlayerPtr->Class->House;  // get current house
+  const int scenario = Scenario;                     // get current scenario #
+  const HousesType house = PlayerPtr->Class->House;  // get current house
 
   /*
   **	Generate the filename to save
@@ -194,8 +191,8 @@ bool Save_Game(int id, const char* descr) {
       return false;
     }
 
-    for (i = 0; i < LAYER_COUNT; i++) {
-      MouseClass::Layer[i].Serialize(writer);
+    for (auto& i : MouseClass::Layer) {
+      i.Serialize(writer);
       if (!writer.ok()) {
         return false;
       }
@@ -233,10 +230,9 @@ bool Save_Game(int id, const char* descr) {
 bool Load_Game(int id) {
   DiskFile file;
   char name[kMaxFname + kMaxExt];
-  int i;
   int32_t version = 0;
-  unsigned scenario;
-  HousesType house;
+  unsigned scenario = 0;
+  HousesType house = HOUSE_NONE;
   char descr_buf[kDescripMax];
 
   /*
@@ -389,8 +385,8 @@ bool Load_Game(int id) {
     file.Close();
     return false;
   }
-  for (i = 0; i < LAYER_COUNT; i++) {
-    MouseClass::Layer[i].Serialize(reader);
+  for (auto& i : MouseClass::Layer) {
+    i.Serialize(reader);
     if (!reader.ok()) {
       file.Close();
       return false;

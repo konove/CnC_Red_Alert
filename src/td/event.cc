@@ -397,11 +397,11 @@ EventClass::EventClass(EventType type, int id, CELL cell) : EventClass() {
 // Not const: applies the event to the game.
 // NOLINTNEXTLINE(readability-make-member-function-const)
 void EventClass::Execute() {
-  TechnoClass* techno;
+  TechnoClass* techno = nullptr;
   AnimClass* anim = nullptr;
   const HouseClass* house = nullptr;
   char txt[80];
-  int i;
+  int i = 0;
   // #if (0)
   if (static_cast<unsigned>(Type) > PROCESS_TIME) {
     char tempbuf[128];
@@ -567,7 +567,7 @@ void EventClass::Execute() {
         /*
         **	Fetch a pointer to the object of the mission.
         */
-        ObjectClass* object;
+        ObjectClass* object = nullptr;
         if (Target_Legal(Data.MegaMission.Target)) {
           object = As_Object(Data.MegaMission.Target);
         } else {

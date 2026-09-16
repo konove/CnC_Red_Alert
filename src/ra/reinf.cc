@@ -684,7 +684,7 @@ int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
   ** Loop through the number of objects we are supposed to create and
   ** 	create and place them on the map.
   */
-  int sub;
+  int sub = 0;
   for (sub = 0; sub < number; sub++) {
     /*
     ** Create one of the required objects.  If this fails we could have

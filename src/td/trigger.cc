@@ -154,9 +154,7 @@ static const char* ActionText[TriggerClass::ACTION_COUNT + 1] = {
  *=============================================================================================*/
 int TriggerClass::Validate() const {
   if constexpr (config::kCheatKeysEnabled) {
-    int num;
-
-    num = Triggers.ID(this);
+    const int num = Triggers.ID(this);
     if (num < 0 || num >= kTriggerMax) {
       Validate_Error("TRIGGER");
     }
@@ -602,7 +600,6 @@ bool TriggerClass::Spring(EventType event, CELL cell) {
   */
   bool success = true;
   TriggerClass* trig = nullptr;
-  int index;
   switch (Action) {
     case ACTION_NUKE:
       HouseClass::As_Pointer(HOUSE_BAD)->NukeStrike.Enable(true, false);
@@ -617,7 +614,7 @@ bool TriggerClass::Spring(EventType event, CELL cell) {
       break;
 
     case ACTION_AUTOCREATE:
-      for (index = 0; index < Houses.Count(); index++) {
+      for (int index = 0; index < Houses.Count(); index++) {
         Houses.Ptr(index)->IsAlerted = true;
       }
       break;
@@ -922,14 +919,11 @@ bool TriggerClass::Spring(EventType event, HousesType house, int64_t data) {
  *=============================================================================================*/
 bool TriggerClass::Remove() {
   Validate();
-  CELL cell;
-  HousesType h;
-  int index;
 
   /*
   **	Loop through all cells; remove any reference to this trigger
   */
-  for (cell = 0; cell < MAP_CELL_TOTAL; cell++) {
+  for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
     if (Map[cell].IsTrigger && (CellTriggers[cell] == this)) {
       Map[cell].IsTrigger = false;
       CellTriggers[cell] = nullptr;
@@ -939,22 +933,22 @@ bool TriggerClass::Remove() {
   /*
   **	Loop through all objects, removing any reference to this trigger
   */
-  for (index = 0; index < Infantry.Count(); index++) {
+  for (int index = 0; index < Infantry.Count(); index++) {
     if (Infantry.Ptr(index)->Trigger == this) {
       Infantry.Ptr(index)->Trigger = nullptr;
     }
   }
-  for (index = 0; index < Buildings.Count(); index++) {
+  for (int index = 0; index < Buildings.Count(); index++) {
     if (Buildings.Ptr(index)->Trigger == this) {
       Buildings.Ptr(index)->Trigger = nullptr;
     }
   }
-  for (index = 0; index < Units.Count(); index++) {
+  for (int index = 0; index < Units.Count(); index++) {
     if (Units.Ptr(index)->Trigger == this) {
       Units.Ptr(index)->Trigger = nullptr;
     }
   }
-  for (index = 0; index < Terrains.Count(); index++) {
+  for (int index = 0; index < Terrains.Count(); index++) {
     if (Terrains.Ptr(index)->Trigger == this) {
       Terrains.Ptr(index)->Trigger = nullptr;
     }
@@ -965,7 +959,7 @@ bool TriggerClass::Remove() {
   **	pointer not in the list has no effect; loop through all houses just to
   **	be on the safe side.
   */
-  for (h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
+  for (HousesType h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
     HouseTriggers[h].Delete(this);
   }
 
@@ -1007,16 +1001,14 @@ bool TriggerClass::Remove() {
  * HISTORY: * 11/28/1994 BR : Created. *
  *=============================================================================================*/
 void TriggerClass::Read_INI(char* buffer) {
-  TriggerClass* trigger;  // Working trigger pointer.
-  char* tbuffer;          // Accumulation buffer of trigger IDs.
-  int len;                // Length of data in buffer.
   char buf[128];
 
   /*
   **	Set 'tbuffer' to point just past the INI buffer
   */
-  len = static_cast<int>(strlen(buffer)) + 2;
-  tbuffer = buffer + len;
+  const int len =
+      static_cast<int>(strlen(buffer)) + 2;  // Length of data in buffer.
+  char* tbuffer = buffer + len;  // Accumulation buffer of trigger IDs.
 
   /*
   **	Read all TRIGGER entry names into 'tbuffer'
@@ -1031,7 +1023,7 @@ void TriggerClass::Read_INI(char* buffer) {
     /*
     **	Create a new trigger.
     */
-    trigger = new TriggerClass();
+    auto* trigger = new TriggerClass();  // Working trigger pointer.
 
     /*
     **	Set its name.
@@ -1093,7 +1085,6 @@ void TriggerClass::Read_INI(char* buffer) {
  *=============================================================================================*/
 void TriggerClass::Fill_In(char* name, char* entry) {
   Validate();
-  char* p;
 
   /*
   **	Set its name.
@@ -1134,7 +1125,7 @@ void TriggerClass::Fill_In(char* name, char* entry) {
   ** 6th token: IsPersistant.  This token was added later, so we must check
   ** for its existence.
   */
-  p = tokens.Next();
+  char* p = tokens.Next();
   if (p) {
     IsPersistant =
         static_cast<PersistantType>(tech::ParseInteger<int>(p).value_or(0));
@@ -1158,11 +1149,9 @@ void TriggerClass::Fill_In(char* name, char* entry) {
  * HISTORY: * 11/28/1994 BR : Created. *
  *=============================================================================================*/
 void TriggerClass::Write_INI(char* buffer, bool refresh) {
-  int index;
   char buf[128];
-  TriggerClass* trigger;
-  const char* hname;
-  const char* tname;
+  const char* hname = nullptr;
+  const char* tname = nullptr;
 
   /*
   **	First, clear out all existing trigger data from the INI file.
@@ -1174,11 +1163,11 @@ void TriggerClass::Write_INI(char* buffer, bool refresh) {
   /*
   **	Now write all the trigger data out
   */
-  for (index = 0; index < Triggers.Count(); index++) {
+  for (int index = 0; index < Triggers.Count(); index++) {
     /*
     **	Get ptr to next active trigger.
     */
-    trigger = Triggers.Ptr(index);
+    TriggerClass* trigger = Triggers.Ptr(index);
 
     /*
     **	Generate INI entry.
@@ -1283,13 +1272,12 @@ void TriggerClass::operator delete(void* ptr) {
  * HISTORY: * 11/29/1994 BR : Created. *
  *=============================================================================================*/
 EventType TriggerClass::Event_From_Name(const char* name) {
-  int i;
 
   if (name == nullptr) {
     return EVENT_NONE;
   }
 
-  for (i = EVENT_NONE; i < EVENT_COUNT; i++) {
+  for (int i = EVENT_NONE; i < EVENT_COUNT; i++) {
     if (!stricmp(name, EventText[i + 1])) {
       return static_cast<EventType>(i);
     }
@@ -1325,13 +1313,12 @@ const char* TriggerClass::Name_From_Event(EventType event) {
  * HISTORY: * 11/29/1994 BR : Created. *
  *=============================================================================================*/
 TriggerClass::ActionType TriggerClass::Action_From_Name(const char* name) {
-  int i;
 
   if (name == nullptr) {
     return ACTION_NONE;
   }
 
-  for (i = ACTION_NONE; i < ACTION_COUNT; i++) {
+  for (int i = ACTION_NONE; i < ACTION_COUNT; i++) {
     if (!stricmp(name, ActionText[i + 1])) {
       return static_cast<ActionType>(i);
     }
@@ -1387,9 +1374,7 @@ TARGET TriggerClass::As_Target() const {
  *from a team if necessary.                             *
  *=============================================================================================*/
 static void Do_All_To_Hunt() {
-  int index;
-
-  for (index = 0; index < Units.Count(); index++) {
+  for (int index = 0; index < Units.Count(); index++) {
     UnitClass* unit = Units.Ptr(index);
 
     if (!unit->House->IsHuman && unit->IsDown && !unit->IsInLimbo) {
@@ -1400,7 +1385,7 @@ static void Do_All_To_Hunt() {
     }
   }
 
-  for (index = 0; index < Infantry.Count(); index++) {
+  for (int index = 0; index < Infantry.Count(); index++) {
     InfantryClass* infantry = Infantry.Ptr(index);
 
     if (!infantry->House->IsHuman && infantry->IsDown && !infantry->IsInLimbo) {

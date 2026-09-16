@@ -189,12 +189,11 @@ const LinkClass& LinkClass::Tail_Of_List() const { return Tail_Of(*this); }
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
 LinkClass& LinkClass::Add(LinkClass& list) {
-  LinkClass* ptr;
 
   /*
   **	Save ptr to next gadget.
   */
-  ptr = list.Next;
+  LinkClass* ptr = list.Next;
 
   /*
   **	Link myself in after 'list'.
@@ -226,12 +225,11 @@ LinkClass& LinkClass::Add(LinkClass& list) {
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
 LinkClass& LinkClass::Add_Head(LinkClass& list) {
-  LinkClass* ptr;
 
   /*
   **	Get head of given list.
   */
-  ptr = &list.Head_Of_List();
+  LinkClass* ptr = &list.Head_Of_List();
 
   /*
   **	Link myself in front of it.
@@ -256,12 +254,11 @@ LinkClass& LinkClass::Add_Head(LinkClass& list) {
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
 LinkClass& LinkClass::Add_Tail(LinkClass& list) {
-  LinkClass* ptr;
 
   /*
   **	Get head of given list.
   */
-  ptr = &list.Tail_Of_List();
+  LinkClass* ptr = &list.Tail_Of_List();
 
   /*
   **	Link myself in front of it.

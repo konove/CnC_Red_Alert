@@ -91,21 +91,18 @@
  *=========================================================================*/
 int MapEditClass::Select_Object() {
   ObjectClass* object = nullptr;  // Generic object clicked on.
-  int x;
-  int y;
-  CELL cell;  // Cell that was selected.
   int rc = 0;
 
   /*
   **	See if an object was clicked on
   */
-  x = Keyboard->MouseQX;
-  y = Keyboard->MouseQY;
+  int x = Keyboard->MouseQX;
+  int y = Keyboard->MouseQY;
 
   /*
   **	Get cell for x,y
   */
-  cell = Click_Cell_Calc(x, y);
+  CELL const cell = Click_Cell_Calc(x, y);  // Cell that was selected.
 
   /*
   **	Convert x,y to offset from cell upper-left
@@ -184,19 +181,11 @@ int MapEditClass::Select_Object() {
  *   11/22/1994 BR : Created.                                              *
  *=========================================================================*/
 void MapEditClass::Select_Next() {
-  ObjectClass* obj;
-  CELL obj_cell;
-  int smap_w;   // screen map width in icons
-  int smap_h;   // screen map height in icons
-  int cell_x;   // cell-x of next object
-  int cell_y;   // cell-y of next object
-  int tcell_x;  // cell-x of TacticalCell
-  int tcell_y;  // cell-y of TacticalCell
 
   /*
   **	Get next object on the map
   */
-  obj = MapEditClass::Next_Object(CurrentObject[0]);
+  ObjectClass* obj = MapEditClass::Next_Object(CurrentObject[0]);
 
   if (obj) {
     /*
@@ -227,17 +216,19 @@ void MapEditClass::Select_Next() {
   /*
   **	compute screen map dimensions
   */
-  smap_w = Lepton_To_Cell(TacLeptonWidth);
-  smap_h = Lepton_To_Cell(TacLeptonHeight);
+  const int smap_w =
+      Lepton_To_Cell(TacLeptonWidth);  // screen map width in icons
+  const int smap_h =
+      Lepton_To_Cell(TacLeptonHeight);  // screen map height in icons
 
   /*
   **	compute x,y of object's cell
   */
-  obj_cell = Coord_Cell(CurrentObject[0]->Coord);
-  cell_x = Cell_X(obj_cell);
-  cell_y = Cell_Y(obj_cell);
-  tcell_x = Coord_XCell(TacticalCoord);
-  tcell_y = Coord_YCell(TacticalCoord);
+  CELL const obj_cell = Coord_Cell(CurrentObject[0]->Coord);
+  const int cell_x = Cell_X(obj_cell);       // cell-x of next object
+  const int cell_y = Cell_Y(obj_cell);       // cell-y of next object
+  int tcell_x = Coord_XCell(TacticalCoord);  // cell-x of TacticalCell
+  int tcell_y = Coord_YCell(TacticalCoord);  // cell-y of TacticalCell
 
   /*
   **	If object is off-screen, move map
@@ -293,10 +284,6 @@ void MapEditClass::Select_Next() {
  *=========================================================================*/
 void MapEditClass::Popup_Controls() {
   const TechnoTypeClass* objtype = nullptr;
-  HousesType owner;   // object's current owner
-  int mission_index;  // object's current mission
-  int strength;       // object's 0-255 strength value
-  int i;
 
   /*
   **	Remove all buttons from GScreen's button list (so none of them provide
@@ -344,14 +331,15 @@ void MapEditClass::Popup_Controls() {
   /*
   **	Get object's current values
   */
-  owner = CurrentObject[0]->Owner();
-  mission_index = 0;
-  for (i = 0; i < std::ssize(MapEditMissions); i++) {
+  const HousesType owner = CurrentObject[0]->Owner();  // object's current owner
+  int mission_index = 0;  // object's current mission
+  for (int i = 0; i < std::ssize(MapEditMissions); i++) {
     if (CurrentObject[0]->Get_Mission() == MapEditMissions[base::ToSize(i)]) {
       mission_index = i;
     }
   }
-  strength = CurrentObject[0]->Health_Ratio() * 256;
+  const int strength =
+      CurrentObject[0]->Health_Ratio() * 256;  // object's 0-255 strength value
 
   switch (objtype->What_Am_I()) {
     case RTTI_VESSELTYPE:
@@ -434,7 +422,6 @@ void MapEditClass::Popup_Controls() {
  *   11/07/1994 BR : Created.                                              *
  *=========================================================================*/
 void MapEditClass::Grab_Object() {
-  CELL cell;
 
   if (CurrentObject.Count()) {
     GrabbedObject = CurrentObject[0];
@@ -443,7 +430,7 @@ void MapEditClass::Grab_Object() {
     **	Find out which cell 'ZoneCell' is in relation to the object's current
     *cell
     */
-    cell = Coord_Cell(GrabbedObject->Coord);
+    CELL const cell = Coord_Cell(GrabbedObject->Coord);
     GrabOffset = static_cast<CELL>(cell - ZoneCell);
   }
 }
@@ -559,7 +546,6 @@ int MapEditClass::Move_Grabbed_Object() {
  *   11/17/1994 BR : Created.                                              *
  *=========================================================================*/
 bool MapEditClass::Change_House(HousesType newhouse) {
-  TechnoClass* tp;
 
   /*
   **	Return if no current object
@@ -600,7 +586,7 @@ bool MapEditClass::Change_House(HousesType newhouse) {
   /*
   **	Change the house
   */
-  tp = dynamic_cast<TechnoClass*>(CurrentObject[0]);
+  auto* tp = dynamic_cast<TechnoClass*>(CurrentObject[0]);
   tp->House = HouseClass::As_Pointer(newhouse);
 
   tp->IsOwnedByPlayer = false;

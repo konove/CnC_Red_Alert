@@ -237,12 +237,12 @@ static bool Map_Edit_Loop() {
   Map.Render();
 
   // Get user input (keys, mouse clicks).
-  KeyNumType input;
+  KeyNumType input = KN_NONE;
 
   WWMouse->Erase_Mouse(&HidPage, true);
 
-  int x;
-  int y;
+  int x = 0;
+  int y = 0;
   Map.Input(input, x, y);
 
   // Process keypress.
@@ -732,13 +732,12 @@ static void Message_Input(KeyNumType& input) {
 // it does, the objects are read but not selected again, which stops the unit
 // acknowledgement voices from firing again on every frame.
 static void Do_Record_Playback() {
-  int count;
-  TARGET tgt;
-  int i;
-  COORDINATE coord;
-  uint32_t sum;
-  uint32_t sum2;
-  uint32_t ltgt;
+  int count = 0;
+  TARGET tgt = 0;
+  COORDINATE coord = 0;
+  uint32_t sum = 0;
+  uint32_t sum2 = 0;
+  uint32_t ltgt = 0;
 
   // Record a game
   if (Session.Record) {
@@ -751,14 +750,14 @@ static void Do_Record_Playback() {
 
     // Save a CRC of the selected-object list.
     sum = 0;
-    for (i = 0; i < count; i++) {
+    for (int i = 0; i < count; i++) {
       ltgt = static_cast<uint32_t>(CurrentObject[i]->As_Target());
       sum += ltgt;
     }
     Session.RecordFile.WriteObject(sum);
 
     // Save all selected objects.
-    for (i = 0; i < count; i++) {
+    for (int i = 0; i < count; i++) {
       tgt = CurrentObject[i]->As_Target();
       Session.RecordFile.WriteObject(tgt);
     }
@@ -788,7 +787,7 @@ static void Do_Record_Playback() {
     if (Session.RecordFile.ReadObject(count)) {
       // Compute a CRC of the current object-selection list.
       sum = 0;
-      for (i = 0; i < CurrentObject.Count(); i++) {
+      for (int i = 0; i < CurrentObject.Count(); i++) {
         ltgt = static_cast<uint32_t>(CurrentObject[i]->As_Target());
         sum += ltgt;
       }
@@ -802,7 +801,7 @@ static void Do_Record_Playback() {
 
       AllowVoice = true;
 
-      for (i = 0; i < count; ++i) {
+      for (int i = 0; i < count; ++i) {
         if (Session.RecordFile.ReadObject(tgt)) {
           ObjectClass* obj = As_Object(tgt);
           if (obj != nullptr && sum2 != sum) {
@@ -1003,8 +1002,7 @@ void Main_Game(const int argc, char* argv[]) {
 // gets first refusal for that reason: a player typing chat must not also be
 // commanding their units.
 void Keyboard_Process(KeyNumType& input) {
-  ObjectClass* obj;
-  int index;
+  ObjectClass* obj = nullptr;
 
   // Don't do anything if there is not keyboard event.
   if (input == KN_NONE) {
@@ -1117,7 +1115,7 @@ void Keyboard_Process(KeyNumType& input) {
   // All selected units will go into idle mode.
   if (key != 0 && key == Options.KeyStop) {
     if (CurrentObject.Count()) {
-      for (index = 0; index < CurrentObject.Count(); index++) {
+      for (int index = 0; index < CurrentObject.Count(); index++) {
         const ObjectClass* tech = CurrentObject[index];
 
         if (tech != nullptr &&
@@ -1133,7 +1131,7 @@ void Keyboard_Process(KeyNumType& input) {
   // All selected units will attempt to go into guard area mode.
   if (key != 0 && key == Options.KeyGuard) {
     if (CurrentObject.Count()) {
-      for (index = 0; index < CurrentObject.Count(); index++) {
+      for (int index = 0; index < CurrentObject.Count(); index++) {
         const ObjectClass* tech = CurrentObject[index];
 
         if (tech != nullptr && tech->Can_Player_Move() &&
@@ -1148,7 +1146,7 @@ void Keyboard_Process(KeyNumType& input) {
   // All selected units will attempt to scatter.
   if (key != 0 && key == Options.KeyScatter) {
     if (CurrentObject.Count()) {
-      for (index = 0; index < CurrentObject.Count(); index++) {
+      for (int index = 0; index < CurrentObject.Count(); index++) {
         const ObjectClass* tech = CurrentObject[index];
 
         if (tech != nullptr && tech->Can_Player_Move()) {
@@ -1176,7 +1174,7 @@ void Keyboard_Process(KeyNumType& input) {
   if (key != 0 && key == Options.KeyBase) {
     Unselect_All();
     if (PlayerPtr->CurBuildings) {
-      for (index = 0; index < Buildings.Count(); index++) {
+      for (int index = 0; index < Buildings.Count(); index++) {
         BuildingClass* building = Buildings.Ptr(index);
 
         if (building != nullptr && !building->IsInLimbo &&
@@ -1190,7 +1188,7 @@ void Keyboard_Process(KeyNumType& input) {
       }
     }
     if (CurrentObject.Count() == 0 && PlayerPtr->CurUnits) {
-      for (index = 0; index < Units.Count(); index++) {
+      for (int index = 0; index < Units.Count(); index++) {
         UnitClass* unit = Units.Ptr(index);
 
         if (unit != nullptr && !unit->IsInLimbo && unit->House == PlayerPtr &&
@@ -1603,8 +1601,8 @@ static void Sync_Delay() {
     if (SpecialDialog == SDLG_NONE) {
       WWMouse->Erase_Mouse(&HidPage, true);
       KeyNumType input = KN_NONE;
-      int x;
-      int y;
+      int x = 0;
+      int y = 0;
       Map.Input(input, x, y);
       if (input) {
         Keyboard_Process(input);
@@ -1961,15 +1959,14 @@ void Rebuild_Interpolated_Palette(unsigned char* interpal) {
 
 int Load_Interpolated_Palettes(const char* filename, const bool add) {
   int num_palettes = 0;
-  int i;
-  int start_palette;
+  int start_palette = 0;
 
   PalettesRead = false;
   GameFile file(filename);
 
   if (!add) {
-    for (i = 0; i < std::ssize(InterpolatedPalettes); i++) {
-      InterpolatedPalettes[i] = nullptr;
+    for (auto& InterpolatedPalette : InterpolatedPalettes) {
+      InterpolatedPalette = nullptr;
     }
     start_palette = 0;
   } else {
@@ -1991,7 +1988,7 @@ int Load_Interpolated_Palettes(const char* filename, const bool add) {
     file.Open(FileAccess::kRead);
     file.ReadObject(num_palettes);
 
-    for (i = 0; i < num_palettes; i++) {
+    for (int i = 0; i < num_palettes; i++) {
       // 256 x 256: the blended result for every pair of palette indices.
       InterpolatedPalettes[i + start_palette] = new unsigned char[65536]();
       // Only the lower triangle is stored, row y holding y + 1 entries;
@@ -2522,7 +2519,6 @@ int32_t VQ_Event_Handler(const uint32_t event, void* /*buffer*/,
 // AllowVoice is cleared once something has been selected so that picking a
 // group of ten units produces one acknowledgement rather than ten.
 void Handle_Team(const int team, const int action) {
-  int index;
 
   // Recording support
   if (Session.Record) {
@@ -2547,7 +2543,7 @@ void Handle_Team(const int team, const int action) {
         Unselect_All();
       }
 
-      for (index = 0; index < Vessels.Count(); index++) {
+      for (int index = 0; index < Vessels.Count(); index++) {
         VesselClass* obj = Vessels.Ptr(index);
         if ((obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
              obj->House->IsPlayerControl) &&
@@ -2556,7 +2552,7 @@ void Handle_Team(const int team, const int action) {
           AllowVoice = false;
         }
       }
-      for (index = 0; index < Units.Count(); index++) {
+      for (int index = 0; index < Units.Count(); index++) {
         UnitClass* obj = Units.Ptr(index);
         if ((obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
              obj->House->IsPlayerControl) &&
@@ -2565,7 +2561,7 @@ void Handle_Team(const int team, const int action) {
           AllowVoice = false;
         }
       }
-      for (index = 0; index < Infantry.Count(); index++) {
+      for (int index = 0; index < Infantry.Count(); index++) {
         InfantryClass* obj = Infantry.Ptr(index);
         if ((obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
              obj->House->IsPlayerControl) &&
@@ -2574,7 +2570,7 @@ void Handle_Team(const int team, const int action) {
           AllowVoice = false;
         }
       }
-      for (index = 0; index < Aircraft.Count(); index++) {
+      for (int index = 0; index < Aircraft.Count(); index++) {
         AircraftClass* obj = Aircraft.Ptr(index);
         if ((obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
              obj->House->IsPlayerControl) &&
@@ -2593,7 +2589,7 @@ void Handle_Team(const int team, const int action) {
 
     // Additive selection of team.
     case 1:
-      for (index = 0; index < Units.Count(); index++) {
+      for (int index = 0; index < Units.Count(); index++) {
         UnitClass* obj = Units.Ptr(index);
         if ((obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
              obj->House->IsPlayerControl) &&
@@ -2602,7 +2598,7 @@ void Handle_Team(const int team, const int action) {
           AllowVoice = false;
         }
       }
-      for (index = 0; index < Vessels.Count(); index++) {
+      for (int index = 0; index < Vessels.Count(); index++) {
         VesselClass* obj = Vessels.Ptr(index);
         if ((obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
              obj->House->IsPlayerControl) &&
@@ -2611,7 +2607,7 @@ void Handle_Team(const int team, const int action) {
           AllowVoice = false;
         }
       }
-      for (index = 0; index < Infantry.Count(); index++) {
+      for (int index = 0; index < Infantry.Count(); index++) {
         InfantryClass* obj = Infantry.Ptr(index);
         if ((obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
              obj->House->IsPlayerControl) &&
@@ -2620,7 +2616,7 @@ void Handle_Team(const int team, const int action) {
           AllowVoice = false;
         }
       }
-      for (index = 0; index < Aircraft.Count(); index++) {
+      for (int index = 0; index < Aircraft.Count(); index++) {
         AircraftClass* obj = Aircraft.Ptr(index);
         if ((obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
              obj->House->IsPlayerControl) &&
@@ -2640,7 +2636,7 @@ void Handle_Team(const int team, const int action) {
       int32_t maxy = 0;
       TeamSpeed[team] = SPEED_WHEEL;
       TeamMaxSpeed[team] = MPH_LIGHT_SPEED;
-      for (index = 0; index < Units.Count(); index++) {
+      for (int index = 0; index < Units.Count(); index++) {
         UnitClass* obj = Units.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->House->IsPlayerControl) {
           if (std::cmp_equal(obj->Group, team)) {
@@ -2663,7 +2659,7 @@ void Handle_Team(const int team, const int action) {
         }
       }
 
-      for (index = 0; index < Vessels.Count(); index++) {
+      for (int index = 0; index < Vessels.Count(); index++) {
         VesselClass* obj = Vessels.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->House->IsPlayerControl) {
           if (std::cmp_equal(obj->Group, team)) {
@@ -2686,7 +2682,7 @@ void Handle_Team(const int team, const int action) {
         }
       }
 
-      for (index = 0; index < Infantry.Count(); index++) {
+      for (int index = 0; index < Infantry.Count(); index++) {
         InfantryClass* obj = Infantry.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->House->IsPlayerControl) {
           if (std::cmp_equal(obj->Group, team)) {
@@ -2706,7 +2702,7 @@ void Handle_Team(const int team, const int action) {
           }
         }
       }
-      for (index = 0; index < Aircraft.Count(); index++) {
+      for (int index = 0; index < Aircraft.Count(); index++) {
         AircraftClass* obj = Aircraft.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->House->IsPlayerControl) {
           if (std::cmp_equal(obj->Group, team)) {
@@ -2719,7 +2715,7 @@ void Handle_Team(const int team, const int action) {
         }
       }
 
-      for (index = 0; index < Units.Count(); index++) {
+      for (int index = 0; index < Units.Count(); index++) {
         UnitClass* obj = Units.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->House->IsPlayerControl &&
             std::cmp_equal(obj->Group, team) && obj->IsSelected) {
@@ -2732,7 +2728,7 @@ void Handle_Team(const int team, const int action) {
         }
       }
 
-      for (index = 0; index < Infantry.Count(); index++) {
+      for (int index = 0; index < Infantry.Count(); index++) {
         InfantryClass* obj = Infantry.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->House->IsPlayerControl) {
           if (std::cmp_equal(obj->Group, team)) {
@@ -3116,7 +3112,7 @@ void Shake_The_Screen(int shakes) {
     // rather than as fast as the machine can blit.
     const int64_t x = TickCount.Value();
     // Never repeat the previous offset, so every tick visibly moves the screen.
-    int new_y_off;
+    int new_y_off = 0;
     do {
       new_y_off = Sim_Random_Pick(0, 2) - 1;
     } while (new_y_off == old_y_off);

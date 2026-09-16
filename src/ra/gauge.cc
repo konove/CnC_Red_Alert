@@ -150,7 +150,7 @@ bool GaugeClass::Set_Value(int value) {
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
 int GaugeClass::Pixel_To_Value(int pixel) {
-  int maximum;
+  int maximum = 0;
 
   if (IsHorizontal) {
     pixel -= X + 1;
@@ -181,8 +181,8 @@ int GaugeClass::Pixel_To_Value(int pixel) {
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
 int GaugeClass::Value_To_Pixel(int value) {
-  int maximum;
-  int start;
+  int maximum = 0;
+  int start = 0;
   if (IsHorizontal) {
     maximum = Width;
     start = X;

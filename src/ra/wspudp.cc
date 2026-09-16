@@ -320,7 +320,7 @@ void UDPInterfaceClass::Broadcast(void* buffer, int buffer_len) {
 // like below, but less windows-y
 void UDPInterfaceClass::Event_Handler(int /*socket*/, SocketEvent event) {
   struct sockaddr_in addr{};
-  WinsockBufferType* packet;
+  WinsockBufferType* packet = nullptr;
 
   switch (event) {
     case SOCKEV_READ: {

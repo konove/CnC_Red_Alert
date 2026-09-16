@@ -115,20 +115,18 @@ void GameOptionsClass::Process() {
   */
   TextButtonClass* buttons = nullptr;
   int selection = 0;
-  bool pressed;
   int curbutton = 7;
-  int y;
+  int y = 0;
   TextButtonClass* buttonsel[std::size(_constants)];
   static const int num_buttons = sizeof(_constants) / sizeof(_constants[0]);
 
   int num_players = 0;
-  int i;
 
   //
   // Compute the number of real players in the game; only allow saves
   // if there are more than 1.
   //
-  for (i = 0; i < Session.Players.Count(); i++) {
+  for (int i = 0; i < Session.Players.Count(); i++) {
     if (!HouseClass::As_Pointer(Session.Players[i]->Player.ID)->IsDefeated) {
       num_players++;
     }
@@ -174,7 +172,7 @@ void GameOptionsClass::Process() {
       y = OptionY + ButtonResumeY;
     }
 
-    TextButtonClass* g;
+    TextButtonClass* g = nullptr;
     if (_constants[index].ID == BUTTON_DRAW) {
       if (Session.Type != GAME_NORMAL && Session.Type != GAME_SKIRMISH &&
           Session.Players.Count() == 2) {
@@ -269,7 +267,7 @@ void GameOptionsClass::Process() {
   */
   bool display = true;
   bool process = true;
-  pressed = false;
+  bool pressed = false;
   while (process) {
     /*
     **	Invoke game callback.

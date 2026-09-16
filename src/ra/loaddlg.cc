@@ -199,14 +199,13 @@ bool LoadOptionsClass::Process() {
   /*
   **	Other Variables
   */
-  int btn_txt;                         // text on the 'OK' button
-  unsigned btn_id;                        // ID of 'OK' button
-  int caption;                         // dialog caption
+  int btn_txt = 0;                     // text on the 'OK' button
+  unsigned btn_id = 0;                 // ID of 'OK' button
+  int caption = 0;                     // dialog caption
   int game_idx = 0;                    // index of game to save/load/etc
   int game_num = 0;                    // file number of game to load/save/etc
   char game_descr[kDescripMax] = {0};  // save-game description
   char fname[kMaxFname + kMaxExt];     // for generating filename to delete
-  bool rc;                             // return code
 
   /*
   **	Buttons
@@ -423,7 +422,7 @@ bool LoadOptionsClass::Process() {
 
           WWMessageBox().Process(TXT_LOADING, TXT_NONE);
           Theme.Fade_Out();
-          rc = Load_Game(game_num);
+          const bool rc = Load_Game(game_num);  // return code
 
           /*
           ** Make sure the message says on the screen at least 1 second
@@ -635,12 +634,12 @@ void LoadOptionsClass::Clear_List(ListClass* list) {
  *games are "(old)".                                     *
  *=============================================================================================*/
 void LoadOptionsClass::Fill_List(ListClass* list) {
-  FileEntryClass* fdata;  // for adding entries to 'Files'
+  FileEntryClass* fdata = nullptr;  // for adding entries to 'Files'
   char descr[kDescripMax + 32];
-  unsigned scenario;  // scenario #
-  HousesType house;   // house
+  unsigned scenario = 0;  // scenario #
+  HousesType house = HOUSE_NONE;
   FindFileState find_state{};
-  int id;
+  int id = 0;
 
   /*
   ** Make sure the list is empty
@@ -714,7 +713,7 @@ void LoadOptionsClass::Fill_List(ListClass* list) {
     ** in the list; if any number isn't found, use that number; otherwise,
     ** use 'N + 1'.
     */
-    int i;
+    int i = 0;
     for (i = 0; i < Files.Count(); i++) {  // i = the # we're searching for
       id = -1;                             // mark as 'not found'
       for (int j = 0; j < Files.Count(); j++) {  // loop through all game ID's

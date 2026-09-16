@@ -102,7 +102,7 @@ const MonoClass::BoxDataType MonoClass::CharData[COUNT] = {
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
 MonoClass::MonoClass() {
-  int index;
+  int index = 0;
 
   X = Y = 0;
   for (index = 0; index < MAX_MONO_PAGES; index++) {
@@ -383,14 +383,13 @@ void MonoClass::Scroll(int lines) {
 void MonoClass::Print(const char* ptr) {
   //	int optr;
   const char startcol = X;
-  const char* text;
   CellType cell;
 
   if (!ptr || !Enabled) {
     return;
   }
 
-  text = ptr;
+  const char* text = ptr;
   cell.Attribute = Attrib;
   //	optr = Offset(X, Y);
   while (*text) {
@@ -551,7 +550,6 @@ MonoClass& MonoClass::operator=(const MonoClass& src) {
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
 void MonoClass::View() {
-  MonoClass* displace;  // The page that is being displaced.
 
   if (Get_Current() == this) {
     return;
@@ -561,7 +559,7 @@ void MonoClass::View() {
   **	If the visible page is already assigned to a real monochrome page
   **	object, then it must be swapped with the new one.
   */
-  displace = Get_Current();
+  MonoClass* displace = Get_Current();  // The page that is being displaced.
   if (displace) {
     char temp[SIZE_OF_PAGE];
 

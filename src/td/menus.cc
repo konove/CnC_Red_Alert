@@ -100,13 +100,12 @@ static int MenuSkip;
  */
 /*=========================================================================*/
 static int Select_To_Entry(int select, uint32_t bitfield, int index) {
-  int placement;
 
   if (bitfield == 0xFFFFFFFFL) { /* if all bits are set	*/
     return select;               /*		then it as is		*/
   }
 
-  placement = 0;                                  /* current pos zero		*/
+  int placement = 0;                              /* current pos zero		*/
   while (select) {                                /* while still ones		*/
     if (bitfield & (1L << (placement + index))) { /* if this flagged then
                                                    */
@@ -141,9 +140,7 @@ static int Select_To_Entry(int select, uint32_t bitfield, int index) {
 /*=========================================================================*/
 static void Flash_Line(const char* text, int xpix, int ypix, int nfgc,
                        int hfgc, int bgc) {
-  int loop;
-
-  for (loop = 0; loop < 3; loop++) {
+  for (int loop = 0; loop < 3; loop++) {
     Hide_Mouse();
     Fancy_Text_Print(text, xpix, ypix, hfgc, bgc, TPF_8POINT | TPF_DROPSHADOW);
     Delay(2);
@@ -268,42 +265,27 @@ void Setup_Menu(const MenuConfig& menu, const char* labels[],
 /*=========================================================================*/
 int Check_Menu(MenuConfig& menu, const char* text[], uint32_t field,
                int index) {
-  int maxitem;
-  int select;
-  int key;
-  int menuy;
-  int menux;
-  int mx1;
-  int mx2;
-  int my1;
-  int my2;
-  int tempy;
-  int drawy;
-  int menuskip;
-  int halfskip;
-  int normcol;
-  int litcol;
-  int item;
-  int newitem;
-  int idx;
+  int drawy = 0;
+  int item = 0;
+  int idx = 0;
 
-  maxitem = menu.item_count - 1;                  /* find max items			*/
-  newitem = item = menu.selected % (maxitem + 1); /* find selected */
-  select = -1;                                    /* no selection made		*/
-  menuskip = FontHeight + MenuSkip;               /* calc new font height	*/
-  halfskip = MenuSkip >> 1;                       /* adjustment for menus	*/
+  const int maxitem = menu.item_count - 1;            /* find max items */
+  int newitem = item = menu.selected % (maxitem + 1); /* find selected */
+  int select = -1;                                    /* no selection made		*/
+  const int menuskip = FontHeight + MenuSkip;         /* calc new font height	*/
+  const int halfskip = MenuSkip >> 1;                 /* adjustment for menus	*/
 
-  menuy = static_cast<int>(WinY) + menu.y;        /* get the absolute */
-  menux = (static_cast<int>(WinX) + menu.x) << 3; /* coords of menu */
-  normcol = menu.normal_color;
-  litcol = menu.highlight_color;
+  const int menuy = static_cast<int>(WinY) + menu.y; /* get the absolute */
+  const int menux = (static_cast<int>(WinX) + menu.x) << 3; /* coords of menu */
+  const int normcol = menu.normal_color;
+  const int litcol = menu.highlight_color;
 
   /*
   **	Fetch a pending keystroke from the buffer if there is a keystroke
   **	present. If no keystroke is pending then simple mouse tracking will
   **	be done.
   */
-  key = 0;
+  int key = 0;
   UnknownKey = 0;
   if (Keyboard::Check()) {
     key = (Keyboard::Get() & 0x18FF); /* mask off all but release bit	*/
@@ -316,14 +298,14 @@ int Check_Menu(MenuConfig& menu, const char* text[], uint32_t field,
   **	out the new selected item, and continue forward.
   */
   /* get menu coords from the menu */
-  mx1 = (static_cast<int>(WinX) << 3) + (menu.x * FontWidth);
-  my1 = static_cast<int>(WinY) + menu.y - halfskip;
-  mx2 = mx1 + (menu.item_width * FontWidth) -
-        1; /*		structure as		*/
-  my2 = my1 + (menu.item_count * menuskip) -
-        1; /*		necessary			*/
+  const int mx1 = (static_cast<int>(WinX) << 3) + (menu.x * FontWidth);
+  const int my1 = static_cast<int>(WinY) + menu.y - halfskip;
+  const int mx2 = mx1 + (menu.item_width * FontWidth) -
+                  1; /*		structure as		*/
+  const int my2 = my1 + (menu.item_count * menuskip) -
+                  1; /*		necessary			*/
 
-  tempy = Get_Mouse_Y();
+  const int tempy = Get_Mouse_Y();
   if (Coordinates_In_Region(Get_Mouse_X(), tempy, mx1, my1, mx2, my2) &&
       MenuUpdate) {
     newitem = (tempy - my1) / menuskip;
@@ -449,10 +431,6 @@ int Check_Menu(MenuConfig& menu, const char* text[], uint32_t field,
  *   05/16/1994 JLB : Created.                                             *
  *=========================================================================*/
 int Do_Menu(const char** strings, bool blue) {
-  int count;         // Number of entries in this menu.
-  int length;        // The width of the menu (in pixels).
-  const char** ptr;  // Working menu text pointer.
-  int selection;     // Selection from user.
 
   if (!strings) {
     return (-1);
@@ -463,8 +441,8 @@ int Do_Menu(const char** strings, bool blue) {
   /*
   **	Determine the number of entries in this string.
   */
-  ptr = strings;
-  count = 0;
+  const char** ptr = strings;  // Working menu text pointer.
+  int count = 0;               // Number of entries in this menu.
   while (*ptr++) {
     count++;
   }
@@ -475,7 +453,7 @@ int Do_Menu(const char** strings, bool blue) {
   **	longest menu entry.
   */
   Fancy_Text_Print(TXT_NONE, 0, 0, 0, 0, TPF_8POINT | TPF_DROPSHADOW);
-  length = 0;
+  int length = 0;  // The width of the menu (in pixels).
   ptr = strings;
   while (*ptr) {
     length = std::max(length, String_Pixel_Width(*ptr));
@@ -504,7 +482,7 @@ int Do_Menu(const char** strings, bool blue) {
   Setup_Menu(menu_config, strings, 0xFFFFL, 0, 0);
 
   Keyboard::Clear();
-  selection = -1;
+  int selection = -1;  // Selection from user.
   UnknownKey = 0;
   while (selection == -1) {
     Call_Back();
@@ -621,9 +599,9 @@ int Main_Menu(int timeout) {
 #ifdef NEWMENU
   const bool expansions = Expansion_Present();
 #endif
-  KeyNumType input;  // input from user
+  KeyNumType input = KN_NONE;  // input from user
   int retval = 0;    // return value
-  int curbutton;
+  int curbutton = 0;
 #ifdef NEWMENU
 #ifdef BONUS_MISSIONS
   TextButtonClass* buttons[8];
@@ -633,7 +611,7 @@ int Main_Menu(int timeout) {
 #else
   TextButtonClass* buttons[5];
 #endif
-  int64_t starttime;
+  int64_t starttime = 0;
 
   ControlClass* commands = nullptr;  // the button list
 

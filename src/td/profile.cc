@@ -209,16 +209,11 @@ bool WWWritePrivateProfileInt(const char* section, const char* entry, int value,
 char* WWGetPrivateProfileString(const char* section, const char* key,
                                 const char* def, char* dest, int dest_len,
                                 char* ini_data) {
-  char* workptr;
   char                         // Working pointer into profile block.
       * altworkptr = nullptr;  // Alternate work pointer.
   char sec[50];       // Working section buffer.
-  char* retval;       // Start of section or entry pointer.
-  char* next;         // Pointer to start of next section (or EOF).
-  char c;
-  char c2;            // Working character values.
-  int len;            // Working substring length value.
-  int entrylen;       // Byte length of specified entry.
+  char* retval = nullptr;  // Start of section or entry pointer.
+  char c = 0;
   const char* orig_retbuf = nullptr;  // original dest ptr
 
   /*
@@ -245,12 +240,14 @@ char* WWGetPrivateProfileString(const char* section, const char* key,
   absl::SNPrintF(sec, sizeof(sec), "[%s]",
                  section);  // sec = section name including []'s
   strupr(sec);
-  len = static_cast<int>(strlen(sec));  // len = section name length, incl []'s
+  int len =
+      static_cast<int>(strlen(sec));  // Working substring length value.  // len
+                                      // = section name length, incl []'s
 
   /*
   **	Scan for a matching section
   */
-  workptr = ini_data;
+  char* workptr = ini_data;
   for (;;) {
     /*
     **	'workptr' = start of next section
@@ -301,7 +298,8 @@ char* WWGetPrivateProfileString(const char* section, const char* key,
       /*
       **	'next = end of section or end of file.
       */
-      next = strchr(workptr, '[');
+      char* next =
+          strchr(workptr, '[');  // Pointer to start of next section (or EOF).
       for (;;) {
         if (next) {
           c = *(next - 1);
@@ -335,7 +333,8 @@ char* WWGetPrivateProfileString(const char* section, const char* key,
       *associated *	string.
       */
       if (key) {
-        entrylen = static_cast<int>(strlen(key));
+        const int entrylen =
+            static_cast<int>(strlen(key));  // Byte length of specified entry.
 
         for (;;) {
           /*
@@ -356,7 +355,7 @@ char* WWGetPrivateProfileString(const char* section, const char* key,
           **	'c2' = character after possible entry; must be '=' or space
           */
           c = *(workptr - 1);
-          c2 = *(workptr + entrylen);
+          const char c2 = *(workptr + entrylen);  // Working character values.
 
           /*
           **	Entry found; extract it
@@ -431,9 +430,8 @@ char* WWGetPrivateProfileString(const char* section, const char* key,
           altworkptr = strchr(workptr, '=');  // find '='
 
           if (altworkptr && altworkptr < next) {
-            int length;  // Length of ID string.
-
-            length = static_cast<int>(altworkptr - workptr);
+            const int length =
+                static_cast<int>(altworkptr - workptr);  // Length of ID string.
 
             /*
             **	Make sure we don't write past the end of dest;
@@ -501,9 +499,6 @@ char* WWGetPrivateProfileString(const char* section, const char* key,
 bool WWWritePrivateProfileString(const char* section, const char* entry,
                                  const char* string, char* profile) {
   char buffer[250];  // Working section buffer
-  char* offset;
-  char* next;  // ptr to next section
-  char c;      // Working character value
 
   /*
   **	Just return if nothing to do.
@@ -518,7 +513,7 @@ bool WWWritePrivateProfileString(const char* section, const char* entry,
   **	buffer length. 'offset' will point to 1st entry in the section, NULL if
   **	section not found.
   */
-  offset =
+  char* offset =
       WWGetPrivateProfileString(section, nullptr, nullptr, nullptr, 0, profile);
 
   /*
@@ -539,10 +534,10 @@ bool WWWritePrivateProfileString(const char* section, const char* entry,
     /*
     **	'next = end of section or end of file.
     */
-    next = strchr(offset, '[');
+    char* next = strchr(offset, '[');  // ptr to next section
     for (;;) {
       if (next) {
-        c = *(next - 1);
+        const char c = *(next - 1);  // Working character value
 
         /*
         **	If character before '[' is newline, this is the start of the
@@ -588,13 +583,13 @@ bool WWWritePrivateProfileString(const char* section, const char* entry,
   **	Remove any existing entry
   */
   if (offset) {
-    int eol;  // Working EOL offset.
 
     /*
     **	Get # characters up to newline; \n is used since we're after the end
     **	of this line
     */
-    eol = static_cast<int>(strcspn(offset, "\n"));
+    const int eol =
+        static_cast<int>(strcspn(offset, "\n"));  // Working EOL offset.
 
     /*
     **	Erase the entry by strcpy'ing the entire INI file over this entry

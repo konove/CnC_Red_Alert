@@ -115,9 +115,7 @@ unsigned char TeamClass::Success[kTeamTypeMax];
  *=============================================================================================*/
 int TeamClass::Validate() const {
   if constexpr (config::kCheatKeysEnabled) {
-    int num;
-
-    num = Teams.ID(this);
+    const int num = Teams.ID(this);
     if (num < 0 || num >= kTeamMax) {
       Validate_Error("TEAM");
     }
@@ -1002,12 +1000,11 @@ void TeamClass::Calc_Center(CELL& center, CELL& obj_center) const {
   int32_t y = 0;
   int dist = 0x7FFFFFFF;
   int quantity = 0;
-  FootClass* unit;
 
   obj_center = 0;
   center = 0;
 
-  unit = Member;
+  FootClass* unit = Member;
   while (unit) {
     if (unit->IsInitiated && !unit->IsInLimbo) {
       const CELL c = Coord_Cell(unit->Center_Coord());

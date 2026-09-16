@@ -74,7 +74,7 @@ int LZWEngine::Compress(std::span<const std::byte> input,
     **	then break out of the process loop so that the final code
     **	can be written out.
     */
-    unsigned char character;
+    unsigned char character = 0;
     if (!instraw.ReadObject(character)) {
       break;
     }
@@ -132,7 +132,7 @@ int LZWEngine::Uncompress(std::span<const std::byte> input,
   SpanSource instraw(input);
   SpanSink outpipe(output);
 
-  CodeType old_code;
+  CodeType old_code = 0;
   if (instraw.Read(std::as_writable_bytes(std::span(&old_code, 1))) == 0) {
     return static_cast<int>(outpipe.bytes_written());
   }
@@ -144,8 +144,8 @@ int LZWEngine::Uncompress(std::span<const std::byte> input,
   auto character = static_cast<unsigned char>(old_code);
   outpipe.WriteObject(character);
 
-  int count;
-  CodeType new_code;
+  int count = 0;
+  CodeType new_code = 0;
   CodeType next_code = FIRST_CODE;
   for (;;) {
     if (instraw.Read(std::as_writable_bytes(std::span(&new_code, 1))) == 0) {

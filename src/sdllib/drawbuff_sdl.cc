@@ -94,7 +94,7 @@ void GraphicBufferClass::Update_Window_Surface(bool end_frame) {
   }
 
   // blit from paletted surface
-  SDL_Surface* tmp_surf;
+  SDL_Surface* tmp_surf = nullptr;
   SDL_LockTextureToSurface(window_tex, nullptr, &tmp_surf);
   SDL_BlitSurface(static_cast<SDL_Surface*>(PaletteSurface), nullptr, tmp_surf,
                   nullptr);
@@ -175,8 +175,8 @@ void GraphicBufferClass::Render_Scaled_Frame(const uint8_t* paletted_data,
       static_cast<SDL_Surface*>(PaletteSurface)->format->palette;
 
   // Convert paletted pixels to RGBA and upload to intermediate texture
-  void* pixels;
-  int pitch;
+  void* pixels = nullptr;
+  int pitch = 0;
   SDL_LockTexture(static_cast<SDL_Texture*>(VQATexture), nullptr, &pixels,
                   &pitch);
 

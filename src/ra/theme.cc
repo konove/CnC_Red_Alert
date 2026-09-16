@@ -258,7 +258,7 @@ ThemeType ThemeClass::Next_Song(ThemeType theme) {
       **	Shuffle the theme, but never pick the same theme that was just
       **	playing.
       */
-      ThemeType newtheme;
+      ThemeType newtheme = THEME_NONE;
       do {
         newtheme = Sim_Random_Pick(magic_enum::enum_values<ThemeType>().front(),
                                    magic_enum::enum_values<ThemeType>().back());

@@ -89,7 +89,6 @@ CommBufferClass::CommBufferClass(int numsend, int numreceive, int maxlen,
       SendIndex(new int[base::ToSize(numsend)]),
       ReceiveQueue(new ReceiveQueueType[base::ToSize(numreceive)]),
       ReceiveIndex(new int[base::ToSize(numreceive)]) {
-  int i;
 
   //------------------------------------------------------------------------
   //	Init variables
@@ -102,7 +101,7 @@ CommBufferClass::CommBufferClass(int numsend, int numreceive, int maxlen,
   //------------------------------------------------------------------------
   //	Allocate queue entry buffers
   //------------------------------------------------------------------------
-  for (i = 0; i < MaxSend; i++) {
+  for (int i = 0; i < MaxSend; i++) {
     // new char[] provides alignment for the packet headers stored at its base.
     SendQueue[i].Buffer = new char[base::ToSize(maxlen)];
     if (MaxExtraSize > 0) {
@@ -112,7 +111,7 @@ CommBufferClass::CommBufferClass(int numsend, int numreceive, int maxlen,
     }
   }
 
-  for (i = 0; i < MaxReceive; i++) {
+  for (int i = 0; i < MaxReceive; i++) {
     ReceiveQueue[i].Buffer = new char[base::ToSize(maxlen)];
     if (MaxExtraSize > 0) {
       ReceiveQueue[i].ExtraBuffer = new char[base::ToSize(MaxExtraSize)];
@@ -144,17 +143,16 @@ CommBufferClass::CommBufferClass(int numsend, int numreceive, int maxlen,
  *   12/19/1994 BR : Created.                                              *
  *=========================================================================*/
 CommBufferClass::~CommBufferClass() {
-  int i;
 
   //------------------------------------------------------------------------
   //	Free queue entry buffers
   //------------------------------------------------------------------------
-  for (i = 0; i < MaxSend; i++) {
+  for (int i = 0; i < MaxSend; i++) {
     delete[] SendQueue[i].Buffer;
     delete[] SendQueue[i].ExtraBuffer;
   }
 
-  for (i = 0; i < MaxReceive; i++) {
+  for (int i = 0; i < MaxReceive; i++) {
     delete[] ReceiveQueue[i].Buffer;
     delete[] ReceiveQueue[i].ExtraBuffer;
   }
@@ -186,7 +184,6 @@ CommBufferClass::~CommBufferClass() {
  *   01/20/1995 BR : Created.                                              *
  *=========================================================================*/
 void CommBufferClass::Init() {
-  int i;
 
   //------------------------------------------------------------------------
   //	Init data members
@@ -206,7 +203,7 @@ void CommBufferClass::Init() {
   //------------------------------------------------------------------------
   //	Init the queue entries
   //------------------------------------------------------------------------
-  for (i = 0; i < MaxSend; i++) {
+  for (int i = 0; i < MaxSend; i++) {
     SendQueue[i].IsActive = 0;
     SendQueue[i].IsACK = 0;
     SendQueue[i].FirstTime = 0L;
@@ -218,7 +215,7 @@ void CommBufferClass::Init() {
     SendIndex[i] = 0;
   }
 
-  for (i = 0; i < MaxReceive; i++) {
+  for (int i = 0; i < MaxReceive; i++) {
     ReceiveQueue[i].IsActive = 0;
     ReceiveQueue[i].IsRead = 0;
     ReceiveQueue[i].IsACK = 0;
@@ -257,7 +254,6 @@ void CommBufferClass::Init() {
  *   10/23/1995 BRR : Created.                                             *
  *=========================================================================*/
 void CommBufferClass::Init_Send_Queue() {
-  int i;
 
   //------------------------------------------------------------------------
   //	Init data members
@@ -267,7 +263,7 @@ void CommBufferClass::Init_Send_Queue() {
   //------------------------------------------------------------------------
   //	Init the queue entries
   //------------------------------------------------------------------------
-  for (i = 0; i < MaxSend; i++) {
+  for (int i = 0; i < MaxSend; i++) {
     SendQueue[i].IsActive = 0;
     SendQueue[i].IsACK = 0;
     SendQueue[i].FirstTime = 0L;
@@ -304,8 +300,6 @@ void CommBufferClass::Init_Send_Queue() {
  *=========================================================================*/
 int CommBufferClass::Queue_Send(void* buf, int buflen, void* extrabuf,
                                 int extralen) {
-  int i;
-  int index;
 
   //------------------------------------------------------------------------
   //	Error if no room in the queue
@@ -317,8 +311,8 @@ int CommBufferClass::Queue_Send(void* buf, int buflen, void* extrabuf,
   //------------------------------------------------------------------------
   //	Find an empty slot
   //------------------------------------------------------------------------
-  index = -1;
-  for (i = 0; i < MaxSend; i++) {
+  int index = -1;
+  for (int i = 0; i < MaxSend; i++) {
     if (SendQueue[i].IsActive == 0) {
       index = i;
       break;
@@ -398,7 +392,6 @@ int CommBufferClass::Queue_Send(void* buf, int buflen, void* extrabuf,
  *=========================================================================*/
 int CommBufferClass::UnQueue_Send(void* buf, int* buflen, int index,
                                   void* extrabuf, int* extralen) {
-  int i;
 
   //------------------------------------------------------------------------
   //	Error if no entry to retrieve
@@ -439,7 +432,7 @@ int CommBufferClass::UnQueue_Send(void* buf, int* buflen, int index,
   //------------------------------------------------------------------------
   //	Move Indices back one
   //------------------------------------------------------------------------
-  for (i = index; i < SendCount - 1; i++) {
+  for (int i = index; i < SendCount - 1; i++) {
     SendIndex[i] = SendIndex[i + 1];
   }
   SendIndex[SendCount - 1] = 0;
@@ -503,8 +496,6 @@ SendQueueType* CommBufferClass::Get_Send(int index) {
  *=========================================================================*/
 int CommBufferClass::Queue_Receive(void* buf, int buflen, void* extrabuf,
                                    int extralen) {
-  int i;
-  int index;
 
   //------------------------------------------------------------------------
   //	Error if no room in the queue
@@ -516,8 +507,8 @@ int CommBufferClass::Queue_Receive(void* buf, int buflen, void* extrabuf,
   //------------------------------------------------------------------------
   //	Find an empty slot
   //------------------------------------------------------------------------
-  index = -1;
-  for (i = 0; i < MaxReceive; i++) {
+  int index = -1;
+  for (int i = 0; i < MaxReceive; i++) {
     if (ReceiveQueue[i].IsActive == 0) {
       index = i;
       break;
@@ -596,7 +587,6 @@ int CommBufferClass::Queue_Receive(void* buf, int buflen, void* extrabuf,
  *=========================================================================*/
 int CommBufferClass::UnQueue_Receive(void* buf, int* buflen, int index,
                                      void* extrabuf, int* extralen) {
-  int i;
 
   //------------------------------------------------------------------------
   //	Error if no entry to retrieve
@@ -635,7 +625,7 @@ int CommBufferClass::UnQueue_Receive(void* buf, int* buflen, int index,
   //------------------------------------------------------------------------
   //	Move Indices back one
   //------------------------------------------------------------------------
-  for (i = index; i < ReceiveCount - 1; i++) {
+  for (int i = index; i < ReceiveCount - 1; i++) {
     ReceiveIndex[i] = ReceiveIndex[i + 1];
   }
   ReceiveIndex[ReceiveCount - 1] = 0;

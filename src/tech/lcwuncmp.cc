@@ -81,23 +81,18 @@ int32_t __cdecl LCW_Uncompress(const void* source, void* dest, int32_t length)
 // unsigned long LCW_Uncompress (void * source, void * dest, unsigned long
 // length)
 {
-  const unsigned char* source_ptr;
-  unsigned char* dest_ptr;
-  unsigned char* copy_ptr;
-  unsigned char* dest_end;
-  unsigned char op_code;
-  unsigned char data;
-  unsigned count;
+  unsigned char* copy_ptr = nullptr;
+  unsigned count = 0;
 
   /* Copy the source and destination ptrs. */
-  source_ptr = static_cast<const unsigned char*>(source);
-  dest_ptr = static_cast<unsigned char*>(dest);
+  const auto* source_ptr = static_cast<const unsigned char*>(source);
+  auto* dest_ptr = static_cast<unsigned char*>(dest);
 
-  dest_end = dest_ptr + length;
+  unsigned char* dest_end = dest_ptr + length;
 
   while (dest_ptr < dest_end) {
     /* Read in the operation code. */
-    op_code = *source_ptr++;
+    const unsigned char op_code = *source_ptr++;
 
     if (!(op_code & 0x80)) {
       /* Do a short copy from destination. */
@@ -138,7 +133,7 @@ int32_t __cdecl LCW_Uncompress(const void* source, void* dest, int32_t length)
         if (op_code == 0xfe) {
           /* Do a long run. */
           count = *source_ptr + (static_cast<unsigned>(*(source_ptr + 1)) << 8);
-          data = *(source_ptr + 2);
+          const unsigned char data = *(source_ptr + 2);
           source_ptr += 3;
 
           // clamp to decompressed size

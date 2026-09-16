@@ -1304,14 +1304,12 @@ TemplateType TemplateTypeClass::From_Name(const char* name) {
 const int16_t* TemplateTypeClass::Occupy_List(bool /*placement*/) const {
   static int16_t _occupy[(13 * 8) + 5];
   unsigned char map[13 * 8];
-  int16_t* ptr;
-  int index;
 
   Mem_Copy(Get_Icon_Set_Map(Get_Image_Data()), map,
            static_cast<size_t>(Width) * Height);
 
-  ptr = &_occupy[0];
-  for (index = 0; index < Width * Height; index++) {
+  int16_t* ptr = &_occupy[0];
+  for (int index = 0; index < Width * Height; index++) {
     if (map[index] != 0xFF) {
       *ptr++ =
           static_cast<int16_t>((index % Width) + (index / Width * MAP_CELL_W));
@@ -1340,7 +1338,6 @@ const int16_t* TemplateTypeClass::Occupy_List(bool /*placement*/) const {
  *loading now (as it should).                         *
  *=============================================================================================*/
 void TemplateTypeClass::Init(TheaterType theater) {
-  const void* ptr;  // Working loaded iconset pointer.
 
   for (TemplateType index = TEMPLATE_CLEAR1; index < TEMPLATE_COUNT; index++) {
     const TemplateTypeClass& tplate = As_Reference(index);
@@ -1351,7 +1348,8 @@ void TemplateTypeClass::Init(TheaterType theater) {
       const auto fullname = std::filesystem::path(tplate.IniName)
                                 .replace_extension(Theaters[theater].Suffix)
                                 .string();
-      ptr = MixArchive::Retrieve(fullname);
+      const void* ptr =
+          MixArchive::Retrieve(fullname);  // Working loaded iconset pointer.
       tplate.Set_Image_Data(ptr);
       Register_Icon_Set(ptr,
                         true);  // Register icon set for video memory caching
@@ -1378,15 +1376,11 @@ void TemplateTypeClass::Init(TheaterType theater) {
  *=============================================================================================*/
 void TemplateTypeClass::Display(int x, int y, WindowNumberType window,
                                 HousesType /*unused*/) const {
-  int w;
-  int h;
-  int index;
   unsigned char map[13 * 8];
-  bool scale;  // Should the template be half sized?
 
-  w = Bound(Width, 1, 13);
-  h = Bound(Height, 1, 8);
-  scale = (w > 3 || h > 3);
+  const int w = Bound(Width, 1, 13);
+  const int h = Bound(Height, 1, 8);
+  const bool scale = (w > 3 || h > 3);  // Should the template be half sized?
   if (scale) {
     x -= (w / 2) * (ICON_PIXEL_W / 2);
     y -= (h / 2) * (ICON_PIXEL_H / 2);
@@ -1400,7 +1394,7 @@ void TemplateTypeClass::Display(int x, int y, WindowNumberType window,
   Mem_Copy(Get_Icon_Set_Map(Get_Image_Data()), map,
            static_cast<size_t>(Width) * Height);
 
-  for (index = 0; index < w * h; index++) {
+  for (int index = 0; index < w * h; index++) {
     if (map[index] != 0xFF) {
       HidPage.Draw_Stamp(Get_Image_Data(), index, 0, 0, nullptr, WINDOW_MAIN);
       if (scale) {

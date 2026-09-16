@@ -65,7 +65,6 @@
 #include <cstdlib>
 #include <cstring>
 #include <format>
-#include <iterator>
 #include <string>
 #include <utility>
 
@@ -326,7 +325,6 @@ bool TriggerTypeClass::Edit() {
   /*
   **	Dialog variables:
   */
-  int i;  // loop counter
   RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
 
   /*
@@ -995,8 +993,8 @@ bool TriggerTypeClass::Edit() {
       BUTTON_PERSISTANCE, perstext, sizeof(perstext), TPF_EFNT | TPF_NOSHADOW,
       housebtn.X + housebtn.Width + 20, housebtn.Y, 105, 8 * 5,
       MixArchive::Retrieve("EBTN-UP.SHP"), MixArchive::Retrieve("EBTN-DN.SHP"));
-  for (i = 0; i < std::ssize(_perstext); i++) {
-    persbtn.Add_Item(_perstext[i]);
+  for (auto& i : _perstext) {
+    persbtn.Add_Item(i);
   }
   persbtn.Set_Selected_Index(IsPersistant);
 
@@ -1734,7 +1732,7 @@ const char* TriggerTypeClass::Description() const {
   if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
     static char _buffer[128];
 
-    char special;
+    char special = 0;
     switch (EventControl) {
       case MULTI_AND:
         special = '&';
@@ -1880,7 +1878,6 @@ AttachType TriggerTypeClass::Attaches_To() const {
  * HISTORY: * 11/28/1994 BR : Created. *
  *=============================================================================================*/
 void TriggerTypeClass::Read_INI(CCINIClass& ini) {
-  TriggerTypeClass* trigger;  // Working trigger pointer.
   char buf[128];
 
   const int len = ini.Entry_Count(INI_Name());
@@ -1890,7 +1887,7 @@ void TriggerTypeClass::Read_INI(CCINIClass& ini) {
     /*
     **	Create a new trigger.
     */
-    trigger = new TriggerTypeClass();
+    auto* trigger = new TriggerTypeClass();  // Working trigger pointer.
 
     /*
     **	Get the trigger entry.

@@ -82,36 +82,35 @@
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
 void Detach_This_From_All(TARGET target, bool all) {
-  int index;
   if (Target_Legal(target)) {
-    for (index = 0; index < Houses.Count(); index++) {
+    for (int index = 0; index < Houses.Count(); index++) {
       Houses.Ptr(index)->Detach(target, all);
     }
-    for (index = 0; index < Teams.Count(); index++) {
+    for (int index = 0; index < Teams.Count(); index++) {
       Teams.Ptr(index)->Detach(target, all);
     }
-    for (index = 0; index < TeamTypes.Count(); index++) {
+    for (int index = 0; index < TeamTypes.Count(); index++) {
       TeamTypes.Ptr(index)->Detach(target, all);
     }
-    for (index = 0; index < Units.Count(); index++) {
+    for (int index = 0; index < Units.Count(); index++) {
       Units.Ptr(index)->Detach(target, all);
     }
-    for (index = 0; index < Vessels.Count(); index++) {
+    for (int index = 0; index < Vessels.Count(); index++) {
       Vessels.Ptr(index)->Detach(target, all);
     }
-    for (index = 0; index < Aircraft.Count(); index++) {
+    for (int index = 0; index < Aircraft.Count(); index++) {
       Aircraft.Ptr(index)->Detach(target, all);
     }
-    for (index = 0; index < Buildings.Count(); index++) {
+    for (int index = 0; index < Buildings.Count(); index++) {
       Buildings.Ptr(index)->Detach(target, all);
     }
-    for (index = 0; index < Bullets.Count(); index++) {
+    for (int index = 0; index < Bullets.Count(); index++) {
       Bullets.Ptr(index)->Detach(target, all);
     }
-    for (index = 0; index < Infantry.Count(); index++) {
+    for (int index = 0; index < Infantry.Count(); index++) {
       Infantry.Ptr(index)->Detach(target, all);
     }
-    for (index = 0; index < Anims.Count(); index++) {
+    for (int index = 0; index < Anims.Count(); index++) {
       Anims.Ptr(index)->Detach(target, all);
     }
 
@@ -137,10 +136,10 @@ void Detach_This_From_All(TARGET target, bool all) {
       }
     }
 
-    for (index = 0; index < Triggers.Count(); index++) {
+    for (int index = 0; index < Triggers.Count(); index++) {
       Triggers.Ptr(index)->Detach(target, all);
     }
-    for (index = 0; index < TriggerTypes.Count(); index++) {
+    for (int index = 0; index < TriggerTypes.Count(); index++) {
       TriggerTypes.Ptr(index)->Detach(target, all);
     }
   }

@@ -132,10 +132,10 @@ void Set_Scenario_Name(char* buf, int scenario, ScenarioPlayerType player,
                        ScenarioDirType dir, ScenarioVarType var) {
   // "SC" + player + two-digit number + direction + variation, plus the NUL.
   constexpr size_t kScenarioNameSize = sizeof("SCG01EA");
-  char c_player;  // character representing player type
-  char c_dir;     // character representing direction type
-  char c_var;     // character representing variation type
-  ScenarioVarType i;
+  char c_player = 0;  // character representing player type
+  char c_dir = 0;     // character representing direction type
+  char c_var = 0;     // character representing variation type
+  ScenarioVarType i = SCEN_VAR_NONE;
   char fname[kMaxFname + kMaxExt];
 
   /*
@@ -255,13 +255,11 @@ void Set_Scenario_Name(char* buf, int scenario, ScenarioPlayerType player,
  * HISTORY: * 10/07/1992 JLB : Created. *
  *=============================================================================================*/
 bool Read_Scenario_Ini(const char* root, bool fresh) {
-  char* buffer;                       // Scenario.ini staging buffer pointer.
   char fname[kMaxFname + kMaxExt];    // full INI filename
   char buf[128];                      // Working string staging buffer.
-  int rndmax;
-  int rndmin;
-  int len;
-  unsigned char val;
+  int rndmax = 0;
+  int rndmin = 0;
+  unsigned char val = 0;
 
   ScenarioInit++;
 
@@ -271,7 +269,7 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   *this, since *	the HidPage may be needed for various uncompressions
   *during the INI *	parsing.)
   */
-  buffer = ShapeBuffer;
+  char* buffer = ShapeBuffer;  // Scenario.ini staging buffer pointer.
   memset(buffer, '\0', base::ToSize(ShapeBufferSize));
 
   if (fresh) {
@@ -327,7 +325,7 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   ** Init the Scenario CRC value
   */
   ScenarioCRC = 0;
-  len = static_cast<int>(strlen(buffer));
+  const int len = static_cast<int>(strlen(buffer));
   for (int i = 0; i < len; i++) {
     val = static_cast<unsigned char>(buffer[i]);
 #ifndef DEMO
@@ -412,7 +410,7 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
 
     PlayerPtr = HouseClass::As_Pointer(HouseTypeClass::From_Name(buf));
     PlayerPtr->IsHuman = true;
-    int carryover;
+    int carryover = 0;
     // Any negative cap, not just the -1 default, means uncapped; the original
     // compared the cap as unsigned.
     if (CarryOverCap >= 0) {
@@ -664,16 +662,15 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
  *=============================================================================================*/
 void Write_Scenario_Ini(const char* root) {
   if constexpr (config::kCheatKeysEnabled) {
-    char* buffer;                       // Scenario.ini staging buffer pointer.
     char fname[kMaxFname + kMaxExt];    // full scenario name
-    HousesType house;
+    HousesType house = HOUSE_NONE;
     GameFile file;
 
     /*
     **	Get a working pointer to the INI staging buffer. Make sure that the
     *buffer *	starts cleared out of any data.
     */
-    buffer = ShapeBuffer;
+    char* buffer = ShapeBuffer;  // Scenario.ini staging buffer pointer.
     memset(buffer, '\0', base::ToSize(ShapeBufferSize));
 
     switch (ScenPlayer) {
@@ -782,16 +779,12 @@ void Write_Scenario_Ini(const char* root) {
  *player in house structure.                               *
  *=============================================================================================*/
 static void Assign_Houses() {
-  HousesType house;
-  HousesType pref_house;
-  HouseClass* housep;
+  HousesType house = HOUSE_NONE;
+  HousesType pref_house = HOUSE_NONE;
+  HouseClass* housep = nullptr;
   bool house_used[MAX_PLAYERS];  // true = this house is in use
   bool color_used[6];            // true = this color is in use
-  int i;
-  int j;
-  PlayerColorType color;
-  HousesType house2;
-  HouseClass* housep2;
+  PlayerColorType color = REMAP_NONE;
 
   char wibble[256];
   absl::SNPrintF(wibble, sizeof(wibble),
@@ -802,18 +795,18 @@ static void Assign_Houses() {
   /*
   **	Init the 'used' flag for all houses & colors to 0
   */
-  for (i = 0; i < MAX_PLAYERS; i++) {
-    house_used[i] = false;
+  for (bool& i : house_used) {
+    i = false;
   }
-  for (i = 0; i < 6; i++) {
-    color_used[i] = false;
+  for (bool& i : color_used) {
+    i = false;
   }
 
   /*
   **	For each player, randomly pick a house
   */
-  for (i = 0; i < MPlayerCount; i++) {
-    j = Random_Pick(0, MPlayerMax - 1);
+  for (int i = 0; i < MPlayerCount; i++) {
+    const int j = Random_Pick(0, MPlayerMax - 1);
 
     /*
     **	If this house was already selected, decrement 'i' & keep looping.
@@ -858,7 +851,7 @@ static void Assign_Houses() {
   /*
   **	For all houses not assigned to a player, set them up for computer use
   */
-  for (i = 0; i < MPlayerMax; i++) {
+  for (int i = 0; i < MPlayerMax; i++) {
     if (!house_used[i]) {
       /*
       **	Set the house, preferred house (GDI/NOD), and color; get a
@@ -897,8 +890,9 @@ static void Assign_Houses() {
       continue;
     }
 
-    for (house2 = HOUSE_MULTI1; house2 < HOUSE_MULTI1 + MPlayerMax; house2++) {
-      housep2 = HouseClass::As_Pointer(house2);
+    for (HousesType house2 = HOUSE_MULTI1; house2 < HOUSE_MULTI1 + MPlayerMax;
+         house2++) {
+      HouseClass* housep2 = HouseClass::As_Pointer(house2);
       if (housep2->IsHuman) {
         continue;
       }
@@ -919,13 +913,9 @@ static void Assign_Houses() {
  * HISTORY: * 06/09/1995 BRR : Created. *
  *=============================================================================================*/
 static void Remove_AI_Players() {
-  int i;
-  HousesType house;
-  HouseClass* housep;
-
-  for (i = 0; i < MAX_PLAYERS; i++) {
-    house = static_cast<HousesType>(i + HOUSE_MULTI1);
-    housep = HouseClass::As_Pointer(house);
+  for (int i = 0; i < MAX_PLAYERS; i++) {
+    const auto house = static_cast<HousesType>(i + HOUSE_MULTI1);
+    HouseClass* housep = HouseClass::As_Pointer(house);
     if (!static_cast<bool>(housep->IsHuman)) {
       housep->Clobber_All();
     }
@@ -993,7 +983,6 @@ static void Create_Units() {
   };
   static int
       num_units[NUM_UNIT_CATEGORIES];  // # of each type of unit to create
-  int tot_units;                       // total # units to create
 
   static const struct {
     int MinLevel;
@@ -1010,36 +999,27 @@ static void Create_Units() {
   };
   static int num_infantry[NUM_INFANTRY_CATEGORIES];  // # of each type of
                                                      // infantry to create
-  int tot_infantry;  // total # infantry to create
 
   CELL waypts[26];
   CELL sorted_waypts[26];
-  int num_waypts;
 
-  HousesType h;      // house loop counter
-  HouseClass* hptr;  // ptr to house being processed
-
-  CELL centroid;  // centroid of this house's stuff
-  int try_count;  // # times we've tried to select a centroid
-  CELL centerpt;  // centroid for a category of objects, as a CELL
+  CELL centroid = 0;  // centroid of this house's stuff
+  CELL centerpt = 0;  // centroid for a category of objects, as a CELL
 
   int u_limit = 0;   // last allowable index of units for this BuildLevel
   int i_limit = 0;   // last allowable index of infantry for this BuildLevel
-  TechnoClass* obj;  // newly-created object
-  int i;
-  int j;
-  int k;             // loop counters
-  int scaleval;      // value to scale # units or infantry
+  TechnoClass* obj = nullptr;  // newly-created object
+  int scaleval = 0;            // value to scale # units or infantry
 
   /*------------------------------------------------------------------------
   For the current BuildLevel, find the max allowable index into the tables
   ------------------------------------------------------------------------*/
-  for (i = 0; i < NUM_UNIT_CATEGORIES; i++) {
+  for (int i = 0; i < NUM_UNIT_CATEGORIES; i++) {
     if (BuildLevel >= utable[i].MinLevel) {
       u_limit = i;
     }
   }
-  for (i = 0; i < NUM_INFANTRY_CATEGORIES; i++) {
+  for (int i = 0; i < NUM_INFANTRY_CATEGORIES; i++) {
     if (BuildLevel >= utable[i].MinLevel) {
       i_limit = i;
     }
@@ -1051,21 +1031,21 @@ static void Create_Units() {
   /*........................................................................
   Compute allowed # units
   ........................................................................*/
-  tot_units = MPlayerUnitCount * 2 / 3;
+  const int tot_units = MPlayerUnitCount * 2 / 3;  // total # units to create
   //	tot_units = std::max(tot_units, 1);
 
   /*........................................................................
   Init # of each category to 0
   ........................................................................*/
-  for (i = 0; i <= u_limit; i++) {
+  for (int i = 0; i <= u_limit; i++) {
     num_units[i] = 0;
   }
 
   /*........................................................................
   Increment # of each category, until we've used up all units
   ........................................................................*/
-  j = 0;
-  for (i = 0; i < tot_units; i++) {
+  int j = 0;
+  for (int i = 0; i < tot_units; i++) {
     num_units[j]++;
     j++;
     if (j > u_limit) {
@@ -1076,12 +1056,13 @@ static void Create_Units() {
   /*........................................................................
   Compute allowed # infantry
   ........................................................................*/
-  tot_infantry = MPlayerUnitCount - tot_units;
+  const int tot_infantry =
+      MPlayerUnitCount - tot_units;  // total # infantry to create
 
   /*........................................................................
   Init # of each category to 0
   ........................................................................*/
-  for (i = 0; i <= i_limit; i++) {
+  for (int i = 0; i <= i_limit; i++) {
     num_infantry[i] = 0;
   }
 
@@ -1089,7 +1070,7 @@ static void Create_Units() {
   Increment # of each category, until we've used up all infantry
   ........................................................................*/
   j = 0;
-  for (i = 0; i < tot_infantry; i++) {
+  for (int i = 0; i < tot_infantry; i++) {
     num_infantry[j]++;
     j++;
     if (j > i_limit) {
@@ -1100,12 +1081,12 @@ static void Create_Units() {
   /*------------------------------------------------------------------------
   Now sort all the Waypoints on the map by distance.
   ------------------------------------------------------------------------*/
-  num_waypts = 0;  // counts # waypoints
+  int num_waypts = 0;  // counts # waypoints
 
   /*........................................................................
   First, copy all valid waytpoints into my 'waypts' array
   ........................................................................*/
-  for (i = 0; i < 26; i++) {
+  for (int i = 0; i < 26; i++) {
     if (Waypoint[i] != -1) {
       waypts[num_waypts] = Waypoint[i];
       num_waypts++;
@@ -1122,11 +1103,12 @@ static void Create_Units() {
   ON, are treated as though bases are OFF (since we have no base-building
   AI logic.)
   ------------------------------------------------------------------------*/
-  for (h = HOUSE_MULTI1; h < HOUSE_MULTI1 + MPlayerMax; h++) {
+  for (HousesType h = HOUSE_MULTI1; h < HOUSE_MULTI1 + MPlayerMax; h++) {
     /*.....................................................................
     Get a pointer to this house; if there is none, go to the next house
     .....................................................................*/
-    hptr = HouseClass::As_Pointer(h);
+    HouseClass* hptr =
+        HouseClass::As_Pointer(h);  // ptr to house being processed
     if (!hptr) {
       continue;
     }
@@ -1135,7 +1117,7 @@ static void Create_Units() {
     Pick a random waypoint; if the chosen waypoint isn't valid, try again.
     'centroid' will be the centroid of all this house's stuff.
     .....................................................................*/
-    try_count = 0;
+    int try_count = 0;  // # times we've tried to select a centroid
     while (true) {
       j = GameRandomRange(0, MPlayerMax - 1);
       if (sorted_waypts[j] != -1) {
@@ -1231,7 +1213,7 @@ static void Create_Units() {
     /*---------------------------------------------------------------------
     Create units for this house
     ---------------------------------------------------------------------*/
-    for (i = 0; i <= u_limit; i++) {
+    for (int i = 0; i <= u_limit; i++) {
       /*..................................................................
       Find the center point for this category.
       ..................................................................*/
@@ -1245,7 +1227,7 @@ static void Create_Units() {
         Create a GDI unit
         ...............................................................*/
         if (hptr->ActLike == HOUSE_GOOD) {
-          for (k = 0; k < utable[i].GDICount; k++) {
+          for (int k = 0; k < utable[i].GDICount; k++) {
             obj = new UnitClass(utable[i].GDIType, h);
             if (!Scan_Place_Object(obj, centerpt)) {
               delete obj;
@@ -1259,7 +1241,7 @@ static void Create_Units() {
           /*...............................................................
           Create a NOD unit
           ...............................................................*/
-          for (k = 0; k < utable[i].NODCount; k++) {
+          for (int k = 0; k < utable[i].NODCount; k++) {
             obj = new UnitClass(utable[i].NODType, h);
             if (!Scan_Place_Object(obj, centerpt)) {
               delete obj;
@@ -1276,7 +1258,7 @@ static void Create_Units() {
     /*---------------------------------------------------------------------
     Create infantry
     ---------------------------------------------------------------------*/
-    for (i = 0; i <= i_limit; i++) {
+    for (int i = 0; i <= i_limit; i++) {
       /*..................................................................
       Find the center point for this category.
       ..................................................................*/
@@ -1292,7 +1274,7 @@ static void Create_Units() {
         this state.)
         ...............................................................*/
         if (hptr->ActLike == HOUSE_GOOD) {
-          for (k = 0; k < itable[i].GDICount; k++) {
+          for (int k = 0; k < itable[i].GDICount; k++) {
             obj = new InfantryClass(itable[i].GDIType, h);
             if (!Scan_Place_Object(obj, centerpt)) {
               delete obj;
@@ -1306,7 +1288,7 @@ static void Create_Units() {
           /*...............................................................
           Create NOD infantry
           ...............................................................*/
-          for (k = 0; k < itable[i].NODCount; k++) {
+          for (int k = 0; k < itable[i].NODCount; k++) {
             obj = new InfantryClass(itable[i].NODType, h);
             if (!Scan_Place_Object(obj, centerpt)) {
               delete obj;
@@ -1335,13 +1317,7 @@ static void Create_Units() {
  * HISTORY: * 06/09/1995 BRR : Created. *
  *=============================================================================================*/
 bool Scan_Place_Object(ObjectClass* obj, CELL cell) {
-  int dist;             // for object placement
-  FacingType rot;       // for object placement
-  FacingType fcounter;  // for object placement
-  int tryval;
-  CELL newcell;
-  TechnoClass* techno;
-  bool skipit;
+  TechnoClass* techno = nullptr;
 
   /*------------------------------------------------------------------------
   First try to unlimbo the object in the given cell.
@@ -1362,25 +1338,26 @@ bool Scan_Place_Object(ObjectClass* obj, CELL cell) {
   If that fails, go to the next distance.
   This ensures that the closest coordinates are filled first.
   ------------------------------------------------------------------------*/
-  for (dist = 1; dist < 32; dist++) {
+  for (int dist = 1; dist < 32; dist++) {
     /*.....................................................................
     Pick a random starting direction
     .....................................................................*/
-    rot = static_cast<FacingType>(GameRandomRange(FACING_N, FACING_NW));
+    auto rot = static_cast<FacingType>(
+        GameRandomRange(FACING_N, FACING_NW));  // for object placement
     /*.....................................................................
     Try all directions twice
     .....................................................................*/
-    for (tryval = 0; tryval < 2; tryval++) {
+    for (int tryval = 0; tryval < 2; tryval++) {
       /*..................................................................
       Loop through all directions, at this distance.
       ..................................................................*/
-      for (fcounter = FACING_N; fcounter <= FACING_NW; fcounter++) {
-        skipit = false;
+      for (FacingType fcounter = FACING_N; fcounter <= FACING_NW; fcounter++) {
+        bool skipit = false;
 
         /*...............................................................
         Pick a coordinate along this directional axis
         ...............................................................*/
-        newcell = Clip_Move(cell, rot, dist);
+        CELL newcell = Clip_Move(cell, rot, dist);
 
         /*...............................................................
         If this is our second try at this distance, add a random scatter
@@ -1436,20 +1413,17 @@ bool Scan_Place_Object(ObjectClass* obj, CELL cell) {
  * HISTORY: * 07/19/1995 BRR : Created. *
  *=============================================================================================*/
 static void Sort_Cells(CELL* cells, int numcells, CELL* outcells) {
-  int i;
-  int j;
-  int k;
   int num_sorted = 0;
   int num_unsorted = numcells;
 
   /*------------------------------------------------------------------------
   Pick the first cell at random
   ------------------------------------------------------------------------*/
-  j = Random_Pick(0, numcells - 1);
+  int j = Random_Pick(0, numcells - 1);
   outcells[0] = cells[j];
   num_sorted++;
 
-  for (k = j; k < num_unsorted - 1; k++) {
+  for (int k = j; k < num_unsorted - 1; k++) {
     cells[k] = cells[k + 1];
   }
   num_unsorted--;
@@ -1458,12 +1432,12 @@ static void Sort_Cells(CELL* cells, int numcells, CELL* outcells) {
   After the first cell, assign the other cells based on who's furthest away
   from the chosen ones.
   ------------------------------------------------------------------------*/
-  for (i = 0; i < numcells; i++) {
+  for (int i = 0; i < numcells; i++) {
     j = Furthest_Cell(outcells, num_sorted, cells, num_unsorted);
     outcells[num_sorted] = cells[j];
     num_sorted++;
 
-    for (k = j; k < num_unsorted - 1; k++) {
+    for (int k = j; k < num_unsorted - 1; k++) {
       cells[k] = cells[k + 1];
     }
     num_unsorted--;
@@ -1487,30 +1461,25 @@ static void Sort_Cells(CELL* cells, int numcells, CELL* outcells) {
  *=============================================================================================*/
 static int Furthest_Cell(const CELL* ref_cells, int num_ref_cells,
                          const CELL* test_cells, int num_test_cells) {
-  int i;
-  int j;
-  int mindist;     // minimum distance a test_cell is from a ref_cell
-  int maxmindist;  // the highest mindist value of all test_cells
-  int maxmin_idx;  // index of the test_cell with largest mindist
-  int dist;        // working distance measure
 
   /*------------------------------------------------------------------------
   Initialize
   ------------------------------------------------------------------------*/
-  maxmindist = 0;
-  maxmin_idx = 0;
+  int maxmindist = 0;  // the highest mindist value of all test_cells
+  int maxmin_idx = 0;  // index of the test_cell with largest mindist
 
   /*------------------------------------------------------------------------
   Loop through all test cells, finding the furthest one from all entries in
   the ref_cells array
   ------------------------------------------------------------------------*/
-  for (i = 0; i < num_test_cells; i++) {
+  for (int i = 0; i < num_test_cells; i++) {
     /*.....................................................................
     Find the ref_cell closest to this test_cell
     .....................................................................*/
-    mindist = 0xffff;
-    for (j = 0; j < num_ref_cells; j++) {
-      dist = Distance(test_cells[i], ref_cells[j]);
+    int mindist = 0xffff;  // minimum distance a test_cell is from a ref_cell
+    for (int j = 0; j < num_ref_cells; j++) {
+      const int dist =
+          Distance(test_cells[i], ref_cells[j]);  // working distance measure
       mindist = std::min(dist, mindist);
     }
 
@@ -1539,33 +1508,25 @@ static int Furthest_Cell(const CELL* ref_cells, int num_ref_cells,
  * HISTORY: * 07/30/1995 BRR : Created. *
  *=============================================================================================*/
 static CELL Clip_Scatter(CELL cell, int maxdist) {
-  int x;
-  int y;
-  int xdist;
-  int ydist;
-  int xmin;
-  int xmax;
-  int ymin;
-  int ymax;
 
   /*------------------------------------------------------------------------
   Get X & Y coords of given starting cell
   ------------------------------------------------------------------------*/
-  x = Cell_X(cell);
-  y = Cell_Y(cell);
+  int x = Cell_X(cell);
+  int y = Cell_Y(cell);
 
   /*------------------------------------------------------------------------
   Compute our x & y limits
   ------------------------------------------------------------------------*/
-  xmin = Map.MapCellX;
-  xmax = xmin + Map.MapCellWidth - 1;
-  ymin = Map.MapCellY;
-  ymax = ymin + Map.MapCellHeight - 1;
+  const int xmin = Map.MapCellX;
+  const int xmax = xmin + Map.MapCellWidth - 1;
+  const int ymin = Map.MapCellY;
+  const int ymax = ymin + Map.MapCellHeight - 1;
 
   /*------------------------------------------------------------------------
   Adjust the x-coordinate
   ------------------------------------------------------------------------*/
-  xdist = GameRandomRange(0, maxdist);
+  const int xdist = GameRandomRange(0, maxdist);
   if (GameRandomRange(0, 1) == 0) {
     x += xdist;
     x = std::min(x, xmax);
@@ -1577,7 +1538,7 @@ static CELL Clip_Scatter(CELL cell, int maxdist) {
   /*------------------------------------------------------------------------
   Adjust the y-coordinate
   ------------------------------------------------------------------------*/
-  ydist = GameRandomRange(0, maxdist);
+  const int ydist = GameRandomRange(0, maxdist);
   if (GameRandomRange(0, 1) == 0) {
     y += ydist;
     y = std::min(y, ymax);
@@ -1602,26 +1563,20 @@ static CELL Clip_Scatter(CELL cell, int maxdist) {
  * HISTORY: * 07/30/1995 BRR : Created. *
  *=============================================================================================*/
 static CELL Clip_Move(CELL cell, FacingType facing, int dist) {
-  int x;
-  int y;
-  int xmin;
-  int xmax;
-  int ymin;
-  int ymax;
 
   /*------------------------------------------------------------------------
   Get X & Y coords of given starting cell
   ------------------------------------------------------------------------*/
-  x = Cell_X(cell);
-  y = Cell_Y(cell);
+  int x = Cell_X(cell);
+  int y = Cell_Y(cell);
 
   /*------------------------------------------------------------------------
   Compute our x & y limits
   ------------------------------------------------------------------------*/
-  xmin = Map.MapCellX;
-  xmax = xmin + Map.MapCellWidth - 1;
-  ymin = Map.MapCellY;
-  ymax = ymin + Map.MapCellHeight - 1;
+  const int xmin = Map.MapCellX;
+  const int xmax = xmin + Map.MapCellWidth - 1;
+  const int ymin = Map.MapCellY;
+  const int ymax = ymin + Map.MapCellHeight - 1;
 
   /*------------------------------------------------------------------------
   Adjust the x-coordinate

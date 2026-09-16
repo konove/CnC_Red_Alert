@@ -128,13 +128,10 @@ void Write_Interpolation_Palette(const char* palette_file_name) {
 void Increase_Palette_Luminance(unsigned char* palette, int red_percentage,
                                 int green_percentage, int blue_percentage,
                                 int cap) {
-  int red;
-  int green;
-  int blue;
   for (int i = 0; i < SIZE_OF_PALETTE * 3; i += 3) {
-    red = *(palette + i);
-    green = *(palette + i + 1);
-    blue = *(palette + i + 2);
+    int red = *(palette + i);
+    int green = *(palette + i + 1);
+    int blue = *(palette + i + 2);
 
     red += red * red_percentage / 100;
     green += green * green_percentage / 100;

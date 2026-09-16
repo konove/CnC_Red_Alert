@@ -565,10 +565,7 @@ void Fill_In_Data() {
   ** Now go through and set all the cells ringing the map to be visible, so
   ** we won't get the wall of shadow at the edge of the map.
   */
-  int x;
-  int y;
-  for (x = Map.MapCellX - 1;
-       x < Map.MapCellX + Map.MapCellWidth + 1; x++) {
+  for (int x = Map.MapCellX - 1; x < Map.MapCellX + Map.MapCellWidth + 1; x++) {
     Map[XY_Cell(x, Map.MapCellY - 1)].IsVisible =
         Map[XY_Cell(x, Map.MapCellY - 1)].IsMapped = true;
 
@@ -577,7 +574,7 @@ void Fill_In_Data() {
         Map[XY_Cell(x, Map.MapCellY + Map.MapCellHeight)]
             .IsMapped = true;
   }
-  for (y = Map.MapCellY; y < Map.MapCellY + Map.MapCellHeight; y++) {
+  for (int y = Map.MapCellY; y < Map.MapCellY + Map.MapCellHeight; y++) {
     Map[XY_Cell(Map.MapCellX - 1, y)].IsVisible =
         Map[XY_Cell(Map.MapCellX - 1, y)].IsMapped = true;
     Map[XY_Cell(Map.MapCellX + Map.MapCellWidth, y)].IsVisible =
@@ -746,7 +743,7 @@ void Clear_Scenario() {
 
   CurrentObject.Clear();
 
-  for (short& index : Scen.Waypoint) {
+  for (int16_t& index : Scen.Waypoint) {
     index = -1;
   }
 
@@ -1229,11 +1226,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
   // Track which text ID each button position represents after shifting.
   int left_btn_text_id = left_btn;
   const int right_btn_text_id = right_btn;
-  bool process;      // loop while true
-  KeyNumType input;  // user input
   int selection = 0;
-  bool pressed;
-  int curbutton;
   TextButtonClass* buttons[3];
   bool display = true;  // display level
   int realval[5];
@@ -1351,8 +1344,8 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
   buffer[page_text.size()] = '\0';
   Fancy_Text_Print(TXT_NONE, 0, 0, &ColorRemaps[PCOLOR_TYPE], TBLACK,
                    TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
-  int width;
-  int height;
+  int width = 0;
+  int height = 0;
   Format_Window_String(buffer, 300, width, height);
   height += numbuttons == 0 ? 30 : 60;
 
@@ -1381,7 +1374,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
   button3.X = x + ((width - button3.Width) >> 1);
 
   TextButtonClass* buttonlist = nullptr;
-  curbutton = 0;
+  int curbutton = 0;
 
   /*
   **	Add and initialize the buttons to the button list.
@@ -1462,8 +1455,8 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
   Keyboard->Clear();
 
   if (buttonlist) {
-    process = true;
-    pressed = false;
+    bool process = true;  // loop while true
+    bool pressed = false;
     while (process) {
       if (display) {
         display = false;
@@ -1478,7 +1471,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
       Call_Back();
 
       // Fetch and process input.
-      input = buttonlist->Input();
+      const KeyNumType input = buttonlist->Input();  // user input
       switch (static_cast<int>(input)) {
         case kButton1 | kButtonFlag:
           selection = realval[0];
@@ -1644,9 +1637,9 @@ void ScenarioClass::Set_Scenario_Name(int scenario, ScenarioPlayerType player,
   //	ScenDir = dir;
   //	ScenVar = var;
 
-  char c_player;  // character representing player type
-  char c_dir;     // character representing direction type
-  char c_var;     // character representing variation type
+  char c_player = 0;  // character representing player type
+  char c_dir = 0;     // character representing direction type
+  char c_var = 0;     // character representing variation type
   char fname[kMaxFname + kMaxExt];
 
   /*
@@ -2066,7 +2059,7 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
     PlayerPtr = HouseClass::As_Pointer(
         ini.Get_HousesType(BASIC, "Player", HOUSE_GREECE));
     PlayerPtr->Assign_Handicap(Scen.Difficulty);
-    int carryover;
+    int carryover = 0;
     if (Scen.CarryOverCap != -1) {
       carryover = std::min(Scen.CarryOverMoney * Scen.CarryOverPercent,
                            Scen.CarryOverCap);
@@ -2327,19 +2320,14 @@ void Write_Scenario_INI(const char* fname) {
 void Assign_Houses() {
   int assigned[kMaxPlayers];
   bool color_used[8];
-  int i;
-  int j;
-  HousesType house;
-  HouseClass* housep;
-  int lowest_color;
-  int index;
-  HousesType pref_house;
-  int color;
+  HousesType house = HOUSE_NONE;
+  HouseClass* housep = nullptr;
+  int color = 0;
 
   //------------------------------------------------------------------------
   // Initialize
   //------------------------------------------------------------------------
-  for (i = 0; i < kMaxPlayers; i++) {
+  for (int i = 0; i < kMaxPlayers; i++) {
     assigned[i] = 0;
     color_used[i] = false;
   }
@@ -2350,13 +2338,13 @@ void Assign_Houses() {
   // be sorted by their chosen color value (this value must be unique among
   // all the players).
   //------------------------------------------------------------------------
-  for (i = 0; i < Session.Players.Count(); i++) {
+  for (int i = 0; i < Session.Players.Count(); i++) {
     //.....................................................................
     // Find the player with the lowest color index
     //.....................................................................
-    index = 0;
-    lowest_color = 255;
-    for (j = 0; j < Session.Players.Count(); j++) {
+    int index = 0;
+    int lowest_color = 255;
+    for (int j = 0; j < Session.Players.Count(); j++) {
       //..................................................................
       // If we've already assigned this house, skip it.
       //..................................................................
@@ -2411,15 +2399,12 @@ void Assign_Houses() {
   //------------------------------------------------------------------------
   // Now assign computer players to the remaining houses.
   //------------------------------------------------------------------------
-  for (i = static_cast<int>(Session.Players.Count());
+  for (int i = static_cast<int>(Session.Players.Count());
        i < Session.Players.Count() + Session.Options.AIPlayers; i++) {
     house = static_cast<HousesType>(i + HOUSE_MULTI1);
     housep = HouseClass::As_Pointer(house);
-    if (Percent_Chance(50)) {
-      pref_house = HOUSE_GREECE;
-    } else {
-      pref_house = HOUSE_USSR;
-    }
+    const HousesType pref_house =
+        Percent_Chance(50) ? HOUSE_GREECE : HOUSE_USSR;
 
     //.....................................................................
     // Pick a color for this house; keep looping until we find one.
@@ -2462,7 +2447,8 @@ void Assign_Houses() {
     housep->Assign_Handicap(difficulty);
   }
 
-  for (i = static_cast<int>(Session.Players.Count()) + Session.Options.AIPlayers;
+  for (int i = static_cast<int>(Session.Players.Count()) +
+               Session.Options.AIPlayers;
        i < Rule.MaxPlayers; i++) {
     house = static_cast<HousesType>(i + HOUSE_MULTI1);
     housep = HouseClass::As_Pointer(house);
@@ -2484,14 +2470,11 @@ void Assign_Houses() {
  * HISTORY: * 06/09/1995 BRR : Created. *
  *=============================================================================================*/
 static void Remove_AI_Players() {
-  int i;
   int aicount = 0;
-  HousesType house;
-  HouseClass* housep;
 
-  for (i = 0; i < kMaxPlayers; i++) {
-    house = static_cast<HousesType>(i + HOUSE_MULTI1);
-    housep = HouseClass::As_Pointer(house);
+  for (int i = 0; i < kMaxPlayers; i++) {
+    const auto house = static_cast<HousesType>(i + HOUSE_MULTI1);
+    HouseClass* housep = HouseClass::As_Pointer(house);
     if (!static_cast<bool>(housep->IsHuman)) {
       aicount++;
       if (aicount > Session.Options.AIPlayers) {
@@ -2529,7 +2512,6 @@ static void Create_Units(bool official) {
                 {8, {UNIT_ARTY, UNIT_JEEP}, {UNIT_MTANK, UNIT_NONE}},
                 {10, {UNIT_MTANK2, UNIT_MTANK2}, {UNIT_HTANK, UNIT_NONE}}};
   static int num_units[std::size(utable)];  // # of each type of unit to create
-  int tot_units;                             // total # units to create
 
   static const struct {
     int MinLevel;
@@ -2552,28 +2534,24 @@ static void Create_Units(bool official) {
   };
   static int
       num_infantry[std::size(itable)];  // # of each type of infantry to create
-  int tot_infantry;                      // total # infantry to create
 
-  CELL centroid;  // centroid of this house's stuff
-  CELL centerpt;  // centroid for a category of objects, as a CELL
+  CELL centroid = 0;  // centroid of this house's stuff
+  CELL centerpt = 0;  // centroid for a category of objects, as a CELL
 
   int u_limit = 0;   // last allowable index of units for this BuildLevel
   int i_limit = 0;   // last allowable index of infantry for this BuildLevel
-  TechnoClass* obj;  // newly-created object
-  int i;
-  int j;
-  int k;             // loop counters
-  int scaleval;      // value to scale # units or infantry
+  TechnoClass* obj = nullptr;  // newly-created object
+  int scaleval = 0;            // value to scale # units or infantry
 
   /*
   **	For the current BuildLevel, find the max allowable index into the tables
   */
-  for (i = 0; i < std::ssize(utable); i++) {
+  for (int i = 0; i < std::ssize(utable); i++) {
     if (PlayerPtr->Control.TechLevel >= utable[i].MinLevel) {
       u_limit = i + 1;
     }
   }
-  for (i = 0; i < std::ssize(itable); i++) {
+  for (int i = 0; i < std::ssize(itable); i++) {
     if (PlayerPtr->Control.TechLevel >= itable[i].MinLevel) {
       i_limit = i + 1;
     }
@@ -2585,7 +2563,7 @@ static void Create_Units(bool official) {
   /*
   **	Compute allowed # units
   */
-  tot_units = Session.Options.UnitCount * 2 / 3;
+  int tot_units = Session.Options.UnitCount * 2 / 3;  // total # units to create
   if (u_limit == 0) {
     tot_units = 0;
   }
@@ -2593,15 +2571,15 @@ static void Create_Units(bool official) {
   /*
   **	Init # of each category to 0
   */
-  for (i = 0; i < u_limit; i++) {
+  for (int i = 0; i < u_limit; i++) {
     num_units[i] = 0;
   }
 
   /*
   **	Increment # of each category, until we've used up all units
   */
-  j = 0;
-  for (i = 0; i < tot_units; i++) {
+  int j = 0;
+  for (int i = 0; i < tot_units; i++) {
     num_units[j]++;
     j++;
     if (j >= u_limit) {
@@ -2612,12 +2590,13 @@ static void Create_Units(bool official) {
   /*
   **	Compute allowed # infantry
   */
-  tot_infantry = Session.Options.UnitCount - tot_units;
+  const int tot_infantry =
+      Session.Options.UnitCount - tot_units;  // total # infantry to create
 
   /*
   **	Init # of each category to 0
   */
-  for (i = 0; i < i_limit; i++) {
+  for (int i = 0; i < i_limit; i++) {
     num_infantry[i] = 0;
   }
 
@@ -2625,7 +2604,7 @@ static void Create_Units(bool official) {
   **	Increment # of each category, until we've used up all infantry
   */
   j = 0;
-  for (i = 0; i < tot_infantry; i++) {
+  for (int i = 0; i < tot_infantry; i++) {
     num_infantry[j]++;
     j++;
     if (j >= i_limit) {
@@ -2802,7 +2781,7 @@ static void Create_Units(bool official) {
     /*
     **	Create units for this house
     */
-    for (i = 0; i < u_limit; i++) {
+    for (int i = 0; i < u_limit; i++) {
       /*
       **	Find the center point for this category.
       */
@@ -2816,9 +2795,9 @@ static void Create_Units(bool official) {
         **	Create an Ally unit
         */
         if (hptr->ActLike != HOUSE_USSR && hptr->ActLike != HOUSE_UKRAINE) {
-          for (k = 0; k < 2; k++) {
-            if (utable[i].AllyType[k] != UNIT_NONE) {
-              obj = new UnitClass(utable[i].AllyType[k], house);
+          for (const auto k : utable[i].AllyType) {
+            if (k != UNIT_NONE) {
+              obj = new UnitClass(k, house);
               if (!Scan_Place_Object(obj, centerpt)) {
                 delete obj;
               } else {
@@ -2834,9 +2813,9 @@ static void Create_Units(bool official) {
           /*
           **	Create a Soviet unit
           */
-          for (k = 0; k < 2; k++) {
-            if (utable[i].SovietType[k] != UNIT_NONE) {
-              obj = new UnitClass(utable[i].SovietType[k], house);
+          for (const auto k : utable[i].SovietType) {
+            if (k != UNIT_NONE) {
+              obj = new UnitClass(k, house);
               if (!Scan_Place_Object(obj, centerpt)) {
                 delete obj;
               } else {
@@ -2855,7 +2834,7 @@ static void Create_Units(bool official) {
     /*
     **	Create infantry
     */
-    for (i = 0; i < i_limit; i++) {
+    for (int i = 0; i < i_limit; i++) {
       /*
       **	Find the center point for this category.
       */
@@ -2871,7 +2850,7 @@ static void Create_Units(bool official) {
         *to override *	this state.)
         */
         if (hptr->ActLike != HOUSE_USSR && hptr->ActLike != HOUSE_UKRAINE) {
-          for (k = 0; k < itable[i].AllyCount; k++) {
+          for (int k = 0; k < itable[i].AllyCount; k++) {
             obj = new InfantryClass(itable[i].AllyType, house);
             if (!Scan_Place_Object(obj, centerpt)) {
               delete obj;
@@ -2887,7 +2866,7 @@ static void Create_Units(bool official) {
           /*
           **	Create Soviet infantry
           */
-          for (k = 0; k < itable[i].SovietCount; k++) {
+          for (int k = 0; k < itable[i].SovietCount; k++) {
             obj = new InfantryClass(itable[i].SovietType, house);
             if (!Scan_Place_Object(obj, centerpt)) {
               delete obj;
@@ -2918,13 +2897,7 @@ static void Create_Units(bool official) {
  * HISTORY: * 06/09/1995 BRR : Created. *
  *=============================================================================================*/
 bool Scan_Place_Object(ObjectClass* obj, CELL cell) {
-  int dist;             // for object placement
-  FacingType rot;       // for object placement
-  FacingType fcounter;  // for object placement
-  int tryval;
-  CELL newcell;
-  TechnoClass* techno;
-  bool skipit;
+  TechnoClass* techno = nullptr;
 
   /*
   **	First try to unlimbo the object in the given cell.
@@ -2945,26 +2918,26 @@ bool Scan_Place_Object(ObjectClass* obj, CELL cell) {
   *value. *	If that fails, go to the next distance. *	This ensures
   *that the closest coordinates are filled first.
   */
-  for (dist = 1; dist < 32; dist++) {
+  for (int dist = 1; dist < 32; dist++) {
     /*
     **	Pick a random starting direction
     */
-    rot = Random_Pick(FACING_N, FACING_NW);
+    FacingType rot = Random_Pick(FACING_N, FACING_NW);  // for object placement
 
     /*
     **	Try all directions twice
     */
-    for (tryval = 0; tryval < 2; tryval++) {
+    for (int tryval = 0; tryval < 2; tryval++) {
       /*
       **	Loop through all directions, at this distance.
       */
-      for (fcounter = FACING_N; fcounter <= FACING_NW; fcounter++) {
-        skipit = false;
+      for (FacingType fcounter = FACING_N; fcounter <= FACING_NW; fcounter++) {
+        bool skipit = false;
 
         /*
         **	Pick a coordinate along this directional axis
         */
-        newcell = Clip_Move(cell, rot, dist);
+        CELL newcell = Clip_Move(cell, rot, dist);
 
         /*
         **	If this is our second try at this distance, add a random scatter
@@ -3020,33 +2993,25 @@ bool Scan_Place_Object(ObjectClass* obj, CELL cell) {
  * HISTORY: * 07/30/1995 BRR : Created. *
  *=============================================================================================*/
 static CELL Clip_Scatter(CELL cell, int maxdist) {
-  int x;
-  int y;
-  int xdist;
-  int ydist;
-  int xmin;
-  int xmax;
-  int ymin;
-  int ymax;
 
   /*
   **	Get X & Y coords of given starting cell
   */
-  x = Cell_X(cell);
-  y = Cell_Y(cell);
+  int x = Cell_X(cell);
+  int y = Cell_Y(cell);
 
   /*
   **	Compute our x & y limits
   */
-  xmin = Map.MapCellX;
-  xmax = xmin + Map.MapCellWidth - 1;
-  ymin = Map.MapCellY;
-  ymax = ymin + Map.MapCellHeight - 1;
+  const int xmin = Map.MapCellX;
+  const int xmax = xmin + Map.MapCellWidth - 1;
+  const int ymin = Map.MapCellY;
+  const int ymax = ymin + Map.MapCellHeight - 1;
 
   /*
   **	Adjust the x-coordinate
   */
-  xdist = Random_Pick(0, maxdist);
+  const int xdist = Random_Pick(0, maxdist);
   if (Percent_Chance(50)) {
     x += xdist;
     x = std::min(x, xmax);
@@ -3058,7 +3023,7 @@ static CELL Clip_Scatter(CELL cell, int maxdist) {
   /*
   **	Adjust the y-coordinate
   */
-  ydist = Random_Pick(0, maxdist);
+  const int ydist = Random_Pick(0, maxdist);
   if (Percent_Chance(50)) {
     y += ydist;
     y = std::min(y, ymax);
@@ -3083,26 +3048,20 @@ static CELL Clip_Scatter(CELL cell, int maxdist) {
  * HISTORY: * 07/30/1995 BRR : Created. *
  *=============================================================================================*/
 static CELL Clip_Move(CELL cell, FacingType facing, int dist) {
-  int x;
-  int y;
-  int xmin;
-  int xmax;
-  int ymin;
-  int ymax;
 
   /*
   **	Get X & Y coords of given starting cell
   */
-  x = Cell_X(cell);
-  y = Cell_Y(cell);
+  int x = Cell_X(cell);
+  int y = Cell_Y(cell);
 
   /*
   **	Compute our x & y limits
   */
-  xmin = Map.MapCellX;
-  xmax = xmin + Map.MapCellWidth - 1;
-  ymin = Map.MapCellY;
-  ymax = ymin + Map.MapCellHeight - 1;
+  const int xmin = Map.MapCellX;
+  const int xmax = xmin + Map.MapCellWidth - 1;
+  const int ymin = Map.MapCellY;
+  const int ymax = ymin + Map.MapCellHeight - 1;
 
   /*
   **	Adjust the x-coordinate

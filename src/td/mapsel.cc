@@ -478,17 +478,14 @@ struct nodstats {
  * HISTORY: * 04/17/1995 BWG : Created. *
  *=============================================================================================*/
 void Map_Selection() {
-  void* anim;
-  void* progress;
-  void* greyearth;
-  void* greyearth2;
+  void* anim = nullptr;
+  void* progress = nullptr;
   // Static: InterpolationPalette is a global that keeps pointing here after
   // this function returns, and interpal.cc reads it from another
   // translation unit. Every path fills the buffer before reading it, so
   // persisting it between calls changes nothing.
   static unsigned char localpalette[768];
-  int scenario;
-  bool lastscenario;
+  bool lastscenario = false;
   const int house = PlayerPtr->Class->House;
   int attackxcoord = 0;
 
@@ -520,7 +517,7 @@ void Map_Selection() {
   Set_Font_Palette(_regpal);
   Set_Palette(BlackPalette);
 
-  scenario = Scenario + (house == HOUSE_GOOD ? 0 : 14);
+  const int scenario = Scenario + (house == HOUSE_GOOD ? 0 : 14);
   if (house == HOUSE_GOOD) {
     lastscenario = Scenario == 14;
     if (Scenario == 15) {
@@ -560,10 +557,10 @@ void Map_Selection() {
   /*
   ** Now start the process where we fade the gray earth in.
   */
-  greyearth =
+  void* greyearth =
       Open_Animation("GREYERTH.WSA", nullptr, 0,
                      WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, localpalette);
-  greyearth2 =
+  void* greyearth2 =
       Open_Animation("E-BWTOCL.WSA", nullptr, 0,
                      WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, grey2palette);
 
@@ -1233,9 +1230,8 @@ void Map_Selection() {
  *   04/27/1995 BWG : Created.                                             *
  *=========================================================================*/
 void Print_Statistics(int country, int xpos, int ypos) {
-  int index;
-  int newx;
-  const void* oldfont;
+  int index = 0;
+  int newx = 0;
   static const int _gdistatnames[] = {
       TXT_MAP_GDISTAT0, TXT_MAP_GDISTAT1, TXT_MAP_GDISTAT2, TXT_MAP_GDISTAT3,
       TXT_MAP_GDISTAT4, TXT_MAP_GDISTAT5, TXT_MAP_GDISTAT6};
@@ -1275,7 +1271,7 @@ void Print_Statistics(int country, int xpos, int ypos) {
   static char _deststr[16];
 
   /* Change to the six-point font for Text_Print */
-  oldfont = Set_Font(ScoreFontPtr);
+  const void* oldfont = Set_Font(ScoreFontPtr);
 
 #ifdef GERMAN
   xpos = 8;
@@ -1539,20 +1535,16 @@ void Fading_Byte_Blit(int srcx, int srcy, int destx, int desty, int w, int h,
 
 void Cycle_Call_Back_Delay(int time, unsigned char* pal) {
   static int _counter;
-  unsigned char r;
-  unsigned char g;
-  unsigned char b;
-  int i;
 
   while (time--) {
     _counter = ++_counter & 3;
 
     if (!(_counter & 3)) {
-      r = pal[(249 * 3) + 0];
-      g = pal[(249 * 3) + 1];
-      b = pal[(249 * 3) + 2];
+      const unsigned char r = pal[(249 * 3) + 0];
+      const unsigned char g = pal[(249 * 3) + 1];
+      const unsigned char b = pal[(249 * 3) + 2];
 
-      for (i = 249; i < 254; i++) {
+      for (int i = 249; i < 254; i++) {
         pal[(i * 3) + 0] = pal[((i + 1) * 3) + 0];
         pal[(i * 3) + 1] = pal[((i + 1) * 3) + 1];
         pal[(i * 3) + 2] = pal[((i + 1) * 3) + 2];

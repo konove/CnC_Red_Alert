@@ -210,7 +210,7 @@ class IPXGlobalConnClass : public IPXConnClass {
   //.....................................................................
   IPXAddressClass LastAddress[4];  // array of last 4 addresses
   uint32_t LastPacketID[4]{};  // array of last 4 packet ID's
-  int LastRXIndex;                 // index of next avail pos
+  int LastRXIndex = 0;         // index of next avail pos
 };
 
 #endif  // CNC_RED_ALERT_RA_IPXGCONN_H_

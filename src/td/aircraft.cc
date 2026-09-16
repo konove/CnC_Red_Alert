@@ -174,9 +174,7 @@
  *=============================================================================================*/
 int AircraftClass::Validate() const {
   if constexpr (config::kCheatKeysEnabled) {
-    int num;
-
-    num = Aircraft.ID(this);
+    const int num = Aircraft.ID(this);
     if (num < 0 || num >= kAircraftMax) {
       Validate_Error("AIRCRAFT");
     }
@@ -373,14 +371,14 @@ bool AircraftClass::Unlimbo(COORDINATE coord, DirType dir) {
  *=============================================================================================*/
 void AircraftClass::Draw_It(int x, int y, WindowNumberType window) {
   Validate();
-  const void* shapefile;  // Working shape file pointer.
   int shapenum = 0;
   const int facing = Facing_To_32(SecondaryFacing);
 
   /*
   **	Verify the legality of the unit class.
   */
-  shapefile = Class->Get_Image_Data();
+  const void* shapefile =
+      Class->Get_Image_Data();  // Working shape file pointer.
   if (!shapefile) {
     return;
   }
@@ -498,15 +496,11 @@ void AircraftClass::Draw_It(int x, int y, WindowNumberType window) {
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
 void AircraftClass::Read_INI(char* buffer) {
-  AircraftClass* air;    // Working unit pointer.
-  char* tbuffer;         // Accumulation buffer of unit IDs.
-  HousesType inhouse;    // Unit house.
-  AircraftType classid;  // Unit class.
-  int len;               // Length of data in buffer.
   char buf[128];
 
-  len = static_cast<int>(strlen(buffer)) + 2;
-  tbuffer = buffer + len;
+  const int len =
+      static_cast<int>(strlen(buffer)) + 2;  // Length of data in buffer.
+  char* tbuffer = buffer + len;              // Accumulation buffer of unit IDs.
 
   WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
                             ShapeBufferSize - len, buffer);
@@ -514,24 +508,25 @@ void AircraftClass::Read_INI(char* buffer) {
     WWGetPrivateProfileString(INI_Name(), tbuffer, nullptr, buf,
                               sizeof(buf) - 1, buffer);
     port::Tokenizer tokens(buf, ",");
-    inhouse = HouseTypeClass::From_Name(tokens.Next());
+    const HousesType inhouse =
+        HouseTypeClass::From_Name(tokens.Next());  // Unit house.
     if (inhouse != HOUSE_NONE) {
-      classid = AircraftTypeClass::From_Name(tokens.Next());
+      const AircraftType classid =
+          AircraftTypeClass::From_Name(tokens.Next());  // Unit class.
 
       if (classid != AIRCRAFT_NONE) {
-        air = new AircraftClass(classid, inhouse);
+        auto* air =
+            new AircraftClass(classid, inhouse);  // Working unit pointer.
         if (air) {
-          COORDINATE coord;
-          int strength;
-          DirType dir;
 
           /*
           **	Read the raw data.
           */
-          strength = tech::ParseInteger<int>(tokens.Next()).value_or(0);
-          coord =
+          const int strength =
+              tech::ParseInteger<int>(tokens.Next()).value_or(0);
+          COORDINATE const coord =
               Cell_Coord(tech::ParseInteger<CELL>(tokens.Next()).value_or(0));
-          dir = static_cast<DirType>(
+          const DirType dir = static_cast<DirType>(
               tech::ParseInteger<int>(tokens.Next()).value_or(0));
 
           if (!Map.In_Radar(Coord_Cell(coord))) {
@@ -569,15 +564,14 @@ void AircraftClass::Read_INI(char* buffer) {
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
 void AircraftClass::Write_INI(char* buffer) {
-  int index;
   char uname[10];
   char buf[128];
-  char* tbuffer;  // Accumulation buffer of unit IDs.
 
   /*
   **	First, clear out all existing unit data from the ini file.
   */
-  tbuffer = buffer + strlen(buffer) + 2;
+  char* tbuffer =
+      buffer + strlen(buffer) + 2;  // Accumulation buffer of unit IDs.
   WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
                             ShapeBufferSize - static_cast<int>(strlen(buffer)),
                             buffer);
@@ -589,10 +583,8 @@ void AircraftClass::Write_INI(char* buffer) {
   /*
   **	Write the unit data out.
   */
-  for (index = 0; index < Aircraft.Count(); index++) {
-    AircraftClass* unit;
-
-    unit = Aircraft.Ptr(index);
+  for (int index = 0; index < Aircraft.Count(); index++) {
+    AircraftClass* unit = Aircraft.Ptr(index);
     if (!unit->IsInLimbo) {
       absl::SNPrintF(uname, 10, "%03d", index);
       absl::SNPrintF(buf, 128, "%s,%s,%d,%u,%d,%s", unit->House->Class->IniName,
@@ -1470,7 +1462,7 @@ int AircraftClass::Exit_Object(TechnoClass* unit) {
   /*
   **	Find a free cell to drop the unit off at.
   */
-  FacingType face;
+  FacingType face = FACING_NONE;
   for (face = FACING_N; face < FACING_COUNT; face++) {
     cell = Adjacent_Cell(Coord_Cell(Coord), _toface[face]);
     if (unit->Can_Enter_Cell(cell) == MOVE_OK) {
@@ -1883,7 +1875,7 @@ void AircraftClass::Enter_Idle_Mode(bool /*initial*/) {
  *=============================================================================================*/
 int AircraftClass::Process_Fly_To(bool slowdown) {
   Validate();
-  COORDINATE coord;
+  COORDINATE coord = 0;
   if (Is_Target_Building(NavCom)) {
     coord = As_Building(NavCom)->Docking_Coord();
   } else {
@@ -2604,7 +2596,7 @@ RadioMessageType AircraftClass::Receive_Message(RadioClass* from,
           *out a good *	spot and tell it to go.
           */
           if (Transmit_Message(RADIO_NEED_TO_MOVE, from) == RADIO_ROGER) {
-            CELL cell;
+            CELL cell = 0;
             Desired_Load_Dir(from, cell);
 
             /*

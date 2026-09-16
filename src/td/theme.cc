@@ -240,7 +240,7 @@ ThemeType ThemeClass::Next_Song(ThemeType theme) {
         **	Shuffle the theme, but never pick the same theme that was just
         **	playing.
         */
-        ThemeType newtheme;
+        ThemeType newtheme = THEME_NONE;
         do {
           newtheme = Sim_Random_Pick(THEME_AIRSTRIKE, THEME_LAST);
         } while (newtheme == theme || !Is_Allowed(newtheme));

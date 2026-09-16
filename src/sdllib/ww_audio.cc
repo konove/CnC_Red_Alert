@@ -692,8 +692,6 @@ AudioCallback* Get_Audio_Callback_Ptr() { return &ExtraCallback; }
 // used for nod ending
 static int32_t Sample_Read(int fh, void* buffer, base::ssize size) {
   AUDHeaderType RawHeader;
-  void* outbuffer;         // Pointer to start of raw data.
-  int32_t actual_bytes_read;  // Actual bytes read in, including header
 
   if (!buffer || fh == kInvalidHandle ||
       size <= base::ssize{sizeof(RawHeader)}) {
@@ -701,8 +699,11 @@ static int32_t Sample_Read(int fh, void* buffer, base::ssize size) {
   }
 
   size -= base::ssize{sizeof(RawHeader)};
-  outbuffer = Add_Long_To_Pointer(buffer, sizeof(RawHeader));
-  actual_bytes_read = ReadFileHandle(fh, &RawHeader, sizeof(RawHeader));
+  void* outbuffer = Add_Long_To_Pointer(
+      buffer, sizeof(RawHeader));  // Pointer to start of raw data.
+  int32_t actual_bytes_read = ReadFileHandle(
+      fh, &RawHeader,
+      sizeof(RawHeader));  // Actual bytes read in, including header
   actual_bytes_read += ReadFileHandle(
       fh, outbuffer,
       static_cast<int32_t>(std::min<base::ssize>(size, RawHeader.Size)));
@@ -712,16 +713,14 @@ static int32_t Sample_Read(int fh, void* buffer, base::ssize size) {
 
 void* Load_Sample(const char* filename) {
   void* buffer = nullptr;
-  base::ssize size;
-  int fh;
 
   if (!filename || !FileExists(filename)) {
     return nullptr;
   }
 
-  fh = OpenFileHandle(filename, FileAccess::kRead);
+  const int fh = OpenFileHandle(filename, FileAccess::kRead);
   if (fh != kInvalidHandle) {
-    size =
+    const base::ssize size =
         base::ToSigned(FileHandleSize(fh)) + base::ssize{sizeof(AUDHeaderType)};
     buffer = new char[base::ToSize(size)];
     Sample_Read(fh, buffer, size);

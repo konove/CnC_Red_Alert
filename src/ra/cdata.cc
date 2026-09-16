@@ -1794,12 +1794,11 @@ TemplateType TemplateTypeClass::From_Name(const char* name) {
  *=============================================================================================*/
 const int16_t* TemplateTypeClass::Occupy_List(bool /*placement*/) const {
   static int16_t _occupy[(13 * 8) + 5];
-  int16_t* ptr;
 
   const auto* iconset = static_cast<const IconsetClass*>(Get_Image_Data());
   const unsigned char* map = iconset->Map_Data();
 
-  ptr = &_occupy[0];
+  int16_t* ptr = &_occupy[0];
   for (int index = 0; index < Width * Height; index++) {
     if (*map++ != 0xFF) {
       *ptr++ =
@@ -1871,14 +1870,9 @@ void TemplateTypeClass::Init(TheaterType theater) {
  *=============================================================================================*/
 void TemplateTypeClass::Display(int x, int y, WindowNumberType window,
                                 HousesType /*unused*/) const {
-  int w;
-  int h;
-  int index;
-  bool scale;  // Should the template be half sized?
-
-  w = Bound(static_cast<int>(Width), 1, 13);
-  h = Bound(static_cast<int>(Height), 1, 8);
-  scale = (w > 3 || h > 3);
+  const int w = Bound(static_cast<int>(Width), 1, 13);
+  const int h = Bound(static_cast<int>(Height), 1, 8);
+  const bool scale = (w > 3 || h > 3);  // Should the template be half sized?
   if (scale) {
     x -= (w * ICON_PIXEL_W) / 4;
     y -= (h * ICON_PIXEL_H) / 4;
@@ -1892,7 +1886,7 @@ void TemplateTypeClass::Display(int x, int y, WindowNumberType window,
   const auto* iconset = static_cast<const IconsetClass*>(Get_Image_Data());
   const unsigned char* map = iconset->Map_Data();
 
-  for (index = 0; index < w * h; index++) {
+  for (int index = 0; index < w * h; index++) {
     if (map[index] != 0xFF) {
       HidPage.Draw_Stamp(iconset, index, 0, 0, nullptr, WINDOW_MAIN);
       if (scale) {

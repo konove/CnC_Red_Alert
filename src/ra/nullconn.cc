@@ -163,8 +163,6 @@ void NullModemConnClass::Init(HANDLE port_handle) {
  *=========================================================================*/
 int NullModemConnClass::Send(void* buf, int buflen, void* /*extrabuf*/,
                              int /*extralen*/) {
-  SerialHeaderType* header;
-  int sendlen;
 
   /*------------------------------------------------------------------------
   Error if we haven't been properly initialized
@@ -177,12 +175,12 @@ int NullModemConnClass::Send(void* buf, int buflen, void* /*extrabuf*/,
   /*------------------------------------------------------------------------
   Package the data into the Send Buffer
   ------------------------------------------------------------------------*/
-  header = port::AlignedObject<SerialHeaderType>(SendBuf);
+  auto* header = port::AlignedObject<SerialHeaderType>(SendBuf);
   header->MagicNumber = PACKET_SERIAL_START;
   header->Length = static_cast<uint16_t>(buflen);
   header->MagicNumber2 = PACKET_SERIAL_VERIFY;
 
-  sendlen = static_cast<int>(sizeof(SerialHeaderType));
+  int sendlen = static_cast<int>(sizeof(SerialHeaderType));
   memcpy(SendBuf + sendlen, buf, base::ToSize(buflen));
   sendlen += buflen;
   port::WriteUnaligned(SendBuf + sendlen, Compute_CRC(buf, buflen));
@@ -221,10 +219,9 @@ int NullModemConnClass::Send(void* buf, int buflen, void* /*extrabuf*/,
  *=========================================================================*/
 int NullModemConnClass::Compute_CRC(const void* buf, int buflen) {
   const auto* bytes = static_cast<const unsigned char*>(buf);
-  unsigned int sum;
-  unsigned int hibit;
+  unsigned int hibit = 0;
 
-  sum = 0;
+  unsigned int sum = 0;
   for (int i = 0; i < buflen; i++) {
     if (sum & 0x80000000) {  // check hi bit to rotate into low bit
       hibit = 1;

@@ -94,9 +94,7 @@
 
 int FactoryClass::Validate() const {
   if constexpr (config::kCheatKeysEnabled) {
-    int num;
-
-    num = Factories.ID(this);
+    const int num = Factories.ID(this);
     if (num < 0 || num >= kFactoryMax) {
       Validate_Error("FACTORY");
     }
@@ -495,7 +493,7 @@ bool FactoryClass::Start() {
   Validate();
   if (((Object || SpecialItem) && IsSuspended && !Has_Completed()) &&
       (Get_House()->Available_Money() >= Cost_Per_Tick())) {
-    int time;
+    int time = 0;
 
     if (Object) {
       time = Object->Class_Of().Time_To_Build(Get_House()->Class->House);

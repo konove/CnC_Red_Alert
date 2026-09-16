@@ -141,9 +141,7 @@ static int Select_To_Entry(int selection, const uint32_t enabled_mask,
 /*=========================================================================*/
 static void Flash_Line(const char* text, int xpix, int ypix, int nfgc,
                        int hfgc, int bgc) {
-  int loop;
-
-  for (loop = 0; loop < 3; loop++) {
+  for (int loop = 0; loop < 3; loop++) {
     Hide_Mouse();
     Plain_Text_Print(text, xpix, ypix, hfgc, bgc, TPF_8POINT | TPF_DROPSHADOW);
     Delay(2);
@@ -192,26 +190,19 @@ static bool Coordinates_In_Region(int x, int y, int inx1, int iny1, int inx2,
 /*=========================================================================*/
 void Setup_Menu(int menu, const char* text[], uint32_t field, int index,
                 int skip) {
-  int* menuptr;
-  int lp;
-  int menuy;
-  int menux;
-  int idx;
-  int item;
-  int num;
-  int drawy;
-
-  menuptr = &MenuList[menu][0];  /* get pointer to menu	*/
-  menuy = static_cast<int>(WinY) + menuptr[MENUY]; /* get the absolute */
-  menux = static_cast<int>(WinX) + menuptr[MENUX]; /* coords of menu */
-  item = Select_To_Entry(menuptr[MSELECTED], field, index);
-  num = menuptr[ITEMSHIGH];
+  int* menuptr = &MenuList[menu][0]; /* get pointer to menu	*/
+  const int menuy =
+      static_cast<int>(WinY) + menuptr[MENUY]; /* get the absolute */
+  const int menux =
+      static_cast<int>(WinX) + menuptr[MENUX]; /* coords of menu */
+  const int item = Select_To_Entry(menuptr[MSELECTED], field, index);
+  const int num = menuptr[ITEMSHIGH];
 
   Plain_Text_Print(0, 0, 0, TBLACK, TBLACK, TPF_8POINT | TPF_DROPSHADOW);
   Hide_Mouse();
-  for (lp = 0; lp < num; lp++) {
-    idx = Select_To_Entry(lp, field, index);
-    drawy = menuy + (lp * FontHeight) + (lp * skip);
+  for (int lp = 0; lp < num; lp++) {
+    const int idx = Select_To_Entry(lp, field, index);
+    const int drawy = menuy + (lp * FontHeight) + (lp * skip);
     Plain_Text_Print(text[idx], menux, drawy,
                      menuptr[idx == item && MenuUpdate ? HILITE : NORMCOL],
                      TBLACK, TPF_8POINT | TPF_DROPSHADOW);
@@ -226,47 +217,33 @@ void Setup_Menu(int menu, const char* text[], uint32_t field, int index,
 
 int Check_Menu(int menu, const char* text[], char* /*unused*/, uint32_t field,
                int index) {
-  int maxitem;
-  int select;
-  int key;
-  int menuy;
-  int menux;
-  int mx1;
-  int mx2;
-  int my1;
-  int my2;
-  int tempy;
-  int drawy;
-  int menuskip;
-  int halfskip;
-  int normcol;
-  int litcol;
-  int item;
-  int newitem;
-  int idx;
-  int* menuptr;
+  int drawy = 0;
+  int item = 0;
+  int idx = 0;
 
   // selection++;
   // /* get rid of warning	*/
 
-  menuptr = &MenuList[menu][0];                        /* get pointer to menu	*/
-  maxitem = menuptr[ITEMSHIGH] - 1;                    /* find max items			*/
-  newitem = item = menuptr[MSELECTED] % (maxitem + 1); /* find selected */
-  select = -1;                                         /* no selection made		*/
-  menuskip = FontHeight + MenuSkip; /* calc new font height	*/
-  halfskip = MenuSkip >> 1;         /* adjustment for menus	*/
+  int* menuptr = &MenuList[menu][0];          /* get pointer to menu	*/
+  const int maxitem = menuptr[ITEMSHIGH] - 1; /* find max items */
+  int newitem = item = menuptr[MSELECTED] % (maxitem + 1); /* find selected */
+  int select = -1;                            /* no selection made		*/
+  const int menuskip = FontHeight + MenuSkip; /* calc new font height	*/
+  const int halfskip = MenuSkip >> 1;         /* adjustment for menus	*/
 
-  menuy = static_cast<int>(WinY) + menuptr[MENUY]; /* get the absolute */
-  menux = static_cast<int>(WinX) + menuptr[MENUX]; /* coords of menu */
-  normcol = menuptr[NORMCOL];
-  litcol = menuptr[HILITE];
+  const int menuy =
+      static_cast<int>(WinY) + menuptr[MENUY]; /* get the absolute */
+  const int menux =
+      static_cast<int>(WinX) + menuptr[MENUX]; /* coords of menu */
+  const int normcol = menuptr[NORMCOL];
+  const int litcol = menuptr[HILITE];
 
   /*
   **	Fetch a pending keystroke from the buffer if there is a keystroke
   **	present. If no keystroke is pending then simple mouse tracking will
   **	be done.
   */
-  key = 0;
+  int key = 0;
   UnknownKey = 0;
   if (Keyboard->Check()) {
     key = Keyboard->Get() &
@@ -281,15 +258,15 @@ int Check_Menu(int menu, const char* text[], char* /*unused*/, uint32_t field,
   **	out the new selected item, and continue forward.
   */
   /* get menu coords from the menu structure as necessary */
-  mx1 = static_cast<int>(WinX) + (menuptr[MENUX] * FontWidth);
-  my1 = static_cast<int>(WinY) + menuptr[MENUY] -
-        halfskip; /*		from the menu		*/
-  mx2 = mx1 + (menuptr[ITEMWIDTH] * FontWidth) -
-        1; /*		structure as		*/
-  my2 = my1 + (menuptr[ITEMSHIGH] * menuskip) -
-        1; /*		necessary			*/
+  const int mx1 = static_cast<int>(WinX) + (menuptr[MENUX] * FontWidth);
+  const int my1 = static_cast<int>(WinY) + menuptr[MENUY] -
+                  halfskip; /*		from the menu		*/
+  const int mx2 = mx1 + (menuptr[ITEMWIDTH] * FontWidth) -
+                  1; /*		structure as		*/
+  const int my2 = my1 + (menuptr[ITEMSHIGH] * menuskip) -
+                  1; /*		necessary			*/
 
-  tempy = Get_Mouse_Y();
+  const int tempy = Get_Mouse_Y();
   if (Coordinates_In_Region(Get_Mouse_X(), tempy, mx1, my1, mx2, my2) &&
       MenuUpdate) {
     newitem = (tempy - my1) / menuskip;
@@ -416,10 +393,6 @@ int Check_Menu(int menu, const char* text[], char* /*unused*/, uint32_t field,
  *   05/16/1994 JLB : Created.                                             *
  *=========================================================================*/
 int Do_Menu(const char** strings, bool /*unused*/) {
-  int count;         // Number of entries in this menu.
-  int length;        // The width of the menu (in pixels).
-  const char** ptr;  // Working menu text pointer.
-  int selection;     // Selection from user.
 
   if (!strings) {
     return -1;
@@ -430,8 +403,8 @@ int Do_Menu(const char** strings, bool /*unused*/) {
   /*
   **	Determine the number of entries in this string.
   */
-  ptr = strings;
-  count = 0;
+  const char** ptr = strings;  // Working menu text pointer.
+  int count = 0;               // Number of entries in this menu.
   while (*ptr++) {
     count++;
   }
@@ -442,7 +415,7 @@ int Do_Menu(const char** strings, bool /*unused*/) {
   **	longest menu entry.
   */
   Plain_Text_Print(TXT_NONE, 0, 0, 0, 0, TPF_8POINT | TPF_DROPSHADOW);
-  length = 0;
+  int length = 0;  // The width of the menu (in pixels).
   ptr = strings;
   while (*ptr) {
     length = std::max(length, String_Pixel_Width(*ptr));
@@ -471,7 +444,7 @@ int Do_Menu(const char** strings, bool /*unused*/) {
   Setup_Menu(0, strings, 0xFFFFL, 0, 0);
 
   Keyboard->Clear();
-  selection = -1;
+  int selection = -1;  // Selection from user.
   UnknownKey = 0;
   while (selection == -1) {
     Call_Back();
@@ -561,9 +534,8 @@ int Main_Menu(int32_t /*unused*/) {
   */
   const bool bExpansionCS = Expansion_CS_Present();
   const bool bExpansionAM = Expansion_AM_Present();
-  KeyNumType input;  // input from user
   int retval = 0;    // return value
-  int curbutton;
+  int curbutton = 0;
   TextButtonClass* buttons[7];
 
   /*
@@ -735,7 +707,7 @@ int Main_Menu(int32_t /*unused*/) {
     /*
     **	Get and process player input.
     */
-    input = commands->Input();
+    const KeyNumType input = commands->Input();  // input from user
 
     /*
     **	Dispatch the input to be processed.

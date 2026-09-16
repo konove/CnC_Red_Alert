@@ -658,10 +658,9 @@ void ObjectClass::Sell_Back(int /*unused*/) {}
  * HISTORY: * 06/19/1994 JLB : Created. *
  *=============================================================================================*/
 void ObjectClass::Move(FacingType facing) {
-  COORDINATE coord;
 
   Mark(MARK_UP);
-  coord = Adjacent_Cell(Coord, facing);
+  COORDINATE const coord = Adjacent_Cell(Coord, facing);
   if (Can_Enter_Cell(Coord_Cell(coord)) == MOVE_OK) {
     Coord = coord;
   }
@@ -778,8 +777,8 @@ bool ObjectClass::Select() {
  * HISTORY: * 06/19/1994 JLB : Created. *
  *=============================================================================================*/
 bool ObjectClass::Render(bool forced) {
-  int x;
-  int y;
+  int x = 0;
+  int y = 0;
   const COORDINATE coord = Render_Coord();
 
   if (Debug_Map || Debug_Unshroud ||
@@ -798,13 +797,12 @@ bool ObjectClass::Render(bool forced) {
         case RTTI_INFANTRY:
         case RTTI_UNIT:
           auto* foot = dynamic_cast<FootClass*>(this);
-          CELL cell;
-          int oldx;
-          int oldy;
+          int oldx = 0;
+          int oldy = 0;
 
           if (foot->Head_To_Coord() && foot->Path[0] != FACING_NONE) {
-            cell = Adjacent_Cell(Coord_Cell(foot->Head_To_Coord()),
-                                 foot->Path[0] + FACING_S & FACING_NW);
+            CELL cell = Adjacent_Cell(Coord_Cell(foot->Head_To_Coord()),
+                                      foot->Path[0] + FACING_S & FACING_NW);
             Map.Coord_To_Pixel(Cell_Coord(cell), oldx, oldy);
             for (const auto& index : foot->Path) {
               if (index == FACING_NONE) {
@@ -1121,27 +1119,26 @@ void ObjectClass::Detach_All(bool all) {
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
 void ObjectClass::Detach_This_From_All(TARGET target, bool all) {
-  int index;
   if (Target_Legal(target)) {
-    for (index = 0; index < Teams.Count(); index++) {
+    for (int index = 0; index < Teams.Count(); index++) {
       Teams.Ptr(index)->Detach(target, all);
     }
-    for (index = 0; index < Units.Count(); index++) {
+    for (int index = 0; index < Units.Count(); index++) {
       Units.Ptr(index)->Detach(target, all);
     }
-    for (index = 0; index < Infantry.Count(); index++) {
+    for (int index = 0; index < Infantry.Count(); index++) {
       Infantry.Ptr(index)->Detach(target, all);
     }
-    for (index = 0; index < Aircraft.Count(); index++) {
+    for (int index = 0; index < Aircraft.Count(); index++) {
       Aircraft.Ptr(index)->Detach(target, all);
     }
-    for (index = 0; index < Buildings.Count(); index++) {
+    for (int index = 0; index < Buildings.Count(); index++) {
       Buildings.Ptr(index)->Detach(target, all);
     }
-    for (index = 0; index < Bullets.Count(); index++) {
+    for (int index = 0; index < Bullets.Count(); index++) {
       Bullets.Ptr(index)->Detach(target, all);
     }
-    for (index = 0; index < Anims.Count(); index++) {
+    for (int index = 0; index < Anims.Count(); index++) {
       Anims.Ptr(index)->Detach(target, all);
     }
   }
@@ -1312,7 +1309,7 @@ ResultType ObjectClass::Take_Damage(int& damage, int distance,
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
 bool ObjectClass::Mark(MarkType mark) {
-  TechnoClass* tech;
+  TechnoClass* tech = nullptr;
   CELL cell = 0;
   int threat = 0;
   HousesType house = HOUSE_NONE;

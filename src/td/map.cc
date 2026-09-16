@@ -584,9 +584,6 @@ void MapClass::Set_Map_Dimensions(int x, int y, int w, int h) {
  *Converted to member function.                                            *
  *=============================================================================================*/
 void MapClass::Sight_From(CELL cell, int sightrange, bool incremental) {
-  int xx;          // Center cell X coordinate (bounds checking).
-  const int* ptr;  // Offset pointer.
-  int count;       // Counter for number of offsets to process.
 
   /*
   **	Units that are off-map cannot sight.
@@ -601,14 +598,15 @@ void MapClass::Sight_From(CELL cell, int sightrange, bool incremental) {
   /*
   **	Determine logical cell coordinate for center scan point.
   */
-  xx = Cell_X(cell);
+  const int xx = Cell_X(cell);  // Center cell X coordinate (bounds checking).
 
   /*
   **	Incremental scans only scan the outer rings. Full scans
   **	scan all internal cells as well.
   */
-  count = RadiusCount[sightrange];
-  ptr = &RadiusOffset[0];
+  int count =
+      RadiusCount[sightrange];  // Counter for number of offsets to process.
+  const int* ptr = &RadiusOffset[0];  // Offset pointer.
   if (incremental && (sightrange > 1)) {
     ptr += RadiusCount[sightrange - 2];
     count -= RadiusCount[sightrange - 2];
@@ -618,10 +616,8 @@ void MapClass::Sight_From(CELL cell, int sightrange, bool incremental) {
   **	Process all offsets required for the desired scan.
   */
   while (count--) {
-    CELL newcell;  // New cell with offset.
-    int xdiff;     // New cell's X coordinate distance from center.
-
-    newcell = static_cast<CELL>(cell + *ptr++);
+    CELL const newcell =
+        static_cast<CELL>(cell + *ptr++);  // New cell with offset.
 
     /*
     **	Determine if the map edge has been wrapped. If so,
@@ -630,7 +626,8 @@ void MapClass::Sight_From(CELL cell, int sightrange, bool incremental) {
     if (static_cast<unsigned>(newcell) >= MAP_CELL_TOTAL) {
       continue;
     }
-    xdiff = Cell_X(newcell) - xx;
+    int xdiff =
+        Cell_X(newcell) - xx;  // New cell's X coordinate distance from center.
     xdiff = std::abs(xdiff);
     if (xdiff > sightrange) {
       continue;
@@ -670,11 +667,8 @@ void MapClass::Sight_From(CELL cell, int sightrange, bool incremental) {
  *function.                                            *
  *=============================================================================================*/
 int MapClass::Cell_Distance(CELL cell1, CELL cell2) {
-  int x;
-  int y;  // Difference on X and Y axis.
-
-  x = Cell_X(cell1) - Cell_X(cell2);
-  y = Cell_Y(cell1) - Cell_Y(cell2);
+  int x = Cell_X(cell1) - Cell_X(cell2);
+  int y = Cell_Y(cell1) - Cell_Y(cell2);  // Difference on X and Y axis.
 
   if (x < 0) {
     x = -x;
@@ -924,10 +918,7 @@ bool MapClass::Read_Binary(const char* root, uint32_t* crc)
 {
   GameFile file;
   char fname[kMaxFname + kMaxExt];
-  int i;
-  const char* map;
-  const void* rawmap;
-  const void* shape;
+  int i = 0;
 
   /*
   **	Filename = INI name with BIN extension.
@@ -966,11 +957,12 @@ bool MapClass::Read_Binary(const char* root, uint32_t* crc)
     *clear terrain.
     */
     if (temp.TType != TEMPLATE_CLEAR1 && temp.TType != TEMPLATE_NONE) {
-      shape = TemplateTypeClass::As_Reference(temp.TType).Get_Image_Data();
+      const void* shape =
+          TemplateTypeClass::As_Reference(temp.TType).Get_Image_Data();
       if (shape) {
-        rawmap = Get_Icon_Set_Map(shape);
+        const void* rawmap = Get_Icon_Set_Map(shape);
         if (rawmap) {
-          map = static_cast<const char*>(rawmap);
+          const char* map = static_cast<const char*>(rawmap);
           if (map[temp.TIcon] == -1) {
             temp.TIcon = 0;
             temp.TType = TEMPLATE_NONE;
@@ -1011,9 +1003,7 @@ bool MapClass::Read_Binary(const char* root, uint32_t* crc)
  * HISTORY: * 11/14/1994 BR : Created. *
  *=============================================================================================*/
 bool MapClass::Write_Binary(const char* root) {
-  GameFile* file;
   char fname[kMaxFname + kMaxExt];
-  int i;
 
   /*
   **	Filename = INI name with BIN extension.
@@ -1023,13 +1013,13 @@ bool MapClass::Write_Binary(const char* root) {
   /*
   **	Create object & open file.
   */
-  file = new GameFile(fname);
+  auto* file = new GameFile(fname);
   file->Open(FileAccess::kWrite);
 
   /*
   **	Loop through all cells.
   */
-  for (i = 0; i < MAP_CELL_TOTAL; i++) {
+  for (int i = 0; i < MAP_CELL_TOTAL; i++) {
     /*
     **	Save TType.
     */
@@ -1086,7 +1076,7 @@ void MapClass::Logic() {
   **	Tiberium cells that can grow or spread.
   */
   int subcount = 30;
-  int index;
+  int index = 0;
   for (index = TiberiumScan; index < MAP_CELL_TOTAL; index++) {
     CELL cell = static_cast<CELL>(index);
     if (!IsForwardScan) {
@@ -1299,26 +1289,17 @@ bool MapClass::Place_Random_Crate() {
  *   07/08/1995 BRR : Created.                                             *
  *=========================================================================*/
 bool MapClass::Validate() {
-  CELL cell;
-  TemplateType ttype;
-  unsigned char ticon;
-  const TemplateTypeClass* tclass;
   unsigned char map[13 * 8];
-  OverlayType overlay;
-  SmudgeType smudge;
-  ObjectClass* obj;
-  LandType land;
-  int i;
 
   /*------------------------------------------------------------------------
   Check every cell on the map, even those that aren't displayed,
   in the hopes of detecting a memory trasher.
   ------------------------------------------------------------------------*/
-  for (cell = 0; cell < MAP_CELL_TOTAL; cell++) {
+  for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
     /*.....................................................................
     Validate Template & Icon data
     .....................................................................*/
-    ttype = (*this)[cell].TType;
+    const TemplateType ttype = (*this)[cell].TType;
     if (ttype >= TEMPLATE_COUNT && ttype != TEMPLATE_NONE) {
       return false;
     }
@@ -1330,8 +1311,8 @@ bool MapClass::Validate() {
     return an error.
     .....................................................................*/
     if (ttype != TEMPLATE_NONE) {
-      tclass = &TemplateTypeClass::As_Reference(ttype);
-      ticon = (*this)[cell].TIcon;
+      const TemplateTypeClass* tclass = &TemplateTypeClass::As_Reference(ttype);
+      const unsigned char ticon = (*this)[cell].TIcon;
       Mem_Copy(Get_Icon_Set_Map(tclass->Get_Image_Data()), map,
                static_cast<size_t>(tclass->Width) * tclass->Height);
       if (ticon >= tclass->Width * tclass->Height || map[ticon] == 0xff) {
@@ -1342,7 +1323,7 @@ bool MapClass::Validate() {
     /*.....................................................................
     Validate Overlay
     .....................................................................*/
-    overlay = (*this)[cell].Overlay;
+    const OverlayType overlay = (*this)[cell].Overlay;
     if (overlay < OVERLAY_NONE || overlay >= OVERLAY_COUNT) {
       return false;
     }
@@ -1350,7 +1331,7 @@ bool MapClass::Validate() {
     /*.....................................................................
     Validate Smudge
     .....................................................................*/
-    smudge = (*this)[cell].Smudge;
+    const SmudgeType smudge = (*this)[cell].Smudge;
     if (smudge < SMUDGE_NONE || smudge >= SMUDGE_COUNT) {
       return false;
     }
@@ -1358,7 +1339,7 @@ bool MapClass::Validate() {
     /*.....................................................................
     Validate LandType
     .....................................................................*/
-    land = (*this)[cell].Land_Type();
+    const LandType land = (*this)[cell].Land_Type();
     if (land < LAND_CLEAR || land >= LAND_COUNT) {
       return false;
     }
@@ -1366,7 +1347,7 @@ bool MapClass::Validate() {
     /*.....................................................................
     Validate Occupier
     .....................................................................*/
-    obj = (*this)[cell].Cell_Occupier();
+    ObjectClass* obj = (*this)[cell].Cell_Occupier();
     if (obj && (obj->IsInLimbo ||
                 static_cast<unsigned int>(Coord_Cell(obj->Coord)) > 4095)) {
       return false;
@@ -1375,8 +1356,8 @@ bool MapClass::Validate() {
     /*.....................................................................
     Validate Overlappers
     .....................................................................*/
-    for (i = 0; i < 3; i++) {
-      obj = (*this)[cell].Overlappers[i];
+    for (auto& Overlapper : (*this)[cell].Overlappers) {
+      obj = Overlapper;
       if (obj && (obj->IsInLimbo ||
                   static_cast<unsigned int>(Coord_Cell(obj->Coord)) > 4095)) {
         return false;

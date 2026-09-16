@@ -142,8 +142,8 @@ bool Expansion_Dialog() {
 
   GadgetClass* buttons = nullptr;
 
-  const void* up_button;
-  const void* down_button;
+  const void* up_button = nullptr;
+  const void* down_button = nullptr;
 
   if (InMainLoop) {
     up_button = Hires_Retrieve("BTN-UP.SHP");
@@ -302,8 +302,8 @@ bool Bonus_Dialog() {
 
   GadgetClass* buttons = nullptr;
 
-  const void* up_button;
-  const void* down_button;
+  const void* up_button = nullptr;
+  const void* down_button = nullptr;
 
   if (InMainLoop) {
     up_button = Hires_Retrieve("BTN-UP.SHP");

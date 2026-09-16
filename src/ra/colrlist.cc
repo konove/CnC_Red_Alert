@@ -209,7 +209,7 @@ void ColorListClass::Set_Selected_Style(SelectStyleType style,
  *=========================================================================*/
 void ColorListClass::Draw_Entry(int index, int x, int y, int width,
                                 bool selected) {
-  RemapControlType* color;
+  RemapControlType* color = nullptr;
 
   /*
   ** Draw a non-selected item in its color

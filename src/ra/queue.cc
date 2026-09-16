@@ -665,8 +665,7 @@ static void Queue_AI_Multiplayer() {
   //........................................................................
   // Other misc variables
   //........................................................................
-  int i;
-  RetcodeType rc;
+  RetcodeType rc = RC_NORMAL;
 
   //------------------------------------------------------------------------
   //	Initialize the packet buffer pointer & its max size
@@ -711,15 +710,15 @@ static void Queue_AI_Multiplayer() {
     //.....................................................................
     //	Initialize static locals
     //.....................................................................
-    for (i = 0; i < kMaxPlayers - 1; i++) {
+    for (int i = 0; i < kMaxPlayers - 1; i++) {
       their_frame[i] = -1;
       their_sent[i] = 0;
       their_recv[i] = 0;
     }
     my_sent = 0;
     skip_crc.Set(32);
-    for (i = 0; i < 32; i++) {
-      CRC[i] = 0;
+    for (unsigned int& i : CRC) {
+      i = 0;
     }
 
     //.....................................................................
@@ -771,8 +770,8 @@ static void Queue_AI_Multiplayer() {
     //	waiting for MIX files to load; we would have fallen through, but
     //	their frame # would still be -1).
     //.....................................................................
-    for (i = 0; i < kMaxPlayers - 1; i++) {
-      their_frame[i] = 0;
+    for (int64_t& frame : their_frame) {
+      frame = 0;
     }
 
     //.....................................................................
@@ -967,15 +966,12 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
   //........................................................................
   // Variables for sending, receiving & parsing packets:
   //........................................................................
-  int packetlen;           // size of meta-packet sent, & received
-  int id;                  // id of other player
-  int messages_this_loop;  // to limit # messages processed each loop
-  int message_limit;       // max # messages we'll read each frame
+  int packetlen = 0;  // size of meta-packet sent, & received
+  int id = 0;         // id of other player
 
   //........................................................................
   // Variables used only if 'first_time':
   //........................................................................
-  int num_ready;  // # players signalling ready
 
   //........................................................................
   // Timing variables
@@ -992,15 +988,15 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
   //........................................................................
   // Other misc variables
   //........................................................................
-  KeyNumType input;  // for user input
-  int x;
-  int y;  // for map input
-  RetcodeType rc;
+  KeyNumType input = KN_NONE;  // for user input
+  int x = 0;
+  int y = 0;  // for map input
+  RetcodeType rc = RC_NORMAL;
 
   //------------------------------------------------------------------------
   // Wait to hear from all other players
   //------------------------------------------------------------------------
-  num_ready = 0;
+  int num_ready = 0;              // # players signalling ready
   retry_timer.Set(resend_delta);  // time to retry
   dialog_timer.Set(dialog_time);  // time to show dlg
   timeout_timer.Set(timeout);     // time to bail out
@@ -1033,16 +1029,12 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
     //---------------------------------------------------------------------
     if (dialog_timer.IsFinished() && SpecialDialog == SDLG_NONE) {
       if (reconnect_dlg == 0 && first_time == 0) {
-        FILE* fp;
-        int i;
-        HouseClass* housep;
-
-        fp = fopen("recon.txt", "wt");
+        FILE* fp = fopen("recon.txt", "wt");
         if (fp) {
           absl::FPrintF(fp, "# Connections: %d\n", net->Num_Connections());
           absl::FPrintF(fp, "   My Frame #: %" PRId64 "\n", Frame);
-          for (i = 0; i < net->Num_Connections(); i++) {
-            housep = HouseClass::As_Pointer(
+          for (int i = 0; i < net->Num_Connections(); i++) {
+            HouseClass* housep = HouseClass::As_Pointer(
                 static_cast<HousesType>(net->Connection_ID(i)));
             absl::FPrintF(
                 fp,
@@ -1131,8 +1123,8 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
     // We have to limit the number of incoming messages we handle; it's
     // possible to go into an infinite loop processing modem messages.
     //---------------------------------------------------------------------
-    messages_this_loop = 0;
-    message_limit = 5;
+    int messages_this_loop = 0;   // to limit # messages processed each loop
+    const int message_limit = 5;  // max # messages we'll read each frame
 
     while (messages_this_loop++ < message_limit &&
            net->Get_Private_Message(multi_packet_buf, &packetlen, &id)) {
@@ -1313,7 +1305,6 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
 static void Generate_Timing_Event(ConnManClass* net, int my_sent) {
-  int32_t resp_time;  // connection response time, in ticks
   EventClass ev;
 
   //------------------------------------------------------------------------
@@ -1322,7 +1313,8 @@ static void Generate_Timing_Event(ConnManClass* net, int my_sent) {
   // To convert to one-way packet time, divide by 2; to convert to game
   // frames, divide again by 4, assuming a game rate of 15 fps.
   //------------------------------------------------------------------------
-  resp_time = net->Response_Time();
+  const int32_t resp_time =
+      net->Response_Time();  // connection response time, in ticks
 
   //------------------------------------------------------------------------
   //	Adjust my connection retry timing; only do this if I've sent out more
@@ -1386,12 +1378,8 @@ static void Generate_Timing_Event(ConnManClass* net, int my_sent) {
  *   07/02/1996 BRR : Created.                                             *
  *=========================================================================*/
 static void Generate_Real_Timing_Event(ConnManClass* net, int my_sent) {
-  int32_t resp_time;  // connection response time, in ticks
   EventClass ev;
-  int highest_ticks;
-  int i;
-  int specified_frame_rate;
-  int maxahead;
+  int specified_frame_rate = 0;
 
   //
   // If we haven't sent out at least 5 guaranteed-delivery packets, don't
@@ -1404,8 +1392,8 @@ static void Generate_Real_Timing_Event(ConnManClass* net, int my_sent) {
   //
   // Find the highest processing time we have stored
   //
-  highest_ticks = 0;
-  for (i = 0; i < Session.Players.Count(); i++) {
+  int highest_ticks = 0;
+  for (int i = 0; i < Session.Players.Count(); i++) {
     //
     // If we haven't heard from all systems yet, bail out.
     //
@@ -1442,7 +1430,8 @@ static void Generate_Real_Timing_Event(ConnManClass* net, int my_sent) {
   // To convert to one-way packet time, divide by 2; to convert to game
   // frames, ....uh....
   //
-  resp_time = net->Response_Time();
+  const int32_t resp_time =
+      net->Response_Time();  // connection response time, in ticks
 
   //
   // Compute our new 'MaxAhead' value, based upon the response time of our
@@ -1454,7 +1443,7 @@ static void Generate_Real_Timing_Event(ConnManClass* net, int my_sent) {
   // resp_time is divided by 2 because, as reported, it represents a round-
   // trip, and we only want to use a one-way trip.
   //
-  maxahead = resp_time * Session.DesiredFrameRate / (2 * 60);
+  int maxahead = resp_time * Session.DesiredFrameRate / (2 * 60);
 
   //
   // Now, we have to round 'maxahead' so it's an even multiple of our
@@ -1507,8 +1496,6 @@ static void Generate_Real_Timing_Event(ConnManClass* net, int my_sent) {
  *=========================================================================*/
 static void Generate_Process_Time_Event(ConnManClass* net) {
   EventClass ev;
-  int avgticks;
-  int32_t resp_time;  // connection response time, in ticks
 
   //
   // Measure the current connection response time.  This time will be in
@@ -1516,7 +1503,8 @@ static void Generate_Process_Time_Event(ConnManClass* net) {
   // To convert to one-way packet time, divide by 2; to convert to game
   // frames, ....uh....
   //
-  resp_time = net->Response_Time();
+  const int32_t resp_time =
+      net->Response_Time();  // connection response time, in ticks
 
   //
   //	Adjust my connection retry timing.  These values set the retry timeout
@@ -1538,7 +1526,8 @@ static void Generate_Process_Time_Event(ConnManClass* net) {
     MonoClass::Disable();
   }
 
-  avgticks = static_cast<int>(Session.ProcessTicks / Session.ProcessFrames);
+  const int avgticks =
+      static_cast<int>(Session.ProcessTicks / Session.ProcessFrames);
 
   ev.Type = EventClass::PROCESS_TIME;
   ev.Data.ProcessTime.AverageTicks = static_cast<uint16_t>(avgticks);
@@ -1621,10 +1610,9 @@ static int Process_Send_Period(ConnManClass* net)  //, int init)
  *=========================================================================*/
 static int Send_Packets(ConnManClass* net, char* multi_packet_buf,
                         int multi_packet_max, int max_ahead, int my_sent) {
-  int cap;        // max # events to send, NOT including FRAMEINFO event
-  int do_once;    // true: only go through packet loop once
-  int ack_req;    // 0 = no ack required on outgoing packet
-  int packetlen;  // size of meta-packet sent
+  int cap = 0;      // max # events to send, NOT including FRAMEINFO event
+  int do_once = 0;  // true: only go through packet loop once
+  int ack_req = 0;  // 0 = no ack required on outgoing packet
 
   //------------------------------------------------------------------------
   //	Determine how many events it's OK to send this frame.
@@ -1699,8 +1687,9 @@ static int Send_Packets(ConnManClass* net, char* multi_packet_buf,
     //.....................................................................
     //	Build & send out our message
     //.....................................................................
-    packetlen = Build_Send_Packet(multi_packet_buf, multi_packet_max, max_ahead,
-                                  my_sent, cap);
+    const int packetlen =
+        Build_Send_Packet(multi_packet_buf, multi_packet_max, max_ahead,
+                          my_sent, cap);  // size of meta-packet sent
     net->Send_Private_Message(multi_packet_buf, packetlen, ack_req);
 
     //.....................................................................
@@ -1821,9 +1810,7 @@ static RetcodeType Process_Receive_Packet(ConnManClass* net,
                                           uint16_t* their_recv) {
   EventClass event_storage;
   const EventClass* event = &event_storage;
-  int index;
   RetcodeType retcode = RC_NORMAL;
-  int i;
 
   //------------------------------------------------------------------------
   //	Get an event ptr to the incoming message
@@ -1839,7 +1826,7 @@ static RetcodeType Process_Receive_Packet(ConnManClass* net,
   //------------------------------------------------------------------------
   //	Get the index of the sender
   //------------------------------------------------------------------------
-  index = net->Connection_Index(id);
+  const int index = net->Connection_Index(id);
 
   //------------------------------------------------------------------------
   //	Compute the other player's frame # (at the time this packet was sent)
@@ -1863,8 +1850,7 @@ static RetcodeType Process_Receive_Packet(ConnManClass* net,
   //------------------------------------------------------------------------
   if (event->Data.FrameInfo.CommandCount > their_sent[index]) {
     if (abs(their_sent[index] - event->Data.FrameInfo.CommandCount) > 500) {
-      FILE* fp;
-      fp = fopen("badcount.txt", "wt");
+      FILE* fp = fopen("badcount.txt", "wt");
       if (fp) {
         absl::FPrintF(fp, "Event Type:%s\n",
                       EventClass::EventNames[event->Type]);
@@ -1908,7 +1894,7 @@ static RetcodeType Process_Receive_Packet(ConnManClass* net,
     // Break up the packet into its component events.  A returned packet
     // count of -1 indicates a fatal queue-full error.
     //.....................................................................
-    i = Breakup_Receive_Packet(multi_packet_buf, packetlen);
+    int i = Breakup_Receive_Packet(multi_packet_buf, packetlen);
     if (i == -1) {
       return RC_DOLIST_FULL;
     }
@@ -1976,7 +1962,6 @@ static RetcodeType Process_Serial_Packet(const char* multi_packet_buf,
   SerialPacketType serial_storage;
   SerialPacketType* serial_packet =
       &serial_storage;  // for parsing serial packets
-  int player_gone;
   EventClass event_storage;
   const EventClass* event = &event_storage;
 
@@ -1989,7 +1974,7 @@ static RetcodeType Process_Serial_Packet(const char* multi_packet_buf,
   std::memset(&serial_storage, 0, sizeof(serial_storage));
   std::memcpy(&serial_storage, multi_packet_buf,
               std::min(sizeof(serial_storage), static_cast<size_t>(packetlen)));
-  player_gone = 0;
+  int player_gone = 0;
   //........................................................................
   // On Frame 0, only a SIGN_OFF means the other player left; the other
   // packet types may be left over from a previous session.
@@ -2133,9 +2118,6 @@ static RetcodeType Process_Serial_Packet(const char* multi_packet_buf,
 static int Can_Advance(ConnManClass* net, int max_ahead,
                        const int64_t* their_frame, const uint16_t* their_sent,
                        const uint16_t* their_recv) {
-  int64_t their_oldest_frame;  // other players' oldest frame #
-  int count_ok;                // true = my cmd count matches theirs
-  int i;
 
   //------------------------------------------------------------------------
   // Special case for modem: if the other player has left, go ahead and
@@ -2148,8 +2130,8 @@ static int Can_Advance(ConnManClass* net, int max_ahead,
   //------------------------------------------------------------------------
   //	Find the oldest frame # in 'their_frame'
   //------------------------------------------------------------------------
-  their_oldest_frame = Frame + 1000;
-  for (i = 0; i < net->Num_Connections(); i++) {
+  int64_t their_oldest_frame = Frame + 1000;  // other players' oldest frame #
+  for (int i = 0; i < net->Num_Connections(); i++) {
     their_oldest_frame = std::min(their_frame[i], their_oldest_frame);
   }
 
@@ -2160,8 +2142,8 @@ static int Can_Advance(ConnManClass* net, int max_ahead,
   //	2) their_recv[i] >= their_sent[i] (ie I've received all the commands
   //	   the other players have sent so far).
   //------------------------------------------------------------------------
-  count_ok = 1;
-  for (i = 0; i < net->Num_Connections(); i++) {
+  int count_ok = 1;  // true = my cmd count matches theirs
+  for (int i = 0; i < net->Num_Connections(); i++) {
     if (their_recv[i] < their_sent[i]) {
       count_ok = 0;
       break;
@@ -2204,14 +2186,11 @@ static int Process_Reconnect_Dialog(
     const Timer<SystemTickSource>* timeout_timer, const int64_t* their_frame,
     int num_conn, bool reconn, bool fresh) {
   static int displayed_time = 0;  // time value currently displayed
-  int new_time;
-  int i;
-  int64_t j;  // oldest frame number seen so far
 
   //------------------------------------------------------------------------
   // Convert the timer to seconds
   //------------------------------------------------------------------------
-  new_time = static_cast<int>(timeout_timer->Value()) / 60;
+  const int new_time = static_cast<int>(timeout_timer->Value()) / 60;
 
   //------------------------------------------------------------------------
   // If the timer has changed, or 'fresh' is set, redraw the dialog
@@ -2222,9 +2201,9 @@ static int Process_Reconnect_Dialog(
     // Find the index of the person we're trying to reconnect to
     //.....................................................................
     if (reconn) {
-      j = 0x7fffffff;
+      int64_t j = 0x7fffffff;  // oldest frame number seen so far
       oldest_index = 0;
-      for (i = 0; i < num_conn; i++) {
+      for (int i = 0; i < num_conn; i++) {
         if (their_frame[i] < j) {
           j = their_frame[i];
           oldest_index = i;
@@ -2284,10 +2263,6 @@ static int Process_Reconnect_Dialog(
  *=========================================================================*/
 static int Handle_Timeout(ConnManClass* net, int64_t* their_frame,
                           uint16_t* their_sent, uint16_t* their_recv) {
-  int oldest_index;  // index of person requiring a reconnect
-  int i;
-  int64_t j;  // oldest frame number seen so far
-  int id;
 
   //------------------------------------------------------------------------
   // For modem, attempt to reconnect; if that fails, save the game & bail.
@@ -2305,16 +2280,16 @@ static int Handle_Timeout(ConnManClass* net, int64_t* their_frame,
   //	For network, destroy the oldest connection
   //------------------------------------------------------------------------
   else if (Session.Type == GAME_IPX || Session.Type == GAME_INTERNET) {
-    j = 0x7fffffff;
-    oldest_index = 0;
-    for (i = 0; i < net->Num_Connections(); i++) {
+    int64_t j = 0x7fffffff;  // oldest frame number seen so far
+    int oldest_index = 0;    // index of person requiring a reconnect
+    for (int i = 0; i < net->Num_Connections(); i++) {
       if (their_frame[i] < j) {
         j = their_frame[i];
         oldest_index = i;
       }
     }
 
-    id = net->Connection_ID(oldest_index);
+    const int id = net->Connection_ID(oldest_index);
     /*
     ** Send the game statistics packet now if the game is effectivly over
     */
@@ -2327,7 +2302,7 @@ static int Handle_Timeout(ConnManClass* net, int64_t* their_frame,
     }
 
     if (id != ConnManClass::CONNECTION_NONE) {
-      for (i = oldest_index; i < net->Num_Connections() - 1; i++) {
+      for (int i = oldest_index; i < net->Num_Connections() - 1; i++) {
         their_frame[i] = their_frame[i + 1];
         their_sent[i] = their_sent[i + 1];
         their_recv[i] = their_recv[i + 1];
@@ -2415,7 +2390,6 @@ static void Stop_Game() {
 static int Build_Send_Packet(void* buf, int bufsize, int frame_delay,
                              int num_cmds, int cap) {
   int size = 0;
-  EventClass* finfo;
 
   //------------------------------------------------------------------------
   // All events start with a FRAMEINFO event; fill this part in.
@@ -2423,7 +2397,7 @@ static int Build_Send_Packet(void* buf, int bufsize, int frame_delay,
   //........................................................................
   // Set the event type
   //........................................................................
-  finfo = static_cast<EventClass*>(buf);
+  auto* finfo = static_cast<EventClass*>(buf);
   finfo->Type = EventClass::FRAMEINFO;
   //........................................................................
   // Set the frame to execute this event on; this is protocol-specific
@@ -2516,7 +2490,7 @@ static int Build_Send_Packet(void* buf, int bufsize, int frame_delay,
 int Add_Uncompressed_Events(void* buf, int bufsize, int frame_delay, int size,
                             int cap) {
   int num = 0;  // # of events processed
-  int ev_size;  // size of event we're adding
+  int ev_size = 0;  // size of event we're adding
 
   //------------------------------------------------------------------------
   // Loop until there are no more events, or we've processed our max # of
@@ -2610,10 +2584,8 @@ int Add_Uncompressed_Events(void* buf, int bufsize, int frame_delay, int size,
 int Add_Compressed_Events(void* buf, int bufsize, int frame_delay, int size,
                           int cap) {
   int num = 0;                      // # of events processed
-  EventClass::EventType eventtype;  // type of event being compressed
   EventClass prevevent;             // last event processed
-  int datasize;                     // size of element plucked from event union
-  int storedsize;                   // actual # bytes stored from event
+  int storedsize = 0;               // actual # bytes stored from event
   unsigned char* unitsptr =
       nullptr;                 // ptr to buffer pos to store mega. rep count
   unsigned char numunits = 0;  // megamission rep count value
@@ -2634,8 +2606,11 @@ int Add_Compressed_Events(void* buf, int bufsize, int frame_delay, int size,
   while (OutList.Count() && num < cap) {
     Keyboard->Check();
 
-    eventtype = OutList.First().Type;
-    datasize = EventClass::EventLength[eventtype];
+    const EventClass::EventType eventtype =
+        OutList.First().Type;  // type of event being compressed
+    int datasize =
+        EventClass::EventLength[eventtype];  // size of element plucked from
+                                             // event union
     //.....................................................................
     // For a variable-sized event, pull the size from the event; otherwise,
     // the size will be the data element size plus the event type value.
@@ -3300,13 +3275,8 @@ static int Execute_DoList(int max_houses, HousesType base_house,
                           const Timer<FrameTickSource>* skip_crc,
                           int64_t* their_frame, uint16_t* their_sent,
                           uint16_t* their_recv) {
-  HousesType house;
-  HouseClass* hptr;
-  int i;
-  int j;
-  int k;
-  int index;
-  int check_crc;
+  int index = 0;
+  int check_crc = 0;
 
   //
   // If MPlayerMaxAhead is recomputed such that it increases, the systems
@@ -3319,7 +3289,7 @@ static int Execute_DoList(int max_houses, HousesType base_house,
   // that are scheduled to execute during this "period of vulnerability",
   // and re-schedule for the end of that period.
   //
-  for (j = 0; j < DoList.Count(); j++) {
+  for (int j = 0; j < DoList.Count(); j++) {
     if (DoList[j].Type != EventClass::FRAMEINFO &&
         std::cmp_greater(DoList[j].Frame, NewMaxAheadFrame1) &&
         std::cmp_less(DoList[j].Frame, NewMaxAheadFrame2)) {
@@ -3332,12 +3302,12 @@ static int Execute_DoList(int max_houses, HousesType base_house,
   //	systems; so, execute them in the order of the HouseClass array.  This
   //	array is stored in the same order on all systems.
   //------------------------------------------------------------------------
-  for (i = 0; i < max_houses; i++) {
+  for (int i = 0; i < max_houses; i++) {
     //.....................................................................
     //	Convert our index into a HousesType value
     //.....................................................................
-    house = static_cast<HousesType>(i + base_house);
-    hptr = HouseClass::As_Pointer(house);
+    const auto house = static_cast<HousesType>(i + base_house);
+    HouseClass* hptr = HouseClass::As_Pointer(house);
 
     //.....................................................................
     // If for some reason this house doesn't exist, skip it.
@@ -3358,7 +3328,7 @@ static int Execute_DoList(int max_houses, HousesType base_house,
     //.....................................................................
     //	Loop through all events
     //.....................................................................
-    for (j = 0; j < DoList.Count(); j++) {
+    for (int j = 0; j < DoList.Count(); j++) {
       if (net) {
         Update_Queue_Mono(net, 6);
       }
@@ -3392,12 +3362,11 @@ static int Execute_DoList(int max_houses, HousesType base_house,
             /*
             ** Flag that this house lost because it quit.
             */
-            HousesType quithouse;
-            HouseClass* quithptr;
 
             for (int player = 0; player < max_houses; player++) {
-              quithouse = static_cast<HousesType>(player + base_house);
-              quithptr = HouseClass::As_Pointer(quithouse);
+              const auto quithouse =
+                  static_cast<HousesType>(player + base_house);
+              HouseClass* quithptr = HouseClass::As_Pointer(quithouse);
               if (!quithptr) {
                 continue;
               }
@@ -3443,7 +3412,7 @@ static int Execute_DoList(int max_houses, HousesType base_house,
                        net) {
               index = net->Connection_Index(house);
               if (index != -1) {
-                for (k = index; k < net->Num_Connections() - 1; k++) {
+                for (int k = index; k < net->Num_Connections() - 1; k++) {
                   their_frame[k] = their_frame[k + 1];
                   their_sent[k] = their_sent[k + 1];
                   their_recv[k] = their_recv[k + 1];
@@ -3602,14 +3571,12 @@ static void Clean_DoList(ConnManClass* net) {
  *   08/14/1995 BRR : Created.                                             *
  *=========================================================================*/
 static void Queue_Record() {
-  int i;
-  int j;
 
   //------------------------------------------------------------------------
   //	Compute # of events to save this frame
   //------------------------------------------------------------------------
-  j = 0;
-  for (i = 0; i < DoList.Count(); i++) {
+  int j = 0;
+  for (int i = 0; i < DoList.Count(); i++) {
     if (std::cmp_equal(Frame, DoList[i].Frame) && !DoList[i].IsExecuted) {
       j++;
     }
@@ -3619,7 +3586,7 @@ static void Queue_Record() {
   //	Save the # of events, then all events.
   //------------------------------------------------------------------------
   Session.RecordFile.WriteObject(j);
-  for (i = 0; i < DoList.Count(); i++) {
+  for (int i = 0; i < DoList.Count(); i++) {
     if (std::cmp_equal(Frame, DoList[i].Frame) && !DoList[i].IsExecuted) {
       Session.RecordFile.WriteObject(DoList[i]);
       j--;
@@ -3656,22 +3623,18 @@ static void Queue_Record() {
  *   05/15/1995 BRR : Created.                                             *
  *=========================================================================*/
 static void Queue_Playback() {
-  int numevents;
+  int numevents = 0;
   EventClass event;
-  int i;
-  int ok;
   static int mx;
   static int my;
-  int max_houses;
-  HousesType base_house;
-  int key;
-  int testframe;
+  int max_houses = 0;
+  HousesType base_house = HOUSE_NONE;
 
   //------------------------------------------------------------------------
   //	If the user hits ESC, stop the playback
   //------------------------------------------------------------------------
   if (Keyboard->Check()) {
-    key = Keyboard->Get();
+    const int key = Keyboard->Get();
     if (key == KA_ESC || Session.Attract) {
       GameActive = false;
       return;
@@ -3717,8 +3680,9 @@ static void Queue_Playback() {
   //------------------------------------------------------------------------
   // Only process every 'FrameSendRate' frames
   //------------------------------------------------------------------------
-  testframe = static_cast<int>((Frame + (Session.FrameSendRate - 1)) /
-                               Session.FrameSendRate * Session.FrameSendRate);
+  const int testframe =
+      static_cast<int>((Frame + (Session.FrameSendRate - 1)) /
+                       Session.FrameSendRate * Session.FrameSendRate);
   if ((Session.Type != GAME_NORMAL && Session.Type != GAME_SKIRMISH &&
        Session.CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) &&
       (Frame != testframe)) {
@@ -3728,9 +3692,9 @@ static void Queue_Playback() {
   //------------------------------------------------------------------------
   //	Read the DoList from disk
   //------------------------------------------------------------------------
-  ok = 1;
+  int ok = 1;
   if (Session.RecordFile.ReadObject(numevents)) {
-    for (i = 0; i < numevents; i++) {
+    for (int i = 0; i < numevents; i++) {
       if (Session.RecordFile.ReadObject(event)) {
         event.IsExecuted = 0;
         DoList.Add(event);
@@ -3791,22 +3755,15 @@ static void Queue_Playback() {
  *   05/09/1995 BRR : Created.                                             *
  *=========================================================================*/
 static void Compute_Game_CRC() {
-  int i;
-  int j;
-  VesselClass* vessp;
-  InfantryClass* infp;
-  UnitClass* unitp;
-  BuildingClass* bldgp;
-  ObjectClass* objp;
-  HouseClass* housep;
+  ObjectClass* objp = nullptr;
 
   GameCRC = 0;
 
   //------------------------------------------------------------------------
   //	Infantry
   //------------------------------------------------------------------------
-  for (i = 0; i < Infantry.Count(); i++) {
-    infp = static_cast<InfantryClass*>(Infantry.Active_Ptr(i));
+  for (int i = 0; i < Infantry.Count(); i++) {
+    auto* infp = static_cast<InfantryClass*>(Infantry.Active_Ptr(i));
     Add_CRC(&GameCRC,
             static_cast<uint32_t>(static_cast<int>(infp->Coord) +
                                   static_cast<int>(infp->PrimaryFacing)));
@@ -3818,8 +3775,8 @@ static void Compute_Game_CRC() {
   //------------------------------------------------------------------------
   //	Units
   //------------------------------------------------------------------------
-  for (i = 0; i < Units.Count(); i++) {
-    unitp = static_cast<UnitClass*>(Units.Active_Ptr(i));
+  for (int i = 0; i < Units.Count(); i++) {
+    auto* unitp = static_cast<UnitClass*>(Units.Active_Ptr(i));
     Add_CRC(&GameCRC,
             static_cast<uint32_t>(static_cast<int>(unitp->Coord) +
                                   static_cast<int>(unitp->PrimaryFacing) +
@@ -3829,8 +3786,8 @@ static void Compute_Game_CRC() {
   //------------------------------------------------------------------------
   //	Shippies
   //------------------------------------------------------------------------
-  for (i = 0; i < Vessels.Count(); i++) {
-    vessp = static_cast<VesselClass*>(Vessels.Active_Ptr(i));
+  for (int i = 0; i < Vessels.Count(); i++) {
+    auto* vessp = static_cast<VesselClass*>(Vessels.Active_Ptr(i));
     Add_CRC(&GameCRC,
             static_cast<uint32_t>(static_cast<int>(vessp->Coord) +
                                   static_cast<int>(vessp->PrimaryFacing)));
@@ -3843,8 +3800,8 @@ static void Compute_Game_CRC() {
   //------------------------------------------------------------------------
   //	Buildings
   //------------------------------------------------------------------------
-  for (i = 0; i < Buildings.Count(); i++) {
-    bldgp = static_cast<BuildingClass*>(Buildings.Active_Ptr(i));
+  for (int i = 0; i < Buildings.Count(); i++) {
+    auto* bldgp = static_cast<BuildingClass*>(Buildings.Active_Ptr(i));
     Add_CRC(&GameCRC,
             static_cast<uint32_t>(static_cast<int>(bldgp->Coord) +
                                   static_cast<int>(bldgp->PrimaryFacing)));
@@ -3853,8 +3810,8 @@ static void Compute_Game_CRC() {
   //------------------------------------------------------------------------
   //	Houses
   //------------------------------------------------------------------------
-  for (i = 0; i < Houses.Count(); i++) {
-    housep = static_cast<HouseClass*>(Houses.Active_Ptr(i));
+  for (int i = 0; i < Houses.Count(); i++) {
+    auto* housep = static_cast<HouseClass*>(Houses.Active_Ptr(i));
     Add_CRC(&GameCRC, static_cast<uint32_t>(static_cast<int>(housep->Credits) +
                                             housep->Power +
                                             housep->Drain));
@@ -3863,8 +3820,8 @@ static void Compute_Game_CRC() {
   //------------------------------------------------------------------------
   //	Map Layers
   //------------------------------------------------------------------------
-  for (i = 0; std::cmp_less(i, magic_enum::enum_count<LayerType>()); i++) {
-    for (j = 0; j < MouseClass::Layer[i].Count(); j++) {
+  for (int i = 0; std::cmp_less(i, magic_enum::enum_count<LayerType>()); i++) {
+    for (int j = 0; j < MouseClass::Layer[i].Count(); j++) {
       objp = MouseClass::Layer[i][j];
       Add_CRC(&GameCRC,
               static_cast<uint32_t>(static_cast<int>(objp->Coord) +
@@ -3875,7 +3832,7 @@ static void Compute_Game_CRC() {
   //------------------------------------------------------------------------
   //	Logic Layers
   //------------------------------------------------------------------------
-  for (i = 0; i < Logic.Count(); i++) {
+  for (int i = 0; i < Logic.Count(); i++) {
     objp = Logic[i];
     Add_CRC(&GameCRC,
             static_cast<uint32_t>(static_cast<int>(objp->Coord) +
@@ -3910,7 +3867,7 @@ static void Compute_Game_CRC() {
  *   05/09/1995 BRR : Created.                                             *
  *=========================================================================*/
 void Add_CRC(uint32_t* crc, uint32_t val) {
-  uint32_t hibit;
+  uint32_t hibit = 0;
 
   if (*crc & 0x80000000) {
     hibit = 1;
@@ -3944,38 +3901,29 @@ void Add_CRC(uint32_t* crc, uint32_t val) {
  *   05/09/1995 BRR : Created.                                             *
  *=========================================================================*/
 static void Print_CRCs(const EventClass* ev) {
-  int i;
-  int j;
-  InfantryClass* infp;
-  UnitClass* unitp;
-  VesselClass* vesselp;
-  BuildingClass* bldgp;
-  ObjectClass* objp;
-  FILE* fp;
-  HouseClass* housep;
-  HousesType house;
-  int color;
+  ObjectClass* objp = nullptr;
+  HouseClass* housep = nullptr;
 
   Mono_Clear_Screen();
   Mono_Set_Cursor(0, 0);
-  fp = fopen("OUT.TXT", "wt");
+  FILE* fp = fopen("OUT.TXT", "wt");
   if (fp == nullptr) {
     return;
   }
 
-  for (i = 0; i < 32; i++) {
+  for (int i = 0; i < 32; i++) {
     absl::FPrintF(fp, "CRC[%d]=%x\n", i, CRC[i]);
   }
 
   //
   // Houses
   //
-  for (house = HOUSE_MULTI1; house <= HOUSE_MULTI8; house++) {
+  for (HousesType house = HOUSE_MULTI1; house <= HOUSE_MULTI8; house++) {
     GameCRC = 0;
     housep = HouseClass::As_Pointer(house);
     if (housep) {
       const HousesType actlike = housep->ActLike;
-      color = housep->RemapColor;
+      const int color = housep->RemapColor;
       absl::FPrintF(fp, "%s: IsHuman:%d  Color:%s  ID:%d  ActLike:%s\n",
                     housep->IniName, housep->IsHuman, ColorNames[color],
                     housep->ID, HouseClass::As_Pointer(actlike)->Class->Name());
@@ -3990,15 +3938,15 @@ static void Print_CRCs(const EventClass* ev) {
   //
   // Infantry
   //
-  for (house = HOUSE_MULTI1; house <= HOUSE_MULTI8; house++) {
+  for (HousesType house = HOUSE_MULTI1; house <= HOUSE_MULTI8; house++) {
     housep = HouseClass::As_Pointer(house);
     if (housep) {
       GameCRC = 0;
       absl::FPrintF(fp,
                     "-------------------- %s Infantry -------------------\n",
                     housep->Class->Name());
-      for (i = 0; i < Infantry.Count(); i++) {
-        infp = static_cast<InfantryClass*>(Infantry.Active_Ptr(i));
+      for (int i = 0; i < Infantry.Count(); i++) {
+        auto* infp = static_cast<InfantryClass*>(Infantry.Active_Ptr(i));
         if (infp->Owner() == house) {
           Add_CRC(&GameCRC,
                   static_cast<uint32_t>(static_cast<int>(infp->Coord) +
@@ -4023,14 +3971,14 @@ static void Print_CRCs(const EventClass* ev) {
   //
   // Units
   //
-  for (house = HOUSE_MULTI1; house <= HOUSE_MULTI8; house++) {
+  for (HousesType house = HOUSE_MULTI1; house <= HOUSE_MULTI8; house++) {
     housep = HouseClass::As_Pointer(house);
     if (housep) {
       GameCRC = 0;
       absl::FPrintF(fp, "-------------------- %s Units -------------------\n",
                     housep->Class->Name());
-      for (i = 0; i < Units.Count(); i++) {
-        unitp = static_cast<UnitClass*>(Units.Active_Ptr(i));
+      for (int i = 0; i < Units.Count(); i++) {
+        auto* unitp = static_cast<UnitClass*>(Units.Active_Ptr(i));
         if (unitp->Owner() == house) {
           Add_CRC(&GameCRC,
                   static_cast<uint32_t>(static_cast<int>(unitp->Coord) +
@@ -4053,14 +4001,14 @@ static void Print_CRCs(const EventClass* ev) {
   //
   // Vessels
   //
-  for (house = HOUSE_MULTI1; house <= HOUSE_MULTI8; house++) {
+  for (HousesType house = HOUSE_MULTI1; house <= HOUSE_MULTI8; house++) {
     housep = HouseClass::As_Pointer(house);
     if (housep) {
       GameCRC = 0;
       absl::FPrintF(fp, "-------------------- %s Vessels -------------------\n",
                     housep->Class->Name());
-      for (i = 0; i < Vessels.Count(); i++) {
-        vesselp = static_cast<VesselClass*>(Vessels.Active_Ptr(i));
+      for (int i = 0; i < Vessels.Count(); i++) {
+        auto* vesselp = static_cast<VesselClass*>(Vessels.Active_Ptr(i));
         if (vesselp->Owner() == house) {
           Add_CRC(&GameCRC,
                   static_cast<uint32_t>(static_cast<int>(vesselp->Coord) +
@@ -4087,15 +4035,15 @@ static void Print_CRCs(const EventClass* ev) {
   //
   // Buildings
   //
-  for (house = HOUSE_MULTI1; house <= HOUSE_MULTI8; house++) {
+  for (HousesType house = HOUSE_MULTI1; house <= HOUSE_MULTI8; house++) {
     housep = HouseClass::As_Pointer(house);
     if (housep) {
       GameCRC = 0;
       absl::FPrintF(fp,
                     "-------------------- %s Buildings -------------------\n",
                     housep->Class->Name());
-      for (i = 0; i < Buildings.Count(); i++) {
-        bldgp = static_cast<BuildingClass*>(Buildings.Active_Ptr(i));
+      for (int i = 0; i < Buildings.Count(); i++) {
+        auto* bldgp = static_cast<BuildingClass*>(Buildings.Active_Ptr(i));
         if (bldgp->Owner() == house) {
           Add_CRC(&GameCRC,
                   static_cast<uint32_t>(static_cast<int>(bldgp->Coord) +
@@ -4114,10 +4062,9 @@ static void Print_CRCs(const EventClass* ev) {
   //
   // Animations
   //
-  AnimClass* animp;
   absl::FPrintF(fp, "-------------------- Animations -------------------\n");
-  for (i = 0; i < Anims.Count(); i++) {
-    animp = static_cast<AnimClass*>(Anims.Active_Ptr(i));
+  for (int i = 0; i < Anims.Count(); i++) {
+    auto* animp = static_cast<AnimClass*>(Anims.Active_Ptr(i));
     absl::FPrintF(fp, "Target:%x OwnerHouse:%d Loops:%d\\n",
                   static_cast<unsigned int>(animp->xObject), animp->OwnerHouse,
                   animp->Loops);
@@ -4127,9 +4074,9 @@ static void Print_CRCs(const EventClass* ev) {
   //	Map Layers
   //------------------------------------------------------------------------
   GameCRC = 0;
-  for (i = 0; std::cmp_less(i, magic_enum::enum_count<LayerType>()); i++) {
+  for (int i = 0; std::cmp_less(i, magic_enum::enum_count<LayerType>()); i++) {
     absl::FPrintF(fp, ">>>> MAP LAYER %d <<<<\n", i);
-    for (j = 0; j < MouseClass::Layer[i].Count(); j++) {
+    for (int j = 0; j < MouseClass::Layer[i].Count(); j++) {
       objp = MouseClass::Layer[i][j];
       Add_CRC(&GameCRC,
               static_cast<uint32_t>(static_cast<int>(objp->Coord) +
@@ -4182,7 +4129,7 @@ static void Print_CRCs(const EventClass* ev) {
             static_cast<VesselType>(dynamic_cast<const VesselClass&>(*objp)));
       }
 
-      house = objp->Owner();
+      const HousesType house = objp->Owner();
       if (house != HOUSE_NONE) {
         housep = HouseClass::As_Pointer(house);
         absl::FPrintF(fp, "Owner: %s\n", housep->Class->IniName);
@@ -4198,7 +4145,7 @@ static void Print_CRCs(const EventClass* ev) {
   //------------------------------------------------------------------------
   GameCRC = 0;
   absl::FPrintF(fp, ">>>> LOGIC LAYER <<<<\n");
-  for (i = 0; i < Logic.Count(); i++) {
+  for (int i = 0; i < Logic.Count(); i++) {
     objp = Logic[i];
     Add_CRC(&GameCRC,
             static_cast<uint32_t>(static_cast<int>(objp->Coord) +
@@ -4247,7 +4194,7 @@ static void Print_CRCs(const EventClass* ev) {
           static_cast<UnitType>(dynamic_cast<const UnitClass&>(*objp)));
     }
 
-    house = objp->Owner();
+    const HousesType house = objp->Owner();
     if (house != HOUSE_NONE) {
       housep = HouseClass::As_Pointer(house);
       absl::FPrintF(fp, "Owner: %s\n", housep->Class->IniName);
@@ -4492,11 +4439,7 @@ void Dump_Packet_Too_Late_Stuff(const EventClass* event, ConnManClass* net,
                                 const int64_t* their_frame,
                                 const uint16_t* their_sent,
                                 const uint16_t* their_recv) {
-  FILE* fp;
-  int i;
-  HousesType house;
-
-  fp = fopen("toolate.txt", "wt");
+  FILE* fp = fopen("toolate.txt", "wt");
   if (!fp) {
     return;
   }
@@ -4505,7 +4448,7 @@ void Dump_Packet_Too_Late_Stuff(const EventClass* event, ConnManClass* net,
   absl::FPrintF(fp, "Frame:      %d\n", event->Frame);
   absl::FPrintF(fp, "ID:         %d\n", event->ID);
 
-  for (i = 0; i < Session.Players.Count(); i++) {
+  for (int i = 0; i < Session.Players.Count(); i++) {
     if (event->ID == Session.Players[i]->Player.ID) {
       absl::FPrintF(fp, "Player's Name: %s", Session.Players[i]->Name);
     }
@@ -4519,8 +4462,8 @@ void Dump_Packet_Too_Late_Stuff(const EventClass* event, ConnManClass* net,
   if (net) {
     absl::FPrintF(fp, "-------------------- Frame Stats: ------------------\n");
     absl::FPrintF(fp, "Name          ID  TheirFrame  TheirSent  TheirRecv\n");
-    for (i = 0; i < net->Num_Connections(); i++) {
-      house = static_cast<HousesType>(net->Connection_ID(i));
+    for (int i = 0; i < net->Num_Connections(); i++) {
+      const auto house = static_cast<HousesType>(net->Connection_ID(i));
       absl::FPrintF(fp, "%12s  %2d    %6" PRId64 "      %6d      %6d\n",
                     HouseClass::As_Pointer(house)->IniName,
                     net->Connection_ID(i), their_frame[i], their_sent[i],

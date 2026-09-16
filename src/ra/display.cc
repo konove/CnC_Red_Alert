@@ -653,8 +653,8 @@ void DisplayClass::Set_Cursor_Shape(const int16_t* list) {
   ZoneOffset = 0;
 
   if (list) {
-    int w;
-    int h;
+    int w = 0;
+    int h = 0;
     static int16_t _list[50];
 
     for (int i = 0; !i || list[i - 1] != kRefreshEol; i++) {
@@ -705,7 +705,6 @@ void DisplayClass::Set_Cursor_Shape(const int16_t* list) {
 bool DisplayClass::Passes_Proximity_Check(const ObjectTypeClass* object,
                                           HousesType house, const int16_t* list,
                                           CELL trycell) const {
-  const int16_t* ptr;
   int retval = -1;
   bool noradar = false;
 
@@ -735,7 +734,7 @@ bool DisplayClass::Passes_Proximity_Check(const ObjectTypeClass* object,
   *adjacent *	cells to these are of friendly persuasion, then consider the
   *proximity check to *	have been a success.
   */
-  ptr = list;
+  const int16_t* ptr = list;
   //	ptr = CursorSize;
   CELL cell = trycell;
   //	CELL cell = ZoneCell;
@@ -881,7 +880,7 @@ bool DisplayClass::Passes_Proximity_Check(const ObjectTypeClass* object,
  *   02/28/1995 JLB : Forces placement cursor to fit on map. *
  *=============================================================================================*/
 CELL DisplayClass::Set_Cursor_Pos(CELL pos) {
-  CELL prevpos;  // Last position of cursor (for jump-back reasons).
+  CELL prevpos = 0;  // Last position of cursor (for jump-back reasons).
 
   /*
   **	Follow the mouse position if no cell number is provided.
@@ -900,8 +899,8 @@ CELL DisplayClass::Set_Cursor_Pos(CELL pos) {
   **	Adjusts the position so that the placement cursor is never part way off
   *the *	tactical map.
   */
-  int w;
-  int h;
+  int w = 0;
+  int h = 0;
   Get_Occupy_Dimensions(w, h, CursorSize);
 
   int x = static_cast<CELL>(Cell_X(static_cast<CELL>(pos + ZoneOffset)));
@@ -972,8 +971,6 @@ void DisplayClass::Get_Occupy_Dimensions(int& w, int& h, const int16_t* list) {
   int max_x = -MAP_CELL_W;
   int min_y = MAP_CELL_H;
   int max_y = -MAP_CELL_H;
-  int x;
-  int y;
 
   w = 0;
   h = 0;
@@ -988,8 +985,8 @@ void DisplayClass::Get_Occupy_Dimensions(int& w, int& h, const int16_t* list) {
       ** & Cell_Y(), because they use shifts to compute the values, and if the
       ** offset is negative we'll get a bogus coordinate!
       */
-      x = *list % MAP_CELL_W;
-      y = *list / MAP_CELL_H;
+      const int x = *list % MAP_CELL_W;
+      const int y = *list / MAP_CELL_H;
 
       max_x = std::max(max_x, x);
       min_x = std::min(min_x, x);
@@ -1023,8 +1020,7 @@ void DisplayClass::Get_Occupy_Dimensions(int& w, int& h, const int16_t* list) {
  *function.                                            *
  *=============================================================================================*/
 void DisplayClass::Cursor_Mark(CELL pos, bool on) {
-  const CELL* ptr;
-  CellClass* cellptr;
+  CellClass* cellptr = nullptr;
 
   if (pos == -1) {
     return;
@@ -1034,7 +1030,7 @@ void DisplayClass::Cursor_Mark(CELL pos, bool on) {
   **	For every cell in the CursorSize list, invoke its Redraw_Objects and
   **	toggle its IsCursorHere flag
   */
-  ptr = CursorSize;
+  const CELL* ptr = CursorSize;
   while (*ptr != kRefreshEol) {
     const CELL cell = static_cast<CELL>(pos + *ptr++);
     if (In_Radar(cell)) {
@@ -1526,15 +1522,12 @@ bool DisplayClass::Map_Cell(CELL cell, HouseClass* house) {
   **	all is ok.
   */
   for (const FacingType dir : magic_enum::enum_values<FacingType>()) {
-    int shadow;
-    CELL c;
-
-    c = Adjacent_Cell(cell, dir);
+    CELL const c = Adjacent_Cell(cell, dir);
     CellClass* cptr = &(*this)[c];
     cptr->Redraw_Objects();
 
     if (c != cell && !cptr->IsVisible) {
-      shadow = Cell_Shadow(c);
+      const int shadow = Cell_Shadow(c);
 
       if (shadow == -1) {
         if (!cptr->IsMapped) {
@@ -1716,8 +1709,6 @@ ObjectClass* DisplayClass::Cell_Object(CELL cell, int x, int y) const {
  *Rubber band drawing.                                                     *
  *=============================================================================================*/
 void DisplayClass::Draw_It(bool forced) {
-  int x;
-  int y;  // Working cell index values.
 
   MapClass::Draw_It(forced);
 
@@ -1856,9 +1847,9 @@ void DisplayClass::Draw_It(bool forced) {
           ** Flag the cells across the top of the visible area if required
           */
           if (redraw_top) {
-            for (y = starty; y <= starty + (CELL_PIXEL_H * extra_y);
+            for (int y = starty; y <= starty + (CELL_PIXEL_H * extra_y);
                  y += CELL_PIXEL_H) {
-              for (x = startx;
+              for (int x = startx;
                    x <= Lepton_To_Pixel(TacLeptonWidth) + (CELL_PIXEL_W * 2);
                    x += CELL_PIXEL_W) {
                 const CELL c = Click_Cell_Calc(
@@ -1878,11 +1869,11 @@ void DisplayClass::Draw_It(bool forced) {
           ** Flag the cells across the bottom of the visible area if required
           */
           if (redraw_bottom) {
-            for (y = Lepton_To_Pixel(TacLeptonHeight) -
-                     (CELL_PIXEL_H * (1 + extra_y));
+            for (int y = Lepton_To_Pixel(TacLeptonHeight) -
+                         (CELL_PIXEL_H * (1 + extra_y));
                  y <= Lepton_To_Pixel(TacLeptonHeight) + (CELL_PIXEL_H * 3);
                  y += CELL_PIXEL_H) {
-              for (x = startx;
+              for (int x = startx;
                    x <= Lepton_To_Pixel(TacLeptonWidth) + (CELL_PIXEL_W * 2);
                    x += CELL_PIXEL_W) {
                 const CELL c = Click_Cell_Calc(
@@ -1902,9 +1893,9 @@ void DisplayClass::Draw_It(bool forced) {
           ** Flag the cells down the left of the visible area if required
           */
           if (redraw_left) {
-            for (x = startx; x <= startx + (CELL_PIXEL_W * extra_x);
+            for (int x = startx; x <= startx + (CELL_PIXEL_W * extra_x);
                  x += CELL_PIXEL_W) {
-              for (y = starty;
+              for (int y = starty;
                    y <= Lepton_To_Pixel(TacLeptonHeight) + (CELL_PIXEL_H * 2);
                    y += CELL_PIXEL_H) {
                 const CELL c = Click_Cell_Calc(
@@ -1924,11 +1915,11 @@ void DisplayClass::Draw_It(bool forced) {
           ** Flag the cells down the right of the visible area if required
           */
           if (redraw_right) {
-            for (x = Lepton_To_Pixel(TacLeptonWidth) -
-                     (CELL_PIXEL_W * (extra_x + 1));
+            for (int x = Lepton_To_Pixel(TacLeptonWidth) -
+                         (CELL_PIXEL_W * (extra_x + 1));
                  x <= Lepton_To_Pixel(TacLeptonWidth) + (CELL_PIXEL_W * 3);
                  x += CELL_PIXEL_W) {
-              for (y = starty;
+              for (int y = starty;
                    y <= Lepton_To_Pixel(TacLeptonHeight) + (CELL_PIXEL_H * 2);
                    y += CELL_PIXEL_H) {
                 const CELL c = Click_Cell_Calc(
@@ -1955,10 +1946,10 @@ void DisplayClass::Draw_It(bool forced) {
               static_cast<LEPTON>(Coord_YLepton(TacticalCoord)));
           oldw -= 24;
           oldh -= 24;
-          for (y = tactical_y;
+          for (int y = tactical_y;
                y <= Lepton_To_Pixel(TacLeptonHeight) + (CELL_PIXEL_H * 2);
                y += CELL_PIXEL_H) {
-            for (x = tactical_x;
+            for (int x = tactical_x;
                  x <= Lepton_To_Pixel(TacLeptonWidth) + (CELL_PIXEL_W * 2);
                  x += CELL_PIXEL_W) {
               if (x <= oldx || x >= oldx + oldw || y <= oldy ||
@@ -2153,8 +2144,8 @@ void DisplayClass::Redraw_Icons() {
       **	Only cells flagged to be redraw are examined.
       */
       if (In_View(cell) && Is_Cell_Flagged(cell)) {
-        int xpixel;
-        int ypixel;
+        int xpixel = 0;
+        int ypixel = 0;
 
         if (Coord_To_Pixel(coord, xpixel, ypixel)) {
           const CellClass* cellptr = &(*this)[coord];
@@ -2196,8 +2187,8 @@ void DisplayClass::Redraw_OIcons() {
       **	Only cells flagged to be redraw are examined.
       */
       if (In_View(cell) && Is_Cell_Flagged(cell)) {
-        int xpixel;
-        int ypixel;
+        int xpixel = 0;
+        int ypixel = 0;
 
         if (Coord_To_Pixel(coord, xpixel, ypixel)) {
           const CellClass* cellptr = &(*this)[coord];
@@ -2246,8 +2237,8 @@ void DisplayClass::Redraw_Shadow() {
         **	Only cells flagged to be redrawn are examined.
         */
         if (In_View(cell) && Is_Cell_Flagged(cell)) {
-          int xpixel;
-          int ypixel;
+          int xpixel = 0;
+          int ypixel = 0;
 
           if (Coord_To_Pixel(coord, xpixel, ypixel)) {
             const CellClass* cellptr = &(*this)[coord];
@@ -2785,7 +2776,7 @@ void DisplayClass::Refresh_Band() {
       y2 = temp;
     }
 
-    CELL cell;
+    CELL cell = 0;
     for (int y = y1; y <= y2 + CELL_PIXEL_H; y += CELL_PIXEL_H) {
       cell = Click_Cell_Calc(
           x1, Bound(y, 0, TacPixelY + Lepton_To_Pixel(TacLeptonHeight)));
@@ -2848,9 +2839,8 @@ void DisplayClass::Refresh_Band() {
  * HISTORY: * 02/17/1995 JLB : Created. *
  *=============================================================================================*/
 bool DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
-  int x;
-  int y;  // Sub cell pixel coordinates.
-  bool shadow;
+  int x = 0;
+  int y = 0;  // Sub cell pixel coordinates.
   ObjectClass* object = nullptr;
   ActionType action =
       ACTION_NONE;  // Action possible with currently selected object.
@@ -2872,7 +2862,7 @@ bool DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
   const COORDINATE coord = Map.Pixel_To_Coord(x, y);
   const CELL cell = Coord_Cell(coord);
   if (coord) {
-    shadow = !Map[cell].IsMapped && !Debug_Unshroud;
+    const bool shadow = !Map[cell].IsMapped && !Debug_Unshroud;
     x -= Map.TacPixelX;
     y -= Map.TacPixelY;
 
@@ -3371,7 +3361,6 @@ void DisplayClass::Mouse_Left_Up(CELL cell, bool shadow, ObjectClass* object,
     **	system of the text name for the object under the mouse.
     */
     if (object != nullptr) {
-      int text;
       int color = LTGREY;
 
       /*
@@ -3391,7 +3380,7 @@ void DisplayClass::Mouse_Left_Up(CELL cell, bool shadow, ObjectClass* object,
       **	Fetch the name of the object. If it is an enemy object, then
       **	the exact identity is glossed over with a generic text.
       */
-      text = object->Full_Name();
+      int text = object->Full_Name();
       if ((object->Is_Techno() &&
            !dynamic_cast<const TechnoTypeClass&>(object->Class_Of())
                 .IsNominal) &&
@@ -3640,9 +3629,8 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
             */
             CELL newmove = cell;
             if (action == ACTION_MOVE && tobject->Is_Foot()) {
-              bool oldisform;
               auto* foot = dynamic_cast<FootClass*>(tobject);
-              oldisform = foot->IsFormationMove;
+              const bool oldisform = foot->IsFormationMove;
               foot->IsFormationMove = FormMove;
               if (FormMove && foot->Group != kNoGroup) {
                 newmove = foot->Adjust_Dest(cell);

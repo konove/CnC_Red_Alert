@@ -141,9 +141,9 @@ int VQAMovieDone;
  ****************************************************************************/
 
 int32_t VQA_Play(VQAHandle* vqa, int32_t mode) {
-  VQAData* vqabuf;
-  VQAConfig* config;
-  VQADrawer* drawer;
+  VQAData* vqabuf = nullptr;
+  VQAConfig* config = nullptr;
+  VQADrawer* drawer = nullptr;
   int32_t rc = 0;
 
 #ifdef _WIN32
@@ -394,10 +394,9 @@ void VQA_GetInfo(VQAHandle* vqa, VQAInfo* info) {
  ****************************************************************************/
 
 void VQA_GetStats(const VQAHandle* vqa, VQAStatistics* stats) {
-  VQAData* vqabuf;
 
   /* Dereference VQAData structure from VQAHandle */
-  vqabuf = vqa->data;
+  VQAData* vqabuf = vqa->data;
 
   stats->MemUsed = vqabuf->MemUsed;
   stats->StartTime = vqabuf->StartTime;

@@ -220,9 +220,9 @@ int main(int argc, char* argv[])
     FindClose(hWOLSetupFile);
     //	Look for special registry entry that tells us when the setup exe has
     // done its thing.
-    HKEY hKey;
+    HKEY hKey = nullptr;
     RegOpenKeyEx(HKEY_LOCAL_MACHINE, Game_Registry_Key(), 0, KEY_READ, &hKey);
-    DWORD dwValue;
+    DWORD dwValue = 0;
     DWORD dwBufSize = sizeof(DWORD);
     if (RegQueryValueEx(hKey, "WolapiInstallComplete", nullptr, nullptr,
                         port::BytesOf(dwValue), &dwBufSize) == ERROR_SUCCESS) {

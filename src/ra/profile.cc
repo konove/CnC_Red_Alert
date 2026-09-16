@@ -209,15 +209,10 @@ bool WWWritePrivateProfileInt(const char* section, const char* entry, int value,
 const char* WWGetPrivateProfileString(const char* section, const char* key,
                                       const char* def, char* dest, int dest_len,
                                       const char* ini_data) {
-  const char* workptr;     // Working pointer into profile block.
   const char* altworkptr = nullptr;  // Alternate work pointer.
   char sec[50];            // Working section buffer.
-  const char* retval;      // Start of section or entry pointer.
-  const char* next;        // Pointer to start of next section (or EOF).
-  char c;
-  char c2;                 // Working character values.
-  int len;                 // Working substring length value.
-  int entrylen;            // Byte length of specified entry.
+  const char* retval = nullptr;  // Start of section or entry pointer.
+  char c = 0;
   const char* orig_retbuf = nullptr;  // original retbuffer ptr
 
   //	if (!retlen) return(NULL);
@@ -250,12 +245,14 @@ const char* WWGetPrivateProfileString(const char* section, const char* key,
   absl::SNPrintF(sec, sizeof(sec), "[%s]",
                  section);  // sec = section name including []'s
   strupr(sec);
-  len = static_cast<int>(strlen(sec));  // len = section name length, incl []'s
+  int len =
+      static_cast<int>(strlen(sec));  // Working substring length value.  // len
+                                      // = section name length, incl []'s
 
   /*
   **	Scan for a matching section
   */
-  workptr = ini_data;
+  const char* workptr = ini_data;  // Working pointer into profile block.
   for (;;) {
     /*
     **	'workptr' = start of next section
@@ -306,7 +303,8 @@ const char* WWGetPrivateProfileString(const char* section, const char* key,
       /*
       **	'next = end of section or end of file.
       */
-      next = strchr(workptr, '[');
+      const char* next =
+          strchr(workptr, '[');  // Pointer to start of next section (or EOF).
       for (;;) {
         if (next) {
           c = *(next - 1);
@@ -340,7 +338,8 @@ const char* WWGetPrivateProfileString(const char* section, const char* key,
       *associated *	string.
       */
       if (key) {
-        entrylen = static_cast<int>(strlen(key));
+        const int entrylen =
+            static_cast<int>(strlen(key));  // Byte length of specified entry.
 
         for (;;) {
           /*
@@ -361,7 +360,7 @@ const char* WWGetPrivateProfileString(const char* section, const char* key,
           **	'c2' = character after possible entry; must be '=' or space
           */
           c = *(workptr - 1);
-          c2 = *(workptr + entrylen);
+          const char c2 = *(workptr + entrylen);  // Working character values.
 
           /*
           **	Entry found; extract it
@@ -439,9 +438,8 @@ const char* WWGetPrivateProfileString(const char* section, const char* key,
             altworkptr = strchr(workptr, '=');  // find '='
 
             if (altworkptr && altworkptr < next) {
-              int length;  // Length of ID string.
-
-              length = static_cast<int>(altworkptr - workptr);
+              const int length = static_cast<int>(
+                  altworkptr - workptr);  // Length of ID string.
 
               /*
               **	Make sure we don't write past the end of the retbuffer;
@@ -522,9 +520,6 @@ static char* Find_Profile_Entry(const char* section, const char* entry,
 bool WWWritePrivateProfileString(const char* section, const char* entry,
                                  const char* string, char* profile) {
   char buffer[250];  // Working section buffer
-  char* offset;
-  const char* next;  // ptr to next section
-  char c;            // Working character value
 
   /*
   **	Just return if nothing to do.
@@ -539,7 +534,7 @@ bool WWWritePrivateProfileString(const char* section, const char* entry,
   **	buffer length. 'offset' will point to 1st entry in the section, NULL if
   **	section not found.
   */
-  offset = Find_Profile_Entry(section, nullptr, profile);
+  char* offset = Find_Profile_Entry(section, nullptr, profile);
 
   /*
   **	If the section could not be found, then add it to the end. Don't add
@@ -559,10 +554,10 @@ bool WWWritePrivateProfileString(const char* section, const char* entry,
     /*
     **	'next = end of section or end of file.
     */
-    next = strchr(offset, '[');
+    const char* next = strchr(offset, '[');  // ptr to next section
     for (;;) {
       if (next) {
-        c = *(next - 1);
+        const char c = *(next - 1);  // Working character value
 
         /*
         **	If character before '[' is newline, this is the start of the
@@ -610,13 +605,13 @@ bool WWWritePrivateProfileString(const char* section, const char* entry,
   **	Remove any existing entry
   */
   if (offset) {
-    int eol;  // Working EOL offset.
 
     /*
     **	Get # characters up to newline; \n is used since we're after the end
     **	of this line
     */
-    eol = static_cast<int>(strcspn(offset, "\n"));
+    const int eol =
+        static_cast<int>(strcspn(offset, "\n"));  // Working EOL offset.
 
     /*
     **	Erase the entry by strcpy'ing the entire INI file over this entry
@@ -677,13 +672,12 @@ int Read_Bin_Length(const char* buffer) {
 }
 
 bool Read_Bin_Num(void* num, int length, const char* buffer) {
-  char* ptr;
 
   if (buffer != ReadBinBuffer || length <= 0 || length > 4 ||
       ReadBinBufferPos + length >= ReadBinBufferLen) {
     return false;
   }
-  ptr = ReadBinBuffer + ReadBinBufferPos;
+  char* ptr = ReadBinBuffer + ReadBinBufferPos;
   memcpy(num, ptr, base::ToSize(length));
   ReadBinBufferPos += length;
 
@@ -708,14 +702,12 @@ int Read_Bin_PosSet(int pos, const char* buffer) {
 }
 
 bool Read_Bin_String(char* string, const char* buffer) {
-  char* ptr;
-  unsigned char length;
 
   if (buffer != ReadBinBuffer || ReadBinBufferPos >= ReadBinBufferLen) {
     return false;
   }
-  ptr = ReadBinBuffer + ReadBinBufferPos;
-  length = static_cast<unsigned char>(*ptr++);
+  char* ptr = ReadBinBuffer + ReadBinBufferPos;
+  const auto length = static_cast<unsigned char>(*ptr++);
   if (ReadBinBufferPos + length + 2 <= ReadBinBufferLen) {
     memcpy(string, ptr, static_cast<unsigned int>(length + 1));
     ReadBinBufferPos += length + 2;
@@ -745,13 +737,12 @@ int Write_Bin_Length(const char* buffer) {
 }
 
 bool Write_Bin_Num(const void* num, int length, const char* buffer) {
-  char* ptr;
 
   if (buffer != WriteBinBuffer || length <= 0 || length > 4 ||
       WriteBinBufferPos + length > WriteBinBufferLen) {
     return false;
   }
-  ptr = WriteBinBuffer + WriteBinBufferPos;
+  char* ptr = WriteBinBuffer + WriteBinBufferPos;
   memcpy(ptr, num, base::ToSize(length));
   WriteBinBufferPos += length;
 
@@ -776,13 +767,12 @@ int Write_Bin_PosSet(int pos, const char* buffer) {
 }
 
 bool Write_Bin_String(const char* string, int length, const char* buffer) {
-  char* ptr;
 
   if (buffer != WriteBinBuffer || length < 0 || length > 255 ||
       WriteBinBufferPos + length + 2 > WriteBinBufferLen) {
     return false;
   }
-  ptr = WriteBinBuffer + WriteBinBufferPos;
+  char* ptr = WriteBinBuffer + WriteBinBufferPos;
   *ptr++ = static_cast<char>(length);
   memcpy(ptr, string, base::ToSize(length + 1));
   WriteBinBufferPos += length + 2;

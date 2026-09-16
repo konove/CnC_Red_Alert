@@ -136,7 +136,6 @@ bool CheckListClass::Is_Checked(int index) const {
  *   02/16/1995 BR : Created.                                              *
  *=========================================================================*/
 bool CheckListClass::Action(unsigned flags, KeyNumType& key) {
-  bool rc;
 
   /*
   ** If this is a read-only list, it's a display-only device
@@ -148,7 +147,7 @@ bool CheckListClass::Action(unsigned flags, KeyNumType& key) {
   /*
   **	Invoke parents Action first, so it can set the SelectedIndex if needed.
   */
-  rc = ListClass::Action(flags, key);
+  const bool rc = ListClass::Action(flags, key);
 
   /*
   **	Now, if this event was a left-press, toggle the checked state of the

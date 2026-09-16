@@ -348,10 +348,9 @@ void MissionClass::Assign_Mission(MissionType order) {
  *member function.                                     *
  *=============================================================================================*/
 MissionType MissionClass::Mission_From_Name(const char* name) {
-  MissionType order;
 
   if (name) {
-    for (order = MISSION_SLEEP; order < MISSION_COUNT; order++) {
+    for (MissionType order = MISSION_SLEEP; order < MISSION_COUNT; order++) {
       if (stricmp(Missions[order], name) == 0) {
         return order;
       }

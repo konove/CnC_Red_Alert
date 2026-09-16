@@ -403,9 +403,7 @@ void Simple_Text_Print(const char* text, int x, int y,
   static int yspace = 0;          // Y spacing adjustment for font.
   static int xspace = 0;          // Spacing adjustment for font.
   const void* font = nullptr;     // Font to use.
-  int shadow;                     // Requested shadow value.
   unsigned char fontpalette[16];  // Working font palette array.
-  int forecolor;
 
   if (fore == nullptr) {
     fore = &ColorRemaps[PCOLOR_RED];
@@ -416,7 +414,7 @@ void Simple_Text_Print(const char* text, int x, int y,
   */
   memset(&fontpalette[0], back, 16);
 
-  forecolor = fore->Color;
+  int forecolor = fore->Color;
 
   /*
   **	A gradient font always requires special fixups for the palette
@@ -541,8 +539,8 @@ void Simple_Text_Print(const char* text, int x, int y,
   /*
   **	Change the current font palette according to the dropshadow flags.
   */
-  shadow =
-      flag & (TPF_NOSHADOW | TPF_DROPSHADOW | TPF_FULLSHADOW | TPF_LIGHTSHADOW);
+  const int shadow = flag & (TPF_NOSHADOW | TPF_DROPSHADOW | TPF_FULLSHADOW |
+                             TPF_LIGHTSHADOW);  // Requested shadow value.
   switch (shadow) {
     /*
     **	The text is rendered plain.

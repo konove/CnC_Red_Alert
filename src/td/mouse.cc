@@ -159,7 +159,7 @@ void MouseClass::Mouse_Small(bool wwsmall) {
 bool MouseClass::Override_Mouse_Shape(MouseType mouse, bool wwsmall) {
   const MouseStruct* control = &MouseControl[mouse];
   static bool startup = false;
-  int baseshp;
+  int baseshp = 0;
 
   /*
   **	Only certain mouse shapes have a small counterpart. If the requested
@@ -220,7 +220,7 @@ bool MouseClass::Override_Mouse_Shape(MouseType mouse, bool wwsmall) {
  *=============================================================================================*/
 void MouseClass::AI(KeyNumType& input, int x, int y) {
   //	bool doit = false;
-  const void* mouse_shape_ptr;
+  const void* mouse_shape_ptr = nullptr;
   const MouseStruct* control = &MouseControl[CurrentMouseShape];
 
   if (control->FrameRate && Timer.Time() == 0) {

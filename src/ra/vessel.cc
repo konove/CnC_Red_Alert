@@ -464,7 +464,7 @@ void VesselClass::Draw_It(int x, int y, WindowNumberType window) const {
       **	Determine which turret shape to use. This depends on if there
       **	is any firing animation in progress.
       */
-      int shapenum;
+      int shapenum = 0;
       auto turdir = static_cast<DirType>(Dir_To_16(PrimaryFacing) * 16);
 
       switch (Class->Type) {
@@ -629,7 +629,7 @@ void VesselClass::AI() {
       MoebiusCountDown.Set(Rule.ReloadRate * kTicksPerMinute);
       ObjectClass* obj = Attached_Object();
       while (obj) {
-        int32_t bogus;
+        int32_t bogus = 0;
         dynamic_cast<AircraftClass*>(obj)->Receive_Message(this, RADIO_RELOAD,
                                                            bogus);
         obj = obj->Next;
@@ -1029,8 +1029,7 @@ FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
   assert(Vessels.ID(this) == ID);
   assert(IsActive);
 
-  DirType dir;  // The facing to impart upon the projectile.
-  int diff;
+  int diff = 0;
 
   if (*this == VESSEL_CARRIER) {
     if (!How_Many() || Arm.HasTimeLeft()) {
@@ -1061,7 +1060,8 @@ FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
       isseatarget = true;
     }
 
-    dir = Direction(target);
+    const DirType dir =
+        Direction(target);  // The facing to impart upon the projectile.
 
     if (weapon->Bullet->IsSubSurface) {
       if (!isseatarget && Is_Target_Object(target)) {
@@ -1371,7 +1371,7 @@ RadioMessageType VesselClass::Receive_Message(RadioClass* from,
         ** Before saying "Sure, come on board", make sure we're adjacent to
         ** the shore.
         */
-        CELL cell;
+        CELL cell = 0;
         Desired_Load_Dir(from, cell);
         if (cell) {
           return RADIO_ROGER;
@@ -1454,7 +1454,7 @@ RadioMessageType VesselClass::Receive_Message(RadioClass* from,
         */
         if ((!IsDriving && !IsRotating) &&
             (Transmit_Message(RADIO_NEED_TO_MOVE, from) == RADIO_ROGER)) {
-          CELL cell;
+          CELL cell = 0;
           Desired_Load_Dir(from, cell);
 
           /*
@@ -1688,8 +1688,8 @@ int VesselClass::Mission_Unload() {
   assert(IsActive);
 
   enum { INITIAL_CHECK, MANEUVERING, OPENING_DOOR, UNLOADING, CLOSING_DOOR };
-  DirType dir;
-  CELL cell;
+  DirType dir = DIR_N;
+  CELL cell = 0;
 
   if (Class->Type == VESSEL_TRANSPORT) {
     switch (Status) {
@@ -1948,9 +1948,6 @@ bool VesselClass::Is_Allowed_To_Recloak() const {
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 void VesselClass::Read_INI(CCINIClass& ini) {
-  VesselClass* vessel;  // Working vessel pointer.
-  HousesType inhouse;   // Vessel house.
-  VesselType classid;   // Vessel class.
   char buf[128];
 
   const int len = ini.Entry_Count(INI_Name());
@@ -1959,12 +1956,15 @@ void VesselClass::Read_INI(CCINIClass& ini) {
 
     ini.Get_String(INI_Name(), entry, nullptr, buf, sizeof(buf));
     port::Tokenizer tokens(buf, ",\r\n");
-    inhouse = HouseTypeClass::From_Name(tokens.Next());
+    const HousesType inhouse =
+        HouseTypeClass::From_Name(tokens.Next());  // Vessel house.
     if (inhouse != HOUSE_NONE) {
-      classid = VesselTypeClass::From_Name(tokens.Next());
+      const VesselType classid =
+          VesselTypeClass::From_Name(tokens.Next());  // Vessel class.
 
       if (classid != VESSEL_NONE) {
-        vessel = new VesselClass(classid, inhouse);
+        auto* vessel =
+            new VesselClass(classid, inhouse);  // Working vessel pointer.
         if (vessel != nullptr) {
           /*
           **	Read the raw data.

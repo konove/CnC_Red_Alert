@@ -184,12 +184,9 @@ int Modify_Damage(int damage, WarheadType warhead, ArmorType armor,
  *=============================================================================================*/
 void Explosion_Damage(COORDINATE coord, int strength, TechnoClass* source,
                       WarheadType warhead) {
-  CELL cell;                 // Cell number under explosion.
-  ObjectClass* object;       // Working object pointer.
+  ObjectClass* object = nullptr;  // Working object pointer.
   ObjectClass* objects[32];  // Maximum number of objects that can be damaged.
-  int distance;              // Distance to unit.
-  int range;                 // Damage effect radius.
-  int count;                 // Number of vehicle IDs in list.
+  int distance = 0;          // Distance to unit.
 
   if (!strength || Special.IsInert || warhead == WARHEAD_NONE) {
     return;
@@ -198,8 +195,9 @@ void Explosion_Damage(COORDINATE coord, int strength, TechnoClass* source,
   const WarheadTypeClass* whead = WarheadTypeClass::As_Pointer(warhead);
   //	WarheadTypeClass const * whead = &Warheads[warhead];
   //	range = ICON_LEPTON_W*2;
-  range = ICON_LEPTON_W + (ICON_LEPTON_W >> 1);
-  cell = Coord_Cell(coord);
+  const int range =
+      ICON_LEPTON_W + (ICON_LEPTON_W >> 1);  // Damage effect radius.
+  CELL const cell = Coord_Cell(coord);       // Cell number under explosion.
   if (static_cast<unsigned>(cell) >= MAP_CELL_TOTAL) {
     return;
   }
@@ -212,7 +210,7 @@ void Explosion_Damage(COORDINATE coord, int strength, TechnoClass* source,
   **	assessed upon them. The units can be lifted from
   **	the cell data directly.
   */
-  count = 0;
+  int count = 0;  // Number of vehicle IDs in list.
   // The centre cell (FACING_NONE) and its eight neighbours.
   for (FacingType i = FACING_NONE;
        i <= magic_enum::enum_values<FacingType>().back(); i++) {

@@ -336,7 +336,6 @@ template void ChronalVortexClass::Serialize(ArchiveReader&);
  * HISTORY: * 8/29/96 4:34PM ST : Created *
  *=============================================================================================*/
 void ChronalVortexClass::AI() {
-  int chance;
 
   /*
   ** No AI if vortex isnt active
@@ -357,7 +356,7 @@ void ChronalVortexClass::AI() {
       ** Vortex is hidden. Chance of it showing itself increases the longer its
       *stays hidden.
       */
-      chance = Random_Pick(0, 2000);
+      const int chance = Random_Pick(0, 2000);
       if (chance <= Frame - HiddenFrame) {
         Show();
       }
@@ -569,7 +568,7 @@ void ChronalVortexClass::Set_Target(ObjectClass* target) {
  * HISTORY: * 8/29/96 4:42PM ST : Created *
  *=============================================================================================*/
 void ChronalVortexClass::Attack() {
-  int distance;
+  int distance = 0;
   // if(TargetObject) return;
   // if(!TargetObject) return;
   /*
@@ -730,10 +729,6 @@ void ChronalVortexClass::Zap_Target() {
 void ChronalVortexClass::Coordinate_Remap(GraphicViewPortClass* inbuffer, int x,
                                           int y, int width, int height,
                                           const unsigned char* remap_table) {
-  unsigned char getx;
-  unsigned char gety;
-  unsigned char remap_color;
-  unsigned char pixel_color;
 
   BufferClass destbuf(static_cast<int32_t>(width) * height);
 
@@ -763,11 +758,11 @@ void ChronalVortexClass::Coordinate_Remap(GraphicViewPortClass* inbuffer, int x,
         /*
         ** Get the coordinates of the pixel to draw
         */
-        getx = *remap_table++;
-        gety = *remap_table++;
-        remap_color = *remap_table++;
+        const unsigned char getx = *remap_table++;
+        const unsigned char gety = *remap_table++;
+        const unsigned char remap_color = *remap_table++;
 
-        pixel_color =
+        const unsigned char pixel_color =
             *(bufptr + getx + (static_cast<base::ssize>(gety) * modulo));
 
         *destptr++ = VortexRemapTables[remap_color][pixel_color];
@@ -800,7 +795,7 @@ void ChronalVortexClass::Render() {
   if (Active && !Hidden) {
     char fname[80];
 
-    int frame;
+    int frame = 0;
 
     /*
     ** Calculate which coordinate lookup table we should be using for this
@@ -842,10 +837,8 @@ void ChronalVortexClass::Render() {
       }
       const CELL xc = Coord_XCell(Position);
       const CELL yc = Coord_YCell(Position);
-      CellClass* cellptr;
-      CELL cell;
       const TemplateTypeClass* ttype = nullptr;
-      int icon;  // The icon number to use from the template set.
+      int icon = 0;  // The icon number to use from the template set.
 
       GraphicViewPortClass* oldpage = Set_Logic_Page(RenderBuffer);
 
@@ -870,10 +863,10 @@ void ChronalVortexClass::Render() {
       */
       for (int y = 0; y < 4; y++) {
         for (int x = 0; x < 4; x++) {
-          cell = XY_Cell(xc + x, yc + y);
+          CELL const cell = XY_Cell(xc + x, yc + y);
           if (cell != -1) {
             // cellptr = &Map[ Coord_Whole (Cell_Coord(cell)) ];
-            cellptr = &Map[cell];
+            CellClass* cellptr = &Map[cell];
 
             /*
             **	Fetch a pointer to the template type associated with this cell.
@@ -975,7 +968,7 @@ void ChronalVortexClass::Render() {
       /*
       ** Do some clipping since the library clipping gets it wrong.
       */
-      int diff;
+      int diff = 0;
 
       int source_x = 0;
       int source_y = 0;
@@ -1041,11 +1034,10 @@ void ChronalVortexClass::Set_Redraw() {
     const CELL xc = Coord_XCell(Position);
     const CELL yc = Coord_YCell(Position);
 
-    CELL cell;
 
     for (int y = std::max(0, yc - 1); y < yc + 4; y++) {
       for (int x = std::max(0, xc - 1); x < xc + 4; x++) {
-        cell = XY_Cell(x, y);
+        CELL const cell = XY_Cell(x, y);
         if (cell != -1) {
           Map[cell].Redraw_Objects();
         }
@@ -1074,7 +1066,6 @@ void ChronalVortexClass::Setup_Remap_Tables(TheaterType theater) {
   */
   static char _remaps[3][13] = {"TEMP_VTX.PAL", "SNOW_VTX.PAL", "INTR_VTX.PAL"};
 
-  int i;
 
   /*
   ** If the theater has changed then load the remap tables from disk if they
@@ -1089,7 +1080,7 @@ void ChronalVortexClass::Setup_Remap_Tables(TheaterType theater) {
     if (file.IsAvailable()) {
       file.ReadObject(VortexRemapTables);
     } else {
-      for (i = 0; i < MAX_REMAP_SHADES; i++) {
+      for (int i = 0; i < MAX_REMAP_SHADES; i++) {
         Build_Fading_Table(GamePalette, &VortexRemapTables[i][0], 0,
                            240 - (i * 256 / MAX_REMAP_SHADES));
       }
@@ -1101,7 +1092,7 @@ void ChronalVortexClass::Setup_Remap_Tables(TheaterType theater) {
   /*
   ** Set up the remap table for the lightning
   */
-  for (i = 0; i < 256; i++) {
+  for (int i = 0; i < 256; i++) {
     LightningRemap[i] = static_cast<unsigned char>(i);
   }
   LightningRemap[192] = 208;

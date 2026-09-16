@@ -324,9 +324,7 @@ void TerrainClass::Draw_It(int x, int y, WindowNumberType window) const {
   assert(Terrains.ID(this) == ID);
   assert(IsActive);
 
-  const void* shapedata;
-
-  shapedata = Get_Image_Data();
+  const void* shapedata = Get_Image_Data();
   if (shapedata) {
     int shapenum = 0;
 
@@ -395,13 +393,12 @@ MoveType TerrainClass::Can_Enter_Cell(CELL cell, FacingType /*unused*/) const {
   assert(Terrains.ID(this) == ID);
   assert(IsActive);
 
-  const int16_t* offset;  // Pointer to cell offset list.
 
   if (static_cast<unsigned>(cell) >= MAP_CELL_TOTAL) {
     return MOVE_NO;
   }
 
-  offset = Occupy_List();
+  const int16_t* offset = Occupy_List();  // Pointer to cell offset list.
   while (*offset != kRefreshEol) {
     if (Class->IsWaterBased) {
       if (!Map[static_cast<CELL>(cell + *offset++)].Is_Clear_To_Build(
@@ -773,9 +770,7 @@ void TerrainClass::Write_INI(CCINIClass& ini) {
   **	Write the terrain data out.
   */
   for (int index = 0; index < Terrains.Count(); index++) {
-    TerrainClass* terrain;
-
-    terrain = Terrains.Ptr(index);
+    TerrainClass* terrain = Terrains.Ptr(index);
     if (terrain != nullptr && !terrain->IsInLimbo && terrain->IsActive) {
       char uname[10];
       absl::SNPrintF(uname, sizeof(uname), "%d", Coord_Cell(terrain->Coord));

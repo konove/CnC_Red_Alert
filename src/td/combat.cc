@@ -146,21 +146,18 @@ int Modify_Damage(int damage, WarheadType warhead, ArmorType armor,
  *=============================================================================================*/
 void Explosion_Damage(COORDINATE coord, int strength, TechnoClass* source,
                       WarheadType warhead) {
-  CELL cell;                 // Cell number under explosion.
-  ObjectClass* object;       // Working object pointer.
+  ObjectClass* object = nullptr;  // Working object pointer.
   ObjectClass* objects[32];  // Maximum number of objects that can be damaged.
-  int distance;              // Distance to unit.
-  int range;                 // Damage effect radius.
-  int index;
-  int count;  // Number of vehicle IDs in list.
+  int distance = 0;          // Distance to unit.
 
   if (!strength || Special.IsInert || warhead == WARHEAD_NONE) {
     return;
   }
 
   const WarheadTypeClass* whead = &Warheads[warhead];
-  range = ICON_LEPTON_W + (ICON_LEPTON_W >> 1);
-  cell = Coord_Cell(coord);
+  const int range =
+      ICON_LEPTON_W + (ICON_LEPTON_W >> 1);  // Damage effect radius.
+  CELL const cell = Coord_Cell(coord);       // Cell number under explosion.
   if (static_cast<unsigned>(cell) >= MAP_CELL_TOTAL) {
     return;
   }
@@ -174,7 +171,7 @@ void Explosion_Damage(COORDINATE coord, int strength, TechnoClass* source,
   **	assessed upon them. The units can be lifted from
   **	the cell data directly.
   */
-  count = 0;
+  int count = 0;  // Number of vehicle IDs in list.
   for (FacingType i = FACING_NONE; i < FACING_COUNT; i++) {
     /*
     **	Fetch a pointer to the cell to examine. This is either
@@ -212,7 +209,7 @@ void Explosion_Damage(COORDINATE coord, int strength, TechnoClass* source,
   **	buildings, consider a hit on any cell the building occupies as if it
   **	were a direct hit on the building's center.
   */
-  for (index = 0; index < count; index++) {
+  for (int index = 0; index < count; index++) {
     object = objects[index];
 
     object->IsToDamage = false;

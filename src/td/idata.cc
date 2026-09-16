@@ -1798,13 +1798,10 @@ InfantryType InfantryTypeClass::From_Name(const char* name) {
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
 void InfantryTypeClass::One_Time() {
-  InfantryType index;
-
-  for (index = INFANTRY_E1; index < INFANTRY_COUNT; index++) {
-    const InfantryTypeClass* uclass;
+  for (InfantryType index = INFANTRY_E1; index < INFANTRY_COUNT; index++) {
     const GameFile file;
 
-    uclass = &As_Reference(index);
+    const InfantryTypeClass* uclass = &As_Reference(index);
 
     /*
     **	Generic shape for all houses load method.
@@ -1845,14 +1842,10 @@ void InfantryTypeClass::One_Time() {
 
 void InfantryTypeClass::Init(TheaterType theater) {
   if (Get_Resolution_Factor() && (theater != LastTheater)) {
-    InfantryType index;
-    const void* cameo_ptr;
-
-    for (index = INFANTRY_E1; index < INFANTRY_COUNT; index++) {
-      const InfantryTypeClass* uclass;
+    for (InfantryType index = INFANTRY_E1; index < INFANTRY_COUNT; index++) {
       const GameFile file;
 
-      uclass = &As_Reference(index);
+      const InfantryTypeClass* uclass = &As_Reference(index);
 
       uclass->Set_Cameo_Data(nullptr);
 
@@ -1861,7 +1854,7 @@ void InfantryTypeClass::Init(TheaterType theater) {
       const auto fullname = std::filesystem::path(filename)
                                 .replace_extension(Theaters[theater].Suffix)
                                 .string();
-      cameo_ptr = MixArchive::Retrieve(fullname);
+      const void* cameo_ptr = MixArchive::Retrieve(fullname);
       if (cameo_ptr) {
         uclass->Set_Cameo_Data(cameo_ptr);
       }

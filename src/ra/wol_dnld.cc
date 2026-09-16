@@ -131,10 +131,8 @@ bool WOL_Download_Dialog(IDownload* pDownload,
 
   bool process = true;
   RedrawType display = REDRAW_ALL;  // redraw level
-  KeyNumType input;
-  GadgetClass* commands;  // button list
 
-  commands = &cancelbtn;
+  GadgetClass* commands = &cancelbtn;  // button list
   progress_meter.Add_Tail(*commands);
   StatTitle.Add_Tail(*commands);
   StatBytes.Add_Tail(*commands);
@@ -188,7 +186,7 @@ bool WOL_Download_Dialog(IDownload* pDownload,
     }
 
     if (process) {
-      input = cancelbtn.Input();
+      const KeyNumType input = cancelbtn.Input();
       switch (static_cast<int>(input)) {
         /*
         ** Cancel. Just return to the main menu

@@ -170,14 +170,11 @@ static constexpr bool FitsInBuffer(int64_t offset, int64_t size,
  ****************************************************************************/
 
 int32_t VQA_Open(VQAHandle* vqa, const char* filename, VQAConfig* config) {
-  VQAHandle* vqap;
-  VQAHeader* header;
   ChunkHeader chunk;
-  int32_t done;
 
   /* Dereference commonly used data members for quicker access. */
-  vqap = vqa;
-  header = &vqap->header;
+  VQAHandle* vqap = vqa;
+  VQAHeader* header = &vqap->header;
 
   VQAMovieDone = 0;
   /*-------------------------------------------------------------------------
@@ -230,7 +227,7 @@ int32_t VQA_Open(VQAHandle* vqa, const char* filename, VQAConfig* config) {
   /*-------------------------------------------------------------------------
    * PROCESS THE PRE-FRAME CHUNKS (VQHD, CAP, FINF, ETC...)
    *-----------------------------------------------------------------------*/
-  done = 0;
+  int32_t done = 0;
 
   while (!done) {
     if (!vqap->io->ReadObject(chunk)) {
@@ -379,10 +376,9 @@ int32_t VQA_Open(VQAHandle* vqa, const char* filename, VQAConfig* config) {
    * INITIALIZE THE AUDIO PLAYBACK/TIMING SYSTEM.
    *-----------------------------------------------------------------------*/
   if (config->OptionFlags & VQAOPTF_AUDIO) {
-    VQAAudio* audio;
 
     /* Dereference for quick access. */
-    audio = &vqap->data->Audio;
+    VQAAudio* audio = &vqap->data->Audio;
 
     /* Open HMI audio resource for playback. */
     if (VQA_OpenAudio(vqap, MainWindow)) {
@@ -507,23 +503,17 @@ void VQA_Close(VQAHandle* vqa) {
  ****************************************************************************/
 
 int32_t VQA_LoadFrame(VQAHandle* vqa) {
-  VQAData* vqabuf;
-  VQALoader* loader;
-  VQADrawer* drawer;
-  VQAFrameNode* curframe;
-  ChunkHeader* chunk;
-  int32_t iffsize;
   int32_t frame_loaded = 0;
 
   /* Dereference commonly used data members for quicker access. */
   VQAHandle* vqa_handle_p = vqa;
-  vqabuf = vqa_handle_p->data;
-  loader = &vqabuf->Loader;
-  drawer = &vqa_handle_p->data->Drawer;
-  curframe = loader->CurFrame;
-  chunk = &loader->CurChunkHdr;
+  VQAData* vqabuf = vqa_handle_p->data;
+  VQALoader* loader = &vqabuf->Loader;
+  VQADrawer* drawer = &vqa_handle_p->data->Drawer;
+  VQAFrameNode* curframe = loader->CurFrame;
+  ChunkHeader* chunk = &loader->CurChunkHdr;
 
-  iffsize = ChunkSize(*chunk);
+  int32_t iffsize = ChunkSize(*chunk);
 
   /* We have reached the end of the file if we loaded all the frames. */
   if (std::cmp_greater_equal(loader->CurFrameNum,
@@ -890,28 +880,19 @@ int32_t VQA_LoadFrame(VQAHandle* vqa) {
  ****************************************************************************/
 
 int32_t VQA_SeekFrame(VQAHandle* vqa, int32_t framenum, int32_t /*fromwhere*/) {
-  VQAHandle* vqap;
-  VQAData* vqabuf;
-  VQALoader* loader;
-  VQAHeader* header;
-  VQAFrameNode* frame;
-  VQAConfig* config;
-  int32_t group;
-  int32_t i;
+  VQAFrameNode* frame = nullptr;
   int32_t rc = VQAERR_NONE;
-  VQAAudio* audio;
-  int32_t audio_on;
   /* Dereference commonly used data members for quick access. */
-  vqap = vqa;
-  vqabuf = vqap->data;
-  loader = &vqabuf->Loader;
-  header = &vqap->header;
-  config = &vqap->config;
+  VQAHandle* vqap = vqa;
+  VQAData* vqabuf = vqap->data;
+  VQALoader* loader = &vqabuf->Loader;
+  VQAHeader* header = &vqap->header;
+  VQAConfig* config = &vqap->config;
 
-  audio = &vqabuf->Audio;
+  VQAAudio* audio = &vqabuf->Audio;
 
   /* Stop audio playback. */
-  audio_on = audio->Flags & VQAAUDF_ISPLAYING;
+  const int32_t audio_on = audio->Flags & VQAAUDF_ISPLAYING;
   VQA_StopAudio(vqap);
 
   /* Make sure the requested frame is valid and the frame information
@@ -929,7 +910,7 @@ int32_t VQA_SeekFrame(VQAHandle* vqa, int32_t framenum, int32_t /*fromwhere*/) {
       /* Get the current frame. */
       frame = loader->CurFrame;
 
-      for (i = framenum; i >= 0; i--) {
+      for (int32_t i = framenum; i >= 0; i--) {
         if (vqabuf->Foff[i] & VQAFINF_PAL) {
           /* Seek to the palette frame. */
           rc = vqap->io->Seek(VQAFRAME_OFFSET(vqabuf->Foff[i]),
@@ -968,7 +949,7 @@ int32_t VQA_SeekFrame(VQAHandle* vqa, int32_t framenum, int32_t /*fromwhere*/) {
     /* Build the codebook for the frame we are seeking to. */
     if (!rc) {
       /* Compute the starting group frame of the requested frame. */
-      group = framenum / header->Groupsize;
+      int32_t group = framenum / header->Groupsize;
       group = group * header->Groupsize;
 
       /* The codebook for the group we want to goto is found in the previous
@@ -994,7 +975,7 @@ int32_t VQA_SeekFrame(VQAHandle* vqa, int32_t framenum, int32_t /*fromwhere*/) {
                              (audio->BitsPerSample >> 3) / 2;
 
           /* Mark 1/2 second of the audio buffer as loaded. */
-          for (i = 0; i < audio->AudBufPos / config->HMIBufSize; i++) {
+          for (int32_t i = 0; i < audio->AudBufPos / config->HMIBufSize; i++) {
             audio->IsLoaded[i] = 1;
           }
         }
@@ -1009,7 +990,7 @@ int32_t VQA_SeekFrame(VQAHandle* vqa, int32_t framenum, int32_t /*fromwhere*/) {
         /* Load frames up to the target frame collecting partial codebooks
          * along the way.
          */
-        for (i = 0; i < framenum - group; i++) {
+        for (int32_t i = 0; i < framenum - group; i++) {
           /* Fool the loader into thinking the frame has been drawn. */
           loader->CurFrame->Flags = 0;
 
@@ -1377,18 +1358,14 @@ static void FreeBuffers(const VQAData* vqa, VQAConfig* /*config*/,
  ****************************************************************************/
 
 int32_t PrimeBuffers(VQAHandle* vqa) {
-  VQAData* vqabuf;
-  VQAConfig* config;
-  int32_t rc;
-  int32_t i;
 
   /* Dereference commonly used data members for quick access. */
-  vqabuf = vqa->data;
-  config = &vqa->config;
+  VQAData* vqabuf = vqa->data;
+  VQAConfig* config = &vqa->config;
 
   /* Pre-load the buffers */
-  for (i = 0; i < config->NumFrameBufs; i++) {
-    rc = VQA_LoadFrame(vqa);
+  for (int32_t i = 0; i < config->NumFrameBufs; i++) {
+    const int32_t rc = VQA_LoadFrame(vqa);
     if (rc == 0) {
       vqabuf->LoadedFrames++;
     } else if (rc == VQAERR_EOF && std::cmp_greater_equal(
@@ -1430,20 +1407,14 @@ int32_t PrimeBuffers(VQAHandle* vqa) {
  ****************************************************************************/
 
 static int32_t Load_VQF(VQAHandle* vqap, int32_t frame_iffsize) {
-  VQAData* vqabuf;
-  VQAFrameNode* curframe;
-  ChunkHeader* chunk;
-  int32_t iffsize;
-  int32_t framesize;
   int64_t bytes_loaded = 0;  // 64-bit: sums sizes up to 2^31 each.
-  VQADrawer* drawer;
 
   /* Dereference commonly used data members for quicker access. */
-  vqabuf = vqap->data;
-  curframe = vqabuf->Loader.CurFrame;
-  framesize = PadSize(frame_iffsize);
-  drawer = &vqap->data->Drawer;
-  chunk = &vqabuf->Loader.CurChunkHdr;
+  VQAData* vqabuf = vqap->data;
+  VQAFrameNode* curframe = vqabuf->Loader.CurFrame;
+  const int32_t framesize = PadSize(frame_iffsize);
+  VQADrawer* drawer = &vqap->data->Drawer;
+  ChunkHeader* chunk = &vqabuf->Loader.CurChunkHdr;
 
   /*-------------------------------------------------------------------------
    * FRAME LOADING LOOP.
@@ -1454,7 +1425,7 @@ static int32_t Load_VQF(VQAHandle* vqap, int32_t frame_iffsize) {
       return VQAERR_EOF;
     }
 
-    iffsize = ChunkSize(*chunk);
+    const int32_t iffsize = ChunkSize(*chunk);
     if (!IsValidChunkSize(iffsize)) {
       return VQAERR_READ;
     }
@@ -1631,12 +1602,10 @@ static int32_t Load_FINF(const VQAHandle* vqap, int32_t iffsize) {
  ****************************************************************************/
 
 static int32_t Load_CBF0(const VQAHandle* vqap, int32_t iffsize) {
-  VQALoader* loader;
-  VQACBNode* curcb;
 
   /* Dereference commonly used data members for quicker access. */
-  loader = &vqap->data->Loader;
-  curcb = loader->CurCB;
+  VQALoader* loader = &vqap->data->Loader;
+  VQACBNode* curcb = loader->CurCB;
 
   if (!FitsInBuffer(0, PadSize(iffsize), vqap->data->Max_CB_Size)) {
     return VQAERR_READ;
@@ -1684,26 +1653,21 @@ static int32_t Load_CBF0(const VQAHandle* vqap, int32_t iffsize) {
  ****************************************************************************/
 
 static int32_t Load_CBFZ(const VQAHandle* vqap, int32_t iffsize) {
-  VQALoader* loader;
-  VQACBNode* curcb;
-  unsigned char* buffer;
-  int32_t padsize;
-  int32_t lcwoffset;
 
   /* Dereference commonly used data members for quicker access. */
-  loader = &vqap->data->Loader;
-  curcb = loader->CurCB;
-  padsize = PadSize(iffsize);
+  VQALoader* loader = &vqap->data->Loader;
+  VQACBNode* curcb = loader->CurCB;
+  const int32_t padsize = PadSize(iffsize);
 
   /* Load the codebook into the end of the buffer. */
-  lcwoffset = vqap->data->Max_CB_Size - padsize;
+  const int32_t lcwoffset = vqap->data->Max_CB_Size - padsize;
 
   // A chunk larger than the buffer would start before it.
   if (lcwoffset < 0) {
     return VQAERR_READ;
   }
 
-  buffer = curcb->Buffer + lcwoffset;
+  unsigned char* buffer = curcb->Buffer + lcwoffset;
 
   if (!vqap->io->Read(buffer, padsize)) {
     return VQAERR_READ;
@@ -1746,15 +1710,11 @@ static int32_t Load_CBFZ(const VQAHandle* vqap, int32_t iffsize) {
  ****************************************************************************/
 
 static int32_t Load_CBP0(const VQAHandle* vqap, int32_t iffsize) {
-  VQAData* vqabuf;
-  VQALoader* loader;
-  VQACBNode* curcb;
-  unsigned char* buffer;
 
   /* Dereference commonly used data members for quicker access. */
-  vqabuf = vqap->data;
-  loader = &vqabuf->Loader;
-  curcb = loader->CurCB;
+  VQAData* vqabuf = vqap->data;
+  VQALoader* loader = &vqabuf->Loader;
+  VQACBNode* curcb = loader->CurCB;
 
   /*-------------------------------------------------------------------------
    * ASSEMBLY PARTIAL CODEBOOKS.
@@ -1766,7 +1726,7 @@ static int32_t Load_CBP0(const VQAHandle* vqap, int32_t iffsize) {
   }
 
   /* Read the partial codebook into the next position in the buffer. */
-  buffer = curcb->Buffer + loader->PartialCBSize;
+  unsigned char* buffer = curcb->Buffer + loader->PartialCBSize;
 
   if (!vqap->io->Read(buffer, PadSize(iffsize))) {
     return VQAERR_READ;
@@ -1819,17 +1779,12 @@ static int32_t Load_CBP0(const VQAHandle* vqap, int32_t iffsize) {
  ****************************************************************************/
 
 static int32_t Load_CBPZ(const VQAHandle* vqap, int32_t iffsize) {
-  VQAData* vqabuf;
-  VQALoader* loader;
-  VQACBNode* curcb;
-  unsigned char* buffer;
-  int32_t padsize;
 
   /* Dereference commonly used data members for quicker access */
-  vqabuf = vqap->data;
-  loader = &vqabuf->Loader;
-  curcb = loader->CurCB;
-  padsize = PadSize(iffsize);
+  VQAData* vqabuf = vqap->data;
+  VQALoader* loader = &vqabuf->Loader;
+  VQACBNode* curcb = loader->CurCB;
+  const int32_t padsize = PadSize(iffsize);
 
   /* Attempt to compute the LCW offset into the codebook buffer by
    * multiplying the size of this chunk by the # frames/group, and adding
@@ -1859,7 +1814,8 @@ static int32_t Load_CBPZ(const VQAHandle* vqap, int32_t iffsize) {
    *-----------------------------------------------------------------------*/
 
   /* Read the partial codebook into the next position in the buffer. */
-  buffer = curcb->Buffer + curcb->CBOffset + loader->PartialCBSize;
+  unsigned char* buffer =
+      curcb->Buffer + curcb->CBOffset + loader->PartialCBSize;
 
   if (!vqap->io->Read(buffer, padsize)) {
     return VQAERR_READ;
@@ -1911,10 +1867,9 @@ static int32_t Load_CBPZ(const VQAHandle* vqap, int32_t iffsize) {
  ****************************************************************************/
 
 static int32_t Load_CPL0(const VQAHandle* vqap, int32_t iffsize) {
-  VQAFrameNode* curframe;
 
   /* Dereference commonly used data members for quicker access. */
-  curframe = vqap->data->Loader.CurFrame;
+  VQAFrameNode* curframe = vqap->data->Loader.CurFrame;
 
   // The loader copies a frame's palette into the drawer's 256-color palette,
   // so a larger one is malformed and would overrun that copy.
@@ -1958,24 +1913,20 @@ static int32_t Load_CPL0(const VQAHandle* vqap, int32_t iffsize) {
  ****************************************************************************/
 
 static int32_t Load_CPLZ(const VQAHandle* vqap, int32_t iffsize) {
-  VQAFrameNode* curframe;
-  unsigned char* buffer;
-  int32_t padsize;
-  int32_t lcwoffset;
 
   /* Dereference commonly used data members for quicker access. */
-  curframe = vqap->data->Loader.CurFrame;
-  padsize = PadSize(iffsize);
+  VQAFrameNode* curframe = vqap->data->Loader.CurFrame;
+  const int32_t padsize = PadSize(iffsize);
 
   /* Read the palette into the end of the palette buffer. */
-  lcwoffset = vqap->data->Max_Pal_Size - padsize;
+  const int32_t lcwoffset = vqap->data->Max_Pal_Size - padsize;
 
   // A chunk larger than the buffer would start before it.
   if (lcwoffset < 0) {
     return VQAERR_READ;
   }
 
-  buffer = curframe->Palette + lcwoffset;
+  unsigned char* buffer = curframe->Palette + lcwoffset;
 
   if (!vqap->io->Read(buffer, padsize)) {
     return VQAERR_READ;
@@ -2011,10 +1962,9 @@ static int32_t Load_CPLZ(const VQAHandle* vqap, int32_t iffsize) {
  ****************************************************************************/
 
 static int32_t Load_VPT0(const VQAHandle* vqap, int32_t iffsize) {
-  VQAFrameNode* curframe;
 
   /* Dereference commonly used data members for quicker access. */
-  curframe = vqap->data->Loader.CurFrame;
+  VQAFrameNode* curframe = vqap->data->Loader.CurFrame;
 
   if (!FitsInBuffer(0, PadSize(iffsize), vqap->data->Max_Ptr_Size)) {
     return VQAERR_READ;
@@ -2054,15 +2004,11 @@ static int32_t Load_VPT0(const VQAHandle* vqap, int32_t iffsize) {
  ****************************************************************************/
 
 static int32_t Load_VPTZ(const VQAHandle* vqap, int32_t iffsize) {
-  VQAFrameNode* curframe;
-  unsigned char* buffer;
-  int32_t padsize;
-  int32_t lcwoffset;
 
   /* Dereference commonly used data members for quicker access. */
-  curframe = vqap->data->Loader.CurFrame;
-  padsize = PadSize(iffsize);
-  lcwoffset = vqap->data->Max_Ptr_Size - padsize;
+  VQAFrameNode* curframe = vqap->data->Loader.CurFrame;
+  const int32_t padsize = PadSize(iffsize);
+  const int32_t lcwoffset = vqap->data->Max_Ptr_Size - padsize;
 
   // A chunk larger than the buffer would start before it.
   if (lcwoffset < 0) {
@@ -2070,7 +2016,7 @@ static int32_t Load_VPTZ(const VQAHandle* vqap, int32_t iffsize) {
   }
 
   /* Read the pointers into end of the pointer buffer. */
-  buffer = curframe->Pointers + lcwoffset;
+  unsigned char* buffer = curframe->Pointers + lcwoffset;
 
   if (!vqap->io->Read(buffer, padsize)) {
     return VQAERR_READ;
@@ -2109,17 +2055,12 @@ static int32_t Load_VPTZ(const VQAHandle* vqap, int32_t iffsize) {
  ****************************************************************************/
 
 static int32_t Load_SND0(VQAHandle* vqap, int32_t iffsize) {
-  VQAData* vqabuf;
-  VQAAudio* audio;
-  VQAConfig* config;
-  int32_t padsize;
-  int32_t i;
 
   /* Dereference commonly used data members for quicker access. */
-  vqabuf = vqap->data;
-  audio = &vqabuf->Audio;
-  config = &vqap->config;
-  padsize = PadSize(iffsize);
+  VQAData* vqabuf = vqap->data;
+  VQAAudio* audio = &vqabuf->Audio;
+  VQAConfig* config = &vqap->config;
+  const int32_t padsize = PadSize(iffsize);
 
   /* If sound is disabled, or if we're playing from a VOC file, or if
    * there's no Audio Buffer, just skip the chunk.
@@ -2144,7 +2085,7 @@ static int32_t Load_SND0(VQAHandle* vqap, int32_t iffsize) {
     audio->AudBufPos += iffsize;
 
     /* Flag the audio frame flags as loaded for the initial audio frame. */
-    for (i = 0; i < iffsize / config->HMIBufSize; i++) {
+    for (int32_t i = 0; i < iffsize / config->HMIBufSize; i++) {
       audio->IsLoaded[i] = 1;
     }
 
@@ -2192,19 +2133,14 @@ static int32_t Load_SND0(VQAHandle* vqap, int32_t iffsize) {
  ****************************************************************************/
 
 static int32_t Load_SND1(VQAHandle* vqap, int32_t iffsize) {
-  VQAData* vqabuf;
-  VQAAudio* audio;
-  VQAConfig* config;
-  unsigned char* loadbuf;
-  int32_t padsize;
+  unsigned char* loadbuf = nullptr;
   ZAPHeader zap;
-  int32_t i;
 
   /* Dereference commonly used data members for quicker access. */
-  vqabuf = vqap->data;
-  audio = &vqabuf->Audio;
-  config = &vqap->config;
-  padsize = PadSize(iffsize);
+  VQAData* vqabuf = vqap->data;
+  VQAAudio* audio = &vqabuf->Audio;
+  VQAConfig* config = &vqap->config;
+  int32_t padsize = PadSize(iffsize);
 
   /* If sound is disabled, or if we're playing from a VOC file, or if
    * there's no Audio Buffer, just skip the chunk
@@ -2258,7 +2194,7 @@ static int32_t Load_SND1(VQAHandle* vqap, int32_t iffsize) {
     /* Set buffer positions & flags */
     audio->AudBufPos += zap.UnCompSize;
 
-    for (i = 0; i < zap.UnCompSize / config->HMIBufSize; i++) {
+    for (int32_t i = 0; i < zap.UnCompSize / config->HMIBufSize; i++) {
       audio->IsLoaded[i] = 1;
     }
 
@@ -2321,19 +2257,13 @@ static int32_t Load_SND1(VQAHandle* vqap, int32_t iffsize) {
  ****************************************************************************/
 
 static int32_t Load_SND2(VQAHandle* vqap, int32_t iffsize) {
-  VQAData* vqabuf;
-  VQAAudio* audio;
-  VQAConfig* config;
-  unsigned char* loadbuf;
-  int32_t padsize;
-  int32_t uncomp_size;
-  int32_t i;
+  unsigned char* loadbuf = nullptr;
 
   /* Dereference commonly used data members for quicker access. */
-  vqabuf = vqap->data;
-  audio = &vqabuf->Audio;
-  config = &vqap->config;
-  padsize = PadSize(iffsize);
+  VQAData* vqabuf = vqap->data;
+  VQAAudio* audio = &vqabuf->Audio;
+  VQAConfig* config = &vqap->config;
+  const int32_t padsize = PadSize(iffsize);
 
   /* If sound is disabled, or if we're playing from a VOC file, or if
    * there's no Audio Buffer, just skip the chunk
@@ -2351,7 +2281,7 @@ static int32_t Load_SND2(VQAHandle* vqap, int32_t iffsize) {
   if (uncomp_bytes > std::max(config->AudioBufSize, audio->TempBufSize)) {
     return VQAERR_READ;
   }
-  uncomp_size = static_cast<int32_t>(uncomp_bytes);
+  const auto uncomp_size = static_cast<int32_t>(uncomp_bytes);
 
   /* Read large startup chunk directly into AudioBuf */
   if (uncomp_size > audio->TempBufSize && audio->AudBufPos == 0) {
@@ -2374,7 +2304,7 @@ static int32_t Load_SND2(VQAHandle* vqap, int32_t iffsize) {
     /* Set buffer positions & flags */
     audio->AudBufPos += uncomp_size;
 
-    for (i = 0; i < uncomp_size / config->HMIBufSize; i++) {
+    for (int32_t i = 0; i < uncomp_size / config->HMIBufSize; i++) {
       audio->IsLoaded[i] = 1;
     }
 

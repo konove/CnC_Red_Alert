@@ -98,21 +98,9 @@ static bool Apply_Delta(const SysAnimHeaderType* sys_header, int curr_frame,
 void* Open_Animation(const char* file_name, char* user_buffer,
                      int32_t user_buffer_size, WSAOpenType user_flags,
                      unsigned char* palette) {
-  int fh;
-  int anim_flags;
-  int palette_adjust;
-  int offsets_size;
-  int frame0_size;
-  base::ssize target_buffer_size;
-  base::ssize delta_buffer_size;
-  base::ssize file_buffer_size;
-  base::ssize max_buffer_size;
-  base::ssize min_buffer_size;
-  char* sys_anim_header_buffer;
-  char* target_buffer;
-  char* delta_buffer;
-  char* delta_back;
-  SysAnimHeaderType* sys_header;
+  int palette_adjust = 0;
+  int frame0_size = 0;
+  base::ssize target_buffer_size = 0;
   WSA_FileHeaderType file_header = {};
 
   /*======================================================================*/
@@ -120,8 +108,8 @@ void* Open_Animation(const char* file_name, char* user_buffer,
    */
   /*======================================================================*/
 
-  anim_flags = 0;
-  fh = OpenFileHandle(file_name, FileAccess::kRead);
+  int anim_flags = 0;
+  const int fh = OpenFileHandle(file_name, FileAccess::kRead);
   if (fh == kInvalidHandle) {
     return nullptr;
   }
@@ -158,13 +146,11 @@ void* Open_Animation(const char* file_name, char* user_buffer,
 
   // Get the total file size minus the size of the first frame and the size
   // of the file header.  These will not be read in to save even more space.
-  file_buffer_size = SeekFileHandle(fh, 0, SEEK_END);
+  base::ssize file_buffer_size = SeekFileHandle(fh, 0, SEEK_END);
 
   if (file_header.frame0_offset) {
-    int32_t tlong;
-
-    tlong = static_cast<int32_t>(file_header.frame0_end -
-                                 file_header.frame0_offset);
+    const auto tlong = static_cast<int32_t>(file_header.frame0_end -
+                                            file_header.frame0_offset);
     frame0_size = static_cast<uint16_t>(tlong);
   } else {
     anim_flags |= WSA_FRAME_0_ON_PAGE;
@@ -195,8 +181,9 @@ void* Open_Animation(const char* file_name, char* user_buffer,
   // ANIMATE.EXE UTILITY DID NOT KNOW I UPDATED IT, IT ADDS IT TO
   // largest_frame_size BEFORE SAVING IT TO THE FILE.  THIS MEANS I HAVE TO ADD
   // THESE charS ON NOW FOR IT TO WORK.
-  delta_buffer_size = base::ssize{file_header.largest_frame_size} +
-                      kExtraBytesAnimateDoesNotKnowAbout;
+  const base::ssize delta_buffer_size =
+      base::ssize{file_header.largest_frame_size} +
+      kExtraBytesAnimateDoesNotKnowAbout;
 
   // Frame 0 is read into the last largest_frame_size - 37 bytes of the delta
   // buffer. A corrupt header whose frame 0 is bigger than that, or whose
@@ -208,8 +195,8 @@ void* Open_Animation(const char* file_name, char* user_buffer,
     CloseFileHandle(fh);
     return nullptr;
   }
-  min_buffer_size = target_buffer_size + delta_buffer_size;
-  max_buffer_size = min_buffer_size + file_buffer_size;
+  const base::ssize min_buffer_size = target_buffer_size + delta_buffer_size;
+  const base::ssize max_buffer_size = min_buffer_size + file_buffer_size;
 
   // check to see if buffer size is big enough for at least min required
   if (user_buffer &&
@@ -263,10 +250,10 @@ void* Open_Animation(const char* file_name, char* user_buffer,
   }
 
   // Set the pointers to the RAM buffers
-  sys_anim_header_buffer = user_buffer;
-  target_buffer = static_cast<char*>(
+  char* sys_anim_header_buffer = user_buffer;
+  char* target_buffer = static_cast<char*>(
       Add_Long_To_Pointer(sys_anim_header_buffer, sizeof(SysAnimHeaderType)));
-  delta_buffer = static_cast<char*>(
+  char* delta_buffer = static_cast<char*>(
       Add_Long_To_Pointer(target_buffer, target_buffer_size));
 
   //	Clear target buffer if it is in the user buffer.
@@ -281,7 +268,8 @@ void* Open_Animation(const char* file_name, char* user_buffer,
   // it needs to clear the target buffer.
 
   // Allocated storage is aligned; caller-provided storage was checked above.
-  sys_header = port::AlignedObject<SysAnimHeaderType>(sys_anim_header_buffer);
+  auto* sys_header =
+      port::AlignedObject<SysAnimHeaderType>(sys_anim_header_buffer);
   sys_header->current_frame = sys_header->total_frames =
       file_header.total_frames;
   sys_header->pixel_x = file_header.pixel_x;
@@ -298,7 +286,7 @@ void* Open_Animation(const char* file_name, char* user_buffer,
 
   // Figure how much room the frame offsets take up in the file.
   // Add 2 - one for the wrap around and one for the final end offset.
-  offsets_size = (file_header.total_frames + 2) << 2;
+  const int offsets_size = (file_header.total_frames + 2) << 2;
 
   // Can the user_buffer_size handle the maximum case buffer?
   if (user_buffer_size == max_buffer_size) {
@@ -342,7 +330,7 @@ void* Open_Animation(const char* file_name, char* user_buffer,
   }
 
   // Figure where to back load frame 0 into the delta buffer.
-  delta_back = static_cast<char*>(Add_Long_To_Pointer(
+  char* delta_back = static_cast<char*>(Add_Long_To_Pointer(
       delta_buffer, sys_header->largest_frame_size - frame0_size));
 
   // Read the first frame into the delta buffer and uncompress it.
@@ -369,10 +357,9 @@ void* Open_Animation(const char* file_name, char* user_buffer,
 }
 
 void Close_Animation(void* handle) {
-  SysAnimHeaderType* sys_header;
 
   // Assign our local system header pointer to the beginning of the handle space
-  sys_header = static_cast<SysAnimHeaderType*>(handle);
+  auto* sys_header = static_cast<SysAnimHeaderType*>(handle);
 
   // Close the WSA file in it was disk based.
   if (sys_header->flags & WSA_FILE) {
@@ -389,23 +376,18 @@ void Close_Animation(void* handle) {
 bool Animate_Frame(void* handle, GraphicViewPortClass& view, int frame_number,
                    int x_pixel, int y_pixel, WSAType /*flags_and_prio*/,
                    void* /*magic_cols*/, void* /*magic*/) {
-  SysAnimHeaderType* sys_header;  // fix up the void pointer past in.
-  int curr_frame;                 // current frame we are on.
-  int total_frames;               // number of frames in anim.
-  int distance;                   // distance to desired frame.
-  int search_dir;                 // direcion to search for desired frame.
-  int search_frames;              // How many frames to search.
-  int loop;                       // Just a loop varible.
-  uint8_t* frame_buffer;          // our destination.
-  bool direct_to_dest;            // are we going directly to the destination?
-  int dest_width;  // the width of the destination buffer or page.
+  int search_frames = 0;            // How many frames to search.
+  uint8_t* frame_buffer = nullptr;  // our destination.
+  bool direct_to_dest = false;      // are we going directly to the destination?
 
   // Assign local pointer to the beginning of the buffer where the system
   // information resides
-  sys_header = static_cast<SysAnimHeaderType*>(handle);
+  auto* sys_header = static_cast<SysAnimHeaderType*>(
+      handle);  // fix up the void pointer past in.
 
   // Get the total number of frames
-  total_frames = sys_header->total_frames;
+  const int total_frames =
+      sys_header->total_frames;  // number of frames in anim.
 
   // Are the animation handle and the frame number valid?
   if (!handle || total_frames <= frame_number) {
@@ -417,7 +399,9 @@ bool Animate_Frame(void* handle, GraphicViewPortClass& view, int frame_number,
   }
 
   // Decide if we are going to a page or a viewport (part of a buffer).
-  dest_width = view.Get_Width() + view.Get_XAdd() + view.Get_Pitch();
+  const int dest_width =
+      view.Get_Width() + view.Get_XAdd() +
+      view.Get_Pitch();  // the width of the destination buffer or page.
 
   //
   // adjust x_pixel and y_pixel by system pixel_x and pixel_y respectively.
@@ -469,13 +453,14 @@ bool Animate_Frame(void* handle, GraphicViewPortClass& view, int frame_number,
   // Get the current frame
   // If no looping aloud, are the trying to do it anyways?
   //
-  curr_frame = sys_header->current_frame;
+  int curr_frame = sys_header->current_frame;  // current frame we are on.
 
   // Get absoulte distance from our current frame to the target frame
-  distance = std::abs(curr_frame - frame_number);
+  const int distance =
+      std::abs(curr_frame - frame_number);  // distance to desired frame.
 
   // Assume we are searching right
-  search_dir = 1;
+  int search_dir = 1;  // direcion to search for desired frame.
 
   // Calculate the number of frames to search if we go right and wrap
 
@@ -503,7 +488,7 @@ bool Animate_Frame(void* handle, GraphicViewPortClass& view, int frame_number,
   // Take care of the case when we are searching right (possibly right)
 
   if (search_dir > 0) {
-    for (loop = 0; loop < search_frames; loop++) {
+    for (int loop = 0; loop < search_frames; loop++) {
       // Move the logical frame number ordinally right
       curr_frame += search_dir;
 
@@ -517,7 +502,7 @@ bool Animate_Frame(void* handle, GraphicViewPortClass& view, int frame_number,
       }
     }
   } else {
-    for (loop = 0; loop < search_frames; loop++) {
+    for (int loop = 0; loop < search_frames; loop++) {
       // If we are going backwards and we are on frame 0, the delta to get
       // to the last frame is the n + 1 delta (wrap delta)
 
@@ -545,12 +530,11 @@ bool Animate_Frame(void* handle, GraphicViewPortClass& view, int frame_number,
 }
 
 int Get_Animation_Frame_Count(void* handle) {
-  SysAnimHeaderType* sys_header;
 
   if (!handle) {
     return 0;
   }
-  sys_header = static_cast<SysAnimHeaderType*>(handle);
+  auto* sys_header = static_cast<SysAnimHeaderType*>(handle);
   return static_cast<int16_t>(sys_header->total_frames);
 }
 
@@ -829,7 +813,7 @@ void Apply_XOR_Delta_To_Page_Or_Viewport(void* target, void* delta, int width,
 }
 
 static int64_t Get_Resident_Frame_Offset(const char* file_buffer, int frame) {
-  uint32_t frame0_size;
+  uint32_t frame0_size = 0;
   const auto first = port::ReadUnaligned<uint32_t>(file_buffer);
   if (first) {
     frame0_size =
@@ -848,7 +832,7 @@ static int64_t Get_Resident_Frame_Offset(const char* file_buffer, int frame) {
 
 static int64_t Get_File_Frame_Offset(int file_handle, int frame,
                                      int palette_adjust) {
-  uint32_t offset;
+  uint32_t offset = 0;
 
   SeekFileHandle(file_handle, (frame << 2) + kWsaFileHeaderSize, SEEK_SET);
 
@@ -862,15 +846,11 @@ static int64_t Get_File_Frame_Offset(int file_handle, int frame,
 
 static bool Apply_Delta(const SysAnimHeaderType* sys_header, int curr_frame,
                         void* dest_ptr, int dest_w) {
-  char* data_ptr;
-  char* delta_back;
-  int file_handle;
-  int palette_adjust;
-  int64_t frame_data_size;
-  int64_t frame_offset;
+  int64_t frame_data_size = 0;
+  int64_t frame_offset = 0;
 
-  palette_adjust = sys_header->flags & WSA_PALETTE_PRESENT ? 768 : 0;
-  delta_back = sys_header->delta_buffer;
+  const int palette_adjust = sys_header->flags & WSA_PALETTE_PRESENT ? 768 : 0;
+  char* delta_back = sys_header->delta_buffer;
 
   if (sys_header->flags & WSA_RESIDENT) {
     // Get offset of the given frame in the resident file
@@ -895,7 +875,7 @@ static bool Apply_Delta(const SysAnimHeaderType* sys_header, int curr_frame,
       return false;
     }
 
-    data_ptr = static_cast<char*>(
+    char* data_ptr = static_cast<char*>(
         Add_Long_To_Pointer(sys_header->file_buffer, frame_offset));
     delta_back = static_cast<char*>(Add_Long_To_Pointer(
         delta_back, sys_header->largest_frame_size - frame_data_size));
@@ -911,7 +891,7 @@ static bool Apply_Delta(const SysAnimHeaderType* sys_header, int curr_frame,
     // figure offset to load data into end of delta buffer
     //	Read it into buffer -- Return if correct amount not read.-- errors??
 
-    file_handle = sys_header->file_handle;
+    const int file_handle = sys_header->file_handle;
     SeekFileHandle(file_handle, 0L, SEEK_SET);
 
     frame_offset =

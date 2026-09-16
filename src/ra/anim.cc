@@ -573,7 +573,7 @@ AnimClass::~AnimClass() {
       *that *	this animation is attached to. If there are no others, then
       *inform the *	attached object of this fact.
       */
-      int index;
+      int index = 0;
       for (index = 0; index < Anims.Count(); index++) {
         if (Anims.Ptr(index) != this && Anims.Ptr(index)->xObject == xObject) {
           break;
@@ -928,7 +928,7 @@ void AnimClass::Middle() {
     new SmudgeClass(SMUDGE_CRATER1, Center_Coord());
   }
 
-  AnimClass* newanim;
+  AnimClass* newanim = nullptr;
 
   /*
   **	If this animation spawns side effects during its lifetime, then
@@ -1047,8 +1047,8 @@ void AnimClass::Do_Atom_Damage(HousesType ownerhouse, CELL cell) {
     }
   }
 
-  int radius;
-  int rawdamage;
+  int radius = 0;
+  int rawdamage = 0;
   if (Session.Type == GAME_NORMAL) {
     radius = 4;
     rawdamage = Rule.AtomDamage;

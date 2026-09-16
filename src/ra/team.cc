@@ -921,7 +921,7 @@ bool TeamClass::Add(FootClass* obj) {
     return false;
   }
 
-  int typeindex;
+  int typeindex = 0;
   if (!Can_Add(obj, typeindex)) {
     return false;
   }

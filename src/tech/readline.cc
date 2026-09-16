@@ -63,7 +63,7 @@ int Read_Line(ByteSource& file, char* buffer, int len, bool& eof) {
 
   int count = 0;
   for (;;) {
-    char c;
+    char c = 0;
     if (!file.ReadObject(c)) {
       eof = true;
       buffer[0] = '\0';

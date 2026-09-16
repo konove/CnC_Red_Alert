@@ -90,9 +90,7 @@ HousesType OverlayClass::ToOwn = HOUSE_NONE;
  *=============================================================================================*/
 int OverlayClass::Validate() const {
   if constexpr (config::kCheatKeysEnabled) {
-    int num;
-
-    num = Overlays.ID(this);
+    const int num = Overlays.ID(this);
     if (num < 0 || num >= kOverlayMax) {
       Validate_Error("OVERLAY");
     }
@@ -277,7 +275,7 @@ bool OverlayClass::Mark(MarkType mark) {
             cellptr->Tiberium_Adjust();
           } else {
             if (*this == OVERLAY_CONCRETE) {
-              CELL newcell;
+              CELL newcell = 0;
 
               /*
               **	Smudges go away when concrete is laid down.
@@ -343,24 +341,20 @@ bool OverlayClass::Mark(MarkType mark) {
  *manual crates in multiplayer scenarios.              *
  *=============================================================================================*/
 void OverlayClass::Read_INI(char* buffer) {
-  char* tbuffer;
-  int len;  // Length of data in buffer.
   char buf[128];
 
-  len = static_cast<int>(strlen(buffer)) + 2;
-  tbuffer = buffer + len;
+  const int len =
+      static_cast<int>(strlen(buffer)) + 2;  // Length of data in buffer.
+  char* tbuffer = buffer + len;
 
   WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
                             ShapeBufferSize - len, buffer);
   while (*tbuffer != '\0') {
-    CELL cell;
-    OverlayType classid;
-
-    cell = tech::ParseInteger<CELL>(tbuffer).value_or(0);
+    CELL const cell = tech::ParseInteger<CELL>(tbuffer).value_or(0);
     WWGetPrivateProfileString(INI_Name(), tbuffer, nullptr, buf,
                               sizeof(buf) - 1, buffer);
     port::Tokenizer tokens(buf, ",\n\r");
-    classid = OverlayTypeClass::From_Name(tokens.Next());
+    const OverlayType classid = OverlayTypeClass::From_Name(tokens.Next());
 
     /*
     **	Don't allow placement of crates in the multiplayer scenarios.
@@ -396,15 +390,14 @@ void OverlayClass::Read_INI(char* buffer) {
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
 void OverlayClass::Write_INI(char* buffer) {
-  int index;
   char uname[10];
   char buf[128];
-  char* tbuffer;  // Accumulation buffer of unit IDs.
 
   /*
   **	First, clear out all existing unit data from the ini file.
   */
-  tbuffer = buffer + strlen(buffer) + 2;
+  char* tbuffer =
+      buffer + strlen(buffer) + 2;  // Accumulation buffer of unit IDs.
   WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
                             ShapeBufferSize - static_cast<int>(strlen(buffer)),
                             buffer);
@@ -416,7 +409,7 @@ void OverlayClass::Write_INI(char* buffer) {
   /*
   **	Write the unit data out.
   */
-  for (index = 0; index < MAP_CELL_TOTAL; index++) {
+  for (int index = 0; index < MAP_CELL_TOTAL; index++) {
     const CellClass* cellptr = &Map[index];
 
     if (cellptr->Overlay != OVERLAY_NONE) {

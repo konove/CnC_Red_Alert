@@ -281,7 +281,7 @@ void OverlayClass::Read_INI(CCINIClass& ini) {
       LcwSource uncomp(CodecMode::kDecompress, bpipe);
 
       for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
-        OverlayType classid;
+        OverlayType classid = OVERLAY_NONE;
 
         uncomp.ReadObject(classid);
 

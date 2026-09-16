@@ -149,7 +149,7 @@ const uint16_t* XMP_Halves(
  * HISTORY: * 07/01/1996 JLB : Created. *
  *=============================================================================================*/
 static int Byte_Precision(uint32_t value) {
-  int byte_count;
+  int byte_count = 0;
   for (byte_count = sizeof(value); byte_count; byte_count--) {
     if (value >> ((byte_count - 1) * 8)) {
       break;
@@ -263,7 +263,7 @@ void XMP_DER_Decode(uint32_t* result, const unsigned char* input,
   assert(precision > 0);
 
   if (*input++ == 0x02) {
-    int byte_count;
+    int byte_count = 0;
 
     if ((*input & 0x80) == 0) {
       byte_count = *input++;
@@ -362,7 +362,7 @@ int XMP_Encode(unsigned char* to, const uint32_t* from, int precision) {
 
   const bool is_negative = XMP_Is_Negative(from, precision);
   const auto filler = static_cast<unsigned char>(is_negative ? 0xff : 0);
-  const unsigned char* number_ptr;
+  const unsigned char* number_ptr = nullptr;
 
   // Byte view of the number's representation, which reinterpret_cast defines.
   // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
@@ -427,15 +427,14 @@ void XMP_Signed_Decode(uint32_t* result, const unsigned char* from,
   /*
   **	Fill in any excess significant bytes.
   */
-  int index;
-  for (index = 0; index < fillcount; index++) {
+  for (int index = 0; index < fillcount; index++) {
     *--dest = filler;
   }
 
   /*
   **	Move in the remaining bytes.
   */
-  for (index = 0; index < frombytes; index++) {
+  for (int index = 0; index < frombytes; index++) {
     *--dest = *from++;
   }
 }
@@ -477,15 +476,14 @@ void XMP_Unsigned_Decode(uint32_t* result, const unsigned char* from,
   /*
   **	Fill in any excess significant bytes.
   */
-  int index;
-  for (index = 0; index < fillcount; index++) {
+  for (int index = 0; index < fillcount; index++) {
     *--dest = '\0';
   }
 
   /*
   **	Move in the remaining bytes.
   */
-  for (index = 0; index < frombytes; index++) {
+  for (int index = 0; index < frombytes; index++) {
     *--dest = *from++;
   }
 }
@@ -697,8 +695,7 @@ void XMP_Shift_Right_Bits(uint32_t* number, int bits, int precision) {
   const int digits_to_shift = bits / UNITSIZE;
   const int bits_to_shift = bits % UNITSIZE;
 
-  int index;
-  for (index = digits_to_shift; index < precision - 1; index++) {
+  for (int index = digits_to_shift; index < precision - 1; index++) {
     *number = *(number + digits_to_shift) >> bits_to_shift |
               *(number + (digits_to_shift + 1)) << (UNITSIZE - bits_to_shift);
     number++;
@@ -709,7 +706,7 @@ void XMP_Shift_Right_Bits(uint32_t* number, int bits, int precision) {
     number++;
   }
 
-  for (index = 0; index < std::min(digits_to_shift, precision); index++) {
+  for (int index = 0; index < std::min(digits_to_shift, precision); index++) {
     *number++ = 0;
   }
 }
@@ -782,9 +779,8 @@ void XMP_Shift_Left_Bits(uint32_t* number, int bits, int precision) {
   const int digits_to_shift = bits / UNITSIZE;
   const int bits_to_shift = bits % UNITSIZE;
 
-  int index;
   number += precision - 1;
-  for (index = digits_to_shift; index < precision - 1; index++) {
+  for (int index = digits_to_shift; index < precision - 1; index++) {
     *number = *(number - digits_to_shift) << bits_to_shift |
               *(number - (digits_to_shift + 1)) >> (UNITSIZE - bits_to_shift);
     number--;
@@ -795,7 +791,7 @@ void XMP_Shift_Left_Bits(uint32_t* number, int bits, int precision) {
     number--;
   }
 
-  for (index = 0; index < std::min(digits_to_shift, precision); index++) {
+  for (int index = 0; index < std::min(digits_to_shift, precision); index++) {
     *number-- = 0;
   }
 }
@@ -1621,7 +1617,7 @@ void XMP_Inverse_A_Mod_B(uint32_t* result, const uint32_t* number,
 
   uint32_t y[MAX_UNIT_PRECISION] = {};
 
-  int i;
+  int i = 0;
   for (i = 1; !XMP_Test_Eq_Int(g[i % 3], 0, precision); i++) {
     XMP_Unsigned_Div(g[(i + 1) % 3], y, g[(i - 1) % 3], g[i % 3], precision);
 
@@ -1731,7 +1727,7 @@ void XMP_Decode_ASCII(const char* str, uint32_t* mpn, int precision) {
     return;
   }
 
-  uint16_t radix;                /* base 2-16 */
+  uint16_t radix = 0;            /* base 2-16 */
   switch (toupper(str[i - 1])) { /* classify radix select suffix character */
     case '.':
       radix = 10;
@@ -1759,7 +1755,7 @@ void XMP_Decode_ASCII(const char* str, uint32_t* mpn, int precision) {
     str++;
   }
 
-  uint32_t c;
+  uint32_t c = 0;
   while ((c = static_cast<unsigned char>(*str++)) != 0) {
     if (c == ',') {
       continue; /* allow commas in number */
@@ -2116,29 +2112,25 @@ void XMP_Mod_Mult_Clear(int precision) {
 **      modulus.
 */
 uint16_t mp_quo_digit(const uint16_t* dividend) {
-  uint64_t q;
-  uint64_t q0;
-  uint64_t q1;
-  uint64_t q2;
 
   /*
    * Compute the least significant product group.
    * The last terms of q1 and q2 perform upward rounding, which is
    * needed to guarantee that the result not be too small.
    */
-  q1 = ((dividend[-2] ^ kSemiMask) *
-        static_cast<uint64_t>(reciprical_high_digit)) +
-       reciprical_high_digit;
-  q2 = ((dividend[-1] ^ kSemiMask) *
-        static_cast<uint64_t>(reciprical_low_digit)) +
-       (1L << 16);
-  q0 = (q1 >> 1) + (q2 >> 1) + 1;
+  uint64_t q1 = ((dividend[-2] ^ kSemiMask) *
+                 static_cast<uint64_t>(reciprical_high_digit)) +
+                reciprical_high_digit;
+  uint64_t q2 = ((dividend[-1] ^ kSemiMask) *
+                 static_cast<uint64_t>(reciprical_low_digit)) +
+                (1L << 16);
+  const uint64_t q0 = (q1 >> 1) + (q2 >> 1) + 1;
 
   /*      Compute the middle significant product group.   */
   q1 =
       (dividend[-1] ^ kSemiMask) * static_cast<uint64_t>(reciprical_high_digit);
   q2 = (dividend[0] ^ kSemiMask) * static_cast<uint64_t>(reciprical_low_digit);
-  q = (q0 >> 16) + (q1 >> 1) + (q2 >> 1) + 1;
+  uint64_t q = (q0 >> 16) + (q1 >> 1) + (q2 >> 1) + 1;
 
   /*      Compute the most significant term and add in the others */
   q = (q >> (16 - 2)) + (((dividend[0] ^ kSemiMask) *
@@ -2320,8 +2312,8 @@ bool XMP_Is_Small_Prime(const uint32_t* candidate, const int precision) {
 bool XMP_Small_Divisors_Test(const uint32_t* candidate, int precision) {
   uint32_t quotient[MAX_UNIT_PRECISION];
 
-  for (const unsigned short i : primeTable) {
-    if (XMP_Unsigned_Div_Int(quotient, candidate, i, precision) == 0) {
+  for (const uint16_t prime : primeTable) {
+    if (XMP_Unsigned_Div_Int(quotient, candidate, prime, precision) == 0) {
       return false;
     }
   }
@@ -2406,7 +2398,7 @@ bool XMP_Rabin_Miller_Test(ByteSource& rng, const uint32_t* w, int rounds,
 
   const int maxbitprecision =
       precision * static_cast<int>(sizeof(uint32_t)) * 8;
-  int a;
+  int a = 0;
   for (a = 0; a < maxbitprecision; a++) {
     if (XMP_Test_Bit(wminus1, a)) {
       break;
@@ -2431,7 +2423,7 @@ bool XMP_Rabin_Miller_Test(ByteSource& rng, const uint32_t* w, int rounds,
       continue;  // passes this round
     }
 
-    int j;
+    int j = 0;
     for (j = 1; j < a; j++) {
       uint32_t t2[MAX_UNIT_PRECISION];
       xmp_exponent_mod(t2, z, temp, w, precision);

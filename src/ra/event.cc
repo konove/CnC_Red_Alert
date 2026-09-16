@@ -497,7 +497,7 @@ EventClass::EventClass(EventType type, void* ptr, uint32_t size)
 // Not const: applies the event to the game.
 // NOLINTNEXTLINE(readability-make-member-function-const)
 void EventClass::Execute() {
-  TechnoClass* techno;
+  TechnoClass* techno = nullptr;
   AnimClass* anim = nullptr;
   //	CELL cell = 0;
   bool formation = false;
@@ -932,9 +932,8 @@ void EventClass::Execute() {
     ** - Place his units on the map
     */
     case ADDPLAYER:
-      int i;
       absl::PrintF("ADDPLAYER EVENT!\n");
-      for (i = 0; std::cmp_less(i, Data.Variable.Size); i++) {
+      for (int i = 0; std::cmp_less(i, Data.Variable.Size); i++) {
         absl::PrintF("%d\n", static_cast<char*>(Data.Variable.Pointer)[i]);
       }
       if (std::cmp_not_equal(ID, PlayerPtr->ID)) {
@@ -975,7 +974,7 @@ void EventClass::Execute() {
     // for the game.
     //
     case PROCESS_TIME:
-      for (i = 0; i < Session.Players.Count(); i++) {
+      for (int i = 0; i < Session.Players.Count(); i++) {
         if (ID == Session.Players[i]->Player.ID) {
           Session.Players[i]->Player.ProcessTime =
               Data.ProcessTime.AverageTicks;
@@ -1007,7 +1006,7 @@ void EventClass::Execute() {
         // translation still takes exactly one %s before using it.
         const auto format =
             absl::ParsedFormat<'s'>::New(TXT_WOL_DRAW_PROPOSED_OTHER);
-        for (i = 0; i < Session.Players.Count(); i++) {
+        for (int i = 0; i < Session.Players.Count(); i++) {
           if (ID == Session.Players[i]->Player.ID) {
             if (format != nullptr) {
               message = absl::StrFormat(*format, Session.Players[i]->Name);
@@ -1039,7 +1038,7 @@ void EventClass::Execute() {
         // translation still takes exactly one %s before using it.
         const auto format =
             absl::ParsedFormat<'s'>::New(TXT_WOL_DRAW_RETRACTED_OTHER);
-        for (i = 0; i < Session.Players.Count(); i++) {
+        for (int i = 0; i < Session.Players.Count(); i++) {
           if (ID == Session.Players[i]->Player.ID) {
             if (format != nullptr) {
               message = absl::StrFormat(*format, Session.Players[i]->Name);

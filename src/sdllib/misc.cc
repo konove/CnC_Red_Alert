@@ -40,12 +40,6 @@ void Delay(int duration) {
 }
 
 void* Build_Fading_Table(const void* palette, void* dest, int color, int frac) {
-  int matchvalue;
-  uint8_t targetred;
-  uint8_t targetgreen;
-  uint8_t idealred;
-  uint8_t idealgreen;
-  uint8_t matchcolor;
 
   // If the source palette is NULL, then just return with current fading table
   // pointer.
@@ -58,8 +52,8 @@ void* Build_Fading_Table(const void* palette, void* dest, int color, int frac) {
 
   // Record the target gun values.
   const auto* pal8 = static_cast<const uint8_t*>(palette);
-  targetred = pal8[(color * 3) + 0];
-  targetgreen = pal8[(color * 3) + 0];
+  const uint8_t targetred = pal8[(color * 3) + 0];
+  const uint8_t targetgreen = pal8[(color * 3) + 0];
 
   // Main loop
 
@@ -73,16 +67,16 @@ void* Build_Fading_Table(const void* palette, void* dest, int color, int frac) {
     const uint8_t origgreen = pal8[(remap_index * 3) + 1];
 
     auto tmp = static_cast<uint16_t>((origred - targetred) * (frac >> 1));
-    idealred = static_cast<uint8_t>(origred - (tmp >> 7));
+    const auto idealred = static_cast<uint8_t>(origred - (tmp >> 7));
 
     tmp = static_cast<uint16_t>((origgreen - targetgreen) * (frac >> 1));
-    idealgreen = static_cast<uint8_t>(origgreen - (tmp >> 7));
+    const auto idealgreen = static_cast<uint8_t>(origgreen - (tmp >> 7));
 
     // Sweep through the entire existing palette to find the closest
     // matching color.  Never matches with color 0.
 
-    matchcolor = static_cast<uint8_t>(color);  // Default color (self).
-    matchvalue = INT_MAX;  // Ridiculous match value init.
+    auto matchcolor = static_cast<uint8_t>(color);  // Default color (self).
+    int matchvalue = INT_MAX;  // Ridiculous match value init.
 
     const auto* palptr = pal8 + 3;
 
@@ -185,11 +179,6 @@ static unsigned Divide_With_Round(unsigned num, unsigned den) {
 
 void Convert_RGB_To_HSV(unsigned int r, unsigned int g, unsigned int b,
                         unsigned int* h, unsigned int* s, unsigned int* v) {
-  unsigned int m;
-  unsigned int r1;
-  unsigned int g1;
-  unsigned int b1;
-  unsigned int tmp;
 
   // Convert RGB base to HSV base.
   r = Divide_With_Round(r * HSV_BASE, RGB_BASE);
@@ -204,7 +193,7 @@ void Convert_RGB_To_HSV(unsigned int r, unsigned int g, unsigned int b,
   *v = std::max(b, *v);
 
   // Set m = min(r,g,b) to find amount of white.
-  m = r < g ? r : g;
+  unsigned int m = r < g ? r : g;
   m = std::min(b, m);
 
   // Determine the normalized saturation.
@@ -215,11 +204,11 @@ void Convert_RGB_To_HSV(unsigned int r, unsigned int g, unsigned int b,
   }
 
   if (*s != 0) {
-    tmp = *v - m;
+    const unsigned int tmp = *v - m;
     CHECK_NE(tmp, 0U);
-    r1 = Divide_With_Round((*v - r) * HSV_BASE, tmp);
-    g1 = Divide_With_Round((*v - g) * HSV_BASE, tmp);
-    b1 = Divide_With_Round((*v - b) * HSV_BASE, tmp);
+    const unsigned int r1 = Divide_With_Round((*v - r) * HSV_BASE, tmp);
+    const unsigned int g1 = Divide_With_Round((*v - g) * HSV_BASE, tmp);
+    const unsigned int b1 = Divide_With_Round((*v - b) * HSV_BASE, tmp);
 
     // Find effect of second most predominant color.
     // In which section of the hexagon of colors does the color lie?
