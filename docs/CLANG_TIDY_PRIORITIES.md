@@ -113,7 +113,7 @@ comes from the installed tool, since the online documentation follows LLVM devel
 
 | Check                                                           | Status  | Reason / result                                                                                                                                                                                                                                                                                                                                                                                                              |
 | --------------------------------------------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `clang-diagnostic-unsafe-buffer-usage`                          | Skipped | Commit `Document buffer, union and boolean conversion check policy`: 5,924 reports of raw pointer and array indexing across the blitters, codecs, packet and save code; enforcing it needs a span-based buffer API first. See review below.                                                                                                                                                                                  |
+| `clang-diagnostic-unsafe-buffer-usage`                          | Skipped | Commit `Document buffer, union and boolean conversion check policy`: 5,924 reports of raw pointer and array indexing across the blitters, codecs, packet and save code; enforcing it needs a span-based buffer API first. A targeted LCW destination-bounds fix is recorded in [LCW_BUFFER_BOUNDS_PLAN.md](LCW_BUFFER_BOUNDS_PLAN.md) and the follow-up below; the broad exclusion remains.                                  |
 | `cppcoreguidelines-pro-bounds-avoid-unchecked-container-access` | Skipped | Commit `Document buffer, union and boolean conversion check policy`: 1,840 reports of `operator[]` on the engine's vectors and heaps. See review below.                                                                                                                                                                                                                                                                      |
 | `cppcoreguidelines-pro-bounds-constant-array-index`             | Skipped | Commit `Document buffer, union and boolean conversion check policy`: 3,365 reports of runtime indices into fixed game tables. See review below.                                                                                                                                                                                                                                                                              |
 | `cppcoreguidelines-owning-memory`                               | Skipped | Commit `Document P3 checks the legacy-code policy rules out`: 1,240 reports, raw `new`/`delete` ownership across the object heaps, dialogs and buffers; `gsl::owner` or smart pointers everywhere is exactly what CLAUDE.md's legacy-code rules list it under changes to avoid unless requested. See review below.                                                                                                           |
@@ -394,6 +394,33 @@ the exclusion and revisit if the checker gains suitable range semantics or those
 redesigned. No source or configuration changes were made; the excluded-name count remains 229.
 Markdown formatting and whitespace checks passed; game builds and tests were not rerun for this
 documentation-only decision.
+
+### LCW destination bounds follow-up (2026-09-15)
+
+Revisited the skipped checks in priority order. Installed Clang 23.1.2 still reports valid
+consecutive vector mutations and string assignment followed by a read as lifetime invalidation. The
+switch-enum and swappable-parameter skips retain their documented policy tradeoffs. A focused review
+of the skipped `clang-diagnostic-unsafe-buffer-usage` row found a concrete destination overrun in
+the shared `LCW_Uncompress` decoder; see the [implementation plan](LCW_BUFFER_BOUNDS_PLAN.md).
+
+Literal runs and medium/long absolute copies previously ignored the remaining destination capacity.
+All five command forms now honor that capacity. Relative and absolute back-references must refer to
+the already decoded prefix before any output access; invalid references return the prefix length.
+Nonpositive capacities return zero without accessing either buffer. Forward overlapping and in-place
+copies, zero-count commands, and the C ABI are preserved.
+
+The original decoder returned three and overwrote a guard byte for a one-byte capacity; the fixed
+decoder returns one and preserves the guard. The new `BoundsEveryCommand` regression also fails
+against the original implementation. All seven new regressions pass with AddressSanitizer and UBSan
+(leak detection is disabled because the sandbox prevents LeakSanitizer's process inspection).
+Full-config clang-tidy passes both changed translation units. The isolated unsafe-buffer check still
+reports 14 raw-pointer operations, so its broad exclusion remains. This API cannot validate
+compressed-input truncation without a source length; that separate API migration is not claimed as
+fixed here.
+
+Both strict game builds passed, and all 482 CTest tests in the rebuilt suite passed, including the
+seven new regressions. The RA save/load smoke check matched 240 object positions; TD matched 5,742
+game states.
 
 ### Container invalidation check policy (2026-09-11)
 

@@ -44,133 +44,66 @@
 
 extern "C" {
 
-/***************************************************************************
- * LCW_UNCOMPRESS -- Decompress an LCW encoded data block.                 *
- *                                                                         *
- * Uncompress data to the following codes in the format b = byte, w = word *
- * n = byte code pulled from compressed data.                              *
- *                                                                         *
- * Command code, n        |Description                                     *
- * ------------------------------------------------------------------------*
- * n=0xxxyyyy,yyyyyyyy    |short copy back y bytes and run x+3   from dest *
- * n=10xxxxxx,n1,n2,...,nx+1|med length copy the next x+1 bytes from source*
- * n=11xxxxxx,w1          |med copy from dest x+3 bytes from offset w1     *
- * n=11111111,w1,w2       |long copy from dest w1 bytes from offset w2     *
- * n=11111110,w1,b1       |long run of byte b1 for w1 bytes                *
- * n=10000000             |end of data reached                             *
- *                                                                         *
- *                                                                         *
- * INPUT:                                                                  *
- *      void * source ptr                                                  *
- *      void * destination ptr                                             *
- *      unsigned long length of uncompressed data                          *
- *                                                                         *
- *                                                                         *
- * OUTPUT:                                                                 *
- *     unsigned long # of destination bytes written                        *
- *                                                                         *
- * WARNINGS:                                                               *
- *     3rd argument is dummy. It exists to provide cross-platform          *
- *      compatibility. Note therefore that this implementation does not    *
- *      check for corrupt source data by testing the uncompressed length.  *
- *                                                                         *
- * HISTORY:                                                                *
- *    03/20/1995 IML : Created.                                            *
- *=========================================================================*/
-int32_t __cdecl LCW_Uncompress(const void* source, void* dest, int32_t length)
-// unsigned long LCW_Uncompress (void * source, void * dest, unsigned long
-// length)
-{
-  unsigned char* copy_ptr = nullptr;
-  unsigned count = 0;
-
-  /* Copy the source and destination ptrs. */
-  const auto* source_ptr = static_cast<const unsigned char*>(source);
-  auto* dest_ptr = static_cast<unsigned char*>(dest);
-
-  unsigned char* dest_end = dest_ptr + length;
-
-  while (dest_ptr < dest_end) {
-    /* Read in the operation code. */
-    const unsigned char op_code = *source_ptr++;
-
-    if (!(op_code & 0x80)) {
-      /* Do a short copy from destination. */
-      count = (op_code >> 4) + 3;
-
-      // clamp to decompressed size
-      count = static_cast<unsigned int>(std::min<std::ptrdiff_t>(count, dest_end - dest_ptr));
-
-      // not possible to write any more, and if we try to read more we might
-      // fault
-      if (!count) {
-        return static_cast<int32_t>(dest_ptr -
-                                    static_cast<unsigned char*>(dest));
-      }
-
-      copy_ptr = dest_ptr - (static_cast<unsigned>(*source_ptr++) +
-                             ((static_cast<unsigned>(op_code) & 0x0f) << 8));
-
-      while (count--) {
-        *dest_ptr++ = *copy_ptr++;
-      }
-
-    } else {
-      if (!(op_code & 0x40)) {
-        if (op_code == 0x80) {
-          /* Return # of destination bytes written. */
-          return static_cast<int32_t>(dest_ptr -
-                                      static_cast<unsigned char*>(dest));
-        }
-        /* Do a medium copy from source. */
-        count = op_code & 0x3f;
-
-        while (count--) {
-          *dest_ptr++ = *source_ptr++;
-        }
-
-      } else {
-        if (op_code == 0xfe) {
-          /* Do a long run. */
-          count = *source_ptr + (static_cast<unsigned>(*(source_ptr + 1)) << 8);
-          const unsigned char data = *(source_ptr + 2);
-          source_ptr += 3;
-
-          // clamp to decompressed size
-          count = static_cast<unsigned int>(std::min<std::ptrdiff_t>(count, dest_end - dest_ptr));
-
-          std::memset(dest_ptr, data, count);
-          dest_ptr += count;
-
-        } else {
-          if (op_code == 0xff) {
-            /* Do a long copy from destination. */
-            count =
-                *source_ptr + (static_cast<unsigned>(*(source_ptr + 1)) << 8);
-            copy_ptr = static_cast<unsigned char*>(dest) + *(source_ptr + 2) +
-                       (static_cast<unsigned>(*(source_ptr + 3)) << 8);
-            source_ptr += 4;
-
-            while (count--) {
-              *dest_ptr++ = *copy_ptr++;
-            }
-
-          } else {
-            /* Do a medium copy from destination. */
-            count = (op_code & 0x3f) + 3;
-            copy_ptr = static_cast<unsigned char*>(dest) + *source_ptr +
-                       (static_cast<unsigned>(*(source_ptr + 1)) << 8);
-            source_ptr += 2;
-
-            while (count--) {
-              *dest_ptr++ = *copy_ptr++;
-            }
-          }
-        }
-      }
-    }
+// Decodes into at most length bytes and returns the decoded prefix. Invalid
+// back-references stop decoding. Source must contain complete commands: this
+// legacy API has no compressed size with which to check source bounds.
+int32_t __cdecl LCW_Uncompress(const void* source, void* dest, int32_t length) {
+  if (length <= 0) {
+    return 0;
   }
 
-  return static_cast<int32_t>(dest_ptr - static_cast<unsigned char*>(dest));
+  const auto* source_ptr = static_cast<const unsigned char*>(source);
+  auto* output = static_cast<unsigned char*>(dest);
+  int32_t written = 0;
+  while (written < length) {
+    const unsigned char opcode = *source_ptr++;
+    int count = 0;
+    int offset = 0;
+    if (!(opcode & 0x80)) {
+      count = (opcode >> 4) + 3;
+      const int distance = *source_ptr++ + ((opcode & 0x0f) * 256);
+      if (distance == 0 || distance > written) {
+        return written;
+      }
+      offset = written - distance;
+    } else if (!(opcode & 0x40)) {
+      if (opcode == 0x80) {
+        return written;
+      }
+      count = std::min<int>(opcode & 0x3f, length - written);
+      // Forward copies preserve the legacy in-place decompression behavior.
+      for (int i = 0; i < count; ++i) {
+        output[written++] = *source_ptr++;
+      }
+      continue;
+    } else if (opcode == 0xfe) {
+      count = source_ptr[0] + (source_ptr[1] << 8);
+      const unsigned char value = source_ptr[2];
+      source_ptr += 3;
+      count = std::min<int>(count, length - written);
+      std::memset(output + written, value, static_cast<std::size_t>(count));
+      written += count;
+      continue;
+    } else {
+      if (opcode == 0xff) {
+        count = source_ptr[0] + (source_ptr[1] << 8);
+        source_ptr += 2;
+      } else {
+        count = (opcode & 0x3f) + 3;
+      }
+      offset = source_ptr[0] + (source_ptr[1] << 8);
+      source_ptr += 2;
+      // A zero-length copy does not access its offset.
+      if (count != 0 && offset >= written) {
+        return written;
+      }
+    }
+
+    count = std::min<int>(count, length - written);
+    for (int i = 0; i < count; ++i) {
+      output[written++] = output[offset++];
+    }
+  }
+  return written;
 }
 }
