@@ -27,6 +27,7 @@
 #include <utility>
 
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
@@ -605,8 +606,8 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       Session.Options.Goodies = Rule.IsMPCrates;
       Session.Options.AIPlayers = 0;
       Session.Options.UnitCount =
-          (SessionClass::CountMax[Session.Options.Bases] +
-           SessionClass::CountMin[Session.Options.Bases]) /
+          (base::At(SessionClass::CountMax, Session.Options.Bases) +
+           base::At(SessionClass::CountMin, Session.Options.Bases)) /
           2;
       // first_time = 0;
     }
@@ -1089,15 +1090,16 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       if (display >= REDRAW_COLORS) {
         for (int i = 0; i < MAX_MPLAYER_COLORS; i++) {
           LogicPage->Fill_Rect(
-              cbox_x[i] + 1, d_color_y + 1, cbox_x[i] + 1 + d_color_w - 4,
+              base::At(cbox_x, i) + 1, d_color_y + 1,
+              base::At(cbox_x, i) + 1 + d_color_w - 4,
               d_color_y + 1 + d_color_h - 2,
               ColorRemaps[static_cast<PlayerColorType>(i)].Box);
 
           if (static_cast<PlayerColorType>(i) == Session.ColorIdx) {
-            Draw_Box(cbox_x[i], d_color_y, d_color_w, d_color_h, BOXSTYLE_DOWN,
-                     false);
+            Draw_Box(base::At(cbox_x, i), d_color_y, d_color_w, d_color_h,
+                     BOXSTYLE_DOWN, false);
           } else {
-            Draw_Box(cbox_x[i], d_color_y, d_color_w, d_color_h,
+            Draw_Box(base::At(cbox_x, i), d_color_y, d_color_w, d_color_h,
                      BOXSTYLE_RAISED, false);
           }
         }
@@ -1467,7 +1469,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       case ButtonKey(kButtonCount):
         Session.Options.UnitCount =
             pGaugeCount->Get_Value() +
-            SessionClass::CountMin[Session.Options.Bases];
+            base::At(SessionClass::CountMin, Session.Options.Bases);
         display = std::max(display, REDRAW_PARMS);
         Sound_Effect(VOC_OPTIONS_CHANGED);
         break;
@@ -1544,10 +1546,11 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
                 static_cast<uint32_t>(SessionClass::CountMax[0] - SessionClass::CountMin[0])));
           }
           pGaugeCount->Set_Maximum(
-              SessionClass::CountMax[Session.Options.Bases] -
-              SessionClass::CountMin[Session.Options.Bases]);
-          pGaugeCount->Set_Value(Session.Options.UnitCount -
-                                 SessionClass::CountMin[Session.Options.Bases]);
+              base::At(SessionClass::CountMax, Session.Options.Bases) -
+              base::At(SessionClass::CountMin, Session.Options.Bases));
+          pGaugeCount->Set_Value(
+              Session.Options.UnitCount -
+              base::At(SessionClass::CountMin, Session.Options.Bases));
         }
         Session.Options.Tiberium = pCheckListOptions->Is_Checked(1) ? 1 : 0;
         Special.IsTGrowth =
@@ -1696,10 +1699,12 @@ void WOL_GameSetupDialog::SetSpecialControlStates() {
   pCheckListOptions->Check_Item(
       5, bSlowUnitBuildRate);  //	Ugh. Use of "Special" global.
 
-  pGaugeCount->Set_Maximum(SessionClass::CountMax[Session.Options.Bases] -
-                           SessionClass::CountMin[Session.Options.Bases]);
-  pGaugeCount->Set_Value(Session.Options.UnitCount -
-                         SessionClass::CountMin[Session.Options.Bases]);
+  pGaugeCount->Set_Maximum(
+      base::At(SessionClass::CountMax, Session.Options.Bases) -
+      base::At(SessionClass::CountMin, Session.Options.Bases));
+  pGaugeCount->Set_Value(
+      Session.Options.UnitCount -
+      base::At(SessionClass::CountMin, Session.Options.Bases));
 
   pGaugeLevel->Set_Maximum(MPLAYER_BUILD_LEVEL_MAX - 1);
   pGaugeLevel->Set_Value(BuildLevel - 1);
@@ -1905,10 +1910,11 @@ void WOL_GameSetupDialog::ScenarioDisplayMode(SCENARIO_GAMEKIND ScenKind) {
   // scenario.
   bool bFoundCurrentSelection = false;
   int iSelect = 0;  //	Only read when bFoundCurrentSelection is true.
-  for (int i = 0; i != ar_szScenarios[static_cast<int>(ScenKind)].Count();
-       i++) {
+  for (int i = 0;
+       i != base::At(ar_szScenarios, static_cast<int>(ScenKind)).Count(); i++) {
     //	Put ScenarioIndex in as extradata to list item.
-    const int iScenIndex = ar_szScenIndexes[static_cast<int>(ScenKind)][i];
+    const int iScenIndex =
+        base::At(ar_szScenIndexes, static_cast<int>(ScenKind))[i];
     if (iScenIndex == Session.Options.ScenarioIndex &&
         !bFoundCurrentSelection) {
       //	(Choose first line of what can be multiline description of
@@ -2583,7 +2589,7 @@ bool WOL_GameSetupDialog::AcceptParams(char* szParams) {
   //	Read in string.
   memcpy(Session.Options.ScenarioDescription, szRemaining, base::ToSize(iLen));
   //	Null-terminate.
-  Session.Options.ScenarioDescription[iLen] = 0;
+  base::At(Session.Options.ScenarioDescription, iLen) = 0;
   //	Resume parsing after the string.
   tokens = port::Tokenizer(szRemaining + iLen + 1, " ");
 
@@ -3204,7 +3210,7 @@ void WOL_GameSetupDialog::AcceptNewGuestPlayerInfo(char* szMsg) {
     char szPlayerName[50];
     memcpy(szPlayerName, szRemaining, base::ToSize(iLen));
     //	Null-terminate.
-    szPlayerName[iLen] = 0;
+    base::At(szPlayerName, iLen) = 0;
 
     //	Resume parsing after the name.
     tokens = port::Tokenizer(szRemaining + iLen + 1, " ");
@@ -3650,7 +3656,7 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
         //				debugprint( "%s has requested scenario
         // download.\n", szPlayerName );
         //	ScenarioRequests holds player indices, one char each.
-        Session.ScenarioRequests[Session.RequestCount++] =
+        base::At(Session.ScenarioRequests, Session.RequestCount++) =
             static_cast<char>(Session.Players.Count() - 1);
       }
     }

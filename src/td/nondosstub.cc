@@ -25,6 +25,7 @@
 #include <optional>
 
 #include "absl/base/attributes.h"
+#include "base/array.h"
 #include "base/numeric.h"
 #include "base/seek_origin.h"
 #include "sdllib/file_access.h"
@@ -123,7 +124,7 @@ void __cdecl SetPalette(unsigned char* palette, int32_t /*unused*/,
 
   if (PalettesRead) {
     memcpy(&PaletteInterpolationTable[0][0],
-           InterpolatedPalettes[PaletteCounter++], 65536);
+           base::At(InterpolatedPalettes, PaletteCounter++), 65536);
   }
 
   Set_Palette(palette);

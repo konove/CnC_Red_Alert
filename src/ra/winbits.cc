@@ -4,6 +4,7 @@
 #include <cstring>
 #include <span>
 
+#include "base/array.h"
 #include "base/types.h"
 #include "ra/defines.h"
 #include "ra/dib.h"
@@ -13,12 +14,12 @@
 
 LockedWindow::LockedWindow(WindowNumberType window)
     : view_(LogicPage->Get_Graphic_Buffer(),
-            WindowList[static_cast<int>(window)][kWindowX] +
+            base::At(WindowList[static_cast<int>(window)], kWindowX) +
                 LogicPage->Get_XPos(),
-            WindowList[static_cast<int>(window)][kWindowY] +
+            base::At(WindowList[static_cast<int>(window)], kWindowY) +
                 LogicPage->Get_YPos(),
-            WindowList[static_cast<int>(window)][kWindowWidth],
-            WindowList[static_cast<int>(window)][kWindowHeight]),
+            base::At(WindowList[static_cast<int>(window)], kWindowWidth),
+            base::At(WindowList[static_cast<int>(window)], kWindowHeight)),
 
       locked_(view_.Lock()) {
   if (locked_) {

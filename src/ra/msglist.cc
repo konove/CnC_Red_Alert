@@ -63,6 +63,7 @@
 #include <utility>
 
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "base/numeric.h"
 #include "port/safe_string.h"
 #include "ra/conquer.h"
@@ -352,8 +353,8 @@ TextLabelClass* MessageListClass::Add_Message(const char* name, int id,
       mess_start = 0;
     }
     for (int j = 1; std::cmp_less(j, strlen(txt)); j++) {
-      strncpy(&temp[mess_start], txt, base::ToSize(j));
-      temp[mess_start + j] = 0;
+      strncpy(base::Suffix(temp, mess_start).data(), txt, base::ToSize(j));
+      base::At(temp, mess_start + j) = 0;
       wid = String_Pixel_Width(temp);
       if (wid >= Width - 8) {
         print_this_pass = mess_start + j - 1;
@@ -366,8 +367,8 @@ TextLabelClass* MessageListClass::Add_Message(const char* name, int id,
     // We will re-enter at the end to print the rest.
     //------------------------------------------------------------------------
     if (print_this_pass) {
-      save = message[print_this_pass];
-      message[print_this_pass] = 0;
+      save = base::At(message, print_this_pass);
+      base::At(message, print_this_pass) = 0;
     }
   }
 
@@ -386,8 +387,8 @@ TextLabelClass* MessageListClass::Add_Message(const char* name, int id,
     //.....................................................................
     MessageList = dynamic_cast<TextLabelClass*>(txtlabel->Remove());
     for (i = 0; i < MAX_NUM_MESSAGES; i++) {
-      if (txtlabel->Text == MessageBuffers[i]) {
-        BufferAvail[i] = 1;
+      if (txtlabel->Text == base::At(MessageBuffers, i)) {
+        base::At(BufferAvail, i) = 1;
       }
     }
     delete txtlabel;
@@ -402,10 +403,10 @@ TextLabelClass* MessageListClass::Add_Message(const char* name, int id,
   //------------------------------------------------------------------------
   int found = 0;
   for (i = 0; i < MAX_NUM_MESSAGES; i++) {
-    if (BufferAvail[i]) {
-      BufferAvail[i] = 0;
-      memset(MessageBuffers[i], 0, MAX_MESSAGE_LENGTH + 30);
-      port::SafeCopy(MessageBuffers[i], message);
+    if (base::At(BufferAvail, i)) {
+      base::At(BufferAvail, i) = 0;
+      memset(base::At(MessageBuffers, i), 0, MAX_MESSAGE_LENGTH + 30);
+      port::SafeCopy(base::At(MessageBuffers, i), message);
       found = 1;
       break;
     }
@@ -416,7 +417,7 @@ TextLabelClass* MessageListClass::Add_Message(const char* name, int id,
 
   // The label keeps a pointer to its text, so it is built on the message
   // buffer, never on the local copy.
-  txtlabel = new TextLabelClass(MessageBuffers[i], MessageX, MessageY,
+  txtlabel = new TextLabelClass(base::At(MessageBuffers, i), MessageX, MessageY,
                                 &ColorRemaps[color], style);
   if (timeout == -1) {
     txtlabel->UserData1 = 0;
@@ -446,8 +447,9 @@ TextLabelClass* MessageListClass::Add_Message(const char* name, int id,
   // add a new message with the rest of the string.
   //------------------------------------------------------------------------
   if (save) {
-    message[print_this_pass] = save;
-    Add_Message(name, id, &message[print_this_pass], color, style, timeout);
+    base::At(message, print_this_pass) = save;
+    Add_Message(name, id, base::Suffix(message, print_this_pass).data(), color,
+                style, timeout);
   }
 
   return txtlabel;
@@ -730,8 +732,8 @@ TextLabelClass* MessageListClass::Add_Edit(PlayerColorType color,
     TextLabelClass* txtlabel = MessageList;
     MessageList = dynamic_cast<TextLabelClass*>(txtlabel->Remove());
     for (int i = 0; i < MAX_NUM_MESSAGES; i++) {
-      if (txtlabel->Text == MessageBuffers[i]) {
-        BufferAvail[i] = 1;
+      if (txtlabel->Text == base::At(MessageBuffers, i)) {
+        base::At(BufferAvail, i) = 1;
       }
     }
     delete txtlabel;
@@ -901,8 +903,8 @@ int MessageListClass::Manage() {
       auto* next = dynamic_cast<TextLabelClass*>(txtlabel->Get_Next());
       MessageList = dynamic_cast<TextLabelClass*>(txtlabel->Remove());
       for (int i = 0; i < MAX_NUM_MESSAGES; i++) {
-        if (txtlabel->Text == MessageBuffers[i]) {
-          BufferAvail[i] = 1;
+        if (txtlabel->Text == base::At(MessageBuffers, i)) {
+          base::At(BufferAvail, i) = 1;
         }
       }
       delete txtlabel;
@@ -1014,9 +1016,9 @@ int MessageListClass::Input(KeyNumType& input) {
           break;
         }
         if (EditCurPos - EditInitPos < MaxChars - 1) {
-          EditBuf[EditCurPos] = ' ';
+          base::At(EditBuf, EditCurPos) = ' ';
           EditCurPos++;
-          EditBuf[EditCurPos] = 0;
+          base::At(EditBuf, EditCurPos) = 0;
         }
         Remove_Edit();
         retcode = 3;
@@ -1029,7 +1031,7 @@ int MessageListClass::Input(KeyNumType& input) {
       case KA_BACKSPACE & 0xff:
         if (EditCurPos > EditInitPos) {
           EditCurPos--;
-          EditBuf[EditCurPos] = 0;
+          base::At(EditBuf, EditCurPos) = 0;
           retcode = 2;
         }
         input = KN_NONE;
@@ -1046,9 +1048,9 @@ int MessageListClass::Input(KeyNumType& input) {
         bool overflowed = false;
         if (ascii >= ' ' && ascii <= 127) {
           if (EditCurPos - EditInitPos < MaxChars - 1) {
-            EditBuf[EditCurPos] = static_cast<char>(ascii);
+            base::At(EditBuf, EditCurPos) = static_cast<char>(ascii);
             EditCurPos++;
-            EditBuf[EditCurPos] = 0;
+            base::At(EditBuf, EditCurPos) = 0;
             retcode = 1;
 
             /*
@@ -1061,7 +1063,7 @@ int MessageListClass::Input(KeyNumType& input) {
             if (width >= Width - 10) {
               overflowed = true;
               EditCurPos--;
-              EditBuf[EditCurPos] = 0;
+              base::At(EditBuf, EditCurPos) = 0;
               retcode = 0;
             }
           } else {
@@ -1079,9 +1081,9 @@ int MessageListClass::Input(KeyNumType& input) {
                 Trim_Message(OverflowBuf, EditBuf + EditInitPos, OverflowStart,
                              OverflowEnd, 1);
             EditCurPos -= numchars;
-            EditBuf[EditCurPos] = static_cast<char>(ascii);
+            base::At(EditBuf, EditCurPos) = static_cast<char>(ascii);
             EditCurPos++;
-            EditBuf[EditCurPos] = 0;
+            base::At(EditBuf, EditCurPos) = 0;
             retcode = 4;
           }
         }

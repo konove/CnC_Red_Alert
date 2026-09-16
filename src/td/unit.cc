@@ -116,6 +116,7 @@
 #include <iterator>
 
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "base/enum_array.h"
 #include "port/tokenizer.h"
 #include "sdllib/misc.h"
@@ -229,8 +230,8 @@ static void Recoil_Adjust(DirType dir, int& x, int& y) {
                    {1, 1},   {0, 1},   {0, 1}};
 
   const int index = Facing_To_32(dir);
-  x += _adjust[index].X;
-  y += _adjust[index].Y;
+  x += base::At(_adjust, index).X;
+  y += base::At(_adjust, index).Y;
 }
 
 /***********************************************************************************************
@@ -264,8 +265,8 @@ static void Turret_Adjust(DirType dir, int& x, int& y) {
                    {2, 0},   {2, 1},   {1, 2}};
 
   const int index = Facing_To_32(dir);
-  x += _adjust[index].X;
-  y += _adjust[index].Y;
+  x += base::At(_adjust, index).X;
+  y += base::At(_adjust, index).Y;
 }
 
 /***********************************************************************************************

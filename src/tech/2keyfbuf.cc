@@ -7,6 +7,7 @@
 #include <cstring>
 
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "base/numeric.h"
 #include "base/types.h"
 #include "port/bytes_of.h"
@@ -114,7 +115,7 @@ static void Do_Old_Blit(int line_count, int pixel_count, uint8_t* src_offset,
             // pick up a color offset a pseudo-random amount from the current
             // viewport address
             // NOLINTNEXTLINE(bugprone-signed-bitwise)
-            pixel = dst_offset[BFPredTable[BFPredOffset >> 1]];
+            pixel = dst_offset[base::At(BFPredTable, BFPredOffset >> 1)];
             // NOLINTNEXTLINE(bugprone-signed-bitwise)
             BFPredOffset = (BFPredOffset + 2) & PRED_MASK;
           }
@@ -257,9 +258,9 @@ void Buffer_Frame_To_Page(int x, int y, const int w, const int h, void* src,
     BFPartialPred = 256;  // init partial to off
 
     for (int off = 0; off < 8; off++) {
-      BFPredNegTable[off + 8] =
-          static_cast<int16_t>(BFPredNegTable[off] + dest.Get_Width() +
-                               dest.Get_XAdd() + dest.Get_Pitch());
+      base::At(BFPredNegTable, off + 8) = static_cast<int16_t>(
+          base::At(BFPredNegTable, off) + dest.Get_Width() + dest.Get_XAdd() +
+          dest.Get_Pitch());
     }
   }
 

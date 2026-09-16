@@ -43,6 +43,7 @@
 #include <string>
 #include <vector>
 
+#include "base/array.h"
 #include "base/numeric.h"
 #include "port/safe_string.h"
 #include "sdllib/drawbuff.h"
@@ -67,7 +68,6 @@
 #include "td/text.h"
 #include "td/textbtn.h"
 #include "tech/game_file.h"
-
 
 #ifdef NEWMENU
 
@@ -345,8 +345,8 @@ bool Bonus_Dialog() {
     file.SetName(buffer);
     if (file.IsAvailable()) {
       list.Add_Scenario(
-          index,
-          std::format("GDI: {}", Text_String(gdi_scen_names[index - 60])));
+          index, std::format("GDI: {}", Text_String(base::At(gdi_scen_names,
+                                                             index - 60))));
     }
   }
 
@@ -360,8 +360,8 @@ bool Bonus_Dialog() {
     file.SetName(buffer);
     if (file.IsAvailable()) {
       list.Add_Scenario(
-          index,
-          std::format("NOD: {}", Text_String(nod_scen_names[index - 60])));
+          index, std::format("NOD: {}", Text_String(base::At(nod_scen_names,
+                                                             index - 60))));
     }
   }
 

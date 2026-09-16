@@ -40,6 +40,7 @@
 
 #include <cstdint>
 
+#include "base/array.h"
 #include "sdllib/misc.h"
 #include "td/jshell.h"
 #include "td/randomstate.h"
@@ -115,7 +116,7 @@ int Sim_Random() {
   };
 
   SimRandIndex = (SimRandIndex + 1) % 256;
-  return _randvals[SimRandIndex];
+  return base::At(_randvals, SimRandIndex);
 }
 
 /***************************************************************************

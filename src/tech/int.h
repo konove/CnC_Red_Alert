@@ -46,6 +46,7 @@
 #include <iterator>
 
 #include "absl/base/attributes.h"
+#include "base/array.h"
 #include "tech/byte_source.h"
 #include "tech/mp.h"
 
@@ -377,18 +378,18 @@ class Int {
   struct RemainderTable {
     explicit RemainderTable(const Int<PRECISION>& p) {
       for (unsigned i = 0; i < std::ssize(primeTable); i++) {
-        table[i] = p % primeTable[i];
+        base::At(table, i) = p % base::At(primeTable, i);
       }
     }
     [[nodiscard]] bool HasZero() const { return HasZeroEntry; }
     void Increment(uint16_t increment = 1) {
       HasZeroEntry = false;
       for (unsigned int i = 0; i < std::ssize(primeTable); i++) {
-        table[i] += increment;
-        while (table[i] >= primeTable[i]) {
-          table[i] -= primeTable[i];
+        base::At(table, i) += increment;
+        while (base::At(table, i) >= base::At(primeTable, i)) {
+          base::At(table, i) -= base::At(primeTable, i);
         }
-        HasZeroEntry = HasZeroEntry || table[i] == 0;
+        HasZeroEntry = HasZeroEntry || base::At(table, i) == 0;
       }
     }
     void Increment(const RemainderTable& rtQ) {

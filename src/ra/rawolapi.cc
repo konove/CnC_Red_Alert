@@ -33,6 +33,7 @@
 
 #include "absl/log/check.h"
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "port/tokenizer.h"
@@ -1849,22 +1850,22 @@ STDMETHODIMP RANetUtilEventSink::OnPing(
     if (ip == pOwner->TournamentOpponentIP) {
       //	This is the result of the opponent ping.
       if (time != -1) {
-        pOwner->DisconnectPingResult_Opponent[pOwner->iDisconnectPingCurrent] =
-            PING_GOOD;
+        base::At(pOwner->DisconnectPingResult_Opponent,
+                 pOwner->iDisconnectPingCurrent) = PING_GOOD;
       } else {
-        pOwner->DisconnectPingResult_Opponent[pOwner->iDisconnectPingCurrent] =
-            PING_BAD;
+        base::At(pOwner->DisconnectPingResult_Opponent,
+                 pOwner->iDisconnectPingCurrent) = PING_BAD;
       }
       //			debugprint( "Set ping #%i for Opponent\n",
       // pOwner->iDisconnectPingCurrent );
     } else {
       //	This is the result of the game server ping.
       if (time != -1) {
-        pOwner->DisconnectPingResult_Server[pOwner->iDisconnectPingCurrent] =
-            PING_GOOD;
+        base::At(pOwner->DisconnectPingResult_Server,
+                 pOwner->iDisconnectPingCurrent) = PING_GOOD;
       } else {
-        pOwner->DisconnectPingResult_Server[pOwner->iDisconnectPingCurrent] =
-            PING_BAD;
+        base::At(pOwner->DisconnectPingResult_Server,
+                 pOwner->iDisconnectPingCurrent) = PING_BAD;
       }
       //			debugprint( "Set ping #%i for Server\n",
       // pOwner->iDisconnectPingCurrent );
@@ -2084,7 +2085,7 @@ void InterpretLobbyNumber(char* szLobbyNameToSet, int iLobby) {
       "The Hive",     "North by Northwest", "Decatur High", "Damnation Alley",
   };
   if (iLobby >= 0 && std::cmp_less(iLobby, std::size(kLobbyNames))) {
-    port::SafeCopy(szLobbyNameToSet, kLobbyNames[iLobby],
+    port::SafeCopy(szLobbyNameToSet, base::At(kLobbyNames, iLobby),
                    REASONABLELOBBYINTERPRETEDNAMELEN);
   } else {
     absl::SNPrintF(szLobbyNameToSet, REASONABLELOBBYINTERPRETEDNAMELEN,

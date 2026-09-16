@@ -88,6 +88,7 @@
 #include <utility>
 
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "base/numeric.h"
 #include "port/safe_string.h"
 #include "port/unaligned.h"
@@ -649,10 +650,10 @@ static void Queue_AI_Multiplayer() {
     //	Initialize static locals
     //.....................................................................
     for (int i = 0; i < MAX_PLAYERS - 1; i++) {
-      their_frame[i] = -1;
-      their_sent[i] = 0;
-      their_recv[i] = 0;
-      TheirProcessTime[i] = -1;
+      base::At(their_frame, i) = -1;
+      base::At(their_sent, i) = 0;
+      base::At(their_recv, i) = 0;
+      base::At(TheirProcessTime, i) = -1;
     }
     my_sent = 0;
     for (unsigned int& i : CRC) {
@@ -742,7 +743,7 @@ static void Queue_AI_Multiplayer() {
   //	Compute the Game's CRC
   //------------------------------------------------------------------------
   Compute_Game_CRC();
-  CRC[Frame % 32] = GameCRC;
+  base::At(CRC, Frame % 32) = GameCRC;
   // unsigned long save_crc = GameCRC;
   // Print_CRCs((EventClass *)NULL);
   // GameCRC = save_crc;
@@ -1237,10 +1238,10 @@ static void Generate_Real_Timing_Event(ConnManClass* net, int my_sent) {
     //
     // If we haven't heard from all systems yet, bail out.
     //
-    if (TheirProcessTime[i] == -1) {
+    if (base::At(TheirProcessTime, i) == -1) {
       return;
     }
-    highest_ticks = std::max(TheirProcessTime[i], highest_ticks);
+    highest_ticks = std::max(base::At(TheirProcessTime, i), highest_ticks);
   }
 
   //
@@ -2998,7 +2999,7 @@ static int Execute_DoList(int /*unused*/, HousesType /*unused*/,
   //	array is stored in the same order on all systems.
   //------------------------------------------------------------------------
   for (int i = 0; i < MPlayerCount; i++) {
-    HousesType house = MPlayerHouses[i];
+    HousesType house = base::At(MPlayerHouses, i);
     HouseClass* housep = HouseClass::As_Pointer(house);
 
     //.....................................................................
@@ -3032,7 +3033,7 @@ static int Execute_DoList(int /*unused*/, HousesType /*unused*/,
       //	If this event was from the currently-executing player ID, and
       // it's 	time to execute it, execute it.
       //..................................................................
-      if (DoList[j].MPlayerID == MPlayerID[i] &&
+      if (DoList[j].MPlayerID == base::At(MPlayerID, i) &&
           std::cmp_greater_equal(Frame, DoList[j].Frame) &&
           !DoList[j].IsExecuted) {
         //...............................................................
@@ -3059,8 +3060,8 @@ static int Execute_DoList(int /*unused*/, HousesType /*unused*/,
             ** Flag that this house lost because it quit. ST - 6/5/96 0:29AM
             */
             for (wibble = 0; wibble < MPlayerCount; wibble++) {
-              if (MPlayerID[wibble] == DoList[j].MPlayerID) {
-                house = MPlayerHouses[wibble];
+              if (base::At(MPlayerID, wibble) == DoList[j].MPlayerID) {
+                house = base::At(MPlayerHouses, wibble);
                 housep = HouseClass::As_Pointer(house);
                 housep->IGaveUp = true;
                 break;
@@ -3123,7 +3124,7 @@ static int Execute_DoList(int /*unused*/, HousesType /*unused*/,
           if (std::cmp_equal(DoList[j].Frame, Frame) &&
               DoList[j].Data.FrameInfo.Delay < 32) {
             index = (DoList[j].Frame - DoList[j].Data.FrameInfo.Delay) % 32;
-            if (CRC[index] != DoList[j].Data.FrameInfo.CRC) {
+            if (base::At(CRC, index) != DoList[j].Data.FrameInfo.CRC) {
               Print_CRCs(&DoList[j]);
               if (CCMessageBox().Process(TXT_OUT_OF_SYNC, TXT_CONTINUE,
                                          TXT_STOP) == 0) {
@@ -3335,7 +3336,7 @@ static void Queue_Playback() {
   //	Compute the Game's CRC
   //------------------------------------------------------------------------
   Compute_Game_CRC();
-  CRC[Frame % 32] = GameCRC;
+  base::At(CRC, Frame % 32) = GameCRC;
 
   //------------------------------------------------------------------------
   //	Don't read anything the first time through (since the Queue_AI_Network
@@ -3538,49 +3539,49 @@ void Print_CRCs(EventClass* /*ev*/) {
   }
 
   for (int i = 0; i < 32; i++) {
-    absl::FPrintF(fp, "CRC[%d]=%x\n", i, CRC[i]);
+    absl::FPrintF(fp, "CRC[%d]=%x\n", i, base::At(CRC, i));
   }
 
   HouseClass* housep = HouseClass::As_Pointer(HOUSE_MULTI1);
   if (housep) {
     color = static_cast<int>(housep->RemapColor);
     absl::FPrintF(fp, "Multi1: IsHuman:%d  Color:%s\n", housep->IsHuman,
-                  ColorNames[color]);
+                  base::At(ColorNames, color));
   }
 
   housep = HouseClass::As_Pointer(HOUSE_MULTI2);
   if (housep) {
     color = static_cast<int>(housep->RemapColor);
     absl::FPrintF(fp, "Multi2: IsHuman:%d  Color:%s\n", housep->IsHuman,
-                  ColorNames[color]);
+                  base::At(ColorNames, color));
   }
 
   housep = HouseClass::As_Pointer(HOUSE_MULTI3);
   if (housep) {
     color = static_cast<int>(housep->RemapColor);
     absl::FPrintF(fp, "Multi3: IsHuman:%d  Color:%s\n", housep->IsHuman,
-                  ColorNames[color]);
+                  base::At(ColorNames, color));
   }
 
   housep = HouseClass::As_Pointer(HOUSE_MULTI4);
   if (housep) {
     color = static_cast<int>(housep->RemapColor);
     absl::FPrintF(fp, "Multi4: IsHuman:%d  Color:%s\n", housep->IsHuman,
-                  ColorNames[color]);
+                  base::At(ColorNames, color));
   }
 
   housep = HouseClass::As_Pointer(HOUSE_MULTI5);
   if (housep) {
     color = static_cast<int>(housep->RemapColor);
     absl::FPrintF(fp, "Multi5: IsHuman:%d  Color:%s\n", housep->IsHuman,
-                  ColorNames[color]);
+                  base::At(ColorNames, color));
   }
 
   housep = HouseClass::As_Pointer(HOUSE_MULTI6);
   if (housep) {
     color = static_cast<int>(housep->RemapColor);
     absl::FPrintF(fp, "Multi6: IsHuman:%d  Color:%s\n", housep->IsHuman,
-                  ColorNames[color]);
+                  base::At(ColorNames, color));
   }
 
   //------------------------------------------------------------------------
@@ -4115,8 +4116,8 @@ static void Update_Queue_Mono(ConnManClass* net, int flow_index) {
   if (NetMonoMode == 1) {
     if (flow_index >= 0 && flow_index < 20) {
       Mono_Set_Cursor(35, flow_index);
-      flowcount[flow_index]++;
-      Mono_Printf("%d", flowcount[flow_index]);
+      base::At(flowcount, flow_index)++;
+      Mono_Printf("%d", base::At(flowcount, flow_index));
     }
   }
   //------------------------------------------------------------------------
@@ -4227,8 +4228,8 @@ void Dump_Packet_Too_Late_Stuff(const EventClass* event) {
   absl::FPrintF(fp, "MPlayerID:  %04x\n", event->MPlayerID);
 
   for (int i = 0; i < MPlayerCount; i++) {
-    if (event->MPlayerID == MPlayerID[i]) {
-      absl::FPrintF(fp, "Player's Name: %s", MPlayerNames[i]);
+    if (event->MPlayerID == base::At(MPlayerID, i)) {
+      absl::FPrintF(fp, "Player's Name: %s", base::At(MPlayerNames, i));
     }
   }
 

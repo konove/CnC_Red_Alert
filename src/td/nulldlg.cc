@@ -60,6 +60,7 @@
 #include <utility>
 
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "base/numeric.h"
 #include "port/ex_string.h"
 #include "port/random_seed.h"
@@ -820,7 +821,7 @@ void Destroy_Null_Connection(int id, int error) {
 
   int idx = -1;
   for (int i = 0; i < MPlayerCount; i++) {
-    if (MPlayerID[i] == static_cast<unsigned char>(id)) {
+    if (base::At(MPlayerID, i) == static_cast<unsigned char>(id)) {
       idx = i;
       break;
     }
@@ -836,10 +837,10 @@ void Destroy_Null_Connection(int id, int error) {
   txt[0] = '\0';
   if (error == 1) {
     Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_CONNECTION_LOST),
-                        MPlayerNames[idx]);
+                        base::At(MPlayerNames, idx));
   } else if (error == 0) {
     Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_LEFT_GAME),
-                        MPlayerNames[idx]);
+                        base::At(MPlayerNames, idx));
   } else if (error == -1) {
     NullModem.Delete_Connection();
   }
@@ -854,11 +855,11 @@ void Destroy_Null_Connection(int id, int error) {
   }
 
   for (int i = 0; i < MPlayerCount; i++) {
-    if (MPlayerID[i] == static_cast<unsigned char>(id)) {
+    if (base::At(MPlayerID, i) == static_cast<unsigned char>(id)) {
       /*..................................................................
       Turn the player's house over to the computer's AI
       ..................................................................*/
-      const HousesType house = MPlayerHouses[i];
+      const HousesType house = base::At(MPlayerHouses, i);
       HouseClass* housep = HouseClass::As_Pointer(house);
       housep->IsHuman = false;
 
@@ -866,10 +867,11 @@ void Destroy_Null_Connection(int id, int error) {
       Move arrays back by one
       ..................................................................*/
       for (int j = i; j < MPlayerCount - 1; j++) {
-        MPlayerID[j] = MPlayerID[j + 1];
-        MPlayerHouses[j] = MPlayerHouses[j + 1];
-        port::SafeCopy(MPlayerNames[j], MPlayerNames[j + 1]);
-        TheirProcessTime[j] = TheirProcessTime[j + 1];
+        base::At(MPlayerID, j) = base::At(MPlayerID, j + 1);
+        base::At(MPlayerHouses, j) = base::At(MPlayerHouses, j + 1);
+        port::SafeCopy(base::At(MPlayerNames, j),
+                       base::At(MPlayerNames, j + 1));
+        base::At(TheirProcessTime, j) = base::At(TheirProcessTime, j + 1);
       }
     }
   }
@@ -1065,7 +1067,7 @@ GameType Select_Serial_Dialog() {
   buttons[2] = &nullmodembtn;
   buttons[3] = &settingsbtn;
   buttons[4] = &cancelbtn;
-  buttons[curbutton]->Turn_On();
+  base::At(buttons, curbutton)->Turn_On();
 
   Keyboard::Clear();
 
@@ -1163,25 +1165,25 @@ GameType Select_Serial_Dialog() {
         break;
 
       case KN_UP:
-        buttons[curbutton]->Turn_Off();
-        buttons[curbutton]->Flag_To_Redraw();
+        base::At(buttons, curbutton)->Turn_Off();
+        base::At(buttons, curbutton)->Flag_To_Redraw();
         curbutton--;
         if (curbutton < 0) {
           curbutton = kNumOfButtons - 1;
         }
-        buttons[curbutton]->Turn_On();
-        buttons[curbutton]->Flag_To_Redraw();
+        base::At(buttons, curbutton)->Turn_On();
+        base::At(buttons, curbutton)->Flag_To_Redraw();
         break;
 
       case KN_DOWN:
-        buttons[curbutton]->Turn_Off();
-        buttons[curbutton]->Flag_To_Redraw();
+        base::At(buttons, curbutton)->Turn_Off();
+        base::At(buttons, curbutton)->Flag_To_Redraw();
         curbutton++;
         if (curbutton > kNumOfButtons - 1) {
           curbutton = 0;
         }
-        buttons[curbutton]->Turn_On();
-        buttons[curbutton]->Flag_To_Redraw();
+        base::At(buttons, curbutton)->Turn_On();
+        base::At(buttons, curbutton)->Flag_To_Redraw();
         break;
 
       case KN_RETURN:
@@ -1197,12 +1199,12 @@ GameType Select_Serial_Dialog() {
       //
       // to make sure the selection is correct in case they used the mouse
       //
-      buttons[curbutton]->Turn_Off();
-      buttons[curbutton]->Flag_To_Redraw();
+      base::At(buttons, curbutton)->Turn_Off();
+      base::At(buttons, curbutton)->Flag_To_Redraw();
       curbutton = selection - kButtonDial;
-      buttons[curbutton]->Turn_On();
-      buttons[curbutton]->IsPressed = true;
-      buttons[curbutton]->Draw_Me(true);
+      base::At(buttons, curbutton)->Turn_On();
+      base::At(buttons, curbutton)->IsPressed = true;
+      base::At(buttons, curbutton)->Draw_Me(true);
 
       switch (selection) {
         case kButtonDial:
@@ -1228,8 +1230,9 @@ GameType Select_Serial_Dialog() {
               if (settings->CallWaitStringIndex == kCallWaitCustom) {
                 port::SafeCopy(DialString, settings->CallWaitString);
               } else {
-                port::SafeCopy(DialString,
-                               CallWaitStrings[settings->CallWaitStringIndex]);
+                port::SafeCopy(
+                    DialString,
+                    base::At(CallWaitStrings, settings->CallWaitStringIndex));
               }
               port::SafeAppend(DialString, PhoneBook[CurPhoneIdx]->Number);
 
@@ -1250,8 +1253,8 @@ GameType Select_Serial_Dialog() {
           }
 
           if (process) {
-            buttons[curbutton]->IsPressed = false;
-            buttons[curbutton]->Flag_To_Redraw();
+            base::At(buttons, curbutton)->IsPressed = false;
+            base::At(buttons, curbutton)->Flag_To_Redraw();
           }
 
           display = REDRAW_ALL;
@@ -1288,8 +1291,8 @@ GameType Select_Serial_Dialog() {
           }
 
           if (process) {
-            buttons[curbutton]->IsPressed = false;
-            buttons[curbutton]->Flag_To_Redraw();
+            base::At(buttons, curbutton)->IsPressed = false;
+            base::At(buttons, curbutton)->Flag_To_Redraw();
           }
 
           display = REDRAW_ALL;
@@ -1342,8 +1345,8 @@ GameType Select_Serial_Dialog() {
           }
 
           if (process) {
-            buttons[curbutton]->IsPressed = false;
-            buttons[curbutton]->Flag_To_Redraw();
+            base::At(buttons, curbutton)->IsPressed = false;
+            base::At(buttons, curbutton)->Flag_To_Redraw();
           }
 
           display = REDRAW_ALL;
@@ -1362,8 +1365,8 @@ GameType Select_Serial_Dialog() {
             }
           }
 
-          buttons[curbutton]->IsPressed = false;
-          buttons[curbutton]->Flag_To_Redraw();
+          base::At(buttons, curbutton)->IsPressed = false;
+          base::At(buttons, curbutton)->Flag_To_Redraw();
           display = REDRAW_ALL;
           break;
 

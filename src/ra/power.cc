@@ -50,6 +50,7 @@
 
 #include <cstdint>
 
+#include "base/array.h"
 #include "ra/bench_util.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"
@@ -196,11 +197,11 @@ void PowerClass::Draw_It(bool complete) {
         int bottom = (kPowerY + kPowerHeight - 1) * 2;
         int power_height =
             PowerHeight == DesiredPowerHeight
-                ? PowerHeight + (_modtable[PowerBounce] * PowerDir)
+                ? PowerHeight + (base::At(_modtable, PowerBounce) * PowerDir)
                 : PowerHeight;
         int drain_height =
             DrainHeight == DesiredDrainHeight
-                ? DrainHeight + (_modtable[DrainBounce] * DrainDir)
+                ? DrainHeight + (base::At(_modtable, DrainBounce) * DrainDir)
                 : DrainHeight;
         power_height = Bound(power_height, 0, kPowerHeight - 2);
         drain_height = Bound(drain_height, 0, kPowerHeight - 2);

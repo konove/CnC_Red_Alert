@@ -48,6 +48,7 @@
 
 #include <cassert>
 
+#include "base/array.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/safe_string.h"
 #include "ra/aircraft.h"
@@ -201,7 +202,7 @@ static FootClass* Create_Group(TeamTypeClass* teamtype) {
 
   bool hasunload = false;
   for (int tm = 0; tm < teamtype->MissionCount; tm++) {
-    if (teamtype->MissionList[tm].Mission == TMISSION_UNLOAD) {
+    if (base::At(teamtype->MissionList, tm).Mission == TMISSION_UNLOAD) {
       hasunload = true;
       break;
     }
@@ -214,9 +215,10 @@ static FootClass* Create_Group(TeamTypeClass* teamtype) {
   FootClass* transport = nullptr;
   FootClass* object = nullptr;
   for (int index = 0; index < teamtype->ClassCount; index++) {
-    const TechnoTypeClass* tclass = teamtype->Members[index].Class;
+    const TechnoTypeClass* tclass = base::At(teamtype->Members, index).Class;
 
-    for (int sub = 0; sub < teamtype->Members[index].Quantity; sub++) {
+    for (int sub = 0; sub < base::At(teamtype->Members, index).Quantity;
+         sub++) {
       ScenarioInit++;
       auto* temp = dynamic_cast<FootClass*>(
           tclass->Create_One_Of(HouseClass::As_Pointer(teamtype->House)));
@@ -436,7 +438,7 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
     **	Search for an object that these infantry can pop out of.
     */
     TechnoClass* candidate =
-        Who_Can_Pop_Out_Of(Scen.Waypoint[teamtype->Origin]);
+        Who_Can_Pop_Out_Of(base::At(Scen.Waypoint, teamtype->Origin));
 
     if (candidate != nullptr) {
       return Pop_Group_Out_Of_Object(object, candidate);
@@ -468,7 +470,7 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
   const auto* unit = dynamic_cast<UnitClass*>(object);
   if (teamtype->Origin != -1 && unit != nullptr &&
       (*unit == UNIT_ANT1 || *unit == UNIT_ANT2 || *unit == UNIT_ANT3)) {
-    const CELL newcell = Scen.Waypoint[teamtype->Origin];
+    const CELL newcell = base::At(Scen.Waypoint, teamtype->Origin);
     if ((newcell != -1) && (Map[newcell].TType == TEMPLATE_HILL01)) {
       cell = newcell;
     }

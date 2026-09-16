@@ -57,6 +57,7 @@
 #include <cstdint>
 #include <filesystem>
 
+#include "base/array.h"
 #include "externs.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
@@ -373,8 +374,8 @@ void SmudgeTypeClass::Display(int x, int y, WindowNumberType window,
                               HousesType /*unused*/) const {
   const void* ptr = Get_Image_Data();
 
-  x += WindowList[static_cast<int>(window)][kWindowX];
-  y += WindowList[static_cast<int>(window)][kWindowY];
+  x += base::At(WindowList[static_cast<int>(window)], kWindowX);
+  y += base::At(WindowList[static_cast<int>(window)], kWindowY);
 
   IsTheaterShape = true;  // Smudges are theater specific
   if (ptr != nullptr) {

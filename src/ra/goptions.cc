@@ -43,6 +43,7 @@
 #include <algorithm>
 #include <iterator>
 
+#include "base/array.h"
 #include "ra/conquer.h"
 #include "ra/control.h"
 #include "ra/defines.h"
@@ -140,10 +141,10 @@ void GameOptionsClass::Process() {
   int maxwidth = 0;
 
   for (int index = 0; index < num_buttons; index++) {
-    int text = _constants[index].Text;
-    buttonsel[index] = nullptr;
+    int text = base::At(_constants, index).Text;
+    base::At(buttonsel, index) = nullptr;
 
-    if (Session.Type != GAME_NORMAL && !_constants[index].Multiplay) {
+    if (Session.Type != GAME_NORMAL && !base::At(_constants, index).Multiplay) {
       continue;
     }
 
@@ -173,7 +174,7 @@ void GameOptionsClass::Process() {
     }
 
     TextButtonClass* g = nullptr;
-    if (_constants[index].ID == kButtonDraw) {
+    if (base::At(_constants, index).ID == kButtonDraw) {
       if (Session.Type != GAME_NORMAL && Session.Type != GAME_SKIRMISH &&
           Session.Players.Count() == 2) {
         if (Scen.bLocalProposesDraw) {
@@ -196,8 +197,9 @@ void GameOptionsClass::Process() {
         continue;
       }
     } else {
-      g = new TextButtonClass(static_cast<unsigned>(_constants[index].ID), text,
-                              kTpfButton, 0, y);
+      g = new TextButtonClass(
+          static_cast<unsigned>(base::At(_constants, index).ID), text,
+          kTpfButton, 0, y);
     }
 
     maxwidth = std::max(g->Width, maxwidth);
@@ -207,18 +209,18 @@ void GameOptionsClass::Process() {
       g->Add_Tail(*buttons);
     }
 
-    buttonsel[index] = g;
+    base::At(buttonsel, index) = g;
   }
 
   /*
   ** BG: In skirmish mode, there is no 'restate' button, so we have to
   **     backtrack through the list to find the last valid button.
   */
-  while (!buttonsel[curbutton - 1]) {
+  while (!base::At(buttonsel, curbutton - 1)) {
     curbutton--;
   }
 
-  buttonsel[curbutton - 1]->Turn_On();
+  base::At(buttonsel, curbutton - 1)->Turn_On();
 
   /*
   **	Force all button lengths to match the maximum length of the widest
@@ -385,36 +387,36 @@ void GameOptionsClass::Process() {
         break;
 
       case KN_UP:
-        buttonsel[curbutton - 1]->Turn_Off();
-        buttonsel[curbutton - 1]->Flag_To_Redraw();
+        base::At(buttonsel, curbutton - 1)->Turn_Off();
+        base::At(buttonsel, curbutton - 1)->Flag_To_Redraw();
         do {
           curbutton--;
           if (curbutton < 1) {
             curbutton = num_buttons;
           }
-        } while (!buttonsel[curbutton - 1]);
+        } while (!base::At(buttonsel, curbutton - 1));
 
-        buttonsel[curbutton - 1]->Turn_On();
-        buttonsel[curbutton - 1]->Flag_To_Redraw();
+        base::At(buttonsel, curbutton - 1)->Turn_On();
+        base::At(buttonsel, curbutton - 1)->Flag_To_Redraw();
         break;
 
       case KN_DOWN:
-        buttonsel[curbutton - 1]->Turn_Off();
-        buttonsel[curbutton - 1]->Flag_To_Redraw();
+        base::At(buttonsel, curbutton - 1)->Turn_Off();
+        base::At(buttonsel, curbutton - 1)->Flag_To_Redraw();
         do {
           curbutton++;
           if (curbutton > num_buttons) {
             curbutton = 1;
           }
-        } while (!buttonsel[curbutton - 1]);
+        } while (!base::At(buttonsel, curbutton - 1));
 
-        buttonsel[curbutton - 1]->Turn_On();
-        buttonsel[curbutton - 1]->Flag_To_Redraw();
+        base::At(buttonsel, curbutton - 1)->Turn_On();
+        base::At(buttonsel, curbutton - 1)->Flag_To_Redraw();
         break;
 
       case KN_RETURN:
-        buttonsel[curbutton - 1]->IsPressed = true;
-        buttonsel[curbutton - 1]->Draw_Me(true);
+        base::At(buttonsel, curbutton - 1)->IsPressed = true;
+        base::At(buttonsel, curbutton - 1)->Draw_Me(true);
         selection = curbutton;
         pressed = true;
         Keyboard->Clear();
@@ -425,11 +427,11 @@ void GameOptionsClass::Process() {
     }
 
     if (pressed) {
-      buttonsel[curbutton - 1]->Turn_Off();
-      buttonsel[curbutton - 1]->Flag_To_Redraw();
+      base::At(buttonsel, curbutton - 1)->Turn_Off();
+      base::At(buttonsel, curbutton - 1)->Flag_To_Redraw();
       curbutton = selection;
-      buttonsel[curbutton - 1]->Turn_On();
-      buttonsel[curbutton - 1]->Flag_To_Redraw();
+      base::At(buttonsel, curbutton - 1)->Turn_On();
+      base::At(buttonsel, curbutton - 1)->Flag_To_Redraw();
 
       switch (selection) {
         case kButtonRestate:
@@ -554,9 +556,9 @@ void GameOptionsClass::Process() {
       }
 
       pressed = false;
-      buttonsel[curbutton - 1]->IsPressed = false;
-      buttonsel[curbutton - 1]->Turn_Off();
-      buttonsel[curbutton - 1]->Flag_To_Redraw();
+      base::At(buttonsel, curbutton - 1)->IsPressed = false;
+      base::At(buttonsel, curbutton - 1)->Turn_Off();
+      base::At(buttonsel, curbutton - 1)->Flag_To_Redraw();
     }
   }
 

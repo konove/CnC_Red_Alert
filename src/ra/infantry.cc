@@ -108,6 +108,7 @@
 #include <utility>
 
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
@@ -565,7 +566,7 @@ int InfantryClass::Shape_Number() const {
   **	by the facing accordingly.
   */
   if (Class->DoControls[static_cast<int>(doit)].Jump) {
-    shapenum += HumanShape[Dir_To_32(PrimaryFacing.Current())] *
+    shapenum += base::At(HumanShape, Dir_To_32(PrimaryFacing.Current())) *
                 Class->DoControls[static_cast<int>(doit)].Jump;
   }
 
@@ -3174,7 +3175,8 @@ void InfantryClass::Read_INI(CCINIClass& ini) {
           */
           const int sub = std::clamp(
               tech::ParseInteger<int>(tokens.Next(",")).value_or(0), 0, 4);
-          coord = Coord_Add(Coord_Whole(coord), StoppingCoordAbs[sub]);
+          coord =
+              Coord_Add(Coord_Whole(coord), base::At(StoppingCoordAbs, sub));
 
           /*
           **	Fetch the mission and facing.
@@ -3649,7 +3651,7 @@ void InfantryClass::Movement_AI() {
         */
         const int d = Lepton_To_Cell(static_cast<LEPTON>(Distance(NavCom)));
         if (d < kConquerPathMax) {
-          Path[d] = FACING_NONE;
+          base::At(Path, d) = FACING_NONE;
         }
 
         /*

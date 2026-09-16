@@ -86,6 +86,7 @@
 
 #include "absl/log/check.h"
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "base/numeric.h"
 #include "base/types.h"
 #include "magic_enum/magic_enum.hpp"
@@ -405,8 +406,8 @@ void RadarClass::Draw_It(bool forced) {
 
     //		port::SafeCopy(name, "NATORADR.SHP" );
     //		if (Session.Type == GAME_NORMAL) {
-    port::SafeCopy(name,
-                   _hiresradarnames[static_cast<int>(PlayerPtr->ActLike)]);
+    port::SafeCopy(
+        name, base::At(_hiresradarnames, static_cast<int>(PlayerPtr->ActLike)));
     //		}
 #ifndef NDEBUG
     DiskFile file(name);
@@ -422,13 +423,14 @@ void RadarClass::Draw_It(bool forced) {
     } else {
       RadarPulse = MixArchive::Retrieve(name);
     }
-    port::SafeCopy(name, _frames[static_cast<int>(PlayerPtr->ActLike)]);
+    port::SafeCopy(name,
+                   base::At(_frames, static_cast<int>(PlayerPtr->ActLike)));
     DiskFile file3(name);
     if (file3.IsAvailable()) {
       RadarFrame = Load_Alloc_Data(file3);
     } else {
-      RadarFrame =
-          MixArchive::Retrieve(_frames[static_cast<int>(PlayerPtr->ActLike)]);
+      RadarFrame = MixArchive::Retrieve(
+          base::At(_frames, static_cast<int>(PlayerPtr->ActLike)));
     }
 #else
     RadarAnim = MixArchive::Retrieve(name);
@@ -490,7 +492,7 @@ void RadarClass::Draw_It(bool forced) {
           */
           if (LogicPage->Lock()) {
             for (int index = 0; index < PixelPtr; index++) {
-              const CELL cell = PixelStack[index];
+              const CELL cell = base::At(PixelStack, index);
               if (Cell_On_Radar(cell)) {
                 (*this)[cell].IsPlot = false;
                 Plot_Radar_Pixel(cell);
@@ -511,7 +513,7 @@ void RadarClass::Draw_It(bool forced) {
               for (int x = 0; x < MapCellWidth; x++) {
                 const CELL cell = XY_Cell(MapCellX + x, MapCellY + y);
                 if (Cell_On_Radar(cell) && (*this)[cell].IsPlot) {
-                  PixelStack[PixelPtr++] = cell;
+                  base::At(PixelStack, PixelPtr++) = cell;
                   IsRadarToRedraw = true;
                   if (PixelPtr == kPixelstack) {
                     break;
@@ -642,7 +644,7 @@ void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) const {
   ** list.
   */
   if (obj && obj->What_Am_I() == RTTI_TERRAIN) {
-    list[listidx++] = dynamic_cast<TerrainClass*>(obj);
+    base::At(list, listidx++) = dynamic_cast<TerrainClass*>(obj);
   }
 
   /*
@@ -650,9 +652,9 @@ void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) const {
   ** are terrain type.
   */
   for (int lp = 0; lp < std::ssize(Map[cell].Overlappers); lp++) {
-    obj = Map[cell].Overlappers[lp];
+    obj = base::At(Map[cell].Overlappers, lp);
     if (obj && obj->What_Am_I() == RTTI_TERRAIN) {
-      list[listidx++] = dynamic_cast<TerrainClass*>(obj);
+      base::At(list, listidx++) = dynamic_cast<TerrainClass*>(obj);
     }
   }
 
@@ -679,10 +681,10 @@ void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) const {
   */
   for (int lp = 0; lp < listidx - 1; lp++) {
     for (int lp2 = lp + 1; lp2 < listidx; lp2++) {
-      if (list[lp]->Sort_Y() > list[lp2]->Sort_Y()) {
-        TerrainClass* terrain = list[lp];
-        list[lp] = list[lp2];
-        list[lp2] = terrain;
+      if (base::At(list, lp)->Sort_Y() > base::At(list, lp2)->Sort_Y()) {
+        TerrainClass* terrain = base::At(list, lp);
+        base::At(list, lp) = base::At(list, lp2);
+        base::At(list, lp2) = terrain;
       }
     }
   }
@@ -691,7 +693,7 @@ void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) const {
   ** loop through the list and take care of rendering the correct icon.
   */
   for (int lp = 0; lp < listidx; lp++) {
-    const unsigned char* icon = list[lp]->Radar_Icon(cell);
+    const unsigned char* icon = base::At(list, lp)->Radar_Icon(cell);
     if (!icon) {
       continue;
     }
@@ -1093,7 +1095,7 @@ void RadarClass::Radar_Pixel(CELL cell) {
     IsRadarToRedraw = true;
     (*this)[cell].IsPlot = true;
     if (PixelPtr < kPixelstack) {
-      PixelStack[PixelPtr++] = cell;
+      base::At(PixelStack, PixelPtr++) = cell;
     }
   }
 }

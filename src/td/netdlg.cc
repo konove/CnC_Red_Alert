@@ -130,6 +130,7 @@
 #include <utility>
 
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "port/ex_string.h"
 #include "port/random_seed.h"
 #include "port/safe_string.h"
@@ -445,11 +446,11 @@ void Destroy_Connection(int id, int error) {
   Ipx.Delete_Connection(id);
 
   for (int i = 0; i < MPlayerCount; i++) {
-    if (MPlayerID[i] == static_cast<unsigned char>(id)) {
+    if (base::At(MPlayerID, i) == static_cast<unsigned char>(id)) {
       /*..................................................................
       Turn the player's house over to the computer's AI
       ..................................................................*/
-      const HousesType house = MPlayerHouses[i];
+      const HousesType house = base::At(MPlayerHouses, i);
       HouseClass* housep = HouseClass::As_Pointer(house);
       housep->IsHuman = false;
       housep->IsStarted = true;
@@ -458,10 +459,11 @@ void Destroy_Connection(int id, int error) {
       Move arrays back by one
       ..................................................................*/
       for (int j = i; j < MPlayerCount - 1; j++) {
-        MPlayerID[j] = MPlayerID[j + 1];
-        MPlayerHouses[j] = MPlayerHouses[j + 1];
-        port::SafeCopy(MPlayerNames[j], MPlayerNames[j + 1]);
-        TheirProcessTime[j] = TheirProcessTime[j + 1];
+        base::At(MPlayerID, j) = base::At(MPlayerID, j + 1);
+        base::At(MPlayerHouses, j) = base::At(MPlayerHouses, j + 1);
+        port::SafeCopy(base::At(MPlayerNames, j),
+                       base::At(MPlayerNames, j + 1));
+        base::At(TheirProcessTime, j) = base::At(TheirProcessTime, j + 1);
       }
     }
   }

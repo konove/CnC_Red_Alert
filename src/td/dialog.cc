@@ -57,6 +57,7 @@
 
 #include "absl/strings/str_format.h"
 #include "absl/types/span.h"
+#include "base/array.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
 #include "port/format.h"
@@ -282,11 +283,12 @@ void Window_Box(WindowNumberType window, BoxStyleEnum style) {
           {0, 1}    // 10 Simple 1 pixel box.
       }};
 
-  const int x = WindowList[static_cast<int>(window)][kWindowX] * 8;
-  const int y = WindowList[static_cast<int>(window)][kWindowY];
-  const int w = WindowList[static_cast<int>(window)][kWindowWidth] * 8;
-  const int h = WindowList[static_cast<int>(window)]
-                          [kWindowHeight];  // Window dimensions.
+  const int x = base::At(WindowList[static_cast<int>(window)], kWindowX) * 8;
+  const int y = base::At(WindowList[static_cast<int>(window)], kWindowY);
+  const int w =
+      base::At(WindowList[static_cast<int>(window)], kWindowWidth) * 8;
+  const int h = base::At(WindowList[static_cast<int>(window)],
+                         kWindowHeight);  // Window dimensions.
 
   /*
   **	If it is to be rendered to the seenpage, then
@@ -417,7 +419,7 @@ void Simple_Text_Print(const char* text, int x, int y, int fore,
     **	according to the color index specified.
     */
     if (base::Any(flag & TPF_USE_GRAD_PAL)) {
-      memcpy(&fontpalette[0], _textfontpal[fore % 16], 16);
+      memcpy(&fontpalette[0], base::At(_textfontpal, fore % 16), 16);
     } else {
       /*
       **	Special adjustment for fonts that have gradient artwork. When
@@ -428,11 +430,11 @@ void Simple_Text_Print(const char* text, int x, int y, int fore,
     }
 
     if (base::Any(flag & TPF_MEDIUM_COLOR)) {
-      fore = _textpalmedium[fore % 16];
+      fore = base::At(_textpalmedium, fore % 16);
       memset(&fontpalette[4], fore, 12);
     } else {
       if (base::Any(flag & TPF_BRIGHT_COLOR)) {
-        fore = _textpalbright[fore % 16];
+        fore = base::At(_textpalbright, fore % 16);
         memset(&fontpalette[4], fore, 12);
       } else {
         fore = fontpalette[1];

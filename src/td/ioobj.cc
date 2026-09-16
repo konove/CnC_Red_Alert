@@ -43,6 +43,7 @@
 #include <cstdint>
 #include <utility>
 
+#include "base/array.h"
 #include "td/abstract.h"
 #include "td/aircraft.h"
 #include "td/anim.h"
@@ -161,12 +162,12 @@ void TeamTypeClass::Serialize(Archive& ar) {
   }
   // Unused array tails have no gameplay meaning and are defaulted on load.
   for (int i = 0; i < MissionCount; ++i) {
-    ar(MissionList[i]);
+    ar(base::At(MissionList, i));
   }
   for (int i = 0; std::cmp_less(i, ClassCount); ++i) {
-    ar(TechnoTypePtr(Class[i]), DesiredNum[i]);
+    ar(TechnoTypePtr(base::At(Class, i)), base::At(DesiredNum, i));
     if constexpr (Archive::kIsReading) {
-      if (Class[i] == nullptr) {
+      if (base::At(Class, i) == nullptr) {
         ar.Fail("missing team member type");
       }
     }
@@ -229,7 +230,7 @@ void HouseClass::Serialize(Archive& ar) {
   int32_t remap_id = -1;
   if constexpr (!Archive::kIsReading) {
     for (int i = 0; i < 7; ++i) {
-      if (RemapTable == tables[i]) {
+      if (RemapTable == base::At(tables, i)) {
         remap_id = i;
       }
     }
@@ -309,7 +310,7 @@ void HouseClass::Serialize(Archive& ar) {
         return;
       }
     }
-    RemapTable = tables[remap_id];
+    RemapTable = base::At(tables, remap_id);
     // The ten runtime-only UnitTracker counters are recreated by the shell
     // ctor.
   }
@@ -602,9 +603,10 @@ void FootClass::Serialize(Archive& ar) {
     }
   }
   for (int32_t i = 0; i < path_length; ++i) {
-    ar(Path[i]);
+    ar(base::At(Path, i));
     if constexpr (Archive::kIsReading) {
-      if (Path[i] < FACING_NONE || Path[i] >= FACING_COUNT) {
+      if (base::At(Path, i) < FACING_NONE ||
+          base::At(Path, i) >= FACING_COUNT) {
         ar.Fail("invalid saved path facing");
       }
     }

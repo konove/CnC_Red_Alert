@@ -6,6 +6,8 @@
 
 #include <cstdint>
 
+#include "base/array.h"
+
 namespace base {
 
 // 256-entry trig tables covering a full circle (step = 2*pi/256).
@@ -79,10 +81,10 @@ inline constexpr int16_t kCos256[256] = {
 // would change for the negative quadrants.
 inline void MovePoint(int16_t& x, int16_t& y, const uint8_t dir,
                       const int16_t distance) {
-  const int dx =
-      (kSin256[dir] * distance) >> 7;  // NOLINT(bugprone-signed-bitwise)
-  const int dy =
-      (kCos256[dir] * distance) >> 7;  // NOLINT(bugprone-signed-bitwise)
+  // NOLINTNEXTLINE(bugprone-signed-bitwise)
+  const int dx = (base::At(kSin256, dir) * distance) >> 7;
+  // NOLINTNEXTLINE(bugprone-signed-bitwise)
+  const int dy = (base::At(kCos256, dir) * distance) >> 7;
   x = static_cast<int16_t>(x + dx);
   y = static_cast<int16_t>(y - dy);
 }
@@ -90,10 +92,10 @@ inline void MovePoint(int16_t& x, int16_t& y, const uint8_t dir,
 // Like MovePoint but halves Y for 2:1 isometric projection (turret offsets).
 inline void MovePointIsometric(int16_t& x, int16_t& y, const uint8_t dir,
                                const int16_t distance) {
-  const int dx =
-      (kSin256[dir] * distance) >> 7;  // NOLINT(bugprone-signed-bitwise)
-  const int dy =
-      ((kCos256[dir] / 2) * distance) >> 7;  // NOLINT(bugprone-signed-bitwise)
+  // NOLINTNEXTLINE(bugprone-signed-bitwise)
+  const int dx = (base::At(kSin256, dir) * distance) >> 7;
+  // NOLINTNEXTLINE(bugprone-signed-bitwise)
+  const int dy = ((base::At(kCos256, dir) / 2) * distance) >> 7;
   x = static_cast<int16_t>(x + dx);
   y = static_cast<int16_t>(y - dy);
 }

@@ -52,6 +52,7 @@
 #include <cstring>
 
 #include "absl/log/check.h"
+#include "base/array.h"
 #include "base/numeric.h"
 
 /*
@@ -183,8 +184,8 @@ void BlowfishEngine::Submit_Key(const void* key, int length) {
   for (auto& sbox_index : bf_S) {
     for (int ss_index = 0; ss_index < UCHAR_MAX + 1; ss_index += 2) {
       Sub_Key_Encrypt(left, right);
-      sbox_index[ss_index] = left;
-      sbox_index[ss_index + 1] = right;
+      base::At(sbox_index, ss_index) = left;
+      base::At(sbox_index, ss_index + 1) = right;
     }
   }
 
@@ -384,13 +385,15 @@ void BlowfishEngine::Process_Block(const void* plaintext, void* cyphertext,
   */
   for (int index = 0; index < kRounds / 2; index++) {
     left.Long ^= *ptable++;
-    right.Long ^= ((bf_S[0][left.Char.C0] + bf_S[1][left.Char.C1]) ^
-                   bf_S[2][left.Char.C2]) +
-                  bf_S[3][left.Char.C3];
+    right.Long ^= ((base::At(base::At(bf_S, 0), left.Char.C0) +
+                    base::At(base::At(bf_S, 1), left.Char.C1)) ^
+                   base::At(base::At(bf_S, 2), left.Char.C2)) +
+                  base::At(base::At(bf_S, 3), left.Char.C3);
     right.Long ^= *ptable++;
-    left.Long ^= ((bf_S[0][right.Char.C0] + bf_S[1][right.Char.C1]) ^
-                  bf_S[2][right.Char.C2]) +
-                 bf_S[3][right.Char.C3];
+    left.Long ^= ((base::At(base::At(bf_S, 0), right.Char.C0) +
+                   base::At(base::At(bf_S, 1), right.Char.C1)) ^
+                  base::At(base::At(bf_S, 2), right.Char.C2)) +
+                 base::At(base::At(bf_S, 3), right.Char.C3);
   }
 
   /*
@@ -449,12 +452,16 @@ void BlowfishEngine::Sub_Key_Encrypt(uint32_t& left, uint32_t& right) {
   r.Long = right;
 
   for (int index = 0; index < kRounds; index += 2) {
-    l.Long ^= P_Encrypt[index];
-    r.Long ^= ((bf_S[0][l.Char.C0] + bf_S[1][l.Char.C1]) ^ bf_S[2][l.Char.C2]) +
-              bf_S[3][l.Char.C3];
-    r.Long ^= P_Encrypt[index + 1];
-    l.Long ^= ((bf_S[0][r.Char.C0] + bf_S[1][r.Char.C1]) ^ bf_S[2][r.Char.C2]) +
-              bf_S[3][r.Char.C3];
+    l.Long ^= base::At(P_Encrypt, index);
+    r.Long ^= ((base::At(base::At(bf_S, 0), l.Char.C0) +
+                base::At(base::At(bf_S, 1), l.Char.C1)) ^
+               base::At(base::At(bf_S, 2), l.Char.C2)) +
+              base::At(base::At(bf_S, 3), l.Char.C3);
+    r.Long ^= base::At(P_Encrypt, index + 1);
+    l.Long ^= ((base::At(base::At(bf_S, 0), r.Char.C0) +
+                base::At(base::At(bf_S, 1), r.Char.C1)) ^
+               base::At(base::At(bf_S, 2), r.Char.C2)) +
+              base::At(base::At(bf_S, 3), r.Char.C3);
   }
   left = r.Long ^ P_Encrypt[kRounds + 1];
   right = l.Long ^ P_Encrypt[kRounds];

@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cstdint>
 
+#include "base/array.h"
 #include "port/win32/win32_types.h"
 
 #ifndef _WIN32
@@ -50,7 +51,7 @@ HANDLE FindFirstFile(LPCSTR file_name, WIN32_FIND_DATA* find_data) {
   const std::size_t copied =
       std::min(name.size(), sizeof(find_data->cFileName) - 1);
   std::memcpy(find_data->cFileName, name.data(), copied);
-  find_data->cFileName[copied] = '\0';
+  base::At(find_data->cFileName, copied) = '\0';
 
   return &kFoundHandleStorage;
 }

@@ -99,6 +99,7 @@
 #include <span>
 
 #include "absl/base/attributes.h"
+#include "base/array.h"
 #include "base/numeric.h"
 #include "port/bytes_of.h"
 #include "tech/byte_source.h"
@@ -1621,18 +1622,21 @@ void XMP_Inverse_A_Mod_B(uint32_t* result, const uint32_t* number,
   uint32_t y[MAX_UNIT_PRECISION] = {};
 
   int i = 0;
-  for (i = 1; !XMP_Test_Eq_Int(g[i % 3], 0, precision); i++) {
-    XMP_Unsigned_Div(g[(i + 1) % 3], y, g[(i - 1) % 3], g[i % 3], precision);
+  for (i = 1; !XMP_Test_Eq_Int(base::At(g, i % 3), 0, precision); i++) {
+    XMP_Unsigned_Div(base::At(g, (i + 1) % 3), y, base::At(g, (i - 1) % 3),
+                     base::At(g, i % 3), precision);
 
-    XMP_Unsigned_Mult(result, v[i % 3], y, precision);
-    XMP_Sub(v[(i + 1) % 3], v[(i - 1) % 3], result, false, precision);
+    XMP_Unsigned_Mult(result, base::At(v, i % 3), y, precision);
+    XMP_Sub(base::At(v, (i + 1) % 3), base::At(v, (i - 1) % 3), result, false,
+            precision);
   }
 
-  if (XMP_Is_Negative(v[(i - 1) % 3], precision)) {
-    XMP_Add(v[(i - 1) % 3], v[(i - 1) % 3], modulus, false, precision);
+  if (XMP_Is_Negative(base::At(v, (i - 1) % 3), precision)) {
+    XMP_Add(base::At(v, (i - 1) % 3), base::At(v, (i - 1) % 3), modulus, false,
+            precision);
   }
 
-  XMP_Move(result, v[(i - 1) % 3], precision);
+  XMP_Move(result, base::At(v, (i - 1) % 3), precision);
 }
 
 /***********************************************************************************************
@@ -1935,7 +1939,8 @@ int XMP_Prepare_Modulus(const uint32_t* n_modulus, int precision) {
   */
   const int sub_precision = XMP_Significance(
       scratch_modulus, precision);  // significant digits in modulus
-  XMP_Move(mod_divisor, &scratch_modulus[sub_precision - 2], 2);
+  XMP_Move(mod_divisor, base::Suffix(scratch_modulus, sub_precision - 2).data(),
+           2);
   modulus_shift = XMP_Count_Bits(mod_divisor, 2) - (2 * 16);
   XMP_Shift_Right_Bits(mod_divisor, modulus_shift, 2);
 
@@ -1986,7 +1991,8 @@ int XMP_Mod_Mult(uint32_t* prod, const uint32_t* multiplicand,
 
   const int double_precision = (precision * 2) + 1;
 
-  double_staging_number[double_precision - 1] = 0; /* leading 0 uint32_t */
+  base::At(double_staging_number, double_precision - 1) =
+      0; /* leading 0 uint32_t */
 
   /*
   **	We now start working with MULTUNITs.
@@ -2360,7 +2366,7 @@ bool XMP_Fermat_Test(const uint32_t* candidate_prime, unsigned rounds,
     uint32_t result[MAX_UNIT_PRECISION];
 
     uint32_t small_prime[MAX_UNIT_PRECISION];
-    XMP_Init(small_prime, primeTable[i], precision);
+    XMP_Init(small_prime, base::At(primeTable, i), precision);
 
     xmp_exponent_mod(result, small_prime, term, candidate_prime, precision);
 

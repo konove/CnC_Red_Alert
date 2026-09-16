@@ -48,6 +48,7 @@
 #include <cctype>
 #include <cstdint>
 
+#include "base/array.h"
 #include "base/numeric.h"
 #include "sdllib/font.h"
 #include "sdllib/gbuffer.h"
@@ -472,12 +473,13 @@ int Do_Menu(const char** strings, bool blue) {
   **	Adjust the window values to match the size of the
   **	specified menu.
   */
-  WindowList[static_cast<int>(WINDOW_MENU)][kWindowWidth] =
+  base::At(WindowList[static_cast<int>(WINDOW_MENU)], kWindowWidth) =
       menu_config.item_width + 2;
-  WindowList[static_cast<int>(WINDOW_MENU)][kWindowX] = 19 - (length / 16);
-  WindowList[static_cast<int>(WINDOW_MENU)][kWindowY] =
+  base::At(WindowList[static_cast<int>(WINDOW_MENU)], kWindowX) =
+      19 - (length / 16);
+  base::At(WindowList[static_cast<int>(WINDOW_MENU)], kWindowY) =
       174 - (menu_config.item_count * (FontHeight + FontYSpacing));
-  WindowList[static_cast<int>(WINDOW_MENU)][kWindowHeight] =
+  base::At(WindowList[static_cast<int>(WINDOW_MENU)], kWindowHeight) =
       (menu_config.item_count * FontHeight) + 5 /*11*/;
 
   /*
@@ -779,16 +781,16 @@ int Main_Menu(int timeout) {
   }
   int butt = 0;
 
-  buttons[butt++] = &expandbtn;
-  buttons[butt++] = &startbtn;
+  base::At(buttons, butt++) = &expandbtn;
+  base::At(buttons, butt++) = &startbtn;
 #ifdef BONUS_MISSIONS
-  buttons[butt++] = &bonusbtn;
+  base::At(buttons, butt++) = &bonusbtn;
 #endif  // BONUS_MISSIONS
-  buttons[butt++] = &internetbutton;
-  buttons[butt++] = &loadbtn;
-  buttons[butt++] = &multibtn;
-  buttons[butt++] = &introbtn;
-  buttons[butt++] = &exitbtn;
+  base::At(buttons, butt++) = &internetbutton;
+  base::At(buttons, butt++) = &loadbtn;
+  base::At(buttons, butt++) = &multibtn;
+  base::At(buttons, butt++) = &introbtn;
+  base::At(buttons, butt++) = &exitbtn;
 #else
   curbutton = 0;
   buttons[0] = &startbtn;
@@ -797,7 +799,7 @@ int Main_Menu(int timeout) {
   buttons[3] = &introbtn;
   buttons[4] = &exitbtn;
 #endif
-  buttons[curbutton]->Turn_On();
+  base::At(buttons, curbutton)->Turn_On();
 
   Keyboard::Clear();
 
@@ -924,8 +926,8 @@ int Main_Menu(int timeout) {
         break;
 
       case KN_UP:
-        buttons[curbutton]->Turn_Off();
-        buttons[curbutton]->Flag_To_Redraw();
+        base::At(buttons, curbutton)->Turn_Off();
+        base::At(buttons, curbutton)->Flag_To_Redraw();
         curbutton--;
 #ifdef NEWMENU
         if (expansions) {
@@ -942,13 +944,13 @@ int Main_Menu(int timeout) {
           curbutton = 4;
         }
 #endif
-        buttons[curbutton]->Turn_On();
-        buttons[curbutton]->Flag_To_Redraw();
+        base::At(buttons, curbutton)->Turn_On();
+        base::At(buttons, curbutton)->Flag_To_Redraw();
         break;
 
       case KN_DOWN:
-        buttons[curbutton]->Turn_Off();
-        buttons[curbutton]->Flag_To_Redraw();
+        base::At(buttons, curbutton)->Turn_Off();
+        base::At(buttons, curbutton)->Flag_To_Redraw();
         curbutton++;
 #ifdef NEWMENU
         if (curbutton > 6) {
@@ -963,13 +965,13 @@ int Main_Menu(int timeout) {
           curbutton = 0;
         }
 #endif
-        buttons[curbutton]->Turn_On();
-        buttons[curbutton]->Flag_To_Redraw();
+        base::At(buttons, curbutton)->Turn_On();
+        base::At(buttons, curbutton)->Flag_To_Redraw();
         break;
 
       case KN_RETURN:
-        buttons[curbutton]->IsPressed = true;
-        buttons[curbutton]->Draw_Me(true);
+        base::At(buttons, curbutton)->IsPressed = true;
+        base::At(buttons, curbutton)->Draw_Me(true);
         retval = curbutton;
         process = false;
         break;

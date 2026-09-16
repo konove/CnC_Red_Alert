@@ -87,6 +87,7 @@
 #include <cstdlib>
 #include <iterator>
 
+#include "base/array.h"
 #include "ra/const.h"
 #include "ra/coord.h"
 #include "ra/defines.h"
@@ -662,7 +663,7 @@ inline DirType Facing_Dir(FacingType facing) {
  * HISTORY: * 08/26/1996 JLB : Created. *
  *=============================================================================================*/
 inline int Dir_To_16(DirType facing) {
-  return Facing16[static_cast<int>(facing)];
+  return base::At(Facing16, static_cast<int>(facing));
 }
 
 /***********************************************************************************************
@@ -682,7 +683,7 @@ inline int Dir_To_16(DirType facing) {
  * HISTORY: * 08/26/1996 JLB : Created. *
  *=============================================================================================*/
 inline int Dir_To_32(DirType facing) {
-  return Facing32[static_cast<int>(facing)];
+  return base::At(Facing32, static_cast<int>(facing));
 }
 
 /***********************************************************************************************
@@ -877,7 +878,7 @@ inline FacingType Dir_To_8(DirType facing) {
  *=============================================================================================*/
 inline const char* Text_String(int index) {
   if (index < 0 && -index < std::ssize(NameOverride)) {
-    return NameOverride[-index - 1];
+    return base::At(NameOverride, -index - 1);
   }
 
   if (index < 1000) {

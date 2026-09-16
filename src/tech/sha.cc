@@ -48,6 +48,7 @@
 #include <cstring>
 #include <utility>
 
+#include "base/array.h"
 #include "base/numeric.h"
 #include "port/unaligned.h"
 
@@ -93,7 +94,8 @@ void SHAEngine::Process_Partial(const void*& data, int32_t& length) {
   **	the staging buffer.
   */
   const int add_count = std::min(length, SRC_BLOCK_SIZE - PartialCount);
-  memcpy(&Partial[PartialCount], data, base::ToSize(add_count));
+  memcpy(base::Suffix(Partial, PartialCount).data(), data,
+         base::ToSize(add_count));
   data = static_cast<const char*>(data) + add_count;
   PartialCount += add_count;
   length -= add_count;
@@ -207,7 +209,7 @@ Sha1Digest SHAEngine::Digest() const {
   /*
   **	Cap the end of the source data stream with a 1 bit.
   */
-  partial[partialcount] = static_cast<char>(0x80);
+  base::At(partial, partialcount) = static_cast<char>(0x80);
 
   /*
   **	Determine if there is insufficient room to append the
@@ -219,7 +221,7 @@ Sha1Digest SHAEngine::Digest() const {
   Accumulator acc = Acc;
   if (SRC_BLOCK_SIZE - partialcount < 9) {
     if (partialcount + 1 < SRC_BLOCK_SIZE) {
-      memset(&partial[partialcount + 1], '\0',
+      memset(base::Suffix(partial, partialcount + 1).data(), '\0',
              base::ToSize(SRC_BLOCK_SIZE - (partialcount + 1)));
     }
     Process_Block(&partial[0], acc);
@@ -232,7 +234,7 @@ Sha1Digest SHAEngine::Digest() const {
   **	Put the length of the source data as a 64 bit integer in the
   **	last 8 bytes of the pseudo-source data.
   */
-  memset(&partial[partialcount], '\0',
+  memset(base::Suffix(partial, partialcount).data(), '\0',
          base::ToSize(SRC_BLOCK_SIZE - partialcount));
   port::WriteUnaligned(&partial[SRC_BLOCK_SIZE - 4],
                        Reverse_LONG(static_cast<uint32_t>(length * 8)));
@@ -302,16 +304,17 @@ void SHAEngine::Process_Block(const void* source, Accumulator& acc) {
   const auto* data = static_cast<const uint32_t*>(source);
   for (int index = 0; std::cmp_less(index, SRC_BLOCK_SIZE / sizeof(uint32_t));
        index++) {
-    block[index] = Reverse_LONG(data[index]);
+    base::At(block, index) = Reverse_LONG(data[index]);
   }
 
   for (int index = SRC_BLOCK_SIZE / sizeof(uint32_t);
        std::cmp_less(index, PROC_BLOCK_SIZE / sizeof(uint32_t)); index++) {
     //		block[index] = _rotl(block[(index-3)&15] ^ block[(index-8)&15] ^
     // block[(index-14)&15] ^ block[(index-16)&15], 1);
-    block[index] = rotl(block[index - 3] ^ block[index - 8] ^
-                            block[index - 14] ^ block[index - 16],
-                        1);
+    base::At(block, index) =
+        rotl(base::At(block, index - 3) ^ base::At(block, index - 8) ^
+                 base::At(block, index - 14) ^ base::At(block, index - 16),
+             1);
   }
 
   /*
@@ -324,7 +327,7 @@ void SHAEngine::Process_Block(const void* source, Accumulator& acc) {
        index++) {
     const uint32_t temp = rotl(alt[0], 5) +
                           Do_Function(index, alt[1], alt[2], alt[3]) + alt[4] +
-                          block[index] + Get_Constant(index);
+                          base::At(block, index) + Get_Constant(index);
     alt[4] = alt[3];
     alt[3] = alt[2];
     alt[2] = rotl(alt[1], 30);

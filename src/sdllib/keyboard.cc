@@ -8,6 +8,7 @@
 
 #include <cstdint>
 
+#include "base/array.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
 
@@ -30,7 +31,7 @@ int WWKeyboardClass::Check() {
 
   // Head always addresses a key entry: Buff_Get steps past the two coordinate
   // entries that follow a mouse key, so a click at x or y 0 is never read here.
-  return Buffer[Head];
+  return base::At(Buffer, Head);
 }
 
 int WWKeyboardClass::Get() {
@@ -42,7 +43,7 @@ int WWKeyboardClass::Get() {
 bool WWKeyboardClass::Put(int key) {
   const int temp = (Tail + 1) % 256;
   if (temp != Head) {
-    Buffer[Tail] = static_cast<uint16_t>(key);
+    base::At(Buffer, Tail) = static_cast<uint16_t>(key);
 
     Tail = temp;
     return true;
@@ -197,11 +198,12 @@ bool WWKeyboardClass::Event_Handler(SDL_Event* event) {
 int WWKeyboardClass::Buff_Get() {
   while (!Check()) {
   }  // wait for key in buffer
-  const int temp = Buffer[Head];       // get key out of the buffer
+  const int temp = base::At(Buffer, Head);  // get key out of the buffer
   int newhead = Head;                  // save off head for manipulation
   if (Is_Mouse_Key(temp)) {            // if key is a mouse then
-    MouseQX = Buffer[(Head + 1) % 256];  //		get the x and y pos
-    MouseQY = Buffer[(Head + 2) % 256];  //		from the buffer
+    MouseQX =
+        base::At(Buffer, (Head + 1) % 256);        //		get the x and y pos
+    MouseQY = base::At(Buffer, (Head + 2) % 256);  //		from the buffer
     newhead += 3;                      //		adjust head forward
   } else {
     newhead += 1;  //		adjust head forward

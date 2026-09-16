@@ -68,6 +68,7 @@
 #include <utility>
 
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/base.h"
@@ -142,8 +143,8 @@ MapEditClass::MapEditClass() {
   //	ScenVar = SCEN_VAR_A;
 
   for (int i = 0; i < kNumEditClasses; i++) {
-    NumType[i] = 0;
-    TypeOffset[i] = 0;
+    base::At(NumType, i) = 0;
+    base::At(TypeOffset, i) = 0;
   }
   Scen.Waypoint[ScenarioClass::kHomeWaypoint] = 0;
   CurrentCell = 0;
@@ -334,7 +335,7 @@ bool MapEditClass::Add_To_List(const ObjectTypeClass* object) {
   **	Add the object if there's room.
   */
   if (object && ObjCount < kMaxEditObjects) {
-    Objects[ObjCount++] = object;
+    base::At(Objects, ObjCount++) = object;
 
     /*
     **	Update type counters.
@@ -794,7 +795,8 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         if (cell != -1) {
           found = 0;
           for (int i = 0; i < ScenarioClass::kWaypointCount; i++) {
-            if (i != ScenarioClass::kHomeWaypoint && Scen.Waypoint[i] == cell) {
+            if (i != ScenarioClass::kHomeWaypoint &&
+                base::At(Scen.Waypoint, i) == cell) {
               found = 1;
             }
           }
@@ -841,7 +843,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         found = 0;
         for (int i = 0; i < ScenarioClass::kWaypointCount; i++) {
           if (i != ScenarioClass::kReinforcementWaypoint &&
-              Scen.Waypoint[i] == cell) {
+              base::At(Scen.Waypoint, i) == cell) {
             found = 1;
           }
         }
@@ -932,8 +934,8 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         **	clear that waypoint.
         */
         for (int i = 0; i < ScenarioClass::kHomeWaypoint; i++) {
-          if (Scen.Waypoint[i] == CurrentCell) {
-            Scen.Waypoint[i] = -1;
+          if (base::At(Scen.Waypoint, i) == CurrentCell) {
+            base::At(Scen.Waypoint, i) = -1;
           }
         }
 
@@ -2027,7 +2029,7 @@ void MapEditClass::Update_Waypoint(int waypt_idx) {
   /*
   **	Unflag cell for this waypoint if there is one
   */
-  CELL const cell = Scen.Waypoint[waypt_idx];
+  CELL const cell = base::At(Scen.Waypoint, waypt_idx);
   if (cell != -1) {
     if (Scen.Waypoint[ScenarioClass::kHomeWaypoint] != cell &&
         Scen.Waypoint[ScenarioClass::kReinforcementWaypoint] != cell) {
@@ -2035,7 +2037,7 @@ void MapEditClass::Update_Waypoint(int waypt_idx) {
     }
     Flag_Cell(cell);
   }
-  Scen.Waypoint[waypt_idx] = CurrentCell;
+  base::At(Scen.Waypoint, waypt_idx) = CurrentCell;
   (*this)[CurrentCell].IsWaypoint = true;
   Changed = true;
   Flag_Cell(CurrentCell);

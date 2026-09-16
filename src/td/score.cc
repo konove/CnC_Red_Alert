@@ -59,6 +59,7 @@
 #include <utility>
 
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "base/types.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/file_access.h"
@@ -527,9 +528,10 @@ void ScoreScaleClass::Update() {
   if (!Timer.Time()) {
     Timer.Set(1);
     if (Stage != 5) {
-      TextPrintBuffer->Blit(HidPage, _destx[Stage + 1] * 2, YPos * 2,
-                            _destx[Stage + 1] * 2, YPos * 2,
-                            _destw[Stage + 1] * 2, _destw[Stage + 1] * 2);
+      TextPrintBuffer->Blit(HidPage, base::At(_destx, Stage + 1) * 2, YPos * 2,
+                            base::At(_destx, Stage + 1) * 2, YPos * 2,
+                            base::At(_destw, Stage + 1) * 2,
+                            base::At(_destw, Stage + 1) * 2);
       // SysMemPage.Blit(*PseudoSeenBuff, _destx[Stage+1], YPos,
       // _destx[Stage+1], YPos, _destw[Stage+1], _destw[Stage+1]);
     }
@@ -537,8 +539,9 @@ void ScoreScaleClass::Update() {
       Set_Font_Palette(Palette);
       TextPrintBuffer->Fill_Rect(0, 0, 14, 14, kTBlack);
       TextPrintBuffer->Print(Text(), 0, 0, kTBlack, kTBlack);
-      TextPrintBuffer->Scale(HidPage, 0, 0, _destx[Stage] * 2, YPos * 2, 10, 10,
-                             _destw[Stage] * 2, _destw[Stage] * 2, true);
+      TextPrintBuffer->Scale(HidPage, 0, 0, base::At(_destx, Stage) * 2,
+                             YPos * 2, 10, 10, base::At(_destw, Stage) * 2,
+                             base::At(_destw, Stage) * 2, true);
 
       // SysMemPage.Fill_Rect(0,0, 7,7, TBLACK);
       // SysMemPage.Print((char *)DataPtr, 0,0,   TBLACK, TBLACK);
@@ -569,8 +572,8 @@ int Alloc_Object(ScoreAnimClass* obj) {
   int ret = 0;
 
   for (int i = ret = 0; i < MAXSCOREOBJS; i++) {
-    if (!ScoreObjs[i]) {
-      ScoreObjs[i] = obj;
+    if (!base::At(ScoreObjs, i)) {
+      base::At(ScoreObjs, i) = obj;
       ret = i;
       break;
     }
@@ -582,12 +585,12 @@ TextBlitClass::TextBlitClass() { Clear(); }
 
 void TextBlitClass::Add(int x, int y, int dx, int dy, int w, int h) {
   if (Count < MAX_ENTRIES) {
-    BlitListo[Count].SourceX = x;
-    BlitListo[Count].SourceY = y;
-    BlitListo[Count].DestX = dx;
-    BlitListo[Count].DestY = dy;
-    BlitListo[Count].Width = w;
-    BlitListo[Count].Height = h;
+    base::At(BlitListo, Count).SourceX = x;
+    base::At(BlitListo, Count).SourceY = y;
+    base::At(BlitListo, Count).DestX = dx;
+    base::At(BlitListo, Count).DestY = dy;
+    base::At(BlitListo, Count).Width = w;
+    base::At(BlitListo, Count).Height = h;
 
     Count++;
   }
@@ -598,9 +601,11 @@ void TextBlitClass::Clear() { Count = 0; }
 void TextBlitClass::Update() {
   if (TextPrintBuffer && HidPage.Lock()) {
     for (int i = 0; i < Count; i++) {
-      TextPrintBuffer->Blit(HidPage, BlitListo[i].SourceX, BlitListo[i].SourceY,
-                            BlitListo[i].DestX, BlitListo[i].DestY,
-                            BlitListo[i].Width, BlitListo[i].Height, true);
+      TextPrintBuffer->Blit(
+          HidPage, base::At(BlitListo, i).SourceX,
+          base::At(BlitListo, i).SourceY, base::At(BlitListo, i).DestX,
+          base::At(BlitListo, i).DestY, base::At(BlitListo, i).Width,
+          base::At(BlitListo, i).Height, true);
     }
 
     HidPage.Unlock();
@@ -703,7 +708,7 @@ void ScoreClass::Presentation() {
   /*
   ** Load the background for the score screen
   */
-  void* anim = Open_Animation(ScreenNames[house], nullptr, 0L,
+  void* anim = Open_Animation(base::At(ScreenNames, house), nullptr, 0L,
                               WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, Palette);
 
   const int minutes = static_cast<int>(ElapsedTime / kTimerMinute) + 1;
@@ -721,7 +726,7 @@ void ScoreClass::Presentation() {
 
   HouseClass* houses[3];
   for (int index = 0; index < 3; index++) {
-    houses[index] = HouseClass::As_Pointer(
+    base::At(houses, index) = HouseClass::As_Pointer(
         static_cast<HousesType>(static_cast<int>(HOUSE_GOOD) + index));
   }
 
@@ -884,18 +889,18 @@ void ScoreClass::Presentation() {
   */
   Set_Logic_Page(*PseudoSeenBuff);
   Play_Sample(sfx4, 255, Options.Normalize_Sound(90));
-  Alloc_Object(new ScorePrintClass(TXT_SCORE_CASU, _casuax[house],
-                                   _casuay[house], redpal));
+  Alloc_Object(new ScorePrintClass(TXT_SCORE_CASU, base::At(_casuax, house),
+                                   base::At(_casuay, house), redpal));
   Call_Back_Delay(9);
   if (player_house == HOUSE_BAD) {
     Alloc_Object(new ScorePrintClass(TXT_SCORE_NEUT, 200, 114, redpal));
     Call_Back_Delay(4);
   }
 
-  Alloc_Object(new ScorePrintClass(TXT_SCORE_GDI, _gditxx[house],
-                                   _gditxy[house], redpal));
-  Alloc_Object(new ScorePrintClass(TXT_SCORE_NOD, _nodtxx[house],
-                                   _nodtxy[house], redpal));
+  Alloc_Object(new ScorePrintClass(TXT_SCORE_GDI, base::At(_gditxx, house),
+                                   base::At(_gditxy, house), redpal));
+  Alloc_Object(new ScorePrintClass(TXT_SCORE_NOD, base::At(_nodtxx, house),
+                                   base::At(_nodtxy, house), redpal));
   Call_Back_Delay(6);
 
   Set_Font_Palette(redpal);
@@ -921,10 +926,10 @@ void ScoreClass::Presentation() {
     Alloc_Object(new ScorePrintClass(TXT_SCORE_NEUT, 200, 152, greenpal));
     Call_Back_Delay(4);
   }
-  Alloc_Object(new ScorePrintClass(TXT_SCORE_GDI, _gditxx[house],
-                                   _bldggy[house], greenpal));
-  Alloc_Object(new ScorePrintClass(TXT_SCORE_NOD, _gditxx[house],
-                                   _bldgny[house], greenpal));
+  Alloc_Object(new ScorePrintClass(TXT_SCORE_GDI, base::At(_gditxx, house),
+                                   base::At(_bldggy, house), greenpal));
+  Alloc_Object(new ScorePrintClass(TXT_SCORE_NOD, base::At(_gditxx, house),
+                                   base::At(_bldgny, house), greenpal));
   Call_Back_Delay(7);
 
   if (player_house == HOUSE_BAD) {
@@ -964,8 +969,9 @@ void ScoreClass::Presentation() {
     file.Open(FileAccess::kWrite);
 
     for (i = 0; i < NUMFAMENAMES; i++) {
-      hallfame[i].name[0] = static_cast<char>(hallfame[i].score = hallfame[i].level = 0);
-      file.WriteObject(hallfame[i]);
+      base::At(base::At(hallfame, i).name, 0) = static_cast<char>(
+          base::At(hallfame, i).score = base::At(hallfame, i).level = 0);
+      file.WriteObject(base::At(hallfame, i));
     }
 
     file.Close();
@@ -973,7 +979,7 @@ void ScoreClass::Presentation() {
 
   file.Open(FileAccess::kRead);
   for (i = 0; i < NUMFAMENAMES; i++) {
-    file.ReadObject(hallfame[i]);
+    file.ReadObject(base::At(hallfame, i));
   }
   file.Close();
 
@@ -987,18 +993,20 @@ void ScoreClass::Presentation() {
   }
   int index = 0;
   for (index = 0; index < NUMFAMENAMES; index++) {
-    if (total > hallfame[index].score) {
+    if (total > base::At(hallfame, index).score) {
       if (index < NUMFAMENAMES - 1) {
         for (i = NUMFAMENAMES - 1; i > index; i--) {
-          hallfame[i] = hallfame[i - 1];
+          base::At(hallfame, i) = base::At(hallfame, i - 1);
         }
       }
-      hallfame[index].score = total;
-      hallfame[index].level = Scenario;
+      base::At(hallfame, index).score = total;
+      base::At(hallfame, index).level = Scenario;
       //			hallfame[index].level = BuildLevel;
       // hallfame[index].name[0] = 0;	// blank out the name
-      memset(hallfame[index].name, ' ', sizeof(hallfame[index].name) - 1);
-      hallfame[index].name[sizeof(hallfame[index].name) - 1] = 0;
+      memset(base::At(hallfame, index).name, ' ',
+             sizeof(hallfame[index].name) - 1);
+      base::At(base::At(hallfame, index).name,
+               sizeof(hallfame[index].name) - 1) = 0;
       break;
     }
   }
@@ -1009,16 +1017,16 @@ void ScoreClass::Presentation() {
   Set_Logic_Page(*PseudoSeenBuff);
 
   for (int j = 0; j < NUMFAMENAMES; j++) {
-    Alloc_Object(new ScorePrintClass(hallfame[j].name, HALLFAME_X,
+    Alloc_Object(new ScorePrintClass(base::At(hallfame, j).name, HALLFAME_X,
                                      HALLFAME_Y + (j * 8), bluepal));
-    if (hallfame[j].score) {
+    if (base::At(hallfame, j).score) {
       char* str = static_cast<char*>(SysMemPage.Get_Buffer()) +
                   (static_cast<base::ssize>(j) * 32);
-      absl::SNPrintF(str, 16, "%d", hallfame[j].score);
+      absl::SNPrintF(str, 16, "%d", base::At(hallfame, j).score);
       Alloc_Object(new ScorePrintClass(str, HALLFAME_X + (6 * 15),
                                        HALLFAME_Y + (j * 8), bluepal, kBlack));
-      if (hallfame[j].level < 20) {
-        absl::SNPrintF(str + 16, 16, "%d", hallfame[j].level);
+      if (base::At(hallfame, j).level < 20) {
+        absl::SNPrintF(str + 16, 16, "%d", base::At(hallfame, j).level);
       } else {
         absl::SNPrintF(str + 16, 16, "**");
       }
@@ -1038,12 +1046,12 @@ void ScoreClass::Presentation() {
   */
   Keyboard::Clear();
   if (index < NUMFAMENAMES) {
-    Input_Name(hallfame[index].name, HALLFAME_X, HALLFAME_Y + (index * 8),
-               bluepal);
+    Input_Name(base::At(hallfame, index).name, HALLFAME_X,
+               HALLFAME_Y + (index * 8), bluepal);
 
     file.Open(FileAccess::kWrite);
     for (i = 0; i < NUMFAMENAMES; i++) {
-      file.WriteObject(hallfame[i]);
+      file.WriteObject(base::At(hallfame, i));
     }
     file.Close();
   } else {
@@ -1059,9 +1067,9 @@ void ScoreClass::Presentation() {
 
   /* get rid of all the animating objects */
   for (i = 0; i < MAXSCOREOBJS; i++) {
-    if (ScoreObjs[i]) {
-      delete ScoreObjs[i];
-      ScoreObjs[i] = nullptr;
+    if (base::At(ScoreObjs, i)) {
+      delete base::At(ScoreObjs, i);
+      base::At(ScoreObjs, i) = nullptr;
     }
   }
   Fade_Palette_To(BlackPalette, kFadePaletteFast, nullptr);
@@ -1404,25 +1412,27 @@ void ScoreClass::Do_Nod_Casualties_Graph() {
   const int q = NUMINFANTRYMEN / 3;
   const int r = q * 2;
   for (int i = 0; i < NUMINFANTRYMEN / 3; i++) {
-    InfantryMan[i + 0].xpos = InfantryMan[i + q].xpos =
-        InfantryMan[i + r].xpos = (i * 10) + 7;
-    InfantryMan[i + 0].ypos = 11;
-    InfantryMan[i + q].ypos = 21;
-    InfantryMan[i + r].ypos = 31;
-    InfantryMan[i + 0].shapefile = InfantryMan[i + q].shapefile = e1ptr;
-    InfantryMan[i + r].shapefile = c1ptr;
-    InfantryMan[i + 0].remap = ScoreRemapYellow;
-    InfantryMan[i + q].remap = ScoreRemapGrey;
-    InfantryMan[i + r].remap = RemapCiv;
-    InfantryMan[i + 0].anim = InfantryMan[i + q].anim =
-        InfantryMan[i + r].anim = 0;
-    InfantryMan[i + 0].stage = InfantryMan[i + q].stage =
-        InfantryMan[i + r].stage = 0;
-    InfantryMan[i + 0].delay = InfantryMan[i + q].delay =
-        InfantryMan[i + r].delay = static_cast<char>(Random() & 0x1F);
-    InfantryMan[i + 0].Class = InfantryMan[i + q].Class =
+    base::At(InfantryMan, i + 0).xpos = base::At(InfantryMan, i + q).xpos =
+        base::At(InfantryMan, i + r).xpos = (i * 10) + 7;
+    base::At(InfantryMan, i + 0).ypos = 11;
+    base::At(InfantryMan, i + q).ypos = 21;
+    base::At(InfantryMan, i + r).ypos = 31;
+    base::At(InfantryMan, i + 0).shapefile =
+        base::At(InfantryMan, i + q).shapefile = e1ptr;
+    base::At(InfantryMan, i + r).shapefile = c1ptr;
+    base::At(InfantryMan, i + 0).remap = ScoreRemapYellow;
+    base::At(InfantryMan, i + q).remap = ScoreRemapGrey;
+    base::At(InfantryMan, i + r).remap = RemapCiv;
+    base::At(InfantryMan, i + 0).anim = base::At(InfantryMan, i + q).anim =
+        base::At(InfantryMan, i + r).anim = 0;
+    base::At(InfantryMan, i + 0).stage = base::At(InfantryMan, i + q).stage =
+        base::At(InfantryMan, i + r).stage = 0;
+    base::At(InfantryMan, i + 0).delay = base::At(InfantryMan, i + q).delay =
+        base::At(InfantryMan, i + r).delay = static_cast<char>(Random() & 0x1F);
+    base::At(InfantryMan, i + 0).Class = base::At(InfantryMan, i + q).Class =
         &InfantryTypeClass::As_Reference(INFANTRY_E1);
-    InfantryMan[i + r].Class = &InfantryTypeClass::As_Reference(INFANTRY_C1);
+    base::At(InfantryMan, i + r).Class =
+        &InfantryTypeClass::As_Reference(INFANTRY_C1);
   }
 
   /*
@@ -1486,7 +1496,7 @@ void ScoreClass::Do_Nod_Casualties_Graph() {
   int k = 1;
   while (k) {
     for (int i = k = 0; i < NUMINFANTRYMEN; i++) {
-      if (InfantryMan[i].anim >= static_cast<int>(DO_GUN_DEATH)) {
+      if (base::At(InfantryMan, i).anim >= static_cast<int>(DO_GUN_DEATH)) {
         k = 1;
       }
     }
@@ -1517,12 +1527,12 @@ void ScoreClass::Show_Credits(int house, const unsigned char pal[]) {
 
   const void* credshape = MixArchive::Retrieve("CREDS.SHP");
 
-  Alloc_Object(new ScorePrintClass(TXT_SCORE_ENDCRED, _credtx[house],
-                                   _credty[house], pal));
+  Alloc_Object(new ScorePrintClass(TXT_SCORE_ENDCRED, base::At(_credtx, house),
+                                   base::At(_credty, house), pal));
   Call_Back_Delay(15);
 
-  const int credobj = Alloc_Object(
-      new ScoreCredsClass(_credsx[house], _credsy[house], credshape, 32, 2));
+  const int credobj = Alloc_Object(new ScoreCredsClass(
+      base::At(_credsx, house), base::At(_credsy, house), credshape, 32, 2));
   const int min = static_cast<int>(PlayerPtr->Available_Money() / 100);
 
   /*
@@ -1530,8 +1540,9 @@ void ScoreClass::Show_Credits(int house, const unsigned char pal[]) {
   */
   int i = -50;
 
-  BlitList.Add(2 * _credpx[house], 2 * _credpy[house], 2 * _credpx[house],
-               2 * _credpy[house], 5 * 12, 12);
+  BlitList.Add(2 * base::At(_credpx, house), 2 * base::At(_credpy, house),
+               2 * base::At(_credpx, house), 2 * base::At(_credpy, house),
+               5 * 12, 12);
 
   do {
     int add = 5;
@@ -1547,8 +1558,8 @@ void ScoreClass::Show_Credits(int house, const unsigned char pal[]) {
     i = std::max(i, 0);
 
     Set_Font_Palette(pal);
-    Count_Up_Print("%d", i, static_cast<int>(PlayerPtr->Available_Money()), _credpx[house],
-                   _credpy[house]);
+    Count_Up_Print("%d", i, static_cast<int>(PlayerPtr->Available_Money()),
+                   base::At(_credpx, house), base::At(_credpy, house));
     Call_Back_Delay(2);
     if (Check_Key()) {
       i = static_cast<int>(PlayerPtr->Available_Money() - 5);
@@ -1557,11 +1568,11 @@ void ScoreClass::Show_Credits(int house, const unsigned char pal[]) {
   } while (i < PlayerPtr->Available_Money());
 
   // Make sure the credits object doesn't freeze on the white stage
-  while (ScoreObjs[credobj]->Stage >= 20 && !ControlQ) {
+  while (base::At(ScoreObjs, credobj)->Stage >= 20 && !ControlQ) {
     Call_Back_Delay(1);
   }
-  delete ScoreObjs[credobj];
-  ScoreObjs[credobj] = nullptr;
+  delete base::At(ScoreObjs, credobj);
+  base::At(ScoreObjs, credobj) = nullptr;
 }
 
 /***************************************************************************
@@ -1733,7 +1744,7 @@ void ScoreClass::Input_Name(char str[], int xpos, int ypos,
           Play_Sample(keystrok, 255, Options.Normalize_Sound(255));
           const int objindex = Alloc_Object(
               new ScoreScaleClass(str + index, xpos + (index * 6), ypos, pal));
-          while (ScoreObjs[objindex]) {
+          while (base::At(ScoreObjs, objindex)) {
             Call_Back_Delay(1);
           }
 
@@ -1837,35 +1848,38 @@ void Draw_InfantryMen() {
 void Draw_InfantryMan(int index) {
 
   /* If the infantryman's dead, just abort this function */
-  if (InfantryMan[index].anim == -1) {
+  if (base::At(InfantryMan, index).anim == -1) {
     return;
   }
 
   const int stage =
-      InfantryMan[index].stage +
-      InfantryMan[index]
-          .Class->DoControls[static_cast<DoType>(InfantryMan[index].anim)]
+      base::At(InfantryMan, index).stage +
+      base::At(InfantryMan, index)
+          .Class
+          ->DoControls[static_cast<DoType>(base::At(InfantryMan, index).anim)]
           .Frame;
 
-  CC_Draw_Shape(InfantryMan[index].shapefile, stage, InfantryMan[index].xpos,
-                InfantryMan[index].ypos, WINDOW_MAIN,
+  CC_Draw_Shape(base::At(InfantryMan, index).shapefile, stage,
+                base::At(InfantryMan, index).xpos,
+                base::At(InfantryMan, index).ypos, WINDOW_MAIN,
                 SHAPE_FADING | SHAPE_CENTER | SHAPE_WIN_REL,  //|SHAPE_GHOST,
-                InfantryMan[index].remap, MouseClass::UnitShadow);
+                base::At(InfantryMan, index).remap, MouseClass::UnitShadow);
   /*
   ** see if it's time to run a new anim
   */
-  if (--InfantryMan[index].delay < 0) {
-    InfantryMan[index].delay = 3;
-    if (std::cmp_greater_equal(
-            ++InfantryMan[index].stage,
-            InfantryMan[index]
-                .Class->DoControls[static_cast<DoType>(InfantryMan[index].anim)]
-                .Count)) {
+  if (--base::At(InfantryMan, index).delay < 0) {
+    base::At(InfantryMan, index).delay = 3;
+    if (std::cmp_greater_equal(++base::At(InfantryMan, index).stage,
+                               base::At(InfantryMan, index)
+                                   .Class
+                                   ->DoControls[static_cast<DoType>(
+                                       base::At(InfantryMan, index).anim)]
+                                   .Count)) {
       /*
       ** was he playing a death anim? If so, and it's done, erase him
       */
-      if (InfantryMan[index].anim >= static_cast<int>(DO_GUN_DEATH)) {
-        InfantryMan[index].anim = -1;
+      if (base::At(InfantryMan, index).anim >= static_cast<int>(DO_GUN_DEATH)) {
+        base::At(InfantryMan, index).anim = -1;
       } else {
         New_Infantry_Anim(index, static_cast<int>(DO_STAND_READY));
       }
@@ -1888,12 +1902,12 @@ void Draw_InfantryMan(int index) {
  *   04/13/1995 BWG : Created.                                             *
  *=========================================================================*/
 void New_Infantry_Anim(int index, int anim) {
-  InfantryMan[index].anim = anim;
-  InfantryMan[index].stage = 0;
+  base::At(InfantryMan, index).anim = anim;
+  base::At(InfantryMan, index).stage = 0;
   if (anim >= static_cast<int>(DO_GUN_DEATH)) {
-    InfantryMan[index].delay = 1;  // start right away
+    base::At(InfantryMan, index).delay = 1;  // start right away
   } else {
-    InfantryMan[index].delay = static_cast<char>(Random() & 15);
+    base::At(InfantryMan, index).delay = static_cast<char>(Random() & 15);
   }
 }
 
@@ -1921,7 +1935,7 @@ void Draw_Bar_Graphs(int i, int gkilled, int nkilled, int ckilled) {
     LogicPage->Draw_Line(0 + std::min(i, gkilled) + 1, 0 + 5,
                          0 + std::min(i, gkilled) + 1, 0 + 5, kTBlack);
     if (i <= gkilled) {
-      const int anim = InfantryMan[i / 11].anim;
+      const int anim = base::At(InfantryMan, i / 11).anim;
       if (anim != -1 && anim < static_cast<int>(DO_GUN_DEATH)) {
         if (i / 11) {
           New_Infantry_Anim(i / 11,
@@ -1941,7 +1955,8 @@ void Draw_Bar_Graphs(int i, int gkilled, int nkilled, int ckilled) {
     LogicPage->Draw_Line(0 + std::min(i, nkilled) + 1, 0 + 17,
                          0 + std::min(i, nkilled) + 1, 0 + 17, kTBlack);
     if (i <= nkilled) {
-      const int anim = InfantryMan[(NUMINFANTRYMEN / 3) + (i / 11)].anim;
+      const int anim =
+          base::At(InfantryMan, (NUMINFANTRYMEN / 3) + (i / 11)).anim;
       if (anim != -1 && anim < static_cast<int>(DO_GUN_DEATH)) {
         if (i / 11) {
           New_Infantry_Anim((NUMINFANTRYMEN / 3) + (i / 11),
@@ -1963,7 +1978,8 @@ void Draw_Bar_Graphs(int i, int gkilled, int nkilled, int ckilled) {
     LogicPage->Draw_Line(0 + std::min(i, ckilled) + 1, 0 + 29,
                          0 + std::min(i, ckilled) + 1, 0 + 29, kTBlack);
     if (i <= ckilled) {
-      const int anim = InfantryMan[(NUMINFANTRYMEN * 2 / 3) + (i / 11)].anim;
+      const int anim =
+          base::At(InfantryMan, (NUMINFANTRYMEN * 2 / 3) + (i / 11)).anim;
       if (anim != -1 && anim < static_cast<int>(DO_GUN_DEATH)) {
         if (i / 11) {
           New_Infantry_Anim((NUMINFANTRYMEN * 2 / 3) + (i / 11),
@@ -2149,7 +2165,7 @@ void Multi_Score_Presentation() {
   if (MPlayerCurGame == MAX_MULTI_GAMES - 1) {
     for (auto& i : MPlayerScore) {
       for (int k = 0; k < MAX_MULTI_GAMES - 1; k++) {
-        i.Kills[k] = i.Kills[k + 1];
+        base::At(i.Kills, k) = base::At(i.Kills, k + 1);
       }
     }
   }
@@ -2157,7 +2173,7 @@ void Multi_Score_Presentation() {
   int y = 41;
   for (auto& i : MPlayerScore) {
     if (strlen(i.Name)) {
-      const unsigned char* pal = _colors[i.Color];
+      const unsigned char* pal = base::At(_colors, i.Color);
 
       Alloc_Object(new ScorePrintClass(i.Name, 15, y, pal));
       Call_Back_Delay(20);
@@ -2166,8 +2182,8 @@ void Multi_Score_Presentation() {
       Call_Back_Delay(6);
 
       for (int k = 0; k <= std::min(MPlayerCurGame, MAX_MULTI_GAMES - 2); k++) {
-        if (i.Kills[k] >= 0) {
-          Alloc_Object(new ScorePrintClass(Int_Print(i.Kills[k]),
+        if (base::At(i.Kills, k) >= 0) {
+          Alloc_Object(new ScorePrintClass(Int_Print(base::At(i.Kills, k)),
                                            225 + (24 * k), y, pal));
           Call_Back_Delay(6);
         }

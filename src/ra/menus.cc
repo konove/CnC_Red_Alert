@@ -43,6 +43,7 @@
 #include <cctype>
 #include <cstdint>
 
+#include "base/array.h"
 #include "base/numeric.h"
 #include "ra/compat.h"
 #include "ra/conquer.h"
@@ -191,7 +192,8 @@ static bool Coordinates_In_Region(int x, int y, int inx1, int iny1, int inx2,
 /*=========================================================================*/
 void Setup_Menu(int menu, const char* text[], uint32_t field, int index,
                 int skip) {
-  int* menuptr = &MenuList[menu][0]; /* get pointer to menu	*/
+  int* menuptr =
+      base::Suffix(MenuList[menu], 0).data(); /* get pointer to menu	*/
   const int menuy =
       static_cast<int>(WinY) + menuptr[kMenuy]; /* get the absolute */
   const int menux =
@@ -225,7 +227,8 @@ int Check_Menu(int menu, const char* text[], char* /*unused*/, uint32_t field,
   // selection++;
   // /* get rid of warning	*/
 
-  int* menuptr = &MenuList[menu][0];          /* get pointer to menu	*/
+  int* menuptr =
+      base::Suffix(MenuList[menu], 0).data(); /* get pointer to menu	*/
   const int maxitem = menuptr[kItemshigh] - 1;              /* find max items */
   int newitem = item = menuptr[kMselected] % (maxitem + 1); /* find selected */
   int select = -1;                            /* no selection made		*/
@@ -430,13 +433,13 @@ int Do_Menu(const char** strings, bool /*unused*/) {
   **	Adjust the window values to match the size of the
   **	specified menu.
   */
-  WindowList[static_cast<int>(WINDOW_MENU)][kWindowWidth] =
+  base::At(WindowList[static_cast<int>(WINDOW_MENU)], kWindowWidth) =
       (MenuList[0][kItemwidth] + 2) * 8;
-  WindowList[static_cast<int>(WINDOW_MENU)][kWindowX] =
+  base::At(WindowList[static_cast<int>(WINDOW_MENU)], kWindowX) =
       (19 - (length / 16)) * 8;
-  WindowList[static_cast<int>(WINDOW_MENU)][kWindowY] =
+  base::At(WindowList[static_cast<int>(WINDOW_MENU)], kWindowY) =
       174 - (MenuList[0][kItemshigh] * (FontHeight + FontYSpacing));
-  WindowList[static_cast<int>(WINDOW_MENU)][kWindowHeight] =
+  base::At(WindowList[static_cast<int>(WINDOW_MENU)], kWindowHeight) =
       (MenuList[0][kItemshigh] * FontHeight) + 5 /*11*/;
 
   /*
@@ -630,7 +633,7 @@ int Main_Menu(int32_t /*unused*/) {
   buttons[5] = &introbtn;
   buttons[6] = &exitbtn;
 
-  buttons[curbutton]->Turn_On();
+  base::At(buttons, curbutton)->Turn_On();
 
   Keyboard->Clear();
 
@@ -727,8 +730,8 @@ int Main_Menu(int32_t /*unused*/) {
         break;
 
       case KN_UP:
-        buttons[curbutton]->Turn_Off();
-        buttons[curbutton]->Flag_To_Redraw();
+        base::At(buttons, curbutton)->Turn_Off();
+        base::At(buttons, curbutton)->Flag_To_Redraw();
         curbutton--;
         switch (curbutton) {
           case -1:
@@ -751,13 +754,13 @@ int Main_Menu(int32_t /*unused*/) {
           default:
             break;
         }
-        buttons[curbutton]->Turn_On();
-        buttons[curbutton]->Flag_To_Redraw();
+        base::At(buttons, curbutton)->Turn_On();
+        base::At(buttons, curbutton)->Flag_To_Redraw();
         break;
 
       case KN_DOWN:
-        buttons[curbutton]->Turn_Off();
-        buttons[curbutton]->Flag_To_Redraw();
+        base::At(buttons, curbutton)->Turn_Off();
+        base::At(buttons, curbutton)->Flag_To_Redraw();
         curbutton++;
         if (curbutton == max_buttons) {
           if (bExpansionCS) {
@@ -770,13 +773,13 @@ int Main_Menu(int32_t /*unused*/) {
         } else if (curbutton == 1 && !bExpansionAM) {
           curbutton = 2;
         }
-        buttons[curbutton]->Turn_On();
-        buttons[curbutton]->Flag_To_Redraw();
+        base::At(buttons, curbutton)->Turn_On();
+        base::At(buttons, curbutton)->Flag_To_Redraw();
         break;
 
       case KN_RETURN:
-        buttons[curbutton]->IsPressed = true;
-        buttons[curbutton]->Draw_Me(true);
+        base::At(buttons, curbutton)->IsPressed = true;
+        base::At(buttons, curbutton)->Draw_Me(true);
         retval = curbutton;
         process = false;
         break;

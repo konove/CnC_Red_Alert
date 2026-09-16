@@ -48,6 +48,8 @@
 
 #include "tech/random_source.h"
 
+#include "base/array.h"
+
 // explicit_bzero is a C library extension that <cstring> does not declare.
 #include <string.h>  // NOLINT(modernize-deprecated-headers)
 
@@ -288,7 +290,7 @@ void RandomSource::Scramble_Seed() {
  *=============================================================================================*/
 base::ssize RandomSource::Read(std::span<std::byte> buffer) {
   for (std::byte& byte : buffer) {
-    byte = static_cast<std::byte>(Random[Current++].Next());
+    byte = static_cast<std::byte>(base::At(Random, Current++).Next());
     Current %= static_cast<int>(std::size(Random));
   }
   return std::ssize(buffer);

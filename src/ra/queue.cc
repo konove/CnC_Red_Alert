@@ -90,6 +90,7 @@
 #include <utility>
 
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/safe_string.h"
@@ -701,7 +702,7 @@ static void Queue_AI_Multiplayer() {
   //	Compute the Game's CRC
   //------------------------------------------------------------------------
   Compute_Game_CRC();
-  CRC[Frame % 32] = GameCRC;
+  base::At(CRC, Frame % 32) = GameCRC;
 
   //------------------------------------------------------------------------
   //	If we've just started a game, or loaded a multiplayer game, we must
@@ -712,9 +713,9 @@ static void Queue_AI_Multiplayer() {
     //	Initialize static locals
     //.....................................................................
     for (int i = 0; i < kMaxPlayers - 1; i++) {
-      their_frame[i] = -1;
-      their_sent[i] = 0;
-      their_recv[i] = 0;
+      base::At(their_frame, i) = -1;
+      base::At(their_sent, i) = 0;
+      base::At(their_recv, i) = 0;
     }
     my_sent = 0;
     skip_crc.Set(32);
@@ -3460,7 +3461,7 @@ static int Execute_DoList(int max_houses, HousesType base_house,
             // difference non-negative before wrapping onto the CRC ring.
             index =
                 (DoList[j].Frame - DoList[j].Data.FrameInfo.Delay + 32) % 32;
-            if (CRC[index] != DoList[j].Data.FrameInfo.CRC) {
+            if (base::At(CRC, index) != DoList[j].Data.FrameInfo.CRC) {
               Print_CRCs(&DoList[j]);
 
               if (WWMessageBox().Process(TXT_OUT_OF_SYNC, TXT_CONTINUE,
@@ -3663,7 +3664,7 @@ static void Queue_Playback() {
   //	Compute the Game's CRC
   //------------------------------------------------------------------------
   Compute_Game_CRC();
-  CRC[Frame % 32] = GameCRC;
+  base::At(CRC, Frame % 32) = GameCRC;
 
   //------------------------------------------------------------------------
   // If we've reached the CRC print frame, do so & exit
@@ -3918,7 +3919,7 @@ static void Print_CRCs(const EventClass* ev) {
   }
 
   for (int i = 0; i < 32; i++) {
-    absl::FPrintF(fp, "CRC[%d]=%x\n", i, CRC[i]);
+    absl::FPrintF(fp, "CRC[%d]=%x\n", i, base::At(CRC, i));
   }
 
   //
@@ -3932,7 +3933,7 @@ static void Print_CRCs(const EventClass* ev) {
       const PlayerColorType color = housep->RemapColor;
       absl::FPrintF(fp, "%s: IsHuman:%d  Color:%s  ID:%d  ActLike:%s\n",
                     housep->IniName, housep->IsHuman,
-                    ColorNames[static_cast<int>(color)], housep->ID,
+                    base::At(ColorNames, static_cast<int>(color)), housep->ID,
                     HouseClass::As_Pointer(actlike)->Class->Name());
       Add_CRC(&GameCRC,
               static_cast<uint32_t>(static_cast<int>(housep->Credits) +

@@ -45,6 +45,7 @@
 #include <algorithm>
 #include <iterator>
 
+#include "base/array.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/timer.h"
@@ -200,7 +201,7 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
         // guarantee they land inside _rate, so clamp before indexing.
         rate = Bound(rate, 0, static_cast<int>(std::ssize(_rate)) - 1);
 
-        int distance = _rate[rate] / 2;
+        int distance = base::At(_rate, rate) / 2;
 
         if (!Scroll_Map(direction, distance, false)) {
           Override_Mouse_Shape(
@@ -216,7 +217,7 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
           *scroll *	the map if the delay counter indicates.
           */
           if (Keyboard::Down(KN_LMOUSE) || IsAutoScroll) {
-            distance = _rate[rate];
+            distance = base::At(_rate, rate);
             Scroll_Map(direction, distance, true);
 
             if (Counter.Time() == 0 && player_scrolled) {

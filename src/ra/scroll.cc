@@ -44,6 +44,7 @@
 #include <algorithm>
 #include <iterator>
 
+#include "base/array.h"
 #include "ra/defines.h"
 #include "ra/externs.h"
 #include "ra/face.h"
@@ -194,7 +195,7 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
         // guarantee they land inside _rate, so clamp before indexing.
         rate = Bound(rate, 0, static_cast<int>(std::ssize(_rate)) - 1);
 
-        int distance = _rate[rate] / 2;
+        int distance = base::At(_rate, rate) / 2;
 
         if (!Scroll_Map(direction, distance, false)) {
           Override_Mouse_Shape(
@@ -210,13 +211,13 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
           *scroll *	the map if the delay counter indicates.
           */
           if (KeyboardClass::Down(KN_LMOUSE) || IsAutoScroll) {
-            distance = _rate[rate];
+            distance = base::At(_rate, rate);
 
             if (MapEditorActive) {
               Scroll_Map(direction, distance, true);
               Counter.Set(SCROLL_DELAY);
             } else {
-              distance = _rate[rate];
+              distance = base::At(_rate, rate);
               Scroll_Map(direction, distance, true);
 
               if (Counter.IsFinished() && player_scrolled) {

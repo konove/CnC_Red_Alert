@@ -43,6 +43,7 @@
 #include <cstdint>
 #include <span>
 
+#include "base/array.h"
 #include "tech/span_sink.h"
 #include "tech/span_source.h"
 
@@ -93,8 +94,8 @@ int LZWEngine::Compress(std::span<const std::byte> input,
     **	value to this code value that represents the concatenation
     **	of the previous code value and the current character.
     */
-    if (index != -1 && dict[index].CodeValue != -1) {
-      string_code = dict[index].CodeValue;
+    if (index != -1 && base::At(dict, index).CodeValue != -1) {
+      string_code = base::At(dict, index).CodeValue;
     } else {
       /*
       **	Since no exact match was found, then create a new code
@@ -103,7 +104,7 @@ int LZWEngine::Compress(std::span<const std::byte> input,
       **	code table.
       */
       if (index != -1 && next_code <= kMaxCode) {
-        dict[index] = CodeClass(next_code, string_code, character);
+        base::At(dict, index) = CodeClass(next_code, string_code, character);
         next_code++;
       }
 
@@ -177,10 +178,10 @@ int LZWEngine::Uncompress(std::span<const std::byte> input,
       count = Decode_String(decode_stack, new_code);
     }
 
-    character = decode_stack[count - 1];
+    character = base::At(decode_stack, count - 1);
     while (count > 0) {
       --count;
-      outpipe.WriteObject(decode_stack[count]);
+      outpipe.WriteObject(base::At(decode_stack, count));
     }
 
     /*
@@ -188,7 +189,7 @@ int LZWEngine::Uncompress(std::span<const std::byte> input,
     **	room).
     */
     if (next_code <= kMaxCode) {
-      dict[next_code] = CodeClass(next_code, old_code, character);
+      base::At(dict, next_code) = CodeClass(next_code, old_code, character);
       next_code++;
     }
     old_code = new_code;
@@ -224,12 +225,13 @@ int LZWEngine::Find_Child_Node(CodeType parent_code,
   **	found for the code and character specified.
   */
   const int initial = hash_index;
-  while (!dict[hash_index].Is_Matching(parent_code, child_character)) {
+  while (
+      !base::At(dict, hash_index).Is_Matching(parent_code, child_character)) {
     /*
     **	Stop searching if an unused index is found since this means that
     **	a match doesn't exist in the table at all.
     */
-    if (dict[hash_index].Is_Unused()) {
+    if (base::At(dict, hash_index).Is_Unused()) {
       break;
     }
 
@@ -259,9 +261,9 @@ int LZWEngine::Find_Child_Node(CodeType parent_code,
 int LZWEngine::Decode_String(unsigned char* ptr, CodeType code) {
   int count = 0;
   while (code > 255) {
-    *ptr++ = dict[code].CharValue;
+    *ptr++ = base::At(dict, code).CharValue;
     count++;
-    code = dict[code].ParentCode;
+    code = base::At(dict, code).ParentCode;
   }
   *ptr = static_cast<unsigned char>(code);
   count++;

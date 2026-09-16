@@ -3,10 +3,12 @@
 #ifndef CNC_RED_ALERT_BASE_ENUM_ARRAY_H_
 #define CNC_RED_ALERT_BASE_ENUM_ARRAY_H_
 
+#include <iterator>
 #include <type_traits>
 
 #include "absl/base/attributes.h"
 #include "absl/log/check.h"
+#include "base/array.h"
 #include "base/types.h"
 #include "magic_enum/magic_enum.hpp"
 
@@ -34,12 +36,12 @@ struct EnumArray {
 
   constexpr T& operator[](E index) noexcept ABSL_ATTRIBUTE_LIFETIME_BOUND {
     DCHECK(static_cast<ssize>(index) >= 0 && static_cast<ssize>(index) < N);
-    return elements[static_cast<ssize>(index)];
+    return base::At(elements, static_cast<ssize>(index));
   }
   constexpr const T& operator[](E index) const noexcept
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
     DCHECK(static_cast<ssize>(index) >= 0 && static_cast<ssize>(index) < N);
-    return elements[static_cast<ssize>(index)];
+    return base::At(elements, static_cast<ssize>(index));
   }
 
   [[nodiscard]] static constexpr ssize size() noexcept { return N; }
@@ -64,12 +66,17 @@ struct EnumArray {
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return elements;
   }
+  // std::end returns the one-past pointer into elements. Clang 23 cannot
+  // infer this through the library template.
+  // NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-lifetimebound-violation)
   [[nodiscard]] constexpr T* end() noexcept ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return elements + N;
+    return std::end(elements);
   }
   [[nodiscard]] constexpr const T* end() const noexcept
+      // std::end has the same owner as elements.
+      // NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-lifetimebound-violation)
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return elements + N;
+    return std::end(elements);
   }
 };
 

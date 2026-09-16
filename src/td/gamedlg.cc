@@ -41,6 +41,7 @@
 
 #include "td/gamedlg.h"
 
+#include "base/array.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/misc.h"
@@ -346,9 +347,9 @@ void GameControlsClass::Process() {
         break;
 
       case KN_UP:
-        if (buttons[curbutton]) {
-          buttons[curbutton]->Turn_Off();
-          buttons[curbutton]->Flag_To_Redraw();
+        if (base::At(buttons, curbutton)) {
+          base::At(buttons, curbutton)->Turn_Off();
+          base::At(buttons, curbutton)->Flag_To_Redraw();
         }
 
         curbutton--;
@@ -356,17 +357,17 @@ void GameControlsClass::Process() {
           curbutton = kButtonCount - kButtonFirst - 1;
         }
 
-        if (buttons[curbutton]) {
-          buttons[curbutton]->Turn_On();
-          buttons[curbutton]->Flag_To_Redraw();
+        if (base::At(buttons, curbutton)) {
+          base::At(buttons, curbutton)->Turn_On();
+          base::At(buttons, curbutton)->Flag_To_Redraw();
         }
         refresh = true;
         break;
 
       case KN_DOWN:
-        if (buttons[curbutton]) {
-          buttons[curbutton]->Turn_Off();
-          buttons[curbutton]->Flag_To_Redraw();
+        if (base::At(buttons, curbutton)) {
+          base::At(buttons, curbutton)->Turn_Off();
+          base::At(buttons, curbutton)->Flag_To_Redraw();
         }
 
         curbutton++;
@@ -374,9 +375,9 @@ void GameControlsClass::Process() {
           curbutton = 0;
         }
 
-        if (buttons[curbutton]) {
-          buttons[curbutton]->Turn_On();
-          buttons[curbutton]->Flag_To_Redraw();
+        if (base::At(buttons, curbutton)) {
+          base::At(buttons, curbutton)->Turn_On();
+          base::At(buttons, curbutton)->Flag_To_Redraw();
         }
         refresh = true;
         break;

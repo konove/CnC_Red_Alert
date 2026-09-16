@@ -57,6 +57,7 @@
 #include <utility>
 
 #include "absl/log/log.h"
+#include "base/array.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
@@ -409,9 +410,9 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     */
     case TACTION_TEXT_TRIGGER: {
       const char* message =
-          TutorialTextOffsets[Data.Value] == 0xFFFF
+          base::At(TutorialTextOffsets, Data.Value) == 0xFFFF
               ? nullptr
-              : TutorialTextData + TutorialTextOffsets[Data.Value];
+              : TutorialTextData + base::At(TutorialTextOffsets, Data.Value);
       Session.Messages.Add_Message(
           nullptr, 0, message, PCOLOR_GREEN,
           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
@@ -475,8 +476,8 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     */
     case TACTION_REVEAL_SOME:
       if (!PlayerPtr->IsVisionary) {
-        Map.Sight_From(Scen.Waypoint[Data.Value], Rule.GapShroudRadius,
-                       PlayerPtr, false);
+        Map.Sight_From(base::At(Scen.Waypoint, Data.Value),
+                       Rule.GapShroudRadius, PlayerPtr, false);
       }
       break;
 
@@ -486,7 +487,8 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     */
     case TACTION_REVEAL_ZONE:
       if (!PlayerPtr->IsVisionary) {
-        const int zone = Map[Scen.Waypoint[Data.Value]].Zones[MZONE_CRUSHER];
+        const int zone =
+            Map[base::At(Scen.Waypoint, Data.Value)].Zones[MZONE_CRUSHER];
 
         for (CELL map_cell = 0; map_cell < MAP_CELL_TOTAL; map_cell++) {
           if (std::cmp_equal(Map[map_cell].Zones[MZONE_CRUSHER], zone)) {
@@ -640,7 +642,8 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     **	Place a smoke marker at the waypoint specified.
     */
     case TACTION_DZ:
-      new AnimClass(ANIM_LZ_SMOKE, Cell_Coord(Scen.Waypoint[Data.Value]));
+      new AnimClass(ANIM_LZ_SMOKE,
+                    Cell_Coord(base::At(Scen.Waypoint, Data.Value)));
       break;
 
     /*

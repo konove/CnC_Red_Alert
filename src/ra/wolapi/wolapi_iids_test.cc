@@ -1,5 +1,6 @@
 #include <cstdint>
 
+#include "base/array.h"
 #include "gtest/gtest.h"
 #include "port/win32/win32_com.h"
 #include "ra/wolapi/wolapi.h"
@@ -15,7 +16,7 @@ IID FromString(std::uint32_t data1, std::uint16_t data2, std::uint16_t data3,
                std::uint64_t tail) {
   IID iid{data1, data2, data3, {}};
   for (unsigned i = 0; i < 8; ++i) {
-    iid.Data4[i] = static_cast<std::uint8_t>(tail >> (8U * (7U - i)));
+    base::At(iid.Data4, i) = static_cast<std::uint8_t>(tail >> (8U * (7U - i)));
   }
   return iid;
 }

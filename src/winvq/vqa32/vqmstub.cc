@@ -5,6 +5,7 @@
 #include <cstring>
 
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "winvq/vqm32/compress.h"
 #include "winvq/vqm32/soscomp.h"
 
@@ -63,10 +64,10 @@ bool DecompressVqaSosData(SosCompressInfo* info, int32_t uncomp_size) {
           static_cast<std::uint8_t>(i == 0 ? raw_byte & 0x0F : raw_byte >> 4);
 
       // 2. Get current step size
-      const int step = kImaAdpcmStepTable[info->step_index];
+      const int step = base::At(kImaAdpcmStepTable, info->step_index);
 
       // 3. Update Step Index for the NEXT sample
-      const int index_delta = kImaAdpcmIndexTable[nibble];
+      const int index_delta = base::At(kImaAdpcmIndexTable, nibble);
       info->step_index = static_cast<std::int16_t>(std::clamp(info->step_index + index_delta, 0, 88));
 
       // 4. Calculate Difference

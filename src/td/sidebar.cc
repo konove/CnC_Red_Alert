@@ -97,6 +97,7 @@
 #include <new>
 #include <string>
 
+#include "base/array.h"
 #include "base/numeric.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
@@ -235,12 +236,13 @@ void SidebarClass::One_Time() {
   *drawing *	code so that as the sidebar buildable buttons scroll, they get
   *properly *	clipped at the top and bottom edges.
   */
-  WindowList[static_cast<int>(WINDOW_SIDEBAR)][kWindowX] =
+  base::At(WindowList[static_cast<int>(WINDOW_SIDEBAR)], kWindowX) =
       (SideX + PowWidth) / 8;
-  WindowList[static_cast<int>(WINDOW_SIDEBAR)][kWindowY] =
+  base::At(WindowList[static_cast<int>(WINDOW_SIDEBAR)], kWindowY) =
       SideY + 1 + TopHeight;
-  WindowList[static_cast<int>(WINDOW_SIDEBAR)][kWindowWidth] = SideWidth / 8;
-  WindowList[static_cast<int>(WINDOW_SIDEBAR)][kWindowHeight] =
+  base::At(WindowList[static_cast<int>(WINDOW_SIDEBAR)], kWindowWidth) =
+      SideWidth / 8;
+  base::At(WindowList[static_cast<int>(WINDOW_SIDEBAR)], kWindowHeight) =
       (MaxVisible * (StripClass::kObjectHeight * factor)) - 1;
 
   /*
@@ -465,7 +467,7 @@ int SidebarClass::Which_Column(RTTIType type) {
  * HISTORY: * 05/19/1995 JLB : Created. *
  *=============================================================================================*/
 bool SidebarClass::Factory_Link(int factory, RTTIType type, int id) {
-  return Column[Which_Column(type)].Factory_Link(factory, type, id);
+  return base::At(Column, Which_Column(type)).Factory_Link(factory, type, id);
 }
 
 /***********************************************************************************************
@@ -653,7 +655,7 @@ bool SidebarClass::Add(RTTIType type, int id) {
   if (!Debug_Map) {
     const int column = Which_Column(type);
 
-    if (Column[column].Add(type, id)) {
+    if (base::At(Column, column).Add(type, id)) {
       Activate(1);
       IsSidebarToRedraw = true;
       Flag_To_Redraw(false);
@@ -684,7 +686,7 @@ bool SidebarClass::Add(RTTIType type, int id) {
  * HISTORY: * 10/28/94   JLB : Created. *
  *=============================================================================================*/
 bool SidebarClass::Scroll(bool up, int column) {
-  if (Column[column].Scroll(up)) {
+  if (base::At(Column, column).Scroll(up)) {
     IsSidebarToRedraw = true;
     Flag_To_Redraw(false);
     return true;
@@ -1071,13 +1073,13 @@ void SidebarClass::StripClass::One_Time(int /*unused*/) {
   for (int lp = 0; lp < 3; lp++) {
     std::string filename;
     if (Get_Resolution_Factor()) {
-      filename = std::string(_file[lp]) + "ICNH";
+      filename = std::string(base::At(_file, lp)) + "ICNH";
     } else {
-      filename = std::string(_file[lp]) + "ICON";
+      filename = std::string(base::At(_file, lp)) + "ICON";
     }
     const auto fullname =
         std::filesystem::path(filename).replace_extension(".SHP").string();
-    SpecialShapes[lp] = MixArchive::Retrieve(fullname);
+    base::At(SpecialShapes, lp) = MixArchive::Retrieve(fullname);
   }
 }
 
@@ -1098,7 +1100,7 @@ void SidebarClass::StripClass::One_Time(int /*unused*/) {
  * HISTORY: * 05/19/1995 JLB : commented *
  *=============================================================================================*/
 const void* SidebarClass::StripClass::Get_Special_Cameo(int type) {
-  return SpecialShapes[type];
+  return base::At(SpecialShapes, type);
 }
 
 /***********************************************************************************************
@@ -1150,23 +1152,24 @@ void SidebarClass::StripClass::Init_Clear() {
 void SidebarClass::StripClass::Init_IO(int id) {
   ID = id;
 
-  UpButton[ID].IsSticky = true;
-  UpButton[ID].ID = static_cast<unsigned>(kButtonUp + id);
-  UpButton[ID].X = X + ButtonSpacingOffset + 1;
-  UpButton[ID].Y = Y + (kMaxVisible * ObjectHeight) - 1;
+  base::At(UpButton, ID).IsSticky = true;
+  base::At(UpButton, ID).ID = static_cast<unsigned>(kButtonUp + id);
+  base::At(UpButton, ID).X = X + ButtonSpacingOffset + 1;
+  base::At(UpButton, ID).Y = Y + (kMaxVisible * ObjectHeight) - 1;
 
-  UpButton[ID].Set_Shape(Hires_Retrieve("STRIPUP.SHP"));
+  base::At(UpButton, ID).Set_Shape(Hires_Retrieve("STRIPUP.SHP"));
 
-  DownButton[ID].IsSticky = true;
-  DownButton[ID].ID = static_cast<unsigned>(kButtonDown + id);
-  DownButton[ID].X =
-      UpButton[ID].X + UpButton[ID].Width + ButtonSpacingOffset - 2;
-  DownButton[ID].Y = Y + (kMaxVisible * ObjectHeight) - 1;
+  base::At(DownButton, ID).IsSticky = true;
+  base::At(DownButton, ID).ID = static_cast<unsigned>(kButtonDown + id);
+  base::At(DownButton, ID).X = base::At(UpButton, ID).X +
+                               base::At(UpButton, ID).Width +
+                               ButtonSpacingOffset - 2;
+  base::At(DownButton, ID).Y = Y + (kMaxVisible * ObjectHeight) - 1;
 
-  DownButton[ID].Set_Shape(Hires_Retrieve("STRIPDN.SHP"));
+  base::At(DownButton, ID).Set_Shape(Hires_Retrieve("STRIPDN.SHP"));
 
   for (int index = 0; index < kMaxVisible; index++) {
-    SelectClass& g = SelectButton[ID][index];
+    SelectClass& g = base::At(base::At(SelectButton, ID), index);
     g.ID = kButtonSelect;
     g.X = X;
     g.Y = Y + (ObjectHeight * index);
@@ -1194,16 +1197,16 @@ void SidebarClass::StripClass::Init_Theater(TheaterType theater) {
   for (int lp = 0; lp < 3; lp++) {
     std::string filename;
     if (Get_Resolution_Factor()) {
-      filename = std::string(_file[lp]) + "ICNH";
+      filename = std::string(base::At(_file, lp)) + "ICNH";
     } else {
-      filename = std::string(_file[lp]) + "ICON";
+      filename = std::string(base::At(_file, lp)) + "ICON";
     }
     const auto fullname = std::filesystem::path(filename)
                               .replace_extension(Theaters[theater].Suffix)
                               .string();
     const void* cameo_ptr = MixArchive::Retrieve(fullname);
     if (cameo_ptr) {
-      SpecialShapes[lp] = cameo_ptr;
+      base::At(SpecialShapes, lp) = cameo_ptr;
     }
   }
 
@@ -1231,15 +1234,15 @@ void SidebarClass::StripClass::Init_Theater(TheaterType theater) {
 // Not const: adds the strip's buttons to the map's gadget list.
 // NOLINTNEXTLINE(readability-make-member-function-const)
 void SidebarClass::StripClass::Activate() {
-  UpButton[ID].Zap();
-  Map.Add_A_Button(UpButton[ID]);
+  base::At(UpButton, ID).Zap();
+  Map.Add_A_Button(base::At(UpButton, ID));
 
-  DownButton[ID].Zap();
-  Map.Add_A_Button(DownButton[ID]);
+  base::At(DownButton, ID).Zap();
+  Map.Add_A_Button(base::At(DownButton, ID));
 
   for (int index = 0; index < kMaxVisible; index++) {
-    SelectButton[ID][index].Zap();
-    Map.Add_A_Button(SelectButton[ID][index]);
+    base::At(base::At(SelectButton, ID), index).Zap();
+    Map.Add_A_Button(base::At(base::At(SelectButton, ID), index));
   }
 }
 
@@ -1262,10 +1265,10 @@ void SidebarClass::StripClass::Activate() {
 // Not const: removes the strip's buttons from the map's gadget list.
 // NOLINTNEXTLINE(readability-make-member-function-const)
 void SidebarClass::StripClass::Deactivate() {
-  Map.Remove_A_Button(UpButton[ID]);
-  Map.Remove_A_Button(DownButton[ID]);
+  Map.Remove_A_Button(base::At(UpButton, ID));
+  Map.Remove_A_Button(base::At(DownButton, ID));
   for (int index = 0; index < kMaxVisible; index++) {
-    Map.Remove_A_Button(SelectButton[ID][index]);
+    Map.Remove_A_Button(base::At(base::At(SelectButton, ID), index));
   }
 }
 
@@ -1363,16 +1366,16 @@ static int sortfunc(const void* ptr1, const void* ptr2) {
 bool SidebarClass::StripClass::Add(RTTIType type, int id) {
   if (BuildableCount <= kMaxBuildables) {
     for (int index = 0; index < BuildableCount; index++) {
-      if (Buildables[index].BuildableType == type &&
-          Buildables[index].BuildableID == id) {
+      if (base::At(Buildables, index).BuildableType == type &&
+          base::At(Buildables, index).BuildableID == id) {
         return false;
       }
     }
     if (!ScenarioInit && type != RTTI_SPECIAL) {
       Speak(VOX_NEW_CONSTRUCT);
     }
-    Buildables[BuildableCount].BuildableType = type;
-    Buildables[BuildableCount].BuildableID = id;
+    base::At(Buildables, BuildableCount).BuildableType = type;
+    base::At(Buildables, BuildableCount).BuildableID = id;
     BuildableCount++;
     IsToRedraw = true;
 #ifdef OBSOLETE
@@ -1489,14 +1492,14 @@ bool SidebarClass::StripClass::AI(KeyNumType& input, int /*unused*/,
   **	If this is scroll button for this side strip, then scroll the strip as
   **	indicated.
   */
-  if (input ==
-      ButtonKey(static_cast<int>(UpButton[ID].ID))) {  // && !IsScrolling
-    UpButton[ID].IsPressed = false;
+  if (input == ButtonKey(static_cast<int>(
+                   base::At(UpButton, ID).ID))) {  // && !IsScrolling
+    base::At(UpButton, ID).IsPressed = false;
     Scroll(true);
   }
-  if (input ==
-      ButtonKey(static_cast<int>(DownButton[ID].ID))) {  // && !IsScrolling
-    DownButton[ID].IsPressed = false;
+  if (input == ButtonKey(static_cast<int>(
+                   base::At(DownButton, ID).ID))) {  // && !IsScrolling
+    base::At(DownButton, ID).IsPressed = false;
     Scroll(false);
   }
 
@@ -1577,7 +1580,7 @@ bool SidebarClass::StripClass::AI(KeyNumType& input, int /*unused*/,
   */
   if (IsBuilding) {
     for (int index = 0; index < BuildableCount; index++) {
-      const int factoryid = Buildables[index].Factory;
+      const int factoryid = base::At(Buildables, index).Factory;
 
       if (factoryid != -1) {
         FactoryClass* factory = Factories.Raw_Ptr(factoryid);
@@ -1663,8 +1666,8 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
     /*
     **	Redraw the scroll buttons.
     */
-    UpButton[ID].Draw_Me(true);
-    DownButton[ID].Draw_Me(true);
+    base::At(UpButton, ID).Draw_Me(true);
+    base::At(DownButton, ID).Draw_Me(true);
 
     /*
     **	Loop through all the buildable objects that are visible in the strip and
@@ -1702,12 +1705,12 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
         const ObjectTypeClass* obj = nullptr;
         int spc = 0;
 
-        if (Buildables[index].BuildableType != RTTI_SPECIAL) {
-          obj = Fetch_Techno_Type(Buildables[index].BuildableType,
-                                  Buildables[index].BuildableID);
+        if (base::At(Buildables, index).BuildableType != RTTI_SPECIAL) {
+          obj = Fetch_Techno_Type(base::At(Buildables, index).BuildableType,
+                                  base::At(Buildables, index).BuildableID);
           if (obj) {
             bool isbusy = false;
-            switch (Buildables[index].BuildableType) {
+            switch (base::At(Buildables, index).BuildableType) {
               case RTTI_INFANTRYTYPE:
                 isbusy = PlayerPtr->InfantryFactory != -1;
                 break;
@@ -1728,8 +1731,8 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
             }
             shapefile = obj->Get_Cameo_Data();
             shapenum = 0;
-            if (Buildables[index].Factory != -1) {
-              factory = Factories.Raw_Ptr(Buildables[index].Factory);
+            if (base::At(Buildables, index).Factory != -1) {
+              factory = Factories.Raw_Ptr(base::At(Buildables, index).Factory);
               production = true;
               completed = factory->Has_Completed();
               stage = factory->Completion();
@@ -1748,7 +1751,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
           }
 
         } else {
-          spc = Buildables[index].BuildableID;
+          spc = base::At(Buildables, index).BuildableID;
           shapefile = Get_Special_Cameo(spc - 1);
           shapenum = 0;
 
@@ -1801,9 +1804,13 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
         IsTheaterShape = true;  // This shape is theater specific
         CC_Draw_Shape(
             shapefile, shapenum,
-            x - (WindowList[static_cast<int>(WINDOW_SIDEBAR)][kWindowX] * 8) +
+            x -
+                (base::At(WindowList[static_cast<int>(WINDOW_SIDEBAR)],
+                          kWindowX) *
+                 8) +
                 LeftEdgeOffset,
-            y - WindowList[static_cast<int>(WINDOW_SIDEBAR)][kWindowY],
+            y - base::At(WindowList[static_cast<int>(WINDOW_SIDEBAR)],
+                         kWindowY),
             WINDOW_SIDEBAR,
             SHAPE_NORMAL | SHAPE_WIN_REL |
                 (remapper ? SHAPE_FADING : SHAPE_NORMAL),
@@ -1817,9 +1824,13 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
         if (darken) {
           CC_Draw_Shape(
               ClockShapes, 0,
-              x - (WindowList[static_cast<int>(WINDOW_SIDEBAR)][kWindowX] * 8) +
+              x -
+                  (base::At(WindowList[static_cast<int>(WINDOW_SIDEBAR)],
+                            kWindowX) *
+                   8) +
                   LeftEdgeOffset,
-              y - WindowList[static_cast<int>(WINDOW_SIDEBAR)][kWindowY],
+              y - base::At(WindowList[static_cast<int>(WINDOW_SIDEBAR)],
+                           kWindowY),
               WINDOW_SIDEBAR, SHAPE_NORMAL | SHAPE_WIN_REL | SHAPE_GHOST,
               nullptr, ClockTranslucentTable);
         }
@@ -1837,9 +1848,14 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
           */
           CC_Draw_Shape(
               ObjectTypeClass::PipShapes, static_cast<int>(PIP_READY),
-              x - (WindowList[static_cast<int>(WINDOW_SIDEBAR)][kWindowX] * 8) +
+              x -
+                  (base::At(WindowList[static_cast<int>(WINDOW_SIDEBAR)],
+                            kWindowX) *
+                   8) +
                   LeftEdgeOffset + (ObjectWidth / 2),
-              y - WindowList[static_cast<int>(WINDOW_SIDEBAR)][kWindowY] +
+              y -
+                  base::At(WindowList[static_cast<int>(WINDOW_SIDEBAR)],
+                           kWindowY) +
                   ObjectHeight -
                   Get_Build_Frame_Height(ObjectTypeClass::PipShapes) - 8,
               WINDOW_SIDEBAR, SHAPE_CENTER);
@@ -1849,9 +1865,13 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
         } else {
           CC_Draw_Shape(
               ClockShapes, stage + 1,
-              x - (WindowList[static_cast<int>(WINDOW_SIDEBAR)][kWindowX] * 8) +
+              x -
+                  (base::At(WindowList[static_cast<int>(WINDOW_SIDEBAR)],
+                            kWindowX) *
+                   8) +
                   LeftEdgeOffset,
-              y - WindowList[static_cast<int>(WINDOW_SIDEBAR)][kWindowY],
+              y - base::At(WindowList[static_cast<int>(WINDOW_SIDEBAR)],
+                           kWindowY),
               WINDOW_SIDEBAR, SHAPE_NORMAL | SHAPE_WIN_REL | SHAPE_GHOST,
               nullptr, ClockTranslucentTable);
           /*
@@ -1862,10 +1882,13 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
             CC_Draw_Shape(
                 ObjectTypeClass::PipShapes, static_cast<int>(PIP_HOLDING),
                 x -
-                    (WindowList[static_cast<int>(WINDOW_SIDEBAR)][kWindowX] *
+                    (base::At(WindowList[static_cast<int>(WINDOW_SIDEBAR)],
+                              kWindowX) *
                      8) +
                     LeftEdgeOffset + (ObjectWidth / 2),
-                y - WindowList[static_cast<int>(WINDOW_SIDEBAR)][kWindowY] +
+                y -
+                    base::At(WindowList[static_cast<int>(WINDOW_SIDEBAR)],
+                             kWindowY) +
                     ObjectHeight -
                     Get_Build_Frame_Height(ObjectTypeClass::PipShapes) -
                     8,  // Moved up now that icons have names on them
@@ -1913,13 +1936,14 @@ bool SidebarClass::StripClass::Recalc() {
   */
   bool redraw = false;
   for (int index = 0; index < BuildableCount; index++) {
-    const TechnoTypeClass* tech = Fetch_Techno_Type(
-        Buildables[index].BuildableType, Buildables[index].BuildableID);
+    const TechnoTypeClass* tech =
+        Fetch_Techno_Type(base::At(Buildables, index).BuildableType,
+                          base::At(Buildables, index).BuildableID);
     if (tech) {
       ok = tech->Who_Can_Build_Me(true, false, PlayerPtr->Class->House) !=
            nullptr;
     } else {
-      switch (Buildables[index].BuildableID) {
+      switch (base::At(Buildables, index).BuildableID) {
         case static_cast<int>(SPC_ION_CANNON):
           ok = PlayerPtr->IonCannon.Is_Present();
           break;
@@ -1992,8 +2016,10 @@ bool SidebarClass::StripClass::Recalc() {
       **	Removes this entry from the list.
       */
       if (BuildableCount > 1 && index < BuildableCount - 1) {
-        memcpy(&Buildables[index], &Buildables[index + 1],
-               sizeof(Buildables[0]) * base::ToSize(BuildableCount - index - 1));
+        memcpy(
+            base::Suffix(Buildables, index).data(),
+            base::Suffix(Buildables, index + 1).data(),
+            sizeof(Buildables[0]) * base::ToSize(BuildableCount - index - 1));
       }
       TopIndex = 0;
       IsToRedraw = true;
@@ -2089,9 +2115,9 @@ void SidebarClass::StripClass::SelectClass::Set_Owner(StripClass& strip,
 bool SidebarClass::StripClass::SelectClass::Action(unsigned flags,
                                                    KeyNumType& key) {
   const int index = Strip->TopIndex + Index;
-  const RTTIType otype = Strip->Buildables[index].BuildableType;
-  const int oid = Strip->Buildables[index].BuildableID;
-  const int fnumber = Strip->Buildables[index].Factory;
+  const RTTIType otype = base::At(Strip->Buildables, index).BuildableType;
+  const int oid = base::At(Strip->Buildables, index).BuildableID;
+  const int fnumber = base::At(Strip->Buildables, index).Factory;
 
   FactoryClass* factory = nullptr;
   const ObjectTypeClass* choice = nullptr;
@@ -2319,9 +2345,10 @@ bool SidebarClass::StripClass::SelectClass::Action(unsigned flags,
               *construction *	normally.
               */
               Speak(VOX_BUILDING);
-              OutList.Add(EventClass(EventClass::PRODUCE,
-                                     Strip->Buildables[index].BuildableType,
-                                     Strip->Buildables[index].BuildableID));
+              OutList.Add(
+                  EventClass(EventClass::PRODUCE,
+                             base::At(Strip->Buildables, index).BuildableType,
+                             base::At(Strip->Buildables, index).BuildableID));
             }
           }
 
@@ -2334,9 +2361,10 @@ bool SidebarClass::StripClass::SelectClass::Action(unsigned flags,
           //						Speak(VOX_NO_FACTORY);
           //					} else {
           Speak(VOX_BUILDING);
-          OutList.Add(EventClass(EventClass::PRODUCE,
-                                 Strip->Buildables[index].BuildableType,
-                                 Strip->Buildables[index].BuildableID));
+          OutList.Add(
+              EventClass(EventClass::PRODUCE,
+                         base::At(Strip->Buildables, index).BuildableType,
+                         base::At(Strip->Buildables, index).BuildableID));
           //					}
         }
       }
@@ -2400,9 +2428,9 @@ bool SidebarClass::SBGadgetClass::Action(unsigned /*flags*/,
 bool SidebarClass::StripClass::Factory_Link(int factory, RTTIType type,
                                             int id) {
   for (int index = 0; index < BuildableCount; index++) {
-    if (Buildables[index].BuildableType == type &&
-        Buildables[index].BuildableID == id) {
-      Buildables[index].Factory = factory;
+    if (base::At(Buildables, index).BuildableType == type &&
+        base::At(Buildables, index).BuildableID == id) {
+      base::At(Buildables, index).Factory = factory;
       IsBuilding = true;
 
       /*
@@ -2435,7 +2463,7 @@ bool SidebarClass::StripClass::Factory_Link(int factory, RTTIType type,
  * HISTORY: * 05/18/1995 JLB : Created. *
  *=============================================================================================*/
 bool SidebarClass::Abandon_Production(RTTIType type, int factory) {
-  return Column[Which_Column(type)].Abandon_Production(factory);
+  return base::At(Column, Which_Column(type)).Abandon_Production(factory);
 }
 
 /***********************************************************************************************
@@ -2458,12 +2486,12 @@ bool SidebarClass::StripClass::Abandon_Production(int factory) {
   bool noprod = true;
   bool abandon = false;
   for (int index = 0; index < BuildableCount; index++) {
-    if (Buildables[index].Factory == factory) {
+    if (base::At(Buildables, index).Factory == factory) {
       Factories.Raw_Ptr(factory)->Abandon();
-      Buildables[index].Factory = -1;
+      base::At(Buildables, index).Factory = -1;
       abandon = true;
     } else {
-      if (Buildables[index].Factory != -1) {
+      if (base::At(Buildables, index).Factory != -1) {
         noprod = false;
       }
     }

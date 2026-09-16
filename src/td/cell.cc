@@ -89,6 +89,7 @@
 #include <iterator>
 #include <utility>
 
+#include "base/array.h"
 #include "base/numeric.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
@@ -402,11 +403,11 @@ void CellClass::Redraw_Objects(bool forced) {
     */
     for (int index = 0; index < std::ssize(Overlappers);
          index++) {
-      if (Overlappers[index]) {
-        if (!Overlappers[index]->IsActive) {
-          Overlappers[index] = nullptr;
+      if (base::At(Overlappers, index)) {
+        if (!base::At(Overlappers, index)->IsActive) {
+          base::At(Overlappers, index) = nullptr;
         } else {
-          Overlappers[index]->Mark(MARK_CHANGE);
+          base::At(Overlappers, index)->Mark(MARK_CHANGE);
         }
       }
     }
@@ -708,14 +709,15 @@ void CellClass::Overlap_Down(ObjectClass* object) {
        index++) {
     // Deleted objects can leave stale overlap entries outside the redraw area.
     // Reclaim them just as the archive's null inactive TARGET does on load.
-    if (Overlappers[index] != nullptr && !Overlappers[index]->IsActive) {
-      Overlappers[index] = nullptr;
+    if (base::At(Overlappers, index) != nullptr &&
+        !base::At(Overlappers, index)->IsActive) {
+      base::At(Overlappers, index) = nullptr;
     }
-    if (Overlappers[index] == object) {
+    if (base::At(Overlappers, index) == object) {
       return;
     }
-    if (!Overlappers[index]) {
-      ptr = &Overlappers[index];
+    if (!base::At(Overlappers, index)) {
+      ptr = base::Suffix(Overlappers, index).data();
     }
   }
 
@@ -726,13 +728,13 @@ void CellClass::Overlap_Down(ObjectClass* object) {
   if (!ptr && object->What_Am_I() == RTTI_BUILDING) {
     for (int index = 0; index < std::ssize(Overlappers);
          index++) {
-      switch (Overlappers[index]->What_Am_I()) {
+      switch (base::At(Overlappers, index)->What_Am_I()) {
         case RTTI_BUILDING:
         case RTTI_TERRAIN:
           break;
 
         default:
-          Overlappers[index] = object;
+          base::At(Overlappers, index) = object;
           index = sizeof(Overlappers) / sizeof(Overlappers[0]);
           break;
       }
@@ -769,8 +771,8 @@ void CellClass::Overlap_Up(ObjectClass* object) {
   Validate();
   for (int index = 0; index < std::ssize(Overlappers);
        index++) {
-    if (Overlappers[index] == object) {
-      Overlappers[index] = nullptr;
+    if (base::At(Overlappers, index) == object) {
+      base::At(Overlappers, index) = nullptr;
       break;
     }
   }
@@ -996,7 +998,7 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
           */
           if (IsWaypoint) {
             for (i = 0; i < 26; i++) {
-              if (Waypoint[i] == Cell_Number()) {
+              if (base::At(Waypoint, i) == Cell_Number()) {
                 waypt[0] = static_cast<char>('A' + i);
                 waypt[1] = 0;
                 Fancy_Text_Print(waypt, Map.TacPixelX + x + (CELL_PIXEL_W / 2),
@@ -1364,7 +1366,8 @@ void CellClass::Wall_Update() {
       **	cells.
       */
       for (int i = 0; i < 4; i++) {
-        if (newcell.Adjacent_Cell(_offsets[i]).Overlay == newcell.Overlay) {
+        if (newcell.Adjacent_Cell(base::At(_offsets, i)).Overlay ==
+            newcell.Overlay) {
           icon |= base::Bit<uint32_t>(i);
         }
       }
@@ -1638,7 +1641,7 @@ COORDINATE CellClass::Closest_Free_Spot(COORDINATE coord, bool any) const {
   *or not, *	then just return with the stopping coordinate value.
   */
   if (any || Is_Spot_Free(spot_index)) {
-    return Coord_Add(coord, StoppingCoordAbs[spot_index]);
+    return Coord_Add(coord, base::At(StoppingCoordAbs, spot_index));
   }
 
   /*
@@ -1648,15 +1651,15 @@ COORDINATE CellClass::Closest_Free_Spot(COORDINATE coord, bool any) const {
   */
   unsigned char* sequence = nullptr;
   if (spot_index == 0) {
-    sequence = &_alternate[Random_Pick(0, 3)][0];
+    sequence = base::Suffix(base::At(_alternate, Random_Pick(0, 3)), 0).data();
   } else {
-    sequence = &_sequence[spot_index][0];
+    sequence = base::Suffix(base::At(_sequence, spot_index), 0).data();
   }
   for (int index = 0; index < 4; index++) {
     const int pos = *sequence++;
 
     if (Is_Spot_Free(pos)) {
-      return Coord_Add(coord, StoppingCoordAbs[pos]);
+      return Coord_Add(coord, base::At(StoppingCoordAbs, pos));
     }
   }
 
@@ -1834,7 +1837,7 @@ int32_t CellClass::Tiberium_Adjust(bool pregame) {
       }
     }
 
-    OverlayData = static_cast<unsigned char>(_adj[count]);
+    OverlayData = static_cast<unsigned char>(base::At(_adj, count));
     return (static_cast<int32_t>(OverlayData + 1)) *
            UnitTypeClass::kTiberiumStep;
   }
@@ -1936,8 +1939,10 @@ bool CellClass::Goodie_Check(FootClass* object) {
         }
 
         while (what == -1) {
-          what = _what[Random_Pick(
-              0, static_cast<int>((sizeof(_what) / sizeof(_what[0])) - 1))];
+          what = base::At(
+              _what,
+              Random_Pick(
+                  0, static_cast<int>((sizeof(_what) / sizeof(_what[0])) - 1)));
 
           if (what == kReveal && object->House->IsVisionary) {
             what = -1;
@@ -2094,8 +2099,10 @@ bool CellClass::Goodie_Check(FootClass* object) {
                 INFANTRY_E1, INFANTRY_E1, INFANTRY_E2, INFANTRY_E3,
                 INFANTRY_E4, INFANTRY_E5, INFANTRY_E7, INFANTRY_RAMBO};
             InfantryTypeClass::As_Reference(
-                _inf[Random_Pick(
-                    0, static_cast<int>((sizeof(_inf) / sizeof(_inf[0])) - 1))])
+                base::At(
+                    _inf,
+                    Random_Pick(0, static_cast<int>(
+                                       (sizeof(_inf) / sizeof(_inf[0])) - 1))))
                 .Create_And_Place(Cell_Number(), object->Owner());
           }
           return false;

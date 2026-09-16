@@ -24,6 +24,7 @@
 #include <iterator>
 #include <vector>
 
+#include "base/array.h"
 #include "ra/ccptr.h"
 #include "ra/cell.h"
 #include "ra/conquer.h"
@@ -101,7 +102,7 @@ void CellClass::Serialize(Archive& ar) {
     }
   }
   for (int i = 0; i < count; ++i) {
-    ar(ObjectPtr(Overlappers[i]));
+    ar(ObjectPtr(base::At(Overlappers, i)));
   }
   ar(Flag.Composite, Land);
 }
@@ -152,8 +153,8 @@ void MapClass::Serialize(Archive& ar) {
         ar.Fail("invalid or duplicate crate index");
         return;
       }
-      ar(Crates[index]);
-      if (!ar.ok() || !Crates[index].Is_Valid()) {
+      ar(base::At(Crates, index));
+      if (!ar.ok() || !base::At(Crates, index).Is_Valid()) {
         ar.Fail("invalid saved crate");
         return;
       }
@@ -161,8 +162,8 @@ void MapClass::Serialize(Archive& ar) {
     }
   } else {
     for (int32_t index = 0; index < std::ssize(Crates); ++index) {
-      if (Crates[index].Is_Valid()) {
-        ar(index, Crates[index]);
+      if (base::At(Crates, index).Is_Valid()) {
+        ar(index, base::At(Crates, index));
       }
     }
   }
@@ -219,7 +220,7 @@ void SidebarClass::StripClass::Serialize(Archive& ar) {
     }
   }
   for (int i = 0; i < BuildableCount; ++i) {
-    auto& item = Buildables[i];
+    auto& item = base::At(Buildables, i);
     ar(item.BuildableID, item.BuildableType, item.Factory);
   }
 }

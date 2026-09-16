@@ -47,6 +47,7 @@
 #include <cstring>
 #include <utility>
 
+#include "base/array.h"
 #include "base/types.h"
 #include "sdllib/iff.h"
 #include "sdllib/memflag.h"
@@ -170,7 +171,9 @@ void* Build_Frame(const void* dataptr, uint16_t framenumber, void* buffptr) {
       uint16_t subframe = 2;
 
       while (currframe <= framenumber) {
-        offdiff = static_cast<int32_t>(offset[subframe] & 0x00FFFFFF) - offcurr;
+        offdiff =
+            static_cast<int32_t>(base::At(offset, subframe) & 0x00FFFFFF) -
+            offcurr;
 
         Apply_Delta(buffptr, Add_Long_To_Pointer(ptr, offdiff));
 

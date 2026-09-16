@@ -59,6 +59,7 @@
 #include <cstring>
 
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "base/numeric.h"
 #include "port/ex_string.h"
 #include "sdllib/misc.h"
@@ -812,7 +813,7 @@ static void Assign_Houses() {
     /*
     **	If this house was already selected, decrement 'i' & keep looping.
     */
-    if (house_used[j]) {
+    if (base::At(house_used, j)) {
       i--;
       continue;
     }
@@ -822,29 +823,29 @@ static void Assign_Houses() {
     **	get a pointer to the house instance
     */
     house = static_cast<HousesType>(j + static_cast<int>(HOUSE_MULTI1));
-    pref_house = MPlayerID_To_HousesType(MPlayerID[i]);
-    color = MPlayerID_To_ColorIndex(MPlayerID[i]);
+    pref_house = MPlayerID_To_HousesType(base::At(MPlayerID, i));
+    color = MPlayerID_To_ColorIndex(base::At(MPlayerID, i));
     housep = HouseClass::As_Pointer(house);
-    MPlayerHouses[i] = house;
+    base::At(MPlayerHouses, i) = house;
 
     /*
     **	Mark this house & color as used
     */
-    house_used[j] = true;
-    color_used[static_cast<int>(color)] = true;
+    base::At(house_used, j) = true;
+    base::At(color_used, static_cast<int>(color)) = true;
 
     /*
     **	Set the house's IsHuman, Credits, ActLike, & RemapTable
     */
     memset(housep->Name, 0, MPLAYER_NAME_MAX);
-    strncpy(housep->Name, MPlayerNames[i], MPLAYER_NAME_MAX - 1);
+    strncpy(housep->Name, base::At(MPlayerNames, i), MPLAYER_NAME_MAX - 1);
     housep->IsHuman = true;
     housep->Init_Data(color, pref_house, MPlayerCredits);
 
     /*
     **	If this ID is for myself, set up PlayerPtr
     */
-    if (MPlayerID[i] == MPlayerLocalID) {
+    if (base::At(MPlayerID, i) == MPlayerLocalID) {
       PlayerPtr = housep;
     }
   }
@@ -853,7 +854,7 @@ static void Assign_Houses() {
   **	For all houses not assigned to a player, set them up for computer use
   */
   for (int i = 0; i < MPlayerMax; i++) {
-    if (!house_used[i]) {
+    if (!base::At(house_used, i)) {
       /*
       **	Set the house, preferred house (GDI/NOD), and color; get a
       *pointer *	to the house instance
@@ -863,7 +864,7 @@ static void Assign_Houses() {
                                            static_cast<int>(HOUSE_GOOD));
       for (;;) {
         color = Random_Pick(REMAP_FIRST, REMAP_LAST);
-        if (!color_used[static_cast<int>(color)]) {
+        if (!base::At(color_used, static_cast<int>(color))) {
           break;
         }
       }
@@ -872,8 +873,8 @@ static void Assign_Houses() {
       /*
       **	Mark this house & color as used
       */
-      house_used[i] = true;
-      color_used[static_cast<int>(color)] = true;
+      base::At(house_used, i) = true;
+      base::At(color_used, static_cast<int>(color)) = true;
 
       /*
       **	Set the house's IsHuman, Credits, ActLike, & RemapTable
@@ -1016,12 +1017,12 @@ static void Create_Units() {
   For the current BuildLevel, find the max allowable index into the tables
   ------------------------------------------------------------------------*/
   for (int i = 0; i < kNumUnitCategories; i++) {
-    if (BuildLevel >= utable[i].MinLevel) {
+    if (BuildLevel >= base::At(utable, i).MinLevel) {
       u_limit = i;
     }
   }
   for (int i = 0; i < kNumInfantryCategories; i++) {
-    if (BuildLevel >= utable[i].MinLevel) {
+    if (BuildLevel >= base::At(utable, i).MinLevel) {
       i_limit = i;
     }
   }
@@ -1039,7 +1040,7 @@ static void Create_Units() {
   Init # of each category to 0
   ........................................................................*/
   for (int i = 0; i <= u_limit; i++) {
-    num_units[i] = 0;
+    base::At(num_units, i) = 0;
   }
 
   /*........................................................................
@@ -1047,7 +1048,7 @@ static void Create_Units() {
   ........................................................................*/
   int j = 0;
   for (int i = 0; i < tot_units; i++) {
-    num_units[j]++;
+    base::At(num_units, j)++;
     j++;
     if (j > u_limit) {
       j = 0;
@@ -1064,7 +1065,7 @@ static void Create_Units() {
   Init # of each category to 0
   ........................................................................*/
   for (int i = 0; i <= i_limit; i++) {
-    num_infantry[i] = 0;
+    base::At(num_infantry, i) = 0;
   }
 
   /*........................................................................
@@ -1072,7 +1073,7 @@ static void Create_Units() {
   ........................................................................*/
   j = 0;
   for (int i = 0; i < tot_infantry; i++) {
-    num_infantry[j]++;
+    base::At(num_infantry, j)++;
     j++;
     if (j > i_limit) {
       j = 0;
@@ -1088,8 +1089,8 @@ static void Create_Units() {
   First, copy all valid waytpoints into my 'waypts' array
   ........................................................................*/
   for (int i = 0; i < 26; i++) {
-    if (Waypoint[i] != -1) {
-      waypts[num_waypts] = Waypoint[i];
+    if (base::At(Waypoint, i) != -1) {
+      base::At(waypts, num_waypts) = base::At(Waypoint, i);
       num_waypts++;
     }
   }
@@ -1123,9 +1124,9 @@ static void Create_Units() {
     int try_count = 0;  // # times we've tried to select a centroid
     while (true) {
       j = GameRandomRange(0, MPlayerMax - 1);
-      if (sorted_waypts[j] != -1) {
-        centroid = sorted_waypts[j];
-        sorted_waypts[j] = -1;
+      if (base::At(sorted_waypts, j) != -1) {
+        centroid = base::At(sorted_waypts, j);
+        base::At(sorted_waypts, j) = -1;
         break;
       }
       try_count++;
@@ -1225,13 +1226,13 @@ static void Create_Units() {
       /*..................................................................
       Place objects; loop through all unit in this category
       ..................................................................*/
-      for (j = 0; j < num_units[i] * scaleval; j++) {
+      for (j = 0; j < base::At(num_units, i) * scaleval; j++) {
         /*...............................................................
         Create a GDI unit
         ...............................................................*/
         if (hptr->ActLike == HOUSE_GOOD) {
-          for (int k = 0; k < utable[i].GDICount; k++) {
-            obj = new UnitClass(utable[i].GDIType, h);
+          for (int k = 0; k < base::At(utable, i).GDICount; k++) {
+            obj = new UnitClass(base::At(utable, i).GDIType, h);
             if (!Scan_Place_Object(obj, centerpt)) {
               delete obj;
             } else {
@@ -1244,8 +1245,8 @@ static void Create_Units() {
           /*...............................................................
           Create a NOD unit
           ...............................................................*/
-          for (int k = 0; k < utable[i].NODCount; k++) {
-            obj = new UnitClass(utable[i].NODType, h);
+          for (int k = 0; k < base::At(utable, i).NODCount; k++) {
+            obj = new UnitClass(base::At(utable, i).NODType, h);
             if (!Scan_Place_Object(obj, centerpt)) {
               delete obj;
             } else {
@@ -1270,15 +1271,15 @@ static void Create_Units() {
       /*..................................................................
       Place objects; loop through all unit in this category
       ..................................................................*/
-      for (j = 0; j < num_infantry[i] * scaleval; j++) {
+      for (j = 0; j < base::At(num_infantry, i) * scaleval; j++) {
         /*...............................................................
         Create GDI infantry (Note: Unlimbo calls Enter_Idle_Mode(), which
         assigns the infantry to HUNT; we must use Set_Mission() to override
         this state.)
         ...............................................................*/
         if (hptr->ActLike == HOUSE_GOOD) {
-          for (int k = 0; k < itable[i].GDICount; k++) {
-            obj = new InfantryClass(itable[i].GDIType, h);
+          for (int k = 0; k < base::At(itable, i).GDICount; k++) {
+            obj = new InfantryClass(base::At(itable, i).GDIType, h);
             if (!Scan_Place_Object(obj, centerpt)) {
               delete obj;
             } else {
@@ -1291,8 +1292,8 @@ static void Create_Units() {
           /*...............................................................
           Create NOD infantry
           ...............................................................*/
-          for (int k = 0; k < itable[i].NODCount; k++) {
-            obj = new InfantryClass(itable[i].NODType, h);
+          for (int k = 0; k < base::At(itable, i).NODCount; k++) {
+            obj = new InfantryClass(base::At(itable, i).NODType, h);
             if (!Scan_Place_Object(obj, centerpt)) {
               delete obj;
             } else {

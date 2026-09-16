@@ -38,6 +38,7 @@
 
 #ifndef CNC_RED_ALERT_SDLLIB_PLAYCD_H_
 #define CNC_RED_ALERT_SDLLIB_PLAYCD_H_
+#include "base/array.h"
 
 /***************************************************************************
  * GetCDClass -- object which will return logical CD drive
@@ -84,7 +85,7 @@ inline int GetCDClass::Get_Next_CD_Drive() {
     if (CDIndex == CDCount) {
       CDIndex = 0;
     }
-    return CDDrives[CDIndex++];
+    return base::At(CDDrives, CDIndex++);
   }
   return -1;
 }

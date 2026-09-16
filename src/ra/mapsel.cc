@@ -31,6 +31,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/array.h"
 #include "ra/ccptr.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"
@@ -150,13 +151,26 @@ static void Cycle_Call_Back_Delay(int time, PaletteClass& pal) {
 static int Mouse_Over_Spot(const bool is_soviet, const int scenario) {
   int retval = -1;
   for (int choice = 0;
-       choice < 3 && MapCoords[is_soviet][scenario][choice].x != -1; choice++) {
+       choice < 3 &&
+       base::At(base::At(base::At(MapCoords, is_soviet), scenario), choice).x !=
+           -1;
+       choice++) {
     const int mouse_x = Get_Mouse_X() / 2;
     const int mouse_y = Get_Mouse_Y() / 2;
-    if (mouse_x >= MapCoords[is_soviet][scenario][choice].x &&
-        mouse_y >= MapCoords[is_soviet][scenario][choice].y &&
-        mouse_x <= MapCoords[is_soviet][scenario][choice].x + 11 &&
-        mouse_y <= MapCoords[is_soviet][scenario][choice].y + 9) {
+    if (mouse_x >=
+            base::At(base::At(base::At(MapCoords, is_soviet), scenario), choice)
+                .x &&
+        mouse_y >=
+            base::At(base::At(base::At(MapCoords, is_soviet), scenario), choice)
+                .y &&
+        mouse_x <=
+            base::At(base::At(base::At(MapCoords, is_soviet), scenario), choice)
+                    .x +
+                11 &&
+        mouse_y <=
+            base::At(base::At(base::At(MapCoords, is_soviet), scenario), choice)
+                    .y +
+                9) {
       retval = choice;
       break;
     }
@@ -212,7 +226,8 @@ std::string Map_Selection() {
   // Initialize palette interpolation as identity mapping (no blending).
   // Each row x maps all 256 entries to color x.
   for (int x = 0; x < 256; x++) {
-    memset(&PaletteInterpolationTable[x][0], x, 256);
+    memset(base::Suffix(base::At(PaletteInterpolationTable, x), 0).data(), x,
+           256);
   }
   Interpolate_2X_Scale(pseudo_seen_buf, &SeenBuff, nullptr);
 
@@ -303,11 +318,11 @@ std::string Map_Selection() {
     if (antnum > 4) {
       antnum = 1;
     }
-    scenario_name = ant_missions[antnum];
+    scenario_name = base::At(ant_missions, antnum);
   } else {
     scenario_name = Scen.ScenarioName;
     scenario_name.replace(3, 2, std::format("{:02d}", Scen.Scenario + 1));
-    scenario_name[6] = kScenarioVariants[selection];
+    scenario_name[6] = base::At(kScenarioVariants, selection);
   }
   Theme.Fade_Out();
 

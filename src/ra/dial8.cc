@@ -43,6 +43,7 @@
 
 #include "ra/dial8.h"
 
+#include "base/array.h"
 #include "ra/control.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
@@ -260,11 +261,14 @@ bool Dial8Class::Draw_Me(bool forced) {
     **	Draw the hand & its shadow.
     */
     LogicPage->Draw_Line(
-        FaceX + 1, FaceY + 1, FaceLine[static_cast<int>(Facing)][0] + 1,
-        FaceLine[static_cast<int>(Facing)][1] + 1, scheme->Shadow);
-    LogicPage->Draw_Line(FaceX, FaceY, FaceLine[static_cast<int>(Facing)][0],
-                         FaceLine[static_cast<int>(Facing)][1],
-                         scheme->Highlight);
+        FaceX + 1, FaceY + 1,
+        base::At(base::At(FaceLine, static_cast<int>(Facing)), 0) + 1,
+        base::At(base::At(FaceLine, static_cast<int>(Facing)), 1) + 1,
+        scheme->Shadow);
+    LogicPage->Draw_Line(
+        FaceX, FaceY, base::At(base::At(FaceLine, static_cast<int>(Facing)), 0),
+        base::At(base::At(FaceLine, static_cast<int>(Facing)), 1),
+        scheme->Highlight);
 
     /*
     **	Restore the mouse.

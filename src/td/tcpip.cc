@@ -61,6 +61,7 @@
 #include <cstdint>
 #include <cstring>
 
+#include "base/array.h"
 #include "base/numeric.h"
 #include "port/safe_string.h"
 #include "port/socket_bytes.h"
@@ -303,14 +304,14 @@ int TcpipManagerClass::Read(void* buffer, int buffer_len) {
   /*
   ** Copy any outstanding incoming data to the buffer provided
   */
-  if (ReceiveBuffers[RXBufferTail].InUse) {
-    memcpy(buffer, ReceiveBuffers[RXBufferTail].Buffer,
-           base::ToSize(
-               std::min(ReceiveBuffers[RXBufferTail].DataLength, buffer_len)));
-    ReceiveBuffers[RXBufferTail].InUse = false;
+  if (base::At(ReceiveBuffers, RXBufferTail).InUse) {
+    memcpy(buffer, base::At(ReceiveBuffers, RXBufferTail).Buffer,
+           base::ToSize(std::min(
+               base::At(ReceiveBuffers, RXBufferTail).DataLength, buffer_len)));
+    base::At(ReceiveBuffers, RXBufferTail).InUse = false;
 
-    bytes_copied =
-        std::min(ReceiveBuffers[RXBufferTail++].DataLength, buffer_len);
+    bytes_copied = std::min(base::At(ReceiveBuffers, RXBufferTail++).DataLength,
+                            buffer_len);
 
     RXBufferTail %= WS_NUM_RX_BUFFERS;
   }
@@ -336,11 +337,11 @@ void TcpipManagerClass::Write(void* buffer, int buffer_len) {
   /*
   ** Copy the data to one of the classes internal buffers
   */
-  if (!TransmitBuffers[TXBufferHead].InUse) {
-    memcpy(TransmitBuffers[TXBufferHead].Buffer, buffer,
+  if (!base::At(TransmitBuffers, TXBufferHead).InUse) {
+    memcpy(base::At(TransmitBuffers, TXBufferHead).Buffer, buffer,
            base::ToSize(std::min(buffer_len, WS_INTERNET_BUFFER_LEN)));
-    TransmitBuffers[TXBufferHead].InUse = true;
-    TransmitBuffers[TXBufferHead++].DataLength =
+    base::At(TransmitBuffers, TXBufferHead).InUse = true;
+    base::At(TransmitBuffers, TXBufferHead++).DataLength =
         std::min(buffer_len, WS_INTERNET_BUFFER_LEN);
     TXBufferHead %= WS_NUM_TX_BUFFERS;
   }
@@ -455,11 +456,11 @@ bool TcpipManagerClass::Add_Client() {
  * HISTORY: * 3/20/96 3:17PM ST : Created *
  *=============================================================================================*/
 void TcpipManagerClass::Copy_To_In_Buffer(int bytes) {
-  if (!ReceiveBuffers[RXBufferHead].InUse) {
-    memcpy(ReceiveBuffers[RXBufferHead].Buffer, ReceiveBuffer,
+  if (!base::At(ReceiveBuffers, RXBufferHead).InUse) {
+    memcpy(base::At(ReceiveBuffers, RXBufferHead).Buffer, ReceiveBuffer,
            base::ToSize(std::min(bytes, WS_INTERNET_BUFFER_LEN)));
-    ReceiveBuffers[RXBufferHead].InUse = true;
-    ReceiveBuffers[RXBufferHead++].DataLength =
+    base::At(ReceiveBuffers, RXBufferHead).InUse = true;
+    base::At(ReceiveBuffers, RXBufferHead++).DataLength =
         std::min(bytes, WS_INTERNET_BUFFER_LEN);
     RXBufferHead %= WS_NUM_RX_BUFFERS;
   }

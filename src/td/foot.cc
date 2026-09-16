@@ -92,6 +92,7 @@
 #include <cstring>
 #include <iterator>
 
+#include "base/array.h"
 #include "base/numeric.h"
 #include "rand.h"
 #include "sdllib/ww_mouse.h"
@@ -278,8 +279,11 @@ void FootClass::Debug_Dump(MonoClass* mono) const {
       // end of Path. Walk the array instead.
       for (int index = 0; index < kConquerPathMax; index++) {
         mono->Set_Cursor(50 + index, 3);
-        mono->Printf("%s", _p2c[std::abs(static_cast<int>(Path[index]) + 1) %
-                                std::ssize(_p2c)]);
+        mono->Printf(
+            "%s",
+            base::At(_p2c,
+                     std::abs(static_cast<int>(base::At(Path, index)) + 1) %
+                         std::ssize(_p2c)));
       }
 
       mono->Set_Cursor(65, 1);

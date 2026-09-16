@@ -44,6 +44,7 @@
 #include <cstdint>
 
 #include "absl/base/attributes.h"
+#include "base/array.h"
 #include "base/enum_array.h"
 #include "ra/ccini.h"
 #include "ra/ccptr.h"
@@ -965,13 +966,13 @@ class HouseClass {
     if (index >= kOriginalUnitCount) {
       index -= kOriginalUnitCount;
     }
-    return UQuantity[index];
+    return base::At(UQuantity, index);
   }
   int QuantityI(int index) {
     if (index >= kOriginalInfantryCount) {
       index -= kOriginalInfantryCount;
     }
-    return IQuantity[index];
+    return base::At(IQuantity, index);
   }
   int QuantityA(int index) {
     return AQuantity[static_cast<AircraftType>(index)];
@@ -980,7 +981,7 @@ class HouseClass {
     if (index >= kOriginalVesselCount) {
       index -= kOriginalVesselCount;
     }
-    return VQuantity[index];
+    return base::At(VQuantity, index);
   }
 };
 

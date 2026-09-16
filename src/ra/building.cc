@@ -131,6 +131,7 @@
 #include <utility>
 
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
@@ -721,7 +722,7 @@ int BuildingClass::Shape_Number() const {
     **	the direction the turret is facing.
     */
     if (Class->IsTurretEquipped) {
-      shapenum = BodyShape[Dir_To_32(PrimaryFacing.Current())];
+      shapenum = base::At(BodyShape, Dir_To_32(PrimaryFacing.Current()));
 
       if (*this == STRUCT_SAM) {
         /*

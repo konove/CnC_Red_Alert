@@ -67,6 +67,7 @@
 #include <cstdlib>
 
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "base/numeric.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
@@ -134,8 +135,8 @@ MapEditClass::MapEditClass() {
   */
 
   for (int i = 0; i < kNumEditClasses; i++) {
-    NumType[i] = 0;
-    TypeOffset[i] = 0;
+    base::At(NumType, i) = 0;
+    base::At(TypeOffset, i) = 0;
   }
   Waypoint[kWayptHome] = 0;
   CurrentCell = 0;
@@ -406,7 +407,7 @@ bool MapEditClass::Add_To_List(const ObjectTypeClass* object) {
   **	Add the object if there's room.
   */
   if (object && ObjCount < kMaxEditObjects) {
-    Objects[ObjCount++] = object;
+    base::At(Objects, ObjCount++) = object;
 
     /*
     **	Update type counters.
@@ -855,7 +856,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       if (cell != -1) {
         found = 0;
         for (int i = 0; i < kWayptCount; i++) {
-          if (i != kWayptHome && Waypoint[i] == cell) {
+          if (i != kWayptHome && base::At(Waypoint, i) == cell) {
             found = 1;
           }
         }
@@ -894,7 +895,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       if (cell != -1) {
         found = 0;
         for (int i = 0; i < kWayptCount; i++) {
-          if (i != kWayptReinf && Waypoint[i] == cell) {
+          if (i != kWayptReinf && base::At(Waypoint, i) == cell) {
             found = 1;
           }
         }
@@ -948,14 +949,14 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         /*...............................................................
         Unflag cell for this waypoint if there is one
         ...............................................................*/
-        cell = Waypoint[waypt_idx];
+        cell = base::At(Waypoint, waypt_idx);
         if (cell != -1) {
           if (Waypoint[kWayptHome] != cell && Waypoint[kWayptReinf] != cell) {
             (*this)[cell].IsWaypoint = false;
           }
           Flag_Cell(cell);
         }
-        Waypoint[waypt_idx] = CurrentCell;
+        base::At(Waypoint, waypt_idx) = CurrentCell;
         (*this)[CurrentCell].IsWaypoint = true;
         Changed = true;
         Flag_Cell(CurrentCell);
@@ -1009,8 +1010,8 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         clear that waypoint.
         ...............................................................*/
         for (int i = 0; i < 26; i++) {
-          if (Waypoint[i] == CurrentCell) {
-            Waypoint[i] = -1;
+          if (base::At(Waypoint, i) == CurrentCell) {
+            base::At(Waypoint, i) = -1;
           }
         }
 

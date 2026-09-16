@@ -60,6 +60,7 @@
 #include <utility>
 
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
 #include "port/ex_string.h"
@@ -354,8 +355,8 @@ void TeamTypeClass::Fill_In(char* name, char* entry) {
     --------------- If the name was resolved, add this class --------------
     */
     if (otype) {
-      Class[ClassCount] = otype;
-      DesiredNum[ClassCount] =
+      base::At(Class, ClassCount) = otype;
+      base::At(DesiredNum, ClassCount) =
           static_cast<unsigned char>(tech::ParseInteger<int>(p2).value_or(0));
       ClassCount++;
     }
@@ -381,7 +382,7 @@ void TeamTypeClass::Fill_In(char* name, char* entry) {
     }
     mission.Mission = Mission_From_Name(p1);
     mission.Argument = tech::ParseInteger<int>(p2).value_or(0);
-    MissionList[i] = mission;
+    base::At(MissionList, i) = mission;
   }
 
   const char* ptr = tokens.Next();
@@ -464,7 +465,8 @@ void TeamTypeClass::Write_INI(char* buffer, bool refresh) {
     .....................................................................*/
     for (int i = 0; std::cmp_less(i, team->ClassCount); i++) {
       absl::SNPrintF(buf + strlen(buf), sizeof(buf) - strlen(buf), ",%s:%d",
-                     team->Class[i]->IniName, team->DesiredNum[i]);
+                     base::At(team->Class, i)->IniName,
+                     base::At(team->DesiredNum, i));
     }
 
     /*.....................................................................
@@ -474,8 +476,8 @@ void TeamTypeClass::Write_INI(char* buffer, bool refresh) {
                    team->MissionCount);
     for (int i = 0; i < team->MissionCount; i++) {
       absl::SNPrintF(buf + strlen(buf), sizeof(buf) - strlen(buf), ",%s:%d",
-                     Name_From_Mission(team->MissionList[i].Mission),
-                     team->MissionList[i].Argument);
+                     Name_From_Mission(base::At(team->MissionList, i).Mission),
+                     base::At(team->MissionList, i).Argument);
     }
 
     if (team->IsReinforcable) {
@@ -643,8 +645,8 @@ void TeamTypeClass::Read_Old_INI(char* buffer) {
       ............. If the name was resolved, add this class .............
       */
       if (otype) {
-        team->Class[index] = otype;
-        team->DesiredNum[index] =
+        base::At(team->Class, index) = otype;
+        base::At(team->DesiredNum, index) =
             static_cast<unsigned char>(tech::ParseInteger<int>(p2).value_or(0));
         index++;
         team->ClassCount = static_cast<unsigned char>(index);
@@ -827,7 +829,8 @@ void TeamTypeClass::operator delete(void* ptr) {
 }
 
 TeamClass* TeamTypeClass::Create_One_Of() const {
-  if (ScenarioInit || TeamClass::Number[TeamTypes.ID(this)] < MaxAllowed) {
+  if (ScenarioInit ||
+      base::At(TeamClass::Number, TeamTypes.ID(this)) < MaxAllowed) {
     return new TeamClass(this, HouseClass::As_Pointer(House));
   }
   return nullptr;
@@ -885,7 +888,7 @@ const TeamTypeClass* TeamTypeClass::Suggested_New_Team(HouseClass* house,
     const TeamTypeClass* ttype = TeamTypes.Ptr(index);
 
     if (ttype && ttype->House == house->Class->House &&
-        TeamClass::Number[index] <
+        base::At(TeamClass::Number, index) <
             (alerted || !ttype->IsAutocreate ? ttype->MaxAllowed : 0)) {
       /*
       **	Determine what kind of units this team requires.
@@ -893,16 +896,18 @@ const TeamTypeClass* TeamTypeClass::Suggested_New_Team(HouseClass* house,
       uint64_t uneeded = 0;
       uint64_t ineeded = 0;
       for (int ctype = 0; std::cmp_less(ctype, ttype->ClassCount); ctype++) {
-        switch (ttype->Class[ctype]->What_Am_I()) {
+        switch (base::At(ttype->Class, ctype)->What_Am_I()) {
           case RTTI_INFANTRYTYPE:
-            ineeded |= base::Bit<uint64_t>(
-                dynamic_cast<const InfantryTypeClass*>(ttype->Class[ctype])
-                    ->Type);
+            ineeded |=
+                base::Bit<uint64_t>(dynamic_cast<const InfantryTypeClass*>(
+                                        base::At(ttype->Class, ctype))
+                                        ->Type);
             break;
 
           case RTTI_UNITTYPE:
-            uneeded |= base::Bit<uint64_t>(
-                dynamic_cast<const UnitTypeClass*>(ttype->Class[ctype])->Type);
+            uneeded |= base::Bit<uint64_t>(dynamic_cast<const UnitTypeClass*>(
+                                               base::At(ttype->Class, ctype))
+                                               ->Type);
             break;
           default:
             break;

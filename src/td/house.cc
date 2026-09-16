@@ -118,6 +118,7 @@
 #include <utility>
 
 #include "absl/log/check.h"
+#include "base/array.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
 #include "port/ex_string.h"
@@ -2068,7 +2069,7 @@ void HouseClass::Adjust_Threat(int region, int threat) {
   }
 
   for (int lp = 0; lp < 9; lp++) {
-    Regions[region + *val].Adjust_Threat(threat / *thr, neg);
+    base::At(Regions, region + *val).Adjust_Threat(threat / *thr, neg);
     val++;
     thr++;
   }
@@ -3221,9 +3222,10 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
                 team->House == Class->House) {
               for (int subindex = 0; std::cmp_less(subindex, team->ClassCount);
                    subindex++) {
-                if (team->Class[subindex]->What_Am_I() == RTTI_UNITTYPE) {
+                if (base::At(team->Class, subindex)->What_Am_I() ==
+                    RTTI_UNITTYPE) {
                   counter[dynamic_cast<const UnitTypeClass*>(
-                              team->Class[subindex])
+                              base::At(team->Class, subindex))
                               ->Type] = 1;
                   //									counter[((UnitTypeClass
                   // const *)(team->Class[subindex]))->Type] +=
@@ -3245,12 +3247,13 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
                        (!team->IsAutocreate || IsAlerted))) {
             for (int subindex = 0; std::cmp_less(subindex, team->ClassCount);
                  subindex++) {
-              if (team->Class[subindex]->What_Am_I() == RTTI_UNITTYPE) {
-                const UnitType subtype =
-                    dynamic_cast<const UnitTypeClass*>(team->Class[subindex])
-                        ->Type;
-                counter[subtype] =
-                    std::max<int>(counter[subtype], team->DesiredNum[subindex]);
+              if (base::At(team->Class, subindex)->What_Am_I() ==
+                  RTTI_UNITTYPE) {
+                const UnitType subtype = dynamic_cast<const UnitTypeClass*>(
+                                             base::At(team->Class, subindex))
+                                             ->Type;
+                counter[subtype] = std::max<int>(
+                    counter[subtype], base::At(team->DesiredNum, subindex));
               }
             }
           }
@@ -3287,7 +3290,7 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
               bestval = counter[utype];
               bestcount = 0;
             }
-            bestlist[bestcount++] = utype;
+            base::At(bestlist, bestcount++) = utype;
           }
         }
 
@@ -3297,7 +3300,7 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
         */
         if (bestcount) {
           techno = &UnitTypeClass::As_Reference(
-              bestlist[Random_Pick(0, bestcount - 1)]);
+              base::At(bestlist, Random_Pick(0, bestcount - 1)));
         }
       }
       break;
@@ -3338,10 +3341,12 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
                 team->House == Class->House) {
               for (int subindex = 0; std::cmp_less(subindex, team->ClassCount);
                    subindex++) {
-                if (team->Class[subindex]->What_Am_I() == RTTI_INFANTRYTYPE) {
+                if (base::At(team->Class, subindex)->What_Am_I() ==
+                    RTTI_INFANTRYTYPE) {
                   counter[dynamic_cast<const InfantryTypeClass*>(
-                              team->Class[subindex])
-                              ->Type] += team->DesiredNum[subindex] + 1;
+                              base::At(team->Class, subindex))
+                              ->Type] +=
+                      base::At(team->DesiredNum, subindex) + 1;
                 }
               }
             }
@@ -3359,15 +3364,16 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
                        (!team->IsAutocreate || IsAlerted))) {
             for (int subindex = 0; std::cmp_less(subindex, team->ClassCount);
                  subindex++) {
-              if (team->Class[subindex]->What_Am_I() == RTTI_INFANTRYTYPE) {
+              if (base::At(team->Class, subindex)->What_Am_I() ==
+                  RTTI_INFANTRYTYPE) {
                 const InfantryType subtype =
                     dynamic_cast<const InfantryTypeClass*>(
-                        team->Class[subindex])
+                        base::At(team->Class, subindex))
                         ->Type;
                 //									counter[subtype]
                 //= 1;
-                counter[subtype] =
-                    std::max<int>(counter[subtype], team->DesiredNum[subindex]);
+                counter[subtype] = std::max<int>(
+                    counter[subtype], base::At(team->DesiredNum, subindex));
                 counter[subtype] = std::min(counter[subtype], 5);
               }
             }
@@ -3406,7 +3412,7 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
               bestval = counter[utype];
               bestcount = 0;
             }
-            bestlist[bestcount++] = utype;
+            base::At(bestlist, bestcount++) = utype;
           }
         }
 
@@ -3416,7 +3422,7 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
         */
         if (bestcount) {
           techno = &InfantryTypeClass::As_Reference(
-              bestlist[Random_Pick(0, bestcount - 1)]);
+              base::At(bestlist, Random_Pick(0, bestcount - 1)));
         }
       }
       break;
@@ -3723,12 +3729,12 @@ void HouseClass::MPlayer_Defeated() {
                           Text_String(TXT_UNKNOWN));
       id = 0;
       for (i = 0; i < MPlayerCount; i++) {
-        house = MPlayerHouses[i];
+        house = base::At(MPlayerHouses, i);
         if (As_Pointer(house) == this) {
           Format_Runtime_Text(txt, sizeof(txt),
                               Text_String(TXT_PLAYER_DEFEATED),
-                              MPlayerNames[i]);
-          id = MPlayerID[i];
+                              base::At(MPlayerNames, i));
+          id = base::At(MPlayerID, i);
         }
       }
 
@@ -3814,14 +3820,15 @@ void HouseClass::MPlayer_Defeated() {
     Find each player's score index
     ---------------------------------------------------------------------*/
     for (i = 0; i < MPlayerCount; i++) {
-      score_index[i] = -1;
+      base::At(score_index, i) = -1;
 
       /*..................................................................
       Search for this player's name in the MPlayerScore array
       ..................................................................*/
       for (int j = 0; j < MPlayerNumScores; j++) {
-        if (!stricmp(MPlayerNames[i], MPlayerScore[j].Name)) {
-          score_index[i] = j;
+        if (!stricmp(base::At(MPlayerNames, i),
+                     base::At(MPlayerScore, j).Name)) {
+          base::At(score_index, i) = j;
           break;
         }
       }
@@ -3829,9 +3836,9 @@ void HouseClass::MPlayer_Defeated() {
       /*..................................................................
       If the index is still -1, the name wasn't found; add a new entry.
       ..................................................................*/
-      if (score_index[i] == -1) {
+      if (base::At(score_index, i) == -1) {
         if (MPlayerNumScores < MAX_MULTI_NAMES) {
-          score_index[i] = MPlayerNumScores;
+          base::At(score_index, i) = MPlayerNumScores;
           MPlayerNumScores++;
         } else {
           /*...............................................................
@@ -3844,7 +3851,7 @@ void HouseClass::MPlayer_Defeated() {
           for (int j = 0; j < MPlayerNumScores; j++) {
             int count = 0;
             for (int k = MPlayerNumScores - 1; k >= 0; k--) {
-              if (MPlayerScore[j].Kills[k] == -1) {
+              if (base::At(base::At(MPlayerScore, j).Kills, k) == -1) {
                 count++;
               } else {
                 break;
@@ -3855,15 +3862,17 @@ void HouseClass::MPlayer_Defeated() {
               max_index = j;
             }
           }
-          score_index[i] = max_index;
+          base::At(score_index, i) = max_index;
         }
 
         /*...............................................................
         Initialize this score entry
         ...............................................................*/
-        MPlayerScore[score_index[i]].Wins = 0;
-        port::SafeCopy(MPlayerScore[score_index[i]].Name, MPlayerNames[i]);
-        for (int& Kill : MPlayerScore[score_index[i]].Kills) {
+        base::At(MPlayerScore, base::At(score_index, i)).Wins = 0;
+        port::SafeCopy(base::At(MPlayerScore, base::At(score_index, i)).Name,
+                       base::At(MPlayerNames, i));
+        for (int& Kill :
+             base::At(MPlayerScore, base::At(score_index, i)).Kills) {
           Kill = -1;
         }
       }
@@ -3872,13 +3881,14 @@ void HouseClass::MPlayer_Defeated() {
       Init this player's Kills to 0 (-1 means he didn't play this round;
       0 means he played but got no kills).
       ..................................................................*/
-      MPlayerScore[score_index[i]].Kills[MPlayerCurGame] = 0;
+      base::At(base::At(MPlayerScore, base::At(score_index, i)).Kills,
+               MPlayerCurGame) = 0;
 
       /*..................................................................
       Init this player's color to his last-used color index
       ..................................................................*/
-      MPlayerScore[score_index[i]].Color =
-          static_cast<int>(MPlayerID_To_ColorIndex(MPlayerID[i]));
+      base::At(MPlayerScore, base::At(score_index, i)).Color =
+          static_cast<int>(MPlayerID_To_ColorIndex(base::At(MPlayerID, i)));
     }
 
     /*---------------------------------------------------------------------
@@ -3888,26 +3898,26 @@ void HouseClass::MPlayer_Defeated() {
       - Each player's Kills value is the sum of the unit's they killed
     ---------------------------------------------------------------------*/
     for (i = 0; i < MPlayerCount; i++) {
-      hptr = As_Pointer(MPlayerHouses[i]);
+      hptr = As_Pointer(base::At(MPlayerHouses, i));
 
       /*..................................................................
       If this house was undefeated, it must have been the winner.  (If
       no human houses are undefeated, the computer won.)
       ..................................................................*/
       if (!hptr->IsDefeated) {
-        MPlayerScore[score_index[i]].Wins++;
-        MPlayerWinner = score_index[i];
+        base::At(MPlayerScore, base::At(score_index, i)).Wins++;
+        MPlayerWinner = base::At(score_index, i);
       }
 
       /*..................................................................
       Tally up all kills for this player
       ..................................................................*/
       for (house = HOUSE_FIRST; house < HOUSE_COUNT; house++) {
-        MPlayerScore[score_index[i]].Kills[MPlayerCurGame] +=
-            hptr->UnitsKilled[house];
+        base::At(base::At(MPlayerScore, base::At(score_index, i)).Kills,
+                 MPlayerCurGame) += hptr->UnitsKilled[house];
 
-        MPlayerScore[score_index[i]].Kills[MPlayerCurGame] +=
-            hptr->BuildingsKilled[house];
+        base::At(base::At(MPlayerScore, base::At(score_index, i)).Kills,
+                 MPlayerCurGame) += hptr->BuildingsKilled[house];
       }
     }
 

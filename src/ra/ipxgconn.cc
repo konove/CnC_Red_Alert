@@ -46,6 +46,7 @@
 #include <cstring>
 #include <utility>
 
+#include "base/array.h"
 #include "base/numeric.h"
 #include "port/aligned_buffer.h"
 #include "port/unaligned.h"
@@ -238,8 +239,8 @@ int IPXGlobalConnClass::Receive_Packet(void* buf, int buflen,
         if (std::cmp_greater_equal(i, Queue->Receive_Total())) {
           break;
         }
-        if (*address == LastAddress[i] &&
-            packet->Header.PacketID == LastPacketID[i]) {
+        if (*address == base::At(LastAddress, i) &&
+            packet->Header.PacketID == base::At(LastPacketID, i)) {
           resend = 1;
           break;
         }
@@ -254,8 +255,8 @@ int IPXGlobalConnClass::Receive_Packet(void* buf, int buflen,
       if (!resend) {
         if (Queue->Queue_Receive(buf, buflen, address,
                                  sizeof(IPXAddressClass))) {
-          LastAddress[LastRXIndex] = *address;
-          LastPacketID[LastRXIndex] = packet->Header.PacketID;
+          base::At(LastAddress, LastRXIndex) = *address;
+          base::At(LastPacketID, LastRXIndex) = packet->Header.PacketID;
           LastRXIndex++;
           if (LastRXIndex >= 4) {
             LastRXIndex = 0;

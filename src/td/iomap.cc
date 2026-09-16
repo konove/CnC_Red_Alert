@@ -16,10 +16,10 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 #include <algorithm>
 #include <cstdint>
 
+#include "base/array.h"
 #include "sdllib/wwstd.h"
 #include "td/aircraft.h"
 #include "td/cell.h"
@@ -42,7 +42,6 @@
 #include "td/type.h"
 #include "tech/archive.h"
 
-
 template <class Archive>
 void CellClass::Serialize(Archive& ar) {
   auto flags = static_cast<uint8_t>(
@@ -62,7 +61,7 @@ void CellClass::Serialize(Archive& ar) {
     std::ranges::fill(Overlappers, nullptr);
   }
   for (int32_t i = 0; i < overlapper_count; ++i) {
-    ar(ObjectPtr(Overlappers[i]));
+    ar(ObjectPtr(base::At(Overlappers, i)));
   }
   ar(Flag.Composite, Land);
   if constexpr (Archive::kIsReading) {
@@ -118,17 +117,19 @@ void MapClass::Serialize(Archive& ar) {
     std::ranges::fill(TiberiumSpread, 0);
   }
   for (int i = 0; i < TiberiumGrowthCount; ++i) {
-    ar(TiberiumGrowth[i]);
+    ar(base::At(TiberiumGrowth, i));
     if constexpr (Archive::kIsReading) {
-      if (TiberiumGrowth[i] < 0 || TiberiumGrowth[i] >= MAP_CELL_TOTAL) {
+      if (base::At(TiberiumGrowth, i) < 0 ||
+          base::At(TiberiumGrowth, i) >= MAP_CELL_TOTAL) {
         ar.Fail("invalid tiberium growth cell");
       }
     }
   }
   for (int i = 0; i < TiberiumSpreadCount; ++i) {
-    ar(TiberiumSpread[i]);
+    ar(base::At(TiberiumSpread, i));
     if constexpr (Archive::kIsReading) {
-      if (TiberiumSpread[i] < 0 || TiberiumSpread[i] >= MAP_CELL_TOTAL) {
+      if (base::At(TiberiumSpread, i) < 0 ||
+          base::At(TiberiumSpread, i) >= MAP_CELL_TOTAL) {
         ar.Fail("invalid tiberium spread cell");
       }
     }
@@ -186,7 +187,7 @@ void SidebarClass::StripClass::Serialize(Archive& ar) {
     }
   }
   for (int i = 0; i < BuildableCount; ++i) {
-    auto& item = Buildables[i];
+    auto& item = base::At(Buildables, i);
     ar(item.BuildableID, item.BuildableType, item.Factory);
     if constexpr (Archive::kIsReading) {
       if (item.Factory < -1 || item.Factory >= Factories.Length() ||

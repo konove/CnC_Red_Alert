@@ -26,6 +26,7 @@
 #include <string_view>
 
 #include "absl/base/attributes.h"
+#include "base/array.h"
 #include "base/numeric.h"
 #include "base/seek_origin.h"
 #include "ra/externs.h"
@@ -107,7 +108,7 @@ void __cdecl SetPalette(unsigned char* palette, int32_t /*unused*/,
   Increase_Palette_Luminance(palette, 15, 15, 15, 63);
   if (PalettesRead) {
     memcpy(&PaletteInterpolationTable[0][0],
-           InterpolatedPalettes[PaletteCounter++], 65536);
+           base::At(InterpolatedPalettes, PaletteCounter++), 65536);
   }
   Set_Palette(palette);
 }

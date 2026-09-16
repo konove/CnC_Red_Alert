@@ -8,6 +8,7 @@
 #include <span>
 #include <string_view>
 
+#include "base/array.h"
 #include "base/numeric.h"
 #include "base/seek_origin.h"
 #include "sdllib/file.h"
@@ -25,18 +26,18 @@ GameFile handle_table[10];
 // out of range, or closed.
 GameFile* OpenFileForHandle(int handle) {
   if (handle < 0 || handle >= std::ssize(handle_table) ||
-      !handle_table[handle].IsOpen()) {
+      !base::At(handle_table, handle).IsOpen()) {
     return nullptr;
   }
-  return &handle_table[handle];
+  return base::Suffix(handle_table, handle).data();
 }
 
 }  // namespace
 
 int __cdecl OpenFileHandle(const std::string_view file_name, FileAccess mode) {
   for (int handle = 0; handle < std::ssize(handle_table); handle++) {
-    if (!handle_table[handle].IsOpen()) {
-      if (handle_table[handle].Open(file_name, mode)) {
+    if (!base::At(handle_table, handle).IsOpen()) {
+      if (base::At(handle_table, handle).Open(file_name, mode)) {
         return handle;
       }
       // The first free slot is as good as any other; a failed open would fail

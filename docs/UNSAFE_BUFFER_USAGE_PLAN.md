@@ -30,4 +30,29 @@ formats, and packet layouts.
 ## Progress
 
 - LCW destination-bounds fix complete and validated (see LCW_BUFFER_BOUNDS_PLAN.md).
-- Repository-wide measurement and migration pending.
+- Baseline: 941 project translation units, 6,318 unique warnings (including the child diagnostics
+  for unsafe C library calls and span construction). Two generated VQA header checks also exposed a
+  missing public `base` dependency.
+- Fixed-array batch in validation: 2,233 accesses migrated in 152 files; array storage layouts are
+  unchanged. Checked element access rejects negative and excessive indices, while suffix views
+  preserve legal one-past pointers.
+- After the initial array rewrite: 943 units scanned, 4,345 warnings and no compile failures.
+  Subsequent suffix fixes will be included in the next sweep.
+- Next: null-terminated string views, then pointer/size APIs and buffer ownership.
+- Enforcement remains pending until the entire remaining inventory is resolved.
+
+### Fixed-array validation
+
+Both strict game builds and all 486 CTest tests pass. Save/load smoke checks match 240 RA object
+positions and 5,742 TD game states.
+
+The new runtime checks exposed two existing defects during those smoke tests: RA's team-center
+calculation indexed the mission list at the initial `-1` mission sentinel, and TD's display
+initialization read palette ramps beyond a 256-byte row for higher house IDs. RA now checks that a
+current mission exists before selecting hound-dog behavior. TD retains the base fading table when
+the palette has no corresponding ramp; the only current consumer uses the unchanged GDI identity
+row.
+
+`base::At` and `EnumArray::end` keep their lifetime-bound contracts. Three narrow lifetime
+diagnostic annotations document Clang 23's inability to trace the reference through libstdc++ span
+indexing or the pointer through `std::end`. No unsafe-buffer diagnostic is suppressed in this batch.

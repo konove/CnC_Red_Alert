@@ -124,6 +124,7 @@
 
 #include "absl/base/attributes.h"
 #include "absl/strings/str_cat.h"
+#include "base/array.h"
 #include "base/attributes.h"
 #include "base/flags.h"
 #include "base/types.h"
@@ -683,16 +684,16 @@ inline void GraphicViewPortClass::Draw_Stamp(const void* icondata, int icon,
   if (Lock()) {
 #ifdef TD
     Buffer_Draw_Stamp_Clip(this, icondata, icon, x_pixel, y_pixel, remap,
-                           WindowList[clip_window][kWindowX] * 8,
-                           WindowList[clip_window][kWindowY],
-                           WindowList[clip_window][kWindowWidth] * 8,
-                           WindowList[clip_window][kWindowHeight]);
+                           base::At(WindowList[clip_window], kWindowX) * 8,
+                           base::At(WindowList[clip_window], kWindowY),
+                           base::At(WindowList[clip_window], kWindowWidth) * 8,
+                           base::At(WindowList[clip_window], kWindowHeight));
 #else
     Buffer_Draw_Stamp_Clip(this, icondata, icon, x_pixel, y_pixel, remap,
-                           WindowList[clip_window][kWindowX],
-                           WindowList[clip_window][kWindowY],
-                           WindowList[clip_window][kWindowWidth],
-                           WindowList[clip_window][kWindowHeight]);
+                           base::At(WindowList[clip_window], kWindowX),
+                           base::At(WindowList[clip_window], kWindowY),
+                           base::At(WindowList[clip_window], kWindowWidth),
+                           base::At(WindowList[clip_window], kWindowHeight));
 #endif
   }
   Unlock();

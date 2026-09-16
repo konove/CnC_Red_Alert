@@ -43,6 +43,7 @@
 #include <cstdint>
 #include <cstring>
 
+#include "base/array.h"
 #include "base/types.h"
 #include "ra/defines.h"
 #include "ra/externs.h"
@@ -155,7 +156,7 @@ void* Build_Frame(const void* dataptr, const uint16_t framenumber,
       int subframe = 2;
 
       while (currframe <= framenumber) {
-        offdiff = (offset[subframe] & 0x00FFFFFF) - offcurr;
+        offdiff = (base::At(offset, subframe) & 0x00FFFFFF) - offcurr;
 
         Apply_XOR_Delta(
             static_cast<char*>(buffptr),

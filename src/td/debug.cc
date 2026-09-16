@@ -46,6 +46,7 @@
 #include <filesystem>
 
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
@@ -139,7 +140,7 @@ void Self_Regulate() {
         *MonoClass::Get_Current() = *mono;
       }
 
-      MonoArray[MonoPage] = *mono;
+      base::At(MonoArray, MonoPage) = *mono;
     }
   }
 }

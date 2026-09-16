@@ -39,6 +39,7 @@
 #include <string>
 
 #include "absl/base/attributes.h"
+#include "base/array.h"
 #include "base/numeric.h"
 #include "base/types.h"
 #include "port/safe_string.h"
@@ -383,10 +384,11 @@ void IconListClass::Draw_Entry(int index, int x, int y, int width,
   // here and offset x.
   bool bIconsPresent = false;
   for (int iIcon = 0; iIcon != 3; iIcon++) {
-    if (pExtras->pIcon[iIcon] && pExtras->IconKind[iIcon] == ICON_DIB) {
+    if (base::At(pExtras->pIcon, iIcon) &&
+        base::At(pExtras->IconKind, iIcon) == ICON_DIB) {
       //	Push text over to accommodate icon.
       const int iWidthIcon =
-          PREICONGAP + AsImage(pExtras->pIcon[iIcon]).Width();
+          PREICONGAP + AsImage(base::At(pExtras->pIcon, iIcon)).Width();
       xText += iWidthIcon;
       width -= iWidthIcon;
       bIconsPresent = true;
@@ -485,15 +487,15 @@ void IconListClass::Draw_Entry(int index, int x, int y, int width,
 
   //	Draw variable position left-of-text icons.
   for (int iIcon = 0; iIcon != 3; iIcon++) {
-    if (pExtras->pIcon[iIcon]) {
+    if (base::At(pExtras->pIcon, iIcon)) {
       x += PREICONGAP;
-      if (pExtras->IconKind[iIcon] == ICON_SHAPE) {
-        CC_Draw_Shape(pExtras->pIcon[iIcon], 0, x, y, WINDOW_MAIN,
+      if (base::At(pExtras->IconKind, iIcon) == ICON_SHAPE) {
+        CC_Draw_Shape(base::At(pExtras->pIcon, iIcon), 0, x, y, WINDOW_MAIN,
                       SHAPE_NORMAL);
       }
       //	Put similar code in here for shapes if used...
       else {
-        const dib::Image& icon = AsImage(pExtras->pIcon[iIcon]);
+        const dib::Image& icon = AsImage(base::At(pExtras->pIcon, iIcon));
         DrawDib(icon, x, y, kNoIconWidthLimit, WINDOW_MAIN);
         x += icon.Width();
       }
@@ -673,8 +675,8 @@ bool IconListClass::Set_Icon(unsigned int index, unsigned int iIconNumber,
   }
 
   //	Sets one of the left-aligned icons.
-  ExtrasList[index]->pIcon[iIconNumber] = pIcon;
-  ExtrasList[index]->IconKind[iIconNumber] = IconKind;
+  base::At(ExtrasList[index]->pIcon, iIconNumber) = pIcon;
+  base::At(ExtrasList[index]->IconKind, iIconNumber) = IconKind;
   return true;
 }
 

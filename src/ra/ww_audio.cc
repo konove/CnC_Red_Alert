@@ -54,6 +54,7 @@
 #include <string>
 
 #include "absl/log/log.h"
+#include "base/array.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
@@ -845,7 +846,7 @@ void Speak_AI() {
     return;
   }
 
-  if (!Is_Sample_Playing(SpeechBuffer[_index])) {
+  if (!Is_Sample_Playing(base::At(SpeechBuffer, _index))) {
     CurrentVoice = VOX_NONE;
     if (SpeakQueue != VOX_NONE) {
       /*
@@ -854,12 +855,12 @@ void Speak_AI() {
       */
       const void* speech = nullptr;
       for (size_t index = 0; index < std::size(SpeechRecord); index++) {
-        if (SpeechRecord[index] == SpeakQueue) {
+        if (base::At(SpeechRecord, index) == SpeakQueue) {
           // _index tracks the buffer being played, so move it to the cached
           // one -- the poll at the top of this routine watches that buffer to
           // decide when the voice has finished.
           _index = static_cast<int>(index);
-          speech = SpeechBuffer[index];
+          speech = base::At(SpeechBuffer, index);
           break;
         }
       }
@@ -877,10 +878,10 @@ void Speak_AI() {
 
         GameFile file(name);
         if (file.IsAvailable() &&
-            file.Read(static_cast<char*>(SpeechBuffer[_index]),
+            file.Read(static_cast<char*>(base::At(SpeechBuffer, _index)),
                       kSpeechBufferSize)) {
-          speech = SpeechBuffer[_index];
-          SpeechRecord[_index] = SpeakQueue;
+          speech = base::At(SpeechBuffer, _index);
+          base::At(SpeechRecord, _index) = SpeakQueue;
         }
       }
 

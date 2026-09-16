@@ -48,6 +48,7 @@
 #include "absl/random/random.h"
 #include "absl/strings/str_format.h"
 #include "absl/types/span.h"
+#include "base/array.h"
 #include "base/numeric.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
@@ -535,7 +536,8 @@ void Map_Selection() {
   }
 
   // Check if they're even entitled to map selection this time
-  if (CountryArray[scenario].Choices[static_cast<int>(ScenDir)] == 0) {
+  if (base::At(base::At(CountryArray, scenario).Choices,
+               static_cast<int>(ScenDir)) == 0) {
     delete[] progresspalette;
     delete[] grey2palette;
     return;
@@ -822,7 +824,8 @@ void Map_Selection() {
   /*
   ** Now show territories as they existed last scenario
   */
-  int startframe = CountryArray[scenario].Start[static_cast<int>(ScenDir)];
+  int startframe = base::At(base::At(CountryArray, scenario).Start,
+                            static_cast<int>(ScenDir));
   if (startframe) {
     Animate_Frame(progress, SysMemPage, startframe);
     SysMemPage.Blit(*PseudoSeenBuff);
@@ -897,7 +900,8 @@ void Map_Selection() {
 
   Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, nullptr);
 
-  startframe = CountryArray[scenario].ContAnim[static_cast<int>(ScenDir)];
+  startframe = base::At(base::At(CountryArray, scenario).ContAnim,
+                        static_cast<int>(ScenDir));
 
   /*
   ** Now print the text over the page
@@ -1092,22 +1096,24 @@ void Map_Selection() {
     // Check for the mouse button
     if (Keyboard::Check() && ((Keyboard::Get() & 0x10FF) == KN_LMOUSE)) {
       for (selection = 0;
-           selection <
-           CountryArray[scenario].Choices[static_cast<int>(ScenDir)];
+           selection < base::At(base::At(CountryArray, scenario).Choices,
+                                static_cast<int>(ScenDir));
            selection++) {
         color = SysMemPage.Get_Pixel(Get_Mouse_X() / 2, Get_Mouse_Y() / 2);
 
         /*
         ** Special hack for Egypt the second time through
         */
-        if ((CountryArray[scenario]
-                 .CountryColor[static_cast<int>(ScenDir)][selection] == 0xA0) &&
+        if ((base::At(base::At(base::At(CountryArray, scenario).CountryColor,
+                               static_cast<int>(ScenDir)),
+                      selection) == 0xA0) &&
             (color == 0x80 || color == 0x81)) {
           color = 0xA0;
         }
 
-        if (CountryArray[scenario]
-                .CountryColor[static_cast<int>(ScenDir)][selection] == color) {
+        if (base::At(base::At(base::At(CountryArray, scenario).CountryColor,
+                              static_cast<int>(ScenDir)),
+                     selection) == color) {
           Play_Sample(world2, 255, Options.Normalize_Sound(90));
           done = 1;
           break;
@@ -1116,10 +1122,12 @@ void Map_Selection() {
       }
     }
   }
-  ScenVar = CountryArray[scenario]
-                .CountryVariant[static_cast<int>(ScenDir)][selection];
-  ScenDir =
-      CountryArray[scenario].CountryDir[static_cast<int>(ScenDir)][selection];
+  ScenVar = base::At(base::At(base::At(CountryArray, scenario).CountryVariant,
+                              static_cast<int>(ScenDir)),
+                     selection);
+  ScenDir = base::At(base::At(base::At(CountryArray, scenario).CountryDir,
+                              static_cast<int>(ScenDir)),
+                     selection);
 
   if (!lastscenario) {
     Close_Animation(progress);
@@ -1150,11 +1158,13 @@ void Map_Selection() {
     */
     Set_Logic_Page(SysMemPage);
     europe->Blit(SysMemPage);
-    const int shape = CountryArray[scenario]
-                          .CountryShape[static_cast<int>(ScenDir)][selection];
+    const int shape =
+        base::At(base::At(base::At(CountryArray, scenario).CountryShape,
+                          static_cast<int>(ScenDir)),
+                 selection);
     const int xshuffled_rows = shape + (house == HOUSE_GOOD ? 0 : 18);
-    CC_Draw_Shape(countryshape, shape, _countryx[xshuffled_rows],
-                  _countryy[xshuffled_rows], WINDOW_MAIN,
+    CC_Draw_Shape(countryshape, shape, base::At(_countryx, xshuffled_rows),
+                  base::At(_countryy, xshuffled_rows), WINDOW_MAIN,
                   SHAPE_WIN_REL | SHAPE_CENTER, nullptr, nullptr);
     SysMemPage.Blit(*PseudoSeenBuff);
     Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, nullptr);
@@ -1174,8 +1184,8 @@ void Map_Selection() {
 
     countryshape = nullptr;
 
-    Print_Statistics(color % 128, _countryx[xshuffled_rows],
-                     _countryy[xshuffled_rows]);
+    Print_Statistics(color % 128, base::At(_countryx, xshuffled_rows),
+                     base::At(_countryy, xshuffled_rows));
   } else {
     GameFile(house == HOUSE_GOOD ? "DARK_B.PAL" : "DARK_SA.PAL")
         .Read(localpalette, 768);
@@ -1288,45 +1298,51 @@ void Print_Statistics(int country, int xpos, int ypos) {
 #endif
   ypos = ypos > 100 ? 8 : 104 - 6;
   if (PlayerPtr->Class->House == HOUSE_GOOD) {
-    Alloc_Object(new ScorePrintClass(_countryname[GDIStats[country].nameindex],
-                                     xpos, ypos, greenpal));
+    Alloc_Object(new ScorePrintClass(
+        base::At(_countryname, base::At(GDIStats, country).nameindex), xpos,
+        ypos, greenpal));
     Call_Back_Delay(
-        static_cast<int>(strlen(Text_String(_countryname[GDIStats[country].nameindex]))) * 3);
+        static_cast<int>(strlen(Text_String(
+            base::At(_countryname, base::At(GDIStats, country).nameindex)))) *
+        3);
     ypos += 16;
     for (index = 0; index < 7; index++) {
-      Alloc_Object(
-          new ScorePrintClass(_gdistatnames[index], xpos, ypos, greenpal));
-      Call_Back_Delay(static_cast<int>(strlen(Text_String(_gdistatnames[index] + 3))));
-      newx = xpos +
-             (6 * static_cast<int>(strlen(Text_String(_gdistatnames[index]))));
+      Alloc_Object(new ScorePrintClass(base::At(_gdistatnames, index), xpos,
+                                       ypos, greenpal));
+      Call_Back_Delay(static_cast<int>(
+          strlen(Text_String(base::At(_gdistatnames, index) + 3))));
+      newx = xpos + (6 * static_cast<int>(strlen(
+                             Text_String(base::At(_gdistatnames, index)))));
       switch (index) {
         case 0:
-          Alloc_Object(
-              new ScorePrintClass(GDIStats[country].pop, newx, ypos, greenpal));
-          break;
-        case 1:
-          Alloc_Object(new ScorePrintClass(GDIStats[country].area, newx, ypos,
-                                           greenpal));
-          break;
-        case 2:
-          Alloc_Object(new ScorePrintClass(GDIStats[country].capital, newx,
-                                           ypos, greenpal));
-          break;
-        case 3:
-          Alloc_Object(new ScorePrintClass(_govtnames[GDIStats[country].govt],
+          Alloc_Object(new ScorePrintClass(base::At(GDIStats, country).pop,
                                            newx, ypos, greenpal));
           break;
+        case 1:
+          Alloc_Object(new ScorePrintClass(base::At(GDIStats, country).area,
+                                           newx, ypos, greenpal));
+          break;
+        case 2:
+          Alloc_Object(new ScorePrintClass(base::At(GDIStats, country).capital,
+                                           newx, ypos, greenpal));
+          break;
+        case 3:
+          Alloc_Object(new ScorePrintClass(
+              base::At(_govtnames, base::At(GDIStats, country).govt), newx,
+              ypos, greenpal));
+          break;
         case 4:
-          Alloc_Object(
-              new ScorePrintClass(GDIStats[country].gdp, newx, ypos, greenpal));
+          Alloc_Object(new ScorePrintClass(base::At(GDIStats, country).gdp,
+                                           newx, ypos, greenpal));
           break;
         case 5:
-          Alloc_Object(new ScorePrintClass(GDIStats[country].conflict, newx,
-                                           ypos, greenpal));
+          Alloc_Object(new ScorePrintClass(base::At(GDIStats, country).conflict,
+                                           newx, ypos, greenpal));
           break;
         case 6:
           Alloc_Object(new ScorePrintClass(
-              _armynames[GDIStats[country].military], newx, ypos, greenpal));
+              base::At(_armynames, base::At(GDIStats, country).military), newx,
+              ypos, greenpal));
           break;
         default:
           break;
@@ -1343,34 +1359,39 @@ void Print_Statistics(int country, int xpos, int ypos) {
     }
     country++;
 
-    Alloc_Object(new ScorePrintClass(_countryname[NodStats[country].nameindex],
-                                     xpos, ypos, greenpal));
+    Alloc_Object(new ScorePrintClass(
+        base::At(_countryname, base::At(NodStats, country).nameindex), xpos,
+        ypos, greenpal));
     Call_Back_Delay(
-        static_cast<int>(strlen(Text_String(_countryname[NodStats[country].nameindex]))) * 3);
+        static_cast<int>(strlen(Text_String(
+            base::At(_countryname, base::At(NodStats, country).nameindex)))) *
+        3);
     ypos += 16;
     for (index = 0; index < 9; index++) {
-      Alloc_Object(
-          new ScorePrintClass(_nodstatnames[index], xpos, ypos, greenpal));
-      Call_Back_Delay(static_cast<int>(strlen(Text_String(_nodstatnames[index] + 3))));
-      newx = xpos +
-             (6 * static_cast<int>(strlen(Text_String(_nodstatnames[index]))));
+      Alloc_Object(new ScorePrintClass(base::At(_nodstatnames, index), xpos,
+                                       ypos, greenpal));
+      Call_Back_Delay(static_cast<int>(
+          strlen(Text_String(base::At(_nodstatnames, index) + 3))));
+      newx = xpos + (6 * static_cast<int>(strlen(
+                             Text_String(base::At(_nodstatnames, index)))));
       switch (index) {
         case 0:
-          Alloc_Object(
-              new ScorePrintClass(NodStats[country].pop, newx, ypos, greenpal));
+          Alloc_Object(new ScorePrintClass(base::At(NodStats, country).pop,
+                                           newx, ypos, greenpal));
           break;
         case 1:
           absl::SNPrintF(_deststr, sizeof(_deststr), "%d%%",
-                         NodStats[country].expendable);
+                         base::At(NodStats, country).expendable);
           Alloc_Object(new ScorePrintClass(_deststr, newx, ypos, greenpal));
           break;
         case 2:
-          Alloc_Object(new ScorePrintClass(NodStats[country].capital, newx,
-                                           ypos, greenpal));
+          Alloc_Object(new ScorePrintClass(base::At(NodStats, country).capital,
+                                           newx, ypos, greenpal));
           break;
         case 3:
-          Alloc_Object(new ScorePrintClass(_govtnames[NodStats[country].govt],
-                                           newx, ypos, greenpal));
+          Alloc_Object(new ScorePrintClass(
+              base::At(_govtnames, base::At(NodStats, country).govt), newx,
+              ypos, greenpal));
           break;
         case 4:
 #ifdef FIX_ME_LATER
@@ -1379,24 +1400,25 @@ void Print_Statistics(int country, int xpos, int ypos) {
                          NodStats[country].corruptible);
 #endif  // FIX_ME_LATER
           absl::SNPrintF(_deststr, sizeof(_deststr), "%d%%",
-                         NodStats[country].corruptible);
+                         base::At(NodStats, country).corruptible);
           Alloc_Object(new ScorePrintClass(_deststr, newx, ypos, greenpal));
           break;
         case 5:
-          Alloc_Object(new ScorePrintClass(NodStats[country].worth, newx, ypos,
-                                           greenpal));
+          Alloc_Object(new ScorePrintClass(base::At(NodStats, country).worth,
+                                           newx, ypos, greenpal));
           break;
         case 6:
-          Alloc_Object(new ScorePrintClass(NodStats[country].conflict, newx,
-                                           ypos, greenpal));
+          Alloc_Object(new ScorePrintClass(base::At(NodStats, country).conflict,
+                                           newx, ypos, greenpal));
           break;
         case 7:
           Alloc_Object(new ScorePrintClass(
-              _military[NodStats[country].military], newx, ypos, greenpal));
+              base::At(_military, base::At(NodStats, country).military), newx,
+              ypos, greenpal));
           break;
         case 8:
           absl::SNPrintF(_deststr, sizeof(_deststr), "%d%%",
-                         NodStats[country].probability);
+                         base::At(NodStats, country).probability);
           Alloc_Object(new ScorePrintClass(_deststr, newx, ypos, greenpal));
           break;
         default:
@@ -1641,8 +1663,8 @@ void Bit_It_In(const int x, const int y, const int w, const int h,
       // Each pixel uses a shuffled x and a wrapping y offset, so pixels
       // scatter across the entire image rather than filling row by row.
       for (int col = 0; col < w; col++) {
-        const int px = x + shuffled_cols[col];
-        const int py = y + shuffled_rows[row_offset];
+        const int px = x + base::At(shuffled_cols, col);
+        const int py = y + base::At(shuffled_rows, row_offset);
         row_offset++;
         if (row_offset >= h) {
           row_offset = 0;

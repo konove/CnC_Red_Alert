@@ -44,6 +44,7 @@
 #include <algorithm>
 #include <cstdint>
 
+#include "base/array.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/anim.h"
 #include "ra/bench_util.h"
@@ -212,7 +213,7 @@ void LogicClass::Debug_Dump(MonoClass* mono) {
       index += (graph >= row + 1) ? 2 : 0;
 
       str[1] = '\0';
-      str[0] = static_cast<char>(_barchar[index]);
+      str[0] = static_cast<char>(base::At(_barchar, index));
       mono->Text_Print(str, 62, 9 - (row / 2));
     }
     mono->Sub_Window();

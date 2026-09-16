@@ -41,6 +41,8 @@
 
 #include "tech/base64.h"
 
+#include "base/array.h"
+
 /*
 **	This is the magic padding character used to fill out the encoded data to
 *a multiple of *	4 characters even though the source data is less than
@@ -256,7 +258,7 @@ int Base64_Decode(const void* source, int slen, void* dest, int dlen) {
       const unsigned char c = *sptr++;
       slen--;
 
-      const unsigned char code = kDecoder[c];
+      const unsigned char code = base::At(kDecoder, c);
 
       /*
       **	An unrecognized character is skipped.

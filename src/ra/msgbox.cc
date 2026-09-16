@@ -44,6 +44,7 @@
 #include <cstdint>
 #include <cstring>
 
+#include "base/array.h"
 #include "base/numeric.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"
@@ -212,13 +213,13 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
       button2.Add(*buttonlist);
       buttons[2] = &button2;
       realval[2] = BUTTON_2;
-      buttons[curbutton]->Turn_On();
+      base::At(buttons, curbutton)->Turn_On();
     } else {
       if (numbuttons == 2) {
         button2.Add(*buttonlist);
         buttons[1] = &button2;
         realval[1] = BUTTON_2;
-        buttons[curbutton]->Turn_On();
+        base::At(buttons, curbutton)->Turn_On();
       }
     }
   }
@@ -295,7 +296,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
       }
       switch (static_cast<int>(input)) {
         case KN_ESC:
-          selection = realval[numbuttons - 1];
+          selection = base::At(realval, numbuttons - 1);
           pressed = true;
 
           break;
@@ -321,36 +322,36 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
 
         case KN_LEFT:
           if (numbuttons > 1) {
-            buttons[curbutton]->Turn_Off();
-            buttons[curbutton]->Flag_To_Redraw();
+            base::At(buttons, curbutton)->Turn_Off();
+            base::At(buttons, curbutton)->Flag_To_Redraw();
 
             curbutton--;
             if (curbutton < 0) {
               curbutton = numbuttons - 1;
             }
 
-            buttons[curbutton]->Turn_On();
-            buttons[curbutton]->Flag_To_Redraw();
+            base::At(buttons, curbutton)->Turn_On();
+            base::At(buttons, curbutton)->Flag_To_Redraw();
           }
           break;
 
         case KN_RIGHT:
           if (numbuttons > 1) {
-            buttons[curbutton]->Turn_Off();
-            buttons[curbutton]->Flag_To_Redraw();
+            base::At(buttons, curbutton)->Turn_Off();
+            base::At(buttons, curbutton)->Flag_To_Redraw();
 
             curbutton++;
             if (curbutton > numbuttons - 1) {
               curbutton = 0;
             }
 
-            buttons[curbutton]->Turn_On();
-            buttons[curbutton]->Flag_To_Redraw();
+            base::At(buttons, curbutton)->Turn_On();
+            base::At(buttons, curbutton)->Flag_To_Redraw();
           }
           break;
 
         case KN_RETURN:
-          selection = realval[curbutton];
+          selection = base::At(realval, curbutton);
           pressed = true;
           break;
 

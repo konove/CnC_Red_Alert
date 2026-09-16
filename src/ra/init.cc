@@ -79,6 +79,7 @@
 #include "absl/log/log.h"
 #include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "base/numeric.h"
 #include "base/types.h"
 #include "magic_enum/magic_enum.hpp"
@@ -503,7 +504,7 @@ bool Select_Game(bool /*fade*/) {
   ** Kills for this game.  Kills of -1 means this player didn't play this round.
   */
   for (int i = 0; i < MAX_MULTI_GAMES; i++) {
-    Session.Score[i].Kills[Session.CurGame] = -1;
+    base::At(base::At(Session.Score, i).Kills, Session.CurGame) = -1;
   }
 
   /*
@@ -1430,9 +1431,9 @@ bool Parse_Command_Line(int argc, char* argv[]) {
           break;
         }
         if (i < 4) {
-          net[i] = *byte;  // fill NetNum
+          base::At(net, i) = *byte;  // fill NetNum
         } else {
-          node[i - 4] = *byte;  // fill NetNode
+          base::At(node, i - 4) = *byte;  // fill NetNode
         }
         i++;
       }
@@ -1635,8 +1636,8 @@ uint32_t Obfuscate(const char* string) {
   **	discourages the direct forced illegal character input method of attack.
   */
   for (int index = 0; index < length; index++) {
-    if (!isgraph(buffer[index])) {
-      buffer[index] = static_cast<char>('A' + (index % 26));
+    if (!isgraph(base::At(buffer, index))) {
+      base::At(buffer, index) = static_cast<char>('A' + (index % 26));
     }
   }
 
@@ -1652,11 +1653,11 @@ uint32_t Obfuscate(const char* string) {
     int index = 0;
     for (index = length; index < maxlen; index++) {
       const int mixed = static_cast<uint8_t>('?') ^
-                        static_cast<uint8_t>(buffer[index - length]);
-      buffer[index] = static_cast<char>('A' + ((mixed + index) % 26));
+                        static_cast<uint8_t>(base::At(buffer, index - length));
+      base::At(buffer, index) = static_cast<char>('A' + ((mixed + index) % 26));
     }
     length = index;
-    buffer[length] = '\0';
+    base::At(buffer, length) = '\0';
   }
 
   /*
@@ -1693,10 +1694,10 @@ uint32_t Obfuscate(const char* string) {
   */
   strrev(buffer);  // Restore original string order.
   for (int index = 0; index < length; index++) {
-    code ^= static_cast<unsigned char>(buffer[index]);
+    code ^= static_cast<unsigned char>(base::At(buffer, index));
     const auto temp = static_cast<unsigned char>(code);
-    buffer[index] =
-        static_cast<char>(static_cast<uint8_t>(buffer[index]) ^ temp);
+    base::At(buffer, index) =
+        static_cast<char>(static_cast<uint8_t>(base::At(buffer, index)) ^ temp);
     code >>= 8;
     code |= uint32_t{temp} << 24;
   }
@@ -1713,11 +1714,13 @@ uint32_t Obfuscate(const char* string) {
     static const unsigned char _addbits[] = {0x10, 0x00, 0x00, 0x80,
                                              0x40, 0x00, 0x00, 0x04};
 
-    buffer[index] = static_cast<char>(static_cast<uint8_t>(buffer[index]) |
-                                      _addbits[index % std::ssize(_addbits)]);
-    buffer[index] = static_cast<char>(
-        static_cast<uint8_t>(buffer[index]) &
-        static_cast<uint8_t>(~_lossbits[index % std::ssize(_lossbits)]));
+    base::At(buffer, index) =
+        static_cast<char>(static_cast<uint8_t>(base::At(buffer, index)) |
+                          base::At(_addbits, index % std::ssize(_addbits)));
+    base::At(buffer, index) =
+        static_cast<char>(static_cast<uint8_t>(base::At(buffer, index)) &
+                          static_cast<uint8_t>(~base::At(
+                              _lossbits, index % std::ssize(_lossbits))));
   }
 
   /*
@@ -1736,10 +1739,13 @@ uint32_t Obfuscate(const char* string) {
     // below uses only +, * and ^, whose low 8 bits depend only on the low 8
     // bits of their operands, and only those low 8 bits are stored back into
     // the buffer.
-    const uint16_t key1 = static_cast<unsigned char>(buffer[index]);
-    const uint16_t key2 = static_cast<unsigned char>(buffer[index + 1]);
-    const uint16_t key3 = static_cast<unsigned char>(buffer[index + 2]);
-    const uint16_t key4 = static_cast<unsigned char>(buffer[index + 3]);
+    const uint16_t key1 = static_cast<unsigned char>(base::At(buffer, index));
+    const uint16_t key2 =
+        static_cast<unsigned char>(base::At(buffer, index + 1));
+    const uint16_t key3 =
+        static_cast<unsigned char>(base::At(buffer, index + 2));
+    const uint16_t key4 =
+        static_cast<unsigned char>(base::At(buffer, index + 3));
     uint16_t val1 = key1;
     uint16_t val2 = key2;
     uint16_t val3 = key3;
@@ -1765,10 +1771,10 @@ uint32_t Obfuscate(const char* string) {
     val2 = static_cast<uint16_t>(val2 ^ s3);
     val3 = static_cast<uint16_t>(val3 ^ s2);
 
-    buffer[index] = static_cast<char>(val1);
-    buffer[index + 1] = static_cast<char>(val2);
-    buffer[index + 2] = static_cast<char>(val3);
-    buffer[index + 3] = static_cast<char>(val4);
+    base::At(buffer, index) = static_cast<char>(val1);
+    base::At(buffer, index + 1) = static_cast<char>(val2);
+    base::At(buffer, index + 2) = static_cast<char>(val3);
+    base::At(buffer, index + 3) = static_cast<char>(val4);
   }
 
   /*
@@ -1906,8 +1912,9 @@ static void Init_Color_Remaps() {
           HidPage.Get_Pixel(index, static_cast<int>(pcolor)));
     }
     for (int index = 0; index < 6; index++) {
-      ColorRemaps[pcolor].FontRemap[10 + index] = static_cast<unsigned char>(
-          HidPage.Get_Pixel(2 + index, static_cast<int>(pcolor)));
+      base::At(ColorRemaps[pcolor].FontRemap, 10 + index) =
+          static_cast<unsigned char>(
+              HidPage.Get_Pixel(2 + index, static_cast<int>(pcolor)));
     }
     ColorRemaps[pcolor].BrightColor = kWhite;
     //		ColorRemaps[pcolor].BrightColor = HidPage.Get_Pixel(1,
@@ -1942,7 +1949,7 @@ static void Init_Color_Remaps() {
   ** Now do the special dim grey scheme
   */
   for (int color = 0; color < 256; color++) {
-    GreyScheme.RemapTable[color] = static_cast<unsigned char>(color);
+    base::At(GreyScheme.RemapTable, color) = static_cast<unsigned char>(color);
   }
   // The palette index in the low byte of the pixel read from the grey row.
   const auto GreyPixel = [](int x) {
@@ -1950,26 +1957,32 @@ static void Init_Color_Remaps() {
         HidPage.Get_Pixel(x, static_cast<int>(PCOLOR_GREY)));
   };
   for (int index = 0; index < 6; index++) {
-    GreyScheme.FontRemap[10 + index] = GreyPixel(9 + index);
+    base::At(GreyScheme.FontRemap, 10 + index) = GreyPixel(9 + index);
   }
   GreyScheme.BrightColor = GreyPixel(3);
   GreyScheme.Color = GreyPixel(7);
 
-  GreyScheme.Shadow = ColorRemaps[PCOLOR_GREY].RemapTable[GreyPixel(15)];
-  GreyScheme.Background = ColorRemaps[PCOLOR_GREY].RemapTable[GreyPixel(14)];
-  GreyScheme.Corners = ColorRemaps[PCOLOR_GREY].RemapTable[GreyPixel(13)];
-  GreyScheme.Highlight = ColorRemaps[PCOLOR_GREY].RemapTable[GreyPixel(9)];
-  GreyScheme.Bright = ColorRemaps[PCOLOR_GREY].RemapTable[GreyPixel(5)];
-  GreyScheme.Underline = ColorRemaps[PCOLOR_GREY].RemapTable[GreyPixel(5)];
-  GreyScheme.Bar = ColorRemaps[PCOLOR_GREY].RemapTable[GreyPixel(11)];
-  GreyScheme.Box = ColorRemaps[PCOLOR_GREY].RemapTable[GreyPixel(11)];
+  GreyScheme.Shadow =
+      base::At(ColorRemaps[PCOLOR_GREY].RemapTable, GreyPixel(15));
+  GreyScheme.Background =
+      base::At(ColorRemaps[PCOLOR_GREY].RemapTable, GreyPixel(14));
+  GreyScheme.Corners =
+      base::At(ColorRemaps[PCOLOR_GREY].RemapTable, GreyPixel(13));
+  GreyScheme.Highlight =
+      base::At(ColorRemaps[PCOLOR_GREY].RemapTable, GreyPixel(9));
+  GreyScheme.Bright =
+      base::At(ColorRemaps[PCOLOR_GREY].RemapTable, GreyPixel(5));
+  GreyScheme.Underline =
+      base::At(ColorRemaps[PCOLOR_GREY].RemapTable, GreyPixel(5));
+  GreyScheme.Bar = base::At(ColorRemaps[PCOLOR_GREY].RemapTable, GreyPixel(11));
+  GreyScheme.Box = base::At(ColorRemaps[PCOLOR_GREY].RemapTable, GreyPixel(11));
 
   /*
   ** Set up the metallic remap table for the font that prints over the tabs
   */
   memset(&MetalScheme, 4, sizeof(MetalScheme));
   for (int color_counter = 0; color_counter < 16; color_counter++) {
-    MetalScheme.FontRemap[color_counter] =
+    base::At(MetalScheme.FontRemap, color_counter) =
         static_cast<unsigned char>(color_counter);
   }
   MetalScheme.FontRemap[1] = 128;
@@ -1984,8 +1997,9 @@ static void Init_Color_Remaps() {
   ** Set up the font remap table for the mission briefing font
   */
   for (int colr = 0; colr < 16; colr++) {
-    ColorRemaps[PCOLOR_TYPE].FontRemap[colr] = static_cast<unsigned char>(
-        HidPage.Get_Pixel(colr, static_cast<int>(PCOLOR_TYPE)));
+    base::At(ColorRemaps[PCOLOR_TYPE].FontRemap, colr) =
+        static_cast<unsigned char>(
+            HidPage.Get_Pixel(colr, static_cast<int>(PCOLOR_TYPE)));
   }
 
   ColorRemaps[PCOLOR_TYPE].Shadow = 11;
@@ -2046,8 +2060,8 @@ static void Init_Heaps() {
   **	be played.
   */
   for (int index = 0; index < std::ssize(SpeechBuffer); index++) {
-    SpeechBuffer[index] = new char[kSpeechBufferSize];
-    SpeechRecord[index] = VOX_NONE;
+    base::At(SpeechBuffer, index) = new char[kSpeechBufferSize];
+    base::At(SpeechRecord, index) = VOX_NONE;
     assert(SpeechBuffer[index] != nullptr);
   }
 
@@ -2618,7 +2632,7 @@ static void Init_Bulk_Data() {
   ini.Load(fc);
   int totallen = 0;
   for (int index = 0; index < std::ssize(TutorialTextOffsets); index++) {
-    TutorialTextOffsets[index] = 0xFFFF;
+    base::At(TutorialTextOffsets, index) = 0xFFFF;
 
     char buffer[128];
     char num[10];
@@ -2637,7 +2651,7 @@ static void Init_Bulk_Data() {
     absl::SNPrintF(num, sizeof(num), "%d", index);
     const int textoffset = static_cast<int>(textptr - text_data);
     if (ini.Get_String("Tutorial", num, "", textptr, totallen - textoffset)) {
-      TutorialTextOffsets[index] = static_cast<uint16_t>(textoffset);
+      base::At(TutorialTextOffsets, index) = static_cast<uint16_t>(textoffset);
       textptr += strlen(textptr) + 1;
     }
   }

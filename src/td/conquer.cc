@@ -78,6 +78,7 @@
 
 #include "absl/log/log.h"
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "base/numeric.h"
 #include "base/seek_origin.h"
 #include "base/types.h"
@@ -1727,7 +1728,7 @@ bool Main_Loop() {
             constexpr char hex[] = "0123456789abcdef";
             for (const std::byte byte : bytes) {
               const auto value = std::to_integer<uint8_t>(byte);
-              fields += hex[value >> 4];
+              fields += base::At(hex, value >> 4);
               fields += hex[value & 15];
             }
             return true;
@@ -1765,7 +1766,7 @@ bool Main_Loop() {
           hash = (hash ^ value) * 1099511628211ULL;
           if (trace) {
             constexpr char hex[] = "0123456789abcdef";
-            fields += hex[value >> 4];
+            fields += base::At(hex, value >> 4);
             fields += hex[value & 15];
           }
         }
@@ -1995,7 +1996,7 @@ int Load_Interpolated_Palettes(const char* filename, bool add) {
   } else {
     for (start_palette = 0; start_palette < std::ssize(InterpolatedPalettes);
          start_palette++) {
-      if (!InterpolatedPalettes[start_palette]) {
+      if (!base::At(InterpolatedPalettes, start_palette)) {
         break;
       }
     }
@@ -2008,14 +2009,16 @@ int Load_Interpolated_Palettes(const char* filename, bool add) {
   file.ReadObject(num_palettes);
 
   for (int i = 0; i < num_palettes; i++) {
-    InterpolatedPalettes[i + start_palette] = new unsigned char[65536]();
+    base::At(InterpolatedPalettes, i + start_palette) =
+        new unsigned char[65536]();
     for (int y = 0; y < 256; y++) {
-      file.Read(InterpolatedPalettes[i + start_palette] +
+      file.Read(base::At(InterpolatedPalettes, i + start_palette) +
                     (static_cast<base::ssize>(y) * 256),
                 y + 1);
     }
 
-    Rebuild_Interpolated_Palette(InterpolatedPalettes[i + start_palette]);
+    Rebuild_Interpolated_Palette(
+        base::At(InterpolatedPalettes, i + start_palette));
   }
 
   PalettesRead = true;
@@ -2330,8 +2333,8 @@ const void* Get_Radar_Icon(const void* shapefile, int shapenum, int frames,
               if (getx < pixel_width && gety < pixel_height) {
                 for (int lp = 0; lp < 9; lp++) {
                   pixel = *static_cast<const char*>(Add_Long_To_Pointer(
-                      ptr,
-                      ((gety - _offy[lp]) * pixel_width) + getx - _offx[lp]));
+                      ptr, ((gety - base::At(_offy, lp)) * pixel_width) + getx -
+                               base::At(_offx, lp)));
                   if (pixel == kLtGreen) {
                     pixel = 0;
                   }
@@ -2464,12 +2467,12 @@ void CC_Draw_Shape(const void* shapefile, int shapenum, int x, int y,
     if (shape_size) {
       GraphicViewPortClass draw_window(
           LogicPage->Get_Graphic_Buffer(),
-          (WindowList[static_cast<int>(window)][kWindowX] * 8) +
+          (base::At(WindowList[static_cast<int>(window)], kWindowX) * 8) +
               LogicPage->Get_XPos(),
-          WindowList[static_cast<int>(window)][kWindowY] +
+          base::At(WindowList[static_cast<int>(window)], kWindowY) +
               LogicPage->Get_YPos(),
-          WindowList[static_cast<int>(window)][kWindowWidth] * 8,
-          WindowList[static_cast<int>(window)][kWindowHeight]);
+          base::At(WindowList[static_cast<int>(window)], kWindowWidth) * 8,
+          base::At(WindowList[static_cast<int>(window)], kWindowHeight));
 
       char* shape_pointer = static_cast<char*>(shape_size);
 
@@ -2485,7 +2488,8 @@ void CC_Draw_Shape(const void* shapefile, int shapenum, int x, int y,
 
       int predoffset = static_cast<int>(Frame);
 
-      if (x > WindowList[static_cast<int>(window)][kWindowWidth] * 4) {
+      if (x >
+          base::At(WindowList[static_cast<int>(window)], kWindowWidth) * 4) {
         predoffset = -predoffset;
       }
 
@@ -2921,10 +2925,11 @@ void Handle_Team(int team, int action) {
 void Handle_View(int view, int action) {
   if (static_cast<unsigned>(view) < sizeof(Views) / sizeof(Views[0])) {
     if (action == 0) {
-      Map.Set_Tactical_Position(Cell_Coord(Views[view]) & 0xFF00FF00L);
+      Map.Set_Tactical_Position(Cell_Coord(base::At(Views, view)) &
+                                0xFF00FF00L);
       Map.Flag_To_Redraw(true);
     } else {
-      Views[view] = Coord_Cell(Map.TacticalCoord);
+      base::At(Views, view) = Coord_Cell(Map.TacticalCoord);
     }
   }
 }
@@ -3101,7 +3106,8 @@ bool Force_CD_Available(int cd) {
         } else {
           // 0 or 1?
           Format_Runtime_Text(buffer, sizeof(buffer),
-                              Text_String(TXT_CD_DIALOG_2), cd + 1, _volid[cd]);
+                              Text_String(TXT_CD_DIALOG_2), cd + 1,
+                              base::At(_volid, cd));
         }
       }
       GraphicViewPortClass* oldpage = Set_Logic_Page(SeenBuff);

@@ -46,6 +46,7 @@
 #include <cstdint>
 #include <cstring>
 
+#include "base/array.h"
 #include "base/numeric.h"
 #include "base/types.h"
 #include "port/safe_string.h"
@@ -285,9 +286,10 @@ static void Slide_Show(int slide, int frame) {
     /*
     ** Blit in a quarter of the new frame to the background page.
     */
-    SlideBuffers[slide]->Blit(*BackgroundPage, 0, (frame - 1) * CHUNK_HEIGHT, 0,
-                              (frame - 1) * CHUNK_HEIGHT, SeenBuff.Get_Width(),
-                              CHUNK_HEIGHT, false);
+    base::At(SlideBuffers, slide)
+        ->Blit(*BackgroundPage, 0, (frame - 1) * CHUNK_HEIGHT, 0,
+               (frame - 1) * CHUNK_HEIGHT, SeenBuff.Get_Width(), CHUNK_HEIGHT,
+               false);
     return;
   }
 
@@ -306,11 +308,13 @@ static void Slide_Show(int slide, int frame) {
     ** Create the combo palette from the font entries and the picture entries.
     */
     for (int index = 0; index < 256; index++) {
-      if (PaletteLUT[index]) {
-        ComboPalPtr[static_cast<base::ssize>(index) * 3] =
-            SlidePals[slide][static_cast<base::ssize>(index) * 3];
-        ComboPalPtr[(index * 3) + 1] = SlidePals[slide][(index * 3) + 1];
-        ComboPalPtr[(index * 3) + 2] = SlidePals[slide][(index * 3) + 2];
+      if (base::At(PaletteLUT, index)) {
+        ComboPalPtr[static_cast<base::ssize>(index) * 3] = base::At(
+            base::At(SlidePals, slide), static_cast<base::ssize>(index) * 3);
+        ComboPalPtr[(index * 3) + 1] =
+            base::At(base::At(SlidePals, slide), (index * 3) + 1);
+        ComboPalPtr[(index * 3) + 2] =
+            base::At(base::At(SlidePals, slide), (index * 3) + 2);
       }
     }
     return;
@@ -351,7 +355,7 @@ static void Slide_Show(int slide, int frame) {
       */
       unsigned char* ccpalptr = CCPalette;
       for (int index = 0; index < 256; index++) {
-        if (PaletteLUT[index]) {
+        if (base::At(PaletteLUT, index)) {
           ccpalptr[static_cast<base::ssize>(index) * 3] = 0;
           ccpalptr[(index * 3) + 1] = 0;
           ccpalptr[(index * 3) + 2] = 0;
@@ -590,18 +594,19 @@ void Show_Who_Was_Responsible() {
   const PlayerColorType pcolor = PCOLOR_GREEN;
 
   for (int index = 0; index < 6; index++) {
-    PaletteLUT[ColorRemaps[pcolor].FontRemap[10 + index]] = 0;
+    base::At(PaletteLUT, base::At(ColorRemaps[pcolor].FontRemap, 10 + index)) =
+        0;
   }
   // PaletteLUT[ColorRemaps[pcolor].BrightColor] = 0;
-  PaletteLUT[ColorRemaps[pcolor].Color] = 0;
-  PaletteLUT[ColorRemaps[pcolor].Shadow] = 0;
-  PaletteLUT[ColorRemaps[pcolor].Background] = 0;
-  PaletteLUT[ColorRemaps[pcolor].Corners] = 0;
-  PaletteLUT[ColorRemaps[pcolor].Highlight] = 0;
-  PaletteLUT[ColorRemaps[pcolor].Bright] = 0;
-  PaletteLUT[ColorRemaps[pcolor].Underline] = 0;
-  PaletteLUT[ColorRemaps[pcolor].Bar] = 0;
-  PaletteLUT[ColorRemaps[pcolor].Box] = 0;
+  base::At(PaletteLUT, ColorRemaps[pcolor].Color) = 0;
+  base::At(PaletteLUT, ColorRemaps[pcolor].Shadow) = 0;
+  base::At(PaletteLUT, ColorRemaps[pcolor].Background) = 0;
+  base::At(PaletteLUT, ColorRemaps[pcolor].Corners) = 0;
+  base::At(PaletteLUT, ColorRemaps[pcolor].Highlight) = 0;
+  base::At(PaletteLUT, ColorRemaps[pcolor].Bright) = 0;
+  base::At(PaletteLUT, ColorRemaps[pcolor].Underline) = 0;
+  base::At(PaletteLUT, ColorRemaps[pcolor].Bar) = 0;
+  base::At(PaletteLUT, ColorRemaps[pcolor].Box) = 0;
 
   /*
   ** Stop the music.
@@ -625,7 +630,7 @@ void Show_Who_Was_Responsible() {
   memcpy(ComboPalette, CCPalette, sizeof(ComboPalette));
 
   for (int index = 0; index < 256; index++) {
-    if (PaletteLUT[index]) {
+    if (base::At(PaletteLUT, index)) {
       ComboPalPtr[static_cast<base::ssize>(index) * 3] = 0;
       ComboPalPtr[(index * 3) + 1] = 0;
       ComboPalPtr[(index * 3) + 2] = 0;
@@ -648,11 +653,13 @@ void Show_Who_Was_Responsible() {
   ** Loop through and load up all the slideshow pictures
   */
   for (int index = 0; index < NUM_SLIDES; index++) {
-    SlideBuffers[index] = new GraphicBufferClass;
-    SlideBuffers[index]->Init(SeenBuff.Get_Width(), SeenBuff.Get_Height(),
-                              nullptr, 0, GBC_NONE);
-    Load_Title_Screen(&SlideNames[index][0], SlideBuffers[index],
-                      &SlidePals[index][0]);
+    base::At(SlideBuffers, index) = new GraphicBufferClass;
+    base::At(SlideBuffers, index)
+        ->Init(SeenBuff.Get_Width(), SeenBuff.Get_Height(), nullptr, 0,
+               GBC_NONE);
+    Load_Title_Screen(base::Suffix(base::At(SlideNames, index), 0).data(),
+                      base::At(SlideBuffers, index),
+                      base::Suffix(base::At(SlidePals, index), 0).data());
   }
 
   // Create a new graphic buffer to restore the background from. Initialize it
@@ -782,8 +789,8 @@ void Show_Who_Was_Responsible() {
     */
     if (frame) {
       for (int i = slide_number + 1; i < NUM_SLIDES; i++) {
-        if (!SlideBuffers[i]->Get_IsDirectDraw()) {
-          Force_VM_Page_In(SlideBuffers[i]->Get_Offset(),
+        if (!base::At(SlideBuffers, i)->Get_IsDirectDraw()) {
+          Force_VM_Page_In(base::At(SlideBuffers, i)->Get_Offset(),
                            SeenBuff.Get_Width() * SeenBuff.Get_Height());
         }
       }

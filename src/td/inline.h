@@ -4,6 +4,7 @@
 #include <concepts>
 #include <cstdint>
 
+#include "base/array.h"
 #include "td/const.h"
 #include "td/defines.h"
 #include "td/display_constants.h"
@@ -131,7 +132,7 @@ inline COORDINATE XYPixel_Coord(int x, int y) {
                                      ICON_PIXEL_W) /*+LEPTON_OFFSET_X*/));
 }
 inline int Facing_To_32(DirType facing) {
-  return Facing32[static_cast<int>(facing)];
+  return base::At(Facing32, static_cast<int>(facing));
 }
 inline DirType Direction256(COORDINATE coord1, COORDINATE coord2) {
   return Desired_Facing256(Coord_X(coord1), Coord_Y(coord1), Coord_X(coord2),

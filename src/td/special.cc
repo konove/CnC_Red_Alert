@@ -40,6 +40,9 @@
 
 #include "td/special.h"
 
+#include <iterator>
+
+#include "base/array.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/misc.h"
@@ -58,7 +61,6 @@
 #include "td/mapedit.h"
 #include "td/queue.h"
 #include "td/textbtn.h"
-#include <iterator>
 
 #define kOptionWidth 236
 #define kOptionHeight 162
@@ -97,14 +99,14 @@ void Special_Dialog() {
   cancel.Add(*buttons);
 
   for (int index = 0; index < std::ssize(_options); index++) {
-    _options[index].Button =
+    base::At(_options, index).Button =
         new CheckBoxClass(static_cast<unsigned>(100 + index), kOptionX + 7,
                           kOptionY + 20 + (index * 10));
-    if (_options[index].Button) {
-      _options[index].Button->Add(*buttons);
+    if (base::At(_options, index).Button) {
+      base::At(_options, index).Button->Add(*buttons);
 
       bool value = false;
-      switch (_options[index].Description) {
+      switch (base::At(_options, index).Description) {
         case TXT_SEPARATE_HELIPAD:
           value = Special.IsSeparate;
           break;
@@ -160,11 +162,11 @@ void Special_Dialog() {
           break;
       }
 
-      _options[index].Setting = value;
+      base::At(_options, index).Setting = value;
       if (value) {
-        _options[index].Button->Turn_On();
+        base::At(_options, index).Button->Turn_On();
       } else {
-        _options[index].Button->Turn_Off();
+        base::At(_options, index).Button->Turn_Off();
       }
     }
   }
@@ -284,11 +286,12 @@ void Special_Dialog() {
         const int index = (input & ~KN_BUTTON) - 100;
         if (static_cast<unsigned>(index) <
             sizeof(_options) / sizeof(_options[0])) {
-          _options[index].Setting = !_options[index].Setting;
-          if (_options[index].Setting) {
-            _options[index].Button->Turn_On();
+          base::At(_options, index).Setting =
+              !base::At(_options, index).Setting;
+          if (base::At(_options, index).Setting) {
+            base::At(_options, index).Button->Turn_On();
           } else {
-            _options[index].Button->Turn_Off();
+            base::At(_options, index).Button->Turn_Off();
           }
         }
         break;

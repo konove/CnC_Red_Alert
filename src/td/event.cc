@@ -59,6 +59,7 @@
 #include <utility>
 
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "base/enum_array.h"
 #include "td/anim.h"
 #include "td/audio.h"
@@ -766,8 +767,8 @@ void EventClass::Execute() {
     //
     case PROCESS_TIME:
       for (i = 0; i < MPlayerCount; i++) {
-        if (MPlayerID == ::MPlayerID[i]) {
-          TheirProcessTime[i] = Data.ProcessTime.AverageTicks;
+        if (MPlayerID == base::At(::MPlayerID, i)) {
+          base::At(TheirProcessTime, i) = Data.ProcessTime.AverageTicks;
 
           char flip_text[128];
           absl::SNPrintF(flip_text, sizeof(flip_text),

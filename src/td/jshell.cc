@@ -56,6 +56,7 @@
 
 #include "absl/strings/str_format.h"
 #include "absl/types/span.h"
+#include "base/array.h"
 #include "base/numeric.h"
 #include "base/seek_origin.h"
 #include "base/types.h"
@@ -106,7 +107,7 @@ void* Small_Icon(const void* iconptr, int iconnum) {
       const int _offsets[9] = {4 + (4 * 24),  12 + (4 * 24),  20 + (4 * 24),
                                4 + (12 * 24), 12 + (12 * 24), 20 + (12 * 24),
                                4 + (20 * 24), 12 + (20 * 24), 20 + (20 * 24)};
-      _icon[index] = data[_offsets[index]];
+      base::At(_icon, index) = data[base::At(_offsets, index)];
     }
   }
 
@@ -135,10 +136,10 @@ void* Small_Icon(const void* iconptr, int iconnum) {
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
 void Set_Window(int window, int x, int y, int w, int h) {
-  WindowList[window][kWindowWidth] = w / 8;
-  WindowList[window][kWindowHeight] = h;
-  WindowList[window][kWindowX] = x / 8;
-  WindowList[window][kWindowY] = y;
+  base::At(WindowList[window], kWindowWidth) = w / 8;
+  base::At(WindowList[window], kWindowHeight) = h;
+  base::At(WindowList[window], kWindowX) = x / 8;
+  base::At(WindowList[window], kWindowY) = y;
 }
 
 /***********************************************************************************************

@@ -55,6 +55,7 @@
 #include <string>
 
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "ra/config.h"
 #include "ra/conquer.h"
 #include "ra/externs.h"
@@ -332,8 +333,8 @@ void VersionClass::Read_Text_String() {
   if (file.IsAvailable()) {
     file.ReadObject(VersionText);
     VersionText[sizeof(VersionText) - 1] = '\0';
-    while (VersionText[strlen(VersionText) - 1] == '\r') {
-      VersionText[strlen(VersionText) - 1] = '\0';
+    while (base::At(VersionText, strlen(VersionText) - 1) == '\r') {
+      base::At(VersionText, strlen(VersionText) - 1) = '\0';
     }
   } else {
     VersionText[0] = '\0';
@@ -372,8 +373,8 @@ CommProtocolType VersionClass::Version_Protocol(uint32_t version) {
   // the given version number.
   //------------------------------------------------------------------------
   for (int i = j - 1; i >= 0; i--) {
-    if (version >= VersionProtocol[i].Version) {
-      return VersionProtocol[i].Protocol;
+    if (version >= base::At(VersionProtocol, i).Version) {
+      return base::At(VersionProtocol, i).Protocol;
     }
   }
 

@@ -5,6 +5,7 @@
 #include <cstring>
 #include <utility>
 
+#include "base/array.h"
 #include "base/numeric.h"
 #include "base/types.h"
 #include "sdllib/font.h"
@@ -643,7 +644,7 @@ void Buffer_Print(void* thisptr, const char* str, int x, int y, int fcolor,
           --cols_left;
 
           if (cols_left > 0) {
-            const uint8_t right = FontPalette[pixel_pair >> 4];
+            const uint8_t right = base::At(FontPalette, pixel_pair >> 4);
             if (right != 0) {
               *draw_ptr = right;
             }

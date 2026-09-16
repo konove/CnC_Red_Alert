@@ -47,6 +47,7 @@
 #include "ra/mplayer.h"
 
 #include "absl/log/check.h"
+#include "base/array.h"
 #include "ra/config.h"
 #include "ra/conquer.h"
 #include "ra/control.h"
@@ -223,13 +224,13 @@ GameType Select_MPlayer_Game() {
   buttons[1] = &skirmishbtn;
   int iButton = 2;
   if (has_ipx) {
-    buttons[iButton++] = &ipxbtn;
+    base::At(buttons, iButton++) = &ipxbtn;
   }
   if constexpr (config::kWolapiEnabled) {
-    buttons[iButton++] = &wolbtn;  //	ajw
+    base::At(buttons, iButton++) = &wolbtn;  //	ajw
   }
-  buttons[iButton] = &cancelbtn;
-  buttons[curbutton]->Turn_On();
+  base::At(buttons, iButton) = &cancelbtn;
+  base::At(buttons, curbutton)->Turn_On();
 
   Keyboard->Clear();
 
@@ -314,25 +315,25 @@ GameType Select_MPlayer_Game() {
         break;
 
       case KN_UP:
-        buttons[curbutton]->Turn_Off();
-        buttons[curbutton]->Flag_To_Redraw();
+        base::At(buttons, curbutton)->Turn_Off();
+        base::At(buttons, curbutton)->Flag_To_Redraw();
         curbutton--;
         if (curbutton < 0) {
           curbutton = num_of_buttons - 1;
         }
-        buttons[curbutton]->Turn_On();
-        buttons[curbutton]->Flag_To_Redraw();
+        base::At(buttons, curbutton)->Turn_On();
+        base::At(buttons, curbutton)->Flag_To_Redraw();
         break;
 
       case KN_DOWN:
-        buttons[curbutton]->Turn_Off();
-        buttons[curbutton]->Flag_To_Redraw();
+        base::At(buttons, curbutton)->Turn_Off();
+        base::At(buttons, curbutton)->Flag_To_Redraw();
         curbutton++;
         if (curbutton > num_of_buttons - 1) {
           curbutton = 0;
         }
-        buttons[curbutton]->Turn_On();
-        buttons[curbutton]->Flag_To_Redraw();
+        base::At(buttons, curbutton)->Turn_On();
+        base::At(buttons, curbutton)->Flag_To_Redraw();
         break;
 
       case KN_RETURN:
@@ -348,8 +349,8 @@ GameType Select_MPlayer_Game() {
       //..................................................................
       // to make sure the selection is correct in case they used the mouse
       //..................................................................
-      buttons[curbutton]->Turn_Off();
-      buttons[curbutton]->Flag_To_Redraw();
+      base::At(buttons, curbutton)->Turn_Off();
+      base::At(buttons, curbutton)->Flag_To_Redraw();
       curbutton = selection - kButtonModemserial;
       //	BUTTON_WOL is in the enum either way, but only takes a slot in
       //	buttons[] when it was actually built.
@@ -360,9 +361,9 @@ GameType Select_MPlayer_Game() {
         curbutton--;
       }
       DCHECK(buttons[curbutton] != nullptr);
-      buttons[curbutton]->Turn_On();
-      buttons[curbutton]->IsPressed = true;
-      buttons[curbutton]->Draw_Me(true);
+      base::At(buttons, curbutton)->Turn_On();
+      base::At(buttons, curbutton)->IsPressed = true;
+      base::At(buttons, curbutton)->Draw_Me(true);
 
       switch (selection) {
         case kButtonModemserial:
@@ -375,7 +376,7 @@ GameType Select_MPlayer_Game() {
           if (retval != GAME_NORMAL) {
             process = false;
           } else {
-            buttons[curbutton]->IsPressed = false;
+            base::At(buttons, curbutton)->IsPressed = false;
             display = REDRAW_ALL;
           }
           break;
@@ -391,7 +392,7 @@ GameType Select_MPlayer_Game() {
                 Session.Scenarios[Session.Options.ScenarioIndex]
                     ->Get_Official();
           } else {
-            buttons[curbutton]->IsPressed = false;
+            base::At(buttons, curbutton)->IsPressed = false;
             Session.Type = GAME_NORMAL;
             display = REDRAW_ALL;
           }
@@ -564,7 +565,7 @@ int Surrender_Dialog(const char* text) {
 
   buttons[0] = &okbtn;
   buttons[1] = &cancelbtn;
-  buttons[curbutton]->Turn_On();
+  base::At(buttons, curbutton)->Turn_On();
 
   //------------------------------------------------------------------------
   //	Main Processing Loop
@@ -643,21 +644,21 @@ int Surrender_Dialog(const char* text) {
         break;
 
       case KN_RIGHT:
-        buttons[curbutton]->Turn_Off();
+        base::At(buttons, curbutton)->Turn_Off();
         curbutton++;
         if (curbutton > 1) {
           curbutton = 0;
         }
-        buttons[curbutton]->Turn_On();
+        base::At(buttons, curbutton)->Turn_On();
         break;
 
       case KN_LEFT:
-        buttons[curbutton]->Turn_Off();
+        base::At(buttons, curbutton)->Turn_Off();
         curbutton--;
         if (curbutton < 0) {
           curbutton = 1;
         }
-        buttons[curbutton]->Turn_On();
+        base::At(buttons, curbutton)->Turn_On();
         break;
 
       default:
@@ -747,7 +748,7 @@ int Abort_Dialog() {
 
   buttons[0] = &yesbtn;
   buttons[1] = &nobtn;
-  buttons[curbutton]->Turn_On();
+  base::At(buttons, curbutton)->Turn_On();
 
   //------------------------------------------------------------------------
   //	Main Processing Loop
@@ -825,21 +826,21 @@ int Abort_Dialog() {
         break;
 
       case KN_RIGHT:
-        buttons[curbutton]->Turn_Off();
+        base::At(buttons, curbutton)->Turn_Off();
         curbutton++;
         if (curbutton > 1) {
           curbutton = 0;
         }
-        buttons[curbutton]->Turn_On();
+        base::At(buttons, curbutton)->Turn_On();
         break;
 
       case KN_LEFT:
-        buttons[curbutton]->Turn_Off();
+        base::At(buttons, curbutton)->Turn_Off();
         curbutton--;
         if (curbutton < 0) {
           curbutton = 1;
         }
-        buttons[curbutton]->Turn_On();
+        base::At(buttons, curbutton)->Turn_On();
         break;
 
       default:

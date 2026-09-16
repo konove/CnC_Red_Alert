@@ -62,6 +62,7 @@
 #include <utility>
 
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
@@ -1015,7 +1016,7 @@ GameType Select_Serial_Dialog() {
   buttons[2] = &nullmodembtn;
   buttons[3] = &settingsbtn;
   buttons[4] = &cancelbtn;
-  buttons[curbutton]->Turn_On();
+  base::At(buttons, curbutton)->Turn_On();
 
   Keyboard->Clear();
 
@@ -1104,25 +1105,25 @@ GameType Select_Serial_Dialog() {
         break;
 
       case KN_UP:
-        buttons[curbutton]->Turn_Off();
-        buttons[curbutton]->Flag_To_Redraw();
+        base::At(buttons, curbutton)->Turn_Off();
+        base::At(buttons, curbutton)->Flag_To_Redraw();
         curbutton--;
         if (curbutton < 0) {
           curbutton = kNumOfButtons - 1;
         }
-        buttons[curbutton]->Turn_On();
-        buttons[curbutton]->Flag_To_Redraw();
+        base::At(buttons, curbutton)->Turn_On();
+        base::At(buttons, curbutton)->Flag_To_Redraw();
         break;
 
       case KN_DOWN:
-        buttons[curbutton]->Turn_Off();
-        buttons[curbutton]->Flag_To_Redraw();
+        base::At(buttons, curbutton)->Turn_Off();
+        base::At(buttons, curbutton)->Flag_To_Redraw();
         curbutton++;
         if (curbutton > kNumOfButtons - 1) {
           curbutton = 0;
         }
-        buttons[curbutton]->Turn_On();
-        buttons[curbutton]->Flag_To_Redraw();
+        base::At(buttons, curbutton)->Turn_On();
+        base::At(buttons, curbutton)->Flag_To_Redraw();
         break;
 
       case KN_RETURN:
@@ -1138,12 +1139,12 @@ GameType Select_Serial_Dialog() {
       //
       // to make sure the selection is correct in case they used the mouse
       //
-      buttons[curbutton]->Turn_Off();
-      buttons[curbutton]->Flag_To_Redraw();
+      base::At(buttons, curbutton)->Turn_Off();
+      base::At(buttons, curbutton)->Flag_To_Redraw();
       curbutton = selection - kButtonDial;
-      buttons[curbutton]->Turn_On();
-      buttons[curbutton]->IsPressed = true;
-      buttons[curbutton]->Draw_Me(true);
+      base::At(buttons, curbutton)->Turn_On();
+      base::At(buttons, curbutton)->IsPressed = true;
+      base::At(buttons, curbutton)->Draw_Me(true);
 
       switch (selection) {
         case kButtonDial:
@@ -1168,9 +1169,8 @@ GameType Select_Serial_Dialog() {
               if (settings->CallWaitStringIndex == kCallWaitCustom) {
                 DialString = settings->CallWaitString;
               } else {
-                DialString =
-                    SessionClass::CallWaitStrings[settings
-                                                      ->CallWaitStringIndex];
+                DialString = base::At(SessionClass::CallWaitStrings,
+                                      settings->CallWaitStringIndex);
               }
               DialString += Session.PhoneBook[Session.CurPhoneIdx]->Number;
 
@@ -1191,8 +1191,8 @@ GameType Select_Serial_Dialog() {
           }
 
           if (process) {
-            buttons[curbutton]->IsPressed = false;
-            buttons[curbutton]->Flag_To_Redraw();
+            base::At(buttons, curbutton)->IsPressed = false;
+            base::At(buttons, curbutton)->Flag_To_Redraw();
           }
 
           display = REDRAW_ALL;
@@ -1227,8 +1227,8 @@ GameType Select_Serial_Dialog() {
           }
 
           if (process) {
-            buttons[curbutton]->IsPressed = false;
-            buttons[curbutton]->Flag_To_Redraw();
+            base::At(buttons, curbutton)->IsPressed = false;
+            base::At(buttons, curbutton)->Flag_To_Redraw();
           }
 
           display = REDRAW_ALL;
@@ -1273,8 +1273,8 @@ GameType Select_Serial_Dialog() {
           }
 
           if (process) {
-            buttons[curbutton]->IsPressed = false;
-            buttons[curbutton]->Flag_To_Redraw();
+            base::At(buttons, curbutton)->IsPressed = false;
+            base::At(buttons, curbutton)->Flag_To_Redraw();
           }
 
           display = REDRAW_ALL;
@@ -1295,8 +1295,8 @@ GameType Select_Serial_Dialog() {
             }
           }
 
-          buttons[curbutton]->IsPressed = false;
-          buttons[curbutton]->Flag_To_Redraw();
+          base::At(buttons, curbutton)->IsPressed = false;
+          base::At(buttons, curbutton)->Flag_To_Redraw();
           display = REDRAW_ALL;
           break;
 

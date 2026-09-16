@@ -58,6 +58,7 @@
 #include <cstddef>
 #include <cstdint>
 
+#include "base/array.h"
 #include "rand.h"
 #include "sdllib/shape.h"
 #include "td/aircraft.h"
@@ -235,7 +236,7 @@ const int16_t* BulletClass::Occupy_List(bool /*placement*/) const {
         const CELL cell1 = Coord_Cell(Coord);
 
         while (ptr[index] != REFRESH_EOL) {
-          _list[index] = ptr[index];
+          base::At(_list, index) = ptr[index];
           index++;
         }
 
@@ -244,9 +245,10 @@ const int16_t* BulletClass::Occupy_List(bool /*placement*/) const {
         const CELL cell2 = Coord_Cell(coord);
         ptr = Coord_Spillage_List(coord, 5);
         while (*ptr != REFRESH_EOL) {
-          _list[index++] = static_cast<CELL>(*ptr++ + (cell2 - cell1));
+          base::At(_list, index++) =
+              static_cast<CELL>(*ptr++ + (cell2 - cell1));
         }
-        _list[index] = REFRESH_EOL;
+        base::At(_list, index) = REFRESH_EOL;
         return _list;
       }
   }
@@ -508,7 +510,7 @@ void BulletClass::Draw_It(int x, int y, WindowNumberType window) {
   */
   int shapenum = 0;
   if (!Class->IsFaceless) {
-    shapenum = UnitClass::BodyShape[facing];
+    shapenum = base::At(UnitClass::BodyShape, facing);
   }
 
   /*

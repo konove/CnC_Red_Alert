@@ -96,9 +96,12 @@
 #include <cstdlib>
 #include <cstring>
 #include <iterator>
+#include <numeric>
+#include <span>
 #include <vector>
 
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
 #include "base/types.h"
@@ -255,26 +258,28 @@ void DisplayClass::One_Time() {
 
   for (int fade = 0; fade < 3; fade++) {
     for (HousesType hindex = HOUSE_FIRST; hindex < HOUSE_COUNT; hindex++) {
+      const std::span row(base::At(RemapTables[hindex], fade));
       switch (fade) {
         case 0:
-          for (int color = 0; color < 256; color++) {
-            RemapTables[hindex][fade][color] =
-                static_cast<unsigned char>(color);
-          }
+          std::ranges::iota(row, 0);
           break;
-
         case 1:
-          Mem_Copy(FadingLight, RemapTables[hindex][fade], 256);
+          std::ranges::copy(FadingLight, row.begin());
           break;
-
         case 2:
-          Mem_Copy(FadingShade, RemapTables[hindex][fade], 256);
+          std::ranges::copy(FadingShade, row.begin());
           break;
         default:
           break;
       }
-      Mem_Copy(&RemapTables[hindex][fade][(static_cast<base::ssize>(static_cast<int>(hindex) + 11)) * 16],
-               &RemapTables[hindex][fade][(static_cast<base::ssize>(0 + 11)) * 16], 16);
+      // The 256-color palette has only five 16-color ramps after slot 176.
+      // Higher house IDs have no such ramp; retain their base fading table
+      // instead of reading across the row into another house/fade table.
+      const int ramp = (static_cast<int>(hindex) + 11) * 16;
+      if (ramp != 176 && ramp <= 256 - 16) {
+        std::ranges::copy(row.subspan(base::ToSize(ramp), 16),
+                          row.subspan(176).begin());
+      }
     }
   }
 }
@@ -432,7 +437,7 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   */
   Conquer_Build_Fading_Table(GamePalette, &SpecialGhost[256], kBlack, 100);
   for (int index = 0; index < 256; index++) {
-    SpecialGhost[index] = 0;
+    base::At(SpecialGhost, index) = 0;
   }
 
   Build_Fading_Table(GamePalette, FadingBrighten, kWhite, 25);
@@ -569,10 +574,12 @@ void DisplayClass::Set_View_Dimensions(int x, int y, int width, int height) {
 
   TacPixelX = x;
   TacPixelY = y;
-  WindowList[static_cast<int>(WINDOW_TACTICAL)][kWindowX] = x / 8;
-  WindowList[static_cast<int>(WINDOW_TACTICAL)][kWindowY] = y;
-  WindowList[static_cast<int>(WINDOW_TACTICAL)][kWindowWidth] = width / 8;
-  WindowList[static_cast<int>(WINDOW_TACTICAL)][kWindowHeight] = height;
+  base::At(WindowList[static_cast<int>(WINDOW_TACTICAL)], kWindowX) = x / 8;
+  base::At(WindowList[static_cast<int>(WINDOW_TACTICAL)], kWindowY) = y;
+  base::At(WindowList[static_cast<int>(WINDOW_TACTICAL)], kWindowWidth) =
+      width / 8;
+  base::At(WindowList[static_cast<int>(WINDOW_TACTICAL)], kWindowHeight) =
+      height;
   if (Window == static_cast<unsigned>(WINDOW_TACTICAL)) {
     Change_Window(0);
     Change_Window(static_cast<int>(Window));
@@ -618,7 +625,7 @@ void DisplayClass::Set_Cursor_Shape(const int16_t* list) {
     static int16_t _list[50];
 
     for (int i = 0; !i || list[i - 1] != REFRESH_EOL; i++) {
-      _list[i] = list[i];
+      base::At(_list, i) = list[i];
     }
     CursorSize = _list;
     Get_Occupy_Dimensions(w, h, CursorSize);
@@ -1077,9 +1084,10 @@ void DisplayClass::Read_INI(char* buffer) {
   */
   for (int i = 0; i < kWayptCount; i++) {
     absl::SNPrintF(buf, sizeof(buf), "%d", i);
-    Waypoint[i] = static_cast<CELL>(WWGetPrivateProfileInt("Waypoints", buf, -1, buffer));
-    if (Waypoint[i] != -1) {
-      (*this)[Waypoint[i]].IsWaypoint = true;
+    base::At(Waypoint, i) =
+        static_cast<CELL>(WWGetPrivateProfileInt("Waypoints", buf, -1, buffer));
+    if (base::At(Waypoint, i) != -1) {
+      (*this)[base::At(Waypoint, i)].IsWaypoint = true;
     }
   }
 
@@ -1173,7 +1181,7 @@ void DisplayClass::Write_INI(char* buffer) {
   */
   for (int i = 0; i < kWayptCount; i++) {
     absl::SNPrintF(entry, sizeof(entry), "%d", i);
-    WWWritePrivateProfileInt("Waypoints", entry, Waypoint[i], buffer);
+    WWWritePrivateProfileInt("Waypoints", entry, base::At(Waypoint, i), buffer);
   }
 
   /*
@@ -1416,7 +1424,7 @@ int DisplayClass::Cell_Shadow(CELL cell) {
     if (cellptr->IsMapped) {
       index |= 0x01;
     }
-    value = CardShadow[index];
+    value = base::At(CardShadow, index);
 
     /*
     **	The diagonals must be checked, since the cardinal directions
@@ -1440,7 +1448,7 @@ int DisplayClass::Cell_Shadow(CELL cell) {
       if (cellptr->IsMapped) {
         index |= 0x01;
       }
-      value = DiagShadow[index];
+      value = base::At(DiagShadow, index);
     }
 
     /*
@@ -2509,7 +2517,7 @@ CELL DisplayClass::Calculated_Cell(SourceType dir, HousesType house) {
               !(*this)[newcell - MAP_CELL_W].Cell_Terrain() &&
               !(*this)[newcell - (MAP_CELL_W * 2)].Cell_Terrain() &&
               !(*this)[newcell - (MAP_CELL_W * 2)].Cell_Techno()) {
-            cells[counter++] = newcell;
+            base::At(cells, counter++) = newcell;
             if (counter >= std::ssize(cells)) {
               break;
             }
@@ -2522,25 +2530,27 @@ CELL DisplayClass::Calculated_Cell(SourceType dir, HousesType house) {
         */
         int counter2 = 0;
         for (int j = 1; j < counter - 1; j++) {
-          if (Cell_X(cells[j - 1]) + 1 == Cell_X(cells[j]) &&
-              Cell_X(cells[j + 1]) - 1 == Cell_X(cells[j])) {
-            alternate[counter2++] = cells[j];
+          if (Cell_X(base::At(cells, j - 1)) + 1 ==
+                  Cell_X(base::At(cells, j)) &&
+              Cell_X(base::At(cells, j + 1)) - 1 ==
+                  Cell_X(base::At(cells, j))) {
+            base::At(alternate, counter2++) = base::At(cells, j);
           }
         }
 
         CELL scan_cell = 0;
         if (counter2) {
           if (counter2 < 4) {
-            scan_cell = alternate[counter2 - 1];
+            scan_cell = base::At(alternate, counter2 - 1);
           } else {
-            scan_cell = alternate[counter2 - (counter2 / 4)];
+            scan_cell = base::At(alternate, counter2 - (counter2 / 4));
           }
         } else {
           if (counter) {
             if (counter < 4) {
-              scan_cell = cells[counter - 1];
+              scan_cell = base::At(cells, counter - 1);
             } else {
-              scan_cell = cells[counter - (counter / 4)];
+              scan_cell = base::At(cells, counter - (counter / 4));
             }
           }
         }

@@ -84,6 +84,7 @@
 #include <utility>
 
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "base/numeric.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
@@ -416,7 +417,7 @@ void RadarClass::Draw_It(bool forced) {
           **	Render all pixels in the "to redraw" stack.
           */
           for (int index = 0; index < PixelPtr; index++) {
-            const CELL cell = PixelStack[index];
+            const CELL cell = base::At(PixelStack, index);
             if (Cell_On_Radar(cell)) {
               (*this)[cell].IsPlot = false;
               Plot_Radar_Pixel(cell);
@@ -436,7 +437,7 @@ void RadarClass::Draw_It(bool forced) {
               for (int x = 0; x < MapCellWidth; x++) {
                 const CELL cell = XY_Cell(MapCellX + x, MapCellY + y);
                 if (Cell_On_Radar(cell) && (*this)[cell].IsPlot) {
-                  PixelStack[PixelPtr++] = cell;
+                  base::At(PixelStack, PixelPtr++) = cell;
                   IsRadarToRedraw = true;
                   if (PixelPtr == kPixelstack) {
                     break;
@@ -532,7 +533,7 @@ void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) const {
   ** list.
   */
   if (obj && obj->What_Am_I() == RTTI_TERRAIN) {
-    list[listidx++] = dynamic_cast<TerrainClass*>(obj);
+    base::At(list, listidx++) = dynamic_cast<TerrainClass*>(obj);
   }
 
   /*
@@ -542,7 +543,7 @@ void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) const {
   for (auto& Overlapper : Map[cell].Overlappers) {
     obj = Overlapper;
     if (obj && obj->IsActive && obj->What_Am_I() == RTTI_TERRAIN) {
-      list[listidx++] = dynamic_cast<TerrainClass*>(obj);
+      base::At(list, listidx++) = dynamic_cast<TerrainClass*>(obj);
     }
   }
 
@@ -568,10 +569,10 @@ void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) const {
   */
   for (int lp = 0; lp < listidx - 1; lp++) {
     for (int lp2 = lp + 1; lp2 < listidx; lp2++) {
-      if (list[lp]->Sort_Y() > list[lp2]->Sort_Y()) {
-        TerrainClass* terrain = list[lp];
-        list[lp] = list[lp2];
-        list[lp2] = terrain;
+      if (base::At(list, lp)->Sort_Y() > base::At(list, lp2)->Sort_Y()) {
+        TerrainClass* terrain = base::At(list, lp);
+        base::At(list, lp) = base::At(list, lp2);
+        base::At(list, lp2) = terrain;
       }
     }
   }
@@ -580,7 +581,7 @@ void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) const {
   ** loop through the list and take care of rendering the correct icon.
   */
   for (int lp = 0; lp < listidx; lp++) {
-    const unsigned char* icon = list[lp]->Radar_Icon(cell);
+    const unsigned char* icon = base::At(list, lp)->Radar_Icon(cell);
     if (!icon) {
       continue;
     }
@@ -920,7 +921,7 @@ void RadarClass::Radar_Pixel(CELL cell) {
     IsRadarToRedraw = true;
     (*this)[cell].IsPlot = true;
     if (PixelPtr < kPixelstack) {
-      PixelStack[PixelPtr++] = cell;
+      base::At(PixelStack, PixelPtr++) = cell;
     }
   }
 }
@@ -1918,8 +1919,8 @@ void RadarClass::Draw_Names() const {
       const auto id =
           static_cast<unsigned char>(Build_MPlayerID(c_idx, ptr->ActLike));
       for (int i = 0; i < MPlayerCount; i++) {
-        if (id == MPlayerID[i]) {
-          absl::SNPrintF(txt, sizeof(txt), "%s", MPlayerNames[i]);
+        if (id == base::At(MPlayerID, i)) {
+          absl::SNPrintF(txt, sizeof(txt), "%s", base::At(MPlayerNames, i));
           break;
         }
       }

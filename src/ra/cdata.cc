@@ -57,6 +57,7 @@
 #include <filesystem>
 #include <span>
 
+#include "base/array.h"
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
@@ -1741,8 +1742,8 @@ LandType TemplateTypeClass::Land_Type(int icon) const {
           LAND_CLEAR,
       };
 
-      return _land[map[icon %
-                       (icontrol->Map_Width() * icontrol->Map_Height())]];
+      return base::At(
+          _land, map[icon % (icontrol->Map_Width() * icontrol->Map_Height())]);
     }
   }
   return LAND_CLEAR;
@@ -1881,8 +1882,8 @@ void TemplateTypeClass::Display(int x, int y, WindowNumberType window,
     x -= (w * ICON_PIXEL_W) / 2;
     y -= (h * ICON_PIXEL_H) / 2;
   }
-  x += WindowList[static_cast<int>(window)][kWindowX];
-  y += WindowList[static_cast<int>(window)][kWindowY];
+  x += base::At(WindowList[static_cast<int>(window)], kWindowX);
+  y += base::At(WindowList[static_cast<int>(window)], kWindowY);
 
   const auto* iconset = static_cast<const IconsetClass*>(Get_Image_Data());
   const unsigned char* map = iconset->Map_Data();

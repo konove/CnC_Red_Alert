@@ -67,6 +67,7 @@
 #include <cstring>
 #include <utility>
 
+#include "base/array.h"
 #include "base/numeric.h"
 #include "td/audio.h"
 #include "td/building.h"
@@ -437,7 +438,7 @@ void DriveClass::Exit_Map() {
  *=============================================================================================*/
 COORDINATE DriveClass::Smooth_Turn(COORDINATE adj, DirType* dir) {
   DirType workdir = *dir;
-  const TrackControlType flags = TrackControl[TrackNumber].Flag;
+  const TrackControlType flags = base::At(TrackControl, TrackNumber).Flag;
 
   int x = Coord_X(adj);
   int y = Coord_Y(adj);
@@ -628,15 +629,15 @@ bool DriveClass::While_Moving() {
   if (actual > PIXEL_LEPTON_W) {
     int tracknum = 0;  // The track number being processed.
 
-    const TurnTrackType* track =
-        &TrackControl[TrackNumber];  // Track control pointer.
+    const TurnTrackType* track = base::Suffix(TrackControl, TrackNumber)
+                                     .data();  // Track control pointer.
     if (IsOnShortTrack) {
       tracknum = track->StartTrack;
     } else {
       tracknum = track->Track;
     }
-    const TrackType* ptr =
-        RawTracks[tracknum - 1].Track;    // Pointer to coord offset values.
+    const TrackType* ptr = base::At(RawTracks, tracknum - 1)
+                               .Track;    // Pointer to coord offset values.
     const FacingType nextface = Path[0];  // Next facing queued in path.
 
     /*
@@ -668,7 +669,8 @@ bool DriveClass::While_Moving() {
         /*
         **	See if "per cell" processing is necessary.
         */
-        if (TrackIndex && RawTracks[tracknum - 1].Cell == TrackIndex) {
+        if (TrackIndex &&
+            base::At(RawTracks, tracknum - 1).Cell == TrackIndex) {
           Per_Cell_Process(false);
           if (!IsActive) {
             return false;
@@ -680,13 +682,16 @@ bool DriveClass::While_Moving() {
         **	do so.
         */
         if (*this != UNIT_GUNBOAT && nextface != FACING_NONE && adj &&
-            RawTracks[tracknum - 1].Jump == TrackIndex && TrackIndex) {
+            base::At(RawTracks, tracknum - 1).Jump == TrackIndex &&
+            TrackIndex) {
           const int tnum =
               (static_cast<int>(Dir_Facing(track->Facing)) * kFacingCount) +
               static_cast<int>(nextface);
           const TurnTrackType* newtrack =
-              &TrackControl[tnum];  // Proposed jump-to track.
-          if (newtrack->Track && RawTracks[newtrack->Track - 1].Entry) {
+              base::Suffix(TrackControl, tnum)
+                  .data();  // Proposed jump-to track.
+          if (newtrack->Track &&
+              base::At(RawTracks, newtrack->Track - 1).Entry) {
             COORDINATE c = Head_To_Coord();
             const int oldspeed = Speed;
 
@@ -702,9 +707,9 @@ bool DriveClass::While_Moving() {
                 // track %d. **\n", tracknum, track->Track);Keyboard::Get();
 
                 tracknum = track->Track;
-                TrackIndex =
-                    RawTracks[tracknum - 1].Entry - 1;  // Anticipate increment.
-                ptr = RawTracks[tracknum - 1].Track;
+                TrackIndex = base::At(RawTracks, tracknum - 1).Entry -
+                             1;  // Anticipate increment.
+                ptr = base::At(RawTracks, tracknum - 1).Track;
                 adj = false;
 
                 Stop_Driver();
@@ -883,7 +888,7 @@ bool DriveClass::Start_Of_Move() {
     //|| 				!Class->IsCrusher) {
 
     if (dist < kConquerPathMax) {
-      Path[dist] = FACING_NONE;
+      base::At(Path, dist) = FACING_NONE;
       facing = Path[0];  // Maybe needed.
     }
     //			}
@@ -1116,12 +1121,12 @@ bool DriveClass::Start_Of_Move() {
     IsOnShortTrack = false;
     TrackNumber =
         (static_cast<int>(facing) * kFacingCount) + static_cast<int>(nextface);
-    if (TrackControl[TrackNumber].Track == 0) {
+    if (base::At(TrackControl, TrackNumber).Track == 0) {
       Path[0] = FACING_NONE;
       TrackNumber = -1;
       return true;
     }
-    if (base::Any(TrackControl[TrackNumber].Flag & F_D)) {
+    if (base::Any(base::At(TrackControl, TrackNumber).Flag & F_D)) {
       /*
       **	If the middle cell of a two cell track contains a crate,
       **	the check for goodies before movement starts.
@@ -1363,13 +1368,18 @@ void DriveClass::Fixup_Path(PathType* path) {
 
   // The diagonal facings are the odd ones.
   if (static_cast<int>(Dir_Facing(PrimaryFacing)) % 2 != 0) {
-    ptr = &_dpath[std::abs(facediff) - 1][1];  // Pointer to path adjust list.
-    counter = static_cast<int>(
-        _dpath[std::abs(facediff) - 1][0]);  // Number of path adjusts.
+    ptr = base::Suffix(base::At(_dpath, std::abs(facediff) - 1),
+                       1)
+              .data();  // Pointer to path adjust list.
+    counter =
+        static_cast<int>(base::At(base::At(_dpath, std::abs(facediff) - 1),
+                                  0));  // Number of path adjusts.
   } else {
-    ptr = &_path[std::abs(facediff) - 1][1];  // Pointer to path adjust list.
-    counter = static_cast<int>(
-        _path[std::abs(facediff) - 1][0]);  // Number of path adjusts.
+    ptr = base::Suffix(base::At(_path, std::abs(facediff) - 1),
+                       1)
+              .data();  // Pointer to path adjust list.
+    counter = static_cast<int>(base::At(base::At(_path, std::abs(facediff) - 1),
+                                        0));  // Number of path adjusts.
   }
   FacingType* ptr2 = ptr;  // Copy of new path list pointer.
 
@@ -1388,7 +1398,7 @@ void DriveClass::Fixup_Path(PathType* path) {
     } else {
       nextpath = nextpath - *ptr++;
     }
-    stage[index] = nextpath;
+    base::At(stage, index) = nextpath;
     cell = Adjacent_Cell(cell, nextpath);
     // cell = Coord_Cell(Adjacent_Cell(Cell_Coord(cell), nextpath));
 
@@ -1424,7 +1434,7 @@ void DriveClass::Fixup_Path(PathType* path) {
       } else {
         nextpath = nextpath - *ptr++;
       }
-      stage[index] = nextpath;
+      base::At(stage, index) = nextpath;
       cell = Coord_Cell(Adjacent_Cell(Cell_Coord(cell), nextpath));
 
       /*
@@ -1456,7 +1466,7 @@ void DriveClass::Fixup_Path(PathType* path) {
       */
       if (counter) {
         counter--;
-        path->Command[0] = stage[counter];
+        path->Command[0] = base::At(stage, counter);
         Optimize_Moves(path, MOVE_OK);
       }
 
@@ -1530,10 +1540,10 @@ void DriveClass::Mark_Track(COORDINATE headto, MarkType type) {
       ** If we have not passed the per cell process point we need
       ** to deal with it.
       */
-      const int tracknum = TrackControl[TrackNumber].Track;
+      const int tracknum = base::At(TrackControl, TrackNumber).Track;
       if (tracknum) {
-        const TrackType* ptr = RawTracks[tracknum - 1].Track;
-        const int cellidx = RawTracks[tracknum - 1].Cell;
+        const TrackType* ptr = base::At(RawTracks, tracknum - 1).Track;
+        const int cellidx = base::At(RawTracks, tracknum - 1).Cell;
         if (cellidx > -1) {
           DirType dir = ptr[cellidx].Facing;
 

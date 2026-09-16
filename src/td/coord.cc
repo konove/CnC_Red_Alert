@@ -53,6 +53,7 @@
 #include <algorithm>
 #include <cstdint>
 
+#include "base/array.h"
 #include "base/trig.h"
 #include "td/const.h"
 #include "td/defines.h"
@@ -147,39 +148,39 @@ const int16_t* Coord_Spillage_List(COORDINATE coord, int maxsize) {
     const int top = y - maxsize;
     const int bottom = y + maxsize;
 
-    _manual[index++] = 0;
+    base::At(_manual, index++) = 0;
     if (left < 0) {
-      _manual[index++] = -1;
+      base::At(_manual, index++) = -1;
     }
     if (right >= ICON_PIXEL_W) {
-      _manual[index++] = 1;
+      base::At(_manual, index++) = 1;
     }
     if (top < 0) {
-      _manual[index++] = -MAP_CELL_W;
+      base::At(_manual, index++) = -MAP_CELL_W;
     }
     if (bottom >= ICON_PIXEL_H) {
-      _manual[index++] = MAP_CELL_W;
+      base::At(_manual, index++) = MAP_CELL_W;
     }
     if (left < 0 && top < 0) {
-      _manual[index++] = -(MAP_CELL_W + 1);
+      base::At(_manual, index++) = -(MAP_CELL_W + 1);
     }
     if (right >= ICON_PIXEL_W && bottom >= ICON_PIXEL_H) {
-      _manual[index++] = MAP_CELL_W + 1;
+      base::At(_manual, index++) = MAP_CELL_W + 1;
     }
     if (left < 0 && bottom >= ICON_PIXEL_H) {
-      _manual[index++] = MAP_CELL_W - 1;
+      base::At(_manual, index++) = MAP_CELL_W - 1;
     }
     if (right >= ICON_PIXEL_H && top < 0) {
-      _manual[index++] = -(MAP_CELL_W - 1);
+      base::At(_manual, index++) = -(MAP_CELL_W - 1);
     }
-    _manual[index] = REFRESH_EOL;
+    base::At(_manual, index) = REFRESH_EOL;
     return &_manual[0];
   }
 
   /*
   **	Determine the number of leptons "leeway" allowed this unit.
   */
-  const int posval = Pixel2Lepton[(ICON_PIXEL_W - maxsize) / 2];
+  const int posval = base::At(Pixel2Lepton, (ICON_PIXEL_W - maxsize) / 2);
 
   x = Coord_XLepton(coord) - 0x0080;
   y = Coord_YLepton(coord) - 0x0080;
@@ -197,7 +198,8 @@ const int16_t* Coord_Spillage_List(COORDINATE coord, int maxsize) {
     index += 1;  // Spilling West.
   }
 
-  return &MoveSpillage[SpillTable[index]][0];
+  return base::Suffix(base::At(MoveSpillage, base::At(SpillTable, index)), 0)
+      .data();
 }
 
 /***********************************************************************************************

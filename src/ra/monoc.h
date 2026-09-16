@@ -45,6 +45,7 @@
 
 #include "absl/strings/str_format.h"
 #include "absl/types/span.h"
+#include "base/array.h"
 #include "port/format.h"
 
 class MonoClass {
@@ -224,7 +225,9 @@ class MonoClass {
   * live in *	ordinary memory and enabling mono output no longer writes to a
   * fixed *	address.
   */
-  static MonoPageType* Raw_Ptr(int page) { return &MonoRAM[page]; }
+  static MonoPageType* Raw_Ptr(int page) {
+    return base::Suffix(MonoRAM, page).data();
+  }
   [[nodiscard]] MonoPageType* Page_Ptr() const { return Raw_Ptr(Page); }
 
   /*

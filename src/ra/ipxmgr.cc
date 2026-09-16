@@ -76,6 +76,7 @@
 #include <cstdint>
 #include <cstring>
 
+#include "base/array.h"
 #include "base/numeric.h"
 #include "port/safe_string.h"
 #include "port/unaligned.h"
@@ -228,8 +229,8 @@ IPXManagerClass::~IPXManagerClass() {
     GlobalChannel = nullptr;
   }
   for (int i = 0; i < NumConnections; i++) {
-    delete Connection[i];
-    Connection[i] = nullptr;
+    delete base::At(Connection, i);
+    base::At(Connection, i) = nullptr;
   }
   NumConnections = 0;
 
@@ -305,8 +306,8 @@ int IPXManagerClass::Init() {
     GlobalChannel = nullptr;
   }
   for (int i = 0; i < NumConnections; i++) {
-    delete Connection[i];
-    Connection[i] = nullptr;
+    delete base::At(Connection, i);
+    base::At(Connection, i) = nullptr;
   }
   NumConnections = 0;
 
@@ -414,9 +415,9 @@ void IPXManagerClass::Set_Timing(int32_t retrydelta, int32_t maxretries,
   }
 
   for (int i = 0; i < NumConnections; i++) {
-    Connection[i]->Set_Retry_Delta(RetryDelta);
-    Connection[i]->Set_Max_Retries(MaxRetries);
-    Connection[i]->Set_TimeOut(Timeout);
+    base::At(Connection, i)->Set_Retry_Delta(RetryDelta);
+    base::At(Connection, i)->Set_Max_Retries(MaxRetries);
+    base::At(Connection, i)->Set_TimeOut(Timeout);
   }
 
 } /* end of Set_Timing */
@@ -461,17 +462,17 @@ int IPXManagerClass::Create_Connection(int id, char* name,
   //------------------------------------------------------------------------
   //	Create new connection
   //------------------------------------------------------------------------
-  Connection[NumConnections] =
+  base::At(Connection, NumConnections) =
       new IPXConnClass(Pvt_NumPackets, Pvt_NumPackets, Pvt_MaxPacketLen,
                        ProductID, address, id, name);
-  if (!Connection[NumConnections]) {
+  if (!base::At(Connection, NumConnections)) {
     return 0;
   }
 
-  Connection[NumConnections]->Init();
-  Connection[NumConnections]->Set_Retry_Delta(RetryDelta);
-  Connection[NumConnections]->Set_Max_Retries(MaxRetries);
-  Connection[NumConnections]->Set_TimeOut(Timeout);
+  base::At(Connection, NumConnections)->Init();
+  base::At(Connection, NumConnections)->Set_Retry_Delta(RetryDelta);
+  base::At(Connection, NumConnections)->Set_Max_Retries(MaxRetries);
+  base::At(Connection, NumConnections)->Set_TimeOut(Timeout);
 
   NumConnections++;
 
@@ -520,14 +521,14 @@ int IPXManagerClass::Delete_Connection(int id) {
     //.....................................................................
     //	If a match, delete it
     //.....................................................................
-    if (Connection[i]->ID == id) {
-      delete Connection[i];
+    if (base::At(Connection, i)->ID == id) {
+      delete base::At(Connection, i);
 
       //..................................................................
       //	Move array elements back one index
       //..................................................................
       for (int j = i; j < NumConnections - 1; j++) {
-        Connection[j] = Connection[j + 1];
+        base::At(Connection, j) = base::At(Connection, j + 1);
       }
 
       //..................................................................
@@ -592,7 +593,7 @@ int IPXManagerClass::Num_Connections() {
  *=========================================================================*/
 int IPXManagerClass::Connection_ID(int index) {
   if (index >= 0 && index < NumConnections) {
-    return Connection[index]->ID;
+    return base::At(Connection, index)->ID;
   }
   return kConnectionNone;
 } /* end of Connection_ID */
@@ -617,8 +618,8 @@ int IPXManagerClass::Connection_ID(int index) {
  *=========================================================================*/
 char* IPXManagerClass::Connection_Name(int id) {
   for (int i = 0; i < NumConnections; i++) {
-    if (Connection[i]->ID == id) {
-      return Connection[i]->Name;
+    if (base::At(Connection, i)->ID == id) {
+      return base::At(Connection, i)->Name;
     }
   }
 
@@ -647,8 +648,8 @@ char* IPXManagerClass::Connection_Name(int id) {
  *=========================================================================*/
 IPXAddressClass* IPXManagerClass::Connection_Address(int id) {
   for (int i = 0; i < NumConnections; i++) {
-    if (Connection[i]->ID == id) {
-      return &Connection[i]->Address;
+    if (base::At(Connection, i)->ID == id) {
+      return &base::At(Connection, i)->Address;
     }
   }
 
@@ -676,7 +677,7 @@ IPXAddressClass* IPXManagerClass::Connection_Address(int id) {
  *=========================================================================*/
 int IPXManagerClass::Connection_Index(int id) {
   for (int i = 0; i < NumConnections; i++) {
-    if (Connection[i]->ID == id) {
+    if (base::At(Connection, i)->ID == id) {
       return i;
     }
   }
@@ -710,8 +711,8 @@ void IPXManagerClass::Set_Connection_Parms(int index, int id, char* name) {
     return;
   }
 
-  Connection[index]->ID = id;
-  port::SafeCopy(Connection[index]->Name, name);
+  base::At(Connection, index)->ID = id;
+  port::SafeCopy(base::At(Connection, index)->Name, name);
 
 } /* end of Set_Connection_Parms */
 
@@ -833,8 +834,8 @@ int IPXManagerClass::Send_Private_Message(void* buf, int buflen, int ack_req,
     //	Check for room in all connections
     //.....................................................................
     for (int i = 0; i < NumConnections; i++) {
-      if (Connection[i]->Queue->Num_Send() ==
-          Connection[i]->Queue->Max_Send()) {
+      if (base::At(Connection, i)->Queue->Num_Send() ==
+          base::At(Connection, i)->Queue->Max_Send()) {
         SendOverflows++;
         return 0;
       }
@@ -844,7 +845,7 @@ int IPXManagerClass::Send_Private_Message(void* buf, int buflen, int ack_req,
     //	Send packet to all connections
     //.....................................................................
     for (int i = 0; i < NumConnections; i++) {
-      Connection[i]->Send_Packet(buf, buflen, ack_req);
+      base::At(Connection, i)->Send_Packet(buf, buflen, ack_req);
     }
     return 1;
   }
@@ -862,8 +863,8 @@ int IPXManagerClass::Send_Private_Message(void* buf, int buflen, int ack_req,
   //.....................................................................
   //	Check for room in the connection
   //.....................................................................
-  if (Connection[connect_idx]->Queue->Num_Send() ==
-      Connection[connect_idx]->Queue->Max_Send()) {
+  if (base::At(Connection, connect_idx)->Queue->Num_Send() ==
+      base::At(Connection, connect_idx)->Queue->Max_Send()) {
     SendOverflows++;
     return 0;
   }
@@ -871,7 +872,7 @@ int IPXManagerClass::Send_Private_Message(void* buf, int buflen, int ack_req,
   //.....................................................................
   //	Send the packet to that connection
   //.....................................................................
-  Connection[connect_idx]->Send_Packet(buf, buflen, ack_req);
+  base::At(Connection, connect_idx)->Send_Packet(buf, buflen, ack_req);
   return 1;
 
 } /* end of Send_Private_Message */
@@ -921,8 +922,8 @@ int IPXManagerClass::Get_Private_Message(void* buf, int* buflen, int* conn_id) {
     //.....................................................................
     //	Check this connection for a packet
     //.....................................................................
-    const int rc = Connection[CurConnection]->Get_Packet(buf, buflen);
-    const int c_id = Connection[CurConnection]->ID;
+    const int rc = base::At(Connection, CurConnection)->Get_Packet(buf, buflen);
+    const int c_id = base::At(Connection, CurConnection)->ID;
 
     //.....................................................................
     //	Increment CurConnection to the next connection index
@@ -1004,9 +1005,10 @@ int IPXManagerClass::Service() {
             */
             bool found_address = false;
             for (int i = 0; i < NumConnections; i++) {
-              if (Connection[i]->Address == address) {
+              if (base::At(Connection, i)->Address == address) {
                 found_address = true;
-                if (!Connection[i]->Receive_Packet(packet, packetlen)) {
+                if (!base::At(Connection, i)
+                         ->Receive_Packet(packet, packetlen)) {
                   ReceiveOverflows++;
                 }
                 break;
@@ -1053,7 +1055,7 @@ int IPXManagerClass::Service() {
                       *pick up the next one.
                       */
                       Session.Players[k]->Address = address;
-                      Connection[iConnectionIndex]->Address = address;
+                      base::At(Connection, iConnectionIndex)->Address = address;
                     }
                     break;
                   }
@@ -1079,9 +1081,9 @@ int IPXManagerClass::Service() {
   }
 
   for (int i = 0; i < NumConnections; i++) {
-    if (!Connection[i]->Service()) {
+    if (!base::At(Connection, i)->Service()) {
       rc = 0;
-      BadConnection = Connection[i]->ID;
+      BadConnection = base::At(Connection, i)->ID;
     }
   }
 
@@ -1212,7 +1214,7 @@ int IPXManagerClass::Private_Num_Send(int id) {
   if (id != kConnectionNone) {
     i = Connection_Index(id);
     if (i != kConnectionNone) {
-      return Connection[i]->Queue->Num_Send();
+      return base::At(Connection, i)->Queue->Num_Send();
     }
     return 0;
   }
@@ -1222,7 +1224,7 @@ int IPXManagerClass::Private_Num_Send(int id) {
   //------------------------------------------------------------------------
   int maxnum = 0;
   for (i = 0; i < NumConnections; i++) {
-    maxnum = std::max(Connection[i]->Queue->Num_Send(), maxnum);
+    maxnum = std::max(base::At(Connection, i)->Queue->Num_Send(), maxnum);
   }
   return maxnum;
 
@@ -1263,7 +1265,7 @@ int IPXManagerClass::Private_Num_Receive(int id) {
   if (id != kConnectionNone) {
     i = Connection_Index(id);
     if (i != kConnectionNone) {
-      return Connection[i]->Queue->Num_Receive();
+      return base::At(Connection, i)->Queue->Num_Receive();
     }
     return 0;
   }
@@ -1273,7 +1275,7 @@ int IPXManagerClass::Private_Num_Receive(int id) {
   //------------------------------------------------------------------------
   int maxnum = 0;
   for (i = 0; i < NumConnections; i++) {
-    maxnum = std::max(Connection[i]->Queue->Num_Receive(), maxnum);
+    maxnum = std::max(base::At(Connection, i)->Queue->Num_Receive(), maxnum);
   }
   return maxnum;
 
@@ -1328,7 +1330,8 @@ void IPXManagerClass::Set_Socket(uint16_t socket) {
 int32_t IPXManagerClass::Response_Time() {
   int32_t maxresp = 0;
   for (int i = 0; i < NumConnections; i++) {
-    maxresp = std::max(Connection[i]->Queue->Avg_Response_Time(), maxresp);
+    maxresp =
+        std::max(base::At(Connection, i)->Queue->Avg_Response_Time(), maxresp);
   }
   return maxresp;
 }
@@ -1379,7 +1382,7 @@ int32_t IPXManagerClass::Global_Response_Time() {
  *=========================================================================*/
 void IPXManagerClass::Reset_Response_Time() {
   for (int i = 0; i < NumConnections; i++) {
-    Connection[i]->Queue->Reset_Response_Time();
+    base::At(Connection, i)->Queue->Reset_Response_Time();
   }
 
   if (GlobalChannel) {
@@ -1409,7 +1412,7 @@ void IPXManagerClass::Reset_Response_Time() {
 void* IPXManagerClass::Oldest_Send() {
   std::array<CommBufferClass*, CONNECT_MAX> queues{};
   for (int i = 0; i < NumConnections; i++) {
-    queues[base::ToSize(i)] = Connection[i]->Queue;
+    queues[base::ToSize(i)] = base::At(Connection, i)->Queue;
   }
   const SendQueueType* oldest = ConnectionClass::OldestUnackedSend(queues);
   return oldest != nullptr ? oldest->Buffer : nullptr;
@@ -1483,9 +1486,10 @@ void IPXManagerClass::Configure_Debug(int index, int type_offset, int type_size,
   if (index == -1) {
     GlobalChannel->Queue->Configure_Debug(type_offset, type_size, names,
                                           namestart, namecount);
-  } else if (Connection[index]) {
-    Connection[index]->Queue->Configure_Debug(type_offset, type_size, names,
-                                              namestart, namecount);
+  } else if (base::At(Connection, index)) {
+    base::At(Connection, index)
+        ->Queue->Configure_Debug(type_offset, type_size, names, namestart,
+                                 namecount);
   }
 
 } /* end of Configure_Debug */
@@ -1516,7 +1520,7 @@ void IPXManagerClass::Mono_Debug_Print(int index, int refresh) {
 
   // Both branches print the shared comm-buffer state; the connection only has
   // to exist.
-  if (index == -1 || Connection[index]) {
+  if (index == -1 || base::At(Connection, index)) {
     CommBufferClass::Mono_Debug_Print(refresh);
   }
 
@@ -1541,7 +1545,8 @@ void IPXManagerClass::Mono_Debug_Print(int index, int refresh) {
   if (index == -1) {
     Mono_Printf("%d  ", GlobalChannel->Queue->Avg_Response_Time());
   } else {
-    Mono_Printf("%d  ", Connection[index]->Queue->Avg_Response_Time());
+    Mono_Printf("%d  ",
+                base::At(Connection, index)->Queue->Avg_Response_Time());
   }
 
   Mono_Set_Cursor(59, 1);
@@ -1552,12 +1557,12 @@ void IPXManagerClass::Mono_Debug_Print(int index, int refresh) {
 
   for (i = 0; i < NumBufs; i++) {
     if (BufferFlags[i]) {
-      txt[i] = 'X';
+      base::At(txt, i) = 'X';
     } else {
-      txt[i] = '_';
+      base::At(txt, i) = '_';
     }
   }
-  txt[i] = 0;
+  base::At(txt, i) = 0;
   Mono_Set_Cursor((80 - NumBufs) / 2, 3);
   Mono_Printf("%s", txt);
 } /* end of Mono_Debug_Print */

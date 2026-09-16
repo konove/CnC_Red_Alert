@@ -114,6 +114,7 @@
 #include <vector>
 
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
 #include "base/types.h"
@@ -458,7 +459,7 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   */
   Conquer_Build_Fading_Table(GamePalette, &SpecialGhost[256], kBlack, 100);
   for (int index = 0; index < 256; index++) {
-    SpecialGhost[index] = 0;
+    base::At(SpecialGhost, index) = 0;
   }
 
   Make_Fading_Table(GamePalette, FadingBrighten, kWhite, 25);
@@ -613,11 +614,11 @@ void DisplayClass::Update_View_Dimensions(int x, int y, int width, int height,
 
   TacPixelX = x;
   TacPixelY = y;
-  WindowList[static_cast<int>(WINDOW_TACTICAL)][kWindowX] = x;
-  WindowList[static_cast<int>(WINDOW_TACTICAL)][kWindowY] = y;
-  WindowList[static_cast<int>(WINDOW_TACTICAL)][kWindowWidth] =
+  base::At(WindowList[static_cast<int>(WINDOW_TACTICAL)], kWindowX) = x;
+  base::At(WindowList[static_cast<int>(WINDOW_TACTICAL)], kWindowY) = y;
+  base::At(WindowList[static_cast<int>(WINDOW_TACTICAL)], kWindowWidth) =
       Lepton_To_Pixel(TacLeptonWidth);
-  WindowList[static_cast<int>(WINDOW_TACTICAL)][kWindowHeight] =
+  base::At(WindowList[static_cast<int>(WINDOW_TACTICAL)], kWindowHeight) =
       Lepton_To_Pixel(TacLeptonHeight);
   if (Window == static_cast<unsigned>(WINDOW_TACTICAL)) {
     Change_Window(0);
@@ -663,7 +664,7 @@ void DisplayClass::Set_Cursor_Shape(const int16_t* list) {
     static int16_t _list[50];
 
     for (int i = 0; !i || list[i - 1] != kRefreshEol; i++) {
-      _list[i] = list[i];
+      base::At(_list, i) = list[i];
     }
 
     CursorSize = _list;
@@ -1453,7 +1454,7 @@ int DisplayClass::Cell_Shadow(CELL cell) const {
       index |= 0x04;
     }
 
-    value = _shadow[index];
+    value = base::At(_shadow, index);
   }
   return value;
 }
@@ -2457,7 +2458,7 @@ CELL DisplayClass::Calculated_Cell(SourceType dir, WAYPOINT waypoint, CELL cell,
   */
   CELL trycell = -1;
   if (waypoint != -1) {
-    trycell = Scen.Waypoint[waypoint];
+    trycell = base::At(Scen.Waypoint, waypoint);
   }
   if (trycell == -1) {
     trycell = cell;
@@ -4333,10 +4334,11 @@ void DisplayClass::Read_INI(CCINIClass& ini) {
   for (int i = 0; i < ScenarioClass::kWaypointCount; i++) {
     char buf[20];
     absl::SNPrintF(buf, sizeof(buf), "%d", i);
-    Scen.Waypoint[i] = static_cast<CELL>(ini.Get_Int("Waypoints", buf, -1));
+    base::At(Scen.Waypoint, i) =
+        static_cast<CELL>(ini.Get_Int("Waypoints", buf, -1));
 
-    if (Scen.Waypoint[i] != -1) {
-      (*this)[Scen.Waypoint[i]].IsWaypoint = true;
+    if (base::At(Scen.Waypoint, i) != -1) {
+      (*this)[base::At(Scen.Waypoint, i)].IsWaypoint = true;
     }
   }
 
@@ -4423,9 +4425,9 @@ void DisplayClass::Write_INI(CCINIClass& ini) {
   static const char* const WAYNAME = "Waypoints";
   ini.Clear(WAYNAME);
   for (int i = 0; i < ScenarioClass::kWaypointCount; i++) {
-    if (Scen.Waypoint[i] != -1) {
+    if (base::At(Scen.Waypoint, i) != -1) {
       absl::SNPrintF(entry, sizeof(entry), "%d", i);
-      ini.Put_Int(WAYNAME, entry, Scen.Waypoint[i]);
+      ini.Put_Int(WAYNAME, entry, base::At(Scen.Waypoint, i));
     }
   }
 

@@ -51,6 +51,7 @@
 #include <cstdint>
 #include <cstring>
 
+#include "base/array.h"
 #include "base/numeric.h"
 #include "base/types.h"
 #include "port/safe_string.h"
@@ -311,8 +312,8 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
     .....................................................................*/
     MessageList = dynamic_cast<TextLabelClass*>(txtlabel->Remove());
     for (int i = 0; i < MAX_NUM_MESSAGES; i++) {
-      if (txtlabel->Text == MessageBuffers[i]) {
-        BufferAvail[i] = 1;
+      if (txtlabel->Text == base::At(MessageBuffers, i)) {
+        base::At(BufferAvail, i) = 1;
       }
     }
     delete txtlabel;
@@ -363,10 +364,10 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
   txtlabel->CRC = crc;
 
   for (int i = 0; i < MAX_NUM_MESSAGES; i++) {
-    if (BufferAvail[i]) {
-      BufferAvail[i] = 0;
-      memset(MessageBuffers[i], 0, MAX_MESSAGE_LENGTH + 30);
-      port::SafeCopy(MessageBuffers[i], txt);
+    if (base::At(BufferAvail, i)) {
+      base::At(BufferAvail, i) = 0;
+      memset(base::At(MessageBuffers, i), 0, MAX_MESSAGE_LENGTH + 30);
+      port::SafeCopy(base::At(MessageBuffers, i), txt);
 
       /*
       ** If this is a segment from a larger message then put it in the right
@@ -376,11 +377,11 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
       if (magic_number >= MESSAGE_HEAD_MAGIC_NUMBER &&
           magic_number < MESSAGE_HEAD_MAGIC_NUMBER + MAX_MESSAGE_SEGMENTS) {
         raw_string = strchr(txt, ':');
-        char* dest_str = strchr(MessageBuffers[i], ':');
+        char* dest_str = strchr(base::At(MessageBuffers, i), ':');
         if (dest_str) {
           dest_str++;
         } else {
-          dest_str = MessageBuffers[i];
+          dest_str = base::At(MessageBuffers, i);
         }
 
         if (raw_string++) {
@@ -405,7 +406,7 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
         txtlabel->Segments = base::Bit<uint8_t>(position);
       }
 
-      txtlabel->Text = MessageBuffers[i];
+      txtlabel->Text = base::At(MessageBuffers, i);
       found = 1;
       break;
     }
@@ -539,8 +540,8 @@ int MessageListClass::Manage() {
       auto* next = dynamic_cast<TextLabelClass*>(txtlabel->Get_Next());
       MessageList = dynamic_cast<TextLabelClass*>(txtlabel->Remove());
       for (int i = 0; i < MAX_NUM_MESSAGES; i++) {
-        if (txtlabel->Text == MessageBuffers[i]) {
-          BufferAvail[i] = 1;
+        if (txtlabel->Text == base::At(MessageBuffers, i)) {
+          base::At(BufferAvail, i) = 1;
         }
       }
       delete txtlabel;

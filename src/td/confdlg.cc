@@ -43,6 +43,7 @@
 
 #include <algorithm>
 
+#include "base/array.h"
 #include "port/safe_string.h"
 #include "sdllib/font.h"
 #include "sdllib/gbuffer.h"
@@ -120,7 +121,7 @@ bool ConfirmationClass::Process(const char* string) {
   int curbutton = 1;
   buttons[0] = &yesbtn;
   buttons[1] = &nobtn;
-  buttons[curbutton]->Turn_On();
+  base::At(buttons, curbutton)->Turn_On();
 
   /*
   **	This causes left mouse button clicking within the confines of the dialog
@@ -210,29 +211,29 @@ bool ConfirmationClass::Process(const char* string) {
         break;
 
       case KN_LEFT:
-        buttons[curbutton]->Turn_Off();
-        buttons[curbutton]->Flag_To_Redraw();
+        base::At(buttons, curbutton)->Turn_Off();
+        base::At(buttons, curbutton)->Flag_To_Redraw();
 
         curbutton--;
         if (curbutton < 0) {
           curbutton = kNumOfButtons - 1;
         }
 
-        buttons[curbutton]->Turn_On();
-        buttons[curbutton]->Flag_To_Redraw();
+        base::At(buttons, curbutton)->Turn_On();
+        base::At(buttons, curbutton)->Flag_To_Redraw();
         break;
 
       case KN_RIGHT:
-        buttons[curbutton]->Turn_Off();
-        buttons[curbutton]->Flag_To_Redraw();
+        base::At(buttons, curbutton)->Turn_Off();
+        base::At(buttons, curbutton)->Flag_To_Redraw();
 
         curbutton++;
         if (curbutton > kNumOfButtons - 1) {
           curbutton = 0;
         }
 
-        buttons[curbutton]->Turn_On();
-        buttons[curbutton]->Flag_To_Redraw();
+        base::At(buttons, curbutton)->Turn_On();
+        base::At(buttons, curbutton)->Flag_To_Redraw();
         break;
 
       case KN_RETURN:

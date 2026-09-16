@@ -58,6 +58,7 @@
 #include <utility>
 
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "base/numeric.h"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
@@ -227,7 +228,7 @@ GameType Select_MPlayer_Game() {
     number_of_buttons--;
   }
 
-  buttons[curbutton]->Turn_On();
+  base::At(buttons, curbutton)->Turn_On();
 
   Keyboard::Clear();
 
@@ -308,31 +309,31 @@ GameType Select_MPlayer_Game() {
         break;
 
       case KN_UP:
-        buttons[curbutton]->Turn_Off();
-        buttons[curbutton]->Flag_To_Redraw();
+        base::At(buttons, curbutton)->Turn_Off();
+        base::At(buttons, curbutton)->Flag_To_Redraw();
         curbutton--;
         if (curbutton < 0) {
           curbutton = number_of_buttons - 1;
         }
-        buttons[curbutton]->Turn_On();
-        buttons[curbutton]->Flag_To_Redraw();
+        base::At(buttons, curbutton)->Turn_On();
+        base::At(buttons, curbutton)->Flag_To_Redraw();
         break;
 
       case KN_DOWN:
-        buttons[curbutton]->Turn_Off();
-        buttons[curbutton]->Flag_To_Redraw();
+        base::At(buttons, curbutton)->Turn_Off();
+        base::At(buttons, curbutton)->Flag_To_Redraw();
         curbutton++;
         if (curbutton > number_of_buttons - 1) {
           curbutton = 0;
         }
-        buttons[curbutton]->Turn_On();
-        buttons[curbutton]->Flag_To_Redraw();
+        base::At(buttons, curbutton)->Turn_On();
+        base::At(buttons, curbutton)->Flag_To_Redraw();
         break;
 
       case KN_RETURN:
         // Read the id off the button itself. The array skips the IPX button
         // when IPX is unavailable, so ids and indices are not interchangeable.
-        selection = static_cast<int>(buttons[curbutton]->ID);
+        selection = static_cast<int>(base::At(buttons, curbutton)->ID);
         pressed = true;
         break;
 
@@ -344,18 +345,18 @@ GameType Select_MPlayer_Game() {
       //
       // to make sure the selection is correct in case they used the mouse
       //
-      buttons[curbutton]->Turn_Off();
-      buttons[curbutton]->Flag_To_Redraw();
+      base::At(buttons, curbutton)->Turn_Off();
+      base::At(buttons, curbutton)->Flag_To_Redraw();
       for (int index = 0; index < number_of_buttons; index++) {
-        if (std::cmp_equal(buttons[index]->ID, selection)) {
+        if (std::cmp_equal(base::At(buttons, index)->ID, selection)) {
           curbutton = index;
           break;
         }
       }
-      buttons[curbutton]->Turn_On();
+      base::At(buttons, curbutton)->Turn_On();
       //			buttons[curbutton]->Flag_To_Redraw();
-      buttons[curbutton]->IsPressed = true;
-      buttons[curbutton]->Draw_Me(true);
+      base::At(buttons, curbutton)->IsPressed = true;
+      base::At(buttons, curbutton)->Draw_Me(true);
 
       switch (selection) {
         case kButtonModemserial:
@@ -368,7 +369,7 @@ GameType Select_MPlayer_Game() {
           if (retval != GAME_NORMAL) {
             process = false;
           } else {
-            buttons[curbutton]->IsPressed = false;
+            base::At(buttons, curbutton)->IsPressed = false;
             display = REDRAW_ALL;
           }
           break;
@@ -937,8 +938,8 @@ void Read_Scenario_Descriptions() {
     Extract description & add it to the list.
     .....................................................................*/
     WWGetPrivateProfileString("Basic", "Name", "Nulls-Ville",
-                              MPlayerDescriptions[i], 40, buffer);
-    MPlayerScenarios.Add(MPlayerDescriptions[i]);
+                              base::At(MPlayerDescriptions, i), 40, buffer);
+    MPlayerScenarios.Add(base::At(MPlayerDescriptions, i));
   }
 }
 
@@ -1110,7 +1111,7 @@ static void Garble_Message(char* buf) {
   p = tokens.Next();
   int numwords = 0;  // # words in the phrase
   while (p) {
-    words[numwords] = p;
+    base::At(words, numwords) = p;
     numwords++;
     p = tokens.Next();
   }
@@ -1123,12 +1124,12 @@ static void Garble_Message(char* buf) {
   buf[0] = 0;
   for (int i = 0; i < numwords; i++) {
     const int j = Sim_IRandom(0, numwords);
-    if (words[j] == nullptr) {  // this word has been used already
+    if (base::At(words, j) == nullptr) {  // this word has been used already
       i--;
       continue;
     }
-    port::SafeAppend(buf, words[j], MAX_MESSAGE_LENGTH);
-    words[j] = nullptr;
+    port::SafeAppend(buf, base::At(words, j), MAX_MESSAGE_LENGTH);
+    base::At(words, j) = nullptr;
     if (i < numwords - 1) {
       port::SafeAppend(buf, " ", MAX_MESSAGE_LENGTH);
     }

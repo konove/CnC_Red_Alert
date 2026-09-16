@@ -15,7 +15,7 @@ target_sources(vqa32 PUBLIC
         FILES ${VQA32_HEADERS}
 )
 
-target_link_libraries(vqa32 PRIVATE base port)
+target_link_libraries(vqa32 PUBLIC base PRIVATE port)
 
 find_package(SDL2 REQUIRED)
 target_link_libraries(vqa32 PRIVATE SDL2::SDL2)

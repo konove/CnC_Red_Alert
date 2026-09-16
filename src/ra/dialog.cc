@@ -57,6 +57,7 @@
 
 #include "absl/strings/str_format.h"
 #include "absl/types/span.h"
+#include "base/array.h"
 #include "base/numeric.h"
 #include "port/format.h"
 #include "port/safe_string.h"
@@ -90,10 +91,10 @@
  *the box.                                             *
  *=============================================================================================*/
 void Dialog_Box(int x, int y, int w, int h) {
-  WindowList[static_cast<int>(WINDOW_PARTIAL)][kWindowX] = x;
-  WindowList[static_cast<int>(WINDOW_PARTIAL)][kWindowY] = y;
-  WindowList[static_cast<int>(WINDOW_PARTIAL)][kWindowWidth] = w;
-  WindowList[static_cast<int>(WINDOW_PARTIAL)][kWindowHeight] = h;
+  base::At(WindowList[static_cast<int>(WINDOW_PARTIAL)], kWindowX) = x;
+  base::At(WindowList[static_cast<int>(WINDOW_PARTIAL)], kWindowY) = y;
+  base::At(WindowList[static_cast<int>(WINDOW_PARTIAL)], kWindowWidth) = w;
+  base::At(WindowList[static_cast<int>(WINDOW_PARTIAL)], kWindowHeight) = h;
 
   /*
   **	Always draw to the hidpage and then blit forward.
@@ -339,10 +340,10 @@ int Format_Window_String(char* string, int max_line_len, int& width,
  *appropriate enumeration parameters.                                *
  *=============================================================================================*/
 void Window_Box(WindowNumberType window, BoxStyleEnum style) {
-  const int x = WindowList[static_cast<int>(window)][kWindowX];
-  const int y = WindowList[static_cast<int>(window)][kWindowY];
-  const int w = WindowList[static_cast<int>(window)][kWindowWidth];
-  const int h = WindowList[static_cast<int>(window)][kWindowHeight];
+  const int x = base::At(WindowList[static_cast<int>(window)], kWindowX);
+  const int y = base::At(WindowList[static_cast<int>(window)], kWindowY);
+  const int w = base::At(WindowList[static_cast<int>(window)], kWindowWidth);
+  const int h = base::At(WindowList[static_cast<int>(window)], kWindowHeight);
 
   /*
   **	If it is to be rendered to the seenpage, then

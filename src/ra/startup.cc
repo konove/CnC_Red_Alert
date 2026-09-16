@@ -50,6 +50,7 @@
 #include "absl/log/globals.h"
 #include "absl/log/initialize.h"
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "port/bytes_of.h"
 #include "port/tokenizer.h"
 #include "port/win32/win32_registry.h"
@@ -291,9 +292,9 @@ int main(int argc, char* argv[])
 
       WindowList[0][kWindowWidth] = SeenBuff.Get_Width();
       WindowList[0][kWindowHeight] = SeenBuff.Get_Height();
-      WindowList[static_cast<int>(WINDOW_EDITOR)][kWindowWidth] =
+      base::At(WindowList[static_cast<int>(WINDOW_EDITOR)], kWindowWidth) =
           SeenBuff.Get_Width();
-      WindowList[static_cast<int>(WINDOW_EDITOR)][kWindowHeight] =
+      base::At(WindowList[static_cast<int>(WINDOW_EDITOR)], kWindowHeight) =
           SeenBuff.Get_Height();
 
       WWMouse = new WWMouseClass(&SeenBuff, 48, 48);
@@ -600,9 +601,9 @@ void Read_Setup_Options(DiskFile* config_file) {
           break;
         }
         if (i < 4) {
-          net[i] = *byte;  // fill NetNum
+          base::At(net, i) = *byte;  // fill NetNum
         } else {
-          node[i - 4] = *byte;  // fill NetNode
+          base::At(node, i - 4) = *byte;  // fill NetNode
         }
         i++;
       }

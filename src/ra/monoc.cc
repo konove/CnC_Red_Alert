@@ -74,6 +74,7 @@
 
 #include "absl/strings/str_format.h"
 #include "absl/types/span.h"
+#include "base/array.h"
 #include "base/numeric.h"
 #include "port/format.h"
 #include "ra/inline.h"
@@ -113,8 +114,8 @@ MonoClass::MonoClass() {
   int index = 0;
 
   for (index = 0; index < kMaxMonoPages; index++) {
-    if (!PageUsage[index]) {
-      PageUsage[index] = this;
+    if (!base::At(PageUsage, index)) {
+      base::At(PageUsage, index) = this;
       Page = index;
       break;
     }
@@ -139,7 +140,7 @@ MonoClass::MonoClass() {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-MonoClass::~MonoClass() { PageUsage[Page] = nullptr; }
+MonoClass::~MonoClass() { base::At(PageUsage, Page) = nullptr; }
 
 /***********************************************************************************************
  * MonoClass::Pan -- Scroll the window right or left. *
@@ -172,20 +173,22 @@ void MonoClass::Pan(int cols) {
 
   if (cols > 0) {
     for (int index = SubY; index < SubY + SubH; index++) {
-      memmove(&Page_Ptr()->Data[index][SubX],
-              &Page_Ptr()->Data[index][SubX + cols],
-              sizeof(CellType) * base::ToSize(SubW - cols));
+      memmove(
+          base::Suffix(base::At(Page_Ptr()->Data, index), SubX).data(),
+          base::Suffix(base::At(Page_Ptr()->Data, index), SubX + cols).data(),
+          sizeof(CellType) * base::ToSize(SubW - cols));
       for (int cc = SubX + SubW - cols; cc < SubX + SubW; cc++) {
-        Page_Ptr()->Data[index][cc] = cell;
+        base::At(base::At(Page_Ptr()->Data, index), cc) = cell;
       }
     }
   } else {
     for (int index = SubY; index < SubY + SubH; index++) {
-      memmove(&Page_Ptr()->Data[index][SubX - cols],
-              &Page_Ptr()->Data[index][SubX],
-              sizeof(CellType) * base::ToSize(SubW + cols));
+      memmove(
+          base::Suffix(base::At(Page_Ptr()->Data, index), SubX - cols).data(),
+          base::Suffix(base::At(Page_Ptr()->Data, index), SubX).data(),
+          sizeof(CellType) * base::ToSize(SubW + cols));
       for (int cc = SubX; cc < SubX - cols; cc++) {
-        Page_Ptr()->Data[index][cc] = cell;
+        base::At(base::At(Page_Ptr()->Data, index), cc) = cell;
       }
     }
   }
@@ -307,34 +310,34 @@ void MonoClass::Draw_Box(int x, int y, int w, int h, MonoAttribute attrib,
   **	Draw the horizontal lines.
   */
   for (int xpos = 0; xpos < w - 2; xpos++) {
-    cell.Character = CharData[static_cast<int>(thick)].TopEdge;
-    Page_Ptr()->Data[y][x + xpos + 1] = cell;
-    cell.Character = CharData[static_cast<int>(thick)].BottomEdge;
-    Page_Ptr()->Data[y + h - 1][x + xpos + 1] = cell;
+    cell.Character = base::At(CharData, static_cast<int>(thick)).TopEdge;
+    base::At(base::At(Page_Ptr()->Data, y), x + xpos + 1) = cell;
+    cell.Character = base::At(CharData, static_cast<int>(thick)).BottomEdge;
+    base::At(base::At(Page_Ptr()->Data, y + h - 1), x + xpos + 1) = cell;
   }
 
   /*
   **	Draw the vertical lines.
   */
   for (int ypos = 0; ypos < h - 2; ypos++) {
-    cell.Character = CharData[static_cast<int>(thick)].LeftEdge;
-    Page_Ptr()->Data[y + ypos + 1][x] = cell;
-    cell.Character = CharData[static_cast<int>(thick)].RightEdge;
-    Page_Ptr()->Data[y + ypos + 1][x + w - 1] = cell;
+    cell.Character = base::At(CharData, static_cast<int>(thick)).LeftEdge;
+    base::At(base::At(Page_Ptr()->Data, y + ypos + 1), x) = cell;
+    cell.Character = base::At(CharData, static_cast<int>(thick)).RightEdge;
+    base::At(base::At(Page_Ptr()->Data, y + ypos + 1), x + w - 1) = cell;
   }
 
   /*
   **	Draw the four corners.
   */
   if (w > 1 && h > 1) {
-    cell.Character = CharData[static_cast<int>(thick)].UpperLeft;
-    Page_Ptr()->Data[y][x] = cell;
-    cell.Character = CharData[static_cast<int>(thick)].UpperRight;
-    Page_Ptr()->Data[y][x + w - 1] = cell;
-    cell.Character = CharData[static_cast<int>(thick)].BottomRight;
-    Page_Ptr()->Data[y + h - 1][x + w - 1] = cell;
-    cell.Character = CharData[static_cast<int>(thick)].BottomLeft;
-    Page_Ptr()->Data[y + h - 1][x] = cell;
+    cell.Character = base::At(CharData, static_cast<int>(thick)).UpperLeft;
+    base::At(base::At(Page_Ptr()->Data, y), x) = cell;
+    cell.Character = base::At(CharData, static_cast<int>(thick)).UpperRight;
+    base::At(base::At(Page_Ptr()->Data, y), x + w - 1) = cell;
+    cell.Character = base::At(CharData, static_cast<int>(thick)).BottomRight;
+    base::At(base::At(Page_Ptr()->Data, y + h - 1), x + w - 1) = cell;
+    cell.Character = base::At(CharData, static_cast<int>(thick)).BottomLeft;
+    base::At(base::At(Page_Ptr()->Data, y + h - 1), x) = cell;
   }
 
   Attrib = oldattrib;
@@ -397,7 +400,7 @@ void MonoClass::Clear() {
 
   for (int rows = 0; rows < SubH; rows++) {
     for (int cols = 0; cols < SubW; cols++) {
-      Page_Ptr()->Data[rows + SubX][cols + SubY] = cell;
+      base::At(base::At(Page_Ptr()->Data, rows + SubX), cols + SubY) = cell;
     }
   }
 }
@@ -432,7 +435,7 @@ void MonoClass::Fill_Attrib(int x, int y, int w, int h, MonoAttribute attrib) {
 
   for (int rows = y; rows < y + h; rows++) {
     for (int cols = x; cols < x + w; cols++) {
-      Page_Ptr()->Data[rows + SubY][cols + SubX].Attribute =
+      base::At(base::At(Page_Ptr()->Data, rows + SubY), cols + SubX).Attribute =
           static_cast<unsigned char>(attrib);
     }
   }
@@ -471,24 +474,26 @@ void MonoClass::Scroll(int lines) {
 
   if (lines > 0) {
     for (int row = 0; row < SubH - lines; row++) {
-      memmove(&Page_Ptr()->Data[SubY + row][SubX],
-              &Page_Ptr()->Data[SubY + row + 1][SubX],
-              base::ToSize(SubW) * sizeof(CellType));
+      memmove(
+          base::Suffix(base::At(Page_Ptr()->Data, SubY + row), SubX).data(),
+          base::Suffix(base::At(Page_Ptr()->Data, SubY + row + 1), SubX).data(),
+          base::ToSize(SubW) * sizeof(CellType));
     }
     for (int frow = SubH - lines; frow < SubH; frow++) {
       for (int cc = 0; cc < SubW; cc++) {
-        Page_Ptr()->Data[SubY + frow][SubX + cc] = cell;
+        base::At(base::At(Page_Ptr()->Data, SubY + frow), SubX + cc) = cell;
       }
     }
   } else {
     for (int row = SubH - 1; row >= -lines; row--) {
-      memmove(&Page_Ptr()->Data[SubY + row][SubX],
-              &Page_Ptr()->Data[SubY + row - 1][SubX],
-              base::ToSize(SubW) * sizeof(CellType));
+      memmove(
+          base::Suffix(base::At(Page_Ptr()->Data, SubY + row), SubX).data(),
+          base::Suffix(base::At(Page_Ptr()->Data, SubY + row - 1), SubX).data(),
+          base::ToSize(SubW) * sizeof(CellType));
     }
     for (int frow = 0; frow < -lines; frow++) {
       for (int cc = 0; cc < SubW; cc++) {
-        Page_Ptr()->Data[SubY + frow][SubX + cc] = cell;
+        base::At(base::At(Page_Ptr()->Data, SubY + frow), SubX + cc) = cell;
       }
     }
   }
@@ -599,7 +604,7 @@ void MonoClass::Print(const char* ptr) {
       *scrolled *	upward a line.
       */
       default:
-        Page_Ptr()->Data[SubY + Y][SubX + X] = cell;
+        base::At(base::At(Page_Ptr()->Data, SubY + Y), SubX + X) = cell;
 
         if (X < SubW - 1) {
           Set_Cursor(X + 1, Y);
@@ -762,9 +767,10 @@ void MonoClass::View() {
   if (displace) {
     for (int line = 0; line < kLines; line++) {
       for (int col = 0; col < kColumns; col++) {
-        const CellType temp = Page_Ptr()->Data[line][col];
-        Page_Ptr()->Data[line][col] = Raw_Ptr(0)->Data[line][col];
-        Raw_Ptr(0)->Data[line][col] = temp;
+        const CellType temp = base::At(base::At(Page_Ptr()->Data, line), col);
+        base::At(base::At(Page_Ptr()->Data, line), col) =
+            base::At(base::At(Raw_Ptr(0)->Data, line), col);
+        base::At(base::At(Raw_Ptr(0)->Data, line), col) = temp;
       }
     }
     displace->Page = Page;
@@ -776,7 +782,7 @@ void MonoClass::View() {
     */
     memmove(Raw_Ptr(0), Page_Ptr(), sizeof(MonoPageType));
   }
-  PageUsage[Page] = displace;
+  base::At(PageUsage, Page) = displace;
   PageUsage[0] = this;
   Page = 0;
 

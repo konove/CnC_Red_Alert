@@ -96,6 +96,7 @@
 #include <iterator>
 #include <utility>
 
+#include "base/array.h"
 #include "base/numeric.h"
 #include "config.h"
 #include "magic_enum/magic_enum.hpp"
@@ -177,7 +178,7 @@ CellClass::CellClass()
   }
   Flag.Composite = 0;
   for (int index = 0; index < std::ssize(Overlappers); index++) {
-    Overlappers[index] = nullptr;
+    base::At(Overlappers, index) = nullptr;
   }
 }
 
@@ -437,12 +438,12 @@ void CellClass::Redraw_Objects(bool forced) {
       **	Flag any overlapping object in this cell to be redrawn.
       */
       for (int index = 0; index < std::ssize(Overlappers); index++) {
-        if (Overlappers[index]) {
+        if (base::At(Overlappers, index)) {
           assert(Overlappers[index]->IsActive);
-          if (Overlappers[index]->Is_Techno() &&
-              dynamic_cast<const TechnoClass*>(Overlappers[index])
+          if (base::At(Overlappers, index)->Is_Techno() &&
+              dynamic_cast<const TechnoClass*>(base::At(Overlappers, index))
                       ->Visual_Character() != VISUAL_NORMAL) {
-            Overlappers[index]->Mark(MARK_CHANGE);
+            base::At(Overlappers, index)->Mark(MARK_CHANGE);
           }
         }
       }
@@ -451,11 +452,11 @@ void CellClass::Redraw_Objects(bool forced) {
       **	Flag any overlapping object in this cell to be redrawn.
       */
       for (int index = 0; index < std::ssize(Overlappers); index++) {
-        if (Overlappers[index] != nullptr) {
-          if (!Overlappers[index]->IsActive) {
-            Overlappers[index] = nullptr;
+        if (base::At(Overlappers, index) != nullptr) {
+          if (!base::At(Overlappers, index)->IsActive) {
+            base::At(Overlappers, index) = nullptr;
           } else {
-            Overlappers[index]->Mark(MARK_CHANGE);
+            base::At(Overlappers, index)->Mark(MARK_CHANGE);
           }
         }
       }
@@ -766,11 +767,11 @@ void CellClass::Overlap_Down(ObjectClass* object) {
   }
 
   for (int index = 0; index < std::ssize(Overlappers); index++) {
-    if (Overlappers[index] == object) {
+    if (base::At(Overlappers, index) == object) {
       return;
     }
-    if (!Overlappers[index]) {
-      ptr = &Overlappers[index];
+    if (!base::At(Overlappers, index)) {
+      ptr = base::Suffix(Overlappers, index).data();
     }
   }
 
@@ -780,13 +781,13 @@ void CellClass::Overlap_Down(ObjectClass* object) {
   */
   if (!ptr && object->What_Am_I() == RTTI_BUILDING) {
     for (int index = 0; index < std::ssize(Overlappers); index++) {
-      switch (Overlappers[index]->What_Am_I()) {
+      switch (base::At(Overlappers, index)->What_Am_I()) {
         case RTTI_BUILDING:
         case RTTI_TERRAIN:
           break;
 
         default:
-          Overlappers[index] = object;
+          base::At(Overlappers, index) = object;
           index = static_cast<int>(std::ssize(Overlappers));
           break;
       }
@@ -824,8 +825,8 @@ void CellClass::Overlap_Up(ObjectClass* object) {
   assert(object != nullptr && object->IsActive);
 
   for (int index = 0; index < std::ssize(Overlappers); index++) {
-    if (Overlappers[index] == object) {
-      Overlappers[index] = nullptr;
+    if (base::At(Overlappers, index) == object) {
+      base::At(Overlappers, index) = nullptr;
       break;
     }
   }
@@ -901,14 +902,20 @@ InfantryClass* CellClass::Cell_Infantry() const {
 // Only the cell-sorted renderer draws partial cells, hence maybe_unused.
 [[maybe_unused]] static bool Calc_Partial_Window(int cellx, int celly,
                                                  int& drawx, int& drawy) {
-  int& px = WindowList[static_cast<int>(WINDOW_PARTIAL)][kWindowX];
-  int& py = WindowList[static_cast<int>(WINDOW_PARTIAL)][kWindowY];
-  int& pw = WindowList[static_cast<int>(WINDOW_PARTIAL)][kWindowWidth];
-  int& ph = WindowList[static_cast<int>(WINDOW_PARTIAL)][kWindowHeight];
-  const int& tx = WindowList[static_cast<int>(WINDOW_TACTICAL)][kWindowX];
-  const int& ty = WindowList[static_cast<int>(WINDOW_TACTICAL)][kWindowY];
-  const int& tw = WindowList[static_cast<int>(WINDOW_TACTICAL)][kWindowWidth];
-  const int& th = WindowList[static_cast<int>(WINDOW_TACTICAL)][kWindowHeight];
+  int& px = base::At(WindowList[static_cast<int>(WINDOW_PARTIAL)], kWindowX);
+  int& py = base::At(WindowList[static_cast<int>(WINDOW_PARTIAL)], kWindowY);
+  int& pw =
+      base::At(WindowList[static_cast<int>(WINDOW_PARTIAL)], kWindowWidth);
+  int& ph =
+      base::At(WindowList[static_cast<int>(WINDOW_PARTIAL)], kWindowHeight);
+  const int& tx =
+      base::At(WindowList[static_cast<int>(WINDOW_TACTICAL)], kWindowX);
+  const int& ty =
+      base::At(WindowList[static_cast<int>(WINDOW_TACTICAL)], kWindowY);
+  const int& tw =
+      base::At(WindowList[static_cast<int>(WINDOW_TACTICAL)], kWindowWidth);
+  const int& th =
+      base::At(WindowList[static_cast<int>(WINDOW_TACTICAL)], kWindowHeight);
 
   px = cellx + tx;
   py = celly + ty;
@@ -1106,7 +1113,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
           if (IsWaypoint) {
             char waypt[3];
             for (int i = 0; i < ScenarioClass::kHomeWaypoint; i++) {
-              if (Scen.Waypoint[i] == Cell_Number()) {
+              if (base::At(Scen.Waypoint, i) == Cell_Number()) {
                 if (i < 26) {
                   waypt[0] = static_cast<char>('A' + i);
                   waypt[1] = 0;
@@ -1257,16 +1264,16 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
         if (!object->IsActive) {
           break;
         }
-        optr[count] = object;
+        base::At(optr, count) = object;
         object->IsToDisplay = true;
         object = object->Next;
         count++;
       }
       for (int index = 0; index < std::ssize(Overlappers); index++) {
-        object = Overlappers[index];
+        object = base::At(Overlappers, index);
         if (object != nullptr && object->IsActive) {
           object->IsToDisplay = true;
-          optr[count] = object;
+          base::At(optr, count) = object;
           count++;
         }
       }
@@ -1324,7 +1331,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
       **	Draw any objects that happen to be in or overlapping this cell.
       */
       for (int index = 0; index < count; index++) {
-        object = optr[index];
+        object = base::At(optr, index);
         int xx = 0;
         int yy = 0;
         if ((object->IsToDisplay &&
@@ -1400,7 +1407,8 @@ void CellClass::Wall_Update() {
       **	cells.
       */
       for (int i = 0; i < 4; i++) {
-        if (newcell.Adjacent_Cell(_offsets[i]).Overlay == newcell.Overlay) {
+        if (newcell.Adjacent_Cell(base::At(_offsets, i)).Overlay ==
+            newcell.Overlay) {
           icon |= base::Bit<uint32_t>(i);
         }
       }
@@ -1676,7 +1684,7 @@ COORDINATE CellClass::Closest_Free_Spot(COORDINATE coord, bool any) const {
   *or not, *	then just return with the stopping coordinate value.
   */
   if (any || Is_Spot_Free(spot_index)) {
-    return Coord_Add(coord, StoppingCoordAbs[spot_index]);
+    return Coord_Add(coord, base::At(StoppingCoordAbs, spot_index));
   }
 
   /*
@@ -1686,15 +1694,15 @@ COORDINATE CellClass::Closest_Free_Spot(COORDINATE coord, bool any) const {
   */
   unsigned char* sequence = nullptr;
   if (spot_index == 0) {
-    sequence = &_alternate[Random_Pick(0, 3)][0];
+    sequence = base::Suffix(base::At(_alternate, Random_Pick(0, 3)), 0).data();
   } else {
-    sequence = &_sequence[spot_index][0];
+    sequence = base::Suffix(base::At(_sequence, spot_index), 0).data();
   }
   for (int index = 0; index < 4; index++) {
     const int pos = *sequence++;
 
     if (Is_Spot_Free(pos)) {
-      return Coord_Add(coord, StoppingCoordAbs[pos]);
+      return Coord_Add(coord, base::At(StoppingCoordAbs, pos));
     }
   }
 
@@ -1907,11 +1915,11 @@ int32_t CellClass::Tiberium_Adjust(bool pregame) {
     }
 
     if (gems) {
-      OverlayData = static_cast<unsigned char>(_adjgem[count]);
+      OverlayData = static_cast<unsigned char>(base::At(_adjgem, count));
       OverlayData = static_cast<unsigned char>(
           std::min(static_cast<int>(OverlayData), 2));
     } else {
-      OverlayData = static_cast<unsigned char>(_adj[count]);
+      OverlayData = static_cast<unsigned char>(base::At(_adj, count));
     }
     return (static_cast<int32_t>(OverlayData + 1)) * value;
   }
@@ -2329,7 +2337,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
               INFANTRY_E1, INFANTRY_E1, INFANTRY_E1,
               INFANTRY_E2, INFANTRY_E3, INFANTRY_RENOVATOR};
           if ((!InfantryTypeClass::As_Reference(
-                    _inf[Random_Pick<int>(0, std::ssize(_inf) - 1)])
+                    base::At(_inf, Random_Pick<int>(0, std::ssize(_inf) - 1)))
                     .Create_And_Place(Cell_Number(), object->Owner())) &&
               (index == 0)) {
             give_crate_money();

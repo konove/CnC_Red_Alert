@@ -57,6 +57,7 @@
 #include <cstdio>
 
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
@@ -430,10 +431,11 @@ bool ScreenRecording = false;
 
 static void Add_Current_Screen() {
   if (ScreenRecording) {
-    ScreenList[CurrentScreen] = new GraphicBufferClass;
-    ScreenList[CurrentScreen]->Init(SeenBuff.Get_Width(), SeenBuff.Get_Height(),
-                                    nullptr, 0, static_cast<GBC_Enum>(0));
-    SeenBuff.Blit(*ScreenList[CurrentScreen]);
+    base::At(ScreenList, CurrentScreen) = new GraphicBufferClass;
+    base::At(ScreenList, CurrentScreen)
+        ->Init(SeenBuff.Get_Width(), SeenBuff.Get_Height(), nullptr, 0,
+               static_cast<GBC_Enum>(0));
+    SeenBuff.Blit(*base::At(ScreenList, CurrentScreen));
 
     CurrentScreen++;
 
@@ -441,8 +443,8 @@ static void Add_Current_Screen() {
       char filename[20];
       for (int i = 0; i < MAX_SCREENS_SAVED; i++) {
         absl::SNPrintF(filename, sizeof(filename), "SCRN%04d.PCX", i);
-        Write_PCX_File(filename, *ScreenList[i], CurrentPalette);
-        delete ScreenList[i];
+        Write_PCX_File(filename, *base::At(ScreenList, i), CurrentPalette);
+        delete base::At(ScreenList, i);
       }
 
       CurrentScreen = 0;

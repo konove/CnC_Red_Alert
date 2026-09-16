@@ -48,6 +48,7 @@
 #include <iterator>
 #include <utility>
 
+#include "base/array.h"
 #include "port/safe_string.h"
 #include "ra/checkbox.h"
 #include "ra/conquer.h"
@@ -141,14 +142,14 @@ void Special_Dialog(bool simple) {
   cancel.Add(*buttons);
 
   for (int index = 0; index < std::ssize(_options); index++) {
-    _options[index].Button =
+    base::At(_options, index).Button =
         new CheckBoxClass(static_cast<unsigned>(100 + index), kOptionX + 34,
                           kOptionY + 40 + (index * 20));
-    if (_options[index].Button) {
-      _options[index].Button->Add(*buttons);
+    if (base::At(_options, index).Button) {
+      base::At(_options, index).Button->Add(*buttons);
 
       bool value = false;
-      switch (_options[index].Description) {
+      switch (base::At(_options, index).Description) {
         case TXT_THREE_POINT:
           value = Special.IsThreePoint;
           break;
@@ -160,11 +161,11 @@ void Special_Dialog(bool simple) {
           break;
       }
 
-      _options[index].Setting = value;
+      base::At(_options, index).Setting = value;
       if (value) {
-        _options[index].Button->Turn_On();
+        base::At(_options, index).Button->Turn_On();
       } else {
-        _options[index].Button->Turn_Off();
+        base::At(_options, index).Button->Turn_Off();
       }
     }
   }
@@ -236,7 +237,8 @@ void Special_Dialog(bool simple) {
         const int index = (input & ~KN_BUTTON) - 100;
         if (static_cast<unsigned>(index) <
             sizeof(_options) / sizeof(_options[0])) {
-          _options[index].Setting = _options[index].Button->IsOn;
+          base::At(_options, index).Setting =
+              base::At(_options, index).Button->IsOn;
         }
         break;
     }
@@ -493,11 +495,11 @@ int Fetch_Difficulty(bool amath) {
   // stuff.
   if (amath) {
     int index = 0;
-    while (buffer[index] && buffer[index] != '.') {
+    while (base::At(buffer, index) && base::At(buffer, index) != '.') {
       index++;
     }
-    if (buffer[index] == '.') {
-      buffer[index + 1] = 0;
+    if (base::At(buffer, index) == '.') {
+      base::At(buffer, index + 1) = 0;
     }
   }
   Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack,

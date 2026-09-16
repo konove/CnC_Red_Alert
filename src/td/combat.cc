@@ -44,6 +44,7 @@
 #include <cstdint>
 #include <iterator>
 
+#include "base/array.h"
 #include "base/numeric.h"
 #include "td/cell.h"
 #include "td/const.h"
@@ -194,7 +195,7 @@ void Explosion_Damage(COORDINATE coord, int strength, TechnoClass* source,
     while (object) {
       if (!object->IsToDamage && object != source) {
         object->IsToDamage = true;
-        objects[count++] = object;
+        base::At(objects, count++) = object;
         if (count >= std::ssize(objects)) {
           break;
         }
@@ -212,7 +213,7 @@ void Explosion_Damage(COORDINATE coord, int strength, TechnoClass* source,
   **	were a direct hit on the building's center.
   */
   for (int index = 0; index < count; index++) {
-    object = objects[index];
+    object = base::At(objects, index);
 
     object->IsToDamage = false;
     if (object->What_Am_I() == RTTI_BUILDING && impacto == object) {

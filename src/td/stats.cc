@@ -46,6 +46,7 @@
 #include <cstring>
 
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
 #include "sdllib/shape.h"
@@ -392,14 +393,15 @@ void Send_Statistics_Packet() {
     **
     */
     for (int house = 0; house < 2; house++) {
-      HouseClass* player = HouseClass::As_Pointer(MPlayerHouses[house]);
+      HouseClass* player =
+          HouseClass::As_Pointer(base::At(MPlayerHouses, house));
 
       if (player) {
         /*
         ** Player handle.
         */
         field_player_handle[3] = static_cast<char>('1' + static_cast<char>(house));
-        stats.Add_Field(field_player_handle, MPlayerNames[house]);
+        stats.Add_Field(field_player_handle, base::At(MPlayerNames, house));
 
         /*
         ** Player team. (NOD or GDI)

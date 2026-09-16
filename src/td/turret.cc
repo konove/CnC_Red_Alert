@@ -55,6 +55,7 @@
 #include <cstdint>
 #include <cstdlib>
 
+#include "base/array.h"
 #include "td/config.h"
 #include "td/const.h"
 #include "td/coord.h"
@@ -342,7 +343,7 @@ COORDINATE TurretClass::Fire_Coord(int which) const {
   switch (Class->Type) {
     case UNIT_GUNBOAT:
       coord = Coord_Move(coord, PrimaryFacing.Current(),
-                         Pixel2Lepton[Class->TurretOffset]);
+                         base::At(Pixel2Lepton, Class->TurretOffset));
       dist = 0x0060;
       break;
 

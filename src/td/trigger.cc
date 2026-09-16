@@ -71,6 +71,7 @@
 #include <cstring>
 
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "port/ex_string.h"
 #include "port/tokenizer.h"
 #include "reinf.h"
@@ -1279,7 +1280,7 @@ EventType TriggerClass::Event_From_Name(const char* name) {
 
   for (int i = static_cast<int>(EVENT_NONE); i < static_cast<int>(EVENT_COUNT);
        i++) {
-    if (!stricmp(name, EventText[i + 1])) {
+    if (!stricmp(name, base::At(EventText, i + 1))) {
       return static_cast<EventType>(i);
     }
   }
@@ -1299,7 +1300,7 @@ EventType TriggerClass::Event_From_Name(const char* name) {
  * HISTORY: * 11/29/1994 BR : Created. *
  *=============================================================================================*/
 const char* TriggerClass::Name_From_Event(EventType event) {
-  return EventText[static_cast<int>(event) + 1];
+  return base::At(EventText, static_cast<int>(event) + 1);
 }
 
 /***********************************************************************************************
@@ -1321,7 +1322,7 @@ TriggerClass::ActionType TriggerClass::Action_From_Name(const char* name) {
 
   for (int i = static_cast<int>(ACTION_NONE);
        i < static_cast<int>(ACTION_COUNT); i++) {
-    if (!stricmp(name, ActionText[i + 1])) {
+    if (!stricmp(name, base::At(ActionText, i + 1))) {
       return static_cast<ActionType>(i);
     }
   }
@@ -1341,7 +1342,7 @@ TriggerClass::ActionType TriggerClass::Action_From_Name(const char* name) {
  * HISTORY: * 11/29/1994 BR : Created. *
  *=============================================================================================*/
 const char* TriggerClass::Name_From_Action(ActionType action) {
-  return ActionText[static_cast<int>(action) + 1];
+  return base::At(ActionText, static_cast<int>(action) + 1);
 }
 
 /***********************************************************************************************

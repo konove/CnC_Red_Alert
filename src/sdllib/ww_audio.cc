@@ -13,6 +13,7 @@
 
 #include "absl/base/attributes.h"
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "base/numeric.h"
 #include "base/types.h"
 #include "port/unaligned.h"
@@ -122,8 +123,9 @@ static const uint8_t* DecodeADPCMBlock(ChannelState& chan, int block_size,
 
     // The nibble is the low or high half of the byte: a 4-bit pattern.
     uint8_t nibble = b & 0xF;
-    int step = ima_adpcm_step_table[chan.step];
-    chan.step = static_cast<int8_t>(clamp(chan.step + ima_adpcm_index_table[nibble], 0, 88));
+    int step = base::At(ima_adpcm_step_table, chan.step);
+    chan.step = static_cast<int8_t>(
+        clamp(chan.step + base::At(ima_adpcm_index_table, nibble), 0, 88));
 
     int diff = (((((nibble & 7) * 2) + 1) * step) / 8) * (nibble & 8 ? -1 : 1);
     chan.predictor = static_cast<int16_t>(clamp(chan.predictor + diff, -32768, 32767));
@@ -131,8 +133,9 @@ static const uint8_t* DecodeADPCMBlock(ChannelState& chan, int block_size,
     samples[0] = chan.predictor;
 
     nibble = static_cast<uint8_t>(b >> 4);
-    step = ima_adpcm_step_table[chan.step];
-    chan.step = static_cast<int8_t>(clamp(chan.step + ima_adpcm_index_table[nibble], 0, 88));
+    step = base::At(ima_adpcm_step_table, chan.step);
+    chan.step = static_cast<int8_t>(
+        clamp(chan.step + base::At(ima_adpcm_index_table, nibble), 0, 88));
 
     diff = (((((nibble & 7) * 2) + 1) * step) / 8) * (nibble & 8 ? -1 : 1);
     chan.predictor = static_cast<int16_t>(clamp(chan.predictor + diff, -32768, 32767));
@@ -206,7 +209,7 @@ static const uint8_t* DecodeWestwoodBlock(
               prev_sample = 0xFF;
             }
 
-            sample_buf[i] = static_cast<uint8_t>(prev_sample);
+            base::At(sample_buf, i) = static_cast<uint8_t>(prev_sample);
           }
 
           SDL_AudioStreamPut(chan.stream, sample_buf, 2);
@@ -228,7 +231,7 @@ static const uint8_t* DecodeWestwoodBlock(
               prev_sample = 0xFF;
             }
 
-            sample_buf[i] = static_cast<uint8_t>(prev_sample);
+            base::At(sample_buf, i) = static_cast<uint8_t>(prev_sample);
           }
 
           SDL_AudioStreamPut(chan.stream, sample_buf, 4);
@@ -399,7 +402,7 @@ int File_Stream_Sample_Vol(const char* filename, int volume,
 
   // setup channel
   SDL_LockAudioDevice(AudioDevice);
-  auto& chan = Channels[id];
+  auto& chan = base::At(Channels, id);
 
   chan.sample = nullptr;
   chan.playing = true;
@@ -531,13 +534,13 @@ void Stop_Sample(int handle) {
 
   SDL_LockAudioDevice(AudioDevice);
 
-  Channels[handle].playing = false;
+  base::At(Channels, handle).playing = false;
 
   SDL_UnlockAudioDevice(AudioDevice);
 
-  if (Channels[handle].file_handle != -1) {
-    CloseFileHandle(Channels[handle].file_handle);
-    Channels[handle].file_handle = -1;
+  if (base::At(Channels, handle).file_handle != -1) {
+    CloseFileHandle(base::At(Channels, handle).file_handle);
+    base::At(Channels, handle).file_handle = -1;
   }
 }
 
@@ -545,12 +548,12 @@ bool Sample_Status(int handle) {
   if (!Is_Valid_Handle(handle)) {
     return false;
   }
-  return Channels[handle].playing;
+  return base::At(Channels, handle).playing;
 }
 
 bool Is_Sample_Playing(const void* sample) {
   for (int i = 0; i < kMaxSfx; i++) {
-    if (Channels[i].sample == sample && Sample_Status(i)) {
+    if (base::At(Channels, i).sample == sample && Sample_Status(i)) {
       return true;
     }
   }
@@ -560,7 +563,7 @@ bool Is_Sample_Playing(const void* sample) {
 
 void Stop_Sample_Playing(const void* sample) {
   for (int i = 0; i < kMaxSfx; i++) {
-    if (Channels[i].sample == sample) {
+    if (base::At(Channels, i).sample == sample) {
       Stop_Sample(i);
     }
   }
@@ -599,7 +602,7 @@ int Play_Sample_Handle(const void* sample, int priority, int volume,
 
   // setup channel
   SDL_LockAudioDevice(AudioDevice);
-  auto& chan = Channels[id];
+  auto& chan = base::At(Channels, id);
 
   chan.sample = sample;
   chan.playing = true;
@@ -655,21 +658,22 @@ void Fade_Sample(int handle, int ticks) {
 
   if (Sample_Status(handle)) {
     SDL_LockAudioDevice(AudioDevice);
-    Channels[handle].fade = Channels[handle].raw_volume / num_steps;
+    base::At(Channels, handle).fade =
+        base::At(Channels, handle).raw_volume / num_steps;
     SDL_UnlockAudioDevice(AudioDevice);
   }
 }
 
 int AcquireSampleHandle(const int priority) {
   for (int i = kMaxSfx - 1; i >= 0; i--) {
-    if (!Channels[i].playing) {
+    if (!base::At(Channels, i).playing) {
       return i;
     }
   }
 
   // All channels busy; evict the first with lower priority.
   for (int i = 0; i < kMaxSfx; i++) {
-    if (Channels[i].priority < priority) {
+    if (base::At(Channels, i).priority < priority) {
       Stop_Sample(i);
       return i;
     }

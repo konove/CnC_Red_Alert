@@ -53,6 +53,7 @@
 
 #include <cstdint>
 
+#include "base/array.h"
 #include "base/numeric.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
@@ -184,23 +185,25 @@ void PowerClass::Draw_It(bool complete) {
       ** 1st get the height of the filled section of the power bar
       */
       const int bottom = PowY + PowHeight - 1;
-      int power_height = PowerHeight == DesiredPowerHeight
-                             ? PowerHeight + (_modtable[PowerBounce] * PowerDir)
-                             : PowerHeight;
-      int drain_height = DrainHeight == DesiredDrainHeight
-                             ? DrainHeight + (_modtable[DrainBounce] * DrainDir)
-                             : DrainHeight;
+      int power_height =
+          PowerHeight == DesiredPowerHeight
+              ? PowerHeight + (base::At(_modtable, PowerBounce) * PowerDir)
+              : PowerHeight;
+      int drain_height =
+          DrainHeight == DesiredDrainHeight
+              ? DrainHeight + (base::At(_modtable, DrainBounce) * DrainDir)
+              : DrainHeight;
       power_height = Bound(power_height, 0, PowHeight - 2);
       drain_height = Bound(drain_height, 0, PowHeight - 2);
 
       /*
       ** Create a clip region to draw the unfilled section of the bar
       */
-      WindowList[static_cast<int>(WINDOW_CUSTOM)][kWindowX] = 0;
-      WindowList[static_cast<int>(WINDOW_CUSTOM)][kWindowY] = 0;
-      WindowList[static_cast<int>(WINDOW_CUSTOM)][kWindowWidth] =
+      base::At(WindowList[static_cast<int>(WINDOW_CUSTOM)], kWindowX) = 0;
+      base::At(WindowList[static_cast<int>(WINDOW_CUSTOM)], kWindowY) = 0;
+      base::At(WindowList[static_cast<int>(WINDOW_CUSTOM)], kWindowWidth) =
           SeenBuff.Get_Width();
-      WindowList[static_cast<int>(WINDOW_CUSTOM)][kWindowHeight] =
+      base::At(WindowList[static_cast<int>(WINDOW_CUSTOM)], kWindowHeight) =
           bottom - power_height;
 
       /*
@@ -213,11 +216,11 @@ void PowerClass::Draw_It(bool complete) {
       /*
       ** Set up the clip region for the filled section
       */
-      WindowList[static_cast<int>(WINDOW_CUSTOM)][kWindowY] =
+      base::At(WindowList[static_cast<int>(WINDOW_CUSTOM)], kWindowY) =
           bottom - power_height;
-      WindowList[static_cast<int>(WINDOW_CUSTOM)][kWindowHeight] =
+      base::At(WindowList[static_cast<int>(WINDOW_CUSTOM)], kWindowHeight) =
           SeenBuff.Get_Height() -
-          WindowList[static_cast<int>(WINDOW_CUSTOM)][kWindowY];
+          base::At(WindowList[static_cast<int>(WINDOW_CUSTOM)], kWindowY);
 
       /*
       ** What color is the filled section?
@@ -237,13 +240,16 @@ void PowerClass::Draw_It(bool complete) {
         */
         CC_Draw_Shape(
             PowerBarShape, 2 + power_color, PowX,
-            PowY - WindowList[static_cast<int>(WINDOW_CUSTOM)][kWindowY],
+            PowY -
+                base::At(WindowList[static_cast<int>(WINDOW_CUSTOM)], kWindowY),
             WINDOW_CUSTOM, SHAPE_WIN_REL);
 
-        CC_Draw_Shape(
-            PowerBarShape, 3 + power_color, PowX,
-            PowY - WindowList[static_cast<int>(WINDOW_CUSTOM)][kWindowY] + 100,
-            WINDOW_CUSTOM, SHAPE_WIN_REL);
+        CC_Draw_Shape(PowerBarShape, 3 + power_color, PowX,
+                      PowY -
+                          base::At(WindowList[static_cast<int>(WINDOW_CUSTOM)],
+                                   kWindowY) +
+                          100,
+                      WINDOW_CUSTOM, SHAPE_WIN_REL);
       }
 
       /*

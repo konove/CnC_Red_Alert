@@ -8,6 +8,7 @@
 #include <cstring>
 
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "port/bytes_of.h"
 #include "ra/externs.h"
 #include "sdllib/gbuffer.h"
@@ -87,9 +88,9 @@ int PaletteClass::Closest_Color(const RGBClass& col) const {
 
   for (int i = 0; i < COLOR_COUNT; i++) {
     const int new_diff =
-        std::abs(col.Red_Component() - data_[i].Red_Component()) +
-        std::abs(col.Green_Component() - data_[i].Green_Component()) +
-        std::abs(col.Blue_Component() - data_[i].Blue_Component());
+        std::abs(col.Red_Component() - base::At(data_, i).Red_Component()) +
+        std::abs(col.Green_Component() - base::At(data_, i).Green_Component()) +
+        std::abs(col.Blue_Component() - base::At(data_, i).Blue_Component());
 
     if (new_diff == 0) {
       return i;
@@ -104,10 +105,10 @@ int PaletteClass::Closest_Color(const RGBClass& col) const {
   return index;
 }
 
-RGBClass& PaletteClass::operator[](int index) { return data_[index]; }
+RGBClass& PaletteClass::operator[](int index) { return base::At(data_, index); }
 
 const RGBClass& PaletteClass::operator[](int index) const {
-  return data_[index];
+  return base::At(data_, index);
 }
 
 PaletteClass::operator unsigned char*() noexcept {

@@ -70,6 +70,7 @@
 #include <cstdint>
 #include <cstring>
 
+#include "base/array.h"
 #include "base/numeric.h"
 #include "base/types.h"
 #include "sdllib/misc.h"
@@ -746,7 +747,7 @@ int OptionsClass::Normalize_Delay(int delay) const {
                                    {7, 6, 5, 4, 4, 4, 3, 2}};
   if (delay) {
     if (delay < 5) {
-      delay = _adjust[delay - 1][GameSpeed];
+      delay = base::At(base::At(_adjust, delay - 1), GameSpeed);
     } else {
       delay = delay * 8 / static_cast<int>(GameSpeed + 1);
     }

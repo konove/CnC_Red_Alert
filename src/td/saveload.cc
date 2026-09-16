@@ -45,6 +45,7 @@
 
 #include "absl/log/log.h"
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "sdllib/file_access.h"
@@ -126,7 +127,7 @@ bool Save_Game(int id, const char* descr) {
   */
   absl::SNPrintF(descr_buf, sizeof(descr_buf) - 1, "%s\r\n",
                  descr);                  // put CR-LF after text
-  descr_buf[strlen(descr_buf) + 1] = 26;  // put CTRL-Z after NULL
+  base::At(descr_buf, strlen(descr_buf) + 1) = 26;  // put CTRL-Z after NULL
 
   if (file.Write(descr_buf, kDescripMax) != kDescripMax) {
     file.Close();
@@ -364,7 +365,7 @@ bool Load_Game(int id) {
     count = 0;
   }
   for (int j = 0; j < Teams.Count(); ++j) {
-    ++TeamClass::Number[TeamTypes.ID(Teams.Ptr(j)->Class)];
+    ++base::At(TeamClass::Number, TeamTypes.ID(Teams.Ptr(j)->Class));
   }
 
   // add triggers
@@ -557,9 +558,10 @@ bool Get_Savefile_Info(int id, char* buf, unsigned* scenp, HousesType* housep) {
 
     descr_buf[kDescripMax - 1] = '\0';
     const auto description_length = strlen(descr_buf);
-    if (description_length >= 2 && descr_buf[description_length - 2] == '\r' &&
-        descr_buf[description_length - 1] == '\n') {
-      descr_buf[description_length - 2] = '\0';
+    if (description_length >= 2 &&
+        base::At(descr_buf, description_length - 2) == '\r' &&
+        base::At(descr_buf, description_length - 1) == '\n') {
+      base::At(descr_buf, description_length - 2) = '\0';
     }
     port::SafeCopy(buf, descr_buf, kDescripMax);
 

@@ -46,6 +46,7 @@
 #include <cstdint>
 #include <cstring>
 
+#include "base/array.h"
 #include "base/numeric.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
@@ -227,12 +228,12 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
       button2.Add(*buttonlist);
       buttons[2] = &button2;
       realval[2] = BUTTON_2;
-      buttons[curbutton]->Turn_On();
+      base::At(buttons, curbutton)->Turn_On();
     } else if (numbuttons == 2) {
       button2.Add(*buttonlist);
       buttons[1] = &button2;
       realval[1] = BUTTON_2;
-      buttons[curbutton]->Turn_On();
+      base::At(buttons, curbutton)->Turn_On();
     }
   }
 
@@ -358,31 +359,31 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
 
         case KN_LEFT:
           if (numbuttons > 1) {
-            buttons[curbutton]->Turn_Off();
-            buttons[curbutton]->Flag_To_Redraw();
+            base::At(buttons, curbutton)->Turn_Off();
+            base::At(buttons, curbutton)->Flag_To_Redraw();
 
             curbutton--;
             if (curbutton < 0) {
               curbutton = numbuttons - 1;
             }
 
-            buttons[curbutton]->Turn_On();
-            buttons[curbutton]->Flag_To_Redraw();
+            base::At(buttons, curbutton)->Turn_On();
+            base::At(buttons, curbutton)->Flag_To_Redraw();
           }
           break;
 
         case KN_RIGHT:
           if (numbuttons > 1) {
-            buttons[curbutton]->Turn_Off();
-            buttons[curbutton]->Flag_To_Redraw();
+            base::At(buttons, curbutton)->Turn_Off();
+            base::At(buttons, curbutton)->Flag_To_Redraw();
 
             curbutton++;
             if (curbutton > numbuttons - 1) {
               curbutton = 0;
             }
 
-            buttons[curbutton]->Turn_On();
-            buttons[curbutton]->Flag_To_Redraw();
+            base::At(buttons, curbutton)->Turn_On();
+            base::At(buttons, curbutton)->Flag_To_Redraw();
           }
           break;
 

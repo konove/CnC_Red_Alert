@@ -112,6 +112,7 @@
 #include <utility>
 
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "base/enum_array.h"
 #include "base/trig.h"
 #include "port/tokenizer.h"
@@ -383,7 +384,7 @@ void AircraftClass::Draw_It(int x, int y, WindowNumberType window) {
   if (!shapefile) {
     return;
   }
-  shapenum = BodyShape[facing];
+  shapenum = base::At(BodyShape, facing);
 
   /*
   **	The orca attack helicopter uses a special shape set when it is
@@ -410,7 +411,7 @@ void AircraftClass::Draw_It(int x, int y, WindowNumberType window) {
 
     static const int _jitter[] = {0, 0, 0, 0, 1,  1,  1,  0,
                                   0, 0, 0, 0, -1, -1, -1, 0};
-    jitter = _jitter[Jitter % 16];
+    jitter = base::At(_jitter, Jitter % 16);
   }
 
   /*

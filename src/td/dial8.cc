@@ -61,6 +61,7 @@
  *=========================================================================*/
 #include "td/dial8.h"
 
+#include "base/array.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
@@ -258,10 +259,14 @@ bool Dial8Class::Draw_Me(bool forced) {
     **	Draw the hand & its shadow.
     */
     LogicPage->Draw_Line(
-        FaceX + 1, FaceY + 1, FaceLine[static_cast<int>(Facing)][0] + 1,
-        FaceLine[static_cast<int>(Facing)][1] + 1, kCcGreenShadow);
-    LogicPage->Draw_Line(FaceX, FaceY, FaceLine[static_cast<int>(Facing)][0],
-                         FaceLine[static_cast<int>(Facing)][1], kCcLightGreen);
+        FaceX + 1, FaceY + 1,
+        base::At(base::At(FaceLine, static_cast<int>(Facing)), 0) + 1,
+        base::At(base::At(FaceLine, static_cast<int>(Facing)), 1) + 1,
+        kCcGreenShadow);
+    LogicPage->Draw_Line(
+        FaceX, FaceY, base::At(base::At(FaceLine, static_cast<int>(Facing)), 0),
+        base::At(base::At(FaceLine, static_cast<int>(Facing)), 1),
+        kCcLightGreen);
 
     /*
     **	Restore the mouse.

@@ -65,6 +65,7 @@
 #include <iterator>
 
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "base/types.h"
 #include "port/ex_string.h"
 #include "rand.h"
@@ -604,12 +605,12 @@ void MapClass::Sight_From(CELL cell, int sightrange, bool incremental) {
   **	Incremental scans only scan the outer rings. Full scans
   **	scan all internal cells as well.
   */
-  int count =
-      RadiusCount[sightrange];  // Counter for number of offsets to process.
+  int count = base::At(
+      RadiusCount, sightrange);  // Counter for number of offsets to process.
   const int* ptr = &RadiusOffset[0];  // Offset pointer.
   if (incremental && (sightrange > 1)) {
-    ptr += RadiusCount[sightrange - 2];
-    count -= RadiusCount[sightrange - 2];
+    ptr += base::At(RadiusCount, sightrange - 2);
+    count -= base::At(RadiusCount, sightrange - 2);
   }
 
   /*
@@ -1087,9 +1088,10 @@ void MapClass::Logic() {
     if (Special.IsTGrowth && ptr->Land_Type() == LAND_TIBERIUM &&
         ptr->OverlayData < 11) {
       if (TiberiumGrowthCount < std::ssize(TiberiumGrowth)) {
-        TiberiumGrowth[TiberiumGrowthCount++] = cell;
+        base::At(TiberiumGrowth, TiberiumGrowthCount++) = cell;
       } else {
-        TiberiumGrowth[Random_Pick(0, TiberiumGrowthCount - 1)] = cell;
+        base::At(TiberiumGrowth, Random_Pick(0, TiberiumGrowthCount - 1)) =
+            cell;
       }
     }
 
@@ -1106,9 +1108,10 @@ void MapClass::Logic() {
       }
       for (int i = 0; i < tries; i++) {
         if (TiberiumSpreadCount < std::ssize(TiberiumSpread)) {
-          TiberiumSpread[TiberiumSpreadCount++] = cell;
+          base::At(TiberiumSpread, TiberiumSpreadCount++) = cell;
         } else {
-          TiberiumSpread[Random_Pick(0, TiberiumSpreadCount - 1)] = cell;
+          base::At(TiberiumSpread, Random_Pick(0, TiberiumSpreadCount - 1)) =
+              cell;
         }
       }
     }
@@ -1133,7 +1136,7 @@ void MapClass::Logic() {
     if (TiberiumGrowthCount) {
       for (int i = 0; i < tries; i++) {
         const CELL cell =
-            TiberiumGrowth[Random_Pick(0, TiberiumGrowthCount - 1)];
+            base::At(TiberiumGrowth, Random_Pick(0, TiberiumGrowthCount - 1));
         CellClass* newcell = &(*this)[cell];
         if (newcell->Land_Type() == LAND_TIBERIUM &&
             newcell->OverlayData < 12 - 1) {
@@ -1149,7 +1152,7 @@ void MapClass::Logic() {
     if (TiberiumSpreadCount) {
       for (int i = 0; i < tries; i++) {
         const CELL cell =
-            TiberiumSpread[Random_Pick(0, TiberiumSpreadCount - 1)];
+            base::At(TiberiumSpread, Random_Pick(0, TiberiumSpreadCount - 1));
 
         /*
         **	Find a pseudo-random adjacent cell that doesn't contain any
@@ -1225,8 +1228,8 @@ int MapClass::Cell_Region(CELL cell) {
  *   04/25/1995 PWG : Created.                                             *
  *=========================================================================*/
 int MapClass::Cell_Threat(CELL cell, HousesType house) {
-  int threat = HouseClass::As_Pointer(house)
-                   ->Regions[MapEditClass::Cell_Region(Map[cell].Cell_Number())]
+  int threat = base::At(HouseClass::As_Pointer(house)->Regions,
+                        MapEditClass::Cell_Region(Map[cell].Cell_Number()))
                    .Threat_Value();
   if (!threat && Map[cell].IsVisible) {
     threat = 1;
@@ -1315,7 +1318,8 @@ bool MapClass::Validate() {
       const unsigned char ticon = (*this)[cell].TIcon;
       Mem_Copy(Get_Icon_Set_Map(tclass->Get_Image_Data()), map,
                static_cast<size_t>(tclass->Width) * tclass->Height);
-      if (ticon >= tclass->Width * tclass->Height || map[ticon] == 0xff) {
+      if (ticon >= tclass->Width * tclass->Height ||
+          base::At(map, ticon) == 0xff) {
         return false;
       }
     }

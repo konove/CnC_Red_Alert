@@ -99,6 +99,7 @@
 #include <cstring>
 #include <iterator>
 
+#include "base/array.h"
 #include "base/numeric.h"
 #include "base/types.h"
 #include "magic_enum/magic_enum.hpp"
@@ -183,7 +184,7 @@ FootClass::FootClass(RTTIType rtti, int id, HousesType house)
       HeadToCoord(0) {
   Path[0] = FACING_NONE;
   for (int index = 0; index < std::ssize(NavQueue); index++) {
-    NavQueue[index] = kTargetNone;
+    base::At(NavQueue, index) = kTargetNone;
   }
 }
 
@@ -249,8 +250,11 @@ void FootClass::Debug_Dump(MonoClass* mono) const {
     for (base::ssize index = 0;
          index < std::min<base::ssize>(12, std::ssize(Path)); index++) {
       mono->Set_Cursor(static_cast<int>(54 + index), 3);
-      mono->Printf("%s", _p2c[(std::abs(static_cast<int>(Path[index]) + 1) %
-                               std::ssize(_p2c))]);
+      mono->Printf(
+          "%s",
+          base::At(_p2c,
+                   (std::abs(static_cast<int>(base::At(Path, index)) + 1) %
+                    std::ssize(_p2c))));
     }
     mono->Set_Cursor(54, 5);
     mono->Printf("%2d", PathThreshhold);
@@ -1994,11 +1998,13 @@ void FootClass::Detach(TARGET target, bool all) {
   **	Remove the target from the NavQueue list as well.
   */
   for (int index = 0; index < std::ssize(NavQueue); index++) {
-    if (NavQueue[index] == target) {
-      NavQueue[index] = kTargetNone;
+    if (base::At(NavQueue, index) == target) {
+      base::At(NavQueue, index) = kTargetNone;
       if (index < std::ssize(NavQueue) - 1) {
-        memmove(&NavQueue[index], &NavQueue[index + 1],
-                base::ToSize(std::ssize(NavQueue) - index - 1) * sizeof(NavQueue[0]));
+        memmove(base::Suffix(NavQueue, index).data(),
+                base::Suffix(NavQueue, index + 1).data(),
+                base::ToSize(std::ssize(NavQueue) - index - 1) *
+                    sizeof(NavQueue[0]));
         index--;
       }
     }
@@ -2227,7 +2233,7 @@ void FootClass::Handle_Navigation_List() {
       Assign_Destination(target);
       memmove(&NavQueue[0], &NavQueue[1],
               sizeof(NavQueue) - sizeof(NavQueue[0]));
-      NavQueue[std::ssize(NavQueue) - 1] = kTargetNone;
+      base::At(NavQueue, std::ssize(NavQueue) - 1) = kTargetNone;
 
       /*
       **	If the navigation queue is to loop (indefinately), then append
@@ -2235,8 +2241,8 @@ void FootClass::Handle_Navigation_List() {
       */
       if (IsNavQueueLoop) {
         for (int index = 0; index < std::ssize(NavQueue); index++) {
-          if (NavQueue[index] == kTargetNone) {
-            NavQueue[index] = target;
+          if (base::At(NavQueue, index) == kTargetNone) {
+            base::At(NavQueue, index) = target;
             break;
           }
         }
@@ -2270,7 +2276,7 @@ void FootClass::Queue_Navigation_List(TARGET target) {
   if (Target_Legal(target)) {
     int count = 0;
     for (count = 0; count < std::ssize(NavQueue); count++) {
-      if (!Target_Legal(NavQueue[count])) {
+      if (!Target_Legal(base::At(NavQueue, count))) {
         break;
       }
     }
@@ -2287,7 +2293,7 @@ void FootClass::Queue_Navigation_List(TARGET target) {
         IsNavQueueLoop = false;
       }
       if (count < std::ssize(NavQueue)) {
-        NavQueue[count] = target;
+        base::At(NavQueue, count) = target;
       }
     }
 
@@ -2320,7 +2326,7 @@ void FootClass::Queue_Navigation_List(TARGET target) {
  *=============================================================================================*/
 void FootClass::Clear_Navigation_List() {
   for (int index = 0; index < std::ssize(NavQueue); index++) {
-    NavQueue[index] = kTargetNone;
+    base::At(NavQueue, index) = kTargetNone;
   }
 }
 

@@ -114,6 +114,7 @@
 #include <iterator>
 
 #include "absl/log/check.h"
+#include "base/array.h"
 #include "base/enum_array.h"
 #include "base/trig.h"
 #include "base/types.h"
@@ -422,15 +423,21 @@ int AircraftClass::Shape_Number() const {
 
   switch (Class->Rotation) {
     case 32:
-      shapenum = BodyShape[Dir_To_32(SecondaryFacing)];
+      shapenum = base::At(BodyShape, Dir_To_32(SecondaryFacing));
       break;
 
     case 16:
-      shapenum = BodyShape[static_cast<base::ssize>(Dir_To_16(SecondaryFacing)) * 2] / 2;
+      shapenum =
+          base::At(BodyShape,
+                   static_cast<base::ssize>(Dir_To_16(SecondaryFacing)) * 2) /
+          2;
       break;
 
     case 8:
-      shapenum = BodyShape[static_cast<base::ssize>(Dir_To_8(SecondaryFacing)) * 4] / 4;
+      shapenum =
+          base::At(BodyShape,
+                   static_cast<base::ssize>(Dir_To_8(SecondaryFacing)) * 4) /
+          4;
       break;
 
     default:
@@ -487,8 +494,8 @@ void AircraftClass::Draw_It(int x, int y, WindowNumberType window) const {
   */
   DirType rotation = DIR_N;
   if (Class->Rotation == 16) {
-    rotation =
-        AsDirection(Rotation16[static_cast<int>(SecondaryFacing.Current())]);
+    rotation = AsDirection(
+        base::At(Rotation16, static_cast<int>(SecondaryFacing.Current())));
   }
 
   /*
@@ -498,7 +505,7 @@ void AircraftClass::Draw_It(int x, int y, WindowNumberType window) const {
   if (Height == kFlightLevel && static_cast<int>(Get_Speed()) < 3) {
     static const int _jitter[] = {0, 0, 0, 0, 1,  1,  1,  0,
                                   0, 0, 0, 0, -1, -1, -1, 0};
-    jitter = _jitter[Frame % 16];
+    jitter = base::At(_jitter, Frame % 16);
   }
 
   /*
@@ -1157,8 +1164,8 @@ int AircraftClass::Mission_Unload() {
           const FootClass* foot = Attached_Object();
           if (foot != nullptr && foot->Team &&
               foot->Team->Class->Origin != -1) {
-            Assign_Destination(
-                ::As_Target(Scen.Waypoint[foot->Team->Class->Origin]));
+            Assign_Destination(::As_Target(
+                base::At(Scen.Waypoint, foot->Team->Class->Origin)));
           } else {
             Assign_Destination(New_LZ(::As_Target(
                 Scen.Waypoint[ScenarioClass::kReinforcementWaypoint])));
@@ -3864,7 +3871,7 @@ void AircraftClass::Response_Attack() {
 
   static const VocType _response[] = {VOC_AFFIRM, VOC_ACKNOWL};
   const VocType response =
-      _response[Sim_Random_Pick<int>(0, std::ssize(_response) - 1)];
+      base::At(_response, Sim_Random_Pick<int>(0, std::ssize(_response) - 1));
   if (AllowVoice) {
     Sound_Effect(response, fixed(1), -(ID + 1));
   }
@@ -3889,7 +3896,7 @@ void AircraftClass::Response_Move() {
 
   static const VocType _response[] = {VOC_ACKNOWL, VOC_AFFIRM};
   const VocType response =
-      _response[Sim_Random_Pick<int>(0, std::ssize(_response) - 1)];
+      base::At(_response, Sim_Random_Pick<int>(0, std::ssize(_response) - 1));
   if (AllowVoice) {
     Sound_Effect(response, fixed(1), -(ID + 1));
   }
@@ -3915,7 +3922,7 @@ void AircraftClass::Response_Select() {
   static const VocType _response[] = {VOC_VEHIC,  VOC_REPORT, VOC_YESSIR,
                                       VOC_YESSIR, VOC_YESSIR, VOC_AWAIT};
   const VocType response =
-      _response[Sim_Random_Pick<int>(0, std::ssize(_response) - 1)];
+      base::At(_response, Sim_Random_Pick<int>(0, std::ssize(_response) - 1));
   if (AllowVoice) {
     Sound_Effect(response, fixed(1), -(ID + 1));
   }

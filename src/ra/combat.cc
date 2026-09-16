@@ -45,6 +45,7 @@
 #include <algorithm>
 #include <iterator>
 
+#include "base/array.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/cell.h"
 #include "ra/coord.h"
@@ -233,7 +234,7 @@ void Explosion_Damage(COORDINATE coord, int strength, TechnoClass* source,
     while (object) {
       if (!object->IsToDamage && object != source) {
         object->IsToDamage = true;
-        objects[count++] = object;
+        base::At(objects, count++) = object;
         if (count >= std::ssize(objects)) {
           break;
         }
@@ -251,7 +252,7 @@ void Explosion_Damage(COORDINATE coord, int strength, TechnoClass* source,
   **	were a direct hit on the building's center.
   */
   for (int index = 0; index < count; index++) {
-    object = objects[index];
+    object = base::At(objects, index);
 
     object->IsToDamage = false;
     if (object->IsActive) {
@@ -381,33 +382,33 @@ AnimType Combat_Anim(int damage, WarheadType warhead, LandType land) {
       }
       //	Fixed math error
       if (land == LAND_WATER) {
-        return _waterlist[(std::ssize(_waterlist) - 1) *
-                          fixed(std::min(damage, 90), 90)];
+        return base::At(_waterlist, (std::ssize(_waterlist) - 1) *
+                                        fixed(std::min(damage, 90), 90));
       }
-      return _aplist[(std::ssize(_aplist) - 1) *
-                     fixed(std::min(damage, 90), 90)];
+      return base::At(
+          _aplist, (std::ssize(_aplist) - 1) * fixed(std::min(damage, 90), 90));
 
     case 5:
       if (land == LAND_NONE) {
         return ANIM_FLAK;
       }
       if (land == LAND_WATER) {
-        return _waterlist[(std::ssize(_waterlist) - 1) *
-                          fixed(std::min(damage, 130), 130)];
+        return base::At(_waterlist, (std::ssize(_waterlist) - 1) *
+                                        fixed(std::min(damage, 130), 130));
       }
-      return _helist[(std::ssize(_helist) - 1) *
-                     fixed(std::min(damage, 130), 130)];
+      return base::At(_helist, (std::ssize(_helist) - 1) *
+                                   fixed(std::min(damage, 130), 130));
 
     case 3:
       if (land == LAND_NONE) {
         return ANIM_FLAK;
       }
       if (land == LAND_WATER) {
-        return _waterlist[(std::ssize(_waterlist) - 1) *
-                          fixed(std::min(damage, 150), 150)];
+        return base::At(_waterlist, (std::ssize(_waterlist) - 1) *
+                                        fixed(std::min(damage, 150), 150));
       }
-      return _firelist[(std::ssize(_firelist) - 1) *
-                       fixed(std::min(damage, 150), 150)];
+      return base::At(_firelist, (std::ssize(_firelist) - 1) *
+                                     fixed(std::min(damage, 150), 150));
 
     case 1:
       return ANIM_PIFF;

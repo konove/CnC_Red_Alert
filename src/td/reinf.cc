@@ -44,6 +44,7 @@
 
 #include <utility>
 
+#include "base/array.h"
 #include "port/safe_string.h"
 #include "td/aircraft.h"
 #include "td/audio.h"
@@ -116,14 +117,14 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
   bool watertransport = false;  // Transport needs a beach to land at?
   bool onlytransport = true;    // Just transport is in reinforcement?
   for (int index = 0; std::cmp_less(index, teamtype->ClassCount); index++) {
-    if (teamtype->Class[index]->IsTransporter ||
-        teamtype->Class[index]->What_Am_I() == RTTI_AIRCRAFTTYPE) {
-      if (teamtype->Class[index]->What_Am_I() == RTTI_AIRCRAFTTYPE) {
+    if (base::At(teamtype->Class, index)->IsTransporter ||
+        base::At(teamtype->Class, index)->What_Am_I() == RTTI_AIRCRAFTTYPE) {
+      if (base::At(teamtype->Class, index)->What_Am_I() == RTTI_AIRCRAFTTYPE) {
         airtransport = true;
       } else {
         watertransport =
-            dynamic_cast<const UnitTypeClass*>(teamtype->Class[index])->Type ==
-            UNIT_HOVER;
+            dynamic_cast<const UnitTypeClass*>(base::At(teamtype->Class, index))
+                ->Type == UNIT_HOVER;
       }
     } else {
       onlytransport = false;
@@ -171,9 +172,10 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
   TechnoClass* transport = nullptr;
   TechnoClass* object = nullptr;
   for (int index = 0; std::cmp_less(index, teamtype->ClassCount); index++) {
-    const TechnoTypeClass* tclass = teamtype->Class[index];
+    const TechnoTypeClass* tclass = base::At(teamtype->Class, index);
 
-    for (int sub = 0; std::cmp_less(sub, teamtype->DesiredNum[index]); sub++) {
+    for (int sub = 0; std::cmp_less(sub, base::At(teamtype->DesiredNum, index));
+         sub++) {
       ScenarioInit++;
       auto* temp = dynamic_cast<FootClass*>(
           tclass->Create_One_Of(HouseClass::As_Pointer(teamtype->House)));

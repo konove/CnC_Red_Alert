@@ -62,6 +62,7 @@
 #include <cassert>
 #include <cstddef>
 
+#include "base/array.h"
 #include "ra/building.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
@@ -420,7 +421,8 @@ bool FactoryClass::Start() {
     *slowest to *	just normal time at the fastest.
     */
     if (!House->IsHuman &&
-        Rule.Diff[static_cast<int>(House->Difficulty)].IsBuildSlowdown) {
+        base::At(Rule.Diff, static_cast<int>(House->Difficulty))
+            .IsBuildSlowdown) {
       time = time * fixed(House->IQ + Rule.MaxIQ, Rule.MaxIQ * 2).Inverse();
     }
 

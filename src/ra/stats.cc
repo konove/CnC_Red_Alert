@@ -45,6 +45,7 @@
 #include <cstdio>
 #include <cstring>
 
+#include "base/array.h"
 #include "port/unaligned.h"
 #include "port/win32/win32_com.h"
 #include "ra/aircraft.h"
@@ -599,7 +600,7 @@ void Send_Statistics_Packet() {
       */
       field_player_team[3] = static_cast<char>('1' + static_cast<char>(house));
       stats.Add_Field(field_player_team,
-                      houses[static_cast<int>(player->ActLike)]);
+                      base::At(houses, static_cast<int>(player->ActLike)));
 
       /*
       ** Player color

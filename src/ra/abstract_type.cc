@@ -2,6 +2,7 @@
 #include <cstring>
 #include <iterator>
 
+#include "base/array.h"
 #include "base/types.h"
 #include "ra/defines.h"
 #include "ra/externs.h"
@@ -23,7 +24,8 @@ int AbstractTypeClass::Full_Name() const {
   // object type and ID. A negative return signals the caller to look up the
   // string in NameOverride rather than the normal text table.
   for (base::ssize index = 0; index < std::ssize(NameOverride); index++) {
-    if (NameIDOverride[index] == ((static_cast<int>(RTTI) + 1) * 100) + ID) {
+    if (base::At(NameIDOverride, index) ==
+        ((static_cast<int>(RTTI) + 1) * 100) + ID) {
       return static_cast<int>(-(index + 1));
     }
   }

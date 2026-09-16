@@ -45,6 +45,7 @@
 
 #include "absl/log/log.h"
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "base/numeric.h"
 #include "base/types.h"
 #include "magic_enum/magic_enum.hpp"
@@ -296,8 +297,8 @@ static void Toggle_Formation() {
       team = obj->Group;
       if (std::cmp_not_equal(team, kNoGroup)) {
         set_form = obj->XFormOffset == kNoFormationOffset;
-        TeamSpeed[team] = SPEED_WHEEL;
-        TeamMaxSpeed[team] = MPH_LIGHT_SPEED;
+        base::At(TeamSpeed, team) = SPEED_WHEEL;
+        base::At(TeamMaxSpeed, team) = MPH_LIGHT_SPEED;
         break;
       }
     }
@@ -310,8 +311,8 @@ static void Toggle_Formation() {
         team = obj->Group;
         if (std::cmp_not_equal(team, kNoGroup)) {
           set_form = obj->XFormOffset == kNoFormationOffset;
-          TeamSpeed[team] = SPEED_WHEEL;
-          TeamMaxSpeed[team] = MPH_LIGHT_SPEED;
+          base::At(TeamSpeed, team) = SPEED_WHEEL;
+          base::At(TeamMaxSpeed, team) = MPH_LIGHT_SPEED;
           break;
         }
       }
@@ -326,8 +327,8 @@ static void Toggle_Formation() {
         team = obj->Group;
         if (std::cmp_not_equal(team, kNoGroup)) {
           set_form = obj->XFormOffset == kNoFormationOffset;
-          TeamSpeed[team] = SPEED_WHEEL;
-          TeamMaxSpeed[team] = MPH_LIGHT_SPEED;
+          base::At(TeamSpeed, team) = SPEED_WHEEL;
+          base::At(TeamMaxSpeed, team) = MPH_LIGHT_SPEED;
           break;
         }
       }
@@ -350,9 +351,9 @@ static void Toggle_Formation() {
         maxx = std::max(xc, maxx);
         miny = std::min(yc, miny);
         maxy = std::max(yc, maxy);
-        if (obj->Class->MaxSpeed < TeamMaxSpeed[team]) {
-          TeamMaxSpeed[team] = obj->Class->MaxSpeed;
-          TeamSpeed[team] = obj->Class->Speed;
+        if (obj->Class->MaxSpeed < base::At(TeamMaxSpeed, team)) {
+          base::At(TeamMaxSpeed, team) = obj->Class->MaxSpeed;
+          base::At(TeamSpeed, team) = obj->Class->Speed;
         }
       } else {
         obj->XFormOffset = obj->YFormOffset = kNoFormationOffset;
@@ -372,7 +373,8 @@ static void Toggle_Formation() {
         maxx = std::max(xc, maxx);
         miny = std::min(yc, miny);
         maxy = std::max(yc, maxy);
-        TeamMaxSpeed[team] = std::min(obj->Class->MaxSpeed, TeamMaxSpeed[team]);
+        base::At(TeamMaxSpeed, team) =
+            std::min(obj->Class->MaxSpeed, base::At(TeamMaxSpeed, team));
       } else {
         obj->XFormOffset = obj->YFormOffset = kNoFormationOffset;
       }
@@ -391,7 +393,8 @@ static void Toggle_Formation() {
         maxx = std::max(xc, maxx);
         miny = std::min(yc, miny);
         maxy = std::max(yc, maxy);
-        TeamMaxSpeed[team] = std::min(obj->Class->MaxSpeed, TeamMaxSpeed[team]);
+        base::At(TeamMaxSpeed, team) =
+            std::min(obj->Class->MaxSpeed, base::At(TeamMaxSpeed, team));
       } else {
         obj->XFormOffset = obj->YFormOffset = kNoFormationOffset;
       }
@@ -1975,7 +1978,7 @@ int Load_Interpolated_Palettes(const char* filename, const bool add) {
   } else {
     for (start_palette = 0; start_palette < std::ssize(InterpolatedPalettes);
          start_palette++) {
-      if (!InterpolatedPalettes[start_palette]) {
+      if (!base::At(InterpolatedPalettes, start_palette)) {
         break;
       }
     }
@@ -1993,16 +1996,18 @@ int Load_Interpolated_Palettes(const char* filename, const bool add) {
 
     for (int i = 0; i < num_palettes; i++) {
       // 256 x 256: the blended result for every pair of palette indices.
-      InterpolatedPalettes[i + start_palette] = new unsigned char[65536]();
+      base::At(InterpolatedPalettes, i + start_palette) =
+          new unsigned char[65536]();
       // Only the lower triangle is stored, row y holding y + 1 entries;
       // Rebuild_Interpolated_Palette() mirrors it to fill the rest.
       for (int y = 0; y < 256; y++) {
-        file.Read(InterpolatedPalettes[i + start_palette] +
+        file.Read(base::At(InterpolatedPalettes, i + start_palette) +
                       (static_cast<base::ssize>(y) * 256),
                   y + 1);
       }
 
-      Rebuild_Interpolated_Palette(InterpolatedPalettes[i + start_palette]);
+      Rebuild_Interpolated_Palette(
+          base::At(InterpolatedPalettes, i + start_palette));
     }
 
     PalettesRead = true;
@@ -2215,10 +2220,11 @@ std::unique_ptr<char[]> Get_Radar_Icon(const void* shapefile,
               if (getx < pixel_width && gety < pixel_height) {
                 char pixel = 0;
                 for (int lp = 0; lp < 9; ++lp) {
-                  pixel = *(static_cast<char*>(ptr) +
-                            (static_cast<base::ssize>(gety - off_y[lp]) *
-                             pixel_width) +
-                            getx - off_x[lp]);
+                  pixel =
+                      *(static_cast<char*>(ptr) +
+                        (static_cast<base::ssize>(gety - base::At(off_y, lp)) *
+                         pixel_width) +
+                        getx - base::At(off_x, lp));
 
                   if (pixel == kLtGreen) {
                     pixel = 0;
@@ -2274,12 +2280,12 @@ void CC_Draw_Shape(const void* shapefile, const int shape_num, const int x,
     if (shape_pointer) {
       GraphicViewPortClass draw_window(
           LogicPage->Get_Graphic_Buffer(),
-          WindowList[static_cast<int>(window)][kWindowX] +
+          base::At(WindowList[static_cast<int>(window)], kWindowX) +
               LogicPage->Get_XPos(),
-          WindowList[static_cast<int>(window)][kWindowY] +
+          base::At(WindowList[static_cast<int>(window)], kWindowY) +
               LogicPage->Get_YPos(),
-          WindowList[static_cast<int>(window)][kWindowWidth],
-          WindowList[static_cast<int>(window)][kWindowHeight]);
+          base::At(WindowList[static_cast<int>(window)], kWindowWidth),
+          base::At(WindowList[static_cast<int>(window)], kWindowHeight));
       auto* buffer = static_cast<unsigned char*>(shape_pointer);
 
       UseOldShapeDraw = false;
@@ -2320,7 +2326,8 @@ void CC_Draw_Shape(const void* shapefile, const int shape_num, const int x,
       // cloaked objects side by side do not ripple in lockstep.
       int pred_offset = static_cast<int>(Frame);
 
-      if (x > WindowList[static_cast<int>(window)][kWindowWidth] * 4) {
+      if (x >
+          base::At(WindowList[static_cast<int>(window)], kWindowWidth) * 4) {
         pred_offset = -pred_offset;
       }
 
@@ -2641,8 +2648,8 @@ void Handle_Team(const int team, const int action) {
       int32_t miny = 0x7FFFFFFFL;
       int32_t maxx = 0;
       int32_t maxy = 0;
-      TeamSpeed[team] = SPEED_WHEEL;
-      TeamMaxSpeed[team] = MPH_LIGHT_SPEED;
+      base::At(TeamSpeed, team) = SPEED_WHEEL;
+      base::At(TeamMaxSpeed, team) = MPH_LIGHT_SPEED;
       for (int index = 0; index < Units.Count(); index++) {
         UnitClass* obj = Units.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->House->IsPlayerControl) {
@@ -2658,9 +2665,9 @@ void Handle_Team(const int team, const int action) {
             maxx = std::max(xc, maxx);
             miny = std::min(yc, miny);
             maxy = std::max(yc, maxy);
-            if (obj->Class->MaxSpeed < TeamMaxSpeed[team]) {
-              TeamMaxSpeed[team] = obj->Class->MaxSpeed;
-              TeamSpeed[team] = obj->Class->Speed;
+            if (obj->Class->MaxSpeed < base::At(TeamMaxSpeed, team)) {
+              base::At(TeamMaxSpeed, team) = obj->Class->MaxSpeed;
+              base::At(TeamSpeed, team) = obj->Class->Speed;
             }
           }
         }
@@ -2681,9 +2688,9 @@ void Handle_Team(const int team, const int action) {
             maxx = std::max(xc, maxx);
             miny = std::min(yc, miny);
             maxy = std::max(yc, maxy);
-            if (obj->Class->MaxSpeed < TeamMaxSpeed[team]) {
-              TeamMaxSpeed[team] = obj->Class->MaxSpeed;
-              TeamSpeed[team] = obj->Class->Speed;
+            if (obj->Class->MaxSpeed < base::At(TeamMaxSpeed, team)) {
+              base::At(TeamMaxSpeed, team) = obj->Class->MaxSpeed;
+              base::At(TeamSpeed, team) = obj->Class->Speed;
             }
           }
         }
@@ -2704,8 +2711,8 @@ void Handle_Team(const int team, const int action) {
             maxx = std::max(xc, maxx);
             miny = std::min(yc, miny);
             maxy = std::max(yc, maxy);
-            TeamMaxSpeed[team] =
-                std::min(obj->Class->MaxSpeed, TeamMaxSpeed[team]);
+            base::At(TeamMaxSpeed, team) =
+                std::min(obj->Class->MaxSpeed, base::At(TeamMaxSpeed, team));
           }
         }
       }
@@ -2764,15 +2771,15 @@ void Handle_Team(const int team, const int action) {
 void Handle_View(const int view, const int action) {
   if (static_cast<unsigned>(view) < std::ssize(Scen.Views)) {
     if (action == 0) {
-      Map.Set_Tactical_Position(Coord_Whole(Cell_Coord(
-          static_cast<CELL>(Scen.Views[view] - (MAP_CELL_W * 8) - 10))));
+      Map.Set_Tactical_Position(Coord_Whole(Cell_Coord(static_cast<CELL>(
+          base::At(Scen.Views, view) - (MAP_CELL_W * 8) - 10))));
 
       // Win95 scrolling logic cant handle just jumps in screen position so
       // redraw the lot.
       Map.Flag_To_Redraw(true);
     } else {
-      Scen.Views[view] = static_cast<CELL>(Coord_Cell(Map.TacticalCoord) +
-                                           (MAP_CELL_W * 8) + 10);
+      base::At(Scen.Views, view) = static_cast<CELL>(
+          Coord_Cell(Map.TacticalCoord) + (MAP_CELL_W * 8) + 10);
     }
   }
 }

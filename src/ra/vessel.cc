@@ -81,6 +81,7 @@
 #include <utility>
 
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
 #include "base/types.h"
@@ -389,7 +390,9 @@ int VesselClass::Shape_Number() const {
   **	For eight facing units, adjust the facing number accordingly.
   */
   int shapenum =
-      BodyShape[static_cast<base::ssize>(Dir_To_16(PrimaryFacing)) * 2] / 2;
+      base::At(BodyShape,
+               static_cast<base::ssize>(Dir_To_16(PrimaryFacing)) * 2) /
+      2;
 
   /*
   **	Special case code for transport. The north/south facing is in frame
@@ -473,7 +476,7 @@ void VesselClass::Draw_It(int x, int y, WindowNumberType window) const {
       switch (Class->Type) {
         case VESSEL_CA:
           shapefile = TechnoTypeClass::TurretShapes;
-          shapenum = BodyShape[Dir_To_32(SecondaryFacing)];
+          shapenum = base::At(BodyShape, Dir_To_32(SecondaryFacing));
           Class->Turret_Adjust(turdir, xx, yy);
           Techno_Draw_Object(shapefile, shapenum, xx, yy, window);
           xx = x;
@@ -484,18 +487,18 @@ void VesselClass::Draw_It(int x, int y, WindowNumberType window) const {
 
         case VESSEL_DD:
           shapefile = TechnoTypeClass::SamShapes;
-          shapenum = BodyShape[Dir_To_32(SecondaryFacing)];
+          shapenum = base::At(BodyShape, Dir_To_32(SecondaryFacing));
           Class->Turret_Adjust(turdir, xx, yy);
           break;
 
         case VESSEL_PT:
           shapefile = TechnoTypeClass::MGunShapes;
-          shapenum = BodyShape[Dir_To_32(SecondaryFacing)];
+          shapenum = base::At(BodyShape, Dir_To_32(SecondaryFacing));
           Class->Turret_Adjust(turdir, xx, yy);
           break;
 
         default:
-          shapenum = BodyShape[Dir_To_32(SecondaryFacing)];
+          shapenum = base::At(BodyShape, Dir_To_32(SecondaryFacing));
           Class->Turret_Adjust(turdir, xx, yy);
           break;
       }

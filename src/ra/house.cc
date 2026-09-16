@@ -159,6 +159,7 @@
 
 #include "absl/base/attributes.h"
 #include "absl/log/check.h"
+#include "base/array.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
 #include "base/types.h"
@@ -342,36 +343,46 @@ DiffType HouseClass::Assign_Handicap(DiffType handicap) {
 
   if (Session.Type != GAME_NORMAL) {
     const HouseTypeClass* hptr = &HouseTypeClass::As_Reference(ActLike);
-    FirepowerBias = hptr->FirepowerBias *
-                    Rule.Diff[static_cast<int>(handicap)].FirepowerBias;
-    GroundspeedBias = hptr->GroundspeedBias *
-                      Rule.Diff[static_cast<int>(handicap)].GroundspeedBias *
-                      Rule.GameSpeedBias;
-    AirspeedBias = hptr->AirspeedBias *
-                   Rule.Diff[static_cast<int>(handicap)].AirspeedBias *
-                   Rule.GameSpeedBias;
-    ArmorBias =
-        hptr->ArmorBias * Rule.Diff[static_cast<int>(handicap)].ArmorBias;
-    ROFBias = hptr->ROFBias * Rule.Diff[static_cast<int>(handicap)].ROFBias;
-    CostBias = hptr->CostBias * Rule.Diff[static_cast<int>(handicap)].CostBias;
-    RepairDelay = Rule.Diff[static_cast<int>(handicap)].RepairDelay;
-    BuildDelay = Rule.Diff[static_cast<int>(handicap)].BuildDelay;
-    BuildSpeedBias = hptr->BuildSpeedBias *
-                     Rule.Diff[static_cast<int>(handicap)].BuildSpeedBias *
-                     Rule.GameSpeedBias;
-  } else {
-    FirepowerBias = Rule.Diff[static_cast<int>(handicap)].FirepowerBias;
-    GroundspeedBias = Rule.Diff[static_cast<int>(handicap)].GroundspeedBias *
-                      Rule.GameSpeedBias;
+    FirepowerBias =
+        hptr->FirepowerBias *
+        base::At(Rule.Diff, static_cast<int>(handicap)).FirepowerBias;
+    GroundspeedBias =
+        hptr->GroundspeedBias *
+        base::At(Rule.Diff, static_cast<int>(handicap)).GroundspeedBias *
+        Rule.GameSpeedBias;
     AirspeedBias =
-        Rule.Diff[static_cast<int>(handicap)].AirspeedBias * Rule.GameSpeedBias;
-    ArmorBias = Rule.Diff[static_cast<int>(handicap)].ArmorBias;
-    ROFBias = Rule.Diff[static_cast<int>(handicap)].ROFBias;
-    CostBias = Rule.Diff[static_cast<int>(handicap)].CostBias;
-    RepairDelay = Rule.Diff[static_cast<int>(handicap)].RepairDelay;
-    BuildDelay = Rule.Diff[static_cast<int>(handicap)].BuildDelay;
-    BuildSpeedBias = Rule.Diff[static_cast<int>(handicap)].BuildSpeedBias *
-                     Rule.GameSpeedBias;
+        hptr->AirspeedBias *
+        base::At(Rule.Diff, static_cast<int>(handicap)).AirspeedBias *
+        Rule.GameSpeedBias;
+    ArmorBias = hptr->ArmorBias *
+                base::At(Rule.Diff, static_cast<int>(handicap)).ArmorBias;
+    ROFBias =
+        hptr->ROFBias * base::At(Rule.Diff, static_cast<int>(handicap)).ROFBias;
+    CostBias = hptr->CostBias *
+               base::At(Rule.Diff, static_cast<int>(handicap)).CostBias;
+    RepairDelay = base::At(Rule.Diff, static_cast<int>(handicap)).RepairDelay;
+    BuildDelay = base::At(Rule.Diff, static_cast<int>(handicap)).BuildDelay;
+    BuildSpeedBias =
+        hptr->BuildSpeedBias *
+        base::At(Rule.Diff, static_cast<int>(handicap)).BuildSpeedBias *
+        Rule.GameSpeedBias;
+  } else {
+    FirepowerBias =
+        base::At(Rule.Diff, static_cast<int>(handicap)).FirepowerBias;
+    GroundspeedBias =
+        base::At(Rule.Diff, static_cast<int>(handicap)).GroundspeedBias *
+        Rule.GameSpeedBias;
+    AirspeedBias =
+        base::At(Rule.Diff, static_cast<int>(handicap)).AirspeedBias *
+        Rule.GameSpeedBias;
+    ArmorBias = base::At(Rule.Diff, static_cast<int>(handicap)).ArmorBias;
+    ROFBias = base::At(Rule.Diff, static_cast<int>(handicap)).ROFBias;
+    CostBias = base::At(Rule.Diff, static_cast<int>(handicap)).CostBias;
+    RepairDelay = base::At(Rule.Diff, static_cast<int>(handicap)).RepairDelay;
+    BuildDelay = base::At(Rule.Diff, static_cast<int>(handicap)).BuildDelay;
+    BuildSpeedBias =
+        base::At(Rule.Diff, static_cast<int>(handicap)).BuildSpeedBias *
+        Rule.GameSpeedBias;
   }
 
   return old;
@@ -520,7 +531,7 @@ void HouseClass::Debug_Dump(MonoClass* mono) const {
 
     for (int index = 0; index < std::ssize(Scen.GlobalFlags); index++) {
       mono->Set_Cursor(1 + index, 15);
-      if (Scen.GlobalFlags[index]) {
+      if (base::At(Scen.GlobalFlags, index)) {
         mono->Print("1");
       } else {
         mono->Print("0");
@@ -1257,7 +1268,7 @@ void HouseClass::AI() {
         //	ajw - Found bug - house's civilians are not removed from
         // IQuantity when they die. 	Workaround...
         for (int i = 0; i <= static_cast<int>(INFANTRY_DOG); ++i) {
-          iCount += IQuantity[i];
+          iCount += base::At(IQuantity, i);
         }
         if (!iCount) {
           for (const AircraftType i : magic_enum::enum_values<AircraftType>()) {
@@ -1266,7 +1277,7 @@ void HouseClass::AI() {
           if (!iCount) {
             for (int i = 0; i != kOriginalVesselCount; ++i) {
               if (i != static_cast<int>(VESSEL_SS)) {
-                iCount += VQuantity[i];
+                iCount += base::At(VQuantity, i);
               }
             }
             if (!iCount) {
@@ -2404,7 +2415,7 @@ void HouseClass::Adjust_Threat(int region, int threat) {
   }
 
   for (int lp = 0; lp < 9; lp++) {
-    Regions[region + *val].Adjust_Threat(threat / *div, neg);
+    base::At(Regions, region + *val).Adjust_Threat(threat / *div, neg);
     val++;
     div++;
   }
@@ -3706,7 +3717,7 @@ void HouseClass::Tally_Score() {
     */
     int score_index = -1;
     for (int i = 0; i < Session.NumScores; i++) {
-      if (!stricmp(hptr->IniName, Session.Score[i].Name)) {
+      if (!stricmp(hptr->IniName, base::At(Session.Score, i).Name)) {
         score_index = i;
         break;
       }
@@ -3735,7 +3746,7 @@ void HouseClass::Tally_Score() {
         for (int j = 0; j < Session.NumScores; j++) {
           int count = 0;
           for (int k = Session.NumScores - 1; k >= 0; k--) {
-            if (Session.Score[j].Kills[k] == -1) {
+            if (base::At(base::At(Session.Score, j).Kills, k) == -1) {
               count++;
             } else {
               break;
@@ -3752,9 +3763,9 @@ void HouseClass::Tally_Score() {
       /*
       **	Initialize this new score entry
       */
-      Session.Score[score_index].Wins = 0;
-      port::SafeCopy(Session.Score[score_index].Name, hptr->IniName);
-      for (int& Kill : Session.Score[score_index].Kills) {
+      base::At(Session.Score, score_index).Wins = 0;
+      port::SafeCopy(base::At(Session.Score, score_index).Name, hptr->IniName);
+      for (int& Kill : base::At(Session.Score, score_index).Kills) {
         Kill = -1;
       }
     }
@@ -3763,19 +3774,19 @@ void HouseClass::Tally_Score() {
     **	Init this player's Kills to 0 (-1 means he didn't play this round;
     **	0 means he played but got no kills).
     */
-    Session.Score[score_index].Kills[Session.CurGame] = 0;
+    base::At(base::At(Session.Score, score_index).Kills, Session.CurGame) = 0;
 
     /*
     **	Init this player's color to his last-used color index
     */
-    Session.Score[score_index].Color = hptr->RemapColor;
+    base::At(Session.Score, score_index).Color = hptr->RemapColor;
 
     /*
     **	If this house was undefeated, it must have been the winner.
     ** (If no human houses are undefeated, the computer won.)
     */
     if (!hptr->IsDefeated) {
-      Session.Score[score_index].Wins++;
+      base::At(Session.Score, score_index).Wins++;
       Session.Winner = score_index;
     }
 
@@ -3783,9 +3794,9 @@ void HouseClass::Tally_Score() {
     **	Tally up all kills for this player
     */
     for (const HousesType house2 : magic_enum::enum_values<HousesType>()) {
-      Session.Score[score_index].Kills[Session.CurGame] +=
+      base::At(base::At(Session.Score, score_index).Kills, Session.CurGame) +=
           hptr->UnitsKilled[house2];
-      Session.Score[score_index].Kills[Session.CurGame] +=
+      base::At(base::At(Session.Score, score_index).Kills, Session.CurGame) +=
           hptr->BuildingsKilled[house2];
     }
   }
@@ -4318,7 +4329,8 @@ COORDINATE HouseClass::Find_Build_Location(BuildingClass* building) const {
                                     ZONE_EAST, ZONE_WEST};
   const int start = Random_Pick<int>(0, std::ssize(_zones) - 1);
   for (int zz = 0; zz < std::ssize(_zones); zz++) {
-    const ZoneType tryzone = _zones[(zz + start) % std::ssize(_zones)];
+    const ZoneType tryzone =
+        base::At(_zones, (zz + start) % std::ssize(_zones));
     zcell = Find_Cell_In_Zone(building, tryzone);
     if (zcell) {
       return Cell_Coord(zcell);
@@ -5593,7 +5605,8 @@ int HouseClass::AI_Unit() {
               !tptr->JustAltered)) &&
             team->House == Class->House) {
           for (int subindex = 0; subindex < team->ClassCount; subindex++) {
-            const TechnoTypeClass* memtype = team->Members[subindex].Class;
+            const TechnoTypeClass* memtype =
+                base::At(team->Members, subindex).Class;
             if (memtype->What_Am_I() == RTTI_UNITTYPE) {
               counter[dynamic_cast<const UnitTypeClass*>(memtype)->Type] = 1;
             }
@@ -5612,13 +5625,14 @@ int HouseClass::AI_Unit() {
       if (team != nullptr && team->House == Class->House && team->IsPrebuilt &&
           (!team->IsAutocreate || IsAlerted)) {
         for (int subindex = 0; subindex < team->ClassCount; subindex++) {
-          const TechnoTypeClass* memtype = team->Members[subindex].Class;
+          const TechnoTypeClass* memtype =
+              base::At(team->Members, subindex).Class;
 
           if (memtype->What_Am_I() == RTTI_UNITTYPE) {
             const UnitType subtype =
                 dynamic_cast<const UnitTypeClass*>(memtype)->Type;
-            counter[subtype] =
-                std::max(counter[subtype], team->Members[subindex].Quantity);
+            counter[subtype] = std::max(
+                counter[subtype], base::At(team->Members, subindex).Quantity);
           }
         }
       }
@@ -5652,7 +5666,7 @@ int HouseClass::AI_Unit() {
           bestval = counter[utype];
           bestcount = 0;
         }
-        bestlist[bestcount++] = utype;
+        base::At(bestlist, bestcount++) = utype;
       }
     }
 
@@ -5661,7 +5675,7 @@ int HouseClass::AI_Unit() {
     *class.
     */
     if (bestcount) {
-      BuildUnit = bestlist[Random_Pick(0, bestcount - 1)];
+      BuildUnit = base::At(bestlist, Random_Pick(0, bestcount - 1));
     }
   }
 
@@ -5736,9 +5750,10 @@ int HouseClass::AI_Vessel() {
               !tptr->JustAltered)) &&
             team->House == Class->House) {
           for (int subindex = 0; subindex < team->ClassCount; subindex++) {
-            if (team->Members[subindex].Class->What_Am_I() == RTTI_VESSELTYPE) {
+            if (base::At(team->Members, subindex).Class->What_Am_I() ==
+                RTTI_VESSELTYPE) {
               counter[dynamic_cast<const VesselTypeClass*>(
-                          team->Members[subindex].Class)
+                          base::At(team->Members, subindex).Class)
                           ->Type] = 1;
             }
           }
@@ -5756,12 +5771,14 @@ int HouseClass::AI_Vessel() {
       if (team && (team->House == Class->House && team->IsPrebuilt &&
                    (!team->IsAutocreate || IsAlerted))) {
         for (int subindex = 0; subindex < team->ClassCount; subindex++) {
-          if (team->Members[subindex].Class->What_Am_I() == RTTI_VESSELTYPE) {
-            const VesselType subtype = dynamic_cast<const VesselTypeClass*>(
-                                           team->Members[subindex].Class)
-                                           ->Type;
-            counter[subtype] =
-                std::max(counter[subtype], team->Members[subindex].Quantity);
+          if (base::At(team->Members, subindex).Class->What_Am_I() ==
+              RTTI_VESSELTYPE) {
+            const VesselType subtype =
+                dynamic_cast<const VesselTypeClass*>(
+                    base::At(team->Members, subindex).Class)
+                    ->Type;
+            counter[subtype] = std::max(
+                counter[subtype], base::At(team->Members, subindex).Quantity);
           }
         }
       }
@@ -5795,7 +5812,7 @@ int HouseClass::AI_Vessel() {
           bestval = counter[utype];
           bestcount = 0;
         }
-        bestlist[bestcount++] = utype;
+        base::At(bestlist, bestcount++) = utype;
       }
     }
 
@@ -5804,7 +5821,7 @@ int HouseClass::AI_Vessel() {
     *class.
     */
     if (bestcount) {
-      BuildVessel = bestlist[Random_Pick(0, bestcount - 1)];
+      BuildVessel = base::At(bestlist, Random_Pick(0, bestcount - 1));
     }
   }
 
@@ -5857,12 +5874,13 @@ int HouseClass::AI_Infantry() {
               !tptr->JustAltered)) &&
             team->House == Class->House) {
           for (int subindex = 0; subindex < team->ClassCount; subindex++) {
-            if (team->Members[subindex].Class->What_Am_I() ==
+            if (base::At(team->Members, subindex).Class->What_Am_I() ==
                 RTTI_INFANTRYTYPE) {
               counter[dynamic_cast<const InfantryTypeClass*>(
-                          team->Members[subindex].Class)
-                          ->Type] += team->Members[subindex].Quantity +
-                                     (team->IsReinforcable ? 1 : 0);
+                          base::At(team->Members, subindex).Class)
+                          ->Type] +=
+                  base::At(team->Members, subindex).Quantity +
+                  (team->IsReinforcable ? 1 : 0);
             }
           }
         }
@@ -5880,14 +5898,16 @@ int HouseClass::AI_Infantry() {
           (team->House == Class->House && team->IsPrebuilt &&
            (!team->IsAutocreate || IsAlerted))) {
         for (int subindex = 0; subindex < team->ClassCount; subindex++) {
-          if (team->Members[subindex].Class->What_Am_I() == RTTI_INFANTRYTYPE) {
-            const InfantryType subtype = dynamic_cast<const InfantryTypeClass*>(
-                                             team->Members[subindex].Class)
-                                             ->Type;
+          if (base::At(team->Members, subindex).Class->What_Am_I() ==
+              RTTI_INFANTRYTYPE) {
+            const InfantryType subtype =
+                dynamic_cast<const InfantryTypeClass*>(
+                    base::At(team->Members, subindex).Class)
+                    ->Type;
             //									counter[subtype]
             //= 1;
-            counter[subtype] =
-                std::max(counter[subtype], team->Members[subindex].Quantity);
+            counter[subtype] = std::max(
+                counter[subtype], base::At(team->Members, subindex).Quantity);
             counter[subtype] = std::min(counter[subtype], 5);
           }
         }
@@ -5924,7 +5944,7 @@ int HouseClass::AI_Infantry() {
           bestval = counter[utype];
           bestcount = 0;
         }
-        bestlist[bestcount++] = utype;
+        base::At(bestlist, bestcount++) = utype;
       }
     }
 
@@ -5934,7 +5954,7 @@ int HouseClass::AI_Infantry() {
     */
     if (bestcount) {
       const int pick = Random_Pick(0, bestcount - 1);
-      BuildInfantry = bestlist[pick];
+      BuildInfantry = base::At(bestlist, pick);
     }
   }
 
@@ -5958,55 +5978,56 @@ int HouseClass::AI_Infantry() {
     for (const InfantryType index : magic_enum::enum_values<InfantryType>()) {
       if (Can_Build(&InfantryTypeClass::As_Reference(index), ActLike) &&
           InfantryTypeClass::As_Reference(index).Level <= Control.TechLevel) {
-        typetrack[count].Value = 0;
+        base::At(typetrack, count).Value = 0;
         // ajw 9/28/98 This looks like a potential bug.
         // It is prob. for save game format compatibility.
         int clipindex = static_cast<int>(index);
         if (clipindex >= kOriginalInfantryCount) {
           clipindex -= kOriginalInfantryCount;
         }
-        if ((enemy != nullptr &&
-             enemy->IQuantity[clipindex] > IQuantity[clipindex]) ||
+        if ((enemy != nullptr && base::At(enemy->IQuantity, clipindex) >
+                                     base::At(IQuantity, clipindex)) ||
             Available_Money() > Rule.InfantryReserve ||
             CurInfantry < CurBuildings * Rule.InfantryBaseMult) {
           switch (index) {
             case INFANTRY_E1:
-              typetrack[count].Value = 3;
+              base::At(typetrack, count).Value = 3;
               break;
 
             case INFANTRY_E2:
-              typetrack[count].Value = 5;
+              base::At(typetrack, count).Value = 5;
               break;
 
             case INFANTRY_E3:
-              typetrack[count].Value = 2;
+              base::At(typetrack, count).Value = 2;
               break;
 
             case INFANTRY_E4:
-              typetrack[count].Value = 5;
+              base::At(typetrack, count).Value = 5;
               break;
 
             case INFANTRY_RENOVATOR:
               if (CurInfantry > 5) {
-                typetrack[count].Value =
-                    1 - std::max(IQuantity[static_cast<int>(index)], 0);
+                base::At(typetrack, count).Value =
+                    1 -
+                    std::max(base::At(IQuantity, static_cast<int>(index)), 0);
               }
               break;
 
             case INFANTRY_TANYA:
-              typetrack[count].Value =
-                  1 - std::max(IQuantity[static_cast<int>(index)], 0);
+              base::At(typetrack, count).Value =
+                  1 - std::max(base::At(IQuantity, static_cast<int>(index)), 0);
               break;
 
             default:
-              typetrack[count].Value = 0;
+              base::At(typetrack, count).Value = 0;
               break;
           }
         }
 
-        if (typetrack[count].Value > 0) {
-          typetrack[count].Type = index;
-          total += typetrack[count].Value;
+        if (base::At(typetrack, count).Value > 0) {
+          base::At(typetrack, count).Type = index;
+          total += base::At(typetrack, count).Value;
           count++;
         }
       }
@@ -6022,11 +6043,11 @@ int HouseClass::AI_Infantry() {
     if (count > 0) {
       int pick = Random_Pick(0, total - 1);
       for (int index = 0; index < count; index++) {
-        if (pick < typetrack[index].Value) {
-          BuildInfantry = typetrack[index].Type;
+        if (pick < base::At(typetrack, index).Value) {
+          BuildInfantry = base::At(typetrack, index).Type;
           break;
         }
-        pick -= typetrack[index].Value;
+        pick -= base::At(typetrack, index).Value;
       }
     }
   }
@@ -6199,7 +6220,7 @@ void HouseClass::Tracking_Remove(const TechnoClass* techno) {
         if (type >= kOriginalInfantryCount) {
           type -= kOriginalInfantryCount;
         }
-        IQuantity[type]--;
+        base::At(IQuantity, type)--;
       }
       break;
 
@@ -6210,7 +6231,7 @@ void HouseClass::Tracking_Remove(const TechnoClass* techno) {
       if (type >= kOriginalUnitCount) {
         type -= kOriginalUnitCount;
       }
-      UQuantity[type]--;
+      base::At(UQuantity, type)--;
       break;
 
     case RTTI_VESSEL:
@@ -6220,7 +6241,7 @@ void HouseClass::Tracking_Remove(const TechnoClass* techno) {
       if (type >= kOriginalVesselCount) {
         type -= kOriginalVesselCount;
       }
-      VQuantity[type]--;
+      base::At(VQuantity, type)--;
       break;
 
     default:
@@ -6286,7 +6307,7 @@ void HouseClass::Tracking_Add(const TechnoClass* techno) {
         if (quant >= kOriginalInfantryCount) {
           quant -= kOriginalInfantryCount;
         }
-        IQuantity[quant]++;
+        base::At(IQuantity, quant)++;
         if (!dynamic_cast<const InfantryTypeClass&>(techno->Class_Of())
                  .IsCivilian &&
             Session.Type == GAME_INTERNET) {
@@ -6303,7 +6324,7 @@ void HouseClass::Tracking_Add(const TechnoClass* techno) {
       if (quant >= kOriginalUnitCount) {
         quant -= kOriginalUnitCount;
       }
-      UQuantity[quant]++;
+      base::At(UQuantity, quant)++;
       UScan |= ScanBit(static_cast<int>(unit));
       if (Session.Type == GAME_INTERNET) {
         UnitTotals->Increment_Unit_Total(techno->Class_Of().ID);
@@ -6317,7 +6338,7 @@ void HouseClass::Tracking_Add(const TechnoClass* techno) {
       if (quant >= kOriginalVesselCount) {
         quant -= kOriginalVesselCount;
       }
-      VQuantity[quant]++;
+      base::At(VQuantity, quant)++;
       VScan |= ScanBit(static_cast<int>(vessel));
       if (Session.Type == GAME_INTERNET) {
         VesselTotals->Increment_Unit_Total(techno->Class_Of().ID);

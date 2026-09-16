@@ -62,6 +62,7 @@
 #include <cstddef>
 #include <cstdint>
 
+#include "base/array.h"
 #include "port/ex_string.h"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
@@ -311,7 +312,7 @@ const int16_t* BulletClass::Occupy_List(bool /*placement*/) const {
     const CELL cell1 = Coord_Cell(Coord);
 
     while (ptr[index] != kRefreshEol) {
-      _list[index] = ptr[index];
+      base::At(_list, index) = ptr[index];
       index++;
     }
 
@@ -320,10 +321,10 @@ const int16_t* BulletClass::Occupy_List(bool /*placement*/) const {
     const CELL cell2 = Coord_Cell(coord);
     ptr = Coord_Spillage_List(coord, 5);
     while (*ptr != kRefreshEol) {
-      _list[index++] = static_cast<int16_t>(*ptr + (cell2 - cell1));
+      base::At(_list, index++) = static_cast<int16_t>(*ptr + (cell2 - cell1));
       ptr++;
     }
-    _list[index] = kRefreshEol;
+    base::At(_list, index) = kRefreshEol;
     return _list;
   }
 
@@ -514,7 +515,7 @@ int BulletClass::Shape_Number() const {
   int shapenum = 0;
 
   if (!Class->IsFaceless) {
-    shapenum = UnitClass::BodyShape[Dir_To_32(PrimaryFacing)];
+    shapenum = base::At(UnitClass::BodyShape, Dir_To_32(PrimaryFacing));
   }
 
   /*

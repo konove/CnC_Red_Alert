@@ -137,6 +137,7 @@
 #include <cstdint>
 #include <utility>
 
+#include "base/array.h"
 #include "base/numeric.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
@@ -869,11 +870,12 @@ void TechnoClass::Draw_It(int x, int y, WindowNumberType window) {
   if (IsSelected || Special.IsBarOn) {
     GraphicViewPortClass draw_window(
         LogicPage->Get_Graphic_Buffer(),
-        (WindowList[static_cast<int>(window)][kWindowX] * 8) +
+        (base::At(WindowList[static_cast<int>(window)], kWindowX) * 8) +
             LogicPage->Get_XPos(),
-        WindowList[static_cast<int>(window)][kWindowY] + LogicPage->Get_YPos(),
-        WindowList[static_cast<int>(window)][kWindowWidth] * 8,
-        WindowList[static_cast<int>(window)][kWindowHeight]);
+        base::At(WindowList[static_cast<int>(window)], kWindowY) +
+            LogicPage->Get_YPos(),
+        base::At(WindowList[static_cast<int>(window)], kWindowWidth) * 8,
+        base::At(WindowList[static_cast<int>(window)], kWindowHeight));
 
     /*
     **	The infantry select box should be a bit higher than normal.
@@ -3397,8 +3399,8 @@ void TechnoClass::Base_Is_Attacked(TechnoClass* enemy) {
       }
 
       if (count < 6) {
-        defender[count] = static_cast<FootClass*>(infantry);
-        value[count] = threat;
+        base::At(defender, count) = static_cast<FootClass*>(infantry);
+        base::At(value, count) = threat;
         count++;
         continue;
       }
@@ -3407,12 +3409,12 @@ void TechnoClass::Base_Is_Attacked(TechnoClass* enemy) {
         int newweakest = threat;
 
         for (int lp = 0; lp < count; lp++) {
-          if (value[lp] == weakest) {
-            value[lp] = threat;
-            defender[lp] = static_cast<FootClass*>(infantry);
+          if (base::At(value, lp) == weakest) {
+            base::At(value, lp) = threat;
+            base::At(defender, lp) = static_cast<FootClass*>(infantry);
             continue;
           }
-          newweakest = std::min(value[lp], newweakest);
+          newweakest = std::min(base::At(value, lp), newweakest);
         }
         weakest = newweakest;
       }
@@ -3458,8 +3460,8 @@ void TechnoClass::Base_Is_Attacked(TechnoClass* enemy) {
       }
 
       if (count < 6) {
-        defender[count] = static_cast<FootClass*>(unit);
-        value[count] = threat;
+        base::At(defender, count) = static_cast<FootClass*>(unit);
+        base::At(value, count) = threat;
         count++;
         continue;
       }
@@ -3467,12 +3469,12 @@ void TechnoClass::Base_Is_Attacked(TechnoClass* enemy) {
         int newweakest = threat;
 
         for (int lp = 0; lp < count; lp++) {
-          if (value[lp] == weakest) {
-            value[lp] = threat;
-            defender[lp] = static_cast<FootClass*>(unit);
+          if (base::At(value, lp) == weakest) {
+            base::At(value, lp) = threat;
+            base::At(defender, lp) = static_cast<FootClass*>(unit);
             continue;
           }
-          newweakest = std::min(value[lp], newweakest);
+          newweakest = std::min(base::At(value, lp), newweakest);
         }
         weakest = newweakest;
       }
@@ -3486,20 +3488,20 @@ void TechnoClass::Base_Is_Attacked(TechnoClass* enemy) {
     */
     for (int lp = 0; lp < count - 1; lp++) {
       for (int lp2 = lp + 1; lp2 < count; lp2++) {
-        if (value[lp] < value[lp2]) {
-          std::swap(value[lp], value[lp2]);
+        if (base::At(value, lp) < base::At(value, lp2)) {
+          std::swap(base::At(value, lp), base::At(value, lp2));
 
-          FootClass* temp = defender[lp];
-          defender[lp] = defender[lp2];
-          defender[lp2] = temp;
+          FootClass* temp = base::At(defender, lp);
+          base::At(defender, lp) = base::At(defender, lp2);
+          base::At(defender, lp2) = temp;
         }
       }
     }
 
     for (int lp = 0; lp < count; lp++) {
-      defender[lp]->Assign_Mission(MISSION_RESCUE);
-      defender[lp]->Assign_Target(enemy->As_Target());
-      risktotal += defender[lp]->Risk();
+      base::At(defender, lp)->Assign_Mission(MISSION_RESCUE);
+      base::At(defender, lp)->Assign_Target(enemy->As_Target());
+      risktotal += base::At(defender, lp)->Risk();
       if (risktotal > desired) {
         break;
       }

@@ -47,6 +47,7 @@
 #include <cstring>
 #include <string>
 
+#include "base/array.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
@@ -627,7 +628,7 @@ bool Send_Remote_File(const char* file_name, int gametype) {
     for (int i = 0; i < Session.RequestCount; i++) {
       Ipx.Send_Global_Message(
           &net_file_info, sizeof(GlobalPacketType), 1,
-          &Session.Players[Session.ScenarioRequests[i]]->Address);
+          &Session.Players[base::At(Session.ScenarioRequests, i)]->Address);
     }
 
     while (Ipx.Global_Num_Send() > 0 && response_timer.HasTimeLeft()) {
@@ -752,7 +753,8 @@ bool Send_Remote_File(const char* file_name, int gametype) {
             for (int i = 0; i < Session.RequestCount; i++) {
               Ipx.Send_Global_Message(
                   &send_packet, sizeof(send_packet), 1,
-                  &Session.Players[Session.ScenarioRequests[i]]->Address);
+                  &Session.Players[base::At(Session.ScenarioRequests, i)]
+                       ->Address);
             }
           }
 

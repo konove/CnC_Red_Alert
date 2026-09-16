@@ -61,6 +61,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/array.h"
 
 // extern void output(short port, short data);
 // #pragma aux output parm [dx] [ax] =		\
@@ -106,8 +107,8 @@ MonoClass::MonoClass() {
 
   X = Y = 0;
   for (index = 0; index < kMaxMonoPages; index++) {
-    if (!PageUsage[index]) {
-      PageUsage[index] = this;
+    if (!base::At(PageUsage, index)) {
+      base::At(PageUsage, index) = this;
       Page = index;
       break;
     }
@@ -132,7 +133,7 @@ MonoClass::MonoClass() {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-MonoClass::~MonoClass() { PageUsage[Page] = nullptr; }
+MonoClass::~MonoClass() { base::At(PageUsage, Page) = nullptr; }
 
 /***********************************************************************************************
  * MonoClass::Draw_Box -- Draws a box using the IBM linedraw characters. *
@@ -173,10 +174,10 @@ void MonoClass::Draw_Box(int x, int y, int w, int h, char attrib,
   **	Draw the horizontal lines.
   */
   for (int xpos = 0; xpos < w - 2; xpos++) {
-    cell.Character = CharData[static_cast<int>(thick)].TopEdge;
+    cell.Character = base::At(CharData, static_cast<int>(thick)).TopEdge;
     Store_Cell(cell, x + xpos + 1, y);
     //		MonoSegment.Copy_Word_To(*(short*)&cell, Offset(x+xpos+1, y));
-    cell.Character = CharData[static_cast<int>(thick)].BottomEdge;
+    cell.Character = base::At(CharData, static_cast<int>(thick)).BottomEdge;
     Store_Cell(cell, x + xpos + 1, y + h - 1);
     //		MonoSegment.Copy_Word_To(*(short*)&cell, Offset(x+xpos+1,
     // y+h-1));
@@ -186,10 +187,10 @@ void MonoClass::Draw_Box(int x, int y, int w, int h, char attrib,
   **	Draw the vertical lines.
   */
   for (int ypos = 0; ypos < h - 2; ypos++) {
-    cell.Character = CharData[static_cast<int>(thick)].LeftEdge;
+    cell.Character = base::At(CharData, static_cast<int>(thick)).LeftEdge;
     Store_Cell(cell, x, y + ypos + 1);
     //		MonoSegment.Copy_Word_To(*(short*)&cell, Offset(x, y+ypos+1));
-    cell.Character = CharData[static_cast<int>(thick)].RightEdge;
+    cell.Character = base::At(CharData, static_cast<int>(thick)).RightEdge;
     Store_Cell(cell, x + w - 1, y + ypos + 1);
     //		MonoSegment.Copy_Word_To(*(short*)&cell, Offset(x+w-1,
     // y+ypos+1));
@@ -199,16 +200,16 @@ void MonoClass::Draw_Box(int x, int y, int w, int h, char attrib,
   **	Draw the four corners.
   */
   if (w > 1 && h > 1) {
-    cell.Character = CharData[static_cast<int>(thick)].UpperLeft;
+    cell.Character = base::At(CharData, static_cast<int>(thick)).UpperLeft;
     Store_Cell(cell, x, y);
     //		MonoSegment.Copy_Word_To(*(short*)&cell, Offset(x, y));
-    cell.Character = CharData[static_cast<int>(thick)].UpperRight;
+    cell.Character = base::At(CharData, static_cast<int>(thick)).UpperRight;
     Store_Cell(cell, x + w - 1, y);
     //		MonoSegment.Copy_Word_To(*(short*)&cell, Offset(x+w-1, y));
-    cell.Character = CharData[static_cast<int>(thick)].BottomRight;
+    cell.Character = base::At(CharData, static_cast<int>(thick)).BottomRight;
     Store_Cell(cell, x + w - 1, y + h - 1);
     //		MonoSegment.Copy_Word_To(*(short*)&cell, Offset(x+w-1, y+h-1));
-    cell.Character = CharData[static_cast<int>(thick)].BottomLeft;
+    cell.Character = base::At(CharData, static_cast<int>(thick)).BottomLeft;
     Store_Cell(cell, x, y + h - 1);
     //		MonoSegment.Copy_Word_To(*(short*)&cell, Offset(x, y+h-1));
   }
@@ -580,7 +581,7 @@ void MonoClass::View() {
     //		DOSSegmentClass::Copy(MonoSegment, Offset(0, 0), MonoSegment, 0,
     // kSizeOfPage);
   }
-  PageUsage[Page] = displace;
+  base::At(PageUsage, Page) = displace;
   PageUsage[0] = this;
   Page = 0;
 

@@ -51,6 +51,7 @@
 
 #include "absl/log/log.h"
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "base/seek_origin.h"
 #include "base/types.h"
 #include "magic_enum/magic_enum.hpp"
@@ -486,7 +487,7 @@ bool Save_Game(int id, const char* descr, bool /*unused*/) {
   memset(descr_buf, '\0', sizeof(descr_buf));
   absl::SNPrintF(descr_buf, sizeof(descr_buf), "%s\r\n",
                  descr);                  // put CR-LF after text
-  descr_buf[strlen(descr_buf) + 1] = 26;  // put CTRL-Z after nullptr
+  base::At(descr_buf, strlen(descr_buf) + 1) = 26;  // put CTRL-Z after nullptr
   fpipe.Write(std::as_bytes(std::span(descr_buf)));
 
   /*
@@ -1276,7 +1277,7 @@ bool Get_Savefile_Info(int id, char* buf, size_t buf_size, unsigned* scenp,
     return false;
   }
 
-  descr_buf[strlen(descr_buf) - 2] = '\0';  // trim off CR/LF
+  base::At(descr_buf, strlen(descr_buf) - 2) = '\0';  // trim off CR/LF
   port::SafeCopy(buf, descr_buf, buf_size);
 
   ArchiveReader header(straw);

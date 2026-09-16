@@ -119,6 +119,7 @@
 #include <iterator>
 
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "base/enum_array.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/tokenizer.h"
@@ -210,8 +211,8 @@ static void Recoil_Adjust(DirType dir, int& x, int& y) {
                    {1, 1},   {0, 1},   {0, 1}};
 
   const int index = Dir_To_32(dir);
-  x += _adjust[index].X;
-  y += _adjust[index].Y;
+  x += base::At(_adjust, index).X;
+  y += base::At(_adjust, index).Y;
 }
 
 /***********************************************************************************************
@@ -1907,7 +1908,7 @@ int UnitClass::Shape_Number() const {
     /*
     **	The starting frame is based on the facing of the unit.
     */
-    shapenum = ((BodyShape[facing] + 2) / 4) % 8;
+    shapenum = ((base::At(BodyShape, facing) + 2) / 4) % 8;
 
     /*
     **	If the unit is driving, then it has an animation adjustment to the frame
@@ -1935,10 +1936,10 @@ int UnitClass::Shape_Number() const {
       if (stage >= std::ssize(UnitTypeClass::Harvester_Load_List)) {
         stage = std::ssize(UnitTypeClass::Harvester_Load_List) - 1;
       }
-      shapenum =
-          32 +
-          ((BodyShape[facing] + 2) / 4 * UnitTypeClass::Harvester_Load_Count) +
-          UnitTypeClass::Harvester_Load_List[stage];
+      shapenum = 32 +
+                 ((base::At(BodyShape, facing) + 2) / 4 *
+                  UnitTypeClass::Harvester_Load_Count) +
+                 base::At(UnitTypeClass::Harvester_Load_List, stage);
     } else {
       /*
       ** If the harvester's dumping a load of ore, show that animation
@@ -1949,15 +1950,15 @@ int UnitClass::Shape_Number() const {
           if (stage >= 8) {
             stage = 7;
           }
-          shapenum = 32 + stage + (BodyShape[facing] / 4 * 8);
+          shapenum = 32 + stage + (base::At(BodyShape, facing) / 4 * 8);
         } else {
           if (stage >= std::ssize(UnitTypeClass::Harvester_Dump_List)) {
             stage = std::ssize(UnitTypeClass::Harvester_Dump_List) - 1;
           }
-          shapenum = UnitTypeClass::Harvester_Dump_List[stage] + 96;
+          shapenum = base::At(UnitTypeClass::Harvester_Dump_List, stage) + 96;
         }
       } else {
-        shapenum = BodyShape[facing];
+        shapenum = base::At(BodyShape, facing);
 
         if (Class->IsAnimating) {
           shapenum = Fetch_Stage();
@@ -2085,7 +2086,7 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) const {
       **	Determine which turret shape to use. This depends on if there
       **	is any firing animation in progress.
       */
-      shapenum = BodyShape[tfacing] + 32;
+      shapenum = base::At(BodyShape, tfacing) + 32;
       if (*this == UNIT_PHASE) {
         shapenum += 6;
       }
@@ -3567,8 +3568,8 @@ void UnitClass::Exit_Repair() {
       XYCELL(0, 2),  XYCELL(-1, 1), XYCELL(-2, 0), XYCELL(-1, -1)};
 
   CELL cell = static_cast<CELL>(
-      Coord_Cell(Coord) +
-      ExitRepair[static_cast<int>(Dir_Facing(PrimaryFacing.Current()))]);
+      Coord_Cell(Coord) + base::At(ExitRepair, static_cast<int>(Dir_Facing(
+                                                   PrimaryFacing.Current()))));
   if (Can_Enter_Cell(cell) == MOVE_OK) {
     found = true;
   }
@@ -4869,7 +4870,8 @@ void UnitClass::Shroud_Regen() {
       centery = Cell_Y(ShroudCenter);
       for (int index = 30; index >= 0 && ShroudBits; index--) {
         if (ShroudBits & 1) {
-          trycell = XY_Cell(centerx + _xtab[index], centery + _ytab[index]);
+          trycell = XY_Cell(centerx + base::At(_xtab, index),
+                            centery + base::At(_ytab, index));
           Map.UnJam_Cell(trycell, House);
           Map.Map_Cell(trycell, PlayerPtr);
         }
@@ -4885,7 +4887,8 @@ void UnitClass::Shroud_Regen() {
       centery = Cell_Y(ShroudCenter);
       for (int index = 0; index < 31; index++) {
         ShroudBits <<= 1;
-        trycell = XY_Cell(centerx + _xtab[index], centery + _ytab[index]);
+        trycell = XY_Cell(centerx + base::At(_xtab, index),
+                          centery + base::At(_ytab, index));
         if (Map[trycell].IsMapped) {
           Map.Jam_Cell(trycell, House);
           ShroudBits |= 1;

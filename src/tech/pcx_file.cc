@@ -40,6 +40,7 @@
 #include <cstdint>
 #include <utility>
 
+#include "base/array.h"
 #include "base/types.h"
 #include "sdllib/file.h"
 #include "sdllib/file_access.h"
@@ -129,7 +130,7 @@ void Write_Pcx_ScanLine(int file_handle, int scansize, const char* ptr) {
 
   const auto write_char = [&](unsigned char x) {
     *file_ptr++ = x;
-    if (file_ptr >= &pool[kPoolSize]) {
+    if (file_ptr >= base::Suffix(pool, kPoolSize).data()) {
       WriteFileHandle(file_handle, pool, kPoolSize);
       file_ptr = pool;
     }

@@ -69,6 +69,7 @@
 #include <cstring>
 #include <iterator>
 
+#include "base/array.h"
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/building.h"
@@ -118,7 +119,7 @@ void DriveClass::Response_Select() {
   static const VocType _response[] = {VOC_VEHIC,  VOC_REPORT, VOC_YESSIR,
                                       VOC_YESSIR, VOC_YESSIR, VOC_AWAIT};
   const VocType response =
-      _response[Sim_Random_Pick<int>(0, std::ssize(_response) - 1)];
+      base::At(_response, Sim_Random_Pick<int>(0, std::ssize(_response) - 1));
   if (AllowVoice) {
     Sound_Effect(response, fixed(1), -(ID + 1));
   }
@@ -146,7 +147,7 @@ void DriveClass::Response_Move() {
       VOC_AFFIRM,
   };
   const VocType response =
-      _response[Sim_Random_Pick<int>(0, std::ssize(_response) - 1)];
+      base::At(_response, Sim_Random_Pick<int>(0, std::ssize(_response) - 1));
   if (AllowVoice) {
     Sound_Effect(response, fixed(1), -(ID + 1));
   }
@@ -171,7 +172,7 @@ void DriveClass::Response_Attack() {
 
   static const VocType _response[] = {VOC_AFFIRM, VOC_ACKNOWL};
   const VocType response =
-      _response[Sim_Random_Pick<int>(0, std::ssize(_response) - 1)];
+      base::At(_response, Sim_Random_Pick<int>(0, std::ssize(_response) - 1));
   if (AllowVoice) {
     Sound_Effect(response, fixed(1), -(ID + 1));
   }
@@ -487,7 +488,7 @@ COORDINATE DriveClass::Smooth_Turn(COORDINATE adj, DirType& dir) {
   assert(IsActive);
 
   DirType workdir = dir;
-  const TrackControlType flags = TrackControl[TrackNumber].Flag;
+  const TrackControlType flags = base::At(TrackControl, TrackNumber).Flag;
 
   int x = Coord_X(adj);
   int y = Coord_Y(adj);
@@ -640,15 +641,15 @@ bool DriveClass::While_Moving() {
   if (actual > PIXEL_LEPTON_W) {
     int tracknum = 0;  // The track number being processed.
 
-    const TurnTrackType* track =
-        &TrackControl[TrackNumber];  // Track control pointer.
+    const TurnTrackType* track = base::Suffix(TrackControl, TrackNumber)
+                                     .data();  // Track control pointer.
     if (IsOnShortTrack) {
       tracknum = track->StartTrack;
     } else {
       tracknum = track->Track;
     }
-    const TrackType* ptr =
-        RawTracks[tracknum - 1].Track;    // Pointer to coord offset values.
+    const TrackType* ptr = base::At(RawTracks, tracknum - 1)
+                               .Track;    // Pointer to coord offset values.
     const FacingType nextface = Path[0];  // Next facing queued in path.
 
     /*
@@ -680,7 +681,8 @@ bool DriveClass::While_Moving() {
         /*
         **	See if "per cell" processing is necessary.
         */
-        if (TrackIndex && RawTracks[tracknum - 1].Cell == TrackIndex) {
+        if (TrackIndex &&
+            base::At(RawTracks, tracknum - 1).Cell == TrackIndex) {
           Mark(MARK_DOWN);
           Per_Cell_Process(PCP_DURING);
           if (!IsActive) {
@@ -694,14 +696,17 @@ bool DriveClass::While_Moving() {
         **	do so.
         */
         if (/**this != UNIT_GUNBOAT &&*/ nextface != FACING_NONE && adj &&
-            RawTracks[tracknum - 1].Jump == TrackIndex && TrackIndex) {
+            base::At(RawTracks, tracknum - 1).Jump == TrackIndex &&
+            TrackIndex) {
           const int tnum =
               (static_cast<int>(Dir_Facing(track->Facing)) *
                static_cast<int>(magic_enum::enum_count<FacingType>())) +
               static_cast<int>(nextface);
           const TurnTrackType* newtrack =
-              &TrackControl[tnum];  // Proposed jump-to track.
-          if (newtrack->Track && RawTracks[newtrack->Track - 1].Entry) {
+              base::Suffix(TrackControl, tnum)
+                  .data();  // Proposed jump-to track.
+          if (newtrack->Track &&
+              base::At(RawTracks, newtrack->Track - 1).Entry) {
             COORDINATE c = Head_To_Coord();
             const int oldspeed = Speed;
 
@@ -714,9 +719,9 @@ bool DriveClass::While_Moving() {
                 track = newtrack;
 
                 tracknum = track->Track;
-                TrackIndex =
-                    RawTracks[tracknum - 1].Entry - 1;  // Anticipate increment.
-                ptr = RawTracks[tracknum - 1].Track;
+                TrackIndex = base::At(RawTracks, tracknum - 1).Entry -
+                             1;  // Anticipate increment.
+                ptr = base::At(RawTracks, tracknum - 1).Track;
                 adj = false;
 
                 Stop_Driver();
@@ -875,7 +880,7 @@ bool DriveClass::Start_Of_Move() {
        Is_Target_Infantry(NavCom))) {
     const int dist = Lepton_To_Cell(static_cast<LEPTON>(Distance(NavCom)));
     if (dist < std::ssize(Path)) {
-      Path[dist] = FACING_NONE;
+      base::At(Path, dist) = FACING_NONE;
       facing = Path[0];  // Maybe needed.
     }
   }
@@ -1143,12 +1148,12 @@ bool DriveClass::Start_Of_Move() {
     TrackNumber = (static_cast<int>(facing) *
                    static_cast<int>(magic_enum::enum_count<FacingType>())) +
                   static_cast<int>(nextface);
-    if (TrackControl[TrackNumber].Track == 0) {
+    if (base::At(TrackControl, TrackNumber).Track == 0) {
       Path[0] = FACING_NONE;
       TrackNumber = -1;
       return true;
     }
-    if (base::Any(TrackControl[TrackNumber].Flag & F_D)) {
+    if (base::Any(base::At(TrackControl, TrackNumber).Flag & F_D)) {
       /*
       **	If the middle cell of a two cell track contains a crate,
       **	the check for goodies before movement starts.
@@ -1399,10 +1404,10 @@ void DriveClass::Mark_Track(COORDINATE headto, MarkType type) {
       ** If we have not passed the per cell process point we need
       ** to deal with it.
       */
-      const int tracknum = TrackControl[TrackNumber].Track;
+      const int tracknum = base::At(TrackControl, TrackNumber).Track;
       if (tracknum) {
-        const TrackType* ptr = RawTracks[tracknum - 1].Track;
-        const int cellidx = RawTracks[tracknum - 1].Cell;
+        const TrackType* ptr = base::At(RawTracks, tracknum - 1).Track;
+        const int cellidx = base::At(RawTracks, tracknum - 1).Cell;
         if (cellidx > -1) {
           DirType dir = ptr[cellidx].Facing;
 

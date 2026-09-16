@@ -52,6 +52,7 @@
 #include <cstdint>
 #include <filesystem>
 
+#include "base/array.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
 #include "port/ex_string.h"
@@ -1313,7 +1314,7 @@ const int16_t* TemplateTypeClass::Occupy_List(bool /*placement*/) const {
 
   int16_t* ptr = &_occupy[0];
   for (int index = 0; index < Width * Height; index++) {
-    if (map[index] != 0xFF) {
+    if (base::At(map, index) != 0xFF) {
       *ptr++ =
           static_cast<int16_t>((index % Width) + (index / Width * MAP_CELL_W));
     }
@@ -1391,14 +1392,14 @@ void TemplateTypeClass::Display(int x, int y, WindowNumberType window,
     x -= (w / 2) * ICON_PIXEL_W;
     y -= (h / 2) * ICON_PIXEL_H;
   }
-  x += WindowList[static_cast<int>(window)][kWindowX] * 8;
-  y += WindowList[static_cast<int>(window)][kWindowY];
+  x += base::At(WindowList[static_cast<int>(window)], kWindowX) * 8;
+  y += base::At(WindowList[static_cast<int>(window)], kWindowY);
 
   Mem_Copy(Get_Icon_Set_Map(Get_Image_Data()), map,
            static_cast<size_t>(Width) * Height);
 
   for (int index = 0; index < w * h; index++) {
-    if (map[index] != 0xFF) {
+    if (base::At(map, index) != 0xFF) {
       HidPage.Draw_Stamp(Get_Image_Data(), index, 0, 0, nullptr,
                          static_cast<int>(WINDOW_MAIN));
       if (scale) {

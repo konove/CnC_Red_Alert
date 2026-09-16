@@ -80,6 +80,7 @@
 #include <string_view>
 
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "base/numeric.h"
 #include "tech/base64.h"
 #include "tech/base64_sink.h"
@@ -547,7 +548,7 @@ bool INIClass::Put_UUBlock(const char* section, const void* block, int len) {
 
     const auto length = static_cast<int>(bstraw.Read(
         std::as_writable_bytes(std::span(buffer).first(sizeof(buffer) - 1))));
-    buffer[length] = '\0';
+    base::At(buffer, length) = '\0';
     if (length == 0) {
       break;
     }
@@ -651,7 +652,7 @@ bool INIClass::Put_TextBlock(const char* section, const char* text) {
     if (count > 0) {
       if (count >= 75) {
         while (count) {
-          const char c = buffer[count];
+          const char c = base::At(buffer, count);
 
           if (isspace(c)) {
             break;
@@ -662,7 +663,7 @@ bool INIClass::Put_TextBlock(const char* section, const char* text) {
         if (count == 0) {
           break;
         }
-        buffer[count] = '\0';
+        base::At(buffer, count) = '\0';
       }
 
       strtrim(buffer);

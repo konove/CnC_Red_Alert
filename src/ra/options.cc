@@ -69,6 +69,7 @@
 
 #include "ra/options.h"
 
+#include "base/array.h"
 #include "ra/defines.h"
 #include "ra/externs.h"
 #include "ra/ini.h"
@@ -797,7 +798,7 @@ int OptionsClass::Normalize_Delay(int delay) const {
                                    {7, 6, 5, 4, 4, 4, 3, 2}};
   if (delay) {
     if (delay < 5) {
-      delay = _adjust[delay - 1][GameSpeed];
+      delay = base::At(base::At(_adjust, delay - 1), GameSpeed);
     } else {
       delay = delay * 8 / static_cast<int>(GameSpeed + 1);
     }

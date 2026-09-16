@@ -41,6 +41,9 @@
 
 #include "td/visudlg.h"
 
+#include <iterator>
+
+#include "base/array.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/misc.h"
@@ -57,7 +60,6 @@
 #include "td/jshell.h"
 #include "td/slider.h"
 #include "td/textbtn.h"
-#include <iterator>
 
 /***********************************************************************************************
  * VisualControlsClass::Process -- Process the visual control dialog box. *
@@ -241,8 +243,8 @@ void VisualControlsClass::Process() {
       */
       for (int i = 0; i < std::ssize(_titles); i++) {
         Fancy_Text_Print(
-            _titles[i], slider_x - 16, text_y + (i * slider_y_spacing),
-            kCcGreen, kTBlack,
+            base::At(_titles, i), slider_x - 16,
+            text_y + (i * slider_y_spacing), kCcGreen, kTBlack,
             TPF_6PT_GRAD | TPF_RIGHT | TPF_NOSHADOW |
                 (curbutton == i ? TPF_BRIGHT_COLOR : TPF_USE_GRAD_PAL));
       }
@@ -285,7 +287,7 @@ void VisualControlsClass::Process() {
 
       case KN_LEFT:
         if (curbutton <= kButtonTint - kButtonBase) {
-          buttonsliders[curbutton]->Bump(true);
+          base::At(buttonsliders, curbutton)->Bump(true);
           switch (curbutton) {
             case kButtonBrightness - kButtonBase:
               Options.Set_Brightness(brightness.Get_Value());
@@ -306,22 +308,22 @@ void VisualControlsClass::Process() {
               break;
           }
         } else {
-          buttons[curbutton]->Turn_Off();
-          buttons[curbutton]->Flag_To_Redraw();
+          base::At(buttons, curbutton)->Turn_Off();
+          base::At(buttons, curbutton)->Flag_To_Redraw();
 
           curbutton--;
           if (curbutton < kButtonReset - kButtonBase) {
             curbutton = kButtonOptions - kButtonBase;
           }
 
-          buttons[curbutton]->Turn_On();
-          buttons[curbutton]->Flag_To_Redraw();
+          base::At(buttons, curbutton)->Turn_On();
+          base::At(buttons, curbutton)->Flag_To_Redraw();
         }
         break;
 
       case KN_RIGHT:
         if (curbutton <= kButtonTint - kButtonBase) {
-          buttonsliders[curbutton]->Bump(false);
+          base::At(buttonsliders, curbutton)->Bump(false);
           switch (curbutton) {
             case kButtonBrightness - kButtonBase:
               Options.Set_Brightness(brightness.Get_Value());
@@ -342,16 +344,16 @@ void VisualControlsClass::Process() {
               break;
           }
         } else {
-          buttons[curbutton]->Turn_Off();
-          buttons[curbutton]->Flag_To_Redraw();
+          base::At(buttons, curbutton)->Turn_Off();
+          base::At(buttons, curbutton)->Flag_To_Redraw();
 
           curbutton++;
           if (curbutton > kButtonOptions - kButtonBase) {
             curbutton = kButtonReset - kButtonBase;
           }
 
-          buttons[curbutton]->Turn_On();
-          buttons[curbutton]->Flag_To_Redraw();
+          base::At(buttons, curbutton)->Turn_On();
+          base::At(buttons, curbutton)->Flag_To_Redraw();
         }
         break;
 
@@ -359,8 +361,8 @@ void VisualControlsClass::Process() {
         if (curbutton <= kButtonTint - kButtonBase) {
           partial = true;
         } else {
-          buttons[curbutton]->Turn_Off();
-          buttons[curbutton]->Flag_To_Redraw();
+          base::At(buttons, curbutton)->Turn_Off();
+          base::At(buttons, curbutton)->Flag_To_Redraw();
         }
 
         curbutton--;
@@ -375,8 +377,8 @@ void VisualControlsClass::Process() {
         if (curbutton <= kButtonTint - kButtonBase) {
           partial = true;
         } else {
-          buttons[curbutton]->Turn_On();
-          buttons[curbutton]->Flag_To_Redraw();
+          base::At(buttons, curbutton)->Turn_On();
+          base::At(buttons, curbutton)->Flag_To_Redraw();
         }
         break;
 
@@ -384,8 +386,8 @@ void VisualControlsClass::Process() {
         if (curbutton <= kButtonTint - kButtonBase) {
           partial = true;
         } else {
-          buttons[curbutton]->Turn_Off();
-          buttons[curbutton]->Flag_To_Redraw();
+          base::At(buttons, curbutton)->Turn_Off();
+          base::At(buttons, curbutton)->Flag_To_Redraw();
         }
 
         curbutton++;
@@ -396,8 +398,8 @@ void VisualControlsClass::Process() {
         if (curbutton <= kButtonTint - kButtonBase) {
           partial = true;
         } else {
-          buttons[curbutton]->Turn_On();
-          buttons[curbutton]->Flag_To_Redraw();
+          base::At(buttons, curbutton)->Turn_On();
+          base::At(buttons, curbutton)->Flag_To_Redraw();
         }
         break;
 

@@ -25,6 +25,7 @@
 #include <cstdint>
 #include <iterator>
 
+#include "base/array.h"
 #include "base/trig.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/const.h"
@@ -189,37 +190,38 @@ const int16_t* Coord_Spillage_List(const COORDINATE coord, int maxsize) {
     const int top = y - maxsize;
     const int bottom = y + maxsize;
 
-    computed_offsets[index++] = 0;
+    base::At(computed_offsets, index++) = 0;
     if (left < 0) {
-      computed_offsets[index++] = -1;
+      base::At(computed_offsets, index++) = -1;
     }
     if (right >= ICON_PIXEL_W) {
-      computed_offsets[index++] = 1;
+      base::At(computed_offsets, index++) = 1;
     }
     if (top < 0) {
-      computed_offsets[index++] = -MAP_CELL_W;
+      base::At(computed_offsets, index++) = -MAP_CELL_W;
     }
     if (bottom >= ICON_PIXEL_H) {
-      computed_offsets[index++] = MAP_CELL_W;
+      base::At(computed_offsets, index++) = MAP_CELL_W;
     }
     if (left < 0 && top < 0) {
-      computed_offsets[index++] = -(MAP_CELL_W + 1);
+      base::At(computed_offsets, index++) = -(MAP_CELL_W + 1);
     }
     if (right >= ICON_PIXEL_W && bottom >= ICON_PIXEL_H) {
-      computed_offsets[index++] = MAP_CELL_W + 1;
+      base::At(computed_offsets, index++) = MAP_CELL_W + 1;
     }
     if (left < 0 && bottom >= ICON_PIXEL_H) {
-      computed_offsets[index++] = MAP_CELL_W - 1;
+      base::At(computed_offsets, index++) = MAP_CELL_W - 1;
     }
     if (right >= ICON_PIXEL_H && top < 0) {
-      computed_offsets[index++] = -(MAP_CELL_W - 1);
+      base::At(computed_offsets, index++) = -(MAP_CELL_W - 1);
     }
-    computed_offsets[index] = kRefreshEol;
+    base::At(computed_offsets, index) = kRefreshEol;
     return &computed_offsets[0];
   }
 
   // Lepton threshold: how far from cell center before spilling into neighbors.
-  const int spill_threshold = Pixel2Lepton[(ICON_PIXEL_W - maxsize) / 2];
+  const int spill_threshold =
+      base::At(Pixel2Lepton, (ICON_PIXEL_W - maxsize) / 2);
 
   x = Coord_XLepton(coord) - 0x0080;
   y = Coord_YLepton(coord) - 0x0080;
@@ -237,7 +239,9 @@ const int16_t* Coord_Spillage_List(const COORDINATE coord, int maxsize) {
     index += 1;  // Spilling West.
   }
 
-  return &kFacingOffsets[kSpillToFacing[index]][0];
+  return base::Suffix(base::At(kFacingOffsets, base::At(kSpillToFacing, index)),
+                      0)
+      .data();
 }
 
 CELL Coord_Cell(COORDINATE coord) {

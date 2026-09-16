@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <cstdint>
 
+#include "base/array.h"
+
 int FontXSpacing;
 int FontYSpacing;
 char FontWidth;
@@ -63,7 +65,7 @@ void Set_Font_Palette_Range(const void* palette, int start_idx, int end_idx) {
   end_idx %= 16;
 
   for (int i = start_idx; i <= end_idx; ++i) {
-    FontPalette[i] = *palette8++;
+    base::At(FontPalette, i) = *palette8++;
   }
 }
 

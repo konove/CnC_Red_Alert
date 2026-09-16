@@ -68,6 +68,7 @@
 #include <cstdio>
 
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "base/types.h"
 #include "ra/building.h"
 #include "ra/cell.h"
@@ -763,7 +764,8 @@ void ChronalVortexClass::Coordinate_Remap(GraphicViewPortClass* inbuffer, int x,
         const unsigned char pixel_color =
             *(bufptr + getx + (static_cast<base::ssize>(gety) * modulo));
 
-        *destptr++ = VortexRemapTables[remap_color][pixel_color];
+        *destptr++ =
+            base::At(base::At(VortexRemapTables, remap_color), pixel_color);
       }
 
       remap_table += static_cast<base::ssize>(3) * (width - dest_width);
@@ -844,18 +846,20 @@ void ChronalVortexClass::Render() {
       ** Temporarily modify the tactical window so it works with our offscreen
       *buffer
       */
-      const int wx = WindowList[static_cast<int>(WINDOW_TACTICAL)][kWindowX];
-      const int wy = WindowList[static_cast<int>(WINDOW_TACTICAL)][kWindowY];
+      const int wx =
+          base::At(WindowList[static_cast<int>(WINDOW_TACTICAL)], kWindowX);
+      const int wy =
+          base::At(WindowList[static_cast<int>(WINDOW_TACTICAL)], kWindowY);
       const int ww =
-          WindowList[static_cast<int>(WINDOW_TACTICAL)][kWindowWidth];
-      const int wh =
-          WindowList[static_cast<int>(WINDOW_TACTICAL)][kWindowHeight];
+          base::At(WindowList[static_cast<int>(WINDOW_TACTICAL)], kWindowWidth);
+      const int wh = base::At(WindowList[static_cast<int>(WINDOW_TACTICAL)],
+                              kWindowHeight);
 
-      WindowList[static_cast<int>(WINDOW_TACTICAL)][kWindowX] = 0;
-      WindowList[static_cast<int>(WINDOW_TACTICAL)][kWindowY] = 0;
-      WindowList[static_cast<int>(WINDOW_TACTICAL)][kWindowWidth] =
+      base::At(WindowList[static_cast<int>(WINDOW_TACTICAL)], kWindowX) = 0;
+      base::At(WindowList[static_cast<int>(WINDOW_TACTICAL)], kWindowY) = 0;
+      base::At(WindowList[static_cast<int>(WINDOW_TACTICAL)], kWindowWidth) =
           RenderBuffer->Get_Width();
-      WindowList[static_cast<int>(WINDOW_TACTICAL)][kWindowHeight] =
+      base::At(WindowList[static_cast<int>(WINDOW_TACTICAL)], kWindowHeight) =
           RenderBuffer->Get_Height();
 
       /*
@@ -929,10 +933,12 @@ void ChronalVortexClass::Render() {
       /*
       ** Restore the tactical window to its correct value
       */
-      WindowList[static_cast<int>(WINDOW_TACTICAL)][kWindowX] = wx;
-      WindowList[static_cast<int>(WINDOW_TACTICAL)][kWindowY] = wy;
-      WindowList[static_cast<int>(WINDOW_TACTICAL)][kWindowWidth] = ww;
-      WindowList[static_cast<int>(WINDOW_TACTICAL)][kWindowHeight] = wh;
+      base::At(WindowList[static_cast<int>(WINDOW_TACTICAL)], kWindowX) = wx;
+      base::At(WindowList[static_cast<int>(WINDOW_TACTICAL)], kWindowY) = wy;
+      base::At(WindowList[static_cast<int>(WINDOW_TACTICAL)], kWindowWidth) =
+          ww;
+      base::At(WindowList[static_cast<int>(WINDOW_TACTICAL)], kWindowHeight) =
+          wh;
 
       /*
       ** Render the vortex over the cells we just rendered to our buffer
@@ -1079,14 +1085,15 @@ void ChronalVortexClass::Setup_Remap_Tables(TheaterType theater) {
   if (theater != Theater) {
     Theater = theater;
 
-    GameFile file(_remaps[static_cast<int>(Theater)]);
+    GameFile file(base::At(_remaps, static_cast<int>(Theater)));
 
     if (file.IsAvailable()) {
       file.ReadObject(VortexRemapTables);
     } else {
       for (int i = 0; i < MAX_REMAP_SHADES; i++) {
-        Build_Fading_Table(GamePalette, &VortexRemapTables[i][0], 0,
-                           240 - (i * 256 / MAX_REMAP_SHADES));
+        Build_Fading_Table(
+            GamePalette, base::Suffix(base::At(VortexRemapTables, i), 0).data(),
+            0, 240 - (i * 256 / MAX_REMAP_SHADES));
       }
 
       file.WriteObject(VortexRemapTables);
@@ -1097,7 +1104,7 @@ void ChronalVortexClass::Setup_Remap_Tables(TheaterType theater) {
   ** Set up the remap table for the lightning
   */
   for (int i = 0; i < 256; i++) {
-    LightningRemap[i] = static_cast<unsigned char>(i);
+    base::At(LightningRemap, i) = static_cast<unsigned char>(i);
   }
   LightningRemap[192] = 208;
   LightningRemap[193] = 209;

@@ -75,6 +75,7 @@
 #include <iterator>
 #include <new>
 
+#include "base/array.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/anim.h"
 #include "ra/ccptr.h"
@@ -476,7 +477,7 @@ void MapClass::Init_Clear() {
   TiberiumSpreadCount = 0;
   TiberiumSpreadExcess = 0;
   for (int index = 0; index < std::ssize(Crates); index++) {
-    Crates[index].Init();
+    base::At(Crates, index).Init();
   }
 }
 
@@ -606,12 +607,12 @@ void MapClass::Sight_From(CELL cell, int sightrange, HouseClass* house,
   **	Incremental scans only scan the outer rings. Full scans
   **	scan all internal cells as well.
   */
-  int count =
-      RadiusCount[sightrange];  // Counter for number of offsets to process.
+  int count = base::At(
+      RadiusCount, sightrange);  // Counter for number of offsets to process.
   const int* ptr = &RadiusOffset[0];  // Offset pointer.
   if (incremental && (sightrange > 2)) {
-    ptr += RadiusCount[sightrange - 3];
-    count -= RadiusCount[sightrange - 3];
+    ptr += base::At(RadiusCount, sightrange - 3);
+    count -= base::At(RadiusCount, sightrange - 3);
   }
 
   /*
@@ -686,8 +687,8 @@ void MapClass::Jam_From(CELL cell, int jamrange, HouseClass* house) {
   **	Incremental scans only scan the outer rings. Full scans
   **	scan all internal cells as well.
   */
-  int count =
-      RadiusCount[jamrange];  // Counter for number of offsets to process.
+  int count = base::At(RadiusCount,
+                       jamrange);  // Counter for number of offsets to process.
   const int* ptr = &RadiusOffset[0];  // Offset pointer.
 
   /*
@@ -768,8 +769,8 @@ void MapClass::UnJam_From(CELL cell, int jamrange, HouseClass* house) {
   **	Incremental scans only scan the outer rings. Full scans
   **	scan all internal cells as well.
   */
-  int count =
-      RadiusCount[jamrange];  // Counter for number of offsets to process.
+  int count = base::At(RadiusCount,
+                       jamrange);  // Counter for number of offsets to process.
   const int* ptr = &RadiusOffset[0];  // Offset pointer.
 
   /*
@@ -1174,8 +1175,8 @@ void MapClass::Logic() {
     **	spot.
     */
     for (int index = 0; index < std::ssize(Crates); index++) {
-      if (Crates[index].Is_Expired()) {
-        Crates[index].Remove_It();
+      if (base::At(Crates, index).Is_Expired()) {
+        base::At(Crates, index).Remove_It();
         Place_Random_Crate();
       }
     }
@@ -1210,9 +1211,10 @@ void MapClass::Logic() {
         */
         if (Random_Pick(0, TiberiumGrowthExcess) <= TiberiumGrowthCount) {
           if (TiberiumGrowthCount < std::ssize(TiberiumGrowth)) {
-            TiberiumGrowth[TiberiumGrowthCount++] = cell;
+            base::At(TiberiumGrowth, TiberiumGrowthCount++) = cell;
           } else {
-            TiberiumGrowth[Random_Pick(0, TiberiumGrowthCount - 1)] = cell;
+            base::At(TiberiumGrowth, Random_Pick(0, TiberiumGrowthCount - 1)) =
+                cell;
           }
         }
         TiberiumGrowthExcess++;
@@ -1228,9 +1230,10 @@ void MapClass::Logic() {
         */
         if (Random_Pick(0, TiberiumSpreadExcess) <= TiberiumSpreadCount) {
           if (TiberiumSpreadCount < std::ssize(TiberiumSpread)) {
-            TiberiumSpread[TiberiumSpreadCount++] = cell;
+            base::At(TiberiumSpread, TiberiumSpreadCount++) = cell;
           } else {
-            TiberiumSpread[Random_Pick(0, TiberiumSpreadCount - 1)] = cell;
+            base::At(TiberiumSpread, Random_Pick(0, TiberiumSpreadCount - 1)) =
+                cell;
           }
         }
         TiberiumSpreadExcess++;
@@ -1256,7 +1259,7 @@ void MapClass::Logic() {
     */
     if (TiberiumGrowthCount) {
       for (int i = 0; i < TiberiumGrowthCount; i++) {
-        const CELL cell = TiberiumGrowth[i];
+        const CELL cell = base::At(TiberiumGrowth, i);
         CellClass* newcell = &(*this)[cell];
         newcell->Grow_Tiberium();
       }
@@ -1269,7 +1272,7 @@ void MapClass::Logic() {
     */
     if (TiberiumSpreadCount) {
       for (int i = 0; i < TiberiumSpreadCount; i++) {
-        Map[TiberiumSpread[i]].Spread_Tiberium();
+        Map[base::At(TiberiumSpread, i)].Spread_Tiberium();
       }
     }
     TiberiumSpreadCount = 0;
@@ -1310,8 +1313,8 @@ int MapClass::Cell_Region(CELL cell) {
  *   04/25/1995 PWG : Created.                                             *
  *=========================================================================*/
 int MapClass::Cell_Threat(CELL cell, HousesType house) {
-  int threat = HouseClass::As_Pointer(house)
-                   ->Regions[MapEditClass::Cell_Region(Map[cell].Cell_Number())]
+  int threat = base::At(HouseClass::As_Pointer(house)->Regions,
+                        MapEditClass::Cell_Region(Map[cell].Cell_Number()))
                    .Threat_Value();
   if (!threat && Map[cell].IsVisible) {
     threat = 1;
@@ -1341,7 +1344,7 @@ bool MapClass::Place_Random_Crate() {
   */
   int crateindex = 0;
   for (crateindex = 0; crateindex < std::ssize(Crates); crateindex++) {
-    if (!Crates[crateindex].Is_Valid()) {
+    if (!base::At(Crates, crateindex).Is_Valid()) {
       break;
     }
   }
@@ -1355,7 +1358,7 @@ bool MapClass::Place_Random_Crate() {
   for (int index = 0; index < 1000; index++) {
     const CELL cell = MapEditClass::Pick_Random_Location();
 
-    if (Crates[crateindex].Create_Crate(cell)) {
+    if (base::At(Crates, crateindex).Create_Crate(cell)) {
       return true;
     }
   }
@@ -1379,8 +1382,8 @@ bool MapClass::Place_Random_Crate() {
 bool MapClass::Remove_Crate(CELL cell) {
   if (Session.Type != GAME_NORMAL) {
     for (int index = 0; index < std::ssize(Crates); index++) {
-      if (Crates[index].Is_Here(cell)) {
-        return Crates[index].Remove_It();
+      if (base::At(Crates, index).Is_Here(cell)) {
+        return base::At(Crates, index).Remove_It();
       }
     }
   }
@@ -1450,7 +1453,8 @@ bool MapClass::Validate() {
       const unsigned char ticon = (*this)[cell].TIcon;
       Mem_Copy(Get_Icon_Set_Map(tclass->Get_Image_Data()), map,
                static_cast<size_t>(tclass->Width) * tclass->Height);
-      if (ticon >= tclass->Width * tclass->Height || map[ticon] == 0xff) {
+      if (ticon >= tclass->Width * tclass->Height ||
+          base::At(map, ticon) == 0xff) {
         return false;
       }
     }
@@ -1498,7 +1502,7 @@ bool MapClass::Validate() {
     **	Validate Overlappers
     */
     for (int i = 0; i < std::ssize((*this)[cell].CellClass::Overlappers); i++) {
-      obj = (*this)[cell].Overlappers[i];
+      obj = base::At((*this)[cell].Overlappers, i);
       if (obj && (obj->IsInLimbo || static_cast<unsigned int>(Coord_Cell(
                                         obj->Coord)) >= MAP_CELL_TOTAL)) {
         return false;
@@ -1848,7 +1852,7 @@ CELL MapClass::Nearby_Location(CELL cell, SpeedType speed, int zone,
         cellptr = &Map[newcell];
         if (Map.In_Radar(newcell) &&
             cellptr->Is_Clear_To_Move(speed, false, false, zone, check)) {
-          topten[count++] = newcell;
+          base::At(topten, count++) = newcell;
         }
       }
       if (count == std::ssize(topten)) {
@@ -1860,7 +1864,7 @@ CELL MapClass::Nearby_Location(CELL cell, SpeedType speed, int zone,
         cellptr = &Map[newcell];
         if (Map.In_Radar(newcell) &&
             cellptr->Is_Clear_To_Move(speed, false, false, zone, check)) {
-          topten[count++] = newcell;
+          base::At(topten, count++) = newcell;
         }
       }
       if (count == std::ssize(topten)) {
@@ -1881,7 +1885,7 @@ CELL MapClass::Nearby_Location(CELL cell, SpeedType speed, int zone,
         cellptr = &Map[newcell];
         if (Map.In_Radar(newcell) &&
             cellptr->Is_Clear_To_Move(speed, false, false, zone, check)) {
-          topten[count++] = newcell;
+          base::At(topten, count++) = newcell;
         }
       }
       if (count == std::ssize(topten)) {
@@ -1893,7 +1897,7 @@ CELL MapClass::Nearby_Location(CELL cell, SpeedType speed, int zone,
         cellptr = &Map[newcell];
         if (Map.In_Radar(newcell) &&
             cellptr->Is_Clear_To_Move(speed, false, false, zone, check)) {
-          topten[count++] = newcell;
+          base::At(topten, count++) = newcell;
         }
       }
       if (count == std::ssize(topten)) {
@@ -1907,7 +1911,7 @@ CELL MapClass::Nearby_Location(CELL cell, SpeedType speed, int zone,
   }
 
   if (count > 0) {
-    return topten[Frame % count];
+    return base::At(topten, Frame % count);
   }
   return 0;
 }

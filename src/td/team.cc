@@ -64,6 +64,7 @@
 #include <cstring>
 #include <utility>
 
+#include "base/array.h"
 #include "td/aircraft.h"
 #include "td/building.h"
 #include "td/config.h"
@@ -162,12 +163,12 @@ void TeamClass::operator delete(void* ptr) {
 
 TeamClass::~TeamClass() {
   if (GameActive && Class) {
-    Number[TeamTypes.ID(Class)]--;
+    base::At(Number, TeamTypes.ID(Class))--;
     while (Member) {
       Remove(Member);
     }
 
-    if (Class->IsTransient && !Number[TeamTypes.ID(Class)]) {
+    if (Class->IsTransient && !base::At(Number, TeamTypes.ID(Class))) {
       delete Class;
     }
   }
@@ -177,7 +178,7 @@ TeamClass::TeamClass(const TeamTypeClass* type, HouseClass* owner)
     : TeamClass() {
   Class = type;
   House = owner;
-  Number[TeamTypes.ID(Class)]++;
+  base::At(Number, TeamTypes.ID(Class))++;
 }
 
 /***************************************************************************
@@ -281,7 +282,7 @@ void TeamClass::AI() {
   */
   if (IsAltered) {
     for (int index = 0; std::cmp_less(index, Class->ClassCount); index++) {
-      desired += Class->DesiredNum[index];
+      desired += base::At(Class->DesiredNum, index);
     }
 
     if (Total) {
@@ -435,7 +436,7 @@ void TeamClass::AI() {
   if (!IsMoving ||
       (!IsFullStrength && Class->IsReinforcable && !House->IsHuman)) {
     for (int index = 0; std::cmp_less(index, Class->ClassCount); index++) {
-      if (Quantity[index] < Class->DesiredNum[index]) {
+      if (base::At(Quantity, index) < base::At(Class->DesiredNum, index)) {
         Recruit(index);
       }
     }
@@ -459,7 +460,8 @@ void TeamClass::AI() {
     IsNextMission = false;
     CurrentMission++;
     if (CurrentMission < Class->MissionCount) {
-      const TeamMissionStruct* mission = &Class->MissionList[CurrentMission];
+      const TeamMissionStruct* mission =
+          base::Suffix(Class->MissionList, CurrentMission).data();
 
       TimeOut = mission->Argument * (kTicksPerMinute / 10);
       Target = kTargetNone;
@@ -471,7 +473,8 @@ void TeamClass::AI() {
 
         case TMISSION_MOVE:
         case TMISSION_UNLOAD:
-          Assign_Mission_Target(::As_Target(Waypoint[mission->Argument]));
+          Assign_Mission_Target(
+              ::As_Target(base::At(Waypoint, mission->Argument)));
           break;
 
         case TMISSION_ATTACKTARCOM:
@@ -506,7 +509,8 @@ void TeamClass::AI() {
     **	this case. If it has timed out then advance to the next
     **	mission in the list or disband the team.
     */
-    const TeamMissionStruct* mission = &Class->MissionList[CurrentMission];
+    const TeamMissionStruct* mission =
+        base::Suffix(Class->MissionList, CurrentMission).data();
     switch (mission->Mission) {
       case TMISSION_ATTACKBASE:
         if (!Target_Legal(MissionTarget)) {
@@ -682,7 +686,7 @@ bool TeamClass::Add(FootClass* obj, int typeindex) {
   if (typeindex == -1) {
     for (typeindex = 0; std::cmp_less(typeindex, Class->ClassCount);
          typeindex++) {
-      if (Class->Class[typeindex] == &obj->Class_Of()) {
+      if (base::At(Class->Class, typeindex) == &obj->Class_Of()) {
         break;
       }
     }
@@ -692,7 +696,7 @@ bool TeamClass::Add(FootClass* obj, int typeindex) {
   **	If the team is already full of this type, then adding the object is not
   *allowed. *	Return with a failure flag in this case.
   */
-  if (Quantity[typeindex] >= Class->DesiredNum[typeindex]) {
+  if (base::At(Quantity, typeindex) >= base::At(Class->DesiredNum, typeindex)) {
     return false;
   }
 
@@ -707,7 +711,7 @@ bool TeamClass::Add(FootClass* obj, int typeindex) {
   /*
   **	Actually add the object to the team.
   */
-  Quantity[typeindex]++;
+  base::At(Quantity, typeindex)++;
   obj->IsInitiated = Member == nullptr;
   obj->Member = Member;
   Member = obj;
@@ -766,7 +770,7 @@ bool TeamClass::Remove(FootClass* obj, int typeindex) {
   if (typeindex == -1) {
     for (typeindex = 0; std::cmp_less(typeindex, Class->ClassCount);
          typeindex++) {
-      if (Class->Class[typeindex] == &obj->Class_Of()) {
+      if (base::At(Class->Class, typeindex) == &obj->Class_Of()) {
         break;
       }
     }
@@ -777,7 +781,7 @@ bool TeamClass::Remove(FootClass* obj, int typeindex) {
   *object type.
   */
   if (std::cmp_less(typeindex, Class->ClassCount)) {
-    Quantity[typeindex]--;
+    base::At(Quantity, typeindex)--;
   }
 
   /*
@@ -865,17 +869,17 @@ int TeamClass::Recruit(int typeindex) {
   **	Quick check to see if recruiting is really allowed for this index or
   *not.
   */
-  if (Class->DesiredNum[typeindex] > Quantity[typeindex]) {
+  if (base::At(Class->DesiredNum, typeindex) > base::At(Quantity, typeindex)) {
     /*
     **	For infantry objects, sweep through the infantry in the game looking for
     **	ones owned by the house that owns the team. When found, try to add.
     */
-    if (Class->Class[typeindex]->What_Am_I() == RTTI_INFANTRYTYPE) {
+    if (base::At(Class->Class, typeindex)->What_Am_I() == RTTI_INFANTRYTYPE) {
       for (int index = 0; index < Infantry.Count(); index++) {
         InfantryClass* infantry = Infantry.Ptr(index);
 
         if ((infantry->House == House &&
-             infantry->Class == Class->Class[typeindex]) &&
+             infantry->Class == base::At(Class->Class, typeindex)) &&
             Add(infantry, typeindex)) {
           added++;
         }
@@ -884,17 +888,19 @@ int TeamClass::Recruit(int typeindex) {
         **	If there is sufficient quantity of this type of object recruited
         *to the *	team, then abort further scanning for members.
         */
-        if (Quantity[typeindex] >= Class->DesiredNum[typeindex]) {
+        if (base::At(Quantity, typeindex) >=
+            base::At(Class->DesiredNum, typeindex)) {
           break;
         }
       }
     }
 
-    if (Class->Class[typeindex]->What_Am_I() == RTTI_UNITTYPE) {
+    if (base::At(Class->Class, typeindex)->What_Am_I() == RTTI_UNITTYPE) {
       for (int index = 0; index < Units.Count(); index++) {
         UnitClass* unit = Units.Ptr(index);
 
-        if ((unit->House == House && unit->Class == Class->Class[typeindex]) &&
+        if ((unit->House == House &&
+             unit->Class == base::At(Class->Class, typeindex)) &&
             Add(unit, typeindex)) {
           added++;
 
@@ -913,7 +919,8 @@ int TeamClass::Recruit(int typeindex) {
         **	If there is sufficient quantity of this type of object recruited
         *to the *	team, then abort further scanning for members.
         */
-        if (Quantity[typeindex] >= Class->DesiredNum[typeindex]) {
+        if (base::At(Quantity, typeindex) >=
+            base::At(Class->DesiredNum, typeindex)) {
           break;
         }
       }
@@ -1220,7 +1227,7 @@ void TeamClass::Coordinate_Move() {
             if (unit->Distance(Target) / ICON_LEPTON_W > STRAY_DISTANCE ||
                 (unit->What_Am_I() == RTTI_AIRCRAFT &&
                  dynamic_cast<AircraftClass*>(unit)->Altitude > 0 &&
-                 Class->MissionList[CurrentMission + 1].Mission !=
+                 base::At(Class->MissionList, CurrentMission + 1).Mission !=
                      TMISSION_MOVE)) {
               if (unit->Mission != MISSION_MOVE) {
                 unit->Assign_Mission(MISSION_MOVE);

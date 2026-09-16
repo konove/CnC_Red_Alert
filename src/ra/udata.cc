@@ -60,6 +60,7 @@
 #include <span>
 #include <string>
 
+#include "base/array.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "ra/ccini.h"
@@ -1284,8 +1285,8 @@ void UnitTypeClass::Turret_Adjust(DirType dir, int& x, int& y) const {
 
     case UNIT_MGG:
       index = Dir_To_32(dir);
-      x += _adjust[index].X;
-      y += _adjust[index].Y;
+      x += base::At(_adjust, index).X;
+      y += base::At(_adjust, index).Y;
       break;
 
     default:

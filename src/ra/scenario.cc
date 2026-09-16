@@ -79,6 +79,7 @@
 
 #include "absl/log/log.h"
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
@@ -200,7 +201,7 @@ ScenarioClass::ScenarioClass()
       FadeTimer(0),
       AutoSonarTimer(AUTOSONAR_PERIOD) {
   for (int index = 0; index < std::ssize(Waypoint); index++) {
-    Waypoint[index] = -1;
+    base::At(Waypoint, index) = -1;
   }
   port::SafeCopy(Description, "");
   port::SafeCopy(ScenarioName, "");
@@ -293,9 +294,9 @@ void ScenarioClass::Do_Fade_AI() {
  *=============================================================================================*/
 bool ScenarioClass::Set_Global_To(int global, bool value) {
   if (static_cast<unsigned>(global) < std::ssize(Scen.GlobalFlags)) {
-    const bool previous = GlobalFlags[global];
+    const bool previous = base::At(GlobalFlags, global);
     if (previous != value) {
-      GlobalFlags[global] = value;
+      base::At(GlobalFlags, global) = value;
       IsGlobalChanged = true;
 
       /*
@@ -1345,7 +1346,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
   char buffer[kMaxCharsPerPage];
   // Copy to mutable buffer for Format_Window_String (which inserts newlines).
   page_text.copy(buffer, page_text.size());
-  buffer[page_text.size()] = '\0';
+  base::At(buffer, page_text.size()) = '\0';
   Fancy_Text_Print(TXT_NONE, 0, 0, &ColorRemaps[PCOLOR_TYPE], kTBlack,
                    TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
   int width = 0;
@@ -1394,12 +1395,12 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
       button2.Add(*buttonlist);
       buttons[2] = &button2;
       realval[2] = kButton2;
-      buttons[curbutton]->Turn_On();
+      base::At(buttons, curbutton)->Turn_On();
     } else if (numbuttons == 2) {
       button2.Add(*buttonlist);
       buttons[1] = &button2;
       realval[1] = kButton2;
-      buttons[curbutton]->Turn_On();
+      base::At(buttons, curbutton)->Turn_On();
     }
   }
 
@@ -1434,7 +1435,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
   do {
     char bufprint[2];
     bufprint[1] = 0;
-    bufprint[0] = buffer[bufindex];
+    bufprint[0] = base::At(buffer, bufindex);
     if (bufprint[0] == '\r' || bufprint[0] == '@') {
       xprint = x + 20;
       yprint += FontHeight + FontYSpacing;
@@ -1453,7 +1454,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
         Call_Back();
       } while (!Keyboard->Check() && cd.HasTimeLeft());
     }
-  } while (buffer[++bufindex]);
+  } while (base::At(buffer, ++bufindex));
 
   Show_Mouse();
   Keyboard->Clear();
@@ -1504,31 +1505,31 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
 
         case KN_LEFT:
           if (numbuttons > 1) {
-            buttons[curbutton]->Turn_Off();
-            buttons[curbutton]->Flag_To_Redraw();
+            base::At(buttons, curbutton)->Turn_Off();
+            base::At(buttons, curbutton)->Flag_To_Redraw();
 
             curbutton--;
             if (curbutton < 0) {
               curbutton = numbuttons - 1;
             }
 
-            buttons[curbutton]->Turn_On();
-            buttons[curbutton]->Flag_To_Redraw();
+            base::At(buttons, curbutton)->Turn_On();
+            base::At(buttons, curbutton)->Flag_To_Redraw();
           }
           break;
 
         case KN_RIGHT:
           if (numbuttons > 1) {
-            buttons[curbutton]->Turn_Off();
-            buttons[curbutton]->Flag_To_Redraw();
+            base::At(buttons, curbutton)->Turn_Off();
+            base::At(buttons, curbutton)->Flag_To_Redraw();
 
             curbutton++;
             if (curbutton > numbuttons - 1) {
               curbutton = 0;
             }
 
-            buttons[curbutton]->Turn_On();
-            buttons[curbutton]->Flag_To_Redraw();
+            base::At(buttons, curbutton)->Turn_On();
+            base::At(buttons, curbutton)->Flag_To_Redraw();
           }
           break;
 
@@ -1770,7 +1771,7 @@ void ScenarioClass::Set_Scenario_Name(int scenario, ScenarioPlayerType player,
 void ScenarioClass::Set_Scenario_Name(const char* name) {
   if (name != nullptr) {
     port::SafeCopy(ScenarioName, name);
-    ScenarioName[std::ssize(ScenarioName) - 1] = '\0';
+    base::At(ScenarioName, std::ssize(ScenarioName) - 1) = '\0';
 
     char buf[3];
     memcpy(buf, &ScenarioName[3], 2);
@@ -1939,9 +1940,9 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
   **	Reset the rules values to their initial settings.
   */
   for (int index = 0; index < std::ssize(NameOverride); index++) {
-    delete[] NameOverride[index];
-    NameOverride[index] = nullptr;
-    NameIDOverride[index] = 0;
+    delete[] base::At(NameOverride, index);
+    base::At(NameOverride, index) = nullptr;
+    base::At(NameIDOverride, index) = 0;
   }
   if (Session.Type == GAME_NORMAL) {
     Special.IsShadowGrow = false;
@@ -2332,7 +2333,7 @@ void Assign_Houses() {
   // Initialize
   //------------------------------------------------------------------------
   for (int i = 0; i < kMaxPlayers; i++) {
-    assigned[i] = 0;
+    base::At(assigned, i) = 0;
     color_used[static_cast<PlayerColorType>(i)] = false;
   }
 
@@ -2352,7 +2353,7 @@ void Assign_Houses() {
       //..................................................................
       // If we've already assigned this house, skip it.
       //..................................................................
-      if (assigned[j]) {
+      if (base::At(assigned, j)) {
         continue;
       }
       if (lowest_color == PCOLOR_NONE ||
@@ -2365,7 +2366,7 @@ void Assign_Houses() {
     //.....................................................................
     // Mark this player as having been assigned.
     //.....................................................................
-    assigned[index] = 1;
+    base::At(assigned, index) = 1;
     color_used[Session.Players[index]->Player.Color] = true;
 
     //.....................................................................
@@ -2388,7 +2389,7 @@ void Assign_Houses() {
     **	Convert the build level into an actual tech level to assign to the
     *house. *	There isn't a one-to-one correspondence.
     */
-    housep->Control.TechLevel = build_tech[BuildLevel];
+    housep->Control.TechLevel = base::At(build_tech, BuildLevel);
 
     housep->Assign_Handicap(Scen.Difficulty);
 
@@ -2440,7 +2441,7 @@ void Assign_Houses() {
 
     housep->Init_Data(static_cast<PlayerColorType>(color), pref_house,
                       Session.Options.Credits);
-    housep->Control.TechLevel = build_tech[BuildLevel];
+    housep->Control.TechLevel = base::At(build_tech, BuildLevel);
     //		housep->Control.TechLevel = BuildLevel;
 
     DiffType difficulty = Scen.CDifficulty;
@@ -2553,12 +2554,12 @@ static void Create_Units(bool official) {
   **	For the current BuildLevel, find the max allowable index into the tables
   */
   for (int i = 0; i < std::ssize(utable); i++) {
-    if (PlayerPtr->Control.TechLevel >= utable[i].MinLevel) {
+    if (PlayerPtr->Control.TechLevel >= base::At(utable, i).MinLevel) {
       u_limit = i + 1;
     }
   }
   for (int i = 0; i < std::ssize(itable); i++) {
-    if (PlayerPtr->Control.TechLevel >= itable[i].MinLevel) {
+    if (PlayerPtr->Control.TechLevel >= base::At(itable, i).MinLevel) {
       i_limit = i + 1;
     }
   }
@@ -2578,7 +2579,7 @@ static void Create_Units(bool official) {
   **	Init # of each category to 0
   */
   for (int i = 0; i < u_limit; i++) {
-    num_units[i] = 0;
+    base::At(num_units, i) = 0;
   }
 
   /*
@@ -2586,7 +2587,7 @@ static void Create_Units(bool official) {
   */
   int j = 0;
   for (int i = 0; i < tot_units; i++) {
-    num_units[j]++;
+    base::At(num_units, j)++;
     j++;
     if (j >= u_limit) {
       j = 0;
@@ -2603,7 +2604,7 @@ static void Create_Units(bool official) {
   **	Init # of each category to 0
   */
   for (int i = 0; i < i_limit; i++) {
-    num_infantry[i] = 0;
+    base::At(num_infantry, i) = 0;
   }
 
   /*
@@ -2611,7 +2612,7 @@ static void Create_Units(bool official) {
   */
   j = 0;
   for (int i = 0; i < tot_infantry; i++) {
-    num_infantry[j]++;
+    base::At(num_infantry, j)++;
     j++;
     if (j >= i_limit) {
       j = 0;
@@ -2644,9 +2645,9 @@ static void Create_Units(bool official) {
   for (int waycount = 0; waycount < look_for; waycount++) {
     //	for (int waycount = 0; waycount < max(4,
     // Session.Players.Count()+Session.Options.AIPlayers); waycount++) {
-    if (Scen.Waypoint[waycount] != -1) {
-      waypts[num_waypts] = Scen.Waypoint[waycount];
-      taken[num_waypts] = false;
+    if (base::At(Scen.Waypoint, waycount) != -1) {
+      base::At(waypts, num_waypts) = base::At(Scen.Waypoint, waycount);
+      base::At(taken, num_waypts) = false;
       num_waypts++;
     }
   }
@@ -2665,8 +2666,8 @@ static void Create_Units(bool official) {
                   Map.MapCellY + Random_Pick(0, Map.MapCellHeight - 1));
 
       trycell = Map.Nearby_Location(trycell, SPEED_TRACK);
-      waypts[num_waypts] = trycell;
-      taken[num_waypts] = false;
+      base::At(waypts, num_waypts) = trycell;
+      base::At(taken, num_waypts) = false;
       num_waypts++;
     }
   }
@@ -2695,8 +2696,8 @@ static void Create_Units(bool official) {
     */
     if (numtaken == 0) {
       const int pick = Random_Pick(0, num_waypts - 1);
-      centroid = waypts[pick];
-      taken[pick] = true;
+      centroid = base::At(waypts, pick);
+      base::At(taken, pick) = true;
       numtaken++;
     } else {
       /*
@@ -2716,11 +2717,12 @@ static void Create_Units(bool official) {
         **	sum of the distance between this waypoint and all other taken
         **	waypoints.
         */
-        if (!taken[index]) {
+        if (!base::At(taken, index)) {
           for (int trypoint = 0; trypoint < num_waypts; trypoint++) {
-            if (taken[trypoint]) {
-              score[index] += Distance(Cell_Coord(waypts[index]),
-                                       Cell_Coord(waypts[trypoint]));
+            if (base::At(taken, trypoint)) {
+              base::At(score, index) +=
+                  Distance(Cell_Coord(base::At(waypts, index)),
+                           Cell_Coord(base::At(waypts, trypoint)));
             }
           }
         }
@@ -2733,8 +2735,8 @@ static void Create_Units(bool official) {
       int best = 0;
       int bestvalue = 0;
       for (int searchindex = 0; searchindex < num_waypts; searchindex++) {
-        if (score[searchindex] > bestvalue || bestvalue == 0) {
-          bestvalue = score[searchindex];
+        if (base::At(score, searchindex) > bestvalue || bestvalue == 0) {
+          bestvalue = base::At(score, searchindex);
           best = searchindex;
         }
       }
@@ -2742,8 +2744,8 @@ static void Create_Units(bool official) {
       /*
       **	Assign this best position to the house.
       */
-      centroid = waypts[best];
-      taken[best] = true;
+      centroid = base::At(waypts, best);
+      base::At(taken, best) = true;
       numtaken++;
     }
 
@@ -2797,12 +2799,12 @@ static void Create_Units(bool official) {
       /*
       **	Place objects; loop through all unit in this category
       */
-      for (j = 0; j < num_units[i] * scaleval; j++) {
+      for (j = 0; j < base::At(num_units, i) * scaleval; j++) {
         /*
         **	Create an Ally unit
         */
         if (hptr->ActLike != HOUSE_USSR && hptr->ActLike != HOUSE_UKRAINE) {
-          for (const auto k : utable[i].AllyType) {
+          for (const auto k : base::At(utable, i).AllyType) {
             if (k != UNIT_NONE) {
               obj = new UnitClass(k, house);
               if (!Scan_Place_Object(obj, centerpt)) {
@@ -2820,7 +2822,7 @@ static void Create_Units(bool official) {
           /*
           **	Create a Soviet unit
           */
-          for (const auto k : utable[i].SovietType) {
+          for (const auto k : base::At(utable, i).SovietType) {
             if (k != UNIT_NONE) {
               obj = new UnitClass(k, house);
               if (!Scan_Place_Object(obj, centerpt)) {
@@ -2850,15 +2852,15 @@ static void Create_Units(bool official) {
       /*
       **	Place objects; loop through all unit in this category
       */
-      for (j = 0; j < num_infantry[i] * scaleval; j++) {
+      for (j = 0; j < base::At(num_infantry, i) * scaleval; j++) {
         /*
         **	Create Ally infantry (Note: Unlimbo calls Enter_Idle_Mode(),
         *which *	assigns the infantry to HUNT; we must use Set_Mission()
         *to override *	this state.)
         */
         if (hptr->ActLike != HOUSE_USSR && hptr->ActLike != HOUSE_UKRAINE) {
-          for (int k = 0; k < itable[i].AllyCount; k++) {
-            obj = new InfantryClass(itable[i].AllyType, house);
+          for (int k = 0; k < base::At(itable, i).AllyCount; k++) {
+            obj = new InfantryClass(base::At(itable, i).AllyType, house);
             if (!Scan_Place_Object(obj, centerpt)) {
               delete obj;
             } else {
@@ -2873,8 +2875,8 @@ static void Create_Units(bool official) {
           /*
           **	Create Soviet infantry
           */
-          for (int k = 0; k < itable[i].SovietCount; k++) {
-            obj = new InfantryClass(itable[i].SovietType, house);
+          for (int k = 0; k < base::At(itable, i).SovietCount; k++) {
+            obj = new InfantryClass(base::At(itable, i).SovietType, house);
             if (!Scan_Place_Object(obj, centerpt)) {
               delete obj;
             } else {

@@ -54,6 +54,7 @@
 #include <string>
 #include <utility>
 
+#include "base/array.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
 #include "port/ex_string.h"
@@ -274,10 +275,10 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
   */
   switch (Event) {
     case TEVENT_GLOBAL_SET:
-      return Scen.GlobalFlags[Data.Value];
+      return base::At(Scen.GlobalFlags, Data.Value);
 
     case TEVENT_GLOBAL_CLEAR:
-      return !Scen.GlobalFlags[Data.Value];
+      return !base::At(Scen.GlobalFlags, Data.Value);
 
     case TEVENT_MISSION_TIMER_EXPIRED:
       return Scen.MissionTimer.IsRunning() && Scen.MissionTimer.IsFinished();

@@ -53,6 +53,7 @@
 #include <cstdint>
 #include <filesystem>
 
+#include "base/array.h"
 #include "base/enum_array.h"
 #include "port/ex_string.h"
 #include "sdllib/shape.h"
@@ -315,8 +316,8 @@ void SmudgeTypeClass::Display(int x, int y, WindowNumberType window,
                               HousesType /*unused*/) const {
   const void* ptr = Get_Image_Data();
 
-  x += WindowList[static_cast<int>(window)][kWindowX] * 8;
-  y += WindowList[static_cast<int>(window)][kWindowY];
+  x += base::At(WindowList[static_cast<int>(window)], kWindowX) * 8;
+  y += base::At(WindowList[static_cast<int>(window)], kWindowY);
 
   if (ptr) {
     for (int w = 0; w < Width; w++) {

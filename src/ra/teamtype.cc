@@ -73,6 +73,7 @@
 #include <utility>
 
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
@@ -441,13 +442,12 @@ TeamTypeClass* TeamTypeClass::Suggested_New_Team(
 
     if (ttype != nullptr && ttype->House == house->Class->House &&
         ttype->Number < maxnum) {
-      choices[choicecount++] = ttype;
-
+      base::At(choices, choicecount++) = ttype;
     }
   }
 
   if (choicecount > 0) {
-    return choices[Random_Pick(0, choicecount - 1)];
+    return base::At(choices, Random_Pick(0, choicecount - 1));
   }
   return nullptr;
 
@@ -897,7 +897,7 @@ bool TeamTypeClass::Edit() {
       TPF_EFNT | TPF_NOSHADOW, MixArchive::Retrieve("EBTN-UP.SHP"),
       MixArchive::Retrieve("EBTN-DN.SHP"));
   for (int index = 0; index < MissionCount; index++) {
-    missionlist2.Add_Item(new TeamMissionClass(MissionList[index]));
+    missionlist2.Add_Item(new TeamMissionClass(base::At(MissionList, index)));
     //		missionlist2.Add_Item(&TeamMissions[MissionList[index].Mission]);
   }
   static int tabs[] = {13, 40};  // list box tab stops
@@ -1336,8 +1336,8 @@ bool TeamTypeClass::Edit() {
 
         MissionCount = missionlist2.Count();
         for (int index = 0; index < MissionCount; index++) {
-          MissionList[index].Data.Value = 0;  // Clears extra bits.
-          MissionList[index] = *missionlist2[index];
+          base::At(MissionList, index).Data.Value = 0;  // Clears extra bits.
+          base::At(MissionList, index) = *missionlist2[index];
         }
 
         if (strlen(originbtn.Get_Text())) {
@@ -1443,10 +1443,10 @@ const char* TeamTypeClass::Member_Description() const {
     for (int index = 0; index < ClassCount; index++) {
       char txt[10];
 
-      port::SafeAppend(buffer, Members[index].Class->IniName);
+      port::SafeAppend(buffer, base::At(Members, index).Class->IniName);
       port::SafeAppend(buffer, ":");
 
-      absl::SNPrintF(txt, sizeof(txt), "%d", Members[index].Quantity);
+      absl::SNPrintF(txt, sizeof(txt), "%d", base::At(Members, index).Quantity);
       port::SafeAppend(buffer, txt);
 
       if (index < ClassCount - 1) {
@@ -1768,8 +1768,9 @@ void TeamTypeClass::Fill_In(const char* name, char* entry) {
     **	If the name was resolved, add this class
     */
     if (otype) {
-      Members[index].Class = otype;
-      Members[index].Quantity = tech::ParseInteger<int>(p2).value_or(0);
+      base::At(Members, index).Class = otype;
+      base::At(Members, index).Quantity =
+          tech::ParseInteger<int>(p2).value_or(0);
     } else {
       ClassCount--;
       if (index == 0) {
@@ -1789,9 +1790,9 @@ void TeamTypeClass::Fill_In(const char* name, char* entry) {
     return;
   }
   for (int index = 0; index < MissionCount; index++) {
-    MissionList[index].Mission = static_cast<TeamMissionType>(
+    base::At(MissionList, index).Mission = static_cast<TeamMissionType>(
         tech::ParseInteger<int>(tokens.Next(",:")).value_or(0));
-    MissionList[index].Data.Value =
+    base::At(MissionList, index).Data.Value =
         tech::ParseInteger<int>(tokens.Next(",:")).value_or(0);
   }
 
@@ -1875,8 +1876,9 @@ void TeamTypeClass::Build_INI_Entry(char* buf) {
   absl::SNPrintF(buf, sizeof(buf), ",%d", ClassCount);
   buf += strlen(buf);
   for (int i = 0; i < ClassCount; i++) {
-    absl::SNPrintF(buf, sizeof(buf), ",%s:%d", Members[i].Class->IniName,
-                   Members[i].Quantity);
+    absl::SNPrintF(buf, sizeof(buf), ",%s:%d",
+                   base::At(Members, i).Class->IniName,
+                   base::At(Members, i).Quantity);
     buf += strlen(buf);
   }
 
@@ -1886,8 +1888,8 @@ void TeamTypeClass::Build_INI_Entry(char* buf) {
   absl::SNPrintF(buf, sizeof(buf), ",%d", MissionCount);
   buf += strlen(buf);
   for (int i = 0; i < MissionCount; i++) {
-    absl::SNPrintF(buf, sizeof(buf), ",%d:%d", MissionList[i].Mission,
-                   MissionList[i].Data.Value);
+    absl::SNPrintF(buf, sizeof(buf), ",%d:%d", base::At(MissionList, i).Mission,
+                   base::At(MissionList, i).Data.Value);
     buf += strlen(buf);
   }
 }
