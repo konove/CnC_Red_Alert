@@ -81,6 +81,7 @@
 #include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
+#include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/types.h"
 #include "magic_enum/magic_enum.hpp"
@@ -1445,7 +1446,7 @@ bool Parse_Command_Line(int argc, char* argv[]) {
       */
       if (i >= 4) {
         Session.IsBridge = 1;
-        memset(node, 0xff, 6);
+        base::FillBytes(base::ObjectBytes(node), 0xff, 6);
         Session.BridgeNet = IPXAddressClass(net, node);
       }
       continue;
@@ -1619,7 +1620,7 @@ uint32_t Obfuscate(const char* string) {
   if (!string) {
     return 0;
   }
-  memset(buffer, '\xA5', sizeof(buffer));
+  base::FillBytes(base::ObjectBytes(buffer), '\xA5', sizeof(buffer));
 
   /*
   **	Copy key phrase into a working buffer. This hides any transformation
@@ -1983,7 +1984,7 @@ static void Init_Color_Remaps() {
   /*
   ** Set up the metallic remap table for the font that prints over the tabs
   */
-  memset(&MetalScheme, 4, sizeof(MetalScheme));
+  base::FillBytes(base::ObjectBytes(MetalScheme), 4, sizeof(MetalScheme));
   for (int color_counter = 0; color_counter < 16; color_counter++) {
     base::At(MetalScheme.FontRemap, color_counter) =
         static_cast<unsigned char>(color_counter);

@@ -53,6 +53,7 @@
 #include "absl/log/log.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
+#include "base/buffer.h"
 #include "base/seek_origin.h"
 #include "base/types.h"
 #include "magic_enum/magic_enum.hpp"
@@ -485,7 +486,7 @@ bool Save_Game(int id, const char* descr, bool /*unused*/) {
   **	here ensures we can always pull out the house for this file.)
   */
   char descr_buf[kDescripMax];
-  memset(descr_buf, '\0', sizeof(descr_buf));
+  base::FillBytes(base::ObjectBytes(descr_buf), '\0', sizeof(descr_buf));
   absl::SNPrintF(descr_buf, sizeof(descr_buf), "%s\r\n",
                  descr);                  // put CR-LF after text
   base::At(descr_buf, std::string_view(descr_buf).size() + 1) =
@@ -994,10 +995,13 @@ bool Load_Game(int id) {
       */
       for (int s = 0; s < Session.Scenarios.Count(); s++) {
         if (Session.Scenarios[s]->Description() == Scen.Description) {
-          memcpy(Session.Options.ScenarioDescription, Scen.Description,
-                 sizeof(Session.Options.ScenarioDescription));
-          memcpy(Session.ScenarioFileName, Scen.ScenarioName,
-                 sizeof(Session.ScenarioFileName));
+          base::CopyBytes(
+              base::ObjectBytes(Session.Options.ScenarioDescription),
+              base::ObjectBytes(Scen.Description),
+              sizeof(Session.Options.ScenarioDescription));
+          base::CopyBytes(base::ObjectBytes(Session.ScenarioFileName),
+                          base::ObjectBytes(Scen.ScenarioName),
+                          sizeof(Session.ScenarioFileName));
           Session.ScenarioFileLength =
               static_cast<decltype(Session.ScenarioFileLength)>(
                   scenario_file.Size());

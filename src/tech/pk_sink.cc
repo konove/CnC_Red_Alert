@@ -22,6 +22,7 @@
 #include <memory>
 #include <span>
 
+#include "base/buffer.h"
 #include "base/numeric.h"
 #include "tech/blowfish.h"
 #include "tech/blowfish_sink.h"
@@ -38,7 +39,7 @@ std::unique_ptr<BlowfishSink> MakePkEncryptSink(ByteSink& sink, const PKey& key,
                                                 RandomSource& rng) {
   // Generate a random blowfish key.
   char blowfish_key[kMaxKeyBlockSize];
-  memset(blowfish_key, 0, sizeof(blowfish_key));
+  base::FillBytes(base::ObjectBytes(blowfish_key), 0, sizeof(blowfish_key));
   rng.Read(
       std::as_writable_bytes(std::span(blowfish_key).first(kBlowfishKeySize)));
 

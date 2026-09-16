@@ -59,6 +59,7 @@
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
+#include "base/buffer.h"
 #include "base/types.h"
 #include "ra/ccptr.h"
 #include "ra/config.h"
@@ -732,7 +733,8 @@ void Cycle_Wait_Click(bool cycle) {
       // send a timing packet if enough time has gone by.
       //
       if (TickCount.Value() - timingtime > PACKET_TIMING_TIMEOUT) {
-        memset(&sendpacket, 0, sizeof(SerialPacketType));
+        base::FillBytes(base::ObjectBytes(sendpacket), 0,
+                        sizeof(SerialPacketType));
         sendpacket.Command = SERIAL_SCORE_SCREEN;
         sendpacket.ScenarioInfo.ResponseTime = NullModem.Response_Time();
         sendpacket.ID = static_cast<unsigned char>(Session.ModemType);

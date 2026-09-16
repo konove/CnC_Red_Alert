@@ -61,6 +61,7 @@
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
+#include "base/buffer.h"
 #include "base/numeric.h"
 #include "port/ex_string.h"
 #include "sdllib/misc.h"
@@ -840,7 +841,7 @@ static void Assign_Houses() {
     /*
     **	Set the house's IsHuman, Credits, ActLike, & RemapTable
     */
-    memset(housep->Name, 0, MPLAYER_NAME_MAX);
+    base::FillBytes(base::ObjectBytes(housep->Name), 0, MPLAYER_NAME_MAX);
     strncpy(housep->Name, base::At(MPlayerNames, i), MPLAYER_NAME_MAX - 1);
     housep->IsHuman = true;
     housep->Init_Data(color, pref_house, MPlayerCredits);

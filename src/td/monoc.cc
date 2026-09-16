@@ -58,10 +58,12 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
+#include <span>
 #include <string>
 #include <string_view>
 
 #include "base/array.h"
+#include "base/buffer.h"
 
 // extern void output(short port, short data);
 // #pragma aux output parm [dx] [ax] =		\
@@ -564,7 +566,8 @@ void MonoClass::View() {
   if (displace) {
     char temp[kSizeOfPage];
 
-    memcpy(&temp[0], MonoRAM, kSizeOfPage);
+    base::CopyBytes(std::as_writable_bytes(base::Suffix(temp, 0)),
+                    base::ObjectBytes(MonoRAM), kSizeOfPage);
     memcpy(MonoRAM, (MonoRAM + Offset(0, 0)), kSizeOfPage);
     memcpy((MonoRAM + Offset(0, 0)), &temp[0], kSizeOfPage);
 

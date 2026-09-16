@@ -29,6 +29,7 @@
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
+#include "base/buffer.h"
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
@@ -174,7 +175,7 @@ WOL_GameSetupDialog::WOL_GameSetupDialog(WolapiObject* wolapi, bool bIsHost)
       pWO(wolapi) {
   *szSendBuffer = 0;
   *szHouseBuffer = 0;
-  memset(&GParamsLastSent, 0, sizeof(GAMEPARAMS));
+  base::FillBytes(base::ObjectBytes(GParamsLastSent), 0, sizeof(GAMEPARAMS));
   *szNameOfHostWhoJustBailedOnUs = 0;
   *szTriggerGameStartInfo = 0;
 }
@@ -3587,7 +3588,8 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
   //	Add all other players to Session.Players list (if they have a valid
   // color - see just above). 	Also in this step - build the scenario download
   // requests array (used by hosts only).
-  memset(Session.ScenarioRequests, 0, sizeof(Session.ScenarioRequests));
+  base::FillBytes(base::ObjectBytes(Session.ScenarioRequests), 0,
+                  sizeof(Session.ScenarioRequests));
   Session.RequestCount = 0;
   for (int iItem = 0; iItem < pILPlayers->Count(); iItem++) {
     //	The following is not very efficient, but doesn't have to be. Better in
@@ -3614,9 +3616,9 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
       }
       NetNumType net;
       NetNodeType node;
-      memset(net, 0, 4);
-      memset(node, 0, 6);
-      memcpy(node, &lAddress, 4);
+      base::FillBytes(base::ObjectBytes(net), 0, 4);
+      base::FillBytes(base::ObjectBytes(node), 0, 6);
+      base::CopyBytes(base::ObjectBytes(node), base::ObjectBytes(lAddress), 4);
       // memcpy( node + 2, &lAddress, 4 );
       pPlayerNew->Address.Set_Address(net, node);
       // pPlayerNew->Address = Session.GAddress;

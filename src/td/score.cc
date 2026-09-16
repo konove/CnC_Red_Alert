@@ -61,6 +61,7 @@
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
+#include "base/buffer.h"
 #include "base/types.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/file_access.h"
@@ -1004,8 +1005,8 @@ void ScoreClass::Presentation() {
       base::At(hallfame, index).level = Scenario;
       //			hallfame[index].level = BuildLevel;
       // hallfame[index].name[0] = 0;	// blank out the name
-      memset(base::At(hallfame, index).name, ' ',
-             sizeof(hallfame[index].name) - 1);
+      base::FillBytes(base::ObjectBytes(base::At(hallfame, index).name), ' ',
+                      sizeof(hallfame[index].name) - 1);
       base::At(base::At(hallfame, index).name,
                sizeof(hallfame[index].name) - 1) = 0;
       break;

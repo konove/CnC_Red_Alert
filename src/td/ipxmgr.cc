@@ -1567,7 +1567,7 @@ void* IPXManagerClass::Oldest_Send() {
  * HISTORY:                                                                *
  *   07/06/1995 BRR : Created.                                             *
  *=========================================================================*/
-void IPXManagerClass::Set_Bridge(NetNumType bridge) {
+void IPXManagerClass::Set_Bridge(const NetNumType& bridge) {
   if (GlobalChannel) {
     GlobalChannel->Set_Bridge(bridge);
   }

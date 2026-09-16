@@ -49,6 +49,7 @@
 #include <utility>
 
 #include "base/array.h"
+#include "base/buffer.h"
 #include "base/numeric.h"
 #include "port/unaligned.h"
 
@@ -204,7 +205,8 @@ Sha1Digest SHAEngine::Digest() const {
   const int32_t length = Length + PartialCount;
   int partialcount = PartialCount;
   char partial[SRC_BLOCK_SIZE];
-  memcpy(partial, Partial, sizeof(Partial));
+  base::CopyBytes(base::ObjectBytes(partial), base::ObjectBytes(Partial),
+                  sizeof(Partial));
 
   /*
   **	Cap the end of the source data stream with a 1 bit.

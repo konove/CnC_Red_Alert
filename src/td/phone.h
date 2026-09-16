@@ -36,7 +36,10 @@
 #define CNC_RED_ALERT_TD_PHONE_H_
 
 #include <cstring>
+#include <span>
 #include <string_view>
+
+#include "base/buffer.h"
 
 /*
 ***************************** Class Declaration *****************************
@@ -49,22 +52,34 @@ class PhoneEntryClass {
   PhoneEntryClass() = default;
 
   bool operator==(PhoneEntryClass& obj) {
-    return memcmp(Name, obj.Name, std::string_view(Name).size()) == 0;
+    return base::CompareBytes(base::ObjectBytes(Name),
+                              base::ObjectBytes(obj.Name),
+                              std::string_view(Name).size()) == 0;
   }
   bool operator!=(PhoneEntryClass& obj) {
-    return memcmp(Name, obj.Name, std::string_view(Name).size()) != 0;
+    return base::CompareBytes(base::ObjectBytes(Name),
+                              base::ObjectBytes(obj.Name),
+                              std::string_view(Name).size()) != 0;
   }
   bool operator>(PhoneEntryClass& obj) {
-    return memcmp(Name, obj.Name, std::string_view(Name).size()) > 0;
+    return base::CompareBytes(base::ObjectBytes(Name),
+                              base::ObjectBytes(obj.Name),
+                              std::string_view(Name).size()) > 0;
   }
   bool operator<(PhoneEntryClass& obj) {
-    return memcmp(Name, obj.Name, std::string_view(Name).size()) < 0;
+    return base::CompareBytes(base::ObjectBytes(Name),
+                              base::ObjectBytes(obj.Name),
+                              std::string_view(Name).size()) < 0;
   }
   bool operator>=(PhoneEntryClass& obj) {
-    return memcmp(Name, obj.Name, std::string_view(Name).size()) >= 0;
+    return base::CompareBytes(base::ObjectBytes(Name),
+                              base::ObjectBytes(obj.Name),
+                              std::string_view(Name).size()) >= 0;
   }
   bool operator<=(PhoneEntryClass& obj) {
-    return memcmp(Name, obj.Name, std::string_view(Name).size()) <= 0;
+    return base::CompareBytes(base::ObjectBytes(Name),
+                              base::ObjectBytes(obj.Name),
+                              std::string_view(Name).size()) <= 0;
   }
 
   SerialSettingsType Settings = {};

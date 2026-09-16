@@ -62,6 +62,7 @@
 #include <cstring>
 
 #include "base/array.h"
+#include "base/buffer.h"
 #include "base/numeric.h"
 #include "port/safe_string.h"
 #include "port/socket_bytes.h"
@@ -391,8 +392,10 @@ bool TcpipManagerClass::Add_Client() {
   /*
   ** Save the clients address
   */
-  memcpy(&ClientIPAddress, &addr.sin_addr.s_addr, 4);
-  memcpy(&UDPIPAddress, &addr.sin_addr.s_addr, 4);
+  base::CopyBytes(base::ObjectBytes(ClientIPAddress),
+                  base::ObjectBytes(addr.sin_addr.s_addr), 4);
+  base::CopyBytes(base::ObjectBytes(UDPIPAddress),
+                  base::ObjectBytes(addr.sin_addr.s_addr), 4);
 
   /*
   ** Create our UDP socket

@@ -12,9 +12,11 @@
 
 #include <cstdint>
 #include <cstring>
+#include <span>
 #include <utility>
 
 #include "absl/log/log.h"
+#include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/types.h"
 #include "sdllib/gbuffer.h"
@@ -137,7 +139,8 @@ void WWMouseClass::Set_Cursor(int xhotspot, int yhotspot, const void* cursor) {
   auto* outptr = MouseCursor.data();
 
   // Pre-zero buffer: RLE decoding may not write every pixel explicitly.
-  memset(MouseCursor.data(), 0, base::ToSize(remaining));
+  base::FillBytes(std::as_writable_bytes(std::span(MouseCursor)), 0,
+                  base::ToSize(remaining));
 
   do {
     const uint8_t pixel = *inptr++;

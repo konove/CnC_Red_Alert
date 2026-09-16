@@ -56,6 +56,7 @@
 #include <cstring>
 
 #include "absl/strings/str_format.h"
+#include "base/buffer.h"
 #include "base/numeric.h"
 #include "port/socket_bytes.h"
 #include "port/unaligned.h"
@@ -296,7 +297,8 @@ void UDPInterfaceClass::Broadcast(void* buffer, int buffer_len) {
     /*
     ** Set up the send address for this packet.
     */
-    memset(packet->Address, 0, sizeof(packet->Address));
+    base::FillBytes(base::ObjectBytes(packet->Address), 0,
+                    sizeof(packet->Address));
     memcpy(packet->Address + 4, BroadcastAddresses[i], 4);
 
     /*
@@ -355,8 +357,10 @@ void UDPInterfaceClass::Event_Handler(int /*socket*/, SocketEvent event) {
         */
         packet = new WinsockBufferType;
         packet->BufferLen = rc;
-        memcpy(packet->Buffer, ReceiveBuffer, base::ToSize(rc));
-        memset(packet->Address, 0, sizeof(packet->Address));
+        base::CopyBytes(base::ObjectBytes(packet->Buffer),
+                        base::ObjectBytes(ReceiveBuffer), base::ToSize(rc));
+        base::FillBytes(base::ObjectBytes(packet->Address), 0,
+                        sizeof(packet->Address));
         memcpy(packet->Address + 4, &addr.sin_addr.s_addr, 4);
         if (!InBuffers.Add(packet)) {
           delete packet;

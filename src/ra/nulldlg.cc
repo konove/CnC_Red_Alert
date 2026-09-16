@@ -63,6 +63,7 @@
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
+#include "base/buffer.h"
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
@@ -394,7 +395,7 @@ int Test_Null_Modem() {
   ** hasn't received it yet.
   */
   if (process) {
-    memset(&SendPacket, 0, sizeof(SerialPacketType));
+    base::FillBytes(base::ObjectBytes(SendPacket), 0, sizeof(SerialPacketType));
     SendPacket.Command = SERIAL_CONNECT;
     //
     // put time from start of game for determining the host in case of tie.
@@ -721,7 +722,8 @@ static int Reconnect_Null_Modem() {
     */
     if (TickCount.Value() - starttime > PACKET_RETRANS_TIME) {
       starttime = TickCount.Value();
-      memset(&SendPacket, 0, sizeof(SerialPacketType));
+      base::FillBytes(base::ObjectBytes(SendPacket), 0,
+                      sizeof(SerialPacketType));
       SendPacket.Command = SERIAL_CONNECT;
       SendPacket.ID = static_cast<unsigned char>(Session.ColorIdx);
       NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 0);
@@ -746,7 +748,8 @@ static int Reconnect_Null_Modem() {
         ** OK, we got our message; now we have to make certain the other
         ** guy gets his, so send him one with an ACK required.
         */
-        memset(&SendPacket, 0, sizeof(SerialPacketType));
+        base::FillBytes(base::ObjectBytes(SendPacket), 0,
+                        sizeof(SerialPacketType));
         SendPacket.Command = SERIAL_CONNECT;
         SendPacket.ID = static_cast<unsigned char>(Session.ColorIdx);
         NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 1);

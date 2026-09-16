@@ -52,6 +52,7 @@
 #include <random>
 
 #include "base/array.h"
+#include "base/buffer.h"
 #include "base/numeric.h"
 #include "tech/byte_source.h"
 #include "tech/int.h"
@@ -257,7 +258,8 @@ void PKey::Generate(ByteSource& random, int bits, PKey& fastkey,
     **	Compare the pre and post processing buffer. A match indicates
     **	a valid key pair.
     */
-    if (memcmp(before, after, base::ToSize(fastkey.Plain_Block_Size())) == 0) {
+    if (base::CompareBytes(base::ObjectBytes(before), base::ObjectBytes(after),
+                           base::ToSize(fastkey.Plain_Block_Size())) == 0) {
       break;
     }
   }

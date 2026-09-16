@@ -115,11 +115,13 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
+#include <span>
 #include <string_view>
 #include <utility>
 
 #include "absl/log/check.h"
 #include "base/array.h"
+#include "base/buffer.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
 #include "port/ex_string.h"
@@ -458,7 +460,8 @@ HouseClass::HouseClass(HousesType house)
   UnitFactories = 0;
   UnitFactory = -1;
   UScan = 0;
-  memset(&Regions[0], 0x00, sizeof(Regions));
+  base::FillBytes(std::as_writable_bytes(base::Suffix(Regions, 0)), 0x00,
+                  sizeof(Regions));
 
   Init_Trackers();
 }

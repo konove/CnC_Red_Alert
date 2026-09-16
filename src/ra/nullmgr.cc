@@ -66,6 +66,7 @@
 
 #include "absl/log/log.h"
 #include "absl/strings/str_format.h"
+#include "base/buffer.h"
 #include "base/numeric.h"
 #include "port/aligned_buffer.h"
 #include "port/safe_string.h"
@@ -1641,7 +1642,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
         delay = ModemWaitCarrier;
         display = REDRAW_ALL;
       } else if (strncmp(comm_buffer, "CON", 3) == 0) {
-        memset(ModemRXString, 0, 80);
+        base::FillBytes(base::ObjectBytes(ModemRXString), 0, 80);
         strncpy(ModemRXString, comm_buffer, 79);
         dialstatus = DIAL_CONNECTED;
         process = false;

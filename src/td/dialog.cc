@@ -53,12 +53,14 @@
 #include <algorithm>
 #include <cstdio>
 #include <cstring>
+#include <span>
 #include <string>
 #include <string_view>
 
 #include "absl/strings/str_format.h"
 #include "absl/types/span.h"
 #include "base/array.h"
+#include "base/buffer.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
 #include "port/format.h"
@@ -379,7 +381,8 @@ void Simple_Text_Print(const char* text, int x, int y, int fore,
   ///////////////////////#endif	//(0)
 
   unsigned char fontpalette[16];  // Working font palette array.
-  memset(&fontpalette[0], back, 16);
+  base::FillBytes(std::as_writable_bytes(base::Suffix(fontpalette, 0)), back,
+                  16);
 
   if ((flag & static_cast<TextPrintType>(0xF)) == TPF_VCR) {
     fontpalette[3] = 12;
@@ -421,23 +424,27 @@ void Simple_Text_Print(const char* text, int x, int y, int fore,
     **	according to the color index specified.
     */
     if (base::Any(flag & TPF_USE_GRAD_PAL)) {
-      memcpy(&fontpalette[0], base::At(_textfontpal, fore % 16), 16);
+      base::CopyBytes(std::as_writable_bytes(base::Suffix(fontpalette, 0)),
+                      base::ObjectBytes(base::At(_textfontpal, fore % 16)), 16);
     } else {
       /*
       **	Special adjustment for fonts that have gradient artwork. When
       *there is *	no special gradient effect desired, then set the font
       *color based on the *	forground color specified.
       */
-      memset(&fontpalette[4], fore, 12);
+      base::FillBytes(std::as_writable_bytes(base::Suffix(fontpalette, 4)),
+                      fore, 12);
     }
 
     if (base::Any(flag & TPF_MEDIUM_COLOR)) {
       fore = base::At(_textpalmedium, fore % 16);
-      memset(&fontpalette[4], fore, 12);
+      base::FillBytes(std::as_writable_bytes(base::Suffix(fontpalette, 4)),
+                      fore, 12);
     } else {
       if (base::Any(flag & TPF_BRIGHT_COLOR)) {
         fore = base::At(_textpalbright, fore % 16);
-        memset(&fontpalette[4], fore, 12);
+        base::FillBytes(std::as_writable_bytes(base::Suffix(fontpalette, 4)),
+                        fore, 12);
       } else {
         fore = fontpalette[1];
       }

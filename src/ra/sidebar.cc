@@ -90,11 +90,13 @@
 
 #include "ra/sidebar.h"
 
+#include <algorithm>
 #include <cassert>
 #include <cstdint>
 #include <cstring>
 #include <filesystem>
 #include <new>
+#include <span>
 #include <string>
 
 #include "base/array.h"
@@ -136,6 +138,7 @@
 #include "sdllib/wwstd.h"
 #include "tech/fixed.h"
 #include "tech/mix_archive.h"
+#include "tech/rgb.h"
 
 const void* SidebarClass::SidebarShape = nullptr;
 const void* SidebarClass::SidebarMiddleShape = nullptr;
@@ -1169,7 +1172,8 @@ void SidebarClass::StripClass::Init_Theater(TheaterType theater) {
     **	Make sure that remapping doesn't occur on the colors that cycle.
     */
     PaletteClass pal = OriginalPalette;
-    memset(&pal[kCycleColorStart], 0x3f, std::size_t{kCycleColorCount} * 3);
+    std::ranges::fill(pal.colors().subspan(kCycleColorStart, kCycleColorCount),
+                      RGBClass(0x3f, 0x3f, 0x3f));
     Build_Translucent_Table(pal, &ClockCols[0], 1, ClockTranslucentTable);
 
     /*

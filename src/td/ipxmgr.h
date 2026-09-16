@@ -192,7 +192,7 @@ class IPXManagerClass : public ConnManClass {
   [[nodiscard]] int Is_IPX() const;
   void Set_Timing(int32_t retrydelta, int32_t maxretries,
                   int32_t timeout) override;
-  void Set_Bridge(NetNumType bridge);
+  void Set_Bridge(const NetNumType& bridge);
 
   /*.....................................................................
   These routines control creation of the "Connections" (data queues) for

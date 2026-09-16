@@ -98,8 +98,10 @@
 #include <cstdlib>
 #include <cstring>
 #include <iterator>
+#include <span>
 
 #include "base/array.h"
+#include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/types.h"
 #include "magic_enum/magic_enum.hpp"
@@ -2231,8 +2233,9 @@ void FootClass::Handle_Navigation_List() {
     */
     if (Target_Legal(target)) {
       Assign_Destination(target);
-      memmove(&NavQueue[0], &NavQueue[1],
-              sizeof(NavQueue) - sizeof(NavQueue[0]));
+      base::MoveBytes(std::as_writable_bytes(base::Suffix(NavQueue, 0)),
+                      std::as_bytes(base::Suffix(NavQueue, 1)),
+                      sizeof(NavQueue) - sizeof(NavQueue[0]));
       base::At(NavQueue, std::ssize(NavQueue) - 1) = kTargetNone;
 
       /*

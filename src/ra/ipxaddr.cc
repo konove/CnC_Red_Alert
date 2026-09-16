@@ -49,6 +49,7 @@
 
 #include <cstring>
 
+#include "base/buffer.h"
 #include "port/bytes_of.h"
 #include "ra/_wsproto.h"
 #include "ra/ipx.h"
@@ -110,9 +111,10 @@ IPXAddressClass::IPXAddressClass() noexcept {
  * HISTORY:                                                                *
  *   12/19/1994 BR : Created.                                              *
  *=========================================================================*/
-IPXAddressClass::IPXAddressClass(NetNumType net, NetNodeType node) {
-  memcpy(NetworkNumber, net, 4);
-  memcpy(NodeAddress, node, 6);
+IPXAddressClass::IPXAddressClass(const NetNumType& net,
+                                 const NetNodeType& node) {
+  base::CopyBytes(base::ObjectBytes(NetworkNumber), base::ObjectBytes(net), 4);
+  base::CopyBytes(base::ObjectBytes(NodeAddress), base::ObjectBytes(node), 6);
 
 } /* end of IPXAddressClass */
 
@@ -139,8 +141,10 @@ IPXAddressClass::IPXAddressClass(NetNumType net, NetNodeType node) {
  *   12/19/1994 BR : Created.                                              *
  *=========================================================================*/
 IPXAddressClass::IPXAddressClass(IPXHeaderType* header) {
-  memcpy(NetworkNumber, header->SourceNetworkNumber, 4);
-  memcpy(NodeAddress, header->SourceNetworkNode, 6);
+  base::CopyBytes(base::ObjectBytes(NetworkNumber),
+                  base::ObjectBytes(header->SourceNetworkNumber), 4);
+  base::CopyBytes(base::ObjectBytes(NodeAddress),
+                  base::ObjectBytes(header->SourceNetworkNode), 6);
 
 } /* end of IPXAddressClass */
 
@@ -163,9 +167,10 @@ IPXAddressClass::IPXAddressClass(IPXHeaderType* header) {
  * HISTORY:                                                                *
  *   12/19/1994 BR : Created.                                              *
  *=========================================================================*/
-void IPXAddressClass::Set_Address(NetNumType net, NetNodeType node) {
-  memcpy(NetworkNumber, net, 4);
-  memcpy(NodeAddress, node, 6);
+void IPXAddressClass::Set_Address(const NetNumType& net,
+                                  const NetNodeType& node) {
+  base::CopyBytes(base::ObjectBytes(NetworkNumber), base::ObjectBytes(net), 4);
+  base::CopyBytes(base::ObjectBytes(NodeAddress), base::ObjectBytes(node), 6);
 
 } /* end of Set_Address */
 
@@ -200,15 +205,17 @@ void IPXAddressClass::Set_Address(IPXHeaderType* header) {
 
   switch (protocol) {
     case PROTOCOL_IPX:
-      memcpy(NetworkNumber, header->SourceNetworkNumber, 4);
-      memcpy(NodeAddress, header->SourceNetworkNode, 6);
+      base::CopyBytes(base::ObjectBytes(NetworkNumber),
+                      base::ObjectBytes(header->SourceNetworkNumber), 4);
+      base::CopyBytes(base::ObjectBytes(NodeAddress),
+                      base::ObjectBytes(header->SourceNetworkNode), 6);
       break;
 
     case PROTOCOL_UDP: {
       const unsigned char* addr = port::BytesOf(*header);
-      memset(NodeAddress, 0, 6);
+      base::FillBytes(base::ObjectBytes(NodeAddress), 0, 6);
       memcpy(NodeAddress, addr, 4);
-      memset(NetworkNumber, 0, 4);
+      base::FillBytes(base::ObjectBytes(NetworkNumber), 0, 4);
       break;
     }
     default:
@@ -236,9 +243,9 @@ void IPXAddressClass::Set_Address(IPXHeaderType* header) {
  * HISTORY:                                                                *
  *   12/19/1994 BR : Created.                                              *
  *=========================================================================*/
-void IPXAddressClass::Get_Address(NetNumType net, NetNodeType node) {
-  memcpy(net, NetworkNumber, 4);
-  memcpy(node, NodeAddress, 6);
+void IPXAddressClass::Get_Address(NetNumType& net, NetNodeType& node) {
+  base::CopyBytes(base::ObjectBytes(net), base::ObjectBytes(NetworkNumber), 4);
+  base::CopyBytes(base::ObjectBytes(node), base::ObjectBytes(NodeAddress), 6);
 
 } /* end of Get_Address */
 
@@ -263,8 +270,10 @@ void IPXAddressClass::Get_Address(NetNumType net, NetNodeType node) {
  *   12/19/1994 BR : Created.                                              *
  *=========================================================================*/
 void IPXAddressClass::Get_Address(IPXHeaderType* header) {
-  memcpy(header->DestNetworkNumber, NetworkNumber, 4);
-  memcpy(header->DestNetworkNode, NodeAddress, 6);
+  base::CopyBytes(base::ObjectBytes(header->DestNetworkNumber),
+                  base::ObjectBytes(NetworkNumber), 4);
+  base::CopyBytes(base::ObjectBytes(header->DestNetworkNode),
+                  base::ObjectBytes(NodeAddress), 6);
 
 } /* end of Get_Address */
 
@@ -330,13 +339,16 @@ bool IPXAddressClass::operator==(IPXAddressClass& addr) {
        NetworkNumber[2] == 0 && NetworkNumber[3] == 0) ||
       (addr.NetworkNumber[0] == 0 && addr.NetworkNumber[1] == 0 &&
        addr.NetworkNumber[2] == 0 && addr.NetworkNumber[3] == 0)) {
-    return memcmp(NodeAddress, addr.NodeAddress, 6) == 0;
+    return base::CompareBytes(base::ObjectBytes(NodeAddress),
+                              base::ObjectBytes(addr.NodeAddress), 6) == 0;
   }
   //------------------------------------------------------------------------
   //	Otherwise, compare both the Network Numbers and Node Addresses
   //------------------------------------------------------------------------
-  if (memcmp(NodeAddress, addr.NodeAddress, 6) == 0 &&
-      memcmp(NetworkNumber, addr.NetworkNumber, 4) == 0) {
+  if (base::CompareBytes(base::ObjectBytes(NodeAddress),
+                         base::ObjectBytes(addr.NodeAddress), 6) == 0 &&
+      base::CompareBytes(base::ObjectBytes(NetworkNumber),
+                         base::ObjectBytes(addr.NetworkNumber), 4) == 0) {
     return true;
   }
   return false;
@@ -375,13 +387,16 @@ bool IPXAddressClass::operator!=(IPXAddressClass& addr) {
        NetworkNumber[2] == 0 && NetworkNumber[3] == 0) ||
       (addr.NetworkNumber[0] == 0 && addr.NetworkNumber[1] == 0 &&
        addr.NetworkNumber[2] == 0 && addr.NetworkNumber[3] == 0)) {
-    return memcmp(NodeAddress, addr.NodeAddress, 6) != 0;
+    return base::CompareBytes(base::ObjectBytes(NodeAddress),
+                              base::ObjectBytes(addr.NodeAddress), 6) != 0;
   }
   //------------------------------------------------------------------------
   //	Otherwise, compare both the Network Numbers and Node Addresses
   //------------------------------------------------------------------------
-  if (memcmp(NodeAddress, addr.NodeAddress, 6) == 0 &&
-      memcmp(NetworkNumber, addr.NetworkNumber, 4) == 0) {
+  if (base::CompareBytes(base::ObjectBytes(NodeAddress),
+                         base::ObjectBytes(addr.NodeAddress), 6) == 0 &&
+      base::CompareBytes(base::ObjectBytes(NetworkNumber),
+                         base::ObjectBytes(addr.NetworkNumber), 4) == 0) {
     return false;
   }
   return true;

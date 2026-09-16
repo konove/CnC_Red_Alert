@@ -59,6 +59,7 @@
 
 #include "absl/log/log.h"
 #include "absl/strings/str_format.h"
+#include "base/buffer.h"
 #include "port/ex_string.h"
 #include "port/random_seed.h"
 #include "port/safe_string.h"
@@ -206,7 +207,7 @@ bool Init_Game(int /*unused*/, char* /*unused*/[]) {
   **	Initialize all the waypoints to invalid values.
   */
   DLOG(INFO) << "C&C95 - About to clear waypoints";
-  memset(Waypoint, 0xFF, sizeof(Waypoint));
+  base::FillBytes(base::ObjectBytes(Waypoint), 0xFF, sizeof(Waypoint));
 
   /*
   **	Setup the keyboard processor in preparation for the game.

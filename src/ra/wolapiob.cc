@@ -25,6 +25,7 @@
 #include <span>
 
 #include "absl/strings/str_format.h"
+#include "base/buffer.h"
 #include "port/win32/win32_types.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"
@@ -974,7 +975,7 @@ HRESULT WolapiObject::ChannelJoin(const char* szChannelName,
                                   const char* szKey) {
   //	Used for CHAT channels (or lobbies) only. Channel type is set to 0.
   Channel ChannelTemp;
-  memset(&ChannelTemp, 0, sizeof(ChannelTemp));
+  base::FillBytes(base::ObjectBytes(ChannelTemp), 0, sizeof(ChannelTemp));
   port::SafeCopy(WolText(ChannelTemp.name), szChannelName,
                  sizeof(ChannelTemp.name));
   port::SafeCopy(WolText(ChannelTemp.key), szKey, sizeof(ChannelTemp.key));
@@ -1617,7 +1618,7 @@ bool WolapiObject::ChannelCreate(
   Channel ChannelNew;
 
   //	Prepare the struct.
-  memset(&ChannelNew, 0, sizeof(ChannelNew));
+  base::FillBytes(base::ObjectBytes(ChannelNew), 0, sizeof(ChannelNew));
 
   if (!bGame) {
     //	ChannelNew.type = 0;	0 for chat channel.

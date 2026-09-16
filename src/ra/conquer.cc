@@ -46,6 +46,7 @@
 #include "absl/log/log.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
+#include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/types.h"
 #include "magic_enum/magic_enum.hpp"
@@ -471,8 +472,8 @@ static void Toggle_Formation() {
   // is a reply to whoever paged me from outside the game".
   NetNumType blip;
   NetNodeType blop;
-  memset(blip, 0, sizeof(blip));
-  memset(blop, 0, sizeof(blop));
+  base::FillBytes(base::ObjectBytes(blip), 0, sizeof(blip));
+  base::FillBytes(base::ObjectBytes(blop), 0, sizeof(blop));
   Session.MessageAddress = IPXAddressClass(blip, blop);
 
   // Tell pWolapi not to reset szExternalPager while the reply is being typed.
@@ -573,7 +574,7 @@ static void Message_Input(KeyNumType& input) {
   if (Session.Type != GAME_NORMAL && Session.Type != GAME_SKIRMISH &&
       input >= KN_F1 && input < KN_F1 + Session.MaxPlayers &&
       !Session.Messages.Is_Edit()) {
-    memset(txt, 0, 40);
+    base::FillBytes(base::ObjectBytes(txt), 0, 40);
 
     // For a serial game, send a message on F1 or F4; set 'txt' to the
     // "Message:" string & add an editable message to the list.

@@ -63,3 +63,21 @@ Replaced 293 `strlen`/`strcmp` calls in 68 files with string-view operations, us
 operators and `empty()` where appropriate. These retain the existing null-terminated-string
 contracts and comparison ordering. Both strict game builds, all 486 CTest tests, and both save/load
 smoke checks pass (240 RA positions and 5,742 TD states).
+
+### Bounded memory operations
+
+Migrated 155 memory operations to checked byte spans or typed palette ranges. `ObjectBytes` takes a
+real object reference and rejects pointer types, avoiding confusion between a pointer variable's
+storage and its allocation. Array-typedef parameters in the IPX address and bridge APIs now retain
+their extents through references; the optional immediate address is a span. Palette bulk operations
+use a color span instead of treating one color as an entire palette tail.
+
+The byte-view constructor has one narrow unsafe-container annotation: it creates a span of exactly
+one existing `T` from a reference, with no caller-provided pointer/count pair. The byte-operation
+tests also annotate formatted diagnostics inside GoogleTest's death-test macro. Neither annotation
+conceals an unbounded project indexing or copy operation.
+
+Both strict game builds, all 492 CTest tests, and both save/load smoke checks pass (240 RA positions
+and 5,742 TD states). The existing player-address serialization test caught a decayed-array
+migration error before commit; the pointer constraint and extent-preserving signatures correct that
+class of error.

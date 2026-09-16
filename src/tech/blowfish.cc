@@ -53,6 +53,7 @@
 
 #include "absl/log/check.h"
 #include "base/array.h"
+#include "base/buffer.h"
 #include "base/numeric.h"
 
 /*
@@ -123,9 +124,12 @@ void BlowfishEngine::Submit_Key(const void* key, int length) {
   **	Initialize the permutation and S-Box tables to a known
   **	constant value.
   */
-  memcpy(P_Encrypt, P_Init, sizeof(P_Init));
-  memcpy(P_Decrypt, P_Init, sizeof(P_Init));
-  memcpy(bf_S, S_Init, sizeof(S_Init));
+  base::CopyBytes(base::ObjectBytes(P_Encrypt), base::ObjectBytes(P_Init),
+                  sizeof(P_Init));
+  base::CopyBytes(base::ObjectBytes(P_Decrypt), base::ObjectBytes(P_Init),
+                  sizeof(P_Init));
+  base::CopyBytes(base::ObjectBytes(bf_S), base::ObjectBytes(S_Init),
+                  sizeof(S_Init));
 
   /*
   **	Validate parameters.

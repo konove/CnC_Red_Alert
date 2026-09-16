@@ -105,10 +105,12 @@
 #include <cstdlib>
 #include <cstring>
 #include <iterator>
+#include <span>
 #include <utility>
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
+#include "base/buffer.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
@@ -3810,7 +3812,9 @@ void InfantryClass::Movement_AI() {
       */
       Mark(MARK_UP);
       if (Distance(Head_To_Coord()) < 0x0010) {
-        memmove(&Path[0], &Path[1], sizeof(Path) - sizeof(Path[0]));
+        base::MoveBytes(std::as_writable_bytes(base::Suffix(Path, 0)),
+                        std::as_bytes(base::Suffix(Path, 1)),
+                        sizeof(Path) - sizeof(Path[0]));
         Path[(sizeof(Path) / sizeof(Path[0])) - 1] = FACING_NONE;
         Coord = Head_To_Coord();
         Per_Cell_Process(PCP_END);

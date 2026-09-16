@@ -53,6 +53,7 @@
 #include <string_view>
 
 #include "base/array.h"
+#include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/types.h"
 #include "port/safe_string.h"
@@ -367,7 +368,8 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
   for (int i = 0; i < MAX_NUM_MESSAGES; i++) {
     if (base::At(BufferAvail, i)) {
       base::At(BufferAvail, i) = 0;
-      memset(base::At(MessageBuffers, i), 0, MAX_MESSAGE_LENGTH + 30);
+      base::FillBytes(base::ObjectBytes(base::At(MessageBuffers, i)), 0,
+                      MAX_MESSAGE_LENGTH + 30);
       port::SafeCopy(base::At(MessageBuffers, i), txt);
 
       /*

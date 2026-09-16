@@ -53,11 +53,13 @@
 #include <algorithm>
 #include <cstdio>
 #include <cstring>
+#include <span>
 #include <string>
 
 #include "absl/strings/str_format.h"
 #include "absl/types/span.h"
 #include "base/array.h"
+#include "base/buffer.h"
 #include "base/numeric.h"
 #include "port/format.h"
 #include "port/safe_string.h"
@@ -414,7 +416,8 @@ void Simple_Text_Print(const char* text, int x, int y,
   /*
   ** Init the font palette to the given background color
   */
-  memset(&fontpalette[0], back, 16);
+  base::FillBytes(std::as_writable_bytes(base::Suffix(fontpalette, 0)), back,
+                  16);
 
   int forecolor = fore->Color;
 
@@ -429,13 +432,15 @@ void Simple_Text_Print(const char* text, int x, int y,
     *otherwise *	use the foreground color as the entire font remap color.
     */
     if (base::Any(flag & TPF_USE_GRAD_PAL)) {
-      memcpy(fontpalette, fore->FontRemap, 16);
+      base::CopyBytes(base::ObjectBytes(fontpalette),
+                      base::ObjectBytes(fore->FontRemap), 16);
       forecolor = fore->Color;
       if (point == TPF_TYPE) {
         forecolor = fontpalette[1];
       }
     } else {
-      memset(&fontpalette[4], fore->Color, 12);
+      base::FillBytes(std::as_writable_bytes(base::Suffix(fontpalette, 4)),
+                      fore->Color, 12);
       forecolor = fore->Color;
     }
 
@@ -445,7 +450,8 @@ void Simple_Text_Print(const char* text, int x, int y,
     */
     if (base::Any(flag & TPF_MEDIUM_COLOR)) {
       forecolor = fore->Color;
-      memset(&fontpalette[4], fore->Color, 12);
+      base::FillBytes(std::as_writable_bytes(base::Suffix(fontpalette, 4)),
+                      fore->Color, 12);
     }
 
     /*
@@ -454,7 +460,8 @@ void Simple_Text_Print(const char* text, int x, int y,
     */
     if (base::Any(flag & TPF_BRIGHT_COLOR)) {
       forecolor = fore->Bright;
-      memset(&fontpalette[4], fore->BrightColor, 12);
+      base::FillBytes(std::as_writable_bytes(base::Suffix(fontpalette, 4)),
+                      fore->BrightColor, 12);
     }
   }
 
@@ -841,7 +848,8 @@ void Plain_Text_Print(const int text, const int x, const int y, const int fore,
                       const absl::Span<const absl::FormatArg> args) {
   RemapControlType scheme{};
 
-  memset(&scheme.FontRemap[4], fore, 12);
+  base::FillBytes(std::as_writable_bytes(base::Suffix(scheme.FontRemap, 4)),
+                  fore, 12);
 
   scheme.BrightColor = static_cast<unsigned char>(fore);
   scheme.Color = static_cast<unsigned char>(fore);
@@ -887,7 +895,8 @@ void Plain_Text_Print(const char* text, const int x, const int y,
                       const absl::Span<const absl::FormatArg> args) {
   RemapControlType scheme{};
 
-  memset(&scheme.FontRemap[4], fore, 12);
+  base::FillBytes(std::as_writable_bytes(base::Suffix(scheme.FontRemap, 4)),
+                  fore, 12);
 
   scheme.BrightColor = static_cast<unsigned char>(fore);
   scheme.Color = static_cast<unsigned char>(fore);

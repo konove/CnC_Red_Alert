@@ -74,12 +74,14 @@
 #include <cstdlib>
 #include <cstring>
 #include <iterator>
+#include <span>
 #include <string>
 #include <string_view>
 
 #include "absl/log/log.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
+#include "base/buffer.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
@@ -206,8 +208,8 @@ ScenarioClass::ScenarioClass()
   port::SafeCopy(Description, "");
   port::SafeCopy(ScenarioName, "");
   port::SafeCopy(BriefingText, "");
-  memset(GlobalFlags, '\0', sizeof(GlobalFlags));
-  memset(Views, '\0', sizeof(Views));
+  base::FillBytes(base::ObjectBytes(GlobalFlags), '\0', sizeof(GlobalFlags));
+  base::FillBytes(base::ObjectBytes(Views), '\0', sizeof(Views));
 }
 
 /***********************************************************************************************
@@ -702,7 +704,8 @@ void Clear_Scenario() {
   Scen.TransitTheme = THEME_NONE;
   Scen.Percent = 0;
 
-  memset(Scen.GlobalFlags, 0, sizeof(Scen.GlobalFlags));
+  base::FillBytes(base::ObjectBytes(Scen.GlobalFlags), 0,
+                  sizeof(Scen.GlobalFlags));
 
   MapTriggers.Clear();
   LogicTriggers.Clear();
@@ -897,7 +900,8 @@ void Do_Win() {
         char buf[10];
         Scen.Scenario++;
         absl::SNPrintF(buf, sizeof(buf), "%02d", Scen.Scenario);
-        memcpy(&scenarioname[3], buf, 2);
+        base::CopyBytes(std::as_writable_bytes(base::Suffix(scenarioname, 3)),
+                        base::ObjectBytes(buf), 2);
         Scen.Set_Scenario_Name(scenarioname);
       } else {
         Scen.ScenarioName[6] = 'B';
@@ -1774,7 +1778,8 @@ void ScenarioClass::Set_Scenario_Name(const char* name) {
     base::At(ScenarioName, std::ssize(ScenarioName) - 1) = '\0';
 
     char buf[3];
-    memcpy(buf, &ScenarioName[3], 2);
+    base::CopyBytes(base::ObjectBytes(buf),
+                    std::as_bytes(base::Suffix(ScenarioName, 3)), 2);
     buf[2] = '\0';
     if (buf[0] > '9' || buf[1] > '9') {
       char first = buf[0];
@@ -2705,7 +2710,7 @@ static void Create_Units(bool official) {
       *giving *	a distance score to all waypoints.
       */
       int score[26];
-      memset(score, '\0', sizeof(score));
+      base::FillBytes(base::ObjectBytes(score), '\0', sizeof(score));
 
       /*
       **	Scan through all waypoints and give a score as a value of the

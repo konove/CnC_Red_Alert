@@ -52,6 +52,7 @@
 #include "absl/log/initialize.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
+#include "base/buffer.h"
 #include "port/bytes_of.h"
 #include "port/tokenizer.h"
 #include "port/win32/win32_registry.h"
@@ -581,7 +582,7 @@ void Read_Setup_Options(DiskFile* config_file) {
     ** See if a destination network has been specified
     */
     char netbuf[512];
-    memset(netbuf, 0, sizeof(netbuf));
+    base::FillBytes(base::ObjectBytes(netbuf), 0, sizeof(netbuf));
     const char* netptr = netbuf;
     const bool found = ini.Get_String("Options", "DestNet", nullptr, netbuf,
                                       sizeof(netbuf)) != 0;
@@ -615,7 +616,7 @@ void Read_Setup_Options(DiskFile* config_file) {
       */
       if (i >= 4) {
         Session.IsBridge = 1;
-        memset(node, 0xff, 6);
+        base::FillBytes(base::ObjectBytes(node), 0xff, 6);
         Session.BridgeNet = IPXAddressClass(net, node);
       }
     }

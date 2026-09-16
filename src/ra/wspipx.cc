@@ -46,6 +46,7 @@
 
 #include <cstring>
 
+#include "base/buffer.h"
 #include "ra/wsproto.h"
 
 #ifdef _WIN32
@@ -76,9 +77,10 @@ IPXInterfaceClass::IPXInterfaceClass() {
   /*
   ** Set the net and node addressed to their default values.
   */
-  memset(BroadcastNet, 0xff, sizeof(BroadcastNet));
-  memset(BroadcastNode, 0xff, sizeof(BroadcastNode));
-  memset(MyNode, 0xff, sizeof(MyNode));
+  base::FillBytes(base::ObjectBytes(BroadcastNet), 0xff, sizeof(BroadcastNet));
+  base::FillBytes(base::ObjectBytes(BroadcastNode), 0xff,
+                  sizeof(BroadcastNode));
+  base::FillBytes(base::ObjectBytes(MyNode), 0xff, sizeof(MyNode));
 }
 
 /***********************************************************************************************

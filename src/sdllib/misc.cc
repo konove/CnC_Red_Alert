@@ -7,9 +7,11 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <span>
 
 #include "absl/log/check.h"
 #include "absl/strings/str_format.h"
+#include "base/buffer.h"
 #include "base/hsv.h"
 #include "sdllib/timer.h"
 #include "sdllib/ww_win.h"
@@ -146,7 +148,8 @@ uint8_t Random() {
   // The generator shifts and carries through the bytes of RandNumb, low byte
   // first, so it works on a copy of them and stores the result back.
   std::array<uint8_t, sizeof(RandNumb)> r{};
-  std::memcpy(r.data(), &RandNumb, sizeof(RandNumb));
+  base::CopyBytes(std::as_writable_bytes(std::span(r)),
+                  base::ObjectBytes(RandNumb), sizeof(RandNumb));
 
   uint8_t tmp = r[0] >> 1;
   const uint8_t c = tmp & 1;
@@ -163,7 +166,8 @@ uint8_t Random() {
 
   r[0] = static_cast<uint8_t>((r[0] / 2) + (c3 * 128));
 
-  std::memcpy(&RandNumb, r.data(), sizeof(RandNumb));
+  base::CopyBytes(base::ObjectBytes(RandNumb), std::as_bytes(std::span(r)),
+                  sizeof(RandNumb));
   return r[0] ^ r[1];
 }
 

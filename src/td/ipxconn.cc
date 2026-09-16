@@ -52,7 +52,9 @@
 
 #include <cstdint>
 #include <cstring>
+#include <span>
 
+#include "base/buffer.h"
 #include "port/safe_string.h"
 #include "td/ipx.h"
 #include "td/ipx95.h"
@@ -136,19 +138,21 @@ IPXConnClass::IPXConnClass(int numsend, int numreceive, int maxlen,
       .....................................................................*/
       if (ConnectionNum != 0) {
         if (IPX_Get_Local_Target(net, node, Socket, ImmediateAddress) != 0) {
-          memcpy(ImmediateAddress, node, 6);
+          base::CopyBytes(base::ObjectBytes(ImmediateAddress),
+                          base::ObjectBytes(node), 6);
         }
       } else {
         /*.....................................................................
         Otherwise, use the destination node address as the ImmediateAddress, and
         just hope there's no network bridge in the path.
         .....................................................................*/
-        memcpy(ImmediateAddress, node, 6);
+        base::CopyBytes(base::ObjectBytes(ImmediateAddress),
+                        base::ObjectBytes(node), 6);
       }
 
       Immed_Set = 1;
     } else {
-      memset(ImmediateAddress, 0, 6);
+      base::FillBytes(base::ObjectBytes(ImmediateAddress), 0, 6);
       Immed_Set = 0;
     }
   }
@@ -429,7 +433,7 @@ int IPXConnClass::Send(void* buf, int buflen) {
   if (Immed_Set) {
     return Send_To(buf, buflen, &Address, ImmediateAddress);
   }
-  return Send_To(buf, buflen, &Address, nullptr);
+  return Send_To(buf, buflen, &Address, {});
 
 } /* end of Send */
 
@@ -559,7 +563,7 @@ void IPXConnClass::Close_Socket(uint16_t socket) {
  *   12/16/1994 BR : Created.                                              *
  *=========================================================================*/
 int IPXConnClass::Send_To(void* buf, int buflen, IPXAddressClass* address,
-                          NetNodeType immed) {
+                          std::span<const unsigned char> immed) {
   NetNumType net;
   NetNodeType node;
   int rc = 0;
@@ -568,8 +572,8 @@ int IPXConnClass::Send_To(void* buf, int buflen, IPXAddressClass* address,
 
   if (Winsock.Get_Connected()) {
 #ifdef VIRTUAL_SUBNET_SERVER
-    if (immed) {
-      memcpy(send_address, immed, 6);
+    if (!immed.empty()) {
+      base::CopyBytes(base::ObjectBytes(send_address), std::as_bytes(immed), 6);
     } else {
       address->Get_Address(net, node);
       memcpy(send_address, node, 6);
@@ -594,8 +598,8 @@ int IPXConnClass::Send_To(void* buf, int buflen, IPXAddressClass* address,
     return 1;
   }
 
-  if (immed) {
-    memcpy(send_address, immed, 6);
+  if (!immed.empty()) {
+    base::CopyBytes(base::ObjectBytes(send_address), std::as_bytes(immed), 6);
     // memcpy(node, immed, 6);
     // memset (net, 0, sizeof(net) );
     address->Get_Address(net, node);
@@ -615,7 +619,8 @@ int IPXConnClass::Send_To(void* buf, int buflen, IPXAddressClass* address,
       Otherwise, use the destination node address as the ImmediateAddress, and
       just hope there's no network bridge in the path.
       .....................................................................*/
-      memcpy(send_address, node, 6);
+      base::CopyBytes(base::ObjectBytes(send_address), base::ObjectBytes(node),
+                      6);
     }
   }
 

@@ -4,7 +4,9 @@
 #include <array>
 #include <cstdint>
 #include <cstring>
+#include <span>
 
+#include "base/buffer.h"
 #include "gtest/gtest.h"
 #include "td/defines.h"
 #include "td/inline.h"
@@ -14,13 +16,15 @@ namespace {
 // The legacy implementations read COORDINATE through byte and word pointers.
 uint8_t LegacyByte(COORDINATE coord, int index) {
   std::array<uint8_t, sizeof(coord)> bytes{};
-  std::memcpy(bytes.data(), &coord, sizeof(coord));
+  base::CopyBytes(std::as_writable_bytes(std::span(bytes)),
+                  base::ObjectBytes(coord), sizeof(coord));
   return bytes.at(static_cast<std::size_t>(index));
 }
 
 uint16_t LegacyWord(COORDINATE coord, int index) {
   std::array<uint16_t, 2> words{};
-  std::memcpy(words.data(), &coord, sizeof(coord));
+  base::CopyBytes(std::as_writable_bytes(std::span(words)),
+                  base::ObjectBytes(coord), sizeof(coord));
   return words.at(static_cast<std::size_t>(index));
 }
 
@@ -41,8 +45,8 @@ COORDINATE LegacyMid(COORDINATE coord1, COORDINATE coord2) {
 int LegacyDirDiff(DirType dir1, DirType dir2) {
   signed char first = 0;
   signed char second = 0;
-  std::memcpy(&first, &dir1, 1);
-  std::memcpy(&second, &dir2, 1);
+  base::CopyBytes(base::ObjectBytes(first), base::ObjectBytes(dir1), 1);
+  base::CopyBytes(base::ObjectBytes(second), base::ObjectBytes(dir2), 1);
   return second - first;
 }
 

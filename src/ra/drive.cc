@@ -68,8 +68,10 @@
 #include <cstdlib>
 #include <cstring>
 #include <iterator>
+#include <span>
 
 #include "base/array.h"
+#include "base/buffer.h"
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/building.h"
@@ -733,7 +735,9 @@ bool DriveClass::While_Moving() {
                 }
                 if (Start_Driver(c)) {
                   Set_Speed(oldspeed);
-                  memmove(&Path[0], &Path[1], kConquerPathMax - 1);
+                  base::MoveBytes(std::as_writable_bytes(base::Suffix(Path, 0)),
+                                  std::as_bytes(base::Suffix(Path, 1)),
+                                  kConquerPathMax - 1);
                   Path[kConquerPathMax - 1] = FACING_NONE;
                 } else {
                   Path[0] = FACING_NONE;
@@ -1213,12 +1217,16 @@ bool DriveClass::Start_Of_Move() {
           return true;
         }
       } else {
-        memmove(&Path[0], &Path[2], kConquerPathMax - 2);
+        base::MoveBytes(std::as_writable_bytes(base::Suffix(Path, 0)),
+                        std::as_bytes(base::Suffix(Path, 2)),
+                        kConquerPathMax - 2);
         Path[kConquerPathMax - 2] = FACING_NONE;
         IsPlanningToLook = true;
       }
     } else {
-      memmove(&Path[0], &Path[1], kConquerPathMax - 1);
+      base::MoveBytes(std::as_writable_bytes(base::Suffix(Path, 0)),
+                      std::as_bytes(base::Suffix(Path, 1)),
+                      kConquerPathMax - 1);
     }
     Path[kConquerPathMax - 1] = FACING_NONE;
   }

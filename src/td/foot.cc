@@ -93,6 +93,7 @@
 #include <iterator>
 
 #include "base/array.h"
+#include "base/buffer.h"
 #include "base/numeric.h"
 #include "rand.h"
 #include "sdllib/ww_mouse.h"
@@ -493,7 +494,8 @@ bool FootClass::Basic_Path() {
         if (path && path->Cost &&
             path->Cost < std::max(path1.Cost + (path1.Cost / 2), 3)) {
           memcpy(&path1, path, sizeof(path1));
-          memcpy(workpath1, workpath2, sizeof(workpath1));
+          base::CopyBytes(base::ObjectBytes(workpath1),
+                          base::ObjectBytes(workpath2), sizeof(workpath1));
         } else {
           /*
           **	The easiest path method didn't result in a satisfactory path.
@@ -505,7 +507,8 @@ bool FootClass::Basic_Path() {
             if (path && path->Cost &&
                 path->Cost < std::max(path1.Cost + (path1.Cost / 2), 3)) {
               memcpy(&path1, path, sizeof(path1));
-              memcpy(workpath1, workpath2, sizeof(workpath1));
+              base::CopyBytes(base::ObjectBytes(workpath1),
+                              base::ObjectBytes(workpath2), sizeof(workpath1));
             }
           }
         }

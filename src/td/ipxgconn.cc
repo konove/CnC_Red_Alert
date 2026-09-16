@@ -75,6 +75,7 @@
 #include <cstring>
 #include <utility>
 
+#include "base/buffer.h"
 #include "base/numeric.h"
 #include "port/aligned_buffer.h"
 #include "port/unaligned.h"
@@ -391,7 +392,7 @@ int IPXGlobalConnClass::Send(void* buf, int buflen) {
   if (IsBridge && !memcmp(addr, BridgeNet, 4)) {
     rc = Send_To(buf, buflen, addr, BridgeNode);
   } else {
-    rc = Send_To(buf, buflen, addr, nullptr);
+    rc = Send_To(buf, buflen, addr, {});
   }
   return rc;
 
@@ -501,10 +502,10 @@ int IPXGlobalConnClass::Service_Receive_Queue() {
  * HISTORY:                                                                *
  *   07/06/1995 BRR : Created.                                             *
  *=========================================================================*/
-void IPXGlobalConnClass::Set_Bridge(NetNumType bridge) {
+void IPXGlobalConnClass::Set_Bridge(const NetNumType& bridge) {
   if (Configured) {
-    memcpy(BridgeNet, bridge, 4);
-    memset(BridgeNode, 0xff, 6);
+    base::CopyBytes(base::ObjectBytes(BridgeNet), base::ObjectBytes(bridge), 4);
+    base::FillBytes(base::ObjectBytes(BridgeNode), 0xff, 6);
 
     if (IPX_Get_Local_Target(BridgeNet, BridgeNode, Socket, BridgeNode) == 0) {
       IsBridge = 1;

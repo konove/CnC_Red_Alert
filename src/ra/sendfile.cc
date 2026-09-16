@@ -48,6 +48,7 @@
 #include <string>
 
 #include "base/array.h"
+#include "base/buffer.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
@@ -138,11 +139,12 @@ bool Get_Scenario_File_From_Host(char* return_name, size_t dest_size,
   ** Send the scenario request using guaranteed delivery.
   */
   if (!gametype) {
-    memset(&send_packet, 0, sizeof(send_packet));
+    base::FillBytes(base::ObjectBytes(send_packet), 0, sizeof(send_packet));
     send_packet.Command = SERIAL_REQ_SCENARIO;
     NullModem.Send_Message(&send_packet, sizeof(send_packet), 1);
   } else {
-    memset(&net_send_packet, 0, sizeof(net_send_packet));
+    base::FillBytes(base::ObjectBytes(net_send_packet), 0,
+                    sizeof(net_send_packet));
     net_send_packet.Command = NET_REQ_SCENARIO;
     Ipx.Send_Global_Message(&net_send_packet, sizeof(net_send_packet), 1,
                             &Session.HostAddress);

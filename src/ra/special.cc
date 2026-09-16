@@ -50,6 +50,7 @@
 #include <utility>
 
 #include "base/array.h"
+#include "base/buffer.h"
 #include "port/safe_string.h"
 #include "ra/checkbox.h"
 #include "ra/conquer.h"
@@ -287,7 +288,7 @@ class PWEditClass : public EditClass {
 void PWEditClass::Draw_Text(const char* text) {
   char buffer[80];
 
-  memset(buffer, '\0', sizeof(buffer));
+  base::FillBytes(base::ObjectBytes(buffer), '\0', sizeof(buffer));
   memset(buffer, '*', std::string_view(text).size());
 
   if (FontPtr == GradFont6Ptr) {
@@ -385,7 +386,7 @@ const char* Fetch_Password(int caption, int message, int btext) {
                           y + height - (bheight + 10), bwidth);
 
   static char pbuffer[45];
-  memset(pbuffer, '\0', sizeof(pbuffer));
+  base::FillBytes(base::ObjectBytes(pbuffer), '\0', sizeof(pbuffer));
   const int editx = x + 52;
   const int editwidth = ((SeenBuff.Get_Width() / 2) - editx) * 2;
   PWEditClass button2(2, &pbuffer[0], sizeof(pbuffer),

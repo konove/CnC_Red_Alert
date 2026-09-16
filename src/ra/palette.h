@@ -1,6 +1,8 @@
 #ifndef CNC_RED_ALERT_RA_PALETTE_H_
 #define CNC_RED_ALERT_RA_PALETTE_H_
 
+#include <span>
+
 #include "absl/base/attributes.h"
 #include "tech/rgb.h"
 
@@ -32,6 +34,16 @@ class PaletteClass {
   operator const unsigned char*() const ABSL_ATTRIBUTE_LIFETIME_BOUND;
 
   static const int COLOR_COUNT = 256;
+
+  // Bounded views retain the number of colors for bulk palette operations.
+  [[nodiscard]] std::span<RGBClass, COLOR_COUNT> colors()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return data_;
+  }
+  [[nodiscard]] std::span<const RGBClass, COLOR_COUNT> colors() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return data_;
+  }
 
   static PaletteClass CurrentPalette;
 

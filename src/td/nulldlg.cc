@@ -61,6 +61,7 @@
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
+#include "base/buffer.h"
 #include "base/numeric.h"
 #include "port/ex_string.h"
 #include "port/random_seed.h"
@@ -393,7 +394,7 @@ int Test_Null_Modem() {
   hasn't received it yet.
   ------------------------------------------------------------------------*/
   if (process) {
-    memset(&SendPacket, 0, sizeof(SerialPacketType));
+    base::FillBytes(base::ObjectBytes(SendPacket), 0, sizeof(SerialPacketType));
     SendPacket.Command = SERIAL_CONNECT;
     //
     // put time from start of game for determining the host in case of tie.

@@ -65,6 +65,7 @@
 #include <utility>
 
 #include "base/array.h"
+#include "base/buffer.h"
 #include "td/aircraft.h"
 #include "td/building.h"
 #include "td/config.h"
@@ -142,8 +143,8 @@ int TeamClass::Validate() const {
  *=============================================================================================*/
 void TeamClass::Init() {
   Teams.Free_All();
-  memset(Number, 0, sizeof(Number));
-  memset(Success, 0, sizeof(Success));
+  base::FillBytes(base::ObjectBytes(Number), 0, sizeof(Number));
+  base::FillBytes(base::ObjectBytes(Success), 0, sizeof(Success));
 }
 
 void* TeamClass::operator new(size_t /*unused*/) noexcept {

@@ -21,6 +21,7 @@
 
 #include "absl/strings/ascii.h"
 #include "absl/strings/match.h"
+#include "base/buffer.h"
 #include "base/seek_origin.h"
 #include "sdllib/file_access.h"
 #include "tech/blowfish_source.h"
@@ -79,13 +80,15 @@ bool MixArchive::Open(std::string_view filename, const PKey* key) {
     // Plain Format: The bytes read into 'alternate' are actually the start of
     // FileHeader. Reassemble via a byte buffer to avoid reinterpret_cast.
     char header_buf[sizeof(file_header)];
-    std::memcpy(header_buf, &alternate, sizeof(alternate));
+    base::CopyBytes(base::ObjectBytes(header_buf), base::ObjectBytes(alternate),
+                    sizeof(alternate));
     const int rest = sizeof(file_header) - sizeof(alternate);
     if (straw->Read(std::as_writable_bytes(
             std::span(header_buf).subspan(sizeof(alternate)))) != rest) {
       return false;
     }
-    std::memcpy(&file_header, header_buf, sizeof(file_header));
+    base::CopyBytes(base::ObjectBytes(file_header),
+                    base::ObjectBytes(header_buf), sizeof(file_header));
   }
 
   // A corrupt header would size the index from a negative count, which makes

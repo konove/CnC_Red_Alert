@@ -65,6 +65,7 @@
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
+#include "base/buffer.h"
 #include "base/numeric.h"
 #include "port/safe_string.h"
 #include "ra/conquer.h"
@@ -406,7 +407,8 @@ TextLabelClass* MessageListClass::Add_Message(const char* name, int id,
   for (i = 0; i < MAX_NUM_MESSAGES; i++) {
     if (base::At(BufferAvail, i)) {
       base::At(BufferAvail, i) = 0;
-      memset(base::At(MessageBuffers, i), 0, MAX_MESSAGE_LENGTH + 30);
+      base::FillBytes(base::ObjectBytes(base::At(MessageBuffers, i)), 0,
+                      MAX_MESSAGE_LENGTH + 30);
       port::SafeCopy(base::At(MessageBuffers, i), message);
       found = 1;
       break;
@@ -760,7 +762,7 @@ TextLabelClass* MessageListClass::Add_Edit(PlayerColorType color,
   //------------------------------------------------------------------------
   //	Initialize the buffer positions; create a new text label object
   //------------------------------------------------------------------------
-  memset(EditBuf, 0, sizeof(EditBuf));
+  base::FillBytes(base::ObjectBytes(EditBuf), 0, sizeof(EditBuf));
   port::SafeCopy(EditBuf, to);
   OverflowBuf[0] = 0;
   EditCurPos = EditInitPos = static_cast<int>(std::string_view(to).size());

@@ -90,6 +90,7 @@
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
+#include "base/buffer.h"
 #include "base/numeric.h"
 #include "port/safe_string.h"
 #include "port/unaligned.h"
@@ -1766,7 +1767,7 @@ static RetcodeType Process_Serial_Packet(const char* multi_packet_buf,
   if (std::cmp_less(packetlen, sizeof(serial_storage.Command))) {
     return RC_SERIAL_PROCESSED;
   }
-  std::memset(&serial_storage, 0, sizeof(serial_storage));
+  base::FillBytes(base::ObjectBytes(serial_storage), 0, sizeof(serial_storage));
   std::memcpy(&serial_storage, multi_packet_buf,
               std::min(sizeof(serial_storage), static_cast<size_t>(packetlen)));
   int player_gone = 0;
@@ -2589,7 +2590,8 @@ int Add_Compressed_Events(void* buf, int bufsize, int frame_delay, int size,
     //---------------------------------------------------------------------
     // Update 'prevevent'
     //---------------------------------------------------------------------
-    memcpy(&prevevent, &OutList.First(), sizeof(EventClass));
+    base::CopyBytes(base::ObjectBytes(prevevent),
+                    base::ObjectBytes(OutList.First()), sizeof(EventClass));
 
     //---------------------------------------------------------------------
     // Go to the next event to process
@@ -2788,7 +2790,8 @@ int Extract_Compressed_Events(void* buf, int bufsize) {
       //..................................................................
       // clear the union data portion of the event
       //..................................................................
-      memset(&eventdata.Data, 0, sizeof(eventdata.Data));
+      base::FillBytes(base::ObjectBytes(eventdata.Data), 0,
+                      sizeof(eventdata.Data));
       eventdata.Type = event_type;
       datasize = EventClass::EventLength[eventdata.Type];
 

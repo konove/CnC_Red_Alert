@@ -52,6 +52,7 @@
 #include <cstdint>
 #include <cstring>
 
+#include "base/buffer.h"
 #include "port/safe_string.h"
 #include "ra/_wsproto.h"
 #include "ra/connect.h"
@@ -124,7 +125,8 @@ IPXConnClass::IPXConnClass(int numsend, int numreceive, int maxlen,
   port::SafeCopy(Name, name);
 
   Address.Get_Address(net, node);
-  memcpy(ImmediateAddress, node, 6);
+  base::CopyBytes(base::ObjectBytes(ImmediateAddress), base::ObjectBytes(node),
+                  6);
   Immed_Set = 0;
 } /* end of IPXConnClass */
 

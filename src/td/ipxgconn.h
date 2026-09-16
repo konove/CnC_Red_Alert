@@ -128,7 +128,7 @@ class IPXGlobalConnClass : public IPXConnClass {
   /*.....................................................................
   This is for telling the connection it can cross a bridge.
   .....................................................................*/
-  void Set_Bridge(NetNumType bridge);
+  void Set_Bridge(const NetNumType& bridge);
 
   /*.....................................................................
   The Product ID for this product.

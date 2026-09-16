@@ -115,6 +115,7 @@
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
+#include "base/buffer.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
 #include "base/types.h"
@@ -436,8 +437,9 @@ void DisplayClass::Init_Theater(TheaterType theater) {
 
   Conquer_Build_Translucent_Table(GamePalette, &UShadowColsAir[0],
                                   kUnitShadowColorCount, UnitShadowAir);
-  memcpy(&UnitShadowAir[256], ColorRemaps[PCOLOR_GOLD].RemapTable,
-         sizeof(ColorRemaps[PCOLOR_GOLD].RemapTable));
+  base::CopyBytes(std::as_writable_bytes(base::Suffix(UnitShadowAir, 256)),
+                  base::ObjectBytes(ColorRemaps[PCOLOR_GOLD].RemapTable),
+                  sizeof(ColorRemaps[PCOLOR_GOLD].RemapTable));
   if (theater == THEATER_SNOW) {
     Conquer_Build_Translucent_Table(GamePalette, &UShadowColsSnow[0],
                                     kUnitShadowColorCount, UnitShadow);

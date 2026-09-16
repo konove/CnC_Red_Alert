@@ -80,6 +80,7 @@
 #include "absl/log/log.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
+#include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/seek_origin.h"
 #include "base/types.h"
@@ -832,7 +833,7 @@ static void Message_Input(KeyNumType& input) {
   */
   if (input >= KN_F1 && input < KN_F1 + MPlayerMax &&
       Messages.Get_Edit_Buf() == nullptr) {
-    memset(txt, 0, 40);
+    base::FillBytes(base::ObjectBytes(txt), 0, 40);
 
     /*
     **	For a serial game, send a message on F1 or F4; set 'txt' to the
@@ -2076,7 +2077,9 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
     return;
   }
 
-  memset(&PaletteInterpolationTable[0][0], 0, 65536);
+  base::FillBytes(
+      std::as_writable_bytes(base::Suffix(PaletteInterpolationTable[0], 0)), 0,
+      65536);
 
   if (name) {
     const auto fullname =

@@ -50,6 +50,7 @@
 ********************************* Includes **********************************
 */
 #include <cstdint>
+#include <span>
 
 #include "td/ipx.h"
 #include "td/ipxaddr.h"
@@ -144,7 +145,7 @@ class IPXConnClass : public NonSequencedConnClass {
   static int Open_Socket(uint16_t socket);
   static void Close_Socket(uint16_t socket);
   static int Send_To(void* buf, int buflen, IPXAddressClass* address,
-                     NetNodeType immed);
+                     std::span<const unsigned char> immed);
   static int Broadcast(void* buf, int buflen);
 
   /*.....................................................................

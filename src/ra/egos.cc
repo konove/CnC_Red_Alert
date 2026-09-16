@@ -47,6 +47,7 @@
 #include <cstring>
 
 #include "base/array.h"
+#include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/types.h"
 #include "port/safe_string.h"
@@ -590,7 +591,7 @@ void Show_Who_Was_Responsible() {
   /*
   ** Work out which palette entries the font needs so we dont fade those colors.
   */
-  memset(PaletteLUT, 1, sizeof(PaletteLUT));
+  base::FillBytes(base::ObjectBytes(PaletteLUT), 1, sizeof(PaletteLUT));
   const PlayerColorType pcolor = PCOLOR_GREEN;
 
   for (int index = 0; index < 6; index++) {
