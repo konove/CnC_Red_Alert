@@ -351,6 +351,9 @@ bool FootClass::Mark(MarkType mark) {
         Map.Refresh_Cells(cell, Occupy_List());
         break;
 
+      case MarkType::MARK_CHANGE:
+      case MarkType::MARK_OVERLAP_DOWN:
+      case MarkType::MARK_OVERLAP_UP:
       default:
         Map.Refresh_Cells(cell, Overlap_List());
         Map.Refresh_Cells(cell, Occupy_List());
@@ -644,6 +647,11 @@ int FootClass::Mission_Guard() {
         dtime *= 2;
         break;
 
+      case VesselType::VESSEL_NONE:
+      case VesselType::VESSEL_SS:
+      case VesselType::VESSEL_TRANSPORT:
+      case VesselType::VESSEL_MISSILESUB:
+      case VesselType::VESSEL_CARRIER:
       default:
         break;
     }
@@ -665,6 +673,31 @@ int FootClass::Mission_Guard() {
         dtime = MissionControl[Mission].AA_Delay();
         break;
 
+      case InfantryType::INFANTRY_NONE:
+      case InfantryType::INFANTRY_E2:
+      case InfantryType::INFANTRY_E4:
+      case InfantryType::INFANTRY_RENOVATOR:
+      case InfantryType::INFANTRY_TANYA:
+      case InfantryType::INFANTRY_SPY:
+      case InfantryType::INFANTRY_THIEF:
+      case InfantryType::INFANTRY_MEDIC:
+      case InfantryType::INFANTRY_GENERAL:
+      case InfantryType::INFANTRY_DOG:
+      case InfantryType::INFANTRY_C1:
+      case InfantryType::INFANTRY_C2:
+      case InfantryType::INFANTRY_C3:
+      case InfantryType::INFANTRY_C4:
+      case InfantryType::INFANTRY_C5:
+      case InfantryType::INFANTRY_C6:
+      case InfantryType::INFANTRY_C7:
+      case InfantryType::INFANTRY_C8:
+      case InfantryType::INFANTRY_C9:
+      case InfantryType::INFANTRY_C10:
+      case InfantryType::INFANTRY_EINSTEIN:
+      case InfantryType::INFANTRY_DELPHI:
+      case InfantryType::INFANTRY_CHAN:
+      case InfantryType::INFANTRY_SHOCK:
+      case InfantryType::INFANTRY_MECHANIC:
       default:
         break;
     }
@@ -1259,6 +1292,30 @@ void FootClass::Active_Click_With(ActionType action, ObjectClass* object) {
       }
       break;
 
+    case ActionType::ACTION_NONE:
+    case ActionType::ACTION_HARVEST:
+    case ActionType::ACTION_SELECT:
+    case ActionType::ACTION_TOGGLE_SELECT:
+    case ActionType::ACTION_REPAIR:
+    case ActionType::ACTION_SELL:
+    case ActionType::ACTION_SELL_UNIT:
+    case ActionType::ACTION_NO_SELL:
+    case ActionType::ACTION_NO_REPAIR:
+    case ActionType::ACTION_PARA_BOMB:
+    case ActionType::ACTION_PARA_INFANTRY:
+    case ActionType::ACTION_PARA_SABOTEUR:
+    case ActionType::ACTION_NUKE_BOMB:
+    case ActionType::ACTION_AIR_STRIKE:
+    case ActionType::ACTION_CHRONOSPHERE:
+    case ActionType::ACTION_CHRONO2:
+    case ActionType::ACTION_IRON_CURTAIN:
+    case ActionType::ACTION_SPY_MISSION:
+    case ActionType::ACTION_HEAL:
+    case ActionType::ACTION_DAMAGE:
+    case ActionType::ACTION_GREPAIR:
+    case ActionType::ACTION_NO_DEPLOY:
+    case ActionType::ACTION_NO_ENTER:
+    case ActionType::ACTION_NO_GREPAIR:
     default:
       break;
   }
@@ -1341,6 +1398,32 @@ void FootClass::Active_Click_With(ActionType action, CELL cell) {
     case ACTION_SABOTAGE:
       Player_Assign_Mission(MISSION_SABOTAGE, kTargetNone, ::As_Target(cell));
       break;
+    case ActionType::ACTION_NONE:
+    case ActionType::ACTION_ENTER:
+    case ActionType::ACTION_SELF:
+    case ActionType::ACTION_SELECT:
+    case ActionType::ACTION_TOGGLE_SELECT:
+    case ActionType::ACTION_REPAIR:
+    case ActionType::ACTION_SELL:
+    case ActionType::ACTION_SELL_UNIT:
+    case ActionType::ACTION_NO_SELL:
+    case ActionType::ACTION_NO_REPAIR:
+    case ActionType::ACTION_PARA_BOMB:
+    case ActionType::ACTION_PARA_INFANTRY:
+    case ActionType::ACTION_PARA_SABOTEUR:
+    case ActionType::ACTION_NUKE_BOMB:
+    case ActionType::ACTION_AIR_STRIKE:
+    case ActionType::ACTION_CHRONOSPHERE:
+    case ActionType::ACTION_CHRONO2:
+    case ActionType::ACTION_IRON_CURTAIN:
+    case ActionType::ACTION_SPY_MISSION:
+    case ActionType::ACTION_GUARD_AREA:
+    case ActionType::ACTION_HEAL:
+    case ActionType::ACTION_DAMAGE:
+    case ActionType::ACTION_GREPAIR:
+    case ActionType::ACTION_NO_DEPLOY:
+    case ActionType::ACTION_NO_ENTER:
+    case ActionType::ACTION_NO_GREPAIR:
     default:
       break;
   }
@@ -1659,6 +1742,34 @@ RadioMessageType FootClass::Receive_Message(RadioClass* from,
         return RADIO_ROGER;
       }
       break;
+    case RadioMessageType::RADIO_STATIC:
+    case RadioMessageType::RADIO_ROGER:
+    case RadioMessageType::RADIO_HELLO:
+    case RadioMessageType::RADIO_OVER_OUT:
+    case RadioMessageType::RADIO_PICK_UP:
+    case RadioMessageType::RADIO_ATTACH:
+    case RadioMessageType::RADIO_DELIVERY:
+    case RadioMessageType::RADIO_HOLD_STILL:
+    case RadioMessageType::RADIO_UNLOADED:
+    case RadioMessageType::RADIO_UNLOAD:
+    case RadioMessageType::RADIO_NEGATIVE:
+    case RadioMessageType::RADIO_BUILDING:
+    case RadioMessageType::RADIO_COMPLETE:
+    case RadioMessageType::RADIO_REDRAW:
+    case RadioMessageType::RADIO_DOCKING:
+    case RadioMessageType::RADIO_CAN_LOAD:
+    case RadioMessageType::RADIO_ARE_REFINERY:
+    case RadioMessageType::RADIO_YEA_NOW_WHAT:
+    case RadioMessageType::RADIO_IM_IN:
+    case RadioMessageType::RADIO_BACKUP_NOW:
+    case RadioMessageType::RADIO_TETHER:
+    case RadioMessageType::RADIO_UNTETHER:
+    case RadioMessageType::RADIO_PREPARED:
+    case RadioMessageType::RADIO_ATTACK_THIS:
+    case RadioMessageType::RADIO_RELOAD:
+    case RadioMessageType::RADIO_CANT:
+    case RadioMessageType::RADIO_ALL_DONE:
+    case RadioMessageType::RADIO_NEED_REPAIR:
     default:
       break;
   }
@@ -2103,6 +2214,35 @@ bool FootClass::Can_Demolish() const {
       }
       break;
 
+    case RTTIType::RTTI_NONE:
+    case RTTIType::RTTI_AIRCRAFTTYPE:
+    case RTTIType::RTTI_ANIM:
+    case RTTIType::RTTI_ANIMTYPE:
+    case RTTIType::RTTI_BUILDING:
+    case RTTIType::RTTI_BUILDINGTYPE:
+    case RTTIType::RTTI_BULLET:
+    case RTTIType::RTTI_BULLETTYPE:
+    case RTTIType::RTTI_CELL:
+    case RTTIType::RTTI_FACTORY:
+    case RTTIType::RTTI_HOUSE:
+    case RTTIType::RTTI_HOUSETYPE:
+    case RTTIType::RTTI_INFANTRY:
+    case RTTIType::RTTI_INFANTRYTYPE:
+    case RTTIType::RTTI_OVERLAY:
+    case RTTIType::RTTI_OVERLAYTYPE:
+    case RTTIType::RTTI_SMUDGE:
+    case RTTIType::RTTI_SMUDGETYPE:
+    case RTTIType::RTTI_SPECIAL:
+    case RTTIType::RTTI_TEAM:
+    case RTTIType::RTTI_TEAMTYPE:
+    case RTTIType::RTTI_TEMPLATE:
+    case RTTIType::RTTI_TEMPLATETYPE:
+    case RTTIType::RTTI_TERRAIN:
+    case RTTIType::RTTI_TERRAINTYPE:
+    case RTTIType::RTTI_TRIGGER:
+    case RTTIType::RTTI_TRIGGERTYPE:
+    case RTTIType::RTTI_UNITTYPE:
+    case RTTIType::RTTI_VESSELTYPE:
     default:
       break;
   }

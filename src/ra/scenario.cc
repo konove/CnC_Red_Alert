@@ -450,6 +450,9 @@ bool Read_Scenario(char* name) {
         break;
       case GAME_SKIRMISH:
       case GAME_INTERNET:
+      case GameType::GAME_MODEM:
+      case GameType::GAME_NULL_MODEM:
+      case GameType::GAME_IPX:
       default:
         readini = bAftermathMultiplayer;
         break;
@@ -1677,6 +1680,9 @@ void ScenarioClass::Set_Scenario_Name(int scenario, ScenarioPlayerType player,
     /*
     **	Multi player scenario.
     */
+    case ScenarioPlayerType::SCEN_PLAYER_NONE:
+    case ScenarioPlayerType::SCEN_PLAYER_2PLAYER:
+    case ScenarioPlayerType::SCEN_PLAYER_MPLAYER:
     default:
       c_player = HouseTypeClass::As_Reference(HOUSE_MULTI1).Prefix;
       break;
@@ -1746,6 +1752,8 @@ void ScenarioClass::Set_Scenario_Name(int scenario, ScenarioPlayerType player,
         c_var = 'D';
         break;
 
+      case ScenarioVarType::SCEN_VAR_NONE:
+      case ScenarioVarType::SCEN_VAR_LOSE:
       default:
         c_var = 'L';
         break;
@@ -3119,6 +3127,7 @@ static CELL Clip_Move(CELL cell, FacingType facing, int dist) {
       x -= dist;
       y -= dist;
       break;
+    case FacingType::FACING_NONE:
     default:
       break;
   }

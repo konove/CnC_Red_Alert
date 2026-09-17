@@ -1370,6 +1370,34 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType /*from*/) const {
           case RTTI_BUILDING:
             return MOVE_NO;
 
+          case RTTIType::RTTI_NONE:
+          case RTTIType::RTTI_AIRCRAFTTYPE:
+          case RTTIType::RTTI_ANIM:
+          case RTTIType::RTTI_ANIMTYPE:
+          case RTTIType::RTTI_BUILDINGTYPE:
+          case RTTIType::RTTI_BULLET:
+          case RTTIType::RTTI_BULLETTYPE:
+          case RTTIType::RTTI_CELL:
+          case RTTIType::RTTI_FACTORY:
+          case RTTIType::RTTI_HOUSE:
+          case RTTIType::RTTI_HOUSETYPE:
+          case RTTIType::RTTI_INFANTRY:
+          case RTTIType::RTTI_INFANTRYTYPE:
+          case RTTIType::RTTI_OVERLAY:
+          case RTTIType::RTTI_OVERLAYTYPE:
+          case RTTIType::RTTI_SMUDGE:
+          case RTTIType::RTTI_SMUDGETYPE:
+          case RTTIType::RTTI_SPECIAL:
+          case RTTIType::RTTI_TEAM:
+          case RTTIType::RTTI_TEAMTYPE:
+          case RTTIType::RTTI_TEMPLATE:
+          case RTTIType::RTTI_TEMPLATETYPE:
+          case RTTIType::RTTI_TERRAINTYPE:
+          case RTTIType::RTTI_TRIGGER:
+          case RTTIType::RTTI_TRIGGERTYPE:
+          case RTTIType::RTTI_UNITTYPE:
+          case RTTIType::RTTI_VESSEL:
+          case RTTIType::RTTI_VESSELTYPE:
           default:
             break;
         }
@@ -1404,6 +1432,36 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType /*from*/) const {
                 break;
               }
               [[fallthrough]];
+            case RTTIType::RTTI_NONE:
+            case RTTIType::RTTI_AIRCRAFT:
+            case RTTIType::RTTI_AIRCRAFTTYPE:
+            case RTTIType::RTTI_ANIM:
+            case RTTIType::RTTI_ANIMTYPE:
+            case RTTIType::RTTI_BUILDING:
+            case RTTIType::RTTI_BUILDINGTYPE:
+            case RTTIType::RTTI_BULLET:
+            case RTTIType::RTTI_BULLETTYPE:
+            case RTTIType::RTTI_CELL:
+            case RTTIType::RTTI_FACTORY:
+            case RTTIType::RTTI_HOUSE:
+            case RTTIType::RTTI_HOUSETYPE:
+            case RTTIType::RTTI_INFANTRYTYPE:
+            case RTTIType::RTTI_OVERLAY:
+            case RTTIType::RTTI_OVERLAYTYPE:
+            case RTTIType::RTTI_SMUDGE:
+            case RTTIType::RTTI_SMUDGETYPE:
+            case RTTIType::RTTI_SPECIAL:
+            case RTTIType::RTTI_TEAM:
+            case RTTIType::RTTI_TEAMTYPE:
+            case RTTIType::RTTI_TEMPLATE:
+            case RTTIType::RTTI_TEMPLATETYPE:
+            case RTTIType::RTTI_TERRAINTYPE:
+            case RTTIType::RTTI_TRIGGER:
+            case RTTIType::RTTI_TRIGGERTYPE:
+            case RTTIType::RTTI_UNIT:
+            case RTTIType::RTTI_UNITTYPE:
+            case RTTIType::RTTI_VESSEL:
+            case RTTIType::RTTI_VESSELTYPE:
             default:
               retval = std::max(retval, MOVE_DESTROYABLE);
               break;
@@ -1921,6 +1979,26 @@ bool InfantryClass::Do_Action(DoType todo, bool force) {
         IsProne = false;
         break;
 
+      case DoType::DO_NOTHING:
+      case DoType::DO_STAND_READY:
+      case DoType::DO_STAND_GUARD:
+      case DoType::DO_PRONE:
+      case DoType::DO_WALK:
+      case DoType::DO_FIRE_WEAPON:
+      case DoType::DO_CRAWL:
+      case DoType::DO_FIRE_PRONE:
+      case DoType::DO_IDLE1:
+      case DoType::DO_IDLE2:
+      case DoType::DO_GUN_DEATH:
+      case DoType::DO_EXPLOSION_DEATH:
+      case DoType::DO_EXPLOSION2_DEATH:
+      case DoType::DO_GRENADE_DEATH:
+      case DoType::DO_FIRE_DEATH:
+      case DoType::DO_GESTURE1:
+      case DoType::DO_SALUTE1:
+      case DoType::DO_GESTURE2:
+      case DoType::DO_SALUTE2:
+      case DoType::DO_DOG_MAUL:
       default:
         break;
     }
@@ -2371,6 +2449,23 @@ void InfantryClass::Response_Select() {
         size = std::ssize(_eng_response);
         break;
 
+      case InfantryType::INFANTRY_NONE:
+      case InfantryType::INFANTRY_E1:
+      case InfantryType::INFANTRY_E2:
+      case InfantryType::INFANTRY_E3:
+      case InfantryType::INFANTRY_E4:
+      case InfantryType::INFANTRY_C1:
+      case InfantryType::INFANTRY_C2:
+      case InfantryType::INFANTRY_C3:
+      case InfantryType::INFANTRY_C4:
+      case InfantryType::INFANTRY_C5:
+      case InfantryType::INFANTRY_C6:
+      case InfantryType::INFANTRY_C7:
+      case InfantryType::INFANTRY_C8:
+      case InfantryType::INFANTRY_C9:
+      case InfantryType::INFANTRY_C10:
+      case InfantryType::INFANTRY_DELPHI:
+      case InfantryType::INFANTRY_CHAN:
       default:
         response = _default_response;
         size = std::ssize(_default_response);
@@ -2498,6 +2593,23 @@ void InfantryClass::Response_Move() {
         size = std::ssize(_thief_response);
         break;
 
+      case InfantryType::INFANTRY_NONE:
+      case InfantryType::INFANTRY_E1:
+      case InfantryType::INFANTRY_E2:
+      case InfantryType::INFANTRY_E3:
+      case InfantryType::INFANTRY_E4:
+      case InfantryType::INFANTRY_C1:
+      case InfantryType::INFANTRY_C2:
+      case InfantryType::INFANTRY_C3:
+      case InfantryType::INFANTRY_C4:
+      case InfantryType::INFANTRY_C5:
+      case InfantryType::INFANTRY_C6:
+      case InfantryType::INFANTRY_C7:
+      case InfantryType::INFANTRY_C8:
+      case InfantryType::INFANTRY_C9:
+      case InfantryType::INFANTRY_C10:
+      case InfantryType::INFANTRY_DELPHI:
+      case InfantryType::INFANTRY_CHAN:
       default:
         response = _default_response;
         size = std::ssize(_default_response);
@@ -2627,6 +2739,23 @@ void InfantryClass::Response_Attack() {
         size = std::ssize(_thief_response);
         break;
 
+      case InfantryType::INFANTRY_NONE:
+      case InfantryType::INFANTRY_E1:
+      case InfantryType::INFANTRY_E2:
+      case InfantryType::INFANTRY_E3:
+      case InfantryType::INFANTRY_E4:
+      case InfantryType::INFANTRY_C1:
+      case InfantryType::INFANTRY_C2:
+      case InfantryType::INFANTRY_C3:
+      case InfantryType::INFANTRY_C4:
+      case InfantryType::INFANTRY_C5:
+      case InfantryType::INFANTRY_C6:
+      case InfantryType::INFANTRY_C7:
+      case InfantryType::INFANTRY_C8:
+      case InfantryType::INFANTRY_C9:
+      case InfantryType::INFANTRY_C10:
+      case InfantryType::INFANTRY_DELPHI:
+      case InfantryType::INFANTRY_CHAN:
       default:
         response = _default_response;
         size = std::ssize(_default_response);
@@ -2784,6 +2913,38 @@ ActionType InfantryClass::What_Action(ObjectClass* object) {
           action = ACTION_NO_ENTER;
           break;
 
+        case RadioMessageType::RADIO_STATIC:
+        case RadioMessageType::RADIO_HELLO:
+        case RadioMessageType::RADIO_OVER_OUT:
+        case RadioMessageType::RADIO_PICK_UP:
+        case RadioMessageType::RADIO_ATTACH:
+        case RadioMessageType::RADIO_DELIVERY:
+        case RadioMessageType::RADIO_HOLD_STILL:
+        case RadioMessageType::RADIO_UNLOADED:
+        case RadioMessageType::RADIO_UNLOAD:
+        case RadioMessageType::RADIO_BUILDING:
+        case RadioMessageType::RADIO_COMPLETE:
+        case RadioMessageType::RADIO_REDRAW:
+        case RadioMessageType::RADIO_DOCKING:
+        case RadioMessageType::RADIO_CAN_LOAD:
+        case RadioMessageType::RADIO_ARE_REFINERY:
+        case RadioMessageType::RADIO_TRYING_TO_LOAD:
+        case RadioMessageType::RADIO_MOVE_HERE:
+        case RadioMessageType::RADIO_NEED_TO_MOVE:
+        case RadioMessageType::RADIO_YEA_NOW_WHAT:
+        case RadioMessageType::RADIO_IM_IN:
+        case RadioMessageType::RADIO_BACKUP_NOW:
+        case RadioMessageType::RADIO_RUN_AWAY:
+        case RadioMessageType::RADIO_TETHER:
+        case RadioMessageType::RADIO_UNTETHER:
+        case RadioMessageType::RADIO_REPAIR:
+        case RadioMessageType::RADIO_PREPARED:
+        case RadioMessageType::RADIO_ATTACK_THIS:
+        case RadioMessageType::RADIO_RELOAD:
+        case RadioMessageType::RADIO_CANT:
+        case RadioMessageType::RADIO_ALL_DONE:
+        case RadioMessageType::RADIO_NEED_REPAIR:
+        case RadioMessageType::RADIO_ON_DEPOT:
         default:
           break;
       }
@@ -2892,6 +3053,30 @@ void InfantryClass::Active_Click_With(ActionType action, ObjectClass* object) {
     case ACTION_ATTACK:
     case ACTION_GUARD_AREA:
     case ACTION_MOVE:
+    case ActionType::ACTION_NONE:
+    case ActionType::ACTION_NOMOVE:
+    case ActionType::ACTION_ENTER:
+    case ActionType::ACTION_SELF:
+    case ActionType::ACTION_HARVEST:
+    case ActionType::ACTION_SELECT:
+    case ActionType::ACTION_TOGGLE_SELECT:
+    case ActionType::ACTION_REPAIR:
+    case ActionType::ACTION_SELL:
+    case ActionType::ACTION_SELL_UNIT:
+    case ActionType::ACTION_NO_SELL:
+    case ActionType::ACTION_NO_REPAIR:
+    case ActionType::ACTION_PARA_BOMB:
+    case ActionType::ACTION_PARA_INFANTRY:
+    case ActionType::ACTION_PARA_SABOTEUR:
+    case ActionType::ACTION_NUKE_BOMB:
+    case ActionType::ACTION_AIR_STRIKE:
+    case ActionType::ACTION_CHRONOSPHERE:
+    case ActionType::ACTION_CHRONO2:
+    case ActionType::ACTION_IRON_CURTAIN:
+    case ActionType::ACTION_SPY_MISSION:
+    case ActionType::ACTION_NO_DEPLOY:
+    case ActionType::ACTION_NO_ENTER:
+    case ActionType::ACTION_NO_GREPAIR:
     default:
       break;
   }
@@ -3074,20 +3259,15 @@ ActionType InfantryClass::What_Action(CELL cell) const {
   **	Demolitioners may destroy a bridge
   */
   if (Class->IsBomber && action == ACTION_MOVE && !Special.IsCaptureTheFlag) {
-    switch (Map[cell].TType) {
-      case TEMPLATE_BRIDGE1:
-      case TEMPLATE_BRIDGE2:
-      case TEMPLATE_BRIDGE1H:
-      case TEMPLATE_BRIDGE2H:
-      case TEMPLATE_BRIDGE_1A:
-      case TEMPLATE_BRIDGE_1B:
-      case TEMPLATE_BRIDGE_2A:
-      case TEMPLATE_BRIDGE_2B:
-        //			case TEMPLATE_BRIDGE_3A:
-        //			case TEMPLATE_BRIDGE_3B:
-        return ACTION_SABOTAGE;
-      default:
-        break;
+    const TemplateType bridge_type = Map[cell].TType;
+    if (bridge_type == TEMPLATE_BRIDGE1 || bridge_type == TEMPLATE_BRIDGE2 ||
+        bridge_type == TEMPLATE_BRIDGE1H || bridge_type == TEMPLATE_BRIDGE2H ||
+        bridge_type == TEMPLATE_BRIDGE_1A ||
+        bridge_type == TEMPLATE_BRIDGE_1B ||
+        bridge_type == TEMPLATE_BRIDGE_2A ||
+        bridge_type == TEMPLATE_BRIDGE_2B) {
+      // Middle bridge pieces (TEMPLATE_BRIDGE_3A/3B) are not sabotage targets.
+      return ACTION_SABOTAGE;
     }
   }
 
@@ -3451,6 +3631,14 @@ void InfantryClass::Firing_AI() {
             base::At(Path, 0) = FACING_NONE;
           }
           break;
+        case FireErrorType::FIRE_AMMO:
+        case FireErrorType::FIRE_FACING:
+        case FireErrorType::FIRE_REARM:
+        case FireErrorType::FIRE_ROTATING:
+        case FireErrorType::FIRE_CANT:
+        case FireErrorType::FIRE_MOVING:
+        case FireErrorType::FIRE_RANGE:
+        case FireErrorType::FIRE_BUSY:
         default:
           break;
       }
@@ -3519,6 +3707,22 @@ void InfantryClass::Doing_AI() {
       Fetch_Stage() >=
           Class->DoControls[base::ToSize(static_cast<int>(Doing))].Count) {
     switch (Doing) {
+      case DoType::DO_NOTHING:
+      case DoType::DO_STAND_READY:
+      case DoType::DO_STAND_GUARD:
+      case DoType::DO_PRONE:
+      case DoType::DO_WALK:
+      case DoType::DO_FIRE_WEAPON:
+      case DoType::DO_LIE_DOWN:
+      case DoType::DO_CRAWL:
+      case DoType::DO_GET_UP:
+      case DoType::DO_FIRE_PRONE:
+      case DoType::DO_IDLE1:
+      case DoType::DO_IDLE2:
+      case DoType::DO_GESTURE1:
+      case DoType::DO_SALUTE1:
+      case DoType::DO_GESTURE2:
+      case DoType::DO_SALUTE2:
       default:
         if (IsDriving) {
           if (Class->IsDog) {

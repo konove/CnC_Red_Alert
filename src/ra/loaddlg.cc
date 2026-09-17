@@ -230,6 +230,8 @@ bool LoadOptionsClass::Process() {
       list_ht -= 30;
       break;
 
+    case LoadStyleType::NONE:
+    case LoadStyleType::WWDELETE:
     default:
       btn_txt = TXT_DELETE_BUTTON;
       btn_id = kButtonDelete;
@@ -394,6 +396,7 @@ bool LoadOptionsClass::Process() {
             toggle->IsPressed = true;
           }
           break;
+        case LoadStyleType::NONE:
         default:
           break;
       }

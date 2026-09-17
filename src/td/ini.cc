@@ -169,6 +169,10 @@ void Set_Scenario_Name(char* buf, int scenario, ScenarioPlayerType player,
     /*
     **	Multi player scenario.
     */
+    case ScenarioPlayerType::SCEN_PLAYER_NONE:
+    case ScenarioPlayerType::SCEN_PLAYER_2PLAYER:
+    case ScenarioPlayerType::SCEN_PLAYER_MPLAYER:
+    case ScenarioPlayerType::SCEN_PLAYER_COUNT:
     default:
       c_player = HouseTypeClass::As_Reference(HOUSE_MULTI1).Prefix;
       //			c_player = 'M';
@@ -189,6 +193,7 @@ void Set_Scenario_Name(char* buf, int scenario, ScenarioPlayerType player,
       c_dir = 'W';
       break;
 
+    case ScenarioDirType::SCEN_DIR_COUNT:
     default:
     case SCEN_DIR_NONE:
       c_dir = Random_Pick(0, 1) == 0 ? 'W' : 'E';
@@ -233,6 +238,9 @@ void Set_Scenario_Name(char* buf, int scenario, ScenarioPlayerType player,
         c_var = 'D';
         break;
 
+      case ScenarioVarType::SCEN_VAR_NONE:
+      case ScenarioVarType::SCEN_VAR_COUNT:
+      case ScenarioVarType::SCEN_VAR_LOSE:
       default:
         c_var = 'L';
         break;
@@ -304,6 +312,11 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
             case SCEN_PLAYER_NOD:
               RequiredCD = 1;
               break;
+            case ScenarioPlayerType::SCEN_PLAYER_NONE:
+            case ScenarioPlayerType::SCEN_PLAYER_JP:
+            case ScenarioPlayerType::SCEN_PLAYER_2PLAYER:
+            case ScenarioPlayerType::SCEN_PLAYER_MPLAYER:
+            case ScenarioPlayerType::SCEN_PLAYER_COUNT:
             default:
               RequiredCD = -1;
               break;
@@ -691,6 +704,10 @@ void Write_Scenario_Ini(const char* root) {
         house = HOUSE_JP;
         break;
 
+      case ScenarioPlayerType::SCEN_PLAYER_NONE:
+      case ScenarioPlayerType::SCEN_PLAYER_2PLAYER:
+      case ScenarioPlayerType::SCEN_PLAYER_MPLAYER:
+      case ScenarioPlayerType::SCEN_PLAYER_COUNT:
       default:
         house = HOUSE_MULTI1;
         break;
@@ -1643,6 +1660,8 @@ static CELL Clip_Move(CELL cell, FacingType facing, int dist) {
       x -= dist;
       y -= dist;
       break;
+    case FacingType::FACING_NONE:
+    case FacingType::FACING_COUNT:
     default:
       break;
   }

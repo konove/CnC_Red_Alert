@@ -551,6 +551,11 @@ void VesselTypeClass::Turret_Adjust(DirType dir, int& x, int& y) const {
       x = xx;
       y = yy - 4;
       break;
+    case VesselType::VESSEL_NONE:
+    case VesselType::VESSEL_SS:
+    case VesselType::VESSEL_TRANSPORT:
+    case VesselType::VESSEL_MISSILESUB:
+    case VesselType::VESSEL_CARRIER:
     default:
       break;
   }

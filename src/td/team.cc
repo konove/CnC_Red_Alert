@@ -482,6 +482,16 @@ void TeamClass::AI() {
           Assign_Mission_Target(static_cast<TARGET>(mission->Argument));
           break;
 
+        case TeamMissionType::TMISSION_NONE:
+        case TeamMissionType::TMISSION_ATTACKBASE:
+        case TeamMissionType::TMISSION_ATTACKUNITS:
+        case TeamMissionType::TMISSION_ATTACKCIVILIANS:
+        case TeamMissionType::TMISSION_RAMPAGE:
+        case TeamMissionType::TMISSION_DEFENDBASE:
+        case TeamMissionType::TMISSION_RETREAT:
+        case TeamMissionType::TMISSION_GUARD:
+        case TeamMissionType::TMISSION_LOOP:
+        case TeamMissionType::TMISSION_COUNT:
         default:
           Assign_Mission_Target(kTargetNone);
           break;
@@ -580,6 +590,9 @@ void TeamClass::AI() {
         CurrentMission = mission->Argument - 1;
         IsNextMission = true;
         break;
+      case TeamMissionType::TMISSION_NONE:
+      case TeamMissionType::TMISSION_MOVECELL:
+      case TeamMissionType::TMISSION_COUNT:
       default:
         break;
     }
@@ -601,6 +614,12 @@ void TeamClass::AI() {
           IsNextMission = true;
         }
         break;
+      case TeamMissionType::TMISSION_NONE:
+      case TeamMissionType::TMISSION_MOVE:
+      case TeamMissionType::TMISSION_MOVECELL:
+      case TeamMissionType::TMISSION_LOOP:
+      case TeamMissionType::TMISSION_ATTACKTARCOM:
+      case TeamMissionType::TMISSION_COUNT:
       default:
         break;
     }

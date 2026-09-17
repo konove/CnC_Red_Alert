@@ -2280,6 +2280,7 @@ static int Build_Send_Packet(std::span<std::byte> buf, int bufsize,
     //.....................................................................
     // Default: We have no idea what to do, so do nothing.
     //.....................................................................
+    case CommProtocolType::COMM_PROTOCOL_COUNT:
     default:
       size = 0;
       break;
@@ -2604,6 +2605,31 @@ int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
       //..................................................................
       // Default case: Just copy over the data field from the union
       //..................................................................
+      case EventClass::EMPTY:
+      case EventClass::ALLY:
+      case EventClass::IDLE:
+      case EventClass::SCATTER:
+      case EventClass::DESTRUCT:
+      case EventClass::DEPLOY:
+      case EventClass::PLACE:
+      case EventClass::OPTIONS:
+      case EventClass::GAMESPEED:
+      case EventClass::PRODUCE:
+      case EventClass::SUSPEND:
+      case EventClass::ABANDON:
+      case EventClass::PRIMARY:
+      case EventClass::SPECIAL_PLACE:
+      case EventClass::EXIT:
+      case EventClass::ANIMATION:
+      case EventClass::REPAIR:
+      case EventClass::SELL:
+      case EventClass::SPECIAL:
+      case EventClass::FRAMESYNC:
+      case EventClass::MESSAGE:
+      case EventClass::FRAMEINFO:
+      case EventClass::TIMING:
+      case EventClass::PROCESS_TIME:
+      case EventClass::LAST_EVENT:
       default:
         port::WriteUnaligned(buf.subspan(base::ToSize(size)), eventtype);
 
@@ -2894,6 +2920,31 @@ int Extract_Compressed_Events(std::span<const std::byte> buf, int bufsize) {
           }
           break;
 
+        case EventClass::EMPTY:
+        case EventClass::ALLY:
+        case EventClass::IDLE:
+        case EventClass::SCATTER:
+        case EventClass::DESTRUCT:
+        case EventClass::DEPLOY:
+        case EventClass::PLACE:
+        case EventClass::OPTIONS:
+        case EventClass::GAMESPEED:
+        case EventClass::PRODUCE:
+        case EventClass::SUSPEND:
+        case EventClass::ABANDON:
+        case EventClass::PRIMARY:
+        case EventClass::SPECIAL_PLACE:
+        case EventClass::EXIT:
+        case EventClass::ANIMATION:
+        case EventClass::REPAIR:
+        case EventClass::SELL:
+        case EventClass::SPECIAL:
+        case EventClass::FRAMESYNC:
+        case EventClass::MESSAGE:
+        case EventClass::FRAMEINFO:
+        case EventClass::TIMING:
+        case EventClass::PROCESS_TIME:
+        case EventClass::LAST_EVENT:
         default:
           base::CopyBytes(
               base::ObjectBytes(eventdata.Data),

@@ -1087,6 +1087,10 @@ bool Load_Game(int id) {
       case GAME_SKIRMISH:
         readini = Is_Aftermath_Installed();
         break;
+      case GameType::GAME_MODEM:
+      case GameType::GAME_NULL_MODEM:
+      case GameType::GAME_IPX:
+      case GameType::GAME_INTERNET:
       default:
         readini = bAftermathMultiplayer;
         break;

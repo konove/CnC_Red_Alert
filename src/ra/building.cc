@@ -293,6 +293,90 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass* from,
           }
           break;
 
+        case StructType::STRUCT_NONE:
+        case StructType::STRUCT_ADVANCED_TECH:
+        case StructType::STRUCT_IRON_CURTAIN:
+        case StructType::STRUCT_WEAP:
+        case StructType::STRUCT_CHRONOSPHERE:
+        case StructType::STRUCT_PILLBOX:
+        case StructType::STRUCT_CAMOPILLBOX:
+        case StructType::STRUCT_RADAR:
+        case StructType::STRUCT_GAP:
+        case StructType::STRUCT_TURRET:
+        case StructType::STRUCT_AAGUN:
+        case StructType::STRUCT_FLAME_TURRET:
+        case StructType::STRUCT_CONST:
+        case StructType::STRUCT_STORAGE:
+        case StructType::STRUCT_SAM:
+        case StructType::STRUCT_POWER:
+        case StructType::STRUCT_ADVANCED_POWER:
+        case StructType::STRUCT_SOVIET_TECH:
+        case StructType::STRUCT_HOSPITAL:
+        case StructType::STRUCT_BARRACKS:
+        case StructType::STRUCT_TENT:
+        case StructType::STRUCT_KENNEL:
+        case StructType::STRUCT_BIO_LAB:
+        case StructType::STRUCT_MISSION:
+        case StructType::STRUCT_SHIP_YARD:
+        case StructType::STRUCT_SUB_PEN:
+        case StructType::STRUCT_MSLO:
+        case StructType::STRUCT_FORWARD_COM:
+        case StructType::STRUCT_TESLA:
+        case StructType::STRUCT_FAKEWEAP:
+        case StructType::STRUCT_FAKECONST:
+        case StructType::STRUCT_FAKE_YARD:
+        case StructType::STRUCT_FAKE_PEN:
+        case StructType::STRUCT_FAKE_RADAR:
+        case StructType::STRUCT_SANDBAG_WALL:
+        case StructType::STRUCT_CYCLONE_WALL:
+        case StructType::STRUCT_BRICK_WALL:
+        case StructType::STRUCT_BARBWIRE_WALL:
+        case StructType::STRUCT_WOOD_WALL:
+        case StructType::STRUCT_FENCE:
+        case StructType::STRUCT_AVMINE:
+        case StructType::STRUCT_APMINE:
+        case StructType::STRUCT_V01:
+        case StructType::STRUCT_V02:
+        case StructType::STRUCT_V03:
+        case StructType::STRUCT_V04:
+        case StructType::STRUCT_V05:
+        case StructType::STRUCT_V06:
+        case StructType::STRUCT_V07:
+        case StructType::STRUCT_V08:
+        case StructType::STRUCT_V09:
+        case StructType::STRUCT_V10:
+        case StructType::STRUCT_V11:
+        case StructType::STRUCT_V12:
+        case StructType::STRUCT_V13:
+        case StructType::STRUCT_V14:
+        case StructType::STRUCT_V15:
+        case StructType::STRUCT_V16:
+        case StructType::STRUCT_V17:
+        case StructType::STRUCT_V18:
+        case StructType::STRUCT_PUMP:
+        case StructType::STRUCT_V20:
+        case StructType::STRUCT_V21:
+        case StructType::STRUCT_V22:
+        case StructType::STRUCT_V23:
+        case StructType::STRUCT_V24:
+        case StructType::STRUCT_V25:
+        case StructType::STRUCT_V26:
+        case StructType::STRUCT_V27:
+        case StructType::STRUCT_V28:
+        case StructType::STRUCT_V29:
+        case StructType::STRUCT_V30:
+        case StructType::STRUCT_V31:
+        case StructType::STRUCT_V32:
+        case StructType::STRUCT_V33:
+        case StructType::STRUCT_V34:
+        case StructType::STRUCT_V35:
+        case StructType::STRUCT_V36:
+        case StructType::STRUCT_V37:
+        case StructType::STRUCT_BARREL:
+        case StructType::STRUCT_BARREL3:
+        case StructType::STRUCT_QUEEN:
+        case StructType::STRUCT_LARVA1:
+        case StructType::STRUCT_LARVA2:
         default:
           break;
       }
@@ -324,6 +408,90 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass* from,
           from->Assign_Mission(MISSION_UNLOAD);
           return RADIO_ROGER;
 
+        case StructType::STRUCT_NONE:
+        case StructType::STRUCT_ADVANCED_TECH:
+        case StructType::STRUCT_IRON_CURTAIN:
+        case StructType::STRUCT_WEAP:
+        case StructType::STRUCT_CHRONOSPHERE:
+        case StructType::STRUCT_PILLBOX:
+        case StructType::STRUCT_CAMOPILLBOX:
+        case StructType::STRUCT_RADAR:
+        case StructType::STRUCT_GAP:
+        case StructType::STRUCT_TURRET:
+        case StructType::STRUCT_AAGUN:
+        case StructType::STRUCT_FLAME_TURRET:
+        case StructType::STRUCT_CONST:
+        case StructType::STRUCT_STORAGE:
+        case StructType::STRUCT_SAM:
+        case StructType::STRUCT_POWER:
+        case StructType::STRUCT_ADVANCED_POWER:
+        case StructType::STRUCT_SOVIET_TECH:
+        case StructType::STRUCT_HOSPITAL:
+        case StructType::STRUCT_BARRACKS:
+        case StructType::STRUCT_TENT:
+        case StructType::STRUCT_KENNEL:
+        case StructType::STRUCT_BIO_LAB:
+        case StructType::STRUCT_MISSION:
+        case StructType::STRUCT_SHIP_YARD:
+        case StructType::STRUCT_SUB_PEN:
+        case StructType::STRUCT_MSLO:
+        case StructType::STRUCT_FORWARD_COM:
+        case StructType::STRUCT_TESLA:
+        case StructType::STRUCT_FAKEWEAP:
+        case StructType::STRUCT_FAKECONST:
+        case StructType::STRUCT_FAKE_YARD:
+        case StructType::STRUCT_FAKE_PEN:
+        case StructType::STRUCT_FAKE_RADAR:
+        case StructType::STRUCT_SANDBAG_WALL:
+        case StructType::STRUCT_CYCLONE_WALL:
+        case StructType::STRUCT_BRICK_WALL:
+        case StructType::STRUCT_BARBWIRE_WALL:
+        case StructType::STRUCT_WOOD_WALL:
+        case StructType::STRUCT_FENCE:
+        case StructType::STRUCT_AVMINE:
+        case StructType::STRUCT_APMINE:
+        case StructType::STRUCT_V01:
+        case StructType::STRUCT_V02:
+        case StructType::STRUCT_V03:
+        case StructType::STRUCT_V04:
+        case StructType::STRUCT_V05:
+        case StructType::STRUCT_V06:
+        case StructType::STRUCT_V07:
+        case StructType::STRUCT_V08:
+        case StructType::STRUCT_V09:
+        case StructType::STRUCT_V10:
+        case StructType::STRUCT_V11:
+        case StructType::STRUCT_V12:
+        case StructType::STRUCT_V13:
+        case StructType::STRUCT_V14:
+        case StructType::STRUCT_V15:
+        case StructType::STRUCT_V16:
+        case StructType::STRUCT_V17:
+        case StructType::STRUCT_V18:
+        case StructType::STRUCT_PUMP:
+        case StructType::STRUCT_V20:
+        case StructType::STRUCT_V21:
+        case StructType::STRUCT_V22:
+        case StructType::STRUCT_V23:
+        case StructType::STRUCT_V24:
+        case StructType::STRUCT_V25:
+        case StructType::STRUCT_V26:
+        case StructType::STRUCT_V27:
+        case StructType::STRUCT_V28:
+        case StructType::STRUCT_V29:
+        case StructType::STRUCT_V30:
+        case StructType::STRUCT_V31:
+        case StructType::STRUCT_V32:
+        case StructType::STRUCT_V33:
+        case StructType::STRUCT_V34:
+        case StructType::STRUCT_V35:
+        case StructType::STRUCT_V36:
+        case StructType::STRUCT_V37:
+        case StructType::STRUCT_BARREL:
+        case StructType::STRUCT_BARREL3:
+        case StructType::STRUCT_QUEEN:
+        case StructType::STRUCT_LARVA1:
+        case StructType::STRUCT_LARVA2:
         default:
           break;
       }
@@ -395,6 +563,90 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass* from,
             param =
                 ::As_Target(Coord_Cell(Adjacent_Cell(Center_Coord(), DIR_S)));
             break;
+          case StructType::STRUCT_NONE:
+          case StructType::STRUCT_ADVANCED_TECH:
+          case StructType::STRUCT_IRON_CURTAIN:
+          case StructType::STRUCT_WEAP:
+          case StructType::STRUCT_CHRONOSPHERE:
+          case StructType::STRUCT_PILLBOX:
+          case StructType::STRUCT_CAMOPILLBOX:
+          case StructType::STRUCT_RADAR:
+          case StructType::STRUCT_GAP:
+          case StructType::STRUCT_TURRET:
+          case StructType::STRUCT_AAGUN:
+          case StructType::STRUCT_FLAME_TURRET:
+          case StructType::STRUCT_CONST:
+          case StructType::STRUCT_STORAGE:
+          case StructType::STRUCT_SAM:
+          case StructType::STRUCT_POWER:
+          case StructType::STRUCT_ADVANCED_POWER:
+          case StructType::STRUCT_SOVIET_TECH:
+          case StructType::STRUCT_HOSPITAL:
+          case StructType::STRUCT_BARRACKS:
+          case StructType::STRUCT_TENT:
+          case StructType::STRUCT_KENNEL:
+          case StructType::STRUCT_BIO_LAB:
+          case StructType::STRUCT_MISSION:
+          case StructType::STRUCT_SHIP_YARD:
+          case StructType::STRUCT_SUB_PEN:
+          case StructType::STRUCT_MSLO:
+          case StructType::STRUCT_FORWARD_COM:
+          case StructType::STRUCT_TESLA:
+          case StructType::STRUCT_FAKEWEAP:
+          case StructType::STRUCT_FAKECONST:
+          case StructType::STRUCT_FAKE_YARD:
+          case StructType::STRUCT_FAKE_PEN:
+          case StructType::STRUCT_FAKE_RADAR:
+          case StructType::STRUCT_SANDBAG_WALL:
+          case StructType::STRUCT_CYCLONE_WALL:
+          case StructType::STRUCT_BRICK_WALL:
+          case StructType::STRUCT_BARBWIRE_WALL:
+          case StructType::STRUCT_WOOD_WALL:
+          case StructType::STRUCT_FENCE:
+          case StructType::STRUCT_AVMINE:
+          case StructType::STRUCT_APMINE:
+          case StructType::STRUCT_V01:
+          case StructType::STRUCT_V02:
+          case StructType::STRUCT_V03:
+          case StructType::STRUCT_V04:
+          case StructType::STRUCT_V05:
+          case StructType::STRUCT_V06:
+          case StructType::STRUCT_V07:
+          case StructType::STRUCT_V08:
+          case StructType::STRUCT_V09:
+          case StructType::STRUCT_V10:
+          case StructType::STRUCT_V11:
+          case StructType::STRUCT_V12:
+          case StructType::STRUCT_V13:
+          case StructType::STRUCT_V14:
+          case StructType::STRUCT_V15:
+          case StructType::STRUCT_V16:
+          case StructType::STRUCT_V17:
+          case StructType::STRUCT_V18:
+          case StructType::STRUCT_PUMP:
+          case StructType::STRUCT_V20:
+          case StructType::STRUCT_V21:
+          case StructType::STRUCT_V22:
+          case StructType::STRUCT_V23:
+          case StructType::STRUCT_V24:
+          case StructType::STRUCT_V25:
+          case StructType::STRUCT_V26:
+          case StructType::STRUCT_V27:
+          case StructType::STRUCT_V28:
+          case StructType::STRUCT_V29:
+          case StructType::STRUCT_V30:
+          case StructType::STRUCT_V31:
+          case StructType::STRUCT_V32:
+          case StructType::STRUCT_V33:
+          case StructType::STRUCT_V34:
+          case StructType::STRUCT_V35:
+          case StructType::STRUCT_V36:
+          case StructType::STRUCT_V37:
+          case StructType::STRUCT_BARREL:
+          case StructType::STRUCT_BARREL3:
+          case StructType::STRUCT_QUEEN:
+          case StructType::STRUCT_LARVA1:
+          case StructType::STRUCT_LARVA2:
           default:
             break;
         }
@@ -482,6 +734,32 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass* from,
       }
       return RADIO_ROGER;
 
+    case RadioMessageType::RADIO_STATIC:
+    case RadioMessageType::RADIO_ROGER:
+    case RadioMessageType::RADIO_HELLO:
+    case RadioMessageType::RADIO_PICK_UP:
+    case RadioMessageType::RADIO_ATTACH:
+    case RadioMessageType::RADIO_DELIVERY:
+    case RadioMessageType::RADIO_HOLD_STILL:
+    case RadioMessageType::RADIO_UNLOAD:
+    case RadioMessageType::RADIO_NEGATIVE:
+    case RadioMessageType::RADIO_REDRAW:
+    case RadioMessageType::RADIO_TRYING_TO_LOAD:
+    case RadioMessageType::RADIO_MOVE_HERE:
+    case RadioMessageType::RADIO_NEED_TO_MOVE:
+    case RadioMessageType::RADIO_YEA_NOW_WHAT:
+    case RadioMessageType::RADIO_BACKUP_NOW:
+    case RadioMessageType::RADIO_RUN_AWAY:
+    case RadioMessageType::RADIO_TETHER:
+    case RadioMessageType::RADIO_UNTETHER:
+    case RadioMessageType::RADIO_REPAIR:
+    case RadioMessageType::RADIO_PREPARED:
+    case RadioMessageType::RADIO_ATTACK_THIS:
+    case RadioMessageType::RADIO_RELOAD:
+    case RadioMessageType::RADIO_CANT:
+    case RadioMessageType::RADIO_ALL_DONE:
+    case RadioMessageType::RADIO_NEED_REPAIR:
+    case RadioMessageType::RADIO_ON_DEPOT:
     default:
       break;
   }
@@ -873,6 +1151,88 @@ bool BuildingClass::Mark(MarkType mark) {
               new OverlayClass(OVERLAY_FENCE, cell, House->Class->House);
               break;
 
+            case StructType::STRUCT_NONE:
+            case StructType::STRUCT_ADVANCED_TECH:
+            case StructType::STRUCT_IRON_CURTAIN:
+            case StructType::STRUCT_WEAP:
+            case StructType::STRUCT_CHRONOSPHERE:
+            case StructType::STRUCT_PILLBOX:
+            case StructType::STRUCT_CAMOPILLBOX:
+            case StructType::STRUCT_RADAR:
+            case StructType::STRUCT_GAP:
+            case StructType::STRUCT_TURRET:
+            case StructType::STRUCT_AAGUN:
+            case StructType::STRUCT_FLAME_TURRET:
+            case StructType::STRUCT_CONST:
+            case StructType::STRUCT_REFINERY:
+            case StructType::STRUCT_STORAGE:
+            case StructType::STRUCT_HELIPAD:
+            case StructType::STRUCT_SAM:
+            case StructType::STRUCT_AIRSTRIP:
+            case StructType::STRUCT_POWER:
+            case StructType::STRUCT_ADVANCED_POWER:
+            case StructType::STRUCT_SOVIET_TECH:
+            case StructType::STRUCT_HOSPITAL:
+            case StructType::STRUCT_BARRACKS:
+            case StructType::STRUCT_TENT:
+            case StructType::STRUCT_KENNEL:
+            case StructType::STRUCT_REPAIR:
+            case StructType::STRUCT_BIO_LAB:
+            case StructType::STRUCT_MISSION:
+            case StructType::STRUCT_SHIP_YARD:
+            case StructType::STRUCT_SUB_PEN:
+            case StructType::STRUCT_MSLO:
+            case StructType::STRUCT_FORWARD_COM:
+            case StructType::STRUCT_TESLA:
+            case StructType::STRUCT_FAKEWEAP:
+            case StructType::STRUCT_FAKECONST:
+            case StructType::STRUCT_FAKE_YARD:
+            case StructType::STRUCT_FAKE_PEN:
+            case StructType::STRUCT_FAKE_RADAR:
+            case StructType::STRUCT_AVMINE:
+            case StructType::STRUCT_APMINE:
+            case StructType::STRUCT_V01:
+            case StructType::STRUCT_V02:
+            case StructType::STRUCT_V03:
+            case StructType::STRUCT_V04:
+            case StructType::STRUCT_V05:
+            case StructType::STRUCT_V06:
+            case StructType::STRUCT_V07:
+            case StructType::STRUCT_V08:
+            case StructType::STRUCT_V09:
+            case StructType::STRUCT_V10:
+            case StructType::STRUCT_V11:
+            case StructType::STRUCT_V12:
+            case StructType::STRUCT_V13:
+            case StructType::STRUCT_V14:
+            case StructType::STRUCT_V15:
+            case StructType::STRUCT_V16:
+            case StructType::STRUCT_V17:
+            case StructType::STRUCT_V18:
+            case StructType::STRUCT_PUMP:
+            case StructType::STRUCT_V20:
+            case StructType::STRUCT_V21:
+            case StructType::STRUCT_V22:
+            case StructType::STRUCT_V23:
+            case StructType::STRUCT_V24:
+            case StructType::STRUCT_V25:
+            case StructType::STRUCT_V26:
+            case StructType::STRUCT_V27:
+            case StructType::STRUCT_V28:
+            case StructType::STRUCT_V29:
+            case StructType::STRUCT_V30:
+            case StructType::STRUCT_V31:
+            case StructType::STRUCT_V32:
+            case StructType::STRUCT_V33:
+            case StructType::STRUCT_V34:
+            case StructType::STRUCT_V35:
+            case StructType::STRUCT_V36:
+            case StructType::STRUCT_V37:
+            case StructType::STRUCT_BARREL:
+            case StructType::STRUCT_BARREL3:
+            case StructType::STRUCT_QUEEN:
+            case StructType::STRUCT_LARVA1:
+            case StructType::STRUCT_LARVA2:
             default:
               break;
           }
@@ -902,6 +1262,9 @@ bool BuildingClass::Mark(MarkType mark) {
         Map.Refresh_Cells(cell, Overlap_List(true));
         break;
 
+      case MarkType::MARK_CHANGE:
+      case MarkType::MARK_OVERLAP_DOWN:
+      case MarkType::MARK_OVERLAP_UP:
       default:
         Map.Refresh_Cells(cell, Overlap_List(false));
         Map.Refresh_Cells(cell, occupy);
@@ -1180,6 +1543,88 @@ bool BuildingClass::Unlimbo(COORDINATE coord, DirType dir) {
           otype = OVERLAY_FENCE;
           break;
 
+        case StructType::STRUCT_NONE:
+        case StructType::STRUCT_ADVANCED_TECH:
+        case StructType::STRUCT_IRON_CURTAIN:
+        case StructType::STRUCT_WEAP:
+        case StructType::STRUCT_CHRONOSPHERE:
+        case StructType::STRUCT_PILLBOX:
+        case StructType::STRUCT_CAMOPILLBOX:
+        case StructType::STRUCT_RADAR:
+        case StructType::STRUCT_GAP:
+        case StructType::STRUCT_TURRET:
+        case StructType::STRUCT_AAGUN:
+        case StructType::STRUCT_FLAME_TURRET:
+        case StructType::STRUCT_CONST:
+        case StructType::STRUCT_REFINERY:
+        case StructType::STRUCT_STORAGE:
+        case StructType::STRUCT_HELIPAD:
+        case StructType::STRUCT_SAM:
+        case StructType::STRUCT_AIRSTRIP:
+        case StructType::STRUCT_POWER:
+        case StructType::STRUCT_ADVANCED_POWER:
+        case StructType::STRUCT_SOVIET_TECH:
+        case StructType::STRUCT_HOSPITAL:
+        case StructType::STRUCT_BARRACKS:
+        case StructType::STRUCT_TENT:
+        case StructType::STRUCT_KENNEL:
+        case StructType::STRUCT_REPAIR:
+        case StructType::STRUCT_BIO_LAB:
+        case StructType::STRUCT_MISSION:
+        case StructType::STRUCT_SHIP_YARD:
+        case StructType::STRUCT_SUB_PEN:
+        case StructType::STRUCT_MSLO:
+        case StructType::STRUCT_FORWARD_COM:
+        case StructType::STRUCT_TESLA:
+        case StructType::STRUCT_FAKEWEAP:
+        case StructType::STRUCT_FAKECONST:
+        case StructType::STRUCT_FAKE_YARD:
+        case StructType::STRUCT_FAKE_PEN:
+        case StructType::STRUCT_FAKE_RADAR:
+        case StructType::STRUCT_AVMINE:
+        case StructType::STRUCT_APMINE:
+        case StructType::STRUCT_V01:
+        case StructType::STRUCT_V02:
+        case StructType::STRUCT_V03:
+        case StructType::STRUCT_V04:
+        case StructType::STRUCT_V05:
+        case StructType::STRUCT_V06:
+        case StructType::STRUCT_V07:
+        case StructType::STRUCT_V08:
+        case StructType::STRUCT_V09:
+        case StructType::STRUCT_V10:
+        case StructType::STRUCT_V11:
+        case StructType::STRUCT_V12:
+        case StructType::STRUCT_V13:
+        case StructType::STRUCT_V14:
+        case StructType::STRUCT_V15:
+        case StructType::STRUCT_V16:
+        case StructType::STRUCT_V17:
+        case StructType::STRUCT_V18:
+        case StructType::STRUCT_PUMP:
+        case StructType::STRUCT_V20:
+        case StructType::STRUCT_V21:
+        case StructType::STRUCT_V22:
+        case StructType::STRUCT_V23:
+        case StructType::STRUCT_V24:
+        case StructType::STRUCT_V25:
+        case StructType::STRUCT_V26:
+        case StructType::STRUCT_V27:
+        case StructType::STRUCT_V28:
+        case StructType::STRUCT_V29:
+        case StructType::STRUCT_V30:
+        case StructType::STRUCT_V31:
+        case StructType::STRUCT_V32:
+        case StructType::STRUCT_V33:
+        case StructType::STRUCT_V34:
+        case StructType::STRUCT_V35:
+        case StructType::STRUCT_V36:
+        case StructType::STRUCT_V37:
+        case StructType::STRUCT_BARREL:
+        case StructType::STRUCT_BARREL3:
+        case StructType::STRUCT_QUEEN:
+        case StructType::STRUCT_LARVA1:
+        case StructType::STRUCT_LARVA2:
         default:
           otype = OVERLAY_NONE;
           break;
@@ -2053,6 +2498,92 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
           ScenarioInit--;
           break;
 
+        case StructType::STRUCT_NONE:
+        case StructType::STRUCT_ADVANCED_TECH:
+        case StructType::STRUCT_IRON_CURTAIN:
+        case StructType::STRUCT_WEAP:
+        case StructType::STRUCT_CHRONOSPHERE:
+        case StructType::STRUCT_PILLBOX:
+        case StructType::STRUCT_CAMOPILLBOX:
+        case StructType::STRUCT_RADAR:
+        case StructType::STRUCT_GAP:
+        case StructType::STRUCT_TURRET:
+        case StructType::STRUCT_AAGUN:
+        case StructType::STRUCT_FLAME_TURRET:
+        case StructType::STRUCT_CONST:
+        case StructType::STRUCT_REFINERY:
+        case StructType::STRUCT_STORAGE:
+        case StructType::STRUCT_HELIPAD:
+        case StructType::STRUCT_SAM:
+        case StructType::STRUCT_AIRSTRIP:
+        case StructType::STRUCT_POWER:
+        case StructType::STRUCT_ADVANCED_POWER:
+        case StructType::STRUCT_SOVIET_TECH:
+        case StructType::STRUCT_HOSPITAL:
+        case StructType::STRUCT_BARRACKS:
+        case StructType::STRUCT_TENT:
+        case StructType::STRUCT_KENNEL:
+        case StructType::STRUCT_REPAIR:
+        case StructType::STRUCT_BIO_LAB:
+        case StructType::STRUCT_MISSION:
+        case StructType::STRUCT_MSLO:
+        case StructType::STRUCT_FORWARD_COM:
+        case StructType::STRUCT_TESLA:
+        case StructType::STRUCT_FAKEWEAP:
+        case StructType::STRUCT_FAKECONST:
+        case StructType::STRUCT_FAKE_YARD:
+        case StructType::STRUCT_FAKE_PEN:
+        case StructType::STRUCT_FAKE_RADAR:
+        case StructType::STRUCT_SANDBAG_WALL:
+        case StructType::STRUCT_CYCLONE_WALL:
+        case StructType::STRUCT_BRICK_WALL:
+        case StructType::STRUCT_BARBWIRE_WALL:
+        case StructType::STRUCT_WOOD_WALL:
+        case StructType::STRUCT_FENCE:
+        case StructType::STRUCT_AVMINE:
+        case StructType::STRUCT_APMINE:
+        case StructType::STRUCT_V01:
+        case StructType::STRUCT_V02:
+        case StructType::STRUCT_V03:
+        case StructType::STRUCT_V04:
+        case StructType::STRUCT_V05:
+        case StructType::STRUCT_V06:
+        case StructType::STRUCT_V07:
+        case StructType::STRUCT_V08:
+        case StructType::STRUCT_V09:
+        case StructType::STRUCT_V10:
+        case StructType::STRUCT_V11:
+        case StructType::STRUCT_V12:
+        case StructType::STRUCT_V13:
+        case StructType::STRUCT_V14:
+        case StructType::STRUCT_V15:
+        case StructType::STRUCT_V16:
+        case StructType::STRUCT_V17:
+        case StructType::STRUCT_V18:
+        case StructType::STRUCT_PUMP:
+        case StructType::STRUCT_V20:
+        case StructType::STRUCT_V21:
+        case StructType::STRUCT_V22:
+        case StructType::STRUCT_V23:
+        case StructType::STRUCT_V24:
+        case StructType::STRUCT_V25:
+        case StructType::STRUCT_V26:
+        case StructType::STRUCT_V27:
+        case StructType::STRUCT_V28:
+        case StructType::STRUCT_V29:
+        case StructType::STRUCT_V30:
+        case StructType::STRUCT_V31:
+        case StructType::STRUCT_V32:
+        case StructType::STRUCT_V33:
+        case StructType::STRUCT_V34:
+        case StructType::STRUCT_V35:
+        case StructType::STRUCT_V36:
+        case StructType::STRUCT_V37:
+        case StructType::STRUCT_BARREL:
+        case StructType::STRUCT_BARREL3:
+        case StructType::STRUCT_QUEEN:
+        case StructType::STRUCT_LARVA1:
+        case StructType::STRUCT_LARVA2:
         default:
           break;
       }
@@ -2149,6 +2680,89 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
           }
           break;
 
+        case StructType::STRUCT_NONE:
+        case StructType::STRUCT_ADVANCED_TECH:
+        case StructType::STRUCT_IRON_CURTAIN:
+        case StructType::STRUCT_CHRONOSPHERE:
+        case StructType::STRUCT_PILLBOX:
+        case StructType::STRUCT_CAMOPILLBOX:
+        case StructType::STRUCT_RADAR:
+        case StructType::STRUCT_GAP:
+        case StructType::STRUCT_TURRET:
+        case StructType::STRUCT_AAGUN:
+        case StructType::STRUCT_FLAME_TURRET:
+        case StructType::STRUCT_CONST:
+        case StructType::STRUCT_STORAGE:
+        case StructType::STRUCT_HELIPAD:
+        case StructType::STRUCT_SAM:
+        case StructType::STRUCT_AIRSTRIP:
+        case StructType::STRUCT_POWER:
+        case StructType::STRUCT_ADVANCED_POWER:
+        case StructType::STRUCT_SOVIET_TECH:
+        case StructType::STRUCT_HOSPITAL:
+        case StructType::STRUCT_REPAIR:
+        case StructType::STRUCT_BIO_LAB:
+        case StructType::STRUCT_MISSION:
+        case StructType::STRUCT_SHIP_YARD:
+        case StructType::STRUCT_SUB_PEN:
+        case StructType::STRUCT_MSLO:
+        case StructType::STRUCT_FORWARD_COM:
+        case StructType::STRUCT_TESLA:
+        case StructType::STRUCT_FAKEWEAP:
+        case StructType::STRUCT_FAKECONST:
+        case StructType::STRUCT_FAKE_YARD:
+        case StructType::STRUCT_FAKE_PEN:
+        case StructType::STRUCT_FAKE_RADAR:
+        case StructType::STRUCT_SANDBAG_WALL:
+        case StructType::STRUCT_CYCLONE_WALL:
+        case StructType::STRUCT_BRICK_WALL:
+        case StructType::STRUCT_BARBWIRE_WALL:
+        case StructType::STRUCT_WOOD_WALL:
+        case StructType::STRUCT_FENCE:
+        case StructType::STRUCT_AVMINE:
+        case StructType::STRUCT_APMINE:
+        case StructType::STRUCT_V01:
+        case StructType::STRUCT_V02:
+        case StructType::STRUCT_V03:
+        case StructType::STRUCT_V04:
+        case StructType::STRUCT_V05:
+        case StructType::STRUCT_V06:
+        case StructType::STRUCT_V07:
+        case StructType::STRUCT_V08:
+        case StructType::STRUCT_V09:
+        case StructType::STRUCT_V10:
+        case StructType::STRUCT_V11:
+        case StructType::STRUCT_V12:
+        case StructType::STRUCT_V13:
+        case StructType::STRUCT_V14:
+        case StructType::STRUCT_V15:
+        case StructType::STRUCT_V16:
+        case StructType::STRUCT_V17:
+        case StructType::STRUCT_V18:
+        case StructType::STRUCT_PUMP:
+        case StructType::STRUCT_V20:
+        case StructType::STRUCT_V21:
+        case StructType::STRUCT_V22:
+        case StructType::STRUCT_V23:
+        case StructType::STRUCT_V24:
+        case StructType::STRUCT_V25:
+        case StructType::STRUCT_V26:
+        case StructType::STRUCT_V27:
+        case StructType::STRUCT_V28:
+        case StructType::STRUCT_V29:
+        case StructType::STRUCT_V30:
+        case StructType::STRUCT_V31:
+        case StructType::STRUCT_V32:
+        case StructType::STRUCT_V33:
+        case StructType::STRUCT_V34:
+        case StructType::STRUCT_V35:
+        case StructType::STRUCT_V36:
+        case StructType::STRUCT_V37:
+        case StructType::STRUCT_BARREL:
+        case StructType::STRUCT_BARREL3:
+        case StructType::STRUCT_QUEEN:
+        case StructType::STRUCT_LARVA1:
+        case StructType::STRUCT_LARVA2:
         default:
           cell = Find_Exit_Cell(base);
           if (cell != 0) {
@@ -2216,6 +2830,33 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
       }
       break;
 
+    case RTTIType::RTTI_NONE:
+    case RTTIType::RTTI_AIRCRAFTTYPE:
+    case RTTIType::RTTI_ANIM:
+    case RTTIType::RTTI_ANIMTYPE:
+    case RTTIType::RTTI_BUILDINGTYPE:
+    case RTTIType::RTTI_BULLET:
+    case RTTIType::RTTI_BULLETTYPE:
+    case RTTIType::RTTI_CELL:
+    case RTTIType::RTTI_FACTORY:
+    case RTTIType::RTTI_HOUSE:
+    case RTTIType::RTTI_HOUSETYPE:
+    case RTTIType::RTTI_INFANTRYTYPE:
+    case RTTIType::RTTI_OVERLAY:
+    case RTTIType::RTTI_OVERLAYTYPE:
+    case RTTIType::RTTI_SMUDGE:
+    case RTTIType::RTTI_SMUDGETYPE:
+    case RTTIType::RTTI_SPECIAL:
+    case RTTIType::RTTI_TEAM:
+    case RTTIType::RTTI_TEAMTYPE:
+    case RTTIType::RTTI_TEMPLATE:
+    case RTTIType::RTTI_TEMPLATETYPE:
+    case RTTIType::RTTI_TERRAIN:
+    case RTTIType::RTTI_TERRAINTYPE:
+    case RTTIType::RTTI_TRIGGER:
+    case RTTIType::RTTI_TRIGGERTYPE:
+    case RTTIType::RTTI_UNITTYPE:
+    case RTTIType::RTTI_VESSELTYPE:
     default:
       break;
   }
@@ -2300,6 +2941,33 @@ void BuildingClass::Update_Buildables() {
         }
         break;
 
+      case RTTIType::RTTI_NONE:
+      case RTTIType::RTTI_AIRCRAFT:
+      case RTTIType::RTTI_ANIM:
+      case RTTIType::RTTI_ANIMTYPE:
+      case RTTIType::RTTI_BUILDING:
+      case RTTIType::RTTI_BULLET:
+      case RTTIType::RTTI_BULLETTYPE:
+      case RTTIType::RTTI_CELL:
+      case RTTIType::RTTI_FACTORY:
+      case RTTIType::RTTI_HOUSE:
+      case RTTIType::RTTI_HOUSETYPE:
+      case RTTIType::RTTI_INFANTRY:
+      case RTTIType::RTTI_OVERLAY:
+      case RTTIType::RTTI_OVERLAYTYPE:
+      case RTTIType::RTTI_SMUDGE:
+      case RTTIType::RTTI_SMUDGETYPE:
+      case RTTIType::RTTI_SPECIAL:
+      case RTTIType::RTTI_TEAM:
+      case RTTIType::RTTI_TEAMTYPE:
+      case RTTIType::RTTI_TEMPLATE:
+      case RTTIType::RTTI_TEMPLATETYPE:
+      case RTTIType::RTTI_TERRAIN:
+      case RTTIType::RTTI_TERRAINTYPE:
+      case RTTIType::RTTI_TRIGGER:
+      case RTTIType::RTTI_TRIGGERTYPE:
+      case RTTIType::RTTI_UNIT:
+      case RTTIType::RTTI_VESSEL:
       default:
         break;
     }
@@ -2736,6 +3404,35 @@ ActionType BuildingClass::What_Action(ObjectClass* object) {
           action = ACTION_NONE;
           break;
 
+        case RTTIType::RTTI_AIRCRAFT:
+        case RTTIType::RTTI_AIRCRAFTTYPE:
+        case RTTIType::RTTI_ANIM:
+        case RTTIType::RTTI_ANIMTYPE:
+        case RTTIType::RTTI_BUILDING:
+        case RTTIType::RTTI_BUILDINGTYPE:
+        case RTTIType::RTTI_BULLET:
+        case RTTIType::RTTI_BULLETTYPE:
+        case RTTIType::RTTI_CELL:
+        case RTTIType::RTTI_FACTORY:
+        case RTTIType::RTTI_HOUSE:
+        case RTTIType::RTTI_HOUSETYPE:
+        case RTTIType::RTTI_OVERLAY:
+        case RTTIType::RTTI_OVERLAYTYPE:
+        case RTTIType::RTTI_SMUDGE:
+        case RTTIType::RTTI_SMUDGETYPE:
+        case RTTIType::RTTI_SPECIAL:
+        case RTTIType::RTTI_TEAM:
+        case RTTIType::RTTI_TEAMTYPE:
+        case RTTIType::RTTI_TEMPLATE:
+        case RTTIType::RTTI_TEMPLATETYPE:
+        case RTTIType::RTTI_TERRAIN:
+        case RTTIType::RTTI_TERRAINTYPE:
+        case RTTIType::RTTI_TRIGGER:
+        case RTTIType::RTTI_TRIGGERTYPE:
+        case RTTIType::RTTI_UNIT:
+        case RTTIType::RTTI_UNITTYPE:
+        case RTTIType::RTTI_VESSEL:
+        case RTTIType::RTTI_VESSELTYPE:
         default:
           break;
       }
@@ -3776,6 +4473,8 @@ int BuildingClass::Mission_Attack() {
       Fire_At(TarCom, primary);
       return 1;
 
+    case FireErrorType::FIRE_ROTATING:
+    case FireErrorType::FIRE_MOVING:
     default:
       break;
   }
@@ -4036,6 +4735,36 @@ int BuildingClass::Mission_Repair() {
             *already *	at full strength.
             */
             case RADIO_NEGATIVE:
+            case RadioMessageType::RADIO_STATIC:
+            case RadioMessageType::RADIO_HELLO:
+            case RadioMessageType::RADIO_OVER_OUT:
+            case RadioMessageType::RADIO_PICK_UP:
+            case RadioMessageType::RADIO_ATTACH:
+            case RadioMessageType::RADIO_DELIVERY:
+            case RadioMessageType::RADIO_HOLD_STILL:
+            case RadioMessageType::RADIO_UNLOADED:
+            case RadioMessageType::RADIO_UNLOAD:
+            case RadioMessageType::RADIO_BUILDING:
+            case RadioMessageType::RADIO_COMPLETE:
+            case RadioMessageType::RADIO_REDRAW:
+            case RadioMessageType::RADIO_DOCKING:
+            case RadioMessageType::RADIO_CAN_LOAD:
+            case RadioMessageType::RADIO_ARE_REFINERY:
+            case RadioMessageType::RADIO_TRYING_TO_LOAD:
+            case RadioMessageType::RADIO_MOVE_HERE:
+            case RadioMessageType::RADIO_NEED_TO_MOVE:
+            case RadioMessageType::RADIO_YEA_NOW_WHAT:
+            case RadioMessageType::RADIO_IM_IN:
+            case RadioMessageType::RADIO_BACKUP_NOW:
+            case RadioMessageType::RADIO_RUN_AWAY:
+            case RadioMessageType::RADIO_TETHER:
+            case RadioMessageType::RADIO_UNTETHER:
+            case RadioMessageType::RADIO_REPAIR:
+            case RadioMessageType::RADIO_PREPARED:
+            case RadioMessageType::RADIO_ATTACK_THIS:
+            case RadioMessageType::RADIO_RELOAD:
+            case RadioMessageType::RADIO_NEED_REPAIR:
+            case RadioMessageType::RADIO_ON_DEPOT:
             default:
               //							Transmit_Message(RADIO_RUN_AWAY);
               Begin_Mode(BSTATE_IDLE);
@@ -4674,6 +5403,89 @@ InfantryType BuildingClass::Crew_Type() const {
     case STRUCT_BARRACKS:
       return INFANTRY_E1;
 
+    case StructType::STRUCT_NONE:
+    case StructType::STRUCT_ADVANCED_TECH:
+    case StructType::STRUCT_IRON_CURTAIN:
+    case StructType::STRUCT_WEAP:
+    case StructType::STRUCT_CHRONOSPHERE:
+    case StructType::STRUCT_PILLBOX:
+    case StructType::STRUCT_CAMOPILLBOX:
+    case StructType::STRUCT_RADAR:
+    case StructType::STRUCT_GAP:
+    case StructType::STRUCT_TURRET:
+    case StructType::STRUCT_AAGUN:
+    case StructType::STRUCT_FLAME_TURRET:
+    case StructType::STRUCT_REFINERY:
+    case StructType::STRUCT_HELIPAD:
+    case StructType::STRUCT_SAM:
+    case StructType::STRUCT_AIRSTRIP:
+    case StructType::STRUCT_POWER:
+    case StructType::STRUCT_ADVANCED_POWER:
+    case StructType::STRUCT_SOVIET_TECH:
+    case StructType::STRUCT_HOSPITAL:
+    case StructType::STRUCT_REPAIR:
+    case StructType::STRUCT_BIO_LAB:
+    case StructType::STRUCT_MISSION:
+    case StructType::STRUCT_SHIP_YARD:
+    case StructType::STRUCT_SUB_PEN:
+    case StructType::STRUCT_MSLO:
+    case StructType::STRUCT_FORWARD_COM:
+    case StructType::STRUCT_TESLA:
+    case StructType::STRUCT_FAKEWEAP:
+    case StructType::STRUCT_FAKECONST:
+    case StructType::STRUCT_FAKE_YARD:
+    case StructType::STRUCT_FAKE_PEN:
+    case StructType::STRUCT_FAKE_RADAR:
+    case StructType::STRUCT_SANDBAG_WALL:
+    case StructType::STRUCT_CYCLONE_WALL:
+    case StructType::STRUCT_BRICK_WALL:
+    case StructType::STRUCT_BARBWIRE_WALL:
+    case StructType::STRUCT_WOOD_WALL:
+    case StructType::STRUCT_FENCE:
+    case StructType::STRUCT_AVMINE:
+    case StructType::STRUCT_APMINE:
+    case StructType::STRUCT_V01:
+    case StructType::STRUCT_V02:
+    case StructType::STRUCT_V03:
+    case StructType::STRUCT_V04:
+    case StructType::STRUCT_V05:
+    case StructType::STRUCT_V06:
+    case StructType::STRUCT_V07:
+    case StructType::STRUCT_V08:
+    case StructType::STRUCT_V09:
+    case StructType::STRUCT_V10:
+    case StructType::STRUCT_V11:
+    case StructType::STRUCT_V12:
+    case StructType::STRUCT_V13:
+    case StructType::STRUCT_V14:
+    case StructType::STRUCT_V15:
+    case StructType::STRUCT_V16:
+    case StructType::STRUCT_V17:
+    case StructType::STRUCT_V18:
+    case StructType::STRUCT_PUMP:
+    case StructType::STRUCT_V20:
+    case StructType::STRUCT_V21:
+    case StructType::STRUCT_V22:
+    case StructType::STRUCT_V23:
+    case StructType::STRUCT_V24:
+    case StructType::STRUCT_V25:
+    case StructType::STRUCT_V26:
+    case StructType::STRUCT_V27:
+    case StructType::STRUCT_V28:
+    case StructType::STRUCT_V29:
+    case StructType::STRUCT_V30:
+    case StructType::STRUCT_V31:
+    case StructType::STRUCT_V32:
+    case StructType::STRUCT_V33:
+    case StructType::STRUCT_V34:
+    case StructType::STRUCT_V35:
+    case StructType::STRUCT_V36:
+    case StructType::STRUCT_V37:
+    case StructType::STRUCT_BARREL:
+    case StructType::STRUCT_BARREL3:
+    case StructType::STRUCT_QUEEN:
+    case StructType::STRUCT_LARVA1:
+    case StructType::STRUCT_LARVA2:
     default:
       break;
   }
@@ -5225,6 +6037,33 @@ void BuildingClass::Factory_AI() {
             House->IsBuiltSomething = true;
             break;
 
+          case RTTIType::RTTI_NONE:
+          case RTTIType::RTTI_AIRCRAFTTYPE:
+          case RTTIType::RTTI_ANIM:
+          case RTTIType::RTTI_ANIMTYPE:
+          case RTTIType::RTTI_BUILDINGTYPE:
+          case RTTIType::RTTI_BULLET:
+          case RTTIType::RTTI_BULLETTYPE:
+          case RTTIType::RTTI_CELL:
+          case RTTIType::RTTI_FACTORY:
+          case RTTIType::RTTI_HOUSE:
+          case RTTIType::RTTI_HOUSETYPE:
+          case RTTIType::RTTI_INFANTRYTYPE:
+          case RTTIType::RTTI_OVERLAY:
+          case RTTIType::RTTI_OVERLAYTYPE:
+          case RTTIType::RTTI_SMUDGE:
+          case RTTIType::RTTI_SMUDGETYPE:
+          case RTTIType::RTTI_SPECIAL:
+          case RTTIType::RTTI_TEAM:
+          case RTTIType::RTTI_TEAMTYPE:
+          case RTTIType::RTTI_TEMPLATE:
+          case RTTIType::RTTI_TEMPLATETYPE:
+          case RTTIType::RTTI_TERRAIN:
+          case RTTIType::RTTI_TERRAINTYPE:
+          case RTTIType::RTTI_TRIGGER:
+          case RTTIType::RTTI_TRIGGERTYPE:
+          case RTTIType::RTTI_UNITTYPE:
+          case RTTIType::RTTI_VESSELTYPE:
           default:
             break;
         }
@@ -5624,6 +6463,89 @@ int BuildingClass::Value() const {
         return BuildingTypeClass::As_Reference(STRUCT_RADAR).Reward +
                BuildingTypeClass::As_Reference(STRUCT_RADAR).Risk;
 
+      case StructType::STRUCT_NONE:
+      case StructType::STRUCT_ADVANCED_TECH:
+      case StructType::STRUCT_IRON_CURTAIN:
+      case StructType::STRUCT_WEAP:
+      case StructType::STRUCT_CHRONOSPHERE:
+      case StructType::STRUCT_PILLBOX:
+      case StructType::STRUCT_CAMOPILLBOX:
+      case StructType::STRUCT_RADAR:
+      case StructType::STRUCT_GAP:
+      case StructType::STRUCT_TURRET:
+      case StructType::STRUCT_AAGUN:
+      case StructType::STRUCT_FLAME_TURRET:
+      case StructType::STRUCT_CONST:
+      case StructType::STRUCT_REFINERY:
+      case StructType::STRUCT_STORAGE:
+      case StructType::STRUCT_HELIPAD:
+      case StructType::STRUCT_SAM:
+      case StructType::STRUCT_AIRSTRIP:
+      case StructType::STRUCT_POWER:
+      case StructType::STRUCT_ADVANCED_POWER:
+      case StructType::STRUCT_SOVIET_TECH:
+      case StructType::STRUCT_HOSPITAL:
+      case StructType::STRUCT_BARRACKS:
+      case StructType::STRUCT_TENT:
+      case StructType::STRUCT_KENNEL:
+      case StructType::STRUCT_REPAIR:
+      case StructType::STRUCT_BIO_LAB:
+      case StructType::STRUCT_MISSION:
+      case StructType::STRUCT_SHIP_YARD:
+      case StructType::STRUCT_SUB_PEN:
+      case StructType::STRUCT_MSLO:
+      case StructType::STRUCT_FORWARD_COM:
+      case StructType::STRUCT_TESLA:
+      case StructType::STRUCT_SANDBAG_WALL:
+      case StructType::STRUCT_CYCLONE_WALL:
+      case StructType::STRUCT_BRICK_WALL:
+      case StructType::STRUCT_BARBWIRE_WALL:
+      case StructType::STRUCT_WOOD_WALL:
+      case StructType::STRUCT_FENCE:
+      case StructType::STRUCT_AVMINE:
+      case StructType::STRUCT_APMINE:
+      case StructType::STRUCT_V01:
+      case StructType::STRUCT_V02:
+      case StructType::STRUCT_V03:
+      case StructType::STRUCT_V04:
+      case StructType::STRUCT_V05:
+      case StructType::STRUCT_V06:
+      case StructType::STRUCT_V07:
+      case StructType::STRUCT_V08:
+      case StructType::STRUCT_V09:
+      case StructType::STRUCT_V10:
+      case StructType::STRUCT_V11:
+      case StructType::STRUCT_V12:
+      case StructType::STRUCT_V13:
+      case StructType::STRUCT_V14:
+      case StructType::STRUCT_V15:
+      case StructType::STRUCT_V16:
+      case StructType::STRUCT_V17:
+      case StructType::STRUCT_V18:
+      case StructType::STRUCT_PUMP:
+      case StructType::STRUCT_V20:
+      case StructType::STRUCT_V21:
+      case StructType::STRUCT_V22:
+      case StructType::STRUCT_V23:
+      case StructType::STRUCT_V24:
+      case StructType::STRUCT_V25:
+      case StructType::STRUCT_V26:
+      case StructType::STRUCT_V27:
+      case StructType::STRUCT_V28:
+      case StructType::STRUCT_V29:
+      case StructType::STRUCT_V30:
+      case StructType::STRUCT_V31:
+      case StructType::STRUCT_V32:
+      case StructType::STRUCT_V33:
+      case StructType::STRUCT_V34:
+      case StructType::STRUCT_V35:
+      case StructType::STRUCT_V36:
+      case StructType::STRUCT_V37:
+      case StructType::STRUCT_BARREL:
+      case StructType::STRUCT_BARREL3:
+      case StructType::STRUCT_QUEEN:
+      case StructType::STRUCT_LARVA1:
+      case StructType::STRUCT_LARVA2:
       default:
         break;
     }

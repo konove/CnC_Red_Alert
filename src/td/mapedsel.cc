@@ -413,6 +413,27 @@ void MapEditClass::Popup_Controls() {
         Add_A_Button(*FacingDial);
       }
       break;
+    case RTTIType::RTTI_NONE:
+    case RTTIType::RTTI_INFANTRY:
+    case RTTIType::RTTI_UNIT:
+    case RTTIType::RTTI_AIRCRAFT:
+    case RTTIType::RTTI_BUILDING:
+    case RTTIType::RTTI_TERRAIN:
+    case RTTIType::RTTI_ABSTRACTTYPE:
+    case RTTIType::RTTI_ANIM:
+    case RTTIType::RTTI_ANIMTYPE:
+    case RTTIType::RTTI_BULLET:
+    case RTTIType::RTTI_BULLETTYPE:
+    case RTTIType::RTTI_OVERLAY:
+    case RTTIType::RTTI_OVERLAYTYPE:
+    case RTTIType::RTTI_SMUDGE:
+    case RTTIType::RTTI_SMUDGETYPE:
+    case RTTIType::RTTI_TEAM:
+    case RTTIType::RTTI_TEMPLATE:
+    case RTTIType::RTTI_TEMPLATETYPE:
+    case RTTIType::RTTI_TERRAINTYPE:
+    case RTTIType::RTTI_OBJECT:
+    case RTTIType::RTTI_SPECIAL:
     default:
       break;
   }

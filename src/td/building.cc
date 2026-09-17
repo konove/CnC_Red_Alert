@@ -309,6 +309,69 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass* from,
           }
           break;
 
+        case StructType::STRUCT_NONE:
+        case StructType::STRUCT_WEAP:
+        case StructType::STRUCT_GTOWER:
+        case StructType::STRUCT_ATOWER:
+        case StructType::STRUCT_OBELISK:
+        case StructType::STRUCT_RADAR:
+        case StructType::STRUCT_TURRET:
+        case StructType::STRUCT_CONST:
+        case StructType::STRUCT_STORAGE:
+        case StructType::STRUCT_SAM:
+        case StructType::STRUCT_POWER:
+        case StructType::STRUCT_ADVANCED_POWER:
+        case StructType::STRUCT_HOSPITAL:
+        case StructType::STRUCT_BARRACKS:
+        case StructType::STRUCT_TANKER:
+        case StructType::STRUCT_BIO_LAB:
+        case StructType::STRUCT_HAND:
+        case StructType::STRUCT_TEMPLE:
+        case StructType::STRUCT_EYE:
+        case StructType::STRUCT_MISSION:
+        case StructType::STRUCT_V01:
+        case StructType::STRUCT_V02:
+        case StructType::STRUCT_V03:
+        case StructType::STRUCT_V04:
+        case StructType::STRUCT_V05:
+        case StructType::STRUCT_V06:
+        case StructType::STRUCT_V07:
+        case StructType::STRUCT_V08:
+        case StructType::STRUCT_V09:
+        case StructType::STRUCT_V10:
+        case StructType::STRUCT_V11:
+        case StructType::STRUCT_V12:
+        case StructType::STRUCT_V13:
+        case StructType::STRUCT_V14:
+        case StructType::STRUCT_V15:
+        case StructType::STRUCT_V16:
+        case StructType::STRUCT_V17:
+        case StructType::STRUCT_V18:
+        case StructType::STRUCT_PUMP:
+        case StructType::STRUCT_V20:
+        case StructType::STRUCT_V21:
+        case StructType::STRUCT_V22:
+        case StructType::STRUCT_V23:
+        case StructType::STRUCT_V24:
+        case StructType::STRUCT_V25:
+        case StructType::STRUCT_V26:
+        case StructType::STRUCT_V27:
+        case StructType::STRUCT_V28:
+        case StructType::STRUCT_V29:
+        case StructType::STRUCT_V30:
+        case StructType::STRUCT_V31:
+        case StructType::STRUCT_V32:
+        case StructType::STRUCT_V33:
+        case StructType::STRUCT_V34:
+        case StructType::STRUCT_V35:
+        case StructType::STRUCT_V36:
+        case StructType::STRUCT_V37:
+        case StructType::STRUCT_SANDBAG_WALL:
+        case StructType::STRUCT_CYCLONE_WALL:
+        case StructType::STRUCT_BRICK_WALL:
+        case StructType::STRUCT_BARBWIRE_WALL:
+        case StructType::STRUCT_WOOD_WALL:
+        case StructType::STRUCT_COUNT:
         default:
           break;
       }
@@ -341,6 +404,70 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass* from,
           Mark(MARK_CHANGE);
           Assign_Mission(MISSION_HARVEST);
           return RADIO_ATTACH;
+        case StructType::STRUCT_NONE:
+        case StructType::STRUCT_WEAP:
+        case StructType::STRUCT_GTOWER:
+        case StructType::STRUCT_ATOWER:
+        case StructType::STRUCT_OBELISK:
+        case StructType::STRUCT_RADAR:
+        case StructType::STRUCT_TURRET:
+        case StructType::STRUCT_CONST:
+        case StructType::STRUCT_STORAGE:
+        case StructType::STRUCT_SAM:
+        case StructType::STRUCT_AIRSTRIP:
+        case StructType::STRUCT_POWER:
+        case StructType::STRUCT_ADVANCED_POWER:
+        case StructType::STRUCT_HOSPITAL:
+        case StructType::STRUCT_BARRACKS:
+        case StructType::STRUCT_TANKER:
+        case StructType::STRUCT_BIO_LAB:
+        case StructType::STRUCT_HAND:
+        case StructType::STRUCT_TEMPLE:
+        case StructType::STRUCT_EYE:
+        case StructType::STRUCT_MISSION:
+        case StructType::STRUCT_V01:
+        case StructType::STRUCT_V02:
+        case StructType::STRUCT_V03:
+        case StructType::STRUCT_V04:
+        case StructType::STRUCT_V05:
+        case StructType::STRUCT_V06:
+        case StructType::STRUCT_V07:
+        case StructType::STRUCT_V08:
+        case StructType::STRUCT_V09:
+        case StructType::STRUCT_V10:
+        case StructType::STRUCT_V11:
+        case StructType::STRUCT_V12:
+        case StructType::STRUCT_V13:
+        case StructType::STRUCT_V14:
+        case StructType::STRUCT_V15:
+        case StructType::STRUCT_V16:
+        case StructType::STRUCT_V17:
+        case StructType::STRUCT_V18:
+        case StructType::STRUCT_PUMP:
+        case StructType::STRUCT_V20:
+        case StructType::STRUCT_V21:
+        case StructType::STRUCT_V22:
+        case StructType::STRUCT_V23:
+        case StructType::STRUCT_V24:
+        case StructType::STRUCT_V25:
+        case StructType::STRUCT_V26:
+        case StructType::STRUCT_V27:
+        case StructType::STRUCT_V28:
+        case StructType::STRUCT_V29:
+        case StructType::STRUCT_V30:
+        case StructType::STRUCT_V31:
+        case StructType::STRUCT_V32:
+        case StructType::STRUCT_V33:
+        case StructType::STRUCT_V34:
+        case StructType::STRUCT_V35:
+        case StructType::STRUCT_V36:
+        case StructType::STRUCT_V37:
+        case StructType::STRUCT_SANDBAG_WALL:
+        case StructType::STRUCT_CYCLONE_WALL:
+        case StructType::STRUCT_BRICK_WALL:
+        case StructType::STRUCT_BARBWIRE_WALL:
+        case StructType::STRUCT_WOOD_WALL:
+        case StructType::STRUCT_COUNT:
         default:
           break;
       }
@@ -457,6 +584,32 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass* from,
         return RADIO_RUN_AWAY;
       }
       return RADIO_ROGER;
+    case RadioMessageType::RADIO_STATIC:
+    case RadioMessageType::RADIO_ROGER:
+    case RadioMessageType::RADIO_HELLO:
+    case RadioMessageType::RADIO_PICK_UP:
+    case RadioMessageType::RADIO_ATTACH:
+    case RadioMessageType::RADIO_DELIVERY:
+    case RadioMessageType::RADIO_HOLD_STILL:
+    case RadioMessageType::RADIO_UNLOAD:
+    case RadioMessageType::RADIO_NEGATIVE:
+    case RadioMessageType::RADIO_REDRAW:
+    case RadioMessageType::RADIO_TRYING_TO_LOAD:
+    case RadioMessageType::RADIO_MOVE_HERE:
+    case RadioMessageType::RADIO_NEED_TO_MOVE:
+    case RadioMessageType::RADIO_YEA_NOW_WHAT:
+    case RadioMessageType::RADIO_BACKUP_NOW:
+    case RadioMessageType::RADIO_RUN_AWAY:
+    case RadioMessageType::RADIO_TETHER:
+    case RadioMessageType::RADIO_UNTETHER:
+    case RadioMessageType::RADIO_REPAIR:
+    case RadioMessageType::RADIO_PREPARED:
+    case RadioMessageType::RADIO_ATTACK_THIS:
+    case RadioMessageType::RADIO_RELOAD:
+    case RadioMessageType::RADIO_KICK:
+    case RadioMessageType::RADIO_PUNCH:
+    case RadioMessageType::RADIO_PREPARE_TO_BOX:
+    case RadioMessageType::RADIO_COUNT:
     default:
       break;
   }
@@ -836,6 +989,68 @@ bool BuildingClass::Mark(MarkType mark) {
             case STRUCT_CYCLONE_WALL:
               new OverlayClass(OVERLAY_CYCLONE_WALL, cell, House->Class->House);
               break;
+            case StructType::STRUCT_NONE:
+            case StructType::STRUCT_WEAP:
+            case StructType::STRUCT_GTOWER:
+            case StructType::STRUCT_ATOWER:
+            case StructType::STRUCT_OBELISK:
+            case StructType::STRUCT_RADAR:
+            case StructType::STRUCT_TURRET:
+            case StructType::STRUCT_CONST:
+            case StructType::STRUCT_REFINERY:
+            case StructType::STRUCT_STORAGE:
+            case StructType::STRUCT_HELIPAD:
+            case StructType::STRUCT_SAM:
+            case StructType::STRUCT_AIRSTRIP:
+            case StructType::STRUCT_POWER:
+            case StructType::STRUCT_ADVANCED_POWER:
+            case StructType::STRUCT_HOSPITAL:
+            case StructType::STRUCT_BARRACKS:
+            case StructType::STRUCT_TANKER:
+            case StructType::STRUCT_REPAIR:
+            case StructType::STRUCT_BIO_LAB:
+            case StructType::STRUCT_HAND:
+            case StructType::STRUCT_TEMPLE:
+            case StructType::STRUCT_EYE:
+            case StructType::STRUCT_MISSION:
+            case StructType::STRUCT_V01:
+            case StructType::STRUCT_V02:
+            case StructType::STRUCT_V03:
+            case StructType::STRUCT_V04:
+            case StructType::STRUCT_V05:
+            case StructType::STRUCT_V06:
+            case StructType::STRUCT_V07:
+            case StructType::STRUCT_V08:
+            case StructType::STRUCT_V09:
+            case StructType::STRUCT_V10:
+            case StructType::STRUCT_V11:
+            case StructType::STRUCT_V12:
+            case StructType::STRUCT_V13:
+            case StructType::STRUCT_V14:
+            case StructType::STRUCT_V15:
+            case StructType::STRUCT_V16:
+            case StructType::STRUCT_V17:
+            case StructType::STRUCT_V18:
+            case StructType::STRUCT_PUMP:
+            case StructType::STRUCT_V20:
+            case StructType::STRUCT_V21:
+            case StructType::STRUCT_V22:
+            case StructType::STRUCT_V23:
+            case StructType::STRUCT_V24:
+            case StructType::STRUCT_V25:
+            case StructType::STRUCT_V26:
+            case StructType::STRUCT_V27:
+            case StructType::STRUCT_V28:
+            case StructType::STRUCT_V29:
+            case StructType::STRUCT_V30:
+            case StructType::STRUCT_V31:
+            case StructType::STRUCT_V32:
+            case StructType::STRUCT_V33:
+            case StructType::STRUCT_V34:
+            case StructType::STRUCT_V35:
+            case StructType::STRUCT_V36:
+            case StructType::STRUCT_V37:
+            case StructType::STRUCT_COUNT:
             default:
               break;
           }
@@ -860,6 +1075,9 @@ bool BuildingClass::Mark(MarkType mark) {
         }
         break;
 
+      case MarkType::MARK_CHANGE:
+      case MarkType::MARK_OVERLAP_DOWN:
+      case MarkType::MARK_OVERLAP_UP:
       default:
         Map.Refresh_Cells(cell, offset);
         Map.Refresh_Cells(cell, occupy);
@@ -1426,6 +1644,68 @@ bool BuildingClass::Unlimbo(COORDINATE coord, DirType dir) {
         case STRUCT_WOOD_WALL:
           otype = OVERLAY_WOOD_WALL;
           break;
+        case StructType::STRUCT_NONE:
+        case StructType::STRUCT_WEAP:
+        case StructType::STRUCT_GTOWER:
+        case StructType::STRUCT_ATOWER:
+        case StructType::STRUCT_OBELISK:
+        case StructType::STRUCT_RADAR:
+        case StructType::STRUCT_TURRET:
+        case StructType::STRUCT_CONST:
+        case StructType::STRUCT_REFINERY:
+        case StructType::STRUCT_STORAGE:
+        case StructType::STRUCT_HELIPAD:
+        case StructType::STRUCT_SAM:
+        case StructType::STRUCT_AIRSTRIP:
+        case StructType::STRUCT_POWER:
+        case StructType::STRUCT_ADVANCED_POWER:
+        case StructType::STRUCT_HOSPITAL:
+        case StructType::STRUCT_BARRACKS:
+        case StructType::STRUCT_TANKER:
+        case StructType::STRUCT_REPAIR:
+        case StructType::STRUCT_BIO_LAB:
+        case StructType::STRUCT_HAND:
+        case StructType::STRUCT_TEMPLE:
+        case StructType::STRUCT_EYE:
+        case StructType::STRUCT_MISSION:
+        case StructType::STRUCT_V01:
+        case StructType::STRUCT_V02:
+        case StructType::STRUCT_V03:
+        case StructType::STRUCT_V04:
+        case StructType::STRUCT_V05:
+        case StructType::STRUCT_V06:
+        case StructType::STRUCT_V07:
+        case StructType::STRUCT_V08:
+        case StructType::STRUCT_V09:
+        case StructType::STRUCT_V10:
+        case StructType::STRUCT_V11:
+        case StructType::STRUCT_V12:
+        case StructType::STRUCT_V13:
+        case StructType::STRUCT_V14:
+        case StructType::STRUCT_V15:
+        case StructType::STRUCT_V16:
+        case StructType::STRUCT_V17:
+        case StructType::STRUCT_V18:
+        case StructType::STRUCT_PUMP:
+        case StructType::STRUCT_V20:
+        case StructType::STRUCT_V21:
+        case StructType::STRUCT_V22:
+        case StructType::STRUCT_V23:
+        case StructType::STRUCT_V24:
+        case StructType::STRUCT_V25:
+        case StructType::STRUCT_V26:
+        case StructType::STRUCT_V27:
+        case StructType::STRUCT_V28:
+        case StructType::STRUCT_V29:
+        case StructType::STRUCT_V30:
+        case StructType::STRUCT_V31:
+        case StructType::STRUCT_V32:
+        case StructType::STRUCT_V33:
+        case StructType::STRUCT_V34:
+        case StructType::STRUCT_V35:
+        case StructType::STRUCT_V36:
+        case StructType::STRUCT_V37:
+        case StructType::STRUCT_COUNT:
         default:
           break;
       }
@@ -1474,6 +1754,27 @@ bool BuildingClass::Unlimbo(COORDINATE coord, DirType dir) {
         House->BuildingFactories++;
         break;
 
+      case RTTIType::RTTI_NONE:
+      case RTTIType::RTTI_INFANTRY:
+      case RTTIType::RTTI_UNIT:
+      case RTTIType::RTTI_AIRCRAFT:
+      case RTTIType::RTTI_BUILDING:
+      case RTTIType::RTTI_TERRAIN:
+      case RTTIType::RTTI_ABSTRACTTYPE:
+      case RTTIType::RTTI_ANIM:
+      case RTTIType::RTTI_ANIMTYPE:
+      case RTTIType::RTTI_BULLET:
+      case RTTIType::RTTI_BULLETTYPE:
+      case RTTIType::RTTI_OVERLAY:
+      case RTTIType::RTTI_OVERLAYTYPE:
+      case RTTIType::RTTI_SMUDGE:
+      case RTTIType::RTTI_SMUDGETYPE:
+      case RTTIType::RTTI_TEAM:
+      case RTTIType::RTTI_TEMPLATE:
+      case RTTIType::RTTI_TEMPLATETYPE:
+      case RTTIType::RTTI_TERRAINTYPE:
+      case RTTIType::RTTI_OBJECT:
+      case RTTIType::RTTI_SPECIAL:
       default:
         break;
     }
@@ -1703,6 +2004,7 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
         break;
 
       case RESULT_NONE:
+      case ResultType::RESULT_LIGHT:
       default:
         break;
     }
@@ -2196,6 +2498,68 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
     case RTTI_INFANTRY:
     case RTTI_UNIT:
       switch (Class->Type) {
+        case StructType::STRUCT_NONE:
+        case StructType::STRUCT_GTOWER:
+        case StructType::STRUCT_ATOWER:
+        case StructType::STRUCT_OBELISK:
+        case StructType::STRUCT_RADAR:
+        case StructType::STRUCT_TURRET:
+        case StructType::STRUCT_CONST:
+        case StructType::STRUCT_STORAGE:
+        case StructType::STRUCT_HELIPAD:
+        case StructType::STRUCT_SAM:
+        case StructType::STRUCT_POWER:
+        case StructType::STRUCT_ADVANCED_POWER:
+        case StructType::STRUCT_HOSPITAL:
+        case StructType::STRUCT_TANKER:
+        case StructType::STRUCT_REPAIR:
+        case StructType::STRUCT_BIO_LAB:
+        case StructType::STRUCT_TEMPLE:
+        case StructType::STRUCT_EYE:
+        case StructType::STRUCT_MISSION:
+        case StructType::STRUCT_V01:
+        case StructType::STRUCT_V02:
+        case StructType::STRUCT_V03:
+        case StructType::STRUCT_V04:
+        case StructType::STRUCT_V05:
+        case StructType::STRUCT_V06:
+        case StructType::STRUCT_V07:
+        case StructType::STRUCT_V08:
+        case StructType::STRUCT_V09:
+        case StructType::STRUCT_V10:
+        case StructType::STRUCT_V11:
+        case StructType::STRUCT_V12:
+        case StructType::STRUCT_V13:
+        case StructType::STRUCT_V14:
+        case StructType::STRUCT_V15:
+        case StructType::STRUCT_V16:
+        case StructType::STRUCT_V17:
+        case StructType::STRUCT_V18:
+        case StructType::STRUCT_PUMP:
+        case StructType::STRUCT_V20:
+        case StructType::STRUCT_V21:
+        case StructType::STRUCT_V22:
+        case StructType::STRUCT_V23:
+        case StructType::STRUCT_V24:
+        case StructType::STRUCT_V25:
+        case StructType::STRUCT_V26:
+        case StructType::STRUCT_V27:
+        case StructType::STRUCT_V28:
+        case StructType::STRUCT_V29:
+        case StructType::STRUCT_V30:
+        case StructType::STRUCT_V31:
+        case StructType::STRUCT_V32:
+        case StructType::STRUCT_V33:
+        case StructType::STRUCT_V34:
+        case StructType::STRUCT_V35:
+        case StructType::STRUCT_V36:
+        case StructType::STRUCT_V37:
+        case StructType::STRUCT_SANDBAG_WALL:
+        case StructType::STRUCT_CYCLONE_WALL:
+        case StructType::STRUCT_BRICK_WALL:
+        case StructType::STRUCT_BARBWIRE_WALL:
+        case StructType::STRUCT_WOOD_WALL:
+        case StructType::STRUCT_COUNT:
         default:
           break;
 
@@ -2318,6 +2682,27 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
         }
       }
       break;
+    case RTTIType::RTTI_NONE:
+    case RTTIType::RTTI_INFANTRYTYPE:
+    case RTTIType::RTTI_UNITTYPE:
+    case RTTIType::RTTI_AIRCRAFTTYPE:
+    case RTTIType::RTTI_BUILDINGTYPE:
+    case RTTIType::RTTI_TERRAIN:
+    case RTTIType::RTTI_ABSTRACTTYPE:
+    case RTTIType::RTTI_ANIM:
+    case RTTIType::RTTI_ANIMTYPE:
+    case RTTIType::RTTI_BULLET:
+    case RTTIType::RTTI_BULLETTYPE:
+    case RTTIType::RTTI_OVERLAY:
+    case RTTIType::RTTI_OVERLAYTYPE:
+    case RTTIType::RTTI_SMUDGE:
+    case RTTIType::RTTI_SMUDGETYPE:
+    case RTTIType::RTTI_TEAM:
+    case RTTIType::RTTI_TEMPLATE:
+    case RTTIType::RTTI_TEMPLATETYPE:
+    case RTTIType::RTTI_TERRAINTYPE:
+    case RTTIType::RTTI_OBJECT:
+    case RTTIType::RTTI_SPECIAL:
     default:
       break;
   }
@@ -2395,6 +2780,27 @@ void BuildingClass::Update_Buildables() {
           }
         }
         break;
+      case RTTIType::RTTI_NONE:
+      case RTTIType::RTTI_INFANTRY:
+      case RTTIType::RTTI_UNIT:
+      case RTTIType::RTTI_AIRCRAFT:
+      case RTTIType::RTTI_BUILDING:
+      case RTTIType::RTTI_TERRAIN:
+      case RTTIType::RTTI_ABSTRACTTYPE:
+      case RTTIType::RTTI_ANIM:
+      case RTTIType::RTTI_ANIMTYPE:
+      case RTTIType::RTTI_BULLET:
+      case RTTIType::RTTI_BULLETTYPE:
+      case RTTIType::RTTI_OVERLAY:
+      case RTTIType::RTTI_OVERLAYTYPE:
+      case RTTIType::RTTI_SMUDGE:
+      case RTTIType::RTTI_SMUDGETYPE:
+      case RTTIType::RTTI_TEAM:
+      case RTTIType::RTTI_TEMPLATE:
+      case RTTIType::RTTI_TEMPLATETYPE:
+      case RTTIType::RTTI_TERRAINTYPE:
+      case RTTIType::RTTI_OBJECT:
+      case RTTIType::RTTI_SPECIAL:
       default:
         break;
     }
@@ -2464,6 +2870,27 @@ bool BuildingClass::Limbo() {
         House->BuildingFactories--;
         break;
 
+      case RTTIType::RTTI_NONE:
+      case RTTIType::RTTI_INFANTRY:
+      case RTTIType::RTTI_UNIT:
+      case RTTIType::RTTI_AIRCRAFT:
+      case RTTIType::RTTI_BUILDING:
+      case RTTIType::RTTI_TERRAIN:
+      case RTTIType::RTTI_ABSTRACTTYPE:
+      case RTTIType::RTTI_ANIM:
+      case RTTIType::RTTI_ANIMTYPE:
+      case RTTIType::RTTI_BULLET:
+      case RTTIType::RTTI_BULLETTYPE:
+      case RTTIType::RTTI_OVERLAY:
+      case RTTIType::RTTI_OVERLAYTYPE:
+      case RTTIType::RTTI_SMUDGE:
+      case RTTIType::RTTI_SMUDGETYPE:
+      case RTTIType::RTTI_TEAM:
+      case RTTIType::RTTI_TEMPLATE:
+      case RTTIType::RTTI_TEMPLATETYPE:
+      case RTTIType::RTTI_TERRAINTYPE:
+      case RTTIType::RTTI_OBJECT:
+      case RTTIType::RTTI_SPECIAL:
       default:
         break;
     }
@@ -2588,6 +3015,68 @@ COORDINATE BuildingClass::Fire_Coord(int /*unused*/) const {
   **	position. This depends on building type and turret facing.
   */
   switch (Class->Type) {
+    case StructType::STRUCT_NONE:
+    case StructType::STRUCT_WEAP:
+    case StructType::STRUCT_RADAR:
+    case StructType::STRUCT_CONST:
+    case StructType::STRUCT_REFINERY:
+    case StructType::STRUCT_STORAGE:
+    case StructType::STRUCT_HELIPAD:
+    case StructType::STRUCT_AIRSTRIP:
+    case StructType::STRUCT_POWER:
+    case StructType::STRUCT_ADVANCED_POWER:
+    case StructType::STRUCT_HOSPITAL:
+    case StructType::STRUCT_BARRACKS:
+    case StructType::STRUCT_TANKER:
+    case StructType::STRUCT_REPAIR:
+    case StructType::STRUCT_BIO_LAB:
+    case StructType::STRUCT_HAND:
+    case StructType::STRUCT_TEMPLE:
+    case StructType::STRUCT_EYE:
+    case StructType::STRUCT_MISSION:
+    case StructType::STRUCT_V01:
+    case StructType::STRUCT_V02:
+    case StructType::STRUCT_V03:
+    case StructType::STRUCT_V04:
+    case StructType::STRUCT_V05:
+    case StructType::STRUCT_V06:
+    case StructType::STRUCT_V07:
+    case StructType::STRUCT_V08:
+    case StructType::STRUCT_V09:
+    case StructType::STRUCT_V10:
+    case StructType::STRUCT_V11:
+    case StructType::STRUCT_V12:
+    case StructType::STRUCT_V13:
+    case StructType::STRUCT_V14:
+    case StructType::STRUCT_V15:
+    case StructType::STRUCT_V16:
+    case StructType::STRUCT_V17:
+    case StructType::STRUCT_V18:
+    case StructType::STRUCT_PUMP:
+    case StructType::STRUCT_V20:
+    case StructType::STRUCT_V21:
+    case StructType::STRUCT_V22:
+    case StructType::STRUCT_V23:
+    case StructType::STRUCT_V24:
+    case StructType::STRUCT_V25:
+    case StructType::STRUCT_V26:
+    case StructType::STRUCT_V27:
+    case StructType::STRUCT_V28:
+    case StructType::STRUCT_V29:
+    case StructType::STRUCT_V30:
+    case StructType::STRUCT_V31:
+    case StructType::STRUCT_V32:
+    case StructType::STRUCT_V33:
+    case StructType::STRUCT_V34:
+    case StructType::STRUCT_V35:
+    case StructType::STRUCT_V36:
+    case StructType::STRUCT_V37:
+    case StructType::STRUCT_SANDBAG_WALL:
+    case StructType::STRUCT_CYCLONE_WALL:
+    case StructType::STRUCT_BRICK_WALL:
+    case StructType::STRUCT_BARBWIRE_WALL:
+    case StructType::STRUCT_WOOD_WALL:
+    case StructType::STRUCT_COUNT:
     default:
     case STRUCT_GTOWER:
     case STRUCT_ATOWER:
@@ -2906,6 +3395,28 @@ ActionType BuildingClass::What_Action(ObjectClass* object) {
           }
           break;
 
+        case RTTIType::RTTI_NONE:
+        case RTTIType::RTTI_INFANTRY:
+        case RTTIType::RTTI_UNIT:
+        case RTTIType::RTTI_AIRCRAFT:
+        case RTTIType::RTTI_BUILDING:
+        case RTTIType::RTTI_BUILDINGTYPE:
+        case RTTIType::RTTI_TERRAIN:
+        case RTTIType::RTTI_ABSTRACTTYPE:
+        case RTTIType::RTTI_ANIM:
+        case RTTIType::RTTI_ANIMTYPE:
+        case RTTIType::RTTI_BULLET:
+        case RTTIType::RTTI_BULLETTYPE:
+        case RTTIType::RTTI_OVERLAY:
+        case RTTIType::RTTI_OVERLAYTYPE:
+        case RTTIType::RTTI_SMUDGE:
+        case RTTIType::RTTI_SMUDGETYPE:
+        case RTTIType::RTTI_TEAM:
+        case RTTIType::RTTI_TEMPLATE:
+        case RTTIType::RTTI_TEMPLATETYPE:
+        case RTTIType::RTTI_TERRAINTYPE:
+        case RTTIType::RTTI_OBJECT:
+        case RTTIType::RTTI_SPECIAL:
         default:
           action = ACTION_NONE;
           break;
@@ -3332,6 +3843,16 @@ bool BuildingClass::Captured(HouseClass* newowner) {
       case HOUSE_BAD:
         Speak(VOX_NOD_CAPTURED);
         break;
+      case HousesType::HOUSE_NONE:
+      case HousesType::HOUSE_NEUTRAL:
+      case HousesType::HOUSE_JP:
+      case HousesType::HOUSE_MULTI1:
+      case HousesType::HOUSE_MULTI2:
+      case HousesType::HOUSE_MULTI3:
+      case HousesType::HOUSE_MULTI4:
+      case HousesType::HOUSE_MULTI5:
+      case HousesType::HOUSE_MULTI6:
+      case HousesType::HOUSE_COUNT:
       default:
         break;
     }
@@ -3399,6 +3920,27 @@ bool BuildingClass::Captured(HouseClass* newowner) {
         House->AircraftFactories--;
         break;
 
+      case RTTIType::RTTI_NONE:
+      case RTTIType::RTTI_INFANTRY:
+      case RTTIType::RTTI_UNIT:
+      case RTTIType::RTTI_AIRCRAFT:
+      case RTTIType::RTTI_BUILDING:
+      case RTTIType::RTTI_TERRAIN:
+      case RTTIType::RTTI_ABSTRACTTYPE:
+      case RTTIType::RTTI_ANIM:
+      case RTTIType::RTTI_ANIMTYPE:
+      case RTTIType::RTTI_BULLET:
+      case RTTIType::RTTI_BULLETTYPE:
+      case RTTIType::RTTI_OVERLAY:
+      case RTTIType::RTTI_OVERLAYTYPE:
+      case RTTIType::RTTI_SMUDGE:
+      case RTTIType::RTTI_SMUDGETYPE:
+      case RTTIType::RTTI_TEAM:
+      case RTTIType::RTTI_TEMPLATE:
+      case RTTIType::RTTI_TEMPLATETYPE:
+      case RTTIType::RTTI_TERRAINTYPE:
+      case RTTIType::RTTI_OBJECT:
+      case RTTIType::RTTI_SPECIAL:
       default:
         break;
     }
@@ -3451,6 +3993,27 @@ bool BuildingClass::Captured(HouseClass* newowner) {
         House->AircraftFactories++;
         break;
 
+      case RTTIType::RTTI_NONE:
+      case RTTIType::RTTI_INFANTRY:
+      case RTTIType::RTTI_UNIT:
+      case RTTIType::RTTI_AIRCRAFT:
+      case RTTIType::RTTI_BUILDING:
+      case RTTIType::RTTI_TERRAIN:
+      case RTTIType::RTTI_ABSTRACTTYPE:
+      case RTTIType::RTTI_ANIM:
+      case RTTIType::RTTI_ANIMTYPE:
+      case RTTIType::RTTI_BULLET:
+      case RTTIType::RTTI_BULLETTYPE:
+      case RTTIType::RTTI_OVERLAY:
+      case RTTIType::RTTI_OVERLAYTYPE:
+      case RTTIType::RTTI_SMUDGE:
+      case RTTIType::RTTI_SMUDGETYPE:
+      case RTTIType::RTTI_TEAM:
+      case RTTIType::RTTI_TEMPLATE:
+      case RTTIType::RTTI_TEMPLATETYPE:
+      case RTTIType::RTTI_TERRAINTYPE:
+      case RTTIType::RTTI_OBJECT:
+      case RTTIType::RTTI_SPECIAL:
       default:
         break;
     }
@@ -4068,6 +4631,8 @@ int BuildingClass::Mission_Attack() {
       case FIRE_OK:
         Fire_At(TarCom, 0);
         return 1;
+      case FireErrorType::FIRE_ROTATING:
+      case FireErrorType::FIRE_MOVING:
       default:
         break;
     }
@@ -4576,6 +5141,16 @@ void BuildingClass::Death_Announcement(const TechnoClass* /*source*/) const {
               Speak(VOX_NOD_STRUCTURE);
               break;
 
+            case HousesType::HOUSE_NONE:
+            case HousesType::HOUSE_NEUTRAL:
+            case HousesType::HOUSE_JP:
+            case HousesType::HOUSE_MULTI1:
+            case HousesType::HOUSE_MULTI2:
+            case HousesType::HOUSE_MULTI3:
+            case HousesType::HOUSE_MULTI4:
+            case HousesType::HOUSE_MULTI5:
+            case HousesType::HOUSE_MULTI6:
+            case HousesType::HOUSE_COUNT:
             default:
               break;
           }
@@ -4813,6 +5388,71 @@ InfantryType BuildingClass::Crew_Type() const {
       }
       break;
 
+    case StructType::STRUCT_NONE:
+    case StructType::STRUCT_WEAP:
+    case StructType::STRUCT_GTOWER:
+    case StructType::STRUCT_ATOWER:
+    case StructType::STRUCT_OBELISK:
+    case StructType::STRUCT_RADAR:
+    case StructType::STRUCT_TURRET:
+    case StructType::STRUCT_REFINERY:
+    case StructType::STRUCT_HELIPAD:
+    case StructType::STRUCT_SAM:
+    case StructType::STRUCT_AIRSTRIP:
+    case StructType::STRUCT_POWER:
+    case StructType::STRUCT_ADVANCED_POWER:
+    case StructType::STRUCT_HOSPITAL:
+    case StructType::STRUCT_BARRACKS:
+    case StructType::STRUCT_TANKER:
+    case StructType::STRUCT_REPAIR:
+    case StructType::STRUCT_BIO_LAB:
+    case StructType::STRUCT_HAND:
+    case StructType::STRUCT_TEMPLE:
+    case StructType::STRUCT_EYE:
+    case StructType::STRUCT_MISSION:
+    case StructType::STRUCT_V01:
+    case StructType::STRUCT_V02:
+    case StructType::STRUCT_V03:
+    case StructType::STRUCT_V04:
+    case StructType::STRUCT_V05:
+    case StructType::STRUCT_V06:
+    case StructType::STRUCT_V07:
+    case StructType::STRUCT_V08:
+    case StructType::STRUCT_V09:
+    case StructType::STRUCT_V10:
+    case StructType::STRUCT_V11:
+    case StructType::STRUCT_V12:
+    case StructType::STRUCT_V13:
+    case StructType::STRUCT_V14:
+    case StructType::STRUCT_V15:
+    case StructType::STRUCT_V16:
+    case StructType::STRUCT_V17:
+    case StructType::STRUCT_V18:
+    case StructType::STRUCT_PUMP:
+    case StructType::STRUCT_V20:
+    case StructType::STRUCT_V21:
+    case StructType::STRUCT_V22:
+    case StructType::STRUCT_V23:
+    case StructType::STRUCT_V24:
+    case StructType::STRUCT_V25:
+    case StructType::STRUCT_V26:
+    case StructType::STRUCT_V27:
+    case StructType::STRUCT_V28:
+    case StructType::STRUCT_V29:
+    case StructType::STRUCT_V30:
+    case StructType::STRUCT_V31:
+    case StructType::STRUCT_V32:
+    case StructType::STRUCT_V33:
+    case StructType::STRUCT_V34:
+    case StructType::STRUCT_V35:
+    case StructType::STRUCT_V36:
+    case StructType::STRUCT_V37:
+    case StructType::STRUCT_SANDBAG_WALL:
+    case StructType::STRUCT_CYCLONE_WALL:
+    case StructType::STRUCT_BRICK_WALL:
+    case StructType::STRUCT_BARBWIRE_WALL:
+    case StructType::STRUCT_WOOD_WALL:
+    case StructType::STRUCT_COUNT:
     default:
       break;
   }
@@ -4874,6 +5514,26 @@ void BuildingClass::Detach_All(bool all) {
       case RTTI_SPECIAL:
         fnum = House->SpecialFactory;
         break;
+      case RTTIType::RTTI_NONE:
+      case RTTIType::RTTI_INFANTRY:
+      case RTTIType::RTTI_UNIT:
+      case RTTIType::RTTI_AIRCRAFT:
+      case RTTIType::RTTI_BUILDING:
+      case RTTIType::RTTI_TERRAIN:
+      case RTTIType::RTTI_ABSTRACTTYPE:
+      case RTTIType::RTTI_ANIM:
+      case RTTIType::RTTI_ANIMTYPE:
+      case RTTIType::RTTI_BULLET:
+      case RTTIType::RTTI_BULLETTYPE:
+      case RTTIType::RTTI_OVERLAY:
+      case RTTIType::RTTI_OVERLAYTYPE:
+      case RTTIType::RTTI_SMUDGE:
+      case RTTIType::RTTI_SMUDGETYPE:
+      case RTTIType::RTTI_TEAM:
+      case RTTIType::RTTI_TEMPLATE:
+      case RTTIType::RTTI_TEMPLATETYPE:
+      case RTTIType::RTTI_TERRAINTYPE:
+      case RTTIType::RTTI_OBJECT:
       default:
         break;
     }

@@ -850,6 +850,7 @@ STDMETHODIMP RAChatEventSink::OnChannelList(HRESULT /*res*/,
           }
         }
         break;
+      case CHANNELFILTER::CHANNELFILTER_NO:
       default:
         break;
     }

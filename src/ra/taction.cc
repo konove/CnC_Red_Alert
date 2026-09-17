@@ -806,6 +806,9 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     **	Do no action at all.
     */
     case TACTION_NONE:
+    case TActionType::TACTION_WINLOSE:
+    case TActionType::TACTION_ALLOWWIN:
+    case TActionType::TACTION_COUNT:
     default:
       break;
   }
@@ -919,6 +922,16 @@ NeedType Action_Needs(TActionType action) {
     case TACTION_PREFERRED_TARGET:
       return NEED_QUARRY;
 
+    case TActionType::TACTION_NONE:
+    case TActionType::TACTION_WINLOSE:
+    case TActionType::TACTION_ALLOWWIN:
+    case TActionType::TACTION_REVEAL_ALL:
+    case TActionType::TACTION_START_TIMER:
+    case TActionType::TACTION_STOP_TIMER:
+    case TActionType::TACTION_CREEP_SHADOW:
+    case TActionType::TACTION_DESTROY_OBJECT:
+    case TActionType::TACTION_LAUNCH_NUKES:
+    case TActionType::TACTION_COUNT:
     default:
       break;
   }

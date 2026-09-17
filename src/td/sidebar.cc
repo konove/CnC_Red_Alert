@@ -1618,6 +1618,27 @@ bool SidebarClass::StripClass::AI(KeyNumType& input, int /*unused*/,
                       EventClass(EventClass::PLACE, pending->What_Am_I(), -1));
                   Speak(VOX_UNIT_READY);
                   break;
+                case RTTIType::RTTI_NONE:
+                case RTTIType::RTTI_INFANTRYTYPE:
+                case RTTIType::RTTI_UNITTYPE:
+                case RTTIType::RTTI_AIRCRAFTTYPE:
+                case RTTIType::RTTI_BUILDINGTYPE:
+                case RTTIType::RTTI_TERRAIN:
+                case RTTIType::RTTI_ABSTRACTTYPE:
+                case RTTIType::RTTI_ANIM:
+                case RTTIType::RTTI_ANIMTYPE:
+                case RTTIType::RTTI_BULLET:
+                case RTTIType::RTTI_BULLETTYPE:
+                case RTTIType::RTTI_OVERLAY:
+                case RTTIType::RTTI_OVERLAYTYPE:
+                case RTTIType::RTTI_SMUDGE:
+                case RTTIType::RTTI_SMUDGETYPE:
+                case RTTIType::RTTI_TEAM:
+                case RTTIType::RTTI_TEMPLATE:
+                case RTTIType::RTTI_TEMPLATETYPE:
+                case RTTIType::RTTI_TERRAINTYPE:
+                case RTTIType::RTTI_OBJECT:
+                case RTTIType::RTTI_SPECIAL:
                 default:
                   break;
               }
@@ -1732,6 +1753,27 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
               case RTTI_AIRCRAFTTYPE:
                 isbusy = PlayerPtr->AircraftFactory != -1;
                 break;
+              case RTTIType::RTTI_NONE:
+              case RTTIType::RTTI_INFANTRY:
+              case RTTIType::RTTI_UNIT:
+              case RTTIType::RTTI_AIRCRAFT:
+              case RTTIType::RTTI_BUILDING:
+              case RTTIType::RTTI_TERRAIN:
+              case RTTIType::RTTI_ABSTRACTTYPE:
+              case RTTIType::RTTI_ANIM:
+              case RTTIType::RTTI_ANIMTYPE:
+              case RTTIType::RTTI_BULLET:
+              case RTTIType::RTTI_BULLETTYPE:
+              case RTTIType::RTTI_OVERLAY:
+              case RTTIType::RTTI_OVERLAYTYPE:
+              case RTTIType::RTTI_SMUDGE:
+              case RTTIType::RTTI_SMUDGETYPE:
+              case RTTIType::RTTI_TEAM:
+              case RTTIType::RTTI_TEMPLATE:
+              case RTTIType::RTTI_TEMPLATETYPE:
+              case RTTIType::RTTI_TERRAINTYPE:
+              case RTTIType::RTTI_OBJECT:
+              case RTTIType::RTTI_SPECIAL:
               default:
                 break;
             }
@@ -2163,6 +2205,27 @@ bool SidebarClass::StripClass::SelectClass::Action(unsigned flags,
       genfactory = PlayerPtr->BuildingFactory;
       break;
 
+    case RTTIType::RTTI_NONE:
+    case RTTIType::RTTI_INFANTRY:
+    case RTTIType::RTTI_UNIT:
+    case RTTIType::RTTI_AIRCRAFT:
+    case RTTIType::RTTI_BUILDING:
+    case RTTIType::RTTI_TERRAIN:
+    case RTTIType::RTTI_ABSTRACTTYPE:
+    case RTTIType::RTTI_ANIM:
+    case RTTIType::RTTI_ANIMTYPE:
+    case RTTIType::RTTI_BULLET:
+    case RTTIType::RTTI_BULLETTYPE:
+    case RTTIType::RTTI_OVERLAY:
+    case RTTIType::RTTI_OVERLAYTYPE:
+    case RTTIType::RTTI_SMUDGE:
+    case RTTIType::RTTI_SMUDGETYPE:
+    case RTTIType::RTTI_TEAM:
+    case RTTIType::RTTI_TEMPLATE:
+    case RTTIType::RTTI_TEMPLATETYPE:
+    case RTTIType::RTTI_TERRAINTYPE:
+    case RTTIType::RTTI_OBJECT:
+    case RTTIType::RTTI_SPECIAL:
     default:
       genfactory = -1;
       break;

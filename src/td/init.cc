@@ -1369,6 +1369,7 @@ bool Select_Game(bool fade) {
               break;
 
 #endif  // FORCE_WINSOCK
+            case GameType::GAME_IPX:
             default:
               break;
           }
@@ -1406,6 +1407,7 @@ bool Select_Game(bool fade) {
                 selection = kSelNone;
               }
               break;
+            case GameType::GAME_NORMAL:
             default:
               break;
           }

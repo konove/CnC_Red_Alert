@@ -737,6 +737,35 @@ RadioMessageType UnitClass::Receive_Message(RadioClass* from,
       }
       TarComClass::Receive_Message(from, message, param);
       return RADIO_ROGER;
+    case RadioMessageType::RADIO_STATIC:
+    case RadioMessageType::RADIO_ROGER:
+    case RadioMessageType::RADIO_HELLO:
+    case RadioMessageType::RADIO_PICK_UP:
+    case RadioMessageType::RADIO_ATTACH:
+    case RadioMessageType::RADIO_DELIVERY:
+    case RadioMessageType::RADIO_HOLD_STILL:
+    case RadioMessageType::RADIO_UNLOADED:
+    case RadioMessageType::RADIO_UNLOAD:
+    case RadioMessageType::RADIO_NEGATIVE:
+    case RadioMessageType::RADIO_BUILDING:
+    case RadioMessageType::RADIO_COMPLETE:
+    case RadioMessageType::RADIO_REDRAW:
+    case RadioMessageType::RADIO_ARE_REFINERY:
+    case RadioMessageType::RADIO_TRYING_TO_LOAD:
+    case RadioMessageType::RADIO_MOVE_HERE:
+    case RadioMessageType::RADIO_NEED_TO_MOVE:
+    case RadioMessageType::RADIO_YEA_NOW_WHAT:
+    case RadioMessageType::RADIO_RUN_AWAY:
+    case RadioMessageType::RADIO_TETHER:
+    case RadioMessageType::RADIO_UNTETHER:
+    case RadioMessageType::RADIO_REPAIR:
+    case RadioMessageType::RADIO_PREPARED:
+    case RadioMessageType::RADIO_ATTACK_THIS:
+    case RadioMessageType::RADIO_RELOAD:
+    case RadioMessageType::RADIO_KICK:
+    case RadioMessageType::RADIO_PUNCH:
+    case RadioMessageType::RADIO_PREPARE_TO_BOX:
+    case RadioMessageType::RADIO_COUNT:
     default:
       break;
   }
@@ -1208,6 +1237,24 @@ void UnitClass::Active_Click_With(ActionType action, ObjectClass* object) {
         action = ACTION_MOVE;
         break;
 
+      case ActionType::ACTION_NONE:
+      case ActionType::ACTION_MOVE:
+      case ActionType::ACTION_NOMOVE:
+      case ActionType::ACTION_SELF:
+      case ActionType::ACTION_ATTACK:
+      case ActionType::ACTION_HARVEST:
+      case ActionType::ACTION_SELECT:
+      case ActionType::ACTION_TOGGLE_SELECT:
+      case ActionType::ACTION_REPAIR:
+      case ActionType::ACTION_SELL:
+      case ActionType::ACTION_SELL_UNIT:
+      case ActionType::ACTION_NO_SELL:
+      case ActionType::ACTION_NO_REPAIR:
+      case ActionType::ACTION_ION:
+      case ActionType::ACTION_NUKE_BOMB:
+      case ActionType::ACTION_AIR_STRIKE:
+      case ActionType::ACTION_GUARD_AREA:
+      case ActionType::ACTION_COUNT:
       default:
         action = ACTION_NONE;
         break;
@@ -1650,6 +1697,38 @@ void UnitClass::Per_Cell_Process(bool center) {
         whom->Attach(this);
         return;
 
+      case RadioMessageType::RADIO_STATIC:
+      case RadioMessageType::RADIO_HELLO:
+      case RadioMessageType::RADIO_OVER_OUT:
+      case RadioMessageType::RADIO_PICK_UP:
+      case RadioMessageType::RADIO_DELIVERY:
+      case RadioMessageType::RADIO_HOLD_STILL:
+      case RadioMessageType::RADIO_UNLOADED:
+      case RadioMessageType::RADIO_UNLOAD:
+      case RadioMessageType::RADIO_NEGATIVE:
+      case RadioMessageType::RADIO_BUILDING:
+      case RadioMessageType::RADIO_COMPLETE:
+      case RadioMessageType::RADIO_REDRAW:
+      case RadioMessageType::RADIO_DOCKING:
+      case RadioMessageType::RADIO_CAN_LOAD:
+      case RadioMessageType::RADIO_ARE_REFINERY:
+      case RadioMessageType::RADIO_TRYING_TO_LOAD:
+      case RadioMessageType::RADIO_MOVE_HERE:
+      case RadioMessageType::RADIO_NEED_TO_MOVE:
+      case RadioMessageType::RADIO_YEA_NOW_WHAT:
+      case RadioMessageType::RADIO_IM_IN:
+      case RadioMessageType::RADIO_BACKUP_NOW:
+      case RadioMessageType::RADIO_RUN_AWAY:
+      case RadioMessageType::RADIO_TETHER:
+      case RadioMessageType::RADIO_UNTETHER:
+      case RadioMessageType::RADIO_REPAIR:
+      case RadioMessageType::RADIO_PREPARED:
+      case RadioMessageType::RADIO_ATTACK_THIS:
+      case RadioMessageType::RADIO_RELOAD:
+      case RadioMessageType::RADIO_KICK:
+      case RadioMessageType::RADIO_PUNCH:
+      case RadioMessageType::RADIO_PREPARE_TO_BOX:
+      case RadioMessageType::RADIO_COUNT:
       default:
         // The original passed `true` as the threat coordinate; that value (1)
         // is kept.
@@ -1934,6 +2013,12 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) {
             break;
 
           case FACING_W:
+          case FacingType::FACING_NONE:
+          case FacingType::FACING_N:
+          case FacingType::FACING_S:
+          case FacingType::FACING_SW:
+          case FacingType::FACING_NW:
+          case FacingType::FACING_COUNT:
           default:
             shapenum = base::At(BodyShape, tfacing);
             shapestart = 6;
@@ -2422,6 +2507,27 @@ int UnitClass::Mission_Unload() {
           break;
       }
       break;
+    case UnitType::UNIT_NONE:
+    case UnitType::UNIT_HTANK:
+    case UnitType::UNIT_MTANK:
+    case UnitType::UNIT_LTANK:
+    case UnitType::UNIT_STANK:
+    case UnitType::UNIT_FTANK:
+    case UnitType::UNIT_VICE:
+    case UnitType::UNIT_MLRS:
+    case UnitType::UNIT_JEEP:
+    case UnitType::UNIT_BUGGY:
+    case UnitType::UNIT_HARVESTER:
+    case UnitType::UNIT_ARTY:
+    case UnitType::UNIT_MSAM:
+    case UnitType::UNIT_MHQ:
+    case UnitType::UNIT_GUNBOAT:
+    case UnitType::UNIT_BIKE:
+    case UnitType::UNIT_TRIC:
+    case UnitType::UNIT_TREX:
+    case UnitType::UNIT_RAPT:
+    case UnitType::UNIT_STEG:
+    case UnitType::UNIT_COUNT:
     default:
       break;
   }

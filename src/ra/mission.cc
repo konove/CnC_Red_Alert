@@ -242,6 +242,7 @@ void MissionClass::AI() {
     switch (Mission) {
       case MISSION_HARMLESS:
       case MISSION_SLEEP:
+      case MissionType::MISSION_NONE:
       default:
         MissionTimer.Set(Mission_Sleep());
         break;

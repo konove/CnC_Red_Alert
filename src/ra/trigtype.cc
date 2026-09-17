@@ -472,6 +472,25 @@ bool TriggerTypeClass::Edit() {
       absl::SNPrintF(databuf1, sizeof(databuf1), "%d",
                      static_cast<int>(Event1.Data.Value));
       break;
+    case NeedType::NEED_NONE:
+    case NeedType::NEED_THEME:
+    case NeedType::NEED_MOVIE:
+    case NeedType::NEED_SOUND:
+    case NeedType::NEED_SPEECH:
+    case NeedType::NEED_INFANTRY:
+    case NeedType::NEED_UNIT:
+    case NeedType::NEED_AIRCRAFT:
+    case NeedType::NEED_STRUCTURE:
+    case NeedType::NEED_WAYPOINT:
+    case NeedType::NEED_TRIGGER:
+    case NeedType::NEED_TEAM:
+    case NeedType::NEED_HOUSE:
+    case NeedType::NEED_QUARRY:
+    case NeedType::NEED_FORMATION:
+    case NeedType::NEED_BOOL:
+    case NeedType::NEED_SPECIAL:
+    case NeedType::NEED_MISSION:
+    case NeedType::NEED_HEX_NUMBER:
     default:
       break;
   }
@@ -486,6 +505,25 @@ bool TriggerTypeClass::Edit() {
       absl::SNPrintF(databuf2, sizeof(databuf2), "%d",
                      static_cast<int>(Event2.Data.Value));
       break;
+    case NeedType::NEED_NONE:
+    case NeedType::NEED_THEME:
+    case NeedType::NEED_MOVIE:
+    case NeedType::NEED_SOUND:
+    case NeedType::NEED_SPEECH:
+    case NeedType::NEED_INFANTRY:
+    case NeedType::NEED_UNIT:
+    case NeedType::NEED_AIRCRAFT:
+    case NeedType::NEED_STRUCTURE:
+    case NeedType::NEED_WAYPOINT:
+    case NeedType::NEED_TRIGGER:
+    case NeedType::NEED_TEAM:
+    case NeedType::NEED_HOUSE:
+    case NeedType::NEED_QUARRY:
+    case NeedType::NEED_FORMATION:
+    case NeedType::NEED_BOOL:
+    case NeedType::NEED_SPECIAL:
+    case NeedType::NEED_MISSION:
+    case NeedType::NEED_HEX_NUMBER:
     default:
       break;
   }
@@ -1180,6 +1218,18 @@ bool TriggerTypeClass::Edit() {
           utype1list.Add(*commands);
           break;
 
+        case NeedType::NEED_NONE:
+        case NeedType::NEED_THEME:
+        case NeedType::NEED_MOVIE:
+        case NeedType::NEED_SOUND:
+        case NeedType::NEED_SPEECH:
+        case NeedType::NEED_TRIGGER:
+        case NeedType::NEED_QUARRY:
+        case NeedType::NEED_FORMATION:
+        case NeedType::NEED_BOOL:
+        case NeedType::NEED_SPECIAL:
+        case NeedType::NEED_MISSION:
+        case NeedType::NEED_HEX_NUMBER:
         default:
           break;
       }
@@ -1230,6 +1280,18 @@ bool TriggerTypeClass::Edit() {
             utype2list.Add(*commands);
             break;
 
+          case NeedType::NEED_NONE:
+          case NeedType::NEED_THEME:
+          case NeedType::NEED_MOVIE:
+          case NeedType::NEED_SOUND:
+          case NeedType::NEED_SPEECH:
+          case NeedType::NEED_TRIGGER:
+          case NeedType::NEED_QUARRY:
+          case NeedType::NEED_FORMATION:
+          case NeedType::NEED_BOOL:
+          case NeedType::NEED_SPECIAL:
+          case NeedType::NEED_MISSION:
+          case NeedType::NEED_HEX_NUMBER:
           default:
             break;
         }
@@ -1312,6 +1374,15 @@ bool TriggerTypeClass::Edit() {
         case NEED_QUARRY:
           qlist1.Add(*commands);
           break;
+        case NeedType::NEED_NONE:
+        case NeedType::NEED_INFANTRY:
+        case NeedType::NEED_UNIT:
+        case NeedType::NEED_AIRCRAFT:
+        case NeedType::NEED_STRUCTURE:
+        case NeedType::NEED_TIME:
+        case NeedType::NEED_FORMATION:
+        case NeedType::NEED_MISSION:
+        case NeedType::NEED_HEX_NUMBER:
         default:
           break;
       }
@@ -1377,6 +1448,15 @@ bool TriggerTypeClass::Edit() {
           case NEED_QUARRY:
             qlist2.Add(*commands);
             break;
+          case NeedType::NEED_NONE:
+          case NeedType::NEED_INFANTRY:
+          case NeedType::NEED_UNIT:
+          case NeedType::NEED_AIRCRAFT:
+          case NeedType::NEED_STRUCTURE:
+          case NeedType::NEED_TIME:
+          case NeedType::NEED_FORMATION:
+          case NeedType::NEED_MISSION:
+          case NeedType::NEED_HEX_NUMBER:
           default:
             break;
         }
@@ -1525,6 +1605,18 @@ bool TriggerTypeClass::Edit() {
           case NEED_TEAM:
             Event1.Team = TeamTypeClass::From_Name(ttype1list.Current_Item());
             break;
+          case NeedType::NEED_NONE:
+          case NeedType::NEED_THEME:
+          case NeedType::NEED_MOVIE:
+          case NeedType::NEED_SOUND:
+          case NeedType::NEED_SPEECH:
+          case NeedType::NEED_TRIGGER:
+          case NeedType::NEED_QUARRY:
+          case NeedType::NEED_FORMATION:
+          case NeedType::NEED_BOOL:
+          case NeedType::NEED_SPECIAL:
+          case NeedType::NEED_MISSION:
+          case NeedType::NEED_HEX_NUMBER:
           default:
             break;
         }
@@ -1571,6 +1663,18 @@ bool TriggerTypeClass::Edit() {
           case NEED_TEAM:
             Event2.Team = TeamTypeClass::As_Pointer(ttype2list.Current_Item());
             break;
+          case NeedType::NEED_NONE:
+          case NeedType::NEED_THEME:
+          case NeedType::NEED_MOVIE:
+          case NeedType::NEED_SOUND:
+          case NeedType::NEED_SPEECH:
+          case NeedType::NEED_TRIGGER:
+          case NeedType::NEED_QUARRY:
+          case NeedType::NEED_FORMATION:
+          case NeedType::NEED_BOOL:
+          case NeedType::NEED_SPECIAL:
+          case NeedType::NEED_MISSION:
+          case NeedType::NEED_HEX_NUMBER:
           default:
             break;
         }
@@ -1634,6 +1738,15 @@ bool TriggerTypeClass::Edit() {
           case NEED_QUARRY:
             Action1.Data.Quarry = QuarryType(qlist1.Current_Index());
             break;
+          case NeedType::NEED_NONE:
+          case NeedType::NEED_INFANTRY:
+          case NeedType::NEED_UNIT:
+          case NeedType::NEED_AIRCRAFT:
+          case NeedType::NEED_STRUCTURE:
+          case NeedType::NEED_TIME:
+          case NeedType::NEED_FORMATION:
+          case NeedType::NEED_MISSION:
+          case NeedType::NEED_HEX_NUMBER:
           default:
             break;
         }
@@ -1696,6 +1809,15 @@ bool TriggerTypeClass::Edit() {
           case NEED_QUARRY:
             Action2.Data.Quarry = QuarryType(qlist1.Current_Index());
             break;
+          case NeedType::NEED_NONE:
+          case NeedType::NEED_INFANTRY:
+          case NeedType::NEED_UNIT:
+          case NeedType::NEED_AIRCRAFT:
+          case NeedType::NEED_STRUCTURE:
+          case NeedType::NEED_TIME:
+          case NeedType::NEED_FORMATION:
+          case NeedType::NEED_MISSION:
+          case NeedType::NEED_HEX_NUMBER:
           default:
             break;
         }
@@ -1756,6 +1878,7 @@ const char* TriggerTypeClass::Description() const {
         special = '=';
         break;
 
+      case MultiStyleType::MULTI_ONLY:
       default:
         special = '.';
         break;
@@ -1807,6 +1930,21 @@ const char* TriggerTypeClass::Description() const {
         added = tbuf;
         break;
 
+      case NeedType::NEED_NONE:
+      case NeedType::NEED_THEME:
+      case NeedType::NEED_MOVIE:
+      case NeedType::NEED_SOUND:
+      case NeedType::NEED_SPEECH:
+      case NeedType::NEED_TRIGGER:
+      case NeedType::NEED_TEAM:
+      case NeedType::NEED_HOUSE:
+      case NeedType::NEED_TIME:
+      case NeedType::NEED_QUARRY:
+      case NeedType::NEED_FORMATION:
+      case NeedType::NEED_BOOL:
+      case NeedType::NEED_SPECIAL:
+      case NeedType::NEED_MISSION:
+      case NeedType::NEED_HEX_NUMBER:
       default:
         break;
     }

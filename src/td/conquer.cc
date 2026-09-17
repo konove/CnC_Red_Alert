@@ -309,6 +309,7 @@ void Main_Game(int argc, char* argv[]) {
                 Map.Revert_Mouse_Shape();
                 break;
 
+              case SpecialDialogType::SDLG_NONE:
               default:
                 break;
             }
@@ -369,6 +370,7 @@ void Main_Game(int argc, char* argv[]) {
               Map.Revert_Mouse_Shape();
               break;
 
+            case SpecialDialogType::SDLG_NONE:
             default:
               break;
           }
@@ -416,6 +418,7 @@ void Main_Game(int argc, char* argv[]) {
 
         case GAME_INTERNET:
           // Winsock.Close();
+        case GameType::GAME_NORMAL:
         default:
           break;
       }
@@ -2524,6 +2527,23 @@ const TechnoTypeClass* Fetch_Techno_Type(RTTIType type, int id) {
     case RTTI_AIRCRAFTTYPE:
     case RTTI_AIRCRAFT:
       return &AircraftTypeClass::As_Reference(static_cast<AircraftType>(id));
+    case RTTIType::RTTI_NONE:
+    case RTTIType::RTTI_TERRAIN:
+    case RTTIType::RTTI_ABSTRACTTYPE:
+    case RTTIType::RTTI_ANIM:
+    case RTTIType::RTTI_ANIMTYPE:
+    case RTTIType::RTTI_BULLET:
+    case RTTIType::RTTI_BULLETTYPE:
+    case RTTIType::RTTI_OVERLAY:
+    case RTTIType::RTTI_OVERLAYTYPE:
+    case RTTIType::RTTI_SMUDGE:
+    case RTTIType::RTTI_SMUDGETYPE:
+    case RTTIType::RTTI_TEAM:
+    case RTTIType::RTTI_TEMPLATE:
+    case RTTIType::RTTI_TEMPLATETYPE:
+    case RTTIType::RTTI_TERRAINTYPE:
+    case RTTIType::RTTI_OBJECT:
+    case RTTIType::RTTI_SPECIAL:
     default:
       break;
   }
@@ -2658,6 +2678,24 @@ void Trap_Object() {
       }
       [[fallthrough]];
 
+    case RTTIType::RTTI_INFANTRYTYPE:
+    case RTTIType::RTTI_UNITTYPE:
+    case RTTIType::RTTI_AIRCRAFTTYPE:
+    case RTTIType::RTTI_BUILDINGTYPE:
+    case RTTIType::RTTI_TERRAIN:
+    case RTTIType::RTTI_ABSTRACTTYPE:
+    case RTTIType::RTTI_ANIMTYPE:
+    case RTTIType::RTTI_BULLETTYPE:
+    case RTTIType::RTTI_OVERLAY:
+    case RTTIType::RTTI_OVERLAYTYPE:
+    case RTTIType::RTTI_SMUDGE:
+    case RTTIType::RTTI_SMUDGETYPE:
+    case RTTIType::RTTI_TEAM:
+    case RTTIType::RTTI_TEMPLATE:
+    case RTTIType::RTTI_TEMPLATETYPE:
+    case RTTIType::RTTI_TERRAINTYPE:
+    case RTTIType::RTTI_OBJECT:
+    case RTTIType::RTTI_SPECIAL:
     default:
       break;
   }
@@ -2765,6 +2803,28 @@ void Handle_Team(int team, int action) {
               Unselect_All();
             }
             break;
+          case RTTIType::RTTI_NONE:
+          case RTTIType::RTTI_INFANTRYTYPE:
+          case RTTIType::RTTI_UNITTYPE:
+          case RTTIType::RTTI_AIRCRAFTTYPE:
+          case RTTIType::RTTI_BUILDING:
+          case RTTIType::RTTI_BUILDINGTYPE:
+          case RTTIType::RTTI_TERRAIN:
+          case RTTIType::RTTI_ABSTRACTTYPE:
+          case RTTIType::RTTI_ANIM:
+          case RTTIType::RTTI_ANIMTYPE:
+          case RTTIType::RTTI_BULLET:
+          case RTTIType::RTTI_BULLETTYPE:
+          case RTTIType::RTTI_OVERLAY:
+          case RTTIType::RTTI_OVERLAYTYPE:
+          case RTTIType::RTTI_SMUDGE:
+          case RTTIType::RTTI_SMUDGETYPE:
+          case RTTIType::RTTI_TEAM:
+          case RTTIType::RTTI_TEMPLATE:
+          case RTTIType::RTTI_TEMPLATETYPE:
+          case RTTIType::RTTI_TERRAINTYPE:
+          case RTTIType::RTTI_OBJECT:
+          case RTTIType::RTTI_SPECIAL:
           default:
             break;
         }

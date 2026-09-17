@@ -271,6 +271,12 @@ ObjectClass* As_Object(TARGET target) {
       object = Anims.Raw_Ptr(val);
       break;
 
+    case KindType::KIND_NONE:
+    case KindType::KIND_CELL:
+    case KindType::KIND_TEMPLATE:
+    case KindType::KIND_TRIGGER:
+    case KindType::KIND_TEAM:
+    case KindType::KIND_TEAMTYPE:
     default:
       break;
   }

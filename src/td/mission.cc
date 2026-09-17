@@ -190,6 +190,8 @@ void MissionClass::AI() {
   */
   if (Timer.Expired() && Strength > 0) {
     switch (Mission) {
+      case MissionType::MISSION_NONE:
+      case MissionType::MISSION_COUNT:
       default:
       case MISSION_STICKY:
       case MISSION_SLEEP:

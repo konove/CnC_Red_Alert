@@ -776,6 +776,18 @@ void TeamClass::AI() {
           break;
 
         case TMISSION_UNLOAD:
+        case TeamMissionType::TMISSION_NONE:
+        case TeamMissionType::TMISSION_ATTACK:
+        case TeamMissionType::TMISSION_FORMATION:
+        case TeamMissionType::TMISSION_GUARD:
+        case TeamMissionType::TMISSION_LOOP:
+        case TeamMissionType::TMISSION_DEPLOY:
+        case TeamMissionType::TMISSION_HOUND_DOG:
+        case TeamMissionType::TMISSION_DO:
+        case TeamMissionType::TMISSION_SET_GLOBAL:
+        case TeamMissionType::TMISSION_INVULNERABLE:
+        case TeamMissionType::TMISSION_LOAD:
+        case TeamMissionType::TMISSION_COUNT:
         default:
           Assign_Mission_Target(kTargetNone);
           break;
@@ -878,6 +890,8 @@ void TeamClass::AI() {
       case TMISSION_LOOP:
         TMission_Loop();
         break;
+      case TeamMissionType::TMISSION_NONE:
+      case TeamMissionType::TMISSION_COUNT:
       default:
         break;
     }
@@ -1355,6 +1369,30 @@ int TeamClass::Recruit(int typeindex) {
           }
         }
       } break;
+      case RTTIType::RTTI_NONE:
+      case RTTIType::RTTI_ANIM:
+      case RTTIType::RTTI_ANIMTYPE:
+      case RTTIType::RTTI_BUILDING:
+      case RTTIType::RTTI_BUILDINGTYPE:
+      case RTTIType::RTTI_BULLET:
+      case RTTIType::RTTI_BULLETTYPE:
+      case RTTIType::RTTI_CELL:
+      case RTTIType::RTTI_FACTORY:
+      case RTTIType::RTTI_HOUSE:
+      case RTTIType::RTTI_HOUSETYPE:
+      case RTTIType::RTTI_OVERLAY:
+      case RTTIType::RTTI_OVERLAYTYPE:
+      case RTTIType::RTTI_SMUDGE:
+      case RTTIType::RTTI_SMUDGETYPE:
+      case RTTIType::RTTI_SPECIAL:
+      case RTTIType::RTTI_TEAM:
+      case RTTIType::RTTI_TEAMTYPE:
+      case RTTIType::RTTI_TEMPLATE:
+      case RTTIType::RTTI_TEMPLATETYPE:
+      case RTTIType::RTTI_TERRAIN:
+      case RTTIType::RTTI_TERRAINTYPE:
+      case RTTIType::RTTI_TRIGGER:
+      case RTTIType::RTTI_TRIGGERTYPE:
       default:
         break;
     }
@@ -2771,6 +2809,8 @@ int TeamClass::TMission_Attack() {
         Assign_Mission_Target(candidate->Greatest_Threat(THREAT_FAKES));
         break;
 
+      case QuarryType::QUARRY_NONE:
+      case QuarryType::QUARRY_VESSELS:
       default:
         break;
     }

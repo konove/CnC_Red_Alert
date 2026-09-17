@@ -77,6 +77,11 @@ ObjectClass* ResolveSavedObject(TARGET target, ArchiveReader& ar, bool active_on
       return Slot(Anims, index, ar, active_only);
     case KIND_TEMPLATE:
       return Slot(Templates, index, ar, active_only);
+    case KindType::KIND_NONE:
+    case KindType::KIND_CELL:
+    case KindType::KIND_TRIGGER:
+    case KindType::KIND_TEAM:
+    case KindType::KIND_TEAMTYPE:
     default:
       ar.Fail("saved target is not an object kind");
       return nullptr;
@@ -206,6 +211,27 @@ void TechnoTypePtr::Serialize(ArchiveWriter& ar) {
             static_cast<int>(
                 dynamic_cast<const BuildingTypeClass*>(ref_)->Type));
         break;
+      case RTTIType::RTTI_NONE:
+      case RTTIType::RTTI_INFANTRY:
+      case RTTIType::RTTI_UNIT:
+      case RTTIType::RTTI_AIRCRAFT:
+      case RTTIType::RTTI_BUILDING:
+      case RTTIType::RTTI_TERRAIN:
+      case RTTIType::RTTI_ABSTRACTTYPE:
+      case RTTIType::RTTI_ANIM:
+      case RTTIType::RTTI_ANIMTYPE:
+      case RTTIType::RTTI_BULLET:
+      case RTTIType::RTTI_BULLETTYPE:
+      case RTTIType::RTTI_OVERLAY:
+      case RTTIType::RTTI_OVERLAYTYPE:
+      case RTTIType::RTTI_SMUDGE:
+      case RTTIType::RTTI_SMUDGETYPE:
+      case RTTIType::RTTI_TEAM:
+      case RTTIType::RTTI_TEMPLATE:
+      case RTTIType::RTTI_TEMPLATETYPE:
+      case RTTIType::RTTI_TERRAINTYPE:
+      case RTTIType::RTTI_OBJECT:
+      case RTTIType::RTTI_SPECIAL:
       default:
         break;
     }
@@ -247,6 +273,15 @@ void TechnoTypePtr::Serialize(ArchiveReader& ar) {
         return;
       }
       break;
+    case KindType::KIND_NONE:
+    case KindType::KIND_CELL:
+    case KindType::KIND_TERRAIN:
+    case KindType::KIND_TEMPLATE:
+    case KindType::KIND_BULLET:
+    case KindType::KIND_ANIMATION:
+    case KindType::KIND_TRIGGER:
+    case KindType::KIND_TEAM:
+    case KindType::KIND_TEAMTYPE:
     default:
       break;
   }

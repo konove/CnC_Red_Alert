@@ -337,6 +337,8 @@ bool TriggerClass::Spring(TEventType event, ObjectClass* obj, CELL cell,
           ok |= Class->Action1(hh, obj, ID, cell);
           break;
 
+        case MultiStyleType::MULTI_OR:
+        case MultiStyleType::MULTI_LINKED:
         default:
         case MULTI_AND:
           ok |= Class->Action1(hh, obj, ID, cell);

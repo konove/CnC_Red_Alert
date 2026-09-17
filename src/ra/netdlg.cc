@@ -5616,6 +5616,8 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
                          Text_String(TXT_WAITING_FOR_CONNECTIONS));
         }
         break;
+      case GameType::GAME_NORMAL:
+      case GameType::GAME_SKIRMISH:
       default:
         break;
     }

@@ -285,6 +285,36 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
 
     case TEVENT_TIME:
       return td.EventTimer.IsFinished();
+    case TEventType::TEVENT_NONE:
+    case TEventType::TEVENT_PLAYER_ENTERED:
+    case TEventType::TEVENT_SPIED:
+    case TEventType::TEVENT_THIEVED:
+    case TEventType::TEVENT_DISCOVERED:
+    case TEventType::TEVENT_HOUSE_DISCOVERED:
+    case TEventType::TEVENT_ATTACKED:
+    case TEventType::TEVENT_DESTROYED:
+    case TEventType::TEVENT_ANY:
+    case TEventType::TEVENT_UNITS_DESTROYED:
+    case TEventType::TEVENT_BUILDINGS_DESTROYED:
+    case TEventType::TEVENT_ALL_DESTROYED:
+    case TEventType::TEVENT_CREDITS:
+    case TEventType::TEVENT_NBUILDINGS_DESTROYED:
+    case TEventType::TEVENT_NUNITS_DESTROYED:
+    case TEventType::TEVENT_NOFACTORIES:
+    case TEventType::TEVENT_EVAC_CIVILIAN:
+    case TEventType::TEVENT_BUILD:
+    case TEventType::TEVENT_BUILD_UNIT:
+    case TEventType::TEVENT_BUILD_INFANTRY:
+    case TEventType::TEVENT_BUILD_AIRCRAFT:
+    case TEventType::TEVENT_LEAVES_MAP:
+    case TEventType::TEVENT_ENTERS_ZONE:
+    case TEventType::TEVENT_CROSS_HORIZONTAL:
+    case TEventType::TEVENT_CROSS_VERTICAL:
+    case TEventType::TEVENT_FAKES_DESTROYED:
+    case TEventType::TEVENT_LOW_POWER:
+    case TEventType::TEVENT_ALL_BRIDGES_DESTROYED:
+    case TEventType::TEVENT_BUILDING_EXISTS:
+    case TEventType::TEVENT_COUNT:
     default:
       break;
   }
@@ -474,6 +504,28 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
         }
         break;
 
+      case TEventType::TEVENT_NONE:
+      case TEventType::TEVENT_PLAYER_ENTERED:
+      case TEventType::TEVENT_SPIED:
+      case TEventType::TEVENT_THIEVED:
+      case TEventType::TEVENT_DISCOVERED:
+      case TEventType::TEVENT_HOUSE_DISCOVERED:
+      case TEventType::TEVENT_ATTACKED:
+      case TEventType::TEVENT_DESTROYED:
+      case TEventType::TEVENT_ANY:
+      case TEventType::TEVENT_UNITS_DESTROYED:
+      case TEventType::TEVENT_BUILDINGS_DESTROYED:
+      case TEventType::TEVENT_ALL_DESTROYED:
+      case TEventType::TEVENT_TIME:
+      case TEventType::TEVENT_MISSION_TIMER_EXPIRED:
+      case TEventType::TEVENT_ENTERS_ZONE:
+      case TEventType::TEVENT_CROSS_HORIZONTAL:
+      case TEventType::TEVENT_CROSS_VERTICAL:
+      case TEventType::TEVENT_GLOBAL_SET:
+      case TEventType::TEVENT_GLOBAL_CLEAR:
+      case TEventType::TEVENT_LOW_POWER:
+      case TEventType::TEVENT_ALL_BRIDGES_DESTROYED:
+      case TEventType::TEVENT_COUNT:
       default:
         break;
     }
@@ -536,6 +588,34 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
         }
         break;
 
+      case TEventType::TEVENT_NONE:
+      case TEventType::TEVENT_PLAYER_ENTERED:
+      case TEventType::TEVENT_SPIED:
+      case TEventType::TEVENT_DISCOVERED:
+      case TEventType::TEVENT_ATTACKED:
+      case TEventType::TEVENT_DESTROYED:
+      case TEventType::TEVENT_ANY:
+      case TEventType::TEVENT_CREDITS:
+      case TEventType::TEVENT_TIME:
+      case TEventType::TEVENT_MISSION_TIMER_EXPIRED:
+      case TEventType::TEVENT_NBUILDINGS_DESTROYED:
+      case TEventType::TEVENT_NUNITS_DESTROYED:
+      case TEventType::TEVENT_NOFACTORIES:
+      case TEventType::TEVENT_EVAC_CIVILIAN:
+      case TEventType::TEVENT_BUILD:
+      case TEventType::TEVENT_BUILD_UNIT:
+      case TEventType::TEVENT_BUILD_INFANTRY:
+      case TEventType::TEVENT_BUILD_AIRCRAFT:
+      case TEventType::TEVENT_LEAVES_MAP:
+      case TEventType::TEVENT_ENTERS_ZONE:
+      case TEventType::TEVENT_CROSS_HORIZONTAL:
+      case TEventType::TEVENT_CROSS_VERTICAL:
+      case TEventType::TEVENT_GLOBAL_SET:
+      case TEventType::TEVENT_GLOBAL_CLEAR:
+      case TEventType::TEVENT_FAKES_DESTROYED:
+      case TEventType::TEVENT_ALL_BRIDGES_DESTROYED:
+      case TEventType::TEVENT_BUILDING_EXISTS:
+      case TEventType::TEVENT_COUNT:
       default:
         break;
     }
@@ -678,6 +758,18 @@ NeedType Event_Needs(TEventType event) {
     case TEVENT_LEAVES_MAP:
       return NEED_TEAM;
 
+    case TEventType::TEVENT_NONE:
+    case TEventType::TEVENT_SPIED:
+    case TEventType::TEVENT_DISCOVERED:
+    case TEventType::TEVENT_ATTACKED:
+    case TEventType::TEVENT_DESTROYED:
+    case TEventType::TEVENT_ANY:
+    case TEventType::TEVENT_MISSION_TIMER_EXPIRED:
+    case TEventType::TEVENT_NOFACTORIES:
+    case TEventType::TEVENT_EVAC_CIVILIAN:
+    case TEventType::TEVENT_FAKES_DESTROYED:
+    case TEventType::TEVENT_ALL_BRIDGES_DESTROYED:
+    case TEventType::TEVENT_COUNT:
     default:
       break;
   }
@@ -751,6 +843,33 @@ AttachType Attaches_To(TEventType event) {
       attach = attach | ATTACH_CELL;
       break;
 
+    case TEventType::TEVENT_SPIED:
+    case TEventType::TEVENT_THIEVED:
+    case TEventType::TEVENT_HOUSE_DISCOVERED:
+    case TEventType::TEVENT_ATTACKED:
+    case TEventType::TEVENT_DESTROYED:
+    case TEventType::TEVENT_UNITS_DESTROYED:
+    case TEventType::TEVENT_BUILDINGS_DESTROYED:
+    case TEventType::TEVENT_ALL_DESTROYED:
+    case TEventType::TEVENT_CREDITS:
+    case TEventType::TEVENT_TIME:
+    case TEventType::TEVENT_MISSION_TIMER_EXPIRED:
+    case TEventType::TEVENT_NBUILDINGS_DESTROYED:
+    case TEventType::TEVENT_NUNITS_DESTROYED:
+    case TEventType::TEVENT_NOFACTORIES:
+    case TEventType::TEVENT_EVAC_CIVILIAN:
+    case TEventType::TEVENT_BUILD:
+    case TEventType::TEVENT_BUILD_UNIT:
+    case TEventType::TEVENT_BUILD_INFANTRY:
+    case TEventType::TEVENT_BUILD_AIRCRAFT:
+    case TEventType::TEVENT_LEAVES_MAP:
+    case TEventType::TEVENT_GLOBAL_SET:
+    case TEventType::TEVENT_GLOBAL_CLEAR:
+    case TEventType::TEVENT_FAKES_DESTROYED:
+    case TEventType::TEVENT_LOW_POWER:
+    case TEventType::TEVENT_ALL_BRIDGES_DESTROYED:
+    case TEventType::TEVENT_BUILDING_EXISTS:
+    case TEventType::TEVENT_COUNT:
     default:
       break;
   }
@@ -766,6 +885,33 @@ AttachType Attaches_To(TEventType event) {
       attach = attach | ATTACH_OBJECT;
       break;
 
+    case TEventType::TEVENT_THIEVED:
+    case TEventType::TEVENT_HOUSE_DISCOVERED:
+    case TEventType::TEVENT_UNITS_DESTROYED:
+    case TEventType::TEVENT_BUILDINGS_DESTROYED:
+    case TEventType::TEVENT_ALL_DESTROYED:
+    case TEventType::TEVENT_CREDITS:
+    case TEventType::TEVENT_TIME:
+    case TEventType::TEVENT_MISSION_TIMER_EXPIRED:
+    case TEventType::TEVENT_NBUILDINGS_DESTROYED:
+    case TEventType::TEVENT_NUNITS_DESTROYED:
+    case TEventType::TEVENT_NOFACTORIES:
+    case TEventType::TEVENT_EVAC_CIVILIAN:
+    case TEventType::TEVENT_BUILD:
+    case TEventType::TEVENT_BUILD_UNIT:
+    case TEventType::TEVENT_BUILD_INFANTRY:
+    case TEventType::TEVENT_BUILD_AIRCRAFT:
+    case TEventType::TEVENT_LEAVES_MAP:
+    case TEventType::TEVENT_ENTERS_ZONE:
+    case TEventType::TEVENT_CROSS_HORIZONTAL:
+    case TEventType::TEVENT_CROSS_VERTICAL:
+    case TEventType::TEVENT_GLOBAL_SET:
+    case TEventType::TEVENT_GLOBAL_CLEAR:
+    case TEventType::TEVENT_FAKES_DESTROYED:
+    case TEventType::TEVENT_LOW_POWER:
+    case TEventType::TEVENT_ALL_BRIDGES_DESTROYED:
+    case TEventType::TEVENT_BUILDING_EXISTS:
+    case TEventType::TEVENT_COUNT:
     default:
       break;
   }
@@ -778,6 +924,38 @@ AttachType Attaches_To(TEventType event) {
       attach = attach | ATTACH_MAP;
       break;
 
+    case TEventType::TEVENT_NONE:
+    case TEventType::TEVENT_PLAYER_ENTERED:
+    case TEventType::TEVENT_SPIED:
+    case TEventType::TEVENT_THIEVED:
+    case TEventType::TEVENT_DISCOVERED:
+    case TEventType::TEVENT_HOUSE_DISCOVERED:
+    case TEventType::TEVENT_ATTACKED:
+    case TEventType::TEVENT_DESTROYED:
+    case TEventType::TEVENT_UNITS_DESTROYED:
+    case TEventType::TEVENT_BUILDINGS_DESTROYED:
+    case TEventType::TEVENT_ALL_DESTROYED:
+    case TEventType::TEVENT_CREDITS:
+    case TEventType::TEVENT_TIME:
+    case TEventType::TEVENT_MISSION_TIMER_EXPIRED:
+    case TEventType::TEVENT_NBUILDINGS_DESTROYED:
+    case TEventType::TEVENT_NUNITS_DESTROYED:
+    case TEventType::TEVENT_NOFACTORIES:
+    case TEventType::TEVENT_EVAC_CIVILIAN:
+    case TEventType::TEVENT_BUILD:
+    case TEventType::TEVENT_BUILD_UNIT:
+    case TEventType::TEVENT_BUILD_INFANTRY:
+    case TEventType::TEVENT_BUILD_AIRCRAFT:
+    case TEventType::TEVENT_LEAVES_MAP:
+    case TEventType::TEVENT_CROSS_HORIZONTAL:
+    case TEventType::TEVENT_CROSS_VERTICAL:
+    case TEventType::TEVENT_GLOBAL_SET:
+    case TEventType::TEVENT_GLOBAL_CLEAR:
+    case TEventType::TEVENT_FAKES_DESTROYED:
+    case TEventType::TEVENT_LOW_POWER:
+    case TEventType::TEVENT_ALL_BRIDGES_DESTROYED:
+    case TEventType::TEVENT_BUILDING_EXISTS:
+    case TEventType::TEVENT_COUNT:
     default:
       break;
   }
@@ -805,6 +983,22 @@ AttachType Attaches_To(TEventType event) {
       attach = attach | ATTACH_HOUSE;
       break;
 
+    case TEventType::TEVENT_NONE:
+    case TEventType::TEVENT_PLAYER_ENTERED:
+    case TEventType::TEVENT_SPIED:
+    case TEventType::TEVENT_DISCOVERED:
+    case TEventType::TEVENT_ATTACKED:
+    case TEventType::TEVENT_DESTROYED:
+    case TEventType::TEVENT_TIME:
+    case TEventType::TEVENT_MISSION_TIMER_EXPIRED:
+    case TEventType::TEVENT_LEAVES_MAP:
+    case TEventType::TEVENT_ENTERS_ZONE:
+    case TEventType::TEVENT_CROSS_HORIZONTAL:
+    case TEventType::TEVENT_CROSS_VERTICAL:
+    case TEventType::TEVENT_GLOBAL_SET:
+    case TEventType::TEVENT_GLOBAL_CLEAR:
+    case TEventType::TEVENT_ALL_BRIDGES_DESTROYED:
+    case TEventType::TEVENT_COUNT:
     default:
       break;
   }
@@ -820,6 +1014,33 @@ AttachType Attaches_To(TEventType event) {
       attach = attach | ATTACH_GENERAL;
       break;
 
+    case TEventType::TEVENT_NONE:
+    case TEventType::TEVENT_PLAYER_ENTERED:
+    case TEventType::TEVENT_SPIED:
+    case TEventType::TEVENT_THIEVED:
+    case TEventType::TEVENT_DISCOVERED:
+    case TEventType::TEVENT_HOUSE_DISCOVERED:
+    case TEventType::TEVENT_ATTACKED:
+    case TEventType::TEVENT_DESTROYED:
+    case TEventType::TEVENT_UNITS_DESTROYED:
+    case TEventType::TEVENT_BUILDINGS_DESTROYED:
+    case TEventType::TEVENT_ALL_DESTROYED:
+    case TEventType::TEVENT_CREDITS:
+    case TEventType::TEVENT_NBUILDINGS_DESTROYED:
+    case TEventType::TEVENT_NUNITS_DESTROYED:
+    case TEventType::TEVENT_NOFACTORIES:
+    case TEventType::TEVENT_EVAC_CIVILIAN:
+    case TEventType::TEVENT_BUILD:
+    case TEventType::TEVENT_BUILD_UNIT:
+    case TEventType::TEVENT_BUILD_INFANTRY:
+    case TEventType::TEVENT_BUILD_AIRCRAFT:
+    case TEventType::TEVENT_ENTERS_ZONE:
+    case TEventType::TEVENT_CROSS_HORIZONTAL:
+    case TEventType::TEVENT_CROSS_VERTICAL:
+    case TEventType::TEVENT_FAKES_DESTROYED:
+    case TEventType::TEVENT_LOW_POWER:
+    case TEventType::TEVENT_BUILDING_EXISTS:
+    case TEventType::TEVENT_COUNT:
     default:
       break;
   }

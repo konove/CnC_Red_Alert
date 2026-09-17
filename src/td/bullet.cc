@@ -230,6 +230,24 @@ std::span<const int16_t> BulletClass::Occupy_List(bool /*placement*/) const {
     case BULLET_NUKE_DOWN:
       return Coord_Spillage_List(Coord, 48);
 
+    case BulletType::BULLET_NONE:
+    case BulletType::BULLET_SNIPER:
+    case BulletType::BULLET_BULLET:
+    case BulletType::BULLET_APDS:
+    case BulletType::BULLET_HE:
+    case BulletType::BULLET_SSM:
+    case BulletType::BULLET_SSM2:
+    case BulletType::BULLET_SAM:
+    case BulletType::BULLET_TOW:
+    case BulletType::BULLET_CHEMSPRAY:
+    case BulletType::BULLET_NAPALM:
+    case BulletType::BULLET_GRENADE:
+    case BulletType::BULLET_LASER:
+    case BulletType::BULLET_HONEST_JOHN:
+    case BulletType::BULLET_SPREADFIRE:
+    case BulletType::BULLET_HEADBUTT:
+    case BulletType::BULLET_TREXBITE:
+    case BulletType::BULLET_COUNT:
     default:
       if (Altitude) {
         static CELL _list[10];

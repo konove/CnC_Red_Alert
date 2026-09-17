@@ -2,7 +2,7 @@
 
 Updated: 2026-09-16, against [`.clang-tidy`](../.clang-tidy) and clang-tidy 23.1.2.
 
-This tracks **all 102 currently excluded check names** and completed entries, in recommended work
+This tracks **all 91 currently excluded check names** and completed entries, in recommended work
 order. Priorities reflect likely defect prevention, relevance to this engine, and the cost of useful
 fixes; they are judgments, not fresh finding counts. Start at P1 and work downward. Aliases stay
 beside their related check so a single cleanup can handle them together. Previously deferred checks
@@ -79,7 +79,7 @@ comes from the installed tool, since the online documentation follows LLVM devel
 | `clang-diagnostic-sign-conversion`                         | Enabled | Commit `Enable sign conversion checking`: 2,414 reports, fixed mostly at the type: signed heap and vector indices, money, text widths and fixed-point helpers, connection timing with an explicit `-1` "no limit", and the VQA player's `long` fields. Library parameters take `base::ToSize`/`base::ToSigned`; packets, recordings and saves keep their widths. See review below.                                                                                                                      |
 | `bugprone-signed-bitwise`                                  | Enabled | Commits `Add base::Bit and make the flag constants unsigned` through `Enable bugprone-signed-bitwise`: 3,363 sites; the flag constants and their holders are unsigned, index-to-bit shifts go through `base::Bit`, shift arithmetic on numbers is arithmetic; 13 floor-division shifts of signed values stay under `NOLINT`. The `base::Bit` check found the building scans wrapping past 64 types. See review below.                                                                                   |
 | `hicpp-signed-bitwise`                                     | Legacy  | Unavailable in LLVM 23; review with `bugprone-signed-bitwise` on older tools.                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| `clang-diagnostic-switch-enum`                             | Skipped | Commit `Document variadic and thread-safety check policy`: all 293 reports are switches that already have a deliberate default over large type enums (up to 102 values); `-Wswitch` and `-Wswitch-default` already require an explicit fallback.                                                                                                                                                                                                                                                        |
+| `clang-diagnostic-switch-enum`                             | Enabled | Commit `Make enum switch fallbacks explicit and enable exhaustive checking`: cover 335 switches across both games; retain existing fallback behavior and express seven sparse bridge predicates as comparisons. Plan [SWITCH_ENUM_PLAN.md](SWITCH_ENUM_PLAN.md); see review below.                                                                                                                                                                                                                      |
 | `clang-diagnostic-switch`                                  | Enabled | Commit `Give every switch a fallback and switch on key numbers as integers`: 792 reports; 639 were gadget-ID `ButtonKey()` cases in 98 `KeyNumType` switches, which now switch on the integer key number; the 153 unhandled-enumerator switches get the default below.                                                                                                                                                                                                                                  |
 | `clang-diagnostic-switch-bool`                             | Enabled | Commit `Enable ten checks the tree already satisfies`: no findings across 460 translation units; a probe confirms it reports.                                                                                                                                                                                                                                                                                                                                                                           |
 | `clang-diagnostic-duplicate-enum`                          | Enabled | Commit `Drop the implicit FIRST enum aliases and fix mixed enum operations`: 25 reports, all an `X_FIRST = 0` alias duplicating the first real enumerator (22 TD enums, three RA trigger/team enums); uses now name that enumerator, per the magic_enum no-alias rule.                                                                                                                                                                                                                                  |
@@ -448,6 +448,40 @@ errors; restoring only the old exclusion suppresses those errors.
 The nine affected files pass the isolated recheck. The final full-configuration sweep passed all 952
 translation units, both strict game builds passed, and all 547 CTest tests passed. Source changes
 are comments only; no runtime behavior or save/load format changed.
+
+### Exhaustive enum switch checking (2026-09-16)
+
+The global exclusion is removed in commit
+`Make enum switch fallbacks explicit and enable exhaustive checking`. The plan is
+[SWITCH_ENUM_PLAN.md](SWITCH_ENUM_PLAN.md). This supersedes the switch-enum exclusion recorded in
+the 2026-09-12 variadic, thread-safety and switch review.
+
+The baseline isolated sweep covered 952 project translation units, including 454 generated header
+checks. It reported 335 switches in 95 files: 195 in RA and 140 in TD. The earlier count of 293
+predated subsequent enum and source migrations.
+
+Of these, 328 now name the known enum values that share their existing default branch. The default
+remains for invalid values; enum aliases with the same numeric value use a single label. No enum
+values, layouts, packet formats, case bodies, or fallthrough paths change. The check now catches a
+new enum value even when a switch has a default. No warning suppression or integer conversion was
+introduced to bypass the check.
+
+Seven switches are sparse bridge-template membership tests, rather than enum dispatch: bridge
+recognition, sabotage targeting, bridge damage and adjoining-piece updates, intact bridge counting,
+and TD tiberium spread exclusions. These now compare the same named template values directly,
+without listing hundreds of unrelated terrain templates. Their branch bodies and invalid-value
+behavior are preserved; the intact-bridge test still requires icon 6.
+
+A source audit verified all 328 inserted label groups against the originals. Extracted bridge
+selection probes compiled against each game's real enums matched the original switches over all
+65,536 input values and icon positions 0, 6, and 7. A missing-value probe fails with exactly the
+switch-enum diagnostic under the repository configuration and passes when only the old exclusion is
+restored.
+
+The isolated sweep and final rechecks pass all 952 translation units. The full-configuration sweep
+passes all 952 translation units with zero failures. Both strict game builds and all 547 CTest tests
+pass. The pre-existing changes in `src/ra/conquer.cc` were preserved and are excluded from the
+commit.
 
 ### Previous container invalidation policy (2026-09-11; superseded above)
 

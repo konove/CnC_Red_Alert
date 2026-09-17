@@ -2578,6 +2578,8 @@ CELL DisplayClass::Calculated_Cell(SourceType dir, HousesType house) {
                        MapCellHeight + MapCellY);
         break;
 
+      case SourceType::SOURCE_NONE:
+      case SourceType::SOURCE_COUNT:
       default:
         return 0;
     }
@@ -3058,6 +3060,16 @@ void DisplayClass::Mouse_Left_Up(bool shadow, ObjectClass* object,
         [[fallthrough]];
         // Fall into next case for non aircraft object types.
 
+      case ActionType::ACTION_MOVE:
+      case ActionType::ACTION_ENTER:
+      case ActionType::ACTION_SELF:
+      case ActionType::ACTION_ATTACK:
+      case ActionType::ACTION_HARVEST:
+      case ActionType::ACTION_SELECT:
+      case ActionType::ACTION_TOGGLE_SELECT:
+      case ActionType::ACTION_CAPTURE:
+      case ActionType::ACTION_SABOTAGE:
+      case ActionType::ACTION_COUNT:
       default:
         Set_Default_Mouse(MOUSE_CAN_MOVE, wwsmall);
         break;
@@ -3135,6 +3147,8 @@ void DisplayClass::Mouse_Left_Up(bool shadow, ObjectClass* object,
         Set_Default_Mouse(MOUSE_AIR_STRIKE, wwsmall);
         break;
 
+      case ActionType::ACTION_NONE:
+      case ActionType::ACTION_COUNT:
       default:
         Set_Default_Mouse(MOUSE_NORMAL, wwsmall);
         break;
@@ -3195,6 +3209,28 @@ void DisplayClass::Mouse_Left_Up(bool shadow, ObjectClass* object,
               text = TXT_ENEMY_STRUCTURE;
             }
             break;
+          case RTTIType::RTTI_NONE:
+          case RTTIType::RTTI_INFANTRYTYPE:
+          case RTTIType::RTTI_UNITTYPE:
+          case RTTIType::RTTI_AIRCRAFT:
+          case RTTIType::RTTI_AIRCRAFTTYPE:
+          case RTTIType::RTTI_BUILDINGTYPE:
+          case RTTIType::RTTI_TERRAIN:
+          case RTTIType::RTTI_ABSTRACTTYPE:
+          case RTTIType::RTTI_ANIM:
+          case RTTIType::RTTI_ANIMTYPE:
+          case RTTIType::RTTI_BULLET:
+          case RTTIType::RTTI_BULLETTYPE:
+          case RTTIType::RTTI_OVERLAY:
+          case RTTIType::RTTI_OVERLAYTYPE:
+          case RTTIType::RTTI_SMUDGE:
+          case RTTIType::RTTI_SMUDGETYPE:
+          case RTTIType::RTTI_TEAM:
+          case RTTIType::RTTI_TEMPLATE:
+          case RTTIType::RTTI_TEMPLATETYPE:
+          case RTTIType::RTTI_TERRAINTYPE:
+          case RTTIType::RTTI_OBJECT:
+          case RTTIType::RTTI_SPECIAL:
           default:
             break;
         }
@@ -3342,6 +3378,29 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
               OutList.Add(EventClass(EventClass::SELL, object->As_Target()));
               break;
 
+            case RTTIType::RTTI_NONE:
+            case RTTIType::RTTI_INFANTRY:
+            case RTTIType::RTTI_INFANTRYTYPE:
+            case RTTIType::RTTI_UNITTYPE:
+            case RTTIType::RTTI_AIRCRAFTTYPE:
+            case RTTIType::RTTI_BUILDING:
+            case RTTIType::RTTI_BUILDINGTYPE:
+            case RTTIType::RTTI_TERRAIN:
+            case RTTIType::RTTI_ABSTRACTTYPE:
+            case RTTIType::RTTI_ANIM:
+            case RTTIType::RTTI_ANIMTYPE:
+            case RTTIType::RTTI_BULLET:
+            case RTTIType::RTTI_BULLETTYPE:
+            case RTTIType::RTTI_OVERLAY:
+            case RTTIType::RTTI_OVERLAYTYPE:
+            case RTTIType::RTTI_SMUDGE:
+            case RTTIType::RTTI_SMUDGETYPE:
+            case RTTIType::RTTI_TEAM:
+            case RTTIType::RTTI_TEMPLATE:
+            case RTTIType::RTTI_TEMPLATETYPE:
+            case RTTIType::RTTI_TERRAINTYPE:
+            case RTTIType::RTTI_OBJECT:
+            case RTTIType::RTTI_SPECIAL:
             default:
               break;
           }

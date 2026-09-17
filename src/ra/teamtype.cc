@@ -538,6 +538,14 @@ NeedType TeamMission_Needs(TeamMissionType tmtype) {
     case TMISSION_DO:
       return NEED_MISSION;
 
+    case TeamMissionType::TMISSION_NONE:
+    case TeamMissionType::TMISSION_ATTACKTARCOM:
+    case TeamMissionType::TMISSION_UNLOAD:
+    case TeamMissionType::TMISSION_DEPLOY:
+    case TeamMissionType::TMISSION_HOUND_DOG:
+    case TeamMissionType::TMISSION_INVULNERABLE:
+    case TeamMissionType::TMISSION_LOAD:
+    case TeamMissionType::TMISSION_COUNT:
     default:
       break;
   }
@@ -977,6 +985,21 @@ bool TeamTypeClass::Edit() {
       mlist.Remove();
       switch (
           TeamMission_Needs(TeamMissionType(missionlist1.Current_Index()))) {
+        case NeedType::NEED_NONE:
+        case NeedType::NEED_THEME:
+        case NeedType::NEED_MOVIE:
+        case NeedType::NEED_SOUND:
+        case NeedType::NEED_SPEECH:
+        case NeedType::NEED_INFANTRY:
+        case NeedType::NEED_UNIT:
+        case NeedType::NEED_AIRCRAFT:
+        case NeedType::NEED_STRUCTURE:
+        case NeedType::NEED_TRIGGER:
+        case NeedType::NEED_TEAM:
+        case NeedType::NEED_HOUSE:
+        case NeedType::NEED_TIME:
+        case NeedType::NEED_BOOL:
+        case NeedType::NEED_SPECIAL:
         default:
           break;
 
@@ -1116,6 +1139,21 @@ bool TeamTypeClass::Edit() {
                     (missionlist2.Current_Item()->Data.Value % 26) + 'A');
               }
               break;
+            case NeedType::NEED_NONE:
+            case NeedType::NEED_THEME:
+            case NeedType::NEED_MOVIE:
+            case NeedType::NEED_SOUND:
+            case NeedType::NEED_SPEECH:
+            case NeedType::NEED_INFANTRY:
+            case NeedType::NEED_UNIT:
+            case NeedType::NEED_AIRCRAFT:
+            case NeedType::NEED_STRUCTURE:
+            case NeedType::NEED_TRIGGER:
+            case NeedType::NEED_TEAM:
+            case NeedType::NEED_HOUSE:
+            case NeedType::NEED_TIME:
+            case NeedType::NEED_BOOL:
+            case NeedType::NEED_SPECIAL:
             default:
               break;
           }
@@ -1169,6 +1207,21 @@ bool TeamTypeClass::Edit() {
               }
               break;
 
+            case NeedType::NEED_NONE:
+            case NeedType::NEED_THEME:
+            case NeedType::NEED_MOVIE:
+            case NeedType::NEED_SOUND:
+            case NeedType::NEED_SPEECH:
+            case NeedType::NEED_INFANTRY:
+            case NeedType::NEED_UNIT:
+            case NeedType::NEED_AIRCRAFT:
+            case NeedType::NEED_STRUCTURE:
+            case NeedType::NEED_TRIGGER:
+            case NeedType::NEED_TEAM:
+            case NeedType::NEED_HOUSE:
+            case NeedType::NEED_TIME:
+            case NeedType::NEED_BOOL:
+            case NeedType::NEED_SPECIAL:
             default:
               tm->Data.Value = 0;
               break;
@@ -1221,6 +1274,21 @@ bool TeamTypeClass::Edit() {
               }
               break;
 
+            case NeedType::NEED_NONE:
+            case NeedType::NEED_THEME:
+            case NeedType::NEED_MOVIE:
+            case NeedType::NEED_SOUND:
+            case NeedType::NEED_SPEECH:
+            case NeedType::NEED_INFANTRY:
+            case NeedType::NEED_UNIT:
+            case NeedType::NEED_AIRCRAFT:
+            case NeedType::NEED_STRUCTURE:
+            case NeedType::NEED_TRIGGER:
+            case NeedType::NEED_TEAM:
+            case NeedType::NEED_HOUSE:
+            case NeedType::NEED_TIME:
+            case NeedType::NEED_BOOL:
+            case NeedType::NEED_SPECIAL:
             default:
               tm->Data.Value = 0;
               break;
@@ -1274,6 +1342,21 @@ bool TeamTypeClass::Edit() {
               }
               break;
 
+            case NeedType::NEED_NONE:
+            case NeedType::NEED_THEME:
+            case NeedType::NEED_MOVIE:
+            case NeedType::NEED_SOUND:
+            case NeedType::NEED_SPEECH:
+            case NeedType::NEED_INFANTRY:
+            case NeedType::NEED_UNIT:
+            case NeedType::NEED_AIRCRAFT:
+            case NeedType::NEED_STRUCTURE:
+            case NeedType::NEED_TRIGGER:
+            case NeedType::NEED_TEAM:
+            case NeedType::NEED_HOUSE:
+            case NeedType::NEED_TIME:
+            case NeedType::NEED_BOOL:
+            case NeedType::NEED_SPECIAL:
             default:
               tm->Data.Value = 0;
               break;
@@ -1581,6 +1664,21 @@ const char* TeamMissionClass::Description(int index) const {
               (Data.Value / 26) + 'A' - 1, (Data.Value % 26) + 'A');
         }
         break;
+      case NeedType::NEED_NONE:
+      case NeedType::NEED_THEME:
+      case NeedType::NEED_MOVIE:
+      case NeedType::NEED_SOUND:
+      case NeedType::NEED_SPEECH:
+      case NeedType::NEED_INFANTRY:
+      case NeedType::NEED_UNIT:
+      case NeedType::NEED_AIRCRAFT:
+      case NeedType::NEED_STRUCTURE:
+      case NeedType::NEED_TRIGGER:
+      case NeedType::NEED_TEAM:
+      case NeedType::NEED_HOUSE:
+      case NeedType::NEED_TIME:
+      case NeedType::NEED_BOOL:
+      case NeedType::NEED_SPECIAL:
       default:
         break;
     }

@@ -632,6 +632,8 @@ int MapEditClass::Pick_Scenario(const char* caption, int* scen_nump,
     case SCEN_VAR_LOSE:
       varlbtn.Turn_On();
       break;
+    case ScenarioVarType::SCEN_VAR_NONE:
+    case ScenarioVarType::SCEN_VAR_COUNT:
     default:
       break;
   }

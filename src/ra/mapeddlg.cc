@@ -151,6 +151,24 @@ int MapEditClass::New_Scenario() {
         player = SCEN_PLAYER_GREECE;
         break;
 
+      case HousesType::HOUSE_NONE:
+      case HousesType::HOUSE_ENGLAND:
+      case HousesType::HOUSE_UKRAINE:
+      case HousesType::HOUSE_GERMANY:
+      case HousesType::HOUSE_FRANCE:
+      case HousesType::HOUSE_TURKEY:
+      case HousesType::HOUSE_GOOD:
+      case HousesType::HOUSE_BAD:
+      case HousesType::HOUSE_NEUTRAL:
+      case HousesType::HOUSE_JP:
+      case HousesType::HOUSE_MULTI1:
+      case HousesType::HOUSE_MULTI2:
+      case HousesType::HOUSE_MULTI3:
+      case HousesType::HOUSE_MULTI4:
+      case HousesType::HOUSE_MULTI5:
+      case HousesType::HOUSE_MULTI6:
+      case HousesType::HOUSE_MULTI7:
+      case HousesType::HOUSE_MULTI8:
       default:
       case HOUSE_USSR:
         player = SCEN_PLAYER_USSR;
@@ -216,6 +234,9 @@ int MapEditClass::New_Scenario() {
       Base.House = HOUSE_USSR;
       LastHouse = HOUSE_GOOD;
       break;
+    case ScenarioPlayerType::SCEN_PLAYER_NONE:
+    case ScenarioPlayerType::SCEN_PLAYER_JP:
+    case ScenarioPlayerType::SCEN_PLAYER_2PLAYER:
     default:
       break;
   }
@@ -430,6 +451,10 @@ int MapEditClass::Load_Scenario() {
         //			Base.House = HOUSE_USSR;
         LastHouse = HOUSE_GOOD;
         break;
+      case ScenarioPlayerType::SCEN_PLAYER_NONE:
+      case ScenarioPlayerType::SCEN_PLAYER_JP:
+      case ScenarioPlayerType::SCEN_PLAYER_2PLAYER:
+      case ScenarioPlayerType::SCEN_PLAYER_MPLAYER:
       default:
         break;
     }
@@ -660,6 +685,8 @@ int MapEditClass::Load_Scenario() {
       case SCEN_VAR_D:
         vardbtn.Turn_On();
         break;
+      case ScenarioVarType::SCEN_VAR_NONE:
+      case ScenarioVarType::SCEN_VAR_LOSE:
       default:
         break;
     }
@@ -704,6 +731,24 @@ int MapEditClass::Load_Scenario() {
           case HOUSE_USSR:
             neubtn.Turn_On();
             break;
+          case HousesType::HOUSE_NONE:
+          case HousesType::HOUSE_ENGLAND:
+          case HousesType::HOUSE_UKRAINE:
+          case HousesType::HOUSE_GERMANY:
+          case HousesType::HOUSE_FRANCE:
+          case HousesType::HOUSE_TURKEY:
+          case HousesType::HOUSE_GOOD:
+          case HousesType::HOUSE_BAD:
+          case HousesType::HOUSE_NEUTRAL:
+          case HousesType::HOUSE_JP:
+          case HousesType::HOUSE_MULTI1:
+          case HousesType::HOUSE_MULTI2:
+          case HousesType::HOUSE_MULTI3:
+          case HousesType::HOUSE_MULTI4:
+          case HousesType::HOUSE_MULTI5:
+          case HousesType::HOUSE_MULTI6:
+          case HousesType::HOUSE_MULTI7:
+          case HousesType::HOUSE_MULTI8:
           default:
             break;
         }

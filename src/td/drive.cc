@@ -742,6 +742,10 @@ bool DriveClass::While_Moving() {
                   Special.IsScatter = old;
                 }
                 break;
+              case MoveType::MOVE_MOVING_BLOCK:
+              case MoveType::MOVE_DESTROYABLE:
+              case MoveType::MOVE_NO:
+              case MoveType::MOVE_COUNT:
               default:
                 break;
             }

@@ -433,6 +433,15 @@ bool Load_Game(int id) {
     case HOUSE_GOOD: ScenPlayer = SCEN_PLAYER_GDI; break;
     case HOUSE_BAD: ScenPlayer = SCEN_PLAYER_NOD; break;
     case HOUSE_JP: ScenPlayer = SCEN_PLAYER_JP; break;
+    case HousesType::HOUSE_NONE:
+    case HousesType::HOUSE_NEUTRAL:
+    case HousesType::HOUSE_MULTI1:
+    case HousesType::HOUSE_MULTI2:
+    case HousesType::HOUSE_MULTI3:
+    case HousesType::HOUSE_MULTI4:
+    case HousesType::HOUSE_MULTI5:
+    case HousesType::HOUSE_MULTI6:
+    case HousesType::HOUSE_COUNT:
     default: break;
   }
   Set_Scenario_Name(ScenarioName, Scenario, ScenPlayer, ScenDir, ScenVar);

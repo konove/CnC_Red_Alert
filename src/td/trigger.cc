@@ -191,6 +191,19 @@ bool TriggerClass::Event_Need_Object(EventType event) {
     case EVENT_DESTROYED:
     case EVENT_ANY:
       return true;
+    case EventType::EVENT_NONE:
+    case EventType::EVENT_HOUSE_DISCOVERED:
+    case EventType::EVENT_UNITS_DESTROYED:
+    case EventType::EVENT_BUILDINGS_DESTROYED:
+    case EventType::EVENT_ALL_DESTROYED:
+    case EventType::EVENT_CREDITS:
+    case EventType::EVENT_TIME:
+    case EventType::EVENT_NBUILDINGS_DESTROYED:
+    case EventType::EVENT_NUNITS_DESTROYED:
+    case EventType::EVENT_NOFACTORIES:
+    case EventType::EVENT_EVAC_CIVILIAN:
+    case EventType::EVENT_BUILD:
+    case EventType::EVENT_COUNT:
     default:
       break;
   }
@@ -228,6 +241,12 @@ bool TriggerClass::Event_Need_House(EventType event) {
     case EVENT_EVAC_CIVILIAN:
     case EVENT_BUILD:
       return true;
+    case EventType::EVENT_NONE:
+    case EventType::EVENT_DISCOVERED:
+    case EventType::EVENT_ATTACKED:
+    case EventType::EVENT_DESTROYED:
+    case EventType::EVENT_ANY:
+    case EventType::EVENT_COUNT:
     default:
       break;
   }
@@ -257,6 +276,19 @@ bool TriggerClass::Event_Need_Data(EventType event) {
     case EVENT_NUNITS_DESTROYED:
     case EVENT_BUILD:
       return true;
+    case EventType::EVENT_NONE:
+    case EventType::EVENT_PLAYER_ENTERED:
+    case EventType::EVENT_DISCOVERED:
+    case EventType::EVENT_ATTACKED:
+    case EventType::EVENT_DESTROYED:
+    case EventType::EVENT_ANY:
+    case EventType::EVENT_HOUSE_DISCOVERED:
+    case EventType::EVENT_UNITS_DESTROYED:
+    case EventType::EVENT_BUILDINGS_DESTROYED:
+    case EventType::EVENT_ALL_DESTROYED:
+    case EventType::EVENT_NOFACTORIES:
+    case EventType::EVENT_EVAC_CIVILIAN:
+    case EventType::EVENT_COUNT:
     default:
       break;
   }
@@ -285,6 +317,22 @@ bool TriggerClass::Action_Need_Team(ActionType action) {
     case ACTION_DESTROY_TEAM:
     case ACTION_REINFORCEMENTS:
       return true;
+    case ActionType::ACTION_NONE:
+    case ActionType::ACTION_WIN:
+    case ActionType::ACTION_LOSE:
+    case ActionType::ACTION_BEGIN_PRODUCTION:
+    case ActionType::ACTION_ALL_HUNT:
+    case ActionType::ACTION_DZ:
+    case ActionType::ACTION_AIRSTRIKE:
+    case ActionType::ACTION_NUKE:
+    case ActionType::ACTION_ION:
+    case ActionType::ACTION_DESTROY_XXXX:
+    case ActionType::ACTION_DESTROY_YYYY:
+    case ActionType::ACTION_DESTROY_ZZZZ:
+    case ActionType::ACTION_AUTOCREATE:
+    case ActionType::ACTION_WINLOSE:
+    case ActionType::ACTION_ALLOWWIN:
+    case ActionType::ACTION_COUNT:
     default:
       break;
   }
@@ -436,6 +484,22 @@ bool TriggerClass::Spring(EventType event, ObjectClass* obj) {
           success = true;
           break;
 
+        case EventType::EVENT_NONE:
+        case EventType::EVENT_DISCOVERED:
+        case EventType::EVENT_ATTACKED:
+        case EventType::EVENT_ANY:
+        case EventType::EVENT_HOUSE_DISCOVERED:
+        case EventType::EVENT_UNITS_DESTROYED:
+        case EventType::EVENT_BUILDINGS_DESTROYED:
+        case EventType::EVENT_ALL_DESTROYED:
+        case EventType::EVENT_CREDITS:
+        case EventType::EVENT_TIME:
+        case EventType::EVENT_NBUILDINGS_DESTROYED:
+        case EventType::EVENT_NUNITS_DESTROYED:
+        case EventType::EVENT_NOFACTORIES:
+        case EventType::EVENT_EVAC_CIVILIAN:
+        case EventType::EVENT_BUILD:
+        case EventType::EVENT_COUNT:
         default:
           success = false;
           break;
@@ -520,6 +584,8 @@ bool TriggerClass::Spring(EventType event, ObjectClass* obj) {
       Do_All_To_Hunt();
       break;
 
+    case ActionType::ACTION_ALLOWWIN:
+    case ActionType::ACTION_COUNT:
     default:
       break;
   }
@@ -703,6 +769,9 @@ bool TriggerClass::Spring(EventType event, CELL cell) {
       Do_All_To_Hunt();
       break;
 
+    case ActionType::ACTION_WINLOSE:
+    case ActionType::ACTION_ALLOWWIN:
+    case ActionType::ACTION_COUNT:
     default:
       break;
   }
@@ -891,6 +960,8 @@ bool TriggerClass::Spring(EventType event, HousesType house, int64_t data) {
       Do_All_To_Hunt();
       break;
 
+    case ActionType::ACTION_WINLOSE:
+    case ActionType::ACTION_COUNT:
     default:
       break;
   }

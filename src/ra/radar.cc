@@ -764,6 +764,34 @@ void RadarClass::Render_Infantry(CELL cell, int x, int y, int size) {
           LogicPage->Fill_Rect(x, y, x + size - 1, y + size - 1, color);
           break;
 
+        case RTTIType::RTTI_NONE:
+        case RTTIType::RTTI_AIRCRAFTTYPE:
+        case RTTIType::RTTI_ANIM:
+        case RTTIType::RTTI_ANIMTYPE:
+        case RTTIType::RTTI_BUILDING:
+        case RTTIType::RTTI_BUILDINGTYPE:
+        case RTTIType::RTTI_BULLET:
+        case RTTIType::RTTI_BULLETTYPE:
+        case RTTIType::RTTI_CELL:
+        case RTTIType::RTTI_FACTORY:
+        case RTTIType::RTTI_HOUSE:
+        case RTTIType::RTTI_HOUSETYPE:
+        case RTTIType::RTTI_INFANTRYTYPE:
+        case RTTIType::RTTI_OVERLAY:
+        case RTTIType::RTTI_OVERLAYTYPE:
+        case RTTIType::RTTI_SMUDGE:
+        case RTTIType::RTTI_SMUDGETYPE:
+        case RTTIType::RTTI_SPECIAL:
+        case RTTIType::RTTI_TEAM:
+        case RTTIType::RTTI_TEAMTYPE:
+        case RTTIType::RTTI_TEMPLATE:
+        case RTTIType::RTTI_TEMPLATETYPE:
+        case RTTIType::RTTI_TERRAIN:
+        case RTTIType::RTTI_TERRAINTYPE:
+        case RTTIType::RTTI_TRIGGER:
+        case RTTIType::RTTI_TRIGGERTYPE:
+        case RTTIType::RTTI_UNITTYPE:
+        case RTTIType::RTTI_VESSELTYPE:
         default:
           break;
       }
@@ -1759,6 +1787,32 @@ bool RadarClass::RTacticalClass::Action(unsigned flags, KeyNumType& key) {
           case ACTION_SABOTAGE:
             break;
 
+          case ActionType::ACTION_NONE:
+          case ActionType::ACTION_SELF:
+          case ActionType::ACTION_HARVEST:
+          case ActionType::ACTION_SELECT:
+          case ActionType::ACTION_TOGGLE_SELECT:
+          case ActionType::ACTION_REPAIR:
+          case ActionType::ACTION_SELL:
+          case ActionType::ACTION_SELL_UNIT:
+          case ActionType::ACTION_NO_SELL:
+          case ActionType::ACTION_NO_REPAIR:
+          case ActionType::ACTION_PARA_BOMB:
+          case ActionType::ACTION_PARA_INFANTRY:
+          case ActionType::ACTION_PARA_SABOTEUR:
+          case ActionType::ACTION_NUKE_BOMB:
+          case ActionType::ACTION_AIR_STRIKE:
+          case ActionType::ACTION_CHRONOSPHERE:
+          case ActionType::ACTION_CHRONO2:
+          case ActionType::ACTION_IRON_CURTAIN:
+          case ActionType::ACTION_SPY_MISSION:
+          case ActionType::ACTION_GUARD_AREA:
+          case ActionType::ACTION_HEAL:
+          case ActionType::ACTION_DAMAGE:
+          case ActionType::ACTION_GREPAIR:
+          case ActionType::ACTION_NO_DEPLOY:
+          case ActionType::ACTION_NO_ENTER:
+          case ActionType::ACTION_NO_GREPAIR:
           default:
             action = ACTION_NONE;
             object = nullptr;

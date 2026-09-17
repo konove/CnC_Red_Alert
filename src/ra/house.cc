@@ -894,6 +894,35 @@ bool HouseClass::Can_Build(const ObjectTypeClass* type,
         }
         break;
       }
+      case RTTIType::RTTI_NONE:
+      case RTTIType::RTTI_AIRCRAFT:
+      case RTTIType::RTTI_AIRCRAFTTYPE:
+      case RTTIType::RTTI_ANIM:
+      case RTTIType::RTTI_ANIMTYPE:
+      case RTTIType::RTTI_BUILDING:
+      case RTTIType::RTTI_BUILDINGTYPE:
+      case RTTIType::RTTI_BULLET:
+      case RTTIType::RTTI_BULLETTYPE:
+      case RTTIType::RTTI_CELL:
+      case RTTIType::RTTI_FACTORY:
+      case RTTIType::RTTI_HOUSE:
+      case RTTIType::RTTI_HOUSETYPE:
+      case RTTIType::RTTI_INFANTRY:
+      case RTTIType::RTTI_OVERLAY:
+      case RTTIType::RTTI_OVERLAYTYPE:
+      case RTTIType::RTTI_SMUDGE:
+      case RTTIType::RTTI_SMUDGETYPE:
+      case RTTIType::RTTI_SPECIAL:
+      case RTTIType::RTTI_TEAM:
+      case RTTIType::RTTI_TEAMTYPE:
+      case RTTIType::RTTI_TEMPLATE:
+      case RTTIType::RTTI_TEMPLATETYPE:
+      case RTTIType::RTTI_TERRAIN:
+      case RTTIType::RTTI_TERRAINTYPE:
+      case RTTIType::RTTI_TRIGGER:
+      case RTTIType::RTTI_TRIGGERTYPE:
+      case RTTIType::RTTI_UNIT:
+      case RTTIType::RTTI_VESSEL:
       default:
         break;
     }
@@ -2801,6 +2830,34 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
               }
               SuperWeapon[SPC_IRON_CURTAIN].Discharged(this == PlayerPtr);
               break;
+            case RTTIType::RTTI_NONE:
+            case RTTIType::RTTI_AIRCRAFTTYPE:
+            case RTTIType::RTTI_ANIM:
+            case RTTIType::RTTI_ANIMTYPE:
+            case RTTIType::RTTI_BUILDINGTYPE:
+            case RTTIType::RTTI_BULLET:
+            case RTTIType::RTTI_BULLETTYPE:
+            case RTTIType::RTTI_CELL:
+            case RTTIType::RTTI_FACTORY:
+            case RTTIType::RTTI_HOUSE:
+            case RTTIType::RTTI_HOUSETYPE:
+            case RTTIType::RTTI_INFANTRY:
+            case RTTIType::RTTI_INFANTRYTYPE:
+            case RTTIType::RTTI_OVERLAY:
+            case RTTIType::RTTI_OVERLAYTYPE:
+            case RTTIType::RTTI_SMUDGE:
+            case RTTIType::RTTI_SMUDGETYPE:
+            case RTTIType::RTTI_SPECIAL:
+            case RTTIType::RTTI_TEAM:
+            case RTTIType::RTTI_TEAMTYPE:
+            case RTTIType::RTTI_TEMPLATE:
+            case RTTIType::RTTI_TEMPLATETYPE:
+            case RTTIType::RTTI_TERRAIN:
+            case RTTIType::RTTI_TERRAINTYPE:
+            case RTTIType::RTTI_TRIGGER:
+            case RTTIType::RTTI_TRIGGERTYPE:
+            case RTTIType::RTTI_UNITTYPE:
+            case RTTIType::RTTI_VESSELTYPE:
             default:
               break;
           }
@@ -2923,6 +2980,8 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
 
       break;
     }
+    case SpecialWeaponType::SPC_NONE:
+    case SpecialWeaponType::SPC_GPS:
     default:
       break;
   }
@@ -3019,6 +3078,33 @@ bool HouseClass::Place_Object(RTTIType type, CELL cell) {
                   dynamic_cast<AircraftClass*>(pending)->Class->Type;
               IsBuiltSomething = true;
               break;
+            case RTTIType::RTTI_NONE:
+            case RTTIType::RTTI_AIRCRAFTTYPE:
+            case RTTIType::RTTI_ANIM:
+            case RTTIType::RTTI_ANIMTYPE:
+            case RTTIType::RTTI_BUILDINGTYPE:
+            case RTTIType::RTTI_BULLET:
+            case RTTIType::RTTI_BULLETTYPE:
+            case RTTIType::RTTI_CELL:
+            case RTTIType::RTTI_FACTORY:
+            case RTTIType::RTTI_HOUSE:
+            case RTTIType::RTTI_HOUSETYPE:
+            case RTTIType::RTTI_INFANTRYTYPE:
+            case RTTIType::RTTI_OVERLAY:
+            case RTTIType::RTTI_OVERLAYTYPE:
+            case RTTIType::RTTI_SMUDGE:
+            case RTTIType::RTTI_SMUDGETYPE:
+            case RTTIType::RTTI_SPECIAL:
+            case RTTIType::RTTI_TEAM:
+            case RTTIType::RTTI_TEAMTYPE:
+            case RTTIType::RTTI_TEMPLATE:
+            case RTTIType::RTTI_TEMPLATETYPE:
+            case RTTIType::RTTI_TERRAIN:
+            case RTTIType::RTTI_TERRAINTYPE:
+            case RTTIType::RTTI_TRIGGER:
+            case RTTIType::RTTI_TRIGGERTYPE:
+            case RTTIType::RTTI_UNITTYPE:
+            case RTTIType::RTTI_VESSELTYPE:
             default:
               break;
           }
@@ -3323,6 +3409,28 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(RTTIType objecttype,
         return &BuildingTypeClass::As_Reference(BuildStructure);
       }
       return nullptr;
+    case RTTIType::RTTI_NONE:
+    case RTTIType::RTTI_ANIM:
+    case RTTIType::RTTI_ANIMTYPE:
+    case RTTIType::RTTI_BULLET:
+    case RTTIType::RTTI_BULLETTYPE:
+    case RTTIType::RTTI_CELL:
+    case RTTIType::RTTI_FACTORY:
+    case RTTIType::RTTI_HOUSE:
+    case RTTIType::RTTI_HOUSETYPE:
+    case RTTIType::RTTI_OVERLAY:
+    case RTTIType::RTTI_OVERLAYTYPE:
+    case RTTIType::RTTI_SMUDGE:
+    case RTTIType::RTTI_SMUDGETYPE:
+    case RTTIType::RTTI_SPECIAL:
+    case RTTIType::RTTI_TEAM:
+    case RTTIType::RTTI_TEAMTYPE:
+    case RTTIType::RTTI_TEMPLATE:
+    case RTTIType::RTTI_TEMPLATETYPE:
+    case RTTIType::RTTI_TERRAIN:
+    case RTTIType::RTTI_TERRAINTYPE:
+    case RTTIType::RTTI_TRIGGER:
+    case RTTIType::RTTI_TRIGGERTYPE:
     default:
       break;
   }
@@ -4114,6 +4222,26 @@ void HouseClass::Sell_Wall(CELL cell) {
             btype = &BuildingTypeClass::As_Reference(STRUCT_FENCE);
             break;
 
+          case OverlayType::OVERLAY_NONE:
+          case OverlayType::OVERLAY_GOLD1:
+          case OverlayType::OVERLAY_GOLD2:
+          case OverlayType::OVERLAY_GOLD3:
+          case OverlayType::OVERLAY_GOLD4:
+          case OverlayType::OVERLAY_GEMS1:
+          case OverlayType::OVERLAY_GEMS2:
+          case OverlayType::OVERLAY_GEMS3:
+          case OverlayType::OVERLAY_GEMS4:
+          case OverlayType::OVERLAY_V12:
+          case OverlayType::OVERLAY_V13:
+          case OverlayType::OVERLAY_V14:
+          case OverlayType::OVERLAY_V15:
+          case OverlayType::OVERLAY_V16:
+          case OverlayType::OVERLAY_V17:
+          case OverlayType::OVERLAY_V18:
+          case OverlayType::OVERLAY_FLAG_SPOT:
+          case OverlayType::OVERLAY_WOOD_CRATE:
+          case OverlayType::OVERLAY_STEEL_CRATE:
+          case OverlayType::OVERLAY_WATER_CRATE:
           default:
             break;
         }
@@ -6018,6 +6146,27 @@ int HouseClass::AI_Infantry() {
                   1 - std::max(base::At(IQuantity, static_cast<int>(index)), 0);
               break;
 
+            case InfantryType::INFANTRY_NONE:
+            case InfantryType::INFANTRY_SPY:
+            case InfantryType::INFANTRY_THIEF:
+            case InfantryType::INFANTRY_MEDIC:
+            case InfantryType::INFANTRY_GENERAL:
+            case InfantryType::INFANTRY_DOG:
+            case InfantryType::INFANTRY_C1:
+            case InfantryType::INFANTRY_C2:
+            case InfantryType::INFANTRY_C3:
+            case InfantryType::INFANTRY_C4:
+            case InfantryType::INFANTRY_C5:
+            case InfantryType::INFANTRY_C6:
+            case InfantryType::INFANTRY_C7:
+            case InfantryType::INFANTRY_C8:
+            case InfantryType::INFANTRY_C9:
+            case InfantryType::INFANTRY_C10:
+            case InfantryType::INFANTRY_EINSTEIN:
+            case InfantryType::INFANTRY_DELPHI:
+            case InfantryType::INFANTRY_CHAN:
+            case InfantryType::INFANTRY_SHOCK:
+            case InfantryType::INFANTRY_MECHANIC:
             default:
               base::At(typetrack, count).Value = 0;
               break;
@@ -6171,6 +6320,33 @@ void HouseClass::Production_Begun(const TechnoClass* product) {
         }
         break;
 
+      case RTTIType::RTTI_NONE:
+      case RTTIType::RTTI_AIRCRAFTTYPE:
+      case RTTIType::RTTI_ANIM:
+      case RTTIType::RTTI_ANIMTYPE:
+      case RTTIType::RTTI_BUILDINGTYPE:
+      case RTTIType::RTTI_BULLET:
+      case RTTIType::RTTI_BULLETTYPE:
+      case RTTIType::RTTI_CELL:
+      case RTTIType::RTTI_FACTORY:
+      case RTTIType::RTTI_HOUSE:
+      case RTTIType::RTTI_HOUSETYPE:
+      case RTTIType::RTTI_INFANTRYTYPE:
+      case RTTIType::RTTI_OVERLAY:
+      case RTTIType::RTTI_OVERLAYTYPE:
+      case RTTIType::RTTI_SMUDGE:
+      case RTTIType::RTTI_SMUDGETYPE:
+      case RTTIType::RTTI_SPECIAL:
+      case RTTIType::RTTI_TEAM:
+      case RTTIType::RTTI_TEAMTYPE:
+      case RTTIType::RTTI_TEMPLATE:
+      case RTTIType::RTTI_TEMPLATETYPE:
+      case RTTIType::RTTI_TERRAIN:
+      case RTTIType::RTTI_TERRAINTYPE:
+      case RTTIType::RTTI_TRIGGER:
+      case RTTIType::RTTI_TRIGGERTYPE:
+      case RTTIType::RTTI_UNITTYPE:
+      case RTTIType::RTTI_VESSELTYPE:
       default:
         break;
     }
@@ -6243,6 +6419,33 @@ void HouseClass::Tracking_Remove(const TechnoClass* techno) {
       base::At(VQuantity, type)--;
       break;
 
+    case RTTIType::RTTI_NONE:
+    case RTTIType::RTTI_AIRCRAFTTYPE:
+    case RTTIType::RTTI_ANIM:
+    case RTTIType::RTTI_ANIMTYPE:
+    case RTTIType::RTTI_BUILDINGTYPE:
+    case RTTIType::RTTI_BULLET:
+    case RTTIType::RTTI_BULLETTYPE:
+    case RTTIType::RTTI_CELL:
+    case RTTIType::RTTI_FACTORY:
+    case RTTIType::RTTI_HOUSE:
+    case RTTIType::RTTI_HOUSETYPE:
+    case RTTIType::RTTI_INFANTRYTYPE:
+    case RTTIType::RTTI_OVERLAY:
+    case RTTIType::RTTI_OVERLAYTYPE:
+    case RTTIType::RTTI_SMUDGE:
+    case RTTIType::RTTI_SMUDGETYPE:
+    case RTTIType::RTTI_SPECIAL:
+    case RTTIType::RTTI_TEAM:
+    case RTTIType::RTTI_TEAMTYPE:
+    case RTTIType::RTTI_TEMPLATE:
+    case RTTIType::RTTI_TEMPLATETYPE:
+    case RTTIType::RTTI_TERRAIN:
+    case RTTIType::RTTI_TERRAINTYPE:
+    case RTTIType::RTTI_TRIGGER:
+    case RTTIType::RTTI_TRIGGERTYPE:
+    case RTTIType::RTTI_UNITTYPE:
+    case RTTIType::RTTI_VESSELTYPE:
     default:
       break;
   }
@@ -6344,6 +6547,33 @@ void HouseClass::Tracking_Add(const TechnoClass* techno) {
       }
       break;
 
+    case RTTIType::RTTI_NONE:
+    case RTTIType::RTTI_AIRCRAFTTYPE:
+    case RTTIType::RTTI_ANIM:
+    case RTTIType::RTTI_ANIMTYPE:
+    case RTTIType::RTTI_BUILDINGTYPE:
+    case RTTIType::RTTI_BULLET:
+    case RTTIType::RTTI_BULLETTYPE:
+    case RTTIType::RTTI_CELL:
+    case RTTIType::RTTI_FACTORY:
+    case RTTIType::RTTI_HOUSE:
+    case RTTIType::RTTI_HOUSETYPE:
+    case RTTIType::RTTI_INFANTRYTYPE:
+    case RTTIType::RTTI_OVERLAY:
+    case RTTIType::RTTI_OVERLAYTYPE:
+    case RTTIType::RTTI_SMUDGE:
+    case RTTIType::RTTI_SMUDGETYPE:
+    case RTTIType::RTTI_SPECIAL:
+    case RTTIType::RTTI_TEAM:
+    case RTTIType::RTTI_TEAMTYPE:
+    case RTTIType::RTTI_TEMPLATE:
+    case RTTIType::RTTI_TEMPLATETYPE:
+    case RTTIType::RTTI_TERRAIN:
+    case RTTIType::RTTI_TERRAINTYPE:
+    case RTTIType::RTTI_TRIGGER:
+    case RTTIType::RTTI_TRIGGERTYPE:
+    case RTTIType::RTTI_UNITTYPE:
+    case RTTIType::RTTI_VESSELTYPE:
     default:
       break;
   }
@@ -6396,6 +6626,28 @@ auto* Factory_Counter_Of(House& house ABSL_ATTRIBUTE_LIFETIME_BOUND,
     case RTTI_BUILDING:
       return &house.BuildingFactories;
 
+    case RTTIType::RTTI_NONE:
+    case RTTIType::RTTI_ANIM:
+    case RTTIType::RTTI_ANIMTYPE:
+    case RTTIType::RTTI_BULLET:
+    case RTTIType::RTTI_BULLETTYPE:
+    case RTTIType::RTTI_CELL:
+    case RTTIType::RTTI_FACTORY:
+    case RTTIType::RTTI_HOUSE:
+    case RTTIType::RTTI_HOUSETYPE:
+    case RTTIType::RTTI_OVERLAY:
+    case RTTIType::RTTI_OVERLAYTYPE:
+    case RTTIType::RTTI_SMUDGE:
+    case RTTIType::RTTI_SMUDGETYPE:
+    case RTTIType::RTTI_SPECIAL:
+    case RTTIType::RTTI_TEAM:
+    case RTTIType::RTTI_TEAMTYPE:
+    case RTTIType::RTTI_TEMPLATE:
+    case RTTIType::RTTI_TEMPLATETYPE:
+    case RTTIType::RTTI_TERRAIN:
+    case RTTIType::RTTI_TERRAINTYPE:
+    case RTTIType::RTTI_TRIGGER:
+    case RTTIType::RTTI_TRIGGERTYPE:
     default:
       break;
   }
@@ -6708,6 +6960,7 @@ CELL HouseClass::Zone_Cell(ZoneType zone) const {
       return Coord_Cell(
           Coord_Move(Center, DIR_S, static_cast<uint16_t>(Radius * 3)));
 
+    case ZoneType::ZONE_NONE:
     default:
       break;
   }
@@ -6862,6 +7115,28 @@ FactoryClass* HouseClass::Fetch_Factory(RTTIType rtti) const {
       factory_index = VesselFactory;
       break;
 
+    case RTTIType::RTTI_NONE:
+    case RTTIType::RTTI_ANIM:
+    case RTTIType::RTTI_ANIMTYPE:
+    case RTTIType::RTTI_BULLET:
+    case RTTIType::RTTI_BULLETTYPE:
+    case RTTIType::RTTI_CELL:
+    case RTTIType::RTTI_FACTORY:
+    case RTTIType::RTTI_HOUSE:
+    case RTTIType::RTTI_HOUSETYPE:
+    case RTTIType::RTTI_OVERLAY:
+    case RTTIType::RTTI_OVERLAYTYPE:
+    case RTTIType::RTTI_SMUDGE:
+    case RTTIType::RTTI_SMUDGETYPE:
+    case RTTIType::RTTI_SPECIAL:
+    case RTTIType::RTTI_TEAM:
+    case RTTIType::RTTI_TEAMTYPE:
+    case RTTIType::RTTI_TEMPLATE:
+    case RTTIType::RTTI_TEMPLATETYPE:
+    case RTTIType::RTTI_TERRAIN:
+    case RTTIType::RTTI_TERRAINTYPE:
+    case RTTIType::RTTI_TRIGGER:
+    case RTTIType::RTTI_TRIGGERTYPE:
     default:
       factory_index = -1;
       break;
@@ -6926,6 +7201,28 @@ void HouseClass::Set_Factory(RTTIType rtti, FactoryClass* factory) {
     case RTTI_AIRCRAFTTYPE:
       factory_index = &AircraftFactory;
       break;
+    case RTTIType::RTTI_NONE:
+    case RTTIType::RTTI_ANIM:
+    case RTTIType::RTTI_ANIMTYPE:
+    case RTTIType::RTTI_BULLET:
+    case RTTIType::RTTI_BULLETTYPE:
+    case RTTIType::RTTI_CELL:
+    case RTTIType::RTTI_FACTORY:
+    case RTTIType::RTTI_HOUSE:
+    case RTTIType::RTTI_HOUSETYPE:
+    case RTTIType::RTTI_OVERLAY:
+    case RTTIType::RTTI_OVERLAYTYPE:
+    case RTTIType::RTTI_SMUDGE:
+    case RTTIType::RTTI_SMUDGETYPE:
+    case RTTIType::RTTI_SPECIAL:
+    case RTTIType::RTTI_TEAM:
+    case RTTIType::RTTI_TEAMTYPE:
+    case RTTIType::RTTI_TEMPLATE:
+    case RTTIType::RTTI_TEMPLATETYPE:
+    case RTTIType::RTTI_TERRAIN:
+    case RTTIType::RTTI_TERRAINTYPE:
+    case RTTIType::RTTI_TRIGGER:
+    case RTTIType::RTTI_TRIGGERTYPE:
     default:
       break;
   }
@@ -7641,6 +7938,7 @@ CELL HouseClass::Random_Cell_In_Zone(ZoneType zone) const {
           static_cast<uint16_t>(Random_Pick(std::min(Radius * 2, maxdist),
                                             std::min(Radius * 3, maxdist))));
       break;
+    case ZoneType::ZONE_NONE:
     default:
       break;
   }

@@ -159,6 +159,14 @@ void TarComClass::AI() {
         IsFiring = false;
         Do_Uncloak();
         break;
+      case FireErrorType::FIRE_AMMO:
+      case FireErrorType::FIRE_REARM:
+      case FireErrorType::FIRE_ROTATING:
+      case FireErrorType::FIRE_ILLEGAL:
+      case FireErrorType::FIRE_CANT:
+      case FireErrorType::FIRE_MOVING:
+      case FireErrorType::FIRE_RANGE:
+      case FireErrorType::FIRE_BUSY:
       default:
         break;
     }

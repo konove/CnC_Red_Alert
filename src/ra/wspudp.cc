@@ -423,6 +423,7 @@ void UDPInterfaceClass::Event_Handler(int /*socket*/, SocketEvent event) {
 
       break;
     }
+    case SocketEvent::SOCKEV_ERROR:
     default:
       break;
   }

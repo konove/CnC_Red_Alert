@@ -464,6 +464,11 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
       }
       break;
 
+    case SourceType::SOURCE_NONE:
+    case SourceType::SOURCE_VISIBLE:
+    case SourceType::SOURCE_ENEMYBASE:
+    case SourceType::SOURCE_HOMEBASE:
+    case SourceType::SOURCE_COUNT:
     default:
       break;
   }
@@ -670,6 +675,15 @@ int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
       case SOURCE_WEST:
         break;
 
+      case SourceType::SOURCE_NONE:
+      case SourceType::SOURCE_SHIPPING:
+      case SourceType::SOURCE_BEACH:
+      case SourceType::SOURCE_AIR:
+      case SourceType::SOURCE_VISIBLE:
+      case SourceType::SOURCE_ENEMYBASE:
+      case SourceType::SOURCE_HOMEBASE:
+      case SourceType::SOURCE_OCEAN:
+      case SourceType::SOURCE_COUNT:
       default:
         source = SOURCE_NORTH;
         break;

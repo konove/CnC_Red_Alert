@@ -747,6 +747,30 @@ RadioMessageType TechnoClass::Receive_Message(RadioClass* from,
       }
       break;
 
+    case RadioMessageType::RADIO_STATIC:
+    case RadioMessageType::RADIO_ROGER:
+    case RadioMessageType::RADIO_HELLO:
+    case RadioMessageType::RADIO_PICK_UP:
+    case RadioMessageType::RADIO_ATTACH:
+    case RadioMessageType::RADIO_DELIVERY:
+    case RadioMessageType::RADIO_NEGATIVE:
+    case RadioMessageType::RADIO_BUILDING:
+    case RadioMessageType::RADIO_COMPLETE:
+    case RadioMessageType::RADIO_REDRAW:
+    case RadioMessageType::RADIO_DOCKING:
+    case RadioMessageType::RADIO_CAN_LOAD:
+    case RadioMessageType::RADIO_ARE_REFINERY:
+    case RadioMessageType::RADIO_TRYING_TO_LOAD:
+    case RadioMessageType::RADIO_MOVE_HERE:
+    case RadioMessageType::RADIO_NEED_TO_MOVE:
+    case RadioMessageType::RADIO_YEA_NOW_WHAT:
+    case RadioMessageType::RADIO_IM_IN:
+    case RadioMessageType::RADIO_RUN_AWAY:
+    case RadioMessageType::RADIO_PREPARED:
+    case RadioMessageType::RADIO_KICK:
+    case RadioMessageType::RADIO_PUNCH:
+    case RadioMessageType::RADIO_PREPARE_TO_BOX:
+    case RadioMessageType::RADIO_COUNT:
     default:
       break;
   }
@@ -1269,6 +1293,29 @@ bool TechnoClass::Evaluate_Object(ThreatType method, uint32_t mask, int range,
         }
         break;
 
+      case RTTIType::RTTI_NONE:
+      case RTTIType::RTTI_INFANTRY:
+      case RTTIType::RTTI_INFANTRYTYPE:
+      case RTTIType::RTTI_UNITTYPE:
+      case RTTIType::RTTI_AIRCRAFT:
+      case RTTIType::RTTI_AIRCRAFTTYPE:
+      case RTTIType::RTTI_BUILDINGTYPE:
+      case RTTIType::RTTI_TERRAIN:
+      case RTTIType::RTTI_ABSTRACTTYPE:
+      case RTTIType::RTTI_ANIM:
+      case RTTIType::RTTI_ANIMTYPE:
+      case RTTIType::RTTI_BULLET:
+      case RTTIType::RTTI_BULLETTYPE:
+      case RTTIType::RTTI_OVERLAY:
+      case RTTIType::RTTI_OVERLAYTYPE:
+      case RTTIType::RTTI_SMUDGE:
+      case RTTIType::RTTI_SMUDGETYPE:
+      case RTTIType::RTTI_TEAM:
+      case RTTIType::RTTI_TEMPLATE:
+      case RTTIType::RTTI_TEMPLATETYPE:
+      case RTTIType::RTTI_TERRAINTYPE:
+      case RTTIType::RTTI_OBJECT:
+      case RTTIType::RTTI_SPECIAL:
       default:
         return false;
     }
@@ -1763,6 +1810,10 @@ void TechnoClass::AI() {
                 Scatter(0, true);
               }
               break;
+            case VisualType::VISUAL_NORMAL:
+            case VisualType::VISUAL_INDISTINCT:
+            case VisualType::VISUAL_SHADOWY:
+            case VisualType::VISUAL_RIPPLE:
             default:
               break;
           }
@@ -1777,6 +1828,7 @@ void TechnoClass::AI() {
             Mark(MARK_CHANGE);
           }
           break;
+        case CloakType::UNCLOAKED:
         default:
           break;
       }
@@ -2140,6 +2192,83 @@ BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
             static_cast<int>(a) +
             static_cast<int>(Dir_Facing(Fire_Direction())));
         break;
+      case AnimType::ANIM_NONE:
+      case AnimType::ANIM_FBALL1:
+      case AnimType::ANIM_GRENADE:
+      case AnimType::ANIM_FRAG1:
+      case AnimType::ANIM_FRAG2:
+      case AnimType::ANIM_VEH_HIT1:
+      case AnimType::ANIM_VEH_HIT2:
+      case AnimType::ANIM_VEH_HIT3:
+      case AnimType::ANIM_ART_EXP1:
+      case AnimType::ANIM_NAPALM1:
+      case AnimType::ANIM_NAPALM2:
+      case AnimType::ANIM_NAPALM3:
+      case AnimType::ANIM_SMOKE_PUFF:
+      case AnimType::ANIM_PIFF:
+      case AnimType::ANIM_PIFFPIFF:
+      case AnimType::ANIM_FLAME_NE:
+      case AnimType::ANIM_FLAME_E:
+      case AnimType::ANIM_FLAME_SE:
+      case AnimType::ANIM_FLAME_S:
+      case AnimType::ANIM_FLAME_SW:
+      case AnimType::ANIM_FLAME_W:
+      case AnimType::ANIM_FLAME_NW:
+      case AnimType::ANIM_CHEM_NE:
+      case AnimType::ANIM_CHEM_E:
+      case AnimType::ANIM_CHEM_SE:
+      case AnimType::ANIM_CHEM_S:
+      case AnimType::ANIM_CHEM_SW:
+      case AnimType::ANIM_CHEM_W:
+      case AnimType::ANIM_CHEM_NW:
+      case AnimType::ANIM_FIRE_SMALL:
+      case AnimType::ANIM_FIRE_MED:
+      case AnimType::ANIM_FIRE_MED2:
+      case AnimType::ANIM_FIRE_TINY:
+      case AnimType::ANIM_MUZZLE_FLASH:
+      case AnimType::ANIM_SMOKE_M:
+      case AnimType::ANIM_BURN_SMALL:
+      case AnimType::ANIM_BURN_MED:
+      case AnimType::ANIM_BURN_BIG:
+      case AnimType::ANIM_ON_FIRE_SMALL:
+      case AnimType::ANIM_ON_FIRE_MED:
+      case AnimType::ANIM_ON_FIRE_BIG:
+      case AnimType::ANIM_SAM_N:
+      case AnimType::ANIM_SAM_NE:
+      case AnimType::ANIM_SAM_E:
+      case AnimType::ANIM_SAM_SE:
+      case AnimType::ANIM_SAM_S:
+      case AnimType::ANIM_SAM_SW:
+      case AnimType::ANIM_SAM_W:
+      case AnimType::ANIM_SAM_NW:
+      case AnimType::ANIM_GUN_NE:
+      case AnimType::ANIM_GUN_E:
+      case AnimType::ANIM_GUN_SE:
+      case AnimType::ANIM_GUN_S:
+      case AnimType::ANIM_GUN_SW:
+      case AnimType::ANIM_GUN_W:
+      case AnimType::ANIM_GUN_NW:
+      case AnimType::ANIM_LZ_SMOKE:
+      case AnimType::ANIM_ION_CANNON:
+      case AnimType::ANIM_ATOM_BLAST:
+      case AnimType::ANIM_CRATE_DEVIATOR:
+      case AnimType::ANIM_CRATE_DOLLAR:
+      case AnimType::ANIM_CRATE_EARTH:
+      case AnimType::ANIM_CRATE_EMPULSE:
+      case AnimType::ANIM_CRATE_INVUN:
+      case AnimType::ANIM_CRATE_MINE:
+      case AnimType::ANIM_CRATE_RAPID:
+      case AnimType::ANIM_CRATE_STEALTH:
+      case AnimType::ANIM_CRATE_MISSILE:
+      case AnimType::ANIM_ATOM_DOOR:
+      case AnimType::ANIM_MOVE_FLASH:
+      case AnimType::ANIM_OILFIELD_BURN:
+      case AnimType::ANIM_TRIC_DIE:
+      case AnimType::ANIM_TREX_DIE:
+      case AnimType::ANIM_STEG_DIE:
+      case AnimType::ANIM_RAPT_DIE:
+      case AnimType::ANIM_CHEM_BALL:
+      case AnimType::ANIM_COUNT:
       default:
         break;
     }
@@ -2619,6 +2748,27 @@ bool TechnoClass::Captured(HouseClass* newowner) {
         }
         break;
 
+      case RTTIType::RTTI_NONE:
+      case RTTIType::RTTI_INFANTRYTYPE:
+      case RTTIType::RTTI_UNITTYPE:
+      case RTTIType::RTTI_AIRCRAFTTYPE:
+      case RTTIType::RTTI_BUILDINGTYPE:
+      case RTTIType::RTTI_TERRAIN:
+      case RTTIType::RTTI_ABSTRACTTYPE:
+      case RTTIType::RTTI_ANIM:
+      case RTTIType::RTTI_ANIMTYPE:
+      case RTTIType::RTTI_BULLET:
+      case RTTIType::RTTI_BULLETTYPE:
+      case RTTIType::RTTI_OVERLAY:
+      case RTTIType::RTTI_OVERLAYTYPE:
+      case RTTIType::RTTI_SMUDGE:
+      case RTTIType::RTTI_SMUDGETYPE:
+      case RTTIType::RTTI_TEAM:
+      case RTTIType::RTTI_TEMPLATE:
+      case RTTIType::RTTI_TEMPLATETYPE:
+      case RTTIType::RTTI_TERRAINTYPE:
+      case RTTIType::RTTI_OBJECT:
+      case RTTIType::RTTI_SPECIAL:
       default:
         break;
     }
@@ -2679,6 +2829,9 @@ ResultType TechnoClass::Take_Damage(int& damage, int distance,
     **	If some damage was received and this object is cloaked, shimmer
     **	the cloak a bit.
     */
+    case ResultType::RESULT_LIGHT:
+    case ResultType::RESULT_HALF:
+    case ResultType::RESULT_MAJOR:
     default:
       if (source && !House->Is_Ally(source)) {
         IsTickedOff = true;
@@ -2759,6 +2912,27 @@ void TechnoClass::Record_The_Kill(TechnoClass* source) {
       case RTTI_AIRCRAFT:
         source->Made_A_Kill();
         break;
+      case RTTIType::RTTI_NONE:
+      case RTTIType::RTTI_INFANTRYTYPE:
+      case RTTIType::RTTI_UNITTYPE:
+      case RTTIType::RTTI_AIRCRAFTTYPE:
+      case RTTIType::RTTI_BUILDINGTYPE:
+      case RTTIType::RTTI_TERRAIN:
+      case RTTIType::RTTI_ABSTRACTTYPE:
+      case RTTIType::RTTI_ANIM:
+      case RTTIType::RTTI_ANIMTYPE:
+      case RTTIType::RTTI_BULLET:
+      case RTTIType::RTTI_BULLETTYPE:
+      case RTTIType::RTTI_OVERLAY:
+      case RTTIType::RTTI_OVERLAYTYPE:
+      case RTTIType::RTTI_SMUDGE:
+      case RTTIType::RTTI_SMUDGETYPE:
+      case RTTIType::RTTI_TEAM:
+      case RTTIType::RTTI_TEMPLATE:
+      case RTTIType::RTTI_TEMPLATETYPE:
+      case RTTIType::RTTI_TERRAINTYPE:
+      case RTTIType::RTTI_OBJECT:
+      case RTTIType::RTTI_SPECIAL:
       default:
         break;
     }
@@ -2846,6 +3020,27 @@ void TechnoClass::Record_The_Kill(TechnoClass* source) {
       }
       break;
 
+    case RTTIType::RTTI_NONE:
+    case RTTIType::RTTI_INFANTRYTYPE:
+    case RTTIType::RTTI_UNITTYPE:
+    case RTTIType::RTTI_AIRCRAFTTYPE:
+    case RTTIType::RTTI_BUILDINGTYPE:
+    case RTTIType::RTTI_TERRAIN:
+    case RTTIType::RTTI_ABSTRACTTYPE:
+    case RTTIType::RTTI_ANIM:
+    case RTTIType::RTTI_ANIMTYPE:
+    case RTTIType::RTTI_BULLET:
+    case RTTIType::RTTI_BULLETTYPE:
+    case RTTIType::RTTI_OVERLAY:
+    case RTTIType::RTTI_OVERLAYTYPE:
+    case RTTIType::RTTI_SMUDGE:
+    case RTTIType::RTTI_SMUDGETYPE:
+    case RTTIType::RTTI_TEAM:
+    case RTTIType::RTTI_TEMPLATE:
+    case RTTIType::RTTI_TEMPLATETYPE:
+    case RTTIType::RTTI_TERRAINTYPE:
+    case RTTIType::RTTI_OBJECT:
+    case RTTIType::RTTI_SPECIAL:
     default:
       break;
   }

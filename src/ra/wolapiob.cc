@@ -857,6 +857,13 @@ void WolapiObject::ListChannels() {
       pILChannels->Add_Item(TXT_WOL_CHANNEL_BACK, CHANNELTYPE_LOBBIES, nullptr,
                             ICON_SHAPE, CHANNELTYPE_LOBBIES);
       break;
+    case WOL_LEVEL::WOL_LEVEL_TOP:
+    case WOL_LEVEL::WOL_LEVEL_OFFICIALCHAT:
+    case WOL_LEVEL::WOL_LEVEL_USERCHAT:
+    case WOL_LEVEL::WOL_LEVEL_INCHATCHANNEL:
+    case WOL_LEVEL::WOL_LEVEL_GAMES:
+    case WOL_LEVEL::WOL_LEVEL_INGAMECHANNEL:
+    case WOL_LEVEL::WOL_LEVEL_INVALID:
     default:
       pILChannels->Add_Item(TXT_WOL_CHANNEL_TOP, CHANNELTYPE_TOP, nullptr,
                             ICON_SHAPE, CHANNELTYPE_TOP);
@@ -2437,6 +2444,14 @@ bool WolapiObject::OnEnteringChatChannel(const char* szChannelName,
                               nullptr, ICON_SHAPE, CHANNELTYPE_OFFICIALCHAT);
         break;
       case WOL_LEVEL_USERCHAT:
+      case WOL_LEVEL::WOL_LEVEL_TOP:
+      case WOL_LEVEL::WOL_LEVEL_INCHATCHANNEL:
+      case WOL_LEVEL::WOL_LEVEL_GAMES:
+      case WOL_LEVEL::WOL_LEVEL_GAMESOFTYPE:
+      case WOL_LEVEL::WOL_LEVEL_INGAMECHANNEL:
+      case WOL_LEVEL::WOL_LEVEL_LOBBIES:
+      case WOL_LEVEL::WOL_LEVEL_INLOBBY:
+      case WOL_LEVEL::WOL_LEVEL_INVALID:
       default:
         //	If entering a channel from anywhere else, user must have created
         // the channel. 	Make "back" take them to user channels list.
@@ -3209,6 +3224,8 @@ bool WolapiObject::Pump_DisconnectPinging() {
       //	Ping results still pending. (Callback will set vars when results
       // arrive.)
       break;
+    case DISCONNECT_PING_STATUS::PING_GOOD:
+    case DISCONNECT_PING_STATUS::PING_BAD:
     default:
       //	Ping result for server is in.
       if (base::At(DisconnectPingResult_Opponent, iDisconnectPingCurrent) ==

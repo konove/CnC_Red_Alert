@@ -2131,6 +2131,22 @@ ProdFailType HouseClass::Begin_Production(RTTIType type, int id) {
     case RTTI_SPECIAL:
       factory = &SpecialFactory;
       break;
+    case RTTIType::RTTI_NONE:
+    case RTTIType::RTTI_TERRAIN:
+    case RTTIType::RTTI_ABSTRACTTYPE:
+    case RTTIType::RTTI_ANIM:
+    case RTTIType::RTTI_ANIMTYPE:
+    case RTTIType::RTTI_BULLET:
+    case RTTIType::RTTI_BULLETTYPE:
+    case RTTIType::RTTI_OVERLAY:
+    case RTTIType::RTTI_OVERLAYTYPE:
+    case RTTIType::RTTI_SMUDGE:
+    case RTTIType::RTTI_SMUDGETYPE:
+    case RTTIType::RTTI_TEAM:
+    case RTTIType::RTTI_TEMPLATE:
+    case RTTIType::RTTI_TEMPLATETYPE:
+    case RTTIType::RTTI_TERRAINTYPE:
+    case RTTIType::RTTI_OBJECT:
     default:
       break;
   }
@@ -2220,6 +2236,22 @@ ProdFailType HouseClass::Suspend_Production(RTTIType type) {
     case RTTI_SPECIAL:
       factory = &SpecialFactory;
       break;
+    case RTTIType::RTTI_NONE:
+    case RTTIType::RTTI_TERRAIN:
+    case RTTIType::RTTI_ABSTRACTTYPE:
+    case RTTIType::RTTI_ANIM:
+    case RTTIType::RTTI_ANIMTYPE:
+    case RTTIType::RTTI_BULLET:
+    case RTTIType::RTTI_BULLETTYPE:
+    case RTTIType::RTTI_OVERLAY:
+    case RTTIType::RTTI_OVERLAYTYPE:
+    case RTTIType::RTTI_SMUDGE:
+    case RTTIType::RTTI_SMUDGETYPE:
+    case RTTIType::RTTI_TEAM:
+    case RTTIType::RTTI_TEMPLATE:
+    case RTTIType::RTTI_TEMPLATETYPE:
+    case RTTIType::RTTI_TERRAINTYPE:
+    case RTTIType::RTTI_OBJECT:
     default:
       break;
   }
@@ -2310,6 +2342,22 @@ ProdFailType HouseClass::Abandon_Production(RTTIType type) {
     case RTTI_SPECIAL:
       factory = &SpecialFactory;
       break;
+    case RTTIType::RTTI_NONE:
+    case RTTIType::RTTI_TERRAIN:
+    case RTTIType::RTTI_ABSTRACTTYPE:
+    case RTTIType::RTTI_ANIM:
+    case RTTIType::RTTI_ANIMTYPE:
+    case RTTIType::RTTI_BULLET:
+    case RTTIType::RTTI_BULLETTYPE:
+    case RTTIType::RTTI_OVERLAY:
+    case RTTIType::RTTI_OVERLAYTYPE:
+    case RTTIType::RTTI_SMUDGE:
+    case RTTIType::RTTI_SMUDGETYPE:
+    case RTTIType::RTTI_TEAM:
+    case RTTIType::RTTI_TEMPLATE:
+    case RTTIType::RTTI_TEMPLATETYPE:
+    case RTTIType::RTTI_TERRAINTYPE:
+    case RTTIType::RTTI_OBJECT:
     default:
       break;
   }
@@ -2533,6 +2581,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
         IsRecalcNeeded = true;
       }
       break;
+    case SpecialWeaponType::SPC_NONE:
     default:
       break;
   }
@@ -2592,6 +2641,23 @@ bool HouseClass::Place_Object(RTTIType type, CELL cell) {
         factory = Factories.Raw_Ptr(BuildingFactory);
       }
       break;
+    case RTTIType::RTTI_NONE:
+    case RTTIType::RTTI_TERRAIN:
+    case RTTIType::RTTI_ABSTRACTTYPE:
+    case RTTIType::RTTI_ANIM:
+    case RTTIType::RTTI_ANIMTYPE:
+    case RTTIType::RTTI_BULLET:
+    case RTTIType::RTTI_BULLETTYPE:
+    case RTTIType::RTTI_OVERLAY:
+    case RTTIType::RTTI_OVERLAYTYPE:
+    case RTTIType::RTTI_SMUDGE:
+    case RTTIType::RTTI_SMUDGETYPE:
+    case RTTIType::RTTI_TEAM:
+    case RTTIType::RTTI_TEMPLATE:
+    case RTTIType::RTTI_TEMPLATETYPE:
+    case RTTIType::RTTI_TERRAINTYPE:
+    case RTTIType::RTTI_OBJECT:
+    case RTTIType::RTTI_SPECIAL:
     default:
       break;
   }
@@ -3446,6 +3512,25 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
         }
       }
       break;
+    case RTTIType::RTTI_NONE:
+    case RTTIType::RTTI_AIRCRAFT:
+    case RTTIType::RTTI_AIRCRAFTTYPE:
+    case RTTIType::RTTI_TERRAIN:
+    case RTTIType::RTTI_ABSTRACTTYPE:
+    case RTTIType::RTTI_ANIM:
+    case RTTIType::RTTI_ANIMTYPE:
+    case RTTIType::RTTI_BULLET:
+    case RTTIType::RTTI_BULLETTYPE:
+    case RTTIType::RTTI_OVERLAY:
+    case RTTIType::RTTI_OVERLAYTYPE:
+    case RTTIType::RTTI_SMUDGE:
+    case RTTIType::RTTI_SMUDGETYPE:
+    case RTTIType::RTTI_TEAM:
+    case RTTIType::RTTI_TEMPLATE:
+    case RTTIType::RTTI_TEMPLATETYPE:
+    case RTTIType::RTTI_TERRAINTYPE:
+    case RTTIType::RTTI_OBJECT:
+    case RTTIType::RTTI_SPECIAL:
     default:
       break;
   }
@@ -4233,6 +4318,8 @@ void HouseClass::Init_Data(PlayerColorType color, HousesType house,
       Color = 203;
       BrightColor = 201;
       break;
+    case PlayerColorType::REMAP_NONE:
+    case PlayerColorType::REMAP_COUNT:
     default:
       break;
   }
@@ -4337,6 +4424,33 @@ void HouseClass::Sell_Wall(CELL cell) {
             cost = BuildingTypeClass::As_Reference(STRUCT_WOOD_WALL).Cost_Of();
             break;
 
+          case OverlayType::OVERLAY_NONE:
+          case OverlayType::OVERLAY_CONCRETE:
+          case OverlayType::OVERLAY_TIBERIUM1:
+          case OverlayType::OVERLAY_TIBERIUM2:
+          case OverlayType::OVERLAY_TIBERIUM3:
+          case OverlayType::OVERLAY_TIBERIUM4:
+          case OverlayType::OVERLAY_TIBERIUM5:
+          case OverlayType::OVERLAY_TIBERIUM6:
+          case OverlayType::OVERLAY_TIBERIUM7:
+          case OverlayType::OVERLAY_TIBERIUM8:
+          case OverlayType::OVERLAY_TIBERIUM9:
+          case OverlayType::OVERLAY_TIBERIUM10:
+          case OverlayType::OVERLAY_TIBERIUM11:
+          case OverlayType::OVERLAY_TIBERIUM12:
+          case OverlayType::OVERLAY_ROAD:
+          case OverlayType::OVERLAY_SQUISH:
+          case OverlayType::OVERLAY_V12:
+          case OverlayType::OVERLAY_V13:
+          case OverlayType::OVERLAY_V14:
+          case OverlayType::OVERLAY_V15:
+          case OverlayType::OVERLAY_V16:
+          case OverlayType::OVERLAY_V17:
+          case OverlayType::OVERLAY_V18:
+          case OverlayType::OVERLAY_FLAG_SPOT:
+          case OverlayType::OVERLAY_WOOD_CRATE:
+          case OverlayType::OVERLAY_STEEL_CRATE:
+          case OverlayType::OVERLAY_COUNT:
           default:
             cost = 0;
             break;

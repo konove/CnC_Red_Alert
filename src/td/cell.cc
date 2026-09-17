@@ -606,6 +606,27 @@ void CellClass::Occupy_Down(ObjectClass* object) {
       Flag.Occupy.Monolith = true;
       break;
 
+    case RTTIType::RTTI_NONE:
+    case RTTIType::RTTI_INFANTRY:
+    case RTTIType::RTTI_INFANTRYTYPE:
+    case RTTIType::RTTI_UNITTYPE:
+    case RTTIType::RTTI_AIRCRAFTTYPE:
+    case RTTIType::RTTI_BUILDINGTYPE:
+    case RTTIType::RTTI_ABSTRACTTYPE:
+    case RTTIType::RTTI_ANIM:
+    case RTTIType::RTTI_ANIMTYPE:
+    case RTTIType::RTTI_BULLET:
+    case RTTIType::RTTI_BULLETTYPE:
+    case RTTIType::RTTI_OVERLAY:
+    case RTTIType::RTTI_OVERLAYTYPE:
+    case RTTIType::RTTI_SMUDGE:
+    case RTTIType::RTTI_SMUDGETYPE:
+    case RTTIType::RTTI_TEAM:
+    case RTTIType::RTTI_TEMPLATE:
+    case RTTIType::RTTI_TEMPLATETYPE:
+    case RTTIType::RTTI_TERRAINTYPE:
+    case RTTIType::RTTI_OBJECT:
+    case RTTIType::RTTI_SPECIAL:
     default:
       break;
   }
@@ -677,6 +698,27 @@ void CellClass::Occupy_Up(ObjectClass* object) {
       Flag.Occupy.Monolith = false;
       break;
 
+    case RTTIType::RTTI_NONE:
+    case RTTIType::RTTI_INFANTRY:
+    case RTTIType::RTTI_INFANTRYTYPE:
+    case RTTIType::RTTI_UNITTYPE:
+    case RTTIType::RTTI_AIRCRAFTTYPE:
+    case RTTIType::RTTI_BUILDINGTYPE:
+    case RTTIType::RTTI_ABSTRACTTYPE:
+    case RTTIType::RTTI_ANIM:
+    case RTTIType::RTTI_ANIMTYPE:
+    case RTTIType::RTTI_BULLET:
+    case RTTIType::RTTI_BULLETTYPE:
+    case RTTIType::RTTI_OVERLAY:
+    case RTTIType::RTTI_OVERLAYTYPE:
+    case RTTIType::RTTI_SMUDGE:
+    case RTTIType::RTTI_SMUDGETYPE:
+    case RTTIType::RTTI_TEAM:
+    case RTTIType::RTTI_TEMPLATE:
+    case RTTIType::RTTI_TEMPLATETYPE:
+    case RTTIType::RTTI_TERRAINTYPE:
+    case RTTIType::RTTI_OBJECT:
+    case RTTIType::RTTI_SPECIAL:
     default:
       break;
   }
@@ -735,6 +777,29 @@ void CellClass::Overlap_Down(ObjectClass* object) {
         case RTTI_TERRAIN:
           break;
 
+        case RTTIType::RTTI_NONE:
+        case RTTIType::RTTI_INFANTRY:
+        case RTTIType::RTTI_INFANTRYTYPE:
+        case RTTIType::RTTI_UNIT:
+        case RTTIType::RTTI_UNITTYPE:
+        case RTTIType::RTTI_AIRCRAFT:
+        case RTTIType::RTTI_AIRCRAFTTYPE:
+        case RTTIType::RTTI_BUILDINGTYPE:
+        case RTTIType::RTTI_ABSTRACTTYPE:
+        case RTTIType::RTTI_ANIM:
+        case RTTIType::RTTI_ANIMTYPE:
+        case RTTIType::RTTI_BULLET:
+        case RTTIType::RTTI_BULLETTYPE:
+        case RTTIType::RTTI_OVERLAY:
+        case RTTIType::RTTI_OVERLAYTYPE:
+        case RTTIType::RTTI_SMUDGE:
+        case RTTIType::RTTI_SMUDGETYPE:
+        case RTTIType::RTTI_TEAM:
+        case RTTIType::RTTI_TEMPLATE:
+        case RTTIType::RTTI_TEMPLATETYPE:
+        case RTTIType::RTTI_TERRAINTYPE:
+        case RTTIType::RTTI_OBJECT:
+        case RTTIType::RTTI_SPECIAL:
         default:
           base::At(Overlappers, index) = object;
           index = static_cast<int>(std::size(Overlappers));
@@ -1089,6 +1154,28 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
                         ->Type)
                     .Draw_It(x, y, 0);
                 break;
+              case RTTIType::RTTI_NONE:
+              case RTTIType::RTTI_INFANTRY:
+              case RTTIType::RTTI_INFANTRYTYPE:
+              case RTTIType::RTTI_UNIT:
+              case RTTIType::RTTI_UNITTYPE:
+              case RTTIType::RTTI_AIRCRAFT:
+              case RTTIType::RTTI_AIRCRAFTTYPE:
+              case RTTIType::RTTI_BUILDING:
+              case RTTIType::RTTI_BUILDINGTYPE:
+              case RTTIType::RTTI_TERRAIN:
+              case RTTIType::RTTI_ABSTRACTTYPE:
+              case RTTIType::RTTI_ANIM:
+              case RTTIType::RTTI_ANIMTYPE:
+              case RTTIType::RTTI_BULLET:
+              case RTTIType::RTTI_BULLETTYPE:
+              case RTTIType::RTTI_OVERLAY:
+              case RTTIType::RTTI_SMUDGE:
+              case RTTIType::RTTI_TEAM:
+              case RTTIType::RTTI_TEMPLATE:
+              case RTTIType::RTTI_TERRAINTYPE:
+              case RTTIType::RTTI_OBJECT:
+              case RTTIType::RTTI_SPECIAL:
               default:
                 break;
             }

@@ -388,6 +388,7 @@ bool LoadOptionsClass::Process() {
         case WWDELETE:
           input = ButtonKey(kButtonDelete);
           break;
+        case LoadStyleType::NONE:
         default:
           break;
       }

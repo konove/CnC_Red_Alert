@@ -669,6 +669,33 @@ void CellClass::Occupy_Down(ObjectClass* object) {
       Flag.Occupy.Monolith = true;
       break;
 
+    case RTTIType::RTTI_NONE:
+    case RTTIType::RTTI_AIRCRAFTTYPE:
+    case RTTIType::RTTI_ANIM:
+    case RTTIType::RTTI_ANIMTYPE:
+    case RTTIType::RTTI_BUILDINGTYPE:
+    case RTTIType::RTTI_BULLET:
+    case RTTIType::RTTI_BULLETTYPE:
+    case RTTIType::RTTI_CELL:
+    case RTTIType::RTTI_FACTORY:
+    case RTTIType::RTTI_HOUSE:
+    case RTTIType::RTTI_HOUSETYPE:
+    case RTTIType::RTTI_INFANTRY:
+    case RTTIType::RTTI_INFANTRYTYPE:
+    case RTTIType::RTTI_OVERLAY:
+    case RTTIType::RTTI_OVERLAYTYPE:
+    case RTTIType::RTTI_SMUDGE:
+    case RTTIType::RTTI_SMUDGETYPE:
+    case RTTIType::RTTI_SPECIAL:
+    case RTTIType::RTTI_TEAM:
+    case RTTIType::RTTI_TEAMTYPE:
+    case RTTIType::RTTI_TEMPLATE:
+    case RTTIType::RTTI_TEMPLATETYPE:
+    case RTTIType::RTTI_TERRAINTYPE:
+    case RTTIType::RTTI_TRIGGER:
+    case RTTIType::RTTI_TRIGGERTYPE:
+    case RTTIType::RTTI_UNITTYPE:
+    case RTTIType::RTTI_VESSELTYPE:
     default:
       break;
   }
@@ -735,6 +762,33 @@ void CellClass::Occupy_Up(ObjectClass* object) {
       Flag.Occupy.Monolith = false;
       break;
 
+    case RTTIType::RTTI_NONE:
+    case RTTIType::RTTI_AIRCRAFTTYPE:
+    case RTTIType::RTTI_ANIM:
+    case RTTIType::RTTI_ANIMTYPE:
+    case RTTIType::RTTI_BUILDINGTYPE:
+    case RTTIType::RTTI_BULLET:
+    case RTTIType::RTTI_BULLETTYPE:
+    case RTTIType::RTTI_CELL:
+    case RTTIType::RTTI_FACTORY:
+    case RTTIType::RTTI_HOUSE:
+    case RTTIType::RTTI_HOUSETYPE:
+    case RTTIType::RTTI_INFANTRY:
+    case RTTIType::RTTI_INFANTRYTYPE:
+    case RTTIType::RTTI_OVERLAY:
+    case RTTIType::RTTI_OVERLAYTYPE:
+    case RTTIType::RTTI_SMUDGE:
+    case RTTIType::RTTI_SMUDGETYPE:
+    case RTTIType::RTTI_SPECIAL:
+    case RTTIType::RTTI_TEAM:
+    case RTTIType::RTTI_TEAMTYPE:
+    case RTTIType::RTTI_TEMPLATE:
+    case RTTIType::RTTI_TEMPLATETYPE:
+    case RTTIType::RTTI_TERRAINTYPE:
+    case RTTIType::RTTI_TRIGGER:
+    case RTTIType::RTTI_TRIGGERTYPE:
+    case RTTIType::RTTI_UNITTYPE:
+    case RTTIType::RTTI_VESSELTYPE:
     default:
       break;
   }
@@ -788,6 +842,36 @@ void CellClass::Overlap_Down(ObjectClass* object) {
         case RTTI_TERRAIN:
           break;
 
+        case RTTIType::RTTI_NONE:
+        case RTTIType::RTTI_AIRCRAFT:
+        case RTTIType::RTTI_AIRCRAFTTYPE:
+        case RTTIType::RTTI_ANIM:
+        case RTTIType::RTTI_ANIMTYPE:
+        case RTTIType::RTTI_BUILDINGTYPE:
+        case RTTIType::RTTI_BULLET:
+        case RTTIType::RTTI_BULLETTYPE:
+        case RTTIType::RTTI_CELL:
+        case RTTIType::RTTI_FACTORY:
+        case RTTIType::RTTI_HOUSE:
+        case RTTIType::RTTI_HOUSETYPE:
+        case RTTIType::RTTI_INFANTRY:
+        case RTTIType::RTTI_INFANTRYTYPE:
+        case RTTIType::RTTI_OVERLAY:
+        case RTTIType::RTTI_OVERLAYTYPE:
+        case RTTIType::RTTI_SMUDGE:
+        case RTTIType::RTTI_SMUDGETYPE:
+        case RTTIType::RTTI_SPECIAL:
+        case RTTIType::RTTI_TEAM:
+        case RTTIType::RTTI_TEAMTYPE:
+        case RTTIType::RTTI_TEMPLATE:
+        case RTTIType::RTTI_TEMPLATETYPE:
+        case RTTIType::RTTI_TERRAINTYPE:
+        case RTTIType::RTTI_TRIGGER:
+        case RTTIType::RTTI_TRIGGERTYPE:
+        case RTTIType::RTTI_UNIT:
+        case RTTIType::RTTI_UNITTYPE:
+        case RTTIType::RTTI_VESSEL:
+        case RTTIType::RTTI_VESSELTYPE:
         default:
           base::At(Overlappers, index) = object;
           index = static_cast<int>(std::ssize(Overlappers));
@@ -1224,6 +1308,35 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
                     .Draw_It(x, y, 0);
                 break;
 
+              case RTTIType::RTTI_NONE:
+              case RTTIType::RTTI_AIRCRAFT:
+              case RTTIType::RTTI_AIRCRAFTTYPE:
+              case RTTIType::RTTI_ANIM:
+              case RTTIType::RTTI_ANIMTYPE:
+              case RTTIType::RTTI_BUILDING:
+              case RTTIType::RTTI_BUILDINGTYPE:
+              case RTTIType::RTTI_BULLET:
+              case RTTIType::RTTI_BULLETTYPE:
+              case RTTIType::RTTI_CELL:
+              case RTTIType::RTTI_FACTORY:
+              case RTTIType::RTTI_HOUSE:
+              case RTTIType::RTTI_HOUSETYPE:
+              case RTTIType::RTTI_INFANTRY:
+              case RTTIType::RTTI_INFANTRYTYPE:
+              case RTTIType::RTTI_OVERLAY:
+              case RTTIType::RTTI_SMUDGE:
+              case RTTIType::RTTI_SPECIAL:
+              case RTTIType::RTTI_TEAM:
+              case RTTIType::RTTI_TEAMTYPE:
+              case RTTIType::RTTI_TEMPLATE:
+              case RTTIType::RTTI_TERRAIN:
+              case RTTIType::RTTI_TERRAINTYPE:
+              case RTTIType::RTTI_TRIGGER:
+              case RTTIType::RTTI_TRIGGERTYPE:
+              case RTTIType::RTTI_UNIT:
+              case RTTIType::RTTI_UNITTYPE:
+              case RTTIType::RTTI_VESSEL:
+              case RTTIType::RTTI_VESSELTYPE:
               default:
                 break;
             }
@@ -1900,6 +2013,24 @@ int32_t CellClass::Tiberium_Adjust(bool pregame) {
           Overlay = Random_Pick(OVERLAY_GEMS1, OVERLAY_GEMS4);
           break;
 
+        case OverlayType::OVERLAY_NONE:
+        case OverlayType::OVERLAY_SANDBAG_WALL:
+        case OverlayType::OVERLAY_CYCLONE_WALL:
+        case OverlayType::OVERLAY_BRICK_WALL:
+        case OverlayType::OVERLAY_BARBWIRE_WALL:
+        case OverlayType::OVERLAY_WOOD_WALL:
+        case OverlayType::OVERLAY_V12:
+        case OverlayType::OVERLAY_V13:
+        case OverlayType::OVERLAY_V14:
+        case OverlayType::OVERLAY_V15:
+        case OverlayType::OVERLAY_V16:
+        case OverlayType::OVERLAY_V17:
+        case OverlayType::OVERLAY_V18:
+        case OverlayType::OVERLAY_FLAG_SPOT:
+        case OverlayType::OVERLAY_WOOD_CRATE:
+        case OverlayType::OVERLAY_STEEL_CRATE:
+        case OverlayType::OVERLAY_FENCE:
+        case OverlayType::OVERLAY_WATER_CRATE:
         default:
           break;
       }
@@ -2137,6 +2268,14 @@ bool CellClass::Goodie_Check(FootClass* object) {
             }
           }
           break;
+        case CrateType::CRATE_PARA_BOMB:
+        case CrateType::CRATE_HEAL_BASE:
+        case CrateType::CRATE_EXPLOSION:
+        case CrateType::CRATE_NAPALM:
+        case CrateType::CRATE_SONAR:
+        case CrateType::CRATE_ICBM:
+        case CrateType::CRATE_INVULN:
+        case CrateType::CRATE_VORTEX:
         default:
           break;
       }
@@ -2180,6 +2319,22 @@ bool CellClass::Goodie_Check(FootClass* object) {
             powerup = CRATE_MONEY;
             break;
 
+          case CrateType::CRATE_MONEY:
+          case CrateType::CRATE_PARA_BOMB:
+          case CrateType::CRATE_HEAL_BASE:
+          case CrateType::CRATE_CLOAK:
+          case CrateType::CRATE_EXPLOSION:
+          case CrateType::CRATE_NAPALM:
+          case CrateType::CRATE_DARKNESS:
+          case CrateType::CRATE_REVEAL:
+          case CrateType::CRATE_SONAR:
+          case CrateType::CRATE_ARMOR:
+          case CrateType::CRATE_SPEED:
+          case CrateType::CRATE_FIREPOWER:
+          case CrateType::CRATE_ICBM:
+          case CrateType::CRATE_TIMEQUAKE:
+          case CrateType::CRATE_INVULN:
+          case CrateType::CRATE_VORTEX:
           default:
             break;
         }
@@ -2749,28 +2904,19 @@ bool CellClass::Is_Clear_To_Move(SpeedType loco, bool ignoreinfantry,
  * HISTORY: * 07/30/1996 JLB : Created. *
  *=============================================================================================*/
 bool CellClass::Is_Bridge_Here() const {
-  switch (TType) {
-    case TEMPLATE_BRIDGE1:
-    case TEMPLATE_BRIDGE1H:
-    case TEMPLATE_BRIDGE1D:
-    case TEMPLATE_BRIDGE2:
-    case TEMPLATE_BRIDGE2H:
-    case TEMPLATE_BRIDGE2D:
-    case TEMPLATE_BRIDGE_1A:
-    case TEMPLATE_BRIDGE_1B:
-    case TEMPLATE_BRIDGE_2A:
-    case TEMPLATE_BRIDGE_2B:
-    case TEMPLATE_BRIDGE_3A:
-    case TEMPLATE_BRIDGE_3B:
-    case TEMPLATE_BRIDGE_3C:
-    case TEMPLATE_BRIDGE_3D:
-    case TEMPLATE_BRIDGE_3E:
-    case TEMPLATE_BRIDGE_3F:
-      return true;
-    default:
-      break;
-  }
-  return false;
+  const TemplateType bridge_type = TType;
+  return bridge_type == TEMPLATE_BRIDGE1 || bridge_type == TEMPLATE_BRIDGE1H ||
+         bridge_type == TEMPLATE_BRIDGE1D || bridge_type == TEMPLATE_BRIDGE2 ||
+         bridge_type == TEMPLATE_BRIDGE2H || bridge_type == TEMPLATE_BRIDGE2D ||
+         bridge_type == TEMPLATE_BRIDGE_1A ||
+         bridge_type == TEMPLATE_BRIDGE_1B ||
+         bridge_type == TEMPLATE_BRIDGE_2A ||
+         bridge_type == TEMPLATE_BRIDGE_2B ||
+         bridge_type == TEMPLATE_BRIDGE_3A ||
+         bridge_type == TEMPLATE_BRIDGE_3B ||
+         bridge_type == TEMPLATE_BRIDGE_3C ||
+         bridge_type == TEMPLATE_BRIDGE_3D ||
+         bridge_type == TEMPLATE_BRIDGE_3E || bridge_type == TEMPLATE_BRIDGE_3F;
 }
 
 /***********************************************************************************************

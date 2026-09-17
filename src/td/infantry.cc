@@ -581,6 +581,8 @@ ResultType InfantryClass::Take_Damage(int& damage, int distance,
         Sound_Effect(sound, Coord);
         Do_Action(DO_KICK_DEATH, true);
         break;
+      case WarheadType::WARHEAD_NONE:
+      case WarheadType::WARHEAD_COUNT:
       default:
         break;
     }
@@ -1236,6 +1238,15 @@ void InfantryClass::AI() {
       }
 #endif
       break;
+    case FireErrorType::FIRE_AMMO:
+    case FireErrorType::FIRE_FACING:
+    case FireErrorType::FIRE_REARM:
+    case FireErrorType::FIRE_ROTATING:
+    case FireErrorType::FIRE_ILLEGAL:
+    case FireErrorType::FIRE_CANT:
+    case FireErrorType::FIRE_MOVING:
+    case FireErrorType::FIRE_RANGE:
+    case FireErrorType::FIRE_BUSY:
     default:
       break;
   }
@@ -1275,6 +1286,35 @@ void InfantryClass::AI() {
 
   if (Doing == DO_NOTHING || Fetch_Stage() >= Class->DoControls[Doing].Count) {
     switch (Doing) {
+      case DoType::DO_NOTHING:
+      case DoType::DO_STAND_READY:
+      case DoType::DO_STAND_GUARD:
+      case DoType::DO_PRONE:
+      case DoType::DO_WALK:
+      case DoType::DO_FIRE_WEAPON:
+      case DoType::DO_LIE_DOWN:
+      case DoType::DO_CRAWL:
+      case DoType::DO_GET_UP:
+      case DoType::DO_FIRE_PRONE:
+      case DoType::DO_IDLE1:
+      case DoType::DO_IDLE2:
+      case DoType::DO_ON_GUARD:
+      case DoType::DO_FIGHT_READY:
+      case DoType::DO_PUNCH:
+      case DoType::DO_KICK:
+      case DoType::DO_PUNCH_HIT1:
+      case DoType::DO_PUNCH_HIT2:
+      case DoType::DO_KICK_HIT1:
+      case DoType::DO_KICK_HIT2:
+      case DoType::DO_READY_WEAPON:
+      case DoType::DO_GESTURE1:
+      case DoType::DO_SALUTE1:
+      case DoType::DO_GESTURE2:
+      case DoType::DO_SALUTE2:
+      case DoType::DO_PULL_GUN:
+      case DoType::DO_PLEAD:
+      case DoType::DO_PLEAD_DEATH:
+      case DoType::DO_COUNT:
       default:
         if (IsDriving) {
           if (IsProne) {
@@ -1716,6 +1756,27 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType /*unused*/) const {
           case RTTI_BUILDING:
             return MOVE_NO;
 
+          case RTTIType::RTTI_NONE:
+          case RTTIType::RTTI_INFANTRY:
+          case RTTIType::RTTI_INFANTRYTYPE:
+          case RTTIType::RTTI_UNITTYPE:
+          case RTTIType::RTTI_AIRCRAFTTYPE:
+          case RTTIType::RTTI_BUILDINGTYPE:
+          case RTTIType::RTTI_ABSTRACTTYPE:
+          case RTTIType::RTTI_ANIM:
+          case RTTIType::RTTI_ANIMTYPE:
+          case RTTIType::RTTI_BULLET:
+          case RTTIType::RTTI_BULLETTYPE:
+          case RTTIType::RTTI_OVERLAY:
+          case RTTIType::RTTI_OVERLAYTYPE:
+          case RTTIType::RTTI_SMUDGE:
+          case RTTIType::RTTI_SMUDGETYPE:
+          case RTTIType::RTTI_TEAM:
+          case RTTIType::RTTI_TEMPLATE:
+          case RTTIType::RTTI_TEMPLATETYPE:
+          case RTTIType::RTTI_TERRAINTYPE:
+          case RTTIType::RTTI_OBJECT:
+          case RTTIType::RTTI_SPECIAL:
           default:
             break;
         }
@@ -2218,6 +2279,38 @@ bool InfantryClass::Do_Action(DoType todo, bool force) {
         base::At(Path, 0) = FACING_NONE;
         break;
 
+      case DoType::DO_NOTHING:
+      case DoType::DO_STAND_READY:
+      case DoType::DO_STAND_GUARD:
+      case DoType::DO_PRONE:
+      case DoType::DO_WALK:
+      case DoType::DO_FIRE_WEAPON:
+      case DoType::DO_CRAWL:
+      case DoType::DO_FIRE_PRONE:
+      case DoType::DO_IDLE1:
+      case DoType::DO_IDLE2:
+      case DoType::DO_FIGHT_READY:
+      case DoType::DO_PUNCH:
+      case DoType::DO_KICK:
+      case DoType::DO_PUNCH_HIT1:
+      case DoType::DO_PUNCH_HIT2:
+      case DoType::DO_PUNCH_DEATH:
+      case DoType::DO_KICK_HIT1:
+      case DoType::DO_KICK_HIT2:
+      case DoType::DO_KICK_DEATH:
+      case DoType::DO_GUN_DEATH:
+      case DoType::DO_EXPLOSION_DEATH:
+      case DoType::DO_EXPLOSION2_DEATH:
+      case DoType::DO_GRENADE_DEATH:
+      case DoType::DO_FIRE_DEATH:
+      case DoType::DO_GESTURE1:
+      case DoType::DO_SALUTE1:
+      case DoType::DO_GESTURE2:
+      case DoType::DO_SALUTE2:
+      case DoType::DO_PULL_GUN:
+      case DoType::DO_PLEAD:
+      case DoType::DO_PLEAD_DEATH:
+      case DoType::DO_COUNT:
       default:
         break;
     }
@@ -2536,6 +2629,31 @@ TARGET InfantryClass::Greatest_Threat(ThreatType threat) const {
     **	Dragon missile equiped soldiers are also assumed to carry a Stinger
     *missile. As such, *	they will consider aircraft a legal target.
     */
+    case WeaponType::WEAPON_CHAIN_GUN:
+    case WeaponType::WEAPON_PISTOL:
+    case WeaponType::WEAPON_M16:
+    case WeaponType::WEAPON_DRAGON:
+    case WeaponType::WEAPON_FLAMETHROWER:
+    case WeaponType::WEAPON_FLAME_TONGUE:
+    case WeaponType::WEAPON_CHEMSPRAY:
+    case WeaponType::WEAPON_GRENADE:
+    case WeaponType::WEAPON_75MM:
+    case WeaponType::WEAPON_105MM:
+    case WeaponType::WEAPON_120MM:
+    case WeaponType::WEAPON_TURRET_GUN:
+    case WeaponType::WEAPON_MAMMOTH_TUSK:
+    case WeaponType::WEAPON_MLRS:
+    case WeaponType::WEAPON_155MM:
+    case WeaponType::WEAPON_M60MG:
+    case WeaponType::WEAPON_TOMAHAWK:
+    case WeaponType::WEAPON_TOW_TWO:
+    case WeaponType::WEAPON_NAPALM:
+    case WeaponType::WEAPON_OBELISK_LASER:
+    case WeaponType::WEAPON_NIKE:
+    case WeaponType::WEAPON_HONEST_JOHN:
+    case WeaponType::WEAPON_STEG:
+    case WeaponType::WEAPON_TREX:
+    case WeaponType::WEAPON_COUNT:
     default:
       if (Class->Primary != WEAPON_NONE &&
           BulletTypeClass::As_Reference(Weapons[Class->Primary].Fires)
@@ -2839,6 +2957,36 @@ RadioMessageType InfantryClass::Receive_Message(RadioClass* from,
         return RADIO_STATIC;
       }
       return RADIO_ROGER;
+    case RadioMessageType::RADIO_STATIC:
+    case RadioMessageType::RADIO_ROGER:
+    case RadioMessageType::RADIO_HELLO:
+    case RadioMessageType::RADIO_PICK_UP:
+    case RadioMessageType::RADIO_ATTACH:
+    case RadioMessageType::RADIO_DELIVERY:
+    case RadioMessageType::RADIO_HOLD_STILL:
+    case RadioMessageType::RADIO_UNLOADED:
+    case RadioMessageType::RADIO_UNLOAD:
+    case RadioMessageType::RADIO_NEGATIVE:
+    case RadioMessageType::RADIO_BUILDING:
+    case RadioMessageType::RADIO_COMPLETE:
+    case RadioMessageType::RADIO_REDRAW:
+    case RadioMessageType::RADIO_DOCKING:
+    case RadioMessageType::RADIO_CAN_LOAD:
+    case RadioMessageType::RADIO_ARE_REFINERY:
+    case RadioMessageType::RADIO_TRYING_TO_LOAD:
+    case RadioMessageType::RADIO_MOVE_HERE:
+    case RadioMessageType::RADIO_NEED_TO_MOVE:
+    case RadioMessageType::RADIO_YEA_NOW_WHAT:
+    case RadioMessageType::RADIO_IM_IN:
+    case RadioMessageType::RADIO_BACKUP_NOW:
+    case RadioMessageType::RADIO_RUN_AWAY:
+    case RadioMessageType::RADIO_TETHER:
+    case RadioMessageType::RADIO_UNTETHER:
+    case RadioMessageType::RADIO_REPAIR:
+    case RadioMessageType::RADIO_PREPARED:
+    case RadioMessageType::RADIO_ATTACK_THIS:
+    case RadioMessageType::RADIO_RELOAD:
+    case RadioMessageType::RADIO_COUNT:
     default:
       break;
   }
@@ -3166,6 +3314,24 @@ void InfantryClass::Active_Click_With(ActionType action, ObjectClass* object) {
         action = ACTION_MOVE;
         break;
 
+      case ActionType::ACTION_NONE:
+      case ActionType::ACTION_MOVE:
+      case ActionType::ACTION_NOMOVE:
+      case ActionType::ACTION_SELF:
+      case ActionType::ACTION_ATTACK:
+      case ActionType::ACTION_HARVEST:
+      case ActionType::ACTION_SELECT:
+      case ActionType::ACTION_TOGGLE_SELECT:
+      case ActionType::ACTION_REPAIR:
+      case ActionType::ACTION_SELL:
+      case ActionType::ACTION_SELL_UNIT:
+      case ActionType::ACTION_NO_SELL:
+      case ActionType::ACTION_NO_REPAIR:
+      case ActionType::ACTION_ION:
+      case ActionType::ACTION_NUKE_BOMB:
+      case ActionType::ACTION_AIR_STRIKE:
+      case ActionType::ACTION_GUARD_AREA:
+      case ActionType::ACTION_COUNT:
       default:
         action = ACTION_NONE;
         break;

@@ -1518,6 +1518,33 @@ bool SidebarClass::StripClass::AI(KeyNumType& input, int /*unused*/,
                       EventClass(EventClass::PLACE, pending->What_Am_I(), -1));
                   Speak(VOX_UNIT_READY);
                   break;
+                case RTTIType::RTTI_NONE:
+                case RTTIType::RTTI_AIRCRAFTTYPE:
+                case RTTIType::RTTI_ANIM:
+                case RTTIType::RTTI_ANIMTYPE:
+                case RTTIType::RTTI_BUILDINGTYPE:
+                case RTTIType::RTTI_BULLET:
+                case RTTIType::RTTI_BULLETTYPE:
+                case RTTIType::RTTI_CELL:
+                case RTTIType::RTTI_FACTORY:
+                case RTTIType::RTTI_HOUSE:
+                case RTTIType::RTTI_HOUSETYPE:
+                case RTTIType::RTTI_INFANTRYTYPE:
+                case RTTIType::RTTI_OVERLAY:
+                case RTTIType::RTTI_OVERLAYTYPE:
+                case RTTIType::RTTI_SMUDGE:
+                case RTTIType::RTTI_SMUDGETYPE:
+                case RTTIType::RTTI_SPECIAL:
+                case RTTIType::RTTI_TEAM:
+                case RTTIType::RTTI_TEAMTYPE:
+                case RTTIType::RTTI_TEMPLATE:
+                case RTTIType::RTTI_TEMPLATETYPE:
+                case RTTIType::RTTI_TERRAIN:
+                case RTTIType::RTTI_TERRAINTYPE:
+                case RTTIType::RTTI_TRIGGER:
+                case RTTIType::RTTI_TRIGGERTYPE:
+                case RTTIType::RTTI_UNITTYPE:
+                case RTTIType::RTTI_VESSELTYPE:
                 default:
                   break;
               }

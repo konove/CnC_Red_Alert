@@ -1831,6 +1831,7 @@ void WOL_GameSetupDialog::BindControls(bool bBind) {
           pShpBtnScenarioUser->Add_Tail(*commands);
           pShpBtnScenarioUser->DRAWTABUP;
           break;
+        case SCENARIO_GAMEKIND::SCENARIO_UNINITIALIZED:
         default:
           break;
       }
@@ -2278,6 +2279,13 @@ void WOL_GameSetupDialog::ProcessGuestRequest(User* pUser,
       // message.)
       port::SafeCopy(szTriggerGameStartInfo, szRequest);
       break;
+    case WOL_GAMEOPT::WOL_GAMEOPT_INFCOLOR:
+    case WOL_GAMEOPT::WOL_GAMEOPT_INFPARAMS:
+    case WOL_GAMEOPT::WOL_GAMEOPT_INFHOUSE:
+    case WOL_GAMEOPT::WOL_GAMEOPT_INFACCEPT:
+    case WOL_GAMEOPT::WOL_GAMEOPT_INFSTART:
+    case WOL_GAMEOPT::WOL_GAMEOPT_INFCANCELSTART:
+    case WOL_GAMEOPT::WOL_GAMEOPT_INFNEWGUESTPLAYERINFO:
     default:
       //		debugprint( "Unhandled value of %i in
       // ProcessGuestRequest!!!\n", opt );
@@ -2466,6 +2474,11 @@ void WOL_GameSetupDialog::ProcessInform(char* inform_data) {
           cancel_current_msgbox = true;
         }
         break;
+      case WOL_GAMEOPT::WOL_GAMEOPT_REQCOLOR:
+      case WOL_GAMEOPT::WOL_GAMEOPT_REQHOUSE:
+      case WOL_GAMEOPT::WOL_GAMEOPT_REQACCEPT:
+      case WOL_GAMEOPT::WOL_GAMEOPT_REQSTART:
+      case WOL_GAMEOPT::WOL_GAMEOPT_REQSTART_BUTNEEDSCENARIO:
       default:
         //			debugprint( "Unhandled value of %i in
         // ProcessInform!!!\n", opt ); WOL_PrintMessage( *pILDisc, "Error -

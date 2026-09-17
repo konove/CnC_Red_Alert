@@ -1289,6 +1289,27 @@ void UnitTypeClass::Turret_Adjust(DirType dir, int& x, int& y) const {
       y += base::At(_adjust, index).Y;
       break;
 
+    case UnitType::UNIT_NONE:
+    case UnitType::UNIT_HTANK:
+    case UnitType::UNIT_MTANK:
+    case UnitType::UNIT_MTANK2:
+    case UnitType::UNIT_LTANK:
+    case UnitType::UNIT_APC:
+    case UnitType::UNIT_MINELAYER:
+    case UnitType::UNIT_HARVESTER:
+    case UnitType::UNIT_ARTY:
+    case UnitType::UNIT_MRJ:
+    case UnitType::UNIT_MCV:
+    case UnitType::UNIT_V2_LAUNCHER:
+    case UnitType::UNIT_TRUCK:
+    case UnitType::UNIT_ANT1:
+    case UnitType::UNIT_ANT2:
+    case UnitType::UNIT_ANT3:
+    case UnitType::UNIT_CHRONOTANK:
+    case UnitType::UNIT_TESLATANK:
+    case UnitType::UNIT_MAD:
+    case UnitType::UNIT_DEMOTRUCK:
+    case UnitType::UNIT_PHASE:
     default:
       break;
   }

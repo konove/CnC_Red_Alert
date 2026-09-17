@@ -2051,18 +2051,15 @@ bool MapClass::Destroy_Bridge_At(CELL cell) {
 
       cell = static_cast<CELL>(cell - (icon % w));
       cell = static_cast<CELL>(cell - (MAP_CELL_W * (icon / w)));
-      switch (ttype) {
-        case TEMPLATE_BRIDGE_1A:
-        case TEMPLATE_BRIDGE_1B:
-        case TEMPLATE_BRIDGE_2A:
-        case TEMPLATE_BRIDGE_2B:
-        case TEMPLATE_BRIDGE_3A:
-        case TEMPLATE_BRIDGE_3B:
-          ttype++;
-          new TemplateClass(ttype, cell);
-          break;
-        default:
-          break;
+      const TemplateType damaged_type = ttype;
+      if (damaged_type == TEMPLATE_BRIDGE_1A ||
+          damaged_type == TEMPLATE_BRIDGE_1B ||
+          damaged_type == TEMPLATE_BRIDGE_2A ||
+          damaged_type == TEMPLATE_BRIDGE_2B ||
+          damaged_type == TEMPLATE_BRIDGE_3A ||
+          damaged_type == TEMPLATE_BRIDGE_3B) {
+        ttype++;
+        new TemplateClass(ttype, cell);
       }
 
       /*
@@ -2109,37 +2106,29 @@ bool MapClass::Destroy_Bridge_At(CELL cell) {
 
         // Point to the template below us, x-1, y+2
         const CELL cell2 = static_cast<CELL>(cell + (MAP_CELL_W * 2) - 1);
-        switch ((*this)[cell2].TType) {
-          case TEMPLATE_BRIDGE_3A:
-          case TEMPLATE_BRIDGE_3B:
-          case TEMPLATE_BRIDGE_3C:
-            new TemplateClass(static_cast<TemplateType>(TEMPLATE_BRIDGE_3E),
-                              cell2);
-            break;
-          case TEMPLATE_BRIDGE_3D:
-            new TemplateClass(static_cast<TemplateType>(TEMPLATE_BRIDGE_3F),
-                              cell2);
-            break;
-          default:
-            break;
+        const TemplateType bridge_type = (*this)[cell2].TType;
+        if (bridge_type == TEMPLATE_BRIDGE_3A ||
+            bridge_type == TEMPLATE_BRIDGE_3B ||
+            bridge_type == TEMPLATE_BRIDGE_3C) {
+          new TemplateClass(static_cast<TemplateType>(TEMPLATE_BRIDGE_3E),
+                            cell2);
+        } else if (bridge_type == TEMPLATE_BRIDGE_3D) {
+          new TemplateClass(static_cast<TemplateType>(TEMPLATE_BRIDGE_3F),
+                            cell2);
         }
       } else {
         if (cellptr->TType == TEMPLATE_BRIDGE_2C) {
           // Point to the template above us, x+2, y-1
           const CELL cell2 = static_cast<CELL>(cell - (MAP_CELL_W - 2));
-          switch ((*this)[cell2].TType) {
-            case TEMPLATE_BRIDGE_3A:
-            case TEMPLATE_BRIDGE_3B:
-            case TEMPLATE_BRIDGE_3C:
-              new TemplateClass(static_cast<TemplateType>(TEMPLATE_BRIDGE_3D),
-                                cell2);
-              break;
-            case TEMPLATE_BRIDGE_3E:
-              new TemplateClass(static_cast<TemplateType>(TEMPLATE_BRIDGE_3F),
-                                cell2);
-              break;
-            default:
-              break;
+          const TemplateType bridge_type = (*this)[cell2].TType;
+          if (bridge_type == TEMPLATE_BRIDGE_3A ||
+              bridge_type == TEMPLATE_BRIDGE_3B ||
+              bridge_type == TEMPLATE_BRIDGE_3C) {
+            new TemplateClass(static_cast<TemplateType>(TEMPLATE_BRIDGE_3D),
+                              cell2);
+          } else if (bridge_type == TEMPLATE_BRIDGE_3E) {
+            new TemplateClass(static_cast<TemplateType>(TEMPLATE_BRIDGE_3F),
+                              cell2);
           }
         }
       }
@@ -2239,20 +2228,13 @@ int MapClass::Intact_Bridge_Count() const {
   */
   int count = 0;
   for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
-    switch (Array[cell].TType) {
-      case TEMPLATE_BRIDGE1:
-      case TEMPLATE_BRIDGE1H:
-      case TEMPLATE_BRIDGE2:
-      case TEMPLATE_BRIDGE2H:
-      case TEMPLATE_BRIDGE_1A:
-      case TEMPLATE_BRIDGE_1B:
-        if (Array[cell].TIcon == 6) {
-          count++;
-        }
-        break;
-
-      default:
-        break;
+    const TemplateType bridge_type = Array[cell].TType;
+    if ((bridge_type == TEMPLATE_BRIDGE1 || bridge_type == TEMPLATE_BRIDGE1H ||
+         bridge_type == TEMPLATE_BRIDGE2 || bridge_type == TEMPLATE_BRIDGE2H ||
+         bridge_type == TEMPLATE_BRIDGE_1A ||
+         bridge_type == TEMPLATE_BRIDGE_1B) &&
+        Array[cell].TIcon == 6) {
+      count++;
     }
   }
 

@@ -1168,20 +1168,16 @@ void MapClass::Logic() {
                 newcell->Overlay == OVERLAY_NONE) {
               bool found = false;
 
-              switch (newcell->TType) {
-                case TEMPLATE_BRIDGE1:
-                case TEMPLATE_BRIDGE2:
-                case TEMPLATE_BRIDGE3:
-                case TEMPLATE_BRIDGE4:
-                  break;
-
-                default:
-                  found = true;
-                  new OverlayClass(
-                      Random_Pick(OVERLAY_TIBERIUM1, OVERLAY_TIBERIUM12),
-                      newcell->Cell_Number());
-                  newcell->OverlayData = 1;
-                  break;
+              const TemplateType bridge_type = newcell->TType;
+              if (bridge_type != TEMPLATE_BRIDGE1 &&
+                  bridge_type != TEMPLATE_BRIDGE2 &&
+                  bridge_type != TEMPLATE_BRIDGE3 &&
+                  bridge_type != TEMPLATE_BRIDGE4) {
+                found = true;
+                new OverlayClass(
+                    Random_Pick(OVERLAY_TIBERIUM1, OVERLAY_TIBERIUM12),
+                    newcell->Cell_Number());
+                newcell->OverlayData = 1;
               }
               if (found) {
                 break;

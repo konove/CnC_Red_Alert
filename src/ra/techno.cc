@@ -1155,6 +1155,30 @@ RadioMessageType TechnoClass::Receive_Message(RadioClass* from,
       }
       return RADIO_NEGATIVE;
 
+    case RadioMessageType::RADIO_STATIC:
+    case RadioMessageType::RADIO_ROGER:
+    case RadioMessageType::RADIO_HELLO:
+    case RadioMessageType::RADIO_PICK_UP:
+    case RadioMessageType::RADIO_ATTACH:
+    case RadioMessageType::RADIO_DELIVERY:
+    case RadioMessageType::RADIO_NEGATIVE:
+    case RadioMessageType::RADIO_BUILDING:
+    case RadioMessageType::RADIO_COMPLETE:
+    case RadioMessageType::RADIO_REDRAW:
+    case RadioMessageType::RADIO_DOCKING:
+    case RadioMessageType::RADIO_CAN_LOAD:
+    case RadioMessageType::RADIO_ARE_REFINERY:
+    case RadioMessageType::RADIO_TRYING_TO_LOAD:
+    case RadioMessageType::RADIO_MOVE_HERE:
+    case RadioMessageType::RADIO_NEED_TO_MOVE:
+    case RadioMessageType::RADIO_YEA_NOW_WHAT:
+    case RadioMessageType::RADIO_IM_IN:
+    case RadioMessageType::RADIO_RUN_AWAY:
+    case RadioMessageType::RADIO_PREPARED:
+    case RadioMessageType::RADIO_CANT:
+    case RadioMessageType::RADIO_ALL_DONE:
+    case RadioMessageType::RADIO_NEED_REPAIR:
+    case RadioMessageType::RADIO_ON_DEPOT:
     default:
       break;
   }
@@ -1806,6 +1830,36 @@ bool TechnoClass::Evaluate_Object(ThreatType method, uint32_t mask, int range,
         }
         break;
 
+      case RTTIType::RTTI_NONE:
+      case RTTIType::RTTI_AIRCRAFT:
+      case RTTIType::RTTI_AIRCRAFTTYPE:
+      case RTTIType::RTTI_ANIM:
+      case RTTIType::RTTI_ANIMTYPE:
+      case RTTIType::RTTI_BUILDINGTYPE:
+      case RTTIType::RTTI_BULLET:
+      case RTTIType::RTTI_BULLETTYPE:
+      case RTTIType::RTTI_CELL:
+      case RTTIType::RTTI_FACTORY:
+      case RTTIType::RTTI_HOUSE:
+      case RTTIType::RTTI_HOUSETYPE:
+      case RTTIType::RTTI_INFANTRY:
+      case RTTIType::RTTI_INFANTRYTYPE:
+      case RTTIType::RTTI_OVERLAY:
+      case RTTIType::RTTI_OVERLAYTYPE:
+      case RTTIType::RTTI_SMUDGE:
+      case RTTIType::RTTI_SMUDGETYPE:
+      case RTTIType::RTTI_SPECIAL:
+      case RTTIType::RTTI_TEAM:
+      case RTTIType::RTTI_TEAMTYPE:
+      case RTTIType::RTTI_TEMPLATE:
+      case RTTIType::RTTI_TEMPLATETYPE:
+      case RTTIType::RTTI_TERRAIN:
+      case RTTIType::RTTI_TERRAINTYPE:
+      case RTTIType::RTTI_TRIGGER:
+      case RTTIType::RTTI_TRIGGERTYPE:
+      case RTTIType::RTTI_UNITTYPE:
+      case RTTIType::RTTI_VESSEL:
+      case RTTIType::RTTI_VESSELTYPE:
       default:
         BEnd(BENCH_EVAL_OBJECT);
         return false;
@@ -1855,6 +1909,89 @@ bool TechnoClass::Evaluate_Object(ThreatType method, uint32_t mask, int range,
       /*
       **	Ignore all non-fake buildings.
       */
+      case StructType::STRUCT_NONE:
+      case StructType::STRUCT_ADVANCED_TECH:
+      case StructType::STRUCT_IRON_CURTAIN:
+      case StructType::STRUCT_WEAP:
+      case StructType::STRUCT_CHRONOSPHERE:
+      case StructType::STRUCT_PILLBOX:
+      case StructType::STRUCT_CAMOPILLBOX:
+      case StructType::STRUCT_RADAR:
+      case StructType::STRUCT_GAP:
+      case StructType::STRUCT_TURRET:
+      case StructType::STRUCT_AAGUN:
+      case StructType::STRUCT_FLAME_TURRET:
+      case StructType::STRUCT_CONST:
+      case StructType::STRUCT_REFINERY:
+      case StructType::STRUCT_STORAGE:
+      case StructType::STRUCT_HELIPAD:
+      case StructType::STRUCT_SAM:
+      case StructType::STRUCT_AIRSTRIP:
+      case StructType::STRUCT_POWER:
+      case StructType::STRUCT_ADVANCED_POWER:
+      case StructType::STRUCT_SOVIET_TECH:
+      case StructType::STRUCT_HOSPITAL:
+      case StructType::STRUCT_BARRACKS:
+      case StructType::STRUCT_TENT:
+      case StructType::STRUCT_KENNEL:
+      case StructType::STRUCT_REPAIR:
+      case StructType::STRUCT_BIO_LAB:
+      case StructType::STRUCT_MISSION:
+      case StructType::STRUCT_SHIP_YARD:
+      case StructType::STRUCT_SUB_PEN:
+      case StructType::STRUCT_MSLO:
+      case StructType::STRUCT_FORWARD_COM:
+      case StructType::STRUCT_TESLA:
+      case StructType::STRUCT_SANDBAG_WALL:
+      case StructType::STRUCT_CYCLONE_WALL:
+      case StructType::STRUCT_BRICK_WALL:
+      case StructType::STRUCT_BARBWIRE_WALL:
+      case StructType::STRUCT_WOOD_WALL:
+      case StructType::STRUCT_FENCE:
+      case StructType::STRUCT_AVMINE:
+      case StructType::STRUCT_APMINE:
+      case StructType::STRUCT_V01:
+      case StructType::STRUCT_V02:
+      case StructType::STRUCT_V03:
+      case StructType::STRUCT_V04:
+      case StructType::STRUCT_V05:
+      case StructType::STRUCT_V06:
+      case StructType::STRUCT_V07:
+      case StructType::STRUCT_V08:
+      case StructType::STRUCT_V09:
+      case StructType::STRUCT_V10:
+      case StructType::STRUCT_V11:
+      case StructType::STRUCT_V12:
+      case StructType::STRUCT_V13:
+      case StructType::STRUCT_V14:
+      case StructType::STRUCT_V15:
+      case StructType::STRUCT_V16:
+      case StructType::STRUCT_V17:
+      case StructType::STRUCT_V18:
+      case StructType::STRUCT_PUMP:
+      case StructType::STRUCT_V20:
+      case StructType::STRUCT_V21:
+      case StructType::STRUCT_V22:
+      case StructType::STRUCT_V23:
+      case StructType::STRUCT_V24:
+      case StructType::STRUCT_V25:
+      case StructType::STRUCT_V26:
+      case StructType::STRUCT_V27:
+      case StructType::STRUCT_V28:
+      case StructType::STRUCT_V29:
+      case StructType::STRUCT_V30:
+      case StructType::STRUCT_V31:
+      case StructType::STRUCT_V32:
+      case StructType::STRUCT_V33:
+      case StructType::STRUCT_V34:
+      case StructType::STRUCT_V35:
+      case StructType::STRUCT_V36:
+      case StructType::STRUCT_V37:
+      case StructType::STRUCT_BARREL:
+      case StructType::STRUCT_BARREL3:
+      case StructType::STRUCT_QUEEN:
+      case StructType::STRUCT_LARVA1:
+      case StructType::STRUCT_LARVA2:
       default:
         value = 0;
         break;
@@ -2726,6 +2863,10 @@ void TechnoClass::Cloaking_AI() {
                 Scatter(0, true);
               }
               break;
+            case VisualType::VISUAL_NORMAL:
+            case VisualType::VISUAL_INDISTINCT:
+            case VisualType::VISUAL_SHADOWY:
+            case VisualType::VISUAL_RIPPLE:
             default:
               break;
           }
@@ -2744,6 +2885,7 @@ void TechnoClass::Cloaking_AI() {
           }
 #endif
           break;
+        case CloakType::UNCLOAKED:
         default:
           break;
       }
@@ -3345,6 +3487,85 @@ BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
             static_cast<int>(ANIM_SAM_N) +
             static_cast<int>(Dir_Facing(PrimaryFacing.Current())));
         break;
+      case AnimType::ANIM_NONE:
+      case AnimType::ANIM_FBALL1:
+      case AnimType::ANIM_FBALL_FADE:
+      case AnimType::ANIM_FRAG1:
+      case AnimType::ANIM_VEH_HIT1:
+      case AnimType::ANIM_VEH_HIT2:
+      case AnimType::ANIM_VEH_HIT3:
+      case AnimType::ANIM_ART_EXP1:
+      case AnimType::ANIM_NAPALM1:
+      case AnimType::ANIM_NAPALM2:
+      case AnimType::ANIM_NAPALM3:
+      case AnimType::ANIM_SMOKE_PUFF:
+      case AnimType::ANIM_PIFF:
+      case AnimType::ANIM_PIFFPIFF:
+      case AnimType::ANIM_FIRE_SMALL:
+      case AnimType::ANIM_FIRE_MED:
+      case AnimType::ANIM_FIRE_MED2:
+      case AnimType::ANIM_FIRE_TINY:
+      case AnimType::ANIM_MUZZLE_FLASH:
+      case AnimType::ANIM_SMOKE_M:
+      case AnimType::ANIM_BURN_SMALL:
+      case AnimType::ANIM_BURN_MED:
+      case AnimType::ANIM_BURN_BIG:
+      case AnimType::ANIM_ON_FIRE_SMALL:
+      case AnimType::ANIM_ON_FIRE_MED:
+      case AnimType::ANIM_ON_FIRE_BIG:
+      case AnimType::ANIM_SAM_NE:
+      case AnimType::ANIM_SAM_E:
+      case AnimType::ANIM_SAM_SE:
+      case AnimType::ANIM_SAM_S:
+      case AnimType::ANIM_SAM_SW:
+      case AnimType::ANIM_SAM_W:
+      case AnimType::ANIM_SAM_NW:
+      case AnimType::ANIM_GUN_NE:
+      case AnimType::ANIM_GUN_E:
+      case AnimType::ANIM_GUN_SE:
+      case AnimType::ANIM_GUN_S:
+      case AnimType::ANIM_GUN_SW:
+      case AnimType::ANIM_GUN_W:
+      case AnimType::ANIM_GUN_NW:
+      case AnimType::ANIM_LZ_SMOKE:
+      case AnimType::ANIM_CRATE_DEVIATOR:
+      case AnimType::ANIM_CRATE_DOLLAR:
+      case AnimType::ANIM_CRATE_EARTH:
+      case AnimType::ANIM_CRATE_EMPULSE:
+      case AnimType::ANIM_CRATE_INVUN:
+      case AnimType::ANIM_CRATE_MINE:
+      case AnimType::ANIM_CRATE_RAPID:
+      case AnimType::ANIM_CRATE_STEALTH:
+      case AnimType::ANIM_CRATE_MISSILE:
+      case AnimType::ANIM_MOVE_FLASH:
+      case AnimType::ANIM_OILFIELD_BURN:
+      case AnimType::ANIM_ELECT_DIE:
+      case AnimType::ANIM_PARACHUTE:
+      case AnimType::ANIM_DOG_ELECT_DIE:
+      case AnimType::ANIM_CORPSE1:
+      case AnimType::ANIM_CORPSE2:
+      case AnimType::ANIM_CORPSE3:
+      case AnimType::ANIM_SPUTDOOR:
+      case AnimType::ANIM_ATOM_BLAST:
+      case AnimType::ANIM_CHRONO_BOX:
+      case AnimType::ANIM_GPS_BOX:
+      case AnimType::ANIM_INVUL_BOX:
+      case AnimType::ANIM_PARA_BOX:
+      case AnimType::ANIM_SONAR_BOX:
+      case AnimType::ANIM_TWINKLE1:
+      case AnimType::ANIM_TWINKLE2:
+      case AnimType::ANIM_TWINKLE3:
+      case AnimType::ANIM_FLAK:
+      case AnimType::ANIM_WATER_EXP1:
+      case AnimType::ANIM_WATER_EXP2:
+      case AnimType::ANIM_WATER_EXP3:
+      case AnimType::ANIM_CRATE_ARMOR:
+      case AnimType::ANIM_CRATE_SPEED:
+      case AnimType::ANIM_CRATE_FPOWER:
+      case AnimType::ANIM_CRATE_TQUAKE:
+      case AnimType::ANIM_PARA_BOMB:
+      case AnimType::ANIM_MINE_EXP1:
+      case AnimType::ANIM_ANT_DEATH:
       default:
         break;
     }
@@ -3976,6 +4197,33 @@ bool TechnoClass::Captured(HouseClass* newowner) {
         newowner->UnitsKilled[Owner()]++;
         break;
 
+      case RTTIType::RTTI_NONE:
+      case RTTIType::RTTI_AIRCRAFTTYPE:
+      case RTTIType::RTTI_ANIM:
+      case RTTIType::RTTI_ANIMTYPE:
+      case RTTIType::RTTI_BUILDINGTYPE:
+      case RTTIType::RTTI_BULLET:
+      case RTTIType::RTTI_BULLETTYPE:
+      case RTTIType::RTTI_CELL:
+      case RTTIType::RTTI_FACTORY:
+      case RTTIType::RTTI_HOUSE:
+      case RTTIType::RTTI_HOUSETYPE:
+      case RTTIType::RTTI_INFANTRYTYPE:
+      case RTTIType::RTTI_OVERLAY:
+      case RTTIType::RTTI_OVERLAYTYPE:
+      case RTTIType::RTTI_SMUDGE:
+      case RTTIType::RTTI_SMUDGETYPE:
+      case RTTIType::RTTI_SPECIAL:
+      case RTTIType::RTTI_TEAM:
+      case RTTIType::RTTI_TEAMTYPE:
+      case RTTIType::RTTI_TEMPLATE:
+      case RTTIType::RTTI_TEMPLATETYPE:
+      case RTTIType::RTTI_TERRAIN:
+      case RTTIType::RTTI_TERRAINTYPE:
+      case RTTIType::RTTI_TRIGGER:
+      case RTTIType::RTTI_TRIGGERTYPE:
+      case RTTIType::RTTI_UNITTYPE:
+      case RTTIType::RTTI_VESSELTYPE:
       default:
         break;
     }
@@ -4081,6 +4329,9 @@ ResultType TechnoClass::Take_Damage(int& damage, int distance,
     **	If some damage was received and this object is cloaked, shimmer
     **	the cloak a bit.
     */
+    case ResultType::RESULT_LIGHT:
+    case ResultType::RESULT_HALF:
+    case ResultType::RESULT_MAJOR:
     default:
       if (source != nullptr && !House->Is_Ally(source)) {
         IsTickedOff = true;
@@ -4221,6 +4472,33 @@ void TechnoClass::Record_The_Kill(TechnoClass* source) {
       }
       break;
 
+    case RTTIType::RTTI_NONE:
+    case RTTIType::RTTI_AIRCRAFTTYPE:
+    case RTTIType::RTTI_ANIM:
+    case RTTIType::RTTI_ANIMTYPE:
+    case RTTIType::RTTI_BUILDINGTYPE:
+    case RTTIType::RTTI_BULLET:
+    case RTTIType::RTTI_BULLETTYPE:
+    case RTTIType::RTTI_CELL:
+    case RTTIType::RTTI_FACTORY:
+    case RTTIType::RTTI_HOUSE:
+    case RTTIType::RTTI_HOUSETYPE:
+    case RTTIType::RTTI_INFANTRYTYPE:
+    case RTTIType::RTTI_OVERLAY:
+    case RTTIType::RTTI_OVERLAYTYPE:
+    case RTTIType::RTTI_SMUDGE:
+    case RTTIType::RTTI_SMUDGETYPE:
+    case RTTIType::RTTI_SPECIAL:
+    case RTTIType::RTTI_TEAM:
+    case RTTIType::RTTI_TEAMTYPE:
+    case RTTIType::RTTI_TEMPLATE:
+    case RTTIType::RTTI_TEMPLATETYPE:
+    case RTTIType::RTTI_TERRAIN:
+    case RTTIType::RTTI_TERRAINTYPE:
+    case RTTIType::RTTI_TRIGGER:
+    case RTTIType::RTTI_TRIGGERTYPE:
+    case RTTIType::RTTI_UNITTYPE:
+    case RTTIType::RTTI_VESSELTYPE:
     default:
       break;
   }

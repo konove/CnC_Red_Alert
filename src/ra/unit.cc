@@ -706,6 +706,14 @@ void UnitClass::Firing_AI() {
         Mark(MARK_OVERLAP_DOWN);
         Do_Uncloak();
         break;
+      case FireErrorType::FIRE_AMMO:
+      case FireErrorType::FIRE_REARM:
+      case FireErrorType::FIRE_ROTATING:
+      case FireErrorType::FIRE_ILLEGAL:
+      case FireErrorType::FIRE_CANT:
+      case FireErrorType::FIRE_MOVING:
+      case FireErrorType::FIRE_RANGE:
+      case FireErrorType::FIRE_BUSY:
       default:
         break;
     }
@@ -915,6 +923,34 @@ RadioMessageType UnitClass::Receive_Message(RadioClass* from,
       }
       DriveClass::Receive_Message(from, message, param);
       return RADIO_ROGER;
+    case RadioMessageType::RADIO_STATIC:
+    case RadioMessageType::RADIO_ROGER:
+    case RadioMessageType::RADIO_HELLO:
+    case RadioMessageType::RADIO_PICK_UP:
+    case RadioMessageType::RADIO_ATTACH:
+    case RadioMessageType::RADIO_DELIVERY:
+    case RadioMessageType::RADIO_HOLD_STILL:
+    case RadioMessageType::RADIO_UNLOADED:
+    case RadioMessageType::RADIO_UNLOAD:
+    case RadioMessageType::RADIO_NEGATIVE:
+    case RadioMessageType::RADIO_BUILDING:
+    case RadioMessageType::RADIO_COMPLETE:
+    case RadioMessageType::RADIO_REDRAW:
+    case RadioMessageType::RADIO_ARE_REFINERY:
+    case RadioMessageType::RADIO_TRYING_TO_LOAD:
+    case RadioMessageType::RADIO_MOVE_HERE:
+    case RadioMessageType::RADIO_NEED_TO_MOVE:
+    case RadioMessageType::RADIO_YEA_NOW_WHAT:
+    case RadioMessageType::RADIO_RUN_AWAY:
+    case RadioMessageType::RADIO_TETHER:
+    case RadioMessageType::RADIO_UNTETHER:
+    case RadioMessageType::RADIO_REPAIR:
+    case RadioMessageType::RADIO_PREPARED:
+    case RadioMessageType::RADIO_ATTACK_THIS:
+    case RadioMessageType::RADIO_RELOAD:
+    case RadioMessageType::RADIO_CANT:
+    case RadioMessageType::RADIO_ALL_DONE:
+    case RadioMessageType::RADIO_ON_DEPOT:
     default:
       break;
   }
@@ -1236,6 +1272,35 @@ void UnitClass::Active_Click_With(ActionType action, ObjectClass* object) {
         action = ACTION_MOVE;
         break;
 
+      case ActionType::ACTION_NONE:
+      case ActionType::ACTION_MOVE:
+      case ActionType::ACTION_NOMOVE:
+      case ActionType::ACTION_SELF:
+      case ActionType::ACTION_ATTACK:
+      case ActionType::ACTION_HARVEST:
+      case ActionType::ACTION_SELECT:
+      case ActionType::ACTION_TOGGLE_SELECT:
+      case ActionType::ACTION_REPAIR:
+      case ActionType::ACTION_SELL:
+      case ActionType::ACTION_SELL_UNIT:
+      case ActionType::ACTION_NO_SELL:
+      case ActionType::ACTION_NO_REPAIR:
+      case ActionType::ACTION_PARA_BOMB:
+      case ActionType::ACTION_PARA_INFANTRY:
+      case ActionType::ACTION_PARA_SABOTEUR:
+      case ActionType::ACTION_NUKE_BOMB:
+      case ActionType::ACTION_AIR_STRIKE:
+      case ActionType::ACTION_CHRONOSPHERE:
+      case ActionType::ACTION_CHRONO2:
+      case ActionType::ACTION_IRON_CURTAIN:
+      case ActionType::ACTION_SPY_MISSION:
+      case ActionType::ACTION_GUARD_AREA:
+      case ActionType::ACTION_HEAL:
+      case ActionType::ACTION_DAMAGE:
+      case ActionType::ACTION_GREPAIR:
+      case ActionType::ACTION_NO_DEPLOY:
+      case ActionType::ACTION_NO_ENTER:
+      case ActionType::ACTION_NO_GREPAIR:
       default:
         break;
     }
@@ -1641,6 +1706,38 @@ void UnitClass::Per_Cell_Process(PCPType why) {
         case RADIO_ATTACH:
           break;
 
+        case RadioMessageType::RADIO_STATIC:
+        case RadioMessageType::RADIO_HELLO:
+        case RadioMessageType::RADIO_OVER_OUT:
+        case RadioMessageType::RADIO_PICK_UP:
+        case RadioMessageType::RADIO_DELIVERY:
+        case RadioMessageType::RADIO_HOLD_STILL:
+        case RadioMessageType::RADIO_UNLOADED:
+        case RadioMessageType::RADIO_UNLOAD:
+        case RadioMessageType::RADIO_NEGATIVE:
+        case RadioMessageType::RADIO_BUILDING:
+        case RadioMessageType::RADIO_COMPLETE:
+        case RadioMessageType::RADIO_REDRAW:
+        case RadioMessageType::RADIO_DOCKING:
+        case RadioMessageType::RADIO_CAN_LOAD:
+        case RadioMessageType::RADIO_ARE_REFINERY:
+        case RadioMessageType::RADIO_TRYING_TO_LOAD:
+        case RadioMessageType::RADIO_MOVE_HERE:
+        case RadioMessageType::RADIO_NEED_TO_MOVE:
+        case RadioMessageType::RADIO_YEA_NOW_WHAT:
+        case RadioMessageType::RADIO_IM_IN:
+        case RadioMessageType::RADIO_BACKUP_NOW:
+        case RadioMessageType::RADIO_RUN_AWAY:
+        case RadioMessageType::RADIO_TETHER:
+        case RadioMessageType::RADIO_UNTETHER:
+        case RadioMessageType::RADIO_REPAIR:
+        case RadioMessageType::RADIO_PREPARED:
+        case RadioMessageType::RADIO_ATTACK_THIS:
+        case RadioMessageType::RADIO_RELOAD:
+        case RadioMessageType::RADIO_CANT:
+        case RadioMessageType::RADIO_ALL_DONE:
+        case RadioMessageType::RADIO_NEED_REPAIR:
+        case RadioMessageType::RADIO_ON_DEPOT:
         default:
           Scatter(0, true);
           break;
@@ -2310,6 +2407,24 @@ bool UnitClass::Harvesting() {
         }
         break;
 
+      case OverlayType::OVERLAY_NONE:
+      case OverlayType::OVERLAY_SANDBAG_WALL:
+      case OverlayType::OVERLAY_CYCLONE_WALL:
+      case OverlayType::OVERLAY_BRICK_WALL:
+      case OverlayType::OVERLAY_BARBWIRE_WALL:
+      case OverlayType::OVERLAY_WOOD_WALL:
+      case OverlayType::OVERLAY_V12:
+      case OverlayType::OVERLAY_V13:
+      case OverlayType::OVERLAY_V14:
+      case OverlayType::OVERLAY_V15:
+      case OverlayType::OVERLAY_V16:
+      case OverlayType::OVERLAY_V17:
+      case OverlayType::OVERLAY_V18:
+      case OverlayType::OVERLAY_FLAG_SPOT:
+      case OverlayType::OVERLAY_WOOD_CRATE:
+      case OverlayType::OVERLAY_STEEL_CRATE:
+      case OverlayType::OVERLAY_FENCE:
+      case OverlayType::OVERLAY_WATER_CRATE:
       default:
         break;
     }
@@ -2728,6 +2843,21 @@ int UnitClass::Mission_Unload() {
 
       Assign_Mission(MISSION_GUARD);
       break;
+    case UnitType::UNIT_NONE:
+    case UnitType::UNIT_HTANK:
+    case UnitType::UNIT_MTANK:
+    case UnitType::UNIT_MTANK2:
+    case UnitType::UNIT_LTANK:
+    case UnitType::UNIT_JEEP:
+    case UnitType::UNIT_ARTY:
+    case UnitType::UNIT_MRJ:
+    case UnitType::UNIT_MGG:
+    case UnitType::UNIT_V2_LAUNCHER:
+    case UnitType::UNIT_ANT1:
+    case UnitType::UNIT_ANT2:
+    case UnitType::UNIT_ANT3:
+    case UnitType::UNIT_TESLATANK:
+    case UnitType::UNIT_DEMOTRUCK:
     default:
       break;
   }
@@ -3496,6 +3626,38 @@ ActionType UnitClass::What_Action(ObjectClass* object) {
           action = ACTION_NO_ENTER;
           break;
 
+        case RadioMessageType::RADIO_STATIC:
+        case RadioMessageType::RADIO_HELLO:
+        case RadioMessageType::RADIO_OVER_OUT:
+        case RadioMessageType::RADIO_PICK_UP:
+        case RadioMessageType::RADIO_ATTACH:
+        case RadioMessageType::RADIO_DELIVERY:
+        case RadioMessageType::RADIO_HOLD_STILL:
+        case RadioMessageType::RADIO_UNLOADED:
+        case RadioMessageType::RADIO_UNLOAD:
+        case RadioMessageType::RADIO_BUILDING:
+        case RadioMessageType::RADIO_COMPLETE:
+        case RadioMessageType::RADIO_REDRAW:
+        case RadioMessageType::RADIO_DOCKING:
+        case RadioMessageType::RADIO_CAN_LOAD:
+        case RadioMessageType::RADIO_ARE_REFINERY:
+        case RadioMessageType::RADIO_TRYING_TO_LOAD:
+        case RadioMessageType::RADIO_MOVE_HERE:
+        case RadioMessageType::RADIO_NEED_TO_MOVE:
+        case RadioMessageType::RADIO_YEA_NOW_WHAT:
+        case RadioMessageType::RADIO_IM_IN:
+        case RadioMessageType::RADIO_BACKUP_NOW:
+        case RadioMessageType::RADIO_RUN_AWAY:
+        case RadioMessageType::RADIO_TETHER:
+        case RadioMessageType::RADIO_UNTETHER:
+        case RadioMessageType::RADIO_REPAIR:
+        case RadioMessageType::RADIO_PREPARED:
+        case RadioMessageType::RADIO_ATTACK_THIS:
+        case RadioMessageType::RADIO_RELOAD:
+        case RadioMessageType::RADIO_CANT:
+        case RadioMessageType::RADIO_ALL_DONE:
+        case RadioMessageType::RADIO_NEED_REPAIR:
+        case RadioMessageType::RADIO_ON_DEPOT:
         default:
           action = ACTION_NONE;
           break;

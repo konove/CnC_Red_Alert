@@ -171,6 +171,17 @@ void Draw_Box(int x, int y, int w, int h, BoxStyleEnum up, bool filled) {
                            static_cast<unsigned char>(style.Highlight));
       break;
 
+    case BoxStyleEnum::BOXSTYLE_DOWN:
+    case BoxStyleEnum::BOXSTYLE_RAISED:
+    case BoxStyleEnum::BOXSTYLE_BLUE_UP:
+    case BoxStyleEnum::BOXSTYLE_DIS_DOWN:
+    case BoxStyleEnum::BOXSTYLE_DIS_RAISED:
+    case BoxStyleEnum::BOXSTYLE_RAISED_ARROW:
+    case BoxStyleEnum::BOXSTYLE_GREEN_DOWN:
+    case BoxStyleEnum::BOXSTYLE_GREEN_RAISED:
+    case BoxStyleEnum::BOXSTYLE_GREEN_DIS_DOWN:
+    case BoxStyleEnum::BOXSTYLE_GREEN_DIS_RAISED:
+    case BoxStyleEnum::BOXSTYLE_COUNT:
     default:
       LogicPage->Draw_Line(x, y + h, x + w, y + h,
                            static_cast<unsigned char>(style.Shadow));
@@ -498,6 +509,16 @@ void Simple_Text_Print(const char* text, int x, int y, int fore,
       font = FontLEDPtr;
       break;
 
+    case TextPrintType::TPF_LASTPOINT:
+    case TextPrintType::TPF_NOSHADOW:
+    case TextPrintType::TPF_DROPSHADOW:
+    case TextPrintType::TPF_FULLSHADOW:
+    case TextPrintType::TPF_LIGHTSHADOW:
+    case TextPrintType::TPF_CENTER:
+    case TextPrintType::TPF_RIGHT:
+    case TextPrintType::TPF_MEDIUM_COLOR:
+    case TextPrintType::TPF_BRIGHT_COLOR:
+    case TextPrintType::TPF_USE_GRAD_PAL:
     default:
       font = FontPtr;
       break;
@@ -550,6 +571,21 @@ void Simple_Text_Print(const char* text, int x, int y, int fore,
       xspace -= 1;
       break;
 
+    case TextPrintType::TPF_LASTPOINT:
+    case TextPrintType::TPF_6POINT:
+    case TextPrintType::TPF_8POINT:
+    case TextPrintType::TPF_3POINT:
+    case TextPrintType::TPF_LED:
+    case TextPrintType::TPF_VCR:
+    case TextPrintType::TPF_6PT_GRAD:
+    case TextPrintType::TPF_MAP:
+    case TextPrintType::TPF_GREEN12:
+    case TextPrintType::TPF_GREEN12_GRAD:
+    case TextPrintType::TPF_CENTER:
+    case TextPrintType::TPF_RIGHT:
+    case TextPrintType::TPF_MEDIUM_COLOR:
+    case TextPrintType::TPF_BRIGHT_COLOR:
+    case TextPrintType::TPF_USE_GRAD_PAL:
     default:
       break;
   }
@@ -577,6 +613,23 @@ void Simple_Text_Print(const char* text, int x, int y, int fore,
         x -= String_Pixel_Width(tempstr);
         break;
 
+      case TextPrintType::TPF_LASTPOINT:
+      case TextPrintType::TPF_6POINT:
+      case TextPrintType::TPF_8POINT:
+      case TextPrintType::TPF_3POINT:
+      case TextPrintType::TPF_LED:
+      case TextPrintType::TPF_VCR:
+      case TextPrintType::TPF_6PT_GRAD:
+      case TextPrintType::TPF_MAP:
+      case TextPrintType::TPF_GREEN12:
+      case TextPrintType::TPF_GREEN12_GRAD:
+      case TextPrintType::TPF_NOSHADOW:
+      case TextPrintType::TPF_DROPSHADOW:
+      case TextPrintType::TPF_FULLSHADOW:
+      case TextPrintType::TPF_LIGHTSHADOW:
+      case TextPrintType::TPF_MEDIUM_COLOR:
+      case TextPrintType::TPF_BRIGHT_COLOR:
+      case TextPrintType::TPF_USE_GRAD_PAL:
       default:
         break;
     }

@@ -4400,6 +4400,10 @@ int Com_Scenario_Dialog() {
             parms_received = 1;
             break;
 
+          case SerialCommandType::SERIAL_CONNECT:
+          case SerialCommandType::SERIAL_GO:
+          case SerialCommandType::SERIAL_READY_TO_GO:
+          case SerialCommandType::SERIAL_LAST_COMMAND:
           default:
             // Smart_Printf( "received unknown command %X\n",
             // ReceivePacket.Command );
@@ -5639,6 +5643,8 @@ int Com_Show_Scenario_Dialog() {
             parms_received = 1;
             break;
 
+          case SerialCommandType::SERIAL_CONNECT:
+          case SerialCommandType::SERIAL_LAST_COMMAND:
           default:
             break;
         }

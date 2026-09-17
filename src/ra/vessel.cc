@@ -499,6 +499,11 @@ void VesselClass::Draw_It(int x, int y, WindowNumberType window) const {
           Class->Turret_Adjust(turdir, xx, yy);
           break;
 
+        case VesselType::VESSEL_NONE:
+        case VesselType::VESSEL_SS:
+        case VesselType::VESSEL_TRANSPORT:
+        case VesselType::VESSEL_MISSILESUB:
+        case VesselType::VESSEL_CARRIER:
         default:
           shapenum = base::At(BodyShape, Dir_To_32(SecondaryFacing));
           Class->Turret_Adjust(turdir, xx, yy);
@@ -1538,6 +1543,36 @@ RadioMessageType VesselClass::Receive_Message(RadioClass* from,
       }
       DriveClass::Receive_Message(from, message, param);
       return RADIO_ROGER;
+    case RadioMessageType::RADIO_STATIC:
+    case RadioMessageType::RADIO_ROGER:
+    case RadioMessageType::RADIO_HELLO:
+    case RadioMessageType::RADIO_PICK_UP:
+    case RadioMessageType::RADIO_ATTACH:
+    case RadioMessageType::RADIO_DELIVERY:
+    case RadioMessageType::RADIO_HOLD_STILL:
+    case RadioMessageType::RADIO_UNLOADED:
+    case RadioMessageType::RADIO_UNLOAD:
+    case RadioMessageType::RADIO_NEGATIVE:
+    case RadioMessageType::RADIO_BUILDING:
+    case RadioMessageType::RADIO_COMPLETE:
+    case RadioMessageType::RADIO_REDRAW:
+    case RadioMessageType::RADIO_ARE_REFINERY:
+    case RadioMessageType::RADIO_TRYING_TO_LOAD:
+    case RadioMessageType::RADIO_MOVE_HERE:
+    case RadioMessageType::RADIO_NEED_TO_MOVE:
+    case RadioMessageType::RADIO_YEA_NOW_WHAT:
+    case RadioMessageType::RADIO_BACKUP_NOW:
+    case RadioMessageType::RADIO_RUN_AWAY:
+    case RadioMessageType::RADIO_TETHER:
+    case RadioMessageType::RADIO_UNTETHER:
+    case RadioMessageType::RADIO_REPAIR:
+    case RadioMessageType::RADIO_PREPARED:
+    case RadioMessageType::RADIO_ATTACK_THIS:
+    case RadioMessageType::RADIO_RELOAD:
+    case RadioMessageType::RADIO_CANT:
+    case RadioMessageType::RADIO_ALL_DONE:
+    case RadioMessageType::RADIO_NEED_REPAIR:
+    case RadioMessageType::RADIO_ON_DEPOT:
     default:
       break;
   }
@@ -2227,6 +2262,14 @@ void VesselClass::Combat_AI() {
         Mark(MARK_OVERLAP_DOWN);
         Do_Uncloak();
         break;
+      case FireErrorType::FIRE_AMMO:
+      case FireErrorType::FIRE_REARM:
+      case FireErrorType::FIRE_ROTATING:
+      case FireErrorType::FIRE_ILLEGAL:
+      case FireErrorType::FIRE_CANT:
+      case FireErrorType::FIRE_MOVING:
+      case FireErrorType::FIRE_RANGE:
+      case FireErrorType::FIRE_BUSY:
       default:
         break;
     }

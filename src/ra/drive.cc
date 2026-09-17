@@ -757,6 +757,9 @@ bool DriveClass::While_Moving() {
                   Map[c].Incoming(0, true, true);
                 }
                 break;
+              case MoveType::MOVE_MOVING_BLOCK:
+              case MoveType::MOVE_DESTROYABLE:
+              case MoveType::MOVE_NO:
               default:
                 break;
             }

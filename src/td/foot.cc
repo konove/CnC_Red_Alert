@@ -362,6 +362,9 @@ bool FootClass::Mark(MarkType mark) {
         Map.Place_Down(cell, this);
         break;
 
+      case MarkType::MARK_CHANGE:
+      case MarkType::MARK_OVERLAP_DOWN:
+      case MarkType::MARK_OVERLAP_UP:
       default:
         Map.Refresh_Cells(cell, Overlap_List());
         Map.Refresh_Cells(cell, Occupy_List());
@@ -1319,6 +1322,19 @@ void FootClass::Active_Click_With(ActionType action, ObjectClass* object) {
       }
       break;
 
+    case ActionType::ACTION_NONE:
+    case ActionType::ACTION_HARVEST:
+    case ActionType::ACTION_SELECT:
+    case ActionType::ACTION_TOGGLE_SELECT:
+    case ActionType::ACTION_REPAIR:
+    case ActionType::ACTION_SELL:
+    case ActionType::ACTION_SELL_UNIT:
+    case ActionType::ACTION_NO_SELL:
+    case ActionType::ACTION_NO_REPAIR:
+    case ActionType::ACTION_ION:
+    case ActionType::ACTION_NUKE_BOMB:
+    case ActionType::ACTION_AIR_STRIKE:
+    case ActionType::ACTION_COUNT:
     default:
       break;
   }
@@ -1365,6 +1381,23 @@ void FootClass::Active_Click_With(ActionType action, CELL cell) {
     case ACTION_ATTACK:
       Player_Assign_Mission(MISSION_ATTACK, ::As_Target(cell));
       break;
+    case ActionType::ACTION_NONE:
+    case ActionType::ACTION_ENTER:
+    case ActionType::ACTION_SELF:
+    case ActionType::ACTION_SELECT:
+    case ActionType::ACTION_TOGGLE_SELECT:
+    case ActionType::ACTION_CAPTURE:
+    case ActionType::ACTION_REPAIR:
+    case ActionType::ACTION_SELL:
+    case ActionType::ACTION_SELL_UNIT:
+    case ActionType::ACTION_NO_SELL:
+    case ActionType::ACTION_NO_REPAIR:
+    case ActionType::ACTION_SABOTAGE:
+    case ActionType::ACTION_ION:
+    case ActionType::ACTION_NUKE_BOMB:
+    case ActionType::ACTION_AIR_STRIKE:
+    case ActionType::ACTION_GUARD_AREA:
+    case ActionType::ACTION_COUNT:
     default:
       break;
   }
@@ -1583,6 +1616,35 @@ RadioMessageType FootClass::Receive_Message(RadioClass* from,
         return RADIO_ROGER;
       }
       break;
+    case RadioMessageType::RADIO_STATIC:
+    case RadioMessageType::RADIO_ROGER:
+    case RadioMessageType::RADIO_HELLO:
+    case RadioMessageType::RADIO_OVER_OUT:
+    case RadioMessageType::RADIO_PICK_UP:
+    case RadioMessageType::RADIO_ATTACH:
+    case RadioMessageType::RADIO_DELIVERY:
+    case RadioMessageType::RADIO_HOLD_STILL:
+    case RadioMessageType::RADIO_UNLOADED:
+    case RadioMessageType::RADIO_UNLOAD:
+    case RadioMessageType::RADIO_NEGATIVE:
+    case RadioMessageType::RADIO_BUILDING:
+    case RadioMessageType::RADIO_COMPLETE:
+    case RadioMessageType::RADIO_REDRAW:
+    case RadioMessageType::RADIO_DOCKING:
+    case RadioMessageType::RADIO_CAN_LOAD:
+    case RadioMessageType::RADIO_ARE_REFINERY:
+    case RadioMessageType::RADIO_YEA_NOW_WHAT:
+    case RadioMessageType::RADIO_IM_IN:
+    case RadioMessageType::RADIO_BACKUP_NOW:
+    case RadioMessageType::RADIO_TETHER:
+    case RadioMessageType::RADIO_UNTETHER:
+    case RadioMessageType::RADIO_PREPARED:
+    case RadioMessageType::RADIO_ATTACK_THIS:
+    case RadioMessageType::RADIO_RELOAD:
+    case RadioMessageType::RADIO_KICK:
+    case RadioMessageType::RADIO_PUNCH:
+    case RadioMessageType::RADIO_PREPARE_TO_BOX:
+    case RadioMessageType::RADIO_COUNT:
     default:
       break;
   }
@@ -1811,6 +1873,16 @@ void FootClass::Death_Announcement(const TechnoClass* source) const {
                   Speak(VOX_DEAD_NOD);
                   break;
 
+                case HousesType::HOUSE_NONE:
+                case HousesType::HOUSE_NEUTRAL:
+                case HousesType::HOUSE_JP:
+                case HousesType::HOUSE_MULTI1:
+                case HousesType::HOUSE_MULTI2:
+                case HousesType::HOUSE_MULTI3:
+                case HousesType::HOUSE_MULTI4:
+                case HousesType::HOUSE_MULTI5:
+                case HousesType::HOUSE_MULTI6:
+                case HousesType::HOUSE_COUNT:
                 default:
                   break;
               }
@@ -1985,6 +2057,29 @@ bool FootClass::Can_Demolish() const {
       }
       break;
 
+    case RTTIType::RTTI_NONE:
+    case RTTIType::RTTI_INFANTRY:
+    case RTTIType::RTTI_INFANTRYTYPE:
+    case RTTIType::RTTI_UNITTYPE:
+    case RTTIType::RTTI_AIRCRAFTTYPE:
+    case RTTIType::RTTI_BUILDING:
+    case RTTIType::RTTI_BUILDINGTYPE:
+    case RTTIType::RTTI_TERRAIN:
+    case RTTIType::RTTI_ABSTRACTTYPE:
+    case RTTIType::RTTI_ANIM:
+    case RTTIType::RTTI_ANIMTYPE:
+    case RTTIType::RTTI_BULLET:
+    case RTTIType::RTTI_BULLETTYPE:
+    case RTTIType::RTTI_OVERLAY:
+    case RTTIType::RTTI_OVERLAYTYPE:
+    case RTTIType::RTTI_SMUDGE:
+    case RTTIType::RTTI_SMUDGETYPE:
+    case RTTIType::RTTI_TEAM:
+    case RTTIType::RTTI_TEMPLATE:
+    case RTTIType::RTTI_TEMPLATETYPE:
+    case RTTIType::RTTI_TERRAINTYPE:
+    case RTTIType::RTTI_OBJECT:
+    case RTTIType::RTTI_SPECIAL:
     default:
       break;
   }

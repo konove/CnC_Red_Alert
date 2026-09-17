@@ -339,6 +339,7 @@ int IPXGlobalConnClass::Receive_Packet(std::span<std::byte> buf, int buflen,
     /*.....................................................................
     Default: ignore the packet
     .....................................................................*/
+    case ConnectionEnum::PACKET_COUNT:
     default:
       break;
   }

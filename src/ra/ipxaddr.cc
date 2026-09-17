@@ -217,6 +217,7 @@ void IPXAddressClass::Set_Address(IPXHeaderType* header) {
       base::FillBytes(base::ObjectBytes(NetworkNumber), 0, 4);
       break;
     }
+    case ProtocolEnum::PROTOCOL_NONE:
     default:
       break;
   }

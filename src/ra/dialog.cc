@@ -530,6 +530,16 @@ void Simple_Text_Print(const char* text, int x, int y,
 
       break;
 
+    case TextPrintType::TPF_LASTPOINT:
+    case TextPrintType::TPF_NOSHADOW:
+    case TextPrintType::TPF_DROPSHADOW:
+    case TextPrintType::TPF_FULLSHADOW:
+    case TextPrintType::TPF_LIGHTSHADOW:
+    case TextPrintType::TPF_CENTER:
+    case TextPrintType::TPF_RIGHT:
+    case TextPrintType::TPF_MEDIUM_COLOR:
+    case TextPrintType::TPF_BRIGHT_COLOR:
+    case TextPrintType::TPF_USE_GRAD_PAL:
     default:
       font = FontPtr;
       break;
@@ -582,6 +592,23 @@ void Simple_Text_Print(const char* text, int x, int y,
       xspace -= 1;
       break;
 
+    case TextPrintType::TPF_LASTPOINT:
+    case TextPrintType::TPF_6POINT:
+    case TextPrintType::TPF_8POINT:
+    case TextPrintType::TPF_3POINT:
+    case TextPrintType::TPF_LED:
+    case TextPrintType::TPF_VCR:
+    case TextPrintType::TPF_6PT_GRAD:
+    case TextPrintType::TPF_MAP:
+    case TextPrintType::TPF_METAL12:
+    case TextPrintType::TPF_EFNT:
+    case TextPrintType::TPF_TYPE:
+    case TextPrintType::TPF_SCORE:
+    case TextPrintType::TPF_CENTER:
+    case TextPrintType::TPF_RIGHT:
+    case TextPrintType::TPF_MEDIUM_COLOR:
+    case TextPrintType::TPF_BRIGHT_COLOR:
+    case TextPrintType::TPF_USE_GRAD_PAL:
     default:
       break;
   }
@@ -611,6 +638,25 @@ void Simple_Text_Print(const char* text, int x, int y,
         x -= String_Pixel_Width(text);
         break;
 
+      case TextPrintType::TPF_LASTPOINT:
+      case TextPrintType::TPF_6POINT:
+      case TextPrintType::TPF_8POINT:
+      case TextPrintType::TPF_3POINT:
+      case TextPrintType::TPF_LED:
+      case TextPrintType::TPF_VCR:
+      case TextPrintType::TPF_6PT_GRAD:
+      case TextPrintType::TPF_MAP:
+      case TextPrintType::TPF_METAL12:
+      case TextPrintType::TPF_EFNT:
+      case TextPrintType::TPF_TYPE:
+      case TextPrintType::TPF_SCORE:
+      case TextPrintType::TPF_NOSHADOW:
+      case TextPrintType::TPF_DROPSHADOW:
+      case TextPrintType::TPF_FULLSHADOW:
+      case TextPrintType::TPF_LIGHTSHADOW:
+      case TextPrintType::TPF_MEDIUM_COLOR:
+      case TextPrintType::TPF_BRIGHT_COLOR:
+      case TextPrintType::TPF_USE_GRAD_PAL:
       default:
         break;
     }

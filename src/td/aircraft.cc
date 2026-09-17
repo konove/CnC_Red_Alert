@@ -1598,6 +1598,9 @@ ResultType AircraftClass::Take_Damage(int& damage, int distance,
       delete this;
       break;
 
+    case ResultType::RESULT_NONE:
+    case ResultType::RESULT_LIGHT:
+    case ResultType::RESULT_MAJOR:
     default:
     case RESULT_HALF:
       break;
@@ -2043,6 +2046,25 @@ void AircraftClass::Active_Click_With(ActionType action, ObjectClass* object) {
       Player_Assign_Mission(MISSION_UNLOAD, kTargetNone, kTargetNone);
       break;
 
+    case ActionType::ACTION_NONE:
+    case ActionType::ACTION_MOVE:
+    case ActionType::ACTION_NOMOVE:
+    case ActionType::ACTION_ATTACK:
+    case ActionType::ACTION_HARVEST:
+    case ActionType::ACTION_SELECT:
+    case ActionType::ACTION_TOGGLE_SELECT:
+    case ActionType::ACTION_CAPTURE:
+    case ActionType::ACTION_REPAIR:
+    case ActionType::ACTION_SELL:
+    case ActionType::ACTION_SELL_UNIT:
+    case ActionType::ACTION_NO_SELL:
+    case ActionType::ACTION_NO_REPAIR:
+    case ActionType::ACTION_SABOTAGE:
+    case ActionType::ACTION_ION:
+    case ActionType::ACTION_NUKE_BOMB:
+    case ActionType::ACTION_AIR_STRIKE:
+    case ActionType::ACTION_GUARD_AREA:
+    case ActionType::ACTION_COUNT:
     default:
       break;
   }
@@ -2353,6 +2375,15 @@ int AircraftClass::Mission_Attack() {
           Status = kFireAtTarget2;
           break;
 
+        case FireErrorType::FIRE_AMMO:
+        case FireErrorType::FIRE_FACING:
+        case FireErrorType::FIRE_REARM:
+        case FireErrorType::FIRE_ROTATING:
+        case FireErrorType::FIRE_ILLEGAL:
+        case FireErrorType::FIRE_CANT:
+        case FireErrorType::FIRE_MOVING:
+        case FireErrorType::FIRE_RANGE:
+        case FireErrorType::FIRE_BUSY:
         default:
           if (!Ammo) {
             Status = kReturnToBase;
@@ -2393,6 +2424,14 @@ int AircraftClass::Mission_Attack() {
           }
           break;
 
+        case FireErrorType::FIRE_AMMO:
+        case FireErrorType::FIRE_FACING:
+        case FireErrorType::FIRE_ROTATING:
+        case FireErrorType::FIRE_ILLEGAL:
+        case FireErrorType::FIRE_CANT:
+        case FireErrorType::FIRE_MOVING:
+        case FireErrorType::FIRE_RANGE:
+        case FireErrorType::FIRE_BUSY:
         default:
           if (!Ammo) {
             Status = kReturnToBase;
@@ -2659,6 +2698,33 @@ RadioMessageType AircraftClass::Receive_Message(RadioClass* from,
         return RADIO_ROGER;
       }
       return RADIO_NEGATIVE;
+    case RadioMessageType::RADIO_STATIC:
+    case RadioMessageType::RADIO_ROGER:
+    case RadioMessageType::RADIO_HELLO:
+    case RadioMessageType::RADIO_OVER_OUT:
+    case RadioMessageType::RADIO_PICK_UP:
+    case RadioMessageType::RADIO_ATTACH:
+    case RadioMessageType::RADIO_DELIVERY:
+    case RadioMessageType::RADIO_HOLD_STILL:
+    case RadioMessageType::RADIO_UNLOADED:
+    case RadioMessageType::RADIO_UNLOAD:
+    case RadioMessageType::RADIO_NEGATIVE:
+    case RadioMessageType::RADIO_BUILDING:
+    case RadioMessageType::RADIO_COMPLETE:
+    case RadioMessageType::RADIO_REDRAW:
+    case RadioMessageType::RADIO_ARE_REFINERY:
+    case RadioMessageType::RADIO_TRYING_TO_LOAD:
+    case RadioMessageType::RADIO_YEA_NOW_WHAT:
+    case RadioMessageType::RADIO_BACKUP_NOW:
+    case RadioMessageType::RADIO_TETHER:
+    case RadioMessageType::RADIO_UNTETHER:
+    case RadioMessageType::RADIO_REPAIR:
+    case RadioMessageType::RADIO_ATTACK_THIS:
+    case RadioMessageType::RADIO_RELOAD:
+    case RadioMessageType::RADIO_KICK:
+    case RadioMessageType::RADIO_PUNCH:
+    case RadioMessageType::RADIO_PREPARE_TO_BOX:
+    case RadioMessageType::RADIO_COUNT:
     default:
       break;
   }
@@ -3084,6 +3150,38 @@ int AircraftClass::Mission_Enter() {
             Contact_With_Whom()->Attach(this);
             break;
 
+          case RadioMessageType::RADIO_STATIC:
+          case RadioMessageType::RADIO_HELLO:
+          case RadioMessageType::RADIO_OVER_OUT:
+          case RadioMessageType::RADIO_PICK_UP:
+          case RadioMessageType::RADIO_DELIVERY:
+          case RadioMessageType::RADIO_HOLD_STILL:
+          case RadioMessageType::RADIO_UNLOADED:
+          case RadioMessageType::RADIO_UNLOAD:
+          case RadioMessageType::RADIO_NEGATIVE:
+          case RadioMessageType::RADIO_BUILDING:
+          case RadioMessageType::RADIO_COMPLETE:
+          case RadioMessageType::RADIO_REDRAW:
+          case RadioMessageType::RADIO_DOCKING:
+          case RadioMessageType::RADIO_CAN_LOAD:
+          case RadioMessageType::RADIO_ARE_REFINERY:
+          case RadioMessageType::RADIO_TRYING_TO_LOAD:
+          case RadioMessageType::RADIO_MOVE_HERE:
+          case RadioMessageType::RADIO_NEED_TO_MOVE:
+          case RadioMessageType::RADIO_YEA_NOW_WHAT:
+          case RadioMessageType::RADIO_IM_IN:
+          case RadioMessageType::RADIO_BACKUP_NOW:
+          case RadioMessageType::RADIO_RUN_AWAY:
+          case RadioMessageType::RADIO_TETHER:
+          case RadioMessageType::RADIO_UNTETHER:
+          case RadioMessageType::RADIO_REPAIR:
+          case RadioMessageType::RADIO_PREPARED:
+          case RadioMessageType::RADIO_ATTACK_THIS:
+          case RadioMessageType::RADIO_RELOAD:
+          case RadioMessageType::RADIO_KICK:
+          case RadioMessageType::RADIO_PUNCH:
+          case RadioMessageType::RADIO_PREPARE_TO_BOX:
+          case RadioMessageType::RADIO_COUNT:
           default:
             Enter_Idle_Mode();
         }

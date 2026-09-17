@@ -880,6 +880,7 @@ bool Select_Game(bool /*fade*/) {
                   selection = kSelNone;
                 }
                 break;
+              case GameType::GAME_IPX:
               default:
                 break;
             }
@@ -973,6 +974,7 @@ bool Select_Game(bool /*fade*/) {
                 PacketTransport = nullptr;
               }
               break;
+            case GameType::GAME_NORMAL:
             default:
               break;
           }
@@ -1097,6 +1099,8 @@ bool Select_Game(bool /*fade*/) {
       //			debugprint( "Internet game: NewUnitsEnabled =
       //%i\n", NewUnitsEnabled );
       break;
+    case GameType::GAME_NORMAL:
+    case GameType::GAME_SKIRMISH:
     default:
       break;
   }

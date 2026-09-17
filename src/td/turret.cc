@@ -393,6 +393,21 @@ COORDINATE TurretClass::Fire_Coord(int which) const {
       coord = Coord_Move(coord, DIR_N, 0x0030);
       dist = 0x0030;
       break;
+    case UnitType::UNIT_NONE:
+    case UnitType::UNIT_STANK:
+    case UnitType::UNIT_VICE:
+    case UnitType::UNIT_MLRS:
+    case UnitType::UNIT_HARVESTER:
+    case UnitType::UNIT_MSAM:
+    case UnitType::UNIT_HOVER:
+    case UnitType::UNIT_MHQ:
+    case UnitType::UNIT_MCV:
+    case UnitType::UNIT_BIKE:
+    case UnitType::UNIT_TRIC:
+    case UnitType::UNIT_TREX:
+    case UnitType::UNIT_RAPT:
+    case UnitType::UNIT_STEG:
+    case UnitType::UNIT_COUNT:
     default:
       break;
   }

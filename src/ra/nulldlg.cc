@@ -4053,6 +4053,15 @@ int Com_Scenario_Dialog(bool skirmish) {
               display = std::max(display, REDRAW_MESSAGE);
               break;
 
+            case SerialCommandType::SERIAL_CONNECT:
+            case SerialCommandType::SERIAL_GO:
+            case SerialCommandType::SERIAL_LOADGAME:
+            case SerialCommandType::SERIAL_LAST_COMMAND:
+            case SerialCommandType::SERIAL_REQ_SCENARIO:
+            case SerialCommandType::SERIAL_FILE_INFO:
+            case SerialCommandType::SERIAL_FILE_CHUNK:
+            case SerialCommandType::SERIAL_READY_TO_GO:
+            case SerialCommandType::SERIAL_NO_SCENARIO:
             default:
               break;
           }
@@ -5903,6 +5912,13 @@ int Com_Show_Scenario_Dialog() {
             parms_received = true;
             break;
 
+          case SerialCommandType::SERIAL_CONNECT:
+          case SerialCommandType::SERIAL_LAST_COMMAND:
+          case SerialCommandType::SERIAL_REQ_SCENARIO:
+          case SerialCommandType::SERIAL_FILE_INFO:
+          case SerialCommandType::SERIAL_FILE_CHUNK:
+          case SerialCommandType::SERIAL_READY_TO_GO:
+          case SerialCommandType::SERIAL_NO_SCENARIO:
           default:
             break;
         }
@@ -7222,6 +7238,8 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
       WWMessageBox().Process(TXT_ANSWERING_CANCELED);
       connected = false;
       break;
+    case DialStatusType::DIAL_BUSY:
+    case DialStatusType::DIAL_NO_DIAL_TONE:
     default:
       break;
   }

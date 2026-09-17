@@ -1078,6 +1078,12 @@ void EventClass::Execute() {
     /*
     **	Default: do nothing.
     */
+    case EventClass::EMPTY:
+    case EventClass::DEPLOY:
+    case EventClass::FRAMESYNC:
+    case EventClass::MESSAGE:
+    case EventClass::FRAMEINFO:
+    case EventClass::LAST_EVENT:
     default:
       break;
   }

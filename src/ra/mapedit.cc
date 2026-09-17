@@ -379,6 +379,29 @@ bool MapEditClass::Add_To_List(const ObjectTypeClass* object) {
       case RTTI_AIRCRAFTTYPE:
         NumType[8]++;
         break;
+      case RTTIType::RTTI_NONE:
+      case RTTIType::RTTI_AIRCRAFT:
+      case RTTIType::RTTI_ANIM:
+      case RTTIType::RTTI_ANIMTYPE:
+      case RTTIType::RTTI_BUILDING:
+      case RTTIType::RTTI_BULLET:
+      case RTTIType::RTTI_BULLETTYPE:
+      case RTTIType::RTTI_CELL:
+      case RTTIType::RTTI_FACTORY:
+      case RTTIType::RTTI_HOUSE:
+      case RTTIType::RTTI_HOUSETYPE:
+      case RTTIType::RTTI_INFANTRY:
+      case RTTIType::RTTI_OVERLAY:
+      case RTTIType::RTTI_SMUDGE:
+      case RTTIType::RTTI_SPECIAL:
+      case RTTIType::RTTI_TEAM:
+      case RTTIType::RTTI_TEAMTYPE:
+      case RTTIType::RTTI_TEMPLATE:
+      case RTTIType::RTTI_TERRAIN:
+      case RTTIType::RTTI_TRIGGER:
+      case RTTIType::RTTI_TRIGGERTYPE:
+      case RTTIType::RTTI_UNIT:
+      case RTTIType::RTTI_VESSEL:
       default:
         break;
     }

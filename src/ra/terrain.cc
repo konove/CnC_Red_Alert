@@ -291,6 +291,10 @@ bool TerrainClass::Mark(MarkType mark) {
         Map.Place_Down(cell, this);
         break;
 
+      case MarkType::MARK_CHANGE:
+      case MarkType::MARK_CHANGE_REDRAW:
+      case MarkType::MARK_OVERLAP_DOWN:
+      case MarkType::MARK_OVERLAP_UP:
       default:
         Map.Refresh_Cells(cell, Overlap_List(true));
         Map.Refresh_Cells(cell, Occupy_List());

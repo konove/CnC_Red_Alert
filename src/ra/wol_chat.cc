@@ -571,6 +571,12 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
         case WOL_LEVEL_INLOBBY:
           pWO->UpdateChannels(GAME_TYPE, CHANNELFILTER_LOCALLOBBYGAMES, true);
           break;
+        case WOL_LEVEL::WOL_LEVEL_TOP:
+        case WOL_LEVEL::WOL_LEVEL_INCHATCHANNEL:
+        case WOL_LEVEL::WOL_LEVEL_GAMES:
+        case WOL_LEVEL::WOL_LEVEL_GAMESOFTYPE:
+        case WOL_LEVEL::WOL_LEVEL_INGAMECHANNEL:
+        case WOL_LEVEL::WOL_LEVEL_INVALID:
         default:
           break;
       }
@@ -641,6 +647,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
             Draw_Box(d_chanlist_x, d_chanlist_y, d_chanlist_w, 16, BOXSTYLE_BOX,
                      false);
             break;
+          case LIST_EXPAND_STATE::LES_NORMAL:
           default:
             //	Draw users title bar in middle.
             Draw_Box(d_userlist_x, d_userlist_y - 15, d_userlist_w, 16,
@@ -900,6 +907,11 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
                              WOLCOLORREMAP_LOCALMACHINEMESS);
             Sound_Effect(WOLSOUND_ERROR);
             break;
+          case WOL_LEVEL::WOL_LEVEL_TOP:
+          case WOL_LEVEL::WOL_LEVEL_OFFICIALCHAT:
+          case WOL_LEVEL::WOL_LEVEL_USERCHAT:
+          case WOL_LEVEL::WOL_LEVEL_INGAMECHANNEL:
+          case WOL_LEVEL::WOL_LEVEL_INVALID:
           default:
             CreateChatChannel(pWO);
         }

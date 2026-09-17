@@ -1608,6 +1608,9 @@ void FootClass::Debug_Draw_Map(const char* txt, CELL start, CELL dest,
         case MOVE_TEMP:
           color = kBrown;
           break;
+        case MoveType::MOVE_CLOAK:
+        case MoveType::MOVE_NO:
+        case MoveType::MOVE_COUNT:
         default:
           color = kRed;
           break;
