@@ -34,77 +34,99 @@
  *                  Last Update : August 20, 1995 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions: * BuildingClass::AI -- Handles non-graphic AI processing for
- *buildings.                     * BuildingClass::Active_Click_With -- Handles
- *cell selection for buildings.                 * BuildingClass::As_Target --
- *Convert the building into a target value.                     *
- *   BuildingClass::Assign_Target -- Assigns a target to the building. *
- *   BuildingClass::Begin_Mode -- Begins an animation mode for the building. *
- *   BuildingClass::BuildingClass -- Constructor for buildings. *
+ * Functions:
+ *   BuildingClass::AI -- Handles non-graphic AI processing for buildings.
+ *   BuildingClass::Active_Click_With -- Handles cell selection for
+ *     buildings.
+ *   BuildingClass::As_Target -- Convert the building into a target value.
+ *   BuildingClass::Assign_Target -- Assigns a target to the building.
+ *   BuildingClass::Begin_Mode -- Begins an animation mode for the building.
+ *   BuildingClass::BuildingClass -- Constructor for buildings.
  *   BuildingClass::Can_Demolish -- Can the player demolish (sell back) the
- *building?          * BuildingClass::Can_Enter_Cell -- Determines if building
- *can be placed down.               * BuildingClass::Can_Fire -- Determines if
- *this building can fire.                          * BuildingClass::Captured --
- *Captures the building.                                         *
+ *     building?
+ *   BuildingClass::Can_Enter_Cell -- Determines if building can be placed
+ *     down.
+ *   BuildingClass::Can_Fire -- Determines if this building can fire.
+ *   BuildingClass::Captured -- Captures the building.
  *   BuildingClass::Center_Coord -- Fetches the center coordinate for the
- *building.            * BuildingClass::Click_With -- Handles clicking on the
- *map while the building is selected.  * BuildingClass::Crew_Type -- This
- *determines the crew that this object generates.          *
- *   BuildingClass::Death_Announcement -- Announce the death of this building. *
- *   BuildingClass::Debug_Dump -- Displays building status to the monochrome
- *screen.           * BuildingClass::Detach -- Handles target removal from the
- *game system.                     * BuildingClass::Detach_All -- Possibly
- *abandons production according to factory type.      * BuildingClass::Draw_It
- *-- Displays the building at the location specified.                *
- *   BuildingClass::Drop_Debris -- Drops rubble when building is destroyed. *
- *   BuildingClass::Enter_Idle_Mode -- The building will enter its idle mode. *
- *   BuildingClass::Exit_Object -- Initiates an object to leave the building. *
- *   BuildingClass::Fire_At -- Fires weapon at specified target. *
+ *     building.
+ *   BuildingClass::Click_With -- Handles clicking on the map while the
+ *     building is selected.
+ *   BuildingClass::Crew_Type -- This determines the crew that this object
+ *     generates.
+ *   BuildingClass::Death_Announcement -- Announce the death of this
+ *     building.
+ *   BuildingClass::Detach -- Handles target removal from the game system.
+ *   BuildingClass::Detach_All -- Possibly abandons production according to
+ *     factory type.
+ *   BuildingClass::Draw_It -- Displays the building at the location
+ *     specified.
+ *   BuildingClass::Drop_Debris -- Drops rubble when building is destroyed.
+ *   BuildingClass::Enter_Idle_Mode -- The building will enter its idle
+ *     mode.
+ *   BuildingClass::Exit_Object -- Initiates an object to leave the
+ *     building.
+ *   BuildingClass::Fire_At -- Fires weapon at specified target.
  *   BuildingClass::Fire_Coord -- Calculates the coordinate that projectile
- *would appear.      * BuildingClass::Fire_Direction -- Fetches the direction of
- *firing.                         * BuildingClass::Fire_Out -- Handles when
- *attached animation expires.                       *
- *   BuildingClass::Flush_For_Placement -- Handles clearing a zone for object
- *placement.       * BuildingClass::Grand_Opening -- Handles construction
- *completed special operations.        * BuildingClass::Greatest_Threat --
- *Searches for target that building can fire upon.        * BuildingClass::Init
- *-- Initialize the building system to an empty null state.             *
+ *     would appear.
+ *   BuildingClass::Fire_Direction -- Fetches the direction of firing.
+ *   BuildingClass::Fire_Out -- Handles when attached animation expires.
+ *   BuildingClass::Flush_For_Placement -- Handles clearing a zone for
+ *     object placement.
+ *   BuildingClass::Grand_Opening -- Handles construction completed special
+ *     operations.
+ *   BuildingClass::Greatest_Threat -- Searches for target that building can
+ *     fire upon.
+ *   BuildingClass::Init -- Initialize the building system to an empty null
+ *     state.
  *   BuildingClass::Limbo -- Handles power adjustment as building goes into
- *limbo.             * BuildingClass::Look -- Reveal map around building. *
- *   BuildingClass::Mark -- Building interface to map rendering system. *
- *   BuildingClass::Mission_Attack -- Handles attack mission for building. *
- *   BuildingClass::Mission_Construction -- Handles mission construction. *
- *   BuildingClass::Mission_Deconstruction -- Handles building deconstruction. *
- *   BuildingClass::Mission_Guard -- Handles guard mission for combat buildings.
- ** BuildingClass::Mission_Harvest -- Handles refinery unloading harvesters. *
- *   BuildingClass::Mission_Missile -- State machine for nuclear missile launch.
- ** BuildingClass::Mission_Repair -- Handles the repair (active) state for
- *building.          * BuildingClass::Mission_Unload -- Handles the unload
- *mission for a building.               * BuildingClass::Pip_Count -- Determines
- *"full" pips to display for building.               *
- *   BuildingClass::Power_Output -- Fetches the current power output from this
- *building.       * BuildingClass::Read_INI -- Reads buildings from INI file. *
+ *     limbo.
+ *   BuildingClass::Look -- Reveal map around building.
+ *   BuildingClass::Mark -- Building interface to map rendering system.
+ *   BuildingClass::Mission_Attack -- Handles attack mission for building.
+ *   BuildingClass::Mission_Construction -- Handles mission construction.
+ *   BuildingClass::Mission_Deconstruction -- Handles building
+ *     deconstruction.
+ *   BuildingClass::Mission_Guard -- Handles guard mission for combat
+ *     buildings.
+ *   BuildingClass::Mission_Harvest -- Handles refinery unloading
+ *     harvesters.
+ *   BuildingClass::Mission_Missile -- State machine for nuclear missile
+ *     launch.
+ *   BuildingClass::Mission_Repair -- Handles the repair (active) state for
+ *     building.
+ *   BuildingClass::Mission_Unload -- Handles the unload mission for a
+ *     building.
+ *   BuildingClass::Pip_Count -- Determines "full" pips to display for
+ *     building.
+ *   BuildingClass::Power_Output -- Fetches the current power output from
+ *     this building.
+ *   BuildingClass::Read_INI -- Reads buildings from INI file.
  *   BuildingClass::Receive_Message -- Handle an incoming message to the
- *building.             * BuildingClass::Refund_Amount -- Fetches the refund
- *amount if building is sold.            * BuildingClass::Remap_Table -- Fetches
- *the remap table to use for this building.           * BuildingClass::Repair --
- *Initiates or terminates the repair process.                      *
- *   BuildingClass::Revealed -- Reveals the building to the specified house. *
- *   BuildingClass::Sell_Back -- Controls the sell back (demolish) operation. *
- *   BuildingClass::Sort_Y -- Returns the building coordinate used for sorting.
- ** BuildingClass::Take_Damage -- Inflicts damage points upon a building. *
- *   BuildingClass::Toggle_Primary -- Toggles the primary factory state. *
- *   BuildingClass::Unlimbo -- Removes a building from limbo state. *
+ *     building.
+ *   BuildingClass::Refund_Amount -- Fetches the refund amount if building
+ *     is sold.
+ *   BuildingClass::Remap_Table -- Fetches the remap table to use for this
+ *     building.
+ *   BuildingClass::Repair -- Initiates or terminates the repair process.
+ *   BuildingClass::Revealed -- Reveals the building to the specified house.
+ *   BuildingClass::Sell_Back -- Controls the sell back (demolish)
+ *     operation.
+ *   BuildingClass::Sort_Y -- Returns the building coordinate used for
+ *     sorting.
+ *   BuildingClass::Take_Damage -- Inflicts damage points upon a building.
+ *   BuildingClass::Toggle_Primary -- Toggles the primary factory state.
+ *   BuildingClass::Unlimbo -- Removes a building from limbo state.
  *   BuildingClass::Update_Buildables -- Informs sidebar of additional
- *construction options.   * BuildingClass::What_Action --
- *Determines action to perform if click on specified object.  *
- *   BuildingClass::What_Action -- Determines what action will occur. *
- *   BuildingClass::Write_INI -- Writes all building data to an INI file. *
- *   BuildingClass::delete -- Deallocates building object. * BuildingClass::new
- *-- Allocates a building object from building pool.                     *
- *   BuildingClass::~BuildingClass -- Destructor for building type objects. *
+ *     construction options.
+ *   BuildingClass::What_Action -- Determines action to perform if click on
+ *     specified object.
+ *   BuildingClass::What_Action -- Determines what action will occur.
+ *   BuildingClass::Write_INI -- Writes all building data to an INI file.
+ *   BuildingClass::delete -- Deallocates building object.
+ *   BuildingClass::new -- Allocates a building object from building pool.
+ *   BuildingClass::~BuildingClass -- Destructor for building type objects.
  *   BuildingClass::Validate -- validates building pointer
- **
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
@@ -159,7 +181,6 @@
 #include "td/jshell.h"
 #include "td/keyframe.h"
 #include "td/mapedit.h"
-#include "td/monoc.h"
 #include "td/object.h"
 #include "td/overlay.h"
 #include "td/power.h"
@@ -619,107 +640,6 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass* from,
   *itself.
   */
   return TechnoClass::Receive_Message(from, message, param);
-}
-
-/***********************************************************************************************
- * BuildingClass::Debug_Dump -- Displays building status to the monochrome
- *screen.             *
- *                                                                                             *
- *    This utility function will output the current status of the building class
- *to the        * monochrome screen. It is through this data that bugs may be
- *fixed or detected.           *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 05/31/1994 JLB : Created. *
- *=============================================================================================*/
-void BuildingClass::Debug_Dump(MonoClass* mono) const {
-  if constexpr (config::kCheatKeysEnabled) {
-    Validate();
-    mono->Set_Cursor(0, 0);
-    mono->Print(
-        "┌Name:──────────────┬Mission:───┬TarCom:┬───────┬Radio:┬Coord:"
-        "──┬────────┬St:─┐\n"
-        "│                   │           │       │       │      │        │     "
-        "  "
-        " │    │\n"
-        "├──────────────┬N┬Y┬Health:─┬───┴─┬Turret:┬─────┴┬─Building:──┬Cargo:"
-        "────┴────┤\n"
-        "│Active........│ │ │        │     │       │      │            │       "
-        "  "
-        "      │\n"
-        "│Limbo.........│ │ "
-        "├────────┴─────┴───────┴──────┴────────────┴───────────────┤\n"
-        "│Owned.........│ │ │Last Message:                                     "
-        "  "
-        "      │\n"
-        "│Discovered....│ │ "
-        "├Timer:┬Arm:┬──────┬Tiberium:┬Flash:┬Stage:┬───────────────┘\n"
-        "│Selected......│ │ │      │    │      │         │      │      │       "
-        "  "
-        "       \n"
-        "│Teathered.....│ │ ├──────┴────┴──────┴─────────┴──────┴──────┘       "
-        "  "
-        "       \n"
-        "│Locked on Map.│ │ │                                                  "
-        "  "
-        "       \n"
-        "│Is A Loaner...│ │ │                                                  "
-        "  "
-        "       \n"
-        "│              │ │ │                                                  "
-        "  "
-        "       \n"
-        "│              │ │ │                                                  "
-        "  "
-        "       \n"
-        "│              │ │ │                                                  "
-        "  "
-        "       \n"
-        "│Repairing.....│ │ │                                                  "
-        "  "
-        "       \n"
-        "│              │ │ │                                                  "
-        "  "
-        "       \n"
-        "│              │ │ │                                                  "
-        "  "
-        "       \n"
-        "│Recoiling.....│ │ │                                                  "
-        "  "
-        "       \n"
-        "│To Display....│ │ │                                                  "
-        "  "
-        "       \n"
-        "└──────────────┴─┴─┘                                                  "
-        "  "
-        "       \n");
-    mono->Set_Cursor(1, 1);
-    mono->Printf("%s:%s", House->Class->IniName, Class->IniName);
-    mono->Set_Cursor(35, 3);
-    mono->Printf("%02X:%02X", PrimaryFacing.Current(), PrimaryFacing.Desired());
-    mono->Set_Cursor(50, 3);
-    if (Factory) {
-      mono->Print(Factory->Get_Object()->Class_Of().IniName);
-      mono->Printf(" ");
-      mono->Printf("%d%%", Factory->Completion());
-    } else {
-      mono->Printf("(empty)");
-    }
-
-    mono->Text_Print("X", 16 + (IsRepairing ? 2 : 0), 14);
-    //	mono->Set_Cursor(44, 3);mono->Printf("%d", SAM);
-    mono->Set_Cursor(34, 1);
-    mono->Printf("%04X", TarCom);
-    mono->Set_Cursor(28, 7);
-    mono->Printf("%2d", Arm);
-
-    TechnoClass::Debug_Dump(mono);
-  }
 }
 
 /***********************************************************************************************

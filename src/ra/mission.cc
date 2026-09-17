@@ -36,19 +36,17 @@
  * Functions: * MissionClass::AI -- Processes order script. *
  *   MissionClass::Assign_Mission -- Give an order to a unit. *
  *   MissionClass::Commence -- Start script with new order. *
- *   MissionClass::Debug_Dump -- Dumps status values to mono screen. *
  *   MissionClass::Get_Mission -- Fetches the mission that this object is acting
- *under.        * MissionClass::MissionClass -- Default constructor for the
- *mission object type.            * MissionClass::Mission_???  -- Stub mission
- *functions that do nothing.                     *
- *   MissionClass::Mission_From_Name -- Fetch order pointer from its name. *
- *   MissionClass::Mission_Name -- Converts a mission number into an ASCII
- *string.             * MissionClass::Override_Mission -- temporarily overrides
- *the units mission                 * MissionClass::Restore_Mission -- Restores
- *overridden mission                              * MissionClass::Set_Mission --
- *Sets the mission to the specified value.                     *
+ *   under. * MissionClass::MissionClass -- Default constructor for the mission
+ *   object type. * MissionClass::Mission_??? -- Stub mission functions that do
+ *   nothing. * MissionClass::Mission_From_Name -- Fetch order pointer from its
+ *   name. * MissionClass::Mission_Name -- Converts a mission number into an
+ *   ASCII string. * MissionClass::Override_Mission -- temporarily overrides the
+ *   units mission * MissionClass::Restore_Mission -- Restores overridden
+ * mission
+ *   * MissionClass::Set_Mission -- Sets the mission to the specified value. *
  *   MissionClass::Is_Recruitable_Mission -- Determines if this mission is
- *recruitable for a te*
+ *   recruitable for a te*
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
@@ -60,11 +58,9 @@
 #include "port/ex_string.h"
 #include "ra/bench_util.h"
 #include "ra/ccini.h"
-#include "ra/config.h"
 #include "ra/const.h"
 #include "ra/defines.h"
 #include "ra/externs.h"
-#include "ra/monoc.h"
 #include "ra/object.h"
 #include "tech/fixed.h"
 
@@ -170,37 +166,6 @@ MissionType MissionClass::Get_Mission() const {
   assert(IsActive);
 
   return Mission == MISSION_NONE ? MissionQueue : Mission;
-}
-
-/***********************************************************************************************
- * MissionClass::Debug_Dump -- Dumps status values to mono screen. *
- *                                                                                             *
- *    This is a debugging function that dumps this class' status to the
- *monochrome screen      * for review. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 05/28/1994 JLB : Created. *
- *=============================================================================================*/
-void MissionClass::Debug_Dump(MonoClass* mono) const {
-  if constexpr (config::kCheatKeysEnabled) {
-    assert(IsActive);
-
-    mono->Set_Cursor(1, 9);
-    mono->Printf("%-14s", MissionClass::Mission_Name(Mission));
-    mono->Set_Cursor(16, 9);
-    mono->Printf("%-12s", MissionClass::Mission_Name(MissionQueue));
-    mono->Set_Cursor(1, 7);
-    mono->Printf("%3d", MissionTimer.Value());
-    mono->Set_Cursor(6, 7);
-    mono->Printf("%2d", Status);
-
-    ObjectClass::Debug_Dump(mono);
-  }
 }
 
 /***********************************************************************************************

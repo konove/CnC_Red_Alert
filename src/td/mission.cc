@@ -34,18 +34,20 @@
  *                  Last Update : June 25, 1995 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions: * MissionClass::AI -- Processes order script. *
- *   MissionClass::Assign_Mission -- Give an order to a unit. *
- *   MissionClass::Commence -- Start script with new order. *
- *   MissionClass::Debug_Dump -- Dumps status values to mono screen. *
- *   MissionClass::Get_Mission -- Fetches the mission that this object is acting
- *under.        * MissionClass::MissionClass -- Default constructor for the
- *mission object type.            * MissionClass::Mission_From_Name -- Fetch
- *order pointer from its name.                     * MissionClass::Mission_Name
- *-- Converts a mission number into an ASCII string.             *
- *   MissionClass::Overide_Mission -- temporarily overides the units mission *
- *   MissionClass::Restore_Mission -- Restores overidden mission *
- *   MissionClass::Set_Mission -- Sets the mission to the specified value. *
+ * Functions:
+ *   MissionClass::AI -- Processes order script.
+ *   MissionClass::Assign_Mission -- Give an order to a unit.
+ *   MissionClass::Commence -- Start script with new order.
+ *   MissionClass::Get_Mission -- Fetches the mission that this object is
+ *     acting under.
+ *   MissionClass::MissionClass -- Default constructor for the mission
+ *     object type.
+ *   MissionClass::Mission_From_Name -- Fetch order pointer from its name.
+ *   MissionClass::Mission_Name -- Converts a mission number into an ASCII
+ *     string.
+ *   MissionClass::Overide_Mission -- temporarily overides the units mission
+ *   MissionClass::Restore_Mission -- Restores overidden mission
+ *   MissionClass::Set_Mission -- Sets the mission to the specified value.
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
@@ -68,11 +70,9 @@
 
 #include "base/enum_array.h"
 #include "port/ex_string.h"
-#include "td/config.h"
 #include "td/defines.h"
 #include "td/ftimer.h"
 #include "td/jshell.h"
-#include "td/monoc.h"
 #include "td/object.h"
 
 MissionClass::MissionClass() { Timer = 0; }
@@ -136,35 +136,6 @@ void MissionClass::Set_Mission(MissionType mission) {
  *=============================================================================================*/
 MissionType MissionClass::Get_Mission() const {
   return Mission == MISSION_NONE ? MissionQueue : Mission;
-}
-
-/***********************************************************************************************
- * MissionClass::Debug_Dump -- Dumps status values to mono screen. *
- *                                                                                             *
- *    This is a debugging function that dumps this class' status to the
- *monochrome screen      * for review. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 05/28/1994 JLB : Created. *
- *=============================================================================================*/
-void MissionClass::Debug_Dump(MonoClass* mono) const {
-  if constexpr (config::kCheatKeysEnabled) {
-    mono->Set_Cursor(21, 1);
-    mono->Printf("%5.5s[%4.4s]", MissionClass::Mission_Name(Mission),
-                 MissionClass::Mission_Name(MissionQueue));
-    //	mono->Text_Print(MissionClass::Mission_Name(Mission), 21, 1);
-    mono->Set_Cursor(20, 7);
-    mono->Printf("%2d", static_cast<int>(Timer));
-    mono->Set_Cursor(74, 1);
-    mono->Printf("%2d", Status);
-
-    ObjectClass::Debug_Dump(mono);
-  }
 }
 
 /***********************************************************************************************

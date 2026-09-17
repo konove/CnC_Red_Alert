@@ -34,53 +34,66 @@
  *                  Last Update : August 13, 1995 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions: * FootClass::Active_Click_With -- Intiates attack or move
- *according to target clicked on.   * FootClass::Active_Click_With -- Performs
- *action as a result of left mouse click.          * FootClass::Approach_Target
- *-- Sets the navigation computer to approach target object.     *
- *   FootClass::Assign_Destination -- Assigns specified destination to NavCom. *
- *   FootClass::Assign_Mission -- Assign mission to foot class object. *
- *   FootClass::Basic_Path -- Finds the basic path for a ground object. *
- *   FootClass::Body_Facing -- Set the body rotation/facing. *
- *   FootClass::Can_Demolish -- Checks to see if this object can be sold back. *
+ * Functions:
+ *   FootClass::Active_Click_With -- Intiates attack or move according to
+ *     target clicked on.
+ *   FootClass::Active_Click_With -- Performs action as a result of left
+ *     mouse click.
+ *   FootClass::Approach_Target -- Sets the navigation computer to approach
+ *     target object.
+ *   FootClass::Assign_Destination -- Assigns specified destination to
+ *     NavCom.
+ *   FootClass::Assign_Mission -- Assign mission to foot class object.
+ *   FootClass::Basic_Path -- Finds the basic path for a ground object.
+ *   FootClass::Body_Facing -- Set the body rotation/facing.
+ *   FootClass::Can_Demolish -- Checks to see if this object can be sold
+ *     back.
  *   FootClass::Can_Enter_Cell -- Checks to see if the object can enter cell
- *specified.        * FootClass::Death_Announcement -- Announces the death of a
- *unit.                           * FootClass::Debug_Dump -- Displays the status
- *of the FootClass to the mono monitor.        * FootClass::Detach -- Detaches a
- *target from tracking systems.                             *
- *   FootClass::Detach_All -- Removes this object from the game system. *
- *   FootClass::Enters_Building -- When unit enters a building for some reason.
- ** FootClass::FootClass -- Default constructor for foot class objects. *
- *   FootClass::FootClass -- Normal constructor for the foot class object. *
- *   FootClass::Greatest_Threat -- Fetches the greatest threat to this object. *
+ *     specified.
+ *   FootClass::Death_Announcement -- Announces the death of a unit.
+ *   FootClass::Detach -- Detaches a target from tracking systems.
+ *   FootClass::Detach_All -- Removes this object from the game system.
+ *   FootClass::Enters_Building -- When unit enters a building for some
+ *     reason.
+ *   FootClass::FootClass -- Default constructor for foot class objects.
+ *   FootClass::FootClass -- Normal constructor for the foot class object.
+ *   FootClass::Greatest_Threat -- Fetches the greatest threat to this
+ *     object.
  *   FootClass::Likely_Coord -- Fetches the coordinate the object will be at
- *shortly.          * FootClass::Limbo -- Intercepts limbo event and handles
- *FootClass processing.              * FootClass::Mark -- Unit interface to map
- *rendering system.                                * FootClass::Mission_Attack
- *-- AI for heading towards and firing upon target.               *
- *   FootClass::Mission_Capture -- Handles the capture mission. *
- *   FootClass::Mission_Enter -- Enter (cooperatively) mission handler. *
- *   FootClass::Mission_Guard_Area -- Causes unit to guard an area about twice
- *weapon range.   * FootClass::Mission_Hunt -- Handles the default hunt order. *
+ *     shortly.
+ *   FootClass::Limbo -- Intercepts limbo event and handles FootClass
+ *     processing.
+ *   FootClass::Mark -- Unit interface to map rendering system.
+ *   FootClass::Mission_Attack -- AI for heading towards and firing upon
+ *     target.
+ *   FootClass::Mission_Capture -- Handles the capture mission.
+ *   FootClass::Mission_Enter -- Enter (cooperatively) mission handler.
+ *   FootClass::Mission_Guard_Area -- Causes unit to guard an area about
+ *     twice weapon range.
+ *   FootClass::Mission_Hunt -- Handles the default hunt order.
  *   FootClass::Mission_Move -- AI process for moving a vehicle to its
- *destination.            * FootClass::Offload_Tiberium_Bail -- Fetches the
- *Tiberium to offload per step.             * FootClass::Override_Mission --
- *temporarily overides a units mission                       *
+ *     destination.
+ *   FootClass::Offload_Tiberium_Bail -- Fetches the Tiberium to offload per
+ *     step.
+ *   FootClass::Override_Mission -- temporarily overides a units mission
  *   FootClass::Per_Cell_Process -- Perform action based on once-per-cell
- *condition.           * FootClass::Receive_Message -- Movement related radio
- *messages are handled here.           * FootClass::Rescue_Mission -- Calls this
- *unit to the rescue.                               * FootClass::Restore_Mission
- *-- Restores an overidden mission                               *
- *   FootClass::Sell_Back -- Causes this object to be sold back. *
- *   FootClass::Set_Speed -- Initiate unit movement physics. * FootClass::Sort_Y
- *-- Determine the sort coordinate for foot class objects.                *
+ *     condition.
+ *   FootClass::Receive_Message -- Movement related radio messages are
+ *     handled here.
+ *   FootClass::Rescue_Mission -- Calls this unit to the rescue.
+ *   FootClass::Restore_Mission -- Restores an overidden mission
+ *   FootClass::Sell_Back -- Causes this object to be sold back.
+ *   FootClass::Set_Speed -- Initiate unit movement physics.
+ *   FootClass::Sort_Y -- Determine the sort coordinate for foot class
+ *     objects.
  *   FootClass::Start_Driver -- This starts the driver heading to the
- *destination desired.     * FootClass::Stop_Driver -- This routine clears the
- *driving state of the object.            * FootClass::Stun -- Prepares a ground
- *travelling object for removal.                       * FootClass::Take_Damage
- *-- Handles taking damage to this object.                           *
- *   FootClass::Unlimbo -- Unlimbos object and performs special fixups. *
- *   FootClass::~FootClass -- Default destructor for foot class objects. *
+ *     destination desired.
+ *   FootClass::Stop_Driver -- This routine clears the driving state of the
+ *     object.
+ *   FootClass::Stun -- Prepares a ground travelling object for removal.
+ *   FootClass::Take_Damage -- Handles taking damage to this object.
+ *   FootClass::Unlimbo -- Unlimbos object and performs special fixups.
+ *   FootClass::~FootClass -- Default destructor for foot class objects.
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
@@ -90,7 +103,6 @@
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
-#include <iterator>
 
 #include "base/array.h"
 #include "base/buffer.h"
@@ -100,7 +112,6 @@
 #include "td/audio.h"
 #include "td/building.h"
 #include "td/cell.h"
-#include "td/config.h"
 #include "td/const.h"
 #include "td/coord.h"
 #include "td/defines.h"
@@ -114,7 +125,6 @@
 #include "td/inline.h"
 #include "td/jshell.h"
 #include "td/mapedit.h"
-#include "td/monoc.h"
 #include "td/object.h"
 #include "td/queue.h"
 #include "td/radio.h"
@@ -232,71 +242,6 @@ FootClass::FootClass(HousesType house)
   PathDelay = 0;
 
   House->CurUnits++;
-}
-
-/***********************************************************************************************
- * FootClass::Debug_Dump -- Displays the status of the FootClass to the mono
- *monitor.          *
- *                                                                                             *
- *    This routine is used to output the current status of the foot class to the
- *mono          * monitor. Through this display bugs may be tracked down or
- *eliminated.                    *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 06/02/1994 JLB : Created. * 07/04/1995 JLB : Handles aircraft
- *special case.                                           *
- *=============================================================================================*/
-void FootClass::Debug_Dump(MonoClass* mono) const {
-  if constexpr (config::kCheatKeysEnabled) {
-    static const char* _p2c[9] = {"-", "0", "1", "2", "3", "4", "5", "6", "7"};
-
-    /*
-    **	Display the common data for all objects that inherity from FootClass.
-    */
-    mono->Set_Cursor(63, 7);
-    if (Team) {
-      mono->Printf("%s(%d)", Team->Class->IniName, Teams.ID(Team));
-    } else {
-      mono->Printf("(none)");
-    }
-    mono->Set_Cursor(73, 7);
-    mono->Printf("%04X", ArchiveTarget);
-    mono->Set_Cursor(42, 1);
-    mono->Printf("%04X", NavCom);
-    mono->Set_Cursor(44, 3);
-    mono->Printf("%d", Speed);
-
-    /*
-    **	Although aircraft inherit from FootClass, some of the variables are not
-    **	used and thus should not be displayed.
-    */
-    if (What_Am_I() != RTTI_AIRCRAFT) {
-      // The original printed a fixed 13 entries, four of which read past the
-      // end of Path. Walk the array instead.
-      for (int index = 0; index < kConquerPathMax; index++) {
-        mono->Set_Cursor(50 + index, 3);
-        mono->Printf(
-            "%s",
-            base::At(_p2c,
-                     std::abs(static_cast<int>(base::At(Path, index)) + 1) %
-                         std::ssize(_p2c)));
-      }
-
-      mono->Set_Cursor(65, 1);
-      mono->Printf("%08lX", Head_To_Coord());
-      mono->Text_Print("X", 16 + (IsDeploying ? 2 : 0), 12);
-      mono->Text_Print("X", 16 + (IsRotating ? 2 : 0), 13);
-      mono->Text_Print("X", 16 + (IsDriving ? 2 : 0), 15);
-      mono->Text_Print("X", 16 + (IsFiring ? 2 : 0), 14);
-      mono->Text_Print("X", 16 + (IsPlanningToLook ? 2 : 0), 16);
-    }
-    TechnoClass::Debug_Dump(mono);
-  }
 }
 
 /***********************************************************************************************

@@ -202,7 +202,6 @@
 #include "tech/mix_archive.h"
 #include "tech/random.h"
 
-#define SHOW_MONO 0
 // #define OLDWAY			1
 
 // Size of the heap buffers holding the "xxx's Game" entries of the game list:
@@ -1724,23 +1723,10 @@ static int Net_Join_Dialog() {
   Send_Join_Queries(game_index, joinstate, 1, 0, 1, namebuf, 1);
   Load_Title_Page(true);
   CCPalette.Set();  // GamePalette.Set();
-
-//------------------------------------------------------------------------
-//	Init Mono Output
-//------------------------------------------------------------------------
-#if (SHOW_MONO)
-  Ipx.Configure_Debug(-1, sizeof(GlobalHeaderType), sizeof(NetCommandType),
-                      GlobalPacketNames, 0, 13);
-  Ipx.Mono_Debug_Print(-1, 1);
-#endif
-  // char *fred;
   //------------------------------------------------------------------------
   //	Processing loop
   //------------------------------------------------------------------------
   while (process) {
-#if (SHOW_MONO)
-    Ipx.Mono_Debug_Print(-1, 0);
-#endif
 
     /*
     ** Kludge to make sure we redraw the message input line when it loses focus.
@@ -4434,9 +4420,6 @@ static int Net_New_Dialog() {
   //	Processing loop
   //------------------------------------------------------------------------
   while (process) {
-#if (SHOW_MONO)
-    Ipx.Mono_Debug_Print(-1, 0);
-#endif
 
     /*
     ** If we have just received input focus again after running in the

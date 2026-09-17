@@ -61,8 +61,7 @@
  *   IPXManagerClass::Global_Response_Time -- Returns Avg Response Time    *
  *   IPXManagerClass::Reset_Response_Time -- Reset response time
  ** IPXManagerClass::Oldest_Send -- gets ptr to oldest send buf           *
- *   IPXManagerClass::Mono_Debug_Print -- debug output routine
- ** IPXManagerClass::Alloc_RealMode_Mem -- allocates real-mode memory *
+ *   IPXManagerClass::Alloc_RealMode_Mem -- allocates real-mode memory *
  *   IPXManagerClass::Free_RealMode_Mem -- frees real-mode memory
  **
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
@@ -78,6 +77,7 @@
 #include <span>
 #include <utility>
 
+#include "absl/log/log.h"
 #include "base/array.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
@@ -94,7 +94,6 @@
 #include "ra/ipxaddr.h"
 #include "ra/ipxconn.h"
 #include "ra/ipxgconn.h"
-#include "ra/monoc.h"
 #include "ra/session.h"
 #include "ra/vector_dynamic.h"
 #include "ra/wsproto.h"
@@ -182,8 +181,6 @@ IPXManagerClass::IPXManagerClass(int glb_maxlen, int pvt_maxlen,
   }
   GlobalChannel = nullptr;
 
-  SendOverflows = 0;
-  ReceiveOverflows = 0;
   BadConnection = kConnectionNone;
 
   //------------------------------------------------------------------------
@@ -752,7 +749,7 @@ int IPXManagerClass::Send_Global_Message(std::span<const std::byte> buf,
 
   const int rc = GlobalChannel->Send_Packet(buf, buflen, address, ack_req);
   if (!rc) {
-    SendOverflows++;
+    DLOG(WARNING) << "IPX global send queue overflow; packet dropped";
   }
 
   return rc;
@@ -838,7 +835,8 @@ int IPXManagerClass::Send_Private_Message(std::span<const std::byte> buf,
     for (int i = 0; i < NumConnections; i++) {
       if (base::At(Connection, i)->Queue->Num_Send() ==
           base::At(Connection, i)->Queue->Max_Send()) {
-        SendOverflows++;
+        DLOG(WARNING) << "IPX send queue full for connection " << i
+                      << "; broadcast dropped";
         return 0;
       }
     }
@@ -858,7 +856,7 @@ int IPXManagerClass::Send_Private_Message(std::span<const std::byte> buf,
   const int connect_idx =
       Connection_Index(conn_id);  // index of channel to send to, if specified
   if (connect_idx == kConnectionNone) {
-    SendOverflows++;
+    DLOG(WARNING) << "IPX send to unknown connection " << conn_id;
     return 0;
   }
 
@@ -867,7 +865,8 @@ int IPXManagerClass::Send_Private_Message(std::span<const std::byte> buf,
   //.....................................................................
   if (base::At(Connection, connect_idx)->Queue->Num_Send() ==
       base::At(Connection, connect_idx)->Queue->Max_Send()) {
-    SendOverflows++;
+    DLOG(WARNING) << "IPX send queue full for connection " << connect_idx
+                  << "; packet dropped";
     return 0;
   }
 
@@ -1006,7 +1005,7 @@ int IPXManagerClass::Service() {
           */
           if (!GlobalChannel->Receive_Packet(cur_data_buf, packetlen,
                                              &address)) {
-            ReceiveOverflows++;
+            DLOG(WARNING) << "IPX global receive queue overflow; packet lost";
           }
         } else {
           if (packet->MagicNumber == ProductID) {
@@ -1019,7 +1018,8 @@ int IPXManagerClass::Service() {
                 found_address = true;
                 if (!base::At(Connection, i)
                          ->Receive_Packet(cur_data_buf, packetlen)) {
-                  ReceiveOverflows++;
+                  DLOG(WARNING) << "IPX receive queue overflow for connection "
+                                << i << "; packet lost";
                 }
                 break;
               }
@@ -1465,125 +1465,6 @@ void IPXManagerClass::Set_Bridge(NetNumType bridge) {
   }
 
 } /* end of Set_Bridge */
-
-/***************************************************************************
- * IPXManagerClass::Configure_Debug -- sets up special debug values        *
- *                                                                         *
- * Mono_Debug_Print2() can look into a packet to pull out a particular * ID, and
- *can print both that ID and a string corresponding to * that ID.  This routine
- *configures these values so it can find				* and
- * decode the ID.  This ID is used in addition to the normal
- *	* CommHeaderType values.
- **
- *                                                                         *
- * INPUT:                                                                  *
- *		index				connection index to configure
- *(-1 = Global Channel)	* type_offset		ID's byte offset into packet
- ** type_size		size of ID, in bytes; 0 if none
- ** names				ptr to array of names; use ID as an
- *index into this	* namestart		numerical value of 1st name in
- *the array					* namecount		# in the
- *names array; 0 if none.
- **
- *                                                                         *
- * OUTPUT:                                                                 *
- *		none.
- **
- *                                                                         *
- * WARNINGS:                                                               *
- *		Names shouldn't be longer than 12 characters.
- **
- *                                                                         *
- * HISTORY:                                                                *
- *   05/31/1995 BRR : Created.                                             *
- *=========================================================================*/
-void IPXManagerClass::Configure_Debug(int index, int type_offset, int type_size,
-                                      const char** names, int namestart,
-                                      int namecount) {
-  if (index == -1) {
-    GlobalChannel->Queue->Configure_Debug(type_offset, type_size, names,
-                                          namestart, namecount);
-  } else if (base::At(Connection, index)) {
-    base::At(Connection, index)
-        ->Queue->Configure_Debug(type_offset, type_size, names, namestart,
-                                 namecount);
-  }
-
-} /* end of Configure_Debug */
-
-/***************************************************************************
- * IPXManagerClass::Mono_Debug_Print -- debug output routine
- **
- *                                                                         *
- * INPUT:                                                                  *
- *		index			index of connection to display (-1 =
- *Global Channel)		* refresh		1 = complete screen
- *refresh *
- *                                                                         *
- * OUTPUT:                                                                 *
- *		1 = OK, 0 = error
- **
- *                                                                         *
- * WARNINGS:                                                               *
- *		none.
- **
- *                                                                         *
- * HISTORY:                                                                *
- *   01/25/1995 BR : Created.                                              *
- *=========================================================================*/
-void IPXManagerClass::Mono_Debug_Print(int index, int refresh) {
-  char txt[80];
-  int i = 0;
-
-  // Both branches print the shared comm-buffer state; the connection only has
-  // to exist.
-  if (index == -1 || base::At(Connection, index)) {
-    CommBufferClass::Mono_Debug_Print(refresh);
-  }
-
-  if (refresh) {
-    Mono_Set_Cursor(20, 1);
-    Mono_Printf("IPX Queue:");
-
-    Mono_Set_Cursor(9, 2);
-    Mono_Printf("Average Response Time:");
-
-    Mono_Set_Cursor(43, 1);
-    Mono_Printf("Send Overflows:");
-
-    Mono_Set_Cursor(40, 2);
-    Mono_Printf("Receive Overflows:");
-  }
-
-  Mono_Set_Cursor(32, 1);
-  Mono_Printf("%d", index);
-
-  Mono_Set_Cursor(32, 2);
-  if (index == -1) {
-    Mono_Printf("%d  ", GlobalChannel->Queue->Avg_Response_Time());
-  } else {
-    Mono_Printf("%d  ",
-                base::At(Connection, index)->Queue->Avg_Response_Time());
-  }
-
-  Mono_Set_Cursor(59, 1);
-  Mono_Printf("%d  ", SendOverflows);
-
-  Mono_Set_Cursor(59, 2);
-  Mono_Printf("%d  ", ReceiveOverflows);
-
-  for (i = 0; i < NumBufs; i++) {
-    if (base::ToSize(i) < BufferFlags.size() &&
-        base::At(BufferFlags, base::ToSize(i)) != 0) {
-      base::At(txt, i) = 'X';
-    } else {
-      base::At(txt, i) = '_';
-    }
-  }
-  base::At(txt, i) = 0;
-  Mono_Set_Cursor((80 - NumBufs) / 2, 3);
-  Mono_Printf("%s", txt);
-} /* end of Mono_Debug_Print */
 
 /***************************************************************************
  * IPXManagerClass::Alloc_RealMode_Mem -- allocates real-mode memory

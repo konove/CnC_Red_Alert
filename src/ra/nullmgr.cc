@@ -74,7 +74,6 @@
 #include "port/safe_string.h"
 #include "port/unaligned.h"
 #include "ra/combuf.h"
-#include "ra/config.h"
 #include "ra/connect.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"
@@ -638,7 +637,7 @@ int NullModemClass::Send_Message(std::span<const std::byte> buf, int buflen,
 
   const int rc = Connection->Send_Packet(buf, buflen, ack_req);
   if (!rc) {
-    SendOverflows++;
+    DLOG(WARNING) << "Serial send queue overflow; packet dropped";
   }
 
   return rc;
@@ -836,7 +835,7 @@ int NullModemClass::Service() {
           std::as_writable_bytes(std::span(RXBuf))
               .subspan(base::ToSize(pos) + sizeof(SerialHeaderType)),
           length) != crc.SerialCRC) {
-    CRCErrors++;
+    DLOG(WARNING) << "Serial packet failed its CRC check; packet dropped";
 
 #if (CONN_DEBUG)
     printf("CRC check failed\n");
@@ -865,8 +864,7 @@ int NullModemClass::Service() {
           std::as_writable_bytes(std::span(RXBuf))
               .subspan(base::ToSize(pos) + sizeof(SerialHeaderType)),
           length)) {
-    ReceiveOverflows++;
-    // Smart_Printf( "Received overflows %d \n", ReceiveOverflows );
+    DLOG(WARNING) << "Serial receive queue overflow; packet lost";
   }
 
   /*------------------------------------------------------------------------
@@ -1000,82 +998,6 @@ std::span<const std::byte> NullModemClass::Oldest_Send() {
   return buf;
 
 } /* end of Oldest_Send */
-
-/***************************************************************************
- * NullModemClass::Configure_Debug -- sets up special debug values         *
- *                                                                         *
- * Mono_Debug_Print2() can look into a packet to pull out a particular * ID, and
- *can print both that ID and a string corresponding to * that ID.  This routine
- *configures these values so it can find				* and
- * decode the ID.  This ID is used in addition to the normal
- *	* CommHeaderType values.
- **
- *                                                                         *
- * INPUT:                                                                  *
- *		index			(not used)
- ** type_offset		ID's byte offset into packet
- ** type_size		size of ID, in bytes; 0 if none
- ** names				ptr to array of names; use ID as an
- *index into this	* namestart		numerical start of the 1st name
- *value						* namecount		# in the
- *names array; 0 if none.
- **
- *                                                                         *
- * OUTPUT:                                                                 *
- *		none.
- **
- *                                                                         *
- * WARNINGS:                                                               *
- *		Names shouldn't be longer than 12 characters.
- **
- *                                                                         *
- * HISTORY:                                                                *
- *   05/31/1995 BRR : Created.                                             *
- *=========================================================================*/
-void NullModemClass::Configure_Debug(int /*index*/, int type_offset,
-                                     int type_size, const char** names,
-                                     int namestart, int namecount) {
-  if (Connection) {
-    Connection->Queue->Configure_Debug(type_offset, type_size, names, namestart,
-                                       namecount);
-  }
-}
-
-/***************************************************************************
- * Mono_Debug_Print -- Debug output routine                                *
- *                                                                         *
- * INPUT:                                                                  *
- *		index			(not used)
- ** refresh		1 = clear screen & completely refresh
- **
- *                                                                         *
- * OUTPUT:                                                                 *
- *		none.
- **
- *                                                                         *
- * WARNINGS:                                                               *
- *		none.
- **
- *                                                                         *
- * HISTORY:                                                                *
- *   05/02/1995 BRR : Created.                                             *
- *=========================================================================*/
-void NullModemClass::Mono_Debug_Print(int /*index*/, int refresh) {
-  if constexpr (config::kCheatKeysEnabled) {
-    if (!Connection) {
-      return;
-    }
-
-    CommBufferClass::Mono_Debug_Print(refresh);
-
-    DLOG(INFO) << "Serial Port Queues: "
-               << "AvgResponseTime=" << Connection->Queue->Avg_Response_Time()
-               << " CRCErrors=" << CRCErrors
-               << " SendOverflows=" << SendOverflows
-               << " ReceiveOverflows=" << ReceiveOverflows
-               << " NumSend=" << Num_Send() << " NumReceive=" << Num_Receive();
-  }
-} /* end of Mono_Debug_Print */
 
 /***************************************************************************
  * NullModemClass::Detect_Modem -- Detects and initializes the modem       *

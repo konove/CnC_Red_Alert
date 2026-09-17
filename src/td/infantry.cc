@@ -34,61 +34,78 @@
  *                  Last Update : August 15, 1995   [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions: * InfantryClass::AI -- Handles the infantry non-graphic related AI
- *processing.              * InfantryClass::Active_Click_With -- Handles action
- *when clicking with infantry soldier.   * InfantryClass::As_Target -- Converts
- *the infantry unit into a target value.               *
+ * Functions:
+ *   InfantryClass::AI -- Handles the infantry non-graphic related AI
+ *     processing.
+ *   InfantryClass::Active_Click_With -- Handles action when clicking with
+ *     infantry soldier.
+ *   InfantryClass::As_Target -- Converts the infantry unit into a target
+ *     value.
  *   InfantryClass::Assign_Destination -- Gives the infantry a movement
- *destination.           * InfantryClass::Assign_Mission -- Make sure he's out
- *of boxing mode first                  * InfantryClass::Assign_Target -- Gives
- *the infantry a combat target.                       *
- *   InfantryClass::Can_Enter_Cell -- Determines if the infantry can enter the
- *cell specified. * InfantryClass::Can_Fire -- Can the infantry fire its weapon?
- ** InfantryClass::Clear_Occupy_Bit -- Clears occupy bit and given cell *
- *   InfantryClass::Debug_Dump -- Displays debug information about infantry
- *unit.              * InfantryClass::Detach -- Removes the specified target
- *from targeting computer.            * InfantryClass::Do_Action -- Launches the
- *infantry into an animation sequence.             * InfantryClass::Draw_It --
- *Draws a unit object.                                            *
+ *     destination.
+ *   InfantryClass::Assign_Mission -- Make sure he's out of boxing mode
+ *     first
+ *   InfantryClass::Assign_Target -- Gives the infantry a combat target.
+ *   InfantryClass::Can_Enter_Cell -- Determines if the infantry can enter
+ *     the cell specified.
+ *   InfantryClass::Can_Fire -- Can the infantry fire its weapon?
+ *   InfantryClass::Clear_Occupy_Bit -- Clears occupy bit and given cell
+ *   InfantryClass::Detach -- Removes the specified target from targeting
+ *     computer.
+ *   InfantryClass::Do_Action -- Launches the infantry into an animation
+ *     sequence.
+ *   InfantryClass::Draw_It -- Draws a unit object.
  *   InfantryClass::Enter_Idle_Mode -- The infantry unit enters idle mode by
- *this routine.     * InfantryClass::Fire_At -- Fires projectile from infantry
- *unit.                            * InfantryClass::Fire_Coord -- Calculates the
- *origin point for projectiles fired.           * InfantryClass::Greatest_Threat
- *-- Determines greatest threat (target) for infantry unit.  *
- *   InfantryClass::InfantryClass -- The constructor for infantry objects. *
- *   InfantryClass::Init -- Initialize the infantry object system. *
- *   InfantryClass::Limbo -- Performs cleanup operations needed when limboing. *
- *   InfantryClass::Look -- The infantry performs a look operation. *
- *   InfantryClass::Made_A_Kill -- Marks a kill caused by this infantry soldier.
- ** InfantryClass::Overlap_List -- The list of cells that the infantry overlaps,
- *but doesn't occ* InfantryClass::Per_Cell_Process -- Handles special operations
- *that occur once per cell.   * InfantryClass::Random_Animate -- Randomly
- *animate the infantry (maybe)                    * InfantryClass::Read_INI --
- *Reads units from scenario INI file.                            *
- *   InfantryClass::Rearm_Delay -- Return Arming delay for infantry if boxing *
- *   InfantryClass::Receive_Message -- Process radio messages *
- *   InfantryClass::Response_Attack -- Plays infantry audio response to attack
- *order.          * InfantryClass::Response_Move -- Plays infantry response to
- *movement order.                * InfantryClass::Response_Select -- Plays
- *infantry audio response due to being selected.    * InfantryClass::Scatter --
- *Causes the infantry to scatter to nearby cell.                  *
+ *     this routine.
+ *   InfantryClass::Fire_At -- Fires projectile from infantry unit.
+ *   InfantryClass::Fire_Coord -- Calculates the origin point for
+ *     projectiles fired.
+ *   InfantryClass::Greatest_Threat -- Determines greatest threat (target)
+ *     for infantry unit.
+ *   InfantryClass::InfantryClass -- The constructor for infantry objects.
+ *   InfantryClass::Init -- Initialize the infantry object system.
+ *   InfantryClass::Limbo -- Performs cleanup operations needed when
+ *     limboing.
+ *   InfantryClass::Look -- The infantry performs a look operation.
+ *   InfantryClass::Made_A_Kill -- Marks a kill caused by this infantry
+ *     soldier.
+ *   InfantryClass::Overlap_List -- The list of cells that the infantry
+ *     overlaps, but doesn't occ
+ *   InfantryClass::Per_Cell_Process -- Handles special operations that
+ *     occur once per cell.
+ *   InfantryClass::Random_Animate -- Randomly animate the infantry (maybe)
+ *   InfantryClass::Read_INI -- Reads units from scenario INI file.
+ *   InfantryClass::Rearm_Delay -- Return Arming delay for infantry if
+ *     boxing
+ *   InfantryClass::Receive_Message -- Process radio messages
+ *   InfantryClass::Response_Attack -- Plays infantry audio response to
+ *     attack order.
+ *   InfantryClass::Response_Move -- Plays infantry response to movement
+ *     order.
+ *   InfantryClass::Response_Select -- Plays infantry audio response due to
+ *     being selected.
+ *   InfantryClass::Scatter -- Causes the infantry to scatter to nearby
+ *     cell.
  *   InfantryClass::Set_Occupy_Bit -- Sets the occupy bit cell and bit pos
- ** InfantryClass::Set_Primary_Facing -- Change infantry primary facing --
- *always and instantl* InfantryClass::Start_Driver -- Handles giving immediate
- *destination and move orders.      * InfantryClass::Stop_Driver -- Stops the
- *infantry from moving any further.                 * InfantryClass::Take_Damage
- *-- Applies damage to the infantry unit.                        *
- *   InfantryClass::Unlimbo -- Unlimbo infantry unit in legal sub-location. *
- *   InfantryClass::What_Action -- Infantry units might be able to capture --
- *check.           * InfantryClass::Write_INI -- Writes all the infantry out to
- *an INI file.                   * InfantryClass::operator delete -- Returns the
- *infantry object back to the free pool       * InfantryClass::operator new --
- *Allocates an infantry object from the free pool.           *
- *   InfantryClass::~InfantryClass -- Default destructor for infantry units. *
- *   InfantryClass::Full_Name -- Fetches the full name of the infantry unit. *
+ *   InfantryClass::Set_Primary_Facing -- Change infantry primary facing --
+ *     always and instantl
+ *   InfantryClass::Start_Driver -- Handles giving immediate destination and
+ *     move orders.
+ *   InfantryClass::Stop_Driver -- Stops the infantry from moving any
+ *     further.
+ *   InfantryClass::Take_Damage -- Applies damage to the infantry unit.
+ *   InfantryClass::Unlimbo -- Unlimbo infantry unit in legal sub-location.
+ *   InfantryClass::What_Action -- Infantry units might be able to capture
+ *     -- check.
+ *   InfantryClass::Write_INI -- Writes all the infantry out to an INI file.
+ *     * InfantryClass::operator delete -- Returns the infantry object back
+ *     to the free pool * InfantryClass::operator new -- Allocates an
+ *     infantry object from the free pool.
+ *   InfantryClass::~InfantryClass -- Default destructor for infantry units.
+ *   InfantryClass::Full_Name -- Fetches the full name of the infantry unit.
  *   InfantryClass::Mission_Attack -- Intercept attack mission for special
- *handling.           * InfantryClass::Validate -- validates infantry pointer.
- **
+ *     handling.
+ *   InfantryClass::Validate -- validates infantry pointer.
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
@@ -133,7 +150,6 @@
 #include "td/inline.h"
 #include "td/jshell.h"
 #include "td/mapedit.h"
-#include "td/monoc.h"
 #include "td/object.h"
 #include "td/profile.h"
 #include "td/radio.h"
@@ -228,94 +244,6 @@ int InfantryClass::Validate() const {
     return 1;
   } else {
     return 1;
-  }
-}
-
-/***********************************************************************************************
- * InfantryClass::Debug_Dump -- Displays debug information about infantry unit.
- **
- *                                                                                             *
- *    This routine is used by the debug version to display pertinent information
- *about the     * infantry unit. *
- *                                                                                             *
- * INPUT:   mono  -- The monochrome screen to display the debug information to.
- **
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 09/01/1994 JLB : Created. *
- *=============================================================================================*/
-void InfantryClass::Debug_Dump(MonoClass* mono) const {
-  if constexpr (config::kCheatKeysEnabled) {
-    Validate();
-    mono->Set_Cursor(0, 0);
-    mono->Print(
-        "┌Name:──────────────┬Mission:───┬TarCom:┬NavCom:┬Radio:┬Coord:"
-        "──┬HeadTo:"
-        "─┬St:─┐\n"
-        "│                   │           │       │       │      │        │     "
-        "  "
-        " │    │\n"
-        "├──────────────┬N┬Y┬Health:─┬Body:┬Turret:┬Speed:┬Path:┴──────┬Cargo:"
-        "────┴────┤\n"
-        "│Active........│ │ │        │     │       │      │            │       "
-        "  "
-        "      │\n"
-        "│Limbo.........│ │ "
-        "├────────┴─────┴───────┴──────┴────────────┴───────────────┤\n"
-        "│Owned.........│ │ │Last Message:                                     "
-        "  "
-        "      │\n"
-        "│Discovered....│ │ "
-        "├Timer:┬Arm:┬Track:┬Tiberium:┬Flash:┬Stage:┬Team:────┬Arch:┤\n"
-        "│Selected......│ │ │      │    │      │         │      │      │       "
-        "  "
-        "│     │\n"
-        "│Teathered.....│ │ "
-        "├──────┴────┴──────┴─────────┴──────┴──────┴─────────┴─────┘\n"
-        "│Locked on Map.│ │ │                                                  "
-        "  "
-        "       \n"
-        "│Is Prone......│ │ │                                                  "
-        "  "
-        "       \n"
-        "│Is A Loner....│ │ │                                                  "
-        "  "
-        "       \n"
-        "│Deploying.....│ │ │                                                  "
-        "  "
-        "       \n"
-        "│Rotating......│ │ │                                                  "
-        "  "
-        "       \n"
-        "│Firing........│ │ │                                                  "
-        "  "
-        "       \n"
-        "│Driving.......│ │ │                                                  "
-        "  "
-        "       \n"
-        "│To Look.......│ │ │                                                  "
-        "  "
-        "       \n"
-        "│Recoiling.....│ │ │                                                  "
-        "  "
-        "       \n"
-        "│To Display....│ │ │                                                  "
-        "  "
-        "       \n"
-        "└──────────────┴─┴─┘                                                  "
-        "  "
-        "       \n");
-    mono->Set_Cursor(1, 1);
-    mono->Printf("%s:%s", House->Class->IniName, Class->IniName);
-    mono->Text_Print("X", 16 + (IsProne ? 2 : 0), 10);
-    mono->Set_Cursor(33, 7);
-    mono->Printf("%2d", Fear);
-    mono->Set_Cursor(41, 7);
-    mono->Printf("%2d", Doing);
-    FootClass::Debug_Dump(mono);
   }
 }
 
@@ -473,9 +401,6 @@ ResultType InfantryClass::Take_Damage(int& damage, int distance,
     damage /= 2;
     //		damage = std::max(damage, 1);
   }
-
-  // Mono_Printf("Infantry Take_Damage(%d, %d, %d, %p)\r", damage, distance,
-  // warhead, source); Get_Key();
 
   res = FootClass::Take_Damage(damage, distance, warhead, source);
 
@@ -1425,7 +1350,6 @@ void InfantryClass::AI() {
             return;
           }
           if (!Basic_Path()) {
-            // Mono_Printf("Infantry Basic_Path is failing.\n");Get_Key();
             if (Distance(NavCom) < 0x0280 && !IsTethered) {
               Assign_Destination(kTargetNone);
             } else {

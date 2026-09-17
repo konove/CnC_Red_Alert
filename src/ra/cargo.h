@@ -41,7 +41,6 @@
 #define CNC_RED_ALERT_RA_CARGO_H_
 
 #include "ra/house.h"
-#include "ra/monoc.h"
 
 /****************************************************************************
 **	This class handles the basic cargo logic.
@@ -66,7 +65,6 @@ class CargoClass {
   **	Member function prototypes.
   */
 
-  virtual void Debug_Dump(MonoClass* mono) const;
   void AI() {}
 
   [[nodiscard]] int How_Many() const { return Quantity; }

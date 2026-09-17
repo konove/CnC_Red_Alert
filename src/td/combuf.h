@@ -147,13 +147,6 @@ class CommBufferClass {
   void Reset_Response_Time();                       // resets computations
 
   /*
-  ........................ Debug output routines ........................
-  */
-  void Configure_Debug(int offset, int size, const char** names, int maxnames);
-  void Mono_Debug_Print(int refresh = 0);
-  void Mono_Debug_Print2(int refresh = 0);
-
-  /*
   --------------------------- Private Interface ----------------------------
   */
  private:
@@ -187,14 +180,6 @@ class CommBufferClass {
   int ReceiveCount = 0;            // # packets in the queue
   uint32_t ReceiveTotal = 0;       // total # added to receive queue
   std::vector<int> ReceiveIndex;   // array of Receive entry indices
-
-  /*
-  ......................... Debugging Variables .........................
-  */
-  int DebugOffset = 0;  // offset into app's packet for ID
-  int DebugSize = 0;  // size of app's ID
-  const char** DebugNames = nullptr;  // ptr to array of app-specific names
-  int DebugMaxNames = 0;  // max # of names in array
 };
 
 #endif  // CNC_RED_ALERT_TD_COMBUF_H_

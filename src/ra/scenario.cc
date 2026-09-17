@@ -16,7 +16,6 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// Mono_Printf("%d %s\n",__LINE__,__FILE__);
 /* $Header: /CounterStrike/SCENARIO.CPP 15    3/13/97 2:06p Steve_tall $ */
 /***********************************************************************************************
  ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
@@ -870,9 +869,6 @@ void Do_Win() {
       GameActive = false;
       Show_Mouse();
       AntsEnabled = false;
-      //			Mono_Printf("Scenario.cpp one time only
-      // antsenabled is
-      // false\n");
       return;
     }
 
@@ -1765,8 +1761,6 @@ void ScenarioClass::Set_Scenario_Name(int scenario, ScenarioPlayerType player,
   /*
   ** generate the filename
   */
-  // Mono_Printf("In set_scenario_name, scenario # =
-  // %d\n",scenario);Keyboard->Get();Keyboard->Get();
   if (scenario < 100) {
     absl::SNPrintF(ScenarioName, sizeof(ScenarioName), "SC%c%02d%c%c.INI",
                    c_player, scenario, c_dir, c_var);
@@ -1858,8 +1852,6 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
     if (Scen.Scenario == 1 && base::At(Scen.ScenarioName, 2) != 'A') {
       RequiredCD = -1;
     } else {
-      //			Mono_Printf("Read_SCen_INI scenario is: %s\n",
-      // Scen.ScenarioName);
       /*
       ** If this is a multiplayer scenario we need to find out if its a
       *counterstrike
@@ -1907,8 +1899,6 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
             RequiredCD = 1;
           } else {
             if (base::At(Scen.ScenarioName, 2) == 'G') {
-              //							Mono_Printf("We
-              // are setting REquiredCD to 0");
               RequiredCD = 0;
             }
           }
@@ -1947,7 +1937,6 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
   //	file.Cache();
 
   if (!ini.Load(file, true)) {
-    //		Mono_Printf("ini.Load failed");
     return false;
   }
 

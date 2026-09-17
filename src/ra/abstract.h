@@ -43,7 +43,6 @@
 #include "ra/coord.h"
 #include "ra/defines.h"
 #include "ra/face.h"
-#include "ra/monoc.h"
 
 // Base class for all game objects that exist on the battlefield.
 class AbstractClass {
@@ -91,8 +90,6 @@ class AbstractClass {
   [[nodiscard]] virtual HousesType Owner() const { return HOUSE_NONE; }
   [[nodiscard]] TARGET As_Target() const { return Build_Target(RTTI, ID); }
   [[nodiscard]] RTTIType What_Am_I() const { return RTTI; }
-
-  virtual void Debug_Dump(MonoClass* mono) const;
 
   [[nodiscard]] virtual COORDINATE Center_Coord() const { return Coord; }
   [[nodiscard]] virtual COORDINATE Target_Coord() const { return Coord; }

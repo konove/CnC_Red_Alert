@@ -109,7 +109,6 @@
 #include "td/logic.h"
 #include "td/mapedit.h"
 #include "td/menus.h"
-#include "td/monoc.h"
 #include "td/mouse.h"
 #include "td/mplayer.h"
 #include "td/msgbox.h"
@@ -605,12 +604,6 @@ bool Init_Game(int /*unused*/, char* /*unused*/[]) {
 #endif
 
   //	malloc(2);
-
-  /*
-  **	Perform any special debug-only processing. This includes preparing the
-  **	monochrome screen.
-  */
-  Mono_Clear_Screen();
 
 #ifdef ONHOLD
   /*
@@ -2138,10 +2131,6 @@ void Anim_Init() {
   // if (!Debug_Quiet && Get_Digi_Handle() != -1) {
   // AnimControl.OptionFlags |= VQAOPTF_AUDIO;
   //}
-
-  if (MonoClass::Is_Enabled()) {
-    AnimControl.OptionFlags |= VQAOPTF_MONO;
-  }
 }
 
 /***********************************************************************************************
@@ -2323,7 +2312,6 @@ bool Parse_Command_Line(std::span<char*> arguments) {
           "     G : Growth for Tiberium slowed in multiplay.\r\n"
           "     I : Inert weapons -- no damage occurs.\r\n"
           "     J : 7th grade sound effects.\r\n"
-          "     M : Monochrome debug messages.\r\n"
           "     N : Name the civilians and buildings.\r\n"
           "     P : Path algorithm displayed as it works.\r\n"
           "     Q : Quiet mode (no sound).\r\n"
@@ -2597,15 +2585,6 @@ bool Parse_Command_Line(std::span<char*> arguments) {
 #endif
 
           /*
-          **	Monochrome debug screen enable.
-          */
-          case 'M':
-            if constexpr (config::kCheatKeysEnabled) {
-              Special.IsMonoEnabled = true;
-            }
-            break;
-
-          /*
           **	Inert weapons -- no units take damage.
           */
           case 'I':
@@ -2694,9 +2673,6 @@ bool Parse_Command_Line(std::span<char*> arguments) {
         }
       }
 
-      if (Special.IsMonoEnabled) {
-        MonoClass::Enable();
-      }
       continue;
     }
   }

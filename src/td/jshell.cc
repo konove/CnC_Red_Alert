@@ -75,7 +75,6 @@
 #include "sdllib/tile.h"
 #include "sdllib/ww_win.h"
 #include "support.h"
-#include "td/monoc.h"
 #include "tech/file.h"
 #include "tech/game_file.h"
 
@@ -172,7 +171,6 @@ void Set_Window(int window, int x, int y, int w, int h) {
 void Fatal_Message(const std::string_view message) {
   Prog_End();
   absl::FPrintF(stderr, "%s", message);
-  Mono_Printf("%s", message);
   exit(EXIT_FAILURE);
 }
 

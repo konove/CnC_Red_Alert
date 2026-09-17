@@ -46,7 +46,6 @@
 
 #include "td/abstract.h"
 #include "td/defines.h"
-#include "td/monoc.h"
 
 class TechnoClass;
 class ObjectTypeClass;
@@ -251,14 +250,6 @@ class ObjectClass : public AbstractClass {
   virtual void Repair(int /*unused*/);
   virtual void Sell_Back(int /*unused*/);
 
-  /*
-  **	File I/O.
-  */
-
-  /*
-  **	Scenario and debug support.
-  */
-  virtual void Debug_Dump(MonoClass* mono) const;
   virtual void Move(FacingType /*facing*/);
 };
 

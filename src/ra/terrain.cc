@@ -35,30 +35,27 @@
  *---------------------------------------------------------------------------------------------*
  * Functions: * TerrainClass::AI -- Process the terrain object AI. *
  *   TerrainClass::Can_Enter_Cell -- Determines if the terrain object can exist
- *in the cell.   * TerrainClass::Catch_Fire -- Catches the terrain object on
- *fire.                           * TerrainClass::Center_Coord -- Fetches the
- *center point coordinate for terrain object.     * TerrainClass::Debug_Dump --
- *Displays the status of the terrain object.                    *
- *   TerrainClass::Draw_It -- Renders the terrain object at the location
- *specified.            * TerrainClass::Fire_Out -- Handles when fire has gone
- *out.                                 * TerrainClass::Heath_Ratio -- Determines
- *the health ratio for the terrain object.          * TerrainClass::Init --
- *Initialize the terrain object tracking system.                      *
- *   TerrainClass::Limbo -- Handles terrain specific limbo action. *
- *   TerrainClass::Mark -- Marks the terrain object on the map. *
+ *   in the cell. * TerrainClass::Catch_Fire -- Catches the terrain object on
+ *   fire. * TerrainClass::Center_Coord -- Fetches the center point coordinate
+ *   for terrain object. * TerrainClass::Draw_It -- Renders the terrain object
+ * at the location specified. * TerrainClass::Fire_Out -- Handles when fire has
+ *   gone out. * TerrainClass::Heath_Ratio -- Determines the health ratio for
+ * the terrain object. * TerrainClass::Init -- Initialize the terrain object
+ *   tracking system. * TerrainClass::Limbo -- Handles terrain specific limbo
+ *   action. * TerrainClass::Mark -- Marks the terrain object on the map. *
  *   TerrainClass::Radar_Icon -- Fetches pointer to radar icon to use. *
  *   TerrainClass::Read_INI -- Reads terrain objects from INI file. *
  *   TerrainClass::Start_To_Crumble -- Initiates crumbling of terrain (tree)
- *object.           * TerrainClass::Take_Damage -- Damages the terrain object as
- *specified.                     * TerrainClass::Target_Coord -- Returns with
- *the target coordinate.                         * TerrainClass::TerrainClass --
- *This is the constructor for a terrain object.               *
- *   TerrainClass::Unlimbo -- Unlimbo terrain object onto the map. *
- *   TerrainClass::Write_INI -- Write all terrain objects to the INI database
- *specified.       * TerrainClass::delete -- Deletes a terrain object. *
+ *   object. * TerrainClass::Take_Damage -- Damages the terrain object as
+ *   specified. * TerrainClass::Target_Coord -- Returns with the target
+ *   coordinate. * TerrainClass::TerrainClass -- This is the constructor for a
+ *   terrain object. * TerrainClass::Unlimbo -- Unlimbo terrain object onto the
+ *   map. * TerrainClass::Write_INI -- Write all terrain objects to the INI
+ *   database specified. * TerrainClass::delete -- Deletes a terrain object. *
  *   TerrainClass::new -- Creates a new terrain object. *
  *   TerrainClass::~TerrainClass -- Default destructor for terrain class
- *objects.              *
+ * objects.
+ *   *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
@@ -77,7 +74,6 @@
 #include "ra/anim.h"
 #include "ra/ccini.h"
 #include "ra/cell.h"
-#include "ra/config.h"
 #include "ra/coord.h"
 #include "ra/defines.h"
 #include "ra/display.h"
@@ -88,7 +84,6 @@
 #include "ra/inline.h"
 #include "ra/keyframe.h"
 #include "ra/mapedit.h"
-#include "ra/monoc.h"
 #include "ra/mouse.h"
 #include "ra/object.h"
 #include "ra/rules.h"
@@ -526,29 +521,6 @@ void TerrainClass::AI() {
 
       Map.Zone_Reset(kZoneFlagNormal | kZoneFlagCrusher | kZoneFlagDestroyer);
     }
-  }
-}
-
-/***********************************************************************************************
- * TerrainClass::Debug_Dump -- Displays the status of the terrain object. *
- *                                                                                             *
- *    This debugging support routine is used to display the status of the
- *terrain object to    * the debug screen. *
- *                                                                                             *
- * INPUT:   mono  -- The mono screen to display the status to. *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 09/27/1994 JLB : Created. *
- *=============================================================================================*/
-void TerrainClass::Debug_Dump(MonoClass* mono) const {
-  if constexpr (config::kCheatKeysEnabled) {
-    assert(Terrains.ID(this) == ID);
-    assert(IsActive);
-
-    ObjectClass::Debug_Dump(mono);
   }
 }
 

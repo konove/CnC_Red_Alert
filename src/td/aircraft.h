@@ -33,7 +33,6 @@ class ArchiveWriter;
 #include "td/fly.h"
 #include "td/foot.h"
 #include "td/ftimer.h"
-#include "td/monoc.h"
 #include "td/object.h"
 #include "td/radio.h"
 #include "td/techno.h"
@@ -144,11 +143,6 @@ class AircraftClass : public FootClass, public FlyClass {
   RadioMessageType Receive_Message(RadioClass* from, RadioMessageType message,
                                    int32_t& param) override;
   void Scatter(COORDINATE threat, bool forced = false) override;
-
-  /*
-   **	Scenario and debug support.
-   */
-  void Debug_Dump(MonoClass* mono) const override;
 
   /*
   **	File I/O.

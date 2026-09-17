@@ -34,100 +34,133 @@
  *                  Last Update : August 23, 1995 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions: * TechnoClass::AI -- Handles AI processing for techno object. *
+ * Functions:
+ *   TechnoClass::AI -- Handles AI processing for techno object.
  *   TechnoClass::Assign_Destination -- Assigns movement destination to the
- *object.            * TechnoClass::Assign_Target -- Assigns the targeting
- *computer with specified target.       * TechnoClass::Base_Is_Attacked --
- *Handle panic response to base being attacked.            *
- *   TechnoClass::Can_Fire -- Determines if this techno object can fire. *
+ *     object.
+ *   TechnoClass::Assign_Target -- Assigns the targeting computer with
+ *     specified target.
+ *   TechnoClass::Base_Is_Attacked -- Handle panic response to base being
+ *     attacked.
+ *   TechnoClass::Can_Fire -- Determines if this techno object can fire.
  *   TechnoClass::Can_Player_Fire -- Determines if the player can give this
- *object a fire order* TechnoClass::Can_Player_Move -- Determines if the object
- *can move be moved by player.     * TechnoClass::Can_Repair -- Determines if
- *the object can and should be repaired.           * TechnoClass::Captured --
- *Handles capturing this object.                                   *
+ *     object a fire order
+ *   TechnoClass::Can_Player_Move -- Determines if the object can move be
+ *     moved by player.
+ *   TechnoClass::Can_Repair -- Determines if the object can and should be
+ *     repaired.
+ *   TechnoClass::Captured -- Handles capturing this object.
  *   TechnoClass::Clicked_As_Target -- Sets the flash count for this techno
- *object.            * TechnoClass::Crew_Type -- Fetches the kind of crew this
- *object contains.                  * TechnoClass::Debug_Dump -- Displays the
- *base class data to the monochrome screen.         *
+ *     object.
+ *   TechnoClass::Crew_Type -- Fetches the kind of crew this object
+ *     contains.
  *   TechnoClass::Desired_Load_Dir -- Fetches loading parameters for this
- *object.              * TechnoClass::Detach -- Handles removal of target from
- *tracking system.                    * TechnoClass::Do_Cloak -- Start the
- *object into cloaking stage.                            *
- *   TechnoClass::Do_Shimmer -- Causes this object to shimmer if it is cloaked.
- ** TechnoClass::Do_Uncloak -- Cause the stealth tank to uncloak. *
- *   TechnoClass::Draw_It -- Draws the health bar (if necessary). *
+ *     object.
+ *   TechnoClass::Detach -- Handles removal of target from tracking system.
+ *   TechnoClass::Do_Cloak -- Start the object into cloaking stage.
+ *   TechnoClass::Do_Shimmer -- Causes this object to shimmer if it is
+ *     cloaked.
+ *   TechnoClass::Do_Uncloak -- Cause the stealth tank to uncloak.
+ *   TechnoClass::Draw_It -- Draws the health bar (if necessary).
  *   TechnoClass::Draw_Pips -- Draws the transport pips and other techno
- *graphics.             * TechnoClass::Enter_Idle_Mode -- Object enters its
- *default idle condition.                 * TechnoClass::Evaluate_Cell --
- *Determine the value and object of specified cell.           *
- *   TechnoClass::Evaluate_Object -- Determines score value of specified object.
- ** TechnoClass::Exit_Object -- Causes specified object to leave this object. *
- *   TechnoClass::Find_Docking_Bay -- Searches for a close docking bay. *
+ *     graphics.
+ *   TechnoClass::Enter_Idle_Mode -- Object enters its default idle
+ *     condition.
+ *   TechnoClass::Evaluate_Cell -- Determine the value and object of
+ *     specified cell.
+ *   TechnoClass::Evaluate_Object -- Determines score value of specified
+ *     object.
+ *   TechnoClass::Exit_Object -- Causes specified object to leave this
+ *     object.
+ *   TechnoClass::Find_Docking_Bay -- Searches for a close docking bay.
  *   TechnoClass::Find_Exit_Cell -- Finds an appropriate exit cell for this
- *object.            * TechnoClass::Fire_At -- Fires projectile at target
- *specified.                             * TechnoClass::Fire_Direction --
- *Fetches the direction projectile fire will take.           *
- *   TechnoClass::Get_Ownable -- Fetches the ownable bits for this object. *
+ *     object.
+ *   TechnoClass::Fire_At -- Fires projectile at target specified.
+ *   TechnoClass::Fire_Direction -- Fetches the direction projectile fire
+ *     will take.
+ *   TechnoClass::Get_Ownable -- Fetches the ownable bits for this object.
  *   TechnoClass::Greatest_Threat -- Determines best target given search
- *criteria.             * TechnoClass::Hidden -- Returns the object back into
- *the hidden state.                     * TechnoClass::In_Range -- Determines if
- *specified target is within weapon range.           * TechnoClass::In_Range --
- *Determines if specified target is within weapon range.           *
- *   TechnoClass::In_Range -- Determines if the specified coordinate is within
- *range.          * TechnoClass::Is_Techno -- Confirms that this is a
- *TechnoClass object.                     * TechnoClass::Is_Weapon_Equipped --
- *Determines if this object has a combat weapon.         *
- *   TechnoClass::Kill_Cargo -- Destroys any cargo attached to this object. *
- *   TechnoClass::Mark -- Handles marking of techno objects. *
+ *     criteria.
+ *   TechnoClass::Hidden -- Returns the object back into the hidden state.
+ *   TechnoClass::In_Range -- Determines if specified target is within
+ *     weapon range.
+ *   TechnoClass::In_Range -- Determines if specified target is within
+ *     weapon range.
+ *   TechnoClass::In_Range -- Determines if the specified coordinate is
+ *     within range.
+ *   TechnoClass::Is_Techno -- Confirms that this is a TechnoClass object.
+ *   TechnoClass::Is_Weapon_Equipped -- Determines if this object has a
+ *     combat weapon.
+ *   TechnoClass::Kill_Cargo -- Destroys any cargo attached to this object.
+ *   TechnoClass::Mark -- Handles marking of techno objects.
  *   TechnoClass::Nearby_Location -- Radiates outward looking for clear cell
- *nearby.           * TechnoClass::Owner -- Who is the owner of this object? *
+ *     nearby.
+ *   TechnoClass::Owner -- Who is the owner of this object?
  *   TechnoClass::Per_Cell_Process -- Handles once-per-cell operations for
- *techno type objects.* TechnoClass::Pip_Count -- Fetches the number of pips to
- *display on this object.           * TechnoClass::Player_Assign_Mission --
- *Assigns a mission as result of player input.        *
- *   TechnoClass::Random_Animate -- Performs some idle animation for the object.
- ** TechnoClass::Rearm_Delay -- Calculates the delay before firing can occur. *
- *   TechnoClass::Receive_Message -- Handles inbound message as appropriate. *
- *   TechnoClass::Record_The_Kill -- Records the death of this object. *
- *   TechnoClass::Remap_Table -- Fetches the appropriate remap table to use. *
+ *     techno type objects.
+ *   TechnoClass::Pip_Count -- Fetches the number of pips to display on this
+ *     object.
+ *   TechnoClass::Player_Assign_Mission -- Assigns a mission as result of
+ *     player input.
+ *   TechnoClass::Random_Animate -- Performs some idle animation for the
+ *     object.
+ *   TechnoClass::Rearm_Delay -- Calculates the delay before firing can
+ *     occur.
+ *   TechnoClass::Receive_Message -- Handles inbound message as appropriate.
+ *   TechnoClass::Record_The_Kill -- Records the death of this object.
+ *   TechnoClass::Remap_Table -- Fetches the appropriate remap table to use.
  *   TechnoClass::Response_Attack -- Handles the voice response when given
- *attack order.       * TechnoClass::Response_Move -- Handles the voice repsonse
- *to a movement request.           * TechnoClass::Response_Select -- Handles the
- *voice response when selected.                 * TechnoClass::Revealed --
- *Handles revealing an object to the house specified.              *
- *   TechnoClass::Risk -- Fetches the risk associated with this object. *
- *   TechnoClass::Scatter -- Causes the object to scatter to an adjacent cell. *
- *   TechnoClass::Select -- Selects object and checks to see if can be selected.
- ** TechnoClass::Set_Mission -- Forced mission set (used by editor). *
- *   TechnoClass::Stun -- Prepares the object for removal from the game. *
- *   TechnoClass::Take_Damage -- Records damage assessed to this object. *
+ *     attack order.
+ *   TechnoClass::Response_Move -- Handles the voice repsonse to a movement
+ *     request.
+ *   TechnoClass::Response_Select -- Handles the voice response when
+ *     selected.
+ *   TechnoClass::Revealed -- Handles revealing an object to the house
+ *     specified.
+ *   TechnoClass::Risk -- Fetches the risk associated with this object.
+ *   TechnoClass::Scatter -- Causes the object to scatter to an adjacent
+ *     cell.
+ *   TechnoClass::Select -- Selects object and checks to see if can be
+ *     selected.
+ *   TechnoClass::Set_Mission -- Forced mission set (used by editor).
+ *   TechnoClass::Stun -- Prepares the object for removal from the game.
+ *   TechnoClass::Take_Damage -- Records damage assessed to this object.
  *   TechnoClass::Target_Something_Nearby -- Handles finding and assigning a
- *nearby target.    * TechnoClass::TechnoClass -- Constructor for techno type
- *objects.                          * TechnoClass::TechnoClass -- Default
- *constructor for techno objects.                       *
- *   TechnoClass::Techno_Draw_Object -- General purpose draw object routine. *
+ *     nearby target.
+ *   TechnoClass::TechnoClass -- Constructor for techno type objects.
+ *   TechnoClass::TechnoClass -- Default constructor for techno objects.
+ *   TechnoClass::Techno_Draw_Object -- General purpose draw object routine.
  *   TechnoClass::Threat_Range -- Returns the range to scan based on threat
- *control.           * TechnoClass::Tiberium_Load -- Fetches the current
- *tiberium load percentage.               * TechnoClass::Unlimbo -- Performs
- *unlimbo process for all techno type objects.             * TechnoClass::Value
- *-- Fetches the target value for this object.                           *
+ *     control.
+ *   TechnoClass::Tiberium_Load -- Fetches the current tiberium load
+ *     percentage.
+ *   TechnoClass::Unlimbo -- Performs unlimbo process for all techno type
+ *     objects.
+ *   TechnoClass::Value -- Fetches the target value for this object.
  *   TechnoClass::Visual_Character -- Determine the visual character of the
- *object.            * TechnoClass::Weapon_Range -- Determines the maximum range
- *for the weapon.                 * TechnoClass::What_Action -- Determines
- *action to perform if cell is clicked on.           * TechnoClass::What_Action
- *-- Determines what action to perform if object is selected.      *
- *   TechnoTypeClass::Cost_Of -- Fetches the cost of this object type. *
- *   TechnoTypeClass::Get_Cameo_Data -- Fetches the cameo image for this object
- *type.          * TechnoTypeClass::Get_Ownable -- Fetches the ownable bits for
- *this object type.            * TechnoTypeClass::Max_Passengers -- Fetches the
- *maximum passengers allowed.                * TechnoTypeClass::Repair_Cost --
- *Fetches the cost to repair one step.                      *
- *   TechnoTypeClass::Repair_Step -- Fetches the health to repair one step. *
- *   TechnoTypeClass::TechnoTypeClass -- Constructor for techno type objects. *
- *   TechnoTypeClass::Time_To_Build -- Fetches the time to build this object. *
- *   TechnoTypeClass::Raw_Cost -- Fetches the raw (base) cost of the object. *
+ *     object.
+ *   TechnoClass::Weapon_Range -- Determines the maximum range for the
+ *     weapon.
+ *   TechnoClass::What_Action -- Determines action to perform if cell is
+ *     clicked on.
+ *   TechnoClass::What_Action -- Determines what action to perform if object
+ *     is selected.
+ *   TechnoTypeClass::Cost_Of -- Fetches the cost of this object type.
+ *   TechnoTypeClass::Get_Cameo_Data -- Fetches the cameo image for this
+ *     object type.
+ *   TechnoTypeClass::Get_Ownable -- Fetches the ownable bits for this
+ *     object type.
+ *   TechnoTypeClass::Max_Passengers -- Fetches the maximum passengers
+ *     allowed.
+ *   TechnoTypeClass::Repair_Cost -- Fetches the cost to repair one step.
+ *   TechnoTypeClass::Repair_Step -- Fetches the health to repair one step.
+ *   TechnoTypeClass::TechnoTypeClass -- Constructor for techno type
+ *     objects.
+ *   TechnoTypeClass::Time_To_Build -- Fetches the time to build this
+ *     object.
+ *   TechnoTypeClass::Raw_Cost -- Fetches the raw (base) cost of the object.
  *   TechnoClass::Refund_Amount -- Returns with the money to refund if this
- *object is sold.    *
+ *     object is sold.
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
@@ -154,7 +187,6 @@
 #include "td/bullet.h"
 #include "td/cargo.h"
 #include "td/cell.h"
-#include "td/config.h"
 #include "td/conquer.h"
 #include "td/const.h"
 #include "td/defines.h"
@@ -162,7 +194,6 @@
 #include "td/door.h"
 #include "td/externs.h"
 #include "td/facing.h"
-#include "td/flasher.h"
 #include "td/foot.h"
 #include "td/ftimer.h"
 #include "td/globals.h"
@@ -173,7 +204,6 @@
 #include "td/jshell.h"
 #include "td/layer.h"
 #include "td/mapedit.h"
-#include "td/monoc.h"
 #include "td/mouse.h"
 #include "td/object.h"
 #include "td/queue.h"
@@ -407,49 +437,6 @@ int TechnoTypeClass::Repair_Cost() const { return 0; }
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
 int TechnoTypeClass::Repair_Step() const { return 0; }
-
-/***********************************************************************************************
- * TechnoClass::Debug_Dump -- Displays the base class data to the monochrome
- *screen.           *
- *                                                                                             *
- *    This routine is used to dump the status of the object class to the
- *monochrome screen.    * This display can be used to track down or prevent
- *bugs.                                  *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 06/02/1994 JLB : Created. *
- *=============================================================================================*/
-void TechnoClass::Debug_Dump(MonoClass* mono) const {
-  if constexpr (config::kCheatKeysEnabled) {
-    mono->Set_Cursor(0, 0);
-    mono->Printf("(%04X)p=%d,d=%d", House->Power_Fraction(), House->Power,
-                 House->Drain);
-    //	mono->Set_Cursor(0,0);mono->Printf("(%d)", House->Blockage);
-    mono->Text_Print("X", 16 + (IsALoaner ? 2 : 0), 11);
-    mono->Text_Print("X", 16 + (IsLocked ? 2 : 0), 9);
-
-    mono->Text_Print("X", 16 + (IsInRecoilState ? 2 : 0), 17);
-    mono->Text_Print("X", 16 + (IsTethered ? 2 : 0), 8);
-    mono->Text_Print("X", 16 + (IsOwnedByPlayer ? 2 : 0), 5);
-    mono->Text_Print("X", 16 + (IsDiscoveredByPlayer ? 2 : 0), 6);
-    //	mono->Text_Print("X", 16 + (IsALemon?2:0), 9);
-    mono->Set_Cursor(28, 7);
-    mono->Printf("%2d", Arm);
-    mono->Set_Cursor(34, 1);
-    mono->Printf("%04X", TarCom);
-    mono->Set_Cursor(29, 3);
-    mono->Printf("%02X", PrimaryFacing.Current());
-
-    FlasherClass::Debug_Dump(mono);
-    StageClass::Debug_Dump(mono);
-    RadioClass::Debug_Dump(mono);
-  }
-}
 
 /***********************************************************************************************
  * TechnoClass::TechnoClass -- Default constructor for techno objects. *
@@ -1919,12 +1906,6 @@ FireErrorType TechnoClass::Can_Fire(TARGET target, int which) const {
   /*
   **	If the object is completely cloaked, then you can't fire on it.
   */
-  // Mono_Printf("Units[0]=%p.\n", Units.Raw_Ptr(0));
-  // Mono_Printf("Infantry[0]=%p.\n", Infantry.Raw_Ptr(0));
-  // Mono_Printf("Buildings[0]=%p.\n", Buildings.Raw_Ptr(0));
-  // Mono_Printf("Aircraft[0]=%p.\n", Aircraft.Raw_Ptr(0));
-  // Mono_Printf("object=%p, Strength=%d, IsActive=%d, IsInLimbo=%d.\n", object,
-  // (long)object->Strength, object->IsActive, object->IsInLimbo);Get_Key();
   if (object && /*(object->IsActive || GameToPlay != GAME_NORMAL) &&*/
       object->Is_Techno() &&
       dynamic_cast<TechnoClass*>(object)->Cloak == CLOAKED) {

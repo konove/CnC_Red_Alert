@@ -53,7 +53,6 @@ class ArchiveWriter;
 #include "td/defines.h"
 #include "td/ftimer.h"
 #include "td/jshell.h"
-#include "td/monoc.h"
 #include "td/object.h"
 #include "td/region.h"
 #include "td/super.h"
@@ -449,7 +448,6 @@ class HouseClass {
   [[nodiscard]] bool Is_Ally(HousesType house) const;
   bool Is_Ally(const HouseClass* house) const;
   bool Is_Ally(const ObjectClass* object) const;
-  void Debug_Dump(MonoClass* mono) const;
   void AI();
   [[nodiscard]] bool Can_Build(StructType structure, HousesType house) const;
   [[nodiscard]] bool Can_Build(InfantryType infantry, HousesType house) const;

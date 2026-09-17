@@ -846,7 +846,7 @@ int32_t VQA_LoadFrame(VQAHandle* vqa) {
   curframe->FrameNum = loader->CurFrameNum;
   loader->CurFrameNum++;
 
-  /* Update data for mono output */
+  /* Remember the last frame loaded, for status reporting. */
   loader->LastFrameNum = loader->CurFrameNum;
 
   /* Loader is finished with this frame; tell Drawer to draw it */

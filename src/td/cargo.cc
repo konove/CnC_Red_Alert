@@ -34,44 +34,17 @@
  *                  Last Update : 10/31/94 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions: * CargoClass::Attach -- Add unit to cargo hold. *
- *   CargoClass::Attached_Object -- Determine attached unit pointer. *
- *   CargoClass::Detach_Object -- Removes a unit from the cargo hold. *
- *   CargoClass::Debug_Dump -- Displays the cargo value to the monochrome
- *screen.              *
+ * Functions:
+ *   CargoClass::Attach -- Add unit to cargo hold.
+ *   CargoClass::Attached_Object -- Determine attached unit pointer.
+ *   CargoClass::Detach_Object -- Removes a unit from the cargo hold.
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
 #include "td/cargo.h"
 
-#include "td/config.h"
 #include "td/foot.h"
-#include "td/monoc.h"
 #include "td/object.h"
-
-/***********************************************************************************************
- * CargoClass::Debug_Dump -- Displays the cargo value to the monochrome screen.
- **
- *                                                                                             *
- *    This routine is used to dump the current cargo value to the monochrome
- *monitor.          *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 06/02/1994 JLB : Created. *
- *=============================================================================================*/
-void CargoClass::Debug_Dump(MonoClass* mono) const {
-  if constexpr (config::kCheatKeysEnabled) {
-    if (How_Many()) {
-      mono->Set_Cursor(63, 3);
-      mono->Printf("(%d)%p", How_Many(), Attached_Object());
-    }
-  }
-}
 
 /***********************************************************************************************
  * CargoClass::Attach -- Add unit to cargo hold. *

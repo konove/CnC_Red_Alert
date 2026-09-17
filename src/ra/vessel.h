@@ -53,7 +53,6 @@
 #include "ra/face.h"
 #include "ra/facing.h"
 #include "ra/jshell.h"
-#include "ra/monoc.h"
 #include "ra/object.h"
 #include "ra/radio.h"
 #include "ra/techno.h"
@@ -170,7 +169,6 @@ class VesselClass : public DriveClass {
   /*
   **	Scenario and debug support.
   */
-  void Debug_Dump(MonoClass* mono) const override;
 
  protected:
   /*

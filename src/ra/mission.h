@@ -43,7 +43,6 @@
 #include "ra/ccini.h"
 #include "ra/defines.h"
 #include "ra/jshell.h"
-#include "ra/monoc.h"
 #include "ra/object.h"
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
@@ -102,7 +101,6 @@ class MissionClass : public ObjectClass {
   /*---------------------------------------------------------------------
   **	Member function prototypes.
   */
-  void Debug_Dump(MonoClass* mono) const override;
 
   void Shorten_Mission_Timer() { MissionTimer.Set(0); }
   [[nodiscard]] MissionType Get_Mission() const override;

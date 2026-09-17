@@ -46,7 +46,6 @@
 
 #include "td/defines.h"
 #include "td/ftimer.h"
-#include "td/monoc.h"
 #include "td/object.h"
 #include "td/radio.h"
 #include "td/target.h"
@@ -281,11 +280,6 @@ class FootClass : public TechnoClass {
   int Mission_Hunt() override;
   int Mission_Timed_Hunt() override;
   int Mission_Guard_Area() override;
-
-  /*
-  **	Scenario and debug support.
-  */
-  void Debug_Dump(MonoClass* mono) const override;
 
   /*
   **	Movement and animation.

@@ -64,7 +64,6 @@
 #include "td/ipxmgr.h"
 #include "td/logic.h"
 #include "td/mapedit.h"
-#include "td/monoc.h"
 #include "td/msglist.h"
 #include "td/nodename.h"
 #include "td/nullmgr.h"
@@ -150,7 +149,6 @@ extern GameOptionsClass Options;
 extern LogicClass Logic;
 extern MapEditClass Map;
 extern ScoreClass Score;
-extern MonoClass MonoArray[MonoClass::kMaxMonoPages];
 extern MixArchive* ScoreMix;
 extern MixArchive* TheaterData;
 extern MixArchive* LowTheaterData;
@@ -210,8 +208,6 @@ extern std::span<const std::byte> SystemStrings;
 */
 extern HousesType Whom;
 extern VQAConfig AnimControl;
-extern int64_t SpareTicks;
-extern int MonoPage;
 extern std::vector<unsigned char> OriginalPalette;
 extern int EndCountDown;
 extern bool SpecialFlag;
@@ -307,9 +303,6 @@ extern int MPlayerCurGame;
 
 extern int TheirProcessTime[MAX_PLAYERS - 1];
 extern int DesiredFrameRate;
-
-extern const char* GlobalPacketNames[];
-extern const char* SerialPacketNames[];
 
 struct TrapObjectType {
   union {

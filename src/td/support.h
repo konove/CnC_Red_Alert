@@ -2,15 +2,13 @@
 #define CNC_RED_ALERT_TD_SUPPORT_H_
 
 #include <cstdint>
-#include <cstdlib>
 #include <source_location>
 #include <span>
 
 #include "absl/base/attributes.h"
+#include "absl/log/check.h"
 #include "sdllib/gbuffer.h"
-#include "sdllib/misc.h"
 #include "td/config.h"
-#include "td/monoc.h"
 
 std::span<uint8_t> Conquer_Build_Fading_Table(
     std::span<const uint8_t> palette,
@@ -23,13 +21,8 @@ void strtrim(char* buffer);
 inline void Check_Ptr(const void* ptr, std::source_location loc =
                                            std::source_location::current()) {
   if constexpr (config::kCheatKeysEnabled) {
-    if (!ptr) {
-      Mono_Clear_Screen();
-      Mono_Printf("NULL Pointer, Module:%s, line:%d!\n", loc.file_name(),
-                  static_cast<int>(loc.line()));
-      Prog_End();
-      exit(EXIT_SUCCESS);
-    }
+    CHECK(ptr != nullptr) << "NULL pointer, module:" << loc.file_name()
+                          << ", line:" << loc.line();
   }
 }
 

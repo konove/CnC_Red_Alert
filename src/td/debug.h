@@ -44,6 +44,5 @@
 #define TXT_RADIO_17 0x3ff           // Take this punch! You...
 
 void Debug_Key(unsigned input);
-void Self_Regulate();
 
 #endif  // CNC_RED_ALERT_TD_DEBUG_H_

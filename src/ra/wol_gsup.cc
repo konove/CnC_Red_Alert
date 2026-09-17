@@ -763,9 +763,6 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
   //	Processing loop
   //------------------------------------------------------------------------
   while (bProcess) {
-#ifdef SHOW_MONO
-    Ipx.Mono_Debug_Print(-1, 0);
-#endif
 
     //	Check for change of house. Occurs on first loop and when user changes
     // house.

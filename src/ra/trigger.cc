@@ -66,9 +66,7 @@
 #include "ra/heap.h"
 #include "ra/house.h"
 #include "ra/jshell.h"
-#include "ra/monoc.h"
 #include "ra/object.h"
-#include "ra/scenario.h"
 #include "ra/taction.h"
 #include "ra/target.h"
 #include "ra/tevent.h"
@@ -355,20 +353,6 @@ bool TriggerClass::Spring(TEventType event, ObjectClass* obj, CELL cell,
     **	necessary.
     */
     if (ok) {
-      if constexpr (config::kCheatKeysEnabled) {
-        MonoArray.at(DMONO_STRESS).Sub_Window(61, 1, 17, 11);
-        MonoArray.at(DMONO_STRESS).Scroll();
-        MonoArray.at(DMONO_STRESS).Sub_Window(61, 1, 18, 11);
-        MonoArray.at(DMONO_STRESS).Set_Cursor(0, 10);
-        MonoArray.at(DMONO_STRESS)
-            .Printf(
-                "%02d:%02d:%02d-%s", Scen.ElapsedTime.Value() / kTicksPerHour,
-                (Scen.ElapsedTime.Value() % kTicksPerHour) / kTicksPerMinute,
-                (Scen.ElapsedTime.Value() % kTicksPerMinute) / kTicksPerSecond,
-                Class->IniName);
-        MonoArray.at(DMONO_STRESS).Sub_Window();
-      }
-
       if (Class->IsPersistant == TriggerTypeClass::VOLATILE ||
           (Class->IsPersistant == TriggerTypeClass::SEMIPERSISTANT &&
            AttachCount <= 1)) {

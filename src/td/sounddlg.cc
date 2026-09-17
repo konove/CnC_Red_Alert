@@ -426,8 +426,6 @@ void SoundControlsClass::Process() {
         break;
 
       case ButtonKey(kButtonListbox):
-        //				Mono_Printf ("%d %s Listbox was
-        // pressed.\r",__LINE__, __FILE__);
         break;
 
       /*

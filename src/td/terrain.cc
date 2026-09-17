@@ -34,35 +34,38 @@
  *                  Last Update : May 8, 1995 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions: * TerrainClass::AI -- Process the terrain object AI. *
+ * Functions:
+ *   TerrainClass::AI -- Process the terrain object AI.
  *   TerrainClass::As_Target -- Converts the terrain object into a target
- *number.              * TerrainClass::Can_Enter_Cell -- Determines if the
- *terrain object can exist in the cell.   * TerrainClass::Catch_Fire -- Catches
- *the terrain object on fire.                           *
+ *     number.
+ *   TerrainClass::Can_Enter_Cell -- Determines if the terrain object can
+ *     exist in the cell.
+ *   TerrainClass::Catch_Fire -- Catches the terrain object on fire.
  *   TerrainClass::Center_Coord -- Fetches the center point coordinate for
- *terrain object.     * TerrainClass::Debug_Dump -- Displays the status of the
- *terrain object.                    * TerrainClass::Draw_It -- Renders the
- *terrain object at the location specified.            * TerrainClass::Fire_Out
- *-- Handles when fire has gone out.                                 *
- *   TerrainClass::Heath_Ratio -- Determines the health ratio for the terrain
- *object.          * TerrainClass::Init -- Initialize the terrain object
- *tracking system.                      * TerrainClass::Limbo -- Handles terrain
- *specific limbo action.                             * TerrainClass::Mark --
- *Marks the terrain object on the map.                                *
- *   TerrainClass::Radar_Icon -- Fetches pointer to radar icon to use. *
- *   TerrainClass::Read_INI -- Reads terrain objects from INI file. *
+ *     terrain object.
+ *   TerrainClass::Draw_It -- Renders the terrain object at the location
+ *     specified.
+ *   TerrainClass::Fire_Out -- Handles when fire has gone out.
+ *   TerrainClass::Heath_Ratio -- Determines the health ratio for the
+ *     terrain object.
+ *   TerrainClass::Init -- Initialize the terrain object tracking system.
+ *   TerrainClass::Limbo -- Handles terrain specific limbo action.
+ *   TerrainClass::Mark -- Marks the terrain object on the map.
+ *   TerrainClass::Radar_Icon -- Fetches pointer to radar icon to use.
+ *   TerrainClass::Read_INI -- Reads terrain objects from INI file.
  *   TerrainClass::Start_To_Crumble -- Initiates crumbling of terrain (tree)
- *object.           * TerrainClass::Take_Damage -- Damages the terrain object as
- *specified.                     * TerrainClass::TerrainClass -- Constructor for
- *a terrain class object.                     * TerrainClass::TerrainClass --
- *This is the constructor for a terrain object.               *
- *   TerrainClass::Unlimbo -- Unlimbo terrain object onto the map. *
- *   TerrainClass::Write_INI -- Writes all terrain objects to the INI file. *
- *   TerrainClass::delete -- Deletes a terrain object. * TerrainClass::new --
- *Creates a new terrain object.                                        *
+ *     object.
+ *   TerrainClass::Take_Damage -- Damages the terrain object as specified.
+ *   TerrainClass::TerrainClass -- Constructor for a terrain class object.
+ *   TerrainClass::TerrainClass -- This is the constructor for a terrain
+ *     object.
+ *   TerrainClass::Unlimbo -- Unlimbo terrain object onto the map.
+ *   TerrainClass::Write_INI -- Writes all terrain objects to the INI file.
+ *   TerrainClass::delete -- Deletes a terrain object.
+ *   TerrainClass::new -- Creates a new terrain object.
  *   TerrainClass::~TerrainClass -- Default destructor for terrain class
- *objects.              * TerrainClass::Validate -- validates terrain pointer
- **
+ *     objects.
+ *   TerrainClass::Validate -- validates terrain pointer
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
@@ -97,7 +100,6 @@
 #include "td/inline.h"
 #include "td/keyframe.h"
 #include "td/mapedit.h"
-#include "td/monoc.h"
 #include "td/mouse.h"
 #include "td/profile.h"
 #include "td/target.h"
@@ -595,27 +597,6 @@ void TerrainClass::AI() {
         Set_Rate(static_cast<unsigned char>(Options.Normalize_Delay(1)));
       }
     }
-  }
-}
-
-/***********************************************************************************************
- * TerrainClass::Debug_Dump -- Displays the status of the terrain object. *
- *                                                                                             *
- *    This debugging support routine is used to display the status of the
- *terrain object to    * the debug screen. *
- *                                                                                             *
- * INPUT:   mono  -- The mono screen to display the status to. *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 09/27/1994 JLB : Created. *
- *=============================================================================================*/
-void TerrainClass::Debug_Dump(MonoClass* mono) const {
-  if constexpr (config::kCheatKeysEnabled) {
-    Validate();
-    ObjectClass::Debug_Dump(mono);
   }
 }
 

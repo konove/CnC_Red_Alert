@@ -76,7 +76,6 @@
 #include "td/logic.h"
 #include "td/mapedit.h"
 #include "td/menus.h"
-#include "td/monoc.h"
 #include "td/msglist.h"
 #include "td/nodename.h"
 #include "td/nullmgr.h"
@@ -254,13 +253,6 @@ bool PlayerRestarts;
 std::vector<std::byte> SpeechBuffer;
 
 /***************************************************************************
-**	This is a running accumulation of the number of ticks that were unused.
-** This accumulates into a useful value that contributes to a
-**	histogram of game performance.
-*/
-int64_t SpareTicks;
-
-/***************************************************************************
 **	This is a special scenario count down value. End of game condition will
 **	not be checked until this value reaches zero.
 */
@@ -277,13 +269,6 @@ StructType SabotagedType;
 **	be set to true.
 */
 bool TempleIoned = false;
-
-/***************************************************************************
-**	This is the monochrome debug page array. The various monochrome data
-**	screens are located here.
-*/
-MonoClass MonoArray[MonoClass::kMaxMonoPages];
-int MonoPage;  // The current page.
 
 /***************************************************************************
 **	This is true if the game is the currently in focus windows app
@@ -652,127 +637,6 @@ int MPlayerCurGame;      // index of current game being played
 //
 int TheirProcessTime[MAX_PLAYERS - 1];
 int DesiredFrameRate;
-
-/***************************************************************************
-** These values are used purely for the Mono debug display.  They show the
-** names of the Global Channel packet types, and the event types.
-*/
-const char* GlobalPacketNames[] = {
-    "Game?",  "Game!",       "Player?",  "Player!", "Join?",   "Join!",
-    "Reject", "GameOptions", "Sign Off", "GO!",     "Message", "Ping"};
-
-// yeah, there's 100 empty names here, because the SerialCommandType starts at
-// 100.
-const char* SerialPacketNames[] = {
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "CONNECT",
-    "GAME_OPTIONS",
-    "SIGN_OFF",
-    "GO",
-    "MESSAGE",
-    "TIMING",
-    "SCORE_SCREEN",
-    "LAST_COMMAND",
-};
 
 /***************************************************************************
 **	These variables are just to help find sync bugs.

@@ -98,7 +98,6 @@
 #include "ra/list.h"
 #include "ra/mapedit.h"
 #include "ra/mission_id.h"
-#include "ra/monoc.h"
 #include "ra/mplayer.h"
 #include "ra/msgbox.h"
 #include "ra/msglist.h"
@@ -183,7 +182,6 @@ static SerialSettingsType* DialSettings;
 
 #define PCOLOR_BROWN PCOLOR_GREY
 
-#define SHOW_MONO 0
 
 /***************************************************************************
  * Init_Null_Modem -- Initializes Null Modem communications                *
@@ -3110,17 +3108,6 @@ int Com_Scenario_Dialog(bool skirmish) {
 
   ModemRXString[0] = '\0';
 
-/*
----------------------------- Init Mono Output ----------------------------
-*/
-#if (SHOW_MONO)
-  if (!skirmish) {
-    NullModem.Configure_Debug(sizeof(CommHeaderType), sizeof(SerialCommandType),
-                              SerialPacketNames, 100, 8);
-    NullModem.Mono_Debug_Print(1);
-  }
-#endif
-
   /*
   ---------------------------- Processing loop -----------------------------
   */
@@ -3135,11 +3122,6 @@ int Com_Scenario_Dialog(bool skirmish) {
     retry_setup = false;
 
     while (process) {
-#if (SHOW_MONO)
-      if (!skirmish) {
-        NullModem.Mono_Debug_Print(0);
-      }
-#endif
 
       if ((!skirmish) &&
           (!ok_button_added && gameoptions && kludge_timer.IsFinished())) {
@@ -4211,9 +4193,6 @@ int Com_Scenario_Dialog(bool skirmish) {
         while ((NullModem.Num_Send() &&
                 TickCount.Value() - starttime < PACKET_SENDING_TIMEOUT) ||
                TickCount.Value() - starttime < 60) {
-#if (SHOW_MONO)
-          NullModem.Mono_Debug_Print(0);
-#endif
 
           NullModem.Service();
         }
@@ -4294,9 +4273,6 @@ int Com_Scenario_Dialog(bool skirmish) {
         while ((NullModem.Num_Send() &&
                 TickCount.Value() - starttime < PACKET_CANCEL_TIMEOUT) ||
                TickCount.Value() - starttime < 60) {
-#if (SHOW_MONO)
-            NullModem.Mono_Debug_Print(0);
-#endif
 
             if ((NullModem.Get_Message(base::ObjectBytes(ReceivePacket),
                                        &packetlen) > 0) &&
@@ -4890,15 +4866,6 @@ int Com_Show_Scenario_Dialog() {
 
   ModemRXString[0] = '\0';
 
-/*
----------------------------- Init Mono Output ----------------------------
-*/
-#if (SHOW_MONO)
-  NullModem.Configure_Debug(sizeof(CommHeaderType), sizeof(SerialCommandType),
-                            SerialPacketNames, 100, 8);
-  NullModem.Mono_Debug_Print(1);
-#endif
-
   /*
   ---------------------------- Processing loop -----------------------------
   */
@@ -4907,9 +4874,6 @@ int Com_Show_Scenario_Dialog() {
 
   bool process = true;  // process while true
   while (process) {
-#if (SHOW_MONO)
-    NullModem.Mono_Debug_Print(0);
-#endif
 
     /*
     ** Kludge to make sure we redraw the message input line when it loses focus.
@@ -5980,9 +5944,6 @@ int Com_Show_Scenario_Dialog() {
     while ((NullModem.Num_Send() &&
             TickCount.Value() - starttime < PACKET_SENDING_TIMEOUT) ||
            TickCount.Value() - starttime < 60) {
-#if (SHOW_MONO)
-      NullModem.Mono_Debug_Print(0);
-#endif
 
       NullModem.Service();
     }
@@ -6006,9 +5967,6 @@ int Com_Show_Scenario_Dialog() {
       while ((NullModem.Num_Send() &&
               TickCount.Value() - starttime < PACKET_CANCEL_TIMEOUT) ||
              TickCount.Value() - starttime < 60) {
-#if (SHOW_MONO)
-        NullModem.Mono_Debug_Print(0);
-#endif
 
         if ((NullModem.Get_Message(base::ObjectBytes(ReceivePacket),
                                    &packetlen) > 0) &&
@@ -7270,11 +7228,7 @@ static void Modem_Echo(char c) {
 
 void Smart_Print(const std::string_view text) {
   if (Debug_Smart_Print) {
-    if (MonoClass::Is_Enabled()) {
-      Mono_Printf("%s", text);
-    } else {
-      absl::PrintF("%s", text);
-    }
+    absl::PrintF("%s", text);
   } else {
     if (Debug_Heap_Dump) {
       absl::PrintF("%s", text);

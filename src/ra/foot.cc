@@ -35,58 +35,53 @@
  *---------------------------------------------------------------------------------------------*
  * Functions: * FootClass::AI -- Handle general movement AI. *
  *   FootClass::Active_Click_With -- Initiates attack or move according to
- *target clicked on.  * FootClass::Active_Click_With -- Performs action as a
- *result of left mouse click.          * FootClass::Adjust_Dest -- Adjust
- *candidate movement cell to account for formation.        *
- *   FootClass::Approach_Target -- Sets the navigation computer to approach
- *target object.     * FootClass::Assign_Destination -- Assigns specified
- *destination to NavCom.                 * FootClass::Basic_Path -- Finds the
- *basic path for a ground object.                        *
+ * target clicked on. * FootClass::Active_Click_With -- Performs action as a
+ * result of left mouse click. * FootClass::Adjust_Dest -- Adjust candidate
+ * movement cell to account for formation. * FootClass::Approach_Target -- Sets
+ * the navigation computer to approach target object. *
+ *   FootClass::Assign_Destination -- Assigns specified destination to NavCom. *
+ *   FootClass::Basic_Path -- Finds the basic path for a ground object. *
  *   FootClass::Body_Facing -- Set the body rotation/facing. *
  *   FootClass::Can_Demolish -- Checks to see if this object can be sold back. *
  *   FootClass::Can_Enter_Cell -- Checks to see if the object can enter cell
- *specified.        * FootClass::Clear_Navigation_List -- Clears out the
- *navigation queue.                      * FootClass::Death_Announcement --
- *Announces the death of a unit.                           *
- *   FootClass::Debug_Dump -- Displays the status of the FootClass to the mono
- *monitor.        * FootClass::Detach -- Detaches a target from tracking
- *systems.                             * FootClass::Detach_All -- Removes this
- *object from the game system.                        *
+ *   specified. * FootClass::Clear_Navigation_List -- Clears out the navigation
+ *   queue. * FootClass::Death_Announcement -- Announces the death of a unit. *
+ *   FootClass::Detach -- Detaches a target from tracking systems. *
+ *   FootClass::Detach_All -- Removes this object from the game system. *
  *   FootClass::Enters_Building -- When unit enters a building for some reason.
- ** FootClass::FootClass -- Normal constructor for the foot class object. *
+ * * FootClass::FootClass -- Normal constructor for the foot class object. *
  *   FootClass::Greatest_Threat -- Fetches the greatest threat to this object. *
  *   FootClass::Handle_Navigation_List -- Processes the navigation queue. *
  *   FootClass::Is_Allowed_To_Leave_Map -- Checks to see if it can leave the map
- *and the game. * FootClass::Is_On_Priority_Mission -- Checks to see if this
- *object should be given priority* FootClass::Is_Recruitable -- Determine if
- *this object is recruitable as a team members.   * FootClass::Likely_Coord --
- *Fetches the coordinate the object will be at shortly.          *
- *   FootClass::Mark -- Unit interface to map rendering system. *
- *   FootClass::Mission_Attack -- AI for heading towards and firing upon target.
- ** FootClass::Mission_Capture -- Handles the capture mission. *
- *   FootClass::Mission_Enter -- Enter (cooperatively) mission handler. *
- *   FootClass::Mission_Guard_Area -- Causes unit to guard an area about twice
- *weapon range.   * FootClass::Mission_Hunt -- Handles the default hunt order. *
- *   FootClass::Mission_Move -- AI process for moving a vehicle to its
- *destination.            * FootClass::Mission_Retreat -- Handle reatreat from
- *map mission for mobile objects.        * FootClass::Offload_Tiberium_Bail --
- *Fetches the Tiberium to offload per step.             *
- *   FootClass::Override_Mission -- temporarily overrides a units mission *
- *   FootClass::Per_Cell_Process -- Perform action based on once-per-cell
- *condition.           * FootClass::Queue_Navigation_List -- Add a target to the
- *objects navigation list.          * FootClass::Receive_Message -- Movement
- *related radio messages are handled here.           * FootClass::Rescue_Mission
- *-- Calls this unit to the rescue.                               *
- *   FootClass::Restore_Mission -- Restores an overridden mission *
- *   FootClass::Sell_Back -- Causes this object to be sold back. *
+ *   and the game. * FootClass::Is_On_Priority_Mission -- Checks to see if this
+ *   object should be given priority* FootClass::Is_Recruitable -- Determine if
+ *   this object is recruitable as a team members. * FootClass::Likely_Coord --
+ *   Fetches the coordinate the object will be at shortly. * FootClass::Mark --
+ *   Unit interface to map rendering system. * FootClass::Mission_Attack -- AI
+ *   for heading towards and firing upon target. * FootClass::Mission_Capture --
+ *   Handles the capture mission. * FootClass::Mission_Enter -- Enter
+ *   (cooperatively) mission handler. * FootClass::Mission_Guard_Area -- Causes
+ *   unit to guard an area about twice weapon range. * FootClass::Mission_Hunt
+ * -- Handles the default hunt order. * FootClass::Mission_Move -- AI process
+ * for moving a vehicle to its destination. * FootClass::Mission_Retreat --
+ * Handle reatreat from map mission for mobile objects. *
+ *   FootClass::Offload_Tiberium_Bail -- Fetches the Tiberium to offload per
+ *   step. * FootClass::Override_Mission -- temporarily overrides a units
+ * mission
+ *   * FootClass::Per_Cell_Process -- Perform action based on once-per-cell
+ *   condition. * FootClass::Queue_Navigation_List -- Add a target to the
+ * objects navigation list. * FootClass::Receive_Message -- Movement related
+ * radio messages are handled here. * FootClass::Rescue_Mission -- Calls this
+ * unit to the rescue. * FootClass::Restore_Mission -- Restores an overridden
+ * mission * FootClass::Sell_Back -- Causes this object to be sold back. *
  *   FootClass::Set_Speed -- Initiate unit movement physics. * FootClass::Sort_Y
- *-- Determine the sort coordinate for foot class objects.                *
+ *   -- Determine the sort coordinate for foot class objects. *
  *   FootClass::Start_Driver -- This starts the driver heading to the
- *destination desired.     * FootClass::Stop_Driver -- This routine clears the
- *driving state of the object.            * FootClass::Stun -- Prepares a ground
- *travelling object for removal.                       * FootClass::Take_Damage
- *-- Handles taking damage to this object.                           *
- *   FootClass::Unlimbo -- Unlimbos object and performs special fixups. *
+ * destination desired. * FootClass::Stop_Driver -- This routine clears the
+ * driving state of the object. * FootClass::Stun -- Prepares a ground
+ * travelling object for removal. * FootClass::Take_Damage -- Handles taking
+ * damage to this object. * FootClass::Unlimbo -- Unlimbos object and performs
+ * special fixups. *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
@@ -103,11 +98,9 @@
 #include "base/array.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
-#include "base/types.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/building.h"
 #include "ra/cell.h"
-#include "ra/config.h"
 #include "ra/coord.h"
 #include "ra/defines.h"
 #include "ra/event.h"
@@ -118,7 +111,6 @@
 #include "ra/jshell.h"
 #include "ra/mapedit.h"
 #include "ra/mission.h"
-#include "ra/monoc.h"
 #include "ra/object.h"
 #include "ra/queue.h"
 #include "ra/radio.h"
@@ -185,89 +177,6 @@ FootClass::FootClass(RTTIType rtti, int id, HousesType house)
   Path[0] = FACING_NONE;
   for (int index = 0; index < std::ssize(NavQueue); index++) {
     base::At(NavQueue, index) = kTargetNone;
-  }
-}
-
-/***********************************************************************************************
- * FootClass::Debug_Dump -- Displays the status of the FootClass to the mono
- *monitor.          *
- *                                                                                             *
- *    This routine is used to output the current status of the foot class to the
- *mono          * monitor. Through this display bugs may be tracked down or
- *eliminated.                    *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 06/02/1994 JLB : Created. * 07/04/1995 JLB : Handles aircraft
- *special case.                                           *
- *=============================================================================================*/
-void FootClass::Debug_Dump(MonoClass* mono) const {
-  if constexpr (config::kCheatKeysEnabled) {
-    assert(IsActive);
-
-    mono->Fill_Attrib(53, 13, 12, 1,
-                      IsInitiated ? MonoClass::INVERSE : MonoClass::NORMAL);
-    mono->Fill_Attrib(
-        1, 18, 12, 1,
-        IsPlanningToLook ? MonoClass::INVERSE : MonoClass::NORMAL);
-    mono->Fill_Attrib(53, 14, 12, 1,
-                      IsDeploying ? MonoClass::INVERSE : MonoClass::NORMAL);
-    mono->Fill_Attrib(53, 15, 12, 1,
-                      IsFiring ? MonoClass::INVERSE : MonoClass::NORMAL);
-    mono->Fill_Attrib(53, 16, 12, 1,
-                      IsRotating ? MonoClass::INVERSE : MonoClass::NORMAL);
-    mono->Fill_Attrib(53, 17, 12, 1,
-                      IsDriving ? MonoClass::INVERSE : MonoClass::NORMAL);
-    mono->Fill_Attrib(53, 18, 12, 1,
-                      IsUnloading ? MonoClass::INVERSE : MonoClass::NORMAL);
-    mono->Fill_Attrib(27, 18, 12, 1,
-                      IsFormationMove ? MonoClass::INVERSE : MonoClass::NORMAL);
-
-    mono->Set_Cursor(45, 1);
-    mono->Printf("%02X", Speed);
-    if (NavCom) {
-      mono->Set_Cursor(29, 5);
-      mono->Printf("%08X", NavCom);
-    }
-    if (SuspendedNavCom) {
-      mono->Set_Cursor(38, 5);
-      mono->Printf("%08X", SuspendedNavCom);
-    }
-
-    if (Team) {
-      Team->Debug_Dump(mono);
-    }
-    if (Group != kNoGroup) {
-      mono->Set_Cursor(59, 1);
-      mono->Printf("%d", Group);
-    }
-
-    static const char* _p2c[9] = {"-", "0", "1", "2", "3", "4", "5", "6", "7"};
-    for (base::ssize index = 0;
-         index < std::min<base::ssize>(12, std::ssize(Path)); index++) {
-      mono->Set_Cursor(static_cast<int>(54 + index), 3);
-      mono->Printf(
-          "%s",
-          base::At(_p2c,
-                   (std::abs(static_cast<int>(base::At(Path, index)) + 1) %
-                    std::ssize(_p2c))));
-    }
-    mono->Set_Cursor(54, 5);
-    mono->Printf("%2d", PathThreshhold);
-    mono->Set_Cursor(72, 3);
-    mono->Printf("%4d", PathDelay.Value());
-    mono->Set_Cursor(67, 3);
-    mono->Printf("%3d", TryTryAgain);
-    if (HeadToCoord) {
-      mono->Set_Cursor(60, 5);
-      mono->Printf("%08X", HeadToCoord);
-    }
-
-    TechnoClass::Debug_Dump(mono);
   }
 }
 

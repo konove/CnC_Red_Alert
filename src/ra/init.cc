@@ -118,7 +118,6 @@
 #include "ra/mapedit.h"
 #include "ra/menus.h"
 #include "ra/mission_id.h"
-#include "ra/monoc.h"
 #include "ra/movie.h"
 #include "ra/mplayer.h"
 #include "ra/msgbox.h"
@@ -351,7 +350,6 @@ bool Init_Game(int /*unused*/, char* /*unused*/[]) {
   */
   if (!Special.IsFromInstall) {
     VisiblePage.Clear();
-    //		Mono_Printf("Playing Intro\n");
     Play_Intro();
     base::FillBytes(
         std::as_writable_bytes(PaletteClass::CurrentPalette.bytes()), 0x01,
@@ -1132,7 +1130,6 @@ bool Select_Game(bool /*fade*/) {
       VisiblePage.Clear();
     }
     Show_Mouse();
-    // Mono_Printf("About to call Start Scenario with %s\n", Scen.ScenarioName);
     if (!Start_Scenario(Scen.ScenarioName)) {
       return false;
     }
@@ -1288,9 +1285,6 @@ void Anim_Init() {
   AnimControl.AudioDeviceID = Get_Audio_Device();
   AnimControl.AudioCallback = Get_Audio_Callback_Ptr();
   AnimControl.AudioSpec = Get_Audio_Spec();
-  if (MonoClass::Is_Enabled()) {
-    AnimControl.OptionFlags |= VQAOPTF_MONO;
-  }
 }
 
 /***********************************************************************************************
@@ -1567,9 +1561,6 @@ bool Parse_Command_Line(std::span<char*> arguments) {
       for (const char code : string.substr(2)) {
         if constexpr (config::kCheatKeysEnabled) {
           switch (code) {
-            case 'M':
-              MonoClass::Enable();
-              continue;
             case 'I':
               Special.IsInert = true;
               continue;
@@ -2506,12 +2497,6 @@ static void Bootstrap() {
     Keyboard->Check();
   } while (!GameInFocus);
   AllSurfaces.SurfacesRestored = false;
-
-  /*
-  **	Perform any special debug-only processing. This includes preparing the
-  **	monochrome screen.
-  */
-  Mono_Clear_Screen();
 
   /*
   **	Register and make resident all local mixfiles with particular emphasis

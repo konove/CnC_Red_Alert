@@ -19,35 +19,14 @@
 #include "ra/abstract.h"
 
 #include <algorithm>
-#include <cassert>
 
 #include "ra/building.h"
 #include "ra/ccptr.h"
-#include "ra/config.h"
 #include "ra/defines.h"
 #include "ra/face.h"
 #include "ra/inline.h"
-#include "ra/monoc.h"
 #include "ra/target.h"
 #include "ra/type.h"
-
-void AbstractClass::Debug_Dump(MonoClass* mono) const {
-  if constexpr (config::kCheatKeysEnabled) {
-    assert(IsActive);
-
-    mono->Set_Cursor(11, 5);
-    mono->Printf("%08X", As_Target());
-    mono->Set_Cursor(20, 1);
-    mono->Printf("%08X", Coord);
-    mono->Set_Cursor(29, 1);
-    mono->Printf("%3d", Height);
-    if (Owner() != HOUSE_NONE) {
-      mono->Set_Cursor(1, 3);
-      mono->Printf("%-18s",
-                   Text_String(HouseTypeClass::As_Reference(Owner()).FullName));
-    }
-  }
-}
 
 DirType AbstractClass::Direction(const TARGET target) const {
   return ::Direction(Center_Coord(), As_Coord(target));

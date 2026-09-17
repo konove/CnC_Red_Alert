@@ -34,32 +34,26 @@
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
  * Functions: * LogicClass::AI -- Handles AI logic processing for game objects.
- ** LogicClass::Debug_Dump -- Displays logic class status to the mono screen. *
- *   LogicClass::Detach -- Detatch the specified target from the logic system. *
+ *   * LogicClass::Detach -- Detatch the specified target from the logic system.
+ *   *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
 #include "ra/logic.h"
 
-#include <algorithm>
 #include <cstdint>
 
-#include "base/array.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/anim.h"
 #include "ra/bench_util.h"
-#include "ra/config.h"
 #include "ra/coord.h"
-#include "ra/debug.h"
 #include "ra/defines.h"
 #include "ra/externs.h"
 #include "ra/factory.h"
 #include "ra/gscreen.h"
 #include "ra/heap.h"
 #include "ra/house.h"
-#include "ra/inline.h"
 #include "ra/mapedit.h"
-#include "ra/monoc.h"
 #include "ra/object.h"
 #include "ra/rules.h"
 #include "ra/scenario.h"
@@ -75,152 +69,6 @@
 #include "session.h"
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
-
-static unsigned FramesPerSecond = 0;
-
-/***********************************************************************************************
- * LogicClass::Debug_Dump -- Displays logic class status to the mono screen. *
- *                                                                                             *
- *    This is a debugging support routine. It displays the current state of the
- *logic class    * to the monochrome monitor. It assumes that it is being called
- *once per second.           *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   Call this routine only once per second. *
- *                                                                                             *
- * HISTORY: * 05/31/1994 JLB : Created. * 01/26/1996 JLB : Prints game time
- *value.                                                  *
- *=============================================================================================*/
-void LogicClass::Debug_Dump(MonoClass* mono) {
-  if constexpr (config::kCheatKeysEnabled) {
-    constexpr int kRecordHeight = 21;
-
-    static bool first = true;
-    if (first) {
-      first = false;
-      mono->Set_Cursor(0, 0);
-      mono->Print(Text_String(TXT_DEBUG_STRESS));
-    }
-
-    mono->Set_Cursor(1, 1);
-    mono->Printf("%ld", Scen.ElapsedTime.Value());
-    mono->Set_Cursor(10, 1);
-    mono->Printf("%3d", FramesPerSecond);
-    mono->Set_Cursor(1, 3);
-    mono->Printf(
-        "%02d:%02d:%02d", Scen.ElapsedTime.Value() / kTicksPerHour,
-        (Scen.ElapsedTime.Value() % kTicksPerHour) / kTicksPerMinute,
-        (Scen.ElapsedTime.Value() % kTicksPerMinute) / kTicksPerSecond);
-
-    mono->Set_Cursor(1, 11);
-    mono->Printf("%3d", Units.Count());
-    mono->Set_Cursor(1, 12);
-    mono->Printf("%3d", Infantry.Count());
-    mono->Set_Cursor(1, 13);
-    mono->Printf("%3d", Aircraft.Count());
-    mono->Set_Cursor(1, 14);
-    mono->Printf("%3d", Vessels.Count());
-    mono->Set_Cursor(1, 15);
-    mono->Printf("%3d", Buildings.Count());
-    mono->Set_Cursor(1, 16);
-    mono->Printf("%3d", Terrains.Count());
-    mono->Set_Cursor(1, 17);
-    mono->Printf("%3d", Bullets.Count());
-    mono->Set_Cursor(1, 18);
-    mono->Printf("%3d", Anims.Count());
-    mono->Set_Cursor(1, 19);
-    mono->Printf("%3d", Teams.Count());
-    mono->Set_Cursor(1, 20);
-    mono->Printf("%3d", Triggers.Count());
-    mono->Set_Cursor(1, 21);
-    mono->Printf("%3d", TriggerTypes.Count());
-    mono->Set_Cursor(1, 22);
-    mono->Printf("%3d", Factories.Count());
-
-    SpareTicks = std::min<int64_t>(SpareTicks, kTimerSecond);
-
-    /*
-    **	CPU utilization record.
-    */
-    mono->Sub_Window(15, 1, 6, 11);
-    mono->Scroll();
-    mono->Set_Cursor(0, 10);
-    mono->Printf("%3d%%", ((kTimerSecond - SpareTicks) * 100) / kTimerSecond);
-
-    /*
-    **	Update the frame rate log.
-    */
-    mono->Sub_Window(22, 1, 6, 11);
-    mono->Scroll();
-    mono->Set_Cursor(0, 10);
-    mono->Printf("%4d", FramesPerSecond);
-
-    /*
-    **	Update the findpath calc record.
-    */
-    mono->Sub_Window(50, 1, 6, 11);
-    mono->Scroll();
-    mono->Set_Cursor(0, 10);
-    mono->Printf("%4d", PathCount);
-    PathCount = 0;
-
-    /*
-    **	Update the cell redraw record.
-    */
-    mono->Sub_Window(29, 1, 6, 11);
-    mono->Scroll();
-    mono->Set_Cursor(0, 10);
-    mono->Printf("%5d", CellCount);
-    CellCount = 0;
-
-    /*
-    **	Update the target scan record.
-    */
-    mono->Sub_Window(36, 1, 6, 11);
-    mono->Scroll();
-    mono->Set_Cursor(0, 10);
-    mono->Printf("%5d", TargetScan);
-    TargetScan = 0;
-
-    /*
-    **	Sidebar redraw record.
-    */
-    mono->Sub_Window(43, 1, 6, 11);
-    mono->Scroll();
-    mono->Set_Cursor(0, 10);
-    mono->Printf("%5d", SidebarRedraws);
-    SidebarRedraws = 0;
-
-    /*
-    **	Update the CPU utilization chart.
-    */
-    mono->Sub_Window(15, 13, 63, 10);
-    mono->Pan(1);
-    mono->Sub_Window(15, 13, 64, 10);
-    const int graph =
-        kRecordHeight *
-        fixed(static_cast<int>(kTimerSecond - SpareTicks), kTimerSecond);
-    for (int row = 1; row < kRecordHeight; row += 2) {
-      static const unsigned char _barchar[4] = {' ', 220, 0, 219};
-      char str[2];
-      int index = 0;
-
-      index += (graph >= row) ? 1 : 0;
-      index += (graph >= row + 1) ? 2 : 0;
-
-      str[1] = '\0';
-      str[0] = static_cast<char>(base::At(_barchar, index));
-      mono->Text_Print(str, 62, 9 - (row / 2));
-    }
-    mono->Sub_Window();
-
-    SpareTicks = 0;
-    FramesPerSecond = 0;
-  }
-}
 
 /***********************************************************************************************
  * LogicClass::AI -- Handles AI logic processing for game objects. *
@@ -239,8 +87,6 @@ void LogicClass::Debug_Dump(MonoClass* mono) {
  *Ensures that no object gets skipped if it was deleted.                   *
  *=============================================================================================*/
 void LogicClass::AI() {
-  FramesPerSecond++;
-
   /*
   ** Fading to B&W or color due to the chronosphere is handled here.
   */

@@ -42,7 +42,6 @@
 
 #include "ra/defines.h"
 #include "ra/layer.h"
-#include "ra/monoc.h"
 
 // Game logic processing is controlled by this class. The graphic and AI logic
 // is handled separately so that on slower machines, the graphic display is
@@ -51,7 +50,6 @@ class LogicClass : public LayerClass {
  public:
   void AI();
   static void Detach(TARGET target, bool all = true);
-  static void Debug_Dump(MonoClass* mono);
 };
 
 #endif  // CNC_RED_ALERT_RA_LOGIC_H_

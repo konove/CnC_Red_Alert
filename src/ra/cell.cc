@@ -1075,8 +1075,6 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
     int icon = 0;  // The icon number to use from the template set.
     std::span<const unsigned char> remap;
 
-    CellCount++;
-
     /*
     **	Fetch a pointer to the template type associated with this cell.
     */
@@ -2121,7 +2119,6 @@ bool CellClass::Goodie_Check(FootClass* object) {
       }
 
       if (Overlay == OVERLAY_WATER_CRATE) {
-        // Mono_Printf("%d-%s.\n", __LINE__, __FILE__);
         powerup = Rule.WaterCrate;
       }
 

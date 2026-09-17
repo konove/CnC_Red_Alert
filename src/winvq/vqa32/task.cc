@@ -436,7 +436,7 @@ int64_t User_Update(const VQAHandle* vqa) {
   auto* vqabuf = vqa->data;
 
   if ((vqabuf->Flags & VQADATF_UPDATE) != 0) {
-    // Update data for mono output
+    // Remember the last frame flipped, for status reporting.
     vqabuf->Flipper.LastFrameNum = vqabuf->Flipper.CurFrame->FrameNum;
 
     // Mark the frame as loadable

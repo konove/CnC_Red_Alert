@@ -262,13 +262,6 @@ class IPXManagerClass : public ConnManClass {
   .....................................................................*/
   std::span<const std::byte> Oldest_Send();
 
-  /*.....................................................................
-  Debug routines
-  .....................................................................*/
-  void Configure_Debug(int index, int offset, int size, const char** names,
-                       int maxnames) override;
-  void Mono_Debug_Print(int index, int refresh = 0) override;
-
   /*
   --------------------------- Private Interface ----------------------------
   */
@@ -396,8 +389,6 @@ class IPXManagerClass : public ConnManClass {
   /*.....................................................................
   Various Statistics
   .....................................................................*/
-  int SendOverflows;
-  int ReceiveOverflows;
   int BadConnection;
 };
 

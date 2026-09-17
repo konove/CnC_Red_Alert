@@ -69,7 +69,6 @@
 #include "ra/externs.h"
 #include "ra/house.h"
 #include "ra/map.h"
-#include "ra/monoc.h"
 #include "ra/object.h"
 #include "ra/type.h"
 #include "tech/archive.h"
@@ -331,7 +330,6 @@ void BaseClass::Read_INI(CCINIClass& ini) {
   char uname[10];
   BaseNodeClass node;  // node to add to list
 
-  Mono_Clear_Screen();
   /*
   **	First, determine the house of the human player, and set the Base's house
   **	accordingly.

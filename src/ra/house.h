@@ -52,7 +52,6 @@
 #include "ra/defines.h"
 #include "ra/heap.h"
 #include "ra/jshell.h"
-#include "ra/monoc.h"
 #include "ra/object.h"
 #include "ra/region.h"
 #include "ra/super.h"
@@ -684,7 +683,6 @@ class HouseClass {
   [[nodiscard]] int Factory_Count(RTTIType rtti) const;
   DiffType Assign_Handicap(DiffType handicap);
   [[nodiscard]] TARGET Find_Juicy_Target(COORDINATE coord) const;
-  void Print_Zone_Stats(int x, int y, ZoneType zone, MonoClass* mono) const;
   CELL Where_To_Go(const FootClass* object) const;
   [[nodiscard]] CELL Zone_Cell(ZoneType zone) const;
   [[nodiscard]] ZoneType Which_Zone(COORDINATE coord) const;
@@ -731,7 +729,6 @@ class HouseClass {
   [[nodiscard]] bool Is_Ally(HousesType house) const;
   bool Is_Ally(const HouseClass* house) const;
   bool Is_Ally(const ObjectClass* object) const;
-  void Debug_Dump(MonoClass* mono) const;
   void AI();
   [[nodiscard]] bool Can_Build(RTTIType rtti, int type, HousesType house) const;
 

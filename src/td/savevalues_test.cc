@@ -17,7 +17,6 @@
 #include "td/fly.h"
 #include "td/ftimer.h"
 #include "td/fuse.h"
-#include "td/monoc.h"
 #include "td/rand.h"
 #include "td/randomstate.h"
 #include "td/region.h"
@@ -31,15 +30,12 @@
 #include "tech/span_sink.h"
 #include "tech/span_source.h"
 
-// The value tests need a frame source, but no game session or debug display.
+// The value tests need a frame source, but no game session.
 int64_t Frame = 0;
 SpecialClass Special{};
 void Speak(VoxType /*unused*/) {}
 // Linking the legacy byte RNG also pulls in the SDL event pump.
 void SDL_Event_Handler(SDL_Event* /*unused*/) {}
-void MonoClass::Set_Cursor(int /*unused*/, int /*unused*/) {}
-void MonoClass::Print(const char* /*unused*/) {}
-int MonoClass::Enabled = 0;
 namespace {
 
 template <class T>

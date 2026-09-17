@@ -33,8 +33,8 @@
  *                  Last Update : November 4, 1996 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions: * HouseClass::AI -- Process house logic. * HouseClass::AI_Aircraft
- *-- Determines what aircraft to build next.                        *
+ * Functions: * HouseClass::AI -- Process house logic. *
+ *   HouseClass::AI_Aircraft -- Determines what aircraft to build next. *
  *   HouseClass::AI_Attack -- Handles offensive attack logic. *
  *   HouseClass::AI_Base_Defense -- Handles maintaining a strong base defense. *
  *   HouseClass::AI_Building -- Determines what building to build. *
@@ -44,107 +44,95 @@
  *   HouseClass::AI_Power_Check -- Handle the power situation. *
  *   HouseClass::AI_Unit -- Determines what unit to build next. *
  *   HouseClass::Abandon_Production -- Abandons production of item type
- *specified.             * HouseClass::Active_Add -- Add an object to active
- *duty for this house.                    * HouseClass::Active_Remove -- Remove
- *this object from active duty for this house.          *
- *   HouseClass::Adjust_Capacity -- Adjusts the house Tiberium storage capacity.
- ** HouseClass::Adjust_Drain -- Adjust the power drain value of the house. *
- *   HouseClass::Adjust_Power -- Adjust the power value of the house. *
- *   HouseClass::Adjust_Threat -- Adjust threat for the region specified. *
- *   HouseClass::As_Pointer -- Converts a house number into a house object
- *pointer.            * HouseClass::Assign_Handicap -- Assigns the specified
- *handicap rating to the house.        * HouseClass::Attacked -- Lets player
- *know if base is under attack.                         *
- *   HouseClass::Available_Money -- Fetches the total credit worth of the house.
- ** HouseClass::Begin_Production -- Starts production of the specified object
- *type.           * HouseClass::Blowup_All -- blows up everything *
- *   HouseClass::Can_Build -- General purpose build legality checker. *
- *   HouseClass::Clobber_All -- removes all objects for this house *
+ *   specified. * HouseClass::Active_Add -- Add an object to active duty for
+ * this house. * HouseClass::Active_Remove -- Remove this object from active
+ * duty for this house. * HouseClass::Adjust_Capacity -- Adjusts the house
+ * Tiberium storage capacity. * HouseClass::Adjust_Drain -- Adjust the power
+ * drain value of the house. * HouseClass::Adjust_Power -- Adjust the power
+ * value of the house. * HouseClass::Adjust_Threat -- Adjust threat for the
+ * region specified. * HouseClass::As_Pointer -- Converts a house number into a
+ * house object pointer. * HouseClass::Assign_Handicap -- Assigns the specified
+ *   handicap rating to the house. * HouseClass::Attacked -- Lets player know if
+ *   base is under attack. * HouseClass::Available_Money -- Fetches the total
+ *   credit worth of the house. * HouseClass::Begin_Production -- Starts
+ *   production of the specified object type. * HouseClass::Blowup_All -- blows
+ *   up everything * HouseClass::Can_Build -- General purpose build legality
+ *   checker. * HouseClass::Clobber_All -- removes all objects for this house *
  *   HouseClass::Computer_Paranoid -- Cause the computer players to becom
- *paranoid.            * HouseClass::Debug_Dump -- Dumps the house status data
- *to the mono screen.                 * HouseClass::Detach -- Removes specified
- *object from house tracking systems.               * HouseClass::Do_All_To_Hunt
- *-- Send all units to hunt.                                     *
+ *   paranoid. * HouseClass::Detach -- Removes specified object from house
+ *   tracking systems. * HouseClass::Do_All_To_Hunt -- Send all units to hunt. *
  *   HouseClass::Does_Enemy_Building_Exist -- Checks for enemy building of
- *specified type.     * HouseClass::Expert_AI -- Handles expert AI processing. *
+ *   specified type. * HouseClass::Expert_AI -- Handles expert AI processing. *
  *   HouseClass::Factory_Count -- Fetches the number of factories for specified
- *type.          * HouseClass::Factory_Counter -- Fetches a pointer to the
- *factory counter value.            * HouseClass::Fetch_Factory -- Finds the
- *factory associated with the object type specified. *
- *   HouseClass::Find_Build_Location -- Finds a suitable building location. *
- *   HouseClass::Find_Building -- Finds a building of specified type. *
- *   HouseClass::Find_Cell_In_Zone -- Finds a legal placement cell within the
- *zone.            * HouseClass::Find_Juicy_Target -- Finds a suitable field
- *target.                           * HouseClass::Fire_Sale -- Cause all
- *buildings to be sold.                                  *
- *   HouseClass::Flag_Attach -- Attach flag to specified cell (or thereabouts).
- ** HouseClass::Flag_Attach -- Attaches the house flag the specified unit. *
- *   HouseClass::Flag_Remove -- Removes the flag from the specified target. *
- *   HouseClass::Flag_To_Die -- Flags the house to blow up soon. *
- *   HouseClass::Flag_To_Lose -- Flags the house to die soon. *
+ *   type. * HouseClass::Factory_Counter -- Fetches a pointer to the factory
+ *   counter value. * HouseClass::Fetch_Factory -- Finds the factory associated
+ *   with the object type specified. * HouseClass::Find_Build_Location -- Finds
+ * a suitable building location. * HouseClass::Find_Building -- Finds a building
+ *   of specified type. * HouseClass::Find_Cell_In_Zone -- Finds a legal
+ *   placement cell within the zone. * HouseClass::Find_Juicy_Target -- Finds a
+ *   suitable field target. * HouseClass::Fire_Sale -- Cause all buildings to be
+ *   sold. * HouseClass::Flag_Attach -- Attach flag to specified cell (or
+ *   thereabouts). * HouseClass::Flag_Attach -- Attaches the house flag the
+ *   specified unit. * HouseClass::Flag_Remove -- Removes the flag from the
+ *   specified target. * HouseClass::Flag_To_Die -- Flags the house to blow up
+ *   soon. * HouseClass::Flag_To_Lose -- Flags the house to die soon. *
  *   HouseClass::Flag_To_Win -- Flags the house to win soon. *
  *   HouseClass::Get_Quantity -- Fetches the total number of aircraft of the
- *specified type.   * HouseClass::Get_Quantity -- Gets the quantity of the
- *building type specified.             * HouseClass::Harvested -- Adds Tiberium
- *to the harvest storage.                            * HouseClass::HouseClass --
- *Constructor for a house object.                                 *
- *   HouseClass::Init -- init's in preparation for new scenario *
+ *   specified type. * HouseClass::Get_Quantity -- Gets the quantity of the
+ *   building type specified. * HouseClass::Harvested -- Adds Tiberium to the
+ *   harvest storage. * HouseClass::HouseClass -- Constructor for a house
+ * object.
+ *   * HouseClass::Init -- init's in preparation for new scenario *
  *   HouseClass::Init_Data -- Initializes the multiplayer color data. *
  *   HouseClass::Is_Allowed_To_Ally -- Determines if this house is allied to
- *make allies.      * HouseClass::Is_Ally -- Checks to see if the object is an
- *ally.                            * HouseClass::Is_Ally -- Determines if the
- *specified house is an ally.                      *
+ * make allies. * HouseClass::Is_Ally -- Checks to see if the object is an ally.
+ * * HouseClass::Is_Ally -- Determines if the specified house is an ally. *
  *   HouseClass::Is_Hack_Prevented -- Is production of the specified type and id
- *prohibted?    * HouseClass::Is_No_YakMig -- Determines if no more yaks or migs
- *should be allowed.         * HouseClass::MPlayer_Defeated -- multiplayer;
- *house is defeated                            * HouseClass::Make_Ally -- Make
- *the specified house an ally.                                *
+ *   prohibted? * HouseClass::Is_No_YakMig -- Determines if no more yaks or migs
+ *   should be allowed. * HouseClass::MPlayer_Defeated -- multiplayer; house is
+ *   defeated * HouseClass::Make_Ally -- Make the specified house an ally. *
  *   HouseClass::Make_Enemy -- Make an enemy of the house specified. *
  *   HouseClass::Manual_Place -- Inform display system of building placement
- *mode.             * HouseClass::One_Time -- Handles one time initialization of
- *the house array.               * HouseClass::Place_Object -- Places the object
- *(building) at location specified.           * HouseClass::Place_Special_Blast
- *-- Place a special blast effect at location specified.    *
- *   HouseClass::Power_Fraction -- Fetches the current power output rating. *
- *   HouseClass::Production_Begun -- Records that production has begun. *
- *   HouseClass::Read_INI -- Reads house specific data from INI. *
- *   HouseClass::Recalc_Attributes -- Recalcs all houses existence bits. *
- *   HouseClass::Recalc_Center -- Recalculates the center point of the base. *
- *   HouseClass::Refund_Money -- Refunds money to back to the house. *
- *   HouseClass::Remap_Table -- Fetches the remap table for this house object. *
- *   HouseClass::Sell_Wall -- Tries to sell the wall at the specified location.
- ** HouseClass::Set_Factory -- Assign specified factory to house tracking. *
- *   HouseClass::Silo_Redraw_Check -- Flags silos to be redrawn if necessary. *
- *   HouseClass::Special_Weapon_AI -- Fires special weapon. *
+ *   mode. * HouseClass::One_Time -- Handles one time initialization of the
+ * house array. * HouseClass::Place_Object -- Places the object (building) at
+ *   location specified. * HouseClass::Place_Special_Blast -- Place a special
+ *   blast effect at location specified. * HouseClass::Power_Fraction -- Fetches
+ *   the current power output rating. * HouseClass::Production_Begun -- Records
+ *   that production has begun. * HouseClass::Read_INI -- Reads house specific
+ *   data from INI. * HouseClass::Recalc_Attributes -- Recalcs all houses
+ *   existence bits. * HouseClass::Recalc_Center -- Recalculates the center
+ * point of the base. * HouseClass::Refund_Money -- Refunds money to back to the
+ *   house. * HouseClass::Remap_Table -- Fetches the remap table for this house
+ *   object. * HouseClass::Sell_Wall -- Tries to sell the wall at the specified
+ *   location. * HouseClass::Set_Factory -- Assign specified factory to house
+ *   tracking. * HouseClass::Silo_Redraw_Check -- Flags silos to be redrawn if
+ *   necessary. * HouseClass::Special_Weapon_AI -- Fires special weapon. *
  *   HouseClass::Spend_Money -- Removes money from the house. *
  *   HouseClass::Suggest_New_Building -- Examines the situation and suggests a
- *building.       * HouseClass::Suggest_New_Object -- Determine what would the
- *next buildable object be.      * HouseClass::Suggested_New_Team -- Determine
- *what team should be created.                  *
- *   HouseClass::Super_Weapon_Handler -- Handles the super weapon charge and
- *discharge logic.  * HouseClass::Suspend_Production -- Temporarily puts
- *production on hold.                    * HouseClass::Tally_Score -- Fills in
- *the score system for this round                       *
- *   HouseClass::Tiberium_Fraction -- Calculates the tiberium fraction of
- *capacity.            * HouseClass::Tracking_Add -- Informs house of new
- *inventory item.                          * HouseClass::Tracking_Remove --
- *Remove object from house tracking system.                  *
- *   HouseClass::Where_To_Go -- Determines where the object should go and wait.
- ** HouseClass::Which_Zone -- Determines what zone a coordinate lies in. *
- *   HouseClass::Which_Zone -- Determines which base zone the specified cell
- *lies in.          * HouseClass::Which_Zone -- Determines which base zone the
- *specified object lies in.        * HouseClass::Write_INI -- Writes the house
- *data to the INI database.                       * HouseClass::Zone_Cell --
- *Finds the cell closest to the center of the zone.                *
- *   HouseClass::delete -- Deallocator function for a house object. *
- *   HouseClass::new -- Allocator for a house class. * HouseClass::operator
- *HousesType -- Conversion to HousesType operator.                     *
- *   HouseClass::~HouseClass -- Default destructor for a house object. *
- *   HouseStaticClass::HouseStaticClass -- Default constructor for house static
- *class.         * HouseClass::AI_Raise_Power -- Try to raise power levels by
- *selling off buildings.         * HouseClass::AI_Raise_Money -- Raise emergency
- *cash by selling buildings.                  * HouseClass::Random_Cell_In_Zone
- *-- Find a (technically) legal cell in the zone specified. *
+ *   building. * HouseClass::Suggest_New_Object -- Determine what would the next
+ *   buildable object be. * HouseClass::Suggested_New_Team -- Determine what
+ * team should be created. * HouseClass::Super_Weapon_Handler -- Handles the
+ * super weapon charge and discharge logic. * HouseClass::Suspend_Production --
+ *   Temporarily puts production on hold. * HouseClass::Tally_Score -- Fills in
+ *   the score system for this round * HouseClass::Tiberium_Fraction --
+ *   Calculates the tiberium fraction of capacity. * HouseClass::Tracking_Add --
+ *   Informs house of new inventory item. * HouseClass::Tracking_Remove --
+ * Remove object from house tracking system. * HouseClass::Where_To_Go --
+ * Determines where the object should go and wait. * HouseClass::Which_Zone --
+ * Determines what zone a coordinate lies in. * HouseClass::Which_Zone --
+ * Determines which base zone the specified cell lies in. *
+ * HouseClass::Which_Zone -- Determines which base zone the specified object
+ * lies in. * HouseClass::Write_INI -- Writes the house data to the INI
+ * database. * HouseClass::Zone_Cell -- Finds the cell closest to the center of
+ * the zone. * HouseClass::delete -- Deallocator function for a house object. *
+ * HouseClass::new -- Allocator for a house class. * HouseClass::operator
+ * HousesType -- Conversion to HousesType operator. * HouseClass::~HouseClass --
+ * Default destructor for a house object. * HouseStaticClass::HouseStaticClass
+ * -- Default constructor for house static class. * HouseClass::AI_Raise_Power
+ * -- Try to raise power levels by selling off buildings. *
+ * HouseClass::AI_Raise_Money -- Raise emergency cash by selling buildings. *
+ * HouseClass::Random_Cell_In_Zone -- Find a (technically) legal cell in the
+ * zone specified. *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
@@ -174,9 +162,7 @@
 #include "ra/ccini.h"
 #include "ra/cell.h"
 #include "ra/config.h"
-#include "ra/const.h"
 #include "ra/coord.h"
-#include "ra/debug.h"
 #include "ra/defines.h"
 #include "ra/display_constants.h"
 #include "ra/drive.h"
@@ -193,7 +179,6 @@
 #include "ra/jshell.h"
 #include "ra/logic.h"
 #include "ra/mapedit.h"
-#include "ra/monoc.h"
 #include "ra/mouse.h"
 #include "ra/msglist.h"
 #include "ra/object.h"
@@ -386,222 +371,6 @@ DiffType HouseClass::Assign_Handicap(DiffType handicap) {
   }
 
   return old;
-}
-
-void HouseClass::Print_Zone_Stats(int x, int y, ZoneType zone,
-                                  MonoClass* mono) const {
-  mono->Set_Cursor(x, y);
-  mono->Printf("A:%-5d I:%-5d V:%-5d", ZoneInfo.at(zone).AirDefense,
-               ZoneInfo.at(zone).InfantryDefense,
-               ZoneInfo.at(zone).ArmorDefense);
-}
-
-/***********************************************************************************************
- * HouseClass::Debug_Dump -- Dumps the house status data to the mono screen. *
- *                                                                                             *
- *    This utility function will output the current status of the house class to
- *the mono      * screen. Through this information bugs may be fixed or
- *detected.                          *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 05/31/1994 JLB : Created. *
- *=============================================================================================*/
-void HouseClass::Debug_Dump(MonoClass* mono) const {
-  if constexpr (config::kCheatKeysEnabled) {
-    mono->Set_Cursor(0, 0);
-    mono->Print(Text_String(TXT_DEBUG_HOUSE));
-
-    mono->Set_Cursor(1, 1);
-    mono->Printf("[%d]%14.14s", Class->House, Name());
-    mono->Set_Cursor(20, 1);
-    mono->Printf("[%d]%13.13s", ActLike,
-                 HouseTypeClass::As_Reference(ActLike).Name());
-    mono->Set_Cursor(39, 1);
-    mono->Printf("%2d", Control.TechLevel);
-    mono->Set_Cursor(45, 1);
-    mono->Printf("%2d", Difficulty);
-    mono->Set_Cursor(52, 1);
-    mono->Printf("%2d", State);
-    mono->Set_Cursor(58, 1);
-    mono->Printf("%2d", Blockage);
-    mono->Set_Cursor(65, 1);
-    mono->Printf("%2d", IQ);
-    mono->Set_Cursor(72, 1);
-    mono->Printf("%5d", RepairTimer.Value());
-
-    mono->Set_Cursor(1, 3);
-    mono->Printf("%08X", AScan);
-    mono->Set_Cursor(10, 3);
-    mono->Printf(
-        "%8.8s",
-        (BuildAircraft == AIRCRAFT_NONE)
-            ? " "
-            : AircraftTypeClass::As_Reference(BuildAircraft).Graphic_Name());
-    mono->Set_Cursor(21, 3);
-    mono->Printf("%3d", CurAircraft);
-    mono->Set_Cursor(27, 3);
-    mono->Printf("%8d", Credits);
-    mono->Set_Cursor(37, 3);
-    mono->Printf("%5d", Power);
-    mono->Set_Cursor(45, 3);
-    mono->Printf("%04X", RadarSpied);
-    mono->Set_Cursor(52, 3);
-    mono->Printf("%5d", PointTotal);
-    mono->Set_Cursor(62, 3);
-    mono->Printf("%5d", TeamTime.Value());
-    mono->Set_Cursor(71, 3);
-    mono->Printf("%5d", AlertTime.Value());
-
-    mono->Set_Cursor(1, 5);
-    mono->Printf("%08X", BScan);
-    mono->Set_Cursor(10, 5);
-    mono->Printf(
-        "%8.8s",
-        (BuildStructure == STRUCT_NONE)
-            ? " "
-            : BuildingTypeClass::As_Reference(BuildStructure).Graphic_Name());
-    mono->Set_Cursor(21, 5);
-    mono->Printf("%3d", CurBuildings);
-    mono->Set_Cursor(27, 5);
-    mono->Printf("%8d", Tiberium);
-    mono->Set_Cursor(37, 5);
-    mono->Printf("%5d", Drain);
-    mono->Set_Cursor(44, 5);
-    mono->Printf("%16.16s", QuarryName.at(PreferredTarget));
-    mono->Set_Cursor(62, 5);
-    mono->Printf("%5d", TriggerTime.Value());
-    mono->Set_Cursor(71, 5);
-    mono->Printf("%5d", BorrowedTime.Value());
-
-    mono->Set_Cursor(1, 7);
-    mono->Printf("%08X", UScan);
-    mono->Set_Cursor(10, 7);
-    mono->Printf("%8.8s",
-                 (BuildUnit == UNIT_NONE)
-                     ? " "
-                     : UnitTypeClass::As_Reference(BuildUnit).Graphic_Name());
-    mono->Set_Cursor(21, 7);
-    mono->Printf("%3d", CurUnits);
-    mono->Set_Cursor(27, 7);
-    mono->Printf("%8d", Control.InitialCredits);
-    mono->Set_Cursor(38, 7);
-    mono->Printf("%5d", UnitsLost);
-    mono->Set_Cursor(44, 7);
-    mono->Printf("%08X", Allies);
-    mono->Set_Cursor(71, 7);
-    mono->Printf("%5d", Attack.Value());
-
-    mono->Set_Cursor(1, 9);
-    mono->Printf("%08X", IScan);
-    mono->Set_Cursor(10, 9);
-    mono->Printf(
-        "%8.8s",
-        (BuildInfantry == INFANTRY_NONE)
-            ? " "
-            : InfantryTypeClass::As_Reference(BuildInfantry).Graphic_Name());
-    mono->Set_Cursor(21, 9);
-    mono->Printf("%3d", CurInfantry);
-    mono->Set_Cursor(27, 9);
-    mono->Printf("%8d", Capacity);
-    mono->Set_Cursor(38, 9);
-    mono->Printf("%5d", BuildingsLost);
-    mono->Set_Cursor(45, 9);
-    mono->Printf("%4d", Radius / CELL_LEPTON_W);
-    mono->Set_Cursor(71, 9);
-    mono->Printf("%5d", AITimer.Value());
-
-    mono->Set_Cursor(1, 11);
-    mono->Printf("%08X", VScan);
-    mono->Set_Cursor(10, 11);
-    mono->Printf(
-        "%8.8s",
-        (BuildVessel == VESSEL_NONE)
-            ? " "
-            : VesselTypeClass::As_Reference(BuildVessel).Graphic_Name());
-    mono->Set_Cursor(21, 11);
-    mono->Printf("%3d", CurVessels);
-    mono->Set_Cursor(54, 11);
-    mono->Printf("%04X", Coord_Cell(Center));
-    mono->Set_Cursor(71, 11);
-    mono->Printf("%5d", DamageTime.Value());
-
-    for (int index = 0; index < std::ssize(Scen.GlobalFlags); index++) {
-      mono->Set_Cursor(1 + index, 15);
-      if (base::At(Scen.GlobalFlags, index)) {
-        mono->Print("1");
-      } else {
-        mono->Print("0");
-      }
-      if (index >= 24) {
-        break;
-      }
-    }
-    if (Enemy != HOUSE_NONE) {
-      mono->Set_Cursor(53, 15);
-      mono->Printf("[%d]%21.21s", Enemy,
-                   HouseTypeClass::As_Reference(Enemy).Name());
-    }
-
-    Print_Zone_Stats(27, 11, ZONE_NORTH, mono);
-    Print_Zone_Stats(27, 13, ZONE_CORE, mono);
-    Print_Zone_Stats(27, 15, ZONE_SOUTH, mono);
-    Print_Zone_Stats(1, 13, ZONE_WEST, mono);
-    Print_Zone_Stats(53, 13, ZONE_EAST, mono);
-
-    mono->Fill_Attrib(1, 17, 12, 1,
-                      IsActive ? MonoClass::INVERSE : MonoClass::NORMAL);
-    mono->Fill_Attrib(1, 18, 12, 1,
-                      IsHuman ? MonoClass::INVERSE : MonoClass::NORMAL);
-    mono->Fill_Attrib(1, 19, 12, 1,
-                      IsPlayerControl ? MonoClass::INVERSE : MonoClass::NORMAL);
-    mono->Fill_Attrib(1, 20, 12, 1,
-                      IsAlerted ? MonoClass::INVERSE : MonoClass::NORMAL);
-    mono->Fill_Attrib(1, 21, 12, 1,
-                      IsDiscovered ? MonoClass::INVERSE : MonoClass::NORMAL);
-    mono->Fill_Attrib(1, 22, 12, 1,
-                      IsMaxedOut ? MonoClass::INVERSE : MonoClass::NORMAL);
-
-    mono->Fill_Attrib(14, 17, 12, 1,
-                      IsDefeated ? MonoClass::INVERSE : MonoClass::NORMAL);
-    mono->Fill_Attrib(14, 18, 12, 1,
-                      IsToDie ? MonoClass::INVERSE : MonoClass::NORMAL);
-    mono->Fill_Attrib(14, 19, 12, 1,
-                      IsToWin ? MonoClass::INVERSE : MonoClass::NORMAL);
-    mono->Fill_Attrib(14, 20, 12, 1,
-                      IsToLose ? MonoClass::INVERSE : MonoClass::NORMAL);
-    mono->Fill_Attrib(14, 21, 12, 1,
-                      IsCivEvacuated ? MonoClass::INVERSE : MonoClass::NORMAL);
-    mono->Fill_Attrib(14, 22, 12, 1,
-                      IsRecalcNeeded ? MonoClass::INVERSE : MonoClass::NORMAL);
-
-    mono->Fill_Attrib(27, 17, 12, 1,
-                      IsVisionary ? MonoClass::INVERSE : MonoClass::NORMAL);
-    mono->Fill_Attrib(27, 18, 12, 1,
-                      IsTiberiumShort ? MonoClass::INVERSE : MonoClass::NORMAL);
-    mono->Fill_Attrib(27, 19, 12, 1,
-                      IsSpied ? MonoClass::INVERSE : MonoClass::NORMAL);
-    mono->Fill_Attrib(27, 20, 12, 1,
-                      IsThieved ? MonoClass::INVERSE : MonoClass::NORMAL);
-    mono->Fill_Attrib(27, 21, 12, 1,
-                      IsGPSActive ? MonoClass::INVERSE : MonoClass::NORMAL);
-    mono->Fill_Attrib(27, 22, 12, 1,
-                      IsStarted ? MonoClass::INVERSE : MonoClass::NORMAL);
-
-    mono->Fill_Attrib(40, 17, 12, 1,
-                      IsResigner ? MonoClass::INVERSE : MonoClass::NORMAL);
-    mono->Fill_Attrib(40, 18, 12, 1,
-                      IsGiverUpper ? MonoClass::INVERSE : MonoClass::NORMAL);
-    mono->Fill_Attrib(
-        40, 19, 12, 1,
-        IsBuiltSomething ? MonoClass::INVERSE : MonoClass::NORMAL);
-    mono->Fill_Attrib(40, 20, 12, 1,
-                      IsBaseBuilding ? MonoClass::INVERSE : MonoClass::NORMAL);
-  }
 }
 
 /***********************************************************************************************

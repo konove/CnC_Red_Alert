@@ -33,21 +33,14 @@
  *                  Last Update : July 18, 1996 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions: * Self_Regulate -- Regulates the logic timer to result in smooth
- *animation.                 * Debug_Key -- Debug mode keyboard processing. *
- *   Bench_Time -- Convert benchmark timer into descriptive string. * Benchmarks
- *-- Display the performance tracking benchmarks. *
+ * Functions: * Debug_Key -- Debug mode keyboard processing. *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
 #include "ra/debug.h"
 
-#include <algorithm>
-#include <cinttypes>
 #include <cstdint>
-#include <cstdio>
 
-#include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/aircraft.h"
@@ -65,13 +58,9 @@
 #include "ra/heap.h"
 #include "ra/house.h"
 #include "ra/inline.h"
-#include "ra/jshell.h"
-#include "ra/logic.h"
 #include "ra/mapedit.h"
-#include "ra/monoc.h"
 #include "ra/object.h"
 #include "ra/super.h"
-#include "ra/techno.h"
 #include "ra/type.h"
 #include "ra/vector_dynamic.h"
 #include "ra/vortex.h"
@@ -81,9 +70,6 @@
 #include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
-#include "tech/ftimer.h"
-
-static Timer<SystemTickSource> DebugTimer;
 
 /***********************************************************************************************
  * Debug_Key -- Debug mode keyboard processing. *
@@ -211,16 +197,6 @@ void Debug_Key(unsigned input) {
         }
         break;
 
-      case KN_M:
-        if (Debug_Flag) {
-          if (MonoClass::Is_Enabled()) {
-            MonoClass::Disable();
-          } else {
-            MonoClass::Enable();
-          }
-        }
-        break;
-
       case KN_W | KN_ALT_BIT:
         PlayerPtr->Flag_To_Win();
         break;
@@ -265,26 +241,6 @@ void Debug_Key(unsigned input) {
             }
           }
         }
-        break;
-
-      case KN_LBRACKET:
-      case KN_F11:
-        if (MonoPage == magic_enum::enum_values<DMonoType>().front()) {
-          MonoPage = magic_enum::enum_values<DMonoType>().back();
-        } else {
-          MonoPage = static_cast<DMonoType>(static_cast<int>(MonoPage) - 1);
-        }
-        DebugTimer.Set(0);
-        break;
-
-      case KN_RBRACKET:
-      case KN_F12:
-        if (MonoPage == magic_enum::enum_values<DMonoType>().back()) {
-          MonoPage = magic_enum::enum_values<DMonoType>().front();
-        } else {
-          MonoPage = static_cast<DMonoType>(static_cast<int>(MonoPage) + 1);
-        }
-        DebugTimer.Set(0);
         break;
 
       case KN_V:
@@ -355,231 +311,6 @@ void Debug_Key(unsigned input) {
 
       default:
         break;
-    }
-  }
-}
-
-/***********************************************************************************************
- * Bench_Time -- Convert benchmark timer into descriptive string. *
- *                                                                                             *
- *    This routine will take the values of the benchmark timer specified and
- *build a string    * that displays the average time each event consumed as well
- *as the ranking of how much    * time that event took (total) during the
- *tracking duration (one second?).                 *
- *                                                                                             *
- * INPUT:   btype -- The benchmark to convert to a descriptive string. *
- *                                                                                             *
- * OUTPUT:  Returns with a pointer to the descriptive string of the benchmark
- *specified.       *
- *                                                                                             *
- * WARNINGS:   The value returned is a pointer to a static buffer. As such, it
- *is only valid   * until the next time that this routine is called. *
- *                                                                                             *
- * HISTORY: * 07/18/1996 JLB : Created. *
- *=============================================================================================*/
-static const char* Bench_Time(BenchType btype) {
-  static char buffer[32];
-
-  int64_t rootcount = Benches.at(static_cast<size_t>(BENCH_GAME_FRAME)).Count();
-  if (rootcount == 0) {
-    rootcount = 1;
-  }
-  const int64_t roottime =
-      Benches.at(static_cast<size_t>(BENCH_GAME_FRAME)).Value();
-  const int64_t count = Benches.at(static_cast<size_t>(btype)).Count();
-  int64_t time = Benches.at(static_cast<size_t>(btype)).Value();
-  if (count > 0 && count * time > roottime * rootcount) {
-    time = roottime / count;
-  }
-  int percent = 0;
-  if (roottime != 0 && rootcount != 0) {
-    percent = static_cast<int>(((count * time) * 99) / (roottime * rootcount));
-  }
-  percent = std::min(percent, 99);
-  absl::SNPrintF(buffer, sizeof(buffer), "%-2d%% %7" PRId64, percent, time);
-  return buffer;
-}
-
-/***********************************************************************************************
- * Benchmarks -- Display the performance tracking benchmarks. *
- *                                                                                             *
- *    This will display the benchmarks for the various processes that are being
- *tracked. The   * display will indicate the fraction that each process is
- *consuming out of the entire      * process time as well as the time consumed
- *by each individual event. The total fraction   * is useful for determing what
- *should be optimized. The individual time is useful for      * guaging the
- *effectiveness of optimization changes.                                       *
- *                                                                                             *
- * INPUT:   mono  -- Pointer to the monochrome screen that the display will use.
- **
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/18/1996 JLB : Created. *
- *=============================================================================================*/
-static void Benchmarks(MonoClass* mono) {
-  static bool _first = true;
-  if (_first) {
-    _first = false;
-    mono->Clear();
-    mono->Set_Cursor(0, 0);
-    mono->Print(Text_String(TXT_DEBUG_PERFORMANCE));
-    if (Benches.empty()) {
-      mono->Set_Cursor(20, 15);
-      mono->Printf(TXT_NO_PENTIUM);
-    }
-  }
-
-  if (!Benches.empty()) {
-    mono->Set_Cursor(1, 2);
-    mono->Printf("%s", Bench_Time(BENCH_FINDPATH));
-    mono->Set_Cursor(1, 4);
-    mono->Printf("%s", Bench_Time(BENCH_GREATEST_THREAT));
-    mono->Set_Cursor(1, 6);
-    mono->Printf("%s", Bench_Time(BENCH_AI));
-    mono->Set_Cursor(1, 8);
-    mono->Printf("%s", Bench_Time(BENCH_PCP));
-    mono->Set_Cursor(1, 10);
-    mono->Printf("%s", Bench_Time(BENCH_EVAL_OBJECT));
-    mono->Set_Cursor(1, 12);
-    mono->Printf("%s", Bench_Time(BENCH_EVAL_CELL));
-    mono->Set_Cursor(1, 14);
-    mono->Printf("%s", Bench_Time(BENCH_EVAL_WALL));
-    mono->Set_Cursor(1, 16);
-    mono->Printf("%s", Bench_Time(BENCH_MISSION));
-
-    mono->Set_Cursor(14, 2);
-    mono->Printf("%s", Bench_Time(BENCH_CELL));
-    mono->Set_Cursor(14, 4);
-    mono->Printf("%s", Bench_Time(BENCH_OBJECTS));
-    mono->Set_Cursor(14, 6);
-    mono->Printf("%s", Bench_Time(BENCH_ANIMS));
-
-    mono->Set_Cursor(27, 2);
-    mono->Printf("%s", Bench_Time(BENCH_PALETTE));
-
-    mono->Set_Cursor(40, 2);
-    mono->Printf("%s", Bench_Time(BENCH_GSCREEN_RENDER));
-    mono->Set_Cursor(40, 4);
-    mono->Printf("%s", Bench_Time(BENCH_SIDEBAR));
-    mono->Set_Cursor(40, 6);
-    mono->Printf("%s", Bench_Time(BENCH_RADAR));
-    mono->Set_Cursor(40, 8);
-    mono->Printf("%s", Bench_Time(BENCH_TACTICAL));
-    mono->Set_Cursor(40, 10);
-    mono->Printf("%s", Bench_Time(BENCH_POWER));
-    mono->Set_Cursor(40, 12);
-    mono->Printf("%s", Bench_Time(BENCH_SHROUD));
-    mono->Set_Cursor(40, 14);
-    mono->Printf("%s", Bench_Time(BENCH_TABS));
-    mono->Set_Cursor(40, 16);
-    mono->Printf("%s", Bench_Time(BENCH_BLIT_DISPLAY));
-
-    mono->Set_Cursor(66, 2);
-    mono->Printf("%7d", Benches.at(static_cast<size_t>(BENCH_RULES)).Value());
-    mono->Set_Cursor(66, 4);
-    mono->Printf("%7d",
-                 Benches.at(static_cast<size_t>(BENCH_SCENARIO)).Value());
-
-    for (const BenchType index : magic_enum::enum_values<BenchType>()) {
-      if (index != BENCH_RULES && index != BENCH_SCENARIO) {
-        Benches.at(static_cast<size_t>(index)).Reset();
-      }
-    }
-  }
-}
-
-/***********************************************************************************************
- * Self_Regulate -- Regulates the logic timer to result in smooth animation *
- *                                                                                             *
- *    The self regulation process checks the number of frames displayed * per
- *second and from this determines the amount of time to devote * to internal
- *logic processing. By adjusting the time allotted to                          *
- *    internal processing, smooth animation can be maintained. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   In order for this routine to work properly it MUST be * called
- *every display loop.                                                      *
- *                                                                                             *
- * HISTORY: * 07/31/1991 JLB : Created. * 07/05/1994 JLB : Handles new
- *monochrome system.                                           *
- *=============================================================================================*/
-#define UPDATE_INTERVAL kTimerSecond
-void Self_Regulate() {
-  static ObjectClass* _lastobject = nullptr;
-  static bool _first = true;
-
-  if (DebugTimer.IsFinished()) {
-    DebugTimer.Set(UPDATE_INTERVAL);
-
-    if (MonoClass::Is_Enabled()) {
-      if (_first) {
-        _first = false;
-        for (const DMonoType index : magic_enum::enum_values<DMonoType>()) {
-          MonoArray.at(index).Clear();
-        }
-      }
-
-      /*
-      **	Always update the stress tracking mono display even if it
-      **	currently isn't visible.
-      */
-      LogicClass::Debug_Dump(&MonoArray.at(DMONO_STRESS));
-
-      MonoClass* mono = &MonoArray.at(MonoPage);
-      mono->Set_Default_Attribute(MonoClass::NORMAL);
-      mono->View();
-
-      switch (MonoPage) {
-        case DMONO_EVENTS:
-          Benchmarks(mono);
-          break;
-
-        case DMONO_OBJECT:
-          mono->Clear();
-
-          /*
-          **	Display the status of the currently selected object.
-          */
-          if (CurrentObject.Count()) {
-            _lastobject = CurrentObject.at(0);
-          }
-          if (_lastobject && !_lastobject->IsActive) {
-            _lastobject = nullptr;
-          }
-          if (_lastobject) {
-            _lastobject->Debug_Dump(mono);
-          }
-          break;
-
-        case DMONO_STRESS:
-          break;
-
-        case DMONO_HOUSE:
-          mono->Clear();
-
-          if (CurrentObject.Count()) {
-            _lastobject = CurrentObject.at(0);
-          }
-          if (_lastobject && !_lastobject->IsActive) {
-            _lastobject = nullptr;
-          }
-          if (_lastobject && _lastobject->Is_Techno()) {
-            dynamic_cast<const TechnoClass*>(_lastobject)
-                ->House->Debug_Dump(mono);
-          }
-          break;
-
-        default:
-          break;
-      }
-
-      mono->Set_Cursor(0, 0);
     }
   }
 }

@@ -54,7 +54,6 @@
 #include "ra/fly.h"
 #include "ra/foot.h"
 #include "ra/jshell.h"
-#include "ra/monoc.h"
 #include "ra/object.h"
 #include "ra/radio.h"
 #include "ra/techno.h"
@@ -197,9 +196,6 @@ class AircraftClass : public FootClass, public FlyClass {
                                    int32_t& param) override;
   void Scatter(COORDINATE threat, bool forced = false,
                bool nokidding = false) override;
-
-  // Scenario and debug support.
-  void Debug_Dump(MonoClass* mono) const override;
 
   /*
   **	File I/O.

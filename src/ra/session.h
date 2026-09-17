@@ -660,8 +660,6 @@ class SessionClass {
   static char Descriptions[100][40];
   static int CountMin[2];
   static int CountMax[2];
-  static const char* GlobalPacketNames[];
-  static const char* SerialPacketNames[];
 
   //.....................................................................
   // For Recording & Playing back a file

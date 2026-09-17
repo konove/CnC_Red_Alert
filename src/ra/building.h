@@ -53,7 +53,6 @@
 #include "ra/factory.h"
 #include "ra/house.h"
 #include "ra/jshell.h"
-#include "ra/monoc.h"
 #include "ra/object.h"
 #include "ra/radio.h"
 #include "ra/techno.h"
@@ -367,7 +366,6 @@ class BuildingClass : public TechnoClass {
   /*
   **	Scenario and debug support.
   */
-  void Debug_Dump(MonoClass* mono) const override;
 
   /*
   **	File I/O.

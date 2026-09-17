@@ -129,10 +129,8 @@
 #include "ra/ccini.h"
 #include "ra/ccptr.h"
 #include "ra/cell.h"
-#include "ra/config.h"
 #include "ra/const.h"
 #include "ra/coord.h"
-#include "ra/debug.h"
 #include "ra/defines.h"
 #include "ra/display.h"
 #include "ra/display_constants.h"
@@ -149,7 +147,6 @@
 #include "ra/jshell.h"
 #include "ra/mapedit.h"
 #include "ra/mission.h"
-#include "ra/monoc.h"
 #include "ra/object.h"
 #include "ra/queue.h"
 #include "ra/radio.h"
@@ -2151,35 +2148,6 @@ int AircraftClass::Process_Fly_To(bool slowdown, TARGET dest) {
     distance = 0;
   }
   return distance;
-}
-
-/***********************************************************************************************
- * AircraftClass::Debug_Dump -- Displays the status of the aircraft to the mono
- *monitor.       *
- *                                                                                             *
- *    This displays the current status of the aircraft class to the mono
- *monitor. By this      * display bugs may be tracked down or prevented. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 06/02/1994 JLB : Created. *
- *=============================================================================================*/
-void AircraftClass::Debug_Dump(MonoClass* mono) const {
-  if constexpr (config::kCheatKeysEnabled) {
-    DCHECK_EQ(Aircraft.ID(this), ID);
-    DCHECK(IsActive);
-
-    mono->Set_Cursor(0, 0);
-    mono->Print(Text_String(TXT_DEBUG_AIRCRAFT));
-    mono->Set_Cursor(1, 11);
-    mono->Printf("%3d", AttacksRemaining);
-
-    FootClass::Debug_Dump(mono);
-  }
 }
 
 /***********************************************************************************************

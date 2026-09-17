@@ -33,13 +33,11 @@
  *                  Last Update : June 5, 1996 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions: * RadioClass::Debug_Dump -- Displays the current status of the
- *radio to the mono monitor.   * RadioClass::Limbo -- When limboing a unit will
- *always break radio contact.                * RadioClass::Receive_Message --
- *Handles receipt of a radio message.                        *
- *   RadioClass::Transmit_Message -- Transmit message from one object to
- *another.              * RadioClass::Transmit_Message -- Transmits a message to
- *the object specified.              *
+ * Functions: * RadioClass::Limbo -- When limboing a unit will always break
+ *   radio contact. * RadioClass::Receive_Message -- Handles receipt of a radio
+ *   message. * RadioClass::Transmit_Message -- Transmit message from one object
+ *   to another. * RadioClass::Transmit_Message -- Transmits a message to the
+ *   object specified. *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
@@ -49,11 +47,9 @@
 #include <cstdint>
 
 #include "base/enum_array.h"
-#include "ra/config.h"
 #include "ra/defines.h"
 #include "ra/globals.h"
 #include "ra/mission.h"
-#include "ra/monoc.h"
 #include "ra/techno.h"  // IWYU pragma: keep
 
 /*
@@ -95,38 +91,6 @@ base::EnumArray<RadioMessageType, const char*> RadioClass::Messages = {
     "All done with the request.",
     "Do you need service depot work?",
     "Are you sitting on service depot?"};
-
-/***********************************************************************************************
- * RadioClass::Debug_Dump -- Displays the current status of the radio to the
- *mono monitor.     *
- *                                                                                             *
- *    This displays the radio connection value to the monochrome monitor. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 06/02/1994 JLB : Created. *
- *=============================================================================================*/
-void RadioClass::Debug_Dump(MonoClass* mono) const {
-  if constexpr (config::kCheatKeysEnabled) {
-    assert(IsActive);
-
-    mono->Set_Cursor(29, 7);
-    mono->Printf("0-%-47s", Messages.at(Old[0]));
-    mono->Set_Cursor(29, 8);
-    mono->Printf("1-%-47s", Messages.at(Old[1]));
-    mono->Set_Cursor(29, 9);
-    mono->Printf("2-%-47s", Messages.at(Old[2]));
-    if (Radio) {
-      mono->Set_Cursor(20, 7);
-      mono->Printf("%08X", Radio->As_Target());
-    }
-    MissionClass::Debug_Dump(mono);
-  }
-}
 
 // Every radio in the game is part of a TechnoClass object, so the cast only
 // fails when there is no contact at all.

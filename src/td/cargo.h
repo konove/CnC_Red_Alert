@@ -41,8 +41,6 @@
 #ifndef CNC_RED_ALERT_TD_CARGO_H_
 #define CNC_RED_ALERT_TD_CARGO_H_
 
-#include "td/monoc.h"
-
 class FootClass;
 
 /****************************************************************************
@@ -69,7 +67,6 @@ class CargoClass {
   **	Member function prototypes.
   */
 
-  virtual void Debug_Dump(MonoClass* mono) const;
   void AI() {}
 
   [[nodiscard]] int How_Many() const { return Quantity; }

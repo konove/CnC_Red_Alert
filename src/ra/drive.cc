@@ -35,29 +35,26 @@
  *---------------------------------------------------------------------------------------------*
  * Functions: * DriveClass::AI -- Processes unit movement and rotation. *
  *   DriveClass::Approach_Target -- Handles approaching the target in order to
- *attack it.      * DriveClass::Assign_Destination -- Set the unit's NavCom. *
+ *   attack it. * DriveClass::Assign_Destination -- Set the unit's NavCom. *
  *   DriveClass::Class_Of -- Fetches a reference to the class type for this
- *object.            * DriveClass::Debug_Dump -- Displays status information to
- *monochrome screen.               * DriveClass::Do_Turn -- Tries to turn the
- *vehicle to the specified direction.              * DriveClass::DriveClass --
- *Constructor for drive class object.                             *
- *   DriveClass::Force_Track -- Forces the unit to use the indicated track. *
+ *   object. * DriveClass::Do_Turn -- Tries to turn the vehicle to the specified
+ *   direction. * DriveClass::DriveClass -- Constructor for drive class object.
+ * * DriveClass::Force_Track -- Forces the unit to use the indicated track. *
  *   DriveClass::Lay_Track -- Handles track laying logic for the unit. *
  *   DriveClass::Limbo -- Prepares vehicle and then limbos it. *
  *   DriveClass::Mark_Track -- Marks the midpoint of the track as occupied. *
  *   DriveClass::Ok_To_Move -- Checks to see if this object can begin moving. *
  *   DriveClass::Per_Cell_Process -- Handles when unit finishes movement into a
- *cell.          * DriveClass::Response_Attack -- Voice feedback when ordering
- *the unit to attack a target.  * DriveClass::Response_Move -- Voice feedback
- *when ordering the unit to move.               * DriveClass::Response_Select --
- *Voice feedback when selecting the unit.                    *
- *   DriveClass::Scatter -- Causes the unit to travel to a nearby safe cell. *
- *   DriveClass::Smooth_Turn -- Handles the low level coord calc for smooth turn
- *logic.        * DriveClass::Start_Of_Move -- Tries to get a unit to advance
- *toward cell.                  * DriveClass::Stop_Driver -- Handles removing
- *occupation bits when driving stops.           * DriveClass::Teleport_To --
- *Teleport object to specified location.                         *
- *   DriveClass::While_Moving -- Processes unit movement. *
+ *   cell. * DriveClass::Response_Attack -- Voice feedback when ordering the
+ * unit to attack a target. * DriveClass::Response_Move -- Voice feedback when
+ *   ordering the unit to move. * DriveClass::Response_Select -- Voice feedback
+ *   when selecting the unit. * DriveClass::Scatter -- Causes the unit to travel
+ *   to a nearby safe cell. * DriveClass::Smooth_Turn -- Handles the low level
+ *   coord calc for smooth turn logic. * DriveClass::Start_Of_Move -- Tries to
+ *   get a unit to advance toward cell. * DriveClass::Stop_Driver -- Handles
+ *   removing occupation bits when driving stops. * DriveClass::Teleport_To --
+ *   Teleport object to specified location. * DriveClass::While_Moving --
+ *   Processes unit movement. *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
@@ -77,7 +74,6 @@
 #include "ra/building.h"
 #include "ra/ccptr.h"
 #include "ra/cell.h"
-#include "ra/config.h"
 #include "ra/const.h"
 #include "ra/coord.h"
 #include "ra/defines.h"
@@ -90,7 +86,6 @@
 #include "ra/inline.h"
 #include "ra/mapedit.h"
 #include "ra/mission.h"
-#include "ra/monoc.h"
 #include "ra/object.h"
 #include "ra/rules.h"
 #include "ra/target.h"
@@ -438,31 +433,6 @@ void DriveClass::Force_Track(int track, COORDINATE coord) {
  *=============================================================================================*/
 DriveClass::DriveClass(RTTIType rtti, int id, HousesType house)
     : FootClass(rtti, id, house) {}
-
-/***********************************************************************************************
- * DriveClass::Debug_Dump -- Displays status information to monochrome screen. *
- *                                                                                             *
- *    This debug utility function will display the status of the drive class to
- *the mono       * screen. It is through this information that bugs can be
- *tracked down.                    *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 05/31/1994 JLB : Created. *
- *=============================================================================================*/
-void DriveClass::Debug_Dump(MonoClass* mono) const {
-  if constexpr (config::kCheatKeysEnabled) {
-    assert(IsActive);
-
-    mono->Fill_Attrib(66, 14, 12, 1,
-                      IsMoebius ? MonoClass::INVERSE : MonoClass::NORMAL);
-    FootClass::Debug_Dump(mono);
-  }
-}
 
 /***********************************************************************************************
  * DriveClass::Smooth_Turn -- Handles the low level coord calc for smooth turn

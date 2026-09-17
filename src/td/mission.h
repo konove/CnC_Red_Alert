@@ -82,7 +82,6 @@ class MissionClass : public ObjectClass {
   /*---------------------------------------------------------------------
   **	Member function prototypes.
   */
-  void Debug_Dump(MonoClass* mono) const override;
 
   [[nodiscard]] MissionType Get_Mission() const override;
   virtual void Assign_Mission(MissionType order);

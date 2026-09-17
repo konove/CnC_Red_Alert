@@ -133,7 +133,6 @@
 #include "td/layer.h"
 #include "td/logic.h"
 #include "td/mapedit.h"
-#include "td/monoc.h"
 #include "td/mouse.h"
 #include "td/mplayer.h"
 #include "td/msgbox.h"
@@ -1512,10 +1511,8 @@ FacingType KN_To_Facing(int input) {
  *=============================================================================================*/
 static void Sync_Delay() {
   /*
-  **	Delay one tick and keep a record that one tick was "wasted" here.
-  **	This accumulates into a running histogram of performance.
+  **	Delay one tick.
   */
-  SpareTicks += FrameTimer.Time();
   while (FrameTimer.Time()) {
     Color_Cycle();
     Call_Back();
@@ -1588,11 +1585,6 @@ bool Main_Loop() {
 
   if constexpr (config::kCheatKeysEnabled) {
     Heap_Dump_Check("After Trap");
-
-    /*
-    **	Update the running status debug display.
-    */
-    Self_Regulate();
   }
 
   /*
@@ -2132,10 +2124,6 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
         std::filesystem::path(name).replace_extension(".VQA").string();
     const auto palname =
         std::filesystem::path(name).replace_extension(".VQP").string();
-    if constexpr (config::kCheatKeysEnabled) {
-      Mono_Set_Cursor(0, 0);
-      Mono_Printf("[%s]", fullname.c_str());
-    }
 
     /*
     **	Reset the anim control structure.
@@ -2436,10 +2424,8 @@ void CC_Draw_Shape(std::span<const std::byte> shapefile, int shapenum, int x,
     const auto shape_size = Build_Frame(
         shapefile, static_cast<uint16_t>(shapenum), ShapeBufferBytes);
     if (Get_Last_Frame_Length() > ShapeBufferSize) {
-      Mono_Printf(
-          "Attempt to use shape buffer for size %d buffer is only size %d",
-          Get_Last_Frame_Length(), ShapeBufferSize);
-      Get_Key();
+      LOG(ERROR) << "Shape buffer too small: need " << Get_Last_Frame_Length()
+                 << " bytes, buffer is only " << ShapeBufferSize;
     }
 
     if (!shape_size.empty()) {
@@ -2488,8 +2474,6 @@ void CC_Draw_Shape(std::span<const std::byte> shapefile, int shapenum, int x,
                              draw_window, flags | SHAPE_TRANS, effects);
       }
       draw_window.Unlock();
-      //		} else {
-      //			Mono_Printf( "Overrun ShapeBuffer!!!!!!!!!\n" );
     }
   }
 }

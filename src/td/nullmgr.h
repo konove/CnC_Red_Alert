@@ -156,9 +156,6 @@ class NullModemClass : public ConnManClass {
   int32_t Response_Time() override;
   void Reset_Response_Time() override;
   std::span<const std::byte> Oldest_Send();
-  void Configure_Debug(int index, int offset, int size, const char** names,
-                       int maxnames) override;
-  void Mono_Debug_Print(int index, int refresh = 0) override;
 
   /*
   ** These are for compatibility
@@ -229,13 +226,6 @@ class NullModemClass : public ConnManClass {
   int32_t RetryDelta{60};  // ticks between retries
   int32_t MaxRetries{-1};  // -1 means no limit: retry forever
   int32_t Timeout{1200};   // report bad connection after 20 seconds
-
-  /*
-  **	Various Statistics
-  */
-  int SendOverflows{0};
-  int ReceiveOverflows{0};
-  int CRCErrors{0};
 };
 
 #endif  // CNC_RED_ALERT_TD_NULLMGR_H_

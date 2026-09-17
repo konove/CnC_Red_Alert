@@ -227,8 +227,8 @@ which checks a literal format against its arguments at compile time:
 // run-time format (string table) →  port::FormatRuntime(Text_String(id), args...) (port/format.h)
 ```
 
-Game printers (`Fancy_Text_Print`, `Mono_Printf`, `Fatal`, ...) are variadic templates over the same
-machinery, so their call sites look unchanged but are type-checked.
+Game printers (`Fancy_Text_Print`, `Smart_Printf`, `Fatal`, ...) are variadic templates over the
+same machinery, so their call sites look unchanged but are type-checked.
 
 ## Testing
 

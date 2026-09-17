@@ -55,7 +55,6 @@
 #include "ra/face.h"
 #include "ra/foot.h"
 #include "ra/jshell.h"
-#include "ra/monoc.h"
 #include "ra/object.h"
 #include "ra/techno.h"
 #include "ra/type.h"
@@ -232,7 +231,6 @@ class InfantryClass final : public FootClass {
   /*
   **	Scenario and debug support.
   */
-  void Debug_Dump(MonoClass* mono) const override;
 
   /*
   **	File I/O.

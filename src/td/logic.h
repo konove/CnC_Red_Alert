@@ -42,7 +42,6 @@
 #define CNC_RED_ALERT_TD_LOGIC_H_
 
 #include "td/layer.h"
-#include "td/monoc.h"
 
 /***********************************************************************************************
 **	Game logic processing is controlled by this class. The graphic and AI
@@ -52,6 +51,5 @@
 class LogicClass : public LayerClass {
  public:
   void AI();
-  static void Debug_Dump(MonoClass* mono);
 };
 #endif  // CNC_RED_ALERT_TD_LOGIC_H_

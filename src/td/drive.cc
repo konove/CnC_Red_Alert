@@ -34,29 +34,36 @@
  *                  Last Update : July 30, 1995 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions: * DriveClass::AI -- Processes unit movement and rotation. *
- *   DriveClass::Approach_Target -- Handles approaching the target in order to
- *attack it.      * DriveClass::Assign_Destination -- Set the unit's NavCom. *
+ * Functions:
+ *   DriveClass::AI -- Processes unit movement and rotation.
+ *   DriveClass::Approach_Target -- Handles approaching the target in order
+ *     to attack it.
+ *   DriveClass::Assign_Destination -- Set the unit's NavCom.
  *   DriveClass::Class_Of -- Fetches a reference to the class type for this
- *object.            * DriveClass::Debug_Dump -- Displays status information to
- *monochrome screen.               * DriveClass::Do_Turn -- Tries to turn the
- *vehicle to the specified direction.              * DriveClass::DriveClass --
- *Constructor for drive class object.                             *
- *   DriveClass::Exit_Map -- Give the unit a movement order to exit the map. *
- *   DriveClass::Fixup_Path -- Adds smooth start path to normal movement path. *
- *   DriveClass::Force_Track -- Forces the unit to use the indicated track. *
- *   DriveClass::Lay_Track -- Handles track laying logic for the unit. *
- *   DriveClass::Offload_Tiberium_Bail -- Offloads one Tiberium quantum from the
- *object.       * DriveClass::Ok_To_Move -- Checks to see if this object can
- *begin moving.                  * DriveClass::Overrun_Square -- Handles vehicle
- *overrun of a cell.                          * DriveClass::Per_Cell_Process --
- *Handles when unit finishes movement into a cell.          *
- *   DriveClass::Smooth_Turn -- Handles the low level coord calc for smooth turn
- *logic.        * DriveClass::Start_Of_Move -- Tries to get a unit to advance
- *toward cell.                  * DriveClass::Tiberium_Load -- Determine the
- *Tiberium load as a percentage.                 * DriveClass::While_Moving --
- *Processes unit movement.                                      *
- *   DriveClass::Mark_Track -- Marks the midpoint of the track as occupied. *
+ *     object.
+ *   DriveClass::Do_Turn -- Tries to turn the vehicle to the specified
+ *     direction.
+ *   DriveClass::DriveClass -- Constructor for drive class object.
+ *   DriveClass::Exit_Map -- Give the unit a movement order to exit the map.
+ *   DriveClass::Fixup_Path -- Adds smooth start path to normal movement
+ *     path.
+ *   DriveClass::Force_Track -- Forces the unit to use the indicated track.
+ *   DriveClass::Lay_Track -- Handles track laying logic for the unit.
+ *   DriveClass::Offload_Tiberium_Bail -- Offloads one Tiberium quantum from
+ *     the object.
+ *   DriveClass::Ok_To_Move -- Checks to see if this object can begin
+ *     moving.
+ *   DriveClass::Overrun_Square -- Handles vehicle overrun of a cell.
+ *   DriveClass::Per_Cell_Process -- Handles when unit finishes movement
+ *     into a cell.
+ *   DriveClass::Smooth_Turn -- Handles the low level coord calc for smooth
+ *     turn logic.
+ *   DriveClass::Start_Of_Move -- Tries to get a unit to advance toward
+ *     cell.
+ *   DriveClass::Tiberium_Load -- Determine the Tiberium load as a
+ *     percentage.
+ *   DriveClass::While_Moving -- Processes unit movement.
+ *   DriveClass::Mark_Track -- Marks the midpoint of the track as occupied.
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
@@ -74,7 +81,6 @@
 #include "td/audio.h"
 #include "td/building.h"
 #include "td/cell.h"
-#include "td/config.h"
 #include "td/const.h"
 #include "td/defines.h"
 #include "td/display_constants.h"
@@ -87,7 +93,6 @@
 #include "td/inline.h"
 #include "td/jshell.h"
 #include "td/mapedit.h"
-#include "td/monoc.h"
 #include "td/object.h"
 #include "td/overlay.h"
 #include "td/special.h"
@@ -340,33 +345,6 @@ DriveClass::DriveClass(UnitType classid, HousesType house)
   IsSecondShot = Class->IsTwoShooter == 0;
 
   Strength = Class->MaxStrength;
-}
-
-/***********************************************************************************************
- * DriveClass::Debug_Dump -- Displays status information to monochrome screen. *
- *                                                                                             *
- *    This debug utility function will display the status of the drive class to
- *the mono       * screen. It is through this information that bugs can be
- *tracked down.                    *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 05/31/1994 JLB : Created. *
- *=============================================================================================*/
-void DriveClass::Debug_Dump(MonoClass* mono) const {
-  if constexpr (config::kCheatKeysEnabled) {
-    mono->Set_Cursor(33, 7);
-    mono->Printf("%2d:%2d", TrackNumber, TrackIndex);
-    mono->Text_Print("X", 16 + (IsTurretLockedDown ? 2 : 0), 10);
-    //	mono->Text_Print("X", 16 + (IsOnShortTrack?2:0), 11);
-    mono->Set_Cursor(41, 7);
-    mono->Printf("%d", Fixed_To_Cardinal(100, Tiberium_Load()));
-    FootClass::Debug_Dump(mono);
-  }
 }
 
 /***********************************************************************************************
@@ -705,9 +683,6 @@ bool DriveClass::While_Moving() {
                 IsOnShortTrack = false;  // Shouldn't be necessary, but...
                 TrackNumber = tnum;
                 track = newtrack;
-
-                //			Mono_Printf("**Jumping from track %d to
-                // track %d. **\n", tracknum, track->Track);Keyboard::Get();
 
                 tracknum = track->Track;
                 TrackIndex = base::At(RawTracks, tracknum - 1).Entry -

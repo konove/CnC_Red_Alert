@@ -50,7 +50,6 @@
 #include "ra/face.h"
 #include "ra/house.h"
 #include "ra/jshell.h"
-#include "ra/monoc.h"
 #include "ra/object.h"
 #include "ra/radio.h"
 #include "ra/target.h"
@@ -399,7 +398,6 @@ class FootClass : public TechnoClass {
   /*
    **	Scenario and debug support.
    */
-  void Debug_Dump(MonoClass* mono) const override;
 
   /*
   **	Movement and animation.

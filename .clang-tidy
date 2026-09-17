@@ -137,7 +137,7 @@ CheckOptions:
   # bearing, so they cannot become function-local statics. Every other static
   # object -- the whole game-data type table -- is nothrow constructible, and
   # the check still guards a static of any type not named here.
-  bugprone-throwing-static-initialization.AllowedTypes: 'BaseClass;CCINIClass;ChronalVortexClass;CreditClass;DynamicVectorClass<.*>;GameOptionsClass;GraphicBufferClass;GraphicViewPortClass;IPXManagerClass;LayerClass;LogicClass;MapEditClass;MessageListClass;MissionControlClass;GameFile;MonoClass;NullModemClass;RulesClass;ScenarioClass;SessionClass;TcpipManagerClass;TextBlitClass;ThemeClass;VersionClass;WWKeyboardClass'
+  bugprone-throwing-static-initialization.AllowedTypes: 'BaseClass;CCINIClass;ChronalVortexClass;CreditClass;DynamicVectorClass<.*>;GameOptionsClass;GraphicBufferClass;GraphicViewPortClass;IPXManagerClass;LayerClass;LogicClass;MapEditClass;MessageListClass;MissionControlClass;GameFile;NullModemClass;RulesClass;ScenarioClass;SessionClass;TcpipManagerClass;TextBlitClass;ThemeClass;VersionClass;WWKeyboardClass'
   # cert-err58-cpp is the same check under another name and needs its own
   # copy of the list.
-  cert-err58-cpp.AllowedTypes: 'BaseClass;CCINIClass;ChronalVortexClass;CreditClass;DynamicVectorClass<.*>;GameOptionsClass;GraphicBufferClass;GraphicViewPortClass;IPXManagerClass;LayerClass;LogicClass;MapEditClass;MessageListClass;MissionControlClass;GameFile;MonoClass;NullModemClass;RulesClass;ScenarioClass;SessionClass;TcpipManagerClass;TextBlitClass;ThemeClass;VersionClass;WWKeyboardClass'
+  cert-err58-cpp.AllowedTypes: 'BaseClass;CCINIClass;ChronalVortexClass;CreditClass;DynamicVectorClass<.*>;GameOptionsClass;GraphicBufferClass;GraphicViewPortClass;IPXManagerClass;LayerClass;LogicClass;MapEditClass;MessageListClass;MissionControlClass;GameFile;NullModemClass;RulesClass;ScenarioClass;SessionClass;TcpipManagerClass;TextBlitClass;ThemeClass;VersionClass;WWKeyboardClass'

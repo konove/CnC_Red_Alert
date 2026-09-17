@@ -2260,12 +2260,6 @@ enum class ArmorType {
 };
 using enum ArmorType;
 
-/**********************************************************************
-**	These are the identifiers for the various monochrome debug screens.
-*/
-enum class DMonoType { DMONO_OBJECT, DMONO_HOUSE, DMONO_STRESS, DMONO_EVENTS };
-using enum DMonoType;
-
 /*
 **	Performance benchmark tracking identifiers.
 */

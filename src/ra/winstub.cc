@@ -163,11 +163,6 @@ long FAR PASCAL _export Windows_Procedure(HWND hwnd, UINT message, UINT wParam,
   }
 
   switch (message) {
-      //		case WM_SYSKEYDOWN:
-      //			Mono_Printf("wparam=%08X lparam=%08X\n",
-      //(long)wParam, (long)lParam);
-      // fall through
-
       //		case WM_MOUSEMOVE:
       //		case WM_KEYDOWN:
       //		case WM_SYSKEYUP:
@@ -509,13 +504,6 @@ void Assert_Failure(char* expression, int line, char* file) {
 
   sprintf(assertbuf, "assert '%s' failed at line %d in module %s.\n",
           expression, line, file);
-
-  if (!MonoClass::Is_Enabled()) {
-    MonoClass::Enable();
-  }
-
-  Mono_Clear_Screen();
-  Mono_Printf("%s", assertbuf);
 
   WWDebugString(assertbuf);
 

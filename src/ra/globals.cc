@@ -71,7 +71,6 @@
 #include "ra/logic.h"
 #include "ra/mapedit.h"
 #include "ra/mission.h"
-#include "ra/monoc.h"
 #include "ra/nullmgr.h"
 #include "ra/object.h"
 #include "ra/overlay.h"
@@ -433,24 +432,6 @@ VoxType SpeechRecord[2];
 **	this global.
 */
 Buffer* TheaterBuffer;
-
-/***************************************************************************
-**	This is a running accumulation of the number of ticks that were unused.
-** This accumulates into a useful value that contributes to a
-**	histogram of game performance.
-*/
-int64_t SpareTicks;
-int32_t PathCount;       // Number of findpaths called.
-int32_t CellCount;       // Number of cells redrawn.
-int32_t TargetScan;      // Number of target scans.
-int32_t SidebarRedraws;  // Number of sidebar redraws.
-
-/***************************************************************************
-**	This is the monochrome debug page array. The various monochrome data
-**	screens are located here.
-*/
-base::EnumArray<DMonoType, MonoClass> MonoArray;
-DMonoType MonoPage = DMONO_STRESS;  // The current page.
 
 /***************************************************************************
 **	This holds the theater specific mixfiles.

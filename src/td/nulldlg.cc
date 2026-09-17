@@ -96,7 +96,6 @@
 #include "td/jshell.h"
 #include "td/list.h"
 #include "td/mapedit.h"
-#include "td/monoc.h"
 #include "td/mplayer.h"
 #include "td/msgbox.h"
 #include "td/msglist.h"
@@ -149,7 +148,6 @@ static unsigned char TheirID;
 static char DialString[CWAITSTRBUF_MAX + PhoneEntryClass::kPhoneMaxNum - 1];
 static SerialSettingsType* DialSettings;
 
-#define SHOW_MONO 0
 
 /***************************************************************************
  * Init_Null_Modem -- Initializes Null Modem communications                *
@@ -3500,15 +3498,6 @@ int Com_Scenario_Dialog() {
 
   base::At(ModemRXString, 0) = '\0';
 
-/*
----------------------------- Init Mono Output ----------------------------
-*/
-#if (SHOW_MONO)
-  NullModem.Configure_Debug(sizeof(CommHeaderType), sizeof(SerialCommandType),
-                            SerialPacketNames, 106);
-  NullModem.Mono_Debug_Print(1);
-#endif
-
   /*
   ---------------------------- Processing loop -----------------------------
   */
@@ -3531,9 +3520,6 @@ int Com_Scenario_Dialog() {
       display = REDRAW_ALL;
     }
 
-#if (SHOW_MONO)
-    NullModem.Mono_Debug_Print(0);
-#endif
 
     /*
     ........................ Invoke game callback .........................
@@ -3954,9 +3940,6 @@ int Com_Scenario_Dialog() {
 
             while (NullModem.Num_Send() &&
                    TickCount.Time() - starttime < PACKET_SENDING_TIMEOUT) {
-#if (SHOW_MONO)
-              NullModem.Mono_Debug_Print(0);
-#endif
 
               NullModem.Service();
               Keyboard::Check();  // Make sure the message loop gets called
@@ -4203,9 +4186,6 @@ int Com_Scenario_Dialog() {
       starttime = TickCount.Time();
       while (NullModem.Num_Send() &&
              TickCount.Time() - starttime < PACKET_SENDING_TIMEOUT) {
-#if (SHOW_MONO)
-        NullModem.Mono_Debug_Print(0);
-#endif
 
         NullModem.Service();
         Keyboard::Check();  // Make sure the message loop gets called
@@ -4483,11 +4463,8 @@ int Com_Scenario_Dialog() {
     .....................................................................*/
     SendPacket.Command = SERIAL_GO;
     SendPacket.ResponseTime = static_cast<uint32_t>(NullModem.Response_Time());
-    if (theirresponsetime == 10000) {
-      //			Mono_Clear_Screen();
-      //			Smart_Printf( "Did not receive their response
-      // time!!!!!!!\n" ); 			Get_Key();
-    } else {
+    // 10000 means the other side never reported a response time.
+    if (theirresponsetime != 10000) {
       SendPacket.ResponseTime =
           std::max(SendPacket.ResponseTime, theirresponsetime);
     }
@@ -4510,9 +4487,6 @@ int Com_Scenario_Dialog() {
     starttime = TickCount.Time();
     while (NullModem.Num_Send() &&
            TickCount.Time() - starttime < PACKET_SENDING_TIMEOUT) {
-#if (SHOW_MONO)
-      NullModem.Mono_Debug_Print(0);
-#endif
 
       NullModem.Service();
       Keyboard::Check();  // Make sure the message loop gets called
@@ -4535,9 +4509,6 @@ int Com_Scenario_Dialog() {
       starttime = TickCount.Time();
       while (NullModem.Num_Send() &&
              TickCount.Time() - starttime < PACKET_CANCEL_TIMEOUT) {
-#if (SHOW_MONO)
-        NullModem.Mono_Debug_Print(0);
-#endif
 
         if ((NullModem.Get_Message(base::ObjectBytes(ReceivePacket),
                                    &packetlen) > 0) &&
@@ -4825,15 +4796,6 @@ int Com_Show_Scenario_Dialog() {
 
   base::At(ModemRXString, 0) = '\0';
 
-/*
----------------------------- Init Mono Output ----------------------------
-*/
-#if (SHOW_MONO)
-  NullModem.Configure_Debug(sizeof(CommHeaderType), sizeof(SerialCommandType),
-                            SerialPacketNames, 106);
-  NullModem.Mono_Debug_Print(1);
-#endif
-
   /*
   ---------------------------- Processing loop -----------------------------
   */
@@ -4854,9 +4816,6 @@ int Com_Show_Scenario_Dialog() {
       display = REDRAW_ALL;
     }
 
-#if (SHOW_MONO)
-    NullModem.Mono_Debug_Print(0);
-#endif
 
     /*
     ........................ Invoke game callback .........................
@@ -5720,9 +5679,6 @@ int Com_Show_Scenario_Dialog() {
     starttime = TickCount.Time();
     while (NullModem.Num_Send() &&
            TickCount.Time() - starttime < PACKET_SENDING_TIMEOUT) {
-#if (SHOW_MONO)
-      NullModem.Mono_Debug_Print(0);
-#endif
 
       NullModem.Service();
       Keyboard::Check();  // Make sure the message loop gets called
@@ -5745,9 +5701,6 @@ int Com_Show_Scenario_Dialog() {
       starttime = TickCount.Time();
       while (NullModem.Num_Send() &&
              TickCount.Time() - starttime < PACKET_CANCEL_TIMEOUT) {
-#if (SHOW_MONO)
-        NullModem.Mono_Debug_Print(0);
-#endif
 
         if ((NullModem.Get_Message(base::ObjectBytes(ReceivePacket),
                                    &packetlen) > 0) &&
@@ -7066,11 +7019,7 @@ static void Modem_Echo(char c) {
 
 void Smart_Print(const std::string_view text) {
   if (Debug_Smart_Print) {
-    if (Special.IsMonoEnabled) {
-      Mono_Printf("%s", text);
-    } else {
-      absl::PrintF("%s", text);
-    }
+    absl::PrintF("%s", text);
   } else {
     if (Debug_Heap_Dump) {
       absl::PrintF("%s", text);

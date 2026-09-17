@@ -141,19 +141,6 @@ int SessionClass::CountMax[2] = {50, 12};
 //---------------------------------------------------------------------------
 char SessionClass::Descriptions[100][40];
 
-//---------------------------------------------------------------------------
-// These values are used purely for the Mono debug display.  They show the
-// names of the Global Channel packet types, and the event types.
-//---------------------------------------------------------------------------
-const char* SessionClass::GlobalPacketNames[] = {
-    "Game?",       "Game!",    "Player?", "Player!", "Join?", "Join!", "Reject",
-    "GameOptions", "Sign Off", "GO!",     "Message", "Ping",  "Load"};
-
-const char* SessionClass::SerialPacketNames[] = {
-    "CONNECT", "GAME_OPTIONS", "SIGN_OFF", "GO",           "MESSAGE",
-    "TIMING",  "SCORE_SCREEN", "LOADGAME", "LAST_COMMAND",
-};
-
 base::EnumArray<DialMethodType, const char*, static_cast<int>(DIAL_METHODS)>
     SessionClass::DialMethodCheck = {"T", "P"};
 
@@ -998,8 +985,6 @@ void SessionClass::Read_Scenario_Descriptions() {
   FindFileState state{};
   bool found = Find_First_File("*.PKT", state);
   while (found) {
-    // Mono_Printf("Found file '%s'.\n", block.cAlternateFileName);
-    // Mono_Printf("Found file '%s'.\n", block.cFileName);
     // debugprint("Found file '%s'.\n", block.cAlternateFileName);
     // debugprint("Found file '%s'.\n", block.cFileName);
     // debugprint( "Found alternate PKT file.\n" );

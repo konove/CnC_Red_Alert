@@ -44,7 +44,6 @@
 #include "ra/face.h"
 #include "ra/foot.h"
 #include "ra/jshell.h"
-#include "ra/monoc.h"
 #include "tech/ftimer.h"
 
 /****************************************************************************
@@ -130,7 +129,6 @@ class DriveClass : public FootClass {
   void Per_Cell_Process(PCPType why) override;
   virtual bool Ok_To_Move(DirType /*unused*/);
   void AI() override;
-  void Debug_Dump(MonoClass* mono) const override;
   void Force_Track(int track, COORDINATE coord);
   bool Stop_Driver() override;
 

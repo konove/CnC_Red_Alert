@@ -43,7 +43,6 @@
 
 #include <cstdint>
 
-#include "base/enum_array.h"
 #include "td/defines.h"
 #include "td/globals.h"
 #include "td/mission.h"
@@ -69,12 +68,6 @@ class RadioClass : public MissionClass {
   **	radio set.
   */
   RadioClass* Radio{nullptr};
-
-  /*
-  **	This is a text representation of all the possible radio messages. This
-  **	text is used for monochrome debug printing.
-  */
-  static base::EnumArray<RadioMessageType, const char*, kRadioCount> Messages;
 
  public:
   /*---------------------------------------------------------------------
@@ -104,7 +97,6 @@ class RadioClass : public MissionClass {
                                             RadioClass* to = nullptr);
   virtual RadioMessageType Transmit_Message(RadioMessageType message,
                                             RadioClass* to);
-  void Debug_Dump(MonoClass* mono) const override;
   bool Limbo() override;
 
   /*

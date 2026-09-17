@@ -2659,7 +2659,6 @@ bool DisplayClass::Good_Reinforcement_Cell(CELL outcell, CELL incell,
   /*
   **	All tests have passed, return with success code.
   */
-  // Mono_Printf("<%04X>\n", incell);Keyboard->Get();
   return true;
 }
 

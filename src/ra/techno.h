@@ -56,7 +56,6 @@
 #include "ra/flasher.h"
 #include "ra/house.h"
 #include "ra/jshell.h"
-#include "ra/monoc.h"
 #include "ra/object.h"
 #include "ra/radio.h"
 #include "ra/stage.h"
@@ -419,7 +418,6 @@ class TechnoClass : public RadioClass,
   /*
   **	Scenario and debug support.
   */
-  void Debug_Dump(MonoClass* mono) const override;
 
   /*
   **	Display and rendering support functionality. Supports imagery and how

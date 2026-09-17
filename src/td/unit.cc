@@ -34,75 +34,86 @@
  *                  Last Update : August 16, 1995 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions: * Recoil_Adjust -- Adjust pixel values in direction specified. *
- *   Turret_Adjust -- Turret adjustment routine for MLRS and MSAM units. *
- *   UnitClass::AI -- AI processing for the unit. * UnitClass::APC_Close_Door --
- *Closes an APC door.                                          *
- *   UnitClass::APC_Open_Door -- Opens an APC door. *
+ * Functions:
+ *   Recoil_Adjust -- Adjust pixel values in direction specified.
+ *     Turret_Adjust -- Turret adjustment routine for MLRS and MSAM units.
+ *   UnitClass::AI -- AI processing for the unit.
+ *   UnitClass::APC_Close_Door -- Closes an APC door.
+ *   UnitClass::APC_Open_Door -- Opens an APC door.
  *   UnitClass::Active_Click_With -- Intercepts the active click to see if
- *deployment is possib* UnitClass::As_Target -- Returns the unit as a target
- *value.                               * UnitClass::Blocking_Object --
- *Determines how a object blocks a unit                       *
- *   UnitClass::Can_Enter_Building -- Determines building entry legality. *
- *   UnitClass::Can_Fire -- Determines if this unit can fire. *
- *   UnitClass::Can_Player_Move -- Determines if the player is legally allowed
- *to move it.     * UnitClass::Click_With -- Handles player map clicking while
- *this unit is selected.         * UnitClass::Crew_Type -- Fetches the kind of
- *crew that this object produces.               * UnitClass::Debug_Dump --
- *Displays the status of the unit to the mono monitor.             *
+ *     deployment is possib
+ *   UnitClass::As_Target -- Returns the unit as a target value.
+ *   UnitClass::Blocking_Object -- Determines how a object blocks a unit
+ *   UnitClass::Can_Enter_Building -- Determines building entry legality.
+ *   UnitClass::Can_Fire -- Determines if this unit can fire.
+ *   UnitClass::Can_Player_Move -- Determines if the player is legally
+ *     allowed to move it.
+ *   UnitClass::Click_With -- Handles player map clicking while this unit is
+ *     selected.
+ *   UnitClass::Crew_Type -- Fetches the kind of crew that this object
+ *     produces.
  *   UnitClass::Desired_Load_Dir -- Determines the best cell and facing for
- *loading.           * UnitClass::Draw_It -- Draws a unit object. *
- *   UnitClass::Enter_Idle_Mode -- Unit enters idle mode state. *
- *   UnitClass::Find_LZ -- Maintenance function for transport units. *
- *   UnitClass::Flag_Attach -- Attaches a house flag to this unit. *
- *   UnitClass::Flag_Remove -- Removes the house flag from this unit. *
- *   UnitClass::Goto_Clear_Spot -- Finds a clear spot to deploy. *
- *   UnitClass::Goto_Tiberium -- Search for and head toward nearest available
- *Tiberium patch.  * UnitClass::Harvesting -- Harvests tiberium at the current
- *location.                       * UnitClass::Init -- Clears all units for
- *scenario preparation.                             * UnitClass::Limbo --
- *Prepares vehicle and then limbos it.                                  *
- *   UnitClass::Look -- Perform map revelation from a unit's position. *
- *   UnitClass::Mission_Attack -- Handles the mission attack logic. *
- *   UnitClass::Mission_Guard -- Special guard mission override processor. *
+ *     loading.
+ *   UnitClass::Draw_It -- Draws a unit object.
+ *   UnitClass::Enter_Idle_Mode -- Unit enters idle mode state.
+ *   UnitClass::Find_LZ -- Maintenance function for transport units.
+ *   UnitClass::Flag_Attach -- Attaches a house flag to this unit.
+ *   UnitClass::Flag_Remove -- Removes the house flag from this unit.
+ *   UnitClass::Goto_Clear_Spot -- Finds a clear spot to deploy.
+ *   UnitClass::Goto_Tiberium -- Search for and head toward nearest
+ *     available Tiberium patch.
+ *   UnitClass::Harvesting -- Harvests tiberium at the current location.
+ *   UnitClass::Init -- Clears all units for scenario preparation.
+ *   UnitClass::Limbo -- Prepares vehicle and then limbos it.
+ *   UnitClass::Look -- Perform map revelation from a unit's position.
+ *   UnitClass::Mission_Attack -- Handles the mission attack logic.
+ *   UnitClass::Mission_Guard -- Special guard mission override processor.
  *   UnitClass::Mission_Harvest -- Handles the harvesting process used by
- *harvesters.          * UnitClass::Mission_Hunt -- This is the AI process for
- *aggressive enemy units.             * UnitClass::Mission_Move -- Handles
- *special move mission overrides.                        *
- *   UnitClass::Mission_Unload -- Handles unloading cargo. *
- *   UnitClass::Overlap_List -- Determines overlap list for units. *
- *   UnitClass::Per_Cell_Process -- Performs operations necessary on a per cell
- *basis.         * UnitClass::Pip_Count -- Fetchs the number of pips to display
- *on unit.                     * UnitClass::Random_Animate -- Handles random
- *idle animation for the unit.                  * UnitClass::Read_INI -- Reads
- *units from scenario INI file.                                *
- *   UnitClass::Receive_Message -- Handles receiving a radio message. *
- *   UnitClass::Remap_Table -- Fetches the remap table to use for this object. *
+ *     harvesters.
+ *   UnitClass::Mission_Hunt -- This is the AI process for aggressive enemy
+ *     units.
+ *   UnitClass::Mission_Move -- Handles special move mission overrides.
+ *   UnitClass::Mission_Unload -- Handles unloading cargo.
+ *   UnitClass::Overlap_List -- Determines overlap list for units.
+ *   UnitClass::Per_Cell_Process -- Performs operations necessary on a per
+ *     cell basis.
+ *   UnitClass::Pip_Count -- Fetchs the number of pips to display on unit.
+ *   UnitClass::Random_Animate -- Handles random idle animation for the
+ *     unit.
+ *   UnitClass::Read_INI -- Reads units from scenario INI file.
+ *   UnitClass::Receive_Message -- Handles receiving a radio message.
+ *   UnitClass::Remap_Table -- Fetches the remap table to use for this
+ *     object.
  *   UnitClass::Response_Attack -- Voice feedback when ordering the unit to
- *attack a target.   * UnitClass::Response_Move -- Voice feedback when ordering
- *the unit to move.                * UnitClass::Response_Select -- Voice
- *feedback when selecting the unit.                     * UnitClass::Scatter --
- *Causes the unit to travel to a nearby safe cell.                    *
- *   UnitClass::Set_Speed -- Initiate unit movement physics. * UnitClass::Sort_Y
- *-- Give Y coordinate sort value for unit.                               *
- *   UnitClass::Start_Driver -- Starts driving and reserves destination cell. *
+ *     attack a target.
+ *   UnitClass::Response_Move -- Voice feedback when ordering the unit to
+ *     move.
+ *   UnitClass::Response_Select -- Voice feedback when selecting the unit.
+ *   UnitClass::Scatter -- Causes the unit to travel to a nearby safe cell.
+ *   UnitClass::Set_Speed -- Initiate unit movement physics.
+ *   UnitClass::Sort_Y -- Give Y coordinate sort value for unit.
+ *   UnitClass::Start_Driver -- Starts driving and reserves destination
+ *     cell.
  *   UnitClass::Stop_Driver -- Handles removing occupation bits when driving
- *stops.            * UnitClass::Stun -- Stuns the unit in preparation for unit
- *removal.                        * UnitClass::Take_Damage -- Inflicts damage
- *points on a unit.                               * UnitClass::Target_Coord --
- *The coordinate to use when targeting this unit.                *
+ *     stops.
+ *   UnitClass::Stun -- Stuns the unit in preparation for unit removal.
+ *   UnitClass::Take_Damage -- Inflicts damage points on a unit.
+ *   UnitClass::Target_Coord -- The coordinate to use when targeting this
+ *     unit.
  *   UnitClass::Try_To_Deploy -- The unit attempts to "deploy" at current
- *location.            * UnitClass::UnitClass -- Constructor for units. *
- *   UnitClass::Unlimbo -- Removes unit from stasis. *
+ *     location.
+ *   UnitClass::UnitClass -- Constructor for units.
+ *   UnitClass::Unlimbo -- Removes unit from stasis.
  *   UnitClass::Unload_Hovercraft_Process -- Handles unloading hovercraft
- *transport.           * UnitClass::Validate -- validates unit pointer.
- ** UnitClass::What_Action -- Determines what action would occur if clicked on
- *object.        * UnitClass::What_Am_I -- Returns with the RTTI type this
- *object is.                        * UnitClass::Write_INI -- Writes all the
- *units out to an INI file.                          * UnitClass::delete --
- *Deletion operator for units.                                         *
- *   UnitClass::new -- Allocate a unit slot and adjust access arrays. *
- *   UnitClass::~UnitClass -- Destructor for unit objects. *
+ *     transport.
+ *   UnitClass::Validate -- validates unit pointer.
+ *   UnitClass::What_Action -- Determines what action would occur if clicked
+ *     on object.
+ *   UnitClass::What_Am_I -- Returns with the RTTI type this object is.
+ *   UnitClass::Write_INI -- Writes all the units out to an INI file.
+ *   UnitClass::delete -- Deletion operator for units.
+ *   UnitClass::new -- Allocate a unit slot and adjust access arrays.
+ *   UnitClass::~UnitClass -- Destructor for unit objects.
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
@@ -150,7 +161,6 @@
 #include "td/keyframe.h"
 #include "td/layer.h"
 #include "td/mapedit.h"
-#include "td/monoc.h"
 #include "td/mouse.h"
 #include "td/object.h"
 #include "td/profile.h"
@@ -293,93 +303,6 @@ TARGET UnitClass::As_Target() const {
 }
 
 /***********************************************************************************************
- * UnitClass::Debug_Dump -- Displays the status of the unit to the mono monitor.
- **
- *                                                                                             *
- *    This displays the current status of the unit class to the mono monitor. By
- *this display  * bugs may be tracked down or prevented. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 06/02/1994 JLB : Created. *
- *=============================================================================================*/
-void UnitClass::Debug_Dump(MonoClass* mono) const {
-  if constexpr (config::kCheatKeysEnabled) {
-    Validate();
-    mono->Set_Cursor(0, 0);
-    mono->Print(
-        "┌Name:──────────────┬Mission:───┬TarCom:┬NavCom:┬Radio:┬Coord:"
-        "──┬HeadTo:"
-        "─┬St:─┐\n"
-        "│                   │           │       │       │      │        │     "
-        "  "
-        " │    │\n"
-        "├──────────────┬N┬Y┬Health:─┬Body:┬Turret:┬Speed:┬Path:┴──────┬Cargo:"
-        "────┴────┤\n"
-        "│Active........│ │ │        │     │       │      │            │       "
-        "  "
-        "      │\n"
-        "│Limbo.........│ │ "
-        "├────────┴─────┴───────┴──────┴────────────┴───────────────┤\n"
-        "│Owned.........│ │ │Last Message:                                     "
-        "  "
-        "      │\n"
-        "│Discovered....│ │ "
-        "├Timer:┬Arm:┬Track:┬Tiberium:┬Flash:┬Stage:┬Team:────┬Arch:┤\n"
-        "│Selected......│ │ │      │    │      │         │      │      │       "
-        "  "
-        "│     │\n"
-        "│Teathered.....│ │ "
-        "├──────┴────┴──────┴─────────┴──────┴──────┴─────────┴─────┘\n"
-        "│Locked on Map.│ │ │                                                  "
-        "  "
-        "       \n"
-        "│Turret Locked.│ │ │                                                  "
-        "  "
-        "       \n"
-        "│Is A Loaner...│ │ │                                                  "
-        "  "
-        "       \n"
-        "│Deploying.....│ │ │                                                  "
-        "  "
-        "       \n"
-        "│Rotating......│ │ │                                                  "
-        "  "
-        "       \n"
-        "│Firing........│ │ │                                                  "
-        "  "
-        "       \n"
-        "│Driving.......│ │ │                                                  "
-        "  "
-        "       \n"
-        "│To Look.......│ │ │                                                  "
-        "  "
-        "       \n"
-        "│Recoiling.....│ │ │                                                  "
-        "  "
-        "       \n"
-        "│To Display....│ │ │                                                  "
-        "  "
-        "       \n"
-        "└──────────────┴─┴─┘                                                  "
-        "  "
-        "       \n");
-    mono->Set_Cursor(1, 1);
-    mono->Printf("%s:%s", House->Class->IniName, Class->IniName);
-    // TechnoClass dumps its flasher, stage and radio bases but not its cargo
-    // base, so the cargo section has to be requested directly. Everything else,
-    // MissionClass included, is reached through the TarComClass chain.
-    // NOLINTNEXTLINE(bugprone-parent-virtual-call)
-    CargoClass::Debug_Dump(mono);
-    TarComClass::Debug_Dump(mono);
-  }
-}
-
-/***********************************************************************************************
  * UnitClass::Sort_Y -- Give Y coordinate sort value for unit. *
  *                                                                                             *
  *    This routine is used by the rendering system in order to sort the * game
@@ -465,7 +388,6 @@ void UnitClass::AI() {
   */
   if (*this == UNIT_HOVER) {
     //		Mark_For_Redraw();
-    // if (IsDown) Mono_Printf("*");
     Mark(MARK_CHANGE);
   }
 
@@ -2105,9 +2027,6 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) {
     **	Actually perform the draw. Overlay an optional shimmer effect as
     *necessary.
     */
-    // if (*this == UNIT_HOVER) {
-    //	Mono_Printf("Display hover %p %d.\n", shapefile, shapenum);
-    // }
     Techno_Draw_Object(shapefile, shapenum, x, y, window);
 
     /*
@@ -2842,7 +2761,6 @@ MoveBitType UnitClass::Blocking_Object(const TechnoClass* techno,
             Distance((const AbstractClass*)techno) > 0x1FF) {
           return (MOVE_BIT_MOVING_BLOCK);
         } else {
-          //					Mono_Printf("Move No!\r");
           return (MOVE_BIT_NO);
         }
       }

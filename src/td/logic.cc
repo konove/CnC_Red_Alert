@@ -34,20 +34,13 @@
  *                  Last Update : December 23, 1994 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions: * LogicClass::AI -- Handles AI logic processing for game objects.
- ** LogicClass::Debug_Dump -- Displays logic class status to the mono screen. *
+ * Functions:
+ *   LogicClass::AI -- Handles AI logic processing for game objects.
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
 #include "td/logic.h"
 
-#include <algorithm>
-#include <cstdint>
-#include <cstring>
-#include <span>
-
-#include "base/array.h"
-#include "base/buffer.h"
 #include "rand.h"
 #include "td/aircraft.h"
 #include "td/building.h"
@@ -55,137 +48,16 @@
 #include "td/externs.h"
 #include "td/factory.h"
 #include "td/ftimer.h"
-#include "td/globals.h"
 #include "td/heap.h"
 #include "td/house.h"
 #include "td/infantry.h"
 #include "td/jshell.h"
 #include "td/mapedit.h"
-#include "td/monoc.h"
 #include "td/object.h"
 #include "td/team.h"
 #include "td/type.h"
 #include "td/unit.h"
 #include "td/vector.h"
-
-static unsigned FramesPerSecond = 0;
-
-static unsigned TotalFrames;
-static unsigned FPSDivider = 1;
-static unsigned AverageFramesPerSecond;
-
-/***********************************************************************************************
- * LogicClass::Debug_Dump -- Displays logic class status to the mono screen. *
- *                                                                                             *
- *    This is a debugging support routine. It displays the current state of the
- *logic class    * to the monochrome monitor. It assumes that it is being called
- *once per second.           *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   Call this routine only once per second. *
- *                                                                                             *
- * HISTORY: * 05/31/1994 JLB : Created. *
- *=============================================================================================*/
-void LogicClass::Debug_Dump(MonoClass* mono) {
-#define RECORDCOUNT 40
-#define RECORDHEIGHT 21
-  static struct {
-    int Graphic;
-  } _record[RECORDCOUNT];
-
-  TotalFrames += FramesPerSecond;
-  AverageFramesPerSecond = TotalFrames / FPSDivider++;
-
-  mono->Set_Cursor(21, 9);
-  mono->Print(
-      "Ŀ\r"
-      "Units.....   Frame Rate:      Avg:      Frame:        \r"
-      "Infantry..   Ĵ\r"
-      "Aircraft..                                            \r"
-      "Buildings.                                            \r"
-      "Terrain...                                            \r"
-      "Bullets...                                            \r"
-      "Anims.....                                            \r"
-      "Teams.....                                           Ĵ\r"
-      "Triggers..                                            \r"
-      "Factories.                                            \r"
-      "                                                      \r"
-      "                                                      \r"
-      "ĴSpare CPU Time\r");
-
-  mono->Set_Cursor(70, 10);
-  mono->Printf("%ld", Frame);
-  if (ScenarioInit) {
-    mono->Set_Cursor(21, 9);
-    mono->Printf("%d", ScenarioInit);
-  }
-
-  mono->Set_Cursor(33, 10);
-  mono->Printf("%3d", Units.Count());
-  mono->Set_Cursor(33, 11);
-  mono->Printf("%3d", Infantry.Count());
-  mono->Set_Cursor(33, 12);
-  mono->Printf("%3d", Aircraft.Count());
-  mono->Set_Cursor(33, 13);
-  mono->Printf("%3d", Buildings.Count());
-  mono->Set_Cursor(33, 14);
-  mono->Printf("%3d", Terrains.Count());
-  mono->Set_Cursor(33, 15);
-  mono->Printf("%3d", Bullets.Count());
-  mono->Set_Cursor(33, 16);
-  mono->Printf("%3d", Anims.Count());
-  mono->Set_Cursor(33, 17);
-  mono->Printf("%3d", Teams.Count());
-  mono->Set_Cursor(33, 18);
-  mono->Printf("%3d", Triggers.Count());
-  mono->Set_Cursor(33, 19);
-  mono->Printf("%3d", Factories.Count());
-
-  mono->Set_Cursor(48, 10);
-  mono->Printf("%d", FramesPerSecond);
-  mono->Set_Cursor(58, 10);
-  mono->Printf("%d", AverageFramesPerSecond);
-
-  /*
-  **	Advance to the next recorded performance record. If the record buffer
-  **	is full then throw out the oldest record.
-  */
-  base::MoveBytes(std::as_writable_bytes(base::Suffix(_record, 0)),
-                  std::as_bytes(base::Suffix(_record, 1)),
-                  sizeof(_record[0]) * (RECORDCOUNT - 1));
-
-  /*
-  **	Fill in the data for the current frame's performance record.
-  */
-  SpareTicks = std::min(SpareTicks, static_cast<int64_t>(kTimerSecond));
-  base::At(_record, RECORDCOUNT - 1).Graphic = Fixed_To_Cardinal(
-      RECORDHEIGHT,
-      Cardinal_To_Fixed(kTimerSecond, static_cast<int>(SpareTicks)));
-
-  /*
-  **	Draw the bars across the performance record screen.
-  */
-  for (int column = 0; column < RECORDCOUNT; column++) {
-    for (int row = 1; row < RECORDHEIGHT; row += 2) {
-      static const unsigned char _barchar[4] = {' ', 220, 0, 219};
-      char str[2];
-      int index = 0;
-
-      index += (base::At(_record, column).Graphic >= row) ? 1 : 0;
-      index += (base::At(_record, column).Graphic >= row + 1) ? 2 : 0;
-
-      base::At(str, 1) = '\0';
-      base::At(str, 0) = static_cast<char>(base::At(_barchar, index));
-      mono->Text_Print(str, 37 + column, 21 - (row / 2));
-    }
-  }
-
-  SpareTicks = 0;
-  FramesPerSecond = 0;
-}
 
 /***********************************************************************************************
  * LogicClass::AI -- Handles AI logic processing for game objects. *
@@ -204,9 +76,6 @@ void LogicClass::Debug_Dump(MonoClass* mono) {
  *Esures that no object gets skipped if it was deleted.                    *
  *=============================================================================================*/
 void LogicClass::AI() {
-
-  FramesPerSecond++;
-
   /*
   **	Crate regeneration is handled here.
   */

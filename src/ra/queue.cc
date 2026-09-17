@@ -74,9 +74,6 @@
  ** Compute_Game_CRC -- Computes a CRC value of the entire game.
  ** Add_CRC -- Adds a value to a CRC                                      *
  *   Print_CRCs -- Prints a data file for finding Sync Bugs
- ** Init_Queue_Mono -- inits mono display                                 *
- *   Update_Queue_Mono -- updates mono display                             *
- *   Print_Framesync_Values -- displays frame-sync variables               *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 #include "ra/queue.h"
 
@@ -123,7 +120,6 @@
 #include "ra/logic.h"
 #include "ra/mapedit.h"
 #include "ra/mission.h"
-#include "ra/monoc.h"
 #include "ra/mouse.h"
 #include "ra/msgbox.h"
 #include "ra/msglist.h"
@@ -160,7 +156,6 @@
 #include "ra/wolapiob.h"
 
 /********************************** Defines *********************************/
-#define SHOW_MONO 0
 
 /********************************** Globals *********************************/
 //---------------------------------------------------------------------------
@@ -173,16 +168,6 @@ static uint32_t CRC[32] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 static const char* ColorNames[8] = {"Yellow", "LtBlue", "Red",  "Green",
                                     "Orange", "Grey",   "Blue", "Brown"};
-
-//...........................................................................
-// Mono debugging variables:
-// NetMonoMode: 0 = show connection output, 1 = flowcount output
-// NewMonoMode: set by anything that toggles NetMonoMode; re-inits screen
-// IsMono: used for taking control of Mono screen away from the engine
-//...........................................................................
-[[maybe_unused]] static int NetMonoMode = 1;
-[[maybe_unused]] static int NewMonoMode = 1;
-static int IsMono = 0;
 
 //---------------------------------------------------------------------------
 // Several routines return various codes; here's an enum for all of them.
@@ -262,7 +247,7 @@ static int Execute_DoList(
     //	ConnManClass *net, TCountDownTimerClass *skip_crc,
     std::span<int64_t> their_frame, std::span<uint16_t> their_sent,
     std::span<uint16_t> their_recv);
-static void Clean_DoList(ConnManClass* net);
+static void Clean_DoList();
 static void Queue_Record();
 static void Queue_Playback();
 
@@ -274,13 +259,6 @@ static void Print_CRCs(const EventClass* ev);
 // Bytes a compressed packet spends on each event's type tag.
 constexpr int kEventTypeSize = static_cast<int>(sizeof(EventClass::EventType));
 
-static void Init_Queue_Mono(ConnManClass* net);
-static void Update_Queue_Mono(ConnManClass* net, int flow_index);
-static void Print_Framesync_Values(int64_t curframe, int max_ahead,
-                                   int num_connections,
-                                   std::span<uint16_t> their_recv,
-                                   std::span<uint16_t> their_sent,
-                                   uint16_t my_sent);
 
 static void Dump_Packet_Too_Late_Stuff(const EventClass* event,
                                        ConnManClass* net,
@@ -498,7 +476,7 @@ static void Queue_AI_Normal() {
   //------------------------------------------------------------------------
   //	Clean out the DoList
   //------------------------------------------------------------------------
-  Clean_DoList(nullptr);
+  Clean_DoList();
 
 } /* end of Queue_AI_Normal */
 
@@ -708,12 +686,6 @@ static void Queue_AI_Multiplayer() {
   }
 
   //------------------------------------------------------------------------
-  //	Debug stuff
-  //------------------------------------------------------------------------
-  Init_Queue_Mono(net);
-  Update_Queue_Mono(net, 0);
-
-  //------------------------------------------------------------------------
   //	Compute the Game's CRC
   //------------------------------------------------------------------------
   Compute_Game_CRC();
@@ -850,9 +822,6 @@ static void Queue_AI_Multiplayer() {
   //------------------------------------------------------------------------
   if ((Session.CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) &&
       (!Process_Send_Period(net))) {  //, 0)) {
-    if (IsMono) {
-      MonoClass::Disable();
-    }
     return;
   }
 
@@ -866,9 +835,6 @@ static void Queue_AI_Multiplayer() {
   //	If this is our first time through, we're done.
   //------------------------------------------------------------------------
   if (Frame == 0) {
-    if (IsMono) {
-      MonoClass::Disable();
-    }
     return;
   }
 
@@ -928,11 +894,7 @@ static void Queue_AI_Multiplayer() {
   //------------------------------------------------------------------------
   //	Clean out the DoList
   //------------------------------------------------------------------------
-  Clean_DoList(net);
-
-  if (IsMono) {
-    MonoClass::Disable();
-  }
+  Clean_DoList();
 
 }  // end of Queue_AI_Multiplayer
 
@@ -1022,8 +984,6 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
   while (true) {
     Keyboard->Check();
 
-    Update_Queue_Mono(net, 2);
-
     //---------------------------------------------------------------------
     //	Resend a frame-sync packet if longer than one propagation delay goes
     // by; this prevents a "deadlock".  If he's waiting for me to advance,
@@ -1033,7 +993,6 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
     //---------------------------------------------------------------------
     if (retry_timer.IsFinished()) {
       retry_timer.Set(resend_delta);  // time to retry
-      Update_Queue_Mono(net, 3);
       Send_FrameSync(net, my_sent);
     }
 
@@ -1104,8 +1063,6 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
       // Otherwise, we're in the middle of a game; so, the modem &
       // network must deal with a timeout differently.
       //..................................................................
-      Update_Queue_Mono(net, 4);
-
       if (Handle_Timeout(net, their_frame, their_sent, their_recv)) {
         Map.Flag_To_Redraw(true);  // erase modem reconnect dialog
         Map.Render();
@@ -1149,8 +1106,6 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
     while (messages_this_loop++ < message_limit &&
            net->Get_Private_Message(multi_packet_buf, &packetlen, &id)) {
       Keyboard->Check();
-
-      Update_Queue_Mono(net, 5);
 
       //------------------------------------------------------------------
       // Special processing for a modem game: process SERIAL packets
@@ -1235,13 +1190,6 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
       //..................................................................
       net->Service();
     }
-
-    //---------------------------------------------------------------------
-    // Debug output
-    //---------------------------------------------------------------------
-    Print_Framesync_Values(Frame, Session.MaxAhead, net->Num_Connections(),
-                           their_recv, their_sent,
-                           static_cast<uint16_t>(my_sent));
 
     //---------------------------------------------------------------------
     //	Attempt to advance to the next frame.
@@ -1538,14 +1486,6 @@ static void Generate_Process_Time_Event(ConnManClass* net) {
     net->Set_Timing(resp_time + 10, -1, (resp_time * 4) + 15);
   }
 
-  if (IsMono) {
-    MonoClass::Enable();
-    Mono_Set_Cursor(0, 23);
-    Mono_Printf("Processing Ticks:%03d Frames:%03d\n", Session.ProcessTicks,
-                Session.ProcessFrames);
-    MonoClass::Disable();
-  }
-
   const int avgticks =
       static_cast<int>(Session.ProcessTicks / Session.ProcessFrames);
 
@@ -1586,10 +1526,6 @@ static int Process_Send_Period(ConnManClass* net)  //, int init)
   if (Frame != (Frame + (Session.FrameSendRate - 1)) / Session.FrameSendRate *
                    Session.FrameSendRate) {
     net->Service();
-
-    if (IsMono) {
-      MonoClass::Disable();
-    }
 
     return 0;
   }
@@ -1690,8 +1626,6 @@ static int Send_Packets(ConnManClass* net,
   //------------------------------------------------------------------------
   while (true) {
     Keyboard->Check();
-
-    Update_Queue_Mono(net, 1);
 
     //.....................................................................
     //	If there are no commands this frame, we'll just be sending a FRAMEINFO
@@ -2386,9 +2320,6 @@ static void Stop_Game() {
   Session.LoadGame = false;
   Session.EmergencySave = false;
   GameActive = false;
-  if (IsMono) {
-    MonoClass::Disable();
-  }
   if (Session.Type == GAME_INTERNET) {
     ConnectionLost = true;
     Send_Statistics_Packet();  //	Stop_Game()
@@ -3485,10 +3416,6 @@ static int Execute_DoList(int max_houses, HousesType base_house,
     //	Loop through all events
     //.....................................................................
     for (int j = 0; j < DoList.Count(); j++) {
-      if (net) {
-        Update_Queue_Mono(net, 6);
-      }
-
       //..................................................................
       //	If this event was from the currently-executing player ID, and
       // it's 	time to execute it, execute it.
@@ -3686,13 +3613,9 @@ static int Execute_DoList(int max_houses, HousesType base_house,
  * HISTORY:                                                                *
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
-static void Clean_DoList(ConnManClass* net) {
+static void Clean_DoList() {
   while (DoList.Count()) {
     Keyboard->Check();
-
-    if (net) {
-      Update_Queue_Mono(net, 7);
-    }
 
     //.....................................................................
     //	Discard events that have been executed, OR it's too late to execute.
@@ -3893,7 +3816,7 @@ static void Queue_Playback() {
   //------------------------------------------------------------------------
   //	Clean out the DoList
   //------------------------------------------------------------------------
-  Clean_DoList(nullptr);
+  Clean_DoList();
 
 } /* end of Queue_Playback */
 
@@ -4066,8 +3989,6 @@ static void Print_CRCs(const EventClass* ev) {
   ObjectClass* objp = nullptr;
   HouseClass* housep = nullptr;
 
-  Mono_Clear_Screen();
-  Mono_Set_Cursor(0, 0);
   FILE* fp = fopen("OUT.TXT", "wt");
   if (fp == nullptr) {
     return;
@@ -4094,7 +4015,6 @@ static void Print_CRCs(const EventClass* ev) {
               static_cast<uint32_t>(static_cast<int>(housep->Credits) +
                                     housep->Power +
                                     housep->Drain));
-      Mono_Printf("House %s:%x\n", housep->Class->Name(), GameCRC);
     }
   }
 
@@ -4129,7 +4049,6 @@ static void Print_CRCs(const EventClass* ev) {
                         infp->Speed, static_cast<unsigned int>(infp->NavCom));
         }
       }
-      Mono_Printf("%s Infantry:%x\n", housep->Class->Name(), GameCRC);
     }
   }
 
@@ -4160,7 +4079,6 @@ static void Print_CRCs(const EventClass* ev) {
               static_cast<unsigned int>(unitp->As_Target()));
         }
       }
-      Mono_Printf("%s Units:%x\n", housep->Class->Name(), GameCRC);
     }
   }
 
@@ -4196,7 +4114,6 @@ static void Print_CRCs(const EventClass* ev) {
               static_cast<unsigned int>(vesselp->As_Target()));
         }
       }
-      Mono_Printf("%s Vessels:%x\n", housep->Class->Name(), GameCRC);
     }
   }
 
@@ -4224,7 +4141,6 @@ static void Print_CRCs(const EventClass* ev) {
               static_cast<unsigned int>(bldgp->As_Target()));
         }
       }
-      Mono_Printf("%s Buildings:%x\n", housep->Class->Name(), GameCRC);
     }
   }
 
@@ -4307,7 +4223,6 @@ static void Print_CRCs(const EventClass* ev) {
       }
     }
   }
-  Mono_Printf("Map Layers:%x  \n", GameCRC);
 
   //------------------------------------------------------------------------
   //	Logic Layers
@@ -4371,12 +4286,10 @@ static void Print_CRCs(const EventClass* ev) {
       absl::FPrintF(fp, "Owner: NONE\n");
     }
   }
-  Mono_Printf("Logic:%x  \n", GameCRC);
 
   //------------------------------------------------------------------------
   //	Random # generator, frame #
   //------------------------------------------------------------------------
-  Mono_Printf("Random Number:%x  \n", Scen.sync_rng_.seed());
 #ifdef RANDOM_COUNT
   absl::FPrintF(fp, "\nRandom Number:%x (Count1:%d, Count2:%d)\n",
                 Scen.sync_rng_.seed(), Scen.sync_rng_.Count1,
@@ -4385,7 +4298,6 @@ static void Print_CRCs(const EventClass* ev) {
   absl::FPrintF(fp, "\nRandom Number:%x\n", Scen.sync_rng_.seed());
 #endif
 
-  Mono_Printf("My Frame:%" PRId64 "  \n", Frame);
   absl::FPrintF(fp, "My Frame:%" PRId64 "\n", Frame);
 
   if (ev) {
@@ -4403,188 +4315,6 @@ static void Print_CRCs(const EventClass* ev) {
   fclose(fp);
 
 } /* end of Print_CRCs */
-
-/***************************************************************************
- * Init_Queue_Mono -- inits mono display                                   *
- *                                                                         *
- * This routine steals control of the mono screen away from the rest of * the
- * engine, by setting the global IsMono; if IsMono is set, the other	*
- * routines in this module turn off the Mono display when they're done * with
- *it, so the rest of the engine won't over-write what we're writing.	*
- *                                                                         *
- * INPUT:                                                                  *
- *		net		ptr to connection manager
- **
- *                                                                         *
- * OUTPUT:                                                                 *
- *		none.
- **
- *                                                                         *
- * WARNINGS:                                                               *
- *		none.
- **
- *                                                                         *
- * HISTORY:                                                                *
- *   11/21/1995 BRR : Created.                                             *
- *=========================================================================*/
-static void Init_Queue_Mono(ConnManClass* /*net*/) {
-#if (SHOW_MONO)
-  //------------------------------------------------------------------------
-  // Set 'IsMono' so we can steal the mono screen from the engine
-  //------------------------------------------------------------------------
-  if ((Frame == 0 || Session.LoadGame) && MonoClass::Is_Enabled()) {
-    IsMono = true;
-  }
-
-  //------------------------------------------------------------------------
-  // Enable mono output for our stuff; we must Disable it before we return
-  // control to the engine.
-  //------------------------------------------------------------------------
-  if (IsMono) {
-    MonoClass::Enable();
-  }
-
-  if (net->Num_Connections() > 0) {
-    //.....................................................................
-    //	Network mono debugging screen
-    //.....................................................................
-    if (NetMonoMode == 0) {
-      if (Frame == 0 || Session.LoadGame || NewMonoMode) {
-        net->Configure_Debug(0, sizeof(CommHeaderType),
-                             sizeof(EventClass::EventType),
-                             EventClass::EventNames, 0, 27);
-        net->Mono_Debug_Print(0, 1);
-        NewMonoMode = 0;
-      } else {
-        net->Mono_Debug_Print(0, 0);
-      }
-    }
-    //.....................................................................
-    //	Flow control debugging output
-    //.....................................................................
-    else {
-      if (NewMonoMode) {
-        Mono_Clear_Screen();
-        Mono_Printf("                         Queue AI:\n");  // flowcount[0]
-        Mono_Printf("                Build Packet Loop:\n");  // flowcount[1]
-        Mono_Printf("                       Frame Sync:\n");  // flowcount[2]
-        Mono_Printf("                Frame Sync Resend:\n");  // flowcount[3]
-        Mono_Printf("               Frame Sync Timeout:\n");  // flowcount[4]
-        Mono_Printf("           Frame Sync New Message:\n");  // flowcount[5]
-        Mono_Printf("                 DoList Execution:\n");  // flowcount[6]
-        Mono_Printf("                  DoList Cleaning:\n");  // flowcount[7]
-        Mono_Printf("\n");
-        Mono_Printf("                            Frame:\n");
-        Mono_Printf("                 Session.MaxAhead:\n");
-        Mono_Printf("                       their_recv:\n");
-        Mono_Printf("                       their_sent:\n");
-        Mono_Printf("                          my_sent:\n");
-        NewMonoMode = 0;
-      }
-    }
-  }
-#endif
-}  // end of Init_Queue_Mono
-
-/***************************************************************************
- * Update_Queue_Mono -- updates mono display                               *
- *                                                                         *
- * INPUT:                                                                  *
- *		net				ptr to connection manager
- ** flow_index		index # for flow-count updates
- ** -1: display
- **
- *                                                                         *
- * OUTPUT:                                                                 *
- *		none.
- **
- *                                                                         *
- * WARNINGS:                                                               *
- *		none.
- **
- *                                                                         *
- * HISTORY:                                                                *
- *   11/21/1995 BRR : Created.                                             *
- *=========================================================================*/
-static void Update_Queue_Mono(ConnManClass* /*net*/, int /*flow_index*/) {
-#if (SHOW_MONO)
-  static int flowcount[20] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                              0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-
-  //------------------------------------------------------------------------
-  // If 'NetMonoMode' is 1, display flowcount info
-  //------------------------------------------------------------------------
-  if (NetMonoMode == 1) {
-    if (flow_index >= 0 && flow_index < 20) {
-      Mono_Set_Cursor(35, flow_index);
-      flowcount[flow_index]++;
-      Mono_Printf("%d", flowcount[flow_index]);
-    }
-  }
-  //------------------------------------------------------------------------
-  // Otherwise, display the connection debug screen
-  //------------------------------------------------------------------------
-  else {
-    net->Mono_Debug_Print(0, 0);
-  }
-#endif
-
-}  // end of Update_Queue_Mono
-
-/***************************************************************************
- * Print_Framesync_Values -- displays frame-sync variables                 *
- *                                                                         *
- * INPUT:                                                                  *
- *		curframe					current game
- *Frame # * max_ahead				max-ahead value
- ** num_connections		# connections
- ** their_recv				# commands I've received from my
- *connections		* their_sent				# commands each
- *connection claims to have sent	* my_sent
- *# commands I've sent
- **
- *                                                                         *
- * OUTPUT:                                                                 *
- *		none.
- **
- *                                                                         *
- * WARNINGS:                                                               *
- *		none.
- **
- *                                                                         *
- * HISTORY:                                                                *
- *   11/21/1995 BRR : Created.                                             *
- *=========================================================================*/
-static void Print_Framesync_Values(int64_t /*curframe*/, int /*max_ahead*/,
-                                   int /*num_connections*/,
-                                   std::span<uint16_t> /*their_recv*/,
-                                   std::span<uint16_t> /*their_sent*/,
-                                   uint16_t /*my_sent*/) {
-#if (SHOW_MONO)
-  int i;
-
-  if (NetMonoMode == 1) {
-    Mono_Set_Cursor(35, 9);
-    Mono_Printf("%d", curframe);
-
-    Mono_Set_Cursor(35, 10);
-    Mono_Printf("%d", max_ahead);
-
-    for (i = 0; i < num_connections; i++) {
-      Mono_Set_Cursor(35 + i * 5, 11);
-      Mono_Printf("%4d", (int)their_recv[base::ToSize(i)]);
-    }
-
-    for (i = 0; i < num_connections; i++) {
-      Mono_Set_Cursor(35 + i * 5, 12);
-      Mono_Printf("%4d", (int)their_sent[base::ToSize(i)]);
-    }
-
-    Mono_Set_Cursor(35, 13);
-    Mono_Printf("%4d", (int)my_sent);
-  }
-#endif
-}  // end of Print_Framesync_Values
 
 /***************************************************************************
  * Dump_Packet_Too_Late_Stuff -- Dumps a debug file to disk                *

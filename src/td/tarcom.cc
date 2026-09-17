@@ -34,10 +34,9 @@
  *                  Last Update : July 19, 1995 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions: * TarComClass::Debug_Dump -- Displays the status of the tarcom
- *class to the mono screen.    * TarComClass::AI -- Handles the logical AI for
- *the tarcom class.                           * TarComClass::~TarComClass --
- *Destructor for turret object.                                *
+ * Functions:
+ *   TarComClass::AI -- Handles the logical AI for the tarcom class.
+ *   TarComClass::~TarComClass -- Destructor for turret object.
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
@@ -57,38 +56,15 @@
 #include "td/tarcom.h"
 
 #include "td/audio.h"
-#include "td/config.h"
 #include "td/const.h"
 #include "td/defines.h"
 #include "td/facing.h"
 #include "td/inline.h"
-#include "td/monoc.h"
 #include "td/target.h"
 #include "td/turret.h"
 #include "td/type.h"
 
 TarComClass::~TarComClass() = default;
-
-/***********************************************************************************************
- * TarComClass::Debug_Dump -- Displays the status of the tarcom class to the
- *mono screen.      *
- *                                                                                             *
- *    This routine is used to display the tarcom class status to the monochrome
- *monitor.       *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 06/02/1994 JLB : Created. *
- *=============================================================================================*/
-void TarComClass::Debug_Dump(MonoClass* mono) const {
-  if constexpr (config::kCheatKeysEnabled) {
-    TurretClass::Debug_Dump(mono);
-  }
-}
 
 /***********************************************************************************************
  * TarComClass::AI -- Handles the logical AI for the tarcom class. *

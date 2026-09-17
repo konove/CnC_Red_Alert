@@ -43,8 +43,6 @@
 
 #include <cstdint>
 
-#include "td/monoc.h"
-
 class FlasherClass {
  public:
   /*
@@ -84,7 +82,6 @@ class FlasherClass {
   FlasherClass(FlasherClass&&) = delete;
   FlasherClass& operator=(FlasherClass&&) = delete;
 
-  virtual void Debug_Dump(MonoClass* mono) const;
   bool Process();
 
   /*

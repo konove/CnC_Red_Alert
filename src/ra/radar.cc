@@ -1562,7 +1562,6 @@ void RadarClass::Radar_Anim() {
   GraphicViewPortClass draw_window(
       LogicPage->Get_Graphic_Buffer(), RadX + RadOffX + LogicPage->Get_XPos(),
       RadY + RadOffY + LogicPage->Get_YPos(), RadIWidth, RadIHeight);
-// Mono_Set_Cursor(0,0);
   Draw_Box(RadX + RadOffX - 1, RadY + RadOffY - 1, RadIWidth + 2,
            RadIHeight + 2, BOXSTYLE_RAISED, true);
   draw_window.Clear();

@@ -185,7 +185,6 @@
 #include "td/ccdde.h"
 #endif
 
-#define SHOW_MONO 0
 
 #ifndef DEMO
 
@@ -1030,14 +1029,6 @@ static int Net_Join_Dialog() {
   Load_Title_Page(true);
   Set_Palette(Palette);
 
-/*
----------------------------- Init Mono Output ----------------------------
-*/
-#if (SHOW_MONO)
-  Ipx.Configure_Debug(-1, sizeof(GlobalHeaderType), sizeof(NetCommandType),
-                      GlobalPacketNames, 11);
-  Ipx.Mono_Debug_Print(-1, 1);
-#endif
   while (Get_Mouse_State() > 0) {
     Show_Mouse();
   }
@@ -1056,9 +1047,6 @@ static int Net_Join_Dialog() {
       display = REDRAW_ALL;
     }
 
-#if (SHOW_MONO)
-    Ipx.Mono_Debug_Print(-1, 0);
-#endif
     /*
     ...................... Refresh display if needed ......................
     */
@@ -3144,9 +3132,6 @@ static int Net_New_Dialog() {
       display = REDRAW_ALL;
     }
 
-#if (SHOW_MONO)
-    Ipx.Mono_Debug_Print(-1, 0);
-#endif
     /*
     ...................... Refresh display if needed ......................
     */
@@ -5060,9 +5045,6 @@ static int Net_Fake_Join_Dialog() {
                  static_cast<int>(Players.Count()));
   CCDebugString(a_buffer);
 
-  /*
-  ---------------------------- Init Mono Output ----------------------------
-  */
   CCDebugString("C&C95 - About to reveal mouse\n");
   while (Get_Mouse_State() > 0) {
     Show_Mouse();

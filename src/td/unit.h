@@ -50,7 +50,6 @@ class ArchiveWriter;
 
 #include "absl/base/attributes.h"
 #include "td/defines.h"
-#include "td/monoc.h"
 #include "td/object.h"
 #include "td/radio.h"
 #include "td/tarcom.h"
@@ -182,7 +181,6 @@ class UnitClass final : public TarComClass {
   /*
   **	Scenario and debug support.
   */
-  void Debug_Dump(MonoClass* mono) const override;
 
   /*
   **	Movement and animation.

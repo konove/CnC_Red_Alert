@@ -55,7 +55,6 @@ class ArchiveWriter;
 #include "td/factory.h"
 #include "td/ftimer.h"
 #include "td/house.h"
-#include "td/monoc.h"
 #include "td/object.h"
 #include "td/radio.h"
 #include "td/techno.h"
@@ -301,11 +300,6 @@ class BuildingClass final : public TechnoClass {
   int Mission_Deconstruction() override;
   int Mission_Missile() override;
   void Enter_Idle_Mode(bool initial = false) override;
-
-  /*
-  **	Scenario and debug support.
-  */
-  void Debug_Dump(MonoClass* mono) const override;
 
   /*
   **	File I/O.

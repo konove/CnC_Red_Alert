@@ -1588,8 +1588,6 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
   if (IsToRedraw || complete) {
     IsToRedraw = false;
 
-    SidebarRedraws++;
-
     /*
     **	Fills the background to the side strip. We shouldnt need to do this if
     *the strip

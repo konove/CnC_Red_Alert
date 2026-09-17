@@ -56,7 +56,6 @@ class ArchiveWriter;
 #include "td/foot.h"
 #include "td/ftimer.h"
 #include "td/inline.h"
-#include "td/monoc.h"
 #include "td/object.h"
 #include "td/radio.h"
 #include "td/techno.h"
@@ -233,11 +232,6 @@ class InfantryClass final : public FootClass {
   void AI() override;
   TARGET Greatest_Threat(ThreatType threat) const override;
   int Mission_Attack() override;
-
-  /*
-   **	Scenario and debug support.
-   */
-  void Debug_Dump(MonoClass* mono) const override;
 
   /*
   **	File I/O.

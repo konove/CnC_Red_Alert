@@ -653,9 +653,6 @@ int MapEditClass::Load_Scenario() {
       const char first = static_cast<char>(scen_nump / 36);
       const char second = static_cast<char>(scen_nump % 36);
       base::At(scen_buf, 0) = static_cast<char>(first + 'A');
-      // Mono_Printf("picking map, scen# = %d, first = %c, second = %d
-      // (numeric)\n",scen_nump,
-      // scen_buf[0],second);Keyboard->Get();Keyboard->Get();
       if (second < 10) {
         base::At(scen_buf, 1) = static_cast<char>(second + '0');
       } else {
@@ -969,8 +966,6 @@ int MapEditClass::Load_Scenario() {
         }
       }
       scen_nump = (first * 36) + second;
-      // Mono_Printf("Converted to: %d, %d = %d\n",first, second,
-      // scen_nump);Keyboard->Get();Keyboard->Get();
     }
 
     return 0;

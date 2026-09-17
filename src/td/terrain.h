@@ -50,7 +50,6 @@ class ArchiveWriter;
 #include "absl/base/attributes.h"
 #include "td/defines.h"
 #include "td/inline.h"
-#include "td/monoc.h"
 #include "td/object.h"
 #include "td/stage.h"
 #include "td/techno.h"
@@ -147,11 +146,6 @@ class TerrainClass final : public ObjectClass, public StageClass {
   **	AI.
   */
   void AI() override;
-
-  /*
-   **	Scenario and debug support.
-   */
-  void Debug_Dump(MonoClass* mono) const override;
 
   /*
   **	File I/O.

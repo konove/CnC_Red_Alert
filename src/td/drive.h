@@ -43,7 +43,6 @@
 
 #include "td/defines.h"
 #include "td/foot.h"
-#include "td/monoc.h"
 #include "td/type.h"
 
 /****************************************************************************
@@ -125,7 +124,6 @@ class DriveClass : public FootClass {
   virtual bool Ok_To_Move(DirType /*unused*/);
   void Fixup_Path(PathType* path) override;
   void AI() override;
-  void Debug_Dump(MonoClass* mono) const override;
   void Force_Track(int track, COORDINATE coord);
   int Tiberium_Load() const override;
 

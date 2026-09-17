@@ -58,7 +58,7 @@ class SpecialClass {
     IsSmartDefense = false;
     IsTreeTarget = false;
     IsMCVDeploy = false;
-    IsMonoEnabled = false;
+    IsRetiredMonoFlag = false;
     IsInert = false;
     IsShowPath = false;
     IsBarOn = false;
@@ -158,10 +158,11 @@ class SpecialClass {
   unsigned IsMCVDeploy : 1;
 
   /*
-  **	If the monochrome debugging output is enabled, then this flag will be
-  *true.
+  **	Retired monochrome-debug flag. The whole structure is copied raw into
+  **	network packets and into EventClass::SPECIAL, so the bit stays reserved
+  **	to keep the wire layout unchanged.
   */
-  unsigned IsMonoEnabled : 1;
+  unsigned IsRetiredMonoFlag : 1;
 
   /*
   **	This flags controls whether weapons are inert. An inert weapon doesn't

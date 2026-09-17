@@ -34,89 +34,81 @@
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
  * Functions: * BuildingClass::AI -- Handles non-graphic AI processing for
- *buildings.                     * BuildingClass::Active_Click_With -- Handles
- *cell selection for buildings.                 * BuildingClass::Animation_AI --
- *Handles normal building animation processing.              *
- *   BuildingClass::Assign_Target -- Assigns a target to the building. *
- *   BuildingClass::Begin_Mode -- Begins an animation mode for the building. *
- *   BuildingClass::BuildingClass -- Constructor for buildings. *
- *   BuildingClass::Can_Demolish -- Can the player demolish (sell back) the
- *building?          * BuildingClass::Can_Enter_Cell -- Determines if building
- *can be placed down.               * BuildingClass::Can_Fire -- Determines if
- *this building can fire.                          *
- *   BuildingClass::Can_Player_Move -- Can this building be moved? *
+ *   buildings. * BuildingClass::Active_Click_With -- Handles cell selection for
+ *   buildings. * BuildingClass::Animation_AI -- Handles normal building
+ *   animation processing. * BuildingClass::Assign_Target -- Assigns a target to
+ *   the building. * BuildingClass::Begin_Mode -- Begins an animation mode for
+ *   the building. * BuildingClass::BuildingClass -- Constructor for buildings.
+ * * BuildingClass::Can_Demolish -- Can the player demolish (sell back) the
+ *   building? * BuildingClass::Can_Enter_Cell -- Determines if building can be
+ *   placed down. * BuildingClass::Can_Fire -- Determines if this building can
+ *   fire. * BuildingClass::Can_Player_Move -- Can this building be moved? *
  *   BuildingClass::Captured -- Captures the building. *
  *   BuildingClass::Center_Coord -- Fetches the center coordinate for the
- *building.            * BuildingClass::Charging_AI -- Handles the special
- *charging logic for Tesla coils.         * BuildingClass::Check_Point --
- *Fetches the landing checkpoint for the given flight pattern.*
- *   BuildingClass::Click_With -- Handles clicking on the map while the building
- *is selected.  * BuildingClass::Crew_Type -- This determines the crew that this
- *object generates.          * BuildingClass::Death_Announcement -- Announce the
- *death of this building.                 * BuildingClass::Debug_Dump --
- *Displays building status to the monochrome screen.           *
- *   BuildingClass::Detach -- Handles target removal from the game system. *
- *   BuildingClass::Detach_All -- Possibly abandons production according to
- *factory type.      * BuildingClass::Docking_Coord -- Fetches the coordinate to
- *use for docking.                * BuildingClass::Draw_It -- Displays the
- *building at the location specified.                *
- *   BuildingClass::Drop_Debris -- Drops rubble when building is destroyed. *
- *   BuildingClass::Enter_Idle_Mode -- The building will enter its idle mode. *
- *   BuildingClass::Exit_Coord -- Determines location where object will leave
- *it.              * BuildingClass::Exit_Object -- Initiates an object to leave
- *the building.                  * BuildingClass::Factory_AI -- Handle factory
- *production and initiation.                    * BuildingClass::Find_Exit_Cell
- *-- Find a clear location to exit an object from this buildin*
+ *   building. * BuildingClass::Charging_AI -- Handles the special charging
+ * logic for Tesla coils. * BuildingClass::Check_Point -- Fetches the landing
+ *   checkpoint for the given flight pattern.* BuildingClass::Click_With --
+ *   Handles clicking on the map while the building is selected. *
+ *   BuildingClass::Crew_Type -- This determines the crew that this object
+ *   generates. * BuildingClass::Death_Announcement -- Announce the death of
+ * this building. * BuildingClass::Detach -- Handles target removal from the
+ * game system. * BuildingClass::Detach_All -- Possibly abandons production
+ *   according to factory type. * BuildingClass::Docking_Coord -- Fetches the
+ *   coordinate to use for docking. * BuildingClass::Draw_It -- Displays the
+ *   building at the location specified. * BuildingClass::Drop_Debris -- Drops
+ *   rubble when building is destroyed. * BuildingClass::Enter_Idle_Mode -- The
+ *   building will enter its idle mode. * BuildingClass::Exit_Coord --
+ * Determines location where object will leave it. * BuildingClass::Exit_Object
+ * -- Initiates an object to leave the building. * BuildingClass::Factory_AI --
+ *   Handle factory production and initiation. * BuildingClass::Find_Exit_Cell
+ * -- Find a clear location to exit an object from this buildin*
  *   BuildingClass::Fire_Direction -- Fetches the direction of firing. *
  *   BuildingClass::Fire_Out -- Handles when attached animation expires. *
  *   BuildingClass::Flush_For_Placement -- Handles clearing a zone for object
- *placement.       * BuildingClass::Get_Image_Data -- Fetch the image pointer
- *for the building.                * BuildingClass::Grand_Opening -- Handles
- *construction completed special operations.        *
- *   BuildingClass::Greatest_Threat -- Searches for target that building can
- *fire upon.        * BuildingClass::How_Many_Survivors -- This determine the
- *maximum number of survivors.      * BuildingClass::Init -- Initialize the
- *building system to an empty null state.             * BuildingClass::Limbo --
- *Handles power adjustment as building goes into limbo.             *
- *   BuildingClass::Mark -- Building interface to map rendering system. *
- *   BuildingClass::Mission_Attack -- Handles attack mission for building. *
+ *   placement. * BuildingClass::Get_Image_Data -- Fetch the image pointer for
+ *   the building. * BuildingClass::Grand_Opening -- Handles construction
+ *   completed special operations. * BuildingClass::Greatest_Threat -- Searches
+ *   for target that building can fire upon. * BuildingClass::How_Many_Survivors
+ *   -- This determine the maximum number of survivors. * BuildingClass::Init --
+ *   Initialize the building system to an empty null state. *
+ *   BuildingClass::Limbo -- Handles power adjustment as building goes into
+ *   limbo. * BuildingClass::Mark -- Building interface to map rendering system.
+ *   * BuildingClass::Mission_Attack -- Handles attack mission for building. *
  *   BuildingClass::Mission_Construction -- Handles mission construction. *
  *   BuildingClass::Mission_Deconstruction -- Handles building deconstruction. *
  *   BuildingClass::Mission_Guard -- Handles guard mission for combat buildings.
- ** BuildingClass::Mission_Harvest -- Handles refinery unloading harvesters. *
- *   BuildingClass::Mission_Missile -- State machine for nuclear missile launch.
- ** BuildingClass::Mission_Repair -- Handles the repair (active) state for
- *building.          * BuildingClass::Mission_Unload -- Handles the unload
- *mission for a building.               * BuildingClass::Pip_Count -- Determines
- *"full" pips to display for building.               *
- *   BuildingClass::Power_Output -- Fetches the current power output from this
- *building.       * BuildingClass::Read_INI -- Reads buildings from INI file. *
- *   BuildingClass::Receive_Message -- Handle an incoming message to the
- *building.             * BuildingClass::Remove_Gap_Effect -- Stop
- *a gap generator from jamming cells               * BuildingClass::Repair --
- *Initiates or terminates the repair process.                      *
- *   BuildingClass::Repair_AI -- Handle the repair (and sell) logic for the
- *building.          * BuildingClass::Revealed -- Reveals the building to the
- *specified house.                   * BuildingClass::Rotation_AI -- Process any
- *turret rotation required of this building.      * BuildingClass::Sell_Back --
- *Controls the sell back (demolish) operation.                  *
- *   BuildingClass::Shape_Number -- Fetch the shape number for this building. *
- *   BuildingClass::Sort_Y -- Returns the building coordinate used for sorting.
- ** BuildingClass::Take_Damage -- Inflicts damage points upon a building. *
- *   BuildingClass::Target_Coord -- Return the coordinate to use when firing on
- *this building. * BuildingClass::Toggle_Primary -- Toggles the primary factory
- *state.                       * BuildingClass::Turret_Facing -- Fetches the
- *turret facing for this building.              * BuildingClass::Unlimbo --
- *Removes a building from limbo state.                            *
+ *   * BuildingClass::Mission_Harvest -- Handles refinery unloading harvesters.
+ * * BuildingClass::Mission_Missile -- State machine for nuclear missile launch.
+ *   * BuildingClass::Mission_Repair -- Handles the repair (active) state for
+ *   building. * BuildingClass::Mission_Unload -- Handles the unload mission for
+ *   a building. * BuildingClass::Pip_Count -- Determines "full" pips to display
+ *   for building. * BuildingClass::Power_Output -- Fetches the current power
+ *   output from this building. * BuildingClass::Read_INI -- Reads buildings
+ * from INI file. * BuildingClass::Receive_Message -- Handle an incoming message
+ * to the building. * BuildingClass::Remove_Gap_Effect -- Stop a gap generator
+ *   from jamming cells * BuildingClass::Repair -- Initiates or terminates the
+ *   repair process. * BuildingClass::Repair_AI -- Handle the repair (and sell)
+ *   logic for the building. * BuildingClass::Revealed -- Reveals the building
+ * to the specified house. * BuildingClass::Rotation_AI -- Process any turret
+ *   rotation required of this building. * BuildingClass::Sell_Back -- Controls
+ *   the sell back (demolish) operation. * BuildingClass::Shape_Number -- Fetch
+ *   the shape number for this building. * BuildingClass::Sort_Y -- Returns the
+ *   building coordinate used for sorting. * BuildingClass::Take_Damage --
+ *   Inflicts damage points upon a building. * BuildingClass::Target_Coord --
+ *   Return the coordinate to use when firing on this building. *
+ *   BuildingClass::Toggle_Primary -- Toggles the primary factory state. *
+ *   BuildingClass::Turret_Facing -- Fetches the turret facing for this
+ * building.
+ *   * BuildingClass::Unlimbo -- Removes a building from limbo state. *
  *   BuildingClass::Update_Buildables -- Informs sidebar of additional
- *construction options.   * BuildingClass::Value -- Determine the value of this
- *building.                             * BuildingClass::What_Action --
- *Determines action to perform if click on specified object.  *
- *   BuildingClass::What_Action -- Determines what action will occur. *
- *   BuildingClass::Write_INI -- Write out the building data to the INI file
- *specified.        * BuildingClass::delete -- Deallocates building object. *
- *   BuildingClass::new -- Allocates a building object from building pool. *
- *   BuildingClass::~BuildingClass -- Destructor for building type objects. *
+ *   construction options. * BuildingClass::Value -- Determine the value of this
+ *   building. * BuildingClass::What_Action -- Determines action to perform if
+ *   click on specified object. * BuildingClass::What_Action -- Determines what
+ *   action will occur. * BuildingClass::Write_INI -- Write out the building
+ * data to the INI file specified. * BuildingClass::delete -- Deallocates
+ * building object. * BuildingClass::new -- Allocates a building object from
+ * building pool. * BuildingClass::~BuildingClass -- Destructor for building
+ * type objects. *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
@@ -145,9 +137,7 @@
 #include "ra/ccini.h"
 #include "ra/ccptr.h"
 #include "ra/cell.h"
-#include "ra/config.h"
 #include "ra/coord.h"
-#include "ra/debug.h"
 #include "ra/defines.h"
 #include "ra/display.h"
 #include "ra/display_constants.h"
@@ -169,7 +159,6 @@
 #include "ra/keyframe.h"
 #include "ra/mapedit.h"
 #include "ra/mission.h"
-#include "ra/monoc.h"
 #include "ra/object.h"
 #include "ra/overlay.h"
 #include "ra/power.h"
@@ -769,54 +758,6 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass* from,
   *itself.
   */
   return TechnoClass::Receive_Message(from, message, param);
-}
-
-/***********************************************************************************************
- * BuildingClass::Debug_Dump -- Displays building status to the monochrome
- *screen.             *
- *                                                                                             *
- *    This utility function will output the current status of the building class
- *to the        * monochrome screen. It is through this data that bugs may be
- *fixed or detected.           *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 05/31/1994 JLB : Created. *
- *=============================================================================================*/
-void BuildingClass::Debug_Dump(MonoClass* mono) const {
-  if constexpr (config::kCheatKeysEnabled) {
-    assert(Buildings.ID(this) == ID);
-    assert(IsActive);
-
-    mono->Set_Cursor(0, 0);
-    mono->Print(Text_String(TXT_DEBUG_BUILDING));
-    mono->Fill_Attrib(66, 13, 12, 1,
-                      IsRepairing ? MonoClass::INVERSE : MonoClass::NORMAL);
-    mono->Fill_Attrib(66, 14, 12, 1,
-                      IsToRebuild ? MonoClass::INVERSE : MonoClass::NORMAL);
-    mono->Fill_Attrib(66, 15, 12, 1,
-                      IsAllowedToSell ? MonoClass::INVERSE : MonoClass::NORMAL);
-    mono->Fill_Attrib(66, 16, 12, 1,
-                      IsCharging ? MonoClass::INVERSE : MonoClass::NORMAL);
-    mono->Fill_Attrib(66, 17, 12, 1,
-                      IsCharged ? MonoClass::INVERSE : MonoClass::NORMAL);
-    mono->Fill_Attrib(66, 18, 12, 1,
-                      IsJamming ? MonoClass::INVERSE : MonoClass::NORMAL);
-    mono->Fill_Attrib(66, 19, 12, 1,
-                      IsJammed ? MonoClass::INVERSE : MonoClass::NORMAL);
-
-    mono->Set_Cursor(1, 11);
-    if (Factory) {
-      mono->Printf("%s %d%%", Factory->Get_Object()->Class_Of().IniName,
-                   (100 * Factory->Completion()) / FactoryClass::kStepCount);
-    }
-
-    TechnoClass::Debug_Dump(mono);
-  }
 }
 
 /***********************************************************************************************

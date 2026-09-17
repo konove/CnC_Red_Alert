@@ -43,8 +43,6 @@
 
 #include <cstdint>
 
-#include "td/monoc.h"
-
 class StageClass {
   // The animation state is mutable because a firing animation restarts from
   // const queries: UnitClass::Can_Fire() const resets the stage and rate when
@@ -99,10 +97,6 @@ class StageClass {
       }
     }
     return false;
-  }
-  virtual void Debug_Dump(MonoClass* mono) const {
-    mono->Set_Cursor(56, 7);
-    mono->Printf("%3d[%d]", Stage, Rate);
   }
 
   /*

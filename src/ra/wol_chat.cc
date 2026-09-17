@@ -436,22 +436,10 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
   //	Cause a refresh of szMyRecord, the string showing my win/loss record.
   pWO->RequestLadders(pWO->szMyName);
 
-//------------------------------------------------------------------------
-//	Init Mono Output
-//------------------------------------------------------------------------
-#ifdef SHOW_MONO
-  Ipx.Configure_Debug(-1, sizeof(GlobalHeaderType), sizeof(NetCommandType),
-                      GlobalPacketNames, 0, 13);
-  Ipx.Mono_Debug_Print(-1, 1);
-#endif
-
   //------------------------------------------------------------------------
   //	Processing loop
   //------------------------------------------------------------------------
   while (process) {
-#ifdef SHOW_MONO
-    Ipx.Mono_Debug_Print(-1, 0);
-#endif
 
     //	Regularly check for incoming messages from wolapi.
     if (Get_Time_Ms() > pWO->dwTimeNextWolapiPump) {

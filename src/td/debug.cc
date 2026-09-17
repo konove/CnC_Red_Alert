@@ -34,8 +34,8 @@
  *                  Last Update : July 5, 1994   [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions: * Self_Regulate -- Regulates the logic timer to result in smooth
- *animation.                 * Debug_Key -- Debug mode keyboard processing. *
+ * Functions:
+ *   Debug_Key -- Debug mode keyboard processing.
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
@@ -46,12 +46,9 @@
 #include <filesystem>
 
 #include "absl/strings/str_format.h"
-#include "base/array.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/memflag.h"
-#include "sdllib/timer.h"
 #include "sdllib/ww_audio.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
@@ -69,81 +66,14 @@
 #include "td/heap.h"
 #include "td/house.h"
 #include "td/jshell.h"
-#include "td/logic.h"
 #include "td/mapedit.h"
-#include "td/monoc.h"
 #include "td/object.h"
 #include "td/palette.h"
-#include "td/queue.h"
 #include "td/team.h"
 #include "td/techno.h"
 #include "td/type.h"
 #include "td/vector.h"
 #include "tech/pcx_file.h"
-
-/***********************************************************************************************
- * Self_Regulate -- Regulates the logic timer to result in smooth animation *
- *                                                                                             *
- *    The self regulation process checks the number of frames displayed * per
- *second and from this determines the amount of time to devote * to internal
- *logic processing. By adjusting the time allotted to                          *
- *    internal processing, smooth animation can be maintained. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   In order for this routine to work properly it MUST be * called
- *every display loop.                                                      *
- *                                                                                             *
- * HISTORY: * 07/31/1991 JLB : Created. * 07/05/1994 JLB : Handles new
- *monochrome system.                                           *
- *=============================================================================================*/
-#define UPDATE_INTERVAL kTimerSecond
-void Self_Regulate() {
-  static CountDownTimerClass DebugTimer{};
-  static const ObjectClass* _lastobject = nullptr;
-
-  if (!DebugTimer.Time()) {
-    DebugTimer.Set(UPDATE_INTERVAL);
-
-    if (MonoClass::Is_Enabled()) {
-      MonoClass* mono = MonoClass::Get_Current();
-      mono->Set_Default_Attribute(2);
-
-      if (MonoPage == 0) {
-        mono = &base::At(MonoArray, 0);
-        mono->Clear();
-
-        /*
-        **	Display the status of the currently selected object.
-        */
-        if (CurrentObject.Count()) {
-          _lastobject = CurrentObject.at(0);
-        }
-        if (_lastobject && !_lastobject->IsActive) {
-          _lastobject = nullptr;
-        }
-        if (_lastobject) {
-          _lastobject->Debug_Dump(mono);
-        }
-        LogicClass::Debug_Dump(mono);
-        mono->Set_Cursor(0, 20);
-        mono->Printf(
-            "Heap size:%10ld \r"
-            "Largest:  %10ld \r"
-            "Ttl Free: %10ld \r"
-            "Frag:     %10ld \r",
-            Heap_Size(MEM_NORMAL), Ram_Free(MEM_NORMAL),
-            Total_Ram_Free(MEM_NORMAL),
-            Total_Ram_Free(MEM_NORMAL) - Ram_Free(MEM_NORMAL));
-        *MonoClass::Get_Current() = *mono;
-      }
-
-      base::At(MonoArray, MonoPage) = *mono;
-    }
-  }
-}
 
 /***********************************************************************************************
  * Debug_Key -- Debug mode keyboard processing. *
@@ -175,15 +105,6 @@ void Debug_Key(unsigned input) {
   */
   if (Debug_Flag) {
     switch (input) {
-      case KN_L:
-        if (NetMonoMode) {
-          NetMonoMode = 0;
-        } else {
-          NetMonoMode = 1;
-        }
-        NewMonoMode = 1;
-        break;
-
       /*
       ** Start saving off screens
       */
@@ -222,7 +143,6 @@ void Debug_Key(unsigned input) {
       case KN_P:
         Keyboard::Clear();
         while (!Keyboard::Check()) {
-          Self_Regulate();
           Sound_Callback();
         }
         Keyboard::Clear();
@@ -329,16 +249,6 @@ void Debug_Key(unsigned input) {
         }
         break;
 
-      case KN_M:
-        if (Debug_Flag) {
-          if (MonoClass::Is_Enabled()) {
-            MonoClass::Disable();
-          } else {
-            MonoClass::Enable();
-          }
-        }
-        break;
-
       case KN_W | KN_ALT_BIT:
         PlayerPtr->Flag_To_Win();
         break;
@@ -389,24 +299,6 @@ void Debug_Key(unsigned input) {
         break;
 
 #ifdef NEVER
-      case KN_1:
-      case KN_2:
-      case KN_3:
-      case KN_4:
-      case KN_5:
-      case KN_6:
-      case KN_7:
-      case KN_8:
-      case KN_9:
-      case KN_0:
-        MonoPage = (input & 0xFF) - KN_1;
-        MonoPage %= sizeof(MonoArray) / sizeof(MonoArray[0]);
-        MonoArray[MonoPage].View();
-        input = 0;
-        break;
-#endif
-
-#ifdef NEVER
       case (KN_F1 | KN_SHIFT_BIT):
         Special.IsBarOn = (Special.IsBarOn == false);
         Map.Flag_To_Redraw(true);
@@ -440,23 +332,6 @@ void Debug_Key(unsigned input) {
         Debug_Map++;
         Scenario_Editor();
         Debug_Map--;
-#ifdef NEVER
-        COORDINATE coord;
-        int index;
-        static COORDINATE _coords[] = {
-            0x00010001L, 0x00800080L, 0x00810081L, 0x00010081L, 0x00810001L,
-            0x00800081L, 0x00800001L, 0x00010080L, 0x00810080L, 0L};
-        index = 0;
-        while (_coords[index]) {
-          coord = _coords[index++];
-          Mono_Printf("Spillage for %08lX = %d.\r", coord,
-                      Coord_Spillage_Number(coord));
-        }
-        Keyboard::Clear();
-        Keyboard::Get();
-
-#endif
-
 #ifdef NEVER
 #define MAX_RADIUS 10
         COORDINATE coord;
@@ -705,14 +580,6 @@ void Debug_Key(unsigned input) {
       case KN_F5:
         Special.IsShowPath = (Special.IsShowPath == false);
         // PlayerPtr->Credits += 1000;
-        break;
-
-      case KN_F6:
-        if (Map.In_Radar(XY_Cell(Map.MapCellX + 5, Map.MapCellY - 1))) {
-          Mono_Printf("Arrrggggghhhhh!");
-        } else {
-          Mono_Printf("No Arrrggggghhhhh!");
-        }
         break;
 
       case (KN_F9 | KN_CTRL_BIT):

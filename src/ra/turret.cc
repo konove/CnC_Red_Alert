@@ -34,17 +34,15 @@
  *                  Last Update : August 13, 1995 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions: * TurretClass::AI -- Handles the reloading of the turret weapon. *
- *   TurretClass::Can_Fire -- Determines if turret can fire upon target. *
- *   TurretClass::Debug_Dump -- Debug printing of turret values. *
+ * Functions: * TurretClass::AI -- Handles the reloading of the turret weapon.
+ *   * TurretClass::Can_Fire -- Determines if turret can fire upon target. *
  *   TurretClass::Fire_At -- Try to fire upon the target specified. *
  *   TurretClass::Fire_Coord -- Determines the coorindate that projectile would
- *appear.        * TurretClass::Fire_Direction -- Determines the directinon of
- *firing.                       * TurretClass::Ok_To_Move -- Queries whether the
- *vehicle can move.                          * TurretClass::TurretClass --
- *Normal constructor for the turret class.                      *
+ *   appear. * TurretClass::Fire_Direction -- Determines the directinon of
+ *   firing. * TurretClass::Ok_To_Move -- Queries whether the vehicle can move.
+ * * TurretClass::TurretClass -- Normal constructor for the turret class. *
  *   TurretClass::TurretClass -- The default constructor for turret class
- *objects.             * TurretClass::Unlimbo -- Unlimboes turret object. *
+ *   objects. * TurretClass::Unlimbo -- Unlimboes turret object. *
  *   TurretClass::~TurretClass -- Default destructor for turret class objects. *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */

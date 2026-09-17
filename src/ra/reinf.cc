@@ -443,9 +443,6 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
 
   FootClass* object = Create_Group(teamtype);
 
-  // Mono_Printf("%d-%s (object=%p, team=%d).\n", __LINE__, __FILE__, object,
-  // object->Team.Is_Valid());Keyboard->Get();
-
   /*
   **	Bail on this reinforcement if no reinforcements could be created.
   **	This is probably because the object maximum was reached.

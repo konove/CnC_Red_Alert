@@ -177,8 +177,8 @@ int Fixed_To_Cardinal(int base, int fixed);
 // 0xFFFF if "base" is zero.
 int Cardinal_To_Fixed(int base, int cardinal);
 
-// Prints `format` with `args`, checked at compile time, to stderr and the
-// mono page, then exits with a failure code.
+// Prints `format` with `args`, checked at compile time, to stderr, then
+// exits with a failure code.
 [[noreturn]] void Fatal_Message(std::string_view message);
 template <typename... Args>
 [[noreturn]] void Fatal(const absl::FormatSpec<Args...>& format,

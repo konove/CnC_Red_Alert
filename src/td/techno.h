@@ -53,7 +53,6 @@
 #include "td/facing.h"
 #include "td/flasher.h"
 #include "td/house.h"
-#include "td/monoc.h"
 #include "td/object.h"
 #include "td/radio.h"
 #include "td/stage.h"
@@ -294,11 +293,6 @@ class TechnoClass : public RadioClass,
   bool Revealed(HouseClass* house) override;
   RadioMessageType Receive_Message(RadioClass* from, RadioMessageType message,
                                    int32_t& param) override;
-
-  /*
-   **	Scenario and debug support.
-   */
-  void Debug_Dump(MonoClass* mono) const override;
 
   /*
   **	File I/O.

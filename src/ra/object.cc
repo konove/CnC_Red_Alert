@@ -35,82 +35,75 @@
  *---------------------------------------------------------------------------------------------*
  * Functions: * ObjectClass::AI -- Handles generic object AI processing. *
  *   ObjectClass::Active_Click_With -- Dispatches action on the object
- *specified.              * ObjectClass::Active_Click_With -- Dispatches action
- *on the specified cell.                * ObjectClass::Attach_Trigger -- Attach
- *specified trigger to object.                        *
+ * specified.
+ *   * ObjectClass::Active_Click_With -- Dispatches action on the specified
+ * cell.
+ *   * ObjectClass::Attach_Trigger -- Attach specified trigger to object. *
  *   ObjectClass::Can_Demolish -- Queries whether this object can be sold back.
- ** ObjectClass::Can_Player_Fire -- Can the player give this object an attack
- *mission?        * ObjectClass::Can_Player_Move -- Can the player give this
- *object a movement mission?       * ObjectClass::Can_Repair -- Queries whether
- *this object can be repaired.                   * ObjectClass::Catch_Fire --
- *Called when animation is attached to this object.              *
- *   ObjectClass::Center_Coord -- Fetches the center coordinate for the object.
- ** ObjectClass::Clicked_As_Target -- Triggers target selection animation. *
- *   ObjectClass::Debug_Dump -- Displays status of the object class to the mono
- *monitor.       * ObjectClass::Detach -- Detach the specified target from this
- *object.                      * ObjectClass::Detach_All -- Removes the object
- *from all tracking systems.                  * ObjectClass::Do_Shimmer --
- *Shimmers this object if it is cloaked.                         *
- *   ObjectClass::Docking_Coord -- Fetches the coordinate to dock at this
- *object.              * ObjectClass::Exit_Coord -- Return with the exit
- *coordinate for this object.               * ObjectClass::Exit_Object -- Causes
- *the specified object to leave this object.             *
- *   ObjectClass::Fire_Coord -- Fetches the coordinate a projectile will launch
- *from.          * ObjectClass::Fire_Out -- Informs object that attached
- *animation has finished.             * ObjectClass::Get_Mission -- Fetches the
- *current mission of this object.                   * ObjectClass::Get_Ownable
- *-- Fetches the house owner legality options for this object.     *
- *   ObjectClass::Hidden -- Called when this object becomes hidden from the
- *player.            * ObjectClass::In_Range -- Determines if the coordinate is
- *within weapon range.             * ObjectClass::In_Which_Layer -- Fetches what
- *layer this object is located in.              * ObjectClass::Init --
- *Initializes the basic object system.                                 *
- *   ObjectClass::Limbo -- Brings the object into a state of limbo. *
- *   ObjectClass::Look -- Called when this object needs to reveal terrain. *
- *   ObjectClass::Mark -- Handles basic marking logic. *
+ * * ObjectClass::Can_Player_Fire -- Can the player give this object an attack
+ *   mission? * ObjectClass::Can_Player_Move -- Can the player give this object
+ * a movement mission? * ObjectClass::Can_Repair -- Queries whether this object
+ *   can be repaired. * ObjectClass::Catch_Fire -- Called when animation is
+ *   attached to this object. * ObjectClass::Center_Coord -- Fetches the center
+ *   coordinate for the object. * ObjectClass::Clicked_As_Target -- Triggers
+ *   target selection animation. * ObjectClass::Detach -- Detach the specified
+ *   target from this object. * ObjectClass::Detach_All -- Removes the object
+ *   from all tracking systems. * ObjectClass::Do_Shimmer -- Shimmers this
+ * object if it is cloaked. * ObjectClass::Docking_Coord -- Fetches the
+ * coordinate to dock at this object. * ObjectClass::Exit_Coord -- Return with
+ * the exit coordinate for this object. * ObjectClass::Exit_Object -- Causes the
+ *   specified object to leave this object. * ObjectClass::Fire_Coord -- Fetches
+ *   the coordinate a projectile will launch from. * ObjectClass::Fire_Out --
+ *   Informs object that attached animation has finished. *
+ *   ObjectClass::Get_Mission -- Fetches the current mission of this object. *
+ *   ObjectClass::Get_Ownable -- Fetches the house owner legality options for
+ *   this object. * ObjectClass::Hidden -- Called when this object becomes
+ * hidden from the player. * ObjectClass::In_Range -- Determines if the
+ * coordinate is within weapon range. * ObjectClass::In_Which_Layer -- Fetches
+ * what layer this object is located in. * ObjectClass::Init -- Initializes the
+ * basic object system. * ObjectClass::Limbo -- Brings the object into a state
+ * of limbo. * ObjectClass::Look -- Called when this object needs to reveal
+ *   terrain. * ObjectClass::Mark -- Handles basic marking logic. *
  *   ObjectClass::Mark_For_Redraw -- Marks object and system for redraw. *
  *   ObjectClass::Move -- Moves (by force) the object in the desired direction.
- ** ObjectClass::Name -- Fetches the identification name of this object. *
+ * * ObjectClass::Name -- Fetches the identification name of this object. *
  *   ObjectClass::ObjectClass -- Default constructor for objects. *
  *   ObjectClass::Paradrop -- Unlimbos object in paradrop mode. *
  *   ObjectClass::Passive_Click_With -- Right mouse button click process. *
  *   ObjectClass::Receive_Message -- Processes an incoming radio message. *
  *   ObjectClass::Record_The_Kill -- Records this object as killed by the
- *specified object.    * ObjectClass::Render -- Displays the object onto the
- *map.                                  * ObjectClass::Render_Coord -- Fetches
- *the coordinate to draw this object at.               * ObjectClass::Repair --
- *Handles object repair control.                                     *
+ *   specified object. * ObjectClass::Render -- Displays the object onto the
+ * map.
+ *   * ObjectClass::Render_Coord -- Fetches the coordinate to draw this object
+ *   at. * ObjectClass::Repair -- Handles object repair control. *
  *   ObjectClass::Revealed -- Reveals this object to the house specified. *
  *   ObjectClass::Scatter -- Tries to scatter this object. * ObjectClass::Select
- *-- Try to make this object the "selected" object.                     *
- *   ObjectClass::Sell_Back -- Sells the object -- if possible. *
- *   ObjectClass::Sort_Y -- Returns the coordinate used for display order
- *sorting.             * ObjectClass::Take_Damage -- Applies damage to the
- *object.                                 * ObjectClass::Target_Coord -- Fetches
- *the coordinate if this object is a target.           * ObjectClass::Unlimbo --
- *Brings the object into the game system.                           *
- *   ObjectClass::Unselect -- This will un-select the object if it was selected.
- ** ObjectClass::Value -- Fetches the target value of this object. *
- *   ObjectClass::Weapon_Range -- Returns the weapon range for the weapon
- *specified.           * ObjectClass::What_Action -- Determines what action to
- *perform on specified object.        * ObjectClass::What_Action -- Returns with
- *the action to perform for this object.           * ObjectTypeClass::Cost_Of --
- *Returns the cost to buy this unit.                            *
+ *   -- Try to make this object the "selected" object. * ObjectClass::Sell_Back
+ *   -- Sells the object -- if possible. * ObjectClass::Sort_Y -- Returns the
+ *   coordinate used for display order sorting. * ObjectClass::Take_Damage --
+ *   Applies damage to the object. * ObjectClass::Target_Coord -- Fetches the
+ *   coordinate if this object is a target. * ObjectClass::Unlimbo -- Brings the
+ *   object into the game system. * ObjectClass::Unselect -- This will un-select
+ *   the object if it was selected. * ObjectClass::Value -- Fetches the target
+ *   value of this object. * ObjectClass::Weapon_Range -- Returns the weapon
+ *   range for the weapon specified. * ObjectClass::What_Action -- Determines
+ *   what action to perform on specified object. * ObjectClass::What_Action --
+ *   Returns with the action to perform for this object. *
+ *   ObjectTypeClass::Cost_Of -- Returns the cost to buy this unit. *
  *   ObjectTypeClass::Dimensions -- Gets the dimensions of the object in pixels.
- ** ObjectTypeClass::Get_Cameo_Data -- Fetches pointer to cameo data for this
- *object type.    * ObjectTypeClass::Max_Pips -- Fetches the maximum pips
- *allowed for this object.            * ObjectTypeClass::ObjectTypeClass --
- *Normal constructor for object type class objects.     *
- *   ObjectTypeClass::Occupy_List -- Returns with simple occupation list for
- *object.           * ObjectTypeClass::One_Time -- Handles one time processing
- *for object types.                * ObjectTypeClass::Overlap_List -- Returns a
- *pointer to a simple overlap list.              *
- *   ObjectTypeClass::Time_To_Build -- Fetches the time to construct this
- *object.              * ObjectTypeClass::Who_Can_Build_Me -- Determine what
- *building can build this object type.  * ObjectTypeClass::Who_Can_Build_Me --
- *Finds the factory building that can build this object*
- *   ObjectClass::Get_Image_Data -- Fetches the image data to use for this
- *object.             *
+ *   * ObjectTypeClass::Get_Cameo_Data -- Fetches pointer to cameo data for this
+ *   object type. * ObjectTypeClass::Max_Pips -- Fetches the maximum pips
+ * allowed for this object. * ObjectTypeClass::ObjectTypeClass -- Normal
+ * constructor for object type class objects. * ObjectTypeClass::Occupy_List --
+ * Returns with simple occupation list for object. * ObjectTypeClass::One_Time
+ * -- Handles one time processing for object types. *
+ *   ObjectTypeClass::Overlap_List -- Returns a pointer to a simple overlap
+ * list.
+ *   * ObjectTypeClass::Time_To_Build -- Fetches the time to construct this
+ *   object. * ObjectTypeClass::Who_Can_Build_Me -- Determine what building can
+ *   build this object type. * ObjectTypeClass::Who_Can_Build_Me -- Finds the
+ *   factory building that can build this object* ObjectClass::Get_Image_Data --
+ *   Fetches the image data to use for this object. *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
@@ -143,7 +136,6 @@
 #include "ra/jshell.h"
 #include "ra/logic.h"
 #include "ra/mapedit.h"
-#include "ra/monoc.h"
 #include "ra/radio.h"
 #include "ra/rules.h"
 #include "ra/selection.h"
@@ -1181,56 +1173,6 @@ bool ObjectClass::Render(bool forced)  // const
     }
   }
   return false;
-}
-
-/***********************************************************************************************
- * ObjectClass::Debug_Dump -- Displays status of the object class to the mono
- *monitor.         *
- *                                                                                             *
- *    This routine is used to display the current status of the object class to
- *the mono       * monitor. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 06/02/1994 JLB : Created. *
- *=============================================================================================*/
-void ObjectClass::Debug_Dump(MonoClass* mono) const {
-  if constexpr (config::kCheatKeysEnabled) {
-    mono->Set_Cursor(1, 1);
-    mono->Printf("%-18.18s", Text_String(Full_Name()));
-    if (Next != nullptr) {
-      mono->Set_Cursor(20, 5);
-      mono->Printf("%08X", Next->As_Target());
-    }
-    if (Trigger.Is_Valid()) {
-      mono->Text_Print(Trigger->Class->IniName, 11, 3);
-    }
-    mono->Set_Cursor(34, 1);
-    mono->Printf("%3d", Strength);
-
-    mono->Fill_Attrib(1, 13, 12, 1,
-                      IsDown ? MonoClass::INVERSE : MonoClass::NORMAL);
-    mono->Fill_Attrib(1, 14, 12, 1,
-                      IsToDamage ? MonoClass::INVERSE : MonoClass::NORMAL);
-    mono->Fill_Attrib(1, 15, 12, 1,
-                      IsToDisplay ? MonoClass::INVERSE : MonoClass::NORMAL);
-    mono->Fill_Attrib(1, 16, 12, 1,
-                      IsInLimbo ? MonoClass::INVERSE : MonoClass::NORMAL);
-    mono->Fill_Attrib(1, 17, 12, 1,
-                      IsSelected ? MonoClass::INVERSE : MonoClass::NORMAL);
-    mono->Fill_Attrib(14, 13, 12, 1,
-                      IsAnimAttached ? MonoClass::INVERSE : MonoClass::NORMAL);
-    mono->Set_Cursor(23, 14);
-    mono->Printf("%d", Riser);
-    mono->Fill_Attrib(14, 12, 14, 1,
-                      IsFalling ? MonoClass::INVERSE : MonoClass::NORMAL);
-
-    AbstractClass::Debug_Dump(mono);
-  }
 }
 
 /***********************************************************************************************

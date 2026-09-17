@@ -48,7 +48,6 @@
 #include "ra/defines.h"
 #include "ra/house.h"
 #include "ra/jshell.h"
-#include "ra/monoc.h"
 #include "ra/object.h"
 #include "ra/teamtype.h"
 #include "tech/ftimer.h"
@@ -215,7 +214,6 @@ class TeamClass : public AbstractClass {
   }
   static void Init();
   static void Suspend_Teams(int priority, const HouseClass* house);
-  void Debug_Dump(MonoClass* mono) const override;
 
   /*
   **	File I/O.

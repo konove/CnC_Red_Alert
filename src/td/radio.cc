@@ -34,90 +34,23 @@
  *                  Last Update : June 25, 1995 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions: * RadioClass::Debug_Dump -- Displays the current status of the
- *radio to the mono monitor.   * RadioClass::Receive_Message -- Handles receipt
- *of a radio message.                        * RadioClass::Transmit_Message --
- *Transmit message from one object to another.              * RadioClass::Limbo
- *-- When limboing a unit will always break radio contact.                *
+ * Functions:
+ *   RadioClass::Receive_Message -- Handles receipt of a radio message.
+ *   RadioClass::Transmit_Message -- Transmit message from one object to
+ *     another.
+ *   RadioClass::Limbo -- When limboing a unit will always break radio
+ *     contact.
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-/*
-**	These are the text representations of the radio messages that can be
-*transmitted.
-*/
 #include "td/radio.h"
 
 #include <cstdint>
 
-#include "base/enum_array.h"
-#include "td/config.h"
 #include "td/defines.h"
 #include "td/globals.h"
 #include "td/mission.h"
-#include "td/monoc.h"
 #include "td/techno.h"  // IWYU pragma: keep
-
-base::EnumArray<RadioMessageType, const char*, kRadioCount>
-    RadioClass::Messages = {"hisssss",
-                            "Roger.",
-                            "Come in.",
-                            "Over and out.",
-                            "Requesting transport.",
-                            "Attach to transport.",
-                            "I've got a delivery for you.",
-                            "I'm performing load/unload maneuver. Be careful.",
-                            "I'm clear.",
-                            "You are clear to unload. Driving away now.",
-                            "Am unable to comply.",
-                            "I'm starting construction now... act busy.",
-                            "I've finished construction. You are free.",
-                            "We bumped, redraw yourself please.",
-                            "I'm trying to load up now.",
-                            "May I become a passenger?",
-                            "Are you ready to receive shipment?",
-                            "Are you trying to become a passenger?",
-                            "Move to location X.",
-                            "Do you need to move?",
-                            "All right already. Now what?",
-                            "I'm a passenger now.",
-                            "Backup into refinery now.",
-                            "Run away!",
-                            "Tether established.",
-                            "Tether broken.",
-                            "Repair one step.",
-                            "Are you prepared to fight?",
-                            "Attack this target please.",
-                            "Reload one step.",
-                            "Take this kick! You... You...",
-                            "Take this punch! You... You...",
-                            "Fancy a little fisticuffs, eh?"};
-
-/***********************************************************************************************
- * RadioClass::Debug_Dump -- Displays the current status of the radio to the
- *mono monitor.     *
- *                                                                                             *
- *    This displays the radio connection value to the monochrome monitor. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 06/02/1994 JLB : Created. *
- *=============================================================================================*/
-void RadioClass::Debug_Dump(MonoClass* mono) const {
-  if constexpr (config::kCheatKeysEnabled) {
-    mono->Set_Cursor(34, 5);
-    mono->Print(Messages.at(LastMessage));
-    if (Radio) {
-      mono->Set_Cursor(50, 1);
-      mono->Printf("%04X", Radio->As_Target());
-    }
-    MissionClass::Debug_Dump(mono);
-  }
-}
 
 // Every radio in the game is part of a TechnoClass object, so the cast only
 // fails when there is no contact at all.

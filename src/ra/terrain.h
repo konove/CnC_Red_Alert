@@ -48,7 +48,6 @@
 #include "ra/defines.h"
 #include "ra/face.h"
 #include "ra/inline.h"
-#include "ra/monoc.h"
 #include "ra/object.h"
 #include "ra/stage.h"
 #include "ra/techno.h"
@@ -147,7 +146,6 @@ class TerrainClass final : public ObjectClass, public StageClass {
   /*
   **	Scenario and debug support.
   */
-  void Debug_Dump(MonoClass* mono) const override;
 
   /*
   **	File I/O.

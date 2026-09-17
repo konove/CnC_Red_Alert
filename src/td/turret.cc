@@ -34,18 +34,20 @@
  *                  Last Update : August 13, 1995 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions: * TurretClass::AI -- Handles the reloading of the turret weapon. *
- *   TurretClass::Can_Fire -- Determines if turret can fire upon target. *
- *   TurretClass::Debug_Dump -- Debug printing of turret values. *
- *   TurretClass::Fire_At -- Try to fire upon the target specified. *
- *   TurretClass::Fire_Coord -- Determines the coorindate that projectile would
- *appear.        * TurretClass::Fire_Direction -- Determines the directinon of
- *firing.                       * TurretClass::Ok_To_Move -- Queries whether the
- *vehicle can move.                          * TurretClass::TurretClass --
- *Normal constructor for the turret class.                      *
+ * Functions:
+ *   TurretClass::AI -- Handles the reloading of the turret weapon.
+ *   TurretClass::Can_Fire -- Determines if turret can fire upon target.
+ *   TurretClass::Fire_At -- Try to fire upon the target specified.
+ *   TurretClass::Fire_Coord -- Determines the coorindate that projectile
+ *     would appear.
+ *   TurretClass::Fire_Direction -- Determines the directinon of firing.
+ *   TurretClass::Ok_To_Move -- Queries whether the vehicle can move.
+ *   TurretClass::TurretClass -- Normal constructor for the turret class.
  *   TurretClass::TurretClass -- The default constructor for turret class
- *objects.             * TurretClass::Unlimbo -- Unlimboes turret object. *
- *   TurretClass::~TurretClass -- Default destructor for turret class objects. *
+ *     objects.
+ *   TurretClass::Unlimbo -- Unlimboes turret object.
+ *   TurretClass::~TurretClass -- Default destructor for turret class
+ *     objects.
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
@@ -56,14 +58,12 @@
 #include <cstdlib>
 
 #include "base/array.h"
-#include "td/config.h"
 #include "td/const.h"
 #include "td/coord.h"
 #include "td/defines.h"
 #include "td/drive.h"
 #include "td/inline.h"
 #include "td/jshell.h"
-#include "td/monoc.h"
 #include "td/target.h"
 #include "td/type.h"
 
@@ -86,31 +86,6 @@
 TurretClass::TurretClass(UnitType classid, HousesType house)
     : DriveClass(classid, house) {
   Reload = 0;
-}
-
-/***********************************************************************************************
- * TurretClass::Debug_Dump -- Debug printing of turret values. *
- *                                                                                             *
- *    This routine is used to display the current values of this turret * class
- *instance. It is primarily used in the debug output screen. *
- *                                                                                             *
- * INPUT:   x,y   -- Monochrome screen coordinates to display data. *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 05/12/1994 JLB : Created. *
- *=============================================================================================*/
-void TurretClass::Debug_Dump(MonoClass* mono) const {
-  if constexpr (config::kCheatKeysEnabled) {
-    mono->Set_Cursor(36, 3);
-    mono->Printf("%02X:%02X", SecondaryFacing.Current(),
-                 SecondaryFacing.Desired());
-    mono->Set_Cursor(28, 7);
-    mono->Printf("%2d", Arm);
-    DriveClass::Debug_Dump(mono);
-  }
 }
 
 /***********************************************************************************************

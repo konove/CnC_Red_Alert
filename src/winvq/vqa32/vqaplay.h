@@ -204,7 +204,7 @@ struct VQAConfig {
 /* Options Configuration (OptionFlags) */
 #define VQAOPTB_AUDIO 0    /* Audio enable. */
 #define VQAOPTB_STEP 1     /* Single step enable. */
-#define VQAOPTB_MONO 2     /* Mono output enable. */
+#define VQAOPTB_UNUSED2 2  /* Retired: mono debug output enable. */
 #define VQAOPTB_PALOFF 3   /* Palette set disable. */
 #define VQAOPTB_SLOWPAL 4  /* Slow palette enable. */
 #define VQAOPTB_HMIINIT 5  /* HMI already initialized by client. */
@@ -213,7 +213,6 @@ struct VQAConfig {
 #define VQAOPTB_EVA 8      /* Show EVA text (For C&C only) */
 #define VQAOPTF_AUDIO (1U << VQAOPTB_AUDIO)
 #define VQAOPTF_STEP (1U << VQAOPTB_STEP)
-#define VQAOPTF_MONO (1U << VQAOPTB_MONO)
 #define VQAOPTF_PALOFF (1U << VQAOPTB_PALOFF)
 #define VQAOPTF_SLOWPAL (1U << VQAOPTB_SLOWPAL)
 #define VQAOPTF_HMIINIT (1U << VQAOPTB_HMIINIT)

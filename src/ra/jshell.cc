@@ -67,7 +67,6 @@
 #include "port/format.h"
 #include "port/safe_string.h"
 #include "ra/compat.h"
-#include "ra/monoc.h"
 #include "ra/palette.h"
 #include "ra/startup.h"
 #include "sdllib/buffer.h"
@@ -169,7 +168,6 @@ void Set_Window(int window, int x, int y, int w, int h) {
 void Fatal_Message(const std::string_view message) {
   // Prog_End();
   absl::FPrintF(stderr, "%s", message);
-  Mono_Printf("%s", message);
   Emergency_Exit(EXIT_FAILURE);
 }
 

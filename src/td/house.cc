@@ -34,78 +34,92 @@
  *                  Last Update : August 12, 1995 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions: * HouseClass::AI -- Process house logic. *
+ * Functions:
+ *   HouseClass::AI -- Process house logic.
  *   HouseClass::Abandon_Production -- Abandons production of item type
- *specified.             * HouseClass::Add_Nuke_Piece -- Add a nuclear piece to
- *the collection.                      * HouseClass::Adjust_Capacity -- Adjusts
- *the house Tiberium storage capacity.               * HouseClass::Adjust_Threat
- *-- Adjust threat for the region specified.                      *
+ *     specified.
+ *   HouseClass::Add_Nuke_Piece -- Add a nuclear piece to the collection.
+ *   HouseClass::Adjust_Capacity -- Adjusts the house Tiberium storage
+ *     capacity.
+ *   HouseClass::Adjust_Threat -- Adjust threat for the region specified.
  *   HouseClass::As_Pointer -- Converts a house number into a house object
- *pointer.            * HouseClass::Attacked -- Lets player know if base is
- *under attack.                         * HouseClass::Available_Money -- Fetches
- *the total credit worth of the house.               *
- *   HouseClass::Begin_Production -- Starts production of the specified object
- *type.           * HouseClass::Blowup_All -- blows up everything *
- *   HouseClass::Can_Build -- Determines if the aircraft type can be built. *
- *   HouseClass::Can_Build -- Determines if the building type can be built. *
- *   HouseClass::Can_Build -- Determines if the infantry unit can be built by
- *this house.      * HouseClass::Can_Build -- Determines if the unit can be
- *built by this house.               * HouseClass::Can_Build -- General purpose
- *build legality checker.                          * HouseClass::Clobber_All --
- *removes house & all its objects                                *
- *   HouseClass::Debug_Dump -- Dumps the house status data to the mono screen. *
- ** HouseClass::Does_Enemy_Building_Exist -- Checks for enemy building of
- *specified type.     * HouseClass::Flag_Attach -- Attach flag to specified cell
- *(or thereabouts).                * HouseClass::Flag_Attach -- Attaches the
- *house flag the specified unit.                    * HouseClass::Flag_Remove --
- *Removes the flag from the specified target.                    *
- *   HouseClass::Flag_To_Die -- Flags the house to blow up soon. *
- *   HouseClass::Flag_To_Lose -- Flags the house to die soon. *
- *   HouseClass::Flag_To_Win -- Flags the house to win soon. *
- *   HouseClass::Harvested -- Adds Tiberium to the harvest storage. *
+ *     pointer.
+ *   HouseClass::Attacked -- Lets player know if base is under attack.
+ *   HouseClass::Available_Money -- Fetches the total credit worth of the
+ *     house.
+ *   HouseClass::Begin_Production -- Starts production of the specified
+ *     object type.
+ *   HouseClass::Blowup_All -- blows up everything
+ *   HouseClass::Can_Build -- Determines if the aircraft type can be built.
+ *   HouseClass::Can_Build -- Determines if the building type can be built.
+ *   HouseClass::Can_Build -- Determines if the infantry unit can be built
+ *     by this house.
+ *   HouseClass::Can_Build -- Determines if the unit can be built by this
+ *     house.
+ *   HouseClass::Can_Build -- General purpose build legality checker.
+ *   HouseClass::Clobber_All -- removes house & all its objects
+ *   HouseClass::Does_Enemy_Building_Exist -- Checks for enemy building of
+ *     specified type.
+ *   HouseClass::Flag_Attach -- Attach flag to specified cell (or
+ *     thereabouts).
+ *   HouseClass::Flag_Attach -- Attaches the house flag the specified unit.
+ *   HouseClass::Flag_Remove -- Removes the flag from the specified target.
+ *   HouseClass::Flag_To_Die -- Flags the house to blow up soon.
+ *   HouseClass::Flag_To_Lose -- Flags the house to die soon.
+ *   HouseClass::Flag_To_Win -- Flags the house to win soon.
+ *   HouseClass::Harvested -- Adds Tiberium to the harvest storage.
  *   HouseClass::Has_Nuke_Device -- Deteremines if the house has a nuclear
- *device.             * HouseClass::HouseClass -- Constructor for a house
- *object.                                 * HouseClass::Init -- init's in
- *preparation for new scenario                                *
+ *     device.
+ *   HouseClass::HouseClass -- Constructor for a house object.
+ *   HouseClass::Init -- init's in preparation for new scenario
  *   HouseClass::Init_Air_Strike -- Add (or reset) the air strike sidebar
- *button.              * HouseClass::Init_Data -- Initializes the multiplayer
- *color data.                          * HouseClass::Init_Ion_Cannon --
- *Initialize the ion cannon countdown.                       *
+ *     button.
+ *   HouseClass::Init_Data -- Initializes the multiplayer color data.
+ *   HouseClass::Init_Ion_Cannon -- Initialize the ion cannon countdown.
  *   HouseClass::Init_Nuke_Bomb -- Adds (if necessary) the atom bomb to the
- *sidebar.           * HouseClass::Is_Ally -- Checks to see if the object is an
- *ally.                            * HouseClass::Is_Ally -- Determines if the
- *specified house is an ally.                      * HouseClass::Is_Ally --
- *Determines if the specified house is an ally.                      *
- *   HouseClass::MPlayer_Defeated -- multiplayer; house is defeated *
- *   HouseClass::Make_Air_Strike_Available -- Make the airstrike available. *
- *   HouseClass::Make_Ally -- Make the specified house an ally. *
- *   HouseClass::Make_Enemy -- Make an enemy of the house specified. *
+ *     sidebar.
+ *   HouseClass::Is_Ally -- Checks to see if the object is an ally.
+ *   HouseClass::Is_Ally -- Determines if the specified house is an ally.
+ *   HouseClass::Is_Ally -- Determines if the specified house is an ally.
+ *   HouseClass::MPlayer_Defeated -- multiplayer; house is defeated
+ *   HouseClass::Make_Air_Strike_Available -- Make the airstrike available.
+ *   HouseClass::Make_Ally -- Make the specified house an ally.
+ *   HouseClass::Make_Enemy -- Make an enemy of the house specified.
  *   HouseClass::Manual_Place -- Inform display system of building placement
- *mode.             * HouseClass::One_Time -- Handles one time initialization of
- *the house array.               * HouseClass::Place_Object -- Places the object
- *(building) at location specified.           * HouseClass::Place_Special_Blast
- *-- Place a special blast effect at location specified.    *
- *   HouseClass::Power_Fraction -- Fetches the current power output rating. *
- *   HouseClass::Read_INI -- Reads house specific data from INI. *
- *   HouseClass::Refund_Money -- Refunds money to back to the house. *
- *   HouseClass::Remap_Table -- Fetches the remap table for this house object. *
+ *     mode.
+ *   HouseClass::One_Time -- Handles one time initialization of the house
+ *     array.
+ *   HouseClass::Place_Object -- Places the object (building) at location
+ *     specified.
+ *   HouseClass::Place_Special_Blast -- Place a special blast effect at
+ *     location specified.
+ *   HouseClass::Power_Fraction -- Fetches the current power output rating.
+ *   HouseClass::Read_INI -- Reads house specific data from INI.
+ *   HouseClass::Refund_Money -- Refunds money to back to the house.
+ *   HouseClass::Remap_Table -- Fetches the remap table for this house
+ *     object.
  *   HouseClass::Remove_Air_Strike -- Removes the air strike button from the
- *sidebar.          * HouseClass::Remove_Ion_Cannon -- Disables the ion cannon.
- ** HouseClass::Remove_Nuke_Bomb -- Removes the nuclear bomb from the sidebar. *
- *   HouseClass::Sell_Wall -- Tries to sell the wall at the specified location.
- ** HouseClass::Silo_Redraw_Check -- Flags silos to be redrawn if necessary. *
- *   HouseClass::Special_Weapon_AI -- Fires special weapon. *
- *   HouseClass::Spend_Money -- Removes money from the house. *
- *   HouseClass::Suggest_New_Object -- Determine what would the next buildable
- *object be.      * HouseClass::Suggested_New_Team -- Determine what team should
- *be created.                  * HouseClass::Suspend_Production -- Temporarily
- *puts production on hold.                    * HouseClass::Validate --
- *validates house pointer
- ** HouseClass::Write_INI -- Writes house specific data into INI file. *
- *   HouseClass::delete -- Deallocator function for a house object. *
+ *     sidebar.
+ *   HouseClass::Remove_Ion_Cannon -- Disables the ion cannon.
+ *   HouseClass::Remove_Nuke_Bomb -- Removes the nuclear bomb from the
+ *     sidebar.
+ *   HouseClass::Sell_Wall -- Tries to sell the wall at the specified
+ *     location.
+ *   HouseClass::Silo_Redraw_Check -- Flags silos to be redrawn if
+ *     necessary.
+ *   HouseClass::Special_Weapon_AI -- Fires special weapon.
+ *   HouseClass::Spend_Money -- Removes money from the house.
+ *   HouseClass::Suggest_New_Object -- Determine what would the next
+ *     buildable object be.
+ *   HouseClass::Suggested_New_Team -- Determine what team should be
+ *     created.
+ *   HouseClass::Suspend_Production -- Temporarily puts production on hold.
+ *   HouseClass::Validate -- validates house pointer
+ *   HouseClass::Write_INI -- Writes house specific data into INI file.
+ *   HouseClass::delete -- Deallocator function for a house object.
  *   HouseClass::new -- Allocator for a house class. * HouseClass::operator
- *HousesType -- Conversion to HousesType operator.                     *
- *   HouseClass::~HouseClass -- Default destructor for a house object. *
+ *     HousesType -- Conversion to HousesType operator.
+ *   HouseClass::~HouseClass -- Default destructor for a house object.
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
@@ -156,7 +170,6 @@
 #include "td/jshell.h"
 #include "td/logic.h"
 #include "td/mapedit.h"
-#include "td/monoc.h"
 #include "td/mouse.h"
 #include "td/mplayer.h"
 #include "td/msglist.h"
@@ -272,27 +285,6 @@ void HouseClass::One_Time() {
   //	for (HousesType index = HOUSE_FIRST; index < HOUSE_COUNT; index++) {
   //		new(index) HouseClass;
   //	}
-}
-
-/***********************************************************************************************
- * HouseClass::Debug_Dump -- Dumps the house status data to the mono screen. *
- *                                                                                             *
- *    This utility function will output the current status of the house class to
- *the mono      * screen. Through this information bugs may be fixed or
- *detected.                          *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 05/31/1994 JLB : Created. *
- *=============================================================================================*/
-void HouseClass::Debug_Dump(MonoClass* /*unused*/) const {
-  if constexpr (config::kCheatKeysEnabled) {
-    Validate();
-  }
 }
 
 /***********************************************************************************************

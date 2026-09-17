@@ -42,7 +42,6 @@
 #define CNC_RED_ALERT_TD_TARCOM_H_
 
 #include "td/defines.h"
-#include "td/monoc.h"
 #include "td/turret.h"
 
 /****************************************************************************
@@ -71,7 +70,6 @@ class TarComClass : public TurretClass {
   /*---------------------------------------------------------------------
    **	Member function prototypes.
    */
-  void Debug_Dump(MonoClass* mono) const override;
   void AI() override;
   //		virtual bool Target_Something_Nearby(ThreatType
   // rangmatters=THREAT_NORMAL);

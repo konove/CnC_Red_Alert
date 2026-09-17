@@ -35,76 +35,66 @@
  *---------------------------------------------------------------------------------------------*
  * Functions: * Recoil_Adjust -- Adjust pixel values in direction specified. *
  *   UnitClass::AI -- AI processing for the unit. * UnitClass::APC_Close_Door --
- *Closes an APC door.                                          *
- *   UnitClass::APC_Open_Door -- Opens an APC door. *
+ *   Closes an APC door. * UnitClass::APC_Open_Door -- Opens an APC door. *
  *   UnitClass::Active_Click_With -- Intercepts the active click to see if
- *deployment is possib* UnitClass::Active_Click_With -- Performs specified
- *action on specified cell.              * UnitClass::Approach_Target -- Handles
- *approaching the target in order to attack it.       *
+ *   deployment is possib* UnitClass::Active_Click_With -- Performs specified
+ *   action on specified cell. * UnitClass::Approach_Target -- Handles
+ *   approaching the target in order to attack it. *
  *   UnitClass::Assign_Destination -- Assign a destination to a unit. *
  *   UnitClass::Blocking_Object -- Determines how a object blocks a unit *
  *   UnitClass::Can_Enter_Cell -- Determines cell entry legality. *
  *   UnitClass::Can_Fire -- Determines if turret can fire upon target. *
  *   UnitClass::Click_With -- Handles player map clicking while this unit is
- *selected.         * UnitClass::Credit_Load -- Fetch the full credit value of
- *cargo carried.                   * UnitClass::Crew_Type -- Fetches the kind of
- *crew that this object produces.               * UnitClass::Debug_Dump --
- *Displays the status of the unit to the mono monitor.             *
- *   UnitClass::Desired_Load_Dir -- Determines the best cell and facing for
- *loading.           * UnitClass::Draw_It -- Draws a unit object. *
+ *   selected. * UnitClass::Credit_Load -- Fetch the full credit value of cargo
+ *   carried. * UnitClass::Crew_Type -- Fetches the kind of crew that this
+ * object produces. * UnitClass::Desired_Load_Dir -- Determines the best cell
+ * and facing for loading. * UnitClass::Draw_It -- Draws a unit object. *
  *   UnitClass::Edge_Of_World_AI -- Check for falling off the edge of the world.
- ** UnitClass::Enter_Idle_Mode -- Unit enters idle mode state. *
+ *   * UnitClass::Enter_Idle_Mode -- Unit enters idle mode state. *
  *   UnitClass::Fire_Direction -- Determines the direction of firing. *
  *   UnitClass::Firing_AI -- Handle firing logic for this unit. *
  *   UnitClass::Flag_Attach -- Attaches a house flag to this unit. *
  *   UnitClass::Flag_Remove -- Removes the house flag from this unit. *
  *   UnitClass::Goto_Clear_Spot -- Finds a clear spot to deploy. *
  *   UnitClass::Goto_Tiberium -- Search for and head toward nearest available
- *Tiberium patch.  * UnitClass::Greatest_Threat -- Fetches the greatest threat
- *for this unit.                  * UnitClass::Harvesting -- Harvests tiberium
- *at the current location.                       * UnitClass::Init -- Clears all
- *units for scenario preparation.                             * UnitClass::Limbo
- *-- Limbo this unit.                                                      *
- *   UnitClass::Mission_Guard -- Special guard mission override processor. *
- *   UnitClass::Mission_Guard_Area -- Guard area logic for units. *
- *   UnitClass::Mission_Harvest -- Handles the harvesting process used by
- *harvesters.          * UnitClass::Mission_Hunt -- This is the AI process for
- *aggressive enemy units.             * UnitClass::Mission_Move -- Handles
- *special move mission overrides.                        *
- *   UnitClass::Mission_Repair -- Handles finding and proceeding on a repair
- *mission.          * UnitClass::Mission_Unload -- Handles unloading cargo. *
- *   UnitClass::Ok_To_Move -- Queries whether the vehicle can
- *move.                            * UnitClass::Overlap_List -- Determines
- *overlap list for units.                             *
- *   UnitClass::Overrun_Square -- Handles vehicle overrun of a cell. *
- *   UnitClass::Per_Cell_Process -- Performs operations necessary on a per cell
- *basis.         * UnitClass::Pip_Count -- Fetches the number of pips to display
- *on unit.                    * UnitClass::Random_Animate -- Handles random idle
- *animation for the unit.                  * UnitClass::Read_INI -- Reads units
- *from scenario INI file.                                *
- *   UnitClass::Receive_Message -- Handles receiving a radio message. *
- *   UnitClass::Reload_AI -- Perform reload logic for this unit. *
+ *   Tiberium patch. * UnitClass::Greatest_Threat -- Fetches the greatest threat
+ *   for this unit. * UnitClass::Harvesting -- Harvests tiberium at the current
+ *   location. * UnitClass::Init -- Clears all units for scenario preparation. *
+ *   UnitClass::Limbo -- Limbo this unit. * UnitClass::Mission_Guard -- Special
+ *   guard mission override processor. * UnitClass::Mission_Guard_Area -- Guard
+ *   area logic for units. * UnitClass::Mission_Harvest -- Handles the
+ * harvesting process used by harvesters. * UnitClass::Mission_Hunt -- This is
+ * the AI process for aggressive enemy units. * UnitClass::Mission_Move --
+ * Handles special move mission overrides. * UnitClass::Mission_Repair --
+ * Handles finding and proceeding on a repair mission. *
+ * UnitClass::Mission_Unload -- Handles unloading cargo. * UnitClass::Ok_To_Move
+ * -- Queries whether the vehicle can move. * UnitClass::Overlap_List --
+ * Determines overlap list for units. * UnitClass::Overrun_Square -- Handles
+ * vehicle overrun of a cell. * UnitClass::Per_Cell_Process -- Performs
+ * operations necessary on a per cell basis. * UnitClass::Pip_Count -- Fetches
+ * the number of pips to display on unit. * UnitClass::Random_Animate -- Handles
+ * random idle animation for the unit. * UnitClass::Read_INI -- Reads units from
+ * scenario INI file. * UnitClass::Receive_Message -- Handles receiving a radio
+ * message. * UnitClass::Reload_AI -- Perform reload logic for this unit. *
  *   UnitClass::Rotation_AI -- Process any turret or body rotation. *
  *   UnitClass::Scatter -- Causes the unit to scatter to a nearby location. *
  *   UnitClass::Set_Speed -- Initiate unit movement physics. *
  *   UnitClass::Shape_Number -- Fetch the shape number to use for this unit. *
  *   UnitClass::Should_Crush_It -- Determines if this unit should crush an
- *object.             * UnitClass::Sort_Y -- Give Y coordinate sort value for
- *unit.                               * UnitClass::Start_Driver -- Starts
- *driving and reserves destination cell.                  *
+ *   object. * UnitClass::Sort_Y -- Give Y coordinate sort value for unit. *
+ *   UnitClass::Start_Driver -- Starts driving and reserves destination cell. *
  *   UnitClass::Take_Damage -- Inflicts damage points on a unit. *
  *   UnitClass::Tiberium_Check -- Search for and head toward nearest available
- *Tiberium patch. * UnitClass::Tiberium_Load -- Determine the Tiberium load as a
- *percentage.                  * UnitClass::Try_To_Deploy -- The unit attempts
- *to "deploy" at current location.            * UnitClass::UnitClass --
- *Constructor for units.                                            *
+ *   Tiberium patch. * UnitClass::Tiberium_Load -- Determine the Tiberium load
+ * as a percentage. * UnitClass::Try_To_Deploy -- The unit attempts to "deploy"
+ * at current location. * UnitClass::UnitClass -- Constructor for units. *
  *   UnitClass::Unlimbo -- Removes unit from stasis. * UnitClass::What_Action --
- *Determines action to perform on specified cell.                 *
- *   UnitClass::What_Action -- Determines what action would occur if clicked on
- *object.        * UnitClass::Write_INI -- Store the units to the INI database.
- ** UnitClass::delete -- Deletion operator for units. * UnitClass::new --
- *Allocate a unit slot and adjust access arrays.                          *
- *   UnitClass::~UnitClass -- Destructor for unit objects. *
+ *   Determines action to perform on specified cell. * UnitClass::What_Action --
+ *   Determines what action would occur if clicked on object. *
+ *   UnitClass::Write_INI -- Store the units to the INI database. *
+ *   UnitClass::delete -- Deletion operator for units. * UnitClass::new --
+ *   Allocate a unit slot and adjust access arrays. * UnitClass::~UnitClass --
+ *   Destructor for unit objects. *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
@@ -136,7 +126,6 @@
 #include "ra/config.h"
 #include "ra/const.h"
 #include "ra/coord.h"
-#include "ra/debug.h"
 #include "ra/defines.h"
 #include "ra/display.h"
 #include "ra/display_constants.h"
@@ -155,7 +144,6 @@
 #include "ra/jshell.h"
 #include "ra/mapedit.h"
 #include "ra/mission.h"
-#include "ra/monoc.h"
 #include "ra/mouse.h"
 #include "ra/object.h"
 #include "ra/overlay.h"
@@ -351,44 +339,6 @@ UnitClass::UnitClass(UnitType classid, HousesType house)
   //	if (Session.Type == GAME_INTERNET) {
   //		House->UnitTotals->Increment_Unit_Total((int)classid);
   //	}
-}
-
-/***********************************************************************************************
- * UnitClass::Debug_Dump -- Displays the status of the unit to the mono monitor.
- **
- *                                                                                             *
- *    This displays the current status of the unit class to the mono monitor. By
- *this display  * bugs may be tracked down or prevented. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 06/02/1994 JLB : Created. *
- *=============================================================================================*/
-void UnitClass::Debug_Dump(MonoClass* mono) const {
-  if constexpr (config::kCheatKeysEnabled) {
-    assert(Units.ID(this) == ID);
-    assert(IsActive);
-
-    mono->Set_Cursor(0, 0);
-    mono->Print(Text_String(TXT_DEBUG_VEHICLE));
-    mono->Set_Cursor(47, 5);
-    mono->Printf("%02X:%02X", SecondaryFacing.Current(),
-                 SecondaryFacing.Desired());
-
-    mono->Set_Cursor(1, 11);
-    mono->Printf("%03d", Gems);
-    mono->Set_Cursor(7, 11);
-    mono->Printf("%03d", Gold);
-
-    mono->Fill_Attrib(66, 13, 12, 1,
-                      IsDumping ? MonoClass::INVERSE : MonoClass::NORMAL);
-
-    DriveClass::Debug_Dump(mono);
-  }
 }
 
 /***********************************************************************************************

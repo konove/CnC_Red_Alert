@@ -49,7 +49,6 @@
 #include "ra/defines.h"
 #include "ra/face.h"
 #include "ra/jshell.h"
-#include "ra/monoc.h"
 #include "tech/fixed.h"
 
 class BuildingClass;
@@ -296,7 +295,6 @@ class ObjectClass : public AbstractClass {
   /*
   **	Scenario and debug support.
   */
-  void Debug_Dump(MonoClass* mono) const override;
   virtual void Move(FacingType /*facing*/);
 
   static constexpr int kFlightLevel = 256;

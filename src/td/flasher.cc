@@ -34,39 +34,13 @@
  *                  Last Update : October 17, 1994   [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions: * FlasherClass::Process -- Performs the logic processing for the
- *flashing ability.          * FlasherClass::Debug_Dump -- Displays current
- *status to the monochrome screen.             *
+ * Functions:
+ *   FlasherClass::Process -- Performs the logic processing for the flashing
+ *     ability.
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
 #include "td/flasher.h"
-
-#include "td/config.h"
-#include "td/monoc.h"
-
-/***********************************************************************************************
- * FlasherClass::Debug_Dump -- Displays current status to the monochrome screen.
- **
- *                                                                                             *
- *    This utility function will output the current status of the FlasherClass
- *to the mono     * screen. It is through this display that bugs may be fixed or
- *detected.                   *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 05/31/1994 JLB : Created. *
- *=============================================================================================*/
-void FlasherClass::Debug_Dump(MonoClass* mono) const {
-  if constexpr (config::kCheatKeysEnabled) {
-    mono->Set_Cursor(50, 7);
-    mono->Printf("%2d", FlashCount);
-  }
-}
 
 /***********************************************************************************************
  * FlasherClass::Process -- Performs the logic processing for the flashing

@@ -33,65 +33,58 @@
  *                  Last Update : October 28, 1996 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions: * InfantryClass::AI -- Handles the infantry non-graphic related AI
- *processing.              * InfantryClass::Active_Click_With -- Handles action
- *when clicking with infantry soldier.   * InfantryClass::Assign_Destination --
- *Gives the infantry a movement destination.           *
- *   InfantryClass::Assign_Target -- Gives the infantry a combat target. *
- *   InfantryClass::Can_Enter_Cell -- Determines if the infantry can enter the
- *cell specified. * InfantryClass::Can_Fire -- Can the infantry fire its weapon?
- ** InfantryClass::Class_Of -- Returns the class reference for this object. *
- *   InfantryClass::Clear_Occupy_Bit -- Clears occupy bit and given cell *
- *   InfantryClass::Debug_Dump -- Displays debug information about infantry
- *unit.              * InfantryClass::Detach -- Removes the specified target
- *from targeting computer.            * InfantryClass::Do_Action -- Launches the
- *infantry into an animation sequence.             * InfantryClass::Doing_AI --
- *Handles the animation AI processing.                           *
- *   InfantryClass::Draw_It -- Draws a unit object. *
- *   InfantryClass::Edge_Of_World_AI -- Detects when infantry has left the map.
- ** InfantryClass::Enter_Idle_Mode -- The infantry unit enters idle mode by this
- *routine.     * InfantryClass::Fear_AI -- Process any fear related affects on
- *this infantry.              * InfantryClass::Fire_At -- Fires projectile from
- *infantry unit.                            * InfantryClass::Firing_AI --
- *Handles firing and combat AI for the infantry.                *
- *   InfantryClass::Full_Name -- Fetches the full name of the infantry unit. *
- *   InfantryClass::Get_Image_Data -- Fetches the image data for this infantry
- *unit.           * InfantryClass::Greatest_Threat -- Determines greatest threat
- *(target) for infantry unit.  * InfantryClass::InfantryClass -- The constructor
- *for infantry objects.                     * InfantryClass::Init -- Initialize
- *the infantry object system.                             *
- *   InfantryClass::Is_Ready_To_Random_Anima -- Checks to see if it is ready to
- *perform an idle* InfantryClass::Limbo -- Performs cleanup operations needed
- *when limboing.                 * InfantryClass::Mission_Attack -- Intercept
- *attack mission for special handling.           * InfantryClass::Movement_AI --
- *This routine handles all infantry movement logic.           *
+ * Functions: * InfantryClass::AI -- Handles the infantry non-graphic related
+ *   AI processing. * InfantryClass::Active_Click_With -- Handles action when
+ *   clicking with infantry soldier. * InfantryClass::Assign_Destination --
+ * Gives the infantry a movement destination. * InfantryClass::Assign_Target --
+ * Gives the infantry a combat target. * InfantryClass::Can_Enter_Cell --
+ * Determines if the infantry can enter the cell specified. *
+ * InfantryClass::Can_Fire -- Can the infantry fire its weapon? *
+ * InfantryClass::Class_Of -- Returns the class reference for this object. *
+ * InfantryClass::Clear_Occupy_Bit -- Clears occupy bit and given cell *
+ * InfantryClass::Detach -- Removes the specified target from targeting
+ * computer. * InfantryClass::Do_Action -- Launches the infantry into an
+ * animation sequence. * InfantryClass::Doing_AI -- Handles the animation AI
+ * processing. * InfantryClass::Draw_It -- Draws a unit object. *
+ * InfantryClass::Edge_Of_World_AI -- Detects when infantry has left the map. *
+ * InfantryClass::Enter_Idle_Mode -- The infantry unit enters idle mode by this
+ * routine. * InfantryClass::Fear_AI -- Process any fear related affects on this
+ * infantry. * InfantryClass::Fire_At -- Fires projectile from infantry unit. *
+ * InfantryClass::Firing_AI -- Handles firing and combat AI for the infantry. *
+ * InfantryClass::Full_Name -- Fetches the full name of the infantry unit. *
+ * InfantryClass::Get_Image_Data -- Fetches the image data for this infantry
+ * unit. * InfantryClass::Greatest_Threat -- Determines greatest threat (target)
+ * for infantry unit. * InfantryClass::InfantryClass -- The constructor for
+ * infantry objects. * InfantryClass::Init -- Initialize the infantry object
+ * system. * InfantryClass::Is_Ready_To_Random_Anima -- Checks to see if it is
+ * ready to perform an idle* InfantryClass::Limbo -- Performs cleanup operations
+ * needed when limboing. * InfantryClass::Mission_Attack -- Intercept attack
+ * mission for special handling. * InfantryClass::Movement_AI
+ *   -- This routine handles all infantry movement logic. *
  *   InfantryClass::Overlap_List -- The list of cells that the infantry
- *overlaps, but doesn't o* InfantryClass::Paradrop -- Handles paradropping
- *infantry.                                 * InfantryClass::Per_Cell_Process --
- *Handles special operations that occur once per cell.   *
- *   InfantryClass::Random_Animate -- Randomly animate the infantry (maybe) *
- *   InfantryClass::Read_INI -- Reads units from scenario INI file. *
- *   InfantryClass::Response_Attack -- Plays infantry audio response to attack
- *order.          * InfantryClass::Response_Move -- Plays infantry response to
- *movement order.                * InfantryClass::Response_Select -- Plays
- *infantry audio response due to being selected.    * InfantryClass::Scatter --
- *Causes the infantry to scatter to nearby cell.                  *
- *   InfantryClass::Set_Occupy_Bit -- Sets the occupy bit cell and bit pos
- ** InfantryClass::Set_Primary_Facing -- Change infantry primary facing --
- *always and instantl* InfantryClass::Shape_Number -- Fetch the shape number for
- *this infantry.                  * InfantryClass::Start_Driver -- Handles
- *giving immediate destination and move orders.      *
- *   InfantryClass::Stop_Driver -- Stops the infantry from moving any further. *
- *   InfantryClass::Take_Damage -- Applies damage to the infantry unit. *
- *   InfantryClass::Unlimbo -- Unlimbo infantry unit in legal sub-location. *
- *   InfantryClass::What_Action -- Determines what action to perform for the
- *cell specified.   * InfantryClass::What_Action -- Infantry units might be able
- *to capture -- check.           * InfantryClass::Write_INI -- Store the
- *infantry to the INI database.                       * InfantryClass::operator
- *delete -- Returns the infantry object back to the free pool       *
- *   InfantryClass::operator new -- Allocates an infantry object from the free
- *pool.           * InfantryClass::~InfantryClass -- Default destructor for
- *infantry units.                   *
+ * overlaps, but doesn't o* InfantryClass::Paradrop -- Handles paradropping
+ * infantry. * InfantryClass::Per_Cell_Process -- Handles special operations
+ * that occur once per cell. * InfantryClass::Random_Animate -- Randomly animate
+ * the infantry (maybe) * InfantryClass::Read_INI -- Reads units from scenario
+ * INI file. * InfantryClass::Response_Attack -- Plays infantry audio response
+ * to attack order. * InfantryClass::Response_Move -- Plays infantry response to
+ *   movement order. * InfantryClass::Response_Select -- Plays infantry audio
+ *   response due to being selected. * InfantryClass::Scatter -- Causes the
+ *   infantry to scatter to nearby cell. * InfantryClass::Set_Occupy_Bit -- Sets
+ *   the occupy bit cell and bit pos * InfantryClass::Set_Primary_Facing --
+ *   Change infantry primary facing -- always and instantl*
+ *   InfantryClass::Shape_Number -- Fetch the shape number for this infantry. *
+ *   InfantryClass::Start_Driver -- Handles giving immediate destination and
+ * move orders. * InfantryClass::Stop_Driver -- Stops the infantry from moving
+ * any further. * InfantryClass::Take_Damage -- Applies damage to the infantry
+ *   unit. * InfantryClass::Unlimbo -- Unlimbo infantry unit in legal sub-
+ *   location. * InfantryClass::What_Action -- Determines what action to perform
+ *   for the cell specified. * InfantryClass::What_Action -- Infantry units
+ * might be able to capture -- check. * InfantryClass::Write_INI -- Store the
+ *   infantry to the INI database. * InfantryClass::operator delete -- Returns
+ *   the infantry object back to the free pool * InfantryClass::operator new --
+ *   Allocates an infantry object from the free pool. *
+ *   InfantryClass::~InfantryClass -- Default destructor for infantry units. *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
@@ -124,7 +117,6 @@
 #include "ra/config.h"
 #include "ra/const.h"
 #include "ra/coord.h"
-#include "ra/debug.h"
 #include "ra/defines.h"
 #include "ra/externs.h"
 #include "ra/face.h"
@@ -138,7 +130,6 @@
 #include "ra/jshell.h"
 #include "ra/mapedit.h"
 #include "ra/mission.h"
-#include "ra/monoc.h"
 #include "ra/rules.h"
 #include "ra/session.h"
 #include "ra/special.h"
@@ -193,46 +184,6 @@ const base::EnumArray<DoType, DoStruct> InfantryClass::MasterDoControls = {{
     {false, false, false, 2},  // DO_SALUTE2
     {false, false, false, 2},  // DO_DOG_MAUL
 }};
-
-/***********************************************************************************************
- * InfantryClass::Debug_Dump -- Displays debug information about infantry unit.
- **
- *                                                                                             *
- *    This routine is used by the debug version to display pertinent information
- *about the     * infantry unit. *
- *                                                                                             *
- * INPUT:   mono  -- The monochrome screen to display the debug information to.
- **
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 09/01/1994 JLB : Created. *
- *=============================================================================================*/
-void InfantryClass::Debug_Dump(MonoClass* mono) const {
-  if constexpr (config::kCheatKeysEnabled) {
-    assert(Infantry.ID(this) == ID);
-    assert(IsActive);
-
-    mono->Set_Cursor(0, 0);
-
-    mono->Print(Text_String(TXT_DEBUG_INFANTRY));
-    mono->Set_Cursor(1, 11);
-    mono->Printf("%3d", Doing);
-    mono->Set_Cursor(8, 11);
-    mono->Printf("%3d", Fear);
-
-    mono->Fill_Attrib(66, 13, 12, 1,
-                      IsTechnician ? MonoClass::INVERSE : MonoClass::NORMAL);
-    mono->Fill_Attrib(66, 14, 12, 1,
-                      IsStoked ? MonoClass::INVERSE : MonoClass::NORMAL);
-    mono->Fill_Attrib(66, 15, 12, 1,
-                      IsProne ? MonoClass::INVERSE : MonoClass::NORMAL);
-
-    FootClass::Debug_Dump(mono);
-  }
-}
 
 /***********************************************************************************************
  * InfantryClass::InfantryClass -- The constructor for infantry objects. *

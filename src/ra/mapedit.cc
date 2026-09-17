@@ -69,6 +69,7 @@
 #include <string_view>
 #include <utility>
 
+#include "absl/log/log.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/numeric.h"
@@ -98,7 +99,6 @@
 #include "ra/list.h"
 #include "ra/menus.h"
 #include "ra/mission.h"
-#include "ra/monoc.h"
 #include "ra/mouse.h"
 #include "ra/msgbox.h"
 #include "ra/palette.h"
@@ -2089,18 +2089,10 @@ void MapEditClass::Update_Waypoint(int waypt_idx) {
  *   11/16/1994 BR : Created.                                              *
  *=========================================================================*/
 void MapEditClass::Read_INI(CCINIClass& ini) {
-  /*
-  **	Invoke parent's Read_INI
-  */
-  Mono_Printf("We are in Read_INI\n");
+  DLOG(INFO) << "Map editor reading scenario INI";
 
   MouseClass::Read_INI(ini);
   BaseGauge->Set_Value(Scen.Percent);
-
-  Mono_Clear_Screen();
-  Mono_Printf("Scen.Percent = %d", Scen.Percent);
-
-  //	BaseGauge->Set_Value(Scen.Percent);
 }
 
 void Go_Editor(const bool flag) {

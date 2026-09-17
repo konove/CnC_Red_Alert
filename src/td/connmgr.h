@@ -146,12 +146,6 @@ class ConnManClass {
   virtual void Set_Timing(int32_t retrydelta, int32_t maxretries,
                           int32_t timeout) = 0;
 
-  /*.....................................................................
-  Debugging
-  .....................................................................*/
-  virtual void Configure_Debug(int index, int type_offset, int type_size,
-                               const char** names, int maxnames) = 0;
-  virtual void Mono_Debug_Print(int index, int refresh) = 0;
   /*
   --------------------------- Private Interface ----------------------------
   */

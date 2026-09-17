@@ -510,7 +510,7 @@ static int32_t DrawFrame_Buffer(VQAHandle* vqa) {
   vqabuf->UnVQ(curframe->Codebook->BufferStorage, curframe->PointersStorage,
                buff, drawer->BlocksPerRow, drawer->NumRows, drawer->ImageWidth);
 
-  /* Update data for mono output */
+  /* Remember the last frame drawn, for status reporting. */
   drawer->LastFrameNum = curframe->FrameNum;
 
   /* Tell the flipper which frame to use */

@@ -52,8 +52,8 @@
 #include <span>
 
 #include "absl/base/attributes.h"
+#include "absl/log/log.h"
 #include "td/defines.h"
-#include "td/monoc.h"
 
 /*
 **	This class implements a classic FIFO queue (also known as - standing in
@@ -192,8 +192,8 @@ bool QueueClass<T, size>::Add(const T& q) {
     Count_++;
     return true;
   }
-  Mono_Printf("Queue Add failed Count %d size %d tail %d head %d \n", Count_,
-              size, Tail, Head);
+  DLOG(WARNING) << "Queue add failed; count " << Count_ << " size " << size
+                << " tail " << Tail << " head " << Head;
   return false;
 }
 
@@ -290,7 +290,5 @@ void Queue_AI();
 int Extract_Uncompressed_Events(std::span<const std::byte> buf, int bufsize);
 int Extract_Compressed_Events(std::span<const std::byte> buf, int bufsize);
 void Add_CRC(uint32_t* crc, uint32_t val);
-
-extern int NetMonoMode, NewMonoMode;
 
 #endif  // CNC_RED_ALERT_TD_QUEUE_H_

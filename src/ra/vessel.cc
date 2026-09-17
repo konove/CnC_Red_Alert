@@ -33,41 +33,34 @@
  *                  Last Update : July 31, 1996 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions: * VesselClass::AI -- Handles the AI processing for vessel objects.
- ** VesselClass::Assign_Destination -- Assign a destination for this vessel. *
- *   VesselClass::Can_Enter_Cell -- Determines if the vessel can enter the cell
- *specified.     * VesselClass::Can_Fire -- Determines if this vessel can fire
- *its weapon.                   * VesselClass::Is_Allowed_To_Recloak -- Can the
- *vessel recloak now?                         * VesselClass::Class_Of -- Fetches
- *a reference to the vessel's class data.                  *
- *   VesselClass::Combat_AI -- Handles firing and target selection for the
- *vessel.             * VesselClass::Debug_Dump -- Dumps the vessel status
- *information to the mono monitor.       * VesselClass::Draw_It -- Draws the
- *vessel.                                                 *
+ * Functions: * VesselClass::AI -- Handles the AI processing for vessel
+ *   objects. * VesselClass::Assign_Destination -- Assign a destination for this
+ *   vessel. * VesselClass::Can_Enter_Cell -- Determines if the vessel can enter
+ *   the cell specified. * VesselClass::Can_Fire -- Determines if this vessel
+ * can fire its weapon. * VesselClass::Is_Allowed_To_Recloak -- Can the vessel
+ *   recloak now? * VesselClass::Class_Of -- Fetches a reference to the vessel's
+ *   class data. * VesselClass::Combat_AI -- Handles firing and target selection
+ *   for the vessel. * VesselClass::Draw_It -- Draws the vessel. *
  *   VesselClass::Edge_Of_World_AI -- Determine if vessel is off the edge of the
- *world.        * VesselClass::Enter_Idle_Mode -- Causes the vessel to enter its
- *default idle mode.         * VesselClass::Fire_Coord -- Fetches the coordinate
- *the firing originates from.             * VesselClass::Greatest_Threat --
- *Determines the greatest threat (best target) for the vesse* VesselClass::Init
- *-- Initialize the vessel heap system.                                   *
- *   VesselClass::Mission_Retreat -- Perform the retreat mission. *
- *   VesselClass::Overlap_List -- Fetches the overlap list for this vessel
- *object.             * VesselClass::Per_Cell_Process -- Performs once-per-cell
- *action.                           * VesselClass::Read_INI -- Read the vessel
- *data from the INI database.                      * VesselClass::Repair_AI --
- *Process any self-repair required of this vessel.                *
- *   VesselClass::Rotation_AI -- Handles turret and body rotation for this
- *vessel.             * VesselClass::Shape_Number -- Calculates the shape number
- *for the ship body.               * VesselClass::Start_Driver -- Starts the
- *vessel by reserving the location it is moving to. * VesselClass::Take_Damage
- *-- Assign damage to the vessel.                                  *
- *   VesselClass::VesselClass -- Constructor for vessel class objects. *
- *   VesselClass::What_Action -- Determines action to perform on specified cell.
- ** VesselClass::Write_INI -- Write all vessel scenario data to the INI
- *database.             * VesselClass::~VesselClass -- Destructor for vessel
- *objects.                               * operator delete -- Deletes a vessel's
- *memory block.                                       * operator new --
- *Allocates a vessel object memory block.                                   *
+ *   world. * VesselClass::Enter_Idle_Mode -- Causes the vessel to enter its
+ *   default idle mode. * VesselClass::Fire_Coord -- Fetches the coordinate the
+ *   firing originates from. * VesselClass::Greatest_Threat -- Determines the
+ *   greatest threat (best target) for the vesse* VesselClass::Init --
+ * Initialize the vessel heap system. * VesselClass::Mission_Retreat -- Perform
+ * the retreat mission. * VesselClass::Overlap_List -- Fetches the overlap list
+ * for this vessel object. * VesselClass::Per_Cell_Process -- Performs once-per-
+ *   cell action. * VesselClass::Read_INI -- Read the vessel data from the INI
+ *   database. * VesselClass::Repair_AI -- Process any self-repair required of
+ *   this vessel. * VesselClass::Rotation_AI -- Handles turret and body rotation
+ *   for this vessel. * VesselClass::Shape_Number -- Calculates the shape number
+ *   for the ship body. * VesselClass::Start_Driver -- Starts the vessel by
+ *   reserving the location it is moving to. * VesselClass::Take_Damage --
+ * Assign damage to the vessel. * VesselClass::VesselClass -- Constructor for
+ * vessel class objects. * VesselClass::What_Action -- Determines action to
+ * perform on specified cell. * VesselClass::Write_INI -- Write all vessel
+ * scenario data to the INI database. * VesselClass::~VesselClass -- Destructor
+ * for vessel objects. * operator delete -- Deletes a vessel's memory block. *
+ * operator new -- Allocates a vessel object memory block. *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
@@ -82,6 +75,7 @@
 #include <span>
 #include <utility>
 
+#include "absl/log/check.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/enum_array.h"
@@ -95,10 +89,8 @@
 #include "ra/building.h"
 #include "ra/ccini.h"
 #include "ra/cell.h"
-#include "ra/config.h"
 #include "ra/const.h"
 #include "ra/coord.h"
-#include "ra/debug.h"
 #include "ra/defines.h"
 #include "ra/display.h"
 #include "ra/display_constants.h"
@@ -113,7 +105,6 @@
 #include "ra/inline.h"
 #include "ra/mapedit.h"
 #include "ra/mission.h"
-#include "ra/monoc.h"
 #include "ra/object.h"
 #include "ra/radio.h"
 #include "ra/rules.h"
@@ -526,41 +517,6 @@ void VesselClass::Draw_It(int x, int y, WindowNumberType window) const {
       !Contact_With_Whom()->IsInLimbo) {
     assert(Contact_With_Whom()->IsActive);
     Contact_With_Whom()->Render(true);
-  }
-}
-
-/***********************************************************************************************
- * VesselClass::Debug_Dump -- Dumps the vessel status information to the mono
- *monitor.         *
- *                                                                                             *
- *    This routine will display the vessel's status information. The information
- *is dumped to  * the monochrome monitor. *
- *                                                                                             *
- * INPUT:   mono  -- Pointer to the monochrome screen that the information will
- *be displayed   * to. *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 03/20/1996 JLB : Created. *
- *=============================================================================================*/
-void VesselClass::Debug_Dump(MonoClass* mono) const {
-  if constexpr (config::kCheatKeysEnabled) {
-    assert(Vessels.ID(this) == ID);
-    assert(IsActive);
-
-    mono->Set_Cursor(0, 0);
-    mono->Print(Text_String(TXT_DEBUG_SHIP));
-    mono->Set_Cursor(47, 5);
-    mono->Printf("%02X:%02X", SecondaryFacing.Current(),
-                 SecondaryFacing.Desired());
-
-    mono->Fill_Attrib(66, 13, 12, 1,
-                      IsSelfRepairing ? MonoClass::INVERSE : MonoClass::NORMAL);
-    mono->Fill_Attrib(66, 14, 12, 1,
-                      IsToSelfRepair ? MonoClass::INVERSE : MonoClass::NORMAL);
-    DriveClass::Debug_Dump(mono);
   }
 }
 
@@ -1050,12 +1006,14 @@ FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
     return FIRE_OK;
   }
   const FireErrorType fire = DriveClass::Can_Fire(target, which);
-  if (*this == VESSEL_DD) {
-    Mono_Set_Cursor(0, 0);
-  }
   if (fire == FIRE_OK || fire == FIRE_CLOAKED) {
+    // An active vessel always has its type, and TechnoClass::Can_Fire returns
+    // FIRE_CANT when the selected weapon is absent, so reaching FIRE_OK or
+    // FIRE_CLOAKED guarantees both exist.
+    DCHECK(Class.Is_Valid());
     const WeaponTypeClass* weapon =
         which == 0 ? Class->PrimaryWeapon : Class->SecondaryWeapon;
+    DCHECK(weapon != nullptr);
 
     /*
     **	Ensure that a torpedo will never be fired upon a non naval target.

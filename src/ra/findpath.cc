@@ -467,8 +467,6 @@ PathType* FootClass::Find_Path(CELL dest, std::span<FacingType> final_moves, int
 
   BStart(BENCH_FINDPATH);
 
-  PathCount++;
-
   if (Team && Team->Class->IsRoundAbout) {
     unit_threat = Team ? Team->Risk : Risk();
     threat_stage = 0;

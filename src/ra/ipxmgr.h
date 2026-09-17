@@ -262,14 +262,6 @@ class IPXManagerClass : public ConnManClass {
   .....................................................................*/
   std::span<const std::byte> Oldest_Send();
 
-  /*.....................................................................
-  Debug routines
-  .....................................................................*/
-  void Configure_Debug(int index, int type_offset, int type_size,
-                       const char** names, int namestart,
-                       int namecount) override;
-  void Mono_Debug_Print(int index, int refresh = 0) override;
-
   /*
   --------------------------- Private Interface ----------------------------
   */
@@ -355,9 +347,8 @@ class IPXManagerClass : public ConnManClass {
   };
 
   /*.....................................................................
-  The number & size of packet buffers in low memory
+  The size of a packet buffer in low memory.
   .....................................................................*/
-  int NumBufs = 0;  // # packet buffers allocated
   int PacketLen = 0;  // size of packet without IPX header
 
   /*.....................................................................
@@ -394,8 +385,6 @@ class IPXManagerClass : public ConnManClass {
   /*.....................................................................
   Various Statistics
   .....................................................................*/
-  int SendOverflows;
-  int ReceiveOverflows;
   int BadConnection;
 };
 

@@ -47,7 +47,6 @@
 #include "ra/ccptr.h"
 #include "ra/chat.h"
 #include "ra/config.h"
-#include "ra/debug.h"
 #include "ra/defines.h"
 #include "ra/display.h"
 #include "ra/event.h"
@@ -66,7 +65,6 @@
 #include "ra/language.h"
 #include "ra/logic.h"
 #include "ra/mapedit.h"
-#include "ra/monoc.h"
 #include "ra/mplayer.h"
 #include "ra/msgbox.h"
 #include "ra/msglist.h"
@@ -428,11 +426,7 @@ void Call_Back() {
 // The wait is not idle: input, rendering and the real-time callbacks all run
 // here. That keeps the interface responsive and the palette cycling smooth
 // between logic frames, which tick far more slowly than the display does.
-// Ticks spent waiting are accumulated into SpareTicks as a measure of how much
-// headroom the machine has.
 static void Sync_Delay() {
-  SpareTicks += FrameTimer.Value();
-
   while (FrameTimer.HasTimeLeft()) {
     Color_Cycle();
     Call_Back();
@@ -641,8 +635,6 @@ static void Capture_Motion_Frame() {
 // only visual -- every machine in a multiplayer game runs this same sequence
 // and must arrive at the same state, or the session desyncs.
 bool Main_Loop() {
-  Mono_Set_Cursor(0, 0);
-
   if (!GameActive) {
     return true;
   }
@@ -659,11 +651,6 @@ bool Main_Loop() {
 
   if (Session.TrapCheckHeap) {
     Debug_Trap_Check_Heap = true;
-  }
-
-  if constexpr (config::kCheatKeysEnabled) {
-    // Update the running status debug display.
-    Self_Regulate();
   }
 
   BStart(BENCH_GAME_FRAME);
