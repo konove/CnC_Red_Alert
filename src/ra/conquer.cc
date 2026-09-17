@@ -745,7 +745,6 @@ static void Do_Record_Playback() {
   TARGET tgt = 0;
   COORDINATE coord = 0;
   uint32_t sum = 0;
-  uint32_t sum2 = 0;
   uint32_t ltgt = 0;
 
   // Record a game
@@ -794,6 +793,7 @@ static void Do_Record_Playback() {
     }
 
     if (Session.RecordFile.ReadObject(count)) {
+      uint32_t sum2 = 0;
       // Compute a CRC of the current object-selection list.
       sum = 0;
       for (int i = 0; i < CurrentObject.Count(); i++) {
@@ -2186,9 +2186,9 @@ std::string Fading_Table_Name(const char* base, const TheaterType theater) {
 // non-transparent of the nine source pixels around its sample point (the
 // off_x/off_y offsets). Without that spread, anything thinner than the sample
 // step -- walls, most of a structure's outline -- would vanish at radar zoom.
-std::vector<unsigned char> Get_Radar_Icon(std::span<const std::byte> shapefile,
-                                          const int shape_num, int frames,
-                                          const int zoom_factor) {
+std::vector<unsigned char> Get_Radar_Icon(
+    const std::span<const std::byte> shapefile, const int shape_num, int frames,
+    const int zoom_factor) {
   static constexpr int off_x[] = {0, 0, -1, 1, 0, -1, 1, -1, 1};
   static constexpr int off_y[] = {0, 0, -1, 1, 0, -1, 1, -1, 1};
 
@@ -2279,9 +2279,10 @@ std::vector<unsigned char> Get_Radar_Icon(std::span<const std::byte> shapefile,
   return result;
 }
 
-void CC_Draw_Shape(std::span<const std::byte> shapefile, const int shape_num,
-                   const int x, const int y, const WindowNumberType window,
-                   ShapeFlags_Type flags, std::span<const uint8_t> fading_data,
+void CC_Draw_Shape(const std::span<const std::byte> shapefile,
+                   const int shape_num, const int x, const int y,
+                   const WindowNumberType window, ShapeFlags_Type flags,
+                   std::span<const uint8_t> fading_data,
                    std::span<const uint8_t> ghostdata, const DirType rotation,
                    const int32_t scale) {
   // Special kludge for E3 to prevent crashes
@@ -2377,7 +2378,7 @@ void CC_Draw_Shape(std::span<const std::byte> shapefile, const int shape_num,
   }
 }
 
-Rect Shape_Dimensions(std::span<const std::byte> shapedata,
+Rect Shape_Dimensions(const std::span<const std::byte> shapedata,
                       const int shape_num) {
   Rect rect;
 
@@ -2556,7 +2557,6 @@ int32_t VQ_Event_Handler(const uint32_t event, void* /*buffer*/,
 // AllowVoice is cleared once something has been selected so that picking a
 // group of ten units produces one acknowledgement rather than ten.
 void Handle_Team(const int team, const int action) {
-
   // Recording support
   if (Session.Record) {
     TeamNumber = static_cast<char>(team);
@@ -3161,7 +3161,7 @@ void Shake_The_Screen(int shakes) {
   Show_Mouse();
 }
 
-void List_Copy(std::span<const int16_t> source, int len,
+void List_Copy(const std::span<const int16_t> source, const int len,
                std::span<int16_t> dest) {
   CHECK_GE(len, 0);
   CHECK_LE(base::ToSize(len), dest.size());
