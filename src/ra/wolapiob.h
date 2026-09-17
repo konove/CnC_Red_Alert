@@ -317,7 +317,7 @@ class WolapiObject {
                                       // game. IP address of opponent.
 
   bool bPump_In_Call_Back{
-      false};  //	Used to enable PumpMessages during Call_Back(),
+      false};  //	Used to enable PumpMessages during ServiceRealTime(),
                // for when we're in a modal dialog.
 
   bool bSelfDestruct{

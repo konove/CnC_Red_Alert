@@ -172,8 +172,9 @@ int32_t VQ_Call_Back(unsigned char* /*unused*/, int32_t /*unused*/) {
   } else {
     Interpolate_2X_Scale(&SysMemPage, &SeenBuff, nullptr);
   }
-  // Call_Back() is deliberately not invoked here. The VQA player drives audio
-  // itself while a movie runs, and the game logic it would service is stopped.
+  // ServiceRealTime() is deliberately not invoked here. The VQA player drives
+  // audio itself while a movie runs, and the game logic it would service is
+  // stopped.
 
   if ((BreakoutAllowed || Debug_Flag) && key == KN_ESC) {
     Keyboard->Clear();

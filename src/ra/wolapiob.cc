@@ -617,7 +617,7 @@ HRESULT WolapiObject::GetChatServer() {
   while (pChatSink->bRequestServerListWait &&
          Get_Time_Ms() - dwTimeLimit < 60000) {
     while (Get_Time_Ms() < dwTimeNextPump) {
-      Call_Back();
+      ServiceRealTime();
       if (KeyboardClass::Down(KN_ESC)) {
         bCancel = true;
         break;
@@ -627,7 +627,7 @@ HRESULT WolapiObject::GetChatServer() {
     pChat->PumpMessages();
     dwTimeNextPump = Get_Time_Ms() + PUMPSLEEPDURATION;
     //        port::SleepMs( PUMPSLEEPDURATION );	//	Can't do because
-    //        we want to Call_Back()
+    //        we want to ServiceRealTime()
     //	If an "update list" of patches has been received, instead of a server
     // list, this flag will have been set 	for us describing the results.
     // We'll either cancel log in or trigger game exit.
@@ -705,7 +705,7 @@ HRESULT WolapiObject::AttemptLogin(const char* szName, const char* szPass,
   while (pChatSink->bRequestConnectionWait &&
          Get_Time_Ms() - dwTimeStart < EMERGENCY_TIMEOUT) {
     while (Get_Time_Ms() < dwTimeNextPump) {
-      Call_Back();
+      ServiceRealTime();
       if (KeyboardClass::Down(KN_ESC)) {
         bCancel = true;
         break;
@@ -717,7 +717,7 @@ HRESULT WolapiObject::AttemptLogin(const char* szName, const char* szPass,
     pChat->PumpMessages();
     dwTimeNextPump = Get_Time_Ms() + PUMPSLEEPDURATION;
     //        Sleep( PUMPSLEEPDURATION );	//	Can't do because we want
-    //        to Call_Back()
+    //        to ServiceRealTime()
   }
   if (bCancel) {
     Keyboard->Clear();
@@ -764,7 +764,7 @@ void WolapiObject::Logout() {
   while (pChatSink->bRequestLogoutWait &&
          Get_Time_Ms() - dwTimePatience < 5000) {
     while (Get_Time_Ms() < dwTimeNextPump) {
-      Call_Back();
+      ServiceRealTime();
     }
     pChat->PumpMessages();
     dwTimeNextPump = Get_Time_Ms() + PUMPSLEEPDURATION;
@@ -801,7 +801,7 @@ bool WolapiObject::UpdateChannels(int iChannelType, CHANNELFILTER ChannelFilter,
      dwTimeStart < EMERGENCY_TIMEOUT )
           {
                   while( Get_Time_Ms() < dwTimeNextPump )
-                          Call_Back();
+                          ServiceRealTime();
                   pChat->PumpMessages();
                   dwTimeNextPump = Get_Time_Ms() + PUMPSLEEPDURATION;
           }
@@ -1027,7 +1027,7 @@ HRESULT WolapiObject::ChannelJoin(Channel* pChannelToJoin) {
   while (pChatSink->bRequestChannelJoinWait &&
          Get_Time_Ms() - dwTimeStart < EMERGENCY_TIMEOUT) {
     while (Get_Time_Ms() < dwTimeNextPump) {
-      Call_Back();
+      ServiceRealTime();
     }
     pChat->PumpMessages();
     dwTimeNextPump = Get_Time_Ms() + PUMPSLEEPDURATION;
@@ -1078,7 +1078,7 @@ bool WolapiObject::ChannelLeave() {
   while (pChatSink->bRequestChannelLeaveWait &&
          Get_Time_Ms() - dwTimeStart < EMERGENCY_TIMEOUT) {
     while (Get_Time_Ms() < dwTimeNextPump) {
-      Call_Back();
+      ServiceRealTime();
     }
     pChat->PumpMessages();
     dwTimeNextPump = Get_Time_Ms() + PUMPSLEEPDURATION;
@@ -1692,7 +1692,7 @@ bool WolapiObject::ChannelCreate(
   while (pChatSink->bRequestChannelCreateWait &&
          Get_Time_Ms() - dwTimeStart < EMERGENCY_TIMEOUT) {
     while (Get_Time_Ms() < dwTimeNextPump) {
-      Call_Back();
+      ServiceRealTime();
     }
     pChat->PumpMessages();
     dwTimeNextPump = Get_Time_Ms() + PUMPSLEEPDURATION;
@@ -1841,7 +1841,7 @@ HRESULT WolapiObject::Locate(const char* szUser) {
   while (pChatSink->bRequestFindWait &&
          Get_Time_Ms() - dwTimeStart < EMERGENCY_TIMEOUT) {
     while (Get_Time_Ms() < dwTimeNextPump) {
-      Call_Back();
+      ServiceRealTime();
     }
     pChat->PumpMessages();
     //		debugprint( ">Find pump\n" );
@@ -1885,7 +1885,7 @@ HRESULT WolapiObject::Page(const char* szUser, const char* szSend,
   while (pChatSink->bRequestPageWait &&
          Get_Time_Ms() - dwTimeStart < EMERGENCY_TIMEOUT) {
     while (Get_Time_Ms() < dwTimeNextPump) {
-      Call_Back();
+      ServiceRealTime();
     }
     pChat->PumpMessages();
     //		debugprint( ">Page pump\n" );
@@ -2126,7 +2126,7 @@ bool WolapiObject::SpawnBrowser(const char* szURL) {
                    szWebBrowser, szURL);
     //		debugprint( "About to CreateProcess: '%s'\n", szCommandLine );
     Hide_Mouse();
-    BlackPalette.Set(kFadePaletteFast, Call_Back);
+    BlackPalette.Set(kFadePaletteFast, ServiceRealTime);
     //		::ShowWindow( MainWindow, SW_SHOWMINIMIZED );
     SeenBuff.Clear();
     if (::CreateProcess(nullptr,
@@ -2149,7 +2149,7 @@ bool WolapiObject::SpawnBrowser(const char* szURL) {
       bPump_In_Call_Back = true;
       for (;;) {
         DWORD dwActive = 0;
-        Call_Back();
+        ServiceRealTime();
         port::SleepMs(200);
         ::GetExitCodeProcess(pi.hProcess, &dwActive);
         if (dwActive != STILL_ACTIVE || cancel_current_msgbox) {
@@ -2165,7 +2165,7 @@ bool WolapiObject::SpawnBrowser(const char* szURL) {
         }
       }
       bPump_In_Call_Back = false;
-      GamePalette.Set(kFadePaletteFast, Call_Back);
+      GamePalette.Set(kFadePaletteFast, ServiceRealTime);
       Show_Mouse();
     }
   }
@@ -3015,7 +3015,7 @@ bool WolapiObject::GetLobbyChannels() {
   while (pChatSink->bRequestChannelListForLobbiesWait &&
          Get_Time_Ms() - dwTimeStart < EMERGENCY_TIMEOUT) {
     while (Get_Time_Ms() < dwTimeNextPump) {
-      Call_Back();
+      ServiceRealTime();
     }
     pChat->PumpMessages();
     dwTimeNextPump = Get_Time_Ms() + PUMPSLEEPDURATION;
@@ -3109,7 +3109,7 @@ bool WolapiObject::RequestGameStart() {
   while (pChatSink->bRequestGameStartWait &&
          Get_Time_Ms() - dwTimeStart < EMERGENCY_TIMEOUT) {
     while (Get_Time_Ms() < dwTimeNextPump) {
-      Call_Back();
+      ServiceRealTime();
     }
     pChat->PumpMessages();
     dwTimeNextPump = Get_Time_Ms() + PUMPSLEEPDURATION;

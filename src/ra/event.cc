@@ -885,7 +885,7 @@ void EventClass::Execute() {
       Stop_Speaking();
       Speak(VOX_CONTROL_EXIT);
       while (Is_Speaking()) {
-        Call_Back();
+        ServiceRealTime();
       }
       GameActive = false;
       break;
@@ -930,7 +930,7 @@ void EventClass::Execute() {
         Save_Game(-1, Text_String(TXT_MULTIPLAYER_GAME));
 
         while (timer.HasTimeLeft()) {
-          Call_Back();
+          ServiceRealTime();
         }
 
         HidPage.Clear();

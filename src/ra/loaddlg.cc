@@ -292,9 +292,9 @@ bool LoadOptionsClass::Process() {
     **	Invoke game callback.
     */
     if (Session.Type == GAME_NORMAL || Session.Type == GAME_SKIRMISH) {
-      Call_Back();
+      ServiceRealTime();
     } else {
-      if (Main_Loop()) {
+      if (RunFrame()) {
         process = false;
         cancel = true;
       }
@@ -435,7 +435,7 @@ bool LoadOptionsClass::Process() {
           ** Make sure the message says on the screen at least 1 second
           */
           while (timer.HasTimeLeft()) {
-            Call_Back();
+            ServiceRealTime();
           }
           Keyboard->Clear();
 
@@ -444,7 +444,7 @@ bool LoadOptionsClass::Process() {
           } else {
             Speak(VOX_LOAD1);
             while (Is_Speaking()) {
-              Call_Back();
+              ServiceRealTime();
             }
             Hide_Mouse();
             SeenBuff.Clear();
@@ -487,7 +487,7 @@ bool LoadOptionsClass::Process() {
         } else {
           Speak(VOX_SAVE1);
           while (Is_Speaking()) {
-            Call_Back();
+            ServiceRealTime();
           }
           Timer<SystemTickSource> timer;
           //					timer.Start();
@@ -499,7 +499,7 @@ bool LoadOptionsClass::Process() {
           **	Delay to let the user read the message
           */
           while (timer.HasTimeLeft()) {
-            Call_Back();
+            ServiceRealTime();
           }
           Keyboard->Clear();
         }

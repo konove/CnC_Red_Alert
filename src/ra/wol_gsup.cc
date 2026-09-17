@@ -1684,7 +1684,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         break;
     }
 
-    Call_Back();
+    ServiceRealTime();
   }
 
   if (pToolTipHitLast && pToolTipHitLast->bShowing) {
@@ -2434,7 +2434,7 @@ void WOL_GameSetupDialog::ProcessInform(char* inform_data) {
           WWMessageBox().Process(TXT_WOL_WAITINGTOSTART, TXT_NONE);
           BindControls(false);
           //	If we are in a modal dialog, we must have arrived here through
-          // Call_Back()'s PumpMessages. 	Set global that will force edit
+          // ServiceRealTime()'s PumpMessages. 	Set global that will force edit
           // dialogs to stop accepting characters. 	This is to fix a minor
           // glitch: guests can keep typing into a "page" dialog editbox after
           // the 	"Launching game..." message has appeared on top of it.
@@ -2459,8 +2459,8 @@ void WOL_GameSetupDialog::ProcessInform(char* inform_data) {
         Sound_Effect(VOC_SYS_ERROR);
         display = REDRAW_ALL;
         //	If we are in a modal dialog, we must have arrived here through
-        // Call_Back()'s PumpMessages. Set global that will 	force a cancel
-        // out of the dialog.
+        // ServiceRealTime()'s PumpMessages. Set global that will 	force a
+        // cancel out of the dialog.
         if (pWO->bPump_In_Call_Back) {
           cancel_current_msgbox = true;
         }
@@ -2469,8 +2469,8 @@ void WOL_GameSetupDialog::ProcessInform(char* inform_data) {
         //	Host says start game right now.
         port::SafeCopy(szTriggerGameStartInfo, szInform.data());
         //	If we are in a modal dialog, we must have arrived here through
-        // Call_Back()'s PumpMessages. Set global that will 	force a cancel
-        // out of the dialog.
+        // ServiceRealTime()'s PumpMessages. Set global that will 	force a
+        // cancel out of the dialog.
         if (pWO->bPump_In_Call_Back) {
           cancel_current_msgbox = true;
         }
@@ -3494,8 +3494,8 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
   //	debugprint( "TriggerGameStart( %s )\n", szGoMessage );
 
   //	If we are in a modal dialog, we must have arrived here through
-  // Call_Back()'s PumpMessages. Set global that will 	force a cancel out of
-  // the dialog.
+  // ServiceRealTime()'s PumpMessages. Set global that will 	force a cancel
+  // out of the dialog.
   if (pWO->bPump_In_Call_Back) {
     cancel_current_msgbox = true;
   }

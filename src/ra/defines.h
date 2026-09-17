@@ -2303,8 +2303,8 @@ inline constexpr int kUnitShadowColorCount = 1;  // Unit shadow ghost colors.
 inline constexpr int kCycleColorStart = 6 * 16;
 inline constexpr int kCycleColorCount = 7;
 
-// Palette entries animated by Call_Back: the pulsing selection colour and
-// the ember colour right after the water cycle range.
+// Palette entries animated by the palette cycler: the pulsing selection colour
+// and the ember colour right after the water cycle range.
 inline constexpr int kPulseColor = 255;
 inline constexpr int kEmberColor = kCycleColorStart + kCycleColorCount;
 

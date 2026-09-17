@@ -1847,7 +1847,7 @@ int NullModemClass::Abort_Modem() {
   /*
   ** Invoke game callback
   */
-  Call_Back();
+  ServiceRealTime();
 
   /*
   ** Get user input

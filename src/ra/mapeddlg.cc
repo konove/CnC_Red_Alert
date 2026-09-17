@@ -785,7 +785,7 @@ int MapEditClass::Load_Scenario() {
       /*
       **	Invoke game callback
       */
-      Call_Back();
+      ServiceRealTime();
 
       /*
       **	Refresh display if needed
@@ -1131,7 +1131,7 @@ int MapEditClass::Load_Scenario() {
       /*
       **	Invoke game callback
       */
-      Call_Back();
+      ServiceRealTime();
 
       /*
       **	Refresh display if needed
@@ -2146,7 +2146,7 @@ int MapEditClass::Load_Scenario() {
       /*
       **	Invoke game callback
       */
-      Call_Back();
+      ServiceRealTime();
 
       /*
       **	If the house changes, then all the gadgets that reflect the
@@ -2799,7 +2799,7 @@ int MapEditClass::Load_Scenario() {
       /*
       **	Invoke game callback
       */
-      Call_Back();
+      ServiceRealTime();
 
       /*
       **	Refresh display if requested.

@@ -248,7 +248,7 @@ GameType Select_MPlayer_Game() {
     //.....................................................................
     //	Invoke game callback
     //.....................................................................
-    Call_Back();
+    ServiceRealTime();
 
     //.....................................................................
     //	Refresh display if needed
@@ -578,7 +578,7 @@ int Surrender_Dialog(const char* text) {
     //.....................................................................
     //	Invoke game callback
     //.....................................................................
-    if ((Session.Type != GAME_SKIRMISH) && Main_Loop()) {
+    if ((Session.Type != GAME_SKIRMISH) && RunFrame()) {
       retcode = 0;
       process = false;
     }
@@ -761,7 +761,7 @@ int Abort_Dialog() {
     //.....................................................................
     //	Invoke game callback
     //.....................................................................
-    if ((Session.Type != GAME_SKIRMISH) && Main_Loop()) {
+    if ((Session.Type != GAME_SKIRMISH) && RunFrame()) {
       retcode = 0;
       process = false;
     }

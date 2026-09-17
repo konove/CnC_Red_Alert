@@ -3538,7 +3538,7 @@ void HouseClass::MPlayer_Defeated() {
 
     /*
     **	Destroy all the IPX connections, since we have to go through the rest
-    **	of the Main_Loop() before we detect that the game is over, and we'll
+    **	of the RunFrame() before we detect that the game is over, and we'll
     **	end up waiting for frame sync packets from the other machines.
     */
     if (Session.Type == GAME_IPX || Session.Type == GAME_INTERNET) {

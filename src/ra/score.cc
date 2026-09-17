@@ -33,10 +33,10 @@
  *                  Last Update : May 3, 1995   [BWG] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions: * Call_Back_Delay -- Combines Call_Back() and Delay() functions *
- *   Draw_Bar_Graphs -- Draw "Casualties" bar graphs * Draw_InfantryMan -- Draw
- *one guy in score screen, update animation                        *
- *   Draw_Infantrymen -- Draw all the guys on the score screen *
+ * Functions: * Call_Back_Delay -- Combines ServiceRealTime() and Delay()
+ * functions * Draw_Bar_Graphs -- Draw "Casualties" bar graphs *
+ * Draw_InfantryMan -- Draw one guy in score screen, update animation
+ *             * Draw_Infantrymen -- Draw all the guys on the score screen *
  *   New_Infantry_Anim -- Start up a new animation for one of the infantrymen *
  *   ScoreClass::Count_Up_Print -- Prints a number (up to its max) into a
  *string, cleanly      * ScoreClass::DO_GDI_GRAPH -- Show # of people or
@@ -395,14 +395,14 @@ void ScoreClass::Presentation() {
 
   /* Change to the six-point font for Text_Print */
   const std::span<const std::byte> oldfont = Set_Font(ScoreFontPtr);
-  Call_Back();
+  ServiceRealTime();
 
   /* --- Now display the background animation --- */
   Hide_Mouse();
   Load_Title_Screen(base::At(ScreenNames, house), &HidPage, ScorePalette);
   Increase_Palette_Luminance(ScorePalette, 30, 30, 30, 63);
   HidPage.Blit(SeenBuff);
-  ScorePalette.Set(kFadePaletteFast, Call_Back);
+  ScorePalette.Set(kFadePaletteFast, ServiceRealTime);
   Play_Sample(country4, 255, Options.Normalize_Volume(150));
 
   /*
@@ -1234,12 +1234,12 @@ void ScoreClass::Input_Name(std::span<char> str, int xpos, int ypos,
   HidPage.Blit(HidPage, 0, 200, 0, 0, 200, 200);
 
   do {
-    Call_Back();
+    ServiceRealTime();
     Animate_Score_Objs();
     Animate_Cursor(index, ypos);
     if (Keyboard->Check()) {
       key = KeyboardClass::To_ASCII(Keyboard->Get()) & 0xFF;
-      Call_Back();
+      ServiceRealTime();
 
       if (index == MAX_FAMENAME_LENGTH - 2) {
         while (Keyboard->Check()) {
@@ -1513,7 +1513,7 @@ void Draw_Bar_Graphs(int i, int gkilled, int nkilled) {
 }
 
 /***************************************************************************
- * Call_Back_Delay -- Combines Call_Back() and Delay() functions           *
+ * Call_Back_Delay -- Combines ServiceRealTime() and Delay() functions  *
  *                                                                         *
  *    This is just to cut down on code size and typing a little.           *
  *                                                                         *
@@ -1544,7 +1544,7 @@ void Call_Back_Delay(int time) {
   StreamLowImpact = true;
   do {
     if (callbackcd.IsFinished()) {
-      Call_Back();
+      ServiceRealTime();
       callbackcd.Set(kTimerSecond / 4);
     } else {
       if (SoundType != SFX_NONE) {
@@ -1613,7 +1613,7 @@ void Multi_Score_Presentation() {
                       static_cast<uint8_t>(x));
   }
   Interpolate_2X_Scale(pseudoseenbuff, &SeenBuff, {});
-  ScorePalette.Set(kFadePaletteFast, Call_Back);
+  ScorePalette.Set(kFadePaletteFast, ServiceRealTime);
 
   int frame = 1;
   while (frame < Get_Animation_Frame_Count(anim)) {
@@ -1625,7 +1625,7 @@ void Multi_Score_Presentation() {
 
   /* Change to the six-point font for Text_Print */
   const std::span<const std::byte> oldfont = Set_Font(ScoreFontPtr);
-  Call_Back();
+  ServiceRealTime();
 
   Set_Logic_Page(SeenBuff);
 

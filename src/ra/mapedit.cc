@@ -1539,7 +1539,7 @@ void MapEditClass::Main_Menu() {
     /*
     **	Invoke game callback, to update music
     */
-    Call_Back();
+    ServiceRealTime();
 
     /*
     **	Invoke menu
@@ -1722,7 +1722,7 @@ void MapEditClass::AI_Menu() {
     /*
     **	Invoke game callback, to update music
     */
-    Call_Back();
+    ServiceRealTime();
 
     /*
     **	Invoke menu
@@ -1960,8 +1960,8 @@ bool MapEditClass::Get_Waypoint_Name(std::span<char> wayptname) {
     **	Invoke game callback.
     */
     if (Session.Type == GAME_NORMAL) {
-      Call_Back();
-    } else if (Main_Loop()) {
+      ServiceRealTime();
+    } else if (RunFrame()) {
       process = false;
       cancel = true;
     }

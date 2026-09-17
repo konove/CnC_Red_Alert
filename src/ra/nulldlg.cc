@@ -464,7 +464,7 @@ int Test_Null_Modem() {
     /*
     ** Invoke game callback
     */
-    Call_Back();
+    ServiceRealTime();
 
     /*
     ** Get user input
@@ -698,7 +698,7 @@ static int Reconnect_Null_Modem() {
     /*
     ** Invoke game callback
     */
-    Call_Back();
+    ServiceRealTime();
 
     /*
     ** Get user input
@@ -1045,7 +1045,7 @@ GameType Select_Serial_Dialog() {
     /*
     ** Invoke game callback
     */
-    Call_Back();
+    ServiceRealTime();
 
     /*
     ** Refresh display if needed
@@ -1470,7 +1470,7 @@ static void Advanced_Modem_Settings(SerialSettingsType* settings) {
     /*
     ........................ Invoke game callback .........................
     */
-    Call_Back();
+    ServiceRealTime();
 
     /*
     ...................... Refresh display if needed ......................
@@ -2055,7 +2055,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
     /*
     ** Invoke game callback
     */
-    Call_Back();
+    ServiceRealTime();
 
     /*
     ** Dont allow editing of non-custom ports to fix the problem of the cursor
@@ -3154,7 +3154,7 @@ int Com_Scenario_Dialog(bool skirmish) {
       /*
       ........................ Invoke game callback .........................
       */
-      Call_Back();
+      ServiceRealTime();
 
       /*
       ** If we have just received input focus again after running in the
@@ -4893,7 +4893,7 @@ int Com_Show_Scenario_Dialog() {
     /*
     ........................ Invoke game callback .........................
     */
-    Call_Back();
+    ServiceRealTime();
 
     /*
     ** If we have just received input focus again after running in the
@@ -6185,7 +6185,7 @@ static int Phone_Dialog() {
     /*
     ........................ Invoke game callback .........................
     */
-    Call_Back();
+    ServiceRealTime();
 
     /*
     ** If we have just received input focus again after running in the
@@ -6745,7 +6745,7 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
     /*
     ........................ Invoke game callback .........................
     */
-    Call_Back();
+    ServiceRealTime();
 
     /*
     ** If we have just received input focus again after running in the
@@ -6984,16 +6984,16 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
     old_theme = Theme.What_Is_Playing();
     Theme.Stop();
     CountDownTimerClass wait;
-    Call_Back();
+    ServiceRealTime();
     wait.Set(60, true);
     while (wait.Time()) {
-      Call_Back();
+      ServiceRealTime();
     }
     Sound_End();
-    Call_Back();
+    ServiceRealTime();
     wait.Set(60, true);
     while (wait.Time()) {
-      Call_Back();
+      ServiceRealTime();
     }
     SoundOn = false;
   }
@@ -7154,16 +7154,16 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
     old_theme = Theme.What_Is_Playing();
     Theme.Stop();
     CountDownTimerClass wait;
-    Call_Back();
+    ServiceRealTime();
     wait.Set(60, true);
     while (wait.Time()) {
-      Call_Back();
+      ServiceRealTime();
     }
     Sound_End();
-    Call_Back();
+    ServiceRealTime();
     wait.Set(60, true);
     while (wait.Time()) {
-      Call_Back();
+      ServiceRealTime();
     }
     SoundOn = false;
   }

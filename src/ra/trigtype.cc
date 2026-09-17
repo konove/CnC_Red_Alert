@@ -1104,7 +1104,7 @@ bool TriggerTypeClass::Edit() {
     /*
     **	Invoke game callback
     */
-    Call_Back();
+    ServiceRealTime();
 
     /*
     **	Refresh display if needed

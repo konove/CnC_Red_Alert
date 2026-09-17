@@ -18,20 +18,21 @@
 #ifndef CNC_RED_ALERT_RA_CONQUER_H_
 #define CNC_RED_ALERT_RA_CONQUER_H_
 
-// File: The game's outer loop: Main_Game() picks and plays games until the
-// player exits, Main_Loop() runs one frame, and Call_Back() does the real-time
-// servicing that has to keep running inside blocking loops and dialogs.
+// File: The game's outer loop: RunGame() picks and plays games until the
+// player exits, RunFrame() runs one frame, and ServiceRealTime() does the
+// real-time servicing that has to keep running inside blocking loops and
+// dialogs.
 
 // The game's entry point: one-time init, then a loop of choosing a game and
 // running it until the player exits.
-void Main_Game(int argc, char* argv[]);
+void RunGame(int argc, char* argv[]);
 
 // Runs one frame of the game. Returns true when the game should end.
-bool Main_Loop();
+bool RunFrame();
 
 // Real-time maintenance -- sound, music, and network servicing. Unlike the
 // per-frame game logic this has to run as often as possible, so it is called
 // from inside blocking loops and dialogs as well as from the main loop.
-void Call_Back();
+void ServiceRealTime();
 
 #endif  // CNC_RED_ALERT_RA_CONQUER_H_

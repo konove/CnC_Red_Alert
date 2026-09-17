@@ -358,7 +358,7 @@ int MapEditClass::Placement_Dialog() {
     /*
     **	Invoke game callback
     */
-    Call_Back();
+    ServiceRealTime();
 
     /*
     **	Refresh display if needed

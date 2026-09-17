@@ -142,9 +142,9 @@ bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame) {
     **	Invoke game callback.
     */
     if (!bCalledFromGame) {
-      Call_Back();
+      ServiceRealTime();
     } else {
-      if (Main_Loop())  //	Game ended on us in the background.
+      if (RunFrame())  //	Game ended on us in the background.
       {
         process = false;
         bReturn = true;

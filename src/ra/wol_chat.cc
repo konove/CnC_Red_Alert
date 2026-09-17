@@ -1026,9 +1026,9 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
 
     //.....................................................................
     //	Service the sounds & score; GameActive must be false at this point,
-    //	so Call_Back() doesn't intercept global messages from me!
+    //	so ServiceRealTime() doesn't intercept global messages from me!
     //.....................................................................
-    Call_Back();
+    ServiceRealTime();
 
   }  // end of while
 

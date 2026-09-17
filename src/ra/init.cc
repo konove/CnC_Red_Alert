@@ -391,7 +391,7 @@ bool Init_Game(int /*unused*/, char* /*unused*/[]) {
     Show_Mouse();
 
     CCPalette.Set(kFadePaletteSlow);
-    Call_Back();
+    ServiceRealTime();
   }
 
   /*
@@ -575,7 +575,7 @@ bool Select_Game(bool /*fade*/) {
         //				if (fade) {
         //					WhitePalette.Set();
         //					CCPalette.Set(kFadePaletteSlow,
-        // Call_Back); 					fade = false;
+        // ServiceRealTime); 					fade = false;
         // } else {
         CCPalette.Set();
         //				}
@@ -633,7 +633,7 @@ bool Select_Game(bool /*fade*/) {
         AntsEnabled = false;
         selection = Main_Menu(ATTRACT_MODE_TIMEOUT);
       }
-      Call_Back();
+      ServiceRealTime();
 
       switch (selection) {
         /*
@@ -1125,7 +1125,7 @@ bool Select_Game(bool /*fade*/) {
     Hide_Mouse();
 
     if (selection != kSelStartNewGame) {
-      BlackPalette.Set(kFadePaletteMedium, Call_Back);
+      BlackPalette.Set(kFadePaletteMedium, ServiceRealTime);
       HiddenPage.Clear();
       VisiblePage.Clear();
     }
@@ -1176,9 +1176,9 @@ bool Select_Game(bool /*fade*/) {
   **	started a scenario, Start_Scenario() will have played a couple of VQ
   **	movies, which will have cleared the screen to black already.)
   */
-  Call_Back();
+  ServiceRealTime();
   Hide_Mouse();
-  BlackPalette.Set(kFadePaletteMedium, Call_Back);
+  BlackPalette.Set(kFadePaletteMedium, ServiceRealTime);
   HiddenPage.Clear();
   VisiblePage.Clear();
   Show_Mouse();
@@ -1190,7 +1190,7 @@ bool Select_Game(bool /*fade*/) {
     Map.Activate(1);
   }
   Map.Flag_To_Redraw();
-  Call_Back();
+  ServiceRealTime();
   Map.Render();
 
   return true;
@@ -1531,7 +1531,7 @@ bool Parse_Command_Line(std::span<char*> arguments) {
     ** Disable mouse grabbing for debugging
     */
     // Developer switches for save-game checks; see Select_Game and
-    // Main_Loop.
+    // RunFrame.
     if (string.starts_with("-LOADGAME")) {
       DebugLoadGame = tech::ParseInteger<int>(string.substr(9)).value_or(-1);
       continue;
@@ -2143,7 +2143,7 @@ static void Init_Expansion_Files() {
  * HISTORY: * 06/03/1996 JLB : Created. *
  *=============================================================================================*/
 static void Init_One_Time_Systems() {
-  Call_Back();
+  ServiceRealTime();
   Map.One_Time();
   Logic.One_Time();
   Options.One_Time();
@@ -2605,7 +2605,7 @@ static void Init_Mouse() {
   while (Get_Mouse_State() > 1) {
     Show_Mouse();
   }
-  Call_Back();
+  ServiceRealTime();
   Hide_Mouse();
 }
 
@@ -2634,7 +2634,7 @@ static void Init_Bulk_Data() {
     MixArchive::Cache("RUSSIAN.MIX");
     MixArchive::Cache("ALLIES.MIX");
   }
-  Call_Back();
+  ServiceRealTime();
 
   /*
   **	Fetch the tutorial message data.

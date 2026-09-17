@@ -2881,10 +2881,10 @@ static int Net_Join_Dialog() {
     }
     //.....................................................................
     //	Service the sounds & score; GameActive must be false at this
-    // point, 	so Call_Back() doesn't intercept global messages from
+    // point, 	so ServiceRealTime() doesn't intercept global messages from
     // me!
     //.....................................................................
-    Call_Back();
+    ServiceRealTime();
 
   }  // end of while
 
@@ -5012,10 +5012,10 @@ static int Net_New_Dialog() {
 
     //.....................................................................
     //	Service the sounds & score; GameActive must be false at this
-    // point, 	so Call_Back() doesn't intercept global messages from
+    // point, 	so ServiceRealTime() doesn't intercept global messages from
     // me!
     //.....................................................................
-    Call_Back();
+    ServiceRealTime();
   }
 
   //------------------------------------------------------------------------

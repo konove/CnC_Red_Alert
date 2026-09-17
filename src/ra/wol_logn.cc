@@ -226,7 +226,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
     /*
     **	Invoke game callback.
     */
-    Call_Back();
+    ServiceRealTime();
 
     /*
     **	Refresh display if needed.
@@ -444,7 +444,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
            has time to read it... Timer<SystemTickSource> timer; timer =
            kTicksPerSecond*4; WWMessageBox().Process(TXT_WOL_DEBUG2, TXT_NONE);
                                         while (timer > 0) {
-                                                Call_Back();
+                                                ServiceRealTime();
                                         }
                                         Keyboard->Clear();
 

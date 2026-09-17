@@ -633,7 +633,7 @@ void Show_Who_Was_Responsible() {
   /*
   ** Fade to black.
   */
-  BlackPalette.Set(kTimerSecond * 2, Call_Back);
+  BlackPalette.Set(kTimerSecond * 2, ServiceRealTime);
 
   /*
   ** Load the reference palette for the font.
@@ -784,7 +784,7 @@ void Show_Who_Was_Responsible() {
     ** Stop calling Theme.AI after a while so a different song doesnt start
     *playing
     */
-    Call_Back();
+    ServiceRealTime();
 
     /*
     ** Kill any spare time before blitting the hid page forward.
@@ -827,7 +827,7 @@ void Show_Who_Was_Responsible() {
 
   if (key == KN_ESC) {
     Theme.Fade_Out();
-    BlackPalette.Set(kTimerSecond * 2, Call_Back);
+    BlackPalette.Set(kTimerSecond * 2, ServiceRealTime);
   } else {
     /*
     ** Wait for the picture to fade down
@@ -841,7 +841,7 @@ void Show_Who_Was_Responsible() {
 
       Slide_Show(slide_number, picture_frame);
 
-      Call_Back();
+      ServiceRealTime();
 
       /*
       ** Kill any spare time

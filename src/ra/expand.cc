@@ -450,7 +450,7 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
       display = true;
     }
 
-    Call_Back();
+    ServiceRealTime();
 
     if (display) {
       display = false;

@@ -180,9 +180,9 @@ void Special_Dialog(bool simple) {
   bool process = true;
   while (process) {
     if (Session.Type == GAME_NORMAL) {
-      Call_Back();
+      ServiceRealTime();
     } else {
-      if (Main_Loop()) {
+      if (RunFrame()) {
         process = false;
       }
     }
@@ -434,7 +434,7 @@ const char* Fetch_Password(int caption, int message, int btext) {
     /*
     **	Invoke game callback.
     */
-    Call_Back();
+    ServiceRealTime();
 
     /*
     ** Handle possible surface loss due to a focus switch
@@ -584,7 +584,7 @@ int Fetch_Difficulty(bool amath) {
     /*
     **	Invoke game callback.
     */
-    Call_Back();
+    ServiceRealTime();
 
     /*
     ** Handle possible surface loss due to a focus switch

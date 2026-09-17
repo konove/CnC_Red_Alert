@@ -243,9 +243,9 @@ void GameControlsClass::Process() {
     **	Invoke game callback.
     */
     if (Session.Type == GAME_NORMAL || Session.Type == GAME_SKIRMISH) {
-      Call_Back();
+      ServiceRealTime();
     } else {
-      if (Main_Loop()) {
+      if (RunFrame()) {
         process = false;
       }
     }

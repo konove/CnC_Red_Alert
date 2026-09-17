@@ -462,7 +462,7 @@ int Do_Menu(std::span<const char* const> strings, bool /*unused*/) {
   int selection = -1;  // Selection from user.
   UnknownKey = 0;
   while (selection == -1) {
-    Call_Back();
+    ServiceRealTime();
     selection = Check_Menu(0, strings, nullptr, 0xFFL, 0);
     if (UnknownKey != 0) {
       break;
@@ -681,7 +681,7 @@ int Main_Menu(int32_t /*unused*/) {
     /*
     **	Invoke game callback.
     */
-    Call_Back();
+    ServiceRealTime();
 
     /*
     **	Refresh display if needed.

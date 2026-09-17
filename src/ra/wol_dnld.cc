@@ -267,7 +267,7 @@ bool WOL_Download_Dialog(IDownload* pDownload,
     }
 
     //	Invoke game callback
-    Call_Back();
+    ServiceRealTime();
 
   } while (process);
 

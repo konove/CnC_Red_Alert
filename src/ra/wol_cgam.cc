@@ -210,7 +210,7 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
     /*
     **	Invoke game callback.
     */
-    Call_Back();
+    ServiceRealTime();
 
     /*
     **	Refresh display if needed.

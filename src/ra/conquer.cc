@@ -18,10 +18,10 @@
 
 // File: The main game loop.
 //
-// Main_Game() owns the outer loop -- pick a game, play it, tear it down -- and
-// Main_Loop() runs one frame of it, pacing itself with Sync_Delay().
-// Call_Back() is the real-time servicing (sound, music, network) that also runs
-// inside every blocking loop and dialog.
+// RunGame() owns the outer loop -- pick a game, play it, tear it down -- and
+// RunFrame() runs one frame of it, pacing itself with WaitForNextFrame().
+// ServiceRealTime() is the real-time servicing (sound, music, network) that
+// also runs inside every blocking loop and dialog.
 //
 // Originally CONQUER.CPP, by Joe L. Bostic, started April 3, 1991.
 
@@ -111,70 +111,70 @@
 // interface glows, and a rotation of the water colours.
 //
 // This needs to run at least 8 times a second to look smooth, which is why
-// Sync_Delay() calls it while idling rather than the main loop calling it once
-// per frame.
-static void Color_Cycle() {
-  static Timer<SystemTickSource> _timer;
-  static Timer<SystemTickSource> _ftimer;
-  static bool _up = false;
-  static int val = 255;
+// WaitForNextFrame() calls it while idling rather than the main loop calling it
+// once per frame.
+static void CyclePalette() {
+  static Timer<SystemTickSource> water_timer;
+  static Timer<SystemTickSource> pulse_timer;
+  static bool pulse_rising = false;
+  static int pulse_level = 255;
 
   if (Options.IsPaletteScroll) {
-    bool changed = false;
+    bool palette_changed = false;
     // Process the fading white color. It is used for the radar box and other
     // glowing game interface elements.
-    if (_ftimer.IsFinished()) {
-      _ftimer.Set(kTimerSecond / 6);
+    if (pulse_timer.IsFinished()) {
+      pulse_timer.Set(kTimerSecond / 6);
 
       // Six steps of 20 carry the pulse across its 0x20..150 range, so a full
       // cycle takes about two seconds at the timer rate set above. The range
       // stops short of both black and full white: the glow has to stay legible
       // at its dimmest and stay distinct from plain white at its brightest.
       constexpr int kStepRate = 20;
-      if (_up) {
-        val += kStepRate;
-        if (val > 150) {
-          val = 150;
-          _up = false;
+      if (pulse_rising) {
+        pulse_level += kStepRate;
+        if (pulse_level > 150) {
+          pulse_level = 150;
+          pulse_rising = false;
         }
       } else {
-        val -= kStepRate;
-        if (val < 0x20) {
-          val = 0x20;
-          _up = true;
+        pulse_level -= kStepRate;
+        if (pulse_level < 0x20) {
+          pulse_level = 0x20;
+          pulse_rising = true;
         }
       }
 
       // Set the pulse color as the proportional value between white and
       // the minimum value for pulsing.
       GamePalette.at(kPulseColor) = GamePalette.at(kWhite);
-      GamePalette.at(kPulseColor).Adjust(val, kBlackColor);
+      GamePalette.at(kPulseColor).Adjust(pulse_level, kBlackColor);
 
       // Pulse the glowing embers between medium and dark red.
       GamePalette.at(kEmberColor) = RGBClass(255, 80, 80);
-      GamePalette.at(kEmberColor).Adjust(val, kBlackColor);
+      GamePalette.at(kEmberColor).Adjust(pulse_level, kBlackColor);
 
-      changed = true;
+      palette_changed = true;
     }
 
     // Process the color cycling effects -- water.
-    if (_timer.IsFinished()) {
-      _timer.Set(kTimerSecond / 4);
+    if (water_timer.IsFinished()) {
+      water_timer.Set(kTimerSecond / 4);
 
-      const RGBClass first =
+      const RGBClass wrapped_color =
           GamePalette.at(kCycleColorStart + kCycleColorCount - 1);
       for (int index = kCycleColorStart + kCycleColorCount - 1;
            index >= kCycleColorStart; index--) {
         GamePalette.at(index) = GamePalette.at(index - 1);
       }
-      GamePalette.at(kCycleColorStart) = first;
+      GamePalette.at(kCycleColorStart) = wrapped_color;
 
-      changed = true;
+      palette_changed = true;
     }
 
     // If any of the processing functions changed the palette, then this
     // palette must be passed to the system.
-    if (changed) {
+    if (palette_changed) {
       BStart(BENCH_PALETTE);
       GamePalette.Set();
       BEnd(BENCH_PALETTE);
@@ -184,7 +184,7 @@ static void Color_Cycle() {
 
 // Reads one input event from the map and dispatches any keypress. The mouse is
 // erased from the hidden page first so the next render draws it afresh.
-static void Process_Input() {
+static void ProcessInput() {
   WWMouse->Erase_Mouse(&HidPage, true);
   KeyNumType input = KN_NONE;
   int x = 0;
@@ -195,25 +195,25 @@ static void Process_Input() {
   }
 }
 
-// The map editor's stand-in for Main_Loop(): render, take input, and keep the
+// The map editor's stand-in for RunFrame(): render, take input, and keep the
 // real-time callbacks alive so music continues. No game logic runs, so the
 // scenario stays frozen while it is edited.
 //
 // Returns true when the game should end.
-static bool Map_Edit_Loop() {
+static bool RunMapEditorFrame() {
   Map.Render();
-  Process_Input();
+  ProcessInput();
 
-  Call_Back();  // maintains Theme.AI() for music
-  Color_Cycle();
+  ServiceRealTime();  // maintains Theme.AI() for music
+  CyclePalette();
 
   return !GameActive;
 }
 
 // Runs the dialog SpecialDialog asks for, then clears the request. The dialogs
-// call Main_Loop() themselves so the game keeps running behind them, which is
+// call RunFrame() themselves so the game keeps running behind them, which is
 // why this is invoked between frames rather than from inside one.
-static void Run_Special_Dialog() {
+static void RunPendingDialog() {
   const SpecialDialogType dialog = SpecialDialog;
   if (dialog == SDLG_NONE) {
     return;
@@ -250,7 +250,7 @@ static void Run_Special_Dialog() {
 
 // Per-scenario setup that Select_Game() leaves to the caller: vortex remap
 // tables, the palette, and the mouse and statistics state for the session type.
-static void Begin_Scenario() {
+static void BeginScenario() {
   ScenarioInit = 0;
 
   ChronalVortex.Stop();
@@ -277,11 +277,11 @@ static void Begin_Scenario() {
 }
 
 // Runs frames, and any dialogs they request, until the scenario ends.
-static void Run_Scenario() {
+static void RunScenario() {
   for (;;) {
     if constexpr (config::kScenarioEditorEnabled) {
       if (MapEditorActive) {
-        if (Map_Edit_Loop()) {
+        if (RunMapEditorFrame()) {
           return;
         }
         continue;
@@ -290,11 +290,11 @@ static void Run_Scenario() {
 
     TimeQuake = PendingTimeQuake;
     PendingTimeQuake = false;
-    if (Main_Loop()) {
+    if (RunFrame()) {
       return;
     }
 
-    Run_Special_Dialog();
+    RunPendingDialog();
   }
 }
 
@@ -303,7 +303,7 @@ static void Run_Scenario() {
 // The modem and network are shut down rather than left running, so that
 // selecting them again in Select_Game() restarts them from a known state.
 // Playback never initialized either, so it skips this.
-static void End_Scenario() {
+static void EndScenario() {
   if (!GameStatisticsPacketSent && PacketLater) {
     Send_Statistics_Packet();  // After game sending if PacketLater set.
   }
@@ -336,15 +336,15 @@ static void End_Scenario() {
 // because Select_Game() may hand back a wholly different kind of session --
 // single player, network, modem, editor -- each needing its own setup and its
 // own teardown.
-void Main_Game(const int argc, char* argv[]) {
+void RunGame(const int argc, char* argv[]) {
   if (!Init_Game(argc, argv)) {
     return;
   }
 
   while (Select_Game(true)) {
-    Begin_Scenario();
-    Run_Scenario();
-    End_Scenario();
+    BeginScenario();
+    RunScenario();
+    EndScenario();
   }
 
   Session.Free_Scenario_Descriptions();
@@ -357,7 +357,7 @@ void Main_Game(const int argc, char* argv[]) {
 // reported through the callbacks they fire, which set
 // pWolapi->bConnectionDown (rawolapi.cc), and every caller tests that flag
 // instead. Only reachable when config::kWolapiEnabled, hence maybe_unused.
-[[maybe_unused]] static void Pump_Wolapi_Messages() {
+[[maybe_unused]] static void PumpWolapiMessages() {
   static_cast<void>(pWolapi->pChat->PumpMessages());
   static_cast<void>(pWolapi->pNetUtil->PumpMessages());
 }
@@ -365,14 +365,14 @@ void Main_Game(const int argc, char* argv[]) {
 // Keeps the Westwood Online connection serviced. In a game it pumps more
 // slowly and announces a dropped connection; outside one it pumps only while a
 // modal dialog over the chat screen has asked for it.
-[[maybe_unused]] static void Wolapi_Call_Back() {
+[[maybe_unused]] static void ServiceWolapi() {
   if (!pWolapi || Get_Time_Ms() <= pWolapi->dwTimeNextWolapiPump) {
     return;
   }
 
   if (!pWolapi->bInGame) {
     if (pWolapi->bPump_In_Call_Back) {
-      Pump_Wolapi_Messages();
+      PumpWolapiMessages();
       pWolapi->dwTimeNextWolapiPump = Get_Time_Ms() + WOLAPIPUMPWAIT;
     }
     return;
@@ -381,7 +381,7 @@ void Main_Game(const int argc, char* argv[]) {
   if (pWolapi->bConnectionDown) {
     return;
   }
-  Pump_Wolapi_Messages();
+  PumpWolapiMessages();
   pWolapi->dwTimeNextWolapiPump = Get_Time_Ms() + WOLAPIPUMPWAIT + 700;
   if (pWolapi->bConnectionDown) {
     // The Wolapi object is kept rather than deleted, so that the game results
@@ -394,7 +394,7 @@ void Main_Game(const int argc, char* argv[]) {
   }
 }
 
-void Call_Back() {
+void ServiceRealTime() {
   // Music and speech maintenance
   if (SampleType != SAMPLE_NONE) {
     Sound_Callback();
@@ -414,7 +414,7 @@ void Call_Back() {
   }
 
   if constexpr (config::kWolapiEnabled) {
-    Wolapi_Call_Back();
+    ServiceWolapi();
   }
 
   Video_End_Frame();
@@ -426,26 +426,27 @@ void Call_Back() {
 // The wait is not idle: input, rendering and the real-time callbacks all run
 // here. That keeps the interface responsive and the palette cycling smooth
 // between logic frames, which tick far more slowly than the display does.
-static void Sync_Delay() {
+static void WaitForNextFrame() {
   while (FrameTimer.HasTimeLeft()) {
-    Color_Cycle();
-    Call_Back();
+    CyclePalette();
+    ServiceRealTime();
 
     if (SpecialDialog == SDLG_NONE) {
-      Process_Input();
+      ProcessInput();
       Map.Render();
     }
   }
-  Color_Cycle();
-  Call_Back();
+  CyclePalette();
+  ServiceRealTime();
 }
 
-// Sets the frame timer that Sync_Delay() waits out at the end of the frame.
+// Sets the frame timer that WaitForNextFrame() waits out at the end of the
+// frame.
 //
 // Multiplayer sessions run at the rate the machines negotiated, and playback as
 // fast as possible. Otherwise the delay comes from the game-speed option, a
 // tick slower on easy and a tick faster on hard.
-static void Set_Frame_Timer() {
+static void StartFrameTimer() {
   if (Session.Type != GAME_NORMAL && Session.Type != GAME_SKIRMISH &&
       Session.CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
     if (Session.Play) {
@@ -474,7 +475,7 @@ enum class ScenarioOutcome { kNone, kWin, kLose, kRestart, kDraw };
 
 // Reads the outcome flags that game logic raised during the frame. A draw needs
 // both players of a two-player multiplayer game to have proposed it.
-static ScenarioOutcome Pending_Outcome() {
+static ScenarioOutcome PendingOutcome() {
   if (PlayerWins) {
     return ScenarioOutcome::kWin;
   }
@@ -495,8 +496,8 @@ static ScenarioOutcome Pending_Outcome() {
 // Ends the scenario if this frame decided it: reports the result to the
 // game-results server, clears the outcome flags and runs the matching end
 // sequence. Returns true if the scenario ended.
-static bool Finish_Scenario_If_Decided() {
-  const ScenarioOutcome outcome = Pending_Outcome();
+static bool FinishScenarioIfDecided() {
+  const ScenarioOutcome outcome = PendingOutcome();
   if (outcome == ScenarioOutcome::kNone) {
     return false;
   }
@@ -536,8 +537,8 @@ static bool Finish_Scenario_If_Decided() {
 // Logs one line per object in `objects`, tagged with `kind`, for the
 // save/load smoke test to diff.
 template <typename T>
-static void Log_Positions(const TFixedIHeapClass<T>& objects,
-                          const std::string_view kind) {
+static void LogObjectPositions(const TFixedIHeapClass<T>& objects,
+                               const std::string_view kind) {
   for (int index = 0; index < objects.Count(); index++) {
     const T* object = objects.Ptr(index);
     LOG(INFO) << "frame " << Frame << " " << kind << " "
@@ -552,11 +553,11 @@ static void Log_Positions(const TFixedIHeapClass<T>& objects,
 // game at frame n, saving to -SAVESLOT<n> first if one was given. Together with
 // -LOADGAME this checks that loaded objects keep moving without anyone at the
 // keyboard. Returns true once the game has been ended.
-static bool Debug_Quit_Frame() {
-  Log_Positions(Units, "unit");
-  Log_Positions(Infantry, "infantry");
-  Log_Positions(Vessels, "vessel");
-  Log_Positions(Aircraft, "aircraft");
+static bool LogFrameAndQuitIfDue() {
+  LogObjectPositions(Units, "unit");
+  LogObjectPositions(Infantry, "infantry");
+  LogObjectPositions(Vessels, "vessel");
+  LogObjectPositions(Aircraft, "aircraft");
 
   if (Frame < DebugQuitAtFrame) {
     return false;
@@ -570,7 +571,7 @@ static bool Debug_Quit_Frame() {
 
 // Records the visible screen each frame for Rule.MovieTime minutes, then
 // writes the frames out as cap0000.pcx, cap0001.pcx, ... and stops.
-static void Capture_Motion_Frame() {
+static void CaptureMotionFrame() {
   // One captured screen per element. Empty between runs. Deliberately leaked
   // rather than given static storage duration with a destructor, which would
   // run at exit after the graphics system is already gone.
@@ -580,7 +581,7 @@ static void Capture_Motion_Frame() {
   static auto& frames = *new std::vector<std::vector<char>>();
   // Doubles as the frame counter and the end-of-run signal: reaching
   // frames.size() ends the capture and flushes to disk.
-  static base::ssize sequence = 0;
+  static base::ssize captured_count = 0;
 
   if (frames.empty()) {
     // Sized when a capture run starts rather than once per process, so that
@@ -590,22 +591,22 @@ static void Capture_Motion_Frame() {
   }
 
   // Leaked for the same reason as frames above.
-  static auto& temp_page =
+  static auto& frame_page =
       *new GraphicBufferClass(SeenBuff.Get_Width(), SeenBuff.Get_Height(), {},
                               SeenBuff.Get_Width() * SeenBuff.Get_Height());
 
-  const base::ssize size =
+  const base::ssize frame_bytes =
       static_cast<base::ssize>(SeenBuff.Get_Width()) * SeenBuff.Get_Height();
 
-  if (sequence < std::ssize(frames)) {
+  if (captured_count < std::ssize(frames)) {
     // A no-op on a frame reused from an earlier run of the same resolution.
-    frames.at(base::ToSize(sequence)).resize(base::ToSize(size));
+    frames.at(base::ToSize(captured_count)).resize(base::ToSize(frame_bytes));
 
-    SeenBuff.Blit(temp_page);
-    base::CopyBytes(
-        std::as_writable_bytes(std::span(frames.at(base::ToSize(sequence)))),
-        std::as_bytes(temp_page.Get_Bytes()), size);
-    sequence++;
+    SeenBuff.Blit(frame_page);
+    base::CopyBytes(std::as_writable_bytes(
+                        std::span(frames.at(base::ToSize(captured_count)))),
+                    std::as_bytes(frame_page.Get_Bytes()), frame_bytes);
+    captured_count++;
     return;
   }
 
@@ -613,20 +614,20 @@ static void Capture_Motion_Frame() {
 
   DiskFile file;
   char filename[30];
-  for (base::ssize index = 0; index < sequence; index++) {
-    base::CopyBytes(std::as_writable_bytes(temp_page.Get_Bytes()),
+  for (base::ssize index = 0; index < captured_count; index++) {
+    base::CopyBytes(std::as_writable_bytes(frame_page.Get_Bytes()),
                     std::as_bytes(std::span(frames.at(base::ToSize(index)))),
-                    size);
+                    frame_bytes);
     absl::SNPrintF(filename, sizeof(filename), "cap%04zd.pcx", index);
     file.SetName(filename);
 
-    Write_PCX_File(file, temp_page, &GamePalette);
+    Write_PCX_File(file, frame_page, &GamePalette);
   }
 
   // Release the run's buffers so that the next run re-reads MovieTime.
   frames.clear();
   frames.shrink_to_fit();
-  sequence = 0;
+  captured_count = 0;
 }
 
 // Runs one frame of the game. See the declaration in conquer.h.
@@ -634,7 +635,7 @@ static void Capture_Motion_Frame() {
 // Nothing that affects game state may be skipped here on the grounds that it is
 // only visual -- every machine in a multiplayer game runs this same sequence
 // and must arrive at the same state, or the session desyncs.
-bool Main_Loop() {
+bool RunFrame() {
   if (!GameActive) {
     return true;
   }
@@ -662,7 +663,7 @@ bool Main_Loop() {
     Theme.Queue_Song(THEME_PICK_ANOTHER);
   }
 
-  Set_Frame_Timer();
+  StartFrameTimer();
 
   // Update the display, unless we're inside a dialog.
   //
@@ -670,7 +671,7 @@ bool Main_Loop() {
   // and Do_Record_Playback() renders below once it has restored the
   // position.
   if (!Session.Play && SpecialDialog == SDLG_NONE && GameInFocus) {
-    Process_Input();
+    ProcessInput();
     Map.Render();
   }
 
@@ -716,15 +717,15 @@ bool Main_Loop() {
   // Keep track of elapsed time in the game.
   Score.ElapsedTime += kTimerSecond / kTicksPerSecond;
 
-  Call_Back();
+  ServiceRealTime();
 
-  if (Finish_Scenario_If_Decided()) {
+  if (FinishScenarioIfDecided()) {
     return !GameActive;
   }
 
   Frame++;
 
-  if (DebugQuitAtFrame >= 0 && Debug_Quit_Frame()) {
+  if (DebugQuitAtFrame >= 0 && LogFrameAndQuitIfDue()) {
     return true;
   }
 
@@ -738,11 +739,11 @@ bool Main_Loop() {
   }
 
   if (Debug_MotionCapture) {
-    Capture_Motion_Frame();
+    CaptureMotionFrame();
   }
 
   BEnd(BENCH_GAME_FRAME);
 
-  Sync_Delay();
+  WaitForNextFrame();
   return !GameActive;
 }

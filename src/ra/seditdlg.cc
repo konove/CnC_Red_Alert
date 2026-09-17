@@ -214,7 +214,7 @@ const char* SimpleEditDlgClass::Show() {
     /*
     **	Invoke game callback.
     */
-    Call_Back();
+    ServiceRealTime();
 
     /*
     **	Refresh display if needed.

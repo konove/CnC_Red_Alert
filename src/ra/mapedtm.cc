@@ -315,7 +315,7 @@ int MapEditClass::Select_Team(const char* /*unused*/) {
     /*
     **	Invoke game callback
     */
-    Call_Back();
+    ServiceRealTime();
 
     /*
     **	Refresh display if needed
@@ -632,7 +632,7 @@ int MapEditClass::Team_Members(HousesType house) {
     /*
     **	Invoke game callback.
     */
-    Call_Back();
+    ServiceRealTime();
 
     /*
     **	Refresh display if needed.

@@ -465,7 +465,7 @@ bool Read_Scenario(char* name) {
       const int cd_index =
           Get_CD_Index(SearchPaths::current_cd_drive(), 1 * 60);
       if ((!Using_DVD() || cd_index != 5) && cd_index != 3) {
-        GamePalette.Set(kFadePaletteFast, Call_Back);
+        GamePalette.Set(kFadePaletteFast, ServiceRealTime);
         RequiredCD = 3;
         if (!Force_CD_Available(RequiredCD)) {  // force Aftermath CD in drive.
           Emergency_Exit(EXIT_FAILURE);
@@ -487,8 +487,8 @@ bool Read_Scenario(char* name) {
     }
     Fill_In_Data();
   } else {
-    GamePalette.Set(kFadePaletteFast, Call_Back);
-    //		Fade_Palette_To(GamePalette, kFadePaletteFast, Call_Back);
+    GamePalette.Set(kFadePaletteFast, ServiceRealTime);
+    //		Fade_Palette_To(GamePalette, kFadePaletteFast, ServiceRealTime);
     Show_Mouse();
     WWMessageBox().Process(TXT_UNABLE_READ_SCENARIO);
     Hide_Mouse();
@@ -789,7 +789,7 @@ void Do_Win() {
 
   /*
   ** If this is a multiplayer game, clear the game's name so we won't respond
-  ** to game queries any more (in Call_Back)
+  ** to game queries any more (in ServiceRealTime)
   */
   if (Session.Type != GAME_NORMAL) {
     base::At(Session.GameName, 0) = 0;
@@ -820,7 +820,7 @@ void Do_Win() {
     }
     Speak(VOX_ACCOMPLISHED);
     while (CountDownTimer.HasTimeLeft() || Is_Speaking()) {
-      Call_Back();
+      ServiceRealTime();
     }
   }
 
@@ -984,8 +984,8 @@ void Do_Win() {
   //	PlayerPtr->NukePieces = nukes;
 
   Map.Render();
-  GamePalette.Set(kFadePaletteFast, Call_Back);
-  //	Fade_Palette_To(GamePalette, kFadePaletteFast, Call_Back);
+  GamePalette.Set(kFadePaletteFast, ServiceRealTime);
+  //	Fade_Palette_To(GamePalette, kFadePaletteFast, ServiceRealTime);
   Show_Mouse();
 }
 
@@ -1012,7 +1012,7 @@ void Do_Lose() {
 
   /*
   ** If this is a multiplayer game, clear the game's name so we won't respond
-  ** to game queries any more (in Call_Back)
+  ** to game queries any more (in ServiceRealTime)
   */
   if (Session.Type != GAME_NORMAL) {
     base::At(Session.GameName, 0) = 0;
@@ -1035,7 +1035,7 @@ void Do_Lose() {
   }
   Speak(VOX_FAIL);
   while (CountDownTimer.HasTimeLeft() || Is_Speaking()) {
-    Call_Back();
+    ServiceRealTime();
   }
 
   /*
@@ -1086,7 +1086,7 @@ void Do_Lose() {
     GameActive = false;
   }
 
-  GamePalette.Set(kFadePaletteFast, Call_Back);
+  GamePalette.Set(kFadePaletteFast, ServiceRealTime);
   Show_Mouse();
 }
 
@@ -1102,7 +1102,7 @@ void Do_Draw() {
 
   /*
   ** If this is a multiplayer game, clear the game's name so we won't respond
-  ** to game queries any more (in Call_Back)
+  ** to game queries any more (in ServiceRealTime)
   */
   if (Session.Type != GAME_NORMAL) {
     base::At(Session.GameName, 0) = 0;
@@ -1124,7 +1124,7 @@ void Do_Draw() {
   }
   Speak(VOX_CONTROL_EXIT);
   while (CountDownTimer.HasTimeLeft() || Is_Speaking()) {
-    Call_Back();
+    ServiceRealTime();
   }
 
   /*
@@ -1184,7 +1184,7 @@ void Do_Restart() {
   ** Make sure the message stays displayed for at least 1 second
   */
   while (timer.HasTimeLeft()) {
-    Call_Back();
+    ServiceRealTime();
   }
   Keyboard->Clear();
 
@@ -1231,7 +1231,7 @@ static constexpr size_t kMaxCharsPerPage = 512;
 int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
                            bool fade_to_black) {
   if (fade_to_black) {
-    BlackPalette.Set(kFadePaletteMedium, Call_Back);
+    BlackPalette.Set(kFadePaletteMedium, ServiceRealTime);
   }
 
   int retval = 0;
@@ -1429,7 +1429,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
   static const unsigned char _scorepal[] = {0, 1, 12, 13,  4,   5,   6,  7,
                                             8, 9, 10, 255, 252, 253, 14, 248};
   Set_Font_Palette(_scorepal);
-  temp.Set(kFadePaletteMedium, Call_Back);
+  temp.Set(kFadePaletteMedium, ServiceRealTime);
 
   // Main Processing Loop.
 
@@ -1459,7 +1459,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
       Timer<SystemTickSource> cd;
       cd.Set(5);
       do {
-        Call_Back();
+        ServiceRealTime();
       } while (!Keyboard->Check() && cd.HasTimeLeft());
     }
   } while (base::At(buffer, ++bufindex));
@@ -1481,7 +1481,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
       }
 
       // Invoke game callback.
-      Call_Back();
+      ServiceRealTime();
 
       // Fetch and process input.
       const KeyNumType input = buttonlist->Input();  // user input
@@ -1609,7 +1609,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
   switch (retval) {
     case 0:
     case 1:
-      BlackPalette.Set(kFadePaletteMedium, Call_Back);
+      BlackPalette.Set(kFadePaletteMedium, ServiceRealTime);
       SeenBuff.Clear();
       break;
     default:
@@ -1915,7 +1915,7 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
       if ((RequiredCD == 0 || RequiredCD == 1) && Session.Type == GAME_NORMAL) {
         SeenBuff.Clear();
       }
-      GamePalette.Set(kFadePaletteFast, Call_Back);
+      GamePalette.Set(kFadePaletteFast, ServiceRealTime);
     }
     if (!Force_CD_Available(RequiredCD)) {
       // Prog_End();
@@ -2054,14 +2054,14 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
   *creates *	the houses of different types.
   */
   HouseClass::Read_INI(ini);
-  Call_Back();
+  ServiceRealTime();
 
   /*
   **	Read in the team-type data. The team types must be created before any
   **	triggers can be created.
   */
   TeamTypeClass::Read_INI(ini);
-  Call_Back();
+  ServiceRealTime();
 
   /*
   **	Assign PlayerPtr by reading the player's house from the INI;
@@ -2091,14 +2091,14 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
   **	objects can be initialized.
   */
   TriggerTypeClass::Read_INI(ini);
-  Call_Back();
+  ServiceRealTime();
 
   /*
   **	Read in the map control values. This includes dimensions
   **	as well as theater information.
   */
   Map.Read_INI(ini);
-  Call_Back();
+  ServiceRealTime();
 
   //	if (NewINIFormat < 2 || !ini.Is_Present("MapPack")) {
   //		Map.Read_Binary(root, &ScenarioCRC);
@@ -2108,45 +2108,45 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
   **	Read in and place the 3D terrain objects.
   */
   TerrainClass::Read_INI(ini);
-  Call_Back();
+  ServiceRealTime();
   /*
   **	Read in and place the units (all sides).
   */
   UnitClass::Read_INI(ini);
-  Call_Back();
+  ServiceRealTime();
 
   VesselClass::Read_INI(ini);
-  Call_Back();
+  ServiceRealTime();
 
   /*
   **	Read in and place the infantry units (all sides).
   */
   InfantryClass::Read_INI(ini);
-  Call_Back();
+  ServiceRealTime();
 
   /*
   **	Read in and place all the buildings on the map.
   */
   BuildingClass::Read_INI(ini);
-  Call_Back();
+  ServiceRealTime();
 
   /*
   **	Read in the AI's base information.
   */
   Base.Read_INI(ini);
-  Call_Back();
+  ServiceRealTime();
 
   /*
   **	Read in any normal overlay objects.
   */
   OverlayClass::Read_INI(ini);
-  Call_Back();
+  ServiceRealTime();
 
   /*
   **	Read in any smudge overlays.
   */
   SmudgeClass::Read_INI(ini);
-  Call_Back();
+  ServiceRealTime();
 
   /*	Moved above ini.Get_TextBlock(...) so Xlat mission.ini could be loaded
   **	If the briefing text could not be found in the INI file, then search
@@ -2168,7 +2168,7 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
   **	types of terrain (tiberium).
   */
   Map.Overpass();
-  Call_Back();
+  ServiceRealTime();
 
   /*
   **	Multi-player last-minute fixups:
@@ -2218,7 +2218,7 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
     Map.Compute_Start_Pos();
   }
 
-  Call_Back();
+  ServiceRealTime();
 
   /*
   **	Return with flag saying that the scenario file was read.

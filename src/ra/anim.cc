@@ -1129,7 +1129,7 @@ void AnimClass::Do_Atom_Damage(HousesType ownerhouse, CELL cell) {
   if (Session.Type == GAME_NORMAL) {
     radius = 4;
     rawdamage = Rule.AtomDamage;
-    WhitePalette.Set(kFadePaletteSlow, Call_Back);
+    WhitePalette.Set(kFadePaletteSlow, ServiceRealTime);
   } else {
     radius = 3;
     rawdamage = Rule.AtomDamage / 5;
@@ -1140,6 +1140,6 @@ void AnimClass::Do_Atom_Damage(HousesType ownerhouse, CELL cell) {
                    building, WARHEAD_FIRE);
   Shake_The_Screen(3);
   if (Session.Type == GAME_NORMAL) {
-    GamePalette.Set(kFadePaletteSlow, Call_Back);
+    GamePalette.Set(kFadePaletteSlow, ServiceRealTime);
   }
 }

@@ -223,7 +223,7 @@ std::string Map_Selection() {
 
   Keyboard->Clear();
   SeenBuff.Clear();
-  map_palette.Set(kFadePaletteFast, Call_Back);
+  map_palette.Set(kFadePaletteFast, ServiceRealTime);
 
   pseudo_seen_buf->Clear();
   Animate_Frame(anim, *pseudo_seen_buf, /*frame_number=*/1);
@@ -261,7 +261,7 @@ std::string Map_Selection() {
     }
   }
   StreamLowImpact = false;
-  Call_Back();
+  ServiceRealTime();
   Close_Animation(anim);
   Show_Mouse();
   Keyboard->Clear();
