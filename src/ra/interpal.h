@@ -76,4 +76,15 @@ void __cdecl Asm_Create_Palette_Interpolation_Table();
 // Global state
 extern bool InterpolationPaletteChanged;
 
+// Mirrors an interpolation table's lower triangle into its upper one. The
+// tables are symmetric, so only half of each is stored on disk.
+void Rebuild_Interpolated_Palette(std::span<unsigned char> interpal);
+
+// Loads the precalculated interpolation tables a hi-res VQA needs to scale its
+// frames, and returns how many were loaded. Pass add == true to append to the
+// tables already loaded rather than starting over. Falls back to AAGUN.VQP when
+// the requested file is missing.
+int Load_Interpolated_Palettes(const char* filename, bool add = false);
+void Free_Interpolated_Palettes();
+
 #endif  // CNC_RED_ALERT_RA_INTERPAL_H_

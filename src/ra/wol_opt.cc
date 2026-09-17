@@ -30,6 +30,7 @@
 #include "ra/globals.h"
 #include "ra/jshell.h"
 #include "ra/msgbox.h"
+#include "ra/text_ids.h"
 #include "ra/textbtn.h"
 #include "ra/wol_main.h"
 #include "ra/wolapiob.h"

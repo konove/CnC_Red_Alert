@@ -47,7 +47,6 @@
 #include <cstddef>
 #include <span>
 
-#include "ra/conquer.h"
 #include "ra/credits.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
@@ -58,7 +57,9 @@
 #include "ra/queue.h"
 #include "ra/rules.h"
 #include "ra/scenario.h"
+#include "ra/shape_draw.h"
 #include "ra/sidebar.h"
+#include "ra/text_ids.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"

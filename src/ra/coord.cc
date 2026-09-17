@@ -21,12 +21,16 @@
 
 #include "ra/coord.h"
 
+#include <absl/log/check.h>
+
 #include <algorithm>
+#include <cstddef>
 #include <cstdint>
 #include <iterator>
 #include <span>
 
 #include "base/array.h"
+#include "base/numeric.h"
 #include "base/trig.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/const.h"
@@ -253,4 +257,16 @@ CELL Coord_Cell(COORDINATE coord) {
   cell.Sub.X = cc.Sub.X.Sub.Cell;
   cell.Sub.Y = cc.Sub.Y.Sub.Cell;
   return cell.Cell;
+}
+
+void List_Copy(const std::span<const int16_t> source, const int len,
+               const std::span<int16_t> dest) {
+  CHECK_GE(len, 0);
+  CHECK_LE(base::ToSize(len), dest.size());
+  for (std::size_t i = 0; i < base::ToSize(len) && i < source.size(); ++i) {
+    base::At(dest, i) = base::At(source, i);
+    if (base::At(source, i) == kRefreshEol) {
+      break;
+    }
+  }
 }

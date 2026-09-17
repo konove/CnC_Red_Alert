@@ -61,8 +61,6 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include <string>
-
 #include "ra/teamtype.h"
 
 #include <cassert>
@@ -73,6 +71,7 @@
 #include <cstring>
 #include <iterator>
 #include <span>
+#include <string>
 #include <string_view>
 #include <utility>
 
@@ -109,6 +108,7 @@
 #include "ra/scenario.h"
 #include "ra/target.h"
 #include "ra/team.h"
+#include "ra/text_ids.h"
 #include "ra/textbtn.h"
 #include "ra/trigtype.h"
 #include "ra/type.h"

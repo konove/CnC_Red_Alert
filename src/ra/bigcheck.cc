@@ -21,10 +21,10 @@
 
 #include "ra/bigcheck.h"
 
-#include "ra/conquer.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/gadget.h"
+#include "ra/shape_draw.h"
 #include "ra/toggle.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/shape.h"

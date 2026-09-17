@@ -54,6 +54,7 @@
 #include "ra/jshell.h"
 #include "ra/session.h"
 #include "ra/slider.h"
+#include "ra/text_ids.h"
 #include "ra/textbtn.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"

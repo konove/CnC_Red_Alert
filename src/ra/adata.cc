@@ -51,12 +51,12 @@
 #include <filesystem>
 
 #include "magic_enum/magic_enum.hpp"
-#include "ra/conquer.h"
 #include "ra/const.h"
 #include "ra/defines.h"
 #include "ra/externs.h"
 #include "ra/heap.h"
 #include "ra/jshell.h"
+#include "ra/text_ids.h"
 #include "ra/type.h"
 #include "tech/disk_file.h"
 #include "tech/fixed.h"

@@ -85,6 +85,7 @@
 #include "ra/scenario.h"
 #include "ra/techno.h"
 #include "ra/tevent.h"
+#include "ra/text_ids.h"
 #include "ra/textbtn.h"
 #include "ra/trigger.h"
 #include "ra/trigtype.h"

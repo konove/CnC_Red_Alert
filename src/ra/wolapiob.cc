@@ -34,6 +34,8 @@
 #include "ra/dib.h"
 #include "ra/globals.h"
 #include "ra/iconlist.h"
+#include "ra/installation.h"
+#include "ra/text_ids.h"
 #include "ra/type.h"
 #include "ra/wolapi/chatdefs.h"
 #include "ra/wolapi/wolapi.h"

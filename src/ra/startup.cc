@@ -67,6 +67,7 @@
 #include "ra/goptions.h"
 #include "ra/ini.h"
 #include "ra/init.h"
+#include "ra/installation.h"
 #include "ra/ipx.h"
 #include "ra/ipxaddr.h"
 #include "ra/ipxmgr.h"

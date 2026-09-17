@@ -23,8 +23,8 @@
 
 #include "port/win32/win32_com.h"
 #include "port/win32/win32_types.h"
-#include "ra/conquer.h"
 #include "ra/defines.h"
+#include "ra/installation.h"
 #include "ra/wol_gsup.h"
 #include "ra/wolapiob.h"
 #include "ra/wolstrng.h"

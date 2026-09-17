@@ -12,8 +12,8 @@
 
 #include "tech/disk_file.h"
 
-// Supplied by the game: returns the index of the CD in cd_drive, waiting up to
-// timeout ticks, or -1 if none is recognized.
+// Supplied by the game (ra/installation.cc): returns the index of the CD in
+// cd_drive, waiting up to timeout ticks, or -1 if none is recognized.
 extern int Get_CD_Index(int cd_drive, int timeout);
 
 std::vector<std::string> SearchPaths::directories_;

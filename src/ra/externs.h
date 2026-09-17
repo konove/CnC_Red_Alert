@@ -81,6 +81,7 @@
 #include "tech/buff.h"
 #include "tech/game_file.h"
 #include "tech/mix_archive.h"
+#include "winvq/vqa32/vqaplay.h"
 
 // Scratch space for packing and unpacking the MapPack and OverlayPack INI blocks.
 inline char staging_buffer[32000];

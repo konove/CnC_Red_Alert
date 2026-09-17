@@ -85,4 +85,9 @@ constexpr uint32_t Rescale(const uint32_t value, const uint32_t old_base,
   return static_cast<uint32_t>(std::min<uint64_t>(rounded, 0xFFFF));
 }
 
+// Copies a cell offset list, stopping early at the kRefreshEol terminator.
+// At most len elements are written, so dest must have room for that many.
+void List_Copy(std::span<const int16_t> source, int len,
+               std::span<int16_t> dest);
+
 #endif  // CNC_RED_ALERT_RA_COORD_H_

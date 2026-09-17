@@ -47,7 +47,6 @@
 #include <cstdlib>
 
 #include "ra/bench_util.h"
-#include "ra/conquer.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/externs.h"
@@ -57,6 +56,7 @@
 #include "ra/mapedit.h"
 #include "ra/scenario.h"
 #include "ra/tab.h"
+#include "ra/text_ids.h"
 #include "ra/ww_audio.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/wwstd.h"

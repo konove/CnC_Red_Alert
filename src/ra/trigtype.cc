@@ -96,6 +96,7 @@
 #include "ra/taction.h"
 #include "ra/teamtype.h"
 #include "ra/tevent.h"
+#include "ra/text_ids.h"
 #include "ra/textbtn.h"
 #include "ra/theme.h"
 #include "ra/type.h"

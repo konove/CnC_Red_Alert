@@ -58,8 +58,8 @@
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "ra/config.h"
-#include "ra/conquer.h"
 #include "ra/externs.h"
+#include "ra/installation.h"
 #include "ra/rawolapi.h"
 #include "tech/disk_file.h"
 

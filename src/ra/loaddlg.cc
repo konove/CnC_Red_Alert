@@ -74,6 +74,7 @@
 #include "ra/palette.h"
 #include "ra/saveload.h"
 #include "ra/session.h"
+#include "ra/text_ids.h"
 #include "ra/textbtn.h"
 #include "ra/theme.h"
 #include "ra/toggle.h"

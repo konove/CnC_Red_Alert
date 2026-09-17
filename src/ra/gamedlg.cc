@@ -57,6 +57,7 @@
 #include "ra/options.h"
 #include "ra/queue.h"
 #include "ra/sounddlg.h"
+#include "ra/text_ids.h"
 #include "ra/textbtn.h"
 #include "ra/visudlg.h"
 #include "ra/wol_main.h"

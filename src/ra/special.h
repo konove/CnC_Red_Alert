@@ -40,7 +40,7 @@
 #ifndef CNC_RED_ALERT_RA_SPECIAL_H_
 #define CNC_RED_ALERT_RA_SPECIAL_H_
 
-#include "ra/conquer.h"
+#include "ra/text_ids.h"
 
 class SpecialClass {
  public:

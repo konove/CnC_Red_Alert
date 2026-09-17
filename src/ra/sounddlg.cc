@@ -60,6 +60,7 @@
 #include "ra/session.h"
 #include "ra/shapebtn.h"
 #include "ra/slider.h"
+#include "ra/text_ids.h"
 #include "ra/textbtn.h"
 #include "ra/theme.h"
 #include "sdllib/drawbuff.h"

@@ -48,12 +48,12 @@
 #include <span>
 
 #include "base/numeric.h"
-#include "ra/conquer.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
 #include "ra/list.h"
+#include "ra/text_ids.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/wwstd.h"

@@ -50,6 +50,7 @@
 #include "ra/palette.h"
 #include "ra/scenario.h"
 #include "ra/score.h"
+#include "ra/text_ids.h"
 #include "ra/theme.h"
 #include "ra/type.h"
 #include "sdllib/gbuffer.h"

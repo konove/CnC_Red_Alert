@@ -52,6 +52,8 @@
 
 #include "ra/gscreen.h"
 
+#include <cstdint>
+
 #include "ra/bench_util.h"
 #include "ra/config.h"
 #include "ra/defines.h"
@@ -67,6 +69,7 @@
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
+#include "sdllib/ww_win.h"
 
 GadgetClass* GScreenClass::Buttons = nullptr;
 
@@ -436,4 +439,41 @@ void GScreenClass::Blit_Display() {
                false);
   WWMouse->Erase_Mouse(&HidPage, false);
   BEnd(BENCH_BLIT_DISPLAY);
+}
+
+// Shows the screen two pixels up, centred, or two pixels down, picking a
+// different position each game tick, for twice the requested number of shakes.
+void Shake_The_Screen(int shakes) {
+  shakes += shakes;
+
+  Hide_Mouse();
+  SeenBuff.Blit(HidPage);
+  int old_y_off = 0;
+  while (shakes-- != 0) {
+    // Hold each offset for exactly one tick, so the shake runs at game speed
+    // rather than as fast as the machine can blit.
+    const int64_t x = TickCount.Value();
+    // Never repeat the previous offset, so every tick visibly moves the screen.
+    int new_y_off = 0;
+    do {
+      new_y_off = Sim_Random_Pick(0, 2) - 1;
+    } while (new_y_off == old_y_off);
+    old_y_off = new_y_off;
+    switch (new_y_off) {
+      case -1:
+        HidPage.Blit(SeenBuff, 0, 2, 0, 0, 640, 398);
+        break;
+      case 1:
+        HidPage.Blit(SeenBuff, 0, 0, 0, 2, 640, 398);
+        break;
+      default:
+        HidPage.Blit(SeenBuff);
+        break;
+    }
+    while (x == TickCount.Value()) {
+      Video_End_Frame();
+    }
+  }
+  HidPage.Blit(SeenBuff);
+  Show_Mouse();
 }

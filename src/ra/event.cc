@@ -90,6 +90,7 @@
 #include "ra/target.h"
 #include "ra/team.h"
 #include "ra/techno.h"
+#include "ra/text_ids.h"
 #include "ra/theme.h"
 #include "ra/type.h"
 #include "ra/vector_dynamic.h"

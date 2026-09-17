@@ -35,6 +35,7 @@
 #include "ra/globals.h"
 #include "ra/inline.h"
 #include "ra/msgbox.h"
+#include "ra/text_ids.h"
 #include "ra/textbtn.h"
 #include "ra/woledit.h"
 #include "sdllib/font.h"

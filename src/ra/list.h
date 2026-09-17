@@ -40,16 +40,15 @@
 #ifndef CNC_RED_ALERT_RA_LIST_H_
 #define CNC_RED_ALERT_RA_LIST_H_
 
-#include <span>
 #include <algorithm>
 #include <cstddef>
+#include <span>
 #include <string>
 #include <string_view>
 #include <vector>
 
 #include "absl/base/attributes.h"
 #include "base/types.h"
-#include "ra/conquer.h"
 #include "ra/control.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
@@ -59,6 +58,7 @@
 #include "ra/link.h"
 #include "ra/shapebtn.h"
 #include "ra/slider.h"
+#include "ra/text_ids.h"
 #include "ra/vector_dynamic.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/font.h"

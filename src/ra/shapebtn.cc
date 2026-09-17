@@ -40,15 +40,16 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include <cstddef>
-#include <span>
 #include "ra/shapebtn.h"
 
-#include "ra/conquer.h"
+#include <cstddef>
+#include <span>
+
 #include "ra/control.h"
 #include "ra/defines.h"
 #include "ra/globals.h"
 #include "ra/keyframe.h"
+#include "ra/shape_draw.h"
 #include "ra/toggle.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/shape.h"

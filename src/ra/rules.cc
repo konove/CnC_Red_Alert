@@ -67,7 +67,6 @@
 #include "ra/anim.h"
 #include "ra/bench_util.h"
 #include "ra/ccini.h"
-#include "ra/conquer.h"
 #include "ra/const.h"
 #include "ra/defines.h"
 #include "ra/display_constants.h"

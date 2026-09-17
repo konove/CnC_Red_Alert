@@ -2016,4 +2016,8 @@ class SmudgeTypeClass : public ObjectTypeClass {
                HousesType house = HOUSE_NONE) const override;
 };
 
+// Converts an RTTI type and a sub-type ID into the matching type-class object,
+// or nullptr if the RTTI type is not one that has a TechnoTypeClass.
+const TechnoTypeClass* Fetch_Techno_Type(RTTIType type, int id);
+
 #endif  // CNC_RED_ALERT_RA_TYPE_H_

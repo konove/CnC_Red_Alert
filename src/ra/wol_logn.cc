@@ -42,6 +42,7 @@
 #include "ra/msgbox.h"
 #include "ra/passedit.h"
 #include "ra/rawolapi.h"
+#include "ra/text_ids.h"
 #include "ra/textbtn.h"
 #include "ra/wol_main.h"
 #include "ra/wolapi/chatdefs.h"

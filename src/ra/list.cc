@@ -68,7 +68,6 @@
 
 #include "base/numeric.h"
 #include "port/ex_string.h"
-#include "ra/conquer.h"
 #include "ra/control.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
@@ -77,6 +76,7 @@
 #include "ra/inline.h"
 #include "ra/jshell.h"
 #include "ra/link.h"
+#include "ra/text_ids.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
 #include "sdllib/gbuffer.h"

@@ -141,4 +141,8 @@ class GScreenClass {
   static GraphicBufferClass* ShadowPage;
 };
 
+// Jolts the screen up and down the given number of times, for explosions and
+// similar. Blocks until the shaking is done.
+void Shake_The_Screen(int shakes);
+
 #endif  // CNC_RED_ALERT_RA_GSCREEN_H_

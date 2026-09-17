@@ -91,6 +91,7 @@
 #include "ra/gadget.h"
 #include "ra/gauge.h"
 #include "ra/globals.h"
+#include "ra/hotkeys.h"
 #include "ra/house.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
@@ -102,10 +103,12 @@
 #include "ra/msgbox.h"
 #include "ra/palette.h"
 #include "ra/scenario.h"
+#include "ra/selection.h"
 #include "ra/session.h"
 #include "ra/startup.h"
 #include "ra/target.h"
 #include "ra/techno.h"
+#include "ra/text_ids.h"
 #include "ra/textbtn.h"
 #include "ra/txtlabel.h"
 #include "ra/type.h"
@@ -2098,4 +2101,42 @@ void MapEditClass::Read_INI(CCINIClass& ini) {
   Mono_Printf("Scen.Percent = %d", Scen.Percent);
 
   //	BaseGauge->Set_Value(Scen.Percent);
+}
+
+void Go_Editor(const bool flag) {
+  // Go into Scenario Editor mode
+  if (flag) {
+    MapEditorActive = true;
+    Debug_Unshroud = true;
+
+    // Un-select any selected objects
+    Unselect_All();
+
+    // Turn off the sidebar if it's on
+    Map.Activate(0);
+
+    // Reset the map's Button list for the new mode
+    Map.Init_IO();
+
+    // Force a complete redraw of the screen
+    HiddenPage.Clear();
+    Map.Flag_To_Redraw(true);
+    Map.Render();
+
+  } else {
+    // Go into normal game mode
+    MapEditorActive = false;
+    Debug_Unshroud = false;
+
+    // Un-select any selected objects
+    Unselect_All();
+
+    // Reset the map's Button list for the new mode
+    Map.Init_IO();
+
+    // Force a complete redraw of the screen
+    HidPage.Clear();
+    Map.Flag_To_Redraw(true);
+    Map.Render();
+  }
 }

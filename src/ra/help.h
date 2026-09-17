@@ -43,11 +43,11 @@
 #include <cstdint>
 #include <span>
 
-#include "ra/conquer.h"
 #include "ra/defines.h"
 #include "ra/face.h"
 #include "ra/jshell.h"
 #include "ra/tab.h"
+#include "ra/text_ids.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/wwstd.h"
 #include "tech/ftimer.h"

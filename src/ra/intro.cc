@@ -39,15 +39,16 @@
 
 #include "ra/intro.h"
 
-#include "ra/conquer.h"
 #include "ra/defines.h"
 #include "ra/externs.h"
 #include "ra/globals.h"
 #include "ra/init.h"
+#include "ra/movie.h"
 #include "ra/mplayer.h"
 #include "ra/msgbox.h"
 #include "ra/palette.h"
 #include "ra/special.h"
+#include "ra/text_ids.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/ww_mouse.h"
 

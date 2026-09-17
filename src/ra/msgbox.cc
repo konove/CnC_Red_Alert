@@ -56,6 +56,7 @@
 #include "ra/globals.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
+#include "ra/text_ids.h"
 #include "ra/textbtn.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/font.h"

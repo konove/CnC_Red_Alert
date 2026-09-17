@@ -55,10 +55,10 @@
 #include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "ra/ccini.h"
-#include "ra/conquer.h"
 #include "ra/defines.h"
 #include "ra/externs.h"
 #include "ra/heap.h"
+#include "ra/text_ids.h"
 #include "ra/type.h"
 #include "tech/fixed.h"
 

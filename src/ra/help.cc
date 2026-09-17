@@ -59,13 +59,13 @@
 #include <span>
 
 #include "absl/strings/str_format.h"
-#include "ra/conquer.h"
 #include "ra/coord.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/face.h"
 #include "ra/inline.h"
 #include "ra/tab.h"
+#include "ra/text_ids.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
 #include "sdllib/gbuffer.h"

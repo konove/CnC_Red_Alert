@@ -83,6 +83,8 @@
 #include "ra/palette.h"
 #include "ra/scenario.h"
 #include "ra/session.h"
+#include "ra/shape_draw.h"
+#include "ra/text_ids.h"
 #include "ra/theme.h"
 #include "ra/type.h"
 #include "ra/ww_audio.h"

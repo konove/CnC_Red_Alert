@@ -49,12 +49,12 @@
 
 #include "base/numeric.h"
 #include "port/safe_string.h"
-#include "ra/conquer.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/gadget.h"
 #include "ra/globals.h"
 #include "ra/jshell.h"
+#include "ra/text_ids.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
 #include "sdllib/gbuffer.h"

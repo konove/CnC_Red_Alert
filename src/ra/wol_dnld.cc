@@ -36,6 +36,7 @@
 #include "ra/palette.h"
 #include "ra/rawolapi.h"
 #include "ra/statbtn.h"
+#include "ra/text_ids.h"
 #include "ra/textbtn.h"
 #include "ra/wolapi/downloaddefs.h"
 #include "ra/wolapi/wolapi.h"

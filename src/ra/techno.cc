@@ -180,7 +180,6 @@
 #include "ra/cell.h"
 #include "ra/combat.h"
 #include "ra/config.h"
-#include "ra/conquer.h"
 #include "ra/coord.h"
 #include "ra/defines.h"
 #include "ra/display.h"
@@ -207,6 +206,7 @@
 #include "ra/rules.h"
 #include "ra/scenario.h"
 #include "ra/session.h"
+#include "ra/shape_draw.h"
 #include "ra/target.h"
 #include "ra/team.h"
 #include "ra/teamtype.h"
@@ -6778,4 +6778,55 @@ bool TechnoTypeClass::Legal_Placement(CELL pos) const {
     }
   }
   return true;
+}
+
+const TechnoTypeClass* Fetch_Techno_Type(const RTTIType type, const int id) {
+  switch (type) {
+    case RTTI_UNITTYPE:
+    case RTTI_UNIT:
+      return &UnitTypeClass::As_Reference(static_cast<UnitType>(id));
+
+    case RTTI_VESSELTYPE:
+    case RTTI_VESSEL:
+      return &VesselTypeClass::As_Reference(static_cast<VesselType>(id));
+
+    case RTTI_BUILDINGTYPE:
+    case RTTI_BUILDING:
+      return &BuildingTypeClass::As_Reference(static_cast<StructType>(id));
+
+    case RTTI_INFANTRYTYPE:
+    case RTTI_INFANTRY:
+      return &InfantryTypeClass::As_Reference(static_cast<InfantryType>(id));
+
+    case RTTI_AIRCRAFTTYPE:
+    case RTTI_AIRCRAFT:
+      return &AircraftTypeClass::As_Reference(static_cast<AircraftType>(id));
+
+    // Everything else either has no TechnoTypeClass or is not a type at all.
+    case RTTI_NONE:
+    case RTTI_ANIM:
+    case RTTI_ANIMTYPE:
+    case RTTI_BULLET:
+    case RTTI_BULLETTYPE:
+    case RTTI_CELL:
+    case RTTI_FACTORY:
+    case RTTI_HOUSE:
+    case RTTI_HOUSETYPE:
+    case RTTI_OVERLAY:
+    case RTTI_OVERLAYTYPE:
+    case RTTI_SMUDGE:
+    case RTTI_SMUDGETYPE:
+    case RTTI_SPECIAL:
+    case RTTI_TEAM:
+    case RTTI_TEAMTYPE:
+    case RTTI_TEMPLATE:
+    case RTTI_TEMPLATETYPE:
+    case RTTI_TERRAIN:
+    case RTTI_TERRAINTYPE:
+    case RTTI_TRIGGER:
+    case RTTI_TRIGGERTYPE:
+    default:
+      break;
+  }
+  return nullptr;
 }

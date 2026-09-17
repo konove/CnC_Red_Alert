@@ -112,7 +112,6 @@
 #include "port/tokenizer.h"
 #include "ra/adata.h"
 #include "ra/anim.h"
-#include "ra/conquer.h"
 #include "ra/const.h"
 #include "ra/defines.h"
 #include "ra/display_constants.h"
@@ -1545,3 +1544,54 @@ void CCINIClass::Calculate_Message_Digest() const {
  * HISTORY: * 11/01/1996 JLB : Created. *
  *=============================================================================================*/
 void CCINIClass::Invalidate_Message_Digest() { IsDigestPresent = false; }
+
+uint32_t Owner_From_Name(const char* text) {
+  uint32_t ownable = 0;
+  if (port::CompareIgnoreCase(text, "soviet") == 0) {
+    ownable |= kHouseFlagSoviet;
+  } else {
+    if (port::CompareIgnoreCase(text, "allies") == 0 ||
+        port::CompareIgnoreCase(text, "allied") == 0) {
+      ownable |= kHouseFlagAllies;
+    } else {
+      const HousesType h = HouseTypeClass::From_Name(text);
+      if (h != HOUSE_NONE && (h < HOUSE_MULTI1 || h > HOUSE_MULTI8)) {
+        ownable |= base::Bit<uint32_t>(h);
+      }
+    }
+  }
+  return ownable;
+}
+
+CrateType Crate_From_Name(const char* name) {
+  if (name != nullptr) {
+    for (const CrateType crate : magic_enum::enum_values<CrateType>()) {
+      if (port::CompareIgnoreCase(name, CrateNames.at(crate)) == 0) {
+        return crate;
+      }
+    }
+  }
+  return CRATE_MONEY;
+}
+
+TheaterType Theater_From_Name(const char* name) {
+  if (name != nullptr) {
+    for (const TheaterType index : magic_enum::enum_values<TheaterType>()) {
+      if (port::CompareIgnoreCase(name, Theaters.at(index).Name) == 0) {
+        return index;
+      }
+    }
+  }
+  return THEATER_NONE;
+}
+
+SourceType Source_From_Name(const char* name) {
+  if (name) {
+    for (const SourceType source : magic_enum::enum_values<SourceType>()) {
+      if (port::CompareIgnoreCase(SourceName.at(source), name) == 0) {
+        return source;
+      }
+    }
+  }
+  return SOURCE_NONE;
+}

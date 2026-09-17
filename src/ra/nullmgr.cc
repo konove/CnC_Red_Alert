@@ -89,6 +89,7 @@
 #include "ra/nullconn.h"
 #include "ra/nulldlg.h"
 #include "ra/session.h"
+#include "ra/text_ids.h"
 #include "ra/textbtn.h"
 #include "sdllib/font.h"
 #include "sdllib/gbuffer.h"

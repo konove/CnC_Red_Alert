@@ -58,6 +58,7 @@
 #include "ra/mapedit.h"
 #include "ra/msgbox.h"
 #include "ra/teamtype.h"
+#include "ra/text_ids.h"
 #include "ra/textbtn.h"
 #include "ra/tracker.h"
 #include "ra/type.h"

@@ -40,7 +40,7 @@
 #ifndef CNC_RED_ALERT_RA_MSGBOX_H_
 #define CNC_RED_ALERT_RA_MSGBOX_H_
 
-#include "ra/conquer.h"
+#include "ra/text_ids.h"
 
 // Set from outside the message box loop to make the box close as though the
 // user had picked its cancel button. WOL uses it to take a dialog down when

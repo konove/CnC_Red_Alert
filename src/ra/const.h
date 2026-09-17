@@ -6,8 +6,8 @@
 
 #include "base/enum_array.h"
 #include "ra/config.h"
-#include "ra/conquer.h"
 #include "ra/defines.h"
+#include "ra/text_ids.h"
 #include "sdllib/wwstd.h"
 
 extern base::EnumArray<CrateType, int> CrateShares;
