@@ -95,7 +95,6 @@
 #include "ra/inline.h"
 #include "ra/jshell.h"
 #include "ra/keyframe.h"
-#include "ra/map.h"
 #include "ra/mapedit.h"
 #include "ra/object.h"
 #include "ra/rules.h"
@@ -2871,25 +2870,25 @@ BuildingTypeClass::BuildingTypeClass(
       Size(size),
       OccupyList(sizelist),
       OverlapList(overlap) {
-  Anims[BSTATE_CONSTRUCTION].Start = 0;
-  Anims[BSTATE_CONSTRUCTION].Count = 1;
-  Anims[BSTATE_CONSTRUCTION].Rate = 0;
+  Anims.at(BSTATE_CONSTRUCTION).Start = 0;
+  Anims.at(BSTATE_CONSTRUCTION).Count = 1;
+  Anims.at(BSTATE_CONSTRUCTION).Rate = 0;
 
-  Anims[BSTATE_IDLE].Start = 0;
-  Anims[BSTATE_IDLE].Count = 1;
-  Anims[BSTATE_IDLE].Rate = 0;
+  Anims.at(BSTATE_IDLE).Start = 0;
+  Anims.at(BSTATE_IDLE).Count = 1;
+  Anims.at(BSTATE_IDLE).Rate = 0;
 
-  Anims[BSTATE_ACTIVE].Start = 0;
-  Anims[BSTATE_ACTIVE].Count = 1;
-  Anims[BSTATE_ACTIVE].Rate = 0;
+  Anims.at(BSTATE_ACTIVE).Start = 0;
+  Anims.at(BSTATE_ACTIVE).Count = 1;
+  Anims.at(BSTATE_ACTIVE).Rate = 0;
 
-  Anims[BSTATE_AUX1].Start = 0;
-  Anims[BSTATE_AUX1].Count = 1;
-  Anims[BSTATE_AUX1].Rate = 0;
+  Anims.at(BSTATE_AUX1).Start = 0;
+  Anims.at(BSTATE_AUX1).Count = 1;
+  Anims.at(BSTATE_AUX1).Rate = 0;
 
-  Anims[BSTATE_AUX2].Start = 0;
-  Anims[BSTATE_AUX2].Count = 1;
-  Anims[BSTATE_AUX2].Rate = 0;
+  Anims.at(BSTATE_AUX2).Start = 0;
+  Anims.at(BSTATE_AUX2).Count = 1;
+  Anims.at(BSTATE_AUX2).Rate = 0;
 }
 
 /***********************************************************************************************
@@ -3118,7 +3117,7 @@ void BuildingTypeClass::One_Time() {
       std::string buffer = std::string(building.Graphic_Name()) + "ICON";
 
       if (building.IsFake) {
-        buffer[3] = 'F';
+        buffer.at(3) = 'F';
       }
 
       const auto fullname =
@@ -3327,9 +3326,9 @@ ObjectClass* BuildingTypeClass::Create_One_Of(HouseClass* house) const {
  *=============================================================================================*/
 void BuildingTypeClass::Init_Anim(BStateType state, int start, int count,
                                   int rate) const {
-  Anims[state].Start = start;
-  Anims[state].Count = count;
-  Anims[state].Rate = rate;
+  Anims.at(state).Start = start;
+  Anims.at(state).Count = count;
+  Anims.at(state).Rate = rate;
 }
 
 /***********************************************************************************************
@@ -3354,7 +3353,7 @@ void BuildingTypeClass::Init(TheaterType theater) {
 
       if (classptr->IsTheater) {
         auto fullname = std::filesystem::path(classptr->Graphic_Name())
-                            .replace_extension(Theaters[theater].Suffix)
+                            .replace_extension(Theaters.at(theater).Suffix)
                             .string();
         classptr->SetBorrowedImage(MixArchive::RetrieveData(fullname));
 
@@ -3364,7 +3363,7 @@ void BuildingTypeClass::Init(TheaterType theater) {
         */
         fullname = std::filesystem::path(std::string(classptr->Graphic_Name()) +
                                          "MAKE")
-                       .replace_extension(Theaters[theater].Suffix)
+                       .replace_extension(Theaters.at(theater).Suffix)
                        .string();
         classptr->BuildupData = MixArchive::RetrieveData(fullname);
         if (!classptr->BuildupData.empty()) {
@@ -3522,7 +3521,7 @@ std::span<const int16_t> BuildingTypeClass::Overlap_List() const {
 int BuildingTypeClass::Width() const {
   static constexpr base::EnumArray<BSizeType, int> width = {1, 2, 1, 2, 2,
                                                             3, 3, 4, 5};
-  return width[Size];
+  return width.at(Size);
 }
 
 /***********************************************************************************************
@@ -3542,7 +3541,7 @@ int BuildingTypeClass::Width() const {
 int BuildingTypeClass::Height(bool bib) const {
   static constexpr base::EnumArray<BSizeType, int> height = {1, 1, 2, 2, 3,
                                                              2, 3, 2, 5};
-  return height[Size] + (bib && IsBibbed ? 1 : 0);
+  return height.at(Size) + (bib && IsBibbed ? 1 : 0);
 }
 
 /***********************************************************************************************
@@ -3703,12 +3702,12 @@ bool BuildingTypeClass::Flush_For_Placement(CELL cell,
       const CELL newcell = static_cast<CELL>(cell + base::ConsumeFront(list));
 
       if (Map.In_Radar(newcell)) {
-        TechnoClass* occupier = Map[newcell].Cell_Techno();
+        TechnoClass* occupier = Map.at(newcell).Cell_Techno();
         if (occupier != nullptr) {
           again = true;
           if (occupier->House->Is_Ally(house) && occupier->Is_Foot() &&
               !Target_Legal(dynamic_cast<FootClass*>(occupier)->NavCom)) {
-            Map[newcell].Incoming(0, true);
+            Map.at(newcell).Incoming(0, true);
           } else {
             //						Base_Is_Attacked(occupier);
           }

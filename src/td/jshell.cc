@@ -111,14 +111,14 @@ std::span<const unsigned char> Small_Icon(std::span<const std::byte> iconptr,
   }
   const auto offset =
       base::ToSize(control.Icons) +
-      (std::to_integer<size_t>(map[base::ToSize(iconnum)]) * 24 * 24);
+      (std::to_integer<size_t>(base::At(map, base::ToSize(iconnum))) * 24 * 24);
   if (offset > iconptr.size() || iconptr.size() - offset < size_t{24} * 24) {
     return {};
   }
   for (int index = 0; index < 9; ++index) {
     base::At(icon, index) = std::to_integer<unsigned char>(
-        iconptr[offset + base::ToSize(4 + ((index % 3) * 8)) +
-                (base::ToSize(4 + ((index / 3) * 8)) * 24)]);
+        base::At(iconptr, offset + base::ToSize(4 + ((index % 3) * 8)) +
+                              (base::ToSize(4 + ((index / 3) * 8)) * 24)));
   }
   return icon;
 }
@@ -291,7 +291,7 @@ std::span<std::byte> Load_Alloc_Data(File& file) {
   // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
   const std::span<char> storage(new char[size + 1], size + 1);
   file.Read(std::as_writable_bytes(storage.first(size)));
-  storage[size] = '\0';
+  base::At(storage, size) = '\0';
   return std::as_writable_bytes(storage.first(size));
 }
 
@@ -356,8 +356,8 @@ std::span<unsigned char> Build_Translucent_Table(
   }
   std::ranges::fill(buffer.first(256), static_cast<unsigned char>(255));
   for (int index = 0; index < count; ++index) {
-    const auto& item = control[base::ToSize(index)];
-    buffer[item.SourceColor] = static_cast<unsigned char>(index);
+    const auto& item = base::At(control, base::ToSize(index));
+    base::At(buffer, item.SourceColor) = static_cast<unsigned char>(index);
     Build_Fading_Table(palette,
                        buffer.subspan(base::ToSize(index + 1) * 256, 256),
                        item.DestColor, item.Fading);
@@ -412,8 +412,8 @@ std::span<unsigned char> Conquer_Build_Translucent_Table(
   }
   std::ranges::fill(buffer.first(256), static_cast<unsigned char>(255));
   for (int index = 0; index < count; ++index) {
-    const auto& item = control[base::ToSize(index)];
-    buffer[item.SourceColor] = static_cast<unsigned char>(index);
+    const auto& item = base::At(control, base::ToSize(index));
+    base::At(buffer, item.SourceColor) = static_cast<unsigned char>(index);
     Conquer_Build_Fading_Table(
         palette, buffer.subspan(base::ToSize(index + 1) * 256, 256),
         item.DestColor, item.Fading);

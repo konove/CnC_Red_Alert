@@ -667,9 +667,10 @@ void TerrainTypeClass::Init(TheaterType theater) {
         /*
         **	Load in the appropriate object shape data.
         */
-        const auto fullname = std::filesystem::path(terrain.IniName)
-                                  .replace_extension(Theaters[theater].Suffix)
-                                  .string();
+        const auto fullname =
+            std::filesystem::path(terrain.IniName)
+                .replace_extension(Theaters.at(theater).Suffix)
+                .string();
         terrain.Set_Image_Data(MixArchive::RetrieveData(fullname));
 
         IsTheaterShape = true;
@@ -699,7 +700,7 @@ TerrainType TerrainTypeClass::From_Name(const char* name) {
 
   if (name) {
     for (TerrainType index = TERRAIN_TREE1; index < TERRAIN_COUNT; index++) {
-      if (port::CompareIgnoreCase(name, Pointers[index]->IniName) == 0) {
+      if (port::CompareIgnoreCase(name, Pointers.at(index)->IniName) == 0) {
         return index;
       }
     }

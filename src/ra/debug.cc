@@ -67,14 +67,12 @@
 #include "ra/inline.h"
 #include "ra/jshell.h"
 #include "ra/logic.h"
-#include "ra/map.h"
 #include "ra/mapedit.h"
 #include "ra/monoc.h"
 #include "ra/object.h"
 #include "ra/super.h"
 #include "ra/techno.h"
 #include "ra/type.h"
-#include "ra/vector.h"
 #include "ra/vector_dynamic.h"
 #include "ra/vortex.h"
 #include "ra/weapon.h"
@@ -136,8 +134,8 @@ void Debug_Key(unsigned input) {
       case KN_P: {
         for (const SpecialWeaponType spc :
              magic_enum::enum_values<SpecialWeaponType>()) {
-          PlayerPtr->SuperWeapon[spc].Enable(true, true);
-          PlayerPtr->SuperWeapon[spc].Forced_Charge(true);
+          PlayerPtr->SuperWeapon.at(spc).Enable(true, true);
+          PlayerPtr->SuperWeapon.at(spc).Forced_Charge(true);
           Map.Add(RTTI_SPECIAL, static_cast<int>(spc));
           base::At(Map.Column, 1).Flag_To_Redraw();
         }
@@ -170,7 +168,7 @@ void Debug_Key(unsigned input) {
         const COORDINATE coord =
             Map.Pixel_To_Coord(Get_Mouse_X(), Get_Mouse_Y());
         const int damage = 1000;
-        new AnimClass(Combat_Anim(damage, warhead, Map[coord].Land_Type()),
+        new AnimClass(Combat_Anim(damage, warhead, Map.at(coord).Land_Type()),
                       coord);
         Explosion_Damage(coord, damage, nullptr, warhead);
       } break;
@@ -235,10 +233,10 @@ void Debug_Key(unsigned input) {
         if (CurrentObject.Count()) {
           Map.Recalc();
           // CurrentObject[0]->Detach_All();
-          if (CurrentObject[0]->What_Am_I() == RTTI_BUILDING) {
-            dynamic_cast<BuildingClass*>(CurrentObject[0])->Sell_Back(1);
+          if (CurrentObject.at(0)->What_Am_I() == RTTI_BUILDING) {
+            dynamic_cast<BuildingClass*>(CurrentObject.at(0))->Sell_Back(1);
           } else {
-            ObjectClass* object = CurrentObject[0];
+            ObjectClass* object = CurrentObject.at(0);
             object->Unselect();
             object->Limbo();
             delete object;
@@ -250,15 +248,15 @@ void Debug_Key(unsigned input) {
         if (CurrentObject.Count()) {
           Map.Recalc();
           int damage = 50;
-          CurrentObject[0]->Take_Damage(damage, 0, WARHEAD_SA);
+          CurrentObject.at(0)->Take_Damage(damage, 0, WARHEAD_SA);
         }
         break;
 
       case KN_INSERT:
         if (CurrentObject.Count()) {
-          Map.PendingObject = &CurrentObject[0]->Class_Of();
+          Map.PendingObject = &CurrentObject.at(0)->Class_Of();
           if (Map.PendingObject) {
-            Map.PendingHouse = CurrentObject[0]->Owner();
+            Map.PendingHouse = CurrentObject.at(0)->Owner();
             Map.PendingObjectPtr = Map.PendingObject->Create_One_Of(
                 HouseClass::As_Pointer(Map.PendingHouse));
             if (Map.PendingObjectPtr) {
@@ -311,17 +309,17 @@ void Debug_Key(unsigned input) {
       *red circle is for *	fire range.
       */
       case KN_F7:
-        if (CurrentObject.Count() && CurrentObject[0]->Is_Techno()) {
+        if (CurrentObject.Count() && CurrentObject.at(0)->Is_Techno()) {
           const auto& ttype = dynamic_cast<const TechnoTypeClass&>(
-              CurrentObject[0]->Class_Of());
+              CurrentObject.at(0)->Class_Of());
           const int sight = ttype.SightRange * 256;
           int weapon = 0;
           if (ttype.PrimaryWeapon != nullptr) {
             weapon = ttype.PrimaryWeapon->Range;
           }
           Set_Logic_Page(SeenBuff);
-          const COORDINATE center = CurrentObject[0]->Center_Coord();
-          const COORDINATE center2 = CurrentObject[0]->Fire_Coord(0);
+          const COORDINATE center = CurrentObject.at(0)->Center_Coord();
+          const COORDINATE center2 = CurrentObject.at(0)->Fire_Coord(0);
 
           for (int r = 0; r < 255; r += 10) {
             int x = 0;
@@ -382,14 +380,14 @@ void Debug_Key(unsigned input) {
 static const char* Bench_Time(BenchType btype) {
   static char buffer[32];
 
-  int64_t rootcount = Benches[static_cast<size_t>(BENCH_GAME_FRAME)].Count();
+  int64_t rootcount = Benches.at(static_cast<size_t>(BENCH_GAME_FRAME)).Count();
   if (rootcount == 0) {
     rootcount = 1;
   }
   const int64_t roottime =
-      Benches[static_cast<size_t>(BENCH_GAME_FRAME)].Value();
-  const int64_t count = Benches[static_cast<size_t>(btype)].Count();
-  int64_t time = Benches[static_cast<size_t>(btype)].Value();
+      Benches.at(static_cast<size_t>(BENCH_GAME_FRAME)).Value();
+  const int64_t count = Benches.at(static_cast<size_t>(btype)).Count();
+  int64_t time = Benches.at(static_cast<size_t>(btype)).Value();
   if (count > 0 && count * time > roottime * rootcount) {
     time = roottime / count;
   }
@@ -480,13 +478,14 @@ static void Benchmarks(MonoClass* mono) {
     mono->Printf("%s", Bench_Time(BENCH_BLIT_DISPLAY));
 
     mono->Set_Cursor(66, 2);
-    mono->Printf("%7d", Benches[static_cast<size_t>(BENCH_RULES)].Value());
+    mono->Printf("%7d", Benches.at(static_cast<size_t>(BENCH_RULES)).Value());
     mono->Set_Cursor(66, 4);
-    mono->Printf("%7d", Benches[static_cast<size_t>(BENCH_SCENARIO)].Value());
+    mono->Printf("%7d",
+                 Benches.at(static_cast<size_t>(BENCH_SCENARIO)).Value());
 
     for (const BenchType index : magic_enum::enum_values<BenchType>()) {
       if (index != BENCH_RULES && index != BENCH_SCENARIO) {
-        Benches[static_cast<size_t>(index)].Reset();
+        Benches.at(static_cast<size_t>(index)).Reset();
       }
     }
   }
@@ -522,7 +521,7 @@ void Self_Regulate() {
       if (_first) {
         _first = false;
         for (const DMonoType index : magic_enum::enum_values<DMonoType>()) {
-          MonoArray[index].Clear();
+          MonoArray.at(index).Clear();
         }
       }
 
@@ -530,9 +529,9 @@ void Self_Regulate() {
       **	Always update the stress tracking mono display even if it
       **	currently isn't visible.
       */
-      LogicClass::Debug_Dump(&MonoArray[DMONO_STRESS]);
+      LogicClass::Debug_Dump(&MonoArray.at(DMONO_STRESS));
 
-      MonoClass* mono = &MonoArray[MonoPage];
+      MonoClass* mono = &MonoArray.at(MonoPage);
       mono->Set_Default_Attribute(MonoClass::NORMAL);
       mono->View();
 
@@ -548,7 +547,7 @@ void Self_Regulate() {
           **	Display the status of the currently selected object.
           */
           if (CurrentObject.Count()) {
-            _lastobject = CurrentObject[0];
+            _lastobject = CurrentObject.at(0);
           }
           if (_lastobject && !_lastobject->IsActive) {
             _lastobject = nullptr;
@@ -565,7 +564,7 @@ void Self_Regulate() {
           mono->Clear();
 
           if (CurrentObject.Count()) {
-            _lastobject = CurrentObject[0];
+            _lastobject = CurrentObject.at(0);
           }
           if (_lastobject && !_lastobject->IsActive) {
             _lastobject = nullptr;

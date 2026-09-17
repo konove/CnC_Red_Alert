@@ -87,14 +87,14 @@ void CheckListClass::Remove_Item(int index) {
 
 void CheckListClass::Check_Item(int index, bool checked) {
   if (index >= 0 && index < Count() &&
-      Checked[base::ToSize(index)] != checked) {
-    Checked[base::ToSize(index)] = checked;
+      Checked.at(base::ToSize(index)) != checked) {
+    Checked.at(base::ToSize(index)) = checked;
     Flag_To_Redraw();
   }
 }
 
 bool CheckListClass::Is_Checked(int index) const {
-  return index >= 0 && index < Count() && Checked[base::ToSize(index)];
+  return index >= 0 && index < Count() && Checked.at(base::ToSize(index));
 }
 
 bool CheckListClass::Action(unsigned flags, KeyNumType& key) {

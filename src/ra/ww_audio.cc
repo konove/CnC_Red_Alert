@@ -411,7 +411,7 @@ VocType Voc_From_Name(const char* name) {
   }
 
   for (const VocType voc : magic_enum::enum_values<VocType>()) {
-    if (port::CompareIgnoreCase(name, SoundEffectName[voc].Name) == 0) {
+    if (port::CompareIgnoreCase(name, SoundEffectName.at(voc).Name) == 0) {
       return voc;
     }
   }
@@ -438,7 +438,7 @@ const char* Voc_Name(VocType voc) {
   if (voc == VOC_NONE) {
     return "none";
   }
-  return SoundEffectName[voc].Name;
+  return SoundEffectName.at(voc).Name;
 }
 
 /***********************************************************************************************
@@ -554,7 +554,7 @@ int Sound_Effect(VocType voc, fixed volume, int variation, int16_t pan_value,
   *appropriate and desired.
   */
   const char* ext = ".AUD";
-  if (SoundEffectName[voc].Where == IN_VAR) {
+  if (SoundEffectName.at(voc).Where == IN_VAR) {
     /*
     **	If there is no forced house, then use the current player
     **	act like house.
@@ -600,7 +600,7 @@ int Sound_Effect(VocType voc, fixed volume, int variation, int16_t pan_value,
       }
     }
   }
-  const auto name = std::filesystem::path(SoundEffectName[voc].Name)
+  const auto name = std::filesystem::path(SoundEffectName.at(voc).Name)
                         .replace_extension(ext)
                         .string();
   const auto ptr = MixArchive::RetrieveData(name);
@@ -610,7 +610,7 @@ int Sound_Effect(VocType voc, fixed volume, int variation, int16_t pan_value,
   */
   if (!ptr.empty()) {
     volume.Sub_Saturate(1);
-    return Play_Sample(ptr, SoundEffectName[voc].Priority * volume,
+    return Play_Sample(ptr, SoundEffectName.at(voc).Priority * volume,
                        volume * 256, pan_value);
   }
   return -1;
@@ -799,7 +799,7 @@ const char* Speech_Name(VoxType speech) {
   if (speech == VOX_NONE) {
     return "none";
   }
-  return Speech[speech];
+  return Speech.at(speech);
 }
 
 /***********************************************************************************************
@@ -874,7 +874,7 @@ void Speak_AI() {
       if (speech.empty()) {
         _index = static_cast<int>((_index + 1) % std::ssize(SpeechRecord));
 
-        const auto name = std::filesystem::path(Speech[SpeakQueue])
+        const auto name = std::filesystem::path(Speech.at(SpeakQueue))
                               .replace_extension(".AUD")
                               .string();
 

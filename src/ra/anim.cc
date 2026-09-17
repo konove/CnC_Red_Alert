@@ -83,7 +83,6 @@
 #include "ra/inline.h"
 #include "ra/keyframe.h"
 #include "ra/logic.h"
-#include "ra/map.h"
 #include "ra/mapedit.h"
 #include "ra/mouse.h"
 #include "ra/object.h"
@@ -94,7 +93,6 @@
 #include "ra/target.h"
 #include "ra/techno.h"
 #include "ra/type.h"
-#include "ra/vector.h"
 #include "ra/ww_audio.h"
 #include "sdllib/shape.h"
 #include "tech/fixed.h"
@@ -243,7 +241,7 @@ bool AnimClass::Render(bool forced)  // const
   if (Delay) {
     return false;
   }
-  if (Map[Center_Coord()].IsVisible) {
+  if (Map.at(Center_Coord()).IsVisible) {
     IsToDisplay = true;
   }
   return ObjectClass::Render(forced);
@@ -630,7 +628,7 @@ void AnimClass::AI() {
   **	Special case check to make sure that building on top of a smoke marker
   **	causes the smoke marker to vanish.
   */
-  if (Class->Type == ANIM_LZ_SMOKE && Map[Center_Coord()].Cell_Building()) {
+  if (Class->Type == ANIM_LZ_SMOKE && Map.at(Center_Coord()).Cell_Building()) {
     IsToDelete = true;
   }
 
@@ -897,7 +895,7 @@ void AnimClass::Middle() {
   assert(IsActive);
 
   const CELL cell = Coord_Cell(Center_Coord());
-  CellClass* cellptr = &Map[cell];
+  CellClass* cellptr = &Map.at(cell);
 
   if (Class->Type == ANIM_ATOM_BLAST) {
     Do_Atom_Damage(OwnerHouse, cell);
@@ -1107,7 +1105,7 @@ void AnimClass::Do_Atom_Damage(HousesType ownerhouse, CELL cell) {
   TechnoClass* backup = nullptr;
   if (ownerhouse != HOUSE_NONE) {
     for (int index = 0; index < Logic.Count(); index++) {
-      ObjectClass* obj = Logic[index];
+      ObjectClass* obj = Logic.at(index);
 
       if (obj != nullptr && obj->Is_Techno() && obj->Owner() == ownerhouse) {
         backup = dynamic_cast<TechnoClass*>(obj);

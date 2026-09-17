@@ -646,7 +646,7 @@ bool TriggerClass::Spring(EventType event, CELL cell) {
     /*
     ** Detach ourselves from the cell
     */
-    Map[cell].IsTrigger = false;
+    Map.at(cell).IsTrigger = false;
 
     /*
     ** Decrement our attachment counter
@@ -998,9 +998,9 @@ bool TriggerClass::Remove() {
   **	Loop through all cells; remove any reference to this trigger
   */
   for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
-    if (Map[cell].IsTrigger && (CellTriggers[cell] == this)) {
-      Map[cell].IsTrigger = false;
-      CellTriggers[cell] = nullptr;
+    if (Map.at(cell).IsTrigger && (CellTriggers.at(cell) == this)) {
+      Map.at(cell).IsTrigger = false;
+      CellTriggers.at(cell) = nullptr;
     }
   }
 
@@ -1034,7 +1034,7 @@ bool TriggerClass::Remove() {
   **	be on the safe side.
   */
   for (HousesType h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
-    HouseTriggers[h].Delete(this);
+    HouseTriggers.at(h).Delete(this);
   }
 
   delete this;
@@ -1126,7 +1126,7 @@ void TriggerClass::Read_INI(char* buffer) {
       if (trigger->Action == ACTION_ALLOWWIN) {
         HouseClass::As_Pointer(trigger->House)->Blockage++;
       }
-      HouseTriggers[trigger->House].Add(trigger);
+      HouseTriggers.at(trigger->House).Add(trigger);
       trigger->AttachCount++;
     }
 

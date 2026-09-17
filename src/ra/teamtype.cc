@@ -160,8 +160,8 @@ void TeamTypeClass::Draw_It(int /*unused*/, int x, int y, int width, int height,
                               width, _tabs);
     } else {
       Conquer_Clip_Text_Print(Description(), x, y,
-                              (selected ? &ColorRemaps[PCOLOR_DIALOG_BLUE]
-                                        : &ColorRemaps[PCOLOR_GREY]),
+                              (selected ? &ColorRemaps.at(PCOLOR_DIALOG_BLUE)
+                                        : &ColorRemaps.at(PCOLOR_GREY)),
                               kTBlack, flags, width, _tabs);
     }
   }
@@ -264,7 +264,7 @@ TeamMissionType TeamTypeClass::Mission_From_Name(const char* name) {
   if (name) {
     for (TeamMissionType order = TMISSION_ATTACK; order < TMISSION_COUNT;
          order++) {
-      if (port::CompareIgnoreCase(TMissions[order], name) == 0) {
+      if (port::CompareIgnoreCase(TMissions.at(order), name) == 0) {
         return order;
       }
     }
@@ -291,7 +291,7 @@ TeamMissionType TeamTypeClass::Mission_From_Name(const char* name) {
 const char* TeamTypeClass::Name_From_Mission(TeamMissionType order) {
   assert(static_cast<unsigned>(order) < static_cast<unsigned>(TMISSION_COUNT));
 
-  return TMissions[order];
+  return TMissions.at(order);
 }
 
 /***************************************************************************
@@ -600,8 +600,8 @@ void TeamMissionClass::Draw_It(int index, int x, int y, int width, int height,
                             width, _tabs);
   } else {
     Conquer_Clip_Text_Print(Description(index), x, y,
-                            (selected ? &ColorRemaps[PCOLOR_DIALOG_BLUE]
-                                      : &ColorRemaps[PCOLOR_GREY]),
+                            (selected ? &ColorRemaps.at(PCOLOR_DIALOG_BLUE)
+                                      : &ColorRemaps.at(PCOLOR_GREY)),
                             kTBlack, flags, width, _tabs);
   }
 }
@@ -881,7 +881,7 @@ bool TeamTypeClass::Edit() {
                       100, 5 * 8, MixArchive::RetrieveData("EBTN-UP.SHP"),
                       MixArchive::RetrieveData("EBTN-DN.SHP"));
   for (const QuarryType q : magic_enum::enum_values<QuarryType>()) {
-    qlist.Add_Item(QuarryName[q]);
+    qlist.Add_Item(QuarryName.at(q));
   }
   qlist.Set_Selected_Index(0);
   qlist.Add_Tail(*commands);
@@ -893,7 +893,7 @@ bool TeamTypeClass::Edit() {
                       100, 5 * 8, MixArchive::RetrieveData("EBTN-UP.SHP"),
                       MixArchive::RetrieveData("EBTN-DN.SHP"));
   for (const FormationType f : magic_enum::enum_values<FormationType>()) {
-    flist.Add_Item(FormationName[f]);
+    flist.Add_Item(FormationName.at(f));
   }
   flist.Set_Selected_Index(0);
   flist.Add_Tail(*commands);
@@ -1125,7 +1125,7 @@ bool TeamTypeClass::Edit() {
             case NEED_QUARRY:
               port::SafeCopy(
                   qlist.Get_Text_Buffer(),
-                  QuarryName[missionlist2.Current_Item()->Data.Quarry]);
+                  QuarryName.at(missionlist2.Current_Item()->Data.Quarry));
               break;
 
             case NEED_WAYPOINT:
@@ -1199,7 +1199,7 @@ bool TeamTypeClass::Edit() {
               if (std::string_view(arg_edt.Get_Text()).size() > 1) {
                 tm->Data.Value = (tm->Data.Value + 1) * 26;
                 tm->Data.Value +=
-                    toupper(std::string_view(arg_edt.Get_Text())[1]) - 'A';
+                    toupper(std::string_view(arg_edt.Get_Text()).at(1)) - 'A';
               }
               if (tm->Data.Value < 0 ||
                   tm->Data.Value >= ScenarioClass::kHomeWaypoint) {
@@ -1266,7 +1266,7 @@ bool TeamTypeClass::Edit() {
               if (std::string_view(arg_edt.Get_Text()).size() > 1) {
                 tm->Data.Value = (tm->Data.Value + 1) * 26;
                 tm->Data.Value +=
-                    toupper(std::string_view(arg_edt.Get_Text())[1]) - 'A';
+                    toupper(std::string_view(arg_edt.Get_Text()).at(1)) - 'A';
               }
               if (tm->Data.Value < 0 ||
                   tm->Data.Value >= ScenarioClass::kHomeWaypoint) {
@@ -1334,7 +1334,7 @@ bool TeamTypeClass::Edit() {
               if (std::string_view(arg_edt.Get_Text()).size() > 1) {
                 tm->Data.Value = (tm->Data.Value + 1) * 26;
                 tm->Data.Value +=
-                    toupper(std::string_view(arg_edt.Get_Text())[1]) - 'A';
+                    toupper(std::string_view(arg_edt.Get_Text()).at(1)) - 'A';
               }
               if (tm->Data.Value < 0 ||
                   tm->Data.Value >= ScenarioClass::kHomeWaypoint) {
@@ -1361,7 +1361,7 @@ bool TeamTypeClass::Edit() {
               tm->Data.Value = 0;
               break;
           }
-          missionlist2[missionlist2.Current_Index()] = tm;
+          missionlist2.at(missionlist2.Current_Index()) = tm;
         }
         display = true;
         break;
@@ -1432,7 +1432,7 @@ bool TeamTypeClass::Edit() {
         MissionCount = missionlist2.Count();
         for (int index = 0; index < MissionCount; index++) {
           base::At(MissionList, index).Data.Value = 0;  // Clears extra bits.
-          base::At(MissionList, index) = *missionlist2[index];
+          base::At(MissionList, index) = *missionlist2.at(index);
         }
 
         if (!std::string_view(originbtn.Get_Text()).empty()) {
@@ -1440,7 +1440,8 @@ bool TeamTypeClass::Edit() {
             Origin = toupper(*originbtn.Get_Text()) - 'A';
           } else {
             Origin = (toupper(*originbtn.Get_Text()) + 1 - 'A') * 26;
-            Origin += toupper(std::string_view(originbtn.Get_Text())[1]) - 'A';
+            Origin +=
+                toupper(std::string_view(originbtn.Get_Text()).at(1)) - 'A';
           }
         } else {
           Origin = -1;
@@ -1483,7 +1484,7 @@ bool TeamTypeClass::Edit() {
 
   // The list holds copies made with new; the team type has its own array.
   for (int index = 0; index < missionlist2.Count(); index++) {
-    delete missionlist2[index];
+    delete missionlist2.at(index);
   }
 
   return (!cancel);
@@ -1631,7 +1632,7 @@ const char* TeamMissionClass::Description(int index) const {
         break;
 
       case NEED_FORMATION:
-        port::SafeAppend(buffer, FormationName[Data.Formation]);
+        port::SafeAppend(buffer, FormationName.at(Data.Formation));
         break;
 
       case NEED_NUMBER:
@@ -1648,7 +1649,7 @@ const char* TeamMissionClass::Description(int index) const {
         break;
 
       case NEED_QUARRY:
-        port::SafeAppend(buffer, QuarryName[Data.Quarry]);
+        port::SafeAppend(buffer, QuarryName.at(Data.Quarry));
         break;
 
       case NEED_WAYPOINT:

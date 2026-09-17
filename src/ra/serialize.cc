@@ -22,7 +22,6 @@
 #include "ra/terrain.h"
 #include "ra/type.h"
 #include "ra/unit.h"
-#include "ra/vector.h"
 #include "ra/vector_dynamic.h"
 #include "ra/vessel.h"
 #include "tech/archive.h"
@@ -194,7 +193,7 @@ void SerializeObjectList(Archive& ar, DynamicVectorClass<ObjectClass*>& objects)
     }
   } else {
     for (int i = 0; i < count; ++i) {
-      ar(ObjectPtr(objects[i]));
+      ar(ObjectPtr(objects.at(i)));
     }
   }
 }

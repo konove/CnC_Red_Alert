@@ -49,7 +49,7 @@ class CrcEngine {
   // Submits a single byte to the accumulator.
   constexpr CrcEngine& Update(const uint8_t datum) noexcept
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    buffer_[index_++] = datum;
+    buffer_.at(index_++) = datum;
     if (index_ == sizeof(uint32_t)) {
       crc_ = std::rotl(crc_, 1) + CurrentBufferAsInt();
       index_ = 0;
@@ -103,10 +103,10 @@ class CrcEngine {
 
   // ReSharper disable once CppDFAUnreachableFunctionCall
   [[nodiscard]] constexpr uint32_t CurrentBufferAsInt() const noexcept {
-    return static_cast<uint32_t>(buffer_[0]) |
-           static_cast<uint32_t>(buffer_[1]) << 8 |
-           static_cast<uint32_t>(buffer_[2]) << 16 |
-           static_cast<uint32_t>(buffer_[3]) << 24;
+    return static_cast<uint32_t>(buffer_.at(0)) |
+           static_cast<uint32_t>(buffer_.at(1)) << 8 |
+           static_cast<uint32_t>(buffer_.at(2)) << 16 |
+           static_cast<uint32_t>(buffer_.at(3)) << 24;
   }
 };
 

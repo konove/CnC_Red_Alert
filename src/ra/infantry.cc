@@ -137,7 +137,6 @@
 #include "ra/house.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
-#include "ra/map.h"
 #include "ra/mapedit.h"
 #include "ra/mission.h"
 #include "ra/monoc.h"
@@ -561,25 +560,27 @@ int InfantryClass::Shape_Number() const {
   */
   int shapenum =
       Fetch_Stage() %
-      std::max(
-          static_cast<int>(
-              Class->DoControls[base::ToSize(static_cast<int>(doit))].Count),
-          1);
+      std::max(static_cast<int>(base::At(Class->DoControls,
+                                         base::ToSize(static_cast<int>(doit)))
+                                    .Count),
+               1);
 
   /*
   **	If facing makes a difference, then the shape number will be incremented
   **	by the facing accordingly.
   */
-  if (Class->DoControls[base::ToSize(static_cast<int>(doit))].Jump) {
-    shapenum += base::At(HumanShape, Dir_To_32(PrimaryFacing.Current())) *
-                Class->DoControls[base::ToSize(static_cast<int>(doit))].Jump;
+  if (base::At(Class->DoControls, base::ToSize(static_cast<int>(doit))).Jump) {
+    shapenum +=
+        base::At(HumanShape, Dir_To_32(PrimaryFacing.Current())) *
+        base::At(Class->DoControls, base::ToSize(static_cast<int>(doit))).Jump;
   }
 
   /*
   **	Finally, the shape number is biased according to the starting frame
   *number for *	that action in the infantry shape file.
   */
-  shapenum += Class->DoControls[base::ToSize(static_cast<int>(doit))].Frame;
+  shapenum +=
+      base::At(Class->DoControls, base::ToSize(static_cast<int>(doit))).Frame;
 
   /*
   **	Return with the final infantry shape number.
@@ -657,7 +658,7 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
   assert(IsActive);
 
   BStart(BENCH_PCP);
-  CellClass* cellptr = &Map[Coord];
+  CellClass* cellptr = &Map.at(Coord);
 
   if (why == PCP_END) {
     /*
@@ -730,7 +731,8 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
               }
               // If they're spying on a sub pen, give 'em a sonar pulse
               if (build == STRUCT_SUB_PEN) {
-                House->SuperWeapon[SPC_SONAR_PULSE].Enable(false, true, false);
+                House->SuperWeapon.at(SPC_SONAR_PULSE)
+                    .Enable(false, true, false);
                 if (IsOwnedByPlayer) {
                   Map.Add(RTTI_SPECIAL, static_cast<int>(SPC_SONAR_PULSE));
                   base::At(Map.Column, 1).Flag_To_Redraw();
@@ -769,7 +771,7 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
       }
       if (!Target_Legal(NavCom)) {
         Enter_Idle_Mode();
-        if (Map[Coord].Cell_Building()) {
+        if (Map.at(Coord).Cell_Building()) {
           Scatter(0, true);
         }
       }
@@ -820,7 +822,7 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
         Assign_Mission(MISSION_MOVE);
 
         if (!Target_Legal(NavCom) ||
-            Map[As_Cell(NavCom)].Land_Type() == LAND_WATER) {
+            Map.at(As_Cell(NavCom)).Land_Type() == LAND_WATER) {
           Mark(MARK_DOWN);  // Needed only so that Tanya will get destroyed by
                             // the explosion.
         }
@@ -912,7 +914,7 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
     *move. In such a case the unit should have been destroyed *	anyway, so blow
     *it up now.
     */
-    const LandType land = Map[Coord].Land_Type();
+    const LandType land = Map.at(Coord).Land_Type();
     if (!IsDriving && !Class->IsBomber &&
         (land == LAND_ROCK || land == LAND_WATER || land == LAND_RIVER)) {
       int damage = Strength;
@@ -1002,7 +1004,7 @@ void InfantryClass::Assign_Destination(TARGET target) {
   *immediately.
   */
   if (IsDriving && !IsFormationMove && Target_Legal(target) &&
-      Map[Center_Coord()].Is_Clear_To_Move(Class->Speed, true, false)) {
+      Map.at(Center_Coord()).Is_Clear_To_Move(Class->Speed, true, false)) {
     Stop_Driver();
   }
 
@@ -1158,7 +1160,7 @@ void InfantryClass::AI() {
   **	Act on new orders if the unit is at a good position to do so.
   */
   if (!IsFiring && !IsFalling && !IsDriving &&
-      (Doing == DO_NOTHING || MasterDoControls[Doing].Interrupt)) {
+      (Doing == DO_NOTHING || MasterDoControls.at(Doing).Interrupt)) {
     if (Mission == MISSION_NONE && MissionQueue == MISSION_NONE) {
       Enter_Idle_Mode();
     }
@@ -1236,7 +1238,7 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType /*from*/) const {
     return MOVE_NO;
   }
 
-  const CellClass* cellptr = &Map[cell];
+  const CellClass* cellptr = &Map.at(cell);
 
   /*
   **	Walls are considered impassable for infantry UNLESS the wall has a hole
@@ -1483,7 +1485,7 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType /*from*/) const {
   **	If foot soldiers cannot travel on the cell -- consider it impassable.
   */
   if (retval == MOVE_OK && !IsTethered &&
-      Ground[cellptr->Land_Type()].Cost[SPEED_FOOT] == 0) {
+      Ground.at(cellptr->Land_Type()).Cost.at(SPEED_FOOT) == 0) {
     return MOVE_NO;
   }
 
@@ -1605,7 +1607,7 @@ FireErrorType InfantryClass::Can_Fire(TARGET target, int which) const {
   **	If this unit cannot fire while moving, then bail.
   */
   if (IsDriving || (Target_Legal(NavCom) && Doing != DO_NOTHING &&
-                    !MasterDoControls[Doing].Interrupt)) {
+                    !MasterDoControls.at(Doing).Interrupt)) {
     return FIRE_MOVING;
   }
 
@@ -1656,8 +1658,8 @@ void InfantryClass::Enter_Idle_Mode(bool /*initial*/) {
       }
     } else {
       if (Mission == MISSION_GUARD || Mission == MISSION_GUARD_AREA ||
-          (Mission != MISSION_NONE && (MissionControl[Mission].IsParalyzed ||
-                                       MissionControl[Mission].IsZombie))) {
+          (Mission != MISSION_NONE && (MissionControl.at(Mission).IsParalyzed ||
+                                       MissionControl.at(Mission).IsZombie))) {
         return;
       }
 
@@ -1834,7 +1836,7 @@ void InfantryClass::Scatter(COORDINATE threat, bool forced, bool nokidding) {
   **	Certain missions prevent scattering regardless of whether it would be
   **	a good idea or not.
   */
-  if (!MissionControl[Mission].IsScatter && !forced) {
+  if (!MissionControl.at(Mission).IsScatter && !forced) {
     return;
   }
 
@@ -1849,7 +1851,7 @@ void InfantryClass::Scatter(COORDINATE threat, bool forced, bool nokidding) {
   /*
   **	Don't scatter if performing an action that can't be interrupted.
   */
-  if (Doing != DO_NOTHING && !MasterDoControls[Doing].Interrupt) {
+  if (Doing != DO_NOTHING && !MasterDoControls.at(Doing).Interrupt) {
     return;
   }
 
@@ -1891,7 +1893,7 @@ void InfantryClass::Scatter(COORDINATE threat, bool forced, bool nokidding) {
         if (altcell == 0) {
           altcell = newcell;
         }
-        if (!Map[newcell].Is_Bridge_Here()) {
+        if (!Map.at(newcell).Is_Bridge_Here()) {
           found = true;
           break;
         }
@@ -1937,7 +1939,8 @@ bool InfantryClass::Do_Action(DoType todo, bool force) {
   assert(IsActive);
 
   if (todo == DO_NOTHING ||
-      Class->DoControls[base::ToSize(static_cast<int>(todo))].Count == 0) {
+      base::At(Class->DoControls, base::ToSize(static_cast<int>(todo))).Count ==
+          0) {
     return false;
   }
 
@@ -1946,14 +1949,14 @@ bool InfantryClass::Do_Action(DoType todo, bool force) {
   }
 
   if (todo != Doing &&
-      (Doing == DO_NOTHING || force || MasterDoControls[Doing].Interrupt)) {
+      (Doing == DO_NOTHING || force || MasterDoControls.at(Doing).Interrupt)) {
     Mark(MARK_OVERLAP_UP);
     Doing = todo;
     Mark(MARK_OVERLAP_DOWN);
     if (todo == DO_IDLE1 || todo == DO_IDLE2) {
-      Set_Rate(Options.Normalize_Delay(MasterDoControls[Doing].Rate));
+      Set_Rate(Options.Normalize_Delay(MasterDoControls.at(Doing).Rate));
     } else {
-      Set_Rate(MasterDoControls[Doing].Rate);
+      Set_Rate(MasterDoControls.at(Doing).Rate);
     }
     Set_Stage(0);
 
@@ -2086,10 +2089,10 @@ bool InfantryClass::Start_Driver(COORDINATE& headto) {
   /*
   **	Convert the head to coordinate to a legal sub-position location.
   */
-  headto = Map[headto].Closest_Free_Spot(
+  headto = Map.at(headto).Closest_Free_Spot(
       Coord_Move(headto, Direction(headto) + DIR_S, 0x007C));
   if (!headto && Can_Enter_Cell(Coord_Cell(old)) == MOVE_OK) {
-    headto = Map[old].Closest_Free_Spot(
+    headto = Map.at(old).Closest_Free_Spot(
         Coord_Move(old, Direction(headto) + DIR_S, 0x0080), true);
   }
 
@@ -2212,7 +2215,7 @@ bool InfantryClass::Unlimbo(COORDINATE coord, DirType facing) {
   /*
   **	Make sure that the infantry start in a legal position on the map.
   */
-  coord = Map[coord].Closest_Free_Spot(coord, ScenarioInit != 0);
+  coord = Map.at(coord).Closest_Free_Spot(coord, ScenarioInit != 0);
   if (coord == 0) {
     return false;
   }
@@ -2472,8 +2475,9 @@ void InfantryClass::Response_Select() {
         break;
     }
     if (!response.empty()) {
-      Sound_Effect(response[base::ToSize(Sim_Random_Pick(0, size - 1))],
-                   fixed(1), ID + 1, 0, house);
+      Sound_Effect(
+          base::At(response, base::ToSize(Sim_Random_Pick(0, size - 1))),
+          fixed(1), ID + 1, 0, house);
     }
   }
 }
@@ -2616,8 +2620,9 @@ void InfantryClass::Response_Move() {
         break;
     }
     if (!response.empty()) {
-      Sound_Effect(response[base::ToSize(Sim_Random_Pick(0, size - 1))],
-                   fixed(1), ID + 1, 0, house);
+      Sound_Effect(
+          base::At(response, base::ToSize(Sim_Random_Pick(0, size - 1))),
+          fixed(1), ID + 1, 0, house);
     }
   }
 }
@@ -2762,8 +2767,9 @@ void InfantryClass::Response_Attack() {
         break;
     }
     if (!response.empty()) {
-      Sound_Effect(response[base::ToSize(Sim_Random_Pick(0, size - 1))],
-                   fixed(1), ID + 1, 0, house);
+      Sound_Effect(
+          base::At(response, base::ToSize(Sim_Random_Pick(0, size - 1))),
+          fixed(1), ID + 1, 0, house);
     }
   }
 }
@@ -2973,7 +2979,8 @@ ActionType InfantryClass::What_Action(ObjectClass* object) {
         action = ACTION_CAPTURE;
         if (object->What_Am_I() == RTTI_BUILDING) {
           const CELL cell = As_Cell(object->As_Target());
-          const int targzone = Map[As_Cell(As_Target())].Zones[Class->MZone];
+          const int targzone =
+              Map.at(As_Cell(As_Target())).Zones.at(Class->MZone);
           std::span<const int16_t> list =
               dynamic_cast<const BuildingClass*>(object)->Class->Occupy_List(
                   false);
@@ -2983,7 +2990,7 @@ ActionType InfantryClass::What_Action(ObjectClass* object) {
                 static_cast<CELL>(cell + base::ConsumeFront(list));
             for (const FacingType i : magic_enum::enum_values<FacingType>()) {
               if (std::cmp_equal(
-                      Map[Adjacent_Cell(newcell, i)].Zones[Class->MZone],
+                      Map.at(Adjacent_Cell(newcell, i)).Zones.at(Class->MZone),
                       targzone)) {
                 found = true;
                 break;
@@ -3102,12 +3109,12 @@ void InfantryClass::Set_Occupy_Bit(CELL cell, int spot_index) {
   /*
   ** Set the occupy position for the spot that we passed in
   */
-  Map[cell].Flag.Composite |= base::Bit<uint8_t>(spot_index);
+  Map.at(cell).Flag.Composite |= base::Bit<uint8_t>(spot_index);
 
   /*
   ** Record the type of infantry that now owns the cell
   */
-  Map[cell].InfType = Owner();
+  Map.at(cell).InfType = Owner();
 }
 
 /***************************************************************************
@@ -3129,15 +3136,15 @@ void InfantryClass::Clear_Occupy_Bit(CELL cell, int spot_index) {
   /*
   ** Clear the occupy bit for the infantry in that cell
   */
-  Map[cell].Flag.Composite &=
+  Map.at(cell).Flag.Composite &=
       static_cast<uint8_t>(~base::Bit<uint8_t>(spot_index));
 
   /*
   ** If he was the last infantry recorded in the cell then
   ** remove the infantry ownership flag.
   */
-  if (!(Map[cell].Flag.Composite & 0x1F)) {
-    Map[cell].InfType = HOUSE_NONE;
+  if (!(Map.at(cell).Flag.Composite & 0x1F)) {
+    Map.at(cell).InfType = HOUSE_NONE;
   }
 }
 
@@ -3259,7 +3266,7 @@ ActionType InfantryClass::What_Action(CELL cell) const {
   **	Demolitioners may destroy a bridge
   */
   if (Class->IsBomber && action == ACTION_MOVE && !Special.IsCaptureTheFlag) {
-    const TemplateType bridge_type = Map[cell].TType;
+    const TemplateType bridge_type = Map.at(cell).TType;
     if (bridge_type == TEMPLATE_BRIDGE1 || bridge_type == TEMPLATE_BRIDGE2 ||
         bridge_type == TEMPLATE_BRIDGE1H || bridge_type == TEMPLATE_BRIDGE2H ||
         bridge_type == TEMPLATE_BRIDGE_1A ||
@@ -3663,7 +3670,7 @@ void InfantryClass::Firing_AI() {
       **	Run away from slowly approaching projectiles.
       */
       if (Class->PrimaryWeapon->MaxSpeed < Rule.Incoming) {
-        Map[As_Cell(TarCom)].Incoming(Coord, true);
+        Map.at(As_Cell(TarCom)).Incoming(Coord, true);
       }
 
       /*
@@ -3705,7 +3712,8 @@ void InfantryClass::Firing_AI() {
 void InfantryClass::Doing_AI() {
   if (Doing == DO_NOTHING ||
       Fetch_Stage() >=
-          Class->DoControls[base::ToSize(static_cast<int>(Doing))].Count) {
+          base::At(Class->DoControls, base::ToSize(static_cast<int>(Doing)))
+              .Count) {
     switch (Doing) {
       case DoType::DO_NOTHING:
       case DoType::DO_STAND_READY:
@@ -3764,7 +3772,8 @@ void InfantryClass::Doing_AI() {
       case DO_GRENADE_DEATH:
       case DO_FIRE_DEATH:
         if (Fetch_Stage() >=
-            Class->DoControls[base::ToSize(static_cast<int>(Doing))].Count) {
+            base::At(Class->DoControls, base::ToSize(static_cast<int>(Doing)))
+                .Count) {
           if (Doing == DO_GUN_DEATH && !Class->IsDog && Height == 0) {
             new AnimClass(ANIM_CORPSE1,
                           Coord_Add(Center_Coord(), XYP_Coord(-2, 4)));
@@ -3831,8 +3840,8 @@ void InfantryClass::Movement_AI() {
       */
       if (((!IsZoneCheat || Can_Enter_Cell(Coord_Cell(Coord)) != MOVE_NO) &&
            !IsDriving && !IsTethered && Target_Legal(NavCom) && IsLocked &&
-           Map[Coord].Zones[Class->MZone] !=
-               Map[As_Cell(NavCom)].Zones[Class->MZone]) &&
+           Map.at(Coord).Zones.at(Class->MZone) !=
+               Map.at(As_Cell(NavCom)).Zones.at(Class->MZone)) &&
           (!Class->IsCapture && Mission != MISSION_ENTER))
       // hack: if it's tanya, spy, or engineer, let 'em move there anyway.
       {
@@ -3922,13 +3931,13 @@ void InfantryClass::Movement_AI() {
                   if ((!IsZoneCheat ||
                        Can_Enter_Cell(Coord_Cell(Coord)) != MOVE_NO) &&
                       IsLocked && Target_Legal(NavCom) &&
-                      Map[As_Cell(NavCom)].Zones[Class->MZone] !=
-                          Map[Coord].Zones[Class->MZone]) {
+                      Map.at(As_Cell(NavCom)).Zones.at(Class->MZone) !=
+                          Map.at(Coord).Zones.at(Class->MZone)) {
                     Assign_Destination(kTargetNone);
                   }
                   if (IsLocked && Target_Legal(TarCom) &&
-                      Map[As_Cell(TarCom)].Zones[Class->MZone] !=
-                          Map[Coord].Zones[Class->MZone]) {
+                      Map.at(As_Cell(TarCom)).Zones.at(Class->MZone) !=
+                          Map.at(Coord).Zones.at(Class->MZone)) {
                     Assign_Target(kTargetNone);
                   }
                 }
@@ -3958,15 +3967,16 @@ void InfantryClass::Movement_AI() {
             ** try again next tick.
             */
             if (Can_Enter_Cell(acell) == MOVE_DESTROYABLE) {
-              if (Map[acell].Cell_Object()) {
-                if (!House->Is_Ally(Map[acell].Cell_Object())) {
+              if (Map.at(acell).Cell_Object()) {
+                if (!House->Is_Ally(Map.at(acell).Cell_Object())) {
                   Override_Mission(MISSION_ATTACK,
-                                   Map[acell].Cell_Object()->As_Target(),
+                                   Map.at(acell).Cell_Object()->As_Target(),
                                    kTargetNone);
                 }
               } else {
-                if (Map[acell].Overlay != OVERLAY_NONE &&
-                    OverlayTypeClass::As_Reference(Map[acell].Overlay).IsWall) {
+                if (Map.at(acell).Overlay != OVERLAY_NONE &&
+                    OverlayTypeClass::As_Reference(Map.at(acell).Overlay)
+                        .IsWall) {
                   Override_Mission(MISSION_ATTACK, ::As_Target(acell),
                                    kTargetNone);
                 }
@@ -3988,8 +3998,9 @@ void InfantryClass::Movement_AI() {
             }
             PrimaryFacing.Set(Direction8(Center_Coord(), Head_To_Coord()));
             if (IsFormationMove) {
-              Set_Speed(Ground[Map[Coord].Land_Type()].Cost[FormationSpeed] *
-                        256);
+              Set_Speed(
+                  Ground.at(Map.at(Coord).Land_Type()).Cost.at(FormationSpeed) *
+                  256);
             } else {
               Set_Speed(0xFF);
             }

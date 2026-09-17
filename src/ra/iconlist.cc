@@ -151,7 +151,7 @@ IconListClass::~IconListClass() {
   //	Delete the IconList_ItemExtras structs created to hold extra info on
   // each item.
   for (int i = 0; i < ExtrasList.Count(); i++) {
-    delete ExtrasList[i];
+    delete ExtrasList.at(i);
   }
 }
 
@@ -344,7 +344,7 @@ void IconListClass::Remove_Item(const char* text) {
 //***********************************************************************************************
 void IconListClass::Remove_Item(int index) {
   if (index >= 0 && index < Count()) {
-    delete ExtrasList[index];
+    delete ExtrasList.at(index);
     ExtrasList.Delete(index);
     ListClass::Remove_Item(index);
 
@@ -384,7 +384,7 @@ void IconListClass::Remove_Item(int index) {
 
 void IconListClass::Draw_Entry(int index, int x, int y, int width,
                                bool selected) {
-  const IconList_ItemExtras* pExtras = ExtrasList[index];
+  const IconList_ItemExtras* pExtras = ExtrasList.at(index);
 
   int xText = x;
   //	ajw If I end up needing to use SHAPEs for icons, figure out shape width
@@ -521,8 +521,8 @@ bool IconListClass::Action(unsigned flags, KeyNumType& key) {
     base::ssize iSelected = CurrentTopIndex + index;
     iSelected = std::min<base::ssize>(iSelected, Count() - 1);
     if (iSelected >= 0) {
-      ExtrasList[iSelected]->bMultiSelected =
-          !ExtrasList[iSelected]->bMultiSelected;
+      ExtrasList.at(iSelected)->bMultiSelected =
+          !ExtrasList.at(iSelected)->bMultiSelected;
     }
   }
 
@@ -544,7 +544,7 @@ void IconListClass::Show_Last_Item() {
 //***********************************************************************************************
 bool IconListClass::bItemIsMultiSelected(int index) const {
   if (index < ExtrasList.Count() && index > -1) {
-    return ExtrasList[index]->bMultiSelected;
+    return ExtrasList.at(index)->bMultiSelected;
   }
   return false;
 }
@@ -552,14 +552,14 @@ bool IconListClass::bItemIsMultiSelected(int index) const {
 //***********************************************************************************************
 void IconListClass::MultiSelect(int index, bool bSelect) {
   if (index < ExtrasList.Count() && index > -1) {
-    ExtrasList[index]->bMultiSelected = bSelect;
+    ExtrasList.at(index)->bMultiSelected = bSelect;
   }
 }
 
 //***********************************************************************************************
 const char* IconListClass::Get_Item_ExtraDataString(int index) const {
   if (index < ExtrasList.Count() && index > -1) {
-    const std::string& data = ExtrasList[index]->szExtraData;
+    const std::string& data = ExtrasList.at(index)->szExtraData;
     return data.empty() ? nullptr : data.c_str();
   }
   return nullptr;
@@ -569,7 +569,7 @@ const char* IconListClass::Get_Item_ExtraDataString(int index) const {
 void IconListClass::Set_Item_ExtraDataString(int index,
                                              const char* szNewString) {
   if (index < ExtrasList.Count() && index > -1) {
-    IconList_ItemExtras* pItemExtra = ExtrasList[index];
+    IconList_ItemExtras* pItemExtra = ExtrasList.at(index);
     pItemExtra->szExtraData = szNewString != nullptr ? szNewString : "";
   }
 }
@@ -579,7 +579,7 @@ void* IconListClass::Get_Item_ExtraDataPtr(int index) const {
   //	Returns the hidden "extra data" void pointer that can be associated with
   // each item. 	This is NULL if no value was assigned.
   if (index < ExtrasList.Count() && index > -1) {
-    return ExtrasList[index]->pvExtraData;
+    return ExtrasList.at(index)->pvExtraData;
   }
   return nullptr;
 }
@@ -589,14 +589,14 @@ void IconListClass::Set_Item_ExtraDataPtr(int index, void* pNewValue) {
   //	Sets the hidden "extra data" void pointer that can be associated with
   // each item.
   if (index < ExtrasList.Count() && index > -1) {
-    ExtrasList[index]->pvExtraData = pNewValue;
+    ExtrasList.at(index)->pvExtraData = pNewValue;
   }
 }
 
 //***********************************************************************************************
 const IconList_ItemExtras* IconListClass::Get_ItemExtras(int index) const {
   if (index < ExtrasList.Count() && index > -1) {
-    return ExtrasList[index];
+    return ExtrasList.at(index);
   }
   return nullptr;
 }
@@ -604,7 +604,7 @@ const IconList_ItemExtras* IconListClass::Get_ItemExtras(int index) const {
 //***********************************************************************************************
 const char* IconListClass::Get_Item_Help(int index) const {
   if (index < ExtrasList.Count() && index > -1) {
-    const std::string& help = ExtrasList[index]->szHelp;
+    const std::string& help = ExtrasList.at(index)->szHelp;
     return help.empty() ? nullptr : help.c_str();
   }
   return nullptr;
@@ -617,7 +617,7 @@ void IconListClass::Clear() {
   //	Delete the IconList_ItemExtras structs created to hold extra info on
   // each item.
   for (int i = 0; i < ExtrasList.Count(); i++) {
-    delete ExtrasList[i];
+    delete ExtrasList.at(i);
   }
   ExtrasList.Clear();
 
@@ -630,7 +630,7 @@ void IconListClass::Clear() {
 //***********************************************************************************************
 RemapControlType* IconListClass::Get_Item_Color(int index) {
   if (index < ExtrasList.Count() && index > -1) {
-    return ExtrasList[index]->pColorRemap;
+    return ExtrasList.at(index)->pColorRemap;
   }
   return nullptr;
 }
@@ -638,7 +638,7 @@ RemapControlType* IconListClass::Get_Item_Color(int index) {
 //***********************************************************************************************
 void IconListClass::Set_Item_Color(int index, RemapControlType* pColorRemap) {
   if (index < ExtrasList.Count() && index > -1) {
-    ExtrasList[index]->pColorRemap = pColorRemap;
+    ExtrasList.at(index)->pColorRemap = pColorRemap;
   }
 }
 
@@ -683,8 +683,8 @@ bool IconListClass::Set_Icon(unsigned int index, unsigned int iIconNumber,
   }
 
   //	Sets one of the left-aligned icons.
-  base::At(ExtrasList[index]->pIcon, iIconNumber) = pIcon;
-  base::At(ExtrasList[index]->IconKind, iIconNumber) = IconKind;
+  base::At(ExtrasList.at(index)->pIcon, iIconNumber) = pIcon;
+  base::At(ExtrasList.at(index)->IconKind, iIconNumber) = IconKind;
   return true;
 }
 
@@ -765,7 +765,7 @@ int Format_Window_String_New(const char* string, int maxlinelen, int& width,
 
   const std::string_view input(string);
   const auto character = [&input](std::size_t offset) {
-    return offset < input.size() ? input[offset] : '\0';
+    return offset < input.size() ? input.at(offset) : '\0';
   };
   CHECK_GE(output.size(), input.size() + base::ToSize(iExtraChars) + 1);
 
@@ -776,7 +776,7 @@ int Format_Window_String_New(const char* string, int maxlinelen, int& width,
     lines++;
 
     // While the current line is less then the max length...
-    output[dest] = character(source);
+    base::At(output, dest) = character(source);
     linelen += Char_Pixel_Width(character(source));
     // A glyph wider than the whole line must still consume input. The old
     // backward search could revisit it forever (or move before the input).
@@ -785,14 +785,14 @@ int Format_Window_String_New(const char* string, int maxlinelen, int& width,
       ++dest;
       width = std::max(width, linelen);
       if (source < input.size() && iExtraChars > 0) {
-        output[dest++] = '\r';
+        base::At(output, dest++) = '\r';
         --iExtraChars;
       }
       continue;
     }
     while (linelen < maxlinelen && character(source) != '\r' &&
            character(source) != '\0') {
-      output[++dest] = character(++source);
+      base::At(output, ++dest) = character(++source);
       linelen += Char_Pixel_Width(character(source));
     }
 
@@ -841,10 +841,10 @@ int Format_Window_String_New(const char* string, int maxlinelen, int& width,
     **	Force a break at the end of the line.
     */
     if (character(source)) {
-      output[dest++] = '\r';
+      base::At(output, dest++) = '\r';
       ++source;
     }
   }
-  output[dest] = '\0';
+  base::At(output, dest) = '\0';
   return lines;
 }

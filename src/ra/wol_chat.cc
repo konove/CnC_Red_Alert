@@ -1066,7 +1066,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
 void WOL_PrintMessage(IconListClass& ILTarget, const char* szText,
                       PlayerColorType iColorRemap /* = PCOLOR_NONE */) {
   RemapControlType* pColorRemap =
-      (iColorRemap == PCOLOR_NONE ? nullptr : &ColorRemaps[iColorRemap]);
+      (iColorRemap == PCOLOR_NONE ? nullptr : &ColorRemaps.at(iColorRemap));
   WOL_PrintMessage(ILTarget, szText, pColorRemap);
 }
 

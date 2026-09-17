@@ -113,7 +113,6 @@
 #include "ra/theme.h"
 #include "ra/type.h"
 #include "ra/unit.h"
-#include "ra/vector.h"
 #include "ra/vector_dynamic.h"
 #include "ra/version.h"
 #include "ra/vessel.h"
@@ -197,12 +196,12 @@ static void Color_Cycle() {
 
       // Set the pulse color as the proportional value between white and
       // the minimum value for pulsing.
-      GamePalette[kPulseColor] = GamePalette[kWhite];
-      GamePalette[kPulseColor].Adjust(val, kBlackColor);
+      GamePalette.at(kPulseColor) = GamePalette.at(kWhite);
+      GamePalette.at(kPulseColor).Adjust(val, kBlackColor);
 
       // Pulse the glowing embers between medium and dark red.
-      GamePalette[kEmberColor] = RGBClass(255, 80, 80);
-      GamePalette[kEmberColor].Adjust(val, kBlackColor);
+      GamePalette.at(kEmberColor) = RGBClass(255, 80, 80);
+      GamePalette.at(kEmberColor).Adjust(val, kBlackColor);
 
       changed = true;
     }
@@ -212,12 +211,12 @@ static void Color_Cycle() {
       _timer.Set(kTimerSecond / 4);
 
       const RGBClass first =
-          GamePalette[kCycleColorStart + kCycleColorCount - 1];
+          GamePalette.at(kCycleColorStart + kCycleColorCount - 1);
       for (int index = kCycleColorStart + kCycleColorCount - 1;
            index >= kCycleColorStart; index--) {
-        GamePalette[index] = GamePalette[index - 1];
+        GamePalette.at(index) = GamePalette.at(index - 1);
       }
-      GamePalette[kCycleColorStart] = first;
+      GamePalette.at(kCycleColorStart) = first;
 
       changed = true;
     }
@@ -508,7 +507,7 @@ static void Toggle_Formation() {
 // the edit buffer, 4 for one that spilled into the overflow buffer.
 static void Send_Network_Chat_Message(const int rc) {
   Session.GPacket.Command = NET_MESSAGE;
-  port::SafeCopy(Session.GPacket.Name, Session.Players[0]->Name);
+  port::SafeCopy(Session.GPacket.Name, Session.Players.at(0)->Name);
   Session.GPacket.Message.Color = Session.ColorIdx;
   Session.GPacket.Message.NameCRC = Compute_Name_CRC(Session.GameName);
 
@@ -670,7 +669,7 @@ static void Message_Input(KeyNumType& input) {
           .Command = SERIAL_MESSAGE, .Name = {}, .ID = 0, .ScenarioInfo = {}};
       auto* serial_packet = &packet_storage;
 
-      port::SafeCopy(serial_packet->Name, Session.Players[0]->Name);
+      port::SafeCopy(serial_packet->Name, Session.Players.at(0)->Name);
       serial_packet->ID = static_cast<unsigned char>(Session.ColorIdx);
 
       if (rc == 3) {
@@ -759,14 +758,14 @@ static void Do_Record_Playback() {
     // Save a CRC of the selected-object list.
     sum = 0;
     for (int i = 0; i < count; i++) {
-      ltgt = static_cast<uint32_t>(CurrentObject[i]->As_Target());
+      ltgt = static_cast<uint32_t>(CurrentObject.at(i)->As_Target());
       sum += ltgt;
     }
     Session.RecordFile.WriteObject(sum);
 
     // Save all selected objects.
     for (int i = 0; i < count; i++) {
-      tgt = CurrentObject[i]->As_Target();
+      tgt = CurrentObject.at(i)->As_Target();
       Session.RecordFile.WriteObject(tgt);
     }
 
@@ -797,7 +796,7 @@ static void Do_Record_Playback() {
       // Compute a CRC of the current object-selection list.
       sum = 0;
       for (int i = 0; i < CurrentObject.Count(); i++) {
-        ltgt = static_cast<uint32_t>(CurrentObject[i]->As_Target());
+        ltgt = static_cast<uint32_t>(CurrentObject.at(i)->As_Target());
         sum += ltgt;
       }
 
@@ -1090,11 +1089,11 @@ void Keyboard_Process(KeyNumType& input) {
   // If the "N" key is pressed, then select the next object.
   if (key != 0 && key == Options.KeyNext) {
     if (action) {
-      obj = MapEditClass::Prev_Object(CurrentObject.Count() ? CurrentObject[0]
-                                                            : nullptr);
+      obj = MapEditClass::Prev_Object(
+          CurrentObject.Count() ? CurrentObject.at(0) : nullptr);
     } else {
-      obj = MapEditClass::Next_Object(CurrentObject.Count() ? CurrentObject[0]
-                                                            : nullptr);
+      obj = MapEditClass::Next_Object(
+          CurrentObject.Count() ? CurrentObject.at(0) : nullptr);
     }
     if (obj != nullptr) {
       Unselect_All();
@@ -1106,11 +1105,11 @@ void Keyboard_Process(KeyNumType& input) {
   }
   if (key != 0 && key == Options.KeyPrevious) {
     if (action) {
-      obj = MapEditClass::Next_Object(CurrentObject.Count() ? CurrentObject[0]
-                                                            : nullptr);
+      obj = MapEditClass::Next_Object(
+          CurrentObject.Count() ? CurrentObject.at(0) : nullptr);
     } else {
-      obj = MapEditClass::Prev_Object(CurrentObject.Count() ? CurrentObject[0]
-                                                            : nullptr);
+      obj = MapEditClass::Prev_Object(
+          CurrentObject.Count() ? CurrentObject.at(0) : nullptr);
     }
     if (obj != nullptr) {
       Unselect_All();
@@ -1125,7 +1124,7 @@ void Keyboard_Process(KeyNumType& input) {
   if (key != 0 && key == Options.KeyStop) {
     if (CurrentObject.Count()) {
       for (int index = 0; index < CurrentObject.Count(); index++) {
-        const ObjectClass* tech = CurrentObject[index];
+        const ObjectClass* tech = CurrentObject.at(index);
 
         if (tech != nullptr &&
             (tech->Can_Player_Move() ||
@@ -1141,7 +1140,7 @@ void Keyboard_Process(KeyNumType& input) {
   if (key != 0 && key == Options.KeyGuard) {
     if (CurrentObject.Count()) {
       for (int index = 0; index < CurrentObject.Count(); index++) {
-        const ObjectClass* tech = CurrentObject[index];
+        const ObjectClass* tech = CurrentObject.at(index);
 
         if (tech != nullptr && tech->Can_Player_Move() &&
             tech->Can_Player_Fire()) {
@@ -1156,7 +1155,7 @@ void Keyboard_Process(KeyNumType& input) {
   if (key != 0 && key == Options.KeyScatter) {
     if (CurrentObject.Count()) {
       for (int index = 0; index < CurrentObject.Count(); index++) {
-        const ObjectClass* tech = CurrentObject[index];
+        const ObjectClass* tech = CurrentObject.at(index);
 
         if (tech != nullptr && tech->Can_Player_Move()) {
           OutList.Add(EventClass(EventClass::SCATTER, TargetClass(tech)));
@@ -1239,9 +1238,9 @@ void Keyboard_Process(KeyNumType& input) {
   if (key != 0 && key == Options.KeyAlliance) {
     if ((Session.Type != GAME_NORMAL || Debug_Flag) &&
         (CurrentObject.Count() && !PlayerPtr->IsDefeated) &&
-        (CurrentObject[0]->Owner() != PlayerPtr->Class->House)) {
+        (CurrentObject.at(0)->Owner() != PlayerPtr->Class->House)) {
       OutList.Add(EventClass(EventClass::ALLY,
-                             static_cast<int>(CurrentObject[0]->Owner())));
+                             static_cast<int>(CurrentObject.at(0)->Owner())));
     }
 
     input = KN_NONE;
@@ -1531,7 +1530,7 @@ void IPX_Call_Back() {
 SourceType Source_From_Name(const char* name) {
   if (name) {
     for (const SourceType source : magic_enum::enum_values<SourceType>()) {
-      if (port::CompareIgnoreCase(SourceName[source], name) == 0) {
+      if (port::CompareIgnoreCase(SourceName.at(source), name) == 0) {
         return source;
       }
     }
@@ -1541,7 +1540,7 @@ SourceType Source_From_Name(const char* name) {
 
 const char* Name_From_Source(const SourceType source) {
   if (static_cast<unsigned>(source) < magic_enum::enum_count<SourceType>()) {
-    return SourceName[source];
+    return SourceName.at(source);
   }
   return "None";
 }
@@ -1549,7 +1548,7 @@ const char* Name_From_Source(const SourceType source) {
 TheaterType Theater_From_Name(const char* name) {
   if (name != nullptr) {
     for (const TheaterType index : magic_enum::enum_values<TheaterType>()) {
-      if (port::CompareIgnoreCase(name, Theaters[index].Name) == 0) {
+      if (port::CompareIgnoreCase(name, Theaters.at(index).Name) == 0) {
         return index;
       }
     }
@@ -1722,7 +1721,7 @@ bool Main_Loop() {
     // sync between machines; this way, all machines will sort the Map's layer
     // in the same way, and any processing done that's based on the order of
     // this layer will remain in sync.
-    DisplayClass::Layer[LAYER_GROUND].Sort();
+    DisplayClass::Layer.at(LAYER_GROUND).Sort();
   }
 
   // AI logic operations are performed here.
@@ -1893,11 +1892,11 @@ bool Main_Loop() {
 
     if (sequence < std::ssize(frames)) {
       // A no-op on a frame reused from an earlier run of the same resolution.
-      frames[base::ToSize(sequence)].resize(base::ToSize(size));
+      frames.at(base::ToSize(sequence)).resize(base::ToSize(size));
 
       SeenBuff.Blit(temp_page);
       base::CopyBytes(
-          std::as_writable_bytes(std::span(frames[base::ToSize(sequence)])),
+          std::as_writable_bytes(std::span(frames.at(base::ToSize(sequence)))),
           std::as_bytes(temp_page.Get_Bytes()), size);
       sequence++;
     } else {
@@ -1907,9 +1906,9 @@ bool Main_Loop() {
       char filename[30];
 
       for (base::ssize index = 0; index < sequence; index++) {
-        base::CopyBytes(std::as_writable_bytes(temp_page.Get_Bytes()),
-                        std::as_bytes(std::span(frames[base::ToSize(index)])),
-                        size);
+        base::CopyBytes(
+            std::as_writable_bytes(temp_page.Get_Bytes()),
+            std::as_bytes(std::span(frames.at(base::ToSize(index)))), size);
         absl::SNPrintF(filename, sizeof(filename), "cap%04zd.pcx", index);
         file.SetName(filename);
 
@@ -1973,8 +1972,8 @@ void Rebuild_Interpolated_Palette(std::span<unsigned char> interpal) {
   }
   for (int y = 0; y < 255; y++) {
     for (int x = y + 1; x < 256; x++) {
-      interpal[base::ToSize((y * 256) + x)] =
-          interpal[base::ToSize((x * 256) + y)];
+      base::At(interpal, base::ToSize((y * 256) + x)) =
+          base::At(interpal, base::ToSize((x * 256) + y));
     }
   }
 }
@@ -2157,7 +2156,7 @@ void Play_Movie(const VQType name, const ThemeType theme,
     if (name == VQ_REDINTRO) {
       IsVQ640 = true;
     }
-    Play_Movie(VQName[name], theme, clear_screen);
+    Play_Movie(VQName.at(name), theme, clear_screen);
     IsVQ640 = false;
   }
 }
@@ -2166,14 +2165,14 @@ void Play_Movie(const VQType name, const ThemeType theme,
 // next one to drop and the count shrinks on every pass.
 void Unselect_All() {
   while (CurrentObject.Count()) {
-    CurrentObject[0]->Unselect();
+    CurrentObject.at(0)->Unselect();
   }
 }
 
 std::string Fading_Table_Name(const char* base, const TheaterType theater) {
   // Build filename: first character of theater root + base name + .MRF
   // extension
-  const auto root = std::string(1, Theaters[theater].Root[0]) + base;
+  const auto root = std::string(1, Theaters.at(theater).Root[0]) + base;
   const auto file_path = std::filesystem::path(root).replace_extension(".MRF");
   return file_path.string();
 }
@@ -2253,8 +2252,8 @@ std::vector<unsigned char> Get_Radar_Icon(
                       sample_y >= pixel_height) {
                     continue;
                   }
-                  pixel =
-                      ptr[base::ToSize((sample_y * pixel_width) + sample_x)];
+                  pixel = base::At(
+                      ptr, base::ToSize((sample_y * pixel_width) + sample_x));
 
                   if (pixel == kLtGreen) {
                     pixel = 0;
@@ -2408,7 +2407,7 @@ Rect Shape_Dimensions(const std::span<const std::byte> shapedata,
   // Find top edge of the shape.
   for (int y = 0; y <= y_limit; y++) {
     for (int x = 0; x <= x_limit; x++) {
-      if (shape[base::ToSize((y * width) + x)] != 0) {
+      if (base::At(shape, base::ToSize((y * width) + x)) != 0) {
         rect.Y = y;
         rect.X = x;
         // Pushing y past the limit breaks the outer loop too -- the first row
@@ -2422,7 +2421,7 @@ Rect Shape_Dimensions(const std::span<const std::byte> shapedata,
   // Find bottom edge of the shape.
   for (int y = y_limit; y >= rect.Y; y--) {
     for (int x = x_limit; x >= 0; x--) {
-      if (shape[base::ToSize((y * width) + x)] != 0) {
+      if (base::At(shape, base::ToSize((y * width) + x)) != 0) {
         rect.Height = y - rect.Y + 1;
         x_limit = x;
         y = rect.Y - 1;
@@ -2434,7 +2433,7 @@ Rect Shape_Dimensions(const std::span<const std::byte> shapedata,
   // Find left edge of the shape.
   for (int x = 0; x < rect.X; x++) {
     for (int y = rect.Y; y < rect.Y + rect.Height; y++) {
-      if (shape[base::ToSize((y * width) + x)] != 0) {
+      if (base::At(shape, base::ToSize((y * width) + x)) != 0) {
         rect.X = x;
         x = rect.X;
         break;
@@ -2445,7 +2444,7 @@ Rect Shape_Dimensions(const std::span<const std::byte> shapedata,
   // Find the right edge of the shape.
   for (int x = width - 1; x >= x_limit; x--) {
     for (int y = rect.Y; y < rect.Y + rect.Height; y++) {
-      if (shape[base::ToSize((y * width) + x)] != 0) {
+      if (base::At(shape, base::ToSize((y * width) + x)) != 0) {
         rect.Width = x - rect.X + 1;
         x = x_limit - 1;
         break;
@@ -2574,9 +2573,9 @@ void Handle_Team(const int team, const int action) {
       // If a non team member is currently selected, then deselect all
       // objects before selecting this team.
       if (CurrentObject.Count() &&
-          (CurrentObject[0]->Is_Foot() &&
-           std::cmp_not_equal(dynamic_cast<FootClass*>(CurrentObject[0])->Group,
-                              team))) {
+          (CurrentObject.at(0)->Is_Foot() &&
+           std::cmp_not_equal(
+               dynamic_cast<FootClass*>(CurrentObject.at(0))->Group, team))) {
         Unselect_All();
       }
 
@@ -2988,9 +2987,9 @@ bool Force_CD_Available(int cd_desired)  // ajw
       };
 
       if (cd_desired == kCdDvd) {
-        insert_prompt(kCdNames[kDvdName]);
+        insert_prompt(kCdNames.at(kDvdName));
       } else if (cd_desired == kCdCounterstrike || cd_desired == kCdAftermath) {
-        insert_prompt(kCdNames[base::ToSize(cd_desired)]);
+        insert_prompt(kCdNames.at(base::ToSize(cd_desired)));
       } else {
         // These prompts come from the localized string table, so verify the
         // translation still takes a %d followed by a %s before using it.
@@ -3001,7 +3000,7 @@ bool Force_CD_Available(int cd_desired)  // ajw
         if (format != nullptr) {
           port::SafeCopy(buffer,
                          absl::StrFormat(*format, cd_desired + 1,
-                                         kCdNames[base::ToSize(cd_desired)])
+                                         kCdNames.at(base::ToSize(cd_desired)))
                              .c_str());
         }
       }
@@ -3012,9 +3011,9 @@ bool Force_CD_Available(int cd_desired)  // ajw
       font = FontPtr;
 
       // Only set the palette if necessary.
-      if (PaletteClass::CurrentPalette[1].Red_Component() +
-              PaletteClass::CurrentPalette[1].Blue_Component() +
-              PaletteClass::CurrentPalette[1].Green_Component() ==
+      if (PaletteClass::CurrentPalette.at(1).Red_Component() +
+              PaletteClass::CurrentPalette.at(1).Blue_Component() +
+              PaletteClass::CurrentPalette.at(1).Green_Component() ==
           0) {
         GamePalette.Set();
       }
@@ -3098,7 +3097,7 @@ std::span<std::byte> Hires_Load(const char* name) {
 CrateType Crate_From_Name(const char* name) {
   if (name != nullptr) {
     for (const CrateType crate : magic_enum::enum_values<CrateType>()) {
-      if (port::CompareIgnoreCase(name, CrateNames[crate]) == 0) {
+      if (port::CompareIgnoreCase(name, CrateNames.at(crate)) == 0) {
         return crate;
       }
     }
@@ -3166,8 +3165,8 @@ void List_Copy(const std::span<const int16_t> source, const int len,
   CHECK_GE(len, 0);
   CHECK_LE(base::ToSize(len), dest.size());
   for (std::size_t i = 0; i < base::ToSize(len) && i < source.size(); ++i) {
-    dest[i] = source[i];
-    if (source[i] == kRefreshEol) {
+    base::At(dest, i) = base::At(source, i);
+    if (base::At(source, i) == kRefreshEol) {
       break;
     }
   }

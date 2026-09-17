@@ -350,7 +350,7 @@ void SmudgeTypeClass::Init(TheaterType theater) {
       SmudgeTypeClass& smudge = As_Reference(index);
       // Fully constructed smudge data set name.
       const auto fullname = std::filesystem::path(smudge.IniName)
-                                .replace_extension(Theaters[theater].Suffix)
+                                .replace_extension(Theaters.at(theater).Suffix)
                                 .string();
       smudge.SetBorrowedImage(MixArchive::RetrieveData(fullname));
     }

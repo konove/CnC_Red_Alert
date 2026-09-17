@@ -51,10 +51,10 @@ class TestScreen {
   TestScreen& operator=(TestScreen&&) = delete;
 
   [[nodiscard]] std::uint8_t Pixel(int x, int y) const {
-    return pixels_[Offset(x, y)];
+    return pixels_.at(Offset(x, y));
   }
   void SetPixel(int x, int y, std::uint8_t value) {
-    pixels_[Offset(x, y)] = value;
+    pixels_.at(Offset(x, y)) = value;
   }
 
  private:

@@ -9,15 +9,16 @@
 #include <SDL_stdinc.h>
 #include <SDL_surface.h>
 #include <SDL_video.h>
+
 #include <algorithm>
 #include <cstddef>
-
 #include <cstdint>
 #include <span>
 #include <utility>
 #include <vector>
 
 #include "absl/log/log.h"
+#include "base/array.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/types.h"
@@ -58,8 +59,8 @@ static WWMouseClass* Mouse = nullptr;
     const int src_y = y / scale;
     for (int x = 0; x < dst_w; ++x) {
       const int src_x = x / scale;
-      dst[base::ToSize((y * dst_w) + x)] =
-          src[base::ToSize((src_y * src_w) + src_x)];
+      dst.at(base::ToSize((y * dst_w) + x)) =
+          base::At(src, base::ToSize((src_y * src_w) + src_x));
     }
   }
 

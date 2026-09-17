@@ -141,7 +141,6 @@
 #include "ra/terrain.h"
 #include "ra/type.h"
 #include "ra/unit.h"
-#include "ra/vector.h"
 #include "ra/vector_dynamic.h"
 #include "ra/version.h"
 #include "ra/vessel.h"
@@ -1056,8 +1055,9 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
                 fp,
                 "%15s: Their Sent:%d  Their Recv:%d  Their Frame:%" PRId64
                 "\\n",
-                housep->IniName, their_sent[base::ToSize(i)],
-                their_recv[base::ToSize(i)], their_frame[base::ToSize(i)]);
+                housep->IniName, base::At(their_sent, base::ToSize(i)),
+                base::At(their_recv, base::ToSize(i)),
+                base::At(their_frame, base::ToSize(i)));
           }
           fclose(fp);
         }
@@ -1414,11 +1414,11 @@ static void Generate_Real_Timing_Event(ConnManClass* net, int my_sent) {
     //
     // If we haven't heard from all systems yet, bail out.
     //
-    if (Session.Players[i]->Player.ProcessTime == -1) {
+    if (Session.Players.at(i)->Player.ProcessTime == -1) {
       return;
     }
     highest_ticks =
-        std::max(Session.Players[i]->Player.ProcessTime, highest_ticks);
+        std::max(Session.Players.at(i)->Player.ProcessTime, highest_ticks);
   }
 
   //
@@ -1855,17 +1855,17 @@ static RetcodeType Process_Receive_Packet(ConnManClass* net,
   //------------------------------------------------------------------------
   //	Compute the other player's frame # (at the time this packet was sent)
   //------------------------------------------------------------------------
-  if (their_frame[base::ToSize(index)] <
+  if (base::At(their_frame, base::ToSize(index)) <
       static_cast<int>(event->Frame - event->Data.FrameInfo.Delay)) {
     //.....................................................................
     // If the original frame # for this player is -1, it means we've heard
     // from this player for the 1st time; return the appropriate value.
     //.....................................................................
-    if (their_frame[base::ToSize(index)] == -1) {
+    if (base::At(their_frame, base::ToSize(index)) == -1) {
       retcode = RC_PLAYER_READY;
     }
 
-    their_frame[base::ToSize(index)] =
+    base::At(their_frame, base::ToSize(index)) =
         event->Frame - event->Data.FrameInfo.Delay;
   }
 
@@ -1873,13 +1873,14 @@ static RetcodeType Process_Receive_Packet(ConnManClass* net,
   //	Extract the other player's CommandCount.  This count will include
   //	the commands in this packet, if there are any.
   //------------------------------------------------------------------------
-  if (event->Data.FrameInfo.CommandCount > their_sent[base::ToSize(index)]) {
-    if (abs(their_sent[base::ToSize(index)] -
+  if (event->Data.FrameInfo.CommandCount >
+      base::At(their_sent, base::ToSize(index))) {
+    if (abs(base::At(their_sent, base::ToSize(index)) -
             event->Data.FrameInfo.CommandCount) > 500) {
       FILE* fp = fopen("badcount.txt", "wt");
       if (fp) {
         absl::FPrintF(fp, "Event Type:%s\n",
-                      EventClass::EventNames[event->Type]);
+                      EventClass::EventNames.at(event->Type));
         absl::FPrintF(fp, "Frame:%d  ID:%d  IsExec:%d\n", event->Frame,
                       event->ID, event->IsExecuted);
         if (event->Type != EventClass::FRAMEINFO) {
@@ -1894,7 +1895,8 @@ static RetcodeType Process_Receive_Packet(ConnManClass* net,
       }
     }
 
-    their_sent[base::ToSize(index)] = event->Data.FrameInfo.CommandCount;
+    base::At(their_sent, base::ToSize(index)) =
+        event->Data.FrameInfo.CommandCount;
   }
 
   if (Debug_Print_Events) {
@@ -1932,7 +1934,7 @@ static RetcodeType Process_Receive_Packet(ConnManClass* net,
       i--;
     }
 
-    their_recv[base::ToSize(index)] += i;
+    base::At(their_recv, base::ToSize(index)) += i;
   }
 
   //------------------------------------------------------------------------
@@ -2163,7 +2165,7 @@ static int Can_Advance(ConnManClass* net, int max_ahead,
   int64_t their_oldest_frame = Frame + 1000;  // other players' oldest frame #
   for (int i = 0; i < net->Num_Connections(); i++) {
     their_oldest_frame =
-        std::min(their_frame[base::ToSize(i)], their_oldest_frame);
+        std::min(base::At(their_frame, base::ToSize(i)), their_oldest_frame);
   }
 
   //------------------------------------------------------------------------
@@ -2175,7 +2177,8 @@ static int Can_Advance(ConnManClass* net, int max_ahead,
   //------------------------------------------------------------------------
   int count_ok = 1;  // true = my cmd count matches theirs
   for (int i = 0; i < net->Num_Connections(); i++) {
-    if (their_recv[base::ToSize(i)] < their_sent[base::ToSize(i)]) {
+    if (base::At(their_recv, base::ToSize(i)) <
+        base::At(their_sent, base::ToSize(i))) {
       count_ok = 0;
       break;
     }
@@ -2236,8 +2239,8 @@ static int Process_Reconnect_Dialog(
       int64_t j = 0x7fffffff;  // oldest frame number seen so far
       oldest_index = 0;
       for (int i = 0; i < num_conn; i++) {
-        if (their_frame[base::ToSize(i)] < j) {
-          j = their_frame[base::ToSize(i)];
+        if (base::At(their_frame, base::ToSize(i)) < j) {
+          j = base::At(their_frame, base::ToSize(i));
           oldest_index = i;
         }
       }
@@ -2315,8 +2318,8 @@ static int Handle_Timeout(ConnManClass* net, std::span<int64_t> their_frame,
     int64_t j = 0x7fffffff;  // oldest frame number seen so far
     int oldest_index = 0;    // index of person requiring a reconnect
     for (int i = 0; i < net->Num_Connections(); i++) {
-      if (their_frame[base::ToSize(i)] < j) {
-        j = their_frame[base::ToSize(i)];
+      if (base::At(their_frame, base::ToSize(i)) < j) {
+        j = base::At(their_frame, base::ToSize(i));
         oldest_index = i;
       }
     }
@@ -2335,9 +2338,12 @@ static int Handle_Timeout(ConnManClass* net, std::span<int64_t> their_frame,
 
     if (id != ConnManClass::kConnectionNone) {
       for (int i = oldest_index; i < net->Num_Connections() - 1; i++) {
-        their_frame[base::ToSize(i)] = their_frame[base::ToSize(i + 1)];
-        their_sent[base::ToSize(i)] = their_sent[base::ToSize(i + 1)];
-        their_recv[base::ToSize(i)] = their_recv[base::ToSize(i + 1)];
+        base::At(their_frame, base::ToSize(i)) =
+            base::At(their_frame, base::ToSize(i + 1));
+        base::At(their_sent, base::ToSize(i)) =
+            base::At(their_sent, base::ToSize(i + 1));
+        base::At(their_recv, base::ToSize(i)) =
+            base::At(their_recv, base::ToSize(i + 1));
       }
       if (Session.Type == GAME_IPX || Session.Type == GAME_INTERNET) {
         Destroy_Connection(id, 1);
@@ -2645,8 +2651,8 @@ int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
     const EventClass::EventType eventtype =
         OutList.First().Type;  // type of event being compressed
     int datasize =
-        EventClass::EventLength[eventtype];  // size of element plucked from
-                                             // event union
+        EventClass::EventLength.at(eventtype);  // size of element plucked from
+                                                // event union
     //.....................................................................
     // For a variable-sized event, pull the size from the event; otherwise,
     // the size will be the data element size plus the event type value.
@@ -2733,7 +2739,8 @@ int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
           }
 
           if (units_offset >= 0) {
-            buf[base::ToSize(units_offset)] = static_cast<std::byte>(numunits);
+            base::At(buf, base::ToSize(units_offset)) =
+                static_cast<std::byte>(numunits);
           }
           units_offset = size + kEventTypeSize;
           storedsize += sizeof(numunits);
@@ -2749,7 +2756,7 @@ int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
       //..................................................................
       else {
         if (units_offset >= 0) {
-          buf[base::ToSize(units_offset)] =
+          base::At(buf, base::ToSize(units_offset)) =
               static_cast<std::byte>(numunits);  // save # events in our run
         }
         units_offset = -1;  // init other values
@@ -2841,7 +2848,8 @@ int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
         //...............................................................
         if (missiondup) {
           if (units_offset >= 0) {
-            buf[base::ToSize(units_offset)] = static_cast<std::byte>(numunits);
+            base::At(buf, base::ToSize(units_offset)) =
+                static_cast<std::byte>(numunits);
           }
 
           base::CopyBytes(
@@ -2859,7 +2867,8 @@ int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
         //...............................................................
         else {
           if (units_offset >= 0) {
-            buf[base::ToSize(units_offset)] = static_cast<std::byte>(numunits);
+            base::At(buf, base::ToSize(units_offset)) =
+                static_cast<std::byte>(numunits);
           }
 
           port::WriteUnaligned(buf.subspan(base::ToSize(size)), eventtype);
@@ -3176,7 +3185,7 @@ int Extract_Compressed_Events(std::span<const std::byte> buf, int bufsize) {
       //..................................................................
       else if (event_type == EventClass::MEGAMISSION) {
         numunits = std::to_integer<unsigned char>(
-            buf[base::ToSize(pos) + sizeof(eventdata.Type)]);
+            base::At(buf, base::ToSize(pos) + sizeof(eventdata.Type)));
         pos += sizeof(numunits);
         leftover -= sizeof(numunits);
       }
@@ -3187,7 +3196,7 @@ int Extract_Compressed_Events(std::span<const std::byte> buf, int bufsize) {
       base::FillBytes(base::ObjectBytes(eventdata.Data), 0,
                       sizeof(eventdata.Data));
       eventdata.Type = event_type;
-      datasize = EventClass::EventLength[eventdata.Type];
+      datasize = EventClass::EventLength.at(eventdata.Type);
       if (datasize < 0 || leftover < datasize + kEventTypeSize) {
         return count;
       }
@@ -3339,7 +3348,7 @@ int Extract_Compressed_Events(std::span<const std::byte> buf, int bufsize) {
             event_type >= EventClass::LAST_EVENT) {
           return count;
         }
-        datasize = EventClass::EventLength[event_type];
+        datasize = EventClass::EventLength.at(event_type);
         if (event_type == EventClass::MEGAMISSION) {
           datasize += sizeof(numunits);
         }
@@ -3432,10 +3441,10 @@ static int Execute_DoList(int max_houses, HousesType base_house,
   // and re-schedule for the end of that period.
   //
   for (int j = 0; j < DoList.Count(); j++) {
-    if (DoList[j].Type != EventClass::FRAMEINFO &&
-        std::cmp_greater(DoList[j].Frame, NewMaxAheadFrame1) &&
-        std::cmp_less(DoList[j].Frame, NewMaxAheadFrame2)) {
-      DoList[j].Frame = static_cast<unsigned>(NewMaxAheadFrame2);
+    if (DoList.at(j).Type != EventClass::FRAMEINFO &&
+        std::cmp_greater(DoList.at(j).Frame, NewMaxAheadFrame1) &&
+        std::cmp_less(DoList.at(j).Frame, NewMaxAheadFrame2)) {
+      DoList.at(j).Frame = static_cast<unsigned>(NewMaxAheadFrame2);
     }
   }
 
@@ -3480,18 +3489,18 @@ static int Execute_DoList(int max_houses, HousesType base_house,
       //	If this event was from the currently-executing player ID, and
       // it's 	time to execute it, execute it.
       //..................................................................
-      if (std::cmp_equal(DoList[j].ID, hptr->ID) &&
-          std::cmp_greater_equal(Frame, DoList[j].Frame) &&
-          !DoList[j].IsExecuted) {
+      if (std::cmp_equal(DoList.at(j).ID, hptr->ID) &&
+          std::cmp_greater_equal(Frame, DoList.at(j).Frame) &&
+          !DoList.at(j).IsExecuted) {
         //...............................................................
         //	Error if it's too late to execute this packet!
         // (Hack: disable this check for solo or skirmish mode.)
         //...............................................................
-        if (std::cmp_greater(Frame, DoList[j].Frame) &&
-            DoList[j].Type != EventClass::FRAMEINFO &&
+        if (std::cmp_greater(Frame, DoList.at(j).Frame) &&
+            DoList.at(j).Type != EventClass::FRAMEINFO &&
             Session.Type != GAME_NORMAL && Session.Type != GAME_SKIRMISH) {
-          Dump_Packet_Too_Late_Stuff(&DoList[j], net, their_frame, their_sent,
-                                     their_recv);
+          Dump_Packet_Too_Late_Stuff(&DoList.at(j), net, their_frame,
+                                     their_sent, their_recv);
           WWMessageBox().Process(TXT_PACKET_TOO_LATE);
           return 0;
         }
@@ -3499,9 +3508,9 @@ static int Execute_DoList(int max_houses, HousesType base_house,
         //...............................................................
         //	Only execute EXIT & OPTIONS commands if they're from myself.
         //...............................................................
-        if (DoList[j].Type == EventClass::EXIT ||
-            DoList[j].Type == EventClass::OPTIONS) {
-          if (DoList[j].Type == EventClass::EXIT) {
+        if (DoList.at(j).Type == EventClass::EXIT ||
+            DoList.at(j).Type == EventClass::OPTIONS) {
+          if (DoList.at(j).Type == EventClass::EXIT) {
             /*
             ** Flag that this house lost because it quit.
             */
@@ -3513,7 +3522,7 @@ static int Execute_DoList(int max_houses, HousesType base_house,
               if (!quithptr) {
                 continue;
               }
-              if (std::cmp_equal(quithptr->ID, DoList[j].ID)) {
+              if (std::cmp_equal(quithptr->ID, DoList.at(j).ID)) {
                 quithptr->IsGiverUpper = true;
                 break;
               }
@@ -3531,18 +3540,18 @@ static int Execute_DoList(int max_houses, HousesType base_house,
             }
           }
 
-          if (Debug_Print_Events && (DoList[j].Type == EventClass::EXIT)) {
+          if (Debug_Print_Events && (DoList.at(j).Type == EventClass::EXIT)) {
             absl::PrintF(
                 "(%" PRId64 ") Executing EXIT, ID:%d (%s), EvFrame:%d\\n",
-                Frame, DoList[j].ID,
-                HouseClass::As_Pointer(static_cast<HousesType>(DoList[j].ID))
+                Frame, DoList.at(j).ID,
+                HouseClass::As_Pointer(static_cast<HousesType>(DoList.at(j).ID))
                     ->IniName,
-                DoList[j].Frame);
+                DoList.at(j).Frame);
           }
 
-          if (std::cmp_equal(DoList[j].ID, PlayerPtr->ID)) {
-            DoList[j].Execute();
-          } else if (DoList[j].Type == EventClass::EXIT) {
+          if (std::cmp_equal(DoList.at(j).ID, PlayerPtr->ID)) {
+            DoList.at(j).Execute();
+          } else if (DoList.at(j).Type == EventClass::EXIT) {
             //............................................................
             //	If this EXIT event isn't from myself, destroy the connection
             //	for that player.  The HousesType for this event is the
@@ -3556,10 +3565,12 @@ static int Execute_DoList(int max_houses, HousesType base_house,
               index = net->Connection_Index(static_cast<int>(house));
               if (index != -1) {
                 for (int k = index; k < net->Num_Connections() - 1; k++) {
-                  their_frame[base::ToSize(k)] =
-                      their_frame[base::ToSize(k + 1)];
-                  their_sent[base::ToSize(k)] = their_sent[base::ToSize(k + 1)];
-                  their_recv[base::ToSize(k)] = their_recv[base::ToSize(k + 1)];
+                  base::At(their_frame, base::ToSize(k)) =
+                      base::At(their_frame, base::ToSize(k + 1));
+                  base::At(their_sent, base::ToSize(k)) =
+                      base::At(their_sent, base::ToSize(k + 1));
+                  base::At(their_recv, base::ToSize(k)) =
+                      base::At(their_recv, base::ToSize(k + 1));
                 }
                 if (Session.Type == GAME_IPX || Session.Type == GAME_INTERNET) {
                   Destroy_Connection(static_cast<int>(house), 0);
@@ -3570,7 +3581,7 @@ static int Execute_DoList(int max_houses, HousesType base_house,
             // Special case for recording playback: turn the house over
             // to the computer.
             //
-            if (Session.Play && DoList[j].Type == EventClass::EXIT) {
+            if (Session.Play && DoList.at(j).Type == EventClass::EXIT) {
               hptr->IsHuman = false;
               hptr->IQ = Rule.MaxIQ;
               HouseClass::Computer_Paranoid();
@@ -3583,7 +3594,7 @@ static int Execute_DoList(int max_houses, HousesType base_house,
         //...............................................................
         //	For a FRAMEINFO event, check the CRC value.
         //...............................................................
-        else if (DoList[j].Type == EventClass::FRAMEINFO) {
+        else if (DoList.at(j).Type == EventClass::FRAMEINFO) {
           //............................................................
           // Skip the CRC check if we're less than 32 frames into the game;
           // this will prevent a newly-loaded modem game from instantly
@@ -3595,14 +3606,15 @@ static int Execute_DoList(int max_houses, HousesType base_house,
           } else {
             check_crc = 0;
           }
-          if (check_crc && std::cmp_equal(DoList[j].Frame, Frame) &&
-              DoList[j].Data.FrameInfo.Delay < 32) {
+          if (check_crc && std::cmp_equal(DoList.at(j).Frame, Frame) &&
+              DoList.at(j).Data.FrameInfo.Delay < 32) {
             // The delay is below 32, so adding a full turn keeps the
             // difference non-negative before wrapping onto the CRC ring.
             index =
-                (DoList[j].Frame - DoList[j].Data.FrameInfo.Delay + 32) % 32;
-            if (base::At(CRC, index) != DoList[j].Data.FrameInfo.CRC) {
-              Print_CRCs(&DoList[j]);
+                (DoList.at(j).Frame - DoList.at(j).Data.FrameInfo.Delay + 32) %
+                32;
+            if (base::At(CRC, index) != DoList.at(j).Data.FrameInfo.CRC) {
+              Print_CRCs(&DoList.at(j));
 
               if (WWMessageBox().Process(TXT_OUT_OF_SYNC, TXT_CONTINUE,
                                          TXT_STOP) == 0) {
@@ -3631,13 +3643,13 @@ static int Execute_DoList(int max_houses, HousesType base_house,
         //	Execute other commands
         //...............................................................
         else {
-          DoList[j].Execute();
+          DoList.at(j).Execute();
         }
 
         //...............................................................
         //	Mark this event as executed.
         //...............................................................
-        DoList[j].IsExecuted = 1;
+        DoList.at(j).IsExecuted = 1;
       }
     }
   }
@@ -3724,7 +3736,7 @@ static void Queue_Record() {
   //------------------------------------------------------------------------
   int j = 0;
   for (int i = 0; i < DoList.Count(); i++) {
-    if (std::cmp_equal(Frame, DoList[i].Frame) && !DoList[i].IsExecuted) {
+    if (std::cmp_equal(Frame, DoList.at(i).Frame) && !DoList.at(i).IsExecuted) {
       j++;
     }
   }
@@ -3734,8 +3746,8 @@ static void Queue_Record() {
   //------------------------------------------------------------------------
   Session.RecordFile.WriteObject(j);
   for (int i = 0; i < DoList.Count(); i++) {
-    if (std::cmp_equal(Frame, DoList[i].Frame) && !DoList[i].IsExecuted) {
-      Session.RecordFile.WriteObject(DoList[i]);
+    if (std::cmp_equal(Frame, DoList.at(i).Frame) && !DoList.at(i).IsExecuted) {
+      Session.RecordFile.WriteObject(DoList.at(i));
       j--;
     }
   }
@@ -3967,8 +3979,8 @@ static void Compute_Game_CRC() {
   //	Map Layers
   //------------------------------------------------------------------------
   for (const LayerType layer : magic_enum::enum_values<LayerType>()) {
-    for (int j = 0; j < MouseClass::Layer[layer].Count(); j++) {
-      objp = MouseClass::Layer[layer][j];
+    for (int j = 0; j < MouseClass::Layer.at(layer).Count(); j++) {
+      objp = MouseClass::Layer.at(layer).at(j);
       Add_CRC(&GameCRC,
               static_cast<uint32_t>(static_cast<int>(objp->Coord) +
                                     static_cast<int>(objp->What_Am_I())));
@@ -3979,7 +3991,7 @@ static void Compute_Game_CRC() {
   //	Logic Layers
   //------------------------------------------------------------------------
   for (int i = 0; i < Logic.Count(); i++) {
-    objp = Logic[i];
+    objp = Logic.at(i);
     Add_CRC(&GameCRC,
             static_cast<uint32_t>(static_cast<int>(objp->Coord) +
                                   static_cast<int>(objp->What_Am_I())));
@@ -4229,8 +4241,8 @@ static void Print_CRCs(const EventClass* ev) {
   GameCRC = 0;
   for (const LayerType layer : magic_enum::enum_values<LayerType>()) {
     absl::FPrintF(fp, ">>>> MAP LAYER %d <<<<\n", layer);
-    for (int j = 0; j < MouseClass::Layer[layer].Count(); j++) {
-      objp = MouseClass::Layer[layer][j];
+    for (int j = 0; j < MouseClass::Layer.at(layer).Count(); j++) {
+      objp = MouseClass::Layer.at(layer).at(j);
       Add_CRC(&GameCRC,
               static_cast<uint32_t>(static_cast<int>(objp->Coord) +
                                     static_cast<int>(objp->What_Am_I())));
@@ -4299,7 +4311,7 @@ static void Print_CRCs(const EventClass* ev) {
   GameCRC = 0;
   absl::FPrintF(fp, ">>>> LOGIC LAYER <<<<\n");
   for (int i = 0; i < Logic.Count(); i++) {
-    objp = Logic[i];
+    objp = Logic.at(i);
     Add_CRC(&GameCRC,
             static_cast<uint32_t>(static_cast<int>(objp->Coord) +
                                   static_cast<int>(objp->What_Am_I())));
@@ -4597,13 +4609,13 @@ void Dump_Packet_Too_Late_Stuff(const EventClass* event, ConnManClass* net,
     return;
   }
   absl::FPrintF(fp, "----------------- Event data: ----------------------\n");
-  absl::FPrintF(fp, "Type:       %s\n", EventClass::EventNames[event->Type]);
+  absl::FPrintF(fp, "Type:       %s\n", EventClass::EventNames.at(event->Type));
   absl::FPrintF(fp, "Frame:      %d\n", event->Frame);
   absl::FPrintF(fp, "ID:         %d\n", event->ID);
 
   for (int i = 0; i < Session.Players.Count(); i++) {
-    if (event->ID == static_cast<unsigned>(Session.Players[i]->Player.ID)) {
-      absl::FPrintF(fp, "Player's Name: %s", Session.Players[i]->Name);
+    if (event->ID == static_cast<unsigned>(Session.Players.at(i)->Player.ID)) {
+      absl::FPrintF(fp, "Player's Name: %s", Session.Players.at(i)->Name);
     }
   }
   absl::FPrintF(fp, "\n");
@@ -4619,8 +4631,10 @@ void Dump_Packet_Too_Late_Stuff(const EventClass* event, ConnManClass* net,
       const auto house = static_cast<HousesType>(net->Connection_ID(i));
       absl::FPrintF(fp, "%12s  %2d    %6" PRId64 "      %6d      %6d\n",
                     HouseClass::As_Pointer(house)->IniName,
-                    net->Connection_ID(i), their_frame[base::ToSize(i)],
-                    their_sent[base::ToSize(i)], their_recv[base::ToSize(i)]);
+                    net->Connection_ID(i),
+                    base::At(their_frame, base::ToSize(i)),
+                    base::At(their_sent, base::ToSize(i)),
+                    base::At(their_recv, base::ToSize(i)));
     }
   }
 

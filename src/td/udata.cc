@@ -1358,7 +1358,7 @@ std::span<const int16_t> UnitTypeClass::Occupy_List(bool /*placement*/) const {
 UnitType UnitTypeClass::From_Name(const char* name) {
   if (name) {
     for (UnitType classid = UNIT_HTANK; classid < UNIT_COUNT; classid++) {
-      if (port::CompareIgnoreCase(Pointers[classid]->IniName, name) == 0) {
+      if (port::CompareIgnoreCase(Pointers.at(classid)->IniName, name) == 0) {
         return classid;
       }
     }
@@ -1640,7 +1640,7 @@ BuildingClass* UnitTypeClass::Who_Can_Build_Me(bool intheory, bool legal,
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
 const UnitTypeClass& UnitTypeClass::As_Reference(UnitType type) {
-  return *Pointers[type];
+  return *Pointers.at(type);
 }
 
 /***********************************************************************************************

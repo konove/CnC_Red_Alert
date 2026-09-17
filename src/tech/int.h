@@ -46,6 +46,7 @@
 #include <iterator>
 
 #include "absl/base/attributes.h"
+#include "absl/log/check.h"
 #include "base/array.h"
 #include "tech/byte_source.h"
 #include "tech/mp.h"
@@ -94,7 +95,12 @@ class Int {
   /*
   **	Array access operator (references bit position). Bit 0 is the first bit.
   */
-  bool operator[](int bit) const { return XMP_Test_Bit(reg, bit); }
+  [[nodiscard]] bool at(int bit) const {
+    CHECK_GE(bit, 0);
+    CHECK_LT(bit, PRECISION * UNITSIZE);
+    return XMP_Test_Bit(reg, bit);
+  }
+  bool operator[](int bit) const { return at(bit); }
 
   /*
   **	Unary operators.

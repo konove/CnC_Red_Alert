@@ -96,7 +96,6 @@
 #include "ra/ipxgconn.h"
 #include "ra/monoc.h"
 #include "ra/session.h"
-#include "ra/vector.h"
 #include "ra/vector_dynamic.h"
 #include "ra/wsproto.h"
 
@@ -1056,7 +1055,7 @@ int IPXManagerClass::Service() {
 
                 assert(id != PlayerPtr->ID);
                 for (int k = 1; k < Session.Players.Count(); k++) {
-                  if (Session.Players[k]->Player.ID ==
+                  if (Session.Players.at(k)->Player.ID ==
                       static_cast<HousesType>(id)) {
                     const int iConnectionIndex = Connection_Index(id);
                     if (iConnectionIndex !=
@@ -1070,7 +1069,7 @@ int IPXManagerClass::Service() {
                       ** packet since it's a framesync packet and will will
                       *pick up the next one.
                       */
-                      Session.Players[k]->Address = address;
+                      Session.Players.at(k)->Address = address;
                       base::At(Connection, iConnectionIndex)->Address = address;
                     }
                     break;
@@ -1428,7 +1427,7 @@ void IPXManagerClass::Reset_Response_Time() {
 std::span<const std::byte> IPXManagerClass::Oldest_Send() {
   std::array<CommBufferClass*, CONNECT_MAX> queues{};
   for (int i = 0; i < NumConnections; i++) {
-    queues[base::ToSize(i)] = base::At(Connection, i)->Queue;
+    queues.at(base::ToSize(i)) = base::At(Connection, i)->Queue;
   }
   const SendQueueType* oldest = ConnectionClass::OldestUnackedSend(queues);
   return oldest != nullptr
@@ -1575,7 +1574,7 @@ void IPXManagerClass::Mono_Debug_Print(int index, int refresh) {
 
   for (i = 0; i < NumBufs; i++) {
     if (base::ToSize(i) < BufferFlags.size() &&
-        BufferFlags[base::ToSize(i)] != 0) {
+        base::At(BufferFlags, base::ToSize(i)) != 0) {
       base::At(txt, i) = 'X';
     } else {
       base::At(txt, i) = '_';

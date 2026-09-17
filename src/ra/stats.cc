@@ -395,7 +395,7 @@ void Send_Statistics_Packet() {
           NetNumType net;
           NetNodeType node;
           char szIPAddress[30];
-          Session.Players[0]->Address.Get_Address(net, node);
+          Session.Players.at(0)->Address.Get_Address(net, node);
           absl::SNPrintF(szIPAddress, sizeof(szIPAddress), "%i.%i.%i.%i",
                          node[0], node[1], node[2], node[3]);
           if (std::string_view(szIPAddress) == "255.255.255.255") {
@@ -453,7 +453,7 @@ void Send_Statistics_Packet() {
             // failed with %i, error %i\n", iRes, WSAGetLastError() );
           }
           stats.Add_Field(FIELD_PLAYER1_IP, szIPAddress);
-          Session.Players[1]->Address.Get_Address(net, node);
+          Session.Players.at(1)->Address.Get_Address(net, node);
           absl::SNPrintF(szIPAddress, sizeof(szIPAddress), "%i.%i.%i.%i",
                          node[0], node[1], node[2], node[3]);
           stats.Add_Field(FIELD_PLAYER2_IP, szIPAddress);
@@ -465,7 +465,7 @@ void Send_Statistics_Packet() {
           if (ConnectionLost) {
             if constexpr (config::kWolapiEnabled) {
               if (bReconnectDialogCancelled) {
-                if (Session.Players[0]->Player.ID == HOUSE_MULTI1) {
+                if (Session.Players.at(0)->Player.ID == HOUSE_MULTI1) {
                   //	I am player1.
                   completion = kCompletionPlayer2WonByDisconnection;
                 } else {

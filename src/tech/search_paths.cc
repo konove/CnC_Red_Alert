@@ -53,7 +53,7 @@ int SearchPaths::Scan(const std::string_view paths) {
     // drive holds a recognized CD; Get_CD_Index waits up to two seconds.
     if (path.starts_with("?:")) {
       if (current_cd_drive_ && Get_CD_Index(current_cd_drive_, 120) >= 0) {
-        path[0] = static_cast<char>(current_cd_drive_ + 'A');
+        path.at(0) = static_cast<char>(current_cd_drive_ + 'A');
         directories_.push_back(path);
         added = true;
       }

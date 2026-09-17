@@ -283,7 +283,7 @@ ArmorType Armor_From_Name(const char* name) {
   }
 
   for (const ArmorType index : magic_enum::enum_values<ArmorType>()) {
-    if (port::CompareIgnoreCase(ArmorName[index], name) == 0) {
+    if (port::CompareIgnoreCase(ArmorName.at(index), name) == 0) {
       return index;
     }
   }

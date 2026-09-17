@@ -40,6 +40,7 @@
 #include <cstdint>
 #include <span>
 
+#include "base/array.h"
 #include "sdllib/iff.h"
 
 int32_t LCW_Uncompress(std::span<const std::byte> source,
@@ -71,7 +72,7 @@ int32_t LCW_Uncompress(std::span<const std::byte> source,
       count = std::min(count, source.size());
       // Forward copies preserve the legacy in-place decompression behavior.
       for (std::size_t i = 0; i < count; ++i) {
-        dest[written++] = source[i];
+        base::At(dest, written++) = base::At(source, i);
       }
       source = source.subspan(count);
       continue;
@@ -79,9 +80,9 @@ int32_t LCW_Uncompress(std::span<const std::byte> source,
       if (source.size() < 3) {
         break;
       }
-      count = std::to_integer<std::size_t>(source[0]) +
-              (std::to_integer<std::size_t>(source[1]) << 8);
-      const std::byte value = source[2];
+      count = std::to_integer<std::size_t>(base::At(source, 0)) +
+              (std::to_integer<std::size_t>(base::At(source, 1)) << 8);
+      const std::byte value = base::At(source, 2);
       source = source.subspan(3);
       count = std::min(count, dest.size() - written);
       std::ranges::fill(dest.subspan(written, count), value);
@@ -92,8 +93,8 @@ int32_t LCW_Uncompress(std::span<const std::byte> source,
         if (source.size() < 2) {
           break;
         }
-        count = std::to_integer<std::size_t>(source[0]) +
-                (std::to_integer<std::size_t>(source[1]) << 8);
+        count = std::to_integer<std::size_t>(base::At(source, 0)) +
+                (std::to_integer<std::size_t>(base::At(source, 1)) << 8);
         source = source.subspan(2);
       } else {
         count = (opcode & 0x3f) + 3;
@@ -101,8 +102,8 @@ int32_t LCW_Uncompress(std::span<const std::byte> source,
       if (source.size() < 2) {
         break;
       }
-      offset = std::to_integer<std::size_t>(source[0]) +
-               (std::to_integer<std::size_t>(source[1]) << 8);
+      offset = std::to_integer<std::size_t>(base::At(source, 0)) +
+               (std::to_integer<std::size_t>(base::At(source, 1)) << 8);
       source = source.subspan(2);
       // A zero-length copy does not access its offset.
       if (count != 0 && offset >= written) {
@@ -111,7 +112,7 @@ int32_t LCW_Uncompress(std::span<const std::byte> source,
     }
     count = std::min(count, dest.size() - written);
     for (std::size_t i = 0; i < count; ++i) {
-      dest[written++] = dest[offset++];
+      base::At(dest, written++) = base::At(dest, offset++);
     }
   }
   return static_cast<int32_t>(written);

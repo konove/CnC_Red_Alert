@@ -265,14 +265,14 @@ int LZWEngine::Decode_String(std::span<unsigned char> output, CodeType code) {
     if (static_cast<std::size_t>(count) >= output.size()) {
       return count;
     }
-    output[base::ToSize(count)] = base::At(dict, code).CharValue;
+    base::At(output, base::ToSize(count)) = base::At(dict, code).CharValue;
     count++;
     code = base::At(dict, code).ParentCode;
   }
   if (static_cast<std::size_t>(count) >= output.size()) {
     return count;
   }
-  output[base::ToSize(count)] = static_cast<unsigned char>(code);
+  base::At(output, base::ToSize(count)) = static_cast<unsigned char>(code);
   count++;
   return count;
 }

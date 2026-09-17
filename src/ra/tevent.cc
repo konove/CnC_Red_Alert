@@ -196,10 +196,10 @@ void EventChoiceClass::Draw_It(int /*unused*/, int x, int y, int width,
     Conquer_Clip_Text_Print(Description(), x, y, scheme, kTBlack, flags, width,
                             _tabs);
   } else {
-    Conquer_Clip_Text_Print(
-        Description(), x, y,
-        selected ? &ColorRemaps[PCOLOR_DIALOG_BLUE] : &ColorRemaps[PCOLOR_GREY],
-        kTBlack, flags, width, _tabs);
+    Conquer_Clip_Text_Print(Description(), x, y,
+                            selected ? &ColorRemaps.at(PCOLOR_DIALOG_BLUE)
+                                     : &ColorRemaps.at(PCOLOR_GREY),
+                            kTBlack, flags, width, _tabs);
   }
 }
 
@@ -790,7 +790,7 @@ NeedType Event_Needs(TEventType event) {
 TEventType Event_From_Name(const char* name) {
   if (name) {
     for (TEventType i = TEVENT_NONE; i < TEVENT_COUNT; i++) {
-      if (!port::CompareIgnoreCase(name, EventText[i])) {
+      if (!port::CompareIgnoreCase(name, EventText.at(i))) {
         return i;
       }
     }
@@ -810,7 +810,7 @@ TEventType Event_From_Name(const char* name) {
  *                                                                                             *
  * HISTORY: * 11/29/1994 BR : Created. *
  *=============================================================================================*/
-const char* Name_From_Event(TEventType event) { return EventText[event]; }
+const char* Name_From_Event(TEventType event) { return EventText.at(event); }
 
 /***********************************************************************************************
  * Attaches_To -- Determines what event can be attached to. *

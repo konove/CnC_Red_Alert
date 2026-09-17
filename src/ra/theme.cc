@@ -155,7 +155,7 @@ base::EnumArray<ThemeType, ThemeClass::ThemeControl> ThemeClass::_themes = {{
  *=============================================================================================*/
 const char* ThemeClass::Base_Name(ThemeType theme) {
   if (theme != THEME_NONE) {
-    return _themes[theme].Name;
+    return _themes.at(theme).Name;
   }
   return "No theme";
 }
@@ -192,7 +192,7 @@ ThemeClass::ThemeClass() = default;
  *=============================================================================================*/
 const char* ThemeClass::Full_Name(ThemeType theme) {
   if (static_cast<unsigned>(theme) < magic_enum::enum_count<ThemeType>()) {
-    return Text_String(_themes[theme].Fullname);
+    return Text_String(_themes.at(theme).Fullname);
   }
   return nullptr;
 }
@@ -253,7 +253,7 @@ void ThemeClass::AI() {
  *=============================================================================================*/
 ThemeType ThemeClass::Next_Song(ThemeType theme) {
   if (theme == THEME_NONE || theme == THEME_PICK_ANOTHER ||
-      (theme != THEME_QUIET && !_themes[theme].Repeat &&
+      (theme != THEME_QUIET && !_themes.at(theme).Repeat &&
        !Options.IsScoreRepeat)) {
     if (Options.IsScoreShuffle) {
       /*
@@ -387,7 +387,7 @@ int ThemeClass::Play_Song(ThemeType theme) {
 const char* ThemeClass::Theme_File_Name(ThemeType theme) {
   if (static_cast<unsigned>(theme) < magic_enum::enum_count<ThemeType>()) {
     static std::string name;
-    name = std::filesystem::path(_themes[theme].Name)
+    name = std::filesystem::path(_themes.at(theme).Name)
                .replace_extension(".AUD")
                .string();
     return name.data();
@@ -415,7 +415,7 @@ const char* ThemeClass::Theme_File_Name(ThemeType theme) {
  *=============================================================================================*/
 int ThemeClass::Track_Length(ThemeType theme) {
   if (static_cast<unsigned>(theme) < magic_enum::enum_count<ThemeType>()) {
-    return _themes[theme].Duration;
+    return _themes.at(theme).Duration;
   }
   return 0;
 }
@@ -500,14 +500,14 @@ bool ThemeClass::Is_Allowed(ThemeType index) {
   /*
   **	If the theme is not present, then it certainly isn't allowed.
   */
-  if (!_themes[index].Available) {
+  if (!_themes.at(index).Available) {
     return false;
   }
 
   /*
   **	Only normal themes (playable during battle) are considered allowed.
   */
-  if (!_themes[index].Normal) {
+  if (!_themes.at(index).Normal) {
     return false;
   }
 
@@ -516,8 +516,8 @@ bool ThemeClass::Is_Allowed(ThemeType index) {
   *don't allow *	it. If the player's house hasn't yet been determined,
   *then presume this test *	passes.
   */
-  if (PlayerPtr != nullptr &&
-      (base::Bit<uint32_t>(PlayerPtr->ActLike) & _themes[index].Owner) == 0) {
+  if (PlayerPtr != nullptr && (base::Bit<uint32_t>(PlayerPtr->ActLike) &
+                               _themes.at(index).Owner) == 0) {
     return false;
   }
 
@@ -525,7 +525,8 @@ bool ThemeClass::Is_Allowed(ThemeType index) {
   **	If the scenario doesn't allow this theme yet, then return the failure
   *flag. The *	scenario check only makes sense for solo play.
   */
-  if (Session.Type == GAME_NORMAL && Scen.Scenario < _themes[index].Scenario) {
+  if (Session.Type == GAME_NORMAL &&
+      Scen.Scenario < _themes.at(index).Scenario) {
     return false;
   }
 
@@ -561,7 +562,7 @@ ThemeType ThemeClass::From_Name(const char* name) {
     **	of the theme. This is guaranteed to be unique.
     */
     for (const ThemeType theme : magic_enum::enum_values<ThemeType>()) {
-      if (port::CompareIgnoreCase(_themes[theme].Name, name) == 0) {
+      if (port::CompareIgnoreCase(_themes.at(theme).Name, name) == 0) {
         return theme;
       }
     }
@@ -572,7 +573,7 @@ ThemeType ThemeClass::From_Name(const char* name) {
     **	yield a match, but is not guaranteed to be unique.
     */
     for (const ThemeType theme : magic_enum::enum_values<ThemeType>()) {
-      if (std::string_view(Text_String(_themes[theme].Fullname))
+      if (std::string_view(Text_String(_themes.at(theme).Fullname))
               .contains(name)) {
         return theme;
       }
@@ -601,7 +602,8 @@ ThemeType ThemeClass::From_Name(const char* name) {
  *=============================================================================================*/
 void ThemeClass::Scan() {
   for (const ThemeType theme : magic_enum::enum_values<ThemeType>()) {
-    _themes[theme].Available = GameFile(Theme_File_Name(theme)).IsAvailable();
+    _themes.at(theme).Available =
+        GameFile(Theme_File_Name(theme)).IsAvailable();
   }
 }
 
@@ -629,8 +631,8 @@ void ThemeClass::Scan() {
 void ThemeClass::Set_Theme_Data(ThemeType theme, int scenario,
                                 uint32_t owners) {
   if (theme != THEME_NONE) {
-    _themes[theme].Normal = true;
-    _themes[theme].Scenario = scenario;
-    _themes[theme].Owner = owners;
+    _themes.at(theme).Normal = true;
+    _themes.at(theme).Scenario = scenario;
+    _themes.at(theme).Owner = owners;
   }
 }

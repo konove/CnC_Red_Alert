@@ -117,7 +117,7 @@ void MouseClass::Revert_Mouse_Shape() {
 }
 
 void MouseClass::Mouse_Small(bool wwsmall) {
-  const MouseStruct* control = &MouseControl[CurrentMouseShape];
+  const MouseStruct* control = &MouseControl.at(CurrentMouseShape);
 
   if (IsSmall == wwsmall) {
     return;
@@ -132,7 +132,7 @@ void MouseClass::Mouse_Small(bool wwsmall) {
           Extract_Shape(MouseShapes, control->SmallFrame + (Frame / 4)));
     } else {
       Set_Mouse_Cursor(
-          MouseControl[MOUSE_NORMAL].X, MouseControl[MOUSE_NORMAL].Y,
+          MouseControl.at(MOUSE_NORMAL).X, MouseControl.at(MOUSE_NORMAL).Y,
           Extract_Shape(MouseShapes, static_cast<int>(MOUSE_NORMAL)));
     }
   } else {
@@ -161,7 +161,7 @@ void MouseClass::Mouse_Small(bool wwsmall) {
  *Added small control parameter.                                           *
  *=============================================================================================*/
 bool MouseClass::Override_Mouse_Shape(MouseType mouse, bool wwsmall) {
-  const MouseStruct* control = &MouseControl[mouse];
+  const MouseStruct* control = &MouseControl.at(mouse);
   static bool startup = false;
   int baseshp = 0;
 
@@ -225,7 +225,7 @@ bool MouseClass::Override_Mouse_Shape(MouseType mouse, bool wwsmall) {
 void MouseClass::AI(KeyNumType& input, int x, int y) {
   //	bool doit = false;
   std::span<const std::byte> mouse_shape_ptr;
-  const MouseStruct* control = &MouseControl[CurrentMouseShape];
+  const MouseStruct* control = &MouseControl.at(CurrentMouseShape);
 
   if (control->FrameRate && Timer.Time() == 0) {
     Frame++;

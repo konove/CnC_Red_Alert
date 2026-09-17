@@ -85,7 +85,6 @@
 #include "ra/house.h"
 #include "ra/infantry.h"
 #include "ra/inline.h"
-#include "ra/map.h"
 #include "ra/mapedit.h"
 #include "ra/object.h"
 #include "ra/radar.h"
@@ -313,8 +312,8 @@ std::span<const int16_t> BulletClass::Occupy_List(bool /*placement*/) const {
     int index = 0;
     const CELL cell1 = Coord_Cell(Coord);
 
-    while (ptr[base::ToSize(index)] != kRefreshEol) {
-      base::At(_list, index) = ptr[base::ToSize(index)];
+    while (base::At(ptr, base::ToSize(index)) != kRefreshEol) {
+      base::At(_list, index) = base::At(ptr, base::ToSize(index));
       index++;
     }
 
@@ -921,7 +920,7 @@ LayerType BulletClass::In_Which_Layer() const {
  *=============================================================================================*/
 bool BulletClass::Is_Forced_To_Explode(COORDINATE& coord) const {
   coord = Coord;
-  const CellClass* cellptr = &Map[coord];
+  const CellClass* cellptr = &Map.at(coord);
 
   /*
   **	Check for impact on a wall or other high obstacle.
@@ -1042,7 +1041,7 @@ void BulletClass::Bullet_Explodes(bool forced) {
   **	Fetch the land type that the explosion will be upon. Special case for
   **	flying aircraft targets, their land type will be LAND_NONE.
   */
-  const CellClass* cellptr = &Map[Coord];
+  const CellClass* cellptr = &Map.at(Coord);
   LandType land = cellptr->Land_Type();
   if (Is_Target_Aircraft(TarCom) &&
       As_Aircraft(TarCom)->In_Which_Layer() == LAYER_TOP) {

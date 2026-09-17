@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "absl/log/check.h"
+#include "base/array.h"
 
 namespace base {
 
@@ -96,8 +97,8 @@ inline int CompareBytes(std::span<const std::byte> left,
   CHECK(std::cmp_less_equal(+count, left.size()));
   CHECK(std::cmp_less_equal(+count, right.size()));
   for (std::size_t i = 0; i < static_cast<std::size_t>(count); ++i) {
-    const int difference =
-        std::to_integer<int>(left[i]) - std::to_integer<int>(right[i]);
+    const int difference = std::to_integer<int>(base::At(left, i)) -
+                           std::to_integer<int>(base::At(right, i));
     if (difference != 0) {
       return difference;
     }

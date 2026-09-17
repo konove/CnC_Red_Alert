@@ -11,6 +11,7 @@ namespace {
 
 constexpr int kValues[] = {3, 5, 8};
 static_assert(base::At(kValues, 1) == 5);
+static_assert(base::At(std::span(kValues), 2) == 8);
 
 TEST(ArrayTest, ReturnsTheOriginalElement) {
   int values[] = {1, 2, 3};
@@ -60,6 +61,30 @@ TEST(ArrayDeathTest, RejectsConsumingAnEmptyView) {
   // GoogleTest formats failure diagnostics inside its death-test macro.
   // NOLINTNEXTLINE(clang-diagnostic-switch-default,clang-diagnostic-unsafe-buffer-usage-in-libc-call)
   EXPECT_DEATH((void)base::ConsumeFront(remaining), "Check failed");
+}
+
+TEST(ArrayTest, SpanAccessPreservesReferencesExtentsAndSingleEvaluation) {
+  int values[] = {2, 4, 6};
+  int index = 0;
+  base::At(std::span(values), index++) = 7;
+  EXPECT_EQ(index, 1);
+  EXPECT_EQ(values[0], 7);
+  const std::span<const int> view(values);
+  EXPECT_EQ(&base::At(view, 2), &values[2]);
+  EXPECT_EQ(base::At(view.subspan(1), 0), 4);
+}
+
+TEST(ArrayDeathTest, SpanRejectsNegativeEndEmptyAndOversizedIndices) {
+  int values[] = {2, 4};
+  const std::span<int> view(values);
+  // GoogleTest's death-test macro formats subprocess diagnostics with libc.
+  // NOLINTBEGIN(clang-diagnostic-switch-default,clang-diagnostic-unsafe-buffer-usage-in-libc-call)
+  EXPECT_DEATH((void)base::At(view, -1), "Check failed");
+  EXPECT_DEATH((void)base::At(view, 2), "Check failed");
+  EXPECT_DEATH((void)base::At(view.subspan(1, 0), 0), "Check failed");
+  EXPECT_DEATH((void)base::At(view, static_cast<std::size_t>(-1)),
+               "Check failed");
+  // NOLINTEND(clang-diagnostic-switch-default,clang-diagnostic-unsafe-buffer-usage-in-libc-call)
 }
 
 }  // namespace

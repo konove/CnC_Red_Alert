@@ -534,8 +534,8 @@ bool Create_Special_Reinforcement(const HouseClass* house,
           for (int index = Map.MapCellX;
                index < Map.MapCellX + Map.MapCellWidth - 1; index++) {
             const CELL cell = XY_Cell(index, Map.MapCellY + Map.MapCellHeight);
-            if (Map[cell].Is_Generally_Clear() &&
-                Map[cell - MAP_CELL_W].Is_Generally_Clear()) {
+            if (Map.at(cell).Is_Generally_Clear() &&
+                Map.at(cell - MAP_CELL_W).Is_Generally_Clear()) {
               found = true;
               break;
             }

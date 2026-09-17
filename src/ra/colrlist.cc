@@ -54,7 +54,6 @@
 #include "ra/inline.h"
 #include "ra/jshell.h"
 #include "ra/list.h"
-#include "ra/vector.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/wwstd.h"
@@ -220,7 +219,7 @@ void ColorListClass::Draw_Entry(int index, int x, int y, int width,
   ** Draw a non-selected item in its color
   */
   if (!selected) {
-    Conquer_Clip_Text_Print(Get_Item(index), x, y, Colors[index], kTBlack,
+    Conquer_Clip_Text_Print(Get_Item(index), x, y, Colors.at(index), kTBlack,
                             TextFlags, width, Tabs);
     return;
   }
@@ -229,7 +228,7 @@ void ColorListClass::Draw_Entry(int index, int x, int y, int width,
   ** For selected items, choose the right color & style:
   */
   if (SelectColor == nullptr) {
-    color = Colors[index];
+    color = Colors.at(index);
   } else {
     color = SelectColor;
   }
@@ -239,7 +238,7 @@ void ColorListClass::Draw_Entry(int index, int x, int y, int width,
     **	NONE: Just print the string in its native color
     */
     case SELECT_NORMAL:
-      Conquer_Clip_Text_Print(Get_Item(index), x, y, Colors[index], kTBlack,
+      Conquer_Clip_Text_Print(Get_Item(index), x, y, Colors.at(index), kTBlack,
                               TextFlags, width, Tabs);
       break;
 
@@ -263,7 +262,7 @@ void ColorListClass::Draw_Entry(int index, int x, int y, int width,
     case SELECT_BOX:
       LogicPage->Draw_Rect(x, y, x + width - 2, y + LineHeight - 2,
                            color->Color);
-      Conquer_Clip_Text_Print(Get_Item(index), x, y, Colors[index], kTBlack,
+      Conquer_Clip_Text_Print(Get_Item(index), x, y, Colors.at(index), kTBlack,
                               TextFlags, width, Tabs);
       break;
 
@@ -274,13 +273,14 @@ void ColorListClass::Draw_Entry(int index, int x, int y, int width,
       if (base::Any(TextFlags & TPF_6PT_GRAD)) {
         LogicPage->Fill_Rect(x, y, x + width - 1, y + LineHeight - 1,
                              color->Color);
-        Conquer_Clip_Text_Print(Get_Item(index), x, y, Colors[index], kTBlack,
-                                TextFlags | TPF_BRIGHT_COLOR, width, Tabs);
+        Conquer_Clip_Text_Print(Get_Item(index), x, y, Colors.at(index),
+                                kTBlack, TextFlags | TPF_BRIGHT_COLOR, width,
+                                Tabs);
       } else {
         LogicPage->Fill_Rect(x, y, x + width - 2, y + LineHeight - 2,
                              color->Color);
-        Conquer_Clip_Text_Print(Get_Item(index), x, y, Colors[index], kTBlack,
-                                TextFlags, width, Tabs);
+        Conquer_Clip_Text_Print(Get_Item(index), x, y, Colors.at(index),
+                                kTBlack, TextFlags, width, Tabs);
       }
       break;
 
@@ -289,7 +289,7 @@ void ColorListClass::Draw_Entry(int index, int x, int y, int width,
     */
     case SELECT_INVERT:
       LogicPage->Fill_Rect(x, y, x + width - 1, y + LineHeight - 1,
-                           Colors[index]->Color);
+                           Colors.at(index)->Color);
       break;
     default:
       break;

@@ -121,7 +121,7 @@ void Check_VQ_Palette_Set() {
 void __cdecl SetPalette(std::span<unsigned char> palette, int32_t /*unused*/,
                         uint32_t /*unused*/) {
   for (int i = 0; i < 256 * 3; i++) {
-    palette[base::ToSize(i)] &= 63;
+    base::At(palette, base::ToSize(i)) &= 63;
   }
   Increase_Palette_Luminance(palette, 15, 15, 15, 63);
 
@@ -207,7 +207,7 @@ class BufferedFileReader {
       return std::nullopt;
     }
 
-    return buffer_[cursor_++];
+    return buffer_.at(cursor_++);
   }
 
  private:

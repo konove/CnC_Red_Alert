@@ -371,7 +371,7 @@ void AnimClass::Draw_It(int x, int y, WindowNumberType window) {
       ShapeFlags_Type flags = SHAPE_CENTER | SHAPE_WIN_REL;
       if (IsAlternate) {
         flags = flags | SHAPE_FADING;
-        remap = base::At(MouseClass::RemapTables[HOUSE_GOOD], 0);
+        remap = base::At(MouseClass::RemapTables.at(HOUSE_GOOD), 0);
       }
       if (!transtable.empty()) {
         flags = flags | SHAPE_GHOST;
@@ -859,7 +859,7 @@ void AnimClass::AI() {
   **	causes the smoke marker to vanish.
   */
   if (Class->Type == ANIM_LZ_SMOKE &&
-      Map[Coord_Cell(Center_Coord())].Cell_Building()) {
+      Map.at(Coord_Cell(Center_Coord())).Cell_Building()) {
     IsToDelete = true;
   }
 
@@ -1078,7 +1078,7 @@ void AnimClass::Start() {
   *animation is already *	attached, then do nothing.
   */
   if (!Object && Class->IsSticky && Map.In_Radar(cell)) {
-    UnitClass* unit = Map[cell].Cell_Unit();
+    UnitClass* unit = Map.at(cell).Cell_Unit();
 
     if (unit && *unit == UNIT_GUNBOAT) {
       Attach_To(unit);
@@ -1104,7 +1104,7 @@ void AnimClass::Start() {
 void AnimClass::Middle() {
   Validate();
   const CELL cell = Coord_Cell(Center_Coord());
-  CellClass* cellptr = &Map[cell];
+  CellClass* cellptr = &Map.at(cell);
 
   if (Class->Type == ANIM_ATOM_BLAST) {
     /*
@@ -1116,7 +1116,7 @@ void AnimClass::Middle() {
     TechnoClass* backup = nullptr;
     if (Owner != HOUSE_NONE) {
       for (int index = 0; index < Logic.Count(); index++) {
-        ObjectClass* obj = Logic[index];
+        ObjectClass* obj = Logic.at(index);
 
         if (obj && obj->Is_Techno() && obj->Owner() == Owner) {
           backup = dynamic_cast<TechnoClass*>(obj);
@@ -1219,18 +1219,18 @@ void AnimClass::Middle() {
 
     c2 = Map.Closest_Free_Spot(c2, true);
     if ((c3 && Random_Pick(0, 1) == 1) &&
-        (!Map[Coord_Cell(c3)].Cell_Terrain())) {
+        (!Map.at(Coord_Cell(c3)).Cell_Terrain())) {
       new AnimClass(ANIM_FIRE_SMALL, c3, 0, 2);
     }
 
     if ((c2 && Random_Pick(0, 1) == 1) &&
-        (!Map[Coord_Cell(c2)].Cell_Terrain())) {
+        (!Map.at(Coord_Cell(c2)).Cell_Terrain())) {
       new AnimClass(ANIM_FIRE_SMALL, c2, 0, 2);
     }
 
     new SmudgeClass(SMUDGE_SCORCH1, c2);
     if ((c3 && Random_Pick(0, 1) == 1) &&
-        (!Map[Coord_Cell(c3)].Cell_Terrain())) {
+        (!Map.at(Coord_Cell(c3)).Cell_Terrain())) {
       new AnimClass(ANIM_SMOKE_M, c3);
     }
   }
@@ -1247,7 +1247,7 @@ void AnimClass::Middle() {
       TechnoClass* backup = nullptr;
       if (Owner != HOUSE_NONE) {
         for (int index = 0; index < Logic.Count(); index++) {
-          ObjectClass* obj = Logic[index];
+          ObjectClass* obj = Logic.at(index);
 
           if (obj && obj->Is_Techno() && obj->Owner() == Owner &&
               !obj->IsInLimbo) {

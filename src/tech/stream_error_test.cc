@@ -11,6 +11,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/array.h"
 #include "base/seek_origin.h"
 #include "base/types.h"
 #include "gtest/gtest.h"
@@ -71,8 +72,9 @@ class ScriptedFile : public File {
         failed_ = true;
         break;
       }
-      buffer[static_cast<std::size_t>(count++)] =
-          static_cast<std::byte>(data_[static_cast<std::size_t>(position_++)]);
+      base::At(buffer, static_cast<std::size_t>(count++)) =
+          static_cast<std::byte>(
+              data_.at(static_cast<std::size_t>(position_++)));
     }
     return count;
   }
@@ -170,7 +172,7 @@ TEST(StreamErrorTest, ReadErrorIsStickyThroughTransformStraw) {
   compressor.Finish();
   std::string stored(static_cast<std::size_t>(std::ssize(encoded.bytes)), '\0');
   for (std::size_t i = 0; i < stored.size(); ++i) {
-    stored[i] = static_cast<char>(encoded.bytes[i]);
+    stored.at(i) = static_cast<char>(encoded.bytes.at(i));
   }
 
   // Blocks of 16, 16 and 4 bytes; the read error lands inside the last.

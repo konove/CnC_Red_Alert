@@ -197,20 +197,21 @@ void Setup_Menu(int menu, std::span<const char* const> text, uint32_t field,
   const auto menuptr =
       std::span(base::At(MenuList, menu)); /* get pointer to menu	*/
   const int menuy =
-      static_cast<int>(WinY) + menuptr[kMenuy]; /* get the absolute */
+      static_cast<int>(WinY) + base::At(menuptr, kMenuy); /* get the absolute */
   const int menux =
-      static_cast<int>(WinX) + menuptr[kMenux]; /* coords of menu */
-  const int item = Select_To_Entry(menuptr[kMselected], field, index);
-  const int num = menuptr[kItemshigh];
+      static_cast<int>(WinX) + base::At(menuptr, kMenux); /* coords of menu */
+  const int item = Select_To_Entry(base::At(menuptr, kMselected), field, index);
+  const int num = base::At(menuptr, kItemshigh);
 
   Plain_Text_Print(0, 0, 0, kTBlack, kTBlack, TPF_8POINT | TPF_DROPSHADOW);
   Hide_Mouse();
   for (int lp = 0; lp < num; lp++) {
     const int idx = Select_To_Entry(lp, field, index);
     const int drawy = menuy + (lp * FontHeight) + (lp * skip);
-    Plain_Text_Print(text[base::ToSize(idx)], menux, drawy,
-                     menuptr[idx == item && MenuUpdate ? kHilite : kNormcol],
-                     kTBlack, TPF_8POINT | TPF_DROPSHADOW);
+    Plain_Text_Print(
+        base::At(text, base::ToSize(idx)), menux, drawy,
+        base::At(menuptr, idx == item && MenuUpdate ? kHilite : kNormcol),
+        kTBlack, TPF_8POINT | TPF_DROPSHADOW);
     //		if ((idx==item) && (MenuUpdate ))
     //			Text_Print(text[base::ToSize(idx)], menux, drawy,
     //menuptr[kHilite],
@@ -232,18 +233,19 @@ int Check_Menu(int menu, std::span<const char* const> text, char* /*unused*/,
 
   const auto menuptr =
       std::span(base::At(MenuList, menu)); /* get pointer to menu	*/
-  const int maxitem = menuptr[kItemshigh] - 1;              /* find max items */
-  int newitem = item = menuptr[kMselected] % (maxitem + 1); /* find selected */
+  const int maxitem = base::At(menuptr, kItemshigh) - 1; /* find max items */
+  int newitem = item =
+      base::At(menuptr, kMselected) % (maxitem + 1); /* find selected */
   int select = -1;                            /* no selection made		*/
   const int menuskip = FontHeight + MenuSkip; /* calc new font height	*/
   const int halfskip = MenuSkip / 2;          /* adjustment for menus	*/
 
   const int menuy =
-      static_cast<int>(WinY) + menuptr[kMenuy]; /* get the absolute */
+      static_cast<int>(WinY) + base::At(menuptr, kMenuy); /* get the absolute */
   const int menux =
-      static_cast<int>(WinX) + menuptr[kMenux]; /* coords of menu */
-  const int normcol = menuptr[kNormcol];
-  const int litcol = menuptr[kHilite];
+      static_cast<int>(WinX) + base::At(menuptr, kMenux); /* coords of menu */
+  const int normcol = base::At(menuptr, kNormcol);
+  const int litcol = base::At(menuptr, kHilite);
 
   /*
   **	Fetch a pending keystroke from the buffer if there is a keystroke
@@ -265,12 +267,13 @@ int Check_Menu(int menu, std::span<const char* const> text, char* /*unused*/,
   **	out the new selected item, and continue forward.
   */
   /* get menu coords from the menu structure as necessary */
-  const int mx1 = static_cast<int>(WinX) + (menuptr[kMenux] * FontWidth);
-  const int my1 = static_cast<int>(WinY) + menuptr[kMenuy] -
+  const int mx1 =
+      static_cast<int>(WinX) + (base::At(menuptr, kMenux) * FontWidth);
+  const int my1 = static_cast<int>(WinY) + base::At(menuptr, kMenuy) -
                   halfskip; /*		from the menu		*/
-  const int mx2 = mx1 + (menuptr[kItemwidth] * FontWidth) -
+  const int mx2 = mx1 + (base::At(menuptr, kItemwidth) * FontWidth) -
                   1; /*		structure as		*/
-  const int my2 = my1 + (menuptr[kItemshigh] * menuskip) -
+  const int my2 = my1 + (base::At(menuptr, kItemshigh) * menuskip) -
                   1; /*		necessary			*/
 
   const int tempy = Get_Mouse_Y();
@@ -338,8 +341,9 @@ int Check_Menu(int menu, std::span<const char* const> text, char* /*unused*/,
     *selection of *					that entry.
     */
     default:
-      for (idx = 0; idx < menuptr[kItemshigh]; idx++) {
-        if (toupper(*text[base::ToSize(Select_To_Entry(idx, field, index))]) ==
+      for (idx = 0; idx < base::At(menuptr, kItemshigh); idx++) {
+        if (toupper(*base::At(
+                text, base::ToSize(Select_To_Entry(idx, field, index)))) ==
             toupper(KeyboardClass::To_ASCII(
                 static_cast<KeyNumType>(key & 0xFFU)))) {
           newitem = select = idx;
@@ -354,12 +358,12 @@ int Check_Menu(int menu, std::span<const char* const> text, char* /*unused*/,
     Hide_Mouse();
     idx = Select_To_Entry(item, field, index);
     drawy = menuy + (item * menuskip);
-    Plain_Text_Print(text[base::ToSize(idx)], menux, drawy, normcol, kTBlack,
-                     TPF_8POINT | TPF_DROPSHADOW);
+    Plain_Text_Print(base::At(text, base::ToSize(idx)), menux, drawy, normcol,
+                     kTBlack, TPF_8POINT | TPF_DROPSHADOW);
     idx = Select_To_Entry(newitem, field, index);
     drawy = menuy + (newitem * menuskip);
-    Plain_Text_Print(text[base::ToSize(idx)], menux, drawy, litcol, kTBlack,
-                     TPF_8POINT | TPF_DROPSHADOW);
+    Plain_Text_Print(base::At(text, base::ToSize(idx)), menux, drawy, litcol,
+                     kTBlack, TPF_8POINT | TPF_DROPSHADOW);
     Show_Mouse(); /* resurrect the mouse	*/
   }
 
@@ -367,12 +371,13 @@ int Check_Menu(int menu, std::span<const char* const> text, char* /*unused*/,
     idx = Select_To_Entry(select, field, index);
     Hide_Mouse(); /* get rid of the mouse	*/
     drawy = menuy + (newitem * menuskip);
-    Flash_Line(text[base::ToSize(idx)], menux, drawy, normcol, litcol, kTBlack);
+    Flash_Line(base::At(text, base::ToSize(idx)), menux, drawy, normcol, litcol,
+               kTBlack);
     Show_Mouse();
     select = idx;
   }
 
-  menuptr[kMselected] = newitem; /* update menu select	*/
+  base::At(menuptr, kMselected) = newitem; /* update menu select	*/
 
   return select;
 }

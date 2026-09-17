@@ -525,7 +525,7 @@ ArmorType CCINIClass::Get_ArmorType(const char* section, const char* entry,
                                     ArmorType defvalue) const {
   char buffer[128];
 
-  Get_String(section, entry, ArmorName[defvalue], buffer, sizeof(buffer));
+  Get_String(section, entry, ArmorName.at(defvalue), buffer, sizeof(buffer));
   return Armor_From_Name(buffer);
 }
 
@@ -548,7 +548,7 @@ ArmorType CCINIClass::Get_ArmorType(const char* section, const char* entry,
  *=============================================================================================*/
 bool CCINIClass::Put_ArmorType(const char* section, const char* entry,
                                ArmorType value) {
-  return Put_String(section, entry, ArmorName[value]);
+  return Put_String(section, entry, ArmorName.at(value));
 }
 
 /***********************************************************************************************
@@ -1014,7 +1014,7 @@ VQType CCINIClass::Get_VQType(const char* section, const char* entry,
 
   if (Get_String(section, entry, "", buffer, sizeof(buffer))) {
     for (const VQType vq : magic_enum::enum_values<VQType>()) {
-      if (port::CompareIgnoreCase(buffer, VQName[vq]) == 0) {
+      if (port::CompareIgnoreCase(buffer, VQName.at(vq)) == 0) {
         return vq;
       }
     }
@@ -1045,7 +1045,7 @@ bool CCINIClass::Put_VQType(const char* section, const char* entry,
   if (value == VQ_NONE) {
     return Put_String(section, entry, "<none>");
   }
-  return Put_String(section, entry, VQName[value]);
+  return Put_String(section, entry, VQName.at(value));
 }
 
 /***********************************************************************************************
@@ -1099,7 +1099,7 @@ TheaterType CCINIClass::Get_TheaterType(const char* section, const char* entry,
  *=============================================================================================*/
 bool CCINIClass::Put_TheaterType(const char* section, const char* entry,
                                  TheaterType value) {
-  return Put_String(section, entry, Theaters[value].Name);
+  return Put_String(section, entry, Theaters.at(value).Name);
 }
 
 /***********************************************************************************************
@@ -1261,7 +1261,7 @@ SourceType CCINIClass::Get_SourceType(const char* section, const char* entry,
  *=============================================================================================*/
 bool CCINIClass::Put_SourceType(const char* section, const char* entry,
                                 SourceType value) {
-  return Put_String(section, entry, SourceName[value]);
+  return Put_String(section, entry, SourceName.at(value));
 }
 
 /***********************************************************************************************
@@ -1315,7 +1315,7 @@ CrateType CCINIClass::Get_CrateType(const char* section, const char* entry,
  *=============================================================================================*/
 bool CCINIClass::Put_CrateType(const char* section, const char* entry,
                                CrateType value) {
-  return Put_String(section, entry, CrateNames[value]);
+  return Put_String(section, entry, CrateNames.at(value));
 }
 
 /***********************************************************************************************

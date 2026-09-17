@@ -307,14 +307,14 @@ void PWEditClass::Draw_Text(const char* text) {
     }
   } else {
     Conquer_Clip_Text_Print(buffer, X + 1, Y + 1,
-                            Has_Focus() ? &ColorRemaps[PCOLOR_DIALOG_BLUE]
-                                        : &ColorRemaps[PCOLOR_GREY],
+                            Has_Focus() ? &ColorRemaps.at(PCOLOR_DIALOG_BLUE)
+                                        : &ColorRemaps.at(PCOLOR_GREY),
                             kTBlack, TextFlags, Width - 2);
 
     if (Has_Focus() &&
         std::cmp_less(std::string_view(buffer).size(), MaxLength)) {
       Conquer_Clip_Text_Print("_", X + 1 + String_Pixel_Width(buffer), Y + 1,
-                              &ColorRemaps[PCOLOR_DIALOG_BLUE], kTBlack,
+                              &ColorRemaps.at(PCOLOR_DIALOG_BLUE), kTBlack,
                               TextFlags);
     }
   }

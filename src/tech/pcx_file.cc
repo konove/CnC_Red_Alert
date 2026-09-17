@@ -145,7 +145,7 @@ void Write_Pcx_ScanLine(int file_handle, std::span<const uint8_t> pixels) {
   unsigned rle = 1;
 
   for (unsigned i = 1; i < pixels.size(); i++) {
-    const unsigned color = pixels[i];
+    const unsigned color = base::At(pixels, i);
     if (color == last) {
       rle++;
       if (rle == 63) {

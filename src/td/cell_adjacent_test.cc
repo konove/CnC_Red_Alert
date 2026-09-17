@@ -15,7 +15,7 @@ class TdAdjacentCellTest : public testing::Test {
   }
   static void TearDownTestSuite() { Map.Clear(); }
 
-  static const CellClass& Cell(int x, int y) { return Map[XY_Cell(x, y)]; }
+  static const CellClass& Cell(int x, int y) { return Map.at(XY_Cell(x, y)); }
 };
 
 TEST_F(TdAdjacentCellTest, InteriorCellReturnsEachNeighbour) {
@@ -39,13 +39,13 @@ TEST_F(TdAdjacentCellTest, StepOffTopOfArrayReturnsSelf) {
 }
 
 TEST_F(TdAdjacentCellTest, StepOffBottomOfArrayReturnsSelf) {
-  const CellClass& last = Map[static_cast<CELL>(MAP_CELL_TOTAL - 1)];
+  const CellClass& last = Map.at(static_cast<CELL>(MAP_CELL_TOTAL - 1));
   EXPECT_EQ(&last.Adjacent_Cell(FACING_S), &last);
   EXPECT_EQ(&last.Adjacent_Cell(FACING_SE), &last);
   EXPECT_EQ(&last.Adjacent_Cell(FACING_SW), &last);
   EXPECT_EQ(&last.Adjacent_Cell(FACING_E), &last);
   EXPECT_EQ(&last.Adjacent_Cell(FACING_W),
-            &Map[static_cast<CELL>(MAP_CELL_TOTAL - 2)]);
+            &Map.at(static_cast<CELL>(MAP_CELL_TOTAL - 2)));
 }
 
 TEST_F(TdAdjacentCellTest, FirstCellStepWestReturnsSelf) {

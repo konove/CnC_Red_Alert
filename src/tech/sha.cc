@@ -196,8 +196,8 @@ Sha1Digest SHAEngine::Digest() const {
   // Each word is stored most significant byte first.
   for (std::size_t word = 0; word < acc.size(); ++word) {
     for (std::size_t byte = 0; byte < 4; ++byte) {
-      FinalResult[(word * 4) + byte] =
-          static_cast<std::byte>(acc[word] >> (24U - (8U * byte)));
+      FinalResult.at((word * 4) + byte) =
+          static_cast<std::byte>(acc.at(word) >> (24U - (8U * byte)));
     }
   }
   IsCached = true;
@@ -278,18 +278,19 @@ void SHAEngine::Process_Block(std::span<const std::byte> source,
   Accumulator alt = acc;
   for (int index = 0; std::cmp_less(index, PROC_BLOCK_SIZE / sizeof(uint32_t));
        index++) {
-    const uint32_t temp = rotl(alt[0], 5) +
-                          Do_Function(index, alt[1], alt[2], alt[3]) + alt[4] +
-                          base::At(block, index) + Get_Constant(index);
-    alt[4] = alt[3];
-    alt[3] = alt[2];
-    alt[2] = rotl(alt[1], 30);
-    alt[1] = alt[0];
-    alt[0] = temp;
+    const uint32_t temp = rotl(alt.at(0), 5) +
+                          Do_Function(index, alt.at(1), alt.at(2), alt.at(3)) +
+                          alt.at(4) + base::At(block, index) +
+                          Get_Constant(index);
+    alt.at(4) = alt.at(3);
+    alt.at(3) = alt.at(2);
+    alt.at(2) = rotl(alt.at(1), 30);
+    alt.at(1) = alt.at(0);
+    alt.at(0) = temp;
   }
-  acc[0] += alt[0];
-  acc[1] += alt[1];
-  acc[2] += alt[2];
-  acc[3] += alt[3];
-  acc[4] += alt[4];
+  acc.at(0) += alt.at(0);
+  acc.at(1) += alt.at(1);
+  acc.at(2) += alt.at(2);
+  acc.at(3) += alt.at(3);
+  acc.at(4) += alt.at(4);
 }

@@ -258,8 +258,8 @@ TechnoTypeClass::TechnoTypeClass(
   */
 
   if (primary != WEAPON_NONE) {
-    Risk = Weapons[primary].Attack * (Weapons[primary].Range / 16) /
-           Weapons[primary].ROF;
+    Risk = Weapons.at(primary).Attack * (Weapons.at(primary).Range / 16) /
+           Weapons.at(primary).ROF;
   }
 }
 
@@ -870,7 +870,7 @@ void TechnoClass::Per_Cell_Process(bool /*unused*/) {
   **	If this object somehow moves into mapped terrain, but is not yet
   **	discovered, then flag it to be discovered.
   */
-  if (!IsDiscoveredByPlayer && Map[cell].IsVisible) {
+  if (!IsDiscoveredByPlayer && Map.at(cell).IsVisible) {
     Revealed(PlayerPtr);
   }
 }
@@ -1418,7 +1418,7 @@ bool TechnoClass::Evaluate_Cell(ThreatType method, uint32_t mask, CELL cell,
   **	Fetch the techno object from the cell. If there is no
   **	techno object there, then bail.
   */
-  const CellClass* cellptr = &Map[cell];
+  const CellClass* cellptr = &Map.at(cell);
   const auto* tentative =
       dynamic_cast<const TechnoClass*>(cellptr->Cell_Occupier());
   while (tentative) {
@@ -1638,9 +1638,9 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method) const {
     **	Now scan through the entire ground layer. This is painful, but what
     *other *	choice is there?
     */
-    for (int index = 0; index < MouseClass::Layer[LAYER_GROUND].Count();
+    for (int index = 0; index < MouseClass::Layer.at(LAYER_GROUND).Count();
          index++) {
-      const ObjectClass* object = MouseClass::Layer[LAYER_GROUND][index];
+      const ObjectClass* object = MouseClass::Layer.at(LAYER_GROUND).at(index);
 
       int value = 0;
       if ((object->Is_Techno() &&
@@ -1945,7 +1945,7 @@ FireErrorType TechnoClass::Can_Fire(TARGET target, int which) const {
   *is *	sitting on the ground.
   */
   if (object && object->What_Am_I() == RTTI_AIRCRAFT &&
-      !BulletTypeClass::As_Reference(Weapons[weap].Fires).IsAntiAircraft &&
+      !BulletTypeClass::As_Reference(Weapons.at(weap).Fires).IsAntiAircraft &&
       dynamic_cast<AircraftClass*>(object)->Altitude > 0) {
     return FIRE_CANT;
   }
@@ -2071,7 +2071,7 @@ void TechnoClass::Assign_Target(TARGET target) {
  *=============================================================================================*/
 int TechnoClass::Rearm_Delay(bool second) const {
   if (second) {
-    return Weapons[Techno_Type_Class()->Primary].ROF + 3;
+    return Weapons.at(Techno_Type_Class()->Primary).ROF + 3;
   }
   return 9;
 }
@@ -2100,7 +2100,7 @@ BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
   COORDINATE target_coord = 0;  // Coordinate of the target.
   const TechnoTypeClass& tclass = *Techno_Type_Class();
   const WeaponTypeClass* weapon =
-      which == 0 ? &Weapons[tclass.Primary] : &Weapons[tclass.Secondary];
+      which == 0 ? &Weapons.at(tclass.Primary) : &Weapons.at(tclass.Secondary);
   const BulletTypeClass& btype = BulletTypeClass::As_Reference(weapon->Fires);
 
   /*
@@ -2304,7 +2304,7 @@ BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
     ** local player.
     */
     if ((!IsOwnedByPlayer && !IsDiscoveredByPlayer) ||
-        !Map[Coord_Cell(Center_Coord())].IsMapped) {
+        !Map.at(Coord_Cell(Center_Coord())).IsMapped) {
       if (GameToPlay == GAME_NORMAL) {
         Map.Sight_From(Coord_Cell(Center_Coord()), 1, false);
       } else {
@@ -2462,7 +2462,7 @@ ActionType TechnoClass::What_Action(ObjectClass* object) {
  *buildings is explicitely disabled.                        *
  *=============================================================================================*/
 ActionType TechnoClass::What_Action(CELL cell) const {
-  const CellClass* cellptr = &Map[cell];
+  const CellClass* cellptr = &Map.at(cell);
   const OverlayTypeClass* optr = nullptr;
 
   bool ctrldown = Keyboard::Down(KN_LCTRL) || Keyboard::Down(KN_RCTRL);
@@ -2493,9 +2493,9 @@ ActionType TechnoClass::What_Action(CELL cell) const {
   if (IsOwnedByPlayer && Techno_Type_Class()->Primary != WEAPON_NONE &&
       (ctrldown || (optr && optr->IsLegalTarget))) {
     const WarheadTypeClass* whead =
-        &Warheads[BulletTypeClass::As_Reference(
-                      Weapons[Techno_Type_Class()->Primary].Fires)
-                      .Warhead];
+        &Warheads.at(BulletTypeClass::As_Reference(
+                         Weapons.at(Techno_Type_Class()->Primary).Fires)
+                         .Warhead);
     if ((!optr ||
          (optr->IsWall && (whead->IsWallDestroyer ||
                            (whead->IsWoodDestroyer && optr->IsWooden)))) &&
@@ -2646,9 +2646,9 @@ int TechnoClass::Weapon_Range(int which) const {
   }
   if (weapon != WEAPON_NONE) {
     if (weapon == WEAPON_NIKE && GameToPlay == GAME_NORMAL) {
-      return Weapons[weapon].Range * 2;
+      return Weapons.at(weapon).Range * 2;
     }
-    return Weapons[weapon].Range;
+    return Weapons.at(weapon).Range;
   }
   return 0;
 }
@@ -2736,7 +2736,7 @@ bool TechnoClass::Captured(HouseClass* newowner) {
     switch (What_Am_I()) {
       case RTTI_BUILDING:
         if (newowner) {
-          newowner->BuildingsKilled[Owner()]++;
+          newowner->BuildingsKilled.at(Owner())++;
         }
         break;
 
@@ -2744,7 +2744,7 @@ bool TechnoClass::Captured(HouseClass* newowner) {
       case RTTI_INFANTRY:
       case RTTI_UNIT:
         if (newowner) {
-          newowner->UnitsKilled[Owner()]++;
+          newowner->UnitsKilled.at(Owner())++;
         }
         break;
 
@@ -2951,7 +2951,7 @@ void TechnoClass::Record_The_Kill(TechnoClass* source) {
               static_cast<int>(
                   dynamic_cast<BuildingClass*>(this)->Class->Type));
         }
-        source->House->BuildingsKilled[Owner()]++;
+        source->House->BuildingsKilled.at(Owner())++;
       }
 
       /*
@@ -2971,7 +2971,7 @@ void TechnoClass::Record_The_Kill(TechnoClass* source) {
               static_cast<int>(
                   dynamic_cast<AircraftClass*>(this)->Class->Type));
         }
-        source->House->UnitsKilled[Owner()]++;
+        source->House->UnitsKilled.at(Owner())++;
       }
       /*
       ** If the map is displaying the multiplayer player names & their
@@ -2990,7 +2990,7 @@ void TechnoClass::Record_The_Kill(TechnoClass* source) {
               static_cast<int>(
                   dynamic_cast<InfantryClass*>(this)->Class->Type));
         }
-        source->House->UnitsKilled[Owner()]++;
+        source->House->UnitsKilled.at(Owner())++;
       }
       /*
       ** If the map is displaying the multiplayer player names & their
@@ -3008,7 +3008,7 @@ void TechnoClass::Record_The_Kill(TechnoClass* source) {
           source->House->DestroyedUnits->Increment_Unit_Total(
               static_cast<int>(dynamic_cast<UnitClass*>(this)->Class->Type));
         }
-        source->House->UnitsKilled[Owner()]++;
+        source->House->UnitsKilled.at(Owner())++;
       }
 
       /*
@@ -3075,12 +3075,12 @@ CELL TechnoClass::Nearby_Location(const TechnoClass* /*unused*/) const {
     */
     for (int x = -radius; x <= radius; x++) {
       CELL newcell = static_cast<CELL>(cell + XY_Cell(x, -radius));
-      if (Map.In_Radar(newcell) && Map[newcell].Is_Generally_Clear()) {
+      if (Map.In_Radar(newcell) && Map.at(newcell).Is_Generally_Clear()) {
         best = newcell;
       }
 
       newcell = static_cast<CELL>(cell + XY_Cell(x, radius));
-      if (Map.In_Radar(newcell) && Map[newcell].Is_Generally_Clear()) {
+      if (Map.In_Radar(newcell) && Map.at(newcell).Is_Generally_Clear()) {
         best = newcell;
       }
     }
@@ -3090,12 +3090,12 @@ CELL TechnoClass::Nearby_Location(const TechnoClass* /*unused*/) const {
     */
     for (int y = -(radius - 1); y < radius; y++) {
       CELL newcell = static_cast<CELL>(cell + XY_Cell(-radius, y));
-      if (Map.In_Radar(newcell) && Map[newcell].Is_Generally_Clear()) {
+      if (Map.In_Radar(newcell) && Map.at(newcell).Is_Generally_Clear()) {
         best = newcell;
       }
 
       newcell = static_cast<CELL>(cell + XY_Cell(radius, y));
-      if (Map.In_Radar(newcell) && Map[newcell].Is_Generally_Clear()) {
+      if (Map.In_Radar(newcell) && Map.at(newcell).Is_Generally_Clear()) {
         best = newcell;
       }
     }

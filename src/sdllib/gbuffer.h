@@ -576,7 +576,7 @@ inline void GraphicViewPortClass::Buffer_Put_Pixel(const int x, const int y,
                                                    const unsigned char color) {
   if (x >= 0 && y >= 0 && x < Get_Width() && y < Get_Height()) {
     const base::ssize pitch = Get_XAdd() + Get_Width() + Get_Pitch();
-    Get_Pixels()[base::ToSize(x + (y * pitch))] = color;
+    base::At(Get_Pixels(), base::ToSize(x + (y * pitch))) = color;
   }
 }
 

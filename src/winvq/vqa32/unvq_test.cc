@@ -11,7 +11,7 @@ namespace {
 TEST(UnvqTest, DecodesUnalignedCodewordsToOddStrideRows) {
   std::array<unsigned char, 17> codebook{};
   for (int i = 0; i < 16; ++i) {
-    codebook[base::ToSize(i + 1)] = static_cast<uint8_t>(i + 1);
+    codebook.at(base::ToSize(i + 1)) = static_cast<uint8_t>(i + 1);
   }
   const std::array<unsigned char, 2> pointers{};
   std::array<unsigned char, 24> output{};
@@ -20,22 +20,24 @@ TEST(UnvqTest, DecodesUnalignedCodewordsToOddStrideRows) {
            std::span(output).subspan(1), 1, 1, 5);
   for (int row = 0; row < 4; ++row) {
     for (int col = 0; col < 4; ++col) {
-      EXPECT_EQ(output[base::ToSize(1 + (row * 5) + col)], 1 + (row * 4) + col);
+      EXPECT_EQ(output.at(base::ToSize(1 + (row * 5) + col)),
+                1 + (row * 4) + col);
     }
-    EXPECT_EQ(output[base::ToSize(row * 5)], 0xa5);
+    EXPECT_EQ(output.at(base::ToSize(row * 5)), 0xa5);
   }
-  EXPECT_EQ(output[20], 0xa5);
+  EXPECT_EQ(output.at(20), 0xa5);
 
   output.fill(0xa5);
   UnVQ_4x2(std::span(codebook).subspan(1), pointers,
            std::span(output).subspan(1), 1, 1, 5);
   for (int row = 0; row < 2; ++row) {
     for (int col = 0; col < 4; ++col) {
-      EXPECT_EQ(output[base::ToSize(1 + (row * 5) + col)], 1 + (row * 4) + col);
+      EXPECT_EQ(output.at(base::ToSize(1 + (row * 5) + col)),
+                1 + (row * 4) + col);
     }
-    EXPECT_EQ(output[base::ToSize(row * 5)], 0xa5);
+    EXPECT_EQ(output.at(base::ToSize(row * 5)), 0xa5);
   }
-  EXPECT_EQ(output[10], 0xa5);
+  EXPECT_EQ(output.at(10), 0xa5);
 }
 
 TEST(UnvqTest, FillsSolidBlocksWithoutTouchingRowPadding) {
@@ -46,20 +48,20 @@ TEST(UnvqTest, FillsSolidBlocksWithoutTouchingRowPadding) {
   UnVQ_4x4({}, pointers4, std::span(output).subspan(1), 1, 1, 5);
   for (int row = 0; row < 4; ++row) {
     for (int col = 0; col < 4; ++col) {
-      EXPECT_EQ(output[base::ToSize(1 + (row * 5) + col)], 0x81);
+      EXPECT_EQ(output.at(base::ToSize(1 + (row * 5) + col)), 0x81);
     }
-    EXPECT_EQ(output[base::ToSize(row * 5)], 0xa5);
+    EXPECT_EQ(output.at(base::ToSize(row * 5)), 0xa5);
   }
-  EXPECT_EQ(output[20], 0xa5);
+  EXPECT_EQ(output.at(20), 0xa5);
   output.fill(0xa5);
   UnVQ_4x2({}, pointers2, std::span(output).subspan(1), 1, 1, 5);
   for (int row = 0; row < 2; ++row) {
     for (int col = 0; col < 4; ++col) {
-      EXPECT_EQ(output[base::ToSize(1 + (row * 5) + col)], 0x81);
+      EXPECT_EQ(output.at(base::ToSize(1 + (row * 5) + col)), 0x81);
     }
-    EXPECT_EQ(output[base::ToSize(row * 5)], 0xa5);
+    EXPECT_EQ(output.at(base::ToSize(row * 5)), 0xa5);
   }
-  EXPECT_EQ(output[10], 0xa5);
+  EXPECT_EQ(output.at(10), 0xa5);
 }
 TEST(UnvqTest, RejectsTruncatedBuffersAndInvalidDimensions) {
   const std::array<unsigned char, 2> pointers{0x81, 0xff};

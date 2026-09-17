@@ -59,7 +59,6 @@
 #include "ra/externs.h"
 #include "ra/heap.h"
 #include "ra/inline.h"
-#include "ra/map.h"
 #include "ra/mapedit.h"
 #include "ra/object.h"
 #include "ra/session.h"
@@ -180,7 +179,7 @@ bool OverlayClass::Mark(MarkType mark) {
 
   if (ObjectClass::Mark(mark) && (mark == MARK_DOWN)) {
     const CELL cell = Coord_Cell(Coord);
-    CellClass* cellptr = &Map[cell];
+    CellClass* cellptr = &Map.at(cell);
 
     /*
     **	Walls have special logic when they are marked down.
@@ -314,7 +313,7 @@ void OverlayClass::Read_INI(CCINIClass& ini) {
                 owner = building->Owner();
               }
             }
-            Map[cell].Owner = owner;
+            Map.at(cell).Owner = owner;
           }
         }
       }
@@ -356,7 +355,7 @@ void OverlayClass::Read_INI(CCINIClass& ini) {
               owner = building->Owner();
             }
           }
-          Map[cell].Owner = owner;
+          Map.at(cell).Owner = owner;
         }
       }
     }
@@ -374,7 +373,7 @@ void OverlayClass::Write_INI(CCINIClass& ini) {
   LcwSink comppipe(CodecMode::kCompress, bpipe);
 
   for (CELL index = 0; index < MAP_CELL_TOTAL; index++) {
-    comppipe.WriteObject(Map[index].Overlay);
+    comppipe.WriteObject(Map.at(index).Overlay);
   }
   comppipe.Finish();
   if (bpipe.bytes_written() > 0) {

@@ -742,8 +742,8 @@ bool ObjectClass::Select() {
   *that *	the entire selection list is cleared.
   */
   if ((CurrentObject.Count() > 0) &&
-      (Owner() != CurrentObject[0]->Owner() ||
-       CurrentObject[0]->Owner() != PlayerPtr->Class->House)) {
+      (Owner() != CurrentObject.at(0)->Owner() ||
+       CurrentObject.at(0)->Owner() != PlayerPtr->Class->House)) {
     Unselect_All();
   }
 
@@ -1394,7 +1394,7 @@ bool ObjectClass::Mark(MarkType mark) {
     */
     if (mark == MARK_DOWN && !IsDown) {
       if (tech && GameToPlay == GAME_NORMAL) {
-        Map[cell].Adjust_Threat(house, threat);
+        Map.at(cell).Adjust_Threat(house, threat);
       }
       IsDown = true;
       Mark_For_Redraw();
@@ -1407,7 +1407,7 @@ bool ObjectClass::Mark(MarkType mark) {
     */
     if (mark == MARK_UP && IsDown) {
       if (tech && GameToPlay == GAME_NORMAL) {
-        Map[cell].Adjust_Threat(house, -threat);
+        Map.at(cell).Adjust_Threat(house, -threat);
       }
       IsDown = false;
       return true;

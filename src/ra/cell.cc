@@ -141,7 +141,6 @@
 #include "ra/type.h"
 #include "ra/unit.h"
 #include "ra/utracker.h"
-#include "ra/vector.h"
 #include "ra/vector_dynamic.h"
 #include "ra/vessel.h"
 #include "ra/vortex.h"
@@ -176,7 +175,7 @@ CellClass::CellClass()
 
       Trigger(nullptr) {
   for (const MZoneType zone : magic_enum::enum_values<MZoneType>()) {
-    Zones[zone] = 0;
+    Zones.at(zone) = 0;
   }
   Flag.Composite = 0;
   for (int index = 0; index < std::ssize(Overlappers); index++) {
@@ -206,16 +205,16 @@ int CellClass::Cell_Color(bool override) const {
 
   const BuildingClass* object = Cell_Building();
   if (object && !object->Class->IsInvisible) {
-    return ColorRemaps[object->House->RemapColor].Bar;
+    return ColorRemaps.at(object->House->RemapColor).Bar;
   }
 
   if (override) {
     return kTBlack;
   }
   if (LastTheater == THEATER_SNOW) {
-    return SnowColor[Land_Type()];
+    return SnowColor.at(Land_Type());
   }
-  return GroundColor[Land_Type()];
+  return GroundColor.at(Land_Type());
 }
 
 /***********************************************************************************************
@@ -536,9 +535,9 @@ bool CellClass::Is_Clear_To_Build(SpeedType loco) const {
       return false;
     }
 
-    return Ground[Land_Type()].Build;
+    return Ground.at(Land_Type()).Build;
   }
-  if (Ground[Land_Type()].Cost[loco] == fixed(0)) {
+  if (Ground.at(Land_Type()).Cost.at(loco) == fixed(0)) {
     return false;
   }
   return true;
@@ -1109,8 +1108,9 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
           "%02X%02X\r%d%d%d\r%d %d", Map.TacPixelX + x + (ICON_PIXEL_W >> 1),
           Map.TacPixelY + y, &GreyScheme, kTBlack,
           TPF_EFNT | TPF_CENTER | TPF_BRIGHT_COLOR | TPF_FULLSHADOW,
-          Cell_Y(cell), Cell_X(cell), Zones[MZONE_NORMAL], Zones[MZONE_CRUSHER],
-          Zones[MZONE_DESTROYER], Overlay, OverlayData);
+          Cell_Y(cell), Cell_X(cell), Zones.at(MZONE_NORMAL),
+          Zones.at(MZONE_CRUSHER), Zones.at(MZONE_DESTROYER), Overlay,
+          OverlayData);
       FontXSpacing += 2;
     } else {
       if constexpr (config::kScenarioEditorEnabled) {
@@ -1118,12 +1118,12 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
         **	Set up the remap table for this icon.
         */
         if (MapEditorActive && Debug_Passable) {
-          if (::Ground[Land].Cost[SPEED_FOOT] == 0 ||
+          if (::Ground.at(Land).Cost.at(SPEED_FOOT) == 0 ||
               (Cell_Occupier() != nullptr &&
                Cell_Occupier()->What_Am_I() != RTTI_INFANTRY)) {  // impassable
             remap = DisplayClass::FadingRed;
           } else {
-            if (::Ground[Land].Cost[SPEED_FOOT] >
+            if (::Ground.at(Land).Cost.at(SPEED_FOOT) >
                 fixed(1, 3)) {  // pretty passable
               remap = DisplayClass::FadingGreen;
             } else {
@@ -1189,7 +1189,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
           */
           if (Trigger.Is_Valid()) {
             Fancy_Text_Print(Trigger->Class->IniName, x + Map.TacPixelX,
-                             y + Map.TacPixelY, &ColorRemaps[PCOLOR_RED],
+                             y + Map.TacPixelY, &ColorRemaps.at(PCOLOR_RED),
                              kTBlack, TPF_EFNT | TPF_FULLSHADOW);
           }
 
@@ -1210,7 +1210,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
                 }
                 Fancy_Text_Print(waypt, Map.TacPixelX + x + (CELL_PIXEL_W / 2),
                                  Map.TacPixelY + y + (CELL_PIXEL_H / 2) - 3,
-                                 &ColorRemaps[PCOLOR_RED], kTBlack,
+                                 &ColorRemaps.at(PCOLOR_RED), kTBlack,
                                  TPF_EFNT | TPF_CENTER | TPF_FULLSHADOW);
                 break;
               }
@@ -1219,7 +1219,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
                 Cell_Number()) {
               Fancy_Text_Print("Home", Map.TacPixelX + x,
                                Map.TacPixelY + y + (CELL_PIXEL_H)-7,
-                               &ColorRemaps[PCOLOR_GREY], kTBlack,
+                               &ColorRemaps.at(PCOLOR_GREY), kTBlack,
                                TPF_EFNT | TPF_FULLSHADOW);
             }
             if (base::At(Scen.Waypoint,
@@ -1227,7 +1227,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
                 Cell_Number()) {
               Fancy_Text_Print("Reinf", Map.TacPixelX + x,
                                Map.TacPixelY + y + (CELL_PIXEL_H)-7,
-                               &ColorRemaps[PCOLOR_GREY], kTBlack,
+                               &ColorRemaps.at(PCOLOR_GREY), kTBlack,
                                TPF_EFNT | TPF_FULLSHADOW);
             }
           }
@@ -1816,7 +1816,7 @@ COORDINATE CellClass::Closest_Free_Spot(COORDINATE coord, bool any) const {
     sequence = std::span(base::At(_sequence, spot_index));
   }
   for (int index = 0; index < 4; index++) {
-    const int pos = sequence[base::ToSize(index)];
+    const int pos = base::At(sequence, base::ToSize(index));
 
     if (Is_Spot_Free(pos)) {
       return Coord_Add(coord, base::At(StoppingCoordAbs, pos));
@@ -1917,11 +1917,11 @@ int CellClass::Adjacent_Offset(FacingType face) const {
 
   // Check the index before forming the pointer: pointer arithmetic that leaves
   // the cell array is undefined even if the result is never dereferenced.
-  const int adjacent = Cell_Number() + AdjacentCell[face];
+  const int adjacent = Cell_Number() + AdjacentCell.at(face);
   if (adjacent < 0 || adjacent >= MAP_CELL_TOTAL) {
     return 0;
   }
-  return AdjacentCell[face];
+  return AdjacentCell.at(face);
 }
 
 /***************************************************************************
@@ -2097,7 +2097,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
     */
     int total_shares = 0;
     for (const CrateType index : magic_enum::enum_values<CrateType>()) {
-      total_shares += CrateShares[index];
+      total_shares += CrateShares.at(index);
     }
 
     /*
@@ -2131,7 +2131,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
       int share_count = 0;
       bool found = false;
       for (const CrateType candidate : magic_enum::enum_values<CrateType>()) {
-        share_count += CrateShares[candidate];
+        share_count += CrateShares.at(candidate);
         if (pick <= share_count) {
           powerup = candidate;
           found = true;
@@ -2362,8 +2362,8 @@ bool CellClass::Goodie_Check(FootClass* object) {
     /*
     **	Generate any corresponding animation associated with this crate powerup.
     */
-    if (CrateAnims[powerup] != ANIM_NONE) {
-      new AnimClass(CrateAnims[powerup], Cell_Coord());
+    if (CrateAnims.at(powerup) != ANIM_NONE) {
+      new AnimClass(CrateAnims.at(powerup), Cell_Coord());
     }
 
     /*
@@ -2375,7 +2375,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
         object->House->Refund_Money(force_money);
       } else {
         object->House->Refund_Money(
-            Random_Pick(CrateData[powerup], CrateData[powerup] + 900));
+            Random_Pick(CrateData.at(powerup), CrateData.at(powerup) + 900));
       }
     };
     switch (powerup) {
@@ -2509,7 +2509,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
       **	A one para-bomb mission.
       */
       case CRATE_PARA_BOMB:
-        if (object->House->SuperWeapon[SPC_PARA_BOMB].Enable(true) &&
+        if (object->House->SuperWeapon.at(SPC_PARA_BOMB).Enable(true) &&
             object->IsOwnedByPlayer) {
           Map.Add(RTTI_SPECIAL, static_cast<int>(SPC_PARA_BOMB));
           base::At(Map.Column, 1).Flag_To_Redraw();
@@ -2521,7 +2521,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
       **	A one time sonar pulse
       */
       case CRATE_SONAR:
-        if (object->House->SuperWeapon[SPC_SONAR_PULSE].Enable(true) &&
+        if (object->House->SuperWeapon.at(SPC_SONAR_PULSE).Enable(true) &&
             object->IsOwnedByPlayer) {
           Map.Add(RTTI_SPECIAL, static_cast<int>(SPC_SONAR_PULSE));
           base::At(Map.Column, 1).Flag_To_Redraw();
@@ -2534,14 +2534,14 @@ bool CellClass::Goodie_Check(FootClass* object) {
       */
       case CRATE_EXPLOSION:
         if (object != nullptr) {
-          int d = CrateData[powerup];
+          int d = CrateData.at(powerup);
           object->Take_Damage(d, 0, WARHEAD_HE, nullptr, true);
         }
         for (int index = 0; index < 5; index++) {
           const COORDINATE frag_coord =
               Coord_Scatter(Cell_Coord(), Random_Pick(0, 0x0200));
           new AnimClass(ANIM_FBALL1, frag_coord);
-          damage = CrateData[powerup];
+          damage = CrateData.at(powerup);
           Explosion_Damage(frag_coord, damage, nullptr, WARHEAD_HE);
         }
         break;
@@ -2553,10 +2553,10 @@ bool CellClass::Goodie_Check(FootClass* object) {
         coord = Coord_Mid(Cell_Coord(), object->Center_Coord());
         new AnimClass(ANIM_NAPALM3, coord);
         if (object != nullptr) {
-          int d = CrateData[powerup];
+          int d = CrateData.at(powerup);
           object->Take_Damage(d, 0, WARHEAD_FIRE, nullptr, true);
         }
-        damage = CrateData[powerup];
+        damage = CrateData.at(powerup);
         Explosion_Damage(coord, damage, nullptr, WARHEAD_FIRE);
         break;
 
@@ -2565,9 +2565,9 @@ bool CellClass::Goodie_Check(FootClass* object) {
       *cloak.
       */
       case CRATE_CLOAK:
-        for (int index = 0; index < DisplayClass::Layer[LAYER_GROUND].Count();
-             index++) {
-          ObjectClass* obj = DisplayClass::Layer[LAYER_GROUND][index];
+        for (int index = 0;
+             index < DisplayClass::Layer.at(LAYER_GROUND).Count(); index++) {
+          ObjectClass* obj = DisplayClass::Layer.at(LAYER_GROUND).at(index);
 
           if (obj && obj->Is_Techno() &&
               Distance(Cell_Coord(), obj->Center_Coord()) < Rule.CrateRadius) {
@@ -2584,7 +2584,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
           Sound_Effect(VOC_HEAL, object->Center_Coord());
         }
         for (int index = 0; index < Logic.Count(); index++) {
-          ObjectClass* obj = Logic[index];
+          ObjectClass* obj = Logic.at(index);
 
           if (obj && object->Is_Techno() &&
               object->House->Class->House == obj->Owner()) {
@@ -2594,7 +2594,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
         break;
 
       case CRATE_ICBM:
-        if (object->House->SuperWeapon[SPC_NUCLEAR_BOMB].Enable(true) &&
+        if (object->House->SuperWeapon.at(SPC_NUCLEAR_BOMB).Enable(true) &&
             object->IsOwnedByPlayer) {
           Map.Add(RTTI_SPECIAL, static_cast<int>(SPC_NUCLEAR_BOMB));
           base::At(Map.Column, 1).Flag_To_Redraw();
@@ -2603,15 +2603,15 @@ bool CellClass::Goodie_Check(FootClass* object) {
         break;
 
       case CRATE_ARMOR:
-        for (int index = 0; index < DisplayClass::Layer[LAYER_GROUND].Count();
-             index++) {
-          ObjectClass* obj = DisplayClass::Layer[LAYER_GROUND][index];
+        for (int index = 0;
+             index < DisplayClass::Layer.at(LAYER_GROUND).Count(); index++) {
+          ObjectClass* obj = DisplayClass::Layer.at(LAYER_GROUND).at(index);
 
           if (obj != nullptr && obj->Is_Techno() &&
               Distance(Cell_Coord(), obj->Center_Coord()) < Rule.CrateRadius &&
               dynamic_cast<TechnoClass*>(obj)->ArmorBias == 1) {
             const fixed val = dynamic_cast<TechnoClass*>(obj)->ArmorBias *
-                              fixed(CrateData[powerup], 256).Inverse();
+                              fixed(CrateData.at(powerup), 256).Inverse();
             dynamic_cast<TechnoClass*>(obj)->ArmorBias = val;
             if (obj->Owner() == PlayerPtr->Class->House) {
               tospeak = true;
@@ -2624,9 +2624,9 @@ bool CellClass::Goodie_Check(FootClass* object) {
         break;
 
       case CRATE_SPEED:
-        for (int index = 0; index < DisplayClass::Layer[LAYER_GROUND].Count();
-             index++) {
-          ObjectClass* obj = DisplayClass::Layer[LAYER_GROUND][index];
+        for (int index = 0;
+             index < DisplayClass::Layer.at(LAYER_GROUND).Count(); index++) {
+          ObjectClass* obj = DisplayClass::Layer.at(LAYER_GROUND).at(index);
 
           if (obj && obj->Is_Foot() &&
               Distance(Cell_Coord(), obj->Center_Coord()) < Rule.CrateRadius &&
@@ -2634,7 +2634,8 @@ bool CellClass::Goodie_Check(FootClass* object) {
               obj->What_Am_I() != RTTI_AIRCRAFT) {
             auto* foot = dynamic_cast<FootClass*>(obj);
 
-            const fixed val = foot->SpeedBias * fixed(CrateData[powerup], 256);
+            const fixed val =
+                foot->SpeedBias * fixed(CrateData.at(powerup), 256);
             foot->SpeedBias = val;
             if (foot->IsOwnedByPlayer) {
               tospeak = true;
@@ -2647,15 +2648,15 @@ bool CellClass::Goodie_Check(FootClass* object) {
         break;
 
       case CRATE_FIREPOWER:
-        for (int index = 0; index < DisplayClass::Layer[LAYER_GROUND].Count();
-             index++) {
-          ObjectClass* obj = DisplayClass::Layer[LAYER_GROUND][index];
+        for (int index = 0;
+             index < DisplayClass::Layer.at(LAYER_GROUND).Count(); index++) {
+          ObjectClass* obj = DisplayClass::Layer.at(LAYER_GROUND).at(index);
 
           if (obj && obj->Is_Techno() &&
               Distance(Cell_Coord(), obj->Center_Coord()) < Rule.CrateRadius &&
               dynamic_cast<TechnoClass*>(obj)->FirepowerBias == 1) {
             const fixed val = dynamic_cast<TechnoClass*>(obj)->FirepowerBias *
-                              fixed(CrateData[powerup], 256);
+                              fixed(CrateData.at(powerup), 256);
             dynamic_cast<TechnoClass*>(obj)->FirepowerBias = val;
             if (obj->Owner() == PlayerPtr->Class->House) {
               tospeak = true;
@@ -2668,14 +2669,14 @@ bool CellClass::Goodie_Check(FootClass* object) {
         break;
 
       case CRATE_INVULN:
-        for (int index = 0; index < DisplayClass::Layer[LAYER_GROUND].Count();
-             index++) {
-          ObjectClass* obj = DisplayClass::Layer[LAYER_GROUND][index];
+        for (int index = 0;
+             index < DisplayClass::Layer.at(LAYER_GROUND).Count(); index++) {
+          ObjectClass* obj = DisplayClass::Layer.at(LAYER_GROUND).at(index);
 
           if (obj && obj->Is_Techno() &&
               Distance(Cell_Coord(), obj->Center_Coord()) < Rule.CrateRadius) {
             dynamic_cast<TechnoClass*>(obj)->IronCurtainCountDown.Set(
-                kTicksPerMinute * fixed(CrateData[powerup], 256));
+                kTicksPerMinute * fixed(CrateData.at(powerup), 256));
             obj->Mark(MARK_CHANGE);
           }
         }
@@ -2828,7 +2829,7 @@ bool CellClass::Is_Clear_To_Move(SpeedType loco, bool ignoreinfantry,
   **	If a zone was specified, then see if the cell is in a legal
   **	zone to allow movement.
   */
-  if ((zone != -1) && std::cmp_not_equal(zone, Zones[check])) {
+  if ((zone != -1) && std::cmp_not_equal(zone, Zones.at(check))) {
     return false;
   }
 
@@ -2878,7 +2879,7 @@ bool CellClass::Is_Clear_To_Move(SpeedType loco, bool ignoreinfantry,
   **	See if the ground type is impassable to this locomotion type and if
   **	so, return the error condition.
   */
-  if (Ground[land].Cost[loco] == 0) {
+  if (Ground.at(land).Cost.at(loco) == 0) {
     return false;
   }
 
@@ -3095,7 +3096,7 @@ bool CellClass::Can_Tiberium_Germinate() const {
     return false;
   }
 
-  if (!Ground[Land_Type()].Build) {
+  if (!Ground.at(Land_Type()).Build) {
     return false;
   }
 
@@ -3108,10 +3109,12 @@ bool CellClass::Can_Tiberium_Germinate() const {
 
 CellClass& CellClass::Adjacent_Cell(FacingType face) {
   const int offset = Adjacent_Offset(face);
-  return offset == 0 ? *this : Map[static_cast<CELL>(Cell_Number() + offset)];
+  return offset == 0 ? *this
+                     : Map.at(static_cast<CELL>(Cell_Number() + offset));
 }
 
 const CellClass& CellClass::Adjacent_Cell(FacingType face) const {
   const int offset = Adjacent_Offset(face);
-  return offset == 0 ? *this : Map[static_cast<CELL>(Cell_Number() + offset)];
+  return offset == 0 ? *this
+                     : Map.at(static_cast<CELL>(Cell_Number() + offset));
 }

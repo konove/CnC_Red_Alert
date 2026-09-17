@@ -1387,7 +1387,7 @@ void TemplateTypeClass::Init(TheaterType theater) {
     if ((tplate.Theater & base::Bit<uint8_t>(theater)) != 0) {
       // Fully constructed iconset name.
       const auto fullname = std::filesystem::path(tplate.IniName)
-                                .replace_extension(Theaters[theater].Suffix)
+                                .replace_extension(Theaters.at(theater).Suffix)
                                 .string();
       const auto ptr = MixArchive::RetrieveData(
           fullname);  // Working loaded iconset pointer.

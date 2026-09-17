@@ -61,6 +61,7 @@
 #include <span>
 
 #include "absl/log/check.h"
+#include "base/array.h"
 #include "base/numeric.h"
 #include "base/types.h"
 
@@ -92,14 +93,17 @@ class VectorClass {
   VectorClass(VectorClass&&) = delete;
   VectorClass& operator=(VectorClass&&) = delete;
 
-  T& operator[](base::ssize index) {
+  // Returns a capacity element; invalid indices fail even in release builds.
+  T& at(base::ssize index) {
     DCHECK(index >= 0 && index < VectorMax);
-    return Elements()[base::ToSize(index)];
+    return base::At(Elements(), base::ToSize(index));
   }
-  const T& operator[](base::ssize index) const {
+  T& operator[](base::ssize index) { return at(index); }
+  [[nodiscard]] const T& at(base::ssize index) const {
     DCHECK(index >= 0 && index < VectorMax);
-    return Elements()[base::ToSize(index)];
+    return base::At(Elements(), base::ToSize(index));
   }
+  const T& operator[](base::ssize index) const { return at(index); }
   VectorClass& operator=(const VectorClass& /*vector*/);
 
  private:

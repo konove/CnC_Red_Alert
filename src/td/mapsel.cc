@@ -1579,18 +1579,21 @@ void Cycle_Call_Back_Delay(int time, std::span<unsigned char> pal) {
     _counter = (_counter + 1) % 4;
 
     if (_counter == 0) {
-      const unsigned char r = pal[(249 * 3) + 0];
-      const unsigned char g = pal[(249 * 3) + 1];
-      const unsigned char b = pal[(249 * 3) + 2];
+      const unsigned char r = base::At(pal, (249 * 3) + 0);
+      const unsigned char g = base::At(pal, (249 * 3) + 1);
+      const unsigned char b = base::At(pal, (249 * 3) + 2);
 
       for (int i = 249; i < 254; i++) {
-        pal[(base::ToSize(i) * 3) + 0] = pal[(base::ToSize(i + 1) * 3) + 0];
-        pal[(base::ToSize(i) * 3) + 1] = pal[(base::ToSize(i + 1) * 3) + 1];
-        pal[(base::ToSize(i) * 3) + 2] = pal[(base::ToSize(i + 1) * 3) + 2];
+        base::At(pal, (base::ToSize(i) * 3) + 0) =
+            base::At(pal, (base::ToSize(i + 1) * 3) + 0);
+        base::At(pal, (base::ToSize(i) * 3) + 1) =
+            base::At(pal, (base::ToSize(i + 1) * 3) + 1);
+        base::At(pal, (base::ToSize(i) * 3) + 2) =
+            base::At(pal, (base::ToSize(i + 1) * 3) + 2);
       }
-      pal[(254 * 3) + 0] = r;
-      pal[(254 * 3) + 1] = g;
-      pal[(254 * 3) + 2] = b;
+      base::At(pal, (254 * 3) + 0) = r;
+      base::At(pal, (254 * 3) + 1) = g;
+      base::At(pal, (254 * 3) + 2) = b;
 
       Set_Palette(pal);
     }

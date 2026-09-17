@@ -227,7 +227,7 @@ void ListClass::Clear() {
 
 void ListClass::Set_Item(int index, std::string_view text) {
   if (index >= 0 && index < Count()) {
-    List[base::ToSize(index)].assign(text);
+    List.at(base::ToSize(index)).assign(text);
     Flag_To_Redraw();
   }
 }
@@ -440,7 +440,7 @@ const char* ListClass::Get_Item(int index) const {
     return nullptr;
   }
   index = std::clamp(index, 0, Count() - 1);
-  return List[base::ToSize(index)].c_str();
+  return List.at(base::ToSize(index)).c_str();
 }
 
 /***********************************************************************************************
@@ -460,7 +460,7 @@ const char* ListClass::Current_Item() const {
   if (Count() <= SelectedIndex) {
     return nullptr;
   }
-  return List[base::ToSize(SelectedIndex)].c_str();
+  return List.at(base::ToSize(SelectedIndex)).c_str();
 }
 
 /***********************************************************************************************
@@ -693,11 +693,11 @@ void ListClass::Draw_Entry(int index, int x, int y, int width, bool selected) {
       }
     }
 
-    Conquer_Clip_Text_Print(List[base::ToSize(index)].c_str(), x, y, kCcGreen,
-                            kTBlack, flags, width, Tabs);
+    Conquer_Clip_Text_Print(List.at(base::ToSize(index)).c_str(), x, y,
+                            kCcGreen, kTBlack, flags, width, Tabs);
 
   } else {
-    Conquer_Clip_Text_Print(List[base::ToSize(index)].c_str(), x, y,
+    Conquer_Clip_Text_Print(List.at(base::ToSize(index)).c_str(), x, y,
                             selected ? kBlue : kWhite, kTBlack, TextFlags,
                             width, Tabs);
   }

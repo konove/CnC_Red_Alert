@@ -24,12 +24,12 @@ TEST(VectorStorageTest, BorrowedStorageRetainsExtentAndDoesNotGrow) {
   DynamicVectorClass<void*> values(2, storage);
   EXPECT_TRUE(values.Add(&first));
   EXPECT_TRUE(values.Add_Head(&second));
-  EXPECT_EQ(values[0], &second);
-  EXPECT_EQ(values[1], &first);
+  EXPECT_EQ(values.at(0), &second);
+  EXPECT_EQ(values.at(1), &first);
   EXPECT_FALSE(values.Add(nullptr));
   EXPECT_TRUE(values.Resize(4));
-  EXPECT_EQ(values[0], &second);
-  EXPECT_EQ(values[1], &first);
+  EXPECT_EQ(values.at(0), &second);
+  EXPECT_EQ(values.at(1), &first);
   EXPECT_TRUE(values.Add(nullptr));
   EXPECT_EQ(values.Count(), 3);
 }

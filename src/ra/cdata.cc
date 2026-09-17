@@ -1747,8 +1747,9 @@ LandType TemplateTypeClass::Land_Type(int icon) const {
           _land,
           (static_cast<size_t>(icon % (icontrol.Map_Width() *
                                        icontrol.Map_Height())) < map.size()
-               ? map[static_cast<size_t>(
-                     icon % (icontrol.Map_Width() * icontrol.Map_Height()))] &
+               ? base::At(map,
+                          static_cast<size_t>(icon % (icontrol.Map_Width() *
+                                                      icontrol.Map_Height()))) &
                      15
                : 0));
     }
@@ -1813,7 +1814,7 @@ std::span<const int16_t> TemplateTypeClass::Occupy_List(
        index < Width * Height && static_cast<size_t>(index) < map.size() &&
        output + 1 < std::size(_occupy);
        index++) {
-    if (map[static_cast<size_t>(index)] != 0xFF) {
+    if (base::At(map, static_cast<size_t>(index)) != 0xFF) {
       base::At(_occupy, output++) =
           static_cast<int16_t>((index % Width) + (index / Width * MAP_CELL_W));
     }
@@ -1847,7 +1848,7 @@ void TemplateTypeClass::Init(TheaterType theater) {
     tplate.ClearImage();
     if (tplate.Theater & base::Bit<uint32_t>(theater)) {
       const auto fullname = std::filesystem::path(tplate.IniName)
-                                .replace_extension(Theaters[theater].Suffix)
+                                .replace_extension(Theaters.at(theater).Suffix)
                                 .string();
 
       // Working loaded iconset pointer.
@@ -1901,7 +1902,7 @@ void TemplateTypeClass::Display(int x, int y, WindowNumberType window,
 
   for (int index = 0; index < w * h; index++) {
     if (static_cast<size_t>(index) < map.size() &&
-        map[static_cast<size_t>(index)] != 0xFF) {
+        base::At(map, static_cast<size_t>(index)) != 0xFF) {
       HidPage.Draw_Stamp(Get_Image_Data(), index, 0, 0, {},
                          static_cast<int>(WINDOW_MAIN));
       if (scale) {

@@ -49,6 +49,7 @@
 #include <span>
 
 #include "absl/log/check.h"
+#include "base/array.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
 #include "port/aligned_buffer.h"
@@ -199,7 +200,7 @@ int NullModemConnClass::Send(std::span<const std::byte> buf, int buflen) {
       Compute_CRC(buf, buflen));
   sendlen += static_cast<int>(sizeof(int));
 
-  SendBuf[base::ToSize(sendlen)] = '\r';
+  SendBuf.at(base::ToSize(sendlen)) = '\r';
   sendlen += 1;
 
   /*------------------------------------------------------------------------
@@ -260,7 +261,8 @@ int NullModemConnClass::Compute_CRC(std::span<const std::byte> buf,
     }
 
     sum <<= 1;
-    sum += hibit + std::to_integer<unsigned char>(buf[base::ToSize(i)]);
+    sum +=
+        hibit + std::to_integer<unsigned char>(base::At(buf, base::ToSize(i)));
   }
 
   return static_cast<int>(sum);

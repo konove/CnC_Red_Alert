@@ -66,7 +66,6 @@
 #include "ra/tab.h"
 #include "ra/textbtn.h"
 #include "ra/theme.h"
-#include "ra/vector.h"
 #include "ra/vector_dynamic.h"
 #include "ra/version.h"
 #include "ra/wolstrng.h"
@@ -128,7 +127,7 @@ void GameOptionsClass::Process() {
   // if there are more than 1.
   //
   for (int i = 0; i < Session.Players.Count(); i++) {
-    if (!HouseClass::As_Pointer(Session.Players[i]->Player.ID)->IsDefeated) {
+    if (!HouseClass::As_Pointer(Session.Players.at(i)->Player.ID)->IsDefeated) {
       num_players++;
     }
   }

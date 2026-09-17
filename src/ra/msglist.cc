@@ -343,7 +343,7 @@ TextLabelClass* MessageListClass::Add_Message(const char* name, int id,
   //------------------------------------------------------------------------
 
   int print_this_pass = 0;
-  Fancy_Text_Print(TXT_NONE, 0, 0, &ColorRemaps[color], kTBlack, style);
+  Fancy_Text_Print(TXT_NONE, 0, 0, &ColorRemaps.at(color), kTBlack, style);
   int wid = String_Pixel_Width(message);
   if (wid >= Width - 8) {
     //------------------------------------------------------------------------
@@ -424,7 +424,7 @@ TextLabelClass* MessageListClass::Add_Message(const char* name, int id,
   // The label keeps a pointer to its text, so it is built on the message
   // buffer, never on the local copy.
   txtlabel = new TextLabelClass(base::At(MessageBuffers, i), MessageX, MessageY,
-                                &ColorRemaps[color], style);
+                                &ColorRemaps.at(color), style);
   if (timeout == -1) {
     txtlabel->UserData1 = 0;
   } else {
@@ -784,7 +784,7 @@ TextLabelClass* MessageListClass::Add_Edit(PlayerColorType color,
   OverflowBuf[0] = 0;
   EditCurPos = EditInitPos = static_cast<int>(std::string_view(to).size());
   EditLabel =
-      new TextLabelClass(EditBuf, EditX, EditY, &ColorRemaps[color], style);
+      new TextLabelClass(EditBuf, EditX, EditY, &ColorRemaps.at(color), style);
 
   Width = width;
 
@@ -888,7 +888,7 @@ char* MessageListClass::Get_Edit_Buf() {
  *=========================================================================*/
 void MessageListClass::Set_Edit_Color(PlayerColorType color) {
   if (IsEdit) {
-    EditLabel->Color = &ColorRemaps[color];
+    EditLabel->Color = &ColorRemaps.at(color);
   }
 
 }  // end of Set_Edit_Color
@@ -1393,7 +1393,8 @@ int MessageListClass::Trim_Message(std::span<char> dest, std::span<char> src,
   //........................................................................
   if (scandir == 0) {
     for (i = min_chars; i <= max_chars; i++) {
-      if (isspace(static_cast<unsigned char>(src[base::ToSize(i - 1)]))) {
+      if (isspace(
+              static_cast<unsigned char>(base::At(src, base::ToSize(i - 1))))) {
         found = 1;
         break;
       }
@@ -1404,7 +1405,8 @@ int MessageListClass::Trim_Message(std::span<char> dest, std::span<char> src,
   //........................................................................
   else {
     for (i = max_chars; i >= min_chars; i--) {
-      if (isspace(static_cast<unsigned char>(src[base::ToSize(i - 1)]))) {
+      if (isspace(
+              static_cast<unsigned char>(base::At(src, base::ToSize(i - 1))))) {
         found = 1;
         break;
       }
@@ -1422,7 +1424,7 @@ int MessageListClass::Trim_Message(std::span<char> dest, std::span<char> src,
   //------------------------------------------------------------------------
   if (!dest.empty()) {
     base::CopyBytes(std::as_writable_bytes(dest), std::as_bytes(src), i);
-    dest[base::ToSize(i)] = '\0';
+    base::At(dest, base::ToSize(i)) = '\0';
   }
 
   //------------------------------------------------------------------------

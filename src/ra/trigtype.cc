@@ -356,8 +356,8 @@ bool TriggerTypeClass::Edit() {
       kE2X, kE2Y, kEWidth, kEHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
       MixArchive::RetrieveData("EBTN-DN.SHP"));
   for (TEventType event = TEVENT_NONE; event < TEVENT_COUNT; event++) {
-    event1list.Add_Item(&EventChoices[event]);
-    event2list.Add_Item(&EventChoices[event]);
+    event1list.Add_Item(&EventChoices.at(event));
+    event2list.Add_Item(&EventChoices.at(event));
   }
 
   PBubble_Sort(event1list, event1list.Count());
@@ -366,11 +366,11 @@ bool TriggerTypeClass::Edit() {
   if (Event1.Event == TEVENT_NONE) {
     Event1.Event = TEVENT_NONE;
   }
-  event1list.Set_Selected_Index(&EventChoices[Event1.Event]);
+  event1list.Set_Selected_Index(&EventChoices.at(Event1.Event));
   if (Event2.Event == TEVENT_NONE) {
     Event2.Event = TEVENT_NONE;
   }
-  event2list.Set_Selected_Index(&EventChoices[Event2.Event]);
+  event2list.Set_Selected_Index(&EventChoices.at(Event2.Event));
 
   /*
   **	List of actions allowed.
@@ -386,8 +386,8 @@ bool TriggerTypeClass::Edit() {
       kA2X, kA2Y, kEWidth, kEHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
       MixArchive::RetrieveData("EBTN-DN.SHP"));
   for (TActionType action = TACTION_NONE; action < TACTION_COUNT; action++) {
-    action1list.Add_Item(&ActionChoices[action]);
-    action2list.Add_Item(&ActionChoices[action]);
+    action1list.Add_Item(&ActionChoices.at(action));
+    action2list.Add_Item(&ActionChoices.at(action));
   }
 
   PBubble_Sort(action1list, action1list.Count());
@@ -396,11 +396,11 @@ bool TriggerTypeClass::Edit() {
   if (Action1.Action == TACTION_NONE) {
     Action1.Action = TACTION_NONE;
   }
-  action1list.Set_Selected_Index(&ActionChoices[Action1.Action]);
+  action1list.Set_Selected_Index(&ActionChoices.at(Action1.Action));
   if (Action2.Action == TACTION_NONE) {
     Action2.Action = TACTION_NONE;
   }
-  action2list.Set_Selected_Index(&ActionChoices[Action2.Action]);
+  action2list.Set_Selected_Index(&ActionChoices.at(Action2.Action));
 
   /*
   **	Optional waypoint entry field.
@@ -695,8 +695,8 @@ bool TriggerTypeClass::Edit() {
       MixArchive::RetrieveData("EBTN-DN.SHP"));
 
   for (const VQType movie : magic_enum::enum_values<VQType>()) {
-    movietype1list.Add_Item(VQName[movie]);
-    movietype2list.Add_Item(VQName[movie]);
+    movietype1list.Add_Item(VQName.at(movie));
+    movietype2list.Add_Item(VQName.at(movie));
   }
 
   if (Action_Needs(Action1.Action) == NEED_MOVIE) {
@@ -967,8 +967,8 @@ bool TriggerTypeClass::Edit() {
                      MixArchive::RetrieveData("EBTN-DN.SHP"));
   for (const SpecialWeaponType spec :
        magic_enum::enum_values<SpecialWeaponType>()) {
-    spc1.Add_Item(SpecialWeaponName[spec]);
-    spc2.Add_Item(SpecialWeaponName[spec]);
+    spc1.Add_Item(SpecialWeaponName.at(spec));
+    spc2.Add_Item(SpecialWeaponName.at(spec));
   }
   if (magic_enum::enum_contains(Action1.Data.Special)) {
     spc1.Set_Selected_Index(static_cast<int>(Action1.Data.Special));
@@ -995,8 +995,8 @@ bool TriggerTypeClass::Edit() {
                        kEdHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
                        MixArchive::RetrieveData("EBTN-DN.SHP"));
   for (const QuarryType q : magic_enum::enum_values<QuarryType>()) {
-    qlist1.Add_Item(QuarryName[q]);
-    qlist2.Add_Item(QuarryName[q]);
+    qlist1.Add_Item(QuarryName.at(q));
+    qlist2.Add_Item(QuarryName.at(q));
   }
   if (magic_enum::enum_contains(Action1.Data.Quarry)) {
     qlist1.Set_Selected_Index(static_cast<int>(Action1.Data.Quarry));
@@ -2237,8 +2237,8 @@ void TriggerTypeClass::Draw_It(int /*unused*/, int x, int y, int width,
                               width, _tabs);
     } else {
       Conquer_Clip_Text_Print(Description(), x, y,
-                              (selected ? &ColorRemaps[PCOLOR_DIALOG_BLUE]
-                                        : &ColorRemaps[PCOLOR_GREY]),
+                              (selected ? &ColorRemaps.at(PCOLOR_DIALOG_BLUE)
+                                        : &ColorRemaps.at(PCOLOR_GREY)),
                               kTBlack, flags, width, _tabs);
     }
   }

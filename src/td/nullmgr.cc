@@ -1231,14 +1231,14 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
     status = Send_Modem_Command("", '\r', buffer, 81, 300, 1);
   } else {
     const size_t str_length =
-        2 + std::string_view(InitStrings[settings->InitStringIndex]).size();
+        2 + std::string_view(InitStrings.at(settings->InitStringIndex)).size();
     /*
     ** Split up the init string into seperate strings if it contains one or more
     *'|' characters.
     ** This character acts as a carriage return/pause.
     */
     std::vector<char> istr(str_length);
-    port::SafeCopy(istr, InitStrings[settings->InitStringIndex]);
+    port::SafeCopy(istr, InitStrings.at(settings->InitStringIndex));
 
     /*
     ** Tokenise the string and send it in chunks
@@ -2027,11 +2027,11 @@ void NullModemClass::Print_EchoBuf() {
   for (int i = 0;
        std::cmp_less(i, std::string_view(NullModem.EchoBuf.data()).size());
        i++) {
-    if (NullModem.EchoBuf[base::ToSize(i)] == '\r') {
-      NullModem.EchoBuf[base::ToSize(i)] = 1;
+    if (NullModem.EchoBuf.at(base::ToSize(i)) == '\r') {
+      NullModem.EchoBuf.at(base::ToSize(i)) = 1;
     } else {
-      if (NullModem.EchoBuf[base::ToSize(i)] == '\n') {
-        NullModem.EchoBuf[base::ToSize(i)] = 2;
+      if (NullModem.EchoBuf.at(base::ToSize(i)) == '\n') {
+        NullModem.EchoBuf.at(base::ToSize(i)) = 2;
       }
     }
   }
@@ -2228,7 +2228,7 @@ int NullModemClass::Verify_And_Convert_To_Int(char* buffer) {
 
   for (int i = 0; i < len; i++) {
     if (!isdigit(static_cast<unsigned char>(
-            std::string_view(buffer)[base::ToSize(i)]))) {
+            std::string_view(buffer).at(base::ToSize(i))))) {
       value = -1;
       break;
     }

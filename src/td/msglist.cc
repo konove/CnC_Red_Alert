@@ -407,9 +407,9 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
               port::SafeCopy(slot, incoming.substr(colon + 1));
             }
           }
-          destination[std::min(destination.size(),
-                               kSegmentSize * MAX_MESSAGE_SEGMENTS) -
-                      1] = '\0';
+          base::At(destination, std::min(destination.size(),
+                                         kSegmentSize * MAX_MESSAGE_SEGMENTS) -
+                                    1) = '\0';
         }
         position = magic_number - MESSAGE_HEAD_MAGIC_NUMBER;
         txtlabel->Segments = base::Bit<uint8_t>(position);
@@ -671,7 +671,7 @@ int MessageListClass::Input(KeyNumType& input) {
       case KA_BACKSPACE & 0xff:
         if (EditCurPos > EditInitPos) {
           EditCurPos--;
-          EditBuf[base::ToSize(EditCurPos)] = 0;
+          base::At(EditBuf, base::ToSize(EditCurPos)) = 0;
           retcode = 2;
         }
         input = KN_NONE;
@@ -794,9 +794,10 @@ int MessageListClass::Input(KeyNumType& input) {
         if ((EditCurPos - EditInitPos < MaxChars - 1) &&
             base::ToSize(EditCurPos + 1) < EditBuf.size() &&
             (!(input & WWKEY_VK_BIT) && ascii >= ' ' && ascii <= 127)) {
-          EditBuf[base::ToSize(EditCurPos)] = static_cast<char>(ascii);
+          base::At(EditBuf, base::ToSize(EditCurPos)) =
+              static_cast<char>(ascii);
           EditCurPos++;
-          EditBuf[base::ToSize(EditCurPos)] = '\0';
+          base::At(EditBuf, base::ToSize(EditCurPos)) = '\0';
           retcode = 1;
 
           /*
@@ -808,7 +809,7 @@ int MessageListClass::Input(KeyNumType& input) {
           const int width = String_Pixel_Width(EditBuf.data());
           if (width >= Width) {
             --EditCurPos;
-            EditBuf[base::ToSize(EditCurPos)] = 0;
+            base::At(EditBuf, base::ToSize(EditCurPos)) = 0;
             retcode = 0;
           }
         }

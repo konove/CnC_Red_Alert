@@ -5,6 +5,7 @@
 #include <span>
 
 #include "absl/log/check.h"
+#include "base/array.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/timer.h"
 #include "sdllib/ww_win.h"
@@ -27,9 +28,9 @@ void Fade_Palette_To(std::span<const unsigned char> palette, int fade,
 
       for (std::size_t c = 0; c < palette.size() && c < sizeof(CurrentPalette);
            ++c) {
-        const int new_val = palette[c] & 0x3F;
-        const int old_val = std::span(CurrentPalette)[c] & 0x3F;
-        (std::span(fade_palette))[c] = static_cast<unsigned char>(
+        const int new_val = base::At(palette, c) & 0x3F;
+        const int old_val = base::At(std::span(CurrentPalette), c) & 0x3F;
+        base::At((std::span(fade_palette)), c) = static_cast<unsigned char>(
             old_val + ((new_val - old_val) * cur_time / fade));
       }
 

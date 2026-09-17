@@ -758,8 +758,8 @@ void BuildingClass::Draw_It(int x, int y, WindowNumberType window) {
     **	from the end to the beginning. Reverse the shape number accordingly.
     */
     if (Mission == MISSION_DECONSTRUCTION) {
-      shapenum = Class->Anims[BState].Start + Class->Anims[BState].Count - 1 -
-                 shapenum;
+      shapenum = Class->Anims.at(BState).Start + Class->Anims.at(BState).Count -
+                 1 - shapenum;
     }
 
   } else {
@@ -848,16 +848,16 @@ void BuildingClass::Draw_It(int x, int y, WindowNumberType window) {
               **	Special damage stage for pump.
               */
               if (!Class->IsSimpleDamage) {
-                const int last1 = Class->Anims[BSTATE_IDLE].Start +
-                                  Class->Anims[BSTATE_IDLE].Count;
-                int last2 = Class->Anims[BSTATE_ACTIVE].Start +
-                            Class->Anims[BSTATE_ACTIVE].Count;
+                const int last1 = Class->Anims.at(BSTATE_IDLE).Start +
+                                  Class->Anims.at(BSTATE_IDLE).Count;
+                int last2 = Class->Anims.at(BSTATE_ACTIVE).Start +
+                            Class->Anims.at(BSTATE_ACTIVE).Count;
                 int largest = std::max(last1, last2);
-                last2 = Class->Anims[BSTATE_AUX1].Start +
-                        Class->Anims[BSTATE_AUX1].Count;
+                last2 = Class->Anims.at(BSTATE_AUX1).Start +
+                        Class->Anims.at(BSTATE_AUX1).Count;
                 largest = std::max(largest, last2);
-                last2 = Class->Anims[BSTATE_AUX2].Start +
-                        Class->Anims[BSTATE_AUX2].Count;
+                last2 = Class->Anims.at(BSTATE_AUX2).Start +
+                        Class->Anims.at(BSTATE_AUX2).Count;
                 largest = std::max(largest, last2);
 
                 shapenum += largest;
@@ -1111,7 +1111,7 @@ bool BuildingClass::Mark(MarkType mark) {
 BulletClass* BuildingClass::Fire_At(TARGET target, int which) {
   Validate();
   const WeaponTypeClass* weapon =
-      which == 0 ? &Weapons[Class->Primary] : &Weapons[Class->Secondary];
+      which == 0 ? &Weapons.at(Class->Primary) : &Weapons.at(Class->Secondary);
 
   BulletClass* bullet = TechnoClass::Fire_At(target, which);  // Projectile.
   if (bullet) {
@@ -1713,7 +1713,7 @@ bool BuildingClass::Unlimbo(COORDINATE coord, DirType dir) {
         ObjectClass* o =
             OverlayTypeClass::As_Reference(otype).Create_One_Of(House);
         if (o && o->Unlimbo(coord)) {
-          Map[Coord_Cell(coord)].Owner = House->Class->House;
+          Map.at(Coord_Cell(coord)).Owner = House->Class->House;
           Transmit_Message(RADIO_OVER_OUT);
           delete this;
           return true;
@@ -1785,7 +1785,7 @@ bool BuildingClass::Unlimbo(COORDINATE coord, DirType dir) {
     House->IsRecalcNeeded = true;
     LastStrength = 0;
 
-    if ((!IsDiscoveredByPlayer && Map[Coord_Cell(coord)].IsVisible) ||
+    if ((!IsDiscoveredByPlayer && Map.at(Coord_Cell(coord)).IsVisible) ||
         GameToPlay != GAME_NORMAL) {
       Revealed(PlayerPtr);
     }
@@ -3133,7 +3133,7 @@ TARGET BuildingClass::Greatest_Threat(ThreatType threat) const {
   }
 
   if (Class->Primary != WEAPON_NONE &&
-      BulletTypeClass::As_Reference(Weapons[Class->Primary].Fires)
+      BulletTypeClass::As_Reference(Weapons.at(Class->Primary).Fires)
           .IsAntiAircraft) {
     threat = threat | THREAT_AIR;
   }
@@ -3700,7 +3700,7 @@ TARGET BuildingClass::As_Target() const {
  *=============================================================================================*/
 COORDINATE BuildingClass::Center_Coord() const {
   Validate();
-  return Coord_Add(Coord, CenterOffset[Class->Size]);
+  return Coord_Add(Coord, CenterOffset.at(Class->Size));
 }
 
 COORDINATE BuildingClass::Docking_Coord() const {
@@ -4333,7 +4333,7 @@ int BuildingClass::Mission_Deconstruction() {
               ScenarioInit++;
               COORDINATE coord =
                   Coord_Add(Center_Coord(), Pixel_Offset_Coord(0, -12));
-              coord = Map[Coord_Cell(coord)].Closest_Free_Spot(coord, false);
+              coord = Map.at(Coord_Cell(coord)).Closest_Free_Spot(coord, false);
 
               if (infantry->Unlimbo(coord, DIR_N)) {
                 if (infantry->Class->IsNominal) {
@@ -4683,8 +4683,8 @@ int BuildingClass::Mission_Harvest() {
         */
         const bool old = Special.IsScatter;
         Special.IsScatter = true;
-        Map[Adjacent_Cell(Coord_Cell(Center_Coord()), DIR_SW)].Incoming(0,
-                                                                        true);
+        Map.at(Adjacent_Cell(Coord_Cell(Center_Coord()), DIR_SW))
+            .Incoming(0, true);
         Special.IsScatter = old;
 
         FootClass* techno = Attached_Object();
@@ -5594,11 +5594,11 @@ bool BuildingClass::Flush_For_Placement(TechnoClass* techno, CELL cell) {
       const CELL newcell = static_cast<CELL>(cell + base::ConsumeFront(list));
 
       if (Map.In_Radar(newcell)) {
-        TechnoClass* occupier = Map[newcell].Cell_Techno();
+        TechnoClass* occupier = Map.at(newcell).Cell_Techno();
         if (occupier) {
           again = true;
           if (occupier->House->Is_Ally(this)) {
-            Map[newcell].Incoming(0, true);
+            Map.at(newcell).Incoming(0, true);
           } else {
             Base_Is_Attacked(occupier);
           }
@@ -5678,14 +5678,14 @@ bool BuildingClass::Passes_Proximity_Check(CELL homecell) {
     for (FacingType facing = FACING_N; facing < FACING_COUNT; facing++) {
       const CELL newcell = Adjacent_Cell(cell, facing);
 
-      const TechnoClass* base = Map[newcell].Cell_Techno();
+      const TechnoClass* base = Map.at(newcell).Cell_Techno();
 
       /*
       **	The special cell ownership flag allows building adjacent
       **	to friendly walls and bibs even though there is no official
       **	building located there.
       */
-      if (Map[newcell].Owner == House->Class->House) {
+      if (Map.at(newcell).Owner == House->Class->House) {
         return true;
       }
 

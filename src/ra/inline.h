@@ -772,7 +772,7 @@ inline DirType Direction8(COORDINATE coord1, COORDINATE coord2) {
  *=============================================================================================*/
 inline COORDINATE Adjacent_Cell(COORDINATE coord, FacingType dir) {
   return Coord_Snap(
-      Coord_Add(AdjacentCoord[WrapFacing(static_cast<int>(dir))], coord));
+      Coord_Add(AdjacentCoord.at(WrapFacing(static_cast<int>(dir))), coord));
 }
 
 /***********************************************************************************************
@@ -817,7 +817,7 @@ inline CELL Adjacent_Cell(CELL cell, FacingType dir) {
   // Wrapped like the COORDINATE overload above, so that FACING_NONE (-1) does
   // not index before the start of the table.
   return static_cast<CELL>(cell +
-                           AdjacentCell[WrapFacing(static_cast<int>(dir))]);
+                           AdjacentCell.at(WrapFacing(static_cast<int>(dir))));
 }
 
 /***********************************************************************************************
@@ -838,7 +838,7 @@ inline CELL Adjacent_Cell(CELL cell, FacingType dir) {
  * HISTORY: * 08/26/1996 JLB : Created. *
  *=============================================================================================*/
 inline CELL Adjacent_Cell(CELL cell, DirType dir) {
-  return static_cast<CELL>(cell + AdjacentCell[Dir_Facing(dir)]);
+  return static_cast<CELL>(cell + AdjacentCell.at(Dir_Facing(dir)));
 }
 
 /***********************************************************************************************

@@ -452,7 +452,7 @@ MoveType TerrainClass::Can_Enter_Cell(CELL cell, FacingType /*unused*/) const {
   std::span<const int16_t> offset =
       Occupy_List();  // Pointer to cell offset list.
   while (offset.front() != REFRESH_EOL) {
-    if (!Map[static_cast<CELL>(cell + base::ConsumeFront(offset))]
+    if (!Map.at(static_cast<CELL>(cell + base::ConsumeFront(offset)))
              .Is_Generally_Clear()) {
       return MOVE_NO;
     }
@@ -691,7 +691,7 @@ bool TerrainClass::Limbo() {
   Validate();
   if (!IsInLimbo) {
     const CELL cell = Coord_Cell(Coord);
-    Map[cell].Flag.Occupy.Monolith = false;
+    Map.at(cell).Flag.Occupy.Monolith = false;
   }
   return ObjectClass::Limbo();
 }
@@ -752,8 +752,8 @@ std::span<const uint8_t> TerrainClass::Radar_Icon(CELL cell) {
   if (icons.size() < 2) {
     return {};
   }
-  const int width = icons[0];
-  const int height = icons[1];
+  const int width = base::At(icons, 0);
+  const int height = base::At(icons, 1);
   const CELL basecell = Coord_Cell(Coord);
   const int ydiff = Cell_Y(cell) - Cell_Y(basecell);
   const int xdiff = Cell_X(cell) - Cell_X(basecell);

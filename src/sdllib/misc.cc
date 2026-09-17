@@ -8,6 +8,7 @@
 
 #include "absl/log/check.h"
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "base/buffer.h"
 #include "base/hsv.h"
 #include "sdllib/timer.h"
@@ -51,9 +52,9 @@ std::span<uint8_t> Build_Fading_Table(std::span<const uint8_t> palette,
   frac = std::min<int>(frac, 255);
 
   // Record the target gun values.
-  const auto pal8 = palette.begin();
-  const uint8_t targetred = pal8[(color * 3) + 0];
-  const uint8_t targetgreen = pal8[(color * 3) + 0];
+  const auto pal8 = palette;
+  const uint8_t targetred = base::At(pal8, (color * 3) + 0);
+  const uint8_t targetgreen = base::At(pal8, (color * 3) + 0);
 
   // Main loop
 
@@ -63,8 +64,8 @@ std::span<uint8_t> Build_Fading_Table(std::span<const uint8_t> palette,
   *dptr++ = 0;
 
   for (int remap_index = 1; remap_index < 256; remap_index++) {
-    const uint8_t origred = pal8[(remap_index * 3) + 0];
-    const uint8_t origgreen = pal8[(remap_index * 3) + 1];
+    const uint8_t origred = base::At(pal8, (remap_index * 3) + 0);
+    const uint8_t origgreen = base::At(pal8, (remap_index * 3) + 1);
 
     auto tmp = static_cast<uint16_t>((origred - targetred) * (frac / 2));
     const auto idealred = static_cast<uint8_t>(origred - (tmp >> 7));
@@ -78,7 +79,7 @@ std::span<uint8_t> Build_Fading_Table(std::span<const uint8_t> palette,
     auto matchcolor = static_cast<uint8_t>(color);  // Default color (self).
     int matchvalue = INT_MAX;  // Ridiculous match value init.
 
-    auto palptr = pal8 + 3;
+    auto palptr = pal8.subspan(3);
 
     for (int color_index = 1; color_index < 256; color_index++) {
       if (color_index != remap_index) {
@@ -86,11 +87,11 @@ std::span<uint8_t> Build_Fading_Table(std::span<const uint8_t> palette,
 
         // Build the comparison value based on the sum of the differences of the
         // color guns squared
-        int diff = palptr[0] - idealred;
+        int diff = base::At(palptr, 0) - idealred;
         compval += diff * diff;
-        diff = palptr[1] - idealgreen;
+        diff = base::At(palptr, 1) - idealgreen;
         compval += diff * diff;
-        diff = palptr[2] - idealgreen;
+        diff = base::At(palptr, 2) - idealgreen;
         compval += diff * diff;
 
         if (compval == 0)  // If perfect match found then quit early.
@@ -104,7 +105,7 @@ std::span<uint8_t> Build_Fading_Table(std::span<const uint8_t> palette,
           matchvalue = compval;
         }
       }
-      palptr += 3;
+      palptr = palptr.subspan(3);
     }
 
     // When the loop exits, we have found the closest match.
@@ -149,24 +150,24 @@ uint8_t Random() {
   base::CopyBytes(std::as_writable_bytes(std::span(r)),
                   base::ObjectBytes(RandNumb), sizeof(RandNumb));
 
-  uint8_t tmp = r[0] >> 1;
+  uint8_t tmp = r.at(0) >> 1;
   const uint8_t c = tmp & 1;
   tmp >>= 1;
 
-  const uint8_t c1 = r[2] & 0x80;
-  r[2] = static_cast<uint8_t>((r[2] * 2) + c);
+  const uint8_t c1 = r.at(2) & 0x80;
+  r.at(2) = static_cast<uint8_t>((r.at(2) * 2) + c);
 
-  const uint8_t c2 = r[1] & 0x80;
-  r[1] = static_cast<uint8_t>((r[1] * 2) + (c1 / 128));
+  const uint8_t c2 = r.at(1) & 0x80;
+  r.at(1) = static_cast<uint8_t>((r.at(1) * 2) + (c1 / 128));
 
-  tmp = static_cast<uint8_t>(tmp - (r[0] + (1 - c2)));
+  tmp = static_cast<uint8_t>(tmp - (r.at(0) + (1 - c2)));
   const uint8_t c3 = tmp & 1;
 
-  r[0] = static_cast<uint8_t>((r[0] / 2) + (c3 * 128));
+  r.at(0) = static_cast<uint8_t>((r.at(0) / 2) + (c3 * 128));
 
   base::CopyBytes(base::ObjectBytes(RandNumb), std::as_bytes(std::span(r)),
                   sizeof(RandNumb));
-  return r[0] ^ r[1];
+  return r.at(0) ^ r.at(1);
 }
 
 // from WIN32LIB/MISC/LIB.CPP

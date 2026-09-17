@@ -265,7 +265,7 @@ SendQueueType* ConnectionClass::OldestUnackedSend(
  *=========================================================================*/
 const char* ConnectionClass::Command_Name(int command) {
   if (command >= 0 && command < static_cast<int>(PACKET_COUNT)) {
-    return Commands[static_cast<ConnectionEnum>(command)];
+    return Commands.at(static_cast<ConnectionEnum>(command));
   }
   return nullptr;
 }

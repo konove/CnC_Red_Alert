@@ -645,11 +645,11 @@ void Keyboard_Process(KeyNumType& input) {
     */
     case VK_N:
       if (action) {
-        obj = MapEditClass::Prev_Object(CurrentObject.Count() ? CurrentObject[0]
-                                                              : nullptr);
+        obj = MapEditClass::Prev_Object(
+            CurrentObject.Count() ? CurrentObject.at(0) : nullptr);
       } else {
-        obj = MapEditClass::Next_Object(CurrentObject.Count() ? CurrentObject[0]
-                                                              : nullptr);
+        obj = MapEditClass::Next_Object(
+            CurrentObject.Count() ? CurrentObject.at(0) : nullptr);
       }
       if (obj) {
         Unselect_All();
@@ -675,9 +675,9 @@ void Keyboard_Process(KeyNumType& input) {
     case VK_A:
       if ((GameToPlay != GAME_NORMAL || Debug_Flag) &&
           (CurrentObject.Count() && !PlayerPtr->IsDefeated) &&
-          (CurrentObject[0]->Owner() != PlayerPtr->Class->House)) {
+          (CurrentObject.at(0)->Owner() != PlayerPtr->Class->House)) {
         OutList.Add(EventClass(EventClass::ALLY,
-                               static_cast<int>(CurrentObject[0]->Owner())));
+                               static_cast<int>(CurrentObject.at(0)->Owner())));
       }
 
       break;
@@ -716,7 +716,7 @@ void Keyboard_Process(KeyNumType& input) {
     case VK_S:
       if (CurrentObject.Count()) {
         for (int j = 0; j < CurrentObject.Count(); j++) {
-          const ObjectClass* tech = CurrentObject[j];
+          const ObjectClass* tech = CurrentObject.at(j);
 
           if (tech && (tech->Can_Player_Move() ||
                        (tech->Can_Player_Fire() &&
@@ -733,7 +733,7 @@ void Keyboard_Process(KeyNumType& input) {
     case VK_X:
       if (CurrentObject.Count()) {
         for (int j = 0; j < CurrentObject.Count(); j++) {
-          const ObjectClass* tech = CurrentObject[j];
+          const ObjectClass* tech = CurrentObject.at(j);
 
           if (tech && tech->Can_Player_Move()) {
             OutList.Add(EventClass(EventClass::SCATTER, tech->As_Target()));
@@ -748,7 +748,7 @@ void Keyboard_Process(KeyNumType& input) {
     case VK_G:
       if (CurrentObject.Count()) {
         for (int j = 0; j < CurrentObject.Count(); j++) {
-          const ObjectClass* tech = CurrentObject[j];
+          const ObjectClass* tech = CurrentObject.at(j);
 
           if (tech && tech->Can_Player_Move() && tech->Can_Player_Fire()) {
             OutList.Add(EventClass(tech->As_Target(), MISSION_GUARD_AREA));
@@ -990,15 +990,15 @@ static void Message_Input(KeyNumType& input) {
         /* Start at the end of the message and find a space with 10 chars. */
         the_string = serial_packet->Message;
         while (COMPAT_MESSAGE_LENGTH - 5 - actual_message_size < 10 &&
-               the_string[base::ToSize(actual_message_size)] != ' ') {
+               base::At(the_string, base::ToSize(actual_message_size)) != ' ') {
           --actual_message_size;
         }
-        if (the_string[base::ToSize(actual_message_size)] == ' ') {
+        if (base::At(the_string, base::ToSize(actual_message_size)) == ' ') {
           /* Now delete the extra characters after the space (they musnt print)
            */
           for (int j = 0; j < COMPAT_MESSAGE_LENGTH - 5 - actual_message_size;
                j++) {
-            the_string[base::ToSize(j + actual_message_size)] =
+            base::At(the_string, base::ToSize(j + actual_message_size)) =
                 static_cast<char>(0xff);
           }
         } else {
@@ -1051,15 +1051,16 @@ static void Message_Input(KeyNumType& input) {
           /* Start at the end of the message and find a space with 10 chars. */
           the_string = GPacket.Message.Buf;
           while (COMPAT_MESSAGE_LENGTH - 5 - actual_message_size < 10 &&
-                 the_string[base::ToSize(actual_message_size)] != ' ') {
+                 base::At(the_string, base::ToSize(actual_message_size)) !=
+                     ' ') {
             --actual_message_size;
           }
-          if (the_string[base::ToSize(actual_message_size)] == ' ') {
+          if (base::At(the_string, base::ToSize(actual_message_size)) == ' ') {
             /* Now delete the extra characters after the space (they musnt
              * print) */
             for (int j = 0; j < COMPAT_MESSAGE_LENGTH - 5 - actual_message_size;
                  j++) {
-              the_string[base::ToSize(j + actual_message_size)] =
+              base::At(the_string, base::ToSize(j + actual_message_size)) =
                   static_cast<char>(0xff);
             }
           } else {
@@ -1154,23 +1155,23 @@ bool Color_Cycle() {
 */
 #define STEP_RATE 5
     if (_up) {
-      GamePalette[767] += STEP_RATE;
-      GamePalette[766] += STEP_RATE;
-      GamePalette[765] += STEP_RATE;
-      if (GamePalette[767] > MAX_CYCLE_COLOR) {
-        GamePalette[767] = MAX_CYCLE_COLOR;
-        GamePalette[766] = MAX_CYCLE_COLOR;
-        GamePalette[765] = MAX_CYCLE_COLOR;
+      GamePalette.at(767) += STEP_RATE;
+      GamePalette.at(766) += STEP_RATE;
+      GamePalette.at(765) += STEP_RATE;
+      if (GamePalette.at(767) > MAX_CYCLE_COLOR) {
+        GamePalette.at(767) = MAX_CYCLE_COLOR;
+        GamePalette.at(766) = MAX_CYCLE_COLOR;
+        GamePalette.at(765) = MAX_CYCLE_COLOR;
         _up = false;
       }
     } else {
-      GamePalette[767] -= STEP_RATE;
-      GamePalette[766] -= STEP_RATE;
-      GamePalette[765] -= STEP_RATE;
-      if (static_cast<unsigned>(GamePalette[767]) < MIN_CYCLE_COLOR) {
-        GamePalette[767] = MIN_CYCLE_COLOR;
-        GamePalette[766] = MIN_CYCLE_COLOR;
-        GamePalette[765] = MIN_CYCLE_COLOR;
+      GamePalette.at(767) -= STEP_RATE;
+      GamePalette.at(766) -= STEP_RATE;
+      GamePalette.at(765) -= STEP_RATE;
+      if (static_cast<unsigned>(GamePalette.at(767)) < MIN_CYCLE_COLOR) {
+        GamePalette.at(767) = MIN_CYCLE_COLOR;
+        GamePalette.at(766) = MIN_CYCLE_COLOR;
+        GamePalette.at(765) = MIN_CYCLE_COLOR;
         _up = true;
       }
     }
@@ -1388,7 +1389,7 @@ const char* Language_Name(const char* basename) {
 SourceType Source_From_Name(const char* name) {
   if (name) {
     for (SourceType source = SOURCE_FIRST; source < SOURCE_COUNT; source++) {
-      if (port::CompareIgnoreCase(SourceName[source], name) == 0) {
+      if (port::CompareIgnoreCase(SourceName.at(source), name) == 0) {
         return source;
       }
     }
@@ -1413,7 +1414,7 @@ SourceType Source_From_Name(const char* name) {
  *=============================================================================================*/
 const char* Name_From_Source(SourceType source) {
   if (static_cast<unsigned>(source) < static_cast<unsigned>(SOURCE_COUNT)) {
-    return SourceName[source];
+    return SourceName.at(source);
   }
   return "None";
 }
@@ -1437,7 +1438,7 @@ TheaterType Theater_From_Name(const char* name) {
 
   if (name) {
     for (TheaterType index = THEATER_DESERT; index < THEATER_COUNT; index++) {
-      if (port::CompareIgnoreCase(name, Theaters[index].Name) == 0) {
+      if (port::CompareIgnoreCase(name, Theaters.at(index).Name) == 0) {
         return index;
       }
     }
@@ -1642,7 +1643,7 @@ bool Main_Loop() {
   ** layer in the same way, and any processing done that's based on
   ** the order of this layer will sync on different machines.
   */
-  MouseClass::Layer[LAYER_GROUND].Sort();
+  MouseClass::Layer.at(LAYER_GROUND).Sort();
 
   //	Heap_Dump_Check( "Before Logic.AI" );
 
@@ -2008,8 +2009,8 @@ void Go_Editor(bool flag) {
 static void Rebuild_Interpolated_Palette(std::span<unsigned char> interpal) {
   for (int y = 0; y < 255; y++) {
     for (int x = y + 1; x < 256; x++) {
-      interpal[base::ToSize((y * 256) + x)] =
-          interpal[base::ToSize((x * 256) + y)];
+      base::At(interpal, base::ToSize((y * 256) + x)) =
+          base::At(interpal, base::ToSize((x * 256) + y));
     }
   }
 }
@@ -2260,7 +2261,7 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
  *=============================================================================================*/
 void Unselect_All() {
   while (CurrentObject.Count()) {
-    CurrentObject[0]->Unselect();
+    CurrentObject.at(0)->Unselect();
   }
 }
 
@@ -2285,7 +2286,8 @@ void Unselect_All() {
 std::string Fading_Table_Name(const char* base, TheaterType theater) {
   // Build filename: first character of theater root + base name + .MRF
   // extension
-  const auto root = std::string(1, base::At(Theaters[theater].Root, 0)) + base;
+  const auto root =
+      std::string(1, base::At(Theaters.at(theater).Root, 0)) + base;
   const auto file_path = std::filesystem::path(root).replace_extension(".MRF");
   return file_path.string();
 }
@@ -2321,8 +2323,8 @@ std::vector<uint8_t> Get_Radar_Icon(std::span<const std::byte> shapefile,
                             base::ToSize(icon_height) *
                             base::ToSize(zoomfactor) * base::ToSize(zoomfactor);
   std::vector<uint8_t> result(2 + (frame_pixels * base::ToSize(frames)));
-  result[0] = static_cast<uint8_t>(icon_width);
-  result[1] = static_cast<uint8_t>(icon_height);
+  result.at(0) = static_cast<uint8_t>(icon_width);
+  result.at(1) = static_cast<uint8_t>(icon_height);
   const int step = 24 / zoomfactor;
   size_t out = 2;
   for (int frame = 0; frame < frames; ++frame) {
@@ -2348,8 +2350,8 @@ std::vector<uint8_t> Get_Radar_Icon(std::span<const std::byte> shapefile,
                     sample_y >= pixel_height) {
                   continue;
                 }
-                pixel =
-                    pixels[base::ToSize((sample_y * pixel_width) + sample_x)];
+                pixel = base::At(
+                    pixels, base::ToSize((sample_y * pixel_width) + sample_x));
                 if (pixel == kLtGreen) {
                   pixel = 0;
                 }
@@ -2358,7 +2360,7 @@ std::vector<uint8_t> Get_Radar_Icon(std::span<const std::byte> shapefile,
                 }
               }
             }
-            result[out++] = pixel;
+            result.at(out++) = pixel;
           }
         }
       }
@@ -2384,8 +2386,8 @@ void CC_Texture_Fill(std::span<const std::byte> shapefile, int shapenum,
     for (int x = 0; x < width; ++x) {
       LogicPage->Put_Pixel(
           xpos + x, ypos + y,
-          pixels[base::ToSize(((y % source_height) * source_width) +
-                              (x % source_width))]);
+          base::At(pixels, base::ToSize(((y % source_height) * source_width) +
+                                        (x % source_width))));
     }
   }
   LogicPage->Unlock();
@@ -2794,12 +2796,13 @@ void Handle_Team(int team, int action) {
       *objects *	before selecting this team.
       */
       if (CurrentObject.Count()) {
-        switch (CurrentObject[0]->What_Am_I()) {
+        switch (CurrentObject.at(0)->What_Am_I()) {
           case RTTI_UNIT:
           case RTTI_INFANTRY:
           case RTTI_AIRCRAFT:
             if (std::cmp_not_equal(
-                    dynamic_cast<FootClass*>(CurrentObject[0])->Group, team)) {
+                    dynamic_cast<FootClass*>(CurrentObject.at(0))->Group,
+                    team)) {
               Unselect_All();
             }
             break;
@@ -3297,7 +3300,7 @@ static void Do_Record_Playback() {
     .....................................................................*/
     sum = 0;
     for (int i = 0; i < count; i++) {
-      ltgt = static_cast<uint32_t>(CurrentObject[i]->As_Target());
+      ltgt = static_cast<uint32_t>(CurrentObject.at(i)->As_Target());
       sum += ltgt;
     }
     RecordFile.WriteObject(sum);
@@ -3306,7 +3309,7 @@ static void Do_Record_Playback() {
     Save all selected objects.
     .....................................................................*/
     for (int i = 0; i < count; i++) {
-      tgt = CurrentObject[i]->As_Target();
+      tgt = CurrentObject.at(i)->As_Target();
       RecordFile.WriteObject(tgt);
     }
 
@@ -3335,7 +3338,7 @@ static void Do_Record_Playback() {
       ..................................................................*/
       sum = 0;
       for (int i = 0; i < CurrentObject.Count(); i++) {
-        ltgt = static_cast<uint32_t>(CurrentObject[i]->As_Target());
+        ltgt = static_cast<uint32_t>(CurrentObject.at(i)->As_Target());
         sum += ltgt;
       }
 

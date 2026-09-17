@@ -119,7 +119,6 @@
 #include "ra/inline.h"
 #include "ra/jshell.h"
 #include "ra/logic.h"
-#include "ra/map.h"
 #include "ra/mapedit.h"
 #include "ra/mapsel.h"
 #include "ra/mission_id.h"
@@ -148,7 +147,6 @@
 #include "ra/trigtype.h"
 #include "ra/type.h"
 #include "ra/unit.h"
-#include "ra/vector.h"
 #include "ra/vector_dynamic.h"
 #include "ra/vessel.h"
 #include "ra/weapon.h"
@@ -385,7 +383,8 @@ bool Start_Scenario(char* name, bool briefing) {
   */
   char buffer[25];
   if (Scen.BriefMovie != VQ_NONE) {
-    absl::SNPrintF(buffer, sizeof(buffer), "%s.VQA", VQName[Scen.BriefMovie]);
+    absl::SNPrintF(buffer, sizeof(buffer), "%s.VQA",
+                   VQName.at(Scen.BriefMovie));
   }
   if (Session.Type == GAME_NORMAL &&
       (Scen.BriefMovie == VQ_NONE || !GameFile(buffer).IsAvailable())) {
@@ -566,7 +565,7 @@ void Fill_In_Data() {
       LogicTriggers.Add(Find_Or_Make(tp));
     }
     if (base::Any(tp->Attaches_To() & ATTACH_HOUSE)) {
-      HouseTriggers[tp->House].Add(Find_Or_Make(tp));
+      HouseTriggers.at(tp->House).Add(Find_Or_Make(tp));
     }
   }
 
@@ -577,19 +576,17 @@ void Fill_In_Data() {
   ** we won't get the wall of shadow at the edge of the map.
   */
   for (int x = Map.MapCellX - 1; x < Map.MapCellX + Map.MapCellWidth + 1; x++) {
-    Map[XY_Cell(x, Map.MapCellY - 1)].IsVisible =
-        Map[XY_Cell(x, Map.MapCellY - 1)].IsMapped = true;
+    Map.at(XY_Cell(x, Map.MapCellY - 1)).IsVisible =
+        Map.at(XY_Cell(x, Map.MapCellY - 1)).IsMapped = true;
 
-    Map[XY_Cell(x, Map.MapCellY + Map.MapCellHeight)]
-        .IsVisible =
-        Map[XY_Cell(x, Map.MapCellY + Map.MapCellHeight)]
-            .IsMapped = true;
+    Map.at(XY_Cell(x, Map.MapCellY + Map.MapCellHeight)).IsVisible =
+        Map.at(XY_Cell(x, Map.MapCellY + Map.MapCellHeight)).IsMapped = true;
   }
   for (int y = Map.MapCellY; y < Map.MapCellY + Map.MapCellHeight; y++) {
-    Map[XY_Cell(Map.MapCellX - 1, y)].IsVisible =
-        Map[XY_Cell(Map.MapCellX - 1, y)].IsMapped = true;
-    Map[XY_Cell(Map.MapCellX + Map.MapCellWidth, y)].IsVisible =
-        Map[XY_Cell(Map.MapCellX + Map.MapCellWidth, y)].IsMapped = true;
+    Map.at(XY_Cell(Map.MapCellX - 1, y)).IsVisible =
+        Map.at(XY_Cell(Map.MapCellX - 1, y)).IsMapped = true;
+    Map.at(XY_Cell(Map.MapCellX + Map.MapCellWidth, y)).IsVisible =
+        Map.at(XY_Cell(Map.MapCellX + Map.MapCellWidth, y)).IsMapped = true;
   }
 
   /*
@@ -717,7 +714,7 @@ void Clear_Scenario() {
   LogicTriggers.Clear();
 
   for (const HousesType house : magic_enum::enum_values<HousesType>()) {
-    HouseTriggers[house].Clear();
+    HouseTriggers.at(house).Clear();
   }
 
   /*
@@ -813,7 +810,7 @@ void Do_Win() {
     Set_Logic_Page(SeenBuff);
     Map.Flag_To_Redraw(true);
     Map.Render();
-    Fancy_Text_Print(TXT_SCENARIO_WON, x, 180, &ColorRemaps[PCOLOR_RED],
+    Fancy_Text_Print(TXT_SCENARIO_WON, x, 180, &ColorRemaps.at(PCOLOR_RED),
                      kTBlack,
                      TPF_CENTER | TPF_VCR | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
     CountDownTimer.Set(int64_t{kTimerSecond} * 3);
@@ -1031,7 +1028,8 @@ void Do_Lose() {
   **	Announce win to player.
   */
   Set_Logic_Page(SeenBuff);
-  Fancy_Text_Print(TXT_SCENARIO_LOST, x, 180, &ColorRemaps[PCOLOR_RED], kTBlack,
+  Fancy_Text_Print(TXT_SCENARIO_LOST, x, 180, &ColorRemaps.at(PCOLOR_RED),
+                   kTBlack,
                    TPF_CENTER | TPF_VCR | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
   CountDownTimer.Set(int64_t{kTimerSecond} * 3);
   while (Is_Speaking()) {
@@ -1120,7 +1118,7 @@ void Do_Draw() {
   **	Announce win to player.
   */
   Set_Logic_Page(SeenBuff);
-  Fancy_Text_Print(TXT_WOL_DRAW, x, 180, &ColorRemaps[PCOLOR_RED], kTBlack,
+  Fancy_Text_Print(TXT_WOL_DRAW, x, 180, &ColorRemaps.at(PCOLOR_RED), kTBlack,
                    TPF_CENTER | TPF_VCR | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
   CountDownTimer.Set(int64_t{kTimerSecond} * 3);
   while (Is_Speaking()) {
@@ -1203,7 +1201,8 @@ BriefingAction Restate_Mission() {
   // Check if briefing video is available.
   bool has_video = false;
   if (Scen.BriefMovie != VQ_NONE) {
-    const auto video_filename = std::string(VQName[Scen.BriefMovie]) + ".VQA";
+    const auto video_filename =
+        std::string(VQName.at(Scen.BriefMovie)) + ".VQA";
     has_video = GameFile(video_filename).IsAvailable();
   }
 
@@ -1261,7 +1260,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
 
   const auto briefsnd = MixArchive::RetrieveData("BRIEFING.AUD");
 
-  GadgetClass::Set_Color_Scheme(&ColorRemaps[PCOLOR_TYPE]);
+  GadgetClass::Set_Color_Scheme(&ColorRemaps.at(PCOLOR_TYPE));
 
   // If the message fits on one page, hide the "MORE" button.
   if (msg.size() < kMaxCharsPerPage) {
@@ -1302,7 +1301,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
     b3txt = nullptr;
   }
 
-  Fancy_Text_Print(TXT_NONE, 0, 0, &ColorRemaps[PCOLOR_TYPE], kTBlack,
+  Fancy_Text_Print(TXT_NONE, 0, 0, &ColorRemaps.at(PCOLOR_TYPE), kTBlack,
                    TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
   /*
   **	Examine the optional button parameters. Fetch the width and starting
@@ -1357,7 +1356,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
   // Copy to mutable buffer for Format_Window_String (which inserts newlines).
   page_text.copy(buffer, page_text.size());
   base::At(buffer, page_text.size()) = '\0';
-  Fancy_Text_Print(TXT_NONE, 0, 0, &ColorRemaps[PCOLOR_TYPE], kTBlack,
+  Fancy_Text_Print(TXT_NONE, 0, 0, &ColorRemaps.at(PCOLOR_TYPE), kTBlack,
                    TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
   int width = 0;
   int height = 0;
@@ -1619,7 +1618,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
   }
   Show_Mouse();
 
-  GadgetClass::Set_Color_Scheme(&ColorRemaps[PCOLOR_DIALOG_BLUE]);
+  GadgetClass::Set_Color_Scheme(&ColorRemaps.at(PCOLOR_DIALOG_BLUE));
 
   // Convert internal button index to the text ID that was clicked.
   return retval == 1 ? left_btn_text_id : right_btn_text_id;
@@ -2350,7 +2349,7 @@ void Assign_Houses() {
   //------------------------------------------------------------------------
   for (int i = 0; i < kMaxPlayers; i++) {
     base::At(assigned, i) = 0;
-    color_used[static_cast<PlayerColorType>(i)] = false;
+    color_used.at(static_cast<PlayerColorType>(i)) = false;
   }
 
   //	debugprint( "Assign_Houses()\n" );
@@ -2373,8 +2372,8 @@ void Assign_Houses() {
         continue;
       }
       if (lowest_color == PCOLOR_NONE ||
-          Session.Players[j]->Player.Color < lowest_color) {
-        lowest_color = Session.Players[j]->Player.Color;
+          Session.Players.at(j)->Player.Color < lowest_color) {
+        lowest_color = Session.Players.at(j)->Player.Color;
         index = j;
       }
     }
@@ -2383,7 +2382,7 @@ void Assign_Houses() {
     // Mark this player as having been assigned.
     //.....................................................................
     base::At(assigned, index) = 1;
-    color_used[Session.Players[index]->Player.Color] = true;
+    color_used.at(Session.Players.at(index)->Player.Color) = true;
 
     //.....................................................................
     // Assign the lowest-color'd player to the next available slot in the
@@ -2391,12 +2390,12 @@ void Assign_Houses() {
     //.....................................................................
     house = static_cast<HousesType>(i + static_cast<int>(HOUSE_MULTI1));
     housep = HouseClass::As_Pointer(house);
-    port::SafeCopy(housep->IniName, Session.Players[index]->Name);
+    port::SafeCopy(housep->IniName, Session.Players.at(index)->Name);
     // A second copy that stays put for the whole game -- see InitialName.
-    port::SafeCopy(housep->InitialName, Session.Players[index]->Name);
+    port::SafeCopy(housep->InitialName, Session.Players.at(index)->Name);
     housep->IsHuman = true;
-    housep->Init_Data(Session.Players[index]->Player.Color,
-                      Session.Players[index]->Player.House,
+    housep->Init_Data(Session.Players.at(index)->Player.Color,
+                      Session.Players.at(index)->Player.House,
                       Session.Options.Credits);
     if (index == 0) {
       PlayerPtr = housep;
@@ -2412,7 +2411,7 @@ void Assign_Houses() {
     //.....................................................................
     // Record where we placed this player
     //.....................................................................
-    Session.Players[index]->Player.ID = house;
+    Session.Players.at(index)->Player.ID = house;
 
     //		debugprint( "Assigned ID of %i to %s\n", house,
     // Session.Players[index]->Name );
@@ -2433,11 +2432,11 @@ void Assign_Houses() {
     //.....................................................................
     while (true) {
       color = Random_Pick(0, 7);
-      if (!color_used[static_cast<PlayerColorType>(color)]) {
+      if (!color_used.at(static_cast<PlayerColorType>(color))) {
         break;
       }
     }
-    color_used[static_cast<PlayerColorType>(color)] = true;
+    color_used.at(static_cast<PlayerColorType>(color)) = true;
 
     //.....................................................................
     // Set up the house
@@ -2928,7 +2927,7 @@ bool Scan_Place_Object(ObjectClass* obj, CELL cell) {
   **	First try to unlimbo the object in the given cell.
   */
   if (Map.In_Radar(cell)) {
-    techno = Map[cell].Cell_Techno();
+    techno = Map.at(cell).Cell_Techno();
     if ((!techno || (techno->What_Am_I() == RTTI_INFANTRY &&
                      obj->What_Am_I() == RTTI_INFANTRY)) &&
         obj->Unlimbo(Cell_Coord(cell), DIR_N)) {
@@ -2987,7 +2986,7 @@ bool Scan_Place_Object(ObjectClass* obj, CELL cell) {
           **	- there is no techno in the cell
           **	- the techno in the cell & the object are both infantry
           */
-          techno = Map[newcell].Cell_Techno();
+          techno = Map.at(newcell).Cell_Techno();
           if ((!techno || (techno->What_Am_I() == RTTI_INFANTRY &&
                            obj->What_Am_I() == RTTI_INFANTRY)) &&
               obj->Unlimbo(Cell_Coord(newcell), DIR_N)) {
@@ -3189,13 +3188,13 @@ void Disect_Scenario_Name(const char* name_data, int& scenario,
   **	Fetch the scenario player (side).
   */
   player = SCEN_PLAYER_GREECE;
-  if (name[2] == HouseTypeClass::As_Reference(HOUSE_SPAIN).Prefix) {
+  if (name.at(2) == HouseTypeClass::As_Reference(HOUSE_SPAIN).Prefix) {
     player = SCEN_PLAYER_SPAIN;
   }
-  if (name[2] == HouseTypeClass::As_Reference(HOUSE_GREECE).Prefix) {
+  if (name.at(2) == HouseTypeClass::As_Reference(HOUSE_GREECE).Prefix) {
     player = SCEN_PLAYER_GREECE;
   }
-  if (name[2] == HouseTypeClass::As_Reference(HOUSE_USSR).Prefix) {
+  if (name.at(2) == HouseTypeClass::As_Reference(HOUSE_USSR).Prefix) {
     player = SCEN_PLAYER_USSR;
   }
 
@@ -3203,7 +3202,7 @@ void Disect_Scenario_Name(const char* name_data, int& scenario,
   **	Fetch the direction.
   */
   dir = SCEN_DIR_EAST;
-  if (name[5] == 'E') {
+  if (name.at(5) == 'E') {
     dir = SCEN_DIR_EAST;
   } else {
     dir = SCEN_DIR_WEST;
@@ -3213,6 +3212,6 @@ void Disect_Scenario_Name(const char* name_data, int& scenario,
   **	Fetch the variation.
   */
   var = SCEN_VAR_A;
-  var = static_cast<ScenarioVarType>(name[6] - 'A' +
+  var = static_cast<ScenarioVarType>(name.at(6) - 'A' +
                                      static_cast<int>(SCEN_VAR_A));
 }

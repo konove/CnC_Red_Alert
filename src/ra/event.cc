@@ -61,6 +61,7 @@
 
 #include "absl/log/log.h"
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
 #include "ra/anim.h"
@@ -77,7 +78,6 @@
 #include "ra/house.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
-#include "ra/map.h"
 #include "ra/mapedit.h"
 #include "ra/msgbox.h"
 #include "ra/msglist.h"
@@ -92,7 +92,6 @@
 #include "ra/techno.h"
 #include "ra/theme.h"
 #include "ra/type.h"
-#include "ra/vector.h"
 #include "ra/vector_dynamic.h"
 #include "ra/vessel.h"
 #include "ra/wolstrng.h"
@@ -522,7 +521,7 @@ void EventClass::Execute() {
 
   if (Debug_Print_Events) {
     absl::PrintF("(%" PRId64 ") Executing %s ID:%d Frame:%d ", ::Frame,
-                 EventNames[Type], ID, Frame);
+                 EventNames.at(Type), ID, Frame);
   }
 
   switch (Type) {
@@ -603,7 +602,7 @@ void EventClass::Execute() {
       if (techno && techno->IsActive && techno->House == Houses.Raw_Ptr(ID)) {
         if (techno->What_Am_I() == RTTI_BUILDING ||
             (techno->What_Am_I() == RTTI_UNIT &&
-             Map[techno->Center_Coord()].Cell_Building() != nullptr)) {
+             Map.at(techno->Center_Coord()).Cell_Building() != nullptr)) {
           techno->Sell_Back(-1);
         }
       } else {
@@ -951,8 +950,8 @@ void EventClass::Execute() {
     case ADDPLAYER:
       absl::PrintF("ADDPLAYER EVENT!\n");
       for (int i = 0; std::cmp_less(i, Data.Variable.Size); i++) {
-        absl::PrintF("%d\n",
-                     std::to_integer<char>(variable_bytes()[base::ToSize(i)]));
+        absl::PrintF("%d\n", std::to_integer<char>(
+                                 base::At(variable_bytes(), base::ToSize(i))));
       }
       if (std::cmp_not_equal(ID, PlayerPtr->ID)) {
         delete[] static_cast<char*>(Data.Variable.Pointer);
@@ -993,8 +992,8 @@ void EventClass::Execute() {
     //
     case PROCESS_TIME:
       for (int i = 0; i < Session.Players.Count(); i++) {
-        if (static_cast<HousesType>(ID) == Session.Players[i]->Player.ID) {
-          Session.Players[i]->Player.ProcessTime =
+        if (static_cast<HousesType>(ID) == Session.Players.at(i)->Player.ID) {
+          Session.Players.at(i)->Player.ProcessTime =
               Data.ProcessTime.AverageTicks;
           break;
         }
@@ -1025,9 +1024,9 @@ void EventClass::Execute() {
         const auto format =
             absl::ParsedFormat<'s'>::New(TXT_WOL_DRAW_PROPOSED_OTHER);
         for (int i = 0; i < Session.Players.Count(); i++) {
-          if (static_cast<HousesType>(ID) == Session.Players[i]->Player.ID) {
+          if (static_cast<HousesType>(ID) == Session.Players.at(i)->Player.ID) {
             if (format != nullptr) {
-              message = absl::StrFormat(*format, Session.Players[i]->Name);
+              message = absl::StrFormat(*format, Session.Players.at(i)->Name);
             }
             break;
           }
@@ -1057,9 +1056,9 @@ void EventClass::Execute() {
         const auto format =
             absl::ParsedFormat<'s'>::New(TXT_WOL_DRAW_RETRACTED_OTHER);
         for (int i = 0; i < Session.Players.Count(); i++) {
-          if (static_cast<HousesType>(ID) == Session.Players[i]->Player.ID) {
+          if (static_cast<HousesType>(ID) == Session.Players.at(i)->Player.ID) {
             if (format != nullptr) {
-              message = absl::StrFormat(*format, Session.Players[i]->Name);
+              message = absl::StrFormat(*format, Session.Players.at(i)->Name);
             }
             break;
           }

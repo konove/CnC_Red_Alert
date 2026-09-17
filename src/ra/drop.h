@@ -40,13 +40,14 @@
 #ifndef CNC_RED_ALERT_RA_DROP_H_
 #define CNC_RED_ALERT_RA_DROP_H_
 
-#include "port/safe_string.h"
 #include <cstddef>
-#include <span>
 #include <cstring>
+#include <span>
 
 #include "absl/base/attributes.h"
+#include "base/array.h"
 #include "base/numeric.h"
+#include "port/safe_string.h"
 #include "ra/control.h"
 #include "ra/defines.h"
 #include "ra/edit.h"
@@ -126,8 +127,11 @@ class TDropListClass : public EditClass {
   TDropListClass(TDropListClass&&) = delete;
   TDropListClass& operator=(TDropListClass&&) = delete;
 
-  T operator[](int index) const { return List[index]; }
-  T& operator[](int index) { return List[index]; }
+  // Returns the indexed list entry through the checked backing vector.
+  [[nodiscard]] T at(int index) const { return List.at(index); }
+  T operator[](int index) const { return at(index); }
+  T& at(int index) { return List.at(index); }
+  T& operator[](int index) { return at(index); }
 
   TDropListClass& Add(LinkClass& object) override;
   TDropListClass& Add_Tail(LinkClass& object) override;
@@ -250,7 +254,7 @@ void TDropListClass<T>::Set_Selected_Index(int index) {
     List.Set_Selected_Index(index);
     port::SafeCopy(String.first(base::ToSize(MaxLength)), List.Get_Item(Current_Index())->Description());
   } else {
-    String[0] = '\0';
+    base::At(String, 0) = '\0';
   }
 }
 

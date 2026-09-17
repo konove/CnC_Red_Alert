@@ -217,7 +217,7 @@ bool SmudgeClass::Mark(MarkType mark) {
       for (int h = 0; h < Class->Height; h++) {
         const CELL newcell = static_cast<CELL>(origin + w + (h * MAP_CELL_W));
         if (Map.In_Radar(newcell)) {
-          CellClass* cell = &Map[newcell];
+          CellClass* cell = &Map.at(newcell);
 
           if (Class->IsBib) {
             cell->Smudge = Class->Type;
@@ -312,8 +312,8 @@ void SmudgeClass::Read_INI(char* buffer) {
           data = tech::ParseInteger<int>(ptr).value_or(0);
         }
         new SmudgeClass(smudge, Cell_Coord(cell));
-        if (Map[cell].Smudge == smudge && data) {
-          Map[cell].SmudgeData = static_cast<unsigned char>(data);
+        if (Map.at(cell).Smudge == smudge && data) {
+          Map.at(cell).SmudgeData = static_cast<unsigned char>(data);
         }
       }
     }
@@ -359,7 +359,7 @@ void SmudgeClass::Write_INI(std::span<char> buffer) {
   **	Find all templates and write them to the file.
   */
   for (CELL index = 0; index < MAP_CELL_TOTAL; index++) {
-    CellClass* ptr = &Map[index];
+    CellClass* ptr = &Map.at(index);
     if (ptr->Smudge != SMUDGE_NONE) {
       const SmudgeTypeClass* stype =
           &SmudgeTypeClass::As_Reference(ptr->Smudge);
@@ -395,7 +395,7 @@ void SmudgeClass::Disown(CELL cell) {
   if (Class->IsBib) {
     for (int w = 0; w < Class->Width; w++) {
       for (int h = 0; h < Class->Height; h++) {
-        CellClass& cellptr = Map[cell + w + (h * MAP_CELL_W)];
+        CellClass& cellptr = Map.at(cell + w + (h * MAP_CELL_W));
 
         if (cellptr.Overlay == OVERLAY_NONE ||
             !OverlayTypeClass::As_Reference(cellptr.Overlay).IsWall) {

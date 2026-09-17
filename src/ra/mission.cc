@@ -409,7 +409,7 @@ void MissionClass::Assign_Mission(MissionType order) {
 MissionType MissionClass::Mission_From_Name(const char* name) {
   if (name) {
     for (const MissionType order : magic_enum::enum_values<MissionType>()) {
-      if (port::CompareIgnoreCase(Missions[order], name) == 0) {
+      if (port::CompareIgnoreCase(Missions.at(order), name) == 0) {
         return order;
       }
     }
@@ -435,7 +435,7 @@ MissionType MissionClass::Mission_From_Name(const char* name) {
  *=============================================================================================*/
 const char* MissionClass::Mission_Name(MissionType mission) {
   if (mission != MISSION_NONE) {
-    return Missions[mission];
+    return Missions.at(mission);
   }
   return "None";
 }
@@ -512,7 +512,7 @@ bool MissionClass::Is_Recruitable_Mission(MissionType mission) {
   if (mission == MISSION_NONE) {
     return true;
   }
-  return MissionControl[mission].IsRecruitable;
+  return MissionControl.at(mission).IsRecruitable;
 }
 
 MissionControlClass::MissionControlClass()
@@ -522,7 +522,7 @@ const char* MissionControlClass::Name() const {
   if (Mission == MISSION_NONE) {
     return "<none>";
   }
-  return Missions[Mission];
+  return Missions.at(Mission);
 }
 
 bool MissionControlClass::Read_INI(CCINIClass& ini) {

@@ -328,7 +328,7 @@ void SerializeObjectList(Archive& ar, DynamicVectorClass<ObjectClass*>& objects)
     ObjectClass* object = nullptr;
     TARGET target = kTargetNone;
     if constexpr (!Archive::kIsReading) {
-      object = objects[i];
+      object = objects.at(i);
       if (object != nullptr && object->IsActive) {
         target = object->As_Target();
       }

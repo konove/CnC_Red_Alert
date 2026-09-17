@@ -143,7 +143,6 @@
 #include "ra/inline.h"
 #include "ra/jshell.h"
 #include "ra/logic.h"
-#include "ra/map.h"
 #include "ra/mapedit.h"
 #include "ra/monoc.h"
 #include "ra/radio.h"
@@ -155,7 +154,6 @@
 #include "ra/trigger.h"
 #include "ra/trigtype.h"
 #include "ra/type.h"
-#include "ra/vector.h"
 #include "ra/vector_dynamic.h"
 #include "sdllib/ww_win.h"
 #include "sdllib/wwstd.h"
@@ -1109,7 +1107,7 @@ bool ObjectClass::Select() {
   if (CurrentObject.Count() > 0) {
     const HouseClass* tryhptr = HouseClass::As_Pointer(Owner());
     const HouseClass* oldhptr =
-        HouseClass::As_Pointer(CurrentObject[0]->Owner());
+        HouseClass::As_Pointer(CurrentObject.at(0)->Owner());
     //		if (Owner() != CurrentObject[0]->Owner() ||
     // CurrentObject[0]->Owner() != PlayerPtr->Class->House) {
     if (oldhptr->IsPlayerControl != tryhptr->IsPlayerControl ||
@@ -1174,7 +1172,7 @@ bool ObjectClass::Render(bool forced)  // const
         */
         if (MapEditorActive && Trigger.Is_Valid()) {
           Fancy_Text_Print(Trigger->Class->IniName, x + static_cast<int>(WinX),
-                           y, &ColorRemaps[PCOLOR_RED], kTBlack,
+                           y, &ColorRemaps.at(PCOLOR_RED), kTBlack,
                            TPF_CENTER | TPF_NOSHADOW | TPF_6POINT);
         }
       }
@@ -1695,7 +1693,7 @@ bool ObjectClass::Mark(MarkType mark) {
     if (mark == MARK_DOWN && !IsDown) {
       if (tech && Session.Type == GAME_NORMAL &&
           In_Which_Layer() == LAYER_GROUND) {
-        Map[cell].Adjust_Threat(house, threat);
+        Map.at(cell).Adjust_Threat(house, threat);
       }
       IsDown = true;
       Mark_For_Redraw();
@@ -1709,7 +1707,7 @@ bool ObjectClass::Mark(MarkType mark) {
     if (mark == MARK_UP && IsDown) {
       if (tech && Session.Type == GAME_NORMAL &&
           In_Which_Layer() == LAYER_GROUND) {
-        Map[cell].Adjust_Threat(house, -threat);
+        Map.at(cell).Adjust_Threat(house, -threat);
       }
       IsDown = false;
       return true;

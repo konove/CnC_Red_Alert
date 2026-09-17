@@ -279,7 +279,7 @@ AircraftType AircraftTypeClass::From_Name(const char* name) {
   if (name) {
     for (AircraftType classid = AIRCRAFT_TRANSPORT; classid < AIRCRAFT_COUNT;
          classid++) {
-      if (port::CompareIgnoreCase(Pointers[classid]->IniName, name) == 0) {
+      if (port::CompareIgnoreCase(Pointers.at(classid)->IniName, name) == 0) {
         return classid;
       }
     }
@@ -409,7 +409,7 @@ void AircraftTypeClass::Init(TheaterType theater) {
       const auto filename = std::string(uclass.IniName).substr(0, 4) + "ICNH";
 
       const auto fullname = std::filesystem::path(filename)
-                                .replace_extension(Theaters[theater].Suffix)
+                                .replace_extension(Theaters.at(theater).Suffix)
                                 .string();
 
       const auto cameo_ptr = MixArchive::RetrieveData(fullname);

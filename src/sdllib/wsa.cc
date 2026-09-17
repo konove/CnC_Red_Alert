@@ -1,5 +1,3 @@
-#include "base/flags.h"
-
 #include "sdllib/wsa.h"
 
 #include <algorithm>
@@ -12,7 +10,9 @@
 #include <utility>
 
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "base/buffer.h"
+#include "base/flags.h"
 #include "base/numeric.h"
 #include "base/types.h"
 #include "port/aligned_buffer.h"
@@ -590,9 +590,9 @@ void DecodeDelta(std::span<uint8_t> target, std::span<const std::byte> delta,
         if (delta.size() < 2) {
           return;
         }
-        const auto code =
-            static_cast<uint16_t>(std::to_integer<uint8_t>(delta[0]) |
-                                  (std::to_integer<uint32_t>(delta[1]) << 8));
+        const auto code = static_cast<uint16_t>(
+            std::to_integer<uint8_t>(base::At(delta, 0)) |
+            (std::to_integer<uint32_t>(base::At(delta, 1)) << 8));
         delta = delta.subspan(2);
         if (code == 0) {
           return;
@@ -619,10 +619,10 @@ void DecodeDelta(std::span<uint8_t> target, std::span<const std::byte> delta,
       return;
     }
     for (size_t i = 0; i < count; ++i) {
-      const auto value = std::to_integer<uint8_t>(delta[run ? 0 : i]);
+      const auto value = std::to_integer<uint8_t>(base::At(delta, run ? 0 : i));
       const auto offset = ((pixel / width) * stride) + (pixel % width);
-      target[offset] =
-          copy ? value : static_cast<uint8_t>(target[offset] ^ value);
+      base::At(target, offset) =
+          copy ? value : static_cast<uint8_t>(base::At(target, offset) ^ value);
       ++pixel;
     }
     delta = delta.subspan(run ? 1 : count);

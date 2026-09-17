@@ -8,6 +8,7 @@
 #include <optional>
 #include <span>
 
+#include "base/array.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/types.h"
@@ -29,8 +30,9 @@ constexpr base::ssize kMaxColors = kPaletteSize;
 
 std::uint16_t ReadU16(std::span<const std::uint8_t> data, base::ssize offset) {
   return static_cast<std::uint16_t>(
-      static_cast<unsigned>(data[static_cast<std::size_t>(offset)]) |
-      (static_cast<unsigned>(data[static_cast<std::size_t>(offset) + 1])
+      static_cast<unsigned>(base::At(data, static_cast<std::size_t>(offset))) |
+      (static_cast<unsigned>(
+           base::At(data, static_cast<std::size_t>(offset) + 1))
        << 8U));
 }
 
@@ -38,7 +40,7 @@ std::uint32_t ReadU32(std::span<const std::uint8_t> data, base::ssize offset) {
   std::uint32_t value = 0;
   for (base::ssize i = 3; i >= 0; --i) {
     value <<= 8U;
-    value |= data[static_cast<std::size_t>(offset + i)];
+    value |= base::At(data, static_cast<std::size_t>(offset + i));
   }
   return value;
 }
@@ -131,7 +133,7 @@ void RemapToPalette(Image& image, std::span<const Color> target) {
     base::ssize best = 0;
     int best_difference = std::numeric_limits<int>::max();
     for (base::ssize i = 0; i < std::ssize(target); ++i) {
-      const auto& entry = target[base::ToSize(i)];
+      const auto& entry = base::At(target, base::ToSize(i));
       const int difference = std::abs(red - entry.red) +
                              std::abs(green - entry.green) +
                              std::abs(blue - entry.blue);
@@ -147,13 +149,14 @@ void RemapToPalette(Image& image, std::span<const Color> target) {
   };
 
   std::array<std::uint8_t, kMaxColors> mapping{};
-  mapping[0] = nearest(Color{});
+  mapping.at(0) = nearest(Color{});
   for (base::ssize i = 1; i < std::ssize(image.Colors()); ++i) {
-    mapping[base::ToSize(i)] = nearest(image.Colors()[base::ToSize(i)]);
+    mapping.at(base::ToSize(i)) =
+        nearest(base::At(image.Colors(), base::ToSize(i)));
   }
 
   for (std::uint8_t& pixel : image.MutableBits()) {
-    pixel = mapping[pixel];
+    pixel = mapping.at(pixel);
   }
 }
 

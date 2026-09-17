@@ -191,7 +191,7 @@ int CellClass::Cell_Color(bool override) const {
   if (override) {
     return kTBlack;
   }
-  return Ground[Land_Type()].Color;
+  return Ground.at(Land_Type()).Color;
 }
 
 /***********************************************************************************************
@@ -470,7 +470,7 @@ bool CellClass::Is_Generally_Clear() const {
   }
 #endif
 
-  return Ground[Land_Type()].Build;
+  return Ground.at(Land_Type()).Build;
 }
 
 /***********************************************************************************************
@@ -953,12 +953,13 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
         **	Set up the remap table for this icon.
         */
         if (Debug_Map && Debug_Passable) {
-          if (::Ground[Land].Cost[SPEED_FOOT] == 0 ||
+          if (::Ground.at(Land).Cost.at(SPEED_FOOT) == 0 ||
               (Cell_Occupier() != nullptr &&
                Cell_Occupier()->What_Am_I() != RTTI_INFANTRY)) {  // impassable
             remap = MapEditClass::FadingRed;
           } else {
-            if (::Ground[Land].Cost[SPEED_FOOT] > 0x70) {  // pretty passable
+            if (::Ground.at(Land).Cost.at(SPEED_FOOT) >
+                0x70) {  // pretty passable
               remap = MapEditClass::FadingGreen;
             } else {
               remap = MapEditClass::FadingYellow;  // moderately passable
@@ -1624,7 +1625,7 @@ bool CellClass::Reduce_Wall(int damage) {
 TriggerClass* CellClass::Get_Trigger() const {
   Validate();
   if (IsTrigger) {
-    return CellTriggers[Cell_Number()];
+    return CellTriggers.at(Cell_Number());
   }
   return nullptr;
 }
@@ -1838,11 +1839,11 @@ int CellClass::Adjacent_Offset(FacingType face) const {
   // The original formed the pointer first and tested its cell number against
   // 0xF000. Check the index instead: pointer arithmetic that leaves the cell
   // array is undefined even if the result is never dereferenced.
-  const int adjacent = Cell_Number() + AdjacentCell[face];
+  const int adjacent = Cell_Number() + AdjacentCell.at(face);
   if (adjacent < 0 || adjacent >= MAP_CELL_TOTAL) {
     return 0;
   }
-  return AdjacentCell[face];
+  return AdjacentCell.at(face);
 }
 
 /***************************************************************************
@@ -2094,16 +2095,17 @@ bool CellClass::Goodie_Check(FootClass* object) {
           new AnimClass(ANIM_CRATE_EMPULSE, Cell_Coord());
           if (object->House == PlayerPtr) {
             for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
-              CellClass* cellptr = &Map[cell];
+              CellClass* cellptr = &Map.at(cell);
               if (cellptr->IsMapped || cellptr->IsVisible) {
                 cellptr->Redraw_Objects();
                 cellptr->IsMapped = false;
                 cellptr->IsVisible = false;
               }
             }
-            for (int j = 0; j < MouseClass::Layer[LAYER_GROUND].Count();
+            for (int j = 0; j < MouseClass::Layer.at(LAYER_GROUND).Count();
                  j++) {
-              ObjectClass* layer_object = MouseClass::Layer[LAYER_GROUND][j];
+              ObjectClass* layer_object =
+                  MouseClass::Layer.at(LAYER_GROUND).at(j);
               if (layer_object && layer_object->Is_Techno() &&
                   dynamic_cast<TechnoClass*>(layer_object)->House == PlayerPtr) {
                 layer_object->Look();
@@ -2293,9 +2295,9 @@ bool CellClass::Goodie_Check(FootClass* object) {
         */
         case kCloak:
           new AnimClass(ANIM_CRATE_STEALTH, Cell_Coord());
-          for (int index = 0; index < MouseClass::Layer[LAYER_GROUND].Count();
-               index++) {
-            ObjectClass* obj = MouseClass::Layer[LAYER_GROUND][index];
+          for (int index = 0;
+               index < MouseClass::Layer.at(LAYER_GROUND).Count(); index++) {
+            ObjectClass* obj = MouseClass::Layer.at(LAYER_GROUND).at(index);
 
             if (obj && obj->Is_Techno() &&
                 Distance(Cell_Coord(), obj->Center_Coord()) < 0x0300) {
@@ -2310,7 +2312,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
         case kHealBase:
           new AnimClass(ANIM_CRATE_INVUN, Cell_Coord());
           for (int index = 0; index < Logic.Count(); index++) {
-            ObjectClass* obj = Logic[index];
+            ObjectClass* obj = Logic.at(index);
 
             if (obj && object->Is_Techno() &&
                 object->House->Class->House == obj->Owner()) {
@@ -2457,10 +2459,10 @@ CELL CellClass::Cell_Number() const { return static_cast<CELL>(Map.ID(this)); }
 
 CellClass& CellClass::Adjacent_Cell(FacingType face) {
   const int offset = Adjacent_Offset(face);
-  return offset == 0 ? *this : Map[Cell_Number() + offset];
+  return offset == 0 ? *this : Map.at(Cell_Number() + offset);
 }
 
 const CellClass& CellClass::Adjacent_Cell(FacingType face) const {
   const int offset = Adjacent_Offset(face);
-  return offset == 0 ? *this : Map[Cell_Number() + offset];
+  return offset == 0 ? *this : Map.at(Cell_Number() + offset);
 }

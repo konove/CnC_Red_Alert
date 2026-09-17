@@ -43,6 +43,7 @@
 #include <span>
 
 #include "absl/base/attributes.h"
+#include "base/array.h"
 #include "base/buffer.h"
 
 //////////////////////////////////////// Defines
@@ -116,7 +117,9 @@ class FontView {
 
  private:
   static uint8_t Byte(std::span<const std::byte> data, size_t offset) {
-    return offset < data.size() ? std::to_integer<uint8_t>(data[offset]) : 0;
+    return offset < data.size()
+               ? std::to_integer<uint8_t>(base::At(data, offset))
+               : 0;
   }
   static uint16_t ReadWord(std::span<const std::byte> data, size_t offset) {
     if (offset > data.size() || data.size() - offset < sizeof(uint16_t)) {

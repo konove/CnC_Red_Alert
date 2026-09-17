@@ -68,7 +68,6 @@
 #include "ra/palette.h"
 #include "ra/session.h"
 #include "ra/textbtn.h"
-#include "ra/vector.h"
 #include "sdllib/file_access.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
@@ -634,7 +633,7 @@ bool Send_Remote_File(const char* file_name, int gametype) {
     for (int i = 0; i < Session.RequestCount; i++) {
       Ipx.Send_Global_Message(
           base::ObjectBytes(net_file_info), sizeof(GlobalPacketType), 1,
-          &Session.Players[base::At(Session.ScenarioRequests, i)]->Address);
+          &Session.Players.at(base::At(Session.ScenarioRequests, i))->Address);
     }
 
     while (Ipx.Global_Num_Send() > 0 && response_timer.HasTimeLeft()) {
@@ -756,7 +755,7 @@ bool Send_Remote_File(const char* file_name, int gametype) {
             for (int i = 0; i < Session.RequestCount; i++) {
               Ipx.Send_Global_Message(
                   base::ObjectBytes(send_packet), sizeof(send_packet), 1,
-                  &Session.Players[base::At(Session.ScenarioRequests, i)]
+                  &Session.Players.at(base::At(Session.ScenarioRequests, i))
                        ->Address);
             }
           }

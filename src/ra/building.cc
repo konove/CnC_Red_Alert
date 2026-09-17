@@ -166,7 +166,6 @@
 #include "ra/infantry.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
-#include "ra/map.h"
 #include "ra/mapedit.h"
 #include "ra/mission.h"
 #include "ra/monoc.h"
@@ -967,8 +966,8 @@ int BuildingClass::Shape_Number() const {
     **	from the end to the beginning. Reverse the shape number accordingly.
     */
     if (Mission == MISSION_DECONSTRUCTION) {
-      shapenum = Class->Anims[BState].Start + Class->Anims[BState].Count - 1 -
-                 shapenum;
+      shapenum = Class->Anims.at(BState).Start + Class->Anims.at(BState).Count -
+                 1 - shapenum;
     }
 
   } else {
@@ -1054,16 +1053,16 @@ int BuildingClass::Shape_Number() const {
           **	building.
           */
           if (Health_Ratio() <= Rule.ConditionYellow) {
-            const int last1 = Class->Anims[BSTATE_IDLE].Start +
-                              Class->Anims[BSTATE_IDLE].Count;
-            int last2 = Class->Anims[BSTATE_ACTIVE].Start +
-                        Class->Anims[BSTATE_ACTIVE].Count;
+            const int last1 = Class->Anims.at(BSTATE_IDLE).Start +
+                              Class->Anims.at(BSTATE_IDLE).Count;
+            int last2 = Class->Anims.at(BSTATE_ACTIVE).Start +
+                        Class->Anims.at(BSTATE_ACTIVE).Count;
             int largest = std::max(last1, last2);
-            last2 = Class->Anims[BSTATE_AUX1].Start +
-                    Class->Anims[BSTATE_AUX1].Count;
+            last2 = Class->Anims.at(BSTATE_AUX1).Start +
+                    Class->Anims.at(BSTATE_AUX1).Count;
             largest = std::max(largest, last2);
-            last2 = Class->Anims[BSTATE_AUX2].Start +
-                    Class->Anims[BSTATE_AUX2].Count;
+            last2 = Class->Anims.at(BSTATE_AUX2).Start +
+                    Class->Anims.at(BSTATE_AUX2).Count;
             largest = std::max(largest, last2);
             shapenum += largest;
           }
@@ -1633,7 +1632,7 @@ bool BuildingClass::Unlimbo(COORDINATE coord, DirType dir) {
         ObjectClass* o =
             OverlayTypeClass::As_Reference(otype).Create_One_Of(House);
         if (o && o->Unlimbo(coord)) {
-          Map[coord].Owner = House->Class->House;
+          Map.at(coord).Owner = House->Class->House;
           Transmit_Message(RADIO_OVER_OUT);
           Map.Sight_From(Coord_Cell(coord), Class->SightRange, House);
           delete this;
@@ -1671,7 +1670,7 @@ bool BuildingClass::Unlimbo(COORDINATE coord, DirType dir) {
     House->IsRecalcNeeded = true;
     LastStrength = 0;
 
-    if ((!IsDiscoveredByPlayer && Map[coord].IsVisible) ||
+    if ((!IsDiscoveredByPlayer && Map.at(coord).IsVisible) ||
         Session.Type != GAME_NORMAL) {
       Revealed(PlayerPtr);
     }
@@ -2214,7 +2213,7 @@ void BuildingClass::Drop_Debris(TARGET source) {
   int count = How_Many_Survivors();
   while (offset.front() != kRefreshEol) {
     CELL const newcell = static_cast<CELL>(cell + base::ConsumeFront(offset));
-    const CellClass* cellptr = &Map[newcell];
+    const CellClass* cellptr = &Map.at(newcell);
 
     /*
     **	Infantry could run out of a destroyed building.
@@ -3553,7 +3552,7 @@ COORDINATE BuildingClass::Center_Coord() const {
   assert(Buildings.ID(this) == ID);
   assert(IsActive);
 
-  return Coord_Add(Coord, CenterOffset[Class->Size]);
+  return Coord_Add(Coord, CenterOffset.at(Class->Size));
 }
 
 /***********************************************************************************************
@@ -3940,11 +3939,11 @@ MoveType BuildingClass::Can_Enter_Cell(CELL cell, FacingType /*unused*/) const {
   assert(IsActive);
 
   if (*this == STRUCT_CONST && IsDown) {
-    return Map[cell].Is_Clear_To_Build(Class->Speed) ? MOVE_OK : MOVE_NO;
+    return Map.at(cell).Is_Clear_To_Build(Class->Speed) ? MOVE_OK : MOVE_NO;
   }
 
   if (!MapEditorActive && ScenarioInit == 0 && Session.Type == GAME_NORMAL &&
-      House->IsPlayerControl && !Map[cell].IsMapped) {
+      House->IsPlayerControl && !Map.at(cell).IsMapped) {
     return MOVE_NO;
   }
 
@@ -4066,11 +4065,11 @@ int BuildingClass::Mission_Guard() {
     }
 
     if (*this == STRUCT_REPAIR) {
-      return MissionControl[Mission].Normal_Delay() + Random_Pick(0, 2);
+      return MissionControl.at(Mission).Normal_Delay() + Random_Pick(0, 2);
     }
-    return (MissionControl[Mission].Normal_Delay() * 3) + Random_Pick(0, 2);
+    return (MissionControl.at(Mission).Normal_Delay() * 3) + Random_Pick(0, 2);
   }
-  return MissionControl[Mission].AA_Delay() + Random_Pick(0, 2);
+  return MissionControl.at(Mission).AA_Delay() + Random_Pick(0, 2);
 }
 
 /***********************************************************************************************
@@ -4231,7 +4230,7 @@ int BuildingClass::Mission_Deconstruction() {
             if (infantry != nullptr) {
               ScenarioInit++;
               COORDINATE coord = Coord_Add(Center_Coord(), XYP_COORD(0, -12));
-              coord = Map[coord].Closest_Free_Spot(coord, false);
+              coord = Map.at(coord).Closest_Free_Spot(coord, false);
 
               if (infantry->Unlimbo(coord, DIR_N)) {
                 if (infantry->Class->IsNominal) {
@@ -4432,7 +4431,7 @@ int BuildingClass::Mission_Attack() {
       default:
         break;
     }
-    return MissionControl[Mission].AA_Delay() + Random_Pick(0, 2);
+    return MissionControl.at(Mission).AA_Delay() + Random_Pick(0, 2);
   }
 
   if (!Target_Legal(TarCom)) {
@@ -4524,8 +4523,8 @@ int BuildingClass::Mission_Harvest() {
         /*
         **	Force any bib squatters to scatter.
         */
-        Map[Adjacent_Cell(Coord_Cell(Center_Coord()), DIR_S)].Incoming(0, true,
-                                                                       true);
+        Map.at(Adjacent_Cell(Coord_Cell(Center_Coord()), DIR_S))
+            .Incoming(0, true, true);
 
         FootClass* techno = Attached_Object();
         if (techno) {
@@ -4777,7 +4776,7 @@ int BuildingClass::Mission_Repair() {
       default:
         break;
     }
-    return MissionControl[Mission].Normal_Delay();
+    return MissionControl.at(Mission).Normal_Delay();
   }
 
   if (*this == STRUCT_HELIPAD || *this == STRUCT_AIRSTRIP) {
@@ -5011,7 +5010,7 @@ int BuildingClass::Mission_Missile() {
         break;
     }
   }
-  return MissionControl[Mission].Normal_Delay();
+  return MissionControl.at(Mission).Normal_Delay();
 }
 
 /***********************************************************************************************
@@ -5192,9 +5191,10 @@ int BuildingClass::Mission_Unload() {
   assert(IsActive);
 
   if (*this == STRUCT_WEAP) {
-    const CELL cell = static_cast<CELL>(Coord_Cell(Coord) + Class->ExitList[0]);
+    const CELL cell =
+        static_cast<CELL>(Coord_Cell(Coord) + base::At(Class->ExitList, 0));
     const COORDINATE coord = Cell_Coord(cell);
-    CellClass* cellptr = &Map[cell];
+    CellClass* cellptr = &Map.at(cell);
     constexpr int kInitial = 0;
     constexpr int kClearBib = 1;
     constexpr int kOpen = 2;
@@ -5297,7 +5297,7 @@ int BuildingClass::Mission_Unload() {
       default:
         break;
     }
-    return MissionControl[Mission].Normal_Delay() + Random_Pick(0, 2);
+    return MissionControl.at(Mission).Normal_Delay() + Random_Pick(0, 2);
   }
 
   Assign_Mission(MISSION_GUARD);

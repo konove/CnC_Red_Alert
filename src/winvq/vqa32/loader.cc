@@ -915,10 +915,10 @@ int32_t VQA_SeekFrame(VQAHandle* vqa, int32_t framenum, int32_t /*fromwhere*/) {
       frame = loader->CurFrame;
 
       for (int32_t i = framenum; i >= 0; i--) {
-        if (vqabuf->FoffStorage[base::ToSize(i)] & VQAFINF_PAL) {
+        if (vqabuf->FoffStorage.at(base::ToSize(i)) & VQAFINF_PAL) {
           /* Seek to the palette frame. */
           rc = vqap->io->Seek(static_cast<base::ssize>(VQAFRAME_OFFSET(
-                                  vqabuf->FoffStorage[base::ToSize(i)])),
+                                  vqabuf->FoffStorage.at(base::ToSize(i)))),
                               SeekOrigin::kBegin)
                    ? VQAERR_NONE
                    : VQAERR_SEEK;
@@ -969,7 +969,7 @@ int32_t VQA_SeekFrame(VQAHandle* vqa, int32_t framenum, int32_t /*fromwhere*/) {
        * the target frame.
        */
       if (vqap->io->Seek(static_cast<base::ssize>(VQAFRAME_OFFSET(
-                             vqabuf->FoffStorage[base::ToSize(group)])),
+                             vqabuf->FoffStorage.at(base::ToSize(group)))),
                          SeekOrigin::kBegin)) {
         /* Throw away any audio frames that were loaded. */
         if (config->OptionFlags & VQAOPTF_AUDIO && !audio->Buffer.empty()) {
@@ -982,7 +982,7 @@ int32_t VQA_SeekFrame(VQAHandle* vqa, int32_t framenum, int32_t /*fromwhere*/) {
 
           /* Mark 1/2 second of the audio buffer as loaded. */
           for (int32_t i = 0; i < audio->AudBufPos / config->HMIBufSize; i++) {
-            audio->IsLoadedStorage[base::ToSize(i)] = 1;
+            audio->IsLoadedStorage.at(base::ToSize(i)) = 1;
           }
         }
 
@@ -1146,11 +1146,11 @@ static VQAData* AllocBuffers(const VQAHeader* header, VQAConfig* config) {
   /* Set up the circular linked list */
   for (size_t i = 0; i < vqa->CBNodes.size(); i++) {
     const size_t next_idx = (i + 1) % vqa->CBNodes.size();
-    vqa->CBNodes[i]->Next = vqa->CBNodes[next_idx].get();
+    vqa->CBNodes.at(i)->Next = vqa->CBNodes.at(next_idx).get();
   }
 
   /* Install the Codebook list */
-  vqa->CBData = vqa->CBNodes[0].get();
+  vqa->CBData = vqa->CBNodes.at(0).get();
   vqa->Loader.CurCB = vqa->CBData;
   vqa->Loader.FullCB = vqa->CBData;
 
@@ -1181,11 +1181,11 @@ static VQAData* AllocBuffers(const VQAHeader* header, VQAConfig* config) {
   /* Set up the circular linked list */
   for (size_t i = 0; i < vqa->FrameNodes.size(); i++) {
     const size_t next_idx = (i + 1) % vqa->FrameNodes.size();
-    vqa->FrameNodes[i]->Next = vqa->FrameNodes[next_idx].get();
+    vqa->FrameNodes.at(i)->Next = vqa->FrameNodes.at(next_idx).get();
   }
 
   /* Install the Frame Buffer list */
-  vqa->FrameData = vqa->FrameNodes[0].get();
+  vqa->FrameData = vqa->FrameNodes.at(0).get();
   vqa->Loader.CurFrame = vqa->FrameData;
   vqa->Drawer.CurFrame = vqa->FrameData;
   vqa->Flipper.CurFrame = vqa->FrameData;
@@ -2100,7 +2100,7 @@ static int32_t Load_SND0(VQAHandle* vqap, int32_t iffsize) {
 
     /* Flag the audio frame flags as loaded for the initial audio frame. */
     for (int32_t i = 0; i < iffsize / config->HMIBufSize; i++) {
-      audio->IsLoadedStorage[base::ToSize(i)] = 1;
+      audio->IsLoadedStorage.at(base::ToSize(i)) = 1;
     }
 
     return 0;
@@ -2210,7 +2210,7 @@ static int32_t Load_SND1(VQAHandle* vqap, int32_t iffsize) {
     audio->AudBufPos += zap.UnCompSize;
 
     for (int32_t i = 0; i < zap.UnCompSize / config->HMIBufSize; i++) {
-      audio->IsLoadedStorage[base::ToSize(i)] = 1;
+      audio->IsLoadedStorage.at(base::ToSize(i)) = 1;
     }
 
     return 0;
@@ -2322,7 +2322,7 @@ static int32_t Load_SND2(VQAHandle* vqap, int32_t iffsize) {
     audio->AudBufPos += uncomp_size;
 
     for (int32_t i = 0; i < uncomp_size / config->HMIBufSize; i++) {
-      audio->IsLoadedStorage[base::ToSize(i)] = 1;
+      audio->IsLoadedStorage.at(base::ToSize(i)) = 1;
     }
 
     return 0;

@@ -4,6 +4,8 @@
 #include <cstddef>
 #include <span>
 
+#include "base/array.h"
+
 namespace {
 // Validate all dimensions before decoding; malformed blocks leave the remaining
 // destination untouched rather than reading beyond a truncated codebook.
@@ -27,8 +29,8 @@ void DecodeBlocks(std::span<const unsigned char> codebook,
   for (size_t row = 0; row < rows; ++row) {
     for (size_t col = 0; col < columns; ++col) {
       const auto entry = (row * columns) + col;
-      const auto value = pointers[entry];
-      const auto high = pointers[entries + entry];
+      const auto value = base::At(pointers, entry);
+      const auto high = base::At(pointers, entries + entry);
       const bool solid = high == (block_height == 2 ? 0x0f : 0xff);
       const auto code_offset =
           ((static_cast<size_t>(high) * 256) + value) * 4 * height;

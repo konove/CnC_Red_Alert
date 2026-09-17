@@ -431,9 +431,9 @@ void OptionsClass::Adjust_Palette(std::span<const unsigned char> oldpal,
       std::ranges::copy(oldpal.subspan(base::ToSize(index) * 3, 3),
                         newpal.subspan(base::ToSize(index) * 3).begin());
     } else {
-      unsigned r = oldpal[(base::ToSize(index) * 3) + 0];
-      unsigned g = oldpal[(base::ToSize(index) * 3) + 1];
-      unsigned b = oldpal[(base::ToSize(index) * 3) + 2];
+      unsigned r = base::At(oldpal, (base::ToSize(index) * 3) + 0);
+      unsigned g = base::At(oldpal, (base::ToSize(index) * 3) + 1);
+      unsigned b = base::At(oldpal, (base::ToSize(index) * 3) + 2);
       Convert_RGB_To_HSV(r, g, b, &h, &s, &v);
 
       /*
@@ -455,9 +455,12 @@ void OptionsClass::Adjust_Palette(std::span<const unsigned char> oldpal,
       temp = Bound(temp, 0, 0xFF);
       h = static_cast<unsigned>(temp);
       Convert_HSV_To_RGB(h, s, v, &r, &g, &b);
-      newpal[(base::ToSize(index) * 3) + 0] = static_cast<unsigned char>(r);
-      newpal[(base::ToSize(index) * 3) + 1] = static_cast<unsigned char>(g);
-      newpal[(base::ToSize(index) * 3) + 2] = static_cast<unsigned char>(b);
+      base::At(newpal, (base::ToSize(index) * 3) + 0) =
+          static_cast<unsigned char>(r);
+      base::At(newpal, (base::ToSize(index) * 3) + 1) =
+          static_cast<unsigned char>(g);
+      base::At(newpal, (base::ToSize(index) * 3) + 2) =
+          static_cast<unsigned char>(b);
     }
   }
 }

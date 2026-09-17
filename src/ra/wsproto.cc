@@ -78,7 +78,6 @@
 #include "ra/externs.h"
 #include "ra/ipxaddr.h"
 #include "ra/jshell.h"
-#include "ra/vector.h"
 #include "sdllib/net_select.h"
 
 #ifdef _WIN32
@@ -244,7 +243,7 @@ void WinsockInterfaceClass::Stop_Listening() {
 void WinsockInterfaceClass::Discard_In_Buffers() {
 
   while (InBuffers.Count()) {
-    WinsockBufferType* packet = InBuffers[0];
+    WinsockBufferType* packet = InBuffers.at(0);
     delete packet;
     InBuffers.Delete(0);
   }
@@ -267,7 +266,7 @@ void WinsockInterfaceClass::Discard_In_Buffers() {
 void WinsockInterfaceClass::Discard_Out_Buffers() {
 
   while (OutBuffers.Count()) {
-    WinsockBufferType* packet = OutBuffers[0];
+    WinsockBufferType* packet = OutBuffers.at(0);
     delete packet;
     OutBuffers.Delete(0);
   }
@@ -385,7 +384,7 @@ int WinsockInterfaceClass::Read(std::span<std::byte> buffer, int& buffer_len,
   ** Get the oldest packet for reading
   */
   const int packetnum = 0;
-  WinsockBufferType* packet = InBuffers[packetnum];
+  WinsockBufferType* packet = InBuffers.at(packetnum);
 
   assert(buffer_len >= packet->BufferLen);
   assert(std::cmp_greater_equal(address_len, sizeof(packet->Address)));

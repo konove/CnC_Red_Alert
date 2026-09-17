@@ -375,7 +375,7 @@ bool Load_Game(int id) {
   for (int j = 0; j < Triggers.Count(); j++) {
     TriggerClass* trig = Triggers.Ptr(j);
     if (trig->House != HOUSE_NONE) {
-      HouseTriggers[trig->House].Add(trig);
+      HouseTriggers.at(trig->House).Add(trig);
     }
   }
 

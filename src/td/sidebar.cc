@@ -1208,7 +1208,7 @@ void SidebarClass::StripClass::Init_Theater(TheaterType theater) {
       filename = std::string(base::At(_file, lp)) + "ICON";
     }
     const auto fullname = std::filesystem::path(filename)
-                              .replace_extension(Theaters[theater].Suffix)
+                              .replace_extension(Theaters.at(theater).Suffix)
                               .string();
     const auto cameo_ptr = MixArchive::RetrieveData(fullname);
     if (!cameo_ptr.empty()) {

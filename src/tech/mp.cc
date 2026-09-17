@@ -171,13 +171,13 @@ int XMP_DER_Length_Encode(uint32_t length, DigitCursor<unsigned char> output) {
   int header_length = 0;
 
   if (length <= SCHAR_MAX) {
-    output[header_length++] = static_cast<unsigned char>(length);
+    output.at(header_length++) = static_cast<unsigned char>(length);
   } else {
-    output[header_length++] =
+    output.at(header_length++) =
         static_cast<unsigned char>(Byte_Precision(length) + 0x80);
     for (int byte_counter = Byte_Precision(length); byte_counter;
          --byte_counter) {
-      output[header_length++] = static_cast<unsigned char>(
+      output.at(header_length++) = static_cast<unsigned char>(
           length >> (8U * static_cast<unsigned>(byte_counter - 1)));
     }
   }
@@ -216,7 +216,7 @@ int XMP_DER_Encode(DigitCursor<const uint32_t> from,
 
   const int number_count = XMP_Encode(buffer, from, precision);
 
-  output[header_count++] = 0x02;
+  output.at(header_count++) = 0x02;
   header_count += XMP_DER_Length_Encode(static_cast<uint32_t>(number_count),
                                         output + header_count);
   base::CopyBytes((output + header_count).bytes(), base::ObjectBytes(buffer),
@@ -248,11 +248,11 @@ int XMP_DER_Encode(DigitCursor<const uint32_t> from,
 void XMP_DER_Decode(DigitCursor<uint32_t> result,
                     DigitCursor<const unsigned char> input, int precision) {
   const auto bytes = input.bytes();
-  if (bytes.size() < 2 || bytes[0] != std::byte{2}) {
+  if (bytes.size() < 2 || base::At(bytes, 0) != std::byte{2}) {
     return;
   }
   std::size_t offset = 2;
-  std::size_t count = std::to_integer<unsigned char>(bytes[1]);
+  std::size_t count = std::to_integer<unsigned char>(base::At(bytes, 1));
   if (count & 0x80) {
     const auto length_bytes = count & 0x7f;
     if (length_bytes == 0 || length_bytes > 2 ||
@@ -261,7 +261,8 @@ void XMP_DER_Decode(DigitCursor<uint32_t> result,
     }
     count = 0;
     for (std::size_t i = 0; i < length_bytes; ++i) {
-      count = (count * 256) + std::to_integer<unsigned char>(bytes[offset++]);
+      count = (count * 256) +
+              std::to_integer<unsigned char>(base::At(bytes, offset++));
     }
   }
   if (count == 0 || count > bytes.size() - offset ||
@@ -320,7 +321,7 @@ unsigned XMP_Encode(DigitCursor<unsigned char> to, unsigned tobytes,
   const std::span<const std::byte> bytes =
       from.bytes().first(base::ToSize(precision) * sizeof(uint32_t));
   for (unsigned index = copied; index > 0; index--) {
-    *to++ = static_cast<unsigned char>(bytes[index - 1]);
+    *to++ = static_cast<unsigned char>(base::At(bytes, index - 1));
   }
 
   return tobytes;
@@ -368,13 +369,13 @@ int XMP_Encode(DigitCursor<unsigned char> to, DigitCursor<const uint32_t> from,
   int index = 0;
   if ((*number_ptr & 0x80 && !is_negative) ||
       (!(*number_ptr & 0x80) && is_negative)) {
-    to[index++] = filler;
+    to.at(index++) = filler;
   }
 
-  to[index++] = *number_ptr;
+  to.at(index++) = *number_ptr;
 
   while (number_ptr != end) {
-    to[index++] = *--number_ptr;
+    to.at(index++) = *--number_ptr;
   }
   return index;
 }
@@ -1754,7 +1755,8 @@ void XMP_Decode_ASCII(std::string_view text, DigitCursor<uint32_t> mpn,
   }
 
   uint16_t radix = 0;            /* base 2-16 */
-  switch (toupper(str[i - 1])) { /* classify radix select suffix character */
+  switch (toupper(text.at(
+      base::ToSize(i - 1)))) { /* classify radix select suffix character */
     case '.':
       radix = 10;
       break;
@@ -2152,22 +2154,23 @@ uint16_t mp_quo_digit(DigitCursor<const uint16_t> dividend) {
    * The last terms of q1 and q2 perform upward rounding, which is
    * needed to guarantee that the result not be too small.
    */
-  uint64_t q1 = ((dividend[-2] ^ kSemiMask) *
+  uint64_t q1 = ((dividend.at(-2) ^ kSemiMask) *
                  static_cast<uint64_t>(reciprical_high_digit)) +
                 reciprical_high_digit;
-  uint64_t q2 = ((dividend[-1] ^ kSemiMask) *
+  uint64_t q2 = ((dividend.at(-1) ^ kSemiMask) *
                  static_cast<uint64_t>(reciprical_low_digit)) +
                 (1L << 16);
   const uint64_t q0 = (q1 >> 1) + (q2 >> 1) + 1;
 
   /*      Compute the middle significant product group.   */
-  q1 =
-      (dividend[-1] ^ kSemiMask) * static_cast<uint64_t>(reciprical_high_digit);
-  q2 = (dividend[0] ^ kSemiMask) * static_cast<uint64_t>(reciprical_low_digit);
+  q1 = (dividend.at(-1) ^ kSemiMask) *
+       static_cast<uint64_t>(reciprical_high_digit);
+  q2 = (dividend.at(0) ^ kSemiMask) *
+       static_cast<uint64_t>(reciprical_low_digit);
   uint64_t q = (q0 >> 16) + (q1 >> 1) + (q2 >> 1) + 1;
 
   /*      Compute the most significant term and add in the others */
-  q = (q >> 14) + (((dividend[0] ^ kSemiMask) *
+  q = (q >> 14) + (((dividend.at(0) ^ kSemiMask) *
                     static_cast<uint64_t>(reciprical_high_digit))
                    << 1);
   q >>= static_cast<unsigned>(modulus_shift);

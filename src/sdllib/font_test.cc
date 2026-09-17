@@ -30,8 +30,8 @@ std::vector<uint8_t> MakeTestFont() {
 
   // Header.
   WriteWord(blob, 0, 64);   // size
-  blob[2] = 0;              // compression
-  blob[3] = 5;              // num_blocks
+  blob.at(2) = 0;           // compression
+  blob.at(3) = 5;           // num_blocks
   WriteWord(blob, 4, 14);   // info_block
   WriteWord(blob, 6, 20);   // offset_block
   WriteWord(blob, 8, 24);   // width_block
@@ -39,24 +39,24 @@ std::vector<uint8_t> MakeTestFont() {
   WriteWord(blob, 12, 27);  // height_block
 
   // Info block: max glyph height 8, max glyph width 5.
-  blob[14 + kFontInfoMaxHeight] = 8;
-  blob[14 + kFontInfoMaxWidth] = 5;
+  blob.at(14 + kFontInfoMaxHeight) = 8;
+  blob.at(14 + kFontInfoMaxWidth) = 5;
 
   // Offset table: glyph 0 data at 31, glyph 1 data at 35.
   WriteWord(blob, 20, 31);
   WriteWord(blob, 22, 35);
 
   // Width table.
-  blob[24] = 3;
-  blob[25] = 4;
+  blob.at(24) = 3;
+  blob.at(25) = 4;
 
   // Height table (unaligned): packed as (drawn rows << 8) | blank rows above.
   WriteWord(blob, 27, (6 * 256) + 2);  // glyph 0: 6 rows drawn, 2 blank above
   WriteWord(blob, 29, (8 * 256) + 0);  // glyph 1: 8 rows drawn, 0 blank above
 
   // Glyph data: arbitrary marker bytes.
-  blob[31] = 0xAB;
-  blob[35] = 0xCD;
+  blob.at(31) = 0xAB;
+  blob.at(35) = 0xCD;
 
   return blob;
 }

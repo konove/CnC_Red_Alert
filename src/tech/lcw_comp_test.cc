@@ -71,7 +71,7 @@ std::vector<uint8_t> Repeats(int size) {
   std::vector<uint8_t> bytes;
   for (int copy = 0; std::ssize(bytes) < size; ++copy) {
     bytes.insert(bytes.end(), pattern.begin(), pattern.end());
-    bytes[bytes.size() - 1 - static_cast<std::size_t>(copy % 3000)] ^= 0x5a;
+    bytes.at(bytes.size() - 1 - static_cast<std::size_t>(copy % 3000)) ^= 0x5a;
   }
   bytes.resize(static_cast<std::size_t>(size));
   return bytes;
@@ -105,7 +105,7 @@ void ExpectRoundTrip(const std::vector<uint8_t>& plain) {
 TEST(LcwCompTest, EmptyInputIsJustTheEndMarker) {
   std::vector<uint8_t> packed(1);
   EXPECT_EQ(LCW_Comp({}, std::as_writable_bytes(std::span(packed))), 1);
-  EXPECT_EQ(packed[0], 0x80);
+  EXPECT_EQ(packed.at(0), 0x80);
 }
 
 TEST(LcwCompTest, RoundTripsSingleByte) { ExpectRoundTrip({42}); }
@@ -206,11 +206,11 @@ TEST(LcwCompTest, MapAndOverlayPacksRoundTripThroughStagingBuffer) {
   for (int cell = 0; cell < kCells; ++cell) {
     const auto index = static_cast<std::size_t>(cell);
     if ((cell / 128) % 16 < 5 && (cell % 128) % 20 < 9) {
-      types[index] = static_cast<uint16_t>(noise[index] % 40);
-      icons[index] = static_cast<uint8_t>(noise[index] % 16);
+      types.at(index) = static_cast<uint16_t>(noise.at(index) % 40);
+      icons.at(index) = static_cast<uint8_t>(noise.at(index) % 16);
     }
     if (cell % 311 == 0) {
-      overlays[index] = static_cast<int8_t>(noise[index] % 20);
+      overlays.at(index) = static_cast<int8_t>(noise.at(index) % 20);
     }
   }
 

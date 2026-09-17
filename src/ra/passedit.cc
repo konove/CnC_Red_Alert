@@ -5,6 +5,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/array.h"
 #include "ra/woledit.h"
 
 void PassEditClass::Set_Focus() {
@@ -13,7 +14,7 @@ void PassEditClass::Set_Focus() {
     // than let the player edit characters they never typed.
     bClearOnNextSetFocus = false;
     if (!String.empty()) {
-      String[0] = '\0';
+      base::At(String, 0) = '\0';
     }
     Length = 0;
   }

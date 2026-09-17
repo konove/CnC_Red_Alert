@@ -134,7 +134,6 @@
 #include "ra/startup.h"
 #include "ra/theme.h"
 #include "ra/type.h"
-#include "ra/vector.h"
 #include "ra/wsproto.h"
 #include "ra/wspudp.h"
 #include "sdllib/file.h"
@@ -385,8 +384,9 @@ bool Init_Game(int /*unused*/, char* /*unused*/[]) {
     Load_Title_Page(true);
 
     Hide_Mouse();
-    Fancy_Text_Print(TXT_STAND_BY, 320, 240, &ColorRemaps[PCOLOR_DIALOG_BLUE],
-                     kTBlack, TPF_CENTER | kTpfText | TPF_DROPSHADOW);
+    Fancy_Text_Print(TXT_STAND_BY, 320, 240,
+                     &ColorRemaps.at(PCOLOR_DIALOG_BLUE), kTBlack,
+                     TPF_CENTER | kTpfText | TPF_DROPSHADOW);
     Show_Mouse();
 
     CCPalette.Set(kFadePaletteSlow);
@@ -832,7 +832,7 @@ bool Select_Game(bool /*fade*/) {
                       !IsMissionCounterstrike(Scen.ScenarioName);
                   //	ajw I'll bet this was needed before also...
                   Session.ScenarioIsOfficial =
-                      Session.Scenarios[Session.Options.ScenarioIndex]
+                      Session.Scenarios.at(Session.Options.ScenarioIndex)
                           ->Get_Official();
                 }
                 break;
@@ -1921,7 +1921,7 @@ static void Init_Color_Remaps() {
   SysMemPage.Blit(HidPage);
   for (const PlayerColorType pcolor :
        magic_enum::enum_values<PlayerColorType>()) {
-    auto& ptr = ColorRemaps[pcolor].RemapTable;
+    auto& ptr = ColorRemaps.at(pcolor).RemapTable;
 
     for (int color = 0; color < 256; color++) {
       base::At(ptr, color) = static_cast<unsigned char>(color);
@@ -1932,36 +1932,36 @@ static void Init_Color_Remaps() {
           HidPage.Get_Pixel(index, static_cast<int>(pcolor)));
     }
     for (int index = 0; index < 6; index++) {
-      base::At(ColorRemaps[pcolor].FontRemap, 10 + index) =
+      base::At(ColorRemaps.at(pcolor).FontRemap, 10 + index) =
           static_cast<unsigned char>(
               HidPage.Get_Pixel(2 + index, static_cast<int>(pcolor)));
     }
-    ColorRemaps[pcolor].BrightColor = kWhite;
+    ColorRemaps.at(pcolor).BrightColor = kWhite;
     //		ColorRemaps[pcolor].BrightColor = HidPage.Get_Pixel(1,
     // static_cast<int>(pcolor));
-    ColorRemaps[pcolor].Color = static_cast<unsigned char>(
+    ColorRemaps.at(pcolor).Color = static_cast<unsigned char>(
         HidPage.Get_Pixel(4, static_cast<int>(pcolor)));
 
-    ColorRemaps[pcolor].Shadow = static_cast<unsigned char>(
+    ColorRemaps.at(pcolor).Shadow = static_cast<unsigned char>(
         HidPage.Get_Pixel(10, static_cast<int>(pcolor)));
-    ColorRemaps[pcolor].Background = static_cast<unsigned char>(
+    ColorRemaps.at(pcolor).Background = static_cast<unsigned char>(
         HidPage.Get_Pixel(9, static_cast<int>(pcolor)));
-    ColorRemaps[pcolor].Corners = static_cast<unsigned char>(
+    ColorRemaps.at(pcolor).Corners = static_cast<unsigned char>(
         HidPage.Get_Pixel(7, static_cast<int>(pcolor)));
-    ColorRemaps[pcolor].Highlight = static_cast<unsigned char>(
+    ColorRemaps.at(pcolor).Highlight = static_cast<unsigned char>(
         HidPage.Get_Pixel(4, static_cast<int>(pcolor)));
-    ColorRemaps[pcolor].Bright = static_cast<unsigned char>(
+    ColorRemaps.at(pcolor).Bright = static_cast<unsigned char>(
         HidPage.Get_Pixel(0, static_cast<int>(pcolor)));
-    ColorRemaps[pcolor].Underline = static_cast<unsigned char>(
+    ColorRemaps.at(pcolor).Underline = static_cast<unsigned char>(
         HidPage.Get_Pixel(0, static_cast<int>(pcolor)));
-    ColorRemaps[pcolor].Bar = static_cast<unsigned char>(
+    ColorRemaps.at(pcolor).Bar = static_cast<unsigned char>(
         HidPage.Get_Pixel(6, static_cast<int>(pcolor)));
 
     /*
     **	This must grab from column 4 because the multiplayer color dialog
     *palette counts *	on this to be true.
     */
-    ColorRemaps[pcolor].Box = static_cast<unsigned char>(
+    ColorRemaps.at(pcolor).Box = static_cast<unsigned char>(
         HidPage.Get_Pixel(4, static_cast<int>(pcolor)));
   }
 
@@ -1983,19 +1983,21 @@ static void Init_Color_Remaps() {
   GreyScheme.Color = GreyPixel(7);
 
   GreyScheme.Shadow =
-      base::At(ColorRemaps[PCOLOR_GREY].RemapTable, GreyPixel(15));
+      base::At(ColorRemaps.at(PCOLOR_GREY).RemapTable, GreyPixel(15));
   GreyScheme.Background =
-      base::At(ColorRemaps[PCOLOR_GREY].RemapTable, GreyPixel(14));
+      base::At(ColorRemaps.at(PCOLOR_GREY).RemapTable, GreyPixel(14));
   GreyScheme.Corners =
-      base::At(ColorRemaps[PCOLOR_GREY].RemapTable, GreyPixel(13));
+      base::At(ColorRemaps.at(PCOLOR_GREY).RemapTable, GreyPixel(13));
   GreyScheme.Highlight =
-      base::At(ColorRemaps[PCOLOR_GREY].RemapTable, GreyPixel(9));
+      base::At(ColorRemaps.at(PCOLOR_GREY).RemapTable, GreyPixel(9));
   GreyScheme.Bright =
-      base::At(ColorRemaps[PCOLOR_GREY].RemapTable, GreyPixel(5));
+      base::At(ColorRemaps.at(PCOLOR_GREY).RemapTable, GreyPixel(5));
   GreyScheme.Underline =
-      base::At(ColorRemaps[PCOLOR_GREY].RemapTable, GreyPixel(5));
-  GreyScheme.Bar = base::At(ColorRemaps[PCOLOR_GREY].RemapTable, GreyPixel(11));
-  GreyScheme.Box = base::At(ColorRemaps[PCOLOR_GREY].RemapTable, GreyPixel(11));
+      base::At(ColorRemaps.at(PCOLOR_GREY).RemapTable, GreyPixel(5));
+  GreyScheme.Bar =
+      base::At(ColorRemaps.at(PCOLOR_GREY).RemapTable, GreyPixel(11));
+  GreyScheme.Box =
+      base::At(ColorRemaps.at(PCOLOR_GREY).RemapTable, GreyPixel(11));
 
   /*
   ** Set up the metallic remap table for the font that prints over the tabs
@@ -2017,23 +2019,23 @@ static void Init_Color_Remaps() {
   ** Set up the font remap table for the mission briefing font
   */
   for (int colr = 0; colr < 16; colr++) {
-    base::At(ColorRemaps[PCOLOR_TYPE].FontRemap, colr) =
+    base::At(ColorRemaps.at(PCOLOR_TYPE).FontRemap, colr) =
         static_cast<unsigned char>(
             HidPage.Get_Pixel(colr, static_cast<int>(PCOLOR_TYPE)));
   }
 
-  ColorRemaps[PCOLOR_TYPE].Shadow = 11;
-  ColorRemaps[PCOLOR_TYPE].Background = 10;
-  ColorRemaps[PCOLOR_TYPE].Corners = 10;
-  ColorRemaps[PCOLOR_TYPE].Highlight = 9;
-  ColorRemaps[PCOLOR_TYPE].Bright = 15;
-  ColorRemaps[PCOLOR_TYPE].Underline = 11;
-  ColorRemaps[PCOLOR_TYPE].Bar = 11;
-  ColorRemaps[PCOLOR_TYPE].Box = 10;
-  ColorRemaps[PCOLOR_TYPE].BrightColor = 15;
-  ColorRemaps[PCOLOR_TYPE].Color = 9;
+  ColorRemaps.at(PCOLOR_TYPE).Shadow = 11;
+  ColorRemaps.at(PCOLOR_TYPE).Background = 10;
+  ColorRemaps.at(PCOLOR_TYPE).Corners = 10;
+  ColorRemaps.at(PCOLOR_TYPE).Highlight = 9;
+  ColorRemaps.at(PCOLOR_TYPE).Bright = 15;
+  ColorRemaps.at(PCOLOR_TYPE).Underline = 11;
+  ColorRemaps.at(PCOLOR_TYPE).Bar = 11;
+  ColorRemaps.at(PCOLOR_TYPE).Box = 10;
+  ColorRemaps.at(PCOLOR_TYPE).BrightColor = 15;
+  ColorRemaps.at(PCOLOR_TYPE).Color = 9;
 
-  GadgetClass::Set_Color_Scheme(&ColorRemaps[PCOLOR_DIALOG_BLUE]);
+  GadgetClass::Set_Color_Scheme(&ColorRemaps.at(PCOLOR_DIALOG_BLUE));
   //	GadgetClass::Set_Color_Scheme(&ColorRemaps[PCOLOR_BLUE]);
 }
 
@@ -2553,7 +2555,7 @@ static void Bootstrap() {
   }
   base::CopyBytes(std::as_writable_bytes(GamePalette.bytes()), palette_data,
                   768);
-  WhitePalette[0] = BlackPalette[0];
+  WhitePalette.at(0) = BlackPalette.at(0);
   //	GamePalette.Set();
 
   /*

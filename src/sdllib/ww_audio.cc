@@ -193,7 +193,7 @@ static std::span<const std::byte> DecodeWestwoodBlock(
           return {};
         }
         SDL_AudioStreamPut(chan.stream, in_ptr.data(), static_cast<int>(data));
-        prev_sample = std::to_integer<uint8_t>(in_ptr[data - 1]);
+        prev_sample = std::to_integer<uint8_t>(base::At(in_ptr, data - 1));
         in_ptr = in_ptr.subspan(data);
       }
     } else {

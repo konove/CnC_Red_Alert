@@ -692,12 +692,12 @@ void InfantryClass::Draw_It(int x, int y, WindowNumberType window) {
     doit = DO_STAND_READY;
   }
 
-  int shapenum = Class->DoControls[doit].Count;
+  int shapenum = Class->DoControls.at(doit).Count;
   shapenum = Fetch_Stage() % std::max(shapenum, 1);
-  if (Class->DoControls[doit].Jump) {
-    shapenum += facenum * Class->DoControls[doit].Jump;
+  if (Class->DoControls.at(doit).Jump) {
+    shapenum += facenum * Class->DoControls.at(doit).Jump;
   }
-  shapenum += Class->DoControls[doit].Frame;
+  shapenum += Class->DoControls.at(doit).Frame;
 
 #ifdef BOXING
   // BG hack to get him to face right when he's supposed to.
@@ -737,7 +737,7 @@ void InfantryClass::Draw_It(int x, int y, WindowNumberType window) {
  *=============================================================================================*/
 void InfantryClass::Per_Cell_Process(bool center) {
   Validate();
-  CellClass* cellptr = &Map[Coord_Cell(Coord)];
+  CellClass* cellptr = &Map.at(Coord_Cell(Coord));
 
   /*
   **	If the infantry unit is entering a cell that contains the building it is
@@ -753,7 +753,7 @@ void InfantryClass::Per_Cell_Process(bool center) {
     // #ifdef NEVER
     if (!Target_Legal(NavCom)) {
       Enter_Idle_Mode();
-      if (Map[Coord_Cell(Coord)].Cell_Building()) {
+      if (Map.at(Coord_Cell(Coord)).Cell_Building()) {
         Scatter(0, true);
       }
     }
@@ -1102,7 +1102,7 @@ void InfantryClass::AI() {
   **	Act on new orders if the unit is at a good position to do so.
   */
   if (!IsDriving &&
-      (Doing == DO_NOTHING || MasterDoControls[Doing].Interrupt)) {
+      (Doing == DO_NOTHING || MasterDoControls.at(Doing).Interrupt)) {
     Commence();
   }
 
@@ -1276,7 +1276,7 @@ void InfantryClass::AI() {
     Fire_At(TarCom, 0);
 
     if (Class->Primary == WEAPON_GRENADE) {
-      Map[As_Cell(TarCom)].Incoming(Coord, true);
+      Map.at(As_Cell(TarCom)).Incoming(Coord, true);
     }
   }
 
@@ -1284,7 +1284,8 @@ void InfantryClass::AI() {
   **	Handle the completion of the animation sequence.
   */
 
-  if (Doing == DO_NOTHING || Fetch_Stage() >= Class->DoControls[Doing].Count) {
+  if (Doing == DO_NOTHING ||
+      Fetch_Stage() >= Class->DoControls.at(Doing).Count) {
     switch (Doing) {
       case DoType::DO_NOTHING:
       case DoType::DO_STAND_READY:
@@ -1461,15 +1462,16 @@ void InfantryClass::AI() {
           ** try again next tick.
           */
           if (Can_Enter_Cell(acell) == MOVE_DESTROYABLE) {
-            if (Map[acell].Cell_Object()) {
-              if (!House->Is_Ally(Map[acell].Cell_Object())) {
+            if (Map.at(acell).Cell_Object()) {
+              if (!House->Is_Ally(Map.at(acell).Cell_Object())) {
                 Override_Mission(MISSION_ATTACK,
-                                 Map[acell].Cell_Object()->As_Target(),
+                                 Map.at(acell).Cell_Object()->As_Target(),
                                  kTargetNone);
               }
             } else {
-              if (Map[acell].Overlay != OVERLAY_NONE &&
-                  OverlayTypeClass::As_Reference(Map[acell].Overlay).IsWall) {
+              if (Map.at(acell).Overlay != OVERLAY_NONE &&
+                  OverlayTypeClass::As_Reference(Map.at(acell).Overlay)
+                      .IsWall) {
                 Override_Mission(MISSION_ATTACK, ::As_Target(acell),
                                  kTargetNone);
               }
@@ -1670,7 +1672,7 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType /*unused*/) const {
   if (IsLocked && !IsALoaner && !ScenarioInit && !Map.In_Radar(cell)) {
     return MOVE_NO;
   }
-  const CellClass* cellptr = &Map[cell];
+  const CellClass* cellptr = &Map.at(cell);
 
   /*
   **	Walls are considered impassable for infantry UNLESS the wall has a hole
@@ -1803,7 +1805,7 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType /*unused*/) const {
           */
           if (obj->What_Am_I() == RTTI_TERRAIN) {
             if (dynamic_cast<TerrainClass*>(obj)->Class->IsFlammable &&
-                BulletTypeClass::As_Reference(Weapons[Class->Primary].Fires)
+                BulletTypeClass::As_Reference(Weapons.at(Class->Primary).Fires)
                         .Warhead == WARHEAD_FIRE) {
               retval = std::max(retval, MOVE_DESTROYABLE);
             } else {
@@ -1828,7 +1830,7 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType /*unused*/) const {
   **	If foot soldiers cannot travel on the cell -- consider it impassible.
   */
   if (retval == MOVE_OK && !IsTethered &&
-      !Ground[cellptr->Land_Type()].Cost[SPEED_FOOT]) {
+      !Ground.at(cellptr->Land_Type()).Cost.at(SPEED_FOOT)) {
     return MOVE_NO;
   }
 
@@ -1960,7 +1962,7 @@ FireErrorType InfantryClass::Can_Fire(TARGET target, int which) const {
   **	If this unit cannot fire while moving, then bail.
   */
   if ((IsDriving && Special.IsDefenderAdvantage) ||
-      (Doing != DO_NOTHING && !MasterDoControls[Doing].Interrupt)) {
+      (Doing != DO_NOTHING && !MasterDoControls.at(Doing).Interrupt)) {
     return FIRE_MOVING;
   }
 
@@ -2169,7 +2171,7 @@ void InfantryClass::Scatter(COORDINATE threat, bool forced) {
   /*
   **	Don't scatter if performing an action that can't be interrupted.
   */
-  if (Doing != DO_NOTHING && !MasterDoControls[Doing].Interrupt) {
+  if (Doing != DO_NOTHING && !MasterDoControls.at(Doing).Interrupt) {
     return;
   }
 
@@ -2234,16 +2236,16 @@ void InfantryClass::Scatter(COORDINATE threat, bool forced) {
 bool InfantryClass::Do_Action(DoType todo, bool force) {
   Validate();
   if (todo != Doing &&
-      (Doing == DO_NOTHING || force || MasterDoControls[Doing].Interrupt)) {
+      (Doing == DO_NOTHING || force || MasterDoControls.at(Doing).Interrupt)) {
     Mark(MARK_CHANGE);
     // Mark(MARK_OVERLAP_UP);
     Doing = todo;
     // Mark(MARK_OVERLAP_DOWN);
     if (todo == DO_IDLE1 || todo == DO_IDLE2) {
       Set_Rate(static_cast<unsigned char>(
-          Options.Normalize_Delay(MasterDoControls[Doing].Rate)));
+          Options.Normalize_Delay(MasterDoControls.at(Doing).Rate)));
     } else {
-      Set_Rate(MasterDoControls[Doing].Rate);
+      Set_Rate(MasterDoControls.at(Doing).Rate);
     }
     Set_Stage(0);
 
@@ -2388,11 +2390,13 @@ bool InfantryClass::Start_Driver(COORDINATE& headto) {
   /*
   **	Convert the head to coordinate to a legal sub-position location.
   */
-  headto = Map[Coord_Cell(headto)].Closest_Free_Spot(
-      Coord_Move(headto, Direction(headto) + DIR_S, 0x007C));
+  headto = Map.at(Coord_Cell(headto))
+               .Closest_Free_Spot(
+                   Coord_Move(headto, Direction(headto) + DIR_S, 0x007C));
   if (!headto && Can_Enter_Cell(Coord_Cell(old)) == MOVE_OK) {
-    headto = Map[Coord_Cell(old)].Closest_Free_Spot(
-        Coord_Move(old, Direction(headto) + DIR_S, 0x0080), true);
+    headto = Map.at(Coord_Cell(old))
+                 .Closest_Free_Spot(
+                     Coord_Move(old, Direction(headto) + DIR_S, 0x0080), true);
   }
 
   /*
@@ -2485,7 +2489,7 @@ BulletClass* InfantryClass::Fire_At(TARGET target, int which) {
   Validate();
   BulletClass* bullet = nullptr;
   const WeaponTypeClass* weapon =
-      which == 0 ? &Weapons[Class->Primary] : &Weapons[Class->Secondary];
+      which == 0 ? &Weapons.at(Class->Primary) : &Weapons.at(Class->Secondary);
 
   IsFiring = false;
 
@@ -2563,7 +2567,7 @@ bool InfantryClass::Unlimbo(COORDINATE coord, DirType facing) {
   /*
   **	Make sure that the infantry start in a legal position on the map.
   */
-  coord = Map[Coord_Cell(coord)].Closest_Free_Spot(coord, ScenarioInit != 0);
+  coord = Map.at(Coord_Cell(coord)).Closest_Free_Spot(coord, ScenarioInit != 0);
   if (coord == 0) {
     return false;
   }
@@ -2656,7 +2660,7 @@ TARGET InfantryClass::Greatest_Threat(ThreatType threat) const {
     case WeaponType::WEAPON_COUNT:
     default:
       if (Class->Primary != WEAPON_NONE &&
-          BulletTypeClass::As_Reference(Weapons[Class->Primary].Fires)
+          BulletTypeClass::As_Reference(Weapons.at(Class->Primary).Fires)
               .IsAntiAircraft) {
         threat = threat | THREAT_AIR;
       }
@@ -3381,12 +3385,12 @@ void InfantryClass::Set_Occupy_Bit(CELL cell, int spot_index) {
   /*
   ** Set the occupy postion for the spot that we passed in
   */
-  Map[cell].Flag.Composite |= base::Bit<uint8_t>(spot_index);
+  Map.at(cell).Flag.Composite |= base::Bit<uint8_t>(spot_index);
 
   /*
   ** Record the type of infantry that now owns the cell
   */
-  Map[cell].InfType = Owner();
+  Map.at(cell).InfType = Owner();
 }
 
 /***************************************************************************
@@ -3408,15 +3412,15 @@ void InfantryClass::Clear_Occupy_Bit(CELL cell, int spot_index) {
   /*
   ** Clear the occupy bit for the infantry in that cell
   */
-  Map[cell].Flag.Composite &=
+  Map.at(cell).Flag.Composite &=
       static_cast<uint8_t>(~base::Bit<uint8_t>(spot_index));
 
   /*
   ** If he was the last infantry recorded in the cell then
   ** remove the infantry ownership flag.
   */
-  if (!(Map[cell].Flag.Composite & 0x1F)) {
-    Map[cell].InfType = HOUSE_NONE;
+  if (!(Map.at(cell).Flag.Composite & 0x1F)) {
+    Map.at(cell).InfType = HOUSE_NONE;
   }
 }
 

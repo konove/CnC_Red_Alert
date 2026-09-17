@@ -152,7 +152,7 @@ inline DirType Direction(CELL cell1, CELL cell2) {
 }
 inline COORDINATE Adjacent_Cell(COORDINATE coord, FacingType dir) {
   return Coord_Snap(
-      Coord_Add(AdjacentCoord[AsFacing(static_cast<int>(dir))], coord));
+      Coord_Add(AdjacentCoord.at(AsFacing(static_cast<int>(dir))), coord));
 }
 inline COORDINATE Adjacent_Cell(COORDINATE coord, DirType dir) {
   return Adjacent_Cell(coord, Dir_Facing(dir));
@@ -161,10 +161,10 @@ inline CELL Adjacent_Cell(CELL cell, FacingType dir) {
   // Masked like the COORDINATE overload above, so that FACING_NONE (-1) does
   // not index before the start of the table.
   return static_cast<CELL>(cell +
-                           AdjacentCell[AsFacing(static_cast<int>(dir))]);
+                           AdjacentCell.at(AsFacing(static_cast<int>(dir))));
 }
 inline CELL Adjacent_Cell(CELL cell, DirType dir) {
-  return static_cast<CELL>(cell + AdjacentCell[Dir_Facing(dir)]);
+  return static_cast<CELL>(cell + AdjacentCell.at(Dir_Facing(dir)));
 }
 inline int Lepton_To_Pixel(int lepton) {
   return ((lepton * ICON_PIXEL_W) + (ICON_LEPTON_W / 2)) / ICON_LEPTON_W;

@@ -193,7 +193,6 @@
 #include "ra/ipxmgr.h"
 #include "ra/jshell.h"
 #include "ra/logic.h"
-#include "ra/map.h"
 #include "ra/mapedit.h"
 #include "ra/monoc.h"
 #include "ra/mouse.h"
@@ -218,7 +217,6 @@
 #include "ra/type.h"
 #include "ra/unit.h"
 #include "ra/utracker.h"
-#include "ra/vector.h"
 #include "ra/vector_dynamic.h"
 #include "ra/vessel.h"
 #include "ra/vortex.h"
@@ -392,8 +390,9 @@ DiffType HouseClass::Assign_Handicap(DiffType handicap) {
 void HouseClass::Print_Zone_Stats(int x, int y, ZoneType zone,
                                   MonoClass* mono) const {
   mono->Set_Cursor(x, y);
-  mono->Printf("A:%-5d I:%-5d V:%-5d", ZoneInfo[zone].AirDefense,
-               ZoneInfo[zone].InfantryDefense, ZoneInfo[zone].ArmorDefense);
+  mono->Printf("A:%-5d I:%-5d V:%-5d", ZoneInfo.at(zone).AirDefense,
+               ZoneInfo.at(zone).InfantryDefense,
+               ZoneInfo.at(zone).ArmorDefense);
 }
 
 /***********************************************************************************************
@@ -472,7 +471,7 @@ void HouseClass::Debug_Dump(MonoClass* mono) const {
     mono->Set_Cursor(37, 5);
     mono->Printf("%5d", Drain);
     mono->Set_Cursor(44, 5);
-    mono->Printf("%16.16s", QuarryName[PreferredTarget]);
+    mono->Printf("%16.16s", QuarryName.at(PreferredTarget));
     mono->Set_Cursor(62, 5);
     mono->Printf("%5d", TriggerTime.Value());
     mono->Set_Cursor(71, 5);
@@ -682,33 +681,33 @@ HouseClass::HouseClass(HousesType house)
   **	weapons must serve as a no-initialization constructor (save/load
   *reasons).
   */
-  new (&SuperWeapon[SPC_NUCLEAR_BOMB])
+  new (&SuperWeapon.at(SPC_NUCLEAR_BOMB))
       SuperClass(kTicksPerMinute * Rule.NukeTime, true, VOX_ABOMB_PREPPING,
                  VOX_ABOMB_READY, VOX_NOT_READY, VOX_INSUFFICIENT_POWER);
-  new (&SuperWeapon[SPC_SONAR_PULSE])
+  new (&SuperWeapon.at(SPC_SONAR_PULSE))
       SuperClass(kTicksPerMinute * Rule.SonarTime, false, VOX_NONE,
                  VOX_SONAR_AVAILABLE, VOX_NOT_READY, VOX_NOT_READY);
-  new (&SuperWeapon[SPC_CHRONOSPHERE])
+  new (&SuperWeapon.at(SPC_CHRONOSPHERE))
       SuperClass(kTicksPerMinute * Rule.ChronoTime, true, VOX_CHRONO_CHARGING,
                  VOX_CHRONO_READY, VOX_NOT_READY, VOX_INSUFFICIENT_POWER);
-  new (&SuperWeapon[SPC_PARA_BOMB])
-      SuperClass(kTicksPerMinute * Rule.ParaBombTime, false, VOX_NONE,
-                 VOX_NONE, VOX_NOT_READY, VOX_NOT_READY);
-  new (&SuperWeapon[SPC_PARA_INFANTRY])
+  new (&SuperWeapon.at(SPC_PARA_BOMB))
+      SuperClass(kTicksPerMinute * Rule.ParaBombTime, false, VOX_NONE, VOX_NONE,
+                 VOX_NOT_READY, VOX_NOT_READY);
+  new (&SuperWeapon.at(SPC_PARA_INFANTRY))
       SuperClass(kTicksPerMinute * Rule.ParaInfantryTime, false, VOX_NONE,
                  VOX_NONE, VOX_NOT_READY, VOX_NOT_READY);
-  new (&SuperWeapon[SPC_SPY_MISSION])
-      SuperClass(kTicksPerMinute * Rule.SpyTime, false, VOX_NONE,
-                 VOX_SPY_PLANE, VOX_NOT_READY, VOX_NOT_READY);
-  new (&SuperWeapon[SPC_IRON_CURTAIN]) SuperClass(
+  new (&SuperWeapon.at(SPC_SPY_MISSION))
+      SuperClass(kTicksPerMinute * Rule.SpyTime, false, VOX_NONE, VOX_SPY_PLANE,
+                 VOX_NOT_READY, VOX_NOT_READY);
+  new (&SuperWeapon.at(SPC_IRON_CURTAIN)) SuperClass(
       kTicksPerMinute * Rule.IronCurtainTime, true, VOX_IRON_CHARGING,
       VOX_IRON_READY, VOX_NOT_READY, VOX_INSUFFICIENT_POWER);
-  new (&SuperWeapon[SPC_GPS])
+  new (&SuperWeapon.at(SPC_GPS))
       SuperClass(kTicksPerMinute * Rule.GPSTime, true, VOX_NONE, VOX_NONE,
                  VOX_NOT_READY, VOX_INSUFFICIENT_POWER);
 
   port::SafeCopy(IniName, Text_String(TXT_COMPUTER));  // Default computer name.
-  HouseTriggers[house].Clear();
+  HouseTriggers.at(house).Clear();
   Make_Ally(house);
   Assign_Handicap(Scen.CDifficulty);
 
@@ -1015,7 +1014,7 @@ void HouseClass::Init() {
   Houses.Free_All();
 
   for (const HousesType index : magic_enum::enum_values<HousesType>()) {
-    HouseTriggers[index].Clear();
+    HouseTriggers.at(index).Clear();
   }
 }
 
@@ -1123,7 +1122,7 @@ void HouseClass::AI() {
   **	blow them up.
   */
   if (FlagHome != 0 && Frame % kTicksPerSecond == 0) {
-    TechnoClass* techno = Map[FlagHome].Cell_Techno();
+    TechnoClass* techno = Map.at(FlagHome).Cell_Techno();
     if (techno != nullptr) {
       bool moving = false;
       if (techno->Is_Foot() &&
@@ -1234,10 +1233,10 @@ void HouseClass::AI() {
       Map.Flash_Power();
 
       const char* text = nullptr;
-      if (BQuantity[STRUCT_AAGUN] > 0) {
+      if (BQuantity.at(STRUCT_AAGUN) > 0) {
         text = Text_String(TXT_POWER_AAGUN);
       }
-      if (BQuantity[STRUCT_TESLA] > 0) {
+      if (BQuantity.at(STRUCT_TESLA) > 0) {
         text = Text_String(TXT_POWER_TESLA);
       }
       if (text == nullptr) {
@@ -1262,7 +1261,7 @@ void HouseClass::AI() {
       unit->Mark(MARK_CHANGE);
     } else {
       const CELL cell = As_Cell(FlagLocation);
-      Map[cell].Redraw_Objects();
+      Map.at(cell).Redraw_Objects();
     }
   }
 
@@ -1302,7 +1301,7 @@ void HouseClass::AI() {
         }
         if (!iCount) {
           for (const AircraftType i : magic_enum::enum_values<AircraftType>()) {
-            iCount += AQuantity[i];
+            iCount += AQuantity.at(i);
           }
           if (!iCount) {
             for (int i = 0; i != kOriginalVesselCount; ++i) {
@@ -1343,8 +1342,8 @@ void HouseClass::AI() {
   **	Try to spring all events attached to this house. The triggers will check
   **	for themselves if they actually need to be sprung or not.
   */
-  for (int index = 0; index < HouseTriggers[Class->House].Count(); index++) {
-    if (HouseTriggers[Class->House][index]->Spring() && index > 0) {
+  for (int index = 0; index < HouseTriggers.at(Class->House).Count(); index++) {
+    if (HouseTriggers.at(Class->House).at(index)->Spring() && index > 0) {
       index--;
       continue;
     }
@@ -1486,7 +1485,7 @@ void HouseClass::Super_Weapon_Handler() {
   */
   for (const SpecialWeaponType special :
        magic_enum::enum_values<SpecialWeaponType>()) {
-    SuperClass* super = &SuperWeapon[special];
+    SuperClass* super = &SuperWeapon.at(special);
 
     if (super->Is_Present()) {
       /*
@@ -1526,13 +1525,13 @@ void HouseClass::Super_Weapon_Handler() {
   **	being destroyed is a good example of this.  Having fired the satellite
   ** is another good example, because it's a one-shot item.
   */
-  if (SuperWeapon[SPC_GPS].Is_Present()) {
+  if (SuperWeapon.at(SPC_GPS).Is_Present()) {
     if (!(ActiveBScan & kStructFlagAdvancedTech) || IsGPSActive || IsDefeated) {
       /*
       **	Remove the missile capability when there is no advanced tech
       *facility.
       */
-      if (SuperWeapon[SPC_GPS].Remove()) {
+      if (SuperWeapon.at(SPC_GPS).Remove()) {
         if (this == PlayerPtr) {
           Map.Column[1].Flag_To_Redraw();
         }
@@ -1542,9 +1541,9 @@ void HouseClass::Super_Weapon_Handler() {
       /*
       ** Auto-fire the GPS satellite if it's charged up.
       */
-      if (SuperWeapon[SPC_GPS].Is_Ready()) {
-        SuperWeapon[SPC_GPS].Discharged(this == PlayerPtr);
-        if (SuperWeapon[SPC_GPS].Remove() && (this == PlayerPtr)) {
+      if (SuperWeapon.at(SPC_GPS).Is_Ready()) {
+        SuperWeapon.at(SPC_GPS).Discharged(this == PlayerPtr);
+        if (SuperWeapon.at(SPC_GPS).Remove() && (this == PlayerPtr)) {
           Map.Column[1].Flag_To_Redraw();
         }
 
@@ -1580,8 +1579,8 @@ void HouseClass::Super_Weapon_Handler() {
       }
 
       if (canfire) {
-        SuperWeapon[SPC_GPS].Enable(false, this == PlayerPtr,
-                                    Power_Fraction() < 1);
+        SuperWeapon.at(SPC_GPS).Enable(false, this == PlayerPtr,
+                                       Power_Fraction() < 1);
 
         /*
         **	Flag the sidebar to be redrawn if necessary.
@@ -1599,11 +1598,11 @@ void HouseClass::Super_Weapon_Handler() {
   **	because of outside circumstances. The chronosphere facility
   **	being destroyed is a good example of this.
   */
-  if (SuperWeapon[SPC_CHRONOSPHERE].Is_Present()) {
+  if (SuperWeapon.at(SPC_CHRONOSPHERE).Is_Present()) {
     if (((!(ActiveBScan & kStructFlagChronosphere) &&
-          !SuperWeapon[SPC_CHRONOSPHERE].Is_One_Time()) ||
+          !SuperWeapon.at(SPC_CHRONOSPHERE).Is_One_Time()) ||
          IsDefeated) &&
-        SuperWeapon[SPC_CHRONOSPHERE].Remove())
+        SuperWeapon.at(SPC_CHRONOSPHERE).Remove())
     /*
     **	Remove the chronosphere when there is no chronosphere facility.
     **	Note that this will not remove the one time created
@@ -1642,8 +1641,8 @@ void HouseClass::Super_Weapon_Handler() {
             BuildingTypeClass::As_Reference(STRUCT_CHRONOSPHERE).Level &&
         //			Control.TechLevel >= Rule.ChronoTechLevel &&
         (IsHuman || IQ >= Rule.IQSuperWeapons)) {
-      SuperWeapon[SPC_CHRONOSPHERE].Enable(false, this == PlayerPtr,
-                                           Power_Fraction() < 1);
+      SuperWeapon.at(SPC_CHRONOSPHERE)
+          .Enable(false, this == PlayerPtr, Power_Fraction() < 1);
 
       /*
       **	Flag the sidebar to be redrawn if necessary.
@@ -1660,11 +1659,11 @@ void HouseClass::Super_Weapon_Handler() {
   **	because of outside circumstances. The iron curtain facility
   **	being destroyed is a good example of this.
   */
-  if (SuperWeapon[SPC_IRON_CURTAIN].Is_Present()) {
+  if (SuperWeapon.at(SPC_IRON_CURTAIN).Is_Present()) {
     if (((!(ActiveBScan & kStructFlagIronCurtain) &&
-          !SuperWeapon[SPC_IRON_CURTAIN].Is_One_Time()) ||
+          !SuperWeapon.at(SPC_IRON_CURTAIN).Is_One_Time()) ||
          IsDefeated) &&
-        SuperWeapon[SPC_IRON_CURTAIN].Remove())
+        SuperWeapon.at(SPC_IRON_CURTAIN).Remove())
     /*
     **	Remove the iron curtain when there is no iron curtain facility.
     **	Note that this will not remove the one time created iron
@@ -1689,8 +1688,8 @@ void HouseClass::Super_Weapon_Handler() {
         (ActLike == HOUSE_USSR || ActLike == HOUSE_UKRAINE ||
          Session.Type != GAME_NORMAL) &&
         (IsHuman || IQ >= Rule.IQSuperWeapons)) {
-      SuperWeapon[SPC_IRON_CURTAIN].Enable(false, this == PlayerPtr,
-                                           Power_Fraction() < 1);
+      SuperWeapon.at(SPC_IRON_CURTAIN)
+          .Enable(false, this == PlayerPtr, Power_Fraction() < 1);
 
       /*
       **	Flag the sidebar to be redrawn if necessary.
@@ -1707,7 +1706,7 @@ void HouseClass::Super_Weapon_Handler() {
   **	because of outside circumstances. The spied-upon enemy sub pen
   **	being destroyed is a good example of this.
   */
-  if (SuperWeapon[SPC_SONAR_PULSE].Is_Present()) {
+  if (SuperWeapon.at(SPC_SONAR_PULSE).Is_Present()) {
     const auto usspy = base::Bit<uint32_t>(Class->House);
     bool present = false;
     bool powered = false;
@@ -1719,9 +1718,9 @@ void HouseClass::Super_Weapon_Handler() {
         powered = !(bldg->House->Power_Fraction() < 1);
       }
     }
-    if (((!present && !SuperWeapon[SPC_SONAR_PULSE].Is_One_Time()) ||
+    if (((!present && !SuperWeapon.at(SPC_SONAR_PULSE).Is_One_Time()) ||
          IsDefeated) &&
-        SuperWeapon[SPC_SONAR_PULSE].Remove())
+        SuperWeapon.at(SPC_SONAR_PULSE).Remove())
     /*
     **	Remove the sonar pulse when there is no spied-upon enemy sub
     *pen. *	Note that this will not remove the one time created sonar pulse.
@@ -1739,15 +1738,15 @@ void HouseClass::Super_Weapon_Handler() {
   **	because of outside circumstances. The missile silos
   **	being destroyed is a good example of this.
   */
-  if (SuperWeapon[SPC_NUCLEAR_BOMB].Is_Present()) {
+  if (SuperWeapon.at(SPC_NUCLEAR_BOMB).Is_Present()) {
     if ((!(ActiveBScan & kStructFlagMslo) &&
-         !SuperWeapon[SPC_NUCLEAR_BOMB].Is_One_Time()) ||
+         !SuperWeapon.at(SPC_NUCLEAR_BOMB).Is_One_Time()) ||
         IsDefeated) {
       /*
       **	Remove the nuke when there is no missile silo.
       **	Note that this will not remove the one time created nuke.
       */
-      if (SuperWeapon[SPC_NUCLEAR_BOMB].Remove()) {
+      if (SuperWeapon.at(SPC_NUCLEAR_BOMB).Remove()) {
         if (this == PlayerPtr) {
           if (Map.IsTargettingMode == SPC_NUCLEAR_BOMB) {
             Map.IsTargettingMode = SPC_NONE;
@@ -1761,7 +1760,7 @@ void HouseClass::Super_Weapon_Handler() {
       **	Allow the computer to fire the nuclear weapon when the weapon is
       **	ready and the owner is the computer.
       */
-      if (SuperWeapon[SPC_NUCLEAR_BOMB].Is_Ready() && !IsHuman) {
+      if (SuperWeapon.at(SPC_NUCLEAR_BOMB).Is_Ready() && !IsHuman) {
         Special_Weapon_AI(SPC_NUCLEAR_BOMB);
       }
     }
@@ -1775,8 +1774,8 @@ void HouseClass::Super_Weapon_Handler() {
         ((ActLike != HOUSE_USSR && ActLike != HOUSE_UKRAINE) ||
          Session.Type != GAME_NORMAL) &&
         (IsHuman || IQ >= Rule.IQSuperWeapons)) {
-      SuperWeapon[SPC_NUCLEAR_BOMB].Enable(false, this == PlayerPtr,
-                                           Power_Fraction() < 1);
+      SuperWeapon.at(SPC_NUCLEAR_BOMB)
+          .Enable(false, this == PlayerPtr, Power_Fraction() < 1);
 
       /*
       **	Flag the sidebar to be redrawn if necessary.
@@ -1788,26 +1787,26 @@ void HouseClass::Super_Weapon_Handler() {
     }
   }
 
-  if (SuperWeapon[SPC_SPY_MISSION].Is_Present()) {
+  if (SuperWeapon.at(SPC_SPY_MISSION).Is_Present()) {
     if ((ActiveBScan & kStructFlagAirstrip) == 0) {
-      if (SuperWeapon[SPC_SPY_MISSION].Remove()) {
+      if (SuperWeapon.at(SPC_SPY_MISSION).Remove()) {
         if (this == PlayerPtr) {
           Map.Column[1].Flag_To_Redraw();
         }
         IsRecalcNeeded = true;
       }
     } else {
-      if (this == PlayerPtr && !SuperWeapon[SPC_SPY_MISSION].Is_Ready()) {
+      if (this == PlayerPtr && !SuperWeapon.at(SPC_SPY_MISSION).Is_Ready()) {
         Map.Column[1].Flag_To_Redraw();
       }
-      if (SuperWeapon[SPC_SPY_MISSION].Is_Ready() && !IsHuman) {
+      if (SuperWeapon.at(SPC_SPY_MISSION).Is_Ready() && !IsHuman) {
         Special_Weapon_AI(SPC_SPY_MISSION);
       }
     }
   } else {
     if ((ActiveBScan & kStructFlagAirstrip) != 0 && !Scen.IsNoSpyPlane &&
         Control.TechLevel >= Rule.SpyPlaneTechLevel) {
-      SuperWeapon[SPC_SPY_MISSION].Enable(false, this == PlayerPtr, false);
+      SuperWeapon.at(SPC_SPY_MISSION).Enable(false, this == PlayerPtr, false);
       if (this == PlayerPtr) {
         Map.Add(RTTI_SPECIAL, static_cast<int>(SPC_SPY_MISSION));
         Map.Column[1].Flag_To_Redraw();
@@ -1815,16 +1814,16 @@ void HouseClass::Super_Weapon_Handler() {
     }
   }
 
-  if (SuperWeapon[SPC_PARA_BOMB].Is_Present()) {
+  if (SuperWeapon.at(SPC_PARA_BOMB).Is_Present()) {
     if ((ActiveBScan & kStructFlagAirstrip) == 0) {
-      if (SuperWeapon[SPC_PARA_BOMB].Remove()) {
+      if (SuperWeapon.at(SPC_PARA_BOMB).Remove()) {
         if (this == PlayerPtr) {
           Map.Column[1].Flag_To_Redraw();
         }
         IsRecalcNeeded = true;
       }
     } else {
-      if (SuperWeapon[SPC_PARA_BOMB].Is_Ready() && !IsHuman) {
+      if (SuperWeapon.at(SPC_PARA_BOMB).Is_Ready() && !IsHuman) {
         Special_Weapon_AI(SPC_PARA_BOMB);
       }
     }
@@ -1832,7 +1831,7 @@ void HouseClass::Super_Weapon_Handler() {
     if ((ActiveBScan & kStructFlagAirstrip) != 0 &&
         Control.TechLevel >= Rule.ParaBombTechLevel &&
         Session.Type == GAME_NORMAL) {
-      SuperWeapon[SPC_PARA_BOMB].Enable(false, this == PlayerPtr, false);
+      SuperWeapon.at(SPC_PARA_BOMB).Enable(false, this == PlayerPtr, false);
       if (this == PlayerPtr) {
         Map.Add(RTTI_SPECIAL, static_cast<int>(SPC_PARA_BOMB));
         Map.Column[1].Flag_To_Redraw();
@@ -1840,23 +1839,23 @@ void HouseClass::Super_Weapon_Handler() {
     }
   }
 
-  if (SuperWeapon[SPC_PARA_INFANTRY].Is_Present()) {
+  if (SuperWeapon.at(SPC_PARA_INFANTRY).Is_Present()) {
     if ((ActiveBScan & kStructFlagAirstrip) == 0) {
-      if (SuperWeapon[SPC_PARA_INFANTRY].Remove()) {
+      if (SuperWeapon.at(SPC_PARA_INFANTRY).Remove()) {
         if (this == PlayerPtr) {
           Map.Column[1].Flag_To_Redraw();
         }
         IsRecalcNeeded = true;
       }
     } else {
-      if (SuperWeapon[SPC_PARA_INFANTRY].Is_Ready() && !IsHuman) {
+      if (SuperWeapon.at(SPC_PARA_INFANTRY).Is_Ready() && !IsHuman) {
         Special_Weapon_AI(SPC_PARA_INFANTRY);
       }
     }
   } else {
     if ((ActiveBScan & kStructFlagAirstrip) != 0 &&
         Control.TechLevel >= Rule.ParaInfantryTechLevel) {
-      SuperWeapon[SPC_PARA_INFANTRY].Enable(false, this == PlayerPtr, false);
+      SuperWeapon.at(SPC_PARA_INFANTRY).Enable(false, this == PlayerPtr, false);
       if (this == PlayerPtr) {
         Map.Add(RTTI_SPECIAL, static_cast<int>(SPC_PARA_INFANTRY));
         Map.Column[1].Flag_To_Redraw();
@@ -1895,8 +1894,9 @@ void HouseClass::Attacked() {
     **	If there is a trigger event associated with being attacked, process it
     **	now.
     */
-    for (int index = 0; index < HouseTriggers[Class->House].Count(); index++) {
-      HouseTriggers[Class->House][index]->Spring(TEVENT_ATTACKED);
+    for (int index = 0; index < HouseTriggers.at(Class->House).Count();
+         index++) {
+      HouseTriggers.at(Class->House).at(index)->Spring(TEVENT_ATTACKED);
     }
   }
 }
@@ -2242,7 +2242,7 @@ void HouseClass::Make_Ally(HousesType house) {
       *cease fire begins.
       */
       for (int index = 0; index < Logic.Count(); index++) {
-        ObjectClass* object = Logic[index];
+        ObjectClass* object = Logic.at(index);
 
         if (object != nullptr && object->Is_Techno() && !object->IsInLimbo &&
             object->Owner() == Class->House) {
@@ -2382,7 +2382,7 @@ std::span<const unsigned char> HouseClass::Remap_Table(bool blushing,
     return {};
   }
 
-  return ColorRemaps[RemapColor].RemapTable;
+  return ColorRemaps.at(RemapColor).RemapTable;
 }
 
 /***********************************************************************************************
@@ -2676,8 +2676,8 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
   switch (id) {
     case SPC_SONAR_PULSE:
       // Automatically discharge the sonar pulse and uncloak all subs.
-      if (SuperWeapon[SPC_SONAR_PULSE].Is_Ready()) {
-        SuperWeapon[SPC_SONAR_PULSE].Discharged(this == PlayerPtr);
+      if (SuperWeapon.at(SPC_SONAR_PULSE).Is_Ready()) {
+        SuperWeapon.at(SPC_SONAR_PULSE).Discharged(this == PlayerPtr);
         if (this == PlayerPtr) {
           Map.Column[1].Flag_To_Redraw();
           Map.Activate_Pulse();
@@ -2695,8 +2695,8 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
       break;
 
     case SPC_NUCLEAR_BOMB:
-      if (SuperWeapon[SPC_NUCLEAR_BOMB].Is_Ready()) {
-        if (SuperWeapon[SPC_NUCLEAR_BOMB].Is_One_Time()) {
+      if (SuperWeapon.at(SPC_NUCLEAR_BOMB).Is_Ready()) {
+        if (SuperWeapon.at(SPC_NUCLEAR_BOMB).Is_One_Time()) {
           auto* bullet =
               new BulletClass(BULLET_NUKE_DOWN, As_Target(cell), nullptr, 200,
                               WARHEAD_NUKE, static_cast<int>(MPH_VERY_FAST));
@@ -2706,7 +2706,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
             if (!bullet->Unlimbo(start, DIR_S)) {
               delete bullet;
             }
-            SuperWeapon[SPC_NUCLEAR_BOMB].Discharged(this == PlayerPtr);
+            SuperWeapon.at(SPC_NUCLEAR_BOMB).Discharged(this == PlayerPtr);
             IsRecalcNeeded = true;
             if (this == PlayerPtr) {
               Map.Column[1].Flag_To_Redraw();
@@ -2731,14 +2731,14 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
           if (this == PlayerPtr) {
             Map.IsTargettingMode = SPC_NONE;
           }
-          SuperWeapon[SPC_NUCLEAR_BOMB].Discharged(this == PlayerPtr);
+          SuperWeapon.at(SPC_NUCLEAR_BOMB).Discharged(this == PlayerPtr);
           IsRecalcNeeded = true;
         }
       }
       break;
 
     case SPC_PARA_INFANTRY:
-      if (SuperWeapon[SPC_PARA_INFANTRY].Is_Ready()) {
+      if (SuperWeapon.at(SPC_PARA_INFANTRY).Is_Ready()) {
         TeamTypeClass* ttype = TeamTypeClass::As_Pointer("@PINF");
         if (ttype == nullptr) {
           ttype = new TeamTypeClass;
@@ -2776,40 +2776,40 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
         if (this == PlayerPtr) {
           Map.IsTargettingMode = SPC_NONE;
         }
-        SuperWeapon[SPC_PARA_INFANTRY].Discharged(this == PlayerPtr);
+        SuperWeapon.at(SPC_PARA_INFANTRY).Discharged(this == PlayerPtr);
         IsRecalcNeeded = true;
       }
       break;
 
     case SPC_SPY_MISSION:
-      if (SuperWeapon[SPC_SPY_MISSION].Is_Ready()) {
+      if (SuperWeapon.at(SPC_SPY_MISSION).Is_Ready()) {
         Create_Air_Reinforcement(this, AIRCRAFT_U2, 1, MISSION_HUNT,
                                  As_Target(cell), As_Target(cell));
         if (this == PlayerPtr) {
           Map.IsTargettingMode = SPC_NONE;
         }
-        SuperWeapon[SPC_SPY_MISSION].Discharged(this == PlayerPtr);
+        SuperWeapon.at(SPC_SPY_MISSION).Discharged(this == PlayerPtr);
         IsRecalcNeeded = true;
       }
       break;
 
     case SPC_PARA_BOMB:
-      if (SuperWeapon[SPC_PARA_BOMB].Is_Ready()) {
+      if (SuperWeapon.at(SPC_PARA_BOMB).Is_Ready()) {
         Create_Air_Reinforcement(this, AIRCRAFT_BADGER, Rule.BadgerBombCount,
                                  MISSION_HUNT, As_Target(cell), kTargetNone);
         if (this == PlayerPtr) {
           Map.IsTargettingMode = SPC_NONE;
         }
-        SuperWeapon[SPC_PARA_BOMB].Discharged(this == PlayerPtr);
+        SuperWeapon.at(SPC_PARA_BOMB).Discharged(this == PlayerPtr);
         IsRecalcNeeded = true;
       }
       break;
 
     case SPC_IRON_CURTAIN:
-      if (SuperWeapon[SPC_IRON_CURTAIN].Is_Ready()) {
+      if (SuperWeapon.at(SPC_IRON_CURTAIN).Is_Ready()) {
         const int x = Keyboard->MouseQX - Map.TacPixelX;
         const int y = Keyboard->MouseQY - Map.TacPixelY;
-        TechnoClass* tech = Map[cell].Cell_Techno(x, y);
+        TechnoClass* tech = Map.at(cell).Cell_Techno(x, y);
         if (tech) {
           switch (tech->What_Am_I()) {
             case RTTI_UNIT:
@@ -2828,7 +2828,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
               if (this == PlayerPtr) {
                 Map.IsTargettingMode = SPC_NONE;
               }
-              SuperWeapon[SPC_IRON_CURTAIN].Discharged(this == PlayerPtr);
+              SuperWeapon.at(SPC_IRON_CURTAIN).Discharged(this == PlayerPtr);
               break;
             case RTTIType::RTTI_NONE:
             case RTTIType::RTTI_AIRCRAFTTYPE:
@@ -2868,10 +2868,10 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
       break;
 
     case SPC_CHRONOSPHERE:
-      if (SuperWeapon[SPC_CHRONOSPHERE].Is_Ready()) {
+      if (SuperWeapon.at(SPC_CHRONOSPHERE).Is_Ready()) {
         const int x = Keyboard->MouseQX - Map.TacPixelX;
         const int y = Keyboard->MouseQY - Map.TacPixelY;
-        TechnoClass* tech = Map[cell].Cell_Techno(x, y);
+        TechnoClass* tech = Map.at(cell).Cell_Techno(x, y);
         if (tech && Is_Ally(tech)) {
           if (tech->What_Am_I() == RTTI_UNIT ||
               tech->What_Am_I() == RTTI_INFANTRY ||
@@ -2943,7 +2943,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
       if (tech && tech->IsActive &&
           (tech->What_Am_I() != RTTI_UNIT ||
            *dynamic_cast<UnitClass*>(tech) != UNIT_CHRONOTANK)) {
-        SuperWeapon[SPC_CHRONOSPHERE].Discharged(this == PlayerPtr);
+        SuperWeapon.at(SPC_CHRONOSPHERE).Discharged(this == PlayerPtr);
       }
       IsRecalcNeeded = true;
 
@@ -3298,7 +3298,7 @@ void HouseClass::Detach(TARGET target, bool /*unused*/) {
   if (Is_Target_Trigger(target)) {
     // The original indexed by the heap ID; the table is per house type, and
     // the two only agree because houses are created in type order.
-    HouseTriggers[Class->House].Delete(As_Trigger(target));
+    HouseTriggers.at(Class->House).Delete(As_Trigger(target));
   }
 }
 
@@ -3477,7 +3477,7 @@ bool HouseClass::Flag_Remove(TARGET target, bool set_home) {
       */
       const CELL cell = As_Cell(target);
       if (Map.In_Radar(cell)) {
-        rc = Map[cell].Flag_Remove();
+        rc = Map.at(cell).Flag_Remove();
         if (rc && FlagLocation == target) {
           FlagLocation = kTargetNone;
         }
@@ -3489,7 +3489,7 @@ bool HouseClass::Flag_Remove(TARGET target, bool set_home) {
     **	If 'set_home' is set, clear the home value & the cell's overlay
     */
     if (set_home && (FlagHome != 0)) {
-      Map[FlagHome].Overlay = OVERLAY_NONE;
+      Map.at(FlagHome).Overlay = OVERLAY_NONE;
       Map.Flag_Cell(FlagHome);
       FlagHome = 0;
     }
@@ -3538,11 +3538,11 @@ bool HouseClass::Flag_Attach(CELL cell, bool set_home) {
     **	a nearby cell where it can be placed.
     */
     CELL newcell = cell;
-    bool rc = Map[newcell].Flag_Place(Class->House);
+    bool rc = Map.at(newcell).Flag_Place(Class->House);
     if (!rc) {
       newcell = Map.Nearby_Location(cell, SPEED_TRACK);
       if (newcell != 0) {
-        rc = Map[newcell].Flag_Place(Class->House);
+        rc = Map.at(newcell).Flag_Place(Class->House);
       }
     }
 
@@ -3555,9 +3555,9 @@ bool HouseClass::Flag_Attach(CELL cell, bool set_home) {
       FlagLocation = As_Target(newcell);
 
       if (set_home || FlagHome == 0) {
-        Map[newcell].Overlay = OVERLAY_FLAG_SPOT;
-        Map[newcell].OverlayData = 0;
-        Map[newcell].Recalc_Attributes();
+        Map.at(newcell).Overlay = OVERLAY_FLAG_SPOT;
+        Map.at(newcell).OverlayData = 0;
+        Map.at(newcell).Recalc_Attributes();
         FlagHome = newcell;
       }
     }
@@ -3902,9 +3902,9 @@ void HouseClass::Tally_Score() {
     */
     for (const HousesType house2 : magic_enum::enum_values<HousesType>()) {
       base::At(base::At(Session.Score, score_index).Kills, Session.CurGame) +=
-          hptr->UnitsKilled[house2];
+          hptr->UnitsKilled.at(house2);
       base::At(base::At(Session.Score, score_index).Kills, Session.CurGame) +=
-          hptr->BuildingsKilled[house2];
+          hptr->BuildingsKilled.at(house2);
     }
   }
 }
@@ -4190,9 +4190,9 @@ void HouseClass::Sell_Wall(CELL cell) {
   CHECK_EQ(Houses.ID(this), ID);
 
   if (static_cast<unsigned>(cell) > 0) {
-    const OverlayType overlay = Map[cell].Overlay;
+    const OverlayType overlay = Map.at(cell).Overlay;
 
-    if (overlay != OVERLAY_NONE && Map[cell].Owner == Class->House) {
+    if (overlay != OVERLAY_NONE && Map.at(cell).Owner == Class->House) {
       const OverlayTypeClass& optr = OverlayTypeClass::As_Reference(overlay);
 
       if (optr.IsWall) {
@@ -4251,12 +4251,12 @@ void HouseClass::Sell_Wall(CELL cell) {
           }
 
           Refund_Money(btype->Raw_Cost() * Rule.RefundPercent);
-          Map[cell].Overlay = OVERLAY_NONE;
-          Map[cell].OverlayData = 0;
-          Map[cell].Owner = HOUSE_NONE;
-          Map[cell].Wall_Update();
-          Map[cell].Recalc_Attributes();
-          Map[cell].Redraw_Objects();
+          Map.at(cell).Overlay = OVERLAY_NONE;
+          Map.at(cell).OverlayData = 0;
+          Map.at(cell).Owner = HOUSE_NONE;
+          Map.at(cell).Wall_Update();
+          Map.at(cell).Recalc_Attributes();
+          Map.at(cell).Redraw_Objects();
           Map.Radar_Pixel(cell);
           Detach_This_From_All(As_Target(cell), true);
 
@@ -4323,7 +4323,7 @@ BuildingClass* HouseClass::Find_Building(StructType type, ZoneType zone) const {
   **	Only scan if we KNOW there is at least one building of the type
   **	requested.
   */
-  if (BQuantity[type] > 0) {
+  if (BQuantity.at(type) > 0) {
     /*
     **	Search for a suitable launch site for this missile.
     */
@@ -4386,9 +4386,9 @@ COORDINATE HouseClass::Find_Build_Location(BuildingClass* building) const {
     if (z < ZONE_NORTH) {
       continue;
     }
-    zoneinfo.AntiAir += ZoneInfo[z].AirDefense;
-    zoneinfo.AntiArmor += ZoneInfo[z].ArmorDefense;
-    zoneinfo.AntiInfantry += ZoneInfo[z].InfantryDefense;
+    zoneinfo.AntiAir += ZoneInfo.at(z).AirDefense;
+    zoneinfo.AntiArmor += ZoneInfo.at(z).ArmorDefense;
+    zoneinfo.AntiInfantry += ZoneInfo.at(z).InfantryDefense;
   }
   zoneinfo.AntiAir /= static_cast<int>(magic_enum::enum_count<ZoneType>()) -
                       static_cast<int>(ZONE_NORTH);
@@ -4405,28 +4405,28 @@ COORDINATE HouseClass::Find_Build_Location(BuildingClass* building) const {
   *very under *	defended.
   */
   for (const ZoneType z : magic_enum::enum_values<ZoneType>()) {
-    int diff = zoneinfo.AntiAir - ZoneInfo[z].AirDefense;
+    int diff = zoneinfo.AntiAir - ZoneInfo.at(z).AirDefense;
     if (z == ZONE_CORE) {
       diff /= 2;
     }
     if (diff > 0) {
-      zonerating[z] += std::min(antiair, diff);
+      zonerating.at(z) += std::min(antiair, diff);
     }
 
-    diff = zoneinfo.AntiArmor - ZoneInfo[z].ArmorDefense;
+    diff = zoneinfo.AntiArmor - ZoneInfo.at(z).ArmorDefense;
     if (z == ZONE_CORE) {
       diff /= 2;
     }
     if (diff > 0) {
-      zonerating[z] += std::min(antiarmor, diff);
+      zonerating.at(z) += std::min(antiarmor, diff);
     }
 
-    diff = zoneinfo.AntiInfantry - ZoneInfo[z].InfantryDefense;
+    diff = zoneinfo.AntiInfantry - ZoneInfo.at(z).InfantryDefense;
     if (z == ZONE_CORE) {
       diff /= 2;
     }
     if (diff > 0) {
-      zonerating[z] += std::min(antiinfantry, diff);
+      zonerating.at(z) += std::min(antiinfantry, diff);
     }
   }
 
@@ -4438,9 +4438,9 @@ COORDINATE HouseClass::Find_Build_Location(BuildingClass* building) const {
       Random_Pick(magic_enum::enum_values<ZoneType>().front(), ZONE_WEST);
   int largest = 0;
   for (const ZoneType z : magic_enum::enum_values<ZoneType>()) {
-    if (zonerating[z] > largest) {
+    if (zonerating.at(z) > largest) {
       zone = z;
-      largest = zonerating[z];
+      largest = zonerating.at(z);
     }
   }
 
@@ -4493,9 +4493,9 @@ void HouseClass::Recalc_Center() {
   Center = 0;
   Radius = 0;
   for (const ZoneType zone : magic_enum::enum_values<ZoneType>()) {
-    ZoneInfo[zone].AirDefense = 0;
-    ZoneInfo[zone].ArmorDefense = 0;
-    ZoneInfo[zone].InfantryDefense = 0;
+    ZoneInfo.at(zone).AirDefense = 0;
+    ZoneInfo.at(zone).ArmorDefense = 0;
+    ZoneInfo.at(zone).InfantryDefense = 0;
   }
 
   /*
@@ -4570,9 +4570,9 @@ void HouseClass::Recalc_Center() {
           const ZoneType z = Which_Zone(b);
 
           if (z != ZONE_NONE) {
-            ZoneInfo[z].ArmorDefense += b->Anti_Armor();
-            ZoneInfo[z].AirDefense += b->Anti_Air();
-            ZoneInfo[z].InfantryDefense += b->Anti_Infantry();
+            ZoneInfo.at(z).ArmorDefense += b->Anti_Armor();
+            ZoneInfo.at(z).AirDefense += b->Anti_Air();
+            ZoneInfo.at(z).InfantryDefense += b->Anti_Infantry();
           }
         }
       }
@@ -4669,8 +4669,8 @@ int HouseClass::Expert_AI() {
         **	against this house. The enemy that does more damage might be
         **	considered a greater threat.
         */
-        value += h->BuildingsKilled[Class->House] * 5;
-        value += h->UnitsKilled[Class->House];
+        value += h->BuildingsKilled.at(Class->House) * 5;
+        value += h->UnitsKilled.at(Class->House);
 
         /*
         **	Factor in the relative sizes of the bases. An enemy that has a
@@ -4761,51 +4761,51 @@ int HouseClass::Expert_AI() {
   base::EnumArray<StrategyType, UrgencyType> urgency = {};
 
   for (const StrategyType strat : magic_enum::enum_values<StrategyType>()) {
-    urgency[strat] = URGENCY_NONE;
+    urgency.at(strat) = URGENCY_NONE;
 
     switch (strat) {
       case STRATEGY_BUILD_POWER:
-        urgency[strat] = Check_Build_Power();
+        urgency.at(strat) = Check_Build_Power();
         break;
 
       case STRATEGY_BUILD_DEFENSE:
-        urgency[strat] = Check_Build_Defense();
+        urgency.at(strat) = Check_Build_Defense();
         break;
 
       case STRATEGY_BUILD_INCOME:
-        urgency[strat] = Check_Build_Income();
+        urgency.at(strat) = Check_Build_Income();
         break;
 
       case STRATEGY_FIRE_SALE:
-        urgency[strat] = Check_Fire_Sale();
+        urgency.at(strat) = Check_Fire_Sale();
         break;
 
       case STRATEGY_BUILD_ENGINEER:
-        urgency[strat] = Check_Build_Engineer();
+        urgency.at(strat) = Check_Build_Engineer();
         break;
 
       case STRATEGY_BUILD_OFFENSE:
-        urgency[strat] = Check_Build_Offense();
+        urgency.at(strat) = Check_Build_Offense();
         break;
 
       case STRATEGY_RAISE_MONEY:
-        urgency[strat] = Check_Raise_Money();
+        urgency.at(strat) = Check_Raise_Money();
         break;
 
       case STRATEGY_RAISE_POWER:
-        urgency[strat] = Check_Raise_Power();
+        urgency.at(strat) = Check_Raise_Power();
         break;
 
       case STRATEGY_LOWER_POWER:
-        urgency[strat] = Check_Lower_Power();
+        urgency.at(strat) = Check_Lower_Power();
         break;
 
       case STRATEGY_ATTACK:
-        urgency[strat] = Check_Attack();
+        urgency.at(strat) = Check_Attack();
         break;
 
       default:
-        urgency[strat] = URGENCY_NONE;
+        urgency.at(strat) = URGENCY_NONE;
         break;
     }
   }
@@ -4818,7 +4818,7 @@ int HouseClass::Expert_AI() {
   */
   for (UrgencyType u = URGENCY_CRITICAL; u >= URGENCY_LOW; u--) {
     for (const StrategyType strat : magic_enum::enum_values<StrategyType>()) {
-      if (urgency[strat] == u) {
+      if (urgency.at(strat) == u) {
         switch (strat) {
           case STRATEGY_BUILD_POWER:
             AI_Build_Power(u);
@@ -5334,7 +5334,8 @@ int HouseClass::AI_Building() {
     BuildChoice.Free_All();
     BuildChoiceClass* choiceptr = nullptr;
     const int money = static_cast<int>(Available_Money());
-    const bool hasincome = BQuantity[STRUCT_REFINERY] > 0 && !IsTiberiumShort &&
+    const bool hasincome = BQuantity.at(STRUCT_REFINERY) > 0 &&
+                           !IsTiberiumShort &&
                            UQuantity[static_cast<int>(UNIT_HARVESTER)] > 0;
     const BuildingTypeClass* b = nullptr;
     const HouseClass* enemy = nullptr;
@@ -5352,7 +5353,7 @@ int HouseClass::AI_Building() {
       choiceptr = BuildChoice.Alloc();
       if (choiceptr != nullptr) {
         *choiceptr = BuildChoiceClass(
-            BQuantity[STRUCT_REFINERY] == 0 ? URGENCY_LOW : URGENCY_MEDIUM,
+            BQuantity.at(STRUCT_REFINERY) == 0 ? URGENCY_LOW : URGENCY_MEDIUM,
             b->Type);
       }
     } else {
@@ -5362,7 +5363,7 @@ int HouseClass::AI_Building() {
         choiceptr = BuildChoice.Alloc();
         if (choiceptr != nullptr) {
           *choiceptr = BuildChoiceClass(
-              BQuantity[STRUCT_REFINERY] == 0 ? URGENCY_LOW : URGENCY_MEDIUM,
+              BQuantity.at(STRUCT_REFINERY) == 0 ? URGENCY_LOW : URGENCY_MEDIUM,
               b->Type);
         }
       }
@@ -5371,7 +5372,7 @@ int HouseClass::AI_Building() {
     /*
     **	Build a refinery if there isn't one already available.
     */
-    int current = BQuantity[STRUCT_REFINERY];
+    int current = BQuantity.at(STRUCT_REFINERY);
     if (!IsTiberiumShort &&
         (Rule.RefineryRatio * fixed(static_cast<uint8_t>(CurBuildings)))
                 .Round_Up() > current &&
@@ -5380,9 +5381,10 @@ int HouseClass::AI_Building() {
       if (Can_Build(b, ActLike) && (money > b->Cost_Of() || hasincome)) {
         choiceptr = BuildChoice.Alloc();
         if (choiceptr != nullptr) {
-          *choiceptr = BuildChoiceClass(
-              BQuantity[STRUCT_REFINERY] == 0 ? URGENCY_HIGH : URGENCY_MEDIUM,
-              b->Type);
+          *choiceptr = BuildChoiceClass(BQuantity.at(STRUCT_REFINERY) == 0
+                                            ? URGENCY_HIGH
+                                            : URGENCY_MEDIUM,
+                                        b->Type);
         }
       }
     }
@@ -5391,7 +5393,7 @@ int HouseClass::AI_Building() {
     **	Always make sure there is a barracks available, but only if there
     **	will be sufficient money to train troopers.
     */
-    current = BQuantity[STRUCT_BARRACKS] + BQuantity[STRUCT_TENT];
+    current = BQuantity.at(STRUCT_BARRACKS) + BQuantity.at(STRUCT_TENT);
     if ((Rule.BarracksRatio * fixed(static_cast<uint8_t>(CurBuildings)))
                 .Round_Up() > current &&
         current < Rule.BarracksLimit && (money > 300 || hasincome)) {
@@ -5417,7 +5419,7 @@ int HouseClass::AI_Building() {
     /*
     **	Try to build one dog house.
     */
-    current = BQuantity[STRUCT_KENNEL];
+    current = BQuantity.at(STRUCT_KENNEL);
     if (current < 1 && (money > 300 || hasincome)) {
       b = &BuildingTypeClass::As_Reference(STRUCT_KENNEL);
       if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
@@ -5431,7 +5433,7 @@ int HouseClass::AI_Building() {
     /*
     **	Try to build one gap generator.
     */
-    current = BQuantity[STRUCT_GAP];
+    current = BQuantity.at(STRUCT_GAP);
     if (current < 1 && Power_Fraction() >= 1 && hasincome) {
       b = &BuildingTypeClass::As_Reference(STRUCT_GAP);
       if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
@@ -5446,7 +5448,7 @@ int HouseClass::AI_Building() {
     **	A source of combat vehicles is always needed, but only if there will
     **	be sufficient money to build vehicles.
     */
-    current = BQuantity[STRUCT_WEAP];
+    current = BQuantity.at(STRUCT_WEAP);
     if ((Rule.WarRatio * fixed(static_cast<uint8_t>(CurBuildings)))
                 .Round_Up() > current &&
         current < Rule.WarLimit && (money > 2000 || hasincome)) {
@@ -5463,8 +5465,8 @@ int HouseClass::AI_Building() {
     /*
     **	Always build up some base defense.
     */
-    current = BQuantity[STRUCT_PILLBOX] + BQuantity[STRUCT_CAMOPILLBOX] +
-              BQuantity[STRUCT_TURRET] + BQuantity[STRUCT_FLAME_TURRET];
+    current = BQuantity.at(STRUCT_PILLBOX) + BQuantity.at(STRUCT_CAMOPILLBOX) +
+              BQuantity.at(STRUCT_TURRET) + BQuantity.at(STRUCT_FLAME_TURRET);
     if ((Rule.DefenseRatio * fixed(static_cast<uint8_t>(CurBuildings)))
                 .Round_Up() > current &&
         current < Rule.DefenseLimit) {
@@ -5498,7 +5500,7 @@ int HouseClass::AI_Building() {
     /*
     **	Build some air defense.
     */
-    current = BQuantity[STRUCT_SAM] + BQuantity[STRUCT_AAGUN];
+    current = BQuantity.at(STRUCT_SAM) + BQuantity.at(STRUCT_AAGUN);
     if ((Rule.AARatio * fixed(static_cast<uint8_t>(CurBuildings)))
                 .Round_Up() > current &&
         current < Rule.AALimit) {
@@ -5523,7 +5525,7 @@ int HouseClass::AI_Building() {
       }
 
       if (airthreat) {
-        if (BQuantity[STRUCT_RADAR] == 0) {
+        if (BQuantity.at(STRUCT_RADAR) == 0) {
           b = &BuildingTypeClass::As_Reference(STRUCT_RADAR);
           if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
             choiceptr = BuildChoice.Alloc();
@@ -5558,7 +5560,7 @@ int HouseClass::AI_Building() {
     /*
     **	Advanced base defense would be good.
     */
-    current = BQuantity[STRUCT_TESLA];
+    current = BQuantity.at(STRUCT_TESLA);
     if ((Rule.TeslaRatio * fixed(static_cast<uint8_t>(CurBuildings)))
                 .Round_Up() > current &&
         current < Rule.TeslaLimit) {
@@ -5575,7 +5577,8 @@ int HouseClass::AI_Building() {
     /*
     **	Build a tech center as soon as possible.
     */
-    current = BQuantity[STRUCT_ADVANCED_TECH] + BQuantity[STRUCT_SOVIET_TECH];
+    current =
+        BQuantity.at(STRUCT_ADVANCED_TECH) + BQuantity.at(STRUCT_SOVIET_TECH);
     if (current < 1) {
       b = &BuildingTypeClass::As_Reference(STRUCT_ADVANCED_TECH);
       if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome) &&
@@ -5599,7 +5602,7 @@ int HouseClass::AI_Building() {
     /*
     **	A helipad would be good.
     */
-    current = BQuantity[STRUCT_HELIPAD];
+    current = BQuantity.at(STRUCT_HELIPAD);
     if ((Rule.HelipadRatio * fixed(static_cast<uint8_t>(CurBuildings)))
                 .Round_Up() > current &&
         current < Rule.HelipadLimit) {
@@ -5622,7 +5625,7 @@ int HouseClass::AI_Building() {
     /*
     **	An airstrip would be good.
     */
-    current = BQuantity[STRUCT_AIRSTRIP];
+    current = BQuantity.at(STRUCT_AIRSTRIP);
     if ((Rule.AirstripRatio * fixed(static_cast<uint8_t>(CurBuildings)))
                 .Round_Up() > current &&
         current < Rule.AirstripLimit) {
@@ -5707,7 +5710,7 @@ int HouseClass::AI_Unit() {
   **	harvester if possible.
   */
   if ((IQ >= Rule.IQHarvester && !IsTiberiumShort && !IsHuman &&
-       BQuantity[STRUCT_REFINERY] >
+       BQuantity.at(STRUCT_REFINERY) >
            UQuantity[static_cast<int>(UNIT_HARVESTER)] &&
        Difficulty != DIFF_HARD) &&
       (UnitTypeClass::As_Reference(UNIT_HARVESTER).Level <=
@@ -5735,7 +5738,7 @@ int HouseClass::AI_Unit() {
             const TechnoTypeClass* memtype =
                 base::At(team->Members, subindex).Class;
             if (memtype->What_Am_I() == RTTI_UNITTYPE) {
-              counter[dynamic_cast<const UnitTypeClass*>(memtype)->Type] = 1;
+              counter.at(dynamic_cast<const UnitTypeClass*>(memtype)->Type) = 1;
             }
           }
         }
@@ -5758,8 +5761,9 @@ int HouseClass::AI_Unit() {
           if (memtype->What_Am_I() == RTTI_UNITTYPE) {
             const UnitType subtype =
                 dynamic_cast<const UnitTypeClass*>(memtype)->Type;
-            counter[subtype] = std::max(
-                counter[subtype], base::At(team->Members, subindex).Quantity);
+            counter.at(subtype) =
+                std::max(counter.at(subtype),
+                         base::At(team->Members, subindex).Quantity);
           }
         }
       }
@@ -5772,8 +5776,8 @@ int HouseClass::AI_Unit() {
     for (int uindex = 0; uindex < Units.Count(); uindex++) {
       const UnitClass* unit = Units.Ptr(uindex);
       if (unit != nullptr && unit->Is_Recruitable(this) &&
-          counter[unit->Class->Type] > 0) {
-        counter[unit->Class->Type]--;
+          counter.at(unit->Class->Type) > 0) {
+        counter.at(unit->Class->Type)--;
       }
     }
 
@@ -5786,11 +5790,11 @@ int HouseClass::AI_Unit() {
     int bestcount = 0;
     UnitType bestlist[magic_enum::enum_count<UnitType>()];
     for (const UnitType utype : magic_enum::enum_values<UnitType>()) {
-      if (counter[utype] > 0 &&
+      if (counter.at(utype) > 0 &&
           Can_Build(&UnitTypeClass::As_Reference(utype), Class->House) &&
           UnitTypeClass::As_Reference(utype).Cost_Of() <= Available_Money()) {
-        if (bestval == -1 || bestval < counter[utype]) {
-          bestval = counter[utype];
+        if (bestval == -1 || bestval < counter.at(utype)) {
+          bestval = counter.at(utype);
           bestcount = 0;
         }
         base::At(bestlist, bestcount++) = utype;
@@ -5813,24 +5817,24 @@ int HouseClass::AI_Unit() {
       const UnitTypeClass* utype = &UnitTypeClass::As_Reference(index);
       if (Can_Build(utype, ActLike) && utype->Type != UNIT_HARVESTER) {
         if (utype->PrimaryWeapon != nullptr) {
-          counter[index] = 20;
+          counter.at(index) = 20;
         } else {
-          counter[index] = 1;
+          counter.at(index) = 1;
         }
       } else {
-        counter[index] = 0;
+        counter.at(index) = 0;
       }
-      total += counter[index];
+      total += counter.at(index);
     }
 
     if (total > 0) {
       int choice = Random_Pick(0, total - 1);
       for (const UnitType index : magic_enum::enum_values<UnitType>()) {
-        if (choice < counter[index]) {
+        if (choice < counter.at(index)) {
           BuildUnit = index;
           break;
         }
-        choice -= counter[index];
+        choice -= counter.at(index);
       }
     }
   }
@@ -5856,9 +5860,9 @@ int HouseClass::AI_Vessel() {
       for (const VesselType index : magic_enum::enum_values<VesselType>()) {
         if (Can_Build(&VesselTypeClass::As_Reference(index), Class->House) &&
             VesselTypeClass::As_Reference(index).Level <= Control.TechLevel) {
-          counter[index] = 16;
+          counter.at(index) = 16;
         } else {
-          counter[index] = 0;
+          counter.at(index) = 0;
         }
       }
     }
@@ -5879,9 +5883,9 @@ int HouseClass::AI_Vessel() {
           for (int subindex = 0; subindex < team->ClassCount; subindex++) {
             if (base::At(team->Members, subindex).Class->What_Am_I() ==
                 RTTI_VESSELTYPE) {
-              counter[dynamic_cast<const VesselTypeClass*>(
-                          base::At(team->Members, subindex).Class)
-                          ->Type] = 1;
+              counter.at(dynamic_cast<const VesselTypeClass*>(
+                             base::At(team->Members, subindex).Class)
+                             ->Type) = 1;
             }
           }
         }
@@ -5904,8 +5908,9 @@ int HouseClass::AI_Vessel() {
                 dynamic_cast<const VesselTypeClass*>(
                     base::At(team->Members, subindex).Class)
                     ->Type;
-            counter[subtype] = std::max(
-                counter[subtype], base::At(team->Members, subindex).Quantity);
+            counter.at(subtype) =
+                std::max(counter.at(subtype),
+                         base::At(team->Members, subindex).Quantity);
           }
         }
       }
@@ -5918,8 +5923,8 @@ int HouseClass::AI_Vessel() {
     for (int vindex = 0; vindex < Vessels.Count(); vindex++) {
       const VesselClass* unit = Vessels.Ptr(vindex);
       if (unit != nullptr && unit->Is_Recruitable(this) &&
-          counter[unit->Class->Type] > 0) {
-        counter[unit->Class->Type]--;
+          counter.at(unit->Class->Type) > 0) {
+        counter.at(unit->Class->Type)--;
       }
     }
 
@@ -5932,11 +5937,11 @@ int HouseClass::AI_Vessel() {
     int bestcount = 0;
     VesselType bestlist[magic_enum::enum_count<VesselType>()];
     for (const VesselType utype : magic_enum::enum_values<VesselType>()) {
-      if (counter[utype] > 0 &&
+      if (counter.at(utype) > 0 &&
           Can_Build(&VesselTypeClass::As_Reference(utype), Class->House) &&
           VesselTypeClass::As_Reference(utype).Cost_Of() <= Available_Money()) {
-        if (bestval == -1 || bestval < counter[utype]) {
-          bestval = counter[utype];
+        if (bestval == -1 || bestval < counter.at(utype)) {
+          bestval = counter.at(utype);
           bestcount = 0;
         }
         base::At(bestlist, bestcount++) = utype;
@@ -6003,9 +6008,9 @@ int HouseClass::AI_Infantry() {
           for (int subindex = 0; subindex < team->ClassCount; subindex++) {
             if (base::At(team->Members, subindex).Class->What_Am_I() ==
                 RTTI_INFANTRYTYPE) {
-              counter[dynamic_cast<const InfantryTypeClass*>(
-                          base::At(team->Members, subindex).Class)
-                          ->Type] +=
+              counter.at(dynamic_cast<const InfantryTypeClass*>(
+                             base::At(team->Members, subindex).Class)
+                             ->Type) +=
                   base::At(team->Members, subindex).Quantity +
                   (team->IsReinforcable ? 1 : 0);
             }
@@ -6033,9 +6038,10 @@ int HouseClass::AI_Infantry() {
                     ->Type;
             //									counter[subtype]
             //= 1;
-            counter[subtype] = std::max(
-                counter[subtype], base::At(team->Members, subindex).Quantity);
-            counter[subtype] = std::min(counter[subtype], 5);
+            counter.at(subtype) =
+                std::max(counter.at(subtype),
+                         base::At(team->Members, subindex).Quantity);
+            counter.at(subtype) = std::min(counter.at(subtype), 5);
           }
         }
       }
@@ -6048,8 +6054,8 @@ int HouseClass::AI_Infantry() {
     for (int uindex = 0; uindex < Infantry.Count(); uindex++) {
       const InfantryClass* infantry = Infantry.Ptr(uindex);
       if (infantry != nullptr && infantry->Is_Recruitable(this) &&
-          counter[infantry->Class->Type] > 0) {
-        counter[infantry->Class->Type]--;
+          counter.at(infantry->Class->Type) > 0) {
+        counter.at(infantry->Class->Type)--;
       }
     }
 
@@ -6063,12 +6069,12 @@ int HouseClass::AI_Infantry() {
     InfantryType bestlist[magic_enum::enum_count<InfantryType>()];
     for (const InfantryType utype : magic_enum::enum_values<InfantryType>()) {
       if ((utype != INFANTRY_DOG || !(IScan & kInfantryFlagDog)) &&
-          (counter[utype] > 0 &&
+          (counter.at(utype) > 0 &&
            Can_Build(&InfantryTypeClass::As_Reference(utype), Class->House) &&
            InfantryTypeClass::As_Reference(utype).Cost_Of() <=
                Available_Money())) {
-        if (bestval == -1 || bestval < counter[utype]) {
-          bestval = counter[utype];
+        if (bestval == -1 || bestval < counter.at(utype)) {
+          bestval = counter.at(utype);
           bestcount = 0;
         }
         base::At(bestlist, bestcount++) = utype;
@@ -6232,8 +6238,8 @@ int HouseClass::AI_Aircraft() {
                   ActLike) &&
         AircraftTypeClass::As_Reference(AIRCRAFT_LONGBOW).Level <=
             Control.TechLevel &&
-        BQuantity[STRUCT_HELIPAD] >
-            AQuantity[AIRCRAFT_LONGBOW] + AQuantity[AIRCRAFT_HIND]) {
+        BQuantity.at(STRUCT_HELIPAD) >
+            AQuantity.at(AIRCRAFT_LONGBOW) + AQuantity.at(AIRCRAFT_HIND)) {
       BuildAircraft = AIRCRAFT_LONGBOW;
       return kTicksPerSecond;
     }
@@ -6241,8 +6247,8 @@ int HouseClass::AI_Aircraft() {
     if (Can_Build(&AircraftTypeClass::As_Reference(AIRCRAFT_HIND), ActLike) &&
         AircraftTypeClass::As_Reference(AIRCRAFT_HIND).Level <=
             Control.TechLevel &&
-        BQuantity[STRUCT_HELIPAD] >
-            AQuantity[AIRCRAFT_LONGBOW] + AQuantity[AIRCRAFT_HIND]) {
+        BQuantity.at(STRUCT_HELIPAD) >
+            AQuantity.at(AIRCRAFT_LONGBOW) + AQuantity.at(AIRCRAFT_HIND)) {
       BuildAircraft = AIRCRAFT_HIND;
       return kTicksPerSecond;
     }
@@ -6250,8 +6256,8 @@ int HouseClass::AI_Aircraft() {
     if (Can_Build(&AircraftTypeClass::As_Reference(AIRCRAFT_MIG), ActLike) &&
         AircraftTypeClass::As_Reference(AIRCRAFT_MIG).Level <=
             Control.TechLevel &&
-        BQuantity[STRUCT_AIRSTRIP] >
-            AQuantity[AIRCRAFT_MIG] + AQuantity[AIRCRAFT_YAK]) {
+        BQuantity.at(STRUCT_AIRSTRIP) >
+            AQuantity.at(AIRCRAFT_MIG) + AQuantity.at(AIRCRAFT_YAK)) {
       BuildAircraft = AIRCRAFT_MIG;
       return kTicksPerSecond;
     }
@@ -6259,8 +6265,8 @@ int HouseClass::AI_Aircraft() {
     if (Can_Build(&AircraftTypeClass::As_Reference(AIRCRAFT_YAK), ActLike) &&
         AircraftTypeClass::As_Reference(AIRCRAFT_YAK).Level <=
             Control.TechLevel &&
-        BQuantity[STRUCT_AIRSTRIP] >
-            AQuantity[AIRCRAFT_MIG] + AQuantity[AIRCRAFT_YAK]) {
+        BQuantity.at(STRUCT_AIRSTRIP) >
+            AQuantity.at(AIRCRAFT_MIG) + AQuantity.at(AIRCRAFT_YAK)) {
       BuildAircraft = AIRCRAFT_YAK;
       return kTicksPerSecond;
     }
@@ -6377,14 +6383,14 @@ void HouseClass::Tracking_Remove(const TechnoClass* techno) {
   switch (techno->What_Am_I()) {
     case RTTI_BUILDING:
       CurBuildings--;
-      BQuantity[dynamic_cast<const BuildingTypeClass&>(techno->Class_Of())
-                    .Type]--;
+      BQuantity.at(
+          dynamic_cast<const BuildingTypeClass&>(techno->Class_Of()).Type)--;
       break;
 
     case RTTI_AIRCRAFT:
       CurAircraft--;
-      AQuantity[dynamic_cast<const AircraftTypeClass&>(techno->Class_Of())
-                    .Type]--;
+      AQuantity.at(
+          dynamic_cast<const AircraftTypeClass&>(techno->Class_Of()).Type)--;
       break;
 
     case RTTI_INFANTRY:
@@ -6482,7 +6488,7 @@ void HouseClass::Tracking_Add(const TechnoClass* techno) {
       CurBuildings++;
       building =
           dynamic_cast<const BuildingTypeClass&>(techno->Class_Of()).Type;
-      BQuantity[building]++;
+      BQuantity.at(building)++;
       BScan |= ScanBit(static_cast<int>(building));
       if (Session.Type == GAME_INTERNET) {
         BuildingTotals->Increment_Unit_Total(techno->Class_Of().ID);
@@ -6493,7 +6499,7 @@ void HouseClass::Tracking_Add(const TechnoClass* techno) {
       CurAircraft++;
       aircraft =
           dynamic_cast<const AircraftTypeClass&>(techno->Class_Of()).Type;
-      AQuantity[aircraft]++;
+      AQuantity.at(aircraft)++;
       AScan |= ScanBit(static_cast<int>(aircraft));
       if (Session.Type == GAME_INTERNET) {
         AircraftTotals->Increment_Unit_Total(techno->Class_Of().ID);
@@ -6996,8 +7002,8 @@ CELL HouseClass::Where_To_Go(const FootClass* object) const {
   const CELL cell = Random_Cell_In_Zone(zone);
   CHECK_NE(cell, 0);
 
-  return Map.Nearby_Location(cell, SPEED_TRACK, Map[cell].Zones[MZONE_NORMAL],
-                             MZONE_NORMAL);
+  return Map.Nearby_Location(cell, SPEED_TRACK,
+                             Map.at(cell).Zones.at(MZONE_NORMAL), MZONE_NORMAL);
 }
 
 /***********************************************************************************************
@@ -7066,7 +7072,7 @@ TARGET HouseClass::Find_Juicy_Target(COORDINATE coord) const {
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 int HouseClass::Get_Quantity(AircraftType aircraft) {
-  return AQuantity[aircraft];
+  return AQuantity.at(aircraft);
 }
 
 /***********************************************************************************************
@@ -7282,7 +7288,7 @@ int HouseClass::Factory_Count(RTTIType rtti) const {
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 int HouseClass::Get_Quantity(StructType building) {
-  return BQuantity[building];
+  return BQuantity.at(building);
 }
 
 /***********************************************************************************************
@@ -7442,7 +7448,7 @@ void HouseClass::Write_INI(CCINIClass& ini) {
  * HISTORY: * 09/23/1996 JLB : Created. *
  *=============================================================================================*/
 bool HouseClass::Is_No_YakMig() const {
-  int quantity = AQuantity[AIRCRAFT_YAK] + AQuantity[AIRCRAFT_MIG];
+  int quantity = AQuantity.at(AIRCRAFT_YAK) + AQuantity.at(AIRCRAFT_MIG);
 
   /*
   **	Adjust the quantity down one if there is an aircraft in production. This
@@ -7456,7 +7462,7 @@ bool HouseClass::Is_No_YakMig() const {
     }
   }
 
-  if (quantity >= BQuantity[STRUCT_AIRSTRIP]) {
+  if (quantity >= BQuantity.at(STRUCT_AIRSTRIP)) {
     return true;
   }
   return false;
@@ -7774,7 +7780,7 @@ void HouseClass::Update_Spied_Power_Plants() {
   const base::ssize count = CurrentObject.Count();
   if (count) {
     for (int index = 0; index < count; index++) {
-      ObjectClass* tech = CurrentObject[index];
+      ObjectClass* tech = CurrentObject.at(index);
       if (tech && tech->What_Am_I() == RTTI_BUILDING) {
         auto* bldg = dynamic_cast<BuildingClass*>(tech);
         if (!bldg->IsOwnedByPlayer &&

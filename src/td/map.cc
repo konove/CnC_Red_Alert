@@ -532,7 +532,7 @@ void MapClass::Init_Cells() {
 #else
   // Reset all cells to their default initial state.
   for (base::ssize index = 0; index < MAP_CELL_TOTAL; index++) {
-    Map[index].Reset();
+    Map.at(index).Reset();
   }
 #endif
 }
@@ -645,7 +645,7 @@ void MapClass::Sight_From(CELL cell, int sightrange, bool incremental) {
     **	adjacent cells as well. For full scans, just update
     **	the cell itself.
     */
-    if (!(*this)[newcell].IsMapped) {
+    if (!(*this).at(newcell).IsMapped) {
       Map.Map_Cell(newcell, PlayerPtr);
     }
   }
@@ -743,9 +743,9 @@ void MapClass::Place_Down(CELL cell, ObjectClass* object) {
   while (list.front() != REFRESH_EOL) {
     const CELL newcell = static_cast<CELL>(cell + base::ConsumeFront(list));
     if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
-      (*this)[newcell].Occupy_Down(object);
-      (*this)[newcell].Recalc_Attributes();
-      (*this)[newcell].Redraw_Objects();
+      (*this).at(newcell).Occupy_Down(object);
+      (*this).at(newcell).Recalc_Attributes();
+      (*this).at(newcell).Redraw_Objects();
     }
   }
 
@@ -753,8 +753,8 @@ void MapClass::Place_Down(CELL cell, ObjectClass* object) {
   while (list.front() != REFRESH_EOL) {
     const CELL newcell = static_cast<CELL>(cell + base::ConsumeFront(list));
     if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
-      (*this)[newcell].Overlap_Down(object);
-      (*this)[newcell].Redraw_Objects();
+      (*this).at(newcell).Overlap_Down(object);
+      (*this).at(newcell).Redraw_Objects();
     }
   }
 }
@@ -786,9 +786,9 @@ void MapClass::Pick_Up(CELL cell, ObjectClass* object) {
   while (list.front() != REFRESH_EOL) {
     const CELL newcell = static_cast<CELL>(cell + base::ConsumeFront(list));
     if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
-      (*this)[newcell].Occupy_Up(object);
-      (*this)[newcell].Recalc_Attributes();
-      (*this)[newcell].Redraw_Objects();
+      (*this).at(newcell).Occupy_Up(object);
+      (*this).at(newcell).Recalc_Attributes();
+      (*this).at(newcell).Redraw_Objects();
     }
   }
 
@@ -796,8 +796,8 @@ void MapClass::Pick_Up(CELL cell, ObjectClass* object) {
   while (list.front() != REFRESH_EOL) {
     const CELL newcell = static_cast<CELL>(cell + base::ConsumeFront(list));
     if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
-      (*this)[newcell].Overlap_Up(object);
-      (*this)[newcell].Redraw_Objects();
+      (*this).at(newcell).Overlap_Up(object);
+      (*this).at(newcell).Redraw_Objects();
     }
   }
 }
@@ -829,8 +829,8 @@ void MapClass::Overlap_Down(CELL cell, ObjectClass* object) {
   while (list.front() != REFRESH_EOL) {
     const CELL newcell = static_cast<CELL>(cell + base::ConsumeFront(list));
     if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
-      (*this)[newcell].Overlap_Down(object);
-      (*this)[newcell].Redraw_Objects();
+      (*this).at(newcell).Overlap_Down(object);
+      (*this).at(newcell).Redraw_Objects();
     }
   }
 }
@@ -861,8 +861,8 @@ void MapClass::Overlap_Up(CELL cell, ObjectClass* object) {
   while (list.front() != REFRESH_EOL) {
     const CELL newcell = static_cast<CELL>(cell + base::ConsumeFront(list));
     if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
-      (*this)[newcell].Overlap_Up(object);
-      (*this)[newcell].Redraw_Objects();
+      (*this).at(newcell).Overlap_Up(object);
+      (*this).at(newcell).Redraw_Objects();
     }
   }
 }
@@ -894,7 +894,8 @@ int32_t MapClass::Overpass() {
   */
   for (int y = 0; y < MapCellHeight - 1; y++) {
     for (int x = 0; x < MapCellWidth; x++) {
-      value += (*this)[((MapCellY + y) * MAP_CELL_W) + (MapCellX + x)]
+      value += (*this)
+                   .at(((MapCellY + y) * MAP_CELL_W) + (MapCellX + x))
                    .Tiberium_Adjust(true);
     }
   }
@@ -942,7 +943,7 @@ bool MapClass::Read_Binary(const char* root, uint32_t* crc)
   **	Loop through all cells.
   */
   for (i = 0; i < MAP_CELL_TOTAL; i++) {
-    CellClass* cellptr = &Map[static_cast<CELL>(i)];
+    CellClass* cellptr = &Map.at(static_cast<CELL>(i));
     struct {
       TemplateType TType;   // Template type.
       unsigned char TIcon;  // Template icon number.
@@ -965,8 +966,8 @@ bool MapClass::Read_Binary(const char* root, uint32_t* crc)
           TemplateTypeClass::As_Reference(temp.TType).Get_Image_Data();
       if (!shape.empty()) {
         const auto map = Get_Icon_Set_Map(shape);
-        if ((!map.empty()) &&
-            (temp.TIcon >= map.size() || map[temp.TIcon] == std::byte{0xff})) {
+        if ((!map.empty()) && (temp.TIcon >= map.size() ||
+                               base::At(map, temp.TIcon) == std::byte{0xff})) {
           temp.TIcon = 0;
           temp.TType = TEMPLATE_NONE;
         }
@@ -1024,7 +1025,7 @@ bool MapClass::Write_Binary(const char* root) {
     /*
     **	Save TType.
     */
-    if (!file->WriteObject(Map[i].TType)) {
+    if (!file->WriteObject(Map.at(i).TType)) {
       file->Close();
       delete file;
       return false;
@@ -1033,7 +1034,7 @@ bool MapClass::Write_Binary(const char* root) {
     /*
     **	Save TIcon.
     */
-    if (!file->WriteObject(Map[i].TIcon)) {
+    if (!file->WriteObject(Map.at(i).TIcon)) {
       file->Close();
       delete file;
       return false;
@@ -1083,7 +1084,7 @@ void MapClass::Logic() {
     if (!IsForwardScan) {
       cell = static_cast<CELL>(MAP_CELL_TOTAL - 1 - index);
     }
-    const CellClass* ptr = &(*this)[cell];
+    const CellClass* ptr = &(*this).at(cell);
 
     if (Special.IsTGrowth && ptr->Land_Type() == LAND_TIBERIUM &&
         ptr->OverlayData < 11) {
@@ -1137,7 +1138,7 @@ void MapClass::Logic() {
       for (int i = 0; i < tries; i++) {
         const CELL cell =
             base::At(TiberiumGrowth, Random_Pick(0, TiberiumGrowthCount - 1));
-        CellClass* newcell = &(*this)[cell];
+        CellClass* newcell = &(*this).at(cell);
         if (newcell->Land_Type() == LAND_TIBERIUM &&
             newcell->OverlayData < 12 - 1) {
           newcell->OverlayData++;
@@ -1161,7 +1162,7 @@ void MapClass::Logic() {
         if (Map.In_Radar(cell)) {
           const FacingType offset = Random_Pick(FACING_N, FACING_NW);
           for (FacingType j = FACING_N; j < FACING_COUNT; j++) {
-            CellClass* newcell = &(*this)[cell].Adjacent_Cell(j + offset);
+            CellClass* newcell = &(*this).at(cell).Adjacent_Cell(j + offset);
 
             if (newcell && newcell->Cell_Object() == nullptr &&
                 newcell->Land_Type() == LAND_CLEAR &&
@@ -1225,9 +1226,9 @@ int MapClass::Cell_Region(CELL cell) {
  *=========================================================================*/
 int MapClass::Cell_Threat(CELL cell, HousesType house) {
   int threat = base::At(HouseClass::As_Pointer(house)->Regions,
-                        MapEditClass::Cell_Region(Map[cell].Cell_Number()))
+                        MapEditClass::Cell_Region(Map.at(cell).Cell_Number()))
                    .Threat_Value();
-  if (!threat && Map[cell].IsVisible) {
+  if (!threat && Map.at(cell).IsVisible) {
     threat = 1;
   }
   return threat;
@@ -1256,7 +1257,7 @@ bool MapClass::Place_Random_Crate() {
     const int y = Random_Pick(0, MapCellHeight - 1);
     const CELL cell = XY_Cell(MapCellX + x, MapCellY + y);
 
-    CellClass* ptr = &(*this)[cell];
+    CellClass* ptr = &(*this).at(cell);
     if (ptr->Is_Generally_Clear() && ptr->Overlay == OVERLAY_NONE) {
       ptr->Overlay = OVERLAY_WOOD_CRATE;
       ptr->OverlayData = 0;
@@ -1298,7 +1299,7 @@ bool MapClass::Validate() {
     /*.....................................................................
     Validate Template & Icon data
     .....................................................................*/
-    const TemplateType ttype = (*this)[cell].TType;
+    const TemplateType ttype = (*this).at(cell).TType;
     if (ttype >= TEMPLATE_COUNT && ttype != TEMPLATE_NONE) {
       return false;
     }
@@ -1311,7 +1312,7 @@ bool MapClass::Validate() {
     .....................................................................*/
     if (ttype != TEMPLATE_NONE) {
       const TemplateTypeClass* tclass = &TemplateTypeClass::As_Reference(ttype);
-      const unsigned char ticon = (*this)[cell].TIcon;
+      const unsigned char ticon = (*this).at(cell).TIcon;
       Mem_Copy(std::as_bytes(Get_Icon_Set_Map(tclass->Get_Image_Data())),
                std::as_writable_bytes(std::span(map)),
                static_cast<size_t>(tclass->Width) * tclass->Height);
@@ -1324,7 +1325,7 @@ bool MapClass::Validate() {
     /*.....................................................................
     Validate Overlay
     .....................................................................*/
-    const OverlayType overlay = (*this)[cell].Overlay;
+    const OverlayType overlay = (*this).at(cell).Overlay;
     if (overlay < OVERLAY_NONE || overlay >= OVERLAY_COUNT) {
       return false;
     }
@@ -1332,7 +1333,7 @@ bool MapClass::Validate() {
     /*.....................................................................
     Validate Smudge
     .....................................................................*/
-    const SmudgeType smudge = (*this)[cell].Smudge;
+    const SmudgeType smudge = (*this).at(cell).Smudge;
     if (smudge < SMUDGE_NONE || smudge >= SMUDGE_COUNT) {
       return false;
     }
@@ -1340,7 +1341,7 @@ bool MapClass::Validate() {
     /*.....................................................................
     Validate LandType
     .....................................................................*/
-    const LandType land = (*this)[cell].Land_Type();
+    const LandType land = (*this).at(cell).Land_Type();
     if (land < LAND_CLEAR || land >= LAND_COUNT) {
       return false;
     }
@@ -1348,7 +1349,7 @@ bool MapClass::Validate() {
     /*.....................................................................
     Validate Occupier
     .....................................................................*/
-    ObjectClass* obj = (*this)[cell].Cell_Occupier();
+    ObjectClass* obj = (*this).at(cell).Cell_Occupier();
     if (obj && (obj->IsInLimbo ||
                 static_cast<unsigned int>(Coord_Cell(obj->Coord)) > 4095)) {
       return false;
@@ -1357,7 +1358,7 @@ bool MapClass::Validate() {
     /*.....................................................................
     Validate Overlappers
     .....................................................................*/
-    for (auto& Overlapper : (*this)[cell].Overlappers) {
+    for (auto& Overlapper : (*this).at(cell).Overlappers) {
       obj = Overlapper;
       if (obj && (obj->IsInLimbo ||
                   static_cast<unsigned int>(Coord_Cell(obj->Coord)) > 4095)) {
@@ -1417,7 +1418,7 @@ ObjectClass* MapClass::Close_Object(COORDINATE coord) const {
       **	find the closest object. Check against any previously found
       *object *	to ensure that it is actually closer.
       */
-      ObjectClass* o = (*this)[newcell].Cell_Occupier();
+      ObjectClass* o = (*this).at(newcell).Cell_Occupier();
       while (o) {
         /*
         **	Special case check to ignore cloaked object if not owned by the

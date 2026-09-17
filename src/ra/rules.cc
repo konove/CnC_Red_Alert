@@ -701,7 +701,7 @@ bool RulesClass::Powerups(CCINIClass& ini) {
   if (ini.Is_Present(POWERUPS)) {
     for (const CrateType crate : magic_enum::enum_values<CrateType>()) {
       char buffer[128];
-      if (ini.Get_String(POWERUPS, CrateNames[crate], "0,NONE", buffer,
+      if (ini.Get_String(POWERUPS, CrateNames.at(crate), "0,NONE", buffer,
                          sizeof(buffer))) {
         /*
         **	Share odds.
@@ -710,7 +710,7 @@ bool RulesClass::Powerups(CCINIClass& ini) {
         char* token = tokens.Next();
         if (token) {
           strtrim(port::MutableCString(token));
-          CrateShares[crate] = tech::ParseInteger<int>(token).value_or(0);
+          CrateShares.at(crate) = tech::ParseInteger<int>(token).value_or(0);
         }
 
         /*
@@ -719,7 +719,7 @@ bool RulesClass::Powerups(CCINIClass& ini) {
         token = tokens.Next();
         if (token) {
           strtrim(port::MutableCString(token));
-          CrateAnims[crate] = Anim_From_Name(token);
+          CrateAnims.at(crate) = Anim_From_Name(token);
         }
 
         /*
@@ -729,10 +729,10 @@ bool RulesClass::Powerups(CCINIClass& ini) {
         if (token != nullptr) {
           if ((std::string_view(token).contains('.') ||
                std::string_view(token).contains('%'))) {
-            CrateData[crate] = fixed::FromString(token) * 256;
+            CrateData.at(crate) = fixed::FromString(token) * 256;
           } else {
             strtrim(port::MutableCString(token));
-            CrateData[crate] = tech::ParseInteger<int>(token).value_or(0);
+            CrateData.at(crate) = tech::ParseInteger<int>(token).value_or(0);
           }
         }
       }
@@ -765,19 +765,19 @@ bool RulesClass::Land_Types(CCINIClass& ini) {
         "Clear", "Road",  "Water", "Rock", "Wall",
         "Ore",   "Beach", "Rough", "River"};
 
-    GroundType* gptr = &Ground[land];
+    GroundType* gptr = &Ground.at(land);
 
-    if (ini.Is_Present(_lands[land])) {
-      gptr->Cost[SPEED_FOOT] =
-          ini.Get_Fixed(_lands[land], "Foot", fixed(1)).Sub_Saturate(1);
-      gptr->Cost[SPEED_TRACK] =
-          ini.Get_Fixed(_lands[land], "Track", fixed(1)).Sub_Saturate(1);
-      gptr->Cost[SPEED_WHEEL] =
-          ini.Get_Fixed(_lands[land], "Wheel", fixed(1)).Sub_Saturate(1);
-      gptr->Cost[SPEED_WINGED] = fixed(1).Sub_Saturate(1);
-      gptr->Cost[SPEED_FLOAT] =
-          ini.Get_Fixed(_lands[land], "Float", fixed(1)).Sub_Saturate(1);
-      gptr->Build = ini.Get_Bool(_lands[land], "Buildable", false);
+    if (ini.Is_Present(_lands.at(land))) {
+      gptr->Cost.at(SPEED_FOOT) =
+          ini.Get_Fixed(_lands.at(land), "Foot", fixed(1)).Sub_Saturate(1);
+      gptr->Cost.at(SPEED_TRACK) =
+          ini.Get_Fixed(_lands.at(land), "Track", fixed(1)).Sub_Saturate(1);
+      gptr->Cost.at(SPEED_WHEEL) =
+          ini.Get_Fixed(_lands.at(land), "Wheel", fixed(1)).Sub_Saturate(1);
+      gptr->Cost.at(SPEED_WINGED) = fixed(1).Sub_Saturate(1);
+      gptr->Cost.at(SPEED_FLOAT) =
+          ini.Get_Fixed(_lands.at(land), "Float", fixed(1)).Sub_Saturate(1);
+      gptr->Build = ini.Get_Bool(_lands.at(land), "Buildable", false);
     }
   }
   return true;
@@ -928,7 +928,7 @@ bool RulesClass::Objects(CCINIClass& ini) {
   **	Fetch the mission control values.
   */
   for (const MissionType mission : magic_enum::enum_values<MissionType>()) {
-    MissionControlClass* miss = &MissionControl[mission];
+    MissionControlClass* miss = &MissionControl.at(mission);
     miss->Mission = mission;
     miss->Read_INI(ini);
   }

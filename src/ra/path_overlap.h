@@ -7,6 +7,7 @@
 #include <span>
 
 #include "absl/log/check.h"
+#include "base/array.h"
 #include "base/numeric.h"
 
 // Overlap bitmaps are arrays of 32-bit words: cell N lives in word N / 32, at
@@ -32,21 +33,22 @@ constexpr uint32_t OverlapMask(int cell) {
 inline bool IsOverlapped(std::span<const uint32_t> words, int cell) {
   CHECK_GE(cell, 0);
   CHECK_LT(base::ToSize(OverlapWord(cell)), words.size());
-  return (words[base::ToSize(OverlapWord(cell))] & OverlapMask(cell)) != 0;
+  return (base::At(words, base::ToSize(OverlapWord(cell))) &
+          OverlapMask(cell)) != 0;
 }
 
 // Marks `cell` in the bitmap `words`.
 inline void SetOverlap(std::span<uint32_t> words, int cell) {
   CHECK_GE(cell, 0);
   CHECK_LT(base::ToSize(OverlapWord(cell)), words.size());
-  words[base::ToSize(OverlapWord(cell))] |= OverlapMask(cell);
+  base::At(words, base::ToSize(OverlapWord(cell))) |= OverlapMask(cell);
 }
 
 // Unmarks `cell` in the bitmap `words`.
 inline void ClearOverlap(std::span<uint32_t> words, int cell) {
   CHECK_GE(cell, 0);
   CHECK_LT(base::ToSize(OverlapWord(cell)), words.size());
-  words[base::ToSize(OverlapWord(cell))] &= ~OverlapMask(cell);
+  base::At(words, base::ToSize(OverlapWord(cell))) &= ~OverlapMask(cell);
 }
 
 #endif  // CNC_RED_ALERT_RA_PATH_OVERLAP_H_

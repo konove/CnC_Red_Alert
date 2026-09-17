@@ -72,7 +72,7 @@ static void Setup_Shape_Header(int pixel_width, int pixel_height,
     int trans_count = 0;
     int x_count = pixel_width;
     do {
-      const int pixel = std::to_integer<uint8_t>(src[input++]);
+      const int pixel = std::to_integer<uint8_t>(base::At(src, input++));
       if (!pixel && base::Any(flags & SHAPE_TRANS)) {
         line_flags = kBlitTransparent;
         trans_count++;  // keep track of number of transparent pixels
@@ -82,7 +82,7 @@ static void Setup_Shape_Header(int pixel_width, int pixel_height,
         }
 
         if (base::Any(flags & SHAPE_GHOST) &&
-            IsTranslucent[static_cast<std::size_t>(pixel)] != 0xFF) {
+            base::At(IsTranslucent, static_cast<std::size_t>(pixel)) != 0xFF) {
           line_flags |= kBlitGhost;
         }
 
@@ -97,7 +97,7 @@ static void Setup_Shape_Header(int pixel_width, int pixel_height,
       line_flags = kBlitSkip;
     }
 
-    line_flags_out[output++] = static_cast<std::byte>(line_flags);
+    base::At(line_flags_out, output++) = static_cast<std::byte>(line_flags);
   } while (--pixel_height != 0);
 }
 
@@ -116,7 +116,7 @@ static void Do_Old_Blit(int line_count, int pixel_count,
   do {
     // original asm unrolled this 32 times
     for (int x = 0; x < pixel_count; x++) {
-      auto pixel = std::to_integer<uint8_t>(src_offset[input++]);
+      auto pixel = std::to_integer<uint8_t>(base::At(src_offset, input++));
       if (pixel || !(flags & kBlitTransparent)) {
         if (flags & kBlitPredator) {
           const int pred = BFPartialCount + BFPartialPred;
@@ -129,7 +129,7 @@ static void Do_Old_Blit(int line_count, int pixel_count,
             const int pred_index = BFPredOffset >> 1;
             const auto sample = output + base::ToSize(base::At(BFPredTable, pred_index));
             if (sample < dst_offset.size()) {
-              pixel = dst_offset[sample];
+              pixel = base::At(dst_offset, sample);
             }
             // NOLINTNEXTLINE(bugprone-signed-bitwise)
             BFPredOffset = (BFPredOffset + 2) & PRED_MASK;
@@ -138,20 +138,21 @@ static void Do_Old_Blit(int line_count, int pixel_count,
 
         if (flags & kBlitGhost) {
           const uint8_t is_trans =
-              IsTranslucent[static_cast<std::size_t>(pixel)];
+              base::At(IsTranslucent, static_cast<std::size_t>(pixel));
           if (is_trans != 0xFF) {  // is it a translucent color?
-            pixel = Translucent[(is_trans * 256) + dst_offset[output]];
+            pixel = base::At(Translucent,
+                             (is_trans * 256) + base::At(dst_offset, output));
           }
         }
 
         if (flags & kBlitFading) {
           // run color through fading table
           for (int f = 0; f < FadingNum; f++) {
-            pixel = FadingTable[pixel];
+            pixel = base::At(FadingTable, pixel);
           }
         }
 
-        dst_offset[output] = pixel;
+        base::At(dst_offset, output) = pixel;
       }
       output++;
     }

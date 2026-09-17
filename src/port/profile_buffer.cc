@@ -161,7 +161,8 @@ bool WriteProfile(std::span<char> storage, std::string_view section,
       result.erase(entry->start, entry->end - entry->start);
     }
     if (value != nullptr) {
-      const std::string separator = insertion != 0 && result[insertion - 1] != '\n' ? "\r\n" : "";
+      const std::string separator =
+          insertion != 0 && result.at(insertion - 1) != '\n' ? "\r\n" : "";
       result.insert(insertion, separator + key + "=" + value + "\r\n");
     }
   } else if (value != nullptr) {

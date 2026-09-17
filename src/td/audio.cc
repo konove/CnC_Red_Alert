@@ -406,10 +406,10 @@ int Sound_Effect(VocType voc, VolType volume, int variation,
   *appropriate and desired.
   */
   const char* ext = ".AUD";
-  if (Special.IsJuvenile && SoundEffectName[voc].Where == IN_JUV) {
+  if (Special.IsJuvenile && SoundEffectName.at(voc).Where == IN_JUV) {
     ext = ".JUV";
   } else {
-    if (SoundEffectName[voc].Where == IN_VAR) {
+    if (SoundEffectName.at(voc).Where == IN_VAR) {
       /*
       **	For infantry, use a variation on the response. For vehicles,
       *always *	use the vehicle response table.
@@ -430,7 +430,7 @@ int Sound_Effect(VocType voc, VolType volume, int variation,
     }
   }
   // Working filename of sound effect.
-  const auto name = std::filesystem::path(SoundEffectName[voc].Name)
+  const auto name = std::filesystem::path(SoundEffectName.at(voc).Name)
                         .replace_extension(ext)
                         .string();
   const auto ptr = MixArchive::RetrieveData(name);
@@ -441,7 +441,7 @@ int Sound_Effect(VocType voc, VolType volume, int variation,
   if (!ptr.empty()) {
     const int vol = static_cast<int>(volume);
     return Play_Sample(ptr,
-                       Fixed_To_Cardinal(SoundEffectName[voc].Priority, vol),
+                       Fixed_To_Cardinal(SoundEffectName.at(voc).Priority, vol),
                        vol, pan_value);
   }
   return -1;
@@ -597,7 +597,7 @@ void Speak_AI() {
     CurrentVoice = VOX_NONE;
     if (SpeakQueue != VOX_NONE) {
       if (SpeakQueue != _last) {
-        const auto name = std::filesystem::path(Speech[SpeakQueue])
+        const auto name = std::filesystem::path(Speech.at(SpeakQueue))
                               .replace_extension(".AUD")
                               .string();
 

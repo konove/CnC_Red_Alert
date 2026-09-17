@@ -22,11 +22,11 @@ TEST(LcwDestinationTest, BoundsEveryCommand) {
     std::array<unsigned char, 10> output{};
     output.fill(0xcc);
     EXPECT_EQ(LCW_Uncompress(stream, std::span(output).subspan(1, 5)), 5);
-    EXPECT_EQ(output[0], 0xcc);
-    EXPECT_EQ(output[1], 'a');
-    EXPECT_EQ(output[2], 'b');
-    EXPECT_EQ(output[3], 'c');
-    EXPECT_EQ(output[4], 'a');
+    EXPECT_EQ(output.at(0), 0xcc);
+    EXPECT_EQ(output.at(1), 'a');
+    EXPECT_EQ(output.at(2), 'b');
+    EXPECT_EQ(output.at(3), 'c');
+    EXPECT_EQ(output.at(4), 'a');
     for (const unsigned char byte : std::span(output).subspan(6)) {
       EXPECT_EQ(byte, 0xcc);
     }
@@ -46,7 +46,7 @@ TEST(LcwDestinationTest, RejectsReferencesOutsideDecodedPrefix) {
     std::array<unsigned char, 8> output{};
     output.fill(0xcc);
     EXPECT_EQ(LCW_Uncompress(stream, output), 1);
-    EXPECT_EQ(output[0], 'a');
+    EXPECT_EQ(output.at(0), 'a');
     for (const unsigned char byte : std::span(output).subspan(1)) {
       EXPECT_EQ(byte, 0xcc);
     }
@@ -65,7 +65,7 @@ TEST(LcwDestinationTest, PreservesOverlappingBackReferences) {
     for (const unsigned char byte : std::span(output).first(6)) {
       EXPECT_EQ(byte, 'a');
     }
-    EXPECT_EQ(output[6], 0);
+    EXPECT_EQ(output.at(6), 0);
   }
 }
 
@@ -74,7 +74,7 @@ TEST(LcwDestinationTest, AcceptsEmptyCommandsAndEndMarker) {
       0xff, 0, 0, 0xff, 0xff, 0xfe, 0, 0, 'x', 0x80, 0};
   std::array<unsigned char, 1> output = {0xcc};
   EXPECT_EQ(LCW_Uncompress(kStream, output), 0);
-  EXPECT_EQ(output[0], 0xcc);
+  EXPECT_EQ(output.at(0), 0xcc);
 }
 
 TEST(LcwDestinationTest, EmptyBuffersDoNotAccessStorage) {
@@ -87,15 +87,15 @@ TEST(LcwDestinationTest, StopsAtCapacityWithoutReadingNextCommand) {
   constexpr std::array<unsigned char, 2> kStream = {0x81, 'a'};
   std::array<unsigned char, 1> output{};
   EXPECT_EQ(LCW_Uncompress(kStream, output), 1);
-  EXPECT_EQ(output[0], 'a');
+  EXPECT_EQ(output.at(0), 'a');
 }
 
 TEST(LcwDestinationTest, SupportsInPlaceLiteralCopy) {
   std::array<unsigned char, 5> buffer = {0x83, 'a', 'b', 'c', 0x80};
   EXPECT_EQ(LCW_Uncompress(buffer, std::span(buffer).first(3)), 3);
-  EXPECT_EQ(buffer[0], 'a');
-  EXPECT_EQ(buffer[1], 'b');
-  EXPECT_EQ(buffer[2], 'c');
+  EXPECT_EQ(buffer.at(0), 'a');
+  EXPECT_EQ(buffer.at(1), 'b');
+  EXPECT_EQ(buffer.at(2), 'c');
 }
 
 TEST(LcwDestinationTest, TruncatedCommandsKeepDecodedPrefix) {
@@ -108,8 +108,8 @@ TEST(LcwDestinationTest, TruncatedCommandsKeepDecodedPrefix) {
   for (const auto& stream : streams) {
     std::array<unsigned char, 8> output{};
     EXPECT_EQ(LCW_Uncompress(stream, output), 1);
-    EXPECT_EQ(output[0], 'a');
-    EXPECT_EQ(output[1], 0);
+    EXPECT_EQ(output.at(0), 'a');
+    EXPECT_EQ(output.at(1), 0);
   }
 }
 

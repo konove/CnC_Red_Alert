@@ -90,10 +90,10 @@ bool LayerClass::Submit(ObjectClass* object, bool sort) {
  *=============================================================================================*/
 void LayerClass::Sort() {
   for (int index = 0; index < Count() - 1; index++) {
-    if (*(*this)[index + 1] < *(*this)[index]) {
-      ObjectClass* temp = (*this)[index + 1];
-      (*this)[index + 1] = (*this)[index];
-      (*this)[index] = temp;
+    if (*(*this).at(index + 1) < *(*this).at(index)) {
+      ObjectClass* temp = (*this).at(index + 1);
+      (*this).at(index + 1) = (*this).at(index);
+      (*this).at(index) = temp;
     }
   }
 }
@@ -139,7 +139,7 @@ bool LayerClass::Sorted_Add(ObjectClass* const object) {
   */
   int index = 0;
   for (index = 0; index < ActiveCount; index++) {
-    if (*(*this)[index] > *object) {
+    if (*(*this).at(index) > *object) {
       break;
     }
   }
@@ -148,9 +148,9 @@ bool LayerClass::Sorted_Add(ObjectClass* const object) {
   **	Make room if the insertion spot is not at the end of the vector.
   */
   for (int i = static_cast<int>(ActiveCount - 1); i >= index; i--) {
-    (*this)[i + 1] = (*this)[i];
+    (*this).at(i + 1) = (*this).at(i);
   }
-  (*this)[index] = object;
+  (*this).at(index) = object;
   ActiveCount++;
   return true;
 }

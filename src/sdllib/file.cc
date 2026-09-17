@@ -182,7 +182,7 @@ static bool Update_Find_Result(FindFileState& state) {
   struct stat stat_buf{};
 
   while (matches->offset < matches->names.size()) {
-    const std::string& current = matches->names[matches->offset];
+    const std::string& current = matches->names.at(matches->offset);
 
     // A name that cannot be stat'ed (broken symlink, permission denied) or
     // names a directory is skipped.

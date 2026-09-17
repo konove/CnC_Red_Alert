@@ -8,8 +8,9 @@
 #include <cstdint>
 #include <span>
 #include <utility>
-#include "base/numeric.h"
 
+#include "base/array.h"
+#include "base/numeric.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/ww_win.h"
 
@@ -131,18 +132,19 @@ void GraphicBufferClass::Update_Palette(std::span<const uint8_t> palette) {
 
   for (int i = 0; i < sdl_pal->ncolors; i++) {
     // convert from 6-bit
-    const int new_r = (palette[base::ToSize((i * 3) + 0)] * 4) +
-                      (palette[base::ToSize((i * 3) + 0)] / 16);
-    const int new_g = (palette[base::ToSize((i * 3) + 1)] * 4) +
-                      (palette[base::ToSize((i * 3) + 1)] / 16);
-    const int new_b = (palette[base::ToSize((i * 3) + 2)] * 4) +
-                      (palette[base::ToSize((i * 3) + 2)] / 16);
-    changed = changed || std::cmp_not_equal(colors[base::ToSize(i)].r, new_r) ||
-              std::cmp_not_equal(colors[base::ToSize(i)].g, new_g) ||
-              std::cmp_not_equal(colors[base::ToSize(i)].b, new_b);
-    colors[base::ToSize(i)].r = static_cast<Uint8>(new_r);
-    colors[base::ToSize(i)].g = static_cast<Uint8>(new_g);
-    colors[base::ToSize(i)].b = static_cast<Uint8>(new_b);
+    const int new_r = (base::At(palette, base::ToSize((i * 3) + 0)) * 4) +
+                      (base::At(palette, base::ToSize((i * 3) + 0)) / 16);
+    const int new_g = (base::At(palette, base::ToSize((i * 3) + 1)) * 4) +
+                      (base::At(palette, base::ToSize((i * 3) + 1)) / 16);
+    const int new_b = (base::At(palette, base::ToSize((i * 3) + 2)) * 4) +
+                      (base::At(palette, base::ToSize((i * 3) + 2)) / 16);
+    changed = changed ||
+              std::cmp_not_equal(base::At(colors, base::ToSize(i)).r, new_r) ||
+              std::cmp_not_equal(base::At(colors, base::ToSize(i)).g, new_g) ||
+              std::cmp_not_equal(base::At(colors, base::ToSize(i)).b, new_b);
+    base::At(colors, base::ToSize(i)).r = static_cast<Uint8>(new_r);
+    base::At(colors, base::ToSize(i)).g = static_cast<Uint8>(new_g);
+    base::At(colors, base::ToSize(i)).b = static_cast<Uint8>(new_b);
   }
 
   if (!changed) {
@@ -214,13 +216,14 @@ void GraphicBufferClass::Render_Scaled_Frame(
       std::span(sdl_pal->colors, base::ToSize(sdl_pal->ncolors));
   for (int y = 0; y < height; y++) {
     for (int x = 0; x < width; x++) {
-      const uint8_t idx =
-          paletted_data[(base::ToSize(y) * frame_width) + base::ToSize(x)];
+      const uint8_t idx = base::At(
+          paletted_data, (base::ToSize(y) * frame_width) + base::ToSize(x));
       // Use palette already converted to 8-bit by Update_Palette
-      const uint8_t r = colors[idx].r;
-      const uint8_t g = colors[idx].g;
-      const uint8_t b = colors[idx].b;
-      dest[(base::ToSize(y) * base::ToSize(pitch / 4)) + base::ToSize(x)] =
+      const uint8_t r = base::At(colors, idx).r;
+      const uint8_t g = base::At(colors, idx).g;
+      const uint8_t b = base::At(colors, idx).b;
+      base::At(dest,
+               (base::ToSize(y) * base::ToSize(pitch / 4)) + base::ToSize(x)) =
           0xFFU << 24U | uint32_t{b} << 16U | uint32_t{g} << 8U | r;
     }
   }

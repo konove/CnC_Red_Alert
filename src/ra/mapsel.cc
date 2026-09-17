@@ -140,8 +140,8 @@ static void Cycle_Call_Back_Delay(int time, PaletteClass& pal) {
       }
 
       // Blend white toward black based on current fade ratio.
-      pal[kHotspotPaletteIndex] = GamePalette[kWhite];
-      pal[kHotspotPaletteIndex].Adjust(fade_ratio, kBlackColor);
+      pal.at(kHotspotPaletteIndex) = GamePalette.at(kWhite);
+      pal.at(kHotspotPaletteIndex).Adjust(fade_ratio, kBlackColor);
 
       pal.Set();
     }
@@ -195,8 +195,8 @@ std::string Map_Selection() {
   const bool is_soviet = PlayerPtr->Class->House == HOUSE_USSR ||
                          PlayerPtr->Class->House == HOUSE_UKRAINE;
 
-  file_name[2] = is_soviet ? 'S' : 'A';
-  file_name[3] = static_cast<char>(Scen.Scenario + 'A');
+  file_name.at(2) = is_soviet ? 'S' : 'A';
+  file_name.at(3) = static_cast<char>(Scen.Scenario + 'A');
   PaletteClass map_palette;
 
   int selection = 0;
@@ -325,7 +325,7 @@ std::string Map_Selection() {
   } else {
     scenario_name = Scen.ScenarioName;
     scenario_name.replace(3, 2, std::format("{:02d}", Scen.Scenario + 1));
-    scenario_name[6] = base::At(kScenarioVariants, selection);
+    scenario_name.at(6) = base::At(kScenarioVariants, selection);
   }
   Theme.Fade_Out();
 

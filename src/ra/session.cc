@@ -64,6 +64,7 @@
 #include <string_view>
 
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
 #include "base/types.h"
@@ -91,7 +92,6 @@
 #include "ra/mission_id.h"
 #include "ra/queue.h"
 #include "ra/unit.h"
-#include "ra/vector.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/file.h"
 #include "sdllib/gbuffer.h"
@@ -320,11 +320,11 @@ int SessionClass::Create_Connections() {
     // Make sure the name matches before creating the connection
     //.....................................................................
     if (!port::CompareIgnoreCase(
-            Players[i]->Name,
-            HouseClass::As_Pointer(Players[i]->Player.ID)->IniName)) {
-      Ipx.Create_Connection(static_cast<int>(Players[i]->Player.ID),
-                            Players[i]->Name, &Players[i]->Address);
-      Players[i]->Player.ProcessTime = -1;
+            Players.at(i)->Name,
+            HouseClass::As_Pointer(Players.at(i)->Player.ID)->IniName)) {
+      Ipx.Create_Connection(static_cast<int>(Players.at(i)->Player.ID),
+                            Players.at(i)->Name, &Players.at(i)->Address);
+      Players.at(i)->Player.ProcessTime = -1;
     } else {
       return 0;
     }
@@ -419,7 +419,7 @@ void SessionClass::SerializePlayers(Archive& ar) {
       return;
     }
     for (int i = 0; i < Players.Count(); ++i) {
-      delete Players[i];
+      delete Players.at(i);
     }
     Players.Clear();
     for (int i = 0; i < count; ++i) {
@@ -433,7 +433,7 @@ void SessionClass::SerializePlayers(Archive& ar) {
     }
   } else {
     for (int i = 0; i < count; ++i) {
-      ar(*Players[i]);
+      ar(*Players.at(i));
     }
   }
 }
@@ -552,13 +552,13 @@ void SessionClass::Read_MultiPlayer_Settings() {
   //	Clear the initstring entries
   //------------------------------------------------------------------------
   for (i = 0; i < InitStrings.Count(); i++) {
-    delete[] InitStrings[i];
+    delete[] InitStrings.at(i);
   }
   InitStrings.Clear();
 
   //	Clear the dialing entries
   for (i = 0; i < PhoneBook.Count(); i++) {
-    delete[] PhoneBook[i];
+    delete[] PhoneBook.at(i);
   }
   PhoneBook.Clear();
 
@@ -601,7 +601,7 @@ void SessionClass::Read_MultiPlayer_Settings() {
     // find dial method
     for (i = 0; i < static_cast<int>(DIAL_METHODS); i++) {
       if (!port::CompareIgnoreCase(
-              buf, DialMethodCheck[static_cast<DialMethodType>(i)])) {
+              buf, DialMethodCheck.at(static_cast<DialMethodType>(i)))) {
         SerialDefaults.DialMethod = static_cast<DialMethodType>(i);
         break;
       }
@@ -633,7 +633,7 @@ void SessionClass::Read_MultiPlayer_Settings() {
       // entry was allocated above with INITSTRBUF_MAX elements.
       // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
       const std::span entry_buffer(entry, INITSTRBUF_MAX);
-      entry_buffer[0] = 0;
+      base::At(entry_buffer, 0) = 0;
       ini.Get_String("InitStrings", ini.Get_Entry("InitStrings", index),
                      nullptr, entry_buffer, INITSTRBUF_MAX);
       strupr(entry);
@@ -717,7 +717,7 @@ void SessionClass::Read_MultiPlayer_Settings() {
 
         for (i = 0; i < static_cast<int>(DIAL_METHODS); i++) {
           if (!port::CompareIgnoreCase(
-                  buf, DialMethodCheck[static_cast<DialMethodType>(i)])) {
+                  buf, DialMethodCheck.at(static_cast<DialMethodType>(i)))) {
             /*
             ** This must be an old phonebook entry
             */
@@ -757,7 +757,7 @@ void SessionClass::Read_MultiPlayer_Settings() {
         //	find dial method
         for (i = 0; i < static_cast<int>(DIAL_METHODS); i++) {
           if (!port::CompareIgnoreCase(
-                  buf, DialMethodCheck[static_cast<DialMethodType>(i)])) {
+                  buf, DialMethodCheck.at(static_cast<DialMethodType>(i)))) {
             phone->Settings.DialMethod = static_cast<DialMethodType>(i);
             break;
           }
@@ -830,7 +830,7 @@ void SessionClass::Read_MultiPlayer_Settings() {
     ini.Get_String("SyncBug", "Cell", "0", buf, 80);
     CELL const cell = tech::ParseInteger<CELL>(buf).value_or(0);
     if (cell) {
-      TrapCell = &Map[cell];
+      TrapCell = &Map.at(cell);
     }
 
     TrapPrintCRC = ini.Get_Int("SyncBug", "PrintCRC", 0x7fffffff);
@@ -874,7 +874,7 @@ void SessionClass::Write_MultiPlayer_Settings() {
     ini.Put_Int("SerialDefaults", "InitStringIndex",
                 SerialDefaults.InitStringIndex ? 1 : 0);
     ini.Put_String("SerialDefaults", "DialMethod",
-                   DialMethodCheck[SerialDefaults.DialMethod]);
+                   DialMethodCheck.at(SerialDefaults.DialMethod));
     ini.Put_Int("SerialDefaults", "Baud", SerialDefaults.Baud ? 1 : 0);
     ini.Put_Int("SerialDefaults", "IRQ", SerialDefaults.IRQ ? 1 : 0);
     ini.Put_Int("SerialDefaults", "Port", SerialDefaults.Port, 1);
@@ -893,7 +893,7 @@ void SessionClass::Write_MultiPlayer_Settings() {
     for (int index = 0; index < InitStrings.Count(); index++) {
       char buf[10];
       absl::SNPrintF(buf, sizeof(buf), "%03d", index);
-      ini.Put_String("InitStrings", buf, InitStrings[index]);
+      ini.Put_String("InitStrings", buf, InitStrings.at(index));
     }
 
     //	Clear all existing Phone Book entries.
@@ -905,16 +905,17 @@ void SessionClass::Write_MultiPlayer_Settings() {
       char buf[128];
       char entrytext[10];
       absl::SNPrintF(buf, sizeof(buf), "%s|%s|%x|%d|%d|%d|%d|%d|%s|%d|%d|%s",
-                     PhoneBook[i]->Name, PhoneBook[i]->Number,
-                     static_cast<unsigned int>(PhoneBook[i]->Settings.Port),
-                     PhoneBook[i]->Settings.IRQ, PhoneBook[i]->Settings.Baud,
-                     PhoneBook[i]->Settings.Compression ? 1 : 0,
-                     PhoneBook[i]->Settings.ErrorCorrection ? 1 : 0,
-                     PhoneBook[i]->Settings.HardwareFlowControl ? 1 : 0,
-                     DialMethodCheck[PhoneBook[i]->Settings.DialMethod],
-                     PhoneBook[i]->Settings.InitStringIndex,
-                     PhoneBook[i]->Settings.CallWaitStringIndex,
-                     PhoneBook[i]->Settings.CallWaitString);
+                     PhoneBook.at(i)->Name, PhoneBook.at(i)->Number,
+                     static_cast<unsigned int>(PhoneBook.at(i)->Settings.Port),
+                     PhoneBook.at(i)->Settings.IRQ,
+                     PhoneBook.at(i)->Settings.Baud,
+                     PhoneBook.at(i)->Settings.Compression ? 1 : 0,
+                     PhoneBook.at(i)->Settings.ErrorCorrection ? 1 : 0,
+                     PhoneBook.at(i)->Settings.HardwareFlowControl ? 1 : 0,
+                     DialMethodCheck.at(PhoneBook.at(i)->Settings.DialMethod),
+                     PhoneBook.at(i)->Settings.InitStringIndex,
+                     PhoneBook.at(i)->Settings.CallWaitStringIndex,
+                     PhoneBook.at(i)->Settings.CallWaitString);
       absl::SNPrintF(entrytext, sizeof(entrytext), "%03td", i);
       ini.Put_String("PhoneBook", entrytext, buf);
     }
@@ -934,12 +935,12 @@ bool Is_Mission_126x126(
     const char* file_name)  //	This is no longer used. ajw
 {
   const std::string_view name(file_name == nullptr ? "" : file_name);
-  if (name.size() < 6 || isdigit(static_cast<unsigned char>(name[5]))) {
+  if (name.size() < 6 || isdigit(static_cast<unsigned char>(name.at(5)))) {
     return false;
   }
 
-  if ((name[3] >= 'k' && name[3] <= 'm') ||
-      (name[3] >= 'K' && name[3] <= 'M')) {
+  if ((name.at(3) >= 'k' && name.at(3) <= 'm') ||
+      (name.at(3) >= 'K' && name.at(3) <= 'M')) {
     return true;
   }
   return false;
@@ -1120,7 +1121,7 @@ void SessionClass::Free_Scenario_Descriptions() {
   //	Clear the scenario descriptions & filenames
   //------------------------------------------------------------------------
   for (int index = 0; index < Scenarios.Count(); index++) {
-    delete Scenarios[index];
+    delete Scenarios.at(index);
   }
   Scenarios.Clear();
   //	Filenum.Clear();
@@ -1129,7 +1130,7 @@ void SessionClass::Free_Scenario_Descriptions() {
   //	Clear the initstring entries
   //------------------------------------------------------------------------
   for (int i = 0; i < InitStrings.Count(); i++) {
-    delete[] InitStrings[i];
+    delete[] InitStrings.at(i);
   }
   InitStrings.Clear();
 
@@ -1137,7 +1138,7 @@ void SessionClass::Free_Scenario_Descriptions() {
   //	Clear the dialing entries
   //------------------------------------------------------------------------
   for (int i = 0; i < PhoneBook.Count(); i++) {
-    delete PhoneBook[i];
+    delete PhoneBook.at(i);
   }
   PhoneBook.Clear();
 
@@ -1391,10 +1392,10 @@ void MultiMission::Draw_It(int /*unused*/, int x, int y, int width, int height,
     Conquer_Clip_Text_Print(ScenarioDescription, x, y, scheme, kTBlack, flags,
                             width, _tabs);
   } else {
-    Conquer_Clip_Text_Print(
-        ScenarioDescription, x, y,
-        selected ? &ColorRemaps[PCOLOR_DIALOG_BLUE] : &ColorRemaps[PCOLOR_GREY],
-        kTBlack, flags, width, _tabs);
+    Conquer_Clip_Text_Print(ScenarioDescription, x, y,
+                            selected ? &ColorRemaps.at(PCOLOR_DIALOG_BLUE)
+                                     : &ColorRemaps.at(PCOLOR_GREY),
+                            kTBlack, flags, width, _tabs);
   }
 }
 

@@ -534,7 +534,7 @@ void MapClass::Free_Cells() { Array.Clear(); }
 void MapClass::Init_Cells() {
   TotalValue = 0;
   for (int index = 0; index < MAP_CELL_TOTAL; index++) {
-    new (&Array[index]) CellClass;
+    new (&Array.at(index)) CellClass;
   }
 }
 
@@ -648,7 +648,7 @@ void MapClass::Sight_From(CELL cell, int sightrange, HouseClass* house,
     **	adjacent cells as well. For full scans, just update
     **	the cell itself.
     */
-    if (!(*this)[newcell].IsMapped) {
+    if (!(*this).at(newcell).IsMapped) {
       Map.Map_Cell(newcell, house);
     }
   }
@@ -890,9 +890,9 @@ void MapClass::Place_Down(CELL cell, ObjectClass* object) {
     while (list.front() != kRefreshEol) {
       const CELL newcell = static_cast<CELL>(cell + base::ConsumeFront(list));
       if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
-        (*this)[newcell].Occupy_Down(object);
-        (*this)[newcell].Recalc_Attributes();
-        (*this)[newcell].Redraw_Objects();
+        (*this).at(newcell).Occupy_Down(object);
+        (*this).at(newcell).Recalc_Attributes();
+        (*this).at(newcell).Redraw_Objects();
       }
     }
 
@@ -901,8 +901,8 @@ void MapClass::Place_Down(CELL cell, ObjectClass* object) {
     while (list.front() != kRefreshEol) {
       const CELL newcell = static_cast<CELL>(cell + base::ConsumeFront(list));
       if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
-        (*this)[newcell].Overlap_Down(object);
-        (*this)[newcell].Redraw_Objects();
+        (*this).at(newcell).Overlap_Down(object);
+        (*this).at(newcell).Redraw_Objects();
       }
     }
   }
@@ -939,9 +939,9 @@ void MapClass::Pick_Up(CELL cell, ObjectClass* object) {
     while (list.front() != kRefreshEol) {
       const CELL newcell = static_cast<CELL>(cell + base::ConsumeFront(list));
       if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
-        (*this)[newcell].Occupy_Up(object);
-        (*this)[newcell].Recalc_Attributes();
-        (*this)[newcell].Redraw_Objects();
+        (*this).at(newcell).Occupy_Up(object);
+        (*this).at(newcell).Recalc_Attributes();
+        (*this).at(newcell).Redraw_Objects();
       }
     }
 
@@ -950,8 +950,8 @@ void MapClass::Pick_Up(CELL cell, ObjectClass* object) {
     while (list.front() != kRefreshEol) {
       const CELL newcell = static_cast<CELL>(cell + base::ConsumeFront(list));
       if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
-        (*this)[newcell].Overlap_Up(object);
-        (*this)[newcell].Redraw_Objects();
+        (*this).at(newcell).Overlap_Up(object);
+        (*this).at(newcell).Redraw_Objects();
       }
     }
   }
@@ -988,8 +988,8 @@ void MapClass::Overlap_Down(CELL cell, ObjectClass* object) {
     while (list.front() != kRefreshEol) {
       const CELL newcell = static_cast<CELL>(cell + base::ConsumeFront(list));
       if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
-        (*this)[newcell].Overlap_Down(object);
-        (*this)[newcell].Redraw_Objects();
+        (*this).at(newcell).Overlap_Down(object);
+        (*this).at(newcell).Redraw_Objects();
       }
     }
   }
@@ -1025,8 +1025,8 @@ void MapClass::Overlap_Up(CELL cell, ObjectClass* object) {
     while (list.front() != kRefreshEol) {
       const CELL newcell = static_cast<CELL>(cell + base::ConsumeFront(list));
       if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
-        (*this)[newcell].Overlap_Up(object);
-        (*this)[newcell].Redraw_Objects();
+        (*this).at(newcell).Overlap_Up(object);
+        (*this).at(newcell).Redraw_Objects();
       }
     }
   }
@@ -1061,8 +1061,8 @@ int32_t MapClass::Overpass() {
     for (int x = 0; x < MapCellWidth; x++) {
       const CELL cell =
           static_cast<CELL>(((MapCellY + y) * MAP_CELL_W) + (MapCellX + x));
-      value += (*this)[cell].Tiberium_Adjust(true);
-      (*this)[cell].Recalc_Attributes();
+      value += (*this).at(cell).Tiberium_Adjust(true);
+      (*this).at(cell).Recalc_Attributes();
     }
   }
   return value;
@@ -1090,11 +1090,11 @@ bool MapClass::Write_Binary(ByteSink& pipe) {
   LcwSink comp(CodecMode::kCompress, pipe);
 
   for (int i = 0; i < MAP_CELL_TOTAL; i++) {
-    comp.WriteObject(Array[i].TType);
+    comp.WriteObject(Array.at(i).TType);
   }
 
   for (int i = 0; i < MAP_CELL_TOTAL; i++) {
-    comp.WriteObject(Array[i].TIcon);
+    comp.WriteObject(Array.at(i).TIcon);
   }
 
   return comp.Finish();
@@ -1121,11 +1121,11 @@ bool MapClass::Read_Binary(ByteSource& straw) {
   switch (NewINIFormat) {
     default:
       for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
-        decomp.ReadObject(Array[cell].TType);
+        decomp.ReadObject(Array.at(cell).TType);
       }
       for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
-        decomp.ReadObject(Array[cell].TIcon);
-        Array[cell].Recalc_Attributes();
+        decomp.ReadObject(Array.at(cell).TIcon);
+        Array.at(cell).Recalc_Attributes();
       }
       break;
 
@@ -1133,9 +1133,9 @@ bool MapClass::Read_Binary(ByteSource& straw) {
     case 1:
     case 2:
       for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
-        decomp.ReadObject(Array[cell].TType);
-        decomp.ReadObject(Array[cell].TIcon);
-        Array[cell].Recalc_Attributes();
+        decomp.ReadObject(Array.at(cell).TType);
+        decomp.ReadObject(Array.at(cell).TIcon);
+        Array.at(cell).Recalc_Attributes();
       }
       break;
   }
@@ -1191,7 +1191,7 @@ void MapClass::Logic() {
   for (index = TiberiumScan; index < MAP_CELL_TOTAL; index++) {
     const CELL cell = static_cast<CELL>(index);
     if (In_Radar(cell)) {
-      const CellClass* ptr = &(*this)[cell];
+      const CellClass* ptr = &(*this).at(cell);
 
       /*
       **	Tiberium cells can grow.
@@ -1252,7 +1252,7 @@ void MapClass::Logic() {
     if (TiberiumGrowthCount) {
       for (int i = 0; i < TiberiumGrowthCount; i++) {
         const CELL cell = base::At(TiberiumGrowth, i);
-        CellClass* newcell = &(*this)[cell];
+        CellClass* newcell = &(*this).at(cell);
         newcell->Grow_Tiberium();
       }
     }
@@ -1264,7 +1264,7 @@ void MapClass::Logic() {
     */
     if (TiberiumSpreadCount) {
       for (int i = 0; i < TiberiumSpreadCount; i++) {
-        Map[base::At(TiberiumSpread, i)].Spread_Tiberium();
+        Map.at(base::At(TiberiumSpread, i)).Spread_Tiberium();
       }
     }
     TiberiumSpreadCount = 0;
@@ -1306,9 +1306,9 @@ int MapClass::Cell_Region(CELL cell) {
  *=========================================================================*/
 int MapClass::Cell_Threat(CELL cell, HousesType house) {
   int threat = base::At(HouseClass::As_Pointer(house)->Regions,
-                        MapEditClass::Cell_Region(Map[cell].Cell_Number()))
+                        MapEditClass::Cell_Region(Map.at(cell).Cell_Number()))
                    .Threat_Value();
-  if (!threat && Map[cell].IsVisible) {
+  if (!threat && Map.at(cell).IsVisible) {
     threat = 1;
   }
   return threat;
@@ -1381,7 +1381,7 @@ bool MapClass::Remove_Crate(CELL cell) {
   }
 
   //	if (Session.Type == GAME_NORMAL) {
-  CellClass* cellptr = &(*this)[cell];
+  CellClass* cellptr = &(*this).at(cell);
   if (cellptr->Overlay != OVERLAY_NONE &&
       OverlayTypeClass::As_Reference(cellptr->Overlay).IsCrate) {
     cellptr->Overlay = OVERLAY_NONE;
@@ -1427,7 +1427,7 @@ bool MapClass::Validate() {
     /*
     **	Validate Template & Icon data
     */
-    const TemplateType ttype = (*this)[cell].TType;
+    const TemplateType ttype = (*this).at(cell).TType;
     if (static_cast<int>(ttype) >=
             static_cast<int>(magic_enum::enum_count<TemplateType>()) &&
         ttype != TEMPLATE_NONE) {
@@ -1442,7 +1442,7 @@ bool MapClass::Validate() {
     */
     if (ttype != TEMPLATE_NONE) {
       const TemplateTypeClass* tclass = &TemplateTypeClass::As_Reference(ttype);
-      const unsigned char ticon = (*this)[cell].TIcon;
+      const unsigned char ticon = (*this).at(cell).TIcon;
       Mem_Copy(std::as_bytes(Get_Icon_Set_Map(tclass->Get_Image_Data())),
                base::ObjectBytes(map),
                static_cast<size_t>(tclass->Width) * tclass->Height);
@@ -1455,7 +1455,7 @@ bool MapClass::Validate() {
     /*
     **	Validate Overlay
     */
-    const OverlayType overlay = (*this)[cell].Overlay;
+    const OverlayType overlay = (*this).at(cell).Overlay;
     if (overlay < OVERLAY_NONE ||
         static_cast<int>(overlay) >=
             static_cast<int>(magic_enum::enum_count<OverlayType>())) {
@@ -1465,7 +1465,7 @@ bool MapClass::Validate() {
     /*
     **	Validate Smudge
     */
-    const SmudgeType smudge = (*this)[cell].Smudge;
+    const SmudgeType smudge = (*this).at(cell).Smudge;
     if (smudge < SMUDGE_NONE ||
         static_cast<int>(smudge) >=
             static_cast<int>(magic_enum::enum_count<SmudgeType>())) {
@@ -1475,7 +1475,7 @@ bool MapClass::Validate() {
     /*
     **	Validate LandType
     */
-    const LandType land = (*this)[cell].Land_Type();
+    const LandType land = (*this).at(cell).Land_Type();
     if (land < LAND_CLEAR ||
         static_cast<int>(land) >=
             static_cast<int>(magic_enum::enum_count<LandType>())) {
@@ -1485,7 +1485,7 @@ bool MapClass::Validate() {
     /*
     **	Validate Occupier
     */
-    ObjectClass* obj = (*this)[cell].Cell_Occupier();
+    ObjectClass* obj = (*this).at(cell).Cell_Occupier();
     if (obj && (obj->IsInLimbo || static_cast<unsigned int>(Coord_Cell(
                                       obj->Coord)) >= MAP_CELL_TOTAL)) {
       return false;
@@ -1494,8 +1494,9 @@ bool MapClass::Validate() {
     /*
     **	Validate Overlappers
     */
-    for (int i = 0; i < std::ssize((*this)[cell].CellClass::Overlappers); i++) {
-      obj = base::At((*this)[cell].Overlappers, i);
+    for (int i = 0; i < std::ssize((*this).at(cell).CellClass::Overlappers);
+         i++) {
+      obj = base::At((*this).at(cell).Overlappers, i);
       if (obj && (obj->IsInLimbo || static_cast<unsigned int>(Coord_Cell(
                                         obj->Coord)) >= MAP_CELL_TOTAL)) {
         return false;
@@ -1554,7 +1555,7 @@ ObjectClass* MapClass::Close_Object(COORDINATE coord) const {
       **	find the closest object. Check against any previously found
       *object *	to ensure that it is actually closer.
       */
-      ObjectClass* o = Array[newcell].Cell_Occupier();
+      ObjectClass* o = Array.at(newcell).Cell_Occupier();
       while (o != nullptr) {
         /*
         **	Special case check to ignore cloaked object if not owned by the
@@ -1616,16 +1617,16 @@ bool MapClass::Zone_Reset(uint32_t method) {
   */
   for (int index = 0; index < MAP_CELL_TOTAL; index++) {
     if (method & kZoneFlagNormal) {
-      Array[index].Zones[MZONE_NORMAL] = 0;
+      Array.at(index).Zones.at(MZONE_NORMAL) = 0;
     }
     if (method & kZoneFlagCrusher) {
-      Array[index].Zones[MZONE_CRUSHER] = 0;
+      Array.at(index).Zones.at(MZONE_CRUSHER) = 0;
     }
     if (method & kZoneFlagDestroyer) {
-      Array[index].Zones[MZONE_DESTROYER] = 0;
+      Array.at(index).Zones.at(MZONE_DESTROYER) = 0;
     }
     if (method & kZoneFlagWater) {
-      Array[index].Zones[MZONE_WATER] = 0;
+      Array.at(index).Zones.at(MZONE_WATER) = 0;
     }
   }
 
@@ -1723,8 +1724,8 @@ int MapClass::Zone_Span(CELL cell, int zone, MZoneType check) {
   **	until a boundary is reached.
   */
   for (; xbegin >= MapCellX; xbegin--) {
-    const CellClass* cellptr = &(*this)[XY_Cell(xbegin, y)];
-    if (cellptr->Zones[check] != 0 ||
+    const CellClass* cellptr = &(*this).at(XY_Cell(xbegin, y));
+    if (cellptr->Zones.at(check) != 0 ||
         !cellptr->Is_Clear_To_Move(
             check == MZONE_WATER ? SPEED_FLOAT : SPEED_TRACK, true, true, -1,
             check)) {
@@ -1753,8 +1754,8 @@ int MapClass::Zone_Span(CELL cell, int zone, MZoneType check) {
   **	extent of the current span.
   */
   for (; xend < MapCellX + MapCellWidth; xend++) {
-    const CellClass* cellptr = &(*this)[XY_Cell(xend, y)];
-    if (cellptr->Zones[check] != 0 ||
+    const CellClass* cellptr = &(*this).at(XY_Cell(xend, y));
+    if (cellptr->Zones.at(check) != 0 ||
         !cellptr->Is_Clear_To_Move(
             check == MZONE_WATER ? SPEED_FLOAT : SPEED_TRACK, true, true, -1,
             check)) {
@@ -1769,7 +1770,8 @@ int MapClass::Zone_Span(CELL cell, int zone, MZoneType check) {
   *values *	for the entire span.
   */
   for (int x = xbegin; x <= xend; x++) {
-    (*this)[XY_Cell(x, y)].Zones[check] = static_cast<unsigned char>(zone);
+    (*this).at(XY_Cell(x, y)).Zones.at(check) =
+        static_cast<unsigned char>(zone);
     filled++;
   }
 
@@ -1842,7 +1844,7 @@ CELL MapClass::Nearby_Location(CELL cell, SpeedType speed, int zone,
     for (int x = -radius; x <= radius; x++) {
       if (x >= -left && radius <= top) {
         newcell = XY_Cell(xx + x, yy - radius);
-        cellptr = &Map[newcell];
+        cellptr = &Map.at(newcell);
         if (Map.In_Radar(newcell) &&
             cellptr->Is_Clear_To_Move(speed, false, false, zone, check)) {
           base::At(topten, count++) = newcell;
@@ -1854,7 +1856,7 @@ CELL MapClass::Nearby_Location(CELL cell, SpeedType speed, int zone,
 
       if (x <= right && radius <= bottom) {
         newcell = XY_Cell(xx + x, yy + radius);
-        cellptr = &Map[newcell];
+        cellptr = &Map.at(newcell);
         if (Map.In_Radar(newcell) &&
             cellptr->Is_Clear_To_Move(speed, false, false, zone, check)) {
           base::At(topten, count++) = newcell;
@@ -1875,7 +1877,7 @@ CELL MapClass::Nearby_Location(CELL cell, SpeedType speed, int zone,
     for (int y = -(radius - 1); y <= radius - 1; y++) {
       if (y >= -top && radius <= left) {
         newcell = XY_Cell(xx - radius, yy + y);
-        cellptr = &Map[newcell];
+        cellptr = &Map.at(newcell);
         if (Map.In_Radar(newcell) &&
             cellptr->Is_Clear_To_Move(speed, false, false, zone, check)) {
           base::At(topten, count++) = newcell;
@@ -1887,7 +1889,7 @@ CELL MapClass::Nearby_Location(CELL cell, SpeedType speed, int zone,
 
       if (y <= bottom && radius <= right) {
         newcell = XY_Cell(xx + radius, yy + y);
-        cellptr = &Map[newcell];
+        cellptr = &Map.at(newcell);
         if (Map.In_Radar(newcell) &&
             cellptr->Is_Clear_To_Move(speed, false, false, zone, check)) {
           base::At(topten, count++) = newcell;
@@ -1966,7 +1968,7 @@ bool MapClass::Base_Region(CELL cell, HousesType& house, ZoneType& zone) const {
  *=============================================================================================*/
 bool MapClass::Destroy_Bridge_At(CELL cell) {
   if (In_Radar(cell) && !Special.IsCaptureTheFlag) {
-    const CellClass* cellptr = &(*this)[cell];
+    const CellClass* cellptr = &(*this).at(cell);
     TemplateType ttype = cellptr->TType;
 
     if (ttype == TEMPLATE_BRIDGE1 || ttype == TEMPLATE_BRIDGE2) {
@@ -2015,7 +2017,7 @@ bool MapClass::Destroy_Bridge_At(CELL cell) {
       */
       for (int y = 0; y < bridge_h; y++) {
         for (int x = 0; x < bridge_w; x++) {
-          const CellClass* bridge_cell = &(*this)[cell];
+          const CellClass* bridge_cell = &(*this).at(cell);
           if (bridge_cell->TType == ttype) {
             /*
             **	Any unit that is firing on the bridge at this location, will
@@ -2069,7 +2071,7 @@ bool MapClass::Destroy_Bridge_At(CELL cell) {
       if (ttype == TEMPLATE_BRIDGE_3C) {
         // check the template below us, at x-1, y+1
         CELL cell2 = static_cast<CELL>(cell + (MAP_CELL_W - 1));
-        const CellClass* celptr = &(*this)[cell2];
+        const CellClass* celptr = &(*this).at(cell2);
         if (celptr->TType == TEMPLATE_BRIDGE_3C) {
           // It was also destroyed.  Update us and it.
           new TemplateClass(static_cast<TemplateType>(TEMPLATE_BRIDGE_3D),
@@ -2080,7 +2082,7 @@ bool MapClass::Destroy_Bridge_At(CELL cell) {
 
         // Now check the template above us, at x+1, y-1.
         cell2 = static_cast<CELL>(cell - (MAP_CELL_W - 1));
-        celptr = &(*this)[cell2];
+        celptr = &(*this).at(cell2);
         if (celptr->TType == TEMPLATE_BRIDGE_3C) {
           if (cellptr->TType == TEMPLATE_BRIDGE_3D) {
             // if we're already one-sided, turn us to all water
@@ -2106,7 +2108,7 @@ bool MapClass::Destroy_Bridge_At(CELL cell) {
 
         // Point to the template below us, x-1, y+2
         const CELL cell2 = static_cast<CELL>(cell + (MAP_CELL_W * 2) - 1);
-        const TemplateType bridge_type = (*this)[cell2].TType;
+        const TemplateType bridge_type = (*this).at(cell2).TType;
         if (bridge_type == TEMPLATE_BRIDGE_3A ||
             bridge_type == TEMPLATE_BRIDGE_3B ||
             bridge_type == TEMPLATE_BRIDGE_3C) {
@@ -2120,7 +2122,7 @@ bool MapClass::Destroy_Bridge_At(CELL cell) {
         if (cellptr->TType == TEMPLATE_BRIDGE_2C) {
           // Point to the template above us, x+2, y-1
           const CELL cell2 = static_cast<CELL>(cell - (MAP_CELL_W - 2));
-          const TemplateType bridge_type = (*this)[cell2].TType;
+          const TemplateType bridge_type = (*this).at(cell2).TType;
           if (bridge_type == TEMPLATE_BRIDGE_3A ||
               bridge_type == TEMPLATE_BRIDGE_3B ||
               bridge_type == TEMPLATE_BRIDGE_3C) {
@@ -2139,7 +2141,7 @@ bool MapClass::Destroy_Bridge_At(CELL cell) {
         int tdata = 0;
         for (int y = 0; y < h; y++) {
           for (int x = 0; x < w; x++) {
-            const CellClass* ptr = &(*this)[static_cast<CELL>(cell + x)];
+            const CellClass* ptr = &(*this).at(static_cast<CELL>(cell + x));
             if (ptr->TType == cellptr->TType ||
                 ptr->Land_Type() == LAND_RIVER ||
                 ptr->Land_Type() == LAND_WATER) {
@@ -2191,7 +2193,7 @@ void MapClass::Detach(TARGET target, bool /*unused*/) {
   */
   if (Is_Target_Trigger(target)) {
     for (int index = 0; index < MapTriggers.Count(); index++) {
-      if (MapTriggers[index] == As_Trigger(target)) {
+      if (MapTriggers.at(index) == As_Trigger(target)) {
         MapTriggers.Delete(index);
         break;
       }
@@ -2201,8 +2203,8 @@ void MapClass::Detach(TARGET target, bool /*unused*/) {
     **	Loop through all cells; remove any reference to this trigger
     */
     for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
-      if ((*this)[cell].Trigger == As_Trigger(target)) {
-        (*this)[cell].Trigger = nullptr;
+      if ((*this).at(cell).Trigger == As_Trigger(target)) {
+        (*this).at(cell).Trigger = nullptr;
       }
     }
   }
@@ -2228,12 +2230,12 @@ int MapClass::Intact_Bridge_Count() const {
   */
   int count = 0;
   for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
-    const TemplateType bridge_type = Array[cell].TType;
+    const TemplateType bridge_type = Array.at(cell).TType;
     if ((bridge_type == TEMPLATE_BRIDGE1 || bridge_type == TEMPLATE_BRIDGE1H ||
          bridge_type == TEMPLATE_BRIDGE2 || bridge_type == TEMPLATE_BRIDGE2H ||
          bridge_type == TEMPLATE_BRIDGE_1A ||
          bridge_type == TEMPLATE_BRIDGE_1B) &&
-        Array[cell].TIcon == 6) {
+        Array.at(cell).TIcon == 6) {
       count++;
     }
   }
@@ -2276,7 +2278,7 @@ CELL MapClass::Pick_Random_Location() {
  *=============================================================================================*/
 void MapClass::Shroud_The_Map() {
   for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
-    CellClass* cellptr = &Map[cell];
+    CellClass* cellptr = &Map.at(cell);
     if (cellptr->IsMapped || cellptr->IsVisible) {
       cellptr->Redraw_Objects();
       /*
@@ -2291,9 +2293,10 @@ void MapClass::Shroud_The_Map() {
       }
     }
   }
-  for (int obj_index = 0; obj_index < DisplayClass::Layer[LAYER_GROUND].Count();
-       obj_index++) {
-    ObjectClass* layer_object = DisplayClass::Layer[LAYER_GROUND][obj_index];
+  for (int obj_index = 0;
+       obj_index < DisplayClass::Layer.at(LAYER_GROUND).Count(); obj_index++) {
+    ObjectClass* layer_object =
+        DisplayClass::Layer.at(LAYER_GROUND).at(obj_index);
     if (layer_object && layer_object->Is_Techno() &&
         dynamic_cast<TechnoClass*>(layer_object)->House == PlayerPtr) {
       layer_object->Look();

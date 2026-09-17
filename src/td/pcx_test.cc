@@ -9,6 +9,7 @@
 #include <string>
 #include <system_error>
 
+#include "base/array.h"
 #include "gtest/gtest.h"
 #include "sdllib/gbuffer.h"
 #include "tech/pcx_file.h"
@@ -24,13 +25,13 @@ class PcxFile {
              testing::UnitTest::GetInstance()->current_test_info()->name() +
              ".pcx");
     std::array<char, 128> header{};
-    header[0] = 10;  // PCX identifier.
-    header[1] = 5;   // Version.
-    header[2] = 1;   // RLE encoding.
-    header[3] = 8;   // Bits per pixel.
-    header[8] = 1;   // Inclusive right edge: width is two pixels.
-    header[65] = 1;  // One color plane.
-    header[66] = padded ? 4 : 2;  // Bytes per scanline.
+    header.at(0) = 10;  // PCX identifier.
+    header.at(1) = 5;   // Version.
+    header.at(2) = 1;   // RLE encoding.
+    header.at(3) = 8;   // Bits per pixel.
+    header.at(8) = 1;   // Inclusive right edge: width is two pixels.
+    header.at(65) = 1;  // One color plane.
+    header.at(66) = padded ? 4 : 2;  // Bytes per scanline.
     std::ofstream out(path_, std::ios::binary);
     out.write(header.data(), static_cast<std::streamsize>(header.size()));
     for (const uint8_t pixel : pixels) {
@@ -103,8 +104,8 @@ TEST(PcxTest, DecodesLiteralPixels) {
         PcxFile(std::span(pixels).first(padded ? 4 : 2), padded).Load();
     ASSERT_NE(image, nullptr);
     const auto decoded = image->Get_Bytes();
-    EXPECT_EQ(decoded[0], 7);
-    EXPECT_EQ(decoded[1], 8);
+    EXPECT_EQ(base::At(decoded, 0), 7);
+    EXPECT_EQ(base::At(decoded, 1), 8);
   }
 }
 
@@ -114,8 +115,8 @@ TEST(PcxTest, DecodesRepeatedPixels) {
     const auto image = PcxFile(std::span(pixels).first(padded ? 4 : 2), padded).Load();
     ASSERT_NE(image, nullptr);
     const auto decoded = image->Get_Bytes();
-    EXPECT_EQ(decoded[0], 7);
-    EXPECT_EQ(decoded[1], 7);
+    EXPECT_EQ(base::At(decoded, 0), 7);
+    EXPECT_EQ(base::At(decoded, 1), 7);
   }
 }
 

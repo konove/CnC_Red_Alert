@@ -2,7 +2,7 @@
 
 Updated: 2026-09-16, against [`.clang-tidy`](../.clang-tidy) and clang-tidy 23.1.2.
 
-This tracks **all 91 currently excluded check names** and completed entries, in recommended work
+This tracks **all 90 currently excluded check names** and completed entries, in recommended work
 order. Priorities reflect likely defect prevention, relevance to this engine, and the cost of useful
 fixes; they are judgments, not fresh finding counts. Start at P1 and work downward. Aliases stay
 beside their related check so a single cleanup can handle them together. Previously deferred checks
@@ -114,7 +114,7 @@ comes from the installed tool, since the online documentation follows LLVM devel
 | Check                                                           | Status  | Reason / result                                                                                                                                                                                                                                                                                                                                                                                                              |
 | --------------------------------------------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `clang-diagnostic-unsafe-buffer-usage`                          | Enabled | Commit `Enforce clang unsafe buffer diagnostics repository-wide`: bounded APIs throughout both games and shared libraries; both exclusions removed. All 952 project source/header units pass full configured analysis, all 547 tests pass, and both save/load checks match. See [the completed plan and validation record](UNSAFE_BUFFER_USAGE_PLAN.md).                                                                     |
-| `cppcoreguidelines-pro-bounds-avoid-unchecked-container-access` | Skipped | Commit `Document buffer, union and boolean conversion check policy`: 1,840 reports of `operator[]` on the engine's vectors and heaps. See review below.                                                                                                                                                                                                                                                                      |
+| `cppcoreguidelines-pro-bounds-avoid-unchecked-container-access` | Enabled | Commit `Enable checked container access across both games`: replace 4,089 unchecked-access sites with checked accessors; preserve container storage and enforce active queue bounds. Plan [UNCHECKED_CONTAINER_ACCESS_PLAN.md](UNCHECKED_CONTAINER_ACCESS_PLAN.md); see review below.                                                                                                                                        |
 | `cppcoreguidelines-pro-bounds-constant-array-index`             | Skipped | Commit `Document buffer, union and boolean conversion check policy`: 3,365 reports of runtime indices into fixed game tables. See review below.                                                                                                                                                                                                                                                                              |
 | `cppcoreguidelines-owning-memory`                               | Skipped | Commit `Document P3 checks the legacy-code policy rules out`: 1,240 reports, raw `new`/`delete` ownership across the object heaps, dialogs and buffers; `gsl::owner` or smart pointers everywhere is exactly what CLAUDE.md's legacy-code rules list it under changes to avoid unless requested. See review below.                                                                                                           |
 | `cppcoreguidelines-no-malloc`                                   | Enabled | Commit `Hold INI section and entry names in std::string`: the 3 reports were RA's `INIEntry` and `INISection` freeing names that `ini.cc` had `strdup`ed at 4 sites; the names are now `std::string`, and the 12 readers use `.c_str()`, `.data()` and `.size()`.                                                                                                                                                            |
@@ -293,6 +293,26 @@ comes from the installed tool, since the online documentation follows LLVM devel
 | `clang-diagnostic-pre-c++23-compat`           | Skip proposed | The project requires C++23, so older-standard compatibility is unnecessary.        |
 
 ## Completing a row
+
+### Checked container access review (2026-09-16)
+
+The fresh inventory found 4,089 unique sites in 292 files across 952 project translation units.
+Recent buffer work supplies spans that retain their bounds, so the earlier decision to skip this
+check is superseded. Standard containers use `.at()`; game containers expose named checked
+accessors; `base::At` also accepts spans. Rendering and compression iterator accesses use their
+owning span's extent. The check has no added suppressions or container exclusions.
+
+Both queues now reject indices outside their active count before wrapping into the circular buffer.
+Vector accesses check capacity bounds in release builds. The accessors preserve storage layouts,
+references/proxies, coordinate overloads, and the values returned for valid indices. See the
+[plan and validation record](UNCHECKED_CONTAINER_ACCESS_PLAN.md) for details.
+
+Both isolated and full-config sweeps passed all 952 translation units. Both GCC and strict Clang
+game builds and all 557 CTest tests passed. Thirteen focused tests passed with `NDEBUG`; removing
+the new queue guards made the regression fail as expected. The enabled check rejects an
+unchecked-subscript probe that passes with the former exclusion. Strict headless save/load checks
+matched 240 RA positions and 5,951 TD states; additional map/mobile and saved-fixture checks also
+passed.
 
 ### StatusOr check toolchain limitation (2026-09-11)
 

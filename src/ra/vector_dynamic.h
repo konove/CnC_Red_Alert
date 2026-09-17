@@ -118,7 +118,7 @@ bool DynamicVectorClass<T>::Add(const T& object) {
   if (!EnsureRoom()) {
     return false;
   }
-  (*this)[ActiveCount++] = object;
+  (*this).at(ActiveCount++) = object;
   return true;
 }
 
@@ -135,7 +135,7 @@ bool DynamicVectorClass<T>::Add_Head(const T& object) {
   const auto elements = this->Elements();
   std::move_backward(elements.begin(), elements.begin() + ActiveCount,
                      elements.begin() + ActiveCount + 1);
-  (*this)[0] = object;
+  (*this).at(0) = object;
   ActiveCount++;
   return true;
 }
@@ -148,7 +148,7 @@ bool DynamicVectorClass<T>::Delete(base::ssize index) {
     ActiveCount--;
     // Use assignment (not memcpy) to properly handle class objects.
     for (base::ssize i = index; i < ActiveCount; i++) {
-      (*this)[i] = (*this)[i + 1];
+      (*this).at(i) = (*this).at(i + 1);
     }
     return true;
   }
@@ -161,7 +161,7 @@ bool DynamicVectorClass<T>::Delete(base::ssize index) {
 template <typename T>
 base::ssize DynamicVectorClass<T>::ID(const T& ptr) {
   for (base::ssize index = 0; index < Count(); index++) {
-    if ((*this)[index] == ptr) {
+    if ((*this).at(index) == ptr) {
       return index;
     }
   }

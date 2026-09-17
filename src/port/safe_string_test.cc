@@ -3,6 +3,7 @@
 #include <span>
 #include <string_view>
 
+#include "base/array.h"
 #include "gtest/gtest.h"
 
 namespace port {
@@ -110,7 +111,7 @@ TEST(MutableCStringTest, IncludesTerminatorAndHandlesNull) {
   const auto view = MutableCString(text);
   EXPECT_EQ(view.size(), 4U);
   EXPECT_EQ(view.back(), '\0');
-  view[1] = 'X';
+  base::At(view, 1) = 'X';
   EXPECT_STREQ(text, "aXc");
   EXPECT_TRUE(MutableCString(nullptr).empty());
 }

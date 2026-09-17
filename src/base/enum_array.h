@@ -23,7 +23,7 @@ namespace base {
 //
 // Example:
 //   base::EnumArray<ArmorType, const char*> ArmorName = {"none", "wood"};
-//   const char* name = ArmorName[ARMOR_WOOD];
+//   const char* name = ArmorName.at(ARMOR_WOOD);
 //   for (const char* n : ArmorName) ...
 template <class E, class T, ssize N = ssize{magic_enum::enum_count<E>()}>
 struct EnumArray {
@@ -34,14 +34,22 @@ struct EnumArray {
 
   T elements[N];
 
+  // Returns the enum-indexed element with a check in every build mode.
+  constexpr T& at(E index) noexcept ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    DCHECK(static_cast<ssize>(index) >= 0 && static_cast<ssize>(index) < N);
+    return base::At(elements, static_cast<ssize>(index));
+  }
   constexpr T& operator[](E index) noexcept ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return at(index);
+  }
+  [[nodiscard]] constexpr const T& at(E index) const noexcept
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
     DCHECK(static_cast<ssize>(index) >= 0 && static_cast<ssize>(index) < N);
     return base::At(elements, static_cast<ssize>(index));
   }
   constexpr const T& operator[](E index) const noexcept
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    DCHECK(static_cast<ssize>(index) >= 0 && static_cast<ssize>(index) < N);
-    return base::At(elements, static_cast<ssize>(index));
+    return at(index);
   }
 
   [[nodiscard]] static constexpr ssize size() noexcept { return N; }

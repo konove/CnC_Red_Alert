@@ -153,13 +153,13 @@ void BlowfishEngine::Submit_Key(std::span<const std::byte> key) {
     uint32_t data = 0;
 
     data = data << CHAR_BIT |
-           std::to_integer<uint32_t>(key[base::ToSize(j++ % length)]);
+           std::to_integer<uint32_t>(base::At(key, base::ToSize(j++ % length)));
     data = data << CHAR_BIT |
-           std::to_integer<uint32_t>(key[base::ToSize(j++ % length)]);
+           std::to_integer<uint32_t>(base::At(key, base::ToSize(j++ % length)));
     data = data << CHAR_BIT |
-           std::to_integer<uint32_t>(key[base::ToSize(j++ % length)]);
+           std::to_integer<uint32_t>(base::At(key, base::ToSize(j++ % length)));
     data = data << CHAR_BIT |
-           std::to_integer<uint32_t>(key[base::ToSize(j++ % length)]);
+           std::to_integer<uint32_t>(base::At(key, base::ToSize(j++ % length)));
 
     base::At(P_Encrypt, index) ^= data;
   }
@@ -327,16 +327,16 @@ void BlowfishEngine::Process_Block(std::span<const std::byte> plaintext,
   std::size_t source = 0;
   std::size_t table_index = 0;
   Int left;
-  left.Char.C0 = std::to_integer<unsigned char>(plaintext[source++]);
-  left.Char.C1 = std::to_integer<unsigned char>(plaintext[source++]);
-  left.Char.C2 = std::to_integer<unsigned char>(plaintext[source++]);
-  left.Char.C3 = std::to_integer<unsigned char>(plaintext[source++]);
+  left.Char.C0 = std::to_integer<unsigned char>(base::At(plaintext, source++));
+  left.Char.C1 = std::to_integer<unsigned char>(base::At(plaintext, source++));
+  left.Char.C2 = std::to_integer<unsigned char>(base::At(plaintext, source++));
+  left.Char.C3 = std::to_integer<unsigned char>(base::At(plaintext, source++));
 
   Int right;
-  right.Char.C0 = std::to_integer<unsigned char>(plaintext[source++]);
-  right.Char.C1 = std::to_integer<unsigned char>(plaintext[source++]);
-  right.Char.C2 = std::to_integer<unsigned char>(plaintext[source++]);
-  right.Char.C3 = std::to_integer<unsigned char>(plaintext[source]);
+  right.Char.C0 = std::to_integer<unsigned char>(base::At(plaintext, source++));
+  right.Char.C1 = std::to_integer<unsigned char>(base::At(plaintext, source++));
+  right.Char.C2 = std::to_integer<unsigned char>(base::At(plaintext, source++));
+  right.Char.C3 = std::to_integer<unsigned char>(base::At(plaintext, source));
 
   /*
   **	Perform all Feistal rounds on the block. This is the
@@ -345,12 +345,12 @@ void BlowfishEngine::Process_Block(std::span<const std::byte> plaintext,
   *unnecessary exchanging.
   */
   for (int index = 0; index < kRounds / 2; index++) {
-    left.Long ^= ptable[table_index++];
+    left.Long ^= base::At(ptable, table_index++);
     right.Long ^= ((base::At(base::At(bf_S, 0), left.Char.C0) +
                     base::At(base::At(bf_S, 1), left.Char.C1)) ^
                    base::At(base::At(bf_S, 2), left.Char.C2)) +
                   base::At(base::At(bf_S, 3), left.Char.C3);
-    right.Long ^= ptable[table_index++];
+    right.Long ^= base::At(ptable, table_index++);
     left.Long ^= ((base::At(base::At(bf_S, 0), right.Char.C0) +
                    base::At(base::At(bf_S, 1), right.Char.C1)) ^
                   base::At(base::At(bf_S, 2), right.Char.C2)) +
@@ -362,8 +362,8 @@ void BlowfishEngine::Process_Block(std::span<const std::byte> plaintext,
   *block. *	The left and right halves are still reversed as a side effect of
   *the last *	round.
   */
-  left.Long ^= ptable[table_index++];
-  right.Long ^= ptable[table_index];
+  left.Long ^= base::At(ptable, table_index++);
+  right.Long ^= base::At(ptable, table_index);
 
   /*
   **	The final block data is output in endian architecture
@@ -373,15 +373,15 @@ void BlowfishEngine::Process_Block(std::span<const std::byte> plaintext,
   **	encryption rounds.
   */
   std::size_t out = 0;
-  cyphertext[out++] = static_cast<std::byte>(right.Char.C0);
-  cyphertext[out++] = static_cast<std::byte>(right.Char.C1);
-  cyphertext[out++] = static_cast<std::byte>(right.Char.C2);
-  cyphertext[out++] = static_cast<std::byte>(right.Char.C3);
+  base::At(cyphertext, out++) = static_cast<std::byte>(right.Char.C0);
+  base::At(cyphertext, out++) = static_cast<std::byte>(right.Char.C1);
+  base::At(cyphertext, out++) = static_cast<std::byte>(right.Char.C2);
+  base::At(cyphertext, out++) = static_cast<std::byte>(right.Char.C3);
 
-  cyphertext[out++] = static_cast<std::byte>(left.Char.C0);
-  cyphertext[out++] = static_cast<std::byte>(left.Char.C1);
-  cyphertext[out++] = static_cast<std::byte>(left.Char.C2);
-  cyphertext[out] = static_cast<std::byte>(left.Char.C3);
+  base::At(cyphertext, out++) = static_cast<std::byte>(left.Char.C0);
+  base::At(cyphertext, out++) = static_cast<std::byte>(left.Char.C1);
+  base::At(cyphertext, out++) = static_cast<std::byte>(left.Char.C2);
+  base::At(cyphertext, out) = static_cast<std::byte>(left.Char.C3);
 }
 
 /***********************************************************************************************

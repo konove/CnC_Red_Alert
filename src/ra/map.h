@@ -129,12 +129,17 @@ class MapClass : public GScreenClass {
   */
   int64_t TotalValue = 0;
 
-  CellClass& operator[](COORDINATE coord) { return Array[Coord_Cell(coord)]; }
-  CellClass& operator[](CELL cell) { return Array[cell]; }
-  const CellClass& operator[](COORDINATE coord) const {
-    return Array[Coord_Cell(coord)];
+  // Resolves a coordinate or cell ID through the checked cell array.
+  CellClass& at(COORDINATE coord) { return Array.at(Coord_Cell(coord)); }
+  CellClass& operator[](COORDINATE coord) { return at(coord); }
+  CellClass& at(CELL cell) { return Array.at(cell); }
+  CellClass& operator[](CELL cell) { return at(cell); }
+  [[nodiscard]] const CellClass& at(COORDINATE coord) const {
+    return Array.at(Coord_Cell(coord));
   }
-  const CellClass& operator[](CELL cell) const { return Array[cell]; }
+  const CellClass& operator[](COORDINATE coord) const { return at(coord); }
+  [[nodiscard]] const CellClass& at(CELL cell) const { return Array.at(cell); }
+  const CellClass& operator[](CELL cell) const { return at(cell); }
   int ID(const CellClass* ptr) { return static_cast<int>(Array.ID(ptr)); }
   int ID(const CellClass& ptr) { return static_cast<int>(Array.ID(ptr)); }
 

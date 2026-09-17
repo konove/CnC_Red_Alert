@@ -307,8 +307,12 @@ bool Linear_Blit_To_Linear(void* thisptr, void* dest, int x_pixel, int y_pixel,
       dst_offset += dst_area * (line_count - 1);
       do {
         for (int x = 0; x < pixel_count; x++) {
-          if (src_offset[x]) {
-            dst_offset[x] = src_offset[x];
+          if (base::At(vp_src->Get_Pixels(),
+                       (src_offset - vp_src->Get_Pixels().begin()) + x)) {
+            base::At(vp_dst->Get_Pixels(),
+                     (dst_offset - vp_dst->Get_Pixels().begin()) + x) =
+                base::At(vp_src->Get_Pixels(),
+                         (src_offset - vp_src->Get_Pixels().begin()) + x);
           }
         }
         src_offset -= src_area;
@@ -335,8 +339,12 @@ bool Linear_Blit_To_Linear(void* thisptr, void* dest, int x_pixel, int y_pixel,
       // copy transparent lines
       do {
         for (int x = 0; x < pixel_count; x++) {
-          if (src_offset[x]) {
-            dst_offset[x] = src_offset[x];
+          if (base::At(vp_src->Get_Pixels(),
+                       (src_offset - vp_src->Get_Pixels().begin()) + x)) {
+            base::At(vp_dst->Get_Pixels(),
+                     (dst_offset - vp_dst->Get_Pixels().begin()) + x) =
+                base::At(vp_src->Get_Pixels(),
+                         (src_offset - vp_src->Get_Pixels().begin()) + x);
           }
         }
         src_offset += src_area;
@@ -470,10 +478,12 @@ bool Linear_Scale_To_Linear(void* thisptr, void* dest, int src_x, int src_y,
       int x = 0;
       auto out = dst_offset;
       do {
-        const uint8_t pixel = src_offset[x / 65536];
+        const uint8_t pixel =
+            base::At(vp_src->Get_Pixels(),
+                     (src_offset - vp_src->Get_Pixels().begin()) + (x / 65536));
 
         if (pixel) {
-          *out = remap[pixel];
+          *out = base::At(remap, pixel);
         }
 
         x += dx_frac;
@@ -496,7 +506,9 @@ bool Linear_Scale_To_Linear(void* thisptr, void* dest, int src_x, int src_y,
       int x = 0;
       auto out = dst_offset;
       do {
-        const uint8_t pixel = src_offset[x / 65536];
+        const uint8_t pixel =
+            base::At(vp_src->Get_Pixels(),
+                     (src_offset - vp_src->Get_Pixels().begin()) + (x / 65536));
 
         if (pixel) {
           *out = pixel;
@@ -522,7 +534,10 @@ bool Linear_Scale_To_Linear(void* thisptr, void* dest, int src_x, int src_y,
       int x = 0;
       auto out = dst_offset;
       do {
-        *out++ = remap[src_offset[x / 65536]];
+        *out++ = base::At(remap,
+                          base::At(vp_src->Get_Pixels(),
+                                   (src_offset - vp_src->Get_Pixels().begin()) +
+                                       (x / 65536)));
         x += dx_frac;
       } while (--counter_x);
 
@@ -542,7 +557,9 @@ bool Linear_Scale_To_Linear(void* thisptr, void* dest, int src_x, int src_y,
       int x = 0;
       auto out = dst_offset;
       do {
-        *out++ = src_offset[x / 65536];
+        *out++ =
+            base::At(vp_src->Get_Pixels(),
+                     (src_offset - vp_src->Get_Pixels().begin()) + (x / 65536));
         x += dx_frac;
       } while (--counter_x);
 
@@ -945,7 +962,7 @@ void Buffer_Remap(void* thisptr, int sx, int sy, int width, int height,
   // remap lines
   do {
     for (int x = 0; x < pixel_count; x++) {
-      const auto v = remap.begin()[*dst_offset];
+      const auto v = base::At(remap, *dst_offset);
       *dst_offset++ = v;
     }
     dst_offset += skip;

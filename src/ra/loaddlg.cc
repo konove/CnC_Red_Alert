@@ -77,7 +77,6 @@
 #include "ra/textbtn.h"
 #include "ra/theme.h"
 #include "ra/toggle.h"
-#include "ra/vector.h"
 #include "ra/ww_audio.h"
 #include "sdllib/file.h"
 #include "sdllib/gbuffer.h"
@@ -124,7 +123,7 @@ LoadOptionsClass::LoadOptionsClass(LoadStyleType style) : Style(style) {
  *=============================================================================================*/
 LoadOptionsClass::~LoadOptionsClass() {
   for (int i = 0; i < Files.Count(); i++) {
-    delete Files[i];
+    delete Files.at(i);
   }
   Files.Clear();
 }
@@ -418,8 +417,8 @@ bool LoadOptionsClass::Process() {
         if (game_idx < 0 || game_idx >= Files.Count()) {
           break;
         }
-        game_num = Files[game_idx]->Num;
-        if (Files[game_idx]->Valid) {
+        game_num = Files.at(game_idx)->Num;
+        if (Files.at(game_idx)->Valid) {
           /*
           ** Start a timer before we load the game
           */
@@ -481,7 +480,7 @@ bool LoadOptionsClass::Process() {
           break;
         }
 
-        game_num = Files[game_idx]->Num;
+        game_num = Files.at(game_idx)->Num;
         if (!Save_Game(game_num, game_descr)) {
           WWMessageBox().Process(TXT_ERROR_SAVING_GAME);
         } else {
@@ -515,7 +514,7 @@ bool LoadOptionsClass::Process() {
         if (game_idx < 0 || game_idx >= Files.Count()) {
           break;
         }
-        game_num = Files[game_idx]->Num;
+        game_num = Files.at(game_idx)->Num;
         if (WWMessageBox().Process(TXT_DELETE_FILE_QUERY, TXT_YES, TXT_NO) ==
             0) {
           absl::SNPrintF(fname, sizeof(fname), "SAVEGAME.%03d", game_num);
@@ -627,7 +626,7 @@ void LoadOptionsClass::Clear_List(ListClass* list) {
   ** Clear the array of game numbers
   */
   for (int i = 0; i < Files.Count(); i++) {
-    delete Files[i];
+    delete Files.at(i);
   }
   Files.Clear();
 }
@@ -728,7 +727,7 @@ void LoadOptionsClass::Fill_List(ListClass* list) {
     for (i = 0; i < Files.Count(); i++) {  // i = the # we're searching for
       id = -1;                             // mark as 'not found'
       for (int j = 0; j < Files.Count(); j++) {  // loop through all game ID's
-        if (Files[j]->Num == i) {                // if found, mark as found
+        if (Files.at(j)->Num == i) {             // if found, mark as found
           id = j;
           break;
         }
@@ -739,7 +738,7 @@ void LoadOptionsClass::Fill_List(ListClass* list) {
     }
 
     if (Files.Count() > 0) {
-      Files[0]->Num = i;  // set the empty slot's ID
+      Files.at(0)->Num = i;  // set the empty slot's ID
     }
   }
 
@@ -750,14 +749,14 @@ void LoadOptionsClass::Fill_List(ListClass* list) {
     std::vector<FileEntryClass*> sorted;
     sorted.reserve(base::ToSize(Files.Count()));
     for (int i = 0; i < Files.Count(); ++i) {
-      sorted.push_back(Files[i]);
+      sorted.push_back(Files.at(i));
     }
     std::ranges::sort(
         sorted, [](const FileEntryClass* left, const FileEntryClass* right) {
           return left->DateTime > right->DateTime;
         });
     for (int i = 0; i < Files.Count(); ++i) {
-      Files[i] = sorted[base::ToSize(i)];
+      Files.at(i) = sorted.at(base::ToSize(i));
     }
   }
 
@@ -765,7 +764,7 @@ void LoadOptionsClass::Fill_List(ListClass* list) {
   ** Now add every file's name to the list box
   */
   for (int i = 0; i < Files.Count(); i++) {
-    list->Add_Item(Files[i]->Descr);
+    list->Add_Item(Files.at(i)->Descr);
   }
 }
 

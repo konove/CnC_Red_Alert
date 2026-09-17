@@ -634,7 +634,7 @@ int FootClass::Mission_Move() {
 int FootClass::Mission_Capture() {
   if (!Target_Legal(NavCom) && !In_Radio_Contact()) {
     Enter_Idle_Mode();
-    if (Map[Coord_Cell(Center_Coord())].Cell_Building()) {
+    if (Map.at(Coord_Cell(Center_Coord())).Cell_Building()) {
       Scatter(0, true);
     }
   }
@@ -831,7 +831,7 @@ bool FootClass::Start_Driver(COORDINATE& headto) {
     /*
     **	Check for crate goodie finder here.
     */
-    if (Map[Coord_Cell(headto)].Goodie_Check(this)) {
+    if (Map.at(Coord_Cell(headto)).Goodie_Check(this)) {
       return true;
     }
 
@@ -1207,7 +1207,7 @@ ResultType FootClass::Take_Damage(int& damage, int distance,
           Techno_Type_Class()->Primary != WEAPON_NONE &&
           (source->What_Am_I() != RTTI_AIRCRAFT ||
            BulletTypeClass::As_Reference(
-               Weapons[Techno_Type_Class()->Primary].Fires)
+               Weapons.at(Techno_Type_Class()->Primary).Fires)
                .IsAntiAircraft) &&
           (!Target_Legal(TarCom) ||
            ((!House->IsHuman || Special.IsSmartDefense) &&
@@ -1373,7 +1373,7 @@ void FootClass::Active_Click_With(ActionType action, CELL cell) {
       [[fallthrough]];
 
     case ACTION_NOMOVE:
-      if (What_Am_I() != RTTI_AIRCRAFT || Map[cell].IsVisible) {
+      if (What_Am_I() != RTTI_AIRCRAFT || Map.at(cell).IsVisible) {
         Player_Assign_Mission(MISSION_MOVE, kTargetNone, ::As_Target(cell));
       }
       break;
@@ -1440,7 +1440,7 @@ void FootClass::Per_Cell_Process(bool center) {
       const CELL cell = Adjacent_Cell(Coord_Cell(Coord), face);
 
       if (Map.In_Radar(cell)) {
-        const TechnoClass* techno = Map[cell].Cell_Techno();
+        const TechnoClass* techno = Map.at(cell).Cell_Techno();
 
         if (techno && !House->Is_Ally(techno) &&
             techno->Techno_Type_Class()->IsScanner) {
@@ -1476,7 +1476,7 @@ void FootClass::Per_Cell_Process(bool center) {
   /*
   **	Trigger event associated with the player entering the cell.
   */
-  TriggerClass* trigger = Map[Coord_Cell(Coord)].Get_Trigger();
+  TriggerClass* trigger = Map.at(Coord_Cell(Coord)).Get_Trigger();
   if (Cloak != CLOAKED && trigger && trigger->House == Owner()) {
     trigger->Spring(EVENT_PLAYER_ENTERED, Coord_Cell(Coord));
   }
@@ -1921,13 +1921,14 @@ TARGET FootClass::Greatest_Threat(ThreatType method) const {
   }
 
   if (Techno_Type_Class()->Primary != WEAPON_NONE &&
-      BulletTypeClass::As_Reference(Weapons[Techno_Type_Class()->Primary].Fires)
+      BulletTypeClass::As_Reference(
+          Weapons.at(Techno_Type_Class()->Primary).Fires)
           .IsAntiAircraft) {
     method = method | THREAT_AIR;
   }
   if (Techno_Type_Class()->Secondary != WEAPON_NONE &&
       BulletTypeClass::As_Reference(
-          Weapons[Techno_Type_Class()->Secondary].Fires)
+          Weapons.at(Techno_Type_Class()->Secondary).Fires)
           .IsAntiAircraft) {
     method = method | THREAT_AIR;
   }

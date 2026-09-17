@@ -201,7 +201,7 @@ class DisplayClass : public MapClass {
 
   virtual void Flag_Cell(CELL cell);
   [[nodiscard]] static bool Is_Cell_Flagged(CELL cell) {
-    return CellRedraw[base::ToSize(cell)];
+    return CellRedraw.at(base::ToSize(cell));
   }
 
   /*

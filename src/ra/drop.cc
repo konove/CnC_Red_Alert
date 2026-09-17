@@ -37,10 +37,12 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include <cstddef>
-#include <span>
 #include "ra/drop.h"
 
+#include <cstddef>
+#include <span>
+
+#include "base/array.h"
 #include "base/numeric.h"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
@@ -113,7 +115,7 @@ void DropListClass::Set_Selected_Index(int index) {
     List.Set_Selected_Index(index);
     port::SafeCopy(std::span(String).first(base::ToSize(MaxLength)), List.Get_Item(Current_Index()));
   } else {
-    String[0] = '\0';
+    base::At(String, 0) = '\0';
   }
 }
 

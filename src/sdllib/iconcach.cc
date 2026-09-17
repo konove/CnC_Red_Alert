@@ -6,6 +6,7 @@
 #include <span>
 
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/types.h"
@@ -114,7 +115,7 @@ void Buffer_Draw_Stamp_Clip(GraphicViewPortClass* viewport,
     if (icon < 0 || base::ToSize(icon) >= MapPtr.size()) {
       return;
     }
-    icon = std::to_integer<uint8_t>(MapPtr[base::ToSize(icon)]);
+    icon = std::to_integer<uint8_t>(base::At(MapPtr, base::ToSize(icon)));
   }
 
   if (icon < 0 || icon >= IconCount || IconSize <= 0 ||
@@ -201,7 +202,8 @@ void Buffer_Draw_Stamp_Clip(GraphicViewPortClass* viewport,
     // Complex icon draw -- extended remap.
     do {
       for (int x = 0; x < iwidth; x++) {
-        const uint8_t pixel = remap8[std::to_integer<uint8_t>(*ptr++)];
+        const uint8_t pixel =
+            base::At(remap8, std::to_integer<uint8_t>(*ptr++));
         if (pixel) {
           *dst_offset = pixel;
         }
@@ -213,7 +215,7 @@ void Buffer_Draw_Stamp_Clip(GraphicViewPortClass* viewport,
     } while (--iheight);
   }
   // Check to see if transparent or generic draw is necessary.
-  else if (IsTrans[base::ToSize(icon)] != std::byte{}) {
+  else if (base::At(IsTrans, base::ToSize(icon)) != std::byte{}) {
     // Transparent icon draw routine -- no extended remap.
     do {
       for (int x = 0; x < iwidth; x++) {

@@ -465,13 +465,13 @@ void AircraftClass::Draw_It(int x, int y, WindowNumberType window) {
       auto yy = static_cast<int16_t>(y - Altitude);
       const FacingType face = Dir_Facing(SecondaryFacing);
       base::MovePoint(xx, yy, static_cast<uint8_t>(SecondaryFacing.Current()),
-                      static_cast<int16_t>(_stretch[face]));
+                      static_cast<int16_t>(_stretch.at(face)));
       CC_Draw_Shape(AircraftTypeClass::RRotorData, shapenum, xx, yy - 2, window,
                     flags, {}, MouseClass::UnitShadow);
 
       base::MovePoint(xx, yy,
                       static_cast<uint8_t>(SecondaryFacing.Current() + DIR_S),
-                      static_cast<int16_t>(_stretch[face] * 2));
+                      static_cast<int16_t>(_stretch.at(face) * 2));
       CC_Draw_Shape(AircraftTypeClass::LRotorData, shapenum, xx, yy - 2, window,
                     flags, {}, MouseClass::UnitShadow);
 
@@ -687,7 +687,7 @@ int AircraftClass::Mission_Hunt() {
           Status = kLookForTarget;
         } else {
           Fire_At(TarCom, 0);
-          Map[As_Cell(TarCom)].Incoming(Coord, true);
+          Map.at(As_Cell(TarCom)).Incoming(Coord, true);
           return 5;
         }
         break;
@@ -1262,7 +1262,8 @@ int AircraftClass::Mission_Unload() {
             **	Break off radio contact with the helipad it is taking off from.
             */
             if (In_Radio_Contact() &&
-                Map[Coord_Cell(Coord)].Cell_Building() == Contact_With_Whom()) {
+                Map.at(Coord_Cell(Coord)).Cell_Building() ==
+                    Contact_With_Whom()) {
               Transmit_Message(RADIO_OVER_OUT);
             }
           } else {
@@ -1306,7 +1307,7 @@ bool AircraftClass::Is_LZ_Clear(TARGET target) const {
     return false;
   }
 
-  const ObjectClass* object = Map[cell].Cell_Object();
+  const ObjectClass* object = Map.at(cell).Cell_Object();
   if (object) {
     if (object == this) {
       return true;
@@ -1318,7 +1319,7 @@ bool AircraftClass::Is_LZ_Clear(TARGET target) const {
     return false;
   }
 
-  if (!Map[cell].Is_Generally_Clear()) {
+  if (!Map.at(cell).Is_Generally_Clear()) {
     return false;
   }
 
@@ -1480,7 +1481,7 @@ int AircraftClass::Exit_Object(TechnoClass* unit) {
   */
   FacingType face = FACING_NONE;
   for (face = FACING_N; face < FACING_COUNT; face++) {
-    cell = Adjacent_Cell(Coord_Cell(Coord), _toface[face]);
+    cell = Adjacent_Cell(Coord_Cell(Coord), _toface.at(face));
     if (unit->Can_Enter_Cell(cell) == MOVE_OK) {
       break;
     }
@@ -1494,7 +1495,7 @@ int AircraftClass::Exit_Object(TechnoClass* unit) {
   *This is used *	to make sure that the transport waits until the
   *passenger is clear before *	unloading the next passenger or taking off.
   */
-  if (unit->Unlimbo(Coord, Facing_Dir(_toface[face]))) {
+  if (unit->Unlimbo(Coord, Facing_Dir(_toface.at(face)))) {
     unit->Assign_Mission(MISSION_MOVE);
     unit->Assign_Destination(::As_Target(cell));
     if (Transmit_Message(RADIO_HELLO, unit) == RADIO_ROGER) {
@@ -1533,8 +1534,8 @@ BulletClass* AircraftClass::Fire_At(TARGET target, int which) {
     /*
     **	Play the sound effect associated with this weapon.
     */
-    const WeaponTypeClass* weapon =
-        which == 0 ? &Weapons[Class->Primary] : &Weapons[Class->Secondary];
+    const WeaponTypeClass* weapon = which == 0 ? &Weapons.at(Class->Primary)
+                                               : &Weapons.at(Class->Secondary);
     Sound_Effect(weapon->Sound, Coord);
 
     /*
@@ -1717,8 +1718,8 @@ int AircraftClass::Mission_Move() {
           **	After takeoff is complete, break radio contact with any helipad
           *that this *	helicopter is taking off from.
           */
-          if (In_Radio_Contact() &&
-              Map[Coord_Cell(Coord)].Cell_Building() == Contact_With_Whom()) {
+          if (In_Radio_Contact() && Map.at(Coord_Cell(Coord)).Cell_Building() ==
+                                        Contact_With_Whom()) {
             Transmit_Message(RADIO_OVER_OUT);
           }
 
@@ -2197,7 +2198,7 @@ ActionType AircraftClass::What_Action(CELL cell) const {
   ActionType action = FootClass::What_Action(cell);
 
   if (action == ACTION_MOVE && GameToPlay == GAME_NORMAL &&
-      !Map[cell].IsVisible) {
+      !Map.at(cell).IsVisible) {
     action = ACTION_NOMOVE;
   }
 
@@ -2301,8 +2302,8 @@ int AircraftClass::Mission_Attack() {
           /*
           **	Break off radio contact with the helipad it is taking off from.
           */
-          if (In_Radio_Contact() &&
-              Map[Coord_Cell(Coord)].Cell_Building() == Contact_With_Whom()) {
+          if (In_Radio_Contact() && Map.at(Coord_Cell(Coord)).Cell_Building() ==
+                                        Contact_With_Whom()) {
             Transmit_Message(RADIO_OVER_OUT);
           }
 
@@ -2371,7 +2372,7 @@ int AircraftClass::Mission_Attack() {
 
         case FIRE_OK:
           Fire_At(TarCom, 0);
-          Map[As_Cell(TarCom)].Incoming(Coord, true);
+          Map.at(As_Cell(TarCom)).Incoming(Coord, true);
           Status = kFireAtTarget2;
           break;
 
@@ -2415,7 +2416,7 @@ int AircraftClass::Mission_Attack() {
 
         case FIRE_OK:
           Fire_At(TarCom, 0);
-          Map[As_Cell(TarCom)].Incoming(Coord, true);
+          Map.at(As_Cell(TarCom)).Incoming(Coord, true);
 
           if (Ammo) {
             Status = kPickAttackLocation;
@@ -2764,13 +2765,13 @@ DirType AircraftClass::Desired_Load_Dir(ObjectClass* object,
        sweep < static_cast<int>(FACING_S); sweep++) {
     moveto = Adjacent_Cell(center, FACING_S + sweep);
     if (Map.In_Radar(moveto) && (Coord_Cell(object->Center_Coord()) == moveto ||
-                                 Map[moveto].Is_Generally_Clear())) {
+                                 Map.at(moveto).Is_Generally_Clear())) {
       return DIR_N;
     }
 
     moveto = Adjacent_Cell(center, FACING_S - sweep);
     if (Map.In_Radar(moveto) && (Coord_Cell(object->Center_Coord()) == moveto ||
-                                 Map[moveto].Is_Generally_Clear())) {
+                                 Map.at(moveto).Is_Generally_Clear())) {
       return DIR_N;
     }
   }
@@ -2883,7 +2884,7 @@ MoveType AircraftClass::Can_Enter_Cell(CELL cell, FacingType /*unused*/) const {
     return MOVE_NO;
   }
 
-  const CellClass* cellptr = &Map[cell];
+  const CellClass* cellptr = &Map.at(cell);
 
   if ((!cellptr->Cell_Occupier() || !cellptr->Cell_Occupier()->Is_Techno() ||
        dynamic_cast<TechnoClass*>(cellptr->Cell_Occupier())
@@ -2935,7 +2936,7 @@ TARGET AircraftClass::Good_Fire_Location(TARGET target) const {
         const CELL newcell = Coord_Cell(newcoord);
 
         if (Map.In_Radar(newcell) &&
-            (GameToPlay != GAME_NORMAL || Map[newcell].IsVisible) &&
+            (GameToPlay != GAME_NORMAL || Map.at(newcell).IsVisible) &&
             Cell_Seems_Ok(newcell, true)) {
           const int dist = Distance(newcoord);
           if (bestval == -1 || dist < bestval) {
@@ -3081,7 +3082,7 @@ int AircraftClass::Mission_Enter() {
         *that this *	helicopter is taking off from.
         */
         if (In_Radio_Contact() &&
-            Map[Coord_Cell(Coord)].Cell_Building() == Contact_With_Whom()) {
+            Map.at(Coord_Cell(Coord)).Cell_Building() == Contact_With_Whom()) {
           Transmit_Message(RADIO_OVER_OUT);
         }
         Status = kAltitude;

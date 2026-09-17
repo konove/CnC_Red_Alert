@@ -264,7 +264,7 @@ void DriveClass::Approach_Target() {
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
 void DriveClass::Overrun_Square(CELL cell, bool threaten) {
-  CellClass* cellptr = &Map[cell];
+  CellClass* cellptr = &Map.at(cell);
 
   if (Class->IsCrusher) {
     if (threaten) {
@@ -399,7 +399,7 @@ void DriveClass::Exit_Map() {
       for (int y = Cell_Y(Coord_Cell(Center_Coord())) + 1;
            y < Map.MapCellY + Map.MapCellHeight; y++) {
         cell = XY_Cell(x, y);
-        if (Map[cell].Cell_Techno()) {
+        if (Map.at(cell).Cell_Techno()) {
           Mark(MARK_DOWN);
           return;
         }
@@ -559,7 +559,7 @@ void DriveClass::Assign_Destination(TARGET target) {
         */
         const CELL cell =
             static_cast<CELL>(Coord_Cell(b->Center_Coord()) + (MAP_CELL_W - 1));
-        if (Ground[Map[cell].Land_Type()].Cost[Class->Speed]) {
+        if (Ground.at(Map.at(cell).Land_Type()).Cost.at(Class->Speed)) {
           if (Transmit_Message(RADIO_DOCKING) == RADIO_ROGER) {
             FootClass::Assign_Destination(target);
             base::At(Path, 0) = FACING_NONE;
@@ -662,9 +662,9 @@ bool DriveClass::While_Moving() {
 
       actual -= PIXEL_LEPTON_W;
 
-      COORDINATE const offset = ptr[base::ToSize(TrackIndex)].Offset;
+      COORDINATE const offset = base::At(ptr, base::ToSize(TrackIndex)).Offset;
       if (offset || !TrackIndex) {
-        DirType dir = ptr[base::ToSize(TrackIndex)].Facing;
+        DirType dir = base::At(ptr, base::ToSize(TrackIndex)).Facing;
         Coord = Smooth_Turn(offset, &dir);
 
         PrimaryFacing.Set(dir);
@@ -731,14 +731,14 @@ bool DriveClass::While_Moving() {
                 break;
 
               case MOVE_CLOAK:
-                Map[Coord_Cell(c)].Shimmer();
+                Map.at(Coord_Cell(c)).Shimmer();
                 break;
 
               case MOVE_TEMP:
                 if (*this == UNIT_HARVESTER || !House->IsHuman) {
                   const bool old = Special.IsScatter;
                   Special.IsScatter = true;
-                  Map[Coord_Cell(c)].Incoming(0, true);
+                  Map.at(Coord_Cell(c)).Incoming(0, true);
                   Special.IsScatter = old;
                 }
                 break;
@@ -929,7 +929,7 @@ bool DriveClass::Start_Of_Move() {
         const CELL cell =
             Adjacent_Cell(Coord_Cell(Center_Coord()), PrimaryFacing.Current());
         if (Map.In_Radar(cell) && (Can_Enter_Cell(cell) == MOVE_TEMP)) {
-          CellClass* cellptr = &Map[cell];
+          CellClass* cellptr = &Map.at(cell);
           const TechnoClass* blockage = cellptr->Cell_Techno();
           if (blockage && House->Is_Ally(blockage)) {
             const bool old = Special.IsScatter;
@@ -963,7 +963,7 @@ bool DriveClass::Start_Of_Move() {
     const CELL cell =
         Adjacent_Cell(Coord_Cell(Center_Coord()), base::At(Path, 0));
     if (Map.In_Radar(cell) && (Can_Enter_Cell(cell) == MOVE_TEMP)) {
-      CellClass* cellptr = &Map[cell];
+      CellClass* cellptr = &Map.at(cell);
       const TechnoClass* blockage = cellptr->Cell_Techno();
       if (blockage && House->Is_Ally(blockage)) {
         const bool old = Special.IsScatter;
@@ -1035,7 +1035,7 @@ bool DriveClass::Start_Of_Move() {
     if (cando == MOVE_TEMP) {
       const bool old = Special.IsScatter;
       Special.IsScatter = true;
-      Map[destcell].Incoming(0, true);
+      Map.at(destcell).Incoming(0, true);
       Special.IsScatter = old;
     }
 
@@ -1043,7 +1043,7 @@ bool DriveClass::Start_Of_Move() {
     **	If a cloaked object is blocking, then shimmer the cell.
     */
     if (cando == MOVE_CLOAK) {
-      Map[destcell].Shimmer();
+      Map.at(destcell).Shimmer();
     }
 
     Stop_Driver();
@@ -1056,15 +1056,15 @@ bool DriveClass::Start_Of_Move() {
     ** try again next tick.
     */
     if (cando == MOVE_DESTROYABLE) {
-      if (Map[destcell].Cell_Object()) {
-        if (!House->Is_Ally(Map[destcell].Cell_Object())) {
+      if (Map.at(destcell).Cell_Object()) {
+        if (!House->Is_Ally(Map.at(destcell).Cell_Object())) {
           Override_Mission(MISSION_ATTACK,
-                           Map[destcell].Cell_Object()->As_Target(),
+                           Map.at(destcell).Cell_Object()->As_Target(),
                            kTargetNone);
         }
       } else {
-        if (Map[destcell].Overlay != OVERLAY_NONE &&
-            OverlayTypeClass::As_Reference(Map[destcell].Overlay).IsWall) {
+        if (Map.at(destcell).Overlay != OVERLAY_NONE &&
+            OverlayTypeClass::As_Reference(Map.at(destcell).Overlay).IsWall) {
           Override_Mission(MISSION_ATTACK, ::As_Target(destcell), kTargetNone);
         }
       }
@@ -1082,8 +1082,8 @@ bool DriveClass::Start_Of_Move() {
   **	Determine the speed that the unit can travel to the desired square.
   */
   const LandType ground =
-      Map[destcell].Land_Type();  // Ground unit is entering.
-  speed = Ground[ground].Cost[Class->Speed];
+      Map.at(destcell).Land_Type();  // Ground unit is entering.
+  speed = Ground.at(ground).Cost.at(Class->Speed);
   if (!speed) {
     speed = 128;
   }
@@ -1141,7 +1141,7 @@ bool DriveClass::Start_Of_Move() {
       **	If the middle cell of a two cell track contains a crate,
       **	the check for goodies before movement starts.
       */
-      if (!Map[destcell].Goodie_Check(this)) {
+      if (!Map.at(destcell).Goodie_Check(this)) {
         cando = MOVE_NO;
       } else {
         dest = Adjacent_Cell(dest, nextface);
@@ -1157,7 +1157,7 @@ bool DriveClass::Start_Of_Move() {
         if (cando == MOVE_TEMP) {
           const bool old = Special.IsScatter;
           Special.IsScatter = true;
-          Map[destcell].Incoming(0, true);
+          Map.at(destcell).Incoming(0, true);
           Special.IsScatter = old;
         }
 
@@ -1165,22 +1165,23 @@ bool DriveClass::Start_Of_Move() {
         **	If a cloaked object is blocking, then shimmer the cell.
         */
         if (cando == MOVE_CLOAK) {
-          Map[destcell].Shimmer();
+          Map.at(destcell).Shimmer();
         }
 
         base::At(Path, 0) = FACING_NONE;  // Path is blocked!
         TrackNumber = -1;
         dest = 0;
         if (cando == MOVE_DESTROYABLE) {
-          if (Map[destcell].Cell_Object()) {
-            if (!House->Is_Ally(Map[destcell].Cell_Object())) {
+          if (Map.at(destcell).Cell_Object()) {
+            if (!House->Is_Ally(Map.at(destcell).Cell_Object())) {
               Override_Mission(MISSION_ATTACK,
-                               Map[destcell].Cell_Object()->As_Target(),
+                               Map.at(destcell).Cell_Object()->As_Target(),
                                kTargetNone);
             }
           } else {
-            if (Map[destcell].Overlay != OVERLAY_NONE &&
-                OverlayTypeClass::As_Reference(Map[destcell].Overlay).IsWall) {
+            if (Map.at(destcell).Overlay != OVERLAY_NONE &&
+                OverlayTypeClass::As_Reference(Map.at(destcell).Overlay)
+                    .IsWall) {
               Override_Mission(MISSION_ATTACK, ::As_Target(destcell),
                                kTargetNone);
             }
@@ -1357,7 +1358,7 @@ void DriveClass::Fixup_Path(PathType* path) {
   /*
   **	Verify that the unit is valid and there is a path problem to resolve.
   */
-  if (!path || path->Command[0] == FACING_NONE) {
+  if (!path || base::At(path->Command, 0) == FACING_NONE) {
     return;
   }
 
@@ -1372,10 +1373,11 @@ void DriveClass::Fixup_Path(PathType* path) {
   **	If the original path starts in the same direction as the unit, then
   **	there is no problem to resolve -- abort.
   */
+  const auto first_direction = Facing_Dir(base::At(path->Command, 0));
   // The facing difference value (0..4 | 0..-4); the shift floors negative
   // differences as the original did.
   // NOLINTNEXTLINE(bugprone-signed-bitwise)
-  int facediff = PrimaryFacing.Difference(Facing_Dir(path->Command[0])) >> 5;
+  int facediff = PrimaryFacing.Difference(first_direction) >> 5;
 
   if (!facediff) {
     return;
@@ -1481,7 +1483,7 @@ void DriveClass::Fixup_Path(PathType* path) {
       */
       if (counter) {
         counter--;
-        path->Command[0] = base::At(stage, counter);
+        base::At(path->Command, 0) = base::At(stage, counter);
         Optimize_Moves(path, MOVE_OK);
       }
 
@@ -1499,7 +1501,7 @@ void DriveClass::Fixup_Path(PathType* path) {
         path->Length += counter;
       }
     }
-    path->Command[base::ToSize(path->Length)] = FACING_NONE;
+    base::At(path->Command, base::ToSize(path->Length)) = FACING_NONE;
   }
 }
 
@@ -1563,17 +1565,17 @@ void DriveClass::Mark_Track(COORDINATE headto, MarkType type) {
         const auto ptr = base::At(RawTracks, tracknum - 1).Track;
         const int cellidx = base::At(RawTracks, tracknum - 1).Cell;
         if (cellidx > -1) {
-          DirType dir = ptr[base::ToSize(cellidx)].Facing;
+          DirType dir = base::At(ptr, base::ToSize(cellidx)).Facing;
 
           if (TrackIndex < cellidx && cellidx != -1) {
             const COORDINATE offset =
-                Smooth_Turn(ptr[base::ToSize(cellidx)].Offset, &dir);
-            Map[Coord_Cell(offset)].Flag.Occupy.Vehicle = value;
+                Smooth_Turn(base::At(ptr, base::ToSize(cellidx)).Offset, &dir);
+            Map.at(Coord_Cell(offset)).Flag.Occupy.Vehicle = value;
           }
         }
       }
     }
-    Map[Coord_Cell(headto)].Flag.Occupy.Vehicle = value;
+    Map.at(Coord_Cell(headto)).Flag.Occupy.Vehicle = value;
   }
 }
 

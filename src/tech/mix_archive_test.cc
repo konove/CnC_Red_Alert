@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+#include "base/array.h"
 #include "gtest/gtest.h"
 #include "tech/crc.h"
 
@@ -98,8 +99,8 @@ TEST_F(MixFileTest, ValidArchiveServesItsFile) {
 
   const std::span<const std::byte> data = Mix::RetrieveData("a.bin");
   ASSERT_EQ(data.size(), 4U);
-  EXPECT_EQ(static_cast<char>(data[0]), 'a');
-  EXPECT_EQ(static_cast<char>(data[3]), 'd');
+  EXPECT_EQ(static_cast<char>(base::At(data, 0)), 'a');
+  EXPECT_EQ(static_cast<char>(base::At(data, 3)), 'd');
 }
 
 TEST_F(MixFileTest, NegativeCountFailsOpen) {

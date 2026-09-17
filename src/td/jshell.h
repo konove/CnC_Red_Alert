@@ -53,6 +53,7 @@
 #include "absl/log/check.h"
 #include "absl/strings/str_format.h"
 #include "absl/types/span.h"
+#include "base/array.h"
 #include "base/numeric.h"
 #include "base/types.h"
 #include "port/format.h"
@@ -126,16 +127,17 @@ inline void Set_Bit(std::span<uint32_t> array, int bit, int value) {
   CHECK_GE(bit, 0);
   CHECK_LT(base::ToSize(bit / 32), array.size());
   if (value) {
-    array[base::ToSize(bit / 32)] |= base::Bit<uint32_t>(bit % 32);
+    base::At(array, base::ToSize(bit / 32)) |= base::Bit<uint32_t>(bit % 32);
   } else {
-    array[base::ToSize(bit / 32)] &= ~base::Bit<uint32_t>(bit % 32);
+    base::At(array, base::ToSize(bit / 32)) &= ~base::Bit<uint32_t>(bit % 32);
   }
 }
 
 inline bool Get_Bit(std::span<const uint32_t> array, int bit) {
   CHECK_GE(bit, 0);
   CHECK_LT(base::ToSize(bit / 32), array.size());
-  return (array[base::ToSize(bit / 32)] & base::Bit<uint32_t>(bit % 32)) != 0;
+  return (base::At(array, base::ToSize(bit / 32)) &
+          base::Bit<uint32_t>(bit % 32)) != 0;
 }
 
 // Returns -1 if no matching bit exists within the supplied words.

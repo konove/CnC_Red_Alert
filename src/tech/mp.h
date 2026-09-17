@@ -45,6 +45,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/array.h"
 #include "base/buffer.h"
 #include "tech/byte_source.h"
 #include "tech/digit_cursor.h"
@@ -189,11 +190,11 @@ inline bool XMP_Test_Eq_Int(DigitCursor<const uint32_t> r, int i, int p) {
 }
 
 inline void XMP_Set_Bit(DigitCursor<uint32_t> r, int bit) {
-  r[bit / UNITSIZE] |= base::Bit<uint32_t>(bit % UNITSIZE);
+  r.at(bit / UNITSIZE) |= base::Bit<uint32_t>(bit % UNITSIZE);
 }
 
 inline bool XMP_Test_Bit(DigitCursor<const uint32_t> r, int bit) {
-  return (r[bit / UNITSIZE] & base::Bit<uint32_t>(bit % UNITSIZE)) != 0;
+  return (r.at(bit / UNITSIZE) & base::Bit<uint32_t>(bit % UNITSIZE)) != 0;
 }
 
 // Misc functions.

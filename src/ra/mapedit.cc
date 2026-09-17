@@ -95,7 +95,6 @@
 #include "ra/inline.h"
 #include "ra/jshell.h"
 #include "ra/list.h"
-#include "ra/map.h"
 #include "ra/menus.h"
 #include "ra/mission.h"
 #include "ra/monoc.h"
@@ -111,7 +110,6 @@
 #include "ra/txtlabel.h"
 #include "ra/type.h"
 #include "ra/unit.h"
-#include "ra/vector.h"
 #include "ra/vector_dynamic.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
@@ -640,7 +638,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       **	Unselect object & hide popup controls
       */
       if (CurrentObject.Count()) {
-        CurrentObject[0]->Unselect();
+        CurrentObject.at(0)->Unselect();
         Popup_Controls();
       }
       Main_Menu();
@@ -666,7 +664,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         **	Unselect current object, hide popup controls
         */
         if (CurrentObject.Count()) {
-          CurrentObject[0]->Unselect();
+          CurrentObject.at(0)->Unselect();
           Popup_Controls();
         }
 
@@ -828,7 +826,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
           }
 
           if (found == 0) {
-            (*this)[cell].IsWaypoint = false;
+            (*this).at(cell).IsWaypoint = false;
             Flag_Cell(cell);
           }
         }
@@ -841,7 +839,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         //			(*this)[TacticalCoord].IsWaypoint = 1;
         //			Flag_Cell(Coord_Cell(TacticalCoord));
         Scen.Waypoint[ScenarioClass::kHomeWaypoint] = CurrentCell;
-        (*this)[CurrentCell].IsWaypoint = true;
+        (*this).at(CurrentCell).IsWaypoint = true;
         Flag_Cell(CurrentCell);
 
         Changed = true;
@@ -875,7 +873,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         }
 
         if (found == 0) {
-          (*this)[cell].IsWaypoint = false;
+          (*this).at(cell).IsWaypoint = false;
           Flag_Cell(cell);
         }
       }
@@ -883,7 +881,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       ** Now set the new Reinforcement cell
       */
       Scen.Waypoint[ScenarioClass::kReinforcementWaypoint] = CurrentCell;
-      (*this)[CurrentCell].IsWaypoint = true;
+      (*this).at(CurrentCell).IsWaypoint = true;
       Flag_Cell(CurrentCell);
       Changed = true;
       input = KN_NONE;
@@ -985,7 +983,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         if (Scen.Waypoint[ScenarioClass::kHomeWaypoint] != CurrentCell &&
             Scen.Waypoint[ScenarioClass::kReinforcementWaypoint] !=
                 CurrentCell) {
-          (*this)[CurrentCell].IsWaypoint = false;
+          (*this).at(CurrentCell).IsWaypoint = false;
         }
         Changed = true;
         Flag_Cell(CurrentCell);
@@ -1086,7 +1084,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     case KN_LEFT | KN_ALT_BIT | KN_SHIFT_BIT:
     case KN_RIGHT | KN_ALT_BIT | KN_SHIFT_BIT:
       if (CurrentObject.Count()) {
-        CurrentObject[0]->Move(KN_To_Facing(input));
+        CurrentObject.at(0)->Move(KN_To_Facing(input));
         Changed = true;
       }
       input = KN_NONE;
@@ -1104,16 +1102,16 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         /*
         **	Delete trigger
         */
-        if (CurrentObject[0]->Trigger.Is_Valid()) {
-          CurrentObject[0]->Trigger = nullptr;
+        if (CurrentObject.at(0)->Trigger.Is_Valid()) {
+          CurrentObject.at(0)->Trigger = nullptr;
         } else {
           /*
           ** If the current object is part of the AI's Base, remove it
           ** from the Base's Node list.
           */
-          if (CurrentObject[0]->What_Am_I() == RTTI_BUILDING) {
+          if (CurrentObject.at(0)->What_Am_I() == RTTI_BUILDING) {
             const auto* building =
-                dynamic_cast<const BuildingClass*>(CurrentObject[0]);
+                dynamic_cast<const BuildingClass*>(CurrentObject.at(0));
             if (Base.Is_Node(building)) {
               BaseNodeClass* node =
                   Base.Get_Node(building);  // for removing from an AI Base
@@ -1124,7 +1122,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
           /*
           **	Delete current object
           */
-          delete CurrentObject[0];
+          delete CurrentObject.at(0);
 
           /*
           **	Hide the popup controls
@@ -1142,8 +1140,8 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         /*
         **	Remove trigger from current cell
         */
-        if (CurrentCell && (*this)[CurrentCell].Trigger.Is_Valid()) {
-          (*this)[CurrentCell].Trigger = nullptr;
+        if (CurrentCell && (*this).at(CurrentCell).Trigger.Is_Valid()) {
+          (*this).at(CurrentCell).Trigger = nullptr;
           //						CellTriggers[CurrentCell]
           //= NULL;
 
@@ -1181,7 +1179,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       /*
       **	If that house doesn't own this object, try to transfer it
       */
-      if ((CurrentObject[0]->Owner() != house) && Change_House(house)) {
+      if ((CurrentObject.at(0)->Owner() != house) && Change_House(house)) {
         Changed = true;
       }
 
@@ -1223,8 +1221,8 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       // break;
 
     case ButtonKey(kPopupSellable):
-      if (CurrentObject[0]->What_Am_I() == RTTI_BUILDING) {
-        auto* building = dynamic_cast<BuildingClass*>(CurrentObject[0]);
+      if (CurrentObject.at(0)->What_Am_I() == RTTI_BUILDING) {
+        auto* building = dynamic_cast<BuildingClass*>(CurrentObject.at(0));
 
         if (building->Class->Level != -1) {
           //				if (building->Class->IsBuildable) {
@@ -1241,8 +1239,8 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       break;
 
     case ButtonKey(kPopupRebuildable):
-      if (CurrentObject[0]->What_Am_I() == RTTI_BUILDING) {
-        auto* building = dynamic_cast<BuildingClass*>(CurrentObject[0]);
+      if (CurrentObject.at(0)->What_Am_I() == RTTI_BUILDING) {
+        auto* building = dynamic_cast<BuildingClass*>(CurrentObject.at(0));
 
         if (building->Class->Level != -1) {
           //				if (building->Class->IsBuildable) {
@@ -1261,14 +1259,14 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     **	Object-Editing button: Mission
     */
     case ButtonKey(kPopupMissionlist):
-      if (CurrentObject[0]->Is_Techno()) {
+      if (CurrentObject.at(0)->Is_Techno()) {
         /*
         **	Set new mission
         */
         const MissionType mission =
-            MapEditMissions[base::ToSize(MissionList->Current_Index())];
-        if (CurrentObject[0]->Get_Mission() != mission) {
-          dynamic_cast<TechnoClass*>(CurrentObject[0])->Set_Mission(mission);
+            MapEditMissions.at(base::ToSize(MissionList->Current_Index()));
+        if (CurrentObject.at(0)->Get_Mission() != mission) {
+          dynamic_cast<TechnoClass*>(CurrentObject.at(0))->Set_Mission(mission);
           Changed = true;
           Buttons->Flag_List_To_Redraw();
           Flag_To_Redraw(true);
@@ -1281,11 +1279,11 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     **	Object-Editing button: Health
     */
     case ButtonKey(kPopupHealthgauge):
-      if (CurrentObject[0]->Is_Techno()) {
+      if (CurrentObject.at(0)->Is_Techno()) {
         /*
         **	Derive strength from current gauge reading
         */
-        int strength = CurrentObject[0]->Class_Of().MaxStrength *
+        int strength = CurrentObject.at(0)->Class_Of().MaxStrength *
                        fixed(HealthGauge->Get_Value(), 256);
         //				strength =
         // Fixed_To_Cardinal((unsigned)CurrentObject[0]->Class_Of().MaxStrength,
@@ -1301,8 +1299,8 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         /*
         **	Set new strength
         */
-        if (strength != CurrentObject[0]->Strength) {
-          CurrentObject[0]->Strength = static_cast<int16_t>(strength);
+        if (strength != CurrentObject.at(0)->Strength) {
+          CurrentObject.at(0)->Strength = static_cast<int16_t>(strength);
           HidPage.Clear();
           Flag_To_Redraw(true);
           Changed = true;
@@ -1320,8 +1318,8 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     **	Object-Editing button: Facing
     */
     case ButtonKey(kPopupFacingdial):
-      if (CurrentObject[0]->Is_Techno()) {
-        auto* techno = dynamic_cast<TechnoClass*>(CurrentObject[0]);
+      if (CurrentObject.at(0)->Is_Techno()) {
+        auto* techno = dynamic_cast<TechnoClass*>(CurrentObject.at(0));
         if (FacingDial->Get_Direction() != techno->PrimaryFacing.Get()) {
           /*
           **	Set body's facing
@@ -1415,15 +1413,15 @@ void MapEditClass::Draw_It(bool forced) {
     /*
     **	Display the object's name & ID
     */
-    const char* label = Text_String(CurrentObject[0]->Full_Name());
+    const char* label = Text_String(CurrentObject.at(0)->Full_Name());
     const char* tptr = label;
     absl::SNPrintF(buf, sizeof(buf), "%s (%d)", tptr,
-                   CurrentObject[0]->As_Target());
+                   CurrentObject.at(0)->As_Target());
 
     /*
     **	print the label
     */
-    Fancy_Text_Print(buf, 160, 0, &ColorRemaps[PCOLOR_BROWN], kTBlack,
+    Fancy_Text_Print(buf, 160, 0, &ColorRemaps.at(PCOLOR_BROWN), kTBlack,
                      TPF_CENTER | TPF_NOSHADOW | TPF_EFNT);
   }
 }
@@ -1921,7 +1919,7 @@ bool MapEditClass::Get_Waypoint_Name(std::span<char> wayptname) {
   **	Dialog variables
   */
   bool cancel = false;  // true = user cancels
-  wayptname[0] = 0;
+  base::At(wayptname, 0) = 0;
 
   /*
   **	Buttons
@@ -2059,12 +2057,12 @@ void MapEditClass::Update_Waypoint(int waypt_idx) {
   if (cell != -1) {
     if (Scen.Waypoint[ScenarioClass::kHomeWaypoint] != cell &&
         Scen.Waypoint[ScenarioClass::kReinforcementWaypoint] != cell) {
-      (*this)[cell].IsWaypoint = false;
+      (*this).at(cell).IsWaypoint = false;
     }
     Flag_Cell(cell);
   }
   base::At(Scen.Waypoint, waypt_idx) = CurrentCell;
-  (*this)[CurrentCell].IsWaypoint = true;
+  (*this).at(CurrentCell).IsWaypoint = true;
   Changed = true;
   Flag_Cell(CurrentCell);
 }

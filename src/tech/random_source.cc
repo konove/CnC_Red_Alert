@@ -156,8 +156,9 @@ int RandomSource::Seed_Bits_Needed() const {
 void RandomSource::Seed_Bit(int seed) {
   const std::span<std::byte> seed_bytes =
       std::as_writable_bytes(std::span(Random));
-  std::byte& target = seed_bytes[base::ToSize(
-      SeedBits / CHAR_BIT % static_cast<int>(sizeof(Random)))];
+  std::byte& target = base::At(
+      seed_bytes,
+      base::ToSize(SeedBits / CHAR_BIT % static_cast<int>(sizeof(Random))));
   const std::byte frac = std::byte{1} << (SeedBits % CHAR_BIT);
 
   if (seed % 2 != 0) {

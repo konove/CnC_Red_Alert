@@ -202,7 +202,7 @@ int MapEditClass::New_Scenario() {
       XY_Cell(MapCellX + (MapCellWidth / 2), MapCellY + (MapCellHeight / 2));
   base::At(Waypoint, kWayptHome) =
       XY_Cell(MapCellX + (MapCellWidth / 2), MapCellY + (MapCellHeight / 2));
-  (*this)[Coord_Cell(TacticalCoord)].IsWaypoint = true;
+  (*this).at(Coord_Cell(TacticalCoord)).IsWaypoint = true;
   Flag_Cell(Coord_Cell(TacticalCoord));
 
   ScenarioInit++;
@@ -1146,9 +1146,9 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
         Draw Land map symbols (use color according to Ground[] array).
         ...............................................................*/
         for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
-          occupier = (*this)[cell].Cell_Occupier();
+          occupier = (*this).at(cell).Cell_Occupier();
           if (occupier == nullptr) {
-            color = Ground[(*this)[cell].Land_Type()].Color;
+            color = Ground.at((*this).at(cell).Land_Type()).Color;
             LogicPage->Put_Pixel(kBordX1 + Cell_X(cell) + 1,
                                  kBordY1 + Cell_Y(cell) + 1,
                                  static_cast<unsigned char>(color));
@@ -1196,7 +1196,7 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
         DKGREEN = terrain object
         ...............................................................*/
         for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
-          occupier = (*this)[cell].Cell_Occupier();
+          occupier = (*this).at(cell).Cell_Occupier();
           if (occupier) {
             color = kGreen;
             if (occupier && occupier->Owner() != HOUSE_NONE) {
@@ -2063,12 +2063,12 @@ int MapEditClass::Scenario_Dialog() {
       If this cell has a template icon & that template isn't compatible
       with this theater, set the icon to NONE
       ..................................................................*/
-      if ((*this)[i].TType != TEMPLATE_NONE) {
+      if ((*this).at(i).TType != TEMPLATE_NONE) {
         theater_mask =
-            TemplateTypeClass::As_Reference((*this)[i].TType).Theater;
+            TemplateTypeClass::As_Reference((*this).at(i).TType).Theater;
         if ((theater_mask & base::Bit<uint32_t>(theater)) == 0) {
-          (*this)[i].TType = TEMPLATE_NONE;
-          (*this)[i].TIcon = 0;
+          (*this).at(i).TType = TEMPLATE_NONE;
+          (*this).at(i).TIcon = 0;
         }
       }
       /*..................................................................
@@ -2076,7 +2076,7 @@ int MapEditClass::Scenario_Dialog() {
       with this theater, delete the terrain object.
       ..................................................................*/
       TerrainClass* terrain =
-          (*this)[i].Cell_Terrain();  // cell's terrain pointer
+          (*this).at(i).Cell_Terrain();  // cell's terrain pointer
       if (terrain) {
         theater_mask = terrain->Class->Theater;
         if ((theater_mask & base::Bit<uint32_t>(theater)) == 0) {
@@ -3454,7 +3454,7 @@ int MapEditClass::Import_Triggers() {
         trigger->Fill_In(tbuffer, buf);
 
         if (trigger->House != HOUSE_NONE) {
-          HouseTriggers[trigger->House].Add(trigger);
+          HouseTriggers.at(trigger->House).Add(trigger);
         }
       }
 

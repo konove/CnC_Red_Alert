@@ -412,13 +412,13 @@ void OptionsClass::Adjust_Palette(const PaletteClass& oldpal,
   */
   for (int index = 0; index < PaletteClass::COLOR_COUNT; index++) {
     if (index == kMouseColor) {
-      newpal[index] = oldpal[index];
+      newpal.at(index) = oldpal.at(index);
     } else {
       /*
       **	Convert the working palette entry into an HSV format for
       **	manipulation.
       */
-      const HSVClass hsv = oldpal[index].ToHSV();
+      const HSVClass hsv = oldpal.at(index).ToHSV();
 
       /*
       **	Adjust contrast by moving the value toward the center according
@@ -442,7 +442,7 @@ void OptionsClass::Adjust_Palette(const PaletteClass& oldpal,
       **	Replace the working palette entry according to the newly
       *calculated *	hue, saturation, and value.
       */
-      newpal[index] =
+      newpal.at(index) =
           HSVClass(static_cast<unsigned char>(h), static_cast<unsigned char>(s),
                    static_cast<unsigned char>(v));
     }

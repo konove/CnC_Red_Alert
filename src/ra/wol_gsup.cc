@@ -52,7 +52,6 @@
 #include "ra/rawolapi.h"
 #include "ra/session.h"
 #include "ra/tooltip.h"
-#include "ra/vector.h"
 #include "ra/vector_dynamic.h"
 #include "ra/version.h"
 #include "ra/winbits.h"
@@ -633,28 +632,30 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       for (int i = 0; i < Session.Scenarios.Count(); i++) {
         //	Reworking of the loop previously used for language translation.
         //(What a hack I have inherited...)
-        MultiMission* pMMission = Session.Scenarios[i];
+        MultiMission* pMMission = Session.Scenarios.at(i);
         const char* szScenarioNameShow = pMMission->Description();
         if constexpr (!config::kIsEnglish) {
           // Show the translation when the table has one; otherwise the
           // English description stands.
-          for (int j = 0; EngMisStr[base::ToSize(j)] != nullptr; j++) {
+          for (int j = 0; base::At(EngMisStr, base::ToSize(j)) != nullptr;
+               j++) {
             if ((std::string_view(szScenarioNameShow) ==
-                 EngMisStr[base::ToSize(j)])) {
-              szScenarioNameShow = EngMisStr[base::ToSize(j + 1)];
+                 base::At(EngMisStr, base::ToSize(j)))) {
+              szScenarioNameShow = base::At(EngMisStr, base::ToSize(j + 1));
               break;
             }
           }
         }
         //	Place scenario name in a specific scenario list.
         if (pMMission->Get_Official()) {
-          if (IsMissionCounterstrike(Session.Scenarios[i]->Get_Filename())) {
+          if (IsMissionCounterstrike(Session.Scenarios.at(i)->Get_Filename())) {
             //					debugprint( " ----------------
             // Adding scenario %s as CS\n", szScenarioNameShow );
             base::At(ar_szScenarios, static_cast<int>(SCENARIO_CS))
                 .Add(szScenarioNameShow);
             base::At(ar_szScenIndexes, static_cast<int>(SCENARIO_CS)).Add(i);
-          } else if (IsMissionAftermath(Session.Scenarios[i]->Get_Filename())) {
+          } else if (IsMissionAftermath(
+                         Session.Scenarios.at(i)->Get_Filename())) {
             //					debugprint( " ----------------
             // Adding scenario %s as AM\n", szScenarioNameShow ); 	If this
             // is not an Aftermath game channel, we must filter out any AM maps
@@ -1099,7 +1100,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
               base::At(cbox_x, i) + 1, d_color_y + 1,
               base::At(cbox_x, i) + 1 + d_color_w - 4,
               d_color_y + 1 + d_color_h - 2,
-              ColorRemaps[static_cast<PlayerColorType>(i)].Box);
+              ColorRemaps.at(static_cast<PlayerColorType>(i)).Box);
 
           if (static_cast<PlayerColorType>(i) == Session.ColorIdx) {
             Draw_Box(base::At(cbox_x, i), d_color_y, d_color_w, d_color_h,
@@ -1139,28 +1140,29 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
           bOfficial = Session.ScenarioIsOfficial;
           szScenarioFileName = Session.ScenarioFileName;
         } else {
-          szScenarioDesc =
-              Session.Scenarios[Session.Options.ScenarioIndex]->Description();
-          bOfficial =
-              Session.Scenarios[Session.Options.ScenarioIndex]->Get_Official();
+          szScenarioDesc = Session.Scenarios.at(Session.Options.ScenarioIndex)
+                               ->Description();
+          bOfficial = Session.Scenarios.at(Session.Options.ScenarioIndex)
+                          ->Get_Official();
           szScenarioFileName =
-              Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename();
+              Session.Scenarios.at(Session.Options.ScenarioIndex)
+                  ->Get_Filename();
         }
 
         if (*szScenarioDesc) {
           //	Language translation.
           int ii = 0;
-          for (; EngMisStr[base::ToSize(ii)] != nullptr; ii++) {
+          for (; base::At(EngMisStr, base::ToSize(ii)) != nullptr; ii++) {
             if ((std::string_view(szScenarioDesc) ==
-                 EngMisStr[base::ToSize(ii)])) {
+                 base::At(EngMisStr, base::ToSize(ii)))) {
               absl::SNPrintF(txt, sizeof(txt), "%s",
                              config::kIsEnglish
                                  ? szScenarioDesc
-                                 : EngMisStr[base::ToSize(ii + 1)]);
+                                 : base::At(EngMisStr, base::ToSize(ii + 1)));
               break;
             }
           }
-          if (EngMisStr[base::ToSize(ii)] == nullptr) {
+          if (base::At(EngMisStr, base::ToSize(ii)) == nullptr) {
             absl::SNPrintF(txt, sizeof(txt), "%s", szScenarioDesc);
           }
           //					pStaticDescrip->Set_Text( txt,
@@ -1320,9 +1322,9 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
 
             //	Ensure that no one is using this color (to our knowledge).
             if (pILPlayers->FindColor(
-                    &ColorRemaps[Session.PrefColor == PCOLOR_DIALOG_BLUE
-                                     ? PCOLOR_REALLY_BLUE
-                                     : Session.PrefColor]) == -1) {
+                    &ColorRemaps.at(Session.PrefColor == PCOLOR_DIALOG_BLUE
+                                        ? PCOLOR_REALLY_BLUE
+                                        : Session.PrefColor)) == -1) {
               //	Show me as the new color.
               //							debugprint(
               //"Color box pressed - " );
@@ -1621,10 +1623,10 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
           // because we're about to send changes 	that will unaccept
           // everyone.
           if ((!bParamsUnfresh()) &&
-              (!Session.Scenarios[Session.Options.ScenarioIndex]
+              (!Session.Scenarios.at(Session.Options.ScenarioIndex)
                     ->Get_Official() ||
                Force_Scenario_Available(
-                   Session.Scenarios[Session.Options.ScenarioIndex]
+                   Session.Scenarios.at(Session.Options.ScenarioIndex)
                        ->Get_Filename())))
           //	Force user to put the correct disk in before proceeding. (Not
           // crucial, but can lead to ugly 	timeouts if the scenario has to
@@ -1927,7 +1929,7 @@ void WOL_GameSetupDialog::ScenarioDisplayMode(SCENARIO_GAMEKIND ScenKind) {
        i != base::At(ar_szScenarios, static_cast<int>(ScenKind)).Count(); i++) {
     //	Put ScenarioIndex in as extradata to list item.
     const int iScenIndex =
-        base::At(ar_szScenIndexes, static_cast<int>(ScenKind))[i];
+        base::At(ar_szScenIndexes, static_cast<int>(ScenKind)).at(i);
     if (iScenIndex == Session.Options.ScenarioIndex &&
         !bFoundCurrentSelection) {
       //	(Choose first line of what can be multiline description of
@@ -2005,8 +2007,8 @@ void WOL_GameSetupDialog::SetPlayerColor(const char* szName,
     display = std::max(display, REDRAW_COLORS);
   }
   pILPlayers->Set_Item_Color(
-      iItem,
-      &ColorRemaps[Color == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE : Color]);
+      iItem, &ColorRemaps.at(Color == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
+                                                         : Color));
   pILPlayers->Flag_To_Redraw();
 }
 
@@ -2153,7 +2155,7 @@ void WOL_GameSetupDialog::ProcessGuestRequest(User* pUser,
   // WOL_GAMEOPT 	1 space 	2		color 	1
   // null-terminator 	debugprint( "ProcessGuestRequest. szRequest is '%s', len
   //%i.\n", szRequest, strlen( szRequest ) );
-  if (std::string_view(szRequest).size() < 3 || szRequest[2] != ' ') {
+  if (std::string_view(szRequest).size() < 3 || szRequest.at(2) != ' ') {
     return;
   }
   const auto option = tech::ParseInteger<int>(szRequest.substr(0, 2));
@@ -2172,9 +2174,9 @@ void WOL_GameSetupDialog::ProcessGuestRequest(User* pUser,
         return;
       }
       const auto ColorDesired = static_cast<PlayerColorType>(*color);
-      if (pILPlayers->FindColor(&ColorRemaps[ColorDesired == PCOLOR_DIALOG_BLUE
-                                                 ? PCOLOR_REALLY_BLUE
-                                                 : ColorDesired]) == -1) {
+      if (pILPlayers->FindColor(&ColorRemaps.at(
+              ColorDesired == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
+                                                 : ColorDesired)) == -1) {
         //	Color is available.
         SetPlayerColor(WolText(pUser->name), ColorDesired);
         //	Tell all guests about the color change.
@@ -2300,7 +2302,7 @@ void WOL_GameSetupDialog::ProcessInform(char* inform_data) {
   //	debugprint( "ProcessInform: '%s'\n", szInform );
   if (!bHost) {
     if (szInform.empty() || std::string_view(szInform.data()).size() < 3 ||
-        szInform[2] != ' ') {
+        base::At(szInform, 2) != ' ') {
       return;
     }
     const auto option =
@@ -2319,7 +2321,7 @@ void WOL_GameSetupDialog::ProcessInform(char* inform_data) {
         //	1		space
         //	string	name of player
         if (std::string_view(szInform.data()).size() < 3 ||
-            szInform[2] != ' ') {
+            base::At(szInform, 2) != ' ') {
           return;
         }
         const auto color =
@@ -2342,7 +2344,7 @@ void WOL_GameSetupDialog::ProcessInform(char* inform_data) {
                                   // house.
       {
         if (std::string_view(szInform.data()).size() < 10 ||
-            szInform[6] != ' ' || szInform[9] != ' ') {
+            base::At(szInform, 6) != ' ' || base::At(szInform, 9) != ' ') {
           return;
         }
         const auto param_id =
@@ -2842,20 +2844,20 @@ void WOL_GameSetupDialog::SetGParamsToCurrent(GAMEPARAMS& GParams) const {
 
   port::SafeCopy(
       GParams.GPacket.ScenarioInfo.Scenario,
-      Session.Scenarios[Session.Options.ScenarioIndex]->Description());
+      Session.Scenarios.at(Session.Options.ScenarioIndex)->Description());
   GameFile file(
-      Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
+      Session.Scenarios.at(Session.Options.ScenarioIndex)->Get_Filename());
   GParams.GPacket.ScenarioInfo.FileLength =
       static_cast<unsigned int>(file.Size());
   port::SafeCopy(
       GParams.GPacket.ScenarioInfo.ShortFileName,
-      Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
+      Session.Scenarios.at(Session.Options.ScenarioIndex)->Get_Filename());
   //	Digest is not null-terminated.
   std::ranges::copy(
-      Session.Scenarios[Session.Options.ScenarioIndex]->Get_Digest_Bytes(),
+      Session.Scenarios.at(Session.Options.ScenarioIndex)->Get_Digest_Bytes(),
       std::begin(GParams.GPacket.ScenarioInfo.FileDigest));
   GParams.GPacket.ScenarioInfo.OfficialScenario =
-      Session.Scenarios[Session.Options.ScenarioIndex]->Get_Official();
+      Session.Scenarios.at(Session.Options.ScenarioIndex)->Get_Official();
   GParams.GPacket.ScenarioInfo.Credits = Session.Options.Credits;
   GParams.GPacket.ScenarioInfo.IsBases =
       static_cast<uint8_t>(Session.Options.Bases);
@@ -3004,7 +3006,7 @@ void Debug_GlobalPacketType( const GlobalPacketType& gp1 )
 PlayerColorType PlayerColorTypeOf(const RemapControlType* pColorRemap) {
   for (const PlayerColorType pcolor :
        magic_enum::enum_values<PlayerColorType>()) {
-    if (&ColorRemaps[pcolor] == pColorRemap) {
+    if (&ColorRemaps.at(pcolor) == pColorRemap) {
       return pcolor;
     }
   }
@@ -3367,8 +3369,8 @@ PlayerColorType WOL_GameSetupDialog::ColorNextAvailable() {
   //	(Totally unoptimized, but hardly ever called.)
 
   for (int i = 0; i < MAX_MPLAYER_COLORS; i++) {
-    if (pILPlayers->FindColor(&ColorRemaps[static_cast<PlayerColorType>(i)]) ==
-        -1) {
+    if (pILPlayers->FindColor(
+            &ColorRemaps.at(static_cast<PlayerColorType>(i))) == -1) {
       return static_cast<PlayerColorType>(i);
     }
   }
@@ -3809,7 +3811,7 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
       // Scen.Scenario );
       port::SafeCopy(
           Scen.ScenarioName,
-          Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
+          Session.Scenarios.at(Session.Options.ScenarioIndex)->Get_Filename());
       //			debugprint( "Scen.ScenarioName = %s\n",
       // Scen.ScenarioName );
     }
@@ -3819,11 +3821,11 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
     //		debugprint( "Scen.Scenario = %i\n", Scen.Scenario );
     port::SafeCopy(
         Scen.ScenarioName,
-        Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
+        Session.Scenarios.at(Session.Options.ScenarioIndex)->Get_Filename());
     //		debugprint( "Scen.ScenarioName = %s\n", Scen.ScenarioName );
     port::SafeCopy(
         Session.Options.ScenarioDescription,
-        Session.Scenarios[Session.Options.ScenarioIndex]->Description());
+        Session.Scenarios.at(Session.Options.ScenarioIndex)->Description());
   }
 
   Options.GameSpeed = 0;
@@ -3843,7 +3845,7 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
   Ipx.Set_Timing(25, -1, 1000);
 
   if (bHost) {
-    if (Session.Scenarios[Session.Options.ScenarioIndex]->Get_Official() &&
+    if (Session.Scenarios.at(Session.Options.ScenarioIndex)->Get_Official() &&
         (!Force_Scenario_Available(Scen.ScenarioName))) {
       bExitForGameTrigger = false;
       *szTriggerGameStartInfo = 0;
@@ -3900,7 +3902,7 @@ int ScenarioIndex_From_Filename(const char* szScenarioFilename) {
   // no match found.
   for (int index = 0; index < Session.Scenarios.Count(); index++) {
     if (port::CompareIgnoreCase(szScenarioFilename,
-                                Session.Scenarios[index]->Get_Filename()) ==
+                                Session.Scenarios.at(index)->Get_Filename()) ==
         0) {
       return index;
     }

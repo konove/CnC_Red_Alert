@@ -35,9 +35,9 @@ TEST(ProfileBufferTest, DefaultMayAliasOutputAndSmallOutputsKeepTheirBounds) {
   std::array<char, 3> guarded{'L', 'x', 'R'};
   port::ReadProfile("[S]\nK=value", "S", "K", nullptr,
                     std::span(guarded).subspan(1, 1));
-  EXPECT_EQ(guarded[0], 'L');
-  EXPECT_EQ(guarded[1], '\0');
-  EXPECT_EQ(guarded[2], 'R');
+  EXPECT_EQ(guarded.at(0), 'L');
+  EXPECT_EQ(guarded.at(1), '\0');
+  EXPECT_EQ(guarded.at(2), 'R');
   EXPECT_TRUE(port::ReadProfile("[S]\nK=value", "S", "K", nullptr, {}));
 }
 

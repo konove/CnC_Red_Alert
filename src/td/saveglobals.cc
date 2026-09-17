@@ -23,7 +23,7 @@ void BaseClass::Serialize(Archive& ar) {
   for (int32_t i = 0; i < count; ++i) {
     BaseNodeClass node;
     if constexpr (!Archive::kIsReading) {
-      node = Nodes[i];
+      node = Nodes.at(i);
     }
     ar(node.Type, node.Coord);
     if constexpr (Archive::kIsReading) {

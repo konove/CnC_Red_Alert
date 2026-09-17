@@ -6,6 +6,7 @@
 #include <new>
 #include <utility>
 
+#include "base/array.h"
 #include "base/numeric.h"
 #include "td/vector.h"
 
@@ -96,7 +97,7 @@ void VectorClass<T>::Copy_From(const VectorClass<T>& vector) {
     if (Vector) {
       IsAllocated = true;
       for (base::ssize index = 0; index < VectorMax; index++) {
-        Elements()[base::ToSize(index)] = vector[index];
+        base::At(Elements(), base::ToSize(index)) = vector.at(index);
       }
     }
   } else {
@@ -149,7 +150,7 @@ template <class T>
 bool VectorClass<T>::operator==(const VectorClass<T>& vector) const {
   if (VectorMax == vector.Length()) {
     for (base::ssize index = 0; index < VectorMax; index++) {
-      if (Elements()[base::ToSize(index)] != vector[index]) {
+      if (base::At(Elements(), base::ToSize(index)) != vector.at(index)) {
         return false;
       }
     }
@@ -180,7 +181,7 @@ bool VectorClass<T>::operator==(const VectorClass<T>& vector) const {
  *=============================================================================================*/
 template <class T>
 int VectorClass<T>::ID(const T* ptr) {
-  return static_cast<int>(ptr - &(*this)[0]);
+  return static_cast<int>(ptr - &(*this).at(0));
 }
 
 /***********************************************************************************************
@@ -204,7 +205,7 @@ int VectorClass<T>::ID(const T* ptr) {
 template <class T>
 int VectorClass<T>::ID(const T& object) {
   for (base::ssize index = 0; index < VectorMax; index++) {
-    if ((*this)[index] == object) {
+    if ((*this).at(index) == object) {
       return static_cast<int>(index);
     }
   }
@@ -292,7 +293,8 @@ bool VectorClass<T>::Resize(base::ssize newsize, std::span<T> array) {
       const int copycount = static_cast<int>(
           std::cmp_less(newsize, VectorMax) ? newsize : VectorMax);
       for (int index = 0; index < copycount; index++) {
-        replacement[base::ToSize(index)] = Elements()[base::ToSize(index)];
+        base::At(replacement, base::ToSize(index)) =
+            base::At(Elements(), base::ToSize(index));
       }
 
       /*
@@ -401,7 +403,7 @@ bool DynamicVectorClass<T>::Resize(base::ssize newsize, std::span<T> array) {
 template <class T>
 int DynamicVectorClass<T>::ID(const T& ptr) {
   for (base::ssize index = 0; index < Count(); index++) {
-    if ((*this)[index] == ptr) {
+    if ((*this).at(index) == ptr) {
       return static_cast<int>(index);
     }
   }
@@ -453,7 +455,7 @@ bool DynamicVectorClass<T>::Add(const T& object) {
   **	There is room for the new object now. Add it to the end of the object
   *vector.
   */
-  (*this)[ActiveCount++] = object;
+  (*this).at(ActiveCount++) = object;
   return true;
 }
 
@@ -491,7 +493,7 @@ bool DynamicVectorClass<T>::Add_Head(const T& object) {
   const auto elements = this->Elements();
   std::move_backward(elements.begin(), elements.begin() + ActiveCount,
                      elements.begin() + ActiveCount + 1);
-  (*this)[0] = object;
+  (*this).at(0) = object;
   ActiveCount++;
   //	(*this)[ActiveCount++] = object;
   return true;
@@ -559,7 +561,7 @@ bool DynamicVectorClass<T>::Delete(int index) {
     **	need to use the assignment operator for movement.
     */
     for (int i = index; i < ActiveCount; i++) {
-      (*this)[i] = (*this)[i + 1];
+      (*this).at(i) = (*this).at(i + 1);
     }
     return true;
   }

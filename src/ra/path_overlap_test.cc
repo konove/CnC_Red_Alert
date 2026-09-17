@@ -35,8 +35,8 @@ TEST(RaPathOverlapTest, EveryCellMapsToItsOwnBit) {
     ASSERT_LT(word, kWordCount) << "cell " << cell;
     const size_t bit = (static_cast<size_t>(word) * 32) +
                        static_cast<size_t>(std::countr_zero(mask));
-    ASSERT_FALSE(used[bit]) << "cell " << cell;
-    used[bit] = true;
+    ASSERT_FALSE(used.at(bit)) << "cell " << cell;
+    used.at(bit) = true;
   }
 }
 
@@ -71,12 +71,12 @@ TEST(RaPathOverlapTest, ClearKeepsTheRestOfTheWord) {
   for (int cell = 32; cell < 64; ++cell) {
     SetOverlap(words, cell);
   }
-  EXPECT_EQ(words[1], uint32_t{0xFFFFFFFF});
+  EXPECT_EQ(words.at(1), uint32_t{0xFFFFFFFF});
   ClearOverlap(words, 63);
-  EXPECT_EQ(words[1], uint32_t{0x7FFFFFFF});
+  EXPECT_EQ(words.at(1), uint32_t{0x7FFFFFFF});
   EXPECT_TRUE(IsOverlapped(words, 62));
-  EXPECT_EQ(words[0], uint32_t{0});
-  EXPECT_EQ(words[2], uint32_t{0});
+  EXPECT_EQ(words.at(0), uint32_t{0});
+  EXPECT_EQ(words.at(2), uint32_t{0});
 }
 
 }  // namespace

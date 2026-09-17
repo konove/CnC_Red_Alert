@@ -425,7 +425,7 @@ void Read_MultiPlayer_Settings() {
   Clear the initstring entries
   ------------------------------------------------------------------------*/
   for (i = 0; i < InitStrings.Count(); i++) {
-    delete[] InitStrings[i];
+    delete[] InitStrings.at(i);
   }
   InitStrings.Clear();
 
@@ -433,7 +433,7 @@ void Read_MultiPlayer_Settings() {
   Clear the dialing entries
   ------------------------------------------------------------------------*/
   for (i = 0; i < PhoneBook.Count(); i++) {
-    delete PhoneBook[i];
+    delete PhoneBook.at(i);
   }
   PhoneBook.Clear();
 
@@ -509,7 +509,7 @@ void Read_MultiPlayer_Settings() {
 
   for (i = 0; i < kDialMethods; i++) {
     if (!port::CompareIgnoreCase(
-            buf, DialMethodCheck[static_cast<DialMethodType>(i)])) {
+            buf, DialMethodCheck.at(static_cast<DialMethodType>(i)))) {
       SerialDefaults.DialMethod = static_cast<DialMethodType>(i);
       break;
     }
@@ -690,7 +690,7 @@ void Read_MultiPlayer_Settings() {
 
       for (i = 0; i < kDialMethods; i++) {
         if (!port::CompareIgnoreCase(
-                buf, DialMethodCheck[static_cast<DialMethodType>(i)])) {
+                buf, DialMethodCheck.at(static_cast<DialMethodType>(i)))) {
           phone->Settings.DialMethod = static_cast<DialMethodType>(i);
           break;
         }
@@ -781,7 +781,7 @@ void Read_MultiPlayer_Settings() {
         std::span(buf).first(static_cast<std::size_t>(80)), buffer);
     CELL const cell = tech::ParseInteger<CELL>(buf).value_or(0);
     if (cell) {
-      TrapCell = &Map[cell];
+      TrapCell = &Map.at(cell);
     }
   }
 }
@@ -852,7 +852,7 @@ void Write_MultiPlayer_Settings() {
                            SerialDefaults.Init ? 1 : 0,
                            port::CharBytes(ShapeBufferBytes));
   WWWritePrivateProfileString("SerialDefaults", "DialMethod",
-                              DialMethodCheck[SerialDefaults.DialMethod],
+                              DialMethodCheck.at(SerialDefaults.DialMethod),
                               port::CharBytes(ShapeBufferBytes));
   WWWritePrivateProfileInt("SerialDefaults", "Baud", SerialDefaults.Baud,
                            port::CharBytes(ShapeBufferBytes));
@@ -887,7 +887,7 @@ void Write_MultiPlayer_Settings() {
   ------------------------------------------------------------------------*/
   for (int i = static_cast<int>(InitStrings.Count()) - 1; i >= 0; i--) {
     absl::SNPrintF(buf, sizeof(buf), "%03d", i);
-    WWWritePrivateProfileString("InitStrings", buf, InitStrings[i],
+    WWWritePrivateProfileString("InitStrings", buf, InitStrings.at(i),
                                 port::CharBytes(ShapeBufferBytes));
   }
 
@@ -903,16 +903,17 @@ void Write_MultiPlayer_Settings() {
   ------------------------------------------------------------------------*/
   for (int i = static_cast<int>(PhoneBook.Count()) - 1; i >= 0; i--) {
     absl::SNPrintF(buf, sizeof(buf), "%s|%s|%x|%d|%d|%d|%d|%d|%s|%d|%d|%s",
-                   PhoneBook[i]->Name, PhoneBook[i]->Number,
-                   static_cast<unsigned int>(PhoneBook[i]->Settings.Port),
-                   PhoneBook[i]->Settings.IRQ, PhoneBook[i]->Settings.Baud,
-                   PhoneBook[i]->Settings.Compression ? 1 : 0,
-                   PhoneBook[i]->Settings.ErrorCorrection ? 1 : 0,
-                   PhoneBook[i]->Settings.HardwareFlowControl ? 1 : 0,
-                   DialMethodCheck[PhoneBook[i]->Settings.DialMethod],
-                   PhoneBook[i]->Settings.InitStringIndex,
-                   PhoneBook[i]->Settings.CallWaitStringIndex,
-                   PhoneBook[i]->Settings.CallWaitString);
+                   PhoneBook.at(i)->Name, PhoneBook.at(i)->Number,
+                   static_cast<unsigned int>(PhoneBook.at(i)->Settings.Port),
+                   PhoneBook.at(i)->Settings.IRQ,
+                   PhoneBook.at(i)->Settings.Baud,
+                   PhoneBook.at(i)->Settings.Compression ? 1 : 0,
+                   PhoneBook.at(i)->Settings.ErrorCorrection ? 1 : 0,
+                   PhoneBook.at(i)->Settings.HardwareFlowControl ? 1 : 0,
+                   DialMethodCheck.at(PhoneBook.at(i)->Settings.DialMethod),
+                   PhoneBook.at(i)->Settings.InitStringIndex,
+                   PhoneBook.at(i)->Settings.CallWaitStringIndex,
+                   PhoneBook.at(i)->Settings.CallWaitString);
     absl::SNPrintF(entrytext, sizeof(entrytext), "%03d", i);
     WWWritePrivateProfileString("PhoneBook", entrytext, buf,
                                 port::CharBytes(ShapeBufferBytes));
@@ -979,7 +980,7 @@ void Read_Scenario_Descriptions() {
     /*.....................................................................
     Create filename and read the file.
     .....................................................................*/
-    Set_Scenario_Name(ScenarioName, MPlayerFilenum[i], SCEN_PLAYER_MPLAYER,
+    Set_Scenario_Name(ScenarioName, MPlayerFilenum.at(i), SCEN_PLAYER_MPLAYER,
                       SCEN_DIR_EAST, SCEN_VAR_A);
     absl::SNPrintF(fname, sizeof(fname), "%s.INI", ScenarioName);
     file.SetName(fname);
@@ -1021,7 +1022,7 @@ void Free_Scenario_Descriptions() {
   Clear the initstring entries
   ------------------------------------------------------------------------*/
   for (int i = 0; i < InitStrings.Count(); i++) {
-    delete InitStrings[i];
+    delete InitStrings.at(i);
   }
   InitStrings.Clear();
 
@@ -1029,7 +1030,7 @@ void Free_Scenario_Descriptions() {
   Clear the dialing entries
   ------------------------------------------------------------------------*/
   for (int i = 0; i < PhoneBook.Count(); i++) {
-    delete PhoneBook[i];
+    delete PhoneBook.at(i);
   }
   PhoneBook.Clear();
 }
@@ -1130,14 +1131,14 @@ static void Garble_Message(std::span<char> buf) {
   const std::string_view message(buf.data());
   size_t punctuation = message.size();
   while (punctuation > 0 && message.size() - punctuation < sizeof(punct) - 1) {
-    const char ch = message[punctuation - 1];
+    const char ch = message.at(punctuation - 1);
     if (ch != '!' && ch != '.' && ch != '?') {
       break;
     }
     --punctuation;
   }
   port::SafeCopy(punct, message.substr(punctuation));
-  buf[punctuation] = '\0';
+  base::At(buf, punctuation) = '\0';
 
   for (auto& word : words) {
     word = nullptr;
@@ -1165,7 +1166,7 @@ static void Garble_Message(std::span<char> buf) {
   generator, since different machines will have different LastMessage's,
   and will go out of sync.
   ------------------------------------------------------------------------*/
-  buf[0] = 0;
+  base::At(buf, 0) = 0;
   for (int i = 0; i < numwords; i++) {
     const int j = Sim_IRandom(0, numwords);
     if (base::At(words, j) == nullptr) {  // this word has been used already

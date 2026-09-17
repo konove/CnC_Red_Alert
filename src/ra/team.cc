@@ -106,7 +106,6 @@
 #include "ra/house.h"
 #include "ra/infantry.h"
 #include "ra/inline.h"
-#include "ra/map.h"
 #include "ra/mapedit.h"
 #include "ra/mission.h"
 #include "ra/monoc.h"
@@ -120,7 +119,6 @@
 #include "ra/trigger.h"
 #include "ra/type.h"
 #include "ra/unit.h"
-#include "ra/vector.h"
 #include "ra/vector_dynamic.h"
 #include "ra/vessel.h"
 #include "ra/ww_audio.h"
@@ -248,7 +246,7 @@ void TeamClass::Debug_Dump(MonoClass* mono) const {
                                 .Description(CurrentMission));
     }
     mono->Set_Cursor(40, 20);
-    mono->Printf("%-10s", FormationName[Formation]);
+    mono->Printf("%-10s", FormationName.at(Formation));
     mono->Set_Cursor(22, 20);
     mono->Printf("%08X", Zone);
     mono->Set_Cursor(31, 20);
@@ -568,7 +566,7 @@ void TeamClass::AI() {
         */
         if (IsLeaveMap) {
           for (int index = 0; index < LogicTriggers.Count(); index++) {
-            TriggerClass* trig = LogicTriggers[index];
+            TriggerClass* trig = LogicTriggers.at(index);
             if (trig->Spring(TEVENT_LEAVES_MAP)) {
               index--;
               if (LogicTriggers.Count() == 0) {
@@ -711,7 +709,7 @@ void TeamClass::AI() {
     */
     if (IsLeaveMap) {
       for (int index = 0; index < LogicTriggers.Count(); index++) {
-        TriggerClass* trig = LogicTriggers[index];
+        TriggerClass* trig = LogicTriggers.at(index);
         if (trig->Spring(TEVENT_LEAVES_MAP)) {
           index--;
           if (LogicTriggers.Count() == 0) {
@@ -1740,7 +1738,7 @@ void TeamClass::Coordinate_Attack() {
   */
   if (Is_Target_Cell(Target) && Member != nullptr &&
       Fetch_A_Leader()->What_Am_I() != RTTI_AIRCRAFT) {
-    const CellClass* cellptr = &Map[As_Cell(Target)];
+    const CellClass* cellptr = &Map.at(As_Cell(Target));
     const TemplateType tt = cellptr->TType;
     if (cellptr->Cell_Object()) {
       Target = cellptr->Cell_Object()->As_Target();
@@ -2227,7 +2225,7 @@ int TeamClass::TMission_Unload() {
         *retracting *	the mine layer. During this time, it should not be
         *considered to have *	finished its unload mission.
         */
-        if (Map[unit->Center_Coord()].Cell_Building() == nullptr &&
+        if (Map.at(unit->Center_Coord()).Cell_Building() == nullptr &&
             unit->Mission != MISSION_UNLOAD) {
           unit->Assign_Destination(kTargetNone);
           unit->Assign_Target(kTargetNone);
@@ -2842,7 +2840,7 @@ int TeamClass::TMission_Attack() {
 int TeamClass::TMission_Spy() {
   if (Is_Target_Cell(MissionTarget)) {
     const CELL cell = As_Cell(MissionTarget);
-    const CellClass* cellptr = &Map[cell];
+    const CellClass* cellptr = &Map.at(cell);
     const ObjectClass* bldg = cellptr->Cell_Building();
     if (bldg != nullptr) {
       Assign_Mission_Target(bldg->As_Target());
@@ -3068,7 +3066,7 @@ int TeamClass::TMission_Deploy() {
         *retracting *	the mine layer. During this time, it should not be
         *considered to have *	finished its unload mission.
         */
-        if (!Map[unit->Center_Coord()].Cell_Building() &&
+        if (!Map.at(unit->Center_Coord()).Cell_Building() &&
             unit->Mission != MISSION_UNLOAD) {
           unit->Assign_Destination(kTargetNone);
           unit->Assign_Target(kTargetNone);

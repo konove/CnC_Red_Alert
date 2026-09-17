@@ -51,13 +51,13 @@
 #include <span>
 #include <utility>
 
+#include "base/array.h"
 #include "ra/cell.h"
 #include "ra/coord.h"
 #include "ra/defines.h"
 #include "ra/externs.h"
 #include "ra/heap.h"
 #include "ra/inline.h"
-#include "ra/map.h"
 #include "ra/mapedit.h"
 #include "ra/object.h"
 #include "sdllib/tile.h"
@@ -107,7 +107,7 @@ bool TemplateClass::Mark(MarkType mark) {
         const CELL cell =
             static_cast<CELL>(Coord_Cell(Coord) + (y * MAP_CELL_W) + x);
         if (Map.In_Radar(cell)) {
-          CellClass* cellptr = &Map[cell];
+          CellClass* cellptr = &Map.at(cell);
           const int number = (y * Class->Width) + x;
 
           /*
@@ -115,8 +115,9 @@ bool TemplateClass::Mark(MarkType mark) {
           *no real *	icon is associated with this logical position, then
           *don't do any action *	since none is required.
           */
-          const bool real = static_cast<size_t>(number) < map.size() &&
-                            map[static_cast<size_t>(number)] != std::byte{0xff};
+          const bool real =
+              static_cast<size_t>(number) < map.size() &&
+              base::At(map, static_cast<size_t>(number)) != std::byte{0xff};
 
           if (real) {
             /*

@@ -129,8 +129,8 @@ void ExpectTruncationsFail() {
   }
   const std::vector<uint8_t> encoded = Compress<PipeType>(plain);
   const auto count_at = [&encoded](base::ssize at) {
-    return encoded[static_cast<std::size_t>(at)] +
-           (encoded[static_cast<std::size_t>(at + 1)] * 256);
+    return encoded.at(static_cast<std::size_t>(at)) +
+           (encoded.at(static_cast<std::size_t>(at + 1)) * 256);
   };
   const base::ssize first_block_end = 4 + count_at(0);
   for (const base::ssize cut : {base::ssize{2}, base::ssize{4}, base::ssize{9},
@@ -189,18 +189,18 @@ TEST(CodecCorruptTest, LzoKeepsValidBlockBeforeCorruptOne) {
 TEST(CodecCorruptTest, RejectsOversizedUncompressedCount) {
   // 0x9c40 = 40000 bytes, far beyond every decoder's output buffer.
   std::vector<uint8_t> lcw = LcwAbc();
-  lcw[2] = 0x40;
-  lcw[3] = 0x9c;
+  lcw.at(2) = 0x40;
+  lcw.at(3) = 0x9c;
   ExpectDecodes<LcwSink, LcwSource>(lcw, {});
 
   std::vector<uint8_t> lzw = Compress<LzwSink>(Plain());
-  lzw[2] = 0x40;
-  lzw[3] = 0x9c;
+  lzw.at(2) = 0x40;
+  lzw.at(3) = 0x9c;
   ExpectDecodes<LzwSink, LzwSource>(lzw, {});
 
   std::vector<uint8_t> lzo = Compress<LzoSink>(Plain());
-  lzo[2] = 0x40;
-  lzo[3] = 0x9c;
+  lzo.at(2) = 0x40;
+  lzo.at(3) = 0x9c;
   ExpectDecodes<LzoSink, LzoSource>(lzo, {});
 }
 

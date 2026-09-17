@@ -76,7 +76,6 @@
 #include "ra/infantry.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
-#include "ra/map.h"
 #include "ra/mapedit.h"
 #include "ra/object.h"
 #include "ra/rules.h"
@@ -1109,7 +1108,7 @@ ObjectClass* InfantryTypeClass::Create_One_Of(HouseClass* house) const {
 bool InfantryTypeClass::Create_And_Place(CELL cell, HousesType house) const {
   auto* i = new InfantryClass(Type, house);
   if (i != nullptr) {
-    const COORDINATE coord = Map[cell].Closest_Free_Spot(Cell_Coord(cell));
+    const COORDINATE coord = Map.at(cell).Closest_Free_Spot(Cell_Coord(cell));
     if (coord) {
       return i->Unlimbo(coord, DIR_E);
     }

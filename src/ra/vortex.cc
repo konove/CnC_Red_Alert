@@ -93,7 +93,6 @@
 #include "ra/techno.h"
 #include "ra/keyframe.h"
 #include "ra/type.h"
-#include "ra/vector.h"
 #include "ra/ww_audio.h"
 #include "sdllib/buffer.h"
 #include "sdllib/drawbuff.h"
@@ -595,8 +594,8 @@ void ChronalVortexClass::Attack() {
   /*
   ** First scan - find any object directly above the vortex.
   */
-  for (unsigned i = 0; i < MouseClass::Layer[LAYER_GROUND].Count(); i++) {
-    ObjectClass* obj = MouseClass::Layer[LAYER_GROUND][i];
+  for (unsigned i = 0; i < MouseClass::Layer.at(LAYER_GROUND).Count(); i++) {
+    ObjectClass* obj = MouseClass::Layer.at(LAYER_GROUND).at(i);
 
     if (obj->Is_Techno() && obj->Strength > 0) {
       distance = Distance(obj->Center_Coord(), here);
@@ -627,8 +626,8 @@ void ChronalVortexClass::Attack() {
     return;
   }
 
-  for (int i = 0; i < MouseClass::Layer[LAYER_GROUND].Count(); i++) {
-    ObjectClass* obj = MouseClass::Layer[LAYER_GROUND][i];
+  for (int i = 0; i < MouseClass::Layer.at(LAYER_GROUND).Count(); i++) {
+    ObjectClass* obj = MouseClass::Layer.at(LAYER_GROUND).at(i);
 
     if (obj && obj->Is_Techno()) {
       distance = Distance(obj->Center_Coord(), Position);
@@ -746,16 +745,16 @@ void ChronalVortexClass::Coordinate_Remap(
       inbuffer->Get_Pitch() + inbuffer->Get_XAdd() + inbuffer->Get_Width());
   const auto origin = base::ToSize(x) + (base::ToSize(y) * stride);
   for (size_t i = 0; i < count; ++i) {
-    const auto getx = remap_table[i * 3];
-    const auto gety = remap_table[(i * 3) + 1];
-    const auto remap_color = remap_table[(i * 3) + 2];
+    const auto getx = base::At(remap_table, i * 3);
+    const auto gety = base::At(remap_table, (i * 3) + 1);
+    const auto remap_color = base::At(remap_table, (i * 3) + 2);
     const auto source = origin + getx + (gety * stride);
     if (source >= input.size() || remap_color >= std::size(VortexRemapTables)) {
       inbuffer->Unlock();
       return;
     }
-    output[i] =
-        base::At(base::At(VortexRemapTables, remap_color), input[source]);
+    base::At(output, i) = base::At(base::At(VortexRemapTables, remap_color),
+                                   base::At(input, source));
   }
   destbuf.To_Page(x, y, width, height, *inbuffer);
   inbuffer->Unlock();
@@ -855,7 +854,7 @@ void ChronalVortexClass::Render() {
           CELL const cell = XY_Cell(xc + x, yc + y);
           if (cell != -1) {
             // cellptr = &Map[ Coord_Whole (Cell_Coord(cell)) ];
-            CellClass* cellptr = &Map[cell];
+            CellClass* cellptr = &Map.at(cell);
 
             /*
             **	Fetch a pointer to the template type associated with this cell.
@@ -1032,7 +1031,7 @@ void ChronalVortexClass::Set_Redraw() {
       for (int x = std::max(0, xc - 1); x < xc + 4; x++) {
         CELL const cell = XY_Cell(x, y);
         if (cell != -1) {
-          Map[cell].Redraw_Objects();
+          Map.at(cell).Redraw_Objects();
         }
       }
     }
@@ -1138,8 +1137,8 @@ void ChronalVortexClass::Build_Fading_Table(const PaletteClass& palette,
         **	Find the color that, ideally, the working color should be
         *remapped *	to in the special remap range.
         */
-        RGBClass trycolor = palette[index];
-        trycolor.Adjust(frac, palette[color]);  // Try to match this color.
+        RGBClass trycolor = palette.at(index);
+        trycolor.Adjust(frac, palette.at(color));  // Try to match this color.
 
         /*
         **	Search through the remap range to find the color that should be
@@ -1152,7 +1151,7 @@ void ChronalVortexClass::Build_Fading_Table(const PaletteClass& palette,
               (id < kCycleColorStart ||
                id >= kCycleColorStart + kCycleColorCount) &&
               id != kPulseColor && id != kEmberColor) {
-            const int diff = palette[id].Difference(trycolor);
+            const int diff = palette.at(id).Difference(trycolor);
             if (best == -1 || diff < bvalue) {
               best = id;
               bvalue = diff;

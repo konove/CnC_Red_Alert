@@ -1558,7 +1558,7 @@ void IPXManagerClass::Reset_Response_Time() {
 std::span<const std::byte> IPXManagerClass::Oldest_Send() {
   std::array<CommBufferClass*, CONNECT_MAX> queues{};
   for (int i = 0; i < NumConnections; i++) {
-    queues[base::ToSize(i)] = base::At(Connection, i)->Queue;
+    queues.at(base::ToSize(i)) = base::At(Connection, i)->Queue;
   }
   const SendQueueType* oldest = ConnectionClass::OldestUnackedSend(queues);
   return oldest != nullptr

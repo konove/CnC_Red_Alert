@@ -83,7 +83,7 @@ class FixedHeapClass {
   [[nodiscard]] int Length() const { return TotalCount; }
   [[nodiscard]] int Avail() const { return TotalCount - ActiveCount; }
   [[nodiscard]] bool Is_Allocated(int index) const {
-    return index >= 0 && index < TotalCount && FreeFlag[base::ToSize(index)];
+    return index >= 0 && index < TotalCount && FreeFlag.at(base::ToSize(index));
   }
 
   virtual bool Set_Heap(int count, std::span<char> buffer = {});
@@ -93,11 +93,13 @@ class FixedHeapClass {
   virtual bool Free_All();
 
  protected:
-  void* operator[](int index) {
+  // Returns a storage slot; index must be in [0, Length()).
+  void* at(int index) {
     CHECK_GE(index, 0);
     CHECK_LT(index, TotalCount);
     return Buffer.subspan(base::ToSize(int64_t{index} * Size)).data();
   }
+  void* operator[](int index) { return at(index); }
 
   /*
   **	If the memory block buffer was allocated by this class, then this flag
@@ -160,7 +162,7 @@ class FixedIHeapClass : public FixedHeapClass {
   bool Free(void* pointer) override;
   bool Free_All() override;
 
-  virtual void* Active_Ptr(int index) { return ActivePointers[index]; }
+  virtual void* Active_Ptr(int index) { return ActivePointers.at(index); }
 
   /*
   **	This is an array of pointers to allocated objects. Using this array
@@ -197,8 +199,10 @@ class TFixedIHeapClass : public FixedIHeapClass {
   bool Load(ArchiveReader& /*file*/)
     requires Serializable<T>;
 
-  virtual T* Ptr(int index) { return static_cast<T*>(ActivePointers[index]); }
-  virtual T* Raw_Ptr(int index) { return static_cast<T*>((*this)[index]); }
+  virtual T* Ptr(int index) {
+    return static_cast<T*>(ActivePointers.at(index));
+  }
+  virtual T* Raw_Ptr(int index) { return static_cast<T*>((*this).at(index)); }
 };
 
 /***********************************************************************************************
@@ -292,12 +296,12 @@ bool TFixedIHeapClass<T>::Load(ArchiveReader& file)
     /*
     ** Get a pointer to the object, activate that object
     */
-    if (idx < 0 || idx >= TotalCount || FreeFlag[base::ToSize(idx)]) {
+    if (idx < 0 || idx >= TotalCount || FreeFlag.at(base::ToSize(idx))) {
       file.Fail("invalid heap slot");
       return false;
     }
-    T* ptr = static_cast<T*>((*this)[idx]);  // object pointer
-    FreeFlag[base::ToSize(idx)] = true;
+    T* ptr = static_cast<T*>((*this).at(idx));  // object pointer
+    FreeFlag.at(base::ToSize(idx)) = true;
     ActiveCount++;
     ActivePointers.Add(ptr);
 

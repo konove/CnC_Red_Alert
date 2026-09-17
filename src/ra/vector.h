@@ -25,6 +25,7 @@
 #include <span>
 
 #include "absl/log/check.h"
+#include "base/array.h"
 #include "base/numeric.h"
 #include "base/types.h"
 #include "ra/defines.h"  // IWYU pragma: keep
@@ -44,14 +45,17 @@ class VectorClass {
   VectorClass(VectorClass&&) = delete;
   VectorClass& operator=(VectorClass&&) = delete;
 
-  T& operator[](base::ssize index) {
+  // Returns a capacity element; invalid indices fail even in release builds.
+  T& at(base::ssize index) {
     DCHECK(index >= 0 && index < VectorMax);
-    return Elements()[base::ToSize(index)];
+    return base::At(Elements(), base::ToSize(index));
   }
-  const T& operator[](base::ssize index) const {
+  T& operator[](base::ssize index) { return at(index); }
+  [[nodiscard]] const T& at(base::ssize index) const {
     DCHECK(index >= 0 && index < VectorMax);
-    return Elements()[base::ToSize(index)];
+    return base::At(Elements(), base::ToSize(index));
   }
+  const T& operator[](base::ssize index) const { return at(index); }
   VectorClass& operator=(
       const VectorClass& /*vector*/);  // Assignment operator.
   virtual bool operator==(
@@ -119,7 +123,7 @@ VectorClass<T>& VectorClass<T>::operator=(const VectorClass<T>& vector) {
       if (Vector) {
         IsAllocated = true;
         for (base::ssize index = 0; index < VectorMax; index++) {
-          Elements()[base::ToSize(index)] = vector[index];
+          base::At(Elements(), base::ToSize(index)) = vector.at(index);
         }
       }
     } else {
@@ -135,7 +139,7 @@ template <class T>
 bool VectorClass<T>::operator==(const VectorClass<T>& vector) const {
   if (VectorMax == vector.Length()) {
     for (base::ssize index = 0; index < VectorMax; index++) {
-      if (Elements()[base::ToSize(index)] != vector[index]) {
+      if (base::At(Elements(), base::ToSize(index)) != vector.at(index)) {
         return false;
       }
     }
@@ -157,7 +161,7 @@ base::ssize VectorClass<T>::ID(const T* ptr) {
 template <class T>
 base::ssize VectorClass<T>::ID(const T& object) {
   for (base::ssize index = 0; index < VectorMax; index++) {
-    if ((*this)[index] == object) {
+    if ((*this).at(index) == object) {
       return index;
     }
   }
@@ -206,7 +210,8 @@ bool VectorClass<T>::Resize(base::ssize newsize, std::span<T> array) {
       const base::ssize copycount = newsize < VectorMax ? newsize : VectorMax;
       for (base::ssize index = 0; index < copycount; index++) {
         // NOLINTNEXTLINE(clang-analyzer-core.uninitialized.Assign)
-        replacement[base::ToSize(index)] = Elements()[base::ToSize(index)];
+        base::At(replacement, base::ToSize(index)) =
+            base::At(Elements(), base::ToSize(index));
       }
       if (IsAllocated) {
         delete[] Vector;

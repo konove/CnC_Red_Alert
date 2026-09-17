@@ -78,7 +78,7 @@ TFixedIHeapClass<WarheadTypeClass> Warheads;
 WarheadTypeClass::WarheadTypeClass(const char* name)
     : ID(Warheads.ID(this)), IniName(name) {
   for (const ArmorType armor : magic_enum::enum_values<ArmorType>()) {
-    Modifier[armor] = fixed(1);
+    Modifier.at(armor) = fixed(1);
   }
 }
 
@@ -175,11 +175,11 @@ bool WarheadTypeClass::Read_INI(CCINIClass& ini) {
                        buffer, sizeof(buffer))) {
       port::Tokenizer tokens(buffer, ",");
       for (const ArmorType armor : magic_enum::enum_values<ArmorType>()) {
-        Modifier[armor] = fixed::FromString(tokens.Next());
+        Modifier.at(armor) = fixed::FromString(tokens.Next());
       }
     }
 
-    IsOrganic = Modifier[ARMOR_STEEL] == 0;
+    IsOrganic = Modifier.at(ARMOR_STEEL) == 0;
     return true;
   }
   return false;

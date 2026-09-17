@@ -44,10 +44,11 @@ void PaletteClass::Set(int fade, void (*callback)()) {
       const auto out_bytes = fade_palette.bytes();
 
       for (int c = 0; c < COLOR_COUNT * 3; c++) {
-        const int new_val = new_bytes[static_cast<size_t>(c)] & 0x3F;
-        const int old_val = old_bytes[static_cast<size_t>(c)] & 0x3F;
-        out_bytes[static_cast<size_t>(c)] = static_cast<unsigned char>(
-            old_val + ((new_val - old_val) * cur_time / fade));
+        const int new_val = base::At(new_bytes, static_cast<size_t>(c)) & 0x3F;
+        const int old_val = base::At(old_bytes, static_cast<size_t>(c)) & 0x3F;
+        base::At(out_bytes, static_cast<size_t>(c)) =
+            static_cast<unsigned char>(old_val +
+                                       ((new_val - old_val) * cur_time / fade));
       }
 
       Do_Set_Palette(fade_palette);
@@ -107,9 +108,9 @@ int PaletteClass::Closest_Color(const RGBClass& col) const {
   return index;
 }
 
-RGBClass& PaletteClass::operator[](int index) { return base::At(data_, index); }
+RGBClass& PaletteClass::at(int index) { return base::At(data_, index); }
 
-const RGBClass& PaletteClass::operator[](int index) const {
+const RGBClass& PaletteClass::at(int index) const {
   return base::At(data_, index);
 }
 

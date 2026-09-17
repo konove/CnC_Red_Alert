@@ -81,7 +81,7 @@ void CellClass::Serialize(Archive& ar) {
       ar.Fail("invalid saved cell attributes");
     }
   }
-  auto& trigger = CellTriggers[Cell_Number()];
+  auto& trigger = CellTriggers.at(Cell_Number());
   if (IsTrigger) {
     ar(TriggerPtr(trigger));
     if constexpr (Archive::kIsReading) {
@@ -324,7 +324,7 @@ void MouseClass::Serialize(Archive& ar) {
     // Init_Cells clears TotalValue, so it must precede the member reads.
     Init_Cells();
     for (CELL cell = 0; cell < MAP_CELL_TOTAL; ++cell) {
-      CellTriggers[cell] = nullptr;
+      CellTriggers.at(cell) = nullptr;
     }
   }
   SidebarClass::Serialize(ar);
@@ -338,7 +338,7 @@ void MouseClass::Serialize(Archive& ar) {
   int32_t count = 0;
   if constexpr (!Archive::kIsReading) {
     for (CELL cell = 0; cell < MAP_CELL_TOTAL; ++cell) {
-      if ((*this)[cell].Should_Save()) {
+      if ((*this).at(cell).Should_Save()) {
         ++count;
       }
     }
@@ -357,7 +357,7 @@ void MouseClass::Serialize(Archive& ar) {
         ar.Fail("invalid or duplicate saved cell index");
         return;
       }
-      ar((*this)[cell]);
+      ar((*this).at(cell));
       if (!ar.ok()) {
         return;
       }
@@ -366,8 +366,8 @@ void MouseClass::Serialize(Archive& ar) {
     LastTheater = Theater;
   } else {
     for (CELL cell = 0; cell < MAP_CELL_TOTAL; ++cell) {
-      if ((*this)[cell].Should_Save()) {
-        ar(cell, (*this)[cell]);
+      if ((*this).at(cell).Should_Save()) {
+        ar(cell, (*this).at(cell));
       }
     }
   }

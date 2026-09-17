@@ -111,7 +111,6 @@
 #include "ra/heap.h"
 #include "ra/house.h"
 #include "ra/inline.h"
-#include "ra/map.h"
 #include "ra/mapedit.h"
 #include "ra/mission.h"
 #include "ra/monoc.h"
@@ -315,7 +314,7 @@ MoveType VesselClass::Can_Enter_Cell(CELL cell, FacingType /*from*/) const {
     return MOVE_NO;
   }
 
-  const CellClass* cellptr = &Map[cell];
+  const CellClass* cellptr = &Map.at(cell);
 
   /*
   **	Moving off the edge of the map is not allowed unless
@@ -339,7 +338,7 @@ MoveType VesselClass::Can_Enter_Cell(CELL cell, FacingType /*from*/) const {
   **	If the cell is out and out impassable because of underlying terrain,
   *then *	return this immutable fact.
   */
-  if (Ground[cellptr->Land_Type()].Cost[Class->Speed] == 0) {
+  if (Ground.at(cellptr->Land_Type()).Cost.at(Class->Speed) == 0) {
     return MOVE_NO;
   }
 
@@ -736,7 +735,7 @@ void VesselClass::Per_Cell_Process(PCPType why) {
     if (IsToSelfRepair) {
       for (const FacingType face : magic_enum::enum_values<FacingType>()) {
         const CELL cell = Coord_Cell(Adjacent_Cell(Center_Coord(), face));
-        const BuildingClass* whom = Map[cell].Cell_Building();
+        const BuildingClass* whom = Map.at(cell).Cell_Building();
         if (whom != nullptr &&
             (*whom == STRUCT_SHIP_YARD || *whom == STRUCT_SUB_PEN)) {
           if (IsOwnedByPlayer) {
@@ -801,9 +800,9 @@ ActionType VesselClass::What_Action(ObjectClass* object) {
             break;
           }
           const CELL cellnum = Adjacent_Cell(Coord_Cell(Coord), face);
-          const CellClass* cell = &Map[cellnum];
+          const CellClass* cell = &Map.at(cellnum);
           if (!Map.In_Radar(cellnum) ||
-              Ground[cell->Land_Type()].Cost[SPEED_FOOT] == 0 ||
+              Ground.at(cell->Land_Type()).Cost.at(SPEED_FOOT) == 0 ||
               cell->Flag.Occupy.Building || cell->Flag.Occupy.Vehicle ||
               cell->Flag.Occupy.Monolith ||
               (cell->Flag.Composite & 0x01F) == 0x01F) {
@@ -1091,14 +1090,14 @@ FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
         int totaldist = ::Distance(coord, obj->Center_Coord());
         while (totaldist > CELL_LEPTON_W) {
           coord = Coord_Move(coord, dir, CELL_LEPTON_W);
-          if ((Map[coord].Land_Type() != LAND_WATER) && (!isbridgetarget)) {
+          if ((Map.at(coord).Land_Type() != LAND_WATER) && (!isbridgetarget)) {
             return FIRE_RANGE;
           }
 
           /*
           ** Check for friendly boats in the way.
           */
-          const TechnoClass* tech = Map[coord].Cell_Techno();
+          const TechnoClass* tech = Map.at(coord).Cell_Techno();
           if (tech != nullptr && tech != this && House->Is_Ally(tech)) {
             return FIRE_RANGE;
           }
@@ -1322,8 +1321,8 @@ void VesselClass::Enter_Idle_Mode(bool /*initial*/) {
 
     } else {
       if (Mission == MISSION_GUARD || Mission == MISSION_GUARD_AREA ||
-          (Mission != MISSION_NONE && (MissionControl[Mission].IsParalyzed ||
-                                       MissionControl[Mission].IsZombie))) {
+          (Mission != MISSION_NONE && (MissionControl.at(Mission).IsParalyzed ||
+                                       MissionControl.at(Mission).IsZombie))) {
         return;
       }
 
@@ -1626,8 +1625,8 @@ DirType VesselClass::Desired_Load_Dir(ObjectClass* passenger,
                   ? 128
                   : -128;
     } else {
-      const CellClass* cell = &Map[cellnum];
-      if (Ground[cell->Land_Type()].Cost[SPEED_FOOT] == 0 ||
+      const CellClass* cell = &Map.at(cellnum);
+      if (Ground.at(cell->Land_Type()).Cost.at(SPEED_FOOT) == 0 ||
           cell->Flag.Occupy.Building || cell->Flag.Occupy.Vehicle ||
           cell->Flag.Occupy.Monolith ||
           (cell->Flag.Composite & 0x01F) == 0x01F) {
@@ -1664,7 +1663,7 @@ DirType VesselClass::Desired_Load_Dir(ObjectClass* passenger,
         DIR_S, DIR_SW, DIR_NW, DIR_NW, DIR_NE, DIR_NE, DIR_NE, DIR_SE};
 
     moveto = Adjacent_Cell(Coord_Cell(Coord), bestdir);
-    return _desired_to_actual[bestdir];
+    return _desired_to_actual.at(bestdir);
   }
   return DIR_N;
 }
@@ -1821,7 +1820,7 @@ int VesselClass::Mission_Unload() {
               */
               for (const FacingType face :
                    magic_enum::enum_values<FacingType>()) {
-                CellClass* cellptr = &Map[Coord].Adjacent_Cell(face);
+                CellClass* cellptr = &Map.at(Coord).Adjacent_Cell(face);
                 if (cellptr->Is_Clear_To_Move(SPEED_TRACK, true, true)) {
                   cellptr->Incoming(0, true);
                 }
@@ -1855,7 +1854,7 @@ int VesselClass::Mission_Unload() {
         break;
     }
   }
-  return MissionControl[Mission].Normal_Delay();
+  return MissionControl.at(Mission).Normal_Delay();
 }
 
 /***********************************************************************************************
@@ -1957,7 +1956,7 @@ int VesselClass::Mission_Retreat() {
     default:
       break;
   }
-  return MissionControl[Mission].Normal_Delay();
+  return MissionControl.at(Mission).Normal_Delay();
 }
 
 /***********************************************************************************************
@@ -2162,13 +2161,13 @@ ActionType VesselClass::What_Action(CELL cell) const {
   assert(IsActive);
 
   const ActionType action = DriveClass::What_Action(cell);
-  if (action == ACTION_NOMOVE && Map[cell].Land_Type() == LAND_BEACH) {
+  if (action == ACTION_NOMOVE && Map.at(cell).Land_Type() == LAND_BEACH) {
     return ACTION_MOVE;
   }
 
   if (action == ACTION_NOMOVE && Class->PrimaryWeapon != nullptr &&
       Class->PrimaryWeapon->Bullet->IsSubSurface &&
-      Map[cell].Is_Bridge_Here()) {
+      Map.at(cell).Is_Bridge_Here()) {
     return ACTION_ATTACK;
   }
   return action;

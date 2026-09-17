@@ -203,7 +203,7 @@ class BuildingClass final : public TechnoClass {
   TARGET Target_Scan();
   [[nodiscard]] const BuildingTypeClass::AnimControlType* Fetch_Anim_Control()
       const {
-    return &Class->Anims[BState];
+    return &Class->Anims.at(BState);
   }
 
   /*

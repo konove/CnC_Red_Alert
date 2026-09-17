@@ -7,6 +7,7 @@
 #include <span>
 #include <type_traits>
 
+#include "base/array.h"
 #include "gtest/gtest.h"
 
 namespace {
@@ -20,10 +21,10 @@ TEST(BufferTest, UnsignedBytesRetainsExtentAliasingAndConstness) {
   std::array<unsigned char, 4> values = {1, 2, 3, 4};
   const auto middle = base::UnsignedBytes(std::span(values).subspan(1, 2));
   ASSERT_EQ(middle.size(), 2);
-  middle[0] = 9;
-  EXPECT_EQ(values[0], 1);
-  EXPECT_EQ(values[1], 9);
-  EXPECT_EQ(values[3], 4);
+  base::At(middle, 0) = 9;
+  EXPECT_EQ(values.at(0), 1);
+  EXPECT_EQ(values.at(1), 9);
+  EXPECT_EQ(values.at(3), 4);
   const auto immutable =
       base::UnsignedBytes(std::span<const unsigned char>(values));
   static_assert(
@@ -36,10 +37,10 @@ TEST(BufferTest, PreservesObjectAndArrayExtent) {
   unsigned char values[4] = {1, 2, 3, 4};
   const auto bytes = base::ObjectBytes(values);
   EXPECT_EQ(bytes.size(), sizeof(values));
-  bytes[2] = std::byte{9};
+  base::At(bytes, 2) = std::byte{9};
   EXPECT_EQ(values[2], 9);
   const unsigned char immutable[2] = {5, 6};
-  EXPECT_EQ(base::ObjectBytes(immutable)[1], std::byte{6});
+  EXPECT_EQ(base::At(base::ObjectBytes(immutable), 1), std::byte{6});
 }
 
 TEST(BufferTest, CopiesOnlyTheRequestedPrefix) {
@@ -62,7 +63,7 @@ TEST(BufferTest, MovesInBothOverlappingDirections) {
   EXPECT_EQ(bytes, (std::array<std::byte, 4>{std::byte{1}, std::byte{2},
                                              std::byte{3}, std::byte{3}}));
   base::MoveBytes(bytes, bytes, 4);
-  EXPECT_EQ(bytes[0], std::byte{1});
+  EXPECT_EQ(bytes.at(0), std::byte{1});
 }
 
 TEST(BufferTest, FillUsesTheLowByteAndPreservesTheSuffix) {

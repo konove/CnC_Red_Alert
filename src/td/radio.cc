@@ -110,7 +110,7 @@ base::EnumArray<RadioMessageType, const char*, kRadioCount>
 void RadioClass::Debug_Dump(MonoClass* mono) const {
   if constexpr (config::kCheatKeysEnabled) {
     mono->Set_Cursor(34, 5);
-    mono->Print(Messages[LastMessage]);
+    mono->Print(Messages.at(LastMessage));
     if (Radio) {
       mono->Set_Cursor(50, 1);
       mono->Printf("%04X", Radio->As_Target());

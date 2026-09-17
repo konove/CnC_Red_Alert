@@ -65,7 +65,6 @@
 #include "ra/jshell.h"
 #include "ra/palette.h"
 #include "ra/theme.h"
-#include "ra/vector.h"
 #include "ra/vector_dynamic.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
@@ -315,12 +314,13 @@ static void Slide_Show(int slide, int frame) {
     */
     for (int index = 0; index < 256; index++) {
       if (base::At(PaletteLUT, index)) {
-        ComboPalPtr[base::ToSize(static_cast<base::ssize>(index) * 3)] =
+        base::At(ComboPalPtr,
+                 base::ToSize(static_cast<base::ssize>(index) * 3)) =
             base::At(base::At(SlidePals, slide),
                      static_cast<base::ssize>(index) * 3);
-        ComboPalPtr[base::ToSize((index * 3) + 1)] =
+        base::At(ComboPalPtr, base::ToSize((index * 3) + 1)) =
             base::At(base::At(SlidePals, slide), (index * 3) + 1);
-        ComboPalPtr[base::ToSize((index * 3) + 2)] =
+        base::At(ComboPalPtr, base::ToSize((index * 3) + 2)) =
             base::At(base::At(SlidePals, slide), (index * 3) + 2);
       }
     }
@@ -367,9 +367,10 @@ static void Slide_Show(int slide, int frame) {
       const auto ccpalptr = CCPalette.bytes();
       for (int index = 0; index < 256; index++) {
         if (base::At(PaletteLUT, index)) {
-          ccpalptr[base::ToSize(static_cast<base::ssize>(index) * 3)] = 0;
-          ccpalptr[base::ToSize((index * 3) + 1)] = 0;
-          ccpalptr[base::ToSize((index * 3) + 2)] = 0;
+          base::At(ccpalptr,
+                   base::ToSize(static_cast<base::ssize>(index) * 3)) = 0;
+          base::At(ccpalptr, base::ToSize((index * 3) + 1)) = 0;
+          base::At(ccpalptr, base::ToSize((index * 3) + 2)) = 0;
         }
       }
       Set_Pal(&CCPalette);
@@ -423,7 +424,7 @@ void Show_Who_Was_Responsible() {
   /*
   ** Initialise the text printing system.
   */
-  GadgetClass::Set_Color_Scheme(&ColorRemaps[PCOLOR_GREEN]);
+  GadgetClass::Set_Color_Scheme(&ColorRemaps.at(PCOLOR_GREEN));
   Fancy_Text_Print(TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(), kTBlack,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
@@ -609,19 +610,19 @@ void Show_Who_Was_Responsible() {
   const PlayerColorType pcolor = PCOLOR_GREEN;
 
   for (int index = 0; index < 6; index++) {
-    base::At(PaletteLUT, base::At(ColorRemaps[pcolor].FontRemap, 10 + index)) =
-        0;
+    base::At(PaletteLUT,
+             base::At(ColorRemaps.at(pcolor).FontRemap, 10 + index)) = 0;
   }
   // PaletteLUT[ColorRemaps[pcolor].BrightColor] = 0;
-  base::At(PaletteLUT, ColorRemaps[pcolor].Color) = 0;
-  base::At(PaletteLUT, ColorRemaps[pcolor].Shadow) = 0;
-  base::At(PaletteLUT, ColorRemaps[pcolor].Background) = 0;
-  base::At(PaletteLUT, ColorRemaps[pcolor].Corners) = 0;
-  base::At(PaletteLUT, ColorRemaps[pcolor].Highlight) = 0;
-  base::At(PaletteLUT, ColorRemaps[pcolor].Bright) = 0;
-  base::At(PaletteLUT, ColorRemaps[pcolor].Underline) = 0;
-  base::At(PaletteLUT, ColorRemaps[pcolor].Bar) = 0;
-  base::At(PaletteLUT, ColorRemaps[pcolor].Box) = 0;
+  base::At(PaletteLUT, ColorRemaps.at(pcolor).Color) = 0;
+  base::At(PaletteLUT, ColorRemaps.at(pcolor).Shadow) = 0;
+  base::At(PaletteLUT, ColorRemaps.at(pcolor).Background) = 0;
+  base::At(PaletteLUT, ColorRemaps.at(pcolor).Corners) = 0;
+  base::At(PaletteLUT, ColorRemaps.at(pcolor).Highlight) = 0;
+  base::At(PaletteLUT, ColorRemaps.at(pcolor).Bright) = 0;
+  base::At(PaletteLUT, ColorRemaps.at(pcolor).Underline) = 0;
+  base::At(PaletteLUT, ColorRemaps.at(pcolor).Bar) = 0;
+  base::At(PaletteLUT, ColorRemaps.at(pcolor).Box) = 0;
 
   /*
   ** Stop the music.
@@ -646,9 +647,10 @@ void Show_Who_Was_Responsible() {
 
   for (int index = 0; index < 256; index++) {
     if (base::At(PaletteLUT, index)) {
-      ComboPalPtr[base::ToSize(static_cast<base::ssize>(index) * 3)] = 0;
-      ComboPalPtr[base::ToSize((index * 3) + 1)] = 0;
-      ComboPalPtr[base::ToSize((index * 3) + 2)] = 0;
+      base::At(ComboPalPtr, base::ToSize(static_cast<base::ssize>(index) * 3)) =
+          0;
+      base::At(ComboPalPtr, base::ToSize((index * 3) + 1)) = 0;
+      base::At(ComboPalPtr, base::ToSize((index * 3) + 2)) = 0;
     }
   }
 
@@ -756,8 +758,8 @@ void Show_Who_Was_Responsible() {
     ** Scroll the text. If any text goes off the top then delete that object.
     */
     for (base::ssize i = EgoList.Count() - 1; i >= 0; i--) {
-      EgoList[i]->Wipe(BackgroundPage);
-      if (EgoList[i]->Scroll(1)) {
+      EgoList.at(i)->Wipe(BackgroundPage);
+      if (EgoList.at(i)->Scroll(1)) {
         EgoList.Delete(i);
         break;
       }
@@ -768,7 +770,7 @@ void Show_Who_Was_Responsible() {
     */
     if (LogicPage->Lock()) {
       for (base::ssize i = EgoList.Count() - 1; i >= 0; i--) {
-        EgoList[i]->Render();
+        EgoList.at(i)->Render();
       }
       LogicPage->Unlock();
     }
@@ -855,7 +857,7 @@ void Show_Who_Was_Responsible() {
 
   Show_Mouse();
 
-  GadgetClass::Set_Color_Scheme(&ColorRemaps[PCOLOR_DIALOG_BLUE]);
+  GadgetClass::Set_Color_Scheme(&ColorRemaps.at(PCOLOR_DIALOG_BLUE));
 
   Theme.Stop();
   Options.Set_Score_Volume(oldvolume, false);

@@ -1098,7 +1098,7 @@ class InfantryTypeClass : public TechnoTypeClass {
 
   static InfantryType From_Name(const char* name);
   static const InfantryTypeClass& As_Reference(InfantryType type) {
-    return *Pointers[type];
+    return *Pointers.at(type);
   }
   static void Init(TheaterType /*theater*/);
   static void One_Time();
@@ -1262,7 +1262,7 @@ class BulletTypeClass : public ObjectTypeClass {
   [[nodiscard]] RTTIType What_Am_I() const override { return RTTI_BULLETTYPE; }
 
   static const BulletTypeClass& As_Reference(BulletType type) {
-    return *Pointers[type];
+    return *Pointers.at(type);
   }
   static void Init(TheaterType /*unused*/) {}
   static void One_Time();
@@ -1343,7 +1343,7 @@ class TerrainTypeClass : public ObjectTypeClass {
 
   static TerrainType From_Name(const char* name);
   static const TerrainTypeClass& As_Reference(TerrainType type) {
-    return *Pointers[type];
+    return *Pointers.at(type);
   }
   static void Init(TheaterType theater = THEATER_TEMPERATE);
   static void One_Time() {}
@@ -1422,7 +1422,7 @@ class TemplateTypeClass : public ObjectTypeClass {
 
   static TemplateType From_Name(const char* name);
   static const TemplateTypeClass& As_Reference(TemplateType type) {
-    return *Pointers[type];
+    return *Pointers.at(type);
   }
   static void Init(TheaterType theater);
   static void One_Time();
@@ -1599,7 +1599,7 @@ class AnimTypeClass : public ObjectTypeClass {
   RTTIType What_Am_I() const override { return RTTI_ANIMTYPE; }
 
   static const AnimTypeClass& As_Reference(AnimType type) {
-    return *Pointers[type];
+    return *Pointers.at(type);
   }
   static void Init(TheaterType /*unused*/) {}
   static void One_Time();
@@ -1671,7 +1671,7 @@ class AircraftTypeClass : public TechnoTypeClass {
   // or AIRCRAFT_NONE if no match is found.
   static AircraftType From_Name(const char* name);
   static const AircraftTypeClass& As_Reference(AircraftType a) {
-    return *Pointers[a];
+    return *Pointers.at(a);
   }
 
   // Reloads theater-specific hi-res sidebar icons.
@@ -1812,7 +1812,7 @@ class OverlayTypeClass : public ObjectTypeClass {
 
   static OverlayType From_Name(const char* name);
   static const OverlayTypeClass& As_Reference(OverlayType type) {
-    return *Pointers[type];
+    return *Pointers.at(type);
   }
   static void Init(TheaterType /*theater*/);
   static void One_Time();
@@ -1885,7 +1885,7 @@ class SmudgeTypeClass : public ObjectTypeClass {
 
   static SmudgeType From_Name(const char* name);
   static const SmudgeTypeClass& As_Reference(SmudgeType type) {
-    return *Pointers[type];
+    return *Pointers.at(type);
   }
   static void Init(TheaterType /*theater*/);
   static void One_Time();

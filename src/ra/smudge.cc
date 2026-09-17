@@ -62,7 +62,6 @@
 #include "ra/externs.h"
 #include "ra/heap.h"
 #include "ra/inline.h"
-#include "ra/map.h"
 #include "ra/mapedit.h"
 #include "ra/object.h"
 #include "tech/number_parse.h"
@@ -189,7 +188,7 @@ bool SmudgeClass::Mark(MarkType mark) {
       for (int h = 0; h < Class->Height; h++) {
         const CELL newcell = static_cast<CELL>(origin + w + (h * MAP_CELL_W));
         if (Map.In_Radar(newcell)) {
-          CellClass* cell = &Map[newcell];
+          CellClass* cell = &Map.at(newcell);
 
           if (Class->IsBib) {
             cell->Smudge = Class->Type;
@@ -271,7 +270,7 @@ void SmudgeClass::Disown(CELL cell) {
     for (int w = 0; w < Class->Width; w++) {
       for (int h = 0; h < Class->Height; h++) {
         CellClass& cellptr =
-            Map[static_cast<CELL>(cell + w + (h * MAP_CELL_W))];
+            Map.at(static_cast<CELL>(cell + w + (h * MAP_CELL_W)));
 
         if (cellptr.Overlay == OVERLAY_NONE ||
             !OverlayTypeClass::As_Reference(cellptr.Overlay).IsWall) {
@@ -323,8 +322,8 @@ void SmudgeClass::Read_INI(CCINIClass& ini) {
           data = tech::ParseInteger<int>(ptr).value_or(0);
         }
         new SmudgeClass(smudge, Cell_Coord(cell));
-        if (Map[cell].Smudge == smudge && data != 0) {
-          Map[cell].SmudgeData = static_cast<unsigned char>(data);
+        if (Map.at(cell).Smudge == smudge && data != 0) {
+          Map.at(cell).SmudgeData = static_cast<unsigned char>(data);
         }
       }
     }
@@ -354,7 +353,7 @@ void SmudgeClass::Write_INI(CCINIClass& ini) {
   **	Find all templates and write them to the file.
   */
   for (CELL index = 0; index < MAP_CELL_TOTAL; index++) {
-    CellClass* ptr = &Map[index];
+    CellClass* ptr = &Map.at(index);
     if (ptr->Smudge != SMUDGE_NONE) {
       const SmudgeTypeClass* stype =
           &SmudgeTypeClass::As_Reference(ptr->Smudge);

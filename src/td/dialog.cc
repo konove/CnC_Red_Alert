@@ -148,7 +148,7 @@ void Draw_Box(int x, int y, int w, int h, BoxStyleEnum up, bool filled) {
 
   w--;
   h--;
-  const BoxStyleType& style = ButtonColors[up];
+  const BoxStyleType& style = ButtonColors.at(up);
 
   if (filled) {
     if (style.Filler == kCcGreenBkgd) {
@@ -227,32 +227,33 @@ int Format_Window_String(std::span<char> string, int max_line_len, int& width,
 
   int lines = 0;
   size_t cursor = 0;
-  while (cursor < string.size() && string[cursor] != '\0') {
+  while (cursor < string.size() && base::At(string, cursor) != '\0') {
     const auto line_start = cursor;
     height += FontHeight + FontYSpacing;
     ++lines;
     int line_len = 0;
     while (cursor < string.size() && line_len < max_line_len &&
-           string[cursor] != '\r' && string[cursor] != '\0') {
-      line_len += Char_Pixel_Width(string[cursor++]);
+           base::At(string, cursor) != '\r' &&
+           base::At(string, cursor) != '\0') {
+      line_len += Char_Pixel_Width(base::At(string, cursor++));
     }
     if (line_len >= max_line_len) {
       const auto overflow = cursor;
       while (cursor > line_start &&
-             (cursor == string.size() || string[cursor] != ' ')) {
-        line_len -= Char_Pixel_Width(string[--cursor]);
+             (cursor == string.size() || base::At(string, cursor) != ' ')) {
+        line_len -= Char_Pixel_Width(base::At(string, --cursor));
       }
       if (cursor == line_start) {
         cursor = overflow > line_start ? overflow - 1 : line_start;
         line_len = 0;
         for (auto c = line_start; c < cursor; ++c) {
-          line_len += Char_Pixel_Width(string[c]);
+          line_len += Char_Pixel_Width(base::At(string, c));
         }
       }
     }
     width = std::max(line_len, width);
-    if (cursor < string.size() && string[cursor] != '\0') {
-      string[cursor++] = '\r';
+    if (cursor < string.size() && base::At(string, cursor) != '\0') {
+      base::At(string, cursor++) = '\r';
     }
   }
 
@@ -313,7 +314,7 @@ void Window_Box(WindowNumberType window, BoxStyleEnum style) {
   }
 
   Draw_Box(x, y, w, h, style, true);
-  const int border = base::At(_border[style], 1);  // Width of border.
+  const int border = base::At(_border.at(style), 1);  // Width of border.
 
   /*
   **	Draw the second border if requested.
@@ -765,14 +766,14 @@ void Conquer_Clip_Text_Print(const char* text, int x, int y, int fore, int back,
     int line_width = 0;
     size_t visible = 0;
     while (visible < count) {
-      const int next = Char_Pixel_Width(source[visible]);
+      const int next = Char_Pixel_Width(base::At(source, visible));
       if (offset + line_width + next >= width) {
         break;
       }
       line_width += next;
       ++visible;
     }
-    source[visible] = '\0';
+    base::At(source, visible) = '\0';
     Simple_Text_Print(source.data(), x + offset, y, fore, back, flag);
     offset += line_width;
     if (visible < count || tab == std::string_view::npos) {

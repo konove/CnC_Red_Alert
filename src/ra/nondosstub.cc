@@ -181,7 +181,7 @@ class BufferedFileReader {
       return std::nullopt;
     }
 
-    return buffer_[cursor_++];
+    return buffer_.at(cursor_++);
   }
 
  private:

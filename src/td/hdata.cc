@@ -264,7 +264,7 @@ HouseTypeClass::HouseTypeClass(HousesType house, const char* ini, int fullname,
 HousesType HouseTypeClass::From_Name(const char* name) {
   if (name) {
     for (HousesType house = HOUSE_FIRST; house < HOUSE_COUNT; house++) {
-      if (port::CompareIgnoreCase(Pointers[house]->IniName, name) == 0) {
+      if (port::CompareIgnoreCase(Pointers.at(house)->IniName, name) == 0) {
         return house;
       }
     }
@@ -287,5 +287,5 @@ HousesType HouseTypeClass::From_Name(const char* name) {
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
 const HouseTypeClass& HouseTypeClass::As_Reference(HousesType house) {
-  return *Pointers[house];
+  return *Pointers.at(house);
 }

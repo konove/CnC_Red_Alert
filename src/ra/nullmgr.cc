@@ -90,7 +90,6 @@
 #include "ra/nulldlg.h"
 #include "ra/session.h"
 #include "ra/textbtn.h"
-#include "ra/vector.h"
 #include "sdllib/font.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
@@ -1200,7 +1199,8 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
   ** Send the user supplied modem init string
   */
   if (settings->InitStringIndex != -1) {
-    const std::string initStr = Session.InitStrings[settings->InitStringIndex];
+    const std::string initStr =
+        Session.InitStrings.at(settings->InitStringIndex);
 
     std::istringstream tokenStream(initStr);
     std::string token;
@@ -1871,11 +1871,11 @@ void NullModemClass::Print_EchoBuf() {
   for (int i = 0;
        std::cmp_less(i, std::string_view(NullModem.EchoBuf.data()).size());
        i++) {
-    if (NullModem.EchoBuf[base::ToSize(i)] == '\r') {
-      NullModem.EchoBuf[base::ToSize(i)] = 1;
+    if (NullModem.EchoBuf.at(base::ToSize(i)) == '\r') {
+      NullModem.EchoBuf.at(base::ToSize(i)) = 1;
     } else {
-      if (NullModem.EchoBuf[base::ToSize(i)] == '\n') {
-        NullModem.EchoBuf[base::ToSize(i)] = 2;
+      if (NullModem.EchoBuf.at(base::ToSize(i)) == '\n') {
+        NullModem.EchoBuf.at(base::ToSize(i)) = 2;
       }
     }
   }
@@ -2071,7 +2071,7 @@ int NullModemClass::Verify_And_Convert_To_Int(char* buffer) {
 
   for (int i = 0; i < len; i++) {
     if (!isdigit(static_cast<unsigned char>(
-            std::string_view(buffer)[base::ToSize(i)]))) {
+            std::string_view(buffer).at(base::ToSize(i))))) {
       value = -1;
       break;
     }

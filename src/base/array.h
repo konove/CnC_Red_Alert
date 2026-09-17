@@ -1,4 +1,4 @@
-// Bounds-checked access to fixed arrays without changing their storage layout.
+// Bounds-checked access to fixed arrays and spans without changing storage.
 
 #ifndef CNC_RED_ALERT_BASE_ARRAY_H_
 #define CNC_RED_ALERT_BASE_ARRAY_H_
@@ -13,6 +13,16 @@
 
 namespace base {
 
+// Returns an element of a bounded view. The reference belongs to the viewed
+// storage, which must outlive its use; the span itself may be temporary.
+// Negative and past-the-end indices fail in every build mode.
+template <class T, std::size_t N>
+constexpr T& At(std::span<T, N> view, std::integral auto index) {
+  CHECK(std::cmp_greater_equal(+index, 0) &&
+        std::cmp_less(+index, view.size()));
+  return view.subspan(static_cast<std::size_t>(index), 1).front();
+}
+
 // Returns an element of a fixed array. The extent is deduced from the array,
 // never supplied by the caller. Invalid signed or unsigned indices fail in
 // all build modes; valid access is also usable in constant expressions.
@@ -21,13 +31,12 @@ namespace base {
 //   int samples[8] = {};
 //   base::At(samples, index) = 42;
 template <class T, std::size_t N>
-// Clang 23 cannot trace the reference through libstdc++ span::operator[].
+// Clang 23 cannot trace the reference through libstdc++ span operations.
 // The span is constructed directly from array and never escapes.
 // NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-lifetimebound-violation)
 constexpr T& At(T (&array ABSL_ATTRIBUTE_LIFETIME_BOUND)[N],
                 std::integral auto index) {
-  CHECK(std::cmp_greater_equal(+index, 0) && std::cmp_less(+index, N));
-  return std::span(array)[static_cast<std::size_t>(index)];
+  return base::At(std::span(array), index);
 }
 
 // Returns the tail starting at index. Unlike At, this accepts the array's

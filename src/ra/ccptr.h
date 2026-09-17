@@ -59,18 +59,18 @@ class CCPtr {
       return nullptr;
     }
     assert(Heap != nullptr && ID < Heap->Length());
-    return static_cast<T*>((*Heap)[ID]);
+    return static_cast<T*>((*Heap).at(ID));
   }
   T& operator*() const {
     assert(Heap != nullptr && ID < Heap->Length());
-    return *static_cast<T*>((*Heap)[ID]);
+    return *static_cast<T*>((*Heap).at(ID));
   }
   T* operator->() const {
     if (ID == -1) {
       return nullptr;
     }
     assert(Heap != nullptr && ID < Heap->Length());
-    return static_cast<T*>((*Heap)[ID]);
+    return static_cast<T*>((*Heap).at(ID));
   }
 
   [[nodiscard]] bool Is_Valid() const { return ID != -1; }

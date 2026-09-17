@@ -2223,9 +2223,10 @@ void AnimTypeClass::Init(TheaterType theater) {
       AnimTypeClass& anim = As_Reference(index);
 
       if (anim.IsTheater) {
-        const auto fullname = std::filesystem::path(anim.IniName)
-                                  .replace_extension(Theaters[theater].Suffix)
-                                  .string();
+        const auto fullname =
+            std::filesystem::path(anim.IniName)
+                .replace_extension(Theaters.at(theater).Suffix)
+                .string();
 
         anim.SetBorrowedImage(MixArchive::RetrieveData(fullname));
       }

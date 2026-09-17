@@ -482,12 +482,12 @@ void WolapiObject::PrepareButtonsAndIcons() {
     int iMyIndex = 0;
     for (const std::string_view sku : skus) {
       GetGameTypeInfo(tech::ParseInteger<int>(sku).value_or(0),
-                      GameTypeInfos[base::ToSize(iMyIndex)], Palette);
+                      GameTypeInfos.at(base::ToSize(iMyIndex)), Palette);
       iMyIndex++;
     }
     //	Get the two extra game type infos...
-    GetGameTypeInfo(-1, GameTypeInfos[base::ToSize(iMyIndex++)], Palette);
-    GetGameTypeInfo(0, GameTypeInfos[base::ToSize(iMyIndex++)], Palette);
+    GetGameTypeInfo(-1, GameTypeInfos.at(base::ToSize(iMyIndex++)), Palette);
+    GetGameTypeInfo(0, GameTypeInfos.at(base::ToSize(iMyIndex++)), Palette);
   }
   //	else
   //		debugprint( "GetGametypeList() failed.\n" );
@@ -539,8 +539,8 @@ void* WolapiObject::IconForGameType(int iGameType) {
   // arbitrary) index. 	Returns NULL if type not found in list, which will of
   // course never happen...
   for (unsigned int i = 0; i != nGameTypeInfos; i++) {
-    if (GameTypeInfos[base::ToSize(i)].iGameType == iGameType) {
-      return IconPointer(GameTypeInfos[base::ToSize(i)]);
+    if (GameTypeInfos.at(base::ToSize(i)).iGameType == iGameType) {
+      return IconPointer(GameTypeInfos.at(base::ToSize(i)));
     }
   }
   return nullptr;
@@ -552,8 +552,8 @@ const char* WolapiObject::NameOfGameType(int iGameType) const {
   // arbitrary) index. 	Returns NULL if type not found in list, which will of
   // course never happen...
   for (unsigned int i = 0; i != nGameTypeInfos; i++) {
-    if (GameTypeInfos[base::ToSize(i)].iGameType == iGameType) {
-      return GameTypeInfos[base::ToSize(i)].szName;
+    if (GameTypeInfos.at(base::ToSize(i)).iGameType == iGameType) {
+      return GameTypeInfos.at(base::ToSize(i)).szName;
     }
   }
   return nullptr;
@@ -564,8 +564,8 @@ const char* WolapiObject::URLForGameType(int iGameType) const {
   //	Returns NULL if type not found in list, which will of course never
   // happen...
   for (unsigned int i = 0; i != nGameTypeInfos; i++) {
-    if (GameTypeInfos[base::ToSize(i)].iGameType == iGameType) {
-      return GameTypeInfos[base::ToSize(i)].szURL;
+    if (GameTypeInfos.at(base::ToSize(i)).iGameType == iGameType) {
+      return GameTypeInfos.at(base::ToSize(i)).szURL;
     }
   }
   return nullptr;
@@ -1153,27 +1153,28 @@ bool WolapiObject::ListChannelUsers() {
     if (iCount) {
       pUsersSaved.resize(base::ToSize(iCount));
       for (int i = 0; i != iCount; i++) {
-        PullPlayerName_Into_From(pUsersSaved[base::ToSize(iUsersSaved)].szName,
-                                 pListToUse->Get_Item(i));
-        pUsersSaved[base::ToSize(iUsersSaved)].bFlagged =
+        PullPlayerName_Into_From(
+            pUsersSaved.at(base::ToSize(iUsersSaved)).szName,
+            pListToUse->Get_Item(i));
+        pUsersSaved.at(base::ToSize(iUsersSaved)).bFlagged =
             pListToUse->bItemIsMultiSelected(i);
-        pUsersSaved[base::ToSize(iUsersSaved)].pColorRemap =
+        pUsersSaved.at(base::ToSize(iUsersSaved)).pColorRemap =
             pListToUse->Get_Item_Color(i);
         //				debugprint( "  Saving color of %s as
         //%i.\n", pUsersSaved[base::ToSize( iUsersSaved )].szName,
         //pUsersSaved[base::ToSize( iUsersSaved
         //)].pColorRemap );
         if (CurrentLevel == WOL_LEVEL_INGAMECHANNEL) {
-          pUsersSaved[base::ToSize(iUsersSaved)].House =
+          pUsersSaved.at(base::ToSize(iUsersSaved)).House =
               PullPlayerHouse_From(pListToUse->Get_Item(i));
-          pUsersSaved[base::ToSize(iUsersSaved)].bAccept =
+          pUsersSaved.at(base::ToSize(iUsersSaved)).bAccept =
               bItemMarkedAccepted(i);
           const char* szExtra = pListToUse->Get_Item_ExtraDataString(i);
           if (szExtra) {
-            port::SafeCopy(pUsersSaved[base::ToSize(iUsersSaved)].szExtra,
+            port::SafeCopy(pUsersSaved.at(base::ToSize(iUsersSaved)).szExtra,
                            szExtra);
           } else {
-            *pUsersSaved[base::ToSize(iUsersSaved)].szExtra = 0;
+            *pUsersSaved.at(base::ToSize(iUsersSaved)).szExtra = 0;
           }
         }
         iUsersSaved++;
@@ -1262,33 +1263,33 @@ bool WolapiObject::ListChannelUsers() {
     //	(What a bloody, bloody hack.)
     for (int iUser = 0; iUser != iUsersSaved; iUser++) {
       const int iFind = pListToUse->Find(
-          pUsersSaved[base::ToSize(iUser)]
+          pUsersSaved.at(base::ToSize(iUser))
               .szName);  //	Finds any item beginning with szName...
       if (iFind != -1) {
         if (CurrentLevel == WOL_LEVEL_INGAMECHANNEL) {
-          if (pUsersSaved[base::ToSize(iUser)].House != HOUSE_NONE) {
+          if (pUsersSaved.at(base::ToSize(iUser)).House != HOUSE_NONE) {
             //	Append house text to item string, as we found a valid house name
             // after the name, above.
             char szItem[120];
             WritePlayerListItem(szItem, sizeof(szItem),
-                                pUsersSaved[base::ToSize(iUser)].szName,
-                                pUsersSaved[base::ToSize(iUser)].House);
+                                pUsersSaved.at(base::ToSize(iUser)).szName,
+                                pUsersSaved.at(base::ToSize(iUser)).House);
             pListToUse->Set_Item(static_cast<unsigned int>(iFind), szItem);
           }
           //	Player was marked "accepted" before. If he has one now, it's
           // because he is the host. 	Else it was an accepted icon before, so
           // put one in again now. (a-hacking-we-will-go)
-          if (pUsersSaved[base::ToSize(iUser)].bAccept &&
+          if (pUsersSaved.at(base::ToSize(iUser)).bAccept &&
               (!bItemMarkedAccepted(iFind))) {
             MarkItemAccepted(iFind, true);
           }
 
-          if (*pUsersSaved[base::ToSize(iUser)].szExtra) {
+          if (*pUsersSaved.at(base::ToSize(iUser)).szExtra) {
             pListToUse->Set_Item_ExtraDataString(
-                iFind, pUsersSaved[base::ToSize(iUser)].szExtra);
+                iFind, pUsersSaved.at(base::ToSize(iUser)).szExtra);
           }
         }
-        if (pUsersSaved[base::ToSize(iUser)].bFlagged) {
+        if (pUsersSaved.at(base::ToSize(iUser)).bFlagged) {
           pListToUse->MultiSelect(iFind, true);
         }
         //				debugprint( "  Restoring color of %s as
@@ -1296,7 +1297,7 @@ bool WolapiObject::ListChannelUsers() {
         //pUsersSaved[base::ToSize( iUser )].pColorRemap
         //);
         pListToUse->Set_Item_Color(
-            iFind, pUsersSaved[base::ToSize(iUser)].pColorRemap);
+            iFind, pUsersSaved.at(base::ToSize(iUser)).pColorRemap);
       }
       //			else
       //				debugprint( "ListChannelUsers() -
@@ -2304,12 +2305,12 @@ bool WolapiObject::EnterLevel_Games() {
   //	(There are actually 2 additional game types at the end of GameTypeInfos
   //- for ws icon and wwonline icon.)
   for (unsigned int i = 0; i + 2 < nGameTypeInfos; i++) {
-    if (GameTypeInfos[base::ToSize(i)].iGameType == GAME_TYPE) {
+    if (GameTypeInfos.at(base::ToSize(i)).iGameType == GAME_TYPE) {
       // pILChannels->Add_Item( GameTypeInfos[base::ToSize( i )].szName,
       // CHANNELTYPE_LOBBIES, IconPointer(GameTypeInfos[base::ToSize( i )]),
       // ICON_DIB, CHANNELTYPE_LOBBIES );
       pILChannels->Add_Item(TXT_WOL_REDALERTLOBBIES, CHANNELTYPE_LOBBIES,
-                            IconPointer(GameTypeInfos[base::ToSize(i)]),
+                            IconPointer(GameTypeInfos.at(base::ToSize(i))),
                             ICON_DIB, CHANNELTYPE_LOBBIES);
       bFound = true;
       break;
@@ -2327,7 +2328,7 @@ bool WolapiObject::EnterLevel_Games() {
   //	A pointer to the GameTypeInfos entry is stored in the item for
   // convenience later.
   for (unsigned int i = 0; i + 2 < nGameTypeInfos; i++) {
-    const int iType = GameTypeInfos[base::ToSize(i)].iGameType;
+    const int iType = GameTypeInfos.at(base::ToSize(i)).iGameType;
     if (iType != GAME_TYPE)  //	Else it is our game - skip it here since we put
                              // it at the top.
     {
@@ -2338,11 +2339,11 @@ bool WolapiObject::EnterLevel_Games() {
         char szHelp[200];
         Format_Runtime_Text(szHelp, sizeof(szHelp),
                             TXT_WOL_TTIP_CHANNELTYPE_GAMESOFTYPE,
-                            GameTypeInfos[base::ToSize(i)].szName);
-        pILChannels->Add_Item(GameTypeInfos[base::ToSize(i)].szName, szHelp,
-                              IconPointer(GameTypeInfos[base::ToSize(i)]),
+                            GameTypeInfos.at(base::ToSize(i)).szName);
+        pILChannels->Add_Item(GameTypeInfos.at(base::ToSize(i)).szName, szHelp,
+                              IconPointer(GameTypeInfos.at(base::ToSize(i))),
                               ICON_DIB, CHANNELTYPE_GAMESOFTYPE,
-                              &GameTypeInfos[base::ToSize(i)]);
+                              &GameTypeInfos.at(base::ToSize(i)));
       }
     }
   }
@@ -2908,7 +2909,7 @@ void WolapiObject::AddHostLeftMessageToSavedChat(const char* szName) {
   Format_Runtime_Text(pChatSaveNew->szText, sizeof(pChatSaveNew->szText),
                       TXT_WOL_HOSTLEFTGAME, szName);
   pChatSaveNew->ItemExtras.pColorRemap =
-      &ColorRemaps[WOLCOLORREMAP_LOCALMACHINEMESS];
+      &ColorRemaps.at(WOLCOLORREMAP_LOCALMACHINEMESS);
   pChatSaveNew->next = nullptr;
   if (pChatSaveLast) {
     pChatSaveLast->next = pChatSaveNew;
@@ -2923,7 +2924,7 @@ void WolapiObject::AddMessageToSavedChat(const char* szMessage) {
   auto* pChatSaveNew = new CHATSAVE;
   port::SafeCopy(pChatSaveNew->szText, szMessage);
   pChatSaveNew->ItemExtras.pColorRemap =
-      &ColorRemaps[WOLCOLORREMAP_LOCALMACHINEMESS];
+      &ColorRemaps.at(WOLCOLORREMAP_LOCALMACHINEMESS);
   pChatSaveNew->next = nullptr;
   if (pChatSaveLast) {
     pChatSaveLast->next = pChatSaveNew;
@@ -3346,8 +3347,8 @@ std::array<dib::Color, dib::kPaletteSize> CurrentScreenPalette() {
   // dib::RemapToPalette matches in, so the values go across unscaled.
   std::array<dib::Color, dib::kPaletteSize> Palette = {};
   for (int i = 0; i != dib::kPaletteSize; i++) {
-    const RGBClass& Entry = PaletteClass::CurrentPalette[i];
-    dib::Color& color = Palette[base::ToSize(i)];
+    const RGBClass& Entry = PaletteClass::CurrentPalette.at(i);
+    dib::Color& color = Palette.at(base::ToSize(i));
     color.red = static_cast<std::uint8_t>(Entry.Red_Component());
     color.green = static_cast<std::uint8_t>(Entry.Green_Component());
     color.blue = static_cast<std::uint8_t>(Entry.Blue_Component());

@@ -50,6 +50,7 @@
 #include <span>
 
 #include "absl/log/check.h"
+#include "base/array.h"
 #include "sdllib/file_access.h"
 #include "sdllib/gbuffer.h"
 #include "tech/game_file.h"
@@ -134,9 +135,9 @@ void Increase_Palette_Luminance(std::span<unsigned char> palette,
   CHECK_GE(palette.size(), static_cast<std::size_t>(SIZE_OF_PALETTE) * 3);
   for (std::size_t i = 0; i < static_cast<std::size_t>(SIZE_OF_PALETTE) * 3;
        i += 3) {
-    int red = palette[i];
-    int green = palette[i + 1];
-    int blue = palette[i + 2];
+    int red = base::At(palette, i);
+    int green = base::At(palette, i + 1);
+    int blue = base::At(palette, i + 2);
 
     red += red * red_percentage / 100;
     green += green * green_percentage / 100;
@@ -146,9 +147,9 @@ void Increase_Palette_Luminance(std::span<unsigned char> palette,
     green = std::min(cap, green);
     blue = std::min(cap, blue);
 
-    palette[i] = static_cast<unsigned char>(red);
-    palette[i + 1] = static_cast<unsigned char>(green);
-    palette[i + 2] = static_cast<unsigned char>(blue);
+    base::At(palette, i) = static_cast<unsigned char>(red);
+    base::At(palette, i + 1) = static_cast<unsigned char>(green);
+    base::At(palette, i + 2) = static_cast<unsigned char>(blue);
   }
 }
 

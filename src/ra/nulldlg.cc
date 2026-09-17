@@ -115,7 +115,6 @@
 #include "ra/textbtn.h"
 #include "ra/theme.h"
 #include "ra/type.h"
-#include "ra/vector.h"
 #include "ra/vector_dynamic.h"
 #include "ra/version.h"
 #include "ra/wol_main.h"
@@ -855,9 +854,10 @@ void Destroy_Null_Connection(int id, int error) {
   ** Remove this player from the Players vector
   */
   for (int i = 0; i < Session.Players.Count(); i++) {
-    if (!port::CompareIgnoreCase(Session.Players[i]->Name, housep->IniName)) {
-      delete Session.Players[i];
-      Session.Players.Delete(Session.Players[i]);
+    if (!port::CompareIgnoreCase(Session.Players.at(i)->Name,
+                                 housep->IniName)) {
+      delete Session.Players.at(i);
+      Session.Players.Delete(Session.Players.at(i));
       break;
     }
   }
@@ -1169,10 +1169,10 @@ GameType Select_Serial_Dialog() {
             ** Remote-connect
             */
           } else if (Phone_Dialog()) {
-            if (Session.PhoneBook[Session.CurPhoneIdx]->Settings.Port == 0) {
+            if (Session.PhoneBook.at(Session.CurPhoneIdx)->Settings.Port == 0) {
               settings = &Session.SerialDefaults;
             } else {
-              settings = &Session.PhoneBook[Session.CurPhoneIdx]->Settings;
+              settings = &Session.PhoneBook.at(Session.CurPhoneIdx)->Settings;
             }
 
             delete SerialPort;
@@ -1185,7 +1185,7 @@ GameType Select_Serial_Dialog() {
                 DialString = base::At(SessionClass::CallWaitStrings,
                                       settings->CallWaitStringIndex);
               }
-              DialString += Session.PhoneBook[Session.CurPhoneIdx]->Number;
+              DialString += Session.PhoneBook.at(Session.CurPhoneIdx)->Number;
 
               if (Dial_Modem(settings, false)) {
                 Session.ModemType = MODEM_DIALER;
@@ -2272,7 +2272,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
               const auto sep = std::string_view(current).find('-');
               if (sep != std::string_view::npos) {
                 pos = static_cast<int>(sep) + 2;
-                if (std::string_view(current)[base::ToSize(pos)] == '?') {
+                if (std::string_view(current).at(base::ToSize(pos)) == '?') {
                   portbuf[0] = 0;
                 } else {
                   port::SafeCopy(portbuf, std::string_view(current).substr(
@@ -2345,9 +2345,9 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         Set the current listbox index to the newly-added item.
         ............................................................*/
         for (int i = 0; i < Session.InitStrings.Count(); i++) {
-          if (item == Session.InitStrings[i]) {
+          if (item == Session.InitStrings.at(i)) {
             initstr_index = i;
-            port::SafeCopy(initstrbuf, Session.InitStrings[initstr_index]);
+            port::SafeCopy(initstrbuf, Session.InitStrings.at(initstr_index));
             initstr_edt.Set_Text(initstrbuf, INITSTRBUF_MAX);
             initstrlist.Set_Selected_Index(initstr_index);
           }
@@ -2548,13 +2548,13 @@ static void Build_Init_String_Listbox(ListClass* list, EditClass* edit,
   if (Session.InitStrings.Count() > 0) {
     std::vector<char*> sorted(base::ToSize(Session.InitStrings.Count()));
     for (int i = 0; i < Session.InitStrings.Count(); ++i) {
-      sorted[base::ToSize(i)] = Session.InitStrings[i];
+      sorted.at(base::ToSize(i)) = Session.InitStrings.at(i);
     }
     std::ranges::sort(sorted, [](const char* left, const char* right) {
       return std::string_view(left).compare(right) < 0;
     });
     for (int i = 0; i < Session.InitStrings.Count(); ++i) {
-      Session.InitStrings[i] = sorted[base::ToSize(i)];
+      Session.InitStrings.at(i) = sorted.at(base::ToSize(i));
     }
   }
 
@@ -2562,7 +2562,7 @@ static void Build_Init_String_Listbox(ListClass* list, EditClass* edit,
   Build the list
   ........................................................................*/
   for (int i = 0; i < Session.InitStrings.Count(); i++) {
-    list->Add_Item(Session.InitStrings[i]);
+    list->Add_Item(Session.InitStrings.at(i));
   }
   list->Flag_To_Redraw();
 
@@ -2580,7 +2580,7 @@ static void Build_Init_String_Listbox(ListClass* list, EditClass* edit,
   ........................................................................*/
   if (curidx > -1) {
     port::SafeCopy(std::span(buf).first(INITSTRBUF_MAX),
-                   Session.InitStrings[curidx]);
+                   Session.InitStrings.at(curidx));
     edit->Set_Text(buf, INITSTRBUF_MAX);
     list->Set_Selected_Index(curidx);
   }
@@ -2935,9 +2935,9 @@ int Com_Scenario_Dialog(bool skirmish) {
   Session.ColorIdx = Session.PrefColor;     // init my preferred color
   port::SafeCopy(namebuf, Session.Handle);  // set my name
   name_edt.Set_Text(namebuf, MPLAYER_NAME_MAX);
-  name_edt.Set_Color(
-      &ColorRemaps[Session.ColorIdx == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
-                                                          : Session.ColorIdx]);
+  name_edt.Set_Color(&ColorRemaps.at(Session.ColorIdx == PCOLOR_DIALOG_BLUE
+                                         ? PCOLOR_REALLY_BLUE
+                                         : Session.ColorIdx));
 
 #ifdef OLDWAY
   if (Session.House == HOUSE_GOOD) {
@@ -3040,32 +3040,32 @@ int Com_Scenario_Dialog(bool skirmish) {
   ........................................................................*/
   for (i = 0; i < Session.Scenarios.Count(); i++) {
     int j = 0;
-    for (j = 0; EngMisStr[base::ToSize(j)] != nullptr; j++) {
-      if (std::string_view(Session.Scenarios[i]->Description()) ==
-          EngMisStr[base::ToSize(j)]) {
+    for (j = 0; base::At(EngMisStr, base::ToSize(j)) != nullptr; j++) {
+      if (std::string_view(Session.Scenarios.at(i)->Description()) ==
+          base::At(EngMisStr, base::ToSize(j))) {
         // ajw Added Aftermath installed checks (before, it was
         // assumed). Add mission if it's available to us.
-        if ((!IsMissionCounterstrike(Session.Scenarios[i]->Get_Filename()) ||
+        if ((!IsMissionCounterstrike(Session.Scenarios.at(i)->Get_Filename()) ||
              Is_Counterstrike_Installed()) &&
-            (!IsMissionAftermath(Session.Scenarios[i]->Get_Filename()) ||
+            (!IsMissionAftermath(Session.Scenarios.at(i)->Get_Filename()) ||
              Is_Aftermath_Installed())) {
-          scenariolist.Add_Item(
-              EngMisStr[base::ToSize(config::kIsEnglish ? j : j + 1)]);
+          scenariolist.Add_Item(base::At(
+              EngMisStr, base::ToSize(config::kIsEnglish ? j : j + 1)));
         }
         break;
       }
     }
-    if ((EngMisStr[base::ToSize(j)] == nullptr) &&
-        (!Session.Scenarios[i]->Get_Official() ||
-         ((!IsMissionCounterstrike(Session.Scenarios[i]->Get_Filename()) ||
+    if ((base::At(EngMisStr, base::ToSize(j)) == nullptr) &&
+        (!Session.Scenarios.at(i)->Get_Official() ||
+         ((!IsMissionCounterstrike(Session.Scenarios.at(i)->Get_Filename()) ||
            Is_Counterstrike_Installed()) &&
-          (!IsMissionAftermath(Session.Scenarios[i]->Get_Filename()) ||
+          (!IsMissionAftermath(Session.Scenarios.at(i)->Get_Filename()) ||
            Is_Aftermath_Installed()))))
     // ajw Added Aftermath installed checks (before, it was
     // assumed). Added officialness check. Add mission if
     // it's available to us.
     {
-      scenariolist.Add_Item(Session.Scenarios[i]->Description());
+      scenariolist.Add_Item(Session.Scenarios.at(i)->Description());
     }
   }
 
@@ -3259,7 +3259,7 @@ int Com_Scenario_Dialog(bool skirmish) {
                 base::At(cbox_x, i) + 1, d_color_y + 1,
                 base::At(cbox_x, i) + 1 + d_color_w - 2,
                 d_color_y + 1 + d_color_h - 2,
-                ColorRemaps[static_cast<PlayerColorType>(i)].Box);
+                ColorRemaps.at(static_cast<PlayerColorType>(i)).Box);
             //						(i ==
             // PCOLOR_DIALOG_BLUE) ? ColorRemaps[PCOLOR_REALLY_BLUE].Box :
             // ColorRemaps[static_cast<PlayerColorType>(i)].Box);
@@ -3389,10 +3389,9 @@ int Com_Scenario_Dialog(bool skirmish) {
             Session.ColorIdx = Session.PrefColor;
             display = std::max(display, REDRAW_COLORS);
 
-            name_edt.Set_Color(
-                &ColorRemaps[Session.ColorIdx == PCOLOR_DIALOG_BLUE
-                                 ? PCOLOR_REALLY_BLUE
-                                 : Session.ColorIdx]);
+            name_edt.Set_Color(&ColorRemaps.at(
+                Session.ColorIdx == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
+                                                       : Session.ColorIdx));
             name_edt.Flag_To_Redraw();
             Session.Messages.Set_Edit_Color(
                 Session.ColorIdx == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
@@ -3762,21 +3761,21 @@ int Com_Scenario_Dialog(bool skirmish) {
         */
         port::SafeCopy(
             SendPacket.ScenarioInfo.Scenario,
-            Session.Scenarios[Session.Options.ScenarioIndex]->Description());
-        GameFile file(
-            Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
+            Session.Scenarios.at(Session.Options.ScenarioIndex)->Description());
+        GameFile file(Session.Scenarios.at(Session.Options.ScenarioIndex)
+                          ->Get_Filename());
 
         SendPacket.ScenarioInfo.FileLength =
             static_cast<unsigned int>(file.Size());
 
-        port::SafeCopy(
-            SendPacket.ScenarioInfo.ShortFileName,
-            Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
+        port::SafeCopy(SendPacket.ScenarioInfo.ShortFileName,
+                       Session.Scenarios.at(Session.Options.ScenarioIndex)
+                           ->Get_Filename());
         port::SafeCopy(
             SendPacket.ScenarioInfo.FileDigest,
-            Session.Scenarios[Session.Options.ScenarioIndex]->Get_Digest());
+            Session.Scenarios.at(Session.Options.ScenarioIndex)->Get_Digest());
         SendPacket.ScenarioInfo.OfficialScenario =
-            Session.Scenarios[Session.Options.ScenarioIndex]->Get_Official();
+            Session.Scenarios.at(Session.Options.ScenarioIndex)->Get_Official();
         NullModem.Send_Message(base::ObjectBytes(SendPacket),
                                sizeof(SendPacket), 1);
 
@@ -3800,10 +3799,9 @@ int Com_Scenario_Dialog(bool skirmish) {
                   HouseTypeClass::As_Reference(Session.House).Full_Name()));
 #endif  // OLDWAY
           playerlist.Set_Item(0, item);
-          playerlist.Colors[0] =
-              &ColorRemaps[Session.ColorIdx == PCOLOR_DIALOG_BLUE
-                               ? PCOLOR_REALLY_BLUE
-                               : Session.ColorIdx];
+          playerlist.Colors.at(0) = &ColorRemaps.at(
+              Session.ColorIdx == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
+                                                     : Session.ColorIdx);
           playerlist.Flag_To_Redraw();
         }
 
@@ -3957,8 +3955,8 @@ int Com_Scenario_Dialog(bool skirmish) {
                 //......................................................
                 // Add two strings to the player list
                 //......................................................
-                playerlist.Add_Item("", &ColorRemaps[Session.ColorIdx]);
-                playerlist.Add_Item("", &ColorRemaps[TheirColor]);
+                playerlist.Add_Item("", &ColorRemaps.at(Session.ColorIdx));
+                playerlist.Add_Item("", &ColorRemaps.at(TheirColor));
               }
 
               //.........................................................
@@ -3979,10 +3977,9 @@ int Com_Scenario_Dialog(bool skirmish) {
                       HouseTypeClass::As_Reference(Session.House).Full_Name()));
 #endif  // OLDWAY
               playerlist.Set_Item(0, item);
-              playerlist.Colors[0] =
-                  &ColorRemaps[Session.ColorIdx == PCOLOR_DIALOG_BLUE
-                                   ? PCOLOR_REALLY_BLUE
-                                   : Session.ColorIdx];
+              playerlist.Colors.at(0) = &ColorRemaps.at(
+                  Session.ColorIdx == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
+                                                         : Session.ColorIdx);
 
 #ifdef OLDWAY
               if (TheirHouse == HOUSE_GOOD) {
@@ -3997,10 +3994,9 @@ int Com_Scenario_Dialog(bool skirmish) {
                       HouseTypeClass::As_Reference(TheirHouse).Full_Name()));
 #endif  // OLDWAY
               playerlist.Set_Item(1, item);
-              playerlist.Colors[1] =
-                  &ColorRemaps[TheirColor == PCOLOR_DIALOG_BLUE
-                                   ? PCOLOR_REALLY_BLUE
-                                   : TheirColor];
+              playerlist.Colors.at(1) = &ColorRemaps.at(
+                  TheirColor == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
+                                                   : TheirColor);
 
               playerlist.Flag_To_Redraw();
 
@@ -4096,7 +4092,7 @@ int Com_Scenario_Dialog(bool skirmish) {
       Scen.Scenario = Session.Options.ScenarioIndex;
       port::SafeCopy(
           Scen.ScenarioName,
-          Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
+          Session.Scenarios.at(Session.Options.ScenarioIndex)->Get_Filename());
 
       /*.....................................................................
       Add both players to the Players vector; the local system is always
@@ -4233,7 +4229,7 @@ int Com_Scenario_Dialog(bool skirmish) {
           if (NullModem.Get_Message(base::ObjectBytes(ReceivePacket),
                                     &packetlen) > 0) {
             if (ReceivePacket.Command == SERIAL_READY_TO_GO) {
-              if (Session.Scenarios[Session.Options.ScenarioIndex]
+              if (Session.Scenarios.at(Session.Options.ScenarioIndex)
                       ->Get_Official() &&
                   (!Force_Scenario_Available(Scen.ScenarioName))) {
                 Emergency_Exit(EXIT_FAILURE);
@@ -4257,7 +4253,7 @@ int Com_Scenario_Dialog(bool skirmish) {
             if (ReceivePacket.Command == SERIAL_REQ_SCENARIO) {
               WWDebugString("RA95 - About to call 'Send_Remote_File'.\n");
 
-              if (Session.Scenarios[Session.Options.ScenarioIndex]
+              if (Session.Scenarios.at(Session.Options.ScenarioIndex)
                       ->Get_Official() &&
                   (!Force_Scenario_Available(Scen.ScenarioName))) {
                 Emergency_Exit(EXIT_FAILURE);
@@ -4401,10 +4397,10 @@ bool Find_Local_Scenario(const char* description, std::span<char> filename,
   for (int index = 0; index < Session.Scenarios.Count(); index++) {
     // debugprint( "Checking against scenario: %s\n",
     // Session.Scenarios[index]->Description());
-    if (std::string_view(Session.Scenarios[index]->Description()) ==
+    if (std::string_view(Session.Scenarios.at(index)->Description()) ==
         description) {
       // debugprint("found matching description.\n");
-      GameFile file(Session.Scenarios[index]->Get_Filename());
+      GameFile file(Session.Scenarios.at(index)->Get_Filename());
 
       /*
       ** Possible rejection on the basis of availability.
@@ -4437,10 +4433,10 @@ bool Find_Local_Scenario(const char* description, std::span<char> filename,
         ** If this is an aftermath scenario then ignore the digest and return
         *success.
         */
-        if (IsMissionAftermath(Session.Scenarios[index]->Get_Filename())) {
+        if (IsMissionAftermath(Session.Scenarios.at(index)->Get_Filename())) {
           // debugprint("a 1match!\n");
           port::SafeCopy(std::span(filename).first(kMaxFname + kMaxExt + 1),
-                         Session.Scenarios[index]->Get_Filename());
+                         Session.Scenarios.at(index)->Get_Filename());
           return true;
         }
 
@@ -4450,7 +4446,7 @@ bool Find_Local_Scenario(const char* description, std::span<char> filename,
         if (official || (std::string_view(digest) == digest_buffer)) {
           // debugprint("a match!\n");
           port::SafeCopy(std::span(filename).first(kMaxFname + kMaxExt + 1),
-                         Session.Scenarios[index]->Get_Filename());
+                         Session.Scenarios.at(index)->Get_Filename());
           return true;
         }
       }
@@ -4784,9 +4780,9 @@ int Com_Show_Scenario_Dialog() {
   Session.ColorIdx = Session.PrefColor;     // init my preferred color
   port::SafeCopy(namebuf, Session.Handle);  // set my name
   name_edt.Set_Text(namebuf, MPLAYER_NAME_MAX);
-  name_edt.Set_Color(
-      &ColorRemaps[Session.ColorIdx == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
-                                                          : Session.ColorIdx]);
+  name_edt.Set_Color(&ColorRemaps.at(Session.ColorIdx == PCOLOR_DIALOG_BLUE
+                                         ? PCOLOR_REALLY_BLUE
+                                         : Session.ColorIdx));
 
   //........................................................................
   // List boxes
@@ -5000,7 +4996,7 @@ int Com_Show_Scenario_Dialog() {
               base::At(cbox_x, i) + 2, d_color_y + 2,
               base::At(cbox_x, i) + 2 + d_color_w - 4,
               d_color_y + 2 + d_color_h - 4,
-              ColorRemaps[static_cast<PlayerColorType>(i)].Box);
+              ColorRemaps.at(static_cast<PlayerColorType>(i)).Box);
           //						(i ==
           // PCOLOR_DIALOG_BLUE) ? ColorRemaps[PCOLOR_REALLY_BLUE].Box :
           // ColorRemaps[static_cast<PlayerColorType>(i)].Box);
@@ -5050,17 +5046,19 @@ int Com_Show_Scenario_Dialog() {
               // TBLACK, kTpfText | TPF_CENTER);
 
               // EW - Scenario language translation goes here!!!!!!!! VG
-              for (i = 0; EngMisStr[base::ToSize(i)] != nullptr; i++) {
+              for (i = 0; base::At(EngMisStr, base::ToSize(i)) != nullptr;
+                   i++) {
                 if (std::string_view(Session.Options.ScenarioDescription) ==
-                    EngMisStr[base::ToSize(i)]) {
-                  absl::SNPrintF(txt, sizeof(txt), "%s %s", p,
-                                 config::kIsEnglish
-                                     ? Session.Options.ScenarioDescription
-                                     : EngMisStr[base::ToSize(i + 1)]);
+                    base::At(EngMisStr, base::ToSize(i))) {
+                  absl::SNPrintF(
+                      txt, sizeof(txt), "%s %s", p,
+                      config::kIsEnglish
+                          ? Session.Options.ScenarioDescription
+                          : base::At(EngMisStr, base::ToSize(i + 1)));
                   break;
                 }
               }
-              if (EngMisStr[base::ToSize(i)] == nullptr) {
+              if (base::At(EngMisStr, base::ToSize(i)) == nullptr) {
                 absl::SNPrintF(txt, sizeof(txt), "%s %s", p,
                                Session.Options.ScenarioDescription);
               }
@@ -5072,7 +5070,7 @@ int Com_Show_Scenario_Dialog() {
                              Text_String(TXT_NOT_FOUND));
 
               Fancy_Text_Print(txt, d_dialog_cx, d_scenario_y,
-                               &ColorRemaps[PCOLOR_RED], kTBlack,
+                               &ColorRemaps.at(PCOLOR_RED), kTBlack,
                                kTpfText | TPF_CENTER);
             }
 
@@ -5175,9 +5173,9 @@ int Com_Show_Scenario_Dialog() {
 
           Session.ColorIdx = Session.PrefColor;
 
-          name_edt.Set_Color(&ColorRemaps[Session.ColorIdx == PCOLOR_DIALOG_BLUE
-                                              ? PCOLOR_REALLY_BLUE
-                                              : Session.ColorIdx]);
+          name_edt.Set_Color(&ColorRemaps.at(
+              Session.ColorIdx == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
+                                                     : Session.ColorIdx));
           name_edt.Flag_To_Redraw();
           Session.Messages.Set_Edit_Color(Session.ColorIdx == PCOLOR_DIALOG_BLUE
                                               ? PCOLOR_REALLY_BLUE
@@ -5372,10 +5370,9 @@ int Com_Show_Scenario_Dialog() {
                 HouseTypeClass::As_Reference(Session.House).Full_Name()));
 #endif  // OLDWAY
         playerlist.Set_Item(0, item);
-        playerlist.Colors[0] =
-            &ColorRemaps[Session.ColorIdx == PCOLOR_DIALOG_BLUE
-                             ? PCOLOR_REALLY_BLUE
-                             : Session.ColorIdx];
+        playerlist.Colors.at(0) = &ColorRemaps.at(
+            Session.ColorIdx == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
+                                                   : Session.ColorIdx);
         playerlist.Flag_To_Redraw();
       }
 
@@ -5481,10 +5478,9 @@ int Com_Show_Scenario_Dialog() {
                 Session.ColorIdx =
                     magic_enum::enum_values<PlayerColorType>().front();
               }
-              name_edt.Set_Color(
-                  &ColorRemaps[Session.ColorIdx == PCOLOR_DIALOG_BLUE
-                                   ? PCOLOR_REALLY_BLUE
-                                   : Session.ColorIdx]);
+              name_edt.Set_Color(&ColorRemaps.at(
+                  Session.ColorIdx == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
+                                                         : Session.ColorIdx));
               name_edt.Flag_To_Redraw();
               display = std::max(display, REDRAW_COLORS);
               if (housebtn.IsDropped) {
@@ -5628,13 +5624,13 @@ int Com_Show_Scenario_Dialog() {
               //......................................................
               gamelist.Add_Item("");
               playerlist.Add_Item(
-                  "", &ColorRemaps[Session.ColorIdx == PCOLOR_DIALOG_BLUE
-                                       ? PCOLOR_REALLY_BLUE
-                                       : Session.ColorIdx]);
-              playerlist.Add_Item("",
-                                  &ColorRemaps[TheirColor == PCOLOR_DIALOG_BLUE
-                                                   ? PCOLOR_REALLY_BLUE
-                                                   : TheirColor]);
+                  "", &ColorRemaps.at(Session.ColorIdx == PCOLOR_DIALOG_BLUE
+                                          ? PCOLOR_REALLY_BLUE
+                                          : Session.ColorIdx));
+              playerlist.Add_Item(
+                  "", &ColorRemaps.at(TheirColor == PCOLOR_DIALOG_BLUE
+                                          ? PCOLOR_REALLY_BLUE
+                                          : TheirColor));
 
               first = false;
               transmit = true;
@@ -5663,10 +5659,9 @@ int Com_Show_Scenario_Dialog() {
 
 #endif  // OLDWAY
             playerlist.Set_Item(0, item);
-            playerlist.Colors[0] =
-                &ColorRemaps[Session.ColorIdx == PCOLOR_DIALOG_BLUE
-                                 ? PCOLOR_REALLY_BLUE
-                                 : Session.ColorIdx];
+            playerlist.Colors.at(0) = &ColorRemaps.at(
+                Session.ColorIdx == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
+                                                       : Session.ColorIdx);
 
 #ifdef OLDWAY
             if (TheirHouse == HOUSE_GOOD) {
@@ -5681,9 +5676,9 @@ int Com_Show_Scenario_Dialog() {
                     HouseTypeClass::As_Reference(TheirHouse).Full_Name()));
 #endif  // OLDWAY
             playerlist.Set_Item(1, item);
-            playerlist.Colors[1] = &ColorRemaps[TheirColor == PCOLOR_DIALOG_BLUE
-                                                    ? PCOLOR_REALLY_BLUE
-                                                    : TheirColor];
+            playerlist.Colors.at(1) = &ColorRemaps.at(
+                TheirColor == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
+                                                 : TheirColor);
 
             gamelist.Flag_To_Redraw();
             playerlist.Flag_To_Redraw();
@@ -6309,7 +6304,7 @@ static int Phone_Dialog() {
             (phonelist.Current_Index() != Session.CurPhoneIdx)) {
           Session.CurPhoneIdx = phonelist.Current_Index();
           port::SafeCopy(phone_num,
-                         Session.PhoneBook[Session.CurPhoneIdx]->Number);
+                         Session.PhoneBook.at(Session.CurPhoneIdx)->Number);
           numedit.Set_Text(phone_num, PhoneEntryClass::PHONE_MAX_NUM);
           changed = true;
         }
@@ -6346,10 +6341,10 @@ static int Phone_Dialog() {
           Set the current listbox index to the newly-added item.
           ............................................................*/
           for (int i = 0; i < Session.PhoneBook.Count(); i++) {
-            if (p_entry == Session.PhoneBook[i]) {
+            if (p_entry == Session.PhoneBook.at(i)) {
               Session.CurPhoneIdx = i;
               port::SafeCopy(phone_num,
-                             Session.PhoneBook[Session.CurPhoneIdx]->Number);
+                             Session.PhoneBook.at(Session.CurPhoneIdx)->Number);
               numedit.Set_Text(phone_num, PhoneEntryClass::PHONE_MAX_NUM);
               phonelist.Set_Selected_Index(Session.CurPhoneIdx);
             }
@@ -6380,7 +6375,7 @@ static int Phone_Dialog() {
         Allocate a new entry & copy the currently-selected entry into it
         ...............................................................*/
         p_entry = new PhoneEntryClass();
-        *p_entry = *Session.PhoneBook[Session.CurPhoneIdx];
+        *p_entry = *Session.PhoneBook.at(Session.CurPhoneIdx);
 
         /*...............................................................
         Pass the new entry to the entry editor; if the user selects OK,
@@ -6388,17 +6383,17 @@ static int Phone_Dialog() {
         the changes show up in the list box.
         ...............................................................*/
         if (Edit_Phone_Dialog(p_entry)) {
-          *Session.PhoneBook[Session.CurPhoneIdx] = *p_entry;
+          *Session.PhoneBook.at(Session.CurPhoneIdx) = *p_entry;
           Build_Phone_Listbox(&phonelist, &numedit, phone_num);
           /*............................................................
           Set the current listbox index to the newly-added item.
           ............................................................*/
           for (int i = 0; i < Session.PhoneBook.Count(); i++) {
-            if (Session.PhoneBook[Session.CurPhoneIdx] ==
-                Session.PhoneBook[i]) {
+            if (Session.PhoneBook.at(Session.CurPhoneIdx) ==
+                Session.PhoneBook.at(i)) {
               Session.CurPhoneIdx = i;
               port::SafeCopy(phone_num,
-                             Session.PhoneBook[Session.CurPhoneIdx]->Number);
+                             Session.PhoneBook.at(Session.CurPhoneIdx)->Number);
               numedit.Set_Text(phone_num, PhoneEntryClass::PHONE_MAX_NUM);
               phonelist.Set_Selected_Index(Session.CurPhoneIdx);
             }
@@ -6452,7 +6447,8 @@ static int Phone_Dialog() {
         - Set settings to defaults
         ...............................................................*/
         if (Session.CurPhoneIdx == -1 ||
-            std::string_view(Session.PhoneBook[Session.CurPhoneIdx]->Number) !=
+            std::string_view(
+                Session.PhoneBook.at(Session.CurPhoneIdx)->Number) !=
                 phone_num) {
           if (std::string_view(phone_num).empty()) {  // do not dial
             dialbtn.IsPressed = true;
@@ -6477,7 +6473,7 @@ static int Phone_Dialog() {
           Set the current listbox index to the newly-added item.
           ............................................................*/
           for (int i = 0; i < Session.PhoneBook.Count(); i++) {
-            if (p_entry == Session.PhoneBook[i]) {
+            if (p_entry == Session.PhoneBook.at(i)) {
               Session.CurPhoneIdx = i;
             }
           }
@@ -6560,7 +6556,7 @@ static void Build_Phone_Listbox(ListClass* list, EditClass* edit,
     std::vector<PhoneEntryClass*> sorted;
     sorted.reserve(base::ToSize(Session.PhoneBook.Count()));
     for (int i = 0; i < Session.PhoneBook.Count(); ++i) {
-      sorted.push_back(Session.PhoneBook[i]);
+      sorted.push_back(Session.PhoneBook.at(i));
     }
     std::ranges::sort(
         sorted, [](const PhoneEntryClass* left, const PhoneEntryClass* right) {
@@ -6572,7 +6568,7 @@ static void Build_Phone_Listbox(ListClass* list, EditClass* edit,
           return result < 0;
         });
     for (int i = 0; i < Session.PhoneBook.Count(); ++i) {
-      Session.PhoneBook[i] = sorted[base::ToSize(i)];
+      Session.PhoneBook.at(i) = sorted.at(base::ToSize(i));
     }
   }
 
@@ -6580,26 +6576,26 @@ static void Build_Phone_Listbox(ListClass* list, EditClass* edit,
   Build the list
   ........................................................................*/
   for (int i = 0; i < Session.PhoneBook.Count(); i++) {
-    if (std::string_view(Session.PhoneBook[i]->Name).empty()) {
+    if (std::string_view(Session.PhoneBook.at(i)->Name).empty()) {
       port::SafeCopy(phonename, " ");
     } else {
-      port::SafeCopy(phonename, Session.PhoneBook[i]->Name);
+      port::SafeCopy(phonename, Session.PhoneBook.at(i)->Name);
     }
 
-    if (std::string_view(Session.PhoneBook[i]->Number).empty()) {
+    if (std::string_view(Session.PhoneBook.at(i)->Number).empty()) {
       port::SafeCopy(phonenum, " ");
     } else {
-      if (std::string_view(Session.PhoneBook[i]->Number).size() < 14) {
-        port::SafeCopy(phonenum, Session.PhoneBook[i]->Number);
+      if (std::string_view(Session.PhoneBook.at(i)->Number).size() < 14) {
+        port::SafeCopy(phonenum, Session.PhoneBook.at(i)->Number);
       } else {
-        port::SafeCopy(phonenum, Session.PhoneBook[i]->Number);
+        port::SafeCopy(phonenum, Session.PhoneBook.at(i)->Number);
         port::SafeAppend(phonenum, "...");
       }
     }
 
-    if (Session.PhoneBook[i]->Settings.Baud != -1) {
+    if (Session.PhoneBook.at(i)->Settings.Baud != -1) {
       absl::SNPrintF(item, sizeof(item), "%s\t%s\t%d", phonename, phonenum,
-                     Session.PhoneBook[i]->Settings.Baud);
+                     Session.PhoneBook.at(i)->Settings.Baud);
     } else {
       absl::SNPrintF(item, sizeof(item), "%s\t%s\t[%s]", phonename, phonenum,
                      Text_String(TXT_DEFAULT));
@@ -6624,7 +6620,7 @@ static void Build_Phone_Listbox(ListClass* list, EditClass* edit,
   ........................................................................*/
   if (Session.CurPhoneIdx > -1) {
     port::SafeCopy(std::span(buf).first(PhoneEntryClass::PHONE_MAX_NUM),
-                   Session.PhoneBook[Session.CurPhoneIdx]->Number);
+                   Session.PhoneBook.at(Session.CurPhoneIdx)->Number);
     edit->Set_Text(buf, PhoneEntryClass::PHONE_MAX_NUM);
     list->Set_Selected_Index(Session.CurPhoneIdx);
   }
@@ -7263,8 +7259,8 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
 
 static void Modem_Echo(char c) {
   if (NullModem.EchoCount < NullModem.EchoSize - 1) {
-    NullModem.EchoBuf[base::ToSize(NullModem.EchoCount)] = c;
-    NullModem.EchoBuf[base::ToSize(NullModem.EchoCount + 1)] = 0;
+    NullModem.EchoBuf.at(base::ToSize(NullModem.EchoCount)) = c;
+    NullModem.EchoBuf.at(base::ToSize(NullModem.EchoCount + 1)) = 0;
     NullModem.EchoCount++;
   }
 
@@ -7373,9 +7369,9 @@ void Hex_Dump_Data(std::span<const char> buffer) {
 void itoh(int i, std::span<char> s) {
   constexpr std::string_view digits = "0123456789ABCDEF";
   const auto bits = static_cast<uint32_t>(i);
-  s[0] = digits[(bits >> 4) & 0xfU];
-  s[1] = digits[bits & 0xfU];
-  s[2] = '\0';
+  base::At(s, 0) = digits.at((bits >> 4) & 0xfU);
+  base::At(s, 1) = digits.at(bits & 0xfU);
+  base::At(s, 2) = '\0';
 }
 
 void Log_Start_Time(const char* string) {

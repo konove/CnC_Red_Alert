@@ -199,8 +199,11 @@ class TListClass final : public ControlClass {
   TListClass& operator=(const TListClass&) = delete;
   TListClass(TListClass&&) = delete;
   TListClass& operator=(TListClass&&) = delete;
-  T operator[](int index) const { return List[index]; }
-  T& operator[](int index) { return List[index]; }
+  // Returns the indexed list entry through the checked backing vector.
+  [[nodiscard]] T at(int index) const { return List.at(index); }
+  T operator[](int index) const { return at(index); }
+  T& at(int index) { return List.at(index); }
+  T& operator[](int index) { return at(index); }
 
   int Add_Item(T text);
   bool Add_Scroll_Bar();
@@ -212,7 +215,7 @@ class TListClass final : public ControlClass {
   bool Draw_Me(bool forced) override;
   int Step_Selected_Index(int step);
   void Flag_To_Redraw() override;
-  [[nodiscard]] T Get_Item(int index) const { return List[index]; }
+  [[nodiscard]] T Get_Item(int index) const { return List.at(index); }
 
   void Peer_To_Peer(unsigned flags, KeyNumType& key,
                     ControlClass& whom) override;
@@ -345,13 +348,13 @@ void TListClass<T>::Insert_Item(T item) {
     **	Move all trailing items upward.
     */
     for (base::ssize index = List.Count() - 1; index >= Current_Index(); index--) {
-      List[index + 1] = List[index];
+      List.at(index + 1) = List.at(index);
     }
 
     /*
     **	Insert the new item into the location at the current index.
     */
-    List[Current_Index()] = item;
+    List.at(Current_Index()) = item;
   }
 }
 
@@ -486,9 +489,9 @@ bool TListClass<T>::Draw_Me(bool forced) {
           /*
           **	Prints the text and handles right edge clipping and tabs.
           */
-          List[line]->Draw_It(line, X + 1, Y + (LineHeight * index) + 1,
-                              Width - 2, LineHeight, (line == SelectedIndex),
-                              TextFlags);
+          List.at(line)->Draw_It(line, X + 1, Y + (LineHeight * index) + 1,
+                                 Width - 2, LineHeight, (line == SelectedIndex),
+                                 TextFlags);
           //					List[index].Draw_It(line, X+1,
           // Y+(LineHeight*index)+1, Width-2, LineHeight, (line ==
           // SelectedIndex), TextFlags);
@@ -531,7 +534,7 @@ T TListClass<T>::Current_Item() const {
   if (List.Count() <= SelectedIndex) {
     return _temp;
   }
-  return List[SelectedIndex];
+  return List.at(SelectedIndex);
 }
 
 template <class T>

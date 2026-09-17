@@ -44,6 +44,7 @@
 #include <span>
 #include <vector>
 
+#include "base/array.h"
 #include "base/numeric.h"
 #include "base/types.h"
 
@@ -51,13 +52,13 @@ int LcwUncompBounded(std::span<const std::byte> source,
                      std::span<std::byte> dest) {
   const base::ssize in_size = std::ssize(source);
   const base::ssize out_size = std::ssize(dest);
-  const auto in_bytes = source.begin();
-  const auto out_bytes = dest.begin();
+  const auto in_bytes = source;
+  const auto out_bytes = dest;
   base::ssize in = 0;
   base::ssize out = 0;
 
   const auto byte_at = [&](base::ssize offset) {
-    return std::to_integer<uint8_t>(in_bytes[in + offset]);
+    return std::to_integer<uint8_t>(base::At(in_bytes, in + offset));
   };
   // Copies forward one byte at a time so a reference that overlaps the bytes
   // it is producing repeats a pattern, as the encoder intends.
@@ -66,7 +67,7 @@ int LcwUncompBounded(std::span<const std::byte> source,
       return false;
     }
     for (base::ssize i = 0; i < count; ++i) {
-      out_bytes[out + i] = out_bytes[from + i];
+      base::At(out_bytes, out + i) = base::At(out_bytes, from + i);
     }
     out += count;
     return true;
@@ -97,7 +98,7 @@ int LcwUncompBounded(std::span<const std::byte> source,
         return -1;
       }
       for (base::ssize i = 0; i < count; ++i) {
-        out_bytes[out + i] = in_bytes[in + i];
+        base::At(out_bytes, out + i) = base::At(in_bytes, in + i);
       }
       in += count;
       out += count;
@@ -110,7 +111,7 @@ int LcwUncompBounded(std::span<const std::byte> source,
       if (count > out_size - out) {
         return -1;
       }
-      std::fill_n(out_bytes + out, count, in_bytes[in + 2]);
+      std::fill_n(out_bytes.begin() + out, count, base::At(in_bytes, in + 2));
       in += 3;
       out += count;
     } else if (op_code == 0xff) {
@@ -185,9 +186,9 @@ Choice BestReference(int length, int distance, int position) {
 
 int HashAt(std::span<const std::byte> in, int pos) {
   const uint32_t hash =
-      (std::to_integer<uint32_t>(in[base::ToSize(pos)]) << 8) ^
-      (std::to_integer<uint32_t>(in[base::ToSize(pos + 1)]) << 4) ^
-      std::to_integer<uint32_t>(in[base::ToSize(pos + 2)]);
+      (std::to_integer<uint32_t>(base::At(in, base::ToSize(pos))) << 8) ^
+      (std::to_integer<uint32_t>(base::At(in, base::ToSize(pos + 1))) << 4) ^
+      std::to_integer<uint32_t>(base::At(in, base::ToSize(pos + 2)));
   return static_cast<int>(hash % kHashSize);
 }
 
@@ -210,13 +211,13 @@ int LCW_Comp(std::span<const std::byte> in, std::span<std::byte> out) {
   const auto remember = [&](int pos) {
     if (pos + 2 < length) {
       const auto bucket = base::ToSize(HashAt(in, pos));
-      previous[base::ToSize(pos)] = head[bucket];
-      head[bucket] = pos;
+      previous.at(base::ToSize(pos)) = head.at(bucket);
+      head.at(bucket) = pos;
     }
   };
 
   const auto put = [&](int value) {
-    out[base::ToSize(written++)] = static_cast<std::byte>(value);
+    base::At(out, base::ToSize(written++)) = static_cast<std::byte>(value);
   };
 
   int pos = 0;
@@ -225,8 +226,8 @@ int LCW_Comp(std::span<const std::byte> in, std::span<std::byte> out) {
     Choice best;
 
     int run = 1;
-    while (run < limit &&
-           in[base::ToSize(pos + run)] == in[base::ToSize(pos)]) {
+    while (run < limit && base::At(in, base::ToSize(pos + run)) ==
+                              base::At(in, base::ToSize(pos))) {
       ++run;
     }
     if (run - 4 > best.savings) {
@@ -235,13 +236,13 @@ int LCW_Comp(std::span<const std::byte> in, std::span<std::byte> out) {
 
     if (pos + 2 < length) {
       int steps = 0;
-      for (int candidate = head[base::ToSize(HashAt(in, pos))];
+      for (int candidate = head.at(base::ToSize(HashAt(in, pos)));
            candidate >= 0 && steps < kMaxChainSteps;
-           candidate = previous[base::ToSize(candidate)], ++steps) {
+           candidate = previous.at(base::ToSize(candidate)), ++steps) {
         int match = 0;
         // Overlapping matches are fine: the decoder copies byte by byte.
-        while (match < limit && in[base::ToSize(candidate + match)] ==
-                                    in[base::ToSize(pos + match)]) {
+        while (match < limit && base::At(in, base::ToSize(candidate + match)) ==
+                                    base::At(in, base::ToSize(pos + match))) {
           ++match;
         }
         if (match < 3) {
@@ -256,14 +257,15 @@ int LCW_Comp(std::span<const std::byte> in, std::span<std::byte> out) {
 
     if (best.savings < 1) {
       if (literal_opcode < 0 ||
-          out[base::ToSize(literal_opcode)] ==
+          base::At(out, base::ToSize(literal_opcode)) ==
               static_cast<std::byte>(0x80 + kMaxLiteralRun)) {
         literal_opcode = written;
         put(0x80);
       }
-      out[base::ToSize(literal_opcode)] = static_cast<std::byte>(
-          std::to_integer<int>(out[base::ToSize(literal_opcode)]) + 1);
-      put(std::to_integer<int>(in[base::ToSize(pos)]));
+      base::At(out, base::ToSize(literal_opcode)) = static_cast<std::byte>(
+          std::to_integer<int>(base::At(out, base::ToSize(literal_opcode))) +
+          1);
+      put(std::to_integer<int>(base::At(in, base::ToSize(pos))));
       remember(pos);
       ++pos;
       continue;
@@ -290,7 +292,7 @@ int LCW_Comp(std::span<const std::byte> in, std::span<std::byte> out) {
         put(0xfe);
         put(best.count % 256);
         put(best.count / 256);
-        put(std::to_integer<int>(in[base::ToSize(pos)]));
+        put(std::to_integer<int>(base::At(in, base::ToSize(pos))));
         break;
       case Choice::kLiteral:
       default:

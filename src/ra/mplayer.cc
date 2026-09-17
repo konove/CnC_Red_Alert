@@ -66,7 +66,6 @@
 #include "ra/palette.h"
 #include "ra/session.h"
 #include "ra/textbtn.h"
-#include "ra/vector.h"
 #include "ra/vector_dynamic.h"
 #include "ra/wolstrng.h"
 #include "sdllib/gbuffer.h"
@@ -389,7 +388,7 @@ GameType Select_MPlayer_Game() {
             bAftermathMultiplayer = Is_Aftermath_Installed();
             //	ajw I'll bet this was needed before also...
             Session.ScenarioIsOfficial =
-                Session.Scenarios[Session.Options.ScenarioIndex]
+                Session.Scenarios.at(Session.Options.ScenarioIndex)
                     ->Get_Official();
           } else {
             base::At(buttons, curbutton)->IsPressed = false;
@@ -470,7 +469,7 @@ void Clear_Vector(DynamicVectorClass<NodeNameType*>* vector) {
   //	Clear the 'Players' Vector
   //------------------------------------------------------------------------
   for (int i = 0; i < vector->Count(); i++) {
-    delete (*vector)[i];
+    delete (*vector).at(i);
   }
   vector->Clear();
 

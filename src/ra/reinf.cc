@@ -61,7 +61,6 @@
 #include "ra/foot.h"
 #include "ra/heap.h"
 #include "ra/inline.h"
-#include "ra/map.h"
 #include "ra/mapedit.h"
 #include "ra/object.h"
 #include "ra/scenario.h"
@@ -380,7 +379,7 @@ static bool Consists_Only_Of_Infantry(const FootClass* first) {
  * HISTORY: * 06/25/1996 JLB : Created. *
  *=============================================================================================*/
 static TechnoClass* Who_Can_Pop_Out_Of(CELL origin) {
-  CellClass* cellptr = &Map[origin];
+  CellClass* cellptr = &Map.at(origin);
   TechnoClass* candidate = nullptr;
 
   for (int f = -1; f < 8; f++) {
@@ -499,7 +498,7 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
   if (teamtype->Origin != -1 && unit != nullptr &&
       (*unit == UNIT_ANT1 || *unit == UNIT_ANT2 || *unit == UNIT_ANT3)) {
     const CELL newcell = base::At(Scen.Waypoint, teamtype->Origin);
-    if ((newcell != -1) && (Map[newcell].TType == TEMPLATE_HILL01)) {
+    if ((newcell != -1) && (Map.at(newcell).TType == TEMPLATE_HILL01)) {
       cell = newcell;
     }
   }

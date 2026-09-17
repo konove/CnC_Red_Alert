@@ -117,7 +117,7 @@ LoadOptionsClass::LoadOptionsClass(LoadStyleType style) : Style(style) {
  *=============================================================================================*/
 LoadOptionsClass::~LoadOptionsClass() {
   for (int i = 0; i < Files.Count(); i++) {
-    delete Files[i];
+    delete Files.at(i);
   }
   Files.Clear();
 }
@@ -404,8 +404,8 @@ bool LoadOptionsClass::Process() {
       */
       case ButtonKey(kButtonLoad):
         game_idx = listbtn.Current_Index();
-        game_num = Files[game_idx]->Num;
-        if (Files[game_idx]->Valid) {
+        game_num = Files.at(game_idx)->Num;
+        if (Files.at(game_idx)->Valid) {
           CCMessageBox().Process(TXT_LOADING, TXT_NONE);
           if (!Load_Game(game_num)) {
             CCMessageBox().Process(TXT_ERROR_LOADING_GAME);
@@ -442,7 +442,7 @@ bool LoadOptionsClass::Process() {
           break;
         }
 
-        game_num = Files[game_idx]->Num;
+        game_num = Files.at(game_idx)->Num;
         if (!Save_Game(game_num, game_descr)) {
           CCMessageBox().Process(TXT_ERROR_SAVING_GAME);
         } else {
@@ -457,7 +457,7 @@ bool LoadOptionsClass::Process() {
       */
       case ButtonKey(kButtonDelete):
         game_idx = listbtn.Current_Index();
-        game_num = Files[game_idx]->Num;
+        game_num = Files.at(game_idx)->Num;
         if (CCMessageBox().Process(TXT_DELETE_FILE_QUERY, TXT_YES, TXT_NO) ==
             0) {
           absl::SNPrintF(fname, sizeof(fname), "SAVEGAME.%03d", game_num);
@@ -542,7 +542,7 @@ void LoadOptionsClass::Clear_List(ListClass* list) {
   ** Clear the array of game numbers
   */
   for (int i = 0; i < Files.Count(); i++) {
-    delete Files[i];
+    delete Files.at(i);
   }
   Files.Clear();
 }
@@ -632,7 +632,7 @@ void LoadOptionsClass::Fill_List(ListClass* list) {
     for (i = 0; i < Files.Count(); i++) {  // i = the # we're searching for
       id = -1;                             // mark as 'not found'
       for (int j = 0; j < Files.Count(); j++) {  // loop through all game ID's
-        if (Files[j]->Num == i) {                // if found, mark as found
+        if (Files.at(j)->Num == i) {             // if found, mark as found
           id = j;
           break;
         }
@@ -642,7 +642,7 @@ void LoadOptionsClass::Fill_List(ListClass* list) {
       }
     }
 
-    Files[0]->Num = i;  // set the empty slot's ID
+    Files.at(0)->Num = i;  // set the empty slot's ID
   }
 
   /*
@@ -659,7 +659,7 @@ void LoadOptionsClass::Fill_List(ListClass* list) {
   ** Now add every file's name to the list box
   */
   for (int i = 0; i < Files.Count(); i++) {
-    list->Add_Item(Files[i]->Descr);
+    list->Add_Item(Files.at(i)->Descr);
   }
 }
 

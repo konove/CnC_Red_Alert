@@ -696,7 +696,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       .............. Unselect object & hide popup controls ...............
       */
       if (CurrentObject.Count()) {
-        CurrentObject[0]->Unselect();
+        CurrentObject.at(0)->Unselect();
         Popup_Controls();
       }
       Main_Menu();
@@ -722,7 +722,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         ......... Unselect current object, hide popup controls ..........
         */
         if (CurrentObject.Count()) {
-          CurrentObject[0]->Unselect();
+          CurrentObject.at(0)->Unselect();
           Popup_Controls();
         }
         /*
@@ -880,7 +880,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         }
 
         if (found == 0) {
-          (*this)[cell].IsWaypoint = false;
+          (*this).at(cell).IsWaypoint = false;
           Flag_Cell(cell);
         }
       }
@@ -889,7 +889,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       ** Now set the new Home cell
       */
       base::At(Waypoint, kWayptHome) = Coord_Cell(TacticalCoord);
-      (*this)[Coord_Cell(TacticalCoord)].IsWaypoint = true;
+      (*this).at(Coord_Cell(TacticalCoord)).IsWaypoint = true;
       Flag_Cell(Coord_Cell(TacticalCoord));
       Changed = true;
       input = KN_NONE;
@@ -919,7 +919,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         }
 
         if (found == 0) {
-          (*this)[cell].IsWaypoint = false;
+          (*this).at(cell).IsWaypoint = false;
           Flag_Cell(cell);
         }
       }
@@ -927,7 +927,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       ** Now set the new Reinforcement cell
       */
       base::At(Waypoint, kWayptReinf) = CurrentCell;
-      (*this)[CurrentCell].IsWaypoint = true;
+      (*this).at(CurrentCell).IsWaypoint = true;
       Flag_Cell(CurrentCell);
       Changed = true;
       input = KN_NONE;
@@ -971,12 +971,12 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         if (cell != -1) {
           if (base::At(Waypoint, kWayptHome) != cell &&
               base::At(Waypoint, kWayptReinf) != cell) {
-            (*this)[cell].IsWaypoint = false;
+            (*this).at(cell).IsWaypoint = false;
           }
           Flag_Cell(cell);
         }
         base::At(Waypoint, waypt_idx) = CurrentCell;
-        (*this)[CurrentCell].IsWaypoint = true;
+        (*this).at(CurrentCell).IsWaypoint = true;
         Changed = true;
         Flag_Cell(CurrentCell);
       }
@@ -1005,14 +1005,14 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         If there's a current object, attach the flag to it and clear the
         waypoint.
         ------------------------------------------------------------------*/
-        if (CurrentObject[0] != nullptr) {
+        if (CurrentObject.at(0) != nullptr) {
           waypt_idx = (KN_To_KA(input & 0xff) - KA_1);
           house = static_cast<HousesType>(static_cast<int>(HOUSE_MULTI1) +
                                           waypt_idx);
           if (HouseClass::As_Pointer(house) &&
-              CurrentObject[0]->What_Am_I() == RTTI_UNIT) {
+              CurrentObject.at(0)->What_Am_I() == RTTI_UNIT) {
             HouseClass::As_Pointer(house)->Flag_Attach(
-                dynamic_cast<UnitClass*>(CurrentObject[0]), true);
+                dynamic_cast<UnitClass*>(CurrentObject.at(0)), true);
           }
         }
       }
@@ -1053,7 +1053,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         ...............................................................*/
         if (base::At(Waypoint, kWayptHome) != CurrentCell &&
             base::At(Waypoint, kWayptReinf) != CurrentCell) {
-          (*this)[CurrentCell].IsWaypoint = false;
+          (*this).at(CurrentCell).IsWaypoint = false;
         }
         Changed = true;
         Flag_Cell(CurrentCell);
@@ -1152,7 +1152,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     case KN_LEFT | KN_ALT_BIT | KN_SHIFT_BIT:
     case KN_RIGHT | KN_ALT_BIT | KN_SHIFT_BIT:
       if (CurrentObject.Count()) {
-        CurrentObject[0]->Move(KN_To_Facing(input));
+        CurrentObject.at(0)->Move(KN_To_Facing(input));
         Changed = true;
       }
       input = KN_NONE;
@@ -1169,15 +1169,15 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         /*
         ........................ Delete trigger .........................
         */
-        if (CurrentObject[0]->Trigger) {
-          CurrentObject[0]->Trigger = nullptr;
+        if (CurrentObject.at(0)->Trigger) {
+          CurrentObject.at(0)->Trigger = nullptr;
         } else {
           /*
           ** If the current object is part of the AI's Base, remove it
           ** from the Base's Node list.
           */
-          if (CurrentObject[0]->What_Am_I() == RTTI_BUILDING) {
-            auto* building = dynamic_cast<BuildingClass*>(CurrentObject[0]);
+          if (CurrentObject.at(0)->What_Am_I() == RTTI_BUILDING) {
+            auto* building = dynamic_cast<BuildingClass*>(CurrentObject.at(0));
             if (Base.Is_Node(building)) {
               BaseNodeClass* node =
                   Base.Get_Node(building);  // for removing from an AI Base
@@ -1188,7 +1188,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
           /*
           ................... Delete current object ....................
           */
-          delete CurrentObject[0];
+          delete CurrentObject.at(0);
 
           /*
           .................. Hide the popup controls ...................
@@ -1206,9 +1206,9 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         /*
         ................. Remove trigger from current cell .................
         */
-        if (CurrentCell && (*this)[CurrentCell].IsTrigger) {
-          (*this)[CurrentCell].IsTrigger = false;
-          CellTriggers[CurrentCell] = nullptr;
+        if (CurrentCell && (*this).at(CurrentCell).IsTrigger) {
+          (*this).at(CurrentCell).IsTrigger = false;
+          CellTriggers.at(CurrentCell) = nullptr;
           /*
           ...................... Force a redraw ........................
           */
@@ -1246,11 +1246,11 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       /*..................................................................
       If that house doesn't own this object, try to transfer it
       ..................................................................*/
-      if ((CurrentObject[0]->Owner() != house) && Change_House(house)) {
+      if ((CurrentObject.at(0)->Owner() != house) && Change_House(house)) {
         Changed = true;
       }
 
-      Set_House_Buttons(CurrentObject[0]->Owner(), Buttons, kPopupGdi);
+      Set_House_Buttons(CurrentObject.at(0)->Owner(), Buttons, kPopupGdi);
       HiddenPage.Clear();
       Flag_To_Redraw(true);
       input = KN_NONE;
@@ -1260,14 +1260,14 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     Object-Editing button: Mission
     ---------------------------------------------------------------------*/
     case ButtonKey(kPopupMissionlist):
-      if (CurrentObject[0]->Is_Techno()) {
+      if (CurrentObject.at(0)->Is_Techno()) {
         /*
         ........................ Set new mission ........................
         */
         const MissionType mission =
-            MapEditMissions[base::ToSize(MissionList->Current_Index())];
-        if (CurrentObject[0]->Get_Mission() != mission) {
-          dynamic_cast<TechnoClass*>(CurrentObject[0])->Set_Mission(mission);
+            MapEditMissions.at(base::ToSize(MissionList->Current_Index()));
+        if (CurrentObject.at(0)->Get_Mission() != mission) {
+          dynamic_cast<TechnoClass*>(CurrentObject.at(0))->Set_Mission(mission);
           Changed = true;
         }
       }
@@ -1279,12 +1279,13 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     Object-Editing button: Health
     ---------------------------------------------------------------------*/
     case ButtonKey(kPopupHealthgauge):
-      if (CurrentObject[0]->Is_Techno()) {
+      if (CurrentObject.at(0)->Is_Techno()) {
         /*
         .......... Derive strength from current gauge reading ...........
         */
-        int strength = Fixed_To_Cardinal(
-            CurrentObject[0]->Class_Of().MaxStrength, HealthGauge->Get_Value());
+        int strength =
+            Fixed_To_Cardinal(CurrentObject.at(0)->Class_Of().MaxStrength,
+                              HealthGauge->Get_Value());
 
         /*
         ........................... Clip to 1 ...........................
@@ -1296,8 +1297,8 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         /*
         ....................... Set new strength ........................
         */
-        if (strength != CurrentObject[0]->Strength) {
-          CurrentObject[0]->Strength = static_cast<int16_t>(strength);
+        if (strength != CurrentObject.at(0)->Strength) {
+          CurrentObject.at(0)->Strength = static_cast<int16_t>(strength);
           HiddenPage.Clear();
           Flag_To_Redraw(true);
           Changed = true;
@@ -1315,8 +1316,8 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     Object-Editing button: Facing
     ---------------------------------------------------------------------*/
     case ButtonKey(kPopupFacingdial):
-      if (CurrentObject[0]->Is_Techno()) {
-        auto* techno = dynamic_cast<TechnoClass*>(CurrentObject[0]);
+      if (CurrentObject.at(0)->Is_Techno()) {
+        auto* techno = dynamic_cast<TechnoClass*>(CurrentObject.at(0));
         if (FacingDial->Get_Direction() != techno->PrimaryFacing.Get()) {
           /*
           ..................... Set body's facing ......................
@@ -1421,10 +1422,10 @@ void MapEditClass::Draw_It(bool forced) {
     /*
     ------------------ Display the object's name & ID ------------------
     */
-    const char* label = Text_String(CurrentObject[0]->Full_Name());
+    const char* label = Text_String(CurrentObject.at(0)->Full_Name());
     const char* tptr = label;
     absl::SNPrintF(buf, sizeof(buf), "%s (%d)", tptr,
-                   CurrentObject[0]->As_Target());
+                   CurrentObject.at(0)->As_Target());
 
     /*
     ......................... print the label ..........................

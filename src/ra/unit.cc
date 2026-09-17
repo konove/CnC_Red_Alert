@@ -153,7 +153,6 @@
 #include "ra/infantry.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
-#include "ra/map.h"
 #include "ra/mapedit.h"
 #include "ra/mission.h"
 #include "ra/monoc.h"
@@ -1401,7 +1400,7 @@ void UnitClass::Enter_Idle_Mode(bool initial) {
         if (!In_Radio_Contact() && Mission != MISSION_HARVEST &&
             MissionQueue != MISSION_HARVEST) {
           if (initial || !House->IsHuman ||
-              Map[Coord].Land_Type() == LAND_TIBERIUM) {
+              Map.at(Coord).Land_Type() == LAND_TIBERIUM) {
             order = MISSION_HARVEST;
           } else {
             order = MISSION_GUARD;
@@ -1427,8 +1426,8 @@ void UnitClass::Enter_Idle_Mode(bool initial) {
       }
     } else {
       if (Mission == MISSION_GUARD || Mission == MISSION_GUARD_AREA ||
-          (Mission != MISSION_NONE && (MissionControl[Mission].IsParalyzed ||
-                                       MissionControl[Mission].IsZombie))) {
+          (Mission != MISSION_NONE && (MissionControl.at(Mission).IsParalyzed ||
+                                       MissionControl.at(Mission).IsZombie))) {
         return;
       }
 
@@ -1700,7 +1699,8 @@ void UnitClass::Per_Cell_Process(PCPType why) {
     TechnoClass* whom = Contact_With_Whom();
     if ((IsTethered && whom != nullptr) &&
         (whom->What_Am_I() == RTTI_BUILDING && Mission == MISSION_ENTER) &&
-        (whom == Map[static_cast<CELL>(cell - MAP_CELL_W)].Cell_Building())) {
+        (whom ==
+         Map.at(static_cast<CELL>(cell - MAP_CELL_W)).Cell_Building())) {
       switch (Transmit_Message(RADIO_IM_IN, whom)) {
         case RADIO_ROGER:
         case RADIO_ATTACH:
@@ -1774,7 +1774,7 @@ void UnitClass::Per_Cell_Process(PCPType why) {
       *one *	cell, if it is still on the building (e.g., service depot), have
       **	it scatter again.
       */
-      if (Map[Coord].Cell_Building() != nullptr && !Target_Legal(NavCom)) {
+      if (Map.at(Coord).Cell_Building() != nullptr && !Target_Legal(NavCom)) {
         Scatter(0, true, true);
       } else {
         if (Transmit_Message(RADIO_UNLOADED) == RADIO_RUN_AWAY) {
@@ -1862,8 +1862,8 @@ void UnitClass::Per_Cell_Process(PCPType why) {
     **	If there is a house flag here, then this unit just might pick it up.
     */
     if ((Flagged == HOUSE_NONE) &&
-        (Map[cell].IsFlagged && Map[cell].Owner != House->Class->House)) {
-      HouseClass::As_Pointer(Map[cell].Owner)->Flag_Attach(this);
+        (Map.at(cell).IsFlagged && Map.at(cell).Owner != House->Class->House)) {
+      HouseClass::As_Pointer(Map.at(cell).Owner)->Flag_Attach(this);
     }
 
     /*
@@ -1895,7 +1895,7 @@ void UnitClass::Per_Cell_Process(PCPType why) {
     /*
     ** If entering a cell with a land mine in it, blow up the mine.
     */
-    const BuildingClass* bldng = Map[cell].Cell_Building();
+    const BuildingClass* bldng = Map.at(cell).Cell_Building();
     if (bldng != nullptr &&
         (*bldng == STRUCT_AVMINE || *bldng == STRUCT_APMINE) &&
         !bldng->House->Is_Ally(this)) {
@@ -1938,7 +1938,7 @@ void UnitClass::Per_Cell_Process(PCPType why) {
     *move. In such a case the unit should have been destroyed *	anyway, so blow
     *it up now.
     */
-    const LandType land = Map[Coord].Land_Type();
+    const LandType land = Map.at(Coord).Land_Type();
     if (!IsDriving &&
         (land == LAND_ROCK || land == LAND_WATER || land == LAND_RIVER)) {
       new AnimClass(Combat_Anim(Strength, WARHEAD_AP, land), Coord);
@@ -1951,7 +1951,7 @@ void UnitClass::Per_Cell_Process(PCPType why) {
   /*
   **	Destroy any crushable wall that is driven over by a tracked vehicle.
   */
-  CellClass* cellptr = &Map[cell];
+  CellClass* cellptr = &Map.at(cell);
   if (Class->IsCrusher && cellptr->Overlay != OVERLAY_NONE) {
     //	if (Class->Speed == SPEED_TRACK && cellptr->Overlay != OVERLAY_NONE) {
     const OverlayTypeClass* optr =
@@ -2265,12 +2265,14 @@ bool UnitClass::Tiberium_Check(CELL& center, int x, int y) {
 
   center = XY_Cell(Cell_X(center) + x, Cell_Y(center) + y);
 
-  if (Session.Type != GAME_NORMAL || !IsOwnedByPlayer || Map[center].IsMapped) {
-    if (Map[Coord].Zones[Class->MZone] != Map[center].Zones[Class->MZone]) {
+  if (Session.Type != GAME_NORMAL || !IsOwnedByPlayer ||
+      Map.at(center).IsMapped) {
+    if (Map.at(Coord).Zones.at(Class->MZone) !=
+        Map.at(center).Zones.at(Class->MZone)) {
       return false;
     }
-    if (!Map[center].Cell_Techno() &&
-        Map[center].Land_Type() == LAND_TIBERIUM) {
+    if (!Map.at(center).Cell_Techno() &&
+        Map.at(center).Land_Type() == LAND_TIBERIUM) {
       return true;
     }
   }
@@ -2300,7 +2302,7 @@ bool UnitClass::Goto_Tiberium(int rad) {
 
   if (!Target_Legal(NavCom)) {
     const CELL center = Coord_Cell(Center_Coord());
-    if (Map[center].Land_Type() == LAND_TIBERIUM) {
+    if (Map.at(center).Land_Type() == LAND_TIBERIUM) {
       return true;
     }
     /*
@@ -2358,7 +2360,7 @@ bool UnitClass::Harvesting() {
   assert(IsActive);
 
   const CELL cell = Coord_Cell(Coord);
-  CellClass* ptr = &Map[cell];
+  CellClass* ptr = &Map.at(cell);
 
   /*
   **	Keep waiting if still heading toward a spot to harvest.
@@ -2727,7 +2729,7 @@ int UnitClass::Mission_Unload() {
 
         case kUnloading:
           if (Ammo > 0) {
-            if (!Map[Center_Coord()].Cell_Building()) {
+            if (!Map.at(Center_Coord()).Cell_Building()) {
               Mark(MARK_UP);
               auto* building =
                   new BuildingClass(House->ActLike == HOUSE_USSR ||
@@ -2861,7 +2863,7 @@ int UnitClass::Mission_Unload() {
     default:
       break;
   }
-  return MissionControl[Mission].Normal_Delay() + Random_Pick(0, 2);
+  return MissionControl.at(Mission).Normal_Delay() + Random_Pick(0, 2);
 }
 
 /***********************************************************************************************
@@ -3061,7 +3063,7 @@ int UnitClass::Mission_Harvest() {
     default:
       break;
   }
-  return MissionControl[Mission].Normal_Delay() + Random_Pick(0, 2);
+  return MissionControl.at(Mission).Normal_Delay() + Random_Pick(0, 2);
 }
 
 /***********************************************************************************************
@@ -3116,7 +3118,7 @@ int UnitClass::Mission_Hunt() {
   } else {
     return DriveClass::Mission_Hunt();
   }
-  return MissionControl[Mission].Normal_Delay() + Random_Pick(0, 2);
+  return MissionControl.at(Mission).Normal_Delay() + Random_Pick(0, 2);
 }
 
 /***********************************************************************************************
@@ -3180,7 +3182,7 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType /*from*/) const {
 
   bool cancrush = false;
 
-  const CellClass* cellptr = &Map[cell];
+  const CellClass* cellptr = &Map.at(cell);
 
   if (static_cast<unsigned>(cell) >= MAP_CELL_TOTAL) {
     return MOVE_NO;
@@ -3319,7 +3321,8 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType /*from*/) const {
           **	If the blocking object is not in the same zone, then it
           *certainly *	isn't a temporary block, it is a permanent one.
           */
-          if (Map[Coord].Zones[Class->MZone] != cellptr->Zones[Class->MZone]) {
+          if (Map.at(Coord).Zones.at(Class->MZone) !=
+              cellptr->Zones.at(Class->MZone)) {
             return MOVE_NO;
           }
 
@@ -3377,7 +3380,7 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType /*from*/) const {
   *then *	return this immutable fact.
   */
   if (!cancrush && retval != MOVE_DESTROYABLE &&
-      Ground[cellptr->Land_Type()].Cost[Class->Speed] == 0) {
+      Ground.at(cellptr->Land_Type()).Cost.at(Class->Speed) == 0) {
     return MOVE_NO;
   }
 
@@ -3550,9 +3553,10 @@ ActionType UnitClass::What_Action(ObjectClass* object) {
       **	sitting on top of a mine and it still has mines available.
       */
       if (*this == UNIT_MINELAYER) {
-        if (!Ammo || Map[Center_Coord()].Cell_Building() ||
-            (Map[Center_Coord()].Smudge != SMUDGE_NONE &&
-             SmudgeTypeClass::As_Reference(Map[Center_Coord()].Smudge).IsBib)) {
+        if (!Ammo || Map.at(Center_Coord()).Cell_Building() ||
+            (Map.at(Center_Coord()).Smudge != SMUDGE_NONE &&
+             SmudgeTypeClass::As_Reference(Map.at(Center_Coord()).Smudge)
+                 .IsBib)) {
           action = ACTION_NO_DEPLOY;
         }
       } else {
@@ -3701,7 +3705,7 @@ ActionType UnitClass::What_Action(CELL cell) const {
   assert(IsActive);
 
   ActionType action = DriveClass::What_Action(cell);
-  if (action == ACTION_MOVE && Map[cell].Land_Type() == LAND_TIBERIUM &&
+  if (action == ACTION_MOVE && Map.at(cell).Land_Type() == LAND_TIBERIUM &&
       Class->IsToHarvest) {
     return ACTION_HARVEST;
   }
@@ -3785,7 +3789,7 @@ int UnitClass::Mission_Guard() {
 
   if (*this == UNIT_MCV && House->IsBaseBuilding) {
     Assign_Mission(MISSION_UNLOAD);
-    return MissionControl[Mission].Normal_Delay() + Random_Pick(0, 2);
+    return MissionControl.at(Mission).Normal_Delay() + Random_Pick(0, 2);
   }
   return DriveClass::Mission_Guard();
 }
@@ -3879,8 +3883,8 @@ DirType UnitClass::Desired_Load_Dir(ObjectClass* passenger,
                   ? 128
                   : -128;
     } else {
-      const CellClass* cell = &Map[cellnum];
-      if (Ground[cell->Land_Type()].Cost[SPEED_FOOT] == 0 ||
+      const CellClass* cell = &Map.at(cellnum);
+      if (Ground.at(cell->Land_Type()).Cost.at(SPEED_FOOT) == 0 ||
           cell->Flag.Occupy.Building || cell->Flag.Occupy.Vehicle ||
           cell->Flag.Occupy.Monolith ||
           (cell->Flag.Composite & 0x01F) == 0x01F) {
@@ -3927,7 +3931,7 @@ DirType UnitClass::Desired_Load_Dir(ObjectClass* passenger,
         DIR_S, DIR_SW, DIR_NW, DIR_NW, DIR_NE, DIR_NE, DIR_NE, DIR_SE};
 
     moveto = Adjacent_Cell(Coord_Cell(Coord), bestdir);
-    return _desired_to_actual[bestdir];
+    return _desired_to_actual.at(bestdir);
   }
   return DIR_S;
 }
@@ -4156,7 +4160,7 @@ int UnitClass::Mission_Repair() {
   **	If no action could be performed at this time, then wait
   **	around for a bit before trying again.
   */
-  return MissionControl[Mission].Normal_Delay();
+  return MissionControl.at(Mission).Normal_Delay();
 }
 
 /***********************************************************************************************
@@ -4472,7 +4476,7 @@ void UnitClass::Approach_Target() {
 void UnitClass::Overrun_Square(CELL cell, bool threaten) {
   assert(IsActive);
 
-  CellClass* cellptr = &Map[cell];
+  CellClass* cellptr = &Map.at(cell);
 
   if (Class->IsCrusher) {
     if (threaten) {
@@ -4655,8 +4659,8 @@ void UnitClass::Assign_Destination(TARGET target) {
         */
         const CELL cell =
             static_cast<CELL>(Coord_Cell(b->Center_Coord()) + (MAP_CELL_W - 1));
-        if (Ground[Map[cell].Land_Type()].Cost[Techno_Type_Class()->Speed] >
-            0) {
+        if (Ground.at(Map.at(cell).Land_Type())
+                .Cost.at(Techno_Type_Class()->Speed) > 0) {
           if (Transmit_Message(RADIO_DOCKING) == RADIO_ROGER) {
             // Docking with the service depot is already arranged, so this wants
             // only FootClass's "record the destination" step. DriveClass would
@@ -4971,7 +4975,7 @@ void UnitClass::Scatter(COORDINATE threat, bool forced, bool nokidding) {
   **	Certain missions prevent scattering regardless of whether it would be
   **	a good idea or not.
   */
-  if (!MissionControl[Mission].IsScatter && !forced) {
+  if (!MissionControl.at(Mission).IsScatter && !forced) {
     return;
   }
 
@@ -5054,7 +5058,7 @@ void UnitClass::Shroud_Regen() {
         ShroudBits <<= 1;
         trycell = XY_Cell(centerx + base::At(_xtab, index),
                           centery + base::At(_ytab, index));
-        if (Map[trycell].IsMapped) {
+        if (Map.at(trycell).IsMapped) {
           Map.Jam_Cell(trycell, House);
           ShroudBits |= 1;
         }

@@ -962,7 +962,9 @@ class HouseClass {
   // are the only ones that fill it in.
   char InitialName[HOUSE_NAME_MAX]{};
 
-  int QuantityB(int index) { return BQuantity[static_cast<StructType>(index)]; }
+  int QuantityB(int index) {
+    return BQuantity.at(static_cast<StructType>(index));
+  }
   int QuantityU(int index) {
     if (index >= kOriginalUnitCount) {
       index -= kOriginalUnitCount;
@@ -976,7 +978,7 @@ class HouseClass {
     return base::At(IQuantity, index);
   }
   int QuantityA(int index) {
-    return AQuantity[static_cast<AircraftType>(index)];
+    return AQuantity.at(static_cast<AircraftType>(index));
   }
   int QuantityV(int index) {
     if (index >= kOriginalVesselCount) {

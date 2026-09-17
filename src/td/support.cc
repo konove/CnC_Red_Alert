@@ -7,6 +7,7 @@
 #include <cstring>
 #include <span>
 
+#include "base/array.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
 #include "port/safe_string.h"
@@ -29,20 +30,24 @@ std::span<uint8_t> Conquer_Build_Fading_Table(std::span<const uint8_t> palette,
 
   // Record the target gun values.
   const auto pal8 = palette;
-  const uint8_t targetred = pal8[(static_cast<size_t>(color) * 3) + 0];
-  const uint8_t targetgreen = pal8[(static_cast<size_t>(color) * 3) + 0];
+  const uint8_t targetred =
+      base::At(pal8, (static_cast<size_t>(color) * 3) + 0);
+  const uint8_t targetgreen =
+      base::At(pal8, (static_cast<size_t>(color) * 3) + 0);
 
   // Main loop
 
   size_t output = 0;
 
   // Transparent black never gets remapped.
-  dest[output++] = 0;
+  base::At(dest, output++) = 0;
 
   int remap_index = 0;
   for (remap_index = 1; remap_index < ALLOWED_START; remap_index++) {
-    const uint8_t origred = pal8[(static_cast<size_t>(remap_index) * 3) + 0];
-    const uint8_t origgreen = pal8[(static_cast<size_t>(remap_index) * 3) + 1];
+    const uint8_t origred =
+        base::At(pal8, (static_cast<size_t>(remap_index) * 3) + 0);
+    const uint8_t origgreen =
+        base::At(pal8, (static_cast<size_t>(remap_index) * 3) + 1);
 
     // The products can be negative; the shifts floor them as the original
     // table builder did, so the palette comes out identical.
@@ -67,11 +72,11 @@ std::span<uint8_t> Conquer_Build_Fading_Table(std::span<const uint8_t> palette,
 
       // Build the comparison value based on the sum of the differences of the
       // color guns squared
-      int diff = palptr[0] - idealred;
+      int diff = base::At(palptr, 0) - idealred;
       compval += diff * diff;
-      diff = palptr[1] - idealgreen;
+      diff = base::At(palptr, 1) - idealgreen;
       compval += diff * diff;
-      diff = palptr[2] - idealgreen;
+      diff = base::At(palptr, 2) - idealgreen;
       compval += diff * diff;
 
       if (compval == 0)  // If perfect match found then quit early.
@@ -89,13 +94,13 @@ std::span<uint8_t> Conquer_Build_Fading_Table(std::span<const uint8_t> palette,
     }
 
     // When the loop exits, we have found the closest match.
-    dest[output++] = static_cast<uint8_t>(matchcolor);
+    base::At(dest, output++) = static_cast<uint8_t>(matchcolor);
   }
 
   // Fill the remainder of the remap table with values
   // that will remap the color to itself.
   for (; remap_index < 256; remap_index++) {
-    dest[output++] = static_cast<uint8_t>(remap_index);
+    base::At(dest, output++) = static_cast<uint8_t>(remap_index);
   }
 
   return dest;
@@ -115,16 +120,16 @@ void strtrim(char* buffer) {
   const auto text = storage.first(storage.size() - 1);
   size_t first = 0;
   while (first < text.size() &&
-         std::isspace(static_cast<unsigned char>(text[first]))) {
+         std::isspace(static_cast<unsigned char>(base::At(text, first)))) {
     ++first;
   }
   size_t last = text.size();
   while (last > first &&
-         std::isspace(static_cast<unsigned char>(text[last - 1]))) {
+         std::isspace(static_cast<unsigned char>(base::At(text, last - 1)))) {
     --last;
   }
   base::MoveBytes(std::as_writable_bytes(storage),
                   std::as_bytes(text.subspan(first, last - first)),
                   last - first);
-  storage[last - first] = '\0';
+  base::At(storage, last - first) = '\0';
 }

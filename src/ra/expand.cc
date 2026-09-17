@@ -260,12 +260,12 @@ class EListClass : public ListClass {
   }
   [[nodiscard]] const EObjectClass& Get_Object(int index) const
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return Objects[base::ToSize(index)];
+    return Objects.at(base::ToSize(index));
   }
   // The selected scenario. Only valid while the list is not empty.
   [[nodiscard]] const EObjectClass& Current_Object() const
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return Objects[base::ToSize(Current_Index())];
+    return Objects.at(base::ToSize(Current_Index()));
   }
   void Remove_Item(int index) override {
     if (index >= 0 && index < Count()) {
@@ -387,16 +387,17 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
         case 'G':
         case 'g':
           file.Read(sbuffer, 2000);
-          sbuffer[2000] = '\r';
-          sbuffer[2000 + 1] = '\n';
-          sbuffer[2000 + 2] = '\0';
+          base::At(sbuffer, 2000) = '\r';
+          base::At(sbuffer, 2000 + 1) = '\n';
+          base::At(sbuffer, 2000 + 2) = '\0';
           WWGetPrivateProfileString("Basic", "Name", "x", buffer,
                                     sbuffer.data());
           if constexpr (config::kIsEnglish) {
             port::SafeCopy(obj.Name, buffer);
           } else {
-            port::SafeCopy(obj.Name, kTranslatedMissionNames[base::ToSize(
-                                         index - kMissionNameOffset)]);
+            port::SafeCopy(obj.Name,
+                           base::At(kTranslatedMissionNames,
+                                    base::ToSize(index - kMissionNameOffset)));
           }
           port::SafeCopy(obj.FullName, buffer2);
           obj.House = HOUSE_GOOD;
@@ -407,16 +408,17 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
         case 'U':
         case 'u':
           file.Read(sbuffer, 2000);
-          sbuffer[2000] = '\r';
-          sbuffer[2000 + 1] = '\n';
-          sbuffer[2000 + 2] = '\0';
+          base::At(sbuffer, 2000) = '\r';
+          base::At(sbuffer, 2000 + 1) = '\n';
+          base::At(sbuffer, 2000 + 2) = '\0';
           WWGetPrivateProfileString("Basic", "Name", "x", buffer,
                                     sbuffer.data());
           if constexpr (config::kIsEnglish) {
             port::SafeCopy(obj.Name, buffer);
           } else {
-            port::SafeCopy(obj.Name, kTranslatedMissionNames[base::ToSize(
-                                         index - kMissionNameOffset)]);
+            port::SafeCopy(obj.Name,
+                           base::At(kTranslatedMissionNames,
+                                    base::ToSize(index - kMissionNameOffset)));
           }
           port::SafeCopy(obj.FullName, buffer2);
           obj.House = HOUSE_BAD;

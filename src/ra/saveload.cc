@@ -107,7 +107,6 @@
 #include "ra/trigtype.h"
 #include "ra/type.h"
 #include "ra/unit.h"
-#include "ra/vector.h"
 #include "ra/vector_dynamic.h"
 #include "ra/vessel.h"
 #include "ra/vortex.h"
@@ -164,7 +163,7 @@ static void SerializeTriggerList(Archive& ar, DynamicVectorClass<TriggerClass*>&
   for (int i = 0; i < count; ++i) {
     TARGET target = kTargetNone;
     if constexpr (!Archive::kIsReading) {
-      target = list[i]->As_Target();
+      target = list.at(i)->As_Target();
     }
     ar(target);
     if constexpr (Archive::kIsReading) {
@@ -183,7 +182,7 @@ static void SerializeTriggerLists(Archive& ar) {
   SerializeTriggerList(ar, MapTriggers);
   SerializeTriggerList(ar, LogicTriggers);
   for (const HousesType house : magic_enum::enum_values<HousesType>()) {
-    SerializeTriggerList(ar, HouseTriggers[house]);
+    SerializeTriggerList(ar, HouseTriggers.at(house));
   }
 }
 
@@ -361,7 +360,7 @@ static void Put_All(ByteSink& pipe, int save_net) {
 
   Put_Section(pipe, FourCC("LAYR"));
   for (const LayerType layer : magic_enum::enum_values<LayerType>()) {
-    writer(MouseClass::Layer[layer]);
+    writer(MouseClass::Layer.at(layer));
   }
 
   if (!save_net) {
@@ -864,7 +863,7 @@ bool Load_Game(int id) {
     return false;
   }
   for (const LayerType layer : magic_enum::enum_values<LayerType>()) {
-    reader(MouseClass::Layer[layer]);
+    reader(MouseClass::Layer.at(layer));
     if (!reader.ok()) {
       return false;
     }
@@ -995,7 +994,7 @@ bool Load_Game(int id) {
       ** Fix up the session class variables
       */
       for (int s = 0; s < Session.Scenarios.Count(); s++) {
-        if (Session.Scenarios[s]->Description() == Scen.Description) {
+        if (Session.Scenarios.at(s)->Description() == Scen.Description) {
           base::CopyBytes(
               base::ObjectBytes(Session.Options.ScenarioDescription),
               base::ObjectBytes(Scen.Description),
@@ -1008,9 +1007,9 @@ bool Load_Game(int id) {
                   scenario_file.Size());
           base::CopyBytes(
               base::ObjectBytes(Session.ScenarioDigest),
-              std::as_bytes(Session.Scenarios[s]->Get_Digest_Bytes()),
+              std::as_bytes(Session.Scenarios.at(s)->Get_Digest_Bytes()),
               sizeof(Session.ScenarioDigest));
-          Session.ScenarioIsOfficial = Session.Scenarios[s]->Get_Official();
+          Session.ScenarioIsOfficial = Session.Scenarios.at(s)->Get_Official();
           Scen.Scenario = s;
           Session.Options.ScenarioIndex = s;
           break;
@@ -1379,7 +1378,8 @@ static bool Reconcile_Players() {
         continue;
       }
 
-      if (!port::CompareIgnoreCase(Session.Players[i]->Name, housep->IniName)) {
+      if (!port::CompareIgnoreCase(Session.Players.at(i)->Name,
+                                   housep->IniName)) {
         found = 1;
         break;
       }
@@ -1415,9 +1415,10 @@ static bool Reconcile_Players() {
     //
     found = 0;
     for (int i = 0; i < Session.Players.Count(); i++) {
-      if (!port::CompareIgnoreCase(Session.Players[i]->Name, housep->IniName)) {
+      if (!port::CompareIgnoreCase(Session.Players.at(i)->Name,
+                                   housep->IniName)) {
         found = 1;
-        Session.Players[i]->Player.ID = house;
+        Session.Players.at(i)->Player.ID = house;
         break;
       }
     }

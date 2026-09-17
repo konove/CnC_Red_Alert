@@ -49,14 +49,15 @@
 #include <string_view>
 
 #include "absl/strings/str_format.h"
-#include "port/profile_buffer.h"
-#include "port/safe_string.h"
-#include "tech/number_parse.h"
+#include "base/array.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
+#include "port/profile_buffer.h"
+#include "port/safe_string.h"
 #include "ra/defines.h"
 #include "ra/ini.h"
 #include "tech/file.h"
+#include "tech/number_parse.h"
 
 bool Read_Private_Config_Struct(File& file, NewConfigType* config) {
   INIClass ini;
@@ -200,7 +201,8 @@ bool Read_Bin_String(std::span<char> string, const char* buffer) {
   const auto remaining = read_bin_buffer.subspan(base::ToSize(read_bin_pos));
   const auto length = static_cast<unsigned char>(remaining.front());
   if (static_cast<std::size_t>(length) + 2 > remaining.size() ||
-      static_cast<std::size_t>(length) + 1 > string.size() || remaining[static_cast<std::size_t>(length) + 1] != '\0') {
+      static_cast<std::size_t>(length) + 1 > string.size() ||
+      base::At(remaining, static_cast<std::size_t>(length) + 1) != '\0') {
     return false;
   }
   std::ranges::copy(remaining.subspan(1, static_cast<std::size_t>(length) + 1), string.begin());
@@ -216,7 +218,7 @@ bool Write_Bin_String(std::string_view string, const char* buffer) {
   const auto remaining = write_bin_buffer.subspan(base::ToSize(write_bin_pos));
   remaining.front() = static_cast<char>(string.size());
   std::ranges::copy(string, remaining.subspan(1).begin());
-  remaining[string.size() + 1] = '\0';
+  base::At(remaining, string.size() + 1) = '\0';
   write_bin_pos += static_cast<int>(string.size()) + 2;
   write_bin_max = std::max(write_bin_pos, write_bin_max);
   return true;

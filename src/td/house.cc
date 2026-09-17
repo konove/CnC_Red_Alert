@@ -364,8 +364,8 @@ HouseClass::HouseClass(HousesType house)
       NukeStrike(NUKE_GONE_TIME, VOX_NUKE_AVAILABLE, VOX_NONE, VOX_NOT_READY,
                  VOX_NO_POWER) {
   for (HousesType i = HOUSE_FIRST; i < HOUSE_COUNT; i++) {
-    UnitsKilled[i] = 0;
-    BuildingsKilled[i] = 0;
+    UnitsKilled.at(i) = 0;
+    BuildingsKilled.at(i) = 0;
   }
   WhoLastHurtMe = house;  // init this to myself
 
@@ -410,7 +410,7 @@ HouseClass::HouseClass(HousesType house)
   FlagHome = 0;
   FlagLocation = kTargetNone;
   HarvestedCredits = 0;
-  HouseTriggers[house].Clear();
+  HouseTriggers.at(house).Clear();
   IGaveUp = false;
   InfantryFactories = 0;
   InfantryFactory = -1;
@@ -817,7 +817,7 @@ void HouseClass::Init() {
   Houses.Free_All();
 
   for (HousesType index = HOUSE_FIRST; index < HOUSE_COUNT; index++) {
-    HouseTriggers[index].Clear();
+    HouseTriggers.at(index).Clear();
   }
 }
 
@@ -952,7 +952,7 @@ void HouseClass::AI() {
     *refuse, *	blow them up.
     */
     if (Special.IsCaptureTheFlag && GameToPlay != GAME_NORMAL && FlagHome) {
-      TechnoClass* techno = Map[FlagHome].Cell_Techno();
+      TechnoClass* techno = Map.at(FlagHome).Cell_Techno();
       if (techno) {
         bool moving = false;
         techno->Scatter(0, true);
@@ -1106,7 +1106,7 @@ void HouseClass::AI() {
       unit->Mark(MARK_CHANGE);
     } else {
       const CELL cell = As_Cell(FlagLocation);
-      Map[cell].Redraw_Objects();
+      Map.at(cell).Redraw_Objects();
     }
   }
 
@@ -1297,8 +1297,8 @@ void HouseClass::AI() {
     MPlayer_Defeated();
   }
 
-  for (int index = 0; index < HouseTriggers[Class->House].Count(); index++) {
-    TriggerClass* t = HouseTriggers[Class->House][index];
+  for (int index = 0; index < HouseTriggers.at(Class->House).Count(); index++) {
+    TriggerClass* t = HouseTriggers.at(Class->House).at(index);
 
     /*
     **	Check for just built the building trigger event.
@@ -1489,8 +1489,11 @@ void HouseClass::Attacked() {
     **	If there is a trigger event associated with being attacked, process it
     **	now.
     */
-    for (int index = 0; index < HouseTriggers[Class->House].Count(); index++) {
-      HouseTriggers[Class->House][index]->Spring(EVENT_ATTACKED, Class->House);
+    for (int index = 0; index < HouseTriggers.at(Class->House).Count();
+         index++) {
+      HouseTriggers.at(Class->House)
+          .at(index)
+          ->Spring(EVENT_ATTACKED, Class->House);
     }
   }
 }
@@ -1914,7 +1917,7 @@ void HouseClass::Make_Ally(HousesType house) {
       *cease fire begins.
       */
       for (int index = 0; index < Logic.Count(); index++) {
-        ObjectClass* object = Logic[index];
+        ObjectClass* object = Logic.at(index);
 
         if (object && !object->IsInLimbo && object->Owner() == Class->House) {
           const TARGET target = dynamic_cast<TechnoClass*>(object)->TarCom;
@@ -3275,9 +3278,9 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
             if (Can_Build(index, Class->House) &&
                 std::cmp_less_equal(UnitTypeClass::As_Reference(index).Level,
                                     BuildLevel)) {
-              counter[index] = 16;
+              counter.at(index) = 16;
             } else {
-              counter[index] = 0;
+              counter.at(index) = 0;
             }
           }
         }
@@ -3297,9 +3300,9 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
                    subindex++) {
                 if (base::At(team->Class, subindex)->What_Am_I() ==
                     RTTI_UNITTYPE) {
-                  counter[dynamic_cast<const UnitTypeClass*>(
-                              base::At(team->Class, subindex))
-                              ->Type] = 1;
+                  counter.at(dynamic_cast<const UnitTypeClass*>(
+                                 base::At(team->Class, subindex))
+                                 ->Type) = 1;
                   //									counter[((UnitTypeClass
                   // const *)(team->Class[subindex]))->Type] +=
                   // team->DesiredNum[subindex]*2;
@@ -3325,8 +3328,8 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
                 const UnitType subtype = dynamic_cast<const UnitTypeClass*>(
                                              base::At(team->Class, subindex))
                                              ->Type;
-                counter[subtype] = std::max<int>(
-                    counter[subtype], base::At(team->DesiredNum, subindex));
+                counter.at(subtype) = std::max<int>(
+                    counter.at(subtype), base::At(team->DesiredNum, subindex));
               }
             }
           }
@@ -3343,7 +3346,7 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
               unit->Mission != MISSION_HUNT &&
               unit->Mission != MISSION_STICKY &&
               unit->Mission != MISSION_SLEEP) {
-            counter[unit->Class->Type]--;
+            counter.at(unit->Class->Type)--;
           }
         }
 
@@ -3356,11 +3359,11 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
         int bestcount = 0;
         UnitType bestlist[kUnitCount];
         for (UnitType utype = UNIT_HTANK; utype < UNIT_COUNT; utype++) {
-          if (counter[utype] > 0 && Can_Build(utype, Class->House) &&
+          if (counter.at(utype) > 0 && Can_Build(utype, Class->House) &&
               UnitTypeClass::As_Reference(utype).Cost_Of() <=
                   Available_Money()) {
-            if (bestval == -1 || bestval < counter[utype]) {
-              bestval = counter[utype];
+            if (bestval == -1 || bestval < counter.at(utype)) {
+              bestval = counter.at(utype);
               bestcount = 0;
             }
             base::At(bestlist, bestcount++) = utype;
@@ -3394,9 +3397,9 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
             if (Can_Build(index, Class->House) &&
                 std::cmp_less_equal(
                     InfantryTypeClass::As_Reference(index).Level, BuildLevel)) {
-              counter[index] = 16;
+              counter.at(index) = 16;
             } else {
-              counter[index] = 0;
+              counter.at(index) = 0;
             }
           }
         }
@@ -3416,9 +3419,9 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
                    subindex++) {
                 if (base::At(team->Class, subindex)->What_Am_I() ==
                     RTTI_INFANTRYTYPE) {
-                  counter[dynamic_cast<const InfantryTypeClass*>(
-                              base::At(team->Class, subindex))
-                              ->Type] +=
+                  counter.at(dynamic_cast<const InfantryTypeClass*>(
+                                 base::At(team->Class, subindex))
+                                 ->Type) +=
                       base::At(team->DesiredNum, subindex) + 1;
                 }
               }
@@ -3445,9 +3448,9 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
                         ->Type;
                 //									counter[subtype]
                 //= 1;
-                counter[subtype] = std::max<int>(
-                    counter[subtype], base::At(team->DesiredNum, subindex));
-                counter[subtype] = std::min(counter[subtype], 5);
+                counter.at(subtype) = std::max<int>(
+                    counter.at(subtype), base::At(team->DesiredNum, subindex));
+                counter.at(subtype) = std::min(counter.at(subtype), 5);
               }
             }
           }
@@ -3464,7 +3467,7 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
               infantry->Mission != MISSION_HUNT &&
               infantry->Mission != MISSION_STICKY &&
               infantry->Mission != MISSION_SLEEP) {
-            counter[infantry->Class->Type]--;
+            counter.at(infantry->Class->Type)--;
           }
         }
 
@@ -3478,11 +3481,11 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
         InfantryType bestlist[kInfantryCount];
         for (InfantryType utype = INFANTRY_E1; utype < INFANTRY_COUNT;
              utype++) {
-          if (counter[utype] > 0 && Can_Build(utype, Class->House) &&
+          if (counter.at(utype) > 0 && Can_Build(utype, Class->House) &&
               InfantryTypeClass::As_Reference(utype).Cost_Of() <=
                   Available_Money()) {
-            if (bestval == -1 || bestval < counter[utype]) {
-              bestval = counter[utype];
+            if (bestval == -1 || bestval < counter.at(utype)) {
+              bestval = counter.at(utype);
               bestcount = 0;
             }
             base::At(bestlist, bestcount++) = utype;
@@ -3576,7 +3579,7 @@ bool HouseClass::Flag_Remove(TARGET target, bool set_home) {
       */
       const CELL cell = As_Cell(target);
       if (Map.In_Radar(cell)) {
-        rc = Map[cell].Flag_Remove();
+        rc = Map.at(cell).Flag_Remove();
         if (rc && FlagLocation == target) {
           FlagLocation = kTargetNone;
         }
@@ -3588,7 +3591,7 @@ bool HouseClass::Flag_Remove(TARGET target, bool set_home) {
     **	If 'set_home' is set, clear the home value & the cell's overlay
     */
     if (set_home && FlagHome) {
-      Map[FlagHome].Overlay = OVERLAY_NONE;
+      Map.at(FlagHome).Overlay = OVERLAY_NONE;
       Map.Flag_Cell(FlagHome);
       FlagHome = 0;
     }
@@ -3642,7 +3645,7 @@ bool HouseClass::Flag_Attach(CELL cell, bool set_home) {
     **	a nearby cell where it can be placed.
     */
     CELL newcell = cell;
-    bool rc = Map[newcell].Flag_Place(Class->House);
+    bool rc = Map.at(newcell).Flag_Place(Class->House);
     if (!rc) {
       /*
       **	Loop for increasing distance from the desired cell.
@@ -3661,7 +3664,7 @@ bool HouseClass::Flag_Attach(CELL cell, bool set_home) {
             newcell = Coord_Cell(Coord_Move(Cell_Coord(cell), Facing_Dir(rot),
                                             static_cast<uint16_t>(dist * 256)));
             if (Map.In_Radar(newcell) &&
-                Map[newcell].Flag_Place(Class->House)) {
+                Map.at(newcell).Flag_Place(Class->House)) {
               dist = 32;
               rc = true;
               break;
@@ -3681,7 +3684,7 @@ bool HouseClass::Flag_Attach(CELL cell, bool set_home) {
             newcell = Coord_Cell(Coord_Move(Cell_Coord(cell), Facing_Dir(rot),
                                             static_cast<uint16_t>(dist * 256)));
             if (Map.In_Radar(newcell) &&
-                Map[newcell].Flag_Place(Class->House)) {
+                Map.at(newcell).Flag_Place(Class->House)) {
               dist = 32;
               rc = true;
               break;
@@ -3704,7 +3707,7 @@ bool HouseClass::Flag_Attach(CELL cell, bool set_home) {
       FlagLocation = As_Target(newcell);
 
       if (set_home || FlagHome == 0) {
-        Map[newcell].Overlay = OVERLAY_FLAG_SPOT;
+        Map.at(newcell).Overlay = OVERLAY_FLAG_SPOT;
         FlagHome = newcell;
       }
     }
@@ -4008,10 +4011,10 @@ void HouseClass::MPlayer_Defeated() {
       ..................................................................*/
       for (house = HOUSE_FIRST; house < HOUSE_COUNT; house++) {
         base::At(base::At(MPlayerScore, base::At(score_index, i)).Kills,
-                 MPlayerCurGame) += hptr->UnitsKilled[house];
+                 MPlayerCurGame) += hptr->UnitsKilled.at(house);
 
         base::At(base::At(MPlayerScore, base::At(score_index, i)).Kills,
-                 MPlayerCurGame) += hptr->BuildingsKilled[house];
+                 MPlayerCurGame) += hptr->BuildingsKilled.at(house);
       }
     }
 
@@ -4393,9 +4396,9 @@ bool HouseClass::Has_Nuke_Device() const {
 void HouseClass::Sell_Wall(CELL cell) {
   Validate();
   if (static_cast<unsigned>(cell) > 0) {
-    const OverlayType overlay = Map[cell].Overlay;
+    const OverlayType overlay = Map.at(cell).Overlay;
 
-    if (overlay != OVERLAY_NONE && Map[cell].Owner == Class->House) {
+    if (overlay != OVERLAY_NONE && Map.at(cell).Owner == Class->House) {
       const OverlayTypeClass& optr = OverlayTypeClass::As_Reference(overlay);
 
       if (optr.IsWall) {
@@ -4456,12 +4459,12 @@ void HouseClass::Sell_Wall(CELL cell) {
             break;
         }
         Refund_Money(cost / 2);
-        Map[cell].Overlay = OVERLAY_NONE;
-        Map[cell].OverlayData = 0;
-        Map[cell].Owner = HOUSE_NONE;
-        Map[cell].Wall_Update();
-        Map[cell].Recalc_Attributes();
-        Map[cell].Redraw_Objects();
+        Map.at(cell).Overlay = OVERLAY_NONE;
+        Map.at(cell).OverlayData = 0;
+        Map.at(cell).Owner = HOUSE_NONE;
+        Map.at(cell).Wall_Update();
+        Map.at(cell).Recalc_Attributes();
+        Map.at(cell).Redraw_Objects();
         ObjectClass::Detach_This_From_All(As_Target(cell), true);
       }
     }

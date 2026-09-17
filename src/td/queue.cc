@@ -1676,17 +1676,17 @@ static RetcodeType Process_Receive_Packet(ConnManClass* net,
   //------------------------------------------------------------------------
   //	Compute the other player's frame # (at the time this packet was sent)
   //------------------------------------------------------------------------
-  if (their_frame[base::ToSize(index)] <
+  if (base::At(their_frame, base::ToSize(index)) <
       static_cast<int>(event->Frame - event->Data.FrameInfo.Delay)) {
     //.....................................................................
     // If the original frame # for this player is -1, it means we've heard
     // from this player for the 1st time; return the appropriate value.
     //.....................................................................
-    if (their_frame[base::ToSize(index)] == -1) {
+    if (base::At(their_frame, base::ToSize(index)) == -1) {
       retcode = RC_PLAYER_READY;
     }
 
-    their_frame[base::ToSize(index)] =
+    base::At(their_frame, base::ToSize(index)) =
         event->Frame - event->Data.FrameInfo.Delay;
   }
 
@@ -1694,8 +1694,9 @@ static RetcodeType Process_Receive_Packet(ConnManClass* net,
   //	Extract the other player's CommandCount.  This count will include
   //	the commands in this packet, if there are any.
   //------------------------------------------------------------------------
-  their_sent[base::ToSize(index)] = std::max(event->Data.FrameInfo.CommandCount,
-                                             their_sent[base::ToSize(index)]);
+  base::At(their_sent, base::ToSize(index)) =
+      std::max(event->Data.FrameInfo.CommandCount,
+               base::At(their_sent, base::ToSize(index)));
 
   //------------------------------------------------------------------------
   //	If this packet was not a FRAMESYNC packet:
@@ -1720,7 +1721,7 @@ static RetcodeType Process_Receive_Packet(ConnManClass* net,
       i--;
     }
 
-    their_recv[base::ToSize(index)] += i;
+    base::At(their_recv, base::ToSize(index)) += i;
   }
 
   //------------------------------------------------------------------------
@@ -1941,7 +1942,7 @@ static int Can_Advance(ConnManClass* net, int max_ahead,
       static_cast<int>(Frame + 1000);  // other players' oldest frame #
   for (int i = 0; i < net->Num_Connections(); i++) {
     their_oldest_frame =
-        std::min(their_frame[base::ToSize(i)], their_oldest_frame);
+        std::min(base::At(their_frame, base::ToSize(i)), their_oldest_frame);
   }
 
   //------------------------------------------------------------------------
@@ -1953,7 +1954,8 @@ static int Can_Advance(ConnManClass* net, int max_ahead,
   //------------------------------------------------------------------------
   int count_ok = 1;  // true = my cmd count matches theirs
   for (int i = 0; i < net->Num_Connections(); i++) {
-    if (their_recv[base::ToSize(i)] < their_sent[base::ToSize(i)]) {
+    if (base::At(their_recv, base::ToSize(i)) <
+        base::At(their_sent, base::ToSize(i))) {
       count_ok = 0;
       break;
     }
@@ -2022,8 +2024,8 @@ static int Process_Reconnect_Dialog(CountDownTimerClass* timeout_timer,
       int j = 0x7fffffff;
       oldest_index = 0;
       for (int i = 0; i < num_conn; i++) {
-        if (their_frame[base::ToSize(i)] < j) {
-          j = their_frame[base::ToSize(i)];
+        if (base::At(their_frame, base::ToSize(i)) < j) {
+          j = base::At(their_frame, base::ToSize(i));
           oldest_index = i;
         }
       }
@@ -2101,8 +2103,8 @@ static int Handle_Timeout(ConnManClass* net, std::span<int> their_frame,
     int j = 0x7fffffff;
     int oldest_index = 0;  // index of person requiring a reconnect
     for (int i = 0; i < net->Num_Connections(); i++) {
-      if (their_frame[base::ToSize(i)] < j) {
-        j = their_frame[base::ToSize(i)];
+      if (base::At(their_frame, base::ToSize(i)) < j) {
+        j = base::At(their_frame, base::ToSize(i));
         oldest_index = i;
       }
     }
@@ -2121,9 +2123,12 @@ static int Handle_Timeout(ConnManClass* net, std::span<int> their_frame,
 
     if (id != ConnManClass::kConnectionNone) {
       for (int i = oldest_index; i < net->Num_Connections() - 1; i++) {
-        their_frame[base::ToSize(i)] = their_frame[base::ToSize(i + 1)];
-        their_sent[base::ToSize(i)] = their_sent[base::ToSize(i + 1)];
-        their_recv[base::ToSize(i)] = their_recv[base::ToSize(i + 1)];
+        base::At(their_frame, base::ToSize(i)) =
+            base::At(their_frame, base::ToSize(i + 1));
+        base::At(their_sent, base::ToSize(i)) =
+            base::At(their_sent, base::ToSize(i + 1));
+        base::At(their_recv, base::ToSize(i)) =
+            base::At(their_recv, base::ToSize(i + 1));
       }
       CCDebugString("C&C95 = Destroying connection due to time out\n");
       Destroy_Connection(id, 1);
@@ -2409,8 +2414,8 @@ int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
     const EventClass::EventType eventtype =
         OutList.First().Type;  // type of event being compressed
     int datasize =
-        EventClass::EventLength[eventtype];  // size of element plucked from
-                                             // event union
+        EventClass::EventLength.at(eventtype);  // size of element plucked from
+                                                // event union
     //.....................................................................
     // For a variable-sized event, pull the size from the event; otherwise,
     // the size will be the data element size plus the event type value.
@@ -2464,7 +2469,8 @@ int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
         //...............................................................
         else {
           if (units_offset >= 0) {
-            buf[base::ToSize(units_offset)] = static_cast<std::byte>(numunits);
+            base::At(buf, base::ToSize(units_offset)) =
+                static_cast<std::byte>(numunits);
           }
           units_offset = size + kEventTypeSize;
           storedsize += sizeof(numunits);
@@ -2481,7 +2487,8 @@ int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
       else {
         // save # events in our run
         if (units_offset >= 0) {
-          buf[base::ToSize(units_offset)] = static_cast<std::byte>(numunits);
+          base::At(buf, base::ToSize(units_offset)) =
+              static_cast<std::byte>(numunits);
         }
         units_offset = -1;  // init other values
         numunits = 0;
@@ -2569,7 +2576,8 @@ int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
         //...............................................................
         if (missiondup) {
           if (units_offset >= 0) {
-            buf[base::ToSize(units_offset)] = static_cast<std::byte>(numunits);
+            base::At(buf, base::ToSize(units_offset)) =
+                static_cast<std::byte>(numunits);
           }
 
           base::CopyBytes(
@@ -2587,7 +2595,8 @@ int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
         //...............................................................
         else {
           if (units_offset >= 0) {
-            buf[base::ToSize(units_offset)] = static_cast<std::byte>(numunits);
+            base::At(buf, base::ToSize(units_offset)) =
+                static_cast<std::byte>(numunits);
           }
 
           port::WriteUnaligned(buf.subspan(base::ToSize(size)), eventtype);
@@ -2851,7 +2860,7 @@ int Extract_Compressed_Events(std::span<const std::byte> buf, int bufsize) {
       //..................................................................
       else if (event_type == EventClass::MEGAMISSION) {
         numunits = std::to_integer<unsigned char>(
-            buf[base::ToSize(pos) + sizeof(eventdata.Type)]);
+            base::At(buf, base::ToSize(pos) + sizeof(eventdata.Type)));
         pos += sizeof(numunits);
         leftover -= sizeof(numunits);
       }
@@ -2862,7 +2871,7 @@ int Extract_Compressed_Events(std::span<const std::byte> buf, int bufsize) {
       base::FillBytes(base::ObjectBytes(eventdata.Data), 0,
                       sizeof(eventdata.Data));
       eventdata.Type = event_type;
-      datasize = EventClass::EventLength[eventdata.Type];
+      datasize = EventClass::EventLength.at(eventdata.Type);
       if (datasize < 0 || leftover < datasize + kEventTypeSize) {
         return count;
       }
@@ -2986,7 +2995,7 @@ int Extract_Compressed_Events(std::span<const std::byte> buf, int bufsize) {
             event_type >= EventClass::LAST_EVENT) {
           return count;
         }
-        datasize = EventClass::EventLength[event_type];
+        datasize = EventClass::EventLength.at(event_type);
         if (event_type == EventClass::MEGAMISSION) {
           datasize += sizeof(numunits);
         }
@@ -3074,10 +3083,10 @@ static int Execute_DoList(int /*unused*/, HousesType /*unused*/,
   //------------------------------------------------------------------------
   if (GameToPlay == GAME_NORMAL) {
     for (int i = 0; i < DoList.Count(); i++) {
-      if (std::cmp_greater_equal(Frame, DoList[i].Frame) &&
-          !DoList[i].IsExecuted) {
-        DoList[i].Execute();          // execute it
-        DoList[i].IsExecuted = true;  // mark as having been executed
+      if (std::cmp_greater_equal(Frame, DoList.at(i).Frame) &&
+          !DoList.at(i).IsExecuted) {
+        DoList.at(i).Execute();          // execute it
+        DoList.at(i).IsExecuted = true;  // mark as having been executed
       }
     }
     return 1;
@@ -3097,10 +3106,10 @@ static int Execute_DoList(int /*unused*/, HousesType /*unused*/,
   //
   if (CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
     for (int j = 0; j < DoList.Count(); j++) {
-      if (DoList[j].Type != EventClass::FRAMEINFO &&
-          std::cmp_greater(DoList[j].Frame, NewMaxAheadFrame1) &&
-          std::cmp_less(DoList[j].Frame, NewMaxAheadFrame2)) {
-        DoList[j].Frame = static_cast<unsigned>(NewMaxAheadFrame2);
+      if (DoList.at(j).Type != EventClass::FRAMEINFO &&
+          std::cmp_greater(DoList.at(j).Frame, NewMaxAheadFrame1) &&
+          std::cmp_less(DoList.at(j).Frame, NewMaxAheadFrame2)) {
+        DoList.at(j).Frame = static_cast<unsigned>(NewMaxAheadFrame2);
       }
     }
   }
@@ -3146,16 +3155,16 @@ static int Execute_DoList(int /*unused*/, HousesType /*unused*/,
       //	If this event was from the currently-executing player ID, and
       // it's 	time to execute it, execute it.
       //..................................................................
-      if (DoList[j].MPlayerID == base::At(MPlayerID, i) &&
-          std::cmp_greater_equal(Frame, DoList[j].Frame) &&
-          !DoList[j].IsExecuted) {
+      if (DoList.at(j).MPlayerID == base::At(MPlayerID, i) &&
+          std::cmp_greater_equal(Frame, DoList.at(j).Frame) &&
+          !DoList.at(j).IsExecuted) {
         //...............................................................
         //	Error if it's too late to execute this packet!
         //...............................................................
-        if (std::cmp_greater(Frame, DoList[j].Frame) &&
-            DoList[j].Type != EventClass::FRAMEINFO) {
+        if (std::cmp_greater(Frame, DoList.at(j).Frame) &&
+            DoList.at(j).Type != EventClass::FRAMEINFO) {
 #ifndef DEMO
-          Dump_Packet_Too_Late_Stuff(&DoList[j]);
+          Dump_Packet_Too_Late_Stuff(&DoList.at(j));
 #endif  // DEMO
           CCMessageBox().Process(TXT_PACKET_TOO_LATE);
           return 0;
@@ -3164,16 +3173,16 @@ static int Execute_DoList(int /*unused*/, HousesType /*unused*/,
         //...............................................................
         //	Only execute EXIT & OPTIONS commands if they're from myself.
         //...............................................................
-        if (DoList[j].Type == EventClass::EXIT ||
-            DoList[j].Type == EventClass::OPTIONS) {
-          if (DoList[j].Type == EventClass::EXIT) {
+        if (DoList.at(j).Type == EventClass::EXIT ||
+            DoList.at(j).Type == EventClass::OPTIONS) {
+          if (DoList.at(j).Type == EventClass::EXIT) {
             CCDebugString("C&C95 -  Received EXIT packet\n");
 
             /*
             ** Flag that this house lost because it quit. ST - 6/5/96 0:29AM
             */
             for (wibble = 0; wibble < MPlayerCount; wibble++) {
-              if (base::At(MPlayerID, wibble) == DoList[j].MPlayerID) {
+              if (base::At(MPlayerID, wibble) == DoList.at(j).MPlayerID) {
                 house = base::At(MPlayerHouses, wibble);
                 housep = HouseClass::As_Pointer(house);
                 housep->IGaveUp = true;
@@ -3192,8 +3201,8 @@ static int Execute_DoList(int /*unused*/, HousesType /*unused*/,
             }
           }
 
-          if (DoList[j].ID == Houses.ID(PlayerPtr)) {
-            DoList[j].Execute();
+          if (DoList.at(j).ID == Houses.ID(PlayerPtr)) {
+            DoList.at(j).Execute();
           }
 
           //............................................................
@@ -3201,26 +3210,28 @@ static int Execute_DoList(int /*unused*/, HousesType /*unused*/,
           //	for that player.  The HousesType for this event is the
           // connection ID.
           //............................................................
-          else if (DoList[j].Type == EventClass::EXIT) {
+          else if (DoList.at(j).Type == EventClass::EXIT) {
             if (GameToPlay == GAME_MODEM || GameToPlay == GAME_NULL_MODEM) {
               //|| GameToPlay == GAME_INTERNET) {
-              Destroy_Null_Connection(DoList[j].MPlayerID, 0);
+              Destroy_Null_Connection(DoList.at(j).MPlayerID, 0);
             }
 
             else if ((GameToPlay == GAME_IPX || GameToPlay == GAME_INTERNET) &&
                      net) {
-              index = net->Connection_Index(DoList[j].MPlayerID);
+              index = net->Connection_Index(DoList.at(j).MPlayerID);
               if (index != -1) {
                 for (k = index; k < net->Num_Connections() - 1; k++) {
-                  their_frame[base::ToSize(k)] =
-                      their_frame[base::ToSize(k + 1)];
-                  their_sent[base::ToSize(k)] = their_sent[base::ToSize(k + 1)];
-                  their_recv[base::ToSize(k)] = their_recv[base::ToSize(k + 1)];
+                  base::At(their_frame, base::ToSize(k)) =
+                      base::At(their_frame, base::ToSize(k + 1));
+                  base::At(their_sent, base::ToSize(k)) =
+                      base::At(their_sent, base::ToSize(k + 1));
+                  base::At(their_recv, base::ToSize(k)) =
+                      base::At(their_recv, base::ToSize(k + 1));
                 }
                 CCDebugString(
                     "C&C95 = Destroying connection due to exit event\n");
 #ifndef DEMO
-                Destroy_Connection(DoList[j].MPlayerID, 0);
+                Destroy_Connection(DoList.at(j).MPlayerID, 0);
 #endif  // DEMO
               }
             }
@@ -3234,16 +3245,17 @@ static int Execute_DoList(int /*unused*/, HousesType /*unused*/,
         // the Internet, when packets that were 35 frames old arrived.)
         //...............................................................
 #ifndef DEMO
-        else if (DoList[j].Type == EventClass::FRAMEINFO) {
-          if (std::cmp_equal(DoList[j].Frame, Frame) &&
-              DoList[j].Data.FrameInfo.Delay < 32) {
-            index = (DoList[j].Frame - DoList[j].Data.FrameInfo.Delay) % 32;
-            if (base::At(CRC, index) != DoList[j].Data.FrameInfo.CRC) {
-              Print_CRCs(&DoList[j]);
+        else if (DoList.at(j).Type == EventClass::FRAMEINFO) {
+          if (std::cmp_equal(DoList.at(j).Frame, Frame) &&
+              DoList.at(j).Data.FrameInfo.Delay < 32) {
+            index =
+                (DoList.at(j).Frame - DoList.at(j).Data.FrameInfo.Delay) % 32;
+            if (base::At(CRC, index) != DoList.at(j).Data.FrameInfo.CRC) {
+              Print_CRCs(&DoList.at(j));
               if (CCMessageBox().Process(TXT_OUT_OF_SYNC, TXT_CONTINUE,
                                          TXT_STOP) == 0) {
                 if (GameToPlay == GAME_MODEM || GameToPlay == GAME_NULL_MODEM) {
-                  Destroy_Null_Connection(DoList[j].MPlayerID, -1);
+                  Destroy_Null_Connection(DoList.at(j).MPlayerID, -1);
                   Shutdown_Modem();
                   GameToPlay = GAME_NORMAL;
                 } else if ((GameToPlay == GAME_IPX ||
@@ -3269,13 +3281,13 @@ static int Execute_DoList(int /*unused*/, HousesType /*unused*/,
         //	Execute other commands
         //...............................................................
         else {
-          DoList[j].Execute();
+          DoList.at(j).Execute();
         }
 
         //...............................................................
         //	Mark this event as executed.
         //...............................................................
-        DoList[j].IsExecuted = 1;
+        DoList.at(j).IsExecuted = 1;
       }
     }
   }
@@ -3366,7 +3378,7 @@ static void Queue_Record() {
   //------------------------------------------------------------------------
   int j = 0;
   for (int i = 0; i < DoList.Count(); i++) {
-    if (std::cmp_equal(Frame, DoList[i].Frame) && !DoList[i].IsExecuted) {
+    if (std::cmp_equal(Frame, DoList.at(i).Frame) && !DoList.at(i).IsExecuted) {
       j++;
     }
   }
@@ -3376,8 +3388,8 @@ static void Queue_Record() {
   //------------------------------------------------------------------------
   RecordFile.WriteObject(j);
   for (int i = 0; i < DoList.Count(); i++) {
-    if (std::cmp_equal(Frame, DoList[i].Frame) && !DoList[i].IsExecuted) {
-      RecordFile.WriteObject(DoList[i]);
+    if (std::cmp_equal(Frame, DoList.at(i).Frame) && !DoList.at(i).IsExecuted) {
+      RecordFile.WriteObject(DoList.at(i));
       j--;
     }
   }
@@ -4287,12 +4299,14 @@ static void Print_Framesync_Values(int64_t curframe, int max_ahead,
 
     for (int i = 0; i < num_connections; i++) {
       Mono_Set_Cursor(35 + (i * 5), 11);
-      Mono_Printf("%4d", static_cast<int>(their_recv[base::ToSize(i)]));
+      Mono_Printf("%4d",
+                  static_cast<int>(base::At(their_recv, base::ToSize(i))));
     }
 
     for (int i = 0; i < num_connections; i++) {
       Mono_Set_Cursor(35 + (i * 5), 12);
-      Mono_Printf("%4d", static_cast<int>(their_sent[base::ToSize(i)]));
+      Mono_Printf("%4d",
+                  static_cast<int>(base::At(their_sent, base::ToSize(i))));
     }
 
     Mono_Set_Cursor(35, 13);
@@ -4335,7 +4349,7 @@ void Dump_Packet_Too_Late_Stuff(const EventClass* event) {
     return;
   }
   absl::FPrintF(fp, "--------- Event data: -------------------\n");
-  absl::FPrintF(fp, "Type:       %s\n", EventClass::EventNames[event->Type]);
+  absl::FPrintF(fp, "Type:       %s\n", EventClass::EventNames.at(event->Type));
   absl::FPrintF(fp, "Frame:      %d\n", event->Frame);
   absl::FPrintF(fp, "ID:         %d\n", event->ID);
   absl::FPrintF(fp, "MPlayerID:  %04x\n", event->MPlayerID);

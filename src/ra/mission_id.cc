@@ -29,9 +29,10 @@ bool IsMissionAftermath(const std::string_view file_name) {
   if (rest.empty()) {
     return false;
   }
-  if (!absl::ascii_isdigit(static_cast<unsigned char>(rest[0]))) {
+  if (!absl::ascii_isdigit(static_cast<unsigned char>(rest.at(0)))) {
     return true;
   }
-  return rest.size() >= 3 && absl::ascii_isdigit(static_cast<unsigned char>(rest[1])) &&
-         !absl::ascii_isdigit(static_cast<unsigned char>(rest[2]));
+  return rest.size() >= 3 &&
+         absl::ascii_isdigit(static_cast<unsigned char>(rest.at(1))) &&
+         !absl::ascii_isdigit(static_cast<unsigned char>(rest.at(2)));
 }

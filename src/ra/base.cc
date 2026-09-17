@@ -72,7 +72,6 @@
 #include "ra/monoc.h"
 #include "ra/object.h"
 #include "ra/type.h"
-#include "ra/vector.h"
 #include "tech/archive.h"
 #include "tech/number_parse.h"
 
@@ -152,11 +151,11 @@ BuildingClass* BaseClass::Get_Building(int index) const {
   ** Check the location on the map where this building should be; if it's
   ** there, return a pointer to it.
   */
-  const auto& node = Nodes[index];
+  const auto& node = Nodes.at(index);
   const CELL target_cell = node.Cell;
 
   // Create a reference to the map cell to avoid repeated lookups.
-  const auto& map_cell = Map[target_cell];
+  const auto& map_cell = Map.at(target_cell);
 
   // Helper lambda to check if a candidate object matches our criteria.
   // Returns the cast pointer if successful, nullptr otherwise.
@@ -232,9 +231,9 @@ bool BaseClass::Is_Node(const BuildingClass* obj) {
  *=============================================================================================*/
 BaseNodeClass* BaseClass::Get_Node(const BuildingClass* obj) {
   for (int i = 0; i < Nodes.Count(); i++) {
-    if (obj->Class->Type == Nodes[i].Type &&
-        Coord_Cell(obj->Coord) == Nodes[i].Cell) {
-      return &Nodes[i];
+    if (obj->Class->Type == Nodes.at(i).Type &&
+        Coord_Cell(obj->Coord) == Nodes.at(i).Cell) {
+      return &Nodes.at(i);
     }
   }
   return nullptr;
@@ -257,8 +256,8 @@ BaseNodeClass* BaseClass::Get_Node(const BuildingClass* obj) {
  *=============================================================================================*/
 BaseNodeClass* BaseClass::Get_Node(CELL cell) {
   for (int index = 0; index < Nodes.Count(); index++) {
-    if (cell == Nodes[index].Cell) {
-      return &Nodes[index];
+    if (cell == Nodes.at(index).Cell) {
+      return &Nodes.at(index);
     }
   }
   return nullptr;
@@ -291,15 +290,15 @@ BaseNodeClass* BaseClass::Next_Buildable(StructType type) {
     */
     if (type == STRUCT_NONE) {
       if (!Is_Built(i)) {
-        return &Nodes[i];
+        return &Nodes.at(i);
       }
 
     } else {
       /*
       ** For a "real" building type, return the first hold for that type
       */
-      if (Nodes[i].Type == type && !Is_Built(i)) {
-        return &Nodes[i];
+      if (Nodes.at(i).Type == type && !Is_Built(i)) {
+        return &Nodes.at(i);
       }
     }
   }
@@ -415,8 +414,8 @@ void BaseClass::Write_INI(CCINIClass& ini) {
       absl::SNPrintF(uname, sizeof(uname), "%03td", i);
 
       absl::SNPrintF(buf, sizeof(buf), "%s,%d",
-                     BuildingTypeClass::As_Reference(Nodes[i].Type).IniName,
-                     Nodes[i].Cell);
+                     BuildingTypeClass::As_Reference(Nodes.at(i).Type).IniName,
+                     Nodes.at(i).Cell);
 
       ini.Put_String(INI_Name(), uname, buf);
     }
@@ -446,7 +445,7 @@ void BaseClass::Serialize(Archive& ar) {
     }
   } else {
     for (int i = 0; i < count; ++i) {
-      ar(Nodes[i].Type, Nodes[i].Cell);
+      ar(Nodes.at(i).Type, Nodes.at(i).Cell);
     }
   }
 }

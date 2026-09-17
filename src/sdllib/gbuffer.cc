@@ -23,6 +23,7 @@
 #include <numbers>
 #include <span>
 
+#include "base/array.h"
 #include "base/numeric.h"
 #include "sdllib/bitmap.h"
 
@@ -57,9 +58,10 @@ void GraphicBufferClass::Scale_Rotate(const BitmapClass& bmp,
           static_cast<int>((((-cos_a * rx) + (sin_a * ry)) * inv_S) + cy_bmp);
 
       if (bx >= 0 && bx < bmp.Width && by >= 0 && by < bmp.Height) {
-        const uint8_t pixel = bmp.Data[base::ToSize((by * bmp.Width) + bx)];
+        const uint8_t pixel =
+            base::At(bmp.Data, base::ToSize((by * bmp.Width) + bx));
         if (pixel != 0) {
-          dst_buf[base::ToSize((dy * Width) + dx)] = pixel;
+          base::At(dst_buf, base::ToSize((dy * Width) + dx)) = pixel;
         }
       }
     }

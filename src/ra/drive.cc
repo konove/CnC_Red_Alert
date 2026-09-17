@@ -88,7 +88,6 @@
 #include "ra/foot.h"
 #include "ra/house.h"
 #include "ra/inline.h"
-#include "ra/map.h"
 #include "ra/mapedit.h"
 #include "ra/mission.h"
 #include "ra/monoc.h"
@@ -213,7 +212,7 @@ void DriveClass::Scatter(COORDINATE threat, bool forced, bool nokidding) {
   **	Certain missions prevent scattering regardless of whether it would be
   **	a good idea or not.
   */
-  if (MissionControl[Mission].IsParalyzed) {
+  if (MissionControl.at(Mission).IsParalyzed) {
     return;
   }
 
@@ -675,9 +674,9 @@ bool DriveClass::While_Moving() {
 
       actual -= PIXEL_LEPTON_W;
 
-      COORDINATE const offset = ptr[base::ToSize(TrackIndex)].Offset;
+      COORDINATE const offset = base::At(ptr, base::ToSize(TrackIndex)).Offset;
       if (offset || !TrackIndex) {
-        DirType dir = ptr[base::ToSize(TrackIndex)].Facing;
+        DirType dir = base::At(ptr, base::ToSize(TrackIndex)).Facing;
         Coord = Smooth_Turn(offset, dir);
 
         PrimaryFacing.Set(dir);
@@ -749,12 +748,12 @@ bool DriveClass::While_Moving() {
                 break;
 
               case MOVE_CLOAK:
-                Map[c].Shimmer();
+                Map.at(c).Shimmer();
                 break;
 
               case MOVE_TEMP:
                 if (!House->IsHuman) {
-                  Map[c].Incoming(0, true, true);
+                  Map.at(c).Incoming(0, true, true);
                 }
                 break;
               case MoveType::MOVE_MOVING_BLOCK:
@@ -934,7 +933,7 @@ bool DriveClass::Start_Of_Move() {
         if (Map.In_Radar(cell)) {
           const MoveType ok = Can_Enter_Cell(cell);
           if (ok == MOVE_TEMP) {
-            CellClass* cellptr = &Map[cell];
+            CellClass* cellptr = &Map.at(cell);
             const TechnoClass* blockage = cellptr->Cell_Techno();
             if (blockage && House->Is_Ally(blockage)) {
               /*
@@ -1000,7 +999,7 @@ bool DriveClass::Start_Of_Move() {
     if (Map.In_Radar(cell)) {
       const MoveType ok = Can_Enter_Cell(cell);
       if (ok == MOVE_TEMP) {
-        CellClass* cellptr = &Map[cell];
+        CellClass* cellptr = &Map.at(cell);
         const TechnoClass* blockage = cellptr->Cell_Techno();
         if (blockage && House->Is_Ally(blockage)) {
           /*
@@ -1067,14 +1066,14 @@ bool DriveClass::Start_Of_Move() {
     *it to *	get out of the way.
     */
     if (cando == MOVE_TEMP) {
-      Map[destcell].Incoming(0, true, true);
+      Map.at(destcell).Incoming(0, true, true);
     }
 
     /*
     **	If a cloaked object is blocking, then shimmer the cell.
     */
     if (cando == MOVE_CLOAK) {
-      Map[destcell].Shimmer();
+      Map.at(destcell).Shimmer();
     }
 
     Stop_Driver();
@@ -1087,15 +1086,15 @@ bool DriveClass::Start_Of_Move() {
     ** try again next tick.
     */
     if (cando == MOVE_DESTROYABLE) {
-      if (Map[destcell].Cell_Object()) {
-        if (!House->Is_Ally(Map[destcell].Cell_Object())) {
+      if (Map.at(destcell).Cell_Object()) {
+        if (!House->Is_Ally(Map.at(destcell).Cell_Object())) {
           Override_Mission(MISSION_ATTACK,
-                           Map[destcell].Cell_Object()->As_Target(),
+                           Map.at(destcell).Cell_Object()->As_Target(),
                            kTargetNone);
         }
       } else {
-        if (Map[destcell].Overlay != OVERLAY_NONE &&
-            OverlayTypeClass::As_Reference(Map[destcell].Overlay).IsWall) {
+        if (Map.at(destcell).Overlay != OVERLAY_NONE &&
+            OverlayTypeClass::As_Reference(Map.at(destcell).Overlay).IsWall) {
           Override_Mission(MISSION_ATTACK, ::As_Target(destcell), kTargetNone);
         }
       }
@@ -1113,13 +1112,13 @@ bool DriveClass::Start_Of_Move() {
   **	Determine the speed that the unit can travel to the desired square.
   */
   const LandType ground =
-      Map[destcell].Land_Type();  // Ground unit is entering.
-  int speed =
-      Ground[ground].Cost[Techno_Type_Class()->Speed] * 256;  // Speed of unit.
+      Map.at(destcell).Land_Type();  // Ground unit is entering.
+  int speed = Ground.at(ground).Cost.at(Techno_Type_Class()->Speed) *
+              256;  // Speed of unit.
 
   /* change speed if it's related to a team move */
   if (IsFormationMove) {
-    speed = Ground[ground].Cost[FormationSpeed] * 256;
+    speed = Ground.at(ground).Cost.at(FormationSpeed) * 256;
   }
   if (!speed) {
     speed = 128;
@@ -1168,7 +1167,7 @@ bool DriveClass::Start_Of_Move() {
       **	If the middle cell of a two cell track contains a crate,
       **	the check for goodies before movement starts.
       */
-      if (!Map[destcell].Goodie_Check(this)) {
+      if (!Map.at(destcell).Goodie_Check(this)) {
         cando = MOVE_NO;
         if (!IsActive) {
           return false;
@@ -1191,29 +1190,30 @@ bool DriveClass::Start_Of_Move() {
         *it to *	get out of the way.
         */
         if (cando == MOVE_TEMP) {
-          Map[destcell].Incoming(0, true, true);
+          Map.at(destcell).Incoming(0, true, true);
         }
 
         /*
         **	If a cloaked object is blocking, then shimmer the cell.
         */
         if (cando == MOVE_CLOAK) {
-          Map[destcell].Shimmer();
+          Map.at(destcell).Shimmer();
         }
 
         base::At(Path, 0) = FACING_NONE;  // Path is blocked!
         TrackNumber = -1;
         dest = 0;
         if (cando == MOVE_DESTROYABLE) {
-          if (Map[destcell].Cell_Object()) {
-            if (!House->Is_Ally(Map[destcell].Cell_Object())) {
+          if (Map.at(destcell).Cell_Object()) {
+            if (!House->Is_Ally(Map.at(destcell).Cell_Object())) {
               Override_Mission(MISSION_ATTACK,
-                               Map[destcell].Cell_Object()->As_Target(),
+                               Map.at(destcell).Cell_Object()->As_Target(),
                                kTargetNone);
             }
           } else {
-            if (Map[destcell].Overlay != OVERLAY_NONE &&
-                OverlayTypeClass::As_Reference(Map[destcell].Overlay).IsWall) {
+            if (Map.at(destcell).Overlay != OVERLAY_NONE &&
+                OverlayTypeClass::As_Reference(Map.at(destcell).Overlay)
+                    .IsWall) {
               Override_Mission(MISSION_ATTACK, ::As_Target(destcell),
                                kTargetNone);
             }
@@ -1425,17 +1425,17 @@ void DriveClass::Mark_Track(COORDINATE headto, MarkType type) {
             base::At(RawTracks, tracknum - 1).Track;
         const int cellidx = base::At(RawTracks, tracknum - 1).Cell;
         if (cellidx > -1) {
-          DirType dir = ptr[base::ToSize(cellidx)].Facing;
+          DirType dir = base::At(ptr, base::ToSize(cellidx)).Facing;
 
           if (TrackIndex < cellidx && cellidx != -1) {
             const COORDINATE offset =
-                Smooth_Turn(ptr[base::ToSize(cellidx)].Offset, dir);
-            Map[offset].Flag.Occupy.Vehicle = value;
+                Smooth_Turn(base::At(ptr, base::ToSize(cellidx)).Offset, dir);
+            Map.at(offset).Flag.Occupy.Vehicle = value;
           }
         }
       }
     }
-    Map[headto].Flag.Occupy.Vehicle = value;
+    Map.at(headto).Flag.Occupy.Vehicle = value;
   }
 }
 

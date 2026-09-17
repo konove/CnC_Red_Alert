@@ -414,7 +414,7 @@ void Send_Statistics_Packet() {
         */
         base::At(field_player_team, 3) =
             static_cast<char>('1' + static_cast<char>(house));
-        stats.Add_Field(field_player_team, houses[player->ActLike]);
+        stats.Add_Field(field_player_team, houses.at(player->ActLike));
 
         /*
         ** Player color

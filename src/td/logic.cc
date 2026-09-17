@@ -228,7 +228,7 @@ void LogicClass::AI() {
   **	AI for all sentient objects is processed.
   */
   for (int index = 0; index < Count(); index++) {
-    ObjectClass* obj = (*this)[index];
+    ObjectClass* obj = (*this).at(index);
 
     obj->AI();
 
@@ -236,7 +236,7 @@ void LogicClass::AI() {
     **	If the object was destroyed in the process of performing its AI, then
     **	adjust the index so that no object gets skipped.
     */
-    if (obj != (*this)[index]) {
+    if (obj != (*this).at(index)) {
       //		if (!obj->IsActive) {
       index--;
     }

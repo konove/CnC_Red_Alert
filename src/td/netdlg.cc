@@ -1198,7 +1198,7 @@ static int Net_Join_Dialog() {
           p = Text_String(TXT_SCENARIO_COLON);
           if (ScenarioIdx != -1) {
             absl::SNPrintF(txt, sizeof(txt), "%s %s", p,
-                           MPlayerScenarios[ScenarioIdx]);
+                           MPlayerScenarios.at(ScenarioIdx));
 
             Fancy_Text_Print(
                 txt, d_dialog_cx, d_msg1_y, kCcGreen, kTBlack,
@@ -1447,7 +1447,7 @@ static int Net_Join_Dialog() {
           // Remove myself from the Players list
           //
           if (Players.Count()) {  // added: BRR 6/14/96
-            who = Players[0];
+            who = Players.at(0);
             Players.Delete(0);
             delete who;
           }
@@ -1455,7 +1455,7 @@ static int Net_Join_Dialog() {
           for (i = 0; i < Players.Count(); i++) {
             Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
                                     sizeof(GlobalPacketType), 1,
-                                    &Players[i]->Address);
+                                    &Players.at(i)->Address);
             Ipx.Service();
           }
         }
@@ -1506,7 +1506,7 @@ static int Net_Join_Dialog() {
         */
         found = 0;
         for (i = 0; i < Games.Count(); i++) {
-          if (!port::CompareIgnoreCase(Games[i]->Name, namebuf)) {
+          if (!port::CompareIgnoreCase(Games.at(i)->Name, namebuf)) {
             found = 1;
             CCMessageBox().Process(TXT_GAMENAME_MUSTBE_UNIQUE);
             display = REDRAW_ALL;
@@ -1620,16 +1620,19 @@ static int Net_Join_Dialog() {
                  * chars. */
                 const auto the_string = std::span(GPacket.Message.Buf);
                 while (COMPAT_MESSAGE_LENGTH - 5 - actual_message_size < 10 &&
-                       the_string[base::ToSize(actual_message_size)] != ' ') {
+                       base::At(the_string,
+                                base::ToSize(actual_message_size)) != ' ') {
                   --actual_message_size;
                 }
-                if (the_string[base::ToSize(actual_message_size)] == ' ') {
+                if (base::At(the_string, base::ToSize(actual_message_size)) ==
+                    ' ') {
                   /* Now delete the extra characters after the space (they musnt
                    * print) */
                   for (int k = 0;
                        k < COMPAT_MESSAGE_LENGTH - 5 - actual_message_size;
                        k++) {
-                    the_string[base::ToSize(k + actual_message_size)] =
+                    base::At(the_string,
+                             base::ToSize(k + actual_message_size)) =
                         static_cast<char>(0xff);
                   }
                 } else {
@@ -1656,7 +1659,7 @@ static int Net_Join_Dialog() {
                   for (i = 1; i < Players.Count(); i++) {
                     Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
                                             sizeof(GlobalPacketType), 1,
-                                            &Players[i]->Address);
+                                            &Players.at(i)->Address);
                     Ipx.Service();
                   }
 
@@ -1671,7 +1674,7 @@ static int Net_Join_Dialog() {
                   for (i = 0; i < Players.Count(); i++) {
                     Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
                                             sizeof(GlobalPacketType), 1,
-                                            &Players[i]->Address);
+                                            &Players.at(i)->Address);
                     Ipx.Service();
                   }
                 }
@@ -1746,7 +1749,7 @@ static int Net_Join_Dialog() {
             // Remove myself from the Players list
             //
             if (Players.Count()) {
-              who = Players[0];
+              who = Players.at(0);
               Players.Delete(0);
               delete who;
             }
@@ -1816,8 +1819,8 @@ static int Net_Join_Dialog() {
     - Send queries for the new selected game, if there is one
     ---------------------------------------------------------------------*/
     for (i = 0; i < Games.Count(); i++) {
-      if (TickCount.Time() - Games[i]->Game.LastTime > 400) {
-        Games.Delete(Games[i]);
+      if (TickCount.Time() - Games.at(i)->Game.LastTime > 400) {
+        Games.Delete(Games.at(i));
         gamelist.Remove_Item(i);
         if (i <= game_index) {
           gamelist.Flag_To_Redraw();
@@ -1858,7 +1861,7 @@ static int Net_Join_Dialog() {
       // Remove myself from the Players list
       //
       if (Players.Count()) {  // added: BRR 6/14/96
-        who = Players[0];
+        who = Players.at(0);
         Players.Delete(0);
         delete who;
       }
@@ -1871,7 +1874,7 @@ static int Net_Join_Dialog() {
       for (i = 0; i < Players.Count(); i++) {
         Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
                                 sizeof(GlobalPacketType), 1,
-                                &Players[i]->Address);
+                                &Players.at(i)->Address);
         Ipx.Service();
       }
 
@@ -1903,7 +1906,7 @@ static int Net_Join_Dialog() {
       /*..................................................................
       Get the scenario number
       ..................................................................*/
-      Scenario = MPlayerFilenum[ScenarioIdx];
+      Scenario = MPlayerFilenum.at(ScenarioIdx);
 
       /*..................................................................
       Form connections with all other players.  Form the IPX Connection ID
@@ -1915,13 +1918,14 @@ static int Net_Join_Dialog() {
         /*...............................................................
         Only create the connection if it's not myself!
         ...............................................................*/
-        if (std::string_view(MPlayerName) != Players[i]->Name) {
+        if (std::string_view(MPlayerName) != Players.at(i)->Name) {
           id = static_cast<unsigned char>(Build_MPlayerID(
-              Players[i]->Player.Color, Players[i]->Player.House));
+              Players.at(i)->Player.Color, Players.at(i)->Player.House));
 
           base::At(tmp_id, i) = id;
 
-          Ipx.Create_Connection(id, Players[i]->Name, &Players[i]->Address);
+          Ipx.Create_Connection(id, Players.at(i)->Name,
+                                &Players.at(i)->Address);
         } else {
           base::At(tmp_id, i) = MPlayerLocalID;
         }
@@ -2023,7 +2027,7 @@ static void Clear_Game_List(ListClass* gamelist) {
   Clear the 'Games' Vector
   ------------------------------------------------------------------------*/
   for (int i = 0; i < Games.Count(); i++) {
-    delete Games[i];
+    delete Games.at(i);
   }
 
   Games.Clear();
@@ -2062,7 +2066,7 @@ static void Clear_Player_List(ListClass* playerlist) {
   Clear the 'Players' Vector
   ------------------------------------------------------------------------*/
   for (int i = 0; i < Players.Count(); i++) {
-    delete Players[i];
+    delete Players.at(i);
   }
 
   Players.Clear();
@@ -2117,7 +2121,7 @@ static bool Request_To_Join(const char* playername, int join_index,
   /*
   ------------------------- The game must be open --------------------------
   */
-  if (!Games[join_index]->Game.IsOpen) {
+  if (!Games.at(join_index)->Game.IsOpen) {
     CCMessageBox().Process(TXT_GAME_IS_CLOSED);
     return false;
   }
@@ -2126,7 +2130,7 @@ static bool Request_To_Join(const char* playername, int join_index,
   ------------------------ Make sure name is unique ------------------------
   */
   for (int i = 0; i < Players.Count(); i++) {
-    if (!port::CompareIgnoreCase(playername, Players[i]->Name)) {
+    if (!port::CompareIgnoreCase(playername, Players.at(i)->Name)) {
       CCMessageBox().Process(TXT_NAME_MUSTBE_UNIQUE);
       return false;
     }
@@ -2145,11 +2149,11 @@ static bool Request_To_Join(const char* playername, int join_index,
 #else
   v = Version_Number();
 #endif
-  if (Games[join_index]->Game.Version > v) {
+  if (Games.at(join_index)->Game.Version > v) {
     CCMessageBox().Process(TXT_YOURGAME_OUTDATED);
     return false;
   }
-  if (Games[join_index]->Game.Version < v) {
+  if (Games.at(join_index)->Game.Version < v) {
     CCMessageBox().Process(TXT_DESTGAME_OUTDATED);
     return false;
   }
@@ -2170,7 +2174,7 @@ static bool Request_To_Join(const char* playername, int join_index,
   GPacket.PlayerInfo.Color = static_cast<unsigned int>(color);
 
   Ipx.Send_Global_Message(base::ObjectBytes(GPacket), sizeof(GlobalPacketType),
-                          1, &Games[join_index]->Address);
+                          1, &Games.at(join_index)->Address);
 
   return true;
 }
@@ -2244,7 +2248,7 @@ static void Send_Join_Queries(int curgame, int gamenow, int playernow) {
     base::FillBytes(base::ObjectBytes(GPacket), 0, sizeof(GlobalPacketType));
 
     GPacket.Command = NET_QUERY_PLAYER;
-    port::SafeCopy(GPacket.Name, Games[curgame]->Name);
+    port::SafeCopy(GPacket.Name, Games.at(curgame)->Name);
 
     Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
                             sizeof(GlobalPacketType), 0, nullptr);
@@ -2342,13 +2346,13 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
     retcode = EV_NONE;
     found = 0;
     for (i = 0; i < Games.Count(); i++) {
-      if ((std::string_view(Games[i]->Name) == GPacket.Name)) {
+      if ((std::string_view(Games.at(i)->Name) == GPacket.Name)) {
         found = 1;
         /*...............................................................
         If name was found, update the node's time stamp & IsOpen flag.
         ...............................................................*/
-        Games[i]->Game.LastTime = TickCount.Time();
-        if (Games[i]->Game.IsOpen != GPacket.GameInfo.IsOpen) {
+        Games.at(i)->Game.LastTime = TickCount.Time();
+        if (Games.at(i)->Game.IsOpen != GPacket.GameInfo.IsOpen) {
           if (GPacket.GameInfo.IsOpen) {
             Format_Runtime_Text(item, kGameListItemSize,
                                 Text_String(TXT_THATGUYS_GAME), GPacket.Name);
@@ -2358,15 +2362,15 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
                                 GPacket.Name);
           }
           gamelist->Set_Item(i, item);
-          Games[i]->Game.IsOpen = GPacket.GameInfo.IsOpen;
+          Games.at(i)->Game.IsOpen = GPacket.GameInfo.IsOpen;
           gamelist->Flag_To_Redraw();
           /*............................................................
           If this game has gone from closed to open, copy the responder's
           address into our Game slot, since the guy responding to this
           must be game owner.
           ............................................................*/
-          if (Games[i]->Game.IsOpen) {
-            Games[i]->Address = GAddress;
+          if (Games.at(i)->Game.IsOpen) {
+            Games.at(i)->Address = GAddress;
           }
         }
         break;
@@ -2421,12 +2425,12 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       house into the existing entry, in case they've changed it without
       our knowledge; set the 'found' flag so we won't create a new entry.
       ..................................................................*/
-      if (Players[i]->Address == GAddress) {
-        port::SafeCopy(Players[i]->Name, GPacket.Name);
-        Players[i]->Player.House = GPacket.PlayerInfo.House;
-        Players[i]->Player.Color =
+      if (Players.at(i)->Address == GAddress) {
+        port::SafeCopy(Players.at(i)->Name, GPacket.Name);
+        Players.at(i)->Player.House = GPacket.PlayerInfo.House;
+        Players.at(i)->Player.Color =
             static_cast<unsigned char>(GPacket.PlayerInfo.Color);
-        playerlist->Colors[i] = static_cast<char>(
+        playerlist->Colors.at(i) = static_cast<char>(
             base::At(MPlayerTColors, GPacket.PlayerInfo.Color));
         found = 1;
         break;
@@ -2437,7 +2441,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
     .....................................................................*/
     i = gamelist->Current_Index();
     if (Games.Count() &&
-        GPacket.PlayerInfo.NameCRC != Compute_Name_CRC(Games[i]->Name)) {
+        GPacket.PlayerInfo.NameCRC != Compute_Name_CRC(Games.at(i)->Name)) {
       found = 1;
     }
 
@@ -2560,7 +2564,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
         ScenarioIdx = -1;
         for (i = 0; i < MPlayerFilenum.Count(); i++) {
           if (std::cmp_equal(GPacket.ScenarioInfo.Scenario,
-                             MPlayerFilenum[i])) {
+                             MPlayerFilenum.at(i))) {
             ScenarioIdx = i;
           }
         }
@@ -2579,8 +2583,8 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
     Remove this name from the list of games
     .....................................................................*/
     for (i = 0; i < Games.Count(); i++) {
-      if ((std::string_view(Games[i]->Name) == GPacket.Name) &&
-          Games[i]->Address == GAddress) {
+      if ((std::string_view(Games.at(i)->Name) == GPacket.Name) &&
+          Games.at(i)->Address == GAddress) {
         /*...............................................................
         If the system signing off is the currently-selected list
         item, clear the player list since that game is no longer
@@ -2613,7 +2617,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
         /*
         ................. Remove game name from game list ...............
         */
-        Games.Delete(Games[i]);
+        Games.Delete(Games.at(i));
         gamelist->Remove_Item(i);
         gamelist->Flag_To_Redraw();
       }
@@ -2625,9 +2629,9 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       /*
       ..................... Name found; remove it .....................
       */
-      if (Players[i]->Address == GAddress) {
+      if (Players.at(i)->Address == GAddress) {
         playerlist->Remove_Item(i);
-        Players.Delete(Players[i]);
+        Players.Delete(Players.at(i));
         playerlist->Flag_To_Redraw();
 
         if (retcode == EV_NONE) {
@@ -3081,7 +3085,7 @@ static int Net_New_Dialog() {
   Init scenario description list box
   ........................................................................*/
   for (i = 0; i < MPlayerScenarios.Count(); i++) {
-    scenariolist.Add_Item(strupr(MPlayerScenarios[i]));
+    scenariolist.Add_Item(strupr(MPlayerScenarios.at(i)));
   }
   ScenarioIdx = 0;  // 1st scenario is selected
 
@@ -3284,7 +3288,7 @@ static int Net_New_Dialog() {
 
         Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
                                 sizeof(GlobalPacketType), 1,
-                                &Players[index - 1]->Address);
+                                &Players.at(index - 1)->Address);
         break;
 
       /*------------------------------------------------------------------
@@ -3529,7 +3533,7 @@ static int Net_New_Dialog() {
         for (i = 0; i < Players.Count(); i++) {
           Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
                                   sizeof(GlobalPacketType), 1,
-                                  &Players[i]->Address);
+                                  &Players.at(i)->Address);
           Ipx.Service();
         }
         while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0) {
@@ -3631,15 +3635,17 @@ static int Net_New_Dialog() {
              */
             const auto the_string = std::span(GPacket.Message.Buf);
             while (COMPAT_MESSAGE_LENGTH - 5 - actual_message_size < 10 &&
-                   the_string[base::ToSize(actual_message_size)] != ' ') {
+                   base::At(the_string, base::ToSize(actual_message_size)) !=
+                       ' ') {
               --actual_message_size;
             }
-            if (the_string[base::ToSize(actual_message_size)] == ' ') {
+            if (base::At(the_string, base::ToSize(actual_message_size)) ==
+                ' ') {
               /* Now delete the extra characters after the space (they musnt
                * print) */
               for (int k = 0;
                    k < COMPAT_MESSAGE_LENGTH - 5 - actual_message_size; k++) {
-                the_string[base::ToSize(k + actual_message_size)] =
+                base::At(the_string, base::ToSize(k + actual_message_size)) =
                     static_cast<char>(0xff);
               }
             } else {
@@ -3663,7 +3669,7 @@ static int Net_New_Dialog() {
             for (i = 0; i < Players.Count(); i++) {
               Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
                                       sizeof(GlobalPacketType), 1,
-                                      &Players[i]->Address);
+                                      &Players.at(i)->Address);
               Ipx.Service();
             }
             /*..................................................................
@@ -3719,7 +3725,7 @@ static int Net_New_Dialog() {
 
         GPacket.Command = NET_GAME_OPTIONS;
         GPacket.ScenarioInfo.Scenario =
-            static_cast<unsigned char>(MPlayerFilenum[ScenarioIdx]);
+            static_cast<unsigned char>(MPlayerFilenum.at(ScenarioIdx));
         GPacket.ScenarioInfo.Credits =
             static_cast<unsigned int>(MPlayerCredits);
         GPacket.ScenarioInfo.IsBases =
@@ -3740,7 +3746,7 @@ static int Net_New_Dialog() {
 
         Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
                                 sizeof(GlobalPacketType), 1,
-                                &Players[i]->Address);
+                                &Players.at(i)->Address);
       }
       transmit = 0;
     }
@@ -3755,7 +3761,7 @@ static int Net_New_Dialog() {
       for (i = 0; i < Players.Count(); i++) {
         Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
                                 sizeof(GlobalPacketType), 1,
-                                &Players[i]->Address);
+                                &Players.at(i)->Address);
       }
       ping_timer = TickCount.Time();
     }
@@ -3787,7 +3793,7 @@ static int Net_New_Dialog() {
     /*.....................................................................
     Get the scenario filename
     .....................................................................*/
-    Scenario = MPlayerFilenum[ScenarioIdx];
+    Scenario = MPlayerFilenum.at(ScenarioIdx);
 
     /*.....................................................................
     Compute frame delay value for packet transmissions:
@@ -3806,7 +3812,7 @@ static int Net_New_Dialog() {
     for (i = 0; i < Players.Count(); i++) {
       Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
                               sizeof(GlobalPacketType), 1,
-                              &Players[i]->Address);
+                              &Players.at(i)->Address);
       /*..................................................................
       Wait for all the ACK's to come in.
       ..................................................................*/
@@ -3822,12 +3828,12 @@ static int Net_New_Dialog() {
     Fill in 'tmp_id' while we're doing this.
     .....................................................................*/
     for (i = 0; i < Players.Count(); i++) {
-      id = static_cast<unsigned char>(
-          Build_MPlayerID(Players[i]->Player.Color, Players[i]->Player.House));
+      id = static_cast<unsigned char>(Build_MPlayerID(
+          Players.at(i)->Player.Color, Players.at(i)->Player.House));
 
       base::At(tmp_id, i) = id;
 
-      Ipx.Create_Connection(id, Players[i]->Name, &Players[i]->Address);
+      Ipx.Create_Connection(id, Players.at(i)->Name, &Players.at(i)->Address);
     }
     base::At(tmp_id, i) = MPlayerLocalID;
 
@@ -3946,8 +3952,8 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist) {
     int found = 0;
     int resend = 0;
     for (int i = 0; i < Players.Count(); i++) {
-      if ((std::string_view(Players[i]->Name) == GPacket.Name)) {
-        if (Players[i]->Address != GAddress) {
+      if ((std::string_view(Players.at(i)->Name) == GPacket.Name)) {
+        if (Players.at(i)->Address != GAddress) {
           found = 1;
         } else {
           resend = 1;
@@ -4043,8 +4049,8 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist) {
       /*
       ....................... Name found; remove it ......................
       */
-      if ((std::string_view(Players[i]->Name) == GPacket.Name) &&
-          Players[i]->Address == GAddress) {
+      if ((std::string_view(Players.at(i)->Name) == GPacket.Name) &&
+          Players.at(i)->Address == GAddress) {
         /*...............................................................
         Remove from the list box
         ...............................................................*/
@@ -4053,11 +4059,11 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist) {
         /*...............................................................
         Mark his color as available
         ...............................................................*/
-        base::At(ColorUsed, Players[i]->Player.Color) = 0;
+        base::At(ColorUsed, Players.at(i)->Player.Color) = 0;
         /*...............................................................
         Delete from the Vector list
         ...............................................................*/
-        Players.Delete(Players[i]);
+        Players.Delete(Players.at(i));
         break;
       }
     }
@@ -4578,7 +4584,7 @@ static int Net_Fake_New_Dialog() {
         for (i = 0; i < Players.Count(); i++) {
           Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
                                   sizeof(GlobalPacketType), 1,
-                                  &Players[i]->Address);
+                                  &Players.at(i)->Address);
           Ipx.Service();
         }
         while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0) {
@@ -4692,7 +4698,7 @@ static int Net_Fake_New_Dialog() {
 
         Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
                                 sizeof(GlobalPacketType), 1,
-                                &Players[i]->Address);
+                                &Players.at(i)->Address);
       }
       transmit = 0;
     }
@@ -4707,7 +4713,7 @@ static int Net_Fake_New_Dialog() {
       for (i = 0; i < Players.Count(); i++) {
         Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
                                 sizeof(GlobalPacketType), 1,
-                                &Players[i]->Address);
+                                &Players.at(i)->Address);
       }
       ping_timer = TickCount.Time();
     }
@@ -4765,12 +4771,12 @@ static int Net_Fake_New_Dialog() {
       absl::SNPrintF(flopbuf, sizeof(flopbuf),
                      "Sending 'GO' packet to address %d\n",
                      port::ReadUnaligned<uint16_t>(
-                         base::ObjectBytes(Players[i]->Address)));
+                         base::ObjectBytes(Players.at(i)->Address)));
       CCDebugString(flopbuf);
 
       Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
                               sizeof(GlobalPacketType), 1,
-                              &Players[i]->Address);
+                              &Players.at(i)->Address);
       /*..................................................................
       Wait for all the ACK's to come in.
       ..................................................................*/
@@ -4786,12 +4792,12 @@ static int Net_Fake_New_Dialog() {
     Fill in 'tmp_id' while we're doing this.
     .....................................................................*/
     for (i = 0; i < Players.Count(); i++) {
-      id = static_cast<unsigned char>(
-          Build_MPlayerID(Players[i]->Player.Color, Players[i]->Player.House));
+      id = static_cast<unsigned char>(Build_MPlayerID(
+          Players.at(i)->Player.Color, Players.at(i)->Player.House));
 
       base::At(tmp_id, i) = id;
 
-      Ipx.Create_Connection(id, Players[i]->Name, &Players[i]->Address);
+      Ipx.Create_Connection(id, Players.at(i)->Name, &Players.at(i)->Address);
     }
 
 #ifdef VIRTUAL_SUBNET_SERVER
@@ -5158,14 +5164,14 @@ static int Net_Fake_Join_Dialog() {
           //
           // Remove myself from the Players list
           //
-          who = Players[0];
+          who = Players.at(0);
           Players.Delete(0);
           delete who;
 
           for (i = 0; i < Players.Count(); i++) {
             Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
                                     sizeof(GlobalPacketType), 1,
-                                    &Players[i]->Address);
+                                    &Players.at(i)->Address);
             Ipx.Service();
           }
         }
@@ -5277,7 +5283,7 @@ static int Net_Fake_Join_Dialog() {
             // Remove myself from the Players list
             //
             if (Players.Count()) {
-              who = Players[0];
+              who = Players.at(0);
               Players.Delete(0);
               delete who;
             }
@@ -5337,8 +5343,8 @@ static int Net_Fake_Join_Dialog() {
     - Send queries for the new selected game, if there is one
     ---------------------------------------------------------------------*/
     for (i = 0; i < Games.Count(); i++) {
-      if (TickCount.Time() - Games[i]->Game.LastTime > 400) {
-        Games.Delete(Games[i]);
+      if (TickCount.Time() - Games.at(i)->Game.LastTime > 400) {
+        Games.Delete(Games.at(i));
         gamelist.Remove_Item(i);
         if (i <= game_index) {
           gamelist.Flag_To_Redraw();
@@ -5389,7 +5395,7 @@ static int Net_Fake_Join_Dialog() {
       //
       // Remove myself from the Players list
       //
-      who = Players[0];
+      who = Players.at(0);
       Players.Delete(0);
       delete who;
 
@@ -5401,7 +5407,7 @@ static int Net_Fake_Join_Dialog() {
       for (i = 0; i < Players.Count(); i++) {
         Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
                                 sizeof(GlobalPacketType), 1,
-                                &Players[i]->Address);
+                                &Players.at(i)->Address);
         Ipx.Service();
       }
 
@@ -5446,13 +5452,14 @@ static int Net_Fake_Join_Dialog() {
         /*...............................................................
         Only create the connection if it's not myself!
         ...............................................................*/
-        if (std::string_view(MPlayerName) != Players[i]->Name) {
+        if (std::string_view(MPlayerName) != Players.at(i)->Name) {
           id = static_cast<unsigned char>(Build_MPlayerID(
-              Players[i]->Player.Color, Players[i]->Player.House));
+              Players.at(i)->Player.Color, Players.at(i)->Player.House));
 
           base::At(tmp_id, i) = id;
 
-          Ipx.Create_Connection(id, Players[i]->Name, &Players[i]->Address);
+          Ipx.Create_Connection(id, Players.at(i)->Name,
+                                &Players.at(i)->Address);
         } else {
           base::At(tmp_id, i) = MPlayerLocalID;
         }

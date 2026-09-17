@@ -717,7 +717,7 @@ int INIClass::Get_TextBlock(const char* section, std::span<char> buffer,
     return 0;
   }
 
-  buffer[0] = '\0';
+  base::At(buffer, 0) = '\0';
   if (len <= 1) {
     return 0;
   }
@@ -729,7 +729,7 @@ int INIClass::Get_TextBlock(const char* section, std::span<char> buffer,
     **	Add spacers between lines of fetched text.
     */
     if (index > 0) {
-      buffer[0] = ' ';
+      base::At(buffer, 0) = ' ';
       buffer = buffer.subspan(1);
       len--;
       total++;
@@ -1006,7 +1006,7 @@ int INIClass::Get_String(const char* section, const char* entry,
   }
   buffer = buffer.first(base::ToSize(size));
   if (section == nullptr || entry == nullptr) {
-    buffer[0] = '\0';
+    base::At(buffer, 0) = '\0';
     return 0;
   }
   const INIEntry* entryptr = Find_Entry(section, entry);
@@ -1078,7 +1078,7 @@ bool INIClass::Get_Bool(const char* section, const char* entry,
 
   INIEntry* entryptr = Find_Entry(section, entry);
   if (entryptr) {
-    switch (toupper(entryptr->Value[0])) {
+    switch (toupper(entryptr->Value.at(0))) {
       case 'Y':
       case 'T':
       case '1':

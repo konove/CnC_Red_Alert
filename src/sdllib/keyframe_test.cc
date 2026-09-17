@@ -50,7 +50,7 @@ std::vector<std::byte> FrameFile() {
       4,    1, 1, 1, 1, 0x80, 0, 0,   // XOR key delta.
       4,    2, 2, 2, 2, 0x80, 0, 0};  // XOR chained delta.
   for (size_t i = 0; i < stream.size(); ++i) {
-    data[40 + i] = std::byte{stream[i]};
+    data.at(40 + i) = std::byte{stream.at(i)};
   }
   return data;
 }

@@ -110,7 +110,6 @@
 #include "ra/infantry.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
-#include "ra/map.h"
 #include "ra/mapedit.h"
 #include "ra/mouse.h"
 #include "ra/object.h"
@@ -120,7 +119,6 @@
 #include "ra/techno.h"
 #include "ra/terrain.h"
 #include "ra/type.h"
-#include "ra/vector.h"
 #include "ra/vector_dynamic.h"
 #include "ra/ww_audio.h"
 #include "sdllib/drawbuff.h"
@@ -496,9 +494,9 @@ void RadarClass::Draw_It(bool forced) {
             for (int index = 0; index < PixelPtr; index++) {
               const CELL cell = base::At(PixelStack, index);
               if (Cell_On_Radar(cell)) {
-                (*this)[cell].IsPlot = false;
+                (*this).at(cell).IsPlot = false;
                 Plot_Radar_Pixel(cell);
-                RadarCursorRedraw |= (*this)[cell].IsRadarCursor;
+                RadarCursorRedraw |= (*this).at(cell).IsRadarCursor;
               }
             }
             LogicPage->Unlock();
@@ -514,7 +512,7 @@ void RadarClass::Draw_It(bool forced) {
             for (int y = 0; y < MapCellHeight; y++) {
               for (int x = 0; x < MapCellWidth; x++) {
                 const CELL cell = XY_Cell(MapCellX + x, MapCellY + y);
-                if (Cell_On_Radar(cell) && (*this)[cell].IsPlot) {
+                if (Cell_On_Radar(cell) && (*this).at(cell).IsPlot) {
                   base::At(PixelStack, PixelPtr++) = cell;
                   IsRadarToRedraw = true;
                   if (PixelPtr == kPixelstack) {
@@ -611,7 +609,7 @@ void RadarClass::Draw_It(bool forced) {
             Text_String(
                 HouseTypeClass::As_Reference(PlayerPtr->ActLike).Full_Name()),
             RadX + (RadWidth / 2), RadY + RadHeight - 20,
-            &ColorRemaps[PlayerPtr->RemapColor], kTBlack,
+            &ColorRemaps.at(PlayerPtr->RemapColor), kTBlack,
             TPF_CENTER | kTpfText | TPF_DROPSHADOW);
       }
 
@@ -639,7 +637,7 @@ void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) const {
   TerrainClass* list[4] = {nullptr, nullptr, nullptr, nullptr};
   int listidx = 0;
 
-  ObjectClass* obj = Map[cell].Cell_Occupier();
+  ObjectClass* obj = Map.at(cell).Cell_Occupier();
 
   /*
   ** If the cell is occupied by a terrain type, add it to the sortable
@@ -653,8 +651,8 @@ void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) const {
   ** Now loop through all the occupiers and add them to the list if they
   ** are terrain type.
   */
-  for (int lp = 0; lp < std::ssize(Map[cell].Overlappers); lp++) {
-    obj = base::At(Map[cell].Overlappers, lp);
+  for (int lp = 0; lp < std::ssize(Map.at(cell).Overlappers); lp++) {
+    obj = base::At(Map.at(cell).Overlappers, lp);
     if (obj && obj->What_Am_I() == RTTI_TERRAIN) {
       base::At(list, listidx++) = dynamic_cast<TerrainClass*>(obj);
     }
@@ -726,12 +724,13 @@ void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) const {
  * HISTORY: * 08/17/1995 JLB : Created. *
  *=============================================================================================*/
 void RadarClass::Render_Infantry(CELL cell, int x, int y, int size) {
-  ObjectClass* obj = Map[cell].Cell_Occupier();
+  ObjectClass* obj = Map.at(cell).Cell_Occupier();
   while (obj) {
     if (obj->Is_Techno() &&
         dynamic_cast<TechnoClass*>(obj)->Is_Visible_On_Radar()) {
       unsigned char color =
-          ColorRemaps[dynamic_cast<TechnoClass*>(obj)->House->RemapColor].Bar;
+          ColorRemaps.at(dynamic_cast<TechnoClass*>(obj)->House->RemapColor)
+              .Bar;
       int xoff = 0;
       int yoff = 0;
       const int subsize = std::max(1, size / 3);
@@ -752,7 +751,7 @@ void RadarClass::Render_Infantry(CELL cell, int x, int y, int size) {
           *color
           */
           if (*dynamic_cast<InfantryClass*>(obj) == INFANTRY_SPY) {
-            color = ColorRemaps[PlayerPtr->RemapColor].Bar;
+            color = ColorRemaps.at(PlayerPtr->RemapColor).Bar;
           }
           LogicPage->Fill_Rect(x + xoff, y + yoff, x + xoff + (subsize - 1),
                                y + yoff + (subsize - 1), color);
@@ -815,12 +814,12 @@ void RadarClass::Render_Infantry(CELL cell, int x, int y, int size) {
 void RadarClass::Render_Overlay(CELL cell, int x, int y, int size) {
   // int lpx,lpy;
 
-  const OverlayType overlay = (*this)[cell].Overlay;
+  const OverlayType overlay = (*this).at(cell).Overlay;
   if (overlay != OVERLAY_NONE) {
     const OverlayTypeClass* otype = &OverlayTypeClass::As_Reference(overlay);
 
     if (otype->IsRadarVisible) {
-      const auto icon = otype->Radar_Icon((*this)[cell].OverlayData);
+      const auto icon = otype->Radar_Icon((*this).at(cell).OverlayData);
       if (icon.empty()) {
         return;
       }
@@ -1012,7 +1011,7 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
 
   bool usjamming = false;
   if (LogicPage->Lock()) {
-    const CellClass* cellptr = &(*this)[cell];
+    const CellClass* cellptr = &(*this).at(cell);
     x = RadX + RadOffX + BaseX + (x * ZoomFactor);
     y = RadY + RadOffY + BaseY + (y * ZoomFactor);
 
@@ -1021,10 +1020,10 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
     */
     int color = kTBlack;  // Color of the pixel to plot.
     const auto housebit = base::Bit<uint16_t>(PlayerPtr->Class->House);
-    const uint16_t celljammed = (*this)[cell].Jammed;
+    const uint16_t celljammed = (*this).at(cell).Jammed;
     const auto jammed =
         static_cast<uint16_t>(celljammed & static_cast<uint16_t>(~housebit));
-    if (!jammed && ((*this)[cell].IsMapped || Debug_Unshroud)) {
+    if (!jammed && ((*this).at(cell).IsMapped || Debug_Unshroud)) {
       // 		if (!jammed && ((*this)[cell].IsVisible ||
       // Debug_Unshroud)) {
       color = cellptr->Cell_Color(true);
@@ -1078,7 +1077,7 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
           LogicPage->Unlock();
           return;
         }
-        icon = iconmap[static_cast<size_t>(icon)];
+        icon = base::At(iconmap, static_cast<size_t>(icon));
 
         const size_t offset = static_cast<size_t>(icon) * 24 * 24;
         if (offset > icondata.size() ||
@@ -1133,7 +1132,7 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
 void RadarClass::Radar_Pixel(CELL cell) {
   if (IsRadarActive && Map.IsSidebarActive && Cell_On_Radar(cell)) {
     IsRadarToRedraw = true;
-    (*this)[cell].IsPlot = true;
+    (*this).at(cell).IsPlot = true;
     if (PixelPtr < kPixelstack) {
       base::At(PixelStack, PixelPtr++) = cell;
     }
@@ -1259,13 +1258,13 @@ void RadarClass::Cursor_Cell(CELL cell, bool value) {
   ** If this cell is not on the radar don't bother doing anything.
   */
   if (Cell_On_Radar(cell)) {
-    const bool temp = (*this)[cell].IsRadarCursor;
+    const bool temp = (*this).at(cell).IsRadarCursor;
 
     if (temp != value) {
       /*
       **	Record the new state of this cell.
       */
-      (*this)[cell].IsRadarCursor = value;
+      (*this).at(cell).IsRadarCursor = value;
 
       /*
       **	If we are erasing then erase the cell.
@@ -1366,7 +1365,7 @@ void RadarClass::Cell_XY_To_Radar_Pixel(int cellx, int celly, int& x,
  *=============================================================================================*/
 bool RadarClass::Jam_Cell(CELL cell, HouseClass* house /*KO, bool shadeit*/) {
   const auto jam = base::Bit<uint16_t>(house->Class->House);
-  (*this)[cell].Jammed |= jam;
+  (*this).at(cell).Jammed |= jam;
   if (house != PlayerPtr) {
     Shroud_Cell(cell /*KO, shadeit*/);
   }
@@ -1392,8 +1391,8 @@ bool RadarClass::Jam_Cell(CELL cell, HouseClass* house /*KO, bool shadeit*/) {
  *=============================================================================================*/
 bool RadarClass::UnJam_Cell(CELL cell, HouseClass* house) {
   const auto jam = base::Bit<uint16_t>(house->Class->House);
-  (*this)[cell].Redraw_Objects();
-  (*this)[cell].Jammed &= static_cast<uint16_t>(~jam);
+  (*this).at(cell).Redraw_Objects();
+  (*this).at(cell).Jammed &= static_cast<uint16_t>(~jam);
   Radar_Pixel(cell);
   return true;
 }
@@ -1749,7 +1748,7 @@ bool RadarClass::RTacticalClass::Action(unsigned flags, KeyNumType& key) {
     CELL cell =
         Map.RadarClass::Click_Cell_Calc(x, y);  // cell num click happened over
     if (cell != -1 && Map.In_Radar(cell)) {
-      const bool shadow = !Map[cell].IsMapped &&
+      const bool shadow = !Map.at(cell).IsMapped &&
                           !Debug_Unshroud;  // is the cell in shadow or not
       //			shadow	= (!Map[cell].IsVisible &&
       //! Debug_Unshroud);
@@ -1769,9 +1768,9 @@ bool RadarClass::RTacticalClass::Action(unsigned flags, KeyNumType& key) {
       */
       if (CurrentObject.Count()) {
         if (object) {
-          action = CurrentObject[0]->What_Action(object);
+          action = CurrentObject.at(0)->What_Action(object);
         } else {
-          action = CurrentObject[0]->What_Action(cell);
+          action = CurrentObject.at(0)->What_Action(cell);
         }
 
         /*
@@ -2271,14 +2270,14 @@ bool RadarClass::Draw_House_Info() {
   MouseClass::Zoom.Draw_Me(true);
 
   Fancy_Text_Print(TXT_SPY_INFO, RadX + RadOffX + 12, y,
-                   &ColorRemaps[PCOLOR_GREY], kTBlack,
+                   &ColorRemaps.at(PCOLOR_GREY), kTBlack,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
   y += 14;
 
   HouseClass* ptr = HouseClass::As_Pointer(SpyingOn);
   if (ptr && ptr->RadarSpied & base::Bit<uint32_t>(PlayerPtr->Class->House)) {
     const PlayerColorType c_idx = ptr->RemapColor;
-    RemapControlType* color = &ColorRemaps[c_idx];
+    RemapControlType* color = &ColorRemaps.at(c_idx);
     const TextPrintType style = TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW;
 
     /*
@@ -2301,7 +2300,7 @@ bool RadarClass::Draw_House_Info() {
     y += 12 + 1;
 
     Fancy_Text_Print(TXT_BUILDNGS, RadX + RadOffX + 12, y,
-                     &ColorRemaps[PCOLOR_GREY], kTBlack,
+                     &ColorRemaps.at(PCOLOR_GREY), kTBlack,
                      TPF_6PT_GRAD | TPF_NOSHADOW);
     y += 12 + 1;
 
@@ -2311,7 +2310,7 @@ bool RadarClass::Draw_House_Info() {
     y += 12 + 1;
 
     Fancy_Text_Print(TXT_UNITS, RadX + RadOffX + 12, y,
-                     &ColorRemaps[PCOLOR_GREY], kTBlack,
+                     &ColorRemaps.at(PCOLOR_GREY), kTBlack,
                      TPF_6PT_GRAD | TPF_NOSHADOW);
     y += 12 + 1;
     // count & print units
@@ -2320,7 +2319,7 @@ bool RadarClass::Draw_House_Info() {
     y += 12 + 1;
 
     Fancy_Text_Print(TXT_INFANTRY, RadX + RadOffX + 12, y,
-                     &ColorRemaps[PCOLOR_GREY], kTBlack,
+                     &ColorRemaps.at(PCOLOR_GREY), kTBlack,
                      TPF_6PT_GRAD | TPF_NOSHADOW);
     y += 12 + 1;
     // count & print infantry
@@ -2359,10 +2358,11 @@ void RadarClass::Draw_Names() const {
 
   int y = RadY + RadOffY + 4;
 
-  Fancy_Text_Print(TXT_NAME_COLON, RadX + RadOffX, y, &ColorRemaps[PCOLOR_GREY],
-                   kTBlack, TPF_6PT_GRAD | TPF_NOSHADOW);
+  Fancy_Text_Print(TXT_NAME_COLON, RadX + RadOffX, y,
+                   &ColorRemaps.at(PCOLOR_GREY), kTBlack,
+                   TPF_6PT_GRAD | TPF_NOSHADOW);
   Fancy_Text_Print(TXT_KILLS_COLON, RadX + RadOffX + RadIWidth - 2, y,
-                   &ColorRemaps[PCOLOR_GREY], kTBlack,
+                   &ColorRemaps.at(PCOLOR_GREY), kTBlack,
                    TPF_RIGHT | TPF_6PT_GRAD | TPF_NOSHADOW);
   y += 12 + 1;
 
@@ -2388,7 +2388,7 @@ void RadarClass::Draw_Names() const {
     if (ptr->IsDefeated) {
       color = &GreyScheme;
     } else {
-      color = &ColorRemaps[c_idx];
+      color = &ColorRemaps.at(c_idx);
     }
     const TextPrintType style =
         ptr->IsDefeated ? TPF_6PT_GRAD | TPF_NOSHADOW
@@ -2417,8 +2417,8 @@ void RadarClass::Draw_Names() const {
 
     int kills = 0;
     for (const HousesType h : magic_enum::enum_values<HousesType>()) {
-      kills += ptr->UnitsKilled[h];
-      kills += ptr->BuildingsKilled[h];
+      kills += ptr->UnitsKilled.at(h);
+      kills += ptr->BuildingsKilled.at(h);
     }
     absl::SNPrintF(txt, sizeof(txt), "%2d", kills);
     Fancy_Text_Print(txt, RadX + RadOffX + RadIWidth - 2, y, color, kTBlack,

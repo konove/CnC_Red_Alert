@@ -6,7 +6,9 @@
 #include <vector>
 
 #include "gtest/gtest.h"
+#include "ra/queue.h"
 #include "ra/search.h"
+#include "ra/vector.h"
 #include "ra/vector_dynamic.h"
 #include "tech/archive.h"
 #include "tech/byte_sink.h"
@@ -20,12 +22,12 @@ TEST(VectorStorageTest, BorrowedStorageRetainsExtentAndDoesNotGrow) {
   DynamicVectorClass<void*> values(2, storage);
   EXPECT_TRUE(values.Add(&first));
   EXPECT_TRUE(values.Add_Head(&second));
-  EXPECT_EQ(values[0], &second);
-  EXPECT_EQ(values[1], &first);
+  EXPECT_EQ(values.at(0), &second);
+  EXPECT_EQ(values.at(1), &first);
   EXPECT_FALSE(values.Add(nullptr));
   EXPECT_TRUE(values.Resize(4));
-  EXPECT_EQ(values[0], &second);
-  EXPECT_EQ(values[1], &first);
+  EXPECT_EQ(values.at(0), &second);
+  EXPECT_EQ(values.at(1), &first);
   EXPECT_TRUE(values.Add(nullptr));
   EXPECT_EQ(values.Count(), 3);
 }
@@ -165,12 +167,57 @@ TEST(HeapSerializeTest, SlotIndexOutOfRangeFails) {
   const Widget* w = Allocate(source, 1);
   EXPECT_EQ(source.ID(w), 0);
   std::vector<uint8_t> bytes = Save(source);
-  bytes[4] = 0x7F;  // slot index low byte: 127 is past an 8-slot heap
+  bytes.at(4) = 0x7F;  // slot index low byte: 127 is past an 8-slot heap
 
   TFixedIHeapClass<Widget> loaded;
   loaded.Set_Heap(8);
   EXPECT_FALSE(Load(loaded, bytes));
   EXPECT_EQ(loaded.Count(), 0);
+}
+
+}  // namespace
+
+namespace {
+
+TEST(RaCheckedContainerTest, VectorAccessPreservesConstnessAndCapacity) {
+  VectorClass<int> values(2);
+  values.at(1) = 42;
+  const VectorClass<int>& view = values;
+  EXPECT_EQ(view.at(1), 42);
+  EXPECT_EQ(&view.at(1), &values.at(1));
+}
+
+TEST(RaCheckedContainerTest, QueueAccessFollowsWrappedLogicalOrder) {
+  QueueClass<int, 3> queue;
+  ASSERT_TRUE(queue.Add(10));
+  ASSERT_TRUE(queue.Add(20));
+  EXPECT_EQ(queue.Next(), 1);
+  ASSERT_TRUE(queue.Add(30));
+  ASSERT_TRUE(queue.Add(40));
+  EXPECT_EQ(queue.at(0), 20);
+  EXPECT_EQ(queue.at(1), 30);
+  EXPECT_EQ(queue.at(2), 40);
+  queue.at(1) = 31;
+  EXPECT_EQ(queue.at(1), 31);
+}
+
+TEST(RaCheckedContainerDeathTest, RejectsInvalidVectorAndQueueIndices) {
+  VectorClass<int> values(2);
+  const VectorClass<int>& view = values;
+  QueueClass<int, 3> queue;
+  // GoogleTest's death-test macro formats subprocess diagnostics with libc.
+  // NOLINTBEGIN(clang-diagnostic-switch-default,clang-diagnostic-unsafe-buffer-usage-in-libc-call)
+  EXPECT_DEATH((void)values.at(-1), "Check failed");
+  EXPECT_DEATH((void)view.at(2), "Check failed");
+  EXPECT_DEATH((void)queue.at(0), "Check failed");
+  ASSERT_TRUE(queue.Add(10));
+  ASSERT_TRUE(queue.Add(20));
+  EXPECT_EQ(queue.Next(), 1);
+  // Both indices formerly wrapped to valid storage outside the active queue.
+  EXPECT_DEATH((void)queue.at(-1), "Check failed");
+  EXPECT_DEATH((void)queue.at(1), "Check failed");
+  EXPECT_DEATH((void)queue.at(4), "Check failed");
+  // NOLINTEND(clang-diagnostic-switch-default,clang-diagnostic-unsafe-buffer-usage-in-libc-call)
 }
 
 }  // namespace

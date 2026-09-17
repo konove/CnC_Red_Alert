@@ -68,7 +68,6 @@
 #include "ra/techno.h"
 #include "ra/textbtn.h"
 #include "ra/type.h"
-#include "ra/vector.h"
 #include "ra/vector_dynamic.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/ww_mouse.h"
@@ -136,7 +135,7 @@ int MapEditClass::Select_Object() {
     **	Select object only if it's different
     */
     if (!CurrentObject.Count() ||
-        (CurrentObject.Count() && object != CurrentObject[0])) {
+        (CurrentObject.Count() && object != CurrentObject.at(0))) {
       /*
       **	Unselect all current objects
       */
@@ -185,7 +184,7 @@ void MapEditClass::Select_Next() {
   /*
   **	Get next object on the map
   */
-  ObjectClass* obj = MapEditClass::Next_Object(CurrentObject[0]);
+  ObjectClass* obj = MapEditClass::Next_Object(CurrentObject.at(0));
 
   if (obj) {
     /*
@@ -224,7 +223,7 @@ void MapEditClass::Select_Next() {
   /*
   **	compute x,y of object's cell
   */
-  CELL const obj_cell = Coord_Cell(CurrentObject[0]->Coord);
+  CELL const obj_cell = Coord_Cell(CurrentObject.at(0)->Coord);
   const int cell_x = Cell_X(obj_cell);       // cell-x of next object
   const int cell_y = Cell_Y(obj_cell);       // cell-y of next object
   int tcell_x = Coord_XCell(TacticalCoord);  // cell-x of TacticalCell
@@ -318,28 +317,31 @@ void MapEditClass::Popup_Controls() {
   /*
   **	If not Techno, no need for editing buttons
   */
-  if (!CurrentObject[0]->Is_Techno()) {
+  if (!CurrentObject.at(0)->Is_Techno()) {
     Add_A_Button(*BaseGauge);
     Add_A_Button(*BaseLabel);
     Add_A_Button(*MapArea);
     return;
   }
 
-  objtype = dynamic_cast<const TechnoTypeClass*>(&CurrentObject[0]->Class_Of());
-  const auto* techno = dynamic_cast<const TechnoClass*>(CurrentObject[0]);
+  objtype =
+      dynamic_cast<const TechnoTypeClass*>(&CurrentObject.at(0)->Class_Of());
+  const auto* techno = dynamic_cast<const TechnoClass*>(CurrentObject.at(0));
 
   /*
   **	Get object's current values
   */
-  const HousesType owner = CurrentObject[0]->Owner();  // object's current owner
+  const HousesType owner =
+      CurrentObject.at(0)->Owner();  // object's current owner
   int mission_index = 0;  // object's current mission
   for (int i = 0; i < std::ssize(MapEditMissions); i++) {
-    if (CurrentObject[0]->Get_Mission() == MapEditMissions[base::ToSize(i)]) {
+    if (CurrentObject.at(0)->Get_Mission() ==
+        MapEditMissions.at(base::ToSize(i))) {
       mission_index = i;
     }
   }
-  const int strength =
-      CurrentObject[0]->Health_Ratio() * 256;  // object's 0-255 strength value
+  const int strength = CurrentObject.at(0)->Health_Ratio() *
+                       256;  // object's 0-255 strength value
 
   switch (objtype->What_Am_I()) {
     case RTTI_VESSELTYPE:
@@ -349,7 +351,7 @@ void MapEditClass::Popup_Controls() {
       MissionList->Set_Selected_Index(mission_index);
       HealthGauge->Set_Value(strength);
       absl::SNPrintF(HealthBuf, sizeof(HealthBuf), "%d",
-                     CurrentObject[0]->Strength);
+                     CurrentObject.at(0)->Strength);
       FacingDial->Set_Direction(techno->PrimaryFacing);
 
       /*
@@ -365,10 +367,10 @@ void MapEditClass::Popup_Controls() {
 
     case RTTI_BUILDINGTYPE: {
       const auto& building =
-          dynamic_cast<const BuildingClass&>(*CurrentObject[0]);
+          dynamic_cast<const BuildingClass&>(*CurrentObject.at(0));
       HealthGauge->Set_Value(strength);
       absl::SNPrintF(HealthBuf, sizeof(HealthBuf), "%d",
-                     CurrentObject[0]->Strength);
+                     CurrentObject.at(0)->Strength);
       Add_A_Button(*HealthGauge);
       Add_A_Button(*HouseList);
       HouseList->Set_Selected_Index(static_cast<int>(owner));
@@ -451,7 +453,7 @@ void MapEditClass::Popup_Controls() {
 void MapEditClass::Grab_Object() {
 
   if (CurrentObject.Count()) {
-    GrabbedObject = CurrentObject[0];
+    GrabbedObject = CurrentObject.at(0);
 
     /*
     **	Find out which cell 'ZoneCell' is in relation to the object's current
@@ -584,15 +586,15 @@ bool MapEditClass::Change_House(HousesType newhouse) {
   /*
   **	Only techno objects can be owned by a house; return if not a techno
   */
-  if (!CurrentObject[0]->Is_Techno()) {
+  if (!CurrentObject.at(0)->Is_Techno()) {
     return false;
   }
 
   /*
   **	You can't change the house if the object is part of the AI's Base.
   */
-  if (CurrentObject[0]->What_Am_I() == RTTI_BUILDING &&
-      Base.Is_Node(dynamic_cast<const BuildingClass*>(CurrentObject[0]))) {
+  if (CurrentObject.at(0)->What_Am_I() == RTTI_BUILDING &&
+      Base.Is_Node(dynamic_cast<const BuildingClass*>(CurrentObject.at(0)))) {
     return false;
   }
 
@@ -613,7 +615,7 @@ bool MapEditClass::Change_House(HousesType newhouse) {
   /*
   **	Change the house
   */
-  auto* tp = dynamic_cast<TechnoClass*>(CurrentObject[0]);
+  auto* tp = dynamic_cast<TechnoClass*>(CurrentObject.at(0));
   tp->House = HouseClass::As_Pointer(newhouse);
 
   tp->IsOwnedByPlayer = false;

@@ -74,7 +74,7 @@ class ThemeClass {
   [[nodiscard]] ThemeType What_Is_Playing() const { return Score; }
   [[nodiscard]] static bool Is_Allowed(ThemeType index);
   [[nodiscard]] static bool Is_Regular(ThemeType theme) {
-    return theme != THEME_NONE && _themes[theme].Normal;
+    return theme != THEME_NONE && _themes.at(theme).Normal;
   }
   [[nodiscard]] static const char* Base_Name(ThemeType theme);
   [[nodiscard]] static const char* Full_Name(ThemeType theme);

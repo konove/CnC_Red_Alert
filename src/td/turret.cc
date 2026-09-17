@@ -260,8 +260,8 @@ FireErrorType TurretClass::Can_Fire(TARGET target, int which) const {
   const FireErrorType fire = DriveClass::Can_Fire(target, which);
 
   if (fire == FIRE_OK) {
-    const WeaponTypeClass* weapon =
-        which == 0 ? &Weapons[Class->Primary] : &Weapons[Class->Secondary];
+    const WeaponTypeClass* weapon = which == 0 ? &Weapons.at(Class->Primary)
+                                               : &Weapons.at(Class->Secondary);
 
     /*
     **	If this unit cannot fire while moving, then bail.

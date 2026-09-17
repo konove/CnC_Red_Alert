@@ -266,7 +266,7 @@ void DisplayClass::One_Time() {
   CellRedraw.resize(MAP_CELL_TOTAL);
 
   for (const LayerType layer : magic_enum::enum_values<LayerType>()) {
-    Layer[layer].One_Time();
+    Layer.at(layer).One_Time();
   }
 
   /*
@@ -319,7 +319,7 @@ void DisplayClass::Init_Clear() {
   ** Empty all the display's layers
   */
   for (const LayerType layer : magic_enum::enum_values<LayerType>()) {
-    Layer[layer].Init();
+    Layer.at(layer).Init();
   }
 }
 
@@ -398,7 +398,8 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   /*
   ** Unload old mixfiles, and cache the new ones
   */
-  absl::SNPrintF(fullname, sizeof(fullname), "%s.MIX", Theaters[theater].Root);
+  absl::SNPrintF(fullname, sizeof(fullname), "%s.MIX",
+                 Theaters.at(theater).Root);
 
   if (Scen.Theater != LastTheater) {
     delete TheaterData;
@@ -413,7 +414,8 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   **	Load the custom palette associated with this theater.
   **	The fading palettes will have to be generated as well.
   */
-  absl::SNPrintF(fullname, sizeof(fullname), "%s.PAL", Theaters[theater].Root);
+  absl::SNPrintF(fullname, sizeof(fullname), "%s.PAL",
+                 Theaters.at(theater).Root);
   const auto* ptr =
       static_cast<const PaletteClass*>(MixArchive::Retrieve(fullname));
   GamePalette = *ptr;
@@ -441,8 +443,8 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   Conquer_Build_Translucent_Table(GamePalette, base::Suffix(UShadowColsAir, 0),
                                   kUnitShadowColorCount, UnitShadowAir);
   base::CopyBytes(std::as_writable_bytes(base::Suffix(UnitShadowAir, 256)),
-                  base::ObjectBytes(ColorRemaps[PCOLOR_GOLD].RemapTable),
-                  sizeof(ColorRemaps[PCOLOR_GOLD].RemapTable));
+                  base::ObjectBytes(ColorRemaps.at(PCOLOR_GOLD).RemapTable),
+                  sizeof(ColorRemaps.at(PCOLOR_GOLD).RemapTable));
   if (theater == THEATER_SNOW) {
     Conquer_Build_Translucent_Table(GamePalette,
                                     base::Suffix(UShadowColsSnow, 0),
@@ -670,8 +672,9 @@ void DisplayClass::Set_Cursor_Shape(std::span<const int16_t> list) {
     int h = 0;
     static int16_t _list[50];
 
-    for (int i = 0; !i || list[base::ToSize(i - 1)] != kRefreshEol; i++) {
-      base::At(_list, i) = list[base::ToSize(i)];
+    for (int i = 0; !i || base::At(list, base::ToSize(i - 1)) != kRefreshEol;
+         i++) {
+      base::At(_list, i) = base::At(list, base::ToSize(i));
     }
 
     CursorSize = _list;
@@ -771,7 +774,7 @@ bool DisplayClass::Passes_Proximity_Check(const ObjectTypeClass* object,
           continue;
         }
 
-        TechnoClass* base = (*this)[newcell].Cell_Techno();
+        TechnoClass* base = (*this).at(newcell).Cell_Techno();
         /*
         **	The special cell ownership flag allows building adjacent
         **	to friendly walls and bibs even though there is no official
@@ -781,9 +784,10 @@ bool DisplayClass::Passes_Proximity_Check(const ObjectTypeClass* object,
         // can't. JLB: Except for bibs, in which case buildings can be placed
         // next to these.
         if ((building->IsWall ||
-             ((*this)[newcell].Smudge != SMUDGE_NONE &&
-              SmudgeTypeClass::As_Reference((*this)[newcell].Smudge).IsBib)) &&
-            ((*this)[newcell].Owner == house)) {
+             ((*this).at(newcell).Smudge != SMUDGE_NONE &&
+              SmudgeTypeClass::As_Reference((*this).at(newcell).Smudge)
+                  .IsBib)) &&
+            ((*this).at(newcell).Owner == house)) {
           retval = 1;
           break;
         }
@@ -813,15 +817,15 @@ bool DisplayClass::Passes_Proximity_Check(const ObjectTypeClass* object,
           const CELL newercell = Adjacent_Cell(newcell, newface);
 
           if ((building->IsWall ||
-               ((*this)[newercell].Smudge != SMUDGE_NONE &&
-                SmudgeTypeClass::As_Reference((*this)[newercell].Smudge)
+               ((*this).at(newercell).Smudge != SMUDGE_NONE &&
+                SmudgeTypeClass::As_Reference((*this).at(newercell).Smudge)
                     .IsBib)) &&
-              ((*this)[newercell].Owner == house)) {
+              ((*this).at(newercell).Owner == house)) {
             retval = 1;
             break;
           }
 
-          const TechnoClass* newbase = (*this)[newercell].Cell_Techno();
+          const TechnoClass* newbase = (*this).at(newercell).Cell_Techno();
 
           // we've found a building...
           if (newbase != nullptr && newbase->What_Am_I() == RTTI_BUILDING &&
@@ -1050,7 +1054,7 @@ void DisplayClass::Cursor_Mark(CELL pos, bool on) {
   while (ptr.front() != kRefreshEol) {
     const CELL cell = static_cast<CELL>(pos + base::ConsumeFront(ptr));
     if (In_Radar(cell)) {
-      cellptr = &(*this)[cell];
+      cellptr = &(*this).at(cell);
       cellptr->Redraw_Objects();
       cellptr->IsCursorHere = on;
     }
@@ -1065,7 +1069,7 @@ void DisplayClass::Cursor_Mark(CELL pos, bool on) {
     while (ptr.front() != kRefreshEol) {
       const CELL cell = static_cast<CELL>(pos + base::ConsumeFront(ptr));
       if (In_Radar(cell)) {
-        cellptr = &(*this)[cell];
+        cellptr = &(*this).at(cell);
         cellptr->Redraw_Objects();
       }
     }
@@ -1130,7 +1134,7 @@ void DisplayClass::AI(KeyNumType& input, int x, int y) {
  *=============================================================================================*/
 void DisplayClass::Submit(ObjectClass* object, LayerType layer) {
   if (object) {
-    Layer[layer].Submit(object, layer == LAYER_GROUND);
+    Layer.at(layer).Submit(object, layer == LAYER_GROUND);
   }
 }
 
@@ -1156,7 +1160,7 @@ void DisplayClass::Remove(ObjectClass* object, LayerType layer) {
   assert(object->IsActive);
 
   if (object) {
-    Layer[layer].Delete(object);
+    Layer.at(layer).Delete(object);
   }
 }
 
@@ -1318,11 +1322,11 @@ bool DisplayClass::Scroll_Map(DirType facing, int& distance, bool really) {
     /*
     **	Scrolled map REQUIRES all top layer units to be redrawn.
     */
-    for (int index = 0; index < Layer[LAYER_TOP].Count(); index++) {
-      Layer[LAYER_TOP][index]->Mark(MARK_CHANGE);
+    for (int index = 0; index < Layer.at(LAYER_TOP).Count(); index++) {
+      Layer.at(LAYER_TOP).at(index)->Mark(MARK_CHANGE);
     }
-    for (int index = 0; index < Layer[LAYER_AIR].Count(); index++) {
-      Layer[LAYER_AIR][index]->Mark(MARK_CHANGE);
+    for (int index = 0; index < Layer.at(LAYER_AIR).Count(); index++) {
+      Layer.at(LAYER_AIR).at(index)->Mark(MARK_CHANGE);
     }
   }
   return true;
@@ -1357,7 +1361,7 @@ void DisplayClass::Refresh_Cells(CELL cell, std::span<const int16_t> list) {
   while (tt.front() != kRefreshEol) {
     const CELL newcell = static_cast<CELL>(cell + base::ConsumeFront(tt));
     if (In_Radar(newcell)) {
-      (*this)[newcell].Redraw_Objects();
+      (*this).at(newcell).Redraw_Objects();
     }
   }
 }
@@ -1415,7 +1419,7 @@ int DisplayClass::Cell_Shadow(CELL cell) const {
   }
   // if ((unsigned)(Cell_Y(cell)-1) > MAP_CELL_H-2) return(-2);
 
-  const CellClass* cellptr = &(*this)[cell];
+  const CellClass* cellptr = &(*this).at(cell);
 
   /*
   **	Presume solid black if that is what is here already.
@@ -1434,7 +1438,7 @@ int DisplayClass::Cell_Shadow(CELL cell) const {
     const auto unmapped = [this, cell](int delta) {
       const int neighbor = static_cast<int>(cell) + delta;
       return neighbor < 0 || neighbor >= MAP_CELL_TOTAL ||
-             !Array[neighbor].IsMapped;
+             !Array.at(neighbor).IsMapped;
     };
     if (unmapped(-MAP_CELL_W - 1)) {
       index |= 0x40;
@@ -1504,7 +1508,7 @@ bool DisplayClass::Map_Cell(CELL cell, HouseClass* house) {
     return false;
   }
 
-  CellClass* cellptr = &(*this)[cell];
+  CellClass* cellptr = &(*this).at(cell);
 
   /*
   **	Don't bother remapping this cell if it is already mapped.
@@ -1536,7 +1540,7 @@ bool DisplayClass::Map_Cell(CELL cell, HouseClass* house) {
   */
   for (const FacingType dir : magic_enum::enum_values<FacingType>()) {
     CELL const c = Adjacent_Cell(cell, dir);
-    CellClass* cptr = &(*this)[c];
+    CellClass* cptr = &(*this).at(c);
     cptr->Redraw_Objects();
 
     if (c != cell && !cptr->IsVisible) {
@@ -1556,7 +1560,7 @@ bool DisplayClass::Map_Cell(CELL cell, HouseClass* house) {
     }
   }
 
-  TechnoClass* tech = (*this)[cell].Cell_Techno();
+  TechnoClass* tech = (*this).at(cell).Cell_Techno();
   if (tech) {
     tech->Revealed(house);
   }
@@ -1684,7 +1688,7 @@ bool DisplayClass::Push_Onto_TacMap(COORDINATE& source,
  * HISTORY: * 05/14/1994 JLB : Created. *
  *=============================================================================================*/
 ObjectClass* DisplayClass::Cell_Object(CELL cell, int x, int y) const {
-  return (*this)[cell].Cell_Object(x, y);
+  return (*this).at(cell).Cell_Object(x, y);
 }
 
 /***********************************************************************************************
@@ -1755,7 +1759,7 @@ void DisplayClass::Draw_It(bool forced) {
       for (int row = 0; row < rows; row++) {
         const int start = first + (row * MAP_CELL_W);
         for (int offset = 0; offset < width; offset++) {
-          (*this)[static_cast<CELL>(start + offset)].Redraw_Objects();
+          (*this).at(static_cast<CELL>(start + offset)).Redraw_Objects();
         }
       }
     }
@@ -1872,7 +1876,7 @@ void DisplayClass::Draw_It(bool forced) {
                         TacPixelY);
 
                 if (c > 0) {
-                  (*this)[c].Redraw_Objects(true);
+                  (*this).at(c).Redraw_Objects(true);
                 }
               }
             }
@@ -1896,7 +1900,7 @@ void DisplayClass::Draw_It(bool forced) {
                         TacPixelY);
 
                 if (c > 0) {
-                  (*this)[c].Redraw_Objects(true);
+                  (*this).at(c).Redraw_Objects(true);
                 }
               }
             }
@@ -1918,7 +1922,7 @@ void DisplayClass::Draw_It(bool forced) {
                         TacPixelY);
 
                 if (c > 0) {
-                  (*this)[c].Redraw_Objects(true);
+                  (*this).at(c).Redraw_Objects(true);
                 }
               }
             }
@@ -1942,7 +1946,7 @@ void DisplayClass::Draw_It(bool forced) {
                         TacPixelY);
 
                 if (c > 0) {
-                  (*this)[c].Redraw_Objects(true);
+                  (*this).at(c).Redraw_Objects(true);
                 }
               }
             }
@@ -1974,7 +1978,7 @@ void DisplayClass::Draw_It(bool forced) {
                         TacPixelY);
 
                 if (c > 0) {
-                  (*this)[c].Redraw_Objects(true);
+                  (*this).at(c).Redraw_Objects(true);
                 }
               }
             }
@@ -2041,8 +2045,8 @@ void DisplayClass::Draw_It(bool forced) {
       */
       BStart(BENCH_OBJECTS);
       for (const LayerType layer : magic_enum::enum_values<LayerType>()) {
-        for (int index = 0; index < Layer[layer].Count(); index++) {
-          ObjectClass* ptr = Layer[layer][index];
+        for (int index = 0; index < Layer.at(layer).Count(); index++) {
+          ObjectClass* ptr = Layer.at(layer).at(index);
 
           if constexpr (config::kSortDrawEnabled) {
             // Objects with IsFootprint are rendered cell by cell. Skip them here
@@ -2082,8 +2086,8 @@ void DisplayClass::Draw_It(bool forced) {
       // IsToDisplay during Render() to allow multiple renders per frame,
       // preventing flickering when render rate exceeds logic tick rate.
       for (const LayerType layer : magic_enum::enum_values<LayerType>()) {
-        for (int index = 0; index < Layer[layer].Count(); ++index) {
-          Layer[layer][index]->IsToDisplay = false;
+        for (int index = 0; index < Layer.at(layer).Count(); ++index) {
+          Layer.at(layer).at(index)->IsToDisplay = false;
         }
       }
     }
@@ -2161,7 +2165,7 @@ void DisplayClass::Redraw_Icons() {
         int ypixel = 0;
 
         if (Coord_To_Pixel(coord, xpixel, ypixel)) {
-          const CellClass* cellptr = &(*this)[coord];
+          const CellClass* cellptr = &(*this).at(coord);
 
           /*
           **	If there is a portion of the underlying icon that could be
@@ -2204,7 +2208,7 @@ void DisplayClass::Redraw_OIcons() {
         int ypixel = 0;
 
         if (Coord_To_Pixel(coord, xpixel, ypixel)) {
-          const CellClass* cellptr = &(*this)[coord];
+          const CellClass* cellptr = &(*this).at(coord);
 
           /*
           **	If there is a portion of the underlying icon that could be
@@ -2254,7 +2258,7 @@ void DisplayClass::Redraw_Shadow() {
           int ypixel = 0;
 
           if (Coord_To_Pixel(coord, xpixel, ypixel)) {
-            const CellClass* cellptr = &(*this)[coord];
+            const CellClass* cellptr = &(*this).at(coord);
             if (cellptr->IsVisible) {
               continue;
             }
@@ -2310,8 +2314,8 @@ ObjectClass* DisplayClass::Next_Object(ObjectClass* object) {
   if (object == nullptr) {
     foundmatch = true;
   }
-  for (unsigned uindex = 0; uindex < Layer[LAYER_GROUND].Count(); uindex++) {
-    ObjectClass* obj = Layer[LAYER_GROUND][uindex];
+  for (unsigned uindex = 0; uindex < Layer.at(LAYER_GROUND).Count(); uindex++) {
+    ObjectClass* obj = Layer.at(LAYER_GROUND).at(uindex);
 
     /*
     **	Verify that the object can be selected by and is owned by the player.
@@ -2356,9 +2360,9 @@ ObjectClass* DisplayClass::Prev_Object(ObjectClass* object) {
   if (object == nullptr) {
     foundmatch = true;
   }
-  for (base::ssize uindex = Layer[LAYER_GROUND].Count() - 1; uindex >= 0;
+  for (base::ssize uindex = Layer.at(LAYER_GROUND).Count() - 1; uindex >= 0;
        uindex--) {
-    ObjectClass* obj = Layer[LAYER_GROUND][uindex];
+    ObjectClass* obj = Layer.at(LAYER_GROUND).at(uindex);
 
     /*
     **	Verify that the object can be selected by and is owned by the player.
@@ -2475,7 +2479,7 @@ CELL DisplayClass::Calculated_Cell(SourceType dir, WAYPOINT waypoint, CELL cell,
   **	If zone checking is requested, then find the correct zone to use.
   */
   if (zonecheck && trycell != -1) {
-    zone = (*this)[trycell].Zones[mzone];
+    zone = (*this).at(trycell).Zones.at(mzone);
   }
 
   /*
@@ -2627,7 +2631,7 @@ bool DisplayClass::Good_Reinforcement_Cell(CELL outcell, CELL incell,
   **	If the map edge location is not clear for object placement, then this is
   *not *	a good cell for reinforcement purposes.
   */
-  if (!(*this)[outcell].Is_Clear_To_Move(loco, false, false)) {
+  if (!(*this).at(outcell).Is_Clear_To_Move(loco, false, false)) {
     return false;
   }
 
@@ -2635,7 +2639,7 @@ bool DisplayClass::Good_Reinforcement_Cell(CELL outcell, CELL incell,
   **	If it looks like the on-map cell cannot be driven on to, then return
   *with *	the failure code.
   */
-  if (!(*this)[incell].Is_Clear_To_Move(loco, false, false, zone, mzone)) {
+  if (!(*this).at(incell).Is_Clear_To_Move(loco, false, false, zone, mzone)) {
     return false;
   }
 
@@ -2643,10 +2647,10 @@ bool DisplayClass::Good_Reinforcement_Cell(CELL outcell, CELL incell,
   **	If the reinforcement cell is already occupied, then return a failure
   *code.
   */
-  if ((*this)[outcell].Cell_Techno() != nullptr) {
+  if ((*this).at(outcell).Cell_Techno() != nullptr) {
     return false;
   }
-  if ((*this)[incell].Cell_Techno() != nullptr) {
+  if ((*this).at(incell).Cell_Techno() != nullptr) {
     return false;
   }
 
@@ -2711,8 +2715,8 @@ void DisplayClass::Select_These(COORDINATE coord1, COORDINATE coord2) {
   */
   Unselect_All();
   AllowVoice = true;
-  for (int index = 0; index < Layer[LAYER_GROUND].Count(); index++) {
-    ObjectClass* obj = Layer[LAYER_GROUND][index];
+  for (int index = 0; index < Layer.at(LAYER_GROUND).Count(); index++) {
+    ObjectClass* obj = Layer.at(LAYER_GROUND).at(index);
     const COORDINATE ocoord = obj->Center_Coord();
     const int x = Coord_X(ocoord);
     const int y = Coord_Y(ocoord);
@@ -2796,13 +2800,13 @@ void DisplayClass::Refresh_Band() {
       cell = Click_Cell_Calc(
           x1, Bound(y, 0, TacPixelY + Lepton_To_Pixel(TacLeptonHeight)));
       if (cell != -1) {
-        (*this)[cell].Redraw_Objects();
+        (*this).at(cell).Redraw_Objects();
       }
 
       cell = Click_Cell_Calc(
           x2, Bound(y, 0, TacPixelY + Lepton_To_Pixel(TacLeptonHeight)));
       if (cell != -1) {
-        (*this)[cell].Redraw_Objects();
+        (*this).at(cell).Redraw_Objects();
       }
     }
 
@@ -2810,24 +2814,24 @@ void DisplayClass::Refresh_Band() {
       cell = Click_Cell_Calc(
           Bound(x, 0, TacPixelX + Lepton_To_Pixel(TacLeptonWidth)), y1);
       if (cell != -1) {
-        (*this)[cell].Redraw_Objects();
+        (*this).at(cell).Redraw_Objects();
       }
 
       cell = Click_Cell_Calc(
           Bound(x, 0, TacPixelX + Lepton_To_Pixel(TacLeptonWidth)), y2);
       if (cell != -1) {
-        (*this)[cell].Redraw_Objects();
+        (*this).at(cell).Redraw_Objects();
       }
     }
 
     /*
     **	Stretching the rubber band requires all objects to be redrawn.
     */
-    for (int index = 0; index < Layer[LAYER_TOP].Count(); index++) {
-      Layer[LAYER_TOP][index]->Mark(MARK_CHANGE);
+    for (int index = 0; index < Layer.at(LAYER_TOP).Count(); index++) {
+      Layer.at(LAYER_TOP).at(index)->Mark(MARK_CHANGE);
     }
-    for (int index = 0; index < Layer[LAYER_AIR].Count(); index++) {
-      Layer[LAYER_AIR][index]->Mark(MARK_CHANGE);
+    for (int index = 0; index < Layer.at(LAYER_AIR).Count(); index++) {
+      Layer.at(LAYER_AIR).at(index)->Mark(MARK_CHANGE);
     }
   }
 }
@@ -2877,7 +2881,7 @@ bool DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
   const COORDINATE coord = Map.Pixel_To_Coord(x, y);
   const CELL cell = Coord_Cell(coord);
   if (coord) {
-    const bool shadow = !Map[cell].IsMapped && !Debug_Unshroud;
+    const bool shadow = !Map.at(cell).IsMapped && !Debug_Unshroud;
     x -= Map.TacPixelX;
     y -= Map.TacPixelY;
 
@@ -2914,9 +2918,9 @@ bool DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
     */
     if (CurrentObject.Count()) {
       if (object != nullptr) {
-        action = CurrentObject[0]->What_Action(object);
+        action = CurrentObject.at(0)->What_Action(object);
       } else {
-        action = CurrentObject[0]->What_Action(cell);
+        action = CurrentObject.at(0)->What_Action(cell);
       }
 
     } else {
@@ -2945,9 +2949,9 @@ bool DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
           /*
           **	Check to see if the cursor is over an owned wall.
           */
-          if (Map[cell].Overlay != OVERLAY_NONE &&
-              OverlayTypeClass::As_Reference(Map[cell].Overlay).IsWall &&
-              Map[cell].Owner == PlayerPtr->Class->House) {
+          if (Map.at(cell).Overlay != OVERLAY_NONE &&
+              OverlayTypeClass::As_Reference(Map.at(cell).Overlay).IsWall &&
+              Map.at(cell).Owner == PlayerPtr->Class->House) {
             action = ACTION_SELL;
           } else {
             action = ACTION_NO_SELL;
@@ -3223,7 +3227,7 @@ void DisplayClass::Mouse_Left_Up(CELL cell, bool shadow, ObjectClass* object,
 
       case ACTION_NOMOVE:
         if (CurrentObject.Count() &&
-            CurrentObject[0]->What_Am_I() == RTTI_AIRCRAFT) {
+            CurrentObject.at(0)->What_Am_I() == RTTI_AIRCRAFT) {
           Set_Default_Mouse(MOUSE_NO_MOVE, wsmall);
           break;
         }
@@ -3285,8 +3289,9 @@ void DisplayClass::Mouse_Left_Up(CELL cell, bool shadow, ObjectClass* object,
 
       case ACTION_ATTACK:
         if (Target_Legal(target) && CurrentObject.Count() == 1 &&
-            CurrentObject[0]->Is_Techno() &&
-            dynamic_cast<TechnoClass*>(CurrentObject[0])->In_Range(target, 0)) {
+            CurrentObject.at(0)->Is_Techno() &&
+            dynamic_cast<TechnoClass*>(CurrentObject.at(0))
+                ->In_Range(target, 0)) {
           Set_Default_Mouse(MOUSE_STAY_ATTACK, wsmall);
           break;
         }
@@ -3465,7 +3470,7 @@ void DisplayClass::Mouse_Left_Up(CELL cell, bool shadow, ObjectClass* object,
         Help_Text(TXT_NONE);
       }
     } else {
-      if ((*this)[cell].Land_Type() == LAND_TIBERIUM) {
+      if ((*this).at(cell).Land_Type() == LAND_TIBERIUM) {
         Help_Text(TXT_MINERALS);
       } else {
         Help_Text(TXT_NONE);
@@ -3528,7 +3533,7 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
       */
       if (action == ACTION_TOGGLE_SELECT) {
         if (!object || !CurrentObject.Count() ||
-            CurrentObject[0]->Owner() != PlayerPtr->Class->House) {
+            CurrentObject.at(0)->Owner() != PlayerPtr->Class->House) {
           action = ACTION_SELECT;
         } else {
           if (object->IsSelected) {
@@ -3576,8 +3581,8 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
           */
           int group = 254;  // init to invalid group #
 
-          if (CurrentObject[0]->Is_Foot()) {
-            group = dynamic_cast<FootClass*>(CurrentObject[0])->Group;
+          if (CurrentObject.at(0)->Is_Foot()) {
+            group = dynamic_cast<FootClass*>(CurrentObject.at(0))->Group;
           }
 
           /*
@@ -3592,7 +3597,7 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
           *formation
           */
           for (int index = 0; index < CurrentObject.Count(); index++) {
-            const ObjectClass* tobject = CurrentObject[index];
+            const ObjectClass* tobject = CurrentObject.at(index);
 
             /*
             **	Only moveable (i.e., FootClass) objects can ever be in a
@@ -3632,7 +3637,7 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
           */
           if (FormMove) {
             for (int index = 0; index < ::Logic.Count(); index++) {
-              const ObjectClass* obj = ::Logic[index];
+              const ObjectClass* obj = ::Logic.at(index);
 
               /*
               **	If the object is selected, then it has already been
@@ -3672,7 +3677,7 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
         }
 
         for (int index = 0; index < CurrentObject.Count(); index++) {
-          ObjectClass* tobject = CurrentObject[index];
+          ObjectClass* tobject = CurrentObject.at(index);
 
           if (object != nullptr) {
             tobject->Active_Click_With(tobject->What_Action(object), object);
@@ -3866,11 +3871,11 @@ void DisplayClass::Mouse_Left_Held(int x, int y) {
       /*
       **	Stretching the rubber band requires all objects to be redrawn.
       */
-      for (int index = 0; index < Layer[LAYER_TOP].Count(); index++) {
-        Layer[LAYER_TOP][index]->Mark(MARK_CHANGE);
+      for (int index = 0; index < Layer.at(LAYER_TOP).Count(); index++) {
+        Layer.at(LAYER_TOP).at(index)->Mark(MARK_CHANGE);
       }
-      for (int index = 0; index < Layer[LAYER_AIR].Count(); index++) {
-        Layer[LAYER_AIR][index]->Mark(MARK_CHANGE);
+      for (int index = 0; index < Layer.at(LAYER_AIR).Count(); index++) {
+        Layer.at(LAYER_AIR).at(index)->Mark(MARK_CHANGE);
       }
     }
   }
@@ -4159,7 +4164,7 @@ COORDINATE DisplayClass::Closest_Free_Spot(COORDINATE coord, bool any) {
   if (coord & kHighCoordMask) {
     return 0x00800080;
   }
-  return Map[coord].Closest_Free_Spot(coord, any);
+  return Map.at(coord).Closest_Free_Spot(coord, any);
 }
 
 /***********************************************************************************************
@@ -4184,7 +4189,7 @@ bool DisplayClass::Is_Spot_Free(COORDINATE coord) {
   if (coord & kHighCoordMask) {
     return true;
   }
-  return Map[coord].Is_Spot_Free(CellClass::Spot_Index(coord));
+  return Map.at(coord).Is_Spot_Free(CellClass::Spot_Index(coord));
 }
 
 /***********************************************************************************************
@@ -4215,7 +4220,7 @@ void DisplayClass::Center_Map(COORDINATE center) {
 
   if (CurrentObject.Count()) {
     for (int index = 0; index < CurrentObject.Count(); index++) {
-      const COORDINATE coord = CurrentObject[index]->Center_Coord();
+      const COORDINATE coord = CurrentObject.at(index)->Center_Coord();
 
       x += Coord_X(coord);
       y += Coord_Y(coord);
@@ -4267,7 +4272,7 @@ void DisplayClass::Encroach_Shadow() {
       continue;
     }
 
-    CellClass* cellptr = &(*this)[cell];
+    CellClass* cellptr = &(*this).at(cell);
     if (cellptr->IsVisible || !cellptr->IsMapped) {
       continue;
     }
@@ -4284,8 +4289,8 @@ void DisplayClass::Encroach_Shadow() {
       continue;
     }
 
-    if ((*this)[cell].IsToShroud) {
-      (*this)[cell].IsToShroud = false;
+    if ((*this).at(cell).IsToShroud) {
+      (*this).at(cell).IsToShroud = false;
       Shroud_Cell(cell);
     }
   }
@@ -4315,7 +4320,8 @@ void DisplayClass::Encroach_Shadow() {
  *=============================================================================================*/
 void DisplayClass::Shroud_Cell(CELL cell /*KO, bool shadeit*/) {
   if (PlayerPtr->IsGPSActive &&
-      ((*this)[cell].Jammed & base::Bit<uint16_t>(PlayerPtr->Class->House))) {
+      ((*this).at(cell).Jammed &
+       base::Bit<uint16_t>(PlayerPtr->Class->House))) {
     return;
   }
 
@@ -4323,7 +4329,7 @@ void DisplayClass::Shroud_Cell(CELL cell /*KO, bool shadeit*/) {
     return;
   }
 
-  CellClass* cellptr = &(*this)[cell];
+  CellClass* cellptr = &(*this).at(cell);
   if (cellptr->IsMapped) {
     cellptr->IsMapped = false;
     cellptr->IsVisible = false;
@@ -4336,7 +4342,7 @@ void DisplayClass::Shroud_Cell(CELL cell /*KO, bool shadeit*/) {
     */
     for (const FacingType dir : magic_enum::enum_values<FacingType>()) {
       const CELL c = Adjacent_Cell(cell, dir);
-      CellClass* cptr = &(*this)[c];
+      CellClass* cptr = &(*this).at(c);
 
       /*
       **	If this adjacent cell must be completely shrouded as a result
@@ -4419,7 +4425,7 @@ void DisplayClass::Read_INI(CCINIClass& ini) {
         static_cast<CELL>(ini.Get_Int("Waypoints", buf, -1));
 
     if (base::At(Scen.Waypoint, i) != -1) {
-      (*this)[base::At(Scen.Waypoint, i)].IsWaypoint = true;
+      (*this).at(base::At(Scen.Waypoint, i)).IsWaypoint = true;
     }
   }
 
@@ -4451,12 +4457,12 @@ void DisplayClass::Read_INI(CCINIClass& ini) {
     TriggerTypeClass* tp = ini.Get_TriggerType("CellTriggers", cellentry);
     const CELL cell = tech::ParseInteger<CELL>(cellentry).value_or(0);
 
-    if (tp != nullptr && !(*this)[cell].Trigger.Is_Valid()) {
+    if (tp != nullptr && !(*this).at(cell).Trigger.Is_Valid()) {
       TriggerClass* tt = Find_Or_Make(tp);
       if (tt) {
         tt->AttachCount++;
         tt->Cell = cell;
-        (*this)[cell].Trigger = tt;
+        (*this).at(cell).Trigger = tt;
       }
     }
   }
@@ -4521,8 +4527,8 @@ void DisplayClass::Write_INI(CCINIClass& ini) {
   static const char* const CELLTRIG = "CellTriggers";
   ini.Clear(CELLTRIG);
   for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
-    if ((*this)[cell].Trigger.Is_Valid()) {
-      const TriggerClass* tp = (*this)[cell].Trigger;
+    if ((*this).at(cell).Trigger.Is_Valid()) {
+      const TriggerClass* tp = (*this).at(cell).Trigger;
       if (tp != nullptr) {
         /*
         **	Generate entry name.
@@ -4567,8 +4573,8 @@ void DisplayClass::Write_INI(CCINIClass& ini) {
  * HISTORY: * 09/23/1996 JLB : Created. *
  *=============================================================================================*/
 void DisplayClass::All_To_Look(bool units_only) {
-  for (int index = 0; index < Layer[LAYER_GROUND].Count(); index++) {
-    ObjectClass* object = Layer[LAYER_GROUND][index];
+  for (int index = 0; index < Layer.at(LAYER_GROUND).Count(); index++) {
+    ObjectClass* object = Layer.at(LAYER_GROUND).at(index);
     if (object != nullptr && object->Is_Techno()) {
       auto* tech = dynamic_cast<TechnoClass*>(object);
 
@@ -4591,8 +4597,8 @@ void DisplayClass::All_To_Look(bool units_only) {
 }
 
 void DisplayClass::Constrained_Look(COORDINATE center, LEPTON distance) {
-  for (int index = 0; index < Layer[LAYER_GROUND].Count(); index++) {
-    ObjectClass* object = Layer[LAYER_GROUND][index];
+  for (int index = 0; index < Layer.at(LAYER_GROUND).Count(); index++) {
+    ObjectClass* object = Layer.at(LAYER_GROUND).at(index);
     if (object != nullptr && object->Is_Techno()) {
       auto* tech = dynamic_cast<TechnoClass*>(object);
 
@@ -4635,5 +4641,5 @@ void DisplayClass::Constrained_Look(COORDINATE center, LEPTON distance) {
 void DisplayClass::Flag_Cell(CELL cell) {
   Flag_To_Redraw(false);
   IsDisplayToRedraw = true;
-  CellRedraw[base::ToSize(cell)] = true;
+  CellRedraw.at(base::ToSize(cell)) = true;
 }

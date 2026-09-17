@@ -150,7 +150,7 @@ void MouseClass::Revert_Mouse_Shape() {
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
 void MouseClass::Mouse_Small(bool wsmall) {
-  const MouseStruct* control = &MouseControl[CurrentMouseShape];
+  const MouseStruct* control = &MouseControl.at(CurrentMouseShape);
 
   if (IsSmall == wsmall) {
     return;
@@ -165,7 +165,7 @@ void MouseClass::Mouse_Small(bool wsmall) {
           Extract_Shape(MouseShapes, control->SmallFrame + (Frame / 4)));
     } else {
       Set_Mouse_Cursor(
-          MouseControl[MOUSE_NORMAL].X, MouseControl[MOUSE_NORMAL].Y,
+          MouseControl.at(MOUSE_NORMAL).X, MouseControl.at(MOUSE_NORMAL).Y,
           Extract_Shape(MouseShapes, static_cast<int>(MOUSE_NORMAL)));
     }
   } else {
@@ -199,7 +199,7 @@ void Unblock_Mouse(GraphicBufferClass* buffer);
 bool MouseClass::Override_Mouse_Shape(MouseType mouse, bool wsmall) {
   assert(static_cast<unsigned>(mouse) < magic_enum::enum_count<MouseType>());
 
-  const MouseStruct* control = &MouseControl[mouse];
+  const MouseStruct* control = &MouseControl.at(mouse);
   static bool startup = false;
 
   /*
@@ -258,7 +258,7 @@ bool MouseClass::Override_Mouse_Shape(MouseType mouse, bool wsmall) {
  ** 06/30/1995 JLB : Uses constant timer system. *
  *=============================================================================================*/
 void MouseClass::AI(KeyNumType& input, int x, int y) {
-  const MouseStruct* control = &MouseControl[CurrentMouseShape];
+  const MouseStruct* control = &MouseControl.at(CurrentMouseShape);
 
   if (control->FrameRate && AnimTimer.IsFinished()) {
     Frame++;

@@ -138,7 +138,7 @@ void TabClass::Draw_It(bool complete) {
       CC_Draw_Shape(TabShape, 0, width - (EVA_WIDTH * 2), 0, WINDOW_MAIN,
                     SHAPE_NORMAL);
       Fancy_Text_Print(
-          TXT_TAB_SIDEBAR, width - EVA_WIDTH, 0, &ColorRemaps[PCOLOR_GREY],
+          TXT_TAB_SIDEBAR, width - EVA_WIDTH, 0, &ColorRemaps.at(PCOLOR_GREY),
           kTBlack, TPF_METAL12 | TPF_NOSHADOW | TPF_CENTER | TPF_BRIGHT_COLOR);
     }
 

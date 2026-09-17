@@ -341,12 +341,12 @@ TEST_F(VqaLoaderTest, FinfEntriesAreFourBytesEach) {
 
   ASSERT_EQ(Open(), 0);
   ASSERT_EQ(handle_.data->FoffStorage.size(), entries.size());
-  EXPECT_EQ(handle_.data->FoffStorage[0], entries[0]);
-  EXPECT_EQ(handle_.data->FoffStorage[1], entries[1]);
-  EXPECT_EQ(handle_.data->FoffStorage[2], entries[2]);
+  EXPECT_EQ(handle_.data->FoffStorage.at(0), entries.at(0));
+  EXPECT_EQ(handle_.data->FoffStorage.at(1), entries.at(1));
+  EXPECT_EQ(handle_.data->FoffStorage.at(2), entries.at(2));
   // The flags occupy the top bits; the offset is stored halved.
-  EXPECT_NE(handle_.data->FoffStorage[0] & VQAFINF_PAL, 0);
-  EXPECT_EQ(VQAFRAME_OFFSET(handle_.data->FoffStorage[1]), 0x40);
+  EXPECT_NE(handle_.data->FoffStorage.at(0) & VQAFINF_PAL, 0);
+  EXPECT_EQ(VQAFRAME_OFFSET(handle_.data->FoffStorage.at(1)), 0x40);
 }
 
 TEST_F(VqaLoaderTest, OversizedFinfChunkIsSkippedPastTheTable) {
@@ -357,7 +357,7 @@ TEST_F(VqaLoaderTest, OversizedFinfChunkIsSkippedPastTheTable) {
 
   ASSERT_EQ(Open(), 0);
   ASSERT_EQ(handle_.data->FoffStorage.size(), 3U);
-  EXPECT_EQ(handle_.data->FoffStorage[2], 0x30U);
+  EXPECT_EQ(handle_.data->FoffStorage.at(2), 0x30U);
   // The excess entries were skipped, so the frame after them still loaded.
   EXPECT_EQ(fake_.pos, static_cast<int64_t>(fake_.data.size()));
 }
@@ -423,7 +423,7 @@ TEST_F(VqaLoaderTest, PartialCompressedCodebookLoadsAtEstimatedOffset) {
   // Groupsize 1: offset = Max_CB_Size - (20 * 1 + 100).
   const VQACBNode* codebook = handle_.data->Loader.FullCB;
   EXPECT_EQ(codebook->CBOffset, kMaxCbSize - 120);
-  EXPECT_EQ(codebook->BufferStorage[static_cast<size_t>(codebook->CBOffset)],
+  EXPECT_EQ(codebook->BufferStorage.at(static_cast<size_t>(codebook->CBOffset)),
             0xAB);
 }
 
@@ -527,7 +527,7 @@ TEST_F(VqaLoaderTest, SeekFrameLoadsFromTheFrameTable) {
   std::vector<uint32_t> entries(3);
   for (int i = 0; i < 3; ++i) {
     // Entries store half the file offset.
-    entries[static_cast<size_t>(i)] =
+    entries.at(static_cast<size_t>(i)) =
         static_cast<uint32_t>((start + (i * kFrameBytes)) / 2);
   }
   fake_.data = MovieStart(SmallHeader(), entries);

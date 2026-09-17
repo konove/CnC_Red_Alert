@@ -250,7 +250,7 @@ void Setup_Menu(const MenuConfig& menu, std::span<const char* const> labels,
   for (int i = 0; i < item_count; i++) {
     const int text_index = Select_To_Entry(i, visible_items, bit_offset);
     const int draw_y = menu_y + (i * FontHeight) + (i * line_spacing);
-    Fancy_Text_Print(labels[base::ToSize(text_index)], menu_x, draw_y,
+    Fancy_Text_Print(base::At(labels, base::ToSize(text_index)), menu_x, draw_y,
                      text_index == selected_entry && MenuUpdate
                          ? menu.highlight_color
                          : menu.normal_color,
@@ -379,8 +379,8 @@ int Check_Menu(MenuConfig& menu, std::span<const char* const> text,
     */
     default:
       for (int menu_item = 0; menu_item < menu.item_count; menu_item++) {
-        if (toupper(*text[base::ToSize(
-                Select_To_Entry(menu_item, field, index))]) ==
+        if (toupper(*base::At(text, base::ToSize(Select_To_Entry(
+                                        menu_item, field, index)))) ==
             toupper(Keyboard::To_ASCII(static_cast<KeyNumType>(key % 256)))) {
           newitem = select = menu_item;
           break;
@@ -394,12 +394,12 @@ int Check_Menu(MenuConfig& menu, std::span<const char* const> text,
     Hide_Mouse();
     idx = Select_To_Entry(item, field, index);
     drawy = menuy + (item * menuskip);
-    Fancy_Text_Print(text[base::ToSize(idx)], menux, drawy, normcol, kTBlack,
-                     TPF_8POINT | TPF_DROPSHADOW);
+    Fancy_Text_Print(base::At(text, base::ToSize(idx)), menux, drawy, normcol,
+                     kTBlack, TPF_8POINT | TPF_DROPSHADOW);
     idx = Select_To_Entry(newitem, field, index);
     drawy = menuy + (newitem * menuskip);
-    Fancy_Text_Print(text[base::ToSize(idx)], menux, drawy, litcol, kTBlack,
-                     TPF_8POINT | TPF_DROPSHADOW);
+    Fancy_Text_Print(base::At(text, base::ToSize(idx)), menux, drawy, litcol,
+                     kTBlack, TPF_8POINT | TPF_DROPSHADOW);
     Show_Mouse(); /* resurrect the mouse	*/
   }
 
@@ -407,7 +407,8 @@ int Check_Menu(MenuConfig& menu, std::span<const char* const> text,
     idx = Select_To_Entry(select, field, index);
     Hide_Mouse(); /* get rid of the mouse	*/
     drawy = menuy + (newitem * menuskip);
-    Flash_Line(text[base::ToSize(idx)], menux, drawy, normcol, litcol, kTBlack);
+    Flash_Line(base::At(text, base::ToSize(idx)), menux, drawy, normcol, litcol,
+               kTBlack);
     Show_Mouse();
     select = idx;
   }

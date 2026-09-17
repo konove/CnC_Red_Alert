@@ -183,7 +183,6 @@
 #include "ra/statbtn.h"
 #include "ra/textbtn.h"
 #include "ra/type.h"
-#include "ra/vector.h"
 #include "ra/vector_dynamic.h"
 #include "ra/version.h"
 #include "ra/wol_main.h"
@@ -1072,7 +1071,7 @@ bool Process_Global_Packet(GlobalPacketType* packet, IPXAddressClass* address) {
     if (!std::string_view(Session.GameName).empty() &&
         (!Session.NetOpen ||
          (Session.NetOpen &&
-          std::string_view(Session.Players[0]->Name) == Session.GameName))) {
+          std::string_view(Session.Players.at(0)->Name) == Session.GameName))) {
       base::FillBytes(base::ObjectBytes(mypacket), 0, sizeof(mypacket));
 
       mypacket.Command = NET_ANSWER_GAME;
@@ -1095,7 +1094,7 @@ bool Process_Global_Packet(GlobalPacketType* packet, IPXAddressClass* address) {
                     sizeof(mypacket));  // changed DRD 9/26
 
     mypacket.Command = NET_ANSWER_PLAYER;
-    port::SafeCopy(mypacket.Name, Session.Players[0]->Name);
+    port::SafeCopy(mypacket.Name, Session.Players.at(0)->Name);
     mypacket.PlayerInfo.House = Session.House;
     mypacket.PlayerInfo.Color = Session.ColorIdx;
     mypacket.PlayerInfo.NameCRC = Compute_Name_CRC(Session.GameName);
@@ -1167,9 +1166,10 @@ void Destroy_Connection(int id, int error) {
   // Remove this player from the Players vector
   //------------------------------------------------------------------------
   for (int i = 0; i < Session.Players.Count(); i++) {
-    if (!port::CompareIgnoreCase(Session.Players[i]->Name, housep->IniName)) {
-      delete Session.Players[i];
-      Session.Players.Delete(Session.Players[i]);
+    if (!port::CompareIgnoreCase(Session.Players.at(i)->Name,
+                                 housep->IniName)) {
+      delete Session.Players.at(i);
+      Session.Players.Delete(Session.Players.at(i));
       break;
     }
   }
@@ -1606,9 +1606,9 @@ static int Net_Join_Dialog() {
   port::SafeCopy(namebuf, Session.Handle);  // set my name
   name_edt.Set_Text(namebuf, MPLAYER_NAME_MAX);
   if (Session.ColorIdx == PCOLOR_DIALOG_BLUE) {
-    name_edt.Set_Color(&ColorRemaps[PCOLOR_REALLY_BLUE]);
+    name_edt.Set_Color(&ColorRemaps.at(PCOLOR_REALLY_BLUE));
   } else {
-    name_edt.Set_Color(&ColorRemaps[Session.ColorIdx]);
+    name_edt.Set_Color(&ColorRemaps.at(Session.ColorIdx));
   }
 
   //........................................................................
@@ -1838,8 +1838,8 @@ static int Net_Join_Dialog() {
 #endif  // OLDWAY
           Fancy_Text_Print(txt, d_dialog_cx, d_dialog_y + d_margin2 + 2,
                            Session.ColorIdx == PCOLOR_DIALOG_BLUE
-                               ? &ColorRemaps[PCOLOR_REALLY_BLUE]
-                               : &ColorRemaps[Session.ColorIdx],
+                               ? &ColorRemaps.at(PCOLOR_REALLY_BLUE)
+                               : &ColorRemaps.at(Session.ColorIdx),
                            kTBlack, TPF_CENTER | kTpfText);
         }
 
@@ -1920,7 +1920,7 @@ static int Net_Join_Dialog() {
               base::At(cbox_x, i) + 1, d_color_y + 1,
               base::At(cbox_x, i) + 1 + d_color_w - 4,
               d_color_y + 1 + d_color_h - 2,
-              ColorRemaps[static_cast<PlayerColorType>(i)].Box);
+              ColorRemaps.at(static_cast<PlayerColorType>(i)).Box);
           //						(i ==
           // PCOLOR_DIALOG_BLUE) ? ColorRemaps[PCOLOR_REALLY_BLUE].Box :
           // ColorRemaps[i].Box);
@@ -1966,17 +1966,17 @@ static int Net_Join_Dialog() {
         if (Session.Options.ScenarioDescription[0]) {
           // EW - Scenario language translation goes here!!!!!!!! VG
           int ii = 0;
-          for (ii = 0; EngMisStr[base::ToSize(ii)] != nullptr; ii++) {
+          for (ii = 0; base::At(EngMisStr, base::ToSize(ii)) != nullptr; ii++) {
             if (std::string_view(Session.Options.ScenarioDescription) ==
-                EngMisStr[base::ToSize(ii)]) {
+                base::At(EngMisStr, base::ToSize(ii))) {
               absl::SNPrintF(txt, sizeof(txt), "%s %s", p,
                              config::kIsEnglish
                                  ? Session.Options.ScenarioDescription
-                                 : EngMisStr[base::ToSize(ii + 1)]);
+                                 : base::At(EngMisStr, base::ToSize(ii + 1)));
               break;
             }
           }
-          if (EngMisStr[base::ToSize(ii)] == nullptr) {
+          if (base::At(EngMisStr, base::ToSize(ii)) == nullptr) {
             absl::SNPrintF(txt, sizeof(txt), "%s %s", p,
                            Session.Options.ScenarioDescription);
           }
@@ -2098,12 +2098,11 @@ static int Net_Join_Dialog() {
           Session.ColorIdx = Session.PrefColor;
 
           if (Session.ColorIdx == PCOLOR_DIALOG_BLUE) {
-            name_edt.Set_Color(&ColorRemaps[PCOLOR_REALLY_BLUE]);
+            name_edt.Set_Color(&ColorRemaps.at(PCOLOR_REALLY_BLUE));
           } else {
-            name_edt.Set_Color(
-                &ColorRemaps[Session.ColorIdx == PCOLOR_DIALOG_BLUE
-                                 ? PCOLOR_REALLY_BLUE
-                                 : Session.ColorIdx]);
+            name_edt.Set_Color(&ColorRemaps.at(
+                Session.ColorIdx == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
+                                                       : Session.ColorIdx));
           }
           name_edt.Flag_To_Redraw();
 
@@ -2293,7 +2292,7 @@ static int Net_Join_Dialog() {
           for (i = 1; i < Session.Chat.Count(); i++) {
             Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
                                     sizeof(GlobalPacketType), 1,
-                                    &Session.Chat[i]->Address);
+                                    &Session.Chat.at(i)->Address);
             Ipx.Service();
           }
 
@@ -2339,7 +2338,7 @@ static int Net_Join_Dialog() {
         //...............................................................
         found = 0;
         for (i = 1; i < Session.Games.Count(); i++) {
-          if (!port::CompareIgnoreCase(Session.Games[i]->Name, namebuf)) {
+          if (!port::CompareIgnoreCase(Session.Games.at(i)->Name, namebuf)) {
             found = 1;
             Session.Messages.Add_Message(
                 nullptr, 0, Text_String(TXT_GAMENAME_MUSTBE_UNIQUE),
@@ -2422,7 +2421,7 @@ static int Net_Join_Dialog() {
             for (i = 1; i < Session.Players.Count(); i++) {
               Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
                                       sizeof(GlobalPacketType), 1,
-                                      &Session.Players[i]->Address);
+                                      &Session.Players.at(i)->Address);
               Ipx.Service();
             }
           } else {
@@ -2432,7 +2431,7 @@ static int Net_Join_Dialog() {
             for (i = 1; i < Session.Chat.Count(); i++) {
               Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
                                       sizeof(GlobalPacketType), 1,
-                                      &Session.Chat[i]->Address);
+                                      &Session.Chat.at(i)->Address);
               Ipx.Service();
             }
             if (Obfuscate(Session.GPacket.Message.Buf) == 0x72A47EF6) {
@@ -2631,8 +2630,8 @@ static int Net_Join_Dialog() {
                 HouseTypeClass::As_Reference(Session.House).Full_Name()));
 #endif  // OLDWAY
         playerlist.Add_Item(item, Session.ColorIdx == PCOLOR_DIALOG_BLUE
-                                      ? &ColorRemaps[PCOLOR_REALLY_BLUE]
-                                      : &ColorRemaps[Session.ColorIdx]);
+                                      ? &ColorRemaps.at(PCOLOR_REALLY_BLUE)
+                                      : &ColorRemaps.at(Session.ColorIdx));
 
         who = new NodeNameType;
         port::SafeCopy(who->Name, namebuf);
@@ -2779,9 +2778,9 @@ static int Net_Join_Dialog() {
       //	- Send queries for the new selected game, if there is one
       //.....................................................................
       for (i = 1; i < Session.Games.Count(); i++) {
-        if (TickCount.Value() - Session.Games[i]->Game.LastTime > 400) {
-          delete Session.Games[i];
-          Session.Games.Delete(Session.Games[i]);
+        if (TickCount.Value() - Session.Games.at(i)->Game.LastTime > 400) {
+          delete Session.Games.at(i);
+          Session.Games.Delete(Session.Games.at(i));
 
           gamelist.Remove_Item(i);
 
@@ -2807,10 +2806,10 @@ static int Net_Join_Dialog() {
       // If I've changed my name or color, make sure those changes go into
       // the Chat vector.
       //.....................................................................
-      port::SafeCopy(Session.Chat[0]->Name, namebuf);
-      Session.Chat[0]->Chat.Color = Session.ColorIdx;
-      if (Session.Chat[0]->Chat.Color == PCOLOR_DIALOG_BLUE) {
-        Session.Chat[0]->Chat.Color = PCOLOR_REALLY_BLUE;
+      port::SafeCopy(Session.Chat.at(0)->Name, namebuf);
+      Session.Chat.at(0)->Chat.Color = Session.ColorIdx;
+      if (Session.Chat.at(0)->Chat.Color == PCOLOR_DIALOG_BLUE) {
+        Session.Chat.at(0)->Chat.Color = PCOLOR_REALLY_BLUE;
       }
 
       //.....................................................................
@@ -2820,20 +2819,21 @@ static int Net_Join_Dialog() {
       // for a chat announcement; he then has 1 second to reply.
       //.....................................................................
       for (i = 1; i < Session.Chat.Count(); i++) {
-        if (TickCount.Value() - Session.Chat[i]->Chat.LastTime > 360) {
-          delete Session.Chat[i];
-          Session.Chat.Delete(Session.Chat[i]);
-        } else if (TickCount.Value() - Session.Chat[i]->Chat.LastTime > 300 &&
-                   Session.Chat[i]->Chat.LastChance == 0) {
+        if (TickCount.Value() - Session.Chat.at(i)->Chat.LastTime > 360) {
+          delete Session.Chat.at(i);
+          Session.Chat.Delete(Session.Chat.at(i));
+        } else if (TickCount.Value() - Session.Chat.at(i)->Chat.LastTime >
+                       300 &&
+                   Session.Chat.at(i)->Chat.LastChance == 0) {
           base::FillBytes(base::ObjectBytes(Session.GPacket), 0,
                           sizeof(Session.GPacket));
           Session.GPacket.Name[0] = 0;
           Session.GPacket.Command = NET_CHAT_REQUEST;
           Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
                                   sizeof(GlobalPacketType), 0,
-                                  &Session.Chat[i]->Address);
+                                  &Session.Chat.at(i)->Address);
           Ipx.Service();
-          Session.Chat[i]->Chat.LastChance = 1;
+          Session.Chat.at(i)->Chat.LastChance = 1;
         }
       }
 
@@ -2858,27 +2858,31 @@ static int Net_Join_Dialog() {
             playerlist.Flag_To_Redraw();
           }
           for (i = 0; i < Session.Chat.Count(); i++) {
-            if (port::CompareIgnoreCase(Session.Chat[i]->Name,
+            if (port::CompareIgnoreCase(Session.Chat.at(i)->Name,
                                         playerlist.Get_Item(i)) != 0 ||
-                &ColorRemaps[Session.Chat[i]->Chat.Color == PCOLOR_DIALOG_BLUE
-                                 ? PCOLOR_REALLY_BLUE
-                                 : Session.Chat[i]->Chat.Color] !=
-                    playerlist.Colors[i]) {
-              playerlist.Colors[i] = &ColorRemaps[Session.Chat[i]->Chat.Color];
-              if (playerlist.Colors[i] == &ColorRemaps[PCOLOR_DIALOG_BLUE]) {
-                playerlist.Colors[i] = &ColorRemaps[PCOLOR_REALLY_BLUE];
+                &ColorRemaps.at(Session.Chat.at(i)->Chat.Color ==
+                                        PCOLOR_DIALOG_BLUE
+                                    ? PCOLOR_REALLY_BLUE
+                                    : Session.Chat.at(i)->Chat.Color) !=
+                    playerlist.Colors.at(i)) {
+              playerlist.Colors.at(i) =
+                  &ColorRemaps.at(Session.Chat.at(i)->Chat.Color);
+              if (playerlist.Colors.at(i) ==
+                  &ColorRemaps.at(PCOLOR_DIALOG_BLUE)) {
+                playerlist.Colors.at(i) = &ColorRemaps.at(PCOLOR_REALLY_BLUE);
               }
-              playerlist.Set_Item(i, Session.Chat[i]->Name);
+              playerlist.Set_Item(i, Session.Chat.at(i)->Name);
               playerlist.Flag_To_Redraw();
             }
           }
         } else {
-          if (port::CompareIgnoreCase(Session.Chat[0]->Name,
+          if (port::CompareIgnoreCase(Session.Chat.at(0)->Name,
                                       playerlist.Get_Item(0)) != 0 ||
-              &ColorRemaps[Session.Chat[0]->Chat.Color] !=
-                  playerlist.Colors[0]) {
-            playerlist.Colors[0] = &ColorRemaps[Session.Chat[0]->Chat.Color];
-            playerlist.Set_Item(0, Session.Chat[0]->Name);
+              &ColorRemaps.at(Session.Chat.at(0)->Chat.Color) !=
+                  playerlist.Colors.at(0)) {
+            playerlist.Colors.at(0) =
+                &ColorRemaps.at(Session.Chat.at(0)->Chat.Color);
+            playerlist.Set_Item(0, Session.Chat.at(0)->Name);
             playerlist.Flag_To_Redraw();
           }
           if (Update_WWChat()) {
@@ -2919,7 +2923,7 @@ static int Net_Join_Dialog() {
       for (int j = 1; j < Session.Players.Count(); j++) {
         Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
                                 sizeof(GlobalPacketType), 1,
-                                &Session.Players[j]->Address);
+                                &Session.Players.at(j)->Address);
         Ipx.Service();
       }
 
@@ -3072,7 +3076,7 @@ static bool Request_To_Join(const char* playername, int join_index,
   //------------------------------------------------------------------------
   //	The game must be open
   //------------------------------------------------------------------------
-  if (!Session.Games[join_index]->Game.IsOpen) {
+  if (!Session.Games.at(join_index)->Game.IsOpen) {
     Session.Messages.Add_Message(nullptr, 0, Text_String(TXT_GAME_IS_CLOSED),
                                  PCOLOR_BROWN, kTpfText, 1200);
     Sound_Effect(VOC_SYS_ERROR);
@@ -3106,7 +3110,7 @@ static bool Request_To_Join(const char* playername, int join_index,
 
   Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
                           sizeof(GlobalPacketType), 1,
-                          &Session.Games[join_index]->Address);
+                          &Session.Games.at(join_index)->Address);
 
   return true;
 
@@ -3158,14 +3162,14 @@ static void Unjoin_Game(char* namebuf, JoinStateType joinstate,
   for (int i = 1; i < Session.Players.Count(); i++) {
     Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
                             sizeof(GlobalPacketType), 1,
-                            &Session.Players[i]->Address);
+                            &Session.Players.at(i)->Address);
     Ipx.Service();
   }
 
   if (joinstate == JOIN_WAIT_CONFIRM || joinstate == JOIN_CONFIRMED) {
     Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
                             sizeof(GlobalPacketType), 1,
-                            &Session.Games[game_index]->Address);
+                            &Session.Games.at(game_index)->Address);
   }
 
   //------------------------------------------------------------------------
@@ -3187,8 +3191,8 @@ static void Unjoin_Game(char* namebuf, JoinStateType joinstate,
   }
 
   if (Session.Players.Count() > 0) {
-    delete Session.Players[0];
-    Session.Players.Delete(Session.Players[0]);
+    delete Session.Players.at(0);
+    Session.Players.Delete(Session.Players.at(0));
   }
 
   Session.GameName[0] = 0;
@@ -3301,7 +3305,7 @@ static void Send_Join_Queries(int curgame, JoinStateType joinstate, int gamenow,
                     sizeof(Session.GPacket));
 
     Session.GPacket.Command = NET_QUERY_PLAYER;
-    port::SafeCopy(Session.GPacket.Name, Session.Games[curgame]->Name);
+    port::SafeCopy(Session.GPacket.Name, Session.Games.at(curgame)->Name);
 
     Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
                             sizeof(GlobalPacketType), 0, nullptr);
@@ -3427,14 +3431,15 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
     retcode = EV_NONE;
     found = 0;
     for (i = 1; i < Session.Games.Count(); i++) {
-      if (std::string_view(Session.Games[i]->Name) == Session.GPacket.Name) {
+      if (std::string_view(Session.Games.at(i)->Name) == Session.GPacket.Name) {
         found = 1;
 
         //...............................................................
         //	If name was found, update the node's time stamp & IsOpen flag.
         //...............................................................
-        Session.Games[i]->Game.LastTime = TickCount.Value();
-        if (Session.Games[i]->Game.IsOpen != Session.GPacket.GameInfo.IsOpen) {
+        Session.Games.at(i)->Game.LastTime = TickCount.Value();
+        if (Session.Games.at(i)->Game.IsOpen !=
+            Session.GPacket.GameInfo.IsOpen) {
           if (Session.GPacket.GameInfo.IsOpen) {
             Format_Runtime_Text(item, kGameListItemSize,
                                 Text_String(TXT_THATGUYS_GAME),
@@ -3445,7 +3450,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
                                 Session.GPacket.Name);
           }
           gamelist->Set_Item(i, item);
-          Session.Games[i]->Game.IsOpen = Session.GPacket.GameInfo.IsOpen;
+          Session.Games.at(i)->Game.IsOpen = Session.GPacket.GameInfo.IsOpen;
           gamelist->Flag_To_Redraw();
 
           //............................................................
@@ -3453,8 +3458,8 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
           // responder's address into our Game slot, since the guy
           // responding to this must be game owner.
           //............................................................
-          if (Session.Games[i]->Game.IsOpen) {
-            Session.Games[i]->Address = Session.GAddress;
+          if (Session.Games.at(i)->Game.IsOpen) {
+            Session.Games.at(i)->Address = Session.GAddress;
           }
 
           //............................................................
@@ -3462,15 +3467,15 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
           // this game has changed.
           //............................................................
           if (*joinstate < JOIN_CONFIRMED) {
-            if (Session.Games[i]->Game.IsOpen) {
-              Format_Runtime_Text(txt, sizeof(txt),
-                                  Text_String(TXT_S_FORMED_NEW_GAME),
-                                  Session.Games[Session.Games.Count() - 1]->Name);
+            if (Session.Games.at(i)->Game.IsOpen) {
+              Format_Runtime_Text(
+                  txt, sizeof(txt), Text_String(TXT_S_FORMED_NEW_GAME),
+                  Session.Games.at(Session.Games.Count() - 1)->Name);
               Sound_Effect(VOC_GAME_FORMING);
             } else {
-              Format_Runtime_Text(txt, sizeof(txt),
-                                  Text_String(TXT_GAME_NOW_IN_PROGRESS),
-                                  Session.Games[Session.Games.Count() - 1]->Name);
+              Format_Runtime_Text(
+                  txt, sizeof(txt), Text_String(TXT_GAME_NOW_IN_PROGRESS),
+                  Session.Games.at(Session.Games.Count() - 1)->Name);
               Sound_Effect(VOC_GAME_CLOSED);
             }
             Session.Messages.Add_Message(nullptr, 0, txt, PCOLOR_BROWN,
@@ -3515,9 +3520,9 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       // If this player's in the Chat vector, remove him from there
       //..................................................................
       for (i = 1; i < Session.Chat.Count(); i++) {
-        if (Session.Chat[i]->Address == Session.GAddress) {
-          delete Session.Chat[i];
-          Session.Chat.Delete(Session.Chat[i]);
+        if (Session.Chat.at(i)->Address == Session.GAddress) {
+          delete Session.Chat.at(i);
+          Session.Chat.Delete(Session.Chat.at(i));
           break;
         }
       }
@@ -3556,15 +3561,16 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       // without 	our knowledge; set the 'found' flag so we won't create a
       // new entry.
       //..................................................................
-      if (Session.Players[i]->Address == Session.GAddress) {
-        port::SafeCopy(Session.Players[i]->Name, Session.GPacket.Name);
-        Session.Players[i]->Player.House = Session.GPacket.PlayerInfo.House;
-        Session.Players[i]->Player.Color = Session.GPacket.PlayerInfo.Color;
+      if (Session.Players.at(i)->Address == Session.GAddress) {
+        port::SafeCopy(Session.Players.at(i)->Name, Session.GPacket.Name);
+        Session.Players.at(i)->Player.House = Session.GPacket.PlayerInfo.House;
+        Session.Players.at(i)->Player.Color = Session.GPacket.PlayerInfo.Color;
 
-        playerlist->Colors[i] = &ColorRemaps[Session.GPacket.PlayerInfo.Color];
+        playerlist->Colors.at(i) =
+            &ColorRemaps.at(Session.GPacket.PlayerInfo.Color);
 
-        if (playerlist->Colors[i] == &ColorRemaps[PCOLOR_DIALOG_BLUE]) {
-          playerlist->Colors[i] = &ColorRemaps[PCOLOR_REALLY_BLUE];
+        if (playerlist->Colors.at(i) == &ColorRemaps.at(PCOLOR_DIALOG_BLUE)) {
+          playerlist->Colors.at(i) = &ColorRemaps.at(PCOLOR_REALLY_BLUE);
         }
 
         found = 1;
@@ -3577,8 +3583,9 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
     // selected.
     //.....................................................................
     i = gamelist->Current_Index();
-    if (Session.Games.Count() && Session.GPacket.PlayerInfo.NameCRC !=
-                                     Compute_Name_CRC(Session.Games[i]->Name)) {
+    if (Session.Games.Count() &&
+        Session.GPacket.PlayerInfo.NameCRC !=
+            Compute_Name_CRC(Session.Games.at(i)->Name)) {
       found = 1;
     }
 
@@ -3623,16 +3630,16 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
                                      .Full_Name()));
 #endif  // OLDWAY
       playerlist->Add_Item(item, who->Player.Color == PCOLOR_DIALOG_BLUE
-                                     ? &ColorRemaps[PCOLOR_REALLY_BLUE]
-                                     : &ColorRemaps[who->Player.Color]);
+                                     ? &ColorRemaps.at(PCOLOR_REALLY_BLUE)
+                                     : &ColorRemaps.at(who->Player.Color));
 
       //..................................................................
       // If this player's in the Chat vector, remove him from there
       //..................................................................
       for (i = 1; i < Session.Chat.Count(); i++) {
-        if (Session.Chat[i]->Address == Session.GAddress) {
-          delete Session.Chat[i];
-          Session.Chat.Delete(Session.Chat[i]);
+        if (Session.Chat.at(i)->Address == Session.GAddress) {
+          delete Session.Chat.at(i);
+          Session.Chat.Delete(Session.Chat.at(i));
           break;
         }
       }
@@ -3682,7 +3689,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       for (i = 1; i < Session.Players.Count(); i++) {
         Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
                                 sizeof(GlobalPacketType), 1,
-                                &Session.Players[i]->Address);
+                                &Session.Players.at(i)->Address);
         Ipx.Service();
       }
 
@@ -3705,8 +3712,8 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       playerlist->Remove_Item(0);
       playerlist->Flag_To_Redraw();
 
-      delete Session.Players[0];
-      Session.Players.Delete(Session.Players[0]);
+      delete Session.Players.at(0);
+      Session.Players.Delete(Session.Players.at(0));
 
       *joinstate = JOIN_REJECTED;
       *why = REJECT_BY_OWNER;
@@ -3796,8 +3803,8 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
     //	Remove this name from the list of games
     //.....................................................................
     for (i = 1; i < Session.Games.Count(); i++) {
-      if (std::string_view(Session.Games[i]->Name) == Session.GPacket.Name &&
-          Session.Games[i]->Address == Session.GAddress) {
+      if (std::string_view(Session.Games.at(i)->Name) == Session.GPacket.Name &&
+          Session.Games.at(i)->Address == Session.GAddress) {
         //...............................................................
         //	If the system signing off is the currently-selected list
         //	item, clear the player list since that game is no longer
@@ -3832,8 +3839,8 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
         //...............................................................
         //	Remove game name from game list
         //...............................................................
-        delete Session.Games[i];
-        Session.Games.Delete(Session.Games[i]);
+        delete Session.Games.at(i);
+        Session.Games.Delete(Session.Games.at(i));
         gamelist->Remove_Item(i);
         gamelist->Flag_To_Redraw();
       }
@@ -3846,11 +3853,11 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       //..................................................................
       //	Name found; remove it
       //..................................................................
-      if (Session.Players[i]->Address == Session.GAddress) {
+      if (Session.Players.at(i)->Address == Session.GAddress) {
         playerlist->Remove_Item(i);
 
-        delete Session.Players[i];
-        Session.Players.Delete(Session.Players[i]);
+        delete Session.Players.at(i);
+        Session.Players.Delete(Session.Players.at(i));
 
         playerlist->Flag_To_Redraw();
 
@@ -3874,9 +3881,9 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       //..................................................................
       //	Name found; remove it
       //..................................................................
-      if (Session.Chat[i]->Address == Session.GAddress) {
-        delete Session.Chat[i];
-        Session.Chat.Delete(Session.Chat[i]);
+      if (Session.Chat.at(i)->Address == Session.GAddress) {
+        delete Session.Chat.at(i);
+        Session.Chat.Delete(Session.Chat.at(i));
 
         if (retcode == EV_NONE) {
           retcode = EV_PLAYER_SIGNOFF;
@@ -3927,11 +3934,11 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
     //.....................................................................
     else {
       for (i = 0; i < Session.Chat.Count(); i++) {
-        if (Session.Chat[i]->Address == Session.GAddress) {
-          port::SafeCopy(Session.Chat[i]->Name, Session.GPacket.Name);
-          Session.Chat[i]->Chat.LastTime = TickCount.Value();
-          Session.Chat[i]->Chat.LastChance = 0;
-          Session.Chat[i]->Chat.Color = Session.GPacket.Chat.Color;
+        if (Session.Chat.at(i)->Address == Session.GAddress) {
+          port::SafeCopy(Session.Chat.at(i)->Name, Session.GPacket.Name);
+          Session.Chat.at(i)->Chat.LastTime = TickCount.Value();
+          Session.Chat.at(i)->Chat.LastChance = 0;
+          Session.Chat.at(i)->Chat.Color = Session.GPacket.Chat.Color;
           found = 1;
           break;
         }
@@ -4317,33 +4324,33 @@ static int Net_New_Dialog() {
   //	Init scenario description list box
   //------------------------------------------------------------------------
   for (i = 0; i < Session.Scenarios.Count(); i++) {
-    for (j = 0; EngMisStr[base::ToSize(j)] != nullptr; j++) {
-      if (std::string_view(Session.Scenarios[i]->Description()) ==
-          EngMisStr[base::ToSize(j)]) {
+    for (j = 0; base::At(EngMisStr, base::ToSize(j)) != nullptr; j++) {
+      if (std::string_view(Session.Scenarios.at(i)->Description()) ==
+          base::At(EngMisStr, base::ToSize(j))) {
         // ajw Added Aftermath installed checks (before, it was
         // assumed). Add mission if it's available to us.
-        if ((!IsMissionCounterstrike(Session.Scenarios[i]->Get_Filename()) ||
+        if ((!IsMissionCounterstrike(Session.Scenarios.at(i)->Get_Filename()) ||
              Is_Counterstrike_Installed()) &&
-            (!IsMissionAftermath(Session.Scenarios[i]->Get_Filename()) ||
+            (!IsMissionAftermath(Session.Scenarios.at(i)->Get_Filename()) ||
              Is_Aftermath_Installed())) {
-          scenariolist.Add_Item(
-              EngMisStr[base::ToSize(config::kIsEnglish ? j : j + 1)]);
+          scenariolist.Add_Item(base::At(
+              EngMisStr, base::ToSize(config::kIsEnglish ? j : j + 1)));
         }
 
         break;
       }
     }
-    if ((EngMisStr[base::ToSize(j)] == nullptr) &&
-        (!Session.Scenarios[i]->Get_Official() ||
-         ((!IsMissionCounterstrike(Session.Scenarios[i]->Get_Filename()) ||
+    if ((base::At(EngMisStr, base::ToSize(j)) == nullptr) &&
+        (!Session.Scenarios.at(i)->Get_Official() ||
+         ((!IsMissionCounterstrike(Session.Scenarios.at(i)->Get_Filename()) ||
            Is_Counterstrike_Installed()) &&
-          (!IsMissionAftermath(Session.Scenarios[i]->Get_Filename()) ||
+          (!IsMissionAftermath(Session.Scenarios.at(i)->Get_Filename()) ||
            Is_Aftermath_Installed()))))
     // ajw Added Aftermath installed checks (before, it was
     // assumed). Added officialness check. Add mission if
     // it's available to us.
     {
-      scenariolist.Add_Item(Session.Scenarios[i]->Description());
+      scenariolist.Add_Item(Session.Scenarios.at(i)->Description());
     }
   }
 
@@ -4356,7 +4363,7 @@ static int Net_New_Dialog() {
   //	Init player color-used flags
   //------------------------------------------------------------------------
   color_used = {};                   // init all colors to available
-  color_used[Session.ColorIdx] = 1;  // set my color to used
+  color_used.at(Session.ColorIdx) = 1;  // set my color to used
   playerlist.Set_Selected_Style(ColorListClass::SELECT_BAR, scheme);
 
   //------------------------------------------------------------------------
@@ -4404,8 +4411,8 @@ static int Net_New_Dialog() {
       Text_String(HouseTypeClass::As_Reference(Session.House).Full_Name()));
 #endif  // OLDWAY
   playerlist.Add_Item(item, Session.ColorIdx == PCOLOR_DIALOG_BLUE
-                                ? &ColorRemaps[PCOLOR_REALLY_BLUE]
-                                : &ColorRemaps[Session.ColorIdx]);
+                                ? &ColorRemaps.at(PCOLOR_REALLY_BLUE)
+                                : &ColorRemaps.at(Session.ColorIdx));
 
   who = new NodeNameType;
   port::SafeCopy(who->Name, Session.Handle);
@@ -4621,7 +4628,7 @@ static int Net_New_Dialog() {
 
         Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
                                 sizeof(GlobalPacketType), 1,
-                                &Session.Players[index]->Address);
+                                &Session.Players.at(index)->Address);
         break;
 
       //..................................................................
@@ -4803,7 +4810,7 @@ static int Net_New_Dialog() {
         for (i = 1; i < Session.Players.Count(); i++) {
           Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
                                   sizeof(GlobalPacketType), 1,
-                                  &Session.Players[i]->Address);
+                                  &Session.Players.at(i)->Address);
           Ipx.Service();
         }
         while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0) {
@@ -4863,7 +4870,7 @@ static int Net_New_Dialog() {
           for (i = 1; i < Session.Players.Count(); i++) {
             Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
                                     sizeof(GlobalPacketType), 1,
-                                    &Session.Players[i]->Address);
+                                    &Session.Players.at(i)->Address);
             Ipx.Service();
           }
 
@@ -4944,19 +4951,19 @@ static int Net_New_Dialog() {
         */
         port::SafeCopy(
             Session.GPacket.ScenarioInfo.Scenario,
-            Session.Scenarios[Session.Options.ScenarioIndex]->Description());
-        GameFile file(
-            Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
+            Session.Scenarios.at(Session.Options.ScenarioIndex)->Description());
+        GameFile file(Session.Scenarios.at(Session.Options.ScenarioIndex)
+                          ->Get_Filename());
         Session.GPacket.ScenarioInfo.FileLength =
             static_cast<unsigned int>(file.Size());
-        port::SafeCopy(
-            Session.GPacket.ScenarioInfo.ShortFileName,
-            Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
+        port::SafeCopy(Session.GPacket.ScenarioInfo.ShortFileName,
+                       Session.Scenarios.at(Session.Options.ScenarioIndex)
+                           ->Get_Filename());
         port::SafeCopy(
             Session.GPacket.ScenarioInfo.FileDigest,
-            Session.Scenarios[Session.Options.ScenarioIndex]->Get_Digest());
+            Session.Scenarios.at(Session.Options.ScenarioIndex)->Get_Digest());
         Session.GPacket.ScenarioInfo.OfficialScenario =
-            Session.Scenarios[Session.Options.ScenarioIndex]->Get_Official();
+            Session.Scenarios.at(Session.Options.ScenarioIndex)->Get_Official();
 
         Session.GPacket.ScenarioInfo.Credits = Session.Options.Credits;
         Session.GPacket.ScenarioInfo.IsBases =
@@ -4990,7 +4997,7 @@ static int Net_New_Dialog() {
 
         Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
                                 sizeof(GlobalPacketType), 1,
-                                &Session.Players[i]->Address);
+                                &Session.Players.at(i)->Address);
       }
       Sound_Effect(VOC_OPTIONS_CHANGED);
       transmit = 0;
@@ -5008,7 +5015,7 @@ static int Net_New_Dialog() {
       for (i = 1; i < Session.Players.Count(); i++) {
         Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
                                 sizeof(GlobalPacketType), 1,
-                                &Session.Players[i]->Address);
+                                &Session.Players.at(i)->Address);
       }
       ping_timer = TickCount.Value();
     }
@@ -5038,7 +5045,7 @@ static int Net_New_Dialog() {
     Scen.Scenario = Session.Options.ScenarioIndex;
     port::SafeCopy(
         Scen.ScenarioName,
-        Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
+        Session.Scenarios.at(Session.Options.ScenarioIndex)->Get_Filename());
 
     //.....................................................................
     //	Compute frame delay value for packet transmissions:
@@ -5072,7 +5079,7 @@ static int Net_New_Dialog() {
     for (i = 1; i < Session.Players.Count(); i++) {
       Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
                               sizeof(GlobalPacketType), 1,
-                              &Session.Players[i]->Address);
+                              &Session.Players.at(i)->Address);
     }
     //.....................................................................
     //	Wait for all the ACK's to come in.
@@ -5103,7 +5110,7 @@ static int Net_New_Dialog() {
       if (retcode &&
           Session.GProductID == IPXGlobalConnClass::kCommandAndConquer0) {
         for (i = 1; i < Session.Players.Count(); i++) {
-          if ((Session.Players[i]->Address == Session.GAddress) &&
+          if ((Session.Players.at(i)->Address == Session.GAddress) &&
               (!base::At(responses, i))) {
             if (Session.GPacket.Command == NET_REQ_SCENARIO) {
               base::At(responses, i) =
@@ -5122,7 +5129,7 @@ static int Net_New_Dialog() {
     } while (num_responses < Session.Players.Count() - 1 &&
              response_timer.HasTimeLeft());
 
-    if (Session.Scenarios[Session.Options.ScenarioIndex]->Get_Official() &&
+    if (Session.Scenarios.at(Session.Options.ScenarioIndex)->Get_Official() &&
         (!Force_Scenario_Available(Scen.ScenarioName))) {
       Emergency_Exit(EXIT_FAILURE);
     }
@@ -5267,8 +5274,9 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
     found = 0;
     resend = 0;
     for (int i = 1; i < Session.Players.Count(); i++) {
-      if (std::string_view(Session.Players[i]->Name) == Session.GPacket.Name) {
-        if (Session.Players[i]->Address != Session.GAddress) {
+      if (std::string_view(Session.Players.at(i)->Name) ==
+          Session.GPacket.Name) {
+        if (Session.Players.at(i)->Address != Session.GAddress) {
           found = 1;
         } else {
           resend = 1;
@@ -5279,7 +5287,7 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
     //.....................................................................
     // If his name is the same as mine, treat it like a duplicate name
     //.....................................................................
-    if (std::string_view(Session.Players[0]->Name) == Session.GPacket.Name) {
+    if (std::string_view(Session.Players.at(0)->Name) == Session.GPacket.Name) {
       found = 1;
     }
 
@@ -5394,17 +5402,17 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
       // color we
       //	give him as used.
       //..................................................................
-      if (color_used[Session.GPacket.PlayerInfo.Color] == 0) {
+      if (color_used.at(Session.GPacket.PlayerInfo.Color) == 0) {
         who->Player.Color = Session.GPacket.PlayerInfo.Color;
       } else {
         for (int i = 0; i < MAX_MPLAYER_COLORS; i++) {
-          if (color_used[static_cast<PlayerColorType>(i)] == 0) {
+          if (color_used.at(static_cast<PlayerColorType>(i)) == 0) {
             who->Player.Color = static_cast<PlayerColorType>(i);
             break;
           }
         }
       }
-      color_used[who->Player.Color] = 1;
+      color_used.at(who->Player.Color) = 1;
 
       //..................................................................
       //	Add player name to the list box
@@ -5424,8 +5432,8 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
                                      .Full_Name()));
 #endif  // OLDWAY
       playerlist->Add_Item(item, who->Player.Color == PCOLOR_DIALOG_BLUE
-                                     ? &ColorRemaps[PCOLOR_REALLY_BLUE]
-                                     : &ColorRemaps[who->Player.Color]);
+                                     ? &ColorRemaps.at(PCOLOR_REALLY_BLUE)
+                                     : &ColorRemaps.at(who->Player.Color));
 
       //..................................................................
       //	Send a confirmation packet
@@ -5459,8 +5467,9 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
       //..................................................................
       //	Name found; remove it
       //..................................................................
-      if (std::string_view(Session.Players[i]->Name) == Session.GPacket.Name &&
-          Session.Players[i]->Address == Session.GAddress) {
+      if (std::string_view(Session.Players.at(i)->Name) ==
+              Session.GPacket.Name &&
+          Session.Players.at(i)->Address == Session.GAddress) {
         //...............................................................
         //	Remove from the list box
         //...............................................................
@@ -5470,13 +5479,13 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
         //...............................................................
         //	Mark his color as available
         //...............................................................
-        color_used[Session.Players[i]->Player.Color] = 0;
+        color_used.at(Session.Players.at(i)->Player.Color) = 0;
 
         //...............................................................
         //	Delete from the Vector list
         //...............................................................
-        delete Session.Players[i];
-        Session.Players.Delete(Session.Players[i]);
+        delete Session.Players.at(i);
+        Session.Players.Delete(Session.Players.at(i));
 
         //...............................................................
         // Play a special sound.
@@ -7229,8 +7238,8 @@ void Start_WWChat(ColorListClass* playerlist) {
       Text_String(HouseTypeClass::As_Reference(Session.House).Full_Name()));
 #endif  // OLDWAY
   playerlist->Add_Item(item, Session.ColorIdx == PCOLOR_DIALOG_BLUE
-                                 ? &ColorRemaps[PCOLOR_REALLY_BLUE]
-                                 : &ColorRemaps[Session.ColorIdx]);
+                                 ? &ColorRemaps.at(PCOLOR_REALLY_BLUE)
+                                 : &ColorRemaps.at(Session.ColorIdx));
 
   //------------------------------------------------------------------------
   // Add everyone else to the list
@@ -7258,8 +7267,8 @@ void Start_WWChat(ColorListClass* playerlist) {
       }
       playerlist->Add_Item(item,
                            base::At(WWPersons, i).Color == PCOLOR_DIALOG_BLUE
-                               ? &ColorRemaps[PCOLOR_REALLY_BLUE]
-                               : &ColorRemaps[base::At(WWPersons, i).Color]);
+                               ? &ColorRemaps.at(PCOLOR_REALLY_BLUE)
+                               : &ColorRemaps.at(base::At(WWPersons, i).Color));
     }
     //.....................................................................
     // If this entry's name is the same as the previous, copy the color

@@ -116,8 +116,10 @@ class DigitCursor {
     result.bytes_ = bytes;
     return result;
   }
-  [[nodiscard]] auto operator*() const { return (*this)[0]; }
-  [[nodiscard]] auto operator[](std::ptrdiff_t offset) const {
+  [[nodiscard]] auto operator*() const { return (*this).at(0); }
+  // Returns a digit relative to this cursor, checked against the original
+  // storage. Negative offsets are valid when they remain inside that storage.
+  [[nodiscard]] auto at(std::ptrdiff_t offset) const {
     CHECK_GE(offset, -position_);
     CHECK_LT(offset, Count() - position_);
     const auto index = position_ + offset;
@@ -128,6 +130,9 @@ class DigitCursor {
     } else {
       return Reference(bytes);
     }
+  }
+  [[nodiscard]] auto operator[](std::ptrdiff_t offset) const {
+    return at(offset);
   }
   DigitCursor& operator+=(std::ptrdiff_t count) {
     CHECK_GE(count, -1 - position_);

@@ -1667,7 +1667,7 @@ ObjectClass* InfantryTypeClass::Create_One_Of(HouseClass* house) const {
 bool InfantryTypeClass::Create_And_Place(CELL cell, HousesType house) const {
   auto* i = new InfantryClass(Type, house);
   if (i) {
-    const COORDINATE coord = Map[cell].Closest_Free_Spot(Cell_Coord(cell));
+    const COORDINATE coord = Map.at(cell).Closest_Free_Spot(Cell_Coord(cell));
     if (coord) {
       return i->Unlimbo(coord, DIR_E);
     }
@@ -1782,7 +1782,7 @@ InfantryType InfantryTypeClass::From_Name(const char* name) {
   if (name) {
     for (InfantryType classid = INFANTRY_E1; classid < INFANTRY_COUNT;
          classid++) {
-      if (port::CompareIgnoreCase(Pointers[classid]->IniName, name) == 0) {
+      if (port::CompareIgnoreCase(Pointers.at(classid)->IniName, name) == 0) {
         return classid;
       }
     }
@@ -1861,7 +1861,7 @@ void InfantryTypeClass::Init(TheaterType theater) {
       const auto filename = std::string(uclass->IniName).substr(0, 4) + "ICNH";
 
       const auto fullname = std::filesystem::path(filename)
-                                .replace_extension(Theaters[theater].Suffix)
+                                .replace_extension(Theaters.at(theater).Suffix)
                                 .string();
       const auto cameo_ptr = MixArchive::RetrieveData(fullname);
       if (!cameo_ptr.empty()) {

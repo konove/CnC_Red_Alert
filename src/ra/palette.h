@@ -24,8 +24,16 @@ class PaletteClass {
 
   [[nodiscard]] int Closest_Color(const RGBClass& /*col*/) const;
 
-  RGBClass& operator[](int index) ABSL_ATTRIBUTE_LIFETIME_BOUND;
-  const RGBClass& operator[](int index) const ABSL_ATTRIBUTE_LIFETIME_BOUND;
+  // Returns a palette entry; indices outside [0, 256) fail in every build.
+  RGBClass& at(int index) ABSL_ATTRIBUTE_LIFETIME_BOUND;
+  [[nodiscard]] const RGBClass& at(int index) const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND;
+  RGBClass& operator[](int index) ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return at(index);
+  }
+  const RGBClass& operator[](int index) const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return at(index);
+  }
 
   // legacy C interfaces take the object where a pointer or name is expected.
   // NOLINTNEXTLINE(*-explicit-constructor)

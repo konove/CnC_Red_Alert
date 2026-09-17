@@ -116,7 +116,7 @@ class BaseClass {
   ** Returns a pointer to the requested node.
   */
   BaseNodeClass* Get_Node(const BuildingClass* obj);
-  BaseNodeClass* Get_Node(int index) { return &Nodes[index]; }
+  BaseNodeClass* Get_Node(int index) { return &Nodes.at(index); }
   BaseNodeClass* Get_Node(CELL cell);
 
   /*

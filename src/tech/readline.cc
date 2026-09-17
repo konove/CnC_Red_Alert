@@ -25,6 +25,7 @@
 #include <span>
 #include <string_view>
 
+#include "base/array.h"
 #include "tech/byte_source.h"
 #include "tech/file.h"
 #include "tech/file_source.h"
@@ -40,10 +41,10 @@ void strtrim(std::span<char> buffer) {
   }
   // Forward copy is safe when removing a prefix from the same buffer.
   for (std::size_t i = 0; i < text.size(); ++i) {
-    buffer[i] = text[i];
+    base::At(buffer, i) = base::At(text, i);
   }
   if (text.size() < buffer.size()) {
-    buffer[static_cast<std::size_t>(text.size())] = '\0';
+    base::At(buffer, static_cast<std::size_t>(text.size())) = '\0';
   }
 }
 
@@ -62,7 +63,7 @@ int Read_Line(ByteSource& file, std::span<char> buffer, bool& eof) {
     char c = 0;
     if (!file.ReadObject(c)) {
       eof = true;
-      buffer[static_cast<std::size_t>(0)] = '\0';
+      base::At(buffer, static_cast<std::size_t>(0)) = '\0';
       break;
     }
 
@@ -70,10 +71,10 @@ int Read_Line(ByteSource& file, std::span<char> buffer, bool& eof) {
       break;
     }
     if (c != '\x0D' && count + 1 < std::ssize(buffer)) {
-      buffer[static_cast<std::size_t>(count++)] = c;
+      base::At(buffer, static_cast<std::size_t>(count++)) = c;
     }
   }
-  buffer[static_cast<std::size_t>(count)] = '\0';
+  base::At(buffer, static_cast<std::size_t>(count)) = '\0';
 
   strtrim(buffer);
   return static_cast<int>(std::string_view(buffer.data()).size());

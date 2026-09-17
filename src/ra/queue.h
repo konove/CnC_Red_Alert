@@ -93,7 +93,10 @@ class QueueClass {
   *and entry *	[Count-1] matches the last-in-line. This is ensured regardless
   *of the actual position *	of the object in the circular internal list.
   */
-  T& operator[](int /*index*/) ABSL_ATTRIBUTE_LIFETIME_BOUND;
+  // Returns an active entry in logical order; invalid indices fail in all
+  // builds.
+  T& at(int index) ABSL_ATTRIBUTE_LIFETIME_BOUND;
+  T& operator[](int index) ABSL_ATTRIBUTE_LIFETIME_BOUND { return at(index); }
 
   /*
   **	This function will return a reference to the "head of the line" object.
@@ -246,7 +249,9 @@ int QueueClass<T, size>::Next() {
  * HISTORY: * 12/09/1994 JLB : Created. *
  *=============================================================================================*/
 template <class T, int size>
-T& QueueClass<T, size>::operator[](int index) {
+T& QueueClass<T, size>::at(int index) {
+  CHECK_GE(index, 0);
+  CHECK_LT(index, Count_);
   return base::At(Array, (Head + index) % size);
 }
 

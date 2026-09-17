@@ -136,7 +136,7 @@ base::EnumArray<ThemeType, ThemeClass::ThemeControl, kThemeCount>
  *=============================================================================================*/
 const char* ThemeClass::Base_Name(ThemeType theme) {
   if (theme != THEME_NONE) {
-    return _themes[theme].Name;
+    return _themes.at(theme).Name;
   }
   return "No theme";
 }
@@ -173,7 +173,7 @@ ThemeClass::ThemeClass() = default;
  *=============================================================================================*/
 const char* ThemeClass::Full_Name(ThemeType theme) {
   if (theme != THEME_NONE) {
-    return Text_String(_themes[theme].Fullname);
+    return Text_String(_themes.at(theme).Fullname);
   }
   return nullptr;
 }
@@ -237,7 +237,7 @@ ThemeType ThemeClass::Next_Song(ThemeType theme) {
     theme = Next_Song(THEME_PICK_ANOTHER);
   } else {
     if (theme == THEME_PICK_ANOTHER ||
-        (!_themes[theme].Repeat && !Options.IsScoreRepeat)) {
+        (!_themes.at(theme).Repeat && !Options.IsScoreRepeat)) {
       if (Options.IsScoreShuffle) {
         /*
         **	Shuffle the theme, but never pick the same theme that was just
@@ -354,8 +354,8 @@ int ThemeClass::Play_Song(ThemeType theme) {
  *support.                                                 *
  *=============================================================================================*/
 const char* ThemeClass::Theme_File_Name(ThemeType theme) {
-  if (_themes[theme].Variation && Special.IsVariation) {
-    static auto name = std::filesystem::path(_themes[theme].Name)
+  if (_themes.at(theme).Variation && Special.IsVariation) {
+    static auto name = std::filesystem::path(_themes.at(theme).Name)
                            .replace_extension(".VAR")
                            .string();
     GameFile file(name);
@@ -363,7 +363,7 @@ const char* ThemeClass::Theme_File_Name(ThemeType theme) {
       return name.data();
     }
   }
-  static auto name = std::filesystem::path(_themes[theme].Name)
+  static auto name = std::filesystem::path(_themes.at(theme).Name)
                          .replace_extension(".AUD")
                          .string();
 
@@ -389,7 +389,7 @@ const char* ThemeClass::Theme_File_Name(ThemeType theme) {
  *=============================================================================================*/
 int ThemeClass::Track_Length(ThemeType theme) {
   if (static_cast<unsigned>(theme) < static_cast<unsigned>(kThemeCount)) {
-    return _themes[theme].Duration;
+    return _themes.at(theme).Duration;
   }
   return 0;
 }
@@ -471,13 +471,14 @@ bool ThemeClass::Is_Allowed(ThemeType index) {
     return true;
   }
 
-  return _themes[index].Available &&
-         (_themes[index].Normal ||
+  return _themes.at(index).Available &&
+         (_themes.at(index).Normal ||
           //		(index == THEME_MAP1 && ScenarioInit) ||
-          (Special.IsVariation && _themes[index].Variation &&
+          (Special.IsVariation && _themes.at(index).Variation &&
            index != THEME_WIN1 &&
 #ifndef DEMO
-           (GameToPlay != GAME_NORMAL || _themes[index].Scenario <= Scenario) &&
+           (GameToPlay != GAME_NORMAL ||
+            _themes.at(index).Scenario <= Scenario) &&
 #endif
            (index != THEME_J1 || Special.IsJurassic)));
 }
@@ -508,7 +509,7 @@ ThemeType ThemeClass::From_Name(const char* name) {
     **	of the theme. This is guaranteed to be unique.
     */
     for (ThemeType theme = THEME_AIRSTRIKE; theme < THEME_COUNT; theme++) {
-      if (port::CompareIgnoreCase(_themes[theme].Name, name) == 0) {
+      if (port::CompareIgnoreCase(_themes.at(theme).Name, name) == 0) {
         return theme;
       }
     }
@@ -519,7 +520,7 @@ ThemeType ThemeClass::From_Name(const char* name) {
     **	yeild a match, but is not guaranteed to be unique.
     */
     for (ThemeType theme = THEME_AIRSTRIKE; theme < THEME_COUNT; theme++) {
-      if (std::string_view(Text_String(_themes[theme].Fullname))
+      if (std::string_view(Text_String(_themes.at(theme).Fullname))
               .contains(name)) {
         return theme;
       }
@@ -551,7 +552,8 @@ void ThemeClass::Scan() {
     //		if (theme == THEME_J1 && !Special.IsJurassic) {
     //			_themes[theme].Available = false;
     //		} else {
-    _themes[theme].Available = GameFile(Theme_File_Name(theme)).IsAvailable();
+    _themes.at(theme).Available =
+        GameFile(Theme_File_Name(theme)).IsAvailable();
     //		}
   }
 }

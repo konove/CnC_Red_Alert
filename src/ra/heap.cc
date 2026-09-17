@@ -180,8 +180,8 @@ void* FixedHeapClass::Allocate() {
 
     if (index != -1) {
       ActiveCount++;
-      FreeFlag[base::ToSize(index)] = true;
-      return (*this)[index];
+      FreeFlag.at(base::ToSize(index)) = true;
+      return (*this).at(index);
     }
   }
   return nullptr;
@@ -207,9 +207,9 @@ bool FixedHeapClass::Free(void* pointer) {
     const int index = ID(pointer);
 
     if (static_cast<unsigned>(index) < static_cast<unsigned>(TotalCount)) {
-      if (FreeFlag[base::ToSize(index)]) {
+      if (FreeFlag.at(base::ToSize(index))) {
         ActiveCount--;
-        FreeFlag[base::ToSize(index)] = false;
+        FreeFlag.at(base::ToSize(index)) = false;
         return true;
       }
     }

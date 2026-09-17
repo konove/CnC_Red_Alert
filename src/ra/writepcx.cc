@@ -40,6 +40,7 @@
 #include <cstring>
 #include <span>
 
+#include "base/array.h"
 #include "base/buffer.h"
 #include "ra/filepcx.h"
 #include "ra/palette.h"
@@ -196,7 +197,7 @@ static void Write_Pcx_ScanLine(File& file, int scansize,
   unsigned char rle = 1;
   unsigned char c = 0;
   for (int i = 1; i < scansize; i++) {
-    const auto color = pixels[static_cast<size_t>(i)];
+    const auto color = base::At(pixels, static_cast<size_t>(i));
     if (color == last) {
       rle++;
       if (rle == rle_max_run) {

@@ -354,7 +354,7 @@ MissionType MissionClass::Mission_From_Name(const char* name) {
 
   if (name) {
     for (MissionType order = MISSION_SLEEP; order < MISSION_COUNT; order++) {
-      if (port::CompareIgnoreCase(Missions[order], name) == 0) {
+      if (port::CompareIgnoreCase(Missions.at(order), name) == 0) {
         return order;
       }
     }
@@ -379,7 +379,7 @@ MissionType MissionClass::Mission_From_Name(const char* name) {
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
 const char* MissionClass::Mission_Name(MissionType mission) {
-  return mission == MISSION_NONE ? "None" : Missions[mission];
+  return mission == MISSION_NONE ? "None" : Missions.at(mission);
 }
 
 /***********************************************************************************************

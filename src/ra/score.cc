@@ -85,7 +85,6 @@
 #include "ra/session.h"
 #include "ra/theme.h"
 #include "ra/type.h"
-#include "ra/vector.h"
 #include "ra/ww_audio.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/file_access.h"
@@ -253,12 +252,12 @@ void ScorePrintClass::Update() {
     // print the letter properly
     if (Stage) {
       Set_Font_Palette(PrimaryPalette);
-      localstr[0] = Text()[base::ToSize(Stage - 1)];
+      localstr[0] = Text().at(base::ToSize(Stage - 1));
       HidPage.Print(localstr, pos - 12, YPos, kTBlack, kTBlack);
       HidPage.Blit(SeenBuff, pos - 12, YPos - 2, pos - 12, YPos - 2, 14, 16);
     }
     if (base::ToSize(Stage) < Text().size()) {
-      localstr[0] = Text()[base::ToSize(Stage)];
+      localstr[0] = Text().at(base::ToSize(Stage));
       Set_Font_Palette(_whitepal);
       SeenBuff.Print(localstr, pos, YPos - 1, kTBlack, kTBlack);
       SeenBuff.Print(localstr, pos, YPos + 1, kTBlack, kTBlack);
@@ -432,7 +431,7 @@ void ScoreClass::Presentation() {
   */
   int leadership = 0;
   for (int index = 0; index < Logic.Count(); index++) {
-    const ObjectClass* object = Logic[index];
+    const ObjectClass* object = Logic.at(index);
     const HousesType owner = object->Owner();
     if (house &&
         (owner == HOUSE_USSR || owner == HOUSE_BAD || owner == HOUSE_UKRAINE)) {
@@ -774,11 +773,11 @@ void Cycle_Wait_Click(bool cycle) {
     if (cycle) {
       counter = (counter + 1) % 8;
       if (counter == 0 && Options.IsPaletteScroll) {
-        const RGBClass rgb = ScorePalette[233];
+        const RGBClass rgb = ScorePalette.at(233);
         for (int i = 233; i < 237; i++) {
-          ScorePalette[i] = ScorePalette[i + 1];
+          ScorePalette.at(i) = ScorePalette.at(i + 1);
         }
-        ScorePalette[237] = rgb;
+        ScorePalette.at(237) = rgb;
         ScorePalette.Set();
       }
     }
@@ -828,7 +827,7 @@ void ScoreClass::Do_Nod_Buildings_Graph() {
     if (i < 68) {
       CC_Draw_Shape(power_plant_shape, shapenum, 0, 0, WINDOW_MAIN,
                     SHAPE_GHOST | SHAPE_FADING | SHAPE_WIN_REL,
-                    ColorRemaps[PCOLOR_GOLD].RemapTable,
+                    ColorRemaps.at(PCOLOR_GOLD).RemapTable,
                     DisplayClass::UnitShadow);
     }
 
@@ -855,12 +854,14 @@ void ScoreClass::Do_Nod_Buildings_Graph() {
     */
     CC_Draw_Shape(
         tanya_shape,
-        ramboclass->DoControls[static_cast<int>(DO_WALK)].Frame +
-            (ramboclass->DoControls[static_cast<int>(DO_WALK)].Jump * 6) +
-            ((i / 2) % ramboclass->DoControls[static_cast<int>(DO_WALK)].Count),
+        base::At(ramboclass->DoControls, static_cast<int>(DO_WALK)).Frame +
+            (base::At(ramboclass->DoControls, static_cast<int>(DO_WALK)).Jump *
+             6) +
+            ((i / 2) %
+             base::At(ramboclass->DoControls, static_cast<int>(DO_WALK)).Count),
         i + 32, 40, WINDOW_MAIN,
         SHAPE_FADING | SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST,
-        ColorRemaps[PCOLOR_RED].RemapTable, DisplayClass::UnitShadow);
+        ColorRemaps.at(PCOLOR_RED).RemapTable, DisplayClass::UnitShadow);
     HidPage.Blit(SeenBuff, 0, 0, BUILDING_X, BUILDING_Y, 320 - BUILDING_X, 48);
     Call_Back_Delay(1);
   }
@@ -1020,8 +1021,8 @@ void ScoreClass::Do_Nod_Casualties_Graph() {
     base::At(InfantryMan, i + r).ypos = 21;
     base::At(InfantryMan, i + 0).shapefile =
         base::At(InfantryMan, i + r).shapefile = e1ptr;
-    base::At(InfantryMan, i + 0).remap = ColorRemaps[PCOLOR_RED].RemapTable;
-    base::At(InfantryMan, i + r).remap = ColorRemaps[PCOLOR_BLUE].RemapTable;
+    base::At(InfantryMan, i + 0).remap = ColorRemaps.at(PCOLOR_RED).RemapTable;
+    base::At(InfantryMan, i + r).remap = ColorRemaps.at(PCOLOR_BLUE).RemapTable;
     base::At(InfantryMan, i + 0).anim = base::At(InfantryMan, i + r).anim = 0;
     base::At(InfantryMan, i + 0).stage = base::At(InfantryMan, i + r).stage = 0;
     base::At(InfantryMan, i + 0).delay = base::At(InfantryMan, i + r).delay =
@@ -1247,13 +1248,14 @@ void ScoreClass::Input_Name(std::span<char> str, int xpos, int ypos,
       ** turn it into a space instead.
       */
       if ((key == KA_BACKSPACE && index == MAX_FAMENAME_LENGTH - 2) &&
-          (str[base::ToSize(index)] && str[base::ToSize(index)] != 32)) {
+          (base::At(str, base::ToSize(index)) &&
+           base::At(str, base::ToSize(index)) != 32)) {
         key = 32;
       }
 
       if (key == KA_BACKSPACE) {  // if (key == KN_BACKSPACE) {
         if (index) {
-          str[base::ToSize(--index)] = 0;
+          base::At(str, base::ToSize(--index)) = 0;
 
           const int xposindex6 = (xpos + (index * 6)) * 2;
           HidPage.Blit(SeenBuff, xposindex6, (ypos - 100) * 2, xposindex6,
@@ -1273,8 +1275,8 @@ void ScoreClass::Input_Name(std::span<char> str, int xpos, int ypos,
                        (xpos + (index * 6)) * 2, ypos * 2, 12, 12);
           HidPage.Blit(HidPage, (xpos + (index * 6)) * 2, (ypos - 100) * 2,
                        (xpos + (index * 6)) * 2, ypos * 2, 12, 12);
-          str[base::ToSize(index)] = static_cast<char>(ascii);
-          str[base::ToSize(index + 1)] = 0;
+          base::At(str, base::ToSize(index)) = static_cast<char>(ascii);
+          base::At(str, base::ToSize(index + 1)) = 0;
 
           Play_Sample(keystrok, 255, Options.Normalize_Volume(150));
           const int objindex = Alloc_Object(
@@ -1381,11 +1383,10 @@ void Draw_InfantryMan(int index) {
     return;
   }
 
-  const int stage =
-      base::At(InfantryMan, index).stage +
-      base::At(InfantryMan, index)
-          .Class->DoControls[base::ToSize(base::At(InfantryMan, index).anim)]
-          .Frame;
+  const int stage = base::At(InfantryMan, index).stage +
+                    base::At(base::At(InfantryMan, index).Class->DoControls,
+                             base::ToSize(base::At(InfantryMan, index).anim))
+                        .Frame;
 
   CC_Draw_Shape(base::At(InfantryMan, index).shapefile, stage,
                 base::At(InfantryMan, index).xpos,
@@ -1399,9 +1400,8 @@ void Draw_InfantryMan(int index) {
     base::At(InfantryMan, index).delay = 3;
     if (std::cmp_greater_equal(
             ++base::At(InfantryMan, index).stage,
-            base::At(InfantryMan, index)
-                .Class
-                ->DoControls[base::ToSize(base::At(InfantryMan, index).anim)]
+            base::At(base::At(InfantryMan, index).Class->DoControls,
+                     base::ToSize(base::At(InfantryMan, index).anim))
                 .Count)) {
       /*
       ** was he playing a death anim? If so, and it's done, erase him
@@ -1662,11 +1662,11 @@ void Multi_Score_Presentation() {
   for (auto& i : Session.Score) {
     if (!std::string_view(i.Name).empty()) {
       const PlayerColorType color = i.Color;
-      remap[8] = ColorRemaps[color].FontRemap[11];
-      remap[6] = ColorRemaps[color].FontRemap[12];
-      remap[4] = ColorRemaps[color].FontRemap[13];
-      remap[2] = ColorRemaps[color].FontRemap[14];
-      remap[14] = ColorRemaps[color].FontRemap[15];
+      remap[8] = ColorRemaps.at(color).FontRemap[11];
+      remap[6] = ColorRemaps.at(color).FontRemap[12];
+      remap[4] = ColorRemaps.at(color).FontRemap[13];
+      remap[2] = ColorRemaps.at(color).FontRemap[14];
+      remap[14] = ColorRemaps.at(color).FontRemap[15];
 
       Alloc_Object(new ScorePrintClass(i.Name, 15, y, remap));
       Call_Back_Delay(20);

@@ -423,9 +423,9 @@ void RadarClass::Draw_It(bool forced) {
           for (int index = 0; index < PixelPtr; index++) {
             const CELL cell = base::At(PixelStack, index);
             if (Cell_On_Radar(cell)) {
-              (*this)[cell].IsPlot = false;
+              (*this).at(cell).IsPlot = false;
               Plot_Radar_Pixel(cell);
-              RadarCursorRedraw |= (*this)[cell].IsRadarCursor;
+              RadarCursorRedraw |= (*this).at(cell).IsRadarCursor;
             }
           }
 
@@ -440,7 +440,7 @@ void RadarClass::Draw_It(bool forced) {
             for (int y = 0; y < MapCellHeight; y++) {
               for (int x = 0; x < MapCellWidth; x++) {
                 const CELL cell = XY_Cell(MapCellX + x, MapCellY + y);
-                if (Cell_On_Radar(cell) && (*this)[cell].IsPlot) {
+                if (Cell_On_Radar(cell) && (*this).at(cell).IsPlot) {
                   base::At(PixelStack, PixelPtr++) = cell;
                   IsRadarToRedraw = true;
                   if (PixelPtr == kPixelstack) {
@@ -530,7 +530,7 @@ void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) const {
   TerrainClass* list[4];
   int listidx = 0;
 
-  ObjectClass* obj = Map[cell].Cell_Occupier();
+  ObjectClass* obj = Map.at(cell).Cell_Occupier();
 
   /*
   ** If the cell is occupied by a terrain type, add it to the sortable
@@ -544,7 +544,7 @@ void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) const {
   ** Now loop through all the occupiers and add them to the list if they
   ** are terrain type.
   */
-  for (auto& Overlapper : Map[cell].Overlappers) {
+  for (auto& Overlapper : Map.at(cell).Overlappers) {
     obj = Overlapper;
     if (obj && obj->IsActive && obj->What_Am_I() == RTTI_TERRAIN) {
       base::At(list, listidx++) = dynamic_cast<TerrainClass*>(obj);
@@ -620,7 +620,7 @@ void RadarClass::Render_Infantry(CELL cell, int x, int y, int size) const {
   int xoff = 0;
   int yoff = 0;
 
-  ObjectClass* obj = Map[cell].Cell_Occupier();
+  ObjectClass* obj = Map.at(cell).Cell_Occupier();
   while (obj) {
     if (obj->Is_Techno() &&
         (dynamic_cast<TechnoClass*>(obj)->Cloak != CLOAKED ||
@@ -697,12 +697,12 @@ void RadarClass::Render_Infantry(CELL cell, int x, int y, int size) const {
  *   04/18/1995 PWG : Created.                                             *
  *=========================================================================*/
 void RadarClass::Render_Overlay(CELL cell, int x, int y, int size) {
-  const OverlayType overlay = (*this)[cell].Overlay;
+  const OverlayType overlay = (*this).at(cell).Overlay;
   if (overlay != OVERLAY_NONE) {
     const OverlayTypeClass* otype = &OverlayTypeClass::As_Reference(overlay);
 
     if (otype->IsRadarVisible) {
-      const auto icon = otype->Radar_Icon((*this)[cell].OverlayData);
+      const auto icon = otype->Radar_Icon((*this).at(cell).OverlayData);
       if (icon.empty()) {
         return;
       }
@@ -847,7 +847,7 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
   int y = Cell_Y(cell) - RadarY;  // Coordinate of cell location.
 
   if (LogicPage->Lock()) {
-    const CellClass* cellptr = &(*this)[cell];
+    const CellClass* cellptr = &(*this).at(cell);
     x = RadX + RadOffX + BaseX + (x * ZoomFactor);
     y = RadY + RadOffY + BaseY + (y * ZoomFactor);
 
@@ -855,7 +855,7 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
     **	Determine what (if any) vehicle or unit should be rendered in this blip.
     */
     int color = kTBlack;  // Color of the pixel to plot.
-    if ((*this)[cell].IsVisible || Debug_Unshroud) {
+    if ((*this).at(cell).IsVisible || Debug_Unshroud) {
       color = cellptr->Cell_Color(true);
     } else {
       color = kBlack;
@@ -888,7 +888,8 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
           const auto map_index = static_cast<std::size_t>(map_offset) +
                                  static_cast<std::size_t>(logical_icon);
           if (map_index < data.size()) {
-            const auto icon = std::to_integer<std::size_t>(data[map_index]);
+            const auto icon =
+                std::to_integer<std::size_t>(base::At(data, map_index));
             const auto start = static_cast<std::size_t>(pixel_offset) +
                                (icon * std::size_t{24} * 24);
             if (start <= data.size() &&
@@ -945,7 +946,7 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
 void RadarClass::Radar_Pixel(CELL cell) {
   if (IsRadarActive && Map.IsSidebarActive && Cell_On_Radar(cell)) {
     IsRadarToRedraw = true;
-    (*this)[cell].IsPlot = true;
+    (*this).at(cell).IsPlot = true;
     if (PixelPtr < kPixelstack) {
       base::At(PixelStack, PixelPtr++) = cell;
     }
@@ -1062,7 +1063,7 @@ bool RadarClass::Map_Cell(CELL cell, HouseClass* house) {
 }
 
 void RadarClass::Cursor_Cell(CELL cell, bool value) {
-  const bool temp = (*this)[cell].IsRadarCursor;
+  const bool temp = (*this).at(cell).IsRadarCursor;
 
   /*
   ** If this cell is not on the radar don't botther doing anything.
@@ -1071,7 +1072,7 @@ void RadarClass::Cursor_Cell(CELL cell, bool value) {
     /*
     **	Record the new state of this cell.
     */
-    (*this)[cell].IsRadarCursor = value;
+    (*this).at(cell).IsRadarCursor = value;
 
     /*
     **	If we are erasing then erase the cell.
@@ -1461,7 +1462,7 @@ bool RadarClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
     CELL cell =
         Map.RadarClass::Click_Cell_Calc(x, y);  // cell num click happened over
     if (cell != -1 && Map.In_Radar(cell)) {
-      const bool shadow = !Map[cell].IsVisible &&
+      const bool shadow = !Map.at(cell).IsVisible &&
                           !Debug_Unshroud;  // is the cell in shadow or not
       const int cellx = 12;
       const int celly = 12;  // Sub cell pixel coordinates.
@@ -1479,9 +1480,9 @@ bool RadarClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
       */
       if (CurrentObject.Count()) {
         if (object) {
-          action = CurrentObject[0]->What_Action(object);
+          action = CurrentObject.at(0)->What_Action(object);
         } else {
-          action = CurrentObject[0]->What_Action(cell);
+          action = CurrentObject.at(0)->What_Action(cell);
         }
 
         /*
@@ -1979,8 +1980,8 @@ void RadarClass::Draw_Names() const {
 
       int kills = 0;
       for (HousesType h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
-        kills += ptr->UnitsKilled[h];
-        kills += ptr->BuildingsKilled[h];
+        kills += ptr->UnitsKilled.at(h);
+        kills += ptr->BuildingsKilled.at(h);
       }
       absl::SNPrintF(txt, sizeof(txt), "%2d", kills);
       Fancy_Text_Print(txt, RadX + RadOffX + RadIWidth - 2, y, color, kBlack,

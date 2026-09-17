@@ -255,8 +255,8 @@ std::span<const int16_t> BulletClass::Occupy_List(bool /*placement*/) const {
         int index = 0;
         const CELL cell1 = Coord_Cell(Coord);
 
-        while (ptr[base::ToSize(index)] != REFRESH_EOL) {
-          base::At(_list, index) = ptr[base::ToSize(index)];
+        while (base::At(ptr, base::ToSize(index)) != REFRESH_EOL) {
+          base::At(_list, index) = base::At(ptr, base::ToSize(index));
           index++;
         }
 
@@ -399,7 +399,7 @@ void BulletClass::AI() {
       Mark();
       //			IsLocked = true;
       if (!Class->IsHigh) {
-        const CellClass* cellptr = &Map[Coord_Cell(coord)];
+        const CellClass* cellptr = &Map.at(Coord_Cell(coord));
         if (cellptr->Overlay != OVERLAY_NONE &&
             OverlayTypeClass::As_Reference(cellptr->Overlay).IsHigh) {
           forced = true;

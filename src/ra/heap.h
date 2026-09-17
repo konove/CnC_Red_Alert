@@ -99,16 +99,19 @@ class FixedHeapClass {
   virtual bool Free(void* pointer);
   virtual bool Free_All();
 
-  void* operator[](int index) {
+  // Returns a storage slot; index must be in [0, Length()).
+  void* at(int index) {
     CHECK_GE(index, 0);
     CHECK_LT(index, TotalCount);
     return Buffer.subspan(base::ToSize(int64_t{index} * Size)).data();
   }
-  const void* operator[](int index) const {
+  void* operator[](int index) { return at(index); }
+  [[nodiscard]] const void* at(int index) const {
     CHECK_GE(index, 0);
     CHECK_LT(index, TotalCount);
     return Buffer.subspan(base::ToSize(int64_t{index} * Size)).data();
   }
+  const void* operator[](int index) const { return at(index); }
 
  protected:
   /*
@@ -172,12 +175,12 @@ class FixedIHeapClass : public FixedHeapClass {
   bool Free_All() override;
   virtual int Logical_ID(const void* pointer) const;
   [[nodiscard]] virtual int Logical_ID(int id) const {
-    return Logical_ID((*this)[id]);
+    return Logical_ID((*this).at(id));
   }
 
-  virtual void* Active_Ptr(int index) { return ActivePointers[index]; }
+  virtual void* Active_Ptr(int index) { return ActivePointers.at(index); }
   [[nodiscard]] virtual const void* Active_Ptr(int index) const {
-    return ActivePointers[index];
+    return ActivePointers.at(index);
   }
 
   /*
@@ -231,11 +234,9 @@ class TFixedIHeapClass : public FixedIHeapClass {
   bool Load(ByteSource& file)
     requires Serializable<T>;
   [[nodiscard]] virtual T* Ptr(int index) const {
-    return static_cast<T*>(ActivePointers[index]);
+    return static_cast<T*>(ActivePointers.at(index));
   }
-  virtual T* Raw_Ptr(int index) {
-    return static_cast<T*>((*this)[index]);
-  }
+  virtual T* Raw_Ptr(int index) { return static_cast<T*>((*this).at(index)); }
 };
 
 template <class T>
@@ -274,8 +275,8 @@ bool TFixedIHeapClass<T>::Load(ByteSource& file)
       return false;
     }
 
-    T* ptr = static_cast<T*>((*this)[idx]);
-    FreeFlag[base::ToSize(idx)] = true;
+    T* ptr = static_cast<T*>((*this).at(idx));
+    FreeFlag.at(base::ToSize(idx)) = true;
     ActiveCount++;
     ActivePointers.Add(ptr);
 

@@ -104,17 +104,18 @@ CommBufferClass::CommBufferClass(int numsend, int numreceive, int maxlen,
   //------------------------------------------------------------------------
   for (int i = 0; i < MaxSend; i++) {
     // Byte vectors own the complete packet allocation and carry its capacity.
-    SendQueue[base::ToSize(i)].Buffer.resize(base::ToSize(maxlen));
+    SendQueue.at(base::ToSize(i)).Buffer.resize(base::ToSize(maxlen));
     if (MaxExtraSize > 0) {
-      SendQueue[base::ToSize(i)].ExtraBuffer.resize(base::ToSize(MaxExtraSize));
+      SendQueue.at(base::ToSize(i))
+          .ExtraBuffer.resize(base::ToSize(MaxExtraSize));
     }
   }
 
   for (int i = 0; i < MaxReceive; i++) {
-    ReceiveQueue[base::ToSize(i)].Buffer.resize(base::ToSize(maxlen));
+    ReceiveQueue.at(base::ToSize(i)).Buffer.resize(base::ToSize(maxlen));
     if (MaxExtraSize > 0) {
-      ReceiveQueue[base::ToSize(i)].ExtraBuffer.resize(
-          base::ToSize(MaxExtraSize));
+      ReceiveQueue.at(base::ToSize(i))
+          .ExtraBuffer.resize(base::ToSize(MaxExtraSize));
     }
   }
 
@@ -181,25 +182,25 @@ void CommBufferClass::Init() {
   //	Init the queue entries
   //------------------------------------------------------------------------
   for (int i = 0; i < MaxSend; i++) {
-    SendQueue[base::ToSize(i)].IsActive = 0;
-    SendQueue[base::ToSize(i)].IsACK = 0;
-    SendQueue[base::ToSize(i)].FirstTime = 0L;
-    SendQueue[base::ToSize(i)].LastTime = 0L;
-    SendQueue[base::ToSize(i)].SendCount = 0;
-    SendQueue[base::ToSize(i)].BufLen = 0;
-    SendQueue[base::ToSize(i)].ExtraLen = 0;
+    SendQueue.at(base::ToSize(i)).IsActive = 0;
+    SendQueue.at(base::ToSize(i)).IsACK = 0;
+    SendQueue.at(base::ToSize(i)).FirstTime = 0L;
+    SendQueue.at(base::ToSize(i)).LastTime = 0L;
+    SendQueue.at(base::ToSize(i)).SendCount = 0;
+    SendQueue.at(base::ToSize(i)).BufLen = 0;
+    SendQueue.at(base::ToSize(i)).ExtraLen = 0;
 
-    SendIndex[base::ToSize(i)] = 0;
+    SendIndex.at(base::ToSize(i)) = 0;
   }
 
   for (int i = 0; i < MaxReceive; i++) {
-    ReceiveQueue[base::ToSize(i)].IsActive = 0;
-    ReceiveQueue[base::ToSize(i)].IsRead = 0;
-    ReceiveQueue[base::ToSize(i)].IsACK = 0;
-    ReceiveQueue[base::ToSize(i)].BufLen = 0;
-    ReceiveQueue[base::ToSize(i)].ExtraLen = 0;
+    ReceiveQueue.at(base::ToSize(i)).IsActive = 0;
+    ReceiveQueue.at(base::ToSize(i)).IsRead = 0;
+    ReceiveQueue.at(base::ToSize(i)).IsACK = 0;
+    ReceiveQueue.at(base::ToSize(i)).BufLen = 0;
+    ReceiveQueue.at(base::ToSize(i)).ExtraLen = 0;
 
-    ReceiveIndex[base::ToSize(i)] = 0;
+    ReceiveIndex.at(base::ToSize(i)) = 0;
   }
 
   //------------------------------------------------------------------------
@@ -241,15 +242,15 @@ void CommBufferClass::Init_Send_Queue() {
   //	Init the queue entries
   //------------------------------------------------------------------------
   for (int i = 0; i < MaxSend; i++) {
-    SendQueue[base::ToSize(i)].IsActive = 0;
-    SendQueue[base::ToSize(i)].IsACK = 0;
-    SendQueue[base::ToSize(i)].FirstTime = 0L;
-    SendQueue[base::ToSize(i)].LastTime = 0L;
-    SendQueue[base::ToSize(i)].SendCount = 0;
-    SendQueue[base::ToSize(i)].BufLen = 0;
-    SendQueue[base::ToSize(i)].ExtraLen = 0;
+    SendQueue.at(base::ToSize(i)).IsActive = 0;
+    SendQueue.at(base::ToSize(i)).IsACK = 0;
+    SendQueue.at(base::ToSize(i)).FirstTime = 0L;
+    SendQueue.at(base::ToSize(i)).LastTime = 0L;
+    SendQueue.at(base::ToSize(i)).SendCount = 0;
+    SendQueue.at(base::ToSize(i)).BufLen = 0;
+    SendQueue.at(base::ToSize(i)).ExtraLen = 0;
 
-    SendIndex[base::ToSize(i)] = 0;
+    SendIndex.at(base::ToSize(i)) = 0;
   }
 
 } /* end of Init_Send_Queue */
@@ -291,7 +292,7 @@ int CommBufferClass::Queue_Send(std::span<const std::byte> buf, int buflen,
   //------------------------------------------------------------------------
   int index = -1;
   for (int i = 0; i < MaxSend; i++) {
-    if (SendQueue[base::ToSize(i)].IsActive == 0) {
+    if (SendQueue.at(base::ToSize(i)).IsActive == 0) {
       index = i;
       break;
     }
@@ -303,20 +304,20 @@ int CommBufferClass::Queue_Send(std::span<const std::byte> buf, int buflen,
   //------------------------------------------------------------------------
   //	Set entry flags
   //------------------------------------------------------------------------
-  SendQueue[base::ToSize(index)].IsActive = 1;  // entry is now active
-  SendQueue[base::ToSize(index)].IsACK = 0;     // entry hasn't been ACK'd
-  SendQueue[base::ToSize(index)].FirstTime =
+  SendQueue.at(base::ToSize(index)).IsActive = 1;  // entry is now active
+  SendQueue.at(base::ToSize(index)).IsACK = 0;     // entry hasn't been ACK'd
+  SendQueue.at(base::ToSize(index)).FirstTime =
       0L;  // filled in by Manager when sent
-  SendQueue[base::ToSize(index)].LastTime =
+  SendQueue.at(base::ToSize(index)).LastTime =
       0L;  // filled in by Manager when sent
-  SendQueue[base::ToSize(index)].SendCount =
+  SendQueue.at(base::ToSize(index)).SendCount =
       0;  // filled in by Manager when sent
-  SendQueue[base::ToSize(index)].BufLen = buflen;  // save buffer size
+  SendQueue.at(base::ToSize(index)).BufLen = buflen;  // save buffer size
 
   //------------------------------------------------------------------------
   //	Copy the packet data
   //------------------------------------------------------------------------
-  base::CopyBytes(SendQueue[base::ToSize(index)].Buffer, buf,
+  base::CopyBytes(SendQueue.at(base::ToSize(index)).Buffer, buf,
                   base::ToSize(buflen));
 
   //------------------------------------------------------------------------
@@ -324,17 +325,17 @@ int CommBufferClass::Queue_Send(std::span<const std::byte> buf, int buflen,
   //------------------------------------------------------------------------
   if (!extrabuf.empty() && extralen > 0 && extralen <= MaxExtraSize &&
       base::ToSize(extralen) <= extrabuf.size()) {
-    base::CopyBytes(SendQueue[base::ToSize(index)].ExtraBuffer, extrabuf,
+    base::CopyBytes(SendQueue.at(base::ToSize(index)).ExtraBuffer, extrabuf,
                     base::ToSize(extralen));
-    SendQueue[base::ToSize(index)].ExtraLen = extralen;
+    SendQueue.at(base::ToSize(index)).ExtraLen = extralen;
   } else {
-    SendQueue[base::ToSize(index)].ExtraLen = 0;
+    SendQueue.at(base::ToSize(index)).ExtraLen = 0;
   }
 
   //------------------------------------------------------------------------
   //	Save this entry's index
   //------------------------------------------------------------------------
-  SendIndex[base::ToSize(SendCount)] = index;
+  SendIndex.at(base::ToSize(SendCount)) = index;
 
   //------------------------------------------------------------------------
   //	Increment counters & entry ptr
@@ -381,18 +382,19 @@ int CommBufferClass::UnQueue_Send(std::span<std::byte> buf, int* buflen,
   //	Error if no entry to retrieve
   //------------------------------------------------------------------------
   if (index < 0 || index >= SendCount ||
-      SendQueue[base::ToSize(SendIndex[base::ToSize(index)])].IsActive == 0) {
+      SendQueue.at(base::ToSize(SendIndex.at(base::ToSize(index)))).IsActive ==
+          0) {
     return 0;
   }
   if ((!buf.empty() &&
        (buflen == nullptr ||
         base::ToSize(
-            SendQueue[base::ToSize(SendIndex[base::ToSize(index)])].BufLen) >
-            buf.size())) ||
+            SendQueue.at(base::ToSize(SendIndex.at(base::ToSize(index))))
+                .BufLen) > buf.size())) ||
       (!extrabuf.empty() && extralen != nullptr &&
        base::ToSize(
-           SendQueue[base::ToSize(SendIndex[base::ToSize(index)])].ExtraLen) >
-           extrabuf.size())) {
+           SendQueue.at(base::ToSize(SendIndex.at(base::ToSize(index))))
+               .ExtraLen) > extrabuf.size())) {
     return 0;
   }
 
@@ -401,10 +403,13 @@ int CommBufferClass::UnQueue_Send(std::span<std::byte> buf, int* buflen,
   //------------------------------------------------------------------------
   if (!buf.empty()) {
     base::CopyBytes(
-        buf, SendQueue[base::ToSize(SendIndex[base::ToSize(index)])].Buffer,
+        buf,
+        SendQueue.at(base::ToSize(SendIndex.at(base::ToSize(index)))).Buffer,
         base::ToSize(
-            SendQueue[base::ToSize(SendIndex[base::ToSize(index)])].BufLen));
-    *buflen = SendQueue[base::ToSize(SendIndex[base::ToSize(index)])].BufLen;
+            SendQueue.at(base::ToSize(SendIndex.at(base::ToSize(index))))
+                .BufLen));
+    *buflen =
+        SendQueue.at(base::ToSize(SendIndex.at(base::ToSize(index)))).BufLen;
   }
 
   //------------------------------------------------------------------------
@@ -413,31 +418,33 @@ int CommBufferClass::UnQueue_Send(std::span<std::byte> buf, int* buflen,
   if (!extrabuf.empty() && extralen != nullptr) {
     base::CopyBytes(
         extrabuf,
-        SendQueue[base::ToSize(SendIndex[base::ToSize(index)])].ExtraBuffer,
+        SendQueue.at(base::ToSize(SendIndex.at(base::ToSize(index))))
+            .ExtraBuffer,
         base::ToSize(
-            SendQueue[base::ToSize(SendIndex[base::ToSize(index)])].ExtraLen));
+            SendQueue.at(base::ToSize(SendIndex.at(base::ToSize(index))))
+                .ExtraLen));
     *extralen =
-        SendQueue[base::ToSize(SendIndex[base::ToSize(index)])].ExtraLen;
+        SendQueue.at(base::ToSize(SendIndex.at(base::ToSize(index)))).ExtraLen;
   }
 
   //------------------------------------------------------------------------
   //	Set entry flags
   //------------------------------------------------------------------------
-  SendQueue[base::ToSize(SendIndex[base::ToSize(index)])].IsActive = 0;
-  SendQueue[base::ToSize(SendIndex[base::ToSize(index)])].IsACK = 0;
-  SendQueue[base::ToSize(SendIndex[base::ToSize(index)])].FirstTime = 0L;
-  SendQueue[base::ToSize(SendIndex[base::ToSize(index)])].LastTime = 0L;
-  SendQueue[base::ToSize(SendIndex[base::ToSize(index)])].SendCount = 0;
-  SendQueue[base::ToSize(SendIndex[base::ToSize(index)])].BufLen = 0;
-  SendQueue[base::ToSize(SendIndex[base::ToSize(index)])].ExtraLen = 0;
+  SendQueue.at(base::ToSize(SendIndex.at(base::ToSize(index)))).IsActive = 0;
+  SendQueue.at(base::ToSize(SendIndex.at(base::ToSize(index)))).IsACK = 0;
+  SendQueue.at(base::ToSize(SendIndex.at(base::ToSize(index)))).FirstTime = 0L;
+  SendQueue.at(base::ToSize(SendIndex.at(base::ToSize(index)))).LastTime = 0L;
+  SendQueue.at(base::ToSize(SendIndex.at(base::ToSize(index)))).SendCount = 0;
+  SendQueue.at(base::ToSize(SendIndex.at(base::ToSize(index)))).BufLen = 0;
+  SendQueue.at(base::ToSize(SendIndex.at(base::ToSize(index)))).ExtraLen = 0;
 
   //------------------------------------------------------------------------
   //	Move Indices back one
   //------------------------------------------------------------------------
   for (int i = index; i < SendCount - 1; i++) {
-    SendIndex[base::ToSize(i)] = SendIndex[base::ToSize(i + 1)];
+    SendIndex.at(base::ToSize(i)) = SendIndex.at(base::ToSize(i + 1));
   }
-  SendIndex[base::ToSize(SendCount - 1)] = 0;
+  SendIndex.at(base::ToSize(SendCount - 1)) = 0;
   SendCount--;
 
   return 1;
@@ -468,10 +475,11 @@ int CommBufferClass::UnQueue_Send(std::span<std::byte> buf, int* buflen,
  *=========================================================================*/
 SendQueueType* CommBufferClass::Get_Send(int index) {
   if (index < 0 || index >= SendCount ||
-      SendQueue[base::ToSize(SendIndex[base::ToSize(index)])].IsActive == 0) {
+      SendQueue.at(base::ToSize(SendIndex.at(base::ToSize(index)))).IsActive ==
+          0) {
     return nullptr;
   }
-  return &SendQueue[base::ToSize(SendIndex[base::ToSize(index)])];
+  return &SendQueue.at(base::ToSize(SendIndex.at(base::ToSize(index))));
 
 } /* end of Get_Send */
 
@@ -513,7 +521,7 @@ int CommBufferClass::Queue_Receive(std::span<const std::byte> buf, int buflen,
   //------------------------------------------------------------------------
   int index = -1;
   for (int i = 0; i < MaxReceive; i++) {
-    if (ReceiveQueue[base::ToSize(i)].IsActive == 0) {
+    if (ReceiveQueue.at(base::ToSize(i)).IsActive == 0) {
       index = i;
       break;
     }
@@ -525,15 +533,15 @@ int CommBufferClass::Queue_Receive(std::span<const std::byte> buf, int buflen,
   //------------------------------------------------------------------------
   //	Set entry flags
   //------------------------------------------------------------------------
-  ReceiveQueue[base::ToSize(index)].IsActive = 1;
-  ReceiveQueue[base::ToSize(index)].IsRead = 0;
-  ReceiveQueue[base::ToSize(index)].IsACK = 0;
-  ReceiveQueue[base::ToSize(index)].BufLen = buflen;
+  ReceiveQueue.at(base::ToSize(index)).IsActive = 1;
+  ReceiveQueue.at(base::ToSize(index)).IsRead = 0;
+  ReceiveQueue.at(base::ToSize(index)).IsACK = 0;
+  ReceiveQueue.at(base::ToSize(index)).BufLen = buflen;
 
   //------------------------------------------------------------------------
   //	Copy the packet data
   //------------------------------------------------------------------------
-  base::CopyBytes(ReceiveQueue[base::ToSize(index)].Buffer, buf,
+  base::CopyBytes(ReceiveQueue.at(base::ToSize(index)).Buffer, buf,
                   base::ToSize(buflen));
 
   //------------------------------------------------------------------------
@@ -541,17 +549,17 @@ int CommBufferClass::Queue_Receive(std::span<const std::byte> buf, int buflen,
   //------------------------------------------------------------------------
   if (!extrabuf.empty() && extralen > 0 && extralen <= MaxExtraSize &&
       base::ToSize(extralen) <= extrabuf.size()) {
-    base::CopyBytes(ReceiveQueue[base::ToSize(index)].ExtraBuffer, extrabuf,
+    base::CopyBytes(ReceiveQueue.at(base::ToSize(index)).ExtraBuffer, extrabuf,
                     base::ToSize(extralen));
-    ReceiveQueue[base::ToSize(index)].ExtraLen = extralen;
+    ReceiveQueue.at(base::ToSize(index)).ExtraLen = extralen;
   } else {
-    ReceiveQueue[base::ToSize(index)].ExtraLen = 0;
+    ReceiveQueue.at(base::ToSize(index)).ExtraLen = 0;
   }
 
   //------------------------------------------------------------------------
   //	Save this entry's index
   //------------------------------------------------------------------------
-  ReceiveIndex[base::ToSize(ReceiveCount)] = index;
+  ReceiveIndex.at(base::ToSize(ReceiveCount)) = index;
 
   //------------------------------------------------------------------------
   //	Increment counters & entry ptr
@@ -599,18 +607,18 @@ int CommBufferClass::UnQueue_Receive(std::span<std::byte> buf, int* buflen,
   //	Error if no entry to retrieve
   //------------------------------------------------------------------------
   if (index < 0 || index >= ReceiveCount ||
-      ReceiveQueue[base::ToSize(ReceiveIndex[base::ToSize(index)])].IsActive ==
-          0) {
+      ReceiveQueue.at(base::ToSize(ReceiveIndex.at(base::ToSize(index))))
+              .IsActive == 0) {
     return 0;
   }
   if ((!buf.empty() &&
        (buflen == nullptr ||
         base::ToSize(
-            ReceiveQueue[base::ToSize(ReceiveIndex[base::ToSize(index)])]
+            ReceiveQueue.at(base::ToSize(ReceiveIndex.at(base::ToSize(index))))
                 .BufLen) > buf.size())) ||
       (!extrabuf.empty() && extralen != nullptr &&
        base::ToSize(
-           ReceiveQueue[base::ToSize(ReceiveIndex[base::ToSize(index)])]
+           ReceiveQueue.at(base::ToSize(ReceiveIndex.at(base::ToSize(index))))
                .ExtraLen) > extrabuf.size())) {
     return 0;
   }
@@ -621,12 +629,14 @@ int CommBufferClass::UnQueue_Receive(std::span<std::byte> buf, int* buflen,
   if (!buf.empty()) {
     base::CopyBytes(
         buf,
-        ReceiveQueue[base::ToSize(ReceiveIndex[base::ToSize(index)])].Buffer,
+        ReceiveQueue.at(base::ToSize(ReceiveIndex.at(base::ToSize(index))))
+            .Buffer,
         base::ToSize(
-            ReceiveQueue[base::ToSize(ReceiveIndex[base::ToSize(index)])]
+            ReceiveQueue.at(base::ToSize(ReceiveIndex.at(base::ToSize(index))))
                 .BufLen));
     *buflen =
-        ReceiveQueue[base::ToSize(ReceiveIndex[base::ToSize(index)])].BufLen;
+        ReceiveQueue.at(base::ToSize(ReceiveIndex.at(base::ToSize(index))))
+            .BufLen;
   }
 
   //------------------------------------------------------------------------
@@ -635,31 +645,36 @@ int CommBufferClass::UnQueue_Receive(std::span<std::byte> buf, int* buflen,
   if (!extrabuf.empty() && extralen != nullptr) {
     base::CopyBytes(
         extrabuf,
-        ReceiveQueue[base::ToSize(ReceiveIndex[base::ToSize(index)])]
+        ReceiveQueue.at(base::ToSize(ReceiveIndex.at(base::ToSize(index))))
             .ExtraBuffer,
         base::ToSize(
-            ReceiveQueue[base::ToSize(ReceiveIndex[base::ToSize(index)])]
+            ReceiveQueue.at(base::ToSize(ReceiveIndex.at(base::ToSize(index))))
                 .ExtraLen));
     *extralen =
-        ReceiveQueue[base::ToSize(ReceiveIndex[base::ToSize(index)])].ExtraLen;
+        ReceiveQueue.at(base::ToSize(ReceiveIndex.at(base::ToSize(index))))
+            .ExtraLen;
   }
 
   //------------------------------------------------------------------------
   //	Set entry flags
   //------------------------------------------------------------------------
-  ReceiveQueue[base::ToSize(ReceiveIndex[base::ToSize(index)])].IsActive = 0;
-  ReceiveQueue[base::ToSize(ReceiveIndex[base::ToSize(index)])].IsRead = 0;
-  ReceiveQueue[base::ToSize(ReceiveIndex[base::ToSize(index)])].IsACK = 0;
-  ReceiveQueue[base::ToSize(ReceiveIndex[base::ToSize(index)])].BufLen = 0;
-  ReceiveQueue[base::ToSize(ReceiveIndex[base::ToSize(index)])].ExtraLen = 0;
+  ReceiveQueue.at(base::ToSize(ReceiveIndex.at(base::ToSize(index)))).IsActive =
+      0;
+  ReceiveQueue.at(base::ToSize(ReceiveIndex.at(base::ToSize(index)))).IsRead =
+      0;
+  ReceiveQueue.at(base::ToSize(ReceiveIndex.at(base::ToSize(index)))).IsACK = 0;
+  ReceiveQueue.at(base::ToSize(ReceiveIndex.at(base::ToSize(index)))).BufLen =
+      0;
+  ReceiveQueue.at(base::ToSize(ReceiveIndex.at(base::ToSize(index)))).ExtraLen =
+      0;
 
   //------------------------------------------------------------------------
   //	Move Indices back one
   //------------------------------------------------------------------------
   for (int i = index; i < ReceiveCount - 1; i++) {
-    ReceiveIndex[base::ToSize(i)] = ReceiveIndex[base::ToSize(i + 1)];
+    ReceiveIndex.at(base::ToSize(i)) = ReceiveIndex.at(base::ToSize(i + 1));
   }
-  ReceiveIndex[base::ToSize(ReceiveCount - 1)] = 0;
+  ReceiveIndex.at(base::ToSize(ReceiveCount - 1)) = 0;
   ReceiveCount--;
 
   return 1;
@@ -690,11 +705,11 @@ int CommBufferClass::UnQueue_Receive(std::span<std::byte> buf, int* buflen,
  *=========================================================================*/
 ReceiveQueueType* CommBufferClass::Get_Receive(int index) {
   if (index < 0 || index >= ReceiveCount ||
-      ReceiveQueue[base::ToSize(ReceiveIndex[base::ToSize(index)])].IsActive ==
-          0) {
+      ReceiveQueue.at(base::ToSize(ReceiveIndex.at(base::ToSize(index))))
+              .IsActive == 0) {
     return nullptr;
   }
-  return &ReceiveQueue[base::ToSize(ReceiveIndex[base::ToSize(index)])];
+  return &ReceiveQueue.at(base::ToSize(ReceiveIndex.at(base::ToSize(index))));
 
 } /* end of Get_Receive */
 

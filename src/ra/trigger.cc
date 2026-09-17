@@ -66,7 +66,6 @@
 #include "ra/heap.h"
 #include "ra/house.h"
 #include "ra/jshell.h"
-#include "ra/map.h"
 #include "ra/monoc.h"
 #include "ra/object.h"
 #include "ra/scenario.h"
@@ -136,8 +135,8 @@ void TriggerClass::Draw_It(int /*unused*/, int x, int y, int width, int height,
                               width, _tabs);
     } else {
       Conquer_Clip_Text_Print(Description(), x, y,
-                              (selected ? &ColorRemaps[PCOLOR_DIALOG_BLUE]
-                                        : &ColorRemaps[PCOLOR_GREY]),
+                              (selected ? &ColorRemaps.at(PCOLOR_DIALOG_BLUE)
+                                        : &ColorRemaps.at(PCOLOR_GREY)),
                               kTBlack, flags, width, _tabs);
     }
   }
@@ -304,7 +303,7 @@ bool TriggerClass::Spring(TEventType event, ObjectClass* obj, CELL cell,
         obj->Trigger = nullptr;
       }
       if (cell) {
-        Map[cell].Trigger = nullptr;
+        Map.at(cell).Trigger = nullptr;
       }
 
       /*
@@ -357,16 +356,17 @@ bool TriggerClass::Spring(TEventType event, ObjectClass* obj, CELL cell,
     */
     if (ok) {
       if constexpr (config::kCheatKeysEnabled) {
-        MonoArray[DMONO_STRESS].Sub_Window(61, 1, 17, 11);
-        MonoArray[DMONO_STRESS].Scroll();
-        MonoArray[DMONO_STRESS].Sub_Window(61, 1, 18, 11);
-        MonoArray[DMONO_STRESS].Set_Cursor(0, 10);
-        MonoArray[DMONO_STRESS].Printf(
-            "%02d:%02d:%02d-%s", Scen.ElapsedTime.Value() / kTicksPerHour,
-            (Scen.ElapsedTime.Value() % kTicksPerHour) / kTicksPerMinute,
-            (Scen.ElapsedTime.Value() % kTicksPerMinute) / kTicksPerSecond,
-            Class->IniName);
-        MonoArray[DMONO_STRESS].Sub_Window();
+        MonoArray.at(DMONO_STRESS).Sub_Window(61, 1, 17, 11);
+        MonoArray.at(DMONO_STRESS).Scroll();
+        MonoArray.at(DMONO_STRESS).Sub_Window(61, 1, 18, 11);
+        MonoArray.at(DMONO_STRESS).Set_Cursor(0, 10);
+        MonoArray.at(DMONO_STRESS)
+            .Printf(
+                "%02d:%02d:%02d-%s", Scen.ElapsedTime.Value() / kTicksPerHour,
+                (Scen.ElapsedTime.Value() % kTicksPerHour) / kTicksPerMinute,
+                (Scen.ElapsedTime.Value() % kTicksPerMinute) / kTicksPerSecond,
+                Class->IniName);
+        MonoArray.at(DMONO_STRESS).Sub_Window();
       }
 
       if (Class->IsPersistant == TriggerTypeClass::VOLATILE ||

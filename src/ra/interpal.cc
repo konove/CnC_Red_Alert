@@ -51,6 +51,7 @@
 #include <span>
 
 #include "absl/log/check.h"
+#include "base/array.h"
 #include "sdllib/file_access.h"
 #include "sdllib/gbuffer.h"
 #include "tech/game_file.h"
@@ -137,11 +138,11 @@ static void Create_Palette_Interpolation_Table() {
     //
     // Get the first palette entry's RGB.
     //
-    const int first_r = InterpolationPalette[first_palette_ptr];
+    const int first_r = base::At(InterpolationPalette, first_palette_ptr);
     first_palette_ptr++;
-    const int first_g = InterpolationPalette[first_palette_ptr];
+    const int first_g = base::At(InterpolationPalette, first_palette_ptr);
     first_palette_ptr++;
-    const int first_b = InterpolationPalette[first_palette_ptr];
+    const int first_b = base::At(InterpolationPalette, first_palette_ptr);
     first_palette_ptr++;
 
     std::size_t second_palette_ptr = 0;
@@ -149,11 +150,11 @@ static void Create_Palette_Interpolation_Table() {
       //
       // Get the second palette entry's RGB.
       //
-      const int second_r = InterpolationPalette[second_palette_ptr];
+      const int second_r = base::At(InterpolationPalette, second_palette_ptr);
       second_palette_ptr++;
-      const int second_g = InterpolationPalette[second_palette_ptr];
+      const int second_g = base::At(InterpolationPalette, second_palette_ptr);
       second_palette_ptr++;
-      const int second_b = InterpolationPalette[second_palette_ptr];
+      const int second_b = base::At(InterpolationPalette, second_palette_ptr);
       second_palette_ptr++;
 
       //
@@ -173,13 +174,16 @@ static void Create_Palette_Interpolation_Table() {
       std::size_t match_pal_ptr = 0;
       for (int p = 0; p < SIZE_OF_PALETTE; p++) {
         const int diff_r =
-            static_cast<int>(InterpolationPalette[match_pal_ptr]) - dest_r;
+            static_cast<int>(base::At(InterpolationPalette, match_pal_ptr)) -
+            dest_r;
         match_pal_ptr++;
         const int diff_g =
-            static_cast<int>(InterpolationPalette[match_pal_ptr]) - dest_g;
+            static_cast<int>(base::At(InterpolationPalette, match_pal_ptr)) -
+            dest_g;
         match_pal_ptr++;
         const int diff_b =
-            static_cast<int>(InterpolationPalette[match_pal_ptr]) - dest_b;
+            static_cast<int>(base::At(InterpolationPalette, match_pal_ptr)) -
+            dest_b;
         match_pal_ptr++;
 
         const int distance =
@@ -221,9 +225,9 @@ void Increase_Palette_Luminance(std::span<unsigned char> palette,
   CHECK_GE(palette.size(), static_cast<std::size_t>(SIZE_OF_PALETTE) * 3);
   for (std::size_t i = 0; i < static_cast<std::size_t>(SIZE_OF_PALETTE) * 3;
        i += 3) {
-    int red = palette[i];
-    int green = palette[i + 1];
-    int blue = palette[i + 2];
+    int red = base::At(palette, i);
+    int green = base::At(palette, i + 1);
+    int blue = base::At(palette, i + 2);
 
     red += red * red_percentage / 100;
     green += green * green_percentage / 100;
@@ -233,9 +237,9 @@ void Increase_Palette_Luminance(std::span<unsigned char> palette,
     green = std::min(cap, green);
     blue = std::min(cap, blue);
 
-    palette[i] = static_cast<unsigned char>(red);
-    palette[i + 1] = static_cast<unsigned char>(green);
-    palette[i + 2] = static_cast<unsigned char>(blue);
+    base::At(palette, i) = static_cast<unsigned char>(red);
+    base::At(palette, i + 1) = static_cast<unsigned char>(green);
+    base::At(palette, i + 2) = static_cast<unsigned char>(blue);
   }
 }
 

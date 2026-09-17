@@ -153,7 +153,7 @@ bool WWKeyboardClass::Down(int key) {
     // SDL_GetKeyboardState returns exactly numkeys state bytes.
     // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
     const std::span states(keys, static_cast<size_t>(numkeys));
-    return states[static_cast<size_t>(key)] != 0;
+    return base::At(states, static_cast<size_t>(key)) != 0;
   }
 
   return false;

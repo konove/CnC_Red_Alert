@@ -292,7 +292,7 @@ void SmudgeTypeClass::Init(TheaterType theater) {
 
       // Fully constructed smudge data set name.
       const auto fullname = std::filesystem::path(smudge.IniName)
-                                .replace_extension(Theaters[theater].Suffix)
+                                .replace_extension(Theaters.at(theater).Suffix)
                                 .string();
       smudge.Set_Image_Data(MixArchive::RetrieveData(fullname));
     }

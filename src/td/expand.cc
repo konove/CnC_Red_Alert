@@ -95,7 +95,7 @@ class EListClass : public ListClass {
   // The selected line's scenario number. Only valid while the list is not
   // empty.
   [[nodiscard]] int Current_Scenario() const {
-    return Scenarios[base::ToSize(Current_Index())];
+    return Scenarios.at(base::ToSize(Current_Index()));
   }
   void Remove_Item(int index) override {
     if (index >= 0 && index < Count()) {
@@ -184,9 +184,9 @@ bool Expansion_Dialog() {
     file.SetName(buffer);
     if (file.IsAvailable()) {
       file.Read(sbuffer, 1000);
-      sbuffer[1000] = '\r';
-      sbuffer[1000 + 1] = '\n';
-      sbuffer[1000 + 2] = '\0';
+      base::At(sbuffer, 1000) = '\r';
+      base::At(sbuffer, 1000 + 1) = '\n';
+      base::At(sbuffer, 1000 + 2) = '\0';
 
       WWGetPrivateProfileString("Basic", "Name", "x", buffer, sbuffer.data());
       list.Add_Scenario(index, std::format("GDI: {}", buffer));
@@ -203,9 +203,9 @@ bool Expansion_Dialog() {
     file.SetName(buffer);
     if (file.IsAvailable()) {
       file.Read(sbuffer, 1000);
-      sbuffer[1000] = '\r';
-      sbuffer[1000 + 1] = '\n';
-      sbuffer[1000 + 2] = '\0';
+      base::At(sbuffer, 1000) = '\r';
+      base::At(sbuffer, 1000 + 1) = '\n';
+      base::At(sbuffer, 1000 + 2) = '\0';
 
       WWGetPrivateProfileString("Basic", "Name", "x", buffer, sbuffer.data());
       list.Add_Scenario(index, std::format("NOD: {}", buffer));

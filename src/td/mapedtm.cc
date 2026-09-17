@@ -1590,21 +1590,21 @@ int MapEditClass::Team_Members(HousesType house) {
   int i = 0;
   for (InfantryType i_id = INFANTRY_E1; i_id < INFANTRY_COUNT; i_id++) {
     if (Verify_House(house, &InfantryTypeClass::As_Reference(i_id))) {
-      teamclass[base::ToSize(i)] = &InfantryTypeClass::As_Reference(i_id);
+      teamclass.at(base::ToSize(i)) = &InfantryTypeClass::As_Reference(i_id);
       i++;
     }
   }
 
   for (AircraftType a_id = AIRCRAFT_TRANSPORT; a_id < AIRCRAFT_COUNT; a_id++) {
     if (Verify_House(house, &AircraftTypeClass::As_Reference(a_id))) {
-      teamclass[base::ToSize(i)] = &AircraftTypeClass::As_Reference(a_id);
+      teamclass.at(base::ToSize(i)) = &AircraftTypeClass::As_Reference(a_id);
       i++;
     }
   }
 
   for (UnitType u_id = UNIT_HTANK; u_id < UNIT_COUNT; u_id++) {
     if (Verify_House(house, &UnitTypeClass::As_Reference(u_id))) {
-      teamclass[base::ToSize(i)] = &UnitTypeClass::As_Reference(u_id);
+      teamclass.at(base::ToSize(i)) = &UnitTypeClass::As_Reference(u_id);
       i++;
     }
   }
@@ -1620,7 +1620,7 @@ int MapEditClass::Team_Members(HousesType house) {
   **	  'teamclass' array & set its count value
   */
   for (int j = 0; j < maxclasses; j++) {
-    teamcount[base::ToSize(j)] = 0;
+    teamcount.at(base::ToSize(j)) = 0;
   }
 
   /*
@@ -1636,8 +1636,8 @@ int MapEditClass::Team_Members(HousesType house) {
       **	'teamclass' array entry by comparing the actual pointers; typeid
       **	won't work because E1 & E2 are the same type class.
       */
-      if (base::At(CurTeam->Class, i) == teamclass[base::ToSize(j)]) {
-        teamcount[base::ToSize(j)] = base::At(CurTeam->DesiredNum, i);
+      if (base::At(CurTeam->Class, i) == teamclass.at(base::ToSize(j))) {
+        teamcount.at(base::ToSize(j)) = base::At(CurTeam->DesiredNum, i);
         break;
       }
     }
@@ -1740,13 +1740,14 @@ int MapEditClass::Team_Members(HousesType house) {
           //
           //	Display the object along with any count value for it.
           //
-          Draw_Member(teamclass[base::ToSize(i)], i, teamcount[base::ToSize(i)],
-                      house, kDialogX + 16, dlg_picture_top);
+          Draw_Member(teamclass.at(base::ToSize(i)), i,
+                      teamcount.at(base::ToSize(i)), house, kDialogX + 16,
+                      dlg_picture_top);
         }
 
         if (static_cast<unsigned>(curclass) < static_cast<unsigned>(maxclasses)) {
           Fancy_Text_Print(
-              teamclass[base::ToSize(curclass)]->Full_Name(),
+              teamclass.at(base::ToSize(curclass))->Full_Name(),
               kDialogX + (kDialogW / 2), msg_y, kCcTan, kTBlack,
               TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
         }
@@ -1835,7 +1836,7 @@ int MapEditClass::Team_Members(HousesType house) {
 
           if (static_cast<unsigned>(curclass) < static_cast<unsigned>(maxclasses)) {
             Fancy_Text_Print(
-                teamclass[base::ToSize(curclass)]->Full_Name(),
+                teamclass.at(base::ToSize(curclass))->Full_Name(),
                 kDialogX + (kDialogW / 2), msg_y, kCcGreen, kTBlack,
                 TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
           }
@@ -1871,7 +1872,7 @@ int MapEditClass::Team_Members(HousesType house) {
         /*
         **	Detect addition of a new class.
         */
-        if (teamcount[base::ToSize(curclass)] == 0) {
+        if (teamcount.at(base::ToSize(curclass)) == 0) {
           /*
           **	Don't allow more classes than we can handle.
           */
@@ -1880,13 +1881,13 @@ int MapEditClass::Team_Members(HousesType house) {
           }
           numclasses++;
         }
-        teamcount[base::ToSize(curclass)]++;
+        teamcount.at(base::ToSize(curclass))++;
 
         /*
         **	Update number label.
         */
-        Draw_Member(teamclass[base::ToSize(curclass)], curclass,
-                    teamcount[base::ToSize(curclass)], house, kDialogX + 16,
+        Draw_Member(teamclass.at(base::ToSize(curclass)), curclass,
+                    teamcount.at(base::ToSize(curclass)), house, kDialogX + 16,
                     dlg_picture_top);
       }
 
@@ -1903,13 +1904,13 @@ int MapEditClass::Team_Members(HousesType house) {
         }
         heldtime = TickCount.Time();
 
-        if (teamcount[base::ToSize(curclass)] > 0) {
-          teamcount[base::ToSize(curclass)]--;
+        if (teamcount.at(base::ToSize(curclass)) > 0) {
+          teamcount.at(base::ToSize(curclass))--;
 
           /*
           **	Detect removal of a class.
           */
-          if (teamcount[base::ToSize(curclass)] == 0) {
+          if (teamcount.at(base::ToSize(curclass)) == 0) {
             numclasses--;
           }
         }
@@ -1917,8 +1918,8 @@ int MapEditClass::Team_Members(HousesType house) {
         /*
         **	Update number label.
         */
-        Draw_Member(teamclass[base::ToSize(curclass)], curclass,
-                    teamcount[base::ToSize(curclass)], house, kDialogX + 16,
+        Draw_Member(teamclass.at(base::ToSize(curclass)), curclass,
+                    teamcount.at(base::ToSize(curclass)), house, kDialogX + 16,
                     dlg_picture_top);
       }
     }
@@ -1931,10 +1932,10 @@ int MapEditClass::Team_Members(HousesType house) {
     CurTeam->ClassCount = static_cast<unsigned char>(numclasses);
     i = 0;  // current team class index
     for (int j = 0; j < maxclasses; j++) {
-      if (teamcount[base::ToSize(j)] > 0) {
+      if (teamcount.at(base::ToSize(j)) > 0) {
         base::At(CurTeam->DesiredNum, i) =
-            static_cast<unsigned char>(teamcount[base::ToSize(j)]);
-        base::At(CurTeam->Class, i) = teamclass[base::ToSize(j)];
+            static_cast<unsigned char>(teamcount.at(base::ToSize(j)));
+        base::At(CurTeam->Class, i) = teamclass.at(base::ToSize(j));
         i++;
       }
     }

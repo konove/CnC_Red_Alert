@@ -760,7 +760,7 @@ TeamMissionType TeamTypeClass::Mission_From_Name(const char* name) {
   if (name) {
     for (TeamMissionType order = TMISSION_ATTACKBASE; order < TMISSION_COUNT;
          order++) {
-      if (port::CompareIgnoreCase(TMissions[order], name) == 0) {
+      if (port::CompareIgnoreCase(TMissions.at(order), name) == 0) {
         return order;
       }
     }
@@ -788,7 +788,7 @@ const char* TeamTypeClass::Name_From_Mission(TeamMissionType order) {
   if (order <= TMISSION_NONE || order >= TMISSION_COUNT) {
     return "None";
   }
-  return TMissions[order];
+  return TMissions.at(order);
 }
 
 /***************************************************************************

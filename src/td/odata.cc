@@ -895,7 +895,7 @@ void OverlayTypeClass::Init(TheaterType theater) {
 
       if (overlay.IsTheater) {
         fullname = std::filesystem::path(overlay.IniName)
-                       .replace_extension(Theaters[theater].Suffix)
+                       .replace_extension(Theaters.at(theater).Suffix)
                        .string();
       } else {
         fullname = std::filesystem::path(overlay.IniName)

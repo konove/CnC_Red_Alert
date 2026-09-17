@@ -119,7 +119,7 @@ void Self_Regulate() {
         **	Display the status of the currently selected object.
         */
         if (CurrentObject.Count()) {
-          _lastobject = CurrentObject[0];
+          _lastobject = CurrentObject.at(0);
         }
         if (_lastobject && !_lastobject->IsActive) {
           _lastobject = nullptr;
@@ -325,7 +325,7 @@ void Debug_Key(unsigned input) {
 
       case KN_R:
         if (CurrentObject.Count()) {
-          dynamic_cast<TechnoClass*>(CurrentObject[0])->IsCloakable = true;
+          dynamic_cast<TechnoClass*>(CurrentObject.at(0))->IsCloakable = true;
         }
         break;
 
@@ -355,7 +355,7 @@ void Debug_Key(unsigned input) {
         if (CurrentObject.Count()) {
           Map.Recalc();
           // CurrentObject[0]->Detach_All();
-          delete CurrentObject[0];
+          delete CurrentObject.at(0);
         }
         break;
 
@@ -369,15 +369,15 @@ void Debug_Key(unsigned input) {
         if (CurrentObject.Count()) {
           Map.Recalc();
           int damage = 50;
-          CurrentObject[0]->Take_Damage(damage, 0, WARHEAD_SA);
+          CurrentObject.at(0)->Take_Damage(damage, 0, WARHEAD_SA);
         }
         break;
 
       case KN_INSERT:
         if (CurrentObject.Count()) {
-          Map.PendingObject = &CurrentObject[0]->Class_Of();
+          Map.PendingObject = &CurrentObject.at(0)->Class_Of();
           if (Map.PendingObject) {
-            Map.PendingHouse = CurrentObject[0]->Owner();
+            Map.PendingHouse = CurrentObject.at(0)->Owner();
             Map.PendingObjectPtr = Map.PendingObject->Create_One_Of(
                 HouseClass::As_Pointer(Map.PendingHouse));
             if (Map.PendingObjectPtr) {
@@ -657,17 +657,17 @@ void Debug_Key(unsigned input) {
       *red circle is for *	fire range.
       */
       case KN_F7:
-        if (CurrentObject.Count() && CurrentObject[0]->Is_Techno()) {
+        if (CurrentObject.Count() && CurrentObject.at(0)->Is_Techno()) {
           const auto& ttype = dynamic_cast<const TechnoTypeClass&>(
-              CurrentObject[0]->Class_Of());
+              CurrentObject.at(0)->Class_Of());
           const int sight = ttype.SightRange * 256;
           int weapon = 0;
           if (ttype.Primary != WEAPON_NONE) {
-            weapon = Weapons[ttype.Primary].Range;
+            weapon = Weapons.at(ttype.Primary).Range;
           }
           Set_Logic_Page(SeenBuff);
-          const COORDINATE center = CurrentObject[0]->Center_Coord();
-          const COORDINATE center2 = CurrentObject[0]->Fire_Coord(0);
+          const COORDINATE center = CurrentObject.at(0)->Center_Coord();
+          const COORDINATE center2 = CurrentObject.at(0)->Fire_Coord(0);
 
           for (int r = 0; r < 255; r += 10) {
             int x = 0;

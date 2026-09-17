@@ -166,7 +166,7 @@ TEST_F(TdArchiveRoundTripTest, EventConstructorsClearExecutionFlagAndUnusedWireB
 TEST_F(TdArchiveRoundTripTest, CellRestoresFlagsAndGappedObjectAndTriggerReferences) {
   auto* unit = new UnitClass(UNIT_LTANK, HOUSE_GOOD);
   auto* trigger = new TriggerClass;
-  auto& cell = Map[100];
+  auto& cell = Map.at(100);
   cell.Reset();
   cell.IsPlot = cell.IsCursorHere = cell.IsWaypoint = true;
   cell.IsRadarCursor = cell.IsFlagged = cell.IsTrigger = true;
@@ -179,10 +179,10 @@ TEST_F(TdArchiveRoundTripTest, CellRestoresFlagsAndGappedObjectAndTriggerReferen
   cell.OccupierPtr = unit;
   cell.Overlappers[2] = unit;
   cell.Flag.Composite = 2;
-  CellTriggers[100] = trigger;
+  CellTriggers.at(100) = trigger;
   const auto bytes = Save(cell);
   cell.Reset();
-  CellTriggers[100] = nullptr;
+  CellTriggers.at(100) = nullptr;
   ASSERT_TRUE(Restore(cell, bytes));
   EXPECT_TRUE(cell.IsMapped && cell.IsVisible && cell.IsTrigger && cell.IsFlagged);
   EXPECT_TRUE(cell.IsPlot && cell.IsCursorHere && cell.IsWaypoint && cell.IsRadarCursor);
@@ -193,7 +193,7 @@ TEST_F(TdArchiveRoundTripTest, CellRestoresFlagsAndGappedObjectAndTriggerReferen
   EXPECT_EQ(cell.Overlappers[0], nullptr);
   EXPECT_EQ(cell.Overlappers[1], nullptr);
   EXPECT_EQ(cell.Overlappers[2], unit);
-  EXPECT_EQ(CellTriggers[100], trigger);
+  EXPECT_EQ(CellTriggers.at(100), trigger);
   EXPECT_EQ(Save(cell), bytes);
 }
 
@@ -251,7 +251,7 @@ TEST_F(TdArchiveRoundTripTest, HouseRestoresEconomyFlagsTimersAndTypeIdentity) {
   house.IsAlerted = true;
   house.NukePieces = 5;
   house.BorrowedTime = 777;
-  house.UnitsKilled[HOUSE_BAD] = 19;
+  house.UnitsKilled.at(HOUSE_BAD) = 19;
   const auto bytes = Save(house);
   HouseClass restored;
   ASSERT_TRUE(Restore(restored, bytes));
@@ -262,7 +262,7 @@ TEST_F(TdArchiveRoundTripTest, HouseRestoresEconomyFlagsTimersAndTypeIdentity) {
   EXPECT_TRUE(restored.IsHuman && restored.IsAlerted);
   EXPECT_EQ(restored.NukePieces, 5);
   EXPECT_EQ(static_cast<int>(restored.BorrowedTime), 777);
-  EXPECT_EQ(restored.UnitsKilled[HOUSE_BAD], 19);
+  EXPECT_EQ(restored.UnitsKilled.at(HOUSE_BAD), 19);
   EXPECT_EQ(Save(restored), bytes);
 }
 
@@ -301,7 +301,7 @@ TEST_F(TdArchiveRoundTripTest, TruncatedCellHouseAndUnitRecordsFail) {
     object.Serialize(reader);
     EXPECT_FALSE(reader.ok());
   };
-  check(Map[200]);
+  check(Map.at(200));
   check(*PlayerPtr);
   auto* unit = new UnitClass(UNIT_LTANK, HOUSE_GOOD);
   check(*unit);

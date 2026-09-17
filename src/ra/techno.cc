@@ -197,7 +197,6 @@
 #include "ra/jshell.h"
 #include "ra/keyframe.h"
 #include "ra/layer.h"
-#include "ra/map.h"
 #include "ra/mapedit.h"
 #include "ra/mission.h"
 #include "ra/monoc.h"
@@ -216,7 +215,6 @@
 #include "ra/type.h"
 #include "ra/unit.h"
 #include "ra/utracker.h"
-#include "ra/vector.h"
 #include "ra/vector_dynamic.h"
 #include "ra/vessel.h"
 #include "ra/warhead.h"
@@ -418,7 +416,7 @@ bool TechnoClass::Can_Teleport_Here(CELL cell) const {
   *the *	requirement that entering that location must proceed under
   *normal channels.
   */
-  if (Map[cell].Overlay == OVERLAY_FLAG_SPOT) {
+  if (Map.at(cell).Overlay == OVERLAY_FLAG_SPOT) {
     return false;
   }
 
@@ -427,7 +425,7 @@ bool TechnoClass::Can_Teleport_Here(CELL cell) const {
   **	cell is impassable, then it can't be teleported there.
   */
   const TechnoTypeClass* ttype = Techno_Type_Class();
-  return Map[cell].Is_Clear_To_Move(
+  return Map.at(cell).Is_Clear_To_Move(
       ttype->Speed, true, true, -1,
       ttype->Speed == SPEED_FLOAT ? MZONE_WATER : MZONE_NORMAL);
 }
@@ -478,7 +476,7 @@ int TechnoClass::What_Weapon_Should_I_Use(TARGET target) const {
   int w1 = 0;
   const WeaponTypeClass* wptr = ttype->PrimaryWeapon;
   if (wptr != nullptr && wptr->WarheadPtr != nullptr) {
-    w1 = wptr->WarheadPtr->Modifier[armor] * 1000;
+    w1 = wptr->WarheadPtr->Modifier.at(armor) * 1000;
   }
   if (In_Range(target, 0)) {
     w1 *= 2;
@@ -494,7 +492,7 @@ int TechnoClass::What_Weapon_Should_I_Use(TARGET target) const {
   int w2 = 0;
   wptr = ttype->SecondaryWeapon;
   if (wptr != nullptr && wptr->WarheadPtr != nullptr) {
-    w2 = wptr->WarheadPtr->Modifier[armor] * 1000;
+    w2 = wptr->WarheadPtr->Modifier.at(armor) * 1000;
   }
   if (In_Range(target, 1)) {
     w2 *= 2;
@@ -1223,7 +1221,7 @@ void TechnoClass::Per_Cell_Process(PCPType why) {
     **	If this object somehow moves into mapped terrain, but is not yet
     **	discovered, then flag it to be discovered.
     */
-    if (!IsDiscoveredByPlayer && Map[cell].IsVisible) {
+    if (!IsDiscoveredByPlayer && Map.at(cell).IsVisible) {
       Revealed(PlayerPtr);
     }
   }
@@ -1538,7 +1536,7 @@ fixed TechnoClass::Area_Modify(CELL cell) const {
 
       if (Cell_Y(cell) - radius >= Map.MapCellY) {
         newcell = XY_Cell(Cell_X(cell) + x, Cell_Y(cell) - radius);
-        const BuildingClass* building = Map[newcell].Cell_Building();
+        const BuildingClass* building = Map.at(newcell).Cell_Building();
         if (building != nullptr && House->Is_Ally(building)) {
           odds /= 2;
         }
@@ -1546,7 +1544,7 @@ fixed TechnoClass::Area_Modify(CELL cell) const {
 
       if (Cell_Y(cell) + radius < Map.MapCellY + Map.MapCellHeight) {
         newcell = XY_Cell(Cell_X(cell) + x, Cell_Y(cell) + radius);
-        const BuildingClass* building = Map[newcell].Cell_Building();
+        const BuildingClass* building = Map.at(newcell).Cell_Building();
         if (building != nullptr && House->Is_Ally(building)) {
           odds /= 2;
         }
@@ -1568,7 +1566,7 @@ fixed TechnoClass::Area_Modify(CELL cell) const {
 
       if (Cell_X(cell) - radius >= Map.MapCellX) {
         newcell = XY_Cell(Cell_X(cell) - radius, Cell_Y(cell) + y);
-        const BuildingClass* building = Map[newcell].Cell_Building();
+        const BuildingClass* building = Map.at(newcell).Cell_Building();
         if (building != nullptr && House->Is_Ally(building)) {
           odds /= 2;
         }
@@ -1576,7 +1574,7 @@ fixed TechnoClass::Area_Modify(CELL cell) const {
 
       if (Cell_X(cell) + radius < Map.MapCellX + Map.MapCellWidth) {
         newcell = XY_Cell(Cell_X(cell) + radius, Cell_Y(cell) + y);
-        const BuildingClass* building = Map[newcell].Cell_Building();
+        const BuildingClass* building = Map.at(newcell).Cell_Building();
         if (building != nullptr && House->Is_Ally(building)) {
           odds /= 2;
         }
@@ -1657,7 +1655,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, uint32_t mask, int range,
   **	a threat.
   */
   if (object->Mission != MISSION_NONE &&
-      MissionControl[object->Mission].IsNoThreat) {
+      MissionControl.at(object->Mission).IsNoThreat) {
     BEnd(BENCH_EVAL_OBJECT);
     return false;
   }
@@ -1668,8 +1666,8 @@ bool TechnoClass::Evaluate_Object(ThreatType method, uint32_t mask, int range,
   */
   const COORDINATE objectcoord = object->Center_Coord();
   if (zone != -1 &&
-      std::cmp_not_equal(Map[objectcoord].Zones[Techno_Type_Class()->MZone],
-                         zone)) {
+      std::cmp_not_equal(
+          Map.at(objectcoord).Zones.at(Techno_Type_Class()->MZone), zone)) {
     BEnd(BENCH_EVAL_OBJECT);
     return false;
   }
@@ -2127,14 +2125,14 @@ bool TechnoClass::Evaluate_Cell(ThreatType method, uint32_t mask, CELL cell,
   **	Fetch the techno object from the cell. If there is no
   **	techno object there, then bail.
   */
-  const CellClass* cellptr = &Map[cell];
+  const CellClass* cellptr = &Map.at(cell);
 
   /*
   **	Don't consider for evaluation a cell that is not within the same zone.
   *Only *	perform this check if zone checking is required.
   */
   if (zone != -1 &&
-      std::cmp_not_equal(cellptr->Zones[Techno_Type_Class()->MZone], zone)) {
+      std::cmp_not_equal(cellptr->Zones.at(Techno_Type_Class()->MZone), zone)) {
     BEnd(BENCH_EVAL_CELL);
     return false;
   }
@@ -2218,7 +2216,7 @@ int TechnoClass::Evaluate_Just_Cell(CELL cell) const {
   /*
   **	Determine if, in fact, a wall is located at this cell location.
   */
-  const CellClass* cellptr = &Map[cell];
+  const CellClass* cellptr = &Map.at(cell);
   if (cellptr->Overlay == OVERLAY_NONE ||
       !OverlayTypeClass::As_Reference(cellptr->Overlay).IsWall) {
     BEnd(BENCH_EVAL_WALL);
@@ -2324,7 +2322,7 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method)  // const
   */
   if (!base::Any(method & THREAT_RANGE) && What_Am_I() != RTTI_VESSEL &&
       What_Am_I() != RTTI_BUILDING && What_Am_I() != RTTI_AIRCRAFT) {
-    zone = Map[Center_Coord()].Zones[Techno_Type_Class()->MZone];
+    zone = Map.at(Center_Coord()).Zones.at(Techno_Type_Class()->MZone);
   }
 
   /*
@@ -2587,9 +2585,9 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method)  // const
     **	Now scan through the entire ground layer. This is painful, but
     *what other *	choice is there?
     */
-    for (int index = 0; index < MouseClass::Layer[LAYER_GROUND].Count();
+    for (int index = 0; index < MouseClass::Layer.at(LAYER_GROUND).Count();
          index++) {
-      const ObjectClass* object = MouseClass::Layer[LAYER_GROUND][index];
+      const ObjectClass* object = MouseClass::Layer.at(LAYER_GROUND).at(index);
 
       int value = 0;
       if ((object->Is_Techno() &&
@@ -2841,7 +2839,7 @@ void TechnoClass::Cloaking_AI() {
               CloakingDevice.Set_Stage(0);
               Mark(MARK_CHANGE);
 
-              Map[Center_Coord()].Redraw_Objects(true);
+              Map.at(Center_Coord()).Redraw_Objects(true);
               Map.RadarClass::Flag_To_Redraw(true);
 
               /*
@@ -3630,7 +3628,7 @@ BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
     ** local player.
     */
     if ((!IsOwnedByPlayer && !IsDiscoveredByPlayer) ||
-        (!Map[Center_Coord()].IsMapped &&
+        (!Map.at(Center_Coord()).IsMapped &&
          (What_Am_I() != RTTI_AIRCRAFT || !IsOwnedByPlayer))) {
       if (Session.Type == GAME_NORMAL) {
         Map.Sight_From(Coord_Cell(Center_Coord()), 2, PlayerPtr, false);
@@ -3778,7 +3776,7 @@ ActionType TechnoClass::What_Action(ObjectClass* object) {
     const TechnoTypeClass* ttype = Techno_Type_Class();
     if (Is_Weapon_Equipped() && ttype->PrimaryWeapon->Bullet != nullptr &&
         ttype->PrimaryWeapon->Bullet->IsSubSurface &&
-        Map[object->Target_Coord()].Land_Type() != LAND_WATER) {
+        Map.at(object->Target_Coord()).Land_Type() != LAND_WATER) {
       // Do nothing.
 
     } else {
@@ -3853,7 +3851,7 @@ ActionType TechnoClass::What_Action(ObjectClass* object) {
 ActionType TechnoClass::What_Action(CELL cell) const {
   assert(IsActive);
 
-  const CellClass* cellptr = &Map[cell];
+  const CellClass* cellptr = &Map.at(cell);
   const OverlayTypeClass* optr = nullptr;
 
   bool ctrldown = KeyboardClass::Down(Options.KeyForceAttack1) ||
@@ -4187,14 +4185,14 @@ bool TechnoClass::Captured(HouseClass* newowner) {
     newowner->Tracking_Add(this);
     switch (What_Am_I()) {
       case RTTI_BUILDING:
-        newowner->BuildingsKilled[Owner()]++;
+        newowner->BuildingsKilled.at(Owner())++;
         break;
 
       case RTTI_AIRCRAFT:
       case RTTI_INFANTRY:
       case RTTI_UNIT:
       case RTTI_VESSEL:
-        newowner->UnitsKilled[Owner()]++;
+        newowner->UnitsKilled.at(Owner())++;
         break;
 
       case RTTIType::RTTI_NONE:
@@ -4302,7 +4300,8 @@ ResultType TechnoClass::Take_Damage(int& damage, int distance,
         }
 
         const int explosion_damage = Techno_Type_Class()->MaxStrength;
-        new AnimClass(Combat_Anim(explosion_damage, wh, Map[Center_Coord()].Land_Type()),
+        new AnimClass(Combat_Anim(explosion_damage, wh,
+                                  Map.at(Center_Coord()).Land_Type()),
                       Center_Coord());
         const int radius = explosion_damage * Rule.ExplosionSpread;
         //				int radius = damage/2;
@@ -4415,7 +4414,7 @@ void TechnoClass::Record_The_Kill(TechnoClass* source) {
                 static_cast<int>(
                     dynamic_cast<BuildingClass*>(this)->Class->Type));
           }
-          source->House->BuildingsKilled[Owner()]++;
+          source->House->BuildingsKilled.at(Owner())++;
         }
 
         /*
@@ -4460,7 +4459,7 @@ void TechnoClass::Record_The_Kill(TechnoClass* source) {
 
       House->UnitsLost++;
       if (source != nullptr) {
-        source->House->UnitsKilled[Owner()]++;
+        source->House->UnitsKilled.at(Owner())++;
       }
 
       /*
@@ -4543,7 +4542,7 @@ CELL TechnoClass::Nearby_Location(const TechnoClass* techno) const {
   }
 
   return Map.Nearby_Location(cell, speed,
-                             Map[cell].Zones[Techno_Type_Class()->MZone],
+                             Map.at(cell).Zones.at(Techno_Type_Class()->MZone),
                              Techno_Type_Class()->MZone);
 }
 
@@ -4731,8 +4730,9 @@ void TechnoClass::Techno_Draw_Object(std::span<const std::byte> shapefile,
         ttype->DimensionData.resize(Get_Build_Frame_Count(shapefile));
       }
       if (base::ToSize(shapenum) < ttype->DimensionData.size() &&
-          !ttype->DimensionData[base::ToSize(shapenum)].Is_Valid()) {
-        ttype->DimensionData[base::ToSize(shapenum)] = Shape_Dimensions(shapefile, shapenum);
+          !ttype->DimensionData.at(base::ToSize(shapenum)).Is_Valid()) {
+        ttype->DimensionData.at(base::ToSize(shapenum)) =
+            Shape_Dimensions(shapefile, shapenum);
       }
     }
 
@@ -4821,7 +4821,7 @@ std::span<const unsigned char> TechnoClass::Remap_Table() const {
   if (Techno_Type_Class()->IsRemappable) {
     return House->Remap_Table(IsBlushing, Techno_Type_Class()->Remap);
   }
-  return ColorRemaps[PCOLOR_GOLD].RemapTable;
+  return ColorRemaps.at(PCOLOR_GOLD).RemapTable;
 }
 
 /***********************************************************************************************
@@ -5064,7 +5064,7 @@ int TechnoClass::Threat_Range(int control) const {
  *=============================================================================================*/
 bool TechnoClass::Is_In_Same_Zone(CELL cell) const {
   const MZoneType zone = Techno_Type_Class()->MZone;
-  return Map[cell].Zones[zone] == Map[Center_Coord()].Zones[zone];
+  return Map.at(cell).Zones.at(zone) == Map.at(Center_Coord()).Zones.at(zone);
 }
 
 /***********************************************************************************************
@@ -5156,7 +5156,7 @@ void TechnoClass::Base_Is_Attacked(TechnoClass* enemy) {
       */
       if (!infantry->Is_Weapon_Equipped() ||
           (infantry->Mission != MISSION_NONE &&
-           !MissionControl[infantry->Mission].IsRecruitable &&
+           !MissionControl.at(infantry->Mission).IsRecruitable &&
            Session.Type == GAME_NORMAL)) {
         continue;
       }
@@ -5167,16 +5167,16 @@ void TechnoClass::Base_Is_Attacked(TechnoClass* enemy) {
       **	Don't allow a response if it doesn't have a weapon that will
       *affect the *	enemy object.
       */
-      if (infantry->Class->PrimaryWeapon->WarheadPtr
-              ->Modifier[enemy->Techno_Type_Class()->Armor] == 0) {
+      if (infantry->Class->PrimaryWeapon->WarheadPtr->Modifier.at(
+              enemy->Techno_Type_Class()->Armor) == 0) {
         continue;
       }
 
       /*
       **	Don't try to help if the building is on another planet.
       */
-      if (Map[infantry->Center_Coord()].Zones[infantry->Class->MZone] !=
-          Map[Center_Coord()].Zones[infantry->Class->MZone]) {
+      if (Map.at(infantry->Center_Coord()).Zones.at(infantry->Class->MZone) !=
+          Map.at(Center_Coord()).Zones.at(infantry->Class->MZone)) {
         continue;
       }
 
@@ -5247,7 +5247,7 @@ void TechnoClass::Base_Is_Attacked(TechnoClass* enemy) {
       */
       if (!unit->Is_Weapon_Equipped() ||
           (unit->Mission != MISSION_NONE &&
-           !MissionControl[unit->Mission].IsRecruitable &&
+           !MissionControl.at(unit->Mission).IsRecruitable &&
            Session.Type == GAME_NORMAL)) {
         continue;
       }
@@ -5256,16 +5256,16 @@ void TechnoClass::Base_Is_Attacked(TechnoClass* enemy) {
       **	Don't allow a response if it doesn't have a weapon that will
       *affect the *	enemy object.
       */
-      if (unit->Class->PrimaryWeapon->WarheadPtr
-              ->Modifier[enemy->Techno_Type_Class()->Armor] == 0) {
+      if (unit->Class->PrimaryWeapon->WarheadPtr->Modifier.at(
+              enemy->Techno_Type_Class()->Armor) == 0) {
         continue;
       }
 
       /*
       **	Don't try to help if the building is on another planet.
       */
-      if (Map[unit->Center_Coord()].Zones[unit->Class->MZone] !=
-          Map[Center_Coord()].Zones[unit->Class->MZone]) {
+      if (Map.at(unit->Center_Coord()).Zones.at(unit->Class->MZone) !=
+          Map.at(Center_Coord()).Zones.at(unit->Class->MZone)) {
         continue;
       }
 
@@ -5389,7 +5389,7 @@ bool TechnoClass::Is_Allowed_To_Retaliate(const TechnoClass* source) const {
   /*
   **	If the mission precludes retaliation, then don't retaliate.
   */
-  if (Mission != MISSION_NONE && !MissionControl[Mission].IsRetaliate) {
+  if (Mission != MISSION_NONE && !MissionControl.at(Mission).IsRetaliate) {
     return false;
   }
 
@@ -5423,8 +5423,8 @@ bool TechnoClass::Is_Allowed_To_Retaliate(const TechnoClass* source) const {
   */
   const TechnoTypeClass* ttype = Techno_Type_Class();
   if (ttype->PrimaryWeapon->WarheadPtr != nullptr &&
-      ttype->PrimaryWeapon->WarheadPtr
-              ->Modifier[source->Techno_Type_Class()->Armor] == 0) {
+      ttype->PrimaryWeapon->WarheadPtr->Modifier.at(
+          source->Techno_Type_Class()->Armor) == 0) {
     return false;
   }
 
@@ -5490,7 +5490,7 @@ bool TechnoClass::Is_Allowed_To_Retaliate(const TechnoClass* source) const {
                      : source->Techno_Type_Class()->SecondaryWeapon;
     if (weapon != nullptr && weapon->WarheadPtr != nullptr &&
         In_Range(source, primary)) {
-      source_val = weapon->WarheadPtr->Modifier[Techno_Type_Class()->Armor];
+      source_val = weapon->WarheadPtr->Modifier.at(Techno_Type_Class()->Armor);
     }
 
     auto current_val = fixed(0);
@@ -5501,7 +5501,8 @@ bool TechnoClass::Is_Allowed_To_Retaliate(const TechnoClass* source) const {
                             : source->Techno_Type_Class()->SecondaryWeapon;
       if (weapon != nullptr && weapon->WarheadPtr != nullptr &&
           In_Range(tech, primary)) {
-        current_val = weapon->WarheadPtr->Modifier[Techno_Type_Class()->Armor];
+        current_val =
+            weapon->WarheadPtr->Modifier.at(Techno_Type_Class()->Armor);
       }
     }
     if (source_val <= current_val) {
@@ -6179,8 +6180,9 @@ BuildingClass* TechnoClass::Find_Docking_Bay(StructType b, bool friendly) {
                     : building->House == House) &&
           !building->IsInLimbo && *building == b &&
           (What_Am_I() == RTTI_AIRCRAFT ||
-           Map[building->Center_Coord()].Zones[Techno_Type_Class()->MZone] ==
-               Map[Center_Coord()].Zones[Techno_Type_Class()->MZone]) &&
+           Map.at(building->Center_Coord())
+                   .Zones.at(Techno_Type_Class()->MZone) ==
+               Map.at(Center_Coord()).Zones.at(Techno_Type_Class()->MZone)) &&
           Transmit_Message(RADIO_CAN_LOAD, building) == RADIO_ROGER) {
         /*
         **	If the building qualifies and this building is better than the
@@ -6276,7 +6278,7 @@ int TechnoClass::Anti_Air() const {
     const WarheadTypeClass* warhead = weapon->WarheadPtr;
 
     if (bullet->IsAntiAircraft) {
-      int value = weapon->Attack * warhead->Modifier[ARMOR_ALUMINUM] *
+      int value = weapon->Attack * warhead->Modifier.at(ARMOR_ALUMINUM) *
                   weapon->Range / weapon->ROF;
 
       if (Techno_Type_Class()->Is_Two_Shooter()) {
@@ -6319,7 +6321,7 @@ int TechnoClass::Anti_Armor() const {
     const WarheadTypeClass* warhead = weapon->WarheadPtr;
     const int mrange = std::min(static_cast<int>(weapon->Range), 0x0400);
 
-    int value = weapon->Attack * warhead->Modifier[ARMOR_STEEL] * mrange *
+    int value = weapon->Attack * warhead->Modifier.at(ARMOR_STEEL) * mrange *
                 warhead->SpreadFactor / weapon->ROF;
     if (Techno_Type_Class()->Is_Two_Shooter()) {
       value *= 2;
@@ -6363,7 +6365,7 @@ int TechnoClass::Anti_Infantry() const {
     const WarheadTypeClass* warhead = weapon->WarheadPtr;
     const int mrange = std::min(static_cast<int>(weapon->Range), 0x0400);
 
-    int value = weapon->Attack * warhead->Modifier[ARMOR_NONE] * mrange *
+    int value = weapon->Attack * warhead->Modifier.at(ARMOR_NONE) * mrange *
                 warhead->SpreadFactor / weapon->ROF;
     if (Techno_Type_Class()->Is_Two_Shooter()) {
       value *= 2;
@@ -6664,9 +6666,12 @@ bool TechnoTypeClass::Read_INI(CCINIClass& ini) {
     ini.Get_String(Name(), "Name", "", buffer, sizeof(buffer));
     if (!std::string_view(buffer).empty()) {
       if constexpr (!config::kIsEnglish) {
-        for (int xx = 0; kNameOverrides[base::ToSize(xx)] != nullptr; xx++) {
-          if ((std::string_view(kNameOverrides[base::ToSize(xx)]) == buffer)) {
-            port::SafeCopy(buffer, kNameOverrides[base::ToSize(xx + 1)]);
+        for (int xx = 0; base::At(kNameOverrides, base::ToSize(xx)) != nullptr;
+             xx++) {
+          if ((std::string_view(base::At(kNameOverrides, base::ToSize(xx))) ==
+               buffer)) {
+            port::SafeCopy(buffer,
+                           base::At(kNameOverrides, base::ToSize(xx + 1)));
             break;
           }
         }
@@ -6763,11 +6768,11 @@ bool TechnoTypeClass::Legal_Placement(CELL pos) const {
       return false;
     }
     if (build) {
-      if (!Map[cell].Is_Clear_To_Build(Speed)) {
+      if (!Map.at(cell).Is_Clear_To_Build(Speed)) {
         return false;
       }
     } else {
-      if (!Map[cell].Is_Clear_To_Move(Speed, false, false)) {
+      if (!Map.at(cell).Is_Clear_To_Move(Speed, false, false)) {
         return false;
       }
     }

@@ -69,7 +69,6 @@
 #include "ra/tevent.h"
 #include "ra/trigger.h"
 #include "ra/type.h"
-#include "ra/vector.h"
 #include "ra/vector_dynamic.h"
 #include "ra/vortex.h"
 #include "ra/ww_audio.h"
@@ -252,7 +251,7 @@ void LogicClass::AI() {
   */
   for (LogicTriggerID = 0; LogicTriggerID < LogicTriggers.Count();
        LogicTriggerID++) {
-    TriggerClass* trig = LogicTriggers[LogicTriggerID];
+    TriggerClass* trig = LogicTriggers.at(LogicTriggerID);
 
     /*
     **	Global changed trigger event might be triggered.
@@ -330,7 +329,7 @@ void LogicClass::AI() {
   **	AI for all sentient objects is processed.
   */
   for (int index = 0; index < Count(); index++) {
-    ObjectClass* obj = (*this)[index];
+    ObjectClass* obj = (*this).at(index);
 
     BStart(BENCH_AI);
     obj->AI();
@@ -395,7 +394,7 @@ void LogicClass::AI() {
     **	If the object was destroyed in the process of performing its AI, then
     **	adjust the index so that no object gets skipped.
     */
-    if (obj != (*this)[index]) {
+    if (obj != (*this).at(index)) {
       index--;
     }
   }
@@ -468,7 +467,7 @@ void LogicClass::Detach(TARGET target, bool /*unused*/) {
   */
   if (Is_Target_Trigger(target)) {
     for (int index = 0; index < LogicTriggers.Count(); index++) {
-      if (As_Trigger(target) == LogicTriggers[index]) {
+      if (As_Trigger(target) == LogicTriggers.at(index)) {
         LogicTriggers.Delete(index);
         index--;
       }

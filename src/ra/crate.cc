@@ -47,7 +47,6 @@
 #include "ra/defines.h"
 #include "ra/externs.h"
 #include "ra/inline.h"
-#include "ra/map.h"
 #include "ra/mapedit.h"
 #include "ra/overlay.h"
 #include "ra/rules.h"
@@ -130,7 +129,7 @@ bool CrateClass::Put_Crate(CELL& cell) {
   ScenarioInit = 0;
 
   if (Map.In_Radar(cell)) {
-    const CellClass* cellptr = &Map[cell];
+    const CellClass* cellptr = &Map.at(cell);
 
     while (cellptr->Overlay != OVERLAY_NONE &&
            !cellptr->Is_Clear_To_Build(SPEED_FLOAT) &&
@@ -142,7 +141,7 @@ bool CrateClass::Put_Crate(CELL& cell) {
       } else {
         cell = Map.Nearby_Location(cell, SPEED_TRACK);
       }
-      cellptr = &Map[cell];
+      cellptr = &Map.at(cell);
     }
 
     if (cellptr->Is_Clear_To_Build(SPEED_FLOAT)) {
@@ -174,7 +173,7 @@ bool CrateClass::Put_Crate(CELL& cell) {
  *=============================================================================================*/
 bool CrateClass::Get_Crate(CELL cell) {
   if (Map.In_Radar(cell)) {
-    CellClass* cellptr = &Map[cell];
+    CellClass* cellptr = &Map.at(cell);
 
     if (cellptr->Overlay == OVERLAY_WOOD_CRATE ||
         cellptr->Overlay == OVERLAY_STEEL_CRATE ||

@@ -49,11 +49,11 @@ TEST(RandomSourceTest, FillsEveryRequestedByte) {
             4000);
   // Bytes past the request stay untouched.
   for (int i = 4000; i < 4096; ++i) {
-    EXPECT_EQ(bytes[static_cast<std::size_t>(i)], 0);
+    EXPECT_EQ(bytes.at(static_cast<std::size_t>(i)), 0);
   }
   int zeros = 0;
   for (int i = 0; i < 4000; ++i) {
-    zeros += bytes[static_cast<std::size_t>(i)] == 0 ? 1 : 0;
+    zeros += bytes.at(static_cast<std::size_t>(i)) == 0 ? 1 : 0;
   }
   EXPECT_LT(zeros, 100);
 }

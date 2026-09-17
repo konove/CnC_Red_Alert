@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <vector>
 
+#include "base/array.h"
 #include "gtest/gtest.h"
 
 namespace {
@@ -81,12 +82,12 @@ TEST(DibTest, ReadsDimensionsColoursAndPixels) {
   EXPECT_EQ(image->Stride(), 4) << "rows pad out to four bytes";
 
   ASSERT_EQ(image->Colors().size(), 2U);
-  EXPECT_EQ(image->Colors()[1], (dib::Color{1, 2, 3, 0}));
+  EXPECT_EQ(base::At(image->Colors(), 1), (dib::Color{1, 2, 3, 0}));
 
   // Bottom row first, as stored.
   ASSERT_EQ(image->Bits().size(), 8U);
-  EXPECT_EQ(image->Bits()[0], 1);
-  EXPECT_EQ(image->Bits()[4], 2);
+  EXPECT_EQ(base::At(image->Bits(), 0), 1);
+  EXPECT_EQ(base::At(image->Bits(), 4), 2);
 }
 
 TEST(DibTest, ColoursCanBeRemappedInPlace) {
@@ -94,9 +95,9 @@ TEST(DibTest, ColoursCanBeRemappedInPlace) {
   auto image = dib::Image::FromBmp(bmp);
   ASSERT_TRUE(image.has_value());
 
-  image->MutableColors()[0] = dib::Color{9, 9, 9, 0};
+  base::At(image->MutableColors(), 0) = dib::Color{9, 9, 9, 0};
 
-  EXPECT_EQ(image->Colors()[0], (dib::Color{9, 9, 9, 0}));
+  EXPECT_EQ(base::At(image->Colors(), 0), (dib::Color{9, 9, 9, 0}));
 }
 
 TEST(DibTest, RejectsWhatItCannotDraw) {
@@ -139,8 +140,8 @@ TEST(DibRemapTest, EveryPixelPointsAtTheNearestColourInTheTarget) {
   };
   dib::RemapToPalette(*image, target);
 
-  EXPECT_EQ(image->Bits()[0], 1);
-  EXPECT_EQ(image->Bits()[1], 1);
+  EXPECT_EQ(base::At(image->Bits(), 0), 1);
+  EXPECT_EQ(base::At(image->Bits(), 1), 1);
 }
 
 TEST(DibRemapTest, IndexZeroGoesToBlackRatherThanItsOwnColour) {
@@ -149,14 +150,15 @@ TEST(DibRemapTest, IndexZeroGoesToBlackRatherThanItsOwnColour) {
   // target's black rather than to its white.
   std::vector<std::uint8_t> bmp = MakeBmp(1, 1);
   const std::size_t table = 14 + 40;
-  bmp[table + 0] = 255;  // blue
-  bmp[table + 1] = 255;  // green
-  bmp[table + 2] = 255;  // red
+  bmp.at(table + 0) = 255;  // blue
+  bmp.at(table + 1) = 255;  // green
+  bmp.at(table + 2) = 255;  // red
 
   auto image = dib::Image::FromBmp(bmp);
   ASSERT_TRUE(image.has_value());
-  ASSERT_EQ(image->Bits()[0], 1) << "MakeBmp puts row+1 in the pixels";
-  image->MutableBits()[0] = 0;
+  ASSERT_EQ(base::At(image->Bits(), 0), 1)
+      << "MakeBmp puts row+1 in the pixels";
+  base::At(image->MutableBits(), 0) = 0;
 
   const std::vector<dib::Color> target = {
       dib::Color{63, 63, 63, 0},  // white
@@ -164,7 +166,8 @@ TEST(DibRemapTest, IndexZeroGoesToBlackRatherThanItsOwnColour) {
   };
   dib::RemapToPalette(*image, target);
 
-  EXPECT_EQ(image->Bits()[0], 1) << "entry 0 is transparent, so it maps black";
+  EXPECT_EQ(base::At(image->Bits(), 0), 1)
+      << "entry 0 is transparent, so it maps black";
 }
 
 TEST(DibRemapTest, MatchingHappensInTheVgaSixBitSpace) {
@@ -173,9 +176,9 @@ TEST(DibRemapTest, MatchingHappensInTheVgaSixBitSpace) {
   // whichever entry was merely closest.
   std::vector<std::uint8_t> bmp = MakeBmp(1, 1);
   const std::size_t table = 14 + 40;
-  bmp[table + 4] = 0;    // entry 1, blue
-  bmp[table + 5] = 0;    // green
-  bmp[table + 6] = 255;  // red
+  bmp.at(table + 4) = 0;    // entry 1, blue
+  bmp.at(table + 5) = 0;    // green
+  bmp.at(table + 6) = 255;  // red
 
   auto image = dib::Image::FromBmp(bmp);
   ASSERT_TRUE(image.has_value());
@@ -187,17 +190,17 @@ TEST(DibRemapTest, MatchingHappensInTheVgaSixBitSpace) {
   };
   dib::RemapToPalette(*image, target);
 
-  EXPECT_EQ(image->Bits()[0], 2);
+  EXPECT_EQ(base::At(image->Bits(), 0), 2);
 }
 
 TEST(DibRemapTest, AnEmptyTargetLeavesTheImageAlone) {
   auto image = dib::Image::FromBmp(MakeBmp(2, 1));
   ASSERT_TRUE(image.has_value());
-  const std::uint8_t before = image->Bits()[0];
+  const std::uint8_t before = base::At(image->Bits(), 0);
 
   dib::RemapToPalette(*image, {});
 
-  EXPECT_EQ(image->Bits()[0], before);
+  EXPECT_EQ(base::At(image->Bits(), 0), before);
 }
 
 }  // namespace

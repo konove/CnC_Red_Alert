@@ -78,7 +78,6 @@
 #include "ra/heap.h"
 #include "ra/infantry.h"
 #include "ra/inline.h"
-#include "ra/map.h"
 #include "ra/object.h"
 #include "ra/team.h"
 #include "ra/teamtype.h"
@@ -121,7 +120,7 @@ TargetClass::TargetClass(const CellClass* ptr) : xTargetClass() {
 
 CellClass* xTargetClass::As_Cell() const {
   if (Target.Sub.Exponent == static_cast<unsigned>(RTTI_CELL)) {
-    return &Map[static_cast<CELL>(Target.Sub.Mantissa)];
+    return &Map.at(static_cast<CELL>(Target.Sub.Mantissa));
   }
   return nullptr;
 }

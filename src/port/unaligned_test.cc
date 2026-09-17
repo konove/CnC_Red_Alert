@@ -19,8 +19,8 @@ TEST(UnalignedTest, ReadsAndWritesNativeValuesAtEveryByteOffset) {
     port::WriteUnaligned(base::ObjectBytes(bytes).subspan(base::ToSize(offset)), kValue);
     EXPECT_EQ(port::ReadUnaligned<uint64_t>(base::ObjectBytes(bytes).subspan(base::ToSize(offset))), kValue);
     EXPECT_EQ(base::CompareBytes(base::ObjectBytes(bytes).subspan(base::ToSize(offset)), base::ObjectBytes(kValue), sizeof(kValue)), 0);
-    EXPECT_EQ(bytes[base::ToSize(offset - 1)], 0xa5);
-    EXPECT_EQ(bytes[base::ToSize(offset) + sizeof(kValue)], 0xa5);
+    EXPECT_EQ(bytes.at(base::ToSize(offset - 1)), 0xa5);
+    EXPECT_EQ(bytes.at(base::ToSize(offset) + sizeof(kValue)), 0xa5);
   }
 }
 }  // namespace

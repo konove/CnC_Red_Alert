@@ -96,9 +96,9 @@ int Modify_Damage(int damage, WarheadType warhead, ArmorType armor,
     return 0;
   }
 
-  const WarheadTypeClass* whead = &Warheads[warhead];
+  const WarheadTypeClass* whead = &Warheads.at(warhead);
 
-  damage = Fixed_To_Cardinal(damage, whead->Modifier[armor]);
+  damage = Fixed_To_Cardinal(damage, whead->Modifier.at(armor));
 
   /*
   **	Reduce damage according to the distance from the impact point.
@@ -157,7 +157,7 @@ void Explosion_Damage(COORDINATE coord, int strength, TechnoClass* source,
     return;
   }
 
-  const WarheadTypeClass* whead = &Warheads[warhead];
+  const WarheadTypeClass* whead = &Warheads.at(warhead);
   const int range =
       ICON_LEPTON_W + (ICON_LEPTON_W >> 1);  // Damage effect radius.
   CELL const cell = Coord_Cell(coord);       // Cell number under explosion.
@@ -166,7 +166,7 @@ void Explosion_Damage(COORDINATE coord, int strength, TechnoClass* source,
   }
   //	if (!Map.In_Radar(cell)) return;
 
-  CellClass* cellptr = &Map[cell];
+  CellClass* cellptr = &Map.at(cell);
   const ObjectClass* impacto = cellptr->Cell_Occupier();
 
   /*
@@ -182,7 +182,7 @@ void Explosion_Damage(COORDINATE coord, int strength, TechnoClass* source,
     **	further than one cell away.
     */
     if (i != FACING_NONE) {
-      cellptr = &Map[cell].Adjacent_Cell(i);
+      cellptr = &Map.at(cell).Adjacent_Cell(i);
     }
 
     /*
@@ -244,7 +244,7 @@ void Explosion_Damage(COORDINATE coord, int strength, TechnoClass* source,
   **	If there is a wall present at this location, it may be destroyed. Check
   *to *	make sure that the warhead is of the kind that can destroy walls.
   */
-  cellptr = &Map[cell];
+  cellptr = &Map.at(cell);
   cellptr->Reduce_Tiberium(strength / 10);
   if (cellptr->Overlay != OVERLAY_NONE) {
     const OverlayTypeClass* optr =
@@ -252,7 +252,7 @@ void Explosion_Damage(COORDINATE coord, int strength, TechnoClass* source,
 
     if (optr->IsWall && (whead->IsWallDestroyer ||
                          (whead->IsWoodDestroyer && optr->IsWooden))) {
-      Map[cell].Reduce_Wall(strength);
+      Map.at(cell).Reduce_Wall(strength);
     }
   }
 }

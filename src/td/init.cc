@@ -912,7 +912,8 @@ bool Select_Game(bool fade) {
         Scenario =
             tech::ParseInteger<int>(std::string_view{DebugNewGame}.substr(3, 2))
                 .value_or(0);
-        ScenPlayer = DebugNewGame[2] == 'B' ? SCEN_PLAYER_NOD : SCEN_PLAYER_GDI;
+        ScenPlayer =
+            DebugNewGame.at(2) == 'B' ? SCEN_PLAYER_NOD : SCEN_PLAYER_GDI;
         Whom = ScenPlayer == SCEN_PLAYER_NOD ? HOUSE_BAD : HOUSE_GOOD;
         GameToPlay = GAME_NORMAL;
         process = false;
@@ -1682,32 +1683,32 @@ bool Select_Game(bool fade) {
           LOG(ERROR) << "-MAPTEST: fixture cells must be outside the playable map";
           return false;
         }
-        Map[cell].Reset();
+        Map.at(cell).Reset();
       }
       // Isolate fields formerly omitted by the sparse-cell predicate.
-      Map[0].IsPlot = true;
-      Map[1].IsCursorHere = true;
-      Map[2].IsWaypoint = true;
-      Map[3].IsRadarCursor = true;
-      Map[4].IsFlagged = true;
-      Map[5].TIcon = 7;
-      Map[6].OverlayData = 3;
-      Map[7].SmudgeData = 2;
-      Map[8].Owner = HOUSE_GOOD;
-      Map[9].InfType = HOUSE_BAD;
-      Map[10].Overlay = OVERLAY_BRICK_WALL;
-      Map[10].Recalc_Attributes();
-      Map[10].Overlay = OVERLAY_NONE;
+      Map.at(0).IsPlot = true;
+      Map.at(1).IsCursorHere = true;
+      Map.at(2).IsWaypoint = true;
+      Map.at(3).IsRadarCursor = true;
+      Map.at(4).IsFlagged = true;
+      Map.at(5).TIcon = 7;
+      Map.at(6).OverlayData = 3;
+      Map.at(7).SmudgeData = 2;
+      Map.at(8).Owner = HOUSE_GOOD;
+      Map.at(9).InfType = HOUSE_BAD;
+      Map.at(10).Overlay = OVERLAY_BRICK_WALL;
+      Map.at(10).Recalc_Attributes();
+      Map.at(10).Overlay = OVERLAY_NONE;
       auto* trigger = new TriggerClass;
       if (!trigger || Units.Count() == 0) {
         return false;
       }
       trigger->AttachCount = 2;
-      Map[11].IsTrigger = Map[12].IsTrigger = true;
-      CellTriggers[11] = CellTriggers[12] = trigger;
-      Map[13].OccupierPtr = Units.Ptr(0);
-      base::At(Map[14].Overlappers, 2) = Units.Ptr(0);
-      Map[15].Flag.Composite = 2;
+      Map.at(11).IsTrigger = Map.at(12).IsTrigger = true;
+      CellTriggers.at(11) = CellTriggers.at(12) = trigger;
+      Map.at(13).OccupierPtr = Units.Ptr(0);
+      base::At(Map.at(14).Overlappers, 2) = Units.Ptr(0);
+      Map.at(15).Flag.Composite = 2;
       Map.TotalValue = static_cast<int64_t>(uint64_t{1} << 35);
       auto* pending = new BuildingClass(STRUCT_POWER, PlayerPtr->Class->House);
       if (!pending) {
@@ -2453,7 +2454,7 @@ bool Parse_Command_Line(std::span<char*> arguments) {
       ** Scan the command-line string, pulling off each address piece
       */
       int i = 0;
-      port::Tokenizer tokens(std::span(string).subspan(8).data(), ".");
+      port::Tokenizer tokens{std::span(string).subspan(8).data(), "."};
       const char* p = tokens.Next();
       while (p) {
         const auto byte = tech::ParseHex<uint8_t>(p);

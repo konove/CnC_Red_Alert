@@ -91,7 +91,7 @@ class MusicListClass : public ListClass {
   }
   // The selected line's theme, or THEME_NONE when the list is empty.
   [[nodiscard]] ThemeType Current_Theme() const {
-    return Count() > 0 ? Themes[base::ToSize(Current_Index())] : THEME_NONE;
+    return Count() > 0 ? Themes.at(base::ToSize(Current_Index())) : THEME_NONE;
   }
   void Remove_Item(int index) override {
     if (index >= 0 && index < Count()) {

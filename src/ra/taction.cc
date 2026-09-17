@@ -79,7 +79,6 @@
 #include "ra/infantry.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
-#include "ra/map.h"
 #include "ra/mapedit.h"
 #include "ra/msglist.h"
 #include "ra/object.h"
@@ -231,10 +230,10 @@ void ActionChoiceClass::Draw_It(int /*unused*/, int x, int y, int width,
     Conquer_Clip_Text_Print(Description(), x, y, scheme, kTBlack, flags, width,
                             _tabs);
   } else {
-    Conquer_Clip_Text_Print(
-        Description(), x, y,
-        selected ? &ColorRemaps[PCOLOR_DIALOG_BLUE] : &ColorRemaps[PCOLOR_GREY],
-        kTBlack, flags, width, _tabs);
+    Conquer_Clip_Text_Print(Description(), x, y,
+                            selected ? &ColorRemaps.at(PCOLOR_DIALOG_BLUE)
+                                     : &ColorRemaps.at(PCOLOR_GREY),
+                            kTBlack, flags, width, _tabs);
   }
 }
 
@@ -490,10 +489,10 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     case TACTION_REVEAL_ZONE:
       if (!PlayerPtr->IsVisionary) {
         const int zone =
-            Map[base::At(Scen.Waypoint, Data.Value)].Zones[MZONE_CRUSHER];
+            Map.at(base::At(Scen.Waypoint, Data.Value)).Zones.at(MZONE_CRUSHER);
 
         for (CELL map_cell = 0; map_cell < MAP_CELL_TOTAL; map_cell++) {
-          if (std::cmp_equal(Map[map_cell].Zones[MZONE_CRUSHER], zone)) {
+          if (std::cmp_equal(Map.at(map_cell).Zones.at(MZONE_CRUSHER), zone)) {
             Map.Map_Cell(map_cell, PlayerPtr);
           }
         }
@@ -603,8 +602,8 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     */
     case TACTION_1_SPECIAL:
     case TACTION_FULL_SPECIAL:
-      hptr->SuperWeapon[Data.Special].Enable(Action == TACTION_1_SPECIAL,
-                                             false);
+      hptr->SuperWeapon.at(Data.Special)
+          .Enable(Action == TACTION_1_SPECIAL, false);
       //			hptr->SuperWeapon[Data.Special].Forced_Charge(PlayerPtr
       //== hptr);
 
@@ -832,7 +831,7 @@ TActionType Action_From_Name(const char* name) {
   }
 
   for (TActionType i = TACTION_NONE; i < TACTION_COUNT; i++) {
-    if (!port::CompareIgnoreCase(name, ActionText[i])) {
+    if (!port::CompareIgnoreCase(name, ActionText.at(i))) {
       return i;
     }
   }
@@ -851,7 +850,9 @@ TActionType Action_From_Name(const char* name) {
  *                                                                                             *
  * HISTORY: * 11/29/1994 BR : Created. *
  *=============================================================================================*/
-const char* Name_From_Action(TActionType action) { return ActionText[action]; }
+const char* Name_From_Action(TActionType action) {
+  return ActionText.at(action);
+}
 
 /***********************************************************************************************
  * Action_Needs -- Figures out what data an action object needs. *

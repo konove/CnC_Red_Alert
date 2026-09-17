@@ -115,11 +115,11 @@ void RadioClass::Debug_Dump(MonoClass* mono) const {
     assert(IsActive);
 
     mono->Set_Cursor(29, 7);
-    mono->Printf("0-%-47s", Messages[Old[0]]);
+    mono->Printf("0-%-47s", Messages.at(Old[0]));
     mono->Set_Cursor(29, 8);
-    mono->Printf("1-%-47s", Messages[Old[1]]);
+    mono->Printf("1-%-47s", Messages.at(Old[1]));
     mono->Set_Cursor(29, 9);
-    mono->Printf("2-%-47s", Messages[Old[2]]);
+    mono->Printf("2-%-47s", Messages.at(Old[2]));
     if (Radio) {
       mono->Set_Cursor(20, 7);
       mono->Printf("%08X", Radio->As_Target());

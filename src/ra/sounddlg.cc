@@ -92,7 +92,7 @@ class MusicListClass : public ListClass {
   }
   // The selected line's theme, or THEME_NONE when the list is empty.
   [[nodiscard]] ThemeType Current_Theme() const {
-    return Count() > 0 ? Themes[base::ToSize(Current_Index())] : THEME_NONE;
+    return Count() > 0 ? Themes.at(base::ToSize(Current_Index())) : THEME_NONE;
   }
   void Remove_Item(int index) override {
     if (index >= 0 && index < Count()) {
@@ -496,9 +496,9 @@ void MusicListClass::Draw_Entry(int index, int x, int y, int width,
                             width, Tabs);
 
   } else {
-    Conquer_Clip_Text_Print(
-        Get_Item(index), x, y,
-        selected ? &ColorRemaps[PCOLOR_DIALOG_BLUE] : &ColorRemaps[PCOLOR_GREY],
-        kTBlack, TextFlags, width, Tabs);
+    Conquer_Clip_Text_Print(Get_Item(index), x, y,
+                            selected ? &ColorRemaps.at(PCOLOR_DIALOG_BLUE)
+                                     : &ColorRemaps.at(PCOLOR_GREY),
+                            kTBlack, TextFlags, width, Tabs);
   }
 }

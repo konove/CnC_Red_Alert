@@ -121,13 +121,12 @@ TEST(CodecStateTest, Base64HandlesShortFinalGroups) {
     Base64Source encoder(Base64Mode::kEncode, plain);
     const auto bytes = Drain(encoder);
     ASSERT_EQ(bytes.size(),
-              expected[static_cast<std::size_t>(length - 1)].size());
-    EXPECT_EQ(
-        base::CompareBytes(std::as_bytes(std::span(bytes)),
-                           std::as_bytes(std::span(
-                               expected[static_cast<std::size_t>(length - 1)])),
-                           bytes.size()),
-        0);
+              expected.at(static_cast<std::size_t>(length - 1)).size());
+    EXPECT_EQ(base::CompareBytes(std::as_bytes(std::span(bytes)),
+                                 std::as_bytes(std::span(expected.at(
+                                     static_cast<std::size_t>(length - 1)))),
+                                 bytes.size()),
+              0);
     SpanSource encoded(std::as_bytes(std::span(bytes)));
     Base64Source decoder(Base64Mode::kDecode, encoded);
     const auto decoded = Drain(decoder);
@@ -201,9 +200,9 @@ TEST(CodecStateTest, ModularMultiplicationMatchesIndependentRemainder) {
       }
       addend = (addend * 2) % kModulus;
     }
-    EXPECT_EQ(result[0], static_cast<uint32_t>(expected));
-    EXPECT_EQ(result[1], static_cast<uint32_t>(expected >> 32));
-    EXPECT_EQ(result[2], 0);
+    EXPECT_EQ(result.at(0), static_cast<uint32_t>(expected));
+    EXPECT_EQ(result.at(1), static_cast<uint32_t>(expected >> 32));
+    EXPECT_EQ(result.at(2), 0);
   }
   XMP_Mod_Mult_Clear(kPrecision);
 }
@@ -297,7 +296,8 @@ TEST(CodecStateTest, SourcesReadOnlyWhatTheirCodecNeeds) {
     LzoSource decompressor(CodecMode::kDecompress, source, 128);
     std::array<std::byte, 1> one{};
     ASSERT_EQ(decompressor.Read(one), 1);
-    const int first_block = 4 + encoded.bytes[0] + (encoded.bytes[1] << 8);
+    const int first_block =
+        4 + encoded.bytes.at(0) + (encoded.bytes.at(1) << 8);
     EXPECT_EQ(source.bytes_remaining(),
               std::ssize(encoded.bytes) - first_block);
   }

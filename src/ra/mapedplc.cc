@@ -79,7 +79,6 @@
 #include "ra/inline.h"
 #include "ra/jshell.h"
 #include "ra/list.h"
-#include "ra/map.h"
 #include "ra/mapedit.h"
 #include "ra/msgbox.h"
 #include "ra/object.h"
@@ -90,7 +89,6 @@
 #include "ra/trigger.h"
 #include "ra/trigtype.h"
 #include "ra/type.h"
-#include "ra/vector.h"
 #include "ra/vector_dynamic.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
@@ -826,9 +824,9 @@ int MapEditClass::Place_Object() {
       */
       template_cell =
           static_cast<CELL>((ZoneCell + ZoneOffset) + occupy.front());
-      if ((*this)[template_cell].Cell_Occupier()) {
+      if ((*this).at(template_cell).Cell_Occupier()) {
         ObjectClass* occupier =
-            (*this)[template_cell].Cell_Occupier();  // occupying object
+            (*this).at(template_cell).Cell_Occupier();  // occupying object
 
         /*
         **	Save object's coordinates
@@ -844,16 +842,16 @@ int MapEditClass::Place_Object() {
         **	Set the cell's template values
         */
         const TemplateType save_ttype =
-            (*this)[template_cell].TType;  // for saving cell's TType
+            (*this).at(template_cell).TType;  // for saving cell's TType
         const unsigned char save_ticon =
-            (*this)[template_cell].TIcon;  // for saving cell's TIcon
-        (*this)[template_cell].TType =
+            (*this).at(template_cell).TIcon;  // for saving cell's TIcon
+        (*this).at(template_cell).TType =
             dynamic_cast<const TemplateTypeClass*>(PendingObject)->Type;
-        (*this)[template_cell].TIcon = static_cast<unsigned char>(
+        (*this).at(template_cell).TIcon = static_cast<unsigned char>(
             Cell_X(occupy.front()) +
             (Cell_Y(occupy.front()) *
              dynamic_cast<const TemplateTypeClass*>(PendingObject)->Width));
-        (*this)[template_cell].Recalc_Attributes();
+        (*this).at(template_cell).Recalc_Attributes();
 
         /*
         **	Try to put the object back down
@@ -865,9 +863,9 @@ int MapEditClass::Place_Object() {
         /*
         **	Put everything back the way it was
         */
-        (*this)[template_cell].TType = save_ttype;
-        (*this)[template_cell].TIcon = save_ticon;
-        (*this)[template_cell].Recalc_Attributes();
+        (*this).at(template_cell).TType = save_ttype;
+        (*this).at(template_cell).TIcon = save_ticon;
+        (*this).at(template_cell).Recalc_Attributes();
 
         /*
         **	Major error if can't replace the object now
@@ -897,16 +895,16 @@ int MapEditClass::Place_Object() {
           /*
           **	Clear smudge & overlay
           */
-          (*this)[template_cell].Overlay = OVERLAY_NONE;
-          (*this)[template_cell].OverlayData = 0;
-          (*this)[template_cell].Smudge = SMUDGE_NONE;
+          (*this).at(template_cell).Overlay = OVERLAY_NONE;
+          (*this).at(template_cell).OverlayData = 0;
+          (*this).at(template_cell).Smudge = SMUDGE_NONE;
 
           /*
           **	make adjacent cells recalc attrib's
           */
-          (*this)[template_cell].Recalc_Attributes();
-          (*this)[template_cell].Wall_Update();
-          (*this)[template_cell].Concrete_Calc();
+          (*this).at(template_cell).Recalc_Attributes();
+          (*this).at(template_cell).Wall_Update();
+          (*this).at(template_cell).Concrete_Calc();
 
           occupy = occupy.subspan(1);
         }
@@ -1648,7 +1646,7 @@ void MapEditClass::Place_Trigger() {
     */
     if (base::Any(a1 & ATTACH_CELL) && CurTrigger) {
       TriggerClass* tt = Find_Or_Make(CurTrigger);
-      Map[cell].Trigger = tt;
+      Map.at(cell).Trigger = tt;
     }
     //			CellTriggers[cell] = CurTrigger;
   }
@@ -1772,7 +1770,7 @@ void MapEditClass::Build_Base_To(int percent) {
     ** Get a ptr to the type of building to build, create one, and unlimbo it.
     */
     const BuildingTypeClass* objtype =
-        &BuildingTypeClass::As_Reference(Base.Nodes[i].Type);
+        &BuildingTypeClass::As_Reference(Base.Nodes.at(i).Type);
     obj = dynamic_cast<BuildingClass*>(
         objtype->Create_One_Of(HouseClass::As_Pointer(Base.House)));
 
@@ -1780,7 +1778,7 @@ void MapEditClass::Build_Base_To(int percent) {
     ** If unlimbo fails, error out
     */
     ScenarioInit++;
-    if (!obj->Unlimbo(Cell_Coord(Base.Nodes[i].Cell))) {
+    if (!obj->Unlimbo(Cell_Coord(Base.Nodes.at(i).Cell))) {
       delete obj;
       WWMessageBox().Process("Unable to build base!");
       ScenarioInit--;

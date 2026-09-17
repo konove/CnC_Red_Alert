@@ -130,9 +130,9 @@ static void VQA_Audio_Callback(uint8_t* stream, int len) {
      * buffer play position & the 'CurBlock' value.
      * If not, don't change anything and replay this block.
      */
-    if (audio->IsLoadedStorage[base::ToSize(audio->NextBlock)] == 1) {
+    if (audio->IsLoadedStorage.at(base::ToSize(audio->NextBlock)) == 1) {
       /* Update this block's status to loadable (0) */
-      audio->IsLoadedStorage[base::ToSize(audio->CurBlock)] = 0;
+      audio->IsLoadedStorage.at(base::ToSize(audio->CurBlock)) = 0;
 
       /* Update position within audio buffer */
       audio->PlayPosition += config->HMIBufSize;
@@ -511,7 +511,7 @@ int32_t CopyAudio(VQAHandle* vqap) {
   }
 
   /* If 'endblock' hasn't played yet, return VQAERR_SLEEPING */
-  if (audio->IsLoadedStorage[base::ToSize(endblock)] == 1) {
+  if (audio->IsLoadedStorage.at(base::ToSize(endblock)) == 1) {
     return VQAERR_SLEEPING;
   }
 
@@ -538,7 +538,7 @@ int32_t CopyAudio(VQAHandle* vqap) {
 
     /* Set all blocks to loaded */
     for (int32_t i = startblock; i < endblock; i++) {
-      audio->IsLoadedStorage[base::ToSize(i)] = 1;
+      audio->IsLoadedStorage.at(base::ToSize(i)) = 1;
     }
 
     SDL_UnlockAudioDevice(config->AudioDeviceID);
@@ -568,11 +568,11 @@ int32_t CopyAudio(VQAHandle* vqap) {
 
   /* Set blocks to loaded */
   for (int32_t i = startblock; i < audio->NumAudBlocks; i++) {
-    audio->IsLoadedStorage[base::ToSize(i)] = 1;
+    audio->IsLoadedStorage.at(base::ToSize(i)) = 1;
   }
 
   for (int32_t i = 0; i < endblock; i++) {
-    audio->IsLoadedStorage[base::ToSize(i)] = 1;
+    audio->IsLoadedStorage.at(base::ToSize(i)) = 1;
   }
 
   SDL_UnlockAudioDevice(config->AudioDeviceID);

@@ -61,15 +61,15 @@ TEST(BlowfishEngineTest, DecryptsReferenceVectors) {
 // In-place operation is the same non-const buffer passed as source and
 // destination; the trailing partial block travels through untouched.
 TEST(BlowfishEngineTest, RoundTripsInPlaceThroughOneBuffer) {
-  const Vector& vector = kVectors[2];
+  const Vector& vector = kVectors.at(2);
   BlowfishEngine engine;
   engine.Submit_Key(std::as_bytes(std::span(vector.key)));
 
   std::array<unsigned char, 11> data{};
   std::ranges::copy(vector.plain, data.begin());
-  data[8] = 0xAA;
-  data[9] = 0xBB;
-  data[10] = 0xCC;
+  data.at(8) = 0xAA;
+  data.at(9) = 0xBB;
+  data.at(10) = 0xCC;
   const std::array<unsigned char, 11> original = data;
 
   EXPECT_EQ(engine.Encrypt(std::as_bytes(std::span(data)),
@@ -77,8 +77,8 @@ TEST(BlowfishEngineTest, RoundTripsInPlaceThroughOneBuffer) {
             8);
   EXPECT_TRUE(
       std::equal(vector.cypher.begin(), vector.cypher.end(), data.begin()));
-  EXPECT_EQ(data[8], 0xAA);
-  EXPECT_EQ(data[10], 0xCC);
+  EXPECT_EQ(data.at(8), 0xAA);
+  EXPECT_EQ(data.at(10), 0xCC);
 
   EXPECT_EQ(engine.Decrypt(std::as_bytes(std::span(data)),
                            std::as_writable_bytes(std::span(data))),

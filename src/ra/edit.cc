@@ -28,6 +28,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/array.h"
 #include "base/numeric.h"
 #include "ra/conquer.h"
 #include "ra/control.h"
@@ -200,7 +201,7 @@ bool EditClass::Handle_Key(KeyASCIIType ascii) {
     case KA_BACKSPACE:
       if (Length) {
         Length--;
-        String[base::ToSize(Length)] = '\0';
+        base::At(String, base::ToSize(Length)) = '\0';
         Flag_To_Redraw();
       }
       break;
@@ -346,8 +347,8 @@ bool EditClass::Handle_Key(KeyASCIIType ascii) {
 
       // Manual redraw needed because the event flag was cleared to prevent
       // the gadget ID from being returned on every keystroke.
-      String[base::ToSize(Length++)] = static_cast<char>(ascii);
-      String[base::ToSize(Length)] = '\0';
+      base::At(String, base::ToSize(Length++)) = static_cast<char>(ascii);
+      base::At(String, base::ToSize(Length)) = '\0';
       Flag_To_Redraw();
       break;
   }

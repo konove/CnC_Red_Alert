@@ -106,15 +106,16 @@ std::span<const unsigned char> Small_Icon(std::span<const std::byte> iconptr,
     return {};
   }
   const size_t offset =
-      static_cast<size_t>(map[static_cast<size_t>(iconnum)]) * 24 * 24;
+      static_cast<size_t>(base::At(map, static_cast<size_t>(iconnum))) * 24 *
+      24;
   const auto pixels = iconset.Icon_Data();
   if (offset > pixels.size() || pixels.size() - offset < size_t{24} * 24) {
     return {};
   }
   for (int index = 0; index < 9; ++index) {
-    base::At(icon, index) =
-        pixels[offset + static_cast<size_t>((4 + (index % 3 * 8)) +
-                                            ((4 + (index / 3 * 8)) * 24))];
+    base::At(icon, index) = base::At(
+        pixels, offset + static_cast<size_t>((4 + (index % 3 * 8)) +
+                                             ((4 + (index / 3 * 8)) * 24)));
   }
   return icon;
 }
@@ -290,7 +291,7 @@ std::span<std::byte> Load_Alloc_Data(File& file) {
   // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
   const std::span<char> storage(new char[size + 1], size + 1);
   file.Read(std::as_writable_bytes(storage.first(size)));
-  storage[size] = '\0';
+  base::At(storage, size) = '\0';
   return std::as_writable_bytes(storage.first(size));
 }
 
@@ -362,8 +363,8 @@ std::span<unsigned char> Build_Translucent_Table(
   }
   std::ranges::fill(buffer.first(256), static_cast<unsigned char>(255));
   for (int index = 0; index < count; ++index) {
-    const auto& item = control[base::ToSize(index)];
-    buffer[item.SourceColor] = static_cast<unsigned char>(index);
+    const auto& item = base::At(control, base::ToSize(index));
+    base::At(buffer, item.SourceColor) = static_cast<unsigned char>(index);
     Build_Fading_Table(palette,
                        buffer.subspan(base::ToSize(index + 1) * 256, 256),
                        item.DestColor, item.Fading);
@@ -417,8 +418,8 @@ std::span<unsigned char> Conquer_Build_Translucent_Table(
   }
   std::ranges::fill(buffer.first(256), static_cast<unsigned char>(255));
   for (int index = 0; index < count; ++index) {
-    const auto& item = control[base::ToSize(index)];
-    buffer[item.SourceColor] = static_cast<unsigned char>(index);
+    const auto& item = base::At(control, base::ToSize(index));
+    base::At(buffer, item.SourceColor) = static_cast<unsigned char>(index);
     Conquer_Build_Fading_Table(
         palette, buffer.subspan(base::ToSize(index + 1) * 256, 256),
         item.DestColor, item.Fading);
@@ -442,8 +443,8 @@ std::span<unsigned char> Make_Fading_Table(const PaletteClass& palette,
       **	Find the color that, ideally, the working color should be
       *remapped *	to in the special remap range.
       */
-      RGBClass trycolor = palette[index];
-      trycolor.Adjust(frac, palette[color]);  // Try to match this color.
+      RGBClass trycolor = palette.at(index);
+      trycolor.Adjust(frac, palette.at(color));  // Try to match this color.
 
       /*
       **	Search through the remap range to find the color that should be
@@ -480,8 +481,8 @@ std::span<unsigned char> Conquer_Build_Fading_Table(
         **	Find the color that, ideally, the working color should be
         *remapped *	to in the special remap range.
         */
-        RGBClass trycolor = palette[index];
-        trycolor.Adjust(frac, palette[color]);  // Try to match this color.
+        RGBClass trycolor = palette.at(index);
+        trycolor.Adjust(frac, palette.at(color));  // Try to match this color.
 
         /*
         **	Search through the remap range to find the color that should be
@@ -492,7 +493,7 @@ std::span<unsigned char> Conquer_Build_Fading_Table(
         int bvalue = 0;
         for (int id = PaletteClass::COLOR_COUNT - 16;
              id < PaletteClass::COLOR_COUNT - 1; id++) {
-          const int diff = palette[id].Difference(trycolor);
+          const int diff = palette.at(id).Difference(trycolor);
           if (best == -1 || diff < bvalue) {
             best = id;
             bvalue = diff;

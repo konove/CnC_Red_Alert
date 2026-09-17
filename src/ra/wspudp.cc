@@ -66,7 +66,6 @@
 #include "ra/externs.h"
 #include "ra/internet.h"
 #include "ra/jshell.h"
-#include "ra/vector.h"
 #include "ra/wsproto.h"
 #include "sdllib/net_select.h"
 
@@ -302,7 +301,7 @@ void UDPInterfaceClass::Broadcast(std::span<const std::byte> buffer,
     base::FillBytes(base::ObjectBytes(packet->Address), 0,
                     sizeof(packet->Address));
     base::CopyBytes(base::ObjectBytes(packet->Address).subspan(4),
-                    base::ObjectBytes(BroadcastAddresses[i]), 4);
+                    base::ObjectBytes(BroadcastAddresses.at(i)), 4);
 
     /*
     ** Add it to our out list.
@@ -350,7 +349,7 @@ void UDPInterfaceClass::Event_Handler(int /*socket*/, SocketEvent event) {
         *away.
         */
         for (int i = 0; i < LocalAddresses.Count(); i++) {
-          if (LocalAddresses[i] == addr.sin_addr.s_addr) {
+          if (LocalAddresses.at(i) == addr.sin_addr.s_addr) {
             return;
           }
         }
@@ -386,7 +385,7 @@ void UDPInterfaceClass::Event_Handler(int /*socket*/, SocketEvent event) {
       /*
       ** Get a pointer to the packet.
       */
-      packet = OutBuffers[packetnum];
+      packet = OutBuffers.at(packetnum);
 
       /*
       ** Set up the address structure of the outgoing packet

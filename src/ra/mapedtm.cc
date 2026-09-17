@@ -661,7 +661,7 @@ int MapEditClass::Team_Members(HousesType house) {
         if (static_cast<unsigned>(curclass) < static_cast<unsigned>(maxclasses)) {
           Fancy_Text_Print(base::At(teamclass, curclass)->Full_Name(),
                            kDialogX + (kDialogW / 2), msg_y,
-                           &ColorRemaps[PCOLOR_BROWN], kTBlack,
+                           &ColorRemaps.at(PCOLOR_BROWN), kTBlack,
                            TPF_CENTER | TPF_EFNT | TPF_NOSHADOW);
         }
       }

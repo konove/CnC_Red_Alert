@@ -1228,10 +1228,10 @@ GameType Select_Serial_Dialog() {
           ** Remote-connect
           */
           else if (Phone_Dialog()) {
-            if (PhoneBook[CurPhoneIdx]->Settings.Port == 0) {
+            if (PhoneBook.at(CurPhoneIdx)->Settings.Port == 0) {
               settings = &SerialDefaults;
             } else {
-              settings = &PhoneBook[CurPhoneIdx]->Settings;
+              settings = &PhoneBook.at(CurPhoneIdx)->Settings;
             }
 
             delete SerialPort;
@@ -1245,7 +1245,7 @@ GameType Select_Serial_Dialog() {
                     DialString,
                     base::At(CallWaitStrings, settings->CallWaitStringIndex));
               }
-              port::SafeAppend(DialString, PhoneBook[CurPhoneIdx]->Number);
+              port::SafeAppend(DialString, PhoneBook.at(CurPhoneIdx)->Number);
 
               if (Dial_Modem(settings, false)) {
                 ModemGameToPlay = MODEM_DIALER;
@@ -2615,7 +2615,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
               const auto sep = std::string_view(current).find('-');
               if (sep != std::string_view::npos) {
                 pos = static_cast<int>(sep) + 2;
-                if (std::string_view(current)[base::ToSize(pos)] == '?') {
+                if (std::string_view(current).at(base::ToSize(pos)) == '?') {
                   base::At(portbuf, 0) = 0;
                 } else {
                   port::SafeCopy(portbuf, std::string_view(current).substr(
@@ -2760,9 +2760,9 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         Set the current listbox index to the newly-added item.
         ............................................................*/
         for (i = 0; i < InitStrings.Count(); i++) {
-          if (item == InitStrings[i]) {
+          if (item == InitStrings.at(i)) {
             initstr_index = i;
-            port::SafeCopy(initstrbuf, InitStrings[initstr_index]);
+            port::SafeCopy(initstrbuf, InitStrings.at(initstr_index));
             initstr_edt.Set_Text(initstrbuf, INITSTRBUF_MAX);
             initstrlist.Set_Selected_Index(initstr_index);
           }
@@ -3018,7 +3018,7 @@ static void Build_Init_String_Listbox(ListClass* list, EditClass* edit,
   Build the list
   ........................................................................*/
   for (int i = 0; i < InitStrings.Count(); i++) {
-    list->Add_Item(InitStrings[i]);
+    list->Add_Item(InitStrings.at(i));
   }
   list->Flag_To_Redraw();
 
@@ -3037,7 +3037,8 @@ static void Build_Init_String_Listbox(ListClass* list, EditClass* edit,
   Fill in initstring edit buffer
   ........................................................................*/
   if (curidx > -1) {
-    port::SafeCopy(std::span(buf).first(INITSTRBUF_MAX), InitStrings[curidx]);
+    port::SafeCopy(std::span(buf).first(INITSTRBUF_MAX),
+                   InitStrings.at(curidx));
     edit->Set_Text(buf, INITSTRBUF_MAX);
     list->Set_Selected_Index(curidx);
   }
@@ -3468,7 +3469,7 @@ int Com_Scenario_Dialog() {
   Init scenario description list box
   ........................................................................*/
   for (i = 0; i < MPlayerScenarios.Count(); i++) {
-    scenariolist.Add_Item(strupr(MPlayerScenarios[i]));
+    scenariolist.Add_Item(strupr(MPlayerScenarios.at(i)));
   }
   ScenarioIdx = 0;  // 1st scenario is selected
 
@@ -4085,15 +4086,17 @@ int Com_Scenario_Dialog() {
              */
             const auto the_string = std::span(SendPacket.Message);
             while (COMPAT_MESSAGE_LENGTH - 5 - actual_message_size < 10 &&
-                   the_string[base::ToSize(actual_message_size)] != ' ') {
+                   base::At(the_string, base::ToSize(actual_message_size)) !=
+                       ' ') {
               --actual_message_size;
             }
-            if (the_string[base::ToSize(actual_message_size)] == ' ') {
+            if (base::At(the_string, base::ToSize(actual_message_size)) ==
+                ' ') {
               /* Now delete the extra characters after the space (they musnt
                * print) */
               for (int j = 0;
                    j < COMPAT_MESSAGE_LENGTH - 5 - actual_message_size; j++) {
-                the_string[base::ToSize(j + actual_message_size)] =
+                base::At(the_string, base::ToSize(j + actual_message_size)) =
                     static_cast<char>(0xff);
               }
             } else {
@@ -4177,7 +4180,7 @@ int Com_Scenario_Dialog() {
       SendPacket.Color = static_cast<unsigned char>(MPlayerColorIdx);
 
       SendPacket.Scenario =
-          static_cast<unsigned char>(MPlayerFilenum[ScenarioIdx]);
+          static_cast<unsigned char>(MPlayerFilenum.at(ScenarioIdx));
 
       SendPacket.Credits = static_cast<unsigned int>(MPlayerCredits);
       SendPacket.IsBases = static_cast<unsigned int>(MPlayerBases);
@@ -4473,7 +4476,7 @@ int Com_Scenario_Dialog() {
     /*.....................................................................
     Get the scenario filename
     .....................................................................*/
-    Scenario = MPlayerFilenum[ScenarioIdx];
+    Scenario = MPlayerFilenum.at(ScenarioIdx);
 
     /*.....................................................................
     Send all players the GO packet.
@@ -4977,7 +4980,7 @@ int Com_Show_Scenario_Dialog() {
 
             if (ScenarioIdx != -1) {
               absl::SNPrintF(txt, sizeof(txt), "%s",
-                             MPlayerScenarios[ScenarioIdx]);
+                             MPlayerScenarios.at(ScenarioIdx));
 
               Fancy_Text_Print(txt, d_dialog_cx, d_scenario_y, kCcGreen,
                                kTBlack,
@@ -5308,16 +5311,19 @@ int Com_Show_Scenario_Dialog() {
                    * chars. */
                   const auto the_string = std::span(GPacket.Message.Buf);
                   while (COMPAT_MESSAGE_LENGTH - 5 - actual_message_size < 10 &&
-                         the_string[base::ToSize(actual_message_size)] != ' ') {
+                         base::At(the_string,
+                                  base::ToSize(actual_message_size)) != ' ') {
                     --actual_message_size;
                   }
-                  if (the_string[base::ToSize(actual_message_size)] == ' ') {
+                  if (base::At(the_string, base::ToSize(actual_message_size)) ==
+                      ' ') {
                     /* Now delete the extra characters after the space (they
                      * musnt print) */
                     for (int j = 0;
                          j < COMPAT_MESSAGE_LENGTH - 5 - actual_message_size;
                          j++) {
-                      the_string[base::ToSize(j + actual_message_size)] =
+                      base::At(the_string,
+                               base::ToSize(j + actual_message_size)) =
                           static_cast<char>(0xff);
                     }
                   } else {
@@ -5533,7 +5539,8 @@ int Com_Show_Scenario_Dialog() {
             ...............................................................*/
             ScenarioIdx = -1;
             for (i = 0; i < MPlayerFilenum.Count(); i++) {
-              if (std::cmp_equal(ReceivePacket.Scenario, MPlayerFilenum[i])) {
+              if (std::cmp_equal(ReceivePacket.Scenario,
+                                 MPlayerFilenum.at(i))) {
                 ScenarioIdx = i;
               }
             }
@@ -5708,7 +5715,7 @@ int Com_Show_Scenario_Dialog() {
     /*.....................................................................
     Get the scenario filename
     .....................................................................*/
-    Scenario = MPlayerFilenum[ScenarioIdx];
+    Scenario = MPlayerFilenum.at(ScenarioIdx);
 
     starttime = TickCount.Time();
     while (NullModem.Num_Send() &&
@@ -6057,7 +6064,7 @@ static int Phone_Dialog() {
         ...............................................................*/
         if (phonelist.Current_Index() != CurPhoneIdx) {
           CurPhoneIdx = phonelist.Current_Index();
-          port::SafeCopy(phone_num, PhoneBook[CurPhoneIdx]->Number);
+          port::SafeCopy(phone_num, PhoneBook.at(CurPhoneIdx)->Number);
           numedit.Set_Text(phone_num, PhoneEntryClass::kPhoneMaxNum);
           changed = 1;
         }
@@ -6093,9 +6100,9 @@ static int Phone_Dialog() {
           Set the current listbox index to the newly-added item.
           ............................................................*/
           for (int i = 0; i < PhoneBook.Count(); i++) {
-            if (p_entry == PhoneBook[i]) {
+            if (p_entry == PhoneBook.at(i)) {
               CurPhoneIdx = i;
-              port::SafeCopy(phone_num, PhoneBook[CurPhoneIdx]->Number);
+              port::SafeCopy(phone_num, PhoneBook.at(CurPhoneIdx)->Number);
               numedit.Set_Text(phone_num, PhoneEntryClass::kPhoneMaxNum);
               phonelist.Set_Selected_Index(CurPhoneIdx);
             }
@@ -6126,7 +6133,7 @@ static int Phone_Dialog() {
         Allocate a new entry & copy the currently-selected entry into it
         ...............................................................*/
         p_entry = new PhoneEntryClass();
-        *p_entry = *PhoneBook[CurPhoneIdx];
+        *p_entry = *PhoneBook.at(CurPhoneIdx);
 
         /*...............................................................
         Pass the new entry to the entry editor; if the user selects OK,
@@ -6134,15 +6141,15 @@ static int Phone_Dialog() {
         the changes show up in the list box.
         ...............................................................*/
         if (Edit_Phone_Dialog(p_entry)) {
-          *PhoneBook[CurPhoneIdx] = *p_entry;
+          *PhoneBook.at(CurPhoneIdx) = *p_entry;
           Build_Phone_Listbox(&phonelist, &numedit, phone_num);
           /*............................................................
           Set the current listbox index to the newly-added item.
           ............................................................*/
           for (int i = 0; i < PhoneBook.Count(); i++) {
-            if (PhoneBook[CurPhoneIdx] == PhoneBook[i]) {
+            if (PhoneBook.at(CurPhoneIdx) == PhoneBook.at(i)) {
               CurPhoneIdx = i;
-              port::SafeCopy(phone_num, PhoneBook[CurPhoneIdx]->Number);
+              port::SafeCopy(phone_num, PhoneBook.at(CurPhoneIdx)->Number);
               numedit.Set_Text(phone_num, PhoneEntryClass::kPhoneMaxNum);
               phonelist.Set_Selected_Index(CurPhoneIdx);
             }
@@ -6196,7 +6203,7 @@ static int Phone_Dialog() {
         - Set settings to defaults
         ...............................................................*/
         if (CurPhoneIdx == -1 ||
-            std::string_view(PhoneBook[CurPhoneIdx]->Number) != phone_num) {
+            std::string_view(PhoneBook.at(CurPhoneIdx)->Number) != phone_num) {
           if (std::string_view(phone_num).empty()) {  // do not dial
             dialbtn.IsPressed = false;
             dialbtn.Flag_To_Redraw();
@@ -6220,7 +6227,7 @@ static int Phone_Dialog() {
           Set the current listbox index to the newly-added item.
           ............................................................*/
           for (int i = 0; i < PhoneBook.Count(); i++) {
-            if (p_entry == PhoneBook[i]) {
+            if (p_entry == PhoneBook.at(i)) {
               CurPhoneIdx = i;
             }
           }
@@ -6314,28 +6321,28 @@ static void Build_Phone_Listbox(ListClass* list, EditClass* edit,
   Build the list
   ........................................................................*/
   for (int i = 0; i < PhoneBook.Count(); i++) {
-    if (std::string_view(PhoneBook[i]->Name).empty()) {
+    if (std::string_view(PhoneBook.at(i)->Name).empty()) {
       port::SafeCopy(phonename, " ");
     } else {
-      port::SafeCopy(phonename, PhoneBook[i]->Name);
+      port::SafeCopy(phonename, PhoneBook.at(i)->Name);
     }
 
-    if (std::string_view(PhoneBook[i]->Number).empty()) {
+    if (std::string_view(PhoneBook.at(i)->Number).empty()) {
       port::SafeCopy(phonenum, " ");
     } else {
-      if (std::string_view(PhoneBook[i]->Number).size() < 15) {
-        port::SafeCopy(phonenum, PhoneBook[i]->Number);
+      if (std::string_view(PhoneBook.at(i)->Number).size() < 15) {
+        port::SafeCopy(phonenum, PhoneBook.at(i)->Number);
       } else {
         port::SafeCopy(phonenum,
-                       std::string_view(PhoneBook[i]->Number).substr(0, 12));
+                       std::string_view(PhoneBook.at(i)->Number).substr(0, 12));
         base::At(phonenum, 12) = 0;
         port::SafeAppend(phonenum, "...");
       }
     }
 
-    if (PhoneBook[i]->Settings.Baud != -1) {
+    if (PhoneBook.at(i)->Settings.Baud != -1) {
       absl::SNPrintF(item, sizeof(item), "%s\t%s\t%d", phonename, phonenum,
-                     PhoneBook[i]->Settings.Baud);
+                     PhoneBook.at(i)->Settings.Baud);
     } else {
       absl::SNPrintF(item, sizeof(item), "%s\t%s\t[%s]", phonename, phonenum,
                      Text_String(TXT_DEFAULT));
@@ -6360,7 +6367,7 @@ static void Build_Phone_Listbox(ListClass* list, EditClass* edit,
   ........................................................................*/
   if (CurPhoneIdx > -1) {
     port::SafeCopy(std::span(buf).first(PhoneEntryClass::kPhoneMaxNum),
-                   PhoneBook[CurPhoneIdx]->Number);
+                   PhoneBook.at(CurPhoneIdx)->Number);
     edit->Set_Text(buf, PhoneEntryClass::kPhoneMaxNum);
     list->Set_Selected_Index(CurPhoneIdx);
   }
@@ -7048,8 +7055,8 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
 
 static void Modem_Echo(char c) {
   if (NullModem.EchoCount < NullModem.EchoSize - 1) {
-    NullModem.EchoBuf[base::ToSize(NullModem.EchoCount)] = c;
-    NullModem.EchoBuf[base::ToSize(NullModem.EchoCount + 1)] = 0;
+    NullModem.EchoBuf.at(base::ToSize(NullModem.EchoCount)) = c;
+    NullModem.EchoBuf.at(base::ToSize(NullModem.EchoCount + 1)) = 0;
     NullModem.EchoCount++;
   } else {
     // Smart_Printf( "Echo buffer full!!!\n" );
@@ -7157,7 +7164,7 @@ void Hex_Dump_Data(std::span<const char> buffer) {
 void itoh(int i, std::span<char> s) {
   constexpr std::string_view digits = "0123456789ABCDEF";
   const auto bits = static_cast<unsigned>(i);
-  s[0] = digits[(bits >> 4) & 0xfU];
-  s[1] = digits[bits & 0xfU];
-  s[2] = '\0';
+  base::At(s, 0) = digits.at((bits >> 4) & 0xfU);
+  base::At(s, 1) = digits.at(bits & 0xfU);
+  base::At(s, 2) = '\0';
 }

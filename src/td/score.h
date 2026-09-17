@@ -115,7 +115,7 @@ class ScoreAnimClass {
   [[nodiscard]] char Text_At(int index) const {
     const std::string_view text(TextData);
     return index >= 0 && static_cast<size_t>(index) < text.size()
-               ? text[static_cast<size_t>(index)]
+               ? text.at(static_cast<size_t>(index))
                : '\0';
   }
   // The animation's text, for the text-style animations.

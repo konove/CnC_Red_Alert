@@ -210,7 +210,7 @@ bool OverlayClass::Mark(MarkType mark) {
   Validate();
   if (ObjectClass::Mark(mark) && (mark == MARK_DOWN)) {
     const CELL cell = Coord_Cell(Coord);
-    CellClass* cellptr = &Map[cell];
+    CellClass* cellptr = &Map.at(cell);
 
     /*
     **	Road placement occurs in two steps. First the foundation is
@@ -255,7 +255,7 @@ bool OverlayClass::Mark(MarkType mark) {
       } else {
         if ((cellptr->Overlay == OVERLAY_NONE ||
              cellptr->Overlay == OVERLAY_SQUISH) &&
-            !cellptr->Cell_Terrain() && Ground[cellptr->Land_Type()].Build) {
+            !cellptr->Cell_Terrain() && Ground.at(cellptr->Land_Type()).Build) {
           /*
           **	Increment the global crate counter. This is used to regulate
           **	the crate generation.
@@ -295,7 +295,7 @@ bool OverlayClass::Mark(MarkType mark) {
               } else {
                 newcell = Adjacent_Cell(cellptr->Cell_Number(), FACING_E);
               }
-              if (Map[newcell].Overlay != OVERLAY_CONCRETE) {
+              if (Map.at(newcell).Overlay != OVERLAY_CONCRETE) {
                 Class->Create_And_Place(newcell);
               }
 
@@ -415,7 +415,7 @@ void OverlayClass::Write_INI(std::span<char> buffer) {
   **	Write the unit data out.
   */
   for (int index = 0; index < MAP_CELL_TOTAL; index++) {
-    const CellClass* cellptr = &Map[index];
+    const CellClass* cellptr = &Map.at(index);
 
     if (cellptr->Overlay != OVERLAY_NONE) {
       absl::SNPrintF(uname, sizeof(uname), "%03d", index);

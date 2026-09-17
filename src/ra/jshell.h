@@ -52,6 +52,7 @@
 #include "absl/log/check.h"
 #include "absl/strings/str_format.h"
 #include "absl/types/span.h"
+#include "base/array.h"
 #include "base/numeric.h"
 #include "base/types.h"
 #include "port/ex_string.h"
@@ -154,16 +155,17 @@ inline void Set_Bit(std::span<uint32_t> array, int bit, int value) {
   CHECK_GE(bit, 0);
   CHECK_LT(base::ToSize(bit / 32), array.size());
   if (value) {
-    array[base::ToSize(bit / 32)] |= base::Bit<uint32_t>(bit % 32);
+    base::At(array, base::ToSize(bit / 32)) |= base::Bit<uint32_t>(bit % 32);
   } else {
-    array[base::ToSize(bit / 32)] &= ~base::Bit<uint32_t>(bit % 32);
+    base::At(array, base::ToSize(bit / 32)) &= ~base::Bit<uint32_t>(bit % 32);
   }
 }
 
 inline bool Get_Bit(std::span<const uint32_t> array, int bit) {
   CHECK_GE(bit, 0);
   CHECK_LT(base::ToSize(bit / 32), array.size());
-  return (array[base::ToSize(bit / 32)] & base::Bit<uint32_t>(bit % 32)) != 0;
+  return (base::At(array, base::ToSize(bit / 32)) &
+          base::Bit<uint32_t>(bit % 32)) != 0;
 }
 
 // Returns -1 if no matching bit exists within the supplied words.
@@ -230,10 +232,10 @@ void PBubble_Sort(T& array, int count) {
     do {
       swapflag = false;
       for (int index = 0; index < count - 1; index++) {
-        if (*array[index] > *array[index + 1]) {
-          const auto temp = array[index];
-          array[index] = array[index + 1];
-          array[index + 1] = temp;
+        if (*array.at(index) > *array.at(index + 1)) {
+          const auto temp = array.at(index);
+          array.at(index) = array.at(index + 1);
+          array.at(index + 1) = temp;
           swapflag = true;
         }
       }
@@ -249,11 +251,11 @@ void PNBubble_Sort(T& array, int count) {
     do {
       swapflag = false;
       for (int index = 0; index < count - 1; index++) {
-        if (port::CompareIgnoreCase(array[index]->Name(),
-                                    array[index + 1]->Name()) > 0) {
-          const auto temp = array[index];
-          array[index] = array[index + 1];
-          array[index + 1] = temp;
+        if (port::CompareIgnoreCase(array.at(index)->Name(),
+                                    array.at(index + 1)->Name()) > 0) {
+          const auto temp = array.at(index);
+          array.at(index) = array.at(index + 1);
+          array.at(index + 1) = temp;
           swapflag = true;
         }
       }

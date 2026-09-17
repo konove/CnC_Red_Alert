@@ -88,7 +88,6 @@
 #include "ra/heap.h"
 #include "ra/inline.h"
 #include "ra/keyframe.h"
-#include "ra/map.h"
 #include "ra/mapedit.h"
 #include "ra/monoc.h"
 #include "ra/mouse.h"
@@ -408,12 +407,12 @@ MoveType TerrainClass::Can_Enter_Cell(CELL cell, FacingType /*unused*/) const {
       Occupy_List();  // Pointer to cell offset list.
   while (offset.front() != kRefreshEol) {
     if (Class->IsWaterBased) {
-      if (!Map[static_cast<CELL>(cell + base::ConsumeFront(offset))]
+      if (!Map.at(static_cast<CELL>(cell + base::ConsumeFront(offset)))
                .Is_Clear_To_Build(SPEED_FLOAT)) {
         return MOVE_NO;
       }
     } else {
-      if (!Map[static_cast<CELL>(cell + base::ConsumeFront(offset))]
+      if (!Map.at(static_cast<CELL>(cell + base::ConsumeFront(offset)))
                .Is_Clear_To_Build()) {
         return MOVE_NO;
       }
@@ -512,7 +511,7 @@ void TerrainClass::AI() {
 
   if (*this == TERRAIN_MINE &&
       Frame % (Rule.GrowthRate * kTicksPerMinute) == 0) {
-    Map[As_Cell(As_Target())].Spread_Tiberium(true);
+    Map.at(As_Cell(As_Target())).Spread_Tiberium(true);
   }
   if (Graphic_Logic()) {
     Mark();
@@ -631,7 +630,7 @@ bool TerrainClass::Limbo() {
 
   if (!IsInLimbo) {
     const CELL cell = Coord_Cell(Coord);
-    Map[cell].Flag.Occupy.Monolith = false;
+    Map.at(cell).Flag.Occupy.Monolith = false;
   }
   return ObjectClass::Limbo();
 }
@@ -681,8 +680,8 @@ std::span<const unsigned char> TerrainClass::Radar_Icon(CELL cell) {
   if (icons.size() < 2) {
     return {};
   }
-  const int width = icons[0];
-  const int height = icons[1];
+  const int width = base::At(icons, 0);
+  const int height = base::At(icons, 1);
 
   /*
   ** Icon number that we need can be found by converting the cell and base

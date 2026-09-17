@@ -44,6 +44,7 @@
 #include <span>
 #include <string_view>
 
+#include "base/array.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
 #include "port/unaligned.h"
@@ -406,9 +407,9 @@ bool PacketClass::Get_Field(const char* id, std::span<char> data) {
     if (!data.empty()) {
       const auto copied = std::min(count, data.size() - 1);
       for (std::size_t i = 0; i < copied; ++i) {
-        data[i] = static_cast<char>(field->Data[i]);
+        base::At(data, i) = static_cast<char>(field->Data.at(i));
       }
-      data[copied] = '\0';
+      base::At(data, copied) = '\0';
     }
   }
   return field != nullptr;

@@ -736,7 +736,7 @@ void ScoreClass::Presentation() {
   */
   int leadership = 0;
   for (int index = 0; index < Logic.Count(); index++) {
-    const ObjectClass* object = Logic[index];
+    const ObjectClass* object = Logic.at(index);
     if (object->Owner() == player_house) {
       leadership++;
     }
@@ -1160,21 +1160,21 @@ void Cycle_Wait_Click() {
     counter = (counter + 1) % 8;
 
     if (counter == 0) {
-      const unsigned char r = Palette[(233 * 3) + 0];
-      const unsigned char g = Palette[(233 * 3) + 1];
-      const unsigned char b = Palette[(233 * 3) + 2];
+      const unsigned char r = Palette.at((233 * 3) + 0);
+      const unsigned char g = Palette.at((233 * 3) + 1);
+      const unsigned char b = Palette.at((233 * 3) + 2);
 
       for (int i = 233; i < 237; i++) {
-        Palette[base::ToSize((i * 3) + 0)] =
-            Palette[base::ToSize(((i + 1) * 3) + 0)];
-        Palette[base::ToSize((i * 3) + 1)] =
-            Palette[base::ToSize(((i + 1) * 3) + 1)];
-        Palette[base::ToSize((i * 3) + 2)] =
-            Palette[base::ToSize(((i + 1) * 3) + 2)];
+        Palette.at(base::ToSize((i * 3) + 0)) =
+            Palette.at(base::ToSize(((i + 1) * 3) + 0));
+        Palette.at(base::ToSize((i * 3) + 1)) =
+            Palette.at(base::ToSize(((i + 1) * 3) + 1));
+        Palette.at(base::ToSize((i * 3) + 2)) =
+            Palette.at(base::ToSize(((i + 1) * 3) + 2));
       }
-      Palette[(237 * 3) + 0] = r;
-      Palette[(237 * 3) + 1] = g;
-      Palette[(237 * 3) + 2] = b;
+      Palette.at((237 * 3) + 0) = r;
+      Palette.at((237 * 3) + 1) = g;
+      Palette.at((237 * 3) + 2) = b;
 
       Set_Palette(Palette);
     }
@@ -1264,9 +1264,9 @@ void ScoreClass::Do_Nod_Buildings_Graph() {
     ** Draw the Rambo character running away from the building
     */
     CC_Draw_Shape(rmboptr,
-                  ramboclass->DoControls[DO_WALK].Frame +
-                      (ramboclass->DoControls[DO_WALK].Jump * 6) +
-                      ((i / 2) % ramboclass->DoControls[DO_WALK].Count),
+                  ramboclass->DoControls.at(DO_WALK).Frame +
+                      (ramboclass->DoControls.at(DO_WALK).Jump * 6) +
+                      ((i / 2) % ramboclass->DoControls.at(DO_WALK).Count),
                   i + 32, 40, WINDOW_MAIN,
                   SHAPE_FADING | SHAPE_CENTER | SHAPE_WIN_REL,  //|SHAPE_GHOST,
                   ScoreRemapYellow, MouseClass::UnitShadow);
@@ -1725,13 +1725,14 @@ void ScoreClass::Input_Name(std::span<char> str, int xpos, int ypos,
       ** turn it into a space instead.
       */
       if ((key == KA_BACKSPACE && index == MAX_FAMENAME_LENGTH - 2) &&
-          (str[base::ToSize(index)] && str[base::ToSize(index)] != 32)) {
+          (base::At(str, base::ToSize(index)) &&
+           base::At(str, base::ToSize(index)) != 32)) {
         key = 32;
       }
 
       if (key == KA_BACKSPACE) {  // if (key == KN_BACKSPACE) {
         if (index) {
-          str[base::ToSize(--index)] = 0;
+          base::At(str, base::ToSize(--index)) = 0;
 
           const int xposindex6 = xpos + (index * 6);
 
@@ -1759,8 +1760,8 @@ void ScoreClass::Input_Name(std::span<char> str, int xpos, int ypos,
           TextPrintBuffer->Fill_Rect(2 * (xpos + (index * 6)), ypos * 2,
                                      2 * (xpos + (index * 6) + 6),
                                      2 * (ypos + 6), kBlack);
-          str[base::ToSize(index)] = static_cast<char>(ascii);
-          str[base::ToSize(index + 1)] = 0;
+          base::At(str, base::ToSize(index)) = static_cast<char>(ascii);
+          base::At(str, base::ToSize(index + 1)) = 0;
 
           Play_Sample(keystrok, 255, Options.Normalize_Sound(255));
           const int objindex = Alloc_Object(
@@ -1877,8 +1878,8 @@ void Draw_InfantryMan(int index) {
   const int stage =
       base::At(InfantryMan, index).stage +
       base::At(InfantryMan, index)
-          .Class
-          ->DoControls[static_cast<DoType>(base::At(InfantryMan, index).anim)]
+          .Class->DoControls
+          .at(static_cast<DoType>(base::At(InfantryMan, index).anim))
           .Frame;
 
   CC_Draw_Shape(base::At(InfantryMan, index).shapefile, stage,
@@ -1891,12 +1892,12 @@ void Draw_InfantryMan(int index) {
   */
   if (--base::At(InfantryMan, index).delay < 0) {
     base::At(InfantryMan, index).delay = 3;
-    if (std::cmp_greater_equal(++base::At(InfantryMan, index).stage,
-                               base::At(InfantryMan, index)
-                                   .Class
-                                   ->DoControls[static_cast<DoType>(
-                                       base::At(InfantryMan, index).anim)]
-                                   .Count)) {
+    if (std::cmp_greater_equal(
+            ++base::At(InfantryMan, index).stage,
+            base::At(InfantryMan, index)
+                .Class->DoControls
+                .at(static_cast<DoType>(base::At(InfantryMan, index).anim))
+                .Count)) {
       /*
       ** was he playing a death anim? If so, and it's done, erase him
       */

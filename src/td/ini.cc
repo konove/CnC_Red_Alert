@@ -350,7 +350,8 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   ScenarioCRC = 0;
   const int len = static_cast<int>(std::string_view(buffer).size());
   for (int i = 0; i < len; i++) {
-    val = static_cast<unsigned char>(std::string_view(buffer)[base::ToSize(i)]);
+    val = static_cast<unsigned char>(
+        std::string_view(buffer).at(base::ToSize(i)));
 #ifndef DEMO
     Add_CRC(&ScenarioCRC, val);
 #endif
@@ -1360,7 +1361,7 @@ bool Scan_Place_Object(ObjectClass* obj, CELL cell) {
   First try to unlimbo the object in the given cell.
   ------------------------------------------------------------------------*/
   if (Map.In_Radar(cell)) {
-    techno = Map[cell].Cell_Techno();
+    techno = Map.at(cell).Cell_Techno();
     if ((!techno || (techno->What_Am_I() == RTTI_INFANTRY &&
                      obj->What_Am_I() == RTTI_INFANTRY)) &&
         obj->Unlimbo(Cell_Coord(cell), DIR_N)) {
@@ -1417,7 +1418,7 @@ bool Scan_Place_Object(ObjectClass* obj, CELL cell) {
           - there is no techno in the cell
           - the techno in the cell & the object are both infantry
           ............................................................*/
-          techno = Map[newcell].Cell_Techno();
+          techno = Map.at(newcell).Cell_Techno();
           if ((!techno || (techno->What_Am_I() == RTTI_INFANTRY &&
                            obj->What_Am_I() == RTTI_INFANTRY)) &&
               obj->Unlimbo(Cell_Coord(newcell), DIR_N)) {
@@ -1463,11 +1464,11 @@ static void Sort_Cells(std::span<CELL> cells, int numcells,
   Pick the first cell at random
   ------------------------------------------------------------------------*/
   int j = Random_Pick(0, numcells - 1);
-  outcells[base::ToSize(0)] = cells[base::ToSize(j)];
+  base::At(outcells, base::ToSize(0)) = base::At(cells, base::ToSize(j));
   num_sorted++;
 
   for (int k = j; k < num_unsorted - 1; k++) {
-    cells[base::ToSize(k)] = cells[base::ToSize(k + 1)];
+    base::At(cells, base::ToSize(k)) = base::At(cells, base::ToSize(k + 1));
   }
   num_unsorted--;
 
@@ -1477,11 +1478,12 @@ static void Sort_Cells(std::span<CELL> cells, int numcells,
   ------------------------------------------------------------------------*/
   for (int i = 1; i < numcells; i++) {
     j = Furthest_Cell(outcells, num_sorted, cells, num_unsorted);
-    outcells[base::ToSize(num_sorted)] = cells[base::ToSize(j)];
+    base::At(outcells, base::ToSize(num_sorted)) =
+        base::At(cells, base::ToSize(j));
     num_sorted++;
 
     for (int k = j; k < num_unsorted - 1; k++) {
-      cells[base::ToSize(k)] = cells[base::ToSize(k + 1)];
+      base::At(cells, base::ToSize(k)) = base::At(cells, base::ToSize(k + 1));
     }
     num_unsorted--;
   }
@@ -1520,9 +1522,9 @@ static int Furthest_Cell(std::span<const CELL> ref_cells, int num_ref_cells,
     .....................................................................*/
     int mindist = 0xffff;  // minimum distance a test_cell is from a ref_cell
     for (int j = 0; j < num_ref_cells; j++) {
-      const int dist =
-          Distance(test_cells[base::ToSize(i)],
-                   ref_cells[base::ToSize(j)]);  // working distance measure
+      const int dist = Distance(
+          base::At(test_cells, base::ToSize(i)),
+          base::At(ref_cells, base::ToSize(j)));  // working distance measure
       mindist = std::min(dist, mindist);
     }
 

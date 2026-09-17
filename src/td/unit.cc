@@ -478,7 +478,7 @@ void UnitClass::AI() {
     Mark(MARK_CHANGE);
   }
   if (*this == UNIT_VICE &&
-      Map[Coord_Cell(Coord)].Land_Type() == LAND_TIBERIUM &&
+      Map.at(Coord_Cell(Coord)).Land_Type() == LAND_TIBERIUM &&
       Health_Ratio() < 0x0100 && Frame % 16 == 0) {
     Strength++;
     Mark(MARK_CHANGE);
@@ -1053,7 +1053,7 @@ ResultType UnitClass::Take_Damage(int& damage, int distance,
       */
       if ((Class->Primary == WEAPON_NONE ||
            (Distance(source) < 0x0180 &&
-            BulletTypeClass::As_Reference(Weapons[Class->Primary].Fires)
+            BulletTypeClass::As_Reference(Weapons.at(Class->Primary).Fires)
                     .Warhead != WARHEAD_FIRE)) &&
           (GameToPlay != GAME_NORMAL || *this != UNIT_HARVESTER ||
            BuildLevel > 8 || Special.IsDifficult) &&
@@ -1304,7 +1304,7 @@ void UnitClass::Enter_Idle_Mode(bool initial) {
     if (Class->IsToHarvest) {
       if (!In_Radio_Contact() && Mission != MISSION_HARVEST) {
         if (initial || !House->IsHuman ||
-            Map[Coord_Cell(Coord)].Land_Type() == LAND_TIBERIUM) {
+            Map.at(Coord_Cell(Coord)).Land_Type() == LAND_TIBERIUM) {
           order = MISSION_HARVEST;
         } else {
           order = MISSION_GUARD;
@@ -1418,7 +1418,7 @@ bool UnitClass::Unload_Hovercraft_Process() {
       FootClass* unit = Attached_Object();  // The unit to be unloaded.
 
       Mark(MARK_UP);
-      if (Map.In_Radar(cell) && !Map[cell].Cell_Unit()) {
+      if (Map.In_Radar(cell) && !Map.at(cell).Cell_Unit()) {
         if (unit->Can_Enter_Cell(cell, FACING_NONE) == MOVE_OK) {
           /*
           **	Place all the transported units onto the map.
@@ -1475,9 +1475,9 @@ bool UnitClass::Unload_Hovercraft_Process() {
             Transmit_Message(RADIO_UNLOAD);
           }
           Mark(MARK_DOWN);
-          MouseClass::Layer[LAYER_GROUND].Sort();
-          MouseClass::Layer[LAYER_GROUND].Sort();
-          MouseClass::Layer[LAYER_GROUND].Sort();
+          MouseClass::Layer.at(LAYER_GROUND).Sort();
+          MouseClass::Layer.at(LAYER_GROUND).Sort();
+          MouseClass::Layer.at(LAYER_GROUND).Sort();
           return false;
         }
         /*
@@ -1684,7 +1684,7 @@ void UnitClass::Per_Cell_Process(bool center) {
   TechnoClass* whom = Contact_With_Whom();
   if ((IsTethered && whom && center) &&
       (whom->What_Am_I() == RTTI_BUILDING && Mission == MISSION_ENTER) &&
-      (whom == Map[cell].Cell_Building())) {
+      (whom == Map.at(cell).Cell_Building())) {
     switch (Transmit_Message(RADIO_IM_IN, whom)) {
       case RADIO_ROGER:
         break;
@@ -1910,8 +1910,8 @@ void UnitClass::Per_Cell_Process(bool center) {
   **	If there is a house flag here, then this unit just might pick it up.
   */
   if ((center && Flagged == HOUSE_NONE) &&
-      (Map[cell].IsFlagged && Map[cell].Owner != House->Class->House)) {
-    HouseClass::As_Pointer(Map[cell].Owner)->Flag_Attach(this);
+      (Map.at(cell).IsFlagged && Map.at(cell).Owner != House->Class->House)) {
+    HouseClass::As_Pointer(Map.at(cell).Owner)->Flag_Attach(this);
   }
 
   /*
@@ -2248,16 +2248,16 @@ bool UnitClass::Tiberium_Check(CELL& center, int x, int y) {
   center = XY_Cell(Cell_X(center) + x, Cell_Y(center) + y);
 
   return (GameToPlay != GAME_NORMAL || !IsOwnedByPlayer ||
-          Map[center].IsVisible) &&
-         (Map[center].Cell_Techno() == nullptr &&
-          Map[center].Land_Type() == LAND_TIBERIUM);
+          Map.at(center).IsVisible) &&
+         (Map.at(center).Cell_Techno() == nullptr &&
+          Map.at(center).Land_Type() == LAND_TIBERIUM);
 }
 
 bool UnitClass::Goto_Tiberium() {
   Validate();
   if (!Target_Legal(NavCom)) {
     const CELL center = Coord_Cell(Center_Coord());
-    if (Map[center].Land_Type() == LAND_TIBERIUM) {
+    if (Map.at(center).Land_Type() == LAND_TIBERIUM) {
       return true;
     }
     /*
@@ -2313,7 +2313,7 @@ bool UnitClass::Goto_Tiberium() {
 bool UnitClass::Harvesting() {
   Validate();
   const CELL cell = Coord_Cell(Coord);
-  CellClass* ptr = &Map[cell];
+  CellClass* ptr = &Map.at(cell);
 
   /*
   **	Keep waiting if still heading toward a spot to harvest.
@@ -2928,7 +2928,7 @@ MoveBitType UnitClass::Blocking_Object(const TechnoClass* techno,
  *=============================================================================================*/
 MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType /*unused*/) const {
   Validate();
-  const CellClass* cellptr = &Map[cell];
+  const CellClass* cellptr = &Map.at(cell);
 
   if (static_cast<unsigned>(cell) >= MAP_CELL_TOTAL) {
     return MOVE_NO;
@@ -2966,10 +2966,9 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType /*unused*/) const {
 
     if (optr->IsWall) {
       if (Class->Primary != WEAPON_NONE) {
-        const WarheadTypeClass* whead =
-            &Warheads[BulletTypeClass::As_Reference(
-                          Weapons[Class->Primary].Fires)
-                          .Warhead];
+        const WarheadTypeClass* whead = &Warheads.at(
+            BulletTypeClass::As_Reference(Weapons.at(Class->Primary).Fires)
+                .Warhead);
 
         if (whead->IsWallDestroyer ||
             (whead->IsWoodDestroyer && optr->IsWooden)) {
@@ -2995,7 +2994,7 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType /*unused*/) const {
   if (retval != MOVE_DESTROYABLE &&
       !Ground[cellptr->Land_Type()].Cost[Class->Speed]) {
 #else
-  if (!Ground[cellptr->Land_Type()].Cost[Class->Speed]) {
+  if (!Ground.at(cellptr->Land_Type()).Cost.at(Class->Speed)) {
 #endif
     return MOVE_NO;
   }
@@ -3068,7 +3067,8 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType /*unused*/) const {
             */
             if (obj->What_Am_I() == RTTI_TERRAIN) {
               if (dynamic_cast<TerrainClass*>(obj)->Class->IsFlammable &&
-                  BulletTypeClass::As_Reference(Weapons[Class->Primary].Fires)
+                  BulletTypeClass::As_Reference(
+                      Weapons.at(Class->Primary).Fires)
                           .Warhead == WARHEAD_FIRE) {
                 retval = std::max(retval, MOVE_DESTROYABLE);
               } else {
@@ -3517,7 +3517,7 @@ ActionType UnitClass::What_Action(ObjectClass* object) {
 ActionType UnitClass::What_Action(CELL cell) const {
   Validate();
   const ActionType action = TarComClass::What_Action(cell);
-  if (action == ACTION_MOVE && Map[cell].Land_Type() == LAND_TIBERIUM &&
+  if (action == ACTION_MOVE && Map.at(cell).Land_Type() == LAND_TIBERIUM &&
       Class->IsToHarvest) {
     return ACTION_HARVEST;
   }
@@ -3714,7 +3714,7 @@ void UnitClass::Exit_Repair() {
       XYCELL(0, 2),  XYCELL(-1, 1), XYCELL(-2, 0), XYCELL(-1, -1)};
 
   CELL cell = static_cast<CELL>(
-      Coord_Cell(Coord) + ExitRepair[Dir_Facing(PrimaryFacing.Current())]);
+      Coord_Cell(Coord) + ExitRepair.at(Dir_Facing(PrimaryFacing.Current())));
   if (Can_Enter_Cell(cell) == MOVE_OK) {
     found = true;
   }
@@ -3866,8 +3866,8 @@ DirType UnitClass::Desired_Load_Dir(ObjectClass* passenger,
                   ? 128
                   : -128;
     } else {
-      const CellClass* cell = &Map[cellnum];
-      if (Ground[cell->Land_Type()].Cost[SPEED_FOOT] == 0 ||
+      const CellClass* cell = &Map.at(cellnum);
+      if (Ground.at(cell->Land_Type()).Cost.at(SPEED_FOOT) == 0 ||
           cell->Flag.Occupy.Building || cell->Flag.Occupy.Vehicle ||
           cell->Flag.Occupy.Monolith ||
           (cell->Flag.Composite & 0x01F) == 0x01F) {
@@ -3913,7 +3913,7 @@ DirType UnitClass::Desired_Load_Dir(ObjectClass* passenger,
                               DIR_NE, DIR_NE, DIR_NE, DIR_SE};
 
     moveto = Adjacent_Cell(Coord_Cell(Coord), bestdir);
-    return _desired_to_actual[bestdir];
+    return _desired_to_actual.at(bestdir);
   }
   return DIR_S;
 }

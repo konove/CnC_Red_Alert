@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/array.h"
 #include "base/buffer.h"
 #include "base/seek_origin.h"
 #include "gtest/gtest.h"
@@ -67,7 +68,7 @@ TEST(FileTest, ReadBytesAndReadStringStopAtEndOfFile) {
   EXPECT_EQ(file.ReadString(2), "he");
   const std::vector<std::byte> rest = file.ReadBytes(10);
   ASSERT_EQ(rest.size(), 3U);
-  EXPECT_EQ(static_cast<char>(rest[0]), 'l');
+  EXPECT_EQ(static_cast<char>(rest.at(0)), 'l');
   EXPECT_TRUE(file.ReadBytes(4).empty());
 }
 
@@ -90,10 +91,10 @@ TEST(FileTest, TypedViewCountIsBytesRatherThanElements) {
   std::array<uint16_t, 2> words{};
   EXPECT_EQ(file.Read(std::span(words), 3), 3);
   const auto bytes = std::as_bytes(std::span(words));
-  EXPECT_EQ(bytes[0], std::byte{'a'});
-  EXPECT_EQ(bytes[1], std::byte{'b'});
-  EXPECT_EQ(bytes[2], std::byte{'c'});
-  EXPECT_EQ(bytes[3], std::byte{0});
+  EXPECT_EQ(base::At(bytes, 0), std::byte{'a'});
+  EXPECT_EQ(base::At(bytes, 1), std::byte{'b'});
+  EXPECT_EQ(base::At(bytes, 2), std::byte{'c'});
+  EXPECT_EQ(base::At(bytes, 3), std::byte{0});
 }
 
 }  // namespace

@@ -66,6 +66,7 @@
 #include <span>
 
 #include "absl/log/check.h"
+#include "base/array.h"
 #include "base/numeric.h"
 
 /*
@@ -308,7 +309,8 @@ bool IndexClass<T>::Increase_Table_Size(int amount) {
     **	Copy all valid nodes into the new table.
     */
     for (int index = 0; index < IndexCount; index++) {
-      replacement[base::ToSize(index)] = Nodes()[base::ToSize(index)];
+      base::At(replacement, base::ToSize(index)) =
+          base::At(Nodes(), base::ToSize(index));
     }
 
     /*
@@ -535,8 +537,8 @@ bool IndexClass<T>::Add_Index(int id, T data) {
   **	Add the data to the end of the index data and then sort the index table.
   */
   DCHECK(IndexCount >= 0 && IndexCount < IndexSize);
-  Nodes()[base::ToSize(IndexCount)].ID = id;
-  Nodes()[base::ToSize(IndexCount)].Data = data;
+  base::At(Nodes(), base::ToSize(IndexCount)).ID = id;
+  base::At(Nodes(), base::ToSize(IndexCount)).Data = data;
   IndexCount++;
   IsSorted = false;
 
@@ -565,7 +567,7 @@ bool IndexClass<T>::Remove_Index(int id) {
   */
   int found_index = -1;
   for (int index = 0; index < IndexCount; index++) {
-    if (Nodes()[base::ToSize(index)].ID == id) {
+    if (base::At(Nodes(), base::ToSize(index)).ID == id) {
       found_index = index;
       break;
     }
@@ -579,14 +581,16 @@ bool IndexClass<T>::Remove_Index(int id) {
   */
   if (found_index != -1) {
     for (int index = found_index + 1; index < IndexCount; index++) {
-      Nodes()[base::ToSize(index - 1)] = Nodes()[base::ToSize(index)];
+      base::At(Nodes(), base::ToSize(index - 1)) =
+          base::At(Nodes(), base::ToSize(index));
     }
     IndexCount--;
 
     NodeElement fake{};
     fake.ID = 0;
     fake.Data = T();
-    Nodes()[base::ToSize(IndexCount)] = fake;  // zap last (now unused) element
+    base::At(Nodes(), base::ToSize(IndexCount)) =
+        fake;  // zap last (now unused) element
 
     Invalidate_Archive();
     return true;

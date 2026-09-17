@@ -124,10 +124,10 @@ class BlockCodec {
   }
 
   void ReadHeader() {
-    comp_count_ = std::to_integer<int>(input_[0]) +
-                  (std::to_integer<int>(input_[1]) * 256);
-    uncomp_count_ = std::to_integer<int>(input_[2]) +
-                    (std::to_integer<int>(input_[3]) * 256);
+    comp_count_ = std::to_integer<int>(input_.at(0)) +
+                  (std::to_integer<int>(input_.at(1)) * 256);
+    uncomp_count_ = std::to_integer<int>(input_.at(2)) +
+                    (std::to_integer<int>(input_.at(3)) * 256);
     count_ = 0;
     have_header_ = true;
     // A corrupt header must not size reads or writes past the buffers.

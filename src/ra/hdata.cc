@@ -458,7 +458,7 @@ HouseTypeClass& HouseTypeClass::As_Reference(HousesType house) {
  * HISTORY: * 06/03/1996 JLB : Created. *
  *=============================================================================================*/
 std::span<const unsigned char> HouseTypeClass::Remap_Table() const {
-  return ColorRemaps[RemapColor].RemapTable;
+  return ColorRemaps.at(RemapColor).RemapTable;
 }
 
 /***********************************************************************************************

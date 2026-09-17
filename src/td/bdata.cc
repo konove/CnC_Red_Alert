@@ -3624,25 +3624,25 @@ BuildingTypeClass::BuildingTypeClass(
       Size(size),
       OccupyList(sizelist),
       OverlapList(overlap) {
-  Anims[BSTATE_CONSTRUCTION].Start = 0;
-  Anims[BSTATE_CONSTRUCTION].Count = 1;
-  Anims[BSTATE_CONSTRUCTION].Rate = 0;
+  Anims.at(BSTATE_CONSTRUCTION).Start = 0;
+  Anims.at(BSTATE_CONSTRUCTION).Count = 1;
+  Anims.at(BSTATE_CONSTRUCTION).Rate = 0;
 
-  Anims[BSTATE_IDLE].Start = 0;
-  Anims[BSTATE_IDLE].Count = 1;
-  Anims[BSTATE_IDLE].Rate = 0;
+  Anims.at(BSTATE_IDLE).Start = 0;
+  Anims.at(BSTATE_IDLE).Count = 1;
+  Anims.at(BSTATE_IDLE).Rate = 0;
 
-  Anims[BSTATE_ACTIVE].Start = 0;
-  Anims[BSTATE_ACTIVE].Count = 1;
-  Anims[BSTATE_ACTIVE].Rate = 0;
+  Anims.at(BSTATE_ACTIVE).Start = 0;
+  Anims.at(BSTATE_ACTIVE).Count = 1;
+  Anims.at(BSTATE_ACTIVE).Rate = 0;
 
-  Anims[BSTATE_AUX1].Start = 0;
-  Anims[BSTATE_AUX1].Count = 1;
-  Anims[BSTATE_AUX1].Rate = 0;
+  Anims.at(BSTATE_AUX1).Start = 0;
+  Anims.at(BSTATE_AUX1).Count = 1;
+  Anims.at(BSTATE_AUX1).Rate = 0;
 
-  Anims[BSTATE_AUX2].Start = 0;
-  Anims[BSTATE_AUX2].Count = 1;
-  Anims[BSTATE_AUX2].Rate = 0;
+  Anims.at(BSTATE_AUX2).Start = 0;
+  Anims.at(BSTATE_AUX2).Count = 1;
+  Anims.at(BSTATE_AUX2).Rate = 0;
 }
 
 /***********************************************************************************************
@@ -3916,9 +3916,9 @@ ObjectClass* BuildingTypeClass::Create_One_Of(HouseClass* house) const {
  *=============================================================================================*/
 void BuildingTypeClass::Init_Anim(BStateType state, int start, int count,
                                   int rate) const {
-  Anims[state].Start = start;
-  Anims[state].Count = count;
-  Anims[state].Rate = rate;
+  Anims.at(state).Start = start;
+  Anims.at(state).Count = count;
+  Anims.at(state).Rate = rate;
 }
 
 /***********************************************************************************************
@@ -3984,7 +3984,7 @@ bool BuildingTypeClass::Legal_Placement(CELL pos) const {
     if (!Map.In_Radar(cell)) {
       return false;
     }
-    if (!Map[cell].Is_Generally_Clear()) {
+    if (!Map.at(cell).Is_Generally_Clear()) {
       return false;
     }
   }
@@ -4059,9 +4059,10 @@ void BuildingTypeClass::Init(TheaterType theater) {
       const BuildingTypeClass* classptr = &As_Reference(sindex);
 
       if (classptr->IsTheater) {
-        const auto fullname = std::filesystem::path(classptr->IniName)
-                                  .replace_extension(Theaters[theater].Suffix)
-                                  .string();
+        const auto fullname =
+            std::filesystem::path(classptr->IniName)
+                .replace_extension(Theaters.at(theater).Suffix)
+                .string();
         classptr->Set_Image_Data(MixArchive::RetrieveData(fullname));
       }
 
@@ -4070,9 +4071,10 @@ void BuildingTypeClass::Init(TheaterType theater) {
         const auto filename =
             std::string(classptr->IniName).substr(0, 4) + "ICNH";
 
-        const auto fullname = std::filesystem::path(filename)
-                                  .replace_extension(Theaters[theater].Suffix)
-                                  .string();
+        const auto fullname =
+            std::filesystem::path(filename)
+                .replace_extension(Theaters.at(theater).Suffix)
+                .string();
 
         const auto cameo_ptr = MixArchive::RetrieveData(fullname);
         if (!cameo_ptr.empty()) {
@@ -4116,9 +4118,9 @@ void BuildingTypeClass::Dimensions(int& width, int& height) const {
         {4, 2},
         {5, 5}}};
 
-  width = _dimensions[Size].Width * ICON_PIXEL_W;
+  width = _dimensions.at(Size).Width * ICON_PIXEL_W;
   width -= width / 5;
-  height = _dimensions[Size].Height * ICON_PIXEL_H;
+  height = _dimensions.at(Size).Height * ICON_PIXEL_H;
   height -= height / 5;
 }
 
@@ -4140,7 +4142,7 @@ void BuildingTypeClass::Dimensions(int& width, int& height) const {
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
 const BuildingTypeClass& BuildingTypeClass::As_Reference(StructType type) {
-  return *Pointers[type];
+  return *Pointers.at(type);
 }
 
 /***********************************************************************************************
@@ -4260,7 +4262,7 @@ std::span<const int16_t> BuildingTypeClass::Overlap_List() const {
 int BuildingTypeClass::Width() const {
   static const base::EnumArray<BSizeType, int, kBsizeCount> width = {
       1, 2, 1, 2, 2, 3, 3, 4, 5};
-  return width[Size];
+  return width.at(Size);
 }
 
 /***********************************************************************************************
@@ -4279,7 +4281,7 @@ int BuildingTypeClass::Width() const {
 int BuildingTypeClass::Height() const {
   static const base::EnumArray<BSizeType, int, kBsizeCount> height = {
       1, 1, 2, 2, 3, 2, 3, 2, 5};
-  return height[Size];
+  return height.at(Size);
 }
 
 /***********************************************************************************************

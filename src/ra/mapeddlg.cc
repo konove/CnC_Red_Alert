@@ -82,7 +82,6 @@
 #include "ra/inline.h"
 #include "ra/jshell.h"
 #include "ra/list.h"
-#include "ra/map.h"
 #include "ra/mapedit.h"
 #include "ra/mplayer.h"
 #include "ra/msgbox.h"
@@ -259,7 +258,7 @@ int MapEditClass::New_Scenario() {
       XY_Cell(MapCellX + (MapCellWidth / 2), MapCellY + (MapCellHeight / 2));
   base::At(Scen.Waypoint, ScenarioClass::kHomeWaypoint) =
       XY_Cell(MapCellX + (MapCellWidth / 2), MapCellY + (MapCellHeight / 2));
-  (*this)[TacticalCoord].IsWaypoint = true;
+  (*this).at(TacticalCoord).IsWaypoint = true;
   Flag_Cell(Coord_Cell(TacticalCoord));
 
   Set_Tactical_Position(Cell_Coord(
@@ -1179,29 +1178,29 @@ int MapEditClass::Load_Scenario() {
             txt_x = kDBordX2 + 15;
             txt_y = kDBordY1;
             Plain_Text_Print("Clear Terrain", txt_x, txt_y,
-                             GroundColor[LAND_CLEAR], kTBlack,
+                             GroundColor.at(LAND_CLEAR), kTBlack,
                              TPF_DROPSHADOW | TPF_EFNT);
             txt_y += 8;
-            Plain_Text_Print("Water", txt_x, txt_y, GroundColor[LAND_WATER],
+            Plain_Text_Print("Water", txt_x, txt_y, GroundColor.at(LAND_WATER),
                              kTBlack, TPF_DROPSHADOW | TPF_EFNT);
             txt_y += 8;
             Plain_Text_Print("Tiberium", txt_x, txt_y,
-                             GroundColor[LAND_TIBERIUM], kTBlack,
+                             GroundColor.at(LAND_TIBERIUM), kTBlack,
                              TPF_DROPSHADOW | TPF_EFNT);
             txt_y += 8;
-            Plain_Text_Print("Rock", txt_x, txt_y, GroundColor[LAND_ROCK],
+            Plain_Text_Print("Rock", txt_x, txt_y, GroundColor.at(LAND_ROCK),
                              kTBlack, TPF_DROPSHADOW | TPF_EFNT);
             txt_y += 8;
-            Plain_Text_Print("Wall", txt_x, txt_y, GroundColor[LAND_WALL],
+            Plain_Text_Print("Wall", txt_x, txt_y, GroundColor.at(LAND_WALL),
                              kTBlack, TPF_DROPSHADOW | TPF_EFNT);
             txt_y += 8;
-            Plain_Text_Print("Beach", txt_x, txt_y, GroundColor[LAND_BEACH],
+            Plain_Text_Print("Beach", txt_x, txt_y, GroundColor.at(LAND_BEACH),
                              kTBlack, TPF_DROPSHADOW | TPF_EFNT);
             txt_y += 8;
-            Plain_Text_Print("Rough", txt_x, txt_y, GroundColor[LAND_ROUGH],
+            Plain_Text_Print("Rough", txt_x, txt_y, GroundColor.at(LAND_ROUGH),
                              kTBlack, TPF_DROPSHADOW | TPF_EFNT);
             txt_y += 8;
-            Plain_Text_Print("River", txt_x, txt_y, GroundColor[LAND_RIVER],
+            Plain_Text_Print("River", txt_x, txt_y, GroundColor.at(LAND_RIVER),
                              kTBlack, TPF_DROPSHADOW | TPF_EFNT);
             //					txt_y += 8;
             //					Plain_Text_Print("GDI Unit",
@@ -1266,9 +1265,9 @@ int MapEditClass::Load_Scenario() {
           **	Draw Land map symbols (use color according to Ground[] array).
           */
           for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
-            occupier = (*this)[cell].Cell_Occupier();
+            occupier = (*this).at(cell).Cell_Occupier();
             if (occupier == nullptr) {
-              color = GroundColor[(*this)[cell].Land_Type()];
+              color = GroundColor.at((*this).at(cell).Land_Type());
               LogicPage->Put_Pixel(kDBordX1 + Cell_X(cell) + 1,
                                    kDBordY1 + Cell_Y(cell) + 1,
                                    static_cast<unsigned char>(color));
@@ -1314,12 +1313,13 @@ int MapEditClass::Load_Scenario() {
           **	DKGREEN = terrain object
           */
           for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
-            occupier = (*this)[cell].Cell_Occupier();
+            occupier = (*this).at(cell).Cell_Occupier();
             if (occupier) {
               color = DKGREEN;
               if (occupier && occupier->Owner() != HOUSE_NONE) {
-                color = ColorRemaps[HouseClass::As_Pointer(occupier->Owner())
-                                        ->RemapColor]
+                color = ColorRemaps
+                            .at(HouseClass::As_Pointer(occupier->Owner())
+                                    ->RemapColor)
                             .Color;
               }
               LogicPage->Put_Pixel(kDBordX1 + Cell_X(cell) + 1,
@@ -1691,7 +1691,7 @@ int MapEditClass::Load_Scenario() {
     for (const HousesType h : magic_enum::enum_values<HousesType>()) {
       const HouseClass* hptr = HouseClass::As_Pointer(h);
       if (hptr) {
-        hdata[h] = hptr->Control;
+        hdata.at(h) = hptr->Control;
       }
     }
 
@@ -1762,7 +1762,7 @@ int MapEditClass::Load_Scenario() {
                              MixArchive::RetrieveData("EBTN-UP.SHP"),
                              MixArchive::RetrieveData("EBTN-DN.SHP"));
     for (const TheaterType t : magic_enum::enum_values<TheaterType>()) {
-      theaterbtn.Add_Item(Theaters[t].Name);
+      theaterbtn.Add_Item(Theaters.at(t).Name);
     }
     theaterbtn.Set_Selected_Index(static_cast<int>(orig_theater));
 
@@ -1897,7 +1897,7 @@ int MapEditClass::Load_Scenario() {
                         MixArchive::RetrieveData("EBTN-DN.SHP"));
     intro.Add_Item("<none>");
     for (const VQType v : magic_enum::enum_values<VQType>()) {
-      intro.Add_Item(VQName[v]);
+      intro.Add_Item(VQName.at(v));
     }
     intro.Set_Selected_Index(static_cast<int>(Scen.IntroMovie) + 1);
 
@@ -1912,7 +1912,7 @@ int MapEditClass::Load_Scenario() {
                            MixArchive::RetrieveData("EBTN-DN.SHP"));
     briefing.Add_Item("<none>");
     for (const VQType v : magic_enum::enum_values<VQType>()) {
-      briefing.Add_Item(VQName[v]);
+      briefing.Add_Item(VQName.at(v));
     }
     briefing.Set_Selected_Index(static_cast<int>(Scen.BriefMovie) + 1);
 
@@ -1924,7 +1924,7 @@ int MapEditClass::Load_Scenario() {
                          MixArchive::RetrieveData("EBTN-DN.SHP"));
     action.Add_Item("<none>");
     for (const VQType v : magic_enum::enum_values<VQType>()) {
-      action.Add_Item(VQName[v]);
+      action.Add_Item(VQName.at(v));
     }
     action.Set_Selected_Index(static_cast<int>(Scen.ActionMovie) + 1);
 
@@ -1936,7 +1936,7 @@ int MapEditClass::Load_Scenario() {
                       MixArchive::RetrieveData("EBTN-DN.SHP"));
     win.Add_Item("<none>");
     for (const VQType v : magic_enum::enum_values<VQType>()) {
-      win.Add_Item(VQName[v]);
+      win.Add_Item(VQName.at(v));
     }
     win.Set_Selected_Index(static_cast<int>(Scen.WinMovie) + 1);
 
@@ -1947,7 +1947,7 @@ int MapEditClass::Load_Scenario() {
                        MixArchive::RetrieveData("EBTN-DN.SHP"));
     lose.Add_Item("<none>");
     for (const VQType v : magic_enum::enum_values<VQType>()) {
-      lose.Add_Item(VQName[v]);
+      lose.Add_Item(VQName.at(v));
     }
     lose.Set_Selected_Index(static_cast<int>(Scen.LoseMovie) + 1);
 
@@ -2045,7 +2045,7 @@ int MapEditClass::Load_Scenario() {
       if (source > SOURCE_WEST) {
         break;
       }
-      sourcebtn.Add_Item(SourceName[source]);
+      sourcebtn.Add_Item(SourceName.at(source));
     }
 
     /*
@@ -2069,7 +2069,7 @@ int MapEditClass::Load_Scenario() {
                           MixArchive::RetrieveData("EBTN-DN.SHP"));
     for (const HousesType h : magic_enum::enum_values<HousesType>()) {
       allies.Add_Item(HouseTypeClass::As_Reference(h).IniName);
-      if (hdata[house].Allies & base::Bit<uint32_t>(h)) {
+      if (hdata.at(house).Allies & base::Bit<uint32_t>(h)) {
         allies.Check_Item(static_cast<int>(h), true);
       }
     }
@@ -2157,7 +2157,7 @@ int MapEditClass::Load_Scenario() {
       *settings of the *	house should change as well.
       */
       if (housechange) {
-        const HouseStaticClass* hstatic = &hdata[newhouse];
+        const HouseStaticClass* hstatic = &hdata.at(newhouse);
         creditbtn.Set_Value(
             static_cast<int>(hstatic->InitialCredits / 100));
         techlevel.Set_Value(hstatic->TechLevel);
@@ -2410,7 +2410,7 @@ int MapEditClass::Load_Scenario() {
       */
       if (fetch) {
         fetch = false;
-        HouseStaticClass* hstatic = &hdata[house];
+        HouseStaticClass* hstatic = &hdata.at(house);
 
         Base.House = HousesType(basebtn.Current_Index());
         hstatic->InitialCredits =
@@ -2450,8 +2450,8 @@ int MapEditClass::Load_Scenario() {
     for (const HousesType h : magic_enum::enum_values<HousesType>()) {
       HouseClass* hptr = HouseClass::As_Pointer(h);
       if (hptr != nullptr) {
-        hptr->Control = hdata[h];
-        hptr->Allies = static_cast<unsigned>(hdata[h].Allies);
+        hptr->Control = hdata.at(h);
+        hptr->Allies = static_cast<unsigned>(hdata.at(h).Allies);
         hptr->IsPlayerControl = control.Is_Checked(static_cast<int>(h));
       }
     }
@@ -2495,12 +2495,12 @@ int MapEditClass::Load_Scenario() {
         **	If this cell has a template icon & that template isn't
         *compatible *	with this theater, set the icon to NONE
         */
-        if ((*this)[i].TType != TEMPLATE_NONE) {
+        if ((*this).at(i).TType != TEMPLATE_NONE) {
           theater_mask =
-              TemplateTypeClass::As_Reference((*this)[i].TType).Theater;
+              TemplateTypeClass::As_Reference((*this).at(i).TType).Theater;
           if ((theater_mask & base::Bit<uint32_t>(theater)) == 0) {
-            (*this)[i].TType = TEMPLATE_NONE;
-            (*this)[i].TIcon = 0;
+            (*this).at(i).TType = TEMPLATE_NONE;
+            (*this).at(i).TIcon = 0;
           }
         }
 
@@ -2509,7 +2509,7 @@ int MapEditClass::Load_Scenario() {
         *compatible *	with this theater, delete the terrain object.
         */
         TerrainClass* terrain =
-            (*this)[i].Cell_Terrain();  // cell's terrain pointer
+            (*this).at(i).Cell_Terrain();  // cell's terrain pointer
         if (terrain != nullptr) {
           theater_mask = terrain->Class->Theater;
           if ((theater_mask & base::Bit<uint32_t>(theater)) == 0) {

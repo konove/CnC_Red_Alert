@@ -96,8 +96,8 @@ CheckListClass::CheckListClass(int id, int x, int y, int w, int h,
  *=========================================================================*/
 void CheckListClass::Check_Item(int index, int checked) {
   // The glyph lives in the item's first character, which the list now owns.
-  if (index >= 0 && index < Count() && !List[base::ToSize(index)].empty()) {
-    List[base::ToSize(index)][0] = checked ? kCheckChar : kUncheckChar;
+  if (index >= 0 && index < Count() && !List.at(base::ToSize(index)).empty()) {
+    List.at(base::ToSize(index)).at(0) = checked ? kCheckChar : kUncheckChar;
     Flag_To_Redraw();
   }
 }
@@ -118,8 +118,9 @@ void CheckListClass::Check_Item(int index, int checked) {
  *   02/16/1995 BR : Created.                                              *
  *=========================================================================*/
 bool CheckListClass::Is_Checked(int index) const {
-  return index >= 0 && index < Count() && !List[base::ToSize(index)].empty() &&
-         List[base::ToSize(index)][0] == kCheckChar;
+  return index >= 0 && index < Count() &&
+         !List.at(base::ToSize(index)).empty() &&
+         List.at(base::ToSize(index)).at(0) == kCheckChar;
 }
 
 /***************************************************************************

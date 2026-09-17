@@ -229,8 +229,8 @@ void BaseClass::Write_INI(std::span<char> buffer) {
   for (int i = 0; i < Nodes.Count(); i++) {
     absl::SNPrintF(uname, sizeof(uname), "%03d", i);
     absl::SNPrintF(buf, sizeof(buf), "%s,%d",
-                   BuildingTypeClass::As_Reference(Nodes[i].Type).IniName,
-                   static_cast<int>(Nodes[i].Coord));
+                   BuildingTypeClass::As_Reference(Nodes.at(i).Type).IniName,
+                   static_cast<int>(Nodes.at(i).Coord));
 
     WWWritePrivateProfileString(INI_Name(), uname, buf, buffer);
   }
@@ -268,18 +268,18 @@ BuildingClass* BaseClass::Get_Building(int index) {
   ** Check the location on the map where this building should be; if it's
   ** there, return a pointer to it.
   */
-  const CELL cell = Coord_Cell(Nodes[index].Coord);
+  const CELL cell = Coord_Cell(Nodes.at(index).Coord);
 
-  base::At(obj, 0) = Map[cell].Cell_Building();
-  base::At(obj, 1) = base::At(Map[cell].Overlappers, 0);
-  base::At(obj, 2) = base::At(Map[cell].Overlappers, 1);
-  base::At(obj, 3) = base::At(Map[cell].Overlappers, 2);
+  base::At(obj, 0) = Map.at(cell).Cell_Building();
+  base::At(obj, 1) = base::At(Map.at(cell).Overlappers, 0);
+  base::At(obj, 2) = base::At(Map.at(cell).Overlappers, 1);
+  base::At(obj, 3) = base::At(Map.at(cell).Overlappers, 2);
 
   BuildingClass* bldg = nullptr;
   for (auto& i : obj) {
-    if (i && i->Coord == Nodes[index].Coord &&
+    if (i && i->Coord == Nodes.at(index).Coord &&
         i->What_Am_I() == RTTI_BUILDING &&
-        dynamic_cast<BuildingClass*>(i)->Class->Type == Nodes[index].Type) {
+        dynamic_cast<BuildingClass*>(i)->Class->Type == Nodes.at(index).Type) {
       bldg = dynamic_cast<BuildingClass*>(i);
       break;
     }
@@ -315,8 +315,9 @@ bool BaseClass::Is_Node(BuildingClass* obj) { return Get_Node(obj) != nullptr; }
  *=============================================================================================*/
 BaseNodeClass* BaseClass::Get_Node(BuildingClass* obj) {
   for (int i = 0; i < Nodes.Count(); i++) {
-    if (obj->Class->Type == Nodes[i].Type && obj->Coord == Nodes[i].Coord) {
-      return &Nodes[i];
+    if (obj->Class->Type == Nodes.at(i).Type &&
+        obj->Coord == Nodes.at(i).Coord) {
+      return &Nodes.at(i);
     }
   }
   return nullptr;
@@ -349,15 +350,15 @@ BaseNodeClass* BaseClass::Next_Buildable(StructType type) {
     */
     if (type == STRUCT_NONE) {
       if (!Is_Built(i)) {
-        return &Nodes[i];
+        return &Nodes.at(i);
       }
 
     } else {
       /*
       ** For a "real" building type, return the first hold for that type
       */
-      if (Nodes[i].Type == type && !Is_Built(i)) {
-        return &Nodes[i];
+      if (Nodes.at(i).Type == type && !Is_Built(i)) {
+        return &Nodes.at(i);
       }
     }
   }

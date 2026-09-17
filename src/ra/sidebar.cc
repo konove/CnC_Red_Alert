@@ -425,11 +425,11 @@ void SidebarClass::Reload_Sidebar() {
   }
 
   std::string sidename = base::At(sidebarnames, houseloaded);
-  sidename[4] = '1';
+  sidename.at(4) = '1';
   SidebarShape = MixArchive::RetrieveData(sidename);
-  sidename[4] = '2';
+  sidename.at(4) = '2';
   SidebarMiddleShape = MixArchive::RetrieveData(sidename);
-  sidename[4] = '3';
+  sidename.at(4) = '3';
   SidebarBottomShape = MixArchive::RetrieveData(sidename);
 
   SidebarClass::StripClass::Reload_LogoShapes();
@@ -1039,10 +1039,10 @@ void SidebarClass::StripClass::One_Time(int /*unused*/) {
 
   for (const SpecialWeaponType lp :
        magic_enum::enum_values<SpecialWeaponType>()) {
-    const auto filename = std::string(SpecialWeaponFile[lp]) + "ICON";
+    const auto filename = std::string(SpecialWeaponFile.at(lp)) + "ICON";
     const auto fullname =
         std::filesystem::path(filename).replace_extension(".SHP").string();
-    SpecialShapes[lp] = MixArchive::RetrieveData(fullname);
+    SpecialShapes.at(lp) = MixArchive::RetrieveData(fullname);
   }
 }
 
@@ -1066,7 +1066,7 @@ std::span<const std::byte> SidebarClass::StripClass::Get_Special_Cameo(
     SpecialWeaponType type) {
   if (static_cast<unsigned>(type) <
       magic_enum::enum_count<SpecialWeaponType>()) {
-    return SpecialShapes[type];
+    return SpecialShapes.at(type);
   }
   return {};
 }
@@ -1706,8 +1706,8 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
           // leave the defaults (not complete, stage zero) in place otherwise.
           if (static_cast<unsigned>(spc) <
               magic_enum::enum_count<SpecialWeaponType>()) {
-            completed = PlayerPtr->SuperWeapon[spc].Is_Ready();
-            stage = PlayerPtr->SuperWeapon[spc].Anim_Stage();
+            completed = PlayerPtr->SuperWeapon.at(spc).Is_Ready();
+            stage = PlayerPtr->SuperWeapon.at(spc).Anim_Stage();
           }
           darken = false;
         }
@@ -1863,9 +1863,9 @@ bool SidebarClass::StripClass::Recalc() {
     } else {
       if (static_cast<unsigned>(base::At(Buildables, index).BuildableID) <
           magic_enum::enum_count<SpecialWeaponType>()) {
-        ok = PlayerPtr
-                 ->SuperWeapon[static_cast<SpecialWeaponType>(
-                     base::At(Buildables, index).BuildableID)]
+        ok = PlayerPtr->SuperWeapon
+                 .at(static_cast<SpecialWeaponType>(
+                     base::At(Buildables, index).BuildableID))
                  .Is_Present();
       } else {
         ok = false;
@@ -2000,7 +2000,7 @@ bool SidebarClass::StripClass::SelectClass::Action(unsigned flags,
     **	Display the help text if the mouse is over the button.
     */
     if (flags & kLeftUp) {
-      Map.Help_Text(SpecialWeaponHelp[spc], X, Y, scheme->Color, true);
+      Map.Help_Text(SpecialWeaponHelp.at(spc), X, Y, scheme->Color, true);
       flags &= ~kLeftUp;
     }
 
@@ -2017,7 +2017,7 @@ bool SidebarClass::StripClass::SelectClass::Action(unsigned flags,
     */
     if ((flags & kLeftPress) && (static_cast<unsigned>(spc) <
                                  magic_enum::enum_count<SpecialWeaponType>())) {
-      if (PlayerPtr->SuperWeapon[spc].Is_Ready()) {
+      if (PlayerPtr->SuperWeapon.at(spc).Is_Ready()) {
         if (spc != SPC_SONAR_PULSE) {
           Map.IsTargettingMode = spc;
           Unselect_All();
@@ -2027,7 +2027,7 @@ bool SidebarClass::StripClass::SelectClass::Action(unsigned flags,
                                  static_cast<int>(SPC_SONAR_PULSE), 0));
         }
       } else {
-        PlayerPtr->SuperWeapon[spc].Impatient_Click();
+        PlayerPtr->SuperWeapon.at(spc).Impatient_Click();
       }
     }
 
