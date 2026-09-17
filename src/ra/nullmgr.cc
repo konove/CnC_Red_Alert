@@ -693,8 +693,8 @@ int NullModemClass::Get_Message(std::span<std::byte> buf, int* buflen) {
  *=========================================================================*/
 int NullModemClass::Service() {
   int i = 0;                // loop counter
-  SerialHeaderType header;  // decoded packet start, length
-  SerialCRCType crc;        // decoded packet CRC
+  SerialHeaderType header{};  // decoded packet start, length
+  SerialCRCType crc{};        // decoded packet CRC
   const char moredata = 0;
 
   if (NumConnections == 0) {

@@ -52,7 +52,7 @@
  * FgPen    - Foreground pen to use.
  * Text     - Text string to display. (WORD aligned)
  */
-typedef struct _CaptionText {
+struct _CaptionText {
   unsigned short Size;
   unsigned short OnFrame;
   unsigned short OffFrame;
@@ -63,7 +63,8 @@ typedef struct _CaptionText {
   char BgPen;
   char FgPen;
   char Text[];
-} CaptionText;
+};
+using CaptionText = _CaptionText;
 
 /* CaptionText flag definitions. */
 #define CTF_JUSTIFY (3 << 0) /* Justification field. */

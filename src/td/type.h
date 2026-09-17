@@ -712,11 +712,11 @@ class BuildingTypeClass : public TechnoTypeClass {
     **	control the appearance of all normal buildings. Turrets and SAM sites
     *are *	an exception since their animation is not merely cosmetic.
     */
-    typedef struct {
+    struct AnimControlType {
       int Start;  // Starting frame of animation.
       int Count;  // Number of frames in this animation.
       int Rate;   // Number of ticks to delay between each frame.
-    } AnimControlType;
+    };
   // Resolved when the theater loads; the table itself stays const.
     mutable base::EnumArray<BStateType, AnimControlType, kBstateCount> Anims{};
 

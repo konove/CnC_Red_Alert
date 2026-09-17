@@ -223,7 +223,7 @@ int32_t Load_Uncompress(File& file, BufferClass& uncomp_buff,
   }
   const auto decode = [&] -> int32_t {
     uint16_t stored_size = 0;
-    CompHeaderType header;
+    CompHeaderType header{};
     if (!file.ReadObject(stored_size) || !file.ReadObject(header) ||
         stored_size < sizeof(header)) {
       return 0;

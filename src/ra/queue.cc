@@ -1988,7 +1988,8 @@ static RetcodeType Process_Receive_Packet(ConnManClass* net,
 static RetcodeType Process_Serial_Packet(
     std::span<const std::byte> multi_packet_buf, int packetlen,
     int first_time) {
-  SerialPacketType serial_storage;
+  SerialPacketType serial_storage{
+      .Command = SERIAL_LAST_COMMAND, .Name = {}, .ID = 0, .ScenarioInfo = {}};
   SerialPacketType* serial_packet =
       &serial_storage;  // for parsing serial packets
   EventClass event_storage;

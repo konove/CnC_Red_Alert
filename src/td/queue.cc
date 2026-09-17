@@ -1775,7 +1775,25 @@ static RetcodeType Process_Receive_Packet(ConnManClass* net,
 static RetcodeType Process_Serial_Packet(
     std::span<const std::byte> multi_packet_buf, int packetlen,
     int first_time) {
-  SerialPacketType serial_storage;
+  SerialPacketType serial_storage{.Command = SERIAL_LAST_COMMAND,
+                                  .Name = {},
+                                  .Version = 0,
+                                  .House = HOUSE_NONE,
+                                  .Color = 0,
+                                  .Scenario = 0,
+                                  .Credits = 0,
+                                  .IsBases = 0,
+                                  .IsTiberium = 0,
+                                  .IsGoodies = 0,
+                                  .IsGhosties = 0,
+                                  .BuildLevel = 0,
+                                  .UnitCount = 0,
+                                  .Seed = 0,
+                                  .Special = {},
+                                  .GameSpeed = 0,
+                                  .ResponseTime = 0,
+                                  .Message = {},
+                                  .ID = 0};
   SerialPacketType* serial_packet =
       &serial_storage;  // for parsing serial packets
   EventClass event_storage;

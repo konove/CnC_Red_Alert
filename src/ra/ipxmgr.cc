@@ -968,7 +968,7 @@ int IPXManagerClass::Get_Private_Message(std::span<std::byte> buf, int* buflen,
  *=========================================================================*/
 int IPXManagerClass::Service() {
   int rc = 1;
-  CommHeaderType packet_storage;
+  CommHeaderType packet_storage{};
   CommHeaderType* packet = &packet_storage;
   int packetlen = 0;
   IPXAddressClass address;

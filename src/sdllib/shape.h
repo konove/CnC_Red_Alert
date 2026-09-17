@@ -89,7 +89,7 @@ inline constexpr bool base::kIsFlagEnum<ShapeFlags_Type> = true;
 ------------------------------- Shape header --------------------------------
 */
 #pragma pack(push, 1)
-typedef struct {
+struct Shape_Type {
   uint16_t ShapeType;            // 0 = normal, 1 = 16 colors,
                                  // 2 = uncompressed, 4 = <16 colors
   unsigned char Height;          // Height of the shape in scan lines
@@ -98,12 +98,12 @@ typedef struct {
   uint16_t ShapeSize;            // Size of the shape, including header
   uint16_t DataLength;           // Size of the uncompressed shape (just data)
   unsigned char Colortable[16];  // Optional color table for compact shape
-} Shape_Type;
+};
 
 /*
 ------------------------------- Shape block ---------------------------------
 */
-typedef struct {
+struct ShapeBlock_Type {
   uint16_t NumShapes;  // number of shapes in the block
   // Offsets follow the count in the file image; the struct is only ever read in
   // place. NOLINTNEXTLINE(clang-diagnostic-c99-extensions)
@@ -111,7 +111,7 @@ typedef struct {
                              //  (offsets within the shape block, with
                              //  0 being the first offset value, not the
                              //  start of the shape block)
-} ShapeBlock_Type;
+};
 #pragma pack(pop)
 
 /*

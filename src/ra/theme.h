@@ -51,7 +51,7 @@ class ThemeClass {
   ThemeType Score{THEME_NONE};    // Score number currently being played.
   ThemeType Pending{THEME_NONE};  // Score to play next.
 
-  typedef struct {
+  struct ThemeControl {
     const char* Name;  // Filename of score.
     int Fullname;      // Text number for full score name.
     int Scenario;      // Scenario when it first becomes available.
@@ -60,7 +60,7 @@ class ThemeClass {
     bool Repeat;       // Always repeat this score?
     bool Available;    // Is the score available?
     uint32_t Owner;  // What houses are allowed to play this theme (bit field)?
-  } ThemeControl;
+  };
 
   static base::EnumArray<ThemeType, ThemeControl> _themes;
 

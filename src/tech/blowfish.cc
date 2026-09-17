@@ -64,7 +64,7 @@
 **	integer. This is biased toward big endian architecture, but that
 **	just happens to be how the Blowfish algorithm was designed.
 */
-typedef union {
+union Int {
   uint32_t Long;
   struct {
     unsigned char C3;
@@ -72,7 +72,7 @@ typedef union {
     unsigned char C1;
     unsigned char C0;
   } Char;
-} Int;
+};
 
 /***********************************************************************************************
  * BlowfishEngine::~BlowfishEngine -- Destructor for the Blowfish engine. *
@@ -326,13 +326,13 @@ void BlowfishEngine::Process_Block(std::span<const std::byte> plaintext,
   */
   std::size_t source = 0;
   std::size_t table_index = 0;
-  Int left;
+  Int left{};
   left.Char.C0 = std::to_integer<unsigned char>(base::At(plaintext, source++));
   left.Char.C1 = std::to_integer<unsigned char>(base::At(plaintext, source++));
   left.Char.C2 = std::to_integer<unsigned char>(base::At(plaintext, source++));
   left.Char.C3 = std::to_integer<unsigned char>(base::At(plaintext, source++));
 
-  Int right;
+  Int right{};
   right.Char.C0 = std::to_integer<unsigned char>(base::At(plaintext, source++));
   right.Char.C1 = std::to_integer<unsigned char>(base::At(plaintext, source++));
   right.Char.C2 = std::to_integer<unsigned char>(base::At(plaintext, source++));
@@ -406,11 +406,9 @@ void BlowfishEngine::Process_Block(std::span<const std::byte> plaintext,
  * HISTORY: * 04/19/1996 JLB : Created. *
  *=============================================================================================*/
 void BlowfishEngine::Sub_Key_Encrypt(uint32_t& left, uint32_t& right) {
-  Int l;
-  l.Long = left;
+  Int l{.Long = left};
 
-  Int r;
-  r.Long = right;
+  Int r{.Long = right};
 
   for (int index = 0; index < kRounds; index += 2) {
     l.Long ^= base::At(P_Encrypt, index);

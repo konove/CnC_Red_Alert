@@ -8,7 +8,7 @@ enum class SocketEvent {
 };
 using enum SocketEvent;
 
-typedef void (*SocketCallback)(int, SocketEvent, void*);
+using SocketCallback = void (*)(int, SocketEvent, void*);
 
 bool Socket_Register_Select(int socket, SocketCallback callback, void* data);
 void Socket_Unregister_Select(int socket);

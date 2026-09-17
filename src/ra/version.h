@@ -88,10 +88,10 @@ enum class CommProtocolType {
 };
 using enum CommProtocolType;
 
-typedef struct {
+struct VersionProtocolType {
   uint32_t Version;
   CommProtocolType Protocol;
-} VersionProtocolType;
+};
 
 class VersionClass {
  public:

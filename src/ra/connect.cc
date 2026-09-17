@@ -303,7 +303,7 @@ int ConnectionClass::Send_Packet(std::span<const std::byte> buf, int buflen,
 int ConnectionClass::Receive_Packet(std::span<std::byte> buf, int buflen) {
   ReceiveQueueType* rec_entry = nullptr;  // ptr to recv entry header
   CommHeaderType* entry_data = nullptr;   // ptr to queue entry data
-  CommHeaderType ackpacket;     // ACK packet to send
+  CommHeaderType ackpacket{};             // ACK packet to send
   int save_packet = 1;  // 0 = this is a resend
   int found = 0;
 

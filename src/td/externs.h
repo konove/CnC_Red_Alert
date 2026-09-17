@@ -311,7 +311,7 @@ extern int DesiredFrameRate;
 extern const char* GlobalPacketNames[];
 extern const char* SerialPacketNames[];
 
-typedef struct {
+struct TrapObjectType {
   union {
     AircraftClass* Aircraft;
     AnimClass* Anim;
@@ -321,7 +321,7 @@ typedef struct {
     UnitClass* Unit;
     void* All;
   } Ptr;
-} TrapObjectType;
+};
 
 extern int32_t TrapFrame;
 extern RTTIType TrapObjType;

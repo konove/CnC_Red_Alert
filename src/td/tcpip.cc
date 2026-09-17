@@ -73,7 +73,7 @@
 #ifdef _WIN32
 #include <winsock.h>
 
-typedef int socklen_t;
+using socklen_t = int;
 #else
 #include <arpa/inet.h>
 #include <netinet/in.h>

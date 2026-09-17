@@ -161,24 +161,24 @@ class DriveClass : public FootClass {
   using enum TrackControlType;
 
  private:
-  typedef struct {
+  struct TurnTrackType {
     int Track;              // Which track to use.
     int StartTrack;         // Track when starting from stand-still.
     DirType Facing;         // Facing when track has been completed.
     TrackControlType Flag;  // List processing flag bits.
-  } TurnTrackType;
+  };
 
-  typedef struct {
+  struct TrackType {
     COORDINATE Offset;  // Offset to origin coordinate.
     DirType Facing;     // Facing (primary track).
-  } TrackType;
+  };
 
-  typedef struct {
+  struct RawTrackType {
     std::span<const TrackType> Track;  // Pointer to track list.
     int Jump;                // Index where track jumping is allowed.
     int Entry;               // Entry point if jumping to this track.
     int Cell;                // Per cell process should occur at this index.
-  } RawTrackType;
+  };
 
   /*
   **	These speed values are used to accumulate movement and then

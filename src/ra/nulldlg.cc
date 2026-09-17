@@ -1793,7 +1793,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   int pos = 0;
   int len = 0;
   bool firsttime = true;
-  SerialSettingsType tempsettings;
+  SerialSettingsType tempsettings{};
   /*
   ** Buttons
   */
@@ -6717,7 +6717,7 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
   char numbuf[PhoneEntryClass::PHONE_MAX_NUM] = {
       0};  // buffer for editing phone #
   int rc = 0;
-  SerialSettingsType settings;
+  SerialSettingsType settings{};
   bool custom = false;
   bool firsttime = true;
   RemapControlType* scheme = GadgetClass::Get_Color_Scheme();

@@ -411,7 +411,7 @@ int File_Stream_Sample_Vol(const char* filename, int volume,
     return -1;
   }
 
-  AUDHeaderType header;
+  AUDHeaderType header{};
   if (ReadFileHandle(handle, base::ObjectBytes(header)) != sizeof(header)) {
     CloseFileHandle(handle);
     return -1;

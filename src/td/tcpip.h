@@ -56,8 +56,8 @@
 #else
 #include <netinet/in.h>
 
-typedef int SOCKET;
-typedef void* HANDLE;
+using SOCKET = int;
+using HANDLE = void*;
 #define IN_ADDR in_addr
 #define MAXGETHOSTSTRUCT 1024
 #define WM_USER 0x400
@@ -149,17 +149,17 @@ class TcpipManagerClass {
   //...........................................................................
   // This structure defines all the info we need about a host
   //...........................................................................
-  typedef struct {
+  struct HostType {
     struct in_addr Addr;  // address
     char DotAddr[16];     // decimal-dot address string
     char Name[255];       // character-string name
-  } HostType;
+  };
 
-  typedef struct {
+  struct InternetBufferType {
     char Buffer[WS_INTERNET_BUFFER_LEN];
     int DataLength;
     bool InUse : 1;
-  } InternetBufferType;
+  };
 
   bool WinsockInitialised{false};
 #ifdef _WIN32

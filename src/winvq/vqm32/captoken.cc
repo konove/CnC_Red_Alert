@@ -51,7 +51,7 @@
 #define STRING_LENGTH 256
 #define PADSIZE(size) (((size) + 1) & (~1))
 
-typedef enum {
+enum TokenTag {
   TOKEN_NULL = 0,
   TOKEN_BGCOL,
   TOKEN_FGCOL,
@@ -64,12 +64,13 @@ typedef enum {
   TOKEN_FLASH,
   TOKEN_CPF,
   TOKEN_END
-} TokenTag;
+};
 
-typedef struct _Token {
+struct _Token {
   char* name;
   long tag;
-} Token;
+};
+using Token = _Token;
 
 /* Script tokens:
  * BG/BGCOL     - Background pen color (EX: BG=<color name>)

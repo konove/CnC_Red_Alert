@@ -49,18 +49,18 @@
 /*
 ** Types for function pointers
 */
-typedef int (*IPXInitialiseType)();
-typedef int (*IPXGetOutstandingBuffer95Type)(unsigned char*);
-typedef void (*IPXShutDown95Type)();
-typedef int (*IPXSendPacket95Type)(unsigned char*, unsigned char*, int,
-                                   unsigned char*, unsigned char*);
-typedef int (*IPXBroadcastPacket95Type)(unsigned char*, int);
-typedef int (*IPXStartListening95Type)();
-typedef int (*IPXOpenSocket95Type)(int);
-typedef void (*IPXCloseSocket95Type)(int);
-typedef int (*IPXGetConnectionNumber95Type)();
-typedef int (*IPXGetLocalTarget95)(unsigned char*, unsigned char*,
-                                   unsigned short, unsigned char*);
+using IPXInitialiseType = int (*)();
+using IPXGetOutstandingBuffer95Type = int (*)(unsigned char*);
+using IPXShutDown95Type = void (*)();
+using IPXSendPacket95Type = int (*)(unsigned char*, unsigned char*, int,
+                                    unsigned char*, unsigned char*);
+using IPXBroadcastPacket95Type = int (*)(unsigned char*, int);
+using IPXStartListening95Type = int (*)();
+using IPXOpenSocket95Type = int (*)(int);
+using IPXCloseSocket95Type = void (*)(int);
+using IPXGetConnectionNumber95Type = int (*)();
+using IPXGetLocalTarget95 = int (*)(unsigned char*, unsigned char*,
+                                    unsigned short, unsigned char*);
 
 /*
 ** Function pointers

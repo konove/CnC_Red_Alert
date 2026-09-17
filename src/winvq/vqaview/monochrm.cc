@@ -45,10 +45,10 @@
 #include <cstdio>
 #include <cstring>
 
-typedef struct {
+struct CA {
   char ch;
   char attr;
-} CA;
+};
 
 #define CCOLMAX 80
 #define CROWMAX 25

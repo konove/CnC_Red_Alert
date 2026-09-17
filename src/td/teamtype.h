@@ -82,7 +82,7 @@ using enum TeamMissionType;
 /*
 **	This structure contains one team mission value & its argument.
 */
-typedef struct TeamMissionTag {
+struct TeamMissionTag {
   TeamMissionType Mission = TMISSION_NONE;
   int Argument = 0;
 
@@ -95,7 +95,8 @@ typedef struct TeamMissionTag {
       }
     }
   }
-} TeamMissionStruct;
+};
+using TeamMissionStruct = TeamMissionTag;
 
 /*
 **	TeamTypeClass declaration

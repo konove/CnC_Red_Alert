@@ -66,15 +66,15 @@ using HANDLE = void*;
 #define PACKET_SERIAL_OVERHEAD_SIZE \
   (sizeof(SerialHeaderType) + sizeof(SerialCRCType))
 
-typedef struct {
+struct SerialHeaderType {
   uint16_t MagicNumber;
   uint16_t Length;
   uint16_t MagicNumber2;
-} SerialHeaderType;
+};
 
-typedef struct {
+struct SerialCRCType {
   int SerialCRC;
-} SerialCRCType;
+};
 
 /*
 ***************************** Class Declaration *****************************

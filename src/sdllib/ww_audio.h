@@ -51,7 +51,7 @@
 //   and Bits.  These were removed because watcom packs them into a 32 bit
 //   flag entry even though they could have fit in a 8 bit entry.
 #pragma pack(push, 1)
-typedef struct {
+struct AUDHeaderType {
   uint16_t Rate;        // Playback rate (hertz).
   int32_t Size;         // Size of data (bytes).
   int32_t UncompSize;   // Size of data (bytes).
@@ -59,7 +59,7 @@ typedef struct {
                         //  1: Is the sample stereo?
                         //  2: Is the sample 16 bits?
   uint8_t Compression;  // What kind of compression for this sample?
-} AUDHeaderType;
+};
 #pragma pack(pop)
 
 /*=========================================================================*/
@@ -114,7 +114,7 @@ void Stop_Primary_Sound_Buffer();
 std::span<std::byte> Load_Sample(const char* filename);
 void Free_Sample(void* sample);
 
-typedef void (*AudioCallback)(uint8_t* stream, int len);
+using AudioCallback = void (*)(uint8_t* stream, int len);
 uint32_t Get_Audio_Device();
 void* Get_Audio_Spec();
 AudioCallback*

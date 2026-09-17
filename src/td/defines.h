@@ -1508,11 +1508,11 @@ struct DoStruct {
   unsigned char Rate;    // Frame rate.
 };
 
-typedef struct {
+struct DoInfoStruct {
   int Frame;            // Starting frame of the animation.
   unsigned char Count;  // Number of frames of animation.
   unsigned char Jump;   // Frames to jump between facings.
-} DoInfoStruct;
+};
 
 /****************************************************************************
 **	These are the various radio message that can be transmitted between
@@ -1566,9 +1566,9 @@ inline constexpr int kRadioCount = static_cast<int>(RADIO_COUNT);
 **	map dimensions) is used for map coordinates with cell resolution. The
 **	COORD type is used for map coordinates that have a lepton resolution.
 */
-typedef uint32_t COORDINATE;
+using COORDINATE = uint32_t;
 
-typedef uint16_t TARGET;
+using TARGET = uint16_t;
 inline constexpr TARGET kTargetNone{};
 
 /****************************************************************************
@@ -1655,12 +1655,12 @@ inline constexpr int kMouseCount = static_cast<int>(MOUSE_COUNT);
 **	This structure is used to control the box relief style drawn by
 **	the Draw_Box() function.
 */
-typedef struct {
+struct BoxStyleType {
   int Filler;     // Center box fill color.
   int Shadow;     // Shadow color (darker).
   int Highlight;  // Highlight color (lighter).
   int Corner;     // Corner color (transition).
-} BoxStyleType;
+};
 
 enum class BoxStyleEnum {
   BOXSTYLE_DOWN,              // Typical depressed edge border.
@@ -1900,11 +1900,11 @@ inline constexpr uint32_t kTheaterFlagTemperate =
 inline constexpr uint32_t kTheaterFlagWinter =
     base::Bit<uint32_t>(THEATER_WINTER);
 
-typedef struct {
+struct TheaterDataType {
   char Name[16];
   char Root[10];
   char Suffix[4];
-} TheaterDataType;
+};
 
 /**********************************************************************
 **	Each building has a predetermined size. These are the size numbers.
@@ -2514,7 +2514,7 @@ inline constexpr int kCallWaitStringsNum = 4;
 /****************************************************************************
 **	This structure defines the settings for the serial port.
 */
-typedef struct {
+struct SerialSettingsType {
   int Port;
   int IRQ;
   int Baud;
@@ -2527,7 +2527,7 @@ typedef struct {
   bool ErrorCorrection;
   bool HardwareFlowControl;
   char ModemName[MODEM_NAME_MAX];
-} SerialSettingsType;
+};
 
 /****************************************************************************
 **	These are the various commands sent during startup of a Serial game.
@@ -2555,7 +2555,7 @@ using enum SerialCommandType;
 **	These is the structure sent over the network Global Channel.
 **	Also used for the Null-Modem and Modem.
 */
-typedef struct {
+struct SerialPacketType {
   SerialCommandType Command;            // One of the enum's defined above
   char Name[MPLAYER_NAME_MAX];          // Player or Game Name
   int Version;                          // game's version number
@@ -2575,7 +2575,7 @@ typedef struct {
   uint32_t ResponseTime;                // packet response time
   char Message[COMPAT_MESSAGE_LENGTH];  // inter-player message
   unsigned char ID;                     // ID of sender of message
-} SerialPacketType;
+};
 
 enum class ModemGameType {
   MODEM_NULL_HOST = 0,
@@ -2614,7 +2614,7 @@ using enum NetCommandType;
 /****************************************************************************
 **	These is the structure sent over the network Global Channel.
 */
-typedef struct {
+struct GlobalPacketType {
   NetCommandType Command;       // One of the enum's defined above
   char Name[MPLAYER_NAME_MAX];  // Player or Game Name
   union {
@@ -2649,7 +2649,7 @@ typedef struct {
       int OneWay;  // one-way response time
     } ResponseTime;
   };
-} GlobalPacketType;
+};
 
 /****************************************************************************
 **	This structure is for keeping score in multiplayer games.
@@ -2657,12 +2657,12 @@ typedef struct {
 #define MAX_MULTI_NAMES 8  // max # names (rows) on the score screen
 #define MAX_MULTI_GAMES 4  // max # games (columns) on the score screen
 
-typedef struct {
+struct MPlayerScoreType {
   char Name[MPLAYER_NAME_MAX];
   int Wins;
   int Kills[MAX_MULTI_GAMES];
   int Color;
-} MPlayerScoreType;
+};
 
 // Frame flags in the high byte of a key-frame shape's offset table.
 inline constexpr uint8_t kKfNumber = 0x08;
@@ -2675,7 +2675,7 @@ inline constexpr uint8_t kKfMask = 0xF0;
 //--------------------------------------------------------------------
 // New Config structure for .CFG files
 //--------------------------------------------------------------------
-typedef struct {
+struct NewConfigType {
   unsigned DigitCard;      // SoundCardType.
   unsigned Port;           // SoundCardType.
   unsigned IRQ;            // SoundCardType.
@@ -2685,7 +2685,7 @@ typedef struct {
   unsigned Speed;          // stereo/mono sound card
   bool Reverse;            // Reverse left/right speakers
   char Language[4];
-} NewConfigType;
+};
 
 /****************************************************************************
 **	These are the types of dialogs that can pop up outside of the main loop,

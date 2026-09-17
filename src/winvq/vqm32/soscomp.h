@@ -70,13 +70,14 @@ struct SosCompressInfo {
 };
 
 /* compressed file type header */
-typedef struct tagCOMPRESS_HEADER {
+struct tagCOMPRESS_HEADER {
   uint32_t dwType;                   // type of compression
   uint32_t dwCompressedSize;         // compressed file size
   uint32_t dwUnCompressedSize;       // uncompressed file size
   uint32_t dwSourceBitSize;          // original bit size
   char szName[16];                   // file type, for error checking
-} SOS_COMPRESS_HEADER;
+};
+using SOS_COMPRESS_HEADER = tagCOMPRESS_HEADER;
 
 /* Prototypes */
 

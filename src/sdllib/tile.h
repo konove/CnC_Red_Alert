@@ -26,7 +26,7 @@
 #include "absl/base/attributes.h"
 #include "base/buffer.h"
 
-typedef struct {
+struct IControl_Type {
   int16_t Width;      // Width of icons (pixels).
   int16_t Height;     // Height of icons (pixels).
   int16_t Count;      // Number of (logical) icons in this set.
@@ -44,7 +44,7 @@ typedef struct {
   int32_t ColorMap;  // Offset for color control value table.
 #endif
   int32_t Map;  // Icon map offset (if present).
-} IControl_Type;
+};
 
 inline std::span<const std::byte> Get_Icon_Set_Map(
     std::span<const std::byte> iconset) {

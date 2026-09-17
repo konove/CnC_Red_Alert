@@ -112,7 +112,7 @@ constexpr FacingType kCounterclockwise = static_cast<FacingType>(-1);
 #define THREAT_THRESHOLD 5
 
 #ifdef NEVER
-typedef enum {
+enum FacingType {
   FACING_N,   // North
   FACING_NE,  // North-East
   FACING_E,   // East
@@ -123,7 +123,7 @@ typedef enum {
   FACING_NW,  // North-West
 
   FACING_COUNT  // Total of 8 directions (0..7).
-} FacingType;
+};
 #endif
 
 /*-------------------------------------------------------------------------*/

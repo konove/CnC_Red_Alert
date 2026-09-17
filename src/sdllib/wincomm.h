@@ -56,7 +56,7 @@ using enum WinCommDialMethodType;
 #define COMMUSERABORT (-16)
 #define ASSUCCESS COMMSUCCESS
 #define ASUSERABORT COMMUSERABORT
-typedef void* HANDLE;
+using HANDLE = void*;
 
 // Modem status bits returned by Get_Modem_Status().
 inline constexpr uint32_t kCtsSet = 0x10;

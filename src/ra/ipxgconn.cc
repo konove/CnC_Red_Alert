@@ -216,7 +216,7 @@ int IPXGlobalConnClass::Send_Packet(std::span<const std::byte> buf, int buflen,
  *=========================================================================*/
 int IPXGlobalConnClass::Receive_Packet(std::span<std::byte> buf, int buflen,
                                        IPXAddressClass* address) {
-  GlobalHeaderType ackpacket;    // ACK packet to send
+  GlobalHeaderType ackpacket{};  // ACK packet to send
 
   /*------------------------------------------------------------------------
   Check the magic #

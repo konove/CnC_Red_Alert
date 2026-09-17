@@ -1120,8 +1120,44 @@ void Cycle_Wait_Click() {
   int counter = 0;
   int minclicks = 20;
   int64_t timingtime = TickCount.Time();
-  SerialPacketType sendpacket;
-  SerialPacketType receivepacket;
+  SerialPacketType sendpacket{.Command = SERIAL_SCORE_SCREEN,
+                              .Name = {},
+                              .Version = 0,
+                              .House = HOUSE_NONE,
+                              .Color = 0,
+                              .Scenario = 0,
+                              .Credits = 0,
+                              .IsBases = 0,
+                              .IsTiberium = 0,
+                              .IsGoodies = 0,
+                              .IsGhosties = 0,
+                              .BuildLevel = 0,
+                              .UnitCount = 0,
+                              .Seed = 0,
+                              .Special = {},
+                              .GameSpeed = 0,
+                              .ResponseTime = 0,
+                              .Message = {},
+                              .ID = 0};
+  SerialPacketType receivepacket{.Command = SERIAL_LAST_COMMAND,
+                                 .Name = {},
+                                 .Version = 0,
+                                 .House = HOUSE_NONE,
+                                 .Color = 0,
+                                 .Scenario = 0,
+                                 .Credits = 0,
+                                 .IsBases = 0,
+                                 .IsTiberium = 0,
+                                 .IsGoodies = 0,
+                                 .IsGhosties = 0,
+                                 .BuildLevel = 0,
+                                 .UnitCount = 0,
+                                 .Seed = 0,
+                                 .Special = {},
+                                 .GameSpeed = 0,
+                                 .ResponseTime = 0,
+                                 .Message = {},
+                                 .ID = 0};
   int packetlen = 0;
 
   Keyboard::Clear();

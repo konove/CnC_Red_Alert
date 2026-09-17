@@ -49,7 +49,7 @@
  * DataBlk    - Offset to character data block.
  * HeightBlk  - Offset to character height block.
  */
-typedef struct _Font {
+struct _Font {
   unsigned short Size;
   unsigned char CompMethod;
   unsigned char NumBlks;
@@ -58,13 +58,15 @@ typedef struct _Font {
   unsigned short WidthBlk;
   unsigned short DataBlk;
   unsigned short HeightBlk;
-} Font;
+};
+using Font = _Font;
 
-typedef struct _FontInfo {
+struct _FontInfo {
   long huh;
   unsigned char MaxHeight;
   unsigned char MaxWidth;
-} FontInfo;
+};
+using FontInfo = _FontInfo;
 
 #ifdef __cplusplus
 extern "C" {

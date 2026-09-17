@@ -373,11 +373,12 @@ void Window_Dialog_Box(HANDLE hinst, LPCTSTR lpszTemplate, HWND hwndOwner,
   Show_Mouse();
 }
 
-typedef struct tColourList {
+struct tColourList {
   char Red;
   char Green;
   char Blue;
-} ColourList;
+};
+using ColourList = tColourList;
 
 ColourList ColourLookup[9] = {0, 0,  0,  63, 0,  0,  0,  63, 0,
                               0, 0,  63, 63, 0,  63, 63, 63, 0,

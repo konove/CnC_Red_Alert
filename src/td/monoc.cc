@@ -164,7 +164,7 @@ MonoClass::~MonoClass() { base::At(PageUsage, Page) = nullptr; }
  *=============================================================================================*/
 void MonoClass::Draw_Box(int x, int y, int w, int h, char attrib,
                          BoxStyleType thick) {
-  CellType cell;
+  CellType cell{};
   const char oldattrib = Attrib;
 
   if (!Enabled || !w || !h) {
@@ -287,7 +287,7 @@ void MonoClass::Set_Cursor([[maybe_unused]] int x, [[maybe_unused]] int y) {
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
 void MonoClass::Clear() {
-  CellType cell;
+  CellType cell{};
   //	int	offset;
 
   if (!Enabled) {
@@ -325,7 +325,7 @@ void MonoClass::Clear() {
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
 void MonoClass::Scroll(int lines) {
-  CellType cell;
+  CellType cell{};
 
   if (!Enabled || lines <= 0) {
     return;
@@ -389,7 +389,7 @@ void MonoClass::Scroll(int lines) {
 void MonoClass::Print(const char* ptr) {
   //	int optr;
   const char startcol = X;
-  CellType cell;
+  CellType cell{};
 
   if (!ptr || !Enabled) {
     return;

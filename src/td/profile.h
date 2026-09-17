@@ -6,7 +6,7 @@
 #include <string_view>
 
 #include "absl/base/attributes.h"
-#include "td/defines.h"  // NewConfigType is an anonymous struct typedef.
+#include "td/defines.h"  // NewConfigType.
 
 int WWGetPrivateProfileInt(const char* section, const char* entry, int def,
                            const char* profile);

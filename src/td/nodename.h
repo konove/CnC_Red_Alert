@@ -8,7 +8,7 @@
 
 // Node for lists of available games & players in multiplayer.
 // 'Game' structure is for games; 'Player' structure for players.
-typedef struct NodeNameTag {
+struct NodeNameTag {
   char Name[MPLAYER_NAME_MAX]{};
   IPXAddressClass Address;
   union {
@@ -22,6 +22,7 @@ typedef struct NodeNameTag {
       unsigned char Color;
     } Player;
   };
-} NodeNameType;
+};
+using NodeNameType = NodeNameTag;
 
 #endif  // CNC_RED_ALERT_TD_NODENAME_H_

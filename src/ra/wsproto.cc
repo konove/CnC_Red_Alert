@@ -83,7 +83,7 @@
 #ifdef _WIN32
 #include <winsock.h>
 
-typedef int socklen_t;
+using socklen_t = int;
 #else
 #include <fcntl.h>
 #include <sys/socket.h>

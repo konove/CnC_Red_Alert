@@ -258,7 +258,7 @@ inline int KN_To_VK(int key) { return key; }
 // composite) that the keyboard buffer stores as an integer, so it stays
 // unscoped.
 // NOLINTNEXTLINE(cppcoreguidelines-use-enum-class)
-typedef enum KeyASCIIType {
+enum KeyASCIIType {
 
   KA_NONE = 0,
   KA_MORE = 1,
@@ -383,10 +383,10 @@ typedef enum KeyASCIIType {
   KA_CTRL_BIT = WWKEY_CTRL_BIT,
   KA_ALT_BIT = WWKEY_ALT_BIT,
   KA_RLSE_BIT = WWKEY_RLS_BIT,
-} KeyASCIIType;
+};
 
 // NOLINTNEXTLINE(cppcoreguidelines-use-enum-class)
-typedef enum KeyNumType {
+enum KeyNumType {
   KN_NONE = 0,
 
   KN_0 = VK_0,
@@ -504,7 +504,7 @@ typedef enum KeyNumType {
   KN_ALT_BIT = WWKEY_ALT_BIT,
   KN_RLSE_BIT = WWKEY_RLS_BIT,
   KN_BUTTON = WWKEY_BTN_BIT,
-} KeyNumType;
+};
 
 // Returns the KeyNumType that GadgetClass::Input() reports when the gadget with
 // the given ID is triggered. The KN_BUTTON bit distinguishes a gadget event

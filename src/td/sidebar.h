@@ -288,11 +288,11 @@ class SidebarClass : public PowerClass {
     *objects are building *	and ready to be placed. The very nature of this
     *method precludes simultaneous *	construction of the same object type.
     */
-    typedef struct BuildType {
+    struct BuildType {
       int BuildableID;
       RTTIType BuildableType;
       int Factory;  // Production manager.
-    } BuildType;
+    };
     BuildType Buildables[kMaxBuildables]{};
 
     /*

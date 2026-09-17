@@ -44,9 +44,9 @@
 /*
 ******************************** Structures *********************************
 */
-typedef unsigned char NetNumType[4];
-typedef unsigned char NetNodeType[6];
-typedef char UserID[48];
+using NetNumType = unsigned char[4];
+using NetNodeType = unsigned char[6];
+using UserID = char[48];
 
 /*---------------------------------------------------------------------------
 This is the IPX Packet structure.  It's followed by the data itself, which
@@ -54,7 +54,7 @@ can be up to 546 bytes long.  Annotation of 'IPX' means IPX will set this
 field; annotation of 'APP' means the application must set the field.
 NOTE: All header fields are ordered high-byte,low-byte.
 ---------------------------------------------------------------------------*/
-typedef struct IPXHEADER {
+struct IPXHEADER {
   uint16_t CheckSum;                     // IPX: Not used; always 0xffff
   uint16_t Length;                       // IPX: Total size, incl header & data
   unsigned char TransportControl;        // IPX: # bridges message crossed
@@ -65,14 +65,15 @@ typedef struct IPXHEADER {
   unsigned char SourceNetworkNumber[4];  // IPX: source Network Number
   unsigned char SourceNetworkNode[6];    // IPX: source Node Address
   uint16_t SourceNetworkSocket;          // IPX: source Socket Number
-} IPXHeaderType;
+};
+using IPXHeaderType = IPXHEADER;
 
 /*---------------------------------------------------------------------------
 This is the IPX Event Control Block.  It serves as a communications area
 between IPX and the application for a single IPX operation.  You should set
 up a separate ECB for each IPX operation you perform.
 ---------------------------------------------------------------------------*/
-typedef struct ECB {
+struct ECB {
   void* Link_Address;
   void (*Event_Service_Routine)();  // APP: event handler (NULL=none)
   unsigned char InUse;              // IPX: 0 = event complete
@@ -87,13 +88,14 @@ typedef struct ECB {
     void* Address;
     uint16_t Length;
   } Packet[2];
-} ECBType;
+};
+using ECBType = ECB;
 
 /*---------------------------------------------------------------------------
 This structure is used for calling DPMI function 0x300, Call-Real-Mode-
 Interrupt.  It passes register values to & from the interrupt handler.
 ---------------------------------------------------------------------------*/
-typedef struct {
+struct RMIType {
   int32_t edi;
   int32_t esi;
   int32_t ebp;
@@ -111,7 +113,7 @@ typedef struct {
   int16_t cs;
   int16_t sp;
   int16_t ss;
-} RMIType;
+};
 
 /*
 ********************************** Defines **********************************

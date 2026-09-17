@@ -101,13 +101,13 @@ class MouseClass : public ScrollClass {
   **	This type is used to control the frames and rates of the mouse
   **	pointer. Some mouse pointers are actually looping animations.
   */
-  typedef struct MouseStruct {
+  struct MouseStruct {
     int StartFrame;  // Starting frame number.
     int FrameCount;  // Number of animation frames.
     int FrameRate;   // Frame delay between changing frames.
     int SmallFrame;  // Start frame number for small version (if any).
     int X, Y;        // Hotspot X and Y offset.
-  } MouseStruct;
+  };
 
   /*
   **	The control frames and rates for the various mouse pointers are stored

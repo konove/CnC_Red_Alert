@@ -44,11 +44,12 @@
  * child0 - Child node 0
  * child1 - Child node 1
  */
-typedef struct _TreeNode {
+struct _TreeNode {
   unsigned long count;
   unsigned short child0;
   unsigned short child1;
-} TreeNode;
+};
+using TreeNode = _TreeNode;
 
 /* HuffCode: This structure is used for storing the code for each symbol
  *            during encoding. A table of codes for each symbol is built
@@ -57,10 +58,11 @@ typedef struct _TreeNode {
  * code - Code used to represent a symbol.
  * bits - Length of code in bits.
  */
-typedef struct _HuffCode {
+struct _HuffCode {
   unsigned short code;
   short bits;
-} HuffCode;
+};
+using HuffCode = _HuffCode;
 
 #define HUFF_EOS 256 /* End of stream symbol */
 

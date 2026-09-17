@@ -172,7 +172,7 @@ static constexpr bool FitsInBuffer(int64_t offset, int64_t size,
  ****************************************************************************/
 
 int32_t VQA_Open(VQAHandle* vqa, const char* filename, VQAConfig* config) {
-  ChunkHeader chunk;
+  ChunkHeader chunk{};
 
   /* Dereference commonly used data members for quicker access. */
   VQAHandle* vqap = vqa;
@@ -2148,7 +2148,7 @@ static int32_t Load_SND0(VQAHandle* vqap, int32_t iffsize) {
 
 static int32_t Load_SND1(VQAHandle* vqap, int32_t iffsize) {
   std::span<unsigned char> loadbuf;
-  ZAPHeader zap;
+  ZAPHeader zap{};
 
   /* Dereference commonly used data members for quicker access. */
   VQAData* vqabuf = vqap->data;

@@ -734,8 +734,10 @@ void Cycle_Wait_Click(bool cycle) {
   int counter = 0;
   int minclicks = 20;
   int64_t timingtime = TickCount.Value();
-  SerialPacketType sendpacket;
-  SerialPacketType receivepacket;
+  SerialPacketType sendpacket{
+      .Command = SERIAL_SCORE_SCREEN, .Name = {}, .ID = 0, .ScenarioInfo = {}};
+  SerialPacketType receivepacket{
+      .Command = SERIAL_LAST_COMMAND, .Name = {}, .ID = 0, .ScenarioInfo = {}};
   int packetlen = 0;
 
   Keyboard->Clear();

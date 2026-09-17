@@ -154,9 +154,9 @@ class VQAClass {
 // TYPES
 //==========================================================================
 
-typedef struct {
+struct VQACacheHeader {
   unsigned long file_offset;
   unsigned long file_size;
-} VQACacheHeader;
+};
 
 #endif  // CNC_RED_ALERT_WINVQ_VQAVIEW_VQ_H_

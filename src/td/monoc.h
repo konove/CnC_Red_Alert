@@ -60,7 +60,7 @@ class MonoClass {
   **	are used when a box is drawn. Line drawing on the monochrome screen is
   **	really made up of characters. This specifies which characters to use.
   */
-  typedef struct {
+  struct BoxDataType {
     unsigned char UpperLeft;
     unsigned char TopEdge;
     unsigned char UpperRight;
@@ -69,7 +69,7 @@ class MonoClass {
     unsigned char BottomEdge;
     unsigned char BottomLeft;
     unsigned char LeftEdge;
-  } BoxDataType;
+  };
 
   /*
   **	Each cell is constructed of the actual character that is displayed and
@@ -78,10 +78,10 @@ class MonoClass {
   *represented by a "short" *	integer, certain speed optimizations are taken
   *in the monochrome drawing *	code.
   */
-  typedef struct {
+  struct CellType {
     unsigned char Character;  // Character to display.
     char Attribute;  // Attribute.
-  } CellType;
+  };
 
   /*
   **	These private constants are used in the various monochrome operations.

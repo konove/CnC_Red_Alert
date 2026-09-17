@@ -35,14 +35,14 @@ class TextBlitClass {
   void Update();
 
  private:
-  typedef struct {
+  struct BlitEntryType {
     int SourceX;
     int SourceY;
     int DestX;
     int DestY;
     int Width;
     int Height;
-  } BlitEntryType;
+  };
 
   BlitEntryType BlitListo[MAX_ENTRIES]{};
   int Count = 0;

@@ -101,10 +101,10 @@
 // Connection Manager class, when it calls this class's Receive_Packet
 // function.
 //---------------------------------------------------------------------------
-typedef struct {
+struct GlobalHeaderType {
   CommHeaderType Header;
   uint16_t ProductID;
-} GlobalHeaderType;
+};
 
 /*
 ***************************** Class Declaration *****************************

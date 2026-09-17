@@ -332,7 +332,7 @@ class IPXManagerClass : public ConnManClass {
   /*.....................................................................
   This is a structure that mirrors data in real-mode memory:
   .....................................................................*/
-  typedef struct {
+  struct RealModeDataType {
     int16_t Marker1;                // the byte ID marker
     ECBType ListenECB;              // the Listening ECB
     int16_t NumBufs;                // # of buffers we're giving to the handler
@@ -352,7 +352,7 @@ class IPXManagerClass : public ConnManClass {
     int16_t Stack[256];             // actual stack space
     int16_t StackSpace;             // label for top of stack
     int16_t Marker2;                // the byte ID marker
-  } RealModeDataType;
+  };
 
   /*.....................................................................
   The number & size of packet buffers in low memory

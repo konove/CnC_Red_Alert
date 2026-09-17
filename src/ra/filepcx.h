@@ -48,13 +48,13 @@ Buff);
 #include "sdllib/gbuffer.h"
 #include "tech/file.h"
 
-typedef struct {
+struct RGB {
   unsigned char red;
   unsigned char green;
   unsigned char blue;
-} RGB;
+};
 
-typedef struct {
+struct PCX_HEADER {
   char id;
   char version;
   char encoding;
@@ -71,7 +71,7 @@ typedef struct {
   int16_t byte_per_line;
   int16_t palette_type;
   char filler[58];
-} PCX_HEADER;
+};
 
 GraphicBufferClass* Read_PCX_File(const char* name, std::span<uint8_t> palette,
                                   std::span<uint8_t> backing, int32_t size);

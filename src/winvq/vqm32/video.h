@@ -70,13 +70,13 @@
  * VBIbit   - Polarity of vertical blank bit.
  * Extended - Pointer to mode specific data structure.
  */
-typedef struct DisplayInfo {
+struct DisplayInfo {
   int32_t Mode;
   int32_t XRes;
   int32_t YRes;
   int32_t VBIbit;
   void* Extended;
-} DisplayInfo;
+};
 
 /*---------------------------------------------------------------------------
  * Function prototypes

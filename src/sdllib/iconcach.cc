@@ -25,7 +25,7 @@ static int IconHeight = 0;
 static int IconSize = 0;
 static int IconCount = 0;
 
-typedef struct {
+struct IControl_Type_Old {
   int16_t Width;      // Width of icons (pixels).
   int16_t Height;     // Height of icons (pixels).
   int16_t Count;      // Number of (logical) icons in this set.
@@ -36,7 +36,7 @@ typedef struct {
   int32_t Remaps;     // Offset from buffer start to remap index data.
   int32_t TransFlag;  // Offset for transparency flag table.
   int32_t Map;        // Icon map offset (if present).
-} IControl_Type_Old;
+};
 
 static std::span<const std::byte> Table(std::span<const std::byte> data,
                                         int offset) {

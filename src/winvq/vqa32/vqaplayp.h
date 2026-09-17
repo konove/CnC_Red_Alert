@@ -90,10 +90,10 @@ constexpr uint32_t BLOCK_DIM(uint32_t a, uint32_t b) {
  * id   - 4 Byte chunk id.
  * size - Size of chunk.
  */
-typedef struct ChunkHeader {
+struct ChunkHeader {
   uint32_t id;
   uint32_t size;
-} ChunkHeader;
+};
 
 /* ZAPHeader: ZAP audio compression header. NOTE: If the uncompressed size
  *            and the compressed size are equal then the audio frame is RAW
@@ -102,10 +102,10 @@ typedef struct ChunkHeader {
  * UnCompSize - Uncompressed size in bytes.
  * CompSize   - Compressed size in bytes.
  */
-typedef struct ZAPHeader {
+struct ZAPHeader {
   uint16_t UnCompSize;
   uint16_t CompSize;
-} ZAPHeader;
+};
 
 /* VQACBNode: A circular list of codebook buffers, used by the load task.
  *            If the data is compressed, it is loaded into the end of the
@@ -196,7 +196,7 @@ struct VQAFrameNode {
  * MaxFrameSize  - Size of the largest frame in the animation.
  * CurChunkHdr   - Chunk header of the chunk currently being processed.
  */
-typedef struct VQALoader {
+struct VQALoader {
   VQACBNode* CurCB;
   VQACBNode* FullCB;
   VQAFrameNode* CurFrame;
@@ -210,7 +210,7 @@ typedef struct VQALoader {
   int32_t FrameSize;
   int32_t MaxFrameSize;
   ChunkHeader CurChunkHdr;
-} VQALoader;
+};
 
 /* VQADrawer: Data needed exclusively by the Drawer.
  *            (Make sure this structure's size is always DWORD aligned.)
@@ -242,7 +242,7 @@ typedef struct VQALoader {
  * WaitsOnFlipper - Number of wait states Drawer hits waiting on the Flipper.
  * WaitsOnLoader  - Number of wait states Drawer hits waiting on the Loader.
  */
-typedef struct VQADrawer {
+struct VQADrawer {
   VQAFrameNode* CurFrame;
   uint32_t Flags;  // VQADRWF_* bits
   DisplayInfo* Display;
@@ -267,7 +267,7 @@ typedef struct VQADrawer {
   int32_t NumSkipped;
   int32_t WaitsOnFlipper;
   int32_t WaitsOnLoader;
-} VQADrawer;
+};
 
 /* Drawer flags */
 #define VQADRWB_SETPAL 0 /* Set palette */
@@ -280,10 +280,10 @@ typedef struct VQADrawer {
  * LastFrameNum - Number of last flipped frame
  * pad          - DWORD alignment padding.
  */
-typedef struct VQAFlipper {
+struct VQAFlipper {
   VQAFrameNode* CurFrame;
   int32_t LastFrameNum;
-} VQAFlipper;
+};
 
 /* VQAAudio: Data needed exclusively by audio playback.
  *           (Make sure this structure's size is always DWORD aligned.)

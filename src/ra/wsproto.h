@@ -52,9 +52,9 @@ class IPXAddressClass;
 */
 #include <winsock.h>
 #else
-typedef int SOCKET;
+using SOCKET = int;
 #define INVALID_SOCKET (-1)
-typedef void* HANDLE;
+using HANDLE = void*;
 #define WM_USER 0x400
 #endif
 
@@ -156,12 +156,13 @@ class WinsockInterfaceClass {
   *packet.
   ** It acts as a temporary control for these packets.
   */
-  typedef struct tWinsockBufferType {
+  struct tWinsockBufferType {
     unsigned char Address[64];   // Address. IN_ADDR, IPXAddressClass etc.
     int BufferLen;               // Length of data in buffer
     bool IsBroadcast;            // Flag to broadcast this packet
     unsigned char Buffer[1024];  // Buffer to store packet in.
-  } WinsockBufferType;
+  };
+  using WinsockBufferType = tWinsockBufferType;
 
   /*
   ** Array of buffers to temporarily store incoming and outgoing packets.

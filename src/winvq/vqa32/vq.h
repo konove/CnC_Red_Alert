@@ -87,7 +87,7 @@
  * VQVersion       - VQ Version #
  * pad[5]          - Pad out to 40 bytes total
  */
-typedef struct VQHeader {
+struct VQHeader {
   uint32_t ImageSize;
   uint16_t ImageWidth;
   uint16_t ImageHeight;
@@ -103,7 +103,7 @@ typedef struct VQHeader {
   uint16_t F555Palette;
   uint16_t VQVersion;
   uint16_t pad[5];
-} VQHeader;
+};
 static_assert(sizeof(VQHeader) == 40);
 
 #endif  // CNC_RED_ALERT_WINVQ_VQA32_VQ_H_

@@ -247,13 +247,13 @@ will be one of the below-defined codes. PacketID:		This is a unique
 numerical ID for this packet.  The Connection sets this ID on all packets sent
 out.
 ---------------------------------------------------------------------------*/
-typedef struct {
+struct CommHeaderType {
   uint16_t MagicNumber;
   unsigned char Code;
   // 32 bits, as in the original game: the receiver's 0xffffffff "nothing
   // received yet" sentinel relies on ID arithmetic wrapping to 0.
   uint32_t PacketID;
-} CommHeaderType;
+};
 
 /*
 ***************************** Class Declaration *****************************

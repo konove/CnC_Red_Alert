@@ -1943,7 +1943,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   int pos = 0;
   int len = 0;
   int firsttime = 1;
-  SerialSettingsType tempsettings;
+  SerialSettingsType tempsettings{};
   char init_text[32];
 
   std::span<const std::byte> up_button;
@@ -6486,7 +6486,7 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
   char numbuf[PhoneEntryClass::kPhoneMaxNum] = {
       0};  // buffer for editing phone #
   int rc = 0;
-  SerialSettingsType settings;
+  SerialSettingsType settings{};
   int custom = 0;
   int firsttime = 1;
 

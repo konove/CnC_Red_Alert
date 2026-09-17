@@ -461,8 +461,8 @@ bool Int<PRECISION>::Borrow = false;
 template <int PRECISION>
 Int<PRECISION> Int<PRECISION>::Remainder;
 
-typedef Int<MAX_UNIT_PRECISION> bignum;
-typedef Int<MAX_UNIT_PRECISION> BigInt;
+using bignum = Int<MAX_UNIT_PRECISION>;
+using BigInt = Int<MAX_UNIT_PRECISION>;
 
 // BigInt Gcd(const BigInt & a, const BigInt & n);
 // BigInt Generate_Prime(RandomNumberGenerator & rng, int pbits, BigInt const *

@@ -54,7 +54,7 @@
 #include "td/defines.h"
 #include "tech/2keyfbuf.h"
 
-typedef struct {
+struct KeyFrameHeaderType {
   uint16_t frames;
   uint16_t x;
   uint16_t y;
@@ -62,7 +62,7 @@ typedef struct {
   uint16_t height;
   uint16_t largest_frame_size;
   int16_t flags;
-} KeyFrameHeaderType;
+};
 
 // The uncompressed-shape cache was never finished: nothing sets
 // UseBigShapeBuffer, so Build_Frame always decodes into the caller's buffer.

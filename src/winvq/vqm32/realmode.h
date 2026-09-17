@@ -50,7 +50,7 @@
  * and the associated macros are identical to that of the PHARLAP "pltypes.h"
  * definitions for easy of conversion to WATCOM/4GW.
  */
-typedef uint32_t REALPTR;
+using REALPTR = uint32_t;
 
 #define RP_OFF(rp) ((unsigned short)(((unsigned long)(rp)) & 0xFFFF))
 #define RP_SEG(rp) ((unsigned short)(((unsigned long)(rp)) >> 16))
@@ -67,7 +67,7 @@ typedef uint32_t REALPTR;
  * will then use this information to set up the real-mode registers, switch
  * to real-mode and then execute the interrupt in real-mode.
  */
-typedef struct RMInfo {
+struct RMInfo {
   int32_t edi;
   int32_t esi;
   int32_t ebp;
@@ -78,6 +78,6 @@ typedef struct RMInfo {
   int32_t eax;
   int16_t flags;
   int16_t es, ds, fs, gs, ip, cs, sp, ss;
-} RMInfo;
+};
 
 #endif  // CNC_RED_ALERT_WINVQ_VQM32_REALMODE_H_

@@ -95,7 +95,7 @@ const int PacketChars = 4;
 *The data *	consists of three source data bytes mapped onto four 6 bit
 *Base64 code elements.
 */
-typedef union {
+union PacketType {
   struct {
     unsigned char C3;
     unsigned char C2;
@@ -110,7 +110,7 @@ typedef union {
     unsigned pad : 8;
   } SubCode;
   unsigned int Raw;
-} PacketType;
+};
 
 /***********************************************************************************************
  * Base64_Encode -- Encode data into Base 64 format. *
@@ -161,10 +161,9 @@ int Base64_Encode(std::span<const std::byte> source,
     /*
     **	Fetch 24 bits of source data.
     */
-    PacketType packet;
+    PacketType packet{.Raw = 0};
 
     int pad = 0;
-    packet.Raw = 0;
     packet.Char.C1 = std::to_integer<unsigned char>(base::At(source, input++));
     slen--;
     if (slen) {
@@ -262,8 +261,7 @@ int Base64_Decode(std::span<const std::byte> source,
   int slen = static_cast<int>(source.size());
   int dlen = static_cast<int>(dest.size());
   while (slen > 0 && dlen > 0) {
-    PacketType packet;
-    packet.Raw = 0;
+    PacketType packet{.Raw = 0};
 
     /*
     **	Process input until a full packet has been accumulated or the

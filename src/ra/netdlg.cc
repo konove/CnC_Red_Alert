@@ -1049,7 +1049,7 @@ void Shutdown_Network() {
  * HISTORY: * 02/15/1995 BR : Created. *
  *=============================================================================================*/
 bool Process_Global_Packet(GlobalPacketType* packet, IPXAddressClass* address) {
-  GlobalPacketType mypacket;
+  GlobalPacketType mypacket{};
 
   //------------------------------------------------------------------------
   // If our Players vector is empty, just return.

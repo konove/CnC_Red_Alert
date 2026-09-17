@@ -57,7 +57,7 @@
  * PixelDepth      - Image pixel size
  * ImageDescriptor - Image descriptor byte.
  */
-typedef struct _TGAHeader {
+struct _TGAHeader {
   char IDLength;
   char ColorMapType;
   char ImageType;
@@ -70,7 +70,8 @@ typedef struct _TGAHeader {
   short Height;
   char PixelDepth;
   char ImageDescriptor;
-} TGAHeader;
+};
+using TGAHeader = _TGAHeader;
 
 /* ImageType definiton */
 #define TGA_NOIMAGE 0            /* No image data included in file */
@@ -96,11 +97,12 @@ typedef struct _TGAHeader {
  * mode   - Access mode.
  * header - TGAHeader structure.
  */
-typedef struct _TGAHandle {
+struct _TGAHandle {
   short fh;
   unsigned short mode;
   TGAHeader header;
-} TGAHandle;
+};
+using TGAHandle = _TGAHandle;
 
 /* Access modes. */
 #define TGA_READMODE 0

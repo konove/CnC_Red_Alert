@@ -263,12 +263,12 @@ void PNBubble_Sort(T& array, int count) {
   }
 }
 
-typedef struct {
+struct TLucentType {
   unsigned char SourceColor;
   unsigned char DestColor;
   unsigned char Fading;
   unsigned char reserved;
-} TLucentType;
+};
 
 int Load_Picture(const char* filename, BufferClass& scratchbuf,
                  BufferClass& destbuf, std::span<unsigned char> palette,

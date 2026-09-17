@@ -57,7 +57,7 @@ class LZWEngine {
   void Reset();
 
  private:
-  typedef int16_t CodeType;
+  using CodeType = int16_t;
   struct CodeClass {
     CodeType CodeValue = kUnused;
     CodeType ParentCode = 0;

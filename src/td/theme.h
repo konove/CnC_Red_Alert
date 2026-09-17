@@ -52,7 +52,7 @@ class ThemeClass {
   ThemeType Score{THEME_NONE};    // Score number currently being played.
   ThemeType Pending{THEME_NONE};  // Score to play next.
 
-  typedef struct {
+  struct ThemeControl {
     const char* Name;  // Filename of score.
     int Fullname;      // Text number for full score name.
     int Scenario;      // Scenario when it first becomes available.
@@ -61,7 +61,7 @@ class ThemeClass {
     bool Variation;    // Is there a variation to the score?
     bool Repeat;       // Always repeat this score?
     bool Available;    // Is the score available?
-  } ThemeControl;
+  };
 
   static base::EnumArray<ThemeType, ThemeControl, kThemeCount> _themes;
 

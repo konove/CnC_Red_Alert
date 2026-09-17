@@ -349,7 +349,7 @@ base::At(MPlayerGameName, 0) = 0;
  * HISTORY: * 02/15/1995 BR : Created. *
  *=============================================================================================*/
 bool Process_Global_Packet(GlobalPacketType* packet, IPXAddressClass* address) {
-  GlobalPacketType mypacket;
+  GlobalPacketType mypacket{};
 
   /*
   ---------------- Another system asking what game this is -----------------

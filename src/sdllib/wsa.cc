@@ -44,7 +44,7 @@
 #define DO_XOR 0x0
 #define DO_COPY 0x01
 
-typedef struct {
+struct SysAnimHeaderType {
   uint16_t current_frame;
   uint16_t total_frames;
   uint16_t pixel_x;
@@ -61,7 +61,7 @@ typedef struct {
   // kExtraBytesAnimateDoesNotKnowAbout
   int16_t file_handle;
   uint32_t anim_mem_size;
-} SysAnimHeaderType;
+};
 
 // NOTE:"THIS IS A BAD THING. SINCE sizeof(SysAnimHeaderType) CHANGED, THE
 // ANIMATE.EXE UTILITY DID NOT KNOW I UPDATED IT, IT ADDS IT TO
@@ -77,7 +77,7 @@ constexpr int kExtraBytesAnimateDoesNotKnowAbout =
 //
 
 #pragma pack(push, 1)
-typedef struct {
+struct WSA_FileHeaderType {
   uint16_t total_frames;
   uint16_t pixel_x;
   uint16_t pixel_y;
@@ -88,7 +88,7 @@ typedef struct {
   uint32_t frame0_offset;
   uint32_t frame0_end;
   /* unsigned long data_seek_offset, unsigned short frame_size ... */
-} WSA_FileHeaderType;
+};
 
 #pragma pack(pop)
 

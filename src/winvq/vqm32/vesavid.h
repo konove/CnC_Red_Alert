@@ -85,7 +85,7 @@
  * TotalMemory  - ???
  * Reserved     - Pads structure to 256 bytes total
  */
-typedef struct VESAInfo {
+struct VESAInfo {
   char Signature[4];
   uint16_t Version;
   REALPTR OEMString;
@@ -93,7 +93,7 @@ typedef struct VESAInfo {
   REALPTR AvailModes;
   uint16_t TotalMemory;
   unsigned char Reserved[236];
-} VESAInfo;
+};
 
 /* VESAModeInfo - Information about this VESA mode.
  *                (Filled in by VESA BIOS Function 1)
@@ -133,7 +133,7 @@ typedef struct VESAInfo {
  *                    10-FFh = OEM-specific
  * BankSize         - Bank size in KB
  */
-typedef struct VESAModeInfo {
+struct VESAModeInfo {
   uint16_t Attributes;
   unsigned char WinA_Attributes;
   unsigned char WinB_Attributes;
@@ -164,7 +164,7 @@ typedef struct VESAModeInfo {
   unsigned char RsvdFieldPosition;
   unsigned char DirectColorModeInfo;
   unsigned char pad[216];
-} VESAModeInfo;
+};
 
 /*---------------------------------------------------------------------------
  * Function prototypes

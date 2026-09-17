@@ -124,10 +124,12 @@ bool Get_Scenario_File_From_Host(std::span<char> return_name, size_t dest_size,
 
   int file_length = 0;
 
-  SerialPacketType send_packet;
-  SerialPacketType receive_packet;
-  GlobalPacketType net_send_packet;
-  GlobalPacketType net_receive_packet;
+  SerialPacketType send_packet{
+      .Command = SERIAL_REQ_SCENARIO, .Name = {}, .ID = 0, .ScenarioInfo = {}};
+  SerialPacketType receive_packet{
+      .Command = SERIAL_LAST_COMMAND, .Name = {}, .ID = 0, .ScenarioInfo = {}};
+  GlobalPacketType net_send_packet{};
+  GlobalPacketType net_receive_packet{};
   int packet_len = 0;
   uint16_t product_id = 0;
 
@@ -310,7 +312,10 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
   bool return_code = false;
   int update_time = 0;
 
-  RemoteFileTransferType receive_packet;
+  RemoteFileTransferType receive_packet{.Command = SERIAL_LAST_COMMAND,
+                                        .BlockNumber = 0,
+                                        .BlockLength = 0,
+                                        .RawData = {}};
 
   int last_received_block = -1;  // No blocks received yet
   int total_length = 0;
@@ -586,10 +591,13 @@ bool Send_Remote_File(const char* file_name, int gametype) {
   bool return_code = false;
   int update_time = 0;
 
-
-  RemoteFileTransferType send_packet;
-  SerialPacketType file_info;
-  GlobalPacketType net_file_info;
+  RemoteFileTransferType send_packet{.Command = SERIAL_FILE_CHUNK,
+                                     .BlockNumber = 0,
+                                     .BlockLength = 0,
+                                     .RawData = {}};
+  SerialPacketType file_info{
+      .Command = SERIAL_FILE_INFO, .Name = {}, .ID = 0, .ScenarioInfo = {}};
+  GlobalPacketType net_file_info{};
 
   GameFile send_file(file_name);
 

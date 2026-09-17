@@ -47,11 +47,11 @@
  * size - Length of IFF in bytes
  * type - Form type (IE: "ILBM")
  */
-typedef struct FormHeader {
+struct FormHeader {
   int32_t id;
   int32_t size;
   int32_t type;
-} FormHeader;
+};
 
 /* Context - Structure associated with chunks.
  *
@@ -59,11 +59,11 @@ typedef struct FormHeader {
  * size - Size of chunk in bytes.
  * scan - Bytes read/written.
  */
-typedef struct Context {
+struct Context {
   int32_t id;
   int32_t size;
   int32_t scan;
-} Context;
+};
 
 /* IFFHandle - Structure associated with an active IFF read\write session.
  *
@@ -73,13 +73,13 @@ typedef struct Context {
  * scan  - Bytes read/written
  * cn    - Context of current chunk.
  */
-typedef struct IFFHandle {
+struct IFFHandle {
   int32_t fh;
   int32_t flags;
   FormHeader form;
   int32_t scan;
   Context cn;
-} IFFHandle;
+};
 
 /*	bit masks for "flags" field. */
 #define IFFB_READ 0

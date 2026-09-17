@@ -145,7 +145,7 @@
  * CapFont        - Pointer to font to use for subtitle text captions.
  * EVAFont        - Pointer to font to use for E.V.A text cations. (For C&C)
  */
-typedef struct VQAConfig {
+struct VQAConfig {
   int32_t (*DrawerCallback)(unsigned char* screen, int32_t framenum){};
   int32_t (*EventHandler)(uint32_t event, void* buffer, int32_t nbytes){};
   uint32_t NotifyFlags{};
@@ -179,7 +179,7 @@ typedef struct VQAConfig {
   int32_t Language{};
   char* CapFont{};
   char* EVAFont{}; /* For C&C Only */
-} VQAConfig;
+};
 
 /* Drawer Configuration flags (DrawFlags) */
 #define VQACFGB_BUFFER 0  /* Buffer UnVQ enable */
@@ -228,12 +228,12 @@ typedef struct VQAConfig {
  * ImageWidth  - Width of image in pixels.
  * ImageBuf    - Pointer to the image buffer VQA draw into.
  */
-typedef struct VQAInfo {
+struct VQAInfo {
   int32_t NumFrames;
   int32_t ImageWidth;
   int32_t ImageHeight;
   unsigned char* ImageBuf;
-} VQAInfo;
+};
 
 /* VQAStatistics: Statistics about the VQA movie played.
  *
@@ -246,7 +246,7 @@ typedef struct VQAInfo {
  * SamplesPlayed - Number of sample bytes played.
  * MemUsed       - Total bytes used. (Low memory)
  */
-typedef struct VQAStatistics {
+struct VQAStatistics {
   int64_t StartTime;
   int64_t EndTime;
   int32_t FramesLoaded;
@@ -255,7 +255,7 @@ typedef struct VQAStatistics {
   int32_t MaxFrameSize;
   int64_t SamplesPlayed;
   int32_t MemUsed;
-} VQAStatistics;
+};
 
 /* Internal player state; defined in vqaplayp.h. */
 struct VQAHandle;

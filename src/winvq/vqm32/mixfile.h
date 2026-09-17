@@ -55,10 +55,11 @@
  * Count - Number of entries contained in this mix file.
  * Size  - Size of Mix file.
  */
-typedef struct _MIXHeader {
+struct _MIXHeader {
   short Count;
   long Size;
-} MIXHeader;
+};
+using MIXHeader = _MIXHeader;
 
 /* MIXSubBlock: Mix file entry descriptor.
  *
@@ -66,11 +67,12 @@ typedef struct _MIXHeader {
  * Offset - Offset from beginning of data segment to entry.
  * Size   - Size of entry.
  */
-typedef struct _MIXSubBlock {
+struct _MIXSubBlock {
   long CRC;
   long Offset;
   long Size;
-} MIXSubBlock;
+};
+using MIXSubBlock = _MIXSubBlock;
 
 /* MIXHandle: Mix file handle.
  *
@@ -80,13 +82,14 @@ typedef struct _MIXSubBlock {
  * Count   - Number of files contained in this mix.
  * Entries - Array of 'Count' MIXSubBlock structure entries.
  */
-typedef struct _MIXHandle {
+struct _MIXHandle {
   char* Name;
   long Size;
   long FH;
   long Count;
   MIXSubBlock Entries[];
-} MIXHandle;
+};
+using MIXHandle = _MIXHandle;
 
 /*---------------------------------------------------------------------------
  * PROTOTYPES

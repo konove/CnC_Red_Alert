@@ -70,12 +70,12 @@ using enum CompressionType;
 */
 
 #pragma pack(push, 1)
-typedef struct {
+struct CompHeaderType {
   char Method;    // Compression method (CompressionType).
   char pad;       // Reserved pad byte (always 0).
   uint32_t Size;  // Size of the uncompressed data.
   int16_t Skip;   // Number of bytes to skip before data.
-} CompHeaderType;
+};
 #pragma pack(pop)
 
 size_t Uncompress_Data(std::span<const unsigned char> src,

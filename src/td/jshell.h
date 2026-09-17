@@ -202,12 +202,12 @@ void Format_Runtime_Text(std::span<char> buffer, const size_t size,
   Format_Runtime_Text(buffer, size, format, absl::MakeConstSpan(packed));
 }
 
-typedef struct {
+struct TLucentType {
   unsigned char SourceColor;
   unsigned char DestColor;
   unsigned char Fading;
   unsigned char reserved;
-} TLucentType;
+};
 
 int Load_Picture(const char* filename, BufferClass& scratchbuf,
                  BufferClass& destbuf, std::span<unsigned char> palette,

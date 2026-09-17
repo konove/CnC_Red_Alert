@@ -133,11 +133,11 @@ will be one of the below-defined codes. PacketID:		This is a unique
 numerical ID for this packet.  The Connection sets this ID on all packets sent
 out.
 ---------------------------------------------------------------------------*/
-typedef struct {
+struct CommHeaderType {
   uint16_t MagicNumber;
   unsigned char Code;
   uint32_t PacketID;
-} CommHeaderType;
+};
 
 /*
 ***************************** Class Declaration *****************************

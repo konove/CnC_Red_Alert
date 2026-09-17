@@ -226,17 +226,17 @@ using enum NetCommandType;
 //...........................................................................
 // An entry on the score screen is defined by this structure
 //...........................................................................
-typedef struct {
+struct MPlayerScoreType {
   char Name[MPLAYER_NAME_MAX];
   int Wins;
   int Kills[MAX_MULTI_GAMES];
   PlayerColorType Color;
-} MPlayerScoreType;
+};
 
 //...........................................................................
 // Settings for the serial port
 //...........................................................................
-typedef struct {
+struct SerialSettingsType {
   int Port;
   int IRQ;
   int Baud;
@@ -248,7 +248,7 @@ typedef struct {
   bool ErrorCorrection;
   bool HardwareFlowControl;
   char ModemName[MODEM_NAME_MAX];
-} SerialSettingsType;
+};
 
 // ??
 class PhoneEntryClass {
@@ -267,7 +267,7 @@ class PhoneEntryClass {
 //	This is a "node", used for the lists of available games & players.  The
 //	'Game' structure is used for games; the 'Player' structure for players.
 //...........................................................................
-typedef struct NodeNameTag {
+struct NodeNameTag {
   // Only the Player arm is saved; Game and Chat describe live discovery data.
   template <class Archive>
   void Serialize(Archive& ar);
@@ -291,12 +291,13 @@ typedef struct NodeNameTag {
       PlayerColorType Color;     // chat player's color
     } Chat;
   };
-} NodeNameType;
+};
+using NodeNameType = NodeNameTag;
 
 //...........................................................................
 // Packet sent over the serial Global Channel
 //...........................................................................
-typedef struct {
+struct SerialPacketType {
   SerialCommandType Command;    // One of the enum's defined above
   char Name[MPLAYER_NAME_MAX];  // Player or Game Name
   unsigned char ID;             // unique ID of sender of message
@@ -337,7 +338,7 @@ typedef struct {
       PlayerColorType Color;  // player's color or SIGNOFF ID
     } Chat;
   };
-} SerialPacketType;
+};
 
 // Both packets go on the wire with sizeof(), so every peer must agree on these
 // numbers. Change one only when you mean to change the protocol.
@@ -353,18 +354,18 @@ static_assert(sizeof(SerialPacketType) == 160);
 // Other packet sent over the serial global channel (for file transfers)
 //...........................................................................
 #define MAX_SEND_FILE_PACKET_SIZE (MAX_SERIAL_PACKET_SIZE - 64)
-typedef struct {
+struct RemoteFileTransferType {
   SerialCommandType
       Command;  // Enum defined above. Should be a file transfer enum.
   uint16_t BlockNumber;  // Index position of this file chunk in the file
   uint16_t BlockLength;  // Length of data in the RawData buffer
   unsigned char RawData[MAX_SEND_FILE_PACKET_SIZE];
-} RemoteFileTransferType;
+};
 
 //...........................................................................
 // Packet sent over the network Global Channel
 //...........................................................................
-typedef struct GlobalPacketType {
+struct GlobalPacketType {
   NetCommandType Command;       // One of the enum's defined above
   char Name[MPLAYER_NAME_MAX];  // Player or Game Name
   union {
@@ -418,7 +419,7 @@ typedef struct GlobalPacketType {
       PlayerColorType Color;  // my color
     } Chat;
   };
-} GlobalPacketType;
+};
 
 static_assert(sizeof(GlobalPacketType) == 144);
 
@@ -426,7 +427,7 @@ static_assert(sizeof(GlobalPacketType) == 144);
 // For finding sync bugs; filled in by the engine when certain conditions
 // are met; the pointers allow examination of objects in the debugger.
 //...........................................................................
-typedef struct {
+struct TrapObjectType {
   union {
     AircraftClass* Aircraft;
     AnimClass* Anim;
@@ -436,7 +437,7 @@ typedef struct {
     UnitClass* Unit;
     void* All;
   } Ptr;
-} TrapObjectType;
+};
 
 /*
 **	This is the identifier for a multiplayer mission. This can be used to
@@ -482,7 +483,7 @@ class MultiMission {
   bool IsExpansion = false;
 };
 
-typedef struct {
+struct GameOptionsType {
   int ScenarioIndex;  // Used on host machine only as index into scenario list
   int Bases;
   int Credits;
@@ -492,7 +493,7 @@ typedef struct {
   int UnitCount;
   int AIPlayers;                          // # of AI players allowed to be built
   char ScenarioDescription[kDescripMax];  // Used on client machines only
-} GameOptionsType;
+};
 
 //---------------------------------------------------------------------------
 // Class Definition

@@ -49,7 +49,7 @@
 #include <wsipx.h>
 #else
 #include <sys/socket.h>
-typedef sockaddr_storage SOCKADDR_IPX;
+using SOCKADDR_IPX = sockaddr_storage;
 #endif
 
 /*

@@ -54,12 +54,12 @@
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
 
-typedef enum {
+enum SCodeType {
   CODE_2BIT,   /* Bit packed 2 bit delta. */
   CODE_4BIT,   /* Nibble packed 4 bit delta. */
   CODE_RAW,    /* Raw sample. */
   CODE_SILENCE /* Run of silence. */
-} SCodeType;
+};
 
 char _2bitencode[5] = {0, 1, 2, 3};
 
