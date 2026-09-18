@@ -472,19 +472,15 @@ bool LoadOptionsClass::Process() {
         if (!Save_Game(game_num, game_descr)) {
           WWMessageBox().Process(TXT_ERROR_SAVING_GAME);
         } else {
+          // "Mission saved" plays while the message is up, rather than
+          // before it; it finishes after the dialog closes if need be.
           Speak(VOX_SAVE1);
-          while (Is_Speaking()) {
-            ServiceRealTime();
-          }
           Timer<SystemTickSource> timer;
-          //					timer.Start();
-          timer.Set(int64_t{kTicksPerSecond} * 4);
+          timer.Set(int64_t{kTicksPerSecond} * 4);  // 60 ticks: one second
 
           WWMessageBox().Process(TXT_GAME_WAS_SAVED, TXT_NONE, TXT_NONE);
 
-          /*
-          **	Delay to let the user read the message
-          */
+          // Give the player a second to read the message.
           while (timer.HasTimeLeft()) {
             ServiceRealTime();
           }
