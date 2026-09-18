@@ -53,6 +53,9 @@ class RGBClass {
   // If 'ratio' is outside the [0, 255] range, it is clamped.
   void Adjust(int ratio, const RGBClass& target);
 
+  // Returns a copy of this color adjusted toward 'target'; see Adjust().
+  [[nodiscard]] RGBClass Adjusted(int ratio, const RGBClass& target) const;
+
   // Returns the squared Euclidean distance between this color and 'other'.
   //
   // This is used to find the closest color match without calculating square

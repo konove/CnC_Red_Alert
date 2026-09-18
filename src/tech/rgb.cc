@@ -46,6 +46,12 @@ void RGBClass::Adjust(const int ratio, const RGBClass& target) {
                                          static_cast<float>(target.blue_), t));
 }
 
+RGBClass RGBClass::Adjusted(const int ratio, const RGBClass& target) const {
+  RGBClass result = *this;
+  result.Adjust(ratio, target);
+  return result;
+}
+
 int RGBClass::Difference(const RGBClass& other) const {
   const auto diff_sq = [](const int a, const int b) {
     const int d = a - b;

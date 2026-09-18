@@ -403,8 +403,9 @@ std::span<unsigned char> Make_Fading_Table(const PaletteClass& palette,
       **	Find the color that, ideally, the working color should be
       *remapped *	to in the special remap range.
       */
-      RGBClass trycolor = palette.at(index);
-      trycolor.Adjust(frac, palette.at(color));  // Try to match this color.
+      // Try to match this color.
+      const RGBClass trycolor =
+          palette.at(index).Adjusted(frac, palette.at(color));
 
       /*
       **	Search through the remap range to find the color that should be
@@ -441,8 +442,9 @@ std::span<unsigned char> Conquer_Build_Fading_Table(
         **	Find the color that, ideally, the working color should be
         *remapped *	to in the special remap range.
         */
-        RGBClass trycolor = palette.at(index);
-        trycolor.Adjust(frac, palette.at(color));  // Try to match this color.
+        // Try to match this color.
+        const RGBClass trycolor =
+            palette.at(index).Adjusted(frac, palette.at(color));
 
         /*
         **	Search through the remap range to find the color that should be
