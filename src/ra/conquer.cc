@@ -29,6 +29,7 @@
 
 #include <absl/log/check.h>
 
+#include <algorithm>
 #include <array>
 #include <cstddef>
 #include <iterator>
@@ -104,79 +105,50 @@
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
 #include "tech/game_file.h"
+#include "tech/glow_pulse.h"
 #include "tech/rgb.h"
 
 // Cycles the animated palette entries. Two effects run off independent timers:
-// a white that pulses between full and dark, used by the radar box and other
-// interface glows, and a rotation of the water colours.
+// a white that pulses between bright and half-dark, used by the radar box and
+// other interface glows, and a rotation of the water colours.
 //
 // This needs to run at least 8 times a second to look smooth, which is why
 // WaitForNextFrame() calls it while idling rather than the main loop calling it
 // once per frame.
 static void CyclePalette() {
+  // The embers' slot holds the last faded value, so each pulse fades this
+  // anew rather than reading the slot back.
+  constexpr RGBClass kEmberBase(255, 80, 80);
+
   static Timer<SystemTickSource> water_timer;
-  static Timer<SystemTickSource> pulse_timer;
-  static bool pulse_rising = false;
-  static int pulse_level = 255;
+  static GlowPulse<SystemTickSource> pulse(kTimerSecond / 6);
 
-  if (Options.IsPaletteScroll) {
-    bool palette_changed = false;
-    // Process the fading white color. It is used for the radar box and other
-    // glowing game interface elements.
-    if (pulse_timer.IsFinished()) {
-      pulse_timer.Set(kTimerSecond / 6);
+  if (!Options.IsPaletteScroll) {
+    return;
+  }
 
-      // Six steps of 20 carry the pulse across its 0x20..150 range, so a full
-      // cycle takes about two seconds at the timer rate set above. The range
-      // stops short of both black and full white: the glow has to stay legible
-      // at its dimmest and stay distinct from plain white at its brightest.
-      constexpr int kStepRate = 20;
-      if (pulse_rising) {
-        pulse_level += kStepRate;
-        if (pulse_level > 150) {
-          pulse_level = 150;
-          pulse_rising = false;
-        }
-      } else {
-        pulse_level -= kStepRate;
-        if (pulse_level < 0x20) {
-          pulse_level = 0x20;
-          pulse_rising = true;
-        }
-      }
+  bool palette_changed = false;
+  if (pulse.Update()) {
+    GamePalette.at(kPulseColor) = pulse.Apply(GamePalette.at(kWhite));
+    GamePalette.at(kEmberColor) = pulse.Apply(kEmberBase);
+    palette_changed = true;
+  }
 
-      // Set the pulse color as the proportional value between white and
-      // the minimum value for pulsing.
-      GamePalette.at(kPulseColor) = GamePalette.at(kWhite);
-      GamePalette.at(kPulseColor).Adjust(pulse_level, kBlackColor);
+  if (water_timer.IsFinished()) {
+    water_timer.Set(kTimerSecond / 4);
 
-      // Pulse the glowing embers between medium and dark red.
-      GamePalette.at(kEmberColor) = RGBClass(255, 80, 80);
-      GamePalette.at(kEmberColor).Adjust(pulse_level, kBlackColor);
+    // Each water colour moves up one slot; the last wraps round to the first.
+    const auto water_colors =
+        GamePalette.colors().subspan<kCycleColorStart, kCycleColorCount>();
+    std::ranges::rotate(water_colors, water_colors.end() - 1);
 
-      palette_changed = true;
-    }
+    palette_changed = true;
+  }
 
-    // Process the color cycling effects -- water.
-    if (water_timer.IsFinished()) {
-      water_timer.Set(kTimerSecond / 4);
-
-      const RGBClass wrapped_color =
-          GamePalette.at(kCycleColorStart + kCycleColorCount - 1);
-      for (int index = kCycleColorStart + kCycleColorCount - 1;
-           index >= kCycleColorStart; index--) {
-        GamePalette.at(index) = GamePalette.at(index - 1);
-      }
-      GamePalette.at(kCycleColorStart) = wrapped_color;
-
-      palette_changed = true;
-    }
-
-    // If any of the processing functions changed the palette, then this
-    // palette must be passed to the system.
-    if (palette_changed) {
-      GamePalette.Set();
-    }
+  // Either effect leaves the palette changed only in memory until it is
+  // passed to the system.
+  if (palette_changed) {
+    GamePalette.Set();
   }
 }
 

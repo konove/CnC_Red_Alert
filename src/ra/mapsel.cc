@@ -62,6 +62,7 @@
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 #include "tech/ftimer.h"
+#include "tech/glow_pulse.h"
 #include "tech/mix_archive.h"
 #include "tech/rgb.h"
 
@@ -115,35 +116,11 @@ constexpr int kHotspotPaletteIndex = 254;
 
 // Animates the pulsing highlight on clickable map locations.
 static void Cycle_Call_Back_Delay(int time, PaletteClass& pal) {
-  static Timer<SystemTickSource> pulse_timer;
-  static bool brightening = false;
-  constexpr int kMinFade = 32;
-  constexpr int kMaxFade = 150;
-  constexpr int kStepRate = 20;
-  static int fade_ratio = kMaxFade;
+  static GlowPulse<SystemTickSource> pulse(kTimerSecond / 6);
 
   while (time--) {
-    if (pulse_timer.IsFinished()) {
-      pulse_timer.Set(kTimerSecond / 6);
-
-      if (brightening) {
-        fade_ratio += kStepRate;
-        if (fade_ratio >= kMaxFade) {
-          fade_ratio = kMaxFade;
-          brightening = false;
-        }
-      } else {
-        fade_ratio -= kStepRate;
-        if (fade_ratio <= kMinFade) {
-          fade_ratio = kMinFade;
-          brightening = true;
-        }
-      }
-
-      // Blend white toward black based on current fade ratio.
-      pal.at(kHotspotPaletteIndex) = GamePalette.at(kWhite);
-      pal.at(kHotspotPaletteIndex).Adjust(fade_ratio, kBlackColor);
-
+    if (pulse.Update()) {
+      pal.at(kHotspotPaletteIndex) = pulse.Apply(GamePalette.at(kWhite));
       pal.Set();
     }
     Call_Back_Delay(/*time=*/1);
