@@ -477,7 +477,7 @@ KeyNumType GadgetClass::Input() {
   *the click occured *	rather the the mouse position at the time we get around
   *to this function.
   */
-  if ((key & 0x10FF) == KN_LMOUSE || (key & 0x10FF) == KN_RMOUSE) {
+  if (KeyCode(key) == KN_LMOUSE || KeyCode(key) == KN_RMOUSE) {
     mousex = ActiveKeyboard->MouseQX;
     mousey = ActiveKeyboard->MouseQY;
   } else {

@@ -1090,7 +1090,7 @@ void Map_Selection() {
     Cycle_Call_Back_Delay(1, progresspalette);
 
     // Check for the mouse button
-    if (Keyboard::Check() && ((Keyboard::Get() & 0x10FF) == KN_LMOUSE)) {
+    if (Keyboard::Check() && KeyCode(Keyboard::Get()) == KN_LMOUSE) {
       for (selection = 0;
            selection < base::At(base::At(CountryArray, scenario).Choices,
                                 static_cast<int>(ScenDir));

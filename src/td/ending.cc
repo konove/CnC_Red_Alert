@@ -224,7 +224,7 @@ void Nod_Ending() {
         Clear_KeyBuffer();
       } else {
         const auto key = static_cast<uint32_t>(Keyboard::Get());
-        if ((key & 0x10FFU) == KN_LMOUSE && (key & WWKEY_RLS_BIT) == 0) {
+        if ((key & kKeyCodeMask) == KN_LMOUSE && (key & WWKEY_RLS_BIT) == 0) {
           const int mousex = ActiveKeyboard->MouseQX;
           const int mousey = ActiveKeyboard->MouseQY;
           if (mousey >= 44 && mousey <= 354) {

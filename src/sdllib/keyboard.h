@@ -50,6 +50,17 @@ inline constexpr uint32_t WWKEY_VK_BIT = 0x1000;
 inline constexpr uint32_t WWKEY_DBL_BIT = 0x2000;
 inline constexpr uint32_t WWKEY_BTN_BIT = 0x8000;
 
+// The part of a key value that says which key it is: the code and whether it
+// is a virtual key, without the shift, release, double-click and button bits
+// that say how it was pressed.
+inline constexpr uint32_t kKeyCodeMask = WWKEY_VK_BIT | 0xFFU;
+
+// Returns which key `key` is, however it was pressed. A release matches too;
+// test WWKEY_RLS_BIT as well to tell a press from a release.
+constexpr int KeyCode(const int key) {
+  return static_cast<int>(static_cast<uint32_t>(key) & kKeyCodeMask);
+}
+
 class WWKeyboardClass {
  public:
   /*===================================================================*/

@@ -238,7 +238,7 @@ void Choose_Side() {
       frame = 0;
     }
     if ((Keyboard::Check() && endframe == 255) &&
-        ((Keyboard::Get() & 0x10FF) == KN_LMOUSE) &&
+        KeyCode(Keyboard::Get()) == KN_LMOUSE &&
         (ActiveKeyboard->MouseQY > 96 && ActiveKeyboard->MouseQY < 300)) {
       if (ActiveKeyboard->MouseQX > 36 && ActiveKeyboard->MouseQX < 296) {
         // Chose GDI
