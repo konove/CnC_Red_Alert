@@ -48,7 +48,6 @@
 #include "ra/smudge.h"
 
 #include <algorithm>
-#include <cassert>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -179,8 +178,8 @@ void SmudgeClass::Init() { Smudges.Free_All(); }
  *legality before proceeding.                             *
  *=============================================================================================*/
 bool SmudgeClass::Mark(MarkType mark) {
-  assert(Smudges.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Smudges.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (ObjectClass::Mark(mark) && (mark == MARK_DOWN)) {
     const CELL origin = Coord_Cell(Coord);

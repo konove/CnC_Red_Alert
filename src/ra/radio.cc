@@ -43,9 +43,9 @@
 
 #include "ra/radio.h"
 
-#include <cassert>
 #include <cstdint>
 
+#include "absl/log/check.h"
 #include "base/enum_array.h"
 #include "ra/defines.h"
 #include "ra/globals.h"
@@ -126,7 +126,7 @@ TechnoClass* RadioClass::Contact_With_Whom() const {
 RadioMessageType RadioClass::Receive_Message(RadioClass* from,
                                              RadioMessageType message,
                                              int32_t& param) {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   /*
   **	Keep a record of the last message received by this radio.
@@ -189,7 +189,7 @@ RadioMessageType RadioClass::Receive_Message(RadioClass* from,
  *=============================================================================================*/
 RadioMessageType RadioClass::Transmit_Message(RadioMessageType message,
                                               int32_t& param, RadioClass* to) {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   if (to == nullptr) {
     to = Contact_With_Whom();
@@ -243,7 +243,7 @@ RadioMessageType RadioClass::Transmit_Message(RadioMessageType message,
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
 bool RadioClass::Limbo() {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   if (!IsInLimbo) {
     Transmit_Message(RADIO_OVER_OUT);
@@ -272,7 +272,7 @@ bool RadioClass::Limbo() {
  *=============================================================================================*/
 RadioMessageType RadioClass::Transmit_Message(RadioMessageType message,
                                               RadioClass* to) {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   return Transmit_Message(message, LParam, to);
 }

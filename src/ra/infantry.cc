@@ -92,7 +92,6 @@
 
 #include <algorithm>
 #include <array>
-#include <cassert>
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>
@@ -330,8 +329,8 @@ void InfantryClass::operator delete(void* ptr) {
 ResultType InfantryClass::Take_Damage(int& damage, int distance,
                                       WarheadType warhead, TechnoClass* source,
                                       bool forced) {
-  assert(Infantry.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Infantry.ID(this) == ID);
+  DCHECK(IsActive);
 
   ResultType res = RESULT_NONE;
 
@@ -561,8 +560,8 @@ int InfantryClass::Shape_Number() const {
  *   08/14/1996 JLB : Simplified. *
  *=============================================================================================*/
 void InfantryClass::Draw_It(int x, int y, WindowNumberType window) const {
-  assert(Infantry.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Infantry.ID(this) == ID);
+  DCHECK(IsActive);
 
   /*
   **	Verify the legality of the unit class by seeing if there is shape
@@ -606,8 +605,8 @@ void InfantryClass::Draw_It(int x, int y, WindowNumberType window) const {
  *Capture is always successful now.                                        *
  *=============================================================================================*/
 void InfantryClass::Per_Cell_Process(PCPType why) {
-  assert(Infantry.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Infantry.ID(this) == ID);
+  DCHECK(IsActive);
 
   BStart(BENCH_PCP);
   CellClass* cellptr = &Map.at(Coord);
@@ -904,8 +903,8 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
  * HISTORY: * 09/08/1994 JLB : Created. *
  *=============================================================================================*/
 void InfantryClass::Detach(TARGET target, bool all) {
-  assert(Infantry.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Infantry.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (TarCom == target) {
     Mark(MARK_OVERLAP_UP);
@@ -948,8 +947,8 @@ void InfantryClass::Init() { Infantry.Free_All(); }
  * HISTORY: * 09/08/1994 JLB : Created. *
  *=============================================================================================*/
 void InfantryClass::Assign_Destination(TARGET target) {
-  assert(Infantry.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Infantry.ID(this) == ID);
+  DCHECK(IsActive);
 
   /*
   **	Special flag so that infantry will start heading in the right direction
@@ -1029,8 +1028,8 @@ void InfantryClass::Assign_Destination(TARGET target) {
  *target if possible.                                     *
  *=============================================================================================*/
 void InfantryClass::Assign_Target(TARGET target) {
-  assert(Infantry.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Infantry.ID(this) == ID);
+  DCHECK(IsActive);
 
   base::At(Path, 0) = FACING_NONE;
   if (Class->IsDog &&
@@ -1068,8 +1067,8 @@ void InfantryClass::Assign_Target(TARGET target) {
  * HISTORY: * 09/08/1994 JLB : Created. * 08/14/1996 JLB : Simplified. *
  *=============================================================================================*/
 void InfantryClass::AI() {
-  assert(Infantry.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Infantry.ID(this) == ID);
+  DCHECK(IsActive);
 
   FootClass::AI();
 
@@ -1173,8 +1172,8 @@ void InfantryClass::AI() {
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
 MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType /*from*/) const {
-  assert(Infantry.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Infantry.ID(this) == ID);
+  DCHECK(IsActive);
 
   /*
   ** If we are moving into an illegal cell, then we can't do that.
@@ -1499,8 +1498,8 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType /*from*/) const {
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
 std::span<const int16_t> InfantryClass::Overlap_List(bool /*redraw*/) const {
-  assert(Infantry.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Infantry.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (Class->IsDog) {
     return Coord_Spillage_List(
@@ -1536,8 +1535,8 @@ std::span<const int16_t> InfantryClass::Overlap_List(bool /*redraw*/) const {
  *fire while prone now.                                  *
  *=============================================================================================*/
 FireErrorType InfantryClass::Can_Fire(TARGET target, int which) const {
-  assert(Infantry.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Infantry.ID(this) == ID);
+  DCHECK(IsActive);
 
   /*
   **	Don't allow firing if the infantry is still firing on previous target.
@@ -1584,8 +1583,8 @@ FireErrorType InfantryClass::Can_Fire(TARGET target, int which) const {
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
 void InfantryClass::Enter_Idle_Mode(bool /*initial*/) {
-  assert(Infantry.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Infantry.ID(this) == ID);
+  DCHECK(IsActive);
 
   MissionType order = MISSION_GUARD;
 
@@ -1660,8 +1659,8 @@ void InfantryClass::Enter_Idle_Mode(bool /*initial*/) {
  *Nikoomba special effects.                                                *
  *=============================================================================================*/
 bool InfantryClass::Random_Animate() {
-  assert(Infantry.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Infantry.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (Is_Ready_To_Random_Animate()) {
     IdleTimer.Set(Random_Pick(Rule.RandomAnimateTime * (kTicksPerMinute / 2),
@@ -1774,8 +1773,8 @@ bool InfantryClass::Random_Animate() {
  *Added the nokidding parameter                                            *
  *=============================================================================================*/
 void InfantryClass::Scatter(COORDINATE threat, bool forced, bool nokidding) {
-  assert(Infantry.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Infantry.ID(this) == ID);
+  DCHECK(IsActive);
 
   /*
   **	A unit that is in the process of going somewhere will never scatter.
@@ -1887,8 +1886,8 @@ void InfantryClass::Scatter(COORDINATE threat, bool forced, bool nokidding) {
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
 bool InfantryClass::Do_Action(DoType todo, bool force) {
-  assert(Infantry.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Infantry.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (todo == DO_NOTHING ||
       base::At(Class->DoControls, base::ToSize(static_cast<int>(todo))).Count ==
@@ -1980,8 +1979,8 @@ bool InfantryClass::Do_Action(DoType todo, bool force) {
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
 bool InfantryClass::Stop_Driver() {
-  assert(Infantry.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Infantry.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (Head_To_Coord()) {
     /*
@@ -2033,8 +2032,8 @@ bool InfantryClass::Stop_Driver() {
  *Uses closest spot if moving onto transport.                              *
  *=============================================================================================*/
 bool InfantryClass::Start_Driver(COORDINATE& headto) {
-  assert(Infantry.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Infantry.ID(this) == ID);
+  DCHECK(IsActive);
 
   const COORDINATE old = headto;
 
@@ -2086,8 +2085,8 @@ bool InfantryClass::Start_Driver(COORDINATE& headto) {
  * HISTORY: * 12/22/1994 JLB : Created. *
  *=============================================================================================*/
 bool InfantryClass::Limbo() {
-  assert(Infantry.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Infantry.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (!IsInLimbo) {
     Stop_Driver();
@@ -2118,8 +2117,8 @@ bool InfantryClass::Limbo() {
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
 BulletClass* InfantryClass::Fire_At(TARGET target, int which) {
-  assert(Infantry.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Infantry.ID(this) == ID);
+  DCHECK(IsActive);
 
   Mark(MARK_OVERLAP_UP);
   IsFiring = false;
@@ -2161,8 +2160,8 @@ BulletClass* InfantryClass::Fire_At(TARGET target, int which) {
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
 bool InfantryClass::Unlimbo(COORDINATE coord, DirType facing) {
-  assert(Infantry.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Infantry.ID(this) == ID);
+  DCHECK(IsActive);
 
   /*
   **	Make sure that the infantry start in a legal position on the map.
@@ -2215,8 +2214,8 @@ bool InfantryClass::Unlimbo(COORDINATE coord, DirType facing) {
  *=============================================================================================*/
 TARGET InfantryClass::Greatest_Threat(ThreatType threat)  // const
 {
-  assert(Infantry.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Infantry.ID(this) == ID);
+  DCHECK(IsActive);
 
   /*
   **	Engineers consider only buildings that can be captured as being a
@@ -2308,8 +2307,8 @@ TARGET InfantryClass::Greatest_Threat(ThreatType threat)  // const
  *added.                                              *
  *=============================================================================================*/
 void InfantryClass::Response_Select() {
-  assert(Infantry.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Infantry.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (!AllowVoice) {
     return;
@@ -2450,8 +2449,8 @@ void InfantryClass::Response_Select() {
  *added.                                              *
  *=============================================================================================*/
 void InfantryClass::Response_Move() {
-  assert(Infantry.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Infantry.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (!AllowVoice) {
     return;
@@ -2596,8 +2595,8 @@ void InfantryClass::Response_Move() {
  *added.                                              *
  *=============================================================================================*/
 void InfantryClass::Response_Attack() {
-  assert(Infantry.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Infantry.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (!AllowVoice) {
     return;
@@ -2744,9 +2743,9 @@ void InfantryClass::Response_Attack() {
  * HISTORY: * 03/01/1995 JLB : Created. *
  *=============================================================================================*/
 ActionType InfantryClass::What_Action(ObjectClass* object) {
-  assert(Infantry.ID(this) == ID);
-  assert(IsActive);
-  assert(object != nullptr);
+  DCHECK(Infantry.ID(this) == ID);
+  DCHECK(IsActive);
+  DCHECK(object != nullptr);
 
   ActionType action = FootClass::What_Action(object);
 
@@ -2992,8 +2991,8 @@ ActionType InfantryClass::What_Action(ObjectClass* object) {
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
 void InfantryClass::Active_Click_With(ActionType action, ObjectClass* object) {
-  assert(Infantry.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Infantry.ID(this) == ID);
+  DCHECK(IsActive);
 
   action = What_Action(object);
 
@@ -3055,8 +3054,8 @@ void InfantryClass::Active_Click_With(ActionType action, ObjectClass* object) {
  * HISTORY: * 06/08/1995 PWG : Created. *
  *=============================================================================================*/
 void InfantryClass::Set_Occupy_Bit(CELL cell, int spot_index) {
-  assert(Infantry.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Infantry.ID(this) == ID);
+  DCHECK(IsActive);
 
   /*
   ** Set the occupy position for the spot that we passed in
@@ -3119,8 +3118,8 @@ void InfantryClass::Clear_Occupy_Bit(CELL cell, int spot_index) {
  *soldier" text name.                                   *
  *=============================================================================================*/
 int InfantryClass::Full_Name() const {
-  assert(Infantry.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Infantry.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (IsTechnician) {
     return TXT_TECHNICIAN;
@@ -3154,8 +3153,8 @@ int InfantryClass::Full_Name() const {
  *Engineers can now damage/capture enemy buildings.                        *
  *=============================================================================================*/
 int InfantryClass::Mission_Attack() {
-  assert(Infantry.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Infantry.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (Class->IsBomber && As_Building(TarCom)) {
     Assign_Destination(TarCom);
@@ -3193,8 +3192,8 @@ int InfantryClass::Mission_Attack() {
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
 ActionType InfantryClass::What_Action(CELL cell) const {
-  assert(Infantry.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Infantry.ID(this) == ID);
+  DCHECK(IsActive);
 
   ActionType action = FootClass::What_Action(cell);
 
@@ -3249,8 +3248,8 @@ ActionType InfantryClass::What_Action(CELL cell) const {
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
 const ObjectTypeClass& InfantryClass::Class_Of() const {
-  assert(Infantry.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Infantry.ID(this) == ID);
+  DCHECK(IsActive);
 
   return *Class;
 }

@@ -51,7 +51,6 @@
 
 #include "ra/trigger.h"
 
-#include <cassert>
 #include <cstddef>
 #include <cstdint>
 
@@ -244,7 +243,7 @@ void TriggerClass::Init() { Triggers.Free_All(); }
  *=============================================================================================*/
 bool TriggerClass::Spring(TEventType event, ObjectClass* obj, CELL cell,
                           bool forced) {
-  assert(Triggers.ID(this) == ID);
+  DCHECK(Triggers.ID(this) == ID);
 
   const bool e1 = Class->Event1(Event1, event, Class->House, obj, forced);
   bool e2 = false;
@@ -429,7 +428,7 @@ void TriggerClass::operator delete(void* pointer) {
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
 TARGET TriggerClass::As_Target() const {
-  assert(Triggers.ID(this) == ID);
+  DCHECK(Triggers.ID(this) == ID);
 
   return Build_Target(RTTI_TRIGGER, ID);
 }

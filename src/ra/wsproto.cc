@@ -62,15 +62,15 @@
 
 #include "ra/wsproto.h"
 
-#include <cassert>
 #include <cerrno>
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
 #include <span>
-#include <utility>  // IWYU pragma: keep - used by an assert() below.
+#include <utility>  // IWYU pragma: keep - used by an DCHECK() below.
 
+#include "absl/log/check.h"
 #include "absl/strings/str_format.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
@@ -386,8 +386,8 @@ int WinsockInterfaceClass::Read(std::span<std::byte> buffer, int& buffer_len,
   const int packetnum = 0;
   WinsockBufferType* packet = InBuffers.at(packetnum);
 
-  assert(buffer_len >= packet->BufferLen);
-  assert(std::cmp_greater_equal(address_len, sizeof(packet->Address)));
+  DCHECK(buffer_len >= packet->BufferLen);
+  DCHECK(std::cmp_greater_equal(address_len, sizeof(packet->Address)));
 
   /*
   ** Copy the data and the address it came from into the supplied buffers.
@@ -562,7 +562,7 @@ bool WinsockInterfaceClass::Set_Socket_Options() {
         "TS: Failed to set IPX socket option SO_RCVBUF - error code %d.\n",
         GetLastError());
     absl::PrintF("%s", out);
-    assert(err != INVALID_SOCKET);
+    DCHECK(err != INVALID_SOCKET);
   }
 
   /*
@@ -577,7 +577,7 @@ bool WinsockInterfaceClass::Set_Socket_Options() {
         "TS: Failed to set IPX socket option SO_SNDBUF - error code %d.\n",
         GetLastError());
     absl::PrintF("%s", out);
-    assert(err != INVALID_SOCKET);
+    DCHECK(err != INVALID_SOCKET);
   }
 
   // setup for non-blocking io

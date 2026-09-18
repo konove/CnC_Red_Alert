@@ -115,7 +115,6 @@
 #include "ra/building.h"
 
 #include <algorithm>
-#include <cassert>
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>
@@ -124,6 +123,7 @@
 #include <span>
 #include <utility>
 
+#include "absl/log/check.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/enum_array.h"
@@ -230,8 +230,8 @@ const base::EnumArray<BSizeType, COORDINATE> BuildingClass::CenterOffset = {
 RadioMessageType BuildingClass::Receive_Message(RadioClass* from,
                                                 RadioMessageType message,
                                                 int32_t& param) {
-  assert(Buildings.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Buildings.ID(this) == ID);
+  DCHECK(IsActive);
 
   switch (message) {
     /*
@@ -779,8 +779,8 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass* from,
  *Handles damaged silos correctly.                                         *
  *=============================================================================================*/
 void BuildingClass::Draw_It(int x, int y, WindowNumberType window) const {
-  assert(Buildings.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Buildings.ID(this) == ID);
+  DCHECK(IsActive);
 
   /*
   **	The shape file to use for rendering depends on whether the building
@@ -813,7 +813,7 @@ void BuildingClass::Draw_It(int x, int y, WindowNumberType window) const {
         Contact_With_Whom()->What_Am_I() != RTTI_BUILDING) {
       TechnoClass* contact = Contact_With_Whom();
 
-      assert(contact->IsActive);
+      DCHECK(contact->IsActive);
       const int xxx = x + (Lepton_To_Pixel(Coord_X(contact->Render_Coord())) -
                            Lepton_To_Pixel(Coord_X(Render_Coord())));
       const int yyy = y + (Lepton_To_Pixel(Coord_Y(contact->Render_Coord())) -
@@ -893,8 +893,8 @@ void BuildingClass::Draw_It(int x, int y, WindowNumberType window) const {
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
 int BuildingClass::Shape_Number() const {
-  assert(Buildings.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Buildings.ID(this) == ID);
+  DCHECK(IsActive);
 
   int shapenum = Fetch_Stage();
 
@@ -1038,8 +1038,8 @@ int BuildingClass::Shape_Number() const {
  *: Special road spacer template added.                                      *
  *=============================================================================================*/
 bool BuildingClass::Mark(MarkType mark) {
-  assert(Buildings.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Buildings.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (TechnoClass::Mark(mark)) {
     const std::span<const int16_t> occupy = Occupy_List();
@@ -1232,8 +1232,8 @@ bool BuildingClass::Mark(MarkType mark) {
  *   06/11/1995 JLB : Revamped. *
  *=============================================================================================*/
 void BuildingClass::AI() {
-  assert(Buildings.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Buildings.ID(this) == ID);
+  DCHECK(IsActive);
 
   /*
   **	Process building animation state changes. Transition to a following
@@ -1449,8 +1449,8 @@ void BuildingClass::AI() {
  *   06/18/1995 JLB : Checks for wall legality before placing down. *
  *=============================================================================================*/
 bool BuildingClass::Unlimbo(COORDINATE coord, DirType dir) {
-  assert(Buildings.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Buildings.ID(this) == ID);
+  DCHECK(IsActive);
 
   /*
   **	If this is a wall type building, then it never gets unlimboed. Instead,
@@ -1674,8 +1674,8 @@ bool BuildingClass::Unlimbo(COORDINATE coord, DirType dir) {
 ResultType BuildingClass::Take_Damage(int& damage, int distance,
                                       WarheadType warhead, TechnoClass* source,
                                       bool forced) {
-  assert(Buildings.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Buildings.ID(this) == ID);
+  DCHECK(IsActive);
 
   ResultType res = RESULT_NONE;
   int shakes = 0;
@@ -2136,9 +2136,8 @@ BuildingClass::~BuildingClass() {
  *Survival rate depends on if captured or sabotaged.                       *
  *=============================================================================================*/
 void BuildingClass::Drop_Debris(TARGET source) {
-  assert(Buildings.ID(this) == ID);
-  assert(IsActive);
-
+  DCHECK(Buildings.ID(this) == ID);
+  DCHECK(IsActive);
 
   /*
   **	Generate random survivors from the destroyed building.
@@ -2250,8 +2249,8 @@ void BuildingClass::Drop_Debris(TARGET source) {
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
 void BuildingClass::Active_Click_With(ActionType action, ObjectClass* object) {
-  assert(Buildings.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Buildings.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (action == ACTION_ATTACK && object != nullptr) {
     Player_Assign_Mission(MISSION_ATTACK, object->As_Target());
@@ -2280,8 +2279,8 @@ void BuildingClass::Active_Click_With(ActionType action, ObjectClass* object) {
  *yard undeploy to move logic.                        *
  *=============================================================================================*/
 void BuildingClass::Active_Click_With(ActionType action, CELL cell) {
-  assert(Buildings.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Buildings.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (action == ACTION_ATTACK) {
     Player_Assign_Mission(MISSION_ATTACK, ::As_Target(cell));
@@ -2312,8 +2311,8 @@ void BuildingClass::Active_Click_With(ActionType action, CELL cell) {
  *before assigning target.                                *
  *=============================================================================================*/
 void BuildingClass::Assign_Target(TARGET target) {
-  assert(Buildings.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Buildings.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (*this != STRUCT_SAM && *this != STRUCT_AAGUN && !In_Range(target, 0)) {
     target = kTargetNone;
@@ -2365,8 +2364,8 @@ void BuildingClass::Init() { Buildings.Free_All(); }
  *Handles refinery exit.                                                   *
  *=============================================================================================*/
 int BuildingClass::Exit_Object(TechnoClass* base) {
-  assert(Buildings.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Buildings.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (!base) {
     return 0;
@@ -2825,8 +2824,8 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
  *PLAYER buildings.                                       *
  *=============================================================================================*/
 void BuildingClass::Update_Buildables() {
-  assert(Buildings.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Buildings.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (House == PlayerPtr && !IsInLimbo && IsDiscoveredByPlayer) {
     switch (Class->ToBuild) {
@@ -2932,8 +2931,8 @@ void BuildingClass::Update_Buildables() {
  * HISTORY: * 11/30/1994 JLB : Created. *
  *=============================================================================================*/
 void BuildingClass::Fire_Out() {
-  assert(Buildings.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Buildings.ID(this) == ID);
+  DCHECK(IsActive);
 }
 
 /***********************************************************************************************
@@ -2953,8 +2952,8 @@ void BuildingClass::Fire_Out() {
  * HISTORY: * 12/24/1994 JLB : Created. *
  *=============================================================================================*/
 bool BuildingClass::Limbo() {
-  assert(Buildings.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Buildings.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (!IsInLimbo) {
     /*
@@ -3035,8 +3034,8 @@ DirType BuildingClass::Turret_Facing() const {
  *=============================================================================================*/
 TARGET BuildingClass::Greatest_Threat(ThreatType threat)  // const
 {
-  assert(Buildings.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Buildings.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (Class->PrimaryWeapon != nullptr) {
     threat = threat | Class->PrimaryWeapon->Allowed_Threats();
@@ -3078,8 +3077,8 @@ TARGET BuildingClass::Greatest_Threat(ThreatType threat)  // const
  * HISTORY: * 01/08/1995 JLB : Created. * 06/13/1995 JLB : Added helipad. *
  *=============================================================================================*/
 void BuildingClass::Grand_Opening(bool captured) {
-  assert(Buildings.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Buildings.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (!HasOpened || captured) {
     HasOpened = true;
@@ -3173,8 +3172,8 @@ void BuildingClass::Grand_Opening(bool captured) {
  * HISTORY: * 01/08/1995 JLB : Created. *
  *=============================================================================================*/
 void BuildingClass::Repair(int control) {
-  assert(Buildings.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Buildings.ID(this) == ID);
+  DCHECK(IsActive);
 
   switch (control) {
     case -1:
@@ -3239,8 +3238,8 @@ void BuildingClass::Repair(int control) {
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
 void BuildingClass::Sell_Back(int control) {
-  assert(Buildings.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Buildings.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (!Class->Get_Buildup_Data().empty()) {
     bool decon = false;
@@ -3307,8 +3306,8 @@ void BuildingClass::Sell_Back(int control) {
  * HISTORY: * 01/18/1995 JLB : Created. *
  *=============================================================================================*/
 ActionType BuildingClass::What_Action(ObjectClass* object) {
-  assert(Buildings.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Buildings.ID(this) == ID);
+  DCHECK(IsActive);
 
   ActionType action = TechnoClass::What_Action(object);
 
@@ -3417,8 +3416,8 @@ ActionType BuildingClass::What_Action(ObjectClass* object) {
  * HISTORY: * 01/18/1995 JLB : Created. *
  *=============================================================================================*/
 ActionType BuildingClass::What_Action(CELL cell) const {
-  assert(Buildings.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Buildings.ID(this) == ID);
+  DCHECK(IsActive);
 
   ActionType action = TechnoClass::What_Action(cell);
 
@@ -3457,8 +3456,8 @@ ActionType BuildingClass::What_Action(CELL cell) const {
  *animation rate where applicable.                          *
  *=============================================================================================*/
 void BuildingClass::Begin_Mode(BStateType bstate) {
-  assert(Buildings.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Buildings.ID(this) == ID);
+  DCHECK(IsActive);
 
   QueueBState = bstate;
   if (BState == BSTATE_NONE || bstate == BSTATE_CONSTRUCTION || ScenarioInit) {
@@ -3491,8 +3490,8 @@ void BuildingClass::Begin_Mode(BStateType bstate) {
  * HISTORY: * 03/10/1995 JLB : Created. *
  *=============================================================================================*/
 COORDINATE BuildingClass::Center_Coord() const {
-  assert(Buildings.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Buildings.ID(this) == ID);
+  DCHECK(IsActive);
 
   return Coord_Add(Coord, CenterOffset.at(Class->Size));
 }
@@ -3516,8 +3515,8 @@ COORDINATE BuildingClass::Center_Coord() const {
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
 COORDINATE BuildingClass::Docking_Coord() const {
-  assert(Buildings.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Buildings.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (*this == STRUCT_HELIPAD) {
     return Coord_Add(Coord, XYP_COORD(24, 18));
@@ -3548,8 +3547,8 @@ COORDINATE BuildingClass::Docking_Coord() const {
  * HISTORY: * 05/03/1995 JLB : Created. *
  *=============================================================================================*/
 FireErrorType BuildingClass::Can_Fire(TARGET target, int which) const {
-  assert(Buildings.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Buildings.ID(this) == ID);
+  DCHECK(IsActive);
 
   const FireErrorType canfire = TechnoClass::Can_Fire(target, which);
 
@@ -3609,8 +3608,8 @@ FireErrorType BuildingClass::Can_Fire(TARGET target, int which) const {
  * HISTORY: * 05/03/1995 JLB : Created. *
  *=============================================================================================*/
 bool BuildingClass::Toggle_Primary() {
-  assert(Buildings.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Buildings.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (IsLeader) {
     IsLeader = false;
@@ -3661,8 +3660,8 @@ bool BuildingClass::Toggle_Primary() {
  *problem with capturing enemy buildings.                 *
  *=============================================================================================*/
 bool BuildingClass::Captured(HouseClass* newowner) {
-  assert(Buildings.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Buildings.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (Class->IsCaptureable && newowner != House) {
     /*
@@ -3835,8 +3834,8 @@ bool BuildingClass::Captured(HouseClass* newowner) {
  *that come with bibs built-in.                          *
  *=============================================================================================*/
 COORDINATE BuildingClass::Sort_Y() const {
-  assert(Buildings.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Buildings.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (*this == STRUCT_REPAIR) {
     return Coord;
@@ -3877,8 +3876,8 @@ COORDINATE BuildingClass::Sort_Y() const {
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
 MoveType BuildingClass::Can_Enter_Cell(CELL cell, FacingType /*unused*/) const {
-  assert(Buildings.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Buildings.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (*this == STRUCT_CONST && IsDown) {
     return Map.at(cell).Is_Clear_To_Build(Class->Speed) ? MOVE_OK : MOVE_NO;
@@ -3911,8 +3910,8 @@ MoveType BuildingClass::Can_Enter_Cell(CELL cell, FacingType /*unused*/) const {
  *Cannot sell a refinery that has a harvester attached.                    *
  *=============================================================================================*/
 bool BuildingClass::Can_Demolish() const {
-  assert(Buildings.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Buildings.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (Class->IsUnsellable) {
     return false;
@@ -3943,8 +3942,8 @@ bool BuildingClass::Can_Demolish() const {
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
 int BuildingClass::Mission_Guard() {
-  assert(Buildings.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Buildings.ID(this) == ID);
+  DCHECK(IsActive);
 
   /*
   **	If this building has a weapon, then search for a target to attack. When
@@ -4030,8 +4029,8 @@ int BuildingClass::Mission_Guard() {
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
 int BuildingClass::Mission_Construction() {
-  assert(Buildings.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Buildings.ID(this) == ID);
+  DCHECK(IsActive);
 
   constexpr int kInitial = 0;
   constexpr int kDuring = 1;
@@ -4086,8 +4085,8 @@ int BuildingClass::Mission_Construction() {
  *Scatters infantry from scattered starting points.                        *
  *=============================================================================================*/
 int BuildingClass::Mission_Deconstruction() {
-  assert(Buildings.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Buildings.ID(this) == ID);
+  DCHECK(IsActive);
 
   /*
   **	Always force repair off.
@@ -4311,8 +4310,8 @@ int BuildingClass::Mission_Deconstruction() {
  *back into ground.                                      *
  *=============================================================================================*/
 int BuildingClass::Mission_Attack() {
-  assert(Buildings.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Buildings.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (*this == STRUCT_SAM) {
     switch (Status) {
@@ -4439,8 +4438,8 @@ int BuildingClass::Mission_Attack() {
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
 int BuildingClass::Mission_Harvest() {
-  assert(Buildings.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Buildings.ID(this) == ID);
+  DCHECK(IsActive);
 
   constexpr int kInitial = 0;
   constexpr int kWaitForDock = 1;    // Waiting for docking to complete.
@@ -4518,8 +4517,8 @@ int BuildingClass::Mission_Harvest() {
  *Repair rate is controlled by power rating.                               *
  *=============================================================================================*/
 int BuildingClass::Mission_Repair() {
-  assert(Buildings.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Buildings.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (*this == STRUCT_CONST) {
     constexpr int kInitial = 0;
@@ -4789,8 +4788,8 @@ int BuildingClass::Mission_Repair() {
  * HISTORY: * 07/04/1995 JLB : Commented. *
  *=============================================================================================*/
 int BuildingClass::Mission_Missile() {
-  assert(Buildings.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Buildings.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (*this == STRUCT_ADVANCED_TECH) {
     // Stages 2 (satellite deploy) and 3 (done) have no handling.
@@ -4973,8 +4972,8 @@ int BuildingClass::Mission_Missile() {
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
 bool BuildingClass::Revealed(HouseClass* house) {
-  assert(Buildings.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Buildings.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (TechnoClass::Revealed(house)) {
     if (!ScenarioInit) {
@@ -5019,8 +5018,8 @@ bool BuildingClass::Revealed(HouseClass* house) {
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
 void BuildingClass::Enter_Idle_Mode(bool initial) {
-  assert(Buildings.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Buildings.ID(this) == ID);
+  DCHECK(IsActive);
 
   /*
   **	Assign an appropriate mission for the building. If the ScenarioInit flag
@@ -5055,8 +5054,8 @@ void BuildingClass::Enter_Idle_Mode(bool initial) {
  * HISTORY: * 06/28/1995 JLB : Created. *
  *=============================================================================================*/
 int BuildingClass::Pip_Count() const {
-  assert(Buildings.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Buildings.ID(this) == ID);
+  DCHECK(IsActive);
 
   return Class->Max_Pips() * House->Tiberium_Fraction();
 }
@@ -5078,8 +5077,8 @@ int BuildingClass::Pip_Count() const {
  * HISTORY: * 07/04/1995 JLB : Created. *
  *=============================================================================================*/
 void BuildingClass::Death_Announcement(const TechnoClass* source) const {
-  assert(Buildings.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Buildings.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (source != nullptr && House->IsPlayerControl) {
     Speak(VOX_STRUCTURE_DESTROYED);
@@ -5103,8 +5102,8 @@ void BuildingClass::Death_Announcement(const TechnoClass* source) const {
  * HISTORY: * 07/04/1995 JLB : Created. *
  *=============================================================================================*/
 DirType BuildingClass::Fire_Direction() const {
-  assert(Buildings.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Buildings.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (Class->IsTurretEquipped) {
     return PrimaryFacing.Current();
@@ -5129,8 +5128,8 @@ DirType BuildingClass::Fire_Direction() const {
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
 int BuildingClass::Mission_Unload() {
-  assert(Buildings.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Buildings.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (*this == STRUCT_WEAP) {
     const CELL cell =
@@ -5262,8 +5261,8 @@ int BuildingClass::Mission_Unload() {
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
 int BuildingClass::Power_Output() const {
-  assert(Buildings.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Buildings.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (Class->Power) {
     return Class->Power * fixed(LastStrength, Class->MaxStrength);
@@ -5289,8 +5288,8 @@ int BuildingClass::Power_Output() const {
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
 void BuildingClass::Detach(TARGET target, bool all) {
-  assert(Buildings.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Buildings.ID(this) == ID);
+  DCHECK(IsActive);
 
   TechnoClass::Detach(target, all);
   if (target == WhomToRepay) {
@@ -5319,8 +5318,8 @@ void BuildingClass::Detach(TARGET target, bool all) {
  * HISTORY: * 08/05/1995 JLB : Created. *
  *=============================================================================================*/
 InfantryType BuildingClass::Crew_Type() const {
-  assert(Buildings.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Buildings.ID(this) == ID);
+  DCHECK(IsActive);
 
   switch (Class->Type) {
     case STRUCT_STORAGE:
@@ -5451,8 +5450,8 @@ InfantryType BuildingClass::Crew_Type() const {
  * HISTORY: * 08/05/1995 JLB : Created. *
  *=============================================================================================*/
 void BuildingClass::Detach_All(bool all) {
-  assert(Buildings.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Buildings.ID(this) == ID);
+  DCHECK(IsActive);
 
   /*
   **	If it is producing something, then it must be abandoned.
@@ -5511,8 +5510,8 @@ void BuildingClass::Detach_All(bool all) {
  *class function.                                      *
  *=============================================================================================*/
 bool BuildingClass::Flush_For_Placement(TechnoClass* techno, CELL cell) {
-  assert(Buildings.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Buildings.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (techno) {
     return dynamic_cast<const BuildingTypeClass&>(techno->Class_Of())
@@ -5542,8 +5541,8 @@ bool BuildingClass::Flush_For_Placement(TechnoClass* techno, CELL cell) {
  *for exit cell calculation.                            *
  *=============================================================================================*/
 CELL BuildingClass::Find_Exit_Cell(const TechnoClass* techno) const {
-  assert(Buildings.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Buildings.ID(this) == ID);
+  DCHECK(IsActive);
 
   const CELL origin = Coord_Cell(Coord);
 
@@ -5604,8 +5603,8 @@ CELL BuildingClass::Find_Exit_Cell(const TechnoClass* techno) const {
  * HISTORY: * 10/04/1995 JLB : Created. *
  *=============================================================================================*/
 bool BuildingClass::Can_Player_Move() const {
-  assert(Buildings.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Buildings.ID(this) == ID);
+  DCHECK(IsActive);
 
   return *this == STRUCT_CONST;
 }
@@ -5626,8 +5625,8 @@ bool BuildingClass::Can_Player_Move() const {
  * HISTORY: * 02/20/1996 JLB : Created. *
  *=============================================================================================*/
 COORDINATE BuildingClass::Exit_Coord() const {
-  assert(Buildings.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Buildings.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (Class->ExitCoordinate) {
     return Coord_Add(Coord, Class->ExitCoordinate);

@@ -49,15 +49,15 @@
 
 #include "ra/wspudp.h"
 
-#include <cassert>
 #include <cerrno>
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
 #include <span>
-#include <string_view>  // IWYU pragma: keep - used by an assert() below.
+#include <string_view>  // IWYU pragma: keep - used by an DCHECK() below.
 
+#include "absl/log/check.h"
 #include "absl/strings/str_format.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
@@ -143,7 +143,7 @@ UDPInterfaceClass::~UDPInterfaceClass() {
  *=============================================================================================*/
 void UDPInterfaceClass::Set_Broadcast_Address(const char* address) {
   const char* ip_addr = address;
-  assert(std::string_view(ip_addr).size() <=
+  DCHECK(std::string_view(ip_addr).size() <=
          std::string_view("xxx.xxx.xxx.xxx").size());
 
   BroadcastAddresses.Add(inet_addr(ip_addr));

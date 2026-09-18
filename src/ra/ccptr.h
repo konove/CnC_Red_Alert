@@ -36,9 +36,9 @@
 #ifndef CNC_RED_ALERT_RA_CCPTR_H_
 #define CNC_RED_ALERT_RA_CCPTR_H_
 
-#include <cassert>
 #include <cstdint>
 
+#include "absl/log/check.h"
 #include "ra/heap.h"
 
 // The CCPtr class is designed for a specific purpose. It functions like a
@@ -58,18 +58,18 @@ class CCPtr {
     if (ID == -1) {
       return nullptr;
     }
-    assert(Heap != nullptr && ID < Heap->Length());
+    DCHECK(Heap != nullptr && ID < Heap->Length());
     return static_cast<T*>((*Heap).at(ID));
   }
   T& operator*() const {
-    assert(Heap != nullptr && ID < Heap->Length());
+    DCHECK(Heap != nullptr && ID < Heap->Length());
     return *static_cast<T*>((*Heap).at(ID));
   }
   T* operator->() const {
     if (ID == -1) {
       return nullptr;
     }
-    assert(Heap != nullptr && ID < Heap->Length());
+    DCHECK(Heap != nullptr && ID < Heap->Length());
     return static_cast<T*>((*Heap).at(ID));
   }
 

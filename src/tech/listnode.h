@@ -40,7 +40,7 @@
 #ifndef CNC_RED_ALERT_TECH_LISTNODE_H_
 #define CNC_RED_ALERT_TECH_LISTNODE_H_
 
-#include <cassert>
+#include "absl/log/check.h"
 
 /*
 **	This is a doubly linked list node. Typical use of this node is to derive
@@ -65,8 +65,8 @@ class GenericNode {
 
   void Unlink() {
     if (Is_Valid()) {
-      assert(PrevNode != nullptr);
-      assert(NextNode != nullptr);
+      DCHECK(PrevNode != nullptr);
+      DCHECK(NextNode != nullptr);
 
       PrevNode->NextNode = NextNode;
       NextNode->PrevNode = PrevNode;
@@ -76,7 +76,7 @@ class GenericNode {
   }
 
   void Link(GenericNode* node) {
-    assert(node != nullptr);
+    DCHECK(node != nullptr);
     node->Unlink();
     node->NextNode = NextNode;
     node->PrevNode = this;

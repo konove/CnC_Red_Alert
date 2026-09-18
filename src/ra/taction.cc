@@ -48,7 +48,6 @@
 
 #include "ra/taction.h"
 
-#include <cassert>
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
@@ -56,6 +55,7 @@
 #include <string>
 #include <utility>
 
+#include "absl/log/check.h"
 #include "absl/log/log.h"
 #include "base/array.h"
 #include "base/enum_array.h"
@@ -321,7 +321,7 @@ void TActionClass::Read_INI(port::Tokenizer& tokens) {
 
       const char* ptr = tokens.Next();
       Team = TeamTypeClass::From_Name(ptr);
-      assert(Action_Needs(Action) != NEED_TEAM || Team.Is_Valid());
+      DCHECK(Action_Needs(Action) != NEED_TEAM || Team.Is_Valid());
 
       /*
       **	Since triggers refer to other triggers, only record a copy of

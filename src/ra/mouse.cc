@@ -48,12 +48,12 @@
 
 #include "ra/mouse.h"
 
-#include <cassert>
 #include <cstddef>
 #include <span>
 
+#include "absl/log/check.h"
 #include "base/enum_array.h"
-#include "magic_enum/magic_enum.hpp"  // IWYU pragma: keep - used by an assert() below.
+#include "magic_enum/magic_enum.hpp"  // IWYU pragma: keep - used by an DCHECK() below.
 #include "ra/defines.h"
 #include "ra/jshell.h"
 #include "ra/scroll.h"
@@ -107,7 +107,7 @@ MouseClass::MouseClass() = default;
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
 void MouseClass::Set_Default_Mouse(MouseType mouse, bool size) {
-  assert(static_cast<unsigned>(mouse) < magic_enum::enum_count<MouseType>());
+  DCHECK(static_cast<unsigned>(mouse) < magic_enum::enum_count<MouseType>());
 
   NormalMouseShape = mouse;
   Override_Mouse_Shape(mouse, size);
@@ -197,7 +197,7 @@ void Block_Mouse(GraphicBufferClass* buffer);
 void Unblock_Mouse(GraphicBufferClass* buffer);
 
 bool MouseClass::Override_Mouse_Shape(MouseType mouse, bool wsmall) {
-  assert(static_cast<unsigned>(mouse) < magic_enum::enum_count<MouseType>());
+  DCHECK(static_cast<unsigned>(mouse) < magic_enum::enum_count<MouseType>());
 
   const MouseStruct* control = &MouseControl.at(mouse);
   static bool startup = false;

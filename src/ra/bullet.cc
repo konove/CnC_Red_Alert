@@ -58,11 +58,11 @@
 #include "ra/bullet.h"
 
 #include <algorithm>
-#include <cassert>
 #include <cstddef>
 #include <cstdint>
 #include <span>
 
+#include "absl/log/check.h"
 #include "base/array.h"
 #include "base/numeric.h"
 #include "port/ex_string.h"
@@ -272,8 +272,8 @@ void BulletClass::operator delete(void* ptr) {
  *with altitude.                                       *
  *=============================================================================================*/
 std::span<const int16_t> BulletClass::Occupy_List(bool /*placement*/) const {
-  assert(Bullets.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Bullets.ID(this) == ID);
+  DCHECK(IsActive);
 
   /*
   **	Super-gigundo units use the >= 64 coord spillage list logic.
@@ -349,8 +349,8 @@ std::span<const int16_t> BulletClass::Occupy_List(bool /*placement*/) const {
  * HISTORY: * 05/02/1994 JLB : Created. *
  *=============================================================================================*/
 bool BulletClass::Mark(MarkType mark) {
-  assert(Bullets.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Bullets.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (ObjectClass::Mark(mark)) {
     if (!Class->IsInvisible) {
@@ -377,8 +377,8 @@ bool BulletClass::Mark(MarkType mark) {
  * HISTORY: * 05/02/1994 JLB : Created. *
  *=============================================================================================*/
 void BulletClass::AI() {
-  assert(Bullets.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Bullets.ID(this) == ID);
+  DCHECK(IsActive);
 
   ObjectClass::AI();
 
@@ -548,8 +548,8 @@ int BulletClass::Shape_Number() const {
  *Handles translucent colors if necessary.                                 *
  *=============================================================================================*/
 void BulletClass::Draw_It(int x, int y, WindowNumberType window) const {
-  assert(Bullets.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Bullets.ID(this) == ID);
+  DCHECK(IsActive);
 
   /*
   **	Certain projectiles aren't visible. This includes small bullets (which
@@ -651,8 +651,8 @@ void BulletClass::Init() { Bullets.Free_All(); }
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
 void BulletClass::Detach(TARGET target, bool all) {
-  assert(Bullets.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Bullets.ID(this) == ID);
+  DCHECK(IsActive);
 
   const ObjectClass* obj = As_Object(target);
   if ((Payback != nullptr && obj == Payback) &&
@@ -691,8 +691,8 @@ void BulletClass::Detach(TARGET target, bool all) {
  * HISTORY: * 01/10/1995 JLB : Created. *
  *=============================================================================================*/
 bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
-  assert(Bullets.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Bullets.ID(this) == ID);
+  DCHECK(IsActive);
 
   /*
   **	Try to unlimbo the bullet as far as the base class is concerned. Use the
@@ -847,8 +847,8 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
 COORDINATE BulletClass::Target_Coord() const {
-  assert(Bullets.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Bullets.ID(this) == ID);
+  DCHECK(IsActive);
 
   return Coord_Add(XY_Coord(0, static_cast<LEPTON>(-Height)), Coord);
 }
@@ -872,7 +872,7 @@ COORDINATE BulletClass::Target_Coord() const {
  * HISTORY: * 10/02/1996 JLB : Created. *
  *=============================================================================================*/
 COORDINATE BulletClass::Sort_Y() const {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   return Coord_Move(Coord, DIR_S, CELL_LEPTON_H / 2);
 }

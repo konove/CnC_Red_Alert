@@ -59,9 +59,9 @@
 #include "ra/factory.h"
 
 #include <algorithm>
-#include <cassert>
 #include <cstddef>
 
+#include "absl/log/check.h"
 #include "base/array.h"
 #include "ra/building.h"
 #include "ra/ccptr.h"
@@ -194,7 +194,7 @@ void FactoryClass::operator delete(void* ptr) {
  *installment payment method.                                   *
  *=============================================================================================*/
 void FactoryClass::AI() {
-  assert(Factories.ID(this) == ID);
+  DCHECK(Factories.ID(this) == ID);
 
   if (!IsSuspended && (Object != nullptr || SpecialItem != SPC_NONE)) {
     for (int index = 0; index < 1; index++) {
@@ -251,7 +251,7 @@ void FactoryClass::AI() {
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
 bool FactoryClass::Has_Changed() {
-  assert(Factories.ID(this) == ID);
+  DCHECK(Factories.ID(this) == ID);
 
   const bool changed = IsDifferent;
   IsDifferent = false;
@@ -283,7 +283,7 @@ bool FactoryClass::Has_Changed() {
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
 bool FactoryClass::Set(const TechnoTypeClass& object, HouseClass& house) {
-  assert(Factories.ID(this) == ID);
+  DCHECK(Factories.ID(this) == ID);
 
   /*
   **	If there is any production currently in progress, abandon it.
@@ -344,7 +344,7 @@ bool FactoryClass::Set(const TechnoTypeClass& object, HouseClass& house) {
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
 void FactoryClass::Set(TechnoClass& object) {
-  assert(Factories.ID(this) == ID);
+  DCHECK(Factories.ID(this) == ID);
 
   Abandon();
   Object = &object;
@@ -374,7 +374,7 @@ void FactoryClass::Set(TechnoClass& object) {
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
 bool FactoryClass::Suspend() {
-  assert(Factories.ID(this) == ID);
+  DCHECK(Factories.ID(this) == ID);
 
   if (!IsSuspended) {
     IsSuspended = true;
@@ -402,7 +402,7 @@ bool FactoryClass::Suspend() {
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
 bool FactoryClass::Start() {
-  assert(Factories.ID(this) == ID);
+  DCHECK(Factories.ID(this) == ID);
 
   if (((Object || SpecialItem != SPC_NONE) && IsSuspended &&
        !Has_Completed()) &&
@@ -460,7 +460,7 @@ bool FactoryClass::Start() {
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
 bool FactoryClass::Abandon() {
-  assert(Factories.ID(this) == ID);
+  DCHECK(Factories.ID(this) == ID);
 
   if (Object) {
     if (Object) {
@@ -513,7 +513,7 @@ bool FactoryClass::Abandon() {
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
 int FactoryClass::Completion() {
-  assert(Factories.ID(this) == ID);
+  DCHECK(Factories.ID(this) == ID);
 
   return Fetch_Stage();
 }
@@ -536,7 +536,7 @@ int FactoryClass::Completion() {
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
 bool FactoryClass::Has_Completed() {
-  assert(Factories.ID(this) == ID);
+  DCHECK(Factories.ID(this) == ID);
 
   if (Object && Fetch_Stage() == kStepCount) {
     return true;
@@ -561,7 +561,7 @@ bool FactoryClass::Has_Completed() {
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
 TechnoClass* FactoryClass::Get_Object() const {
-  assert(Factories.ID(this) == ID);
+  DCHECK(Factories.ID(this) == ID);
 
   return Object;
 }
@@ -577,7 +577,7 @@ TechnoClass* FactoryClass::Get_Object() const {
  *   05/05/1995 PWG : Created.                                             *
  *=========================================================================*/
 int FactoryClass::Get_Special_Item() const {
-  assert(Factories.ID(this) == ID);
+  DCHECK(Factories.ID(this) == ID);
 
   return static_cast<int>(SpecialItem);
 }
@@ -599,7 +599,7 @@ int FactoryClass::Get_Special_Item() const {
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
 int FactoryClass::Cost_Per_Tick() {
-  assert(Factories.ID(this) == ID);
+  DCHECK(Factories.ID(this) == ID);
 
   if (Object) {
     const int steps = kStepCount - Fetch_Stage();
@@ -630,7 +630,7 @@ int FactoryClass::Cost_Per_Tick() {
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
 bool FactoryClass::Completed() {
-  assert(Factories.ID(this) == ID);
+  DCHECK(Factories.ID(this) == ID);
 
   if (Object && Fetch_Stage() == kStepCount) {
     Object = nullptr;

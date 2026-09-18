@@ -88,7 +88,6 @@
 #include "tech/mp.h"
 
 #include <algorithm>
-#include <cassert>
 #include <cctype>
 #include <climits>
 #include <cstddef>
@@ -100,6 +99,7 @@
 #include <string>
 #include <string_view>
 
+#include "absl/log/check.h"
 #include "base/array.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
@@ -166,7 +166,7 @@ static int Byte_Precision(uint32_t value) {
  * HISTORY: * 07/01/1996 JLB : Created. *
  *=============================================================================================*/
 int XMP_DER_Length_Encode(uint32_t length, DigitCursor<unsigned char> output) {
-  assert(output != nullptr);
+  DCHECK(output != nullptr);
 
   int header_length = 0;
 
@@ -207,9 +207,9 @@ int XMP_DER_Length_Encode(uint32_t length, DigitCursor<unsigned char> output) {
  *=============================================================================================*/
 int XMP_DER_Encode(DigitCursor<const uint32_t> from,
                    DigitCursor<unsigned char> output, int precision) {
-  assert(from != nullptr);
-  assert(output != nullptr);
-  assert(precision > 0);
+  DCHECK(from != nullptr);
+  DCHECK(output != nullptr);
+  DCHECK(precision > 0);
 
   unsigned char buffer[(MAX_UNIT_PRECISION * sizeof(uint32_t)) + 1];
   int header_count = 0;
@@ -299,10 +299,10 @@ void XMP_DER_Decode(DigitCursor<uint32_t> result,
  *=============================================================================================*/
 unsigned XMP_Encode(DigitCursor<unsigned char> to, unsigned tobytes,
                     DigitCursor<const uint32_t> from, int precision) {
-  assert(to != nullptr);
-  assert(from != nullptr);
-  assert(tobytes > 0);
-  assert(precision > 0);
+  DCHECK(to != nullptr);
+  DCHECK(from != nullptr);
+  DCHECK(tobytes > 0);
+  DCHECK(precision > 0);
 
   const unsigned frombytes =
       static_cast<unsigned>(precision) * unsigned{sizeof(uint32_t)};
@@ -349,9 +349,9 @@ unsigned XMP_Encode(DigitCursor<unsigned char> to, unsigned tobytes,
  *=============================================================================================*/
 int XMP_Encode(DigitCursor<unsigned char> to, DigitCursor<const uint32_t> from,
                int precision) {
-  assert(to != nullptr);
-  assert(from != nullptr);
-  assert(precision > 0);
+  DCHECK(to != nullptr);
+  DCHECK(from != nullptr);
+  DCHECK(precision > 0);
 
   const bool is_negative = XMP_Is_Negative(from, precision);
   const auto filler = static_cast<unsigned char>(is_negative ? 0xff : 0);
@@ -406,10 +406,10 @@ int XMP_Encode(DigitCursor<unsigned char> to, DigitCursor<const uint32_t> from,
 void XMP_Signed_Decode(DigitCursor<uint32_t> result,
                        DigitCursor<const unsigned char> from, int frombytes,
                        int precision) {
-  assert(result != nullptr);
-  assert(from != nullptr);
-  assert(frombytes > 0);
-  assert(precision > 0);
+  DCHECK(result != nullptr);
+  DCHECK(from != nullptr);
+  DCHECK(frombytes > 0);
+  DCHECK(precision > 0);
 
   const auto filler = static_cast<unsigned char>(*from & 0x80 ? 0xff : 0);
 
@@ -461,10 +461,10 @@ void XMP_Signed_Decode(DigitCursor<uint32_t> result,
 void XMP_Unsigned_Decode(DigitCursor<uint32_t> result,
                          DigitCursor<const unsigned char> from, int frombytes,
                          int precision) {
-  assert(result != nullptr);
-  assert(from != nullptr);
-  assert(frombytes > 0);
-  assert(precision > 0);
+  DCHECK(result != nullptr);
+  DCHECK(from != nullptr);
+  DCHECK(frombytes > 0);
+  DCHECK(precision > 0);
 
   const auto fillcount = (static_cast<std::ptrdiff_t>(precision) *
                           static_cast<int>(sizeof(uint32_t))) -
@@ -508,8 +508,8 @@ void XMP_Unsigned_Decode(DigitCursor<uint32_t> result,
  * HISTORY: * 07/01/1996 JLB : Created. *
  *=============================================================================================*/
 int XMP_Significance(DigitCursor<const uint32_t> number, int precision) {
-  assert(number != nullptr);
-  assert(precision > 0);
+  DCHECK(number != nullptr);
+  DCHECK(precision > 0);
 
   number += precision;
   do {
@@ -537,8 +537,8 @@ int XMP_Significance(DigitCursor<const uint32_t> number, int precision) {
  * HISTORY: * 07/01/1996 JLB : Created. *
  *=============================================================================================*/
 void XMP_Inc(DigitCursor<uint32_t> number, int precision) {
-  assert(number != nullptr);
-  assert(precision > 0);
+  DCHECK(number != nullptr);
+  DCHECK(precision > 0);
 
   do {
     if (++*number) {
@@ -564,8 +564,8 @@ void XMP_Inc(DigitCursor<uint32_t> number, int precision) {
  * HISTORY: * 07/01/1996 JLB : Created. *
  *=============================================================================================*/
 void XMP_Dec(DigitCursor<uint32_t> number, int precision) {
-  assert(number != nullptr);
-  assert(precision > 0);
+  DCHECK(number != nullptr);
+  DCHECK(precision > 0);
 
   do {
     *number -= 1;
@@ -592,8 +592,8 @@ void XMP_Dec(DigitCursor<uint32_t> number, int precision) {
  * HISTORY: * 07/01/1996 JLB : Created. *
  *=============================================================================================*/
 void XMP_Neg(DigitCursor<uint32_t> number, int precision) {
-  assert(number != nullptr);
-  assert(precision > 0);
+  DCHECK(number != nullptr);
+  DCHECK(precision > 0);
 
   XMP_Not(number, precision);
   XMP_Inc(number, precision);
@@ -618,8 +618,8 @@ void XMP_Neg(DigitCursor<uint32_t> number, int precision) {
  * HISTORY: * 07/01/1996 JLB : Created. *
  *=============================================================================================*/
 void XMP_Abs(DigitCursor<uint32_t> number, int precision) {
-  assert(number != nullptr);
-  assert(precision > 0);
+  DCHECK(number != nullptr);
+  DCHECK(precision > 0);
 
   if (XMP_Is_Negative(number, precision)) {
     XMP_Neg(number, precision);
@@ -646,9 +646,9 @@ void XMP_Abs(DigitCursor<uint32_t> number, int precision) {
  *=============================================================================================*/
 void XMP_Shift_Right_Bits(DigitCursor<uint32_t> number, int bits,
                           int precision) {
-  assert(number != nullptr);
-  assert(bits >= 0);
-  assert(precision > 0);
+  DCHECK(number != nullptr);
+  DCHECK(bits >= 0);
+  DCHECK(precision > 0);
 
   if (bits == 0) {
     return; /* shift zero bits is a no-op */
@@ -735,9 +735,9 @@ void XMP_Shift_Right_Bits(DigitCursor<uint32_t> number, int bits,
  *=============================================================================================*/
 void XMP_Shift_Left_Bits(DigitCursor<uint32_t> number, int bits,
                          int precision) {
-  assert(number != nullptr);
-  assert(bits >= 0);
-  assert(precision > 0);
+  DCHECK(number != nullptr);
+  DCHECK(bits >= 0);
+  DCHECK(precision > 0);
 
   if (bits == 0) {
     return; /* shift zero bits is a no-op */
@@ -826,8 +826,8 @@ void XMP_Shift_Left_Bits(DigitCursor<uint32_t> number, int bits,
  * HISTORY: * 07/01/1996 JLB : Created. *
  *=============================================================================================*/
 bool XMP_Rotate_Left(DigitCursor<uint32_t> number, bool carry, int precision) {
-  assert(number != nullptr);
-  assert(precision > 0);
+  DCHECK(number != nullptr);
+  DCHECK(precision > 0);
 
   while (precision--) {
     const bool temp = (*number & UPPER_MOST_BIT) != 0;
@@ -857,8 +857,8 @@ bool XMP_Rotate_Left(DigitCursor<uint32_t> number, bool carry, int precision) {
  * HISTORY: * 07/01/1996 JLB : Created. *
  *=============================================================================================*/
 void XMP_Not(DigitCursor<uint32_t> number, int precision) {
-  assert(number != nullptr);
-  assert(precision > 0);
+  DCHECK(number != nullptr);
+  DCHECK(precision > 0);
 
   for (int index = 0; index < precision; index++) {
     *number = ~*number;
@@ -885,8 +885,8 @@ void XMP_Not(DigitCursor<uint32_t> number, int precision) {
  * HISTORY: * 07/01/1996 JLB : Created. *
  *=============================================================================================*/
 void XMP_Init(DigitCursor<uint32_t> number, uint32_t value, int precision) {
-  assert(number != nullptr);
-  assert(precision > 0);
+  DCHECK(number != nullptr);
+  DCHECK(precision > 0);
 
   base::FillBytes(number.bytes(), 0,
                   base::ToSize(precision) * sizeof(uint32_t));
@@ -911,8 +911,8 @@ void XMP_Init(DigitCursor<uint32_t> number, uint32_t value, int precision) {
  * HISTORY: * 07/01/1996 JLB : Created. *
  *=============================================================================================*/
 int XMP_Count_Bits(DigitCursor<const uint32_t> number, int precision) {
-  assert(number != nullptr);
-  assert(precision > 0);
+  DCHECK(number != nullptr);
+  DCHECK(precision > 0);
 
   const int sub_precision = XMP_Significance(number, precision);
   if (!sub_precision) {
@@ -2379,7 +2379,7 @@ bool XMP_Small_Divisors_Test(DigitCursor<const uint32_t> candidate,
  *=============================================================================================*/
 bool XMP_Fermat_Test(DigitCursor<const uint32_t> candidate_prime,
                      unsigned rounds, int precision) {
-  assert(rounds < std::ssize(primeTable));
+  DCHECK(rounds < std::ssize(primeTable));
 
   uint32_t term[MAX_UNIT_PRECISION];
   XMP_Move(term, candidate_prime, precision);
@@ -2501,7 +2501,7 @@ bool XMP_Rabin_Miller_Test(ByteSource& rng, DigitCursor<const uint32_t> w,
  *=============================================================================================*/
 void XMP_Randomize(DigitCursor<uint32_t> result, ByteSource& rng,
                    int total_bits, int precision) {
-  assert(XMP_Bits_To_Digits(total_bits) <= MAX_UNIT_PRECISION);
+  DCHECK(XMP_Bits_To_Digits(total_bits) <= MAX_UNIT_PRECISION);
 
   total_bits = std::min(total_bits, precision * 32);
 

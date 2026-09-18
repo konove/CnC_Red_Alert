@@ -6,7 +6,6 @@
 
 #include <algorithm>
 #include <bit>
-#include <cassert>
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
@@ -20,6 +19,7 @@
 #include <utility>
 #include <vector>
 
+#include "absl/log/check.h"
 #include "absl/strings/ascii.h"
 #include "absl/strings/match.h"
 #include "base/buffer.h"
@@ -66,7 +66,7 @@ bool MixArchive::Open(std::string_view filename, const PKey* key) {
     is_encrypted_ = (flags & 0x02) != 0;
 
     if (is_encrypted_) {
-      assert(key != nullptr);
+      DCHECK(key != nullptr);
       decrypt_straw = MakePkDecryptSource(file_straw, *key);
       if (decrypt_straw == nullptr) {
         return false;  // Failed to read encrypted key header.

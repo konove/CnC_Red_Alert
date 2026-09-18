@@ -63,9 +63,9 @@
 
 #include "ra/target.h"
 
-#include <cassert>
 #include <cstdint>
 
+#include "absl/log/check.h"
 #include "ra/abstract.h"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
@@ -584,7 +584,7 @@ COORDINATE As_Coord(TARGET target) {
     */
     const ObjectClass* obj = As_Object(target);
     if (obj != nullptr) {
-      assert(obj->IsActive);
+      DCHECK(obj->IsActive);
       return obj->Target_Coord();
     }
   }

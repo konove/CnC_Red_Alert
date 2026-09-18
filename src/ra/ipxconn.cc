@@ -48,12 +48,12 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 #include "ra/ipxconn.h"
 
-#include <cassert>
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
 #include <span>
 
+#include "absl/log/check.h"
 #include "base/buffer.h"
 #include "port/safe_string.h"
 #include "ra/_wsproto.h"
@@ -414,7 +414,7 @@ void IPXConnClass::Close_Socket(uint16_t /*socket*/) {
 int IPXConnClass::Send_To(std::span<const std::byte> buf, int buflen,
                           IPXAddressClass* address,
                           [[maybe_unused]] const NetNodeType immed) {
-  assert(immed == nullptr);
+  DCHECK(immed == nullptr);
   PacketTransport->WriteTo(buf, buflen, *address);
   return 1;
 

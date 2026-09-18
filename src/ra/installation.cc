@@ -21,12 +21,12 @@
 #include "ra/installation.h"
 
 #include <array>
-#include <cassert>
 #include <cstddef>
 #include <memory>
 #include <span>
 #include <string>
 
+#include "absl/log/check.h"
 #include "absl/strings/str_format.h"
 #include "base/numeric.h"
 #include "port/platform.h"
@@ -356,13 +356,13 @@ bool Force_CD_Available(int cd_desired)  // ajw
     delete MainMix;
 
     MainMix = MixArchive::Register("MAIN.MIX", &FastKey);
-    assert(MainMix != nullptr);
+    DCHECK(MainMix != nullptr);
     if (GameFile("MOVIES1.MIX").IsAvailable()) {
       MoviesMix = MixArchive::Register("MOVIES1.MIX", &FastKey);
     } else {
       MoviesMix = MixArchive::Register("MOVIES2.MIX", &FastKey);
     }
-    assert(MoviesMix != nullptr);
+    DCHECK(MoviesMix != nullptr);
     GeneralMix = MixArchive::Register("GENERAL.MIX", &FastKey);
     ScoreMix = MixArchive::Register("SCORES.MIX", &FastKey);
     ThemeClass::Scan();

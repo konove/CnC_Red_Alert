@@ -77,7 +77,6 @@
 
 #include "ra/team.h"
 
-#include <cassert>
 #include <cstdint>
 #include <cstring>
 #include <utility>
@@ -322,9 +321,9 @@ TeamClass::TeamClass(TeamTypeClass* type, HouseClass* owner)
     : AbstractClass(RTTI_TEAM, Teams.ID(this)),
       Class(type),
       House(owner) {
-  assert(Class);
-  assert(Class->IsActive);
-  assert(Class->ClassCount > 0);
+  DCHECK(Class);
+  DCHECK(Class->IsActive);
+  DCHECK(Class->ClassCount > 0);
 
   if (owner == nullptr) {
     House = HouseClass::As_Pointer(Class->House);
@@ -357,8 +356,8 @@ TeamClass::TeamClass(TeamTypeClass* type, HouseClass* owner)
  *   05/16/1995 PWG : Created.                                             *
  *=========================================================================*/
 void TeamClass::Assign_Mission_Target(TARGET new_target) {
-  assert(IsActive);
-  assert(Teams.ID(this) == ID);
+  DCHECK(IsActive);
+  DCHECK(Teams.ID(this) == ID);
 
   /*
   ** First go through and find anyone who is currently targeting
@@ -427,8 +426,8 @@ void TeamClass::Assign_Mission_Target(TARGET new_target) {
  *gesture.                                                   *
  *=============================================================================================*/
 void TeamClass::AI() {
-  assert(IsActive);
-  assert(Teams.ID(this) == ID);
+  DCHECK(IsActive);
+  DCHECK(Teams.ID(this) == ID);
 
   int desired = 0;
   const bool old_under = IsUnderStrength;
@@ -456,7 +455,7 @@ void TeamClass::AI() {
     for (int index = 0; index < Class->ClassCount; index++) {
       desired += base::At(Class->Members, index).Quantity;
     }
-    assert(desired != 0);
+    DCHECK(desired != 0);
 
     if (Total) {
       IsFullStrength = Total == desired;
@@ -871,8 +870,8 @@ void TeamClass::AI() {
  *Allows member stealing from lesser priority teams.                       *
  *=============================================================================================*/
 bool TeamClass::Add(FootClass* obj) {
-  assert(IsActive);
-  assert(Teams.ID(this) == ID);
+  DCHECK(IsActive);
+  DCHECK(Teams.ID(this) == ID);
   if (!obj) {
     return false;
   }
@@ -944,8 +943,8 @@ bool TeamClass::Add(FootClass* obj) {
  * HISTORY: * 02/27/1996 JLB : Created. *
  *=============================================================================================*/
 bool TeamClass::Can_Add(FootClass* obj, int& typeindex) const {
-  assert(IsActive);
-  assert(Teams.ID(this) == ID);
+  DCHECK(IsActive);
+  DCHECK(Teams.ID(this) == ID);
 
   /*
   **	Trying to add the team member to itself is an error condition.
@@ -1039,8 +1038,8 @@ bool TeamClass::Can_Add(FootClass* obj, int& typeindex) const {
  *and team captain selection.                          *
  *=============================================================================================*/
 bool TeamClass::Remove(FootClass* obj, int typeindex) {
-  assert(IsActive);
-  assert(Teams.ID(this) == ID);
+  DCHECK(IsActive);
+  DCHECK(Teams.ID(this) == ID);
 
   /*
   **	Make sure that the object is in fact a member of this team. If not, then
@@ -1169,8 +1168,8 @@ bool TeamClass::Remove(FootClass* obj, int typeindex) {
  **
  *=============================================================================================*/
 int TeamClass::Recruit(int typeindex) {
-  assert(IsActive);
-  assert(Teams.ID(this) == ID);
+  DCHECK(IsActive);
+  DCHECK(Teams.ID(this) == ID);
   COORDINATE center = As_Coord(Zone);
 
   if (Class->Origin != -1) {
@@ -1358,8 +1357,8 @@ int TeamClass::Recruit(int typeindex) {
  * HISTORY: * 12/29/1994 JLB : Created. *
  *=============================================================================================*/
 void TeamClass::Detach(TARGET target, bool /*unused*/) {
-  assert(IsActive);
-  assert(Teams.ID(this) == ID);
+  DCHECK(IsActive);
+  DCHECK(Teams.ID(this) == ID);
 
   /*
   **	If the target to detach matches the target of this team, then remove
@@ -1398,8 +1397,8 @@ void TeamClass::Detach(TARGET target, bool /*unused*/) {
  * HISTORY: * 12/29/1994 JLB : Created. *
  *=============================================================================================*/
 void TeamClass::Calc_Center(TARGET& center, TARGET& close_member) const {
-  assert(IsActive);
-  assert(Teams.ID(this) == ID);
+  DCHECK(IsActive);
+  DCHECK(Teams.ID(this) == ID);
 
   /*
   **	Presume there is no center. This will be confirmed in the following
@@ -1595,8 +1594,8 @@ void TeamClass::Calc_Center(TARGET& center, TARGET& close_member) const {
  *=============================================================================================*/
 void TeamClass::Took_Damage(FootClass* /*unused*/, ResultType result,
                             TechnoClass* source) {
-  assert(IsActive);
-  assert(Teams.ID(this) == ID);
+  DCHECK(IsActive);
+  DCHECK(Teams.ID(this) == ID);
 
   if (result != RESULT_NONE && !Class->IsSuicide) {
     if (!IsMoving) {
@@ -1662,8 +1661,8 @@ void TeamClass::Took_Damage(FootClass* /*unused*/, ResultType result,
  * HISTORY: * 04/06/1995 JLB : Created. *
  *=============================================================================================*/
 void TeamClass::Coordinate_Attack() {
-  assert(IsActive);
-  assert(Teams.ID(this) == ID);
+  DCHECK(IsActive);
+  DCHECK(Teams.ID(this) == ID);
 
   if (!Target_Legal(Target)) {
     Target = MissionTarget;
@@ -1765,8 +1764,8 @@ void TeamClass::Coordinate_Attack() {
  * HISTORY: * 04/06/1995 JLB : Created. *
  *=============================================================================================*/
 bool TeamClass::Coordinate_Regroup() {
-  assert(IsActive);
-  assert(Teams.ID(this) == ID);
+  DCHECK(IsActive);
+  DCHECK(Teams.ID(this) == ID);
 
   FootClass* unit = Member;
   bool retval = true;
@@ -1831,8 +1830,8 @@ bool TeamClass::Coordinate_Regroup() {
  * HISTORY: * 05/11/1996 JLB : Created. *
  *=============================================================================================*/
 void TeamClass::Coordinate_Do() {
-  assert(IsActive);
-  assert(Teams.ID(this) == ID);
+  DCHECK(IsActive);
+  DCHECK(Teams.ID(this) == ID);
 
   FootClass* unit = Member;
   const MissionType do_mission =
@@ -1891,8 +1890,8 @@ void TeamClass::Coordinate_Do() {
  * HISTORY: * 04/06/1995 JLB : Created. *
  *=============================================================================================*/
 void TeamClass::Coordinate_Move() {
-  assert(IsActive);
-  assert(Teams.ID(this) == ID);
+  DCHECK(IsActive);
+  DCHECK(Teams.ID(this) == ID);
 
   FootClass* unit = Member;
   bool finished = true;
@@ -2047,8 +2046,8 @@ void TeamClass::Coordinate_Move() {
  * HISTORY: * 08/01/1995 PWG : Created. * 04/11/1996 JLB : Modified. *
  *=============================================================================================*/
 bool TeamClass::Lagging_Units() {
-  assert(IsActive);
-  assert(Teams.ID(this) == ID);
+  DCHECK(IsActive);
+  DCHECK(Teams.ID(this) == ID);
 
   FootClass* unit = Member;
   bool lag = false;
@@ -2130,8 +2129,8 @@ bool TeamClass::Lagging_Units() {
  * HISTORY: * 06/14/1995 JLB : Created. *
  *=============================================================================================*/
 int TeamClass::TMission_Unload() {
-  assert(IsActive);
-  assert(Teams.ID(this) == ID);
+  DCHECK(IsActive);
+  DCHECK(Teams.ID(this) == ID);
 
   FootClass* unit = Member;
   bool finished = true;
@@ -2210,8 +2209,8 @@ int TeamClass::TMission_Unload() {
  * HISTORY: * 06/28/1996 BWG : Created. *
  *=============================================================================================*/
 int TeamClass::TMission_Load() {
-  assert(IsActive);
-  assert(Teams.ID(this) == ID);
+  DCHECK(IsActive);
+  DCHECK(Teams.ID(this) == ID);
 
   FootClass* unit = Member;
   const FootClass* trans = nullptr;
@@ -2329,8 +2328,8 @@ bool TeamClass::Coordinate_Conscript(FootClass* unit) {
  *   05/16/1995 PWG : Created.                                             *
  *=========================================================================*/
 bool TeamClass::Is_A_Member(const void* who) const {
-  assert(IsActive);
-  assert(Teams.ID(this) == ID);
+  DCHECK(IsActive);
+  DCHECK(Teams.ID(this) == ID);
 
   const FootClass* unit = Member;
   while (unit != nullptr) {
@@ -2391,8 +2390,8 @@ void TeamClass::Suspend_Teams(int priority, const HouseClass* house) {
  * HISTORY: * 04/30/1996 JLB : Created. *
  *=============================================================================================*/
 bool TeamClass::Is_Leaving_Map() const {
-  assert(IsActive);
-  assert(Teams.ID(this) == ID);
+  DCHECK(IsActive);
+  DCHECK(Teams.ID(this) == ID);
 
   if (IsMoving && CurrentMission >= 0) {
     const TeamMissionClass* mission =
@@ -2977,8 +2976,8 @@ int TeamClass::TMission_Patrol() {
 }
 
 int TeamClass::TMission_Deploy() {
-  assert(IsActive);
-  assert(Teams.ID(this) == ID);
+  DCHECK(IsActive);
+  DCHECK(Teams.ID(this) == ID);
 
   FootClass* unit = Member;
   bool finished = true;

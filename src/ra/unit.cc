@@ -101,7 +101,6 @@
 #include "ra/unit.h"
 
 #include <algorithm>
-#include <cassert>
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>
@@ -358,8 +357,8 @@ UnitClass::UnitClass(UnitType classid, HousesType house)
  * HISTORY: * 05/17/1994 JLB : Created. *
  *=============================================================================================*/
 COORDINATE UnitClass::Sort_Y() const {
-  assert(Units.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Units.ID(this) == ID);
+  DCHECK(IsActive);
 
   return Coord_Add(Coord, 0x00800000L);
 }
@@ -379,8 +378,8 @@ COORDINATE UnitClass::Sort_Y() const {
  * HISTORY: * 05/31/1994 JLB : Created. *
  *=============================================================================================*/
 void UnitClass::AI() {
-  assert(Units.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Units.ID(this) == ID);
+  DCHECK(IsActive);
   /*
   **	Act on new orders if the unit is at a good position to do so.
   */
@@ -695,8 +694,8 @@ void UnitClass::Firing_AI() {
 RadioMessageType UnitClass::Receive_Message(RadioClass* from,
                                             RadioMessageType message,
                                             int32_t& param) {
-  assert(Units.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Units.ID(this) == ID);
+  DCHECK(IsActive);
 
   switch (message) {
     /*
@@ -928,8 +927,8 @@ RadioMessageType UnitClass::Receive_Message(RadioClass* from,
  * HISTORY: * 05/22/1994 JLB : Created. *
  *=============================================================================================*/
 bool UnitClass::Unlimbo(COORDINATE coord, DirType dir) {
-  assert(Units.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Units.ID(this) == ID);
+  DCHECK(IsActive);
 
   /*
   **	All units must start out facing one of the 8 major directions.
@@ -998,8 +997,8 @@ bool UnitClass::Unlimbo(COORDINATE coord, DirType dir) {
 ResultType UnitClass::Take_Damage(int& damage, int distance,
                                   WarheadType warhead, TechnoClass* source,
                                   bool forced) {
-  assert(Units.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Units.ID(this) == ID);
+  DCHECK(IsActive);
 
   ResultType res = RESULT_NONE;
 
@@ -1209,8 +1208,8 @@ ResultType UnitClass::Take_Damage(int& damage, int distance,
  * HISTORY: * 03/10/1995 JLB : Created. *
  *=============================================================================================*/
 void UnitClass::Active_Click_With(ActionType action, ObjectClass* object) {
-  assert(Units.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Units.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (action != What_Action(object)) {
     action = What_Action(object);
@@ -1295,8 +1294,8 @@ void UnitClass::Active_Click_With(ActionType action, ObjectClass* object) {
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
 void UnitClass::Active_Click_With(ActionType action, CELL cell) {
-  assert(Units.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Units.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (*this == UNIT_MAD && (IsDumping || Gold)) {
   } else {
@@ -1325,8 +1324,8 @@ void UnitClass::Active_Click_With(ActionType action, CELL cell) {
  *Allows a harvester to stop harvesting.                                   *
  *=============================================================================================*/
 void UnitClass::Enter_Idle_Mode(bool initial) {
-  assert(Units.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Units.ID(this) == ID);
+  DCHECK(IsActive);
 
   MissionType order = MISSION_GUARD;
 
@@ -1411,8 +1410,8 @@ void UnitClass::Enter_Idle_Mode(bool initial) {
  * HISTORY: * 06/27/1994 JLB : Created. *
  *=============================================================================================*/
 bool UnitClass::Goto_Clear_Spot() {
-  assert(Units.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Units.ID(this) == ID);
+  DCHECK(IsActive);
 
   Mark(MARK_UP);
   if (!Target_Legal(NavCom) &&
@@ -1492,8 +1491,8 @@ bool UnitClass::Goto_Clear_Spot() {
  * HISTORY: * 06/18/1994 JLB : Created. *
  *=============================================================================================*/
 bool UnitClass::Try_To_Deploy() {
-  assert(Units.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Units.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (!Target_Legal(NavCom) && !IsRotating) {
     if (*this == UNIT_MCV) {
@@ -1626,8 +1625,8 @@ bool UnitClass::Try_To_Deploy() {
  *Gunboats head back and forth now.                                        *
  *=============================================================================================*/
 void UnitClass::Per_Cell_Process(PCPType why) {
-  assert(Units.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Units.ID(this) == ID);
+  DCHECK(IsActive);
 
   const CELL cell = Coord_Cell(Coord);
 
@@ -1948,8 +1947,8 @@ void UnitClass::Per_Cell_Process(PCPType why) {
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
 int UnitClass::Shape_Number() const {
-  assert(Units.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Units.ID(this) == ID);
+  DCHECK(IsActive);
 
   int shapenum = 0;  // Working shape number.
   const int facing = Dir_To_32(PrimaryFacing);
@@ -2072,8 +2071,8 @@ int UnitClass::Shape_Number() const {
  *general purpose draw routine.                                       *
  *=============================================================================================*/
 void UnitClass::Draw_It(int x, int y, WindowNumberType window) const {
-  assert(Units.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Units.ID(this) == ID);
+  DCHECK(IsActive);
 
   const int tfacing = Dir_To_32(SecondaryFacing);
   const DirType rotation = DIR_N;
@@ -2196,8 +2195,8 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) const {
  * HISTORY: * 07/18/1994 JLB : Created. *
  *=============================================================================================*/
 bool UnitClass::Tiberium_Check(CELL& center, int x, int y) {
-  assert(Units.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Units.ID(this) == ID);
+  DCHECK(IsActive);
 
   /*
   **	If the specified offset from the origin will cause it
@@ -2250,8 +2249,8 @@ bool UnitClass::Tiberium_Check(CELL& center, int x, int y) {
  * HISTORY: * 09/22/1995 JLB : Created. *
  *=============================================================================================*/
 bool UnitClass::Goto_Tiberium(int rad) {
-  assert(Units.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Units.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (!Target_Legal(NavCom)) {
     const CELL center = Coord_Cell(Center_Coord());
@@ -2309,8 +2308,8 @@ bool UnitClass::Goto_Tiberium(int rad) {
  * HISTORY: * 07/18/1994 JLB : Created. *
  *=============================================================================================*/
 bool UnitClass::Harvesting() {
-  assert(Units.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Units.ID(this) == ID);
+  DCHECK(IsActive);
 
   const CELL cell = Coord_Cell(Coord);
   CellClass* ptr = &Map.at(cell);
@@ -2415,8 +2414,8 @@ bool UnitClass::Harvesting() {
  * HISTORY: * 07/18/1994 JLB : Created. *
  *=============================================================================================*/
 int UnitClass::Mission_Unload() {
-  assert(Units.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Units.ID(this) == ID);
+  DCHECK(IsActive);
 
   constexpr int kInitialCheck = 0;
   constexpr int kManeuvering = 1;
@@ -2839,8 +2838,8 @@ int UnitClass::Mission_Unload() {
  *harvesting if there are no more refineries.                       *
  *=============================================================================================*/
 int UnitClass::Mission_Harvest() {
-  assert(Units.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Units.ID(this) == ID);
+  DCHECK(IsActive);
 
   constexpr int kLooking = 0;
   constexpr int kHarvesting = 1;
@@ -3036,8 +3035,8 @@ int UnitClass::Mission_Harvest() {
  * HISTORY: * 07/18/1994 JLB : Created. *
  *=============================================================================================*/
 int UnitClass::Mission_Hunt() {
-  assert(Units.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Units.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (*this == UNIT_MCV) {
     constexpr int kFindSpot = 0;
@@ -3092,8 +3091,8 @@ int UnitClass::Mission_Hunt() {
  *Coord_Spillable_List function.                                      *
  *=============================================================================================*/
 std::span<const int16_t> UnitClass::Overlap_List(bool redraw) const {
-  assert(Units.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Units.ID(this) == ID);
+  DCHECK(IsActive);
 
   int size = ICON_PIXEL_W;
 
@@ -3130,8 +3129,8 @@ std::span<const int16_t> UnitClass::Overlap_List(bool redraw) const {
  *Allowed to drive on building trying to enter it.                         *
  *=============================================================================================*/
 MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType /*from*/) const {
-  assert(Units.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Units.ID(this) == ID);
+  DCHECK(IsActive);
 
   bool cancrush = false;
 
@@ -3426,8 +3425,8 @@ void UnitClass::Init() { Units.Free_All(); }
  * HISTORY: * 12/22/1994 JLB : Created. *
  *=============================================================================================*/
 bool UnitClass::Start_Driver(COORDINATE& headto) {
-  assert(Units.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Units.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (DriveClass::Start_Driver(headto) &&
       IsActive) {  // BG IsActive can be cleared by Start_Driver
@@ -3456,8 +3455,8 @@ bool UnitClass::Start_Driver(COORDINATE& headto) {
  * HISTORY: * 01/11/1995 JLB : Created. *
  *=============================================================================================*/
 ActionType UnitClass::What_Action(ObjectClass* object) {
-  assert(Units.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Units.ID(this) == ID);
+  DCHECK(IsActive);
 
   ActionType action = DriveClass::What_Action(object);
 
@@ -3654,8 +3653,8 @@ ActionType UnitClass::What_Action(ObjectClass* object) {
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
 ActionType UnitClass::What_Action(CELL cell) const {
-  assert(Units.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Units.ID(this) == ID);
+  DCHECK(IsActive);
 
   ActionType action = DriveClass::What_Action(cell);
   if (action == ACTION_MOVE && Map.at(cell).Land_Type() == LAND_TIBERIUM &&
@@ -3681,8 +3680,8 @@ ActionType UnitClass::What_Action(CELL cell) const {
  *=============================================================================================*/
 #define XYCELL(x, y) ((y) * MAP_CELL_W + (x))
 void UnitClass::Exit_Repair() {
-  assert(Units.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Units.ID(this) == ID);
+  DCHECK(IsActive);
 
   bool found = false;
   static const int16_t ExitRepair[] = {
@@ -3730,8 +3729,8 @@ void UnitClass::Exit_Repair() {
  *problems.                                                  *
  *=============================================================================================*/
 int UnitClass::Mission_Guard() {
-  assert(Units.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Units.ID(this) == ID);
+  DCHECK(IsActive);
   if (/*House->IsBaseBuilding &&*/ !House->IsHuman && Class->IsToHarvest &&
       House->Get_Quantity(STRUCT_REFINERY) > 0 && !House->IsTiberiumShort) {
     Assign_Mission(MISSION_HARVEST);
@@ -3765,8 +3764,8 @@ int UnitClass::Mission_Guard() {
  *guard mode if no more refineries.                     *
  *=============================================================================================*/
 int UnitClass::Mission_Move() {
-  assert(Units.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Units.ID(this) == ID);
+  DCHECK(IsActive);
 
   IsHarvesting = false;
 
@@ -3804,8 +3803,8 @@ int UnitClass::Mission_Move() {
  *=============================================================================================*/
 DirType UnitClass::Desired_Load_Dir(ObjectClass* passenger,
                                     CELL& moveto) const {
-  assert(Units.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Units.ID(this) == ID);
+  DCHECK(IsActive);
 
   /*
   **	Determine the ideal facing that provides the least resistance. This
@@ -3904,8 +3903,8 @@ DirType UnitClass::Desired_Load_Dir(ObjectClass* passenger,
  * HISTORY: * 05/23/1995 JLB : Created. *
  *=============================================================================================*/
 bool UnitClass::Flag_Attach(HousesType house) {
-  assert(Units.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Units.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (house != HOUSE_NONE && Flagged == HOUSE_NONE) {
     Flagged = house;
@@ -3931,8 +3930,8 @@ bool UnitClass::Flag_Attach(HousesType house) {
  * HISTORY: * 05/23/1995 JLB : Created. *
  *=============================================================================================*/
 bool UnitClass::Flag_Remove() {
-  assert(Units.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Units.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (Flagged != HOUSE_NONE) {
     Flagged = HOUSE_NONE;
@@ -3958,8 +3957,8 @@ bool UnitClass::Flag_Remove() {
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
 int UnitClass::Pip_Count() const {
-  assert(Units.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Units.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (Class->Max_Passengers() > 0) {
     return How_Many();
@@ -4001,8 +4000,8 @@ int UnitClass::Pip_Count() const {
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
 void UnitClass::APC_Close_Door() {
-  assert(Units.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Units.ID(this) == ID);
+  DCHECK(IsActive);
 
   Close_Door(10, 2);
 }
@@ -4021,8 +4020,8 @@ void UnitClass::APC_Close_Door() {
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
 void UnitClass::APC_Open_Door() {
-  assert(Units.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Units.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (!IsDriving && !IsRotating) {
     if (PrimaryFacing == DIR_NW || PrimaryFacing == DIR_NE) {
@@ -4050,8 +4049,8 @@ void UnitClass::APC_Open_Door() {
  * HISTORY: * 08/13/1995 JLB : Created. *
  *=============================================================================================*/
 InfantryType UnitClass::Crew_Type() const {
-  assert(Units.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Units.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (Class->PrimaryWeapon == nullptr) {
     if (Percent_Chance(50)) {
@@ -4081,8 +4080,8 @@ InfantryType UnitClass::Crew_Type() const {
  * HISTORY: * 10/02/1995 JLB : Created. *
  *=============================================================================================*/
 int UnitClass::Mission_Repair() {
-  assert(Units.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Units.ID(this) == ID);
+  DCHECK(IsActive);
 
   BuildingClass* nearest = Find_Docking_Bay(STRUCT_REFINERY, true);
 
@@ -4133,8 +4132,8 @@ int UnitClass::Mission_Repair() {
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
 DirType UnitClass::Fire_Direction() const {
-  assert(Units.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Units.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (Class->IsTurretEquipped) {
     if (*this == UNIT_V2_LAUNCHER) {
@@ -4175,8 +4174,8 @@ DirType UnitClass::Fire_Direction() const {
  * HISTORY: * 05/12/1994 JLB : Created. *
  *=============================================================================================*/
 bool UnitClass::Ok_To_Move(DirType dir) {
-  assert(Units.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Units.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (Class->IsLockTurret) {
     if (IsRotating) {
@@ -4210,8 +4209,8 @@ bool UnitClass::Ok_To_Move(DirType dir) {
  *can't fire.                                        *
  *=============================================================================================*/
 FireErrorType UnitClass::Can_Fire(TARGET target, int which) const {
-  assert(Units.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Units.ID(this) == ID);
+  DCHECK(IsActive);
 
   int diff = 0;
   const FireErrorType fire = DriveClass::Can_Fire(target, which);
@@ -4331,8 +4330,8 @@ BulletClass* UnitClass::Fire_At(TARGET target, int which) {
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
 const ObjectTypeClass& UnitClass::Class_Of() const {
-  assert(Units.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Units.ID(this) == ID);
+  DCHECK(IsActive);
 
   return *Class;
 }
@@ -4352,7 +4351,7 @@ const ObjectTypeClass& UnitClass::Class_Of() const {
  * HISTORY: * 03/17/1995 JLB : Created. *
  *=============================================================================================*/
 fixed UnitClass::Tiberium_Load() const {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   if (*this == UNIT_HARVESTER) {
     return {Tiberium, Rule.BailCount};
@@ -4380,7 +4379,7 @@ fixed UnitClass::Tiberium_Load() const {
  *don't overrun -- their weapon is better.              *
  *=============================================================================================*/
 void UnitClass::Approach_Target() {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   /*
   **	Only if there is a legal target should the approach check occur.
@@ -4429,7 +4428,7 @@ void UnitClass::Approach_Target() {
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
 void UnitClass::Overrun_Square(CELL cell, bool threaten) {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   CellClass* cellptr = &Map.at(cell);
 
@@ -4495,7 +4494,7 @@ void UnitClass::Overrun_Square(CELL cell, bool threaten) {
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 void UnitClass::Assign_Destination(TARGET target) {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   /*
   **	Abort early if there is anything wrong with the parameters
@@ -4657,7 +4656,7 @@ void UnitClass::Assign_Destination(TARGET target) {
  *=============================================================================================*/
 TARGET UnitClass::Greatest_Threat(ThreatType threat)  // const
 {
-  assert(IsActive);
+  DCHECK(IsActive);
   if (Class->PrimaryWeapon != nullptr) {
     threat = threat | Class->PrimaryWeapon->Allowed_Threats();
   }
@@ -4838,7 +4837,7 @@ int UnitClass::Credit_Load() const {
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
 bool UnitClass::Should_Crush_It(const TechnoClass* it) const {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   /*
   **	If this unit cannot crush anything or the candidate object cannot be
@@ -4919,7 +4918,7 @@ bool UnitClass::Should_Crush_It(const TechnoClass* it) const {
  * HISTORY: * 10/02/1996 JLB : Created. *
  *=============================================================================================*/
 void UnitClass::Scatter(COORDINATE threat, bool forced, bool nokidding) {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   if (Mission == MISSION_SLEEP || Mission == MISSION_STICKY ||
       Mission == MISSION_UNLOAD) {
@@ -5043,7 +5042,7 @@ void UnitClass::Shroud_Regen() {
  * HISTORY: * 11/03/1996 JLB : Created. *
  *=============================================================================================*/
 int UnitClass::Mission_Guard_Area() {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   /*
   **	Check to see if this is an APC that is largely empty and not otherwise

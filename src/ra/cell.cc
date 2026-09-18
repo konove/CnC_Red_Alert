@@ -91,7 +91,6 @@
 #include "ra/cell.h"
 
 #include <algorithm>
-#include <cassert>
 #include <cstdint>
 #include <iterator>
 #include <span>
@@ -202,7 +201,7 @@ CellClass::CellClass()
  *into account any stealth characteristics of object.                *
  *=============================================================================================*/
 int CellClass::Cell_Color(bool override) const {
-  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
   const BuildingClass* object = Cell_Building();
   if (object && !object->Class->IsInvisible) {
@@ -238,7 +237,7 @@ int CellClass::Cell_Color(bool override) const {
  *function.                                            *
  *=============================================================================================*/
 TechnoClass* CellClass::Cell_Techno(int x, int y) const {
-  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
   TechnoClass* close = nullptr;
   int32_t distance = 0;  // Recorded closest distance.
@@ -283,8 +282,8 @@ TechnoClass* CellClass::Cell_Techno(int x, int y) const {
  *   06/12/1995 JLB : Returns object class pointer.                        *
  *=========================================================================*/
 ObjectClass* CellClass::Cell_Find_Object(RTTIType rtti) const {
-  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
-  assert(rtti != RTTI_NONE);
+  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(rtti != RTTI_NONE);
 
   ObjectClass* object = Cell_Occupier();
 
@@ -314,7 +313,7 @@ ObjectClass* CellClass::Cell_Find_Object(RTTIType rtti) const {
  *function.                                            *
  *=============================================================================================*/
 BuildingClass* CellClass::Cell_Building() const {
-  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
   return dynamic_cast<BuildingClass*>(Cell_Find_Object(RTTI_BUILDING));
 }
@@ -335,7 +334,7 @@ BuildingClass* CellClass::Cell_Building() const {
  * HISTORY: * 05/18/1994 JLB : Created. *
  *=============================================================================================*/
 TerrainClass* CellClass::Cell_Terrain() const {
-  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
   return dynamic_cast<TerrainClass*>(Cell_Find_Object(RTTI_TERRAIN));
 }
@@ -361,8 +360,7 @@ TerrainClass* CellClass::Cell_Terrain() const {
  * HISTORY: * 05/13/1994 JLB : Created. *
  *=============================================================================================*/
 ObjectClass* CellClass::Cell_Object(int x, int y) const {
-  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
-
+  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
   /*
   **	Hack so that aircraft landed on helipads can still be selected if
@@ -403,7 +401,7 @@ ObjectClass* CellClass::Cell_Object(int x, int y) const {
  *checks if cell is in view and not flagged already.                  *
  *=============================================================================================*/
 void CellClass::Redraw_Objects(bool forced) {
-  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
   const CELL cell = Cell_Number();
 
@@ -441,7 +439,7 @@ void CellClass::Redraw_Objects(bool forced) {
       */
       for (int index = 0; index < std::ssize(Overlappers); index++) {
         if (base::At(Overlappers, index)) {
-          assert(base::At(Overlappers, index)->IsActive);
+          DCHECK(base::At(Overlappers, index)->IsActive);
           if (base::At(Overlappers, index)->Is_Techno() &&
               dynamic_cast<const TechnoClass*>(base::At(Overlappers, index))
                       ->Visual_Character() != VISUAL_NORMAL) {
@@ -485,7 +483,7 @@ void CellClass::Redraw_Objects(bool forced) {
  *Checks for crushable walls and crushable object.                         *
  *=============================================================================================*/
 bool CellClass::Is_Clear_To_Build(SpeedType loco) const {
-  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
   /*
   **	During scenario initialization, passability is always guaranteed.
@@ -561,7 +559,7 @@ bool CellClass::Is_Clear_To_Build(SpeedType loco) const {
  *pointer in cell object.                             *
  *=============================================================================================*/
 void CellClass::Recalc_Attributes() {
-  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
   /*
   **	Special override for interior terrain set so that a non-template or a
@@ -614,9 +612,8 @@ void CellClass::Recalc_Attributes() {
  * HISTORY: * 07/18/1994 JLB : Created. * 11/29/1994 JLB : Simplified. *
  *=============================================================================================*/
 void CellClass::Occupy_Down(ObjectClass* object) {
-  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
-  assert(object != nullptr && object->IsActive);
-
+  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(object != nullptr && object->IsActive);
 
   if (object == nullptr) {
     return;
@@ -631,8 +628,8 @@ void CellClass::Occupy_Down(ObjectClass* object) {
   if (object->What_Am_I() == RTTI_BUILDING && Cell_Occupier()) {
     ObjectClass* optr = Cell_Occupier();
     while (optr->Next != nullptr) {
-      assert(optr != object);
-      assert(optr->What_Am_I() != RTTI_BUILDING);
+      DCHECK(optr != object);
+      DCHECK(optr->What_Am_I() != RTTI_BUILDING);
       optr = optr->Next;
     }
     optr->Next = object;
@@ -719,8 +716,8 @@ void CellClass::Occupy_Down(ObjectClass* object) {
  *pointer in previous object.                         *
  *=============================================================================================*/
 void CellClass::Occupy_Up(ObjectClass* object) {
-  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
-  assert(object != nullptr && object->IsActive);
+  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(object != nullptr && object->IsActive);
 
   if (object == nullptr) {
     return;
@@ -813,8 +810,8 @@ void CellClass::Occupy_Up(ObjectClass* object) {
  *buildings are always marked down.                           *
  *=============================================================================================*/
 void CellClass::Overlap_Down(ObjectClass* object) {
-  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
-  assert(object != nullptr && object->IsActive);
+  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(object != nullptr && object->IsActive);
 
   ObjectClass** ptr = nullptr;
 
@@ -907,8 +904,8 @@ void CellClass::Overlap_Down(ObjectClass* object) {
  * HISTORY: * 07/18/1994 JLB : Created. *
  *=============================================================================================*/
 void CellClass::Overlap_Up(ObjectClass* object) {
-  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
-  assert(object != nullptr && object->IsActive);
+  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(object != nullptr && object->IsActive);
 
   for (int index = 0; index < std::ssize(Overlappers); index++) {
     if (base::At(Overlappers, index) == object) {
@@ -934,7 +931,7 @@ void CellClass::Overlap_Up(ObjectClass* object) {
  * HISTORY: * 07/18/1994 JLB : Created. *
  *=============================================================================================*/
 UnitClass* CellClass::Cell_Unit() const {
-  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
   return dynamic_cast<UnitClass*>(Cell_Find_Object(RTTI_UNIT));
 }
@@ -957,7 +954,7 @@ UnitClass* CellClass::Cell_Unit() const {
  * HISTORY: * 05/20/1996 JLB : Created. *
  *=============================================================================================*/
 VesselClass* CellClass::Cell_Vessel() const {
-  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
   return dynamic_cast<VesselClass*>(Cell_Find_Object(RTTI_VESSEL));
 }
@@ -980,7 +977,7 @@ VesselClass* CellClass::Cell_Vessel() const {
  * HISTORY: * 12/21/1994 JLB : Created. *
  *=============================================================================================*/
 InfantryClass* CellClass::Cell_Infantry() const {
-  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
   return dynamic_cast<InfantryClass*>(Cell_Find_Object(RTTI_INFANTRY));
 }
@@ -1067,7 +1064,7 @@ InfantryClass* CellClass::Cell_Infantry() const {
  *Objects added to draw process.                                           *
  *=============================================================================================*/
 void CellClass::Draw_It(int x, int y, bool objects) const {
-  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
   if (!objects) {
     BStart(BENCH_CELL);
@@ -1506,7 +1503,7 @@ void CellClass::Concrete_Calc() {}
  *partially-damaged walls.                               *
  *=============================================================================================*/
 void CellClass::Wall_Update() {
-  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
   static const FacingType _offsets[5] = {FACING_N, FACING_E, FACING_S, FACING_W,
                                          FACING_NONE};
@@ -1587,7 +1584,7 @@ void CellClass::Wall_Update() {
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
 COORDINATE CellClass::Cell_Coord() const {
-  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
   return ::Cell_Coord(Cell_Number());
 }
@@ -1608,7 +1605,7 @@ COORDINATE CellClass::Cell_Coord() const {
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
 int CellClass::Reduce_Tiberium(int levels) {
-  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
   int reducer = 0;
 
@@ -1643,7 +1640,7 @@ int CellClass::Reduce_Tiberium(int levels) {
  *Updates zone as necessary.                                               *
  *=============================================================================================*/
 bool CellClass::Reduce_Wall(int damage) {
-  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
   if (Overlay != OVERLAY_NONE) {
     bool destroyed = false;
@@ -1762,7 +1759,7 @@ int CellClass::Spot_Index(COORDINATE coord) {
  *mix-up factor if center location is occupied.                     *
  *=============================================================================================*/
 COORDINATE CellClass::Closest_Free_Spot(COORDINATE coord, bool any) const {
-  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
   const int spot_index = Spot_Index(coord);
 
@@ -1848,7 +1845,7 @@ COORDINATE CellClass::Closest_Free_Spot(COORDINATE coord, bool any) const {
  *scramble algorithm.                                        *
  *=============================================================================================*/
 int CellClass::Clear_Icon() const {
-  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
   const CELL cell = Cell_Number();
   return (Cell_X(cell) % 4) + ((Cell_Y(cell) % 4) * 4);
@@ -1880,7 +1877,7 @@ int CellClass::Clear_Icon() const {
 // Not const: scatters the units in the cell.
 // NOLINTNEXTLINE(readability-make-member-function-const)
 void CellClass::Incoming(COORDINATE threat, bool forced, bool nokidding) {
-  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
   ObjectClass* object = nullptr;
 
@@ -1908,7 +1905,7 @@ void CellClass::Incoming(COORDINATE threat, bool forced, bool nokidding) {
  * HISTORY: * 03/19/1995 JLB : Created. *
  *=============================================================================================*/
 int CellClass::Adjacent_Offset(FacingType face) const {
-  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
   if (static_cast<unsigned>(face) >= magic_enum::enum_count<FacingType>()) {
     return 0;
@@ -1938,7 +1935,7 @@ int CellClass::Adjacent_Offset(FacingType face) const {
 // Not const: changes the other houses' threat values.
 // NOLINTNEXTLINE(readability-make-member-function-const)
 void CellClass::Adjust_Threat(HousesType house, int threat_value) {
-  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
   const int region = MapEditClass::Cell_Region(Cell_Number());
 
@@ -1979,7 +1976,7 @@ void CellClass::Adjust_Threat(HousesType house, int threat_value) {
  *the ore type.                                         *
  *=============================================================================================*/
 int32_t CellClass::Tiberium_Adjust(bool pregame) {
-  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
   if ((Overlay != OVERLAY_NONE) &&
       (OverlayTypeClass::As_Reference(Overlay).Land == LAND_TIBERIUM)) {
     static const int _adj[9] = {0, 1, 3, 4, 6, 7, 8, 10, 11};
@@ -2081,7 +2078,7 @@ int32_t CellClass::Tiberium_Adjust(bool pregame) {
 // Not const: opens the crate and grants its reward.
 // NOLINTNEXTLINE(readability-make-member-function-const)
 bool CellClass::Goodie_Check(FootClass* object) {
-  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
   if (object != nullptr && Overlay != OVERLAY_NONE &&
       OverlayTypeClass::As_Reference(Overlay).IsCrate) {
@@ -2713,7 +2710,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
  * HISTORY: * 05/23/1995 JLB : Created. *
  *=============================================================================================*/
 bool CellClass::Flag_Place(HousesType house) {
-  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
   if (!IsFlagged && Is_Clear_To_Move(SPEED_TRACK, false, false)) {
     IsFlagged = true;
@@ -2739,7 +2736,7 @@ bool CellClass::Flag_Place(HousesType house) {
  * HISTORY: * 05/23/1995 JLB : Created. *
  *=============================================================================================*/
 bool CellClass::Flag_Remove() {
-  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
   if (IsFlagged) {
     IsFlagged = false;
@@ -2768,7 +2765,7 @@ bool CellClass::Flag_Remove() {
 // Not const: starts the occupants' shimmer effect.
 // NOLINTNEXTLINE(readability-make-member-function-const)
 void CellClass::Shimmer() {
-  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
   ObjectClass* object = Cell_Occupier();
 
@@ -2813,7 +2810,7 @@ void CellClass::Shimmer() {
 bool CellClass::Is_Clear_To_Move(SpeedType loco, bool ignoreinfantry,
                                  bool ignorevehicles, int zone,
                                  MZoneType check) const {
-  assert(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
   /*
   **	Flying objects always consider every cell passable since they can fly

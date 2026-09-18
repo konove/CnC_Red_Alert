@@ -40,7 +40,6 @@
 
 #include <algorithm>
 #include <array>
-#include <cassert>
 #include <cctype>
 #include <cstdint>
 #include <cstdio>
@@ -51,6 +50,7 @@
 #include <string_view>
 #include <vector>
 
+#include "absl/log/check.h"
 #include "absl/log/log.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
@@ -936,7 +936,7 @@ bool Load_Game(int id) {
   Whom = PlayerPtr->Class->House;
   if (Map.PendingObjectPtr) {
     Map.PendingObject = &Map.PendingObjectPtr->Class_Of();
-    assert(Map.PendingObject != nullptr);
+    DCHECK(Map.PendingObject != nullptr);
     Map.Set_Cursor_Shape(Map.PendingObject->Occupy_List(true));
 #ifdef BG
     Map.Set_Placement_List(Map.PendingObject->Placement_List(true));

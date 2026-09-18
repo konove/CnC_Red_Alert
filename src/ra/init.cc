@@ -64,7 +64,6 @@
 
 #include <algorithm>
 #include <array>
-#include <cassert>
 #include <cctype>
 #include <cstdint>
 #include <cstdio>
@@ -77,6 +76,7 @@
 #include <string_view>
 #include <vector>
 
+#include "absl/log/check.h"
 #include "absl/log/log.h"
 #include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
@@ -917,7 +917,7 @@ bool Select_Game(bool /*fade*/) {
               if constexpr (config::kWolapiEnabled) {
                 delete PacketTransport;
                 PacketTransport = new UDPInterfaceClass;
-                assert(PacketTransport != nullptr);
+                DCHECK(PacketTransport != nullptr);
                 if (PacketTransport->Init()) {
                   switch (WOL_Main()) {
                     case 1:
@@ -2127,14 +2127,14 @@ static void Init_Heaps() {
   for (int index = 0; index < std::ssize(SpeechBuffer); index++) {
     base::At(SpeechBuffer, index).resize(kSpeechBufferSize);
     base::At(SpeechRecord, index) = VOX_NONE;
-    assert(!base::At(SpeechBuffer, index).empty());
+    DCHECK(!base::At(SpeechBuffer, index).empty());
   }
 
   /*
   **	Allocate the theater buffer block.
   */
   TheaterBuffer = new Buffer(kTheaterBufferSize);
-  assert(TheaterBuffer != nullptr);
+  DCHECK(TheaterBuffer != nullptr);
 }
 
 /***********************************************************************************************
@@ -2461,7 +2461,7 @@ static void Init_Secondary_Mixfiles() {
   } else {
     // assume regular/TFD files
     MainMix = MixArchive::Register("MAIN.MIX", &FastKey);
-    assert(MainMix != nullptr);
+    DCHECK(MainMix != nullptr);
   }
 
 // Denzil extract mixfile
@@ -2498,7 +2498,7 @@ static void Init_Secondary_Mixfiles() {
   if (GameFile("MOVIES2.MIX").IsAvailable()) {
     MoviesMix = MixArchive::Register("MOVIES2.MIX", &FastKey);  // Never cached.
   }
-  assert(MoviesMix != nullptr);
+  DCHECK(MoviesMix != nullptr);
 
   /*
   **	Register the score mixfile.

@@ -146,7 +146,6 @@
 #include "ra/techno.h"
 
 #include <algorithm>
-#include <cassert>
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
@@ -597,7 +596,7 @@ bool TechnoClass::Is_Allowed_To_Recloak() const { return true; }
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
 COORDINATE TechnoClass::Fire_Coord(int which) const {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   const DirType dir = Turret_Facing();
   const TechnoTypeClass* tclass = Techno_Type_Class();
@@ -795,7 +794,7 @@ bool TechnoClass::Is_Visible_On_Radar() const {
  *event processing.                                     *
  *=============================================================================================*/
 bool TechnoClass::Revealed(HouseClass* house) {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   if (house == PlayerPtr && IsDiscoveredByPlayer) {
     return false;
@@ -863,7 +862,7 @@ bool TechnoClass::Revealed(HouseClass* house) {
  * HISTORY: * 06/02/1994 JLB : Created. *
  *=============================================================================================*/
 void TechnoClass::Hidden() {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   if (!IsDiscoveredByPlayer) {
     return;
@@ -890,7 +889,7 @@ void TechnoClass::Hidden() {
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
 bool TechnoClass::Mark(MarkType mark) {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   if (RadioClass::Mark(mark)) {
     /*
@@ -930,7 +929,7 @@ bool TechnoClass::Mark(MarkType mark) {
 RadioMessageType TechnoClass::Receive_Message(RadioClass* from,
                                               RadioMessageType message,
                                               int32_t& param) {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   switch (message) {
     /*
@@ -1105,7 +1104,7 @@ RadioMessageType TechnoClass::Receive_Message(RadioClass* from,
  *Checks for an processes any trigger in cell.                             *
  *=============================================================================================*/
 void TechnoClass::Per_Cell_Process(PCPType why) {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   if (why == PCP_END) {
     const CELL cell = Coord_Cell(Center_Coord());
@@ -1147,7 +1146,7 @@ void TechnoClass::Per_Cell_Process(PCPType why) {
  *   01/23/1995 JLB : Dynamic selected object rectangle. *
  *=============================================================================================*/
 void TechnoClass::Draw_It(int x, int y, WindowNumberType window) const {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   /*
   **	Tells the door logic that it has been drawn.
@@ -1276,7 +1275,7 @@ void TechnoClass::Draw_It(int x, int y, WindowNumberType window) const {
  * HISTORY: * 11/14/1994 JLB : Created. *
  *=============================================================================================*/
 bool TechnoClass::Unlimbo(COORDINATE coord, DirType dir) {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   if (RadioClass::Unlimbo(coord, dir)) {
     PrimaryFacing = dir;
@@ -1309,7 +1308,7 @@ bool TechnoClass::Unlimbo(COORDINATE coord, DirType dir) {
  * HISTORY: * 11/14/1994 JLB : Created. *
  *=============================================================================================*/
 bool TechnoClass::In_Range(TARGET target, int which) const {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   if (IsLocked && Target_Legal(target)) {
     int range = Weapon_Range(which);
@@ -1346,7 +1345,7 @@ bool TechnoClass::In_Range(TARGET target, int which) const {
  * HISTORY: * 11/14/1994 JLB : Created. *
  *=============================================================================================*/
 bool TechnoClass::In_Range(const ObjectClass* target, int which) const {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   if (IsLocked && target) {
     int range = Weapon_Range(which);
@@ -1383,7 +1382,7 @@ bool TechnoClass::In_Range(const ObjectClass* target, int which) const {
  * HISTORY: * 03/16/1995 JLB : Created. *
  *=============================================================================================*/
 bool TechnoClass::In_Range(COORDINATE coord, int which) const {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   return IsLocked &&
          ::Distance(Fire_Coord(which), coord) <= Weapon_Range(which);
@@ -1412,7 +1411,7 @@ bool TechnoClass::In_Range(COORDINATE coord, int which) const {
  * HISTORY: * 08/23/1996 JLB : Created. *
  *=============================================================================================*/
 fixed TechnoClass::Area_Modify(CELL cell) const {
-  //	assert(Techno_Type_Class()->PrimaryWeapon != nullptr);
+  //	DCHECK(Techno_Type_Class()->PrimaryWeapon != nullptr);
   if (Techno_Type_Class()->PrimaryWeapon == nullptr ||
       !Techno_Type_Class()->PrimaryWeapon->IsSupressed) {
     return fixed(1);
@@ -1530,8 +1529,8 @@ fixed TechnoClass::Area_Modify(CELL cell) const {
 bool TechnoClass::Evaluate_Object(ThreatType method, uint32_t mask, int range,
                                   const TechnoClass* object, int& value,
                                   int zone) const {
-  assert(IsActive);
-  assert(object != nullptr);
+  DCHECK(IsActive);
+  DCHECK(object != nullptr);
 
   BStart(BENCH_EVAL_OBJECT);
 
@@ -2003,7 +2002,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, uint32_t mask, int range,
 bool TechnoClass::Evaluate_Cell(ThreatType method, uint32_t mask, CELL cell,
                                 int range, const TechnoClass** object,
                                 int& value, int zone) const {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   BStart(BENCH_EVAL_CELL);
 
@@ -2204,7 +2203,7 @@ int TechnoClass::Evaluate_Just_Cell(CELL cell) const {
  *=============================================================================================*/
 TARGET TechnoClass::Greatest_Threat(ThreatType method)  // const
 {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   BStart(BENCH_GREATEST_THREAT);
 
@@ -2526,7 +2525,7 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method)  // const
  * HISTORY: * 12/09/1994 JLB : Created. *
  *=============================================================================================*/
 HousesType TechnoClass::Owner() const {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   return House->Class->House;
 }
@@ -2549,7 +2548,7 @@ HousesType TechnoClass::Owner() const {
  * HISTORY: * 12/09/1994 JLB : Created. *
  *=============================================================================================*/
 void TechnoClass::Clicked_As_Target(int count) {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   FlashCount = static_cast<uint8_t>(count);
 }
@@ -2570,7 +2569,7 @@ void TechnoClass::Clicked_As_Target(int count) {
  * HISTORY: * 12/09/1994 JLB : Created. *
  *=============================================================================================*/
 void TechnoClass::AI() {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   /*
   **	Handle recoil recovery here.
@@ -2875,7 +2874,7 @@ bool TechnoClass::Is_Ready_To_Cloak() const {
  * HISTORY: * 12/11/1994 JLB : Created. *
  *=============================================================================================*/
 bool TechnoClass::Select() {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   if (!IsDiscoveredByPlayer && !House->IsPlayerControl && !Debug_Unshroud) {
     return false;
@@ -2909,7 +2908,7 @@ bool TechnoClass::Select() {
  * HISTORY: * 12/23/1994 JLB : Created. *
  *=============================================================================================*/
 FireErrorType TechnoClass::Can_Fire(TARGET target, int which) const {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   /*
   **	Don't allow firing if the target is illegal.
@@ -3023,7 +3022,7 @@ FireErrorType TechnoClass::Can_Fire(TARGET target, int which) const {
  * HISTORY: * 12/23/1994 JLB : Created. *
  *=============================================================================================*/
 void TechnoClass::Stun() {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   Assign_Target(kTargetNone);
   Assign_Destination(kTargetNone);
@@ -3048,7 +3047,7 @@ void TechnoClass::Stun() {
  * HISTORY: * 12/23/1994 JLB : Created. *
  *=============================================================================================*/
 void TechnoClass::Assign_Target(TARGET target) {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   if (target == TarCom) {
     return;
@@ -3101,7 +3100,7 @@ void TechnoClass::Assign_Target(TARGET target) {
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
 int TechnoClass::Rearm_Delay(bool second, int which) const {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   if (What_Am_I() == RTTI_BUILDING && Ammo > 1) {
     return 1;
@@ -3265,7 +3264,7 @@ bool TechnoClass::Electric_Zap(TARGET target, int which,
  *Handles camera "weapon" case.                                            *
  *=============================================================================================*/
 BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   DirType dir = DIR_N;          // The facing to impart upon the projectile.
   COORDINATE target_coord = 0;  // Coordinate of the target.
@@ -3573,7 +3572,7 @@ BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
  *=============================================================================================*/
 void TechnoClass::Player_Assign_Mission(MissionType mission, TARGET target,
                                         TARGET destination) {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   if (AllowVoice) {
     if (mission == MISSION_ATTACK) {
@@ -3621,7 +3620,7 @@ void TechnoClass::Player_Assign_Mission(MissionType mission, TARGET target,
  *control for trees.                                        *
  *=============================================================================================*/
 ActionType TechnoClass::What_Action(ObjectClass* object) {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   if (object != nullptr) {
     /*
@@ -3748,7 +3747,7 @@ ActionType TechnoClass::What_Action(ObjectClass* object) {
  *buildings is explicitly disabled.                         *
  *=============================================================================================*/
 ActionType TechnoClass::What_Action(CELL cell) const {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   const CellClass* cellptr = &Map.at(cell);
   const OverlayTypeClass* optr = nullptr;
@@ -3849,7 +3848,7 @@ ActionType TechnoClass::What_Action(CELL cell) const {
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
 bool TechnoClass::Can_Player_Move() const {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   return House->IsPlayerControl;
 }
@@ -3871,7 +3870,7 @@ bool TechnoClass::Can_Player_Move() const {
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
 bool TechnoClass::Can_Player_Fire() const {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   return House->IsPlayerControl && Is_Techno() &&
          Techno_Type_Class()->PrimaryWeapon != nullptr;
@@ -3894,7 +3893,7 @@ bool TechnoClass::Can_Player_Fire() const {
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
 bool TechnoClass::Is_Weapon_Equipped() const {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   return Techno_Type_Class()->PrimaryWeapon != nullptr;
 }
@@ -3919,7 +3918,7 @@ bool TechnoClass::Is_Weapon_Equipped() const {
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
 bool TechnoClass::Can_Repair() const {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   /*
   **	Temporary hack to disable repair cursor over non-buildings.
@@ -3989,7 +3988,7 @@ int TechnoClass::Weapon_Range(int which) const {
  *=========================================================================*/
 void TechnoClass::Override_Mission(MissionType mission, TARGET tarcom,
                                    TARGET navcom) {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   SuspendedTarCom = TarCom;
   RadioClass::Override_Mission(mission, tarcom, navcom);
@@ -4009,7 +4008,7 @@ void TechnoClass::Override_Mission(MissionType mission, TARGET tarcom,
  *   04/28/1995 PWG : Created.                                             *
  *=========================================================================*/
 bool TechnoClass::Restore_Mission() {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   if (RadioClass::Restore_Mission()) {
     Assign_Target(SuspendedTarCom);
@@ -4031,7 +4030,7 @@ bool TechnoClass::Restore_Mission() {
  * HISTORY: * 04/15/1996 BWG : Created. *
  *=============================================================================================*/
 void TechnoClass::Renovate() {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   Mark(MARK_CHANGE);
   Strength = Techno_Type_Class()->MaxStrength;
@@ -4058,7 +4057,7 @@ void TechnoClass::Renovate() {
  *quantity records.                                         *
  *=============================================================================================*/
 bool TechnoClass::Captured(HouseClass* newowner) {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   if (newowner != House) {
     /*
@@ -4160,7 +4159,7 @@ bool TechnoClass::Captured(HouseClass* newowner) {
 ResultType TechnoClass::Take_Damage(int& damage, int distance,
                                     WarheadType warhead, TechnoClass* source,
                                     bool forced) {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   ResultType result = RESULT_NONE;
 
@@ -4261,7 +4260,7 @@ ResultType TechnoClass::Take_Damage(int& damage, int distance,
  *only counted if it received damage.                     *
  *=============================================================================================*/
 void TechnoClass::Record_The_Kill(TechnoClass* source) {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   int total_recorded = 0;
 
@@ -4426,7 +4425,7 @@ void TechnoClass::Record_The_Kill(TechnoClass* source) {
  *function.                                                  *
  *=============================================================================================*/
 CELL TechnoClass::Nearby_Location(const TechnoClass* techno) const {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   SpeedType speed = Techno_Type_Class()->Speed;
   if (speed == SPEED_WINGED) {
@@ -4459,7 +4458,7 @@ CELL TechnoClass::Nearby_Location(const TechnoClass* techno) const {
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
 void TechnoClass::Do_Uncloak() {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   if (IsCloakable && (Cloak == CLOAKED || Cloak == CLOAKING)) {
     if (Cloak == CLOAKED) {
@@ -4490,7 +4489,7 @@ void TechnoClass::Do_Uncloak() {
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
 void TechnoClass::Do_Cloak() {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   if (IsCloakable && (Cloak == UNCLOAKED || Cloak == UNCLOAKING)) {
     Detach_All(false);
@@ -4527,7 +4526,7 @@ void TechnoClass::Do_Cloak() {
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
 void TechnoClass::Do_Shimmer() {
-  assert(IsActive);
+  DCHECK(IsActive);
   Do_Uncloak();
 }
 
@@ -4552,7 +4551,7 @@ void TechnoClass::Do_Shimmer() {
  *invisible objects.                                           *
  *=============================================================================================*/
 VisualType TechnoClass::Visual_Character(bool raw) const {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   if (Techno_Type_Class()->IsInvisible && IsOwnedByPlayer) {
     return VISUAL_NORMAL;
@@ -4612,7 +4611,7 @@ void TechnoClass::Techno_Draw_Object(std::span<const std::byte> shapefile,
                                      int shapenum, int x, int y,
                                      WindowNumberType window, DirType rotation,
                                      int scale) const {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   if (!shapefile.empty()) {
     const VisualType visual = Visual_Character();
@@ -4715,7 +4714,7 @@ void TechnoClass::Techno_Draw_Object(std::span<const std::byte> shapefile,
 }
 
 std::span<const unsigned char> TechnoClass::Remap_Table() const {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   if (Techno_Type_Class()->IsRemappable) {
     return House->Remap_Table(IsBlushing, Techno_Type_Class()->Remap);
@@ -4744,7 +4743,7 @@ std::span<const unsigned char> TechnoClass::Remap_Table() const {
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
 void TechnoClass::Detach(TARGET target, bool all) {
-  assert(IsActive);
+  DCHECK(IsActive);
   RadioClass::Detach(target, all);
 
   if (SuspendedMission != MISSION_NONE && SuspendedTarCom == target) {
@@ -4786,7 +4785,7 @@ void TechnoClass::Detach(TARGET target, bool all) {
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
 void TechnoClass::Kill_Cargo(TechnoClass* source) {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   while (Is_Something_Attached()) {
     FootClass* foot = Detach_Object();
@@ -4813,7 +4812,7 @@ void TechnoClass::Kill_Cargo(TechnoClass* source) {
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
 InfantryType TechnoClass::Crew_Type() const {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   /*
   **	If this object contains no crew, then there can be no
@@ -4859,7 +4858,7 @@ InfantryType TechnoClass::Crew_Type() const {
  *mission lame-out.                                     *
  *=============================================================================================*/
 int TechnoClass::Value() const {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   int value = 0;
 
@@ -4904,7 +4903,7 @@ int TechnoClass::Value() const {
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
 int TechnoClass::Threat_Range(int control) const {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   /*
   **	Threat range means nothing if scanning the whole map. In such a case,
@@ -4987,7 +4986,7 @@ bool TechnoClass::Is_In_Same_Zone(CELL cell) const {
  *JLB : Allow recruit of guard area units in multiplay. *
  *=============================================================================================*/
 void TechnoClass::Base_Is_Attacked(TechnoClass* enemy) {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   FootClass* defender[6] = {};
   int value[std::size(defender)] = {};
@@ -5435,7 +5434,7 @@ bool TechnoClass::Is_Allowed_To_Retaliate(const TechnoClass* source) const {
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
 uint32_t TechnoClass::Get_Ownable() const {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   return dynamic_cast<const TechnoTypeClass&>(Class_Of()).Get_Ownable();
   //	return ((TechnoTypeClass const &)Class_Of()).Ownable;
@@ -5456,7 +5455,7 @@ uint32_t TechnoClass::Get_Ownable() const {
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
 int TechnoClass::Risk() const {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   return Techno_Type_Class()->Risk;
 }
@@ -5482,7 +5481,7 @@ int TechnoClass::Risk() const {
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
 fixed TechnoClass::Tiberium_Load() const {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   return fixed(0);
 }
@@ -5512,7 +5511,7 @@ fixed TechnoClass::Tiberium_Load() const {
  *=============================================================================================*/
 DirType TechnoClass::Desired_Load_Dir(ObjectClass* /*unused*/,
                                       CELL& moveto) const {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   moveto = 0;
   return DIR_N;
@@ -5537,7 +5536,7 @@ DirType TechnoClass::Desired_Load_Dir(ObjectClass* /*unused*/,
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
 int TechnoClass::Pip_Count() const {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   return 0;
 }
@@ -5560,7 +5559,7 @@ int TechnoClass::Pip_Count() const {
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
 DirType TechnoClass::Fire_Direction() const {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   return Turret_Facing();
 }
@@ -5580,7 +5579,7 @@ DirType TechnoClass::Fire_Direction() const {
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-void TechnoClass::Response_Select() { assert(IsActive); }
+void TechnoClass::Response_Select() { DCHECK(IsActive); }
 
 /***********************************************************************************************
  * TechnoClass::Response_Move -- Handles the voice response to a movement
@@ -5598,7 +5597,7 @@ void TechnoClass::Response_Select() { assert(IsActive); }
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-void TechnoClass::Response_Move() { assert(IsActive); }
+void TechnoClass::Response_Move() { DCHECK(IsActive); }
 
 /***********************************************************************************************
  * TechnoClass::Response_Attack -- Handles the voice response when given
@@ -5616,7 +5615,7 @@ void TechnoClass::Response_Move() { assert(IsActive); }
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-void TechnoClass::Response_Attack() { assert(IsActive); }
+void TechnoClass::Response_Attack() { DCHECK(IsActive); }
 
 /***********************************************************************************************
  * TechnoClass::Target_Something_Nearby -- Handles finding and assigning a
@@ -5636,7 +5635,7 @@ void TechnoClass::Response_Attack() { assert(IsActive); }
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
 bool TechnoClass::Target_Something_Nearby(ThreatType threat) {
-  assert(IsActive);
+  DCHECK(IsActive);
   threat = threat & (THREAT_RANGE | THREAT_AREA);
 
   /*
@@ -5682,7 +5681,7 @@ bool TechnoClass::Target_Something_Nearby(ThreatType threat) {
  * HISTORY: * 07/24/1995 JLB : Created. *
  *=============================================================================================*/
 int TechnoClass::Exit_Object(TechnoClass* /*unused*/) {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   return 0;
 }
@@ -5703,7 +5702,7 @@ int TechnoClass::Exit_Object(TechnoClass* /*unused*/) {
  * HISTORY: * 10/19/1996 JLB : Created. *
  *=============================================================================================*/
 bool TechnoClass::Is_Ready_To_Random_Animate() const {
-  assert(IsActive);
+  DCHECK(IsActive);
   return IdleTimer.IsFinished();
 }
 
@@ -5723,7 +5722,7 @@ bool TechnoClass::Is_Ready_To_Random_Animate() const {
  *                                                                                             *
  * HISTORY: * 07/24/1995 JLB : Created. *
  *=============================================================================================*/
-void TechnoClass::Assign_Destination(TARGET /*unused*/) { assert(IsActive); }
+void TechnoClass::Assign_Destination(TARGET /*unused*/) { DCHECK(IsActive); }
 
 /***********************************************************************************************
  * TechnoClass::Enter_Idle_Mode -- Object enters its default idle condition. *
@@ -5743,7 +5742,7 @@ void TechnoClass::Assign_Destination(TARGET /*unused*/) { assert(IsActive); }
  *                                                                                             *
  * HISTORY: * 07/24/1995 JLB : Created. *
  *=============================================================================================*/
-void TechnoClass::Enter_Idle_Mode(bool /*unused*/) { assert(IsActive); }
+void TechnoClass::Enter_Idle_Mode(bool /*unused*/) { DCHECK(IsActive); }
 
 /***********************************************************************************************
  * TechnoClass::Draw_Pips -- Draws the transport pips and other techno
@@ -5767,7 +5766,7 @@ void TechnoClass::Enter_Idle_Mode(bool /*unused*/) { assert(IsActive); }
  *Medic hack for red pip.                                                  *
  *=============================================================================================*/
 void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) const {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   /*
   **	Transporter type objects have a different graphic representation for the
@@ -6052,7 +6051,7 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) const {
  *"IsLeader" method of building preference.                 *
  *=============================================================================================*/
 BuildingClass* TechnoClass::Find_Docking_Bay(StructType b, bool friendly) {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   BuildingClass* best = nullptr;
 
@@ -6117,7 +6116,7 @@ BuildingClass* TechnoClass::Find_Docking_Bay(StructType b, bool friendly) {
  * HISTORY: * 08/12/1995 JLB : Created. *
  *=============================================================================================*/
 CELL TechnoClass::Find_Exit_Cell(const TechnoClass* /*unused*/) const {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   return Coord_Cell(Docking_Coord());
 }
@@ -6139,7 +6138,7 @@ CELL TechnoClass::Find_Exit_Cell(const TechnoClass* /*unused*/) const {
  * HISTORY: * 08/13/1995 JLB : Created. *
  *=============================================================================================*/
 int TechnoClass::Refund_Amount() const {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   int cost = Techno_Type_Class()->Raw_Cost() * House->CostBias;
 
@@ -6169,7 +6168,7 @@ int TechnoClass::Refund_Amount() const {
  * HISTORY: * 10/02/1995 JLB : Created. *
  *=============================================================================================*/
 int TechnoClass::Anti_Air() const {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   if (Is_Weapon_Equipped()) {
     const WeaponTypeClass* weapon = Techno_Type_Class()->PrimaryWeapon;
@@ -6208,7 +6207,7 @@ int TechnoClass::Anti_Air() const {
  * HISTORY: * 10/02/1995 JLB : Created. *
  *=============================================================================================*/
 int TechnoClass::Anti_Armor() const {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   if (Is_Weapon_Equipped()) {
     if (!Techno_Type_Class()->PrimaryWeapon->Bullet->IsAntiGround) {
@@ -6252,7 +6251,7 @@ int TechnoClass::Anti_Armor() const {
  * HISTORY: * 10/02/1995 JLB : Created. *
  *=============================================================================================*/
 int TechnoClass::Anti_Infantry() const {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   if (Is_Weapon_Equipped()) {
     if (!Techno_Type_Class()->PrimaryWeapon->Bullet->IsAntiGround) {
@@ -6295,8 +6294,8 @@ int TechnoClass::Anti_Infantry() const {
  * HISTORY: * 03/14/1996 JLB : Created. *
  *=============================================================================================*/
 void TechnoClass::Look(bool incremental) {
-  assert(IsActive);
-  assert(!IsInLimbo);
+  DCHECK(IsActive);
+  DCHECK(!IsInLimbo);
 
   const int sight_range = Techno_Type_Class()->SightRange;
 

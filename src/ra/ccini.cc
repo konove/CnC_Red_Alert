@@ -97,7 +97,6 @@
 #include "ra/ccini.h"
 
 #include <algorithm>
-#include <cassert>
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
@@ -105,6 +104,7 @@
 #include <string_view>
 #include <utility>
 
+#include "absl/log/check.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
@@ -856,7 +856,7 @@ OverlayType CCINIClass::Get_OverlayType(const char* section, const char* entry,
  *=============================================================================================*/
 bool CCINIClass::Put_OverlayType(const char* section, const char* entry,
                                  OverlayType value) {
-  assert(value != OVERLAY_NONE);
+  DCHECK(value != OVERLAY_NONE);
   return Put_String(section, entry,
                     OverlayTypeClass::As_Reference(value).Name());
 }

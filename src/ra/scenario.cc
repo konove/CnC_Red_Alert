@@ -66,7 +66,6 @@
 #include "ra/scenario.h"
 
 #include <algorithm>
-#include <cassert>
 #include <cctype>
 #include <cstddef>
 #include <cstdint>
@@ -78,6 +77,7 @@
 #include <string>
 #include <string_view>
 
+#include "absl/log/check.h"
 #include "absl/log/log.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
@@ -558,7 +558,7 @@ void Fill_In_Data() {
   for (int index = 0; index < TriggerTypes.Count(); index++) {
     TriggerTypeClass* tp = TriggerTypes.Ptr(index);
 
-    assert(tp != nullptr);
+    DCHECK(tp != nullptr);
 
     if (base::Any(tp->Attaches_To() & ATTACH_MAP)) {
       MapTriggers.Add(Find_Or_Make(tp));
@@ -2634,7 +2634,7 @@ static void Create_Units(bool official) {
   */
   bool taken[26];
   CELL waypts[26];
-  assert(Rule.MaxPlayers < std::ssize(waypts));
+  DCHECK(Rule.MaxPlayers < std::ssize(waypts));
   int num_waypts = 0;
 
   /*

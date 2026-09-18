@@ -45,10 +45,10 @@
 
 #include "ra/overlay.h"
 
-#include <cassert>
 #include <cstdlib>
 #include <span>
 
+#include "absl/log/check.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
 #include "ra/building.h"
@@ -174,8 +174,8 @@ OverlayClass::OverlayClass(OverlayType type, CELL pos, HousesType house)
  *legality before proceeding.                             *
  *=============================================================================================*/
 bool OverlayClass::Mark(MarkType mark) {
-  assert(Overlays.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Overlays.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (ObjectClass::Mark(mark) && (mark == MARK_DOWN)) {
     const CELL cell = Coord_Cell(Coord);

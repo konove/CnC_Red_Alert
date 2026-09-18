@@ -61,7 +61,6 @@
 #include "ra/drive.h"
 
 #include <algorithm>
-#include <cassert>
 #include <cstdlib>
 #include <cstring>
 #include <iterator>
@@ -111,7 +110,7 @@
  * HISTORY: * 12/30/1994 JLB : Created. *
  *=============================================================================================*/
 void DriveClass::Response_Select() {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   static const VocType _response[] = {VOC_VEHIC,  VOC_REPORT, VOC_YESSIR,
                                       VOC_YESSIR, VOC_YESSIR, VOC_AWAIT};
@@ -137,7 +136,7 @@ void DriveClass::Response_Select() {
  * HISTORY: * 12/30/1994 JLB : Created. *
  *=============================================================================================*/
 void DriveClass::Response_Move() {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   static const VocType _response[] = {
       VOC_ACKNOWL,
@@ -165,7 +164,7 @@ void DriveClass::Response_Move() {
  * HISTORY: * 12/30/1994 JLB : Created. *
  *=============================================================================================*/
 void DriveClass::Response_Attack() {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   static const VocType _response[] = {VOC_AFFIRM, VOC_ACKNOWL};
   const VocType response =
@@ -202,7 +201,7 @@ void DriveClass::Response_Attack() {
  *   08/02/1996 JLB : Added the "nokidding" parameter. *
  *=============================================================================================*/
 void DriveClass::Scatter(COORDINATE threat, bool forced, bool nokidding) {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   /*
   **	Certain missions prevent scattering regardless of whether it would be
@@ -276,7 +275,7 @@ bool DriveClass::Limbo() {
  * HISTORY: * 12/22/1994 JLB : Created. *
  *=============================================================================================*/
 bool DriveClass::Stop_Driver() {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   /*
   ** We only need to do something if the vehicle is actually going
@@ -331,7 +330,7 @@ bool DriveClass::Stop_Driver() {
  * HISTORY: * 05/29/1995 JLB : Created. *
  *=============================================================================================*/
 void DriveClass::Do_Turn(DirType dir) {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   if (dir != PrimaryFacing) {
     PrimaryFacing.Set_Desired(dir);
@@ -408,7 +407,7 @@ bool DriveClass::Teleport_To(CELL cell) {
  * HISTORY: * 03/17/1995 JLB : Created. *
  *=============================================================================================*/
 void DriveClass::Force_Track(int track, COORDINATE coord) {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   TrackNumber = track;
   TrackIndex = 0;
@@ -457,7 +456,7 @@ DriveClass::DriveClass(RTTIType rtti, int id, HousesType house)
  *function.                                            *
  *=============================================================================================*/
 COORDINATE DriveClass::Smooth_Turn(COORDINATE adj, DirType& dir) {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   DirType workdir = dir;
   const TrackControlType flags = base::At(TrackControl, TrackNumber).Flag;
@@ -505,7 +504,7 @@ COORDINATE DriveClass::Smooth_Turn(COORDINATE adj, DirType& dir) {
  *function.                                            *
  *=============================================================================================*/
 void DriveClass::Assign_Destination(TARGET target) {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   /*
   **	Abort early if there is anything wrong with the parameters
@@ -577,7 +576,7 @@ void DriveClass::Assign_Destination(TARGET target) {
  *function.                                            *
  *=============================================================================================*/
 bool DriveClass::While_Moving() {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   /*
   **	Perform quick legality checks.
@@ -793,7 +792,7 @@ bool DriveClass::While_Moving() {
  *Distinguishes between center and near-center conditions.                 *
  *=============================================================================================*/
 void DriveClass::Per_Cell_Process(PCPType why) {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   if (why == PCP_END) {
     const CELL cell = Coord_Cell(Coord);
@@ -837,7 +836,7 @@ void DriveClass::Per_Cell_Process(PCPType why) {
  *                                      *
  *=============================================================================================*/
 bool DriveClass::Start_Of_Move() {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   FacingType facing = base::At(Path, 0);  // Direction movement will commence.
 
@@ -1242,7 +1241,7 @@ bool DriveClass::Start_Of_Move() {
  *function.                                            *
  *=============================================================================================*/
 void DriveClass::AI() {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   FootClass::AI();
   if (!IsActive || Height > 0) {
@@ -1378,7 +1377,7 @@ void DriveClass::Lay_Track() { DCHECK(IsActive); }
  * HISTORY: * 07/30/1995 JLB : Created. *
  *=============================================================================================*/
 void DriveClass::Mark_Track(COORDINATE headto, MarkType type) {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   const bool value = type != MARK_UP;
 
@@ -1424,7 +1423,7 @@ void DriveClass::Mark_Track(COORDINATE headto, MarkType type) {
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
 bool DriveClass::Ok_To_Move(DirType /*unused*/) {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   return true;
 }

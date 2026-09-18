@@ -59,11 +59,11 @@
 #include "ra/anim.h"
 
 #include <algorithm>
-#include <cassert>
 #include <cstddef>
 #include <cstdint>
 #include <span>
 
+#include "absl/log/check.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "ra/bench_util.h"
@@ -177,8 +177,8 @@ void Shorten_Attached_Anims(const ObjectClass* obj) {
  *(infantry decay anims).                               *
  *=============================================================================================*/
 COORDINATE AnimClass::Sort_Y() const {
-  assert(Anims.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Anims.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (xObject != kTargetNone) {
     return Coord_Add(As_Object(xObject)->Sort_Y(), 0x00010000L);
@@ -212,8 +212,8 @@ COORDINATE AnimClass::Sort_Y() const {
  *visual center of object.                             *
  *=============================================================================================*/
 COORDINATE AnimClass::Center_Coord() const {
-  assert(Anims.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Anims.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (xObject != kTargetNone) {
     return Coord_Add(Coord, As_Object(xObject)->Target_Coord());
@@ -237,8 +237,8 @@ COORDINATE AnimClass::Center_Coord() const {
  *=============================================================================================*/
 bool AnimClass::Render(bool forced)  // const
 {
-  assert(Anims.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Anims.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (Delay) {
     return false;
@@ -267,8 +267,8 @@ bool AnimClass::Render(bool forced)  // const
  *translucent effect.                                          *
  *=============================================================================================*/
 void AnimClass::Draw_It(int x, int y, WindowNumberType window) const {
-  assert(Anims.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Anims.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (!IsInvisible) {
     BStart(BENCH_ANIMS);
@@ -330,8 +330,8 @@ void AnimClass::Draw_It(int x, int y, WindowNumberType window) const {
  * HISTORY: * 05/31/1994 JLB : Created. *
  *=============================================================================================*/
 bool AnimClass::Mark(MarkType mark) {
-  assert(Anims.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Anims.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (ObjectClass::Mark(mark)) {
     Map.Refresh_Cells(Coord_Cell(Center_Coord()), Overlap_List());
@@ -357,8 +357,8 @@ bool AnimClass::Mark(MarkType mark) {
  * HISTORY: * 03/19/1995 JLB : Created. *
  *=============================================================================================*/
 std::span<const int16_t> AnimClass::Overlap_List(bool /*redraw*/) const {
-  assert(Anims.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Anims.ID(this) == ID);
+  DCHECK(IsActive);
   static const int16_t OverlapAtom[] = {
       (-MAP_CELL_W * 2) - 1, (-MAP_CELL_W * 2),
       (-MAP_CELL_W * 2) + 1, (-MAP_CELL_W * 1) - 1,
@@ -397,8 +397,8 @@ std::span<const int16_t> AnimClass::Overlap_List(bool /*redraw*/) const {
  * HISTORY: * 03/19/1995 JLB : Created. *
  *=============================================================================================*/
 std::span<const int16_t> AnimClass::Occupy_List(bool /*placement*/) const {
-  assert(Anims.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Anims.ID(this) == ID);
+  DCHECK(IsActive);
 
   static const int16_t _simple[] = {kRefreshEol};
 
@@ -552,8 +552,8 @@ AnimClass::AnimClass(AnimType animnum, COORDINATE coord,
  * HISTORY: * 11/29/1994 JLB : Created. *
  *=============================================================================================*/
 AnimClass::~AnimClass() {
-  assert(Anims.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Anims.ID(this) == ID);
+  DCHECK(IsActive);
   if (GameActive) {
     /*
     **	If this anim is attached to another object
@@ -617,8 +617,8 @@ AnimClass::~AnimClass() {
  * HISTORY: * 05/31/1994 JLB : Created. *
  *=============================================================================================*/
 void AnimClass::AI() {
-  assert(Anims.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Anims.ID(this) == ID);
+  DCHECK(IsActive);
 
   /*
   **	For ground level based animations (ones that can run slowly as well as
@@ -792,13 +792,13 @@ void AnimClass::AI() {
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
 void AnimClass::Attach_To(ObjectClass* obj) {
-  assert(Anims.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Anims.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (obj == nullptr) {
     return;
   }
-  assert(obj->IsActive);
+  DCHECK(obj->IsActive);
 
   obj->Mark(MARK_OVERLAP_UP);
   obj->IsAnimAttached = true;
@@ -826,8 +826,8 @@ void AnimClass::Attach_To(ObjectClass* obj) {
  * HISTORY: * 12/25/1994 JLB : Created. *
  *=============================================================================================*/
 LayerType AnimClass::In_Which_Layer() const {
-  assert(Anims.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Anims.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (Class->Type >= ANIM_CORPSE1 && Class->Type <= ANIM_CORPSE3) {
     return LAYER_SURFACE;
@@ -857,8 +857,8 @@ LayerType AnimClass::In_Which_Layer() const {
  * HISTORY: * 06/30/1995 JLB : Created. *
  *=============================================================================================*/
 void AnimClass::Start() {
-  assert(Anims.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Anims.ID(this) == ID);
+  DCHECK(IsActive);
 
   Mark();
 
@@ -893,8 +893,8 @@ void AnimClass::Start() {
  * HISTORY: * 06/30/1995 JLB : Created. * 10/17/1995 JLB : Ion camera added. *
  *=============================================================================================*/
 void AnimClass::Middle() {
-  assert(Anims.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Anims.ID(this) == ID);
+  DCHECK(IsActive);
 
   const CELL cell = Coord_Cell(Center_Coord());
   CellClass* cellptr = &Map.at(cell);
@@ -1069,8 +1069,8 @@ void AnimClass::Middle() {
  *to animation destruction.                          *
  *=============================================================================================*/
 void AnimClass::Detach(TARGET target, bool all) {
-  assert(Anims.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Anims.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (xObject == target && all) {
     MapEditClass::Remove(this, In_Which_Layer());

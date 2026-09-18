@@ -63,7 +63,6 @@
 
 #include "ra/teamtype.h"
 
-#include <cassert>
 #include <cctype>
 #include <cstdint>
 #include <cstdio>
@@ -75,6 +74,7 @@
 #include <string_view>
 #include <utility>
 
+#include "absl/log/check.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/enum_array.h"
@@ -289,7 +289,7 @@ TeamMissionType TeamTypeClass::Mission_From_Name(const char* name) {
  *   12/13/1994 BR : Created.                                              *
  *=========================================================================*/
 const char* TeamTypeClass::Name_From_Mission(TeamMissionType order) {
-  assert(static_cast<unsigned>(order) < static_cast<unsigned>(TMISSION_COUNT));
+  DCHECK(static_cast<unsigned>(order) < static_cast<unsigned>(TMISSION_COUNT));
 
   return TMissions.at(order);
 }
@@ -432,7 +432,7 @@ TeamTypeClass* TeamTypeClass::Suggested_New_Team(
   for (int index = 0; index < TeamTypes.Count(); index++) {
     TeamTypeClass* ttype = TeamTypes.Ptr(index);
 
-    assert(ttype != nullptr);
+    DCHECK(ttype != nullptr);
 
     int maxnum = ttype->MaxAllowed;
     if ((alerted && !ttype->IsAutocreate) ||
@@ -1778,7 +1778,7 @@ void TeamTypeClass::Read_INI(CCINIClass& ini) {
  *team class.                                          *
  *=============================================================================================*/
 void TeamTypeClass::Fill_In(const char* name, char* entry) {
-  assert(TeamTypes.ID(this) == ID);
+  DCHECK(TeamTypes.ID(this) == ID);
 
   /*
   **	Set its name

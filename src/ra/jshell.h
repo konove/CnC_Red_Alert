@@ -41,7 +41,6 @@
 #define CNC_RED_ALERT_RA_JSHELL_H_
 
 #include <bit>
-#include <cassert>
 #include <cstddef>
 #include <cstdint>
 #include <span>

@@ -66,7 +66,6 @@
 
 #include "ra/vessel.h"
 
-#include <cassert>
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>
@@ -254,7 +253,7 @@ void* VesselClass::operator new(size_t /*unused*/) noexcept {
  *=============================================================================================*/
 void VesselClass::operator delete(void* ptr) {
   if (ptr != nullptr) {
-    assert(static_cast<VesselClass*>(ptr)->IsActive);
+    DCHECK(static_cast<VesselClass*>(ptr)->IsActive);
     static_cast<VesselClass*>(ptr)->IsActive = false;
   }
   Vessels.Free(static_cast<VesselClass*>(ptr));
@@ -276,7 +275,7 @@ void VesselClass::operator delete(void* ptr) {
  * HISTORY: * 03/14/1996 JLB : Created. *
  *=============================================================================================*/
 const ObjectTypeClass& VesselClass::Class_Of() const {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   return *Class;
 }
@@ -298,8 +297,8 @@ const ObjectTypeClass& VesselClass::Class_Of() const {
  * HISTORY: * 03/14/1996 JLB : Created. *
  *=============================================================================================*/
 MoveType VesselClass::Can_Enter_Cell(CELL cell, FacingType /*from*/) const {
-  assert(Vessels.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Vessels.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (static_cast<unsigned>(cell) >= MAP_CELL_TOTAL) {
     return MOVE_NO;
@@ -424,8 +423,8 @@ int VesselClass::Shape_Number() const {
  * HISTORY: * 03/14/1996 JLB : Created. *
  *=============================================================================================*/
 void VesselClass::Draw_It(int x, int y, WindowNumberType window) const {
-  assert(Vessels.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Vessels.ID(this) == ID);
+  DCHECK(IsActive);
 
   /*
   **	Verify the legality of the unit class.
@@ -515,7 +514,7 @@ void VesselClass::Draw_It(int x, int y, WindowNumberType window) const {
   */
   if (!Is_Door_Closed() && IsTethered && In_Radio_Contact() &&
       !Contact_With_Whom()->IsInLimbo) {
-    assert(Contact_With_Whom()->IsActive);
+    DCHECK(Contact_With_Whom()->IsActive);
     Contact_With_Whom()->Render(true);
   }
 }
@@ -536,8 +535,8 @@ void VesselClass::Draw_It(int x, int y, WindowNumberType window) const {
  * HISTORY: * 03/20/1996 JLB : Created. *
  *=============================================================================================*/
 std::span<const int16_t> VesselClass::Overlap_List(bool /*redraw*/) const {
-  assert(Vessels.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Vessels.ID(this) == ID);
+  DCHECK(IsActive);
 
   return Coord_Spillage_List(Coord, 56).subspan(1);
 }
@@ -560,8 +559,8 @@ std::span<const int16_t> VesselClass::Overlap_List(bool /*redraw*/) const {
  *weapons if firing on subs.                              *
  *=============================================================================================*/
 void VesselClass::AI() {
-  assert(Vessels.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Vessels.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (Mission == MISSION_NONE && MissionQueue == MISSION_NONE) {
     Enter_Idle_Mode();
@@ -673,8 +672,8 @@ void VesselClass::AI() {
  * HISTORY: * 03/19/1996 JLB : Created. *
  *=============================================================================================*/
 void VesselClass::Per_Cell_Process(PCPType why) {
-  assert(Vessels.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Vessels.ID(this) == ID);
+  DCHECK(IsActive);
 
   BStart(BENCH_PCP);
 
@@ -739,8 +738,8 @@ void VesselClass::Per_Cell_Process(PCPType why) {
  * HISTORY: * 04/16/1996 BWG : Created. *
  *=============================================================================================*/
 ActionType VesselClass::What_Action(ObjectClass* object) {
-  assert(Vessels.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Vessels.ID(this) == ID);
+  DCHECK(IsActive);
 
   ActionType action = DriveClass::What_Action(object);
 
@@ -820,8 +819,8 @@ ActionType VesselClass::What_Action(ObjectClass* object) {
  * HISTORY: * 04/16/1996 BWG : Created. *
  *=============================================================================================*/
 void VesselClass::Active_Click_With(ActionType action, ObjectClass* object) {
-  assert(Vessels.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Vessels.ID(this) == ID);
+  DCHECK(IsActive);
 
   //	if (action != What_Action(object)) {
   action = What_Action(object);
@@ -866,8 +865,8 @@ void VesselClass::Active_Click_With(ActionType action, ObjectClass* object) {
  * HISTORY: * 04/16/1996 BWG : Created. *
  *=============================================================================================*/
 void VesselClass::Active_Click_With(ActionType action, CELL cell) {
-  assert(Vessels.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Vessels.ID(this) == ID);
+  DCHECK(IsActive);
 
   // BRR 10/18/96 IsToSelfRepair = false;
   //	if (action != ACTION_NONE) {
@@ -910,8 +909,8 @@ void VesselClass::Active_Click_With(ActionType action, CELL cell) {
 ResultType VesselClass::Take_Damage(int& damage, int distance,
                                     WarheadType warhead, TechnoClass* source,
                                     bool forced) {
-  assert(Vessels.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Vessels.ID(this) == ID);
+  DCHECK(IsActive);
 
   ResultType res = RESULT_NONE;
 
@@ -994,8 +993,8 @@ ResultType VesselClass::Take_Damage(int& damage, int distance,
  * HISTORY: * 05/13/1996 JLB : Created. *
  *=============================================================================================*/
 FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
-  assert(Vessels.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Vessels.ID(this) == ID);
+  DCHECK(IsActive);
 
   int diff = 0;
 
@@ -1137,8 +1136,8 @@ FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
  * HISTORY: * 05/13/1996 JLB : Created. *
  *=============================================================================================*/
 COORDINATE VesselClass::Fire_Coord(int which) const {
-  assert(Vessels.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Vessels.ID(this) == ID);
+  DCHECK(IsActive);
 
   COORDINATE coord = Center_Coord();
 
@@ -1249,8 +1248,8 @@ TARGET VesselClass::Greatest_Threat(ThreatType threat)  // const
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 void VesselClass::Enter_Idle_Mode(bool /*initial*/) {
-  assert(Vessels.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Vessels.ID(this) == ID);
+  DCHECK(IsActive);
 
   MissionType order = MISSION_GUARD;
 
@@ -1321,8 +1320,8 @@ void VesselClass::Enter_Idle_Mode(bool /*initial*/) {
 RadioMessageType VesselClass::Receive_Message(RadioClass* from,
                                               RadioMessageType message,
                                               int32_t& param) {
-  assert(Vessels.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Vessels.ID(this) == ID);
+  DCHECK(IsActive);
 
   switch (message) {
     /*
@@ -1559,8 +1558,8 @@ RadioMessageType VesselClass::Receive_Message(RadioClass* from,
  *=============================================================================================*/
 DirType VesselClass::Desired_Load_Dir(ObjectClass* passenger,
                                       CELL& moveto) const {
-  assert(Vessels.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Vessels.ID(this) == ID);
+  DCHECK(IsActive);
 
   /*
   **	Sweep through the adjacent cells in order to find the best candidate.
@@ -1640,8 +1639,8 @@ DirType VesselClass::Desired_Load_Dir(ObjectClass* passenger,
  * HISTORY: * 06/01/1996 BWG : Created. *
  *=============================================================================================*/
 void VesselClass::LST_Open_Door() {
-  assert(Vessels.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Vessels.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (!IsDriving && !IsRotating) {
     Open_Door(5, 6);
@@ -1662,8 +1661,8 @@ void VesselClass::LST_Open_Door() {
  * HISTORY: * 06/01/1996 BWG : Created. *
  *=============================================================================================*/
 void VesselClass::LST_Close_Door() {
-  assert(Vessels.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Vessels.ID(this) == ID);
+  DCHECK(IsActive);
 
   Close_Door(5, 6);
 }
@@ -1683,8 +1682,8 @@ void VesselClass::LST_Close_Door() {
  * HISTORY: * 06/01/1996 BWG : Created. *
  *=============================================================================================*/
 int VesselClass::Mission_Unload() {
-  assert(Vessels.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Vessels.ID(this) == ID);
+  DCHECK(IsActive);
 
   constexpr int kInitialCheck = 0;
   constexpr int kManeuvering = 1;
@@ -1830,7 +1829,7 @@ int VesselClass::Mission_Unload() {
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 void VesselClass::Assign_Destination(TARGET target) {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   /*
   **	Abort early if there is anything wrong with the parameters
@@ -1882,8 +1881,8 @@ void VesselClass::Assign_Destination(TARGET target) {
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 int VesselClass::Mission_Retreat() {
-  assert(Vessels.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Vessels.ID(this) == ID);
+  DCHECK(IsActive);
 
   constexpr int kPickRetreatPoint = 0;
   constexpr int kTravel = 1;
@@ -2087,8 +2086,8 @@ void VesselClass::Write_INI(CCINIClass& ini) {
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 bool VesselClass::Start_Driver(COORDINATE& headto) {
-  assert(Vessels.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Vessels.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (DriveClass::Start_Driver(headto) &&
       IsActive) {  // BG IsActive can be cleared by Start_Driver
@@ -2115,8 +2114,8 @@ bool VesselClass::Start_Driver(COORDINATE& headto) {
  * HISTORY: * 07/11/1996 BWG : Created. *
  *=============================================================================================*/
 ActionType VesselClass::What_Action(CELL cell) const {
-  assert(Vessels.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Vessels.ID(this) == ID);
+  DCHECK(IsActive);
 
   const ActionType action = DriveClass::What_Action(cell);
   if (action == ACTION_NOMOVE && Map.at(cell).Land_Type() == LAND_BEACH) {
@@ -2317,8 +2316,8 @@ void VesselClass::Repair_AI() {
  * HISTORY: * 04/26/1994 JLB : Created. *
  *=============================================================================================*/
 BulletClass* VesselClass::Fire_At(TARGET target, int which) {
-  assert(Vessels.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Vessels.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (*this == VESSEL_CARRIER) {
     Arm.Set(CarrierLaunchDelay);

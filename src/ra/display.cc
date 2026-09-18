@@ -103,7 +103,6 @@
 #include "ra/display.h"
 
 #include <algorithm>
-#include <cassert>
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>
@@ -114,6 +113,7 @@
 #include <utility>
 #include <vector>
 
+#include "absl/log/check.h"
 #include "absl/log/log.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
@@ -1164,8 +1164,8 @@ void DisplayClass::Submit(ObjectClass* object, LayerType layer) {
  *system.                                                   *
  *=============================================================================================*/
 void DisplayClass::Remove(ObjectClass* object, LayerType layer) {
-  assert(object != nullptr);
-  assert(object->IsActive);
+  DCHECK(object != nullptr);
+  DCHECK(object->IsActive);
 
   if (object) {
     Layer.at(layer).Delete(object);
@@ -2073,7 +2073,7 @@ void DisplayClass::Draw_It(bool forced) {
             }
           }
 
-          assert(ptr->IsActive);
+          DCHECK(ptr->IsActive);
           ptr->Render(forced);
         }
       }

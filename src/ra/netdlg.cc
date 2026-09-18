@@ -124,7 +124,6 @@
 #include "ra/netdlg.h"
 
 #include <algorithm>
-#include <cassert>
 #include <cctype>
 #include <cstdint>
 #include <cstdio>
@@ -134,6 +133,7 @@
 #include <span>
 #include <string_view>
 
+#include "absl/log/check.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/buffer.h"
@@ -143,7 +143,7 @@
 #include "port/ex_string.h"
 #include "port/random_seed.h"
 #include "port/safe_string.h"
-#include "ra/_wsproto.h"  // IWYU pragma: keep - used by an assert() below.
+#include "ra/_wsproto.h"  // IWYU pragma: keep - used by an DCHECK() below.
 #include "ra/ccini.h"
 #include "ra/cheklist.h"
 #include "ra/colrlist.h"
@@ -969,7 +969,7 @@ static int Update_WWChat();
 bool Init_Network() {
   NetNumType net;
   NetNodeType node;
-  assert(PacketTransport != nullptr);
+  DCHECK(PacketTransport != nullptr);
 
   //------------------------------------------------------------------------
   //	This call allocates all necessary queue buffers, allocates Real-mode

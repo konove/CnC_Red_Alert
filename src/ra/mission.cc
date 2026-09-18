@@ -52,8 +52,7 @@
 
 #include "ra/mission.h"
 
-#include <cassert>
-
+#include "absl/log/check.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/ex_string.h"
 #include "ra/bench_util.h"
@@ -139,7 +138,7 @@ int MissionClass::Mission_Missile() { return kTicksPerSecond * 30; }
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
 void MissionClass::Set_Mission(MissionType mission) {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   Mission = mission;
   MissionQueue = MISSION_NONE;
@@ -163,7 +162,7 @@ void MissionClass::Set_Mission(MissionType mission) {
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
 MissionType MissionClass::Get_Mission() const {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   return Mission == MISSION_NONE ? MissionQueue : Mission;
 }
@@ -184,7 +183,7 @@ MissionType MissionClass::Get_Mission() const {
  * HISTORY: * 04/23/1994 JLB : Created. * 06/25/1995 JLB : Added new missions. *
  *=============================================================================================*/
 void MissionClass::AI() {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   ObjectClass::AI();
 
@@ -306,7 +305,7 @@ void MissionClass::AI() {
  *   06/17/1995 JLB : Returns success flag. *
  *=============================================================================================*/
 bool MissionClass::Commence() {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   if (MissionQueue != MISSION_NONE) {
     Mission = MissionQueue;
@@ -340,7 +339,7 @@ bool MissionClass::Commence() {
  *function.                                            *
  *=============================================================================================*/
 void MissionClass::Assign_Mission(MissionType order) {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   /*
   **	Ensure that a MISSION_QMOVE is translated into a MISSION_MOVE.
@@ -423,7 +422,7 @@ const char* MissionClass::Mission_Name(MissionType mission) {
  *=============================================================================================*/
 void MissionClass::Override_Mission(MissionType mission, TARGET /*unused*/,
                                     TARGET /*unused*/) {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   if (MissionQueue != MISSION_NONE) {
     SuspendedMission = MissionQueue;
@@ -446,7 +445,7 @@ void MissionClass::Override_Mission(MissionType mission, TARGET /*unused*/,
  * HISTORY: * 04/28/1995 PWG : Created. *
  *=============================================================================================*/
 bool MissionClass::Restore_Mission() {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   if (SuspendedMission != MISSION_NONE) {
     Assign_Mission(SuspendedMission);

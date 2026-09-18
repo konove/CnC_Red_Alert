@@ -88,13 +88,13 @@
 #include "ra/foot.h"
 
 #include <algorithm>
-#include <cassert>
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
 #include <iterator>
 #include <span>
 
+#include "absl/log/check.h"
 #include "base/array.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
@@ -202,7 +202,7 @@ FootClass::FootClass(RTTIType rtti, int id, HousesType house)
  *Simplified.                                                              *
  *=============================================================================================*/
 void FootClass::Set_Speed(int speed) {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   Speed = static_cast<int>(static_cast<uint32_t>(speed) & 0xFFU);
 }
@@ -229,7 +229,7 @@ void FootClass::Set_Speed(int speed) {
  *Performs low level check before processing.                              *
  *=============================================================================================*/
 bool FootClass::Mark(MarkType mark) {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   if (TechnoClass::Mark(mark)) {
     //		short list[32];
@@ -288,7 +288,7 @@ bool FootClass::Mark(MarkType mark) {
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
 bool FootClass::Basic_Path() {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   PathType* path = nullptr;  // Pointer to path control structure.
   bool skip_path = false;
@@ -441,7 +441,7 @@ bool FootClass::Basic_Path() {
  *human owned units don't scan for targets.           *
  *=============================================================================================*/
 int FootClass::Mission_Move() {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   if (!Target_Legal(NavCom) && !IsDriving && MissionQueue == MISSION_NONE) {
     Enter_Idle_Mode();
@@ -474,7 +474,7 @@ int FootClass::Mission_Move() {
  * HISTORY: * 03/19/1995 JLB : Created. *
  *=============================================================================================*/
 int FootClass::Mission_Capture() {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   /*
   **	If there is a valid TarCom but the NavCom isn't set, then set the NavCom
@@ -512,7 +512,7 @@ int FootClass::Mission_Capture() {
  * HISTORY: * 07/18/1994 JLB : Created. *
  *=============================================================================================*/
 int FootClass::Mission_Attack() {
-  assert(IsActive);
+  DCHECK(IsActive);
   if (Target_Legal(TarCom)) {
     Approach_Target();
   } else {
@@ -536,7 +536,7 @@ int FootClass::Mission_Attack() {
  * HISTORY: * 07/18/1994 JLB : Created. *
  *=============================================================================================*/
 int FootClass::Mission_Guard() {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   if (!Target_Something_Nearby(THREAT_RANGE)) {
     Random_Animate();
@@ -630,7 +630,7 @@ int FootClass::Mission_Guard() {
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
 int FootClass::Mission_Hunt() {
-  assert(IsActive);
+  DCHECK(IsActive);
   if (!Target_Something_Nearby(THREAT_NORMAL)) {
     Random_Animate();
   } else {
@@ -671,7 +671,7 @@ int FootClass::Mission_Hunt() {
  * HISTORY: * 10/17/1994 JLB : Created. * 12/12/1994 JLB : Greatly simplified. *
  *=============================================================================================*/
 bool FootClass::Stop_Driver() {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   if (HeadToCoord) {
     HeadToCoord = 0;
@@ -700,7 +700,7 @@ bool FootClass::Stop_Driver() {
  *index finder.                                           *
  *=============================================================================================*/
 bool FootClass::Start_Driver(COORDINATE& headto) {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   Stop_Driver();
   if (headto) {
@@ -742,7 +742,7 @@ bool FootClass::Start_Driver(COORDINATE& headto) {
  *different when unloading from aircraft.                    *
  *=============================================================================================*/
 COORDINATE FootClass::Sort_Y() const {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   if (IsUnloading) {
     return Coord_Add(Coord, 0x01000000L);
@@ -772,7 +772,7 @@ COORDINATE FootClass::Sort_Y() const {
  * HISTORY: * 12/23/1994 JLB : Created. *
  *=============================================================================================*/
 void FootClass::Stun() {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   Assign_Destination(kTargetNone);
   Path[0] = FACING_NONE;
@@ -800,7 +800,7 @@ void FootClass::Stun() {
  *   05/20/1995 JLB : Always approaches if the object is off the map. *
  *=============================================================================================*/
 void FootClass::Approach_Target() {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   /*
   **	Determine that if there is an existing target it is still legal
@@ -915,7 +915,7 @@ void FootClass::Approach_Target() {
  * HISTORY: * 12/23/1994 JLB : Created. * 07/27/1995 JLB : Greatly simplified. *
  *=============================================================================================*/
 int FootClass::Mission_Guard_Area() {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   if (What_Am_I() == RTTI_UNIT &&
       dynamic_cast<UnitClass*>(this)->Class->IsToHarvest) {
@@ -993,7 +993,7 @@ int FootClass::Mission_Guard_Area() {
  * HISTORY: * 12/23/1994 JLB : Created. *
  *=============================================================================================*/
 bool FootClass::Unlimbo(COORDINATE coord, DirType dir) {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   /*
   **	Try to unlimbo the unit.
@@ -1040,7 +1040,7 @@ bool FootClass::Unlimbo(COORDINATE coord, DirType dir) {
 ResultType FootClass::Take_Damage(int& damage, int distance,
                                   WarheadType warhead, TechnoClass* source,
                                   bool forced) {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   const ResultType result =
       TechnoClass::Take_Damage(damage, distance, warhead, source, forced);
@@ -1127,8 +1127,8 @@ ResultType FootClass::Take_Damage(int& damage, int distance,
  * HISTORY: * 01/06/1995 JLB : Created. *
  *=============================================================================================*/
 void FootClass::Active_Click_With(ActionType action, ObjectClass* object) {
-  assert(IsActive);
-  assert(object != nullptr);
+  DCHECK(IsActive);
+  DCHECK(object != nullptr);
 
   switch (action) {
     case ACTION_GUARD_AREA:
@@ -1247,7 +1247,7 @@ void FootClass::Active_Click_With(ActionType action, ObjectClass* object) {
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
 void FootClass::Active_Click_With(ActionType action, CELL cell) {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   action = What_Action(cell);
   switch (action) {
@@ -1360,7 +1360,7 @@ void FootClass::Active_Click_With(ActionType action, CELL cell) {
  *to a scanner and cloaked, then shimmer.                          *
  *=============================================================================================*/
 void FootClass::Per_Cell_Process(PCPType why) {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   if (why == PCP_END) {
     IsScattering = false;
@@ -1512,7 +1512,7 @@ void FootClass::Per_Cell_Process(PCPType why) {
  *=========================================================================*/
 void FootClass::Override_Mission(MissionType mission, TARGET tarcom,
                                  TARGET navcom) {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   SuspendedNavCom = NavCom;
   TechnoClass::Override_Mission(mission, tarcom, navcom);
@@ -1533,7 +1533,7 @@ void FootClass::Override_Mission(MissionType mission, TARGET tarcom,
  *   04/28/1995 PWG : Created.                                             *
  *=========================================================================*/
 bool FootClass::Restore_Mission() {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   if (TechnoClass::Restore_Mission()) {
     Assign_Destination(SuspendedNavCom);
@@ -1566,7 +1566,7 @@ bool FootClass::Restore_Mission() {
 RadioMessageType FootClass::Receive_Message(RadioClass* from,
                                             RadioMessageType message,
                                             int32_t& param) {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   switch (message) {
     /*
@@ -1704,7 +1704,7 @@ RadioMessageType FootClass::Receive_Message(RadioClass* from,
  *the "on hold" condition.                              *
  *=============================================================================================*/
 int FootClass::Mission_Enter() {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   /*
   **	Find out who to coordinate with. If in radio contact, then this the
@@ -1758,7 +1758,7 @@ int FootClass::Mission_Enter() {
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
 void FootClass::Assign_Destination(TARGET target) {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   NavCom = target;
 
@@ -1786,7 +1786,7 @@ void FootClass::Assign_Destination(TARGET target) {
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
 void FootClass::Detach_All(bool all) {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   if (Team && !ScenarioInit) {
     Team->Remove(this);
@@ -1816,7 +1816,7 @@ void FootClass::Detach_All(bool all) {
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
 int FootClass::Rescue_Mission(TARGET tarcom) {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   /*
   **	If the target specified is not legal, then it cannot be attacked. Always
@@ -1894,7 +1894,7 @@ int FootClass::Rescue_Mission(TARGET tarcom) {
  * HISTORY: * 07/01/1995 JLB : Created. *
  *=============================================================================================*/
 void FootClass::Death_Announcement(const TechnoClass* /*source*/) const {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   if (IsOwnedByPlayer) {
     if (What_Am_I() == RTTI_VESSEL) {
@@ -1926,7 +1926,7 @@ void FootClass::Death_Announcement(const TechnoClass* /*source*/) const {
  *=============================================================================================*/
 TARGET FootClass::Greatest_Threat(ThreatType method)  // const
 {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   /*
   **	If the scan is forced to be limited, then limit the scan now.
@@ -1993,7 +1993,7 @@ TARGET FootClass::Greatest_Threat(ThreatType method)  // const
  *NavQueue list.                                       *
  *=============================================================================================*/
 void FootClass::Detach(TARGET target, bool all) {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   TechnoClass::Detach(target, all);
 
@@ -2060,7 +2060,7 @@ void FootClass::Detach(TARGET target, bool all) {
  * HISTORY: * 07/19/1995 JLB : Created. *
  *=============================================================================================*/
 int FootClass::Offload_Tiberium_Bail() {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   return 0;
 }
@@ -2089,7 +2089,7 @@ int FootClass::Offload_Tiberium_Bail() {
  *=============================================================================================*/
 MoveType FootClass::Can_Enter_Cell(CELL /*unused*/,
                                    FacingType /*unused*/) const {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   return MOVE_OK;
 }
@@ -2109,7 +2109,7 @@ MoveType FootClass::Can_Enter_Cell(CELL /*unused*/,
  * HISTORY: * 08/13/1995 JLB : Created. *
  *=============================================================================================*/
 bool FootClass::Can_Demolish() const {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   switch (What_Am_I()) {
     case RTTI_UNIT:
@@ -2174,7 +2174,7 @@ bool FootClass::Can_Demolish() const {
  * HISTORY: * 08/13/1995 JLB : Created. *
  *=============================================================================================*/
 void FootClass::Sell_Back(int control) {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   if (control != 0) {
     if (House == PlayerPtr) {
@@ -2206,7 +2206,7 @@ void FootClass::Sell_Back(int control) {
  * HISTORY: * 08/13/1995 JLB : Created. *
  *=============================================================================================*/
 COORDINATE FootClass::Likely_Coord() const {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   if (Head_To_Coord()) {
     return Head_To_Coord();
@@ -2234,7 +2234,7 @@ COORDINATE FootClass::Likely_Coord() const {
  * HISTORY: * 03/11/1996 JLB : Created. *
  *=============================================================================================*/
 CELL FootClass::Adjust_Dest(CELL cell) const {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   if (IsFormationMove) {
     const int xdest = Cell_X(cell);
@@ -2536,7 +2536,7 @@ bool FootClass::Is_On_Priority_Mission() const {
  * HISTORY: * 10/05/1996 JLB : Created. *
  *=============================================================================================*/
 int FootClass::Mission_Retreat() {
-  assert(IsActive);
+  DCHECK(IsActive);
 
   constexpr int kFindEdge = 0;
   constexpr int kTravelling = 1;
@@ -2571,7 +2571,7 @@ int FootClass::Mission_Retreat() {
                                      Techno_Type_Class()->Speed);
         }
 
-        assert(cell == 0);  // An edge cell must be found!
+        DCHECK(cell == 0);  // An edge cell must be found!
 
         Assign_Destination(::As_Target(cell));
         Status = kTravelling;

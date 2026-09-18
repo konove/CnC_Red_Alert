@@ -133,7 +133,6 @@
 #include "td/building.h"
 
 #include <algorithm>
-#include <cassert>
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>

@@ -84,7 +84,6 @@
 
 #include "td/cell.h"
 
-#include <cassert>
 #include <cstdint>
 #include <iterator>
 #include <span>

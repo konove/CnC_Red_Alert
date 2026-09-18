@@ -46,8 +46,7 @@
 
 #include "ra/reinf.h"
 
-#include <cassert>
-
+#include "absl/log/check.h"
 #include "base/array.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/safe_string.h"
@@ -88,7 +87,7 @@
  * HISTORY: * 06/25/1996 JLB : Created. *
  *=============================================================================================*/
 static bool Pop_Group_Out_Of_Object(FootClass* group, TechnoClass* object) {
-  assert(group != nullptr && object != nullptr);
+  DCHECK(group != nullptr && object != nullptr);
   int quantity = 0;
 
   /*
@@ -220,7 +219,7 @@ static bool Need_To_Take(const AircraftClass* air) {
  * HISTORY: * 06/25/1996 JLB : Created. *
  *=============================================================================================*/
 static FootClass* Create_Group(TeamTypeClass* teamtype) {
-  assert(teamtype != nullptr);
+  DCHECK(teamtype != nullptr);
 
   auto* team = new TeamClass(teamtype);
   if (team != nullptr) {
@@ -421,7 +420,7 @@ static TechnoClass* Who_Can_Pop_Out_Of(CELL origin) {
  *   02/15/1996 JLB : Recognizes team reinforcement location. *
  *=============================================================================================*/
 bool Do_Reinforcements(TeamTypeClass* teamtype) {
-  assert(teamtype != nullptr);
+  DCHECK(teamtype != nullptr);
 
   /*
   **	perform some preliminary checks for validity.
@@ -608,8 +607,8 @@ bool Create_Special_Reinforcement(const HouseClass* house,
                                   const TechnoTypeClass* type,
                                   const TechnoTypeClass* another,
                                   TeamMissionType mission, int argument) {
-  assert(house != nullptr);
-  assert(type != nullptr);
+  DCHECK(house != nullptr);
+  DCHECK(type != nullptr);
 
   if (house && type) {
     auto* team = new TeamTypeClass();
@@ -688,10 +687,10 @@ bool Create_Special_Reinforcement(const HouseClass* house,
 int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
                              MissionType mission, TARGET tarcom, TARGET navcom,
                              InfantryType passenger) {
-  assert(house != nullptr);
-  assert(static_cast<unsigned>(air) < magic_enum::enum_count<AircraftType>());
-  assert(number != 0);
-  assert(static_cast<unsigned>(mission) <
+  DCHECK(house != nullptr);
+  DCHECK(static_cast<unsigned>(air) < magic_enum::enum_count<AircraftType>());
+  DCHECK(number != 0);
+  DCHECK(static_cast<unsigned>(mission) <
          magic_enum::enum_count<MissionType>());
   /*
   ** Get a pointer to the class of the object that we are going to create.

@@ -91,7 +91,6 @@
 #include "ra/sidebar.h"
 
 #include <algorithm>
-#include <cassert>
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
@@ -100,6 +99,7 @@
 #include <span>
 #include <string>
 
+#include "absl/log/check.h"
 #include "base/array.h"
 #include "base/buffer.h"
 #include "base/enum_array.h"
@@ -482,8 +482,8 @@ int SidebarClass::Which_Column(RTTIType type) {
  * HISTORY: * 05/19/1995 JLB : Created. *
  *=============================================================================================*/
 bool SidebarClass::Factory_Link(int factory, RTTIType type, int id) {
-  assert(static_cast<unsigned>(type) < magic_enum::enum_count<RTTIType>());
-  assert(id >= 0);
+  DCHECK(static_cast<unsigned>(type) < magic_enum::enum_count<RTTIType>());
+  DCHECK(id >= 0);
 
   return base::At(Column, Which_Column(type)).Factory_Link(factory, type, id);
 }
@@ -666,7 +666,7 @@ bool SidebarClass::Activate_Demolish(int control) {
  * HISTORY: * 11/17/1994 JLB : Created. *
  *=============================================================================================*/
 bool SidebarClass::Add(RTTIType type, int id) {
-  assert(static_cast<unsigned>(type) < magic_enum::enum_count<RTTIType>());
+  DCHECK(static_cast<unsigned>(type) < magic_enum::enum_count<RTTIType>());
 
   /*
   ** Add the sidebar only if we're not in editor mode.

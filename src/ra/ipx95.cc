@@ -49,6 +49,8 @@
 
 #include "ra/ipx95.h"
 
+#include "absl/log/check.h"
+
 /*
 ** Instance handle for the THIPX32 .DLL
 */
@@ -119,7 +121,7 @@ bool Load_IPX_Dll() {
       if (function_name) {
         *fptr = static_cast<unsigned long>(
             GetProcAddress(IpxDllInstance, function_name));
-        assert(*fptr != NULL);
+        DCHECK(*fptr != NULL);
         fptr++;
         count++;
       }

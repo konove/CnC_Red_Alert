@@ -59,7 +59,6 @@
 
 #include "ra/trigtype.h"
 
-#include <cassert>
 #include <cctype>
 #include <cstdint>
 #include <cstdio>
@@ -70,6 +69,7 @@
 #include <string_view>
 #include <utility>
 
+#include "absl/log/check.h"
 #include "absl/strings/str_format.h"
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
@@ -2089,7 +2089,7 @@ void TriggerTypeClass::Read_INI(CCINIClass& ini) {
  * HISTORY: * 11/28/1994 BR : Created. *
  *=============================================================================================*/
 void TriggerTypeClass::Fill_In(const char* name, char* entry) {
-  assert(TriggerTypes.ID(this) == ID);
+  DCHECK(TriggerTypes.ID(this) == ID);
 
   /*
   **	Set its name.

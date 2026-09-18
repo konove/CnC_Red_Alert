@@ -39,6 +39,8 @@
 
 #include "ra/surface.h"
 
+#include "absl/log/check.h"
+
 Surface::Surface(int w, int h, const Buffer* buffer, int pitch)
     : Width(w), Height(h), Pitch(pitch) {
   /*
@@ -76,7 +78,7 @@ Surface::Surface(const Surface& surface, int x, int y, int w, int h)
 }
 
 void Surface::Copy_To(Buffer& buffer, int x, int y, int w, int h) const {
-  assert(buffer.Is_Valid());
+  DCHECK(buffer.Is_Valid());
 
   /*
   **	Determine the width of the region to copy from this surface.
@@ -98,8 +100,8 @@ void Surface::Copy_To(Buffer& buffer, int x, int y, int w, int h) const {
 }
 
 void Surface::Copy_To(const Rect& fromrect, Buffer& tobuffer) const {
-  assert(fromrect.Is_Valid());
-  assert(tobuffer.Is_Valid());
+  DCHECK(fromrect.Is_Valid());
+  DCHECK(tobuffer.Is_Valid());
 
   /*
   **	Determine the copy-from rectangle. The size is bounded to the source

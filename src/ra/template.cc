@@ -46,11 +46,11 @@
 
 #include "ra/template.h"
 
-#include <cassert>
 #include <cstddef>
 #include <span>
 #include <utility>
 
+#include "absl/log/check.h"
 #include "base/array.h"
 #include "ra/cell.h"
 #include "ra/coord.h"
@@ -94,8 +94,8 @@ void TemplateClass::Init() { Templates.Free_All(); }
  *legality before processing.                           *
  *=============================================================================================*/
 bool TemplateClass::Mark(MarkType mark) {
-  assert(Templates.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Templates.ID(this) == ID);
+  DCHECK(IsActive);
 
   static bool noup = false;
   const auto iset = Get_Image_Data();

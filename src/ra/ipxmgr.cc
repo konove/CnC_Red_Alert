@@ -70,13 +70,13 @@
 
 #include <algorithm>
 #include <array>
-#include <cassert>
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
 #include <span>
 #include <utility>
 
+#include "absl/log/check.h"
 #include "absl/log/log.h"
 #include "base/array.h"
 #include "base/buffer.h"
@@ -89,7 +89,7 @@
 #include "ra/defines.h"
 #include "ra/event.h"
 #include "ra/externs.h"
-#include "ra/house.h"  // IWYU pragma: keep - used by an assert() below.
+#include "ra/house.h"  // IWYU pragma: keep - used by an DCHECK() below.
 #include "ra/ipx.h"
 #include "ra/ipxaddr.h"
 #include "ra/ipxconn.h"
@@ -131,7 +131,7 @@ IPXManagerClass::IPXManagerClass(int glb_maxlen, int pvt_maxlen,
     PacketTransport = nullptr;
   }
   PacketTransport = new WinsockInterfaceClass;
-  assert(PacketTransport != nullptr);
+  DCHECK(PacketTransport != nullptr);
 
   IPXStatus = PacketTransport->Init();
   delete PacketTransport;
@@ -1053,7 +1053,7 @@ int IPXManagerClass::Service() {
               if (event->Type == EventClass::FRAMESYNC) {
                 const int id = event->ID;
 
-                assert(id != PlayerPtr->ID);
+                DCHECK(id != PlayerPtr->ID);
                 for (int k = 1; k < Session.Players.Count(); k++) {
                   if (Session.Players.at(k)->Player.ID ==
                       static_cast<HousesType>(id)) {
