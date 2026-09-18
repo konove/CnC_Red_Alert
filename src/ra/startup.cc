@@ -346,7 +346,7 @@ int main(int argc, char* argv[])
 
       Memory_Error_Exit = Print_Error_End_Exit;
 
-      RunGame(argc, argv);
+      RunGame();
 
       VisiblePage.Clear();
       HiddenPage.Clear();

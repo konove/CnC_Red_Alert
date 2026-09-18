@@ -25,7 +25,7 @@
 
 // The game's entry point: one-time init, then a loop of choosing a game and
 // running it until the player exits.
-void RunGame(int argc, char* argv[]);
+void RunGame();
 
 // Runs one frame of the game. Returns true when the game should end.
 bool RunFrame();

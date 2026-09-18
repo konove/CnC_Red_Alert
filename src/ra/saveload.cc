@@ -453,7 +453,7 @@ static void Put_All(ByteSink& pipe, int save_net) {
  *   12/28/1994 BR : Created.                                              *
  *   02/27/1996 JLB : Uses simpler game control value save operation.      *
  *=========================================================================*/
-bool Save_Game(int id, const char* descr, bool /*unused*/) {
+bool Save_Game(int id, const std::string_view descr, bool /*unused*/) {
   char name[kMaxFname + kMaxExt];
   int save_net = 0;  // 1 = save network/modem game
 

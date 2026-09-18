@@ -3,6 +3,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <string_view>
 
 #include "ra/defines.h"
 #include "tech/archive.h"
@@ -26,7 +27,7 @@ bool Save_MPlayer_Values(ByteSink& file);
 bool Get_Savefile_Info(int id, std::span<char> buf, size_t buf_size,
                        unsigned* scenp, HousesType* housep);
 bool Load_Game(int id);
-bool Save_Game(int id, const char* descr, bool bargraph = false);
+bool Save_Game(int id, std::string_view descr, bool bargraph = false);
 void Dump();
 
 #endif  // CNC_RED_ALERT_RA_SAVELOAD_H_

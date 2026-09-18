@@ -30,6 +30,7 @@
 #include <absl/log/check.h>
 
 #include <array>
+#include <cstddef>
 #include <iterator>
 #include <span>
 #include <string>
@@ -336,8 +337,8 @@ static void EndScenario() {
 // because Select_Game() may hand back a wholly different kind of session --
 // single player, network, modem, editor -- each needing its own setup and its
 // own teardown.
-void RunGame(const int argc, char* argv[]) {
-  if (!Init_Game(argc, argv)) {
+void RunGame() {
+  if (!Init_Game()) {
     return;
   }
 
@@ -542,7 +543,7 @@ static void LogObjectPositions(const TFixedIHeapClass<T>& objects,
   for (int index = 0; index < objects.Count(); index++) {
     const T* object = objects.Ptr(index);
     LOG(INFO) << "frame " << Frame << " " << kind << " "
-              << object->Class->IniName << " coord "
+              << std::string_view(object->Class->Name()) << " coord "
               << absl::StrFormat("%08x", object->Coord) << " mission "
               << magic_enum::enum_name(object->Mission) << " navcom "
               << absl::StrFormat("%08x", object->NavCom);
@@ -578,7 +579,7 @@ static void CaptureMotionFrame() {
   // LLVM 23 treats resize as invalidating the vector itself. The reference
   // remains valid, and element views are acquired only after resizing.
   // NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-invalidation)
-  static auto& frames = *new std::vector<std::vector<char>>();
+  static auto& frames = *new std::vector<std::vector<std::byte>>();
   // Doubles as the frame counter and the end-of-run signal: reaching
   // frames.size() ends the capture and flushes to disk.
   static base::ssize captured_count = 0;
@@ -613,13 +614,11 @@ static void CaptureMotionFrame() {
   Debug_MotionCapture = false;
 
   DiskFile file;
-  char filename[30];
   for (base::ssize index = 0; index < captured_count; index++) {
     base::CopyBytes(std::as_writable_bytes(frame_page.Get_Bytes()),
                     std::as_bytes(std::span(frames.at(base::ToSize(index)))),
                     frame_bytes);
-    absl::SNPrintF(filename, sizeof(filename), "cap%04zd.pcx", index);
-    file.SetName(filename);
+    file.SetName(absl::StrFormat("cap%04d.pcx", index));
 
     Write_PCX_File(file, frame_page, &GamePalette);
   }

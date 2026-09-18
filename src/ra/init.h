@@ -7,7 +7,7 @@
 void Load_Title_Page(bool visible = false);
 uint32_t Obfuscate(const char* string);
 void Anim_Init();
-bool Init_Game(int argc, char* argv[]);
+bool Init_Game();
 bool Select_Game(bool fade = false);
 bool Parse_Command_Line(std::span<char*> arguments);
 void Parse_INI_File();

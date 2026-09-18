@@ -239,7 +239,7 @@ static void Load_Prolog_Page() {
  *                                                                                             *
  * HISTORY: * 10/07/1992 JLB : Created. *
  *=============================================================================================*/
-bool Init_Game(int /*unused*/, char* /*unused*/[]) {
+bool Init_Game() {
   /*
   **	Allocate the benchmark tracking objects only if the machine and
   **	compile flags indicate.
