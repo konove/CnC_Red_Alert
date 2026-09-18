@@ -6,7 +6,9 @@
 #include <SDL_stdinc.h>
 #include <SDL_video.h>
 
+#include <chrono>
 #include <cstdio>
+#include <thread>
 
 #include "absl/strings/str_format.h"
 #include "sdllib/net_select.h"
@@ -52,6 +54,26 @@ void SDL_Create_Main_Window(const char* title, int width, int height) {
   // so we get stuck waiting for focus, which it'll never get because it doesn't
   // exist
   SDL_RenderClear(SDLRenderer);
+  SDL_RenderPresent(SDLRenderer);
+}
+
+void PresentFrame() {
+  // Shorter than a 60 Hz refresh, so on a vsync display, where the present
+  // itself blocks for the refresh, the floor is never reached and cannot make
+  // a frame miss its vblank. The renderer's vsync flag cannot tell the two
+  // cases apart: the software renderer sets it without waiting.
+  constexpr std::chrono::microseconds kMinInterval(1'000'000 / 70);
+  // The earliest time the next present may happen.
+  static std::chrono::steady_clock::time_point next_present;
+  const auto now = std::chrono::steady_clock::now();
+  if (now < next_present) {
+    std::this_thread::sleep_until(next_present);
+    next_present += kMinInterval;
+  } else {
+    // Late, or the first present: restart the cadence from now rather than
+    // presenting a burst of frames to catch up.
+    next_present = now + kMinInterval;
+  }
   SDL_RenderPresent(SDLRenderer);
 }
 

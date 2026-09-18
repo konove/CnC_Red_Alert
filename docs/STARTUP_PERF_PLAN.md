@@ -196,7 +196,21 @@ Headless, optimized build, default audio driver:
 | Exit wait for audio drain | 186 ms | 46 ms  |
 
 The logo still plays once per install; the first cold launch is ~0.26 s because of the OS file
-cache. Still open: the main menu's busy loop.
+cache.
+
+### Menu busy loop done (2026-09-17)
+
+It only spins without working vsync. On the real display the menu used 5% CPU, because
+`SDL_RenderPresent` waits for the refresh. SDL's software renderer (the dummy driver) _reports_
+vsync but doesn't wait: 60 presents in 1 ms. `PresentFrame()` (`sdllib/ww_win.cc`) now enforces at
+most 70 presents a second, which a 60 Hz vsync display never reaches. Headless menu: 4.5 s of CPU
+per 5 s → 0.3 s. The RA smoke test uses 1.1 s of CPU instead of 11.7 s, with wall time 12.5 s → 15.9
+s: headless game frames now overshoot by up to one present, as they do on a real display.
+
+That pacing exposed 32 pointless presents in `saveload.cc`: calls to `ServiceRealTime()` between
+save and load sections, kept from DOS days to service music during a slow load. They now call
+`ServiceBackgroundTasks()`, the same maintenance without the present. A load on the real display
+goes from 0.55 s to 0.44 s, and a save skips 25 presents (about 0.4 s of refresh waits).
 
 ## Verification
 

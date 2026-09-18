@@ -396,6 +396,11 @@ void RunGame() {
 }
 
 void ServiceRealTime() {
+  ServiceBackgroundTasks();
+  Video_End_Frame();
+}
+
+void ServiceBackgroundTasks() {
   // Music and speech maintenance
   if (SampleType != SAMPLE_NONE) {
     Sound_Callback();
@@ -417,8 +422,6 @@ void ServiceRealTime() {
   if constexpr (config::kWolapiEnabled) {
     ServiceWolapi();
   }
-
-  Video_End_Frame();
 }
 
 // Spins until the frame timer expires, holding the game to the rate set by the

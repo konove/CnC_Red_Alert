@@ -252,13 +252,13 @@ static void Put_All(ByteSink& pipe, int save_net) {
   **	Save the map.  The map must be saved first, since it saves the Theater.
   */
   if (!save_net) {
-    ServiceRealTime();
+    ServiceBackgroundTasks();
   }
   Put_Section(pipe, FourCC("MAP_"));
   Map.Save(pipe);
 
   if (!save_net) {
-    ServiceRealTime();
+    ServiceBackgroundTasks();
   }
 
   /*
@@ -268,90 +268,90 @@ static void Put_All(ByteSink& pipe, int save_net) {
   Put_Section(pipe, FourCC("HOUS"));
   Houses.Save(pipe);
   if (!save_net) {
-    ServiceRealTime();
+    ServiceBackgroundTasks();
   }
   Put_Section(pipe, FourCC("TMTY"));
   TeamTypes.Save(pipe);
   if (!save_net) {
-    ServiceRealTime();
+    ServiceBackgroundTasks();
   }
   Put_Section(pipe, FourCC("TEAM"));
   Teams.Save(pipe);
   if (!save_net) {
-    ServiceRealTime();
+    ServiceBackgroundTasks();
   }
   Put_Section(pipe, FourCC("TRTY"));
   TriggerTypes.Save(pipe);
   if (!save_net) {
-    ServiceRealTime();
+    ServiceBackgroundTasks();
   }
   Put_Section(pipe, FourCC("TRIG"));
   Triggers.Save(pipe);
   if (!save_net) {
-    ServiceRealTime();
+    ServiceBackgroundTasks();
   }
   Put_Section(pipe, FourCC("AIRC"));
   Aircraft.Save(pipe);
   if (!save_net) {
-    ServiceRealTime();
+    ServiceBackgroundTasks();
   }
   Put_Section(pipe, FourCC("ANIM"));
   Anims.Save(pipe);
 
   if (!save_net) {
-    ServiceRealTime();
+    ServiceBackgroundTasks();
   }
 
   Put_Section(pipe, FourCC("BLDG"));
   Buildings.Save(pipe);
   if (!save_net) {
-    ServiceRealTime();
+    ServiceBackgroundTasks();
   }
   Put_Section(pipe, FourCC("BULL"));
   Bullets.Save(pipe);
   if (!save_net) {
-    ServiceRealTime();
+    ServiceBackgroundTasks();
   }
   Put_Section(pipe, FourCC("INFT"));
   Infantry.Save(pipe);
   if (!save_net) {
-    ServiceRealTime();
+    ServiceBackgroundTasks();
   }
   Put_Section(pipe, FourCC("OVRL"));
   Overlays.Save(pipe);
   if (!save_net) {
-    ServiceRealTime();
+    ServiceBackgroundTasks();
   }
   Put_Section(pipe, FourCC("SMDG"));
   Smudges.Save(pipe);
   if (!save_net) {
-    ServiceRealTime();
+    ServiceBackgroundTasks();
   }
   Put_Section(pipe, FourCC("TMPL"));
   Templates.Save(pipe);
   if (!save_net) {
-    ServiceRealTime();
+    ServiceBackgroundTasks();
   }
   Put_Section(pipe, FourCC("TERR"));
   Terrains.Save(pipe);
   if (!save_net) {
-    ServiceRealTime();
+    ServiceBackgroundTasks();
   }
   Put_Section(pipe, FourCC("UNIT"));
   Units.Save(pipe);
   if (!save_net) {
-    ServiceRealTime();
+    ServiceBackgroundTasks();
   }
   Put_Section(pipe, FourCC("FACT"));
   Factories.Save(pipe);
   if (!save_net) {
-    ServiceRealTime();
+    ServiceBackgroundTasks();
   }
   Put_Section(pipe, FourCC("VESL"));
   Vessels.Save(pipe);
 
   if (!save_net) {
-    ServiceRealTime();
+    ServiceBackgroundTasks();
   }
 
   /*
@@ -363,7 +363,7 @@ static void Put_All(ByteSink& pipe, int save_net) {
   Put_Section(pipe, FourCC("TRGV"));
   SerializeTriggerLists(writer);
   if (!save_net) {
-    ServiceRealTime();
+    ServiceBackgroundTasks();
   }
 
   Put_Section(pipe, FourCC("LAYR"));
@@ -372,7 +372,7 @@ static void Put_All(ByteSink& pipe, int save_net) {
   }
 
   if (!save_net) {
-    ServiceRealTime();
+    ServiceBackgroundTasks();
   }
 
   /*
@@ -381,7 +381,7 @@ static void Put_All(ByteSink& pipe, int save_net) {
   Put_Section(pipe, FourCC("SCOR"));
   writer(Score);
   if (!save_net) {
-    ServiceRealTime();
+    ServiceBackgroundTasks();
   }
 
   /*
@@ -390,13 +390,13 @@ static void Put_All(ByteSink& pipe, int save_net) {
   Put_Section(pipe, FourCC("BASE"));
   writer(Base);
   if (!save_net) {
-    ServiceRealTime();
+    ServiceBackgroundTasks();
   }
 
   Put_Section(pipe, FourCC("CARY"));
   SerializeCarryover(writer);
   if (!save_net) {
-    ServiceRealTime();
+    ServiceBackgroundTasks();
   }
 
   /*
@@ -406,7 +406,7 @@ static void Put_All(ByteSink& pipe, int save_net) {
   Save_Misc_Values(pipe);
 
   if (!save_net) {
-    ServiceRealTime();
+    ServiceBackgroundTasks();
   }
 
   /*
@@ -632,7 +632,7 @@ bool Load_Game(int id) {
 
   FileSource fstraw(file);
 
-  ServiceRealTime();
+  ServiceBackgroundTasks();
 
   /*
   **	Read & discard the save-game's header info
@@ -682,7 +682,7 @@ bool Load_Game(int id) {
     actual = sha.digest();
   }
 
-  ServiceRealTime();
+  ServiceBackgroundTasks();
 
   /*
   **	Compare the two digests. If they differ then return a failure condition
@@ -788,7 +788,7 @@ bool Load_Game(int id) {
     return false;
   }
 
-  ServiceRealTime();
+  ServiceBackgroundTasks();
 
   /*
   **	Load the object data.
@@ -821,7 +821,7 @@ bool Load_Game(int id) {
     return false;
   }
 
-  ServiceRealTime();
+  ServiceBackgroundTasks();
 
   if (!Get_Section(straw, FourCC("INFT")) || !Infantry.Load(straw)) {
     return false;
@@ -877,7 +877,7 @@ bool Load_Game(int id) {
     }
   }
 
-  ServiceRealTime();
+  ServiceBackgroundTasks();
 
   /*
   **	Load the Score
@@ -908,7 +908,7 @@ bool Load_Game(int id) {
   if (!reader.ok()) {
     return false;
   }
-  ServiceRealTime();
+  ServiceBackgroundTasks();
 
   /*
   **	Load miscellaneous variables, including the map size & the Theater
@@ -954,7 +954,7 @@ bool Load_Game(int id) {
   */
   Post_Load_Game(load_net);
 
-  ServiceRealTime();
+  ServiceBackgroundTasks();
 
   /*
   **	Set the required CD to be in the drive according to the scenario

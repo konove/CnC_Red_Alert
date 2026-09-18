@@ -84,7 +84,7 @@ void GraphicBufferClass::Update_Window_Surface(bool end_frame) {
     SDL_RenderClear(SDLRenderer);
     SDL_RenderCopy(SDLRenderer, static_cast<SDL_Texture*>(VQATexture), nullptr,
                    nullptr);
-    SDL_RenderPresent(SDLRenderer);
+    PresentFrame();
     SDL_Event_Loop();
     return;
   }
@@ -113,7 +113,7 @@ void GraphicBufferClass::Update_Window_Surface(bool end_frame) {
   // copy to screen
   SDL_RenderClear(SDLRenderer);
   SDL_RenderCopy(SDLRenderer, window_tex, nullptr, nullptr);
-  SDL_RenderPresent(SDLRenderer);
+  PresentFrame();
 
   // update the event loop here too for now
   SDL_Event_Loop();

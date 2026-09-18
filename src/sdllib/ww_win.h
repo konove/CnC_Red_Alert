@@ -98,4 +98,11 @@ struct SDL_Renderer;
 extern SDL_Renderer* SDLRenderer;
 extern uint32_t ForceRenderEventID;
 
+// Presents SDLRenderer, at most 70 times a second. With working vsync the
+// present itself waits for the display refresh and this never sleeps.
+// Without it (SDL's software renderer, used by the dummy video driver, reports
+// vsync but does not wait) this sleeps out the rest of the interval, so the
+// many loops that present while waiting for input do not spin a core.
+void PresentFrame();
+
 #endif  // CNC_RED_ALERT_SDLLIB_WW_WIN_H_

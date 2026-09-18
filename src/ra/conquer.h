@@ -30,9 +30,16 @@ void RunGame();
 // Runs one frame of the game. Returns true when the game should end.
 bool RunFrame();
 
-// Real-time maintenance -- sound, music, and network servicing. Unlike the
-// per-frame game logic this has to run as often as possible, so it is called
-// from inside blocking loops and dialogs as well as from the main loop.
+// Real-time maintenance -- sound, music, and network servicing -- followed by
+// presenting the screen. Unlike the per-frame game logic this has to run as
+// often as possible, so it is called from inside blocking loops and dialogs as
+// well as from the main loop. Presenting waits for the display refresh (see
+// PresentFrame), which is also what keeps those loops from spinning.
 void ServiceRealTime();
+
+// The maintenance half of ServiceRealTime(), without presenting. For work
+// that runs straight through, such as saving and loading, where nothing on
+// screen changes and each present would only wait out a display refresh.
+void ServiceBackgroundTasks();
 
 #endif  // CNC_RED_ALERT_RA_CONQUER_H_
