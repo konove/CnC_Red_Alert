@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.14)
 project(CnCRedAlert)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+include(OptimizeInDebug)
 
 # Without a build type a single-config generator passes no -O flag at all, and
 # the bounds checks this tree relies on (base::At, the checked container

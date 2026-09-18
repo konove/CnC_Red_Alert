@@ -17,6 +17,10 @@ target_sources(tech PUBLIC
 
 target_link_libraries(tech PUBLIC absl::strings PRIVATE base sdllib port vqa32 lzo)
 
+# RSA bignum, Blowfish, SHA-1 and LCW run over every byte the game loads or
+# saves; keep them fast when debugging everything else.
+optimize_in_debug(mp.cc blowfish.cc sha1_compress.cc lcwuncmp.cc lcw.cc)
+
 # Tests
 include(Testing)
 add_gtest(

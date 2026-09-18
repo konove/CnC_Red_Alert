@@ -171,6 +171,19 @@ whole block in one call. Tests: the FIPS 180 vectors (including the million-`a` 
 against portable over 1 to 1000 blocks, and chunked hashing against one-shot. SHA-1 went from 48% of
 main-thread CPU to 9%.
 
+### Step 4 done (2026-09-17): kernels at -O2 in Debug
+
+Profiled a plain Debug build (no ASan) and charged each sample to the first project `.cc` on its
+stack: `tech/mp.cc` 24% (RSA bignum for encrypted mixfile headers), `tech/blowfish.cc` 15%,
+`sdllib/misc.cc` 15% (`Build_Fading_Table`), `tech/sha1_compress.cc` 14%, `tech/lcwuncmp.cc` 3%,
+`sdllib/drawbuff_sdl.cc` 2%. `optimize_in_debug()` (`cmake/OptimizeInDebug.cmake`) compiles those,
+plus `tech/lcw.cc` (the save-side compressor), at `-O2` in Debug only; game logic stays at `-O0`.
+The Debug headless load drops from 0.72 s to 0.26 s wall (0.65 s → 0.18 s CPU).
+
+`cmake-build-debug-ra/` also has `ENABLE_ASAN=ON`, which about triples it (2.04 s, and 0.72 s once
+the kernels are at `-O2`): ASan's shadow poisoning and fake stacks were 41% of its samples. Use a
+plain Debug directory for day-to-day debugging and keep ASan for hunting memory bugs.
+
 ## Where things stand
 
 Headless, optimized build, default audio driver:
@@ -183,7 +196,7 @@ Headless, optimized build, default audio driver:
 | Exit wait for audio drain | 186 ms | 46 ms  |
 
 The logo still plays once per install; the first cold launch is ~0.26 s because of the OS file
-cache. Still open: step 4 (Debug builds) and the main menu's busy loop.
+cache. Still open: the main menu's busy loop.
 
 ## Verification
 

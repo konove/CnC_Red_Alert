@@ -26,7 +26,9 @@ loops of LCW decompression, Blowfish, SHA-1 and the paletted blit, and unoptimiz
 out-of-line calls. Measured on Red Alert 2026-09-17, `Debug` against `RelWithDebInfo`: loading a
 saved game 483 ms vs 19 ms, startup bootstrap 1836 ms vs 45 ms, and the intro movie could not decode
 in real time at all, stretching 10.5 s of video to 22 s. `Debug` is for stepping in a debugger,
-nothing else.
+nothing else. The worst kernels (RSA bignum, Blowfish, SHA-1, LCW, the fading table, the window
+blit) are compiled at `-O2` even in `Debug` via `optimize_in_debug()` in
+`cmake/OptimizeInDebug.cmake`; add a file there only if a Debug profile shows it hot.
 
 ## Setup
 
