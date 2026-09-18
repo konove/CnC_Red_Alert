@@ -121,7 +121,7 @@ class ScoreClass {
 
   // Lets the player type a hall of fame name into `str` until Return is
   // pressed. Letters are upper-cased and echoed at 320x200 position (`xpos`,
-  // `ypos`) in font palette `pal`. `str` must hold MAX_FAMENAME_LENGTH chars.
+  // `ypos`) in font palette `pal`. `str` must hold kFameNameSize chars.
   static void Input_Name(std::span<char> str, int xpos, int ypos,
                          std::span<const uint8_t> pal);
 };

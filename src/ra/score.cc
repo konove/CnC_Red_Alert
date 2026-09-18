@@ -30,6 +30,7 @@
 #include "ra/score.h"
 
 #include <algorithm>
+#include <array>
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>
@@ -49,6 +50,7 @@
 #include "ra/globals.h"
 #include "ra/goptions.h"
 #include "ra/graphics_loader.h"
+#include "ra/hall_of_fame.h"
 #include "ra/house.h"
 #include "ra/inline.h"
 #include "ra/interpal.h"
@@ -90,12 +92,6 @@
 #define HALLFAME_X 11
 #define HALLFAME_Y 120
 
-// Rows in the hall of fame.
-#define NUMFAMENAMES 7
-// Size of a hall of fame name: ten letters and the terminator. Part of the
-// HALLFAME.DAT record layout (see Fame).
-#define MAX_FAMENAME_LENGTH 11
-
 // Draws the blinking underline cursor beneath letter `pos` of the hall of fame
 // name being typed on 320x200 row `ypos`, erasing the old one if `pos` moved.
 static void Animate_Cursor(int pos, int ypos);
@@ -125,15 +121,6 @@ static bool StillUpdating;
 
 // Score screen backgrounds, indexed by side: 0 Allied, 1 Soviet.
 static const char* ScreenNames[2] = {"ALIBACKH.PCX", "SOVBACKH.PCX"};
-
-// One hall of fame row. HALLFAME.DAT is NUMFAMENAMES of these written as raw
-// memory, so the struct layout (padding included) is the file format.
-struct Fame {
-  char name[MAX_FAMENAME_LENGTH];
-  int score;  // 0 marks an empty row.
-  int level;  // Scenario number the score was earned on.
-  int side;   // 0 Allied, 1 Soviet.
-};
 
 ScoreAnimClass* ScoreObjs[MAXSCOREOBJS];
 
@@ -336,7 +323,6 @@ void ScoreClass::Presentation() {
   static const int _bldgny[2] = {150, 150};
 
   GameFile file(kFameFileName);
-  struct Fame hallfame[NUMFAMENAMES];
   const int oldfontxspacing = FontXSpacing;
   const int house = IsSovietHouse(PlayerPtr->Class->House) ? 1 : 0;  // 0 or 1
 
@@ -595,78 +581,41 @@ void ScoreClass::Presentation() {
   Alloc_Object(new ScorePrintClass(TXT_SCORE_TOP, 28, 110, greenpal));
   Call_Back_Delay(9);
 
-  // First check for the existence of the file, and if there isn't one, make a
-  // new one filled with blanks.
-  if (!file.IsAvailable()) {
-    // TODO: Only name[0] and the three ints are set; the rest of each name and
-    // the struct padding go to disk as uninitialized stack bytes.
-    file.Open(FileAccess::kWrite);
-
-    for (auto& i : hallfame) {
-      i.name[0] = static_cast<char>(i.score = i.level = 0);
-      i.side = 0;
-      file.WriteObject(i);
-    }
-
+  // Load the table. A missing or short file reads as an empty table.
+  std::array<std::byte, kFameFileSize> rawfame{};
+  if (file.IsAvailable()) {
+    file.Open(FileAccess::kRead);
+    file.Read(std::span<std::byte>(rawfame));
     file.Close();
   }
+  FameTable hallfame = DecodeFameTable(rawfame);
 
-  file.Open(FileAccess::kRead);
-  for (auto& i : hallfame) {
-    file.ReadObject(i);
-  }
-  file.Close();
-
-  // If the player's score is good enough to bump someone off the list, remove
-  // their data, move everyone down a notch, and set index = where their info
-  // goes. index == NUMFAMENAMES afterwards means the player did not make the
-  // list.
-  //
-  // TODO: The first test defeats "good enough". When the player does not beat
-  // the bottom row, that row's score is zeroed, so any positive total then wins
-  // the bottom slot and evicts a better score. With a total of zero or less the
-  // row just loses its score on screen (the file is not rewritten). This is the
-  // original behaviour; it may have been meant to always show the latest game.
-  if (hallfame[NUMFAMENAMES - 1].score >= total) {
-    hallfame[NUMFAMENAMES - 1].score = 0;
-  }
-  int index = 0;
-  for (index = 0; index < NUMFAMENAMES; index++) {
-    if (total > base::At(hallfame, index).score) {
-      if (index < NUMFAMENAMES - 1) {
-        for (int i = NUMFAMENAMES - 1; i > index; i--) {
-          base::At(hallfame, i) = base::At(hallfame, i - 1);
-        }
-      }
-      base::At(hallfame, index).score = total;
-      base::At(hallfame, index).level = Scen.Scenario;
-      base::At(base::At(hallfame, index).name, 0) = 0;  // blank out the name
-      base::At(hallfame, index).side = house;
-      break;
-    }
-  }
+  // If the player's score is good enough to bump someone off the list, make
+  // room for it. index is where their info goes, or -1 if they didn't make it.
+  const int index = InsertFameScore(hallfame, total, Scen.Scenario, house);
 
   // Now display the hall of fame. The printers view their strings, so each row
   // gets its own 32-byte slice of `maststr` that stays valid while it types:
   // the score at offset 0 and the mission number at offset 16.
   Set_Logic_Page(SeenBuff);
 
-  char maststr[NUMFAMENAMES * 32];
+  char maststr[kFameRows * 32];
   std::span<const uint8_t> pal;
-  for (int i = 0; i < NUMFAMENAMES; i++) {
-    pal = base::At(hallfame, i).side ? redpal : bluepal;
-    Alloc_Object(new ScorePrintClass(base::At(hallfame, i).name, HALLFAME_X,
+  for (int i = 0; i < kFameRows; i++) {
+    const FameEntry& row = hallfame.at(base::ToSize(i));
+    pal = row.side ? redpal : bluepal;
+    Alloc_Object(new ScorePrintClass(row.name.data(), HALLFAME_X,
                                      HALLFAME_Y + (i * 8), pal));
-    if (base::At(hallfame, i).score) {
+    if (row.score) {
       const auto str = std::span(maststr).subspan(base::ToSize(i) * 32, 32);
-      absl::SNPrintF(str.data(), str.size(), "%d", base::At(hallfame, i).score);
+      absl::SNPrintF(str.data(), str.size(), "%d", row.score);
       Alloc_Object(new ScorePrintClass(str.data(), HALLFAME_X + (6 * 14),
                                        HALLFAME_Y + (i * 8), pal));
       // Scenario numbers from 20 up are expansion missions, not campaign
       // levels; they show as "**".
-      if (base::At(hallfame, i).level < 20) {
+      if (row.level < 20) {
         absl::SNPrintF(str.subspan(16).data(), str.size() - 16, "%d",
-                       base::At(hallfame, i).level);
+                       row.level);
       } else {
         absl::SNPrintF(str.subspan(16).data(), str.size() - 16, "**");
       }
@@ -684,15 +633,14 @@ void ScoreClass::Presentation() {
   // the table. Otherwise just wait for a click.
   Keyboard->Clear();
 
-  if (index < NUMFAMENAMES) {
-    pal = base::At(hallfame, index).side ? redpal : bluepal;
-    Input_Name(base::At(hallfame, index).name, HALLFAME_X,
-               HALLFAME_Y + (index * 8), pal);
+  if (index >= 0) {
+    FameEntry& row = hallfame.at(base::ToSize(index));
+    pal = row.side ? redpal : bluepal;
+    Input_Name(row.name, HALLFAME_X, HALLFAME_Y + (index * 8), pal);
 
+    EncodeFameTable(hallfame, rawfame);
     file.Open(FileAccess::kWrite);
-    for (const auto& i : hallfame) {
-      file.WriteObject(i);
-    }
+    file.Write(std::span<const std::byte>(rawfame));
     file.Close();
   } else {
     Alloc_Object(new ScorePrintClass(TXT_CLICK_CONTINUE, 149, 190, yellowpal));
@@ -966,7 +914,7 @@ void ScoreClass::Input_Name(std::span<char> str, int xpos, int ypos,
                             std::span<const uint8_t> pal) {
   int key = 0;
   // Cursor position within `str`. It stops at the last letter,
-  // MAX_FAMENAME_LENGTH - 2, which further typing overwrites.
+  // kFameNameSize - 2, which further typing overwrites.
   int index = 0;
 
   const auto keystrok = MixArchive::RetrieveData("KEYSTROK.AUD");
@@ -991,7 +939,7 @@ void ScoreClass::Input_Name(std::span<char> str, int xpos, int ypos,
 
       // On the last letter, flush the type-ahead so that key repeat doesn't
       // keep overwriting it.
-      if (index == MAX_FAMENAME_LENGTH - 2) {
+      if (index == kFameNameSize - 2) {
         while (Keyboard->Check()) {
           Keyboard->Get();
         }
@@ -1001,7 +949,7 @@ void ScoreClass::Input_Name(std::span<char> str, int xpos, int ypos,
       // space instead. The cursor never moves past the last letter, so a plain
       // backspace there would delete the letter before it and leave the last
       // one standing.
-      if ((key == KA_BACKSPACE && index == MAX_FAMENAME_LENGTH - 2) &&
+      if ((key == KA_BACKSPACE && index == kFameNameSize - 2) &&
           (base::At(str, base::ToSize(index)) &&
            base::At(str, base::ToSize(index)) != 32)) {
         key = 32;
@@ -1044,7 +992,7 @@ void ScoreClass::Input_Name(std::span<char> str, int xpos, int ypos,
             Call_Back_Delay(1);
           }
 
-          if (index < MAX_FAMENAME_LENGTH - 2) {
+          if (index < kFameNameSize - 2) {
             index++;
           }
         }

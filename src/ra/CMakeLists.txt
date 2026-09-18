@@ -119,6 +119,12 @@ add_gtest(
 )
 
 add_gtest(
+    NAME ra_hall_of_fame_test
+    SOURCES hall_of_fame_test.cc hall_of_fame.cc
+    LIBS base
+)
+
+add_gtest(
     NAME ra_dib_test
     SOURCES dib_test.cc dib.cc
     LIBS base absl::core_headers
