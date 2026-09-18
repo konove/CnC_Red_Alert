@@ -519,7 +519,11 @@ bool Audio_Init(void* /*window*/, int /*bits_per_sample*/, bool stereo,
   desired.freq = rate;
   desired.format = AUDIO_S16;  // bits_per_sample == 16 ? AUDIO_S16 : AUDIO_S8;
   desired.channels = stereo ? 2 : 1;
-  desired.samples = 2048;
+  // 512 samples is 23 ms at the games' 22,050 Hz. Every sound effect can
+  // start up to one buffer late, and SDL2's audio thread sleeps for two
+  // buffers when the device closes, so 2048 cost 93 ms of latency and 186 ms
+  // on every exit.
+  desired.samples = 512;
   desired.callback = SDL_Audio_Callback;
 
   // don't allow format change so I need less mising code
@@ -682,7 +686,8 @@ void Fade_Sample(int handle, int ticks) {
   const int fade_time = 1000 / 60 * ticks;
   const int callback_interval = ObtainedSpec.samples * 1000 / ObtainedSpec.freq;
 
-  const int num_steps = fade_time / callback_interval;
+  // A fade shorter than one callback finishes in a single step.
+  const int num_steps = std::max(1, fade_time / callback_interval);
 
   if (Sample_Status(handle)) {
     SDL_LockAudioDevice(AudioDevice);

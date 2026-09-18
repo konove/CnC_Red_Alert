@@ -151,6 +151,12 @@ sound-effect latency drops the same way. The mixing callback is cheap, so underr
 but check playback on the real device. Skipping the close on process exit would also remove the
 drain, but it leaves shutdown to the OS; prefer the smaller buffer.
 
+**Done 2026-09-17** (`src/sdllib/ww_audio.cc`, both games): 512 samples. Headless load 0.31 s → 0.16
+s wall with the default PulseAudio driver. Also clamped `Fade_Sample`'s step count to at least 1: a
+fade shorter than one callback divided by zero, which with 2048-sample buffers already happened for
+fades under 6 ticks. RA and TD save/load smoke tests pass. Listening on real speakers is still to
+do.
+
 ### Step 5 update
 
 The CPU supports SHA-NI (`/proc/cpuinfo`), and SHA-1 is now the largest CPU cost left at about 50
