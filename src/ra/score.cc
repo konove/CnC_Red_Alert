@@ -36,7 +36,6 @@
 #include <cstring>
 #include <span>
 #include <string_view>
-#include <utility>
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
@@ -46,7 +45,6 @@
 #include "ra/config.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"
-#include "ra/display.h"
 #include "ra/externs.h"
 #include "ra/globals.h"
 #include "ra/goptions.h"
@@ -66,7 +64,6 @@
 #include "ra/text_ids.h"
 #include "ra/theme.h"
 #include "ra/type.h"
-#include "ra/ww_audio.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/file_access.h"
 #include "sdllib/font.h"
@@ -82,17 +79,10 @@
 #include "tech/ftimer.h"
 #include "tech/game_file.h"
 #include "tech/mix_archive.h"
-#include "tech/random.h"
 #include "tech/rgb.h"
 
-// Layout, in 320x200 coordinates. SCORETEXT_X, CASUALTY_Y, BUILDING_X/Y,
-// BARGRAPH_X and MAX_BAR_X belong to the uncalled Do_Nod_*() graphs.
-#define SCORETEXT_X 184
-#define CASUALTY_Y 88
-#define BUILDING_X 256
-#define BUILDING_Y 128
-#define BARGRAPH_X 266
-#define MAX_BAR_X 318  // max possible is 319 because of bar's right shadow
+// Layout, in 320x200 coordinates.
+
 // Length in pixels of a full Do_GDI_Graph() bar. Frame N of a bar shape file is
 // a bar N long; frame SIZEGBAR + 1 is the white flash.
 #define SIZEGBAR 118
@@ -100,70 +90,11 @@
 #define HALLFAME_X 11
 #define HALLFAME_Y 120
 
-// Infantrymen posing in the Nod casualty graph: two rows of five.
-#define NUMINFANTRYMEN 10
 // Rows in the hall of fame.
 #define NUMFAMENAMES 7
 // Size of a hall of fame name: ten letters and the terminator. Part of the
 // HALLFAME.DAT record layout (see Fame).
 #define MAX_FAMENAME_LENGTH 11
-
-// One infantryman of the Nod casualty graph. Like everything else that uses it,
-// this is only reached from the uncalled Do_Nod_Casualties_Graph().
-static struct InfantryAnim {
-  // Centre of the man, in pixels relative to the graph's work area at the
-  // top-left of the hidden page.
-  int xpos{};
-  int ypos{};
-  std::span<const std::byte> shapefile;
-  std::span<const uint8_t> remap;  // House colour remap table.
-  int anim{};                      // A DoType, or -1 once he is dead and gone.
-  int stage{};                     // Frame within `anim`.
-  char delay{};                    // Draws left before the next frame.
-  const InfantryTypeClass* Class{};
-} InfantryMan[NUMINFANTRYMEN];
-
-// Redraws every living infantryman onto a freshly restored background in the
-// work area of the hidden page, and leaves LogicPage pointing there for
-// Draw_Bar_Graphs(). The caller blits the result to the visible page.
-static void Draw_InfantryMen();
-
-// Draws infantryman `index` on LogicPage and advances his animation. A man who
-// finishes a death animation disappears for good; any other animation falls
-// back to standing ready.
-static void Draw_InfantryMan(int index);
-
-// Starts animation `anim` (a DoType) for infantryman `index`. Death animations
-// start at once; the others after a random pause so the men don't move in
-// step.
-static void New_Infantry_Anim(int index, int anim);
-
-// InfantryAnim::anim holds DoType values as an int so that -1 can mean "gone"
-// and the four gun-death variants can be picked arithmetically.
-constexpr int kDoGunDeath = static_cast<int>(DO_GUN_DEATH);
-// Draws one frame of the two "Casualties" bar graphs on the score screen. The
-// caller ramps `i` upward over many calls, so each call extends the bars a
-// little further until they reach the final casualty counts. As a bar grows
-// past one of the displayed infantrymen, that man is sent into a death
-// animation.
-//
-// The two graphs share the InfantryMan[] array: its first half holds the men
-// for the top (`gkilled`) graph, its second half the men for the bottom
-// (`nkilled`) graph.
-//
-// i       - How far the graphs have filled so far (the caller's tick count).
-// gkilled - Forces killed on the top side, pre-clamped to fit the graph width.
-// nkilled - Forces killed on the bottom side, pre-clamped to fit the graph
-//           width.
-//
-// Despite the parameter names, the only caller passes the Nod count as
-// `gkilled` and the GDI count as `nkilled`: the top bar and the first half of
-// InfantryMan[] are the red side.
-//
-// HISTORY:
-//   04/13/1995 BWG : Created.
-//   07/02/1996 BWG : Removed references to civilians.
-static void Draw_Bar_Graphs(int i, int gkilled, int nkilled);
 
 // Draws the blinking underline cursor beneath letter `pos` of the hall of fame
 // name being typed on 320x200 row `ypos`, erasing the old one if `pos` moved.
@@ -241,7 +172,6 @@ ScoreCredsClass::ScoreCredsClass(int xpos, int ypos,
     : ScoreAnimClass(xpos, ypos, data),
       MaxStage(maxval),
       TimerReset(xtimer),
-      CashTurn(MixArchive::RetrieveData("CASHTURN.AUD")),
       Clock1(MixArchive::RetrieveData("CLOCK1.AUD")) {}
 
 void ScoreCredsClass::Update() {
@@ -261,20 +191,14 @@ void ScoreCredsClass::Update() {
 }
 
 ScorePrintClass::ScorePrintClass(int string, int xpos, int ypos,
-                                 std::span<const uint8_t> palette,
-                                 int background)
+                                 std::span<const uint8_t> palette)
     : ScoreAnimClass(xpos, ypos, Text_String(string)),
-      Background(background),
       Stage(0),
       PrimaryPalette(palette) {}
 
 ScorePrintClass::ScorePrintClass(std::string_view string, int xpos, int ypos,
-                                 std::span<const uint8_t> palette,
-                                 int background)
-    : ScoreAnimClass(xpos, ypos, string),
-      Background(background),
-      Stage(0),
-      PrimaryPalette(palette) {}
+                                 std::span<const uint8_t> palette)
+    : ScoreAnimClass(xpos, ypos, string), Stage(0), PrimaryPalette(palette) {}
 
 void ScorePrintClass::Update() {
   // A one-letter string for Print().
@@ -415,9 +339,6 @@ void ScoreClass::Presentation() {
   struct Fame hallfame[NUMFAMENAMES];
   const int oldfontxspacing = FontXSpacing;
   const int house = IsSovietHouse(PlayerPtr->Class->House) ? 1 : 0;  // 0 or 1
-  // Unused: the name of the 2x interpolation palette the Windows build loaded.
-  char inter_pal[15];
-  absl::SNPrintF(inter_pal, sizeof(inter_pal), "SCORPAL1.PAL");
 
   ControlQ = false;
   FontXSpacing = 0;
@@ -740,7 +661,7 @@ void ScoreClass::Presentation() {
       const auto str = std::span(maststr).subspan(base::ToSize(i) * 32, 32);
       absl::SNPrintF(str.data(), str.size(), "%d", base::At(hallfame, i).score);
       Alloc_Object(new ScorePrintClass(str.data(), HALLFAME_X + (6 * 14),
-                                       HALLFAME_Y + (i * 8), pal, kBlack));
+                                       HALLFAME_Y + (i * 8), pal));
       // Scenario numbers from 20 up are expansion missions, not campaign
       // levels; they show as "**".
       if (base::At(hallfame, i).level < 20) {
@@ -751,7 +672,7 @@ void ScoreClass::Presentation() {
       }
       Alloc_Object(new ScorePrintClass(str.subspan(16).data(),
                                        HALLFAME_X + (6 * 11),
-                                       HALLFAME_Y + (i * 8), pal, kBlack));
+                                       HALLFAME_Y + (i * 8), pal));
       Call_Back_Delay(13);
     }
   }
@@ -863,104 +784,6 @@ void Cycle_Wait_Click(bool cycle) {
   Keyboard->Clear();
 }
 
-// Uncalled Tiberian Dawn leftover; see score.h.
-// Not const: plays the score screen animation.
-// NOLINTNEXTLINE(readability-make-member-function-const)
-void ScoreClass::Do_Nod_Buildings_Graph() {
-  const auto power_plant_shape = MixArchive::RetrieveData("POWR.SHP");
-  const auto tanya_shape = MixArchive::RetrieveData("E7.SHP");
-  const auto fireball_shape = MixArchive::RetrieveData("FBALL1.SHP");
-  const InfantryTypeClass* ramboclass =
-      &InfantryTypeClass::As_Reference(INFANTRY_TANYA);
-
-  // Print the # of buildings on the hidpage so we only need to do it once. The
-  // top-left corner of the hidden page is the work area every frame is composed
-  // in, and the pristine background is kept at BUILDING_X, BUILDING_Y.
-  SeenBuff.Blit(HidPage);
-  Set_Logic_Page(HidPage);
-  Call_Back_Delay(30);
-  Set_Font_Palette(redpal);
-  HidPage.Print(0, BUILDING_X + 16, BUILDING_Y + 10, kTBlack, kTBlack);
-  Set_Font_Palette(bluepal);
-  HidPage.Print(0, BUILDING_X + 16, BUILDING_Y + 22, kTBlack, kTBlack);
-
-  // Here's the animation/draw loop for blowing up the factory. Timeline, in
-  // frames: the commando runs past from 0, the building takes damage at 60 and
-  // more at 66, fires start at 61 and 65, and the building is gone from 68.
-  for (int i = 0; i < 98; i++) {
-    HidPage.Blit(HidPage, BUILDING_X, BUILDING_Y, 0, 0, 320 - BUILDING_X, 48);
-    int shapenum = 0;  // no damage
-    if (i >= 60) {
-      shapenum = Extract_Shape_Count(power_plant_shape) - 2;  // some damage
-      if (i == 60) {
-        Sound_Effect(VOC_CRUMBLE);
-      }
-      if (i > 65) {
-        shapenum = Extract_Shape_Count(power_plant_shape) - 1;  // mega damage
-      }
-    }
-
-    // Draw the building before Rambo, so that the commando passes in front of
-    // it.
-    if (i < 68) {
-      CC_Draw_Shape(power_plant_shape, shapenum, 0, 0, WINDOW_MAIN,
-                    SHAPE_GHOST | SHAPE_FADING | SHAPE_WIN_REL,
-                    ColorRemaps.at(PCOLOR_GOLD).RemapTable,
-                    DisplayClass::UnitShadow);
-    }
-
-    // Now draw some fires, if appropriate: two fireballs, the second starting
-    // three frames after the first, each advancing one shape every other frame
-    // until its animation runs out.
-    if (i >= 61) {
-      const int firecount = Extract_Shape_Count(fireball_shape);
-      int shapeindex = (i - 61) / 2;
-      if (shapeindex < firecount) {
-        CC_Draw_Shape(fireball_shape, shapeindex, 10, 10, WINDOW_MAIN,
-                      SHAPE_CENTER | SHAPE_WIN_REL);
-      }
-      if (i > 64) {
-        shapeindex = (i - 64) / 2;
-        if (shapeindex < firecount) {
-          CC_Draw_Shape(fireball_shape, shapeindex, 50, 30, WINDOW_MAIN,
-                        SHAPE_CENTER | SHAPE_WIN_REL);
-        }
-      }
-    }
-    // Draw the Tanya character running away from the building: the walk cycle
-    // for facing 6 (each facing is Jump frames apart), moving one pixel right
-    // per frame.
-    CC_Draw_Shape(
-        tanya_shape,
-        base::At(ramboclass->DoControls, static_cast<int>(DO_WALK)).Frame +
-            (base::At(ramboclass->DoControls, static_cast<int>(DO_WALK)).Jump *
-             6) +
-            ((i / 2) %
-             base::At(ramboclass->DoControls, static_cast<int>(DO_WALK)).Count),
-        i + 32, 40, WINDOW_MAIN,
-        SHAPE_FADING | SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST,
-        ColorRemaps.at(PCOLOR_RED).RemapTable, DisplayClass::UnitShadow);
-    HidPage.Blit(SeenBuff, 0, 0, BUILDING_X, BUILDING_Y, 320 - BUILDING_X, 48);
-    Call_Back_Delay(1);
-  }
-
-  // Count both totals up in step; Count_Up_Print() holds the smaller one at its
-  // maximum while the larger keeps going.
-  const int i = std::max(GBKilled, NBKilled);
-  for (int q = 0; q <= i; q++) {
-    Set_Font_Palette(redpal);
-    Count_Up_Print("%d", q, NBKilled, BUILDING_X + 16, BUILDING_Y + 10);
-    Set_Font_Palette(bluepal);
-    Count_Up_Print("%d", q, GBKilled, BUILDING_X + 16, BUILDING_Y + 22);
-    Play_Sample(Beepy6, 255, Options.Normalize_Volume(150));
-    Call_Back_Delay(1);
-  }
-  Set_Font_Palette(redpal);
-  Count_Up_Print("%d", NBKilled, NBKilled, BUILDING_X + 16, BUILDING_Y + 10);
-  Set_Font_Palette(bluepal);
-  Count_Up_Print("%d", GBKilled, GBKilled, BUILDING_X + 16, BUILDING_Y + 22);
-}
-
 void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
                               std::span<const std::byte> redptr, int gkilled,
                               int nkilled, int ypos) {
@@ -998,8 +821,8 @@ void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
   // From here maxval is the longer bar's length, used to turn a bar position
   // back into a count.
   //
-  // TODO: That conversion suits bars growing side by side, as in
-  // Do_Nod_Casualties_Graph(), where it was copied from. Here each bar stops at
+  // TODO: That conversion suits bars growing side by side, as in Tiberian
+  // Dawn's Nod casualty graph, where it was copied from. Here each bar stops at
   // its own length, so the shorter bar's counter only gets to
   // count * shorter / longer (50 against 100 stops at 25) and then jumps to the
   // real count. Dividing by the bar's own length would fix it.
@@ -1055,101 +878,6 @@ void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
                 SHAPE_WIN_REL, {}, {});
   Count_Up_Print("%d", nkilled, nkilled, 297, ypos + 14);
   /*BG	if (!Keyboard->Check()) */ Call_Back_Delay(40);
-}
-
-// Uncalled Tiberian Dawn leftover; see score.h.
-// Not const: plays the score screen animation.
-// NOLINTNEXTLINE(readability-make-member-function-const)
-void ScoreClass::Do_Nod_Casualties_Graph() {
-  const auto e1ptr = MixArchive::RetrieveData("E1.SHP");
-
-  int gdikilled = GKilled;
-  int nodkilled = NKilled;
-  int maxval = std::max(gdikilled, nodkilled);
-
-  if (!maxval) {
-    maxval = 1;
-  }
-  // Scale the bars down only when one would run off the graph; otherwise a
-  // bar is one pixel per kill.
-  if (gdikilled > MAX_BAR_X - BARGRAPH_X ||
-      nodkilled > MAX_BAR_X - BARGRAPH_X) {
-    gdikilled = gdikilled * (MAX_BAR_X - BARGRAPH_X) / maxval;
-    nodkilled = nodkilled * (MAX_BAR_X - BARGRAPH_X) / maxval;
-  }
-
-  maxval = std::max(gdikilled, nodkilled);
-  if (!maxval) {
-    maxval = 1;
-  }
-
-  // Initialize a bunch of objects for the infantrymen who pose for the bar
-  // graphs of casualties: a red row above a blue row, 10 pixels apart, each man
-  // starting his first animation after a random delay.
-  const int r = NUMINFANTRYMEN / 2;
-  for (int i = 0; i < NUMINFANTRYMEN / 2; i++) {
-    base::At(InfantryMan, i + 0).xpos = base::At(InfantryMan, i + r).xpos =
-        (i * 10) + 7;
-    base::At(InfantryMan, i + 0).ypos = 11;
-    base::At(InfantryMan, i + r).ypos = 21;
-    base::At(InfantryMan, i + 0).shapefile =
-        base::At(InfantryMan, i + r).shapefile = e1ptr;
-    base::At(InfantryMan, i + 0).remap = ColorRemaps.at(PCOLOR_RED).RemapTable;
-    base::At(InfantryMan, i + r).remap = ColorRemaps.at(PCOLOR_BLUE).RemapTable;
-    base::At(InfantryMan, i + 0).anim = base::At(InfantryMan, i + r).anim = 0;
-    base::At(InfantryMan, i + 0).stage = base::At(InfantryMan, i + r).stage = 0;
-    base::At(InfantryMan, i + 0).delay = base::At(InfantryMan, i + r).delay =
-        static_cast<char>(local_rng.Next() % 32);
-    base::At(InfantryMan, i + 0).Class = base::At(InfantryMan, i + r).Class =
-        &InfantryTypeClass::As_Reference(INFANTRY_E1);
-  }
-
-  // Draw the infantrymen and pause briefly before running the graph.
-  Draw_InfantryMen();
-  HidPage.Blit(SeenBuff, 0, 0, BARGRAPH_X, CASUALTY_Y, 320 - BARGRAPH_X, 34);
-  Call_Back_Delay(40);
-
-  for (int i = 1; i <= maxval; i++) {
-    // Draw & update infantrymen 3 times for every tick on the graph (i)
-    for (int index = 0; index < 3; index++) {
-      Draw_InfantryMen();
-      Draw_Bar_Graphs(i, nodkilled, gdikilled);
-      HidPage.Blit(SeenBuff, 0, 0, BARGRAPH_X, CASUALTY_Y, 320 - BARGRAPH_X,
-                   34);
-
-      Set_Font_Palette(redpal);
-      Count_Up_Print("%d", i * NKilled / maxval, NKilled, SCORETEXT_X + 64,
-                     CASUALTY_Y + 2);
-      Set_Font_Palette(bluepal);
-      Count_Up_Print("%d", i * GKilled / maxval, GKilled, SCORETEXT_X + 64,
-                     CASUALTY_Y + 14);
-      /*BG			if (!Keyboard->Check()) */ Call_Back_Delay(3);
-    }
-    Play_Sample(Beepy6, 255, Options.Normalize_Volume(150));
-  }
-  // Make sure accurate count is printed at end.
-  Set_Font_Palette(redpal);
-  Count_Up_Print("%d", NKilled, NKilled, SCORETEXT_X + 64, CASUALTY_Y + 2);
-  Set_Font_Palette(bluepal);
-  Count_Up_Print("%d", GKilled, GKilled, SCORETEXT_X + 64, CASUALTY_Y + 14);
-
-  // Finish up death animations, if there are any active. k is recomputed on
-  // every pass: the loop ends once no man is in a death animation (finished
-  // ones have anim == -1).
-  int k = 1;
-  while (k) {
-    for (int i = k = 0; i < NUMINFANTRYMEN; i++) {
-      if (base::At(InfantryMan, i).anim >= kDoGunDeath) {
-        k = 1;
-      }
-    }
-    if (k) {
-      Draw_InfantryMen();
-    }
-    Draw_Bar_Graphs(maxval, nodkilled, gdikilled);
-    HidPage.Blit(SeenBuff, 0, 0, BARGRAPH_X, CASUALTY_Y, 320 - BARGRAPH_X, 34);
-    Call_Back_Delay(1);
-  }
 }
 
 void ScoreClass::Show_Credits(int house, std::span<const uint8_t> pal) {
@@ -1354,118 +1082,6 @@ void Animate_Cursor(int pos, int ypos) {
   }
 }
 
-void Draw_InfantryMen() {
-  // Only draw the infantrymen if we're playing USSR... Allies wouldn't execute
-  // people like that. (The check itself lived in the caller of
-  // Do_Nod_Casualties_Graph(), which is gone.)
-
-  // First restore the background.
-  HidPage.Blit(HidPage, BARGRAPH_X, CASUALTY_Y, 0, 0, 320 - BARGRAPH_X, 34);
-  Set_Logic_Page(HidPage);
-
-  // Then draw all the infantrymen on the clean hidpage.
-  for (int k = 0; k < NUMINFANTRYMEN; k++) {
-    Draw_InfantryMan(k);
-  }
-  // They'll all be blitted over to the seenpage after the graphs are drawn.
-}
-
-void Draw_InfantryMan(int index) {
-  // If the infantryman's dead (anim == -1), there is nothing to draw.
-  if (base::At(InfantryMan, index).anim == -1) {
-    return;
-  }
-
-  const int stage = base::At(InfantryMan, index).stage +
-                    base::At(base::At(InfantryMan, index).Class->DoControls,
-                             base::ToSize(base::At(InfantryMan, index).anim))
-                        .Frame;
-
-  CC_Draw_Shape(base::At(InfantryMan, index).shapefile, stage,
-                base::At(InfantryMan, index).xpos,
-                base::At(InfantryMan, index).ypos, WINDOW_MAIN,
-                SHAPE_FADING | SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST,
-                base::At(InfantryMan, index).remap, DisplayClass::UnitShadow);
-  // See if it's time to run a new anim: a frame lasts 3 draws.
-  if (--base::At(InfantryMan, index).delay <= 0) {
-    base::At(InfantryMan, index).delay = 3;
-    if (std::cmp_greater_equal(
-            ++base::At(InfantryMan, index).stage,
-            base::At(base::At(InfantryMan, index).Class->DoControls,
-                     base::ToSize(base::At(InfantryMan, index).anim))
-                .Count)) {
-      // Was he playing a death anim? If so, and it's done, erase him.
-      if (base::At(InfantryMan, index).anim >= kDoGunDeath) {
-        base::At(InfantryMan, index).anim = -1;
-      } else {
-        New_Infantry_Anim(index, static_cast<int>(DO_STAND_READY));
-      }
-    }
-  }
-}
-
-void New_Infantry_Anim(int index, int anim) {
-  base::At(InfantryMan, index).anim = anim;
-  base::At(InfantryMan, index).stage = 0;
-  if (anim >= kDoGunDeath) {
-    base::At(InfantryMan, index).delay = 1;  // start right away
-  } else {
-    base::At(InfantryMan, index).delay =
-        static_cast<char>(local_rng.Next() % 16);
-  }
-}
-
-void Draw_Bar_Graphs(int i, int gkilled, int nkilled) {
-  // Top bar. Widths are doubled because the graph is drawn at hi-res (the
-  // coordinates above are in the original 320-wide space).
-  if (gkilled) {
-    LogicPage->Fill_Rect(0, 0 + 8, 0 + (std::min(i, gkilled) * 2), 0 + 10,
-                         kRed);
-    LogicPage->Draw_Line(0 + 2, 0 + 12, (0 + std::min(i, gkilled) + 1) * 2,
-                         0 + 12, kTBlack);
-    LogicPage->Draw_Line((0 + std::min(i, gkilled) + 1) * 2, 0 + 10,
-                         (0 + std::min(i, gkilled) + 1) * 2, 0 + 10, kTBlack);
-    if (i <= gkilled) {
-      // Each displayed infantryman stands for 11 ticks of the graph (a bar is
-      // at most MAX_BAR_X - BARGRAPH_X = 52 long and is shared by five men), so
-      // i / 11 is the man the bar has just reached. Kill him off unless he is
-      // already dead or dying.
-      const int anim = base::At(InfantryMan, i / 11).anim;
-      if (anim != -1 && anim < kDoGunDeath) {
-        if (i / 11) {
-          // Cosmetic death animations use the non-sync RNG so they cannot
-          // perturb game logic; pick one of the 4 gun-death variants at random.
-          New_Infantry_Anim(i / 11, kDoGunDeath + (local_rng.Next() % 4));
-        } else {
-          New_Infantry_Anim(i / 11, kDoGunDeath);
-        }
-      }
-    }
-  }
-  // Bottom bar. Same logic as the top bar, drawn 24 rows lower and indexing the
-  // second half of InfantryMan[] (hence the NUMINFANTRYMEN / 2 offset).
-  if (nkilled) {
-    LogicPage->Fill_Rect(0, 0 + 32, 0 + (std::min(i, nkilled) * 2), 0 + 34,
-                         kLtCyan);
-    LogicPage->Draw_Line(0 + 2, 0 + 36, (0 + std::min(i, nkilled) + 1) * 2,
-                         0 + 36, kTBlack);
-    LogicPage->Draw_Line((0 + std::min(i, nkilled) + 1) * 2, 0 + 34,
-                         (0 + std::min(i, nkilled) + 1) * 2, 0 + 34, kTBlack);
-    if (i <= nkilled) {
-      const int anim =
-          base::At(InfantryMan, (NUMINFANTRYMEN / 2) + (i / 11)).anim;
-      if (anim != -1 && anim < kDoGunDeath) {
-        if (i / 11) {
-          New_Infantry_Anim((NUMINFANTRYMEN / 2) + (i / 11),
-                            kDoGunDeath + (local_rng.Next() % 4));
-        } else {
-          New_Infantry_Anim((NUMINFANTRYMEN / 2) + (i / 11), kDoGunDeath);
-        }
-      }
-    }
-  }
-}
-
 void Call_Back_Delay(int time) {
   time = std::clamp(time, 0, 60);
   // Paces the full ServiceRealTime(): at most four times a second.
@@ -1658,5 +1274,4 @@ void ScoreClass::Init() {
   CHarvested = 0;
   ElapsedTime = 0;
   RealTime.Reset();
-  ChangingGun = nullptr;
 }

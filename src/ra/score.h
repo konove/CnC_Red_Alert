@@ -37,8 +37,6 @@
 
 #include "absl/base/attributes.h"
 #include "ra/jshell.h"
-#include "sdllib/gbuffer.h"
-#include "sdllib/wwstd.h"
 #include "tech/ftimer.h"
 
 // Statistics for the mission in progress plus the score screen that presents
@@ -94,15 +92,6 @@ class ScoreClass {
   void Presentation();
 
  private:
-  // Tiberian Dawn leftover; never points at anything.
-  unsigned char* ChangingGun = nullptr;
-
-  // TODO: ScoreDelay(), Pulse_Bar_Graph() and Print_Graph_Title() are declared
-  // but have no definition; remove them.
-  void ScoreDelay(int ticks);
-  void Pulse_Bar_Graph();
-  void Print_Graph_Title(int, int);
-
   // Prints the mission time next to the clock animation, as hours and minutes
   // once it reaches an hour. The display tops out at 9:59.
   static void Print_Minutes(int minutes);
@@ -129,14 +118,6 @@ class ScoreClass {
   static void Do_GDI_Graph(std::span<const std::byte> yellowptr,
                            std::span<const std::byte> redptr, int gkilled,
                            int nkilled, int ypos);
-
-  // TODO: The two Do_Nod_*() graphs are the Tiberian Dawn Nod score screen
-  // (infantrymen shot as the casualty bars reach them, a commando blowing up a
-  // power plant). Red Alert never calls them; Presentation() uses
-  // Do_GDI_Graph() for both sides. Remove them together with the file-local
-  // infantry helpers in score.cc that only they reach.
-  void Do_Nod_Casualties_Graph();
-  void Do_Nod_Buildings_Graph();
 
   // Lets the player type a hall of fame name into `str` until Return is
   // pressed. Letters are upper-cased and echoed at 320x200 position (`xpos`,
@@ -187,16 +168,12 @@ class ScoreCredsClass : public ScoreAnimClass {
   int Stage{0};    // Current frame.
   int MaxStage;    // Frame count; Stage wraps to 0 on reaching it.
   int TimerReset;  // Ticks per frame.
-  std::span<const std::byte> CashTurn;  // Loaded but never played.
-  std::span<const std::byte> Clock1;    // The per-frame tick sound.
+  std::span<const std::byte> Clock1;  // The per-frame tick sound.
 
   void Update() override;
   ScoreCredsClass(int xpos, int ypos, std::span<const std::byte> data, int max,
                   int timer);
-  ~ScoreCredsClass() override {
-    CashTurn = {};
-    Clock1 = {};
-  }
+  ~ScoreCredsClass() override { Clock1 = {}; }
   ScoreCredsClass(const ScoreCredsClass&) = delete;
   ScoreCredsClass& operator=(const ScoreCredsClass&) = delete;
   ScoreCredsClass(ScoreCredsClass&&) = delete;
@@ -228,18 +205,15 @@ class ScoreTimeClass : public ScoreAnimClass {
 // The string is given as text or as a TXT_ string table id.
 class ScorePrintClass : public ScoreAnimClass {
  public:
-  int Background;  // Stored but unused; letters always print on kTBlack.
-  int Stage;       // Index of the next letter to appear.
+  int Stage;  // Index of the next letter to appear.
   std::span<const uint8_t> PrimaryPalette;  // Font palette of the final text.
   void Update() override;
   ScorePrintClass(std::string_view string, int xpos, int ypos,
                   std::span<const uint8_t> palette
-                      ABSL_ATTRIBUTE_LIFETIME_BOUND,
-                  int background = kTBlack);
+                      ABSL_ATTRIBUTE_LIFETIME_BOUND);
   ScorePrintClass(int string, int xpos, int ypos,
                   std::span<const uint8_t> palette
-                      ABSL_ATTRIBUTE_LIFETIME_BOUND,
-                  int background = kTBlack);
+                      ABSL_ATTRIBUTE_LIFETIME_BOUND);
   ~ScorePrintClass() override { PrimaryPalette = {}; }
   ScorePrintClass(const ScorePrintClass&) = delete;
   ScorePrintClass& operator=(const ScorePrintClass&) = delete;
@@ -275,10 +249,6 @@ extern ScoreAnimClass* ScoreObjs[MAXSCOREOBJS];
 // per game, then waits for a key or click. Restores the game palette, font and
 // mouse before returning.
 void Multi_Score_Presentation();
-
-// TODO: Bit_It_In() is declared but has no definition; remove it.
-void Bit_It_In(int x, int y, int w, int h, GraphicBufferClass* src,
-               GraphicBufferClass* dest, int delay = 0, int dagger = 0);
 
 // Waits `time` timer ticks (clamped to 0..60, i.e. one second) while keeping
 // the score screen alive: it services sound and video and updates every object

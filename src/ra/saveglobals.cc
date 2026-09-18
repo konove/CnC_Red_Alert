@@ -71,9 +71,6 @@ template <class Archive>
 void ScoreClass::Serialize(Archive& ar) {
   ar(Score, NKilled, GKilled, CKilled, NBKilled, GBKilled, CBKilled,
      NHarvested, GHarvested, CHarvested, ElapsedTime, RealTime);
-  if constexpr (Archive::kIsReading) {
-    ChangingGun = nullptr;
-  }
 }
 template void ScoreClass::Serialize(ArchiveWriter&);
 template void ScoreClass::Serialize(ArchiveReader&);
