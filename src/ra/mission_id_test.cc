@@ -58,4 +58,25 @@ TEST(IsMissionAftermathTest, NonMatchingNames) {
   EXPECT_FALSE(IsMissionAftermath("SCG01EA.INI"));
 }
 
+TEST(MissionWithNumberTest, ReplacesTheTwoDigitNumber) {
+  EXPECT_EQ(MissionWithNumber("SCG05EA.INI", 6), "SCG06EA.INI");
+  EXPECT_EQ(MissionWithNumber("SCU09EB.INI", 10), "SCU10EB.INI");
+  EXPECT_EQ(MissionWithNumber("SCA01EA.INI", 2), "SCA02EA.INI");
+}
+
+TEST(MissionWithNumberTest, LeavesShortNamesAlone) {
+  EXPECT_EQ(MissionWithNumber("", 6), "");
+  EXPECT_EQ(MissionWithNumber("SCG0", 6), "SCG0");
+}
+
+TEST(MissionWithVariantTest, ReplacesTheVariantLetter) {
+  EXPECT_EQ(MissionWithVariant("SCG05EA.INI", 'B'), "SCG05EB.INI");
+  EXPECT_EQ(MissionWithVariant("SCU13EA.INI", 'C'), "SCU13EC.INI");
+}
+
+TEST(MissionWithVariantTest, LeavesShortNamesAlone) {
+  EXPECT_EQ(MissionWithVariant("", 'B'), "");
+  EXPECT_EQ(MissionWithVariant("SCG05E", 'B'), "SCG05E");
+}
+
 }  // namespace

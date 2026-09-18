@@ -1,10 +1,12 @@
 #include "ra/mission_id.h"
 
 #include <charconv>
+#include <string>
 #include <string_view>
 
 #include "absl/strings/ascii.h"
 #include "absl/strings/match.h"
+#include "absl/strings/str_format.h"
 
 bool IsMissionCounterstrike(const std::string_view file_name) {
   // Case-sensitive, unlike IsMissionAftermath(): the original sscanf("SCM%03d")
@@ -35,4 +37,32 @@ bool IsMissionAftermath(const std::string_view file_name) {
   return rest.size() >= 3 &&
          absl::ascii_isdigit(static_cast<unsigned char>(rest.at(1))) &&
          !absl::ascii_isdigit(static_cast<unsigned char>(rest.at(2)));
+}
+
+namespace {
+
+// Positions of the fields in "SC<side><NN><dir><variant>.INI".
+constexpr std::string_view::size_type kNumberPos = 3;
+constexpr std::string_view::size_type kNumberLength = 2;
+constexpr std::string_view::size_type kVariantPos = 6;
+
+}  // namespace
+
+std::string MissionWithNumber(const std::string_view file_name,
+                              const int scenario) {
+  std::string result(file_name);
+  if (result.size() >= kNumberPos + kNumberLength) {
+    result.replace(kNumberPos, kNumberLength,
+                   absl::StrFormat("%02d", scenario));
+  }
+  return result;
+}
+
+std::string MissionWithVariant(const std::string_view file_name,
+                               const char variant) {
+  std::string result(file_name);
+  if (result.size() > kVariantPos) {
+    result.at(kVariantPos) = variant;
+  }
+  return result;
 }

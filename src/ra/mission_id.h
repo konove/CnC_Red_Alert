@@ -1,4 +1,8 @@
-// Classifies multiplayer scenario file names by expansion pack.
+// Reads and edits the fields packed into scenario file names.
+//
+// A campaign scenario is named "SC<side><NN><dir><variant>.INI", e.g.
+// "SCG05EA.INI": NN is the two-digit scenario number and the variant letter
+// (A, B, ...) picks one of the alternative maps for that scenario.
 //
 // Multiplayer scenarios are named "SCM<id><house>.INI". Scenarios numbered
 // above 24 belong to Counterstrike; scenarios with an alphabetical name
@@ -7,6 +11,7 @@
 #ifndef CNC_RED_ALERT_RA_MISSION_ID_H_
 #define CNC_RED_ALERT_RA_MISSION_ID_H_
 
+#include <string>
 #include <string_view>
 
 // Returns true if `file_name` names a Counterstrike multiplayer scenario:
@@ -22,5 +27,15 @@ bool IsMissionCounterstrike(std::string_view file_name);
 // this and IsMissionCounterstrike(); callers that need an exclusive
 // classification check IsMissionCounterstrike() first.
 bool IsMissionAftermath(std::string_view file_name);
+
+// Returns the campaign scenario name `file_name` with its number replaced by
+// `scenario` (0-99): ("SCG05EA.INI", 6) gives "SCG06EA.INI". Returns
+// `file_name` unchanged if it is too short to hold a number.
+std::string MissionWithNumber(std::string_view file_name, int scenario);
+
+// Returns the campaign scenario name `file_name` with its variant letter
+// replaced by `variant`: ("SCG05EA.INI", 'B') gives "SCG05EB.INI". Returns
+// `file_name` unchanged if it is too short to hold a variant.
+std::string MissionWithVariant(std::string_view file_name, char variant);
 
 #endif  // CNC_RED_ALERT_RA_MISSION_ID_H_
