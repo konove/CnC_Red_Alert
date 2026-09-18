@@ -52,5 +52,19 @@ bool BlowfishCodec::Flush(ByteSink& out) {
 base::ssize BlowfishCodec::BytesWanted(base::ssize output_needed) const {
   // Unkeyed, bytes pass straight through, so take no more than the reader
   // asked for.
-  return engine_.has_value() ? kBlockSize - count_ : output_needed;
+  if (!engine_.has_value()) {
+    return output_needed;
+  }
+  // Keyed, only whole blocks can be deciphered. Finish the block already
+  // started; otherwise take every block the reader's request reaches into and
+  // not one byte more, so a reader that stops mid-file leaves the source where
+  // the next one expects it -- MixArchive::Open takes data_start_ from the
+  // file position right after the index. Asking for one block at a time would
+  // be just as correct but would drag the whole file through the chain eight
+  // bytes per virtual call.
+  if (count_ != 0) {
+    return kBlockSize - count_;
+  }
+  const base::ssize needed = std::max<base::ssize>(output_needed, 1);
+  return ((needed + kBlockSize - 1) / kBlockSize) * kBlockSize;
 }

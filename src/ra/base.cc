@@ -431,6 +431,12 @@ void BaseClass::Serialize(Archive& ar) {
       return;
     }
     Nodes.Clear();
+    // Clear() releases the storage and Add() grows it back ten slots at a
+    // time, copying every element already there each time. The count is known
+    // here, so take the storage in one step.
+    if (count > 0) {
+      Nodes.Resize(count);
+    }
     for (int i = 0; i < count; ++i) {
       BaseNodeClass node;
       ar(node.Type, node.Cell);

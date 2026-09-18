@@ -161,6 +161,12 @@ static void SerializeTriggerList(Archive& ar, DynamicVectorClass<TriggerClass*>&
       return;
     }
     list.Clear();
+    // Clear() releases the storage and Add() grows it back ten slots at a
+    // time, copying every element already there each time. The count is known
+    // here, so take the storage in one step.
+    if (count > 0) {
+      list.Resize(count);
+    }
   }
   for (int i = 0; i < count; ++i) {
     TARGET target = kTargetNone;

@@ -182,6 +182,12 @@ void SerializeObjectList(Archive& ar, DynamicVectorClass<ObjectClass*>& objects)
       return;
     }
     objects.Clear();
+    // Clear() releases the storage and Add() grows it back ten slots at a
+    // time, copying every element already there each time. The count is known
+    // here, so take the storage in one step.
+    if (count > 0) {
+      objects.Resize(count);
+    }
     for (int i = 0; i < count; ++i) {
       ObjectClass* object = nullptr;
       ar(ObjectPtr(object));

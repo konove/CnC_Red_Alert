@@ -147,6 +147,11 @@ class RangeStream final : public ByteStream {
 
   // Current position within the window.
   base::ssize position_ = 0;
+
+  // Where inner_ was left by our last read, or -1 when that is unknown --
+  // before the first read, and after any read that did not land where it was
+  // asked to. A read only repositions inner_ when it disagrees with this.
+  base::ssize inner_position_ = -1;
 };
 
 #endif  // CNC_RED_ALERT_TECH_BYTE_STREAM_H_

@@ -103,15 +103,23 @@ base::ssize RangeStream::Read(const std::span<std::byte> buffer) {
   if (count <= 0) {
     return 0;
   }
-  // Positioned before every read, so that the inner stream can be shared
-  // between reads of different windows without the two disturbing each other.
-  if (inner_->Seek(offset_ + position_, SeekOrigin::kBegin) !=
-      offset_ + position_) {
-    failed_ = true;
-    return 0;
+  // The inner stream may be positioned anywhere: a window over an archive is
+  // opened once and read from many times, and a seek on this window moves only
+  // position_. Reposition it when it is not already where this read starts --
+  // which, for the sequential reads that decoding a packed file is made of, is
+  // almost never, and each skipped seek is an fseek and an ftell.
+  const base::ssize start = offset_ + position_;
+  if (inner_position_ != start) {
+    if (inner_->Seek(start, SeekOrigin::kBegin) != start) {
+      inner_position_ = -1;
+      failed_ = true;
+      return 0;
+    }
+    inner_position_ = start;
   }
   const base::ssize bytes_read =
       inner_->Read(buffer.first(base::ToSize(count)));
+  inner_position_ += bytes_read;
   position_ += bytes_read;
   return bytes_read;
 }

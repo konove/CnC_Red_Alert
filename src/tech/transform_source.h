@@ -66,11 +66,17 @@ class TransformSource : public ChainedSource {
       pending_.clear();
       cursor_ = 0;
       const base::ssize wanted = codec_.BytesWanted(std::ssize(buffer) - total);
-      input_.resize(base::ToSize(wanted));
-      const base::ssize got = ChainedSource::Read(input_);
+      // Grow only. Resizing down and up again on every pull would re-zero the
+      // scratch each time, which for an eight-byte cipher block is far more
+      // work than the read it serves.
+      if (std::ssize(input_) < wanted) {
+        input_.resize(base::ToSize(wanted));
+      }
+      const std::span<std::byte> chunk =
+          std::span(input_).first(base::ToSize(wanted));
+      const base::ssize got = ChainedSource::Read(chunk);
       VectorSink output(pending_);
-      if (got > 0 &&
-          !codec_.Process(std::span(input_).first(base::ToSize(got)), output)) {
+      if (got > 0 && !codec_.Process(chunk.first(base::ToSize(got)), output)) {
         Fail();
       }
       if (got < wanted) {

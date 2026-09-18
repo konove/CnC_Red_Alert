@@ -49,10 +49,13 @@
 #include <algorithm>
 #include <cstddef>
 #include <span>
+#include <vector>
 
 #include "absl/log/check.h"
 #include "base/array.h"
+#include "base/buffer.h"
 #include "base/numeric.h"
+#include "base/types.h"
 #include "ra/externs.h"
 #include "sdllib/file_access.h"
 #include "sdllib/gbuffer.h"
@@ -327,19 +330,33 @@ int Load_Interpolated_Palettes(const char* filename, const bool add) {
       file.Close();
       return 0;
     }
+    // Only the lower triangle is stored, row y holding y + 1 entries, so a
+    // palette occupies 1 + 2 + ... + 256 bytes on disk. Read all of it at once
+    // and lay the rows out here: a read per row was 256 trips down the stream
+    // chain, and for a movie packed inside a mixfile each of those was a seek
+    // and a read on the archive underneath.
+    constexpr int kStoredBytes = 256 * 257 / 2;
+    std::vector<unsigned char> stored(kStoredBytes);
     for (int i = 0; i < num_palettes; i++) {
+      const int index = i + start_palette;
       // 256 x 256: the blended result for every pair of palette indices.
-      base::At(InterpolatedPalettes, i + start_palette).assign(65536, 0);
-      // Only the lower triangle is stored, row y holding y + 1 entries;
-      // Rebuild_Interpolated_Palette() mirrors it to fill the rest.
+      base::At(InterpolatedPalettes, index).assign(65536, 0);
+      if (file.Read(std::span(stored)) != kStoredBytes) {
+        break;
+      }
+      base::ssize read_offset = 0;
       for (int y = 0; y < 256; y++) {
-        file.Read(std::span(base::At(InterpolatedPalettes, i + start_palette))
-                      .subspan(base::ToSize(y) * 256),
-                  y + 1);
+        const base::ssize row_size = y + 1;
+        base::CopyBytes(
+            std::as_writable_bytes(
+                std::span(base::At(InterpolatedPalettes, index))
+                    .subspan(base::ToSize(y) * 256, base::ToSize(row_size))),
+            std::as_bytes(std::span(stored).subspan(base::ToSize(read_offset))),
+            row_size);
+        read_offset += row_size;
       }
 
-      Rebuild_Interpolated_Palette(
-          base::At(InterpolatedPalettes, i + start_palette));
+      Rebuild_Interpolated_Palette(base::At(InterpolatedPalettes, index));
     }
 
     PalettesRead = true;
