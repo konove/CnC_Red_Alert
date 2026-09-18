@@ -420,32 +420,19 @@ bool LoadOptionsClass::Process() {
         }
         game_num = Files.at(game_idx)->Num;
         if (Files.at(game_idx)->Valid) {
-          /*
-          ** Start a timer before we load the game
-          */
-          Timer<SystemTickSource> timer;
-          //					timer.Start();
-          timer.Set(int64_t{kTicksPerSecond} * 4);
-
+          // Shown in case a load is ever slow; it no longer holds the screen
+          // for a second, since loading takes milliseconds.
           WWMessageBox().Process(TXT_LOADING, TXT_NONE);
           Theme.Fade_Out();
           const bool rc = Load_Game(game_num);  // return code
-
-          /*
-          ** Make sure the message says on the screen at least 1 second
-          */
-          while (timer.HasTimeLeft()) {
-            ServiceRealTime();
-          }
           Keyboard->Clear();
 
           if (!rc) {
             WWMessageBox().Process(TXT_ERROR_LOADING_GAME);
           } else {
+            // "Mission loaded" plays over the fade into the mission rather
+            // than holding the load screen until it finishes.
             Speak(VOX_LOAD1);
-            while (Is_Speaking()) {
-              ServiceRealTime();
-            }
             Hide_Mouse();
             SeenBuff.Clear();
             GamePalette.Set();
