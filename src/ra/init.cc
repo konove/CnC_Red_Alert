@@ -1010,8 +1010,9 @@ bool Select_Game(bool /*fade*/) {
         **	Exit to DOS.
         */
         case kSelExit:
+          // No palette fade: the window closes right after, so it would
+          // only delay the exit.
           Theme.Fade_Out();
-          BlackPalette.Set(kFadePaletteSlow);
           return false;
 
         /*
@@ -1539,6 +1540,12 @@ bool Parse_Command_Line(std::span<char*> arguments) {
     if (string.starts_with("-QUITFRAME")) {
       DebugQuitAtFrame =
           tech::ParseInteger<int>(string.substr(10)).value_or(-1);
+      // Nobody watches an automated run; its fades only add wall time.
+      PaletteClass::DisableFades();
+      continue;
+    }
+    if (std::string_view(string) == "-NOFADE") {
+      PaletteClass::DisableFades();
       continue;
     }
     if (string.starts_with("-NEWGAME")) {

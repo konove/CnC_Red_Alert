@@ -14,7 +14,16 @@ class PaletteClass {
   // NOLINTNEXTLINE(*-explicit-constructor)
   PaletteClass(const RGBClass& /*col*/) noexcept;
 
+  // Makes this the current palette, blending to it over `fade` ticks
+  // (kTimerSecond per second) when fade is nonzero. While fading, calls
+  // `callback` once per displayed step, or presents the frame itself when
+  // callback is nullptr. Switches at once when fades are disabled or when
+  // this palette is already current.
   void Set(int fade = 0, void (*callback)() = nullptr);
+
+  // Makes every later Set() switch at once instead of fading. For automated
+  // runs (-NOFADE, -QUITFRAME), which have nobody watching the fade.
+  static void DisableFades() { fades_disabled_ = true; }
 
   void Adjust(int /*unused*/);
   void Adjust(int /*unused*/, PaletteClass& /*unused*/);
@@ -65,6 +74,8 @@ class PaletteClass {
   static PaletteClass CurrentPalette;
 
  private:
+  static inline bool fades_disabled_ = false;
+
   RGBClass data_[COLOR_COUNT];
 };
 

@@ -1,12 +1,14 @@
 #include "ra/palette.h"
 
 #include <algorithm>
+#include <chrono>
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <span>
+#include <thread>
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
@@ -29,15 +31,22 @@ PaletteClass::PaletteClass(const RGBClass& col) noexcept {
 }
 
 void PaletteClass::Set(int fade, void (*callback)()) {
+  // A fade to the palette already on screen would spend its whole duration
+  // redrawing an unchanged screen, e.g. the fade to black before a movie
+  // that starts from black.
+  if (fades_disabled_ || std::ranges::equal(bytes(), CurrentPalette.bytes())) {
+    fade = 0;
+  }
+
   if (fade) {
-    // fade to new palette
     const auto start_time = TickCount.Value();
 
     PaletteClass fade_palette;
 
     while (true) {
-      const int cur_time = static_cast<int>(
-          std::min<int64_t>(TickCount.Value() - start_time, fade));
+      const int64_t now = TickCount.Value();
+      const int cur_time =
+          static_cast<int>(std::min<int64_t>(now - start_time, fade));
 
       const auto old_bytes = CurrentPalette.bytes();
       const auto new_bytes = bytes();
@@ -61,6 +70,13 @@ void PaletteClass::Set(int fade, void (*callback)()) {
 
       if (cur_time == fade) {
         break;
+      }
+
+      // The blend only changes when the tick does, so presenting again
+      // before then redraws an identical frame. Unpaced, this loop presented
+      // over a thousand times a second and kept a core busy for the fade.
+      while (TickCount.Value() == now) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
       }
     }
   }
