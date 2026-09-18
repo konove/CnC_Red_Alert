@@ -143,7 +143,7 @@
 #include "port/ex_string.h"
 #include "port/random_seed.h"
 #include "port/safe_string.h"
-#include "ra/_wsproto.h"
+#include "ra/_wsproto.h"  // IWYU pragma: keep - used by an assert() below.
 #include "ra/ccini.h"
 #include "ra/cheklist.h"
 #include "ra/colrlist.h"

@@ -54,10 +54,10 @@
 #include "ra/defines.h"
 #include "ra/externs.h"
 #include "ra/heap.h"
-#include "ra/jshell.h"
+#include "ra/jshell.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.
 #include "ra/text_ids.h"
 #include "ra/type.h"
-#include "tech/disk_file.h"
+#include "tech/disk_file.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.
 #include "tech/mix_archive.h"
 
 /***********************************************************************************************
@@ -191,8 +191,7 @@ void BulletTypeClass::One_Time() {
                                 .string();
 
 #ifdef NDEBUG
-      const_cast<BulletTypeClass&>(bullet).SetBorrowedImage(
-          MixArchive::RetrieveData(fullname));
+      bullet.SetBorrowedImage(MixArchive::RetrieveData(fullname));
 #else
       DiskFile file(fullname);
 

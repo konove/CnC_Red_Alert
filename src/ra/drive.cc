@@ -67,6 +67,7 @@
 #include <iterator>
 #include <span>
 
+#include "absl/log/check.h"
 #include "base/array.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
@@ -1357,9 +1358,7 @@ void DriveClass::AI() {
  *                                                                                             *
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
-void DriveClass::Lay_Track() {
-  assert(IsActive);
-}
+void DriveClass::Lay_Track() { DCHECK(IsActive); }
 
 /***********************************************************************************************
  * DriveClass::Mark_Track -- Marks the midpoint of the track as occupied. *

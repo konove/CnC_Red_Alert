@@ -2307,6 +2307,17 @@ static void Init_CDROM_Access() {
  *                                                                                             *
  * HISTORY: * 06/03/1996 JLB : Created. *
  *=============================================================================================*/
+// Caches a registered mixfile, or exits if it cannot be read. Registration
+// only proves the file exists, so a failure here means it is truncated or
+// corrupt. Damaged data files are a user setup problem, not a bug: report and
+// exit quietly rather than abort with a stack trace.
+static void Cache_Or_Exit(const char* name) {
+  if (!MixArchive::Cache(name)) {
+    LOG(QFATAL) << "Cannot read " << name
+                << ": the game data files are missing or damaged.";
+  }
+}
+
 static void Init_Bootstrap_Mixfiles() {
   const int temp = RequiredCD;
   RequiredCD = -2;
@@ -2322,19 +2333,16 @@ static void Init_Bootstrap_Mixfiles() {
   GameFile file2("EXPAND2.MIX");
   if (file2.IsAvailable()) {
     MixArchive::Register("EXPAND2.MIX", &FastKey);
-    bool ok = MixArchive::Cache("EXPAND2.MIX");
-    assert(ok);
+    Cache_Or_Exit("EXPAND2.MIX");
 
     MixArchive::Register("HIRES1.MIX", &FastKey);
-    ok = MixArchive::Cache("HIRES1.MIX");
-    assert(ok);
+    Cache_Or_Exit("HIRES1.MIX");
   }
 
   GameFile file("EXPAND.MIX");
   if (file.IsAvailable()) {
     MixArchive::Register("EXPAND.MIX", &FastKey);
-    const bool ok = MixArchive::Cache("EXPAND.MIX");
-    assert(ok);
+    Cache_Or_Exit("EXPAND.MIX");
   }
 
   MixArchive::Register("REDALERT.MIX", &FastKey);
@@ -2344,12 +2352,10 @@ static void Init_Bootstrap_Mixfiles() {
   *successfully *	be displayed.
   */
   MixArchive::Register("LOCAL.MIX", &FastKey);  // Cached.
-  bool ok = MixArchive::Cache("LOCAL.MIX");
-  assert(ok);
+  Cache_Or_Exit("LOCAL.MIX");
 
   MixArchive::Register("HIRES.MIX", &FastKey);
-  ok = MixArchive::Cache("HIRES.MIX");
-  assert(ok);
+  Cache_Or_Exit("HIRES.MIX");
 
   MixArchive::Register("NCHIRES.MIX",
                        &FastKey);  // Non-cached hires stuff incl VQ palettes

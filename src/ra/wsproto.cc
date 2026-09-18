@@ -69,7 +69,7 @@
 #include <cstdio>
 #include <cstring>
 #include <span>
-#include <utility>
+#include <utility>  // IWYU pragma: keep - used by an assert() below.
 
 #include "absl/strings/str_format.h"
 #include "base/buffer.h"
@@ -366,7 +366,7 @@ bool WinsockInterfaceClass::Init() {
  *=============================================================================================*/
 int WinsockInterfaceClass::Read(std::span<std::byte> buffer, int& buffer_len,
                                 std::span<std::byte> address,
-                                int& address_len) {
+                                [[maybe_unused]] int& address_len) {
   /*
   ** Call the message loop in case there are any outstanding winsock READ
   *messages.

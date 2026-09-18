@@ -55,10 +55,10 @@
 #include "ra/defines.h"
 #include "ra/externs.h"
 #include "ra/heap.h"
-#include "ra/jshell.h"
+#include "ra/jshell.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.
 #include "ra/text_ids.h"
 #include "ra/type.h"
-#include "tech/disk_file.h"
+#include "tech/disk_file.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.
 #include "tech/fixed.h"
 #include "tech/mix_archive.h"
 
@@ -2195,8 +2195,7 @@ void AnimTypeClass::One_Time() {
             MixArchive::RetrieveData(fullname));
       }
 #else
-      const_cast<AnimTypeClass&>(As_Reference(index))
-          .SetBorrowedImage(MixArchive::RetrieveData(fullname));
+      As_Reference(index).SetBorrowedImage(MixArchive::RetrieveData(fullname));
 #endif
     }
   }

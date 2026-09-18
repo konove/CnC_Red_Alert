@@ -442,7 +442,8 @@ void RadarClass::Draw_It(bool forced) {
     } else {
       RadarPulse = MixArchive::RetrieveData(name);
     }
-    RadarFrame = MixArchive::RetrieveData(_frames[PlayerPtr->ActLike]);
+    RadarFrame = MixArchive::RetrieveData(
+        base::At(_frames, static_cast<int>(PlayerPtr->ActLike)));
 #endif
     _house = PlayerPtr->ActLike;
   }

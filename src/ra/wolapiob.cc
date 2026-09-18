@@ -24,6 +24,7 @@
 #include <cstdlib>
 #include <span>
 
+#include "absl/log/log.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/buffer.h"
@@ -291,10 +292,10 @@ void WolapiObject::UnsetupCOMStuff() {
   //	debugprint( "QueryInterface\n" );
   HRESULT hRes =
       pChat->QueryInterface(IID_IConnectionPointContainer, ComOut(&pContainer));
-  DCHECK(SUCCEEDED(hRes));
+  LOG_IF(WARNING, FAILED(hRes)) << "WOL COM call failed";
   //	debugprint( "FindConnectionPoint\n" );
   hRes = pContainer->FindConnectionPoint(IID_IChatEvent, &pConnectionPoint);
-  DCHECK(SUCCEEDED(hRes));
+  LOG_IF(WARNING, FAILED(hRes)) << "WOL COM call failed";
   //	debugprint( "Unadvise: %i\n", dwChatAdvise );
   pConnectionPoint->Unadvise(dwChatAdvise);
 
@@ -306,10 +307,10 @@ void WolapiObject::UnsetupCOMStuff() {
   //	debugprint( "QueryInterface\n" );
   hRes = pNetUtil->QueryInterface(IID_IConnectionPointContainer,
                                   ComOut(&pContainer));
-  DCHECK(SUCCEEDED(hRes));
+  LOG_IF(WARNING, FAILED(hRes)) << "WOL COM call failed";
   //	debugprint( "FindConnectionPoint\n" );
   hRes = pContainer->FindConnectionPoint(IID_INetUtilEvent, &pConnectionPoint);
-  DCHECK(SUCCEEDED(hRes));
+  LOG_IF(WARNING, FAILED(hRes)) << "WOL COM call failed";
   //	debugprint( "Unadvise: %i\n", dwNetUtilAdvise );
   pConnectionPoint->Unadvise(dwNetUtilAdvise);
 

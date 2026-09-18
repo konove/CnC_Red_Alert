@@ -3185,8 +3185,8 @@ TARGET AircraftClass::Good_Fire_Location(TARGET target) const {
 
     for (int r = range - 0x0100; r > 0x0100; r -= 0x0100) {
       for (int face = 0; face < 255; face += 16) {
-        const COORDINATE newcoord = Coord_Move(
-            tcoord, static_cast<DirType>(face), static_cast<uint16_t>(r));
+        const COORDINATE newcoord =
+            Coord_Move(tcoord, AsDirection(face), static_cast<uint16_t>(r));
         const CELL newcell = Coord_Cell(newcoord);
 
         if (Map.In_Radar(newcell) &&
@@ -3388,11 +3388,12 @@ int AircraftClass::Mission_Enter() {
           Transmit_Message(RADIO_HELLO, tech);
           Transmit_Message(RADIO_DOCKING);
           Status = kStack;
-        } else {
-          if (tech->What_Am_I() != RTTI_VESSEL) {
-            Assign_Destination(kTargetNone);
-            Enter_Idle_Mode();
-          }
+        } else if (tech == nullptr || tech->What_Am_I() != RTTI_VESSEL) {
+          // Reached when there is no NavCom object at all, or when the one
+          // there is refused the dock request. Only a vessel is left alone to
+          // be approached again; anything else means the order is dead.
+          Assign_Destination(kTargetNone);
+          Enter_Idle_Mode();
         }
       }
       break;

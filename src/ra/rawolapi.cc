@@ -34,6 +34,7 @@
 #include <utility>
 
 #include "absl/log/check.h"
+#include "absl/log/log.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/buffer.h"
@@ -488,7 +489,7 @@ void RAChatEventSink::InsertUserSorted(User* pUserNew) {
       } else {
         //	Add user to end. pUserTail is set together with pUserList, so a
         //	non-empty list always has one.
-        DCHECK(pUserList != nullptr && pUserTail != nullptr);
+        CHECK(pUserList != nullptr && pUserTail != nullptr);
         pUserNew->next = nullptr;
         pUserTail->next = pUserNew;
         pUserTail = pUserNew;
@@ -991,13 +992,13 @@ bool RAChatEventSink::DownloadUpdates(Update* pUpdateList, int iUpdates) {
   IConnectionPointContainer* pContainer = nullptr;
   HRESULT hRes = pDownload->QueryInterface(IID_IConnectionPointContainer,
                                            ComOut(&pContainer));
-  DCHECK(SUCCEEDED(hRes));
+  LOG_IF(WARNING, FAILED(hRes)) << "WOL COM call failed";
   hRes = pContainer->FindConnectionPoint(IID_IDownloadEvent, &pConnectionPoint);
-  DCHECK(SUCCEEDED(hRes));
+  LOG_IF(WARNING, FAILED(hRes)) << "WOL COM call failed";
   DWORD dwDownloadAdvise = 0;
   hRes = pConnectionPoint->Advise(static_cast<IDownloadEvent*>(pDownloadSink),
                                   &dwDownloadAdvise);
-  DCHECK(SUCCEEDED(hRes));
+  LOG_IF(WARNING, FAILED(hRes)) << "WOL COM call failed";
   //	Presumably the above calls will succeed, because they did so when we did
   // bSetupComStuff().
 
@@ -1050,9 +1051,9 @@ bool RAChatEventSink::DownloadUpdates(Update* pUpdateList, int iUpdates) {
   pContainer = nullptr;
   hRes = pDownload->QueryInterface(IID_IConnectionPointContainer,
                                    ComOut(&pContainer));
-  DCHECK(SUCCEEDED(hRes));
+  LOG_IF(WARNING, FAILED(hRes)) << "WOL COM call failed";
   hRes = pContainer->FindConnectionPoint(IID_IDownloadEvent, &pConnectionPoint);
-  DCHECK(SUCCEEDED(hRes));
+  LOG_IF(WARNING, FAILED(hRes)) << "WOL COM call failed";
   pConnectionPoint->Unadvise(dwDownloadAdvise);
 
   pContainer->Release();

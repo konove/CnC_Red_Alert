@@ -90,6 +90,7 @@
 #include <span>
 #include <utility>
 
+#include "absl/log/check.h"
 #include "base/array.h"
 #include "base/numeric.h"
 #include "sdllib/drawbuff.h"
@@ -650,7 +651,7 @@ void CellClass::Occupy_Down(ObjectClass* object) {
  *pointer in previous object.                         *
  *=============================================================================================*/
 void CellClass::Occupy_Up(ObjectClass* object) {
-  assert(object);
+  CHECK(object != nullptr);
   Validate();
   ObjectClass* optr = nullptr;  // Working pointer to the objects in the chain.
 

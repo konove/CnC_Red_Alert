@@ -114,6 +114,7 @@
 #include <utility>
 #include <vector>
 
+#include "absl/log/log.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/buffer.h"
@@ -177,7 +178,7 @@
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
 #include "sdllib/wwstd.h"
-#include "tech/disk_file.h"
+#include "tech/disk_file.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.
 #include "tech/mix_archive.h"
 #include "tech/number_parse.h"
 #include "tech/span_sink.h"
@@ -408,8 +409,13 @@ void DisplayClass::Init_Theater(TheaterType theater) {
 
     TheaterData = MixArchive::Register(fullname, &FastKey);
 
-    const bool theaterload = TheaterData->Cache();
-    assert(theaterload);
+    if (!TheaterData->Cache()) {
+      // A theater the scenario names but whose art cannot be read leaves the
+      // map with nothing to draw. Damaged data files are a user setup
+      // problem, not a bug.
+      LOG(QFATAL) << "Cannot read " << fullname
+                  << ": the game data files are missing or damaged.";
+    }
   }
 
   /*

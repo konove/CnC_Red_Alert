@@ -110,6 +110,7 @@
 #include <iterator>
 #include <span>
 
+#include "absl/log/check.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/enum_array.h"
@@ -4283,9 +4284,11 @@ FireErrorType UnitClass::Can_Fire(TARGET target, int which) const {
  * HISTORY: * 04/26/1994 JLB : Created. *
  *=============================================================================================*/
 BulletClass* UnitClass::Fire_At(TARGET target, int which) {
-  assert(Units.ID(this) == ID);
-  assert(IsActive);
-  assert(Class);
+  DCHECK(Units.ID(this) == ID);
+  DCHECK(IsActive);
+  // An active unit always has its type, and every dereference below depends
+  // on it, so this one is checked in every build.
+  CHECK(Class.Is_Valid());
 
   BulletClass* bullet = nullptr;
   const WeaponTypeClass* weap =

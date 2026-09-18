@@ -89,7 +89,7 @@
 #include "ra/defines.h"
 #include "ra/event.h"
 #include "ra/externs.h"
-#include "ra/house.h"
+#include "ra/house.h"  // IWYU pragma: keep - used by an assert() below.
 #include "ra/ipx.h"
 #include "ra/ipxaddr.h"
 #include "ra/ipxconn.h"

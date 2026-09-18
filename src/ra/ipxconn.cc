@@ -412,7 +412,8 @@ void IPXConnClass::Close_Socket(uint16_t /*socket*/) {
  *   12/16/1994 BR : Created.                                              *
  *=========================================================================*/
 int IPXConnClass::Send_To(std::span<const std::byte> buf, int buflen,
-                          IPXAddressClass* address, const NetNodeType immed) {
+                          IPXAddressClass* address,
+                          [[maybe_unused]] const NetNodeType immed) {
   assert(immed == nullptr);
   PacketTransport->WriteTo(buf, buflen, *address);
   return 1;

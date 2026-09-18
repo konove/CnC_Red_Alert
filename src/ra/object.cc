@@ -150,7 +150,7 @@
 #include "sdllib/ww_win.h"
 #include "sdllib/wwstd.h"
 #include "session.h"
-#include "tech/disk_file.h"
+#include "tech/disk_file.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.
 #include "tech/fixed.h"
 #include "tech/mix_archive.h"
 

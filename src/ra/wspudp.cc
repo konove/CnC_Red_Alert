@@ -56,7 +56,7 @@
 #include <cstdio>
 #include <cstring>
 #include <span>
-#include <string_view>
+#include <string_view>  // IWYU pragma: keep - used by an assert() below.
 
 #include "absl/strings/str_format.h"
 #include "base/buffer.h"

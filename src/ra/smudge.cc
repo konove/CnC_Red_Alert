@@ -53,6 +53,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "absl/log/check.h"
 #include "absl/strings/str_format.h"
 #include "port/tokenizer.h"
 #include "ra/ccini.h"
@@ -263,8 +264,8 @@ bool SmudgeClass::Mark(MarkType mark) {
  * HISTORY: * 07/04/1995 JLB : Created. *
  *=============================================================================================*/
 void SmudgeClass::Disown(CELL cell) {
-  assert(Smudges.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Smudges.ID(this) == ID);
+  DCHECK(IsActive);
 
   if (Class->IsBib) {
     for (int w = 0; w < Class->Width; w++) {

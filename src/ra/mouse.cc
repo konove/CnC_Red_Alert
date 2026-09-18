@@ -53,7 +53,7 @@
 #include <span>
 
 #include "base/enum_array.h"
-#include "magic_enum/magic_enum.hpp"
+#include "magic_enum/magic_enum.hpp"  // IWYU pragma: keep - used by an assert() below.
 #include "ra/defines.h"
 #include "ra/jshell.h"
 #include "ra/scroll.h"

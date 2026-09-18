@@ -97,6 +97,7 @@
 #include <span>
 #include <utility>
 
+#include "absl/log/check.h"
 #include "base/array.h"
 #include "base/numeric.h"
 #include "config.h"
@@ -2135,7 +2136,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
           break;
         }
       }
-      assert(found);
+      CHECK(found) << "crate share table selected nothing";
 
       /*
       **	Depending on what was picked, there might be an alternate goodie

@@ -1010,10 +1010,10 @@ FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
     // An active vessel always has its type, and TechnoClass::Can_Fire returns
     // FIRE_CANT when the selected weapon is absent, so reaching FIRE_OK or
     // FIRE_CLOAKED guarantees both exist.
-    DCHECK(Class.Is_Valid());
+    CHECK(Class.Is_Valid());
     const WeaponTypeClass* weapon =
         which == 0 ? Class->PrimaryWeapon : Class->SecondaryWeapon;
-    DCHECK(weapon != nullptr);
+    CHECK(weapon != nullptr);
 
     /*
     **	Ensure that a torpedo will never be fired upon a non naval target.

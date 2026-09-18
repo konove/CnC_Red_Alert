@@ -102,6 +102,7 @@
 #include <span>
 #include <utility>
 
+#include "absl/log/check.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/buffer.h"
@@ -3081,8 +3082,8 @@ void InfantryClass::Set_Occupy_Bit(CELL cell, int spot_index) {
  *   06/08/1995 PWG : Created.                                             *
  *=========================================================================*/
 void InfantryClass::Clear_Occupy_Bit(CELL cell, int spot_index) {
-  assert(Infantry.ID(this) == ID);
-  assert(IsActive);
+  DCHECK(Infantry.ID(this) == ID);
+  DCHECK(IsActive);
 
   /*
   ** Clear the occupy bit for the infantry in that cell

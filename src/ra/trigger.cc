@@ -55,6 +55,7 @@
 #include <cstddef>
 #include <cstdint>
 
+#include "absl/log/check.h"
 #include "base/numeric.h"
 #include "ra/cell.h"
 #include "ra/config.h"
@@ -491,7 +492,7 @@ TriggerClass* Find_Or_Make(TriggerTypeClass* trigtype) {
  *=============================================================================================*/
 void TriggerClass::Detach(TARGET target, bool /*unused*/) const {
   if (Is_Target_TriggerType(target)) {
-    assert(static_cast<TriggerTypeClass*>(Class) != As_TriggerType(target));
+    DCHECK(static_cast<TriggerTypeClass*>(Class) != As_TriggerType(target));
     //		if (Class == As_TriggerType(target)) {
     //			Class = NULL;
     //		}

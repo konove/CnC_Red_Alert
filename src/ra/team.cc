@@ -82,6 +82,7 @@
 #include <cstring>
 #include <utility>
 
+#include "absl/log/check.h"
 #include "base/array.h"
 #include "ra/abstract.h"
 #include "ra/aircraft.h"
@@ -2292,8 +2293,8 @@ int TeamClass::TMission_Load() {
  * HISTORY: * 04/06/1995 JLB : Created. *
  *=============================================================================================*/
 bool TeamClass::Coordinate_Conscript(FootClass* unit) {
-  assert(IsActive);
-  assert(Teams.ID(this) == ID);
+  DCHECK(IsActive);
+  DCHECK(Teams.ID(this) == ID);
 
   if (Is_It_Breathing(unit) && !unit->IsInitiated) {
     if (unit->Distance(Zone) > Rule.StrayDistance) {

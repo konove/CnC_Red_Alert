@@ -71,7 +71,7 @@
 #include "ra/heap.h"
 #include "ra/house.h"
 #include "ra/inline.h"
-#include "ra/jshell.h"
+#include "ra/jshell.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.
 #include "ra/keyframe.h"
 #include "ra/mapedit.h"
 #include "ra/object.h"
@@ -80,7 +80,7 @@
 #include "ra/type.h"
 #include "ra/unit.h"
 #include "sdllib/shape.h"
-#include "tech/disk_file.h"
+#include "tech/disk_file.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.
 #include "tech/game_file.h"
 #include "tech/mix_archive.h"
 

@@ -144,6 +144,7 @@
 #include <utility>
 #include <vector>
 
+#include "absl/log/check.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/enum_array.h"
@@ -2771,7 +2772,9 @@ bool BuildingClass::Limbo() {
   //	RTTIType bld_type;
 
   if (!IsInLimbo) {
-    assert(House);
+    // Every dereference below depends on the owner, so check it in every
+    // build rather than only in a debug one.
+    CHECK(House != nullptr);
     // Update the total factory type, assuming this building has a factory.
     switch (Class->ToBuild) {
       case RTTI_AIRCRAFTTYPE:
