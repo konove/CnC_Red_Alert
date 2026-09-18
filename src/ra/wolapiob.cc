@@ -70,10 +70,10 @@
 #include "absl/strings/str_split.h"
 #include "base/numeric.h"
 #include "port/bytes_of.h"
-#include "port/ex_string.h"
-#include "port/inet_text.h"
-#include "port/safe_string.h"
 #include "port/format.h"
+#include "port/inet_text.h"
+#include "port/platform.h"
+#include "port/safe_string.h"
 #include "port/sleep.h"
 #include "port/win32/win32_com.h"
 #include "port/win32/win32_registry.h"
@@ -2068,8 +2068,8 @@ bool WolapiObject::DoWebRegistration() {
     GenericErrorMessage();
     return false;
   }
-  char szPath[kMaxPath + 1];
-  DWORD dwBufSize = kMaxPath;
+  char szPath[port::kMaxPath + 1];
+  DWORD dwBufSize = port::kMaxPath;
   if (RegQueryValueEx(hKey, "InstallPath", nullptr, nullptr,
                       port::BytesOf(szPath), &dwBufSize) != ERROR_SUCCESS) {
     GenericErrorMessage();
@@ -2125,7 +2125,7 @@ bool WolapiObject::SpawnBrowser(const char* szURL) {
   si.cb = sizeof(si);
 
   if (*szWebBrowser) {
-    char szCommandLine[kMaxPath + 300];
+    char szCommandLine[port::kMaxPath + 300];
     absl::SNPrintF(szCommandLine, sizeof(szCommandLine), "\"%s\" %s",
                    szWebBrowser, szURL);
     //		debugprint( "About to CreateProcess: '%s'\n", szCommandLine );

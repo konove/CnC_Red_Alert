@@ -35,7 +35,7 @@
 #include <span>
 
 #include "absl/base/attributes.h"
-#include "port/ex_string.h"
+#include "port/platform.h"
 #include "ra/dib.h"
 #include "ra/iconlist.h"
 #include "ra/rawolapi.h"
@@ -325,7 +325,7 @@ class WolapiObject {
       false};  //	If set true, causes logout and deletion of
                // wolapi object.
 
-  char szWebBrowser[kMaxPath + 1]{};
+  char szWebBrowser[port::kMaxPath + 1]{};
 
   //	For "disconnect pinging".
   bool bDoingDisconnectPinging{false};

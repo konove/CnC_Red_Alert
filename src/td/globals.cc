@@ -46,7 +46,7 @@
 #include <vector>
 
 #include "base/enum_array.h"
-#include "port/ex_string.h"
+#include "port/platform.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/playcd.h"
@@ -175,11 +175,11 @@ bool SlowPalette = true;      // Slow palette flag set?
 **	These are the movie names to use for mission briefing, winning, and
 *losing *	sequences. They are read from the INI file.
 */
-char IntroMovie[kMaxFname + kMaxExt];
-char BriefMovie[kMaxFname + kMaxExt];
-char WinMovie[kMaxFname + kMaxExt];
-char LoseMovie[kMaxFname + kMaxExt];
-char ActionMovie[kMaxFname + kMaxExt];
+char IntroMovie[port::kMaxFname + port::kMaxExt];
+char BriefMovie[port::kMaxFname + port::kMaxExt];
+char WinMovie[port::kMaxFname + port::kMaxExt];
+char LoseMovie[port::kMaxFname + port::kMaxExt];
+char ActionMovie[port::kMaxFname + port::kMaxExt];
 char BriefingText[512];
 ThemeType TransitTheme = THEME_NONE;
 
@@ -341,7 +341,7 @@ int Scenario;                              // Scenario #
 ScenarioPlayerType ScenPlayer;             // GDI, NOD, 2-Player, Multi-Player
 ScenarioDirType ScenDir;                   // East/West
 ScenarioVarType ScenVar;                   // variation A/B/C
-char ScenarioName[kMaxFname + kMaxExt];    // name of scenario
+char ScenarioName[port::kMaxFname + port::kMaxExt];  // name of scenario
 int CarryOverMoney;    // Carry over money from last scenario.
 int CarryOverPercent;  // Carry over money percentage control.
 int CarryOverCap;      // Maxmimum carry over money allowed.

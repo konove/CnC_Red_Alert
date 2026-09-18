@@ -48,7 +48,7 @@
 #include "absl/log/log.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
-#include "port/ex_string.h"
+#include "port/platform.h"
 #include "port/safe_string.h"
 #include "sdllib/file_access.h"
 #include "sdllib/misc.h"
@@ -98,7 +98,7 @@
 // Write the theater/map, object heaps, ordered layers, and globals as fields.
 bool Save_Game(int id, const char* descr) {
   DiskFile file;
-  char name[kMaxFname + kMaxExt];
+  char name[port::kMaxFname + port::kMaxExt];
   int32_t version = 0;
   char descr_buf[kDescripMax]{};
 
@@ -233,7 +233,7 @@ bool Save_Game(int id, const char* descr) {
 // Load heaps before ordered object lists; rebuild runtime placement/UI state last.
 bool Load_Game(int id) {
   DiskFile file;
-  char name[kMaxFname + kMaxExt];
+  char name[port::kMaxFname + port::kMaxExt];
   int32_t version = 0;
   unsigned scenario = 0;
   HousesType house = HOUSE_NONE;
@@ -547,7 +547,7 @@ bool Load_Misc_Values(ArchiveReader& file) {
 bool Get_Savefile_Info(int id, std::span<char> buf, unsigned* scenp,
                        HousesType* housep) {
   DiskFile file;
-  char name[kMaxFname + kMaxExt];
+  char name[port::kMaxFname + port::kMaxExt];
   int32_t version = 0;
   char descr_buf[kDescripMax];
 

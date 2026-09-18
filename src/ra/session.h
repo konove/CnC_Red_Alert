@@ -44,7 +44,7 @@
 
 #include "absl/base/attributes.h"
 #include "base/enum_array.h"
-#include "port/ex_string.h"
+#include "port/platform.h"
 #include "ra/connect.h"
 #include "ra/defines.h"
 #include "ra/event.h"
@@ -477,7 +477,7 @@ class MultiMission {
 
  private:
   char ScenarioDescription[kDescripMax]{};
-  char Filename[kMaxFname + kMaxExt]{};
+  char Filename[port::kMaxFname + port::kMaxExt]{};
   char Digest[32]{};
   bool IsOfficial = false;
   bool IsExpansion = false;
@@ -626,7 +626,7 @@ class SessionClass {
   //		DynamicVectorClass <char *> Scenarios;
   //		DynamicVectorClass <int> Filenum;
 
-  char ScenarioFileName[kMaxFname + kMaxExt +
+  char ScenarioFileName[port::kMaxFname + port::kMaxExt +
                         1]{};  // File name of scenario to load
 
   char ScenarioDigest[32]{};  // Digest of scenario to load

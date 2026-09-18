@@ -41,7 +41,7 @@
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/buffer.h"
-#include "port/ex_string.h"
+#include "port/platform.h"
 #include "port/safe_string.h"
 #include "port/tokenizer.h"
 #include "port/win32/win32_com.h"
@@ -1013,14 +1013,14 @@ bool RAChatEventSink::DownloadUpdates(Update* pUpdateList, int iUpdates) {
   Update* pUpdate = pUpdateList;
   int iUpdateCurrent = 0;
   //	Save current directory.
-  char szCurDirSave[kMaxPath];
+  char szCurDirSave[port::kMaxPath];
   ::GetCurrentDirectory(szCurDirSave);
   while (pUpdate) {
     ++iUpdateCurrent;
     char szTitle[120];
     Format_Runtime_Text(szTitle, sizeof(szTitle), TXT_WOL_DOWNLOADING,
                         iUpdateCurrent, iUpdates);
-    char fullpath[kMaxPath];
+    char fullpath[port::kMaxPath];
     absl::SNPrintF(fullpath, sizeof(fullpath), "%s\\%s",
                    WolText(pUpdate->patchpath), WolText(pUpdate->patchfile));
     //	Downloading in WOLAPI is in a state of disarray somewhat.

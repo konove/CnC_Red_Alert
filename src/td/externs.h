@@ -47,7 +47,7 @@
 #include <vector>
 
 #include "base/enum_array.h"
-#include "port/ex_string.h"
+#include "port/platform.h"
 #include "sdllib/playcd.h"
 #include "td/aircraft.h"
 #include "td/anim.h"
@@ -127,11 +127,11 @@ extern ThemeType TransitTheme;
 extern bool AllowVoice;
 extern NewConfigType NewConfig;
 extern char BriefingText[512];
-extern char IntroMovie[kMaxFname + kMaxExt];
-extern char ActionMovie[kMaxFname + kMaxExt];
-extern char BriefMovie[kMaxFname + kMaxExt];
-extern char WinMovie[kMaxFname + kMaxExt];
-extern char LoseMovie[kMaxFname + kMaxExt];
+extern char IntroMovie[port::kMaxFname + port::kMaxExt];
+extern char ActionMovie[port::kMaxFname + port::kMaxExt];
+extern char BriefMovie[port::kMaxFname + port::kMaxExt];
+extern char WinMovie[port::kMaxFname + port::kMaxExt];
+extern char LoseMovie[port::kMaxFname + port::kMaxExt];
 extern VoxType SpeakQueue;
 extern bool PlayerWins;
 extern bool PlayerLoses;
@@ -225,7 +225,7 @@ extern ScenarioVarType ScenVar;
 extern int CarryOverMoney;
 extern int CarryOverCap;
 extern int CarryOverPercent;
-extern char ScenarioName[kMaxFname + kMaxExt];
+extern char ScenarioName[port::kMaxFname + port::kMaxExt];
 extern int BuildLevel;
 extern uint32_t ScenarioCRC;
 

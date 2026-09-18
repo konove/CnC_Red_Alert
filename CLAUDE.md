@@ -98,7 +98,7 @@ ccache caches only the compile. clang-tidy and IWYU run as separate passes in fr
 **`clang-tidy-cache` only caches a translation unit whose preprocess is silent.** It derives its
 hash by re-running the compiler to preprocess the TU and gives up on any compiler output to stderr
 (`hash_inputs` returns `None`), and under `-Weverything` a single preprocessor warning in a widely
-included header is enough to disable it tree-wide. The `_MAX_PATH`-style defines in
+included header is enough to disable it tree-wide. The `_MAX_PATH`-style defines in the former
 `src/port/ex_string.h` used to do exactly that: 14/40 RA TUs were cacheable. With them renamed
 (`kMaxPath` and friends) and the reserved MIDL macros in `src/port/win32/win32_com.h` and
 `src/ra/wolapi/wolapi.h` wrapped in

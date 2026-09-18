@@ -51,7 +51,7 @@
 #include "absl/base/attributes.h"
 #include "base/array.h"
 #include "base/enum_array.h"
-#include "port/ex_string.h"
+#include "port/platform.h"
 #include "port/safe_string.h"
 #include "ra/ccini.h"
 #include "ra/defines.h"
@@ -140,7 +140,7 @@ class HouseTypeClass : public AbstractTypeClass {
   **	This is the filename suffix to use when creating a house specific
   **	file name. It is three characters long.
   */
-  char Suffix[kMaxExt]{};
+  char Suffix[port::kMaxExt]{};
 
   /*
   **	This is the "lemon percentage" to use when determining if a particular
@@ -205,7 +205,7 @@ class HouseTypeClass : public AbstractTypeClass {
 class ObjectTypeClass : public AbstractTypeClass {
  public:
   // Base filename for graphic data. Empty string indicates no graphic.
-  char GraphicName[kMaxFname]{};
+  char GraphicName[port::kMaxFname]{};
 
   /*
   **	Is this object squashable by heavy vehicles?  If it is, then the vehicle

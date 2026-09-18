@@ -70,7 +70,7 @@
 #include "base/buffer.h"
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
-#include "port/ex_string.h"
+#include "port/platform.h"
 #include "port/random_seed.h"
 #include "port/safe_string.h"
 #include "port/unaligned.h"
@@ -4416,8 +4416,9 @@ bool Find_Local_Scenario(const char* description, std::span<char> filename,
         */
         if (IsMissionAftermath(Session.Scenarios.at(index)->Get_Filename())) {
           // debugprint("a 1match!\n");
-          port::SafeCopy(std::span(filename).first(kMaxFname + kMaxExt + 1),
-                         Session.Scenarios.at(index)->Get_Filename());
+          port::SafeCopy(
+              std::span(filename).first(port::kMaxFname + port::kMaxExt + 1),
+              Session.Scenarios.at(index)->Get_Filename());
           return true;
         }
 
@@ -4426,8 +4427,9 @@ bool Find_Local_Scenario(const char* description, std::span<char> filename,
         */
         if (official || (std::string_view(digest) == digest_buffer)) {
           // debugprint("a match!\n");
-          port::SafeCopy(std::span(filename).first(kMaxFname + kMaxExt + 1),
-                         Session.Scenarios.at(index)->Get_Filename());
+          port::SafeCopy(
+              std::span(filename).first(port::kMaxFname + port::kMaxExt + 1),
+              Session.Scenarios.at(index)->Get_Filename());
           return true;
         }
       }

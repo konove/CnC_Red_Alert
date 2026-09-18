@@ -60,7 +60,7 @@
 #include "base/types.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/env.h"
-#include "port/ex_string.h"
+#include "port/platform.h"
 #include "port/safe_string.h"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
@@ -461,7 +461,7 @@ static void Put_All(ByteSink& pipe, int save_net) {
  *   02/27/1996 JLB : Uses simpler game control value save operation.      *
  *=========================================================================*/
 bool Save_Game(int id, const std::string_view descr, bool /*unused*/) {
-  char name[kMaxFname + kMaxExt];
+  char name[port::kMaxFname + port::kMaxExt];
   int save_net = 0;  // 1 = save network/modem game
 
   const int scenario = Scen.Scenario;          // get current scenario #
@@ -607,7 +607,7 @@ bool Save_Game(int id, const std::string_view descr, bool /*unused*/) {
  ** 1/20/97  V.Grippi Added expansion CD check                            *
  *=========================================================================*/
 bool Load_Game(int id) {
-  char name[kMaxFname + kMaxExt];
+  char name[port::kMaxFname + port::kMaxExt];
   HousesType house = HOUSE_NONE;
   char descr_buf[kDescripMax];
   int load_net = 0;  // 1 = save network/modem game
@@ -1280,7 +1280,7 @@ bool Load_MPlayer_Values(ByteSource& file) {
  *=========================================================================*/
 bool Get_Savefile_Info(int id, std::span<char> buf, size_t buf_size,
                        unsigned* scenp, HousesType* housep) {
-  char name[kMaxFname + kMaxExt];
+  char name[port::kMaxFname + port::kMaxExt];
   char descr_buf[kDescripMax];
 
   /*

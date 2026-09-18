@@ -42,7 +42,7 @@
 
 #include <string_view>
 
-#include "port/ex_string.h"
+#include "port/platform.h"
 #include "ra/defines.h"
 #include "ra/jshell.h"
 #include "tech/fixed.h"
@@ -136,7 +136,7 @@ class ScenarioClass {
   /*
   **	The full name of the scenario (as it exists on disk).
   */
-  char ScenarioName[kMaxFname + kMaxExt]{};
+  char ScenarioName[port::kMaxFname + port::kMaxExt]{};
 
   /*
   **	Description of the scenario.

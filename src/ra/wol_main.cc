@@ -33,7 +33,7 @@ static bool ReregisterWolapiDLL();
 static void HandleDLLFail();
 
 #include "port/bytes_of.h"
-#include "port/ex_string.h"
+#include "port/platform.h"
 #include "port/sleep.h"
 #include "port/win32/win32_registry.h"
 #include "port/win32/win32_system.h"
@@ -196,10 +196,10 @@ bool ReregisterWolapiDLL() {
   //	Attempt to reregister wolapi.dll.
   //	Returns true if we think we succeeded.
   HKEY hKey = nullptr;
-  char szInstallPath[kMaxPath];
+  char szInstallPath[port::kMaxPath];
   if (::RegOpenKeyEx(HKEY_LOCAL_MACHINE, "Software\\Westwood\\WOLAPI", 0,
                      KEY_READ, &hKey) == ERROR_SUCCESS) {
-    DWORD dwBufSize = kMaxPath;
+    DWORD dwBufSize = port::kMaxPath;
     if (::RegQueryValueEx(hKey, "InstallPath", nullptr, nullptr,
                           port::BytesOf(szInstallPath),
                           &dwBufSize) == ERROR_SUCCESS) {

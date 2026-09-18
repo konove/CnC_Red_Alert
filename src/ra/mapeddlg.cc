@@ -56,7 +56,7 @@
 #include "base/enum_array.h"
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
-#include "port/ex_string.h"
+#include "port/platform.h"
 #include "port/safe_string.h"
 #include "ra/base.h"
 #include "ra/ccptr.h"
@@ -1885,7 +1885,7 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Intro movie name.
     */
-    char introtext[kMaxFname + kMaxExt];
+    char introtext[port::kMaxFname + port::kMaxExt];
     DropListClass intro(kButtonIntro, introtext, sizeof(introtext),
                         TPF_EFNT | TPF_NOSHADOW, theaterbtn.X,
                         theaterbtn.Y + theaterbtn.Height + 24, 50, 7 * 10,
@@ -1900,7 +1900,7 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Briefing movie name.
     */
-    char brieftext[kMaxFname + kMaxExt];
+    char brieftext[port::kMaxFname + port::kMaxExt];
     DropListClass briefing(kButtonBriefing, brieftext, sizeof(brieftext),
                            TPF_EFNT | TPF_NOSHADOW, intro.X + intro.Width + 10,
                            intro.Y, 50, 7 * 10,
@@ -1912,7 +1912,7 @@ int MapEditClass::Load_Scenario() {
     }
     briefing.Set_Selected_Index(static_cast<int>(Scen.BriefMovie) + 1);
 
-    char actiontext[kMaxFname + kMaxExt];
+    char actiontext[port::kMaxFname + port::kMaxExt];
     DropListClass action(kButtonAction, actiontext, sizeof(actiontext),
                          TPF_EFNT | TPF_NOSHADOW,
                          briefing.X + briefing.Width + 10, briefing.Y, 50,
@@ -1924,7 +1924,7 @@ int MapEditClass::Load_Scenario() {
     }
     action.Set_Selected_Index(static_cast<int>(Scen.ActionMovie) + 1);
 
-    char wintext[kMaxFname + kMaxExt];
+    char wintext[port::kMaxFname + port::kMaxExt];
     DropListClass win(kButtonWin, wintext, sizeof(wintext),
                       TPF_EFNT | TPF_NOSHADOW, action.X + action.Width + 10,
                       action.Y, 50, 7 * 10,
@@ -1936,7 +1936,7 @@ int MapEditClass::Load_Scenario() {
     }
     win.Set_Selected_Index(static_cast<int>(Scen.WinMovie) + 1);
 
-    char losetext[kMaxFname + kMaxExt];
+    char losetext[port::kMaxFname + port::kMaxExt];
     DropListClass lose(kButtonLose, losetext, sizeof(losetext),
                        TPF_EFNT | TPF_NOSHADOW, win.X + win.Width + 10, win.Y,
                        50, 7 * 10, MixArchive::RetrieveData("EBTN-UP.SHP"),

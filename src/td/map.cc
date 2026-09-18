@@ -70,7 +70,7 @@
 #include "base/array.h"
 #include "base/numeric.h"
 #include "base/types.h"
-#include "port/ex_string.h"
+#include "port/platform.h"
 #include "rand.h"
 #include "sdllib/file_access.h"
 #include "sdllib/memflag.h"
@@ -922,7 +922,7 @@ bool MapClass::Read_Binary(const char* root, uint32_t* crc)
 #endif
 {
   GameFile file;
-  char fname[kMaxFname + kMaxExt];
+  char fname[port::kMaxFname + port::kMaxExt];
   int i = 0;
 
   /*
@@ -1005,7 +1005,7 @@ bool MapClass::Read_Binary(const char* root, uint32_t* crc)
  * HISTORY: * 11/14/1994 BR : Created. *
  *=============================================================================================*/
 bool MapClass::Write_Binary(const char* root) {
-  char fname[kMaxFname + kMaxExt];
+  char fname[port::kMaxFname + port::kMaxExt];
 
   /*
   **	Filename = INI name with BIN extension.

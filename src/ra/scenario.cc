@@ -86,7 +86,7 @@
 #include "base/enum_array.h"
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
-#include "port/ex_string.h"
+#include "port/platform.h"
 #include "port/safe_string.h"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
@@ -1654,7 +1654,7 @@ void ScenarioClass::Set_Scenario_Name(int scenario, ScenarioPlayerType player,
   char c_player = 0;  // character representing player type
   char c_dir = 0;     // character representing direction type
   char c_var = 0;     // character representing variation type
-  char fname[kMaxFname + kMaxExt];
+  char fname[port::kMaxFname + port::kMaxExt];
 
   /*
   ** Set the player-type value.
@@ -1829,7 +1829,8 @@ void ScenarioClass::Set_Scenario_Name(const char* name) {
  * HISTORY: * 10/07/1992 JLB : Created.  V.Grippi added CS check 2/5/97 *
  *=============================================================================================*/
 bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
-  //	char fname[kMaxFname+kMaxExt];			// full INI
+  //	char fname[port::kMaxFname+port::kMaxExt];			// full
+  //INI
   // filename
 
   ScenarioInit++;

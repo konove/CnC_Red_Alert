@@ -67,7 +67,7 @@
 #include "base/buffer.h"
 #include "base/numeric.h"
 #include "port/bytes_of.h"
-#include "port/ex_string.h"
+#include "port/platform.h"
 #include "port/safe_string.h"
 #include "sdllib/misc.h"
 #include "sdllib/shape.h"
@@ -145,7 +145,7 @@ void Set_Scenario_Name(char* buf, int scenario, ScenarioPlayerType player,
   char c_dir = 0;     // character representing direction type
   char c_var = 0;     // character representing variation type
   ScenarioVarType i = SCEN_VAR_NONE;
-  char fname[kMaxFname + kMaxExt];
+  char fname[port::kMaxFname + port::kMaxExt];
 
   /*
   ** Set the player-type value.
@@ -272,7 +272,7 @@ void Set_Scenario_Name(char* buf, int scenario, ScenarioPlayerType player,
  * HISTORY: * 10/07/1992 JLB : Created. *
  *=============================================================================================*/
 bool Read_Scenario_Ini(const char* root, bool fresh) {
-  char fname[kMaxFname + kMaxExt];    // full INI filename
+  char fname[port::kMaxFname + port::kMaxExt];  // full INI filename
   char buf[128];                      // Working string staging buffer.
   int rndmax = 0;
   int rndmin = 0;
@@ -681,7 +681,7 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
  *=============================================================================================*/
 void Write_Scenario_Ini(const char* root) {
   if constexpr (config::kCheatKeysEnabled) {
-    char fname[kMaxFname + kMaxExt];    // full scenario name
+    char fname[port::kMaxFname + port::kMaxExt];  // full scenario name
     HousesType house = HOUSE_NONE;
     GameFile file;
 

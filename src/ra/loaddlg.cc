@@ -57,7 +57,7 @@
 #include "absl/strings/str_format.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
-#include "port/ex_string.h"
+#include "port/platform.h"
 #include "port/safe_string.h"
 #include "ra/config.h"
 #include "ra/conquer.h"
@@ -210,7 +210,8 @@ bool LoadOptionsClass::Process() {
   int game_idx = 0;                    // index of game to save/load/etc
   int game_num = 0;                    // file number of game to load/save/etc
   char game_descr[kDescripMax] = {0};  // save-game description
-  char fname[kMaxFname + kMaxExt];     // for generating filename to delete
+  char fname[port::kMaxFname +
+             port::kMaxExt];  // for generating filename to delete
 
   /*
   **	Buttons

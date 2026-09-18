@@ -87,7 +87,7 @@
 #include "base/numeric.h"
 #include "base/seek_origin.h"
 #include "port/env.h"
-#include "port/ex_string.h"
+#include "port/platform.h"
 #include "port/safe_string.h"
 #include "port/unaligned.h"
 #include "sdllib/drawbuff.h"
@@ -1361,7 +1361,7 @@ void Call_Back() {
  * HISTORY: * 10/07/1992 JLB : Created. *
  *=============================================================================================*/
 const char* Language_Name(const char* basename) {
-  static char _fullname[kMaxFname + kMaxExt];
+  static char _fullname[port::kMaxFname + port::kMaxExt];
 
   if (!basename) {
     return nullptr;

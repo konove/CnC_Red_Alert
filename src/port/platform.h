@@ -15,6 +15,13 @@ inline constexpr bool kIsWindows = true;
 inline constexpr bool kIsWindows = false;
 #endif
 
+// Path component buffer sizes, matching the Microsoft CRT's _MAX_* limits.
+// Some of these size character arrays in save files; changing them breaks
+// saved games.
+inline constexpr int kMaxPath = 260;
+inline constexpr int kMaxFname = 256;
+inline constexpr int kMaxExt = 256;
+
 }  // namespace port
 
 #endif  // CNC_RED_ALERT_PORT_PLATFORM_H_
