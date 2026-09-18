@@ -292,8 +292,6 @@ TextBlitClass BlitList;
 
 static const char* ScreenNames[2] = {"S-GDIIN2.WSA", "SCRSCN1.WSA"};
 
-// extern short StreamLowImpact;
-
 struct Fame {
   char name[MAX_FAMENAME_LENGTH];
   int score;
@@ -817,13 +815,11 @@ void ScoreClass::Presentation() {
   Play_Sample(country4, 255, Options.Normalize_Sound(90));
 
   int frame = 1;
-  StreamLowImpact = true;
   while (frame < Get_Animation_Frame_Count(anim)) {
     Animate_Frame(anim, *PseudoSeenBuff, frame++);
     ////////////////Interpolate_2X_Scale( PseudoSeenBuff , &SeenBuff , NULL);
     Call_Back_Delay(2);
   }
-  StreamLowImpact = false;
   Call_Back();
   Close_Animation(anim);
 
@@ -2081,7 +2077,6 @@ void Call_Back_Delay(int time) {
   }
 
   cd.Set(time);
-  StreamLowImpact = true;
   do {
     Call_Back();
     // Animate_Score_Objs();
@@ -2099,7 +2094,6 @@ void Call_Back_Delay(int time) {
     WWMouse->Erase_Mouse(&HidPage, true);
     //}
   } while (cd.Time());
-  StreamLowImpact = false;
 }
 
 void Animate_Score_Objs() {

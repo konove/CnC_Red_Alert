@@ -1029,10 +1029,8 @@ void Call_Back_Delay(int time) {
   }
 
   const Timer<SystemTickSource> cd{time};
-  // Tell the music streamer to do as little work per call as it can while this
-  // loop spins. In between the full services, only keep the sound fed and the
-  // frame presented.
-  StreamLowImpact = true;
+  // In between the full services, only keep the sound fed and the frame
+  // presented.
   do {
     if (callbackcd.IsFinished()) {
       ServiceRealTime();
@@ -1045,7 +1043,6 @@ void Call_Back_Delay(int time) {
     }
     Animate_Score_Objs();
   } while (cd.HasTimeLeft());
-  StreamLowImpact = false;
 }
 
 void Animate_Score_Objs() {

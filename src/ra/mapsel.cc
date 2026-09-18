@@ -173,7 +173,6 @@ static void PlayMapReveal(const std::string& animation_name,
   Animate_Frame(animation, page, /*frame_number=*/1);
   Interpolate_2X_Scale(&page, &SeenBuff, {});
 
-  StreamLowImpact = true;
   PlayMapSound("MAPWIPE2.AUD");
   for (int frame = 1; frame < Get_Animation_Frame_Count(animation); frame++) {
     Animate_Frame(animation, page, frame);
@@ -185,7 +184,6 @@ static void PlayMapReveal(const std::string& animation_name,
       }
     }
   }
-  StreamLowImpact = false;
   ServiceRealTime();
   Close_Animation(animation);
 }

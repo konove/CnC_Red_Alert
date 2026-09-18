@@ -124,6 +124,4 @@ Get_Audio_Callback_Ptr();  // returns a ptr to a function ptr as we're passing
 extern SFX_Type SoundType;
 extern Sample_Type SampleType;
 
-extern bool StreamLowImpact;
-
 #endif  // CNC_RED_ALERT_SDLLIB_WW_AUDIO_H_
