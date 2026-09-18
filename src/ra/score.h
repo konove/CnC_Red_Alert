@@ -16,26 +16,16 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header: /CounterStrike/SCORE.H 1     3/03/97 10:25a Joe_bostic $ */
-/***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
- ****
- ***********************************************************************************************
- *                                                                                             *
- *                 Project Name : Command & Conquer *
- *                                                                                             *
- *                    File Name : SCORE.H *
- *                                                                                             *
- *                   Programmer : Joe L. Bostic *
- *                                                                                             *
- *                   Start Date : April 19, 1994 *
- *                                                                                             *
- *                  Last Update : April 19, 1994   [JLB] *
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * Functions: *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
+// End-of-mission score screens.
+//
+// ScoreClass holds the statistics of the campaign mission in progress and, once
+// the mission is won, plays the single-player score screen: leadership and
+// economy ratings, casualty and building bar graphs, remaining credits and the
+// hall of fame. Multi_Score_Presentation() is the simpler multiplayer tally.
+// Both screens animate their text and shapes through the small ScoreAnimClass
+// hierarchy, which Call_Back_Delay() ticks while the presentation code waits.
+//
+// Originally SCORE.H by Joe L. Bostic, started April 19, 1994.
 
 #ifndef CNC_RED_ALERT_RA_SCORE_H_
 #define CNC_RED_ALERT_RA_SCORE_H_
@@ -51,6 +41,13 @@
 #include "sdllib/wwstd.h"
 #include "tech/ftimer.h"
 
+// Statistics for the mission in progress plus the score screen that presents
+// them. There is one instance, the global `Score`; it is part of the saved
+// game.
+//
+// The N/G/C prefixes are inherited from Tiberian Dawn (Nod, GDI, civilian). In
+// Red Alert "N" is the Soviet side (the Soviet houses and HOUSE_BAD) and "G" is
+// every other house.
 class ScoreClass {
  public:
   // Field-wise saved-game state; read and write share this field list.
@@ -59,45 +56,104 @@ class ScoreClass {
 
   ScoreClass() = default;
 
+  // Never written by Red Alert; the total is computed inside Presentation().
   int Score = 0;
+
+  // Units (*Killed) and buildings (*BKilled) each side has lost. Presentation()
+  // adds the houses' loss counters into these, so they are only meaningful once
+  // the score screen has run. The civilian counters are never written in Red
+  // Alert and stay 0.
   int NKilled = 0;
   int GKilled = 0;
   int CKilled = 0;
   int NBKilled = 0;
   int GBKilled = 0;
   int CBKilled = 0;
+
+  // Tiberian Dawn leftovers: never written in Red Alert, only saved and loaded.
   int NHarvested = 0;
   int GHarvested = 0;
   int CHarvested = 0;
+
+  // Game time played, in timer ticks (kTimerSecond per second). The main loop
+  // advances it once per game frame, so it follows game speed, not the wall
+  // clock.
   int64_t ElapsedTime = 0;
+
+  // Wall-clock counterpart of ElapsedTime. Reset by Init() and saved, but
+  // nothing reads it.
   Stopwatch<SystemTickSource> RealTime;
 
+  // Zeroes every statistic. Called when a scenario starts.
   void Init();
+
+  // Plays the single-player score screen and returns when the player has
+  // entered a hall of fame name or clicked to continue. Called at the end of a
+  // won campaign mission; rates the player's battle, updates the hall of fame
+  // file, and restores the game palette, font and mouse before returning.
   void Presentation();
 
-  /*
-  **	File I/O.
-  */
-
  private:
+  // Tiberian Dawn leftover; never points at anything.
   unsigned char* ChangingGun = nullptr;
 
+  // TODO: ScoreDelay(), Pulse_Bar_Graph() and Print_Graph_Title() are declared
+  // but have no definition; remove them.
   void ScoreDelay(int ticks);
   void Pulse_Bar_Graph();
   void Print_Graph_Title(int, int);
+
+  // Prints the mission time next to the clock animation, as hours and minutes
+  // once it reaches an hour. The display tops out at 9:59.
   static void Print_Minutes(int minutes);
+
+  // Formats min(percent, max) with the one-integer run-time format `str` and
+  // prints it straight to the visible page over a solid black background, so a
+  // counter can be reprinted in place every tick without flashing. `xpos` and
+  // `ypos` are 320x200 coordinates.
   static void Count_Up_Print(const char* str, int percent, int max, int xpos,
                              int ypos);
+
+  // Prints the "ending credits" caption, then counts the player's remaining
+  // money up to its final value beside a spinning credits animation. `house`
+  // is 0 for an Allied player and 1 for a Soviet one; it selects the artwork
+  // and where on that side's background the readout goes.
   static void Show_Credits(int house, std::span<const uint8_t> pal);
+
+  // Grows a pair of horizontal bar graphs, one after the other, each with a
+  // number counting up beside it: `gkilled` Allied and `nkilled` Soviet losses
+  // (units or buildings). The player's own side is always the top bar, at
+  // 320x200 row `ypos`; the other follows 12 rows below. `yellowptr` and
+  // `redptr` are the bar shape files for the top and bottom bar, whose frame N
+  // is a bar N pixels long.
   static void Do_GDI_Graph(std::span<const std::byte> yellowptr,
                            std::span<const std::byte> redptr, int gkilled,
                            int nkilled, int ypos);
+
+  // TODO: The two Do_Nod_*() graphs are the Tiberian Dawn Nod score screen
+  // (infantrymen shot as the casualty bars reach them, a commando blowing up a
+  // power plant). Red Alert never calls them; Presentation() uses
+  // Do_GDI_Graph() for both sides. Remove them together with the file-local
+  // infantry helpers in score.cc that only they reach.
   void Do_Nod_Casualties_Graph();
   void Do_Nod_Buildings_Graph();
+
+  // Lets the player type a hall of fame name into `str` until Return is
+  // pressed. Letters are upper-cased and echoed at 320x200 position (`xpos`,
+  // `ypos`) in font palette `pal`. `str` must hold MAX_FAMENAME_LENGTH chars.
   static void Input_Name(std::span<char> str, int xpos, int ypos,
                          std::span<const uint8_t> pal);
 };
 
+// Base class for the things that animate on the score screens. An object is
+// heap-allocated, parked in ScoreObjs[] with Alloc_Object(), and has Update()
+// called on every pass of Call_Back_Delay(). Text animations delete themselves
+// and clear their slot when finished; the looping shape animations live until
+// the screen tears ScoreObjs[] down.
+//
+// Constructors take 320x200 coordinates and double them; XPos and YPos are
+// hi-res pixels. The data and text are viewed, not copied, so they must outlive
+// the object.
 class ScoreAnimClass {
  public:
   ScoreAnimClass(int x, int y,
@@ -106,11 +162,16 @@ class ScoreAnimClass {
                  std::string_view text ABSL_ATTRIBUTE_LIFETIME_BOUND);
   int XPos;
   int YPos;
+  // Counts down to the next animation step; Update() does nothing until then.
   Timer<SystemTickSource> AnimTimer;
+  // Shape file, for the shape-style animations; empty otherwise.
   std::span<const std::byte> DataPtr;
+  // Text, for the text-style animations; empty otherwise.
   std::string_view TextData;
   // The animation's text, for the text-style animations.
   [[nodiscard]] std::string_view Text() const { return TextData; }
+  // Advances the animation if AnimTimer has run out. May `delete this`, so the
+  // caller must not touch the object afterwards.
   virtual void Update() {}
   virtual ~ScoreAnimClass() = default;
   ScoreAnimClass(const ScoreAnimClass&) = delete;
@@ -119,13 +180,15 @@ class ScoreAnimClass {
   ScoreAnimClass& operator=(ScoreAnimClass&&) = delete;
 };
 
+// The credits readout's animation: loops like a ScoreTimeClass and also plays
+// a tick sound on every frame. Show_Credits() deletes it when the count ends.
 class ScoreCredsClass : public ScoreAnimClass {
  public:
-  int Stage{0};
-  int MaxStage;
-  int TimerReset;
-  std::span<const std::byte> CashTurn;
-  std::span<const std::byte> Clock1;
+  int Stage{0};    // Current frame.
+  int MaxStage;    // Frame count; Stage wraps to 0 on reaching it.
+  int TimerReset;  // Ticks per frame.
+  std::span<const std::byte> CashTurn;  // Loaded but never played.
+  std::span<const std::byte> Clock1;    // The per-frame tick sound.
 
   void Update() override;
   ScoreCredsClass(int xpos, int ypos, std::span<const std::byte> data, int max,
@@ -140,11 +203,13 @@ class ScoreCredsClass : public ScoreAnimClass {
   ScoreCredsClass& operator=(ScoreCredsClass&&) = delete;
 };
 
+// A shape animation that loops forever (the clock and the two hall of fame
+// ornaments), drawn straight onto the visible page.
 class ScoreTimeClass : public ScoreAnimClass {
  public:
-  int Stage{0};
-  int MaxStage;
-  int TimerReset;
+  int Stage{0};    // Current frame.
+  int MaxStage;    // Frame count; Stage wraps to 0 on reaching it.
+  int TimerReset;  // Ticks per frame.
   void Update() override;
   ScoreTimeClass(int xpos, int ypos, std::span<const std::byte> data, int max,
                  int timer);
@@ -155,11 +220,17 @@ class ScoreTimeClass : public ScoreAnimClass {
   ScoreTimeClass& operator=(ScoreTimeClass&&) = delete;
 };
 
+// Types a string onto the screen one letter per tick: each new letter first
+// appears as a white smear, then is reprinted cleanly in `palette` on the next
+// tick. Deletes itself after the last letter. While any of these is still
+// typing, the file-local StillUpdating flag in score.cc stays set.
+//
+// The string is given as text or as a TXT_ string table id.
 class ScorePrintClass : public ScoreAnimClass {
  public:
-  int Background;
-  int Stage;
-  std::span<const uint8_t> PrimaryPalette;
+  int Background;  // Stored but unused; letters always print on kTBlack.
+  int Stage;       // Index of the next letter to appear.
+  std::span<const uint8_t> PrimaryPalette;  // Font palette of the final text.
   void Update() override;
   ScorePrintClass(std::string_view string, int xpos, int ypos,
                   std::span<const uint8_t> palette
@@ -176,10 +247,14 @@ class ScorePrintClass : public ScoreAnimClass {
   ScorePrintClass& operator=(ScorePrintClass&&) = delete;
 };
 
+// Echoes one typed hall of fame letter. In the DOS game the letter zoomed in
+// from a large size over five steps; see Stage.
 class ScoreScaleClass : public ScoreAnimClass {
  public:
+  // Zoom steps left. The DOS build started at 5; the Windows build, and so this
+  // port, starts at 0, which skips the zoom and prints the letter at once.
   int Stage{0};
-  std::span<const uint8_t> Palette;
+  std::span<const uint8_t> Palette;  // Font palette of the letter.
   void Update() override;
   ScoreScaleClass(std::string_view string, int xpos, int ypos,
                   std::span<const uint8_t> pal ABSL_ATTRIBUTE_LIFETIME_BOUND);
@@ -190,14 +265,30 @@ class ScoreScaleClass : public ScoreAnimClass {
   ScoreScaleClass& operator=(ScoreScaleClass&&) = delete;
 };
 
+// The live score screen animations; nullptr marks a free slot. Eight is enough
+// only because the presentation code paces its Alloc_Object() calls with
+// delays that let earlier text finish.
 #define MAXSCOREOBJS 8
 extern ScoreAnimClass* ScoreObjs[MAXSCOREOBJS];
 
+// Plays the multiplayer score screen: every player's name, games won and kills
+// per game, then waits for a key or click. Restores the game palette, font and
+// mouse before returning.
 void Multi_Score_Presentation();
 
+// TODO: Bit_It_In() is declared but has no definition; remove it.
 void Bit_It_In(int x, int y, int w, int h, GraphicBufferClass* src,
                GraphicBufferClass* dest, int delay = 0, int dagger = 0);
+
+// Waits `time` timer ticks (clamped to 0..60, i.e. one second) while keeping
+// the score screen alive: it services sound and video and updates every object
+// in ScoreObjs[]. Even a zero delay runs one update pass. Once Ctrl-Q has been
+// seen, every delay is cut to zero until the screen finishes.
 void Call_Back_Delay(int time);
+
+// Hands `obj` to the first free ScoreObjs[] slot, which then owns it, and
+// returns the slot index. See the TODO at the definition for the full-table
+// case.
 int Alloc_Object(ScoreAnimClass* obj);
 
 class ArchiveReader;
