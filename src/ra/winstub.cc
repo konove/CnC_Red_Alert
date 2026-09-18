@@ -38,8 +38,7 @@
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
  *                                                                                             *
- * Functions: * Assert_Failure -- display the line and source file where a
- *failed assert occurred         * Check_For_Focus_Loss -- check for the end of
+ * Functions: * Check_For_Focus_Loss -- check for the end of
  *the focus loss                               * Create_Main_Window -- opens the
  *MainWindow for C&C                                        * Focus_Loss -- this
  *function is called when a library function detects focus loss          *
@@ -481,60 +480,6 @@ void Colour_Debug(int call_number) {
 //{
 //	return (0);
 // }
-
-#ifndef NDEBUG
-/***********************************************************************************************
- * Assert_Failure -- display the line and source file where a failed assert
- *occurred           *
- *                                                                                             *
- *                                                                                             *
- * INPUT:    line number in source file * name of source file *
- *                                                                                             *
- * OUTPUT:   Nothing *
- *                                                                                             *
- * WARNINGS: None *
- *                                                                                             *
- * HISTORY: * 4/17/96 9:58AM ST : Created *
- *=============================================================================================*/
-
-void Assert_Failure(char* expression, int line, char* file) {
-  char assertbuf[256];
-  char timebuff[512];
-  SYSTEMTIME time;
-
-  sprintf(assertbuf, "assert '%s' failed at line %d in module %s.\n",
-          expression, line, file);
-
-  WWDebugString(assertbuf);
-
-  GetLocalTime(&time);
-
-  sprintf(timebuff, "%02d/%02d/%04d %02d:%02d:%02d - %s", time.wMonth,
-          time.wDay, time.wYear, time.wHour, time.wMinute, time.wSecond,
-          assertbuf);
-
-  HMMIO handle = mmioOpen("ASSERT.TXT", NULL, MMIO_WRITE);
-  if (!handle) {
-    handle = mmioOpen("ASSERT.TXT", NULL, MMIO_CREATE | MMIO_WRITE);
-    // mmioClose(handle, 0);
-    // handle = mmioOpen("ASSERT.TXT", NULL, MMIO_WRITE);
-  }
-
-  if (handle) {
-    mmioWrite(handle, timebuff, strlen(timebuff));
-    mmioClose(handle, 0);
-  }
-
-  WWMessageBox().Process(assertbuf);
-  //	WWMessageBox().Process("Red Alert demo timed out - Aborting");
-  // Get_Key();
-
-  Prog_End();
-  Invalidate_Cached_Icons();
-  PostQuitMessage(0);
-  ExitProcess(0);
-}
-#endif
 
 /***********************************************************************************************
  * Memory_Error_Handler -- Handle a possibly fatal failure to allocate memory *

@@ -2012,16 +2012,7 @@ std::span<const int16_t> ObjectTypeClass::Overlap_List() const {
 void ObjectTypeClass::One_Time() {
   SelectShapes = MixArchive::RetrieveData("SELECT.SHP");
 
-#ifndef NDEBUG
-  DiskFile file("PIPS.SHP");
-  if (file.IsAvailable()) {
-    PipShapes = Load_Alloc_Data(file);
-  } else {
-    PipShapes = MixArchive::RetrieveData("PIPS.SHP");
-  }
-#else
   PipShapes = MixArchive::RetrieveData("PIPS.SHP");
-#endif
 }
 
 /***********************************************************************************************

@@ -1258,16 +1258,7 @@ void InfantryTypeClass::One_Time() {
                         .replace_extension(".SHP")
                         .string();
 
-#ifndef NDEBUG
-    DiskFile sfile(fullname);
-    if (sfile.IsAvailable()) {
-      uclass->SetOwnedImage(LoadAllocData(sfile));
-    } else {
-      uclass->SetBorrowedImage(MixArchive::RetrieveData(fullname));
-    }
-#else
     uclass->SetBorrowedImage(MixArchive::RetrieveData(fullname));
-#endif
 
     // The small build image icon sized shapes are always generic.
     const auto filename =
@@ -1275,16 +1266,7 @@ void InfantryTypeClass::One_Time() {
     fullname =
         std::filesystem::path(filename).replace_extension(".SHP").string();
 
-#ifndef NDEBUG
-    DiskFile ifile(fullname);
-    if (ifile.IsAvailable()) {
-      uclass->CameoData = Load_Alloc_Data(ifile);
-    } else {
-      uclass->CameoData = MixArchive::RetrieveData(fullname);
-    }
-#else
     uclass->CameoData = MixArchive::RetrieveData(fullname);
-#endif
   }
 }
 

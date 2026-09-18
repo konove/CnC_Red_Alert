@@ -277,16 +277,7 @@ void DisplayClass::One_Time() {
   */
   TransIconset = MixArchive::RetrieveData("TRANS.ICN");
 
-#ifndef NDEBUG
-  DiskFile file("SHADOW.SHP");
-  if (file.IsAvailable()) {
-    ShadowShapes = Load_Alloc_Data(file);
-  } else {
-    ShadowShapes = MixArchive::RetrieveData("SHADOW.SHP");
-  }
-#else
   ShadowShapes = MixArchive::RetrieveData("SHADOW.SHP");
-#endif
 
   Set_View_Dimensions(0, 16);
 }

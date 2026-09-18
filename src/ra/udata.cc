@@ -1074,16 +1074,7 @@ void UnitTypeClass::One_Time() {
     const auto filename = std::string(uclass.Graphic_Name()) + "ICON";
     auto fullname =
         std::filesystem::path(filename).replace_extension(".SHP").string();
-#ifndef NDEBUG
-    DiskFile datafile(fullname);
-    if (datafile.IsAvailable()) {
-      uclass.CameoData = Load_Alloc_Data(datafile);
-    } else {
-      uclass.CameoData = MixArchive::RetrieveData(fullname);
-    }
-#else
     uclass.CameoData = MixArchive::RetrieveData(fullname);
-#endif
     //		}
 
     /*
@@ -1092,16 +1083,7 @@ void UnitTypeClass::One_Time() {
     fullname = std::filesystem::path(uclass.Graphic_Name())
                    .replace_extension(".SHP")
                    .string();
-#ifndef NDEBUG
-    DiskFile shpfile(fullname);
-    if (shpfile.IsAvailable()) {
-      uclass.SetOwnedImage(LoadAllocData(shpfile));
-    } else {
-      uclass.SetBorrowedImage(MixArchive::RetrieveData(fullname));
-    }
-#else
     uclass.SetBorrowedImage(MixArchive::RetrieveData(fullname));
-#endif
     // Read the shape pointer back from the owner rather than from a local the
     // store just moved from.
     const auto ptr = uclass.GetImageSpan();

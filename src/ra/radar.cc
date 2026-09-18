@@ -92,7 +92,6 @@
 #include "base/array.h"
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
-#include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "ra/bench_util.h"
 #include "ra/ccptr.h"
@@ -129,7 +128,6 @@
 #include "sdllib/shape.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
-#include "tech/disk_file.h"
 #include "tech/mix_archive.h"
 
 // void const * RadarClass::CoverShape;
@@ -403,48 +401,11 @@ void RadarClass::Draw_It(bool forced) {
   static HousesType _house = HOUSE_NONE;
 
   if (PlayerPtr->ActLike != _house) {
-    char name[kMaxFname + kMaxExt];
-
-    //		port::SafeCopy(name, "NATORADR.SHP" );
-    //		if (Session.Type == GAME_NORMAL) {
-    port::SafeCopy(
-        name, base::At(_hiresradarnames, static_cast<int>(PlayerPtr->ActLike)));
-    //		}
-#ifndef NDEBUG
-    DiskFile file(name);
-    if (file.IsAvailable()) {
-      RadarAnim = Load_Alloc_Data(file);
-    } else {
-      RadarAnim = MixArchive::RetrieveData(name);
-    }
-    port::SafeCopy(name, "PULSE.SHP");
-    DiskFile file2(name);
-    if (file2.IsAvailable()) {
-      RadarPulse = Load_Alloc_Data(file2);
-    } else {
-      RadarPulse = MixArchive::RetrieveData(name);
-    }
-    port::SafeCopy(name,
-                   base::At(_frames, static_cast<int>(PlayerPtr->ActLike)));
-    DiskFile file3(name);
-    if (file3.IsAvailable()) {
-      RadarFrame = Load_Alloc_Data(file3);
-    } else {
-      RadarFrame = MixArchive::RetrieveData(
-          base::At(_frames, static_cast<int>(PlayerPtr->ActLike)));
-    }
-#else
-    RadarAnim = MixArchive::RetrieveData(name);
-    port::SafeCopy(name, "PULSE.SHP");
-    DiskFile file3(name);
-    if (file3.IsAvailable()) {
-      RadarPulse = Load_Alloc_Data(file3);
-    } else {
-      RadarPulse = MixArchive::RetrieveData(name);
-    }
+    RadarAnim = MixArchive::RetrieveData(
+        base::At(_hiresradarnames, static_cast<int>(PlayerPtr->ActLike)));
+    RadarPulse = MixArchive::RetrieveData("PULSE.SHP");
     RadarFrame = MixArchive::RetrieveData(
         base::At(_frames, static_cast<int>(PlayerPtr->ActLike)));
-#endif
     _house = PlayerPtr->ActLike;
   }
 

@@ -2186,17 +2186,7 @@ void AnimTypeClass::One_Time() {
                                 .replace_extension(".SHP")
                                 .string();
 
-#ifndef NDEBUG
-      DiskFile file(fullname);
-      if (file.IsAvailable()) {
-        As_Reference(index).SetOwnedImage(LoadAllocData(file));
-      } else {
-        As_Reference(index).SetBorrowedImage(
-            MixArchive::RetrieveData(fullname));
-      }
-#else
       As_Reference(index).SetBorrowedImage(MixArchive::RetrieveData(fullname));
-#endif
     }
   }
 }

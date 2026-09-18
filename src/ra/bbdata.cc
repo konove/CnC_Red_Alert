@@ -190,17 +190,7 @@ void BulletTypeClass::One_Time() {
                                 .replace_extension(".SHP")
                                 .string();
 
-#ifdef NDEBUG
       bullet.SetBorrowedImage(MixArchive::RetrieveData(fullname));
-#else
-      DiskFile file(fullname);
-
-      if (file.IsAvailable()) {
-        bullet.SetOwnedImage(LoadAllocData(file));
-      } else {
-        bullet.SetBorrowedImage(MixArchive::RetrieveData(fullname));
-      }
-#endif
     }
   }
 }
