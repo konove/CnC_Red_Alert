@@ -1581,7 +1581,7 @@ static char* Int_Print(int a) {
 
 void Multi_Score_Presentation() {
   unsigned char remap[16];
-  auto* pseudoseenbuff = new GraphicBufferClass(320, 200, std::span<uint8_t>{});
+  GraphicBufferClass pseudoseenbuff(320, 200);
 
   const int oldfontxspacing = FontXSpacing;
 
@@ -1599,19 +1599,15 @@ void Multi_Score_Presentation() {
   /*
   ** Display the background animation
   */
-  pseudoseenbuff->Clear();
-  Animate_Frame(anim, *pseudoseenbuff, 1);
-  for (int x = 0; x < 256; x++) {
-    std::ranges::fill(base::At(PaletteInterpolationTable, x),
-                      static_cast<uint8_t>(x));
-  }
-  Interpolate_2X_Scale(pseudoseenbuff, &SeenBuff, {});
+  pseudoseenbuff.Clear();
+  Animate_Frame(anim, pseudoseenbuff, 1);
+  Interpolate_2X_Scale(&pseudoseenbuff, &SeenBuff, {});
   ScorePalette.Set(kFadePaletteFast, ServiceRealTime);
 
   int frame = 1;
   while (frame < Get_Animation_Frame_Count(anim)) {
-    Animate_Frame(anim, *pseudoseenbuff, frame++);
-    Interpolate_2X_Scale(pseudoseenbuff, &SeenBuff, {});
+    Animate_Frame(anim, pseudoseenbuff, frame++);
+    Interpolate_2X_Scale(&pseudoseenbuff, &SeenBuff, {});
     Call_Back_Delay(2);
   }
   Close_Animation(anim);
