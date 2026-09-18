@@ -257,8 +257,9 @@ void Multi_Score_Presentation();
 void Call_Back_Delay(int time);
 
 // Hands `obj` to the first free ScoreObjs[] slot, which then owns it, and
-// returns the slot index. See the TODO at the definition for the full-table
-// case.
+// returns the slot index. If the table is full this runs the animations, via
+// Call_Back_Delay(), until one finishes and frees its slot; at least one slot
+// must therefore hold an animation that ends, or the call never returns.
 int Alloc_Object(ScoreAnimClass* obj);
 
 class ArchiveReader;

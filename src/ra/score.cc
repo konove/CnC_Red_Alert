@@ -276,22 +276,20 @@ void ScoreScaleClass::Update() {
   }
 }
 
-// TODO: When every slot is taken this leaks `obj` and still returns 0, which a
-// caller cannot tell from "stored in slot 0". Show_Credits() would then delete
-// slot 0 (the clock) and Input_Name() would wait forever for it to empty. The
-// hall of fame loop in Presentation() can fill the table: rows without a score
-// are queued back to back with no delay in between.
+// A full table is waited out rather than reported: the text animations all
+// finish within a tick per letter, so running the animations frees a slot.
+// Presentation() does fill the table, by queueing the hall of fame's empty
+// rows back to back.
 int Alloc_Object(ScoreAnimClass* obj) {
-  int ret = 0;
-
-  for (int i = ret = 0; i < MAXSCOREOBJS; i++) {
-    if (!base::At(ScoreObjs, i)) {
-      base::At(ScoreObjs, i) = obj;
-      ret = i;
-      break;
+  for (;;) {
+    for (int i = 0; i < MAXSCOREOBJS; i++) {
+      if (!base::At(ScoreObjs, i)) {
+        base::At(ScoreObjs, i) = obj;
+        return i;
+      }
     }
+    Call_Back_Delay(1);
   }
-  return ret;
 }
 
 // 16-entry font palettes for Set_Font_Palette(): each maps the gradient score
