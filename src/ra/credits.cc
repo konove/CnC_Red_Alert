@@ -46,7 +46,6 @@
 #include <cstdint>
 #include <cstdlib>
 
-#include "ra/bench_util.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/externs.h"
@@ -99,8 +98,6 @@ CreditClass::CreditClass() = default;
  *=============================================================================================*/
 void CreditClass::Graphic_Logic(bool forced) {
   if (forced || IsToRedraw) {
-    BStart(BENCH_TABS);
-
     int xx = SeenBuff.Get_Width() - 240;
 
     /*
@@ -183,7 +180,6 @@ void CreditClass::Graphic_Logic(bool forced) {
 
     IsToRedraw = false;
     IsAudible = false;
-    BEnd(BENCH_TABS);
   }
 }
 

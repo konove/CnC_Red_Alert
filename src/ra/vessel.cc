@@ -84,7 +84,6 @@
 #include "port/tokenizer.h"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
-#include "ra/bench_util.h"
 #include "ra/building.h"
 #include "ra/ccini.h"
 #include "ra/cell.h"
@@ -675,8 +674,6 @@ void VesselClass::Per_Cell_Process(PCPType why) {
   DCHECK(Vessels.ID(this) == ID);
   DCHECK(IsActive);
 
-  BStart(BENCH_PCP);
-
   if (why == PCP_END) {
     /*
     **	The unit performs looking around at this time. If the
@@ -708,7 +705,6 @@ void VesselClass::Per_Cell_Process(PCPType why) {
     **	map, then it gets eliminated.
     */
     if (Edge_Of_World_AI()) {
-      BEnd(BENCH_PCP);
       return;
     }
   }
@@ -716,7 +712,6 @@ void VesselClass::Per_Cell_Process(PCPType why) {
   if (IsActive) {
     DriveClass::Per_Cell_Process(why);
   }
-  BEnd(BENCH_PCP);
 }
 
 /***********************************************************************************************

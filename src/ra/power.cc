@@ -53,7 +53,6 @@
 #include <span>
 
 #include "base/array.h"
-#include "ra/bench_util.h"
 #include "ra/defines.h"
 #include "ra/externs.h"
 #include "ra/gadget.h"
@@ -167,93 +166,85 @@ void PowerClass::One_Time() {
 void PowerClass::Draw_It(bool complete) {
   static const int _modtable[] = {0, -1, 0, 1, 0, -1, -2, -1, 0, 1, 2, 1, 0};
 
-  if (complete || IsPowerToRedraw) {
-    BStart(BENCH_POWER);
+  if ((complete || IsPowerToRedraw) && LogicPage->Lock()) {
+    if (Map.IsSidebarActive) {
+      IsPowerToRedraw = false;
+      ShapeFlags_Type flags = SHAPE_NORMAL;
+      std::span<const unsigned char> remap;
 
-    if (LogicPage->Lock()) {
-      if (Map.IsSidebarActive) {
-        IsPowerToRedraw = false;
-        ShapeFlags_Type flags = SHAPE_NORMAL;
-        std::span<const unsigned char> remap;
-
-        if (FlashTimer.Value() > 1 && (FlashTimer.Value() % 3) % 2 != 0) {
-          flags = flags | SHAPE_FADING;
-          remap = FadingRed;
-        }
-
-        //				LogicPage->Fill_Rect(kPowerX, kPowerY,
-        // kPowerX+kPowerWidth-1, kPowerY+kPowerHeight-1, LTGREY);
-        CC_Draw_Shape(PowerBarShape, 0, 480, 176,
-                      WINDOW_MAIN, flags | SHAPE_NORMAL | SHAPE_WIN_REL, remap);
-
-        /*
-        ** Hires power strip is too big to fit into a shape so it is in two
-        *parts
-        */
-        CC_Draw_Shape(PowerBarShape, 1, 480,
-                      176 + 112, WINDOW_MAIN,
-                      flags | SHAPE_NORMAL | SHAPE_WIN_REL, remap);
-        /*
-        **	Determine how much the power production exceeds or falls short
-        **	of power demands.
-        */
-        int bottom = (kPowerY + kPowerHeight - 1) * 2;
-        int power_height =
-            PowerHeight == DesiredPowerHeight
-                ? PowerHeight + (base::At(_modtable, PowerBounce) * PowerDir)
-                : PowerHeight;
-        int drain_height =
-            DrainHeight == DesiredDrainHeight
-                ? DrainHeight + (base::At(_modtable, DrainBounce) * DrainDir)
-                : DrainHeight;
-        power_height = Bound(power_height, 0, kPowerHeight - 2);
-        drain_height = Bound(drain_height, 0, kPowerHeight - 2);
-
-        /*
-        **	Draw the power output graphic on top of the power bar framework.
-        */
-        if (power_height) {
-          int color1 = 3;
-          int color2 = 4;
-
-          if (PlayerPtr->Drain > PlayerPtr->Power) {
-            color1 = 214;
-            color2 = 211;
-          }
-          if (PlayerPtr->Drain > PlayerPtr->Power * 2) {
-            color1 = 235;
-            color2 = 230;
-          }
-
-          /*
-          ** New power bar is in slightly different place
-          **
-          ** Old power bar was 107 pixels high. New bar is 153 pixels high.
-          **
-          ** ST - 5/2/96 11:23AM
-          */
-          power_height =
-              power_height * (152 + 1) / (106 + 1);
-          drain_height =
-              drain_height * (152 + 1) / (106 + 1);
-          bottom = 350 + 1;
-
-          LogicPage->Fill_Rect(490, bottom - power_height, 490 + 1, bottom,
-                               static_cast<unsigned char>(color2));
-          LogicPage->Fill_Rect(492, bottom - power_height, 492 + 1, bottom,
-                               static_cast<unsigned char>(color1));
-        }
-
-        /*
-        **	Draw the power drain threshold marker.
-        */
-        CC_Draw_Shape(PowerShape, 0, (kPowerX * 2) + 2,
-                      bottom - (drain_height + 4), WINDOW_MAIN,
-                      flags | SHAPE_NORMAL, remap);
+      if (FlashTimer.Value() > 1 && (FlashTimer.Value() % 3) % 2 != 0) {
+        flags = flags | SHAPE_FADING;
+        remap = FadingRed;
       }
-      LogicPage->Unlock();
+
+      //				LogicPage->Fill_Rect(kPowerX, kPowerY,
+      // kPowerX+kPowerWidth-1, kPowerY+kPowerHeight-1, LTGREY);
+      CC_Draw_Shape(PowerBarShape, 0, 480, 176, WINDOW_MAIN,
+                    flags | SHAPE_NORMAL | SHAPE_WIN_REL, remap);
+
+      /*
+      ** Hires power strip is too big to fit into a shape so it is in two
+      *parts
+      */
+      CC_Draw_Shape(PowerBarShape, 1, 480, 176 + 112, WINDOW_MAIN,
+                    flags | SHAPE_NORMAL | SHAPE_WIN_REL, remap);
+      /*
+      **	Determine how much the power production exceeds or falls short
+      **	of power demands.
+      */
+      int bottom = (kPowerY + kPowerHeight - 1) * 2;
+      int power_height =
+          PowerHeight == DesiredPowerHeight
+              ? PowerHeight + (base::At(_modtable, PowerBounce) * PowerDir)
+              : PowerHeight;
+      int drain_height =
+          DrainHeight == DesiredDrainHeight
+              ? DrainHeight + (base::At(_modtable, DrainBounce) * DrainDir)
+              : DrainHeight;
+      power_height = Bound(power_height, 0, kPowerHeight - 2);
+      drain_height = Bound(drain_height, 0, kPowerHeight - 2);
+
+      /*
+      **	Draw the power output graphic on top of the power bar framework.
+      */
+      if (power_height) {
+        int color1 = 3;
+        int color2 = 4;
+
+        if (PlayerPtr->Drain > PlayerPtr->Power) {
+          color1 = 214;
+          color2 = 211;
+        }
+        if (PlayerPtr->Drain > PlayerPtr->Power * 2) {
+          color1 = 235;
+          color2 = 230;
+        }
+
+        /*
+        ** New power bar is in slightly different place
+        **
+        ** Old power bar was 107 pixels high. New bar is 153 pixels high.
+        **
+        ** ST - 5/2/96 11:23AM
+        */
+        power_height = power_height * (152 + 1) / (106 + 1);
+        drain_height = drain_height * (152 + 1) / (106 + 1);
+        bottom = 350 + 1;
+
+        LogicPage->Fill_Rect(490, bottom - power_height, 490 + 1, bottom,
+                             static_cast<unsigned char>(color2));
+        LogicPage->Fill_Rect(492, bottom - power_height, 492 + 1, bottom,
+                             static_cast<unsigned char>(color1));
+      }
+
+      /*
+      **	Draw the power drain threshold marker.
+      */
+      CC_Draw_Shape(PowerShape, 0, (kPowerX * 2) + 2,
+                    bottom - (drain_height + 4), WINDOW_MAIN,
+                    flags | SHAPE_NORMAL, remap);
     }
-    BEnd(BENCH_POWER);
+    LogicPage->Unlock();
   }
   RadarClass::Draw_It(complete);
 }

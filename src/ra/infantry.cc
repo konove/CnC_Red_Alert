@@ -110,7 +110,6 @@
 #include "magic_enum/magic_enum.hpp"
 #include "port/tokenizer.h"
 #include "ra/anim.h"
-#include "ra/bench_util.h"
 #include "ra/building.h"
 #include "ra/ccini.h"
 #include "ra/combat.h"
@@ -608,7 +607,6 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
   DCHECK(Infantry.ID(this) == ID);
   DCHECK(IsActive);
 
-  BStart(BENCH_PCP);
   CellClass* cellptr = &Map.at(Coord);
 
   if (why == PCP_END) {
@@ -651,7 +649,6 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
                   tech->Strength - 1);
               tech->Take_Damage(damage, 0, WARHEAD_HE, this, true);
             }
-            BEnd(BENCH_PCP);
             delete this;
             return;
           }
@@ -716,7 +713,6 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
             }
           }
         }
-        BEnd(BENCH_PCP);
         delete this;
         return;
       }
@@ -740,7 +736,6 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
         Limbo();
         techno->Attach(this);
       }
-      BEnd(BENCH_PCP);
       return;
     }
 
@@ -762,7 +757,6 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
         Do_Uncloak();
         Arm.Set(Rearm_Delay(true));
         Scatter(building->Center_Coord(), true, true);  // RUN AWAY!
-        BEnd(BENCH_PCP);
         return;
       }
       if (::As_Target(Coord_Cell(Center_Coord())) == NavCom) {
@@ -780,7 +774,6 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
         Explosion_Damage(Coord, Rule.BridgeStrength, nullptr, WARHEAD_HE);
         Explosion_Damage(Coord, Rule.BridgeStrength, nullptr, WARHEAD_HE);
         if (!IsActive) {
-          BEnd(BENCH_PCP);
           return;
         }
 
@@ -852,7 +845,6 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
         }
       }
       if (!IsActive) {
-        BEnd(BENCH_PCP);
         return;
       }
     }
@@ -877,7 +869,6 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
   if (IsActive) {
     FootClass::Per_Cell_Process(why);
   }
-  BEnd(BENCH_PCP);
 }
 
 /***********************************************************************************************

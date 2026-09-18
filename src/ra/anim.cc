@@ -66,7 +66,6 @@
 #include "absl/log/check.h"
 #include "absl/strings/match.h"
 #include "magic_enum/magic_enum.hpp"
-#include "ra/bench_util.h"
 #include "ra/building.h"
 #include "ra/ccptr.h"
 #include "ra/cell.h"
@@ -271,8 +270,6 @@ void AnimClass::Draw_It(int x, int y, WindowNumberType window) const {
   DCHECK(IsActive);
 
   if (!IsInvisible) {
-    BStart(BENCH_ANIMS);
-
     IsTheaterShape = Class->IsTheater;
 
     const auto shapefile = Get_Image_Data();
@@ -311,7 +308,6 @@ void AnimClass::Draw_It(int x, int y, WindowNumberType window) const {
                     transtable);
     }
     IsTheaterShape = false;
-    BEnd(BENCH_ANIMS);
   }
 }
 

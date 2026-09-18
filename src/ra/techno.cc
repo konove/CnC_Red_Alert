@@ -160,7 +160,6 @@
 #include "port/safe_string.h"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
-#include "ra/bench_util.h"
 #include "ra/building.h"
 #include "ra/cargo.h"
 #include "ra/ccini.h"
@@ -1532,13 +1531,10 @@ bool TechnoClass::Evaluate_Object(ThreatType method, uint32_t mask, int range,
   DCHECK(IsActive);
   DCHECK(object != nullptr);
 
-  BStart(BENCH_EVAL_OBJECT);
-
   /*
   **	An object in limbo can never be a valid target.
   */
   if (object == nullptr || object->IsInLimbo) {
-    BEnd(BENCH_EVAL_OBJECT);
     return false;
   }
 
@@ -1546,7 +1542,6 @@ bool TechnoClass::Evaluate_Object(ThreatType method, uint32_t mask, int range,
   **	If the object is cloaked, then it isn't a legal target.
   */
   if (object->Cloak == CLOAKED) {
-    BEnd(BENCH_EVAL_OBJECT);
     return false;
   }
 
@@ -1556,7 +1551,6 @@ bool TechnoClass::Evaluate_Object(ThreatType method, uint32_t mask, int range,
   */
   if (object->Mission != MISSION_NONE &&
       MissionControl.at(object->Mission).IsNoThreat) {
-    BEnd(BENCH_EVAL_OBJECT);
     return false;
   }
 
@@ -1568,7 +1562,6 @@ bool TechnoClass::Evaluate_Object(ThreatType method, uint32_t mask, int range,
   if (zone != -1 &&
       std::cmp_not_equal(
           Map.at(objectcoord).Zones.at(Techno_Type_Class()->MZone), zone)) {
-    BEnd(BENCH_EVAL_OBJECT);
     return false;
   }
 
@@ -1580,11 +1573,9 @@ bool TechnoClass::Evaluate_Object(ThreatType method, uint32_t mask, int range,
   if (House->Is_Ally(object)) {
     if (Combat_Damage() < 0) {
       if (object->Health_Ratio() == Rule.ConditionGreen) {
-        BEnd(BENCH_EVAL_OBJECT);
         return false;
       }
     } else {
-      BEnd(BENCH_EVAL_OBJECT);
       return false;
     }
   }
@@ -1594,14 +1585,12 @@ bool TechnoClass::Evaluate_Object(ThreatType method, uint32_t mask, int range,
   */
   const int dist = Distance(object);
   if (range > 0 && dist > range) {
-    BEnd(BENCH_EVAL_OBJECT);
     return false;
   }
 
   if (range == 0) {
     const int primary = What_Weapon_Should_I_Use(object->As_Target());
     if (!In_Range(object, primary)) {
-      BEnd(BENCH_EVAL_OBJECT);
       return false;
     }
   }
@@ -1612,7 +1601,6 @@ bool TechnoClass::Evaluate_Object(ThreatType method, uint32_t mask, int range,
   */
   if (!object->IsOwnedByPlayer && !object->IsDiscoveredByPlayer &&
       Session.Type == GAME_NORMAL && object->What_Am_I() != RTTI_AIRCRAFT) {
-    BEnd(BENCH_EVAL_OBJECT);
     return false;
   }
 
@@ -1622,7 +1610,6 @@ bool TechnoClass::Evaluate_Object(ThreatType method, uint32_t mask, int range,
   */
   const RTTIType otype = object->What_Am_I();
   if ((base::Bit<uint32_t>(otype) & mask) == 0) {
-    BEnd(BENCH_EVAL_OBJECT);
     return false;  // Mask failure.
   }
 
@@ -1632,7 +1619,6 @@ bool TechnoClass::Evaluate_Object(ThreatType method, uint32_t mask, int range,
   */
   const TechnoTypeClass* tclass = object->Techno_Type_Class();
   if (!tclass->IsLegalTarget) {
-    BEnd(BENCH_EVAL_OBJECT);
     return false;  // Legality failure.
   }
 
@@ -1645,7 +1631,6 @@ bool TechnoClass::Evaluate_Object(ThreatType method, uint32_t mask, int range,
         dynamic_cast<const InfantryClass*>(this)->Class->IsDog) {
       // continue executing...
     } else {
-      BEnd(BENCH_EVAL_OBJECT);
       return false;
     }
   }
@@ -1656,7 +1641,6 @@ bool TechnoClass::Evaluate_Object(ThreatType method, uint32_t mask, int range,
   if (otype == RTTI_AIRCRAFT && What_Am_I() == RTTI_BUILDING &&
       *dynamic_cast<const BuildingClass*>(this) == STRUCT_SAM) {
     if (dynamic_cast<const AircraftClass*>(object)->Height == 0) {
-      BEnd(BENCH_EVAL_OBJECT);
       return false;
     }
   }
@@ -1666,7 +1650,6 @@ bool TechnoClass::Evaluate_Object(ThreatType method, uint32_t mask, int range,
   */
   if (base::Any(method & THREAT_CIVILIANS) &&
       object->Owner() != HOUSE_NEUTRAL) {
-    BEnd(BENCH_EVAL_OBJECT);
     return false;
   }
 
@@ -1677,7 +1660,6 @@ bool TechnoClass::Evaluate_Object(ThreatType method, uint32_t mask, int range,
   if (base::Any(method & THREAT_CAPTURE) &&
       (otype != RTTI_BUILDING ||
        !dynamic_cast<const BuildingTypeClass&>(*tclass).IsCaptureable)) {
-    BEnd(BENCH_EVAL_OBJECT);
     return false;
   }
 
@@ -1689,7 +1671,6 @@ bool TechnoClass::Evaluate_Object(ThreatType method, uint32_t mask, int range,
       *dynamic_cast<const VesselClass*>(this) == VESSEL_SS) {
     const StructType ostruc = *dynamic_cast<const BuildingClass*>(object);
     if (ostruc != STRUCT_SUB_PEN && ostruc != STRUCT_SHIP_YARD) {
-      BEnd(BENCH_EVAL_OBJECT);
       return false;
     }
   }
@@ -1703,7 +1684,6 @@ bool TechnoClass::Evaluate_Object(ThreatType method, uint32_t mask, int range,
       (House->IsHuman ||
        (House->IsPlayerControl && Session.Type == GAME_NORMAL)) &&
       otype == RTTI_BUILDING && tclass->PrimaryWeapon == nullptr) {
-    BEnd(BENCH_EVAL_OBJECT);
     return false;
   }
 
@@ -1715,7 +1695,6 @@ bool TechnoClass::Evaluate_Object(ThreatType method, uint32_t mask, int range,
     switch (otype) {
       case RTTI_UNIT:
         if (!dynamic_cast<const UnitTypeClass&>(*tclass).IsToHarvest) {
-          BEnd(BENCH_EVAL_OBJECT);
           return false;
         }
         break;
@@ -1723,7 +1702,6 @@ bool TechnoClass::Evaluate_Object(ThreatType method, uint32_t mask, int range,
       case RTTI_BUILDING:
         if (!dynamic_cast<const BuildingTypeClass&>(*tclass).Capacity &&
             Session.Type != GAME_NORMAL) {
-          BEnd(BENCH_EVAL_OBJECT);
           return false;
         }
         break;
@@ -1759,7 +1737,6 @@ bool TechnoClass::Evaluate_Object(ThreatType method, uint32_t mask, int range,
       case RTTIType::RTTI_VESSEL:
       case RTTIType::RTTI_VESSELTYPE:
       default:
-        BEnd(BENCH_EVAL_OBJECT);
         return false;
     }
   }
@@ -1958,11 +1935,9 @@ bool TechnoClass::Evaluate_Object(ThreatType method, uint32_t mask, int range,
 
     //		if (value < MAP_CELL_W*2) value = dist/ICON_LEPTON_W;
     value = std::max(value, 1);
-    BEnd(BENCH_EVAL_OBJECT);
     return true;
   }
   value = 0;
-  BEnd(BENCH_EVAL_OBJECT);
   return false;
 }
 
@@ -2004,8 +1979,6 @@ bool TechnoClass::Evaluate_Cell(ThreatType method, uint32_t mask, CELL cell,
                                 int& value, int zone) const {
   DCHECK(IsActive);
 
-  BStart(BENCH_EVAL_CELL);
-
   *object = nullptr;
   value = 0;
 
@@ -2013,11 +1986,9 @@ bool TechnoClass::Evaluate_Cell(ThreatType method, uint32_t mask, CELL cell,
   **	If the cell is not on the legal map, then always ignore it.
   */
   if (static_cast<unsigned>(cell) > MAP_CELL_TOTAL) {
-    BEnd(BENCH_EVAL_CELL);
     return false;
   }
   if (!Map.In_Radar(cell)) {
-    BEnd(BENCH_EVAL_CELL);
     return false;
   }
 
@@ -2033,7 +2004,6 @@ bool TechnoClass::Evaluate_Cell(ThreatType method, uint32_t mask, CELL cell,
   */
   if (zone != -1 &&
       std::cmp_not_equal(cellptr->Zones.at(Techno_Type_Class()->MZone), zone)) {
-    BEnd(BENCH_EVAL_CELL);
     return false;
   }
 
@@ -2057,14 +2027,12 @@ bool TechnoClass::Evaluate_Cell(ThreatType method, uint32_t mask, CELL cell,
   }
 
   if (tentative == nullptr) {
-    BEnd(BENCH_EVAL_CELL);
     return false;
   }
   *object = tentative;
 
   const bool result = Evaluate_Object(method, mask, range, tentative, value);
 
-  BEnd(BENCH_EVAL_CELL);
   return result;
 }
 
@@ -2085,8 +2053,6 @@ bool TechnoClass::Evaluate_Cell(ThreatType method, uint32_t mask, CELL cell,
  * HISTORY: * 09/10/1996 JLB : Created. *
  *=============================================================================================*/
 int TechnoClass::Evaluate_Just_Cell(CELL cell) const {
-  BStart(BENCH_EVAL_WALL);
-
   /*
   **	Ships don't scan for walls.
   */
@@ -2099,7 +2065,6 @@ int TechnoClass::Evaluate_Just_Cell(CELL cell) const {
   *walls.
   */
   if (House->IsHuman) {
-    BEnd(BENCH_EVAL_WALL);
     return 0;
   }
 
@@ -2109,7 +2074,6 @@ int TechnoClass::Evaluate_Just_Cell(CELL cell) const {
   */
   if (!base::At(Rule.Diff, static_cast<int>(House->Difficulty))
            .IsWallDestroyer) {
-    BEnd(BENCH_EVAL_WALL);
     return 0;
   }
 
@@ -2119,7 +2083,6 @@ int TechnoClass::Evaluate_Just_Cell(CELL cell) const {
   const CellClass* cellptr = &Map.at(cell);
   if (cellptr->Overlay == OVERLAY_NONE ||
       !OverlayTypeClass::As_Reference(cellptr->Overlay).IsWall) {
-    BEnd(BENCH_EVAL_WALL);
     return 0;
   }
 
@@ -2129,7 +2092,6 @@ int TechnoClass::Evaluate_Just_Cell(CELL cell) const {
   */
   const int primary = What_Weapon_Should_I_Use(::As_Target(cell));
   if (!In_Range(Cell_Coord(cell), primary)) {
-    BEnd(BENCH_EVAL_WALL);
     return 0;
   }
 
@@ -2139,7 +2101,6 @@ int TechnoClass::Evaluate_Just_Cell(CELL cell) const {
   const TechnoTypeClass* ttype = Techno_Type_Class();
   if (ttype->PrimaryWeapon == nullptr ||
       ttype->PrimaryWeapon->WarheadPtr == nullptr) {
-    BEnd(BENCH_EVAL_WALL);
     return 0;
   }
 
@@ -2149,7 +2110,6 @@ int TechnoClass::Evaluate_Just_Cell(CELL cell) const {
   */
   if (ttype->PrimaryWeapon->Bullet != nullptr &&
       !ttype->PrimaryWeapon->Bullet->IsAntiGround) {
-    BEnd(BENCH_EVAL_WALL);
     return 0;
   }
 
@@ -2158,7 +2118,6 @@ int TechnoClass::Evaluate_Just_Cell(CELL cell) const {
   *any *	value as a target.
   */
   if (!ttype->PrimaryWeapon->WarheadPtr->IsWallDestroyer) {
-    BEnd(BENCH_EVAL_WALL);
     return 0;
   }
 
@@ -2166,7 +2125,6 @@ int TechnoClass::Evaluate_Just_Cell(CELL cell) const {
   **	If this is a friendly wall, then don't attack it.
   */
   if (House->Is_Ally(cellptr->Owner)) {
-    BEnd(BENCH_EVAL_WALL);
     return 0;
   }
 
@@ -2175,7 +2133,6 @@ int TechnoClass::Evaluate_Just_Cell(CELL cell) const {
   *range the wall *	is from the object. The greater the range, the lesser
   *the value returned.
   */
-  BEnd(BENCH_EVAL_WALL);
   return Weapon_Range(0) - Distance(Cell_Coord(cell));
 }
 
@@ -2204,8 +2161,6 @@ int TechnoClass::Evaluate_Just_Cell(CELL cell) const {
 TARGET TechnoClass::Greatest_Threat(ThreatType method)  // const
 {
   DCHECK(IsActive);
-
-  BStart(BENCH_GREATEST_THREAT);
 
   const ObjectClass* bestobject = nullptr;
   int bestval = -1;
@@ -2499,7 +2454,6 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method)  // const
     }
   }
 
-  BEnd(BENCH_GREATEST_THREAT);
 
   /*
   **	If a good target object was found, then return with the target value

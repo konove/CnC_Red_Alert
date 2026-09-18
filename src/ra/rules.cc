@@ -65,7 +65,6 @@
 #include "port/safe_string.h"
 #include "port/tokenizer.h"
 #include "ra/anim.h"
-#include "ra/bench_util.h"
 #include "ra/ccini.h"
 #include "ra/const.h"
 #include "ra/defines.h"
@@ -266,8 +265,6 @@ static void Difficulty_Get(const CCINIClass& ini, DifficultyClass& diff,
  * HISTORY: * 06/17/1996 JLB : Created. *
  *=============================================================================================*/
 bool RulesClass::Process(CCINIClass& ini) {
-  BStart(BENCH_RULES);
-
   General(ini);
   MPlayer(ini);
   Recharge(ini);
@@ -280,7 +277,6 @@ bool RulesClass::Process(CCINIClass& ini) {
   Objects(ini);
   Difficulty(ini);
 
-  BEnd(BENCH_RULES);
 
   return true;
 }

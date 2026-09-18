@@ -123,7 +123,6 @@
 #include "magic_enum/magic_enum.hpp"
 #include "port/tokenizer.h"
 #include "ra/anim.h"
-#include "ra/bench_util.h"
 #include "ra/building.h"
 #include "ra/bullet.h"
 #include "ra/ccini.h"
@@ -4368,9 +4367,7 @@ void AircraftClass::Rotation_AI() {
  * HISTORY: * 09/15/1996 JLB : Created. *
  *=============================================================================================*/
 void AircraftClass::Per_Cell_Process(PCPType why) {
-  BStart(BENCH_PCP);
   FootClass::Per_Cell_Process(why);
-  BEnd(BENCH_PCP);
 }
 
 /***********************************************************************************************

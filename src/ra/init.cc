@@ -159,7 +159,6 @@
 #include "tech/game_file.h"
 #include "tech/memory_file.h"
 #include "tech/mix_archive.h"
-#include "tech/mpu.h"
 #include "tech/number_parse.h"
 #include "tech/pk.h"
 #include "tech/random.h"
@@ -243,16 +242,6 @@ static void Load_Prolog_Page() {
  * HISTORY: * 10/07/1992 JLB : Created. *
  *=============================================================================================*/
 bool Init_Game() {
-  /*
-  **	Allocate the benchmark tracking objects only if the machine and
-  **	compile flags indicate.
-  */
-  if constexpr (config::kCheatKeysEnabled) {
-    if (Processor() >= 2) {
-      Benches.resize(magic_enum::enum_count<BenchType>());
-    }
-  }
-
   /*
   **	Initialize the encryption keys.
   */

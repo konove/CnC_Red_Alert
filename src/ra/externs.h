@@ -77,7 +77,6 @@
 #include "ra/vortex.h"
 #include "ra/warhead.h"
 #include "sdllib/playcd.h"
-#include "tech/bench.h"
 #include "tech/buff.h"
 #include "tech/game_file.h"
 #include "tech/mix_archive.h"
@@ -160,7 +159,6 @@ extern Buffer* TheaterBuffer;
 extern GetCDClass CDList;
 extern CCINIClass RuleINI;
 extern CCINIClass AftermathINI;
-extern std::vector<Benchmark> Benches;
 extern int MapTriggerID;
 extern int LogicTriggerID;
 extern PKey FastKey;

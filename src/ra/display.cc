@@ -123,7 +123,6 @@
 #include "base/types.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/aircraft.h"
-#include "ra/bench_util.h"
 #include "ra/building.h"
 #include "ra/ccini.h"
 #include "ra/ccptr.h"
@@ -1729,7 +1728,6 @@ void DisplayClass::Draw_It(bool forced) {
   MapClass::Draw_It(forced);
 
   if (IsDisplayToRedraw || forced) {
-    BStart(BENCH_TACTICAL);
     IsDisplayToRedraw = false;
 
     /*
@@ -2042,7 +2040,6 @@ void DisplayClass::Draw_It(bool forced) {
       *on the ground layer *	first and then followed by all the layers in
       *increasing altitude.
       */
-      BStart(BENCH_OBJECTS);
       for (const LayerType layer : magic_enum::enum_values<LayerType>()) {
         for (int index = 0; index < Layer.at(layer).Count(); index++) {
           ObjectClass* ptr = Layer.at(layer).at(index);
@@ -2068,15 +2065,12 @@ void DisplayClass::Draw_It(bool forced) {
           ptr->Render(forced);
         }
       }
-      BEnd(BENCH_OBJECTS);
 
       // ChronalVortex.Render();
       /*
       **	Finally, redraw the shadow overlay as necessary.
       */
-      BStart(BENCH_SHROUD);
       Redraw_Shadow();
-      BEnd(BENCH_SHROUD);
     }
     HidPage.Unlock();
 
@@ -2121,7 +2115,6 @@ void DisplayClass::Draw_It(bool forced) {
         PendingObjectPtr->Render(true);
       }
     }
-    BEnd(BENCH_TACTICAL);
   }
 }
 

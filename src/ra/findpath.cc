@@ -63,7 +63,6 @@
 #include "base/enum_array.h"
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
-#include "ra/bench_util.h"
 #include "ra/ccptr.h"
 #include "ra/coord.h"
 #include "ra/defines.h"
@@ -465,8 +464,6 @@ PathType* FootClass::Find_Path(CELL dest, std::span<FacingType> final_moves, int
     return nullptr;
   }
 
-  BStart(BENCH_FINDPATH);
-
   if (Team && Team->Class->IsRoundAbout) {
     unit_threat = Team ? Team->Risk : Risk();
     threat_stage = 0;
@@ -769,7 +766,6 @@ end_of_list:
   Optimize_Moves(&path, threshhold);
 #endif
 
-  BEnd(BENCH_FINDPATH);
 
   return &path;
 }

@@ -45,7 +45,6 @@
 
 #include "magic_enum/magic_enum.hpp"
 #include "ra/anim.h"
-#include "ra/bench_util.h"
 #include "ra/coord.h"
 #include "ra/defines.h"
 #include "ra/externs.h"
@@ -177,9 +176,7 @@ void LogicClass::AI() {
   for (int index = 0; index < Count(); index++) {
     ObjectClass* obj = (*this).at(index);
 
-    BStart(BENCH_AI);
     obj->AI();
-    BEnd(BENCH_AI);
 
     if (TimeQuake && obj->IsActive && !obj->IsInLimbo && obj->Strength) {
       int damage = obj->Class_Of().MaxStrength * Rule.QuakeDamagePercent;

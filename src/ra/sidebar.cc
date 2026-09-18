@@ -105,7 +105,6 @@
 #include "base/enum_array.h"
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
-#include "ra/bench_util.h"
 #include "ra/building.h"
 #include "ra/ccptr.h"
 #include "ra/const.h"
@@ -747,8 +746,6 @@ bool SidebarClass::Scroll(bool up, int column) {
 void SidebarClass::Draw_It(bool complete) {
   PowerClass::Draw_It(complete);
 
-  BStart(BENCH_SIDEBAR);
-
   if (IsSidebarActive && (IsSidebarToRedraw || complete) && !MapEditorActive) {
     IsSidebarToRedraw = false;
 
@@ -791,7 +788,6 @@ void SidebarClass::Draw_It(bool complete) {
   }
   IsSidebarToRedraw = false;
 
-  BEnd(BENCH_SIDEBAR);
 }
 
 /***********************************************************************************************

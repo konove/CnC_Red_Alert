@@ -91,7 +91,6 @@
 #include "ra/aircraft.h"
 #include "ra/anim.h"
 #include "ra/base.h"
-#include "ra/bench_util.h"
 #include "ra/building.h"
 #include "ra/bullet.h"
 #include "ra/carry.h"
@@ -441,7 +440,6 @@ bool Start_Scenario(char* name, bool briefing) {
  *identification.                                               *
  *=============================================================================================*/
 bool Read_Scenario(char* name) {
-  BStart(BENCH_SCENARIO);
   Clear_Scenario();
   ScenarioInit++;
   if (Read_Scenario_INI(name)) {
@@ -493,11 +491,9 @@ bool Read_Scenario(char* name) {
     Show_Mouse();
     WWMessageBox().Process(TXT_UNABLE_READ_SCENARIO);
     Hide_Mouse();
-    BEnd(BENCH_SCENARIO);
     return false;
   }
   ScenarioInit--;
-  BEnd(BENCH_SCENARIO);
   return true;
 }
 

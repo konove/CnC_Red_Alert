@@ -55,7 +55,6 @@
 #include "absl/log/check.h"
 #include "absl/strings/match.h"
 #include "magic_enum/magic_enum.hpp"
-#include "ra/bench_util.h"
 #include "ra/ccini.h"
 #include "ra/const.h"
 #include "ra/defines.h"
@@ -201,7 +200,6 @@ void MissionClass::AI() {
   /*
   **	This is the script AI equivalent processing.
   */
-  BStart(BENCH_MISSION);
   if (MissionTimer.IsFinished() && Strength > 0) {
     switch (Mission) {
       case MISSION_HARMLESS:
@@ -284,7 +282,6 @@ void MissionClass::AI() {
         break;
     }
   }
-  BEnd(BENCH_MISSION);
 }
 
 /***********************************************************************************************

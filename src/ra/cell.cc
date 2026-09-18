@@ -102,7 +102,6 @@
 #include "config.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/anim.h"
-#include "ra/bench_util.h"
 #include "ra/building.h"
 #include "ra/ccptr.h"
 #include "ra/combat.h"
@@ -1067,8 +1066,6 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
   DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
   if (!objects) {
-    BStart(BENCH_CELL);
-
     const TemplateTypeClass* ttype = nullptr;
     int icon = 0;  // The icon number to use from the template set.
     std::span<const unsigned char> remap;
@@ -1353,13 +1350,10 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
                       DisplayClass::UnitShadow);
       }
     }
-    BEnd(BENCH_CELL);
   }
 
   if constexpr (config::kSortDrawEnabled) {
     if (objects) {
-      BStart(BENCH_OBJECTS);
-
       /*
       **	Build a list of objects to draw into a working buffer. There is
       * a *	big presumption here -- it is presumed that if the cell is to be
@@ -1461,7 +1455,6 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
           }
         }
       }
-      BEnd(BENCH_OBJECTS);
     }
   }
 }

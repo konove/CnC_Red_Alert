@@ -116,7 +116,6 @@
 #include "magic_enum/magic_enum.hpp"
 #include "port/tokenizer.h"
 #include "ra/anim.h"
-#include "ra/bench_util.h"
 #include "ra/building.h"
 #include "ra/bullet.h"
 #include "ra/ccini.h"
@@ -1642,7 +1641,6 @@ void UnitClass::Per_Cell_Process(PCPType why) {
     }
   }
 
-  BStart(BENCH_PCP);
   if (why == PCP_END) {
     /*
     **	If this is a unit that is driving onto a building then the unit must
@@ -1708,7 +1706,6 @@ void UnitClass::Per_Cell_Process(PCPType why) {
         Limbo();
         techno->Attach(this);
       }
-      BEnd(BENCH_PCP);
       return;
     }
 
@@ -1770,7 +1767,6 @@ void UnitClass::Per_Cell_Process(PCPType why) {
     *should not be eliminated.
     */
     if (Edge_Of_World_AI()) {
-      BEnd(BENCH_PCP);
       return;
     }
 
@@ -1877,7 +1873,6 @@ void UnitClass::Per_Cell_Process(PCPType why) {
         }
         delete bldng;
         if (!IsActive) {
-          BEnd(BENCH_PCP);
           return;
         }
       }
@@ -1925,11 +1920,9 @@ void UnitClass::Per_Cell_Process(PCPType why) {
   Overrun_Square(Coord_Cell(Coord), false);
 
   if (!IsActive) {
-    BEnd(BENCH_PCP);
     return;
   }
   DriveClass::Per_Cell_Process(why);
-  BEnd(BENCH_PCP);
 }
 
 /***********************************************************************************************

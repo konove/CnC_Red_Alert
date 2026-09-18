@@ -54,7 +54,6 @@
 
 #include <cstdint>
 
-#include "ra/bench_util.h"
 #include "ra/config.h"
 #include "ra/defines.h"
 #include "ra/display_constants.h"
@@ -379,8 +378,6 @@ void GScreenClass::Render() {
   // }
 
   if (IsToUpdate || IsScreenToRedraw) {
-    BStart(BENCH_GSCREEN_RENDER);
-
     GraphicViewPortClass* oldpage = Set_Logic_Page(HidPage);
 
     Draw_It(IsScreenToRedraw);
@@ -411,7 +408,6 @@ void GScreenClass::Render() {
     IsToUpdate = false;
     IsScreenToRedraw = false;
 
-    BEnd(BENCH_GSCREEN_RENDER);
     Set_Logic_Page(oldpage);
   }
 }
@@ -433,12 +429,10 @@ void GScreenClass::Render() {
  *function.                                            *
  *=============================================================================================*/
 void GScreenClass::Blit_Display() {
-  BStart(BENCH_BLIT_DISPLAY);
   WWMouse->Draw_Mouse(&HidPage);
   HidPage.Blit(SeenBuff, 0, 0, 0, 0, HidPage.Get_Width(), HidPage.Get_Height(),
                false);
   WWMouse->Erase_Mouse(&HidPage, false);
-  BEnd(BENCH_BLIT_DISPLAY);
 }
 
 // Shows the screen two pixels up, centred, or two pixels down, picking a

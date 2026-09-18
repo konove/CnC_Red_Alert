@@ -93,7 +93,6 @@
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/safe_string.h"
-#include "ra/bench_util.h"
 #include "ra/ccptr.h"
 #include "ra/cell.h"
 #include "ra/compat.h"
@@ -396,8 +395,6 @@ void RadarClass::Draw_It(bool forced) {
     return;
   }
 
-  BStart(BENCH_RADAR);
-
   static HousesType _house = HOUSE_NONE;
 
   if (PlayerPtr->ActLike != _house) {
@@ -415,7 +412,6 @@ void RadarClass::Draw_It(bool forced) {
   if (IsPlayerNames) {
     Draw_Names();
     IsRadarToRedraw = false;
-    BEnd(BENCH_RADAR);
     return;
   }
 
@@ -425,7 +421,6 @@ void RadarClass::Draw_It(bool forced) {
   if (IsHouseSpy) {
     IsRadarToRedraw = false;
     if (Draw_House_Info()) {
-      BEnd(BENCH_RADAR);
       return;
     }
   }
@@ -436,7 +431,6 @@ void RadarClass::Draw_It(bool forced) {
     MouseClass::Upgrade.Draw_Me(true);
     MouseClass::Zoom.Draw_Me(true);
     IsRadarToRedraw = false;
-    BEnd(BENCH_RADAR);
     return;
   }
 
@@ -581,7 +575,6 @@ void RadarClass::Draw_It(bool forced) {
       MouseClass::Zoom.Draw_Me(true);
     }
   }
-  BEnd(BENCH_RADAR);
 }
 
 /***************************************************************************

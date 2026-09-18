@@ -98,7 +98,6 @@
 #include "sdllib/playcd.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
-#include "tech/bench.h"
 #include "tech/buff.h"
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
@@ -312,12 +311,6 @@ uint16_t TutorialTextOffsets[225];
 */
 CCINIClass RuleINI;
 CCINIClass AftermathINI;
-
-/***************************************************************************
-**	This points to the benchmark objects that are allocated only if the
-**	machine is running on a Pentium and this is a debug version.
-*/
-std::vector<Benchmark> Benches;
 
 /***************************************************************************
 **	General rules that control the game.

@@ -44,7 +44,6 @@
 #include "base/types.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/aircraft.h"  // IWYU pragma: keep
-#include "ra/bench_util.h"
 #include "ra/ccptr.h"
 #include "ra/chat.h"
 #include "ra/config.h"
@@ -176,9 +175,7 @@ static void CyclePalette() {
     // If any of the processing functions changed the palette, then this
     // palette must be passed to the system.
     if (palette_changed) {
-      BStart(BENCH_PALETTE);
       GamePalette.Set();
-      BEnd(BENCH_PALETTE);
     }
   }
 }
@@ -656,8 +653,6 @@ bool RunFrame() {
     Debug_Trap_Check_Heap = true;
   }
 
-  BStart(BENCH_GAME_FRAME);
-
   // If there is no theme playing, but it looks like one is required, then
   // start one playing. This is usually the symptom of there being no
   // transition score.
@@ -743,8 +738,6 @@ bool RunFrame() {
   if (Debug_MotionCapture) {
     CaptureMotionFrame();
   }
-
-  BEnd(BENCH_GAME_FRAME);
 
   WaitForNextFrame();
   return !GameActive;
