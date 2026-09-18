@@ -888,7 +888,7 @@ void OverlayTypeClass::Init(TheaterType theater) {
                        .replace_extension(".SHP")
                        .string();
       }
-      overlay.SetBorrowedImage(MixArchive::RetrieveData(fullname));
+      overlay.SetImage(MixArchive::RetrieveData(fullname));
 
       IsTheaterShape = overlay.IsTheater;  // Tell Build_Frame if this is a
                                            // theater specific shape

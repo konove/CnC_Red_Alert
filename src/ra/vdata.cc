@@ -505,7 +505,7 @@ void VesselTypeClass::One_Time() {
     const auto fullname = std::filesystem::path(uclass.Graphic_Name())
                               .replace_extension(".SHP")
                               .string();
-    uclass.SetBorrowedImage(MixArchive::RetrieveData(fullname));
+    uclass.SetImage(MixArchive::RetrieveData(fullname));
 
     uclass.MaxSize = 26;
   }

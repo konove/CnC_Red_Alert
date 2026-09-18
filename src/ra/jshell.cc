@@ -36,7 +36,6 @@
  * Functions: * Build_Translucent_Table -- Creates a translucent control table.
  ** Conquer_Build_Translucent_Table -- Builds fading table for shadow colors
  *only.            * Fatal -- General purpose fatal error handler. *
- *   Load_Alloc_Data -- Allocates a buffer and loads the file into it. *
  *   Load_Uncompress -- Loads and uncompresses data to a buffer. * Set_Window --
  *Sets the window dimensions to that specified.                               *
  *   Small_Icon -- Create a small icon from a big one. * Translucent_Table_Size
@@ -55,7 +54,6 @@
 #include <span>
 #include <string_view>
 #include <utility>
-#include <vector>
 
 #include "absl/strings/str_format.h"
 #include "absl/types/span.h"
@@ -263,42 +261,6 @@ int Load_Picture(const char* filename, BufferClass& scratchbuf,
                  PicturePlaneType /*unused*/) {
   GameFile fc(filename);
   return Load_Uncompress(fc, scratchbuf, destbuf, palette) / 8000;
-}
-
-/***********************************************************************************************
- * Load_Alloc_Data -- Allocates a buffer and loads the file into it. *
- *                                                                                             *
- *    This is the C++ replacement for the Load_Alloc_Data function. It will
- *allocate the       * memory big enough to hold the file and then read the file
- *into it.                       *
- *                                                                                             *
- * INPUT:   file  -- The file to read. *
- *                                                                                             *
- *          mem   -- The memory system to use for allocation. *
- *                                                                                             *
- * OUTPUT:  Returns with a pointer to the allocated and filled memory block. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 10/17/1994 JLB : Created. *
- *=============================================================================================*/
-std::span<std::byte> Load_Alloc_Data(File& file) {
-  const auto size = base::ToSize(file.Size());
-  // The returned view carries the exact allocation extent; legacy callers
-  // retain ownership. The extra NUL also supports files read as C strings.
-  // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
-  const std::span<char> storage(new char[size + 1], size + 1);
-  file.Read(std::as_writable_bytes(storage.first(size)));
-  base::At(storage, size) = '\0';
-  return std::as_writable_bytes(storage.first(size));
-}
-
-// Modern RAII version that returns owned data as a vector.
-std::vector<std::byte> LoadAllocData(File& file) {
-  const base::ssize size = file.Size();
-  std::vector<std::byte> data(base::ToSize(size));
-  file.Read(std::span(data));
-  return data;
 }
 
 /***********************************************************************************************

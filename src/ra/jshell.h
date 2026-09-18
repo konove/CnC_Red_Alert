@@ -279,8 +279,6 @@ std::span<unsigned char> Conquer_Build_Fading_Table(
 std::span<const unsigned char> Small_Icon(std::span<const std::byte> iconptr,
                                           int iconnum);
 void Set_Window(int window, int x, int y, int w, int h);
-std::span<std::byte> Load_Alloc_Data(File& file);
-std::vector<std::byte> LoadAllocData(File& file);
 int32_t Load_Uncompress(File& file, BuffType& uncomp_buff, BuffType& dest_buff,
                         std::span<unsigned char> reserved_data);
 int32_t Translucent_Table_Size(int count);

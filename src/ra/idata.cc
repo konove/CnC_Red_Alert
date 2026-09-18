@@ -1258,7 +1258,7 @@ void InfantryTypeClass::One_Time() {
                         .replace_extension(".SHP")
                         .string();
 
-    uclass->SetBorrowedImage(MixArchive::RetrieveData(fullname));
+    uclass->SetImage(MixArchive::RetrieveData(fullname));
 
     // The small build image icon sized shapes are always generic.
     const auto filename =

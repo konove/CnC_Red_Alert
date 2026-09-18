@@ -190,7 +190,7 @@ void BulletTypeClass::One_Time() {
                                 .replace_extension(".SHP")
                                 .string();
 
-      bullet.SetBorrowedImage(MixArchive::RetrieveData(fullname));
+      bullet.SetImage(MixArchive::RetrieveData(fullname));
     }
   }
 }

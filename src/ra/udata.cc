@@ -1083,10 +1083,10 @@ void UnitTypeClass::One_Time() {
     fullname = std::filesystem::path(uclass.Graphic_Name())
                    .replace_extension(".SHP")
                    .string();
-    uclass.SetBorrowedImage(MixArchive::RetrieveData(fullname));
+    uclass.SetImage(MixArchive::RetrieveData(fullname));
     // Read the shape pointer back from the owner rather than from a local the
     // store just moved from.
-    const auto ptr = uclass.GetImageSpan();
+    const auto ptr = uclass.Get_Image_Data();
     if (!ptr.empty()) {
       largest = std::max(largest, static_cast<int>(Get_Build_Frame_Width(ptr)));
       largest =

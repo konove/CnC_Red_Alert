@@ -394,7 +394,7 @@ void AircraftTypeClass::One_Time() {
 
     // Load aircraft shape: "<GraphicName>.SHP"
     const auto shape_file = std::string(uclass.Graphic_Name()) + ".SHP";
-    uclass.SetBorrowedImage(MixArchive::RetrieveData(shape_file));
+    uclass.SetImage(MixArchive::RetrieveData(shape_file));
   }
 
   LRotorData = MixArchive::RetrieveData("LROTOR.SHP");

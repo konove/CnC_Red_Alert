@@ -1853,7 +1853,7 @@ void TemplateTypeClass::Init(TheaterType theater) {
 
       // Working loaded iconset pointer.
       const auto data = MixArchive::RetrieveData(fullname);
-      tplate.SetBorrowedImage(data);
+      tplate.SetImage(data);
       const void* ptr = data.data();
 
       // Register icon set for video memory caching

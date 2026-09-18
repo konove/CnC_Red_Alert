@@ -3150,7 +3150,7 @@ void BuildingTypeClass::One_Time() {
     fullname = std::filesystem::path(building.Graphic_Name())
                    .replace_extension(".SHP")
                    .string();
-    building.SetBorrowedImage(MixArchive::RetrieveData(fullname));
+    building.SetImage(MixArchive::RetrieveData(fullname));
   }
 
   // Try to load weap2.shp and tesla coil's lightning shapes
@@ -3356,7 +3356,7 @@ void BuildingTypeClass::Init(TheaterType theater) {
         auto fullname = std::filesystem::path(classptr->Graphic_Name())
                             .replace_extension(Theaters.at(theater).Suffix)
                             .string();
-        classptr->SetBorrowedImage(MixArchive::RetrieveData(fullname));
+        classptr->SetImage(MixArchive::RetrieveData(fullname));
 
         /*
         **	Buildup data is probably theater specific as well. Fetch a

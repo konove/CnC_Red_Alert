@@ -46,7 +46,6 @@
 #include <memory>
 #include <span>
 #include <utility>
-#include <variant>
 #include <vector>
 
 #include "absl/base/attributes.h"
@@ -277,14 +276,10 @@ class ObjectTypeClass : public AbstractTypeClass {
   */
   int16_t MaxStrength{0};
 
-  // Image data with ownership tracking. Either:
-  // - borrowed span pointing into cached MIX data (from MixArchive::Retrieve)
-  // - owned vector allocated for loose files (from Load_Alloc_Data)
-  using ImageDataType =
-      std::variant<std::span<const std::byte>, std::vector<std::byte>>;
 
  private:
-  ImageDataType image_data_;
+  // The shape file, borrowed from the cached MIX data; empty if none.
+  std::span<const std::byte> image_data_;
 
  public:
   /*
@@ -338,28 +333,14 @@ class ObjectTypeClass : public AbstractTypeClass {
   [[nodiscard]] virtual std::span<const std::byte> Get_Cameo_Data() const;
 
   [[nodiscard]] std::span<const std::byte> Get_Image_Data() const {
-    return GetImageSpan();
+    return image_data_;
   }
 
-  // New typed API for modern code.
-  [[nodiscard]] std::span<const std::byte> GetImageSpan() const {
-    // clang suggests lifetimebound here, but its lifetimebound-violation check
-    // cannot verify it.
-    // NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-intra-tu-suggestions)
-    return std::visit([](auto&& d) { return std::span<const std::byte>(d); },
-                      image_data_);
-  }
+  // Points the type at its shape file, which must outlive it (cached MIX data
+  // does).
+  void SetImage(std::span<const std::byte> data) { image_data_ = data; }
 
-  // Set borrowed image data (non-owning reference to cached MIX data).
-  void SetBorrowedImage(std::span<const std::byte> data) { image_data_ = data; }
-
-  // Set owned image data (takes ownership, will be freed on destruction).
-  void SetOwnedImage(std::vector<std::byte>&& data) {
-    image_data_ = std::move(data);
-  }
-
-  // Clear image data.
-  void ClearImage() { image_data_ = std::span<const std::byte>{}; }
+  void ClearImage() { image_data_ = {}; }
 
   [[nodiscard]] std::span<const unsigned char> Get_Radar_Data() const
       ABSL_ATTRIBUTE_LIFETIME_BOUND {

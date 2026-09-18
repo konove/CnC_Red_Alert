@@ -2186,7 +2186,7 @@ void AnimTypeClass::One_Time() {
                                 .replace_extension(".SHP")
                                 .string();
 
-      As_Reference(index).SetBorrowedImage(MixArchive::RetrieveData(fullname));
+      As_Reference(index).SetImage(MixArchive::RetrieveData(fullname));
     }
   }
 }
@@ -2217,7 +2217,7 @@ void AnimTypeClass::Init(TheaterType theater) {
                 .replace_extension(Theaters.at(theater).Suffix)
                 .string();
 
-        anim.SetBorrowedImage(MixArchive::RetrieveData(fullname));
+        anim.SetImage(MixArchive::RetrieveData(fullname));
       }
     }
   }

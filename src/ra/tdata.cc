@@ -531,7 +531,7 @@ void TerrainTypeClass::Init(TheaterType theater) {
             std::filesystem::path(terrain.IniName)
                 .replace_extension(Theaters.at(theater).Suffix)
                 .string();
-        terrain.SetBorrowedImage(MixArchive::RetrieveData(fullname));
+        terrain.SetImage(MixArchive::RetrieveData(fullname));
 
         IsTheaterShape =
             true;  // Let Build_Frame know that this is a theater specific shape
