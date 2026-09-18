@@ -36,8 +36,7 @@
  * Functions: * SHAEngine::Digest -- Fetch the current digest. * SHAEngine::Hash
  *-- Process an arbitrarily long data block.                                *
  *   SHAEngine::Process_Partial -- Helper routine to process any partially
- *accumulated data blo* SHAEngine::Process_Block -- Process a full data block
- *into the hash accumulator.          *
+ *accumulated data blo*
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 #include "tech/sha.h"
@@ -47,12 +46,12 @@
 #include <cstdint>
 #include <cstring>
 #include <span>
-#include <utility>
 
 #include "base/array.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
 #include "port/unaligned.h"
+#include "tech/sha1_compress.h"
 
 /***********************************************************************************************
  * SHAEngine::Process_Partial -- Helper routine to process any partially
@@ -89,7 +88,7 @@ void SHAEngine::Process_Partial(std::span<const std::byte>& data) {
   data = data.subspan(count);
   PartialCount += static_cast<int>(count);
   if (PartialCount == SRC_BLOCK_SIZE) {
-    Process_Block(base::ObjectBytes(Partial), Acc);
+    tech::Sha1Compress(Acc, base::ObjectBytes(Partial));
     Length += SRC_BLOCK_SIZE;
     PartialCount = 0;
   }
@@ -115,11 +114,11 @@ void SHAEngine::Process_Partial(std::span<const std::byte>& data) {
 void SHAEngine::Hash(std::span<const std::byte> data) {
   IsCached = false;
   Process_Partial(data);
-  while (data.size() >= SRC_BLOCK_SIZE) {
-    Process_Block(data.first(SRC_BLOCK_SIZE), Acc);
-    Length += SRC_BLOCK_SIZE;
-    data = data.subspan(SRC_BLOCK_SIZE);
-  }
+  // All whole blocks in one call, so the hardware path runs uninterrupted.
+  const std::size_t whole = data.size() - (data.size() % SRC_BLOCK_SIZE);
+  tech::Sha1Compress(Acc, data.first(whole));
+  Length += static_cast<int32_t>(whole);
+  data = data.subspan(whole);
   Process_Partial(data);
 }
 
@@ -178,7 +177,7 @@ Sha1Digest SHAEngine::Digest() const {
     if (partialcount + 1 < SRC_BLOCK_SIZE) {
       std::ranges::fill(base::Suffix(partial, partialcount + 1), '\0');
     }
-    Process_Block(base::ObjectBytes(partial), acc);
+    tech::Sha1Compress(acc, base::ObjectBytes(partial));
     partialcount = 0;
   } else {
     partialcount++;
@@ -191,7 +190,7 @@ Sha1Digest SHAEngine::Digest() const {
   std::ranges::fill(base::Suffix(partial, partialcount), '\0');
   port::WriteUnaligned(base::ObjectBytes(partial).last(4),
                        Reverse_LONG(static_cast<uint32_t>(length * 8)));
-  Process_Block(base::ObjectBytes(partial), acc);
+  tech::Sha1Compress(acc, base::ObjectBytes(partial));
 
   // Each word is stored most significant byte first.
   for (std::size_t word = 0; word < acc.size(); ++word) {
@@ -202,95 +201,4 @@ Sha1Digest SHAEngine::Digest() const {
   }
   IsCached = true;
   return FinalResult;
-}
-
-/*
-**	This pragma to turn off the warning "Conversion may lose significant
-*digits" is to *	work around a bug within the Borland compiler. It will
-*give this warning when the *	_rotl() function is called but will NOT give the
-*warning when the _lrotl() function *	is called even though they both have the
-*same parameters and declaration attributes.
-*/
-template <class T>
-static T rotl(T X, unsigned n) {
-  return static_cast<T>(X << n |
-                        static_cast<unsigned>(X) >>
-                            (static_cast<unsigned>(sizeof(T) * 8) - n));
-}
-// unsigned long _RTLENTRY _rotl(unsigned long X, int n)
-//{
-//	return(unsigned long)( (unsigned long)( (unsigned long)( (unsigned
-// long)X ) << (int)n ) | (unsigned long)( ((unsigned long) X ) >> (
-//(int)((int)(sizeof(long)*(long)8) - (long)n) ) ) );
-// }
-
-/***********************************************************************************************
- * SHAEngine::Process_Block -- Process a full data block into the hash
- *accumulator.            *
- *                                                                                             *
- *    This helper routine is called when a full block of data is available for
- *processing      * into the hash. *
- *                                                                                             *
- * INPUT:   source   -- Pointer to the block of data to process. *
- *                                                                                             *
- *          acc      -- Reference to the hash accumulator that this hash step
- *will be          * accumulated into. *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/03/1996 JLB : Created. *
- *=============================================================================================*/
-void SHAEngine::Process_Block(std::span<const std::byte> source,
-                              Accumulator& acc) {
-  /*
-  **	The hash is generated by performing operations on a
-  **	block of generated/seeded data.
-  */
-  uint32_t block[PROC_BLOCK_SIZE / sizeof(uint32_t)];
-
-  /*
-  **	Expand the source data into a large 80 * 32bit buffer. This is the
-  *working *	data that will be transformed by the secure hash algorithm.
-  */
-  for (int index = 0; std::cmp_less(index, SRC_BLOCK_SIZE / sizeof(uint32_t));
-       index++) {
-    base::At(block, index) = Reverse_LONG(port::ReadUnaligned<uint32_t>(
-        source.subspan(base::ToSize(index) * sizeof(uint32_t))));
-  }
-
-  for (int index = SRC_BLOCK_SIZE / sizeof(uint32_t);
-       std::cmp_less(index, PROC_BLOCK_SIZE / sizeof(uint32_t)); index++) {
-    //		block[index] = _rotl(block[(index-3)&15] ^ block[(index-8)&15] ^
-    // block[(index-14)&15] ^ block[(index-16)&15], 1);
-    base::At(block, index) =
-        rotl(base::At(block, index - 3) ^ base::At(block, index - 8) ^
-                 base::At(block, index - 14) ^ base::At(block, index - 16),
-             1);
-  }
-
-  /*
-  **	This is the core algorithm of the Secure Hash Algorithm. It is a block
-  **	transformation of 512 bit source data with a 2560 bit intermediate
-  *buffer.
-  */
-  Accumulator alt = acc;
-  for (int index = 0; std::cmp_less(index, PROC_BLOCK_SIZE / sizeof(uint32_t));
-       index++) {
-    const uint32_t temp = rotl(alt.at(0), 5) +
-                          Do_Function(index, alt.at(1), alt.at(2), alt.at(3)) +
-                          alt.at(4) + base::At(block, index) +
-                          Get_Constant(index);
-    alt.at(4) = alt.at(3);
-    alt.at(3) = alt.at(2);
-    alt.at(2) = rotl(alt.at(1), 30);
-    alt.at(1) = alt.at(0);
-    alt.at(0) = temp;
-  }
-  acc.at(0) += alt.at(0);
-  acc.at(1) += alt.at(1);
-  acc.at(2) += alt.at(2);
-  acc.at(3) += alt.at(3);
-  acc.at(4) += alt.at(4);
 }

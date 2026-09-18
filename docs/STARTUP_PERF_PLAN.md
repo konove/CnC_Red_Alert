@@ -162,6 +162,29 @@ do.
 The CPU supports SHA-NI (`/proc/cpuinfo`), and SHA-1 is now the largest CPU cost left at about 50
 ms. The SHA-NI option in step 5 would cut that to a few ms without changing what gets verified.
 
+### Step 5 done (2026-09-17): SHA-NI
+
+`tech/sha1_compress.{h,cc}` holds SHA-1's per-block compression: the portable code, plus an x86
+SHA-extensions path picked at runtime with `cpuid` and compiled with
+`[[gnu::target("sha,sse4.1")]]`, so the build needs no `-msha`. `SHAEngine::Hash` now passes every
+whole block in one call. Tests: the FIPS 180 vectors (including the million-`a` one), hardware
+against portable over 1 to 1000 blocks, and chunked hashing against one-shot. SHA-1 went from 48% of
+main-thread CPU to 9%.
+
+## Where things stand
+
+Headless, optimized build, default audio driver:
+
+| Measurement               | Before | After  |
+| ------------------------- | ------ | ------ |
+| Launch to main menu       | 11.3 s | 0.10 s |
+| `-LOADGAME` run, wall     | 1.77 s | 0.12 s |
+| `-LOADGAME` run, CPU      | 1.53 s | 0.05 s |
+| Exit wait for audio drain | 186 ms | 46 ms  |
+
+The logo still plays once per install; the first cold launch is ~0.26 s because of the OS file
+cache. Still open: step 4 (Debug builds) and the main menu's busy loop.
+
 ## Verification
 
 - `tools/ra_startup_bench.sh` before and after every step. Record the medians here.

@@ -46,6 +46,8 @@
 #include <new>
 #include <span>
 
+#include "tech/sha1_compress.h"
+
 // A SHA-1 digest: 20 bytes, most significant first.
 using Sha1Digest = std::array<std::byte, 20>;
 
@@ -68,7 +70,7 @@ class SHAEngine {
 
  private:
   // The five 32-bit words the algorithm accumulates.
-  using Accumulator = std::array<uint32_t, 5>;
+  using Accumulator = tech::Sha1State;
 
   /*
   **	This holds the calculated final result. It is cached
@@ -85,70 +87,10 @@ class SHAEngine {
   static constexpr uint32_t kSc = 0x98badcfeL;
   static constexpr uint32_t kSd = 0x10325476L;
   static constexpr uint32_t kSe = 0xc3d2e1f0L;
-  static constexpr uint32_t kK1 =
-      0x5a827999L;  // These are the constants used in the block transformation.
-  static constexpr uint32_t kK2 = 0x6ed9eba1L;  // t=0..19 2^(1/2)/4
-  static constexpr uint32_t kK3 = 0x8f1bbcdcL;  // t=20..39 3^(1/2)/4
-  static constexpr uint32_t kK4 = 0xca62c1d6L;  // t=40..59 5^(1/2)/4
-
   // Source data is grouped into blocks of this size. Sizes are constexpr int
   // rather than enumerators: sizeof() makes an enumerator unsigned, which turns
   // every comparison against an int index into a sign mismatch.
-  static constexpr int SRC_BLOCK_SIZE = 16 * static_cast<int>(sizeof(uint32_t));
-
-  // Internal processing data is grouped into blocks this size.
-  static constexpr int PROC_BLOCK_SIZE =
-      80 * static_cast<int>(sizeof(uint32_t));
-
-  static uint32_t Get_Constant(int index) {
-    if (index < 20) {
-      return kK1;
-    }
-    if (index < 40) {
-      return kK2;
-    }
-    if (index < 60) {
-      return kK3;
-    }
-    return kK4;
-  }
-
-  // Used for 0..19
-  static uint32_t Function1(uint32_t X, uint32_t Y, uint32_t Z) {
-    return Z ^ (X & (Y ^ Z));
-  }
-
-  // Used for 20..39
-  static uint32_t Function2(uint32_t X, uint32_t Y, uint32_t Z) {
-    return X ^ Y ^ Z;
-  }
-
-  // Used for 40..59
-  static uint32_t Function3(uint32_t X, uint32_t Y, uint32_t Z) {
-    return (X & Y) | (Z & (X | Y));
-  }
-
-  // Used for 60..79
-  static uint32_t Function4(uint32_t X, uint32_t Y, uint32_t Z) {
-    return X ^ Y ^ Z;
-  }
-
-  static uint32_t Do_Function(int index, uint32_t X, uint32_t Y, uint32_t Z) {
-    if (index < 20) {
-      return Function1(X, Y, Z);
-    }
-    if (index < 40) {
-      return Function2(X, Y, Z);
-    }
-    if (index < 60) {
-      return Function3(X, Y, Z);
-    }
-    return Function4(X, Y, Z);
-  }
-
-  // Process a full source data block.
-  static void Process_Block(std::span<const std::byte> source,
-                            Accumulator& acc);
+  static constexpr int SRC_BLOCK_SIZE = tech::kSha1BlockSize;
 
   // Processes a partially filled source accumulator buffer.
   void Process_Partial(std::span<const std::byte>& data);
