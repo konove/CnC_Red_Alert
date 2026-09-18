@@ -164,8 +164,7 @@ static void PlayMapReveal(const std::string& animation_name,
   GraphicBufferClass page(320, 200);
   page.Clear();
   void* animation = Open_Animation(
-      animation_name.c_str(), /*user_buffer=*/{}, /*user_buffer_size=*/0L,
-      WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, palette);
+      animation_name.c_str(), WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, palette);
 
   Keyboard->Clear();
   SeenBuff.Clear();

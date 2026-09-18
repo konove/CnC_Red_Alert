@@ -1593,9 +1593,8 @@ void Multi_Score_Presentation() {
   SeenBuff.Clear();
   HidPage.Clear();
   Hide_Mouse();
-  void* anim =
-      Open_Animation("MLTIPLYR.WSA", {}, 0L,
-                     WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, ScorePalette);
+  void* anim = Open_Animation(
+      "MLTIPLYR.WSA", WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, ScorePalette);
   /*
   ** Display the background animation
   */

@@ -1,7 +1,6 @@
 #include "sdllib/wsa.h"
 
 #include <algorithm>
-#include <bit>
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>
@@ -25,12 +24,8 @@
 #include "sdllib/wwstd.h"
 
 //
-// WSA animation header allocation type.
-// If we need more then 8 flags for the flags variable, we can combine
-// USER_ALLOCATED with SYS_ALLOCATED  and combine FILE with RESIDENT.
+// WSA animation header flags.
 //
-#define WSA_USER_ALLOCATED 0x01U
-#define WSA_SYS_ALLOCATED 0x02U
 #define WSA_FILE 0x04U
 #define WSA_RESIDENT 0x08U
 #define WSA_TARGET_IN_BUFFER 0x10U
@@ -60,7 +55,6 @@ struct SysAnimHeaderType {
   // New fields that animate does not know about below this point. SEE
   // kExtraBytesAnimateDoesNotKnowAbout
   int16_t file_handle;
-  uint32_t anim_mem_size;
 };
 
 // NOTE:"THIS IS A BAD THING. SINCE sizeof(SysAnimHeaderType) CHANGED, THE
@@ -102,8 +96,7 @@ static int64_t Get_File_Frame_Offset(int file_handle, int frame,
 static bool Apply_Delta(const SysAnimHeaderType* sys_header, int curr_frame,
                         std::span<uint8_t> dest_ptr, int dest_w);
 
-void* Open_Animation(const char* file_name, std::span<uint8_t> user_buffer,
-                     int32_t user_buffer_size, WSAOpenType user_flags,
+void* Open_Animation(const char* file_name, WSAOpenType user_flags,
                      std::span<uint8_t> palette) {
   int palette_adjust = 0;
   int frame0_size = 0;
@@ -210,85 +203,45 @@ void* Open_Animation(const char* file_name, std::span<uint8_t> user_buffer,
   const base::ssize min_buffer_size = target_buffer_size + delta_buffer_size;
   const base::ssize max_buffer_size = min_buffer_size + file_buffer_size;
 
-  // check to see if buffer size is big enough for at least min required
-  if (!user_buffer.empty() && std::bit_cast<uintptr_t>(user_buffer.data()) %
-                                      alignof(SysAnimHeaderType) !=
-                                  0) {
-    CloseFileHandle(fh);
-    return nullptr;
+  // Hold the whole file in memory unless the caller wants it read from disk or
+  // there is only room for the minimum.
+  base::ssize buffer_size = base::Any(user_flags & WSA_OPEN_FROM_DISK)
+                                ? min_buffer_size
+                                : max_buffer_size;
+  if (buffer_size > Ram_Free(MEM_NORMAL)) {
+    if (min_buffer_size > Ram_Free(MEM_NORMAL)) {
+      CloseFileHandle(fh);
+      return nullptr;
+    }
+    buffer_size = min_buffer_size;
   }
 
-  if (!user_buffer.empty() &&
-      (user_buffer_size < min_buffer_size ||
-       std::cmp_less(user_buffer.size(), user_buffer_size))) {
-    CloseFileHandle(fh);
-    return nullptr;
-  }
-
-  // A buffer was not passed in, so do allocations
-  if (user_buffer.empty()) {
-    // If the user wants it from the disk, or specified a buffer less than
-    // the max needed, give them the min. Otherwise (no buffer size, or
-    // enough for the max configuration) allocate what we need.
-    if (base::Any(user_flags & WSA_OPEN_FROM_DISK) ||
-        (user_buffer_size != 0 && user_buffer_size < max_buffer_size)) {
-      user_buffer_size = static_cast<int32_t>(min_buffer_size);
-    } else {
-      user_buffer_size = static_cast<int32_t>(max_buffer_size);
-    }
-
-    // Check to see if enough RAM available for buffer_size.
-    if (user_buffer_size > Ram_Free(MEM_NORMAL)) {
-      // If not enough room for even the min, return no buffer.
-
-      if (min_buffer_size > Ram_Free(MEM_NORMAL)) {
-        CloseFileHandle(fh);
-        return nullptr;
-      }
-
-      // Else make buffer size the min and allocate it.
-      user_buffer_size = static_cast<int32_t>(min_buffer_size);
-    }
-
-    // allocate buffer needed
-    auto* allocation = new uint8_t[base::ToSize(user_buffer_size)]();
-    // This owner allocates exactly user_buffer_size elements.
-    // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
-    user_buffer = std::span(allocation, base::ToSize(user_buffer_size));
-
-    anim_flags |= WSA_SYS_ALLOCATED;
-  } else {
-    // Check to see if the user_buffer_size should be min or max.
-    if (base::Any(user_flags & WSA_OPEN_FROM_DISK) ||
-        user_buffer_size < max_buffer_size) {
-      user_buffer_size = static_cast<int32_t>(min_buffer_size);
-    } else {
-      user_buffer_size = static_cast<int32_t>(max_buffer_size);
-    }
-    anim_flags |= WSA_USER_ALLOCATED;
-  }
+  // Value-initialized, so the target buffer starts out black. Close_Animation()
+  // frees it.
+  auto* allocation = new uint8_t[base::ToSize(buffer_size)]();
+  // This owner allocates exactly buffer_size elements.
+  // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
+  const auto buffer = std::span(allocation, base::ToSize(buffer_size));
 
   // Set the pointers to the RAM buffers
-  const auto target_buffer = user_buffer.subspan(
-      sizeof(SysAnimHeaderType), base::ToSize(target_buffer_size));
-  const auto delta_buffer = user_buffer.subspan(
+  const auto target_buffer = buffer.subspan(sizeof(SysAnimHeaderType),
+                                            base::ToSize(target_buffer_size));
+  const auto delta_buffer = buffer.subspan(
       sizeof(SysAnimHeaderType) + base::ToSize(target_buffer_size),
       base::ToSize(frame_capacity));
-  std::ranges::fill(target_buffer, 0);
 
-  // Poke data into the system animation header (start of user_buffer)
+  // Poke data into the system animation header (start of the buffer)
   // current_frame is set to total_frames so that Animate_Frame() knows that
   // it needs to clear the target buffer.
 
-  // Allocated storage is aligned; caller-provided storage was checked above.
-  auto* sys_header = port::AlignedObject<SysAnimHeaderType>(user_buffer.data());
+  // new[] storage is aligned for any fundamental type.
+  auto* sys_header = port::AlignedObject<SysAnimHeaderType>(buffer.data());
   sys_header->current_frame = sys_header->total_frames =
       file_header.total_frames;
   sys_header->pixel_x = file_header.pixel_x;
   sys_header->pixel_y = file_header.pixel_y;
   sys_header->pixel_width = file_header.pixel_width;
   sys_header->pixel_height = file_header.pixel_height;
-  sys_header->anim_mem_size = static_cast<std::uint32_t>(user_buffer_size);
   sys_header->delta_buffer = delta_buffer;
   sys_header->target_buffer = target_buffer;
   sys_header->largest_frame_size = static_cast<uint16_t>(
@@ -301,8 +254,8 @@ void* Open_Animation(const char* file_name, std::span<uint8_t> user_buffer,
   // Add 2 - one for the wrap around and one for the final end offset.
   const int offsets_size = (file_header.total_frames + 2) * 4;
 
-  // Can the user_buffer_size handle the maximum case buffer?
-  if (user_buffer_size == max_buffer_size) {
+  // Is there room for the whole file?
+  if (buffer_size == max_buffer_size) {
     //
     //	set the file buffer pointer,
     // Skip over the header information.
@@ -311,8 +264,8 @@ void* Open_Animation(const char* file_name, std::span<uint8_t> user_buffer,
     // Read in remaining frames.
     //
 
-    sys_header->file_buffer = user_buffer.subspan(
-        base::ToSize(min_buffer_size), base::ToSize(file_buffer_size));
+    sys_header->file_buffer = buffer.subspan(base::ToSize(min_buffer_size),
+                                             base::ToSize(file_buffer_size));
     SeekFileHandle(fh, kWsaFileHeaderSize, SEEK_SET);
     ReadFileHandle(fh, std::as_writable_bytes(sys_header->file_buffer.first(
                            base::ToSize(offsets_size))));
@@ -367,7 +320,7 @@ void* Open_Animation(const char* file_name, std::span<uint8_t> user_buffer,
   sys_header->flags = anim_flags;
 
   // return valid handle
-  return user_buffer.data();
+  return buffer.data();
 }
 
 void Close_Animation(void* handle) {
@@ -383,11 +336,8 @@ void Close_Animation(void* handle) {
     CloseFileHandle(sys_header->file_handle);
   }
 
-  // Check to see if the buffer was allocated OR the programmer provided the
-  // buffer
-  if (handle && sys_header->flags & WSA_SYS_ALLOCATED) {
-    delete[] static_cast<uint8_t*>(handle);
-  }
+  // The handle is the start of the buffer Open_Animation() allocated.
+  delete[] static_cast<uint8_t*>(handle);
 }
 
 bool Animate_Frame(void* handle, GraphicViewPortClass& view, int frame_number,

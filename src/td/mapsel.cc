@@ -555,27 +555,25 @@ void Map_Selection() {
   /*
   ** Now start the process where we fade the gray earth in.
   */
-  void* greyearth =
-      Open_Animation("GREYERTH.WSA", {}, 0,
-                     WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, localpalette);
-  void* greyearth2 =
-      Open_Animation("E-BWTOCL.WSA", {}, 0,
-                     WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, grey2palette);
+  void* greyearth = Open_Animation(
+      "GREYERTH.WSA", WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, localpalette);
+  void* greyearth2 = Open_Animation(
+      "E-BWTOCL.WSA", WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, grey2palette);
 
   /*
   ** Load the spinning-globe anim
   */
   if (house == HOUSE_GOOD) {
-    anim = Open_Animation("HEARTH_E.WSA", {}, 0,
-                          WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, Palette);
+    anim = Open_Animation("HEARTH_E.WSA", WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE,
+                          Palette);
     progress =
-        Open_Animation(lastscenario ? "HBOSNIA.WSA" : "EUROPE.WSA", {}, 0,
+        Open_Animation(lastscenario ? "HBOSNIA.WSA" : "EUROPE.WSA",
                        WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, progresspalette);
   } else {
-    anim = Open_Animation("HEARTH_A.WSA", {}, 0,
-                          WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, Palette);
+    anim = Open_Animation("HEARTH_A.WSA", WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE,
+                          Palette);
     progress =
-        Open_Animation(lastscenario ? "HSAFRICA.WSA" : "AFRICA.WSA", {}, 0,
+        Open_Animation(lastscenario ? "HSAFRICA.WSA" : "AFRICA.WSA",
                        WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, progresspalette);
   }
 

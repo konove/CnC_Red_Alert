@@ -51,7 +51,6 @@
 #include <cstdint>
 #include <span>
 
-#include "absl/base/attributes.h"
 #include "base/attributes.h"
 #include "base/flags.h"
 #include "sdllib/gbuffer.h"
@@ -90,10 +89,11 @@ inline constexpr bool base::kIsFlagEnum<WSAOpenType> = true;
  */
 /*=========================================================================*/
 
-void* Open_Animation(const char* file_name,
-                     std::span<uint8_t> user_buffer
-                         ABSL_ATTRIBUTE_LIFETIME_BOUND,
-                     int32_t user_buffer_size, WSAOpenType user_flags,
+// Opens the animation in `file_name` and returns a handle to pass to
+// Animate_Frame(), or nullptr if the file is missing, corrupt or too large for
+// memory. If the file has a palette and `palette` holds at least 768 bytes,
+// it is read into `palette`. Release the handle with Close_Animation().
+void* Open_Animation(const char* file_name, WSAOpenType user_flags,
                      std::span<uint8_t> palette = {});
 void Close_Animation(void* handle);
 bool Animate_Frame(void* handle, GraphicViewPortClass& view, int frame_number,
