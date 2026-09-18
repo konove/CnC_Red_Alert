@@ -280,13 +280,13 @@ static void BeginScenario() {
 // Runs frames, and any dialogs they request, until the scenario ends.
 static void RunScenario() {
   for (;;) {
-    if constexpr (config::kScenarioEditorEnabled) {
-      if (MapEditorActive) {
-        if (RunMapEditorFrame()) {
-          return;
-        }
-        continue;
+    // A plain `if`: a discarded `if constexpr` branch would leave
+    // RunMapEditorFrame() unreferenced in builds without the editor.
+    if (config::kScenarioEditorEnabled && MapEditorActive) {
+      if (RunMapEditorFrame()) {
+        return;
       }
+      continue;
     }
 
     TimeQuake = PendingTimeQuake;

@@ -475,7 +475,7 @@ void GScreenClass::Blit_Display() {
   WWMouse->Draw_Mouse(&HidPage);
   HidPage.Blit(SeenBuff, 0, 0, 0, 0, HidPage.Get_Width(), HidPage.Get_Height(),
                false);
-  if constexpr (config::kCheatKeysEnabled) {
+  if (config::kCheatKeysEnabled) {
     Add_Current_Screen();
   }
   WWMouse->Erase_Mouse(&HidPage, false);

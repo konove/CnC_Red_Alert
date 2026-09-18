@@ -2220,7 +2220,7 @@ void TriggerTypeClass::Build_INI_Entry(std::string& buffer) const {
 void TriggerTypeClass::Draw_It(int /*unused*/, int x, int y, int width,
                                int height, bool selected,
                                TextPrintType flags) const {
-  if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
+  if (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
     RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
     static const int _tabs[] = {13, 40};
     if (Is_Font(flags, TPF_6PT_GRAD) || Is_Font(flags, TPF_EFNT)) {

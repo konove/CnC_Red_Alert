@@ -266,7 +266,7 @@ void Main_Game(int argc, char* argv[]) {
 
     InMainLoop = true;
 
-    if constexpr (config::kScenarioEditorEnabled) {
+    if (config::kScenarioEditorEnabled) {
       /*
       **	Scenario-editor version of main-loop processing
       */
