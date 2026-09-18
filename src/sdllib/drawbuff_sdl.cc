@@ -5,6 +5,7 @@
 #include <SDL_surface.h>
 #include <SDL_timer.h>
 
+#include <cstddef>
 #include <cstdint>
 #include <span>
 #include <utility>
@@ -154,6 +155,11 @@ void GraphicBufferClass::Update_Palette(std::span<const uint8_t> palette) {
   // make sure it gets updated
   SDL_SetPaletteColors(sdl_pal, sdl_pal->colors, 0, sdl_pal->ncolors);
 
+  // A scaled frame holds baked colors; the next end of frame presents it.
+  if (VQATexture) {
+    Upload_Scaled_Frame();
+  }
+
   Update_Window_Surface(false);
 }
 
@@ -195,6 +201,21 @@ void GraphicBufferClass::Render_Scaled_Frame(
     VQATextureHeight = height;
   }
 
+  scaled_frame_.assign(paletted_data.begin(),
+                       paletted_data.begin() + static_cast<std::ptrdiff_t>(
+                                                   frame_width * frame_height));
+  if (!Upload_Scaled_Frame()) {
+    return;
+  }
+
+  // Trigger immediate present via Update_Window_Surface
+  Update_Window_Surface(true);
+}
+
+bool GraphicBufferClass::Upload_Scaled_Frame() {
+  const auto frame_width = base::ToSize(VQATextureWidth);
+  const std::span<const uint8_t> frame = scaled_frame_;
+
   // Get the palette already set via Update_Palette (already 8-bit RGB)
   const auto* sdl_pal =
       static_cast<SDL_Surface*>(PaletteSurface)->format->palette;
@@ -204,20 +225,21 @@ void GraphicBufferClass::Render_Scaled_Frame(
   int pitch = 0;
   if (SDL_LockTexture(static_cast<SDL_Texture*>(VQATexture), nullptr, &pixels,
                       &pitch) != 0) {
-    return;
+    return false;
   }
   // SDL_LockTexture exposes pitch bytes for each texture row.
-  // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
-  const auto dest = std::span(static_cast<uint32_t*>(pixels),
-                              base::ToSize(pitch / 4) * base::ToSize(height));
+  const auto dest =
+      // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
+      std::span(static_cast<uint32_t*>(pixels),
+                base::ToSize(pitch / 4) * base::ToSize(VQATextureHeight));
   // SDL owns exactly ncolors entries in the surface palette.
   const auto colors =
       // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
       std::span(sdl_pal->colors, base::ToSize(sdl_pal->ncolors));
-  for (int y = 0; y < height; y++) {
-    for (int x = 0; x < width; x++) {
-      const uint8_t idx = base::At(
-          paletted_data, (base::ToSize(y) * frame_width) + base::ToSize(x));
+  for (int y = 0; y < VQATextureHeight; y++) {
+    for (int x = 0; x < VQATextureWidth; x++) {
+      const uint8_t idx =
+          base::At(frame, (base::ToSize(y) * frame_width) + base::ToSize(x));
       // Use palette already converted to 8-bit by Update_Palette
       const uint8_t r = base::At(colors, idx).r;
       const uint8_t g = base::At(colors, idx).g;
@@ -228,9 +250,7 @@ void GraphicBufferClass::Render_Scaled_Frame(
     }
   }
   SDL_UnlockTexture(static_cast<SDL_Texture*>(VQATexture));
-
-  // Trigger immediate present via Update_Window_Surface
-  Update_Window_Surface(true);
+  return true;
 }
 
 void GraphicBufferClass::Destroy_VQA_Texture() {
@@ -239,5 +259,6 @@ void GraphicBufferClass::Destroy_VQA_Texture() {
     VQATexture = nullptr;
     VQATextureWidth = 0;
     VQATextureHeight = 0;
+    scaled_frame_.clear();
   }
 }

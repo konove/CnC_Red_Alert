@@ -120,18 +120,17 @@
 #ifndef CNC_RED_ALERT_SDLLIB_GBUFFER_H_
 #define CNC_RED_ALERT_SDLLIB_GBUFFER_H_
 
-#include "base/numeric.h"
-
 #include <cstddef>
-
 #include <cstdint>
 #include <span>
+#include <vector>
 
 #include "absl/base/attributes.h"
 #include "absl/strings/str_cat.h"
 #include "base/array.h"
 #include "base/attributes.h"
 #include "base/flags.h"
+#include "base/numeric.h"
 #include "base/types.h"
 #include "sdllib/bitmap.h"
 #include "sdllib/buffer.h"
@@ -379,7 +378,9 @@ class GraphicBufferClass : public GraphicViewPortClass, public BufferClass {
   [[nodiscard]] const void* Get_Palette() const;
 
   // Render paletted frame data with SDL texture scaling (for VQA movies, etc.)
-  // Uses the palette already set via Update_Palette.
+  // Uses the palette already set via Update_Palette. The frame stays on screen,
+  // following later Update_Palette() calls the way a VGA screen would, until
+  // something is drawn to the display surface.
   void Render_Scaled_Frame(std::span<const uint8_t> paletted_data, int width,
                            int height);
   void Destroy_VQA_Texture();
@@ -392,6 +393,16 @@ class GraphicBufferClass : public GraphicViewPortClass, public BufferClass {
   void* VQATexture = nullptr;  // SDL_Texture* for low-res content scaling
   int VQATextureWidth = 0;
   int VQATextureHeight = 0;
+
+ private:
+  // Converts scaled_frame_ to RGBA with the current palette and uploads it to
+  // VQATexture. Returns false if SDL refused the texture.
+  bool Upload_Scaled_Frame();
+
+  // The paletted pixels behind VQATexture, VQATextureWidth x VQATextureHeight.
+  // The texture holds baked colors, so a palette change has to convert these
+  // again. Empty while there is no texture.
+  std::vector<uint8_t> scaled_frame_;
 };
 
 extern GraphicBufferClass* WindowBuffer;

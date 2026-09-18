@@ -1,6 +1,8 @@
 #include "ra/keyframe.h"
 
 #include <SDL_events.h>
+#include <SDL_pixels.h>
+#include <SDL_render.h>
 #include <SDL_surface.h>
 
 #include <array>
@@ -115,5 +117,76 @@ TEST(GraphicBufferRenderTest, RejectsMissingDisplaySurfaceBeforeSdlAccess) {
   const std::array<uint8_t, 4> pixels{};
   buffer.Render_Scaled_Frame(pixels, 2, 2);
   EXPECT_EQ(buffer.PendingTimer(), 1);
+}
+// Draws scaled frames through a software renderer onto a 2x2 target, so the
+// colors that reach the screen can be read back without a window.
+class ScaledFrameTest : public ::testing::Test {
+ protected:
+  class Buffer : public GraphicBufferClass {
+   public:
+    Buffer() { PaletteSurface = SDL_CreateRGBSurface(0, 2, 2, 8, 0, 0, 0, 0); }
+    ~Buffer() {
+      Destroy_VQA_Texture();
+      SDL_FreeSurface(static_cast<SDL_Surface*>(PaletteSurface));
+    }
+    Buffer(const Buffer&) = delete;
+    Buffer& operator=(const Buffer&) = delete;
+    Buffer(Buffer&&) = delete;
+    Buffer& operator=(Buffer&&) = delete;
+  };
+
+  void SetUp() override {
+    target_ =
+        SDL_CreateRGBSurfaceWithFormat(0, 2, 2, 32, SDL_PIXELFORMAT_RGBA32);
+    ASSERT_NE(target_, nullptr);
+    SDLRenderer = SDL_CreateSoftwareRenderer(target_);
+    ASSERT_NE(SDLRenderer, nullptr);
+  }
+
+  void TearDown() override {
+    SDL_DestroyRenderer(SDLRenderer);
+    SDLRenderer = nullptr;
+    SDL_FreeSurface(target_);
+  }
+
+  // Returns a 6-bit VGA palette that is black but for `color` at `index`.
+  static std::array<uint8_t, 768> PaletteWith(size_t index, uint8_t red,
+                                              uint8_t green, uint8_t blue) {
+    std::array<uint8_t, 768> palette{};
+    palette.at(index * 3) = red;
+    palette.at((index * 3) + 1) = green;
+    palette.at((index * 3) + 2) = blue;
+    return palette;
+  }
+
+  // Returns the top-left pixel on screen as {red, green, blue}.
+  [[nodiscard]] static std::array<uint8_t, 3> ScreenColor() {
+    std::array<uint8_t, 16> pixels{};
+    EXPECT_EQ(SDL_RenderReadPixels(SDLRenderer, nullptr, SDL_PIXELFORMAT_RGBA32,
+                                   pixels.data(), 8),
+              0);
+    return {pixels.at(0), pixels.at(1), pixels.at(2)};
+  }
+
+  SDL_Surface* target_ = nullptr;
+};
+
+TEST_F(ScaledFrameTest, ShowsTheFrameInTheCurrentPalette) {
+  Buffer buffer;
+  buffer.Update_Palette(PaletteWith(1, 63, 0, 0));
+  buffer.Render_Scaled_Frame(std::array<uint8_t, 4>{1, 1, 1, 1}, 2, 2);
+  EXPECT_EQ(ScreenColor(), (std::array<uint8_t, 3>{255, 0, 0}));
+}
+
+// The texture holds baked colors, so a palette-cycling screen (the mission
+// map's pulsing hotspots) depends on a palette change converting them again.
+TEST_F(ScaledFrameTest, FollowsALaterPaletteChange) {
+  Buffer buffer;
+  buffer.Update_Palette(PaletteWith(1, 63, 0, 0));
+  buffer.Render_Scaled_Frame(std::array<uint8_t, 4>{1, 1, 1, 1}, 2, 2);
+
+  buffer.Update_Palette(PaletteWith(1, 0, 63, 0));
+  buffer.Update_Window_Surface(/*end_frame=*/true);
+  EXPECT_EQ(ScreenColor(), (std::array<uint8_t, 3>{0, 255, 0}));
 }
 }  // namespace
