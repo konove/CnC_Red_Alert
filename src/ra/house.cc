@@ -1455,8 +1455,7 @@ void HouseClass::Super_Weapon_Handler() {
     **	facility available, then make the iron curtain available as well.
     */
     if (ActiveBScan & kStructFlagIronCurtain &&
-        (ActLike == HOUSE_USSR || ActLike == HOUSE_UKRAINE ||
-         Session.Type != GAME_NORMAL) &&
+        (IsSovietHouse(ActLike) || Session.Type != GAME_NORMAL) &&
         (IsHuman || IQ >= Rule.IQSuperWeapons)) {
       SuperWeapon.at(SPC_IRON_CURTAIN)
           .Enable(false, this == PlayerPtr, Power_Fraction() < 1);
@@ -1541,8 +1540,7 @@ void HouseClass::Super_Weapon_Handler() {
     **	silo available, then make the missile available as well.
     */
     if (ActiveBScan & kStructFlagMslo &&
-        ((ActLike != HOUSE_USSR && ActLike != HOUSE_UKRAINE) ||
-         Session.Type != GAME_NORMAL) &&
+        (!IsSovietHouse(ActLike) || Session.Type != GAME_NORMAL) &&
         (IsHuman || IQ >= Rule.IQSuperWeapons)) {
       SuperWeapon.at(SPC_NUCLEAR_BOMB)
           .Enable(false, this == PlayerPtr, Power_Fraction() < 1);

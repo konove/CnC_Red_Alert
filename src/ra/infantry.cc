@@ -788,7 +788,7 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
     */
     if (IsTethered) {
       Transmit_Message(RADIO_UNLOADED);
-      if (House->ActLike == HOUSE_USSR || House->ActLike == HOUSE_UKRAINE) {
+      if (IsSovietHouse(House->ActLike)) {
         Do_Action(DO_GESTURE1);
       } else {
         Do_Action(DO_GESTURE2);

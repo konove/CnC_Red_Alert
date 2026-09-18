@@ -360,10 +360,7 @@ void ScoreClass::Presentation() {
   GameFile file(kFameFileName);
   struct Fame hallfame[NUMFAMENAMES];
   const int oldfontxspacing = FontXSpacing;
-  const int house = (PlayerPtr->Class->House == HOUSE_USSR ||
-                     PlayerPtr->Class->House == HOUSE_UKRAINE)
-                        ? 1
-                        : 0;  // 0 or 1
+  const int house = IsSovietHouse(PlayerPtr->Class->House) ? 1 : 0;  // 0 or 1
   char inter_pal[15];
   absl::SNPrintF(inter_pal, sizeof(inter_pal), "SCORPAL1.PAL");
 
@@ -435,8 +432,7 @@ void ScoreClass::Presentation() {
   for (int index = 0; index < Logic.Count(); index++) {
     const ObjectClass* object = Logic.at(index);
     const HousesType owner = object->Owner();
-    if (house &&
-        (owner == HOUSE_USSR || owner == HOUSE_BAD || owner == HOUSE_UKRAINE)) {
+    if (house && (IsSovietHouse(owner) || owner == HOUSE_BAD)) {
       leadership++;
     } else {
       if (!house && object->Owner() == HOUSE_GREECE) {
@@ -448,7 +444,7 @@ void ScoreClass::Presentation() {
 
   for (HousesType hous = HOUSE_SPAIN; hous <= HOUSE_BAD; hous++) {
     const HouseClass* hows = HouseClass::As_Pointer(hous);
-    if (hous == HOUSE_USSR || hous == HOUSE_BAD || hous == HOUSE_UKRAINE) {
+    if (IsSovietHouse(hous) || hous == HOUSE_BAD) {
       NKilled += hows->UnitsLost;
       NBKilled += hows->BuildingsLost;
     } else {
@@ -904,10 +900,7 @@ void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
                               std::span<const std::byte> redptr, int gkilled,
                               int nkilled, int ypos) {
   const int xpos = 174;
-  const int house = (PlayerPtr->Class->House == HOUSE_USSR ||
-                     PlayerPtr->Class->House == HOUSE_UKRAINE)
-                        ? 1
-                        : 0;  // 0 or 1
+  const int house = IsSovietHouse(PlayerPtr->Class->House) ? 1 : 0;  // 0 or 1
   if (house) {
     const int temp = gkilled;
     gkilled = nkilled;

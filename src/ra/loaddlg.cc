@@ -676,7 +676,7 @@ void LoadOptionsClass::Fill_List(ListClass* list) {
       if (!ok) {
         port::SafeCopy(fdata->Descr, Text_String(TXT_OLD_GAME));
       } else {
-        if (house == HOUSE_USSR || house == HOUSE_UKRAINE) {
+        if (IsSovietHouse(house)) {
           absl::SNPrintF(fdata->Descr, sizeof(fdata->Descr), "(%s) ",
                          Text_String(TXT_SOVIET));
         } else {

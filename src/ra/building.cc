@@ -3135,8 +3135,7 @@ void BuildingClass::Grand_Opening(bool captured) {
     if (!Rule.IsSeparate && *this == STRUCT_HELIPAD && !captured) {
       ScenarioInit++;
       AircraftClass* air = nullptr;
-      if (House->ActLike == HOUSE_USSR || House->ActLike == HOUSE_BAD ||
-          House->ActLike == HOUSE_UKRAINE) {
+      if (IsSovietHouse(House->ActLike) || House->ActLike == HOUSE_BAD) {
         air = new AircraftClass(AIRCRAFT_HIND, House->Class->House);
       } else {
         air = new AircraftClass(AIRCRAFT_LONGBOW, House->Class->House);

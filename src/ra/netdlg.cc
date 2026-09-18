@@ -7243,7 +7243,7 @@ void Start_WWChat(ColorListClass* playerlist) {
       const HousesType house = Percent_Chance(50) ? HOUSE_GREECE : HOUSE_USSR;
       //			house =
       //(HousesType)Random_Pick((int)HOUSE_GOOD,(int)HOUSE_BAD);
-      if (house != HOUSE_USSR && house != HOUSE_UKRAINE) {
+      if (!IsSovietHouse(house)) {
         absl::SNPrintF(item, sizeof(item), "%s\t%s",
                        base::At(WWPersons, i).Name, Text_String(TXT_ALLIES));
       } else {

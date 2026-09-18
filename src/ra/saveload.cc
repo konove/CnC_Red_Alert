@@ -986,8 +986,7 @@ bool Load_Game(int id) {
 #endif
         }
       } else {
-        if (PlayerPtr->Class->House != HOUSE_USSR &&
-            PlayerPtr->Class->House != HOUSE_UKRAINE) {
+        if (!IsSovietHouse(PlayerPtr->Class->House)) {
           RequiredCD = 0;
         } else {
           RequiredCD = 1;

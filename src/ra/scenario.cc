@@ -1416,8 +1416,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
 
   PaletteClass temp;
   const char* filename = "SOVPAPER.PCX";
-  if (PlayerPtr->Class->House != HOUSE_USSR &&
-      PlayerPtr->Class->House != HOUSE_UKRAINE) {
+  if (!IsSovietHouse(PlayerPtr->Class->House)) {
     filename = "ALIPAPER.PCX";
   }
   Load_Title_Screen(filename, &HidPage, temp);
@@ -2808,7 +2807,7 @@ static void Create_Units(bool official) {
         /*
         **	Create an Ally unit
         */
-        if (hptr->ActLike != HOUSE_USSR && hptr->ActLike != HOUSE_UKRAINE) {
+        if (!IsSovietHouse(hptr->ActLike)) {
           for (const auto k : base::At(utable, i).AllyType) {
             if (k != UNIT_NONE) {
               obj = new UnitClass(k, house);
@@ -2863,7 +2862,7 @@ static void Create_Units(bool official) {
         *which *	assigns the infantry to HUNT; we must use Set_Mission()
         *to override *	this state.)
         */
-        if (hptr->ActLike != HOUSE_USSR && hptr->ActLike != HOUSE_UKRAINE) {
+        if (!IsSovietHouse(hptr->ActLike)) {
           for (int k = 0; k < base::At(itable, i).AllyCount; k++) {
             obj = new InfantryClass(base::At(itable, i).AllyType, house);
             if (!Scan_Place_Object(obj, centerpt)) {

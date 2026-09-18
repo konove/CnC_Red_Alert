@@ -2676,13 +2676,11 @@ int UnitClass::Mission_Unload() {
           if (Ammo > 0) {
             if (!Map.at(Center_Coord()).Cell_Building()) {
               Mark(MARK_UP);
-              auto* building =
-                  new BuildingClass(House->ActLike == HOUSE_USSR ||
-                                            House->ActLike == HOUSE_UKRAINE ||
-                                            House->ActLike == HOUSE_BAD
-                                        ? STRUCT_APMINE
-                                        : STRUCT_AVMINE,
-                                    House->Class->House);
+              auto* building = new BuildingClass(
+                  IsSovietHouse(House->ActLike) || House->ActLike == HOUSE_BAD
+                      ? STRUCT_APMINE
+                      : STRUCT_AVMINE,
+                  House->Class->House);
               if (building != nullptr) {
                 ScenarioInit = 1;
                 if (building->Unlimbo(Coord)) {

@@ -859,6 +859,13 @@ enum class HousesType : int8_t {
 };
 using enum HousesType;
 
+// Returns true if `house` is one of the two Soviet countries. The generic
+// HOUSE_BAD side is not counted; callers that mean "any Soviet-aligned house"
+// test for it as well.
+constexpr bool IsSovietHouse(const HousesType house) {
+  return house == HOUSE_USSR || house == HOUSE_UKRAINE;
+}
+
 // House bit masks over HousesType, for owner lists.
 inline constexpr uint32_t kHouseFlagEngland =
     base::Bit<uint32_t>(HOUSE_ENGLAND);
