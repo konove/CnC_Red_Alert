@@ -172,6 +172,8 @@ static RemapControlType SidebarScheme;
 **	Function prototypes for this module **
 *****************************************/
 static void Play_Intro(bool sequenced = false);
+static bool LogoAlreadyPlayed();
+static void MarkLogoPlayed();
 static void Init_Color_Remaps();
 static void Init_Heaps();
 static void Init_Expansion_Files();
@@ -350,12 +352,17 @@ bool Init_Game() {
   */
   if (!Special.IsFromInstall) {
     VisiblePage.Clear();
-    Play_Intro();
+    if (!LogoAlreadyPlayed()) {
+      Play_Intro();
+      MarkLogoPlayed();
+    }
     base::FillBytes(
         std::as_writable_bytes(PaletteClass::CurrentPalette.bytes()), 0x01,
         768);
     WhitePalette.Set();
   } else {
+    // The first launch plays the full intro instead, which counts.
+    MarkLogoPlayed();
     base::FillBytes(
         std::as_writable_bytes(PaletteClass::CurrentPalette.bytes()), 0x01,
         768);
@@ -1195,6 +1202,41 @@ bool Select_Game(bool /*fade*/) {
   Map.Render();
 
   return true;
+}
+
+// The Westwood logo movie plays only until one launch movie has been shown;
+// otherwise it is 10.5 s of every start. The original game already showed
+// its full intro once, on the first launch ([Intro] PlayIntro, read in
+// startup.cc), but then played the logo on every launch after it.
+// [Intro] LogoPlayed in the config file records that a launch movie was
+// shown; delete the key to see the logo again. These read the file directly
+// because Options.Load_Settings() runs after the logo.
+static constexpr char kLogoPlayedSection[] = "Intro";
+static constexpr char kLogoPlayedEntry[] = "LogoPlayed";
+
+static bool LogoAlreadyPlayed() {
+  GameFile file(kConfigFileName);
+  INIClass ini;
+  if (file.IsAvailable()) {
+    ini.Load(file);
+  }
+  return ini.Get_Bool(kLogoPlayedSection, kLogoPlayedEntry, false);
+}
+
+static void MarkLogoPlayed() {
+  // A -NOMOVIES run never showed the movie, so it must not use up the one
+  // showing.
+  if (bNoMovies) {
+    return;
+  }
+  GameFile file(kConfigFileName);
+  INIClass ini;
+  // Keep every other setting in the file.
+  if (file.IsAvailable()) {
+    ini.Load(file);
+  }
+  ini.Put_Bool(kLogoPlayedSection, kLogoPlayedEntry, true);
+  ini.Save(file);
 }
 
 /***********************************************************************************************

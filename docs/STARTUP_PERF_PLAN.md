@@ -93,6 +93,12 @@ The logo movie is 93% of launch-to-menu time. Options:
 
 Recommended: (a), plus an options-menu toggle later.
 
+**Done 2026-09-17: option (a).** The key is `[Intro] LogoPlayed`, next to the original game's
+`[Intro] PlayIntro`. That flag already played the full cinematic once on the first launch, but the
+logo still played on every launch after it. The first-launch cinematic now also counts as the one
+showing, and a `-NOMOVIES` run never uses it up. Launch to menu: 10.88 s the first time, 0.29 s
+after that (`-QUITFRAME0`, headless). Delete the key to see the logo again.
+
 ### 4. Make Debug builds usable (`CMakeLists.txt`)
 
 - Compile the hot kernels at `-O2` in every build type:
@@ -113,6 +119,42 @@ work). Options, from least to most change:
 - Hardware SHA-1 (SHA-NI) behind a CPU-feature check.
 
 Only worth doing after steps 2–3, when it is a visible share of the time.
+
+## perf profile after steps 2–3 (2026-09-17)
+
+`perf` works now (`kernel.perf_event_paranoid=1`). Headless `-LOADGAME5 -QUITFRAME61` with the
+default audio driver (PulseAudio on PipeWire): 0.31 s wall, 0.11 s CPU.
+
+**Wall time: 0.19 s of it is waiting for audio to close.** At exit, `SDL_CloseAudioDevice` joins
+SDL2's audio thread, which sleeps for two buffer lengths to let the sound drain. `Audio_Init`
+(`src/sdllib/ww_audio.cc`) asks for 2048 samples at 22,050 Hz, which is 93 ms per buffer, so the
+drain takes 186 ms. strace shows the 184 ms sleep, and the main thread blocked 0.27 s on the join
+(slower under strace). SDL's own PipeWire driver doesn't sleep like that: the same run takes 0.12 s.
+The same 2048-sample buffer also delays every sound effect by up to 93 ms.
+
+**CPU on the main thread (perf, ~0.1 s):**
+
+| Where                                            | Share |
+| ------------------------------------------------ | ----- |
+| `SHAEngine::Process_Block` (MIX digests)         | 48%   |
+| SDL window creation plus udev device enumeration | ~18%  |
+| memset/memmove (buffer clears)                   | ~11%  |
+| `Update_Window_Surface`                          | ~4%   |
+
+The other threads (PulseAudio main loop, the SDL audio and timer threads, hotplug) only wait and
+talk to the sound server.
+
+### 6. Audio buffer (new; ~0.19 s off every exit)
+
+Ask for 512 samples, which is 23 ms at 22,050 Hz. The drain drops from 186 ms to 46 ms, and
+sound-effect latency drops the same way. The mixing callback is cheap, so underruns are unlikely,
+but check playback on the real device. Skipping the close on process exit would also remove the
+drain, but it leaves shutdown to the OS; prefer the smaller buffer.
+
+### Step 5 update
+
+The CPU supports SHA-NI (`/proc/cpuinfo`), and SHA-1 is now the largest CPU cost left at about 50
+ms. The SHA-NI option in step 5 would cut that to a few ms without changing what gets verified.
 
 ## Verification
 
