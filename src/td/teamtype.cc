@@ -62,11 +62,11 @@
 #include <utility>
 #include <vector>
 
+#include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
-#include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "port/tokenizer.h"
 #include "td/config.h"
@@ -698,7 +698,7 @@ TeamTypeClass* TeamTypeClass::As_Pointer(const char* name) {
   }
 
   for (int i = 0; i < TeamTypes.Count(); i++) {
-    if (!port::CompareIgnoreCase(name, TeamTypes.Ptr(i)->IniName)) {
+    if (absl::EqualsIgnoreCase(name, TeamTypes.Ptr(i)->IniName)) {
       return TeamTypes.Ptr(i);
     }
   }
@@ -760,7 +760,7 @@ TeamMissionType TeamTypeClass::Mission_From_Name(const char* name) {
   if (name) {
     for (TeamMissionType order = TMISSION_ATTACKBASE; order < TMISSION_COUNT;
          order++) {
-      if (port::CompareIgnoreCase(TMissions.at(order), name) == 0) {
+      if (absl::EqualsIgnoreCase(TMissions.at(order), name)) {
         return order;
       }
     }

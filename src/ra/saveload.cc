@@ -52,6 +52,7 @@
 
 #include "absl/log/check.h"
 #include "absl/log/log.h"
+#include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/buffer.h"
@@ -1386,8 +1387,8 @@ static bool Reconcile_Players() {
         continue;
       }
 
-      if (!port::CompareIgnoreCase(Session.Players.at(i)->Name,
-                                   housep->IniName)) {
+      if (absl::EqualsIgnoreCase(Session.Players.at(i)->Name,
+                                 housep->IniName)) {
         found = 1;
         break;
       }
@@ -1423,8 +1424,8 @@ static bool Reconcile_Players() {
     //
     found = 0;
     for (int i = 0; i < Session.Players.Count(); i++) {
-      if (!port::CompareIgnoreCase(Session.Players.at(i)->Name,
-                                   housep->IniName)) {
+      if (absl::EqualsIgnoreCase(Session.Players.at(i)->Name,
+                                 housep->IniName)) {
         found = 1;
         Session.Players.at(i)->Player.ID = house;
         break;

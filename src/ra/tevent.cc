@@ -54,10 +54,10 @@
 #include <string>
 #include <utility>
 
+#include "absl/strings/match.h"
 #include "base/array.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
-#include "port/ex_string.h"
 #include "port/tokenizer.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
@@ -790,7 +790,7 @@ NeedType Event_Needs(TEventType event) {
 TEventType Event_From_Name(const char* name) {
   if (name) {
     for (TEventType i = TEVENT_NONE; i < TEVENT_COUNT; i++) {
-      if (!port::CompareIgnoreCase(name, EventText.at(i))) {
+      if (absl::EqualsIgnoreCase(name, EventText.at(i))) {
         return i;
       }
     }

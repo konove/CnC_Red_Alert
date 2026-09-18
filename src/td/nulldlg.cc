@@ -61,11 +61,12 @@
 #include <string_view>
 #include <utility>
 
+#include "absl/strings/ascii.h"
+#include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
-#include "port/ex_string.h"
 #include "port/random_seed.h"
 #include "port/safe_string.h"
 #include "port/unaligned.h"
@@ -2172,8 +2173,8 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
 
   if (base::At(tempsettings.ModemName, 0)) {
     for (i = 0; i < port_custom_index; i++) {
-      if (!port::CompareIgnoreCase(portlist.Get_Item(i),
-                                   tempsettings.ModemName)) {
+      if (absl::EqualsIgnoreCase(portlist.Get_Item(i),
+                                 tempsettings.ModemName)) {
         port_index = i;
         port::SafeCopy(portbuf, tempsettings.ModemName);
         break;
@@ -2484,23 +2485,24 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
           irq_edt.Flag_To_Redraw();
 #endif  // EDIT_IRQ
         } else {
-          strupr(portbuf);
-          if (port::CompareIgnoreCase(portbuf, "3F8") == 0) {
+          std::ranges::transform(port::MutableCString(portbuf), portbuf,
+                                 absl::ascii_toupper);
+          if (absl::EqualsIgnoreCase(portbuf, "3F8")) {
             port_index = 0;
             portlist.Set_Selected_Index(port_index);
             port::SafeCopy(portbuf, "COM1");
             display = REDRAW_BUTTONS;
-          } else if (port::CompareIgnoreCase(portbuf, "2F8") == 0) {
+          } else if (absl::EqualsIgnoreCase(portbuf, "2F8")) {
             port_index = 1;
             portlist.Set_Selected_Index(port_index);
             port::SafeCopy(portbuf, "COM2");
             display = REDRAW_BUTTONS;
-          } else if (port::CompareIgnoreCase(portbuf, "3E8") == 0) {
+          } else if (absl::EqualsIgnoreCase(portbuf, "3E8")) {
             port_index = 2;
             portlist.Set_Selected_Index(port_index);
             port::SafeCopy(portbuf, "COM3");
             display = REDRAW_BUTTONS;
-          } else if (port::CompareIgnoreCase(portbuf, "2E8") == 0) {
+          } else if (absl::EqualsIgnoreCase(portbuf, "2E8")) {
             port_index = 3;
             portlist.Set_Selected_Index(port_index);
             port::SafeCopy(portbuf, "COM4");
@@ -2746,7 +2748,8 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
 
         item = new char[INITSTRBUF_MAX]{};
 
-        strupr(initstrbuf);
+        std::ranges::transform(port::MutableCString(initstrbuf), initstrbuf,
+                               absl::ascii_toupper);
         // This allocation above owns exactly INITSTRBUF_MAX characters.
         // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
         port::SafeCopy(std::span(item, INITSTRBUF_MAX), initstrbuf);
@@ -3467,7 +3470,10 @@ int Com_Scenario_Dialog() {
   Init scenario description list box
   ........................................................................*/
   for (i = 0; i < MPlayerScenarios.Count(); i++) {
-    scenariolist.Add_Item(strupr(MPlayerScenarios.at(i)));
+    char* const scenario = MPlayerScenarios.at(i);
+    std::ranges::transform(port::MutableCString(scenario), scenario,
+                           absl::ascii_toupper);
+    scenariolist.Add_Item(scenario);
   }
   ScenarioIdx = 0;  // 1st scenario is selected
 
@@ -6647,7 +6653,7 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
   If 'Save', save all current settings
   ------------------------------------------------------------------------*/
   if (rc) {
-    port::SafeCopy(phone->Name, strupr(namebuf));
+    port::SafeCopy(phone->Name, absl::AsciiStrToUpper(namebuf));
 
     // if nothing was entered then make if NONAME
 
@@ -6655,7 +6661,7 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
       port::SafeCopy(phone->Name, "NONAME");
     }
 
-    port::SafeCopy(phone->Number, strupr(numbuf));
+    port::SafeCopy(phone->Number, absl::AsciiStrToUpper(numbuf));
 
     if (custom) {
       phone->Settings = settings;

@@ -22,6 +22,7 @@
 
 #include "ra/rawolapi.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
@@ -35,6 +36,8 @@
 
 #include "absl/log/check.h"
 #include "absl/log/log.h"
+#include "absl/strings/ascii.h"
+#include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/buffer.h"
@@ -514,7 +517,9 @@ bool operator<(const User& u1, const User& u2) {
   if (!(u1.flags & CHAT_USER_VOICE) && u2.flags & CHAT_USER_VOICE) {
     return false;
   }
-  return (port::CompareIgnoreCase(WolText(u1.name), WolText(u2.name)) < 0);
+  return std::ranges::lexicographical_compare(
+      std::string_view(WolText(u1.name)), std::string_view(WolText(u2.name)),
+      {}, absl::ascii_tolower, absl::ascii_tolower);
 }
 
 //***********************************************************************************************
@@ -560,8 +565,8 @@ STDMETHODIMP RAChatEventSink::OnChannelLeave(HRESULT hRes, Channel* /*channel*/,
       User* pUserPrevious = nullptr;
       bool bFound = false;
       while (pUserSearch) {
-        if (port::CompareIgnoreCase(WolText(pUserSearch->name),
-                                    WolText(pUser->name)) == 0) {
+        if (absl::EqualsIgnoreCase(WolText(pUserSearch->name),
+                                   WolText(pUser->name))) {
           //	Remove from list.
           if (!pUserPrevious) {
             //	Head of list is being removed.
@@ -1398,7 +1403,7 @@ uint32_t RAChatEventSink::GetPlayerGameIP(const char* szPlayerName) const {
   //	Returns ipaddr value of player if found in pGameUserList, else 0.
   User* pUser = pGameUserList;
   while (pUser) {
-    if (port::CompareIgnoreCase(WolText(pUser->name), szPlayerName) == 0) {
+    if (absl::EqualsIgnoreCase(WolText(pUser->name), szPlayerName)) {
       return static_cast<uint32_t>(pUser->ipaddr);
     }
     pUser = pUser->next;
@@ -1472,8 +1477,8 @@ STDMETHODIMP RAChatEventSink::OnUserIP(HRESULT hRes, User* pUser) {
     //	Look for user in our current users list.
     User* pUserSearch = pUserIPList;
     while (pUserSearch) {
-      if (port::CompareIgnoreCase(WolText(pUserSearch->name),
-                                  WolText(pUser->name)) == 0) {
+      if (absl::EqualsIgnoreCase(WolText(pUserSearch->name),
+                                 WolText(pUser->name))) {
         //	Found matching user. Replace it's ipaddr value, in case it
         // changed.(?)
         pUserSearch->ipaddr = pUser->ipaddr;
@@ -1522,7 +1527,7 @@ uint32_t RAChatEventSink::GetUserIP(const char* szName) const {
   //	Find szName in list.
   User* pUser = pUserIPList;
   while (pUser) {
-    if (port::CompareIgnoreCase(WolText(pUser->name), szName) == 0) {
+    if (absl::EqualsIgnoreCase(WolText(pUser->name), szName)) {
       return static_cast<uint32_t>(pUser->ipaddr);
     }
     pUser = pUser->next;
@@ -1569,7 +1574,7 @@ STDMETHODIMP RAChatEventSink::OnUserFlags(HRESULT hRes, LPCSTR name,
   User* pUserPrior = nullptr;
   User* pUserSearch = pUserList;
   while (pUserSearch) {
-    if (port::CompareIgnoreCase(WolText(pUserSearch->name), name) == 0) {
+    if (absl::EqualsIgnoreCase(WolText(pUserSearch->name), name)) {
       //	Set user's flags to new value.
       pUserSearch->flags = flags;
 
@@ -1815,8 +1820,8 @@ STDMETHODIMP RANetUtilEventSink::OnLadderList(
             pLadderTail->next = pLadderNew;
             pLadderTail = pLadderNew;
           }
-          if (port::CompareIgnoreCase(WolText(pLadderNew->login_name),
-                                      pOwner->szMyName) == 0) {
+          if (absl::EqualsIgnoreCase(WolText(pLadderNew->login_name),
+                                     pOwner->szMyName)) {
             //	Set up local player's win/loss string.
             Format_Runtime_Text(pOwner->szMyRecord, sizeof(pOwner->szMyRecord),
                                 TXT_WOL_PERSONALWINLOSSRECORD, pOwner->szMyName,
@@ -1835,8 +1840,8 @@ STDMETHODIMP RANetUtilEventSink::OnLadderList(
             pLadderTailAM->next = pLadderNew;
             pLadderTailAM = pLadderNew;
           }
-          if (port::CompareIgnoreCase(WolText(pLadderNew->login_name),
-                                      pOwner->szMyName) == 0) {
+          if (absl::EqualsIgnoreCase(WolText(pLadderNew->login_name),
+                                     pOwner->szMyName)) {
             //	Set up local player's win/loss string for Aftermath.
             Format_Runtime_Text(
                 pOwner->szMyRecordAM, sizeof(pOwner->szMyRecordAM),
@@ -1918,7 +1923,7 @@ int RANetUtilEventSink::GetUserRank(const char* szName, bool bRankRA) const {
 
   while (pLad) {
     //		debugprint( "  comparing %s\n", (char*)pLad->login_name );
-    if (port::CompareIgnoreCase(WolText(pLad->login_name), szName) == 0) {
+    if (absl::EqualsIgnoreCase(WolText(pLad->login_name), szName)) {
       //			debugprint( "found rung value %u\n", pLad->rung
       //);
       return static_cast<int>(pLad->rung);

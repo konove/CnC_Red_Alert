@@ -58,10 +58,10 @@
 #include <filesystem>
 #include <span>
 
+#include "absl/strings/match.h"
 #include "base/array.h"
 #include "externs.h"
 #include "magic_enum/magic_enum.hpp"
-#include "port/ex_string.h"
 #include "ra/const.h"
 #include "ra/defines.h"
 #include "ra/display_constants.h"
@@ -292,7 +292,7 @@ void SmudgeTypeClass::Init_Heap() {
 SmudgeType SmudgeTypeClass::From_Name(const char* name) {
   if (name != nullptr) {
     for (const SmudgeType index : magic_enum::enum_values<SmudgeType>()) {
-      if (port::CompareIgnoreCase(As_Reference(index).IniName, name) == 0) {
+      if (absl::EqualsIgnoreCase(As_Reference(index).IniName, name)) {
         return index;
       }
     }

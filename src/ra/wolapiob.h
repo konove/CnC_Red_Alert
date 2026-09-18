@@ -35,6 +35,7 @@
 #include <span>
 
 #include "absl/base/attributes.h"
+#include "port/ex_string.h"
 #include "ra/dib.h"
 #include "ra/iconlist.h"
 #include "ra/rawolapi.h"

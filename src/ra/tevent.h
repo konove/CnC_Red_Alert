@@ -40,12 +40,14 @@
 #ifndef CNC_RED_ALERT_RA_TEVENT_H_
 #define CNC_RED_ALERT_RA_TEVENT_H_
 
+#include <algorithm>
 #include <cstdint>
 #include <string>
+#include <string_view>
 
+#include "absl/strings/ascii.h"
 #include "base/attributes.h"
 #include "base/enum_array.h"
-#include "port/ex_string.h"
 #include "port/tokenizer.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
@@ -205,18 +207,19 @@ class EventChoiceClass {
     return Event != rvalue.Event;
   }
   bool operator>(const EventChoiceClass& rvalue) const {
-    return port::CompareIgnoreCase(Description(), rvalue.Description()) > 0;
+    return rvalue < *this;
   }
+  // Orders by description, ignoring case.
   bool operator<(const EventChoiceClass& rvalue) const {
-    return port::CompareIgnoreCase(Description(), rvalue.Description()) < 0;
+    return std::ranges::lexicographical_compare(
+        std::string_view(Description()), std::string_view(rvalue.Description()),
+        {}, absl::ascii_tolower, absl::ascii_tolower);
   }
   bool operator<=(const EventChoiceClass& rvalue) const {
-    return Event == rvalue.Event ||
-           port::CompareIgnoreCase(Description(), rvalue.Description()) < 0;
+    return Event == rvalue.Event || *this < rvalue;
   }
   bool operator>=(const EventChoiceClass& rvalue) const {
-    return Event == rvalue.Event ||
-           port::CompareIgnoreCase(Description(), rvalue.Description()) > 0;
+    return Event == rvalue.Event || rvalue < *this;
   }
   [[nodiscard]] const char* Description() const {
     return Name_From_Event(Event);

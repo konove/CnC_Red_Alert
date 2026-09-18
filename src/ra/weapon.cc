@@ -52,8 +52,8 @@
 
 #include <cstddef>
 
+#include "absl/strings/match.h"
 #include "magic_enum/magic_enum.hpp"
-#include "port/ex_string.h"
 #include "ra/ccini.h"
 #include "ra/const.h"
 #include "ra/defines.h"
@@ -254,7 +254,7 @@ WeaponType Weapon_From_Name(const char* name) {
   }
 
   for (int index = 0; index < Weapons.Count(); index++) {
-    if (port::CompareIgnoreCase(Weapons.Ptr(index)->Name(), name) == 0) {
+    if (absl::EqualsIgnoreCase(Weapons.Ptr(index)->Name(), name)) {
       return static_cast<WeaponType>(Weapons.Ptr(index)->ID);
     }
   }
@@ -283,7 +283,7 @@ ArmorType Armor_From_Name(const char* name) {
   }
 
   for (const ArmorType index : magic_enum::enum_values<ArmorType>()) {
-    if (port::CompareIgnoreCase(ArmorName.at(index), name) == 0) {
+    if (absl::EqualsIgnoreCase(ArmorName.at(index), name)) {
       return index;
     }
   }

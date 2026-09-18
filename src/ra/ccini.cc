@@ -105,10 +105,10 @@
 #include <utility>
 
 #include "absl/log/check.h"
+#include "absl/strings/match.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
-#include "port/ex_string.h"
 #include "port/tokenizer.h"
 #include "ra/adata.h"
 #include "ra/anim.h"
@@ -769,8 +769,8 @@ WarheadType CCINIClass::Get_WarheadType(const char* section, const char* entry,
 
   if (Get_String(section, entry, "", buffer, sizeof(buffer))) {
     for (const WarheadType wh : magic_enum::enum_values<WarheadType>()) {
-      if (port::CompareIgnoreCase(WarheadTypeClass::As_Pointer(wh)->Name(),
-                                  buffer) == 0) {
+      if (absl::EqualsIgnoreCase(WarheadTypeClass::As_Pointer(wh)->Name(),
+                                 buffer)) {
         return wh;
       }
     }
@@ -888,10 +888,10 @@ BulletType CCINIClass::Get_BulletType(const char* section, const char* entry,
 
   if (Get_String(section, entry, "", buffer, sizeof(buffer))) {
     for (const BulletType proj : magic_enum::enum_values<BulletType>()) {
-      if (port::CompareIgnoreCase(BulletTypeClass::As_Reference(proj).Name(),
-                                  buffer) == 0) {
+      if (absl::EqualsIgnoreCase(BulletTypeClass::As_Reference(proj).Name(),
+                                 buffer)) {
         //			if
-        //(port::CompareIgnoreCase(ProjectileNames[proj], buffer) == 0)
+        //(absl::EqualsIgnoreCase(ProjectileNames[proj], buffer))
         //{
         return proj;
       }
@@ -1013,7 +1013,7 @@ VQType CCINIClass::Get_VQType(const char* section, const char* entry,
 
   if (Get_String(section, entry, "", buffer, sizeof(buffer))) {
     for (const VQType vq : magic_enum::enum_values<VQType>()) {
-      if (port::CompareIgnoreCase(buffer, VQName.at(vq)) == 0) {
+      if (absl::EqualsIgnoreCase(buffer, VQName.at(vq))) {
         return vq;
       }
     }
@@ -1547,11 +1547,11 @@ void CCINIClass::Invalidate_Message_Digest() { IsDigestPresent = false; }
 
 uint32_t Owner_From_Name(const char* text) {
   uint32_t ownable = 0;
-  if (port::CompareIgnoreCase(text, "soviet") == 0) {
+  if (absl::EqualsIgnoreCase(text, "soviet")) {
     ownable |= kHouseFlagSoviet;
   } else {
-    if (port::CompareIgnoreCase(text, "allies") == 0 ||
-        port::CompareIgnoreCase(text, "allied") == 0) {
+    if (absl::EqualsIgnoreCase(text, "allies") ||
+        absl::EqualsIgnoreCase(text, "allied")) {
       ownable |= kHouseFlagAllies;
     } else {
       const HousesType h = HouseTypeClass::From_Name(text);
@@ -1566,7 +1566,7 @@ uint32_t Owner_From_Name(const char* text) {
 CrateType Crate_From_Name(const char* name) {
   if (name != nullptr) {
     for (const CrateType crate : magic_enum::enum_values<CrateType>()) {
-      if (port::CompareIgnoreCase(name, CrateNames.at(crate)) == 0) {
+      if (absl::EqualsIgnoreCase(name, CrateNames.at(crate))) {
         return crate;
       }
     }
@@ -1577,7 +1577,7 @@ CrateType Crate_From_Name(const char* name) {
 TheaterType Theater_From_Name(const char* name) {
   if (name != nullptr) {
     for (const TheaterType index : magic_enum::enum_values<TheaterType>()) {
-      if (port::CompareIgnoreCase(name, Theaters.at(index).Name) == 0) {
+      if (absl::EqualsIgnoreCase(name, Theaters.at(index).Name)) {
         return index;
       }
     }
@@ -1588,7 +1588,7 @@ TheaterType Theater_From_Name(const char* name) {
 SourceType Source_From_Name(const char* name) {
   if (name) {
     for (const SourceType source : magic_enum::enum_values<SourceType>()) {
-      if (port::CompareIgnoreCase(SourceName.at(source), name) == 0) {
+      if (absl::EqualsIgnoreCase(SourceName.at(source), name)) {
         return source;
       }
     }

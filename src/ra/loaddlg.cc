@@ -53,6 +53,7 @@
 #include <string_view>
 #include <vector>
 
+#include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
@@ -656,7 +657,7 @@ void LoadOptionsClass::Fill_List(ListClass* list) {
   bool found = Find_First_File("SAVEGAME.*", find_state);
 
   while (found) {
-    if (port::CompareIgnoreCase(find_state.name, kNetSaveFileName) != 0) {
+    if (!absl::EqualsIgnoreCase(find_state.name, kNetSaveFileName)) {
       /*
       ** Extract the game ID from the filename
       */

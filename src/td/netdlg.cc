@@ -132,11 +132,12 @@
 #include <string_view>
 #include <utility>
 
+#include "absl/strings/ascii.h"
+#include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
-#include "port/ex_string.h"
 #include "port/random_seed.h"
 #include "port/safe_string.h"
 #include "port/unaligned.h"
@@ -1494,7 +1495,7 @@ static int Net_Join_Dialog() {
         */
         found = 0;
         for (i = 0; i < Games.Count(); i++) {
-          if (!port::CompareIgnoreCase(Games.at(i)->Name, namebuf)) {
+          if (absl::EqualsIgnoreCase(Games.at(i)->Name, namebuf)) {
             found = 1;
             CCMessageBox().Process(TXT_GAMENAME_MUSTBE_UNIQUE);
             display = REDRAW_ALL;
@@ -2118,7 +2119,7 @@ static bool Request_To_Join(const char* playername, int join_index,
   ------------------------ Make sure name is unique ------------------------
   */
   for (int i = 0; i < Players.Count(); i++) {
-    if (!port::CompareIgnoreCase(playername, Players.at(i)->Name)) {
+    if (absl::EqualsIgnoreCase(playername, Players.at(i)->Name)) {
       CCMessageBox().Process(TXT_NAME_MUSTBE_UNIQUE);
       return false;
     }
@@ -3073,7 +3074,10 @@ static int Net_New_Dialog() {
   Init scenario description list box
   ........................................................................*/
   for (i = 0; i < MPlayerScenarios.Count(); i++) {
-    scenariolist.Add_Item(strupr(MPlayerScenarios.at(i)));
+    char* const scenario = MPlayerScenarios.at(i);
+    std::ranges::transform(port::MutableCString(scenario), scenario,
+                           absl::ascii_toupper);
+    scenariolist.Add_Item(scenario);
   }
   ScenarioIdx = 0;  // 1st scenario is selected
 
@@ -4100,7 +4104,7 @@ uint32_t Compute_Name_CRC(const char* name) {
   uint32_t crc = 0L;
 
   port::SafeCopy(buf, name);
-  strupr(buf);
+  std::ranges::transform(port::MutableCString(buf), buf, absl::ascii_toupper);
 
   for (int i = 0; std::cmp_less(i, std::string_view(buf).size()); i++) {
     Add_CRC(&crc, static_cast<uint32_t>(base::At(buf, i)));

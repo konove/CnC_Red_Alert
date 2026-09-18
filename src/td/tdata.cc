@@ -50,9 +50,9 @@
 #include <filesystem>
 #include <span>
 
+#include "absl/strings/match.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
-#include "port/ex_string.h"
 #include "sdllib/shape.h"
 #include "td/conquer.h"
 #include "td/const.h"
@@ -700,7 +700,7 @@ TerrainType TerrainTypeClass::From_Name(const char* name) {
 
   if (name) {
     for (TerrainType index = TERRAIN_TREE1; index < TERRAIN_COUNT; index++) {
-      if (port::CompareIgnoreCase(name, Pointers.at(index)->IniName) == 0) {
+      if (absl::EqualsIgnoreCase(name, Pointers.at(index)->IniName)) {
         return index;
       }
     }

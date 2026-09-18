@@ -63,6 +63,8 @@
 #include <utility>
 #include <vector>
 
+#include "absl/strings/ascii.h"
+#include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/buffer.h"
@@ -854,8 +856,7 @@ void Destroy_Null_Connection(int id, int error) {
   ** Remove this player from the Players vector
   */
   for (int i = 0; i < Session.Players.Count(); i++) {
-    if (!port::CompareIgnoreCase(Session.Players.at(i)->Name,
-                                 housep->IniName)) {
+    if (absl::EqualsIgnoreCase(Session.Players.at(i)->Name, housep->IniName)) {
       delete Session.Players.at(i);
       Session.Players.Delete(Session.Players.at(i));
       break;
@@ -1908,8 +1909,8 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   port_index = -1;
   if (tempsettings.ModemName[0]) {
     for (int i = 0; i < port_custom_index; i++) {
-      if (!port::CompareIgnoreCase(portlist.Get_Item(i),
-                                   tempsettings.ModemName)) {
+      if (absl::EqualsIgnoreCase(portlist.Get_Item(i),
+                                 tempsettings.ModemName)) {
         port_index = i;
         port::SafeCopy(portbuf, tempsettings.ModemName);
         break;
@@ -2174,26 +2175,27 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
           port_edt.Set_Text(portbuf, PORTBUF_MAX);
           port_edt.Flag_To_Redraw();
         } else {
-          strupr(portbuf);
-          if (port::CompareIgnoreCase(portbuf, "3F8") == 0) {
+          std::ranges::transform(port::MutableCString(portbuf), portbuf,
+                                 absl::ascii_toupper);
+          if (absl::EqualsIgnoreCase(portbuf, "3F8")) {
             port_index = 0;
             portlist.Set_Selected_Index(port_index);
             port::SafeCopy(portbuf, "COM1");
             display = REDRAW_BUTTONS;
 
-          } else if (port::CompareIgnoreCase(portbuf, "2F8") == 0) {
+          } else if (absl::EqualsIgnoreCase(portbuf, "2F8")) {
             port_index = 1;
             portlist.Set_Selected_Index(port_index);
             port::SafeCopy(portbuf, "COM2");
             display = REDRAW_BUTTONS;
 
-          } else if (port::CompareIgnoreCase(portbuf, "3E8") == 0) {
+          } else if (absl::EqualsIgnoreCase(portbuf, "3E8")) {
             port_index = 2;
             portlist.Set_Selected_Index(port_index);
             port::SafeCopy(portbuf, "COM3");
             display = REDRAW_BUTTONS;
 
-          } else if (port::CompareIgnoreCase(portbuf, "2E8") == 0) {
+          } else if (absl::EqualsIgnoreCase(portbuf, "2E8")) {
             port_index = 3;
             portlist.Set_Selected_Index(port_index);
             port::SafeCopy(portbuf, "COM4");
@@ -2335,7 +2337,8 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
         const std::span<char> item_buffer(item, INITSTRBUF_MAX);
 
-        strupr(initstrbuf);
+        std::ranges::transform(port::MutableCString(initstrbuf), initstrbuf,
+                               absl::ascii_toupper);
         port::SafeCopy(item_buffer, initstrbuf);
 
         Session.InitStrings.Add(item);
@@ -6863,7 +6866,7 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
   If 'Save', save all current settings
   ------------------------------------------------------------------------*/
   if (rc) {
-    port::SafeCopy(phone->Name, strupr(namebuf));
+    port::SafeCopy(phone->Name, absl::AsciiStrToUpper(namebuf));
 
     // if nothing was entered then make if NONAME
 
@@ -6871,7 +6874,7 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
       port::SafeCopy(phone->Name, "NONAME");
     }
 
-    port::SafeCopy(phone->Number, strupr(numbuf));
+    port::SafeCopy(phone->Number, absl::AsciiStrToUpper(numbuf));
 
     if (custom) {
       phone->Settings = settings;

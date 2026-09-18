@@ -61,8 +61,8 @@
 #include <span>
 #include <string>
 
+#include "absl/strings/match.h"
 #include "magic_enum/magic_enum.hpp"
-#include "port/ex_string.h"
 #include "ra/aircraft.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
@@ -373,7 +373,7 @@ void AircraftTypeClass::Init_Heap() {
 AircraftType AircraftTypeClass::From_Name(const char* name) {
   if (name != nullptr) {
     for (const AircraftType classid : magic_enum::enum_values<AircraftType>()) {
-      if (port::CompareIgnoreCase(As_Reference(classid).IniName, name) == 0) {
+      if (absl::EqualsIgnoreCase(As_Reference(classid).IniName, name)) {
         return classid;
       }
     }

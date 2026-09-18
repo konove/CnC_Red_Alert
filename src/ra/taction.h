@@ -40,10 +40,12 @@
 #ifndef CNC_RED_ALERT_RA_TACTION_H_
 #define CNC_RED_ALERT_RA_TACTION_H_
 
+#include <algorithm>
 #include <string>
+#include <string_view>
 
+#include "absl/strings/ascii.h"
 #include "base/enum_array.h"
-#include "port/ex_string.h"
 #include "port/tokenizer.h"
 #include "ra/ccini.h"
 #include "ra/ccptr.h"
@@ -169,18 +171,19 @@ class ActionChoiceClass {
     return Action != rvalue.Action;
   }
   bool operator>(const ActionChoiceClass& rvalue) const {
-    return port::CompareIgnoreCase(Description(), rvalue.Description()) > 0;
+    return rvalue < *this;
   }
+  // Orders by description, ignoring case.
   bool operator<(const ActionChoiceClass& rvalue) const {
-    return port::CompareIgnoreCase(Description(), rvalue.Description()) < 0;
+    return std::ranges::lexicographical_compare(
+        std::string_view(Description()), std::string_view(rvalue.Description()),
+        {}, absl::ascii_tolower, absl::ascii_tolower);
   }
   bool operator<=(const ActionChoiceClass& rvalue) const {
-    return Action == rvalue.Action ||
-           port::CompareIgnoreCase(Description(), rvalue.Description()) < 0;
+    return Action == rvalue.Action || *this < rvalue;
   }
   bool operator>=(const ActionChoiceClass& rvalue) const {
-    return Action == rvalue.Action ||
-           port::CompareIgnoreCase(Description(), rvalue.Description()) > 0;
+    return Action == rvalue.Action || rvalue < *this;
   }
   [[nodiscard]] const char* Description() const {
     return Name_From_Action(Action);

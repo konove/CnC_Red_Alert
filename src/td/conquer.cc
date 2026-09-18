@@ -80,6 +80,7 @@
 #include <vector>
 
 #include "absl/log/log.h"
+#include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/buffer.h"
@@ -1388,7 +1389,7 @@ const char* Language_Name(const char* basename) {
 SourceType Source_From_Name(const char* name) {
   if (name) {
     for (SourceType source = SOURCE_FIRST; source < SOURCE_COUNT; source++) {
-      if (port::CompareIgnoreCase(SourceName.at(source), name) == 0) {
+      if (absl::EqualsIgnoreCase(SourceName.at(source), name)) {
         return source;
       }
     }
@@ -1437,7 +1438,7 @@ TheaterType Theater_From_Name(const char* name) {
 
   if (name) {
     for (TheaterType index = THEATER_DESERT; index < THEATER_COUNT; index++) {
-      if (port::CompareIgnoreCase(name, Theaters.at(index).Name) == 0) {
+      if (absl::EqualsIgnoreCase(name, Theaters.at(index).Name)) {
         return index;
       }
     }
@@ -2170,7 +2171,7 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
       ** Kludge to use the old palette interpolation table for CC2TEASE
       ** unless the covert CD is inserted.
       */
-      if (!port::CompareIgnoreCase(palname, "CC2TEASE.VQP")) {
+      if (absl::EqualsIgnoreCase(palname, "CC2TEASE.VQP")) {
         int cd_index = Get_CD_Index(SearchPaths::current_cd_drive(), 1 * 60);
         /*
         ** If cd_index == 2 then its a covert CD
@@ -2186,7 +2187,7 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
       ** Kludge to use a different palette interpolation table for RETRO.VQA
       ** if the covert CD is inserted.
       */
-      if (!port::CompareIgnoreCase(palname, "RETRO.VQP")) {
+      if (absl::EqualsIgnoreCase(palname, "RETRO.VQP")) {
         int cd_index = Get_CD_Index(SearchPaths::current_cd_drive(), 1 * 60);
         /*
         ** If cd_index == 2 then its a covert CD

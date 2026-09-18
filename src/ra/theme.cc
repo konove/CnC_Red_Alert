@@ -60,10 +60,10 @@
 #include <string>
 #include <string_view>
 
+#include "absl/strings/match.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
-#include "port/ex_string.h"
 #include "ra/defines.h"
 #include "ra/externs.h"
 #include "ra/goptions.h"
@@ -562,7 +562,7 @@ ThemeType ThemeClass::From_Name(const char* name) {
     **	of the theme. This is guaranteed to be unique.
     */
     for (const ThemeType theme : magic_enum::enum_values<ThemeType>()) {
-      if (port::CompareIgnoreCase(_themes.at(theme).Name, name) == 0) {
+      if (absl::EqualsIgnoreCase(_themes.at(theme).Name, name)) {
         return theme;
       }
     }

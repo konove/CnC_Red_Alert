@@ -61,9 +61,9 @@
 #include <span>
 #include <string>
 
+#include "absl/strings/match.h"
 #include "base/trig.h"
 #include "magic_enum/magic_enum.hpp"
-#include "port/ex_string.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
 #include "ra/externs.h"
@@ -624,7 +624,7 @@ std::span<const int16_t> VesselTypeClass::Overlap_List() const {
 VesselType VesselTypeClass::From_Name(const char* name) {
   if (name != nullptr) {
     for (const VesselType classid : magic_enum::enum_values<VesselType>()) {
-      if (port::CompareIgnoreCase(As_Reference(classid).IniName, name) == 0) {
+      if (absl::EqualsIgnoreCase(As_Reference(classid).IniName, name)) {
         return classid;
       }
     }

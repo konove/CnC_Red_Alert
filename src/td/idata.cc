@@ -58,10 +58,10 @@
 #include <span>
 #include <string>
 
+#include "absl/strings/match.h"
 #include "base/array.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
-#include "port/ex_string.h"
 #include "sdllib/shape.h"
 #include "td/building.h"
 #include "td/cell.h"
@@ -1782,7 +1782,7 @@ InfantryType InfantryTypeClass::From_Name(const char* name) {
   if (name) {
     for (InfantryType classid = INFANTRY_E1; classid < INFANTRY_COUNT;
          classid++) {
-      if (port::CompareIgnoreCase(Pointers.at(classid)->IniName, name) == 0) {
+      if (absl::EqualsIgnoreCase(Pointers.at(classid)->IniName, name)) {
         return classid;
       }
     }

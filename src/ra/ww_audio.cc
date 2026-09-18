@@ -56,11 +56,11 @@
 #include <string>
 
 #include "absl/log/log.h"
+#include "absl/strings/match.h"
 #include "base/array.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
-#include "port/ex_string.h"
 #include "ra/config.h"
 #include "ra/coord.h"
 #include "ra/defines.h"
@@ -411,7 +411,7 @@ VocType Voc_From_Name(const char* name) {
   }
 
   for (const VocType voc : magic_enum::enum_values<VocType>()) {
-    if (port::CompareIgnoreCase(name, SoundEffectName.at(voc).Name) == 0) {
+    if (absl::EqualsIgnoreCase(name, SoundEffectName.at(voc).Name)) {
       return voc;
     }
   }

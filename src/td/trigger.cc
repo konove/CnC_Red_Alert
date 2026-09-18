@@ -73,9 +73,9 @@
 #include <string_view>
 #include <vector>
 
+#include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
-#include "port/ex_string.h"
 #include "port/tokenizer.h"
 #include "reinf.h"
 #include "td/anim.h"
@@ -1291,7 +1291,7 @@ TriggerClass* TriggerClass::As_Pointer(const char* name) {
   for (int i = 0; i < Triggers.Count(); i++) {
     TriggerClass* trigger = Triggers.Ptr(i);
 
-    if (!port::CompareIgnoreCase(name, trigger->Name)) {
+    if (absl::EqualsIgnoreCase(name, trigger->Name)) {
       return trigger;
     }
   }
@@ -1355,7 +1355,7 @@ EventType TriggerClass::Event_From_Name(const char* name) {
 
   for (int i = static_cast<int>(EVENT_NONE); i < static_cast<int>(EVENT_COUNT);
        i++) {
-    if (!port::CompareIgnoreCase(name, base::At(EventText, i + 1))) {
+    if (absl::EqualsIgnoreCase(name, base::At(EventText, i + 1))) {
       return static_cast<EventType>(i);
     }
   }
@@ -1397,7 +1397,7 @@ TriggerClass::ActionType TriggerClass::Action_From_Name(const char* name) {
 
   for (int i = static_cast<int>(ACTION_NONE);
        i < static_cast<int>(ACTION_COUNT); i++) {
-    if (!port::CompareIgnoreCase(name, base::At(ActionText, i + 1))) {
+    if (absl::EqualsIgnoreCase(name, base::At(ActionText, i + 1))) {
       return static_cast<ActionType>(i);
     }
   }

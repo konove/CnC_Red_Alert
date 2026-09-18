@@ -15,7 +15,7 @@ target_sources(port PUBLIC
         FILES ${PORT_HEADERS}
 )
 
-target_link_libraries(port PUBLIC absl::check absl::log absl::span absl::str_format)
+target_link_libraries(port PUBLIC absl::check absl::log absl::span absl::str_format absl::strings)
 
 # Tests
 include(Testing)

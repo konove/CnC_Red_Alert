@@ -53,8 +53,8 @@
 #include "ra/mission.h"
 
 #include "absl/log/check.h"
+#include "absl/strings/match.h"
 #include "magic_enum/magic_enum.hpp"
-#include "port/ex_string.h"
 #include "ra/bench_util.h"
 #include "ra/ccini.h"
 #include "ra/const.h"
@@ -373,7 +373,7 @@ void MissionClass::Assign_Mission(MissionType order) {
 MissionType MissionClass::Mission_From_Name(const char* name) {
   if (name) {
     for (const MissionType order : magic_enum::enum_values<MissionType>()) {
-      if (port::CompareIgnoreCase(Missions.at(order), name) == 0) {
+      if (absl::EqualsIgnoreCase(Missions.at(order), name)) {
         return order;
       }
     }

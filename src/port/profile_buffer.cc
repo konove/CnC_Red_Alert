@@ -9,7 +9,7 @@
 #include <string_view>
 
 #include "absl/base/attributes.h"
-#include "port/ex_string.h"
+#include "absl/strings/match.h"
 #include "port/safe_string.h"
 
 namespace port {
@@ -48,7 +48,7 @@ std::optional<Section> FindSection(std::string_view text, std::string_view name)
       }
       const auto close = line.find(']');
       if (close != std::string_view::npos &&
-          CompareIgnoreCase(line.substr(1, close - 1), name) == 0) {
+          absl::EqualsIgnoreCase(line.substr(1, close - 1), name)) {
         found = Section{pos, next, text.size()};
       }
     }
@@ -83,7 +83,7 @@ std::optional<Entry> FindEntry(std::string_view text, const Section& section,
   for (auto pos = section.body; pos < section.end;) {
     const auto next = std::min(NextLine(text, pos), section.end);
     const auto entry = ParseEntry(text, pos, next);
-    if (entry && CompareIgnoreCase(entry->key, key) == 0) {
+    if (entry && absl::EqualsIgnoreCase(entry->key, key)) {
       return entry;
     }
     pos = next;

@@ -79,6 +79,7 @@
 
 #include "absl/log/check.h"
 #include "absl/log/log.h"
+#include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/buffer.h"
@@ -1844,7 +1845,7 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
   */
   // Avoid CD check if official scenario was downloaded.
   if ((Session.Type == GAME_NORMAL || Session.ScenarioIsOfficial) &&
-      port::CompareIgnoreCase(Scen.ScenarioName, "download.tmp") != 0) {
+      !absl::EqualsIgnoreCase(Scen.ScenarioName, "download.tmp")) {
     /*
     ** If this is scenario 1 then it should be on all CDs unless its an ant
     *scenario

@@ -75,10 +75,10 @@
 #include <span>
 #include <string>
 
+#include "absl/strings/match.h"
 #include "base/array.h"
 #include "base/enum_array.h"
 #include "magic_enum/magic_enum.hpp"
-#include "port/ex_string.h"
 #include "ra/building.h"
 #include "ra/ccini.h"
 #include "ra/ccptr.h"
@@ -3190,7 +3190,7 @@ void BuildingTypeClass::One_Time() {
 StructType BuildingTypeClass::From_Name(const char* name) {
   if (name != nullptr) {
     for (const StructType classid : magic_enum::enum_values<StructType>()) {
-      if (port::CompareIgnoreCase(As_Reference(classid).IniName, name) == 0) {
+      if (absl::EqualsIgnoreCase(As_Reference(classid).IniName, name)) {
         return classid;
       }
     }

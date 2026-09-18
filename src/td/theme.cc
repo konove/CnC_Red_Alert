@@ -58,8 +58,8 @@
 #include <filesystem>
 #include <string_view>
 
+#include "absl/strings/match.h"
 #include "base/enum_array.h"
-#include "port/ex_string.h"
 #include "sdllib/ww_audio.h"
 #include "td/conquer.h"
 #include "td/defines.h"
@@ -509,7 +509,7 @@ ThemeType ThemeClass::From_Name(const char* name) {
     **	of the theme. This is guaranteed to be unique.
     */
     for (ThemeType theme = THEME_AIRSTRIKE; theme < THEME_COUNT; theme++) {
-      if (port::CompareIgnoreCase(_themes.at(theme).Name, name) == 0) {
+      if (absl::EqualsIgnoreCase(_themes.at(theme).Name, name)) {
         return theme;
       }
     }

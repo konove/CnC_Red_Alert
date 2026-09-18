@@ -66,8 +66,8 @@
 #include <span>
 #include <string_view>
 
+#include "absl/strings/match.h"
 #include "base/numeric.h"
-#include "port/ex_string.h"
 #include "ra/control.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
@@ -911,7 +911,7 @@ void ListClass::Flag_To_Redraw() {
 void ListClass::Set_Selected_Index(const char* text) {
   if (text && Count() > 0) {
     for (int index = 0; index < Count(); index++) {
-      if (port::CompareIgnoreCase(List.at(base::ToSize(index)), text) == 0) {
+      if (absl::EqualsIgnoreCase(List.at(base::ToSize(index)), text)) {
         Set_Selected_Index(index);
         break;
       }

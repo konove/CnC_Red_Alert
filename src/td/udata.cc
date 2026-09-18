@@ -58,9 +58,9 @@
 #include <span>
 #include <string>
 
+#include "absl/strings/match.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
-#include "port/ex_string.h"
 #include "sdllib/shape.h"
 #include "td/building.h"
 #include "td/conquer.h"
@@ -1358,7 +1358,7 @@ std::span<const int16_t> UnitTypeClass::Occupy_List(bool /*placement*/) const {
 UnitType UnitTypeClass::From_Name(const char* name) {
   if (name) {
     for (UnitType classid = UNIT_HTANK; classid < UNIT_COUNT; classid++) {
-      if (port::CompareIgnoreCase(Pointers.at(classid)->IniName, name) == 0) {
+      if (absl::EqualsIgnoreCase(Pointers.at(classid)->IniName, name)) {
         return classid;
       }
     }

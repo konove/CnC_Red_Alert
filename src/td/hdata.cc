@@ -46,9 +46,9 @@
 #include <cstring>
 #include <span>
 
+#include "absl/strings/match.h"
 #include "base/array.h"
 #include "base/enum_array.h"
-#include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "td/conquer.h"
 #include "td/const.h"
@@ -264,7 +264,7 @@ HouseTypeClass::HouseTypeClass(HousesType house, const char* ini, int fullname,
 HousesType HouseTypeClass::From_Name(const char* name) {
   if (name) {
     for (HousesType house = HOUSE_FIRST; house < HOUSE_COUNT; house++) {
-      if (port::CompareIgnoreCase(Pointers.at(house)->IniName, name) == 0) {
+      if (absl::EqualsIgnoreCase(Pointers.at(house)->IniName, name)) {
         return house;
       }
     }

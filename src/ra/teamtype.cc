@@ -75,12 +75,12 @@
 #include <utility>
 
 #include "absl/log/check.h"
+#include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
-#include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "port/tokenizer.h"
 #include "ra/ccini.h"
@@ -237,7 +237,7 @@ void TeamTypeClass::Init() { TeamTypes.Free_All(); }
 TeamTypeClass* TeamTypeClass::As_Pointer(const char* name) {
   if (name) {
     for (int index = 0; index < TeamTypes.Count(); index++) {
-      if (!port::CompareIgnoreCase(name, TeamTypes.Ptr(index)->IniName)) {
+      if (absl::EqualsIgnoreCase(name, TeamTypes.Ptr(index)->IniName)) {
         return TeamTypes.Ptr(index);
       }
     }
@@ -264,7 +264,7 @@ TeamMissionType TeamTypeClass::Mission_From_Name(const char* name) {
   if (name) {
     for (TeamMissionType order = TMISSION_ATTACK; order < TMISSION_COUNT;
          order++) {
-      if (port::CompareIgnoreCase(TMissions.at(order), name) == 0) {
+      if (absl::EqualsIgnoreCase(TMissions.at(order), name)) {
         return order;
       }
     }
@@ -476,7 +476,7 @@ TeamTypeClass* TeamTypeClass::Suggested_New_Team(
 TeamTypeClass* TeamTypeClass::From_Name(const char* name) {
   if (name) {
     for (int index = 0; index < TeamTypes.Count(); index++) {
-      if (port::CompareIgnoreCase(name, TeamTypes.Ptr(index)->IniName) == 0) {
+      if (absl::EqualsIgnoreCase(name, TeamTypes.Ptr(index)->IniName)) {
         return TeamTypes.Ptr(index);
       }
     }

@@ -134,11 +134,11 @@
 #include <utility>
 
 #include "absl/log/check.h"
+#include "absl/strings/match.h"
 #include "base/array.h"
 #include "base/buffer.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
-#include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "port/tokenizer.h"
 #include "sdllib/gbuffer.h"
@@ -3915,8 +3915,8 @@ void HouseClass::MPlayer_Defeated() {
       Search for this player's name in the MPlayerScore array
       ..................................................................*/
       for (int j = 0; j < MPlayerNumScores; j++) {
-        if (!port::CompareIgnoreCase(base::At(MPlayerNames, i),
-                                     base::At(MPlayerScore, j).Name)) {
+        if (absl::EqualsIgnoreCase(base::At(MPlayerNames, i),
+                                   base::At(MPlayerScore, j).Name)) {
           base::At(score_index, i) = j;
           break;
         }

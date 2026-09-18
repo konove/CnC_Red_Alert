@@ -78,13 +78,14 @@
 
 #include "absl/log/check.h"
 #include "absl/log/log.h"
+#include "absl/strings/ascii.h"
 #include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/buffer.h"
+#include "base/numeric.h"
 #include "base/types.h"
 #include "magic_enum/magic_enum.hpp"
-#include "port/ex_string.h"
 #include "port/platform.h"
 #include "port/random_seed.h"
 #include "port/safe_string.h"
@@ -1363,15 +1364,17 @@ bool Parse_Command_Line(std::span<char*> arguments) {
   for (auto* const argument :
        arguments.subspan(std::min(size_t{1}, arguments.size()))) {
     const std::string original_arg = argument;  // Copy for preserving case.
-    const std::string_view string = strupr(argument);
+    std::ranges::transform(port::MutableCString(argument), argument,
+                           absl::ascii_toupper);
+    const std::string_view string = argument;
 
     /*
     **	Print usage text only if requested.
     */
-    if (port::CompareIgnoreCase("/?", string) == 0 ||
-        port::CompareIgnoreCase("-?", string) == 0 ||
-        port::CompareIgnoreCase("-h", string) == 0 ||
-        port::CompareIgnoreCase("/h", string) == 0) {
+    if (absl::EqualsIgnoreCase("/?", string) ||
+        absl::EqualsIgnoreCase("-?", string) ||
+        absl::EqualsIgnoreCase("-h", string) ||
+        absl::EqualsIgnoreCase("/h", string)) {
       /*
       **	Unrecognized command line parameter... Display usage
       **	and then exit.
@@ -1457,7 +1460,7 @@ bool Parse_Command_Line(std::span<char*> arguments) {
       /*
       **	Scenario Editor Mode
       */
-      if (port::CompareIgnoreCase(string, "-CHECKMAP") == 0) {
+      if (absl::EqualsIgnoreCase(string, "-CHECKMAP")) {
         Debug_Check_Map = true;
         continue;
       }
@@ -1692,7 +1695,8 @@ uint32_t Obfuscate(const char* string) {
   /*
   **	Only upper case letters are significant.
   */
-  strupr(buffer);
+  std::ranges::transform(port::MutableCString(buffer), buffer,
+                         absl::ascii_toupper);
 
   /*
   **	Ensure that only visible ASCII characters compose the key phrase. This
@@ -1740,7 +1744,7 @@ uint32_t Obfuscate(const char* string) {
   *transformation. *	This doubles the workload of trying to reverse engineer
   *the CRC calculation.
   */
-  strrev(buffer);
+  std::ranges::reverse(std::span(buffer).first(base::ToSize(length)));
   code ^= CrcEngine::Compute(buffer);
 
   /*
@@ -1755,7 +1759,8 @@ uint32_t Obfuscate(const char* string) {
   *cypher *	process, it gives the sophisticated hacker false hope since the
   *strong *	cypher process occurs later.
   */
-  strrev(buffer);  // Restore original string order.
+  // Restore original string order.
+  std::ranges::reverse(std::span(buffer).first(base::ToSize(length)));
   for (int index = 0; index < length; index++) {
     code ^= static_cast<unsigned char>(base::At(buffer, index));
     const auto temp = static_cast<unsigned char>(code);
@@ -2160,7 +2165,7 @@ static void Init_Expansion_Files() {
     do {
       // scores shouldn't be loaded here but may be found if main has been
       // extracted
-      if (port::CompareIgnoreCase(state.name, "scores.mix") == 0) {
+      if (absl::EqualsIgnoreCase(state.name, "scores.mix")) {
         continue;
       }
       MixArchive::Register(state.name, &FastKey);

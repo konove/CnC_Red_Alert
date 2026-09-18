@@ -51,8 +51,8 @@
 #include <cstring>
 #include <span>
 
+#include "absl/strings/match.h"
 #include "magic_enum/magic_enum.hpp"
-#include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "ra/ccini.h"
 #include "ra/defines.h"
@@ -399,10 +399,7 @@ void HouseTypeClass::Init_Heap() {
 HousesType HouseTypeClass::From_Name(const char* name) {
   if (name != nullptr) {
     for (const HousesType house : magic_enum::enum_values<HousesType>()) {
-      if (port::CompareIgnoreCase(As_Reference(house).IniName, name) == 0) {
-        //			if
-        //(port::CompareIgnoreCase(Pointers[house]->IniName, name) ==
-        // 0) {
+      if (absl::EqualsIgnoreCase(As_Reference(house).IniName, name)) {
         return house;
       }
     }

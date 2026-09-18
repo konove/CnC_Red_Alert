@@ -24,9 +24,9 @@
 #include <span>
 #include <string>
 
+#include "absl/strings/match.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
-#include "port/ex_string.h"
 #include "sdllib/shape.h"
 #include "td/aircraft.h"
 #include "td/building.h"
@@ -279,7 +279,7 @@ AircraftType AircraftTypeClass::From_Name(const char* name) {
   if (name) {
     for (AircraftType classid = AIRCRAFT_TRANSPORT; classid < AIRCRAFT_COUNT;
          classid++) {
-      if (port::CompareIgnoreCase(Pointers.at(classid)->IniName, name) == 0) {
+      if (absl::EqualsIgnoreCase(Pointers.at(classid)->IniName, name)) {
         return classid;
       }
     }

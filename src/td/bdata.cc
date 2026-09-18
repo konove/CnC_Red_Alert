@@ -70,10 +70,10 @@
 #include <span>
 #include <string>
 
+#include "absl/strings/match.h"
 #include "base/array.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
-#include "port/ex_string.h"
 #include "sdllib/shape.h"
 #include "td/building.h"
 #include "td/cell.h"
@@ -3779,7 +3779,7 @@ void BuildingTypeClass::One_Time() {
 StructType BuildingTypeClass::From_Name(const char* name) {
   if (name) {
     for (StructType classid = STRUCT_WEAP; classid < STRUCT_COUNT; classid++) {
-      if (port::CompareIgnoreCase(As_Reference(classid).IniName, name) == 0) {
+      if (absl::EqualsIgnoreCase(As_Reference(classid).IniName, name)) {
         return classid;
       }
     }

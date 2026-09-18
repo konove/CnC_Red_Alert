@@ -134,13 +134,14 @@
 #include <string_view>
 
 #include "absl/log/check.h"
+#include "absl/strings/ascii.h"
+#include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/buffer.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
-#include "port/ex_string.h"
 #include "port/random_seed.h"
 #include "port/safe_string.h"
 #include "ra/_wsproto.h"  // IWYU pragma: keep - used by an DCHECK() below.
@@ -1167,8 +1168,7 @@ void Destroy_Connection(int id, int error) {
   // Remove this player from the Players vector
   //------------------------------------------------------------------------
   for (int i = 0; i < Session.Players.Count(); i++) {
-    if (!port::CompareIgnoreCase(Session.Players.at(i)->Name,
-                                 housep->IniName)) {
+    if (absl::EqualsIgnoreCase(Session.Players.at(i)->Name, housep->IniName)) {
       delete Session.Players.at(i);
       Session.Players.Delete(Session.Players.at(i));
       break;
@@ -2326,7 +2326,7 @@ static int Net_Join_Dialog() {
         //...............................................................
         found = 0;
         for (i = 1; i < Session.Games.Count(); i++) {
-          if (!port::CompareIgnoreCase(Session.Games.at(i)->Name, namebuf)) {
+          if (absl::EqualsIgnoreCase(Session.Games.at(i)->Name, namebuf)) {
             found = 1;
             Session.Messages.Add_Message(
                 nullptr, 0, Text_String(TXT_GAMENAME_MUSTBE_UNIQUE),
@@ -2846,8 +2846,8 @@ static int Net_Join_Dialog() {
             playerlist.Flag_To_Redraw();
           }
           for (i = 0; i < Session.Chat.Count(); i++) {
-            if (port::CompareIgnoreCase(Session.Chat.at(i)->Name,
-                                        playerlist.Get_Item(i)) != 0 ||
+            if (!absl::EqualsIgnoreCase(Session.Chat.at(i)->Name,
+                                        playerlist.Get_Item(i)) ||
                 &ColorRemaps.at(Session.Chat.at(i)->Chat.Color ==
                                         PCOLOR_DIALOG_BLUE
                                     ? PCOLOR_REALLY_BLUE
@@ -2864,8 +2864,8 @@ static int Net_Join_Dialog() {
             }
           }
         } else {
-          if (port::CompareIgnoreCase(Session.Chat.at(0)->Name,
-                                      playerlist.Get_Item(0)) != 0 ||
+          if (!absl::EqualsIgnoreCase(Session.Chat.at(0)->Name,
+                                      playerlist.Get_Item(0)) ||
               &ColorRemaps.at(Session.Chat.at(0)->Chat.Color) !=
                   playerlist.Colors.at(0)) {
             playerlist.Colors.at(0) =
@@ -5531,7 +5531,7 @@ uint32_t Compute_Name_CRC(const char* name) {
   uint32_t crc = 0L;
 
   port::SafeCopy(buf, name);
-  strupr(buf);
+  std::ranges::transform(port::MutableCString(buf), buf, absl::ascii_toupper);
 
   for (int i = 0; std::cmp_less(i, std::string_view(buf).size()); i++) {
     Add_CRC(&crc, static_cast<uint32_t>(base::At(buf, i)));

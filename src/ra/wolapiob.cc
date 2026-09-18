@@ -25,6 +25,7 @@
 #include <span>
 
 #include "absl/log/log.h"
+#include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/buffer.h"
@@ -1587,20 +1588,22 @@ void WolapiObject::SendMessage(const char* szMessage, IconListClass& ILUsers,
     //	Send public message.
     if (!bAction) {
       //	Easter egg related.
-      if (port::CompareIgnoreCase(szMessage, "/nousersounds") == 0) {
+      if (absl::EqualsIgnoreCase(szMessage, "/nousersounds")) {
         bEggSounds = false;
         return;
       }
-      if (port::CompareIgnoreCase(szMessage, "/usersounds") ==
-          0)  //	Left as obvious text in the exe, for someone to find...
-              //:-)
+      if (absl::EqualsIgnoreCase(
+              szMessage, "/usersounds"))  //	Left as obvious text in the exe,
+                                          //for someone to find...
+                                          //:-)
       {
         bEggSounds = true;
         return;
       }
-      if (port::CompareIgnoreCase(szMessage, "/8playergames") ==
-          0)  //	Left as obvious text in the exe, for someone to find...
-              //:-)
+      if (absl::EqualsIgnoreCase(
+              szMessage, "/8playergames"))  //	Left as obvious text in the exe,
+                                            //for someone to find...
+                                            //:-)
       {
         bEgg8Player = true;
         return;

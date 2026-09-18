@@ -61,8 +61,8 @@
 #include <span>
 #include <string>
 
+#include "absl/strings/match.h"
 #include "magic_enum/magic_enum.hpp"
-#include "port/ex_string.h"
 #include "ra/ccini.h"
 #include "ra/ccptr.h"
 #include "ra/cell.h"
@@ -666,7 +666,7 @@ static const InfantryTypeClass C2(
     2,          // Frame of projectile launch.
     0,          // Frame of projectile launch while prone.
     RemapCiv2,  // pointer to override remap table
-    false      // Added by Aftermath?
+    false       // Added by Aftermath?
 );
 
 static const InfantryTypeClass C3(
@@ -706,7 +706,7 @@ static const InfantryTypeClass C4(
     2,          // Frame of projectile launch.
     0,          // Frame of projectile launch while prone.
     RemapCiv4,  // pointer to override remap table
-    false      // Added by Aftermath?
+    false       // Added by Aftermath?
 );
 
 static const InfantryTypeClass C5(
@@ -726,7 +726,7 @@ static const InfantryTypeClass C5(
     2,          // Frame of projectile launch.
     0,          // Frame of projectile launch while prone.
     RemapCiv5,  // pointer to override remap table
-    false      // Added by Aftermath?
+    false       // Added by Aftermath?
 );
 
 static const InfantryTypeClass C6(
@@ -746,7 +746,7 @@ static const InfantryTypeClass C6(
     2,          // Frame of projectile launch.
     0,          // Frame of projectile launch while prone.
     RemapCiv6,  // pointer to override remap table
-    false      // Added by Aftermath?
+    false       // Added by Aftermath?
 );
 
 static const InfantryTypeClass C7(
@@ -766,7 +766,7 @@ static const InfantryTypeClass C7(
     2,          // Frame of projectile launch.
     0,          // Frame of projectile launch while prone.
     RemapCiv7,  // pointer to override remap table
-    false      // Added by Aftermath?
+    false       // Added by Aftermath?
 );
 
 static const InfantryTypeClass C8(
@@ -786,7 +786,7 @@ static const InfantryTypeClass C8(
     2,          // Frame of projectile launch.
     0,          // Frame of projectile launch while prone.
     RemapCiv8,  // pointer to override remap table
-    false      // Added by Aftermath?
+    false       // Added by Aftermath?
 );
 
 static const InfantryTypeClass C9(
@@ -806,7 +806,7 @@ static const InfantryTypeClass C9(
     2,          // Frame of projectile launch.
     0,          // Frame of projectile launch while prone.
     RemapCiv9,  // pointer to override remap table
-    false      // Added by Aftermath?
+    false       // Added by Aftermath?
 );
 
 // Nikoomba
@@ -827,7 +827,7 @@ static const InfantryTypeClass C10(
     2,           // Frame of projectile launch.
     0,           // Frame of projectile launch while prone.
     RemapCiv10,  // pointer to override remap table
-    false       // Added by Aftermath?
+    false        // Added by Aftermath?
 );
 
 static const InfantryTypeClass Einstein(
@@ -1223,7 +1223,7 @@ void InfantryTypeClass::Prep_For_Add() {
 InfantryType InfantryTypeClass::From_Name(const char* name) {
   if (name != nullptr) {
     for (const InfantryType classid : magic_enum::enum_values<InfantryType>()) {
-      if (port::CompareIgnoreCase(As_Reference(classid).IniName, name) == 0) {
+      if (absl::EqualsIgnoreCase(As_Reference(classid).IniName, name)) {
         return classid;
       }
     }

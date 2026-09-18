@@ -62,9 +62,9 @@
 #include <span>
 #include <string>
 
+#include "absl/strings/match.h"
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
-#include "port/ex_string.h"
 #include "ra/const.h"
 #include "ra/defines.h"
 #include "ra/display_constants.h"
@@ -673,7 +673,7 @@ void OverlayTypeClass::One_Time() {}
 OverlayType OverlayTypeClass::From_Name(const char* name) {
   if (name != nullptr) {
     for (const OverlayType index : magic_enum::enum_values<OverlayType>()) {
-      if (port::CompareIgnoreCase(As_Reference(index).IniName, name) == 0) {
+      if (absl::EqualsIgnoreCase(As_Reference(index).IniName, name)) {
         return index;
       }
     }

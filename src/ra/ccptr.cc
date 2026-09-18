@@ -39,7 +39,10 @@
 
 #include "ra/ccptr.h"
 
-#include "port/ex_string.h"
+#include <algorithm>
+#include <string_view>
+
+#include "absl/strings/ascii.h"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
 #include "ra/building.h"
@@ -87,7 +90,9 @@ CCPtr<T>::CCPtr(T* ptr) : ID(-1) {
  *=============================================================================================*/
 template <class T>
 bool CCPtr<T>::operator>(const CCPtr& rvalue) const {
-  return port::CompareIgnoreCase((*this)->Name(), rvalue->Name()) > 0;
+  return std::ranges::lexicographical_compare(
+      std::string_view(rvalue->Name()), std::string_view((*this)->Name()), {},
+      absl::ascii_tolower, absl::ascii_tolower);
 }
 
 template class CCPtr<AircraftClass>;

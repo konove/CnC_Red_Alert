@@ -58,9 +58,9 @@
 #include <filesystem>
 #include <span>
 
+#include "absl/strings/match.h"
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
-#include "port/ex_string.h"
 #include "ra/const.h"
 #include "ra/defines.h"
 #include "ra/externs.h"
@@ -560,7 +560,7 @@ void TerrainTypeClass::Init(TheaterType theater) {
 TerrainType TerrainTypeClass::From_Name(const char* name) {
   if (name != nullptr) {
     for (const TerrainType index : magic_enum::enum_values<TerrainType>()) {
-      if (port::CompareIgnoreCase(name, As_Reference(index).IniName) == 0) {
+      if (absl::EqualsIgnoreCase(name, As_Reference(index).IniName)) {
         return index;
       }
     }

@@ -64,8 +64,8 @@
 #include <span>
 
 #include "absl/log/check.h"
+#include "absl/strings/match.h"
 #include "magic_enum/magic_enum.hpp"
-#include "port/ex_string.h"
 #include "ra/bench_util.h"
 #include "ra/building.h"
 #include "ra/ccptr.h"
@@ -120,8 +120,8 @@ AnimType Anim_From_Name(const char* name) {
   }
 
   for (const AnimType anim : magic_enum::enum_values<AnimType>()) {
-    if (port::CompareIgnoreCase(AnimTypeClass::As_Reference(anim).IniName,
-                                name) == 0) {
+    if (absl::EqualsIgnoreCase(AnimTypeClass::As_Reference(anim).IniName,
+                               name)) {
       return anim;
     }
   }

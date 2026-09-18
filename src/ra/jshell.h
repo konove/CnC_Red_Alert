@@ -40,6 +40,7 @@
 #ifndef CNC_RED_ALERT_RA_JSHELL_H_
 #define CNC_RED_ALERT_RA_JSHELL_H_
 
+#include <algorithm>
 #include <bit>
 #include <cstddef>
 #include <cstdint>
@@ -49,12 +50,12 @@
 
 #include "absl/base/attributes.h"
 #include "absl/log/check.h"
+#include "absl/strings/ascii.h"
 #include "absl/strings/str_format.h"
 #include "absl/types/span.h"
 #include "base/array.h"
 #include "base/numeric.h"
 #include "base/types.h"
-#include "port/ex_string.h"
 #include "port/format.h"
 #include "ra/compat.h"
 #include "ra/globals.h"
@@ -250,8 +251,10 @@ void PNBubble_Sort(T& array, int count) {
     do {
       swapflag = false;
       for (int index = 0; index < count - 1; index++) {
-        if (port::CompareIgnoreCase(array.at(index)->Name(),
-                                    array.at(index + 1)->Name()) > 0) {
+        if (std::ranges::lexicographical_compare(
+                std::string_view(array.at(index + 1)->Name()),
+                std::string_view(array.at(index)->Name()), {},
+                absl::ascii_tolower, absl::ascii_tolower)) {
           const auto temp = array.at(index);
           array.at(index) = array.at(index + 1);
           array.at(index + 1) = temp;

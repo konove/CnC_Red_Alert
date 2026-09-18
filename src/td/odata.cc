@@ -57,9 +57,9 @@
 #include <span>
 #include <string>
 
+#include "absl/strings/match.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
-#include "port/ex_string.h"
 #include "sdllib/shape.h"
 #include "td/conquer.h"
 #include "td/const.h"
@@ -692,7 +692,7 @@ void OverlayTypeClass::One_Time() {}
 OverlayType OverlayTypeClass::From_Name(const char* name) {
   if (name) {
     for (OverlayType index = OVERLAY_CONCRETE; index < OVERLAY_COUNT; index++) {
-      if (port::CompareIgnoreCase(As_Reference(index).IniName, name) == 0) {
+      if (absl::EqualsIgnoreCase(As_Reference(index).IniName, name)) {
         return index;
       }
     }

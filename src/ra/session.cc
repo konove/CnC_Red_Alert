@@ -63,6 +63,8 @@
 #include <span>
 #include <string_view>
 
+#include "absl/strings/ascii.h"
+#include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/enum_array.h"
@@ -70,7 +72,6 @@
 #include "base/types.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/env.h"
-#include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "port/tokenizer.h"
 #include "ra/aircraft.h"
@@ -306,7 +307,7 @@ int SessionClass::Create_Connections() {
     //.....................................................................
     // Make sure the name matches before creating the connection
     //.....................................................................
-    if (!port::CompareIgnoreCase(
+    if (absl::EqualsIgnoreCase(
             Players.at(i)->Name,
             HouseClass::As_Pointer(Players.at(i)->Player.ID)->IniName)) {
       Ipx.Create_Connection(static_cast<int>(Players.at(i)->Player.ID),
@@ -587,7 +588,7 @@ void SessionClass::Read_MultiPlayer_Settings() {
 
     // find dial method
     for (i = 0; i < static_cast<int>(DIAL_METHODS); i++) {
-      if (!port::CompareIgnoreCase(
+      if (absl::EqualsIgnoreCase(
               buf, DialMethodCheck.at(static_cast<DialMethodType>(i)))) {
         SerialDefaults.DialMethod = static_cast<DialMethodType>(i);
         break;
@@ -623,7 +624,8 @@ void SessionClass::Read_MultiPlayer_Settings() {
       base::At(entry_buffer, 0) = 0;
       ini.Get_String("InitStrings", ini.Get_Entry("InitStrings", index),
                      nullptr, entry_buffer, INITSTRBUF_MAX);
-      strupr(entry);
+      std::ranges::transform(port::MutableCString(entry), entry,
+                             absl::ascii_toupper);
       InitStrings.Add(entry);
     }
 
@@ -652,7 +654,8 @@ void SessionClass::Read_MultiPlayer_Settings() {
       char* tokenptr = tokens.Next();  // ptr to token
       if (tokenptr) {
         port::SafeCopy(phone->Name, tokenptr);
-        strupr(phone->Name);
+        std::ranges::transform(port::MutableCString(phone->Name), phone->Name,
+                               absl::ascii_toupper);
       } else {
         phone->Name[0] = 0;
       }
@@ -660,7 +663,8 @@ void SessionClass::Read_MultiPlayer_Settings() {
       tokenptr = tokens.Next();
       if (tokenptr) {
         port::SafeCopy(phone->Number, tokenptr);
-        strupr(phone->Number);
+        std::ranges::transform(port::MutableCString(phone->Number),
+                               phone->Number, absl::ascii_toupper);
       } else {
         phone->Number[0] = 0;
       }
@@ -703,7 +707,7 @@ void SessionClass::Read_MultiPlayer_Settings() {
         // find dial method
 
         for (i = 0; i < static_cast<int>(DIAL_METHODS); i++) {
-          if (!port::CompareIgnoreCase(
+          if (absl::EqualsIgnoreCase(
                   buf, DialMethodCheck.at(static_cast<DialMethodType>(i)))) {
             /*
             ** This must be an old phonebook entry
@@ -743,7 +747,7 @@ void SessionClass::Read_MultiPlayer_Settings() {
 
         //	find dial method
         for (i = 0; i < static_cast<int>(DIAL_METHODS); i++) {
-          if (!port::CompareIgnoreCase(
+          if (absl::EqualsIgnoreCase(
                   buf, DialMethodCheck.at(static_cast<DialMethodType>(i)))) {
             phone->Settings.DialMethod = static_cast<DialMethodType>(i);
             break;
@@ -792,17 +796,17 @@ void SessionClass::Read_MultiPlayer_Settings() {
 
     ini.Get_String("SyncBug", "Type", "NONE", buf, 80);
 
-    if (!port::CompareIgnoreCase(buf, "AIRCRAFT")) {
+    if (absl::EqualsIgnoreCase(buf, "AIRCRAFT")) {
       TrapObjType = RTTI_AIRCRAFT;
-    } else if (!port::CompareIgnoreCase(buf, "ANIM")) {
+    } else if (absl::EqualsIgnoreCase(buf, "ANIM")) {
       TrapObjType = RTTI_ANIM;
-    } else if (!port::CompareIgnoreCase(buf, "BUILDING")) {
+    } else if (absl::EqualsIgnoreCase(buf, "BUILDING")) {
       TrapObjType = RTTI_BUILDING;
-    } else if (!port::CompareIgnoreCase(buf, "BULLET")) {
+    } else if (absl::EqualsIgnoreCase(buf, "BULLET")) {
       TrapObjType = RTTI_BULLET;
-    } else if (!port::CompareIgnoreCase(buf, "INFANTRY")) {
+    } else if (absl::EqualsIgnoreCase(buf, "INFANTRY")) {
       TrapObjType = RTTI_INFANTRY;
-    } else if (!port::CompareIgnoreCase(buf, "UNIT")) {
+    } else if (absl::EqualsIgnoreCase(buf, "UNIT")) {
       TrapObjType = RTTI_UNIT;
     } else {
       TrapObjType = RTTI_NONE;

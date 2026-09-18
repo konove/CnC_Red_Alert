@@ -28,12 +28,12 @@
 #include <string_view>
 #include <utility>
 
+#include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
-#include "port/ex_string.h"
 #include "port/format.h"
 #include "port/random_seed.h"
 #include "port/tokenizer.h"
@@ -3900,9 +3900,8 @@ int ScenarioIndex_From_Filename(const char* szScenarioFilename) {
   //	Returns the scenario index that matches the scenario filename, or -1 if
   // no match found.
   for (int index = 0; index < Session.Scenarios.Count(); index++) {
-    if (port::CompareIgnoreCase(szScenarioFilename,
-                                Session.Scenarios.at(index)->Get_Filename()) ==
-        0) {
+    if (absl::EqualsIgnoreCase(szScenarioFilename,
+                               Session.Scenarios.at(index)->Get_Filename())) {
       return index;
     }
   }

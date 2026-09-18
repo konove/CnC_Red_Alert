@@ -68,8 +68,8 @@
  *=============================================================================================*/
 #include "td/mission.h"
 
+#include "absl/strings/match.h"
 #include "base/enum_array.h"
-#include "port/ex_string.h"
 #include "td/defines.h"
 #include "td/ftimer.h"
 #include "td/jshell.h"
@@ -325,7 +325,7 @@ MissionType MissionClass::Mission_From_Name(const char* name) {
 
   if (name) {
     for (MissionType order = MISSION_SLEEP; order < MISSION_COUNT; order++) {
-      if (port::CompareIgnoreCase(Missions.at(order), name) == 0) {
+      if (absl::EqualsIgnoreCase(Missions.at(order), name)) {
         return order;
       }
     }

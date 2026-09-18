@@ -52,16 +52,17 @@
 #include <cstdlib>
 #include <cstring>
 #include <format>
+#include <span>
 #include <string>
 #include <utility>
 
 #include "absl/log/check.h"
 #include "absl/log/log.h"
+#include "absl/strings/match.h"
 #include "base/array.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
-#include "port/ex_string.h"
 #include "port/tokenizer.h"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
@@ -831,7 +832,7 @@ TActionType Action_From_Name(const char* name) {
   }
 
   for (TActionType i = TACTION_NONE; i < TACTION_COUNT; i++) {
-    if (!port::CompareIgnoreCase(name, ActionText.at(i))) {
+    if (absl::EqualsIgnoreCase(name, ActionText.at(i))) {
       return i;
     }
   }

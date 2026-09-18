@@ -60,9 +60,9 @@
 #include <span>
 #include <string>
 
+#include "absl/strings/match.h"
 #include "base/array.h"
 #include "magic_enum/magic_enum.hpp"
-#include "port/ex_string.h"
 #include "ra/ccini.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
@@ -982,7 +982,7 @@ void UnitTypeClass::Init_Heap() {
 UnitType UnitTypeClass::From_Name(const char* name) {
   if (name != nullptr) {
     for (const UnitType classid : magic_enum::enum_values<UnitType>()) {
-      if (port::CompareIgnoreCase(As_Reference(classid).IniName, name) == 0) {
+      if (absl::EqualsIgnoreCase(As_Reference(classid).IniName, name)) {
         return classid;
       }
     }

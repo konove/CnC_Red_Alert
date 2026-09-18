@@ -63,9 +63,9 @@
 #include <span>
 
 #include "absl/log/check.h"
+#include "absl/strings/match.h"
 #include "base/array.h"
 #include "base/numeric.h"
-#include "port/ex_string.h"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
 #include "ra/ccptr.h"
@@ -410,7 +410,7 @@ void BulletClass::AI() {
   COORDINATE coord = Coord;
   if (Class->IsFlameEquipped) {
     if (IsToAnimate) {
-      if (port::CompareIgnoreCase(Class->GraphicName, "FB1") == 0) {
+      if (absl::EqualsIgnoreCase(Class->GraphicName, "FB1")) {
         new AnimClass(ANIM_FBALL_FADE, coord, 1);
       } else {
         new AnimClass(ANIM_SMOKE_PUFF, coord, 1);
@@ -1080,7 +1080,7 @@ void BulletClass::Bullet_Explodes(bool forced) {
   }
 
   //				if (Payback && Payback->House == PlayerPtr &&
-  // port::CompareIgnoreCase(Class->Name(), "GPSSATELLITE") == 0) {
+  // absl::EqualsIgnoreCase(Class->Name(), "GPSSATELLITE")) {
   if (Payback && Class->Type == BULLET_GPS_SATELLITE) {
     if (Payback->House == PlayerPtr) {
       if (!Map.Is_Radar_Active()) {

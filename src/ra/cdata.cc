@@ -57,10 +57,10 @@
 #include <filesystem>
 #include <span>
 
+#include "absl/strings/match.h"
 #include "base/array.h"
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
-#include "port/ex_string.h"
 #include "ra/compat.h"
 #include "ra/const.h"
 #include "ra/defines.h"
@@ -1776,7 +1776,7 @@ LandType TemplateTypeClass::Land_Type(int icon) const {
 TemplateType TemplateTypeClass::From_Name(const char* name) {
   if (name != nullptr) {
     for (const TemplateType index : magic_enum::enum_values<TemplateType>()) {
-      if (port::CompareIgnoreCase(As_Reference(index).IniName, name) == 0) {
+      if (absl::EqualsIgnoreCase(As_Reference(index).IniName, name)) {
         return index;
       }
     }

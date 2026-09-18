@@ -53,10 +53,10 @@
 #include <filesystem>
 #include <span>
 
+#include "absl/strings/match.h"
 #include "base/array.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
-#include "port/ex_string.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/iconcach.h"
@@ -1314,7 +1314,7 @@ TemplateType TemplateTypeClass::From_Name(const char* name) {
   if (name) {
     for (TemplateType index = TEMPLATE_CLEAR1; index < TEMPLATE_COUNT;
          index++) {
-      if (port::CompareIgnoreCase(As_Reference(index).IniName, name) == 0) {
+      if (absl::EqualsIgnoreCase(As_Reference(index).IniName, name)) {
         return index;
       }
     }

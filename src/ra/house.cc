@@ -148,12 +148,12 @@
 
 #include "absl/base/attributes.h"
 #include "absl/log/check.h"
+#include "absl/strings/match.h"
 #include "base/array.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
 #include "base/types.h"
 #include "magic_enum/magic_enum.hpp"
-#include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "ra/aircraft.h"
 #include "ra/base.h"
@@ -3593,8 +3593,8 @@ void HouseClass::Tally_Score() {
     */
     int score_index = -1;
     for (int i = 0; i < Session.NumScores; i++) {
-      if (!port::CompareIgnoreCase(hptr->IniName,
-                                   base::At(Session.Score, i).Name)) {
+      if (absl::EqualsIgnoreCase(hptr->IniName,
+                                 base::At(Session.Score, i).Name)) {
         score_index = i;
         break;
       }

@@ -80,7 +80,7 @@
 #include "absl/base/log_severity.h"
 #include "absl/log/globals.h"
 #include "absl/log/initialize.h"
-#include "port/ex_string.h"
+#include "absl/strings/match.h"
 #include "sdllib/file.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/memflag.h"
@@ -371,7 +371,7 @@ int main(int argc, char* argv[])
           "Intro", "PlayIntro", "Yes",
           std::span(tempbuff).first(static_cast<std::size_t>(4)), buffer);
       Special.IsFromInstall =
-          port::CompareIgnoreCase(tempbuff, "No") != 0 && !SpawnedFromWChat;
+          !absl::EqualsIgnoreCase(tempbuff, "No") && !SpawnedFromWChat;
       SlowPalette =
           WWGetPrivateProfileInt("Options", "SlowPalette", 1, buffer) != 0;
 

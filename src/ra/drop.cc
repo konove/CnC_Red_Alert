@@ -42,9 +42,9 @@
 #include <cstddef>
 #include <span>
 
+#include "absl/strings/match.h"
 #include "base/array.h"
 #include "base/numeric.h"
-#include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
@@ -167,7 +167,7 @@ void DropListClass::Set_Position(int x, int y) {
 void DropListClass::Set_Selected_Index(const char* text) {
   if (text) {
     for (int index = 0; index < Count(); index++) {
-      if (port::CompareIgnoreCase(text, List.Get_Item(index)) == 0) {
+      if (absl::EqualsIgnoreCase(text, List.Get_Item(index))) {
         Set_Selected_Index(index);
         break;
       }

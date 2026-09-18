@@ -70,10 +70,10 @@
 #include <utility>
 
 #include "absl/log/check.h"
+#include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
-#include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "port/tokenizer.h"
 #include "ra/ccini.h"
@@ -2284,7 +2284,7 @@ void TriggerTypeClass::Init() { TriggerTypes.Free_All(); }
 TriggerTypeClass* TriggerTypeClass::From_Name(const char* name) {
   if (name != nullptr) {
     for (int index = 0; index < TriggerTypes.Count(); index++) {
-      if (port::CompareIgnoreCase(TriggerTypes.Ptr(index)->Name(), name) == 0) {
+      if (absl::EqualsIgnoreCase(TriggerTypes.Ptr(index)->Name(), name)) {
         return TriggerTypes.Ptr(index);
       }
     }
