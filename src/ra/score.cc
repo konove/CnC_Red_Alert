@@ -45,6 +45,7 @@
 #include "ra/ccptr.h"
 #include "ra/config.h"
 #include "ra/conquer.h"
+#include "ra/count_up.h"
 #include "ra/defines.h"
 #include "ra/externs.h"
 #include "ra/globals.h"
@@ -464,26 +465,21 @@ void ScoreClass::Presentation() {
   total = std::clamp(total, -9999, 99999);
 
   Keyboard->Clear();
-  // Count both ratings up together, economy starting 30 ticks after
-  // leadership: tick i shows i% of the final leadership and (i - 30)% of the
-  // final economy, so a full run is 100 + 30 ticks.
-  //
-  // TODO: The early exit compares i with the ratings themselves rather than
-  // with 100, so for ratings under 100 it fires before the counters have
-  // reached their values (leadership 50 stops at i == 50 showing 25) and the
-  // exact prints after the loop make the numbers jump.
+  // Count both ratings up together over 100 ticks each, economy starting 30
+  // ticks after leadership. The loop ends as soon as both show their final
+  // values, which is only early when a rating is zero.
   for (int i = 0; i <= 130; i++) {
     Set_Font_Palette(greenpal);
-    const int lead = leadership * i / 100;
+    const int lead = CountUpValue(leadership, i, 100);
     Count_Up_Print("%3d%%", lead, leadership, 244, 26);
+    const int econo = CountUpValue(economy, i - 30, 100);
     if (i >= 30) {
-      const int econo = economy * (i - 30) / 100;
       Count_Up_Print("%3d%%", econo, economy, 244, 38);
     }
     Print_Minutes(minutes);
     Call_Back_Delay(1);
     Play_Sample(Beepy6, 255, Options.Normalize_Volume(100));
-    if (i >= 30 && i >= leadership && i - 30 >= economy) {
+    if (i >= 30 && lead == leadership && econo == economy) {
       break;
     }
   }
@@ -766,19 +762,6 @@ void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
     nodkilled = nkilled * 5;
   }
 
-  // From here maxval is the longer bar's length, used to turn a bar position
-  // back into a count.
-  //
-  // TODO: That conversion suits bars growing side by side, as in Tiberian
-  // Dawn's Nod casualty graph, where it was copied from. Here each bar stops at
-  // its own length, so the shorter bar's counter only gets to
-  // count * shorter / longer (50 against 100 stops at 25) and then jumps to the
-  // real count. Dividing by the bar's own length would fix it.
-  maxval = std::max(gdikilled, nodkilled);
-  if (!maxval) {
-    maxval = 1;
-  }
-
   // Draw the white-flash shape on the hidpage. It is blitted over the last
   // step of each bar, cut to that bar's length plus 3 pixels of end cap, and
   // then replaced by the final coloured frame.
@@ -796,7 +779,8 @@ void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
       HidPage.Blit(SeenBuff, 0, 0, xpos * 2, ypos * 2, (3 + gdikilled) * 2, 16);
     }
 
-    Count_Up_Print("%d", i * gkilled / maxval, gkilled, 297, ypos + 2);
+    Count_Up_Print("%d", CountUpValue(gkilled, i, gdikilled), gkilled, 297,
+                   ypos + 2);
     Play_Sample(Beepy6, 255, Options.Normalize_Volume(150));
     Call_Back_Delay(2);
   }
@@ -815,13 +799,14 @@ void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
                    (3 + nodkilled) * 2, 16);
     }
 
-    Count_Up_Print("%d", i * nkilled / maxval, nkilled, 297, ypos + 14);
+    Count_Up_Print("%d", CountUpValue(nkilled, i, nodkilled), nkilled, 297,
+                   ypos + 14);
     Play_Sample(Beepy6, 255, Options.Normalize_Volume(150));
     Call_Back_Delay(2);
   }
 
-  // Make sure accurate count is printed at end; integer division in the loop
-  // can leave the counter short.
+  // Make sure accurate count is printed at end: with no losses the loop above
+  // never runs.
   CC_Draw_Shape(redptr, nodkilled, xpos * 2, (ypos + 12) * 2, WINDOW_MAIN,
                 SHAPE_WIN_REL, {}, {});
   Count_Up_Print("%d", nkilled, nkilled, 297, ypos + 14);

@@ -119,6 +119,11 @@ add_gtest(
 )
 
 add_gtest(
+    NAME ra_count_up_test
+    SOURCES count_up_test.cc
+)
+
+add_gtest(
     NAME ra_hall_of_fame_test
     SOURCES hall_of_fame_test.cc hall_of_fame.cc
     LIBS base
