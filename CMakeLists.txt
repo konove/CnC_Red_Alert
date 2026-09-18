@@ -3,6 +3,24 @@ project(CnCRedAlert)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
+# Without a build type a single-config generator passes no -O flag at all, and
+# the bounds checks this tree relies on (base::At, the checked container
+# accessors, the span CHECKs) are then real out-of-line calls in the innermost
+# loops of LCW decompression, Blowfish, SHA-1 and the paletted blit. Measured
+# 2026-09-17 on Red Alert: loading a saved game took 483 ms unoptimized and
+# 19 ms at -O2, bootstrap 1836 ms against 45 ms, and the intro movie could not
+# decode in real time, stretching 10.5 s of video to 22 s. The empty default is
+# never what anyone wants, so pick one. FORCE because the value being replaced
+# is the empty string rather than a deliberate choice; -DCMAKE_BUILD_TYPE=Debug
+# on the command line still wins, since it is set before this runs.
+if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+    set(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING
+            "Build type: Debug, Release, RelWithDebInfo or MinSizeRel" FORCE)
+    message(STATUS "No build type set - defaulting to RelWithDebInfo")
+endif ()
+set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
+        Debug Release RelWithDebInfo MinSizeRel)
+
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_EXTENSIONS OFF)
 

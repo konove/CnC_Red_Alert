@@ -10,14 +10,23 @@ being modernized incrementally.
 JOBS=$(($(getconf _NPROCESSORS_ONLN) / 2))
 ```
 
-| Target                 | Command                                                                          | Output                              |
-| ---------------------- | -------------------------------------------------------------------------------- | ----------------------------------- |
-| Both games             | `cmake -Bbuild -G Ninja && cmake --build build --parallel $JOBS`                 | `build/ra/rasdl`, `build/td/tdsdl`  |
-| Red Alert only         | `cmake --build build --parallel $JOBS --target rasdl`                            | `build/ra/rasdl`                    |
-| Tiberian Dawn only     | `cmake --build build --parallel $JOBS --target tdsdl`                            | `build/td/tdsdl`                    |
-| Fast build (no checks) | `cmake -Bbuild -G Ninja -DSTRICT_CHECKS=OFF`                                     | Disables clang-tidy, IWYU, warnings |
-| With ASan              | `cmake -Bbuild -G Ninja -DENABLE_ASAN=ON`                                        | Memory debugging                    |
-| Clean rebuild          | `rm -rf build && cmake -Bbuild -G Ninja && cmake --build build --parallel $JOBS` |                                     |
+| Target                 | Command                                                                          | Output                                     |
+| ---------------------- | -------------------------------------------------------------------------------- | ------------------------------------------ |
+| Both games             | `cmake -Bbuild -G Ninja && cmake --build build --parallel $JOBS`                 | `build/src/ra/rasdl`, `build/src/td/tdsdl` |
+| Red Alert only         | `cmake --build build --parallel $JOBS --target rasdl`                            | `build/src/ra/rasdl`                       |
+| Tiberian Dawn only     | `cmake --build build --parallel $JOBS --target tdsdl`                            | `build/src/td/tdsdl`                       |
+| Fast build (no checks) | `cmake -Bbuild -G Ninja -DSTRICT_CHECKS=OFF`                                     | Disables clang-tidy, IWYU, warnings        |
+| Unoptimized (stepping) | `cmake -Bbuild -G Ninja -DCMAKE_BUILD_TYPE=Debug`                                | `-O0 -g`; see the warning below            |
+| With ASan              | `cmake -Bbuild -G Ninja -DENABLE_ASAN=ON`                                        | Memory debugging                           |
+| Clean rebuild          | `rm -rf build && cmake -Bbuild -G Ninja && cmake --build build --parallel $JOBS` |                                            |
+
+**Build type defaults to `RelWithDebInfo`.** Do not run or benchmark a `Debug` build: the tree's
+bounds checks (`base::At`, the checked container accessors, the span `CHECK`s) sit in the innermost
+loops of LCW decompression, Blowfish, SHA-1 and the paletted blit, and unoptimized they are real
+out-of-line calls. Measured on Red Alert 2026-09-17, `Debug` against `RelWithDebInfo`: loading a
+saved game 483 ms vs 19 ms, startup bootstrap 1836 ms vs 45 ms, and the intro movie could not decode
+in real time at all, stretching 10.5 s of video to 22 s. `Debug` is for stepping in a debugger,
+nothing else.
 
 ## Setup
 
