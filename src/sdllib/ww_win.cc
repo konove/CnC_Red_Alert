@@ -37,9 +37,15 @@ void SDL_Create_Main_Window(const char* title, int width, int height) {
   const auto window_width = width * kWindowScale;
   const auto window_height = height * kWindowScale;
 
-  MainWindow = SDL_CreateWindow(
-      title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, window_width,
-      window_height, SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
+  // Created hidden and shown once the renderer exists: SDL's OpenGL renderer
+  // destroys and recreates a window whose GL attributes don't match its own,
+  // so a window shown here would flash up and be replaced by a second one.
+  constexpr Uint32 kWindowFlags = Uint32{SDL_WINDOW_RESIZABLE} |
+                                  Uint32{SDL_WINDOW_ALLOW_HIGHDPI} |
+                                  Uint32{SDL_WINDOW_HIDDEN};
+  MainWindow =
+      SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+                       window_width, window_height, kWindowFlags);
 
   ForceRenderEventID = SDL_RegisterEvents(1);
 
@@ -49,6 +55,7 @@ void SDL_Create_Main_Window(const char* title, int width, int height) {
   // Keep logical size at original resolution, SDL will scale to window size
   SDL_RenderSetLogicalSize(SDLRenderer, width, height);
   SDL_RenderSetIntegerScale(SDLRenderer, SDL_TRUE);
+  SDL_ShowWindow(static_cast<SDL_Window*>(MainWindow));
 
   // sometimes the window won't be created until it has content
   // so we get stuck waiting for focus, which it'll never get because it doesn't
