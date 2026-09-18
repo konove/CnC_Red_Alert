@@ -25,14 +25,11 @@
 
 #include "ra/mapsel.h"
 
-#include <algorithm>
-#include <cstdint>
 #include <cstring>
 #include <format>
 #include <span>
 #include <string>
-#include <tuple>
-#include <utility>
+#include <string_view>
 
 #include "base/array.h"
 #include "ra/ccptr.h"
@@ -55,7 +52,6 @@
 #include "ra/type.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/misc.h"
 #include "sdllib/shape.h"
 #include "sdllib/wsa.h"
 #include "sdllib/ww_audio.h"
@@ -66,219 +62,183 @@
 #include "tech/mix_archive.h"
 #include "tech/rgb.h"
 
-// Scenario filenames for the secret ant missions (Easter egg campaign).
-// Index 0 is unused; missions are numbered 1-4.
-static const char* ant_missions[] = {nullptr, "SCA01EA.INI", "SCA02EA.INI",
-                                     "SCA03EA.INI", "SCA04EA.INI"};
+// The scenario variant behind each hotspot, in the order of kHotspotCorners.
+constexpr ScenarioVarType kChoiceVariants[] = {SCEN_VAR_A, SCEN_VAR_B,
+                                               SCEN_VAR_C};
 
-// Scenario variant suffixes. Each mission can have up to 3 variants (A/B/C)
-// representing different map layouts or objectives for the same mission number.
-constexpr char kScenarioVariants[] = "ABC";
-
-// Clickable hotspot coordinates for each scenario's mission choices.
-// Dimensions: [house: Allied=0/Soviet=1][scenario: 0-13][choice: 0-2]
-// Coordinates are in 320x200 logical pixels. {-1, -1} marks unused slots.
-struct point {
+// A position on the 320x200 map artwork.
+struct Point {
   int x;
   int y;
-} const MapCoords[2][14][3] = {{{{185, 123}, {-1, -1}, {-1, -1}},
-                                {{173, 112}, {-1, -1}, {-1, -1}},
-                                {{196, 100}, {200, 112}, {-1, -1}},
-                                {{175, 113}, {-1, -1}, {-1, -1}},
-                                {{187, 91}, {202, 93}, {206, 105}},
-                                {{207, 161}, {212, 172}, {-1, -1}},
-                                {{172, 92}, {-1, -1}, {-1, -1}},
-                                {{132, 119}, {146, 125}, {-1, -1}},
-                                {{199, 73}, {205, 86}, {-1, -1}},
-                                {{236, 114}, {-1, -1}, {-1, -1}},
-                                {{219, 64}, {225, 76}, {-1, -1}},
-                                {{256, 69}, {-1, -1}, {-1, -1}},
-                                {{262, 77}, {-1, -1}, {-1, -1}},
-                                {{249, 97}, {-1, -1}, {-1, -1}}},
-                               // Soviet coords
-                               {{{178, 105}, {-1, -1}, {-1, -1}},
-                                {{163, 101}, {163, 113}, {-1, -1}},
-                                {{160, 89}, {-1, -1}, {-1, -1}},
-                                {{142, 101}, {142, 117}, {-1, -1}},
-                                {{212, 163}, {-1, -1}, {-1, -1}},
-                                {{155, 133}, {171, 144}, {-1, -1}},
-                                {{216, 103}, {-1, -1}, {-1, -1}},
-                                {{132, 145}, {154, 154}, {-1, -1}},
-                                {{122, 117}, {-1, -1}, {-1, -1}},
-                                {{117, 130}, {-1, -1}, {-1, -1}},
-                                {{99, 107}, {109, 146}, {-1, -1}},
-                                {{134, 125}, {-1, -1}, {-1, -1}},
-                                {{32, 156}, {46, 171}, {-1, -1}},
-                                {{108, 97}, {-1, -1}, {-1, -1}}}};
+};
+
+// Top-left corner of the clickable hotspot for each scenario's mission choices.
+// Dimensions: [house: Allied=0/Soviet=1][scenario: 0-13][choice: 0-2]
+// {-1, -1} marks unused slots.
+constexpr Point kHotspotCorners[2][14][3] = {
+    {{{185, 123}, {-1, -1}, {-1, -1}},
+     {{173, 112}, {-1, -1}, {-1, -1}},
+     {{196, 100}, {200, 112}, {-1, -1}},
+     {{175, 113}, {-1, -1}, {-1, -1}},
+     {{187, 91}, {202, 93}, {206, 105}},
+     {{207, 161}, {212, 172}, {-1, -1}},
+     {{172, 92}, {-1, -1}, {-1, -1}},
+     {{132, 119}, {146, 125}, {-1, -1}},
+     {{199, 73}, {205, 86}, {-1, -1}},
+     {{236, 114}, {-1, -1}, {-1, -1}},
+     {{219, 64}, {225, 76}, {-1, -1}},
+     {{256, 69}, {-1, -1}, {-1, -1}},
+     {{262, 77}, {-1, -1}, {-1, -1}},
+     {{249, 97}, {-1, -1}, {-1, -1}}},
+    // Soviet coords
+    {{{178, 105}, {-1, -1}, {-1, -1}},
+     {{163, 101}, {163, 113}, {-1, -1}},
+     {{160, 89}, {-1, -1}, {-1, -1}},
+     {{142, 101}, {142, 117}, {-1, -1}},
+     {{212, 163}, {-1, -1}, {-1, -1}},
+     {{155, 133}, {171, 144}, {-1, -1}},
+     {{216, 103}, {-1, -1}, {-1, -1}},
+     {{132, 145}, {154, 154}, {-1, -1}},
+     {{122, 117}, {-1, -1}, {-1, -1}},
+     {{117, 130}, {-1, -1}, {-1, -1}},
+     {{99, 107}, {109, 146}, {-1, -1}},
+     {{134, 125}, {-1, -1}, {-1, -1}},
+     {{32, 156}, {46, 171}, {-1, -1}},
+     {{108, 97}, {-1, -1}, {-1, -1}}}};
 
 // Palette index reserved in the map WSA artwork for clickable hotspots.
 constexpr int kHotspotPaletteIndex = 254;
 
-// Animates the pulsing highlight on clickable map locations.
-static void Cycle_Call_Back_Delay(int time, PaletteClass& pal) {
+// Keeps the highlight on the clickable map locations pulsing in `palette`.
+// Call it every pass of the selection loop.
+static void PulseHotspots(PaletteClass& palette) {
   static GlowPulse<SystemTickSource> pulse(kTimerSecond / 6);
 
-  while (time--) {
-    if (pulse.Update()) {
-      pal.at(kHotspotPaletteIndex) = pulse.Apply(GamePalette.at(kWhite));
-      pal.Set();
-    }
-    Call_Back_Delay(/*time=*/1);
+  if (pulse.Update()) {
+    palette.at(kHotspotPaletteIndex) = pulse.Apply(GamePalette.at(kWhite));
+    palette.Set();
   }
 }
 
 // Returns which mission choice (0-2) the mouse is hovering over, or -1 if none.
-// Each hotspot is a 12x10 pixel rectangle at the coordinates in MapCoords.
-static int Mouse_Over_Spot(const bool is_soviet, const int scenario) {
-  int retval = -1;
-  for (int choice = 0;
-       choice < 3 &&
-       base::At(base::At(base::At(MapCoords, is_soviet), scenario), choice).x !=
-           -1;
-       choice++) {
-    const int mouse_x = Get_Mouse_X() / 2;
-    const int mouse_y = Get_Mouse_Y() / 2;
-    if (mouse_x >=
-            base::At(base::At(base::At(MapCoords, is_soviet), scenario), choice)
-                .x &&
-        mouse_y >=
-            base::At(base::At(base::At(MapCoords, is_soviet), scenario), choice)
-                .y &&
-        mouse_x <=
-            base::At(base::At(base::At(MapCoords, is_soviet), scenario), choice)
-                    .x +
-                11 &&
-        mouse_y <=
-            base::At(base::At(base::At(MapCoords, is_soviet), scenario), choice)
-                    .y +
-                9) {
-      retval = choice;
+// Each hotspot is a 12x10 pixel rectangle whose top-left corner is in
+// kHotspotCorners.
+static int ChoiceUnderMouse(const bool is_soviet, const int scenario) {
+  const int mouse_x = Get_Mouse_X() / 2;
+  const int mouse_y = Get_Mouse_Y() / 2;
+  int choice = 0;
+  for (const Point& corner :
+       base::At(base::At(kHotspotCorners, is_soviet), scenario)) {
+    if (corner.x == -1) {
       break;
     }
+    if (mouse_x >= corner.x && mouse_y >= corner.y &&
+        mouse_x <= corner.x + 11 && mouse_y <= corner.y + 9) {
+      return choice;
+    }
+    choice++;
   }
-  return retval;
+  return -1;
 }
 
-std::string Map_Selection() {
-  if (AntsEnabled) {
-    std::string scenario_name = Scen.ScenarioName;
-    scenario_name.replace(3, 2, std::format("{:02d}", Scen.Scenario + 1));
-    return scenario_name;
-  }
+static void PlayMapSound(const std::string_view file_name) {
+  Play_Sample(MixArchive::RetrieveData(file_name), /*priority=*/255,
+              Options.Normalize_Volume(170));
+}
 
-  // Build map selection animation filename. Format: MSxY.WSA where
-  // MS=Map Selection, x=side (A=Allied, S=Soviet), Y=scenario letter (A-N for
-  // scenarios 0-13). WSA = Westwood Studios Animation format.
-  std::string file_name = "MSAA.WSA";
-  const bool is_soviet = PlayerPtr->Class->House == HOUSE_USSR ||
-                         PlayerPtr->Class->House == HOUSE_UKRAINE;
+// Plays the animation that draws the map, leaving its last frame on screen and
+// the animation's colors in `palette`.
+static void PlayMapReveal(const std::string& animation_name,
+                          PaletteClass& palette) {
+  // Sound effects timed to specific animation frames.
+  struct SoundCue {
+    int frame;
+    std::string_view file_name;
+  };
+  static constexpr SoundCue kSoundCues[] = {{15, "BLEEP11.AUD"},
+                                            {29, "MAPWIPE5.AUD"},
+                                            {50, "TONEY7.AUD"},
+                                            {60, "BLEEP17.AUD"}};
 
-  file_name.at(2) = is_soviet ? 'S' : 'A';
-  file_name.at(3) = static_cast<char>(Scen.Scenario + 'A');
-  PaletteClass map_palette;
-
-  int selection = 0;
-  static Timer<SystemTickSource> timer;
-
-  const auto appear1 = MixArchive::RetrieveData("MAPWIPE2.AUD");
-  const auto bleep11 = MixArchive::RetrieveData("BLEEP11.AUD");
-  const auto country4 = MixArchive::RetrieveData("MAPWIPE5.AUD");
-  const auto toney7 = MixArchive::RetrieveData("TONEY7.AUD");
-  const auto bleep17 = MixArchive::RetrieveData("BLEEP17.AUD");
-
-  const auto scold1 = MixArchive::RetrieveData("TONEY4.AUD");
-  const auto country1 = MixArchive::RetrieveData("TONEY10.AUD");
-
-  auto* pseudo_seen_buf =
-      new GraphicBufferClass(320, 200, std::span<uint8_t>{});
-
-  Theme.Queue_Song(THEME_MAP);
-
-  void* anim = Open_Animation(
-      file_name.c_str(), /*user_buffer=*/{}, /*user_buffer_size=*/0L,
-      WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, map_palette);
+  // The artwork is drawn at this size and scaled up to the screen.
+  GraphicBufferClass page(320, 200);
+  page.Clear();
+  void* animation = Open_Animation(
+      animation_name.c_str(), /*user_buffer=*/{}, /*user_buffer_size=*/0L,
+      WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, palette);
 
   Keyboard->Clear();
   SeenBuff.Clear();
-  map_palette.Set(kFadePaletteFast, ServiceRealTime);
+  palette.Set(kFadePaletteFast, ServiceRealTime);
 
-  pseudo_seen_buf->Clear();
-  Animate_Frame(anim, *pseudo_seen_buf, /*frame_number=*/1);
-  // Initialize palette interpolation as identity mapping (no blending).
-  // Each row x maps all 256 entries to color x.
-  for (int x = 0; x < 256; x++) {
-    std::ranges::fill(base::At(PaletteInterpolationTable, x),
-                      static_cast<uint8_t>(x));
-  }
-  Interpolate_2X_Scale(pseudo_seen_buf, &SeenBuff, {});
+  Animate_Frame(animation, page, /*frame_number=*/1);
+  Interpolate_2X_Scale(&page, &SeenBuff, {});
 
-  // Play the map reveal animation with synchronized sound effects.
   StreamLowImpact = true;
-  Play_Sample(appear1, 255, Options.Normalize_Volume(170));
-  for (int frame = 1; frame < Get_Animation_Frame_Count(anim); frame++) {
-    Animate_Frame(anim, *pseudo_seen_buf, frame);
-    Interpolate_2X_Scale(pseudo_seen_buf, &SeenBuff, {});
+  PlayMapSound("MAPWIPE2.AUD");
+  for (int frame = 1; frame < Get_Animation_Frame_Count(animation); frame++) {
+    Animate_Frame(animation, page, frame);
+    Interpolate_2X_Scale(&page, &SeenBuff, {});
     Call_Back_Delay(/*time=*/2);
-    // Sound effects timed to specific animation frames.
-    switch (frame) {
-      case 15:
-        Play_Sample(bleep11, 255, Options.Normalize_Volume(170));
-        break;
-      case 29:
-        Play_Sample(country4, 255, Options.Normalize_Volume(170));
-        break;
-      case 50:
-        Play_Sample(toney7, 255, Options.Normalize_Volume(170));
-        break;
-      case 60:
-        Play_Sample(bleep17, 255, Options.Normalize_Volume(170));
-        break;
-      default:
-        break;
+    for (const SoundCue& cue : kSoundCues) {
+      if (cue.frame == frame) {
+        PlayMapSound(cue.file_name);
+      }
     }
   }
   StreamLowImpact = false;
   ServiceRealTime();
-  Close_Animation(anim);
+  Close_Animation(animation);
+}
+
+// Waits for the player to click one of the hotspots on the map, which pulse in
+// `palette` meanwhile, and returns that choice (0-2).
+static int WaitForMissionChoice(PaletteClass& palette, const bool is_soviet) {
+  Timer<SystemTickSource> cursor_timer;
+  int cursor_frame = 0;
+  while (true) {
+    PulseHotspots(palette);
+    Call_Back_Delay(/*time=*/1);
+
+    // MouseClass animates the pointer only while the game map runs, so step
+    // through the crosshair's frames here.
+    const int choice = ChoiceUnderMouse(is_soviet, Scen.Scenario);
+    const MouseClass::MouseStruct& cursor =
+        MouseClass::Control(choice != -1 ? MOUSE_CAN_ATTACK : MOUSE_NORMAL);
+    if (cursor_timer.IsFinished()) {
+      cursor_frame = (cursor_frame + 1) % cursor.FrameCount;
+      cursor_timer.Set(cursor.FrameRate);
+      Set_Mouse_Cursor(cursor.X, cursor.Y,
+                       Extract_Shape(MouseClass::MouseShapes,
+                                     cursor.StartFrame + cursor_frame));
+    }
+
+    if (Keyboard->Check() && KeyCode(Keyboard->Get()) == KN_LMOUSE) {
+      if (choice != -1) {
+        PlayMapSound("TONEY10.AUD");
+        return choice;
+      }
+      PlayMapSound("TONEY4.AUD");
+    }
+  }
+}
+
+ScenarioVarType ChooseMissionVariant() {
+  const bool is_soviet = IsSovietHouse(PlayerPtr->Class->House);
+
+  // The animation is MSxY.WSA: x is the side (A=Allied, S=Soviet) and Y the
+  // scenario letter (A-N for scenarios 0-13).
+  const std::string animation_name =
+      std::format("MS{}{}.WSA", is_soviet ? 'S' : 'A',
+                  static_cast<char>('A' + Scen.Scenario));
+  PaletteClass map_palette;
+
+  Theme.Queue_Song(THEME_MAP);
+  PlayMapReveal(animation_name, map_palette);
   Show_Mouse();
   Keyboard->Clear();
 
-  bool mission_selected = false;
-  int cursor_frame = 0;
-  while (!mission_selected) {
-    Cycle_Call_Back_Delay(1, map_palette);
-    // Re-render each frame so palette cycling on entry 254 is visible.
-    // The SDL2 port bakes palette colors into an RGBA texture, so unlike
-    // DOS VGA hardware, palette changes aren't reflected until we re-render.
-    AllSurfaces.SurfacesRestored = false;
-    Interpolate_2X_Scale(pseudo_seen_buf, &SeenBuff, {});
-    const int choice = Mouse_Over_Spot(is_soviet, Scen.Scenario);
-    const bool hovering_over_choice = choice != -1;
-
-    // Cursor animation parameters: normal cursor is static, targeting cursor
-    // has 8 frames. Hotspot is top-left for normal, centered for crosshairs.
-    const auto [start, count, delay] =
-        hovering_over_choice ? std::tuple{21, 8, 4} : std::tuple{0, 1, 0};
-    const auto [hotspot_x, hotspot_y] =
-        hovering_over_choice ? std::pair{14, 11} : std::pair{0, 0};
-    if (timer.IsFinished()) {
-      cursor_frame++;
-      cursor_frame %= count;
-      timer.Set(delay);
-      Set_Mouse_Cursor(
-          hotspot_x, hotspot_y,
-          Extract_Shape(MouseClass::MouseShapes, start + cursor_frame));
-    }
-    if (Keyboard->Check() && ((Keyboard->Get() & 0x10FF) == KN_LMOUSE)) {
-      if (hovering_over_choice) {
-        mission_selected = true;
-        selection = choice;
-        Play_Sample(country1, 255, Options.Normalize_Volume(170));
-      } else {
-        Play_Sample(scold1, 255, Options.Normalize_Volume(170));
-      }
-    }
-  }
+  const int choice = WaitForMissionChoice(map_palette, is_soviet);
 
   Hide_Mouse();
 
@@ -289,23 +249,7 @@ std::string Map_Selection() {
 
   Fancy_Text_Print(TXT_STAND_BY, 320, 380, GadgetClass::Get_Color_Scheme(),
                    kTBlack, TPF_CENTER | TPF_6PT_GRAD | TPF_DROPSHADOW);
-
-  // Build the next scenario filename. Format: SCxNNEV.INI where x=campaign,
-  // NN=scenario number (01-14), E=side (E=Allied, usually), V=variant (A/B/C).
-  // Ant missions (ScenarioName[2]=='A') use a separate filename table.
-  std::string scenario_name;
-  if (Scen.ScenarioName[2] == 'A') {
-    int antnum = Scen.Scenario++;
-    if (antnum > 4) {
-      antnum = 1;
-    }
-    scenario_name = base::At(ant_missions, antnum);
-  } else {
-    scenario_name = Scen.ScenarioName;
-    scenario_name.replace(3, 2, std::format("{:02d}", Scen.Scenario + 1));
-    scenario_name.at(6) = base::At(kScenarioVariants, selection);
-  }
   Theme.Fade_Out();
 
-  return scenario_name;
+  return base::At(kChoiceVariants, choice);
 }

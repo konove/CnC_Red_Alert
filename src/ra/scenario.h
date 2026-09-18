@@ -69,6 +69,14 @@ class ScenarioClass {
                          ScenarioVarType var = SCEN_VAR_NONE);
   void Set_Scenario_Name(const char* name);
 
+  // Moves on to the next scenario number of the current campaign, keeping the
+  // rest of the name. `variant` picks which of that scenario's maps to play;
+  // SCEN_VAR_NONE keeps the current variant letter.
+  void AdvanceToNextScenario(ScenarioVarType variant = SCEN_VAR_NONE);
+
+  // Switches to another map of the current scenario.
+  void SetScenarioVariant(ScenarioVarType variant);
+
   bool Set_Global_To(int global, bool value);
   void Do_BW_Fade();
   void Do_Fade_AI();

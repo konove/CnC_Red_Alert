@@ -96,7 +96,6 @@ class MouseClass : public ScrollClass {
   */
   static std::span<const std::byte> MouseShapes;
 
- private:
   /*
   **	This type is used to control the frames and rates of the mouse
   **	pointer. Some mouse pointers are actually looping animations.
@@ -109,6 +108,14 @@ class MouseClass : public ScrollClass {
     int X, Y;        // Hotspot X and Y offset.
   };
 
+  // Returns the frames, rate and hotspot of `mouse`. AI() animates the pointer
+  // only while the game map runs; a modal screen that wants an animated
+  // pointer steps through these itself.
+  static const MouseStruct& Control(MouseType mouse) {
+    return MouseControl.at(mouse);
+  }
+
+ private:
   /*
   **	The control frames and rates for the various mouse pointers are stored
   **	in this static array.

@@ -891,22 +891,14 @@ void Do_Win() {
     ** score and map selection, don't increment scenario, and set it to
     ** variation B.
     */
-    if (Scen.IsNoMapSel) {
+    if (AntsEnabled) {
+      // The ant campaign has neither a mission map nor variants.
+      Scen.AdvanceToNextScenario();
+    } else if (Scen.IsNoMapSel) {
       // force it to play the second half of scenario 10
-      if (AntsEnabled) {
-        char scenarioname[24];
-        port::SafeCopy(scenarioname, Scen.ScenarioName);
-        char buf[10];
-        Scen.Scenario++;
-        absl::SNPrintF(buf, sizeof(buf), "%02d", Scen.Scenario);
-        base::CopyBytes(std::as_writable_bytes(base::Suffix(scenarioname, 3)),
-                        base::ObjectBytes(buf), 2);
-        Scen.Set_Scenario_Name(scenarioname);
-      } else {
-        base::At(Scen.ScenarioName, 6) = 'B';
-      }
+      Scen.SetScenarioVariant(SCEN_VAR_B);
     } else {
-      Scen.Set_Scenario_Name(Map_Selection().c_str());
+      Scen.AdvanceToNextScenario(ChooseMissionVariant());
     }
 
     Keyboard->Clear();
@@ -1773,6 +1765,25 @@ void ScenarioClass::Set_Scenario_Name(int scenario, ScenarioPlayerType player,
     absl::SNPrintF(ScenarioName, sizeof(ScenarioName), "SC%c%c%c%c%c.INI",
                    c_player, first, second, c_dir, c_var);
   }
+}
+
+// The variants are lettered from 'A' in enum order.
+static char VariantLetter(const ScenarioVarType variant) {
+  return static_cast<char>('A' + static_cast<int>(variant));
+}
+
+void ScenarioClass::AdvanceToNextScenario(const ScenarioVarType variant) {
+  std::string name = MissionWithNumber(ScenarioName, Scenario + 1);
+  if (variant != SCEN_VAR_NONE) {
+    name = MissionWithVariant(name, VariantLetter(variant));
+  }
+  // This also reads the new number back into Scenario.
+  Set_Scenario_Name(name.c_str());
+}
+
+void ScenarioClass::SetScenarioVariant(const ScenarioVarType variant) {
+  port::SafeCopy(ScenarioName,
+                 MissionWithVariant(ScenarioName, VariantLetter(variant)));
 }
 
 void ScenarioClass::Set_Scenario_Name(const char* name) {
