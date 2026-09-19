@@ -187,9 +187,7 @@ long FAR PASCAL _export Windows_Procedure(HWND hwnd, UINT message, UINT wParam,
       visible_page.Un_Init();
       hidden_page.Un_Init();
       AllSurfaces.Release();
-      if (!InDebugger) {
-        Reset_Video_Mode();
-      }
+      Reset_Video_Mode();
       Stop_Profiler();
       PostQuitMessage(0);
 

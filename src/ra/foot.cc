@@ -1997,7 +1997,7 @@ void FootClass::Detach(TARGET target, bool all) {
 
   TechnoClass::Detach(target, all);
 
-  if ((!SpecialFlag) && (ArchiveTarget == target)) {
+  if (ArchiveTarget == target) {
     ArchiveTarget = kTargetNone;
   }
 

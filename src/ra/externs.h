@@ -88,7 +88,6 @@ inline char staging_buffer[32000];
 
 
 extern bool IsVQ640;
-extern uint32_t GameVersion;
 
 // Developer switches (-NEWGAME<scenario>, -LOADGAME<n>, -QUITFRAME<n>,
 // -SAVESLOT<n>) for save-game checks without a display; see init.cc and
@@ -100,16 +99,12 @@ extern int DebugSaveSlot;
 extern bool Debug_MotionCapture;
 extern bool Debug_Quiet;
 extern bool Debug_Cheat;
-extern bool Debug_Remap;
 extern bool Debug_Flag;
-extern bool Debug_Lose;
 extern bool MapEditorActive;
-extern bool Debug_Win;
 extern bool Debug_Icon;
 extern bool Debug_Passable;
 extern bool Debug_Unshroud;
 extern bool Debug_Threat;
-extern bool Debug_Find_Path;
 extern bool Debug_Check_Map;
 extern bool Debug_Playtest;
 
@@ -145,7 +140,6 @@ extern WWMouseClass* WWMouse;
 extern GraphicBufferClass SysMemPage;
 extern int ScreenWidth;
 extern int ScreenHeight;
-extern GraphicBufferClass ModeXBuff;
 extern GraphicBufferClass VQ640;  // 640x400 staging page for hi-res movies
 
 /*
@@ -234,8 +228,6 @@ extern TFixedIHeapClass<TerrainTypeClass> TerrainTypes;
 extern TFixedIHeapClass<OverlayTypeClass> OverlayTypes;
 extern TFixedIHeapClass<SmudgeTypeClass> SmudgeTypes;
 
-extern base::EnumArray<RTTIType, FixedIHeapClass*> HeapPointers;
-
 extern TFixedIHeapClass<WeaponTypeClass> Weapons;
 extern TFixedIHeapClass<WarheadTypeClass> Warheads;
 
@@ -303,7 +295,6 @@ extern Stopwatch<SystemTickSource> TickCount;
 extern bool PassedProximity;  // used in display.cpp
 extern HousesType Whom;
 extern VQAConfig AnimControl;
-extern bool SpecialFlag;
 extern int ScenarioInit;
 extern HouseClass* PlayerPtr;
 extern PaletteClass CCPalette;
@@ -345,9 +336,6 @@ extern int LogLevel;
 extern int64_t LogLevelTime[kMaxLogLevel];
 extern int64_t LogLastTime;
 
-extern DynamicVectorClass<EventChoiceClass> test2;
-extern DynamicVectorClass<ActionChoiceClass> test3;
-
 extern bool LogDump_Print;
 
 
@@ -355,8 +343,6 @@ extern TheaterType LastTheater;
 
 void Do_Vortex(int x, int y, int frame);
 
-// Shutdown state: 0 = running, 1 = clean shutdown, 2 = complete, 3 = emergency.
-extern bool InDebugger;       // Are we being run from a debugger
 [[noreturn]] void Memory_Error_Handler();  // Memory error handler function
 void WWDebugString(const char* string);
 void Check_For_Focus_Loss();  // Pumps the event queue while focus is lost

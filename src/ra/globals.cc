@@ -109,7 +109,6 @@
 #include "winvq/vqa32/vqaplay.h"
 
 bool IsVQ640 = false;
-uint32_t GameVersion = 0;
 std::string DebugNewGame;
 int DebugLoadGame = -1;
 int64_t DebugQuitAtFrame = -1;
@@ -117,16 +116,12 @@ int DebugSaveSlot = -1;
 bool Debug_MotionCapture = false;
 bool Debug_Quiet = false;
 bool Debug_Cheat = false;
-bool Debug_Remap = false;
 bool Debug_Icon = false;
 bool Debug_Flag = false;
-bool Debug_Lose = false;
-bool Debug_Win = false;
 bool MapEditorActive = false;  // true = scenario/map editor is active
 bool Debug_Passable = false;   // true = show passable/impassable terrain
 bool Debug_Unshroud = false;   // true = hide the shroud
 bool Debug_Threat = false;
-bool Debug_Find_Path = false;
 bool Debug_Check_Map = false;  // true = validate the map each frame
 bool Debug_Playtest = false;
 
@@ -271,7 +266,6 @@ WWMouseClass* WWMouse = nullptr;
 GraphicBufferClass SysMemPage(kDefaultScreenWidth, 200, {});
 int ScreenWidth = 640;
 int ScreenHeight = 400;
-GraphicBufferClass ModeXBuff;
 bool InMovie = false;  // Are we currently playing a VQ movie?
 int AllDone;
 
@@ -488,7 +482,6 @@ bool PassedProximity;  // used in display.cpp
 */
 HousesType Whom;  // Initial command line house choice.
 int ScenarioInit;
-bool SpecialFlag = false;
 
 /***************************************************************************
 ** This value tells the sidebar what items it's allowed to add.  The
@@ -729,7 +722,6 @@ Stopwatch<SystemTickSource> TickCount;
 **  Win32 specific globals
 */
 
-bool InDebugger = false;
 
 GetCDClass CDList;
 int UnitBuildPenalty = 100;
