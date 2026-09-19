@@ -293,19 +293,11 @@ int main(int argc, char* argv[])
       HiddenPage.Clear();
       Memory_Error_Exit = ExitWithError;
 
-      // ReadyToQuit is the shutdown handshake with the message handler:
-      // 1 is a clean quit, and the Windows handler answered 2 once it had
-      // closed everything down. The SDL handler for the quit event calls
-      // Prog_End() and exit(0) itself, so on SDL this loop only pumps events
-      // until that happens and the return below is never reached.
-      ReadyToQuit = 1;
-
-      SDL_Send_Quit();
-
-      do {
-        Keyboard->Check();
-      } while (ReadyToQuit == 1);
-
+      // The same cleanup as the SDL quit handler. The Windows build posted a
+      // quit message and waited for its handler to do this.
+      Prog_End();
+      VisiblePage.Un_Init();
+      HiddenPage.Un_Init();
       return EXIT_SUCCESS;
     }
     // The config file could neither be opened nor created. There is no
@@ -435,8 +427,8 @@ void ExitWithError(char* message) {
   BlackPalette.Set();
   Memory_Error_Exit = ExitWithError;
 
-  // Clean up here rather than through the quit handler's handshake (see
-  // main()): the SDL handler ends in exit(0), which would lose `exit_code`.
+  // Clean up here rather than by posting a quit event: the SDL quit handler
+  // ends in exit(0), which would lose `exit_code`.
   Prog_End();
   VisiblePage.Un_Init();
   HiddenPage.Un_Init();
