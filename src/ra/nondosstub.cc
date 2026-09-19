@@ -29,8 +29,6 @@
 #include <string_view>
 
 #include "absl/base/attributes.h"
-#include "base/array.h"
-#include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/seek_origin.h"
 #include "ra/externs.h"
@@ -113,12 +111,6 @@ void __cdecl SetPalette(std::span<uint8_t> palette, int32_t /*unused*/,
     color &= 63;
   }
   Increase_Palette_Luminance(palette, 15, 15, 15, 63);
-  if (PalettesRead) {
-    base::CopyBytes(base::ObjectBytes(PaletteInterpolationTable),
-                    std::as_bytes(std::span(
-                        base::At(InterpolatedPalettes, PaletteCounter++))),
-                    65536);
-  }
   Set_Palette(palette);
 }
 

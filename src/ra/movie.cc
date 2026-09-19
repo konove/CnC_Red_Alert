@@ -72,8 +72,6 @@ void Play_Movie(const char* name, const ThemeType theme, bool clear_screen) {
   if (name) {
     const auto fullname =
         std::filesystem::path(name).replace_extension(".VQA").string();
-    const auto pal_name =
-        std::filesystem::path(name).replace_extension(".VQP").string();
     if (!GameFile(fullname).IsAvailable()) {
       DLOG(WARNING) << "Play_Movie: file not found: " << fullname;
       return;
@@ -117,17 +115,11 @@ void Play_Movie(const char* name, const ThemeType theme, bool clear_screen) {
 
     if (player.Open(fullname.c_str(), &AnimControl) == 0) {
       movie_broken_out = false;
-      if (!TheScreen().is_vq640()) {
-        Load_Interpolated_Palettes(pal_name.c_str());
-      }
       TheScreen().sys_mem_page().Clear();
       InMovie = true;
       player.Play(VQAMODE_RUN);
       player.Close();
       InMovie = false;
-      if (!TheScreen().is_vq640()) {
-        Free_Interpolated_Palettes();
-      }
       TheScreen().set_is_vq640(false);
 
       // Early exit leaves the palette in an inconsistent state.

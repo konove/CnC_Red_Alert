@@ -123,11 +123,6 @@ extern const char* NameOverride[25];
 extern int NameIDOverride[25];
 
 extern bool GameInFocus;
-// One interpolation table per palette a movie can use; VQAs in this game never
-// come close to the limit.
-inline std::vector<unsigned char> InterpolatedPalettes[100];
-inline bool PalettesRead = false;
-inline int PaletteCounter = 0;
 extern bool InMovie;
 extern WWMouseClass* WWMouse;
 
