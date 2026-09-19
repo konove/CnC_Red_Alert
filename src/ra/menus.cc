@@ -90,6 +90,11 @@ static void Flash_Line(const char* text, int xpix, int ypix, int nfgc,
 
 int UnknownKey;
 
+// X, Y, item width, items high, selected, normal color, selected color, zero.
+static int menu_list[][8] = {
+    {1, 3, 12, 3, 0, kWhite, kPink, 0},
+};
+
 static int MenuUpdate = 1;
 static int MenuSkip;
 
@@ -197,7 +202,7 @@ static bool Coordinates_In_Region(int x, int y, int inx1, int iny1, int inx2,
 void Setup_Menu(int menu, std::span<const char* const> text, uint32_t field,
                 int index, int skip) {
   const auto menuptr =
-      std::span(base::At(MenuList, menu)); /* get pointer to menu	*/
+      std::span(base::At(menu_list, menu)); /* get pointer to menu	*/
   const int menuy =
       static_cast<int>(WinY) + base::At(menuptr, kMenuy); /* get the absolute */
   const int menux =
@@ -234,7 +239,7 @@ int Check_Menu(int menu, std::span<const char* const> text, char* /*unused*/,
   // /* get rid of warning	*/
 
   const auto menuptr =
-      std::span(base::At(MenuList, menu)); /* get pointer to menu	*/
+      std::span(base::At(menu_list, menu)); /* get pointer to menu	*/
   const int maxitem = base::At(menuptr, kItemshigh) - 1; /* find max items */
   int newitem = item =
       base::At(menuptr, kMselected) % (maxitem + 1); /* find selected */
@@ -423,7 +428,7 @@ int Do_Menu(std::span<const char* const> strings, bool /*unused*/) {
   if (strings.empty()) {
     return -1;
   }
-  base::At(MenuList[0], kItemshigh) = count;
+  base::At(menu_list[0], kItemshigh) = count;
 
   /*
   **	Determine the width of the menu by finding the length of the
@@ -435,20 +440,20 @@ int Do_Menu(std::span<const char* const> strings, bool /*unused*/) {
     length = std::max(length, String_Pixel_Width(text));
   }
   length += 7;
-  base::At(MenuList[0], kItemwidth) = length / 8;
+  base::At(menu_list[0], kItemwidth) = length / 8;
 
   /*
   **	Adjust the window values to match the size of the
   **	specified menu.
   */
   base::At(WindowList[static_cast<int>(WINDOW_MENU)], kWindowWidth) =
-      (base::At(MenuList[0], kItemwidth) + 2) * 8;
+      (base::At(menu_list[0], kItemwidth) + 2) * 8;
   base::At(WindowList[static_cast<int>(WINDOW_MENU)], kWindowX) =
       (19 - (length / 16)) * 8;
   base::At(WindowList[static_cast<int>(WINDOW_MENU)], kWindowY) =
-      174 - (base::At(MenuList[0], kItemshigh) * (FontHeight + FontYSpacing));
+      174 - (base::At(menu_list[0], kItemshigh) * (FontHeight + FontYSpacing));
   base::At(WindowList[static_cast<int>(WINDOW_MENU)], kWindowHeight) =
-      (base::At(MenuList[0], kItemshigh) * FontHeight) + 5 /*11*/;
+      (base::At(menu_list[0], kItemshigh) * FontHeight) + 5 /*11*/;
 
   /*
   **	Display the menu.

@@ -665,11 +665,6 @@ int WindowList[][8] = {
     // Partial object draw sub-window.
     {0, 0, 0, 0, kWhite, kBlack, 0, 0}};
 
-/* X,Y,Item Width,Items High,Selected,Norm Color,Sel Color,zero 	*/
-int MenuList[][8] = {
-    {1, 3, 12, 3, 0, kWhite, kPink, 0},
-};
-
 GraphicBufferClass visible_page;
 GraphicBufferClass hidden_page;
 GraphicViewPortClass visible_view(&visible_page, 0, 0, 640, 480);

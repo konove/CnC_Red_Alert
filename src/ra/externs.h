@@ -315,7 +315,6 @@ extern IPXManagerClass Ipx;
 extern int NewMaxAheadFrame1;
 extern int NewMaxAheadFrame2;
 
-extern int MenuList[1][8];
 extern Timer<SystemTickSource> CountDownTimer;
 
 extern SpecialDialogType SpecialDialog;
