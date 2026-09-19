@@ -70,10 +70,10 @@
 #include "td/defines.h"
 #include "td/dialog.h"
 #include "td/externs.h"
-#include "td/globals.h"
 #include "td/house.h"
 #include "td/jshell.h"
 #include "td/mapedit.h"
+#include "td/screen.h"
 #include "td/tab.h"
 
 CreditClass::CreditClass() = default;
@@ -100,7 +100,7 @@ CreditClass::CreditClass() = default;
 void CreditClass::Graphic_Logic(bool forced) {
   const int scale =
       static_cast<int>(base::Bit<uint32_t>(Get_Resolution_Factor()));
-  const int xx = SeenBuff.Get_Width() - (120 * scale);
+  const int xx = TheScreen().visible_view().Get_Width() - (120 * scale);
   if (forced || IsToRedraw) {
     /*
     **	Play a sound effect when the money display changes, but only if a sound

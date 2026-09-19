@@ -57,6 +57,7 @@
 #include "td/help.h"
 #include "td/inline.h"
 #include "td/jshell.h"
+#include "td/screen.h"
 #include "td/special.h"
 
 #define SCROLL_DELAY 1
@@ -116,8 +117,9 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
     */
     bool noscroll = false;
     if (Special.IsScrollMod && y == 0 &&
-        ((x > 3 && x < EVA_WIDTH) || (x > SeenBuff.Get_Width() - EVA_WIDTH &&
-                                      x < SeenBuff.Get_Width() - 3))) {
+        ((x > 3 && x < EVA_WIDTH) ||
+         (x > TheScreen().visible_view().Get_Width() - EVA_WIDTH &&
+          x < TheScreen().visible_view().Get_Width() - 3))) {
       noscroll = true;
     }
 
@@ -125,10 +127,12 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
       /*
       **	Verify that the mouse is over a scroll region.
       */
-      if (Inertia || y <= 0 || x <= 0 || x >= SeenBuff.Get_Width() - 1 ||
-          y >= SeenBuff.Get_Height() - 1) {
-        if (y <= 0 || x <= 0 || x >= SeenBuff.Get_Width() - 1 ||
-            y >= SeenBuff.Get_Height() - 1) {
+      if (Inertia || y <= 0 || x <= 0 ||
+          x >= TheScreen().visible_view().Get_Width() - 1 ||
+          y >= TheScreen().visible_view().Get_Height() - 1) {
+        if (y <= 0 || x <= 0 ||
+            x >= TheScreen().visible_view().Get_Width() - 1 ||
+            y >= TheScreen().visible_view().Get_Height() - 1) {
           player_scrolled = true;
           /*
           **	Adjust the mouse coordinates to emphasise the
@@ -139,12 +143,12 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
             altx -= (50 - altx) * 2;
           }
           altx = std::max(altx, 0);
-          if (altx > SeenBuff.Get_Width() - 50) {
-            altx += (altx - (SeenBuff.Get_Width() - 50)) * 2;
+          if (altx > TheScreen().visible_view().Get_Width() - 50) {
+            altx += (altx - (TheScreen().visible_view().Get_Width() - 50)) * 2;
           }
-          altx = std::min(altx, SeenBuff.Get_Width());
-          if (altx > 50 && altx < SeenBuff.Get_Width() - 50) {
-            altx += ((SeenBuff.Get_Width() / 2) - altx) / 2;
+          altx = std::min(altx, TheScreen().visible_view().Get_Width());
+          if (altx > 50 && altx < TheScreen().visible_view().Get_Width() - 50) {
+            altx += ((TheScreen().visible_view().Get_Width() / 2) - altx) / 2;
           }
 
           int alty = y;
@@ -152,13 +156,14 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
             alty -= 50 - alty;
           }
           alty = std::max(alty, 0);
-          if (alty > SeenBuff.Get_Height() - 50) {
-            alty += alty - (SeenBuff.Get_Height() - 50);
+          if (alty > TheScreen().visible_view().Get_Height() - 50) {
+            alty += alty - (TheScreen().visible_view().Get_Height() - 50);
           }
-          alty = std::min(alty, SeenBuff.Get_Height());
+          alty = std::min(alty, TheScreen().visible_view().Get_Height());
 
-          direction = Desired_Facing256(SeenBuff.Get_Width() / 2,
-                                        SeenBuff.Get_Height() / 2, altx, alty);
+          direction = Desired_Facing256(
+              TheScreen().visible_view().Get_Width() / 2,
+              TheScreen().visible_view().Get_Height() / 2, altx, alty);
         }
         const int control = static_cast<int>(Dir_Facing(direction));
 

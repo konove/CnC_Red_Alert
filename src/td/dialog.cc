@@ -75,8 +75,8 @@
 #include "td/conquer.h"
 #include "td/defines.h"
 #include "td/externs.h"
-#include "td/globals.h"
 #include "td/jshell.h"
+#include "td/screen.h"
 #include "td/text.h"
 #include "tech/mix_archive.h"
 
@@ -309,7 +309,7 @@ void Window_Box(WindowNumberType window, BoxStyleEnum style) {
   **	If it is to be rendered to the seenpage, then
   **	hide the mouse.
   */
-  if (LogicPage == &SeenBuff) {
+  if (TheScreen().IsVisible(LogicPage)) {
     Conditional_Hide_Mouse(x, y, x + w, y + h);
   }
 
@@ -327,7 +327,7 @@ void Window_Box(WindowNumberType window, BoxStyleEnum style) {
   /*
   **	Restore the mouse if it has been hidden and return.
   */
-  if (LogicPage == &SeenBuff) {
+  if (TheScreen().IsVisible(LogicPage)) {
     Conditional_Show_Mouse();
   }
 }
@@ -635,7 +635,8 @@ void Simple_Text_Print(const char* text, int x, int y, int fore,
         break;
     }
 
-    if (x < SeenBuff.Get_Width() && y < SeenBuff.Get_Height()) {
+    if (x < TheScreen().visible_view().Get_Width() &&
+        y < TheScreen().visible_view().Get_Height()) {
       LogicPage->Print(tempstr, x, y, fore, back);
     }
   }

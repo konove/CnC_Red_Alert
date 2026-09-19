@@ -51,8 +51,8 @@
 #include "td/conquer.h"
 #include "td/control.h"
 #include "td/defines.h"
-#include "td/globals.h"
 #include "td/keyframe.h"
+#include "td/screen.h"
 #include "td/toggle.h"
 
 /***********************************************************************************************
@@ -134,7 +134,7 @@ bool ShapeButtonClass::Draw_Me(bool forced) {
     /*
     **	Hide the mouse.
     */
-    if (LogicPage == &SeenBuff) {
+    if (TheScreen().IsVisible(LogicPage)) {
       Conditional_Hide_Mouse(X, Y, X + Width - 1, Y + Height - 1);
     }
 
@@ -160,7 +160,7 @@ bool ShapeButtonClass::Draw_Me(bool forced) {
     /*
     **	Display the mouse.
     */
-    if (LogicPage == &SeenBuff) {
+    if (TheScreen().IsVisible(LogicPage)) {
       Conditional_Show_Mouse();
     }
     return true;

@@ -66,11 +66,11 @@
 #include "td/defines.h"
 #include "td/externs.h"
 #include "td/gadget.h"
-#include "td/globals.h"
 #include "td/house.h"
 #include "td/jshell.h"
 #include "td/mapedit.h"
 #include "td/radar.h"
+#include "td/screen.h"
 #include "tech/mix_archive.h"
 
 std::span<const std::byte> PowerClass::PowerShape;
@@ -143,10 +143,10 @@ void PowerClass::One_Time() {
 
   const int factor = Get_Resolution_Factor();
   const int scale = static_cast<int>(base::Bit<uint32_t>(factor));
-  PowX = SeenBuff.Get_Width() - Map.RadWidth;
+  PowX = TheScreen().visible_view().Get_Width() - Map.RadWidth;
   PowY = Map.RadY + Map.RadHeight + (13 * scale);
   PowWidth = 8 * scale;
-  PowHeight = SeenBuff.Get_Height() - PowY;
+  PowHeight = TheScreen().visible_view().Get_Height() - PowY;
   PowLineSpace = 5 * scale;
   PowLineWidth = PowWidth - 4;
 
@@ -206,7 +206,7 @@ void PowerClass::Draw_It(bool complete) {
       base::At(base::At(WindowList, static_cast<int>(WINDOW_CUSTOM)),
                kWindowY) = 0;
       base::At(base::At(WindowList, static_cast<int>(WINDOW_CUSTOM)),
-               kWindowWidth) = SeenBuff.Get_Width();
+               kWindowWidth) = TheScreen().visible_view().Get_Width();
       base::At(base::At(WindowList, static_cast<int>(WINDOW_CUSTOM)),
                kWindowHeight) = bottom - power_height;
 
@@ -224,7 +224,7 @@ void PowerClass::Draw_It(bool complete) {
                kWindowY) = bottom - power_height;
       base::At(base::At(WindowList, static_cast<int>(WINDOW_CUSTOM)),
                kWindowHeight) =
-          SeenBuff.Get_Height() -
+          TheScreen().visible_view().Get_Height() -
           base::At(base::At(WindowList, static_cast<int>(WINDOW_CUSTOM)),
                    kWindowY);
 

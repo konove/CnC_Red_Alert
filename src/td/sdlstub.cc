@@ -18,6 +18,7 @@
 #include "td/nullconn.h"
 #include "td/palette.h"
 #include "td/rand.h"
+#include "td/screen.h"
 #include "td/startup.h"
 #include "winvq/vqa32/vqaplay.h"
 
@@ -33,7 +34,7 @@ void Check_For_Focus_Loss() {
 }
 
 void Memory_Error_Handler() {
-  VisiblePage.Clear();
+  TheScreen().visible_page().Clear();
   Set_Palette(GamePalette);
   while (Get_Mouse_State()) {
     Show_Mouse();
@@ -93,7 +94,7 @@ void Shake_Screen(int shakes) {
   shakes += shakes;
 
   Hide_Mouse();
-  SeenBuff.Blit(HidPage);
+  TheScreen().visible_view().Blit(TheScreen().hidden_view());
   const int oldyoff = 0;
   int newyoff = 0;
   while (shakes--) {
@@ -104,13 +105,15 @@ void Shake_Screen(int shakes) {
     } while (newyoff == oldyoff);
     switch (newyoff) {
       case -1:
-        HidPage.Blit(SeenBuff, 0, 2, 0, 0, 640, 398);
+        TheScreen().hidden_view().Blit(TheScreen().visible_view(), 0, 2, 0, 0,
+                                       640, 398);
         break;
       case 0:
-        HidPage.Blit(SeenBuff);
+        TheScreen().hidden_view().Blit(TheScreen().visible_view());
         break;
       case 1:
-        HidPage.Blit(SeenBuff, 0, 0, 0, 2, 640, 398);
+        TheScreen().hidden_view().Blit(TheScreen().visible_view(), 0, 0, 0, 2,
+                                       640, 398);
         break;
       default:
         break;
@@ -120,6 +123,6 @@ void Shake_Screen(int shakes) {
     }
   }
 
-  HidPage.Blit(SeenBuff);
+  TheScreen().hidden_view().Blit(TheScreen().visible_view());
   Show_Mouse();
 }

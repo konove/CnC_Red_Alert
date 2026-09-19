@@ -80,7 +80,6 @@
 #include "td/display_constants.h"
 #include "td/edit.h"
 #include "td/externs.h"
-#include "td/globals.h"
 #include "td/goptions.h"
 #include "td/heap.h"
 #include "td/house.h"
@@ -95,6 +94,7 @@
 #include "td/palette.h"
 #include "td/profile.h"
 #include "td/scenario.h"
+#include "td/screen.h"
 #include "td/teamtype.h"
 #include "td/terrain.h"
 #include "td/textbtn.h"
@@ -286,7 +286,7 @@ int MapEditClass::Load_Scenario() {
   */
   if (!Read_Scenario_Ini(ScenarioName)) {
     CCMessageBox().Process("Unable to read scenario!");
-    HiddenPage.Clear();
+    TheScreen().hidden_page().Clear();
     Flag_To_Redraw(true);
     Render();
   } else {
@@ -339,7 +339,7 @@ int MapEditClass::Save_Scenario() {
   if (fp) {
     fclose(fp);
     rc = CCMessageBox().Process("File exists. Replace?", TXT_YES, TXT_NO);
-    HiddenPage.Clear();
+    TheScreen().hidden_page().Clear();
     Flag_To_Redraw(true);
     Render();
     if (rc == 1) {
@@ -601,7 +601,7 @@ int MapEditClass::Pick_Scenario(const char* caption, int* scen_nump,
   /*
   ------------------------------- Initialize -------------------------------
   */
-  Set_Logic_Page(SeenBuff);
+  Set_Logic_Page(TheScreen().visible_view());
 
   absl::SNPrintF(scen_buf, sizeof(scen_buf), "%d",
                  (*scen_nump));  // init edit buffer
@@ -853,7 +853,7 @@ int MapEditClass::Pick_Scenario(const char* caption, int* scen_nump,
   /*
   --------------------------- Redraw the display ---------------------------
   */
-  HiddenPage.Clear();
+  TheScreen().hidden_page().Clear();
   Flag_To_Redraw(true);
   Render();
 
@@ -988,7 +988,7 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
   /*
   ------------------------------- Initialize -------------------------------
   */
-  Set_Logic_Page(SeenBuff);
+  Set_Logic_Page(TheScreen().visible_view());
 
   /*........................................................................
   Set up the actual map area relative to the map's border coords
@@ -1438,7 +1438,7 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
   /*
   --------------------------- Redraw the display ---------------------------
   */
-  HiddenPage.Clear();
+  TheScreen().hidden_page().Clear();
   Flag_To_Redraw(true);
   Render();
 
@@ -1722,7 +1722,7 @@ int MapEditClass::Scenario_Dialog() {
   /*
   ------------------------------- Initialize -------------------------------
   */
-  Set_Logic_Page(SeenBuff);
+  Set_Logic_Page(TheScreen().visible_view());
 
   /*
   .......................... Fill in theater items .........................
@@ -2005,7 +2005,7 @@ int MapEditClass::Scenario_Dialog() {
   /*
   ----------------------------- Redraw the map -----------------------------
   */
-  HiddenPage.Clear();
+  TheScreen().hidden_page().Clear();
   Flag_To_Redraw(true);
   Render();
 
@@ -2172,7 +2172,7 @@ void MapEditClass::Handle_Triggers() {
         ................. Unable to create; issue warning ..................
         */
         CCMessageBox().Process("No more triggers available.");
-        HiddenPage.Clear();
+        TheScreen().hidden_page().Clear();
         Flag_To_Redraw(true);
         Render();
       }
@@ -2325,7 +2325,7 @@ int MapEditClass::Select_Trigger() {
   /*
   ------------------------------- Initialize -------------------------------
   */
-  Set_Logic_Page(SeenBuff);
+  Set_Logic_Page(TheScreen().visible_view());
 
   /*
   ......................... Fill in trigger names ..........................
@@ -2516,7 +2516,7 @@ int MapEditClass::Select_Trigger() {
   /*
   --------------------------- Redraw the display ---------------------------
   */
-  HiddenPage.Clear();
+  TheScreen().hidden_page().Clear();
   Flag_To_Redraw(true);
   Render();
 
@@ -2797,7 +2797,7 @@ int MapEditClass::Edit_Trigger() {
   /*
   ------------------------------- Initialize -------------------------------
   */
-  Set_Logic_Page(SeenBuff);
+  Set_Logic_Page(TheScreen().visible_view());
 
   /*
   ....................... Set default button states ........................
@@ -3045,7 +3045,7 @@ int MapEditClass::Edit_Trigger() {
         if (CurTeam) {
           CurTrigger->Team = CurTeam;
         }
-        HiddenPage.Clear();
+        TheScreen().hidden_page().Clear();
         Flag_To_Redraw(true);
         Render();
         display = REDRAW_ALL;
@@ -3138,7 +3138,7 @@ int MapEditClass::Edit_Trigger() {
   /*
   --------------------------- Redraw the display ---------------------------
   */
-  HiddenPage.Clear();
+  TheScreen().hidden_page().Clear();
   Flag_To_Redraw(true);
   Render();
 
@@ -3249,7 +3249,7 @@ int MapEditClass::Import_Triggers() {
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kCancelX,
       kCancelY, kCancelW, kCancelH);
 
-  Set_Logic_Page(SeenBuff);
+  Set_Logic_Page(TheScreen().visible_view());
 
   /*------------------------------------------------------------------------
   Read the MASTER.INI file
@@ -3425,7 +3425,7 @@ int MapEditClass::Import_Triggers() {
   /*
   --------------------------- Redraw the display ---------------------------
   */
-  HiddenPage.Clear();
+  TheScreen().hidden_page().Clear();
   Flag_To_Redraw(true);
   Render();
 
@@ -3576,7 +3576,7 @@ int MapEditClass::Import_Teams() {
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kCancelX,
       kCancelY, kCancelW, kCancelH);
 
-  Set_Logic_Page(SeenBuff);
+  Set_Logic_Page(TheScreen().visible_view());
 
   /*------------------------------------------------------------------------
   Read the MASTER.INI file
@@ -3754,7 +3754,7 @@ int MapEditClass::Import_Teams() {
   /*
   --------------------------- Redraw the display ---------------------------
   */
-  HiddenPage.Clear();
+  TheScreen().hidden_page().Clear();
   Flag_To_Redraw(true);
   Render();
 

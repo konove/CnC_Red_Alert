@@ -74,6 +74,7 @@
 #include "td/jshell.h"
 #include "td/mapedit.h"
 #include "td/path_overlap.h"
+#include "td/screen.h"
 #include "td/special.h"
 #include "td/support.h"
 #include "td/team.h"
@@ -140,9 +141,10 @@ static inline void Draw_Cell_Point(CELL cell, bool passable, int threat_stage,
 
       if (Map.Coord_To_Pixel(Cell_Coord(cell), x, y)) {
         if (threat_stage > 2) {
-          SeenBuff.Put_Pixel(x, y, passable ? kLtGreen : kRed);
+          TheScreen().visible_view().Put_Pixel(x, y,
+                                               passable ? kLtGreen : kRed);
         } else {
-          SeenBuff.Put_Pixel(
+          TheScreen().visible_view().Put_Pixel(
               x, y,
               static_cast<unsigned char>(passable ? 9 + threat_stage : kRed));
         }
@@ -151,11 +153,12 @@ static inline void Draw_Cell_Point(CELL cell, bool passable, int threat_stage,
       const int x = cell % 64;
       const int y = cell / 64;
       if (!overide) {
-        SeenBuff.Put_Pixel(64 + (x * 3) + 1, 8 + (y * 3) + 1,
-                           passable ? kWhite : kBlack);
+        TheScreen().visible_view().Put_Pixel(64 + (x * 3) + 1, 8 + (y * 3) + 1,
+                                             passable ? kWhite : kBlack);
       } else {
-        SeenBuff.Put_Pixel(64 + (x * 3) + 1, 8 + (y * 3) + 1,
-                           static_cast<unsigned char>(overide));
+        TheScreen().visible_view().Put_Pixel(
+            64 + (x * 3) + 1, 8 + (y * 3) + 1,
+            static_cast<unsigned char>(overide));
       }
     }
   }
@@ -1437,7 +1440,7 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
         if (Map.Coord_To_Pixel(Cell_Coord(cell), x, y)) {
           Map.Coord_To_Pixel(
               Cell_Coord(Adjacent_Cell(cell, path->Command[cmd2])), x1, y1);
-          Set_Logic_Page(SeenBuff);
+          Set_Logic_Page(TheScreen().visible_view());
           LogicPage->Draw_Line(x, y + 8, x1, y1 + 8, kGrey);
         }
       }
@@ -1593,9 +1596,9 @@ void FootClass::Debug_Draw_Map(const char* txt, CELL start, CELL dest,
   if (pause) {
     Get_Key_Num();
   }
-  GraphicViewPortClass* page = Set_Logic_Page(SeenBuff);
+  GraphicViewPortClass* page = Set_Logic_Page(TheScreen().visible_view());
 
-  VisiblePage.Clear();
+  TheScreen().visible_page().Clear();
   Fancy_Text_Print(txt, 160, 0, kWhite, kBlack, TPF_8POINT | TPF_CENTER);
   for (int x = 0; x < 64; x++) {
     for (int y = 0; y < 64; y++) {
@@ -1629,7 +1632,7 @@ void FootClass::Debug_Draw_Map(const char* txt, CELL start, CELL dest,
         color = kBlue;
       }
       Fat_Put_Pixel(64 + (x * 3), 8 + (y * 3), static_cast<uint8_t>(color), 3,
-                    SeenBuff);
+                    TheScreen().visible_view());
     }
   }
   Set_Logic_Page(page);

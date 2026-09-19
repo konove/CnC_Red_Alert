@@ -120,7 +120,6 @@
 #include "td/externs.h"
 #include "td/factory.h"
 #include "td/gadget.h"
-#include "td/globals.h"
 #include "td/heap.h"
 #include "td/house.h"
 #include "td/inline.h"
@@ -130,6 +129,7 @@
 #include "td/object.h"
 #include "td/power.h"
 #include "td/queue.h"
+#include "td/screen.h"
 #include "td/shapebtn.h"
 #include "td/super.h"
 #include "td/techno.h"
@@ -220,12 +220,12 @@ void SidebarClass::One_Time() {
   ** sidebar.  They are now variables because we need to change them for
   ** variable resolutions.
   */
-  const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
+  const int factor = TheScreen().visible_view().Get_Width() == 320 ? 1 : 2;
   SideBarWidth = kSidebarwidth * factor;
-  SideX = SeenBuff.Get_Width() - SideBarWidth;
+  SideX = TheScreen().visible_view().Get_Width() - SideBarWidth;
   SideY = Map.RadY + Map.RadHeight + (factor - 1);
-  SideWidth = SeenBuff.Get_Width() - SideX;
-  SideHeight = SeenBuff.Get_Height() - SideY;
+  SideWidth = TheScreen().visible_view().Get_Width() - SideX;
+  SideHeight = TheScreen().visible_view().Get_Height() - SideY;
   MaxVisible = 4;
   ButtonHeight = 9 * factor;
   TopHeight = ButtonHeight + (4 * factor);
@@ -727,7 +727,8 @@ void SidebarClass::Draw_It(bool complete) {
       // CC_Draw_Shape(SidebarShape1, (int)complete, SideX, 158, WINDOW_MAIN,
       // SHAPE_WIN_REL); CC_Draw_Shape(SidebarShape2, (int)complete, SideX,
       // 158+118, WINDOW_MAIN, SHAPE_WIN_REL);
-      LogicPage->Draw_Line(SideX, 157, SeenBuff.Get_Width() - 1, 157, 0);
+      LogicPage->Draw_Line(SideX, 157,
+                           TheScreen().visible_view().Get_Width() - 1, 157, 0);
       CC_Draw_Shape(SidebarShape1, 0, SideX, 158, WINDOW_MAIN, SHAPE_WIN_REL);
       CC_Draw_Shape(SidebarShape2, 0, SideX, 158 + 118, WINDOW_MAIN,
                     SHAPE_WIN_REL);
@@ -948,8 +949,8 @@ void SidebarClass::Recalc() {
 bool SidebarClass::Activate(int control) {
   const bool old = IsSidebarActive;
 
-  const int sidex = SeenBuff.Get_Width() - SideBarWidth;
-  const int sidewidth = SeenBuff.Get_Width() - sidex;
+  const int sidex = TheScreen().visible_view().Get_Width() - SideBarWidth;
+  const int sidewidth = TheScreen().visible_view().Get_Width() - sidex;
 
   if (PlaybackGame) {
     return old;
@@ -984,7 +985,7 @@ bool SidebarClass::Activate(int control) {
     */
     if (IsSidebarActive /*&& X*/) {
       Set_View_Dimensions(0, Map.Get_Tab_Height(),
-                          SeenBuff.Get_Width() - sidewidth);
+                          TheScreen().visible_view().Get_Width() - sidewidth);
       IsSidebarToRedraw = true;
       Help_Text(TXT_NONE);
       Repair.Zap();

@@ -63,11 +63,11 @@
 #include "td/conquer.h"
 #include "td/defines.h"
 #include "td/externs.h"
-#include "td/globals.h"
 #include "td/interpal.h"
 #include "td/jshell.h"
 #include "td/palette.h"
 #include "td/score.h"
+#include "td/screen.h"
 #include "td/text.h"
 #include "td/textblit.h"
 #include "tech/audio_mixer.h"
@@ -76,13 +76,13 @@
 void GDI_Ending() {
 #ifdef DEMO
   Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
-  Load_Title_Screen("DEMOPIC.PCX", &HidPage, Palette);
-  HidPage.Blit(SeenBuff);
+  Load_Title_Screen("DEMOPIC.PCX", &TheScreen().hidden_view(), Palette);
+  TheScreen().hidden_view().Blit(TheScreen().visible_view());
   Fade_Palette_To(Palette, kFadePaletteMedium, Call_Back);
   Clear_KeyBuffer();
   Get_Key_Num();
   Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
-  VisiblePage.Clear();
+  TheScreen().visible_page().Clear();
 
 #else
   if (TempleIoned) {
@@ -103,8 +103,10 @@ void GDI_Ending() {
   if (GameFile("TRAILER.VQA").IsAvailable()) {
     Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
     GameFile f("ATTRACT2.CPS");
-    Load_Uncompress(f, SysMemPage, SysMemPage, Palette);
-    SysMemPage.Scale(SeenBuff, 0, 0, 0, 0, 320, 199, 640, 398);
+    Load_Uncompress(f, TheScreen().sys_mem_page(), TheScreen().sys_mem_page(),
+                    Palette);
+    TheScreen().sys_mem_page().Scale(TheScreen().visible_view(), 0, 0, 0, 0,
+                                     320, 199, 640, 398);
     Fade_Palette_To(Palette, kFadePaletteMedium, Call_Back);
     Clear_KeyBuffer();
     count.Set(int64_t{kTimerSecond} * 3);
@@ -118,8 +120,10 @@ void GDI_Ending() {
 
   Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
   GameFile f("ATTRACT2.CPS");
-  Load_Uncompress(f, SysMemPage, SysMemPage, Palette);
-  SysMemPage.Scale(SeenBuff, 0, 0, 0, 0, 320, 199, 640, 398);
+  Load_Uncompress(f, TheScreen().sys_mem_page(), TheScreen().sys_mem_page(),
+                  Palette);
+  TheScreen().sys_mem_page().Scale(TheScreen().visible_view(), 0, 0, 0, 0, 320,
+                                   199, 640, 398);
   Fade_Palette_To(Palette, kFadePaletteMedium, Call_Back);
   Clear_KeyBuffer();
   //	CountDownTimerClass count;
@@ -161,22 +165,25 @@ void Nod_Ending() {
   const std::span<const std::byte> oldfont = Set_Font(ScoreFontPtr);
   PseudoSeenBuff = new GraphicBufferClass(320, 200, {});
   TextPrintBuffer =
-      new GraphicBufferClass(SeenBuff.Get_Width(), SeenBuff.Get_Height(), {});
+      new GraphicBufferClass(TheScreen().visible_view().Get_Width(),
+                             TheScreen().visible_view().Get_Height(), {});
   TextPrintBuffer->Clear();
   BlitList.Clear();
-  SeenBuff.Clear();
-  HidPage.Clear();
+  TheScreen().visible_view().Clear();
+  TheScreen().hidden_view().Clear();
   PseudoSeenBuff->Clear();
 
   GameFile f("SATSEL.PAL");
   const auto localpal = Load_Alloc_Data(f);
   f.Open("SATSEL.CPS");
-  Load_Uncompress(f, SysMemPage, SysMemPage, {});
+  Load_Uncompress(f, TheScreen().sys_mem_page(), TheScreen().sys_mem_page(),
+                  {});
 #ifdef NOT_FOR_WIN95
   base::CopyBytes(std::as_writable_bytes(std::span(satpic)),
-                  std::as_bytes(HidPage.Get_Bytes()), satpic.size());
+                  std::as_bytes(TheScreen().hidden_view().Get_Bytes()),
+                  satpic.size());
 #else
-  SysMemPage.Blit(*PseudoSeenBuff);
+  TheScreen().sys_mem_page().Blit(*PseudoSeenBuff);
 #endif  // NOT_FOR_WIN95
   // Read from the file: MixArchive::RetrieveData() only serves cached archives.
   GameFile kanefinl_file("KANEFINL.AUD");
@@ -190,8 +197,9 @@ void Nod_Ending() {
   Wait_Vert_Blank();
   Set_Palette(port::UnsignedBytes(localpal));
 #ifdef NOT_FOR_WIN95
-  base::CopyBytes(std::as_writable_bytes(SeenBuff.Get_Bytes()),
-                  std::as_writable_bytes(std::span(satpic)), satpic.size());
+  base::CopyBytes(
+      std::as_writable_bytes(TheScreen().visible_view().Get_Bytes()),
+      std::as_writable_bytes(std::span(satpic)), satpic.size());
 #endif  // NOT_FOR_WIN95
   Show_Mouse();
 
@@ -199,7 +207,8 @@ void Nod_Ending() {
   InterpolationPalette = port::UnsignedBytes(localpal);
   Increase_Palette_Luminance(InterpolationPalette, 30, 30, 30, 63);
   Read_Interpolation_Palette("SATSELIN.PAL");
-  Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, "SATSELIN.PAL");
+  Interpolate_2X_Scale(PseudoSeenBuff, &TheScreen().visible_view(),
+                       "SATSELIN.PAL");
 
   Keyboard::Clear();
   Audio.Play(kanefinl, 255, 128);
@@ -264,7 +273,7 @@ void Nod_Ending() {
     }
   }
   // erase the "choose a target" text
-  SeenBuff.Fill_Rect(0, 360, 638, 398, 0);
+  TheScreen().visible_view().Fill_Rect(0, 360, 638, 398, 0);
   TextPrintBuffer->Fill_Rect(0, 360, 638, 398, 0);
 
   Hide_Mouse();
@@ -283,8 +292,10 @@ void Nod_Ending() {
   if (GameFile("TRAILER.VQA").IsAvailable()) {
     Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
     GameFile attract_file("ATTRACT2.CPS");
-    Load_Uncompress(attract_file, SysMemPage, SysMemPage, Palette);
-    SysMemPage.Scale(SeenBuff, 0, 0, 0, 0, 320, 199, 640, 398);
+    Load_Uncompress(attract_file, TheScreen().sys_mem_page(),
+                    TheScreen().sys_mem_page(), Palette);
+    TheScreen().sys_mem_page().Scale(TheScreen().visible_view(), 0, 0, 0, 0,
+                                     320, 199, 640, 398);
     Fade_Palette_To(Palette, kFadePaletteMedium, Call_Back);
     Clear_KeyBuffer();
     count.Set(int64_t{kTimerSecond} * 3);
@@ -298,8 +309,10 @@ void Nod_Ending() {
 
   Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
   GameFile f2("ATTRACT2.CPS");
-  Load_Uncompress(f2, SysMemPage, SysMemPage, Palette);
-  SysMemPage.Scale(SeenBuff, 0, 0, 0, 0, 320, 199, 640, 398);
+  Load_Uncompress(f2, TheScreen().sys_mem_page(), TheScreen().sys_mem_page(),
+                  Palette);
+  TheScreen().sys_mem_page().Scale(TheScreen().visible_view(), 0, 0, 0, 0, 320,
+                                   199, 640, 398);
   Fade_Palette_To(Palette, kFadePaletteMedium, Call_Back);
   Clear_KeyBuffer();
   //	CountDownTimerClass count;

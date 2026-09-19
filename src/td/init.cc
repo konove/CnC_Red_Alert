@@ -122,6 +122,7 @@
 #include "td/saveload.h"
 #include "td/scenario.h"
 #include "td/score.h"
+#include "td/screen.h"
 #include "td/smudge.h"
 #include "td/special.h"
 #include "td/startup.h"
@@ -316,7 +317,7 @@ bool Init_Game() {
   if (!Special.IsFromInstall) {
     Set_Palette(BlackPalette);
     DLOG(INFO) << "C&C95 - About to clear visible page";
-    VisiblePage.Clear();
+    TheScreen().visible_page().Clear();
   }
 
   Set_Palette(GamePalette);
@@ -577,7 +578,7 @@ bool Init_Game() {
   Wait_Vert_Blank();
   if (!Special.IsFromInstall) {
     Set_Palette(Palette);
-    HidPage.Blit(SeenBuff);
+    TheScreen().hidden_view().Blit(TheScreen().visible_view());
     Show_Mouse();
   }
   Call_Back();
@@ -897,7 +898,7 @@ bool Select_Game(bool fade) {
       Theme.Queue_Song(THEME_NONE);
       GameToPlay = GAME_INTERNET;
       display = false;
-      Set_Logic_Page(SeenBuff);
+      Set_Logic_Page(TheScreen().visible_view());
     }
 
     while (process) {
@@ -950,23 +951,24 @@ bool Select_Game(bool fade) {
           fade = false;
         }
 
-        Set_Logic_Page(SeenBuff);
+        Set_Logic_Page(TheScreen().visible_view());
         if constexpr (config::kVirginCheatKeysEnabled) {
-          Fancy_Text_Print(
-              "V.%d%s", SeenBuff.Get_Width() - 1, SeenBuff.Get_Height() - 10,
-              kGrey, kTBlack, TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
-              Version_Number(), VersionText, FOREIGN_VERSION_NUMBER);
+          Fancy_Text_Print("V.%d%s", TheScreen().visible_view().Get_Width() - 1,
+                           TheScreen().visible_view().Get_Height() - 10, kGrey,
+                           kTBlack, TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
+                           Version_Number(), VersionText,
+                           FOREIGN_VERSION_NUMBER);
         } else {
 #ifdef DEMO
           Version_Number();
-          Fancy_Text_Print("DEMO V%s", SeenBuff.Get_Width() - 1,
-                           SeenBuff.Get_Height() - 10, kGrey, kTBlack,
-                           TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
-                           VersionText);
+          Fancy_Text_Print(
+              "DEMO V%s", TheScreen().visible_view().Get_Width() - 1,
+              TheScreen().visible_view().Get_Height() - 10, kGrey, kTBlack,
+              TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT, VersionText);
 #else
-          Fancy_Text_Print("V.%d%s", SeenBuff.Get_Width() - 1,
-                           SeenBuff.Get_Height() - 10, kGrey, kTBlack,
-                           TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
+          Fancy_Text_Print("V.%d%s", TheScreen().visible_view().Get_Width() - 1,
+                           TheScreen().visible_view().Get_Height() - 10, kGrey,
+                           kTBlack, TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
                            Version_Number(), VersionText);
 #endif
         }
@@ -1000,9 +1002,9 @@ bool Select_Game(bool fade) {
           /*
           ** Make sure top and bottom of screen are clear in 640x480 mode
           */
-          if (ScreenHeight == 480) {
-            VisiblePage.Fill_Rect(0, 0, 639, 40, 0);
-            VisiblePage.Fill_Rect(0, 440, 639, 479, 0);
+          if (TheScreen().mode_height() == 480) {
+            TheScreen().visible_page().Fill_Rect(0, 0, 639, 40, 0);
+            TheScreen().visible_page().Fill_Rect(0, 440, 639, 479, 0);
           }
         }
       }
@@ -1109,8 +1111,8 @@ bool Select_Game(bool fade) {
 #ifdef DEMO
           Hide_Mouse();
           Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
-          Load_Title_Screen("PREPICK.PCX", &HidPage, Palette);
-          HidPage.Blit(SeenBuff);
+          Load_Title_Screen("PREPICK.PCX", &TheScreen().hidden_view(), Palette);
+          TheScreen().hidden_view().Blit(TheScreen().visible_view());
           Fade_Palette_To(Palette, kFadePaletteMedium, Call_Back);
           Clear_KeyBuffer();
           while (!Check_Key_Num()) {
@@ -1174,8 +1176,8 @@ bool Select_Game(bool fade) {
 #ifdef DEMO
           Hide_Mouse();
           Set_Palette(BlackPalette);
-          Load_Title_Screen("DEMOPIC.PCX", &HidPage, Palette);
-          HidPage.Blit(SeenBuff);
+          Load_Title_Screen("DEMOPIC.PCX", &TheScreen().hidden_view(), Palette);
+          TheScreen().hidden_view().Blit(TheScreen().visible_view());
           Fade_Palette_To(Palette, kFadePaletteMedium, Call_Back);
           Clear_KeyBuffer();
           while (!Check_Key()) {
@@ -1422,11 +1424,13 @@ bool Select_Game(bool fade) {
           // verify existence of movie file before playing this sequence.
           if (GameFile("TRAILER.VQA").IsAvailable()) {
             Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
-            VisiblePage.Clear();
+            TheScreen().visible_page().Clear();
             if (GameFile("ATTRACT2.CPS").IsAvailable()) {
               GameFile f("ATTRACT2.CPS");
-              Load_Uncompress(f, SysMemPage, SysMemPage, Palette);
-              SysMemPage.Scale(SeenBuff, 0, 0, 0, 0, 320, 199, 640, 398);
+              Load_Uncompress(f, TheScreen().sys_mem_page(),
+                              TheScreen().sys_mem_page(), Palette);
+              TheScreen().sys_mem_page().Scale(TheScreen().visible_view(), 0, 0,
+                                               0, 0, 320, 199, 640, 398);
               Fade_Palette_To(Palette, kFadePaletteMedium, Call_Back);
             }
             Clear_KeyBuffer();
@@ -1441,11 +1445,13 @@ bool Select_Game(bool fade) {
 
           if (GameFile("SIZZLE.VQA").IsAvailable()) {
             Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
-            VisiblePage.Clear();
+            TheScreen().visible_page().Clear();
             if (GameFile("ATTRACT2.CPS").IsAvailable()) {
               GameFile f("ATTRACT2.CPS");
-              Load_Uncompress(f, SysMemPage, SysMemPage, Palette);
-              SysMemPage.Scale(SeenBuff, 0, 0, 0, 0, 320, 199, 640, 398);
+              Load_Uncompress(f, TheScreen().sys_mem_page(),
+                              TheScreen().sys_mem_page(), Palette);
+              TheScreen().sys_mem_page().Scale(TheScreen().visible_view(), 0, 0,
+                                               0, 0, 320, 199, 640, 398);
               Fade_Palette_To(Palette, kFadePaletteMedium, Call_Back);
             }
             Clear_KeyBuffer();
@@ -1460,11 +1466,13 @@ bool Select_Game(bool fade) {
 
           if (GameFile("SIZZLE2.VQA").IsAvailable()) {
             Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
-            VisiblePage.Clear();
+            TheScreen().visible_page().Clear();
             if (GameFile("ATTRACT2.CPS").IsAvailable()) {
               GameFile f("ATTRACT2.CPS");
-              Load_Uncompress(f, SysMemPage, SysMemPage, Palette);
-              SysMemPage.Scale(SeenBuff, 0, 0, 0, 0, 320, 199, 640, 398);
+              Load_Uncompress(f, TheScreen().sys_mem_page(),
+                              TheScreen().sys_mem_page(), Palette);
+              TheScreen().sys_mem_page().Scale(TheScreen().visible_view(), 0, 0,
+                                               0, 0, 320, 199, 640, 398);
               Fade_Palette_To(Palette, kFadePaletteMedium, Call_Back);
             }
             Clear_KeyBuffer();
@@ -1478,11 +1486,13 @@ bool Select_Game(bool fade) {
           }
 
           Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
-          VisiblePage.Clear();
+          TheScreen().visible_page().Clear();
           if (GameFile("ATTRACT2.CPS").IsAvailable()) {
             GameFile f("ATTRACT2.CPS");
-            Load_Uncompress(f, SysMemPage, SysMemPage, Palette);
-            SysMemPage.Scale(SeenBuff, 0, 0, 0, 0, 320, 199, 640, 398);
+            Load_Uncompress(f, TheScreen().sys_mem_page(),
+                            TheScreen().sys_mem_page(), Palette);
+            TheScreen().sys_mem_page().Scale(TheScreen().visible_view(), 0, 0,
+                                             0, 0, 320, 199, 640, 398);
             Fade_Palette_To(Palette, kFadePaletteMedium, Call_Back);
           }
           Clear_KeyBuffer();
@@ -1513,7 +1523,7 @@ bool Select_Game(bool fade) {
           Theme.Fade_Out();
           Fade_Palette_To(BlackPalette, kFadePaletteSlow, nullptr);
 #ifdef JAPANESE
-          VisiblePage.Clear();
+          TheScreen().visible_page().Clear();
 #endif
           return false;
 
@@ -1631,8 +1641,8 @@ bool Select_Game(bool fade) {
 
     if (selection != kSelStartNewGame) {
       Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
-      HiddenPage.Clear();
-      VisiblePage.Clear();
+      TheScreen().hidden_page().Clear();
+      TheScreen().visible_page().Clear();
     }
     Show_Mouse();
 
@@ -1941,7 +1951,7 @@ bool Select_Game(bool fade) {
   **	properly set.
   */
   DLOG(INFO) << "C&C95 - Initialising message system.";
-  const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
+  const int factor = TheScreen().visible_view().Get_Width() == 320 ? 1 : 2;
   Messages.Init(Map.TacPixelX, Map.TacPixelY, 6, MAX_MESSAGE_LENGTH,
                 (6 * factor) + 1);
 
@@ -1962,12 +1972,12 @@ bool Select_Game(bool fade) {
   Hide_Mouse();
   Hide_Mouse();
   Hide_Mouse();
-  WWMouse->Erase_Mouse(&HidPage, true);
+  WWMouse->Erase_Mouse(&TheScreen().hidden_view(), true);
 
   Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
-  HiddenPage.Clear();
-  VisiblePage.Clear();
-  Set_Logic_Page(SeenBuff);
+  TheScreen().hidden_page().Clear();
+  TheScreen().visible_page().Clear();
+  Set_Logic_Page(TheScreen().visible_view());
   Map.Flag_To_Redraw();
   Call_Back();
   Map.Render();
@@ -2107,7 +2117,7 @@ void Anim_Init() {
   AnimControl.ImageWidth = 320;
   AnimControl.ImageHeight = 200;
   AnimControl.Vmode = 0;
-  AnimControl.ImageBuf = SysMemPage.Get_Bytes();
+  AnimControl.ImageBuf = TheScreen().sys_mem_page().Get_Bytes();
   // AnimControl.VBIBit = VertBlank;
   // AnimControl.DrawFlags |= VQACFGF_TOPLEFT;
   AnimControl.OptionFlags |= VQAOPTF_CAPTIONS | VQAOPTF_EVA;
@@ -2508,7 +2518,7 @@ bool Parse_Command_Line(const std::span<const std::string_view> arguments) {
     ** Set screen to 640x480 instead of 640x400
     */
     if (string.contains("-480")) {
-      ScreenHeight = 480;
+      TheScreen().set_mode_height(480);
       continue;
     }
 
@@ -2987,9 +2997,9 @@ void Load_Recording_Values() {
  * HISTORY: * 06/03/1996 JLB : Created. *
  *=============================================================================================*/
 void Load_Title_Page(bool visible) {
-  Load_Title_Screen("HTITLE.PCX", &HidPage, Palette);
+  Load_Title_Screen("HTITLE.PCX", &TheScreen().hidden_view(), Palette);
 
   if (visible) {
-    HidPage.Blit(SeenBuff);
+    TheScreen().hidden_view().Blit(TheScreen().visible_view());
   }
 }

@@ -61,10 +61,9 @@
 #include "td/conquer.h"
 #include "td/defines.h"
 #include "td/dialog.h"
-#include "td/externs.h"
-#include "td/globals.h"
 #include "td/goptions.h"
 #include "td/jshell.h"
+#include "td/screen.h"
 #include "td/text.h"
 #include "td/textbtn.h"
 
@@ -112,10 +111,11 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   bool display = false;  // display level
   int realval[5];
 
-  GraphicBufferClass seen_buff_save(VisiblePage.Get_Width(),
-                                    VisiblePage.Get_Height(), {});
+  GraphicBufferClass seen_buff_save(TheScreen().visible_page().Get_Width(),
+                                    TheScreen().visible_page().Get_Height(),
+                                    {});
 
-  const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
+  const int factor = TheScreen().visible_view().Get_Width() == 320 ? 1 : 2;
 
   if (b1txt && *b1txt == '\0') {
     b1txt = nullptr;
@@ -185,14 +185,14 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   // BG #endif
   height += numbuttons == 0 ? 30 * factor : 60 * factor;
 
-  const int x = (SeenBuff.Get_Width() - width) / 2;
-  const int y = (SeenBuff.Get_Height() - height) / 2;
+  const int x = (TheScreen().visible_view().Get_Width() - width) / 2;
+  const int y = (TheScreen().visible_view().Get_Height() - height) / 2;
 
   /*
   **	Other inits.
   */
-  Set_Logic_Page(SeenBuff);
-  VisiblePage.Blit(seen_buff_save);
+  Set_Logic_Page(TheScreen().visible_view());
+  TheScreen().visible_page().Blit(seen_buff_save);
 
   /*
   **	Initialize the button structures. All are initialized, even though one
@@ -245,14 +245,15 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   Hide_Mouse();
   if (preserve) {
     back.resize(base::ToSize(width * height));
-    SeenBuff.To_Buffer(x, y, width, height, std::span(back),
-                       static_cast<int32_t>(width) * height);
+    TheScreen().visible_view().To_Buffer(x, y, width, height, std::span(back),
+                                         static_cast<int32_t>(width) * height);
   }
   // display = true;
 #ifdef JAPANESE
   if (IsPicture) {
-    Load_Uncompress(GameFile(msg), SysMemPage, SysMemPage);
-    SysMemPage.Blit(SeenBuff, 160, 100);
+    Load_Uncompress(GameFile(msg), TheScreen().sys_mem_page(),
+                    TheScreen().sys_mem_page());
+    TheScreen().sys_mem_page().Blit(TheScreen().visible_view(), 160, 100);
   } else {
 #endif
     Dialog_Box(x, y, width, height);
@@ -288,7 +289,7 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
       */
       if (AllSurfaces.SurfacesRestored) {
         AllSurfaces.SurfacesRestored = false;
-        seen_buff_save.Blit(VisiblePage);
+        seen_buff_save.Blit(TheScreen().visible_page());
         display = true;
       }
 
@@ -299,8 +300,9 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
 
 #ifdef JAPANESE
         if (IsPicture) {
-          Load_Uncompress(GameFile(msg), SysMemPage, SysMemPage);
-          SysMemPage.Blit(SeenBuff, 160, 100);
+          Load_Uncompress(GameFile(msg), TheScreen().sys_mem_page(),
+                          TheScreen().sys_mem_page());
+          TheScreen().sys_mem_page().Blit(TheScreen().visible_view(), 160, 100);
         } else {
 #endif
           Dialog_Box(x, y, width, height);
@@ -456,10 +458,11 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   */
   if (preserve) {
     Hide_Mouse();
-    if (SeenBuff.Lock()) {
-      Buffer_To_Page(x, y, width, height, std::span(back), &SeenBuff);
+    if (TheScreen().visible_view().Lock()) {
+      Buffer_To_Page(x, y, width, height, std::span(back),
+                     &TheScreen().visible_view());
     }
-    SeenBuff.Unlock();
+    TheScreen().visible_view().Unlock();
     back.clear();
     Show_Mouse();
   }

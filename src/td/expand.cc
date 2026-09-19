@@ -61,13 +61,13 @@
 #include "td/dialog.h"
 #include "td/externs.h"
 #include "td/gadget.h"
-#include "td/globals.h"
 #include "td/goptions.h"
 #include "td/ini.h"
 #include "td/init.h"
 #include "td/jshell.h"
 #include "td/list.h"
 #include "td/profile.h"
+#include "td/screen.h"
 #include "td/text.h"
 #include "td/textbtn.h"
 #include "tech/game_file.h"
@@ -136,7 +136,7 @@ void EListClass::Draw_Entry(int index, int x, int y, int width, bool selected) {
 }
 
 bool Expansion_Dialog() {
-  const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
+  const int factor = TheScreen().visible_view().Get_Width() == 320 ? 1 : 2;
 
   const int option_width = 236 * factor;
   const int option_height = 162 * factor;
@@ -212,7 +212,7 @@ bool Expansion_Dialog() {
     }
   }
 
-  Set_Logic_Page(SeenBuff);
+  Set_Logic_Page(TheScreen().visible_view());
   bool display = true;
   bool process = true;
   bool okval = true;
@@ -294,7 +294,7 @@ bool Expansion_Dialog() {
  * HISTORY: * 3/26/97 11:07AM ST : Created *
  *=============================================================================================*/
 bool Bonus_Dialog() {
-  const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
+  const int factor = TheScreen().visible_view().Get_Width() == 320 ? 1 : 2;
 
   const int option_width = 236 * factor;
   const int option_height = 162 * factor;
@@ -366,7 +366,7 @@ bool Bonus_Dialog() {
     }
   }
 
-  Set_Logic_Page(SeenBuff);
+  Set_Logic_Page(TheScreen().visible_view());
   bool display = true;
   bool process = true;
   bool okval = true;

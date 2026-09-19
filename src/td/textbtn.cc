@@ -57,8 +57,8 @@
 #include "td/control.h"
 #include "td/defines.h"
 #include "td/dialog.h"
-#include "td/globals.h"
 #include "td/jshell.h"
+#include "td/screen.h"
 #include "td/text.h"
 #include "td/toggle.h"
 
@@ -192,7 +192,7 @@ bool TextButtonClass::Draw_Me(bool forced) {
     /*
     **	Hide the mouse.
     */
-    if (LogicPage == &SeenBuff) {
+    if (TheScreen().IsVisible(LogicPage)) {
       // Conditional_Hide_Mouse(X, Y, X+Width-1, Y+Height-1);
       Conditional_Hide_Mouse(X, Y, X + Width, Y + Height);
     }
@@ -207,7 +207,7 @@ bool TextButtonClass::Draw_Me(bool forced) {
     /*
     **	Display the mouse.
     */
-    if (LogicPage == &SeenBuff) {
+    if (TheScreen().IsVisible(LogicPage)) {
       Conditional_Show_Mouse();
     }
     return true;

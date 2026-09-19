@@ -71,8 +71,8 @@
 #include "td/dialog.h"
 #include "td/face.h"
 #include "td/gadget.h"
-#include "td/globals.h"
 #include "td/inline.h"
+#include "td/screen.h"
 
 Dial8Class::Dial8Class(int id, int x, int y, int w, int h, DirType dir)
     : ControlClass(static_cast<unsigned>(id), x, y, w, h,
@@ -243,7 +243,7 @@ bool Dial8Class::Draw_Me(bool forced) {
     **	Hide the mouse.
     */
 
-    if (LogicPage == &SeenBuff) {
+    if (TheScreen().IsVisible(LogicPage)) {
       Hide_Mouse();
     }
 
@@ -272,7 +272,7 @@ bool Dial8Class::Draw_Me(bool forced) {
     /*
     **	Restore the mouse.
     */
-    if (LogicPage == &SeenBuff) {
+    if (TheScreen().IsVisible(LogicPage)) {
       Show_Mouse();
     }
 

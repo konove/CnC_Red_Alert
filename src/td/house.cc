@@ -179,6 +179,7 @@
 #include "td/randomstate.h"
 #include "td/region.h"
 #include "td/reinf.h"
+#include "td/screen.h"
 #include "td/sidebar.h"
 #include "td/special.h"
 #include "td/super.h"
@@ -3794,7 +3795,7 @@ void HouseClass::MPlayer_Defeated() {
   if (PlayerPtr == this) {
     MPlayerObiWan = true;
     Debug_Unshroud = true;
-    HiddenPage.Clear();
+    TheScreen().hidden_page().Clear();
     Map.Flag_To_Redraw(true);
 
     /*.....................................................................

@@ -64,12 +64,13 @@
 #include "td/defines.h"
 #include "td/externs.h"
 #include "td/game.h"
-#include "td/globals.h"
+#include "td/globals.h"  // IWYU pragma: keep (used only with an entry point)
 #include "td/ipx.h"
 #include "td/ipxaddr.h"
 #include "td/ipxmgr.h"
 #include "td/nullmgr.h"
 #include "td/profile.h"
+#include "td/screen.h"
 #include "td/startup.h"
 #include "tech/audio_mixer.h"
 #include "tech/disk_file.h"
@@ -256,56 +257,19 @@ int main(int argc, char* argv[])
 
       CCDebugString("C&C95 - Creating main window.\n");
 
-      Create_Main_Window(nullptr, 0, ScreenWidth, ScreenHeight);
+      Create_Main_Window(nullptr, 0, Screen::kWidth, TheScreen().mode_height());
       CCDebugString("C&C95 - Initialising audio.\n");
 
       SoundOn = Audio.Open(11025 * 2, /*stereo=*/false);
 
       Palette.assign(768, 0);
 
-      bool video_success = false;
       CCDebugString("C&C95 - Setting video mode.\n");
-      /*
-      ** Set 640x400 video mode. If its not available then try for 640x480
-      */
-      if (ScreenHeight == 400) {
-        if (Set_Video_Mode(MainWindow, ScreenWidth, ScreenHeight, 8)) {
-          video_success = true;
-        } else {
-          if (Set_Video_Mode(MainWindow, ScreenWidth, 480, 8)) {
-            video_success = true;
-            ScreenHeight = 480;
-          }
-        }
-      } else {
-        if (Set_Video_Mode(MainWindow, ScreenWidth, ScreenHeight, 8)) {
-          video_success = true;
-        }
-      }
-
-      if (!video_success) {
+      if (!TheScreen().Init()) {
         CCDebugString("C&C95 - Failed to set video mode.\n");
         ShutDown();
         return EXIT_FAILURE;
       }
-
-      CCDebugString("C&C95 - Initialising video surfaces.\n");
-
-      {
-        VisiblePage.Init(ScreenWidth, ScreenHeight, {}, 0,
-                         GBC_VISIBLE | GBC_VIDEOMEM);
-        HiddenPage.Init(ScreenWidth, ScreenHeight, {}, 0,
-                        static_cast<GBC_Enum>(0));
-      }
-
-      if (ScreenHeight == 480) {
-        ScreenHeight = 400;
-      }
-
-      const int yoff = VisiblePage.Get_Height() == 480 ? 40 : 0;
-
-      SeenBuff.Attach(&VisiblePage, 0, yoff, ScreenWidth, ScreenHeight);
-      HidPage.Attach(&HiddenPage, 0, yoff, ScreenWidth, ScreenHeight);
 
       CCDebugString("C&C95 - Adjusting variables for resolution.\n");
       Options.Adjust_Variables_For_Resolution();
@@ -313,8 +277,8 @@ int main(int argc, char* argv[])
       CCDebugString("C&C95 - Setting palette.\n");
       /////////Set_Palette(Palette);
 
-      WindowList[0][kWindowWidth] = SeenBuff.Get_Width() / 8;
-      WindowList[0][kWindowHeight] = SeenBuff.Get_Height();
+      WindowList[0][kWindowWidth] = TheScreen().visible_view().Get_Width() / 8;
+      WindowList[0][kWindowHeight] = TheScreen().visible_view().Get_Height();
 
       /*
       ** Install the memory error handler
@@ -322,7 +286,7 @@ int main(int argc, char* argv[])
       Memory_Error = &Memory_Error_Handler;
 
       CCDebugString("C&C95 - Creating mouse class.\n");
-      WWMouse = new WWMouseClass(&SeenBuff, 32, 32);
+      WWMouse = new WWMouseClass(&TheScreen().visible_view(), 32, 32);
       //			MouseInstalled = Install_Mouse(32,24,320,200);
       MouseInstalled = true;
 
@@ -391,8 +355,8 @@ int main(int argc, char* argv[])
       CCDebugString("C&C95 - Entering main game.\n");
       Main_Game();
 
-      VisiblePage.Clear();
-      HiddenPage.Clear();
+      TheScreen().visible_page().Clear();
+      TheScreen().hidden_page().Clear();
 
       CCDebugString("C&C95 - About to exit.\n");
       ShutDown();
@@ -484,8 +448,6 @@ void ShutDown() {
   // Nothing is left for an allocation failure from here on to clean up.
   Memory_Error_Exit = Print_Error_Exit;
   Prog_End();
-  VisiblePage.Un_Init();
-  HiddenPage.Un_Init();
   delete game;
   game = nullptr;
 }
@@ -514,8 +476,10 @@ void Read_Setup_Options(DiskFile* config_file) {
 
     AllowHardwareBlitFills =
         WWGetPrivateProfileInt("Options", "HardwareFills", 1, buffer) != 0;
-    ScreenHeight =
-        WWGetPrivateProfileInt("Options", "Resolution", 0, buffer) ? 480 : 400;
+    TheScreen().set_mode_height(
+        WWGetPrivateProfileInt("Options", "Resolution", 0, buffer)
+            ? 480
+            : Screen::kHeight);
     IsV107 = WWGetPrivateProfileInt("Options", "Compatibility", 0, buffer) != 0;
 
     /*

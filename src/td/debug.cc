@@ -60,7 +60,6 @@
 #include "td/defines.h"
 #include "td/ending.h"
 #include "td/externs.h"
-#include "td/globals.h"
 #include "td/gscreen.h"
 #include "td/heap.h"
 #include "td/house.h"
@@ -68,6 +67,7 @@
 #include "td/mapedit.h"
 #include "td/object.h"
 #include "td/palette.h"
+#include "td/screen.h"
 #include "td/team.h"
 #include "td/techno.h"
 #include "td/type.h"
@@ -118,12 +118,13 @@ void Debug_Key(unsigned input) {
         */
         {
           GraphicBufferClass temp_page(
-              SeenBuff.Get_Width(), SeenBuff.Get_Height(), {},
-              static_cast<int32_t>(SeenBuff.Get_Width()) *
-                  SeenBuff.Get_Height());
+              TheScreen().visible_view().Get_Width(),
+              TheScreen().visible_view().Get_Height(), {},
+              static_cast<int32_t>(TheScreen().visible_view().Get_Width()) *
+                  TheScreen().visible_view().Get_Height());
           char filename[30];
 
-          SeenBuff.Blit(temp_page);
+          TheScreen().visible_view().Blit(temp_page);
           for (int lp = 0; lp < 99; lp++) {
             if (lp < 10) {
               absl::SNPrintF(filename, sizeof(filename), "scrsht0%d.pcx", lp);
@@ -344,7 +345,7 @@ void Debug_Key(unsigned input) {
 #define XCENTER 160
 #define YCENTER 100
         for (;;) {
-          VisiblePage.Clear();
+          TheScreen().visible_page().Clear();
 
           // Draw grid.
           {
@@ -540,7 +541,7 @@ void Debug_Key(unsigned input) {
           if (ttype.Primary != WEAPON_NONE) {
             weapon = Weapons.at(ttype.Primary).Range;
           }
-          Set_Logic_Page(SeenBuff);
+          Set_Logic_Page(TheScreen().visible_view());
           const COORDINATE center = CurrentObject.at(0)->Center_Coord();
           const COORDINATE center2 = CurrentObject.at(0)->Fire_Coord(0);
 

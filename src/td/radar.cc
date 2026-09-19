@@ -116,6 +116,7 @@
 #include "td/mouse.h"
 #include "td/mplayer.h"
 #include "td/object.h"
+#include "td/screen.h"
 #include "td/shapebtn.h"
 #include "td/special.h"
 #include "td/techno.h"
@@ -176,7 +177,7 @@ void RadarClass::One_Time() {
   const int scale = static_cast<int>(base::Bit<uint32_t>(factor));
   RadWidth = 80 * scale;
   RadHeight = 70 * scale;
-  RadX = SeenBuff.Get_Width() - RadWidth;
+  RadX = TheScreen().visible_view().Get_Width() - RadWidth;
   RadY = Map.Get_Tab_Height() - scale;
   RadPWidth = 64 * scale;
   RadPHeight = 64 * scale;
@@ -460,7 +461,8 @@ void RadarClass::Draw_It(bool forced) {
         Radar_Cursor(RadarCursorRedraw);
 
       } else {
-        const GraphicViewPortClass* oldpage = Set_Logic_Page(HidPage);
+        const GraphicViewPortClass* oldpage =
+            Set_Logic_Page(TheScreen().hidden_view());
         //				if (LogicPage->Lock()) {
         CC_Draw_Shape(RadarAnim, kRadarActivatedFrame, RadX, RadY + 1,
                       WINDOW_MAIN, SHAPE_NORMAL);
@@ -484,10 +486,10 @@ void RadarClass::Draw_It(bool forced) {
         FullRedraw = false;
         IsRadarToRedraw = false;
         LogicPage->Unlock();
-        if (oldpage == &SeenBuff) {
+        if (oldpage == &TheScreen().visible_view()) {
           Hide_Mouse();
-          LogicPage->Blit(SeenBuff, RadX, RadY, RadX, RadY, RadWidth,
-                          RadHeight);
+          LogicPage->Blit(TheScreen().visible_view(), RadX, RadY, RadX, RadY,
+                          RadWidth, RadHeight);
           Show_Mouse();
         }
 
@@ -1261,7 +1263,7 @@ void RadarClass::Radar_Cursor(bool forced) {
   ** setup a graphic view port class so we can write all the pixels relative
   ** to 0,0 rather than relative to full screen coordinates.
   */
-  GraphicViewPortClass* oldpage = Set_Logic_Page(HidPage);
+  GraphicViewPortClass* oldpage = Set_Logic_Page(TheScreen().hidden_view());
   GraphicViewPortClass draw_window(
       LogicPage->Get_Graphic_Buffer(),
       RadX + RadOffX + BaseX + LogicPage->Get_XPos(),
@@ -1314,7 +1316,7 @@ void RadarClass::Radar_Anim() {
     return;
   }
 
-  GraphicViewPortClass* oldpage = Set_Logic_Page(HidPage);
+  GraphicViewPortClass* oldpage = Set_Logic_Page(TheScreen().hidden_view());
   GraphicViewPortClass draw_window(
       LogicPage->Get_Graphic_Buffer(), RadX + RadOffX + LogicPage->Get_XPos(),
       RadY + RadOffY + LogicPage->Get_YPos(), RadIWidth, RadIHeight);
@@ -1687,9 +1689,10 @@ void RadarClass::Set_Radar_Position(CELL cell) {
         /*
         ** Blit the section that is actually overlapping.
         */
-        if (OverlappedVideoBlits || !HidPage.Get_IsDirectDraw()) {
-          HidPage.Blit(
-              HidPage,
+        if (OverlappedVideoBlits ||
+            !TheScreen().hidden_view().Get_IsDirectDraw()) {
+          TheScreen().hidden_view().Blit(
+              TheScreen().hidden_view(),
               ((radx < 0 ? -radx : 0) * ZoomFactor) + RadX + RadOffX + BaseX,
               ((rady < 0 ? -rady : 0) * ZoomFactor) + RadY + RadOffY + BaseY,
               ((radx < 0 ? 0 : radx) * ZoomFactor) + RadX + RadOffX + BaseX,
@@ -1705,14 +1708,14 @@ void RadarClass::Set_Radar_Position(CELL cell) {
                             ((RadarHeight + 16) / 16) * 16, {}, 0,
                             GBC_VIDEOMEM);
 
-          HidPage.Blit(
+          TheScreen().hidden_view().Blit(
               temp_surface,
               ((radx < 0 ? -radx : 0) * ZoomFactor) + RadX + RadOffX + BaseX,
               ((rady < 0 ? -rady : 0) * ZoomFactor) + RadY + RadOffY + BaseY, 0,
               0, RadarWidth, RadarHeight);
 
           temp_surface.Blit(
-              HidPage, 0, 0,
+              TheScreen().hidden_view(), 0, 0,
               ((radx < 0 ? 0 : radx) * ZoomFactor) + RadX + RadOffX + BaseX,
               ((rady < 0 ? 0 : rady) * ZoomFactor) + RadY + RadOffY + BaseY,
               radw * ZoomFactor, radh * ZoomFactor);
@@ -1890,7 +1893,7 @@ void RadarClass::Player_Names(bool on) {
 void RadarClass::Draw_Names() const {
   char txt[40];
   int color = 0;
-  const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
+  const int factor = TheScreen().visible_view().Get_Width() == 320 ? 1 : 2;
 
   /*
   ** Do nothing if the sidebar isn't there

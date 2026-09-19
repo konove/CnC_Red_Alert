@@ -69,8 +69,8 @@
 #include "td/defines.h"
 #include "td/dialog.h"
 #include "td/gadget.h"
-#include "td/globals.h"
 #include "td/jshell.h"
+#include "td/screen.h"
 
 GaugeClass::GaugeClass(unsigned id, int x, int y, int w, int h)
     : ControlClass(id, x, y, w, h, kLeftHeld | kLeftPress | kLeftRelease, true),
@@ -214,7 +214,7 @@ bool GaugeClass::Draw_Me(bool forced) {
     /*
     ===================== Hide the mouse =====================
     */
-    if (LogicPage == &SeenBuff) {
+    if (TheScreen().IsVisible(LogicPage)) {
       Conditional_Hide_Mouse(X, Y, X + Width, Y + Height);
     }
 
@@ -249,7 +249,7 @@ bool GaugeClass::Draw_Me(bool forced) {
     /*
     =================== Display the mouse ===================
     */
-    if (LogicPage == &SeenBuff) {
+    if (TheScreen().IsVisible(LogicPage)) {
       Conditional_Show_Mouse();
     }
     return true;
@@ -467,7 +467,7 @@ bool TriColorGaugeClass::Draw_Me(bool forced) {
     /*
     ===================== Hide the mouse =====================
     */
-    if (LogicPage == &SeenBuff) {
+    if (TheScreen().IsVisible(LogicPage)) {
       Conditional_Hide_Mouse(X, Y, X + Width, Y + Height);
     }
     /*
@@ -516,7 +516,7 @@ bool TriColorGaugeClass::Draw_Me(bool forced) {
     /*
     =================== Display the mouse ===================
     */
-    if (LogicPage == &SeenBuff) {
+    if (TheScreen().IsVisible(LogicPage)) {
       Conditional_Show_Mouse();
     }
     return true;

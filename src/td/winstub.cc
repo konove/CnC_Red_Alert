@@ -45,6 +45,7 @@
 
 #include "base/seek_origin.h"
 #include "td/function.h"
+#include "td/screen.h"
 #include "td/tcpip.h"
 
 void output(short, short) {}
@@ -94,8 +95,8 @@ void Focus_Restore() {
   if (WWMouse) {
     WWMouse->Set_Cursor_Clip();
   }
-  VisiblePage.Clear();
-  HiddenPage.Clear();
+  TheScreen().visible_page().Clear();
+  TheScreen().hidden_page().Clear();
 }
 
 /***********************************************************************************************
@@ -193,8 +194,8 @@ long FAR PASCAL _export Windows_Procedure(HWND hwnd, UINT message, UINT wParam,
       CCDebugString("C&C95 - About to Invalidate_Cached_Icons.\n");
       Invalidate_Cached_Icons();
       CCDebugString("C&C95 - About to release the video surfaces.\n");
-      VisiblePage.Un_Init();
-      HiddenPage.Un_Init();
+      TheScreen().visible_page().Un_Init();
+      TheScreen().hidden_page().Un_Init();
       AllSurfaces.Release();
       if (!InDebugger) {
         CCDebugString("C&C95 - About to reset the video mode.\n");
@@ -406,7 +407,8 @@ void Colour_Debug(int call_number) {
 #pragma on(unreferenced)
 
 BOOL Any_Locked() {
-  if (SeenBuff.Get_LockCount() || HidPage.Get_LockCount()) {
+  if (TheScreen().visible_view().Get_LockCount() ||
+      TheScreen().hidden_view().Get_LockCount()) {
     return true;
   } else {
     return FALSE;
@@ -550,7 +552,7 @@ void __cdecl SetPalette(unsigned char* palette, long, unsigned long) {
  * HISTORY: * 5/22/96 3:57PM ST : Created *
  *=============================================================================================*/
 void Memory_Error_Handler() {
-  VisiblePage.Clear();
+  TheScreen().visible_page().Clear();
   Set_Palette(GamePalette);
   while (Get_Mouse_State()) {
     Show_Mouse();

@@ -73,13 +73,13 @@
 #include "td/edit.h"
 #include "td/externs.h"
 #include "td/gadget.h"
-#include "td/globals.h"
 #include "td/goptions.h"
 #include "td/heap.h"
 #include "td/jshell.h"
 #include "td/list.h"
 #include "td/mapedit.h"
 #include "td/msgbox.h"
+#include "td/screen.h"
 #include "td/teamtype.h"
 #include "td/textbtn.h"
 #include "td/type.h"
@@ -155,7 +155,7 @@ void MapEditClass::Handle_Teams(const char* caption) {
           ................. Unable to create; issue warning ..................
           */
           CCMessageBox().Process("No more teams available.");
-          HiddenPage.Clear();
+          TheScreen().hidden_page().Clear();
           Flag_To_Redraw(true);
           Render();
         }
@@ -308,7 +308,7 @@ int MapEditClass::Select_Team(const char* caption) {
   /*
   ------------------------------- Initialize -------------------------------
   */
-  Set_Logic_Page(SeenBuff);
+  Set_Logic_Page(TheScreen().visible_view());
 
   /*
   ........................... Fill in team names ...........................
@@ -496,7 +496,7 @@ int MapEditClass::Select_Team(const char* caption) {
   /*
   --------------------------- Redraw the display ---------------------------
   */
-  HiddenPage.Clear();
+  TheScreen().hidden_page().Clear();
   Flag_To_Redraw(true);
   Render();
 
@@ -911,7 +911,7 @@ int MapEditClass::Edit_Team() {
   /*
   ------------------------------- Initialize -------------------------------
   */
-  Set_Logic_Page(SeenBuff);
+  Set_Logic_Page(TheScreen().visible_view());
 
   /*
   ........................... Copy team's state ............................
@@ -1378,7 +1378,7 @@ int MapEditClass::Edit_Team() {
   /*
   --------------------------- Redraw the display ---------------------------
   */
-  HiddenPage.Clear();
+  TheScreen().hidden_page().Clear();
   Flag_To_Redraw(true);
   Render();
 
@@ -1674,7 +1674,7 @@ int MapEditClass::Team_Members(HousesType house) {
   /*
   **	Draw to SeenBuff.
   */
-  Set_Logic_Page(SeenBuff);
+  Set_Logic_Page(TheScreen().visible_view());
 
   /*
   **	Make sure 'house' is valid.
@@ -1944,7 +1944,7 @@ int MapEditClass::Team_Members(HousesType house) {
   /*
   **	Redraw the display.
   */
-  HiddenPage.Clear();
+  TheScreen().hidden_page().Clear();
   Flag_To_Redraw(true);
   Render();
 

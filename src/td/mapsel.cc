@@ -66,13 +66,13 @@
 #include "td/conquer.h"
 #include "td/defines.h"
 #include "td/externs.h"
-#include "td/globals.h"
 #include "td/goptions.h"
 #include "td/house.h"
 #include "td/interpal.h"
 #include "td/jshell.h"
 #include "td/palette.h"
 #include "td/score.h"
+#include "td/screen.h"
 #include "td/text.h"
 #include "td/textblit.h"
 #include "td/theme.h"
@@ -546,7 +546,8 @@ void Map_Selection() {
   ** Extra graphic buffer to draw text into
   */
   TextPrintBuffer =
-      new GraphicBufferClass(SeenBuff.Get_Width(), SeenBuff.Get_Height(), {});
+      new GraphicBufferClass(TheScreen().visible_view().Get_Width(),
+                             TheScreen().visible_view().Get_Height(), {});
   TextPrintBuffer->Clear();
   BlitList.Clear();
 
@@ -581,10 +582,10 @@ void Map_Selection() {
   const auto country1 = MixArchive::RetrieveData("COUNTRY1.AUD");
   const auto scold1 = MixArchive::RetrieveData("SCOLD1.AUD");
 
-  SysMemPage.Clear();
+  TheScreen().sys_mem_page().Clear();
   PseudoSeenBuff->Clear();
-  WWMouse->Erase_Mouse(&HidPage, true);
-  HiddenPage.Clear();
+  WWMouse->Erase_Mouse(&TheScreen().hidden_view(), true);
+  TheScreen().hidden_page().Clear();
 
   InterpolationPaletteChanged = true;
   InterpolationPalette = Palette;
@@ -592,13 +593,13 @@ void Map_Selection() {
   Read_Interpolation_Palette("MAP1.PAL");
 
   //	SeenBuff.Blit(HidPage);
-  greyearth.DrawFrame(SysMemPage, 0);
+  greyearth.DrawFrame(TheScreen().sys_mem_page(), 0);
 
-  Bit_It_In(0, 0, 320, 200, &SysMemPage, PseudoSeenBuff);
+  Bit_It_In(0, 0, 320, 200, &TheScreen().sys_mem_page(), PseudoSeenBuff);
   PseudoSeenBuff->Put_Pixel(237, 92, kTBlack);
   PseudoSeenBuff->Put_Pixel(237, 93, kTBlack);
 
-  Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, "MAP1.PAL");
+  Interpolate_2X_Scale(PseudoSeenBuff, &TheScreen().visible_view(), "MAP1.PAL");
 
   InterpolationPaletteChanged = true;
   InterpolationPalette = localpalette;
@@ -617,8 +618,8 @@ void Map_Selection() {
 
   Call_Back_Delay(4);
 
-  SysMemPage.Clear();
-  greyearth2.DrawFrame(SysMemPage, 0);
+  TheScreen().sys_mem_page().Clear();
+  greyearth2.DrawFrame(TheScreen().sys_mem_page(), 0);
 
   InterpolationPaletteChanged = true;
   InterpolationPalette = grey2palette;
@@ -627,7 +628,7 @@ void Map_Selection() {
   Wait_Vert_Blank();
   Set_Palette(grey2palette);
 
-  SysMemPage.Blit(*PseudoSeenBuff);
+  TheScreen().sys_mem_page().Blit(*PseudoSeenBuff);
 
   Call_Back_Delay(4);
   for (int i = 1; i < greyearth2.frame_count(); i++) {
@@ -641,11 +642,11 @@ void Map_Selection() {
   /*
   ** Copy the first frame up to the seenpage (while screen is black)
   */
-  SysMemPage.Clear();
-  anim.DrawFrame(SysMemPage, 1);
-  SysMemPage.Blit(*PseudoSeenBuff);
+  TheScreen().sys_mem_page().Clear();
+  anim.DrawFrame(TheScreen().sys_mem_page(), 1);
+  TheScreen().sys_mem_page().Blit(*PseudoSeenBuff);
 
-  Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, {});
+  Interpolate_2X_Scale(PseudoSeenBuff, &TheScreen().visible_view(), {});
 
   Stop_Speaking();
 
@@ -659,8 +660,8 @@ void Map_Selection() {
   /*
   ** now make the grid appear
   */
-  SysMemPage.Blit(*PseudoSeenBuff);
-  Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, {});
+  TheScreen().sys_mem_page().Blit(*PseudoSeenBuff);
+  Interpolate_2X_Scale(PseudoSeenBuff, &TheScreen().visible_view(), {});
 
   Audio.Play(sfx4, 255, Options.Normalize_Sound(130));
   Audio.Play(text2, 255, Options.Normalize_Sound(90));
@@ -791,10 +792,10 @@ void Map_Selection() {
   ** Freeze on the map of Europe or Africa
   */
 
-  SysMemPage.Clear();
-  progress.DrawFrame(SysMemPage, 0);
+  TheScreen().sys_mem_page().Clear();
+  progress.DrawFrame(TheScreen().sys_mem_page(), 0);
 
-  SysMemPage.Blit(*PseudoSeenBuff);
+  TheScreen().sys_mem_page().Blit(*PseudoSeenBuff);
 
   InterpolationPaletteChanged = true;
   InterpolationPalette = progresspalette;
@@ -802,8 +803,9 @@ void Map_Selection() {
   Read_Interpolation_Palette("MAP_PROG.PAL");
 
   auto* europe =
-      new GraphicBufferClass(SysMemPage.Get_Width(), SysMemPage.Get_Height());
-  SysMemPage.Blit(*europe);
+      new GraphicBufferClass(TheScreen().sys_mem_page().Get_Width(),
+                             TheScreen().sys_mem_page().Get_Height());
+  TheScreen().sys_mem_page().Blit(*europe);
 
   /*
   ** Now show territories as they existed last scenario
@@ -811,8 +813,8 @@ void Map_Selection() {
   int startframe = base::At(base::At(CountryArray, scenario).Start,
                             static_cast<int>(ScenDir));
   if (startframe) {
-    progress.DrawFrame(SysMemPage, startframe);
-    SysMemPage.Blit(*PseudoSeenBuff);
+    progress.DrawFrame(TheScreen().sys_mem_page(), startframe);
+    TheScreen().sys_mem_page().Blit(*PseudoSeenBuff);
   }
   Set_Palette(progresspalette);
   Call_Back_Delay(45);
@@ -822,7 +824,7 @@ void Map_Selection() {
   ** Now dissolve in first advance of territories
   */
   const int xcoord = house == HOUSE_GOOD ? 0 : 204;
-  SysMemPage.Blit(backpage, xcoord, 1, 0, 0, 20 * 6, 8);
+  TheScreen().sys_mem_page().Blit(backpage, xcoord, 1, 0, 0, 20 * 6, 8);
   Audio.Play(text2, 255, Options.Normalize_Sound(90));
   if (house == HOUSE_GOOD) {
     Alloc_Object(new ScorePrintClass(TXT_MAP_GDI, 0, 2, greenpal));
@@ -832,10 +834,11 @@ void Map_Selection() {
   Call_Back_Delay(60);
 
   Audio.Play(country1, 255, Options.Normalize_Sound(90));
-  progress.DrawFrame(SysMemPage, startframe + 1);
-  progress.DrawFrame(SysMemPage, startframe + 1);
-  Bit_It_In(0, 0, 320, 200, &SysMemPage, PseudoSeenBuff, 1, true);
-  backpage.Blit(SysMemPage, 0, 0, xcoord, 1, 20 * 6, 8);
+  progress.DrawFrame(TheScreen().sys_mem_page(), startframe + 1);
+  progress.DrawFrame(TheScreen().sys_mem_page(), startframe + 1);
+  Bit_It_In(0, 0, 320, 200, &TheScreen().sys_mem_page(), PseudoSeenBuff, 1,
+            true);
+  backpage.Blit(TheScreen().sys_mem_page(), 0, 0, xcoord, 1, 20 * 6, 8);
   Call_Back_Delay(85);
 
   /*
@@ -851,9 +854,9 @@ void Map_Selection() {
                              kBlack);
 #endif
 
-  Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, {});
+  Interpolate_2X_Scale(PseudoSeenBuff, &TheScreen().visible_view(), {});
 
-  SysMemPage.Blit(backpage, xcoord, 1, 0, 0, 20 * 6, 8);
+  TheScreen().sys_mem_page().Blit(backpage, xcoord, 1, 0, 0, 20 * 6, 8);
   if (!lastscenario) {
     Audio.Play(text2, 255, Options.Normalize_Sound(90));
     if (house == HOUSE_GOOD) {
@@ -865,9 +868,10 @@ void Map_Selection() {
   }
 
   Audio.Play(country1, 255, Options.Normalize_Sound(90));
-  progress.DrawFrame(SysMemPage, startframe + 2);
-  Bit_It_In(0, 0, 320, 200, &SysMemPage, PseudoSeenBuff, 1, true);
-  backpage.Blit(SysMemPage, 0, 0, xcoord, 11, 20 * 6, 8);
+  progress.DrawFrame(TheScreen().sys_mem_page(), startframe + 2);
+  Bit_It_In(0, 0, 320, 200, &TheScreen().sys_mem_page(), PseudoSeenBuff, 1,
+            true);
+  backpage.Blit(TheScreen().sys_mem_page(), 0, 0, xcoord, 11, 20 * 6, 8);
   if (!lastscenario) {
     Call_Back_Delay(85);
   }
@@ -882,7 +886,7 @@ void Map_Selection() {
                              kBlack);
 #endif
 
-  Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, {});
+  Interpolate_2X_Scale(PseudoSeenBuff, &TheScreen().visible_view(), {});
 
   startframe = base::At(base::At(CountryArray, scenario).ContAnim,
                         static_cast<int>(ScenDir));
@@ -905,20 +909,20 @@ void Map_Selection() {
   */
   if (lastscenario) {
 #if (defined(GERMAN) || defined(FRENCH))
-    SysMemPage.Fill_Rect(0, 160, 20 * 6, 186, kTBlack);
+    TheScreen().sys_mem_page().Fill_Rect(0, 160, 20 * 6, 186, kTBlack);
     PseudoSeenBuff->Fill_Rect(0, 160, 20 * 6, 186, kTBlack);
     TextPrintBuffer->Fill_Rect(0, 320, 40 * 6, 372, kBlack);
-    SeenBuff.Fill_Rect(0, 320, 40 * 6, 372, kTBlack);
-    HidPage.Fill_Rect(0, 320, 40 * 6, 372, kTBlack);
+    TheScreen().visible_view().Fill_Rect(0, 320, 40 * 6, 372, kTBlack);
+    TheScreen().hidden_view().Fill_Rect(0, 320, 40 * 6, 372, kTBlack);
 #else
-    SysMemPage.Fill_Rect(0, 160, 20 * 6, 176, kTBlack);
+    TheScreen().sys_mem_page().Fill_Rect(0, 160, 20 * 6, 176, kTBlack);
     PseudoSeenBuff->Fill_Rect(0, 160, 20 * 6, 176, kTBlack);
     TextPrintBuffer->Fill_Rect(0, 320, 40 * 6, 352, kBlack);
-    SeenBuff.Fill_Rect(0, 320, 40 * 6, 352, kTBlack);
-    HidPage.Fill_Rect(0, 320, 40 * 6, 352, kTBlack);
+    TheScreen().visible_view().Fill_Rect(0, 320, 40 * 6, 352, kTBlack);
+    TheScreen().hidden_view().Fill_Rect(0, 320, 40 * 6, 352, kTBlack);
 #endif
     BlitList.Clear();
-    Bit_It_In(0, 0, 320, 200, &SysMemPage, PseudoSeenBuff);
+    Bit_It_In(0, 0, 320, 200, &TheScreen().sys_mem_page(), PseudoSeenBuff);
   }
 
   /*
@@ -929,10 +933,12 @@ void Map_Selection() {
     InterpolationPalette = CurrentPalette;
     if (house == HOUSE_GOOD) {
       Read_Interpolation_Palette("LASTSCNG.PAL");
-      Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, "LASTSCNG.PAL");
+      Interpolate_2X_Scale(PseudoSeenBuff, &TheScreen().visible_view(),
+                           "LASTSCNG.PAL");
     } else {
       Read_Interpolation_Palette("LASTSCNB.PAL");
-      Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, "LASTSCNB.PAL");
+      Interpolate_2X_Scale(PseudoSeenBuff, &TheScreen().visible_view(),
+                           "LASTSCNB.PAL");
     }
   }
 
@@ -1031,17 +1037,17 @@ void Map_Selection() {
   Audio.Play(beepy6, 255, Options.Normalize_Sound(90));
   if (!lastscenario) {
 #if (defined(GERMAN) || defined(FRENCH))
-    SysMemPage.Fill_Rect(0, 160, 20 * 6, 186, kTBlack);
+    TheScreen().sys_mem_page().Fill_Rect(0, 160, 20 * 6, 186, kTBlack);
     PseudoSeenBuff->Fill_Rect(0, 160, 20 * 6, 186, kTBlack);
     TextPrintBuffer->Fill_Rect(0, 320, 40 * 6, 372, kBlack);
 #else
-    SysMemPage.Fill_Rect(0, 160, 20 * 6, 176, kTBlack);
+    TheScreen().sys_mem_page().Fill_Rect(0, 160, 20 * 6, 176, kTBlack);
     PseudoSeenBuff->Fill_Rect(0, 160, 20 * 6, 176, kTBlack);
     TextPrintBuffer->Fill_Rect(0, 320, 40 * 6, 352, kBlack);
 #endif
   }
 
-  Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, {});
+  Interpolate_2X_Scale(PseudoSeenBuff, &TheScreen().visible_view(), {});
 
   /*
   ** Now the crosshairs are over the target countries - loop until a
@@ -1051,10 +1057,12 @@ void Map_Selection() {
 
   if (house == HOUSE_GOOD) {
     GameFile f(lastscenario ? "CLICK_EB.CPS" : "CLICK_E.CPS");
-    Load_Uncompress(f, SysMemPage, SysMemPage, {});
+    Load_Uncompress(f, TheScreen().sys_mem_page(), TheScreen().sys_mem_page(),
+                    {});
   } else {
     GameFile f(lastscenario ? "CLICK_SA.CPS" : "CLICK_A.CPS");
-    Load_Uncompress(f, SysMemPage, SysMemPage, {});
+    Load_Uncompress(f, TheScreen().sys_mem_page(), TheScreen().sys_mem_page(),
+                    {});
     if (lastscenario) {
       attackxcoord = 200;
     }
@@ -1082,7 +1090,8 @@ void Map_Selection() {
            selection < base::At(base::At(CountryArray, scenario).Choices,
                                 static_cast<int>(ScenDir));
            selection++) {
-        color = SysMemPage.Get_Pixel(Get_Mouse_X() / 2, Get_Mouse_Y() / 2);
+        color = TheScreen().sys_mem_page().Get_Pixel(Get_Mouse_X() / 2,
+                                                     Get_Mouse_Y() / 2);
 
         /*
         ** Special hack for Egypt the second time through
@@ -1134,13 +1143,13 @@ void Map_Selection() {
                                2 * (attackxcoord + (21 * 6)), 2 * 178, kBlack);
 #endif  // GERMAN
 
-    Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, {});
+    Interpolate_2X_Scale(PseudoSeenBuff, &TheScreen().visible_view(), {});
 
     /*
     ** Draw the country's shape in non-fading colors
     */
-    Set_Logic_Page(SysMemPage);
-    europe->Blit(SysMemPage);
+    Set_Logic_Page(TheScreen().sys_mem_page());
+    europe->Blit(TheScreen().sys_mem_page());
     const int shape =
         base::At(base::At(base::At(CountryArray, scenario).CountryShape,
                           static_cast<int>(ScenDir)),
@@ -1149,8 +1158,8 @@ void Map_Selection() {
     CC_Draw_Shape(countryshape, shape, base::At(_countryx, xshuffled_rows),
                   base::At(_countryy, xshuffled_rows), WINDOW_MAIN,
                   SHAPE_WIN_REL | SHAPE_CENTER, {}, {});
-    SysMemPage.Blit(*PseudoSeenBuff);
-    Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, {});
+    TheScreen().sys_mem_page().Blit(*PseudoSeenBuff);
+    Interpolate_2X_Scale(PseudoSeenBuff, &TheScreen().visible_view(), {});
 
     /*
     ** Now clear the palette of all but the country's colors, and fade
@@ -1162,7 +1171,8 @@ void Map_Selection() {
     InterpolationPalette = localpalette;
     Increase_Palette_Luminance(localpalette, 30, 30, 30, 63);
     Read_Interpolation_Palette("MAP_LOC2.PAL");
-    Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, "MAP_LOC2.PAL");
+    Interpolate_2X_Scale(PseudoSeenBuff, &TheScreen().visible_view(),
+                         "MAP_LOC2.PAL");
     Fade_Palette_To(localpalette, kFadePaletteMedium, Call_Back);
 
     countryshape = {};
@@ -1176,7 +1186,8 @@ void Map_Selection() {
     InterpolationPalette = localpalette;
     Increase_Palette_Luminance(localpalette, 30, 30, 30, 63);
     Read_Interpolation_Palette("MAP_LOC3.PAL");
-    Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, "MAP_LOC3.PAL");
+    Interpolate_2X_Scale(PseudoSeenBuff, &TheScreen().visible_view(),
+                         "MAP_LOC3.PAL");
     Set_Palette(localpalette);
     //		Load_Data(house == HOUSE_GOOD ? "DARK_B.PAL" : "DARK_SA.PAL",
     // localpalette, 768);
@@ -1194,12 +1205,12 @@ void Map_Selection() {
                                2 * (attackxcoord + (17 * 6)), 398,
                                kBlack);  // erase "Select country to attack"
 #endif
-    Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, {});
+    Interpolate_2X_Scale(PseudoSeenBuff, &TheScreen().visible_view(), {});
 
     progress.DrawFrame(*PseudoSeenBuff, progress.frame_count() - 1);
     Set_Palette(localpalette);
     progress.Close();
-    PseudoSeenBuff->Blit(SysMemPage);
+    PseudoSeenBuff->Blit(TheScreen().sys_mem_page());
     Print_Statistics(20, 160, house == HOUSE_GOOD ? 0 : 160);
   }
 

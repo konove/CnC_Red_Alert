@@ -147,6 +147,7 @@
 #include "td/saveload.h"
 #include "td/scenario.h"
 #include "td/score.h"
+#include "td/screen.h"
 #include "td/special.h"
 #include "td/startup.h"
 #include "td/target.h"
@@ -418,7 +419,7 @@ void Main_Game() {
     **	Scenario is done; fade palette to black
     */
     Fade_Palette_To(BlackPalette, kFadePaletteSlow, nullptr);
-    VisiblePage.Clear();
+    TheScreen().visible_page().Clear();
 
 #ifndef DEMO
     /*
@@ -495,8 +496,8 @@ void Main_Game() {
 #ifdef DEMO
   Hide_Mouse();
   Fade_Palette_To(BlackPalette, kFadePaletteMedium, NULL);
-  Load_Title_Screen("DEMOPIC.PCX", &HidPage, Palette);
-  HidPage.Blit(SeenBuff);
+  Load_Title_Screen("DEMOPIC.PCX", &TheScreen().hidden_view(), Palette);
+  TheScreen().hidden_view().Blit(TheScreen().visible_view());
   Fade_Palette_To(Palette, kFadePaletteMedium, NULL);
   Clear_KeyBuffer();
   Get_Key();
@@ -853,7 +854,7 @@ static void Message_Input(KeyNumType& input) {
   int sent_so_far = 0;
   uint16_t magic_number = 0;
   uint16_t crc = 0;
-  const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
+  const int factor = TheScreen().visible_view().Get_Width() == 320 ? 1 : 2;
 
   /*
   **	Check keyboard input for a request to send a message.
@@ -1549,11 +1550,11 @@ static void Sync_Delay() {
     Call_Back();
 
     if (SpecialDialog == SDLG_NONE) {
-      WWMouse->Erase_Mouse(&HidPage, true);
+      WWMouse->Erase_Mouse(&TheScreen().hidden_view(), true);
       KeyNumType input = KN_NONE;
       int x = 0;
       int y = 0;
-      WWMouse->Erase_Mouse(&HidPage, true);
+      WWMouse->Erase_Mouse(&TheScreen().hidden_view(), true);
       Map.Input(input, x, y);
       if (input) {
         Keyboard_Process(input);
@@ -1642,7 +1643,7 @@ bool Main_Loop() {
   **	Update the display, unless we're inside a dialog.
   */
   if ((!PlaybackGame) && (SpecialDialog == SDLG_NONE && GameInFocus)) {
-    WWMouse->Erase_Mouse(&HidPage, true);
+    WWMouse->Erase_Mouse(&TheScreen().hidden_view(), true);
     Map.Input(input, x, y);
     if (input) {
       Keyboard_Process(input);
@@ -1683,7 +1684,7 @@ bool Main_Loop() {
   *updated.
   */
   if (Messages.Manage()) {
-    HiddenPage.Clear();
+    TheScreen().hidden_page().Clear();
     Map.Flag_To_Redraw(true);
   }
 
@@ -1728,7 +1729,7 @@ bool Main_Loop() {
       Send_Statistics_Packet();
     }
 
-    WWMouse->Erase_Mouse(&HidPage, true);
+    WWMouse->Erase_Mouse(&TheScreen().hidden_view(), true);
     PlayerLoses = false;
     PlayerWins = false;
     PlayerRestarts = false;
@@ -1741,7 +1742,7 @@ bool Main_Loop() {
       Send_Statistics_Packet();
     }
 
-    WWMouse->Erase_Mouse(&HidPage, true);
+    WWMouse->Erase_Mouse(&TheScreen().hidden_view(), true);
     PlayerWins = false;
     PlayerLoses = false;
     PlayerRestarts = false;
@@ -1749,7 +1750,7 @@ bool Main_Loop() {
     Do_Lose();
   }
   if (PlayerRestarts) {
-    WWMouse->Erase_Mouse(&HidPage, true);
+    WWMouse->Erase_Mouse(&TheScreen().hidden_view(), true);
     PlayerWins = false;
     PlayerLoses = false;
     PlayerRestarts = false;
@@ -1999,7 +2000,7 @@ void Go_Editor(bool flag) {
     /*
     ** Force a complete redraw of the screen
     */
-    HiddenPage.Clear();
+    TheScreen().hidden_page().Clear();
     Map.Flag_To_Redraw(true);
     Map.Render();
 
@@ -2023,7 +2024,7 @@ void Go_Editor(bool flag) {
     /*
     ** Force a complete redraw of the screen
     */
-    HiddenPage.Clear();
+    TheScreen().hidden_page().Clear();
     Map.Flag_To_Redraw(true);
     Map.Render();
   }
@@ -2174,7 +2175,7 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
     Theme.Queue_Song(theme);
     if (!PreserveVQAScreen) {
       Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
-      VisiblePage.Clear();
+      TheScreen().visible_page().Clear();
       std::ranges::fill(BlackPalette, 0x01);
       Set_Palette(BlackPalette);
       std::ranges::fill(BlackPalette, 0x00);
@@ -2231,7 +2232,7 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
 
       Load_Interpolated_Palettes(palname.c_str());
       // Set_Palette(BlackPalette);
-      SysMemPage.Clear();
+      TheScreen().sys_mem_page().Clear();
       InMovie = true;
       player.Play(VQAMODE_RUN);
       player.Close();
@@ -2244,7 +2245,7 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
       */
       if (movie_broken_out) {
         clear_screen = true;
-        VisiblePage.Clear();
+        TheScreen().visible_page().Clear();
         movie_broken_out = false;
       }
     }
@@ -2255,7 +2256,7 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
     *screen and *	forcing the palette to black.
     */
     if (clear_screen) {
-      VisiblePage.Clear();
+      TheScreen().visible_page().Clear();
       std::ranges::fill(BlackPalette, 0x01);
       Set_Palette(BlackPalette);
       std::ranges::fill(BlackPalette, 0x00);
@@ -2349,7 +2350,7 @@ std::vector<uint8_t> Get_Radar_Icon(std::span<const std::byte> shapefile,
   for (int frame = 0; frame < frames; ++frame) {
     const auto pixels =
         Build_Frame(shapefile, static_cast<uint16_t>(shapenum + frame),
-                    SysMemPage.Get_Bytes());
+                    TheScreen().sys_mem_page().Get_Bytes());
     if (pixels.empty()) {
       out += frame_pixels;
       continue;
@@ -2743,7 +2744,8 @@ int32_t VQ_Call_Back(unsigned char* /*unused*/, int32_t /*unused*/) {
 
   Check_VQ_Palette_Set();
 
-  Interpolate_2X_Scale(&SysMemPage, &SeenBuff, nullptr);
+  Interpolate_2X_Scale(&TheScreen().sys_mem_page(), &TheScreen().visible_view(),
+                       nullptr);
 
   // Call_Back();
   if ((BreakoutAllowed || Debug_Flag) && key == KN_ESC) {
@@ -3167,7 +3169,8 @@ bool Force_CD_Available(int cd) {
                               base::At(_volid, cd));
         }
       }
-      GraphicViewPortClass* oldpage = Set_Logic_Page(SeenBuff);
+      GraphicViewPortClass* oldpage =
+          Set_Logic_Page(TheScreen().visible_view());
       theme_playing = Theme.What_Is_Playing();
       Theme.Stop();
       int hidden = Get_Mouse_State();
@@ -3401,11 +3404,13 @@ static void Do_Record_Playback() {
 std::span<const std::byte> Hires_Retrieve(const char* name) {
   char filename[30];
 
-  if (SeenBuff.Get_Width() != 320) {
+  if (Screen::kWidth != 320) {
     absl::SNPrintF(filename, sizeof(filename), "H%s", name);
   } else {
     port::SafeCopy(filename, name);
   }
   return MixArchive::RetrieveData(filename);
 }
-int Get_Resolution_Factor() { return SeenBuff.Get_Width() == 320 ? 0 : 1; }
+// The static sidebar buttons call this during static initialization, before
+// there is a Screen, so it must not ask one.
+int Get_Resolution_Factor() { return Screen::kWidth == 320 ? 0 : 1; }

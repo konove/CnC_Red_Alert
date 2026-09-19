@@ -59,8 +59,8 @@
 #include "td/dialog.h"
 #include "td/gadget.h"
 #include "td/gauge.h"
-#include "td/globals.h"
 #include "td/jshell.h"
+#include "td/screen.h"
 #include "td/shapebtn.h"
 #include "tech/mix_archive.h"
 
@@ -331,7 +331,7 @@ bool SliderClass::Draw_Me(bool forced) {
     /*
     ===================== Hide the mouse =====================
     */
-    if (LogicPage == &SeenBuff) {
+    if (TheScreen().IsVisible(LogicPage)) {
       Conditional_Hide_Mouse(X, Y, X + Width, Y + Height);
     }
 
@@ -356,7 +356,7 @@ bool SliderClass::Draw_Me(bool forced) {
     /*
     =================== Display the mouse ===================
     */
-    if (LogicPage == &SeenBuff) {
+    if (TheScreen().IsVisible(LogicPage)) {
       Conditional_Show_Mouse();
     }
     return true;

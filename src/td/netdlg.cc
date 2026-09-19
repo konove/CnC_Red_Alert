@@ -174,6 +174,7 @@
 #include "td/nodename.h"
 #include "td/palette.h"
 #include "td/queue.h"
+#include "td/screen.h"
 #include "td/special.h"
 #include "td/tcpip.h"
 #include "td/text.h"
@@ -783,7 +784,7 @@ bool Client_Remote_Connect() {
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
 static int Net_Join_Dialog() {
-  const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
+  const int factor = TheScreen().visible_view().Get_Width() == 320 ? 1 : 2;
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
@@ -2726,7 +2727,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
  *=============================================================================================*/
 static int Net_New_Dialog() {
   /* ###Change collision detected! C:\PROJECTS\CODE\NETDLG.CPP... */
-  const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
+  const int factor = TheScreen().visible_view().Get_Width() == 320 ? 1 : 2;
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
@@ -4147,7 +4148,7 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
   char buf1[40] = {0};
   char buf2[40] = {0};
 
-  const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
+  const int factor = TheScreen().visible_view().Get_Width() == 320 ? 1 : 2;
 
   const int d_txt6_h = (6 * factor) + 1;
   const int d_margin = 5 * factor;
@@ -4180,7 +4181,7 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
     y = (100 * factor) - (h / 2);
 
     Hide_Mouse();
-    Set_Logic_Page(SeenBuff);
+    Set_Logic_Page(TheScreen().visible_view());
     Dialog_Box(x, y, w, h);
 
     Fancy_Text_Print(
@@ -4203,7 +4204,7 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
     Just update the timeout value on the dialog
     ------------------------------------------------------------------------*/
     Hide_Mouse();
-    Set_Logic_Page(SeenBuff);
+    Set_Logic_Page(TheScreen().visible_view());
 
     Format_Runtime_Text(buf2, sizeof(buf2), Text_String(TXT_TIME_ALLOWED),
                         timeval + 1);
@@ -4272,7 +4273,7 @@ static void Wait_For_Focus() {
  * HISTORY: * 5/24/96 10:34AM ST : Created *
  *=============================================================================================*/
 static int Net_Fake_New_Dialog() {
-  const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
+  const int factor = TheScreen().visible_view().Get_Width() == 320 ? 1 : 2;
 
   const int d_dialog_w = 120 * factor;                       // dialog width
   const int d_dialog_h = 80 * factor;                        // dialog height
@@ -4313,7 +4314,8 @@ static int Net_Fake_New_Dialog() {
   port::SafeCopy(buffer, Text_String(TXT_CONNECTING));
   Fancy_Text_Print(TXT_NONE, 0, 0, kTBlack, kTBlack,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
-  Format_Window_String(buffer, SeenBuff.Get_Height(), width, height);
+  Format_Window_String(buffer, TheScreen().visible_view().Get_Height(), width,
+                       height);
 
 #if (defined(GERMAN) || defined(FRENCH))
   d_dialog_w = width + 25 * factor;
@@ -4452,9 +4454,10 @@ static int Net_Fake_New_Dialog() {
   Set_Palette(Palette);
   CCDebugString("C&C95 - Palette was set OK.\n");
 
-  if (LogicPage != &SeenBuff && LogicPage != &HidPage) {
+  if (!TheScreen().IsVisible(LogicPage) &&
+      LogicPage != &TheScreen().hidden_view()) {
     CCDebugString("C&C95 - Logic page invalid");
-    Set_Logic_Page(SeenBuff);
+    Set_Logic_Page(TheScreen().visible_view());
   }
 
   char a_buffer[128];
@@ -4884,7 +4887,7 @@ static int Net_Fake_New_Dialog() {
  *=============================================================================================*/
 
 static int Net_Fake_Join_Dialog() {
-  const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
+  const int factor = TheScreen().visible_view().Get_Width() == 320 ? 1 : 2;
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
@@ -4930,7 +4933,8 @@ static int Net_Fake_Join_Dialog() {
   port::SafeCopy(buffer, Text_String(TXT_CONNECTING));
   Fancy_Text_Print(TXT_NONE, 0, 0, kTBlack, kTBlack,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
-  Format_Window_String(buffer, SeenBuff.Get_Height(), width, height);
+  Format_Window_String(buffer, TheScreen().visible_view().Get_Height(), width,
+                       height);
 
 #if (defined(GERMAN) || defined(FRENCH))
   d_dialog_w = width + 25 * factor;
@@ -5042,9 +5046,10 @@ static int Net_Fake_Join_Dialog() {
   Set_Palette(Palette);
   CCDebugString("C&C95 - Palette was set OK.\n");
 
-  if (LogicPage != &SeenBuff && LogicPage != &HidPage) {
+  if (!TheScreen().IsVisible(LogicPage) &&
+      LogicPage != &TheScreen().hidden_view()) {
     CCDebugString("C&C95 - Logic page invalid\n");
-    Set_Logic_Page(SeenBuff);
+    Set_Logic_Page(TheScreen().visible_view());
   }
 
   char a_buffer[128];

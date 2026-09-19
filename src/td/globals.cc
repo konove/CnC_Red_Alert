@@ -47,7 +47,6 @@
 
 #include "base/enum_array.h"
 #include "port/platform.h"
-#include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/playcd.h"
 #include "sdllib/timer.h"
@@ -727,12 +726,6 @@ int WindowList[][8] = {
 
 };
 
-GraphicBufferClass VisiblePage;
-GraphicBufferClass HiddenPage;
-
-GraphicViewPortClass SeenBuff(&VisiblePage, 0, 0, 640, 480);
-GraphicViewPortClass HidPage(&HiddenPage, 0, 0, 640, 480);
-GraphicBufferClass SysMemPage(kDefaultScreenWidth, 200, {});
 bool SoundOn;
 static CountDownTimerClass DebugTimer{0L};
 CountDownTimerClass CountDownTimer{0L};
@@ -794,8 +787,6 @@ bool MouseInstalled;
 bool AreThingiesEnabled = false;
 
 WWKeyboardClass Kbd;
-int ScreenWidth = 640;
-int ScreenHeight = 400;
 WWMouseClass* WWMouse = nullptr;
 bool InMovie = false;       // Are we currently playing a VQ movie?
 bool MMXAvailable = false;  // Does this CPU support MMX extensions?

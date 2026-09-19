@@ -187,6 +187,7 @@
 #include "td/profile.h"
 #include "td/queue.h"
 #include "td/radio.h"
+#include "td/screen.h"
 #include "td/smudge.h"
 #include "td/special.h"
 #include "td/target.h"
@@ -1077,7 +1078,7 @@ BulletClass* BuildingClass::Fire_At(TARGET target, int which) {
             x1 += Map.TacPixelX;
             y += Map.TacPixelY;
             y1 += Map.TacPixelY;
-            Set_Logic_Page(SeenBuff);
+            Set_Logic_Page(TheScreen().visible_view());
             LogicPage->Draw_Line(x + 1, y, x1, y1, 0x7D);
             LogicPage->Draw_Line(x - 1, y, x1, y1, 0x7D);
             LogicPage->Draw_Line(x, y, x1, y1, 0x7F);

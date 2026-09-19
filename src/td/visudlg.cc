@@ -55,9 +55,9 @@
 #include "td/dialog.h"
 #include "td/externs.h"
 #include "td/gadget.h"
-#include "td/globals.h"
 #include "td/goptions.h"
 #include "td/jshell.h"
+#include "td/screen.h"
 #include "td/slider.h"
 #include "td/textbtn.h"
 
@@ -102,7 +102,7 @@ void VisualControlsClass::Process() {
   TextButtonClass* buttons[kNumOfButtons];
   SliderClass* buttonsliders[kNumOfButtons];
 
-  Set_Logic_Page(SeenBuff);
+  Set_Logic_Page(TheScreen().visible_view());
 
   /*
   **	Create Buttons.  Button coords are in pixels, but are window-relative.
@@ -171,8 +171,9 @@ void VisualControlsClass::Process() {
   **	This causes a right click anywhere or a left click outside the dialog
   *region *	to be equivalent to clicking on the return to options dialog.
   */
-  ControlClass background(kButtonOptions, 0, 0, SeenBuff.Get_Width(),
-                          SeenBuff.Get_Height(),
+  ControlClass background(kButtonOptions, 0, 0,
+                          TheScreen().visible_view().Get_Width(),
+                          TheScreen().visible_view().Get_Height(),
                           GadgetClass::kLeftPress | GadgetClass::kRightPress);
   background.Add_Tail(optionsbtn);
 

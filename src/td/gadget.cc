@@ -77,10 +77,10 @@
 #include "sdllib/ww_mouse.h"
 #include "td/config.h"
 #include "td/control.h"
-#include "td/globals.h"
 #include "td/jshell.h"
 #include "td/link.h"
 #include "td/palette.h"
+#include "td/screen.h"
 #include "tech/pcx_file.h"
 
 GadgetClass* GadgetClass::StuckOn = nullptr;
@@ -449,11 +449,13 @@ KeyNumType GadgetClass::Input() {
       ** time to create a screen shot using the PCX code (if it works)
       */
       GraphicBufferClass temp_page(
-          SeenBuff.Get_Width(), SeenBuff.Get_Height(), {},
-          static_cast<int32_t>(SeenBuff.Get_Width()) * SeenBuff.Get_Height());
+          TheScreen().visible_view().Get_Width(),
+          TheScreen().visible_view().Get_Height(), {},
+          static_cast<int32_t>(TheScreen().visible_view().Get_Width()) *
+              TheScreen().visible_view().Get_Height());
       char filename[30];
 
-      SeenBuff.Blit(temp_page);
+      TheScreen().visible_view().Blit(temp_page);
       for (int lp = 0; lp < 99; lp++) {
         if (lp < 10) {
           absl::SNPrintF(filename, sizeof(filename), "scrsht0%d.pcx", lp);

@@ -67,8 +67,8 @@
 #include "td/dialog.h"
 #include "td/externs.h"
 #include "td/gadget.h"
-#include "td/globals.h"
 #include "td/jshell.h"
+#include "td/screen.h"
 
 /***********************************************************************************************
  * EditClass::EditClass -- Normal constructor for edit class object. *
@@ -190,7 +190,7 @@ bool EditClass::Draw_Me(bool forced) {
     /*
     **	Hide the mouse.
     */
-    if (LogicPage == &SeenBuff) {
+    if (TheScreen().IsVisible(LogicPage)) {
       Conditional_Hide_Mouse(X, Y, X + Width, Y + Height);
     }
 
@@ -207,7 +207,7 @@ bool EditClass::Draw_Me(bool forced) {
     /*
     **	Display the mouse.
     */
-    if (LogicPage == &SeenBuff) {
+    if (TheScreen().IsVisible(LogicPage)) {
       Conditional_Show_Mouse();
     }
 

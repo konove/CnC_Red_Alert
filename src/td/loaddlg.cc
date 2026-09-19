@@ -70,7 +70,6 @@
 #include "td/dialog.h"
 #include "td/edit.h"
 #include "td/externs.h"
-#include "td/globals.h"
 #include "td/goptions.h"
 #include "td/init.h"
 #include "td/jshell.h"
@@ -79,6 +78,7 @@
 #include "td/msgbox.h"
 #include "td/palette.h"
 #include "td/saveload.h"
+#include "td/screen.h"
 #include "td/text.h"
 #include "td/textbtn.h"
 #include "td/vector.h"
@@ -137,11 +137,13 @@ bool LoadOptionsClass::Process() {
   /*
   **	Dialog & button dimensions
   */
-  const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
+  const int factor = TheScreen().visible_view().Get_Width() == 320 ? 1 : 2;
   const int d_dialog_w = 250 * factor;
   const int d_dialog_h = 156 * factor;
-  const int d_dialog_x = (SeenBuff.Get_Width() - d_dialog_w) / 2;
-  const int d_dialog_y = (SeenBuff.Get_Height() - d_dialog_h) / 2;
+  const int d_dialog_x =
+      (TheScreen().visible_view().Get_Width() - d_dialog_w) / 2;
+  const int d_dialog_y =
+      (TheScreen().visible_view().Get_Height() - d_dialog_h) / 2;
   const int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);
   const int d_txt8_h = 11 * factor;
   const int d_margin = 7 * factor;
@@ -262,7 +264,7 @@ bool LoadOptionsClass::Process() {
   /*
   **	Initialize.
   */
-  Set_Logic_Page(SeenBuff);
+  Set_Logic_Page(TheScreen().visible_view());
 
   Fill_List(&listbtn);
 
@@ -324,11 +326,11 @@ bool LoadOptionsClass::Process() {
       **	Redraw the map.
       */
       if (InMainLoop) {
-        HiddenPage.Clear();
+        TheScreen().hidden_page().Clear();
         Map.Flag_To_Redraw(true);
         Map.Render();
       } else {
-        HiddenPage.Clear();
+        TheScreen().hidden_page().Clear();
         Load_Title_Page(true);
       }
 
@@ -411,7 +413,7 @@ bool LoadOptionsClass::Process() {
             CCMessageBox().Process(TXT_ERROR_LOADING_GAME);
           } else {
             Hide_Mouse();
-            VisiblePage.Clear();
+            TheScreen().visible_page().Clear();
             Set_Palette(GamePalette);
             Show_Mouse();
             process = false;

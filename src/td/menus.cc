@@ -44,8 +44,6 @@
 **	Function prototypes
 ******************************/
 
-#include "td/menus.h"
-
 #include <algorithm>
 #include <cctype>
 #include <cstdint>
@@ -67,11 +65,12 @@
 #include "td/dialog.h"
 #include "td/expand.h"
 #include "td/externs.h"
-#include "td/globals.h"
 #include "td/goptions.h"
 #include "td/init.h"
 #include "td/jshell.h"
 #include "td/mapedit.h"
+#include "td/menus.h"
+#include "td/screen.h"
 #include "td/textbtn.h"
 
 static bool Coordinates_In_Region(int x, int y, int inx1, int iny1, int inx2,
@@ -447,7 +446,7 @@ int Do_Menu(std::span<const char* const> strings, bool blue) {
   if (strings.empty()) {
     return (-1);
   }
-  Set_Logic_Page(SeenBuff);
+  Set_Logic_Page(TheScreen().visible_view());
   Keyboard::Clear();
 
   /*
@@ -507,7 +506,7 @@ int Do_Menu(std::span<const char* const> strings, bool blue) {
   Keyboard::Clear();
   Hide_Mouse();
 
-  HidPage.Blit(SeenBuff);
+  TheScreen().hidden_view().Blit(TheScreen().visible_view());
   Change_Window(static_cast<int>(WINDOW_MAIN));
   Map.Flag_To_Redraw(true);
   return selection;
@@ -746,7 +745,7 @@ int Main_Menu(int timeout) {
   /*
   **	Initialize
   */
-  Set_Logic_Page(SeenBuff);
+  Set_Logic_Page(TheScreen().visible_view());
   Keyboard::Clear();
   starttime = TickCount.Time();
 
@@ -851,7 +850,7 @@ int Main_Menu(int timeout) {
       /*
       **	Display the title and text overlay for the menu.
       */
-      Set_Logic_Page(HidPage);
+      Set_Logic_Page(TheScreen().hidden_view());
       Dialog_Box(kDialogX, kDialogY, kDialogW, kDialogH);
       Draw_Caption(TXT_NONE, kDialogX, kDialogY, kDialogW);
       if constexpr (config::kVirginCheatKeysEnabled) {
@@ -889,10 +888,10 @@ int Main_Menu(int timeout) {
       **	Copy the menu to the visible page.
       */
       Hide_Mouse();
-      HidPage.Blit(SeenBuff);
+      TheScreen().hidden_view().Blit(TheScreen().visible_view());
       Show_Mouse();
 
-      Set_Logic_Page(SeenBuff);
+      Set_Logic_Page(TheScreen().visible_view());
       startbtn.Draw_All();
       display = false;
     }

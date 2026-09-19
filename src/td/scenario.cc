@@ -92,6 +92,7 @@
 #include "td/overlay.h"
 #include "td/palette.h"
 #include "td/score.h"
+#include "td/screen.h"
 #include "td/smudge.h"
 #include "td/special.h"
 #include "td/startup.h"
@@ -170,7 +171,7 @@ bool Start_Scenario(char* root, bool briefing) {
     GameFile file(buffer);
 
     if (GameToPlay == GAME_NORMAL && !file.IsAvailable()) {
-      VisiblePage.Clear();
+      TheScreen().visible_page().Clear();
       Set_Palette(GamePalette);
       //			Show_Mouse();
       /*
@@ -370,7 +371,7 @@ void Do_Win() {
   /*
   **	Announce win to player.
   */
-  Set_Logic_Page(SeenBuff);
+  Set_Logic_Page(TheScreen().visible_view());
 #if !(defined(GERMAN) || defined(FRENCH))
   Fancy_Text_Print(TXT_MISSION, x, y, kWhite, kTBlack, TPF_CENTER | TPF_VCR);
 #endif
@@ -469,7 +470,7 @@ void Do_Win() {
       Nod_Ending();
       // Prog_End();
       // exit(0);
-      SeenBuff.Clear();
+      TheScreen().visible_view().Clear();
       Show_Mouse();
       GameActive = false;
       return;
@@ -478,7 +479,7 @@ void Do_Win() {
       GDI_Ending();
       // Prog_End();
       // exit(0);
-      SeenBuff.Clear();
+      TheScreen().visible_view().Clear();
       Show_Mouse();
       GameActive = false;
       return;
@@ -592,7 +593,7 @@ void Do_Lose() {
   /*
   **	Announce win to player.
   */
-  Set_Logic_Page(SeenBuff);
+  Set_Logic_Page(TheScreen().visible_view());
   Fancy_Text_Print(TXT_MISSION, x, y, kWhite, kTBlack, TPF_CENTER | TPF_VCR);
   Fancy_Text_Print(TXT_SCENARIO_LOST, x, y + 30, kWhite, kTBlack,
                    TPF_CENTER | TPF_VCR);

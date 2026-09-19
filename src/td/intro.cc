@@ -60,6 +60,7 @@
 #include "td/jshell.h"
 #include "td/palette.h"
 #include "td/score.h"
+#include "td/screen.h"
 #include "td/special.h"
 #include "td/textblit.h"
 #include "tech/audio_mixer.h"
@@ -117,7 +118,8 @@ void Choose_Side() {
   int setpalette = 0;
 
   TextPrintBuffer =
-      new GraphicBufferClass(SeenBuff.Get_Width(), SeenBuff.Get_Height(), {});
+      new GraphicBufferClass(TheScreen().visible_view().Get_Width(),
+                             TheScreen().visible_view().Get_Height(), {});
   TextPrintBuffer->Clear();
   BlitList.Clear();
   PseudoSeenBuff = new GraphicBufferClass(320, 200, {});
@@ -144,7 +146,7 @@ void Choose_Side() {
 
   if (Special.IsFromInstall) {
     {
-      VisiblePage.Clear();
+      TheScreen().visible_page().Clear();
       PreserveVQAScreen = true;
       Play_Movie("INTRO2", THEME_NONE, false);
     }
@@ -164,12 +166,12 @@ void Choose_Side() {
   gdibrief = Open_Movie(gdibrief_player, gdibrief_io, "GDI1.VQA");
   Load_Interpolated_Palettes("GDI1.VQP", true);
 
-  WWMouse->Erase_Mouse(&HidPage, true);
-  HiddenPage.Clear();
+  WWMouse->Erase_Mouse(&TheScreen().hidden_view(), true);
+  TheScreen().hidden_page().Clear();
   PseudoSeenBuff->Clear();
-  SysMemPage.Clear();
+  TheScreen().sys_mem_page().Clear();
   // if (!Special.IsFromInstall) {
-  VisiblePage.Clear();
+  TheScreen().visible_page().Clear();
   Set_Palette(Palette);
   //} else {
   // setpalette = 1;
@@ -201,13 +203,13 @@ void Choose_Side() {
 
   while (endframe != frame ||
          (speechplaying && Audio.IsPlaying(speech.data()))) {
-    anim.DrawFrame(SysMemPage, frame++);
+    anim.DrawFrame(TheScreen().sys_mem_page(), frame++);
     if (setpalette) {
       Wait_Vert_Blank();
       Set_Palette(Palette);
       setpalette = 0;
     }
-    SysMemPage.Blit(*PseudoSeenBuff, 0, 22, 0, 22, 320, 156);
+    TheScreen().sys_mem_page().Blit(*PseudoSeenBuff, 0, 22, 0, 22, 320, 156);
 
     /*
     ** If the sample has stopped or is about to then restart it
@@ -264,9 +266,10 @@ void Choose_Side() {
 
   // erase the "choose side" text
   PseudoSeenBuff->Fill_Rect(0, 180, 319, 199, 0);
-  SeenBuff.Fill_Rect(0, 180 * 2, 319 * 2, 199 * 2, 0);
-  Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, "SIDES.PAL");
-  SysMemPage.Clear();
+  TheScreen().visible_view().Fill_Rect(0, 180 * 2, 319 * 2, 199 * 2, 0);
+  Interpolate_2X_Scale(PseudoSeenBuff, &TheScreen().visible_view(),
+                       "SIDES.PAL");
+  TheScreen().sys_mem_page().Clear();
 
   Keyboard::Clear();
 
@@ -317,7 +320,7 @@ void Choose_Side() {
     /*
     ** Make sure the screen's fully clear after the movie plays
     */
-    VisiblePage.Clear();
+    TheScreen().visible_page().Clear();
     std::ranges::fill(BlackPalette, 0x01);
     Set_Palette(BlackPalette);
     std::ranges::fill(BlackPalette, 0x00);

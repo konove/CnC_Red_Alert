@@ -320,11 +320,6 @@ extern int NewMaxAheadFrame2;
 */
 
 extern bool SoundOn;
-// extern GraphicBufferClass	SeenPage;
-extern GraphicBufferClass VisiblePage;
-extern GraphicBufferClass HiddenPage;
-extern GraphicViewPortClass HidPage;
-extern GraphicBufferClass SysMemPage;
 extern CountDownTimerClass CountDownTimer;
 
 extern int ProcessTicks;

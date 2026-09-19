@@ -130,7 +130,6 @@
 #include "td/event.h"
 #include "td/externs.h"
 #include "td/gadget.h"
-#include "td/globals.h"
 #include "td/goptions.h"
 #include "td/heap.h"
 #include "td/house.h"
@@ -145,6 +144,7 @@
 #include "td/profile.h"
 #include "td/queue.h"
 #include "td/rand.h"
+#include "td/screen.h"
 #include "td/target.h"
 #include "td/techno.h"
 #include "td/trigger.h"
@@ -512,7 +512,8 @@ std::span<const int16_t> DisplayClass::Text_Overlap_List(const char* text,
     if (x <= right) {
       CELL ul = Click_Cell_Calc(x, y - 1);
       const CELL lr = Click_Cell_Calc(
-          x + len - 1, Bound(y + height, TacPixelY, SeenBuff.Get_Height() - 1));
+          x + len - 1, Bound(y + height, TacPixelY,
+                             TheScreen().visible_view().Get_Height() - 1));
 
       if (ul == -1) {
         ul = Click_Cell_Calc(x, y);
@@ -562,12 +563,12 @@ std::span<const int16_t> DisplayClass::Text_Overlap_List(const char* text,
  *=============================================================================================*/
 void DisplayClass::Set_View_Dimensions(int x, int y, int width, int height) {
   if (width == -1) {
-    width = SeenBuff.Get_Width() - x;
+    width = TheScreen().visible_view().Get_Width() - x;
   }
   TacLeptonWidth = Pixel_To_Lepton(width);
 
   if (height == -1) {
-    height = SeenBuff.Get_Height() - y;
+    height = TheScreen().visible_view().Get_Height() - y;
   }
   TacLeptonHeight = Pixel_To_Lepton(height);
 
@@ -1799,18 +1800,21 @@ void DisplayClass::Draw_It(bool forced) {
         *page to
         **  avoid blitting an overlapped region.
         */
-        if (HidPage.Get_IsDirectDraw() && !OverlappedVideoBlits) {
+        if (TheScreen().hidden_view().Get_IsDirectDraw() &&
+            !OverlappedVideoBlits) {
           Hide_Mouse();
-          SeenBuff.Blit(HidPage, (oldx < 0 ? -oldx : 0) + TacPixelX,
-                        (oldy < 0 ? -oldy : 0) + TacPixelY,
-                        (oldx < 0 ? 0 : oldx) + TacPixelX,
-                        (oldy < 0 ? 0 : oldy) + TacPixelY, oldw, oldh);
+          TheScreen().visible_view().Blit(
+              TheScreen().hidden_view(), (oldx < 0 ? -oldx : 0) + TacPixelX,
+              (oldy < 0 ? -oldy : 0) + TacPixelY,
+              (oldx < 0 ? 0 : oldx) + TacPixelX,
+              (oldy < 0 ? 0 : oldy) + TacPixelY, oldw, oldh);
           Show_Mouse();
         } else {
-          HidPage.Blit(HidPage, (oldx < 0 ? -oldx : 0) + TacPixelX,
-                       (oldy < 0 ? -oldy : 0) + TacPixelY,
-                       (oldx < 0 ? 0 : oldx) + TacPixelX,
-                       (oldy < 0 ? 0 : oldy) + TacPixelY, oldw, oldh);
+          TheScreen().hidden_view().Blit(
+              TheScreen().hidden_view(), (oldx < 0 ? -oldx : 0) + TacPixelX,
+              (oldy < 0 ? -oldy : 0) + TacPixelY,
+              (oldx < 0 ? 0 : oldx) + TacPixelX,
+              (oldy < 0 ? 0 : oldy) + TacPixelY, oldw, oldh);
         }
       } else {
         forced = true;
@@ -1997,7 +2001,7 @@ void DisplayClass::Draw_It(bool forced) {
     */
     // Redraw_Icons(CELL_BLIT_ONLY);
     Redraw_Icons(0);
-    if (HidPage.Lock()) {
+    if (TheScreen().hidden_view().Lock()) {
       // Redraw_Icons(CELL_DRAW_ONLY);
 
       /*
@@ -2020,7 +2024,7 @@ void DisplayClass::Draw_It(bool forced) {
 
     Redraw_Shadow_Rects();
 
-    HidPage.Unlock();
+    TheScreen().hidden_view().Unlock();
 
     // Colour_Debug(8);
     /*

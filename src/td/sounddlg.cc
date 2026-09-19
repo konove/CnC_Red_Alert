@@ -61,10 +61,10 @@
 #include "td/dialog.h"
 #include "td/externs.h"
 #include "td/gadget.h"
-#include "td/globals.h"
 #include "td/goptions.h"
 #include "td/jshell.h"
 #include "td/list.h"
+#include "td/screen.h"
 #include "td/shapebtn.h"
 #include "td/slider.h"
 #include "td/textbtn.h"
@@ -109,12 +109,12 @@ class MusicListClass : public ListClass {
 };
 
 int SoundControlsClass::Init() {
-  const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
+  const int factor = TheScreen().visible_view().Get_Width() == 320 ? 1 : 2;
   Option_Width = 292 * factor;
   Option_Height = 146 * factor;
 
-  Option_X = (SeenBuff.Get_Width() - Option_Width) / 2;
-  Option_Y = (SeenBuff.Get_Height() - Option_Height) / 2;
+  Option_X = (TheScreen().visible_view().Get_Width() - Option_Width) / 2;
+  Option_Y = (TheScreen().visible_view().Get_Height() - Option_Height) / 2;
 
   Listbox_X = 1 * factor;
   Listbox_Y = 54 * factor;
@@ -173,7 +173,7 @@ int SoundControlsClass::Init() {
 void SoundControlsClass::Process() {
   //	ThemeType theme;
 
-  const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
+  const int factor = TheScreen().visible_view().Get_Width() == 320 ? 1 : 2;
 
   Init();
   /*
@@ -254,8 +254,9 @@ void SoundControlsClass::Process() {
   **	Causes right clicks anywhere or left clicks outside of the dialog
   **	box area to be the same a clicking the return to game options button.
   */
-  ControlClass ctrl(kButtonOptions, 0, 0, SeenBuff.Get_Width(),
-                    SeenBuff.Get_Height(),
+  ControlClass ctrl(kButtonOptions, 0, 0,
+                    TheScreen().visible_view().Get_Width(),
+                    TheScreen().visible_view().Get_Height(),
                     GadgetClass::kRightPress | GadgetClass::kLeftPress);
 
   /*
@@ -291,7 +292,7 @@ void SoundControlsClass::Process() {
   /*
   **	Set up the window.  Window x-coords are in bytes not pixels.
   */
-  Set_Logic_Page(SeenBuff);
+  Set_Logic_Page(TheScreen().visible_view());
 
   /*
   **	Create Buttons.

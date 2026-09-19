@@ -19,7 +19,6 @@ list(REMOVE_ITEM TD_HEADERS
         "${CMAKE_CURRENT_SOURCE_DIR}/dde.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/externs.h" # Removed since it is crashing IWYU.
         "${CMAKE_CURRENT_SOURCE_DIR}/phone.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}/screen.h"
 )
 
 target_sources(td_engine PRIVATE
@@ -74,7 +73,14 @@ target_compile_definitions(td_saveload_test PRIVATE TD=1)
 
 add_gtest(
     NAME td_game_test
-    SOURCES game_test.cc
+    SOURCES game_test.cc screen.cc
+    LIBS base sdllib
+)
+
+add_gtest(
+    NAME td_screen_test
+    SOURCES screen_test.cc screen.cc
+    LIBS base sdllib
 )
 
 add_gtest(

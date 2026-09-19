@@ -101,6 +101,7 @@
 #include "td/nullmgr.h"
 #include "td/palette.h"
 #include "td/phone.h"
+#include "td/screen.h"
 #include "td/special.h"
 #include "td/tcpip.h"
 #include "td/text.h"
@@ -267,7 +268,7 @@ void Modem_Signoff() {
  *   04/29/1995 BRR : Created.                                             *
  *=========================================================================*/
 int Test_Null_Modem() {
-  const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
+  const int factor = TheScreen().visible_view().Get_Width() == 320 ? 1 : 2;
   /*........................................................................
   Button Enumerations
   ........................................................................*/
@@ -318,7 +319,7 @@ int Test_Null_Modem() {
   /*
   ------------------------------- Initialize -------------------------------
   */
-  Set_Logic_Page(SeenBuff);
+  Set_Logic_Page(TheScreen().visible_view());
   process = true;
 
   /*
@@ -682,7 +683,7 @@ static int Reconnect_Null_Modem() {
   /*
   ------------------------------- Initialize -------------------------------
   */
-  Set_Logic_Page(SeenBuff);
+  Set_Logic_Page(TheScreen().visible_view());
   process = true;
 
   /*
@@ -935,7 +936,7 @@ void Destroy_Null_Connection(int id, int error) {
 GameType Select_Serial_Dialog() {
   int rc = 0;
 
-  const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
+  const int factor = TheScreen().visible_view().Get_Width() == 320 ? 1 : 2;
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
@@ -1050,7 +1051,7 @@ GameType Select_Serial_Dialog() {
   /*
   ------------------------------- Initialize -------------------------------
   */
-  Set_Logic_Page(SeenBuff);
+  Set_Logic_Page(TheScreen().visible_view());
 
   /*........................................................................
   Read the CC.INI file to extract default serial settings, scenario numbers
@@ -1710,7 +1711,7 @@ static void Advanced_Modem_Settings(SerialSettingsType* settings) {
  *=========================================================================*/
 static int Com_Settings_Dialog(SerialSettingsType* settings) {
   /* ###Change collision detected! C:\PROJECTS\CODE\NULLDLG.CPP... */
-  const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
+  const int factor = TheScreen().visible_view().Get_Width() == 320 ? 1 : 2;
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
@@ -3096,7 +3097,7 @@ static void Build_Init_String_Listbox(ListClass* list, EditClass* edit,
 #define TXT_HOST_INTERNET_GAME (4567 + 1)
 #define TXT_JOIN_INTERNET_GAME (4567 + 2)
 int Com_Scenario_Dialog() {
-  const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
+  const int factor = TheScreen().visible_view().Get_Width() == 320 ? 1 : 2;
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
@@ -4605,7 +4606,7 @@ int Com_Scenario_Dialog() {
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
 int Com_Show_Scenario_Dialog() {
-  const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
+  const int factor = TheScreen().visible_view().Get_Width() == 320 ? 1 : 2;
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
@@ -5772,7 +5773,7 @@ int Com_Show_Scenario_Dialog() {
  *   04/29/1995 BRR : Created.                                             *
  *=========================================================================*/
 static int Phone_Dialog() {
-  const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
+  const int factor = TheScreen().visible_view().Get_Width() == 320 ? 1 : 2;
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
@@ -6360,7 +6361,7 @@ static void Build_Phone_Listbox(ListClass* list, EditClass* edit,
  *   04/29/1995 BRR : Created.                                             *
  *=========================================================================*/
 static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
-  const int factor = SeenBuff.Get_Width() == 320 ? 1 : 2;
+  const int factor = TheScreen().visible_view().Get_Width() == 320 ? 1 : 2;
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
@@ -6803,7 +6804,7 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
     /*
     --------------------------- Redraw the display ---------------------------
     */
-    HiddenPage.Clear();
+    TheScreen().hidden_page().Clear();
     Map.Flag_To_Redraw(true);
     Map.Render();
   }

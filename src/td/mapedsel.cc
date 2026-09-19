@@ -67,6 +67,7 @@
 #include "td/list.h"
 #include "td/mapedit.h"
 #include "td/object.h"
+#include "td/screen.h"
 #include "td/techno.h"
 #include "td/type.h"
 #include "td/vector.h"
@@ -156,7 +157,7 @@ int MapEditClass::Select_Object() {
   /*
   -------------------------- Force map to redraw ---------------------------
   */
-  HiddenPage.Clear();
+  TheScreen().hidden_page().Clear();
   Flag_To_Redraw(true);
 
   return rc;
@@ -254,7 +255,7 @@ void MapEditClass::Select_Next() {
   /*
   -------------------------- Force map to redraw ---------------------------
   */
-  HiddenPage.Clear();
+  TheScreen().hidden_page().Clear();
   Flag_To_Redraw(true);
 }
 

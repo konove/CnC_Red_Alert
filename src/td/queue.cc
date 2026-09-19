@@ -118,6 +118,7 @@
 #include "td/nulldlg.h"
 #include "td/nullmgr.h"
 #include "td/randomstate.h"
+#include "td/screen.h"
 #include "td/text.h"
 #include "td/type.h"
 #include "td/unit.h"
@@ -1051,7 +1052,7 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
     //---------------------------------------------------------------------
     Call_Back();
     if (!first_time && SpecialDialog == SDLG_NONE && reconnect_dlg == 0) {
-      WWMouse->Erase_Mouse(&HidPage, true);
+      WWMouse->Erase_Mouse(&TheScreen().hidden_view(), true);
       Map.Input(input, x, y);
       if (input) {
         Keyboard_Process(input);

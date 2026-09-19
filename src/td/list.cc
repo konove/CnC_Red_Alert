@@ -79,9 +79,9 @@
 #include "td/defines.h"
 #include "td/dialog.h"
 #include "td/gadget.h"
-#include "td/globals.h"
 #include "td/jshell.h"
 #include "td/link.h"
+#include "td/screen.h"
 #include "td/shapebtn.h"
 #include "td/slider.h"
 #include "td/text.h"
@@ -343,7 +343,7 @@ bool ListClass::Draw_Me(bool forced) {
     /*
     **	Turn off the mouse.
     */
-    if (LogicPage == &SeenBuff) {
+    if (TheScreen().IsVisible(LogicPage)) {
       Conditional_Hide_Mouse(X, Y, X + Width, Y + Height);
     }
 
@@ -369,7 +369,7 @@ bool ListClass::Draw_Me(bool forced) {
     /*
     **	Turn on the mouse.
     */
-    if (LogicPage == &SeenBuff) {
+    if (TheScreen().IsVisible(LogicPage)) {
       Conditional_Show_Mouse();
     }
     return true;

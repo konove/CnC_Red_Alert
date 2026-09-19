@@ -689,7 +689,7 @@ void CellClass::Occupy_Up(ObjectClass* object) {
 #ifdef NEVER
       int x, y;
       if (Map.Coord_To_Pixel(Cell_Coord(), x, y)) {
-        SeenBuff.Put_Pixel(x, y, kBlue);
+        TheScreen().visible_view().Put_Pixel(x, y, kBlue);
       }
 #endif
       break;

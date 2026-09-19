@@ -99,6 +99,7 @@
 #include "td/msgbox.h"
 #include "td/profile.h"
 #include "td/scenario.h"
+#include "td/screen.h"
 #include "td/startup.h"
 #include "td/target.h"
 #include "td/techno.h"
@@ -556,7 +557,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     */
     if (Debug_Map && Changed) {
       rc = CCMessageBox().Process("Save Changes?", TXT_YES, TXT_NO);
-      HiddenPage.Clear();
+      TheScreen().hidden_page().Clear();
       Flag_To_Redraw(true);
       Render();
       /*
@@ -708,7 +709,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     ---------------------------------------------------------------------*/
     case KN_F6:
       Debug_Passable = !Debug_Passable;
-      HiddenPage.Clear();
+      TheScreen().hidden_page().Clear();
       Flag_To_Redraw(true);
       input = KN_NONE;
       break;
@@ -759,7 +760,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         break;
       }
       rc = CCMessageBox().Process("Exit Scenario Editor?", TXT_YES, TXT_NO);
-      HiddenPage.Clear();
+      TheScreen().hidden_page().Clear();
       Flag_To_Redraw(true);
       Render();
 
@@ -776,7 +777,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       */
       if (Changed) {
         rc = CCMessageBox().Process("Save Changes?", TXT_YES, TXT_NO);
-        HiddenPage.Clear();
+        TheScreen().hidden_page().Clear();
         Flag_To_Redraw(true);
         Render();
 
@@ -854,7 +855,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         /*
         ...................... Force map to redraw ......................
         */
-        HiddenPage.Clear();
+        TheScreen().hidden_page().Clear();
         Flag_To_Redraw(true);
         Render();
       }
@@ -1125,7 +1126,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
                 */
                 CurrentCell = Click_Cell_Calc(ActiveKeyboard->MouseQX,
                                               ActiveKeyboard->MouseQY);
-                HiddenPage.Clear();
+                TheScreen().hidden_page().Clear();
                 Flag_To_Redraw(true);
                 Render();
               }
@@ -1199,7 +1200,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         /*
         ........................ Force a redraw .........................
         */
-        HiddenPage.Clear();
+        TheScreen().hidden_page().Clear();
         Flag_To_Redraw(true);
         Changed = true;
       } else {
@@ -1212,7 +1213,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
           /*
           ...................... Force a redraw ........................
           */
-          HiddenPage.Clear();
+          TheScreen().hidden_page().Clear();
           Flag_To_Redraw(true);
           Changed = true;
         }
@@ -1251,7 +1252,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       }
 
       Set_House_Buttons(CurrentObject.at(0)->Owner(), Buttons, kPopupGdi);
-      HiddenPage.Clear();
+      TheScreen().hidden_page().Clear();
       Flag_To_Redraw(true);
       input = KN_NONE;
       break;
@@ -1299,7 +1300,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         */
         if (strength != CurrentObject.at(0)->Strength) {
           CurrentObject.at(0)->Strength = static_cast<int16_t>(strength);
-          HiddenPage.Clear();
+          TheScreen().hidden_page().Clear();
           Flag_To_Redraw(true);
           Changed = true;
         }
@@ -1333,7 +1334,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
                 FacingDial->Get_Direction());
           }
 
-          HiddenPage.Clear();
+          TheScreen().hidden_page().Clear();
           Flag_To_Redraw(true);
           Changed = true;
         }
@@ -1349,7 +1350,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       if (BaseGauge->Get_Value() != BasePercent) {
         BasePercent = BaseGauge->Get_Value();
         Build_Base_To(BasePercent);
-        HiddenPage.Clear();
+        TheScreen().hidden_page().Clear();
         Flag_To_Redraw(true);
       }
       input = KN_NONE;
@@ -1572,7 +1573,7 @@ void MapEditClass::Main_Menu() {
       case 0:
         if (Changed) {
           rc = CCMessageBox().Process("Save Changes?", TXT_YES, TXT_NO);
-          HiddenPage.Clear();
+          TheScreen().hidden_page().Clear();
           Flag_To_Redraw(true);
           Render();
           if (rc == 0) {
@@ -1595,7 +1596,7 @@ void MapEditClass::Main_Menu() {
       case 1:
         if (Changed) {
           rc = CCMessageBox().Process("Save Changes?", TXT_YES, TXT_NO);
-          HiddenPage.Clear();
+          TheScreen().hidden_page().Clear();
           Flag_To_Redraw(true);
           Render();
           if (rc == 0) {
@@ -1666,7 +1667,7 @@ void MapEditClass::Main_Menu() {
       case 7:
         if (Changed) {
           rc = CCMessageBox().Process("Save Changes?", TXT_YES, TXT_NO);
-          HiddenPage.Clear();
+          TheScreen().hidden_page().Clear();
           Flag_To_Redraw(true);
           Render();
           if (rc == 0) {
@@ -1691,7 +1692,7 @@ void MapEditClass::Main_Menu() {
   - Invoke Flag_To_Redraw to tell DisplayClass to re-render the whole screen
   - Invoke Redraw() to update the display
   ------------------------------------------------------------------------*/
-  HiddenPage.Clear();
+  TheScreen().hidden_page().Clear();
   Flag_To_Redraw(true);
   Render();
 }

@@ -66,12 +66,12 @@
 #include "td/display_constants.h"
 #include "td/externs.h"
 #include "td/gadget.h"
-#include "td/globals.h"
 #include "td/inline.h"
 #include "td/jshell.h"
 #include "td/mapedit.h"
 #include "td/msglist.h"
 #include "td/palette.h"
+#include "td/screen.h"
 #include "tech/pcx_file.h"
 
 GadgetClass* GScreenClass::Buttons = nullptr;
@@ -130,7 +130,7 @@ void GScreenClass::One_Time() {
   ShadowPage = new GraphicBufferClass(320, 200);
   if (ShadowPage) {
     ShadowPage->Clear();
-    HiddenPage.Clear();
+    TheScreen().hidden_page().Clear();
   }
 }
 
@@ -179,7 +179,7 @@ void GScreenClass::Init_Clear() {
   */
   if (ShadowPage) {
     ShadowPage->Clear();
-    HiddenPage.Clear();
+    TheScreen().hidden_page().Clear();
   }
 
   IsScreenToRedraw = true;
@@ -285,7 +285,7 @@ void GScreenClass::Input(KeyNumType& key, int& x, int& y) {
       Flag_To_Redraw(false);
     }
 
-    GraphicViewPortClass* oldpage = Set_Logic_Page(HidPage);
+    GraphicViewPortClass* oldpage = Set_Logic_Page(TheScreen().hidden_view());
 
     key = Buttons->Input();
 
@@ -385,7 +385,7 @@ void GScreenClass::Render() {
 
   if (IsToUpdate || IsScreenToRedraw) {
     // WWMouse->Erase_Mouse(&HidPage, true);
-    GraphicViewPortClass* oldpage = Set_Logic_Page(HidPage);
+    GraphicViewPortClass* oldpage = Set_Logic_Page(TheScreen().hidden_view());
 
     // if (IsToRedraw) {
     //	Hide_Mouse();
@@ -433,9 +433,10 @@ static void Add_Current_Screen() {
   if (ScreenRecording) {
     base::At(ScreenList, CurrentScreen) = new GraphicBufferClass;
     base::At(ScreenList, CurrentScreen)
-        ->Init(SeenBuff.Get_Width(), SeenBuff.Get_Height(), {}, 0,
+        ->Init(TheScreen().visible_view().Get_Width(),
+               TheScreen().visible_view().Get_Height(), {}, 0,
                static_cast<GBC_Enum>(0));
-    SeenBuff.Blit(*base::At(ScreenList, CurrentScreen));
+    TheScreen().visible_view().Blit(*base::At(ScreenList, CurrentScreen));
 
     CurrentScreen++;
 
@@ -472,11 +473,12 @@ extern bool CanVblankSync;
  *function.                                            *
  *=============================================================================================*/
 void GScreenClass::Blit_Display() {
-  WWMouse->Draw_Mouse(&HidPage);
-  HidPage.Blit(SeenBuff, 0, 0, 0, 0, HidPage.Get_Width(), HidPage.Get_Height(),
-               false);
+  WWMouse->Draw_Mouse(&TheScreen().hidden_view());
+  TheScreen().hidden_view().Blit(TheScreen().visible_view(), 0, 0, 0, 0,
+                                 TheScreen().hidden_view().Get_Width(),
+                                 TheScreen().hidden_view().Get_Height(), false);
   if (config::kCheatKeysEnabled) {
     Add_Current_Screen();
   }
-  WWMouse->Erase_Mouse(&HidPage, false);
+  WWMouse->Erase_Mouse(&TheScreen().hidden_view(), false);
 }

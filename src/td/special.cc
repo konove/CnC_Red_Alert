@@ -60,6 +60,7 @@
 #include "td/jshell.h"
 #include "td/mapedit.h"
 #include "td/queue.h"
+#include "td/screen.h"
 #include "td/textbtn.h"
 
 #define kOptionWidth 236
@@ -172,7 +173,7 @@ void Special_Dialog() {
   }
 
   Map.Override_Mouse_Shape(MOUSE_NORMAL);
-  Set_Logic_Page(SeenBuff);
+  Set_Logic_Page(TheScreen().visible_view());
   bool display = true;
   bool process = true;
   while (process) {
@@ -299,7 +300,7 @@ void Special_Dialog() {
   }
 
   Map.Revert_Mouse_Shape();
-  HiddenPage.Clear();
+  TheScreen().hidden_page().Clear();
   Map.Flag_To_Redraw(true);
   Map.Render();
 }
