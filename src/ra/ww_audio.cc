@@ -16,35 +16,14 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header: /CounterStrike/AUDIO.CPP 1     3/03/97 10:24a Joe_bostic $ */
-/***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
- ****
- ***********************************************************************************************
- *                                                                                             *
- *                 Project Name : Command & Conquer *
- *                                                                                             *
- *                    File Name : AUDIO.CPP *
- *                                                                                             *
- *                   Programmer : Joe L. Bostic *
- *                                                                                             *
- *                   Start Date : September 10, 1993 *
- *                                                                                             *
- *                  Last Update : November 1, 1996 [JLB] *
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * Functions: * Is_Speaking -- Checks to see if the eva voice is still playing.
- ** Sound_Effect -- General purpose sound player. * Sound_Effect -- Plays a
- *sound effect in the tactical map.                                 * Speak --
- *Computer speaks to the player. * Speak_AI -- Handles starting the EVA voices.
- ** Speech_Name -- Fetches the name for the voice specified. * Stop_Speaking --
- *Forces the EVA voice to stop talking.                                    *
- *   Voc_From_Name -- Fetch VocType from ASCII name specified. * Voc_Name --
- *Fetches the name for the sound effect. *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
+// Red Alert's sound effects and EVA speech: the tables that name the .AUD file
+// behind every VocType and VoxType, sound effects placed on the tactical map,
+// and the EVA speech queue with its two cached speech buffers. The sounds are
+// played by the global AudioMixer `Audio` (tech/audio_mixer.h).
+//
+// Originally AUDIO.CPP by Joe L. Bostic, started September 10, 1993.
 
-#include "tech/audio_mixer.h"
+#include "ra/ww_audio.h"
 
 #include <algorithm>
 #include <cstddef>
@@ -72,339 +51,222 @@
 #include "ra/inline.h"
 #include "ra/jshell.h"
 #include "ra/mapedit.h"
-#include "ra/ww_audio.h"
+#include "tech/audio_mixer.h"
 #include "tech/fixed.h"
 #include "tech/game_file.h"
 #include "tech/mix_archive.h"
 
-/***************************************************************************
-**	Controls what special effects may occur on the sound effect.
-*/
+// Controls what special effects may occur on the sound effect.
 enum class ContextType {
-  IN_NOVAR,  // No variation or alterations allowed.
-  IN_VAR     // Infantry variance response modification.
+  // One recording, NAME.AUD, for everybody.
+  IN_NOVAR,
+  // A unit response recorded in four variations for each side's accent:
+  // NAME.V00-.V03 for the Allies and NAME.R00-.R03 for the Soviets.
+  // Sound_Effect() picks one from the house and the variation number.
+  IN_VAR
 };
 using enum ContextType;
 
 struct SoundEffect {
-  const char* Name;   // Digitized voice file name.
-  int Priority;       // Playback priority of this sample.
+  // Root file name; Sound_Effect() adds the extension. "x" marks a VocType
+  // slot that has no sound: there is no X.AUD, so it plays nothing.
+  const char* Name;
+  // Playback priority at full volume. Sound_Effect() scales it by the volume,
+  // so a faint distant sound loses a busy mixer to a loud nearby one.
+  int Priority;
   ContextType Where;  // In what game context does this sample exist.
 };
 static base::EnumArray<VocType, SoundEffect> SoundEffectName = {{
 
-    /*
-    **	Civilian voices (technicians too).
-    */
-    {"GIRLOKAY", 20, IN_NOVAR},  //	VOC_GIRL_OKAY
-    {"GIRLYEAH", 20, IN_NOVAR},  //	VOC_GIRL_YEAH
-    {"GUYOKAY1", 20, IN_NOVAR},  //	VOC_GUY_OKAY
-    {"GUYYEAH1", 20, IN_NOVAR},  //	VOC_GUY_YEAH
+    // Civilian voices (technicians too).
+    {"GIRLOKAY", 20, IN_NOVAR},  // VOC_GIRL_OKAY
+    {"GIRLYEAH", 20, IN_NOVAR},  // VOC_GIRL_YEAH
+    {"GUYOKAY1", 20, IN_NOVAR},  // VOC_GUY_OKAY
+    {"GUYYEAH1", 20, IN_NOVAR},  // VOC_GUY_YEAH
 
     {"MINELAY1", 5, IN_VAR},  // VOC_MINELAY1
 
-    /*
-    **	Infantry and vehicle responses.
-    */
-    {"ACKNO", 20, IN_VAR},  //	VOC_ACKNOWL			"acknowledged"
-    {"AFFIRM1", 20,
-     IN_VAR},  //	VOC_AFFIRM			"affirmative"
-    {"AWAIT1", 20,
-     IN_VAR},                    //	VOC_AWAIT1			"awaiting orders"
-    {"EAFFIRM1", 20, IN_NOVAR},  // VOC_ENG_AFFIRM	Engineer: "affirmative"
-    {"EENGIN1", 20, IN_NOVAR},   //	VOC_ENG_ENG Engineer: "engineering"
-    {"NOPROB", 20, IN_VAR},      // VOC_NO_PROB			"not a problem"
-    {"READY", 20,
-     IN_VAR},  // VOC_READY			"ready and waiting"
-    {"REPORT1", 20,
-     IN_VAR},                 //	VOC_REPORT			"reporting"
-    {"RITAWAY", 20, IN_VAR},  // VOC_RIGHT_AWAY		"right away sir"
-    {"ROGER", 20, IN_VAR},    // VOC_ROGER			"roger"
-    {"UGOTIT", 20, IN_VAR},   // VOC_UGOTIT			"you got it"
-    {"VEHIC1", 20,
-     IN_VAR},  //	VOC_VEHIC1			"vehicle reporting"
-    {"YESSIR1", 20,
-     IN_VAR},  //	VOC_YESSIR			"yes sir"
+    // Infantry and vehicle responses.
+    {"ACKNO", 20, IN_VAR},       // VOC_ACKNOWL      "acknowledged"
+    {"AFFIRM1", 20, IN_VAR},     // VOC_AFFIRM       "affirmative"
+    {"AWAIT1", 20, IN_VAR},      // VOC_AWAIT        "awaiting orders"
+    {"EAFFIRM1", 20, IN_NOVAR},  // VOC_ENG_AFFIRM   Engineer: "affirmative"
+    {"EENGIN1", 20, IN_NOVAR},   // VOC_ENG_ENG      Engineer: "engineering"
+    {"NOPROB", 20, IN_VAR},      // VOC_NO_PROB      "not a problem"
+    {"READY", 20, IN_VAR},       // VOC_READY        "ready and waiting"
+    {"REPORT1", 20, IN_VAR},     // VOC_REPORT       "reporting"
+    {"RITAWAY", 20, IN_VAR},     // VOC_RIGHT_AWAY   "right away sir"
+    {"ROGER", 20, IN_VAR},       // VOC_ROGER        "roger"
+    {"UGOTIT", 20, IN_VAR},      // VOC_UGOTIT       "you got it"
+    {"VEHIC1", 20, IN_VAR},      // VOC_VEHIC        "vehicle reporting"
+    {"YESSIR1", 20, IN_VAR},     // VOC_YESSIR       "yes sir"
 
-    {"DEDMAN1", 10,
-     IN_NOVAR},  // VOC_SCREAM1			short infantry scream
-    {"DEDMAN2", 10,
-     IN_NOVAR},  // VOC_SCREAM3			short infantry scream
-    {"DEDMAN3", 10,
-     IN_NOVAR},  // VOC_SCREAM4			short infantry scream
-    {"DEDMAN4", 10,
-     IN_NOVAR},  // VOC_SCREAM5			short infantry scream
-    {"DEDMAN5", 10,
-     IN_NOVAR},  // VOC_SCREAM6			short infantry scream
-    {"DEDMAN6", 10,
-     IN_NOVAR},                 // VOC_SCREAM7			short infantry scream
-    {"DEDMAN7", 10, IN_NOVAR},  // VOC_SCREAM10		short infantry scream
-    {"DEDMAN8", 10, IN_NOVAR},  // VOC_SCREAM11		short infantry scream
-    {"DEDMAN10", 10,
-     IN_NOVAR},  // VOC_YELL1			long infantry scream
+    // Infantry deaths.
+    {"DEDMAN1", 10, IN_NOVAR},   // VOC_SCREAM1      short infantry scream
+    {"DEDMAN2", 10, IN_NOVAR},   // VOC_SCREAM3      short infantry scream
+    {"DEDMAN3", 10, IN_NOVAR},   // VOC_SCREAM4      short infantry scream
+    {"DEDMAN4", 10, IN_NOVAR},   // VOC_SCREAM5      short infantry scream
+    {"DEDMAN5", 10, IN_NOVAR},   // VOC_SCREAM6      short infantry scream
+    {"DEDMAN6", 10, IN_NOVAR},   // VOC_SCREAM7      short infantry scream
+    {"DEDMAN7", 10, IN_NOVAR},   // VOC_SCREAM10     short infantry scream
+    {"DEDMAN8", 10, IN_NOVAR},   // VOC_SCREAM11     short infantry scream
+    {"DEDMAN10", 10, IN_NOVAR},  // VOC_YELL1        long infantry scream
 
-    {"CHRONO2", 5,
-     IN_NOVAR},  //	VOC_CHRONO			Chronosphere sound
-    {"CANNON1", 1,
-     IN_NOVAR},  //	VOC_CANNON1			Cannon sound (medium).
-    {"CANNON2", 1,
-     IN_NOVAR},                  //	VOC_CANNON2			Cannon sound (short).
-    {"IRONCUR9", 10, IN_NOVAR},  // VOC_IRON1
-    {"EMOVOUT1", 20, IN_NOVAR},  //	VOC_ENG_MOVEOUT	Engineer: "movin' out"
-    {"SONPULSE", 10, IN_NOVAR},  //	VOC_SONAR
-    {"SANDBAG2", 5, IN_NOVAR},   // VOC_SANDBAG			sand bag crunch
-    {"MINEBLO1", 5, IN_NOVAR},   // VOC_MINEBLOW		weird mine explosion
-    {"CHUTE1", 1,
-     IN_NOVAR},               //	VOC_CHUTE1			Wind swoosh sound.
-    {"DOGY1", 5, IN_NOVAR},   //	VOC_DOG_BARK		Dog bark.
-    {"DOGW5", 10, IN_NOVAR},  //	VOC_DOG_WHINE		Dog whine.
-    {"DOGG5P", 10,
-     IN_NOVAR},                //	VOC_DOG_GROWL2		Strong dog growl.
-    {"FIREBL3", 1, IN_NOVAR},  //	VOC_FIRE_LAUNCH	Fireball launch sound.
-    {"FIRETRT1", 1,
-     IN_NOVAR},                 //	VOC_FIRE_EXPLODE	Fireball explode sound.
-    {"GRENADE1", 1, IN_NOVAR},  //	VOC_GRENADE_TOSS	Grenade toss.
-    {"GUN11", 1, IN_NOVAR},     //	VOC_GUN_5			5 round gun
-                                // burst (slow).
-    {"GUN13", 1, IN_NOVAR},     //	VOC_GUN_7			7 round gun
-                                // burst (fast).
-    {"EYESSIR1", 20,
-     IN_NOVAR},              //	VOC_ENG_YES,		Engineer: "yes sir"
-    {"GUN27", 1, IN_NOVAR},  //	VOC_GUN_RIFLE		Rifle shot.
-    {"HEAL2", 1,
-     IN_NOVAR},  //	VOC_HEAL				Healing effect.
-    {"HYDROD1", 1,
-     IN_NOVAR},  //	VOC_DOOR				Hyrdrolic door.
-    {"INVUL2", 1,
-     IN_NOVAR},                //	VOC_INVULNERABLE	Invulnerability effect.
-    {"KABOOM1", 1, IN_NOVAR},  //	VOC_KABOOM1			Long
-                               // explosion (muffled).
-    {"KABOOM12", 1,
-     IN_NOVAR},  //	VOC_KABOOM12		Very long explosion (muffled).
-    {"KABOOM15", 1,
-     IN_NOVAR},                //	VOC_KABOOM15		Very long explosion (muffled).
-    {"SPLASH9", 5, IN_NOVAR},  // VOC_SPLASH			water splash
-    {"KABOOM22", 1,
-     IN_NOVAR},  //	VOC_KABOOM22		Long explosion (sharp).
-    {"AACANON3", 1, IN_NOVAR},
-    {"TANDETH1", 10, IN_NOVAR},
-    {"MGUNINF1", 1, IN_NOVAR},  //	VOC_GUN_5F			5 round
-                                // gun burst (fast).
-    {"MISSILE1", 1,
-     IN_NOVAR},  //	VOC_MISSILE_1		Missile with high tech effect.
-    {"MISSILE6", 1,
-     IN_NOVAR},  //	VOC_MISSILE_2		Long missile launch.
-    {"MISSILE7", 1,
-     IN_NOVAR},  //	VOC_MISSILE_3		Short missile launch.
-    {"x", 1, IN_NOVAR},
-    {"PILLBOX1", 1, IN_NOVAR},  //	VOC_GUN_5R			5 round
-                                // gun burst (rattles).
-    {"RABEEP1", 1, IN_NOVAR},   //	VOC_BEEP
-                                // Generic beep sound.
-    {"RAMENU1", 1,
-     IN_NOVAR},                 //	VOC_CLICK			Generic click sound.
-    {"SILENCER", 1, IN_NOVAR},  //	VOC_SILENCER		Silencer.
-    {"TANK5", 1, IN_NOVAR},     //	VOC_CANNON6			Long muffled
-                                // cannon shot.
-    {"TANK6", 1, IN_NOVAR},     //	VOC_CANNON7			Sharp mechanical
-                                // cannon fire.
-    {"TORPEDO1", 1,
-     IN_NOVAR},  //	VOC_TORPEDO			Torpedo launch.
-    {"TURRET1", 1,
-     IN_NOVAR},                  //	VOC_CANNON8			Sharp cannon fire.
-    {"TSLACHG2", 10, IN_NOVAR},  //	VOC_TESLA_POWER_UP	Hum charge up.
-    {"TESLA1", 10,
-     IN_NOVAR},  //	VOC_TESLA_ZAP		Tesla zap effect.
-    {"SQUISHY2", 10,
-     IN_NOVAR},  //	VOC_SQUISH			Squish effect.
-    {"SCOLDY1", 10,
-     IN_NOVAR},  //	VOC_SCOLD			Scold bleep.
-    {"RADARON2", 20,
-     IN_NOVAR},  //	VOC_RADAR_ON		Powering up electronics.
-    {"RADARDN1", 10,
-     IN_NOVAR},  //	VOC_RADAR_OFF		B movie power down effect.
-    {"PLACBLDG", 10,
-     IN_NOVAR},  //	VOC_PLACE_BUILDING_DOWN	Building slam down sound.
-    {"KABOOM30", 1,
-     IN_NOVAR},  //	VOC_KABOOM30		Short explosion (HE).
-    {"KABOOM25", 10,
-     IN_NOVAR},  //	VOC_KABOOM25		Short growling explosion.
-    {"x", 10, IN_NOVAR},
-    {"DOGW7", 10,
-     IN_NOVAR},  //	VOC_DOG_HURT		Dog whine (loud).
-    {"DOGW3PX", 10,
-     IN_NOVAR},  //	VOC_DOG_YES			Dog 'yes sir'.
-    {"CRMBLE2", 10,
-     IN_NOVAR},  //	VOC_CRUMBLE			Building crumble.
-    {"CASHUP1", 10,
-     IN_NOVAR},  //	VOC_MONEY_UP		Rising money tick.
-    {"CASHDN1", 10,
-     IN_NOVAR},  //	VOC_MONEY_DOWN		Falling money tick.
-    {"BUILD5", 10,
-     IN_NOVAR},                //	VOC_CONSTRUCTION	Building construction sound.
-    {"BLEEP9", 10, IN_NOVAR},  //	VOC_GAME_CLOSED	Long bleep.
-    {"BLEEP6", 10,
-     IN_NOVAR},  //	VOC_INCOMING_MESSAGE	Soft happy warble.
-    {"BLEEP5", 10,
-     IN_NOVAR},  //	VOC_SYS_ERROR		Sharp soft warble.
-    {"BLEEP17", 10,
-     IN_NOVAR},                 //	VOC_OPTIONS_CHANGED	Mid range soft warble.
-    {"BLEEP13", 10, IN_NOVAR},  //	VOC_GAME_FORMING	Long warble.
-    {"BLEEP12", 10, IN_NOVAR},  //	VOC_PLAYER_LEFT	Chirp sequence.
-    {"BLEEP11", 10,
-     IN_NOVAR},  //	VOC_PLAYER_JOINED	Reverse chirp sequence.
-    {"H2OBOMB2", 10,
-     IN_NOVAR},                  //	VOC_DEPTH_CHARGE	Distant explosion sound.
-    {"CASHTURN", 10, IN_NOVAR},  //	VOC_CASHTURN		Airbrake.
-    {"TUFFGUY1", 20,
-     IN_NOVAR},  //	VOC_TANYA_CHEW			Tanya: "Chew on this"
-    {"ROKROLL1", 20,
-     IN_NOVAR},  //	VOC_TANYA_ROCK			Tanya: "Let's rock"
-    {"LAUGH1", 20,
-     IN_NOVAR},  //	VOC_TANYA_LAUGH		Tanya: "ha ha ha"
-    {"CMON1", 20,
-     IN_NOVAR},  //	VOC_TANYA_SHAKE		Tanya: "Shake it baby"
-    {"BOMBIT1", 20,
-     IN_NOVAR},                //	VOC_TANYA_CHING		Tanya: "Cha Ching"
-    {"GOTIT1", 20, IN_NOVAR},  //	VOC_TANYA_GOT			Tanya:
-                               //"That's all you got"
-    {"KEEPEM1", 20,
-     IN_NOVAR},  //	VOC_TANYA_KISS			Tanya: "Kiss it bye bye"
-    {"ONIT1", 20,
-     IN_NOVAR},  //	VOC_TANYA_THERE		Tanya: "I'm there"
-    {"LEFTY1", 20,
-     IN_NOVAR},  //	VOC_TANYA_GIVE			Tanya: "Give it to me"
-    {"YEAH1", 20,
-     IN_NOVAR},  //	VOC_TANYA_YEA			Tanya: "Yea?"
-    {"YES1", 20,
-     IN_NOVAR},             //	VOC_TANYA_YES			Tanya: "Yes sir?"
-    {"YO1", 20, IN_NOVAR},  //	VOC_TANYA_WHATS		Tanya: "What's up."
-    {"WALLKIL2", 5,
-     IN_NOVAR},  //	VOC_WALLKILL2			Crushing wall sound.
-    {"x", 10, IN_NOVAR},
-    {"GUN5", 5,
-     IN_NOVAR},  //	VOC_TRIPLE_SHOT		Three quick shots in succession.
-    {"SUBSHOW1", 5, IN_NOVAR},  //	VOC_SUBSHOW
-                                // Submarine surface sound.
-    {"EINAH1", 20,
-     IN_NOVAR},  //	VOC_E_AH,				Einstien "ah"
-    {"EINOK1", 20,
-     IN_NOVAR},  //	VOC_E_OK,				Einstien "ok"
-    {"EINYES1", 20,
-     IN_NOVAR},  //	VOC_E_YES,				Einstien "yes"
-    {"MINE1", 10,
-     IN_NOVAR},  //	VOC_TRIP_MINE			mine explosion sound
+    // Weapons, machinery and interface sounds.
+    {"CHRONO2", 5, IN_NOVAR},    // VOC_CHRONO       Chronosphere sound.
+    {"CANNON1", 1, IN_NOVAR},    // VOC_CANNON1      Cannon sound (medium).
+    {"CANNON2", 1, IN_NOVAR},    // VOC_CANNON2      Cannon sound (short).
+    {"IRONCUR9", 10, IN_NOVAR},  // VOC_IRON1        Iron Curtain.
+    {"EMOVOUT1", 20, IN_NOVAR},  // VOC_ENG_MOVEOUT  Engineer: "movin' out"
+    {"SONPULSE", 10, IN_NOVAR},  // VOC_SONAR        Sonar pulse.
+    {"SANDBAG2", 5, IN_NOVAR},   // VOC_SANDBAG      Sand bag crunch.
+    {"MINEBLO1", 5, IN_NOVAR},   // VOC_MINEBLOW     Weird mine explosion.
+    {"CHUTE1", 1, IN_NOVAR},     // VOC_CHUTE1       Wind swoosh sound.
+    {"DOGY1", 5, IN_NOVAR},      // VOC_DOG_BARK     Dog bark.
+    {"DOGW5", 10, IN_NOVAR},     // VOC_DOG_WHINE    Dog whine.
+    {"DOGG5P", 10, IN_NOVAR},    // VOC_DOG_GROWL2   Strong dog growl.
+    {"FIREBL3", 1, IN_NOVAR},    // VOC_FIRE_LAUNCH  Fireball launch sound.
+    {"FIRETRT1", 1, IN_NOVAR},   // VOC_FIRE_EXPLODE Fireball explode sound.
+    {"GRENADE1", 1, IN_NOVAR},   // VOC_GRENADE_TOSS Grenade toss.
+    {"GUN11", 1, IN_NOVAR},      // VOC_GUN_5        5 round burst (slow).
+    {"GUN13", 1, IN_NOVAR},      // VOC_GUN_7        7 round burst (fast).
+    {"EYESSIR1", 20, IN_NOVAR},  // VOC_ENG_YES      Engineer: "yes sir"
+    {"GUN27", 1, IN_NOVAR},      // VOC_GUN_RIFLE    Rifle shot.
+    {"HEAL2", 1, IN_NOVAR},      // VOC_HEAL         Healing effect.
+    {"HYDROD1", 1, IN_NOVAR},    // VOC_DOOR         Hydraulic door.
+    {"INVUL2", 1, IN_NOVAR},     // VOC_INVULNERABLE Invulnerability effect.
+    {"KABOOM1", 1, IN_NOVAR},    // VOC_KABOOM1      Long explosion (muffled).
+    {"KABOOM12", 1, IN_NOVAR},   // VOC_KABOOM12     Very long, muffled.
+    {"KABOOM15", 1, IN_NOVAR},   // VOC_KABOOM15     Very long, muffled.
+    {"SPLASH9", 5, IN_NOVAR},    // VOC_SPLASH       Water splash.
+    {"KABOOM22", 1, IN_NOVAR},   // VOC_KABOOM22     Long explosion (sharp).
+    {"AACANON3", 1, IN_NOVAR},   // VOC_AACANON3     AA cannon.
+    {"TANDETH1", 10, IN_NOVAR},  // VOC_TANYA_DIE    Tanya: scream.
+    {"MGUNINF1", 1, IN_NOVAR},   // VOC_GUN_5F       5 round burst (fast).
+    {"MISSILE1", 1, IN_NOVAR},   // VOC_MISSILE_1    Missile, high tech effect.
+    {"MISSILE6", 1, IN_NOVAR},   // VOC_MISSILE_2    Long missile launch.
+    {"MISSILE7", 1, IN_NOVAR},   // VOC_MISSILE_3    Short missile launch.
+    {"x", 1, IN_NOVAR},          // VOC_x6           Unused.
+    {"PILLBOX1", 1, IN_NOVAR},   // VOC_GUN_5R       5 round burst (rattles).
+    {"RABEEP1", 1, IN_NOVAR},    // VOC_BEEP         Generic beep sound.
+    {"RAMENU1", 1, IN_NOVAR},    // VOC_CLICK        Generic click sound.
+    {"SILENCER", 1, IN_NOVAR},   // VOC_SILENCER     Silencer.
+    {"TANK5", 1, IN_NOVAR},      // VOC_CANNON6      Long muffled cannon shot.
+    {"TANK6", 1, IN_NOVAR},      // VOC_CANNON7      Sharp mechanical cannon.
+    {"TORPEDO1", 1, IN_NOVAR},   // VOC_TORPEDO      Torpedo launch.
+    {"TURRET1", 1, IN_NOVAR},    // VOC_CANNON8      Sharp cannon fire.
+    {"TSLACHG2", 10, IN_NOVAR},  // VOC_TESLA_POWER_UP  Hum charge up.
+    {"TESLA1", 10, IN_NOVAR},    // VOC_TESLA_ZAP    Tesla zap effect.
+    {"SQUISHY2", 10, IN_NOVAR},  // VOC_SQUISH       Squish effect.
+    {"SCOLDY1", 10, IN_NOVAR},   // VOC_SCOLD        Scold bleep.
+    {"RADARON2", 20, IN_NOVAR},  // VOC_RADAR_ON     Powering up electronics.
+    {"RADARDN1", 10, IN_NOVAR},  // VOC_RADAR_OFF    B movie power down.
+    {"PLACBLDG", 10, IN_NOVAR},  // VOC_PLACE_BUILDING_DOWN  Building slam.
+    {"KABOOM30", 1, IN_NOVAR},   // VOC_KABOOM30     Short explosion (HE).
+    {"KABOOM25", 10, IN_NOVAR},  // VOC_KABOOM25     Short growling explosion.
+    {"x", 10, IN_NOVAR},         // VOC_x7           Unused.
+    {"DOGW7", 10, IN_NOVAR},     // VOC_DOG_HURT     Dog whine (loud).
+    {"DOGW3PX", 10, IN_NOVAR},   // VOC_DOG_YES      Dog 'yes sir'.
+    {"CRMBLE2", 10, IN_NOVAR},   // VOC_CRUMBLE      Building crumble.
+    {"CASHUP1", 10, IN_NOVAR},   // VOC_MONEY_UP     Rising money tick.
+    {"CASHDN1", 10, IN_NOVAR},   // VOC_MONEY_DOWN   Falling money tick.
+    {"BUILD5", 10, IN_NOVAR},    // VOC_CONSTRUCTION Building construction.
+    {"BLEEP9", 10, IN_NOVAR},    // VOC_GAME_CLOSED  Long bleep.
+    {"BLEEP6", 10, IN_NOVAR},    // VOC_INCOMING_MESSAGE  Soft happy warble.
+    {"BLEEP5", 10, IN_NOVAR},    // VOC_SYS_ERROR    Sharp soft warble.
+    {"BLEEP17", 10, IN_NOVAR},   // VOC_OPTIONS_CHANGED  Mid range warble.
+    {"BLEEP13", 10, IN_NOVAR},   // VOC_GAME_FORMING Long warble.
+    {"BLEEP12", 10, IN_NOVAR},   // VOC_PLAYER_LEFT  Chirp sequence.
+    {"BLEEP11", 10, IN_NOVAR},   // VOC_PLAYER_JOINED  Reverse chirp sequence.
+    {"H2OBOMB2", 10, IN_NOVAR},  // VOC_DEPTH_CHARGE Distant explosion sound.
+    {"CASHTURN", 10, IN_NOVAR},  // VOC_CASHTURN     Airbrake.
 
-    {"SCOMND1", 20,
-     IN_NOVAR},  //	VOC_SPY_COMMANDER		Spy: "commander?"
-    {"SYESSIR1", 20,
-     IN_NOVAR},  //	VOC_SPY_YESSIR			Spy: "yes sir"
-    {"SINDEED1", 20,
-     IN_NOVAR},  //	VOC_SPY_INDEED			Spy: "indeed"
-    {"SONWAY1", 20,
-     IN_NOVAR},                //	VOC_SPY_ONWAY			Spy: "on my way"
-    {"SKING1", 20, IN_NOVAR},  //	VOC_SPY_KING			Spy:
-                               //"for king and country"
-    {"MRESPON1", 20,
-     IN_NOVAR},  //	VOC_MED_REPORTING		Medic: "reporting"
-    {"MYESSIR1", 20,
-     IN_NOVAR},  //	VOC_MED_YESSIR			Medic: "yes sir"
-    {"MAFFIRM1", 20,
-     IN_NOVAR},  //	VOC_MED_AFFIRM			Medic: "affirmative"
-    {"MMOVOUT1", 20,
-     IN_NOVAR},  //	VOC_MED_MOVEOUT		Medic: "movin' out"
-    {"BEEPSLCT", 10,
-     IN_NOVAR},  //	VOC_BEEP_SELECT		map selection beep
+    // Tanya.
+    {"TUFFGUY1", 20, IN_NOVAR},  // VOC_TANYA_CHEW   "Chew on this"
+    {"ROKROLL1", 20, IN_NOVAR},  // VOC_TANYA_ROCK   "Let's rock"
+    {"LAUGH1", 20, IN_NOVAR},    // VOC_TANYA_LAUGH  "ha ha ha"
+    {"CMON1", 20, IN_NOVAR},     // VOC_TANYA_SHAKE  "Shake it baby"
+    {"BOMBIT1", 20, IN_NOVAR},   // VOC_TANYA_CHING  "Cha Ching"
+    {"GOTIT1", 20, IN_NOVAR},    // VOC_TANYA_GOT    "That's all you got"
+    {"KEEPEM1", 20, IN_NOVAR},   // VOC_TANYA_KISS   "Kiss it bye bye"
+    {"ONIT1", 20, IN_NOVAR},     // VOC_TANYA_THERE  "I'm there"
+    {"LEFTY1", 20, IN_NOVAR},    // VOC_TANYA_GIVE   "Give it to me"
+    {"YEAH1", 20, IN_NOVAR},     // VOC_TANYA_YEA    "Yea?"
+    {"YES1", 20, IN_NOVAR},      // VOC_TANYA_YES    "Yes sir?"
+    {"YO1", 20, IN_NOVAR},       // VOC_TANYA_WHATS  "What's up."
 
-    {"SYEAH1", 20,
-     IN_NOVAR},                 //	VOC_THIEF_YEA			Thief: "yea?"
-    {"ANTDIE", 20, IN_NOVAR},   //	VOC_ANTDIE
-    {"ANTBITE", 20, IN_NOVAR},  //	VOC_ANTBITE
-    {"SMOUT1", 20,
-     IN_NOVAR},  //	VOC_THIEF_MOVEOUT		Thief: "movin' out"
-    {"SOKAY1", 20,
-     IN_NOVAR},  //	VOC_THIEF_OKAY			Thief: "ok"
-    {"x", 20, IN_NOVAR},
-    {"SWHAT1", 20,
-     IN_NOVAR},  //	VOC_THIEF_WHAT			Thief: "what"
-    {"SAFFIRM1", 20,
-     IN_NOVAR},  //	VOC_THIEF_AFFIRM		Thief: "affirmative"
-                 // ADDED VG 2/24/97
-    {"STAVCMDR", 20, IN_NOVAR},
-    {"STAVCRSE", 20, IN_NOVAR},
-    {"STAVYES", 20, IN_NOVAR},
-    {"STAVMOV", 20, IN_NOVAR},
-    {"BUZZY1", 20, IN_NOVAR},
-    {"RAMBO1", 20, IN_NOVAR},
-    {"RAMBO2", 20, IN_NOVAR},
-    {"RAMBO3", 20, IN_NOVAR},
-    {"MYES1", 20,
-     IN_NOVAR},                 // VOC_MECHYES1			Mechanic: "Yes sir!"
-    {"MHOWDY1", 20, IN_NOVAR},  // VOC_MECHHOWDY1 Mechanic: "Howdy!"
-    {"MRISE1", 20, IN_NOVAR},   // VOC_MECHRISE1			Mechanic: "Rise
-                                // 'n shine!"
-    {"MHUH1", 20, IN_NOVAR},    // VOC_MECHHUH1			Mechanic: "Huh?"
-    {"MHEAR1", 20,
-     IN_NOVAR},                // VOC_MECHHEAR1			Mechanic: "I Hear Ya!"
-    {"MLAFF1", 20, IN_NOVAR},  // VOC_MECHLAFF1			Mechanic: guffaw
-    {"MBOSS1", 20, IN_NOVAR},  // VOC_MECHBOSS1			Mechanic: "Sure
-                               // Thing, Boss!"
-    {"MYEEHAW1", 20,
-     IN_NOVAR},  // VOC_MECHYEEHAW1		Mechanic: "Yee Haw!"
+    {"WALLKIL2", 5, IN_NOVAR},  // VOC_WALLKILL2    Crushing wall sound.
+    {"x", 10, IN_NOVAR},        // VOC_x8           Unused.
+    {"GUN5", 5, IN_NOVAR},      // VOC_TRIPLE_SHOT  Three quick shots.
+    {"SUBSHOW1", 5, IN_NOVAR},  // VOC_SUBSHOW      Submarine surfacing.
+    {"EINAH1", 20, IN_NOVAR},   // VOC_E_AH         Einstein: "ah"
+    {"EINOK1", 20, IN_NOVAR},   // VOC_E_OK         Einstein: "ok"
+    {"EINYES1", 20, IN_NOVAR},  // VOC_E_YES        Einstein: "yes"
+    {"MINE1", 10, IN_NOVAR},    // VOC_TRIP_MINE    Mine explosion sound.
+
+    // Spy and medic.
+    {"SCOMND1", 20, IN_NOVAR},   // VOC_SPY_COMMANDER  Spy: "commander?"
+    {"SYESSIR1", 20, IN_NOVAR},  // VOC_SPY_YESSIR   Spy: "yes sir"
+    {"SINDEED1", 20, IN_NOVAR},  // VOC_SPY_INDEED   Spy: "indeed"
+    {"SONWAY1", 20, IN_NOVAR},   // VOC_SPY_ONWAY    Spy: "on my way"
+    {"SKING1", 20, IN_NOVAR},    // VOC_SPY_KING     Spy: "for king and country"
+    {"MRESPON1", 20, IN_NOVAR},  // VOC_MED_REPORTING  Medic: "reporting"
+    {"MYESSIR1", 20, IN_NOVAR},  // VOC_MED_YESSIR   Medic: "yes sir"
+    {"MAFFIRM1", 20, IN_NOVAR},  // VOC_MED_AFFIRM   Medic: "affirmative"
+    {"MMOVOUT1", 20, IN_NOVAR},  // VOC_MED_MOVEOUT  Medic: "movin' out"
+    {"BEEPSLCT", 10, IN_NOVAR},  // VOC_BEEP_SELECT  Map selection beep.
+
+    // Thief, and the giant ants.
+    {"SYEAH1", 20, IN_NOVAR},    // VOC_THIEF_YEA    Thief: "yea?"
+    {"ANTDIE", 20, IN_NOVAR},    // VOC_ANTDIE
+    {"ANTBITE", 20, IN_NOVAR},   // VOC_ANTBITE
+    {"SMOUT1", 20, IN_NOVAR},    // VOC_THIEF_MOVEOUT  Thief: "movin' out"
+    {"SOKAY1", 20, IN_NOVAR},    // VOC_THIEF_OKAY   Thief: "ok"
+    {"x", 20, IN_NOVAR},         // VOC_x11          Unused.
+    {"SWHAT1", 20, IN_NOVAR},    // VOC_THIEF_WHAT   Thief: "what"
+    {"SAFFIRM1", 20, IN_NOVAR},  // VOC_THIEF_AFFIRM Thief: "affirmative"
+
+    // Voices added for the expansion packs (VG, 2/24/97): Stavros and the
+    // commandos first, then the Aftermath units.
+    {"STAVCMDR", 20, IN_NOVAR},  // VOC_STAVCMDR
+    {"STAVCRSE", 20, IN_NOVAR},  // VOC_STAVCRSE
+    {"STAVYES", 20, IN_NOVAR},   // VOC_STAVYES
+    {"STAVMOV", 20, IN_NOVAR},   // VOC_STAVMOV
+    {"BUZZY1", 20, IN_NOVAR},    // VOC_BUZZY1
+    {"RAMBO1", 20, IN_NOVAR},    // VOC_RAMBO1
+    {"RAMBO2", 20, IN_NOVAR},    // VOC_RAMBO2
+    {"RAMBO3", 20, IN_NOVAR},    // VOC_RAMBO3
+    {"MYES1", 20, IN_NOVAR},     // VOC_MECHYES1     Mechanic: "Yes sir!"
+    {"MHOWDY1", 20, IN_NOVAR},   // VOC_MECHHOWDY1   Mechanic: "Howdy!"
+    {"MRISE1", 20, IN_NOVAR},    // VOC_MECHRISE1    Mechanic: "Rise 'n shine!"
+    {"MHUH1", 20, IN_NOVAR},     // VOC_MECHHUH1     Mechanic: "Huh?"
+    {"MHEAR1", 20, IN_NOVAR},    // VOC_MECHHEAR1    Mechanic: "I Hear Ya!"
+    {"MLAFF1", 20, IN_NOVAR},    // VOC_MECHLAFF1    Mechanic: guffaw
+    {"MBOSS1", 20, IN_NOVAR},  // VOC_MECHBOSS1    Mechanic: "Sure Thing, Boss!"
+    {"MYEEHAW1", 20, IN_NOVAR},  // VOC_MECHYEEHAW1  Mechanic: "Yee Haw!"
     {"MHOTDIG1", 20,
-     IN_NOVAR},  // VOC_MECHHOTDIG1		Mechanic: "Hot Diggity Dog!"
+     IN_NOVAR},  // VOC_MECHHOTDIG1  Mechanic: "Hot Diggity Dog!"
     {"MWRENCH1", 20,
-     IN_NOVAR},  // VOC_MECHWRENCH1		Mechanic: "I'll get my wrench."
+     IN_NOVAR},  // VOC_MECHWRENCH1  Mechanic: "I'll get my wrench."
 
-    {"JBURN1", 20, IN_NOVAR},   //	VOC_STBURN1
-                                // Shock Trooper: "Burn baby burn!"
-    {"JCHRGE1", 20, IN_NOVAR},  //	VOC_STCHRGE1			Shock
-                                // Trooper: "Fully charged!"
-    {"JCRISP1", 20, IN_NOVAR},  //	VOC_STCRISP1			Shock
-                                // Trooper: "Extra Crispy!"
-    {"JDANCE1", 20, IN_NOVAR},  //	VOC_STDANCE1			Shock
-                                // Trooper: "Let's Dance!"
-    {"JJUICE1", 20, IN_NOVAR},  //	VOC_STJUICE1			Shock
-                                // Trooper: "Got juice?"
-    {"JJUMP1", 20, IN_NOVAR},   //	VOC_STJUMP1
-                                // Shock Trooper: "Need a jump?"
-    {"JLIGHT1", 20, IN_NOVAR},  //	VOC_STLIGHT1			Shock
-                                // Trooper: "Lights out!"
-    {"JPOWER1", 20, IN_NOVAR},  //	VOC_STPOWER1			Shock
-                                // Trooper: "Power on!"
-    {"JSHOCK1", 20, IN_NOVAR},  //	VOC_STSHOCK1			Shock
-                                // Trooper: "Shocking!"
-    {"JYES1", 20, IN_NOVAR},    //	VOC_STYES1
-                                // Shock Trooper: "Yesssss!"
+    {"JBURN1", 20, IN_NOVAR},  // VOC_STBURN1   Shock Trooper: "Burn baby burn!"
+    {"JCHRGE1", 20, IN_NOVAR},  // VOC_STCHRGE1  Shock Trooper: "Fully charged!"
+    {"JCRISP1", 20, IN_NOVAR},  // VOC_STCRISP1  Shock Trooper: "Extra Crispy!"
+    {"JDANCE1", 20, IN_NOVAR},  // VOC_STDANCE1  Shock Trooper: "Let's Dance!"
+    {"JJUICE1", 20, IN_NOVAR},  // VOC_STJUICE1  Shock Trooper: "Got juice?"
+    {"JJUMP1", 20, IN_NOVAR},   // VOC_STJUMP1   Shock Trooper: "Need a jump?"
+    {"JLIGHT1", 20, IN_NOVAR},  // VOC_STLIGHT1  Shock Trooper: "Lights out!"
+    {"JPOWER1", 20, IN_NOVAR},  // VOC_STPOWER1  Shock Trooper: "Power on!"
+    {"JSHOCK1", 20, IN_NOVAR},  // VOC_STSHOCK1  Shock Trooper: "Shocking!"
+    {"JYES1", 20, IN_NOVAR},    // VOC_STYES1    Shock Trooper: "Yesssss!"
 
-    {"CHROTNK1", 20,
-     IN_NOVAR},  // VOC_CHRONOTANK1		Chrono tank teleport
-    {"FIXIT1", 20,
-     IN_NOVAR},  // VOC_MECH_FIXIT1		Mechanic fixes something
-    {"MADCHRG2", 20,
-     IN_NOVAR},  // VOC_MAD_CHARGE			MAD tank charges up
-    {"MADEXPLO", 20,
-     IN_NOVAR},  // VOC_MAD_EXPLODE		MAD tank explodes
-    {"SHKTROP1", 20,
-     IN_NOVAR},  // VOC_SHOCK_TROOP1		Shock Trooper fires
+    {"CHROTNK1", 20, IN_NOVAR},  // VOC_CHRONOTANK1  Chrono tank teleport.
+    {"FIXIT1", 20, IN_NOVAR},    // VOC_MECH_FIXIT1  Mechanic fixes something.
+    {"MADCHRG2", 20, IN_NOVAR},  // VOC_MAD_CHARGE   M.A.D. tank charges up.
+    {"MADEXPLO", 20, IN_NOVAR},  // VOC_MAD_EXPLODE  M.A.D. tank explodes.
+    {"SHKTROP1", 20, IN_NOVAR},  // VOC_SHOCK_TROOP1 Shock Trooper fires.
 }};
 
-/***********************************************************************************************
- * Voc_From_Name -- Fetch VocType from ASCII name specified. *
- *                                                                                             *
- *    This will find the corresponding VocType from the ASCII string specified.
- *It does this   * by finding a root filename that matches the string. *
- *                                                                                             *
- * INPUT:   name  -- Pointer to the ASCII string that will be converted into a
- *VocType.        *
- *                                                                                             *
- * OUTPUT:  Returns with the VocType that matches the string specified. If no
- *match could be   * found, then VOC_NONE is returned. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/06/1996 JLB : Created. *
- *=============================================================================================*/
 VocType Voc_From_Name(const char* name) {
   if (name == nullptr) {
     return VOC_NONE;
@@ -419,21 +281,6 @@ VocType Voc_From_Name(const char* name) {
   return VOC_NONE;
 }
 
-/***********************************************************************************************
- * Voc_Name -- Fetches the name for the sound effect. *
- *                                                                                             *
- *    This routine returns the descriptive name of the sound effect. Currently,
- *this is just   * the root of the file name. *
- *                                                                                             *
- * INPUT:   voc   -- The VocType that the corresponding name is requested. *
- *                                                                                             *
- * OUTPUT:  Returns with a pointer to the text string the represents the sound
- *effect.         *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 05/06/1996 JLB : Created. *
- *=============================================================================================*/
 const char* Voc_Name(VocType voc) {
   if (voc == VOC_NONE) {
     return "none";
@@ -441,33 +288,6 @@ const char* Voc_Name(VocType voc) {
   return SoundEffectName.at(voc).Name;
 }
 
-/***********************************************************************************************
- * Sound_Effect -- Plays a sound effect in the tactical map. *
- *                                                                                             *
- *    This routine is used when a sound effect occurs in the game world. It
- *handles fading     * the sound according to distance. *
- *                                                                                             *
- * INPUT:   voc   -- The sound effect number to play. *
- *                                                                                             *
- *          coord -- The world location that the sound originates from. *
- *                                                                                             *
- *          variation   -- This is the optional variation number to use when
- *playing special   * sound effects that have variations. For normal sound
- *effects, this  * parameter is ignored. *
- *                                                                                             *
- *          house -- This specifies the optional house override value to use
- *when playing      * sound effects that have a variation. If not specified,
- *then the current   * player is examined for the house variation to use. *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 11/12/1994 JLB : Created. * 01/05/1995 JLB : Reduces sound more
- *dramatically when off screen.                         * 09/15/1996 JLB :
- *Revamped volume logic.                                                   *
- *   11/01/1996 JLB : House override control. *
- *=============================================================================================*/
 void Sound_Effect(VocType voc, COORDINATE coord, int variation,
                   HousesType house) {
   CELL cell_pos = 0;
@@ -480,14 +300,28 @@ void Sound_Effect(VocType voc, COORDINATE coord, int variation,
     cell_pos = Coord_Cell(coord);
   }
 
+  // A sound on screen, or with no location, plays at full volume, centred.
+  // Off screen it fades linearly with the distance in cells, reaching silence
+  // 192 cells away (1.5 map widths). Sub_Saturate() keeps a sliver of 1/256
+  // even there.
   fixed volume(1);
   int pan_value = 0;
   if (coord && !Map.In_View(cell_pos)) {
-    const int distance = Distance(coord, Map.TacticalCoord) / CELL_LEPTON_W;
+    // Measured from the centre of the view: TacticalCoord is its upper-left
+    // corner, which would make sounds below and right of the screen quieter
+    // than those as far above and left.
+    const COORDINATE view_center =
+        Coord_Add(Map.TacticalCoord,
+                  XY_Coord(static_cast<LEPTON>(Map.TacLeptonWidth / 2),
+                           static_cast<LEPTON>(Map.TacLeptonHeight / 2)));
+    const int distance = Distance(coord, view_center) / CELL_LEPTON_W;
     fixed dfixed = fixed(distance, 128 + 64);
     dfixed.Sub_Saturate(1);
     volume = fixed(1) - dfixed;
 
+    // Pan by the column offset from the centre of the view, and only once the
+    // sound lies left or right of the screen: 0x8000 per quarter map width,
+    // clamped to the int16_t range. The mixer mixes in mono and ignores it.
     pan_value = Cell_X(cell_pos);
     pan_value -= Coord_XCell(Map.TacticalCoord) +
                  (Lepton_To_Cell(Map.TacLeptonWidth) / 2);
@@ -503,35 +337,10 @@ void Sound_Effect(VocType voc, COORDINATE coord, int variation,
   Sound_Effect(voc, volume, variation, static_cast<int16_t>(pan_value), house);
 }
 
-/***********************************************************************************************
- * Sound_Effect -- General purpose sound player. *
- *                                                                                             *
- *    This is used for general purpose sound effects. These are sounds that
- *occur outside      * of the game world. They do not have a corresponding game
- *world location as their source. *
- *                                                                                             *
- * INPUT:   voc      -- The sound effect number to play. *
- *                                                                                             *
- *          volume   -- The volume to assign to this sound effect. *
- *                                                                                             *
- *          variation   -- This is the optional variation number to use when
- *playing special   * sound effects that have variations. For normal sound
- *effects, this  * parameter is ignored. *
- *                                                                                             *
- *          house -- This specifies the optional house override value to use
- *when playing      * sound effects that have a variation. If not specified,
- *then the current   * player is examined for the house variation to use. *
- *                                                                                             *
- * OUTPUT:  Returns with the sound handle (-1 if no sound was played). *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 11/12/1994 JLB : Created. * 11/12/1994 JLB : Handles cache logic.
- ** 05/04/1995 JLB : Variation adjustments. * 11/01/1996 JLB : House override
- *control.                                                  *
- *=============================================================================================*/
 int Sound_Effect(VocType voc, fixed volume, int variation, int16_t pan_value,
                  HousesType house) {
+  // A VocType cast from scenario or INI data can be out of range; indexing
+  // the table with it would fail the at() check.
   if (voc != VOC_NONE && !magic_enum::enum_contains(voc)) {
     DLOG(WARNING) << "Sound_Effect: invalid voc=" << static_cast<int>(voc)
                   << ", valid range is [0, "
@@ -544,33 +353,26 @@ int Sound_Effect(VocType voc, fixed volume, int variation, int16_t pan_value,
     return -1;
   }
 
-  /*
-  **	Alter the volume according to the game volume setting.
-  */
+  // Alter the volume according to the game volume setting.
   volume = volume * Options.Volume;
 
-  /*
-  **	Fetch a pointer to the sound effect data. Modify the sound as
-  *appropriate and desired.
-  */
+  // Pick the file: NAME.AUD, or for a unit response the variation that fits
+  // the house's accent and the kind of unit.
   const char* ext = ".AUD";
   if (SoundEffectName.at(voc).Where == IN_VAR) {
-    /*
-    **	If there is no forced house, then use the current player
-    **	act like house.
-    */
+    // If no house is forced, use the one the player's house acts like.
+    // Responses only come from units the player selects or orders, so there
+    // is always a player house by then.
     if (house == HOUSE_NONE) {
       house = PlayerPtr->ActLike;
     }
 
-    /*
-    **	Change the extension based on the variation and house accent requested.
-    */
+    // Allied houses get the .V?? recordings, all others the Soviet .R?? ones.
+    // Vehicles and aircraft pass a negative variation, -(ID + 1), and get
+    // recordings 00 and 02; infantry pass ID + 1 and get 01 and 03. The parity
+    // of the ID alternates between the two voices so a group of units does not
+    // all answer in the same voice.
     if ((base::Bit<uint32_t>(house) & kHouseFlagAllies) != 0) {
-      /*
-      **	For infantry, use a variation on the response. For vehicles,
-      *always *	use the vehicle response table.
-      */
       if (variation < 0) {
         if (std::abs(variation) % 2) {
           ext = ".V00";
@@ -605,10 +407,12 @@ int Sound_Effect(VocType voc, fixed volume, int variation, int16_t pan_value,
                         .string();
   const auto ptr = MixArchive::RetrieveData(name);
 
-  /*
-  **	If the sound data pointer is not nullptr, then presume that it is valid.
-  */
+  // The sample is played straight out of the mixfile cache, which keeps it
+  // alive for as long as the mixer needs it. An empty span means the file is
+  // in no loaded mixfile, as for the "x" placeholders.
   if (!ptr.empty()) {
+    // Clamp to 255/256 so that volume * 256 fits the mixer's 0..255 range. A
+    // quieter sound also plays at a lower priority.
     volume.Sub_Saturate(1);
     return Audio.Play(ptr, SoundEffectName.at(voc).Priority * volume,
                       volume * 256, pan_value);
@@ -616,185 +420,133 @@ int Sound_Effect(VocType voc, fixed volume, int variation, int16_t pan_value,
   return -1;
 }
 
-/*
-**	This elaborates all the EVA speech voices.
-*/
+// The root file names of the EVA speech, one per VoxType. "none" marks a slot
+// with no recording: there is no NONE.AUD, so speaking it says nothing.
 static constexpr base::EnumArray<VoxType, const char*> Speech = {
-    "MISNWON1",  //	VOX_ACCOMPLISHED
-                 // mission accomplished
-    "MISNLST1",  //	VOX_FAIL
-                 // your mission has failed
-    "PROGRES1",  //	VOX_NO_FACTORY
-                 // unable to comply, building in progress
-    "CONSCMP1",  //	VOX_CONSTRUCTION
-                 // construction complete
-    "UNITRDY1",  //	VOX_UNIT_READY unit ready
-    "NEWOPT1",   //	VOX_NEW_CONSTRUCT
-                 // new construction options
-    "NODEPLY1",  //	VOX_DEPLOY
-                 // cannot deploy here
-    "STRCKIL1",  //	VOX_STRUCTURE_DESTROYED,		structure
-                 // destroyed
-    "NOPOWR1",   //	VOX_INSUFFICIENT_POWER,			insufficient
-                 // power
-    "NOFUNDS1",  //	VOX_NO_CASH
-                 // insufficient funds
-    "BCT1",      //	VOX_CONTROL_EXIT					battle
-                 // control terminated
-    "REINFOR1",  //	VOX_REINFORCEMENTS
-                 // reinforcements have arrived
-    "CANCLD1",   //	VOX_CANCELED
-                 // canceled
-    "ABLDGIN1",  //	VOX_BUILDING
-                 // building
-    "LOPOWER1",  //	VOX_LOW_POWER low power
-    "NOFUNDS1",  //	VOX_NEED_MO_MONEY
-                 // insufficent funds
-    "BASEATK1",  //	VOX_BASE_UNDER_ATTACK			our base is
-                 // under attack
-    "NOBUILD1",  //	VOX_UNABLE_TO_BUILD				unable
-                 // to build more
-    "PRIBLDG1",  //	VOX_PRIMARY_SELECTED				primary
-                 // building selected
+    "MISNWON1",  // VOX_ACCOMPLISHED  mission accomplished
+    "MISNLST1",  // VOX_FAIL  your mission has failed
+    "PROGRES1",  // VOX_NO_FACTORY  unable to comply, building in progress
+    "CONSCMP1",  // VOX_CONSTRUCTION  construction complete
+    "UNITRDY1",  // VOX_UNIT_READY  unit ready
+    "NEWOPT1",   // VOX_NEW_CONSTRUCT  new construction options
+    "NODEPLY1",  // VOX_DEPLOY  cannot deploy here
+    "STRCKIL1",  // VOX_STRUCTURE_DESTROYED  structure destroyed
+    "NOPOWR1",   // VOX_INSUFFICIENT_POWER  insufficient power
+    "NOFUNDS1",  // VOX_NO_CASH  insufficient funds
+    "BCT1",      // VOX_CONTROL_EXIT  battle control terminated
+    "REINFOR1",  // VOX_REINFORCEMENTS  reinforcements have arrived
+    "CANCLD1",   // VOX_CANCELED  canceled
+    "ABLDGIN1",  // VOX_BUILDING  building
+    "LOPOWER1",  // VOX_LOW_POWER  low power
+    "NOFUNDS1",  // VOX_NEED_MO_MONEY  insufficient funds
+    "BASEATK1",  // VOX_BASE_UNDER_ATTACK  our base is under attack
+    "NOBUILD1",  // VOX_UNABLE_TO_BUILD  unable to build more
+    "PRIBLDG1",  // VOX_PRIMARY_SELECTED  primary building selected
     // VOX_MADTANK_DEPLOYED: M.A.D. Tank Deployed, English speech set only.
     config::kIsEnglish ? "TANK01" : "none",
-    "none",      //	VOX_SOVIET_CAPTURED				Allied building
-                 // captured
-    "UNITLST1",  // VOX_UNIT_LOST unit lost
-    "SLCTTGT1",  // VOX_SELECT_TARGET					select
-                 // target
-    "ENMYAPP1",  //	VOX_PREPARE
-                 // enemy approaching
-    "SILOND1",   //	VOX_NEED_MO_CAPACITY				silos
-                 // needed
-    "ONHOLD1",   //	VOX_SUSPENDED on hold
-    "REPAIR1",   //	VOX_REPAIRING
-                 // repairing
-    "none", "none",
-    "AUNITL1",  //	VOX_AIRCRAFT_LOST
-                // airborne unit lost
-    "none",
-    "AAPPRO1",   //	VOX_ALLIED_FORCES_APPROACHING	allied forces
-                 // approaching
-    "AARRIVE1",  // VOX_ALLIED_APPROACHING			allied
-                 // reinforcements have arrived
-    "none", "none",
-    "BLDGINF1",  // VOX_BUILDING_INFILTRATED		building infiltrated
-    "CHROCHR1",  // VOX_CHRONO_CHARGING				chronosphere
-                 // charging
-    "CHRORDY1",  // VOX_CHRONO_READY chronosphere ready
-    "CHROYES1",  // VOX_CHRONO_TEST
-                 // chronosphere test successful
-    "CMDCNTR1",  //	VOX_HQ_UNDER_ATTACK				command
-                 // center under attack
-    "CNTLDED1",  //	VOX_CENTER_DEACTIVATED			control center
-                 // deactivated
-    "CONVYAP1",  //	VOX_CONVOY_APPROACHING			convoy
-                 // approaching
-    "CONVLST1",  // VOX_CONVOY_UNIT_LOST				convoy
-                 // unit lost
-    "XPLOPLC1",  //	VOX_EXPLOSIVE_PLACED
-                 // explosive charge placed
-    "CREDIT1",   // VOX_MONEY_STOLEN					credits
-                 // stolen
-    "NAVYLST1",  // VOX_SHIP_LOST
-                 // naval unit lost
-    "SATLNCH1",  //	VOX_SATALITE_LAUNCHED			satalite
-                 // launched
-    "PULSE1",    //	VOX_SONAR_AVAILABLE				sonar
-                 // pulse available
-    "none",
-    "SOVFAPP1",  //	VOX_SOVIET_FORCES_APPROACHING	soviet forces
-                 // approaching
-    "SOVREIN1",  // VOX_SOVIET_REINFROCEMENTS		soviet reinforcements
-                 // have arrived
-    "TRAIN1",    //	VOX_TRAINING
-                 // training
-    "AREADY1",   //	VOX_ABOMB_READY
-    "ALAUNCH1",  //	VOX_ABOMB_LAUNCH
-    "AARRIVN1",  //	VOX_ALLIES_N
-    "AARRIVS1",  //	VOX_ALLIES_S
-    "AARIVE1",   //	VOX_ALLIES_E
-    "AARRIVW1",  //	VOX_ALLIES_W
-    "1OBJMET1",  //	VOX_OBJECTIVE1
-    "2OBJMET1",  //	VOX_OBJECTIVE2
-    "3OBJMET1",  //	VOX_OBJECTIVE3
-    "IRONCHG1",  //	VOX_IRON_CHARGING
-    "IRONRDY1",  //	VOX_IRON_READY
-    "KOSYRES1",  //	VOX_RESCUED
-    "OBJNMET1",  //	VOX_OBJECTIVE_NOT
-    "FLAREN1",   //	VOX_SIGNAL_N
-    "FLARES1",   //	VOX_SIGNAL_S
-    "FLAREE1",   //	VOX_SIGNAL_E
-    "FLAREW1",   //	VOX_SIGNAL_W
-    "SPYPLN1",   //	VOX_SPY_PLANE
-    "TANYAF1",   //	VOX_FREED
-    "ARMORUP1",  //	VOX_UPGRADE_ARMOR
-    "FIREPO1",   //	VOX_UPGRADE_FIREPOWER
-    "UNITSPD1",  //	VOX_UPGRADE_SPEED
-    "MTIMEIN1",  //	VOX_MISSION_TIMER
-    "UNITFUL1",  //	VOX_UNIT_FULL
-    "UNITREP1",  //	VOX_UNIT_REPAIRED
-    "40MINR",    //	VOX_TIME_40
-    "30MINR",    //	VOX_TIME_30
-    "20MINR",    //	VOX_TIME_20
-    "10MINR",    //	VOX_TIME_10
-    "5MINR",     //	VOX_TIME_5
-    "4MINR",     //	VOX_TIME_4
-    "3MINR",     //	VOX_TIME_3
-    "2MINR",     //	VOX_TIME_2
-    "1MINR",     //	VOX_TIME_1
-    "TIMERNO1",  //	VOX_TIME_STOP
-    "UNITSLD1",  //	VOX_UNIT_SOLD
-    "TIMERGO1",  //	VOX_TIMER_STARTED
-    "TARGRES1",  //	VOX_TARGET_RESCUED
-    "TARGFRE1",  //	VOX_TARGET_FREED
-    "TANYAR1",   //	VOX_TANYA_RESCUED
-    "STRUSLD1",  //	VOX_STRUCTURE_SOLD
-    "SOVFORC1",  //	VOX_SOVIET_FORCES_FALLEN
-    "SOVEMP1",   //	VOX_SOVIET_SELECTED
-    "SOVEFAL1",  //	VOX_SOVIET_EMPIRE_FALLEN
-    "OPTERM1",   //	VOX_OPERATION_TERMINATED
-    "OBJRCH1",   //	VOX_OBJECTIVE_REACHED
-    "OBJNRCH1",  //	VOX_OBJECTIVE_NOT_REACHED
-    "OBJMET1",   //	VOX_OBJECTIVE_MET
-    "MERCR1",    //	VOX_MERCENARY_RESCUED
-    "MERCF1",    //	VOX_MERCENARY_FREED
-    "KOSYFRE1",  //	VOX_KOSOYGEN_FREED
-    "FLARE1",    //	VOX_FLARE_DETECTED
-    "COMNDOR1",  //	VOX_COMMANDO_RESCUED
-    "COMNDOF1",  //	VOX_COMMANDO_FREED
-    "BLDGPRG1",  //	VOX_BUILDING_IN_PROGRESS
-    "ATPREP1",   //	VOX_ATOM_PREPPING
-    "ASELECT1",  //	VOX_ALLIED_SELECTED
-    "APREP1",    //	VOX_ABOMB_PREPPING
-    "ATLNCH1",   //	VOX_ATOM_LAUNCHED
-    "AFALLEN1",  //	VOX_ALLIED_FORCES_FALLEN
-    "AAVAIL1",   //	VOX_ABOMB_AVAILABLE
-    "AARRIVE1",  //	VOX_ALLIED_REINFORCEMENTS
-    "SAVE1",     //	VOX_MISSION_SAVED
-    "LOAD1"      //	VOX_MISSION_LOADED
+    "none",      // VOX_none4
+    "UNITLST1",  // VOX_UNIT_LOST  unit lost
+    "SLCTTGT1",  // VOX_SELECT_TARGET  select target
+    "ENMYAPP1",  // VOX_PREPARE  enemy approaching
+    "SILOND1",   // VOX_NEED_MO_CAPACITY  silos needed
+    "ONHOLD1",   // VOX_SUSPENDED  on hold
+    "REPAIR1",   // VOX_REPAIRING  repairing
+    "none",      // VOX_none5
+    "none",      // VOX_none6
+    "AUNITL1",   // VOX_AIRCRAFT_LOST  airborne unit lost
+    "none",      // VOX_none7
+    "AAPPRO1",   // VOX_ALLIED_FORCES_APPROACHING  allied forces approaching
+    "AARRIVE1",  // VOX_ALLIED_APPROACHING  allied reinforcements have arrived
+    "none",      // VOX_none8
+    "none",      // VOX_none9
+    "BLDGINF1",  // VOX_BUILDING_INFILTRATED  building infiltrated
+    "CHROCHR1",  // VOX_CHRONO_CHARGING  chronosphere charging
+    "CHRORDY1",  // VOX_CHRONO_READY  chronosphere ready
+    "CHROYES1",  // VOX_CHRONO_TEST  chronosphere test successful
+    "CMDCNTR1",  // VOX_HQ_UNDER_ATTACK  command center under attack
+    "CNTLDED1",  // VOX_CENTER_DEACTIVATED  control center deactivated
+    "CONVYAP1",  // VOX_CONVOY_APPROACHING  convoy approaching
+    "CONVLST1",  // VOX_CONVOY_UNIT_LOST  convoy unit lost
+    "XPLOPLC1",  // VOX_EXPLOSIVE_PLACED  explosive charge placed
+    "CREDIT1",   // VOX_MONEY_STOLEN  credits stolen
+    "NAVYLST1",  // VOX_SHIP_LOST  naval unit lost
+    "SATLNCH1",  // VOX_SATALITE_LAUNCHED  satellite launched
+    "PULSE1",    // VOX_SONAR_AVAILABLE  sonar pulse available
+    "none",      // VOX_none10
+    "SOVFAPP1",  // VOX_SOVIET_FORCES_APPROACHING  soviet forces approaching
+    "SOVREIN1",  // VOX_SOVIET_REINFORCEMENTS  soviet reinforcements arrived
+    "TRAIN1",    // VOX_TRAINING  training
+    "AREADY1",   // VOX_ABOMB_READY
+    "ALAUNCH1",  // VOX_ABOMB_LAUNCH
+    "AARRIVN1",  // VOX_ALLIES_N
+    "AARRIVS1",  // VOX_ALLIES_S
+    "AARIVE1",   // VOX_ALLIES_E
+    "AARRIVW1",  // VOX_ALLIES_W
+    "1OBJMET1",  // VOX_OBJECTIVE1
+    "2OBJMET1",  // VOX_OBJECTIVE2
+    "3OBJMET1",  // VOX_OBJECTIVE3
+    "IRONCHG1",  // VOX_IRON_CHARGING
+    "IRONRDY1",  // VOX_IRON_READY
+    "KOSYRES1",  // VOX_RESCUED
+    "OBJNMET1",  // VOX_OBJECTIVE_NOT
+    "FLAREN1",   // VOX_SIGNAL_N
+    "FLARES1",   // VOX_SIGNAL_S
+    "FLAREE1",   // VOX_SIGNAL_E
+    "FLAREW1",   // VOX_SIGNAL_W
+    "SPYPLN1",   // VOX_SPY_PLANE
+    "TANYAF1",   // VOX_FREED
+    "ARMORUP1",  // VOX_UPGRADE_ARMOR
+    "FIREPO1",   // VOX_UPGRADE_FIREPOWER
+    "UNITSPD1",  // VOX_UPGRADE_SPEED
+    "MTIMEIN1",  // VOX_MISSION_TIMER
+    "UNITFUL1",  // VOX_UNIT_FULL
+    "UNITREP1",  // VOX_UNIT_REPAIRED
+    "40MINR",    // VOX_TIME_40
+    "30MINR",    // VOX_TIME_30
+    "20MINR",    // VOX_TIME_20
+    "10MINR",    // VOX_TIME_10
+    "5MINR",     // VOX_TIME_5
+    "4MINR",     // VOX_TIME_4
+    "3MINR",     // VOX_TIME_3
+    "2MINR",     // VOX_TIME_2
+    "1MINR",     // VOX_TIME_1
+    "TIMERNO1",  // VOX_TIME_STOP
+    "UNITSLD1",  // VOX_UNIT_SOLD
+    "TIMERGO1",  // VOX_TIMER_STARTED
+    "TARGRES1",  // VOX_TARGET_RESCUED
+    "TARGFRE1",  // VOX_TARGET_FREED
+    "TANYAR1",   // VOX_TANYA_RESCUED
+    "STRUSLD1",  // VOX_STRUCTURE_SOLD
+    "SOVFORC1",  // VOX_SOVIET_FORCES_FALLEN
+    "SOVEMP1",   // VOX_SOVIET_SELECTED
+    "SOVEFAL1",  // VOX_SOVIET_EMPIRE_FALLEN
+    "OPTERM1",   // VOX_OPERATION_TERMINATED
+    "OBJRCH1",   // VOX_OBJECTIVE_REACHED
+    "OBJNRCH1",  // VOX_OBJECTIVE_NOT_REACHED
+    "OBJMET1",   // VOX_OBJECTIVE_MET
+    "MERCR1",    // VOX_MERCENARY_RESCUED
+    "MERCF1",    // VOX_MERCENARY_FREED
+    "KOSYFRE1",  // VOX_KOSOYGEN_FREED
+    "FLARE1",    // VOX_FLARE_DETECTED
+    "COMNDOR1",  // VOX_COMMANDO_RESCUED
+    "COMNDOF1",  // VOX_COMMANDO_FREED
+    "BLDGPRG1",  // VOX_BUILDING_IN_PROGRESS
+    "ATPREP1",   // VOX_ATOM_PREPPING
+    "ASELECT1",  // VOX_ALLIED_SELECTED
+    "APREP1",    // VOX_ABOMB_PREPPING
+    "ATLNCH1",   // VOX_ATOM_LAUNCHED
+    "AFALLEN1",  // VOX_ALLIED_FORCES_FALLEN
+    "AAVAIL1",   // VOX_ABOMB_AVAILABLE
+    "AARRIVE1",  // VOX_ALLIED_REINFORCEMENTS
+    "SAVE1",     // VOX_SAVE1  mission saved
+    "LOAD1"      // VOX_LOAD1  mission loaded
 };
 
+// The voice EVA is saying now, or VOX_NONE once Speak_AI() finds the speech
+// buffer silent. Speak() drops a request for this voice so that the same
+// announcement does not queue up behind itself.
 static VoxType CurrentVoice = VOX_NONE;
 
-/***********************************************************************************************
- * Speech_Name -- Fetches the name for the voice specified. *
- *                                                                                             *
- *    Use this routine to fetch the ASCII name of the speech id specified.
- *Typical use of this * would be to build a displayable list of the speech
- *types. The trigger system uses this   * so that a speech type can be selected.
- **
- *                                                                                             *
- * INPUT:   speech   -- The speech type id to convert to ASCII string. *
- *                                                                                             *
- * OUTPUT:  Returns with a pointer to the speech ASCII representation of the
- *speech id type.   *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 06/01/1996 JLB : Created. *
- *=============================================================================================*/
 const char* Speech_Name(VoxType speech) {
   if (speech == VOX_NONE) {
     return "none";
@@ -802,47 +554,21 @@ const char* Speech_Name(VoxType speech) {
   return Speech.at(speech);
 }
 
-/***********************************************************************************************
- * Speak -- Computer speaks to the player. *
- *                                                                                             *
- *    This routine is used to have the game computer (EVA) speak to the player.
- **
- *                                                                                             *
- * INPUT:   voice -- The voice number to speak (see defines.h). *
- *                                                                                             *
- * OUTPUT:  Returns with the handle of the playing speech (-1 if no voice
- *started).            *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 11/12/1994 JLB : Created. *
- *=============================================================================================*/
 void Speak(VoxType voice) {
+  // Only one voice waits in the queue: a request made while another is
+  // pending is dropped, not queued behind it.
   if (!Debug_Quiet && Options.Volume != 0 && Audio.is_open() &&
       voice != VOX_NONE && voice != SpeakQueue && voice != CurrentVoice &&
       SpeakQueue == VOX_NONE) {
     SpeakQueue = voice;
+    // Start it now if EVA is silent, rather than a tick later.
     Speak_AI();
   }
 }
 
-/***********************************************************************************************
- * Speak_AI -- Handles starting the EVA voices. *
- *                                                                                             *
- *    This starts the EVA voice talking as well. If there is any speech request
- *in the queue,  * it will be started when the current voice is finished. Call
- *this routine as often as     * possible (once per game tick is sufficient). *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 12/27/1994 JLB : Created. * 10/11/1996 JLB : Handles multiple
- *speech buffers.                                         *
- *=============================================================================================*/
 void Speak_AI() {
+  // The speech buffer EVA played last, and so the one to watch for the end of
+  // the voice. The other buffer is the older one, reused for the next load.
   static int _index = 0;
   if (Debug_Quiet || !Audio.is_open()) {
     return;
@@ -851,10 +577,8 @@ void Speak_AI() {
   if (!Audio.IsPlaying(base::At(SpeechBuffer, _index).data())) {
     CurrentVoice = VOX_NONE;
     if (SpeakQueue != VOX_NONE) {
-      /*
-      **	Try to find a previously loaded copy of the EVA speech in one of
-      *the *	speech buffers.
-      */
+      // Try to find a previously loaded copy of the EVA speech in one of the
+      // speech buffers.
       std::span<const std::byte> speech;
       for (size_t index = 0; index < std::size(SpeechRecord); index++) {
         if (base::At(SpeechRecord, index) == SpeakQueue) {
@@ -867,10 +591,10 @@ void Speak_AI() {
         }
       }
 
-      /*
-      **	If a previous copy could not be located, then load the requested
-      **	voice into the oldest buffer available.
-      */
+      // If a previous copy could not be located, then load the requested
+      // voice into the oldest buffer available. A voice longer than the
+      // buffer (kSpeechBufferSize) is cut short. SpeechRecord is only updated
+      // on success, so a failed load leaves the old voice cached.
       if (speech.empty()) {
         _index = static_cast<int>((_index + 1) % std::ssize(SpeechRecord));
 
@@ -885,56 +609,34 @@ void Speak_AI() {
         }
       }
 
-      /*
-      **	Since the speech file was loaded, play it.
-      */
+      // Play the speech, whether it was cached or just loaded. At priority 254
+      // it cuts off any sound effect (their priorities are at most 20) to get
+      // a channel.
       if (!speech.empty()) {
         Audio.Play(speech, 254, Options.Volume * 256);
         CurrentVoice = SpeakQueue;
       }
 
+      // Cleared even if the voice could not be loaded, so that a missing
+      // file is not retried every tick.
       SpeakQueue = VOX_NONE;
     }
   }
 }
 
-/***********************************************************************************************
- * Stop_Speaking -- Forces the EVA voice to stop talking. *
- *                                                                                             *
- *    Use this routine to immediately stop the EVA voice from speaking. It also
- *clears out     * the pending voice queue. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 12/27/1994 JLB : Created. *
- *=============================================================================================*/
 void Stop_Speaking() {
   SpeakQueue = VOX_NONE;
+  // Cleared here, not left for the next Speak_AI(), so that Speak() does not
+  // drop the voice just stopped as one still being said.
+  CurrentVoice = VOX_NONE;
   for (auto& index : SpeechBuffer) {
     Audio.Stop(index.data());
   }
 }
 
-/***********************************************************************************************
- * Is_Speaking -- Checks to see if the eva voice is still playing. *
- *                                                                                             *
- *    Call this routine when the EVA voice being played needs to be checked. A
- *typical use     * of this would be when some action needs to be delayed until
- *the voice has finished --    * say the end of the game. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  bool; Is the EVA voice still playing? *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 03/12/1995 JLB : Created. *
- *=============================================================================================*/
 bool Is_Speaking() {
+  // Starts any queued voice first, so a caller waiting in a loop for EVA to
+  // finish also keeps the queue moving.
   Speak_AI();
   return !Debug_Quiet && Audio.is_open() &&
          (SpeakQueue != VOX_NONE ||
