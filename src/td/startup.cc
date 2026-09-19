@@ -450,7 +450,6 @@ int main(int argc, char* argv[])
     puts("Run SETUP program first.");
     puts("\n");
 #endif
-    Kbd.Get();
 #endif
 
     //		Remove_Keyboard_Interrupt();
@@ -460,6 +459,7 @@ int main(int argc, char* argv[])
       Palette.clear();
       Palette.clear();
     }
+    return EXIT_FAILURE;
   }
 
   /*
