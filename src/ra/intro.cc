@@ -23,7 +23,6 @@
 
 #include "ra/defines.h"
 #include "ra/externs.h"
-#include "ra/globals.h"
 #include "ra/init.h"
 #include "ra/movie.h"
 #include "ra/mplayer.h"
@@ -36,7 +35,8 @@
 // ajw: in RA, all this did was play a movie. Denzil's DVD support uses it in
 // its original sense again, because a DVD cannot tell the side by which disc is
 // in the drive. (5/08/1995 BWG: created.)
-void PlayFirstLaunchIntro() {
+void PlayFirstLaunchIntro(GraphicViewPortClass& hidden,
+                          GraphicViewPortClass& visible) {
   // A CD install knows the side from the disc that is in the drive. The DVD
   // holds both campaigns, so the player has to be asked.
   if (Using_DVD()) {
@@ -44,9 +44,9 @@ void PlayFirstLaunchIntro() {
     Hide_Mouse();
     Load_Title_Page();
     GamePalette = CCPalette;
-    hidden_view.Blit(visible_view);
+    hidden.Blit(visible);
     CCPalette.Set();
-    Set_Logic_Page(visible_view);
+    Set_Logic_Page(visible);
     Show_Mouse();
 
     // Process() returns the index of the button pressed. CurrentCD uses the
@@ -68,7 +68,7 @@ void PlayFirstLaunchIntro() {
     // hide it makes itself.
     Hide_Mouse();
     BlackPalette.Set(kFadePaletteSlow);
-    visible_view.Clear();
+    visible.Clear();
     Show_Mouse();
   }
 

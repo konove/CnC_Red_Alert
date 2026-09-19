@@ -759,7 +759,7 @@ bool Select_Game(bool /*fade*/) {
             Load_Title_Page();
           } else {
             Theme.Fade_Out();
-            PlayFirstLaunchIntro();
+            PlayFirstLaunchIntro(hidden_view, visible_view);
             Hide_Mouse();
             if (CurrentCD == 0) {
               Scen.Set_Scenario_Name("SCG01EA.INI");

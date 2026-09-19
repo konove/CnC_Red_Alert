@@ -21,6 +21,8 @@
 #ifndef CNC_RED_ALERT_RA_INTRO_H_
 #define CNC_RED_ALERT_RA_INTRO_H_
 
+#include "sdllib/gbuffer.h"
+
 // Plays the introduction movie. Select_Game() calls this when it starts the
 // campaign on the first launch after installing (Special.IsFromInstall).
 //
@@ -29,6 +31,10 @@
 // turns into the first scenario. With CDs the disc in the drive has already
 // answered that question. Leaves the mouse as it found it. Originally
 // "Choose_Side": in Tiberian Dawn this is where the player picks a house.
-void PlayFirstLaunchIntro();
+//
+// `hidden` is the back buffer the title page is loaded into, and `visible` the
+// view on screen that the dialog is drawn on.
+void PlayFirstLaunchIntro(GraphicViewPortClass& hidden,
+                          GraphicViewPortClass& visible);
 
 #endif  // CNC_RED_ALERT_RA_INTRO_H_

@@ -11,7 +11,6 @@
 #include "gtest/gtest.h"
 #include "ra/defines.h"
 #include "ra/externs.h"
-#include "ra/globals.h"
 #include "ra/init.h"
 #include "ra/movie.h"
 #include "ra/mplayer.h"
@@ -36,8 +35,6 @@ int CurrentCD = -1;
 PaletteClass BlackPalette;
 PaletteClass CCPalette;
 PaletteClass GamePalette;
-GraphicViewPortClass hidden_view;
-GraphicViewPortClass visible_view;
 
 bool Using_DVD() { return using_dvd; }
 void Hide_Mouse() { ++mouse_hides; }
@@ -63,8 +60,6 @@ namespace {
 class IntroTest : public testing::Test {
  protected:
   void SetUp() override {
-    hidden_view.Attach(&hidden_, 0, 0, kWidth, kHeight);
-    visible_view.Attach(&seen_, 0, 0, kWidth, kHeight);
     CurrentCD = -1;
     dialogs_shown = 0;
     movies_played = 0;
@@ -84,7 +79,7 @@ class IntroTest : public testing::Test {
 TEST_F(IntroTest, CdInstallPlaysTheIntroWithoutAsking) {
   using_dvd = false;
 
-  PlayFirstLaunchIntro();
+  PlayFirstLaunchIntro(hidden_, seen_);
 
   EXPECT_EQ(dialogs_shown, 0);
   EXPECT_EQ(movies_played, 1);
@@ -96,7 +91,7 @@ TEST_F(IntroTest, DvdAsksForTheSideBeforeTheIntro) {
   using_dvd = true;
   dialog_answer = 1;
 
-  PlayFirstLaunchIntro();
+  PlayFirstLaunchIntro(hidden_, seen_);
 
   EXPECT_EQ(dialogs_shown, 1);
   EXPECT_EQ(movies_played, 1);
@@ -106,7 +101,7 @@ TEST_F(IntroTest, DvdAsksForTheSideBeforeTheIntro) {
 TEST_F(IntroTest, DvdLeavesTheMouseAsItFoundIt) {
   using_dvd = true;
 
-  PlayFirstLaunchIntro();
+  PlayFirstLaunchIntro(hidden_, seen_);
 
   EXPECT_EQ(mouse_hides, 0);
 }
