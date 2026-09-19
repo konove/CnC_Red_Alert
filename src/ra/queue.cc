@@ -132,6 +132,7 @@
 #include "ra/rules.h"
 #include "ra/saveload.h"
 #include "ra/scenario.h"
+#include "ra/screen.h"
 #include "ra/session.h"
 #include "ra/smudge.h"
 #include "ra/startup.h"
@@ -1224,7 +1225,7 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
     //---------------------------------------------------------------------
     ServiceRealTime();
     if (!first_time && SpecialDialog == SDLG_NONE && reconnect_dlg == 0) {
-      WWMouse->Erase_Mouse(&hidden_view, true);
+      WWMouse->Erase_Mouse(&TheScreen().hidden_view(), true);
       Map.Input(input, x, y);
       if (input) {
         Keyboard_Process(input);

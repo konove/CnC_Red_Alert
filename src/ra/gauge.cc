@@ -50,8 +50,8 @@
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/gadget.h"
-#include "ra/globals.h"
 #include "ra/jshell.h"
+#include "ra/screen.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
@@ -215,7 +215,7 @@ bool GaugeClass::Draw_Me(bool forced) {
     /*
     **	Hide the mouse
     */
-    if (LogicPage == &visible_view) {
+    if (TheScreen().IsVisible(LogicPage)) {
       Conditional_Hide_Mouse(X, Y, X + Width, Y + Height);
     }
 
@@ -248,7 +248,7 @@ bool GaugeClass::Draw_Me(bool forced) {
     /*
     **	Display the mouse
     */
-    if (LogicPage == &visible_view) {
+    if (TheScreen().IsVisible(LogicPage)) {
       Conditional_Show_Mouse();
     }
     return true;
@@ -463,7 +463,7 @@ bool TriColorGaugeClass::Draw_Me(bool forced) {
     /*
     **	Hide the mouse
     */
-    if (LogicPage == &visible_view) {
+    if (TheScreen().IsVisible(LogicPage)) {
       Conditional_Hide_Mouse(X, Y, X + Width, Y + Height);
     }
 
@@ -513,7 +513,7 @@ bool TriColorGaugeClass::Draw_Me(bool forced) {
     /*
     **	Display the mouse
     */
-    if (LogicPage == &visible_view) {
+    if (TheScreen().IsVisible(LogicPage)) {
       Conditional_Show_Mouse();
     }
     return true;

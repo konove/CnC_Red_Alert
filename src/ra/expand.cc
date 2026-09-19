@@ -56,7 +56,6 @@
 #include "ra/dialog.h"
 #include "ra/externs.h"
 #include "ra/gadget.h"
-#include "ra/globals.h"
 #include "ra/init.h"
 #include "ra/inline.h"
 #include "ra/installation.h"
@@ -65,6 +64,7 @@
 #include "ra/palette.h"
 #include "ra/profile.h"
 #include "ra/scenario.h"
+#include "ra/screen.h"
 #include "ra/text_ids.h"
 #include "ra/textbtn.h"
 #include "ra/wolstrng.h"
@@ -434,7 +434,7 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
     }
   }
 
-  Set_Logic_Page(visible_view);
+  Set_Logic_Page(TheScreen().visible_view());
   bool display = true;
   bool process = true;
   bool okval = true;

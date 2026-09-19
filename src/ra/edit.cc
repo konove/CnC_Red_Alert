@@ -34,8 +34,8 @@
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/gadget.h"
-#include "ra/globals.h"
 #include "ra/jshell.h"
+#include "ra/screen.h"
 #include "ra/text_ids.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
@@ -100,14 +100,14 @@ void EditClass::Set_Text(std::span<char> text, const int max_len) {
 
 bool EditClass::Draw_Me(const bool forced) {
   if (ControlClass::Draw_Me(forced)) {
-    if (LogicPage == &visible_view) {
+    if (TheScreen().IsVisible(LogicPage)) {
       Conditional_Hide_Mouse(X, Y, X + Width, Y + Height);
     }
 
     Draw_Background();
     Draw_Text(String.data());
 
-    if (LogicPage == &visible_view) {
+    if (TheScreen().IsVisible(LogicPage)) {
       Conditional_Show_Mouse();
     }
 

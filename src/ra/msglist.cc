@@ -75,8 +75,8 @@
 #include "ra/dialog.h"
 #include "ra/externs.h"
 #include "ra/gadget.h"
-#include "ra/globals.h"
 #include "ra/jshell.h"
+#include "ra/screen.h"
 #include "ra/text_ids.h"
 #include "ra/txtlabel.h"
 #include "sdllib/drawbuff.h"
@@ -1249,7 +1249,7 @@ void MessageListClass::Draw() {
   char txt[2] = {0, 0};
 
   if (IsEdit) {
-    if (LogicPage == &visible_view) {
+    if (TheScreen().IsVisible(LogicPage)) {
       Hide_Mouse();
     }
     EditLabel->Draw_Me(true);
@@ -1262,16 +1262,16 @@ void MessageListClass::Draw() {
                        EditLabel->Style);
     }
 
-    if (LogicPage == &visible_view) {
+    if (TheScreen().IsVisible(LogicPage)) {
       Show_Mouse();
     }
   }
   if (MessageList) {
-    if (LogicPage == &visible_view) {
+    if (TheScreen().IsVisible(LogicPage)) {
       Hide_Mouse();
     }
     MessageList->Draw_All();
-    if (LogicPage == &visible_view) {
+    if (TheScreen().IsVisible(LogicPage)) {
       Show_Mouse();
     }
   }

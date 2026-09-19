@@ -34,9 +34,9 @@
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/dib.h"
-#include "ra/globals.h"
 #include "ra/iconlist.h"
 #include "ra/installation.h"
+#include "ra/screen.h"
 #include "ra/text_ids.h"
 #include "ra/type.h"
 #include "ra/wolapi/chatdefs.h"
@@ -2132,7 +2132,7 @@ bool WolapiObject::SpawnBrowser(const char* szURL) {
     Hide_Mouse();
     BlackPalette.Set(kFadePaletteFast, ServiceRealTime);
     //		::ShowWindow( MainWindow, SW_SHOWMINIMIZED );
-    visible_view.Clear();
+    TheScreen().visible_view().Clear();
     if (::CreateProcess(nullptr,
                         szCommandLine,  //	Command line.
                         nullptr,        //	Process handle not inheritable.

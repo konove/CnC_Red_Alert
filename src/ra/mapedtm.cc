@@ -51,12 +51,12 @@
 #include "ra/dialog.h"
 #include "ra/externs.h"
 #include "ra/gadget.h"
-#include "ra/globals.h"
 #include "ra/heap.h"
 #include "ra/jshell.h"
 #include "ra/list.h"
 #include "ra/mapedit.h"
 #include "ra/msgbox.h"
+#include "ra/screen.h"
 #include "ra/teamtype.h"
 #include "ra/text_ids.h"
 #include "ra/textbtn.h"
@@ -116,7 +116,7 @@ void MapEditClass::Handle_Teams(const char* caption) {
       if (CurTeam->Edit()) {
         Changed = true;
       }
-      hidden_view.Clear();
+      TheScreen().hidden_view().Clear();
       Flag_To_Redraw(true);
       Render();
     } else {
@@ -138,7 +138,7 @@ void MapEditClass::Handle_Teams(const char* caption) {
           } else {
             Changed = true;
           }
-          hidden_view.Clear();
+          TheScreen().hidden_view().Clear();
           Flag_To_Redraw(true);
           Render();
         } else {
@@ -146,7 +146,7 @@ void MapEditClass::Handle_Teams(const char* caption) {
           **	Unable to create; issue warning
           */
           WWMessageBox().Process("No more teams available.");
-          hidden_view.Clear();
+          TheScreen().hidden_view().Clear();
           Flag_To_Redraw(true);
           Render();
         }
@@ -267,7 +267,7 @@ int MapEditClass::Select_Team(const char* /*unused*/) {
   /*
   **	Initialize
   */
-  Set_Logic_Page(visible_view);
+  Set_Logic_Page(TheScreen().visible_view());
 
   /*
   **	Fill in team names
@@ -372,7 +372,7 @@ int MapEditClass::Select_Team(const char* /*unused*/) {
   /*
   **	Redraw the display
   */
-  hidden_view.Clear();
+  TheScreen().hidden_view().Clear();
   Flag_To_Redraw(true);
   Render();
 
@@ -604,7 +604,7 @@ int MapEditClass::Team_Members(HousesType house) {
   /*
   **	Draw to visible_view.
   */
-  Set_Logic_Page(visible_view);
+  Set_Logic_Page(TheScreen().visible_view());
 
   /*
   **	Make sure 'house' is valid.
@@ -854,7 +854,7 @@ int MapEditClass::Team_Members(HousesType house) {
   /*
   **	Redraw the display.
   */
-  hidden_view.Clear();
+  TheScreen().hidden_view().Clear();
   Flag_To_Redraw(true);
   Render();
 
@@ -910,7 +910,7 @@ void MapEditClass::Draw_Member(const TechnoTypeClass* ptr, int index, int quant,
 
   Hide_Mouse();
   Draw_Box(x, y, kPictureW, kPictureH, BOXSTYLE_DOWN, true);
-  ptr->Display(ScreenWidth / 2, ScreenHeight / 2, WINDOW_EDITOR, house);
+  ptr->Display(Screen::kWidth / 2, Screen::kHeight / 2, WINDOW_EDITOR, house);
   if (quant > 0) {
     Fancy_Text_Print("%d", x + 1, y + 1, scheme, kTBlack,
                      TPF_8POINT | TPF_DROPSHADOW, quant);

@@ -68,13 +68,13 @@
 #include "ra/edit.h"
 #include "ra/externs.h"
 #include "ra/gadget.h"
-#include "ra/globals.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
 #include "ra/list.h"
 #include "ra/msgbox.h"
 #include "ra/palette.h"
 #include "ra/saveload.h"
+#include "ra/screen.h"
 #include "ra/session.h"
 #include "ra/text_ids.h"
 #include "ra/textbtn.h"
@@ -258,7 +258,7 @@ bool LoadOptionsClass::Process() {
   /*
   **	Initialize.
   */
-  Set_Logic_Page(visible_view);
+  Set_Logic_Page(TheScreen().visible_view());
 
   Fill_List(&listbtn);
 
@@ -436,7 +436,7 @@ bool LoadOptionsClass::Process() {
             // than holding the load screen until it finishes.
             Speak(VOX_LOAD1);
             Hide_Mouse();
-            visible_view.Clear();
+            TheScreen().visible_view().Clear();
             GamePalette.Set();
             //						Set_Palette(GamePalette);
             Show_Mouse();

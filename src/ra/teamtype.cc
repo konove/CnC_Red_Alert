@@ -97,7 +97,6 @@
 #include "ra/edit.h"
 #include "ra/externs.h"
 #include "ra/gadget.h"
-#include "ra/globals.h"
 #include "ra/heap.h"
 #include "ra/house.h"
 #include "ra/inline.h"
@@ -106,6 +105,7 @@
 #include "ra/mapedit.h"
 #include "ra/mission.h"
 #include "ra/scenario.h"
+#include "ra/screen.h"
 #include "ra/target.h"
 #include "ra/team.h"
 #include "ra/text_ids.h"
@@ -949,7 +949,7 @@ bool TeamTypeClass::Edit() {
   /*
   **	Initialize
   */
-  Set_Logic_Page(visible_view);
+  Set_Logic_Page(TheScreen().visible_view());
 
   /*
   **	Create the list

@@ -38,7 +38,6 @@
 #include "ra/dialog.h"
 #include "ra/externs.h"
 #include "ra/gadget.h"
-#include "ra/globals.h"
 #include "ra/goptions.h"
 #include "ra/house.h"
 #include "ra/interpal.h"
@@ -46,6 +45,7 @@
 #include "ra/mouse.h"
 #include "ra/palette.h"
 #include "ra/scenario.h"
+#include "ra/screen.h"
 #include "ra/text_ids.h"
 #include "ra/theme.h"
 #include "ra/type.h"
@@ -165,18 +165,18 @@ static void PlayMapReveal(const std::string& animation_name,
   WsaAnimation animation(animation_name, palette);
 
   Keyboard->Clear();
-  visible_view.Clear();
+  TheScreen().visible_view().Clear();
   palette.Set(kFadePaletteFast, ServiceRealTime);
 
   animation.DrawFrame(page, 1);
-  Interpolate_2X_Scale(&page, &visible_view, {});
+  Interpolate_2X_Scale(&page, &TheScreen().visible_view(), {});
 
   PlayMapSound("MAPWIPE2.AUD");
   // Ctrl-Q, the score screen's skip key, plays the rest without the waits.
   bool skip = false;
   for (int frame = 1; frame < animation.frame_count(); frame++) {
     animation.DrawFrame(page, frame);
-    Interpolate_2X_Scale(&page, &visible_view, {});
+    Interpolate_2X_Scale(&page, &TheScreen().visible_view(), {});
     skip = skip || (KeyboardClass::Down(KN_LCTRL) && KeyboardClass::Down(KN_Q));
     ServiceRealTimeFor(skip ? 0 : 2);
     for (const SoundCue& cue : kSoundCues) {

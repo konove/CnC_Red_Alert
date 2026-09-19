@@ -75,7 +75,6 @@
 #include "ra/edit.h"
 #include "ra/externs.h"
 #include "ra/gadget.h"
-#include "ra/globals.h"
 #include "ra/heap.h"
 #include "ra/house.h"
 #include "ra/ini.h"
@@ -89,6 +88,7 @@
 #include "ra/palette.h"
 #include "ra/rules.h"
 #include "ra/scenario.h"
+#include "ra/screen.h"
 #include "ra/session.h"
 #include "ra/slider.h"
 #include "ra/statbtn.h"
@@ -354,7 +354,7 @@ int MapEditClass::Load_Scenario() {
       } else {
         WWMessageBox().Process("Unable to read scenario!");
       }
-      hidden_view.Clear();
+      TheScreen().hidden_view().Clear();
       Flag_To_Redraw(true);
       Render();
     } else {
@@ -644,7 +644,7 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Initialize
     */
-    Set_Logic_Page(visible_view);
+    Set_Logic_Page(TheScreen().visible_view());
 
     if (scen_nump < 100) {
       absl::SNPrintF(scen_buf, sizeof(scen_buf), "%d",
@@ -928,7 +928,7 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Redraw the display
     */
-    hidden_view.Clear();
+    TheScreen().hidden_view().Clear();
     Flag_To_Redraw(true);
     Render();
 
@@ -1096,7 +1096,7 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Initialize
     */
-    Set_Logic_Page(visible_view);
+    Set_Logic_Page(TheScreen().visible_view());
 
     /*
     **	Set up the actual map area relative to the map's border coords
@@ -1603,7 +1603,7 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Redraw the display
     */
-    hidden_view.Clear();
+    TheScreen().hidden_view().Clear();
     Flag_To_Redraw(true);
     Render();
 
@@ -1744,7 +1744,7 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Initialize
     */
-    Set_Logic_Page(visible_view);
+    Set_Logic_Page(TheScreen().visible_view());
 
     ControlClass* commands = nullptr;  // the button list
 
@@ -2429,7 +2429,7 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Redraw the map
     */
-    hidden_view.Clear();
+    TheScreen().hidden_view().Clear();
     Flag_To_Redraw(true);
     Render();
 
@@ -2587,7 +2587,7 @@ int MapEditClass::Load_Scenario() {
         if (CurTrigger->Edit()) {
           Changed = true;
         }
-        hidden_view.Clear();
+        TheScreen().hidden_view().Clear();
         Flag_To_Redraw(true);
         Render();
       }
@@ -2610,7 +2610,7 @@ int MapEditClass::Load_Scenario() {
           } else {
             Changed = true;
           }
-          hidden_view.Clear();
+          TheScreen().hidden_view().Clear();
           Flag_To_Redraw(true);
           Render();
 
@@ -2619,7 +2619,7 @@ int MapEditClass::Load_Scenario() {
           **	Unable to create; issue warning
           */
           WWMessageBox().Process("No more triggers available.");
-          hidden_view.Clear();
+          TheScreen().hidden_view().Clear();
           Flag_To_Redraw(true);
           Render();
         }
@@ -2752,7 +2752,7 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Initialize
     */
-    Set_Logic_Page(visible_view);
+    Set_Logic_Page(TheScreen().visible_view());
 
     /*
     **	Fill in the list box
@@ -2859,7 +2859,7 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Redraw the display
     */
-    hidden_view.Clear();
+    TheScreen().hidden_view().Clear();
     Flag_To_Redraw(true);
     Render();
 

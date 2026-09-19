@@ -56,7 +56,7 @@
 #include "ra/dialog.h"
 #include "ra/gadget.h"
 #include "ra/gauge.h"
-#include "ra/globals.h"
+#include "ra/screen.h"
 #include "ra/shapebtn.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/keyboard.h"
@@ -346,7 +346,7 @@ bool SliderClass::Draw_Me(bool forced) {
     /*
     **	Hide the mouse.
     */
-    if (LogicPage == &visible_view) {
+    if (TheScreen().IsVisible(LogicPage)) {
       Conditional_Hide_Mouse(X, Y, X + Width, Y + Height);
     }
 
@@ -359,7 +359,7 @@ bool SliderClass::Draw_Me(bool forced) {
     /*
     **	Display the mouse.
     */
-    if (LogicPage == &visible_view) {
+    if (TheScreen().IsVisible(LogicPage)) {
       Conditional_Show_Mouse();
     }
     return true;

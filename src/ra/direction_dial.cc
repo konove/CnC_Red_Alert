@@ -32,8 +32,8 @@
 #include "ra/dialog.h"
 #include "ra/face.h"
 #include "ra/gadget.h"
-#include "ra/globals.h"
 #include "ra/inline.h"
+#include "ra/screen.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
@@ -117,7 +117,7 @@ bool DirectionDial::Draw_Me(const bool forced) {
 
   // Hide the mouse while drawing on the visible page, so the software cursor
   // does not save and restore pixels the drawing is changing.
-  const bool on_screen = LogicPage == &visible_view;
+  const bool on_screen = TheScreen().IsVisible(LogicPage);
   if (on_screen) {
     Hide_Mouse();
   }

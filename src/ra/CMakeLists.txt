@@ -58,7 +58,6 @@ list(REMOVE_ITEM RA_HEADERS
         "${CMAKE_CURRENT_SOURCE_DIR}/memcheck.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/nullconn.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/nullmgr.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}/screen.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/surface.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/turret.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/w95trace.h"
@@ -114,7 +113,14 @@ add_gtest(
 
 add_gtest(
     NAME ra_game_test
-    SOURCES game_test.cc
+    SOURCES game_test.cc screen.cc
+    LIBS base sdllib
+)
+
+add_gtest(
+    NAME ra_screen_test
+    SOURCES screen_test.cc screen.cc
+    LIBS base sdllib
 )
 
 add_gtest(

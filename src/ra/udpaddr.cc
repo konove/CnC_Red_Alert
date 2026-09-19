@@ -28,10 +28,10 @@
 #include "ra/dialog.h"
 #include "ra/externs.h"
 #include "ra/gadget.h"
-#include "ra/globals.h"
 #include "ra/init.h"
 #include "ra/jshell.h"
 #include "ra/palette.h"
+#include "ra/screen.h"
 #include "ra/text_ids.h"
 #include "ra/textbtn.h"
 #include "ra/wsproto.h"
@@ -103,7 +103,8 @@ bool Get_Broadcast_Addresses() {
   // Format_Window_String rewrites the buffer in place, so the title cannot
   // be a string literal.
   char title[] = "IP Addresses";
-  Format_Window_String(title, visible_view.Get_Height(), width, height);
+  Format_Window_String(title, TheScreen().visible_view().Get_Height(), width,
+                       height);
 
   GadgetClass* commands = nullptr;  // button list
   ColorListClass ip_address_list(kButtonIplist, d_ip_address_list_x,

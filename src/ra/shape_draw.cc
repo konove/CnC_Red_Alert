@@ -32,11 +32,11 @@
 #include "base/types.h"
 #include "ra/defines.h"
 #include "ra/display.h"
-#include "ra/externs.h"
 #include "ra/face.h"
 #include "ra/globals.h"
 #include "ra/interpal.h"
 #include "ra/keyframe.h"
+#include "ra/screen.h"
 #include "sdllib/bitmap.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
@@ -283,7 +283,7 @@ std::vector<unsigned char> Get_Radar_Icon(
     // next frame.
     const auto ptr =
         Build_Frame(shapefile, static_cast<uint16_t>(shape_num + frame_num),
-                    SysMemPage.Get_Bytes());
+                    TheScreen().sys_mem_page().Get_Bytes());
     if (!ptr.empty()) {
       // Loop through the icon width and the icon height building icons
       // into the buffer pointer.  When the getx or gety falls outside of

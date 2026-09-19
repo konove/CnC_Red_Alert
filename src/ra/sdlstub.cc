@@ -7,12 +7,12 @@
 
 #include "ra/config.h"
 #include "ra/externs.h"
-#include "ra/globals.h"
 #include "ra/jshell.h"
 #include "ra/language.h"
 #include "ra/msgbox.h"
 #include "ra/nullconn.h"
 #include "ra/palette.h"
+#include "ra/screen.h"
 #include "ra/startup.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/misc.h"
@@ -32,7 +32,7 @@ void Check_For_Focus_Loss() {
   }
 }
 void Memory_Error_Handler() {
-  visible_page.Clear();
+  TheScreen().visible_page().Clear();
   CCPalette.Set();
   while (Get_Mouse_State()) {
     Show_Mouse();

@@ -52,7 +52,6 @@
 #include "ra/externs.h"
 #include "ra/gadget.h"
 #include "ra/gamedlg.h"
-#include "ra/globals.h"
 #include "ra/house.h"
 #include "ra/jshell.h"
 #include "ra/loaddlg.h"
@@ -63,6 +62,7 @@
 #include "ra/palette.h"
 #include "ra/queue.h"
 #include "ra/scenario.h"
+#include "ra/screen.h"
 #include "ra/session.h"
 #include "ra/tab.h"
 #include "ra/text_ids.h"
@@ -134,7 +134,7 @@ void GameOptionsClass::Process() {
     }
   }
 
-  Set_Logic_Page(visible_view);
+  Set_Logic_Page(TheScreen().visible_view());
 
   /*
   **	Build the button list for all of the buttons for this dialog.
@@ -168,8 +168,8 @@ void GameOptionsClass::Process() {
     }
 
     if (index < 6) {
-      y = ((visible_view.Get_Height() - OptionHeight) / 2) + ButtonY +
-          ((OButtonHeight + 2) * index);
+      y = ((TheScreen().visible_view().Get_Height() - OptionHeight) / 2) +
+          ButtonY + ((OButtonHeight + 2) * index);
     } else {
       y = OptionY + ButtonResumeY;
     }
@@ -254,8 +254,8 @@ void GameOptionsClass::Process() {
   **	This cause a right click anywhere or a left click outside the dialog
   *region *	to be equivalent to clicking on the return to game button.
   */
-  (new ControlClass(kButtonResume, 0, 0, visible_view.Get_Width(),
-                    visible_view.Get_Height(),
+  (new ControlClass(kButtonResume, 0, 0, TheScreen().visible_view().Get_Width(),
+                    TheScreen().visible_view().Get_Height(),
                     GadgetClass::kLeftPress | GadgetClass::kRightPress))
       ->Add_Tail(*buttons);
 
@@ -299,7 +299,7 @@ void GameOptionsClass::Process() {
       /*
       **	Redraw the map.
       */
-      hidden_view.Clear();
+      TheScreen().hidden_view().Clear();
       Map.Flag_To_Redraw(true);
       Map.Render();
 
@@ -572,7 +572,7 @@ void GameOptionsClass::Process() {
   **	Redraw the map.
   */
   Keyboard->Clear();
-  hidden_view.Clear();
+  TheScreen().hidden_view().Clear();
   Map.Flag_To_Redraw(true);
   Map.Render();
 }
@@ -580,8 +580,8 @@ void GameOptionsClass::Process() {
 void GameOptionsClass::Adjust_Variables_For_Resolution() {
   OptionWidth = (216 + 8) * 2;
   OptionHeight = 222;
-  OptionX = (visible_view.Get_Width() - OptionWidth) / 2;
-  OptionY = (visible_view.Get_Height() - OptionHeight) / 2;
+  OptionX = (TheScreen().visible_view().Get_Width() - OptionWidth) / 2;
+  OptionY = (TheScreen().visible_view().Get_Height() - OptionHeight) / 2;
   ButtonWidth = 260;
   OButtonHeight = 18;
   CaptionYPos = 10;

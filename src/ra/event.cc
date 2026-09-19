@@ -86,6 +86,7 @@
 #include "ra/rules.h"
 #include "ra/saveload.h"
 #include "ra/scenario.h"
+#include "ra/screen.h"
 #include "ra/session.h"
 #include "ra/special.h"
 #include "ra/target.h"
@@ -933,7 +934,7 @@ void EventClass::Execute() {
           ServiceRealTime();
         }
 
-        hidden_view.Clear();
+        TheScreen().hidden_view().Clear();
         Map.Flag_To_Redraw(true);
         Map.Render();
       } else {

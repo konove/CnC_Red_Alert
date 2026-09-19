@@ -187,6 +187,7 @@
 #include "ra/reinf.h"
 #include "ra/rules.h"
 #include "ra/scenario.h"
+#include "ra/screen.h"
 #include "ra/selection.h"
 #include "ra/session.h"
 #include "ra/sidebar.h"
@@ -3426,7 +3427,7 @@ void HouseClass::MPlayer_Defeated() {
   if (PlayerPtr == this) {
     Session.ObiWan = true;
     Debug_Unshroud = true;
-    hidden_view.Clear();
+    TheScreen().hidden_view().Clear();
     Map.Flag_To_Redraw(true);
 
     /*

@@ -53,10 +53,10 @@
 #include "ra/dialog.h"
 #include "ra/externs.h"
 #include "ra/gadget.h"
-#include "ra/globals.h"
 #include "ra/goptions.h"
 #include "ra/jshell.h"
 #include "ra/list.h"
+#include "ra/screen.h"
 #include "ra/session.h"
 #include "ra/shapebtn.h"
 #include "ra/slider.h"
@@ -234,8 +234,9 @@ void SoundControlsClass::Process() {
   **	Causes right clicks anywhere or left clicks outside of the dialog
   **	box area to be the same a clicking the return to game options button.
   */
-  ControlClass ctrl(kButtonOptions, 0, 0, visible_view.Get_Width(),
-                    visible_view.Get_Height(),
+  ControlClass ctrl(kButtonOptions, 0, 0,
+                    TheScreen().visible_view().Get_Width(),
+                    TheScreen().visible_view().Get_Height(),
                     GadgetClass::kRightPress | GadgetClass::kLeftPress);
 
   /*
@@ -271,7 +272,7 @@ void SoundControlsClass::Process() {
   /*
   **	Set up the window.  Window x-coords are in bytes not pixels.
   */
-  Set_Logic_Page(visible_view);
+  Set_Logic_Page(TheScreen().visible_view());
 
   /*
   **	Create Buttons.

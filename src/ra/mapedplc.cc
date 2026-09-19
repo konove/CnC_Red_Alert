@@ -73,7 +73,6 @@
 #include "ra/display_constants.h"
 #include "ra/externs.h"
 #include "ra/gadget.h"
-#include "ra/globals.h"
 #include "ra/house.h"
 #include "ra/infantry.h"
 #include "ra/inline.h"
@@ -83,6 +82,7 @@
 #include "ra/msgbox.h"
 #include "ra/object.h"
 #include "ra/scenario.h"
+#include "ra/screen.h"
 #include "ra/techno.h"
 #include "ra/tevent.h"
 #include "ra/text_ids.h"
@@ -320,7 +320,7 @@ int MapEditClass::Placement_Dialog() {
   /*
   **	Initialize
   */
-  Set_Logic_Page(visible_view);
+  Set_Logic_Page(TheScreen().visible_view());
   if (LastChoice >= ObjCount) {
     LastChoice = 0;
   }
@@ -389,7 +389,7 @@ int MapEditClass::Placement_Dialog() {
       Change_Window(static_cast<int>(WINDOW_EDITOR));
       Draw_Box(kPictureX, kPictureY, kPictureW, kPictureH, BOXSTYLE_DOWN,
                false);
-      curobj->Display(ScreenWidth / 2, ScreenHeight / 2, WINDOW_EDITOR,
+      curobj->Display(Screen::kWidth / 2, Screen::kHeight / 2, WINDOW_EDITOR,
                       LastHouse);
       //			curobj->Display(WinW<<2, WinH>>1, WINDOW_EDITOR,
       // LastHouse);
@@ -672,7 +672,7 @@ int MapEditClass::Placement_Dialog() {
   /*
   **	Redraw the display
   */
-  hidden_view.Clear();
+  TheScreen().hidden_view().Clear();
   Flag_To_Redraw(true);
   Render();
 
@@ -753,7 +753,7 @@ void MapEditClass::Start_Placement() {
   */
   if (!PendingObjectPtr) {
     WWMessageBox().Process("No more objects of this type available.");
-    hidden_view.Clear();
+    TheScreen().hidden_view().Clear();
     Flag_To_Redraw(true);
     Render();
     PendingObject = nullptr;
@@ -1047,7 +1047,7 @@ void MapEditClass::Cancel_Placement() {
   /*
   **	Redraw the map to erase old leftovers
   */
-  hidden_view.Clear();
+  TheScreen().hidden_view().Clear();
   Flag_To_Redraw(true);
   Render();
 }
@@ -1119,7 +1119,7 @@ void MapEditClass::Place_Next() {
   /*
   **	Redraw the map to erase old leftovers
   */
-  hidden_view.Clear();
+  TheScreen().hidden_view().Clear();
   Flag_To_Redraw(true);
   Render();
 }
@@ -1194,7 +1194,7 @@ void MapEditClass::Place_Prev() {
   /*
   **	Redraw the map to erase old leftovers
   */
-  hidden_view.Clear();
+  TheScreen().hidden_view().Clear();
   Flag_To_Redraw(true);
   Render();
 }
@@ -1282,7 +1282,7 @@ void MapEditClass::Place_Next_Category() {
   /*
   **	Redraw the map to erase old leftovers
   */
-  hidden_view.Clear();
+  TheScreen().hidden_view().Clear();
   Flag_To_Redraw(true);
   Render();
 }
@@ -1396,7 +1396,7 @@ void MapEditClass::Place_Prev_Category() {
   /*
   **	Redraw the map to erase old leftovers
   */
-  hidden_view.Clear();
+  TheScreen().hidden_view().Clear();
   Flag_To_Redraw(true);
   Render();
 }
@@ -1471,7 +1471,7 @@ void MapEditClass::Place_Home() {
   /*
   **	Redraw the map to erase old leftovers
   */
-  hidden_view.Clear();
+  TheScreen().hidden_view().Clear();
   Flag_To_Redraw(true);
   Render();
 }
@@ -1655,7 +1655,7 @@ void MapEditClass::Place_Trigger() {
   /*
   **	Force map to redraw
   */
-  hidden_view.Clear();
+  TheScreen().hidden_view().Clear();
   Flag_To_Redraw(true);
 }
 
@@ -1689,7 +1689,7 @@ void MapEditClass::Start_Base_Building() {
   /*
   ** Force map to redraw
   */
-  hidden_view.Clear();
+  TheScreen().hidden_view().Clear();
   Flag_To_Redraw(true);
 }
 
@@ -1723,7 +1723,7 @@ void MapEditClass::Cancel_Base_Building() {
   /*
   ** Force map to redraw
   */
-  hidden_view.Clear();
+  TheScreen().hidden_view().Clear();
   Flag_To_Redraw(true);
 }
 

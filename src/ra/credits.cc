@@ -55,6 +55,7 @@
 #include "ra/jshell.h"
 #include "ra/mapedit.h"
 #include "ra/scenario.h"
+#include "ra/screen.h"
 #include "ra/tab.h"
 #include "ra/text_ids.h"
 #include "sdllib/gbuffer.h"
@@ -98,7 +99,7 @@ CreditClass::CreditClass() = default;
  *=============================================================================================*/
 void CreditClass::Graphic_Logic(bool forced) {
   if (forced || IsToRedraw) {
-    int xx = visible_view.Get_Width() - 240;
+    int xx = TheScreen().visible_view().Get_Width() - 240;
 
     /*
     ** Adjust the credits display to be above the sidebar for 640x400

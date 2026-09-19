@@ -41,6 +41,7 @@
 #include "ra/descdlg.h"
 
 #include "ra/function.h"
+#include "ra/screen.h"
 
 /***********************************************************************************************
  * DescriptionClass::Process -- Handles all the options graphic interface. *
@@ -55,7 +56,7 @@ void DescriptionClass::Process(char* string) {
   **	Set up the window.  Window x-coords are in bytes not pixels.
   */
   Set_Window(WINDOW_EDITOR, kOptionX, kOptionY, kOptionWidth, kOptionHeight);
-  Set_Logic_Page(visible_view);
+  Set_Logic_Page(TheScreen().visible_view());
 
   /*
   **	Create Buttons.  Button coords are in pixels, but are window-relative.

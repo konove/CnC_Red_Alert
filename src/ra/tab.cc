@@ -51,12 +51,12 @@
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/externs.h"
-#include "ra/globals.h"
 #include "ra/jshell.h"
 #include "ra/mapedit.h"
 #include "ra/queue.h"
 #include "ra/rules.h"
 #include "ra/scenario.h"
+#include "ra/screen.h"
 #include "ra/shape_draw.h"
 #include "ra/sidebar.h"
 #include "ra/text_ids.h"
@@ -118,7 +118,7 @@ void TabClass::Draw_It(bool complete) {
   *needs *	to be redrawn.
   */
   if ((complete || IsTabToRedraw) && LogicPage->Lock()) {
-    const int width = visible_view.Get_Width();
+    const int width = TheScreen().visible_view().Get_Width();
     const int rightx = width - 1;
     const int tab_height = TAB_HEIGHT * 2;
 
@@ -202,8 +202,8 @@ void TabClass::Hilite_Tab(int tab) {
  *JLB : Handles new scrolling option. *
  *=============================================================================================*/
 void TabClass::AI(KeyNumType& input, int x, int y) {
-  if (y >= 0 && y < TAB_HEIGHT * 2 && x < visible_view.Get_Width() - 1 &&
-      x > 0) {
+  if (y >= 0 && y < TAB_HEIGHT * 2 &&
+      x < TheScreen().visible_view().Get_Width() - 1 && x > 0) {
     bool ok = false;
 
     /*

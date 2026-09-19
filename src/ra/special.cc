@@ -62,12 +62,12 @@
 #include "ra/event.h"
 #include "ra/externs.h"
 #include "ra/gadget.h"
-#include "ra/globals.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
 #include "ra/mapedit.h"
 #include "ra/queue.h"
 #include "ra/rules.h"
+#include "ra/screen.h"
 #include "ra/session.h"
 #include "ra/slider.h"
 #include "ra/text_ids.h"
@@ -175,7 +175,7 @@ void Special_Dialog(bool simple) {
   }
 
   Map.Override_Mouse_Shape(MOUSE_NORMAL);
-  Set_Logic_Page(visible_view);
+  Set_Logic_Page(TheScreen().visible_view());
   bool display = true;
   bool process = true;
   while (process) {
@@ -250,7 +250,7 @@ void Special_Dialog(bool simple) {
 
   if (!simple) {
     Map.Revert_Mouse_Shape();
-    hidden_view.Clear();
+    TheScreen().hidden_view().Clear();
     Map.Flag_To_Redraw(true);
     Map.Render();
   }
@@ -379,8 +379,8 @@ const char* Fetch_Password(int caption, int message, int btext) {
   width += 80;
   height += (60 + 25) * 2;
 
-  const int x = (visible_view.Get_Width() - width) / 2;
-  const int y = (visible_view.Get_Height() - height) / 2;
+  const int x = (TheScreen().visible_view().Get_Width() - width) / 2;
+  const int y = (TheScreen().visible_view().Get_Height() - height) / 2;
 
   /*
   **	Create the "ok" and password edit buttons.
@@ -391,7 +391,8 @@ const char* Fetch_Password(int caption, int message, int btext) {
   static char pbuffer[45];
   base::FillBytes(base::ObjectBytes(pbuffer), '\0', sizeof(pbuffer));
   const int editx = x + 52;
-  const int editwidth = ((visible_view.Get_Width() / 2) - editx) * 2;
+  const int editwidth =
+      ((TheScreen().visible_view().Get_Width() / 2) - editx) * 2;
   PWEditClass button2(2, pbuffer, sizeof(pbuffer), TPF_6PT_GRAD | TPF_NOSHADOW,
                       editx, y + height - 70, editwidth, 20);
 
@@ -407,7 +408,7 @@ const char* Fetch_Password(int caption, int message, int btext) {
   **	Draw the background of the dialog.
   */
   Hide_Mouse();
-  Set_Logic_Page(visible_view);
+  Set_Logic_Page(TheScreen().visible_view());
   Dialog_Box(x, y, width, height);
   Draw_Caption(caption, x, y, width);
 
@@ -537,7 +538,7 @@ int Fetch_Difficulty(bool amath) {
   /*
   **	Main Processing Loop.
   */
-  Set_Logic_Page(visible_view);
+  Set_Logic_Page(TheScreen().visible_view());
   bool redraw = true;
   bool process = true;
   while (process) {

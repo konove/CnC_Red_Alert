@@ -57,7 +57,6 @@
 #include "ra/display_constants.h"
 #include "ra/externs.h"
 #include "ra/gauge.h"
-#include "ra/globals.h"
 #include "ra/house.h"
 #include "ra/infantry.h"
 #include "ra/inline.h"
@@ -65,6 +64,7 @@
 #include "ra/list.h"
 #include "ra/mapedit.h"
 #include "ra/object.h"
+#include "ra/screen.h"
 #include "ra/selection.h"
 #include "ra/techno.h"
 #include "ra/textbtn.h"
@@ -159,7 +159,7 @@ int MapEditClass::Select_Object() {
   /*
   **	Force map to redraw
   */
-  hidden_view.Clear();
+  TheScreen().hidden_view().Clear();
   Flag_To_Redraw(true);
 
   return rc;
@@ -257,7 +257,7 @@ void MapEditClass::Select_Next() {
   /*
   **	Force map to redraw
   */
-  hidden_view.Clear();
+  TheScreen().hidden_view().Clear();
   Flag_To_Redraw(true);
 }
 

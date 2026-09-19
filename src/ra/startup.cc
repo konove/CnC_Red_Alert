@@ -59,6 +59,7 @@
 #include "ra/language.h"
 #include "ra/nullconn.h"
 #include "ra/palette.h"
+#include "ra/screen.h"
 #include "ra/special.h"
 #include "ra/type.h"
 #include "sdllib/drawbuff.h"
@@ -95,8 +96,6 @@ void ShutDown() {
   // Nothing is left for an allocation failure from here on to clean up.
   Memory_Error_Exit = ExitWithError;
   Prog_End();
-  visible_page.Un_Init();
-  hidden_page.Un_Init();
   delete game;
   game = nullptr;
 }
@@ -106,9 +105,10 @@ void ShutDown() {
 static void ReadStartupOptions(const INIClass& ini) {
   AllowHardwareBlitFills = ini.Get_Bool("Options", "HardwareFills", true);
 
-  // Resolution=yes asks for a 480-line mode; InitVideo() letterboxes the
+  // Resolution=yes asks for a 480-line mode; Screen::Init() letterboxes the
   // 400-line game area inside it.
-  ScreenHeight = ini.Get_Bool("Options", "Resolution", false) ? 480 : 400;
+  TheScreen().set_mode_height(
+      ini.Get_Bool("Options", "Resolution", false) ? 480 : Screen::kHeight);
 
   // Socket is an offset into the dynamic IPX socket range 0x4000-0x7FFF,
   // letting several games share a network without seeing each other.
@@ -240,14 +240,14 @@ int main(const int argc, char* argv[])
       INIClass ini;
       ini.Load(config_file);
 
-      // Sets ScreenHeight, so it has to come before the window is opened.
+      // Sets the mode height, so it has to come before the window is opened.
       ReadStartupOptions(ini);
 
-      Create_Main_Window(nullptr, 0, ScreenWidth, ScreenHeight);
+      Create_Main_Window(nullptr, 0, Screen::kWidth, TheScreen().mode_height());
       // 22050 Hz mono.
       SoundOn = Audio.Open(11025 * 2, /*stereo=*/false);
 
-      if (!InitVideo()) {
+      if (!TheScreen().Init()) {
         ShutDown();
         return EXIT_FAILURE;
       }
@@ -258,14 +258,16 @@ int main(const int argc, char* argv[])
 
       // The full-screen and editor windows cover the visible viewport, whose
       // size is only known now that the video mode is set.
-      base::At(WindowList[0], kWindowWidth) = visible_view.Get_Width();
-      base::At(WindowList[0], kWindowHeight) = visible_view.Get_Height();
+      base::At(WindowList[0], kWindowWidth) =
+          TheScreen().visible_view().Get_Width();
+      base::At(WindowList[0], kWindowHeight) =
+          TheScreen().visible_view().Get_Height();
       base::At(WindowList[static_cast<int>(WINDOW_EDITOR)], kWindowWidth) =
-          visible_view.Get_Width();
+          TheScreen().visible_view().Get_Width();
       base::At(WindowList[static_cast<int>(WINDOW_EDITOR)], kWindowHeight) =
-          visible_view.Get_Height();
+          TheScreen().visible_view().Get_Height();
 
-      WWMouse = new WWMouseClass(&visible_view, 48, 48);
+      WWMouse = new WWMouseClass(&TheScreen().visible_view(), 48, 48);
       MouseInstalled = true;
 
       SearchPaths::SetCdDrive(CDList.Get_First_CD_Drive());
@@ -294,8 +296,8 @@ int main(const int argc, char* argv[])
 
       RunGame();
 
-      visible_page.Clear();
-      hidden_page.Clear();
+      TheScreen().visible_page().Clear();
+      TheScreen().hidden_page().Clear();
       ShutDown();
       return EXIT_SUCCESS;
     }
@@ -307,40 +309,6 @@ int main(const int argc, char* argv[])
   }
   ShutDown();
   return EXIT_SUCCESS;
-}
-
-bool InitVideo() {
-  // The game draws 640x400. A 400-line mode is asked for first; failing
-  // that, 480 lines with the picture letterboxed in the middle.
-  bool mode_set = Set_Video_Mode(MainWindow, ScreenWidth, ScreenHeight, 8);
-  if (!mode_set && ScreenHeight == 400) {
-    mode_set = Set_Video_Mode(MainWindow, ScreenWidth, 480, 8);
-    if (mode_set) {
-      ScreenHeight = 480;
-    }
-  }
-
-  if (!mode_set) {
-    return false;
-  }
-
-  visible_page.Init(ScreenWidth, ScreenHeight, {}, 0,
-                    GBC_VISIBLE | GBC_VIDEOMEM);
-  hidden_page.Init(ScreenWidth, ScreenHeight, {}, 0, GBC_NONE);
-
-  // The pages are the full mode; from here on ScreenHeight is the 400-line
-  // game area, and visible_view/hidden_view are views of it 40 lines down in a
-  // 480-line mode.
-  const int letterbox_top = ScreenHeight == 480 ? 40 : 0;
-  if (ScreenHeight == 480) {
-    ScreenHeight = 400;
-  }
-
-  visible_view.Attach(&visible_page, 0, letterbox_top, ScreenWidth,
-                      ScreenHeight);
-  hidden_view.Attach(&hidden_page, 0, letterbox_top, ScreenWidth, ScreenHeight);
-
-  return true;
 }
 
 void Prog_End() {
@@ -382,8 +350,8 @@ void CleanUpAndExitWithError(char* message) {
 [[noreturn]] void EmergencyExit(const int exit_code) {
   // Blank the screen first, so nothing glitches while the window loses focus
   // on the way out.
-  visible_page.Clear();
-  hidden_page.Clear();
+  TheScreen().visible_page().Clear();
+  TheScreen().hidden_page().Clear();
   BlackPalette.Set();
   ShutDown();
   exit(exit_code);

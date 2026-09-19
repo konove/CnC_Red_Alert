@@ -87,7 +87,6 @@
 inline char staging_buffer[32000];
 
 
-extern bool IsVQ640;
 
 // Developer switches (-NEWGAME<scenario>, -LOADGAME<n>, -QUITFRAME<n>,
 // -SAVESLOT<n>) for save-game checks without a display; see init.cc and
@@ -131,10 +130,6 @@ inline bool PalettesRead = false;
 inline int PaletteCounter = 0;
 extern bool InMovie;
 extern WWMouseClass* WWMouse;
-extern GraphicBufferClass SysMemPage;
-extern int ScreenWidth;
-extern int ScreenHeight;
-extern GraphicBufferClass VQ640;  // 640x400 staging page for hi-res movies
 
 /*
 **	Dynamic global variables (these change or are initialized at run time).

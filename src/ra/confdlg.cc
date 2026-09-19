@@ -42,6 +42,7 @@
 #include "ra/confdlg.h"
 
 #include "ra/function.h"
+#include "ra/screen.h"
 
 bool ConfirmationClass::Process(int text) { return Process(Text_String(text)); }
 
@@ -83,7 +84,7 @@ bool ConfirmationClass::Process(const char* string) {
   int x = (320 - width) / 2;
   int y = (200 - height) / 2;
 
-  Set_Logic_Page(visible_view);
+  Set_Logic_Page(TheScreen().visible_view());
 
   /*
   **	Create Buttons.  Button coords are in pixels, but are window-relative.

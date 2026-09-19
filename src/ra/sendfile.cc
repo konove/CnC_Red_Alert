@@ -56,7 +56,6 @@
 #include "ra/externs.h"
 #include "ra/gadget.h"
 #include "ra/gauge.h"
-#include "ra/globals.h"
 #include "ra/init.h"
 #include "ra/inline.h"
 #include "ra/ipxaddr.h"
@@ -65,6 +64,7 @@
 #include "ra/mission_id.h"
 #include "ra/nullmgr.h"
 #include "ra/palette.h"
+#include "ra/screen.h"
 #include "ra/session.h"
 #include "ra/text_ids.h"
 #include "ra/textbtn.h"
@@ -256,7 +256,8 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
 
   const int d_progress_w = 200;
   const int d_progress_h = 20;
-  const int d_progress_x = (visible_view.Get_Width() / 2) - (d_progress_w / 2);
+  const int d_progress_x =
+      (TheScreen().visible_view().Get_Width() / 2) - (d_progress_w / 2);
   const int d_progress_y = d_dialog_y + 90;
 
   int width = 0;
@@ -269,8 +270,8 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
   Fancy_Text_Print(TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(), kTBlack,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
-  Format_Window_String(std::span(info_string), visible_view.Get_Height(), width,
-                       height);
+  Format_Window_String(std::span(info_string),
+                       TheScreen().visible_view().Get_Height(), width, height);
 
   /*
   ** Button Enumerations
@@ -517,7 +518,7 @@ bool Send_Remote_File(const char* file_name, int gametype) {
   /*
   ** Dialog & button dimensions
   */
-  const int factor = visible_view.Get_Width() == 320 ? 1 : 2;
+  const int factor = TheScreen().visible_view().Get_Width() == 320 ? 1 : 2;
 
   const int d_dialog_w = 240 * factor;                       // dialog width
   const int d_dialog_h = 90 * factor;                        // dialog height
@@ -532,7 +533,8 @@ bool Send_Remote_File(const char* file_name, int gametype) {
 
   const int d_progress_w = 100 * factor;
   const int d_progress_h = 10 * factor;
-  const int d_progress_x = (visible_view.Get_Width() / 2) - (d_progress_w / 2);
+  const int d_progress_x =
+      (TheScreen().visible_view().Get_Width() / 2) - (d_progress_w / 2);
   const int d_progress_y = d_dialog_y + (45 * factor);
 
   int width = 0;
@@ -548,8 +550,8 @@ bool Send_Remote_File(const char* file_name, int gametype) {
   Fancy_Text_Print(TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(), kTBlack,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
-  Format_Window_String(std::span(info_string), visible_view.Get_Height(), width,
-                       height);
+  Format_Window_String(std::span(info_string),
+                       TheScreen().visible_view().Get_Height(), width, height);
 
   /*
   ** Button Enumerations

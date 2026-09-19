@@ -52,8 +52,8 @@
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/gadget.h"
-#include "ra/globals.h"
 #include "ra/jshell.h"
+#include "ra/screen.h"
 #include "ra/text_ids.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
@@ -143,7 +143,7 @@ bool StaticButtonClass::Draw_Me(bool forced) {
     /*
     **	Hide the mouse.
     */
-    if (LogicPage == &visible_view) {
+    if (TheScreen().IsVisible(LogicPage)) {
       Conditional_Hide_Mouse(X, Y, X + Width - 1, Y + Height - 1);
     }
 
@@ -157,7 +157,7 @@ bool StaticButtonClass::Draw_Me(bool forced) {
     /*
     **	Display the mouse.
     */
-    if (LogicPage == &visible_view) {
+    if (TheScreen().IsVisible(LogicPage)) {
       Conditional_Show_Mouse();
     }
     return true;

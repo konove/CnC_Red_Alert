@@ -29,12 +29,12 @@
 #include "ra/externs.h"
 #include "ra/gadget.h"
 #include "ra/gauge.h"
-#include "ra/globals.h"
 #include "ra/init.h"
 #include "ra/jshell.h"
 #include "ra/msgbox.h"
 #include "ra/palette.h"
 #include "ra/rawolapi.h"
+#include "ra/screen.h"
 #include "ra/statbtn.h"
 #include "ra/text_ids.h"
 #include "ra/textbtn.h"
@@ -76,7 +76,8 @@ bool WOL_Download_Dialog(IDownload* pDownload,
 
   const int d_progress_w = 200;
   const int d_progress_h = 20;
-  const int d_progress_x = (visible_view.Get_Width() / 2) - (d_progress_w / 2);
+  const int d_progress_x =
+      (TheScreen().visible_view().Get_Width() / 2) - (d_progress_w / 2);
   const int d_progress_y = d_dialog_y + 90;
 
   //	int	width;

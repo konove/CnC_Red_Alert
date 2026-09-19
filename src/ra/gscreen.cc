@@ -59,11 +59,11 @@
 #include "ra/display_constants.h"
 #include "ra/externs.h"
 #include "ra/gadget.h"
-#include "ra/globals.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
 #include "ra/mapedit.h"
 #include "ra/msglist.h"
+#include "ra/screen.h"
 #include "ra/session.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
@@ -172,7 +172,7 @@ void GScreenClass::Init_Clear() {
     ShadowPage->Clear();
   }
 
-  hidden_view.Clear();
+  TheScreen().hidden_view().Clear();
 
   IsScreenToRedraw = true;
 }
@@ -277,7 +277,7 @@ void GScreenClass::Input(KeyNumType& key, int& x, int& y) {
       Flag_To_Redraw(false);
     }
 
-    GraphicViewPortClass* oldpage = Set_Logic_Page(hidden_view);
+    GraphicViewPortClass* oldpage = Set_Logic_Page(TheScreen().hidden_view());
 
     key = Buttons->Input();
 
@@ -378,7 +378,7 @@ void GScreenClass::Render() {
   // }
 
   if (IsToUpdate || IsScreenToRedraw) {
-    GraphicViewPortClass* oldpage = Set_Logic_Page(hidden_view);
+    GraphicViewPortClass* oldpage = Set_Logic_Page(TheScreen().hidden_view());
 
     Draw_It(IsScreenToRedraw);
 
@@ -429,10 +429,11 @@ void GScreenClass::Render() {
  *function.                                            *
  *=============================================================================================*/
 void GScreenClass::Blit_Display() {
-  WWMouse->Draw_Mouse(&hidden_view);
-  hidden_view.Blit(visible_view, 0, 0, 0, 0, hidden_view.Get_Width(),
-                   hidden_view.Get_Height(), false);
-  WWMouse->Erase_Mouse(&hidden_view, false);
+  WWMouse->Draw_Mouse(&TheScreen().hidden_view());
+  TheScreen().hidden_view().Blit(TheScreen().visible_view(), 0, 0, 0, 0,
+                                 TheScreen().hidden_view().Get_Width(),
+                                 TheScreen().hidden_view().Get_Height(), false);
+  WWMouse->Erase_Mouse(&TheScreen().hidden_view(), false);
 }
 
 // Shows the screen two pixels up, centred, or two pixels down, picking a
@@ -441,7 +442,7 @@ void Shake_The_Screen(int shakes) {
   shakes += shakes;
 
   Hide_Mouse();
-  visible_view.Blit(hidden_view);
+  TheScreen().visible_view().Blit(TheScreen().hidden_view());
   int old_y_off = 0;
   while (shakes-- != 0) {
     // Hold each offset for exactly one tick, so the shake runs at game speed
@@ -455,19 +456,21 @@ void Shake_The_Screen(int shakes) {
     old_y_off = new_y_off;
     switch (new_y_off) {
       case -1:
-        hidden_view.Blit(visible_view, 0, 2, 0, 0, 640, 398);
+        TheScreen().hidden_view().Blit(TheScreen().visible_view(), 0, 2, 0, 0,
+                                       640, 398);
         break;
       case 1:
-        hidden_view.Blit(visible_view, 0, 0, 0, 2, 640, 398);
+        TheScreen().hidden_view().Blit(TheScreen().visible_view(), 0, 0, 0, 2,
+                                       640, 398);
         break;
       default:
-        hidden_view.Blit(visible_view);
+        TheScreen().hidden_view().Blit(TheScreen().visible_view());
         break;
     }
     while (x == TickCount.Value()) {
       Video_End_Frame();
     }
   }
-  hidden_view.Blit(visible_view);
+  TheScreen().hidden_view().Blit(TheScreen().visible_view());
   Show_Mouse();
 }

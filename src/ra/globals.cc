@@ -94,7 +94,6 @@
 #include "ra/vector_dynamic.h"
 #include "ra/version.h"
 #include "ra/vessel.h"
-#include "sdllib/gbuffer.h"
 #include "sdllib/playcd.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
@@ -107,7 +106,6 @@
 #include "tech/rgb.h"
 #include "winvq/vqa32/vqaplay.h"
 
-bool IsVQ640 = false;
 std::string DebugNewGame;
 int DebugLoadGame = -1;
 int64_t DebugQuitAtFrame = -1;
@@ -256,9 +254,6 @@ fixed EngineerCaptureLevel(
     0x40);  // Building damage level before engineer can capture
 
 WWMouseClass* WWMouse = nullptr;
-GraphicBufferClass SysMemPage(kDefaultScreenWidth, 200, {});
-int ScreenWidth = 640;
-int ScreenHeight = 400;
 bool InMovie = false;  // Are we currently playing a VQ movie?
 
 /***************************************************************************
@@ -650,10 +645,6 @@ int WindowList[][8] = {
     // Partial object draw sub-window.
     {0, 0, 0, 0, kWhite, kBlack, 0, 0}};
 
-GraphicBufferClass visible_page;
-GraphicBufferClass hidden_page;
-GraphicViewPortClass visible_view(&visible_page, 0, 0, 640, 480);
-GraphicViewPortClass hidden_view(&hidden_page, 0, 0, 640, 480);
 
 bool SoundOn;
 Timer<SystemTickSource> CountDownTimer;

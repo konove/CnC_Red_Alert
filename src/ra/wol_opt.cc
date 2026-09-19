@@ -27,9 +27,9 @@
 #include "ra/dialog.h"
 #include "ra/externs.h"
 #include "ra/gadget.h"
-#include "ra/globals.h"
 #include "ra/jshell.h"
 #include "ra/msgbox.h"
+#include "ra/screen.h"
 #include "ra/text_ids.h"
 #include "ra/textbtn.h"
 #include "ra/wol_main.h"
@@ -119,7 +119,7 @@ bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame) {
   /*
   **	Initialize.
   */
-  Set_Logic_Page(visible_view);
+  Set_Logic_Page(TheScreen().visible_view());
 
   /*
   **	Create the button list.

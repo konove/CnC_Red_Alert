@@ -71,9 +71,9 @@
 #include "ra/defines.h"
 #include "ra/externs.h"
 #include "ra/filepcx.h"
-#include "ra/globals.h"
 #include "ra/jshell.h"
 #include "ra/link.h"
+#include "ra/screen.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
@@ -477,14 +477,15 @@ KeyNumType GadgetClass::Input() {
     if ((key == KN_K && !MapEditorActive && (Debug_Flag || Debug_Playtest)) &&
         (!Debug_MotionCapture)) {
       GraphicBufferClass temp_page(
-          visible_view.Get_Width(), visible_view.Get_Height(), {},
-          static_cast<int32_t>(visible_view.Get_Width()) *
-              visible_view.Get_Height());
+          TheScreen().visible_view().Get_Width(),
+          TheScreen().visible_view().Get_Height(), {},
+          static_cast<int32_t>(TheScreen().visible_view().Get_Width()) *
+              TheScreen().visible_view().Get_Height());
       DiskFile file;
       char filename[30];
 
       //			Hide_Mouse();
-      visible_view.Blit(temp_page);
+      TheScreen().visible_view().Blit(temp_page);
       //			Show_Mouse();
       for (int lp = 0; lp < 99; lp++) {
         absl::SNPrintF(filename, sizeof(filename), "scrsht%02d.pcx", lp);

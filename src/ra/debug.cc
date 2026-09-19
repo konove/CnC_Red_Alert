@@ -54,12 +54,12 @@
 #include "ra/display.h"
 #include "ra/externs.h"
 #include "ra/face.h"
-#include "ra/globals.h"
 #include "ra/heap.h"
 #include "ra/house.h"
 #include "ra/inline.h"
 #include "ra/mapedit.h"
 #include "ra/object.h"
+#include "ra/screen.h"
 #include "ra/super.h"
 #include "ra/type.h"
 #include "ra/vector_dynamic.h"
@@ -273,7 +273,7 @@ void Debug_Key(unsigned input) {
           if (ttype.PrimaryWeapon != nullptr) {
             weapon = ttype.PrimaryWeapon->Range;
           }
-          Set_Logic_Page(visible_view);
+          Set_Logic_Page(TheScreen().visible_view());
           const COORDINATE center = CurrentObject.at(0)->Center_Coord();
           const COORDINATE center2 = CurrentObject.at(0)->Fire_Coord(0);
 

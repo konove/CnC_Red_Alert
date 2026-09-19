@@ -191,6 +191,7 @@
 #include "ra/radio.h"
 #include "ra/rules.h"
 #include "ra/scenario.h"
+#include "ra/screen.h"
 #include "ra/session.h"
 #include "ra/shape_draw.h"
 #include "ra/target.h"
@@ -3121,7 +3122,7 @@ bool TechnoClass::Electric_Zap(TARGET target, int which,
     x1 += Map.TacPixelX;
     y += Map.TacPixelY;
     y1 += Map.TacPixelY;
-    Set_Logic_Page(visible_view);
+    Set_Logic_Page(TheScreen().visible_view());
     gonnadraw = true;
   }
 

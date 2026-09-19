@@ -48,11 +48,11 @@
 #include "ra/defines.h"
 #include "ra/externs.h"
 #include "ra/face.h"
-#include "ra/globals.h"
 #include "ra/goptions.h"
 #include "ra/help.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
+#include "ra/screen.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
 #include "tech/ftimer.h"
@@ -111,9 +111,9 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
     const bool noscroll = false;
 
     if (!noscroll) {
-      const bool at_screen_edge = y <= 0 || x <= 0 ||
-                                  x >= visible_view.Get_Width() - 1 ||
-                                  y >= visible_view.Get_Height() - 1;
+      const bool at_screen_edge =
+          y <= 0 || x <= 0 || x >= TheScreen().visible_view().Get_Width() - 1 ||
+          y >= TheScreen().visible_view().Get_Height() - 1;
 
       /*
       **	Verify that the mouse is over a scroll region.

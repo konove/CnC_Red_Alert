@@ -68,9 +68,9 @@
 #include "ra/defines.h"
 #include "ra/externs.h"
 #include "ra/gadget.h"
-#include "ra/globals.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
+#include "ra/screen.h"
 #include "ra/shape_draw.h"
 #include "ra/text_ids.h"
 #include "sdllib/drawbuff.h"
@@ -103,7 +103,7 @@ void Dialog_Box(int x, int y, int w, int h) {
   /*
   **	Always draw to the hidpage and then blit forward.
   */
-  GraphicViewPortClass* oldpage = Set_Logic_Page(hidden_view);
+  GraphicViewPortClass* oldpage = Set_Logic_Page(TheScreen().hidden_view());
 
   /*
   **	Draw the background block.
@@ -155,9 +155,10 @@ void Dialog_Box(int x, int y, int w, int h) {
   CC_Draw_Shape(shapedata, 2, 0, h - 24, WINDOW_PARTIAL, SHAPE_WIN_REL);
   CC_Draw_Shape(shapedata, 3, w - 23, h - 24, WINDOW_PARTIAL, SHAPE_WIN_REL);
 
-  WWMouse->Draw_Mouse(&hidden_view);
-  hidden_view.Blit(visible_view, x, y, x, y, w, h, false);
-  WWMouse->Erase_Mouse(&hidden_view, false);
+  WWMouse->Draw_Mouse(&TheScreen().hidden_view());
+  TheScreen().hidden_view().Blit(TheScreen().visible_view(), x, y, x, y, w, h,
+                                 false);
+  WWMouse->Erase_Mouse(&TheScreen().hidden_view(), false);
   Set_Logic_Page(oldpage);
 }
 
@@ -342,7 +343,7 @@ void Window_Box(WindowNumberType window, BoxStyleEnum style) {
   **	If it is to be rendered to the seenpage, then
   **	hide the mouse.
   */
-  if (LogicPage == &visible_view) {
+  if (TheScreen().IsVisible(LogicPage)) {
     Conditional_Hide_Mouse(x, y, x + w, y + h);
   }
 
@@ -351,7 +352,7 @@ void Window_Box(WindowNumberType window, BoxStyleEnum style) {
   /*
   **	Restore the mouse if it has been hidden and return.
   */
-  if (LogicPage == &visible_view) {
+  if (TheScreen().IsVisible(LogicPage)) {
     Conditional_Show_Mouse();
   }
 }

@@ -3,11 +3,14 @@
 #ifndef CNC_RED_ALERT_RA_GAME_H_
 #define CNC_RED_ALERT_RA_GAME_H_
 
+#include "base/installed.h"
+#include "ra/screen.h"
+
 // Owns the game's subsystems and so fixes the order they are built and torn
 // down in. Members are declared in dependency order, which C++ constructs
 // front to back and destroys back to front; each one is installed with
 // base::Installed as soon as it is built. docs/GLOBALS_PLAN.md moves the
-// globals into it one subsystem at a time, and until then it is empty.
+// globals into it one subsystem at a time.
 //
 // main() creates the one Game on the heap before anything else, and
 // ShutDown() destroys it, so every way out of the game tears the subsystems
@@ -27,6 +30,10 @@ class Game {
   Game& operator=(const Game&) = delete;
   Game(Game&&) = delete;
   Game& operator=(Game&&) = delete;
+
+ private:
+  Screen screen_;
+  base::Installed<Screen>::Scope screen_scope_{screen_};
 };
 
 #endif  // CNC_RED_ALERT_RA_GAME_H_

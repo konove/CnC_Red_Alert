@@ -74,7 +74,6 @@
 #include "ra/dialog.h"
 #include "ra/externs.h"
 #include "ra/gadget.h"
-#include "ra/globals.h"
 #include "ra/heap.h"
 #include "ra/house.h"
 #include "ra/infantry.h"
@@ -88,6 +87,7 @@
 #include "ra/reinf.h"
 #include "ra/rules.h"
 #include "ra/scenario.h"
+#include "ra/screen.h"
 #include "ra/session.h"
 #include "ra/super.h"
 #include "ra/target.h"
@@ -570,7 +570,7 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     */
     case TACTION_PLAY_MOVIE:
       Hide_Mouse();
-      visible_view.Clear();
+      TheScreen().visible_view().Clear();
       Play_Movie(Data.Movie, THEME_NONE, true);
       GamePalette.Set();
       Map.Flag_To_Redraw(true);

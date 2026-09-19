@@ -56,13 +56,13 @@
 #include "ra/expand.h"
 #include "ra/externs.h"
 #include "ra/gadget.h"
-#include "ra/globals.h"
 #include "ra/goptions.h"
 #include "ra/init.h"
 #include "ra/installation.h"
 #include "ra/jshell.h"
 #include "ra/mapedit.h"
 #include "ra/palette.h"
+#include "ra/screen.h"
 #include "ra/text_ids.h"
 #include "ra/textbtn.h"
 #include "ra/theme.h"
@@ -416,7 +416,7 @@ int Do_Menu(std::span<const char* const> strings, bool /*unused*/) {
   if (strings.empty()) {
     return -1;
   }
-  Set_Logic_Page(visible_view);
+  Set_Logic_Page(TheScreen().visible_view());
   Keyboard->Clear();
 
   /*
@@ -476,7 +476,7 @@ int Do_Menu(std::span<const char* const> strings, bool /*unused*/) {
   Keyboard->Clear();
   Hide_Mouse();
 
-  hidden_view.Blit(visible_view);
+  TheScreen().hidden_view().Blit(TheScreen().visible_view());
   // WindowList[static_cast<int>(WINDOW_MAIN)][2] =
   // visible_view.Get_Width();//BG
   Change_Window(static_cast<int>(WINDOW_MAIN));
@@ -610,7 +610,7 @@ int Main_Menu(int32_t /*unused*/) {
     RequiredCD = -1;
     Force_CD_Available(RequiredCD);
   }
-  Set_Logic_Page(visible_view);
+  Set_Logic_Page(TheScreen().visible_view());
   Keyboard->Clear();
 
   /*
@@ -702,7 +702,7 @@ int Main_Menu(int32_t /*unused*/) {
       /*
       **	Display the title and text overlay for the menu.
       */
-      Set_Logic_Page(hidden_view);
+      Set_Logic_Page(TheScreen().hidden_view());
       //			Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w,
       // d_dialog_h); 			Draw_Caption (TXT_NONE, d_dialog_x,
       // d_dialog_y, d_dialog_w);
@@ -716,10 +716,10 @@ int Main_Menu(int32_t /*unused*/) {
       **	Copy the menu to the visible page.
       */
       Hide_Mouse();
-      hidden_view.Blit(visible_view);
+      TheScreen().hidden_view().Blit(TheScreen().visible_view());
       Show_Mouse();
 
-      Set_Logic_Page(visible_view);
+      Set_Logic_Page(TheScreen().visible_view());
       display = false;
     }
 

@@ -127,6 +127,7 @@
 #include "ra/rules.h"
 #include "ra/saveload.h"
 #include "ra/scenario.h"
+#include "ra/screen.h"
 #include "ra/session.h"
 #include "ra/special.h"
 #include "ra/startup.h"
@@ -215,8 +216,8 @@ static std::vector<uint8_t> shape_storage;
  *=============================================================================================*/
 static void Load_Prolog_Page() {
   Hide_Mouse();
-  Load_Title_Screen("PROLOG.PCX", &hidden_view, CCPalette);
-  hidden_view.Blit(visible_view);
+  Load_Title_Screen("PROLOG.PCX", &TheScreen().hidden_view(), CCPalette);
+  TheScreen().hidden_view().Blit(TheScreen().visible_view());
   CCPalette.Set();
   Show_Mouse();
 }
@@ -336,7 +337,7 @@ bool Init_Game() {
   **	Play the startup animation.
   */
   if (!Special.IsFromInstall) {
-    visible_page.Clear();
+    TheScreen().visible_page().Clear();
     if (!LogoAlreadyPlayed()) {
       Play_Intro();
       MarkLogoPlayed();
@@ -367,7 +368,7 @@ bool Init_Game() {
   /*
   **	Set the logic page to the seenpage.
   */
-  Set_Logic_Page(visible_view);
+  Set_Logic_Page(TheScreen().visible_view());
 
   /*
   **	If not automatically launching into the intro, then display the title
@@ -563,7 +564,7 @@ bool Select_Game(bool /*fade*/) {
         Load_Title_Page();
         GamePalette = CCPalette;
 
-        hidden_view.Blit(visible_view);
+        TheScreen().hidden_view().Blit(TheScreen().visible_view());
         //				if (fade) {
         //					WhitePalette.Set();
         //					CCPalette.Set(kFadePaletteSlow,
@@ -572,7 +573,7 @@ bool Select_Game(bool /*fade*/) {
         CCPalette.Set();
         //				}
 
-        Set_Logic_Page(visible_view);
+        Set_Logic_Page(TheScreen().visible_view());
         display = false;
         Show_Mouse();
       }
@@ -759,7 +760,8 @@ bool Select_Game(bool /*fade*/) {
             Load_Title_Page();
           } else {
             Theme.Fade_Out();
-            PlayFirstLaunchIntro(hidden_view, visible_view);
+            PlayFirstLaunchIntro(TheScreen().hidden_view(),
+                                 TheScreen().visible_view());
             Hide_Mouse();
             if (CurrentCD == 0) {
               Scen.Set_Scenario_Name("SCG01EA.INI");
@@ -982,7 +984,7 @@ bool Select_Game(bool /*fade*/) {
             Play_Intro(Debug_Flag);
           } else {
             Hide_Mouse();
-            visible_page.Clear();
+            TheScreen().visible_page().Clear();
             Show_Mouse();
             Play_Movie(VQ_INTRO_MOVIE, THEME_NONE,
                        true);  // no transition picture to briefing
@@ -1119,8 +1121,8 @@ bool Select_Game(bool /*fade*/) {
 
     if (selection != kSelStartNewGame) {
       BlackPalette.Set(kFadePaletteMedium, ServiceRealTime);
-      hidden_page.Clear();
-      visible_page.Clear();
+      TheScreen().hidden_page().Clear();
+      TheScreen().visible_page().Clear();
     }
     Show_Mouse();
     if (!Start_Scenario(Scen.ScenarioName)) {
@@ -1172,10 +1174,10 @@ bool Select_Game(bool /*fade*/) {
   ServiceRealTime();
   Hide_Mouse();
   BlackPalette.Set(kFadePaletteMedium, ServiceRealTime);
-  hidden_page.Clear();
-  visible_page.Clear();
+  TheScreen().hidden_page().Clear();
+  TheScreen().visible_page().Clear();
   Show_Mouse();
-  Set_Logic_Page(visible_view);
+  Set_Logic_Page(TheScreen().visible_view());
   /*
   ** Sidebar is always active in hi-res.
   */
@@ -1254,14 +1256,14 @@ static void Play_Intro(bool sequenced) {
       _counter--;
     }
     Hide_Mouse();
-    visible_page.Clear();
+    TheScreen().visible_page().Clear();
     Show_Mouse();
     Play_Movie(static_cast<VQType>(_counter--), THEME_NONE);
 
     //		Show_Mouse();
   } else {
     Hide_Mouse();
-    visible_page.Clear();
+    TheScreen().visible_page().Clear();
     Show_Mouse();
     Play_Movie(VQ_REDINTRO, THEME_NONE, false);
   }
@@ -1282,7 +1284,6 @@ static void Play_Intro(bool sequenced) {
  *                                                                                             *
  * HISTORY: * 12/20/1994 JLB : Created. *
  *=============================================================================================*/
-GraphicBufferClass VQ640(640, 400, {});
 void Anim_Init() {
   /* Configure player with INI file */
   VQA_DefaultConfig(&AnimControl);
@@ -1299,11 +1300,11 @@ void Anim_Init() {
   AnimControl.EventHandler = VQ_Event_Handler;
   AnimControl.ImageWidth = 320;
   AnimControl.ImageHeight = 200;
-  AnimControl.ImageBuf = SysMemPage.Get_Bytes();
-  if (IsVQ640) {
+  AnimControl.ImageBuf = TheScreen().sys_mem_page().Get_Bytes();
+  if (TheScreen().is_vq640()) {
     AnimControl.ImageWidth = 640;
     AnimControl.ImageHeight = 400;
-    AnimControl.ImageBuf = VQ640.Get_Bytes();
+    AnimControl.ImageBuf = TheScreen().vq640().Get_Bytes();
   }
   AnimControl.Vmode = 0;
   AnimControl.OptionFlags |= VQAOPTF_CAPTIONS | VQAOPTF_EVA;
@@ -1526,7 +1527,7 @@ bool Parse_Command_Line(const std::span<const std::string_view> arguments) {
     ** Set screen to 640x480 instead of 640x400
     */
     if (string.contains("-480")) {
-      ScreenHeight = 480;
+      TheScreen().set_mode_height(480);
       continue;
     }
 
@@ -1697,10 +1698,10 @@ void Init_Random() {
  * HISTORY: * 06/03/1996 JLB : Created. *
  *=============================================================================================*/
 void Load_Title_Page(bool visible) {
-  Load_Title_Screen("TITLE.PCX", &hidden_view, CCPalette);
+  Load_Title_Screen("TITLE.PCX", &TheScreen().hidden_view(), CCPalette);
 
   if (visible) {
-    hidden_view.Blit(visible_view);
+    TheScreen().hidden_view().Blit(TheScreen().visible_view());
   }
 }
 
@@ -1728,9 +1729,10 @@ static void Init_Color_Remaps() {
   ** after that are the remap colors.
   */
 
-  SysMemPage.Clear();
-  Load_Picture("PALETTE.CPS", SysMemPage, SysMemPage, {}, BM_DEFAULT);
-  SysMemPage.Blit(hidden_view);
+  TheScreen().sys_mem_page().Clear();
+  Load_Picture("PALETTE.CPS", TheScreen().sys_mem_page(),
+               TheScreen().sys_mem_page(), {}, BM_DEFAULT);
+  TheScreen().sys_mem_page().Blit(TheScreen().hidden_view());
   for (const PlayerColorType pcolor :
        magic_enum::enum_values<PlayerColorType>()) {
     auto& ptr = ColorRemaps.at(pcolor).RemapTable;
@@ -1740,42 +1742,42 @@ static void Init_Color_Remaps() {
     }
 
     for (int index = 0; index < 16; index++) {
-      base::At(ptr, hidden_view.Get_Pixel(index, 0)) =
-          static_cast<unsigned char>(
-              hidden_view.Get_Pixel(index, static_cast<int>(pcolor)));
+      base::At(ptr, TheScreen().hidden_view().Get_Pixel(index, 0)) =
+          static_cast<unsigned char>(TheScreen().hidden_view().Get_Pixel(
+              index, static_cast<int>(pcolor)));
     }
     for (int index = 0; index < 6; index++) {
       base::At(ColorRemaps.at(pcolor).FontRemap, 10 + index) =
-          static_cast<unsigned char>(
-              hidden_view.Get_Pixel(2 + index, static_cast<int>(pcolor)));
+          static_cast<unsigned char>(TheScreen().hidden_view().Get_Pixel(
+              2 + index, static_cast<int>(pcolor)));
     }
     ColorRemaps.at(pcolor).BrightColor = kWhite;
     //		ColorRemaps[pcolor].BrightColor = hidden_view.Get_Pixel(1,
     // static_cast<int>(pcolor));
     ColorRemaps.at(pcolor).Color = static_cast<unsigned char>(
-        hidden_view.Get_Pixel(4, static_cast<int>(pcolor)));
+        TheScreen().hidden_view().Get_Pixel(4, static_cast<int>(pcolor)));
 
     ColorRemaps.at(pcolor).Shadow = static_cast<unsigned char>(
-        hidden_view.Get_Pixel(10, static_cast<int>(pcolor)));
+        TheScreen().hidden_view().Get_Pixel(10, static_cast<int>(pcolor)));
     ColorRemaps.at(pcolor).Background = static_cast<unsigned char>(
-        hidden_view.Get_Pixel(9, static_cast<int>(pcolor)));
+        TheScreen().hidden_view().Get_Pixel(9, static_cast<int>(pcolor)));
     ColorRemaps.at(pcolor).Corners = static_cast<unsigned char>(
-        hidden_view.Get_Pixel(7, static_cast<int>(pcolor)));
+        TheScreen().hidden_view().Get_Pixel(7, static_cast<int>(pcolor)));
     ColorRemaps.at(pcolor).Highlight = static_cast<unsigned char>(
-        hidden_view.Get_Pixel(4, static_cast<int>(pcolor)));
+        TheScreen().hidden_view().Get_Pixel(4, static_cast<int>(pcolor)));
     ColorRemaps.at(pcolor).Bright = static_cast<unsigned char>(
-        hidden_view.Get_Pixel(0, static_cast<int>(pcolor)));
+        TheScreen().hidden_view().Get_Pixel(0, static_cast<int>(pcolor)));
     ColorRemaps.at(pcolor).Underline = static_cast<unsigned char>(
-        hidden_view.Get_Pixel(0, static_cast<int>(pcolor)));
+        TheScreen().hidden_view().Get_Pixel(0, static_cast<int>(pcolor)));
     ColorRemaps.at(pcolor).Bar = static_cast<unsigned char>(
-        hidden_view.Get_Pixel(6, static_cast<int>(pcolor)));
+        TheScreen().hidden_view().Get_Pixel(6, static_cast<int>(pcolor)));
 
     /*
     **	This must grab from column 4 because the multiplayer color dialog
     *palette counts *	on this to be true.
     */
     ColorRemaps.at(pcolor).Box = static_cast<unsigned char>(
-        hidden_view.Get_Pixel(4, static_cast<int>(pcolor)));
+        TheScreen().hidden_view().Get_Pixel(4, static_cast<int>(pcolor)));
   }
 
   /*
@@ -1787,7 +1789,7 @@ static void Init_Color_Remaps() {
   // The palette index in the low byte of the pixel read from the grey row.
   const auto GreyPixel = [](int x) {
     return static_cast<uint8_t>(
-        hidden_view.Get_Pixel(x, static_cast<int>(PCOLOR_GREY)));
+        TheScreen().hidden_view().Get_Pixel(x, static_cast<int>(PCOLOR_GREY)));
   };
   for (int index = 0; index < 6; index++) {
     base::At(GreyScheme.FontRemap, 10 + index) = GreyPixel(9 + index);
@@ -1833,8 +1835,8 @@ static void Init_Color_Remaps() {
   */
   for (int colr = 0; colr < 16; colr++) {
     base::At(ColorRemaps.at(PCOLOR_TYPE).FontRemap, colr) =
-        static_cast<unsigned char>(
-            hidden_view.Get_Pixel(colr, static_cast<int>(PCOLOR_TYPE)));
+        static_cast<unsigned char>(TheScreen().hidden_view().Get_Pixel(
+            colr, static_cast<int>(PCOLOR_TYPE)));
   }
 
   ColorRemaps.at(PCOLOR_TYPE).Shadow = 11;
@@ -2030,8 +2032,8 @@ static void Init_Fonts() {
  * HISTORY: * 06/03/1996 JLB : Created. *
  *=============================================================================================*/
 static void Init_CDROM_Access() {
-  visible_page.Clear();
-  hidden_view.Clear();
+  TheScreen().visible_page().Clear();
+  TheScreen().hidden_view().Clear();
 
   //	Determine if we're going to be running from a DVD.
   //	The entire session will either require a DVD, or the regular CDs. Never
@@ -2063,7 +2065,7 @@ static void Init_CDROM_Access() {
       error = SearchPaths::Add("?:\\");
       switch (error) {
         case 1:
-          visible_page.Clear();
+          TheScreen().visible_page().Clear();
           GamePalette.Set();
           Show_Mouse();
           WWMessageBox().Process(TXT_CD_ERROR1, TXT_OK);
@@ -2071,7 +2073,7 @@ static void Init_CDROM_Access() {
           EmergencyExit(EXIT_FAILURE);
 
         case 2:
-          visible_page.Clear();
+          TheScreen().visible_page().Clear();
           GamePalette.Set();
           Show_Mouse();
           if (WWMessageBox().Process(TXT_CD_DIALOG_1, TXT_OK, TXT_CANCEL) ==
@@ -2083,7 +2085,7 @@ static void Init_CDROM_Access() {
           break;
 
         default:
-          visible_page.Clear();
+          TheScreen().visible_page().Clear();
           Show_Mouse();
           if (!Force_CD_Available(RequiredCD)) {
             // Prog_End();
@@ -2413,7 +2415,7 @@ static void Init_Mouse() {
   } else {
     GamePalette.Set();
     GamePalette.Set();
-    visible_page.Clear();
+    TheScreen().visible_page().Clear();
     WWMessageBox().Process(kLanguageText.no_mouse, TXT_OK);
     // Prog_End();
     EmergencyExit(1);

@@ -50,6 +50,7 @@
 #include "WSProto.h"
 #include "ra/config.h"
 #include "ra/function.h"
+#include "ra/screen.h"
 
 unsigned long CCFocusMessage =
     WM_USER + 50;  // Private message for receiving application focus
@@ -62,7 +63,8 @@ void Focus_Loss();
 void Focus_Restore();
 
 BOOL Any_Locked() {
-  if (visible_view.Get_LockCount() || hidden_view.Get_LockCount()) {
+  if (TheScreen().visible_view().Get_LockCount() ||
+      TheScreen().hidden_view().Get_LockCount()) {
     return (true);
   } else {
     return (false);
@@ -184,8 +186,8 @@ long FAR PASCAL _export Windows_Procedure(HWND hwnd, UINT message, UINT wParam,
     case WM_DESTROY:
       Prog_End();
       Invalidate_Cached_Icons();
-      visible_page.Un_Init();
-      hidden_page.Un_Init();
+      TheScreen().visible_page().Un_Init();
+      TheScreen().hidden_page().Un_Init();
       AllSurfaces.Release();
       Reset_Video_Mode();
       Stop_Profiler();
@@ -493,7 +495,7 @@ void Colour_Debug(int call_number) {
  * HISTORY: * 5/22/96 3:57PM ST : Created *
  *=============================================================================================*/
 void Memory_Error_Handler() {
-  visible_page.Clear();
+  TheScreen().visible_page().Clear();
   CCPalette.Set();
   while (Get_Mouse_State()) {
     Show_Mouse();

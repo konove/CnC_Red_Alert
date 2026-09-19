@@ -82,6 +82,7 @@
 #include "ra/saveload.h"
 #include "ra/scenario.h"
 #include "ra/score.h"
+#include "ra/screen.h"
 #include "ra/session.h"
 #include "ra/special.h"
 #include "ra/text_ids.h"
@@ -155,7 +156,7 @@ static void CyclePalette() {
 // Reads one input event from the map and dispatches any keypress. The mouse is
 // erased from the hidden page first so the next render draws it afresh.
 static void ProcessInput() {
-  WWMouse->Erase_Mouse(&hidden_view, true);
+  WWMouse->Erase_Mouse(&TheScreen().hidden_view(), true);
   KeyNumType input = KN_NONE;
   int x = 0;
   int y = 0;
@@ -279,7 +280,7 @@ static void EndScenario() {
   }
 
   BlackPalette.Set(kFadePaletteSlow);
-  visible_page.Clear();
+  TheScreen().visible_page().Clear();
 
   if (Session.Record || Session.Play) {
     Session.RecordFile.Close();
@@ -492,7 +493,7 @@ static bool FinishScenarioIfDecided() {
     Send_Statistics_Packet();
   }
 
-  WWMouse->Erase_Mouse(&hidden_view, true);
+  WWMouse->Erase_Mouse(&TheScreen().hidden_view(), true);
   PlayerWins = false;
   PlayerLoses = false;
   PlayerRestarts = false;
@@ -575,19 +576,21 @@ static void CaptureMotionFrame() {
   }
 
   // Leaked for the same reason as frames above.
-  static auto& frame_page = *new GraphicBufferClass(
-      visible_view.Get_Width(), visible_view.Get_Height(), {},
-      visible_view.Get_Width() * visible_view.Get_Height());
+  static auto& frame_page =
+      *new GraphicBufferClass(TheScreen().visible_view().Get_Width(),
+                              TheScreen().visible_view().Get_Height(), {},
+                              TheScreen().visible_view().Get_Width() *
+                                  TheScreen().visible_view().Get_Height());
 
   const base::ssize frame_bytes =
-      static_cast<base::ssize>(visible_view.Get_Width()) *
-      visible_view.Get_Height();
+      static_cast<base::ssize>(TheScreen().visible_view().Get_Width()) *
+      TheScreen().visible_view().Get_Height();
 
   if (captured_count < std::ssize(frames)) {
     // A no-op on a frame reused from an earlier run of the same resolution.
     frames.at(base::ToSize(captured_count)).resize(base::ToSize(frame_bytes));
 
-    visible_view.Blit(frame_page);
+    TheScreen().visible_view().Blit(frame_page);
     base::CopyBytes(std::as_writable_bytes(
                         std::span(frames.at(base::ToSize(captured_count)))),
                     std::as_bytes(frame_page.Get_Bytes()), frame_bytes);
@@ -677,7 +680,7 @@ bool RunFrame() {
   // means a message has expired & been removed, and the entire map must be
   // updated.
   if (Session.Messages.Manage()) {
-    hidden_page.Clear();
+    TheScreen().hidden_page().Clear();
     Map.Flag_To_Redraw(true);
   }
 

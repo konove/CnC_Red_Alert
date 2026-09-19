@@ -55,7 +55,6 @@
 #include "ra/dialog.h"
 #include "ra/externs.h"
 #include "ra/gadget.h"
-#include "ra/globals.h"
 #include "ra/init.h"
 #include "ra/inline.h"
 #include "ra/installation.h"
@@ -65,6 +64,7 @@
 #include "ra/mapedit.h"
 #include "ra/nulldlg.h"
 #include "ra/palette.h"
+#include "ra/screen.h"
 #include "ra/session.h"
 #include "ra/text_ids.h"
 #include "ra/textbtn.h"
@@ -203,7 +203,7 @@ GameType Select_MPlayer_Game() {
   //------------------------------------------------------------------------
   //	Initialize
   //------------------------------------------------------------------------
-  Set_Logic_Page(visible_view);
+  Set_Logic_Page(TheScreen().visible_view());
   //------------------------------------------------------------------------
   //	Create the list
   //------------------------------------------------------------------------
@@ -556,7 +556,7 @@ int Surrender_Dialog(const char* text) {
   //------------------------------------------------------------------------
   //	Initialize
   //------------------------------------------------------------------------
-  Set_Logic_Page(visible_view);
+  Set_Logic_Page(TheScreen().visible_view());
 
   //------------------------------------------------------------------------
   //	Create the button list
@@ -670,7 +670,7 @@ int Surrender_Dialog(const char* text) {
   //------------------------------------------------------------------------
   //	Redraw the display
   //------------------------------------------------------------------------
-  hidden_view.Clear();
+  TheScreen().hidden_view().Clear();
   Map.Flag_To_Redraw(true);
   Map.Render();
 
@@ -739,7 +739,7 @@ int Abort_Dialog() {
   //------------------------------------------------------------------------
   //	Initialize
   //------------------------------------------------------------------------
-  Set_Logic_Page(visible_view);
+  Set_Logic_Page(TheScreen().visible_view());
 
   //------------------------------------------------------------------------
   //	Create the button list
@@ -852,7 +852,7 @@ int Abort_Dialog() {
   //------------------------------------------------------------------------
   //	Redraw the display
   //------------------------------------------------------------------------
-  hidden_view.Clear();
+  TheScreen().hidden_view().Clear();
   Map.Flag_To_Redraw(true);
   Map.Render();
 

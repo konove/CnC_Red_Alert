@@ -48,7 +48,6 @@
 #include "ra/event.h"
 #include "ra/externs.h"
 #include "ra/gadget.h"
-#include "ra/globals.h"
 #include "ra/goptions.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
@@ -56,6 +55,7 @@
 #include "ra/msgbox.h"
 #include "ra/options.h"
 #include "ra/queue.h"
+#include "ra/screen.h"
 #include "ra/sounddlg.h"
 #include "ra/text_ids.h"
 #include "ra/textbtn.h"
@@ -88,10 +88,10 @@ void GameControlsClass::Process() {
   */
   const int d_dialog_w = 464;                                // dialog width
   int d_dialog_h = 282;                                      // dialog height
-  const int d_dialog_x =
-      (visible_view.Get_Width() - d_dialog_w) / 2;  // dialog x-coord
-  int d_dialog_y =
-      (visible_view.Get_Height() - d_dialog_h) / 2;       // centered y-coord
+  const int d_dialog_x = (TheScreen().visible_view().Get_Width() - d_dialog_w) /
+                         2;  // dialog x-coord
+  int d_dialog_y = (TheScreen().visible_view().Get_Height() - d_dialog_h) /
+                   2;                                     // centered y-coord
   const int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);  // center x-coord
   const int d_top_margin = 50;
 
@@ -138,8 +138,8 @@ void GameControlsClass::Process() {
   if (bShowWolapi) {
     //	Enlarge dialog and shift ok button down.
     d_dialog_h += d_wol_h + d_margin1;
-    d_dialog_y =
-        ((visible_view.Get_Height() - d_dialog_h) / 2);  // centered y-coord
+    d_dialog_y = ((TheScreen().visible_view().Get_Height() - d_dialog_h) /
+                  2);  // centered y-coord
     // d_ok_y += d_wol_h + d_margin1;
     d_ok_y = d_dialog_y + d_dialog_h - d_ok_h - d_margin1 - 8;
   }
@@ -186,7 +186,7 @@ void GameControlsClass::Process() {
                             d_sound_x, d_sound_y, d_sound_w, d_sound_h);
   TextButtonClass okbtn(kButtonOk, TXT_OPTIONS_MENU, kTpfButton, d_ok_x,
                         d_ok_y);
-  okbtn.X = (visible_view.Get_Width() - okbtn.Width) / 2;
+  okbtn.X = (TheScreen().visible_view().Get_Width() - okbtn.Width) / 2;
 
   TextButtonClass wol_btn(kButtonWolapi, TXT_WOL_OPTTITLE, kTpfButton, d_wol_x,
                           d_wol_y, d_wol_w, d_wol_h);
@@ -194,7 +194,7 @@ void GameControlsClass::Process() {
   /*
   **	Various Inits.
   */
-  Set_Logic_Page(visible_view);
+  Set_Logic_Page(TheScreen().visible_view());
 
   /*
   **	Build button list

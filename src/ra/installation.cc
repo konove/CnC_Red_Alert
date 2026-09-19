@@ -34,7 +34,6 @@
 #include "port/win32/win32_registry.h"
 #include "ra/config.h"
 #include "ra/externs.h"
-#include "ra/globals.h"
 #include "ra/inline.h"
 #include "ra/interpal.h"
 #include "ra/jshell.h"
@@ -42,6 +41,7 @@
 #include "ra/mplayer.h"
 #include "ra/msgbox.h"
 #include "ra/palette.h"
+#include "ra/screen.h"
 #include "ra/text_ids.h"
 #include "ra/theme.h"
 #include "sdllib/drawbuff.h"
@@ -288,7 +288,8 @@ bool Force_CD_Available(int cd_desired)  // ajw
         }
       }
 
-      GraphicViewPortClass* old_page = Set_Logic_Page(visible_view);
+      GraphicViewPortClass* old_page =
+          Set_Logic_Page(TheScreen().visible_view());
       Theme.Stop();
       int hidden = Get_Mouse_State();
       font = FontPtr;

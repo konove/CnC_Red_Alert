@@ -47,8 +47,8 @@
 
 #include "ra/control.h"
 #include "ra/defines.h"
-#include "ra/globals.h"
 #include "ra/keyframe.h"
+#include "ra/screen.h"
 #include "ra/shape_draw.h"
 #include "ra/toggle.h"
 #include "sdllib/drawbuff.h"
@@ -144,7 +144,7 @@ bool ShapeButtonClass::Draw_Me(bool forced) {
     /*
     **	Hide the mouse.
     */
-    if (LogicPage == &visible_view) {
+    if (TheScreen().IsVisible(LogicPage)) {
       Conditional_Hide_Mouse(X, Y, X + Width - 1, Y + Height - 1);
     }
 
@@ -169,7 +169,7 @@ bool ShapeButtonClass::Draw_Me(bool forced) {
     /*
     **	Display the mouse.
     */
-    if (LogicPage == &visible_view) {
+    if (TheScreen().IsVisible(LogicPage)) {
       Conditional_Show_Mouse();
     }
     return true;

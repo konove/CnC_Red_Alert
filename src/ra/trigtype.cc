@@ -90,10 +90,10 @@
 #include "ra/edit.h"
 #include "ra/externs.h"
 #include "ra/gadget.h"
-#include "ra/globals.h"
 #include "ra/heap.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
+#include "ra/screen.h"
 #include "ra/taction.h"
 #include "ra/teamtype.h"
 #include "ra/tevent.h"
@@ -1080,7 +1080,7 @@ bool TriggerTypeClass::Edit() {
   /*
   **	Initialize
   */
-  Set_Logic_Page(visible_view);
+  Set_Logic_Page(TheScreen().visible_view());
 
   /*
   **	Build the button list

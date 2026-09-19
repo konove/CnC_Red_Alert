@@ -32,9 +32,9 @@
 #include "ra/edit.h"
 #include "ra/externs.h"
 #include "ra/gadget.h"
-#include "ra/globals.h"
 #include "ra/inline.h"
 #include "ra/msgbox.h"
+#include "ra/screen.h"
 #include "ra/text_ids.h"
 #include "ra/textbtn.h"
 #include "ra/woledit.h"
@@ -187,7 +187,7 @@ const char* SimpleEditDlgClass::Show() {
   /*
   **	Initialize.
   */
-  Set_Logic_Page(visible_view);
+  Set_Logic_Page(TheScreen().visible_view());
 
   /*
   **	Create the button list.

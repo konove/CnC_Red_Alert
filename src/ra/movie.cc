@@ -31,11 +31,11 @@
 #include "ra/const.h"
 #include "ra/defines.h"
 #include "ra/externs.h"
-#include "ra/globals.h"
 #include "ra/init.h"
 #include "ra/interpal.h"
 #include "ra/jshell.h"
 #include "ra/palette.h"
+#include "ra/screen.h"
 #include "ra/session.h"
 #include "ra/theme.h"
 #include "sdllib/gbuffer.h"
@@ -87,7 +87,7 @@ void Play_Movie(const char* name, const ThemeType theme, bool clear_screen) {
     Theme.Queue_Song(theme);
     if (!clear_screen) {
       BlackPalette.Set(kFadePaletteMedium);
-      visible_page.Clear();
+      TheScreen().visible_page().Clear();
       BlackPalette.Adjust(0x08, WhitePalette);
       BlackPalette.Set();
       BlackPalette.Adjust(0xFF);
@@ -99,14 +99,14 @@ void Play_Movie(const char* name, const ThemeType theme, bool clear_screen) {
     GameFileVqaIo movie_io;  // Must outlive the open movie.
     player.SetIo(&movie_io);
 
-    if (IsVQ640) {
+    if (TheScreen().is_vq640()) {
       AnimControl.ImageWidth = 640;
       AnimControl.ImageHeight = 400;
-      AnimControl.ImageBuf = VQ640.Get_Bytes();
+      AnimControl.ImageBuf = TheScreen().vq640().Get_Bytes();
     } else {
       AnimControl.ImageWidth = 320;
       AnimControl.ImageHeight = 200;
-      AnimControl.ImageBuf = SysMemPage.Get_Bytes();
+      AnimControl.ImageBuf = TheScreen().sys_mem_page().Get_Bytes();
     }
 
     if (!Debug_Quiet && Audio.is_open()) {
@@ -117,23 +117,23 @@ void Play_Movie(const char* name, const ThemeType theme, bool clear_screen) {
 
     if (player.Open(fullname.c_str(), &AnimControl) == 0) {
       movie_broken_out = false;
-      if (!IsVQ640) {
+      if (!TheScreen().is_vq640()) {
         Load_Interpolated_Palettes(pal_name.c_str());
       }
-      SysMemPage.Clear();
+      TheScreen().sys_mem_page().Clear();
       InMovie = true;
       player.Play(VQAMODE_RUN);
       player.Close();
       InMovie = false;
-      if (!IsVQ640) {
+      if (!TheScreen().is_vq640()) {
         Free_Interpolated_Palettes();
       }
-      IsVQ640 = false;
+      TheScreen().set_is_vq640(false);
 
       // Early exit leaves the palette in an inconsistent state.
       if (movie_broken_out) {
         clear_screen = true;
-        visible_page.Clear();
+        TheScreen().visible_page().Clear();
         movie_broken_out = false;
       }
     } else {
@@ -142,7 +142,7 @@ void Play_Movie(const char* name, const ThemeType theme, bool clear_screen) {
 
     // The VQA player may leave the framebuffer and palette dirty.
     if (clear_screen) {
-      visible_page.Clear();
+      TheScreen().visible_page().Clear();
       BlackPalette.Adjust(0x08, WhitePalette);
       BlackPalette.Set();
       BlackPalette.Adjust(0xFF);
@@ -156,10 +156,10 @@ void Play_Movie(const VQType name, const ThemeType theme,
                 const bool clear_screen) {
   if (name != VQ_NONE) {
     if (name == VQ_REDINTRO) {
-      IsVQ640 = true;
+      TheScreen().set_is_vq640(true);
     }
     Play_Movie(VQName.at(name), theme, clear_screen);
-    IsVQ640 = false;
+    TheScreen().set_is_vq640(false);
   }
 }
 
@@ -170,10 +170,11 @@ int32_t VQ_Call_Back(unsigned char* /*unused*/, int32_t /*unused*/) {
     Keyboard->Clear();
   }
   Check_VQ_Palette_Set();
-  if (IsVQ640) {
-    VQ640.Blit(visible_view);
+  if (TheScreen().is_vq640()) {
+    TheScreen().vq640().Blit(TheScreen().visible_view());
   } else {
-    Interpolate_2X_Scale(&SysMemPage, &visible_view, nullptr);
+    Interpolate_2X_Scale(&TheScreen().sys_mem_page(),
+                         &TheScreen().visible_view(), nullptr);
   }
   // ServiceRealTime() is deliberately not invoked here. The VQA player drives
   // audio itself while a movie runs, and the game logic it would service is

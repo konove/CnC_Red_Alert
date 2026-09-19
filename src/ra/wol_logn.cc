@@ -35,13 +35,13 @@
 #include "ra/edit.h"
 #include "ra/externs.h"
 #include "ra/gadget.h"
-#include "ra/globals.h"
 #include "ra/iconlist.h"
 #include "ra/init.h"
 #include "ra/jshell.h"
 #include "ra/msgbox.h"
 #include "ra/passedit.h"
 #include "ra/rawolapi.h"
+#include "ra/screen.h"
 #include "ra/text_ids.h"
 #include "ra/textbtn.h"
 #include "ra/wol_main.h"
@@ -185,7 +185,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
   /*
   **	Initialize.
   */
-  Set_Logic_Page(visible_view);
+  Set_Logic_Page(TheScreen().visible_view());
 
   //	Get saved nickname/passwords from the registry.
   if (ReadSavedNicks(pWO, NickList, szNameBuffer, szPassBuffer)) {

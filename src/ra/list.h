@@ -53,9 +53,9 @@
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/gadget.h"
-#include "ra/globals.h"
 #include "ra/jshell.h"
 #include "ra/link.h"
+#include "ra/screen.h"
 #include "ra/shapebtn.h"
 #include "ra/slider.h"
 #include "ra/text_ids.h"
@@ -472,7 +472,7 @@ bool TListClass<T>::Draw_Me(bool forced) {
     /*
     **	Turn off the mouse.
     */
-    if (LogicPage == &visible_view) {
+    if (TheScreen().IsVisible(LogicPage)) {
       Conditional_Hide_Mouse(X, Y, X + Width, Y + Height);
     }
 
@@ -504,7 +504,7 @@ bool TListClass<T>::Draw_Me(bool forced) {
     /*
     **	Turn on the mouse.
     */
-    if (LogicPage == &visible_view) {
+    if (TheScreen().IsVisible(LogicPage)) {
       Conditional_Show_Mouse();
     }
     return true;
