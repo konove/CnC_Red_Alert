@@ -109,7 +109,6 @@ extern bool Debug_Playtest;
 
 extern bool Debug_Heap_Dump;
 extern bool Debug_Smart_Print;
-extern bool Debug_Trap_Check_Heap;
 extern bool Debug_Modem_Dump;
 extern bool Debug_Print_Events;
 
@@ -321,7 +320,6 @@ extern int NewMaxAheadFrame1;
 extern int NewMaxAheadFrame2;
 
 extern int MenuList[1][8];
-extern Timer<SystemTickSource> FrameTimer;
 extern Timer<SystemTickSource> CountDownTimer;
 
 extern SpecialDialogType SpecialDialog;

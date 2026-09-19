@@ -400,6 +400,10 @@ void ServiceBackgroundTasks() {
   }
 }
 
+// Holds the end of the current frame; StartFrameTimer() sets it and
+// WaitForNextFrame() waits it out.
+static Timer<SystemTickSource> frame_timer;
+
 // Spins until the frame timer expires, holding the game to the rate set by the
 // game-speed option.
 //
@@ -407,7 +411,7 @@ void ServiceBackgroundTasks() {
 // here. That keeps the interface responsive and the palette cycling smooth
 // between logic frames, which tick far more slowly than the display does.
 static void WaitForNextFrame() {
-  while (FrameTimer.HasTimeLeft()) {
+  while (frame_timer.HasTimeLeft()) {
     CyclePalette();
     ServiceRealTime();
 
@@ -430,14 +434,14 @@ static void StartFrameTimer() {
   if (Session.Type != GAME_NORMAL && Session.Type != GAME_SKIRMISH &&
       Session.CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
     if (Session.Play) {
-      FrameTimer.Set(0);
+      frame_timer.Set(0);
       return;
     }
     // A zero rate was seen, rarely, and divided by zero.
     if (Session.DesiredFrameRate == 0) {
       Session.DesiredFrameRate = 60;
     }
-    FrameTimer.Set(kTimerSecond / Session.DesiredFrameRate);
+    frame_timer.Set(kTimerSecond / Session.DesiredFrameRate);
     return;
   }
 
@@ -447,7 +451,7 @@ static void StartFrameTimer() {
   } else if (PlayerPtr->Difficulty == DIFF_HARD && delay > 0) {
     delay--;
   }
-  FrameTimer.Set(delay);
+  frame_timer.Set(delay);
 }
 
 // How the scenario ended this frame, in the order the checks take priority.
@@ -628,10 +632,6 @@ bool RunFrame() {
 
   // Initialize our AI processing timer
   Session.ProcessTimer = TickCount.Value();
-
-  if (Session.TrapCheckHeap) {
-    Debug_Trap_Check_Heap = true;
-  }
 
   // If there is no theme playing, but it looks like one is required, then
   // start one playing. This is usually the symptom of there being no

@@ -565,7 +565,6 @@ void SessionClass::Read_MultiPlayer_Settings() {
     iSide = std::max(2, std::min(6, iSide));
     House = static_cast<HousesType>(iSide);
     CurPhoneIdx = ini.Get_Int("MultiPlayer", "PhoneIndex", -1);
-    TrapCheckHeap = ini.Get_Int("MultiPlayer", "CheckHeap", 0);
 
     //	Read in default serial settings
     ini.Get_String("SerialDefaults", "ModemName", "NoName",

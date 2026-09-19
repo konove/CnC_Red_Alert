@@ -127,7 +127,6 @@ bool Debug_Playtest = false;
 bool Debug_Heap_Dump = false;  // true = print the Heap Dump
 bool Debug_Smart_Print =
     false;  // true = print everything that calls Smart_Printf
-bool Debug_Trap_Check_Heap = false;  // true = check the Heap
 bool Debug_Modem_Dump = false;       // true = print the Modem Stuff
 bool Debug_Print_Events = false;     // true = print event & packet processing
 
@@ -682,7 +681,6 @@ GraphicViewPortClass visible_view(&visible_page, 0, 0, 640, 480);
 GraphicViewPortClass hidden_view(&hidden_page, 0, 0, 640, 480);
 
 bool SoundOn;
-Timer<SystemTickSource> FrameTimer;
 Timer<SystemTickSource> CountDownTimer;
 
 NewConfigType NewConfig;

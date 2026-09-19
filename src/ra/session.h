@@ -712,7 +712,6 @@ class SessionClass {
   COORDINATE TrapCoord{0};      // coord of object, 0 = ignore
   TARGET TrapTarget{kTargetNone};  // Target # of object, 0 = ignore
   CellClass* TrapCell{nullptr};    // Ptr to cell to trap (watch)
-  int TrapCheckHeap{0};            // true = check the heap as of TrapFrame
   int32_t TrapPrintCRC{0};         // Frame # to print CRC state file
 };
 
