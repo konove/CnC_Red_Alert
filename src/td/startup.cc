@@ -558,12 +558,9 @@ void Read_Setup_Options(DiskFile* config_file) {
     /*
     ** See if an alternative socket number has been specified
     */
-    int socket = WWGetPrivateProfileInt("Options", "Socket", 0, buffer);
-    if (socket > 0) {
-      socket += 0x4000;
-      if (socket >= 0x4000 && socket < 0x8000) {
-        Ipx.Set_Socket(static_cast<uint16_t>(socket));
-      }
+    const int socket = WWGetPrivateProfileInt("Options", "Socket", 0, buffer);
+    if (socket > 0 && socket < 0x4000) {
+      Ipx.Set_Socket(static_cast<uint16_t>(0x4000 + socket));
     }
 
     /*
