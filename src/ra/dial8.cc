@@ -16,8 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// Dial8Class, the eight-way facing dial the map editor shows for the selected
-// unit or building.
+// DirectionDial, the eight-way facing dial the map editor shows for the
+// selected unit or building.
 //
 // Originally DIAL8.CPP, written by Bill Randolph in 1994-95; the Red Alert copy
 // of the file is credited to Joe L. Bostic, July 1996.
@@ -37,8 +37,8 @@
 #include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
 
-Dial8Class::Dial8Class(int id, int x, int y, int width, int height,
-                       DirType initial_direction)
+DirectionDial::DirectionDial(int id, int x, int y, int width, int height,
+                             DirType initial_direction)
     : ControlClass(static_cast<unsigned>(id), x, y, width, height,
                    kLeftPress | kLeftHeld | kLeftRelease, true),
       center_x_(X + (Width / 2)),
@@ -102,7 +102,7 @@ Dial8Class::Dial8Class(int id, int x, int y, int width, int height,
   hand_tips_[7][1] = center_y_ - (height * 7 * 6 / 2 / 100);
 }
 
-bool Dial8Class::Action(unsigned flags, KeyNumType& key) {
+bool DirectionDial::Action(unsigned flags, KeyNumType& key) {
   // Set by a press on the dial and cleared by the release, so that dragging
   // into the dial with the button already down does not turn it. The dial is
   // sticky: once pressed it receives every mouse event until the release,
@@ -153,7 +153,7 @@ bool Dial8Class::Action(unsigned flags, KeyNumType& key) {
   return ControlClass::Action(0, key);
 }
 
-bool Dial8Class::Draw_Me(bool forced) {
+bool DirectionDial::Draw_Me(bool forced) {
   const RemapControlType* scheme = Get_Color_Scheme();
 
   // Redraw only if the parent says a redraw is needed.
@@ -193,9 +193,9 @@ bool Dial8Class::Draw_Me(bool forced) {
   return false;
 }
 
-DirType Dial8Class::direction() const { return direction_; }
+DirType DirectionDial::direction() const { return direction_; }
 
-void Dial8Class::set_direction(DirType direction) {
+void DirectionDial::set_direction(DirType direction) {
   direction_ = direction;
   facing_ = Dir_Facing(direction_);
   last_facing_ = facing_;

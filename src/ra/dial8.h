@@ -16,7 +16,7 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// Dial8Class, an eight-way direction dial gadget.
+// DirectionDial, an eight-way direction dial gadget.
 //
 // Originally DIAL8.H by Bill Randolph, February 1995.
 
@@ -33,12 +33,12 @@
 // facings. When it moves, the dial reports its button ID as the key, like any
 // other control; the owner then reads the new direction with direction().
 // The map editor uses it to set a unit's or building's facing.
-class Dial8Class : public ControlClass {
+class DirectionDial : public ControlClass {
  public:
   // Creates the dial with button ID `id` in the window-relative rectangle
   // `x`, `y`, `width`, `height` (pixels), pointing in `initial_direction`.
-  Dial8Class(int id, int x, int y, int width, int height,
-             DirType initial_direction);
+  DirectionDial(int id, int x, int y, int width, int height,
+                DirType initial_direction);
 
   // Returns the direction the dial points in, 0-255. After the player turns
   // it, this is one of the eight snapped values Desired_Facing8() returns.

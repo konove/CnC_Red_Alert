@@ -239,9 +239,9 @@ void MapEditClass::One_Time() {
   /*
   **	The facing dial
   */
-  FacingDial =
-      new Dial8Class(kPopupFacingdial, kPopupFaceboxX, kPopupFaceboxY,
-                     kPopupFaceboxW, kPopupFaceboxH, static_cast<DirType>(0));
+  FacingDial = new DirectionDial(kPopupFacingdial, kPopupFaceboxX,
+                                 kPopupFaceboxY, kPopupFaceboxW, kPopupFaceboxH,
+                                 static_cast<DirType>(0));
 
   /*
   **	The base percent-built slider & its label

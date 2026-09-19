@@ -331,7 +331,7 @@ class MapEditClass : public MouseClass {
   ListClass* HouseList = nullptr;
   ListClass* MissionList = nullptr;
   TriColorGaugeClass* HealthGauge = nullptr;
-  Dial8Class* FacingDial = nullptr;
+  DirectionDial* FacingDial = nullptr;
   ControlClass* MapArea = nullptr;
   TextLabelClass* HealthText = nullptr;
   TextButtonClass* Sellable = nullptr;
