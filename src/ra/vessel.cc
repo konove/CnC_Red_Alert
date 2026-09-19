@@ -84,6 +84,7 @@
 #include "port/tokenizer.h"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
+#include "ra/audio.h"
 #include "ra/building.h"
 #include "ra/ccini.h"
 #include "ra/cell.h"
@@ -116,7 +117,6 @@
 #include "ra/type.h"
 #include "ra/unit.h"
 #include "ra/weapon.h"
-#include "ra/ww_audio.h"
 #include "tech/fixed.h"
 #include "tech/number_parse.h"
 

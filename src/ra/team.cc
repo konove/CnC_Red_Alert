@@ -85,6 +85,7 @@
 #include "base/array.h"
 #include "ra/abstract.h"
 #include "ra/aircraft.h"
+#include "ra/audio.h"
 #include "ra/building.h"
 #include "ra/cell.h"
 #include "ra/coord.h"
@@ -111,7 +112,6 @@
 #include "ra/unit.h"
 #include "ra/vector_dynamic.h"
 #include "ra/vessel.h"
-#include "ra/ww_audio.h"
 #include "tech/fixed.h"
 
 /***********************************************************************************************

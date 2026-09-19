@@ -145,6 +145,7 @@
 #include "port/random_seed.h"
 #include "port/safe_string.h"
 #include "ra/_wsproto.h"  // IWYU pragma: keep - used by an DCHECK() below.
+#include "ra/audio.h"
 #include "ra/ccini.h"
 #include "ra/cheklist.h"
 #include "ra/colrlist.h"
@@ -189,7 +190,6 @@
 #include "ra/vector_dynamic.h"
 #include "ra/version.h"
 #include "ra/wol_main.h"
-#include "ra/ww_audio.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
 #include "sdllib/gbuffer.h"

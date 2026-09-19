@@ -45,6 +45,7 @@
 #include "base/types.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/aircraft.h"  // IWYU pragma: keep
+#include "ra/audio.h"
 #include "ra/ccptr.h"
 #include "ra/chat.h"
 #include "ra/config.h"
@@ -92,7 +93,6 @@
 #include "ra/vortex.h"
 #include "ra/wolapiob.h"
 #include "ra/wolstrng.h"
-#include "ra/ww_audio.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"

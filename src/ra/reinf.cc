@@ -51,6 +51,7 @@
 #include "magic_enum/magic_enum.hpp"
 #include "port/safe_string.h"
 #include "ra/aircraft.h"
+#include "ra/audio.h"
 #include "ra/building.h"
 #include "ra/ccptr.h"
 #include "ra/cell.h"
@@ -68,7 +69,6 @@
 #include "ra/techno.h"
 #include "ra/type.h"
 #include "ra/unit.h"
-#include "ra/ww_audio.h"
 
 /***********************************************************************************************
  * _Pop_Group_Out_Of_Object -- Process popping the group out of the object. *

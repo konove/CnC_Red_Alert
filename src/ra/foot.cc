@@ -99,6 +99,7 @@
 #include "base/buffer.h"
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
+#include "ra/audio.h"
 #include "ra/building.h"
 #include "ra/cell.h"
 #include "ra/coord.h"
@@ -126,7 +127,6 @@
 #include "ra/unit.h"
 #include "ra/vector_dynamic.h"
 #include "ra/vessel.h"
-#include "ra/ww_audio.h"
 #include "sdllib/memflag.h"
 #include "sdllib/ww_mouse.h"
 

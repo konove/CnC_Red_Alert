@@ -156,6 +156,7 @@
 #include "magic_enum/magic_enum.hpp"
 #include "port/safe_string.h"
 #include "ra/aircraft.h"
+#include "ra/audio.h"
 #include "ra/base.h"
 #include "ra/building.h"
 #include "ra/bullet.h"
@@ -206,7 +207,6 @@
 #include "ra/vector_dynamic.h"
 #include "ra/vessel.h"
 #include "ra/vortex.h"
-#include "ra/ww_audio.h"
 #include "sdllib/gbuffer.h"
 #include "tech/fixed.h"
 

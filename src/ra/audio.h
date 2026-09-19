@@ -23,8 +23,8 @@
 //
 // Originally AUDIO.H by Joe L. Bostic, started June 21, 1994.
 
-#ifndef CNC_RED_ALERT_RA_WW_AUDIO_H_
-#define CNC_RED_ALERT_RA_WW_AUDIO_H_
+#ifndef CNC_RED_ALERT_RA_AUDIO_H_
+#define CNC_RED_ALERT_RA_AUDIO_H_
 
 #include "ra/defines.h"
 #include "tech/fixed.h"
@@ -78,4 +78,4 @@ void PlaySoundEffectAt(VocType voc, COORDINATE coord, int variation = 1,
 // first, so polling it in a loop keeps the queue moving.
 bool IsSpeaking();
 
-#endif  // CNC_RED_ALERT_RA_WW_AUDIO_H_
+#endif  // CNC_RED_ALERT_RA_AUDIO_H_

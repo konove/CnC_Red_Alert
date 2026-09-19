@@ -71,6 +71,7 @@
 #include "base/buffer.h"
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
+#include "ra/audio.h"
 #include "ra/building.h"
 #include "ra/ccptr.h"
 #include "ra/cell.h"
@@ -93,7 +94,6 @@
 #include "ra/techno.h"
 #include "ra/type.h"
 #include "ra/unit.h"
-#include "ra/ww_audio.h"
 #include "tech/fixed.h"
 
 /***********************************************************************************************

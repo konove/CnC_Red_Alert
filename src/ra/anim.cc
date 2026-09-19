@@ -66,6 +66,7 @@
 #include "absl/log/check.h"
 #include "absl/strings/match.h"
 #include "magic_enum/magic_enum.hpp"
+#include "ra/audio.h"
 #include "ra/building.h"
 #include "ra/ccptr.h"
 #include "ra/cell.h"
@@ -94,7 +95,6 @@
 #include "ra/target.h"
 #include "ra/techno.h"
 #include "ra/type.h"
-#include "ra/ww_audio.h"
 #include "sdllib/shape.h"
 #include "tech/fixed.h"
 

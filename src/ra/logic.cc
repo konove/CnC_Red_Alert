@@ -45,6 +45,7 @@
 
 #include "magic_enum/magic_enum.hpp"
 #include "ra/anim.h"
+#include "ra/audio.h"
 #include "ra/coord.h"
 #include "ra/defines.h"
 #include "ra/externs.h"
@@ -64,7 +65,6 @@
 #include "ra/type.h"
 #include "ra/vector_dynamic.h"
 #include "ra/vortex.h"
-#include "ra/ww_audio.h"
 #include "session.h"
 #include "tech/fixed.h"
 #include "tech/ftimer.h"

@@ -27,6 +27,7 @@
 #include "absl/strings/str_format.h"
 #include "base/buffer.h"
 #include "port/safe_string.h"
+#include "ra/audio.h"
 #include "ra/config.h"
 #include "ra/defines.h"
 #include "ra/externs.h"
@@ -48,7 +49,6 @@
 #include "ra/vector_dynamic.h"
 #include "ra/wolapiob.h"
 #include "ra/wolstrng.h"
-#include "ra/ww_audio.h"
 #include "sdllib/keyboard.h"
 #include "tech/fixed.h"
 

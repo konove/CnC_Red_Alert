@@ -23,7 +23,7 @@
 //
 // Originally AUDIO.CPP by Joe L. Bostic, started September 10, 1993.
 
-#include "ra/ww_audio.h"
+#include "ra/audio.h"
 
 #include <algorithm>
 #include <cstddef>
