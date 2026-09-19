@@ -618,7 +618,6 @@ bool MPlayerObiWan = false;
 MPlayerScoreType MPlayerScore[MAX_MULTI_NAMES];
 int MPlayerGamesPlayed;  // # games played this run
 int MPlayerNumScores;    // # active entries in MPlayerScore
-int MPlayerWinner;       // index of winner of last game
 int MPlayerCurGame;      // index of current game being played
 
 //

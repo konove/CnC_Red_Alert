@@ -3995,7 +3995,6 @@ void HouseClass::MPlayer_Defeated() {
       ..................................................................*/
       if (!hptr->IsDefeated) {
         base::At(MPlayerScore, base::At(score_index, i)).Wins++;
-        MPlayerWinner = base::At(score_index, i);
       }
 
       /*..................................................................

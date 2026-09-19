@@ -291,7 +291,6 @@ extern bool MPlayerObiWan;
 extern MPlayerScoreType MPlayerScore[MAX_MULTI_NAMES];
 extern int MPlayerGamesPlayed;
 extern int MPlayerNumScores;
-extern int MPlayerWinner;
 extern int MPlayerCurGame;
 
 extern int TheirProcessTime[MAX_PLAYERS - 1];
