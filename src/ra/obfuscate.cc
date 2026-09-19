@@ -2,28 +2,26 @@
 
 #include <algorithm>
 #include <array>
+#include <cstddef>
 #include <cstdint>
 #include <span>
 #include <string_view>
 
 #include "absl/strings/ascii.h"
 #include "base/numeric.h"
-#include "base/buffer.h"
 #include "port/safe_string.h"
 #include "tech/crc.h"
 
 uint32_t HashKeyPhrase(const std::string_view phrase) {
-  // 127 phrase characters, the padding that can bring 127 up to 128, and a
-  // terminator. The 0xA5 fill is not just initialization: an empty phrase's
-  // padding is derived from it (see below), so it is part of the hash.
-  std::array<char, 129> phrase_buffer{};
-
-  base::FillBytes(base::ObjectBytes(phrase_buffer), '\xA5',
-                  sizeof(phrase_buffer));
+  // Up to 127 phrase characters and a terminator, which the padding can
+  // overwrite to reach 128. The 0xA5 fill is not just initialization: an empty
+  // phrase's padding is derived from it (see below), so it is part of the hash.
+  std::array<char, 128> phrase_buffer{};
+  phrase_buffer.fill('\xA5');
 
   // Work on a copy so the caller's phrase is left alone. The original read at
   // most 127 characters and stopped at an embedded NUL; keep both limits.
-  port::SafeCopy(std::span(phrase_buffer).first(128), phrase);
+  port::SafeCopy(phrase_buffer, phrase);
   int length = static_cast<int>(std::string_view(phrase_buffer.data()).size());
 
   // Case-insensitive: fold the phrase to upper case.
@@ -58,25 +56,15 @@ uint32_t HashKeyPhrase(const std::string_view phrase) {
           static_cast<char>('A' + ((mixed + index) % 26));
     }
     length = index;
-    phrase_buffer.at(base::ToSize(length)) = '\0';
   }
 
-  // Hash the padded phrase. The CRC is order dependent, so anagrams differ.
+  // Start from the CRC of the reversed padded phrase. The original also
+  // hashed the phrase forwards, meaning to double the work of reversing the
+  // CRC, but then XORed that same CRC back out; only the reversed one reaches
+  // the result.
+  std::ranges::reverse(std::span(phrase_buffer).first(base::ToSize(length)));
   uint32_t code = CrcEngine::Compute(
       std::string_view(phrase_buffer.data(), base::ToSize(length)));
-
-  // Kept to XOR back in below.
-  const uint32_t copy = code;
-
-  // Fold in the CRC of the reversed phrase. The original meant this to double
-  // the work of reversing the CRC, but see the next step.
-  std::ranges::reverse(std::span(phrase_buffer).first(base::ToSize(length)));
-  code ^= CrcEngine::Compute(
-      std::string_view(phrase_buffer.data(), base::ToSize(length)));
-
-  // XORing the first CRC back out cancels it: from here `code` is just the
-  // CRC of the reversed phrase. The historical codes depend on exactly that.
-  code = code ^ copy;
 
   // Feed `code` through the phrase one byte at a time: each byte is XORed with
   // the low byte of the running code, and that byte is rotated back in at the
@@ -104,13 +92,12 @@ uint32_t HashKeyPhrase(const std::string_view phrase) {
     static constexpr std::array<uint8_t, 8> kBitsForcedOn = {
         0x10, 0x00, 0x00, 0x80, 0x40, 0x00, 0x00, 0x04};
 
-    phrase_buffer.at(base::ToSize(index)) = static_cast<char>(
-        static_cast<uint8_t>(phrase_buffer.at(base::ToSize(index))) |
-        kBitsForcedOn.at(base::ToSize(index) % kBitsForcedOn.size()));
-    phrase_buffer.at(base::ToSize(index)) = static_cast<char>(
-        static_cast<uint8_t>(phrase_buffer.at(base::ToSize(index))) &
-        static_cast<uint8_t>(
-            ~kBitsForcedOff.at(base::ToSize(index) % kBitsForcedOff.size())));
+    char& byte = phrase_buffer.at(base::ToSize(index));
+    const size_t pattern = base::ToSize(index) % kBitsForcedOn.size();
+    const uint32_t bits =
+        (uint32_t{static_cast<uint8_t>(byte)} | kBitsForcedOn.at(pattern)) &
+        ~uint32_t{kBitsForcedOff.at(pattern)};
+    byte = static_cast<char>(bits);
   }
 
   // Scramble each group of four bytes with a multiply/add/XOR round that
