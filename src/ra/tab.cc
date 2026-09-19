@@ -53,6 +53,7 @@
 #include "ra/externs.h"
 #include "ra/jshell.h"
 #include "ra/mapedit.h"
+#include "ra/palettes.h"
 #include "ra/queue.h"
 #include "ra/rules.h"
 #include "ra/scenario.h"
@@ -132,15 +133,17 @@ void TabClass::Draw_It(bool complete) {
     CC_Draw_Shape(TabShape, 0, 0, 0, WINDOW_MAIN, SHAPE_NORMAL);
     Draw_Credits_Tab();
     LogicPage->Draw_Line(0, tab_height - 2, rightx, tab_height - 2, kBlack);
-    Fancy_Text_Print(TXT_TAB_BUTTON_CONTROLS, EVA_WIDTH, 0, &MetalScheme,
-                     kTBlack, TPF_METAL12 | TPF_CENTER | TPF_USE_GRAD_PAL);
+    Fancy_Text_Print(TXT_TAB_BUTTON_CONTROLS, EVA_WIDTH, 0,
+                     &ThePalettes().metal_scheme(), kTBlack,
+                     TPF_METAL12 | TPF_CENTER | TPF_USE_GRAD_PAL);
     if (IsSidebarActive) {
     } else {
       CC_Draw_Shape(TabShape, 0, width - (EVA_WIDTH * 2), 0, WINDOW_MAIN,
                     SHAPE_NORMAL);
       Fancy_Text_Print(
-          TXT_TAB_SIDEBAR, width - EVA_WIDTH, 0, &ColorRemaps.at(PCOLOR_GREY),
-          kTBlack, TPF_METAL12 | TPF_NOSHADOW | TPF_CENTER | TPF_BRIGHT_COLOR);
+          TXT_TAB_SIDEBAR, width - EVA_WIDTH, 0,
+          &ThePalettes().color_remaps().at(PCOLOR_GREY), kTBlack,
+          TPF_METAL12 | TPF_NOSHADOW | TPF_CENTER | TPF_BRIGHT_COLOR);
     }
 
     LogicPage->Unlock();
@@ -175,10 +178,11 @@ void TabClass::Hilite_Tab(int tab) {
   ** Use the new sidebar art for 640x400
   */
   CC_Draw_Shape(TabShape, 1, xpos, 0, WINDOW_MAIN, SHAPE_NORMAL);
-  MetalScheme.Color = 128 + 6;
-  Fancy_Text_Print(TXT_TAB_BUTTON_CONTROLS, EVA_WIDTH, 0, &MetalScheme, kTBlack,
+  ThePalettes().metal_scheme().Color = 128 + 6;
+  Fancy_Text_Print(TXT_TAB_BUTTON_CONTROLS, EVA_WIDTH, 0,
+                   &ThePalettes().metal_scheme(), kTBlack,
                    TPF_METAL12 | TPF_CENTER | TPF_USE_GRAD_PAL);
-  MetalScheme.Color = 128;
+  ThePalettes().metal_scheme().Color = 128;
 }
 
 /***********************************************************************************************

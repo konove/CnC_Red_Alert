@@ -176,6 +176,7 @@
 #include "ra/msgbox.h"
 #include "ra/msglist.h"
 #include "ra/palette.h"
+#include "ra/palettes.h"
 #include "ra/queue.h"
 #include "ra/rules.h"
 #include "ra/saveload.h"
@@ -1615,9 +1616,9 @@ static int Net_Join_Dialog() {
   port::SafeCopy(namebuf, Session.Handle);  // set my name
   name_edt.Set_Text(namebuf, MPLAYER_NAME_MAX);
   if (Session.ColorIdx == PCOLOR_DIALOG_BLUE) {
-    name_edt.Set_Color(&ColorRemaps.at(PCOLOR_REALLY_BLUE));
+    name_edt.Set_Color(&ThePalettes().color_remaps().at(PCOLOR_REALLY_BLUE));
   } else {
-    name_edt.Set_Color(&ColorRemaps.at(Session.ColorIdx));
+    name_edt.Set_Color(&ThePalettes().color_remaps().at(Session.ColorIdx));
   }
 
   //........................................................................
@@ -1730,7 +1731,7 @@ static int Net_Join_Dialog() {
   //------------------------------------------------------------------------
   Send_Join_Queries(game_index, joinstate, 1, 0, 1, namebuf, 1);
   Load_Title_Page(true);
-  CCPalette.Set();  // GamePalette.Set();
+  ThePalettes().title_palette().Set();  // GamePalette.Set();
   //------------------------------------------------------------------------
   //	Processing loop
   //------------------------------------------------------------------------
@@ -1832,11 +1833,12 @@ static int Net_Join_Dialog() {
               Text_String(
                   HouseTypeClass::As_Reference(Session.House).Full_Name()));
 #endif  // OLDWAY
-          Fancy_Text_Print(txt, d_dialog_cx, d_dialog_y + d_margin2 + 2,
-                           Session.ColorIdx == PCOLOR_DIALOG_BLUE
-                               ? &ColorRemaps.at(PCOLOR_REALLY_BLUE)
-                               : &ColorRemaps.at(Session.ColorIdx),
-                           kTBlack, TPF_CENTER | kTpfText);
+          Fancy_Text_Print(
+              txt, d_dialog_cx, d_dialog_y + d_margin2 + 2,
+              Session.ColorIdx == PCOLOR_DIALOG_BLUE
+                  ? &ThePalettes().color_remaps().at(PCOLOR_REALLY_BLUE)
+                  : &ThePalettes().color_remaps().at(Session.ColorIdx),
+              kTBlack, TPF_CENTER | kTpfText);
         }
 
         //...............................................................
@@ -1912,11 +1914,13 @@ static int Net_Join_Dialog() {
       //..................................................................
       if (display >= REDRAW_COLORS && joinstate < JOIN_CONFIRMED) {
         for (i = 0; i < MAX_MPLAYER_COLORS; i++) {
-          LogicPage->Fill_Rect(
-              base::At(cbox_x, i) + 1, d_color_y + 1,
-              base::At(cbox_x, i) + 1 + d_color_w - 4,
-              d_color_y + 1 + d_color_h - 2,
-              ColorRemaps.at(static_cast<PlayerColorType>(i)).Box);
+          LogicPage->Fill_Rect(base::At(cbox_x, i) + 1, d_color_y + 1,
+                               base::At(cbox_x, i) + 1 + d_color_w - 4,
+                               d_color_y + 1 + d_color_h - 2,
+                               ThePalettes()
+                                   .color_remaps()
+                                   .at(static_cast<PlayerColorType>(i))
+                                   .Box);
           //						(i ==
           // PCOLOR_DIALOG_BLUE) ? ColorRemaps[PCOLOR_REALLY_BLUE].Box :
           // ColorRemaps[i].Box);
@@ -2094,9 +2098,10 @@ static int Net_Join_Dialog() {
           Session.ColorIdx = Session.PrefColor;
 
           if (Session.ColorIdx == PCOLOR_DIALOG_BLUE) {
-            name_edt.Set_Color(&ColorRemaps.at(PCOLOR_REALLY_BLUE));
+            name_edt.Set_Color(
+                &ThePalettes().color_remaps().at(PCOLOR_REALLY_BLUE));
           } else {
-            name_edt.Set_Color(&ColorRemaps.at(
+            name_edt.Set_Color(&ThePalettes().color_remaps().at(
                 Session.ColorIdx == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
                                                        : Session.ColorIdx));
           }
@@ -2626,9 +2631,10 @@ static int Net_Join_Dialog() {
             Text_String(
                 HouseTypeClass::As_Reference(Session.House).Full_Name()));
 #endif  // OLDWAY
-        playerlist.Add_Item(item, Session.ColorIdx == PCOLOR_DIALOG_BLUE
-                                      ? &ColorRemaps.at(PCOLOR_REALLY_BLUE)
-                                      : &ColorRemaps.at(Session.ColorIdx));
+        playerlist.Add_Item(
+            item, Session.ColorIdx == PCOLOR_DIALOG_BLUE
+                      ? &ThePalettes().color_remaps().at(PCOLOR_REALLY_BLUE)
+                      : &ThePalettes().color_remaps().at(Session.ColorIdx));
 
         who = new NodeNameType;
         port::SafeCopy(who->Name, namebuf);
@@ -2857,16 +2863,17 @@ static int Net_Join_Dialog() {
           for (i = 0; i < Session.Chat.Count(); i++) {
             if (!absl::EqualsIgnoreCase(Session.Chat.at(i)->Name,
                                         playerlist.Get_Item(i)) ||
-                &ColorRemaps.at(Session.Chat.at(i)->Chat.Color ==
-                                        PCOLOR_DIALOG_BLUE
-                                    ? PCOLOR_REALLY_BLUE
-                                    : Session.Chat.at(i)->Chat.Color) !=
+                &ThePalettes().color_remaps().at(
+                    Session.Chat.at(i)->Chat.Color == PCOLOR_DIALOG_BLUE
+                        ? PCOLOR_REALLY_BLUE
+                        : Session.Chat.at(i)->Chat.Color) !=
                     playerlist.Colors.at(i)) {
-              playerlist.Colors.at(i) =
-                  &ColorRemaps.at(Session.Chat.at(i)->Chat.Color);
+              playerlist.Colors.at(i) = &ThePalettes().color_remaps().at(
+                  Session.Chat.at(i)->Chat.Color);
               if (playerlist.Colors.at(i) ==
-                  &ColorRemaps.at(PCOLOR_DIALOG_BLUE)) {
-                playerlist.Colors.at(i) = &ColorRemaps.at(PCOLOR_REALLY_BLUE);
+                  &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)) {
+                playerlist.Colors.at(i) =
+                    &ThePalettes().color_remaps().at(PCOLOR_REALLY_BLUE);
               }
               playerlist.Set_Item(i, Session.Chat.at(i)->Name);
               playerlist.Flag_To_Redraw();
@@ -2875,10 +2882,10 @@ static int Net_Join_Dialog() {
         } else {
           if (!absl::EqualsIgnoreCase(Session.Chat.at(0)->Name,
                                       playerlist.Get_Item(0)) ||
-              &ColorRemaps.at(Session.Chat.at(0)->Chat.Color) !=
-                  playerlist.Colors.at(0)) {
-            playerlist.Colors.at(0) =
-                &ColorRemaps.at(Session.Chat.at(0)->Chat.Color);
+              &ThePalettes().color_remaps().at(
+                  Session.Chat.at(0)->Chat.Color) != playerlist.Colors.at(0)) {
+            playerlist.Colors.at(0) = &ThePalettes().color_remaps().at(
+                Session.Chat.at(0)->Chat.Color);
             playerlist.Set_Item(0, Session.Chat.at(0)->Name);
             playerlist.Flag_To_Redraw();
           }
@@ -3564,10 +3571,12 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
         Session.Players.at(i)->Player.Color = Session.GPacket.PlayerInfo.Color;
 
         playerlist->Colors.at(i) =
-            &ColorRemaps.at(Session.GPacket.PlayerInfo.Color);
+            &ThePalettes().color_remaps().at(Session.GPacket.PlayerInfo.Color);
 
-        if (playerlist->Colors.at(i) == &ColorRemaps.at(PCOLOR_DIALOG_BLUE)) {
-          playerlist->Colors.at(i) = &ColorRemaps.at(PCOLOR_REALLY_BLUE);
+        if (playerlist->Colors.at(i) ==
+            &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)) {
+          playerlist->Colors.at(i) =
+              &ThePalettes().color_remaps().at(PCOLOR_REALLY_BLUE);
         }
 
         found = 1;
@@ -3626,9 +3635,10 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
                                      Session.GPacket.PlayerInfo.House)
                                      .Full_Name()));
 #endif  // OLDWAY
-      playerlist->Add_Item(item, who->Player.Color == PCOLOR_DIALOG_BLUE
-                                     ? &ColorRemaps.at(PCOLOR_REALLY_BLUE)
-                                     : &ColorRemaps.at(who->Player.Color));
+      playerlist->Add_Item(
+          item, who->Player.Color == PCOLOR_DIALOG_BLUE
+                    ? &ThePalettes().color_remaps().at(PCOLOR_REALLY_BLUE)
+                    : &ThePalettes().color_remaps().at(who->Player.Color));
 
       //..................................................................
       // If this player's in the Chat vector, remove him from there
@@ -4407,9 +4417,10 @@ static int Net_New_Dialog() {
       item, sizeof(item), "%s\t%s", Session.Handle,
       Text_String(HouseTypeClass::As_Reference(Session.House).Full_Name()));
 #endif  // OLDWAY
-  playerlist.Add_Item(item, Session.ColorIdx == PCOLOR_DIALOG_BLUE
-                                ? &ColorRemaps.at(PCOLOR_REALLY_BLUE)
-                                : &ColorRemaps.at(Session.ColorIdx));
+  playerlist.Add_Item(item,
+                      Session.ColorIdx == PCOLOR_DIALOG_BLUE
+                          ? &ThePalettes().color_remaps().at(PCOLOR_REALLY_BLUE)
+                          : &ThePalettes().color_remaps().at(Session.ColorIdx));
 
   who = new NodeNameType;
   port::SafeCopy(who->Name, Session.Handle);
@@ -4417,7 +4428,7 @@ static int Net_New_Dialog() {
   who->Player.Color = Session.ColorIdx;
   Session.Players.Add(who);
   Load_Title_Page(true);
-  CCPalette.Set();  // GamePalette.Set();
+  ThePalettes().title_palette().Set();  // GamePalette.Set();
 
   //
   // Now init the max range of the AI players slider.
@@ -5425,9 +5436,10 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
                                      Session.GPacket.PlayerInfo.House)
                                      .Full_Name()));
 #endif  // OLDWAY
-      playerlist->Add_Item(item, who->Player.Color == PCOLOR_DIALOG_BLUE
-                                     ? &ColorRemaps.at(PCOLOR_REALLY_BLUE)
-                                     : &ColorRemaps.at(who->Player.Color));
+      playerlist->Add_Item(
+          item, who->Player.Color == PCOLOR_DIALOG_BLUE
+                    ? &ThePalettes().color_remaps().at(PCOLOR_REALLY_BLUE)
+                    : &ThePalettes().color_remaps().at(who->Player.Color));
 
       //..................................................................
       //	Send a confirmation packet
@@ -7231,9 +7243,10 @@ void Start_WWChat(ColorListClass* playerlist) {
       item, sizeof(item), "%s\t%s", Session.Handle,
       Text_String(HouseTypeClass::As_Reference(Session.House).Full_Name()));
 #endif  // OLDWAY
-  playerlist->Add_Item(item, Session.ColorIdx == PCOLOR_DIALOG_BLUE
-                                 ? &ColorRemaps.at(PCOLOR_REALLY_BLUE)
-                                 : &ColorRemaps.at(Session.ColorIdx));
+  playerlist->Add_Item(
+      item, Session.ColorIdx == PCOLOR_DIALOG_BLUE
+                ? &ThePalettes().color_remaps().at(PCOLOR_REALLY_BLUE)
+                : &ThePalettes().color_remaps().at(Session.ColorIdx));
 
   //------------------------------------------------------------------------
   // Add everyone else to the list
@@ -7259,10 +7272,11 @@ void Start_WWChat(ColorListClass* playerlist) {
         absl::SNPrintF(item, sizeof(item), "%s\t%s",
                        base::At(WWPersons, i).Name, Text_String(TXT_SOVIET));
       }
-      playerlist->Add_Item(item,
-                           base::At(WWPersons, i).Color == PCOLOR_DIALOG_BLUE
-                               ? &ColorRemaps.at(PCOLOR_REALLY_BLUE)
-                               : &ColorRemaps.at(base::At(WWPersons, i).Color));
+      playerlist->Add_Item(
+          item,
+          base::At(WWPersons, i).Color == PCOLOR_DIALOG_BLUE
+              ? &ThePalettes().color_remaps().at(PCOLOR_REALLY_BLUE)
+              : &ThePalettes().color_remaps().at(base::At(WWPersons, i).Color));
     }
     //.....................................................................
     // If this entry's name is the same as the previous, copy the color

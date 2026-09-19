@@ -35,6 +35,7 @@
 #include "ra/interpal.h"
 #include "ra/jshell.h"
 #include "ra/palette.h"
+#include "ra/palettes.h"
 #include "ra/screen.h"
 #include "ra/session.h"
 #include "ra/theme.h"
@@ -84,12 +85,12 @@ void Play_Movie(const char* name, const ThemeType theme, bool clear_screen) {
     Hide_Mouse();
     Theme.Queue_Song(theme);
     if (!clear_screen) {
-      BlackPalette.Set(kFadePaletteMedium);
+      ThePalettes().black_palette().Set(kFadePaletteMedium);
       TheScreen().visible_page().Clear();
-      BlackPalette.Adjust(0x08, WhitePalette);
-      BlackPalette.Set();
-      BlackPalette.Adjust(0xFF);
-      BlackPalette.Set();
+      ThePalettes().black_palette().Adjust(0x08, ThePalettes().white_palette());
+      ThePalettes().black_palette().Set();
+      ThePalettes().black_palette().Adjust(0xFF);
+      ThePalettes().black_palette().Set();
     }
     Keyboard->Clear();
 
@@ -135,10 +136,10 @@ void Play_Movie(const char* name, const ThemeType theme, bool clear_screen) {
     // The VQA player may leave the framebuffer and palette dirty.
     if (clear_screen) {
       TheScreen().visible_page().Clear();
-      BlackPalette.Adjust(0x08, WhitePalette);
-      BlackPalette.Set();
-      BlackPalette.Adjust(0xFF);
-      BlackPalette.Set();
+      ThePalettes().black_palette().Adjust(0x08, ThePalettes().white_palette());
+      ThePalettes().black_palette().Set();
+      ThePalettes().black_palette().Adjust(0xFF);
+      ThePalettes().black_palette().Set();
     }
     Show_Mouse();
   }

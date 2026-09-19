@@ -90,6 +90,7 @@
 #include "ra/object.h"
 #include "ra/overlay.h"
 #include "ra/palette.h"
+#include "ra/palettes.h"
 #include "ra/rules.h"
 #include "ra/scenario.h"
 #include "ra/score.h"
@@ -1106,7 +1107,7 @@ bool Load_Game(int id) {
       ** Find out if the CD in the current drive is the Aftermath disc.
       */
       if (Get_CD_Index(SearchPaths::current_cd_drive(), 60) != 3) {
-        GamePalette.Set(kFadePaletteFast, ServiceRealTime);
+        ThePalettes().game_palette().Set(kFadePaletteFast, ServiceRealTime);
         // force Aftermath CD in drive.
         if (!Force_CD_Available(3)) {
           EmergencyExit(EXIT_FAILURE);

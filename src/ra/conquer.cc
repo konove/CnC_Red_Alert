@@ -75,6 +75,7 @@
 #include "ra/nullmgr.h"
 #include "ra/object.h"
 #include "ra/palette.h"
+#include "ra/palettes.h"
 #include "ra/queue.h"
 #include "ra/rawolapi.h"
 #include "ra/record_playback.h"
@@ -130,8 +131,9 @@ static void CyclePalette() {
 
   bool palette_changed = false;
   if (pulse.Update()) {
-    GamePalette.at(kPulseColor) = pulse.Apply(GamePalette.at(kWhite));
-    GamePalette.at(kEmberColor) = pulse.Apply(kEmberBase);
+    ThePalettes().game_palette().at(kPulseColor) =
+        pulse.Apply(ThePalettes().game_palette().at(kWhite));
+    ThePalettes().game_palette().at(kEmberColor) = pulse.Apply(kEmberBase);
     palette_changed = true;
   }
 
@@ -140,7 +142,10 @@ static void CyclePalette() {
 
     // Each water colour moves up one slot; the last wraps round to the first.
     const auto water_colors =
-        GamePalette.colors().subspan<kCycleColorStart, kCycleColorCount>();
+        ThePalettes()
+            .game_palette()
+            .colors()
+            .subspan<kCycleColorStart, kCycleColorCount>();
     std::ranges::rotate(water_colors, water_colors.end() - 1);
 
     palette_changed = true;
@@ -149,7 +154,7 @@ static void CyclePalette() {
   // Either effect leaves the palette changed only in memory until it is
   // passed to the system.
   if (palette_changed) {
-    GamePalette.Set();
+    ThePalettes().game_palette().Set();
   }
 }
 
@@ -228,7 +233,7 @@ static void BeginScenario() {
   ChronalVortex.Setup_Remap_Tables(Scen.Theater);
 
   // This PRESUMES that Select_Game() has told the map to draw itself.
-  GamePalette.Set(kFadePaletteMedium);
+  ThePalettes().game_palette().Set(kFadePaletteMedium);
   Keyboard->Clear();
 
   // A recording drives the view on playback, so there is no mouse to show.
@@ -279,7 +284,7 @@ static void EndScenario() {
     Send_Statistics_Packet();  // After game sending if PacketLater set.
   }
 
-  BlackPalette.Set(kFadePaletteSlow);
+  ThePalettes().black_palette().Set(kFadePaletteSlow);
   TheScreen().visible_page().Clear();
 
   if (Session.Record || Session.Play) {
@@ -607,7 +612,7 @@ static void CaptureMotionFrame() {
                     frame_bytes);
     file.SetName(absl::StrFormat("cap%04d.pcx", index));
 
-    Write_PCX_File(file, frame_page, &GamePalette);
+    Write_PCX_File(file, frame_page, &ThePalettes().game_palette());
   }
 
   // Release the run's buffers so that the next run re-reads MovieTime.

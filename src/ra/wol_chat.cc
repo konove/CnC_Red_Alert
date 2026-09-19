@@ -34,7 +34,6 @@
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/edit.h"
-#include "ra/externs.h"
 #include "ra/gadget.h"
 #include "ra/iconlist.h"
 #include "ra/inline.h"
@@ -42,6 +41,7 @@
 #include "ra/jshell.h"
 #include "ra/link.h"
 #include "ra/msgbox.h"
+#include "ra/palettes.h"
 #include "ra/rawolapi.h"
 #include "ra/seditdlg.h"
 #include "ra/shapebtn.h"
@@ -1056,7 +1056,9 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
 void WOL_PrintMessage(IconListClass& ILTarget, const char* szText,
                       PlayerColorType iColorRemap /* = PCOLOR_NONE */) {
   RemapControlType* pColorRemap =
-      (iColorRemap == PCOLOR_NONE ? nullptr : &ColorRemaps.at(iColorRemap));
+      (iColorRemap == PCOLOR_NONE
+           ? nullptr
+           : &ThePalettes().color_remaps().at(iColorRemap));
   WOL_PrintMessage(ILTarget, szText, pColorRemap);
 }
 

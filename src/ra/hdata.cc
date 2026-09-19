@@ -58,6 +58,7 @@
 #include "ra/defines.h"
 #include "ra/externs.h"
 #include "ra/heap.h"
+#include "ra/palettes.h"
 #include "ra/text_ids.h"
 #include "ra/type.h"
 #include "tech/fixed.h"
@@ -455,7 +456,7 @@ HouseTypeClass& HouseTypeClass::As_Reference(HousesType house) {
  * HISTORY: * 06/03/1996 JLB : Created. *
  *=============================================================================================*/
 std::span<const unsigned char> HouseTypeClass::Remap_Table() const {
-  return ColorRemaps.at(RemapColor).RemapTable;
+  return ThePalettes().color_remaps().at(RemapColor).RemapTable;
 }
 
 /***********************************************************************************************

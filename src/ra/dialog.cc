@@ -70,6 +70,7 @@
 #include "ra/gadget.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
+#include "ra/palettes.h"
 #include "ra/screen.h"
 #include "ra/shape_draw.h"
 #include "ra/text_ids.h"
@@ -402,7 +403,7 @@ void Simple_Text_Print(const char* text, int x, int y,
   unsigned char fontpalette[16];  // Working font palette array.
 
   if (fore == nullptr) {
-    fore = &ColorRemaps.at(PCOLOR_RED);
+    fore = &ThePalettes().color_remaps().at(PCOLOR_RED);
   }
 
   /*

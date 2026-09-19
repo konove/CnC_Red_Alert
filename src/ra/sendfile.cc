@@ -64,6 +64,7 @@
 #include "ra/mission_id.h"
 #include "ra/nullmgr.h"
 #include "ra/palette.h"
+#include "ra/palettes.h"
 #include "ra/screen.h"
 #include "ra/session.h"
 #include "ra/text_ids.h"
@@ -378,7 +379,7 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
         ** Redraw backgound & dialog box
         */
         Load_Title_Page(true);
-        Set_Palette(CCPalette);
+        Set_Palette(ThePalettes().title_palette());
 
         Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
 
@@ -684,7 +685,7 @@ bool Send_Remote_File(const char* file_name, int gametype) {
         ** Redraw backgound & dialog box
         */
         Load_Title_Page(true);
-        Set_Palette(CCPalette);
+        Set_Palette(ThePalettes().title_palette());
 
         Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
 

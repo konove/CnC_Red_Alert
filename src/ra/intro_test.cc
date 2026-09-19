@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <vector>
 
+#include "base/installed.h"
 #include "gtest/gtest.h"
 #include "ra/defines.h"
 #include "ra/externs.h"
@@ -16,6 +17,7 @@
 #include "ra/mplayer.h"
 #include "ra/msgbox.h"
 #include "ra/palette.h"
+#include "ra/palettes.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
@@ -30,11 +32,8 @@ int mouse_hides = 0;  // Hide_Mouse() calls not yet matched by Show_Mouse().
 
 }  // namespace
 
-// The globals intro.cc reaches for.
+// The global intro.cc reaches for.
 int CurrentCD = -1;
-PaletteClass BlackPalette;
-PaletteClass CCPalette;
-PaletteClass GamePalette;
 
 bool Using_DVD() { return using_dvd; }
 void Hide_Mouse() { ++mouse_hides; }
@@ -74,6 +73,8 @@ class IntroTest : public testing::Test {
       std::vector<uint8_t>(size_t{kWidth} * kHeight);
   GraphicBufferClass hidden_{kWidth, kHeight, hidden_pixels_};
   GraphicBufferClass seen_{kWidth, kHeight, seen_pixels_};
+  Palettes palettes_;
+  base::Installed<Palettes>::Scope palettes_scope_{palettes_};
 };
 
 TEST_F(IntroTest, CdInstallPlaysTheIntroWithoutAsking) {

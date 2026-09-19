@@ -36,6 +36,7 @@
 #include "ra/dib.h"
 #include "ra/iconlist.h"
 #include "ra/installation.h"
+#include "ra/palettes.h"
 #include "ra/screen.h"
 #include "ra/text_ids.h"
 #include "ra/type.h"
@@ -2130,7 +2131,7 @@ bool WolapiObject::SpawnBrowser(const char* szURL) {
                    szWebBrowser, szURL);
     //		debugprint( "About to CreateProcess: '%s'\n", szCommandLine );
     Hide_Mouse();
-    BlackPalette.Set(kFadePaletteFast, ServiceRealTime);
+    ThePalettes().black_palette().Set(kFadePaletteFast, ServiceRealTime);
     //		::ShowWindow( MainWindow, SW_SHOWMINIMIZED );
     TheScreen().visible_view().Clear();
     if (::CreateProcess(nullptr,
@@ -2169,7 +2170,7 @@ bool WolapiObject::SpawnBrowser(const char* szURL) {
         }
       }
       bPump_In_Call_Back = false;
-      GamePalette.Set(kFadePaletteFast, ServiceRealTime);
+      ThePalettes().game_palette().Set(kFadePaletteFast, ServiceRealTime);
       Show_Mouse();
     }
   }
@@ -2180,7 +2181,7 @@ bool WolapiObject::SpawnBrowser(const char* szURL) {
         nullptr) {
       //			debugprint( "ShellExecute\n" );
       //	ShellExecute failed as well. Just print a message instead.
-      GamePalette.Set();
+      ThePalettes().game_palette().Set();
       Restore_Game_Window();
       char szError[300];
       Format_Runtime_Text(szError, sizeof(szError), TXT_WOL_CANTLAUNCHBROWSER,
@@ -2190,7 +2191,7 @@ bool WolapiObject::SpawnBrowser(const char* szURL) {
       return false;
     }
     //	(We return immediately after launching in this case.)
-    GamePalette.Set();
+    ThePalettes().game_palette().Set();
     Show_Mouse();
   }
   return true;
@@ -2915,7 +2916,7 @@ void WolapiObject::AddHostLeftMessageToSavedChat(const char* szName) {
   Format_Runtime_Text(pChatSaveNew->szText, sizeof(pChatSaveNew->szText),
                       TXT_WOL_HOSTLEFTGAME, szName);
   pChatSaveNew->ItemExtras.pColorRemap =
-      &ColorRemaps.at(WOLCOLORREMAP_LOCALMACHINEMESS);
+      &ThePalettes().color_remaps().at(WOLCOLORREMAP_LOCALMACHINEMESS);
   pChatSaveNew->next = nullptr;
   if (pChatSaveLast) {
     pChatSaveLast->next = pChatSaveNew;
@@ -2930,7 +2931,7 @@ void WolapiObject::AddMessageToSavedChat(const char* szMessage) {
   auto* pChatSaveNew = new CHATSAVE;
   port::SafeCopy(pChatSaveNew->szText, szMessage);
   pChatSaveNew->ItemExtras.pColorRemap =
-      &ColorRemaps.at(WOLCOLORREMAP_LOCALMACHINEMESS);
+      &ThePalettes().color_remaps().at(WOLCOLORREMAP_LOCALMACHINEMESS);
   pChatSaveNew->next = nullptr;
   if (pChatSaveLast) {
     pChatSaveLast->next = pChatSaveNew;

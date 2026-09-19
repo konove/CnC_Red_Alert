@@ -91,6 +91,7 @@
 #include "ra/jshell.h"
 #include "ra/map.h"
 #include "ra/mission_id.h"
+#include "ra/palettes.h"
 #include "ra/queue.h"
 #include "ra/unit.h"
 #include "sdllib/drawbuff.h"
@@ -1380,10 +1381,11 @@ void MultiMission::Draw_It(int /*unused*/, int x, int y, int width, int height,
     Conquer_Clip_Text_Print(ScenarioDescription, x, y, scheme, kTBlack, flags,
                             width, _tabs);
   } else {
-    Conquer_Clip_Text_Print(ScenarioDescription, x, y,
-                            selected ? &ColorRemaps.at(PCOLOR_DIALOG_BLUE)
-                                     : &ColorRemaps.at(PCOLOR_GREY),
-                            kTBlack, flags, width, _tabs);
+    Conquer_Clip_Text_Print(
+        ScenarioDescription, x, y,
+        selected ? &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)
+                 : &ThePalettes().color_remaps().at(PCOLOR_GREY),
+        kTBlack, flags, width, _tabs);
   }
 }
 

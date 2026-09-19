@@ -126,6 +126,7 @@
 #include "ra/mapedit.h"
 #include "ra/object.h"
 #include "ra/overlay.h"
+#include "ra/palettes.h"
 #include "ra/rules.h"
 #include "ra/scenario.h"
 #include "ra/score.h"
@@ -204,7 +205,7 @@ int CellClass::Cell_Color(bool override) const {
 
   const BuildingClass* object = Cell_Building();
   if (object && !object->Class->IsInvisible) {
-    return ColorRemaps.at(object->House->RemapColor).Bar;
+    return ThePalettes().color_remaps().at(object->House->RemapColor).Bar;
   }
 
   if (override) {
@@ -1099,7 +1100,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
       FontXSpacing -= 2;
       Fancy_Text_Print(
           "%02X%02X\r%d%d%d\r%d %d", Map.TacPixelX + x + (ICON_PIXEL_W >> 1),
-          Map.TacPixelY + y, &GreyScheme, kTBlack,
+          Map.TacPixelY + y, &ThePalettes().grey_scheme(), kTBlack,
           TPF_EFNT | TPF_CENTER | TPF_BRIGHT_COLOR | TPF_FULLSHADOW,
           Cell_Y(cell), Cell_X(cell), Zones.at(MZONE_NORMAL),
           Zones.at(MZONE_CRUSHER), Zones.at(MZONE_DESTROYER), Overlay,
@@ -1182,7 +1183,8 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
           */
           if (Trigger.Is_Valid()) {
             Fancy_Text_Print(Trigger->Class->IniName, x + Map.TacPixelX,
-                             y + Map.TacPixelY, &ColorRemaps.at(PCOLOR_RED),
+                             y + Map.TacPixelY,
+                             &ThePalettes().color_remaps().at(PCOLOR_RED),
                              kTBlack, TPF_EFNT | TPF_FULLSHADOW);
           }
 
@@ -1203,7 +1205,8 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
                 }
                 Fancy_Text_Print(waypt, Map.TacPixelX + x + (CELL_PIXEL_W / 2),
                                  Map.TacPixelY + y + (CELL_PIXEL_H / 2) - 3,
-                                 &ColorRemaps.at(PCOLOR_RED), kTBlack,
+                                 &ThePalettes().color_remaps().at(PCOLOR_RED),
+                                 kTBlack,
                                  TPF_EFNT | TPF_CENTER | TPF_FULLSHADOW);
                 break;
               }
@@ -1212,16 +1215,16 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
                 Cell_Number()) {
               Fancy_Text_Print("Home", Map.TacPixelX + x,
                                Map.TacPixelY + y + (CELL_PIXEL_H)-7,
-                               &ColorRemaps.at(PCOLOR_GREY), kTBlack,
-                               TPF_EFNT | TPF_FULLSHADOW);
+                               &ThePalettes().color_remaps().at(PCOLOR_GREY),
+                               kTBlack, TPF_EFNT | TPF_FULLSHADOW);
             }
             if (base::At(Scen.Waypoint,
                          ScenarioClass::kReinforcementWaypoint) ==
                 Cell_Number()) {
               Fancy_Text_Print("Reinf", Map.TacPixelX + x,
                                Map.TacPixelY + y + (CELL_PIXEL_H)-7,
-                               &ColorRemaps.at(PCOLOR_GREY), kTBlack,
-                               TPF_EFNT | TPF_FULLSHADOW);
+                               &ThePalettes().color_remaps().at(PCOLOR_GREY),
+                               kTBlack, TPF_EFNT | TPF_FULLSHADOW);
             }
           }
         }

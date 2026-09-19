@@ -150,6 +150,7 @@
 #include "ra/mapedit.h"
 #include "ra/msglist.h"
 #include "ra/palette.h"
+#include "ra/palettes.h"
 #include "ra/queue.h"
 #include "ra/rules.h"
 #include "ra/scenario.h"
@@ -419,62 +420,71 @@ void DisplayClass::Init_Theater(TheaterType theater) {
                  Theaters.at(theater).Root);
   const auto* ptr =
       static_cast<const PaletteClass*>(MixArchive::Retrieve(fullname));
-  GamePalette = *ptr;
+  ThePalettes().game_palette() = *ptr;
 
-  OriginalPalette = GamePalette;
+  ThePalettes().original_palette() = ThePalettes().game_palette();
 
-  Build_Fading_Table(GamePalette, FadingGreen, kGreen, 110);
+  Build_Fading_Table(ThePalettes().game_palette(), FadingGreen, kGreen, 110);
 
-  Build_Fading_Table(GamePalette, FadingYellow, kYellow, 140);
+  Build_Fading_Table(ThePalettes().game_palette(), FadingYellow, kYellow, 140);
 
-  Build_Fading_Table(GamePalette, FadingRed, kRed, 140);
+  Build_Fading_Table(ThePalettes().game_palette(), FadingRed, kRed, 140);
 
-  Build_Translucent_Table(GamePalette, base::Suffix(MouseCols, 0), 4,
-                          MouseTranslucentTable);
+  Build_Translucent_Table(ThePalettes().game_palette(),
+                          base::Suffix(MouseCols, 0), 4, MouseTranslucentTable);
 
-  Build_Translucent_Table(GamePalette, base::Suffix(MagicCols, 0),
-                          kMagicColorCount, TranslucentTable);
+  Build_Translucent_Table(ThePalettes().game_palette(),
+                          base::Suffix(MagicCols, 0), kMagicColorCount,
+                          TranslucentTable);
 
-  Build_Translucent_Table(GamePalette, base::Suffix(WhiteCols, 0), 1,
-                          WhiteTranslucentTable);
+  Build_Translucent_Table(ThePalettes().game_palette(),
+                          base::Suffix(WhiteCols, 0), 1, WhiteTranslucentTable);
 
-  Build_Translucent_Table(GamePalette, base::Suffix(ShadowCols, 0),
-                          kShadowColorCount, ShadowTrans);
+  Build_Translucent_Table(ThePalettes().game_palette(),
+                          base::Suffix(ShadowCols, 0), kShadowColorCount,
+                          ShadowTrans);
 
-  Conquer_Build_Translucent_Table(GamePalette, base::Suffix(UShadowColsAir, 0),
+  Conquer_Build_Translucent_Table(ThePalettes().game_palette(),
+                                  base::Suffix(UShadowColsAir, 0),
                                   kUnitShadowColorCount, UnitShadowAir);
-  base::CopyBytes(std::as_writable_bytes(base::Suffix(UnitShadowAir, 256)),
-                  base::ObjectBytes(ColorRemaps.at(PCOLOR_GOLD).RemapTable),
-                  sizeof(ColorRemaps.at(PCOLOR_GOLD).RemapTable));
+  base::CopyBytes(
+      std::as_writable_bytes(base::Suffix(UnitShadowAir, 256)),
+      base::ObjectBytes(
+          ThePalettes().color_remaps().at(PCOLOR_GOLD).RemapTable),
+      sizeof(ThePalettes().color_remaps().at(PCOLOR_GOLD).RemapTable));
   if (theater == THEATER_SNOW) {
-    Conquer_Build_Translucent_Table(GamePalette,
+    Conquer_Build_Translucent_Table(ThePalettes().game_palette(),
                                     base::Suffix(UShadowColsSnow, 0),
                                     kUnitShadowColorCount, UnitShadow);
   } else {
-    Conquer_Build_Translucent_Table(GamePalette, base::Suffix(UShadowCols, 0),
+    Conquer_Build_Translucent_Table(ThePalettes().game_palette(),
+                                    base::Suffix(UShadowCols, 0),
                                     kUnitShadowColorCount, UnitShadow);
   }
 
   if (theater == THEATER_SNOW) {
-    Conquer_Build_Fading_Table(GamePalette, FadingShade, kBlack, 75);
+    Conquer_Build_Fading_Table(ThePalettes().game_palette(), FadingShade,
+                               kBlack, 75);
   } else {
-    Conquer_Build_Fading_Table(GamePalette, FadingShade, kBlack, 130);
+    Conquer_Build_Fading_Table(ThePalettes().game_palette(), FadingShade,
+                               kBlack, 130);
   }
 
-  Conquer_Build_Fading_Table(GamePalette, FadingLight, kWhite, 85);
+  Conquer_Build_Fading_Table(ThePalettes().game_palette(), FadingLight, kWhite,
+                             85);
 
   /*
   **	Create the shadow color used by aircraft.
   */
-  Conquer_Build_Fading_Table(GamePalette, base::Suffix(SpecialGhost, 256),
-                             kBlack, 100);
+  Conquer_Build_Fading_Table(ThePalettes().game_palette(),
+                             base::Suffix(SpecialGhost, 256), kBlack, 100);
   for (int index = 0; index < 256; index++) {
     base::At(SpecialGhost, index) = 0;
   }
 
-  Make_Fading_Table(GamePalette, FadingBrighten, kWhite, 25);
+  Make_Fading_Table(ThePalettes().game_palette(), FadingBrighten, kWhite, 25);
 
-  Make_Fading_Table(GamePalette, FadingWayDark, DKGRAY, 192);
+  Make_Fading_Table(ThePalettes().game_palette(), FadingWayDark, DKGRAY, 192);
 
   /*
   **	Adjust the palette according to the visual control option settings.

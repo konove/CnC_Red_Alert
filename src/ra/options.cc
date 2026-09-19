@@ -75,6 +75,7 @@
 #include "ra/externs.h"
 #include "ra/ini.h"
 #include "ra/jshell.h"
+#include "ra/palettes.h"
 #include "ra/session.h"
 #include "ra/theme.h"
 #include "sdllib/keyboard.h"
@@ -231,9 +232,9 @@ void OptionsClass::Set_Sound_Volume(fixed volume, bool feedback) {
  *=============================================================================================*/
 void OptionsClass::Set_Brightness(fixed brightness) {
   Brightness = fixed::_1_4 + fixed::_1_2 * brightness;
-  Adjust_Palette(OriginalPalette, GamePalette, Brightness, Saturation, Tint,
-                 Contrast);
-  GamePalette.Set();
+  Adjust_Palette(ThePalettes().original_palette(), ThePalettes().game_palette(),
+                 Brightness, Saturation, Tint, Contrast);
+  ThePalettes().game_palette().Set();
 }
 
 /***********************************************************************************************
@@ -272,9 +273,9 @@ fixed OptionsClass::Get_Brightness() const {
  *=============================================================================================*/
 void OptionsClass::Set_Saturation(fixed color) {
   Saturation = color;
-  Adjust_Palette(OriginalPalette, GamePalette, Brightness, Saturation, Tint,
-                 Contrast);
-  GamePalette.Set();
+  Adjust_Palette(ThePalettes().original_palette(), ThePalettes().game_palette(),
+                 Brightness, Saturation, Tint, Contrast);
+  ThePalettes().game_palette().Set();
 }
 
 /***********************************************************************************************
@@ -310,9 +311,9 @@ fixed OptionsClass::Get_Saturation() const { return Saturation; }
  *=============================================================================================*/
 void OptionsClass::Set_Contrast(fixed contrast) {
   Contrast = fixed::_1_4 + fixed::_1_2 * contrast;
-  Adjust_Palette(OriginalPalette, GamePalette, Brightness, Saturation, Tint,
-                 Contrast);
-  GamePalette.Set();
+  Adjust_Palette(ThePalettes().original_palette(), ThePalettes().game_palette(),
+                 Brightness, Saturation, Tint, Contrast);
+  ThePalettes().game_palette().Set();
 }
 
 /***********************************************************************************************
@@ -351,9 +352,9 @@ fixed OptionsClass::Get_Contrast() const {
  *=============================================================================================*/
 void OptionsClass::Set_Tint(fixed tint) {
   Tint = tint;
-  Adjust_Palette(OriginalPalette, GamePalette, Brightness, Saturation, Tint,
-                 Contrast);
-  GamePalette.Set();
+  Adjust_Palette(ThePalettes().original_palette(), ThePalettes().game_palette(),
+                 Brightness, Saturation, Tint, Contrast);
+  ThePalettes().game_palette().Set();
 }
 
 /***********************************************************************************************
@@ -488,7 +489,8 @@ void OptionsClass::Load_Settings() {
   AutoScroll = ini.Get_Bool(OPTIONS, "AutoScroll", AutoScroll);
   Set_Repeat(ini.Get_Bool(OPTIONS, "IsScoreRepeat", IsScoreRepeat));
   Set_Shuffle(ini.Get_Bool(OPTIONS, "IsScoreShuffle", IsScoreShuffle));
-  SlowPalette = ini.Get_Bool(OPTIONS, "SlowPalette", SlowPalette);
+  ThePalettes().set_slow_palette(
+      ini.Get_Bool(OPTIONS, "SlowPalette", ThePalettes().slow_palette()));
   IsPaletteScroll = ini.Get_Bool(OPTIONS, "PaletteScroll", IsPaletteScroll);
 
   KeyForceMove1 = static_cast<KeyNumType>(
@@ -823,9 +825,9 @@ int OptionsClass::Normalize_Delay(int delay) const {
  * HISTORY: * 09/22/1995 JLB : Created. *
  *=============================================================================================*/
 void OptionsClass::Fixup_Palette() const {
-  Adjust_Palette(OriginalPalette, GamePalette, Brightness, Saturation, Tint,
-                 Contrast);
-  CCPalette = GamePalette;
+  Adjust_Palette(ThePalettes().original_palette(), ThePalettes().game_palette(),
+                 Brightness, Saturation, Tint, Contrast);
+  ThePalettes().title_palette() = ThePalettes().game_palette();
 }
 
 /***********************************************************************************************

@@ -44,6 +44,7 @@
 #include "ra/jshell.h"
 #include "ra/mouse.h"
 #include "ra/palette.h"
+#include "ra/palettes.h"
 #include "ra/scenario.h"
 #include "ra/screen.h"
 #include "ra/text_ids.h"
@@ -114,7 +115,8 @@ static void PulseHotspots(PaletteClass& palette) {
   static GlowPulse<SystemTickSource> pulse(kTimerSecond / 6);
 
   if (pulse.Update()) {
-    palette.at(kHotspotPaletteIndex) = pulse.Apply(GamePalette.at(kWhite));
+    palette.at(kHotspotPaletteIndex) =
+        pulse.Apply(ThePalettes().game_palette().at(kWhite));
     palette.Set();
   }
 }

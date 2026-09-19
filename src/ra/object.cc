@@ -136,6 +136,7 @@
 #include "ra/jshell.h"
 #include "ra/logic.h"
 #include "ra/mapedit.h"
+#include "ra/palettes.h"
 #include "ra/radio.h"
 #include "ra/rules.h"
 #include "ra/selection.h"
@@ -1163,8 +1164,8 @@ bool ObjectClass::Render(bool forced)  // const
         */
         if (MapEditorActive && Trigger.Is_Valid()) {
           Fancy_Text_Print(Trigger->Class->IniName, x + static_cast<int>(WinX),
-                           y, &ColorRemaps.at(PCOLOR_RED), kTBlack,
-                           TPF_CENTER | TPF_NOSHADOW | TPF_6POINT);
+                           y, &ThePalettes().color_remaps().at(PCOLOR_RED),
+                           kTBlack, TPF_CENTER | TPF_NOSHADOW | TPF_6POINT);
         }
       }
 

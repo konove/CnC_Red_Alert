@@ -73,6 +73,7 @@
 #include "ra/filepcx.h"
 #include "ra/jshell.h"
 #include "ra/link.h"
+#include "ra/palettes.h"
 #include "ra/screen.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
@@ -495,7 +496,7 @@ KeyNumType GadgetClass::Input() {
         }
       }
 
-      Write_PCX_File(file, temp_page, &GamePalette);
+      Write_PCX_File(file, temp_page, &ThePalettes().game_palette());
       PlaySoundEffect(VOC_BEEP);
     }
   }

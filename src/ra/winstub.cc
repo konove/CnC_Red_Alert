@@ -50,6 +50,7 @@
 #include "WSProto.h"
 #include "ra/config.h"
 #include "ra/function.h"
+#include "ra/palettes.h"
 #include "ra/screen.h"
 
 unsigned long CCFocusMessage =
@@ -496,7 +497,7 @@ void Colour_Debug(int call_number) {
  *=============================================================================================*/
 void Memory_Error_Handler() {
   TheScreen().visible_page().Clear();
-  CCPalette.Set();
+  ThePalettes().title_palette().Set();
   while (Get_Mouse_State()) {
     Show_Mouse();
   };

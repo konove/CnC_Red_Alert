@@ -130,6 +130,7 @@
 #include "ra/object.h"
 #include "ra/overlay.h"
 #include "ra/palette.h"
+#include "ra/palettes.h"
 #include "ra/rules.h"
 #include "ra/score.h"
 #include "ra/screen.h"
@@ -257,9 +258,10 @@ void ScenarioClass::Do_Fade_AI() {
         fixed(static_cast<int>(kGrayFadeTime - FadeTimer.Value()),
               static_cast<int>(kGrayFadeTime));
     GameOptionsClass::Adjust_Palette(
-        OriginalPalette, GamePalette, Options.Get_Brightness(), newsat,
-        Options.Get_Tint(), Options.Get_Contrast());
-    GamePalette.Set();
+        ThePalettes().original_palette(), ThePalettes().game_palette(),
+        Options.Get_Brightness(), newsat, Options.Get_Tint(),
+        Options.Get_Contrast());
+    ThePalettes().game_palette().Set();
   }
   if (IsFadingBW) {
     if (FadeTimer.IsFinished()) {
@@ -269,9 +271,10 @@ void ScenarioClass::Do_Fade_AI() {
         Options.Get_Saturation() *
         fixed(static_cast<int>(FadeTimer.Value()), kGrayFadeTime);
     GameOptionsClass::Adjust_Palette(
-        OriginalPalette, GamePalette, Options.Get_Brightness(), newsat,
-        Options.Get_Tint(), Options.Get_Contrast());
-    GamePalette.Set();
+        ThePalettes().original_palette(), ThePalettes().game_palette(),
+        Options.Get_Brightness(), newsat, Options.Get_Tint(),
+        Options.Get_Contrast());
+    ThePalettes().game_palette().Set();
     if (!IsFadingBW) {
       IsFadingColor = true;
       FadeTimer.Set(kGrayFadeTime);
@@ -465,7 +468,7 @@ bool Read_Scenario(char* name) {
       const int cd_index =
           Get_CD_Index(SearchPaths::current_cd_drive(), 1 * 60);
       if ((!Using_DVD() || cd_index != 5) && cd_index != 3) {
-        GamePalette.Set(kFadePaletteFast, ServiceRealTime);
+        ThePalettes().game_palette().Set(kFadePaletteFast, ServiceRealTime);
         RequiredCD = 3;
         if (!Force_CD_Available(RequiredCD)) {  // force Aftermath CD in drive.
           EmergencyExit(EXIT_FAILURE);
@@ -487,7 +490,7 @@ bool Read_Scenario(char* name) {
     }
     Fill_In_Data();
   } else {
-    GamePalette.Set(kFadePaletteFast, ServiceRealTime);
+    ThePalettes().game_palette().Set(kFadePaletteFast, ServiceRealTime);
     //		Fade_Palette_To(GamePalette, kFadePaletteFast, ServiceRealTime);
     Show_Mouse();
     WWMessageBox().Process(TXT_UNABLE_READ_SCENARIO);
@@ -810,8 +813,8 @@ void Do_Win() {
     Set_Logic_Page(TheScreen().visible_view());
     Map.Flag_To_Redraw(true);
     Map.Render();
-    Fancy_Text_Print(TXT_SCENARIO_WON, x, 180, &ColorRemaps.at(PCOLOR_RED),
-                     kTBlack,
+    Fancy_Text_Print(TXT_SCENARIO_WON, x, 180,
+                     &ThePalettes().color_remaps().at(PCOLOR_RED), kTBlack,
                      TPF_CENTER | TPF_VCR | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
     CountDownTimer.Set(int64_t{kTimerSecond} * 3);
     while (IsSpeaking()) {
@@ -974,7 +977,7 @@ void Do_Win() {
   //	PlayerPtr->NukePieces = nukes;
 
   Map.Render();
-  GamePalette.Set(kFadePaletteFast, ServiceRealTime);
+  ThePalettes().game_palette().Set(kFadePaletteFast, ServiceRealTime);
   //	Fade_Palette_To(GamePalette, kFadePaletteFast, ServiceRealTime);
   Show_Mouse();
 }
@@ -1017,8 +1020,8 @@ void Do_Lose() {
   **	Announce win to player.
   */
   Set_Logic_Page(TheScreen().visible_view());
-  Fancy_Text_Print(TXT_SCENARIO_LOST, x, 180, &ColorRemaps.at(PCOLOR_RED),
-                   kTBlack,
+  Fancy_Text_Print(TXT_SCENARIO_LOST, x, 180,
+                   &ThePalettes().color_remaps().at(PCOLOR_RED), kTBlack,
                    TPF_CENTER | TPF_VCR | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
   CountDownTimer.Set(int64_t{kTimerSecond} * 3);
   while (IsSpeaking()) {
@@ -1054,7 +1057,7 @@ void Do_Lose() {
   /*
   ** Start same scenario again
   */
-  GamePalette.Set();
+  ThePalettes().game_palette().Set();
   Show_Mouse();
   if (!Session.Play &&
       !WWMessageBox().Process(TXT_TO_REPLAY, TXT_YES, TXT_NO)) {
@@ -1076,7 +1079,7 @@ void Do_Lose() {
     GameActive = false;
   }
 
-  GamePalette.Set(kFadePaletteFast, ServiceRealTime);
+  ThePalettes().game_palette().Set(kFadePaletteFast, ServiceRealTime);
   Show_Mouse();
 }
 
@@ -1107,7 +1110,8 @@ void Do_Draw() {
   **	Announce win to player.
   */
   Set_Logic_Page(TheScreen().visible_view());
-  Fancy_Text_Print(TXT_WOL_DRAW, x, 180, &ColorRemaps.at(PCOLOR_RED), kTBlack,
+  Fancy_Text_Print(TXT_WOL_DRAW, x, 180,
+                   &ThePalettes().color_remaps().at(PCOLOR_RED), kTBlack,
                    TPF_CENTER | TPF_VCR | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
   CountDownTimer.Set(int64_t{kTimerSecond} * 3);
   while (IsSpeaking()) {
@@ -1221,7 +1225,7 @@ static constexpr size_t kMaxCharsPerPage = 512;
 int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
                            bool fade_to_black) {
   if (fade_to_black) {
-    BlackPalette.Set(kFadePaletteMedium, ServiceRealTime);
+    ThePalettes().black_palette().Set(kFadePaletteMedium, ServiceRealTime);
   }
 
   int retval = 0;
@@ -1249,7 +1253,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
 
   const auto briefsnd = MixArchive::RetrieveData("BRIEFING.AUD");
 
-  GadgetClass::Set_Color_Scheme(&ColorRemaps.at(PCOLOR_TYPE));
+  GadgetClass::Set_Color_Scheme(&ThePalettes().color_remaps().at(PCOLOR_TYPE));
 
   // If the message fits on one page, hide the "MORE" button.
   if (msg.size() < kMaxCharsPerPage) {
@@ -1290,7 +1294,8 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
     b3txt = nullptr;
   }
 
-  Fancy_Text_Print(TXT_NONE, 0, 0, &ColorRemaps.at(PCOLOR_TYPE), kTBlack,
+  Fancy_Text_Print(TXT_NONE, 0, 0,
+                   &ThePalettes().color_remaps().at(PCOLOR_TYPE), kTBlack,
                    TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
   /*
   **	Examine the optional button parameters. Fetch the width and starting
@@ -1345,7 +1350,8 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
   // Copy to mutable buffer for Format_Window_String (which inserts newlines).
   page_text.copy(buffer, page_text.size());
   base::At(buffer, page_text.size()) = '\0';
-  Fancy_Text_Print(TXT_NONE, 0, 0, &ColorRemaps.at(PCOLOR_TYPE), kTBlack,
+  Fancy_Text_Print(TXT_NONE, 0, 0,
+                   &ThePalettes().color_remaps().at(PCOLOR_TYPE), kTBlack,
                    TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
   int width = 0;
   int height = 0;
@@ -1599,7 +1605,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
   switch (retval) {
     case 0:
     case 1:
-      BlackPalette.Set(kFadePaletteMedium, ServiceRealTime);
+      ThePalettes().black_palette().Set(kFadePaletteMedium, ServiceRealTime);
       TheScreen().visible_view().Clear();
       break;
     default:
@@ -1607,7 +1613,8 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
   }
   Show_Mouse();
 
-  GadgetClass::Set_Color_Scheme(&ColorRemaps.at(PCOLOR_DIALOG_BLUE));
+  GadgetClass::Set_Color_Scheme(
+      &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE));
 
   // Convert internal button index to the text ID that was clicked.
   return retval == 1 ? left_btn_text_id : right_btn_text_id;
@@ -1925,7 +1932,7 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
       if ((RequiredCD == 0 || RequiredCD == 1) && Session.Type == GAME_NORMAL) {
         TheScreen().visible_view().Clear();
       }
-      GamePalette.Set(kFadePaletteFast, ServiceRealTime);
+      ThePalettes().game_palette().Set(kFadePaletteFast, ServiceRealTime);
     }
     if (!Force_CD_Available(RequiredCD)) {
       // Prog_End();

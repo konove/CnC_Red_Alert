@@ -102,6 +102,7 @@
 #include "ra/mouse.h"
 #include "ra/msgbox.h"
 #include "ra/palette.h"
+#include "ra/palettes.h"
 #include "ra/scenario.h"
 #include "ra/screen.h"
 #include "ra/selection.h"
@@ -1425,7 +1426,8 @@ void MapEditClass::Draw_It(bool forced) {
     /*
     **	print the label
     */
-    Fancy_Text_Print(buf, 160, 0, &ColorRemaps.at(PCOLOR_BROWN), kTBlack,
+    Fancy_Text_Print(buf, 160, 0,
+                     &ThePalettes().color_remaps().at(PCOLOR_BROWN), kTBlack,
                      TPF_CENTER | TPF_NOSHADOW | TPF_EFNT);
   }
 }
@@ -2024,7 +2026,7 @@ bool MapEditClass::Get_Waypoint_Name(std::span<char> wayptname) {
       case ButtonKey(kButtonOk):
         Hide_Mouse();
         TheScreen().visible_view().Clear();
-        GamePalette.Set();
+        ThePalettes().game_palette().Set();
         Show_Mouse();
         process = false;
         cancel = false;
@@ -2037,7 +2039,7 @@ bool MapEditClass::Get_Waypoint_Name(std::span<char> wayptname) {
       case ButtonKey(kButtonCancel):
         Hide_Mouse();
         TheScreen().visible_view().Clear();
-        GamePalette.Set();
+        ThePalettes().game_palette().Set();
         Show_Mouse();
         cancel = true;
         process = false;

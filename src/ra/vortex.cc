@@ -89,6 +89,7 @@
 #include "ra/mapedit.h"
 #include "ra/mouse.h"
 #include "ra/palette.h"
+#include "ra/palettes.h"
 #include "ra/scenario.h"
 #include "ra/shape_draw.h"
 #include "ra/target.h"
@@ -1073,7 +1074,8 @@ void ChronalVortexClass::Setup_Remap_Tables(TheaterType theater) {
       file.ReadObject(VortexRemapTables);
     } else {
       for (int i = 0; i < MAX_REMAP_SHADES; i++) {
-        Build_Fading_Table(GamePalette, base::At(VortexRemapTables, i), 0,
+        Build_Fading_Table(ThePalettes().game_palette(),
+                           base::At(VortexRemapTables, i), 0,
                            240 - (i * 256 / MAX_REMAP_SHADES));
       }
 

@@ -28,6 +28,7 @@
 #include "ra/mplayer.h"
 #include "ra/msgbox.h"
 #include "ra/palette.h"
+#include "ra/palettes.h"
 #include "ra/text_ids.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/ww_mouse.h"
@@ -43,9 +44,9 @@ void PlayFirstLaunchIntro(GraphicViewPortClass& hidden,
     // Put the title page up as a backdrop for the dialog.
     Hide_Mouse();
     Load_Title_Page();
-    GamePalette = CCPalette;
+    ThePalettes().game_palette() = ThePalettes().title_palette();
     hidden.Blit(visible);
-    CCPalette.Set();
+    ThePalettes().title_palette().Set();
     Set_Logic_Page(visible);
     Show_Mouse();
 
@@ -67,7 +68,7 @@ void PlayFirstLaunchIntro(GraphicViewPortClass& hidden,
     // counted, so this one needs its own show: the caller balances only the
     // hide it makes itself.
     Hide_Mouse();
-    BlackPalette.Set(kFadePaletteSlow);
+    ThePalettes().black_palette().Set(kFadePaletteSlow);
     visible.Clear();
     Show_Mouse();
   }

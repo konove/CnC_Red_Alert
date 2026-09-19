@@ -56,6 +56,7 @@
 #include "ra/list.h"
 #include "ra/mapedit.h"
 #include "ra/msgbox.h"
+#include "ra/palettes.h"
 #include "ra/screen.h"
 #include "ra/teamtype.h"
 #include "ra/text_ids.h"
@@ -662,8 +663,8 @@ int MapEditClass::Team_Members(HousesType house) {
         if (static_cast<unsigned>(curclass) < static_cast<unsigned>(maxclasses)) {
           Fancy_Text_Print(base::At(teamclass, curclass)->Full_Name(),
                            kDialogX + (kDialogW / 2), msg_y,
-                           &ColorRemaps.at(PCOLOR_BROWN), kTBlack,
-                           TPF_CENTER | TPF_EFNT | TPF_NOSHADOW);
+                           &ThePalettes().color_remaps().at(PCOLOR_BROWN),
+                           kTBlack, TPF_CENTER | TPF_EFNT | TPF_NOSHADOW);
         }
       }
 

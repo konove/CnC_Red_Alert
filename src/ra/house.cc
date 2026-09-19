@@ -183,6 +183,7 @@
 #include "ra/mouse.h"
 #include "ra/msglist.h"
 #include "ra/object.h"
+#include "ra/palettes.h"
 #include "ra/radar.h"
 #include "ra/reinf.h"
 #include "ra/rules.h"
@@ -2151,7 +2152,7 @@ std::span<const unsigned char> HouseClass::Remap_Table(bool blushing,
     return {};
   }
 
-  return ColorRemaps.at(RemapColor).RemapTable;
+  return ThePalettes().color_remaps().at(RemapColor).RemapTable;
 }
 
 /***********************************************************************************************

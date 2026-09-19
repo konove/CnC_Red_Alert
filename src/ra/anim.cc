@@ -88,6 +88,7 @@
 #include "ra/mouse.h"
 #include "ra/object.h"
 #include "ra/palette.h"
+#include "ra/palettes.h"
 #include "ra/rules.h"
 #include "ra/session.h"
 #include "ra/shape_draw.h"
@@ -1125,7 +1126,7 @@ void AnimClass::Do_Atom_Damage(HousesType ownerhouse, CELL cell) {
   if (Session.Type == GAME_NORMAL) {
     radius = 4;
     rawdamage = Rule.AtomDamage;
-    WhitePalette.Set(kFadePaletteSlow, ServiceRealTime);
+    ThePalettes().white_palette().Set(kFadePaletteSlow, ServiceRealTime);
   } else {
     radius = 3;
     rawdamage = Rule.AtomDamage / 5;
@@ -1136,6 +1137,6 @@ void AnimClass::Do_Atom_Damage(HousesType ownerhouse, CELL cell) {
                    building, WARHEAD_FIRE);
   Shake_The_Screen(3);
   if (Session.Type == GAME_NORMAL) {
-    GamePalette.Set(kFadePaletteSlow, ServiceRealTime);
+    ThePalettes().game_palette().Set(kFadePaletteSlow, ServiceRealTime);
   }
 }

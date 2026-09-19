@@ -12,6 +12,7 @@
 #include "ra/msgbox.h"
 #include "ra/nullconn.h"
 #include "ra/palette.h"
+#include "ra/palettes.h"
 #include "ra/screen.h"
 #include "ra/startup.h"
 #include "sdllib/gbuffer.h"
@@ -33,7 +34,7 @@ void Check_For_Focus_Loss() {
 }
 void Memory_Error_Handler() {
   TheScreen().visible_page().Clear();
-  CCPalette.Set();
+  ThePalettes().title_palette().Set();
   while (Get_Mouse_State()) {
     Show_Mouse();
   }

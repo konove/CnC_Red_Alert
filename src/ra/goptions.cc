@@ -60,6 +60,7 @@
 #include "ra/mplayer.h"
 #include "ra/msgbox.h"
 #include "ra/palette.h"
+#include "ra/palettes.h"
 #include "ra/queue.h"
 #include "ra/scenario.h"
 #include "ra/screen.h"
@@ -442,11 +443,12 @@ void GameOptionsClass::Process() {
             Play_Movie(Scen.BriefMovie);
             Theme.Queue_Song(THEME_PICK_ANOTHER);
           }
-          BlackPalette.Adjust(0x08, WhitePalette);
-          BlackPalette.Set();
-          BlackPalette.Adjust(0xFF);
-          BlackPalette.Set();
-          GamePalette.Set();
+          ThePalettes().black_palette().Adjust(0x08,
+                                               ThePalettes().white_palette());
+          ThePalettes().black_palette().Set();
+          ThePalettes().black_palette().Adjust(0xFF);
+          ThePalettes().black_palette().Set();
+          ThePalettes().game_palette().Set();
           Map.Flag_To_Redraw(true);
           process = false;
           break;

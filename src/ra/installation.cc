@@ -41,6 +41,7 @@
 #include "ra/mplayer.h"
 #include "ra/msgbox.h"
 #include "ra/palette.h"
+#include "ra/palettes.h"
 #include "ra/screen.h"
 #include "ra/text_ids.h"
 #include "ra/theme.h"
@@ -299,7 +300,7 @@ bool Force_CD_Available(int cd_desired)  // ajw
               PaletteClass::CurrentPalette.at(1).Blue_Component() +
               PaletteClass::CurrentPalette.at(1).Green_Component() ==
           0) {
-        GamePalette.Set();
+        ThePalettes().game_palette().Set();
       }
 
       Keyboard->Clear();

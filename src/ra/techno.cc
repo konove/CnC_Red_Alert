@@ -186,6 +186,7 @@
 #include "ra/mapedit.h"
 #include "ra/mission.h"
 #include "ra/mouse.h"
+#include "ra/palettes.h"
 #include "ra/queue.h"
 #include "ra/radar.h"
 #include "ra/radio.h"
@@ -4675,7 +4676,7 @@ std::span<const unsigned char> TechnoClass::Remap_Table() const {
   if (Techno_Type_Class()->IsRemappable) {
     return House->Remap_Table(IsBlushing, Techno_Type_Class()->Remap);
   }
-  return ColorRemaps.at(PCOLOR_GOLD).RemapTable;
+  return ThePalettes().color_remaps().at(PCOLOR_GOLD).RemapTable;
 }
 
 /***********************************************************************************************

@@ -104,6 +104,7 @@
 #include "ra/list.h"
 #include "ra/mapedit.h"
 #include "ra/mission.h"
+#include "ra/palettes.h"
 #include "ra/scenario.h"
 #include "ra/screen.h"
 #include "ra/target.h"
@@ -159,10 +160,11 @@ void TeamTypeClass::Draw_It(int /*unused*/, int x, int y, int width, int height,
       Conquer_Clip_Text_Print(Description(), x, y, scheme, kTBlack, flags,
                               width, _tabs);
     } else {
-      Conquer_Clip_Text_Print(Description(), x, y,
-                              (selected ? &ColorRemaps.at(PCOLOR_DIALOG_BLUE)
-                                        : &ColorRemaps.at(PCOLOR_GREY)),
-                              kTBlack, flags, width, _tabs);
+      Conquer_Clip_Text_Print(
+          Description(), x, y,
+          (selected ? &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)
+                    : &ThePalettes().color_remaps().at(PCOLOR_GREY)),
+          kTBlack, flags, width, _tabs);
     }
   }
 }
@@ -599,10 +601,11 @@ void TeamMissionClass::Draw_It(int index, int x, int y, int width, int height,
     Conquer_Clip_Text_Print(Description(index), x, y, scheme, kTBlack, flags,
                             width, _tabs);
   } else {
-    Conquer_Clip_Text_Print(Description(index), x, y,
-                            (selected ? &ColorRemaps.at(PCOLOR_DIALOG_BLUE)
-                                      : &ColorRemaps.at(PCOLOR_GREY)),
-                            kTBlack, flags, width, _tabs);
+    Conquer_Clip_Text_Print(
+        Description(index), x, y,
+        (selected ? &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)
+                  : &ThePalettes().color_remaps().at(PCOLOR_GREY)),
+        kTBlack, flags, width, _tabs);
   }
 }
 

@@ -31,6 +31,7 @@
 #include "ra/init.h"
 #include "ra/jshell.h"
 #include "ra/palette.h"
+#include "ra/palettes.h"
 #include "ra/screen.h"
 #include "ra/text_ids.h"
 #include "ra/textbtn.h"
@@ -123,7 +124,7 @@ bool Get_Broadcast_Addresses() {
   Fancy_Text_Print("", 0, 0, scheme, kTBlack, TPF_CENTER | kTpfText);
 
   Load_Title_Page(true);
-  CCPalette.Set();  // GamePalette.Set();
+  ThePalettes().title_palette().Set();  // GamePalette.Set();
 
   /*
   ** Add all the ip addresses from the ini file to the list box.
@@ -178,7 +179,7 @@ bool Get_Broadcast_Addresses() {
       //..................................................................
       if (display >= REDRAW_BACKGROUND) {
         Load_Title_Page(true);
-        CCPalette.Set();  // GamePalette.Set();
+        ThePalettes().title_palette().Set();  // GamePalette.Set();
         Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
 
         //...............................................................
@@ -240,7 +241,7 @@ bool Get_Broadcast_Addresses() {
   //------------------------------------------------------------------------
   Hide_Mouse();
   Load_Title_Page(true);
-  CCPalette.Set();  // GamePalette.Set();
+  ThePalettes().title_palette().Set();  // GamePalette.Set();
   Show_Mouse();
 
   for (int i = 0; i < ip_address_list.Count(); i++) {

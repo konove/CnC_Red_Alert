@@ -73,6 +73,7 @@
 #include "ra/list.h"
 #include "ra/msgbox.h"
 #include "ra/palette.h"
+#include "ra/palettes.h"
 #include "ra/saveload.h"
 #include "ra/screen.h"
 #include "ra/session.h"
@@ -437,7 +438,7 @@ bool LoadOptionsClass::Process() {
             Speak(VOX_LOAD1);
             Hide_Mouse();
             TheScreen().visible_view().Clear();
-            GamePalette.Set();
+            ThePalettes().game_palette().Set();
             //						Set_Palette(GamePalette);
             Show_Mouse();
             process = false;

@@ -64,6 +64,7 @@
 #include "ra/mapedit.h"
 #include "ra/nulldlg.h"
 #include "ra/palette.h"
+#include "ra/palettes.h"
 #include "ra/screen.h"
 #include "ra/session.h"
 #include "ra/text_ids.h"
@@ -260,7 +261,7 @@ GameType Select_MPlayer_Game() {
         //	Refresh the backdrop
         //...............................................................
         Load_Title_Page(true);
-        CCPalette.Set();
+        ThePalettes().title_palette().Set();
 
         //...............................................................
         //	Draw the background

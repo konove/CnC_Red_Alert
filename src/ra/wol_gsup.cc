@@ -50,6 +50,7 @@
 #include "ra/installation.h"
 #include "ra/ipx.h"
 #include "ra/mission_id.h"
+#include "ra/palettes.h"
 #include "ra/rawolapi.h"
 #include "ra/session.h"
 #include "ra/text_ids.h"
@@ -1095,11 +1096,13 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       //..................................................................
       if (display >= REDRAW_COLORS) {
         for (int i = 0; i < MAX_MPLAYER_COLORS; i++) {
-          LogicPage->Fill_Rect(
-              base::At(cbox_x, i) + 1, d_color_y + 1,
-              base::At(cbox_x, i) + 1 + d_color_w - 4,
-              d_color_y + 1 + d_color_h - 2,
-              ColorRemaps.at(static_cast<PlayerColorType>(i)).Box);
+          LogicPage->Fill_Rect(base::At(cbox_x, i) + 1, d_color_y + 1,
+                               base::At(cbox_x, i) + 1 + d_color_w - 4,
+                               d_color_y + 1 + d_color_h - 2,
+                               ThePalettes()
+                                   .color_remaps()
+                                   .at(static_cast<PlayerColorType>(i))
+                                   .Box);
 
           if (static_cast<PlayerColorType>(i) == Session.ColorIdx) {
             Draw_Box(base::At(cbox_x, i), d_color_y, d_color_w, d_color_h,
@@ -1320,10 +1323,10 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
                 (Keyboard->MouseQX - base::At(cbox_x, 0)) / d_color_w);
 
             //	Ensure that no one is using this color (to our knowledge).
-            if (pILPlayers->FindColor(
-                    &ColorRemaps.at(Session.PrefColor == PCOLOR_DIALOG_BLUE
-                                        ? PCOLOR_REALLY_BLUE
-                                        : Session.PrefColor)) == -1) {
+            if (pILPlayers->FindColor(&ThePalettes().color_remaps().at(
+                    Session.PrefColor == PCOLOR_DIALOG_BLUE
+                        ? PCOLOR_REALLY_BLUE
+                        : Session.PrefColor)) == -1) {
               //	Show me as the new color.
               //							debugprint(
               //"Color box pressed - " );
@@ -2006,8 +2009,8 @@ void WOL_GameSetupDialog::SetPlayerColor(const char* szName,
     display = std::max(display, REDRAW_COLORS);
   }
   pILPlayers->Set_Item_Color(
-      iItem, &ColorRemaps.at(Color == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
-                                                         : Color));
+      iItem, &ThePalettes().color_remaps().at(
+                 Color == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE : Color));
   pILPlayers->Flag_To_Redraw();
 }
 
@@ -2173,7 +2176,7 @@ void WOL_GameSetupDialog::ProcessGuestRequest(User* pUser,
         return;
       }
       const auto ColorDesired = static_cast<PlayerColorType>(*color);
-      if (pILPlayers->FindColor(&ColorRemaps.at(
+      if (pILPlayers->FindColor(&ThePalettes().color_remaps().at(
               ColorDesired == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
                                                  : ColorDesired)) == -1) {
         //	Color is available.
@@ -2996,7 +2999,7 @@ void Debug_GlobalPacketType( const GlobalPacketType& gp1 )
 PlayerColorType PlayerColorTypeOf(const RemapControlType* pColorRemap) {
   for (const PlayerColorType pcolor :
        magic_enum::enum_values<PlayerColorType>()) {
-    if (&ColorRemaps.at(pcolor) == pColorRemap) {
+    if (&ThePalettes().color_remaps().at(pcolor) == pColorRemap) {
       return pcolor;
     }
   }
@@ -3359,8 +3362,8 @@ PlayerColorType WOL_GameSetupDialog::ColorNextAvailable() {
   //	(Totally unoptimized, but hardly ever called.)
 
   for (int i = 0; i < MAX_MPLAYER_COLORS; i++) {
-    if (pILPlayers->FindColor(
-            &ColorRemaps.at(static_cast<PlayerColorType>(i))) == -1) {
+    if (pILPlayers->FindColor(&ThePalettes().color_remaps().at(
+            static_cast<PlayerColorType>(i))) == -1) {
       return static_cast<PlayerColorType>(i);
     }
   }

@@ -7,6 +7,7 @@
 
 #include "base/installed.h"
 #include "gtest/gtest.h"
+#include "ra/palettes.h"
 #include "ra/screen.h"
 #include "sdllib/ww_win.h"
 
@@ -27,11 +28,14 @@ TEST(GameTest, BuildsAndTearsDownWithoutAWindowOrGameData) {
 
 TEST(GameTest, InstallsItsSubsystemsForItsLifetime) {
   EXPECT_FALSE(base::Installed<Screen>::IsInstalled());
+  EXPECT_FALSE(base::Installed<Palettes>::IsInstalled());
   {
     const Game game;
     EXPECT_TRUE(base::Installed<Screen>::IsInstalled());
+    EXPECT_TRUE(base::Installed<Palettes>::IsInstalled());
   }
   EXPECT_FALSE(base::Installed<Screen>::IsInstalled());
+  EXPECT_FALSE(base::Installed<Palettes>::IsInstalled());
 }
 
 }  // namespace

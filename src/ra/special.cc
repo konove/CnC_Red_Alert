@@ -65,6 +65,7 @@
 #include "ra/inline.h"
 #include "ra/jshell.h"
 #include "ra/mapedit.h"
+#include "ra/palettes.h"
 #include "ra/queue.h"
 #include "ra/rules.h"
 #include "ra/screen.h"
@@ -307,16 +308,18 @@ void PWEditClass::Draw_Text(const char* text) {
                               Color, kTBlack, TextFlags | flags);
     }
   } else {
-    Conquer_Clip_Text_Print(buffer, X + 1, Y + 1,
-                            Has_Focus() ? &ColorRemaps.at(PCOLOR_DIALOG_BLUE)
-                                        : &ColorRemaps.at(PCOLOR_GREY),
-                            kTBlack, TextFlags, Width - 2);
+    Conquer_Clip_Text_Print(
+        buffer, X + 1, Y + 1,
+        Has_Focus() ? &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)
+                    : &ThePalettes().color_remaps().at(PCOLOR_GREY),
+        kTBlack, TextFlags, Width - 2);
 
     if (Has_Focus() &&
         std::cmp_less(std::string_view(buffer).size(), MaxLength)) {
-      Conquer_Clip_Text_Print("_", X + 1 + String_Pixel_Width(buffer), Y + 1,
-                              &ColorRemaps.at(PCOLOR_DIALOG_BLUE), kTBlack,
-                              TextFlags);
+      Conquer_Clip_Text_Print(
+          "_", X + 1 + String_Pixel_Width(buffer), Y + 1,
+          &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE), kTBlack,
+          TextFlags);
     }
   }
 }

@@ -26,13 +26,13 @@
 #include "ra/conquer.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
-#include "ra/externs.h"
 #include "ra/gadget.h"
 #include "ra/gauge.h"
 #include "ra/init.h"
 #include "ra/jshell.h"
 #include "ra/msgbox.h"
 #include "ra/palette.h"
+#include "ra/palettes.h"
 #include "ra/rawolapi.h"
 #include "ra/screen.h"
 #include "ra/statbtn.h"
@@ -161,7 +161,7 @@ bool WOL_Download_Dialog(IDownload* pDownload,
         ** Redraw backgound & dialog box
         */
         Load_Title_Page(true);
-        Set_Palette(CCPalette);
+        Set_Palette(ThePalettes().title_palette());
 
         Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
 

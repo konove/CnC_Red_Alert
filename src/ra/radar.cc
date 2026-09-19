@@ -110,6 +110,7 @@
 #include "ra/mapedit.h"
 #include "ra/mouse.h"
 #include "ra/object.h"
+#include "ra/palettes.h"
 #include "ra/screen.h"
 #include "ra/session.h"
 #include "ra/shape_draw.h"
@@ -567,7 +568,7 @@ void RadarClass::Draw_It(bool forced) {
             Text_String(
                 HouseTypeClass::As_Reference(PlayerPtr->ActLike).Full_Name()),
             RadX + (RadWidth / 2), RadY + RadHeight - 20,
-            &ColorRemaps.at(PlayerPtr->RemapColor), kTBlack,
+            &ThePalettes().color_remaps().at(PlayerPtr->RemapColor), kTBlack,
             TPF_CENTER | kTpfText | TPF_DROPSHADOW);
       }
 
@@ -686,7 +687,9 @@ void RadarClass::Render_Infantry(CELL cell, int x, int y, int size) {
     if (obj->Is_Techno() &&
         dynamic_cast<TechnoClass*>(obj)->Is_Visible_On_Radar()) {
       unsigned char color =
-          ColorRemaps.at(dynamic_cast<TechnoClass*>(obj)->House->RemapColor)
+          ThePalettes()
+              .color_remaps()
+              .at(dynamic_cast<TechnoClass*>(obj)->House->RemapColor)
               .Bar;
       int xoff = 0;
       int yoff = 0;
@@ -708,7 +711,7 @@ void RadarClass::Render_Infantry(CELL cell, int x, int y, int size) {
           *color
           */
           if (*dynamic_cast<InfantryClass*>(obj) == INFANTRY_SPY) {
-            color = ColorRemaps.at(PlayerPtr->RemapColor).Bar;
+            color = ThePalettes().color_remaps().at(PlayerPtr->RemapColor).Bar;
           }
           LogicPage->Fill_Rect(x + xoff, y + yoff, x + xoff + (subsize - 1),
                                y + yoff + (subsize - 1), color);
@@ -2227,14 +2230,14 @@ bool RadarClass::Draw_House_Info() {
   MouseClass::Zoom.Draw_Me(true);
 
   Fancy_Text_Print(TXT_SPY_INFO, RadX + RadOffX + 12, y,
-                   &ColorRemaps.at(PCOLOR_GREY), kTBlack,
+                   &ThePalettes().color_remaps().at(PCOLOR_GREY), kTBlack,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
   y += 14;
 
   HouseClass* ptr = HouseClass::As_Pointer(SpyingOn);
   if (ptr && ptr->RadarSpied & base::Bit<uint32_t>(PlayerPtr->Class->House)) {
     const PlayerColorType c_idx = ptr->RemapColor;
-    RemapControlType* color = &ColorRemaps.at(c_idx);
+    RemapControlType* color = &ThePalettes().color_remaps().at(c_idx);
     const TextPrintType style = TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW;
 
     /*
@@ -2257,7 +2260,7 @@ bool RadarClass::Draw_House_Info() {
     y += 12 + 1;
 
     Fancy_Text_Print(TXT_BUILDNGS, RadX + RadOffX + 12, y,
-                     &ColorRemaps.at(PCOLOR_GREY), kTBlack,
+                     &ThePalettes().color_remaps().at(PCOLOR_GREY), kTBlack,
                      TPF_6PT_GRAD | TPF_NOSHADOW);
     y += 12 + 1;
 
@@ -2267,7 +2270,7 @@ bool RadarClass::Draw_House_Info() {
     y += 12 + 1;
 
     Fancy_Text_Print(TXT_UNITS, RadX + RadOffX + 12, y,
-                     &ColorRemaps.at(PCOLOR_GREY), kTBlack,
+                     &ThePalettes().color_remaps().at(PCOLOR_GREY), kTBlack,
                      TPF_6PT_GRAD | TPF_NOSHADOW);
     y += 12 + 1;
     // count & print units
@@ -2276,7 +2279,7 @@ bool RadarClass::Draw_House_Info() {
     y += 12 + 1;
 
     Fancy_Text_Print(TXT_INFANTRY, RadX + RadOffX + 12, y,
-                     &ColorRemaps.at(PCOLOR_GREY), kTBlack,
+                     &ThePalettes().color_remaps().at(PCOLOR_GREY), kTBlack,
                      TPF_6PT_GRAD | TPF_NOSHADOW);
     y += 12 + 1;
     // count & print infantry
@@ -2316,10 +2319,10 @@ void RadarClass::Draw_Names() const {
   int y = RadY + RadOffY + 4;
 
   Fancy_Text_Print(TXT_NAME_COLON, RadX + RadOffX, y,
-                   &ColorRemaps.at(PCOLOR_GREY), kTBlack,
+                   &ThePalettes().color_remaps().at(PCOLOR_GREY), kTBlack,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
   Fancy_Text_Print(TXT_KILLS_COLON, RadX + RadOffX + RadIWidth - 2, y,
-                   &ColorRemaps.at(PCOLOR_GREY), kTBlack,
+                   &ThePalettes().color_remaps().at(PCOLOR_GREY), kTBlack,
                    TPF_RIGHT | TPF_6PT_GRAD | TPF_NOSHADOW);
   y += 12 + 1;
 
@@ -2343,9 +2346,9 @@ void RadarClass::Draw_Names() const {
     const PlayerColorType c_idx = ptr->RemapColor;
 
     if (ptr->IsDefeated) {
-      color = &GreyScheme;
+      color = &ThePalettes().grey_scheme();
     } else {
-      color = &ColorRemaps.at(c_idx);
+      color = &ThePalettes().color_remaps().at(c_idx);
     }
     const TextPrintType style =
         ptr->IsDefeated ? TPF_6PT_GRAD | TPF_NOSHADOW

@@ -4,6 +4,7 @@
 #define CNC_RED_ALERT_RA_GAME_H_
 
 #include "base/installed.h"
+#include "ra/palettes.h"
 #include "ra/screen.h"
 
 // Owns the game's subsystems and so fixes the order they are built and torn
@@ -34,6 +35,8 @@ class Game {
  private:
   Screen screen_;
   base::Installed<Screen>::Scope screen_scope_{screen_};
+  Palettes palettes_;
+  base::Installed<Palettes>::Scope palettes_scope_{palettes_};
 };
 
 #endif  // CNC_RED_ALERT_RA_GAME_H_

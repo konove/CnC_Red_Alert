@@ -123,6 +123,7 @@
 #include "ra/mapedit.h"
 #include "ra/object.h"
 #include "ra/palette.h"
+#include "ra/palettes.h"
 #include "ra/power.h"
 #include "ra/queue.h"
 #include "ra/selection.h"
@@ -1171,7 +1172,7 @@ void SidebarClass::StripClass::Init_Theater(TheaterType theater) {
     /*
     **	Make sure that remapping doesn't occur on the colors that cycle.
     */
-    PaletteClass pal = OriginalPalette;
+    PaletteClass pal = ThePalettes().original_palette();
     std::ranges::fill(pal.colors().subspan(kCycleColorStart, kCycleColorCount),
                       RGBClass(0x3f, 0x3f, 0x3f));
     Build_Translucent_Table(pal, base::Suffix(ClockCols, 0), 1,
@@ -1183,8 +1184,9 @@ void SidebarClass::StripClass::Init_Theater(TheaterType theater) {
     //		Build_Translucent_Table(GamePalette,ClockCols, 1,
     //(void*)ClockTranslucentTable); 		GamePalette = OriginalPalette;
 
-    Conquer_Build_Fading_Table(
-        GamePalette, base::Suffix(ClockTranslucentTable, 256), kBlack, 100);
+    Conquer_Build_Fading_Table(ThePalettes().game_palette(),
+                               base::Suffix(ClockTranslucentTable, 256), kBlack,
+                               100);
   }
 }
 

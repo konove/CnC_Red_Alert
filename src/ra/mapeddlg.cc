@@ -86,6 +86,7 @@
 #include "ra/msgbox.h"
 #include "ra/object.h"
 #include "ra/palette.h"
+#include "ra/palettes.h"
 #include "ra/rules.h"
 #include "ra/scenario.h"
 #include "ra/screen.h"
@@ -359,7 +360,7 @@ int MapEditClass::Load_Scenario() {
       Render();
     } else {
       Fill_In_Data();
-      GamePalette.Set();
+      ThePalettes().game_palette().Set();
       //		Set_Palette(GamePalette);
     }
 
@@ -1313,7 +1314,8 @@ int MapEditClass::Load_Scenario() {
             if (occupier) {
               color = DKGREEN;
               if (occupier && occupier->Owner() != HOUSE_NONE) {
-                color = ColorRemaps
+                color = ThePalettes()
+                            .color_remaps()
                             .at(HouseClass::As_Pointer(occupier->Owner())
                                     ->RemapColor)
                             .Color;

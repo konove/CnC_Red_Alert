@@ -60,6 +60,7 @@
 #include "ra/nullmgr.h"
 #include "ra/object.h"
 #include "ra/palette.h"
+#include "ra/palettes.h"
 #include "ra/scenario.h"
 #include "ra/screen.h"
 #include "ra/session.h"
@@ -353,7 +354,7 @@ void ScoreClass::Presentation() {
   TheScreen().visible_page().Clear();
   WWMouse->Erase_Mouse(&TheScreen().hidden_view(), true);
   TheScreen().hidden_page().Clear();
-  BlackPalette.Set();
+  ThePalettes().black_palette().Set();
 
   const auto country4 = MixArchive::RetrieveData("COUNTRY4.AUD");
   const auto sfx4 = MixArchive::RetrieveData("SFX4.AUD");
@@ -673,15 +674,15 @@ void ScoreClass::Presentation() {
       ScoreObj = nullptr;
     }
   }
-  BlackPalette.Set(kFadePaletteFast, nullptr);
+  ThePalettes().black_palette().Set(kFadePaletteFast, nullptr);
   TheScreen().visible_page().Clear();
   Show_Mouse();
 
   Theme.Queue_Song(THEME_NONE);
 
-  BlackPalette.Set(kFadePaletteFast, nullptr);
+  ThePalettes().black_palette().Set(kFadePaletteFast, nullptr);
   TheScreen().visible_page().Clear();
-  GamePalette.Set();
+  ThePalettes().game_palette().Set();
 
   Set_Font(oldfont);
   FontXSpacing = oldfontxspacing;
@@ -1087,7 +1088,7 @@ void Multi_Score_Presentation() {
   FontXSpacing = 0;
   Map.Override_Mouse_Shape(MOUSE_NORMAL);
 
-  BlackPalette.Set();
+  ThePalettes().black_palette().Set();
   TheScreen().visible_view().Clear();
   TheScreen().hidden_view().Clear();
   Hide_Mouse();
@@ -1152,11 +1153,11 @@ void Multi_Score_Presentation() {
       // steps of that colour's font ramp. Only the entries the score font
       // uses are set; the rest of `remap` stays uninitialized.
       const PlayerColorType color = i.Color;
-      remap[8] = ColorRemaps.at(color).FontRemap[11];
-      remap[6] = ColorRemaps.at(color).FontRemap[12];
-      remap[4] = ColorRemaps.at(color).FontRemap[13];
-      remap[2] = ColorRemaps.at(color).FontRemap[14];
-      remap[14] = ColorRemaps.at(color).FontRemap[15];
+      remap[8] = ThePalettes().color_remaps().at(color).FontRemap[11];
+      remap[6] = ThePalettes().color_remaps().at(color).FontRemap[12];
+      remap[4] = ThePalettes().color_remaps().at(color).FontRemap[13];
+      remap[2] = ThePalettes().color_remaps().at(color).FontRemap[14];
+      remap[14] = ThePalettes().color_remaps().at(color).FontRemap[15];
 
       Alloc_Object(new ScorePrintClass(i.Name, 15, y, remap));
       TickScoreScreen(20);
@@ -1191,9 +1192,9 @@ void Multi_Score_Presentation() {
 
   Theme.Queue_Song(THEME_NONE);
 
-  BlackPalette.Set(kFadePaletteFast, nullptr);
+  ThePalettes().black_palette().Set(kFadePaletteFast, nullptr);
   TheScreen().visible_view().Clear();
-  GamePalette.Set();
+  ThePalettes().game_palette().Set();
   Set_Font(oldfont);
   FontXSpacing = oldfontxspacing;
   ControlQ = false;

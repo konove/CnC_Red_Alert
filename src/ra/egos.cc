@@ -63,6 +63,7 @@
 #include "ra/graphics_loader.h"
 #include "ra/jshell.h"
 #include "ra/palette.h"
+#include "ra/palettes.h"
 #include "ra/screen.h"
 #include "ra/text_ids.h"
 #include "ra/theme.h"
@@ -334,17 +335,19 @@ static void Slide_Show(int slide, int frame) {
     ** Fade up the picture in the background. The text colors never fade.
     */
     base::CopyBytes(base::ObjectBytes(save_palette),
-                    std::as_bytes(CCPalette.bytes()), sizeof(save_palette));
+                    std::as_bytes(ThePalettes().title_palette().bytes()),
+                    sizeof(save_palette));
     // CCPalette.Partial_Adjust (std::min (6*(frame-5), 255), ComboPalette,
     // PaletteLUT);
     PaletteClass::Partial_Adjust(std::min(255 / FADE_DELAY * (frame - 10), 255),
                                  ComboPalette, PaletteLUT);
-    Set_Pal(&CCPalette);
+    Set_Pal(&ThePalettes().title_palette());
     if (frame != 9 + FADE_DELAY) {
-      base::CopyBytes(std::as_writable_bytes(CCPalette.bytes()),
-                      base::ObjectBytes(save_palette), sizeof(save_palette));
+      base::CopyBytes(
+          std::as_writable_bytes(ThePalettes().title_palette().bytes()),
+          base::ObjectBytes(save_palette), sizeof(save_palette));
     } else {
-      CCPalette = PaletteClass::CurrentPalette;
+      ThePalettes().title_palette() = PaletteClass::CurrentPalette;
     }
     return;
   }
@@ -354,19 +357,21 @@ static void Slide_Show(int slide, int frame) {
     ** Fade down the picture in the background. The text colors never fade.
     */
     base::CopyBytes(base::ObjectBytes(save_palette),
-                    std::as_bytes(CCPalette.bytes()), sizeof(save_palette));
+                    std::as_bytes(ThePalettes().title_palette().bytes()),
+                    sizeof(save_palette));
     PaletteClass::Partial_Adjust(
         std::min(255 / FADE_DELAY * (frame - FRAME_DELAY), 255), PaletteLUT);
     if (frame != FRAME_DELAY + FADE_DELAY - 1) {
-      Set_Pal(&CCPalette);
-      base::CopyBytes(std::as_writable_bytes(CCPalette.bytes()),
-                      base::ObjectBytes(save_palette), sizeof(save_palette));
+      Set_Pal(&ThePalettes().title_palette());
+      base::CopyBytes(
+          std::as_writable_bytes(ThePalettes().title_palette().bytes()),
+          base::ObjectBytes(save_palette), sizeof(save_palette));
     } else {
       /*
       ** If this is the last fade down frame then zero the picture palette
       *entries.
       */
-      const auto ccpalptr = CCPalette.bytes();
+      const auto ccpalptr = ThePalettes().title_palette().bytes();
       for (int index = 0; index < 256; index++) {
         if (base::At(PaletteLUT, index)) {
           base::At(ccpalptr,
@@ -375,7 +380,7 @@ static void Slide_Show(int slide, int frame) {
           base::At(ccpalptr, base::ToSize((index * 3) + 2)) = 0;
         }
       }
-      Set_Pal(&CCPalette);
+      Set_Pal(&ThePalettes().title_palette());
     }
   }
 }
@@ -426,7 +431,7 @@ void Show_Who_Was_Responsible() {
   /*
   ** Initialise the text printing system.
   */
-  GadgetClass::Set_Color_Scheme(&ColorRemaps.at(PCOLOR_GREEN));
+  GadgetClass::Set_Color_Scheme(&ThePalettes().color_remaps().at(PCOLOR_GREEN));
   Fancy_Text_Print(TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(), kTBlack,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
@@ -613,18 +618,19 @@ void Show_Who_Was_Responsible() {
 
   for (int index = 0; index < 6; index++) {
     base::At(PaletteLUT,
-             base::At(ColorRemaps.at(pcolor).FontRemap, 10 + index)) = 0;
+             base::At(ThePalettes().color_remaps().at(pcolor).FontRemap,
+                      10 + index)) = 0;
   }
   // PaletteLUT[ColorRemaps[pcolor].BrightColor] = 0;
-  base::At(PaletteLUT, ColorRemaps.at(pcolor).Color) = 0;
-  base::At(PaletteLUT, ColorRemaps.at(pcolor).Shadow) = 0;
-  base::At(PaletteLUT, ColorRemaps.at(pcolor).Background) = 0;
-  base::At(PaletteLUT, ColorRemaps.at(pcolor).Corners) = 0;
-  base::At(PaletteLUT, ColorRemaps.at(pcolor).Highlight) = 0;
-  base::At(PaletteLUT, ColorRemaps.at(pcolor).Bright) = 0;
-  base::At(PaletteLUT, ColorRemaps.at(pcolor).Underline) = 0;
-  base::At(PaletteLUT, ColorRemaps.at(pcolor).Bar) = 0;
-  base::At(PaletteLUT, ColorRemaps.at(pcolor).Box) = 0;
+  base::At(PaletteLUT, ThePalettes().color_remaps().at(pcolor).Color) = 0;
+  base::At(PaletteLUT, ThePalettes().color_remaps().at(pcolor).Shadow) = 0;
+  base::At(PaletteLUT, ThePalettes().color_remaps().at(pcolor).Background) = 0;
+  base::At(PaletteLUT, ThePalettes().color_remaps().at(pcolor).Corners) = 0;
+  base::At(PaletteLUT, ThePalettes().color_remaps().at(pcolor).Highlight) = 0;
+  base::At(PaletteLUT, ThePalettes().color_remaps().at(pcolor).Bright) = 0;
+  base::At(PaletteLUT, ThePalettes().color_remaps().at(pcolor).Underline) = 0;
+  base::At(PaletteLUT, ThePalettes().color_remaps().at(pcolor).Bar) = 0;
+  base::At(PaletteLUT, ThePalettes().color_remaps().at(pcolor).Box) = 0;
 
   /*
   ** Stop the music.
@@ -634,18 +640,18 @@ void Show_Who_Was_Responsible() {
   /*
   ** Fade to black.
   */
-  BlackPalette.Set(kTimerSecond * 2, ServiceRealTime);
+  ThePalettes().black_palette().Set(kTimerSecond * 2, ServiceRealTime);
 
   /*
   ** Load the reference palette for the font.
   */
-  GameFile("EGOPAL.PAL").ReadObject(CCPalette);
+  GameFile("EGOPAL.PAL").ReadObject(ThePalettes().title_palette());
 
   /*
   ** Copy the font palette entries into the combo palette.
   */
   ComboPalPtr = ComboPalette;
-  ComboPalette = CCPalette;
+  ComboPalette = ThePalettes().title_palette();
 
   for (int index = 0; index < 256; index++) {
     if (base::At(PaletteLUT, index)) {
@@ -665,8 +671,8 @@ void Show_Who_Was_Responsible() {
   /*
   ** Set the font palette.
   */
-  CCPalette = ComboPalette;
-  CCPalette.Set();
+  ThePalettes().title_palette() = ComboPalette;
+  ThePalettes().title_palette().Set();
 
   /*
   ** Loop through and load up all the slideshow pictures
@@ -832,7 +838,7 @@ void Show_Who_Was_Responsible() {
 
   if (key == KN_ESC) {
     Theme.Fade_Out();
-    BlackPalette.Set(kTimerSecond * 2, ServiceRealTime);
+    ThePalettes().black_palette().Set(kTimerSecond * 2, ServiceRealTime);
   } else {
     /*
     ** Wait for the picture to fade down
@@ -863,7 +869,8 @@ void Show_Who_Was_Responsible() {
 
   Show_Mouse();
 
-  GadgetClass::Set_Color_Scheme(&ColorRemaps.at(PCOLOR_DIALOG_BLUE));
+  GadgetClass::Set_Color_Scheme(
+      &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE));
 
   Theme.Stop();
   Options.Set_Score_Volume(oldvolume, false);

@@ -59,6 +59,7 @@
 #include "ra/language.h"
 #include "ra/nullconn.h"
 #include "ra/palette.h"
+#include "ra/palettes.h"
 #include "ra/screen.h"
 #include "ra/special.h"
 #include "ra/type.h"
@@ -278,7 +279,8 @@ int main(const int argc, char* argv[])
       if (!Special.IsFromInstall) {
         Special.IsFromInstall = ini.Get_Bool("Intro", "PlayIntro", true);
       }
-      SlowPalette = ini.Get_Bool("Options", "SlowPalette", false);
+      ThePalettes().set_slow_palette(
+          ini.Get_Bool("Options", "SlowPalette", false));
 
       // Whatever happens next, the intro has now been shown once: write
       // PlayIntro=no so later launches go straight to the menu. Tiberian
@@ -352,7 +354,7 @@ void CleanUpAndExitWithError(char* message) {
   // on the way out.
   TheScreen().visible_page().Clear();
   TheScreen().hidden_page().Clear();
-  BlackPalette.Set();
+  ThePalettes().black_palette().Set();
   ShutDown();
   exit(exit_code);
 }

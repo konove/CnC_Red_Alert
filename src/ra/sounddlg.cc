@@ -56,6 +56,7 @@
 #include "ra/goptions.h"
 #include "ra/jshell.h"
 #include "ra/list.h"
+#include "ra/palettes.h"
 #include "ra/screen.h"
 #include "ra/session.h"
 #include "ra/shapebtn.h"
@@ -498,9 +499,10 @@ void MusicListClass::Draw_Entry(int index, int x, int y, int width,
                             width, Tabs);
 
   } else {
-    Conquer_Clip_Text_Print(Get_Item(index), x, y,
-                            selected ? &ColorRemaps.at(PCOLOR_DIALOG_BLUE)
-                                     : &ColorRemaps.at(PCOLOR_GREY),
-                            kTBlack, TextFlags, width, Tabs);
+    Conquer_Clip_Text_Print(
+        Get_Item(index), x, y,
+        selected ? &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)
+                 : &ThePalettes().color_remaps().at(PCOLOR_GREY),
+        kTBlack, TextFlags, width, Tabs);
   }
 }

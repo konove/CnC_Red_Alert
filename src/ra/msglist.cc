@@ -76,6 +76,7 @@
 #include "ra/externs.h"
 #include "ra/gadget.h"
 #include "ra/jshell.h"
+#include "ra/palettes.h"
 #include "ra/screen.h"
 #include "ra/text_ids.h"
 #include "ra/txtlabel.h"
@@ -343,7 +344,8 @@ TextLabelClass* MessageListClass::Add_Message(const char* name, int id,
   //------------------------------------------------------------------------
 
   int print_this_pass = 0;
-  Fancy_Text_Print(TXT_NONE, 0, 0, &ColorRemaps.at(color), kTBlack, style);
+  Fancy_Text_Print(TXT_NONE, 0, 0, &ThePalettes().color_remaps().at(color),
+                   kTBlack, style);
   int wid = String_Pixel_Width(message);
   if (wid >= Width - 8) {
     //------------------------------------------------------------------------
@@ -424,7 +426,7 @@ TextLabelClass* MessageListClass::Add_Message(const char* name, int id,
   // The label keeps a pointer to its text, so it is built on the message
   // buffer, never on the local copy.
   txtlabel = new TextLabelClass(base::At(MessageBuffers, i), MessageX, MessageY,
-                                &ColorRemaps.at(color), style);
+                                &ThePalettes().color_remaps().at(color), style);
   if (timeout == -1) {
     txtlabel->UserData1 = 0;
   } else {
@@ -783,8 +785,8 @@ TextLabelClass* MessageListClass::Add_Edit(PlayerColorType color,
   port::SafeCopy(EditBuf, to);
   OverflowBuf[0] = 0;
   EditCurPos = EditInitPos = static_cast<int>(std::string_view(to).size());
-  EditLabel =
-      new TextLabelClass(EditBuf, EditX, EditY, &ColorRemaps.at(color), style);
+  EditLabel = new TextLabelClass(
+      EditBuf, EditX, EditY, &ThePalettes().color_remaps().at(color), style);
 
   Width = width;
 
@@ -888,7 +890,7 @@ char* MessageListClass::Get_Edit_Buf() {
  *=========================================================================*/
 void MessageListClass::Set_Edit_Color(PlayerColorType color) {
   if (IsEdit) {
-    EditLabel->Color = &ColorRemaps.at(color);
+    EditLabel->Color = &ThePalettes().color_remaps().at(color);
   }
 
 }  // end of Set_Edit_Color

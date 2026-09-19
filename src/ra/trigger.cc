@@ -67,6 +67,7 @@
 #include "ra/house.h"
 #include "ra/jshell.h"
 #include "ra/object.h"
+#include "ra/palettes.h"
 #include "ra/taction.h"
 #include "ra/target.h"
 #include "ra/tevent.h"
@@ -132,10 +133,11 @@ void TriggerClass::Draw_It(int /*unused*/, int x, int y, int width, int height,
       Conquer_Clip_Text_Print(Description(), x, y, scheme, kTBlack, flags,
                               width, _tabs);
     } else {
-      Conquer_Clip_Text_Print(Description(), x, y,
-                              (selected ? &ColorRemaps.at(PCOLOR_DIALOG_BLUE)
-                                        : &ColorRemaps.at(PCOLOR_GREY)),
-                              kTBlack, flags, width, _tabs);
+      Conquer_Clip_Text_Print(
+          Description(), x, y,
+          (selected ? &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)
+                    : &ThePalettes().color_remaps().at(PCOLOR_GREY)),
+          kTBlack, flags, width, _tabs);
     }
   }
 }

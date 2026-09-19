@@ -114,8 +114,16 @@ add_gtest(
 add_gtest(
     NAME ra_game_test
     SOURCES game_test.cc screen.cc
-    LIBS base sdllib
+    LIBS base sdllib tech magic_enum::magic_enum
 )
+apply_language_setting(ra_game_test)
+
+add_gtest(
+    NAME ra_palettes_test
+    SOURCES palettes_test.cc
+    LIBS base tech magic_enum::magic_enum
+)
+apply_language_setting(ra_palettes_test)
 
 add_gtest(
     NAME ra_screen_test

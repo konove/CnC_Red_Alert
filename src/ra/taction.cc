@@ -84,6 +84,7 @@
 #include "ra/msglist.h"
 #include "ra/object.h"
 #include "ra/palette.h"
+#include "ra/palettes.h"
 #include "ra/reinf.h"
 #include "ra/rules.h"
 #include "ra/scenario.h"
@@ -231,10 +232,11 @@ void ActionChoiceClass::Draw_It(int /*unused*/, int x, int y, int width,
     Conquer_Clip_Text_Print(Description(), x, y, scheme, kTBlack, flags, width,
                             _tabs);
   } else {
-    Conquer_Clip_Text_Print(Description(), x, y,
-                            selected ? &ColorRemaps.at(PCOLOR_DIALOG_BLUE)
-                                     : &ColorRemaps.at(PCOLOR_GREY),
-                            kTBlack, flags, width, _tabs);
+    Conquer_Clip_Text_Print(
+        Description(), x, y,
+        selected ? &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)
+                 : &ThePalettes().color_remaps().at(PCOLOR_GREY),
+        kTBlack, flags, width, _tabs);
   }
 }
 
@@ -572,7 +574,7 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
       Hide_Mouse();
       TheScreen().visible_view().Clear();
       Play_Movie(Data.Movie, THEME_NONE, true);
-      GamePalette.Set();
+      ThePalettes().game_palette().Set();
       Map.Flag_To_Redraw(true);
       Show_Mouse();
       break;

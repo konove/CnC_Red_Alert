@@ -62,6 +62,7 @@
 #include "ra/jshell.h"
 #include "ra/mapedit.h"
 #include "ra/palette.h"
+#include "ra/palettes.h"
 #include "ra/screen.h"
 #include "ra/text_ids.h"
 #include "ra/textbtn.h"
@@ -697,7 +698,7 @@ int Main_Menu(int32_t /*unused*/) {
       **	Load the background picture.
       */
       Load_Title_Page();
-      CCPalette.Set();
+      ThePalettes().title_palette().Set();
 
       /*
       **	Display the title and text overlay for the menu.

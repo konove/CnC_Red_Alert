@@ -74,7 +74,6 @@
 #include "ra/nullmgr.h"
 #include "ra/object.h"
 #include "ra/overlay.h"
-#include "ra/palette.h"
 #include "ra/queue.h"
 #include "ra/rules.h"
 #include "ra/scenario.h"
@@ -103,7 +102,6 @@
 #include "tech/mix_archive.h"
 #include "tech/pk.h"
 #include "tech/random.h"
-#include "tech/rgb.h"
 #include "winvq/vqa32/vqaplay.h"
 
 std::string DebugNewGame;
@@ -304,24 +302,6 @@ RulesClass Rule;
 */
 KeyboardClass* Keyboard;
 
-/***************************************************************************
-**	Remap control array. This is used to hold the remap
-**	tables for the various possible player colors, and the color schemes
-** for dialogs.
-*/
-base::EnumArray<PlayerColorType, RemapControlType> ColorRemaps;
-
-/*
-** Special remap scheme for font that hs to print over metallic tabs
-*/
-RemapControlType MetalScheme;
-
-/*
-** This remap table is for special purposes.  It consists of dark grey shades,
-** and is used for dimming things out.
-*/
-RemapControlType GreyScheme;
-
 // Source of random numbers for events that must NOT affect game logic, such as
 // cosmetic animations and one-machine-only effects. Because it never influences
 // the simulation, it does not need to stay in sync across networked machines.
@@ -347,7 +327,6 @@ VersionClass VerNum;
 VQAConfig AnimControl;
 
 bool BreakoutAllowed = true;  // "true" if aborting of movies is allowed.
-bool SlowPalette = false;     // Slow palette flag set?
 
 /***************************************************************************
 **	These are the movie names to use for mission briefing, winning, and
@@ -502,18 +481,6 @@ std::span<const std::byte> GradFont6Ptr;  // gradient 6 point font pointer.
 **	This is the house that the human player is currently playing.
 */
 HouseClass* PlayerPtr;
-
-/***************************************************************************
-**	Special palettes for MCGA mode goes here. These palette buffers are used
-**	for pictures that do not use the game palette or are used for fading to
-**	black.
-*/
-PaletteClass CCPalette;
-PaletteClass GamePalette;
-PaletteClass BlackPalette(RGBClass(0, 0, 0));
-PaletteClass WhitePalette(RGBClass(RGBClass::kMaxValue, RGBClass::kMaxValue,
-                                   RGBClass::kMaxValue));
-PaletteClass OriginalPalette;
 
 /***************************************************************************
 **	These are the event queues. One is for holding events until they are

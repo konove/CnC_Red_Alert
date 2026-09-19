@@ -123,6 +123,7 @@
 #include "ra/nulldlg.h"
 #include "ra/nullmgr.h"
 #include "ra/palette.h"
+#include "ra/palettes.h"
 #include "ra/queue.h"
 #include "ra/rules.h"
 #include "ra/saveload.h"
@@ -216,9 +217,10 @@ static std::vector<uint8_t> shape_storage;
  *=============================================================================================*/
 static void Load_Prolog_Page() {
   Hide_Mouse();
-  Load_Title_Screen("PROLOG.PCX", &TheScreen().hidden_view(), CCPalette);
+  Load_Title_Screen("PROLOG.PCX", &TheScreen().hidden_view(),
+                    ThePalettes().title_palette());
   TheScreen().hidden_view().Blit(TheScreen().visible_view());
-  CCPalette.Set();
+  ThePalettes().title_palette().Set();
   Show_Mouse();
 }
 
@@ -345,7 +347,7 @@ bool Init_Game() {
     base::FillBytes(
         std::as_writable_bytes(PaletteClass::CurrentPalette.bytes()), 0x01,
         768);
-    WhitePalette.Set();
+    ThePalettes().white_palette().Set();
   } else {
     // The first launch plays the full intro instead, which counts.
     MarkLogoPlayed();
@@ -379,11 +381,11 @@ bool Init_Game() {
 
     Hide_Mouse();
     Fancy_Text_Print(TXT_STAND_BY, 320, 240,
-                     &ColorRemaps.at(PCOLOR_DIALOG_BLUE), kTBlack,
-                     TPF_CENTER | kTpfText | TPF_DROPSHADOW);
+                     &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE),
+                     kTBlack, TPF_CENTER | kTpfText | TPF_DROPSHADOW);
     Show_Mouse();
 
-    CCPalette.Set(kFadePaletteSlow);
+    ThePalettes().title_palette().Set(kFadePaletteSlow);
     ServiceRealTime();
   }
 
@@ -412,8 +414,8 @@ bool Init_Game() {
   ** because the options Load routine uses these palettes to set the brightness,
   *etc.
   */
-  GamePalette = CCPalette;
-  OriginalPalette = CCPalette;
+  ThePalettes().game_palette() = ThePalettes().title_palette();
+  ThePalettes().original_palette() = ThePalettes().title_palette();
 
   /*
   **	Read game options, so the GameSpeed is initialized when multiplayer
@@ -562,7 +564,7 @@ bool Select_Game(bool /*fade*/) {
         **	through the loop, and the 'fade' flag is true
         */
         Load_Title_Page();
-        GamePalette = CCPalette;
+        ThePalettes().game_palette() = ThePalettes().title_palette();
 
         TheScreen().hidden_view().Blit(TheScreen().visible_view());
         //				if (fade) {
@@ -570,7 +572,7 @@ bool Select_Game(bool /*fade*/) {
         //					CCPalette.Set(kFadePaletteSlow,
         // ServiceRealTime); 					fade = false;
         // } else {
-        CCPalette.Set();
+        ThePalettes().title_palette().Set();
         //				}
 
         Set_Logic_Page(TheScreen().visible_view());
@@ -924,7 +926,7 @@ bool Select_Game(bool /*fade*/) {
                     case -1:
                       //	Patch was downloaded. Exit app.
                       Theme.Fade_Out();
-                      BlackPalette.Set(kFadePaletteSlow);
+                      ThePalettes().black_palette().Set(kFadePaletteSlow);
                       return false;
                     default:
                       break;
@@ -1120,7 +1122,7 @@ bool Select_Game(bool /*fade*/) {
     Hide_Mouse();
 
     if (selection != kSelStartNewGame) {
-      BlackPalette.Set(kFadePaletteMedium, ServiceRealTime);
+      ThePalettes().black_palette().Set(kFadePaletteMedium, ServiceRealTime);
       TheScreen().hidden_page().Clear();
       TheScreen().visible_page().Clear();
     }
@@ -1173,7 +1175,7 @@ bool Select_Game(bool /*fade*/) {
   */
   ServiceRealTime();
   Hide_Mouse();
-  BlackPalette.Set(kFadePaletteMedium, ServiceRealTime);
+  ThePalettes().black_palette().Set(kFadePaletteMedium, ServiceRealTime);
   TheScreen().hidden_page().Clear();
   TheScreen().visible_page().Clear();
   Show_Mouse();
@@ -1308,7 +1310,7 @@ void Anim_Init() {
   }
   AnimControl.Vmode = 0;
   AnimControl.OptionFlags |= VQAOPTF_CAPTIONS | VQAOPTF_EVA;
-  if (SlowPalette) {
+  if (ThePalettes().slow_palette()) {
     AnimControl.OptionFlags |= VQAOPTF_SLOWPAL;
   }
   AnimControl.AudioDeviceID = Audio.device_id();
@@ -1698,7 +1700,8 @@ void Init_Random() {
  * HISTORY: * 06/03/1996 JLB : Created. *
  *=============================================================================================*/
 void Load_Title_Page(bool visible) {
-  Load_Title_Screen("TITLE.PCX", &TheScreen().hidden_view(), CCPalette);
+  Load_Title_Screen("TITLE.PCX", &TheScreen().hidden_view(),
+                    ThePalettes().title_palette());
 
   if (visible) {
     TheScreen().hidden_view().Blit(TheScreen().visible_view());
@@ -1735,7 +1738,7 @@ static void Init_Color_Remaps() {
   TheScreen().sys_mem_page().Blit(TheScreen().hidden_view());
   for (const PlayerColorType pcolor :
        magic_enum::enum_values<PlayerColorType>()) {
-    auto& ptr = ColorRemaps.at(pcolor).RemapTable;
+    auto& ptr = ThePalettes().color_remaps().at(pcolor).RemapTable;
 
     for (int color = 0; color < 256; color++) {
       base::At(ptr, color) = static_cast<unsigned char>(color);
@@ -1747,36 +1750,40 @@ static void Init_Color_Remaps() {
               index, static_cast<int>(pcolor)));
     }
     for (int index = 0; index < 6; index++) {
-      base::At(ColorRemaps.at(pcolor).FontRemap, 10 + index) =
+      base::At(ThePalettes().color_remaps().at(pcolor).FontRemap, 10 + index) =
           static_cast<unsigned char>(TheScreen().hidden_view().Get_Pixel(
               2 + index, static_cast<int>(pcolor)));
     }
-    ColorRemaps.at(pcolor).BrightColor = kWhite;
+    ThePalettes().color_remaps().at(pcolor).BrightColor = kWhite;
     //		ColorRemaps[pcolor].BrightColor = hidden_view.Get_Pixel(1,
     // static_cast<int>(pcolor));
-    ColorRemaps.at(pcolor).Color = static_cast<unsigned char>(
+    ThePalettes().color_remaps().at(pcolor).Color = static_cast<unsigned char>(
         TheScreen().hidden_view().Get_Pixel(4, static_cast<int>(pcolor)));
 
-    ColorRemaps.at(pcolor).Shadow = static_cast<unsigned char>(
+    ThePalettes().color_remaps().at(pcolor).Shadow = static_cast<unsigned char>(
         TheScreen().hidden_view().Get_Pixel(10, static_cast<int>(pcolor)));
-    ColorRemaps.at(pcolor).Background = static_cast<unsigned char>(
-        TheScreen().hidden_view().Get_Pixel(9, static_cast<int>(pcolor)));
-    ColorRemaps.at(pcolor).Corners = static_cast<unsigned char>(
-        TheScreen().hidden_view().Get_Pixel(7, static_cast<int>(pcolor)));
-    ColorRemaps.at(pcolor).Highlight = static_cast<unsigned char>(
-        TheScreen().hidden_view().Get_Pixel(4, static_cast<int>(pcolor)));
-    ColorRemaps.at(pcolor).Bright = static_cast<unsigned char>(
+    ThePalettes().color_remaps().at(pcolor).Background =
+        static_cast<unsigned char>(
+            TheScreen().hidden_view().Get_Pixel(9, static_cast<int>(pcolor)));
+    ThePalettes().color_remaps().at(pcolor).Corners =
+        static_cast<unsigned char>(
+            TheScreen().hidden_view().Get_Pixel(7, static_cast<int>(pcolor)));
+    ThePalettes().color_remaps().at(pcolor).Highlight =
+        static_cast<unsigned char>(
+            TheScreen().hidden_view().Get_Pixel(4, static_cast<int>(pcolor)));
+    ThePalettes().color_remaps().at(pcolor).Bright = static_cast<unsigned char>(
         TheScreen().hidden_view().Get_Pixel(0, static_cast<int>(pcolor)));
-    ColorRemaps.at(pcolor).Underline = static_cast<unsigned char>(
-        TheScreen().hidden_view().Get_Pixel(0, static_cast<int>(pcolor)));
-    ColorRemaps.at(pcolor).Bar = static_cast<unsigned char>(
+    ThePalettes().color_remaps().at(pcolor).Underline =
+        static_cast<unsigned char>(
+            TheScreen().hidden_view().Get_Pixel(0, static_cast<int>(pcolor)));
+    ThePalettes().color_remaps().at(pcolor).Bar = static_cast<unsigned char>(
         TheScreen().hidden_view().Get_Pixel(6, static_cast<int>(pcolor)));
 
     /*
     **	This must grab from column 4 because the multiplayer color dialog
     *palette counts *	on this to be true.
     */
-    ColorRemaps.at(pcolor).Box = static_cast<unsigned char>(
+    ThePalettes().color_remaps().at(pcolor).Box = static_cast<unsigned char>(
         TheScreen().hidden_view().Get_Pixel(4, static_cast<int>(pcolor)));
   }
 
@@ -1784,7 +1791,8 @@ static void Init_Color_Remaps() {
   ** Now do the special dim grey scheme
   */
   for (int color = 0; color < 256; color++) {
-    base::At(GreyScheme.RemapTable, color) = static_cast<unsigned char>(color);
+    base::At(ThePalettes().grey_scheme().RemapTable, color) =
+        static_cast<unsigned char>(color);
   }
   // The palette index in the low byte of the pixel read from the grey row.
   const auto GreyPixel = [](int x) {
@@ -1792,65 +1800,68 @@ static void Init_Color_Remaps() {
         TheScreen().hidden_view().Get_Pixel(x, static_cast<int>(PCOLOR_GREY)));
   };
   for (int index = 0; index < 6; index++) {
-    base::At(GreyScheme.FontRemap, 10 + index) = GreyPixel(9 + index);
+    base::At(ThePalettes().grey_scheme().FontRemap, 10 + index) =
+        GreyPixel(9 + index);
   }
-  GreyScheme.BrightColor = GreyPixel(3);
-  GreyScheme.Color = GreyPixel(7);
+  ThePalettes().grey_scheme().BrightColor = GreyPixel(3);
+  ThePalettes().grey_scheme().Color = GreyPixel(7);
 
-  GreyScheme.Shadow =
-      base::At(ColorRemaps.at(PCOLOR_GREY).RemapTable, GreyPixel(15));
-  GreyScheme.Background =
-      base::At(ColorRemaps.at(PCOLOR_GREY).RemapTable, GreyPixel(14));
-  GreyScheme.Corners =
-      base::At(ColorRemaps.at(PCOLOR_GREY).RemapTable, GreyPixel(13));
-  GreyScheme.Highlight =
-      base::At(ColorRemaps.at(PCOLOR_GREY).RemapTable, GreyPixel(9));
-  GreyScheme.Bright =
-      base::At(ColorRemaps.at(PCOLOR_GREY).RemapTable, GreyPixel(5));
-  GreyScheme.Underline =
-      base::At(ColorRemaps.at(PCOLOR_GREY).RemapTable, GreyPixel(5));
-  GreyScheme.Bar =
-      base::At(ColorRemaps.at(PCOLOR_GREY).RemapTable, GreyPixel(11));
-  GreyScheme.Box =
-      base::At(ColorRemaps.at(PCOLOR_GREY).RemapTable, GreyPixel(11));
+  ThePalettes().grey_scheme().Shadow = base::At(
+      ThePalettes().color_remaps().at(PCOLOR_GREY).RemapTable, GreyPixel(15));
+  ThePalettes().grey_scheme().Background = base::At(
+      ThePalettes().color_remaps().at(PCOLOR_GREY).RemapTable, GreyPixel(14));
+  ThePalettes().grey_scheme().Corners = base::At(
+      ThePalettes().color_remaps().at(PCOLOR_GREY).RemapTable, GreyPixel(13));
+  ThePalettes().grey_scheme().Highlight = base::At(
+      ThePalettes().color_remaps().at(PCOLOR_GREY).RemapTable, GreyPixel(9));
+  ThePalettes().grey_scheme().Bright = base::At(
+      ThePalettes().color_remaps().at(PCOLOR_GREY).RemapTable, GreyPixel(5));
+  ThePalettes().grey_scheme().Underline = base::At(
+      ThePalettes().color_remaps().at(PCOLOR_GREY).RemapTable, GreyPixel(5));
+  ThePalettes().grey_scheme().Bar = base::At(
+      ThePalettes().color_remaps().at(PCOLOR_GREY).RemapTable, GreyPixel(11));
+  ThePalettes().grey_scheme().Box = base::At(
+      ThePalettes().color_remaps().at(PCOLOR_GREY).RemapTable, GreyPixel(11));
 
   /*
   ** Set up the metallic remap table for the font that prints over the tabs
   */
-  base::FillBytes(base::ObjectBytes(MetalScheme), 4, sizeof(MetalScheme));
+  base::FillBytes(base::ObjectBytes(ThePalettes().metal_scheme()), 4,
+                  sizeof(ThePalettes().metal_scheme()));
   for (int color_counter = 0; color_counter < 16; color_counter++) {
-    base::At(MetalScheme.FontRemap, color_counter) =
+    base::At(ThePalettes().metal_scheme().FontRemap, color_counter) =
         static_cast<unsigned char>(color_counter);
   }
-  MetalScheme.FontRemap[1] = 128;
-  MetalScheme.FontRemap[2] = 12;
-  MetalScheme.FontRemap[3] = 13;
-  MetalScheme.FontRemap[4] = 14;
-  MetalScheme.Color = 128;
-  MetalScheme.Background = 0;
-  MetalScheme.Underline = 128;
+  ThePalettes().metal_scheme().FontRemap[1] = 128;
+  ThePalettes().metal_scheme().FontRemap[2] = 12;
+  ThePalettes().metal_scheme().FontRemap[3] = 13;
+  ThePalettes().metal_scheme().FontRemap[4] = 14;
+  ThePalettes().metal_scheme().Color = 128;
+  ThePalettes().metal_scheme().Background = 0;
+  ThePalettes().metal_scheme().Underline = 128;
 
   /*
   ** Set up the font remap table for the mission briefing font
   */
   for (int colr = 0; colr < 16; colr++) {
-    base::At(ColorRemaps.at(PCOLOR_TYPE).FontRemap, colr) =
+    base::At(ThePalettes().color_remaps().at(PCOLOR_TYPE).FontRemap, colr) =
         static_cast<unsigned char>(TheScreen().hidden_view().Get_Pixel(
             colr, static_cast<int>(PCOLOR_TYPE)));
   }
 
-  ColorRemaps.at(PCOLOR_TYPE).Shadow = 11;
-  ColorRemaps.at(PCOLOR_TYPE).Background = 10;
-  ColorRemaps.at(PCOLOR_TYPE).Corners = 10;
-  ColorRemaps.at(PCOLOR_TYPE).Highlight = 9;
-  ColorRemaps.at(PCOLOR_TYPE).Bright = 15;
-  ColorRemaps.at(PCOLOR_TYPE).Underline = 11;
-  ColorRemaps.at(PCOLOR_TYPE).Bar = 11;
-  ColorRemaps.at(PCOLOR_TYPE).Box = 10;
-  ColorRemaps.at(PCOLOR_TYPE).BrightColor = 15;
-  ColorRemaps.at(PCOLOR_TYPE).Color = 9;
+  ThePalettes().color_remaps().at(PCOLOR_TYPE).Shadow = 11;
+  ThePalettes().color_remaps().at(PCOLOR_TYPE).Background = 10;
+  ThePalettes().color_remaps().at(PCOLOR_TYPE).Corners = 10;
+  ThePalettes().color_remaps().at(PCOLOR_TYPE).Highlight = 9;
+  ThePalettes().color_remaps().at(PCOLOR_TYPE).Bright = 15;
+  ThePalettes().color_remaps().at(PCOLOR_TYPE).Underline = 11;
+  ThePalettes().color_remaps().at(PCOLOR_TYPE).Bar = 11;
+  ThePalettes().color_remaps().at(PCOLOR_TYPE).Box = 10;
+  ThePalettes().color_remaps().at(PCOLOR_TYPE).BrightColor = 15;
+  ThePalettes().color_remaps().at(PCOLOR_TYPE).Color = 9;
 
-  GadgetClass::Set_Color_Scheme(&ColorRemaps.at(PCOLOR_DIALOG_BLUE));
+  GadgetClass::Set_Color_Scheme(
+      &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE));
   //	GadgetClass::Set_Color_Scheme(&ColorRemaps[PCOLOR_BLUE]);
 }
 
@@ -2066,7 +2077,7 @@ static void Init_CDROM_Access() {
       switch (error) {
         case 1:
           TheScreen().visible_page().Clear();
-          GamePalette.Set();
+          ThePalettes().game_palette().Set();
           Show_Mouse();
           WWMessageBox().Process(TXT_CD_ERROR1, TXT_OK);
           // Prog_End();
@@ -2074,7 +2085,7 @@ static void Init_CDROM_Access() {
 
         case 2:
           TheScreen().visible_page().Clear();
-          GamePalette.Set();
+          ThePalettes().game_palette().Set();
           Show_Mouse();
           if (WWMessageBox().Process(TXT_CD_DIALOG_1, TXT_OK, TXT_CANCEL) ==
               1) {
@@ -2299,7 +2310,7 @@ static void Init_Secondary_Mixfiles() {
  * HISTORY: * 06/03/1996 JLB : Created. *
  *=============================================================================================*/
 static void Bootstrap() {
-  BlackPalette.Set();
+  ThePalettes().black_palette().Set();
 
   /*
   **	Be sure to short circuit the CD-ROM check if there is a CD-ROM override
@@ -2362,9 +2373,9 @@ static void Bootstrap() {
                    "-CD\"<Steam library>/steamapps/common/Command & Conquer "
                    "Red Alert\"";
   }
-  base::CopyBytes(std::as_writable_bytes(GamePalette.bytes()), palette_data,
-                  768);
-  WhitePalette.at(0) = BlackPalette.at(0);
+  base::CopyBytes(std::as_writable_bytes(ThePalettes().game_palette().bytes()),
+                  palette_data, 768);
+  ThePalettes().white_palette().at(0) = ThePalettes().black_palette().at(0);
   //	GamePalette.Set();
 
   /*
@@ -2413,8 +2424,8 @@ static void Init_Mouse() {
       }
     }
   } else {
-    GamePalette.Set();
-    GamePalette.Set();
+    ThePalettes().game_palette().Set();
+    ThePalettes().game_palette().Set();
     TheScreen().visible_page().Clear();
     WWMessageBox().Process(kLanguageText.no_mouse, TXT_OK);
     // Prog_End();

@@ -54,6 +54,7 @@
 #include "ra/house.h"
 #include "ra/jshell.h"
 #include "ra/mapedit.h"
+#include "ra/palettes.h"
 #include "ra/scenario.h"
 #include "ra/screen.h"
 #include "ra/tab.h"
@@ -122,7 +123,7 @@ void CreditClass::Graphic_Logic(bool forced) {
     **	Display the new current value.
     */
     TabClass::Draw_Credits_Tab();
-    Fancy_Text_Print("%ld", xx, 0, &MetalScheme, kTBlack,
+    Fancy_Text_Print("%ld", xx, 0, &ThePalettes().metal_scheme(), kTBlack,
                      TPF_METAL12 | TPF_CENTER | TPF_USE_GRAD_PAL, Current);
 
     if (Scen.MissionTimer.IsRunning()) {
@@ -169,13 +170,14 @@ void CreditClass::Graphic_Logic(bool forced) {
       }
 
       if (hours) {
-        Fancy_Text_Print(TXT_TIME_FORMAT_HOURS, 400, 0, &MetalScheme, kTBlack,
+        Fancy_Text_Print(TXT_TIME_FORMAT_HOURS, 400, 0,
+                         &ThePalettes().metal_scheme(), kTBlack,
                          TPF_METAL12 | TPF_CENTER | TPF_USE_GRAD_PAL, hours,
                          mins, secs);
       } else {
-        Fancy_Text_Print(TXT_TIME_FORMAT_NO_HOURS, 400, 0, &MetalScheme,
-                         kTBlack, TPF_METAL12 | TPF_CENTER | TPF_USE_GRAD_PAL,
-                         mins, secs);
+        Fancy_Text_Print(
+            TXT_TIME_FORMAT_NO_HOURS, 400, 0, &ThePalettes().metal_scheme(),
+            kTBlack, TPF_METAL12 | TPF_CENTER | TPF_USE_GRAD_PAL, mins, secs);
       }
     }
 

@@ -106,6 +106,7 @@
 #include "ra/netdlg.h"
 #include "ra/nullmgr.h"
 #include "ra/palette.h"
+#include "ra/palettes.h"
 #include "ra/rules.h"
 #include "ra/saveload.h"
 #include "ra/scenario.h"
@@ -1485,7 +1486,7 @@ static void Advanced_Modem_Settings(SerialSettingsType* settings) {
       */
       if (display >= REDRAW_BACKGROUND) {
         Load_Title_Page(true);
-        CCPalette.Set();
+        ThePalettes().title_palette().Set();
 
         Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
 
@@ -2090,7 +2091,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
       */
       if (display >= REDRAW_BACKGROUND) {
         Load_Title_Page(true);
-        CCPalette.Set();
+        ThePalettes().title_palette().Set();
 
         Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
 
@@ -2940,9 +2941,9 @@ int Com_Scenario_Dialog(bool skirmish) {
   Session.ColorIdx = Session.PrefColor;     // init my preferred color
   port::SafeCopy(namebuf, Session.Handle);  // set my name
   name_edt.Set_Text(namebuf, MPLAYER_NAME_MAX);
-  name_edt.Set_Color(&ColorRemaps.at(Session.ColorIdx == PCOLOR_DIALOG_BLUE
-                                         ? PCOLOR_REALLY_BLUE
-                                         : Session.ColorIdx));
+  name_edt.Set_Color(&ThePalettes().color_remaps().at(
+      Session.ColorIdx == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
+                                             : Session.ColorIdx));
 
 #ifdef OLDWAY
   if (Session.House == HOUSE_GOOD) {
@@ -3100,7 +3101,7 @@ int Com_Scenario_Dialog(bool skirmish) {
   ........................................................................*/
   VerNum.Init_Clipping();
   Load_Title_Page(true);
-  CCPalette.Set();
+  ThePalettes().title_palette().Set();
 
   if (std::string_view(ModemRXString).size() > 36) {
     ModemRXString[36] = 0;
@@ -3244,11 +3245,13 @@ int Com_Scenario_Dialog(bool skirmish) {
         ..................................................................*/
         if (display >= REDRAW_COLORS) {
           for (i = 0; i < MAX_MPLAYER_COLORS; i++) {
-            LogicPage->Fill_Rect(
-                base::At(cbox_x, i) + 1, d_color_y + 1,
-                base::At(cbox_x, i) + 1 + d_color_w - 2,
-                d_color_y + 1 + d_color_h - 2,
-                ColorRemaps.at(static_cast<PlayerColorType>(i)).Box);
+            LogicPage->Fill_Rect(base::At(cbox_x, i) + 1, d_color_y + 1,
+                                 base::At(cbox_x, i) + 1 + d_color_w - 2,
+                                 d_color_y + 1 + d_color_h - 2,
+                                 ThePalettes()
+                                     .color_remaps()
+                                     .at(static_cast<PlayerColorType>(i))
+                                     .Box);
             //						(i ==
             // PCOLOR_DIALOG_BLUE) ? ColorRemaps[PCOLOR_REALLY_BLUE].Box :
             // ColorRemaps[static_cast<PlayerColorType>(i)].Box);
@@ -3378,7 +3381,7 @@ int Com_Scenario_Dialog(bool skirmish) {
             Session.ColorIdx = Session.PrefColor;
             display = std::max(display, REDRAW_COLORS);
 
-            name_edt.Set_Color(&ColorRemaps.at(
+            name_edt.Set_Color(&ThePalettes().color_remaps().at(
                 Session.ColorIdx == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
                                                        : Session.ColorIdx));
             name_edt.Flag_To_Redraw();
@@ -3788,7 +3791,7 @@ int Com_Scenario_Dialog(bool skirmish) {
                   HouseTypeClass::As_Reference(Session.House).Full_Name()));
 #endif  // OLDWAY
           playerlist.Set_Item(0, item);
-          playerlist.Colors.at(0) = &ColorRemaps.at(
+          playerlist.Colors.at(0) = &ThePalettes().color_remaps().at(
               Session.ColorIdx == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
                                                      : Session.ColorIdx);
           playerlist.Flag_To_Redraw();
@@ -3944,8 +3947,10 @@ int Com_Scenario_Dialog(bool skirmish) {
                 //......................................................
                 // Add two strings to the player list
                 //......................................................
-                playerlist.Add_Item("", &ColorRemaps.at(Session.ColorIdx));
-                playerlist.Add_Item("", &ColorRemaps.at(TheirColor));
+                playerlist.Add_Item(
+                    "", &ThePalettes().color_remaps().at(Session.ColorIdx));
+                playerlist.Add_Item(
+                    "", &ThePalettes().color_remaps().at(TheirColor));
               }
 
               //.........................................................
@@ -3966,7 +3971,7 @@ int Com_Scenario_Dialog(bool skirmish) {
                       HouseTypeClass::As_Reference(Session.House).Full_Name()));
 #endif  // OLDWAY
               playerlist.Set_Item(0, item);
-              playerlist.Colors.at(0) = &ColorRemaps.at(
+              playerlist.Colors.at(0) = &ThePalettes().color_remaps().at(
                   Session.ColorIdx == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
                                                          : Session.ColorIdx);
 
@@ -3983,7 +3988,7 @@ int Com_Scenario_Dialog(bool skirmish) {
                       HouseTypeClass::As_Reference(TheirHouse).Full_Name()));
 #endif  // OLDWAY
               playerlist.Set_Item(1, item);
-              playerlist.Colors.at(1) = &ColorRemaps.at(
+              playerlist.Colors.at(1) = &ThePalettes().color_remaps().at(
                   TheirColor == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
                                                    : TheirColor);
 
@@ -4765,9 +4770,9 @@ int Com_Show_Scenario_Dialog() {
   Session.ColorIdx = Session.PrefColor;     // init my preferred color
   port::SafeCopy(namebuf, Session.Handle);  // set my name
   name_edt.Set_Text(namebuf, MPLAYER_NAME_MAX);
-  name_edt.Set_Color(&ColorRemaps.at(Session.ColorIdx == PCOLOR_DIALOG_BLUE
-                                         ? PCOLOR_REALLY_BLUE
-                                         : Session.ColorIdx));
+  name_edt.Set_Color(&ThePalettes().color_remaps().at(
+      Session.ColorIdx == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
+                                             : Session.ColorIdx));
 
   //........................................................................
   // List boxes
@@ -4859,7 +4864,7 @@ int Com_Show_Scenario_Dialog() {
   ........................................................................*/
   VerNum.Init_Clipping();
   Load_Title_Page(true);
-  CCPalette.Set();
+  ThePalettes().title_palette().Set();
 
   // TODO(konove): This is ugly and just for printing a message.
   if (std::string_view(ModemRXString).size() > 36) {
@@ -4965,11 +4970,13 @@ int Com_Show_Scenario_Dialog() {
       ..................................................................*/
       if (display >= REDRAW_COLORS) {
         for (i = 0; i < MAX_MPLAYER_COLORS; i++) {
-          LogicPage->Fill_Rect(
-              base::At(cbox_x, i) + 2, d_color_y + 2,
-              base::At(cbox_x, i) + 2 + d_color_w - 4,
-              d_color_y + 2 + d_color_h - 4,
-              ColorRemaps.at(static_cast<PlayerColorType>(i)).Box);
+          LogicPage->Fill_Rect(base::At(cbox_x, i) + 2, d_color_y + 2,
+                               base::At(cbox_x, i) + 2 + d_color_w - 4,
+                               d_color_y + 2 + d_color_h - 4,
+                               ThePalettes()
+                                   .color_remaps()
+                                   .at(static_cast<PlayerColorType>(i))
+                                   .Box);
           //						(i ==
           // PCOLOR_DIALOG_BLUE) ? ColorRemaps[PCOLOR_REALLY_BLUE].Box :
           // ColorRemaps[static_cast<PlayerColorType>(i)].Box);
@@ -5043,8 +5050,8 @@ int Com_Show_Scenario_Dialog() {
                              Text_String(TXT_NOT_FOUND));
 
               Fancy_Text_Print(txt, d_dialog_cx, d_scenario_y,
-                               &ColorRemaps.at(PCOLOR_RED), kTBlack,
-                               kTpfText | TPF_CENTER);
+                               &ThePalettes().color_remaps().at(PCOLOR_RED),
+                               kTBlack, kTpfText | TPF_CENTER);
             }
 
             //.........................................................
@@ -5146,7 +5153,7 @@ int Com_Show_Scenario_Dialog() {
 
           Session.ColorIdx = Session.PrefColor;
 
-          name_edt.Set_Color(&ColorRemaps.at(
+          name_edt.Set_Color(&ThePalettes().color_remaps().at(
               Session.ColorIdx == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
                                                      : Session.ColorIdx));
           name_edt.Flag_To_Redraw();
@@ -5343,7 +5350,7 @@ int Com_Show_Scenario_Dialog() {
                 HouseTypeClass::As_Reference(Session.House).Full_Name()));
 #endif  // OLDWAY
         playerlist.Set_Item(0, item);
-        playerlist.Colors.at(0) = &ColorRemaps.at(
+        playerlist.Colors.at(0) = &ThePalettes().color_remaps().at(
             Session.ColorIdx == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
                                                    : Session.ColorIdx);
         playerlist.Flag_To_Redraw();
@@ -5451,7 +5458,7 @@ int Com_Show_Scenario_Dialog() {
                 Session.ColorIdx =
                     magic_enum::enum_values<PlayerColorType>().front();
               }
-              name_edt.Set_Color(&ColorRemaps.at(
+              name_edt.Set_Color(&ThePalettes().color_remaps().at(
                   Session.ColorIdx == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
                                                          : Session.ColorIdx));
               name_edt.Flag_To_Redraw();
@@ -5596,14 +5603,14 @@ int Com_Show_Scenario_Dialog() {
               // list
               //......................................................
               gamelist.Add_Item("");
+              playerlist.Add_Item("", &ThePalettes().color_remaps().at(
+                                          Session.ColorIdx == PCOLOR_DIALOG_BLUE
+                                              ? PCOLOR_REALLY_BLUE
+                                              : Session.ColorIdx));
               playerlist.Add_Item(
-                  "", &ColorRemaps.at(Session.ColorIdx == PCOLOR_DIALOG_BLUE
-                                          ? PCOLOR_REALLY_BLUE
-                                          : Session.ColorIdx));
-              playerlist.Add_Item(
-                  "", &ColorRemaps.at(TheirColor == PCOLOR_DIALOG_BLUE
-                                          ? PCOLOR_REALLY_BLUE
-                                          : TheirColor));
+                  "", &ThePalettes().color_remaps().at(
+                          TheirColor == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
+                                                           : TheirColor));
 
               first = false;
               transmit = true;
@@ -5632,7 +5639,7 @@ int Com_Show_Scenario_Dialog() {
 
 #endif  // OLDWAY
             playerlist.Set_Item(0, item);
-            playerlist.Colors.at(0) = &ColorRemaps.at(
+            playerlist.Colors.at(0) = &ThePalettes().color_remaps().at(
                 Session.ColorIdx == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
                                                        : Session.ColorIdx);
 
@@ -5649,7 +5656,7 @@ int Com_Show_Scenario_Dialog() {
                     HouseTypeClass::As_Reference(TheirHouse).Full_Name()));
 #endif  // OLDWAY
             playerlist.Set_Item(1, item);
-            playerlist.Colors.at(1) = &ColorRemaps.at(
+            playerlist.Colors.at(1) = &ThePalettes().color_remaps().at(
                 TheirColor == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
                                                  : TheirColor);
 
@@ -6213,7 +6220,7 @@ static int Phone_Dialog() {
       */
       if (display >= REDRAW_BACKGROUND) {
         Load_Title_Page(true);
-        CCPalette.Set();
+        ThePalettes().title_palette().Set();
 
         Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
 
@@ -6773,7 +6780,7 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
       */
       if (display >= REDRAW_BACKGROUND) {
         Load_Title_Page(true);
-        CCPalette.Set();
+        ThePalettes().title_palette().Set();
 
         Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
         Draw_Caption(TXT_PHONE_LISTING, d_dialog_x, d_dialog_y, d_dialog_w);

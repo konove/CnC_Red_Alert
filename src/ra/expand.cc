@@ -62,6 +62,7 @@
 #include "ra/jshell.h"
 #include "ra/list.h"
 #include "ra/palette.h"
+#include "ra/palettes.h"
 #include "ra/profile.h"
 #include "ra/scenario.h"
 #include "ra/screen.h"
@@ -461,7 +462,7 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
       **	Load the background picture.
       */
       Load_Title_Page();
-      CCPalette.Set();
+      ThePalettes().title_palette().Set();
 
       Dialog_Box(kOptionX, kOptionY, kOptionWidth, kOptionHeight);
       if (bCounterstrike) {
