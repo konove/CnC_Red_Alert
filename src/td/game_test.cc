@@ -8,6 +8,7 @@
 #include "base/installed.h"
 #include "gtest/gtest.h"
 #include "sdllib/ww_win.h"
+#include "td/palettes.h"
 #include "td/screen.h"
 
 // ww_win.cc, pulled in through gbuffer, dispatches events to the app.
@@ -27,11 +28,14 @@ TEST(GameTest, BuildsAndTearsDownWithoutAWindowOrGameData) {
 
 TEST(GameTest, InstallsItsSubsystemsForItsLifetime) {
   EXPECT_FALSE(base::Installed<Screen>::IsInstalled());
+  EXPECT_FALSE(base::Installed<Palettes>::IsInstalled());
   {
     const Game game;
     EXPECT_TRUE(base::Installed<Screen>::IsInstalled());
+    EXPECT_TRUE(base::Installed<Palettes>::IsInstalled());
   }
   EXPECT_FALSE(base::Installed<Screen>::IsInstalled());
+  EXPECT_FALSE(base::Installed<Palettes>::IsInstalled());
 }
 
 }  // namespace

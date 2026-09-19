@@ -78,6 +78,12 @@ add_gtest(
 )
 
 add_gtest(
+    NAME td_palettes_test
+    SOURCES palettes_test.cc
+    LIBS base
+)
+
+add_gtest(
     NAME td_screen_test
     SOURCES screen_test.cc screen.cc
     LIBS base sdllib

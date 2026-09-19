@@ -91,6 +91,7 @@
 #include "td/nullmgr.h"
 #include "td/object.h"
 #include "td/palette.h"
+#include "td/palettes.h"
 #include "td/screen.h"
 #include "td/special.h"
 #include "td/text.h"
@@ -716,7 +717,7 @@ void ScoreClass::Presentation() {
   TheScreen().sys_mem_page().Clear();
   WWMouse->Erase_Mouse(&TheScreen().hidden_view(), true);
   TheScreen().hidden_page().Clear();
-  Set_Palette(BlackPalette);
+  Set_Palette(ThePalettes().black_palette());
 
   Set_Logic_Page(TheScreen().sys_mem_page());
 
@@ -727,7 +728,8 @@ void ScoreClass::Presentation() {
   /*
   ** Load the background for the score screen
   */
-  WsaAnimation anim(base::At(ScreenNames, house), Palette);
+  WsaAnimation anim(base::At(ScreenNames, house),
+                    ThePalettes().title_palette());
 
   const int minutes = static_cast<int>(ElapsedTime / kTimerMinute) + 1;
 
@@ -806,10 +808,10 @@ void ScoreClass::Presentation() {
   Hide_Mouse();
   anim.DrawFrame(TheScreen().sys_mem_page(), 1);
   TheScreen().sys_mem_page().Blit(*PseudoSeenBuff);
-  Increase_Palette_Luminance(Palette, 30, 30, 30, 63);
+  Increase_Palette_Luminance(ThePalettes().title_palette(), 30, 30, 30, 63);
 
   Interpolate_2X_Scale(PseudoSeenBuff, &TheScreen().visible_view(), inter_pal);
-  Fade_Palette_To(Palette, kFadePaletteFast, Call_Back);
+  Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteFast, Call_Back);
 
   Audio.Play(country4, 255, Options.Normalize_Sound(90));
 
@@ -1087,7 +1089,7 @@ void ScoreClass::Presentation() {
       base::At(ScoreObjs, i) = nullptr;
     }
   }
-  Fade_Palette_To(BlackPalette, kFadePaletteFast, nullptr);
+  Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteFast, nullptr);
   TheScreen().visible_page().Clear();
 
   Show_Mouse();
@@ -1095,9 +1097,9 @@ void ScoreClass::Presentation() {
 
   Theme.Queue_Song(THEME_NONE);
 
-  Fade_Palette_To(BlackPalette, kFadePaletteFast, nullptr);
+  Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteFast, nullptr);
   TheScreen().visible_page().Clear();
-  Set_Palette(GamePalette);
+  Set_Palette(ThePalettes().game_palette());
 
   Set_Font(oldfont);
   FontXSpacing = oldfontxspacing;
@@ -1192,23 +1194,23 @@ void Cycle_Wait_Click() {
     counter = (counter + 1) % 8;
 
     if (counter == 0) {
-      const unsigned char r = Palette.at((233 * 3) + 0);
-      const unsigned char g = Palette.at((233 * 3) + 1);
-      const unsigned char b = Palette.at((233 * 3) + 2);
+      const unsigned char r = ThePalettes().title_palette().at((233 * 3) + 0);
+      const unsigned char g = ThePalettes().title_palette().at((233 * 3) + 1);
+      const unsigned char b = ThePalettes().title_palette().at((233 * 3) + 2);
 
       for (int i = 233; i < 237; i++) {
-        Palette.at(base::ToSize((i * 3) + 0)) =
-            Palette.at(base::ToSize(((i + 1) * 3) + 0));
-        Palette.at(base::ToSize((i * 3) + 1)) =
-            Palette.at(base::ToSize(((i + 1) * 3) + 1));
-        Palette.at(base::ToSize((i * 3) + 2)) =
-            Palette.at(base::ToSize(((i + 1) * 3) + 2));
+        ThePalettes().title_palette().at(base::ToSize((i * 3) + 0)) =
+            ThePalettes().title_palette().at(base::ToSize(((i + 1) * 3) + 0));
+        ThePalettes().title_palette().at(base::ToSize((i * 3) + 1)) =
+            ThePalettes().title_palette().at(base::ToSize(((i + 1) * 3) + 1));
+        ThePalettes().title_palette().at(base::ToSize((i * 3) + 2)) =
+            ThePalettes().title_palette().at(base::ToSize(((i + 1) * 3) + 2));
       }
-      Palette.at((237 * 3) + 0) = r;
-      Palette.at((237 * 3) + 1) = g;
-      Palette.at((237 * 3) + 2) = b;
+      ThePalettes().title_palette().at((237 * 3) + 0) = r;
+      ThePalettes().title_palette().at((237 * 3) + 1) = g;
+      ThePalettes().title_palette().at((237 * 3) + 2) = b;
 
-      Set_Palette(Palette);
+      Set_Palette(ThePalettes().title_palette());
     }
   }
   Keyboard::Clear();
@@ -2184,20 +2186,20 @@ void Multi_Score_Presentation() {
   TheScreen().hidden_page().Clear();
   TextPrintBuffer->Clear();
 
-  Set_Palette(BlackPalette);
+  Set_Palette(ThePalettes().black_palette());
 
-  WsaAnimation anim("MLTIPLYR.WSA", Palette);
+  WsaAnimation anim("MLTIPLYR.WSA", ThePalettes().title_palette());
   Hide_Mouse();
 
   /*
   ** Display the background animation
   */
   TheScreen().visible_page().Clear();
-  Increase_Palette_Luminance(Palette, 30, 30, 30, 63);
+  Increase_Palette_Luminance(ThePalettes().title_palette(), 30, 30, 30, 63);
   anim.DrawFrame(*PseudoSeenBuff, 1);
   Interpolate_2X_Scale(PseudoSeenBuff, &TheScreen().visible_view(),
                        "MULTSCOR.PAL");
-  Fade_Palette_To(Palette, kFadePaletteFast, Call_Back);
+  Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteFast, Call_Back);
 
   int frame = 1;
   while (frame < anim.frame_count()) {
@@ -2267,9 +2269,9 @@ void Multi_Score_Presentation() {
 
   Theme.Queue_Song(THEME_NONE);
 
-  Fade_Palette_To(BlackPalette, kFadePaletteFast, nullptr);
+  Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteFast, nullptr);
   TheScreen().visible_page().Clear();
-  Set_Palette(GamePalette);
+  Set_Palette(ThePalettes().game_palette());
 
   Set_Logic_Page(TheScreen().visible_view());
 

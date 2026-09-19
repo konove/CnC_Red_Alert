@@ -71,6 +71,7 @@
 #include "td/interpal.h"
 #include "td/jshell.h"
 #include "td/palette.h"
+#include "td/palettes.h"
 #include "td/score.h"
 #include "td/screen.h"
 #include "td/text.h"
@@ -513,7 +514,7 @@ void Map_Selection() {
   Keyboard::Clear();
   Set_Font(ScoreFontPtr);
   Set_Font_Palette(_regpal);
-  Set_Palette(BlackPalette);
+  Set_Palette(ThePalettes().black_palette());
 
   const int scenario = Scenario + (house == HOUSE_GOOD ? 0 : 14);
   if (house == HOUSE_GOOD) {
@@ -557,7 +558,8 @@ void Map_Selection() {
   ** Load the spinning-globe anim
   */
   const bool good = house == HOUSE_GOOD;
-  WsaAnimation anim(good ? "HEARTH_E.WSA" : "HEARTH_A.WSA", Palette);
+  WsaAnimation anim(good ? "HEARTH_E.WSA" : "HEARTH_A.WSA",
+                    ThePalettes().title_palette());
   const char* progress_name = lastscenario ? "HSAFRICA.WSA" : "AFRICA.WSA";
   if (good) {
     progress_name = lastscenario ? "HBOSNIA.WSA" : "EUROPE.WSA";
@@ -583,7 +585,7 @@ void Map_Selection() {
   WWMouse->Erase_Mouse(&TheScreen().hidden_view(), true);
   TheScreen().hidden_page().Clear();
 
-  Increase_Palette_Luminance(Palette, 30, 30, 30, 63);
+  Increase_Palette_Luminance(ThePalettes().title_palette(), 30, 30, 30, 63);
 
   //	SeenBuff.Blit(HidPage);
   greyearth.DrawFrame(TheScreen().sys_mem_page(), 0);
@@ -1186,7 +1188,7 @@ void Map_Selection() {
   }
 
   Theme.Queue_Song(THEME_NONE);
-  Fade_Palette_To(BlackPalette, kFadePaletteMedium, nullptr);
+  Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium, nullptr);
   delete europe;
 
   delete PseudoSeenBuff;

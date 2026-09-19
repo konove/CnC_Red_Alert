@@ -160,7 +160,6 @@ VQAConfig AnimControl;
 
 bool PreserveVQAScreen;       // Used for screen mode transition control.
 bool BreakoutAllowed = true;  // "true" if aborting of movies is allowed.
-bool SlowPalette = true;      // Slow palette flag set?
 
 /***************************************************************************
 **	These are the movie names to use for mission briefing, winning, and
@@ -382,17 +381,6 @@ std::span<const std::byte> GradFont6Ptr;  // gradient 6 point font pointer.
 **	This is the house that the human player is currently playing.
 */
 HouseClass* PlayerPtr;
-
-/***************************************************************************
-**	Special palettes for MCGA mode goes here. These palette buffers are used
-**	for pictures that do not use the game palette or are used for fading to
-**	black.
-*/
-std::vector<unsigned char> GamePalette;
-std::vector<unsigned char> BlackPalette;
-std::vector<unsigned char> WhitePalette;
-std::vector<unsigned char> OriginalPalette;
-std::vector<unsigned char> Palette;
 
 /***************************************************************************
 **	These are the event queues. One is for holding events until they are

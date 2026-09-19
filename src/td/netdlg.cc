@@ -173,6 +173,7 @@
 #include "td/msglist.h"
 #include "td/nodename.h"
 #include "td/palette.h"
+#include "td/palettes.h"
 #include "td/queue.h"
 #include "td/screen.h"
 #include "td/special.h"
@@ -1032,7 +1033,7 @@ static int Net_Join_Dialog() {
   Send_Join_Queries(game_index, 1, 0);
 
   Load_Title_Page(true);
-  Set_Palette(Palette);
+  Set_Palette(ThePalettes().title_palette());
 
   while (Get_Mouse_State() > 0) {
     Show_Mouse();
@@ -1062,7 +1063,7 @@ static int Net_Join_Dialog() {
       */
       if (display >= REDRAW_BACKGROUND) {
         Load_Title_Page(true);
-        Set_Palette(Palette);
+        Set_Palette(ThePalettes().title_palette());
 
         Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
 
@@ -3121,7 +3122,7 @@ static int Net_New_Dialog() {
       item, static_cast<char>(base::At(MPlayerTColors, MPlayerColorIdx)));
 
   Load_Title_Page(true);
-  Set_Palette(Palette);
+  Set_Palette(ThePalettes().title_palette());
   while (Get_Mouse_State() > 0) {
     Show_Mouse();
   }
@@ -3167,7 +3168,7 @@ static int Net_New_Dialog() {
         ** Reload and draw the title page
         */
         Load_Title_Page(true);
-        Set_Palette(Palette);
+        Set_Palette(ThePalettes().title_palette());
 
         Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
 
@@ -4451,7 +4452,7 @@ static int Net_Fake_New_Dialog() {
   CCDebugString("C&C95 - About to uncompress title page.\n");
   Load_Title_Page(true);
   CCDebugString("C&C95 - About to set the palette.\n");
-  Set_Palette(Palette);
+  Set_Palette(ThePalettes().title_palette());
   CCDebugString("C&C95 - Palette was set OK.\n");
 
   if (!TheScreen().IsVisible(LogicPage) &&
@@ -4507,7 +4508,7 @@ static int Net_Fake_New_Dialog() {
       */
       if (display >= REDRAW_BACKGROUND) {
         Load_Title_Page(true);
-        Set_Palette(Palette);
+        Set_Palette(ThePalettes().title_palette());
 
         Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
 
@@ -5043,7 +5044,7 @@ static int Net_Fake_Join_Dialog() {
   CCDebugString("C&C95 - About to uncompress title page.\n");
   Load_Title_Page(true);
   CCDebugString("C&C95 - About to set the palette.\n");
-  Set_Palette(Palette);
+  Set_Palette(ThePalettes().title_palette());
   CCDebugString("C&C95 - Palette was set OK.\n");
 
   if (!TheScreen().IsVisible(LogicPage) &&
@@ -5087,7 +5088,7 @@ static int Net_Fake_Join_Dialog() {
       */
       if (display >= REDRAW_BACKGROUND) {
         Load_Title_Page(true);
-        Set_Palette(Palette);
+        Set_Palette(ThePalettes().title_palette());
 
         Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
 

@@ -91,6 +91,7 @@
 #include "td/object.h"
 #include "td/overlay.h"
 #include "td/palette.h"
+#include "td/palettes.h"
 #include "td/score.h"
 #include "td/screen.h"
 #include "td/smudge.h"
@@ -172,7 +173,7 @@ bool Start_Scenario(char* root, bool briefing) {
 
     if (GameToPlay == GAME_NORMAL && !file.IsAvailable()) {
       TheScreen().visible_page().Clear();
-      Set_Palette(GamePalette);
+      Set_Palette(ThePalettes().game_palette());
       //			Show_Mouse();
       /*
       ** Show the mission briefing. Pretend we are inside the main loop so the
@@ -230,7 +231,7 @@ bool Read_Scenario(char* root) {
   if (Read_Scenario_Ini(root)) {
     Fill_In_Data();
   } else {
-    Fade_Palette_To(GamePalette, kFadePaletteFast, Call_Back);
+    Fade_Palette_To(ThePalettes().game_palette(), kFadePaletteFast, Call_Back);
     Show_Mouse();
     CCMessageBox().Process(TXT_UNABLE_READ_SCENARIO);
     Hide_Mouse();
@@ -553,7 +554,7 @@ void Do_Win() {
   SabotagedType = STRUCT_NONE;
 
   Map.Render();
-  Fade_Palette_To(GamePalette, kFadePaletteFast, Call_Back);
+  Fade_Palette_To(ThePalettes().game_palette(), kFadePaletteFast, Call_Back);
   Show_Mouse();
 }
 
@@ -632,7 +633,7 @@ void Do_Lose() {
   /*
   ** Start same scenario again
   */
-  Set_Palette(GamePalette);
+  Set_Palette(ThePalettes().game_palette());
   Show_Mouse();
   if (!PlaybackGame &&
       !CCMessageBox().Process(TXT_TO_REPLAY, TXT_YES, TXT_NO)) {
@@ -645,7 +646,7 @@ void Do_Lose() {
     GameActive = false;
   }
 
-  Fade_Palette_To(GamePalette, kFadePaletteFast, Call_Back);
+  Fade_Palette_To(ThePalettes().game_palette(), kFadePaletteFast, Call_Back);
   Show_Mouse();
 }
 

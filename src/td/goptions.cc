@@ -74,6 +74,7 @@
 #include "td/mplayer.h"
 #include "td/msgbox.h"
 #include "td/palette.h"
+#include "td/palettes.h"
 #include "td/queue.h"
 #include "td/scenario.h"
 #include "td/screen.h"
@@ -450,10 +451,10 @@ void GameOptionsClass::Process() {
               Play_Movie(ActionMovie);
             }
             // BreakoutAllowed = false;
-            std::ranges::fill(BlackPalette, 0x01);
-            Set_Palette(BlackPalette);
-            std::ranges::fill(BlackPalette, 0x00);
-            Set_Palette(BlackPalette);
+            std::ranges::fill(ThePalettes().black_palette(), 0x01);
+            Set_Palette(ThePalettes().black_palette());
+            std::ranges::fill(ThePalettes().black_palette(), 0x00);
+            Set_Palette(ThePalettes().black_palette());
             Map.Flag_To_Redraw(true);
             Theme.Queue_Song(THEME_PICK_ANOTHER);
             process = false;

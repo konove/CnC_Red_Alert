@@ -117,6 +117,7 @@
 #include "td/nullmgr.h"
 #include "td/overlay.h"
 #include "td/palette.h"
+#include "td/palettes.h"
 #include "td/queue.h"
 #include "td/randomstate.h"
 #include "td/saveload.h"
@@ -302,25 +303,25 @@ bool Init_Game() {
   static std::vector<std::byte> grad_font6_ptr_storage;
   grad_font6_ptr_storage = LoadAllocData(f);
   GradFont6Ptr = grad_font6_ptr_storage;
-  BlackPalette.assign(768, 0);
-  GamePalette.assign(768, 0);
-  OriginalPalette.assign(768, 0);
-  WhitePalette.assign(768, 0);
-  std::ranges::fill(WhitePalette, 63);
+  ThePalettes().black_palette().assign(768, 0);
+  ThePalettes().game_palette().assign(768, 0);
+  ThePalettes().original_palette().assign(768, 0);
+  ThePalettes().white_palette().assign(768, 0);
+  std::ranges::fill(ThePalettes().white_palette(), 63);
 
   DLOG(INFO) << "C&C95 - About to set palette";
-  std::ranges::fill(BlackPalette, 0x01);
+  std::ranges::fill(ThePalettes().black_palette(), 0x01);
   if (!Special.IsFromInstall) {
-    Set_Palette(BlackPalette);
+    Set_Palette(ThePalettes().black_palette());
   }
-  std::ranges::fill(BlackPalette, 0);
+  std::ranges::fill(ThePalettes().black_palette(), 0);
   if (!Special.IsFromInstall) {
-    Set_Palette(BlackPalette);
+    Set_Palette(ThePalettes().black_palette());
     DLOG(INFO) << "C&C95 - About to clear visible page";
     TheScreen().visible_page().Clear();
   }
 
-  Set_Palette(GamePalette);
+  Set_Palette(ThePalettes().game_palette());
 
   DLOG(INFO) << "C&C95 - About to set the mouse shape";
   /*
@@ -355,11 +356,11 @@ bool Init_Game() {
   **	but only the non terrain specific colors matter.
   */
   GameFile palfile("TEMPERAT.PAL");
-  palfile.Read(std::span(GamePalette), 768L);
+  palfile.Read(std::span(ThePalettes().game_palette()), 768L);
 
   if (!MouseInstalled) {
     char buffer[255];
-    Set_Palette(GamePalette);
+    Set_Palette(ThePalettes().game_palette());
 #ifdef GERMAN
     sprintf(buffer, "Command & Conquer kann Ihren Maustreiber nicht finden..");
 #else
@@ -401,7 +402,7 @@ bool Init_Game() {
 
     do {
       if (!CDList.Get_Number_Of_Drives()) {
-        Set_Palette(GamePalette);
+        Set_Palette(ThePalettes().game_palette());
         Show_Mouse();
         CCMessageBox().Process(TXT_CD_ERROR1, TXT_OK);
         ShutDown();
@@ -412,14 +413,14 @@ bool Init_Game() {
       error = SearchPaths::Add("?:\\");
       switch (error) {
         case 1:
-          Set_Palette(GamePalette);
+          Set_Palette(ThePalettes().game_palette());
           Show_Mouse();
           CCMessageBox().Process(TXT_CD_ERROR1, TXT_OK);
           ShutDown();
           exit(EXIT_FAILURE);
 
         case 2:
-          Set_Palette(GamePalette);
+          Set_Palette(ThePalettes().game_palette());
           Show_Mouse();
           if (CCMessageBox().Process(TXT_CD_DIALOG_1, TXT_OK, TXT_CANCEL) ==
               1) {
@@ -577,7 +578,7 @@ bool Init_Game() {
   Hide_Mouse();
   Wait_Vert_Blank();
   if (!Special.IsFromInstall) {
-    Set_Palette(Palette);
+    Set_Palette(ThePalettes().title_palette());
     TheScreen().hidden_view().Blit(TheScreen().visible_view());
     Show_Mouse();
   }
@@ -689,8 +690,10 @@ bool Init_Game() {
   ** because the options Load routine uses these palettes to set the brightness,
   *etc.
   */
-  std::ranges::copy(Palette, GamePalette.begin());
-  std::ranges::copy(Palette, OriginalPalette.begin());
+  std::ranges::copy(ThePalettes().title_palette(),
+                    ThePalettes().game_palette().begin());
+  std::ranges::copy(ThePalettes().title_palette(),
+                    ThePalettes().original_palette().begin());
 
   /*
   **	Read game options, so the GameSpeed is initialized when multiplayer
@@ -735,13 +738,11 @@ void Uninit_Game() {
   Set_Shape_Buffer({});
   shape_storage.clear();
   shape_storage.shrink_to_fit();
-  BlackPalette.clear();
-  GamePalette.clear();
-  OriginalPalette.clear();
-  WhitePalette.clear();
-
-  Palette.clear();
-  Palette.clear();  // Prog_End may run again when SDL handles the quit event.
+  ThePalettes().black_palette().clear();
+  ThePalettes().game_palette().clear();
+  ThePalettes().original_palette().clear();
+  ThePalettes().white_palette().clear();
+  ThePalettes().title_palette().clear();
 }
 
 extern int ShowCommand;
@@ -948,10 +949,12 @@ bool Select_Game(bool fade) {
         **	through the loop, and the 'fade' flag is true
         */
         Load_Title_Page(true);
-        std::ranges::copy(Palette, GamePalette.begin());
+        std::ranges::copy(ThePalettes().title_palette(),
+                          ThePalettes().game_palette().begin());
 
         if (fade) {
-          Fade_Palette_To(Palette, kFadePaletteSlow, Call_Back);
+          Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteSlow,
+                          Call_Back);
           fade = false;
         }
 
@@ -1114,16 +1117,20 @@ bool Select_Game(bool fade) {
 
 #ifdef DEMO
           Hide_Mouse();
-          Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
-          Load_Title_Screen("PREPICK.PCX", &TheScreen().hidden_view(), Palette);
+          Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
+                          Call_Back);
+          Load_Title_Screen("PREPICK.PCX", &TheScreen().hidden_view(),
+                            ThePalettes().title_palette());
           TheScreen().hidden_view().Blit(TheScreen().visible_view());
-          Fade_Palette_To(Palette, kFadePaletteMedium, Call_Back);
+          Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
+                          Call_Back);
           Clear_KeyBuffer();
           while (!Check_Key_Num()) {
             Call_Back();
           }
           Get_Key_Num();
-          Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
+          Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
+                          Call_Back);
           Show_Mouse();
 
           Scenario = 1;
@@ -1179,16 +1186,19 @@ bool Select_Game(bool fade) {
 
 #ifdef DEMO
           Hide_Mouse();
-          Set_Palette(BlackPalette);
-          Load_Title_Screen("DEMOPIC.PCX", &TheScreen().hidden_view(), Palette);
+          Set_Palette(ThePalettes().black_palette());
+          Load_Title_Screen("DEMOPIC.PCX", &TheScreen().hidden_view(),
+                            ThePalettes().title_palette());
           TheScreen().hidden_view().Blit(TheScreen().visible_view());
-          Fade_Palette_To(Palette, kFadePaletteMedium, Call_Back);
+          Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
+                          Call_Back);
           Clear_KeyBuffer();
           while (!Check_Key()) {
             Call_Back();
           }
           Get_Key();
-          Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
+          Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
+                          Call_Back);
           Show_Mouse();
           display = true;
           fade = true;
@@ -1427,84 +1437,100 @@ bool Select_Game(bool fade) {
 
           // verify existence of movie file before playing this sequence.
           if (GameFile("TRAILER.VQA").IsAvailable()) {
-            Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
+            Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
+                            Call_Back);
             TheScreen().visible_page().Clear();
             if (GameFile("ATTRACT2.CPS").IsAvailable()) {
               GameFile f("ATTRACT2.CPS");
               Load_Uncompress(f, TheScreen().sys_mem_page(),
-                              TheScreen().sys_mem_page(), Palette);
+                              TheScreen().sys_mem_page(),
+                              ThePalettes().title_palette());
               TheScreen().sys_mem_page().Scale(TheScreen().visible_view(), 0, 0,
                                                0, 0, 320, 199, 640, 398);
-              Fade_Palette_To(Palette, kFadePaletteMedium, Call_Back);
+              Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
+                              Call_Back);
             }
             Clear_KeyBuffer();
             count.Set(int64_t{kTimerSecond} * 3);
             while (count.Time()) {
               Call_Back();
             }
-            Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
+            Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
+                            Call_Back);
 
             Play_Movie("TRAILER");  // Red Alert teaser.
           }
 
           if (GameFile("SIZZLE.VQA").IsAvailable()) {
-            Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
+            Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
+                            Call_Back);
             TheScreen().visible_page().Clear();
             if (GameFile("ATTRACT2.CPS").IsAvailable()) {
               GameFile f("ATTRACT2.CPS");
               Load_Uncompress(f, TheScreen().sys_mem_page(),
-                              TheScreen().sys_mem_page(), Palette);
+                              TheScreen().sys_mem_page(),
+                              ThePalettes().title_palette());
               TheScreen().sys_mem_page().Scale(TheScreen().visible_view(), 0, 0,
                                                0, 0, 320, 199, 640, 398);
-              Fade_Palette_To(Palette, kFadePaletteMedium, Call_Back);
+              Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
+                              Call_Back);
             }
             Clear_KeyBuffer();
             count.Set(int64_t{kTimerSecond} * 3);
             while (count.Time()) {
               Call_Back();
             }
-            Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
+            Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
+                            Call_Back);
 
             Play_Movie("SIZZLE");  // Red Alert teaser.
           }
 
           if (GameFile("SIZZLE2.VQA").IsAvailable()) {
-            Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
+            Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
+                            Call_Back);
             TheScreen().visible_page().Clear();
             if (GameFile("ATTRACT2.CPS").IsAvailable()) {
               GameFile f("ATTRACT2.CPS");
               Load_Uncompress(f, TheScreen().sys_mem_page(),
-                              TheScreen().sys_mem_page(), Palette);
+                              TheScreen().sys_mem_page(),
+                              ThePalettes().title_palette());
               TheScreen().sys_mem_page().Scale(TheScreen().visible_view(), 0, 0,
                                                0, 0, 320, 199, 640, 398);
-              Fade_Palette_To(Palette, kFadePaletteMedium, Call_Back);
+              Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
+                              Call_Back);
             }
             Clear_KeyBuffer();
             count.Set(int64_t{kTimerSecond} * 3);
             while (count.Time()) {
               Call_Back();
             }
-            Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
+            Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
+                            Call_Back);
 
             Play_Movie("SIZZLE2");  // Red Alert teaser.
           }
 
-          Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
+          Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
+                          Call_Back);
           TheScreen().visible_page().Clear();
           if (GameFile("ATTRACT2.CPS").IsAvailable()) {
             GameFile f("ATTRACT2.CPS");
             Load_Uncompress(f, TheScreen().sys_mem_page(),
-                            TheScreen().sys_mem_page(), Palette);
+                            TheScreen().sys_mem_page(),
+                            ThePalettes().title_palette());
             TheScreen().sys_mem_page().Scale(TheScreen().visible_view(), 0, 0,
                                              0, 0, 320, 199, 640, 398);
-            Fade_Palette_To(Palette, kFadePaletteMedium, Call_Back);
+            Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
+                            Call_Back);
           }
           Clear_KeyBuffer();
           count.Set(int64_t{kTimerSecond} * 3);
           while (count.Time()) {
             Call_Back();
           }
-          Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
+          Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
+                          Call_Back);
 
           Play_Movie("CC2TEASE");
           Show_Mouse();
@@ -1525,7 +1551,8 @@ bool Select_Game(bool fade) {
           Hide_Mouse();
 #endif
           Theme.Fade_Out();
-          Fade_Palette_To(BlackPalette, kFadePaletteSlow, nullptr);
+          Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteSlow,
+                          nullptr);
 #ifdef JAPANESE
           TheScreen().visible_page().Clear();
 #endif
@@ -1644,7 +1671,8 @@ bool Select_Game(bool fade) {
     Hide_Mouse();
 
     if (selection != kSelStartNewGame) {
-      Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
+      Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
+                      Call_Back);
       TheScreen().hidden_page().Clear();
       TheScreen().visible_page().Clear();
     }
@@ -1978,7 +2006,7 @@ bool Select_Game(bool fade) {
   Hide_Mouse();
   WWMouse->Erase_Mouse(&TheScreen().hidden_view(), true);
 
-  Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
+  Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium, Call_Back);
   TheScreen().hidden_page().Clear();
   TheScreen().visible_page().Clear();
   Set_Logic_Page(TheScreen().visible_view());
@@ -2126,7 +2154,7 @@ void Anim_Init() {
   // AnimControl.DrawFlags |= VQACFGF_TOPLEFT;
   AnimControl.OptionFlags |= VQAOPTF_CAPTIONS | VQAOPTF_EVA;
 
-  if (SlowPalette) {
+  if (ThePalettes().slow_palette()) {
     AnimControl.OptionFlags |= VQAOPTF_SLOWPAL;
   }
 
@@ -3001,7 +3029,8 @@ void Load_Recording_Values() {
  * HISTORY: * 06/03/1996 JLB : Created. *
  *=============================================================================================*/
 void Load_Title_Page(bool visible) {
-  Load_Title_Screen("HTITLE.PCX", &TheScreen().hidden_view(), Palette);
+  Load_Title_Screen("HTITLE.PCX", &TheScreen().hidden_view(),
+                    ThePalettes().title_palette());
 
   if (visible) {
     TheScreen().hidden_view().Blit(TheScreen().visible_view());

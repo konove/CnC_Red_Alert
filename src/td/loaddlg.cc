@@ -77,6 +77,7 @@
 #include "td/mapedit.h"
 #include "td/msgbox.h"
 #include "td/palette.h"
+#include "td/palettes.h"
 #include "td/saveload.h"
 #include "td/screen.h"
 #include "td/text.h"
@@ -414,7 +415,7 @@ bool LoadOptionsClass::Process() {
           } else {
             Hide_Mouse();
             TheScreen().visible_page().Clear();
-            Set_Palette(GamePalette);
+            Set_Palette(ThePalettes().game_palette());
             Show_Mouse();
             process = false;
           }

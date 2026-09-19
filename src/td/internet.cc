@@ -75,6 +75,7 @@
 #include "td/mplayer.h"
 #include "td/msgbox.h"
 #include "td/palette.h"
+#include "td/palettes.h"
 #include "td/profile.h"
 #include "td/screen.h"
 #include "td/special.h"
@@ -497,7 +498,7 @@ bool Do_The_Internet_Menu_Thang() {
       if (!Spawn_WChat(true)) {
         Set_Logic_Page(TheScreen().visible_view());
         Load_Title_Page(true);
-        Set_Palette(Palette);
+        Set_Palette(ThePalettes().title_palette());
         CCMessageBox().Process(TXT_ERROR_UNABLE_TO_RUN_WCHAT, TXT_OK);
         LogicPage->Clear();
         return false;
@@ -505,7 +506,7 @@ bool Do_The_Internet_Menu_Thang() {
     } else {
       Set_Logic_Page(TheScreen().visible_view());
       Load_Title_Page(true);
-      Set_Palette(Palette);
+      Set_Palette(ThePalettes().title_palette());
       if (CCMessageBox().Process(TXT_EXPLAIN_REGISTRATION, TXT_REGISTER,
                                  TXT_CANCEL)) {
         LogicPage->Clear();
@@ -546,7 +547,7 @@ bool Do_The_Internet_Menu_Thang() {
       ** Redraw backgound & dialog box
       */
       Load_Title_Page(true);
-      Set_Palette(Palette);
+      Set_Palette(ThePalettes().title_palette());
 
       Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
 

@@ -141,6 +141,7 @@
 #include "td/mapedit.h"
 #include "td/msglist.h"
 #include "td/object.h"
+#include "td/palettes.h"
 #include "td/profile.h"
 #include "td/queue.h"
 #include "td/rand.h"
@@ -408,9 +409,12 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   absl::SNPrintF(fullname, sizeof(fullname), "%s.PAL",
                  Theaters.at(theater).Root);
   const auto ptr = MixArchive::RetrieveData(fullname);
-  base::CopyBytes(std::as_writable_bytes(std::span(GamePalette)), ptr, 768);
+  base::CopyBytes(
+      std::as_writable_bytes(std::span(ThePalettes().game_palette())), ptr,
+      768);
 
-  std::ranges::copy(GamePalette, OriginalPalette.begin());
+  std::ranges::copy(ThePalettes().game_palette(),
+                    ThePalettes().original_palette().begin());
 
   GameFile(Fading_Table_Name("GREEN", theater)).ReadObject(FadingGreen);
   if (theater == THEATER_DESERT) {
@@ -445,13 +449,13 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   /*
   **	Create the shadow color used by aircraft.
   */
-  Conquer_Build_Fading_Table(GamePalette, base::Suffix(SpecialGhost, 256),
-                             kBlack, 100);
+  Conquer_Build_Fading_Table(ThePalettes().game_palette(),
+                             base::Suffix(SpecialGhost, 256), kBlack, 100);
   for (int index = 0; index < 256; index++) {
     base::At(SpecialGhost, index) = 0;
   }
 
-  Build_Fading_Table(GamePalette, FadingBrighten, kWhite, 25);
+  Build_Fading_Table(ThePalettes().game_palette(), FadingBrighten, kWhite, 25);
 
   /*
   **	Adjust the palette according to the visual control option settings.

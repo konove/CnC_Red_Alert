@@ -17,6 +17,7 @@
 #include "td/msgbox.h"
 #include "td/nullconn.h"
 #include "td/palette.h"
+#include "td/palettes.h"
 #include "td/rand.h"
 #include "td/screen.h"
 #include "td/startup.h"
@@ -35,7 +36,7 @@ void Check_For_Focus_Loss() {
 
 void Memory_Error_Handler() {
   TheScreen().visible_page().Clear();
-  Set_Palette(GamePalette);
+  Set_Palette(ThePalettes().game_palette());
   while (Get_Mouse_State()) {
     Show_Mouse();
   }

@@ -92,6 +92,7 @@
 #include "td/msgbox.h"
 #include "td/object.h"
 #include "td/palette.h"
+#include "td/palettes.h"
 #include "td/profile.h"
 #include "td/scenario.h"
 #include "td/screen.h"
@@ -291,7 +292,7 @@ int MapEditClass::Load_Scenario() {
     Render();
   } else {
     Fill_In_Data();
-    Set_Palette(GamePalette);
+    Set_Palette(ThePalettes().game_palette());
   }
 
   return 0;

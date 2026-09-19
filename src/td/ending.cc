@@ -66,6 +66,7 @@
 #include "td/interpal.h"
 #include "td/jshell.h"
 #include "td/palette.h"
+#include "td/palettes.h"
 #include "td/score.h"
 #include "td/screen.h"
 #include "td/text.h"
@@ -75,13 +76,14 @@
 
 void GDI_Ending() {
 #ifdef DEMO
-  Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
-  Load_Title_Screen("DEMOPIC.PCX", &TheScreen().hidden_view(), Palette);
+  Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium, Call_Back);
+  Load_Title_Screen("DEMOPIC.PCX", &TheScreen().hidden_view(),
+                    ThePalettes().title_palette());
   TheScreen().hidden_view().Blit(TheScreen().visible_view());
-  Fade_Palette_To(Palette, kFadePaletteMedium, Call_Back);
+  Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium, Call_Back);
   Clear_KeyBuffer();
   Get_Key_Num();
-  Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
+  Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium, Call_Back);
   TheScreen().visible_page().Clear();
 
 #else
@@ -101,37 +103,40 @@ void GDI_Ending() {
 
   CountDownTimerClass count;
   if (GameFile("TRAILER.VQA").IsAvailable()) {
-    Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
+    Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
+                    Call_Back);
     GameFile f("ATTRACT2.CPS");
     Load_Uncompress(f, TheScreen().sys_mem_page(), TheScreen().sys_mem_page(),
-                    Palette);
+                    ThePalettes().title_palette());
     TheScreen().sys_mem_page().Scale(TheScreen().visible_view(), 0, 0, 0, 0,
                                      320, 199, 640, 398);
-    Fade_Palette_To(Palette, kFadePaletteMedium, Call_Back);
+    Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
+                    Call_Back);
     Clear_KeyBuffer();
     count.Set(int64_t{kTimerSecond} * 3);
     while (count.Time()) {
       Call_Back();
     }
-    Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
+    Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
+                    Call_Back);
 
     Play_Movie("TRAILER");  // Red Alert teaser.
   }
 
-  Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
+  Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium, Call_Back);
   GameFile f("ATTRACT2.CPS");
   Load_Uncompress(f, TheScreen().sys_mem_page(), TheScreen().sys_mem_page(),
-                  Palette);
+                  ThePalettes().title_palette());
   TheScreen().sys_mem_page().Scale(TheScreen().visible_view(), 0, 0, 0, 0, 320,
                                    199, 640, 398);
-  Fade_Palette_To(Palette, kFadePaletteMedium, Call_Back);
+  Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium, Call_Back);
   Clear_KeyBuffer();
   //	CountDownTimerClass count;
   count.Set(int64_t{kTimerSecond} * 3);
   while (count.Time()) {
     Call_Back();
   }
-  Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
+  Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium, Call_Back);
 
   Play_Movie("CC2TEASE");
 #endif
@@ -287,37 +292,40 @@ void Nod_Ending() {
 
   CountDownTimerClass count;
   if (GameFile("TRAILER.VQA").IsAvailable()) {
-    Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
+    Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
+                    Call_Back);
     GameFile attract_file("ATTRACT2.CPS");
     Load_Uncompress(attract_file, TheScreen().sys_mem_page(),
-                    TheScreen().sys_mem_page(), Palette);
+                    TheScreen().sys_mem_page(), ThePalettes().title_palette());
     TheScreen().sys_mem_page().Scale(TheScreen().visible_view(), 0, 0, 0, 0,
                                      320, 199, 640, 398);
-    Fade_Palette_To(Palette, kFadePaletteMedium, Call_Back);
+    Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
+                    Call_Back);
     Clear_KeyBuffer();
     count.Set(int64_t{kTimerSecond} * 3);
     while (count.Time()) {
       Call_Back();
     }
-    Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
+    Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
+                    Call_Back);
 
     Play_Movie("TRAILER");  // Red Alert teaser.
   }
 
-  Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
+  Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium, Call_Back);
   GameFile f2("ATTRACT2.CPS");
   Load_Uncompress(f2, TheScreen().sys_mem_page(), TheScreen().sys_mem_page(),
-                  Palette);
+                  ThePalettes().title_palette());
   TheScreen().sys_mem_page().Scale(TheScreen().visible_view(), 0, 0, 0, 0, 320,
                                    199, 640, 398);
-  Fade_Palette_To(Palette, kFadePaletteMedium, Call_Back);
+  Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium, Call_Back);
   Clear_KeyBuffer();
   //	CountDownTimerClass count;
   count.Set(int64_t{kTimerSecond} * 3);
   while (count.Time()) {
     Call_Back();
   }
-  Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
+  Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium, Call_Back);
 
   Play_Movie("CC2TEASE");
 

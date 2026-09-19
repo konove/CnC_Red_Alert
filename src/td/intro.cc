@@ -59,6 +59,7 @@
 #include "td/interpal.h"
 #include "td/jshell.h"
 #include "td/palette.h"
+#include "td/palettes.h"
 #include "td/score.h"
 #include "td/screen.h"
 #include "td/special.h"
@@ -153,7 +154,7 @@ void Choose_Side() {
     BreakoutAllowed = true;
   }
 
-  WsaAnimation anim("CHOOSE.WSA", Palette);
+  WsaAnimation anim("CHOOSE.WSA", ThePalettes().title_palette());
   Call_Back();
 
 
@@ -167,7 +168,7 @@ void Choose_Side() {
   TheScreen().sys_mem_page().Clear();
   // if (!Special.IsFromInstall) {
   TheScreen().visible_page().Clear();
-  Set_Palette(Palette);
+  Set_Palette(ThePalettes().title_palette());
   //} else {
   // setpalette = 1;
   //}
@@ -201,7 +202,7 @@ void Choose_Side() {
     anim.DrawFrame(TheScreen().sys_mem_page(), frame++);
     if (setpalette) {
       Wait_Vert_Blank();
-      Set_Palette(Palette);
+      Set_Palette(ThePalettes().title_palette());
       setpalette = 0;
     }
     TheScreen().sys_mem_page().Blit(*PseudoSeenBuff, 0, 22, 0, 22, 320, 156);
@@ -314,9 +315,9 @@ void Choose_Side() {
     ** Make sure the screen's fully clear after the movie plays
     */
     TheScreen().visible_page().Clear();
-    std::ranges::fill(BlackPalette, 0x01);
-    Set_Palette(BlackPalette);
-    std::ranges::fill(BlackPalette, 0x00);
+    std::ranges::fill(ThePalettes().black_palette(), 0x01);
+    Set_Palette(ThePalettes().black_palette());
+    std::ranges::fill(ThePalettes().black_palette(), 0x00);
   } else {
     PreserveVQAScreen = true;
   }

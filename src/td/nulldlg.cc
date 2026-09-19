@@ -100,6 +100,7 @@
 #include "td/msglist.h"
 #include "td/nullmgr.h"
 #include "td/palette.h"
+#include "td/palettes.h"
 #include "td/phone.h"
 #include "td/screen.h"
 #include "td/special.h"
@@ -1557,7 +1558,7 @@ static void Advanced_Modem_Settings(SerialSettingsType* settings) {
       */
       if (display >= REDRAW_BACKGROUND) {
         Load_Title_Page(true);
-        Set_Palette(Palette);
+        Set_Palette(ThePalettes().title_palette());
 
         Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
 
@@ -2383,7 +2384,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
       */
       if (display >= REDRAW_BACKGROUND) {
         Load_Title_Page(true);
-        Set_Palette(Palette);
+        Set_Palette(ThePalettes().title_palette());
 
         Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
 
@@ -3500,7 +3501,7 @@ int Com_Scenario_Dialog() {
                 MAX_MESSAGE_LENGTH, d_txt6_h);
 
   Load_Title_Page(true);
-  Set_Palette(Palette);
+  Set_Palette(ThePalettes().title_palette());
 
   if (std::string_view(ModemRXString).size() > 36) {
     base::At(ModemRXString, 36) = 0;
@@ -4798,7 +4799,7 @@ int Com_Show_Scenario_Dialog() {
                 MAX_MESSAGE_LENGTH, d_txt6_h);
 
   Load_Title_Page(true);
-  Set_Palette(Palette);
+  Set_Palette(ThePalettes().title_palette());
 
   if (std::string_view(ModemRXString).size() > 36) {
     base::At(ModemRXString, 36) = 0;
@@ -5976,7 +5977,7 @@ static int Phone_Dialog() {
       */
       if (display >= REDRAW_BACKGROUND) {
         Load_Title_Page(true);
-        Set_Palette(Palette);
+        Set_Palette(ThePalettes().title_palette());
 
         Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
 
@@ -6556,7 +6557,7 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
       */
       if (display >= REDRAW_BACKGROUND) {
         Load_Title_Page(true);
-        Set_Palette(Palette);
+        Set_Palette(ThePalettes().title_palette());
 
         Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
 

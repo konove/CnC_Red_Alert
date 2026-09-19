@@ -69,6 +69,7 @@
 #include "td/ipxaddr.h"
 #include "td/ipxmgr.h"
 #include "td/nullmgr.h"
+#include "td/palettes.h"  // IWYU pragma: keep (used only with an entry point)
 #include "td/profile.h"
 #include "td/screen.h"
 #include "td/startup.h"
@@ -262,7 +263,7 @@ int main(int argc, char* argv[])
 
       SoundOn = Audio.Open(11025 * 2, /*stereo=*/false);
 
-      Palette.assign(768, 0);
+      ThePalettes().title_palette().assign(768, 0);
 
       CCDebugString("C&C95 - Setting video mode.\n");
       if (!TheScreen().Init()) {
@@ -309,8 +310,8 @@ int main(int argc, char* argv[])
           std::span(tempbuff).first(static_cast<std::size_t>(4)), buffer);
       Special.IsFromInstall =
           !absl::EqualsIgnoreCase(tempbuff, "No") && !SpawnedFromWChat;
-      SlowPalette =
-          WWGetPrivateProfileInt("Options", "SlowPalette", 1, buffer) != 0;
+      ThePalettes().set_slow_palette(
+          WWGetPrivateProfileInt("Options", "SlowPalette", 1, buffer) != 0);
 
 #ifdef DEMO
       /*
@@ -423,12 +424,6 @@ void __cdecl Prog_End() {
   }
   CCDebugString("C&C95 - Deleting tick timer.\n");
   ShutdownTickTimer();
-
-  if (!Palette.empty()) {
-    CCDebugString("C&C95 - Deleting palette object.\n");
-    Palette.clear();
-    Palette.shrink_to_fit();
-  }
 }
 
 void Print_Error_End_Exit(char* string) {

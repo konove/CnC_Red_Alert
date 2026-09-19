@@ -142,6 +142,7 @@
 #include "td/nullmgr.h"
 #include "td/object.h"
 #include "td/palette.h"
+#include "td/palettes.h"
 #include "td/queue.h"
 #include "td/randomstate.h"
 #include "td/saveload.h"
@@ -271,7 +272,7 @@ void Main_Game() {
     **	values, and then show the mouse.  This PRESUMES that Select_Game() has
     **	told the map to draw itself.
     */
-    Fade_Palette_To(GamePalette, kFadePaletteMedium, nullptr);
+    Fade_Palette_To(ThePalettes().game_palette(), kFadePaletteMedium, nullptr);
     Keyboard::Clear();
 
     /*
@@ -418,7 +419,7 @@ void Main_Game() {
     /*
     **	Scenario is done; fade palette to black
     */
-    Fade_Palette_To(BlackPalette, kFadePaletteSlow, nullptr);
+    Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteSlow, nullptr);
     TheScreen().visible_page().Clear();
 
 #ifndef DEMO
@@ -495,13 +496,14 @@ void Main_Game() {
 
 #ifdef DEMO
   Hide_Mouse();
-  Fade_Palette_To(BlackPalette, kFadePaletteMedium, NULL);
-  Load_Title_Screen("DEMOPIC.PCX", &TheScreen().hidden_view(), Palette);
+  Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium, NULL);
+  Load_Title_Screen("DEMOPIC.PCX", &TheScreen().hidden_view(),
+                    ThePalettes().title_palette());
   TheScreen().hidden_view().Blit(TheScreen().visible_view());
-  Fade_Palette_To(Palette, kFadePaletteMedium, NULL);
+  Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium, NULL);
   Clear_KeyBuffer();
   Get_Key();
-  Fade_Palette_To(BlackPalette, kFadePaletteMedium, NULL);
+  Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium, NULL);
 //		Show_Mouse();
 #else
 
@@ -1186,23 +1188,24 @@ bool Color_Cycle() {
 */
 #define STEP_RATE 5
     if (_up) {
-      GamePalette.at(767) += STEP_RATE;
-      GamePalette.at(766) += STEP_RATE;
-      GamePalette.at(765) += STEP_RATE;
-      if (GamePalette.at(767) > MAX_CYCLE_COLOR) {
-        GamePalette.at(767) = MAX_CYCLE_COLOR;
-        GamePalette.at(766) = MAX_CYCLE_COLOR;
-        GamePalette.at(765) = MAX_CYCLE_COLOR;
+      ThePalettes().game_palette().at(767) += STEP_RATE;
+      ThePalettes().game_palette().at(766) += STEP_RATE;
+      ThePalettes().game_palette().at(765) += STEP_RATE;
+      if (ThePalettes().game_palette().at(767) > MAX_CYCLE_COLOR) {
+        ThePalettes().game_palette().at(767) = MAX_CYCLE_COLOR;
+        ThePalettes().game_palette().at(766) = MAX_CYCLE_COLOR;
+        ThePalettes().game_palette().at(765) = MAX_CYCLE_COLOR;
         _up = false;
       }
     } else {
-      GamePalette.at(767) -= STEP_RATE;
-      GamePalette.at(766) -= STEP_RATE;
-      GamePalette.at(765) -= STEP_RATE;
-      if (static_cast<unsigned>(GamePalette.at(767)) < MIN_CYCLE_COLOR) {
-        GamePalette.at(767) = MIN_CYCLE_COLOR;
-        GamePalette.at(766) = MIN_CYCLE_COLOR;
-        GamePalette.at(765) = MIN_CYCLE_COLOR;
+      ThePalettes().game_palette().at(767) -= STEP_RATE;
+      ThePalettes().game_palette().at(766) -= STEP_RATE;
+      ThePalettes().game_palette().at(765) -= STEP_RATE;
+      if (static_cast<unsigned>(ThePalettes().game_palette().at(767)) <
+          MIN_CYCLE_COLOR) {
+        ThePalettes().game_palette().at(767) = MIN_CYCLE_COLOR;
+        ThePalettes().game_palette().at(766) = MIN_CYCLE_COLOR;
+        ThePalettes().game_palette().at(765) = MIN_CYCLE_COLOR;
         _up = true;
       }
     }
@@ -1217,7 +1220,8 @@ bool Color_Cycle() {
 
     _timer.Set(kTimerSecond / 4);
 
-    const auto palette_bytes = std::as_writable_bytes(std::span(GamePalette));
+    const auto palette_bytes =
+        std::as_writable_bytes(std::span(ThePalettes().game_palette()));
     base::CopyBytes(base::ObjectBytes(colors),
                     palette_bytes.subspan(base::ToSize(
                         (CYCLE_COLOR_START + CYCLE_COLOR_COUNT - 1) * 3)),
@@ -1237,7 +1241,7 @@ bool Color_Cycle() {
   */
   if (changed) {
     Wait_Vert_Blank();
-    Set_Palette(GamePalette);
+    Set_Palette(ThePalettes().game_palette());
     return true;
   }
   return false;
@@ -2089,11 +2093,12 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
     // Theme.AI();
     Theme.Queue_Song(theme);
     if (!PreserveVQAScreen) {
-      Fade_Palette_To(BlackPalette, kFadePaletteMedium, Call_Back);
+      Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
+                      Call_Back);
       TheScreen().visible_page().Clear();
-      std::ranges::fill(BlackPalette, 0x01);
-      Set_Palette(BlackPalette);
-      std::ranges::fill(BlackPalette, 0x00);
+      std::ranges::fill(ThePalettes().black_palette(), 0x01);
+      Set_Palette(ThePalettes().black_palette());
+      std::ranges::fill(ThePalettes().black_palette(), 0x00);
     }
     PreserveVQAScreen = false;
     Keyboard::Clear();
@@ -2137,10 +2142,10 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
     */
     if (clear_screen) {
       TheScreen().visible_page().Clear();
-      std::ranges::fill(BlackPalette, 0x01);
-      Set_Palette(BlackPalette);
-      std::ranges::fill(BlackPalette, 0x00);
-      Set_Palette(BlackPalette);
+      std::ranges::fill(ThePalettes().black_palette(), 0x01);
+      Set_Palette(ThePalettes().black_palette());
+      std::ranges::fill(ThePalettes().black_palette(), 0x00);
+      Set_Palette(ThePalettes().black_palette());
     }
     Show_Mouse();
   }
@@ -3061,7 +3066,7 @@ bool Force_CD_Available(int cd) {
       /*
       **	Only set the palette if necessary.
       */
-      Set_Palette(GamePalette);
+      Set_Palette(ThePalettes().game_palette());
 
       /*
       ** Pretend we are in the game, even if we arent

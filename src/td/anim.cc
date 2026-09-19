@@ -88,6 +88,7 @@
 #include "td/mouse.h"
 #include "td/object.h"
 #include "td/palette.h"
+#include "td/palettes.h"
 #include "td/smudge.h"
 #include "td/target.h"
 #include "td/techno.h"
@@ -1138,7 +1139,7 @@ void AnimClass::Middle() {
     if (GameToPlay == GAME_NORMAL) {
       radius = 4;
       rawdamage = 1000;
-      Fade_Palette_To(WhitePalette, 30, nullptr);
+      Fade_Palette_To(ThePalettes().white_palette(), 30, nullptr);
     }
     for (int x = -radius; x <= radius; x++) {
       for (int y = -radius; y <= radius; y++) {
@@ -1169,7 +1170,7 @@ void AnimClass::Middle() {
     }
     Shake_Screen(3);
     if (GameToPlay == GAME_NORMAL) {
-      Fade_Palette_To(GamePalette, 15, nullptr);
+      Fade_Palette_To(ThePalettes().game_palette(), 15, nullptr);
     }
   }
 

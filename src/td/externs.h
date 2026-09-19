@@ -113,7 +113,6 @@ extern std::span<const std::byte> WarFactoryOverlay;
 extern bool IsV107;
 extern char OverridePath[128];
 #endif
-extern bool SlowPalette;
 extern char VersionText[16];
 extern bool ScoresPresent;
 extern int CrateCount;
@@ -201,15 +200,10 @@ extern std::span<const std::byte> SystemStrings;
 */
 extern HousesType Whom;
 extern VQAConfig AnimControl;
-extern std::vector<unsigned char> OriginalPalette;
 extern int EndCountDown;
 extern bool SpecialFlag;
 extern int ScenarioInit;
 extern HouseClass* PlayerPtr;
-extern std::vector<unsigned char> BlackPalette;
-extern std::vector<unsigned char> WhitePalette;
-extern std::vector<unsigned char> GamePalette;
-extern std::vector<unsigned char> Palette;
 extern int Scenario;
 extern ScenarioPlayerType ScenPlayer;
 extern ScenarioDirType ScenDir;

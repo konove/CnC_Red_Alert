@@ -84,6 +84,7 @@
 #include "td/globals.h"
 #include "td/jshell.h"
 #include "td/palette.h"
+#include "td/palettes.h"
 #include "td/profile.h"
 #include "td/special.h"
 #include "tech/audio_mixer.h"
@@ -234,10 +235,10 @@ void OptionsClass::Set_Sound_Volume(int volume, bool feedback) {
 void OptionsClass::Set_Brightness(int brightness) {
   Brightness =
       static_cast<unsigned char>(0x40 + Fixed_To_Cardinal(0x80, brightness));
-  Adjust_Palette(OriginalPalette, GamePalette, Brightness, Color, Tint,
-                 Contrast);
+  Adjust_Palette(ThePalettes().original_palette(), ThePalettes().game_palette(),
+                 Brightness, Color, Tint, Contrast);
   if (InMainLoop) {
-    Set_Palette(GamePalette);
+    Set_Palette(ThePalettes().game_palette());
   }
 }
 
@@ -277,10 +278,10 @@ int OptionsClass::Get_Brightness() const {
  *=============================================================================================*/
 void OptionsClass::Set_Color(int color) {
   Color = static_cast<unsigned char>(color);
-  Adjust_Palette(OriginalPalette, GamePalette, Brightness, Color, Tint,
-                 Contrast);
+  Adjust_Palette(ThePalettes().original_palette(), ThePalettes().game_palette(),
+                 Brightness, Color, Tint, Contrast);
   if (InMainLoop) {
-    Set_Palette(GamePalette);
+    Set_Palette(ThePalettes().game_palette());
   }
 }
 
@@ -318,10 +319,10 @@ int OptionsClass::Get_Color() const { return Color; }
 void OptionsClass::Set_Contrast(int contrast) {
   Contrast =
       static_cast<unsigned char>(0x40 + Fixed_To_Cardinal(0x80, contrast));
-  Adjust_Palette(OriginalPalette, GamePalette, Brightness, Color, Tint,
-                 Contrast);
+  Adjust_Palette(ThePalettes().original_palette(), ThePalettes().game_palette(),
+                 Brightness, Color, Tint, Contrast);
   if (InMainLoop) {
-    Set_Palette(GamePalette);
+    Set_Palette(ThePalettes().game_palette());
   }
 }
 
@@ -361,10 +362,10 @@ int OptionsClass::Get_Contrast() const {
  *=============================================================================================*/
 void OptionsClass::Set_Tint(int tint) {
   Tint = static_cast<unsigned char>(tint);
-  Adjust_Palette(OriginalPalette, GamePalette, Brightness, Color, Tint,
-                 Contrast);
+  Adjust_Palette(ThePalettes().original_palette(), ThePalettes().game_palette(),
+                 Brightness, Color, Tint, Contrast);
   if (InMainLoop) {
-    Set_Palette(GamePalette);
+    Set_Palette(ThePalettes().game_palette());
   }
 }
 
@@ -520,8 +521,8 @@ void OptionsClass::Load_Settings() {
       WWGetPrivateProfileInt("Options", "DeathAnnounce", 0, buffer) != 0;
   IsFreeScroll =
       WWGetPrivateProfileInt("Options", "FreeScrolling", 0, buffer) != 0;
-  SlowPalette =
-      WWGetPrivateProfileInt("Options", "SlowPalette", 1, buffer) != 0;
+  ThePalettes().set_slow_palette(
+      WWGetPrivateProfileInt("Options", "SlowPalette", 1, buffer) != 0);
 
   char workbuf[128];
 
@@ -764,8 +765,8 @@ int OptionsClass::Normalize_Delay(int delay) const {
 }
 
 void OptionsClass::Fixup_Palette() const {
-  Adjust_Palette(OriginalPalette, GamePalette, Brightness, Color, Tint,
-                 Contrast);
+  Adjust_Palette(ThePalettes().original_palette(), ThePalettes().game_palette(),
+                 Brightness, Color, Tint, Contrast);
 }
 
 int OptionsClass::Normalize_Sound(int volume) const {
