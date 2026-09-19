@@ -1,5 +1,7 @@
 /build
 /build.*
+/build-asan
+/build-asan.*
 /build-strict
 /build-strict.*
 /cmake-build-debug-ra
