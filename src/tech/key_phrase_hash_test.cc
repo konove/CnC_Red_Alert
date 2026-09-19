@@ -26,6 +26,7 @@ TEST(HashKeyPhraseTest, ReproducesRedAlertCodes) {
       {"MOBIUS", 0x1F944BB3},        {"CYCLONE", 0xDE07154D},
       {"EDITOR", 0x16B170B1},        {"PLAYTEST", 0xF7DDC227},
       {"FROMINSTALL", 0xD95C68A2},   {"PEROPERO", 0x905F36A5},
+      {"HAPPY WITS", 0x72A47EF6},
   };
   for (const auto& entry : cases) {
     EXPECT_EQ(HashKeyPhrase(entry.phrase), entry.code) << entry.phrase;

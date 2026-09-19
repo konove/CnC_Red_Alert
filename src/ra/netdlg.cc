@@ -210,6 +210,12 @@
 // a player name plus room for the surrounding text and brackets.
 constexpr size_t kGameListItemSize = MPLAYER_NAME_MAX + 64;
 
+// HashKeyPhrase() code of the chat message that, sent from the network join
+// dialog, fills the player list with scripted Westwood staff who chat among
+// themselves. The original phrase is unknown and the hash collides freely;
+// "HAPPY WITS" is one of many phrases that produce this code.
+constexpr uint32_t kWestwoodChatCode = 0x72A47EF6;  // "HAPPY WITS"
+
 #include <iterator>
 #include <utility>
 
@@ -2423,7 +2429,8 @@ static int Net_Join_Dialog() {
                                       &Session.Chat.at(i)->Address);
               Ipx.Service();
             }
-            if (HashKeyPhrase(Session.GPacket.Message.Buf) == 0x72A47EF6) {
+            if (HashKeyPhrase(Session.GPacket.Message.Buf) ==
+                kWestwoodChatCode) {
               Session.WWChat = true;
               Clear_Listbox(&playerlist);
               Start_WWChat(&playerlist);
