@@ -56,10 +56,6 @@ int64_t Ram_Free(MemoryFlagType flag);
 int64_t Total_Ram_Free(MemoryFlagType flag);
 int64_t __cdecl Heap_Size(MemoryFlagType flag);
 
-extern uint64_t __cdecl MinRam;  // Record of least memory at worst case.
-extern uint64_t __cdecl MaxRam;  // Record of total allocated at worst
-                                 // case.
-
 #ifdef __cplusplus
 }
 #endif

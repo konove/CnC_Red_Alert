@@ -91,11 +91,8 @@ extern bool ForceEnglish;
 
 extern bool Debug_Quiet;
 extern bool Debug_Cheat;
-extern bool Debug_Remap;
 extern bool Debug_Flag;
-extern bool Debug_Lose;
 extern bool Debug_Map;
-extern bool Debug_Win;
 extern bool Debug_Icon;
 extern bool Debug_Passable;
 extern bool Debug_Unshroud;
@@ -152,7 +149,6 @@ extern MapEditClass Map;
 extern ScoreClass Score;
 extern MixArchive* ScoreMix;
 extern MixArchive* TheaterData;
-extern MixArchive* LowTheaterData;
 extern MixArchive* MoviesMix;
 extern MixArchive* GeneralMix;
 extern AudioMixer Audio;
@@ -332,7 +328,6 @@ extern int TrapCheckHeap;
 extern IPXManagerClass Ipx;
 extern int IsBridge;
 extern IPXAddressClass BridgeNet;
-extern bool NetMaster;
 extern bool NetStealth;
 extern bool NetProtect;
 extern bool NetOpen;
@@ -347,7 +342,6 @@ extern DynamicVectorClass<NodeNameType*> Games;
 extern DynamicVectorClass<NodeNameType*> Players;
 
 extern int Seed;
-extern int32_t* RandSeedPtr;
 extern int CustomSeed;
 extern int NewMaxAheadFrame1;
 extern int NewMaxAheadFrame2;
@@ -360,9 +354,7 @@ extern bool SoundOn;
 // extern GraphicBufferClass	SeenPage;
 extern GraphicBufferClass VisiblePage;
 extern GraphicBufferClass HiddenPage;
-extern GraphicBufferClass ModeXBuff;
 extern GraphicViewPortClass HidPage;
-extern GraphicBufferClass LoResHidPage;
 extern GraphicBufferClass SysMemPage;
 struct MenuConfig;
 extern MenuConfig menu_config;
@@ -376,8 +368,6 @@ extern int ProcessFrames;
 extern SpecialDialogType SpecialDialog;
 // extern bool						IsFindPath;
 
-extern char* DebugFname;  // for stoopid debugging purposes
-extern int DebugLine;     // for stoopid debugging purposes
 extern int RequiredCD;
 extern bool MouseInstalled;
 extern bool AreThingiesEnabled;

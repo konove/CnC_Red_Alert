@@ -105,11 +105,8 @@ bool ForceEnglish = false;
 
 bool Debug_Quiet = false;
 bool Debug_Cheat = false;
-bool Debug_Remap = false;
 bool Debug_Icon = false;
 bool Debug_Flag = false;
-bool Debug_Lose = false;
-bool Debug_Win = false;
 bool Debug_Map = false;       // true = map editor mode
 bool Debug_Passable = false;  // true = show passable/impassable terrain
 bool Debug_Unshroud = false;  // true = hide the shroud
@@ -282,7 +279,6 @@ bool GameInFocus;
 */
 MixArchive* TheaterData = nullptr;
 MixArchive* TheaterIcons = nullptr;
-MixArchive* LowTheaterData;
 MixArchive* MoviesMix = nullptr;
 MixArchive* GeneralMix = nullptr;
 MixArchive* ScoreMix = nullptr;
@@ -739,7 +735,6 @@ int MetaSize =
 ** multiplayer games.
 */
 int Seed = 0;
-int32_t* RandSeedPtr;
 
 /***************************************************************************
 ** If this value is non-zero, use it as the random # seed instead; this should
@@ -778,7 +773,6 @@ GraphicBufferClass VisiblePage;
 GraphicBufferClass HiddenPage;
 
 GraphicViewPortClass SeenBuff(&VisiblePage, 0, 0, 640, 480);
-GraphicBufferClass ModeXBuff;
 GraphicViewPortClass HidPage(&HiddenPage, 0, 0, 640, 480);
 GraphicBufferClass SysMemPage(kDefaultScreenWidth, 200, {});
 bool SoundOn;
@@ -829,8 +823,6 @@ DynamicVectorClass<NodeNameType*> Games;
 */
 DynamicVectorClass<NodeNameType*> Players;
 
-char* DebugFname;  // for stoopid debugging purposes
-int DebugLine;     // for stoopid debugging purposes
 #ifdef DEMO
 int RequiredCD = -2;
 #else
