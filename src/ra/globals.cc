@@ -264,7 +264,6 @@ GraphicBufferClass SysMemPage(kDefaultScreenWidth, 200, {});
 int ScreenWidth = 640;
 int ScreenHeight = 400;
 bool InMovie = false;  // Are we currently playing a VQ movie?
-int AllDone;
 
 /***************************************************************************
 **	This is true if the game is the currently in focus windows app

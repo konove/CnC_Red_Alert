@@ -132,7 +132,6 @@ extern bool GameInFocus;
 inline std::vector<unsigned char> InterpolatedPalettes[100];
 inline bool PalettesRead = false;
 inline int PaletteCounter = 0;
-extern int AllDone;
 extern bool InMovie;
 extern WWMouseClass* WWMouse;
 extern GraphicBufferClass SysMemPage;

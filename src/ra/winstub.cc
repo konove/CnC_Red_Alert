@@ -367,7 +367,7 @@ void Window_Dialog_Box(HANDLE hinst, LPCTSTR lpszTemplate, HWND hwndOwner,
   */
 
   DialogBox(hinst, lpszTemplate, hwndOwner, dlgprc);
-  while (GetMessage(&msg, NULL, 0, 0) && !AllDone) {
+  while (GetMessage(&msg, NULL, 0, 0)) {
     TranslateMessage(&msg);
     DispatchMessage(&msg);
   }
