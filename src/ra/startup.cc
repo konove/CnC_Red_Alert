@@ -469,14 +469,9 @@ void Read_Setup_Options(DiskFile* config_file) {
 
     // Socket is an offset into the dynamic IPX socket range 0x4000-0x7FFF,
     // letting several games share a network without seeing each other.
-    // TODO: A Socket value near INT_MAX overflows the addition (undefined
-    // behaviour) instead of being rejected as out of range.
-    int socket = ini.Get_Int("Options", "Socket", 0);
-    if (socket > 0) {
-      socket += 0x4000;
-      if (socket >= 0x4000 && socket < 0x8000) {
-        Ipx.Set_Socket(static_cast<uint16_t>(socket));
-      }
+    const int socket = ini.Get_Int("Options", "Socket", 0);
+    if (socket > 0 && socket < 0x4000) {
+      Ipx.Set_Socket(static_cast<uint16_t>(0x4000 + socket));
     }
 
     // DestNet names a network on the far side of an IPX bridge, as dotted
