@@ -5,14 +5,20 @@
 
 #include "absl/base/attributes.h"
 #include "tech/rgb.h"
+#include "base/array.h"
 #include "base/buffer.h"
 
 class PaletteClass {
  public:
   PaletteClass() = default;
-  // palettes pass where raw palette bytes are expected.
+  // Fills every entry with `col`. Implicit, so that a color converts where a
+  // palette is expected.
   // NOLINTNEXTLINE(*-explicit-constructor)
-  PaletteClass(const RGBClass& /*col*/) noexcept;
+  PaletteClass(const RGBClass& col) noexcept {
+    for (RGBClass& entry : data_) {
+      entry = col;
+    }
+  }
 
   // Makes this the current palette, blending to it over `fade` ticks
   // (kTimerSecond per second) when fade is nonzero. While fading, calls
@@ -34,9 +40,13 @@ class PaletteClass {
   [[nodiscard]] int Closest_Color(const RGBClass& /*col*/) const;
 
   // Returns a palette entry; indices outside [0, 256) fail in every build.
-  RGBClass& at(int index) ABSL_ATTRIBUTE_LIFETIME_BOUND;
+  RGBClass& at(int index) ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return base::At(data_, index);
+  }
   [[nodiscard]] const RGBClass& at(int index) const
-      ABSL_ATTRIBUTE_LIFETIME_BOUND;
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return base::At(data_, index);
+  }
   RGBClass& operator[](int index) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return at(index);
   }

@@ -24,12 +24,6 @@ PaletteClass PaletteClass::CurrentPalette;
 
 unsigned char* CurrentPalette = PaletteClass::CurrentPalette;
 
-PaletteClass::PaletteClass(const RGBClass& col) noexcept {
-  for (auto& i : data_) {
-    i = col;
-  }
-}
-
 void PaletteClass::Set(int fade, void (*callback)()) {
   // A fade to the palette already on screen would spend its whole duration
   // redrawing an unchanged screen, e.g. the fade to black before a movie
@@ -122,12 +116,6 @@ int PaletteClass::Closest_Color(const RGBClass& col) const {
   }
 
   return index;
-}
-
-RGBClass& PaletteClass::at(int index) { return base::At(data_, index); }
-
-const RGBClass& PaletteClass::at(int index) const {
-  return base::At(data_, index);
 }
 
 PaletteClass::operator unsigned char*() noexcept {
