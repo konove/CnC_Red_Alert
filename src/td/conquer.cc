@@ -2030,85 +2030,6 @@ void Go_Editor(bool flag) {
   }
 }
 
-static void Rebuild_Interpolated_Palette(std::span<unsigned char> interpal) {
-  for (int y = 0; y < 255; y++) {
-    for (int x = y + 1; x < 256; x++) {
-      base::At(interpal, base::ToSize((y * 256) + x)) =
-          base::At(interpal, base::ToSize((x * 256) + y));
-    }
-  }
-}
-
-std::vector<unsigned char> InterpolatedPalettes[100];
-bool PalettesRead;
-int PaletteCounter;
-
-int Load_Interpolated_Palettes(const char* filename, bool add) {
-  int num_palettes = 0;
-  int start_palette = 0;
-
-  PalettesRead = false;
-  GameFile file(filename);
-
-  //	DiskFile	*palette_file;
-
-  if (!add) {
-    // Clearing an inner vector does not invalidate the outer array's iterator.
-    // LLVM 23 incorrectly propagates the element invalidation to the array.
-    // NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-invalidation)
-    for (auto& InterpolatedPalette : InterpolatedPalettes) {
-      InterpolatedPalette.clear();
-    }
-    start_palette = 0;
-  } else {
-    for (start_palette = 0; start_palette < std::ssize(InterpolatedPalettes);
-         start_palette++) {
-      if (base::At(InterpolatedPalettes, start_palette).empty()) {
-        break;
-      }
-    }
-  }
-
-  //	palette_file = new DiskFile (filename);
-  //	if (file.IsAvailable()){
-
-  file.Open(FileAccess::kRead);
-  file.ReadObject(num_palettes);
-
-  if (num_palettes < 0 ||
-      num_palettes > std::ssize(InterpolatedPalettes) - start_palette) {
-    file.Close();
-    return 0;
-  }
-  for (int i = 0; i < num_palettes; i++) {
-    base::At(InterpolatedPalettes, i + start_palette).assign(65536, 0);
-    for (int y = 0; y < 256; y++) {
-      file.Read(std::span(base::At(InterpolatedPalettes, i + start_palette))
-                    .subspan(base::ToSize(y) * 256),
-                y + 1);
-    }
-
-    Rebuild_Interpolated_Palette(
-        base::At(InterpolatedPalettes, i + start_palette));
-  }
-
-  PalettesRead = true;
-  file.Close();
-  //	}
-  PaletteCounter = 0;
-  return num_palettes;
-}
-
-void Free_Interpolated_Palettes() {
-  // Clearing an inner vector does not invalidate the outer array's iterator.
-  // LLVM 23 incorrectly propagates the element invalidation to the array.
-  // NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-invalidation)
-  for (auto& InterpolatedPalette : InterpolatedPalettes) {
-    InterpolatedPalette.clear();
-    InterpolatedPalette.shrink_to_fit();
-  }
-}
-
 /***********************************************************************************************
  * Play_Movie -- Plays a VQ movie. *
  *                                                                                             *
@@ -2147,15 +2068,9 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
     return;
   }
 
-  base::FillBytes(std::as_writable_bytes(
-                      base::Suffix(base::At(PaletteInterpolationTable, 0), 0)),
-                  0, 65536);
-
   if (name) {
     const auto fullname =
         std::filesystem::path(name).replace_extension(".VQA").string();
-    const auto palname =
-        std::filesystem::path(name).replace_extension(".VQP").string();
 
     /*
     **	Reset the anim control structure.
@@ -2197,40 +2112,6 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
       movie_broken_out = false;
       // Suspend_Audio_Thread();
 
-#if (defined(FRENCH) || defined(GERMAN) || defined(JAPANESE))
-      /*
-      ** Kludge to use the old palette interpolation table for CC2TEASE
-      ** unless the covert CD is inserted.
-      */
-      if (absl::EqualsIgnoreCase(palname, "CC2TEASE.VQP")) {
-        int cd_index = Get_CD_Index(SearchPaths::current_cd_drive(), 1 * 60);
-        /*
-        ** If cd_index == 2 then its a covert CD
-        */
-        if (cd_index != 2) {
-          port::SafeCopy(palname, "OLDCC2T.VQP");
-        }
-      }
-#endif  //(FRENCH | GERMAN)
-
-#ifdef GERMAN
-      /*
-      ** Kludge to use a different palette interpolation table for RETRO.VQA
-      ** if the covert CD is inserted.
-      */
-      if (absl::EqualsIgnoreCase(palname, "RETRO.VQP")) {
-        int cd_index = Get_CD_Index(SearchPaths::current_cd_drive(), 1 * 60);
-        /*
-        ** If cd_index == 2 then its a covert CD
-        */
-        if (cd_index == 2) {
-          port::SafeCopy(palname, "RETROGER.VQP");
-        }
-      }
-
-#endif  // GERMAN
-
-      Load_Interpolated_Palettes(palname.c_str());
       // Set_Palette(BlackPalette);
       TheScreen().sys_mem_page().Clear();
       InMovie = true;
@@ -2238,7 +2119,6 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
       player.Close();
       // Resume_Audio_Thread();
       InMovie = false;
-      Free_Interpolated_Palettes();
       /*
       **	Any movie that ends prematurely must have the screen
       **	cleared to avoid any unexpected palette glitches.

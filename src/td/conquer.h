@@ -797,13 +797,6 @@
 #define TXT_BONUS_MISSION_4 753                      // Bonus Mission 4
 #define TXT_BONUS_MISSION_5 754                      // Bonus Mission 5
 
-extern std::vector<unsigned char> InterpolatedPalettes[100];
-extern bool PalettesRead;
-extern int PaletteCounter;
-
-extern void Free_Interpolated_Palettes();
-extern int Load_Interpolated_Palettes(const char* filename, bool add = false);
-
 void Center_About_Objects();
 bool Force_CD_Available(int cd);
 void Handle_View(int view, int action = 0);

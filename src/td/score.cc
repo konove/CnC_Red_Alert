@@ -808,9 +808,6 @@ void ScoreClass::Presentation() {
   TheScreen().sys_mem_page().Blit(*PseudoSeenBuff);
   Increase_Palette_Luminance(Palette, 30, 30, 30, 63);
 
-  InterpolationPalette = Palette;
-  InterpolationPaletteChanged = true;
-  Read_Interpolation_Palette(inter_pal);
   Interpolate_2X_Scale(PseudoSeenBuff, &TheScreen().visible_view(), inter_pal);
   Fade_Palette_To(Palette, kFadePaletteFast, Call_Back);
 
@@ -2196,8 +2193,6 @@ void Multi_Score_Presentation() {
   ** Display the background animation
   */
   TheScreen().visible_page().Clear();
-  InterpolationPaletteChanged = true;
-  InterpolationPalette = Palette;
   Increase_Palette_Luminance(Palette, 30, 30, 30, 63);
   anim.DrawFrame(*PseudoSeenBuff, 1);
   Interpolate_2X_Scale(PseudoSeenBuff, &TheScreen().visible_view(),

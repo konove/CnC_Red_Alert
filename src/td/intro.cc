@@ -156,15 +156,10 @@ void Choose_Side() {
   WsaAnimation anim("CHOOSE.WSA", Palette);
   Call_Back();
 
-  InterpolationPaletteChanged = true;
-  InterpolationPalette = Palette;
-  Read_Interpolation_Palette("SIDES.PAL");
 
   nodbrief = Open_Movie(nodbrief_player, nodbrief_io, "NOD1PRE.VQA");
-  const int gdi_start_palette = Load_Interpolated_Palettes("NOD1PRE.VQP");
   Call_Back();
   gdibrief = Open_Movie(gdibrief_player, gdibrief_io, "GDI1.VQA");
-  Load_Interpolated_Palettes("GDI1.VQP", true);
 
   WWMouse->Erase_Mouse(&TheScreen().hidden_view(), true);
   TheScreen().hidden_page().Clear();
@@ -293,7 +288,6 @@ void Choose_Side() {
       nodbrief_player.Close();
     }
     if (gdibrief) {
-      PaletteCounter = gdi_start_palette;
       gdibrief_player.Play(VQAMODE_RUN);
       gdibrief_player.Close();
     }
@@ -307,7 +301,6 @@ void Choose_Side() {
     }
   }
 
-  Free_Interpolated_Palettes();
   /* get rid of all the animating objects */
   for (auto& ScoreObj : ScoreObjs) {
     if (ScoreObj) {

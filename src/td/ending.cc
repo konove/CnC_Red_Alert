@@ -203,10 +203,7 @@ void Nod_Ending() {
 #endif  // NOT_FOR_WIN95
   Show_Mouse();
 
-  InterpolationPaletteChanged = true;
-  InterpolationPalette = port::UnsignedBytes(localpal);
-  Increase_Palette_Luminance(InterpolationPalette, 30, 30, 30, 63);
-  Read_Interpolation_Palette("SATSELIN.PAL");
+  Increase_Palette_Luminance(port::UnsignedBytes(localpal), 30, 30, 30, 63);
   Interpolate_2X_Scale(PseudoSeenBuff, &TheScreen().visible_view(),
                        "SATSELIN.PAL");
 

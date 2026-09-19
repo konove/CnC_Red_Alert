@@ -28,7 +28,6 @@
 
 #include "absl/base/attributes.h"
 #include "base/array.h"
-#include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/seek_origin.h"
 #include "sdllib/file_access.h"
@@ -39,7 +38,6 @@
 #include "sdllib/gbuffer.h"
 #include "sdllib/iconcach.h"
 #include "sdllib/ww_mouse.h"
-#include "td/conquer.h"
 #include "td/globals.h"
 #include "td/interpal.h"
 #include "td/mapedit.h"
@@ -124,14 +122,6 @@ void __cdecl SetPalette(std::span<unsigned char> palette, int32_t /*unused*/,
     base::At(palette, base::ToSize(i)) &= 63;
   }
   Increase_Palette_Luminance(palette, 15, 15, 15, 63);
-
-  if (PalettesRead) {
-    base::CopyBytes(base::ObjectBytes(PaletteInterpolationTable),
-                    std::as_bytes(std::span(
-                        base::At(InterpolatedPalettes, PaletteCounter++))),
-                    sizeof(PaletteInterpolationTable));
-  }
-
   Set_Palette(palette);
 }
 

@@ -482,11 +482,7 @@ struct nodstats {
  * HISTORY: * 04/17/1995 BWG : Created. *
  *=============================================================================================*/
 void Map_Selection() {
-  // Static: InterpolationPalette is a global that keeps pointing here after
-  // this function returns, and interpal.cc reads it from another
-  // translation unit. Every path fills the buffer before reading it, so
-  // persisting it between calls changes nothing.
-  static unsigned char localpalette[768];
+  unsigned char localpalette[768]{};
   bool lastscenario = false;
   const HousesType house = PlayerPtr->Class->House;
   int attackxcoord = 0;
@@ -587,10 +583,7 @@ void Map_Selection() {
   WWMouse->Erase_Mouse(&TheScreen().hidden_view(), true);
   TheScreen().hidden_page().Clear();
 
-  InterpolationPaletteChanged = true;
-  InterpolationPalette = Palette;
-  Increase_Palette_Luminance(InterpolationPalette, 30, 30, 30, 63);
-  Read_Interpolation_Palette("MAP1.PAL");
+  Increase_Palette_Luminance(Palette, 30, 30, 30, 63);
 
   //	SeenBuff.Blit(HidPage);
   greyearth.DrawFrame(TheScreen().sys_mem_page(), 0);
@@ -601,10 +594,7 @@ void Map_Selection() {
 
   Interpolate_2X_Scale(PseudoSeenBuff, &TheScreen().visible_view(), "MAP1.PAL");
 
-  InterpolationPaletteChanged = true;
-  InterpolationPalette = localpalette;
-  Increase_Palette_Luminance(InterpolationPalette, 30, 30, 30, 63);
-  Read_Interpolation_Palette("MAP_LOCL.PAL");
+  Increase_Palette_Luminance(localpalette, 30, 30, 30, 63);
 
   Audio.Play(appear1, 255, Options.Normalize_Sound(110));
   Fade_Palette_To(localpalette, kFadePaletteMedium, Call_Back);
@@ -614,17 +604,13 @@ void Map_Selection() {
   }
   greyearth.Close();
 
-  Write_Interpolation_Palette("MAP_LOCL.PAL");
 
   Call_Back_Delay(4);
 
   TheScreen().sys_mem_page().Clear();
   greyearth2.DrawFrame(TheScreen().sys_mem_page(), 0);
 
-  InterpolationPaletteChanged = true;
-  InterpolationPalette = grey2palette;
-  Increase_Palette_Luminance(InterpolationPalette, 30, 30, 30, 63);
-  Read_Interpolation_Palette("MAP_GRY2.PAL");
+  Increase_Palette_Luminance(grey2palette, 30, 30, 30, 63);
   Wait_Vert_Blank();
   Set_Palette(grey2palette);
 
@@ -637,7 +623,6 @@ void Map_Selection() {
   }
   greyearth2.Close();
 
-  Write_Interpolation_Palette("MAP_GRY2.PAL");
 
   /*
   ** Copy the first frame up to the seenpage (while screen is black)
@@ -797,10 +782,7 @@ void Map_Selection() {
 
   TheScreen().sys_mem_page().Blit(*PseudoSeenBuff);
 
-  InterpolationPaletteChanged = true;
-  InterpolationPalette = progresspalette;
-  Increase_Palette_Luminance(InterpolationPalette, 30, 30, 30, 63);
-  Read_Interpolation_Palette("MAP_PROG.PAL");
+  Increase_Palette_Luminance(progresspalette, 30, 30, 30, 63);
 
   auto* europe =
       new GraphicBufferClass(TheScreen().sys_mem_page().Get_Width(),
@@ -818,7 +800,6 @@ void Map_Selection() {
   }
   Set_Palette(progresspalette);
   Call_Back_Delay(45);
-  // Write_Interpolation_Palette("MAP_PROG.PAL");
 
   /*
   ** Now dissolve in first advance of territories
@@ -929,14 +910,10 @@ void Map_Selection() {
   ** Fix up the palette that seems different for the last scenario
   */
   if (lastscenario) {
-    InterpolationPaletteChanged = true;
-    InterpolationPalette = CurrentPalette;
     if (house == HOUSE_GOOD) {
-      Read_Interpolation_Palette("LASTSCNG.PAL");
       Interpolate_2X_Scale(PseudoSeenBuff, &TheScreen().visible_view(),
                            "LASTSCNG.PAL");
     } else {
-      Read_Interpolation_Palette("LASTSCNB.PAL");
       Interpolate_2X_Scale(PseudoSeenBuff, &TheScreen().visible_view(),
                            "LASTSCNB.PAL");
     }
@@ -1167,10 +1144,7 @@ void Map_Selection() {
     */
     GameFile("DARK_E.PAL").Read(localpalette, 768);
     //		Load_Data("DARK_E.PAL", localpalette, 768);
-    InterpolationPaletteChanged = true;
-    InterpolationPalette = localpalette;
     Increase_Palette_Luminance(localpalette, 30, 30, 30, 63);
-    Read_Interpolation_Palette("MAP_LOC2.PAL");
     Interpolate_2X_Scale(PseudoSeenBuff, &TheScreen().visible_view(),
                          "MAP_LOC2.PAL");
     Fade_Palette_To(localpalette, kFadePaletteMedium, Call_Back);
@@ -1182,10 +1156,7 @@ void Map_Selection() {
   } else {
     GameFile(house == HOUSE_GOOD ? "DARK_B.PAL" : "DARK_SA.PAL")
         .Read(localpalette, 768);
-    InterpolationPaletteChanged = true;
-    InterpolationPalette = localpalette;
     Increase_Palette_Luminance(localpalette, 30, 30, 30, 63);
-    Read_Interpolation_Palette("MAP_LOC3.PAL");
     Interpolate_2X_Scale(PseudoSeenBuff, &TheScreen().visible_view(),
                          "MAP_LOC3.PAL");
     Set_Palette(localpalette);

@@ -492,8 +492,6 @@ void Do_Win() {
 
     if (!Special.IsJurassic || !AreThingiesEnabled) {
       Keyboard::Clear();
-      InterpolationPaletteChanged = true;
-      InterpolationPalette = Palette;
       Score.Presentation();
 
       /*

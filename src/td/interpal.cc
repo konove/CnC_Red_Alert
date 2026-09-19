@@ -33,11 +33,8 @@
  * Overview: * This module contains functions to allow use of old 320x200
  *animations on a 640x400 screen  *
  *                                                                                             *
- * Functions: * Read_Interpolation_Palette -- reads an interpolation palette
- *table from disk               * Write_Interpolation_Palette -- writes an
- *interpolation palette to disk                     *
- *  Create_Palette_Interpolation_Table -- build the palette interpolation table
- ** Increase_Palette_Luminance -- increase the contrast of a palette *
+ * Functions:
+ *  Increase_Palette_Luminance -- increase the contrast of a palette *
  *  Interpolate_2X_Scale -- Stretch a 320x200 graphic buffer into 640x400 *
  *                                                                                             *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -51,65 +48,7 @@
 
 #include "absl/log/check.h"
 #include "base/array.h"
-#include "sdllib/file_access.h"
 #include "sdllib/gbuffer.h"
-#include "tech/game_file.h"
-
-bool InterpolationPaletteChanged = false;
-
-unsigned char PaletteInterpolationTable[SIZE_OF_PALETTE][SIZE_OF_PALETTE];
-std::span<unsigned char> InterpolationPalette;
-
-/***********************************************************************************************
- * Read_Interpolatioin_Palette -- reads an interpolation palette table from disk
- **
- *                                                                                             *
- *                                                                                             *
- *                                                                                             *
- * INPUT:    name of palette file *
- *                                                                                             *
- * OUTPUT:   Nothing *
- *                                                                                             *
- * WARNINGS: None *
- *                                                                                             *
- * HISTORY: * 12/12/95 12:15PM ST : Created *
- *=============================================================================================*/
-
-void Read_Interpolation_Palette(const char* palette_file_name) {
-  GameFile palette_file(palette_file_name);
-
-  if (palette_file.IsAvailable()) {
-    palette_file.Open(FileAccess::kRead);
-    palette_file.ReadObject(PaletteInterpolationTable);
-    palette_file.Close();
-    InterpolationPaletteChanged = false;
-  }
-}
-
-/***********************************************************************************************
- * Write_Interpolatioin_Palette -- writes an interpolation palette table to disk
- **
- *                                                                                             *
- *                                                                                             *
- *                                                                                             *
- * INPUT:    name of palette file *
- *                                                                                             *
- * OUTPUT:   Nothing *
- *                                                                                             *
- * WARNINGS: None *
- *                                                                                             *
- * HISTORY: * 12/12/95 12:15PM ST : Created *
- *=============================================================================================*/
-
-void Write_Interpolation_Palette(const char* palette_file_name) {
-  GameFile palette_file(palette_file_name);
-
-  if (!palette_file.IsAvailable()) {
-    palette_file.Open(FileAccess::kWrite);
-    palette_file.WriteObject(PaletteInterpolationTable);
-    palette_file.Close();
-  }
-}
 
 /***********************************************************************************************
  * Increase_Palette_Luminance -- increase contrast of colours in a palette *
