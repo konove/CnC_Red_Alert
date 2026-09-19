@@ -310,36 +310,24 @@ int main(int argc, char* argv[])
 }
 
 bool InitVideo() {
-  bool mode_set = false;
-
   // The game draws 640x400. A 400-line mode is asked for first; failing
   // that, 480 lines with the picture letterboxed in the middle.
-  if (ScreenHeight == 400) {
-    if (Set_Video_Mode(MainWindow, ScreenWidth, ScreenHeight, 8)) {
-      mode_set = true;
-    } else {
-      if (Set_Video_Mode(MainWindow, ScreenWidth, 480, 8)) {
-        mode_set = true;
-        ScreenHeight = 480;
-      }
-    }
-  } else {
-    if (Set_Video_Mode(MainWindow, ScreenWidth, ScreenHeight, 8)) {
-      mode_set = true;
+  bool mode_set = Set_Video_Mode(MainWindow, ScreenWidth, ScreenHeight, 8);
+  if (!mode_set && ScreenHeight == 400) {
+    mode_set = Set_Video_Mode(MainWindow, ScreenWidth, 480, 8);
+    if (mode_set) {
+      ScreenHeight = 480;
     }
   }
 
   if (!mode_set) {
     ShutdownTickTimer();
-
     return false;
   }
 
-  {
-    VisiblePage.Init(ScreenWidth, ScreenHeight, {}, 0,
-                     GBC_VISIBLE | GBC_VIDEOMEM);
-    HiddenPage.Init(ScreenWidth, ScreenHeight, {}, 0, GBC_NONE);
-  }
+  VisiblePage.Init(ScreenWidth, ScreenHeight, {}, 0,
+                   GBC_VISIBLE | GBC_VIDEOMEM);
+  HiddenPage.Init(ScreenWidth, ScreenHeight, {}, 0, GBC_NONE);
 
   // The pages are the full mode; from here on ScreenHeight is the 400-line
   // game area, and SeenBuff/HidPage are views of it 40 lines down in a
@@ -358,10 +346,8 @@ bool InitVideo() {
 
 void __cdecl Prog_End() {
   Audio.Close();
-  if (WWMouse) {
-    delete WWMouse;
-    WWMouse = nullptr;
-  }
+  delete WWMouse;
+  WWMouse = nullptr;
   ShutdownTickTimer();
 
   // Release owning members of ObjectTypeClass-derived objects in all global
@@ -373,39 +359,22 @@ void __cdecl Prog_End() {
     object_type->RadarIcon.clear();
     object_type->ClearImage();
   };
-  for (int i = 0; i < AircraftTypes.Count(); i++) {
-    reset_object_type(AircraftTypes.Ptr(i));
-  }
-  for (int i = 0; i < AnimTypes.Count(); i++) {
-    reset_object_type(AnimTypes.Ptr(i));
-  }
-  for (int i = 0; i < BuildingTypes.Count(); i++) {
-    reset_object_type(BuildingTypes.Ptr(i));
-  }
-  for (int i = 0; i < BulletTypes.Count(); i++) {
-    reset_object_type(BulletTypes.Ptr(i));
-  }
-  for (int i = 0; i < InfantryTypes.Count(); i++) {
-    reset_object_type(InfantryTypes.Ptr(i));
-  }
-  for (int i = 0; i < OverlayTypes.Count(); i++) {
-    reset_object_type(OverlayTypes.Ptr(i));
-  }
-  for (int i = 0; i < SmudgeTypes.Count(); i++) {
-    reset_object_type(SmudgeTypes.Ptr(i));
-  }
-  for (int i = 0; i < TemplateTypes.Count(); i++) {
-    reset_object_type(TemplateTypes.Ptr(i));
-  }
-  for (int i = 0; i < TerrainTypes.Count(); i++) {
-    reset_object_type(TerrainTypes.Ptr(i));
-  }
-  for (int i = 0; i < UnitTypes.Count(); i++) {
-    reset_object_type(UnitTypes.Ptr(i));
-  }
-  for (int i = 0; i < VesselTypes.Count(); i++) {
-    reset_object_type(VesselTypes.Ptr(i));
-  }
+  const auto reset_heap = [&](auto& heap) {
+    for (int i = 0; i < heap.Count(); i++) {
+      reset_object_type(heap.Ptr(i));
+    }
+  };
+  reset_heap(AircraftTypes);
+  reset_heap(AnimTypes);
+  reset_heap(BuildingTypes);
+  reset_heap(BulletTypes);
+  reset_heap(InfantryTypes);
+  reset_heap(OverlayTypes);
+  reset_heap(SmudgeTypes);
+  reset_heap(TemplateTypes);
+  reset_heap(TerrainTypes);
+  reset_heap(UnitTypes);
+  reset_heap(VesselTypes);
 }
 
 void CleanUpAndExitWithError(char* message) {
