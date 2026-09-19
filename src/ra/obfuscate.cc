@@ -2,7 +2,6 @@
 
 #include <algorithm>
 #include <array>
-#include <cctype>
 #include <cstdint>
 #include <span>
 #include <string_view>
@@ -32,11 +31,11 @@ uint32_t Obfuscate(const std::string_view string) {
 
   // Replace spaces, control characters and other non-printing bytes with a
   // letter that depends on the position, so the hash only ever sees visible
-  // ASCII. "7TH GRADE" therefore hashes like "7THDGRADE".
-  // TODO: isgraph() is undefined for a negative char, which any byte >= 0x80
-  // is here (a chat message from netdlg.cc can carry one).
+  // ASCII; bytes >= 0x80 count as non-printing. "7TH GRADE" therefore hashes
+  // like "7THDGRADE".
   for (int index = 0; index < length; index++) {
-    if (!isgraph(buffer.at(base::ToSize(index)))) {
+    if (!absl::ascii_isgraph(
+            static_cast<unsigned char>(buffer.at(base::ToSize(index))))) {
       buffer.at(base::ToSize(index)) = static_cast<char>('A' + (index % 26));
     }
   }

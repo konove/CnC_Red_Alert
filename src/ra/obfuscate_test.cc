@@ -36,6 +36,14 @@ TEST(ObfuscateTest, IgnoresAsciiCase) {
   EXPECT_EQ(Obfuscate("peropero"), 0x905F36A5U);
 }
 
+TEST(ObfuscateTest, ReplacesNonPrintingCharacters) {
+  // Each non-printing byte becomes 'A' plus its position.
+  EXPECT_EQ(Obfuscate("7TH GRADE"), Obfuscate("7THDGRADE"));
+  EXPECT_EQ(Obfuscate("\xE9\xFF"
+                      "C"),
+            Obfuscate("ABC"));
+}
+
 TEST(ObfuscateTest, HandlesMaximumLength) {
   const std::string maximum(127, 'A');
   const std::string longer(140, 'A');
