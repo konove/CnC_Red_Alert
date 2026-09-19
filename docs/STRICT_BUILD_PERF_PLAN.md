@@ -141,6 +141,29 @@ Full-pass time, the cost breakdown, and the sharing prerequisites.
 5. `ctest --test-dir build` after the helper and call-site commits.
 6. The CI lint job (deep) is green on the next push.
 
+## Results (2026-09-19)
+
+clang-tidy per TU with the final config, run alone from the compile database (the "before" is tidy
+without the analyzer plus the deep analyzer, less one ~3 s parse):
+
+| TU                 | tidy before | tidy after |
+| ------------------ | ----------: | ---------: |
+| ra/ioobj.cc        |       ~67 s |      8.6 s |
+| ra/techno.cc       |       ~18 s |      8.4 s |
+| td/init.cc         |       ~25 s |      5.6 s |
+| tech/fixed_test.cc |     ~11.5 s |      1.7 s |
+| ra/iomap.cc        |     ~10.4 s |      5.4 s |
+
+A one-line code change rebuilt through `build-strict` (compile plus tidy, IWYU gone): `ra/techno.cc`
+12.8 s (was ~24 s), `td/mapeddlg.cc` 7.7 s. Reverting it is a ctcache hit, 0.2 s.
+
+A full re-analysis of `build-strict` at `-j14`, compiles from ccache: 168–185 s wall and 2220–2400
+CPU-s of clang-tidy, against ≈ 3290 CPU-s of tidy plus 950 of IWYU before. With the 1100 CPU-s of
+compiling, a full pass is now ≈ 3400 CPU-s instead of ≈ 5340.
+
+Open: step 7 (CLion profile), then the cross-dir hit check against `cmake-build-strict-ra-clang`,
+and the deep CI lint job on the next push.
+
 ## Not in this plan
 
 - Parsing is ~55% of what remains: each TU is parsed twice, once by tidy and once by the compile.
