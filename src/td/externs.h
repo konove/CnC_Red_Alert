@@ -130,7 +130,6 @@ extern char ActionMovie[port::kMaxFname + port::kMaxExt];
 extern char BriefMovie[port::kMaxFname + port::kMaxExt];
 extern char WinMovie[port::kMaxFname + port::kMaxExt];
 extern char LoseMovie[port::kMaxFname + port::kMaxExt];
-extern VoxType SpeakQueue;
 extern bool PlayerWins;
 extern bool PlayerLoses;
 extern bool PlayerRestarts;

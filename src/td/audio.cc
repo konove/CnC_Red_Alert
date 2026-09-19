@@ -553,6 +553,9 @@ static const base::EnumArray<VoxType, const char*, kVoxCount> Speech = {
 };
 static VoxType CurrentVoice = VOX_NONE;
 
+// The voice Speak() has queued for Speak_AI() to start, or VOX_NONE.
+static VoxType speak_queue = VOX_NONE;
+
 /***********************************************************************************************
  * Speak -- Computer speaks to the player. *
  *                                                                                             *
@@ -570,8 +573,9 @@ static VoxType CurrentVoice = VOX_NONE;
  *=============================================================================================*/
 void Speak(VoxType voice) {
   if (Options.Volume && Audio.is_open() && voice != VOX_NONE &&
-      voice != SpeakQueue && voice != CurrentVoice && SpeakQueue == VOX_NONE) {
-    SpeakQueue = voice;
+      voice != speak_queue && voice != CurrentVoice &&
+      speak_queue == VOX_NONE) {
+    speak_queue = voice;
   }
 }
 
@@ -598,20 +602,20 @@ void Speak_AI() {
 
   if (!Audio.IsPlaying(SpeechBuffer.data())) {
     CurrentVoice = VOX_NONE;
-    if (SpeakQueue != VOX_NONE) {
-      if (SpeakQueue != _last) {
-        const auto name = std::filesystem::path(Speech.at(SpeakQueue))
+    if (speak_queue != VOX_NONE) {
+      if (speak_queue != _last) {
+        const auto name = std::filesystem::path(Speech.at(speak_queue))
                               .replace_extension(".AUD")
                               .string();
 
         if (GameFile(name).Read(std::span(SpeechBuffer), SPEECH_BUFFER_SIZE)) {
           Audio.Play(SpeechBuffer, 254, Options.Volume);
         }
-        _last = SpeakQueue;
+        _last = speak_queue;
       } else {
         Audio.Play(SpeechBuffer, 254, Options.Volume);
       }
-      SpeakQueue = VOX_NONE;
+      speak_queue = VOX_NONE;
     }
   }
 }
@@ -631,7 +635,7 @@ void Speak_AI() {
  * HISTORY: * 12/27/1994 JLB : Created. *
  *=============================================================================================*/
 void Stop_Speaking() {
-  SpeakQueue = VOX_NONE;
+  speak_queue = VOX_NONE;
   // Cleared here, not left for the next Speak_AI(), so that Speak() does not
   // drop the voice just stopped as one still being said.
   CurrentVoice = VOX_NONE;
@@ -658,5 +662,5 @@ void Stop_Speaking() {
 bool Is_Speaking() {
   Speak_AI();
   return Audio.is_open() &&
-         (SpeakQueue != VOX_NONE || Audio.IsPlaying(SpeechBuffer.data()));
+         (speak_queue != VOX_NONE || Audio.IsPlaying(SpeechBuffer.data()));
 }
