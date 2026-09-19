@@ -1,12 +1,10 @@
 #ifndef CNC_RED_ALERT_TD_INIT_H_
 #define CNC_RED_ALERT_TD_INIT_H_
 
-#include <cstdint>
 #include <span>
 
 void Uninit_Game();
 void Load_Title_Page(bool visible = false);
-uint32_t Obfuscate(const char* string);
 void Anim_Init();
 bool Init_Game(int argc, char* argv[]);
 bool Select_Game(bool fade = false);

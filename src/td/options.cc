@@ -82,13 +82,13 @@
 #include "td/defines.h"
 #include "td/externs.h"
 #include "td/globals.h"
-#include "td/init.h"
 #include "td/jshell.h"
 #include "td/palette.h"
 #include "td/profile.h"
 #include "td/special.h"
 #include "tech/audio_mixer.h"
 #include "tech/game_file.h"
+#include "tech/key_phrase_hash.h"
 
 /***********************************************************************************************
  * OptionsClass::OptionsClass -- The default constructor for the options class.
@@ -529,7 +529,7 @@ void OptionsClass::Load_Settings() {
   **	Check for and possible enable true object names.
   */
   WWGetPrivateProfileString("Options", "TrueNames", "", workbuf, buffer);
-  if (Obfuscate(workbuf) == PARM_TRUENAME) {
+  if (HashKeyPhrase(workbuf) == PARM_TRUENAME) {
     Special.IsNamed = true;
   }
 
@@ -537,7 +537,7 @@ void OptionsClass::Load_Settings() {
   **	Enable 6 player games if special flag is detected.
   */
   WWGetPrivateProfileString("Options", "Players", "", workbuf, buffer);
-  if (Obfuscate(workbuf) == PARM_6PLAYER) {
+  if (HashKeyPhrase(workbuf) == PARM_6PLAYER) {
     MPlayerMax = 6;
   }
 
@@ -545,7 +545,7 @@ void OptionsClass::Load_Settings() {
   **	Enable three point turning logic as indicated.
   */
   WWGetPrivateProfileString("Options", "Rotation", "", workbuf, buffer);
-  if (Obfuscate(workbuf) == PARM_3POINT) {
+  if (HashKeyPhrase(workbuf) == PARM_3POINT) {
     Special.IsThreePoint = true;
   }
 
@@ -553,7 +553,7 @@ void OptionsClass::Load_Settings() {
   **	Allow purchase of the helipad separately from the helicopter.
   */
   WWGetPrivateProfileString("Options", "Helipad", "", workbuf, buffer);
-  if (Obfuscate(workbuf) == PARM_HELIPAD) {
+  if (HashKeyPhrase(workbuf) == PARM_HELIPAD) {
     Special.IsSeparate = true;
   }
 
@@ -561,7 +561,7 @@ void OptionsClass::Load_Settings() {
   **	Allow the MCV to undeploy rather than sell.
   */
   WWGetPrivateProfileString("Options", "MCV", "", workbuf, buffer);
-  if (Obfuscate(workbuf) == PARM_MCV) {
+  if (HashKeyPhrase(workbuf) == PARM_MCV) {
     Special.IsMCVDeploy = true;
   }
 
@@ -570,7 +570,7 @@ void OptionsClass::Load_Settings() {
   *occur.
   */
   WWGetPrivateProfileString("Options", "Bibs", "", workbuf, buffer);
-  if (Obfuscate(workbuf) == PARM_BIB) {
+  if (HashKeyPhrase(workbuf) == PARM_BIB) {
     Special.IsRoad = true;
   }
 
@@ -578,7 +578,7 @@ void OptionsClass::Load_Settings() {
   **	Allow targeting of trees without having to hold down the shift key.
   */
   WWGetPrivateProfileString("Options", "TreeTarget", "", workbuf, buffer);
-  if (Obfuscate(workbuf) == PARM_TREETARGET) {
+  if (HashKeyPhrase(workbuf) == PARM_TREETARGET) {
     Special.IsTreeTarget = true;
   }
 
@@ -587,7 +587,7 @@ void OptionsClass::Load_Settings() {
   *flag.
   */
   WWGetPrivateProfileString("Options", "Combat", "", workbuf, buffer);
-  if (Obfuscate(workbuf) == PARM_COMBAT) {
+  if (HashKeyPhrase(workbuf) == PARM_COMBAT) {
     Special.IsDefenderAdvantage = false;
   }
 
@@ -595,7 +595,7 @@ void OptionsClass::Load_Settings() {
   **	Allow custom scores.
   */
   WWGetPrivateProfileString("Options", "Scores", "", workbuf, buffer);
-  if (Obfuscate(workbuf) == PARM_SCORE) {
+  if (HashKeyPhrase(workbuf) == PARM_SCORE) {
     Special.IsVariation = true;
   }
 
@@ -606,7 +606,7 @@ void OptionsClass::Load_Settings() {
   *or damage that can't be directly addressed.
   */
   WWGetPrivateProfileString("Options", "CombatIQ", "", workbuf, buffer);
-  if (Obfuscate(workbuf) == PARM_IQ) {
+  if (HashKeyPhrase(workbuf) == PARM_IQ) {
     Special.IsSmartDefense = true;
     Special.IsScatter = true;
   }
@@ -615,7 +615,7 @@ void OptionsClass::Load_Settings() {
   **	Enable the infantry squish marks when run over by a vehicle.
   */
   WWGetPrivateProfileString("Options", "Overrun", "", workbuf, buffer);
-  if (Obfuscate(workbuf) == PARM_SQUISH) {
+  if (HashKeyPhrase(workbuf) == PARM_SQUISH) {
     Special.IsGross = true;
   }
 
@@ -623,7 +623,7 @@ void OptionsClass::Load_Settings() {
   **	Enable the human generated sound effects.
   */
   WWGetPrivateProfileString("Options", "Sounds", "", workbuf, buffer);
-  if (Obfuscate(workbuf) == PARM_HUMAN) {
+  if (HashKeyPhrase(workbuf) == PARM_HUMAN) {
     Special.IsJuvenile = true;
   }
 
@@ -631,7 +631,7 @@ void OptionsClass::Load_Settings() {
   **	Scrolling is disabled over the tabs with this option.
   */
   WWGetPrivateProfileString("Options", "Scrolling", "", workbuf, buffer);
-  if (Obfuscate(workbuf) == PARM_SCROLLING) {
+  if (HashKeyPhrase(workbuf) == PARM_SCROLLING) {
     Special.IsScrollMod = true;
   }
 }
