@@ -35,3 +35,8 @@ One commit per game.
 - `tools/ra_saveload_smoke.sh` and `tools/td_saveload_smoke.sh` pass (they use `-CD`, `-NOMOVIES`,
   `-SEED`, `-NEWGAME`, `-SAVESLOT`, `-LOADGAME`, `-QUITFRAME`).
 - `rasdl -?` prints usage; `rasdl -XZ` prints the invalid-option message.
+
+## Progress
+
+- Done 2026-09-19: Red Alert (2f928d69), Tiberian Dawn (910a5bef). Both smoke scripts pass; strict
+  builds clean.
