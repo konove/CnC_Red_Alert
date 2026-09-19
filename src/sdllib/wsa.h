@@ -100,19 +100,17 @@ int AnimationFrameCount(void* handle);
 // step outside `target` or `delta`.
 
 // Applies the uncompressed XOR delta in `delta` to `target`, treating `target`
-// as one contiguous run of pixels. Always returns 0.
-unsigned int ApplyXorDelta(std::span<uint8_t> target,
-                           std::span<const std::byte> delta);
-unsigned int ApplyXorDelta(std::span<uint8_t> target,
-                           std::span<const uint8_t> delta);
+// as one contiguous run of pixels.
+void ApplyXorDelta(std::span<uint8_t> target, std::span<const std::byte> delta);
+void ApplyXorDelta(std::span<uint8_t> target, std::span<const uint8_t> delta);
 
 // Applies the uncompressed XOR delta in `delta` to a `width`-pixel-wide image
 // whose rows start `stride` bytes apart in `target`; pixels past `width` on
-// each row are left alone. `copy` is 0 to XOR the delta onto `target` and
-// nonzero to overwrite `target` with it. Does nothing if `width` or `stride`
-// is not positive or `stride` is less than `width`.
+// each row are left alone. The delta is XORed onto `target`, or overwrites it
+// if `copy` is set. Does nothing if `width` or `stride` is not positive or
+// `stride` is less than `width`.
 void ApplyXorDeltaToView(std::span<uint8_t> target,
                          std::span<const uint8_t> delta, int width, int stride,
-                         int copy);
+                         bool copy);
 
 #endif  // CNC_RED_ALERT_SDLLIB_WSA_H_

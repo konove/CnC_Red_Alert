@@ -307,7 +307,16 @@ TEST(WsaDeltaTest, CopiesRowsWithoutTouchingPadding) {
   std::array<uint8_t, 8> output{};
   output.fill(0xa5);
   const std::array<uint8_t, 8> literal{4, 1, 2, 3, 4, 0x80, 0, 0};
-  ApplyXorDeltaToView(output, literal, 2, 4, 1);
+  ApplyXorDeltaToView(output, literal, 2, 4, /*copy=*/true);
   EXPECT_EQ(output,
             (std::array<uint8_t, 8>{1, 2, 0xa5, 0xa5, 3, 4, 0xa5, 0xa5}));
+}
+
+TEST(WsaDeltaTest, XorsRowsWithoutTouchingPadding) {
+  std::array<uint8_t, 8> output{};
+  output.fill(0xa5);
+  const std::array<uint8_t, 8> literal{4, 1, 2, 3, 4, 0x80, 0, 0};
+  ApplyXorDeltaToView(output, literal, 2, 4, /*copy=*/false);
+  EXPECT_EQ(output, (std::array<uint8_t, 8>{0xa4, 0xa7, 0xa5, 0xa5, 0xa6, 0xa1,
+                                            0xa5, 0xa5}));
 }

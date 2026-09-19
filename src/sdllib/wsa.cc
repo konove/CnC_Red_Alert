@@ -46,12 +46,6 @@
 // XORed onto a direct destination instead of overwriting it.
 #define WSA_FRAME_0_IS_DELTA 0x200U
 
-// Values for the `copy` parameter of ApplyXorDeltaToView().
-// They were shared with lp_asm.asm; its replacement, DecodeDelta(), treats
-// anything other than DO_XOR as a copy.
-#define DO_XOR 0x0
-#define DO_COPY 0x01
-
 // Run-time state of an open animation. The handle OpenAnimation() returns
 // points at one of these, at the start of a single allocation laid out as
 //
@@ -70,11 +64,9 @@ struct SysAnimHeader {
   uint16_t pixel_y;
   uint16_t pixel_width;
   uint16_t pixel_height;
-  // Size of delta_buffer: the file's largest_frame_size without ANIMATE's 37
-  // header bytes.
-  uint16_t delta_buffer_size;
   // Scratch space that holds one frame's delta, first compressed at the back
-  // and then decompressed at the front.
+  // and then decompressed at the front. Its size is the file's
+  // largest_frame_size without ANIMATE's 37 header bytes.
   std::span<uint8_t> delta_buffer;
   // The file's offset table and frames 1 and up. Empty unless WSA_RESIDENT.
   std::span<uint8_t> file_buffer;
@@ -187,9 +179,6 @@ void* OpenAnimation(const char* file_name, WsaOpenFlags open_flags,
           SEEK_CUR);
       ReadFileHandle(file_handle, std::as_writable_bytes(palette.first(768)));
     }
-
-  } else {
-    palette_size = 0;
   }
 
   // Check for the flag from ANIMATE (bit 1) indicating that this animation was
@@ -213,7 +202,6 @@ void* OpenAnimation(const char* file_name, WsaOpenFlags open_flags,
     frame0_size = static_cast<uint16_t>(full_frame0_size);
   } else {
     anim_flags |= WSA_FRAME_0_ON_PAGE;
-    frame0_size = 0;
   }
 
   // What is left must at least hold the offset table, and a frame with no area
@@ -303,8 +291,6 @@ void* OpenAnimation(const char* file_name, WsaOpenFlags open_flags,
   sys_header->pixel_height = file_header.pixel_height;
   sys_header->delta_buffer = delta_buffer;
   sys_header->target_buffer = target_buffer;
-  sys_header->delta_buffer_size = static_cast<uint16_t>(
-      header_and_delta_size - base::ssize{sizeof(SysAnimHeader)});
 
   absl::SNPrintF(sys_header->file_name, sizeof(sys_header->file_name), "%s",
                  file_name);
@@ -355,8 +341,8 @@ void* OpenAnimation(const char* file_name, WsaOpenFlags open_flags,
   // goes at the very end so that LCW_Uncompress() can write its output from the
   // front of the same buffer, behind the input it has yet to read; ANIMATE's
   // largest_frame_size is what makes the buffer big enough for that.
-  const auto compressed_delta = delta_buffer.subspan(
-      base::ToSize(sys_header->delta_buffer_size - frame0_size));
+  const auto compressed_delta =
+      delta_buffer.subspan(delta_buffer.size() - base::ToSize(frame0_size));
 
   // Read the first frame into the delta buffer and uncompress it (below).
   // Then close the file, unless later frames will come from it.
@@ -411,8 +397,6 @@ bool DrawAnimationFrame(void* handle, GraphicViewPortClass& view,
   int steps = 0;
   // Where the deltas are applied: the target buffer or the view's own pixels.
   std::span<uint8_t> frame_buffer;
-  // Are we going directly to the destination?
-  bool direct_to_dest = false;
 
   // Assign local pointer to the beginning of the buffer where the system
   // information resides.
@@ -443,10 +427,10 @@ bool DrawAnimationFrame(void* handle, GraphicViewPortClass& view,
 
   // Check to see if we are using a buffer inside of the animation buffer or if
   // it is being drawn directly to the destination page or buffer.
-  if (sys_header->flags & WSA_TARGET_IN_BUFFER) {
+  const bool direct_to_dest = (sys_header->flags & WSA_TARGET_IN_BUFFER) == 0;
+  if (!direct_to_dest) {
     // Get a pointer to the frame in animation buffer.
     frame_buffer = sys_header->target_buffer;
-    direct_to_dest = false;
   } else {
     // Deltas are clipped to the end of the view's pixels but not to its edges,
     // so a frame that sticks out would wrap onto the next row. Buffer_To_Page()
@@ -459,7 +443,6 @@ bool DrawAnimationFrame(void* handle, GraphicViewPortClass& view,
     }
     frame_buffer = view.Get_Pixels().subspan(
         base::ToSize((pixel_y * dest_stride) + pixel_x));
-    direct_to_dest = true;
   }
   // If current_frame is equal to total_frames, then no animations have taken
   // place, so frame 0, which OpenAnimation() left uncompressed in the delta
@@ -477,7 +460,7 @@ bool DrawAnimationFrame(void* handle, GraphicViewPortClass& view,
         ApplyXorDeltaToView(
             frame_buffer, sys_header->delta_buffer, sys_header->pixel_width,
             dest_stride,
-            sys_header->flags & WSA_FRAME_0_IS_DELTA ? DO_XOR : DO_COPY);
+            /*copy=*/(sys_header->flags & WSA_FRAME_0_IS_DELTA) == 0);
       } else {
         // The target buffer starts out zeroed (black), so an XOR onto it is a
         // copy. WSA_FRAME_0_IS_DELTA has no effect here: the picture is not in
@@ -577,7 +560,7 @@ bool DrawAnimationFrame(void* handle, GraphicViewPortClass& view,
 
   // If we did this all in a hidden buffer, then copy it to the desired page or
   // viewport.
-  if (sys_header->flags & WSA_TARGET_IN_BUFFER) {
+  if (!direct_to_dest) {
     Buffer_To_Page(pixel_x, pixel_y, sys_header->pixel_width,
                    sys_header->pixel_height, frame_buffer, view);
   }
@@ -690,29 +673,26 @@ void DecodeDelta(std::span<uint8_t> target, std::span<const std::byte> delta,
 }
 }  // namespace
 
-unsigned int ApplyXorDelta(std::span<uint8_t> target,
-                           std::span<const std::byte> delta) {
+void ApplyXorDelta(std::span<uint8_t> target,
+                   std::span<const std::byte> delta) {
   // One row as wide as the whole target makes the decoder treat it as a
   // contiguous run of pixels.
   DecodeDelta(target, delta, target.size(), target.size(), false);
-  return 0;
 }
 
-unsigned int ApplyXorDelta(std::span<uint8_t> target,
-                           std::span<const uint8_t> delta) {
+void ApplyXorDelta(std::span<uint8_t> target, std::span<const uint8_t> delta) {
   DecodeDelta(target, std::as_bytes(delta), target.size(), target.size(),
               false);
-  return 0;
 }
 
 void ApplyXorDeltaToView(std::span<uint8_t> target,
                          std::span<const uint8_t> delta, int width, int stride,
-                         int copy) {
+                         bool copy) {
   if (width <= 0 || stride <= 0) {
     return;
   }
   DecodeDelta(target, std::as_bytes(delta), base::ToSize(width),
-              base::ToSize(stride), copy != DO_XOR);
+              base::ToSize(stride), copy);
 }
 
 static int64_t ResidentFrameOffset(std::span<const uint8_t> file_buffer,
@@ -730,8 +710,6 @@ static int64_t ResidentFrameOffset(std::span<const uint8_t> file_buffer,
     frame0_size = port::ReadUnaligned<uint32_t>(
                       std::as_bytes(file_buffer.subspan(sizeof(uint32_t)))) -
                   frame0_offset;
-  } else {
-    frame0_size = 0;
   }
 
   // The table holds file positions, worked out as if the file had no palette.
@@ -780,10 +758,10 @@ static bool ApplyFrameDelta(const SysAnimHeader* sys_header, int delta_number,
         frame_offset;
 
     // A corrupt offset table must not copy from outside the loaded file data
-    // or past the delta buffer, which holds delta_buffer_size bytes. A zero
+    // or past the delta buffer. A zero
     // offset for either frame (no such delta) also ends up here.
     if (frame_offset < 0 || frame_data_size <= 0 ||
-        std::cmp_greater(frame_data_size, sys_header->delta_buffer_size) ||
+        std::cmp_greater(frame_data_size, sys_header->delta_buffer.size()) ||
         std::cmp_greater(frame_offset + frame_data_size,
                          sys_header->file_buffer.size())) {
       return false;
@@ -792,7 +770,7 @@ static bool ApplyFrameDelta(const SysAnimHeader* sys_header, int delta_number,
     const auto data = sys_header->file_buffer.subspan(
         base::ToSize(frame_offset), base::ToSize(frame_data_size));
     compressed_delta = compressed_delta.subspan(
-        base::ToSize(sys_header->delta_buffer_size - frame_data_size));
+        sys_header->delta_buffer.size() - base::ToSize(frame_data_size));
 
     base::CopyBytes(std::as_writable_bytes(compressed_delta),
                     std::as_bytes(data), frame_data_size);
@@ -804,7 +782,7 @@ static bool ApplyFrameDelta(const SysAnimHeader* sys_header, int delta_number,
     // failed. Seek to the delta data, figure the offset to load it into the end
     // of the delta buffer and read it in, returning if the correct amount was
     // not read. The original asked "need error handling????" at both returns;
-    // the caller still ignores them.
+    // DrawAnimationFrame() now stops at the frame it reached and reports it.
     const int file_handle = sys_header->file_handle;
     SeekFileHandle(file_handle, 0L, SEEK_SET);
 
@@ -813,16 +791,15 @@ static bool ApplyFrameDelta(const SysAnimHeader* sys_header, int delta_number,
         FileFrameOffset(file_handle, delta_number + 1, palette_size) -
         frame_offset;
 
-    // A corrupt offset table must not size a read past the delta buffer,
-    // which holds delta_buffer_size bytes.
+    // A corrupt offset table must not size a read past the delta buffer.
     if (!frame_offset || frame_data_size <= 0 ||
-        std::cmp_greater(frame_data_size, sys_header->delta_buffer_size)) {
+        std::cmp_greater(frame_data_size, sys_header->delta_buffer.size())) {
       return false;
     }
 
     SeekFileHandle(file_handle, static_cast<int32_t>(frame_offset), SEEK_SET);
     compressed_delta = compressed_delta.subspan(
-        base::ToSize(sys_header->delta_buffer_size - frame_data_size));
+        sys_header->delta_buffer.size() - base::ToSize(frame_data_size));
 
     if (ReadFileHandle(file_handle, std::as_writable_bytes(compressed_delta)) !=
         static_cast<int>(frame_data_size)) {
@@ -838,7 +815,7 @@ static bool ApplyFrameDelta(const SysAnimHeader* sys_header, int delta_number,
     ApplyXorDelta(dest, sys_header->delta_buffer);
   } else {
     ApplyXorDeltaToView(dest, sys_header->delta_buffer, sys_header->pixel_width,
-                        dest_stride, DO_XOR);
+                        dest_stride, /*copy=*/false);
   }
 
   return true;
