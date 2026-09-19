@@ -91,7 +91,7 @@
 
 // Reads the options that have to be known before the window and the network
 // exist: blit fills, the screen height, the IPX socket and a bridge network.
-static void ReadStartupOptions(DiskFile* config_file);
+static void ReadStartupOptions(const INIClass& ini);
 
 // Parses the command line, checks the machine can run the game, opens the
 // window, sound and video, then runs the game until the player quits.
@@ -228,8 +228,11 @@ int main(int argc, char* argv[])
     if (config_file.IsAvailable()) {
       Read_Private_Config_Struct(config_file, &NewConfig);
 
+      INIClass ini;
+      ini.Load(config_file);
+
       // Sets ScreenHeight, so it has to come before the window is opened.
-      ReadStartupOptions(&config_file);
+      ReadStartupOptions(ini);
 
       Create_Main_Window(nullptr, 0, ScreenWidth, ScreenHeight);
       // 22050 Hz mono.
@@ -260,27 +263,19 @@ int main(int argc, char* argv[])
       // IsFromInstall means "first launch after installing": play the intro
       // movie. The installer used to write PlayIntro=yes; with no entry it
       // still defaults to yes, so a fresh install sees the movie once.
-      INIClass ini;
-      ini.Load(config_file);
-
       if (!Special.IsFromInstall) {
         Special.IsFromInstall = ini.Get_Bool("Intro", "PlayIntro", true);
       }
       SlowPalette = ini.Get_Bool("Options", "SlowPalette", false);
 
       // Whatever happens next, the intro has now been shown once: write
-      // PlayIntro=no so later launches go straight to the menu.
+      // PlayIntro=no so later launches go straight to the menu. Tiberian
+      // Dawn forbids skipping this first-run intro with <ESC>; Red Alert
+      // shipped allowing it.
       if (Special.IsFromInstall) {
         BreakoutAllowed = true;
         ini.Put_Bool("Intro", "PlayIntro", false);
         ini.Save(config_file);
-      }
-
-      // Tiberian Dawn forbids skipping the first-run intro with <ESC>. Red
-      // Alert shipped with that assignment changed to true, so the movie can
-      // always be skipped, which makes this block a repeat of the one above.
-      if (Special.IsFromInstall) {
-        BreakoutAllowed = true;
       }
 
       // While the game runs an out-of-memory exit still has everything to
@@ -404,60 +399,55 @@ void ExitWithError(char* message) {
   exit(exit_code);
 }
 
-void ReadStartupOptions(DiskFile* config_file) {
-  if (config_file->IsAvailable()) {
-    INIClass ini;
+void ReadStartupOptions(const INIClass& ini) {
+  AllowHardwareBlitFills = ini.Get_Bool("Options", "HardwareFills", true);
 
-    ini.Load(*config_file);
+  // Resolution=yes asks for a 480-line mode; InitVideo() letterboxes the
+  // 400-line game area inside it.
+  ScreenHeight = ini.Get_Bool("Options", "Resolution", false) ? 480 : 400;
 
-    AllowHardwareBlitFills = ini.Get_Bool("Options", "HardwareFills", true);
+  // Socket is an offset into the dynamic IPX socket range 0x4000-0x7FFF,
+  // letting several games share a network without seeing each other.
+  const int socket = ini.Get_Int("Options", "Socket", 0);
+  if (socket > 0 && socket < 0x4000) {
+    Ipx.Set_Socket(static_cast<uint16_t>(0x4000 + socket));
+  }
 
-    // Resolution=yes asks for a 480-line mode; InitVideo() letterboxes the
-    // 400-line game area inside it.
-    ScreenHeight = ini.Get_Bool("Options", "Resolution", false) ? 480 : 400;
+  // DestNet names a network on the far side of an IPX bridge, as dotted hex
+  // bytes: four for the network number, optionally followed by up to six
+  // node bytes.
+  std::array<char, 512> dest_net{};
+  // Get_String() returns the length of the trimmed value; 0 if absent.
+  if (ini.Get_String("Options", "DestNet", nullptr, dest_net,
+                     static_cast<int>(dest_net.size())) == 0) {
+    return;
+  }
+  NetNumType net;
+  NetNodeType node;
 
-    // Socket is an offset into the dynamic IPX socket range 0x4000-0x7FFF,
-    // letting several games share a network without seeing each other.
-    const int socket = ini.Get_Int("Options", "Socket", 0);
-    if (socket > 0 && socket < 0x4000) {
-      Ipx.Set_Socket(static_cast<uint16_t>(0x4000 + socket));
+  // Bytes 0-3 are the network number, 4-9 the node.
+  int byte_count = 0;
+  port::Tokenizer tokens(dest_net.data(), ".");
+  while (const char* token = tokens.Next()) {
+    const auto byte = tech::ParseHex<uint8_t>(token);
+    if (!byte || byte_count >= 10) {
+      // Reject the address instead of accepting a partial network.
+      byte_count = 0;
+      break;
     }
-
-    // DestNet names a network on the far side of an IPX bridge, as dotted
-    // hex bytes: four for the network number, optionally followed by up to
-    // six node bytes.
-    std::array<char, 512> dest_net{};
-    // Get_String() returns the length of the trimmed value; 0 if absent.
-    if (ini.Get_String("Options", "DestNet", nullptr, dest_net,
-                       static_cast<int>(dest_net.size())) > 0) {
-      NetNumType net;
-      NetNodeType node;
-
-      // Bytes 0-3 are the network number, 4-9 the node.
-      int byte_count = 0;
-      port::Tokenizer tokens(dest_net.data(), ".");
-      while (const char* token = tokens.Next()) {
-        const auto byte = tech::ParseHex<uint8_t>(token);
-        if (!byte || byte_count >= 10) {
-          byte_count =
-              0;  // Reject the address instead of accepting a partial network.
-          break;
-        }
-        if (byte_count < 4) {
-          base::At(net, byte_count) = *byte;
-        } else {
-          base::At(node, byte_count - 4) = *byte;
-        }
-        byte_count++;
-      }
-
-      // Only the network number matters: the node is replaced by the
-      // broadcast node, so packets reach every machine across the bridge.
-      if (byte_count >= 4) {
-        Session.IsBridge = 1;
-        base::FillBytes(base::ObjectBytes(node), 0xff, 6);
-        Session.BridgeNet = IPXAddressClass(net, node);
-      }
+    if (byte_count < 4) {
+      base::At(net, byte_count) = *byte;
+    } else {
+      base::At(node, byte_count - 4) = *byte;
     }
+    byte_count++;
+  }
+
+  // Only the network number matters: the node is replaced by the broadcast
+  // node, so packets reach every machine across the bridge.
+  if (byte_count >= 4) {
+    Session.IsBridge = 1;
+    base::FillBytes(base::ObjectBytes(node), 0xff, 6);
+    Session.BridgeNet = IPXAddressClass(net, node);
   }
 }
