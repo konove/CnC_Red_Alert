@@ -155,6 +155,11 @@
 #include "tech/mix_archive.h"
 #include "tech/number_parse.h"
 
+// The current theater's art and icons, registered and cached by
+// Init_Theater().
+static MixArchive* theater_data = nullptr;
+static MixArchive* theater_icons = nullptr;
+
 /*
 **	These layer control elements are used to group the displayable objects
 **	so that proper overlap can be obtained.
@@ -377,9 +382,9 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   absl::SNPrintF(fullname, sizeof(fullname), "%s.MIX",
                  Theaters.at(Theater).Root);
   if (Theater != LastTheater) {
-    delete TheaterData;
-    TheaterData = MixArchive::Register(fullname);
-    TheaterData->Cache();
+    delete theater_data;
+    theater_data = MixArchive::Register(fullname);
+    theater_data->Cache();
   }
 
 #endif
@@ -391,9 +396,9 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   absl::SNPrintF(iconname, sizeof(iconname), "%.4sICNH.MIX",
                  Theaters.at(Theater).Root);
   if (Theater != LastTheater) {
-    delete TheaterIcons;
-    TheaterIcons = MixArchive::Register(iconname);
-    TheaterIcons->Cache();
+    delete theater_icons;
+    theater_icons = MixArchive::Register(iconname);
+    theater_icons->Cache();
   }
 
   /*

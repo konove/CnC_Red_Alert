@@ -145,7 +145,6 @@ extern LogicClass Logic;
 extern MapEditClass Map;
 extern ScoreClass Score;
 extern MixArchive* ScoreMix;
-extern MixArchive* TheaterData;
 extern MixArchive* MoviesMix;
 extern MixArchive* GeneralMix;
 extern AudioMixer Audio;

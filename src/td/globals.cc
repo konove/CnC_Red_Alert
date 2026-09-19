@@ -269,8 +269,6 @@ bool GameInFocus;
 /***************************************************************************
 **	This holds the theater specific mixfiles.
 */
-MixArchive* TheaterData = nullptr;
-MixArchive* TheaterIcons = nullptr;
 MixArchive* MoviesMix = nullptr;
 MixArchive* GeneralMix = nullptr;
 MixArchive* ScoreMix = nullptr;

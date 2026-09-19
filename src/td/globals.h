@@ -29,12 +29,6 @@ extern bool GameActive;
 extern int32_t LParam;
 extern GraphicViewPortClass SeenBuff;
 extern SpecialClass Special;
-
-// The virtual-destructor exemption on MixArchive's definition does not reach
-// this forward declaration.
-// NOLINTNEXTLINE(cppcoreguidelines-virtual-class-destructor)
-class MixArchive;
-extern MixArchive* TheaterIcons;
 extern bool InMovie;
 
 #endif  // CNC_RED_ALERT_TD_GLOBALS_H_
