@@ -19,9 +19,10 @@
 void ShutDown();
 
 // Sets the video mode for ScreenWidth x ScreenHeight (falling back from 400
-// to 480 lines), creates VisiblePage and HiddenPage, and attaches SeenBuff
-// and HidPage to the 400-line game area. Leaves ScreenHeight at 400.
-// Returns false, after stopping the tick timer, if no mode could be set.
+// to 480 lines), creates visible_page and hidden_page, and attaches
+// visible_view and hidden_view to the 400-line game area. Leaves ScreenHeight
+// at 400. Returns false, after stopping the tick timer, if no mode could be
+// set.
 bool InitVideo();
 
 #endif  // CNC_RED_ALERT_RA_STARTUP_H_

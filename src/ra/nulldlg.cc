@@ -297,7 +297,8 @@ int Test_Null_Modem() {
   /*
   ** Get the resolution factor
   */
-  //	int factor			= (SeenBuff.Get_Width() == 320) ? 1 : 2;
+  //	int factor			= (visible_view.Get_Width() == 320) ? 1
+  //: 2;
 
   /*
   ** Button Enumerations
@@ -328,14 +329,14 @@ int Test_Null_Modem() {
   port::SafeCopy(buffer, Text_String(TXT_WAITING_CONNECT));
   Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
-  Format_Window_String(buffer, SeenBuff.Get_Height(), width, height);
+  Format_Window_String(buffer, visible_view.Get_Height(), width, height);
 
   width = std::max(width, 100);
   width += 80;
   height += 120;
 
-  const int x = (SeenBuff.Get_Width() - width) / 2;
-  const int y = (SeenBuff.Get_Height() - height) / 2;
+  const int x = (visible_view.Get_Width() - width) / 2;
+  const int y = (visible_view.Get_Height() - height) / 2;
 
   TextButtonClass cancelbtn(
       kButtonCancel, TXT_CANCEL, kTpfButton,
@@ -345,7 +346,7 @@ int Test_Null_Modem() {
   /*
   ** Initialize
   */
-  Set_Logic_Page(SeenBuff);
+  Set_Logic_Page(visible_view);
   process = true;
 
   /*
@@ -642,14 +643,14 @@ static int Reconnect_Null_Modem() {
   port::SafeCopy(buffer, Text_String(TXT_NULL_CONNERR_CHECK_CABLES));
   Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
-  Format_Window_String(buffer, SeenBuff.Get_Height(), width, height);
+  Format_Window_String(buffer, visible_view.Get_Height(), width, height);
 
   width = std::max(width, 100);
   width += 80;
   height += 120;
 
-  const int x = (SeenBuff.Get_Width() - width) / 2;
-  const int y = (SeenBuff.Get_Height() - height) / 2;
+  const int x = (visible_view.Get_Width() - width) / 2;
+  const int y = (visible_view.Get_Height() - height) / 2;
 
   TextButtonClass cancelbtn(
       kButtonCancel, TXT_CANCEL, kTpfButton,
@@ -659,7 +660,7 @@ static int Reconnect_Null_Modem() {
   /*
   ** Initialize
   */
-  Set_Logic_Page(SeenBuff);
+  Set_Logic_Page(visible_view);
   process = true;
 
   /*
@@ -1003,7 +1004,7 @@ GameType Select_Serial_Dialog() {
   /*
   ** Initialize
   */
-  Set_Logic_Page(SeenBuff);
+  Set_Logic_Page(visible_view);
 
   if (Session.SerialDefaults.Port == 0 || Session.SerialDefaults.IRQ == -1 ||
       Session.SerialDefaults.Baud == -1 ||
@@ -2808,7 +2809,7 @@ int Com_Scenario_Dialog(bool skirmish) {
   RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
   bool messages_have_focus = true;  // Gadget focus starts on the message system
 
-  Set_Logic_Page(SeenBuff);
+  Set_Logic_Page(visible_view);
 
   Timer<SystemTickSource> kludge_timer;  // Timer to allow a wait after client
                                          // joins game before game can start
@@ -7009,7 +7010,7 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
     /*
     --------------------------- Redraw the display ---------------------------
     */
-    HidPage.Clear();
+    hidden_view.Clear();
     Map.Flag_To_Redraw(true);
     Map.Render();
   }

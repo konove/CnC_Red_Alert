@@ -83,7 +83,7 @@ void Play_Movie(const char* name, const ThemeType theme, bool clear_screen) {
     Theme.Queue_Song(theme);
     if (PreserveVQAScreen == 0 && !clear_screen) {
       BlackPalette.Set(kFadePaletteMedium);
-      VisiblePage.Clear();
+      visible_page.Clear();
       BlackPalette.Adjust(0x08, WhitePalette);
       BlackPalette.Set();
       BlackPalette.Adjust(0xFF);
@@ -130,7 +130,7 @@ void Play_Movie(const char* name, const ThemeType theme, bool clear_screen) {
       // Early exit leaves the palette in an inconsistent state.
       if (Brokeout) {
         clear_screen = true;
-        VisiblePage.Clear();
+        visible_page.Clear();
         Brokeout = false;
       }
     } else {
@@ -139,7 +139,7 @@ void Play_Movie(const char* name, const ThemeType theme, bool clear_screen) {
 
     // The VQA player may leave the framebuffer and palette dirty.
     if (clear_screen) {
-      VisiblePage.Clear();
+      visible_page.Clear();
       BlackPalette.Adjust(0x08, WhitePalette);
       BlackPalette.Set();
       BlackPalette.Adjust(0xFF);
@@ -168,9 +168,9 @@ int32_t VQ_Call_Back(unsigned char* /*unused*/, int32_t /*unused*/) {
   }
   Check_VQ_Palette_Set();
   if (IsVQ640) {
-    VQ640.Blit(SeenBuff);
+    VQ640.Blit(visible_view);
   } else {
-    Interpolate_2X_Scale(&SysMemPage, &SeenBuff, nullptr);
+    Interpolate_2X_Scale(&SysMemPage, &visible_view, nullptr);
   }
   // ServiceRealTime() is deliberately not invoked here. The VQA player drives
   // audio itself while a movie runs, and the game logic it would service is

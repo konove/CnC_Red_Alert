@@ -434,7 +434,7 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
     }
   }
 
-  Set_Logic_Page(SeenBuff);
+  Set_Logic_Page(visible_view);
   bool display = true;
   bool process = true;
   bool okval = true;

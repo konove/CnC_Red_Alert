@@ -118,7 +118,7 @@ void TabClass::Draw_It(bool complete) {
   *needs *	to be redrawn.
   */
   if ((complete || IsTabToRedraw) && LogicPage->Lock()) {
-    const int width = SeenBuff.Get_Width();
+    const int width = visible_view.Get_Width();
     const int rightx = width - 1;
     const int tab_height = TAB_HEIGHT * 2;
 
@@ -202,7 +202,7 @@ void TabClass::Hilite_Tab(int tab) {
  *JLB : Handles new scrolling option. *
  *=============================================================================================*/
 void TabClass::AI(KeyNumType& input, int x, int y) {
-  if (y >= 0 && y < TAB_HEIGHT * 2 && x < SeenBuff.Get_Width() - 1 &&
+  if (y >= 0 && y < TAB_HEIGHT * 2 && x < visible_view.Get_Width() - 1 &&
       x > 0) {
     bool ok = false;
 

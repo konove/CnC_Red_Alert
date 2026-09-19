@@ -2132,7 +2132,7 @@ bool WolapiObject::SpawnBrowser(const char* szURL) {
     Hide_Mouse();
     BlackPalette.Set(kFadePaletteFast, ServiceRealTime);
     //		::ShowWindow( MainWindow, SW_SHOWMINIMIZED );
-    SeenBuff.Clear();
+    visible_view.Clear();
     if (::CreateProcess(nullptr,
                         szCommandLine,  //	Command line.
                         nullptr,        //	Process handle not inheritable.

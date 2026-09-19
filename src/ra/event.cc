@@ -933,7 +933,7 @@ void EventClass::Execute() {
           ServiceRealTime();
         }
 
-        HidPage.Clear();
+        hidden_view.Clear();
         Map.Flag_To_Redraw(true);
         Map.Render();
       } else {

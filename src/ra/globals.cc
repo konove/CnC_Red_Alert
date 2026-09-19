@@ -690,10 +690,10 @@ int MenuList[][8] = {
     {1, 3, 12, 3, 0, kWhite, kPink, 0},
 };
 
-GraphicBufferClass VisiblePage;
-GraphicBufferClass HiddenPage;
-GraphicViewPortClass SeenBuff(&VisiblePage, 0, 0, 640, 480);
-GraphicViewPortClass HidPage(&HiddenPage, 0, 0, 640, 480);
+GraphicBufferClass visible_page;
+GraphicBufferClass hidden_page;
+GraphicViewPortClass visible_view(&visible_page, 0, 0, 640, 480);
+GraphicViewPortClass hidden_view(&hidden_page, 0, 0, 640, 480);
 
 bool SoundOn;
 Timer<SystemTickSource> FrameTimer;

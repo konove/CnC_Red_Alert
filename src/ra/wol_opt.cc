@@ -119,7 +119,7 @@ bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame) {
   /*
   **	Initialize.
   */
-  Set_Logic_Page(SeenBuff);
+  Set_Logic_Page(visible_view);
 
   /*
   **	Create the button list.

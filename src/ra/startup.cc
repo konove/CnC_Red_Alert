@@ -91,8 +91,8 @@ void ShutDown() {
   // Nothing is left for an allocation failure from here on to clean up.
   Memory_Error_Exit = ExitWithError;
   Prog_End();
-  VisiblePage.Un_Init();
-  HiddenPage.Un_Init();
+  visible_page.Un_Init();
+  hidden_page.Un_Init();
 }
 
 // Reads the options that have to be known before the window and the network
@@ -251,14 +251,14 @@ int main(const int argc, char* argv[])
 
       // The full-screen and editor windows cover the visible viewport, whose
       // size is only known now that the video mode is set.
-      base::At(WindowList[0], kWindowWidth) = SeenBuff.Get_Width();
-      base::At(WindowList[0], kWindowHeight) = SeenBuff.Get_Height();
+      base::At(WindowList[0], kWindowWidth) = visible_view.Get_Width();
+      base::At(WindowList[0], kWindowHeight) = visible_view.Get_Height();
       base::At(WindowList[static_cast<int>(WINDOW_EDITOR)], kWindowWidth) =
-          SeenBuff.Get_Width();
+          visible_view.Get_Width();
       base::At(WindowList[static_cast<int>(WINDOW_EDITOR)], kWindowHeight) =
-          SeenBuff.Get_Height();
+          visible_view.Get_Height();
 
-      WWMouse = new WWMouseClass(&SeenBuff, 48, 48);
+      WWMouse = new WWMouseClass(&visible_view, 48, 48);
       MouseInstalled = true;
 
       SearchPaths::SetCdDrive(CDList.Get_First_CD_Drive());
@@ -287,8 +287,8 @@ int main(const int argc, char* argv[])
 
       RunGame();
 
-      VisiblePage.Clear();
-      HiddenPage.Clear();
+      visible_page.Clear();
+      hidden_page.Clear();
       ShutDown();
       return EXIT_SUCCESS;
     }
@@ -317,20 +317,21 @@ bool InitVideo() {
     return false;
   }
 
-  VisiblePage.Init(ScreenWidth, ScreenHeight, {}, 0,
-                   GBC_VISIBLE | GBC_VIDEOMEM);
-  HiddenPage.Init(ScreenWidth, ScreenHeight, {}, 0, GBC_NONE);
+  visible_page.Init(ScreenWidth, ScreenHeight, {}, 0,
+                    GBC_VISIBLE | GBC_VIDEOMEM);
+  hidden_page.Init(ScreenWidth, ScreenHeight, {}, 0, GBC_NONE);
 
   // The pages are the full mode; from here on ScreenHeight is the 400-line
-  // game area, and SeenBuff/HidPage are views of it 40 lines down in a
+  // game area, and visible_view/hidden_view are views of it 40 lines down in a
   // 480-line mode.
   const int letterbox_top = ScreenHeight == 480 ? 40 : 0;
   if (ScreenHeight == 480) {
     ScreenHeight = 400;
   }
 
-  SeenBuff.Attach(&VisiblePage, 0, letterbox_top, ScreenWidth, ScreenHeight);
-  HidPage.Attach(&HiddenPage, 0, letterbox_top, ScreenWidth, ScreenHeight);
+  visible_view.Attach(&visible_page, 0, letterbox_top, ScreenWidth,
+                      ScreenHeight);
+  hidden_view.Attach(&hidden_page, 0, letterbox_top, ScreenWidth, ScreenHeight);
 
   return true;
 }
@@ -374,8 +375,8 @@ void CleanUpAndExitWithError(char* message) {
 [[noreturn]] void EmergencyExit(const int exit_code) {
   // Blank the screen first, so nothing glitches while the window loses focus
   // on the way out.
-  VisiblePage.Clear();
-  HiddenPage.Clear();
+  visible_page.Clear();
+  hidden_page.Clear();
   BlackPalette.Set();
   ShutDown();
   exit(exit_code);

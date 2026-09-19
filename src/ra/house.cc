@@ -3426,7 +3426,7 @@ void HouseClass::MPlayer_Defeated() {
   if (PlayerPtr == this) {
     Session.ObiWan = true;
     Debug_Unshroud = true;
-    HidPage.Clear();
+    hidden_view.Clear();
     Map.Flag_To_Redraw(true);
 
     /*

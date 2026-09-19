@@ -593,13 +593,13 @@ void DisplayClass::Set_View_Dimensions(int x, int y, int width, int height) {
 void DisplayClass::Update_View_Dimensions(int x, int y, int width, int height,
                                           bool reposition) {
   if (width == -1) {
-    TacLeptonWidth = Pixel_To_Lepton(SeenBuff.Get_Width() - x);
+    TacLeptonWidth = Pixel_To_Lepton(visible_view.Get_Width() - x);
   } else {
     TacLeptonWidth = static_cast<LEPTON>(width * CELL_LEPTON_W);
   }
 
   if (height == -1) {
-    height = (SeenBuff.Get_Height() - y) / CELL_PIXEL_H;
+    height = (visible_view.Get_Height() - y) / CELL_PIXEL_H;
   }
   TacLeptonHeight = static_cast<LEPTON>(height * CELL_LEPTON_H);
 
@@ -1808,18 +1808,18 @@ void DisplayClass::Draw_It(bool forced) {
         *blitting
         **  an overlapped region.
         */
-        if (HidPage.Get_IsDirectDraw()) {
+        if (hidden_view.Get_IsDirectDraw()) {
           Hide_Mouse();
-          SeenBuff.Blit(HidPage, (oldx < 0 ? -oldx : 0) + TacPixelX,
-                        (oldy < 0 ? -oldy : 0) + TacPixelY,
-                        (oldx < 0 ? 0 : oldx) + TacPixelX,
-                        (oldy < 0 ? 0 : oldy) + TacPixelY, oldw, oldh);
+          visible_view.Blit(hidden_view, (oldx < 0 ? -oldx : 0) + TacPixelX,
+                            (oldy < 0 ? -oldy : 0) + TacPixelY,
+                            (oldx < 0 ? 0 : oldx) + TacPixelX,
+                            (oldy < 0 ? 0 : oldy) + TacPixelY, oldw, oldh);
           Show_Mouse();
         } else {
-          HidPage.Blit(HidPage, (oldx < 0 ? -oldx : 0) + TacPixelX,
-                       (oldy < 0 ? -oldy : 0) + TacPixelY,
-                       (oldx < 0 ? 0 : oldx) + TacPixelX,
-                       (oldy < 0 ? 0 : oldy) + TacPixelY, oldw, oldh);
+          hidden_view.Blit(hidden_view, (oldx < 0 ? -oldx : 0) + TacPixelX,
+                           (oldy < 0 ? -oldy : 0) + TacPixelY,
+                           (oldx < 0 ? 0 : oldx) + TacPixelX,
+                           (oldy < 0 ? 0 : oldy) + TacPixelY, oldw, oldh);
         }
 
       } else {
@@ -2008,7 +2008,7 @@ void DisplayClass::Draw_It(bool forced) {
     **	The first order of business is to redraw all the underlying icons that
     *are *	flagged to be redrawn.
     */
-    if (HidPage.Lock()) {
+    if (hidden_view.Lock()) {
       Redraw_Icons();
 
       /*
@@ -2026,10 +2026,10 @@ void DisplayClass::Draw_It(bool forced) {
         Redraw_OIcons();
       }
 
-      HidPage.Unlock();
+      hidden_view.Unlock();
     }
 
-    if (HidPage.Lock()) {
+    if (hidden_view.Lock()) {
       /*
       ** Draw the vortex effect over the terrain
       */
@@ -2072,7 +2072,7 @@ void DisplayClass::Draw_It(bool forced) {
       */
       Redraw_Shadow();
     }
-    HidPage.Unlock();
+    hidden_view.Unlock();
 
     if constexpr (config::kSortDrawEnabled) {
       // Clear IsToDisplay for ALL layers at frame end. Objects don't clear
@@ -2867,8 +2867,8 @@ bool DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
     x = Get_Mouse_X();
     y = Get_Mouse_Y();
   }
-  const bool edge = y == 0 || x == 0 || x == SeenBuff.Get_Width() - 1 ||
-                    y == SeenBuff.Get_Height() - 1;
+  const bool edge = y == 0 || x == 0 || x == visible_view.Get_Width() - 1 ||
+                    y == visible_view.Get_Height() - 1;
   const COORDINATE coord = Map.Pixel_To_Coord(x, y);
   const CELL cell = Coord_Cell(coord);
   if (coord) {

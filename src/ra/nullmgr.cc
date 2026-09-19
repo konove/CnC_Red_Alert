@@ -1033,7 +1033,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
   /*
   ** Get resolution factor
   */
-  //	int	factor = SeenBuff.Get_Width()/320;
+  //	int	factor = visible_view.Get_Width()/320;
 
   /*------------------------------------------------------------------------
   Determine the dimensions of the text to be used for the dialog box.
@@ -1043,19 +1043,19 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
 
   Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack, kTpfText);
   const int lines =
-      Format_Window_String(buffer, SeenBuff.Get_Height(), width, height);
+      Format_Window_String(buffer, visible_view.Get_Height(), width, height);
 
   width = std::max(width, 180);
   width += 80;
   height += 80;
 
-  const int x = (SeenBuff.Get_Width() - width) / 2;
-  const int y = (SeenBuff.Get_Height() - height) / 2;
+  const int x = (visible_view.Get_Width() - width) / 2;
+  const int y = (visible_view.Get_Height() - height) / 2;
 
   /*------------------------------------------------------------------------
   Initialize
   ------------------------------------------------------------------------*/
-  Set_Logic_Page(SeenBuff);
+  Set_Logic_Page(visible_view);
 
   /*------------------------------------------------------------------------
   Draw the dialog
@@ -1249,7 +1249,7 @@ DialStatusType NullModemClass::Dial_Modem(const char* string,
   /*
   ** Get the resolution factor
   */
-  //	int factor = SeenBuff.Get_Width()/320;
+  //	int factor = visible_view.Get_Width()/320;
 
   /*------------------------------------------------------------------------
   Button Enumerations
@@ -1274,15 +1274,16 @@ DialStatusType NullModemClass::Dial_Modem(const char* string,
   std::string buffer(buffer_const);
 
   Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack, kTpfText);
-  Format_Window_String(std::span(buffer), SeenBuff.Get_Height(), width, height);
+  Format_Window_String(std::span(buffer), visible_view.Get_Height(), width,
+                       height);
 
   const int text_width = width;
   width = std::max(width, 180);
   width += 80;
   height += 120;
 
-  const int x = (SeenBuff.Get_Width() - width) / 2;
-  const int y = (SeenBuff.Get_Height() - height) / 2;
+  const int x = (visible_view.Get_Width() - width) / 2;
+  const int y = (visible_view.Get_Height() - height) / 2;
 
   TextButtonClass cancelbtn(
       kButtonCancel, TXT_CANCEL, kTpfButton,
@@ -1292,7 +1293,7 @@ DialStatusType NullModemClass::Dial_Modem(const char* string,
   /*------------------------------------------------------------------------
   Initialize
   ------------------------------------------------------------------------*/
-  Set_Logic_Page(SeenBuff);
+  Set_Logic_Page(visible_view);
 
   /*------------------------------------------------------------------------
   Create the list
@@ -1313,7 +1314,7 @@ DialStatusType NullModemClass::Dial_Modem(const char* string,
   Draw_Caption(TXT_NONE, x, y, width);
 
   Fancy_Text_Print(buffer.c_str(),
-                   (SeenBuff.Get_Width() / 2) - (text_width / 2), y + 50,
+                   (visible_view.Get_Width() / 2) - (text_width / 2), y + 50,
                    GadgetClass::Get_Color_Scheme(), kTBlack, kTpfText);
 
   Commands->Draw_All();
@@ -1429,7 +1430,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
   /*
   ** Get the resolution factor
   */
-  //	int factor 		= (SeenBuff.Get_Width() == 320) ? 1 : 2;
+  //	int factor 		= (visible_view.Get_Width() == 320) ? 1 : 2;
 
   /*------------------------------------------------------------------------
   Button Enumerations
@@ -1471,15 +1472,15 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
   }
 
   Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack, kTpfText);
-  Format_Window_String(text_buffer, SeenBuff.Get_Height(), width, height);
+  Format_Window_String(text_buffer, visible_view.Get_Height(), width, height);
 
   int text_width = width;
   width = std::max(width, 180);
   width += 80;
   height += 120;
 
-  int x = (SeenBuff.Get_Width() - width) / 2;
-  int y = (SeenBuff.Get_Height() - height) / 2;
+  int x = (visible_view.Get_Width() - width) / 2;
+  int y = (visible_view.Get_Height() - height) / 2;
 
   TextButtonClass cancelbtn(
       kButtonCancel, TXT_CANCEL, kTpfButton,
@@ -1489,7 +1490,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
   /*------------------------------------------------------------------------
   Initialize
   ------------------------------------------------------------------------*/
-  Set_Logic_Page(SeenBuff);
+  Set_Logic_Page(visible_view);
   Load_Title_Page(true);
 
   Input = KN_NONE;
@@ -1546,9 +1547,9 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
         ...............................................................*/
         Draw_Caption(TXT_NONE, x, y, width);
 
-        Fancy_Text_Print(text_buffer,
-                         (SeenBuff.Get_Width() / 2) - (text_width / 2), y + 50,
-                         GadgetClass::Get_Color_Scheme(), kTBlack, kTpfText);
+        Fancy_Text_Print(
+            text_buffer, (visible_view.Get_Width() / 2) - (text_width / 2),
+            y + 50, GadgetClass::Get_Color_Scheme(), kTBlack, kTpfText);
 
         Commands->Draw_All();
       }
@@ -1580,15 +1581,16 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
         port::SafeCopy(text_buffer, Text_String(TXT_ANSWERING));
 
         Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack, kTpfText);
-        Format_Window_String(text_buffer, SeenBuff.Get_Height(), width, height);
+        Format_Window_String(text_buffer, visible_view.Get_Height(), width,
+                             height);
 
         text_width = width;
         width = std::max(width, 180);
         width += 80;
         height += 120;
 
-        x = (SeenBuff.Get_Width() - width) / 2;
-        y = (SeenBuff.Get_Height() - height) / 2;
+        x = (visible_view.Get_Width() - width) / 2;
+        y = (visible_view.Get_Height() - height) / 2;
 
         static constexpr unsigned char kAnswerCommand[] = {'A', 'T', 'A', '\r'};
         SerialPort->Write_To_Serial_Port(

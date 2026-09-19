@@ -7,6 +7,7 @@
 
 #include "ra/config.h"
 #include "ra/externs.h"
+#include "ra/globals.h"
 #include "ra/jshell.h"
 #include "ra/language.h"
 #include "ra/msgbox.h"
@@ -31,7 +32,7 @@ void Check_For_Focus_Loss() {
   }
 }
 void Memory_Error_Handler() {
-  VisiblePage.Clear();
+  visible_page.Clear();
   CCPalette.Set();
   while (Get_Mouse_State()) {
     Show_Mouse();

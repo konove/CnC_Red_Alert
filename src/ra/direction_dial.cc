@@ -117,7 +117,7 @@ bool DirectionDial::Draw_Me(const bool forced) {
 
   // Hide the mouse while drawing on the visible page, so the software cursor
   // does not save and restore pixels the drawing is changing.
-  const bool on_screen = LogicPage == &SeenBuff;
+  const bool on_screen = LogicPage == &visible_view;
   if (on_screen) {
     Hide_Mouse();
   }

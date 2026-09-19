@@ -142,8 +142,6 @@ inline int PaletteCounter = 0;
 extern int AllDone;
 extern bool InMovie;
 extern WWMouseClass* WWMouse;
-extern GraphicBufferClass HiddenPage;
-extern GraphicBufferClass VisiblePage;
 extern GraphicBufferClass SysMemPage;
 extern int ScreenWidth;
 extern int ScreenHeight;
@@ -333,7 +331,6 @@ extern IPXManagerClass Ipx;
 extern int NewMaxAheadFrame1;
 extern int NewMaxAheadFrame2;
 
-extern GraphicViewPortClass HidPage;
 extern int MenuList[1][8];
 extern Timer<SystemTickSource> FrameTimer;
 extern Timer<SystemTickSource> CountDownTimer;

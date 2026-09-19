@@ -36,8 +36,8 @@ int CurrentCD = -1;
 PaletteClass BlackPalette;
 PaletteClass CCPalette;
 PaletteClass GamePalette;
-GraphicViewPortClass HidPage;
-GraphicViewPortClass SeenBuff;
+GraphicViewPortClass hidden_view;
+GraphicViewPortClass visible_view;
 
 bool Using_DVD() { return using_dvd; }
 void Hide_Mouse() { ++mouse_hides; }
@@ -63,8 +63,8 @@ namespace {
 class IntroTest : public testing::Test {
  protected:
   void SetUp() override {
-    HidPage.Attach(&hidden_, 0, 0, kWidth, kHeight);
-    SeenBuff.Attach(&seen_, 0, 0, kWidth, kHeight);
+    hidden_view.Attach(&hidden_, 0, 0, kWidth, kHeight);
+    visible_view.Attach(&seen_, 0, 0, kWidth, kHeight);
     CurrentCD = -1;
     dialogs_shown = 0;
     movies_played = 0;

@@ -116,7 +116,7 @@ void MapEditClass::Handle_Teams(const char* caption) {
       if (CurTeam->Edit()) {
         Changed = true;
       }
-      HidPage.Clear();
+      hidden_view.Clear();
       Flag_To_Redraw(true);
       Render();
     } else {
@@ -138,7 +138,7 @@ void MapEditClass::Handle_Teams(const char* caption) {
           } else {
             Changed = true;
           }
-          HidPage.Clear();
+          hidden_view.Clear();
           Flag_To_Redraw(true);
           Render();
         } else {
@@ -146,7 +146,7 @@ void MapEditClass::Handle_Teams(const char* caption) {
           **	Unable to create; issue warning
           */
           WWMessageBox().Process("No more teams available.");
-          HidPage.Clear();
+          hidden_view.Clear();
           Flag_To_Redraw(true);
           Render();
         }
@@ -267,7 +267,7 @@ int MapEditClass::Select_Team(const char* /*unused*/) {
   /*
   **	Initialize
   */
-  Set_Logic_Page(SeenBuff);
+  Set_Logic_Page(visible_view);
 
   /*
   **	Fill in team names
@@ -372,7 +372,7 @@ int MapEditClass::Select_Team(const char* /*unused*/) {
   /*
   **	Redraw the display
   */
-  HidPage.Clear();
+  hidden_view.Clear();
   Flag_To_Redraw(true);
   Render();
 
@@ -602,9 +602,9 @@ int MapEditClass::Team_Members(HousesType house) {
   cancelbtn.Y = dlg_y + dlg_h - kMargin - kCancelH - 15;
 
   /*
-  **	Draw to SeenBuff.
+  **	Draw to visible_view.
   */
-  Set_Logic_Page(SeenBuff);
+  Set_Logic_Page(visible_view);
 
   /*
   **	Make sure 'house' is valid.
@@ -854,7 +854,7 @@ int MapEditClass::Team_Members(HousesType house) {
   /*
   **	Redraw the display.
   */
-  HidPage.Clear();
+  hidden_view.Clear();
   Flag_To_Redraw(true);
   Render();
 

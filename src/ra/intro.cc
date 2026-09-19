@@ -44,9 +44,9 @@ void PlayFirstLaunchIntro() {
     Hide_Mouse();
     Load_Title_Page();
     GamePalette = CCPalette;
-    HidPage.Blit(SeenBuff);
+    hidden_view.Blit(visible_view);
     CCPalette.Set();
-    Set_Logic_Page(SeenBuff);
+    Set_Logic_Page(visible_view);
     Show_Mouse();
 
     // Process() returns the index of the button pressed. CurrentCD uses the
@@ -68,7 +68,7 @@ void PlayFirstLaunchIntro() {
     // hide it makes itself.
     Hide_Mouse();
     BlackPalette.Set(kFadePaletteSlow);
-    SeenBuff.Clear();
+    visible_view.Clear();
     Show_Mouse();
   }
 

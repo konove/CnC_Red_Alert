@@ -498,7 +498,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     */
     if (MapEditorActive && Changed) {
       rc = WWMessageBox().Process("Save Changes?", TXT_YES, TXT_NO);
-      HidPage.Clear();
+      hidden_view.Clear();
       Flag_To_Redraw(true);
       Render();
 
@@ -653,7 +653,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     */
     case KN_F6:
       Debug_Passable = !Debug_Passable;
-      HidPage.Clear();
+      hidden_view.Clear();
       Flag_To_Redraw(true);
       input = KN_NONE;
       break;
@@ -705,7 +705,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         break;
       }
       rc = WWMessageBox().Process("Exit Scenario Editor?", TXT_YES, TXT_NO);
-      HidPage.Clear();
+      hidden_view.Clear();
       Flag_To_Redraw(true);
       Render();
 
@@ -722,7 +722,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       */
       if (Changed) {
         rc = WWMessageBox().Process("Save Changes?", TXT_YES, TXT_NO);
-        HidPage.Clear();
+        hidden_view.Clear();
         Flag_To_Redraw(true);
         Render();
 
@@ -801,7 +801,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         /*
         **	Force map to redraw
         */
-        HidPage.Clear();
+        hidden_view.Clear();
         Flag_To_Redraw(true);
         Render();
       }
@@ -1060,7 +1060,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
                 */
                 CurrentCell =
                     Click_Cell_Calc(Keyboard->MouseQX, Keyboard->MouseQY);
-                HidPage.Clear();
+                hidden_view.Clear();
                 Flag_To_Redraw(true);
                 Render();
               }
@@ -1136,7 +1136,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         /*
         **	Force a redraw
         */
-        HidPage.Clear();
+        hidden_view.Clear();
         Flag_To_Redraw(true);
         Changed = true;
       } else {
@@ -1151,7 +1151,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
           /*
           **	Force a redraw
           */
-          HidPage.Clear();
+          hidden_view.Clear();
           Flag_To_Redraw(true);
           Changed = true;
         }
@@ -1188,7 +1188,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
 
       //			Set_House_Buttons(CurrentObject[0]->Owner(),
       // Buttons, kPopupFirst);
-      HidPage.Clear();
+      hidden_view.Clear();
       Buttons->Flag_List_To_Redraw();
       Flag_To_Redraw(true);
       input = KN_NONE;
@@ -1219,7 +1219,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       //				}
       //			}
       //			Set_House_Buttons(CurrentObject[0]->Owner(),
-      // Buttons, kPopupFirst); 			HidPage.Clear();
+      // Buttons, kPopupFirst); 			hidden_view.Clear();
       // Flag_To_Redraw(true); 			input = KN_NONE;
       // break;
 
@@ -1304,7 +1304,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         */
         if (strength != CurrentObject.at(0)->Strength) {
           CurrentObject.at(0)->Strength = static_cast<int16_t>(strength);
-          HidPage.Clear();
+          hidden_view.Clear();
           Flag_To_Redraw(true);
           Changed = true;
         }
@@ -1337,7 +1337,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
                 FacingDial->direction());
           }
 
-          HidPage.Clear();
+          hidden_view.Clear();
           Flag_To_Redraw(true);
           Changed = true;
         }
@@ -1353,7 +1353,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       if (BaseGauge->Get_Value() != Scen.Percent) {
         Scen.Percent = BaseGauge->Get_Value();
         Build_Base_To(Scen.Percent);
-        HidPage.Clear();
+        hidden_view.Clear();
         Flag_To_Redraw(true);
       }
       input = KN_NONE;
@@ -1562,7 +1562,7 @@ void MapEditClass::Main_Menu() {
       case 0:
         if (Changed) {
           rc = WWMessageBox().Process("Save Changes?", TXT_YES, TXT_NO);
-          HidPage.Clear();
+          hidden_view.Clear();
           Flag_To_Redraw(true);
           Render();
           if (rc == 0) {
@@ -1585,7 +1585,7 @@ void MapEditClass::Main_Menu() {
       case 1:
         if (Changed) {
           rc = WWMessageBox().Process("Save Changes?", TXT_YES, TXT_NO);
-          HidPage.Clear();
+          hidden_view.Clear();
           Flag_To_Redraw(true);
           Render();
           if (rc == 0) {
@@ -1657,7 +1657,7 @@ void MapEditClass::Main_Menu() {
         if (Changed) {
           rc = WWMessageBox().Process("Save Changes?", TXT_YES, TXT_NO,
                                       TXT_CANCEL);
-          HidPage.Clear();
+          hidden_view.Clear();
           Flag_To_Redraw(true);
           Render();
           if (rc == 2) {
@@ -1685,7 +1685,7 @@ void MapEditClass::Main_Menu() {
   **	- Invoke Flag_To_Redraw to tell DisplayClass to re-render the whole
   *screen *	- Invoke Redraw() to update the display
   */
-  HidPage.Clear();
+  hidden_view.Clear();
   Flag_To_Redraw(true);
   Render();
 }
@@ -1939,7 +1939,7 @@ bool MapEditClass::Get_Waypoint_Name(std::span<char> wayptname) {
   /*
   **	Initialize.
   */
-  Set_Logic_Page(SeenBuff);
+  Set_Logic_Page(visible_view);
 
   /*
   **	Create the button list.
@@ -2022,7 +2022,7 @@ bool MapEditClass::Get_Waypoint_Name(std::span<char> wayptname) {
       */
       case ButtonKey(kButtonOk):
         Hide_Mouse();
-        SeenBuff.Clear();
+        visible_view.Clear();
         GamePalette.Set();
         Show_Mouse();
         process = false;
@@ -2035,7 +2035,7 @@ bool MapEditClass::Get_Waypoint_Name(std::span<char> wayptname) {
       case KN_ESC:
       case ButtonKey(kButtonCancel):
         Hide_Mouse();
-        SeenBuff.Clear();
+        visible_view.Clear();
         GamePalette.Set();
         Show_Mouse();
         cancel = true;
@@ -2111,7 +2111,7 @@ void Go_Editor(const bool flag) {
     Map.Init_IO();
 
     // Force a complete redraw of the screen
-    HiddenPage.Clear();
+    hidden_page.Clear();
     Map.Flag_To_Redraw(true);
     Map.Render();
 
@@ -2127,7 +2127,7 @@ void Go_Editor(const bool flag) {
     Map.Init_IO();
 
     // Force a complete redraw of the screen
-    HidPage.Clear();
+    hidden_view.Clear();
     Map.Flag_To_Redraw(true);
     Map.Render();
   }

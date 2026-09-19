@@ -89,9 +89,9 @@ void GameControlsClass::Process() {
   const int d_dialog_w = 464;                                // dialog width
   int d_dialog_h = 282;                                      // dialog height
   const int d_dialog_x =
-      (SeenBuff.Get_Width() - d_dialog_w) / 2;  // dialog x-coord
+      (visible_view.Get_Width() - d_dialog_w) / 2;  // dialog x-coord
   int d_dialog_y =
-      (SeenBuff.Get_Height() - d_dialog_h) / 2;   // centered y-coord
+      (visible_view.Get_Height() - d_dialog_h) / 2;       // centered y-coord
   const int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);  // center x-coord
   const int d_top_margin = 50;
 
@@ -139,7 +139,7 @@ void GameControlsClass::Process() {
     //	Enlarge dialog and shift ok button down.
     d_dialog_h += d_wol_h + d_margin1;
     d_dialog_y =
-        ((SeenBuff.Get_Height() - d_dialog_h) / 2);  // centered y-coord
+        ((visible_view.Get_Height() - d_dialog_h) / 2);  // centered y-coord
     // d_ok_y += d_wol_h + d_margin1;
     d_ok_y = d_dialog_y + d_dialog_h - d_ok_h - d_margin1 - 8;
   }
@@ -186,7 +186,7 @@ void GameControlsClass::Process() {
                             d_sound_x, d_sound_y, d_sound_w, d_sound_h);
   TextButtonClass okbtn(kButtonOk, TXT_OPTIONS_MENU, kTpfButton, d_ok_x,
                         d_ok_y);
-  okbtn.X = (SeenBuff.Get_Width() - okbtn.Width) / 2;
+  okbtn.X = (visible_view.Get_Width() - okbtn.Width) / 2;
 
   TextButtonClass wol_btn(kButtonWolapi, TXT_WOL_OPTTITLE, kTpfButton, d_wol_x,
                           d_wol_y, d_wol_w, d_wol_h);
@@ -194,7 +194,7 @@ void GameControlsClass::Process() {
   /*
   **	Various Inits.
   */
-  Set_Logic_Page(SeenBuff);
+  Set_Logic_Page(visible_view);
 
   /*
   **	Build button list

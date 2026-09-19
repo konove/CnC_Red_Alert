@@ -62,7 +62,7 @@ void Focus_Loss();
 void Focus_Restore();
 
 BOOL Any_Locked() {
-  if (SeenBuff.Get_LockCount() || HidPage.Get_LockCount()) {
+  if (visible_view.Get_LockCount() || hidden_view.Get_LockCount()) {
     return (true);
   } else {
     return (false);
@@ -116,8 +116,8 @@ void Check_For_Focus_Loss() {
     VQA_ResumeAudio();
     PostMessage(MainWindow, CCFocusMessage, 0, 0);
     //		AllSurfaces.Restore_Surfaces();
-    //		VisiblePage.Clear();
-    //		HiddenPage.Clear();
+    //		visible_page.Clear();
+    //		hidden_page.Clear();
     //		Map.Flag_To_Redraw(true);
   }
 
@@ -184,8 +184,8 @@ long FAR PASCAL _export Windows_Procedure(HWND hwnd, UINT message, UINT wParam,
     case WM_DESTROY:
       Prog_End();
       Invalidate_Cached_Icons();
-      VisiblePage.Un_Init();
-      HiddenPage.Un_Init();
+      visible_page.Un_Init();
+      hidden_page.Un_Init();
       AllSurfaces.Release();
       if (!InDebugger) {
         Reset_Video_Mode();
@@ -495,7 +495,7 @@ void Colour_Debug(int call_number) {
  * HISTORY: * 5/22/96 3:57PM ST : Created *
  *=============================================================================================*/
 void Memory_Error_Handler() {
-  VisiblePage.Clear();
+  visible_page.Clear();
   CCPalette.Set();
   while (Get_Mouse_State()) {
     Show_Mouse();

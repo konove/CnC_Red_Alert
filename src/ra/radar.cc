@@ -178,7 +178,7 @@ RadarClass::RadarClass() = default;
 void RadarClass::One_Time() {
   RadWidth = 160;
   RadHeight = 140;
-  RadX = SeenBuff.Get_Width() - RadWidth;
+  RadX = visible_view.Get_Width() - RadWidth;
   RadY = 14;
   RadPWidth = 128;
   RadPHeight = 128;
@@ -489,7 +489,7 @@ void RadarClass::Draw_It(bool forced) {
         Radar_Cursor(RadarCursorRedraw);
 
       } else {
-        GraphicViewPortClass* oldpage = Set_Logic_Page(HidPage);
+        GraphicViewPortClass* oldpage = Set_Logic_Page(hidden_view);
 
         CC_Draw_Shape(RadarFrame, 1, RadX, RadY + 2, WINDOW_MAIN,
                       SHAPE_NORMAL);
@@ -536,9 +536,9 @@ void RadarClass::Draw_It(bool forced) {
         MouseClass::Upgrade.Draw_Me(true);
         MouseClass::Zoom.Draw_Me(true);
 
-        if (oldpage == &SeenBuff) {
+        if (oldpage == &visible_view) {
           Hide_Mouse();
-          LogicPage->Blit(SeenBuff, RadX, RadY, RadX, RadY, RadWidth,
+          LogicPage->Blit(visible_view, RadX, RadY, RadX, RadY, RadWidth,
                           RadHeight);
           Show_Mouse();
         }
@@ -1460,7 +1460,7 @@ void RadarClass::Radar_Cursor(bool forced) {
   ** setup a graphic view port class so we can write all the pixels relative
   ** to 0,0 rather than relative to full screen coordinates.
   */
-  GraphicViewPortClass* oldpage = Set_Logic_Page(HidPage);
+  GraphicViewPortClass* oldpage = Set_Logic_Page(hidden_view);
   GraphicViewPortClass draw_window(
       LogicPage->Get_Graphic_Buffer(),
       RadX + RadOffX + BaseX + LogicPage->Get_XPos(),
@@ -1513,7 +1513,7 @@ void RadarClass::Radar_Anim() {
     return;
   }
 
-  GraphicViewPortClass* oldpage = Set_Logic_Page(HidPage);
+  GraphicViewPortClass* oldpage = Set_Logic_Page(hidden_view);
   GraphicViewPortClass draw_window(
       LogicPage->Get_Graphic_Buffer(), RadX + RadOffX + LogicPage->Get_XPos(),
       RadY + RadOffY + LogicPage->Get_YPos(), RadIWidth, RadIHeight);
@@ -1947,14 +1947,14 @@ void RadarClass::Set_Radar_Position(CELL cell) {
         ** overlapped blits is done in the library at the time of setting the
         *video mode.
         */
-        if (OverlappedVideoBlits || !HidPage.Get_IsDirectDraw()) {
+        if (OverlappedVideoBlits || !hidden_view.Get_IsDirectDraw()) {
           /*
           ** Overlapped blits are OK or we dont have a video memory hid page so
           *blits are
           ** always done in software by the library anyway.
           */
-          HidPage.Blit(
-              HidPage,
+          hidden_view.Blit(
+              hidden_view,
               ((radx < 0 ? -radx : 0) * ZoomFactor) + RadX + RadOffX + BaseX,
               ((rady < 0 ? -rady : 0) * ZoomFactor) + RadY + RadOffY + BaseY,
               ((radx < 0 ? 0 : radx) * ZoomFactor) + RadX + RadOffX + BaseX,
@@ -1973,14 +1973,14 @@ void RadarClass::Set_Radar_Position(CELL cell) {
           /*
           ** Do the blit in 2 stages.
           */
-          HidPage.Blit(
+          hidden_view.Blit(
               temp_surface,
               ((radx < 0 ? -radx : 0) * ZoomFactor) + RadX + RadOffX + BaseX,
               ((rady < 0 ? -rady : 0) * ZoomFactor) + RadY + RadOffY + BaseY, 0,
               0, RadarWidth, RadarHeight);
 
           temp_surface.Blit(
-              HidPage, 0, 0,
+              hidden_view, 0, 0,
               ((radx < 0 ? 0 : radx) * ZoomFactor) + RadX + RadOffX + BaseX,
               ((rady < 0 ? 0 : rady) * ZoomFactor) + RadY + RadOffY + BaseY,
               radw * ZoomFactor, radh * ZoomFactor);

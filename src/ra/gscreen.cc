@@ -166,13 +166,13 @@ void GScreenClass::Init(TheaterType theater) {
  *=============================================================================================*/
 void GScreenClass::Init_Clear() {
   /*
-  ** Clear the ShadowPage & HidPage to force a complete shadow blit.
+  ** Clear the ShadowPage & hidden_view to force a complete shadow blit.
   */
   if (ShadowPage) {
     ShadowPage->Clear();
   }
 
-  HidPage.Clear();
+  hidden_view.Clear();
 
   IsScreenToRedraw = true;
 }
@@ -269,7 +269,7 @@ void GScreenClass::Input(KeyNumType& key, int& x, int& y) {
   if (Buttons != nullptr) {
     /*
     ** If any buttons need redrawing, they will do so in the Input routine, and
-    ** they should draw themselves to the HidPage.  So, flag ourselves for a
+    ** they should draw themselves to the hidden_view.  So, flag ourselves for a
     *Blit
     ** to show the newly drawn buttons.
     */
@@ -277,7 +277,7 @@ void GScreenClass::Input(KeyNumType& key, int& x, int& y) {
       Flag_To_Redraw(false);
     }
 
-    GraphicViewPortClass* oldpage = Set_Logic_Page(HidPage);
+    GraphicViewPortClass* oldpage = Set_Logic_Page(hidden_view);
 
     key = Buttons->Input();
 
@@ -378,7 +378,7 @@ void GScreenClass::Render() {
   // }
 
   if (IsToUpdate || IsScreenToRedraw) {
-    GraphicViewPortClass* oldpage = Set_Logic_Page(HidPage);
+    GraphicViewPortClass* oldpage = Set_Logic_Page(hidden_view);
 
     Draw_It(IsScreenToRedraw);
 
@@ -429,10 +429,10 @@ void GScreenClass::Render() {
  *function.                                            *
  *=============================================================================================*/
 void GScreenClass::Blit_Display() {
-  WWMouse->Draw_Mouse(&HidPage);
-  HidPage.Blit(SeenBuff, 0, 0, 0, 0, HidPage.Get_Width(), HidPage.Get_Height(),
-               false);
-  WWMouse->Erase_Mouse(&HidPage, false);
+  WWMouse->Draw_Mouse(&hidden_view);
+  hidden_view.Blit(visible_view, 0, 0, 0, 0, hidden_view.Get_Width(),
+                   hidden_view.Get_Height(), false);
+  WWMouse->Erase_Mouse(&hidden_view, false);
 }
 
 // Shows the screen two pixels up, centred, or two pixels down, picking a
@@ -441,7 +441,7 @@ void Shake_The_Screen(int shakes) {
   shakes += shakes;
 
   Hide_Mouse();
-  SeenBuff.Blit(HidPage);
+  visible_view.Blit(hidden_view);
   int old_y_off = 0;
   while (shakes-- != 0) {
     // Hold each offset for exactly one tick, so the shake runs at game speed
@@ -455,19 +455,19 @@ void Shake_The_Screen(int shakes) {
     old_y_off = new_y_off;
     switch (new_y_off) {
       case -1:
-        HidPage.Blit(SeenBuff, 0, 2, 0, 0, 640, 398);
+        hidden_view.Blit(visible_view, 0, 2, 0, 0, 640, 398);
         break;
       case 1:
-        HidPage.Blit(SeenBuff, 0, 0, 0, 2, 640, 398);
+        hidden_view.Blit(visible_view, 0, 0, 0, 2, 640, 398);
         break;
       default:
-        HidPage.Blit(SeenBuff);
+        hidden_view.Blit(visible_view);
         break;
     }
     while (x == TickCount.Value()) {
       Video_End_Frame();
     }
   }
-  HidPage.Blit(SeenBuff);
+  hidden_view.Blit(visible_view);
   Show_Mouse();
 }

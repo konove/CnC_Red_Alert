@@ -100,14 +100,14 @@ void EditClass::Set_Text(std::span<char> text, const int max_len) {
 
 bool EditClass::Draw_Me(const bool forced) {
   if (ControlClass::Draw_Me(forced)) {
-    if (LogicPage == &SeenBuff) {
+    if (LogicPage == &visible_view) {
       Conditional_Hide_Mouse(X, Y, X + Width, Y + Height);
     }
 
     Draw_Background();
     Draw_Text(String.data());
 
-    if (LogicPage == &SeenBuff) {
+    if (LogicPage == &visible_view) {
       Conditional_Show_Mouse();
     }
 

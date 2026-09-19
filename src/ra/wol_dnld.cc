@@ -76,7 +76,7 @@ bool WOL_Download_Dialog(IDownload* pDownload,
 
   const int d_progress_w = 200;
   const int d_progress_h = 20;
-  const int d_progress_x = (SeenBuff.Get_Width() / 2) - (d_progress_w / 2);
+  const int d_progress_x = (visible_view.Get_Width() / 2) - (d_progress_w / 2);
   const int d_progress_y = d_dialog_y + 90;
 
   //	int	width;
@@ -86,7 +86,8 @@ bool WOL_Download_Dialog(IDownload* pDownload,
   Fancy_Text_Print(TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(), kTBlack,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
-  //	Format_Window_String( info_string, SeenBuff.Get_Height(), width, height
+  //	Format_Window_String( info_string, visible_view.Get_Height(), width,
+  // height
   //);
 
   /*

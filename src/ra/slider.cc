@@ -346,7 +346,7 @@ bool SliderClass::Draw_Me(bool forced) {
     /*
     **	Hide the mouse.
     */
-    if (LogicPage == &SeenBuff) {
+    if (LogicPage == &visible_view) {
       Conditional_Hide_Mouse(X, Y, X + Width, Y + Height);
     }
 
@@ -359,7 +359,7 @@ bool SliderClass::Draw_Me(bool forced) {
     /*
     **	Display the mouse.
     */
-    if (LogicPage == &SeenBuff) {
+    if (LogicPage == &visible_view) {
       Conditional_Show_Mouse();
     }
     return true;

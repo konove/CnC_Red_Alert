@@ -83,7 +83,7 @@ bool ConfirmationClass::Process(const char* string) {
   int x = (320 - width) / 2;
   int y = (200 - height) / 2;
 
-  Set_Logic_Page(SeenBuff);
+  Set_Logic_Page(visible_view);
 
   /*
   **	Create Buttons.  Button coords are in pixels, but are window-relative.

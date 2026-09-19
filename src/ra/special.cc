@@ -175,7 +175,7 @@ void Special_Dialog(bool simple) {
   }
 
   Map.Override_Mouse_Shape(MOUSE_NORMAL);
-  Set_Logic_Page(SeenBuff);
+  Set_Logic_Page(visible_view);
   bool display = true;
   bool process = true;
   while (process) {
@@ -250,7 +250,7 @@ void Special_Dialog(bool simple) {
 
   if (!simple) {
     Map.Revert_Mouse_Shape();
-    HidPage.Clear();
+    hidden_view.Clear();
     Map.Flag_To_Redraw(true);
     Map.Render();
   }
@@ -379,8 +379,8 @@ const char* Fetch_Password(int caption, int message, int btext) {
   width += 80;
   height += (60 + 25) * 2;
 
-  const int x = (SeenBuff.Get_Width() - width) / 2;
-  const int y = (SeenBuff.Get_Height() - height) / 2;
+  const int x = (visible_view.Get_Width() - width) / 2;
+  const int y = (visible_view.Get_Height() - height) / 2;
 
   /*
   **	Create the "ok" and password edit buttons.
@@ -391,7 +391,7 @@ const char* Fetch_Password(int caption, int message, int btext) {
   static char pbuffer[45];
   base::FillBytes(base::ObjectBytes(pbuffer), '\0', sizeof(pbuffer));
   const int editx = x + 52;
-  const int editwidth = ((SeenBuff.Get_Width() / 2) - editx) * 2;
+  const int editwidth = ((visible_view.Get_Width() / 2) - editx) * 2;
   PWEditClass button2(2, pbuffer, sizeof(pbuffer), TPF_6PT_GRAD | TPF_NOSHADOW,
                       editx, y + height - 70, editwidth, 20);
 
@@ -407,7 +407,7 @@ const char* Fetch_Password(int caption, int message, int btext) {
   **	Draw the background of the dialog.
   */
   Hide_Mouse();
-  Set_Logic_Page(SeenBuff);
+  Set_Logic_Page(visible_view);
   Dialog_Box(x, y, width, height);
   Draw_Caption(caption, x, y, width);
 
@@ -537,7 +537,7 @@ int Fetch_Difficulty(bool amath) {
   /*
   **	Main Processing Loop.
   */
-  Set_Logic_Page(SeenBuff);
+  Set_Logic_Page(visible_view);
   bool redraw = true;
   bool process = true;
   while (process) {

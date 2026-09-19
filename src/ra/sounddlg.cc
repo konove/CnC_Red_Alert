@@ -234,8 +234,8 @@ void SoundControlsClass::Process() {
   **	Causes right clicks anywhere or left clicks outside of the dialog
   **	box area to be the same a clicking the return to game options button.
   */
-  ControlClass ctrl(kButtonOptions, 0, 0, SeenBuff.Get_Width(),
-                    SeenBuff.Get_Height(),
+  ControlClass ctrl(kButtonOptions, 0, 0, visible_view.Get_Width(),
+                    visible_view.Get_Height(),
                     GadgetClass::kRightPress | GadgetClass::kLeftPress);
 
   /*
@@ -271,7 +271,7 @@ void SoundControlsClass::Process() {
   /*
   **	Set up the window.  Window x-coords are in bytes not pixels.
   */
-  Set_Logic_Page(SeenBuff);
+  Set_Logic_Page(visible_view);
 
   /*
   **	Create Buttons.

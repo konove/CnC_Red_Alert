@@ -144,7 +144,7 @@ bool ShapeButtonClass::Draw_Me(bool forced) {
     /*
     **	Hide the mouse.
     */
-    if (LogicPage == &SeenBuff) {
+    if (LogicPage == &visible_view) {
       Conditional_Hide_Mouse(X, Y, X + Width - 1, Y + Height - 1);
     }
 
@@ -169,7 +169,7 @@ bool ShapeButtonClass::Draw_Me(bool forced) {
     /*
     **	Display the mouse.
     */
-    if (LogicPage == &SeenBuff) {
+    if (LogicPage == &visible_view) {
       Conditional_Show_Mouse();
     }
     return true;

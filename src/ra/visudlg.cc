@@ -104,7 +104,7 @@ void VisualControlsClass::Process() {
   TextButtonClass* buttons[kNumOfButtons];
   SliderClass* buttonsliders[kNumOfButtons];
 
-  Set_Logic_Page(SeenBuff);
+  Set_Logic_Page(visible_view);
 
   /*
   **	Create Buttons.  Button coords are in pixels, but are window-relative.
@@ -174,8 +174,8 @@ void VisualControlsClass::Process() {
   **	This causes a right click anywhere or a left click outside the dialog
   *region *	to be equivalent to clicking on the return to options dialog.
   */
-  ControlClass background(kButtonOptions, 0, 0, SeenBuff.Get_Width(),
-                          SeenBuff.Get_Height(),
+  ControlClass background(kButtonOptions, 0, 0, visible_view.Get_Width(),
+                          visible_view.Get_Height(),
                           GadgetClass::kLeftPress | GadgetClass::kRightPress);
   background.Add_Tail(optionsbtn);
 

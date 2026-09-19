@@ -1249,7 +1249,7 @@ void MessageListClass::Draw() {
   char txt[2] = {0, 0};
 
   if (IsEdit) {
-    if (LogicPage == &SeenBuff) {
+    if (LogicPage == &visible_view) {
       Hide_Mouse();
     }
     EditLabel->Draw_Me(true);
@@ -1262,16 +1262,16 @@ void MessageListClass::Draw() {
                        EditLabel->Style);
     }
 
-    if (LogicPage == &SeenBuff) {
+    if (LogicPage == &visible_view) {
       Show_Mouse();
     }
   }
   if (MessageList) {
-    if (LogicPage == &SeenBuff) {
+    if (LogicPage == &visible_view) {
       Hide_Mouse();
     }
     MessageList->Draw_All();
-    if (LogicPage == &SeenBuff) {
+    if (LogicPage == &visible_view) {
       Show_Mouse();
     }
   }

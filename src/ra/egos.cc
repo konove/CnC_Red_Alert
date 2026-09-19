@@ -294,8 +294,8 @@ static void Slide_Show(int slide, int frame) {
     */
     base::At(SlideBuffers, slide)
         ->Blit(*BackgroundPage, 0, (frame - 1) * CHUNK_HEIGHT, 0,
-               (frame - 1) * CHUNK_HEIGHT, SeenBuff.Get_Width(), CHUNK_HEIGHT,
-               false);
+               (frame - 1) * CHUNK_HEIGHT, visible_view.Get_Width(),
+               CHUNK_HEIGHT, false);
     return;
   }
 
@@ -303,8 +303,8 @@ static void Slide_Show(int slide, int frame) {
     /*
     ** Blit in a quarter of the new frame to the hid page.
     */
-    BackgroundPage->Blit(HidPage, 0, (frame - 5) * CHUNK_HEIGHT, 0,
-                         (frame - 5) * CHUNK_HEIGHT, SeenBuff.Get_Width(),
+    BackgroundPage->Blit(hidden_view, 0, (frame - 5) * CHUNK_HEIGHT, 0,
+                         (frame - 5) * CHUNK_HEIGHT, visible_view.Get_Width(),
                          CHUNK_HEIGHT, false);
     return;
   }
@@ -444,7 +444,7 @@ void Show_Who_Was_Responsible() {
   int startcolumn = 0;
   int endcolumn = 0;
   int x = 0;
-  const int y = SeenBuff.Get_Height() + 2;
+  const int y = visible_view.Get_Height() + 2;
   EgoClass* ego = nullptr;
   /*
   ** Search through the text file and extract the strings, using each string to
@@ -552,13 +552,13 @@ void Show_Who_Was_Responsible() {
 
         if (startcolumn < 40 && endcolumn > 40) {
           flags = flags | TPF_CENTER;
-          x = SeenBuff.Get_Width() / 2;
+          x = visible_view.Get_Width() / 2;
         } else {
           if (startcolumn < 40) {
             flags = flags | TPF_RIGHT;
-            x = endcolumn * SeenBuff.Get_Width() / 80;
+            x = endcolumn * visible_view.Get_Width() / 80;
           } else {
-            x = startcolumn * SeenBuff.Get_Width() / 80;
+            x = startcolumn * visible_view.Get_Width() / 80;
           }
         }
 
@@ -658,8 +658,8 @@ void Show_Who_Was_Responsible() {
   /*
   ** Clear the Seen Page since we will not be blitting to all of it.
   */
-  SeenBuff.Clear();
-  HidPage.Clear();
+  visible_view.Clear();
+  hidden_view.Clear();
 
   /*
   ** Set the font palette.
@@ -673,7 +673,8 @@ void Show_Who_Was_Responsible() {
   for (int index = 0; index < NUM_SLIDES; index++) {
     base::At(SlideBuffers, index) = new GraphicBufferClass;
     base::At(SlideBuffers, index)
-        ->Init(SeenBuff.Get_Width(), SeenBuff.Get_Height(), {}, 0, GBC_NONE);
+        ->Init(visible_view.Get_Width(), visible_view.Get_Height(), {}, 0,
+               GBC_NONE);
     Load_Title_Screen(base::Suffix(base::At(SlideNames, index), 0).data(),
                       base::At(SlideBuffers, index),
                       base::At(SlidePals, index));
@@ -683,17 +684,17 @@ void Show_Who_Was_Responsible() {
   // to black so we can start scrolling before the first slideshow picture is
   // blitted.
   BackgroundPage = new GraphicBufferClass;
-  BackgroundPage->Init(SeenBuff.Get_Width(), SeenBuff.Get_Height(), {}, 0,
-                       GBC_VIDEOMEM);
+  BackgroundPage->Init(visible_view.Get_Width(), visible_view.Get_Height(), {},
+                       0, GBC_VIDEOMEM);
 
-  SeenBuff.Blit(*BackgroundPage);
+  visible_view.Blit(*BackgroundPage);
 
   /*
   ** Go away nasty keyboard.
   */
   Keyboard->Clear();
 
-  Set_Logic_Page(HidPage);
+  Set_Logic_Page(hidden_view);
 
   /*
   ** Start any old song.
@@ -797,9 +798,8 @@ void Show_Who_Was_Responsible() {
     *print doesn't
     ** clip vertically and looks ugly when it suddenly appears and disappears.
     */
-    HidPage.Blit(SeenBuff, 0, 16, 0, 16,
-                 SeenBuff.Get_Width(), SeenBuff.Get_Height() - 32,
-                 false);
+    hidden_view.Blit(visible_view, 0, 16, 0, 16, visible_view.Get_Width(),
+                     visible_view.Get_Height() - 32, false);
 
     /*
     ** Try and prevent Win95 from swapping out pictures we havnt used yet.
@@ -807,8 +807,9 @@ void Show_Who_Was_Responsible() {
     if (frame) {
       for (int i = slide_number + 1; i < NUM_SLIDES; i++) {
         if (!base::At(SlideBuffers, i)->Get_IsDirectDraw()) {
-          Force_VM_Page_In(base::At(SlideBuffers, i)->Get_Offset(),
-                           SeenBuff.Get_Width() * SeenBuff.Get_Height());
+          Force_VM_Page_In(
+              base::At(SlideBuffers, i)->Get_Offset(),
+              visible_view.Get_Width() * visible_view.Get_Height());
         }
       }
     }
@@ -854,7 +855,7 @@ void Show_Who_Was_Responsible() {
   /*
   ** Tidy up.
   */
-  SeenBuff.Clear();
+  visible_view.Clear();
 
   Show_Mouse();
 

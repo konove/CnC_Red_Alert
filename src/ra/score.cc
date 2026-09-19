@@ -151,7 +151,7 @@ void ScoreTimeClass::Update() {
       Stage = 0;
     }
     GraphicViewPortClass* oldpage = LogicPage;
-    Set_Logic_Page(SeenBuff);
+    Set_Logic_Page(visible_view);
     CC_Draw_Shape(DataPtr, Stage, XPos, YPos, WINDOW_MAIN, SHAPE_WIN_REL, {},
                   {});
     Set_Logic_Page(oldpage);
@@ -173,7 +173,7 @@ void ScoreCredsClass::Update() {
       Stage = 0;
     }
     GraphicViewPortClass* oldpage = LogicPage;
-    Set_Logic_Page(SeenBuff);
+    Set_Logic_Page(visible_view);
     // One tick of sound per frame of the spinning credits symbol.
     Audio.Play(Clock1, 255, Options.Normalize_Volume(130));
     CC_Draw_Shape(DataPtr, Stage, XPos, YPos, WINDOW_MAIN, SHAPE_WIN_REL, {},
@@ -224,17 +224,18 @@ void ScorePrintClass::Update() {
     if (Stage) {
       Set_Font_Palette(PrimaryPalette);
       localstr[0] = Text().at(base::ToSize(Stage - 1));
-      HidPage.Print(localstr, pos - 12, YPos, kTBlack, kTBlack);
-      HidPage.Blit(SeenBuff, pos - 12, YPos - 2, pos - 12, YPos - 2, 14, 16);
+      hidden_view.Print(localstr, pos - 12, YPos, kTBlack, kTBlack);
+      hidden_view.Blit(visible_view, pos - 12, YPos - 2, pos - 12, YPos - 2, 14,
+                       16);
     }
     // Smear the next letter in white, straight onto the visible page: one row
     // up, one row down and one pixel right of where it will finally sit.
     if (base::ToSize(Stage) < Text().size()) {
       localstr[0] = Text().at(base::ToSize(Stage));
       Set_Font_Palette(_whitepal);
-      SeenBuff.Print(localstr, pos, YPos - 1, kTBlack, kTBlack);
-      SeenBuff.Print(localstr, pos, YPos + 1, kTBlack, kTBlack);
-      SeenBuff.Print(localstr, pos + 1, YPos, kTBlack, kTBlack);
+      visible_view.Print(localstr, pos, YPos - 1, kTBlack, kTBlack);
+      visible_view.Print(localstr, pos, YPos + 1, kTBlack, kTBlack);
+      visible_view.Print(localstr, pos + 1, YPos, kTBlack, kTBlack);
     }
     Stage++;
   }
@@ -257,11 +258,11 @@ void ScoreScaleClass::Update() {
     AnimTimer.Set(1);
     if (Stage) {
       Set_Font_Palette(Palette);
-      HidPage.Fill_Rect(0, 0, 14, 14, kTBlack);
-      HidPage.Print(std::string(Text()).c_str(), 0, 0, kTBlack, kTBlack);
-      HidPage.Scale(SeenBuff, 0, 0, base::At(_destx, Stage) * 2, YPos, 10, 12,
-                    base::At(_destw, Stage) * 2, base::At(_destw, Stage) * 2,
-                    true);
+      hidden_view.Fill_Rect(0, 0, 14, 14, kTBlack);
+      hidden_view.Print(std::string(Text()).c_str(), 0, 0, kTBlack, kTBlack);
+      hidden_view.Scale(visible_view, 0, 0, base::At(_destx, Stage) * 2, YPos,
+                        10, 12, base::At(_destw, Stage) * 2,
+                        base::At(_destw, Stage) * 2, true);
       Stage--;
     } else {
       // Zoom finished: print the letter at its final size, free the slot (which
@@ -272,8 +273,9 @@ void ScoreScaleClass::Update() {
           ScoreObj = nullptr;
         }
       }
-      HidPage.Print(std::string(Text()).c_str(), XPos, YPos, kTBlack, kTBlack);
-      HidPage.Blit(SeenBuff, XPos, YPos, XPos, YPos, 12, 12);
+      hidden_view.Print(std::string(Text()).c_str(), XPos, YPos, kTBlack,
+                        kTBlack);
+      hidden_view.Blit(visible_view, XPos, YPos, XPos, YPos, 12, 12);
       delete this;
       return;
     }
@@ -334,9 +336,9 @@ void ScoreClass::Presentation() {
   Map.Override_Mouse_Shape(MOUSE_NORMAL);
   Theme.Queue_Song(THEME_SCORE);
 
-  VisiblePage.Clear();
-  WWMouse->Erase_Mouse(&HidPage, true);
-  HiddenPage.Clear();
+  visible_page.Clear();
+  WWMouse->Erase_Mouse(&hidden_view, true);
+  hidden_page.Clear();
   BlackPalette.Set();
 
   const auto country4 = MixArchive::RetrieveData("COUNTRY4.AUD");
@@ -358,9 +360,9 @@ void ScoreClass::Presentation() {
   // Load this side's background onto the hidden page, brighten its palette,
   // and fade it in from black.
   Hide_Mouse();
-  Load_Title_Screen(base::At(ScreenNames, house), &HidPage, ScorePalette);
+  Load_Title_Screen(base::At(ScreenNames, house), &hidden_view, ScorePalette);
   Increase_Palette_Luminance(ScorePalette, 30, 30, 30, 63);
-  HidPage.Blit(SeenBuff);
+  hidden_view.Blit(visible_view);
   ScorePalette.Set(kFadePaletteFast, ServiceRealTime);
   Audio.Play(country4, 255, Options.Normalize_Volume(150));
 
@@ -377,7 +379,7 @@ void ScoreClass::Presentation() {
   // Type out the headings. Each TickScoreScreen() below is sized to let the
   // text queued before it finish, which is what keeps ScoreObjs[] from
   // overflowing.
-  Set_Logic_Page(SeenBuff);
+  Set_Logic_Page(visible_view);
 
   Alloc_Object(new ScorePrintClass(TXT_SCORE_TIME,
                                    config::kIsFrench ? 198 : 204, 9, greenpal));
@@ -497,9 +499,9 @@ void ScoreClass::Presentation() {
   Alloc_Object(new ScorePrintClass(buffer, 274, 38, greenpal));
   TickScoreScreen(8);
   // Rule off the sum: flash the line white for a tick, then settle on green.
-  SeenBuff.Draw_Line(548, 96, 626, 96, kWhite);
+  visible_view.Draw_Line(548, 96, 626, 96, kWhite);
   TickScoreScreen(1);
-  SeenBuff.Draw_Line(548, 96, 626, 96, kGreen);
+  visible_view.Draw_Line(548, 96, 626, 96, kGreen);
 
   absl::SNPrintF(buffer, sizeof(buffer), "%5d", total);
   Alloc_Object(new ScorePrintClass(buffer, 286, 50, greenpal));
@@ -520,7 +522,7 @@ void ScoreClass::Presentation() {
 
   // Show stats on # of units killed. The player's own side is always the upper
   // of the two rows.
-  Set_Logic_Page(SeenBuff);
+  Set_Logic_Page(visible_view);
   Audio.Play(sfx4, 255, Options.Normalize_Volume(150));
   // The original selected the second layout for Soviet players on DOS only;
   // at this resolution both sides share entry 0.
@@ -544,7 +546,7 @@ void ScoreClass::Presentation() {
   Set_Font_Palette(redpal);
   Do_GDI_Graph(yellowptr, redptr, GKilled + CKilled, NKilled, 89);
 
-  Set_Logic_Page(SeenBuff);
+  Set_Logic_Page(visible_view);
 
   // Print out stats on buildings destroyed, laid out like the casualties above.
   Audio.Play(sfx4, 255, Options.Normalize_Volume(150));
@@ -595,7 +597,7 @@ void ScoreClass::Presentation() {
   // Now display the hall of fame. The printers view their strings, so each row
   // gets its own 32-byte slice of `maststr` that stays valid while it types:
   // the score at offset 0 and the mission number at offset 16.
-  Set_Logic_Page(SeenBuff);
+  Set_Logic_Page(visible_view);
 
   char maststr[kFameRows * 32];
   std::span<const uint8_t> pal;
@@ -657,13 +659,13 @@ void ScoreClass::Presentation() {
     }
   }
   BlackPalette.Set(kFadePaletteFast, nullptr);
-  VisiblePage.Clear();
+  visible_page.Clear();
   Show_Mouse();
 
   Theme.Queue_Song(THEME_NONE);
 
   BlackPalette.Set(kFadePaletteFast, nullptr);
-  VisiblePage.Clear();
+  visible_page.Clear();
   GamePalette.Set();
 
   Set_Font(oldfont);
@@ -767,10 +769,10 @@ void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
   // Draw the white-flash shape on the hidpage. It is blitted over the last
   // step of each bar, cut to that bar's length plus 3 pixels of end cap, and
   // then replaced by the final coloured frame.
-  Set_Logic_Page(HidPage);
-  HidPage.Fill_Rect(0, 0, 248, 18, kTBlack);
+  Set_Logic_Page(hidden_view);
+  hidden_view.Fill_Rect(0, 0, 248, 18, kTBlack);
   CC_Draw_Shape(redptr, 119, 0, 0, WINDOW_MAIN, SHAPE_WIN_REL, {}, {});
-  Set_Logic_Page(SeenBuff);
+  Set_Logic_Page(visible_view);
   Set_Font_Palette(house ? redpal : bluepal);
 
   for (int i = 1; i <= gdikilled; i++) {
@@ -778,7 +780,8 @@ void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
       CC_Draw_Shape(yellowptr, i, xpos * 2, ypos * 2, WINDOW_MAIN,
                     SHAPE_WIN_REL, {}, {});
     } else {
-      HidPage.Blit(SeenBuff, 0, 0, xpos * 2, ypos * 2, (3 + gdikilled) * 2, 16);
+      hidden_view.Blit(visible_view, 0, 0, xpos * 2, ypos * 2,
+                       (3 + gdikilled) * 2, 16);
     }
 
     Count_Up_Print("%d", CountUpValue(gkilled, i, gdikilled), gkilled, 297,
@@ -797,8 +800,8 @@ void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
       CC_Draw_Shape(redptr, i, xpos * 2, (ypos + 12) * 2, WINDOW_MAIN,
                     SHAPE_WIN_REL, {}, {});
     } else {
-      HidPage.Blit(SeenBuff, 0, 0, xpos * 2, (ypos + 12) * 2,
-                   (3 + nodkilled) * 2, 16);
+      hidden_view.Blit(visible_view, 0, 0, xpos * 2, (ypos + 12) * 2,
+                       (3 + nodkilled) * 2, 16);
     }
 
     Count_Up_Print("%d", CountUpValue(nkilled, i, nodkilled), nkilled, 297,
@@ -885,7 +888,7 @@ void ScoreClass::Print_Minutes(int minutes) {
     Format_Runtime_Text(str, sizeof(str), Text_String(TXT_SCORE_TIMEFORMAT2),
                         minutes);
   }
-  SeenBuff.Print(str, 550, 18, kTBlack, kTBlack);
+  visible_view.Print(str, 550, 18, kTBlack, kTBlack);
 }
 
 void ScoreClass::Count_Up_Print(const char* str, int percent, int maxval,
@@ -894,7 +897,7 @@ void ScoreClass::Count_Up_Print(const char* str, int percent, int maxval,
 
   Format_Runtime_Text(destbuf, sizeof(destbuf), str,
                       percent <= maxval ? percent : maxval);
-  SeenBuff.Print(destbuf, xpos * 2, ypos * 2, kTBlack, kBlack);
+  visible_view.Print(destbuf, xpos * 2, ypos * 2, kTBlack, kBlack);
 }
 
 void ScoreClass::Input_Name(std::span<char> str, int xpos, int ypos,
@@ -907,13 +910,13 @@ void ScoreClass::Input_Name(std::span<char> str, int xpos, int ypos,
   const auto keystrok = MixArchive::RetrieveData("KEYSTROK.AUD");
 
   // Ready the hidpage so it can restore background under zoomed letters.
-  SeenBuff.Blit(HidPage);
+  visible_view.Blit(hidden_view);
 
   // Put a copy of the high score area on a spare area of the hidpage, so we can
   // use it to restore the letter's background instead of filling with black.
   // The copy sits 200 pixels (100 in 320x200 terms) above the original, which
   // is where the `ypos - 100` and Animate_Cursor()'s `ypos - 200` come from.
-  HidPage.Blit(HidPage, 0, 200, 0, 0, 200, 200);
+  hidden_view.Blit(hidden_view, 0, 200, 0, 0, 200, 200);
 
   do {
     ServiceRealTime();
@@ -949,10 +952,10 @@ void ScoreClass::Input_Name(std::span<char> str, int xpos, int ypos,
           // Erase the letter on both pages from the saved background copy.
 
           const int xposindex6 = (xpos + (index * 6)) * 2;
-          HidPage.Blit(SeenBuff, xposindex6, (ypos - 100) * 2, xposindex6,
-                       ypos * 2, 12, 12);
-          HidPage.Blit(HidPage, xposindex6, (ypos - 100) * 2, xposindex6,
-                       ypos * 2, 12, 12);
+          hidden_view.Blit(visible_view, xposindex6, (ypos - 100) * 2,
+                           xposindex6, ypos * 2, 12, 12);
+          hidden_view.Blit(hidden_view, xposindex6, (ypos - 100) * 2,
+                           xposindex6, ypos * 2, 12, 12);
         }
 
       } else if (key != KA_RETURN) {
@@ -962,10 +965,12 @@ void ScoreClass::Input_Name(std::span<char> str, int xpos, int ypos,
           ascii -= 'a' - 'A';
         }
         if ((ascii >= '!' && ascii <= KA_TILDA) || ascii == ' ') {
-          HidPage.Blit(SeenBuff, (xpos + (index * 6)) * 2, (ypos - 100) * 2,
-                       (xpos + (index * 6)) * 2, ypos * 2, 12, 12);
-          HidPage.Blit(HidPage, (xpos + (index * 6)) * 2, (ypos - 100) * 2,
-                       (xpos + (index * 6)) * 2, ypos * 2, 12, 12);
+          hidden_view.Blit(visible_view, (xpos + (index * 6)) * 2,
+                           (ypos - 100) * 2, (xpos + (index * 6)) * 2, ypos * 2,
+                           12, 12);
+          hidden_view.Blit(hidden_view, (xpos + (index * 6)) * 2,
+                           (ypos - 100) * 2, (xpos + (index * 6)) * 2, ypos * 2,
+                           12, 12);
           base::At(str, base::ToSize(index)) = static_cast<char>(ascii);
           base::At(str, base::ToSize(index + 1)) = 0;
 
@@ -1001,14 +1006,15 @@ void Animate_Cursor(int pos, int ypos) {
   // If they moved the cursor, erase the old one from Input_Name()'s saved
   // background copy, 200 pixels up the hidden page, and restart the blink.
   if (pos != _lastpos) {
-    HidPage.Blit(SeenBuff, (HALLFAME_X + (_lastpos * 6)) * 2, ypos - 200,
-                 (HALLFAME_X + (_lastpos * 6)) * 2, ypos, 12, 2);
+    hidden_view.Blit(visible_view, (HALLFAME_X + (_lastpos * 6)) * 2,
+                     ypos - 200, (HALLFAME_X + (_lastpos * 6)) * 2, ypos, 12,
+                     2);
     _lastpos = pos;
     _state = 0;
   }
-  SeenBuff.Draw_Line((HALLFAME_X + (pos * 6)) * 2, ypos,
-                     (HALLFAME_X + (pos * 6) + 5) * 2, ypos,
-                     _state ? kLtBlue : kTBlack);
+  visible_view.Draw_Line((HALLFAME_X + (pos * 6)) * 2, ypos,
+                         (HALLFAME_X + (pos * 6) + 5) * 2, ypos,
+                         _state ? kLtBlue : kTBlack);
   // Toggle the color of the cursor, blue or hidden, if it's time to do so:
   // every 5 ticks.
   if (_timer.IsFinished()) {
@@ -1063,21 +1069,21 @@ void Multi_Score_Presentation() {
   Map.Override_Mouse_Shape(MOUSE_NORMAL);
 
   BlackPalette.Set();
-  SeenBuff.Clear();
-  HidPage.Clear();
+  visible_view.Clear();
+  hidden_view.Clear();
   Hide_Mouse();
   WsaAnimation anim("MLTIPLYR.WSA", ScorePalette);
   // Display the background animation. The first frame goes up under a black
   // palette and is faded in; the remaining frames then play at two ticks each.
   pseudoseenbuff.Clear();
   anim.DrawFrame(pseudoseenbuff, 1);
-  Interpolate_2X_Scale(&pseudoseenbuff, &SeenBuff, {});
+  Interpolate_2X_Scale(&pseudoseenbuff, &visible_view, {});
   ScorePalette.Set(kFadePaletteFast, ServiceRealTime);
 
   int frame = 1;
   while (frame < anim.frame_count()) {
     anim.DrawFrame(pseudoseenbuff, frame++);
-    Interpolate_2X_Scale(&pseudoseenbuff, &SeenBuff, {});
+    Interpolate_2X_Scale(&pseudoseenbuff, &visible_view, {});
     TickScoreScreen(2);
   }
   anim.Close();
@@ -1086,7 +1092,7 @@ void Multi_Score_Presentation() {
   const std::span<const std::byte> oldfont = Set_Font(ScoreFontPtr);
   ServiceRealTime();
 
-  Set_Logic_Page(SeenBuff);
+  Set_Logic_Page(visible_view);
 
   Alloc_Object(new ScorePrintClass(TXT_SCORE_TOP, config::kIsFrench ? 113 : 130,
                                    13, greenpal));
@@ -1167,7 +1173,7 @@ void Multi_Score_Presentation() {
   Theme.Queue_Song(THEME_NONE);
 
   BlackPalette.Set(kFadePaletteFast, nullptr);
-  SeenBuff.Clear();
+  visible_view.Clear();
   GamePalette.Set();
   Set_Font(oldfont);
   FontXSpacing = oldfontxspacing;

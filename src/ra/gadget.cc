@@ -477,13 +477,14 @@ KeyNumType GadgetClass::Input() {
     if ((key == KN_K && !MapEditorActive && (Debug_Flag || Debug_Playtest)) &&
         (!Debug_MotionCapture)) {
       GraphicBufferClass temp_page(
-          SeenBuff.Get_Width(), SeenBuff.Get_Height(), {},
-          static_cast<int32_t>(SeenBuff.Get_Width()) * SeenBuff.Get_Height());
+          visible_view.Get_Width(), visible_view.Get_Height(), {},
+          static_cast<int32_t>(visible_view.Get_Width()) *
+              visible_view.Get_Height());
       DiskFile file;
       char filename[30];
 
       //			Hide_Mouse();
-      SeenBuff.Blit(temp_page);
+      visible_view.Blit(temp_page);
       //			Show_Mouse();
       for (int lp = 0; lp < 99; lp++) {
         absl::SNPrintF(filename, sizeof(filename), "scrsht%02d.pcx", lp);
@@ -775,9 +776,9 @@ bool GadgetClass::Has_Focus() { return this == Focused; }
  * GadgetClass::Is_List_To_Redraw -- tells if any gadget in the list needs
  *redrawing           *
  *                                                                                             *
- * This function is mostly for supporting HidPage drawing.  If it returns true,
- *it means       * the application needs to re-blit the HidPage forward, after
- *calling the list's Input().     *
+ * This function is mostly for supporting hidden_view drawing.  If it returns
+ * true, it means       * the application needs to re-blit the hidden_view
+ * forward, after calling the list's Input().     *
  *                                                                                             *
  * INPUT:   none *
  *                                                                                             *

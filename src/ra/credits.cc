@@ -98,7 +98,7 @@ CreditClass::CreditClass() = default;
  *=============================================================================================*/
 void CreditClass::Graphic_Logic(bool forced) {
   if (forced || IsToRedraw) {
-    int xx = SeenBuff.Get_Width() - 240;
+    int xx = visible_view.Get_Width() - 240;
 
     /*
     ** Adjust the credits display to be above the sidebar for 640x400

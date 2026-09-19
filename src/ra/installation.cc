@@ -288,7 +288,7 @@ bool Force_CD_Available(int cd_desired)  // ajw
         }
       }
 
-      GraphicViewPortClass* old_page = Set_Logic_Page(SeenBuff);
+      GraphicViewPortClass* old_page = Set_Logic_Page(visible_view);
       Theme.Stop();
       int hidden = Get_Mouse_State();
       font = FontPtr;

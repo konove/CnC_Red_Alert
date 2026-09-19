@@ -103,7 +103,7 @@ void Dialog_Box(int x, int y, int w, int h) {
   /*
   **	Always draw to the hidpage and then blit forward.
   */
-  GraphicViewPortClass* oldpage = Set_Logic_Page(HidPage);
+  GraphicViewPortClass* oldpage = Set_Logic_Page(hidden_view);
 
   /*
   **	Draw the background block.
@@ -155,9 +155,9 @@ void Dialog_Box(int x, int y, int w, int h) {
   CC_Draw_Shape(shapedata, 2, 0, h - 24, WINDOW_PARTIAL, SHAPE_WIN_REL);
   CC_Draw_Shape(shapedata, 3, w - 23, h - 24, WINDOW_PARTIAL, SHAPE_WIN_REL);
 
-  WWMouse->Draw_Mouse(&HidPage);
-  HidPage.Blit(SeenBuff, x, y, x, y, w, h, false);
-  WWMouse->Erase_Mouse(&HidPage, false);
+  WWMouse->Draw_Mouse(&hidden_view);
+  hidden_view.Blit(visible_view, x, y, x, y, w, h, false);
+  WWMouse->Erase_Mouse(&hidden_view, false);
   Set_Logic_Page(oldpage);
 }
 
@@ -342,7 +342,7 @@ void Window_Box(WindowNumberType window, BoxStyleEnum style) {
   **	If it is to be rendered to the seenpage, then
   **	hide the mouse.
   */
-  if (LogicPage == &SeenBuff) {
+  if (LogicPage == &visible_view) {
     Conditional_Hide_Mouse(x, y, x + w, y + h);
   }
 
@@ -351,7 +351,7 @@ void Window_Box(WindowNumberType window, BoxStyleEnum style) {
   /*
   **	Restore the mouse if it has been hidden and return.
   */
-  if (LogicPage == &SeenBuff) {
+  if (LogicPage == &visible_view) {
     Conditional_Show_Mouse();
   }
 }

@@ -320,7 +320,7 @@ int MapEditClass::Placement_Dialog() {
   /*
   **	Initialize
   */
-  Set_Logic_Page(SeenBuff);
+  Set_Logic_Page(visible_view);
   if (LastChoice >= ObjCount) {
     LastChoice = 0;
   }
@@ -672,7 +672,7 @@ int MapEditClass::Placement_Dialog() {
   /*
   **	Redraw the display
   */
-  HidPage.Clear();
+  hidden_view.Clear();
   Flag_To_Redraw(true);
   Render();
 
@@ -753,7 +753,7 @@ void MapEditClass::Start_Placement() {
   */
   if (!PendingObjectPtr) {
     WWMessageBox().Process("No more objects of this type available.");
-    HidPage.Clear();
+    hidden_view.Clear();
     Flag_To_Redraw(true);
     Render();
     PendingObject = nullptr;
@@ -1047,7 +1047,7 @@ void MapEditClass::Cancel_Placement() {
   /*
   **	Redraw the map to erase old leftovers
   */
-  HidPage.Clear();
+  hidden_view.Clear();
   Flag_To_Redraw(true);
   Render();
 }
@@ -1119,7 +1119,7 @@ void MapEditClass::Place_Next() {
   /*
   **	Redraw the map to erase old leftovers
   */
-  HidPage.Clear();
+  hidden_view.Clear();
   Flag_To_Redraw(true);
   Render();
 }
@@ -1194,7 +1194,7 @@ void MapEditClass::Place_Prev() {
   /*
   **	Redraw the map to erase old leftovers
   */
-  HidPage.Clear();
+  hidden_view.Clear();
   Flag_To_Redraw(true);
   Render();
 }
@@ -1282,7 +1282,7 @@ void MapEditClass::Place_Next_Category() {
   /*
   **	Redraw the map to erase old leftovers
   */
-  HidPage.Clear();
+  hidden_view.Clear();
   Flag_To_Redraw(true);
   Render();
 }
@@ -1396,7 +1396,7 @@ void MapEditClass::Place_Prev_Category() {
   /*
   **	Redraw the map to erase old leftovers
   */
-  HidPage.Clear();
+  hidden_view.Clear();
   Flag_To_Redraw(true);
   Render();
 }
@@ -1471,7 +1471,7 @@ void MapEditClass::Place_Home() {
   /*
   **	Redraw the map to erase old leftovers
   */
-  HidPage.Clear();
+  hidden_view.Clear();
   Flag_To_Redraw(true);
   Render();
 }
@@ -1655,7 +1655,7 @@ void MapEditClass::Place_Trigger() {
   /*
   **	Force map to redraw
   */
-  HidPage.Clear();
+  hidden_view.Clear();
   Flag_To_Redraw(true);
 }
 
@@ -1689,7 +1689,7 @@ void MapEditClass::Start_Base_Building() {
   /*
   ** Force map to redraw
   */
-  HidPage.Clear();
+  hidden_view.Clear();
   Flag_To_Redraw(true);
 }
 
@@ -1723,7 +1723,7 @@ void MapEditClass::Cancel_Base_Building() {
   /*
   ** Force map to redraw
   */
-  HidPage.Clear();
+  hidden_view.Clear();
   Flag_To_Redraw(true);
 }
 

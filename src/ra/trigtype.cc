@@ -1080,7 +1080,7 @@ bool TriggerTypeClass::Edit() {
   /*
   **	Initialize
   */
-  Set_Logic_Page(SeenBuff);
+  Set_Logic_Page(visible_view);
 
   /*
   **	Build the button list

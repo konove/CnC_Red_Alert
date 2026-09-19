@@ -66,6 +66,7 @@
 #include "ra/defines.h"
 #include "ra/display_constants.h"
 #include "ra/externs.h"
+#include "ra/globals.h"
 #include "ra/heap.h"
 #include "ra/house.h"
 #include "ra/inline.h"
@@ -1903,19 +1904,19 @@ void TemplateTypeClass::Display(int x, int y, WindowNumberType window,
   for (int index = 0; index < w * h; index++) {
     if (static_cast<size_t>(index) < map.size() &&
         base::At(map, static_cast<size_t>(index)) != 0xFF) {
-      HidPage.Draw_Stamp(Get_Image_Data(), index, 0, 0, {},
-                         static_cast<int>(WINDOW_MAIN));
+      hidden_view.Draw_Stamp(Get_Image_Data(), index, 0, 0, {},
+                             static_cast<int>(WINDOW_MAIN));
       if (scale) {
-        HidPage.Scale((*LogicPage), 0, 0,
-                      x + ((index % w) * (ICON_PIXEL_W / 2)),
-                      y + ((index / w) * (ICON_PIXEL_H / 2)), ICON_PIXEL_W,
-                      ICON_PIXEL_H, ICON_PIXEL_W / 2, ICON_PIXEL_H / 2,
-                      std::span<const unsigned char>{});
+        hidden_view.Scale((*LogicPage), 0, 0,
+                          x + ((index % w) * (ICON_PIXEL_W / 2)),
+                          y + ((index / w) * (ICON_PIXEL_H / 2)), ICON_PIXEL_W,
+                          ICON_PIXEL_H, ICON_PIXEL_W / 2, ICON_PIXEL_H / 2,
+                          std::span<const unsigned char>{});
 
       } else {
-        HidPage.Blit((*LogicPage), 0, 0, x + ((index % w) * (ICON_PIXEL_W)),
-                     y + ((index / w) * (ICON_PIXEL_H)), ICON_PIXEL_W,
-                     ICON_PIXEL_H);
+        hidden_view.Blit((*LogicPage), 0, 0, x + ((index % w) * (ICON_PIXEL_W)),
+                         y + ((index / w) * (ICON_PIXEL_H)), ICON_PIXEL_W,
+                         ICON_PIXEL_H);
       }
     }
   }

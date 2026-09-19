@@ -258,7 +258,7 @@ bool LoadOptionsClass::Process() {
   /*
   **	Initialize.
   */
-  Set_Logic_Page(SeenBuff);
+  Set_Logic_Page(visible_view);
 
   Fill_List(&listbtn);
 
@@ -436,7 +436,7 @@ bool LoadOptionsClass::Process() {
             // than holding the load screen until it finishes.
             Speak(VOX_LOAD1);
             Hide_Mouse();
-            SeenBuff.Clear();
+            visible_view.Clear();
             GamePalette.Set();
             //						Set_Palette(GamePalette);
             Show_Mouse();

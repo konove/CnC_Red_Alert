@@ -159,8 +159,8 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   // make sure dialog is wide enough for the buttons
   width = std::max((bwidth * numbuttons) + 80, width);
 
-  const int x = (SeenBuff.Get_Width() - width) / 2;
-  const int y = (SeenBuff.Get_Height() - height) / 2;
+  const int x = (visible_view.Get_Width() - width) / 2;
+  const int y = (visible_view.Get_Height() - height) / 2;
   int printx = x + 40;
 
   /*
@@ -174,7 +174,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   /*
   **	Other inits.
   */
-  Set_Logic_Page(SeenBuff);
+  Set_Logic_Page(visible_view);
 
   /*
   **	Initialize the button structures. All are initialized, even though one
@@ -233,8 +233,8 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   Hide_Mouse();
   if (preserve) {
     back.resize(base::ToSize(width * height));
-    SeenBuff.To_Buffer(x, y, width, height, back,
-                       static_cast<int32_t>(width) * height);
+    visible_view.To_Buffer(x, y, width, height, back,
+                           static_cast<int32_t>(width) * height);
   }
   Dialog_Box(x, y, width, height);
   Draw_Caption(Caption, x, y, width);
@@ -437,10 +437,10 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   */
   if (preserve) {
     Hide_Mouse();
-    if (SeenBuff.Lock()) {
-      Buffer_To_Page(x, y, width, height, back, &SeenBuff);
+    if (visible_view.Lock()) {
+      Buffer_To_Page(x, y, width, height, back, &visible_view);
     }
-    SeenBuff.Unlock();
+    visible_view.Unlock();
 
     back.clear();
 

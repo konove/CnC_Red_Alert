@@ -374,7 +374,7 @@ bool Start_Scenario(char* name, bool briefing) {
 
   if (briefing) {
     Hide_Mouse();
-    VisiblePage.Clear();
+    visible_page.Clear();
     Show_Mouse();
     Play_Movie(Scen.IntroMovie);
     Play_Movie(Scen.BriefMovie);
@@ -401,7 +401,7 @@ bool Start_Scenario(char* name, bool briefing) {
 
   if (briefing) {
     Hide_Mouse();
-    VisiblePage.Clear();
+    visible_page.Clear();
     Show_Mouse();
     Play_Movie(Scen.ActionMovie, Scen.TransitTheme);
   }
@@ -806,7 +806,7 @@ void Do_Win() {
     /*
     **	Announce win to player.
     */
-    Set_Logic_Page(SeenBuff);
+    Set_Logic_Page(visible_view);
     Map.Flag_To_Redraw(true);
     Map.Render();
     Fancy_Text_Print(TXT_SCENARIO_WON, x, 180, &ColorRemaps.at(PCOLOR_RED),
@@ -839,7 +839,7 @@ void Do_Win() {
   }
 
   Hide_Mouse();
-  VisiblePage.Clear();
+  visible_page.Clear();
   Show_Mouse();
   Play_Movie(Scen.WinMovie);
 
@@ -1015,7 +1015,7 @@ void Do_Lose() {
   /*
   **	Announce win to player.
   */
-  Set_Logic_Page(SeenBuff);
+  Set_Logic_Page(visible_view);
   Fancy_Text_Print(TXT_SCENARIO_LOST, x, 180, &ColorRemaps.at(PCOLOR_RED),
                    kTBlack,
                    TPF_CENTER | TPF_VCR | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
@@ -1045,7 +1045,7 @@ void Do_Lose() {
   }
 
   Hide_Mouse();
-  VisiblePage.Clear();
+  visible_page.Clear();
   Show_Mouse();
   DLOG(INFO) << "Trying to play lose movie";
   Play_Movie(Scen.LoseMovie);
@@ -1105,7 +1105,7 @@ void Do_Draw() {
   /*
   **	Announce win to player.
   */
-  Set_Logic_Page(SeenBuff);
+  Set_Logic_Page(visible_view);
   Fancy_Text_Print(TXT_WOL_DRAW, x, 180, &ColorRemaps.at(PCOLOR_RED), kTBlack,
                    TPF_CENTER | TPF_VCR | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
   CountDownTimer.Set(int64_t{kTimerSecond} * 3);
@@ -1351,13 +1351,13 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
   Format_Window_String(buffer, 300, width, height);
   height += numbuttons == 0 ? 30 : 60;
 
-  const int x = (SeenBuff.Get_Width() - width) / 2;
-  const int y = (SeenBuff.Get_Height() - height) / 2;
+  const int x = (visible_view.Get_Width() - width) / 2;
+  const int y = (visible_view.Get_Height() - height) / 2;
 
   /*
   **	Other inits.
   */
-  Set_Logic_Page(SeenBuff);
+  Set_Logic_Page(visible_view);
 
   /*
   **	Initialize the button structures. All are initialized, even though one
@@ -1411,8 +1411,8 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
   if (!IsSovietHouse(PlayerPtr->Class->House)) {
     filename = "ALIPAPER.PCX";
   }
-  Load_Title_Screen(filename, &HidPage, temp);
-  HidPage.Blit(SeenBuff);
+  Load_Title_Screen(filename, &hidden_view, temp);
+  hidden_view.Blit(visible_view);
 
   static const unsigned char _scorepal[] = {0, 1, 12, 13,  4,   5,   6,  7,
                                             8, 9, 10, 255, 252, 253, 14, 248};
@@ -1438,7 +1438,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
 
     } else {
       if (base::At(bufprint, 0) != 20) {
-        SeenBuff.Print(bufprint, xprint, yprint, kTBlack, kTBlack);
+        visible_view.Print(bufprint, xprint, yprint, kTBlack, kTBlack);
         xprint += Char_Pixel_Width(base::At(bufprint, 0));
       }
     }
@@ -1598,7 +1598,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
     case 0:
     case 1:
       BlackPalette.Set(kFadePaletteMedium, ServiceRealTime);
-      SeenBuff.Clear();
+      visible_view.Clear();
       break;
     default:
       break;
@@ -1921,7 +1921,7 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
     const int cd_index = Get_CD_Index(SearchPaths::current_cd_drive(), 1 * 60);
     if ((!Using_DVD() || cd_index != 5) && cd_index != RequiredCD) {
       if ((RequiredCD == 0 || RequiredCD == 1) && Session.Type == GAME_NORMAL) {
-        SeenBuff.Clear();
+        visible_view.Clear();
       }
       GamePalette.Set(kFadePaletteFast, ServiceRealTime);
     }

@@ -273,7 +273,7 @@ void Debug_Key(unsigned input) {
           if (ttype.PrimaryWeapon != nullptr) {
             weapon = ttype.PrimaryWeapon->Range;
           }
-          Set_Logic_Page(SeenBuff);
+          Set_Logic_Page(visible_view);
           const COORDINATE center = CurrentObject.at(0)->Center_Coord();
           const COORDINATE center2 = CurrentObject.at(0)->Fire_Coord(0);
 

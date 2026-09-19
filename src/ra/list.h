@@ -472,7 +472,7 @@ bool TListClass<T>::Draw_Me(bool forced) {
     /*
     **	Turn off the mouse.
     */
-    if (LogicPage == &SeenBuff) {
+    if (LogicPage == &visible_view) {
       Conditional_Hide_Mouse(X, Y, X + Width, Y + Height);
     }
 
@@ -504,7 +504,7 @@ bool TListClass<T>::Draw_Me(bool forced) {
     /*
     **	Turn on the mouse.
     */
-    if (LogicPage == &SeenBuff) {
+    if (LogicPage == &visible_view) {
       Conditional_Show_Mouse();
     }
     return true;

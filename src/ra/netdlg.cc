@@ -5652,7 +5652,7 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
     y = 200 - (h / 2);
 
     Hide_Mouse();
-    Set_Logic_Page(SeenBuff);
+    Set_Logic_Page(visible_view);
     Dialog_Box(x, y, w, h);
 
     Fancy_Text_Print(buf1, 320, y + (d_margin * 2), scheme, kTBlack,
@@ -5672,7 +5672,7 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
   //------------------------------------------------------------------------
   else {
     Hide_Mouse();
-    Set_Logic_Page(SeenBuff);
+    Set_Logic_Page(visible_view);
 
     Format_Runtime_Text(buf2, sizeof(buf2), Text_String(TXT_TIME_ALLOWED),
                         timeval + 1);

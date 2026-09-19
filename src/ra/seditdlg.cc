@@ -187,7 +187,7 @@ const char* SimpleEditDlgClass::Show() {
   /*
   **	Initialize.
   */
-  Set_Logic_Page(SeenBuff);
+  Set_Logic_Page(visible_view);
 
   /*
   **	Create the button list.

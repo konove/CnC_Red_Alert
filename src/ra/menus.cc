@@ -411,7 +411,7 @@ int Do_Menu(std::span<const char* const> strings, bool /*unused*/) {
   if (strings.empty()) {
     return -1;
   }
-  Set_Logic_Page(SeenBuff);
+  Set_Logic_Page(visible_view);
   Keyboard->Clear();
 
   /*
@@ -471,8 +471,9 @@ int Do_Menu(std::span<const char* const> strings, bool /*unused*/) {
   Keyboard->Clear();
   Hide_Mouse();
 
-  HidPage.Blit(SeenBuff);
-  // WindowList[static_cast<int>(WINDOW_MAIN)][2] = SeenBuff.Get_Width();//BG
+  hidden_view.Blit(visible_view);
+  // WindowList[static_cast<int>(WINDOW_MAIN)][2] =
+  // visible_view.Get_Width();//BG
   Change_Window(static_cast<int>(WINDOW_MAIN));
   Map.Flag_To_Redraw(true);
   return selection;
@@ -604,7 +605,7 @@ int Main_Menu(int32_t /*unused*/) {
     RequiredCD = -1;
     Force_CD_Available(RequiredCD);
   }
-  Set_Logic_Page(SeenBuff);
+  Set_Logic_Page(visible_view);
   Keyboard->Clear();
 
   /*
@@ -696,7 +697,7 @@ int Main_Menu(int32_t /*unused*/) {
       /*
       **	Display the title and text overlay for the menu.
       */
-      Set_Logic_Page(HidPage);
+      Set_Logic_Page(hidden_view);
       //			Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w,
       // d_dialog_h); 			Draw_Caption (TXT_NONE, d_dialog_x,
       // d_dialog_y, d_dialog_w);
@@ -710,10 +711,10 @@ int Main_Menu(int32_t /*unused*/) {
       **	Copy the menu to the visible page.
       */
       Hide_Mouse();
-      HidPage.Blit(SeenBuff);
+      hidden_view.Blit(visible_view);
       Show_Mouse();
 
-      Set_Logic_Page(SeenBuff);
+      Set_Logic_Page(visible_view);
       display = false;
     }
 

@@ -3121,7 +3121,7 @@ bool TechnoClass::Electric_Zap(TARGET target, int which,
     x1 += Map.TacPixelX;
     y += Map.TacPixelY;
     y1 += Map.TacPixelY;
-    Set_Logic_Page(SeenBuff);
+    Set_Logic_Page(visible_view);
     gonnadraw = true;
   }
 
