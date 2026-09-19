@@ -9,8 +9,8 @@
 [[noreturn]] void Print_Error_End_Exit(char* string);
 
 // Leaves the game from anywhere, cleaning up as a normal quit would: blanks
-// the screen and goes through the quit handler, which runs Prog_End().
-// `code` is the intended process exit status.
+// the screen, runs Prog_End(), releases the video pages and exits with
+// `code`.
 [[noreturn]] void Emergency_Exit(int code);
 
 // Sets the video mode for ScreenWidth x ScreenHeight (falling back from 400

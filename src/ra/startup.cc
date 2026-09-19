@@ -305,8 +305,8 @@ int main(int argc, char* argv[])
       Memory_Error_Exit = Print_Error_Exit;
 
       // ReadyToQuit is the shutdown handshake with the message handler:
-      // 1 is a clean quit, 3 an Emergency_Exit(), and the Windows handler
-      // answered 2 once it had closed everything down. The SDL handler for
+      // 1 is a clean quit, and the Windows handler answered 2 once it had
+      // closed everything down. The SDL handler for
       // the quit event calls Prog_End() and exit(0) itself, so on SDL this
       // loop only pumps events until that happens and the return below is
       // never reached.
@@ -447,19 +447,11 @@ void Print_Error_Exit(char* string) {
   BlackPalette.Set();
   Memory_Error_Exit = Print_Error_Exit;
 
-  // 3 flags an emergency shutdown: not a clean quit, but not a forced kill
-  // either (see the ReadyToQuit handshake in main()).
-  // TODO: The SDL quit handler exits with status 0 before this loop ends,
-  // so `code` is never used and every Emergency_Exit(EXIT_FAILURE) reports
-  // success to the shell.
-  ReadyToQuit = 3;
-
-  SDL_Send_Quit();
-
-  do {
-    Keyboard->Check();
-  } while (ReadyToQuit == 3);
-
+  // Clean up here rather than through the quit handler's handshake (see
+  // main()): the SDL handler ends in exit(0), which would lose `code`.
+  Prog_End();
+  VisiblePage.Un_Init();
+  HiddenPage.Un_Init();
   exit(code);
 }
 
