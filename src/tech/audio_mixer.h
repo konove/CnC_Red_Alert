@@ -20,8 +20,8 @@
 // audio device. It stands where the Westwood 32-bit library's sound driver did
 // (AUDIO.H, Phil W. Gorrow, March 1995).
 
-#ifndef CNC_RED_ALERT_TECH_WW_AUDIO_H_
-#define CNC_RED_ALERT_TECH_WW_AUDIO_H_
+#ifndef CNC_RED_ALERT_TECH_AUDIO_MIXER_H_
+#define CNC_RED_ALERT_TECH_AUDIO_MIXER_H_
 
 #include <SDL_audio.h>
 
@@ -224,4 +224,4 @@ class AudioMixer {
   std::array<Channel, kChannelCount> channels_;
 };
 
-#endif  // CNC_RED_ALERT_TECH_WW_AUDIO_H_
+#endif  // CNC_RED_ALERT_TECH_AUDIO_MIXER_H_

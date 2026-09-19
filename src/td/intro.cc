@@ -62,10 +62,10 @@
 #include "td/score.h"
 #include "td/special.h"
 #include "td/textblit.h"
+#include "tech/audio_mixer.h"
 #include "tech/game_file.h"
 #include "tech/game_file_vqa_io.h"
 #include "tech/wsa_animation.h"
-#include "tech/ww_audio.h"
 #include "winvq/vqa32/vqaplay.h"
 
 #ifndef DEMO

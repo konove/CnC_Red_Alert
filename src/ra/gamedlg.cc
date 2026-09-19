@@ -70,7 +70,7 @@
 #include "sdllib/wwstd.h"
 #include "session.h"
 #include "slider.h"
-#include "tech/ww_audio.h"
+#include "tech/audio_mixer.h"
 
 /***********************************************************************************************
  * OptionsClass::Process -- Handles all the options graphic interface. *

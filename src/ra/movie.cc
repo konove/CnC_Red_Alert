@@ -42,9 +42,9 @@
 #include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
+#include "tech/audio_mixer.h"
 #include "tech/game_file.h"
 #include "tech/game_file_vqa_io.h"
-#include "tech/ww_audio.h"
 #include "winvq/vqa32/vqaplay.h"
 
 void Play_Movie(const char* name, const ThemeType theme, bool clear_screen) {

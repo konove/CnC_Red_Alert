@@ -78,11 +78,11 @@
 #include "ra/theme.h"
 #include "ra/ww_audio.h"
 #include "sdllib/keyboard.h"
+#include "tech/audio_mixer.h"
 #include "tech/fixed.h"
 #include "tech/game_file.h"
 #include "tech/hsv.h"
 #include "tech/rgb.h"
-#include "tech/ww_audio.h"
 
 const char* const OptionsClass::HotkeyName = "WinHotkeys";
 

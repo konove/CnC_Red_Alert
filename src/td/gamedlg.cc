@@ -64,7 +64,7 @@
 #include "td/text.h"
 #include "td/textbtn.h"
 #include "td/visudlg.h"
-#include "tech/ww_audio.h"
+#include "tech/audio_mixer.h"
 
 /***********************************************************************************************
  * OptionsClass::Process -- Handles all the options graphic interface. *

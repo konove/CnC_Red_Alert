@@ -68,9 +68,9 @@
 #include "td/ipxmgr.h"
 #include "td/nullmgr.h"
 #include "td/profile.h"
+#include "tech/audio_mixer.h"
 #include "tech/disk_file.h"
 #include "tech/number_parse.h"
-#include "tech/ww_audio.h"
 
 // The two tests that link this file define TD_NO_ENTRY_POINT; these headers
 // serve only main().

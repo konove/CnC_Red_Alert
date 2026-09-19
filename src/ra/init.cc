@@ -149,6 +149,7 @@
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 #include "tech/archive.h"
+#include "tech/audio_mixer.h"
 #include "tech/buff.h"
 #include "tech/crc.h"
 #include "tech/file_sink.h"
@@ -163,7 +164,6 @@
 #include "tech/random.h"
 #include "tech/rgb.h"
 #include "tech/search_paths.h"
-#include "tech/ww_audio.h"
 #include "winvq/vqa32/vqaplay.h"
 
 static RemapControlType SidebarScheme;

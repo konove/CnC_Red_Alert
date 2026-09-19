@@ -69,8 +69,8 @@
 #include "td/rand.h"
 #include "td/special.h"
 #include "td/text.h"
+#include "tech/audio_mixer.h"
 #include "tech/game_file.h"
-#include "tech/ww_audio.h"
 
 /*
 **	These are the actual filename list for the theme sample files.

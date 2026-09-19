@@ -72,8 +72,8 @@
 #include "td/techno.h"
 #include "td/type.h"
 #include "td/vector.h"
+#include "tech/audio_mixer.h"
 #include "tech/pcx_file.h"
-#include "tech/ww_audio.h"
 
 /***********************************************************************************************
  * Debug_Key -- Debug mode keyboard processing. *

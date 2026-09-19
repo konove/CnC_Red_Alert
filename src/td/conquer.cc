@@ -157,13 +157,13 @@
 #include "td/vector.h"
 #include "tech/2keyfbuf.h"
 #include "tech/archive.h"
+#include "tech/audio_mixer.h"
 #include "tech/byte_sink.h"
 #include "tech/crc.h"
 #include "tech/game_file.h"
 #include "tech/game_file_vqa_io.h"
 #include "tech/mix_archive.h"
 #include "tech/search_paths.h"
-#include "tech/ww_audio.h"
 #include "winvq/vqa32/vqaplay.h"
 
 #ifdef _WIN32

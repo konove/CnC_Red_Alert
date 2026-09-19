@@ -87,8 +87,8 @@
 #include "td/palette.h"
 #include "td/profile.h"
 #include "td/special.h"
+#include "tech/audio_mixer.h"
 #include "tech/game_file.h"
-#include "tech/ww_audio.h"
 
 /***********************************************************************************************
  * OptionsClass::OptionsClass -- The default constructor for the options class.

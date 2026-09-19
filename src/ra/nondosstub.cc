@@ -44,8 +44,8 @@
 #include "sdllib/gbuffer.h"
 #include "sdllib/iconcach.h"
 #include "sdllib/ww_mouse.h"
+#include "tech/audio_mixer.h"
 #include "tech/game_file.h"
-#include "tech/ww_audio.h"
 
 /***********************************************************************************************
  * Focus_Loss -- this function is called when a library function detects focus

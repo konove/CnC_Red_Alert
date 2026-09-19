@@ -45,8 +45,8 @@
 #include "td/mapedit.h"
 #include "td/palette.h"
 #include "td/theme.h"
+#include "tech/audio_mixer.h"
 #include "tech/pcx_file.h"
-#include "tech/ww_audio.h"
 #include "winvq/vqa32/vqaplay.h"
 
 static ThemeType OldTheme = THEME_NONE;

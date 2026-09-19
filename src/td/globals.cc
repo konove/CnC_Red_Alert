@@ -94,9 +94,9 @@
 #include "td/trigger.h"
 #include "td/unit.h"
 #include "td/vector.h"
+#include "tech/audio_mixer.h"
 #include "tech/game_file.h"
 #include "tech/mix_archive.h"
-#include "tech/ww_audio.h"
 #include "winvq/vqa32/vqaplay.h"
 
 #ifdef JAPANESE

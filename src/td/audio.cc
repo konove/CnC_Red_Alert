@@ -59,9 +59,9 @@
 #include "td/jshell.h"
 #include "td/mapedit.h"
 #include "td/special.h"
+#include "tech/audio_mixer.h"
 #include "tech/game_file.h"
 #include "tech/mix_archive.h"
-#include "tech/ww_audio.h"
 
 /***************************************************************************
 **	Controls what special effects may occur on the sound effect.

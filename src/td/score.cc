@@ -97,10 +97,10 @@
 #include "td/theme.h"
 #include "td/type.h"
 #include "td/vector.h"
+#include "tech/audio_mixer.h"
 #include "tech/game_file.h"
 #include "tech/mix_archive.h"
 #include "tech/wsa_animation.h"
-#include "tech/ww_audio.h"
 
 #define SCORETEXT_X 184
 // #define SCORETEXT_Y 8

@@ -75,13 +75,13 @@
 #include "sdllib/shape.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
+#include "tech/audio_mixer.h"
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
 #include "tech/game_file.h"
 #include "tech/mix_archive.h"
 #include "tech/rgb.h"
 #include "tech/wsa_animation.h"
-#include "tech/ww_audio.h"
 
 // Layout, in 320x200 coordinates.
 

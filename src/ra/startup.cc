@@ -88,10 +88,10 @@
 #include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
+#include "tech/audio_mixer.h"
 #include "tech/disk_file.h"
 #include "tech/number_parse.h"
 #include "tech/search_paths.h"
-#include "tech/ww_audio.h"
 
 #ifdef _WIN32
 #include <direct.h>  //chdir

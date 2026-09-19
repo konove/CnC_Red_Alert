@@ -70,8 +70,8 @@
 #include "td/score.h"
 #include "td/text.h"
 #include "td/textblit.h"
+#include "tech/audio_mixer.h"
 #include "tech/game_file.h"
-#include "tech/ww_audio.h"
 
 void GDI_Ending() {
 #ifdef DEMO

@@ -100,13 +100,13 @@
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
 #include "sdllib/wwstd.h"
+#include "tech/audio_mixer.h"
 #include "tech/disk_file.h"
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
 #include "tech/game_file.h"
 #include "tech/glow_pulse.h"
 #include "tech/rgb.h"
-#include "tech/ww_audio.h"
 
 // Cycles the animated palette entries. Two effects run off independent timers:
 // a white that pulses between bright and half-dark, used by the radar box and

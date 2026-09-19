@@ -136,13 +136,13 @@
 #include "td/trigger.h"
 #include "td/type.h"
 #include "td/unit.h"
+#include "tech/audio_mixer.h"
 #include "tech/crc.h"
 #include "tech/disk_file.h"
 #include "tech/game_file.h"
 #include "tech/mix_archive.h"
 #include "tech/number_parse.h"
 #include "tech/search_paths.h"
-#include "tech/ww_audio.h"
 #include "winvq/vqa32/vqaplay.h"
 
 #ifdef _WIN32

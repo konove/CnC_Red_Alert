@@ -159,13 +159,13 @@
 #include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
+#include "tech/audio_mixer.h"
 #include "tech/disk_file.h"
 #include "tech/ftimer.h"
 #include "tech/game_file.h"
 #include "tech/mix_archive.h"
 #include "tech/number_parse.h"
 #include "tech/search_paths.h"
-#include "tech/ww_audio.h"
 
 static void Remove_AI_Players();
 static void Create_Units(bool official);
