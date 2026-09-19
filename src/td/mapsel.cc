@@ -652,7 +652,7 @@ void Map_Selection() {
   ** Copy the first frame up to the seenpage (while screen is black)
   */
   SysMemPage.Clear();
-  Animate_Frame(anim, SysMemPage, 1);  //, 0,0, (WSAType)0,0,0);
+  Animate_Frame(anim, SysMemPage, 1);
   SysMemPage.Blit(*PseudoSeenBuff);
 
   Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, {});

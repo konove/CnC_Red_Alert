@@ -340,9 +340,7 @@ void Close_Animation(void* handle) {
   delete[] static_cast<uint8_t*>(handle);
 }
 
-bool Animate_Frame(void* handle, GraphicViewPortClass& view, int frame_number,
-                   int x_pixel, int y_pixel, WSAType /*flags_and_prio*/,
-                   void* /*magic_cols*/, void* /*magic*/) {
+bool Animate_Frame(void* handle, GraphicViewPortClass& view, int frame_number) {
   if (handle == nullptr || frame_number < 0) {
     return false;
   }
@@ -373,11 +371,9 @@ bool Animate_Frame(void* handle, GraphicViewPortClass& view, int frame_number,
       view.Get_Width() + view.Get_XAdd() +
       view.Get_Pitch();  // the width of the destination buffer or page.
 
-  //
-  // adjust x_pixel and y_pixel by system pixel_x and pixel_y respectively.
-  //
-  x_pixel += static_cast<int16_t>(sys_header->pixel_x);
-  y_pixel += static_cast<int16_t>(sys_header->pixel_y);
+  // The frame is drawn at the offset stored in the animation file.
+  const int x_pixel = static_cast<int16_t>(sys_header->pixel_x);
+  const int y_pixel = static_cast<int16_t>(sys_header->pixel_y);
 
   //
   // Check to see if we are using a buffer inside of the animation buffer or if

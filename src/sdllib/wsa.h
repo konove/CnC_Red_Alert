@@ -55,15 +55,6 @@
 #include "base/flags.h"
 #include "sdllib/gbuffer.h"
 
-enum class WSAType {
-  WSA_NORMAL = 0,          // Normal WSA animation
-  WSA_GHOST = 0x1000,      // Or'd with the above flags to get ghosting
-  WSA_PRIORITY2 = 0x2000,  // Copy using a priority (or in the priority)
-  WSA_TRANS = 0x4000,      // Copy frame, ignoring transparent colors
-  WSA_PRIORITY = 0x8000    // Copy using a priority (or in the priority)
-};
-using enum WSAType;
-
 enum class CNC_FLAG_ENUM WSAOpenType {
   WSA_OPEN_FROM_MEM = 0x0000,  // Try to load entire anim into memory.
   WSA_OPEN_INDIRECT =
@@ -96,10 +87,11 @@ inline constexpr bool base::kIsFlagEnum<WSAOpenType> = true;
 void* Open_Animation(const char* file_name, WSAOpenType user_flags,
                      std::span<uint8_t> palette = {});
 void Close_Animation(void* handle);
-bool Animate_Frame(void* handle, GraphicViewPortClass& view, int frame_number,
-                   int x_pixel = 0, int y_pixel = 0,
-                   WSAType flags_and_prio = WSA_NORMAL,
-                   void* magic_cols = nullptr, void* magic = nullptr);
+// Draws frame `frame_number` of the animation into `view` at the offset stored
+// in the animation file. Returns false if `handle` is nullptr, the frame number
+// is out of range, the view cannot be locked, or the frame does not fit the
+// view.
+bool Animate_Frame(void* handle, GraphicViewPortClass& view, int frame_number);
 int Get_Animation_Frame_Count(void* handle);
 
 /*=========================================================================*/
