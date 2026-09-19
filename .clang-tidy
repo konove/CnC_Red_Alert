@@ -100,8 +100,10 @@ CheckOptions:
   # portable spellings the Windows/macOS branches share stay as written.
   misc-include-cleaner.IgnoreHeaders: 'asm-generic/.*;bits/.*;arpa/inet\.h;netinet/in\.h;sys/time\.h'
   # Types have no `static`: the only way to give a .cc-local struct or enum
-  # internal linkage is an anonymous namespace, which the codebase does not use
-  # (misc-use-anonymous-namespace stays excluded). Functions and variables are
+  # internal linkage is an anonymous namespace. The codebase wraps such types
+  # in one when CLion asks for it (/fix-ide-issues) rather than having this
+  # check demand it tree-wide; functions and variables keep `static`, so
+  # misc-use-anonymous-namespace stays excluded. Functions and variables are
   # still checked.
   misc-use-internal-linkage.AnalyzeTypes: false
   # glibc's list adds exit, whose only hazard is two threads exiting at once;
