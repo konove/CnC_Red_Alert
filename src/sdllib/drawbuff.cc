@@ -99,7 +99,7 @@ int32_t Buffer_To_Buffer(void* thisptr, int x_pixel, int y_pixel,
       src_x1 = vp_src->Get_Width();
     }
     if (code0 & 0b0010) {
-      dst_y0 -= src_x0;
+      dst_y0 -= src_y0;
       src_y0 = 0;
     }
     if (code1 & 0b0001) {
@@ -169,7 +169,7 @@ int32_t Buffer_To_Page(int dx_pixel, int dy_pixel, int pixel_width,
       dst_x1 = vp_dst->Get_Width();
     }
     if (code0 & 0b0010) {
-      src_y0 -= dst_x0;
+      src_y0 -= dst_y0;
       dst_y0 = 0;
     }
     if (code1 & 0b0001) {
@@ -246,10 +246,12 @@ bool Linear_Blit_To_Linear(void* thisptr, void* dest, int x_pixel, int y_pixel,
   }
 
   // clip dest
-  int dst_x0 = dx_pixel;
-  int dst_y0 = dy_pixel;
-  int dst_x1 = dx_pixel + (src_x1 - src_x0);
-  int dst_y1 = dy_pixel + (src_y1 - src_y0);
+  // Whatever the source clip took off the top and left moves the destination
+  // by as much, so the remaining pixels keep their place.
+  int dst_x0 = dx_pixel + (src_x0 - x_pixel);
+  int dst_y0 = dy_pixel + (src_y0 - y_pixel);
+  int dst_x1 = dst_x0 + (src_x1 - src_x0);
+  int dst_y1 = dst_y0 + (src_y1 - src_y0);
 
   code0 = Make_Code(dst_x0, dst_y0, vp_dst->Get_Width(), vp_dst->Get_Height());
   code1 = Make_Code(dst_x1, dst_y1, vp_dst->Get_Width() + 1,
@@ -267,15 +269,15 @@ bool Linear_Blit_To_Linear(void* thisptr, void* dest, int x_pixel, int y_pixel,
       dst_x0 = 0;
     }
     if (code1 & 0b0100) {
-      src_x1 = dst_x1 - vp_dst->Get_Width();
+      src_x1 -= dst_x1 - vp_dst->Get_Width();
       dst_x1 = vp_dst->Get_Width();
     }
     if (code0 & 0b0010) {
-      src_y0 -= dst_x0;
+      src_y0 -= dst_y0;
       dst_y0 = 0;
     }
     if (code1 & 0b0001) {
-      src_y1 = dst_x1 - vp_dst->Get_Height();
+      src_y1 -= dst_y1 - vp_dst->Get_Height();
       dst_y1 = vp_dst->Get_Height();
     }
   }
