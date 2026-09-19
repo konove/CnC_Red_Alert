@@ -3115,7 +3115,10 @@ uint32_t Obfuscate(const char* string) {
     const auto temp = static_cast<unsigned char>(code);
     base::At(buffer, index) = static_cast<char>(
         static_cast<unsigned char>(base::At(buffer, index)) ^ temp);
-    code >>= 8;
+    // The original shifted a signed long, which sign-extends. A logical
+    // shift changes the historical codes.
+    const uint32_t sign_extension = (code & 0x80000000U) ? 0xFF000000U : 0U;
+    code = (code >> 8) | sign_extension;
     code |= static_cast<uint32_t>(temp) << 24;
   }
 
@@ -3194,7 +3197,10 @@ uint32_t Obfuscate(const char* string) {
   **	Convert this final vector into a cypher key code to be
   **	returned by this routine.
   */
-  code = CrcEngine::Compute(buffer);
+  // The scrambled bytes can contain zeros; hash all of them, not up to the
+  // first one.
+  code = CrcEngine::Compute(
+      std::string_view(std::begin(buffer), base::ToSize(length)));
 
   /*
   **	Return the final code value.
