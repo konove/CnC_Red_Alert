@@ -1,5 +1,5 @@
 // File: the integer-handle file API declared in sdllib/file.h, for code
-// outside the game (audio streaming, WSA animation, PCX writing) that cannot
+// outside the game (audio streaming, PCX writing) that cannot
 // use GameFile directly. Shared by both games.
 
 #include <cstddef>

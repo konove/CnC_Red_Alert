@@ -10,13 +10,10 @@
 #include <cstdint>
 #include <limits>
 #include <span>
-#include <string_view>
 #include <vector>
 
 #include "gtest/gtest.h"
 #include "port/unaligned.h"
-#include "sdllib/file.h"
-#include "sdllib/file_access.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/ww_win.h"
 
@@ -24,16 +21,6 @@
 // pump events or draw into game windows.
 int WindowList[7][8]{};
 void SDL_Event_Handler(SDL_Event* /*event*/) {}
-int OpenFileHandle(std::string_view /*name*/, FileAccess /*mode*/) {
-  return -1;
-}
-void CloseFileHandle(int /*handle*/) {}
-int32_t ReadFileHandle(int /*handle*/, std::span<std::byte> /*buffer*/) {
-  return 0;
-}
-int32_t SeekFileHandle(int /*handle*/, int32_t /*offset*/, int /*origin*/) {
-  return -1;
-}
 
 namespace {
 std::vector<std::byte> FrameFile() {

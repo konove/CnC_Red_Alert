@@ -51,7 +51,6 @@
 #include "sdllib/keyboard.h"
 #include "sdllib/misc.h"
 #include "sdllib/timer.h"
-#include "sdllib/wsa.h"
 #include "sdllib/ww_audio.h"
 #include "sdllib/ww_mouse.h"
 #include "td/conquer.h"
@@ -66,6 +65,7 @@
 #include "td/textblit.h"
 #include "tech/game_file.h"
 #include "tech/game_file_vqa_io.h"
+#include "tech/wsa.h"
 #include "winvq/vqa32/vqaplay.h"
 
 #ifndef DEMO

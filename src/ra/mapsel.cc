@@ -52,7 +52,6 @@
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/shape.h"
-#include "sdllib/wsa.h"
 #include "sdllib/ww_audio.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
@@ -60,6 +59,7 @@
 #include "tech/glow_pulse.h"
 #include "tech/mix_archive.h"
 #include "tech/rgb.h"
+#include "tech/wsa.h"
 
 // The scenario variant behind each hotspot, in the order of kHotspotCorners.
 constexpr ScenarioVarType kChoiceVariants[] = {SCEN_VAR_A, SCEN_VAR_B,

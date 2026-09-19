@@ -16,9 +16,9 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// WSA animation playback: opening a .WSA file, stepping it to an arbitrary
-// frame, and the XOR delta decoder the frames are built from. Part of the
-// Westwood WSA 32-bit library (WSA.H, Scott K. Bowen, May 1994).
+// WSA animation playback: opening a .WSA file and stepping it to an arbitrary
+// frame. Originally the Westwood WSA 32-bit library (WSA.H, Scott K. Bowen, May
+// 1994).
 //
 // A WSA file stores every frame as an LCW-compressed XOR delta against the
 // frame before it; frame 0 is a delta against black, or against a picture the
@@ -32,8 +32,8 @@
 //     anim.DrawFrame(view, i);
 //   }
 
-#ifndef CNC_RED_ALERT_SDLLIB_WSA_H_
-#define CNC_RED_ALERT_SDLLIB_WSA_H_
+#ifndef CNC_RED_ALERT_TECH_WSA_H_
+#define CNC_RED_ALERT_TECH_WSA_H_
 
 #include <cstddef>
 #include <cstdint>
@@ -42,6 +42,7 @@
 #include <vector>
 
 #include "sdllib/gbuffer.h"
+#include "tech/file.h"
 
 // A .WSA animation held in memory, in the manner of std::ifstream: the
 // constructor loads the file, is_open() says whether that worked, and a closed
@@ -55,13 +56,18 @@ class WsaAnimation {
   // A closed animation.
   WsaAnimation() = default;
 
-  // Loads the animation in `file_name`; it stays closed if the file is missing
-  // or corrupt. If the file has a palette and `palette` holds at least 768
-  // bytes (256 RGB triples), it is read into `palette`.
+  // Loads the animation in the game file `file_name`, loose or packed in a
+  // mixfile; it stays closed if the file is missing or corrupt. If the file has
+  // a palette and `palette` holds at least 768 bytes (256 RGB triples), it is
+  // read into `palette`.
   explicit WsaAnimation(std::string_view file_name,
                         std::span<uint8_t> palette = {});
 
-  [[nodiscard]] bool is_open() const { return is_open_; }
+  // As above, from `file`, which must be open for reading and is left open.
+  explicit WsaAnimation(File& file, std::span<uint8_t> palette = {});
+
+  // A loaded animation always holds its offset table.
+  [[nodiscard]] bool is_open() const { return !file_buffer_.empty(); }
 
   // Frees the animation's buffers. Does nothing if it is already closed.
   void Close();
@@ -83,9 +89,15 @@ class WsaAnimation {
   }
 
  private:
-  // Does the constructor's work on the open file. On failure the animation is
-  // left half set up for Close() to reset.
-  bool Load(int file_handle, std::span<uint8_t> palette);
+  // Does the constructors' work on the open file. A file that fails its checks
+  // leaves the animation untouched, and so closed.
+  void Load(File& file, std::span<uint8_t> palette);
+
+  // Returns the position in file_buffer_ of the delta that produces `frame`, or
+  // 0 if the offset table has no entry for it. 0 is never a real position,
+  // since the table itself sits there. Frame total_frames_ is the loop delta
+  // and total_frames_ + 1 is the end of the data.
+  [[nodiscard]] int64_t ResidentFrameOffset(int frame) const;
 
   // Decompresses the delta that produces frame `delta_number` from the frame
   // before it and XORs it onto `dest`, the view's pixels, whose rows are
@@ -94,11 +106,11 @@ class WsaAnimation {
   bool ApplyFrameDelta(int delta_number, std::span<uint8_t> dest,
                        int dest_stride);
 
-  bool is_open_ = false;
   int total_frames_ = 0;
-  // The frame the view currently shows. Equal to total_frames_ until the first
+  // The frame the view currently shows. kNothingDrawn until the first
   // DrawFrame(), meaning that not even frame 0 has been applied yet.
-  int current_frame_ = 0;
+  static constexpr int kNothingDrawn = -1;
+  int current_frame_ = kNothingDrawn;
   // Where the frame goes on the view. The file's offsets are read as signed,
   // so x_ and y_ may be negative.
   int x_ = 0;
@@ -119,23 +131,10 @@ class WsaAnimation {
   std::vector<std::byte> delta_buffer_;
   // The file's offset table and frames 1 and up.
   std::vector<std::byte> file_buffer_;
+  // What to take off an offset table entry, a file position, to get a position
+  // in file_buffer_: the header and frame 0, which the buffer leaves out. The
+  // format's offsets are 32-bit and wrap.
+  uint32_t offset_bias_ = 0;
 };
 
-// XOR delta decoders, formerly the assembly in LP_ASM.ASM and now in wsa.cc.
-// All of them stop quietly at the first command that is malformed or would
-// step outside `target` or `delta`.
-
-// Applies the uncompressed XOR delta in `delta` to `target`, treating `target`
-// as one contiguous run of pixels.
-void ApplyXorDelta(std::span<uint8_t> target, std::span<const std::byte> delta);
-
-// Applies the uncompressed XOR delta in `delta` to a `width`-pixel-wide image
-// whose rows start `stride` bytes apart in `target`; pixels past `width` on
-// each row are left alone. The delta is XORed onto `target`, or overwrites it
-// if `copy` is set. Does nothing if `width` or `stride` is not positive or
-// `stride` is less than `width`.
-void ApplyXorDeltaToView(std::span<uint8_t> target,
-                         std::span<const std::byte> delta, int width,
-                         int stride, bool copy);
-
-#endif  // CNC_RED_ALERT_SDLLIB_WSA_H_
+#endif  // CNC_RED_ALERT_TECH_WSA_H_

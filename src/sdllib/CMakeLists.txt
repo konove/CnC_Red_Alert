@@ -30,7 +30,7 @@ endif ()
 include(Testing)
 add_gtest(
         NAME sdllib_test
-        SOURCES font_test.cc file_test.cc
+        SOURCES font_test.cc file_test.cc xor_delta_test.cc
         LIBS sdllib
 )
 
@@ -40,13 +40,6 @@ add_gtest(
         NAME sdllib_keyboard_test
         SOURCES keyboard_test.cc keyboard.cc
         LIBS base SDL2::SDL2 absl::strings absl::check absl::log
-)
-
-# Stubs the game's file layer and LCW decoder with an in-memory WSA image.
-add_gtest(
-        NAME sdllib_wsa_test
-        SOURCES wsa_test.cc
-        LIBS sdllib
 )
 
 add_gtest(

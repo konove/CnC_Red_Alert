@@ -50,7 +50,7 @@
 #include "base/buffer.h"
 #include "port/unaligned.h"
 #include "sdllib/iff.h"
-#include "sdllib/wsa.h"
+#include "sdllib/xor_delta.h"
 #include "td/defines.h"
 #include "tech/2keyfbuf.h"
 
