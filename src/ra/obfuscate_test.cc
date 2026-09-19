@@ -35,11 +35,10 @@ TEST(ObfuscateTest, IgnoresAsciiCase) {
   EXPECT_EQ(Obfuscate("peropero"), 0x905F36A5U);
 }
 
-TEST(ObfuscateTest, HandlesNullAndMaximumLength) {
-  EXPECT_EQ(Obfuscate(nullptr), 0U);
+TEST(ObfuscateTest, HandlesMaximumLength) {
   const std::string maximum(127, 'A');
   const std::string longer(140, 'A');
-  EXPECT_EQ(Obfuscate(maximum.c_str()), Obfuscate(longer.c_str()));
+  EXPECT_EQ(Obfuscate(maximum), Obfuscate(longer));
 }
 
 }  // namespace

@@ -1,12 +1,11 @@
 #include <algorithm>
+#include <array>
 #include <cctype>
 #include <cstdint>
-#include <iterator>
 #include <span>
 #include <string_view>
 
 #include "absl/strings/ascii.h"
-#include "base/array.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
 #include "port/safe_string.h"
@@ -45,12 +44,9 @@
  *                                                                                             *
  * HISTORY: * 08/19/1995 JLB : Created. *
  *=============================================================================================*/
-uint32_t Obfuscate(const char* string) {
-  char buffer[129];
+uint32_t Obfuscate(const std::string_view string) {
+  std::array<char, 129> buffer{};
 
-  if (!string) {
-    return 0;
-  }
   base::FillBytes(base::ObjectBytes(buffer), '\xA5', sizeof(buffer));
 
   /*
@@ -59,12 +55,12 @@ uint32_t Obfuscate(const char* string) {
   */
   // Retain the 127-character input limit, with room for padding and terminator.
   port::SafeCopy(std::span(buffer).first(128), string);
-  int length = static_cast<int>(std::string_view(buffer).size());
+  int length = static_cast<int>(std::string_view(buffer.data()).size());
 
   /*
   **	Only upper case letters are significant.
   */
-  std::ranges::transform(port::MutableCString(buffer), buffer,
+  std::ranges::transform(port::MutableCString(buffer.data()), buffer.begin(),
                          absl::ascii_toupper);
 
   /*
@@ -72,8 +68,8 @@ uint32_t Obfuscate(const char* string) {
   **	discourages the direct forced illegal character input method of attack.
   */
   for (int index = 0; index < length; index++) {
-    if (!isgraph(base::At(buffer, index))) {
-      base::At(buffer, index) = static_cast<char>('A' + (index % 26));
+    if (!isgraph(buffer.at(base::ToSize(index)))) {
+      buffer.at(base::ToSize(index)) = static_cast<char>('A' + (index % 26));
     }
   }
 
@@ -88,12 +84,14 @@ uint32_t Obfuscate(const char* string) {
     const int maxlen = std::max(((length + 3) / 4) * 4, 16);
     int index = 0;
     for (index = length; index < maxlen; index++) {
-      const int mixed = static_cast<uint8_t>('?') ^
-                        static_cast<uint8_t>(base::At(buffer, index - length));
-      base::At(buffer, index) = static_cast<char>('A' + ((mixed + index) % 26));
+      const int mixed =
+          static_cast<uint8_t>('?') ^
+          static_cast<uint8_t>(buffer.at(base::ToSize(index - length)));
+      buffer.at(base::ToSize(index)) =
+          static_cast<char>('A' + ((mixed + index) % 26));
     }
     length = index;
-    base::At(buffer, length) = '\0';
+    buffer.at(base::ToSize(length)) = '\0';
   }
 
   /*
@@ -101,7 +99,7 @@ uint32_t Obfuscate(const char* string) {
   **	order dependant.
   */
   uint32_t code =
-      CrcEngine::Compute(std::string_view(buffer, base::ToSize(length)));
+      CrcEngine::Compute(std::string_view(buffer.data(), base::ToSize(length)));
 
   /*
   **	Record a copy of this initial transformation to be used in a later
@@ -115,7 +113,8 @@ uint32_t Obfuscate(const char* string) {
   *the CRC calculation.
   */
   std::ranges::reverse(std::span(buffer).first(base::ToSize(length)));
-  code ^= CrcEngine::Compute(std::string_view(buffer, base::ToSize(length)));
+  code ^=
+      CrcEngine::Compute(std::string_view(buffer.data(), base::ToSize(length)));
 
   /*
   **	Perform a self referential transformation. This makes a reverse
@@ -132,10 +131,10 @@ uint32_t Obfuscate(const char* string) {
   // Restore original string order.
   std::ranges::reverse(std::span(buffer).first(base::ToSize(length)));
   for (int index = 0; index < length; index++) {
-    code ^= static_cast<unsigned char>(base::At(buffer, index));
+    code ^= static_cast<unsigned char>(buffer.at(base::ToSize(index)));
     const auto temp = static_cast<unsigned char>(code);
-    base::At(buffer, index) =
-        static_cast<char>(static_cast<uint8_t>(base::At(buffer, index)) ^ temp);
+    buffer.at(base::ToSize(index)) = static_cast<char>(
+        static_cast<uint8_t>(buffer.at(base::ToSize(index))) ^ temp);
     // Preserve the original signed shift's sign extension using unsigned
     // operations. A logical shift changes the historical password hashes.
     const uint32_t sign_extension = (code & 0x80000000U) ? 0xFF000000U : 0U;
@@ -150,18 +149,18 @@ uint32_t Obfuscate(const char* string) {
   *10%.
   */
   for (int index = 0; index < length; index++) {
-    static const unsigned char _lossbits[] = {0x00, 0x08, 0x00, 0x20,
-                                              0x00, 0x04, 0x10, 0x00};
-    static const unsigned char _addbits[] = {0x10, 0x00, 0x00, 0x80,
-                                             0x40, 0x00, 0x00, 0x04};
+    static constexpr std::array<uint8_t, 8> _lossbits = {
+        0x00, 0x08, 0x00, 0x20, 0x00, 0x04, 0x10, 0x00};
+    static constexpr std::array<uint8_t, 8> _addbits = {0x10, 0x00, 0x00, 0x80,
+                                                        0x40, 0x00, 0x00, 0x04};
 
-    base::At(buffer, index) =
-        static_cast<char>(static_cast<uint8_t>(base::At(buffer, index)) |
-                          base::At(_addbits, index % std::ssize(_addbits)));
-    base::At(buffer, index) =
-        static_cast<char>(static_cast<uint8_t>(base::At(buffer, index)) &
-                          static_cast<uint8_t>(~base::At(
-                              _lossbits, index % std::ssize(_lossbits))));
+    buffer.at(base::ToSize(index)) =
+        static_cast<char>(static_cast<uint8_t>(buffer.at(base::ToSize(index))) |
+                          _addbits.at(base::ToSize(index) % _addbits.size()));
+    buffer.at(base::ToSize(index)) =
+        static_cast<char>(static_cast<uint8_t>(buffer.at(base::ToSize(index))) &
+                          static_cast<uint8_t>(~_lossbits.at(
+                              base::ToSize(index) % _lossbits.size())));
   }
 
   /*
@@ -180,13 +179,14 @@ uint32_t Obfuscate(const char* string) {
     // below uses only +, * and ^, whose low 8 bits depend only on the low 8
     // bits of their operands, and only those low 8 bits are stored back into
     // the buffer.
-    const uint16_t key1 = static_cast<unsigned char>(base::At(buffer, index));
+    const uint16_t key1 =
+        static_cast<unsigned char>(buffer.at(base::ToSize(index)));
     const uint16_t key2 =
-        static_cast<unsigned char>(base::At(buffer, index + 1));
+        static_cast<unsigned char>(buffer.at(base::ToSize(index + 1)));
     const uint16_t key3 =
-        static_cast<unsigned char>(base::At(buffer, index + 2));
+        static_cast<unsigned char>(buffer.at(base::ToSize(index + 2)));
     const uint16_t key4 =
-        static_cast<unsigned char>(base::At(buffer, index + 3));
+        static_cast<unsigned char>(buffer.at(base::ToSize(index + 3)));
     uint16_t val1 = key1;
     uint16_t val2 = key2;
     uint16_t val3 = key3;
@@ -212,10 +212,10 @@ uint32_t Obfuscate(const char* string) {
     val2 = static_cast<uint16_t>(val2 ^ s3);
     val3 = static_cast<uint16_t>(val3 ^ s2);
 
-    base::At(buffer, index) = static_cast<char>(val1);
-    base::At(buffer, index + 1) = static_cast<char>(val2);
-    base::At(buffer, index + 2) = static_cast<char>(val3);
-    base::At(buffer, index + 3) = static_cast<char>(val4);
+    buffer.at(base::ToSize(index)) = static_cast<char>(val1);
+    buffer.at(base::ToSize(index + 1)) = static_cast<char>(val2);
+    buffer.at(base::ToSize(index + 2)) = static_cast<char>(val3);
+    buffer.at(base::ToSize(index + 3)) = static_cast<char>(val4);
   }
 
   /*
@@ -223,5 +223,6 @@ uint32_t Obfuscate(const char* string) {
   **	returned by this routine.
   */
   // The transformed data can contain zero bytes; hash all of it.
-  return CrcEngine::Compute(std::string_view(buffer, base::ToSize(length)));
+  return CrcEngine::Compute(
+      std::string_view(buffer.data(), base::ToSize(length)));
 }
