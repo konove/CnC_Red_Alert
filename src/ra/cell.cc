@@ -1942,9 +1942,6 @@ void CellClass::Adjust_Threat(HousesType house, int threat_value) {
       house_ptr->Adjust_Threat(region, threat_value);
     }
   }
-  if (Debug_Threat) {
-    Map.Flag_To_Redraw(true);
-  }
 }
 
 /***********************************************************************************************

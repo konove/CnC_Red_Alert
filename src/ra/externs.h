@@ -104,7 +104,6 @@ extern bool MapEditorActive;
 extern bool Debug_Icon;
 extern bool Debug_Passable;
 extern bool Debug_Unshroud;
-extern bool Debug_Threat;
 extern bool Debug_Check_Map;
 extern bool Debug_Playtest;
 

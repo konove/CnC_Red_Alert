@@ -121,7 +121,6 @@ bool Debug_Flag = false;
 bool MapEditorActive = false;  // true = scenario/map editor is active
 bool Debug_Passable = false;   // true = show passable/impassable terrain
 bool Debug_Unshroud = false;   // true = hide the shroud
-bool Debug_Threat = false;
 bool Debug_Check_Map = false;  // true = validate the map each frame
 bool Debug_Playtest = false;
 
