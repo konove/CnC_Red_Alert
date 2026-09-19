@@ -90,7 +90,7 @@ void Focus_Loss() {
 void Focus_Restore() {
   Restore_Cached_Icons();
   Map.Flag_To_Redraw(true);
-  ResumeAudio(true);
+  ResumeAudio();
   if (WWMouse) {
     WWMouse->Set_Cursor_Clip();
   }
@@ -160,7 +160,7 @@ long FAR PASCAL _export Windows_Procedure(HWND hwnd, UINT message, UINT wParam,
   int low_param = LOWORD(wParam);
 
   if (message == CCFocusMessage) {
-    ResumeAudio(true);
+    ResumeAudio();
     if (!InMovie) {
       Theme.Queue_Song(OldTheme);
       OldTheme = THEME_NONE;
@@ -240,7 +240,7 @@ long FAR PASCAL _export Windows_Procedure(HWND hwnd, UINT message, UINT wParam,
       //			if (GameInFocus){
       //				Restore_Cached_Icons();
       //				Map.Flag_To_Redraw(true);
-      //				ResumeAudio(true);
+      //				ResumeAudio();
       //				if (WWMouse) WWMouse->Set_Cursor_Clip();
       //			}
       return 0;

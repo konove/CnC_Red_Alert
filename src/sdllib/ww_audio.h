@@ -72,16 +72,12 @@ struct AudHeader {
 enum class Sample_Type {
   SAMPLE_NONE = 0,  // No digitized sounds will be played.
   SAMPLE_SDL = 1,
-  SAMPLE_TEMP = 0x1000,
-  SAMPLE_LAST = 4097
 };
 using enum Sample_Type;
 
 enum class SFX_Type {
   SFX_NONE = 0,  // No sound effects will be played.
   SFX_SDL = 1,
-  SFX_TEMP = 0x1000,
-  SFX_LAST = 4097
 };
 using enum SFX_Type;
 
@@ -89,11 +85,9 @@ using enum SFX_Type;
 /* The following prototypes are for the file: SOUNDIO.CPP
  */
 /*=========================================================================*/
-int StreamSampleFile(const char* filename, int volume,
-                     bool real_time_start = false);
+int StreamSampleFile(const char* filename, int volume);
 void PumpSampleStreams();
-bool OpenAudio(void* window, int bits_per_sample, bool stereo, int rate,
-               int reverse_channels);
+bool OpenAudio(int rate, bool stereo);
 void CloseAudio();
 void StopSample(int handle);
 bool IsSamplePlaying(int handle);
@@ -107,7 +101,7 @@ int SetScoreVolume(int volume);
 void FadeOutSample(int handle, int ticks);
 int AcquireChannel(int priority);
 int GetDigiHandle();
-bool ResumeAudio(bool forced);
+void ResumeAudio();
 void PauseAudio();
 
 std::span<std::byte> LoadSample(const char* filename);

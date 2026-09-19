@@ -357,7 +357,7 @@ int ThemeClass::Play_Song(ThemeType theme) {
     Stop();
     Score = theme;
     if (theme != THEME_NONE && theme != THEME_QUIET) {
-      Current = StreamSampleFile(Theme_File_Name(theme), 0xFF, true);
+      Current = StreamSampleFile(Theme_File_Name(theme), 0xFF);
     }
   }
   return Current;

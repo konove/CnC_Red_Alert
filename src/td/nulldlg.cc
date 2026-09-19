@@ -80,7 +80,6 @@
 #include "sdllib/wincomm.h"
 #include "sdllib/ww_audio.h"
 #include "sdllib/ww_mouse.h"
-#include "sdllib/ww_win.h"
 #include "sdllib/wwstd.h"
 #include "td/conquer.h"
 #include "td/defines.h"
@@ -6841,7 +6840,7 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
   /*
   ** Restore audio capability
   */
-  SoundOn = OpenAudio(MainWindow, 16, false, 11025 * 2, 0);
+  SoundOn = OpenAudio(11025 * 2, /*stereo=*/false);
   if (SoundOn) {
     Theme.Play_Song(old_theme);
   }
@@ -7002,7 +7001,7 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
   /*
   ** Restore audio capability
   */
-  SoundOn = OpenAudio(MainWindow, 16, false, 11025 * 2, 0);
+  SoundOn = OpenAudio(11025 * 2, /*stereo=*/false);
   if (SoundOn) {
     Theme.Play_Song(old_theme);
   }

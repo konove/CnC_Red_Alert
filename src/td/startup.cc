@@ -284,7 +284,7 @@ int main(int argc, char* argv[])
       Create_Main_Window(nullptr, 0, ScreenWidth, ScreenHeight);
       CCDebugString("C&C95 - Initialising audio.\n");
 
-      SoundOn = OpenAudio(MainWindow, 16, false, 11025 * 2, 0);
+      SoundOn = OpenAudio(11025 * 2, /*stereo=*/false);
 
       Palette.assign(768, 0);
 

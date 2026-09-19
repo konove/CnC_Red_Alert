@@ -30,7 +30,7 @@ endif ()
 include(Testing)
 add_gtest(
         NAME sdllib_test
-        SOURCES font_test.cc file_test.cc xor_delta_test.cc
+        SOURCES font_test.cc file_test.cc xor_delta_test.cc aud_decoder_test.cc
         LIBS sdllib
 )
 

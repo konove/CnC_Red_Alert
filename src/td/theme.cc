@@ -319,7 +319,7 @@ int ThemeClass::Play_Song(ThemeType theme) {
       if (_themes[theme].Scenario != 99) {
         GameFile file(Theme_File_Name(theme));
         if (file.IsAvailable()) {
-          Current = StreamSampleFile(Theme_File_Name(theme), 0xFF, true);
+          Current = StreamSampleFile(Theme_File_Name(theme), 0xFF);
         } else {
           Current = -1;
         }
@@ -327,7 +327,7 @@ int ThemeClass::Play_Song(ThemeType theme) {
         Current = -1;
       }
 #else
-      Current = StreamSampleFile(Theme_File_Name(theme), 0xFF, true);
+      Current = StreamSampleFile(Theme_File_Name(theme), 0xFF);
 #endif
     }
   }
