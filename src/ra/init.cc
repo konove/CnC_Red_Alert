@@ -1315,9 +1315,9 @@ void Anim_Init() {
   if (SlowPalette) {
     AnimControl.OptionFlags |= VQAOPTF_SLOWPAL;
   }
-  AnimControl.AudioDeviceID = AudioDeviceId();
-  AnimControl.AudioCallback = ExtraAudioCallbackSlot();
-  AnimControl.AudioSpec = AudioOutputSpec();
+  AnimControl.AudioDeviceID = Audio.device_id();
+  AnimControl.AudioCallback = Audio.extra_callback_slot();
+  AnimControl.AudioSpec = Audio.output_spec();
 }
 
 /***********************************************************************************************
@@ -2678,7 +2678,7 @@ static void Init_Bulk_Data() {
   **	Cache the main game data. This operation can take a very long time.
   */
   MixArchive::Cache("CONQUER.MIX");
-  if (SampleType != SAMPLE_NONE && !Debug_Quiet) {
+  if (Audio.is_open() && !Debug_Quiet) {
     MixArchive::Cache("SOUNDS.MIX");
     MixArchive::Cache("RUSSIAN.MIX");
     MixArchive::Cache("ALLIES.MIX");

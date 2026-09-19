@@ -213,7 +213,7 @@ const char* ThemeClass::Full_Name(ThemeType theme) {
  *as it is about to play it.                           *
  *=============================================================================================*/
 void ThemeClass::AI() {
-  if (SampleType != SAMPLE_NONE && !Debug_Quiet) {
+  if (Audio.is_open() && !Debug_Quiet) {
     if (ScoresPresent && Options.ScoreVolume != 0 && !Still_Playing() &&
         Pending != THEME_NONE) {
       /*
@@ -230,7 +230,7 @@ void ThemeClass::AI() {
       Play_Song(Pending);
       Pending = THEME_PICK_ANOTHER;
     }
-    PumpSampleStreams();
+    Audio.PumpStreams();
   }
 }
 
@@ -310,7 +310,7 @@ void ThemeClass::Queue_Song(ThemeType theme) {
   **	If there is no sound driver or sounds have been specifically
   **	turned off, then abort.
   */
-  if (SampleType == SAMPLE_NONE || Debug_Quiet) {
+  if (!Audio.is_open() || Debug_Quiet) {
     return;
   }
 
@@ -330,7 +330,7 @@ void ThemeClass::Queue_Song(ThemeType theme) {
       theme == THEME_NONE || theme == THEME_QUIET) {
     Pending = theme;
     if (Still_Playing()) {
-      FadeOutSample(Current, kThemeDelay);
+      Audio.FadeOut(Current, kThemeDelay);
     }
   }
 }
@@ -352,12 +352,12 @@ void ThemeClass::Queue_Song(ThemeType theme) {
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
 int ThemeClass::Play_Song(ThemeType theme) {
-  if (ScoresPresent && SampleType != SAMPLE_NONE && !Debug_Quiet &&
+  if (ScoresPresent && Audio.is_open() && !Debug_Quiet &&
       Options.ScoreVolume != 0) {
     Stop();
     Score = theme;
     if (theme != THEME_NONE && theme != THEME_QUIET) {
-      Current = StreamSampleFile(Theme_File_Name(theme), 0xFF);
+      Current = Audio.Stream(Theme_File_Name(theme), 0xFF);
     }
   }
   return Current;
@@ -433,9 +433,8 @@ int ThemeClass::Track_Length(ThemeType theme) {
  * HISTORY: * 09/08/1994 JLB : Created. *
  *=============================================================================================*/
 void ThemeClass::Stop() {
-  if (ScoresPresent && SampleType != SAMPLE_NONE && !Debug_Quiet &&
-      Current != -1) {
-    StopSample(Current);
+  if (ScoresPresent && Audio.is_open() && !Debug_Quiet && Current != -1) {
+    Audio.Stop(Current);
     Current = -1;
     Score = THEME_NONE;
     Pending = THEME_NONE;
@@ -443,9 +442,8 @@ void ThemeClass::Stop() {
 }
 
 void ThemeClass::Suspend() {
-  if (ScoresPresent && SampleType != SAMPLE_NONE && !Debug_Quiet &&
-      Current != -1) {
-    StopSample(Current);
+  if (ScoresPresent && Audio.is_open() && !Debug_Quiet && Current != -1) {
+    Audio.Stop(Current);
     Current = -1;
     Pending = Score;
     Score = THEME_NONE;
@@ -466,9 +464,8 @@ void ThemeClass::Suspend() {
  * HISTORY: * 12/20/1994 JLB : Created. *
  *=============================================================================================*/
 bool ThemeClass::Still_Playing() const {
-  if (ScoresPresent && SampleType != SAMPLE_NONE && Current != -1 &&
-      !Debug_Quiet) {
-    return IsSamplePlaying(Current);
+  if (ScoresPresent && Audio.is_open() && Current != -1 && !Debug_Quiet) {
+    return Audio.IsPlaying(Current);
   }
   return false;
 }

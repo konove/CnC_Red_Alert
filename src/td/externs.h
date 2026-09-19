@@ -49,6 +49,7 @@
 #include "base/enum_array.h"
 #include "port/platform.h"
 #include "sdllib/playcd.h"
+#include "sdllib/ww_audio.h"
 #include "td/aircraft.h"
 #include "td/anim.h"
 #include "td/base.h"
@@ -154,6 +155,7 @@ extern MixArchive* TheaterData;
 extern MixArchive* LowTheaterData;
 extern MixArchive* MoviesMix;
 extern MixArchive* GeneralMix;
+extern AudioMixer Audio;
 extern ThemeClass Theme;
 
 /*

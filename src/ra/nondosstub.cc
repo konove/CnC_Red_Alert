@@ -64,7 +64,7 @@
 
 void Focus_Loss() {
   Theme.Suspend();
-  PauseAudio();
+  Audio.Pause();
   if (WWMouse) {
     WWMouseClass::Clear_Cursor_Clip();
   }
@@ -73,7 +73,7 @@ void Focus_Loss() {
 void Focus_Restore() {
   Restore_Cached_Icons();
   Map.Flag_To_Redraw(true);
-  ResumeAudio();
+  Audio.Resume();
   if (WWMouse) {
     WWMouseClass::Set_Cursor_Clip();
   }

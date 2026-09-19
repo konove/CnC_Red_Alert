@@ -141,7 +141,7 @@ static int ChoiceUnderMouse(const bool is_soviet, const int scenario) {
 }
 
 static void PlayMapSound(const std::string_view file_name) {
-  PlaySample(MixArchive::RetrieveData(file_name), 255,
+  Audio.Play(MixArchive::RetrieveData(file_name), 255,
              Options.Normalize_Volume(170));
 }
 

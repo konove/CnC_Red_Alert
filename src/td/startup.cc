@@ -284,7 +284,7 @@ int main(int argc, char* argv[])
       Create_Main_Window(nullptr, 0, ScreenWidth, ScreenHeight);
       CCDebugString("C&C95 - Initialising audio.\n");
 
-      SoundOn = OpenAudio(11025 * 2, /*stereo=*/false);
+      SoundOn = Audio.Open(11025 * 2, /*stereo=*/false);
 
       Palette.assign(768, 0);
 
@@ -497,7 +497,7 @@ void __cdecl Prog_End() {
   }
 #endif
   CCDebugString("C&C95 - About to call CloseAudio.\n");
-  CloseAudio();
+  Audio.Close();
   CCDebugString("C&C95 - Returned from CloseAudio.\n");
   if (WWMouse) {
     CCDebugString("C&C95 - Deleting mouse object.\n");

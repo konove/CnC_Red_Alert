@@ -96,6 +96,7 @@
 #include "ra/vessel.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/playcd.h"
+#include "sdllib/ww_audio.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 #include "tech/buff.h"
@@ -447,6 +448,10 @@ GameOptionsClass Options;
 **	and AI logic.
 */
 LogicClass Logic;
+
+// The sound device and its four channels. Defined ahead of Theme, which
+// plays through it.
+AudioMixer Audio;
 
 /***************************************************************************
 **	This handles the background music.

@@ -439,7 +439,7 @@ void GameControlsClass::Process() {
           break;
 
         case kButtonSound:
-          if (SoundType == SFX_NONE) {
+          if (!Audio.is_open()) {
             CCMessageBox().Process(Text_String(TXT_NO_SOUND_CARD));
             process = true;
             display = true;

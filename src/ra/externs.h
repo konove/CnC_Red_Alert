@@ -77,6 +77,7 @@
 #include "ra/vortex.h"
 #include "ra/warhead.h"
 #include "sdllib/playcd.h"
+#include "sdllib/ww_audio.h"
 #include "tech/buff.h"
 #include "tech/game_file.h"
 #include "tech/mix_archive.h"
@@ -197,6 +198,7 @@ extern MixArchive* GeneralMix;
 extern MixArchive* ScoreMix;
 extern MixArchive* MainMix;
 extern MixArchive* ConquerMix;
+extern AudioMixer Audio;
 extern ThemeClass Theme;
 extern SpecialClass Special;
 

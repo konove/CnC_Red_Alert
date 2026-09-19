@@ -1239,7 +1239,7 @@ void Call_Back() {
   /*
   **	Score maintenance
   */
-  if (SampleType != SAMPLE_NONE) {
+  if (Audio.is_open()) {
     Theme.AI();
     Speak_AI();
   }
@@ -1593,7 +1593,7 @@ bool Main_Loop() {
   *start one *	playing. This is usually the symptom of there being no
   *transition score.
   */
-  if (SampleType != SAMPLE_NONE && Theme.What_Is_Playing() == THEME_NONE) {
+  if (Audio.is_open() && Theme.What_Is_Playing() == THEME_NONE) {
     Theme.Queue_Song(THEME_PICK_ANOTHER);
   }
 
@@ -2156,7 +2156,7 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
     GameFileVqaIo movie_io;  // Must outlive the open movie.
     player.SetIo(&movie_io);
 
-    if (!Debug_Quiet && GetDigiHandle() != -1) {
+    if (!Debug_Quiet && Audio.is_open()) {
       AnimControl.OptionFlags |= VQAOPTF_AUDIO;
     } else {
       AnimControl.OptionFlags &= ~VQAOPTF_AUDIO;

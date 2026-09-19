@@ -473,7 +473,7 @@ void Sound_Effect(VocType voc, COORDINATE coord, int variation,
   CELL cell_pos = 0;
 
   if (Debug_Quiet || Options.Volume == 0 || voc == VOC_NONE || !SoundOn ||
-      SampleType == SAMPLE_NONE) {
+      !Audio.is_open()) {
     return;
   }
   if (coord) {
@@ -540,7 +540,7 @@ int Sound_Effect(VocType voc, fixed volume, int variation, int16_t pan_value,
     return -1;
   }
   if (Debug_Quiet || Options.Volume == 0 || voc == VOC_NONE || !SoundOn ||
-      SampleType == SAMPLE_NONE) {
+      !Audio.is_open()) {
     return -1;
   }
 
@@ -610,7 +610,7 @@ int Sound_Effect(VocType voc, fixed volume, int variation, int16_t pan_value,
   */
   if (!ptr.empty()) {
     volume.Sub_Saturate(1);
-    return PlaySample(ptr, SoundEffectName.at(voc).Priority * volume,
+    return Audio.Play(ptr, SoundEffectName.at(voc).Priority * volume,
                       volume * 256, pan_value);
   }
   return -1;
@@ -818,7 +818,7 @@ const char* Speech_Name(VoxType speech) {
  * HISTORY: * 11/12/1994 JLB : Created. *
  *=============================================================================================*/
 void Speak(VoxType voice) {
-  if (!Debug_Quiet && Options.Volume != 0 && SampleType != SAMPLE_NONE &&
+  if (!Debug_Quiet && Options.Volume != 0 && Audio.is_open() &&
       voice != VOX_NONE && voice != SpeakQueue && voice != CurrentVoice &&
       SpeakQueue == VOX_NONE) {
     SpeakQueue = voice;
@@ -844,11 +844,11 @@ void Speak(VoxType voice) {
  *=============================================================================================*/
 void Speak_AI() {
   static int _index = 0;
-  if (Debug_Quiet || SampleType == SAMPLE_NONE) {
+  if (Debug_Quiet || !Audio.is_open()) {
     return;
   }
 
-  if (!IsSamplePlaying(base::At(SpeechBuffer, _index).data())) {
+  if (!Audio.IsPlaying(base::At(SpeechBuffer, _index).data())) {
     CurrentVoice = VOX_NONE;
     if (SpeakQueue != VOX_NONE) {
       /*
@@ -889,7 +889,7 @@ void Speak_AI() {
       **	Since the speech file was loaded, play it.
       */
       if (!speech.empty()) {
-        PlaySample(speech, 254, Options.Volume * 256);
+        Audio.Play(speech, 254, Options.Volume * 256);
         CurrentVoice = SpeakQueue;
       }
 
@@ -915,7 +915,7 @@ void Speak_AI() {
 void Stop_Speaking() {
   SpeakQueue = VOX_NONE;
   for (auto& index : SpeechBuffer) {
-    StopSample(index.data());
+    Audio.Stop(index.data());
   }
 }
 
@@ -936,9 +936,9 @@ void Stop_Speaking() {
  *=============================================================================================*/
 bool Is_Speaking() {
   Speak_AI();
-  return !Debug_Quiet && SampleType != SAMPLE_NONE &&
+  return !Debug_Quiet && Audio.is_open() &&
          (SpeakQueue != VOX_NONE ||
           std::ranges::any_of(SpeechBuffer, [](const auto& buffer) {
-            return IsSamplePlaying(buffer.data());
+            return Audio.IsPlaying(buffer.data());
           }));
 }

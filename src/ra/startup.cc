@@ -286,7 +286,7 @@ int main(int argc, char* argv[])
       Read_Setup_Options(&cfile);
 
       Create_Main_Window(nullptr, 0, ScreenWidth, ScreenHeight);
-      SoundOn = OpenAudio(11025 * 2, /*stereo=*/false);
+      SoundOn = Audio.Open(11025 * 2, /*stereo=*/false);
 
       if (!InitDDraw()) {
         return EXIT_FAILURE;
@@ -442,7 +442,7 @@ bool InitDDraw() {
  * HISTORY: * 03/20/1995 JLB : Created. *
  *=============================================================================================*/
 void __cdecl Prog_End() {
-  CloseAudio();
+  Audio.Close();
   if (WWMouse) {
     delete WWMouse;
     WWMouse = nullptr;

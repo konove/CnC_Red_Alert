@@ -131,7 +131,7 @@ long FAR PASCAL _export Windows_Procedure(HWND hwnd, UINT message, UINT wParam,
   int low_param = LOWORD(wParam);
 
   if (message == CCFocusMessage) {
-    ResumeAudio();
+    Audio.Resume();
     if (!InMovie) {
       Theme.Stop();
       Theme.Queue_Song(THEME_PICK_ANOTHER);
@@ -226,7 +226,7 @@ long FAR PASCAL _export Windows_Procedure(HWND hwnd, UINT message, UINT wParam,
       //			if (GameInFocus) {
       //				Restore_Cached_Icons();
       //				Map.Flag_To_Redraw(true);
-      //				ResumeAudio();
+      //				Audio.Resume();
       //				if (WWMouse) WWMouse->Set_Cursor_Clip();
       //			}
       return (0);

@@ -595,7 +595,7 @@ bool Init_Game(int /*unused*/, char* /*unused*/[]) {
   **	Cache the main game data. This operation can take a very long time.
   */
   MixArchive::Cache("CONQUER.MIX");
-  if (SampleType != SAMPLE_NONE && !Debug_Quiet) {
+  if (Audio.is_open() && !Debug_Quiet) {
     MixArchive::Cache("SOUNDS.MIX");
     if (Special.IsJuvenile) {
       (void)MixArchive::Register("ZOUNDS.MIX");
@@ -2123,14 +2123,13 @@ void Anim_Init() {
   //	AnimControl.AudioBufSize = 32768U;
   // AnimControl.DigiCard = NewConfig.DigitCard;
   // AnimControl.HMIBufSize = 8192;
-  // AnimControl.DigiHandle = GetDigiHandle();
   // AnimControl.Volume = 0x00FF;
   // AnimControl.AudioRate = 22050;
   //	if (NewConfig.Speed) AnimControl.AudioRate = 11025;
-  AnimControl.AudioDeviceID = AudioDeviceId();
-  AnimControl.AudioCallback = ExtraAudioCallbackSlot();
-  AnimControl.AudioSpec = AudioOutputSpec();
-  // if (!Debug_Quiet && GetDigiHandle() != -1) {
+  AnimControl.AudioDeviceID = Audio.device_id();
+  AnimControl.AudioCallback = Audio.extra_callback_slot();
+  AnimControl.AudioSpec = Audio.output_spec();
+  // if (!Debug_Quiet && Audio.is_open()) {
   // AnimControl.OptionFlags |= VQAOPTF_AUDIO;
   //}
 }

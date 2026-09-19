@@ -335,8 +335,7 @@ static base::EnumArray<VocType, SoundEffectEntry, kVocCount> SoundEffectName = {
 void Sound_Effect(VocType voc, COORDINATE coord, int variation) {
   CELL cell_pos = 0;
 
-  if (!Options.Volume || voc == VOC_NONE || !SoundOn ||
-      SampleType == SAMPLE_NONE) {
+  if (!Options.Volume || voc == VOC_NONE || !SoundOn || !Audio.is_open()) {
     return;
   }
   if (coord) {
@@ -396,8 +395,7 @@ void Sound_Effect(VocType voc, COORDINATE coord, int variation) {
  *=============================================================================================*/
 int Sound_Effect(VocType voc, VolType volume, int variation,
                  int16_t pan_value) {
-  if (!Options.Volume || voc == VOC_NONE || !SoundOn ||
-      SampleType == SAMPLE_NONE) {
+  if (!Options.Volume || voc == VOC_NONE || !SoundOn || !Audio.is_open()) {
     return -1;
   }
 
@@ -440,7 +438,7 @@ int Sound_Effect(VocType voc, VolType volume, int variation,
   */
   if (!ptr.empty()) {
     const int vol = static_cast<int>(volume);
-    return PlaySample(ptr,
+    return Audio.Play(ptr,
                       Fixed_To_Cardinal(SoundEffectName.at(voc).Priority, vol),
                       vol, pan_value);
   }
@@ -566,7 +564,7 @@ static VoxType CurrentVoice = VOX_NONE;
  * HISTORY: * 11/12/1994 JLB : Created. *
  *=============================================================================================*/
 void Speak(VoxType voice) {
-  if (Options.Volume && SampleType != SAMPLE_NONE && voice != VOX_NONE &&
+  if (Options.Volume && Audio.is_open() && voice != VOX_NONE &&
       voice != SpeakQueue && voice != CurrentVoice && SpeakQueue == VOX_NONE) {
     SpeakQueue = voice;
   }
@@ -589,11 +587,11 @@ void Speak(VoxType voice) {
  *=============================================================================================*/
 void Speak_AI() {
   static VoxType _last = VOX_NONE;
-  if (SampleType == SAMPLE_NONE) {
+  if (!Audio.is_open()) {
     return;
   }
 
-  if (!IsSamplePlaying(SpeechBuffer.data())) {
+  if (!Audio.IsPlaying(SpeechBuffer.data())) {
     CurrentVoice = VOX_NONE;
     if (SpeakQueue != VOX_NONE) {
       if (SpeakQueue != _last) {
@@ -602,11 +600,11 @@ void Speak_AI() {
                               .string();
 
         if (GameFile(name).Read(std::span(SpeechBuffer), SPEECH_BUFFER_SIZE)) {
-          PlaySample(SpeechBuffer, 254, Options.Volume);
+          Audio.Play(SpeechBuffer, 254, Options.Volume);
         }
         _last = SpeakQueue;
       } else {
-        PlaySample(SpeechBuffer, 254, Options.Volume);
+        Audio.Play(SpeechBuffer, 254, Options.Volume);
       }
       SpeakQueue = VOX_NONE;
     }
@@ -629,8 +627,8 @@ void Speak_AI() {
  *=============================================================================================*/
 void Stop_Speaking() {
   SpeakQueue = VOX_NONE;
-  if (SampleType != SAMPLE_NONE) {
-    StopSample(SpeechBuffer.data());
+  if (Audio.is_open()) {
+    Audio.Stop(SpeechBuffer.data());
   }
 }
 
@@ -651,6 +649,6 @@ void Stop_Speaking() {
  *=============================================================================================*/
 bool Is_Speaking() {
   Speak_AI();
-  return SampleType != SAMPLE_NONE &&
-         (SpeakQueue != VOX_NONE || IsSamplePlaying(SpeechBuffer.data()));
+  return Audio.is_open() &&
+         (SpeakQueue != VOX_NONE || Audio.IsPlaying(SpeechBuffer.data()));
 }

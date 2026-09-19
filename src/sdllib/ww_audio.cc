@@ -2,7 +2,6 @@
 
 #include <SDL_audio.h>
 #include <SDL_error.h>
-#include <SDL_stdinc.h>
 
 #include <algorithm>
 #include <cmath>
@@ -23,61 +22,6 @@
 #include "sdllib/file_access.h"
 #include "sdllib/wwstd.h"
 
-// Windows original had 5 slots; DOS had 4. One slot was reserved for disk
-// streaming, leaving 4 usable slots on both platforms.
-constexpr int kChannelCount = 4;
-
-SFX_Type SoundType;
-Sample_Type SampleType;
-
-static int score_volume = 255;
-
-static SDL_AudioDeviceID audio_device;
-static SDL_AudioSpec output_spec;
-static std::vector<std::byte> mix_buffer;  // temp buffer for mixing
-static AudioCallback extra_callback = nullptr;
-
-// Fields are ordered by decreasing alignment to minimize padding
-// (clang-analyzer-optin.performance.Padding).
-struct Channel {
-  const void* sample_data = nullptr;     // identifies the sample being played
-  SDL_AudioStream* converter = nullptr;  // to the device format; mixed from
-  std::span<const std::byte> remaining_input;  // blocks not yet decoded
-
-  int priority = 0;
-  int play_volume = 255;  // per-sound volume [0, 255], set at play time
-  int scaled_volume = 0;  // play_volume * score_volume
-  int fade_step = 0;      // taken off scaled_volume per callback; 0 is no fade
-  int samples_queued = 0;
-  int total_samples = 0;
-  int file_handle = -1;  // the streamed file; main thread only
-
-  int16_t amplitude = 32767;  // scaled_volume as a Q15 mixing factor
-  uint16_t sample_rate = 0;
-  AdpcmState adpcm;
-
-  bool playing = false;
-  // A score streamed from a file: its volume follows the score volume.
-  bool is_score = false;
-  // PumpSampleStreams() has more of the file to queue, so an empty converter
-  // is an underrun and not the end of the sound.
-  bool expecting_data = false;
-  uint8_t channel_count = 0;
-  uint8_t bits_per_sample = 0;
-  AudCompression compression = SCOMP_NONE;
-};
-
-static Channel mixer_channels[kChannelCount];
-
-// Returns true if 'handle' names a real mixer channel.
-//
-// Handles come from AcquireChannel, but callers store them in long-lived
-// state (ThemeClass::Current, for example) and pass them back later, so every
-// public entry point validates before indexing mixer_channels.
-static bool IsValidHandle(const int handle) {
-  return handle >= 0 && handle < kChannelCount;
-}
-
 // Volumes reach here as products of two [0, 255] factors, but Red Alert
 // scales its own by 256, one past full; without the clamp that wrapped the
 // 16-bit amplitude negative.
@@ -92,19 +36,19 @@ static int ToMixerAmplitude(const int scaled_volume) {
 // device lock. A block as long as its decoded size is stored raw. Returns
 // false, putting nothing, if the block is corrupt or its compression unknown.
 template <typename Put>
-static bool DecodeBlock(Channel& channel,
+static bool DecodeBlock(const AudCompression compression, AdpcmState& adpcm,
                         const std::span<const std::byte> block,
                         const int decoded_bytes, Put put) {
   if (std::cmp_equal(block.size(), decoded_bytes)) {
     put(block);
     return true;
   }
-  if (channel.compression == SCOMP_SOS) {
-    const auto samples = DecodeAdpcmBlock(channel.adpcm, block);
+  if (compression == SCOMP_SOS) {
+    const auto samples = DecodeAdpcmBlock(adpcm, block);
     put(std::as_bytes(std::span(samples)));
     return true;
   }
-  if (channel.compression == SCOMP_WESTWOOD) {
+  if (compression == SCOMP_WESTWOOD) {
     const auto samples = DecodeWestwoodBlock(block);
     if (samples) {
       put(std::as_bytes(std::span(*samples)));
@@ -114,19 +58,17 @@ static bool DecodeBlock(Channel& channel,
   return false;
 }
 
-static void PutPcm(const Channel& channel,
+static void PutPcm(SDL_AudioStream* converter,
                    const std::span<const std::byte> pcm) {
-  SDL_AudioStreamPut(channel.converter, pcm.data(),
-                     static_cast<int>(pcm.size()));
+  SDL_AudioStreamPut(converter, pcm.data(), static_cast<int>(pcm.size()));
 }
 
-// Queues about one callback's worth of an in-memory sample. Runs on the audio
-// thread. When nothing more can be decoded, because the sample is complete or
+// When nothing more can be decoded, because the sample is complete or
 // corrupt, remaining_input is left empty so the channel ends once the
 // converter drains.
-static void RefillConverter(Channel& channel) {
+void AudioMixer::RefillConverter(Channel& channel) const {
   // Assumes the device rate is not lower than the sample's.
-  int samples_needed = std::min(int{output_spec.samples},
+  int samples_needed = std::min(int{output_spec_.samples},
                                 channel.total_samples - channel.samples_queued);
   bool ok = true;
   while (ok && samples_needed > 0) {
@@ -146,9 +88,11 @@ static void RefillConverter(Channel& channel) {
       break;
     }
 
-    ok = DecodeBlock(
-        channel, channel.remaining_input.first(block_bytes), decoded_bytes,
-        [&channel](std::span<const std::byte> pcm) { PutPcm(channel, pcm); });
+    ok = DecodeBlock(channel.compression, channel.adpcm,
+                     channel.remaining_input.first(block_bytes), decoded_bytes,
+                     [&channel](std::span<const std::byte> pcm) {
+                       PutPcm(channel.converter, pcm);
+                     });
     channel.remaining_input = channel.remaining_input.subspan(block_bytes);
 
     const int decoded_samples = decoded_bytes / (channel.bits_per_sample / 8);
@@ -162,7 +106,8 @@ static void RefillConverter(Channel& channel) {
   }
 }
 
-static void ResetConverter(Channel& channel, const AudHeader& header) {
+void AudioMixer::ResetConverter(Channel& channel,
+                                const AudHeader& header) const {
   const int channel_count = header.flags & kAudFlagStereo ? 2 : 1;
   const int bits_per_sample = header.flags & kAudFlag16Bit ? 16 : 8;
 
@@ -176,36 +121,41 @@ static void ResetConverter(Channel& channel, const AudHeader& header) {
 
     channel.converter = SDL_NewAudioStream(
         bits_per_sample == 16 ? AUDIO_S16 : AUDIO_U8,
-        static_cast<Uint8>(channel_count), header.sample_rate,
-        output_spec.format, output_spec.channels, output_spec.freq);
+        static_cast<uint8_t>(channel_count), header.sample_rate,
+        output_spec_.format, output_spec_.channels, output_spec_.freq);
   } else {
     SDL_AudioStreamClear(channel.converter);
   }
 }
 
-static void MixChannels(void* /*userdata*/, Uint8* device_buffer,
-                        int device_bytes) {
+void AudioMixer::DeviceCallback(void* mixer, uint8_t* device_buffer,
+                                const int device_bytes) {
   if (device_bytes < 0) {
     return;
   }
   // SDL supplies device_bytes writable bytes for the duration of this callback.
   // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
   const std::span device_span(device_buffer, base::ToSize(device_bytes));
-  const auto output_bytes = std::as_writable_bytes(device_span);
-  std::ranges::fill(output_bytes, std::byte{});
+  const auto output = std::as_writable_bytes(device_span);
+  std::ranges::fill(output, std::byte{});
 
-  // let VQA do its thing
-  if (extra_callback) {
-    extra_callback(device_buffer, device_bytes);
+  auto& self = *static_cast<AudioMixer*>(mixer);
+  // A movie's sound track goes in first.
+  if (self.extra_callback_) {
+    self.extra_callback_(device_buffer, device_bytes);
   }
+  self.Mix(output);
+}
 
-  for (auto& channel : mixer_channels) {
+void AudioMixer::Mix(const std::span<std::byte> output) {
+  const int device_bytes = static_cast<int>(output.size());
+  for (auto& channel : channels_) {
     if (!channel.playing) {
       continue;
     }
 
     // An in-memory sample is decoded here as it is needed; a streamed file
-    // is fed by PumpSampleStreams() on the main thread.
+    // is fed by PumpStreams() on the main thread.
     if (SDL_AudioStreamAvailable(channel.converter) < device_bytes &&
         !channel.remaining_input.empty()) {
       RefillConverter(channel);
@@ -227,31 +177,29 @@ static void MixChannels(void* /*userdata*/, Uint8* device_buffer,
           static_cast<int16_t>(ToMixerAmplitude(channel.scaled_volume));
     }
     const int stream_len = SDL_AudioStreamGet(
-        channel.converter, mix_buffer.data(),
-        std::min(device_bytes, static_cast<int>(mix_buffer.size())));
+        channel.converter, mix_buffer_.data(),
+        std::min(device_bytes, static_cast<int>(mix_buffer_.size())));
 
     // mix into buffer
     const int sample_count = stream_len / int{sizeof(int16_t)};
     for (int s = 0; s < sample_count; s++) {
       const base::ssize offset = s * base::ssize{sizeof(int16_t)};
-      const auto output = port::ReadUnaligned<int16_t>(
-          output_bytes.subspan(base::ToSize(offset)));
+      const auto mixed_so_far =
+          port::ReadUnaligned<int16_t>(output.subspan(base::ToSize(offset)));
       const auto input = port::ReadUnaligned<int16_t>(
-          std::span(mix_buffer).subspan(base::ToSize(offset)));
+          std::span(mix_buffer_).subspan(base::ToSize(offset)));
       // Floor division of a signed sample product keeps the mix rounding.
       const int mixed =
           (input * channel.amplitude) >> 15;  // NOLINT(bugprone-signed-bitwise)
-      port::WriteUnaligned(output_bytes.subspan(base::ToSize(offset)),
-                           static_cast<int16_t>(output + mixed));
+      port::WriteUnaligned(output.subspan(base::ToSize(offset)),
+                           static_cast<int16_t>(mixed_so_far + mixed));
     }
   }
 }
 
-// Points `channel` at a new sound described by `header` and starts it. The
-// caller holds the device lock and sets the source of the data afterwards.
-static void StartChannel(Channel& channel, const AudHeader& header,
-                         const int priority, const int volume,
-                         const int volume_scale) {
+void AudioMixer::StartChannel(Channel& channel, const AudHeader& header,
+                              const int priority, const int volume,
+                              const int volume_scale) {
   const int channel_count = header.flags & kAudFlagStereo ? 2 : 1;
   const int bits_per_sample = header.flags & kAudFlag16Bit ? 16 : 8;
 
@@ -286,16 +234,16 @@ static void LogUnsupported(const AudHeader& header) {
                header.flags & kAudFlag16Bit ? 16 : 8, header.compression);
 }
 
-int StreamSampleFile(const char* filename, int volume) {
+int AudioMixer::Stream(const char* file_name, int volume) {
   const int handle = AcquireChannel(0xFF);
   if (handle == -1) {
     return -1;
   }
   // A free channel can still hold the file of a score that faded out since
-  // the last PumpSampleStreams().
-  StopSample(handle);
+  // the last PumpStreams().
+  Stop(handle);
 
-  const int file_handle = OpenFileHandle(filename, FileAccess::kRead);
+  const int file_handle = OpenFileHandle(file_name, FileAccess::kRead);
   if (file_handle == kInvalidHandle) {
     return -1;
   }
@@ -307,7 +255,7 @@ int StreamSampleFile(const char* filename, int volume) {
     return -1;
   }
 
-  // Scores are all mono 16-bit ADPCM, and PumpSampleStreams() relies on it.
+  // Scores are all mono 16-bit ADPCM, and PumpStreams() relies on it.
   if (static_cast<AudCompression>(header.compression) != SCOMP_SOS ||
       (header.flags & kAudFlagStereo) != 0 ||
       (header.flags & kAudFlag16Bit) == 0) {
@@ -316,31 +264,29 @@ int StreamSampleFile(const char* filename, int volume) {
     return -1;
   }
 
-  auto& channel = base::At(mixer_channels, handle);
-  SDL_LockAudioDevice(audio_device);
-  StartChannel(channel, header, 0xFF, volume, score_volume);
+  auto& channel = channels_.at(base::ToSize(handle));
+  SDL_LockAudioDevice(device_);
+  StartChannel(channel, header, 0xFF, volume, score_volume_);
   channel.is_score = true;
   channel.expecting_data = true;
-  SDL_UnlockAudioDevice(audio_device);
+  SDL_UnlockAudioDevice(device_);
   channel.file_handle = file_handle;
 
   return handle;
 }
 
-// Closes the file a channel streams from, after which the channel plays out
-// what is queued. Main thread only.
-static void EndFileStream(Channel& channel) {
-  SDL_LockAudioDevice(audio_device);
+void AudioMixer::EndFileStream(Channel& channel) const {
+  SDL_LockAudioDevice(device_);
   channel.expecting_data = false;
   SDL_AudioStreamFlush(channel.converter);
-  SDL_UnlockAudioDevice(audio_device);
+  SDL_UnlockAudioDevice(device_);
 
   CloseFileHandle(channel.file_handle);
   channel.file_handle = -1;
 }
 
-void PumpSampleStreams() {
-  for (auto& channel : mixer_channels) {
+void AudioMixer::PumpStreams() {
+  for (auto& channel : channels_) {
     if (channel.file_handle == -1) {
       continue;
     }
@@ -352,8 +298,8 @@ void PumpSampleStreams() {
     }
 
     // Keep about a second queued rather than the whole file.
-    const int max_queued_bytes = SDL_AUDIO_BITSIZE(output_spec.format) / 8 *
-                                 output_spec.channels * output_spec.freq;
+    const int max_queued_bytes = SDL_AUDIO_BITSIZE(output_spec_.format) / 8 *
+                                 output_spec_.channels * output_spec_.freq;
     if (SDL_AudioStreamAvailable(channel.converter) >= max_queued_bytes) {
       continue;
     }
@@ -372,19 +318,22 @@ void PumpSampleStreams() {
     const bool truncated =
         ReadFileHandle(channel.file_handle, block) != block_bytes;
 
-    if (truncated || !DecodeBlock(channel, block, decoded_bytes,
-                                  [&channel](std::span<const std::byte> pcm) {
-                                    SDL_LockAudioDevice(audio_device);
-                                    PutPcm(channel, pcm);
-                                    SDL_UnlockAudioDevice(audio_device);
-                                  })) {
+    const auto put_locked = [this, &channel](std::span<const std::byte> pcm) {
+      SDL_LockAudioDevice(device_);
+      PutPcm(channel.converter, pcm);
+      SDL_UnlockAudioDevice(device_);
+    };
+    if (truncated || !DecodeBlock(channel.compression, channel.adpcm, block,
+                                  decoded_bytes, put_locked)) {
       EndFileStream(channel);
     }
   }
 }
 
-bool OpenAudio(int rate, bool stereo) {
-  SDL_AudioSpec desired;
+bool AudioMixer::Open(int rate, bool stereo) {
+  Close();
+
+  SDL_AudioSpec desired{};
   desired.freq = rate;
   desired.format = AUDIO_S16;
   desired.channels = stereo ? 2 : 1;
@@ -393,72 +342,80 @@ bool OpenAudio(int rate, bool stereo) {
   // buffers when the device closes, so 2048 cost 93 ms of latency and 186 ms
   // on every exit.
   desired.samples = 512;
-  desired.callback = MixChannels;
+  desired.callback = DeviceCallback;
+  desired.userdata = this;
 
   // The mixing loop only knows 16-bit samples, so the format may not change.
   const int changes = SDL_AUDIO_ALLOW_FREQUENCY_CHANGE |
                       SDL_AUDIO_ALLOW_CHANNELS_CHANGE |
                       SDL_AUDIO_ALLOW_SAMPLES_CHANGE;
-  audio_device =
-      SDL_OpenAudioDevice(nullptr, 0, &desired, &output_spec, changes);
+  device_ = SDL_OpenAudioDevice(nullptr, 0, &desired, &output_spec_, changes);
 
-  if (!audio_device) {
-    absl::PrintF("OpenAudio: %s\n", SDL_GetError());
+  if (!device_) {
+    absl::PrintF("AudioMixer::Open: %s\n", SDL_GetError());
     return false;
   }
-  mix_buffer.resize(output_spec.size);
+  mix_buffer_.resize(output_spec_.size);
 
-  SDL_PauseAudioDevice(audio_device, 0);
-
-  SoundType = SFX_SDL;
-  SampleType = SAMPLE_SDL;
+  SDL_PauseAudioDevice(device_, 0);
   return true;
 }
 
-void CloseAudio() {
-  SDL_CloseAudioDevice(audio_device);
-  audio_device = 0;
-  mix_buffer.clear();
+void AudioMixer::OpenWithoutDevice(const int rate) {
+  Close();
+  output_spec_.freq = rate;
+  output_spec_.format = AUDIO_S16;
+  output_spec_.channels = 1;
+  output_spec_.samples = 512;
+  output_spec_.size = output_spec_.samples * sizeof(int16_t);
+  mix_buffer_.resize(output_spec_.size);
+}
+
+void AudioMixer::Close() {
+  SDL_CloseAudioDevice(device_);
+  device_ = 0;
+  mix_buffer_.clear();
 
   // The games close and reopen the device around their modem dialogs; a
   // channel left pointing at a freed converter would be reused then.
-  for (auto& channel : mixer_channels) {
+  for (auto& channel : channels_) {
     if (channel.file_handle != -1) {
       CloseFileHandle(channel.file_handle);
     }
     SDL_FreeAudioStream(channel.converter);
     channel = {};
   }
-  SoundType = SFX_NONE;
-  SampleType = SAMPLE_NONE;
 }
 
-void StopSample(int handle) {
+void AudioMixer::Stop(int handle) {
   if (!IsValidHandle(handle)) {
     return;
   }
-  auto& channel = base::At(mixer_channels, handle);
+  auto& channel = channels_.at(base::ToSize(handle));
 
-  SDL_LockAudioDevice(audio_device);
+  SDL_LockAudioDevice(device_);
   channel.playing = false;
-  SDL_UnlockAudioDevice(audio_device);
+  SDL_UnlockAudioDevice(device_);
 
   if (channel.file_handle != -1) {
     EndFileStream(channel);
   }
 }
 
-bool IsSamplePlaying(int handle) {
+bool AudioMixer::IsPlaying(int handle) const {
   if (!IsValidHandle(handle)) {
     return false;
   }
-  return base::At(mixer_channels, handle).playing;
+  // The audio thread clears the flag when the sound or its fade runs out.
+  SDL_LockAudioDevice(device_);
+  const bool playing = channels_.at(base::ToSize(handle)).playing;
+  SDL_UnlockAudioDevice(device_);
+  return playing;
 }
 
-bool IsSamplePlaying(const void* sample) {
+bool AudioMixer::IsPlaying(const void* sample) const {
   for (int i = 0; i < kChannelCount; i++) {
-    if (base::At(mixer_channels, i).sample_data == sample &&
-        IsSamplePlaying(i)) {
+    if (channels_.at(base::ToSize(i)).sample_data == sample && IsPlaying(i)) {
       return true;
     }
   }
@@ -466,21 +423,17 @@ bool IsSamplePlaying(const void* sample) {
   return false;
 }
 
-void StopSample(const void* sample) {
+void AudioMixer::Stop(const void* sample) {
   for (int i = 0; i < kChannelCount; i++) {
-    if (base::At(mixer_channels, i).sample_data == sample) {
-      StopSample(i);
+    if (channels_.at(base::ToSize(i)).sample_data == sample) {
+      Stop(i);
     }
   }
 }
-int PlaySample(std::span<const std::byte> sample, int priority, int volume,
-               int16_t panloc) {
-  return PlaySampleOnChannel(sample, priority, volume, panloc,
-                             AcquireChannel(priority));
-}
-int PlaySampleOnChannel(std::span<const std::byte> sample, int priority,
-                        int volume, int16_t /*panloc*/, int handle) {
-  if (!IsValidHandle(handle) || sample.size() < sizeof(AudHeader)) {
+
+int AudioMixer::Play(std::span<const std::byte> sample, int priority,
+                     int volume, int16_t /*pan*/) {
+  if (sample.size() < sizeof(AudHeader)) {
     return -1;
   }
   AudHeader header{};
@@ -496,65 +449,66 @@ int PlaySampleOnChannel(std::span<const std::byte> sample, int priority,
     return -1;
   }
 
-  StopSample(handle);
+  const int handle = AcquireChannel(priority);
+  if (handle == -1) {
+    return -1;
+  }
+  Stop(handle);
 
-  SDL_LockAudioDevice(audio_device);
-  auto& channel = base::At(mixer_channels, handle);
+  SDL_LockAudioDevice(device_);
+  auto& channel = channels_.at(base::ToSize(handle));
   StartChannel(channel, header, priority, volume, 255);
   channel.sample_data = sample.data();
   channel.remaining_input = sample.subspan(sizeof(AudHeader));
-  SDL_UnlockAudioDevice(audio_device);
+  SDL_UnlockAudioDevice(device_);
 
   return handle;
 }
 
-int SetScoreVolume(int volume) {
-  const int old = score_volume;
-  score_volume = volume;
+void AudioMixer::SetScoreVolume(int volume) {
+  score_volume_ = volume;
 
-  SDL_LockAudioDevice(audio_device);
-  for (auto& channel : mixer_channels) {
+  SDL_LockAudioDevice(device_);
+  for (auto& channel : channels_) {
     // A score that is fading out keeps its fade.
     if (channel.playing && channel.is_score && channel.fade_step == 0) {
-      channel.scaled_volume = channel.play_volume * score_volume;
+      channel.scaled_volume = channel.play_volume * score_volume_;
       channel.amplitude =
           static_cast<int16_t>(ToMixerAmplitude(channel.scaled_volume));
     }
   }
-  SDL_UnlockAudioDevice(audio_device);
-
-  return old;
+  SDL_UnlockAudioDevice(device_);
 }
 
-void FadeOutSample(int handle, int ticks) {
-  if (!IsSamplePlaying(handle)) {
+void AudioMixer::FadeOut(int handle, int ticks) {
+  if (!IsPlaying(handle)) {
     return;
   }
   // The fade advances once per device callback; `ticks` are 60ths of a
   // second. A fade shorter than one callback finishes in a single step.
   const int fade_ms = 1000 / 60 * ticks;
   const int callback_ms =
-      std::max(1, output_spec.samples * 1000 / output_spec.freq);
+      std::max(1, output_spec_.samples * 1000 / output_spec_.freq);
   const int step_count = std::max(1, fade_ms / callback_ms);
 
-  SDL_LockAudioDevice(audio_device);
-  auto& channel = base::At(mixer_channels, handle);
+  SDL_LockAudioDevice(device_);
+  auto& channel = channels_.at(base::ToSize(handle));
   // At least 1, or a nearly silent sound would never finish fading.
   channel.fade_step = std::max(1, channel.scaled_volume / step_count);
-  SDL_UnlockAudioDevice(audio_device);
+  SDL_UnlockAudioDevice(device_);
 }
 
-int AcquireChannel(const int priority) {
+int AudioMixer::AcquireChannel(const int priority) {
   for (int i = kChannelCount - 1; i >= 0; i--) {
-    if (!base::At(mixer_channels, i).playing) {
+    if (!channels_.at(base::ToSize(i)).playing) {
       return i;
     }
   }
 
   // All channels busy; evict the first with lower priority.
   for (int i = 0; i < kChannelCount; i++) {
-    if (base::At(mixer_channels, i).priority < priority) {
-      StopSample(i);
+    if (channels_.at(base::ToSize(i)).priority < priority) {
+      Stop(i);
       return i;
     }
   }
@@ -562,20 +516,12 @@ int AcquireChannel(const int priority) {
   return -1;
 }
 
-int GetDigiHandle() {
-  // used to check if audio is initialized
-  return audio_device ? 1 : -1;
-}
+// Pausing changes the state of the audio device, not of the mixer.
+// NOLINTNEXTLINE(readability-make-member-function-const)
+void AudioMixer::Resume() { SDL_PauseAudioDevice(device_, 0); }
 
-void ResumeAudio() { SDL_PauseAudioDevice(audio_device, 0); }
-
-void PauseAudio() { SDL_PauseAudioDevice(audio_device, 1); }
-
-uint32_t AudioDeviceId() { return audio_device; }
-
-void* AudioOutputSpec() { return &output_spec; }
-
-AudioCallback* ExtraAudioCallbackSlot() { return &extra_callback; }
+// NOLINTNEXTLINE(readability-make-member-function-const)
+void AudioMixer::Pause() { SDL_PauseAudioDevice(device_, 1); }
 
 // TD
 // used for nod ending
@@ -597,14 +543,14 @@ static int32_t ReadSampleFile(int file_handle, std::span<std::byte> buffer) {
   base::CopyBytes(buffer, base::ObjectBytes(header), sizeof(header));
   return header_read + payload_read;
 }
-std::span<std::byte> LoadSample(const char* filename) {
+std::span<std::byte> AudioMixer::LoadSample(const char* file_name) {
   std::span<std::byte> buffer;
 
-  if (!filename || !FileExists(filename)) {
+  if (!file_name || !FileExists(file_name)) {
     return {};
   }
 
-  const int file_handle = OpenFileHandle(filename, FileAccess::kRead);
+  const int file_handle = OpenFileHandle(file_name, FileAccess::kRead);
   if (file_handle != kInvalidHandle) {
     const base::ssize size = base::ToSigned(FileHandleSize(file_handle)) +
                              base::ssize{sizeof(AudHeader)};
@@ -619,9 +565,9 @@ std::span<std::byte> LoadSample(const char* filename) {
   return buffer.subspan(0);
 }
 
-void FreeSample(void* sample) {
+void AudioMixer::FreeSample(void* sample) {
   if (sample) {
-    StopSample(sample);
+    Stop(sample);
     delete[] static_cast<std::byte*>(sample);
   }
 }

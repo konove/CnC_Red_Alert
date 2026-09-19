@@ -6993,7 +6993,7 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
     while (wait.Time()) {
       ServiceRealTime();
     }
-    CloseAudio();
+    Audio.Close();
     ServiceRealTime();
     wait.Set(60, true);
     while (wait.Time()) {
@@ -7056,7 +7056,7 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
   /*
   ** Restore audio capability
   */
-  SoundOn = OpenAudio(11025 * 2, /*stereo=*/false);
+  SoundOn = Audio.Open(11025 * 2, /*stereo=*/false);
   if (SoundOn) {
     Theme.Play_Song(old_theme);
   }
@@ -7163,7 +7163,7 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
     while (wait.Time()) {
       ServiceRealTime();
     }
-    CloseAudio();
+    Audio.Close();
     ServiceRealTime();
     wait.Set(60, true);
     while (wait.Time()) {
@@ -7211,7 +7211,7 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
   /*
   ** Restore audio capability
   */
-  SoundOn = OpenAudio(11025 * 2, /*stereo=*/false);
+  SoundOn = Audio.Open(11025 * 2, /*stereo=*/false);
   if (SoundOn) {
     Theme.Play_Song(old_theme);
   }

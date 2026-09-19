@@ -1443,7 +1443,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
       }
     }
     if (base::At(bufprint, 0) == '\r' || base::At(bufprint, 0) == '@') {
-      PlaySample(briefsnd, 255, Options.Normalize_Volume(135));
+      Audio.Play(briefsnd, 255, Options.Normalize_Volume(135));
       Timer<SystemTickSource> cd;
       cd.Set(5);
       do {

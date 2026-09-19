@@ -378,8 +378,8 @@ void ServiceRealTimeFor(const int ticks) {
 
 void ServiceBackgroundTasks() {
   // Music and speech maintenance
-  if (SampleType != SAMPLE_NONE) {
-    PumpSampleStreams();
+  if (Audio.is_open()) {
+    Audio.PumpStreams();
     Theme.AI();
     Speak_AI();
   }
@@ -635,7 +635,7 @@ bool RunFrame() {
   // If there is no theme playing, but it looks like one is required, then
   // start one playing. This is usually the symptom of there being no
   // transition score.
-  if (SampleType != SAMPLE_NONE && Theme.What_Is_Playing() == THEME_NONE) {
+  if (Audio.is_open() && Theme.What_Is_Playing() == THEME_NONE) {
     Theme.Queue_Song(THEME_PICK_ANOTHER);
   }
 
