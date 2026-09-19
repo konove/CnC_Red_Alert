@@ -51,7 +51,6 @@
 #include <span>
 
 #include "base/enum_array.h"
-#include "sdllib/ww_audio.h"
 #include "td/defines.h"
 #include "td/externs.h"
 #include "td/globals.h"
@@ -62,6 +61,7 @@
 #include "td/special.h"
 #include "tech/game_file.h"
 #include "tech/mix_archive.h"
+#include "tech/ww_audio.h"
 
 /***************************************************************************
 **	Controls what special effects may occur on the sound effect.

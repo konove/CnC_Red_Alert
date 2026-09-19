@@ -66,6 +66,8 @@ std::vector<int16_t> DecodeAdpcmBlock(AdpcmState& state,
 std::optional<std::vector<uint8_t>> DecodeWestwoodBlock(
     std::span<const std::byte> block) {
   std::vector<uint8_t> samples;
+  // What 2-bit deltas come to; only long runs of one sample exceed it.
+  samples.reserve(block.size() * 4);
   int sample = 0x80;
   while (!block.empty()) {
     // The top two bits of a command byte select what follows, the low six

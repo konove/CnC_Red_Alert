@@ -1,57 +1,78 @@
-#include "sdllib/ww_audio.h"
+#include "tech/ww_audio.h"
 
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
+#include <memory>
 #include <span>
 #include <string_view>
 #include <vector>
 
 #include "base/buffer.h"
 #include "base/numeric.h"
+#include "base/seek_origin.h"
+#include "base/types.h"
 #include "gtest/gtest.h"
 #include "sdllib/aud_decoder.h"
-#include "sdllib/file.h"
 #include "sdllib/file_access.h"
-#include "sdllib/wwstd.h"
-
-// The mixer reads scores through the integer-handle API, which the game
-// implements. These stand in for it with one in-memory file.
-namespace {
-std::vector<std::byte> score_file;  // what "SCORE.AUD" holds
-std::size_t score_position = 0;
-int open_files = 0;
-}  // namespace
-
-int OpenFileHandle(std::string_view file_name, FileAccess /*mode*/) {
-  if (file_name != "SCORE.AUD") {
-    return kInvalidHandle;
-  }
-  score_position = 0;
-  open_files++;
-  return 0;
-}
-
-void CloseFileHandle(int /*handle*/) { open_files--; }
-
-int32_t ReadFileHandle(int /*handle*/, std::span<std::byte> buffer) {
-  const auto rest = std::span(score_file).subspan(score_position);
-  const auto count = std::min(buffer.size(), rest.size());
-  base::CopyBytes(buffer, rest, count);
-  score_position += count;
-  return static_cast<int32_t>(count);
-}
-
-int32_t FileHandleSize(int /*handle*/) {
-  return static_cast<int32_t>(score_file.size());
-}
-
-bool FileExists(std::string_view file_name) { return file_name == "SCORE.AUD"; }
+#include "tech/file.h"
+#include "tech/memory_file.h"
 
 namespace {
 
 constexpr int kRate = 22050;
 constexpr int kCallbackSamples = 512;
+
+// How many ScoreFiles the mixer has not closed yet.
+int open_files = 0;
+
+// An in-memory score that is counted while it lives, which is how the tests
+// see the mixer let go of a file.
+class ScoreFile final : public File {
+ public:
+  explicit ScoreFile(std::span<const std::byte> aud) : file_(std::ssize(aud)) {
+    file_.Open(FileAccess::kReadWrite);
+    file_.Write(aud);
+    file_.Seek(0, SeekOrigin::kBegin);
+    open_files++;
+  }
+  ~ScoreFile() override { open_files--; }
+
+  ScoreFile(const ScoreFile&) = delete;
+  ScoreFile& operator=(const ScoreFile&) = delete;
+  ScoreFile(ScoreFile&&) = delete;
+  ScoreFile& operator=(ScoreFile&&) = delete;
+
+  [[nodiscard]] std::string_view FileName() const override {
+    return file_.FileName();
+  }
+  void SetName(std::string_view name) override { file_.SetName(name); }
+  bool Create() override { return file_.Create(); }
+  bool Delete() override { return file_.Delete(); }
+  bool IsAvailable() override { return file_.IsAvailable(); }
+  [[nodiscard]] bool IsOpen() const override { return file_.IsOpen(); }
+  bool Open(std::string_view name, FileAccess access) override {
+    return file_.Open(name, access);
+  }
+  bool Open(FileAccess access) override { return file_.Open(access); }
+  using File::Read;
+  using File::Write;
+  base::ssize Read(std::span<std::byte> buffer) override {
+    return file_.Read(buffer);
+  }
+  base::ssize Write(std::span<const std::byte> buffer) override {
+    return file_.Write(buffer);
+  }
+  [[nodiscard]] bool ok() const override { return file_.ok(); }
+  base::ssize Seek(base::ssize offset, SeekOrigin origin) override {
+    return file_.Seek(offset, origin);
+  }
+  base::ssize Size() override { return file_.Size(); }
+  void Close() override { file_.Close(); }
+
+ private:
+  MemoryFile file_;  // Owns a copy of the score.
+};
 
 void Append(std::vector<std::byte>& out, std::span<const std::byte> bytes) {
   out.insert(out.end(), bytes.begin(), bytes.end());
@@ -120,9 +141,12 @@ int16_t AtFullVolume(int16_t sample) {
 class AudioMixerTest : public testing::Test {
  protected:
   void SetUp() override {
-    score_file.clear();
     open_files = 0;
     mixer_.OpenWithoutDevice(kRate);
+  }
+
+  int Stream(std::span<const std::byte> aud) {
+    return mixer_.Stream(std::make_unique<ScoreFile>(aud), 255);
   }
 
   // Runs one device callback and returns the samples it produced.
@@ -157,6 +181,19 @@ TEST_F(AudioMixerTest, AddsChannelsTogether) {
   ASSERT_NE(mixer_.Play(sample), -1);
   ASSERT_NE(mixer_.Play(sample), -1);
   EXPECT_EQ(MixOnce().front(), 2 * 999);
+}
+
+TEST_F(AudioMixerTest, LoudChannelsClipInsteadOfWrapping) {
+  const auto loud = ConstantSample(kCallbackSamples, 30000);
+  const auto loud_negative = ConstantSample(kCallbackSamples, -30000);
+  ASSERT_NE(mixer_.Play(loud), -1);
+  ASSERT_NE(mixer_.Play(loud), -1);
+  EXPECT_EQ(MixOnce().front(), 32767);
+
+  mixer_.Stop(loud.data());
+  ASSERT_NE(mixer_.Play(loud_negative), -1);
+  ASSERT_NE(mixer_.Play(loud_negative), -1);
+  EXPECT_EQ(MixOnce().front(), -32768);
 }
 
 TEST_F(AudioMixerTest, VolumePastFullIsFullNotInverted) {
@@ -205,6 +242,13 @@ TEST_F(AudioMixerTest, StopBySampleStopsEveryChannelPlayingIt) {
   EXPECT_EQ(MixOnce().front(), 999);
 }
 
+TEST_F(AudioMixerTest, NullSampleIsNotAPlayingScore) {
+  ASSERT_NE(Stream(MakeScore(1).aud), -1);  // A score has no sample data.
+  EXPECT_FALSE(mixer_.IsPlaying(nullptr));
+  mixer_.Stop(nullptr);
+  EXPECT_EQ(open_files, 1);
+}
+
 TEST_F(AudioMixerTest, InvalidHandlesAreIgnored) {
   mixer_.Stop(-1);
   mixer_.Stop(4);
@@ -238,8 +282,7 @@ TEST_F(AudioMixerTest, LongFadeGetsQuieterEachCallback) {
 
 TEST_F(AudioMixerTest, StreamsAScoreBlockByBlockAndClosesItsFile) {
   const Score score = MakeScore(3);
-  score_file = score.aud;
-  const int handle = mixer_.Stream("SCORE.AUD", 255);
+  const int handle = Stream(score.aud);
   ASSERT_NE(handle, -1);
   EXPECT_EQ(open_files, 1);
 
@@ -265,21 +308,20 @@ TEST_F(AudioMixerTest, StreamsAScoreBlockByBlockAndClosesItsFile) {
 }
 
 TEST_F(AudioMixerTest, StreamFailsCleanly) {
-  EXPECT_EQ(mixer_.Stream("MISSING.AUD", 255), -1);
+  EXPECT_EQ(mixer_.Stream("NO-SUCH-SCORE.AUD", 255), -1);
+  EXPECT_EQ(mixer_.Stream(std::unique_ptr<File>(), 255), -1);
 
-  score_file = ConstantSample(8, 1, 0);  // Not 16-bit.
-  EXPECT_EQ(mixer_.Stream("SCORE.AUD", 255), -1);
+  EXPECT_EQ(Stream(ConstantSample(8, 1, 0)), -1);  // Not 16-bit.
   EXPECT_EQ(open_files, 0);
 
-  score_file.resize(4);  // Not even a header.
-  EXPECT_EQ(mixer_.Stream("SCORE.AUD", 255), -1);
+  EXPECT_EQ(Stream(std::vector<std::byte>(4)), -1);  // Not even a header.
   EXPECT_EQ(open_files, 0);
 }
 
 TEST_F(AudioMixerTest, TruncatedBlockEndsTheStream) {
-  score_file = MakeScore(2).aud;
-  score_file.resize(score_file.size() - 10);
-  const int handle = mixer_.Stream("SCORE.AUD", 255);
+  auto aud = MakeScore(2).aud;
+  aud.resize(aud.size() - 10);
+  const int handle = Stream(aud);
   mixer_.PumpStreams();
   EXPECT_EQ(open_files, 1);
   mixer_.PumpStreams();
@@ -290,20 +332,20 @@ TEST_F(AudioMixerTest, TruncatedBlockEndsTheStream) {
 }
 
 TEST_F(AudioMixerTest, StoppingAndRestartingAStreamClosesTheOldFile) {
-  score_file = MakeScore(4).aud;
-  const int handle = mixer_.Stream("SCORE.AUD", 255);
+  const auto aud = MakeScore(4).aud;
+  const int handle = Stream(aud);
   mixer_.Stop(handle);
   EXPECT_EQ(open_files, 0);
 
   // A score that faded out is reaped by the next PumpStreams(); starting
   // another before that must not leak its file.
-  const int faded = mixer_.Stream("SCORE.AUD", 255);
+  const int faded = Stream(aud);
   mixer_.PumpStreams();
   mixer_.FadeOut(faded, 1);
   MixOnce();
   ASSERT_FALSE(mixer_.IsPlaying(faded));
   EXPECT_EQ(open_files, 1);
-  ASSERT_NE(mixer_.Stream("SCORE.AUD", 255), -1);
+  ASSERT_NE(Stream(aud), -1);
   EXPECT_EQ(open_files, 1);
 
   mixer_.Close();
@@ -311,10 +353,8 @@ TEST_F(AudioMixerTest, StoppingAndRestartingAStreamClosesTheOldFile) {
 }
 
 TEST_F(AudioMixerTest, ScoreVolumeScalesScoresOnly) {
-  const Score score = MakeScore(1);
-  score_file = score.aud;
   const auto sample = ConstantSample(kCallbackSamples, 1000);
-  ASSERT_NE(mixer_.Stream("SCORE.AUD", 255), -1);
+  ASSERT_NE(Stream(MakeScore(1).aud), -1);
   mixer_.PumpStreams();
   mixer_.SetScoreVolume(0);
   ASSERT_NE(mixer_.Play(sample), -1);

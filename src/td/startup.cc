@@ -60,7 +60,6 @@
 #include "sdllib/keyboard.h"
 #include "sdllib/misc.h"
 #include "sdllib/timer.h"
-#include "sdllib/ww_audio.h"
 #include "td/defines.h"
 #include "td/externs.h"
 #include "td/globals.h"
@@ -71,6 +70,7 @@
 #include "td/profile.h"
 #include "tech/disk_file.h"
 #include "tech/number_parse.h"
+#include "tech/ww_audio.h"
 
 // The two tests that link this file define TD_NO_ENTRY_POINT; these headers
 // serve only main().

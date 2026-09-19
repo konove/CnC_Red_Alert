@@ -49,7 +49,6 @@
 #include "base/enum_array.h"
 #include "port/platform.h"
 #include "sdllib/playcd.h"
-#include "sdllib/ww_audio.h"
 #include "td/aircraft.h"
 #include "td/anim.h"
 #include "td/base.h"
@@ -83,6 +82,7 @@
 #include "td/unit.h"
 #include "tech/game_file.h"
 #include "tech/mix_archive.h"
+#include "tech/ww_audio.h"
 #include "winvq/vqa32/vqaplay.h"
 
 #ifdef JAPANESE

@@ -34,13 +34,6 @@ add_gtest(
         LIBS sdllib
 )
 
-# Stubs the game's integer-handle file API with an in-memory score.
-add_gtest(
-        NAME sdllib_audio_mixer_test
-        SOURCES ww_audio_test.cc
-        LIBS sdllib
-)
-
 # Compiles keyboard.cc directly and stubs its two hooks, so the key buffer can
 # be tested without linking the event loop and mouse cursor code.
 add_gtest(

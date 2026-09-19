@@ -72,10 +72,10 @@
 #include "ra/jshell.h"
 #include "ra/scenario.h"
 #include "ra/text_ids.h"
-#include "sdllib/ww_audio.h"
 #include "session.h"
 #include "tech/fixed.h"
 #include "tech/game_file.h"
+#include "tech/ww_audio.h"
 
 /*
 **	These are the actual filename list for the theme sample files.

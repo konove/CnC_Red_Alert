@@ -44,7 +44,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "sdllib/ww_audio.h"
+#include "tech/ww_audio.h"
 
 #include <algorithm>
 #include <cstddef>

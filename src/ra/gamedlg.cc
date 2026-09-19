@@ -66,11 +66,11 @@
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/misc.h"
-#include "sdllib/ww_audio.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 #include "session.h"
 #include "slider.h"
+#include "tech/ww_audio.h"
 
 /***********************************************************************************************
  * OptionsClass::Process -- Handles all the options graphic interface. *

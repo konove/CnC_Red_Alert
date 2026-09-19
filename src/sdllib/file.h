@@ -52,8 +52,8 @@
 #define SEEK_END 2  // Seek from end of file.
 #endif
 
-// Integer-handle file access for the audio code. The game implements
-// these (tech/file_handles.cc) so that names resolve through its
+// Integer-handle file access, which only the PCX writer still uses. The game
+// implements these (tech/file_handles.cc) so that names resolve through its
 // mixfiles. A handle is kInvalidHandle (-1) when the open failed.
 int OpenFileHandle(std::string_view file_name, FileAccess mode);
 void CloseFileHandle(int handle);

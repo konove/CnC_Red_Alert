@@ -51,7 +51,6 @@
 #include "sdllib/keyboard.h"
 #include "sdllib/playcd.h"
 #include "sdllib/timer.h"
-#include "sdllib/ww_audio.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 #include "td/aircraft.h"
@@ -97,6 +96,7 @@
 #include "td/vector.h"
 #include "tech/game_file.h"
 #include "tech/mix_archive.h"
+#include "tech/ww_audio.h"
 #include "winvq/vqa32/vqaplay.h"
 
 #ifdef JAPANESE

@@ -130,7 +130,6 @@
 #include "sdllib/modemreg.h"
 #include "sdllib/timer.h"
 #include "sdllib/wincomm.h"
-#include "sdllib/ww_audio.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 #include "tech/fixed.h"
@@ -139,6 +138,7 @@
 #include "tech/mix_archive.h"
 #include "tech/number_parse.h"
 #include "tech/search_paths.h"
+#include "tech/ww_audio.h"
 
 ModemRegistryEntryClass* ModemRegistry = nullptr;  // Ptr to modem registry data
 

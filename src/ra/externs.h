@@ -77,10 +77,10 @@
 #include "ra/vortex.h"
 #include "ra/warhead.h"
 #include "sdllib/playcd.h"
-#include "sdllib/ww_audio.h"
 #include "tech/buff.h"
 #include "tech/game_file.h"
 #include "tech/mix_archive.h"
+#include "tech/ww_audio.h"
 #include "winvq/vqa32/vqaplay.h"
 
 // Scratch space for packing and unpacking the MapPack and OverlayPack INI blocks.

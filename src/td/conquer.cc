@@ -99,7 +99,6 @@
 #include "sdllib/playcd.h"
 #include "sdllib/shape.h"
 #include "sdllib/timer.h"
-#include "sdllib/ww_audio.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
 #include "sdllib/wwstd.h"
@@ -164,6 +163,7 @@
 #include "tech/game_file_vqa_io.h"
 #include "tech/mix_archive.h"
 #include "tech/search_paths.h"
+#include "tech/ww_audio.h"
 #include "winvq/vqa32/vqaplay.h"
 
 #ifdef _WIN32

@@ -16,57 +16,26 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/***************************************************************************
- **      C O N F I D E N T I A L --- W E S T W O O D   S T U D I O S      **
- ***************************************************************************
- *                                                                         *
- *                 Project Name : Westwood 32 bit Library                  *
- *                                                                         *
- *                    File Name : AUDIO.H                                  *
- *                                                                         *
- *                   Programmer : Phil W. Gorrow                           *
- *                                                                         *
- *                   Start Date : March 10, 1995                           *
- *                                                                         *
- *                  Last Update : March 10, 1995   [PWG]                   *
- *                                                                         *
- *-------------------------------------------------------------------------*
- * Functions:                                                              *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-#ifndef CNC_RED_ALERT_SDLLIB_WW_AUDIO_H_
-#define CNC_RED_ALERT_SDLLIB_WW_AUDIO_H_
+// File: AudioMixer, which plays .AUD sounds and streamed scores on the SDL
+// audio device. It stands where the Westwood 32-bit library's sound driver did
+// (AUDIO.H, Phil W. Gorrow, March 1995).
+
+#ifndef CNC_RED_ALERT_TECH_WW_AUDIO_H_
+#define CNC_RED_ALERT_TECH_WW_AUDIO_H_
 
 #include <SDL_audio.h>
 
 #include <array>
 #include <cstddef>
 #include <cstdint>
+#include <memory>
 #include <span>
+#include <string_view>
 #include <vector>
 
 #include "absl/base/attributes.h"
 #include "sdllib/aud_decoder.h"
-
-/*=========================================================================*/
-/* AUD file header type
- */
-/*=========================================================================*/
-// Bits of AudHeader::flags.
-constexpr uint8_t kAudFlagStereo = 1;
-constexpr uint8_t kAudFlag16Bit = 2;
-
-// PWG 3-14-95: This structure used to have bit fields defined for Stereo
-//   and Bits.  These were removed because watcom packs them into a 32 bit
-//   flag entry even though they could have fit in a 8 bit entry.
-#pragma pack(push, 1)
-struct AudHeader {
-  uint16_t sample_rate;        // Playback rate (hertz).
-  int32_t compressed_bytes;    // Size of the data that follows the header.
-  int32_t uncompressed_bytes;  // Size of the data once decoded.
-  uint8_t flags;               // kAudFlagStereo, kAudFlag16Bit
-  uint8_t compression;         // What kind of compression for this sample?
-};
-#pragma pack(pop)
+#include "tech/file.h"
 
 // What the VQA player installs to have its sound track mixed in first.
 using AudioCallback = void (*)(uint8_t* device_buffer, int device_bytes);
@@ -125,21 +94,28 @@ class AudioMixer {
   int Play(std::span<const std::byte> sample, int priority = 0xFF,
            int volume = 0xFF, int16_t pan = 0);
 
-  // Plays the score in the game file `file_name` at `volume` times the score
-  // volume, reading it a block at a time from PumpStreams(). Returns -1 if
-  // there is no free channel, the file cannot be opened, or it is not mono
-  // 16-bit ADPCM.
-  int Stream(const char* file_name, int volume);
+  // Plays the score in the game file `file_name`, loose or packed in a
+  // mixfile, at `volume` times the score volume, reading it a block at a time
+  // from PumpStreams(). Returns -1 if there is no free channel, the file
+  // cannot be opened, or it is not mono 16-bit ADPCM.
+  int Stream(std::string_view file_name, int volume);
+
+  // As above, from `file`, which must be open for reading at the AudHeader.
+  // The mixer closes and destroys it when the score ends or is stopped, or at
+  // once if it cannot be played.
+  int Stream(std::unique_ptr<File> file, int volume);
 
   // Queues the next block of each streamed score that is running low, and
   // closes the files of those that ended or were faded out.
   void PumpStreams();
 
   void Stop(int handle);
-  // Stops every channel playing the sample whose data starts at `sample`.
-  void Stop(const void* sample);
-
   [[nodiscard]] bool IsPlaying(int handle) const;
+
+  // The same for every channel playing the sample whose data starts at
+  // `sample`. A null `sample`, as from a file that failed to load, is never
+  // playing.
+  void Stop(const void* sample);
   [[nodiscard]] bool IsPlaying(const void* sample) const;
 
   // Fades the sound to silence over `ticks` 60ths of a second, then stops it.
@@ -163,20 +139,23 @@ class AudioMixer {
     return &extra_callback_;
   }
 
-  // TD's Nod ending only: reads the .AUD game file `file_name` into a buffer
-  // for Play(), empty if there is no such file. FreeSample() stops and frees.
-  static std::span<std::byte> LoadSample(const char* file_name);
-  void FreeSample(void* sample);
-
  private:
   // Windows original had 5 slots; DOS had 4. One slot was reserved for disk
   // streaming, leaving 4 usable slots on both platforms.
   static constexpr int kChannelCount = 4;
 
+  struct SampleFormat {
+    uint16_t rate = 0;
+    uint8_t channels = 0;
+    uint8_t bits = 0;
+    friend bool operator==(const SampleFormat&, const SampleFormat&) = default;
+  };
+
   // Fields are ordered by decreasing alignment to minimize padding
   // (clang-analyzer-optin.performance.Padding).
   struct Channel {
-    const void* sample_data = nullptr;     // identifies the sample being played
+    const void* sample_data = nullptr;  // identifies the sample being played
+    std::unique_ptr<File> file;         // the streamed score; main thread only
     SDL_AudioStream* converter = nullptr;  // to the device format; mixed from
     std::span<const std::byte> remaining_input;  // blocks not yet decoded
 
@@ -184,12 +163,12 @@ class AudioMixer {
     int play_volume = 255;  // per-sound volume [0, 255], set at play time
     int scaled_volume = 0;  // play_volume * score volume, or * 255
     int fade_step = 0;  // taken off scaled_volume per callback; 0 is no fade
-    int samples_queued = 0;
-    int total_samples = 0;
-    int file_handle = -1;  // the streamed file; main thread only
+    // What of the header's uncompressed size is still to be decoded from
+    // remaining_input. A streamed score ends with its file instead.
+    int samples_left = 0;
 
     int16_t amplitude = 32767;  // scaled_volume as a Q15 mixing factor
-    uint16_t sample_rate = 0;
+    SampleFormat format;        // what `converter` converts from
     AdpcmState adpcm;
 
     bool playing = false;
@@ -198,8 +177,6 @@ class AudioMixer {
     // PumpStreams() has more of the file to queue, so an empty converter is
     // an underrun and not the end of the sound.
     bool expecting_data = false;
-    uint8_t channel_count = 0;
-    uint8_t bits_per_sample = 0;
     AudCompression compression = AudCompression::SCOMP_NONE;
   };
 
@@ -210,8 +187,9 @@ class AudioMixer {
     return handle >= 0 && handle < kChannelCount;
   }
 
-  // Returns a free channel, or failing that stops and returns the first one
-  // whose priority is below `priority`. Returns -1 if there is none.
+  // Returns a free channel, or failing that the first one whose priority is
+  // below `priority`, stopped and with any file it held closed. Returns -1 if
+  // there is none.
   int AcquireChannel(int priority);
 
   // Points `channel` at a new sound described by `header` and starts it. The
@@ -223,19 +201,27 @@ class AudioMixer {
   // reusing the one it has if the format is the same.
   void ResetConverter(Channel& channel, const AudHeader& header) const;
 
-  // Queues about one callback's worth of an in-memory sample. Audio thread.
+  // Queues about one callback's worth of an in-memory sample, ending its
+  // input once it is complete or turns out corrupt. Audio thread.
   void RefillConverter(Channel& channel) const;
+
+  // Leaves `channel` nothing more to decode, so that it ends when its
+  // converter drains.
+  static void EndInput(Channel& channel);
+
+  // Sets the volume and the mixing amplitude that follows from it.
+  static void SetVolume(Channel& channel, int scaled_volume);
 
   // Closes the file a channel streams from, after which the channel plays out
   // what is queued. Main thread only.
   void EndFileStream(Channel& channel) const;
 
-  SDL_AudioDeviceID device_ = 0;       // 0 while closed
-  SDL_AudioSpec output_spec_{};        // what the device settled on
-  std::vector<std::byte> mix_buffer_;  // one callback's worth from a channel
+  SDL_AudioDeviceID device_ = 0;     // 0 while closed
+  SDL_AudioSpec output_spec_{};      // what the device settled on
+  std::vector<int16_t> mix_buffer_;  // one callback's worth from a channel
   AudioCallback extra_callback_ = nullptr;
   int score_volume_ = 255;
   std::array<Channel, kChannelCount> channels_;
 };
 
-#endif  // CNC_RED_ALERT_SDLLIB_WW_AUDIO_H_
+#endif  // CNC_RED_ALERT_TECH_WW_AUDIO_H_

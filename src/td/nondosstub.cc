@@ -38,7 +38,6 @@
 // #include "ra/filepcx.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/iconcach.h"
-#include "sdllib/ww_audio.h"
 #include "sdllib/ww_mouse.h"
 #include "td/conquer.h"
 #include "td/globals.h"
@@ -47,6 +46,7 @@
 #include "td/palette.h"
 #include "td/theme.h"
 #include "tech/pcx_file.h"
+#include "tech/ww_audio.h"
 #include "winvq/vqa32/vqaplay.h"
 
 static ThemeType OldTheme = THEME_NONE;

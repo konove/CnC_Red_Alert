@@ -96,7 +96,6 @@
 #include "ra/vessel.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/playcd.h"
-#include "sdllib/ww_audio.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 #include "tech/buff.h"
@@ -106,6 +105,7 @@
 #include "tech/pk.h"
 #include "tech/random.h"
 #include "tech/rgb.h"
+#include "tech/ww_audio.h"
 #include "winvq/vqa32/vqaplay.h"
 
 bool IsVQ640 = false;

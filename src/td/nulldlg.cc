@@ -78,7 +78,6 @@
 #include "sdllib/modemreg.h"
 #include "sdllib/timer.h"
 #include "sdllib/wincomm.h"
-#include "sdllib/ww_audio.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 #include "td/conquer.h"
@@ -110,6 +109,7 @@
 #include "td/vector.h"
 #include "tech/crc.h"
 #include "tech/number_parse.h"
+#include "tech/ww_audio.h"
 
 ModemRegistryEntryClass* ModemRegistry = nullptr;  // Ptr to modem registry data
 

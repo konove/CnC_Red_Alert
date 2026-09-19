@@ -59,7 +59,6 @@
 #include "sdllib/keyboard.h"
 #include "sdllib/misc.h"
 #include "sdllib/timer.h"
-#include "sdllib/ww_audio.h"
 #include "sdllib/ww_mouse.h"
 #include "td/conquer.h"
 #include "td/defines.h"
@@ -72,6 +71,7 @@
 #include "td/text.h"
 #include "td/textblit.h"
 #include "tech/game_file.h"
+#include "tech/ww_audio.h"
 
 void GDI_Ending() {
 #ifdef DEMO
@@ -178,8 +178,11 @@ void Nod_Ending() {
 #else
   SysMemPage.Blit(*PseudoSeenBuff);
 #endif  // NOT_FOR_WIN95
-  const auto kanefinl = AudioMixer::LoadSample("KANEFINL.AUD");
-  const auto loopie6m = AudioMixer::LoadSample("LOOPIE6M.AUD");
+  // Read from the file: MixArchive::RetrieveData() only serves cached archives.
+  GameFile kanefinl_file("KANEFINL.AUD");
+  const auto kanefinl = kanefinl_file.ReadBytes(kanefinl_file.Size());
+  GameFile loopie6m_file("LOOPIE6M.AUD");
+  const auto loopie6m = loopie6m_file.ReadBytes(loopie6m_file.Size());
 
   Play_Movie("NODFINAL", THEME_NONE, false);
 
@@ -269,8 +272,8 @@ void Nod_Ending() {
 
   Set_Font(oldfont);
   FontXSpacing = oldfontxspacing;
-  Audio.FreeSample(kanefinl.data());
-  Audio.FreeSample(loopie6m.data());
+  Audio.Stop(kanefinl.data());
+  Audio.Stop(loopie6m.data());
 
   absl::SNPrintF(fname, sizeof(fname), "NODEND%d", selection);
   PreserveVQAScreen = true;

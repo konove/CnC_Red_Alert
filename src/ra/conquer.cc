@@ -97,7 +97,6 @@
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/timer.h"
-#include "sdllib/ww_audio.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
 #include "sdllib/wwstd.h"
@@ -107,6 +106,7 @@
 #include "tech/game_file.h"
 #include "tech/glow_pulse.h"
 #include "tech/rgb.h"
+#include "tech/ww_audio.h"
 
 // Cycles the animated palette entries. Two effects run off independent timers:
 // a white that pulses between bright and half-dark, used by the radar box and

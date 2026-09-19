@@ -77,7 +77,6 @@
 #include "port/bytes_of.h"
 #include "sdllib/misc.h"
 #include "sdllib/shape.h"
-#include "sdllib/ww_audio.h"
 #include "td/audio.h"
 #include "td/conquer.h"
 #include "td/defines.h"
@@ -89,6 +88,7 @@
 #include "td/profile.h"
 #include "td/special.h"
 #include "tech/game_file.h"
+#include "tech/ww_audio.h"
 
 /***********************************************************************************************
  * OptionsClass::OptionsClass -- The default constructor for the options class.

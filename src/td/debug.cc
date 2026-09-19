@@ -49,7 +49,6 @@
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/ww_audio.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 #include "td/aircraft.h"
@@ -74,6 +73,7 @@
 #include "td/type.h"
 #include "td/vector.h"
 #include "tech/pcx_file.h"
+#include "tech/ww_audio.h"
 
 /***********************************************************************************************
  * Debug_Key -- Debug mode keyboard processing. *

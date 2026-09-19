@@ -60,7 +60,6 @@
 #include "sdllib/misc.h"
 #include "sdllib/shape.h"
 #include "sdllib/timer.h"
-#include "sdllib/ww_audio.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 #include "td/audio.h"
@@ -81,6 +80,7 @@
 #include "tech/game_file.h"
 #include "tech/mix_archive.h"
 #include "tech/wsa_animation.h"
+#include "tech/ww_audio.h"
 
 #ifndef DEMO
 
