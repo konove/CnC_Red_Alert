@@ -306,10 +306,10 @@ void SmudgeClass::Read_INI(char* buffer) {
       const char* ptr = tokens.Next();
       if (ptr) {
         int data = 0;
-        const CELL cell = tech::ParseInteger<CELL>(ptr).value_or(0);
+        const CELL cell = tech::ParseIntegerOr<CELL>(ptr, 0);
         ptr = tokens.Next();
         if (ptr) {
-          data = tech::ParseInteger<int>(ptr).value_or(0);
+          data = tech::ParseIntegerOr<int>(ptr, 0);
         }
         new SmudgeClass(smudge, Cell_Coord(cell));
         if (Map.at(cell).Smudge == smudge && data) {

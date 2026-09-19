@@ -904,9 +904,8 @@ bool Select_Game(bool fade) {
 
     while (process) {
       if (DebugNewGame.size() >= 5) {
-        Scenario =
-            tech::ParseInteger<int>(std::string_view{DebugNewGame}.substr(3, 2))
-                .value_or(0);
+        Scenario = tech::ParseIntegerOr<int>(
+            std::string_view{DebugNewGame}.substr(3, 2), 0);
         ScenPlayer =
             DebugNewGame.at(2) == 'B' ? SCEN_PLAYER_NOD : SCEN_PLAYER_GDI;
         Whom = ScenPlayer == SCEN_PLAYER_NOD ? HOUSE_BAD : HOUSE_GOOD;
@@ -2134,6 +2133,57 @@ void Anim_Init() {
   //}
 }
 
+// Applies "-DESTNET<address>": up to ten dot-separated hex bytes, the first
+// four the IPX network and the rest the node, naming the network across a
+// bridge. A malformed address, or one shorter than four bytes, is ignored.
+// `address` is the text after "-DESTNET" and is tokenized in place. Split out
+// of Parse_Command_Line() so the std::optional below does not make clang-tidy
+// run its optional-access dataflow over that whole function.
+static void ApplyDestNetArgument(char* address) {
+  NetNumType net;
+  NetNodeType node;
+
+  /*
+  ** Scan the command-line string, pulling off each address piece
+  */
+  int i = 0;
+  port::Tokenizer tokens(address, ".");
+  const char* p = tokens.Next();
+  while (p) {
+    const auto byte = tech::ParseHex<uint8_t>(p);
+    if (!byte || i >= 10) {
+      i = 0;  // Reject the address instead of accepting a partial network.
+      break;
+    }
+    if (i < 4) {
+      base::At(net, i) = *byte;  // fill NetNum
+    } else {
+      base::At(node, i - 4) = *byte;  // fill NetNode
+    }
+    i++;
+    p = tokens.Next();
+  }
+
+  /*
+  ** If all the address components were successfully read, fill in the
+  ** BridgeNet with a broadcast address to the network across the bridge.
+  */
+  if (i >= 4) {
+    IsBridge = 1;
+    base::FillBytes(base::ObjectBytes(node), 0xff, 6);
+    BridgeNet = IPXAddressClass(net, node);
+  }
+}
+
+// Applies "-SOCKET<offset>": the IPX socket is 0x4000 plus an offset in
+// [0, 0x4000). Anything else leaves the socket alone.
+static void ApplySocketArgument(std::string_view offset_text) {
+  const auto offset = tech::ParseInteger<int>(offset_text);
+  if (offset && *offset >= 0 && *offset < 0x4000) {
+    Ipx.Set_Socket(static_cast<uint16_t>(*offset + 0x4000));
+  }
+}
+
 /***********************************************************************************************
  * Parse_Command_Line -- Parses the command line parameters. *
  *                                                                                             *
@@ -2178,8 +2228,8 @@ bool Parse_Command_Line(std::span<char*> arguments) {
     std::string string = absl::AsciiStrToUpper(original_arg);
 
     if (string.starts_with("-SEED")) {
-      CustomSeed =
-          tech::ParseInteger<uint16_t>(string.substr(5)).value_or(CustomSeed);
+      CustomSeed = tech::ParseIntegerOr<uint16_t>(
+          string.substr(5), static_cast<uint16_t>(CustomSeed));
       continue;
     }
     if (string.starts_with("-NEWGAME")) {
@@ -2190,16 +2240,15 @@ bool Parse_Command_Line(std::span<char*> arguments) {
       continue;
     }
     if (string.starts_with("-LOADGAME")) {
-      DebugLoadGame = tech::ParseInteger<int>(string.substr(9)).value_or(-1);
+      DebugLoadGame = tech::ParseIntegerOr<int>(string.substr(9), -1);
       continue;
     }
     if (string.starts_with("-QUITFRAME")) {
-      DebugQuitAtFrame =
-          tech::ParseInteger<int>(string.substr(10)).value_or(-1);
+      DebugQuitAtFrame = tech::ParseIntegerOr<int>(string.substr(10), -1);
       continue;
     }
     if (string.starts_with("-SAVESLOT")) {
-      DebugSaveSlot = tech::ParseInteger<int>(string.substr(9)).value_or(-1);
+      DebugSaveSlot = tech::ParseIntegerOr<int>(string.substr(9), -1);
       continue;
     }
     if (std::string_view(string) == "-GLOBALTEST") {
@@ -2435,39 +2484,7 @@ bool Parse_Command_Line(std::span<char*> arguments) {
     **	Specify destination connection for network play
     */
     if (string.contains("-DESTNET")) {
-      NetNumType net;
-      NetNodeType node;
-
-      /*
-      ** Scan the command-line string, pulling off each address piece
-      */
-      int i = 0;
-      port::Tokenizer tokens{std::span(string).subspan(8).data(), "."};
-      const char* p = tokens.Next();
-      while (p) {
-        const auto byte = tech::ParseHex<uint8_t>(p);
-        if (!byte || i >= 10) {
-          i = 0;  // Reject the address instead of accepting a partial network.
-          break;
-        }
-        if (i < 4) {
-          base::At(net, i) = *byte;  // fill NetNum
-        } else {
-          base::At(node, i - 4) = *byte;  // fill NetNode
-        }
-        i++;
-        p = tokens.Next();
-      }
-
-      /*
-      ** If all the address components were successfully read, fill in the
-      ** BridgeNet with a broadcast address to the network across the bridge.
-      */
-      if (i >= 4) {
-        IsBridge = 1;
-        base::FillBytes(base::ObjectBytes(node), 0xff, 6);
-        BridgeNet = IPXAddressClass(net, node);
-      }
+      ApplyDestNetArgument(std::span(string).subspan(8).data());
       continue;
     }
 
@@ -2475,11 +2492,8 @@ bool Parse_Command_Line(std::span<char*> arguments) {
     **	Specify socket ID, as an offset from 0x4000.
     */
     if (string.contains("-SOCKET")) {
-      const auto offset = tech::ParseInteger<int>(
+      ApplySocketArgument(
           std::string_view(string).substr(std::string_view("-SOCKET").size()));
-      if (offset && *offset >= 0 && *offset < 0x4000) {
-        Ipx.Set_Socket(static_cast<uint16_t>(*offset + 0x4000));
-      }
       continue;
     }
 

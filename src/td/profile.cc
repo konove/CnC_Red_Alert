@@ -79,7 +79,7 @@ unsigned WWGetPrivateProfileHex(const char* section, const char* entry,
                                 const char* profile) {
   char buffer[16];
   WWGetPrivateProfileString(section, entry, "0", buffer, profile);
-  return tech::ParseHex<uint32_t>(buffer).value_or(0);
+  return tech::ParseHexOr<uint32_t>(buffer, 0);
 }
 
 int WWGetPrivateProfileInt(const char* section, const char* entry, int def,
@@ -87,7 +87,7 @@ int WWGetPrivateProfileInt(const char* section, const char* entry, int def,
   char buffer[16];
   absl::SNPrintF(buffer, sizeof(buffer), "%d", def);
   WWGetPrivateProfileString(section, entry, buffer, buffer, profile);
-  return tech::ParseInteger<int>(buffer).value_or(def);
+  return tech::ParseIntegerOr<int>(buffer, def);
 }
 
 bool WWWritePrivateProfileInt(const char* section, const char* entry, int value,

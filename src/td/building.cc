@@ -3489,19 +3489,19 @@ void BuildingClass::Read_INI(char* buffer) {
       /*
       **	3rd token: strength.
       */
-      int strength = tech::ParseInteger<int>(tokens.Next()).value_or(0);
+      int strength = tech::ParseIntegerOr<int>(tokens.Next(), 0);
 
       /*
       **	4th token: cell #.
       */
-      CELL const cell = tech::ParseInteger<CELL>(tokens.Next())
-                            .value_or(0);  // Cell of building.
+      CELL const cell =
+          tech::ParseIntegerOr<CELL>(tokens.Next(), 0);  // Cell of building.
 
       /*
       **	5th token: facing.
       */
-      const DirType facing = static_cast<DirType>(
-          tech::ParseInteger<int>(tokens.Next()).value_or(0));
+      const auto facing =
+          static_cast<DirType>(tech::ParseIntegerOr<int>(tokens.Next(), 0));
 
       /*
       **	6th token: triggername (can be NULL).

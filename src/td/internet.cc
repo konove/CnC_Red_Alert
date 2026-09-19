@@ -186,7 +186,7 @@ void Check_From_WChat(const char* wchat_name) {
       return;
     }
 
-    PlanetWestwoodPortNumber = tech::ParseInteger<int>(key_string).value_or(0);
+    PlanetWestwoodPortNumber = tech::ParseIntegerOr<int>(key_string, 0);
 
     /*
     ** Get host or client

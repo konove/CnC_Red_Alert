@@ -867,7 +867,7 @@ int MapEditClass::Pick_Scenario(const char* caption, int* scen_nump,
   /*
   ------------------------ Save selections & return ------------------------
   */
-  (*scen_nump) = tech::ParseInteger<int>(scen_buf).value_or(0);
+  (*scen_nump) = tech::ParseIntegerOr<int>(scen_buf, 0);
 
   return 0;
 }
@@ -2023,12 +2023,10 @@ int MapEditClass::Scenario_Dialog() {
     /*
     .............................. Credits ................................
     */
-    gdi_credits =
-        tech::ParseInteger<decltype(gdi_credits)>(gdicred_buf).value_or(0);
-    nod_credits =
-        tech::ParseInteger<decltype(nod_credits)>(nodcred_buf).value_or(0);
+    gdi_credits = tech::ParseIntegerOr<decltype(gdi_credits)>(gdicred_buf, 0);
+    nod_credits = tech::ParseIntegerOr<decltype(nod_credits)>(nodcred_buf, 0);
     neut_credits =
-        tech::ParseInteger<decltype(neut_credits)>(neutcred_buf).value_or(0);
+        tech::ParseIntegerOr<decltype(neut_credits)>(neutcred_buf, 0);
     HouseClass::As_Pointer(HOUSE_GOOD)->Credits = gdi_credits * 1000L;
     HouseClass::As_Pointer(HOUSE_BAD)->Credits = nod_credits * 1000L;
     HouseClass::As_Pointer(HOUSE_NEUTRAL)->Credits = neut_credits * 1000L;
@@ -2042,7 +2040,7 @@ int MapEditClass::Scenario_Dialog() {
   /*
   ........................... Sidebar build level ..........................
   */
-  BuildLevel = tech::ParseInteger<int>(level_buf).value_or(0);
+  BuildLevel = tech::ParseIntegerOr<int>(level_buf, 0);
 
   /*........................................................................
   Change the theater:
@@ -3119,7 +3117,7 @@ int MapEditClass::Edit_Trigger() {
     .............................. Set Data ...............................
     */
     if (TriggerClass::Event_Need_Data(event_idx)) {
-      CurTrigger->Data = tech::ParseInteger<int64_t>(databuf).value_or(0);
+      CurTrigger->Data = tech::ParseIntegerOr<int64_t>(databuf, 0);
     }
 
     /*
@@ -3628,7 +3626,7 @@ int MapEditClass::Import_Teams() {
     for (i = 0; i < 9; i++) {
       tokens.Next();  // flags and counts, unused
     }
-    const int numclasses = tech::ParseInteger<int>(tokens.Next()).value_or(0);
+    const int numclasses = tech::ParseIntegerOr<int>(tokens.Next(), 0);
 
     /*
     ** Generate the descriptive string

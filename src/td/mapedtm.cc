@@ -1266,7 +1266,7 @@ int MapEditClass::Edit_Team() {
                 toupper(base::At(arg_buf, 0)) - 'A';
           } else {
             base::At(missions, i).Argument =
-                tech::ParseInteger<int>(arg_buf).value_or(0);
+                tech::ParseIntegerOr<int>(arg_buf, 0);
           }
           missioncount++;
 
@@ -1393,11 +1393,11 @@ int MapEditClass::Edit_Team() {
   ------------------------ Save selections & return ------------------------
   */
   CurTeam->Set_Name(name_buf);
-  CurTeam->RecruitPriority = tech::ParseInteger<int>(recr_buf).value_or(0);
-  CurTeam->MaxAllowed = static_cast<unsigned char>(
-      tech::ParseInteger<int>(maxnum_buf).value_or(0));
-  CurTeam->InitNum = static_cast<unsigned char>(
-      tech::ParseInteger<int>(initnum_buf).value_or(0));
+  CurTeam->RecruitPriority = tech::ParseIntegerOr<int>(recr_buf, 0);
+  CurTeam->MaxAllowed =
+      static_cast<unsigned char>(tech::ParseIntegerOr<int>(maxnum_buf, 0));
+  CurTeam->InitNum =
+      static_cast<unsigned char>(tech::ParseIntegerOr<int>(initnum_buf, 0));
   CurTeam->IsRoundAbout = roundabout != 0;
   CurTeam->IsLearning = learning != 0;
   CurTeam->IsSuicide = suicide != 0;

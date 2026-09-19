@@ -3509,12 +3509,11 @@ void UnitClass::Read_INI(char* buffer) {
           /*
           **	Read the raw data.
           */
-          const int strength =
-              tech::ParseInteger<int>(tokens.Next()).value_or(0);
+          const int strength = tech::ParseIntegerOr<int>(tokens.Next(), 0);
           const COORDINATE coord =
-              Cell_Coord(tech::ParseInteger<CELL>(tokens.Next()).value_or(0));
-          const DirType dir = static_cast<DirType>(
-              tech::ParseInteger<int>(tokens.Next()).value_or(0));
+              Cell_Coord(tech::ParseIntegerOr<CELL>(tokens.Next(), 0));
+          const auto dir =
+              static_cast<DirType>(tech::ParseIntegerOr<int>(tokens.Next(), 0));
           const MissionType mission = Mission_From_Name(tokens.Next(",\n\r"));
           unit->Trigger = TriggerClass::As_Pointer(tokens.Next());
           if (unit->Trigger) {

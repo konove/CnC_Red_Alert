@@ -3098,32 +3098,29 @@ void InfantryClass::Read_INI(char* buffer) {
           /*
           **	3rd token: strength.
           */
-          const int strength =
-              tech::ParseInteger<int>(tokens.Next()).value_or(0);
+          const int strength = tech::ParseIntegerOr<int>(tokens.Next(), 0);
 
           /*
           **	4th token: cell #.
           */
           COORDINATE coord =
-              Cell_Coord(tech::ParseInteger<CELL>(tokens.Next()).value_or(0));
+              Cell_Coord(tech::ParseIntegerOr<CELL>(tokens.Next(), 0));
 
           /*
           **	5th token: cell sub-location.
           */
           coord = Coord_Add(
               coord & 0xFF00FF00L,
-              base::At(
-                  StoppingCoordAbs,
-                  std::clamp(
-                      tech::ParseInteger<int>(tokens.Next(",")).value_or(0), 0,
-                      4)));
+              base::At(StoppingCoordAbs, std::clamp(tech::ParseIntegerOr<int>(
+                                                        tokens.Next(","), 0),
+                                                    0, 4)));
 
           /*
           **	Fetch the mission and facing.
           */
           const MissionType mission = Mission_From_Name(tokens.Next());
-          const DirType dir = static_cast<DirType>(
-              tech::ParseInteger<int>(tokens.Next()).value_or(0));
+          const auto dir =
+              static_cast<DirType>(tech::ParseIntegerOr<int>(tokens.Next(), 0));
           infantry->Trigger = TriggerClass::As_Pointer(tokens.Next());
           if (infantry->Trigger) {
             infantry->Trigger->AttachCount++;

@@ -2136,7 +2136,7 @@ int NullModemClass::Verify_And_Convert_To_Int(char* buffer) {
   }
 
   if (value == 0) {
-    value = tech::ParseInteger<int>(buffer).value_or(0);
+    value = tech::ParseIntegerOr<int>(buffer, 0);
   }
 
   return value;

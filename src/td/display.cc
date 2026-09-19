@@ -1145,7 +1145,7 @@ void DisplayClass::Read_INI(char* buffer) {
     /*
     **	Get cell # from entry name.
     */
-    const int cell = tech::ParseInteger<int>(tbuffer).value_or(0);
+    const int cell = tech::ParseIntegerOr<int>(tbuffer, 0);
     if (cell > 0 && cell < MAP_CELL_TOTAL && !(*this).at(cell).IsTrigger) {
       /*
       **	Assign trigger pointer using trigger name.

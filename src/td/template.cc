@@ -133,7 +133,7 @@ void TemplateClass::Read_INI(char* buffer) {
   WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, key_cursor, buffer);
   while (*tbuffer != '\0') {
     CELL const cell =
-        tech::ParseInteger<CELL>(tbuffer).value_or(0);  // Cell of building.
+        tech::ParseIntegerOr<CELL>(tbuffer, 0);  // Cell of building.
     WWGetPrivateProfileString(
         INI_Name(), tbuffer, nullptr,
         std::span(buf).first(static_cast<std::size_t>(sizeof(buf) - 1)),
