@@ -246,8 +246,6 @@ extern int CurPhoneIdx;
 extern DynamicVectorClass<char*> InitStrings;
 extern SerialSettingsType SerialDefaults;
 extern ModemGameType ModemGameToPlay;
-extern const base::EnumArray<DialMethodType, const char*, kDialMethods>
-    DialMethodCheck;
 // CALL_WAIT_CUSTOM is edited in place by the serial-settings dialog, so
 // these are writable buffers rather than pointers to literals.
 extern char CallWaitStrings[kCallWaitStringsNum][CALL_WAIT_STRING_MAX];
@@ -260,7 +258,6 @@ extern int ColorUsed[MAX_MPLAYER_COLORS];
 extern char MPlayerName[MPLAYER_NAME_MAX];
 extern int MPlayerGColors[MAX_MPLAYER_COLORS];
 extern int MPlayerTColors[MAX_MPLAYER_COLORS];
-extern char MPlayerDescriptions[100][40];
 extern DynamicVectorClass<char*> MPlayerScenarios;
 extern DynamicVectorClass<int> MPlayerFilenum;
 extern int MPlayerMax;
@@ -299,7 +296,6 @@ extern int32_t TrapFrame;
 extern RTTIType TrapObjType;
 extern COORDINATE TrapCoord;
 extern void* TrapThis;
-extern CellClass* TrapCell;
 extern int TrapCheckHeap;
 
 /*

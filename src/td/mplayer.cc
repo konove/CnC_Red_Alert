@@ -64,6 +64,7 @@
 #include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
+#include "base/enum_array.h"
 #include "port/bytes_of.h"
 #include "port/safe_string.h"
 #include "port/tokenizer.h"
@@ -103,6 +104,13 @@
 #include "tech/number_parse.h"
 
 static void Garble_Message(std::span<char> buf);
+
+// The modem dial prefix for each dial method: tone or pulse.
+static constexpr base::EnumArray<DialMethodType, const char*, kDialMethods>
+    kDialMethodCheck = {"T", "P"};
+
+// The names of the multiplayer scenarios; MPlayerScenarios points into it.
+static char mplayer_descriptions[100][40];
 
 int Choose_Internet_Game();
 int Get_Internet_Host_Or_Join();
@@ -510,7 +518,7 @@ void Read_MultiPlayer_Settings() {
 
   for (i = 0; i < kDialMethods; i++) {
     if (absl::EqualsIgnoreCase(
-            buf, DialMethodCheck.at(static_cast<DialMethodType>(i)))) {
+            buf, kDialMethodCheck.at(static_cast<DialMethodType>(i)))) {
       SerialDefaults.DialMethod = static_cast<DialMethodType>(i);
       break;
     }
@@ -693,7 +701,7 @@ void Read_MultiPlayer_Settings() {
 
       for (i = 0; i < kDialMethods; i++) {
         if (absl::EqualsIgnoreCase(
-                buf, DialMethodCheck.at(static_cast<DialMethodType>(i)))) {
+                buf, kDialMethodCheck.at(static_cast<DialMethodType>(i)))) {
           phone->Settings.DialMethod = static_cast<DialMethodType>(i);
           break;
         }
@@ -777,14 +785,6 @@ void Read_MultiPlayer_Settings() {
     if (const auto trap_this = tech::ParseHex<uintptr_t>(buf)) {
       TrapThis = std::bit_cast<void*>(*trap_this);
     }
-
-    WWGetPrivateProfileString(
-        "SyncBug", "Cell", "0",
-        std::span(buf).first(static_cast<std::size_t>(80)), buffer);
-    CELL const cell = tech::ParseIntegerOr<CELL>(buf, 0);
-    if (cell) {
-      TrapCell = &Map.at(cell);
-    }
   }
 }
 
@@ -854,7 +854,7 @@ void Write_MultiPlayer_Settings() {
                            SerialDefaults.Init ? 1 : 0,
                            port::CharBytes(ShapeBufferBytes));
   WWWritePrivateProfileString("SerialDefaults", "DialMethod",
-                              DialMethodCheck.at(SerialDefaults.DialMethod),
+                              kDialMethodCheck.at(SerialDefaults.DialMethod),
                               port::CharBytes(ShapeBufferBytes));
   WWWritePrivateProfileInt("SerialDefaults", "Baud", SerialDefaults.Baud,
                            port::CharBytes(ShapeBufferBytes));
@@ -912,7 +912,7 @@ void Write_MultiPlayer_Settings() {
                    PhoneBook.at(i)->Settings.Compression ? 1 : 0,
                    PhoneBook.at(i)->Settings.ErrorCorrection ? 1 : 0,
                    PhoneBook.at(i)->Settings.HardwareFlowControl ? 1 : 0,
-                   DialMethodCheck.at(PhoneBook.at(i)->Settings.DialMethod),
+                   kDialMethodCheck.at(PhoneBook.at(i)->Settings.DialMethod),
                    PhoneBook.at(i)->Settings.InitStringIndex,
                    PhoneBook.at(i)->Settings.CallWaitStringIndex,
                    PhoneBook.at(i)->Settings.CallWaitString);
@@ -994,10 +994,10 @@ void Read_Scenario_Descriptions() {
     Extract description & add it to the list.
     .....................................................................*/
     WWGetPrivateProfileString("Basic", "Name", "Nulls-Ville",
-                              std::span(base::At(MPlayerDescriptions, i))
+                              std::span(base::At(mplayer_descriptions, i))
                                   .first(static_cast<std::size_t>(40)),
                               buffer);
-    MPlayerScenarios.Add(base::At(MPlayerDescriptions, i));
+    MPlayerScenarios.Add(base::At(mplayer_descriptions, i));
   }
 }
 

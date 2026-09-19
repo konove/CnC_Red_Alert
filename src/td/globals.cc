@@ -58,7 +58,6 @@
 #include "td/base.h"
 #include "td/building.h"
 #include "td/bullet.h"
-#include "td/cell.h"
 #include "td/connect.h"
 #include "td/credits.h"
 #include "td/defines.h"
@@ -479,9 +478,6 @@ SerialSettingsType SerialDefaults;  // serial port default settings
 
 ModemGameType ModemGameToPlay;  // type of modem play Dialer, answerer, null
 
-const base::EnumArray<DialMethodType, const char*, kDialMethods>
-    DialMethodCheck = {"T", "P"};
-
 char CallWaitStrings[kCallWaitStringsNum][CALL_WAIT_STRING_MAX] = {
     "*70,", "70#,", "1170,", "CUSTOM -                "};
 
@@ -528,7 +524,6 @@ int MPlayerTColors[MAX_MPLAYER_COLORS] = {
 ** bases (production), and those that don't.  There is a list for
 ** descriptions, and another for actual filenames.
 */
-char MPlayerDescriptions[100][40];
 DynamicVectorClass<char*> MPlayerScenarios;
 DynamicVectorClass<int> MPlayerFilenum;
 
@@ -632,7 +627,6 @@ int32_t TrapFrame = 0x7fffffff;    // frame to start trapping object values at
 RTTIType TrapObjType = RTTI_NONE;  // type of object to trap
 COORDINATE TrapCoord = 0;               // COORD of object to trap
 void* TrapThis = nullptr;               // 'this' ptr of object to trap
-CellClass* TrapCell = nullptr;          // for trapping a cell
 int TrapCheckHeap = 0;                  // start checking the Heap
 
 /***************************************************************************
