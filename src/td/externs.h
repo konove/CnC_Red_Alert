@@ -217,7 +217,6 @@ extern ScenarioPlayerType ScenPlayer;
 extern ScenarioDirType ScenDir;
 extern ScenarioVarType ScenVar;
 extern int CarryOverMoney;
-extern int CarryOverCap;
 extern int CarryOverPercent;
 extern char ScenarioName[port::kMaxFname + port::kMaxExt];
 extern int BuildLevel;

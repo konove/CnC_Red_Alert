@@ -106,6 +106,10 @@
 #include "td/vector.h"
 #include "tech/game_file.h"
 
+// The most money a scenario lets the player carry over from the last one,
+// from its [Basic] CarryOverCap; negative means uncapped.
+static int carry_over_cap;
+
 /************************************* Prototypes
  * *********************************************/
 static void Assign_Houses();
@@ -426,16 +430,17 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
     CarryOverPercent =
         WWGetPrivateProfileInt("Basic", "CarryOverMoney", 100, buffer);
     CarryOverPercent = Cardinal_To_Fixed(100, CarryOverPercent);
-    CarryOverCap = WWGetPrivateProfileInt("Basic", "CarryOverCap", -1, buffer);
+    carry_over_cap =
+        WWGetPrivateProfileInt("Basic", "carry_over_cap", -1, buffer);
 
     PlayerPtr = HouseClass::As_Pointer(HouseTypeClass::From_Name(buf));
     PlayerPtr->IsHuman = true;
     int carryover = 0;
     // Any negative cap, not just the -1 default, means uncapped; the original
     // compared the cap as unsigned.
-    if (CarryOverCap >= 0) {
+    if (carry_over_cap >= 0) {
       carryover = std::min(Fixed_To_Cardinal(CarryOverMoney, CarryOverPercent),
-                           CarryOverCap);
+                           carry_over_cap);
     } else {
       carryover = Fixed_To_Cardinal(CarryOverMoney, CarryOverPercent);
     }
@@ -750,7 +755,7 @@ void Write_Scenario_Ini(const char* root) {
     WWWritePrivateProfileInt("Basic", "CarryOverMoney",
                              Fixed_To_Cardinal(100, CarryOverPercent),
                              port::CharBytes(ShapeBufferBytes));
-    WWWritePrivateProfileInt("Basic", "CarryOverCap", CarryOverCap,
+    WWWritePrivateProfileInt("Basic", "carry_over_cap", carry_over_cap,
                              port::CharBytes(ShapeBufferBytes));
 
     TeamTypeClass::Write_INI(port::CharBytes(ShapeBufferBytes), true);
