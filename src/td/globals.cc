@@ -797,7 +797,6 @@ WWKeyboardClass Kbd;
 int ScreenWidth = 640;
 int ScreenHeight = 400;
 WWMouseClass* WWMouse = nullptr;
-int AllDone;
 bool InMovie = false;       // Are we currently playing a VQ movie?
 bool MMXAvailable = false;  // Does this CPU support MMX extensions?
 GetCDClass CDList;

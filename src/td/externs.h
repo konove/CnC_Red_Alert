@@ -341,7 +341,6 @@ extern WWKeyboardClass Kbd;
 extern int In_Debugger;
 extern WWMouseClass* WWMouse;
 extern HANDLE hInstance;
-extern int AllDone;
 extern "C" bool MMXAvailable;
 extern int Get_CD_Index(int cd_drive, int timeout);
 [[noreturn]] void Memory_Error_Handler();
