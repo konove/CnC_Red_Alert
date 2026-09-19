@@ -16,26 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header: /CounterStrike/INTRO.CPP 1     3/03/97 10:24a Joe_bostic $ */
-/***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
- ****
- ***********************************************************************************************
- *                                                                                             *
- *                 Project Name : Command & Conquer *
- *                                                                                             *
- *                    File Name : INTRO.H *
- *                                                                                             *
- *                   Programmer : Barry W. Green *
- *                                                                                             *
- *                   Start Date : May 8, 1995 *
- *                                                                                             *
- *                  Last Update : May 8, 1995  [BWG] *
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * Functions: *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
+// The first-launch introduction movie and, on the DVD, the side prompt in front
+// of it.
 
 #include "ra/intro.h"
 
@@ -47,54 +29,48 @@
 #include "ra/mplayer.h"
 #include "ra/msgbox.h"
 #include "ra/palette.h"
-#include "ra/special.h"
 #include "ra/text_ids.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/ww_mouse.h"
 
-/***********************************************************************************************
- * Choose_Side -- play the introduction movies, select house *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS: *
- *                                                                                             *
- * HISTORY: * 5/08/1995 BWG : Created. *
- *=============================================================================================*/
-void Choose_Side()  //	ajw - In RA, all this did was play a movie.
-                    // Denzil is using it in its original sense.
-{
-  Whom = HOUSE_GOOD;
+// ajw: in RA, all this did was play a movie. Denzil's DVD support uses it in
+// its original sense again, because a DVD cannot tell the side by which disc is
+// in the drive. (5/08/1995 BWG: created.)
+void PlayFirstLaunchIntro() {
+  // A CD install knows the side from the disc that is in the drive. The DVD
+  // holds both campaigns, so the player has to be asked.
+  if (Using_DVD()) {
+    // Put the title page up as a backdrop for the dialog.
+    Hide_Mouse();
+    Load_Title_Page();
+    GamePalette = CCPalette;
+    HidPage.Blit(SeenBuff);
+    CCPalette.Set();
+    Set_Logic_Page(SeenBuff);
+    Show_Mouse();
 
-  if (Special.IsFromInstall) {
-    if (Using_DVD()) {
-      Hide_Mouse();
-      Load_Title_Page();
-      GamePalette = CCPalette;
-      HidPage.Blit(SeenBuff);
-      CCPalette.Set();
-      Set_Logic_Page(SeenBuff);
-      Show_Mouse();
+    // Process() returns the index of the button pressed. CurrentCD uses the
+    // disc numbering, 0 for the Allied disc and 1 for the Soviet one.
+    switch (WWMessageBox().Process(TXT_CHOOSE, TXT_ALLIES, TXT_SOVIET)) {
+      case 0:
+        CurrentCD = 0;
+        break;
 
-      switch (WWMessageBox().Process(TXT_CHOOSE, TXT_ALLIES, TXT_SOVIET)) {
-        case 0:
-          CurrentCD = 0;
-          break;
-
-        case 1:
-          CurrentCD = 1;
-          break;
-        default:
-          break;
-      }
-
-      Hide_Mouse();
-      BlackPalette.Set(kFadePaletteSlow);
-      SeenBuff.Clear();
+      case 1:
+        CurrentCD = 1;
+        break;
+      default:
+        break;
     }
 
-    Play_Movie(VQ_INTRO_MOVIE, THEME_NONE, false);
+    // Fade out and clear so that the movie starts from black. Mouse hides are
+    // counted, so this one needs its own show: the caller balances only the
+    // hide it makes itself.
+    Hide_Mouse();
+    BlackPalette.Set(kFadePaletteSlow);
+    SeenBuff.Clear();
+    Show_Mouse();
   }
+
+  Play_Movie(VQ_INTRO_MOVIE, THEME_NONE, false);
 }

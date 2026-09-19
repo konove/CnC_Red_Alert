@@ -162,6 +162,14 @@ add_gtest(
 )
 apply_language_setting(ra_crate_test)
 
+# Compiles intro.cc directly; the dialog, movie player and mouse are stubs.
+add_gtest(
+    NAME ra_intro_test
+    SOURCES intro_test.cc intro.cc
+    LIBS base tech sdllib absl::check absl::log magic_enum::magic_enum
+)
+apply_language_setting(ra_intro_test)
+
 add_gtest(
     NAME ra_saveglobals_test
     SOURCES saveglobals_test.cc saveglobals.cc ipxaddr.cc

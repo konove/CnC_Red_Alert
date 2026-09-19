@@ -16,30 +16,19 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header: /CounterStrike/INTRO.H 1     3/03/97 10:24a Joe_bostic $ */
-/***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
- ****
- ***********************************************************************************************
- *                                                                                             *
- *                 Project Name : Command & Conquer *
- *                                                                                             *
- *                    File Name : INTRO.H *
- *                                                                                             *
- *                   Programmer : Barry W. Green *
- *                                                                                             *
- *                   Start Date : May 8, 1995 *
- *                                                                                             *
- *                  Last Update : May 8, 1995  [BWG] *
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * Functions: *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
+// The first-launch introduction (INTRO.H, Barry W. Green, May 1995).
 
 #ifndef CNC_RED_ALERT_RA_INTRO_H_
 #define CNC_RED_ALERT_RA_INTRO_H_
 
-void Choose_Side();
+// Plays the introduction movie. Select_Game() calls this when it starts the
+// campaign on the first launch after installing (Special.IsFromInstall).
+//
+// When playing from the DVD, first asks the player to choose Allies or Soviets
+// and stores the answer in CurrentCD (0 Allied, 1 Soviet), which the caller
+// turns into the first scenario. With CDs the disc in the drive has already
+// answered that question. Leaves the mouse as it found it. Originally
+// "Choose_Side": in Tiberian Dawn this is where the player picks a house.
+void PlayFirstLaunchIntro();
 
 #endif  // CNC_RED_ALERT_RA_INTRO_H_
