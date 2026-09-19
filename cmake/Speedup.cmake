@@ -29,12 +29,45 @@ endif ()
 # ctcache (https://github.com/matus-chochlik/ctcache) wraps clang-tidy and
 # skips the re-analysis when the preprocessed source and .clang-tidy are
 # unchanged. Only useful when the checks actually run, hence the STRICT_CHECKS
-# guard. The top-level CMakeLists.txt puts CTCACHE_PROGRAM in front of
-# CMAKE_CXX_CLANG_TIDY. Point the cache elsewhere with CTCACHE_DIR.
+# guard. The top-level CMakeLists.txt puts CTCACHE_COMMAND in front of
+# CMAKE_CXX_CLANG_TIDY.
+#
+# The cache is shared by every build dir, so a state one strict dir has
+# analyzed is a hit in the other (build-strict and CLion's strict profile).
+# That needs the hash to be independent of the build dir, which ctcache
+# supports through environment variables, set here with `cmake -E env`:
+#   CTCACHE_DIR    one cache in ~/.cache/ctcache (survives reboots, unlike
+#                  ctcache's /tmp default); override with -DCTCACHE_DIR.
+#   CTCACHE_STRIP  removes this build dir from the hashed arguments and, with
+#                  CTCACHE_STRIP_SRC, from the preprocessed source: the _deps
+#                  -isystem paths and any __FILE__ inside _deps.
+#   CTCACHE_EXCLUDE_HASH_REGEX  leaves out -O*, -g* and the color-diagnostics
+#                  flags CLion adds. They cannot change tidy's findings beyond
+#                  what the hashed preprocessed source already captures
+#                  (-O0 and -O1+ differ in __OPTIMIZE__). No `$` in the regex:
+#                  the command runs through `sh -c`.
+# Sharing still needs the same build type family (optimized or not) and the
+# same .env in both dirs, since both change the preprocessed source.
 if (USE_CTCACHE AND STRICT_CHECKS)
     find_program(CTCACHE_PROGRAM NAMES clang-tidy-cache ctcache)
     if (CTCACHE_PROGRAM)
-        message(STATUS "clang-tidy cache enabled: ${CTCACHE_PROGRAM}")
+        if (DEFINED ENV{CTCACHE_DIR})
+            set(_ctcache_default_dir "$ENV{CTCACHE_DIR}")
+        else ()
+            set(_ctcache_default_dir "$ENV{HOME}/.cache/ctcache")
+        endif ()
+        set(CTCACHE_DIR "${_ctcache_default_dir}" CACHE PATH
+                "clang-tidy-cache directory, shared by all build dirs")
+        # CTCACHE_STRIP is a regex; make the path's . and + literal.
+        string(REGEX REPLACE "([.+])" "[\\1]" _ctcache_strip "${CMAKE_BINARY_DIR}/")
+        set(CTCACHE_COMMAND
+                "${CMAKE_COMMAND}" -E env
+                "CTCACHE_DIR=${CTCACHE_DIR}"
+                "CTCACHE_STRIP=${_ctcache_strip}"
+                "CTCACHE_STRIP_SRC=1"
+                "CTCACHE_EXCLUDE_HASH_REGEX=-O|-g|-f(no-)?color-diagnostics|-fdiagnostics-color"
+                "${CTCACHE_PROGRAM}")
+        message(STATUS "clang-tidy cache enabled: ${CTCACHE_PROGRAM} (${CTCACHE_DIR})")
     else ()
         message(STATUS "clang-tidy-cache not found - clang-tidy re-runs on every build")
     endif ()

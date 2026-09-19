@@ -121,8 +121,15 @@ failure: the build continues uncached. Since every unit is quiet today, seeing i
 header started warning and caching is off for the units that include it.
 `CTCACHE_LOG_LEVEL=CRITICAL` hides the message; `-DUSE_CTCACHE=OFF` drops the wrapper entirely.
 
-The cache defaults to `/tmp/ctcache-$USER`, which does not survive a reboot; set
-`CTCACHE_DIR=~/.cache/ctcache` to keep it.
+**Every strict build dir shares one clang-tidy cache,** `~/.cache/ctcache` (set another with
+`-DCTCACHE_DIR=...`). `cmake/Speedup.cmake` runs `clang-tidy-cache` under `cmake -E env` with
+`CTCACHE_STRIP` (the build dir), `CTCACHE_STRIP_SRC` and `CTCACHE_EXCLUDE_HASH_REGEX` (`-O*`, `-g*`,
+color flags), so the same source state hashes the same in `build-strict` and CLion's strict dir, and
+whichever builds second skips clang-tidy. Sharing needs the same compiler, analyzer mode and
+optimized-or-not build type (`-O0` changes `__OPTIMIZE__`, `Release` skips `.env`), so keep both
+dirs on `RelWithDebInfo`. `clang-tidy-cache --show-stats` reports on its server mode, not this
+cache; to check that two dirs agree, compare `CTCACHE_DUMP=1 CTCACHE_DUMP_DIR=<dir>` dumps of one
+TU.
 
 Editing `.clang-tidy` re-checks the whole tree on the next build — its hash rides along in the
 clang-tidy command line, so a config change makes every object stale. No `clean` needed (and `clean`

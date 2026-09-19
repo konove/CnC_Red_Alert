@@ -122,9 +122,10 @@ if (STRICT_CHECKS)
             "--extra-arg=-Xclang" "--extra-arg=mode=${CLANG_ANALYZER_MODE}")
 
     # ctcache takes the clang-tidy invocation as its arguments, so it goes in
-    # front of the list rather than replacing anything in it. Set by Speedup.
-    if (CTCACHE_PROGRAM)
-        set(CMAKE_CXX_CLANG_TIDY "${CTCACHE_PROGRAM}" ${CMAKE_CXX_CLANG_TIDY})
+    # front of the list rather than replacing anything in it. Set by Speedup,
+    # with the environment that shares the cache between build dirs.
+    if (CTCACHE_COMMAND)
+        set(CMAKE_CXX_CLANG_TIDY ${CTCACHE_COMMAND} ${CMAKE_CXX_CLANG_TIDY})
     endif ()
     message(STATUS "Strict checks enabled (clang-tidy + warnings)")
 else ()

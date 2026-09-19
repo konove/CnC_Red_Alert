@@ -163,3 +163,7 @@ Full-pass time, the cost breakdown, and the sharing prerequisites.
   `-DESTNET`/`-SOCKET` moved out of both `Parse_Command_Line()`s.
   `bugprone-unchecked-optional-access` on the 10 hotspot TUs: init.cc 8.2/7.9 s → 0.01 s, session.cc
   0.5 s, the rest ≤ 0.01 s.
+- 2026-09-19: step 6 done — shared `~/.cache/ctcache`. A second strict dir at another path (with
+  `CMAKE_COLOR_DIAGNOSTICS=ON`) produced a byte-identical ctcache hash dump for `ra/drop.cc`; a
+  deliberate violation failed in both dirs. CLion's strict dir is on `Release`, which skips `.env`
+  (`INTERNAL_VERSION`) and so cannot share until step 7.
