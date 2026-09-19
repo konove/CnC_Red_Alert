@@ -183,6 +183,7 @@ int main(int argc, char* argv[])
     absl::PrintF("Insufficient RAM available.\n");
 #endif
 #endif
+    ShutDown();
     return EXIT_FAILURE;
   }
 
@@ -235,7 +236,7 @@ int main(int argc, char* argv[])
 
     if (Disk_Space_Available() < INIT_FREE_DISK_SPACE) {
       // pretty unlikely
-      ShutdownTickTimer();
+      ShutDown();
       return EXIT_FAILURE;
     }
 
@@ -284,9 +285,7 @@ int main(int argc, char* argv[])
 
       if (!video_success) {
         CCDebugString("C&C95 - Failed to set video mode.\n");
-        ShutdownTickTimer();
-        Palette.clear();
-        Palette.clear();
+        ShutDown();
         return EXIT_FAILURE;
       }
 
@@ -411,12 +410,7 @@ int main(int argc, char* argv[])
 #endif
 
     //		Remove_Keyboard_Interrupt();
-    ShutdownTickTimer();
-
-    if (!Palette.empty()) {
-      Palette.clear();
-      Palette.clear();
-    }
+    ShutDown();
     return EXIT_FAILURE;
   }
 
@@ -428,6 +422,7 @@ int main(int argc, char* argv[])
   chdir(oldpath);
 #endif  // NOT_FOR_WIN95
 
+  ShutDown();
   return EXIT_SUCCESS;
 }
 
