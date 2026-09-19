@@ -35,6 +35,7 @@ constexpr uint32_t CheatCodes[] = {0xA0E2AB53,  // Joseph Hewitt
                                    0xBE79088C,  // David Dettmer
                                    0xB216AE7E,  // Barry Green
                                    0x0E07B213,  // Steve Tall
+                                   0x56129C99,  // konove (PEROPERO)
                                    0};
 
 constexpr uint32_t EditorCodes[] = {0xA2C09326,  // Erik Yeo
