@@ -151,7 +151,7 @@ void Choose_Side() {
     BreakoutAllowed = true;
   }
 
-  // anim = Open_Animation("CHOOSE.WSA",NULL,0L,(WSAOpenType)(WSA_OPEN_FROM_MEM
+  // anim = Open_Animation("CHOOSE.WSA",NULL,0L,(WsaOpenFlags)(WSA_OPEN_FROM_MEM
   // | WSA_OPEN_TO_PAGE),Palette);
   void* anim = Open_Animation("CHOOSE.WSA",
                               WSA_OPEN_FROM_DISK | WSA_OPEN_TO_PAGE, Palette);

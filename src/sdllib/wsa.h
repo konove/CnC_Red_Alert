@@ -47,7 +47,7 @@
 
 // Flags for Open_Animation(). The zero-valued names are the defaults and exist
 // only to make call sites readable; testing for them with `&` is always false.
-enum class CNC_FLAG_ENUM WSAOpenType {
+enum class CNC_FLAG_ENUM WsaOpenFlags {
   // Try to load the entire animation into memory.
   WSA_OPEN_FROM_MEM = 0x0000,
   // First animate to an internal buffer, then copy to the page or viewport.
@@ -65,16 +65,16 @@ enum class CNC_FLAG_ENUM WSAOpenType {
   WSA_OPEN_TO_PAGE = WSA_OPEN_DIRECT,
   WSA_OPEN_TO_BUFFER = WSA_OPEN_INDIRECT,
 };
-using enum WSAOpenType;
+using enum WsaOpenFlags;
 template <>
-inline constexpr bool base::kIsFlagEnum<WSAOpenType> = true;
+inline constexpr bool base::kIsFlagEnum<WsaOpenFlags> = true;
 
 // Opens the animation in `file_name` and returns a handle to pass to
 // Animate_Frame(), or nullptr if the file is missing, corrupt or too large for
 // memory. If the file has a palette and `palette` holds at least 768 bytes
 // (256 RGB triples), it is read into `palette`. Release the handle with
 // Close_Animation().
-void* Open_Animation(const char* file_name, WSAOpenType user_flags,
+void* Open_Animation(const char* file_name, WsaOpenFlags user_flags,
                      std::span<uint8_t> palette = {});
 
 // Closes the animation's file, if it is being played from disk, and frees

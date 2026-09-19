@@ -156,7 +156,7 @@ static int64_t Get_File_Frame_Offset(int file_handle, int frame,
 static bool Apply_Delta(const SysAnimHeaderType* sys_header, int curr_frame,
                         std::span<uint8_t> dest_ptr, int dest_w);
 
-void* Open_Animation(const char* file_name, WSAOpenType user_flags,
+void* Open_Animation(const char* file_name, WsaOpenFlags user_flags,
                      std::span<uint8_t> palette) {
   int palette_adjust = 0;
   int frame0_size = 0;

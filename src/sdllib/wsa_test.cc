@@ -183,7 +183,7 @@ std::vector<char> MakeTwoFrameWsa(int claimed_size) {
 // Opens the corrupt animation, animates to frame 1, and checks that the
 // oversized frame was not drawn. Run under ASan, this also catches the frame
 // landing outside the delta buffer.
-void ExpectOversizedFrameIsNotLoaded(WSAOpenType flags) {
+void ExpectOversizedFrameIsNotLoaded(WsaOpenFlags flags) {
   file_image = MakeTwoFrameWsa(600);
 
   void* handle = Open_Animation("TEST.WSA", flags);
