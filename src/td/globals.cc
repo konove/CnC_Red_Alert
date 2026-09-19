@@ -114,8 +114,6 @@ bool Debug_Check_Map = false;  // true = validate the map each frame
 bool Debug_Playtest = false;
 int In_Debugger = 0;
 bool Debug_Heap_Dump = false;  // true = print the Heap Dump
-bool Debug_Smart_Print =
-    false;  // true = print everything that calls Smart_Printf
 bool Debug_Instant_Build = false;
 
 TFixedIHeapClass<UnitClass> Units;
@@ -477,9 +475,6 @@ DynamicVectorClass<char*> InitStrings;
 SerialSettingsType SerialDefaults;  // serial port default settings
 
 ModemGameType ModemGameToPlay;  // type of modem play Dialer, answerer, null
-
-char CallWaitStrings[kCallWaitStringsNum][CALL_WAIT_STRING_MAX] = {
-    "*70,", "70#,", "1170,", "CUSTOM -                "};
 
 /***************************************************************************
 **	Index into scenario description list box

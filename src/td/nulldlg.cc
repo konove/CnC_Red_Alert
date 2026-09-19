@@ -113,6 +113,15 @@
 
 ModemRegistryEntryClass* ModemRegistry = nullptr;  // Ptr to modem registry data
 
+// Whether Smart_Print() echoes to stdout; on while a serial game runs.
+static bool smart_print_enabled = false;
+
+// The call waiting disable strings. kCallWaitCustom is edited in place by the
+// serial-settings dialog, so these are writable buffers rather than pointers
+// to literals.
+static char call_wait_strings[kCallWaitStringsNum][CALL_WAIT_STRING_MAX] = {
+    "*70,", "70#,", "1170,", "CUSTOM -                "};
+
 //
 // how much time (ticks) to go by before thinking other system
 // is not responding.
@@ -1083,7 +1092,7 @@ GameType Select_Serial_Dialog() {
   Fancy_Text_Print(TXT_NONE, 0, 0, kCcGreen, kTBlack,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
-  Debug_Smart_Print = true;
+  smart_print_enabled = true;
 
   MPlayerLocalID = 0xff;  // set to invalid value
 
@@ -1241,7 +1250,7 @@ GameType Select_Serial_Dialog() {
               } else {
                 port::SafeCopy(
                     DialString,
-                    base::At(CallWaitStrings, settings->CallWaitStringIndex));
+                    base::At(call_wait_strings, settings->CallWaitStringIndex));
               }
               port::SafeAppend(DialString, PhoneBook.at(CurPhoneIdx)->Number);
 
@@ -1391,7 +1400,7 @@ GameType Select_Serial_Dialog() {
     }
   } /* end of while */
 
-  Debug_Smart_Print = false;
+  smart_print_enabled = false;
 
   return retval;
 }
@@ -2278,16 +2287,16 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   cwaitstr_index = tempsettings.CallWaitStringIndex;
   for (i = 0; i < kCallWaitStringsNum; i++) {
     if (i == kCallWaitCustom) {
-      item = base::At(CallWaitStrings, i);
+      item = base::At(call_wait_strings, i);
       temp = std::string_view(item).find('-');
       if (temp != std::string_view::npos) {
         pos = static_cast<int>(temp) + 2;
         len = static_cast<int>(
             std::string_view(tempsettings.CallWaitString).size());
-        port::SafeCopy(
-            std::span(base::At(CallWaitStrings, i)).subspan(base::ToSize(pos)),
-            tempsettings.CallWaitString);
-        base::At(base::At(CallWaitStrings, i), pos + len) = 0;
+        port::SafeCopy(std::span(base::At(call_wait_strings, i))
+                           .subspan(base::ToSize(pos)),
+                       tempsettings.CallWaitString);
+        base::At(base::At(call_wait_strings, i), pos + len) = 0;
         if (i == cwaitstr_index) {
           port::SafeCopy(cwaitstrbuf,
                          std::string_view(item).substr(base::ToSize(pos)));
@@ -2295,10 +2304,10 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
       }
     } else {
       if (i == cwaitstr_index) {
-        port::SafeCopy(cwaitstrbuf, base::At(CallWaitStrings, i));
+        port::SafeCopy(cwaitstrbuf, base::At(call_wait_strings, i));
       }
     }
-    cwaitstrlist.Add_Item(base::At(CallWaitStrings, i));
+    cwaitstrlist.Add_Item(base::At(call_wait_strings, i));
   }
 
   cwaitstrlist.Set_Selected_Index(cwaitstr_index);
@@ -2786,13 +2795,14 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
 
       case ButtonKey(kButtonCwaitstr):
         if (cwaitstr_index >= kCallWaitCustom) {
-          item = base::At(CallWaitStrings, kCallWaitCustom);
+          item = base::At(call_wait_strings, kCallWaitCustom);
           temp = std::string_view(item).find('-');
           if (temp != std::string_view::npos) {
             pos = static_cast<int>(temp) + 2;
-            port::SafeCopy(std::span(base::At(CallWaitStrings, kCallWaitCustom))
-                               .subspan(base::ToSize(pos)),
-                           cwaitstrbuf);
+            port::SafeCopy(
+                std::span(base::At(call_wait_strings, kCallWaitCustom))
+                    .subspan(base::ToSize(pos)),
+                cwaitstrbuf);
             cwaitstrlist.Set_Item(cwaitstr_index, item);
             display = REDRAW_BUTTONS;
           }
@@ -2909,7 +2919,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         tempsettings.InitStringIndex = initstr_index;
         tempsettings.CallWaitStringIndex = cwaitstr_index;
 
-        item = base::At(CallWaitStrings, kCallWaitCustom);
+        item = base::At(call_wait_strings, kCallWaitCustom);
         temp = std::string_view(item).find('-');
         if (temp != std::string_view::npos) {
           pos = static_cast<int>(temp) + 2;
@@ -7023,7 +7033,7 @@ static void Modem_Echo(char c) {
 } /* end of Modem_Echo */
 
 void Smart_Print(const std::string_view text) {
-  if (Debug_Smart_Print) {
+  if (smart_print_enabled) {
     absl::PrintF("%s", text);
   } else {
     if (Debug_Heap_Dump) {

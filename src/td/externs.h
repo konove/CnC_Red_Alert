@@ -102,7 +102,6 @@ extern bool Debug_Check_Map;
 extern bool Debug_Playtest;
 
 extern bool Debug_Heap_Dump;
-extern bool Debug_Smart_Print;
 extern bool Debug_Instant_Build;
 
 extern std::span<const std::byte> WarFactoryOverlay;
@@ -246,9 +245,6 @@ extern int CurPhoneIdx;
 extern DynamicVectorClass<char*> InitStrings;
 extern SerialSettingsType SerialDefaults;
 extern ModemGameType ModemGameToPlay;
-// CALL_WAIT_CUSTOM is edited in place by the serial-settings dialog, so
-// these are writable buffers rather than pointers to literals.
-extern char CallWaitStrings[kCallWaitStringsNum][CALL_WAIT_STRING_MAX];
 
 /*
 ** Network/Modem globals
