@@ -82,8 +82,8 @@ uint32_t Obfuscate(const std::string_view string) {
   // Put the phrase back in its original order first.
   std::ranges::reverse(std::span(buffer).first(base::ToSize(length)));
   for (int index = 0; index < length; index++) {
-    code ^= static_cast<unsigned char>(buffer.at(base::ToSize(index)));
-    const auto temp = static_cast<unsigned char>(code);
+    code ^= static_cast<uint8_t>(buffer.at(base::ToSize(index)));
+    const auto temp = static_cast<uint8_t>(code);
     buffer.at(base::ToSize(index)) = static_cast<char>(
         static_cast<uint8_t>(buffer.at(base::ToSize(index))) ^ temp);
     // Preserve the original signed shift's sign extension using unsigned
@@ -121,14 +121,13 @@ uint32_t Obfuscate(const std::string_view string) {
     // below uses only +, * and ^, whose low 8 bits depend only on the low 8
     // bits of their operands, and only those low 8 bits are stored back into
     // the buffer.
-    const uint16_t key1 =
-        static_cast<unsigned char>(buffer.at(base::ToSize(index)));
+    const uint16_t key1 = static_cast<uint8_t>(buffer.at(base::ToSize(index)));
     const uint16_t key2 =
-        static_cast<unsigned char>(buffer.at(base::ToSize(index + 1)));
+        static_cast<uint8_t>(buffer.at(base::ToSize(index + 1)));
     const uint16_t key3 =
-        static_cast<unsigned char>(buffer.at(base::ToSize(index + 2)));
+        static_cast<uint8_t>(buffer.at(base::ToSize(index + 2)));
     const uint16_t key4 =
-        static_cast<unsigned char>(buffer.at(base::ToSize(index + 3)));
+        static_cast<uint8_t>(buffer.at(base::ToSize(index + 3)));
     uint16_t val1 = key1;
     uint16_t val2 = key2;
     uint16_t val3 = key3;
